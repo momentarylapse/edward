@@ -7,31 +7,25 @@
 
 #include "ActionWorldAddTerrain.h"
 #include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldTerrain.h"
 #include "../../../x/terrain.h"
 #include "../../../lib/nix/nix.h"
 #include <assert.h>
 
-ActionWorldAddTerrain::ActionWorldAddTerrain(const vector &_pos, const string &_filename)
-{
+ActionWorldAddTerrain::ActionWorldAddTerrain(const vector &_pos, const string &_filename) {
 	filename = _filename;
 	assert(filename.num > 0);
 	pos = _pos;
 }
 
-ActionWorldAddTerrain::ActionWorldAddTerrain(const vector &_pos, const vector &_size, int _num_x, int _num_z)
-{
+ActionWorldAddTerrain::ActionWorldAddTerrain(const vector &_pos, const vector &_size, int _num_x, int _num_z) {
 	pos = _pos;
 	size = _size;
 	num_x = _num_x;
 	num_z = _num_z;
 }
 
-ActionWorldAddTerrain::~ActionWorldAddTerrain()
-{
-}
-
-void ActionWorldAddTerrain::undo(Data *d)
-{
+void ActionWorldAddTerrain::undo(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	assert(w->terrains.num > 0);
 
@@ -41,8 +35,7 @@ void ActionWorldAddTerrain::undo(Data *d)
 
 
 
-void *ActionWorldAddTerrain::execute(Data *d)
-{
+void *ActionWorldAddTerrain::execute(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	WorldTerrain t;
 
@@ -52,7 +45,7 @@ void *ActionWorldAddTerrain::execute(Data *d)
 	t.is_special = false;
 	t.pos = pos;
 
-	if (filename == ""){
+	if (filename == "") {
 		t.terrain = new Terrain();
 		t.terrain->pos = pos;
 		t.terrain->num_x = num_x;
@@ -79,7 +72,7 @@ void *ActionWorldAddTerrain::execute(Data *d)
 		t.terrain->min = pos;
 		t.terrain->max = pos + size;
 		t.terrain->force_redraw = true;
-	}else{
+	} else {
 		t.terrain = new Terrain(filename, pos);
 		t.filename = filename;
 	}

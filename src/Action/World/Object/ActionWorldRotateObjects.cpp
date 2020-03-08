@@ -7,6 +7,10 @@
 
 #include "ActionWorldRotateObjects.h"
 #include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldCamera.h"
+#include "../../../Data/World/WorldObject.h"
+#include "../../../Data/World/WorldLight.h"
+#include "../../../Data/World/WorldLink.h"
 #include "../../../Edward.h"
 
 ActionWorldRotateObjects::ActionWorldRotateObjects(DataWorld *d) :
@@ -34,6 +38,13 @@ ActionWorldRotateObjects::ActionWorldRotateObjects(DataWorld *d) :
 			old_ang.add(o.ang);
 			type.add(MVD_WORLD_LIGHT);
 		}
+	foreachi(auto &o, d->links, i)
+		if (o.is_selected) {
+			index.add(i);
+			old_data.add(o.pos);
+			old_ang.add(o.ang);
+			type.add(MVD_WORLD_LINK);
+		}
 }
 
 void ActionWorldRotateObjects::undo(Data *d) {
@@ -48,6 +59,9 @@ void ActionWorldRotateObjects::undo(Data *d) {
 		} else if (type[ii] == MVD_WORLD_LIGHT) {
 			w->lights[i].pos = old_data[ii];
 			w->lights[i].ang = old_ang[ii];
+		} else if (type[ii] == MVD_WORLD_LINK) {
+			w->links[i].pos = old_data[ii];
+			w->links[i].ang = old_ang[ii];
 		}
 	}
 }
@@ -67,6 +81,9 @@ void *ActionWorldRotateObjects::execute(Data *d) {
 		} else if (type[ii] == MVD_WORLD_LIGHT) {
 			w->lights[i].pos = mat * old_data[ii];
 			w->lights[i].ang = VecAngAdd(old_ang[ii], q.get_angles());
+		} else if (type[ii] == MVD_WORLD_LINK) {
+			w->links[i].pos = mat * old_data[ii];
+			w->links[i].ang = VecAngAdd(old_ang[ii], q.get_angles());
 		}
 	}
 	return NULL;

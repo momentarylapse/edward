@@ -7,6 +7,8 @@
 
 #include "ActionWorldTerrainApplyHeightmap.h"
 #include "../Helper/ActionWorldTerrainEditHeight.h"
+#include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldTerrain.h"
 #include "../../../lib/image/image.h"
 #include "../../../x/terrain.h"
 
@@ -51,10 +53,6 @@ ActionWorldTerrainApplyHeightmap::ActionWorldTerrainApplyHeightmap(DataWorld *da
 
 			addSubAction(new ActionWorldTerrainEditHeight(index, height, dest), data);
 		}
-}
-
-ActionWorldTerrainApplyHeightmap::~ActionWorldTerrainApplyHeightmap()
-{
 }
 
 

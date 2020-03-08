@@ -6,6 +6,8 @@
  */
 
 #include "TerrainPropertiesDialog.h"
+#include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldTerrain.h"
 #include "../../../Action/World/Terrain/ActionWorldEditTerrain.h"
 #include "../../../Edward.h"
 #include "../../../Storage/Storage.h"

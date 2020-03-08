@@ -7,15 +7,13 @@
 
 #include "ActionWorldAddObject.h"
 #include "../../../Data/World/DataWorld.h"
-#include "../../../x/object.h"
+#include "../../../Data/World/WorldObject.h"
 #include <assert.h>
 
 #include "../../../x/ModelManager.h"
 
-ActionWorldAddObject::ActionWorldAddObject(const string &_filename, const vector &_pos, const vector &_ang) {
-	filename = _filename;
-	pos = _pos;
-	ang = _ang;
+ActionWorldAddObject::ActionWorldAddObject(const WorldObject &o) {
+	object = o;
 }
 
 void ActionWorldAddObject::undo(Data *d) {
@@ -29,16 +27,7 @@ void ActionWorldAddObject::undo(Data *d) {
 
 void *ActionWorldAddObject::execute(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-
-	WorldObject o;
-	o.pos = pos;
-	o.ang = ang;
-	o.is_selected = true;
-	o.is_special = false;
-	o.filename = filename;
-	o.view_stage = 0;//mode_world->ViewStage;
-	o.object = (Object*)ModelManager::load(filename);
-	w->objects.add(o);
+	w->objects.add(object);
 
 	return &w->objects.back();
 }

@@ -9,13 +9,12 @@
 #define ACTIONWORLDTERRAINAPPLYHEIGHTMAP_H_
 
 #include "../../ActionGroup.h"
-#include "../../../Data/World/DataWorld.h"
 
-class ActionWorldTerrainApplyHeightmap : public ActionGroup
-{
+class DataWorld;
+
+class ActionWorldTerrainApplyHeightmap : public ActionGroup {
 public:
 	ActionWorldTerrainApplyHeightmap(DataWorld *data, const string &heightmap, float height_factor, float stretch_x, float stretch_z, const string &filter);
-	virtual ~ActionWorldTerrainApplyHeightmap();
 	string name(){	return "WorldTerrainApplyHeightmap";	}
 };
 

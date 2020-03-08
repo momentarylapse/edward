@@ -9,6 +9,8 @@
 #include "AdminFileList.h"
 #include "DataAdministration.h"
 #include "../World/DataWorld.h"
+#include "../World/WorldObject.h"
+#include "../World/WorldTerrain.h"
 #include "../Model/DataModel.h"
 #include "../Material/DataMaterial.h"
 #include "../Font/DataFont.h"

@@ -11,11 +11,9 @@
 #include "../ActionGroup.h"
 #include "../../Data/World/DataWorld.h"
 
-class ActionWorldDeleteSelection : public ActionGroup
-{
+class ActionWorldDeleteSelection : public ActionGroup {
 public:
 	ActionWorldDeleteSelection();
-	virtual ~ActionWorldDeleteSelection();
 	string name(){	return "WorldDeleteSelection";	}
 
 	void *compose(Data *d);

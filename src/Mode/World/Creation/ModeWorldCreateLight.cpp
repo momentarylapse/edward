@@ -7,8 +7,10 @@
 
 #include "ModeWorldCreateLight.h"
 #include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldLight.h"
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
+#include "../../../Action/World/Light/ActionWorldAddLight.h"
 
 ModeWorldCreateLight::ModeWorldCreateLight(ModeBase *_parent) :
 	ModeCreation<DataWorld>("WorldCreateObject", _parent)
@@ -41,8 +43,7 @@ void ModeWorldCreateLight::on_left_button_down() {
 	l.type = (LightType)t;
 	l.radius = multi_view->cam.radius;
 
-	data->lights.add(l);
-	data->notify();
+	data->execute(new ActionWorldAddLight(l));
 }
 
 void ModeWorldCreateLight::on_draw_win(MultiView::Window *win) {

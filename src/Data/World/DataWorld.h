@@ -15,73 +15,14 @@
 class DataWorld;
 class Terrain;
 class Object;
+class WorldLink;
+class WorldLight;
+class WorldObject;
+class WorldTerrain;
+class WorldCamera;
 
 
-/*class WorldTerrainVertex: public MultiView::SingleData
-{
-public:
-	float Height;
-	vector Normal;
-};*/
 
-class WorldTerrain: public MultiView::SingleData {
-public:
-	string filename;
-	//Array<WorldTerrainVertex> Vertex;
-	int VertexBufferSingle;
-	int ShowTexture;
-	bool Changed;
-	Terrain *terrain;
-
-	bool load(const vector &pos, const string &filename, bool deep = true);
-	bool save(const string &filename);
-
-	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
-	bool in_rect(MultiView::Window *win, const rect &r) override;
-	bool overlap_rect(MultiView::Window *win, const rect &r) override;
-
-	void update_data();
-};
-
-class WorldEditingTerrain {
-public:
-	string FileName;
-	int NumX, NumZ;
-	vector Pattern;
-	string MaterialFile;
-	int NumTextures;
-	string TextureFile[MATERIAL_MAX_TEXTURES];
-	vector TextureScale[MATERIAL_MAX_TEXTURES];
-};
-
-class WorldObject: public MultiView::SingleData {
-public:
-	string filename, name;
-	Object *object;
-	vector ang;
-
-	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
-	bool in_rect(MultiView::Window *win, const rect &r) override;
-	bool overlap_rect(MultiView::Window *win, const rect &r) override;
-
-	void update_data();
-};
-
-enum class LinkType {
-	SOCKET,
-	HINGE,
-	UNIVERSAL,
-	SPRING
-};
-
-class WorldLink: public MultiView::SingleData {
-public:
-	LinkType type;
-	int object[2];
-	vector ang;
-	float param[4];
-	float friction;
-};
 
 class WorldScriptVariable {
 public:
@@ -95,36 +36,6 @@ public:
 	string filename;
 	string class_name;
 	Array<WorldScriptVariable> variables;
-};
-
-class WorldCamera: public MultiView::SingleData {
-public:
-	WorldCamera();
-	string name;
-	vector ang;
-	float fov;
-	float min_depth, max_depth;
-	float exposure;
-};
-
-enum class LightType {
-	DIRECTIONAL,
-	POINT,
-	CONE
-};
-
-class WorldLight: public MultiView::SingleData {
-public:
-	string name;
-	LightType type;
-	vector ang;
-	float radius, theta;
-	bool enabled;
-	color col;
-	float harshness;
-
-	color ambient();
-	color diffuse();
 };
 
 class DataWorld: public Data {

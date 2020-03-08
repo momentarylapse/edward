@@ -9,7 +9,9 @@
 #define TERRAINPROPERTIESDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
-#include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldTerrain.h"
+
+class DataWorld;
 
 class TerrainPropertiesDialog: public hui::Dialog {
 public:

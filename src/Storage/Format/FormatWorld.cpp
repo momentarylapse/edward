@@ -6,6 +6,12 @@
  */
 
 #include "FormatWorld.h"
+#include "../../Data/World/DataWorld.h"
+#include "../../Data/World/WorldCamera.h"
+#include "../../Data/World/WorldLight.h"
+#include "../../Data/World/WorldLink.h"
+#include "../../Data/World/WorldObject.h"
+#include "../../Data/World/WorldTerrain.h"
 #include "../../Edward.h"
 #include "../../x/model.h"
 #include "../../x/object.h"
@@ -13,9 +19,6 @@
 #include "../../meta.h"
 #include "../../x/ModelManager.h"
 #include "../../lib/xfile/xml.h"
-
-string light_type_canonical(LightType t);
-string link_type_canonical(LinkType t);
 
 FormatWorld::FormatWorld() : TypedFormat<DataWorld>(FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
 }

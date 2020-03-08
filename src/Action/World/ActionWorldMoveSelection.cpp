@@ -7,6 +7,11 @@
 
 #include "ActionWorldMoveSelection.h"
 #include "../../Data/World/DataWorld.h"
+#include "../../Data/World/WorldCamera.h"
+#include "../../Data/World/WorldLight.h"
+#include "../../Data/World/WorldLink.h"
+#include "../../Data/World/WorldObject.h"
+#include "../../Data/World/WorldTerrain.h"
 #include "../../x/terrain.h"
 #include "../../Edward.h"
 
@@ -38,6 +43,12 @@ ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d) :
 			old_data.add(l.pos);
 			type.add(MVD_WORLD_LIGHT);
 		}
+	foreachi(auto &l, d->links, i)
+		if (l.is_selected) {
+			index.add(i);
+			old_data.add(l.pos);
+			type.add(MVD_WORLD_LINK);
+		}
 }
 
 void *ActionWorldMoveSelection::execute(Data *d) {
@@ -53,6 +64,8 @@ void *ActionWorldMoveSelection::execute(Data *d) {
 			w->lights[i].pos = mat * old_data[ii];
 		} else if (type[ii] == MVD_WORLD_CAMERA) {
 			w->cameras[i].pos = mat * old_data[ii];
+		} else if (type[ii] == MVD_WORLD_LINK) {
+			w->links[i].pos = mat * old_data[ii];
 		}
 	}
 	return NULL;
@@ -73,6 +86,8 @@ void ActionWorldMoveSelection::undo(Data *d) {
 			w->lights[i].pos = old_data[ii];
 		} else if (type[ii] == MVD_WORLD_CAMERA) {
 			w->cameras[i].pos = old_data[ii];
+		} else if (type[ii] == MVD_WORLD_LINK) {
+			w->links[i].pos = old_data[ii];
 		}
 	}
 }

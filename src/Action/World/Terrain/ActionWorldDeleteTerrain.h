@@ -9,17 +9,15 @@
 #define ACTIONWORLDDELETETERRAIN_H_
 
 #include "../../Action.h"
-#include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldTerrain.h"
 
-class ActionWorldDeleteTerrain : public Action
-{
+class ActionWorldDeleteTerrain : public Action {
 public:
 	ActionWorldDeleteTerrain(int index);
-	virtual ~ActionWorldDeleteTerrain();
 	string name(){	return "WorldDeleteTerrain";	}
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	int index;

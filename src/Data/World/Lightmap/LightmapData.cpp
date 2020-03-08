@@ -7,6 +7,9 @@
 
 #include "LightmapData.h"
 #include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldObject.h"
+#include "../../../Data/World/WorldTerrain.h"
+#include "../../../Data/World/WorldLight.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Data/Model/ModelMesh.h"
 #include "../../../Data/Model/ModelPolygon.h"

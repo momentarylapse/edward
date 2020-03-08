@@ -9,17 +9,15 @@
 #define ACTIONWORLDDELETEOBJECT_H_
 
 #include "../../Action.h"
-#include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldObject.h"
 
-class ActionWorldDeleteObject : public Action
-{
+class ActionWorldDeleteObject : public Action {
 public:
 	ActionWorldDeleteObject(int index);
-	virtual ~ActionWorldDeleteObject();
-	string name(){	return "WorldDeleteObject";	}
+	string name() override { return "WorldDeleteObject"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	int index;

@@ -7,6 +7,7 @@
 
 #include "ActionWorldTerrainEditHeight.h"
 #include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldTerrain.h"
 #include "../../../x/terrain.h"
 #include <assert.h>
 

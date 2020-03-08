@@ -5,15 +5,20 @@
  *      Author: michi
  */
 
+#include "ModeWorld.h"
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
 #include "../../MultiView/MultiView.h"
 #include "../../MultiView/Window.h"
 #include "../../MultiView/DrawingHelper.h"
 #include "../../MultiView/ColorScheme.h"
-#include "ModeWorld.h"
 #include "../../Data/World/DataWorld.h"
 #include "../../Data/World/DataCamera.h"
+#include "../../Data/World/WorldLink.h"
+#include "../../Data/World/WorldLight.h"
+#include "../../Data/World/WorldObject.h"
+#include "../../Data/World/WorldTerrain.h"
+#include "../../Data/World/WorldCamera.h"
 #include "../../lib/nix/nix.h"
 #include "../../x/camera.h"
 #include "../../x/world.h"

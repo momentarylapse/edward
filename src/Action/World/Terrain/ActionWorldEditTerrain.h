@@ -9,17 +9,15 @@
 #define ACTIONWORLDEDITTERRAIN_H_
 
 #include "../../Action.h"
-#include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldTerrain.h"
 
-class ActionWorldEditTerrain : public Action
-{
+class ActionWorldEditTerrain : public Action {
 public:
 	ActionWorldEditTerrain(int _index, const WorldEditingTerrain &_data);
-	virtual ~ActionWorldEditTerrain();
-	string name(){	return "WorldEditTerrain";	}
+	string name() override { return "WorldEditTerrain"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	WorldEditingTerrain data;

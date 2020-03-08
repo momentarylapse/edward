@@ -11,16 +11,14 @@
 #include "../../Action.h"
 #include "../../../lib/math/math.h"
 
-class ActionWorldAddTerrain : public Action
-{
+class ActionWorldAddTerrain : public Action {
 public:
 	ActionWorldAddTerrain(const vector &_pos, const string &_filename);
 	ActionWorldAddTerrain(const vector &_pos, const vector &_size, int _num_x, int _num_z);
-	virtual ~ActionWorldAddTerrain();
 	string name(){	return "WorldAddTerrain";	}
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	string filename;

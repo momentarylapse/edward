@@ -9,7 +9,7 @@
 #define ACTIONWORLDTERRAINBRUSHEXTRUDE_H_
 
 #include "../../Action.h"
-#include "../../../Data/World/DataWorld.h"
+#include "../../../lib/math/vector.h"
 
 class ActionWorldTerrainBrushExtrude : public Action {
 public:

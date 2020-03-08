@@ -6,6 +6,11 @@
  */
 
 #include "DataWorld.h"
+#include "WorldLight.h"
+#include "WorldObject.h"
+#include "WorldTerrain.h"
+#include "WorldCamera.h"
+#include "WorldLink.h"
 #include "../../Mode/World/ModeWorld.h"
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
@@ -22,95 +27,6 @@
 #include "../../x/ModelManager.h"
 
 
-void WorldObject::update_data() {
-	if (!object)
-		return;
-	object->pos = pos;
-	object->ang = quaternion::rotation_v(ang);
-	object->update_matrix();
-}
-
-bool WorldTerrain::load(const vector &_pos, const string &_filename, bool deep) {
-	view_stage = 0;
-	is_selected = false;
-	is_special = false;
-
-	filename = _filename.substr(engine.map_dir.num, -1);
-	filename.resize(filename.num - 4);
-
-	terrain = new Terrain();
-	bool Error = !terrain->load(filename, _pos, deep);
-
-	if (Error) {
-		delete(terrain);
-		terrain = NULL;
-	}
-
-	return !Error;
-}
-
-bool WorldTerrain::save(const string &_filename) {
-	filename = _filename.substr(engine.map_dir.num, -1);
-	filename.resize(filename.num - 4);
-
-
-	File *f = NULL;
-
-	try{
-		f = FileCreate(filename);
-
-	f->WriteFileFormatVersion(true, 4);
-	f->write_byte(0);
-
-	// Metrics
-	f->write_comment("// Metrics");
-	f->write_int(terrain->num_x);
-	f->write_int(terrain->num_z);
-	f->write_float(terrain->pattern.x);
-	f->write_float(terrain->pattern.z);
-
-	// Textures
-	f->write_comment("// Textures");
-	f->write_int(terrain->material->textures.num);
-	for (int i=0;i<terrain->material->textures.num;i++){
-		f->write_str(terrain->texture_file[i]);
-		f->write_float(terrain->texture_scale[i].x);
-		f->write_float(terrain->texture_scale[i].z);
-	}
-	f->write_str(terrain->material_file);
-
-	// height
-	for (int x=0;x<terrain->num_x+1;x++)
-		for (int z=0;z<terrain->num_z+1;z++)
-			f->write_float(terrain->height[x*(terrain->num_z+1) + z]);
-
-	FileClose(f);
-
-	}catch(Exception &e){}
-
-	return true;
-}
-
-void WorldTerrain::update_data() {
-	if (!terrain)
-		return;
-	terrain->pos = pos;
-}
-
-WorldCamera::WorldCamera() {
-	fov = pi/4;
-	min_depth = 1;
-	max_depth = 10000;
-	exposure = 1;
-}
-
-color WorldLight::ambient() {
-	return col * ((1 - harshness) / 2);
-}
-
-color WorldLight::diffuse() {
-	return col * harshness;
-}
 
 DataWorld::DataWorld() :
 	Data(FD_WORLD)
@@ -241,8 +157,16 @@ void DataWorld::UpdateData() {
 		t.update_data();
 }
 
-WorldObject* DataWorld::AddObject(const string& filename, const vector& pos)
-{	return (WorldObject*)execute(new ActionWorldAddObject(filename, pos));	}
+WorldObject* DataWorld::AddObject(const string& filename, const vector& pos) {
+	WorldObject o;
+	o.pos = pos;
+	o.ang = v_0;//quaternion::ID;
+	o.is_selected = true;
+	o.filename = filename;
+	o.view_stage = 0;//mode_world->ViewStage;
+	o.object = (Object*)ModelManager::load(filename);
+	return (WorldObject*)execute(new ActionWorldAddObject(o));
+}
 
 WorldTerrain* DataWorld::AddTerrain(const string& filename, const vector& pos)
 {	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, filename));	}

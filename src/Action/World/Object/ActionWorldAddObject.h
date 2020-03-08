@@ -9,20 +9,18 @@
 #define ACTIONWORLDADDOBJECT_H_
 
 #include "../../Action.h"
-#include "../../../lib/math/math.h"
+#include "../../../Data/World/WorldObject.h"
 
 class ActionWorldAddObject : public Action {
 public:
-	ActionWorldAddObject(const string &_filename, const vector &_pos, const vector &_ang = v_0);
-	string name(){	return "WorldAddObject";	}
+	ActionWorldAddObject(const WorldObject &o);
+	string name() { return "WorldAddObject"; }
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;
 
 private:
-	string filename;
-	vector pos;
-	vector ang;
+	WorldObject object;
 };
 
 #endif /* ACTIONWORLDADDOBJECT_H_ */

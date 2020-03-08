@@ -12,17 +12,11 @@
 
 #include "../../../x/ModelManager.h"
 
-ActionWorldDeleteObject::ActionWorldDeleteObject(int _index)
-{
+ActionWorldDeleteObject::ActionWorldDeleteObject(int _index) {
 	index = _index;
 }
 
-ActionWorldDeleteObject::~ActionWorldDeleteObject()
-{
-}
-
-void* ActionWorldDeleteObject::execute(Data* d)
-{
+void* ActionWorldDeleteObject::execute(Data* d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	assert(index >= 0);
 	assert(index < w->objects.num);
@@ -33,8 +27,7 @@ void* ActionWorldDeleteObject::execute(Data* d)
 	return NULL;
 }
 
-void ActionWorldDeleteObject::undo(Data* d)
-{
+void ActionWorldDeleteObject::undo(Data* d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 
 	object.is_selected = false;

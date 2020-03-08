@@ -6,29 +6,23 @@
  */
 
 #include "ActionWorldEditTerrain.h"
+#include "../../../Data/World/DataWorld.h"
 #include "../../../x/terrain.h"
 #include "../../../lib/nix/nix.h"
 #include <assert.h>
 
-ActionWorldEditTerrain::ActionWorldEditTerrain(int _index, const WorldEditingTerrain &_data)
-{
+ActionWorldEditTerrain::ActionWorldEditTerrain(int _index, const WorldEditingTerrain &_data) {
 	index = _index;
 	data = _data;
 }
 
-ActionWorldEditTerrain::~ActionWorldEditTerrain()
-{
-}
-
-void ActionWorldEditTerrain::undo(Data *d)
-{
+void ActionWorldEditTerrain::undo(Data *d) {
 	execute(d);
 }
 
 
 
-void *ActionWorldEditTerrain::execute(Data *d)
-{
+void *ActionWorldEditTerrain::execute(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	assert(index >= 0);
 	assert(index < w->terrains.num);
@@ -42,7 +36,7 @@ void *ActionWorldEditTerrain::execute(Data *d)
 	old_data.Pattern = t->pattern;
 	old_data.MaterialFile = t->material_file;
 	old_data.NumTextures = t->material->textures.num;
-	for (int i=0;i<t->material->textures.num;i++){
+	for (int i=0;i<t->material->textures.num;i++) {
 		old_data.TextureFile[i] = t->texture_file[i];
 		old_data.TextureScale[i] = t->texture_scale[i];
 	}
@@ -52,7 +46,7 @@ void *ActionWorldEditTerrain::execute(Data *d)
 	t->material_file = data.MaterialFile;
 	//t->material->copy_from(NULL, LoadMaterial(t->material_file), false);
 	t->material->textures.resize(data.NumTextures);
-	for (int i=0;i<t->material->textures.num;i++){
+	for (int i=0;i<t->material->textures.num;i++) {
 		t->texture_file[i] = data.TextureFile[i];
 		t->material->textures[i] = nix::LoadTexture(t->texture_file[i]);
 		t->texture_scale[i] = data.TextureScale[i];

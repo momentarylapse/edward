@@ -6,35 +6,28 @@
  */
 
 #include "ActionWorldEditObject.h"
+#include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldObject.h"
 #include <assert.h>
+#include <algorithm>
 
-ActionWorldEditObject::ActionWorldEditObject(int _index, const WorldObject &_data)
-{
+ActionWorldEditObject::ActionWorldEditObject(int _index, const WorldObject &_data) {
 	data = _data;
 	index = _index;
 }
 
-ActionWorldEditObject::~ActionWorldEditObject()
-{
-}
-
-void ActionWorldEditObject::undo(Data *d)
-{
+void ActionWorldEditObject::undo(Data *d) {
 	execute(d);
 }
 
 
 
-void *ActionWorldEditObject::execute(Data *d)
-{
+void *ActionWorldEditObject::execute(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	assert(index >= 0);
 	assert(index < w->objects.num);
 
-	// swap
-	WorldObject old_data = w->objects[index];
-	w->objects[index] = data;
-	data = old_data;
+	std::swap(data, w->objects[index]);
 
 	return NULL;
 }

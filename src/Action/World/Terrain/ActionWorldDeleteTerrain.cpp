@@ -6,19 +6,14 @@
  */
 
 #include "ActionWorldDeleteTerrain.h"
+#include "../../../Data/World/DataWorld.h"
 #include <assert.h>
 
-ActionWorldDeleteTerrain::ActionWorldDeleteTerrain(int _index)
-{
+ActionWorldDeleteTerrain::ActionWorldDeleteTerrain(int _index) {
 	index = _index;
 }
 
-ActionWorldDeleteTerrain::~ActionWorldDeleteTerrain()
-{
-}
-
-void* ActionWorldDeleteTerrain::execute(Data* d)
-{
+void* ActionWorldDeleteTerrain::execute(Data* d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	assert(index >= 0);
 	assert(index < w->terrains.num);
@@ -29,8 +24,7 @@ void* ActionWorldDeleteTerrain::execute(Data* d)
 	return NULL;
 }
 
-void ActionWorldDeleteTerrain::undo(Data* d)
-{
+void ActionWorldDeleteTerrain::undo(Data* d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 
 	terrain.is_selected = false;

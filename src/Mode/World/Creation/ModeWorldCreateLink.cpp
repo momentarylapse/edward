@@ -7,10 +7,11 @@
 
 #include "ModeWorldCreateLink.h"
 #include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldLink.h"
+#include "../../../Data/World/WorldObject.h"
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
-
-string link_type_canonical(LinkType t);
+#include "../../../Action/World/Link/ActionWorldAddLink.h"
 
 ModeWorldCreateLink::ModeWorldCreateLink(ModeBase *_parent) :
 	ModeCreation<DataWorld>("WorldCreateObject", _parent)
@@ -51,8 +52,7 @@ void ModeWorldCreateLink::on_left_button_down() {
 			l.object[0] = objects[0];
 			l.object[1] = objects[1];
 			l.type = (LinkType)dialog->get_int("type");
-			data->links.add(l);
-			data->notify();
+			data->execute(new ActionWorldAddLink(l));
 			abort();
 		}
 	}

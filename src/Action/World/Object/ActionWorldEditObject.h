@@ -9,17 +9,15 @@
 #define ACTIONWORLDEDITOBJECT_H_
 
 #include "../../Action.h"
-#include "../../../Data/World/DataWorld.h"
+#include "../../../Data/World/WorldObject.h"
 
-class ActionWorldEditObject : public Action
-{
+class ActionWorldEditObject : public Action {
 public:
 	ActionWorldEditObject(int _index, const WorldObject &_data);
-	virtual ~ActionWorldEditObject();
 	string name(){	return "WorldEditObject";	}
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	WorldObject data;
