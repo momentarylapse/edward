@@ -18,7 +18,7 @@ ActionWorldTerrainBrushExtrude::ActionWorldTerrainBrushExtrude(int _index, const
 void* ActionWorldTerrainBrushExtrude::execute(Data* d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	Terrain *t = w->Terrains[index].terrain;
+	Terrain *t = w->terrains[index].terrain;
 
 	float r2 = radius * radius;
 
@@ -39,7 +39,7 @@ void* ActionWorldTerrainBrushExtrude::execute(Data* d)
 void ActionWorldTerrainBrushExtrude::undo(Data* d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	Terrain *t = w->Terrains[index].terrain;
+	Terrain *t = w->terrains[index].terrain;
 
 	foreachi(int vi, v_index, ii)
 		t->height[vi] = old_height[ii];

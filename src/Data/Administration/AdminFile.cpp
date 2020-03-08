@@ -198,14 +198,14 @@ void AdminFile::check(AdminFileList &list)
 		DataWorld w;
 		if (storage->load(engine.map_dir + Name, &w, false)){
 			Time = w.file_time;
-			for (int i=0;i<w.Terrains.num;i++)
-				add_possible_link(l, FD_TERRAIN, w.Terrains[i].filename);
+			for (int i=0;i<w.terrains.num;i++)
+				add_possible_link(l, FD_TERRAIN, w.terrains[i].filename);
 			for (int i=0;i<w.meta_data.SkyBoxFile.num;i++)
 				add_possible_link(l, FD_MODEL, w.meta_data.SkyBoxFile[i]);
 			for (int i=0;i<w.meta_data.scripts.num;i++)
 				add_possible_link(l, FD_SCRIPT, w.meta_data.scripts[i].filename);
-			for (int i=0;i<w.Objects.num;i++)
-				add_possible_link(l, FD_MODEL, w.Objects[i].filename);
+			for (int i=0;i<w.objects.num;i++)
+				add_possible_link(l, FD_MODEL, w.objects[i].filename);
 		}else
 			Missing=true;
 	}else if (Kind==FD_TERRAIN){

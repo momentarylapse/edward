@@ -14,6 +14,8 @@
 #include "../../x/ModelManager.h"
 #include "../../lib/xfile/xml.h"
 
+string light_type_canonical(LightType t);
+
 FormatWorld::FormatWorld() : TypedFormat<DataWorld>(FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
 }
 
@@ -49,15 +51,15 @@ void FormatWorld::_load(const string &filename, DataWorld *data, bool deep) {
 
 
 	if (deep){
-		for (int i=0;i<data->Terrains.num;i++){
-			ed->progress->set(_("Terrains"), (float)i / (float)data->Terrains.num / 2.0f);
-			data->Terrains[i].load(data->Terrains[i].pos, engine.map_dir + data->Terrains[i].filename + ".map", true);
+		for (int i=0;i<data->terrains.num;i++){
+			ed->progress->set(_("Terrains"), (float)i / (float)data->terrains.num / 2.0f);
+			data->terrains[i].load(data->terrains[i].pos, engine.map_dir + data->terrains[i].filename + ".map", true);
 		}
-		for (int i=0;i<data->Objects.num;i++){
+		for (int i=0;i<data->objects.num;i++){
 			//ed->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);
-			data->Objects[i].object = (Object*)ModelManager::load(data->Objects[i].filename);
-			data->Objects[i].object->pos = data->Objects[i].pos;
-			data->Objects[i].object->ang = quaternion::rotation(data->Objects[i].ang);
+			data->objects[i].object = (Object*)ModelManager::load(data->objects[i].filename);
+			data->objects[i].object->pos = data->objects[i].pos;
+			data->objects[i].object->ang = quaternion::rotation(data->objects[i].ang);
 //			if (Objects[i].object)
 //				GodRegisterModel(Objects[i].object);
 		}
@@ -126,7 +128,7 @@ void FormatWorld::_load_xml(const string &filename, DataWorld *data, bool deep) 
 				data->cameras.add(c);
 			} else if (e.tag == "light") {
 				WorldLight l;
-				l.mode = (e.value("type") == "point") ? LightMode::POINT : LightMode::DIRECTIONAL;
+				l.type = (e.value("type") == "point") ? LightType::POINT : LightType::DIRECTIONAL;
 				l.radius = e.value("radius")._float();
 				l.harshness = e.value("harshness")._float();
 				l.col = s2c(e.value("color"));
@@ -136,7 +138,7 @@ void FormatWorld::_load_xml(const string &filename, DataWorld *data, bool deep) 
 				WorldTerrain t;
 				t.filename = e.value("file");
 				t.pos = s2v(e.value("pos"));
-				data->Terrains.add(t);
+				data->terrains.add(t);
 			} else if (e.tag == "object") {
 				WorldObject o;
 				o.object = NULL;
@@ -144,7 +146,7 @@ void FormatWorld::_load_xml(const string &filename, DataWorld *data, bool deep) 
 				o.name = e.value("name");
 				o.pos = s2v(e.value("pos"));
 				o.ang = s2v(e.value("ang"));
-				data->Objects.add(o);
+				data->objects.add(o);
 			}
 		}
 	}
@@ -170,7 +172,7 @@ void FormatWorld::_load_old(const string &filename, DataWorld *data, bool deep) 
 			WorldTerrain t;
 			t.filename = f->read_str();
 			f->read_vector(&t.pos);
-			data->Terrains.add(t);
+			data->terrains.add(t);
 		}
 		// Gravitation
 		f->read_comment();
@@ -224,7 +226,7 @@ void FormatWorld::_load_old(const string &filename, DataWorld *data, bool deep) 
 			o.view_stage = 0;
 			o.is_selected = false;
 			o.is_special = false;
-			data->Objects.add(o);
+			data->objects.add(o);
 		}
 		// Scripts
 		f->read_comment();
@@ -329,7 +331,7 @@ void FormatWorld::_save(const string &filename, DataWorld *data) {
 
 	for (auto &l: data->lights) {
 		auto e = xml::Element("light")
-		.witha("type", l.mode == LightMode::POINT ? "point" : "directional")
+		.witha("type", light_type_canonical(l.type))
 		.witha("color", c2s(l.col))
 		.witha("harshness", f2s(l.harshness, 4))
 		.witha("radius", f2s(l.radius, 3))
@@ -337,14 +339,14 @@ void FormatWorld::_save(const string &filename, DataWorld *data) {
 		cont.add(e);
 	}
 
-	for (auto &t: data->Terrains) {
+	for (auto &t: data->terrains) {
 		auto e = xml::Element("terrain")
 		.witha("file", t.filename)
 		.witha("pos", v2s(t.pos));
 		cont.add(e);
 	}
 
-	for (auto &o: data->Objects) {
+	for (auto &o: data->objects) {
 		auto e = xml::Element("object")
 		.witha("file", o.filename)
 		.witha("name", o.name)
@@ -356,86 +358,4 @@ void FormatWorld::_save(const string &filename, DataWorld *data) {
 
 	p.save(filename);
 	return;
-
-
-#if 0
-	File *f = FileCreateText(filename);
-	f->float_decimals = 6;
-
-	f->WriteFileFormatVersion(false, 10);
-	f->write_comment("// Terrains");
-	f->write_int(data->Terrains.num);
-	for (auto &t: data->Terrains) {
-		f->write_str(t.filename);
-		f->write_float(t.pos.x);
-		f->write_float(t.pos.y);
-		f->write_float(t.pos.z);
-	}
-	f->write_comment("// Gravitation");
-	f->write_float(data->meta_data.Gravity.x);
-	f->write_float(data->meta_data.Gravity.y);
-	f->write_float(data->meta_data.Gravity.z);
-	f->write_comment("// EgoIndex");
-	f->write_int(data->EgoIndex);
-	f->write_comment("// Background");
-	write_color_argb(f, data->meta_data.BackGroundColor);
-	int ns = 0;
-	foreachi(string &sb, data->meta_data.SkyBoxFile, i)
-		if (sb.num > 0)
-			ns = i + 1;
-	f->write_int(ns);
-	for (int i=0;i<ns;i++)
-		f->write_str(data->meta_data.SkyBoxFile[i]);
-	f->write_comment("// Fog");
-	f->write_bool(data->meta_data.FogEnabled);
-	f->write_word(data->meta_data.FogMode);
-	f->write_float(data->meta_data.FogStart);
-	f->write_float(data->meta_data.FogEnd);
-	f->write_float(data->meta_data.FogDensity);
-	write_color_argb(f, data->meta_data.FogColor);
-	f->write_comment("// Music");
-	f->write_int(data->meta_data.MusicFile.num);
-	for (string &m: data->meta_data.MusicFile)
-		f->write_str(m);
-	f->write_comment("// Objects");
-	f->write_int(data->Objects.num);
-	for (auto &o: data->Objects) {
-		f->write_str(o.filename);
-		f->write_str(o.name);
-		f->write_float(o.pos.x);
-		f->write_float(o.pos.y);
-		f->write_float(o.pos.z);
-		f->write_float(o.ang.x);
-		f->write_float(o.ang.y);
-		f->write_float(o.ang.z);
-	}
-	f->write_comment("// Scripts");
-	f->write_int(data->meta_data.scripts.num);
-	for (auto &s: data->meta_data.scripts) {
-		f->write_str(s.filename);
-		f->write_int(s.variables.num);
-		for (auto &v: s.variables) {
-			f->write_str(v.name);
-			f->write_str(v.value);
-		}
-	}
-	f->write_comment("// ScriptVars");
-	f->write_int(0);
-	f->write_comment("// Sun");
-	f->write_bool(data->lights[0].enabled);
-	write_color_3i(f, data->lights[0].ambient());
-	write_color_3i(f, data->lights[0].diffuse());
-	write_color_3i(f, Black);
-	f->write_float(data->lights[0].ang.x);
-	f->write_float(data->lights[0].ang.y);
-	f->write_comment("// Ambient");
-	write_color_3i(f, Black);
-	f->write_comment("// Physics");
-	f->write_bool(data->meta_data.PhysicsEnabled);
-	f->write_int(0);
-	f->write_comment("#");
-
-	delete(f);
-#endif
-
 }

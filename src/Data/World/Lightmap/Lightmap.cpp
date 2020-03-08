@@ -204,7 +204,7 @@ bool Lightmap::RenderTextures()
 		t.orig->texture_scale[t.orig->material->textures.num] = vector(1.0f / t.orig->num_x, 0, 1.0f / t.orig->num_z);
 		t.orig->material->textures.add(NULL);
 		t.new_name = data->model_out_dir + i2s(tid);
-		data->source_world->Terrains[tid].save(engine.map_dir + t.new_name + ".map");
+		data->source_world->terrains[tid].save(engine.map_dir + t.new_name + ".map");
 	}
 
 	CreateNewWorld();
@@ -221,10 +221,10 @@ void Lightmap::CreateNewWorld()
 	DataWorld w;
 	w.meta_data = data->source_world->meta_data;
 	w.EgoIndex = data->source_world->EgoIndex;
-	w.Objects = data->source_world->Objects;
-	w.Terrains = data->source_world->Terrains;
+	w.objects = data->source_world->objects;
+	w.terrains = data->source_world->terrains;
 	for (LightmapData::Model &m: data->Models)
-		w.Objects[m.object_index].filename = m.new_name;
+		w.objects[m.object_index].filename = m.new_name;
 
 	storage->save(engine.map_dir + data->new_world_name + ".world", &w);
 }

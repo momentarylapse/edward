@@ -23,7 +23,7 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(hui::Window *_parent, bool _all
 	data = _data;
 	index = _index;
 	assert(index >= 0);
-	assert(index < data->Terrains.num);
+	assert(index < data->terrains.num);
 
 	event("cancel", [=]{ OnClose(); });
 	event("hui:close", [=]{ OnClose(); });
@@ -121,7 +121,7 @@ void TerrainPropertiesDialog::OnSaveAs()
 {
 	if (!storage->file_dialog(FD_TERRAIN, true, true))
 		return;
-	data->Terrains[index].save(storage->dialog_file_complete);
+	data->terrains[index].save(storage->dialog_file_complete);
 	set_string("filename", storage->dialog_file_no_ending);
 }
 
@@ -210,14 +210,14 @@ void TerrainPropertiesDialog::OnClearTextureLevel()
 }
 
 void TerrainPropertiesDialog::update_data() {
-	if (index >= data->Terrains.num) {
+	if (index >= data->terrains.num) {
 		destroy();
 		return;
 	}
 
-	Terrain *t = data->Terrains[index].terrain;
+	Terrain *t = data->terrains[index].terrain;
 	assert(t);
-	temp.FileName = data->Terrains[index].filename;
+	temp.FileName = data->terrains[index].filename;
 	temp.NumX = t->num_x;
 	temp.NumZ = t->num_z;
 	temp.Pattern = t->pattern;

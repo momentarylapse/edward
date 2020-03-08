@@ -11,16 +11,14 @@
 #include "../../ModeCreation.h"
 class DataWorld;
 
-class ModeWorldCreateTerrain: public ModeCreation<DataWorld>
-{
+class ModeWorldCreateTerrain: public ModeCreation<DataWorld> {
 public:
 	ModeWorldCreateTerrain(ModeBase *_parent);
-	virtual ~ModeWorldCreateTerrain();
 
-	virtual void on_start();
-	virtual void on_end();
+	void on_start() override;
+	void on_end() override;
 
-	virtual void on_draw_win(MultiView::Window *win);
+	void on_draw_win(MultiView::Window *win) override;
 
 	void onOk();
 	void onClose();

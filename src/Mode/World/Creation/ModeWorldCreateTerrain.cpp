@@ -16,10 +16,6 @@ ModeWorldCreateTerrain::ModeWorldCreateTerrain(ModeBase *_parent) :
 	message = _("new terrain...");
 }
 
-ModeWorldCreateTerrain::~ModeWorldCreateTerrain()
-{
-}
-
 void ModeWorldCreateTerrain::on_start()
 {
 	// Dialog

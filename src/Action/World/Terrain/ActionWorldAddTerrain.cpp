@@ -33,10 +33,10 @@ ActionWorldAddTerrain::~ActionWorldAddTerrain()
 void ActionWorldAddTerrain::undo(Data *d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	assert(w->Terrains.num > 0);
+	assert(w->terrains.num > 0);
 
-	delete(w->Terrains.back().terrain);
-	w->Terrains.pop();
+	delete(w->terrains.back().terrain);
+	w->terrains.pop();
 }
 
 
@@ -84,8 +84,8 @@ void *ActionWorldAddTerrain::execute(Data *d)
 		t.filename = filename;
 	}
 
-	w->Terrains.add(t);
-	return &w->Terrains.back();
+	w->terrains.add(t);
+	return &w->terrains.back();
 }
 
 

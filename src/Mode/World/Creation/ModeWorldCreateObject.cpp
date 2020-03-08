@@ -19,21 +19,16 @@ ModeWorldCreateObject::ModeWorldCreateObject(ModeBase *_parent) :
 	message = _("select new object");
 }
 
-ModeWorldCreateObject::~ModeWorldCreateObject()
-{
-}
-
-void ModeWorldCreateObject::on_start()
-{
+void ModeWorldCreateObject::on_start() {
 	filename = LastObjectFilename;
 	if (filename.num == 0)
-		onFindObject();
+		on_find_object();
 
 	dialog = new hui::Panel();
 	dialog->from_resource("world_new_object_dialog");
 	dialog->set_string("kind", filename);
 	dialog->enable("name", false);
-	dialog->event("find_object", std::bind(&ModeWorldCreateObject::onFindObject, this));
+	dialog->event("find_object", std::bind(&ModeWorldCreateObject::on_find_object, this));
 	ed->set_side_panel(dialog);
 
 	if (filename.num > 0)
@@ -43,14 +38,12 @@ void ModeWorldCreateObject::on_start()
 }
 
 
-void ModeWorldCreateObject::on_end()
-{
+void ModeWorldCreateObject::on_end() {
 	ed->set_side_panel(nullptr);
 }
 
-void ModeWorldCreateObject::onFindObject()
-{
-	if (storage->file_dialog(FD_MODEL, false, true)){
+void ModeWorldCreateObject::on_find_object() {
+	if (storage->file_dialog(FD_MODEL, false, true)) {
 		filename = storage->dialog_file_no_ending;
 		LastObjectFilename = filename;
 		message = _("place new object");
@@ -58,9 +51,8 @@ void ModeWorldCreateObject::onFindObject()
 }
 
 
-void ModeWorldCreateObject::on_left_button_down()
-{
-	if (filename.num > 0){
+void ModeWorldCreateObject::on_left_button_down() {
+	if (filename.num > 0) {
 		data->AddObject(filename, multi_view->get_cursor());
 		//Abort();
 	}

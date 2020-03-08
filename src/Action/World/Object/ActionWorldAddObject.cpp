@@ -20,9 +20,9 @@ ActionWorldAddObject::ActionWorldAddObject(const string &_filename, const vector
 
 void ActionWorldAddObject::undo(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	assert(w->Objects.num > 0);
+	assert(w->objects.num > 0);
 
-	w->Objects.pop();
+	w->objects.pop();
 }
 
 
@@ -38,9 +38,9 @@ void *ActionWorldAddObject::execute(Data *d) {
 	o.filename = filename;
 	o.view_stage = 0;//mode_world->ViewStage;
 	o.object = (Object*)ModelManager::load(filename);
-	w->Objects.add(o);
+	w->objects.add(o);
 
-	return &w->Objects.back();
+	return &w->objects.back();
 }
 
 

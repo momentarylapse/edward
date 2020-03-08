@@ -26,6 +26,8 @@
 #include "Dialog/WorldPropertiesDialog.h"
 #include "Creation/ModeWorldCreateObject.h"
 #include "Creation/ModeWorldCreateTerrain.h"
+#include "Creation/ModeWorldCreateLink.h"
+#include "Creation/ModeWorldCreateLight.h"
 #include "Camera/ModeWorldCamera.h"
 #include "../../Action/World/ActionWorldEditData.h"
 #include "../../Action/World/ActionWorldSetEgo.h"
@@ -47,6 +49,27 @@ ModeWorld *mode_world = NULL;
 
 
 const bool LIST_SHOW_SCRIPTS = false;
+
+
+string light_type_canonical(LightType t) {
+	if (t == LightType::DIRECTIONAL)
+		return "directional";
+	if (t == LightType::POINT)
+		return "point";
+	if (t == LightType::CONE)
+		return "cone";
+	return "???";
+}
+
+string light_type(LightType t) {
+	if (t == LightType::DIRECTIONAL)
+		return "directional";
+	if (t == LightType::POINT)
+		return "point";
+	if (t == LightType::CONE)
+		return "cone";
+	return "???";
+}
 
 class WorldObjectListPanel : public hui::Panel {
 public:
@@ -97,14 +120,6 @@ public:
 		delete popup;
 	}
 
-	string light_type(WorldLight &l) {
-		if (l.mode == LightMode::DIRECTIONAL)
-			return "directional";
-		if (l.mode == LightMode::POINT)
-			return "point";
-		return "???";
-	}
-
 	void fill_list() {
 		set_editing(-1);
 		reset("list");
@@ -115,7 +130,7 @@ public:
 			list_indices.add({MVD_WORLD_CAMERA, i});
 		}
 		foreachi (auto &l, data->lights, i) {
-			add_string("list", "Light\\" + light_type(l));
+			add_string("list", "Light\\" + light_type(l.type));
 			list_indices.add({MVD_WORLD_LIGHT, i});
 		}
 		if (LIST_SHOW_SCRIPTS) {
@@ -124,11 +139,11 @@ public:
 			list_indices.add({MVD_WORLD_SCRIPT, i});
 		}
 		}
-		foreachi (auto &t, data->Terrains, i) {
+		foreachi (auto &t, data->terrains, i) {
 			add_string("list", "Terrain\\" + t.filename);
 			list_indices.add({MVD_WORLD_TERRAIN, i});
 		}
-		foreachi (auto &o, data->Objects, i) {
+		foreachi (auto &o, data->objects, i) {
 			add_string("list", "Object\\" + ((o.name == "") ? o.filename : o.name));
 			list_indices.add({MVD_WORLD_OBJECT, i});
 		}
@@ -140,11 +155,11 @@ public:
 
 		foreachi (auto &ii, list_indices, i) {
 			if (ii.type == MVD_WORLD_OBJECT) {
-				auto &o = data->Objects[ii.index];
+				auto &o = data->objects[ii.index];
 				if (o.is_selected)
 					sel.add(i);
 			} else if (ii.type == MVD_WORLD_TERRAIN) {
-				auto &t = data->Terrains[ii.index];
+				auto &t = data->terrains[ii.index];
 				if (t.is_selected)
 					sel.add(i);
 			} else if (ii.type == MVD_WORLD_SCRIPT) {
@@ -192,10 +207,10 @@ public:
 		for (int s: sel) {
 		auto &ii = list_indices[s];
 			if (ii.type == MVD_WORLD_OBJECT) {
-				auto &o = data->Objects[ii.index];
+				auto &o = data->objects[ii.index];
 				o.is_selected = true;
 			} else if (ii.type == MVD_WORLD_TERRAIN) {
-				auto &t = data->Terrains[ii.index];
+				auto &t = data->terrains[ii.index];
 				t.is_selected = true;
 			} else if (ii.type == MVD_WORLD_SCRIPT) {
 				auto &s = data->meta_data.scripts[ii.index];
@@ -230,7 +245,7 @@ public:
 		hide_control("g-location", ii.type == MVD_WORLD_SCRIPT);
 
 		if (ii.type == MVD_WORLD_OBJECT) {
-			auto &o = data->Objects[ii.index];
+			auto &o = data->objects[ii.index];
 			set_string("ob-name", o.name);
 			set_string("ob-kind", o.filename);
 			set_float("pos_x", o.pos.x);
@@ -240,7 +255,7 @@ public:
 			set_float("ang_y", o.ang.y * 180.0f / pi);
 			set_float("ang_z", o.ang.z * 180.0f / pi);
 		} else if (ii.type == MVD_WORLD_TERRAIN) {
-			auto &t = data->Terrains[ii.index];
+			auto &t = data->terrains[ii.index];
 			set_string("terrain-file", t.filename);
 			set_int("terrain-num-x", t.terrain->num_x);
 			set_int("terrain-num-z", t.terrain->num_z);
@@ -263,7 +278,7 @@ public:
 			auto &l = data->lights[ii.index];
 			check("sun_enabled", l.enabled);
 			set_color("sun_col", l.col);
-			set_int("type", (int)l.mode);
+			set_int("type", (int)l.type);
 			set_float("radius", l.radius);
 			set_float("harshness", l.harshness);
 			set_float("pos_x", l.pos.x);
@@ -377,6 +392,10 @@ void ModeWorld::on_command(const string & id) {
 		ed->set_mode(new ModeWorldCreateObject(ed->cur_mode));
 	if (id == "terrain_create")
 		ed->set_mode(new ModeWorldCreateTerrain(ed->cur_mode));
+	if (id == "create-link")
+		ed->set_mode(new ModeWorldCreateLink(ed->cur_mode));
+	if (id == "create-light")
+		ed->set_mode(new ModeWorldCreateLight(ed->cur_mode));
 	if (id == "terrain_load")
 		load_terrain();
 
@@ -630,7 +649,7 @@ void apply_lighting(DataWorld *w) {
 	nix::SetFog(m.FogMode, m.FogStart, m.FogEnd, m.FogDensity, m.FogColor);
 	nix::EnableFog(m.FogEnabled);
 	for (auto &ll: w->lights)
-		if (ll.mode == LightMode::DIRECTIONAL) {
+		if (ll.type == LightType::DIRECTIONAL) {
 			// FIXME: should point ALONG light rays!
 			ed->multi_view_3d->set_light(-ll.ang.ang2dir(), ll.col, ll.harshness);
 		}
@@ -657,7 +676,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 // terrain
 	nix::SetWire(multi_view->wire_mode);
 	nix::SetShader(nix::default_shader_3d);
-	foreachi(WorldTerrain &t, data->Terrains, i) {
+	foreachi(WorldTerrain &t, data->terrains, i) {
 		if (!t.terrain)
 			continue;
 		if (t.view_stage < multi_view->view_stage)
@@ -682,7 +701,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		//MetaDrawSorted();
 		//NixSetWire(false);
 
-	for (WorldObject &o: data->Objects) {
+	for (WorldObject &o: data->objects) {
 		if (o.view_stage < multi_view->view_stage)
 			continue;
 		if (o.object) {
@@ -701,13 +720,13 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 	nix::SetWire(false);
 
 	// object selection
-	for (WorldObject &o: data->Objects)
+	for (WorldObject &o: data->objects)
 		if (o.is_selected)
 			DrawSelectionObject(o.object, OSelectionAlpha, Red);
 		else if (o.is_special)
 			DrawSelectionObject(o.object, OSelectionAlpha, Green);
 	if ((multi_view->hover.index >= 0) and (multi_view->hover.type == MVD_WORLD_OBJECT))
-		DrawSelectionObject(data->Objects[multi_view->hover.index].object, OSelectionAlpha, White);
+		DrawSelectionObject(data->objects[multi_view->hover.index].object, OSelectionAlpha, White);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetWorldMatrix(matrix::ID);
 
@@ -840,7 +859,7 @@ void ModeWorld::ExecutePropertiesDialog() {
 		ExecuteWorldPropertiesDialog();
 	} else if ((num_o == 0) and (num_t == 1)) {
 		// single terrain -> terrain
-		foreachi(WorldTerrain &t, data->Terrains, i)
+		foreachi(WorldTerrain &t, data->terrains, i)
 			if (t.is_selected)
 				ExecuteTerrainPropertiesDialog(i);
 	} else {
@@ -886,7 +905,7 @@ void ModeWorld::set_ego() {
 		ed->set_message(_("Please select exactly one object!"));
 		return;
 	}
-	foreachi(WorldObject &o, data->Objects, i)
+	foreachi(WorldObject &o, data->objects, i)
 		if (o.is_selected)
 			data->execute(new ActionWorldSetEgo(i));
 }
@@ -948,15 +967,18 @@ void ModeWorld::on_set_multi_view() {
 	multi_view->clear_data(data);
 
 	multi_view->add_data(MVD_WORLD_OBJECT,
-			data->Objects,
+			data->objects,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 	multi_view->add_data(MVD_WORLD_TERRAIN,
-			data->Terrains,
+			data->terrains,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
 	multi_view->add_data(MVD_WORLD_LIGHT,
 			data->lights,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
 	multi_view->add_data(MVD_WORLD_CAMERA,
 			data->cameras,
+			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
+	multi_view->add_data(MVD_WORLD_LINK,
+			data->links,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
 }

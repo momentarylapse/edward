@@ -67,9 +67,16 @@ public:
 	void update_data();
 };
 
+enum class LinkType {
+	SOCKET,
+	HINGE,
+	UNIVERSAL,
+	SPRING
+};
+
 class WorldLink: public MultiView::SingleData {
 public:
-	int type;
+	LinkType type;
 	int object[2];
 	vector axis[2];
 	float param[4];
@@ -100,17 +107,18 @@ public:
 	float exposure;
 };
 
-enum class LightMode {
+enum class LightType {
 	DIRECTIONAL,
-	POINT
+	POINT,
+	CONE
 };
 
 class WorldLight: public MultiView::SingleData {
 public:
 	string name;
-	LightMode mode;
+	LightType type;
 	vector ang;
-	float radius;
+	float radius, theta;
 	bool enabled;
 	color col;
 	float harshness;
@@ -138,13 +146,13 @@ public:
 	void ClearSelection();
 
 	// terrains
-	Array<WorldTerrain> Terrains;
+	Array<WorldTerrain> terrains;
 
 	// objects
-	Array<WorldObject> Objects;
+	Array<WorldObject> objects;
 	int EgoIndex;
 
-	Array<WorldLink> Links;
+	Array<WorldLink> links;
 
 	Array<WorldLight> lights;
 	Array<WorldCamera> cameras;

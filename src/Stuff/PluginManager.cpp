@@ -244,8 +244,8 @@ void PluginManager::init() {
 	// world
 
 	Kaba::declare_class_size("DataWorld", sizeof(DataWorld));
-	Kaba::declare_class_element("DataWorld.terrains", &DataWorld::Terrains);
-	Kaba::declare_class_element("DataWorld.objects", &DataWorld::Objects);
+	Kaba::declare_class_element("DataWorld.terrains", &DataWorld::terrains);
+	Kaba::declare_class_element("DataWorld.objects", &DataWorld::objects);
 	Kaba::declare_class_element("DataWorld.ego_index", &DataWorld::EgoIndex);
 	Kaba::link_external_class_func("DataWorld.add_object", &DataWorld::AddObject);
 	Kaba::link_external_class_func("DataWorld.add_terrain", &DataWorld::AddTerrain);

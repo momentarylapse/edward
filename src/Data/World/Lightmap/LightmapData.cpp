@@ -54,12 +54,12 @@ void LightmapData::Init(DataWorld *w)
 	area = 0;
 
 	// load data
-	foreachi(WorldObject &o, w->Objects, i)
+	foreachi(WorldObject &o, w->objects, i)
 		if ((o.is_selected) && (!o.object->physics_data.active)){
 			o.object->update_matrix();
 			AddModel(o.filename, o.object->_matrix, i);
 		}
-	foreachi(WorldTerrain &t, w->Terrains, i)
+	foreachi(WorldTerrain &t, w->terrains, i)
 		if (t.is_selected)
 			AddTerrain(t, i);
 	if (Trias.num == 0)
@@ -87,7 +87,7 @@ void LightmapData::Init(DataWorld *w)
 			light[i].Pos -= lm_m;*/
 
 	for (auto &ll: w->lights)
-		if (ll.enabled and ll.mode == LightMode::DIRECTIONAL){
+		if (ll.enabled and ll.type == LightType::DIRECTIONAL){
 			Light l;
 			l.Directional = true;
 			l.Dir = -ll.ang.ang2dir();

@@ -29,11 +29,11 @@ void *ActionWorldEditObject::execute(Data *d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	assert(index >= 0);
-	assert(index < w->Objects.num);
+	assert(index < w->objects.num);
 
 	// swap
-	WorldObject old_data = w->Objects[index];
-	w->Objects[index] = data;
+	WorldObject old_data = w->objects[index];
+	w->objects[index] = data;
 	data = old_data;
 
 	return NULL;

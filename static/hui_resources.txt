@@ -8098,7 +8098,7 @@ world-edit-toolbar
 
 0
 0
-6
+8
 Item
 create_objects
 image=icons/toolbar/model-surface.png
@@ -8111,28 +8111,40 @@ image=icons/toolbar/terrain.png
 1
 0
 0
+Item
+create-link
+checkable,image=icons/toolbar/new-vertex.png
+2
+0
+0
+Item
+create-light
+checkable,image=icons/toolbar/new-vertex.png
+3
+0
+0
 Separator
 
 
-2
+4
 0
 0
 Item
 select
 checkable,image=icons/toolbar/rf-select.png
-3
+5
 0
 0
 Item
 translate
 checkable,image=icons/toolbar/rf-translate.png
-4
+6
 0
 0
 Item
 rotate
 checkable,image=icons/toolbar/rf-rotate.png
-5
+7
 0
 0
 # Resource
@@ -9776,7 +9788,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-973
+975
 # Text
 /ambient
 Ambient:
@@ -12400,6 +12412,12 @@ Viewstage Pop
 world-camera-toolbar/view_push
 Push
 Viewstage Push
+world-edit-toolbar/create-light
+add light source
+
+world-edit-toolbar/create-link
+add link
+
 world-edit-toolbar/create_objects
 add object
 

@@ -21,10 +21,10 @@ void* ActionWorldDeleteTerrain::execute(Data* d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	assert(index >= 0);
-	assert(index < w->Terrains.num);
+	assert(index < w->terrains.num);
 
-	terrain = w->Terrains[index];
-	w->Terrains.erase(index);
+	terrain = w->terrains[index];
+	w->terrains.erase(index);
 
 	return NULL;
 }
@@ -34,5 +34,5 @@ void ActionWorldDeleteTerrain::undo(Data* d)
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 
 	terrain.is_selected = false;
-	w->Terrains.insert(terrain, index);
+	w->terrains.insert(terrain, index);
 }

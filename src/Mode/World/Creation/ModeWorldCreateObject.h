@@ -9,21 +9,18 @@
 #define MODEWORLDCREATEOBJECT_H_
 
 #include "../../ModeCreation.h"
-#include "../../../lib/hui/hui.h"
 class DataWorld;
 
-class ModeWorldCreateObject: public ModeCreation<DataWorld>
-{
+class ModeWorldCreateObject: public ModeCreation<DataWorld> {
 public:
 	ModeWorldCreateObject(ModeBase *_parent);
-	virtual ~ModeWorldCreateObject();
 
-	virtual void on_start();
-	virtual void on_end();
+	void on_start() override;
+	void on_end() override;
 
-	void onFindObject();
+	void on_find_object();
 
-	void on_left_button_down();
+	void on_left_button_down() override;
 
 	string filename;
 };

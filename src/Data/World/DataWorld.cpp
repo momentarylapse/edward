@@ -115,6 +115,7 @@ color WorldLight::diffuse() {
 DataWorld::DataWorld() :
 	Data(FD_WORLD)
 {
+	reset();
 }
 
 DataWorld::~DataWorld()
@@ -148,12 +149,13 @@ void DataWorld::reset() {
 	filename = "";
 
 	// delete old data...
-	for (int i=0;i<Objects.num;i++)
-		if (Objects[i].object)
-			delete(Objects[i].object);
+	for (int i=0;i<objects.num;i++)
+		if (objects[i].object)
+			delete(objects[i].object);
 
-	Objects.clear();
-	Terrains.clear();
+	objects.clear();
+	terrains.clear();
+	links.clear();
 
 	EgoIndex = -1;
 
@@ -167,8 +169,9 @@ void DataWorld::reset() {
 	sun.pos = vector(0,1000,0);
 	sun.ang = vector(-pi/4,0,0);
 	sun.enabled = true;
-	sun.mode = LightMode::DIRECTIONAL;
+	sun.type = LightType::DIRECTIONAL;
 	sun.radius = 0;
+	sun.theta = 0;
 	sun.col = White;
 	sun.harshness = 0.75;
 	lights.add(sun);
@@ -184,7 +187,7 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 {
 	bool found_any=false;
 
-	for (WorldObject &o: Objects)
+	for (WorldObject &o: objects)
 		if (o.object){
 			vector min2 = o.pos - vector(1,1,1) * o.object->prop.radius;
 			vector max2 = o.pos + vector(1,1,1) * o.object->prop.radius;
@@ -196,7 +199,7 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 			max._max(max2);
 			found_any = true; //|=(min2!=max2);
 		}
-	for (WorldTerrain &t: Terrains)
+	for (WorldTerrain &t: terrains)
 		if (t.terrain){
 			vector min2 = t.terrain->min;
 			vector max2 = t.terrain->max;
@@ -223,18 +226,18 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 		return n;                             \
 	}
 
-IMPLEMENT_COUNT_SELECTED(GetSelectedObjects, Objects)
-IMPLEMENT_COUNT_SELECTED(GetSelectedTerrains, Terrains)
+IMPLEMENT_COUNT_SELECTED(GetSelectedObjects, objects)
+IMPLEMENT_COUNT_SELECTED(GetSelectedTerrains, terrains)
 IMPLEMENT_COUNT_SELECTED(get_selected_lights, lights)
 IMPLEMENT_COUNT_SELECTED(get_selected_cameras, cameras)
 
 
 void DataWorld::UpdateData() {
-	foreachi(auto &o, Objects, i){
+	foreachi(auto &o, objects, i){
 		o.update_data();
 		o.is_special = (i == EgoIndex);
 	}
-	for (auto &t: Terrains)
+	for (auto &t: terrains)
 		t.update_data();
 }
 
@@ -250,28 +253,27 @@ WorldTerrain* DataWorld::AddNewTerrain(const vector& pos, const vector& size, in
 
 void DataWorld::ClearSelection()
 {
-	for (WorldObject &o: Objects)
+	for (WorldObject &o: objects)
 		o.is_selected = false;
-	for (WorldTerrain &t: Terrains)
+	for (WorldTerrain &t: terrains)
 		t.is_selected = false;
 }
 
 
-void DataWorld::Copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains)
-{
-	objects.clear();
-	terrains.clear();
+void DataWorld::Copy(Array<WorldObject> &_objects, Array<WorldTerrain> &_terrains) {
+	_objects.clear();
+	_terrains.clear();
 
-	for (WorldObject &o: Objects)
+	for (WorldObject &o: objects)
 		if (o.is_selected)
-			objects.add(o);
-	for (WorldTerrain &t: Terrains)
+			_objects.add(o);
+	for (WorldTerrain &t: terrains)
 		if (t.is_selected)
-			terrains.add(t);
+			_terrains.add(t);
 }
 
-void DataWorld::Paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains)
-{	execute(new ActionWorldPaste(objects, terrains));	}
+void DataWorld::Paste(Array<WorldObject> &o, Array<WorldTerrain> &t)
+{	execute(new ActionWorldPaste(o, t));	}
 
 void DataWorld::DeleteSelection()
 {	execute(new ActionWorldDeleteSelection());	}

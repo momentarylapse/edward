@@ -14,13 +14,13 @@ ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d) :
 	ActionMultiView()
 {
 	// list of selected objects and save old pos
-	foreachi(auto &o, d->Objects, i)
+	foreachi(auto &o, d->objects, i)
 		if (o.is_selected) {
 			index.add(i);
 			old_data.add(o.pos);
 			type.add(MVD_WORLD_OBJECT);
 		}
-	foreachi(auto &t, d->Terrains, i)
+	foreachi(auto &t, d->terrains, i)
 		if (t.is_selected) {
 			index.add(i);
 			old_data.add(t.pos);
@@ -44,11 +44,11 @@ void *ActionWorldMoveSelection::execute(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	foreachi(int i, index, ii) {
 		if (type[ii] == MVD_WORLD_OBJECT) {
-			w->Objects[i].pos = mat * old_data[ii];
+			w->objects[i].pos = mat * old_data[ii];
 		} else if (type[ii] == MVD_WORLD_TERRAIN) {
-			w->Terrains[i].pos = mat * old_data[ii];
-			w->Terrains[i].terrain->pos = w->Terrains[i].pos;
-			w->Terrains[i].terrain->update(-1, -1, -1, -1, TerrainUpdateVertices);
+			w->terrains[i].pos = mat * old_data[ii];
+			w->terrains[i].terrain->pos = w->terrains[i].pos;
+			w->terrains[i].terrain->update(-1, -1, -1, -1, TerrainUpdateVertices);
 		} else if (type[ii] == MVD_WORLD_LIGHT) {
 			w->lights[i].pos = mat * old_data[ii];
 		} else if (type[ii] == MVD_WORLD_CAMERA) {
@@ -64,11 +64,11 @@ void ActionWorldMoveSelection::undo(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	foreachi(int i, index, ii) {
 		if (type[ii] == MVD_WORLD_OBJECT) {
-			w->Objects[i].pos = old_data[ii];
+			w->objects[i].pos = old_data[ii];
 		} else if (type[ii] == MVD_WORLD_TERRAIN) {
-			w->Terrains[i].pos = old_data[ii];
-			w->Terrains[i].terrain->pos = w->Terrains[i].pos;
-			w->Terrains[i].terrain->update(-1, -1, -1, -1, TerrainUpdateVertices);
+			w->terrains[i].pos = old_data[ii];
+			w->terrains[i].terrain->pos = w->terrains[i].pos;
+			w->terrains[i].terrain->update(-1, -1, -1, -1, TerrainUpdateVertices);
 		} else if (type[ii] == MVD_WORLD_LIGHT) {
 			w->lights[i].pos = old_data[ii];
 		} else if (type[ii] == MVD_WORLD_CAMERA) {

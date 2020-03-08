@@ -13,7 +13,7 @@ ActionWorldRotateObjects::ActionWorldRotateObjects(DataWorld *d) :
 	ActionMultiView()
 {
 	// list of selected objects and save old pos
-	foreachi(auto &o, d->Objects, i)
+	foreachi(auto &o, d->objects, i)
 		if (o.is_selected) {
 			index.add(i);
 			old_data.add(o.pos);
@@ -40,8 +40,8 @@ void ActionWorldRotateObjects::undo(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	foreachi(int i, index, ii) {
 		if (type[ii] == MVD_WORLD_OBJECT) {
-			w->Objects[i].pos = old_data[ii];
-			w->Objects[i].ang = old_ang[ii];
+			w->objects[i].pos = old_data[ii];
+			w->objects[i].ang = old_ang[ii];
 		} else if (type[ii] == MVD_WORLD_CAMERA) {
 			w->cameras[i].pos = old_data[ii];
 			w->cameras[i].ang = old_ang[ii];
@@ -59,8 +59,8 @@ void *ActionWorldRotateObjects::execute(Data *d) {
 	auto q = quaternion::rotation_m(mat);
 	foreachi(int i, index, ii) {
 		if (type[ii] == MVD_WORLD_OBJECT) {
-			w->Objects[i].pos = mat * old_data[ii];
-			w->Objects[i].ang = VecAngAdd(old_ang[ii], q.get_angles());
+			w->objects[i].pos = mat * old_data[ii];
+			w->objects[i].ang = VecAngAdd(old_ang[ii], q.get_angles());
 		} else if (type[ii] == MVD_WORLD_CAMERA) {
 			w->cameras[i].pos = mat * old_data[ii];
 			w->cameras[i].ang = VecAngAdd(old_ang[ii], q.get_angles());
