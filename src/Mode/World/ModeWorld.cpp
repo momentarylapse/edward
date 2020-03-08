@@ -373,6 +373,13 @@ ModeWorld::~ModeWorld() {
 }
 
 bool ModeWorld::save_as() {
+	for (auto &t: data->terrains)
+		if (t.filename == "") {
+			if (!storage->file_dialog(FD_TERRAIN, true, true))
+				return false;
+			if (!t.save(storage->dialog_file_complete))
+				return false;
+		}
 	return storage->save_as(data);
 }
 
@@ -569,6 +576,14 @@ bool WorldTerrain::overlap_rect(MultiView::Window *win, const rect &r) {
 
 
 bool ModeWorld::save() {
+	for (auto &t: data->terrains) {
+		if (t.filename == "") {
+			if (!storage->file_dialog(FD_TERRAIN, true, true))
+				return false;
+			if (!t.save(storage->dialog_file_complete))
+				return false;
+		}
+	}
 	return storage->auto_save(data);
 }
 

@@ -38,7 +38,7 @@ bool WorldTerrain::save(const string &_filename) {
 	File *f = NULL;
 
 	try{
-		f = FileCreate(filename);
+		f = FileCreate(_filename);
 
 	f->WriteFileFormatVersion(true, 4);
 	f->write_byte(0);

@@ -38,6 +38,7 @@ Terrain::Terrain()
 	ubo = nullptr;
 //	dset = nullptr;
 	reset();
+	material = LoadMaterial("");
 }
 
 Terrain::Terrain(const string &_filename_, const vector &_pos_)
