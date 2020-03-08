@@ -286,6 +286,8 @@ void FormatWorld::_load_old(const string &filename, DataWorld *data, bool deep) 
 			read_color_3i(f, sp);
 			data->lights[0].ang.x = f->read_float();
 			data->lights[0].ang.y = f->read_float();
+			// fix for old definition
+			data->lights[0].ang = (-data->lights[0].ang.ang2dir()).dir2ang();
 			f->read_comment();
 			read_color_3i(f, am2);
 			data->lights[0].col = (am + am2) * 2 + di;

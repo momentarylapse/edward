@@ -681,8 +681,7 @@ void apply_lighting(DataWorld *w) {
 	nix::EnableFog(m.FogEnabled);
 	for (auto &ll: w->lights)
 		if (ll.type == LightType::DIRECTIONAL) {
-			// FIXME: should point ALONG light rays!
-			ed->multi_view_3d->set_light(-ll.ang.ang2dir(), ll.col, ll.harshness);
+			ed->multi_view_3d->set_light(ll.ang.ang2dir(), ll.col, ll.harshness);
 		}
 }
 
@@ -773,7 +772,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			//set_color(Red);
 			set_line_width(scheme.LINE_WIDTH_THICK);
 		}
-		draw_line(l.pos, l.pos - l.ang.ang2dir() * win->cam->radius * 0.1f);
+		draw_line(l.pos, l.pos + l.ang.ang2dir() * win->cam->radius * 0.1f);
 	}
 
 	for (auto &c: data->cameras) {
