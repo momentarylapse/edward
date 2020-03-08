@@ -24,7 +24,8 @@ layout (triangle_strip, max_vertices = 4) out;
 in vec4 fragmentColor0[];
 out vec4 fragmentColor;
 
-uniform float target_width, target_height, line_width;
+uniform float target_width = 1024, target_height = 768;
+uniform float line_width = 4;
 
 void main()
 {

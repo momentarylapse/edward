@@ -9,6 +9,7 @@
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/Window.h"
 #include "../../../MultiView/DrawingHelper.h"
+#include "../../../MultiView/ColorScheme.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../Data/Model/ModelSelection.h"
 #include "../../../Data/Model/ModelMesh.h"
@@ -139,7 +140,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	a = win->project(v_0);
 	b = win->project(vector(1, 1, 0));
 	set_color(Red);
-	set_line_width(1.0f);
+	set_line_width(scheme.LINE_WIDTH_THIN);
 	draw_line_2d(a.x, a.y, b.x, a.y, 0.98f);
 	draw_line_2d(b.x, a.y, b.x, b.y, 0.98f);
 	draw_line_2d(a.x, a.y, a.x, b.y, 0.98f);

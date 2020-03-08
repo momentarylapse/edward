@@ -55,20 +55,31 @@ Dialog world-object-list-dialog "" width=400 height=300
 					Text /lu "lu"
 		Group g-light "Light" expandx
 			Grid ? "" vertical expandx
-				CheckBox sun_enabled "Enabled" expandx
+				CheckBox light-enabled "Enabled" expandx
 				Grid ? ""
-					Text t-type "Type:"
-					ComboBox sun_type "directional\\point" expandx
+					Text t-light-type "Type:"
+					ComboBox light-type "Directional\\Point\\Cone" expandx
 					---|
-					Text t-color "Color:"
-					ColorButton sun_col ""
+					Text t-light-color "Color:"
+					ColorButton light-col ""
 					---|
-					Text t-radius "Radius:"
-					Edit radius ""
+					Text t-light-radius "Radius:"
+					Edit light-radius ""
 					---|
-					Text t-harshness "Harshness:"
-					SpinButton harshness "" range=0:1:0.01
+					Text t-light-theta "Theta:"
+					SpinButton light-theta "" range=0:180:1 "tooltip=cone opening angle"
 					---|
+					Text t-light-harshness "Harshness:"
+					SpinButton light-harshness "" range=0:1:0.01 "tooltip=mixing diffuse and ambient parts"
+		Group g-link "Link" expandx
+			Grid ? "" expandx
+				Text t-link-type "Type:"
+				ComboBox link-type "Socket\\Hinge\\Spring\\Universal" expandx
+				---|
+				Text t-link-param "Param:"
+				---|
+				Text t-link-friction "Friction:"
+				SpinButton link-friction "" range=0:1:0.01
 		Group g-location "Location"
 			Grid ? ""
 				.
@@ -77,13 +88,13 @@ Dialog world-object-list-dialog "" width=400 height=300
 				Text /z "Z" center
 				---|
 				Text t-pos "Position"
-				Edit pos_x "" expandx
-				Edit pos_y "" expandx
-				Edit pos_z "" expandx
+				Edit pos-x "" expandx
+				Edit pos-y "" expandx
+				Edit pos-z "" expandx
 				Text /lu "lu"
 				---|
 				Text t-ang "Orientation"
-				Edit ang_x ""
-				Edit ang_y ""
-				Edit ang_z ""
+				Edit ang-x ""
+				Edit ang-y ""
+				Edit ang-z ""
 				Text /degree "°"

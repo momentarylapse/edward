@@ -8113,7 +8113,7 @@ image=icons/toolbar/terrain.png
 0
 Item
 create-link
-checkable,image=icons/toolbar/new-vertex.png
+checkable,image=icons/toolbar/model-edge.png
 2
 0
 0
@@ -9117,7 +9117,7 @@ Grid
 vertical
 0
 0
-7
+8
 Group
 g-list
 
@@ -9401,7 +9401,7 @@ vertical,expandx
 0
 2
 CheckBox
-sun_enabled
+light-enabled
 expandx
 0
 0
@@ -9411,59 +9411,113 @@ Grid
 
 1
 0
-8
+10
 Text
-t-type
+t-light-type
 
 0
 0
 0
 ComboBox
-sun_type
+light-type
 expandx
 1
 0
 0
 Text
-t-color
+t-light-color
 
 0
 1
 0
 ColorButton
-sun_col
+light-col
 
 1
 1
 0
 Text
-t-radius
+t-light-radius
 
 0
 2
 0
 Edit
-radius
+light-radius
 
 1
 2
 0
 Text
-t-harshness
+t-light-theta
 
 0
 3
 0
 SpinButton
-harshness
-range=0:1:0.01
+light-theta
+range=0:180:1
 1
 3
+0
+Text
+t-light-harshness
+
+0
+4
+0
+SpinButton
+light-harshness
+range=0:1:0.01
+1
+4
+0
+Group
+g-link
+expandx
+6
+0
+1
+Grid
+?
+expandx
+0
+0
+5
+Text
+t-link-type
+
+0
+0
+0
+ComboBox
+link-type
+expandx
+1
+0
+0
+Text
+t-link-param
+
+0
+1
+0
+Text
+t-link-friction
+
+0
+2
+0
+SpinButton
+link-friction
+range=0:1:0.01
+1
+2
 0
 Group
 g-location
 
-6
+7
 0
 1
 Grid
@@ -9497,19 +9551,19 @@ t-pos
 1
 0
 Edit
-pos_x
+pos-x
 expandx
 1
 1
 0
 Edit
-pos_y
+pos-y
 expandx
 2
 1
 0
 Edit
-pos_z
+pos-z
 expandx
 3
 1
@@ -9527,19 +9581,19 @@ t-ang
 2
 0
 Edit
-ang_x
+ang-x
 
 1
 2
 0
 Edit
-ang_y
+ang-y
 
 2
 2
 0
 Edit
-ang_z
+ang-z
 
 3
 2
@@ -9556,7 +9610,7 @@ world-object-list-popup
 
 0
 0
-7
+9
 Item
 title
 disabled
@@ -9587,16 +9641,28 @@ image=hui:open
 4
 0
 0
+Item
+create-light
+image=hui:add
+5
+0
+0
+Item
+create-link
+image=hui:add
+6
+0
+0
 Separator
 
 
-5
+7
 0
 0
 Item
 delete
 image=hui:delete
-6
+8
 0
 0
 # Resource
@@ -9788,7 +9854,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-975
+985
 # Text
 /ambient
 Ambient:
@@ -12442,6 +12508,9 @@ Camera
 world-object-list-dialog/g-light
 Light
 
+world-object-list-dialog/g-link
+Link
+
 world-object-list-dialog/g-list
 List
 
@@ -12457,17 +12526,26 @@ Script
 world-object-list-dialog/g-terrain
 Terrain
 
+world-object-list-dialog/light-enabled
+Enabled
+
+world-object-list-dialog/light-harshness
+
+mixing diffuse and ambient parts
+world-object-list-dialog/light-theta
+
+cone opening angle
+world-object-list-dialog/light-type
+Directional\\Point\\Cone
+
+world-object-list-dialog/link-type
+Socket\\Hinge\\Spring\\Universal
+
 world-object-list-dialog/list
 Type\\Name
 
 world-object-list-dialog/script-variables
 Name\\Type\\Value
-
-world-object-list-dialog/sun_enabled
-Enabled
-
-world-object-list-dialog/sun_type
-directional\\point
 
 world-object-list-dialog/t-ang
 Orientation
@@ -12484,11 +12562,29 @@ Max depth:
 world-object-list-dialog/t-cam-min-depth
 Min depth:
 
-world-object-list-dialog/t-color
+world-object-list-dialog/t-light-color
 Color:
 
-world-object-list-dialog/t-harshness
+world-object-list-dialog/t-light-harshness
 Harshness:
+
+world-object-list-dialog/t-light-radius
+Radius:
+
+world-object-list-dialog/t-light-theta
+Theta:
+
+world-object-list-dialog/t-light-type
+Type:
+
+world-object-list-dialog/t-link-friction
+Friction:
+
+world-object-list-dialog/t-link-param
+Param:
+
+world-object-list-dialog/t-link-type
+Type:
 
 world-object-list-dialog/t-ob-name
 Name:
@@ -12498,9 +12594,6 @@ Type:
 
 world-object-list-dialog/t-pos
 Position
-
-world-object-list-dialog/t-radius
-Radius:
 
 world-object-list-dialog/t-script-class
 Class:
@@ -12517,8 +12610,11 @@ Grid size:
 world-object-list-dialog/t-terrain-stripes
 Stripes:
 
-world-object-list-dialog/t-type
-Type:
+world-object-list-popup/create-light
+Add light...
+
+world-object-list-popup/create-link
+Add link...
 
 world-object-list-popup/create_objects
 Add object...

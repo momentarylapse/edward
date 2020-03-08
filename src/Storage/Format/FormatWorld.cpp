@@ -15,6 +15,7 @@
 #include "../../lib/xfile/xml.h"
 
 string light_type_canonical(LightType t);
+string link_type_canonical(LinkType t);
 
 FormatWorld::FormatWorld() : TypedFormat<DataWorld>(FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
 }
@@ -26,7 +27,9 @@ static string v2s(const vector &v) {
 
 static vector s2v(const string &s) {
 	auto x = s.explode(" ");
-	return vector(x[0]._float(), x[1]._float(), x[2]._float());
+	if (x.num >= 3)
+		return vector(x[0]._float(), x[1]._float(), x[2]._float());
+	return v_0;
 }
 
 // RGBA
@@ -36,7 +39,11 @@ static string c2s(const color &c) {
 
 static color s2c(const string &s) {
 	auto x = s.explode(" ");
-	return color(x[3]._float(), x[0]._float(), x[1]._float(), x[2]._float());
+	if (x.num >= 4)
+		return color(x[3]._float(), x[0]._float(), x[1]._float(), x[2]._float());
+	if (x.num == 3)
+		return color(1, x[0]._float(), x[1]._float(), x[2]._float());
+	return White;
 }
 
 void FormatWorld::_load(const string &filename, DataWorld *data, bool deep) {
@@ -86,19 +93,19 @@ void FormatWorld::_load_xml(const string &filename, DataWorld *data, bool deep) 
 	if (meta) {
 		for (auto &e: meta->elements) {
 			if (e.tag == "background") {
-				data->meta_data.BackGroundColor = s2c(e.value("color"));
+				data->meta_data.BackGroundColor = s2c(e.value("color", "0 0 0"));
 			} else if (e.tag == "skybox") {
 				data->meta_data.SkyBoxFile.add(e.value("file"));
 			} else if (e.tag == "physics") {
-				data->meta_data.PhysicsEnabled = e.value("enabled")._bool();
-				data->meta_data.Gravity = s2v(e.value("gravity"));
+				data->meta_data.PhysicsEnabled = e.value("enabled", "true")._bool();
+				data->meta_data.Gravity = s2v(e.value("gravity", "0 0 0"));
 			} else if (e.tag == "fog") {
-				data->meta_data.FogEnabled = e.value("enabled")._bool();
-				data->meta_data.FogMode = e.value("mode")._int();
-				data->meta_data.FogStart = e.value("start")._float();
-				data->meta_data.FogEnd = e.value("end")._float();
-				data->meta_data.FogDensity = e.value("density")._float();
-				data->meta_data.FogColor = s2c(e.value("color"));
+				data->meta_data.FogEnabled = e.value("enabled", "false")._bool();
+				data->meta_data.FogMode = e.value("mode", "0")._int();
+				data->meta_data.FogStart = e.value("start", "0")._float();
+				data->meta_data.FogEnd = e.value("end", "10000")._float();
+				data->meta_data.FogDensity = e.value("density", "0")._float();
+				data->meta_data.FogColor = s2c(e.value("color", "0 0 0"));
 			} else if (e.tag == "script") {
 				WorldScript s;
 				s.filename = e.value("file");
@@ -119,8 +126,8 @@ void FormatWorld::_load_xml(const string &filename, DataWorld *data, bool deep) 
 		for (auto &e: cont->elements) {
 			if (e.tag == "camera") {
 				WorldCamera c;
-				c.pos = s2v(e.value("pos"));
-				c.ang = s2v(e.value("ang"));
+				c.pos = s2v(e.value("pos", "0 0 0"));
+				c.ang = s2v(e.value("ang", "0 0 0"));
 				c.fov = e.value("fov", f2s(pi/4, 3))._float();
 				c.min_depth = e.value("minDepth", "1")._float();
 				c.max_depth = e.value("maxDepth", "10000")._float();
@@ -128,25 +135,45 @@ void FormatWorld::_load_xml(const string &filename, DataWorld *data, bool deep) 
 				data->cameras.add(c);
 			} else if (e.tag == "light") {
 				WorldLight l;
-				l.type = (e.value("type") == "point") ? LightType::POINT : LightType::DIRECTIONAL;
-				l.radius = e.value("radius")._float();
-				l.harshness = e.value("harshness")._float();
-				l.col = s2c(e.value("color"));
-				l.ang = s2v(e.value("ang"));
+				l.type = LightType::POINT;
+				if (e.value("type") == "directional")
+					l.type = LightType::DIRECTIONAL;
+				l.radius = e.value("radius", "0")._float();
+				l.theta = e.value("theta", "0")._float();
+				l.harshness = e.value("harshness", "0.8")._float();
+				l.col = s2c(e.value("color", "1 1 1"));
+				l.ang = s2v(e.value("ang", "0 0 0"));
 				data->lights.add(l);
 			} else if (e.tag == "terrain") {
 				WorldTerrain t;
 				t.filename = e.value("file");
-				t.pos = s2v(e.value("pos"));
+				t.pos = s2v(e.value("pos", "0 0 0"));
 				data->terrains.add(t);
 			} else if (e.tag == "object") {
 				WorldObject o;
 				o.object = NULL;
 				o.filename = e.value("file");
 				o.name = e.value("name");
-				o.pos = s2v(e.value("pos"));
-				o.ang = s2v(e.value("ang"));
+				o.pos = s2v(e.value("pos", "0 0 0"));
+				o.ang = s2v(e.value("ang", "0 0 0"));
 				data->objects.add(o);
+			} else if (e.tag == "link") {
+				WorldLink l;
+				l.type = LinkType::SOCKET;
+				if (e.value("type") == "hinge")
+					l.type = LinkType::HINGE;
+				if (e.value("type") == "spring")
+					l.type = LinkType::SPRING;
+				if (e.value("type") == "universal")
+					l.type = LinkType::UNIVERSAL;
+				l.object[0] = e.value("a")._int();
+				l.object[1] = e.value("b")._int();
+				l.pos = s2v(e.value("pos", "0 0 0"));
+				l.ang = s2v(e.value("ang", "0 0 0"));
+				//l.radius = e.value("radius")._float();
+				data->links.add(l);
+			} else {
+				msg_error("unhandled tag: " + e.tag);
 			}
 		}
 	}
@@ -352,6 +379,18 @@ void FormatWorld::_save(const string &filename, DataWorld *data) {
 		.witha("name", o.name)
 		.witha("pos", v2s(o.pos))
 		.witha("ang", v2s(o.ang));
+		cont.add(e);
+	}
+
+	for (auto &l: data->links) {
+		auto e = xml::Element("link")
+		.witha("a", i2s(l.object[0]))
+		.witha("b", i2s(l.object[1]))
+		.witha("type", link_type_canonical(l.type))
+		.witha("pos", v2s(l.pos))
+		//.witha("pivotA", v2s(l.pos - data->objects[l.object[0]].pos))
+		//.witha("pivotB", v2s(l.pos - data->objects[l.object[1]].pos))
+		.witha("ang", v2s(l.ang));
 		cont.add(e);
 	}
 	w.add(cont);

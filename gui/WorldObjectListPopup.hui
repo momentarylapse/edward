@@ -4,5 +4,7 @@ Menu world-object-list-popup "Objects"
 	Item create_objects "Add object..." image=hui:open
 	Item terrain_create "Create new terrain..." image=hui:new
 	Item terrain_load "Add terrain from file..." image=hui:open
+	Item create-light "Add light..." image=hui:add
+	Item create-link "Add link..." image=hui:add
 	Separator
 	Item delete "Delete" image=hui:delete

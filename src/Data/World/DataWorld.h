@@ -78,7 +78,7 @@ class WorldLink: public MultiView::SingleData {
 public:
 	LinkType type;
 	int object[2];
-	vector axis[2];
+	vector ang;
 	float param[4];
 	float friction;
 };

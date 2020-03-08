@@ -374,6 +374,8 @@ sources = [
 	'src/Mode/Model/ModeModel.cpp',
 	'src/Mode/World/Camera/Creation/ModeWorldCameraCreatePoint.cpp',
 	'src/Mode/World/Camera/ModeWorldCamera.cpp',
+	'src/Mode/World/Creation/ModeWorldCreateLight.cpp',
+	'src/Mode/World/Creation/ModeWorldCreateLink.cpp',
 	'src/Mode/World/Creation/ModeWorldCreateObject.cpp',
 	'src/Mode/World/Creation/ModeWorldCreateTerrain.cpp',
 	'src/Mode/World/Dialog/CameraDialog.cpp',

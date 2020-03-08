@@ -550,7 +550,7 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<Mo
 	auto *multi_view = win->multi_view;
 
 	nix::SetOffset(-2);
-	set_line_width(selection_filter ? 2.3f : 1.5f);
+	set_line_width(selection_filter ? scheme.LINE_WIDTH_MEDIUM : scheme.LINE_WIDTH_THIN);
 	Array<vector> line_pos;
 	Array<color> line_color;
 

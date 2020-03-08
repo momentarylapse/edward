@@ -350,7 +350,7 @@ void ActionController::draw(Window *win) {
 
 	if (in_use()) {
 		set_color(color(1, 0.2f, 0.7f, 0.2f));
-		set_line_width(1.0f);
+		set_line_width(2.0f);
 		float r = multi_view->cam.radius * 10;
 		if (constraints == ACTION_CONSTRAINTS_X)
 			draw_line(pos - vector::EX * r, pos + vector::EX * r);

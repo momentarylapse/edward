@@ -743,7 +743,7 @@ void MultiView::SelectionRect::draw(const vector &m) {
 	draw_rect(m.x, pos0.x, m.y, pos0.y, 0);
 	nix::SetCull(CULL_DEFAULT);
 	set_color(scheme.SELECTION_RECT_BOUNDARY);
-	set_line_width(2.0f);
+	set_line_width(scheme.LINE_WIDTH_THIN);
 	draw_line_2d(pos0.x, pos0.y, pos0.x, m.y, 0);
 	draw_line_2d(m.x, pos0.y, m.x, m.y, 0);
 	draw_line_2d(pos0.x, pos0.y, m.x, pos0.y, 0);

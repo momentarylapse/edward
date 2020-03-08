@@ -55,12 +55,9 @@ void set_line_width(float width) {
 	} else {
 		auto s = MultiView::shader_lines_3d_colored_wide;
 		nix::SetShader(s);
-		int loc_tw = s->get_location("target_width");
-		int loc_th = s->get_location("target_height");
-		int loc_lw = s->get_location("line_width");
-		s->set_float(loc_tw, nix::target_width);
-		s->set_float(loc_th, nix::target_height);
-		s->set_float(loc_lw, width);
+		s->set_float(s->get_location("target_width"), nix::target_width);
+		s->set_float(s->get_location("target_height"), nix::target_height);
+		s->set_float(s->get_location("line_width"), width);
 	}
 }
 
@@ -83,7 +80,7 @@ void draw_lines(const Array<vector> &p, bool contiguous) {
 }
 
 void draw_lines_colored(const Array<vector> &p, const Array<color> &c, bool contiguous) {
-	set_line_width(2);
+	//set_line_width(2);
 	vb_lines->update(0, p);
 	vb_lines->update(1, c);
 	nix::DrawLines(vb_lines, contiguous);
@@ -115,7 +112,6 @@ void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b) 
 	set_color(scheme.TEXT);
 	set_line_width(scheme.LINE_WIDTH_HELPER);
 	draw_line(a, b);
-	set_line_width(1.0f);
 	//nix::SetZ(true, true);
 	vector pa = win->project(a);
 	vector pb = win->project(b);

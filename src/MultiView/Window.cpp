@@ -161,12 +161,11 @@ void draw_grid_3d(const color &bg, Window *w, int plane, float alpha) {
 	add_grid(move_rect(r, -1, 1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);*/
 
 
-	set_line_width(1.0f);
+	set_line_width(scheme.LINE_WIDTH_THIN);
 	for (int l=3; l>=1; l--)
 		draw_lines_colored(p[l], col[l], false);
-	set_line_width(2.0f);
+	set_line_width(scheme.LINE_WIDTH_MEDIUM);
 	draw_lines_colored(p[0], col[0], false);
-	set_line_width(1.0f);
 }
 
 

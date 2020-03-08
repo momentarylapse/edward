@@ -1,7 +1,7 @@
 Toolbar world-edit-toolbar ""
 	Item create_objects "add object" image=icons/toolbar/model-surface.png
 	Item terrain_create "add terrain" image=icons/toolbar/terrain.png
-	Item create-link "add link" checkable image=icons/toolbar/new-vertex.png
+	Item create-link "add link" checkable image=icons/toolbar/model-edge.png
 	Item create-light "add light source" checkable image=icons/toolbar/new-vertex.png
 	Separator
 	Item /select "Select" checkable image=icons/toolbar/rf-select.png

@@ -10,6 +10,7 @@
 #include "../../MultiView/MultiView.h"
 #include "../../MultiView/Window.h"
 #include "../../MultiView/DrawingHelper.h"
+#include "../../MultiView/ColorScheme.h"
 #include "ModeWorld.h"
 #include "../../Data/World/DataWorld.h"
 #include "../../Data/World/DataCamera.h"
@@ -71,6 +72,18 @@ string light_type(LightType t) {
 	return "???";
 }
 
+string link_type_canonical(LinkType t) {
+	if (t == LinkType::SOCKET)
+		return "socket";
+	if (t == LinkType::HINGE)
+		return "hinge";
+	if (t == LinkType::SPRING)
+		return "spring";
+	if (t == LinkType::UNIVERSAL)
+		return "universal";
+	return "???";
+}
+
 class WorldObjectListPanel : public hui::Panel {
 public:
 	ModeWorld *world;
@@ -95,11 +108,13 @@ public:
 		allow_sel_change_signal = true;
 		event_x("list", "hui:select", [=]{ on_list_select(); });
 		event_x("list", "hui:right-button-down", [=]{ on_list_right_click(); });
-		event("sun_enabled", [=]{ on_change(); });
-		event("sun_type", [=]{ on_change(); });
-		event("sun_col", [=]{ on_change(); });
-		event("harshness", [=]{ on_change(); });
-		event("radius", [=]{ on_change(); });
+		event("light-enabled", [=]{ on_change(); });
+		event("light-type", [=]{ on_change(); });
+		event("light-col", [=]{ on_change(); });
+		event("light-harshness", [=]{ on_change(); });
+		event("light-radius", [=]{ on_change(); });
+		event("link-type", [=]{ on_change(); });
+		event("link-friction", [=]{ on_change(); });
 		event("cam-fov", [=]{ on_change(); });
 		event("cam-min-depth", [=]{ on_change(); });
 		event("cam-max-depth", [=]{ on_change(); });
@@ -147,6 +162,10 @@ public:
 			add_string("list", "Object\\" + ((o.name == "") ? o.filename : o.name));
 			list_indices.add({MVD_WORLD_OBJECT, i});
 		}
+		foreachi (auto &l, data->links, i) {
+			add_string("list", "Link\\" + link_type_canonical(l.type));
+			list_indices.add({MVD_WORLD_LINK, i});
+		}
 		selection_from_world();
 	}
 
@@ -168,6 +187,10 @@ public:
 				//	sel.add(i);
 			} else if (ii.type == MVD_WORLD_LIGHT) {
 				auto &l = data->lights[ii.index];
+				if (l.is_selected)
+					sel.add(i);
+			} else if (ii.type == MVD_WORLD_LINK) {
+				auto &l = data->links[ii.index];
 				if (l.is_selected)
 					sel.add(i);
 			} else if (ii.type == MVD_WORLD_CAMERA) {
@@ -217,6 +240,9 @@ public:
 			} else if (ii.type == MVD_WORLD_LIGHT) {
 				auto &l = data->lights[ii.index];
 				l.is_selected = true;
+			} else if (ii.type == MVD_WORLD_LINK) {
+				auto &l = data->links[ii.index];
+				l.is_selected = true;
 			} else if (ii.type == MVD_WORLD_CAMERA) {
 				auto &c = data->cameras[ii.index];
 				c.is_selected = true;
@@ -240,6 +266,7 @@ public:
 		hide_control("g-object", ii.type != MVD_WORLD_OBJECT);
 		hide_control("g-terrain", ii.type != MVD_WORLD_TERRAIN);
 		hide_control("g-light", ii.type != MVD_WORLD_LIGHT);
+		hide_control("g-link", ii.type != MVD_WORLD_LINK);
 		hide_control("g-camera", ii.type != MVD_WORLD_CAMERA);
 		hide_control("g-script", ii.type != MVD_WORLD_SCRIPT);
 		hide_control("g-location", ii.type == MVD_WORLD_SCRIPT);
@@ -248,12 +275,12 @@ public:
 			auto &o = data->objects[ii.index];
 			set_string("ob-name", o.name);
 			set_string("ob-kind", o.filename);
-			set_float("pos_x", o.pos.x);
-			set_float("pos_y", o.pos.y);
-			set_float("pos_z", o.pos.z);
-			set_float("ang_x", o.ang.x * 180.0f / pi);
-			set_float("ang_y", o.ang.y * 180.0f / pi);
-			set_float("ang_z", o.ang.z * 180.0f / pi);
+			set_float("pos-x", o.pos.x);
+			set_float("pos-y", o.pos.y);
+			set_float("pos-z", o.pos.z);
+			set_float("ang-x", o.ang.x * 180.0f / pi);
+			set_float("ang-y", o.ang.y * 180.0f / pi);
+			set_float("ang-z", o.ang.z * 180.0f / pi);
 		} else if (ii.type == MVD_WORLD_TERRAIN) {
 			auto &t = data->terrains[ii.index];
 			set_string("terrain-file", t.filename);
@@ -261,12 +288,12 @@ public:
 			set_int("terrain-num-z", t.terrain->num_z);
 			set_float("terrain-pattern-x", t.terrain->pattern.x);
 			set_float("terrain-pattern-z", t.terrain->pattern.z);
-			set_float("pos_x", t.pos.x);
-			set_float("pos_y", t.pos.y);
-			set_float("pos_z", t.pos.z);
-			set_float("ang_x", 0);
-			set_float("ang_y", 0);
-			set_float("ang_z", 0);
+			set_float("pos-x", t.pos.x);
+			set_float("pos-y", t.pos.y);
+			set_float("pos-z", t.pos.z);
+			set_float("ang-x", 0);
+			set_float("ang-y", 0);
+			set_float("ang-z", 0);
 		} else if (ii.type == MVD_WORLD_SCRIPT) {
 			auto &s = data->meta_data.scripts[ii.index];
 			set_string("script-file", s.filename);
@@ -276,29 +303,39 @@ public:
 				add_string("script-variables", v.name + "\\" + v.type + "\\" + v.value);
 		} else if (ii.type == MVD_WORLD_LIGHT) {
 			auto &l = data->lights[ii.index];
-			check("sun_enabled", l.enabled);
-			set_color("sun_col", l.col);
-			set_int("type", (int)l.type);
-			set_float("radius", l.radius);
-			set_float("harshness", l.harshness);
-			set_float("pos_x", l.pos.x);
-			set_float("pos_y", l.pos.y);
-			set_float("pos_z", l.pos.z);
-			set_float("ang_x", l.ang.x * 180.0f / pi);
-			set_float("ang_y", l.ang.y * 180.0f / pi);
-			set_float("ang_z", l.ang.z * 180.0f / pi);
+			check("light-enabled", l.enabled);
+			set_color("light-col", l.col);
+			set_int("light-type", (int)l.type);
+			set_float("light-radius", l.radius);
+			set_float("light-harshness", l.harshness);
+			set_float("pos-x", l.pos.x);
+			set_float("pos-y", l.pos.y);
+			set_float("pos-z", l.pos.z);
+			set_float("ang-x", l.ang.x * 180.0f / pi);
+			set_float("ang-y", l.ang.y * 180.0f / pi);
+			set_float("ang-z", l.ang.z * 180.0f / pi);
 		} else if (ii.type == MVD_WORLD_CAMERA) {
 			auto &c = data->cameras[ii.index];
 			set_float("cam-fov", c.fov * 180.0f / pi);
 			set_float("cam-min-depth", c.min_depth);
 			set_float("cam-max-depth", c.max_depth);
 			set_float("cam-exposure", c.exposure);
-			set_float("pos_x", c.pos.x);
-			set_float("pos_y", c.pos.y);
-			set_float("pos_z", c.pos.z);
-			set_float("ang_x", c.ang.x * 180.0f / pi);
-			set_float("ang_y", c.ang.y * 180.0f / pi);
-			set_float("ang_z", c.ang.z * 180.0f / pi);
+			set_float("pos-x", c.pos.x);
+			set_float("pos-y", c.pos.y);
+			set_float("pos-z", c.pos.z);
+			set_float("ang-x", c.ang.x * 180.0f / pi);
+			set_float("ang-y", c.ang.y * 180.0f / pi);
+			set_float("ang-z", c.ang.z * 180.0f / pi);
+		} else if (ii.type == MVD_WORLD_LINK) {
+			auto &l = data->links[ii.index];
+			set_int("link-type", (int)l.type);
+			set_float("link-friction", l.friction);
+			set_float("pos-x", l.pos.x);
+			set_float("pos-y", l.pos.y);
+			set_float("pos-z", l.pos.z);
+			set_float("ang-x", l.ang.x * 180.0f / pi);
+			set_float("ang-y", l.ang.y * 180.0f / pi);
+			set_float("ang-z", l.ang.z * 180.0f / pi);
 		}
 	}
 
@@ -308,18 +345,23 @@ public:
 		auto &ii = list_indices[editing];
 		if (ii.type == MVD_WORLD_LIGHT) {
 			auto &l = data->lights[ii.index];
-			l.enabled = is_checked("sun_enabled");
-			l.harshness = get_float("harshness");
-			l.radius = get_float("radius");
-			l.col = get_color("sun_col");
+			l.type = (LightType)get_int("light-type");
+			l.enabled = is_checked("light-enabled");
+			l.harshness = get_float("light-harshness");
+			l.radius = get_float("light-radius");
+			l.col = get_color("light-col");
 			world->multi_view->force_redraw();
-		}
-		if (ii.type == MVD_WORLD_CAMERA) {
+		} else if (ii.type == MVD_WORLD_CAMERA) {
 			auto &c = data->cameras[ii.index];
 			c.fov = get_float("cam-fov") * pi / 180.0f;
 			c.min_depth = get_float("cam-min-depth");
 			c.max_depth = get_float("cam-max-depth");
 			c.exposure = get_float("cam-exposure");
+			world->multi_view->force_redraw();
+		} else if (ii.type == MVD_WORLD_LINK) {
+			auto &l = data->links[ii.index];
+			l.type = (LinkType)get_int("link-type");
+			l.friction = get_float("link-friction");
 			world->multi_view->force_redraw();
 		}
 	}
@@ -737,11 +779,12 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			continue;
 
 		set_color(color(1, 0.9f, 0.6f, 0.3f));
-		if (l.is_selected)
-			set_color(Red);
-		set_line_width(5);
+		set_line_width(scheme.LINE_WIDTH_MEDIUM);
+		if (l.is_selected) {
+			//set_color(Red);
+			set_line_width(scheme.LINE_WIDTH_THICK);
+		}
 		draw_line(l.pos, l.pos - l.ang.ang2dir() * win->cam->radius * 0.1f);
-		set_line_width(1.0f);
 	}
 
 	for (auto &c: data->cameras) {
@@ -749,9 +792,11 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			continue;
 
 		set_color(color(1, 0.9f, 0.6f, 0.3f));
-		if (c.is_selected)
-			set_color(Red);
-		set_line_width(3);
+		set_line_width(scheme.LINE_WIDTH_THIN);
+		if (c.is_selected) {
+			//set_color(Red);
+			set_line_width(scheme.LINE_WIDTH_MEDIUM);
+		}
 		auto q = quaternion::rotation_v(c.ang);
 		float r = win->cam->radius * 0.1f;
 		float rr = r * tan(c.fov / 2);
@@ -766,7 +811,26 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		draw_line(c.pos + ez - ex + ey, c.pos + ez - ex - ey);
 		draw_line(c.pos + ez - ex - ey, c.pos + ez + ex - ey);
 		draw_line(c.pos + ez + ex - ey, c.pos + ez + ex + ey);
-		set_line_width(1.0f);
+	}
+
+	for (auto &l: data->links) {
+		if (l.view_stage < multi_view->view_stage)
+			continue;
+
+		set_color(color(1, 0.9f, 0.6f, 0.3f));
+		set_line_width(scheme.LINE_WIDTH_THIN);
+		if (l.is_selected) {
+			//set_color(Red);
+			set_line_width(5);
+			set_line_width(scheme.LINE_WIDTH_MEDIUM);
+		}
+		draw_line(l.pos, data->objects[l.object[0]].pos);
+		draw_line(l.pos, data->objects[l.object[1]].pos);
+		if (l.is_selected) {
+			set_line_width(scheme.LINE_WIDTH_THICK);
+			vector d = quaternion::rotation(l.ang) * vector::EZ * multi_view->cam.radius * 0.1;
+			draw_line(l.pos - d, l.pos + d);
+		}
 	}
 
 	nix::SetZ(true,true);

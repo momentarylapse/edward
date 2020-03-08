@@ -24,7 +24,7 @@ public:
 
 	void on_left_button_down() override;
 
-	string filename;
+	Array<int> objects;
 };
 
 #endif /* SRC_MODE_WORLD_CREATION_MODEWORLDCREATELINK_H_ */
