@@ -39,18 +39,25 @@ void ModeWorldCreateLink::on_left_button_down() {
 	if (objects.num == 0) {
 		if (multi_view->hover.type == MVD_WORLD_OBJECT) {
 			objects.add(multi_view->hover.index);
-			message = _("select second object to link");
+			message = _("select second object or background (= fixed)");
 		}
 	} else {
 		if (multi_view->hover.type == MVD_WORLD_OBJECT) {
 			objects.add(multi_view->hover.index);
 
 			WorldLink l;
-			//l.pos = multi_view->get_cursor();
 			l.pos = (data->objects[objects[0]].pos + data->objects[objects[1]].pos) / 2;
-			l.ang = v_0;
 			l.object[0] = objects[0];
 			l.object[1] = objects[1];
+			l.type = (LinkType)dialog->get_int("type");
+			data->execute(new ActionWorldAddLink(l));
+			abort();
+		} else if (multi_view->hover.index < 0) {
+
+			WorldLink l;
+			l.pos = multi_view->get_cursor();
+			l.object[0] = objects[0];
+			l.object[1] = -1;
 			l.type = (LinkType)dialog->get_int("type");
 			data->execute(new ActionWorldAddLink(l));
 			abort();

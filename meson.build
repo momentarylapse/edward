@@ -177,6 +177,7 @@ sources = [
 	'src/Data/World/DataWorld.cpp',
 	'src/Data/World/WorldCamera.cpp',
 	'src/Data/World/WorldLight.cpp',
+	'src/Data/World/WorldLink.cpp',
 	'src/Data/World/WorldObject.cpp',
 	'src/Data/World/WorldTerrain.cpp',
 	'src/Data/Data.cpp',

@@ -57,37 +57,6 @@ ModeWorld *mode_world = NULL;
 const bool LIST_SHOW_SCRIPTS = false;
 
 
-string light_type_canonical(LightType t) {
-	if (t == LightType::DIRECTIONAL)
-		return "directional";
-	if (t == LightType::POINT)
-		return "point";
-	if (t == LightType::CONE)
-		return "cone";
-	return "???";
-}
-
-string light_type(LightType t) {
-	if (t == LightType::DIRECTIONAL)
-		return "directional";
-	if (t == LightType::POINT)
-		return "point";
-	if (t == LightType::CONE)
-		return "cone";
-	return "???";
-}
-
-string link_type_canonical(LinkType t) {
-	if (t == LinkType::SOCKET)
-		return "socket";
-	if (t == LinkType::HINGE)
-		return "hinge";
-	if (t == LinkType::SPRING)
-		return "spring";
-	if (t == LinkType::UNIVERSAL)
-		return "universal";
-	return "???";
-}
 
 class WorldObjectListPanel : public hui::Panel {
 public:
@@ -830,7 +799,8 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			set_line_width(scheme.LINE_WIDTH_MEDIUM);
 		}
 		draw_line(l.pos, data->objects[l.object[0]].pos);
-		draw_line(l.pos, data->objects[l.object[1]].pos);
+		if (l.object[1] >= 0)
+			draw_line(l.pos, data->objects[l.object[1]].pos);
 		if (l.is_selected) {
 			set_line_width(scheme.LINE_WIDTH_THICK);
 			vector d = quaternion::rotation(l.ang) * vector::EZ * multi_view->cam.radius * 0.1;

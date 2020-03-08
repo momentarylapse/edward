@@ -22,6 +22,7 @@ string link_type_canonical(LinkType t);
 
 class WorldLink: public MultiView::SingleData {
 public:
+	WorldLink();
 	LinkType type;
 	int object[2];
 	vector ang;

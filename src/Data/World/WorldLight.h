@@ -17,10 +17,12 @@ enum class LightType {
 	CONE
 };
 
+string light_type(LightType t);
 string light_type_canonical(LightType t);
 
 class WorldLight: public MultiView::SingleData {
 public:
+	WorldLight();
 	string name;
 	LightType type;
 	vector ang;

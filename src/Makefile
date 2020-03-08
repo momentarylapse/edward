@@ -144,6 +144,7 @@ OBJ = Action/Font/ActionFontEditGlobal.o \
  Data/World/DataWorld.o \
  Data/World/WorldCamera.o \
  Data/World/WorldLight.o \
+ Data/World/WorldLink.o \
  Data/World/WorldObject.o \
  Data/World/WorldTerrain.o \
  Data/Data.o \
@@ -819,6 +820,9 @@ Data/World/WorldCamera.o : Data/World/WorldCamera.cpp Data/World/WorldCamera.h M
 
 Data/World/WorldLight.o : Data/World/WorldLight.cpp Data/World/WorldLight.h MultiView/SingleData.h lib/math/math.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/image/color.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h
 	$(CPP) -c Data/World/WorldLight.cpp -o $@ $(CXXFLAGS)
+
+Data/World/WorldLink.o : Data/World/WorldLink.cpp Data/World/WorldLink.h MultiView/SingleData.h lib/math/math.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/image/color.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h
+	$(CPP) -c Data/World/WorldLink.cpp -o $@ $(CXXFLAGS)
 
 Data/World/WorldObject.o : Data/World/WorldObject.cpp Data/World/WorldObject.h MultiView/SingleData.h lib/math/math.h lib/base/base.h lib/base/macros.h lib/base/array.h lib/base/strings.h lib/image/color.h lib/math/vector.h lib/math/matrix.h lib/math/matrix3.h lib/math/quaternion.h lib/math/plane.h lib/math/rect.h lib/math/complex.h lib/math/interpolation.h lib/math/random.h lib/math/ray.h x/object.h x/model.h
 	$(CPP) -c Data/World/WorldObject.cpp -o $@ $(CXXFLAGS)
