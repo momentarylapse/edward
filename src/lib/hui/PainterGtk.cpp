@@ -292,7 +292,7 @@ void Painter::set_font(const string &font, float size, bool bold, bool italic)
 		f += " Bold";
 	if (cur_font_italic)
 		f += " Italic";
-	f += " " + i2s((int)font_size);
+	f += " " + f2s(font_size, 2);
 	if (font_desc)
 		pango_font_description_free(font_desc);
 	font_desc = pango_font_description_from_string(f.c_str());
