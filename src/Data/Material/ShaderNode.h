@@ -47,7 +47,7 @@ public:
 	};
 	Array<Port> output;
 
-	Array<string> dependencies;
+	virtual Array<string> dependencies() const { return {}; };
 
 	virtual string code_pixel(ShaderBuilderContext *ctx) const = 0;
 };

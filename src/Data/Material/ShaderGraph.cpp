@@ -192,7 +192,7 @@ string ShaderGraph::build_fragment_source() const {
 
 	ShaderBuilderContext ctx(this);
 	for (auto *n: nodes)
-		for (string &f: n->dependencies)
+		for (string &f: n->dependencies())
 			ctx.dependencies.add(f);
 
 	source += ctx.build_helper_vars();
@@ -218,12 +218,12 @@ string ShaderGraph::build_source() const {
 			"layout(location = 2) in vec2 in_uv;\n"
 			"layout(location = 0) out vec3 out_normal;\n"
 			"layout(location = 1) out vec2 out_uv;\n"
-			"layout(location = 2) out vec3 out_pos; // camera space\n"
+			"layout(location = 2) out vec4 out_pos; // model space\n"
 			"void main() {\n"
 			"	gl_Position = mat_mvp * vec4(in_position,1);\n"
 			"	out_normal = (mat_v * mat_m * vec4(in_normal,0)).xyz;\n"
 			"	out_uv = in_uv;\n"
-			"	out_pos = (mat_v * mat_m * vec4(in_position,1)).xyz;\n"
+			"	out_pos = vec4(in_position,1);\n"
 			"}\n"
 			"</VertexShader>\n"
 			"<FragmentShader>\n";

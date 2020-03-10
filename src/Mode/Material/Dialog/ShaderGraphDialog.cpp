@@ -143,7 +143,16 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 			p->set_color(ColorInterpolate(scheme.TEXT, scheme.GRID, 0.5f));
 		if (n == hover.node and i == hover.param)
 			p->set_color(scheme.hoverify(scheme.TEXT));
-		p->draw_str(n->x + NODE_WIDTH / 2 + 2, yt, pp.value);
+
+		string value = pp.value;
+		if (pp.type == ShaderValueType::INT) {
+			if (pp.options.head(7) == "choice=") {
+				auto xx = pp.options.substr(7, -1).explode("|");
+				int n = clampi(value._int(), 0, xx.num - 1);
+				value = xx[n];
+			}
+		}
+		p->draw_str(n->x + NODE_WIDTH / 2 + 2, yt, value);
 
 		p->set_color(scheme.TEXT);
 		if (hover.type == HoverData::Type::PORT_IN and n == hover.node and i == hover.port)
@@ -232,6 +241,12 @@ void ShaderGraphDialog::on_left_button_down() {
 			color col = pp.get_color();
 			if (hui::SelectColor(win, col)) {
 				pp.set_color(hui::Color);
+				on_update();
+			}
+		} else if (pp.type == ShaderValueType::INT) {
+			if (pp.options.head(7) == "choice=") {
+				auto xx = pp.options.substr(7, -1).explode("|");
+				pp.value = i2s(loopi(pp.value._int() + 1, 0, xx.num - 1));
 				on_update();
 			}
 		}

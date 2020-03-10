@@ -80,7 +80,7 @@ string ShaderBuilderContext::build_helper_vars() {
 		source += "layout(location = 1) in vec2 in_uv;\n";
 	}
 	if (vars.contains("pos")) {
-		source += "layout(location = 2) in vec3 in_pos;\n";
+		source += "layout(location = 2) in vec4 in_pos;\n";
 	}
 	if (vars.contains("texture")) {
 		source += "uniform sampler2D tex0;\n";
@@ -126,7 +126,7 @@ string ShaderBuilderContext::build_helper_functions() {
 		"	r *= diffuse;\n"
 		"	r += emission;\n"
 		"	if ((d > 0) && (material.shininess > 1)) {\n"
-		"		vec3 e = normalize(in_pos); // eye dir\n"
+		"		vec3 e = normalize((mat_v * mat_m * in_pos).xyz); // eye dir\n"
 		"		vec3 rl = reflect(l, n);\n"
 		"		float ee = max(-dot(e, rl), 0);\n"
 		"		r += specular * light.color * light.harshness * pow(ee, shininess);\n"

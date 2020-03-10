@@ -74,8 +74,9 @@ public:
 	ShaderNodeTexture(const string &type, int x, int y) : ShaderNode(type, x, y) {
 		params.add({ShaderValueType::VEC2, "uv", "-mesh-"});
 		output.add({ShaderValueType::COLOR, "color"});
-		dependencies.add("texture");
-		dependencies.add("uv");
+	}
+	Array<string> dependencies() const override {
+		return {"texture", "uv"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
@@ -87,14 +88,13 @@ class ShaderNodeReflection : public ShaderNode {
 public:
 	ShaderNodeReflection(const string &type, int x, int y) : ShaderNode(type, x, y) {
 		output.add({ShaderValueType::COLOR, "color"});
-		dependencies.add("cubemap");
-		dependencies.add("normal");
-		dependencies.add("pos");
-		dependencies.add("matview");
+	}
+	Array<string> dependencies() const override {
+		return {"cubemap", "normal", "pos", "matview", "matworld"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tvec4 " + t + " = texture(tex4, (transpose(mat_v) * vec4(reflect(normalize(in_pos), normalize(in_normal)), 0)).xyz);\n";
+		return "\tvec4 " + t + " = texture(tex4, (transpose(mat_v) * vec4(reflect(normalize((mat_v * mat_m * in_pos).xyz), normalize(in_normal)), 0)).xyz);\n";
 	}
 };
 
@@ -102,7 +102,9 @@ class ShaderNodeNormals : public ShaderNode {
 public:
 	ShaderNodeNormals(const string &type, int x, int y) : ShaderNode(type, x, y) {
 		output.add({ShaderValueType::VEC3, "normals"});
-		dependencies.add("normal");
+	}
+	Array<string> dependencies() const override {
+		return {"normal"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
@@ -114,7 +116,9 @@ class ShaderNodeUV : public ShaderNode {
 public:
 	ShaderNodeUV(const string &type, int x, int y) : ShaderNode(type, x, y) {
 		output.add({ShaderValueType::VEC2, "uv"});
-		dependencies.add("uv");
+	}
+	Array<string> dependencies() const override {
+		return {"uv"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
@@ -125,12 +129,22 @@ public:
 class ShaderNodePosition : public ShaderNode {
 public:
 	ShaderNodePosition(const string &type, int x, int y) : ShaderNode(type, x, y) {
+		params.add({ShaderValueType::INT, "space", "0", "choice=model|world|camera|window"});
 		output.add({ShaderValueType::VEC3, "pos"});
-		dependencies.add("pos");
+	}
+	Array<string> dependencies() const override {
+		return {"pos", "matproject", "matview", "matworld"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tvec3 " + t + " = in_pos;\n";
+		if (params[0].value == "1") // world
+			return "\tvec3 " + t + " = (mat_m * in_pos).xyz;\n";
+		if (params[0].value == "2") // cam
+			return "\tvec3 " + t + " = (mat_v * mat_m * in_pos).xyz;\n";
+		if (params[0].value == "3") // window
+			return "\tvec3 " + t + " = (mat_p * mat_v * mat_m * in_pos).xyz;\n";
+		//if (params[0].value == "0") // model
+		return "\tvec3 " + t + " = in_pos.xyz;\n";
 	}
 };
 
@@ -207,9 +221,9 @@ class ShaderNodeRandomColor : public ShaderNode {
 public:
 	ShaderNodeRandomColor(const string &type, int x, int y) : ShaderNode(type, x, y) {
 		output.add({ShaderValueType::COLOR, "out"});
-		dependencies.add("rand");
-		dependencies.add("noise2d");
-		dependencies.add("uv");
+	}
+	Array<string> dependencies() const override {
+		return {"rand", "noise2d", "uv"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
@@ -225,9 +239,9 @@ class ShaderNodeRandomFloat : public ShaderNode {
 public:
 	ShaderNodeRandomFloat(const string &type, int x, int y) : ShaderNode(type, x, y) {
 		output.add({ShaderValueType::FLOAT, "out"});
-		dependencies.add("rand");
-		dependencies.add("noise2d");
-		dependencies.add("uv");
+	}
+	Array<string> dependencies() const override {
+		return {"rand", "noise2d", "uv"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
@@ -287,12 +301,9 @@ public:
 		params.add({ShaderValueType::COLOR, "emission", "#000000ff"});
 		params.add({ShaderValueType::VEC3, "normals", "-mesh-"});
 		output.add({ShaderValueType::COLOR, "out"});
-		dependencies.add("basic_lighting");
-		dependencies.add("light");
-		dependencies.add("matview");
-		dependencies.add("material");
-		dependencies.add("pos");
-		dependencies.add("normal");
+	}
+	Array<string> dependencies() const override {
+		return {"basic_lighting", "light", "matview", "matworld", "material", "pos", "normal"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
@@ -305,13 +316,14 @@ public:
 	ShaderNodeFog(const string &type, int x, int y) : ShaderNode(type, x, y) {
 		params.add({ShaderValueType::COLOR, "in", "#ffffffff"});
 		output.add({ShaderValueType::COLOR, "out"});
-		dependencies.add("fog");
-		dependencies.add("pos");
+	}
+	Array<string> dependencies() const override {
+		return {"fog", "pos", "matview", "matworld"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string tt = c->create_temp(this, -1, ShaderValueType::FLOAT);
 		string t = c->create_temp(this, 0);
-		return "\tfloat " + tt + " = exp(-in_pos.z * fog.density);\n"
+		return "\tfloat " + tt + " = exp(-(mat_v * mat_m * in_pos).z * fog.density);\n"
 				"\tvec4 " + t + " = (1 - " + tt + ") * fog.color + " + tt + " * " + c->sg_build_value(this, 0) + ";\n";
 	}
 };
@@ -320,7 +332,9 @@ class ShaderNodeMaterialDiffuse : public ShaderNode {
 public:
 	ShaderNodeMaterialDiffuse(const string &type, int x, int y) : ShaderNode(type, x, y) {
 		output.add({ShaderValueType::COLOR, "diffuse"});
-		dependencies.add("material");
+	}
+	Array<string> dependencies() const override {
+		return {"material"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
@@ -332,7 +346,9 @@ class ShaderNodeMaterialSpecular : public ShaderNode {
 public:
 	ShaderNodeMaterialSpecular(const string &type, int x, int y) : ShaderNode(type, x, y) {
 		output.add({ShaderValueType::FLOAT, "specular"});
-		dependencies.add("material");
+	}
+	Array<string> dependencies() const override {
+		return {"material"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
@@ -344,7 +360,9 @@ class ShaderNodeMaterialEmission : public ShaderNode {
 public:
 	ShaderNodeMaterialEmission(const string &type, int x, int y) : ShaderNode(type, x, y) {
 		output.add({ShaderValueType::COLOR, "emission"});
-		dependencies.add("material");
+	}
+	Array<string> dependencies() const override {
+		return {"material"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
