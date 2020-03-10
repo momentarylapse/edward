@@ -12,6 +12,7 @@
 #include "../../../MultiView/ColorScheme.h"
 #include "../../../Data/Material/DataMaterial.h"
 #include "../../../Data/Material/ShaderGraph.h"
+#include "../../../Data/Material/ShaderNode.h"
 #include "../../../lib/math/rect.h"
 #include "../../../lib/nix/nix.h"
 

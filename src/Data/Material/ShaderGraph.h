@@ -10,46 +10,7 @@
 
 #include "../../lib/base/base.h"
 
-class color;
-
-
-enum class ShaderValueType {
-	FLOAT,
-	INT,
-	VEC2,
-	VEC3,
-	COLOR
-};
-
-string shader_value_type_to_str(ShaderValueType t);
-
-
-class ShaderNode {
-public:
-	ShaderNode(const string &type, int x, int y);
-
-	int x, y;
-	string type;
-
-	struct Parameter {
-		ShaderValueType type;
-		string name;
-		string value;
-		string options;
-		color get_color() const;
-		void set_color(const color &c);
-	};
-	Array<Parameter> params;
-
-
-	struct Port {
-		ShaderValueType type;
-		string name;
-	};
-	Array<Port> output;
-
-	Array<string> dependencies;
-};
+class ShaderNode;
 
 class ShaderGraph {
 public:
@@ -82,9 +43,11 @@ public:
 
 	void connect(ShaderNode *s, int sp, ShaderNode *d, int dp);
 	void unconnect(ShaderNode *s, int sp, ShaderNode *d, int dp);
-	Link *find_source(ShaderNode *d, int dp) const;
+	Link *find_source(const ShaderNode *d, int dp) const;
 
-	bool has_dependency(ShaderNode *s, ShaderNode *d) const;
+	bool has_dependency(const ShaderNode *s, const ShaderNode *d) const;
+
+	int node_index(const ShaderNode *n) const;
 
 	static const Array<string> NODE_TYPES;
 };

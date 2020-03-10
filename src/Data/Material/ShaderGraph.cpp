@@ -6,6 +6,8 @@
  */
 
 #include "ShaderGraph.h"
+#include "ShaderNode.h"
+#include "ShaderBuilderContext.h"
 #include "../../lib/base/set.h"
 #include "../../lib/image/color.h"
 #include "../../lib/file/msg.h"
@@ -28,127 +30,8 @@ const Array<string> ShaderGraph::NODE_TYPES = {
 	"--Noise",
 		"RandomFloat", "RandomColor"};
 
-string shader_value_type_to_str(ShaderValueType t) {
-	if (t == ShaderValueType::INT)
-		return "int";
-	if (t == ShaderValueType::FLOAT)
-		return "float";
-	if (t == ShaderValueType::COLOR)
-		return "color";
-	if (t == ShaderValueType::VEC3)
-		return "vec3";
-	if (t == ShaderValueType::VEC2)
-		return "vec2";
-	return "???";
-}
 
 
-void _build_node(ShaderNode *n) {
-
-	if (n->type == "Color") {
-		n->params.add({ShaderValueType::COLOR, "value", "#ffffffff"});
-		n->output.add({ShaderValueType::COLOR, "value"});
-	} else if (n->type == "Vector") {
-		n->params.add({ShaderValueType::FLOAT, "x", "0.0", "range=-1:1"});
-		n->params.add({ShaderValueType::FLOAT, "y", "0.0", "range=-1:1"});
-		n->params.add({ShaderValueType::FLOAT, "z", "1.0", "range=-1:1"});
-		n->output.add({ShaderValueType::VEC3, "value"});
-	} else if (n->type == "Output") {
-		n->params.add({ShaderValueType::COLOR, "color", "#ff0000ff"});
-	} else if (n->type == "Texture") {
-		n->params.add({ShaderValueType::VEC2, "uv", "-mesh-"});
-		n->output.add({ShaderValueType::COLOR, "color"});
-		n->dependencies.add("texture");
-		n->dependencies.add("uv");
-	} else if (n->type == "Reflection") {
-		n->output.add({ShaderValueType::COLOR, "color"});
-		n->dependencies.add("cubemap");
-		n->dependencies.add("normal");
-		n->dependencies.add("pos");
-		n->dependencies.add("matview");
-	} else if (n->type == "Normals") {
-		n->output.add({ShaderValueType::VEC3, "normals"});
-		n->dependencies.add("normal");
-	} else if (n->type == "UV") {
-		n->output.add({ShaderValueType::VEC2, "uv"});
-		n->dependencies.add("uv");
-	} else if (n->type == "Position") {
-		n->output.add({ShaderValueType::VEC3, "pos"});
-		n->dependencies.add("pos");
-	} else if (n->type == "Multiply") {
-		n->params.add({ShaderValueType::COLOR, "a", "#ffffffff"});
-		n->params.add({ShaderValueType::COLOR, "b", "#ffffffff"});
-		n->output.add({ShaderValueType::COLOR, "out"});
-	} else if (n->type == "Mix") {
-		n->params.add({ShaderValueType::COLOR, "a", "#ffffffff"});
-		n->params.add({ShaderValueType::COLOR, "b", "#000000ff"});
-		n->params.add({ShaderValueType::FLOAT, "factor", "0.5", "range=0:1"});
-		n->output.add({ShaderValueType::COLOR, "out"});
-	} else if (n->type == "Add") {
-		n->params.add({ShaderValueType::COLOR, "a", "#000000ff"});
-		n->params.add({ShaderValueType::COLOR, "b", "#000000ff"});
-		n->output.add({ShaderValueType::COLOR, "out"});
-	} else if (n->type == "Brightness") {
-		n->params.add({ShaderValueType::COLOR, "in", "#ffffffff"});
-		n->output.add({ShaderValueType::FLOAT, "brightness"});
-	} else if (n->type == "VectorZ") {
-		n->params.add({ShaderValueType::VEC3, "in", "vec3(0,0,0)"});
-		n->output.add({ShaderValueType::FLOAT, "z"});
-	} else if (n->type == "RandomColor") {
-		n->output.add({ShaderValueType::COLOR, "out"});
-		n->dependencies.add("rand");
-		n->dependencies.add("noise2d");
-		n->dependencies.add("uv");
-	} else if (n->type == "RandomFloat") {
-		n->output.add({ShaderValueType::FLOAT, "out"});
-		n->dependencies.add("rand");
-		n->dependencies.add("noise2d");
-		n->dependencies.add("uv");
-	} else if (n->type == "RescaleVector") {
-		n->params.add({ShaderValueType::VEC3, "in", "vec3(0,0,0)"});
-		n->params.add({ShaderValueType::FLOAT, "scale", "1.0", "range=-2:2"});
-		n->params.add({ShaderValueType::FLOAT, "offset", "0.0", "range=-10:10"});
-		n->output.add({ShaderValueType::VEC3, "out"});
-	} else if (n->type == "RescaleVector2") {
-		n->params.add({ShaderValueType::VEC2, "in", "vec2(0,0)"});
-		n->params.add({ShaderValueType::FLOAT, "scale", "1.0", "range=-2:2"});
-		n->params.add({ShaderValueType::FLOAT, "offset", "0.0", "range=-10:10"});
-		n->output.add({ShaderValueType::VEC2, "out"});
-	} else if (n->type == "RescaleFloat") {
-		n->params.add({ShaderValueType::FLOAT, "in", "0.0"});
-		n->params.add({ShaderValueType::FLOAT, "scale", "1.0", "range=-2:2"});
-		n->params.add({ShaderValueType::FLOAT, "offset", "0.0", "range=-10:10"});
-		n->output.add({ShaderValueType::FLOAT, "out"});
-	} else if (n->type == "BasicLighting") {
-		n->params.add({ShaderValueType::COLOR, "diffuse", "#ffffffff"});
-		n->params.add({ShaderValueType::FLOAT, "ambient", "0.3", "range=0:1"});
-		n->params.add({ShaderValueType::FLOAT, "specular", "0.1", "range=0:1"});
-		n->params.add({ShaderValueType::FLOAT, "shininess", "10.0", "range=0:50"});
-		n->params.add({ShaderValueType::COLOR, "emission", "#000000ff"});
-		n->params.add({ShaderValueType::VEC3, "normals", "-mesh-"});
-		n->output.add({ShaderValueType::COLOR, "out"});
-		n->dependencies.add("basic_lighting");
-		n->dependencies.add("light");
-		n->dependencies.add("matview");
-		n->dependencies.add("material");
-		n->dependencies.add("pos");
-		n->dependencies.add("normal");
-	} else if (n->type == "Fog") {
-		n->params.add({ShaderValueType::COLOR, "in", "#ffffffff"});
-		n->output.add({ShaderValueType::COLOR, "out"});
-		n->dependencies.add("fog");
-		n->dependencies.add("pos");
-	} else if (n->type == "MaterialDiffuse") {
-		n->output.add({ShaderValueType::COLOR, "diffuse"});
-		n->dependencies.add("material");
-	} else if (n->type == "MaterialSpecular") {
-		n->output.add({ShaderValueType::FLOAT, "specular"});
-		n->dependencies.add("material");
-	} else if (n->type == "MaterialEmission") {
-		n->output.add({ShaderValueType::COLOR, "emission"});
-		n->dependencies.add("material");
-	}
-}
 
 ShaderGraph::ShaderGraph() {
 }
@@ -174,8 +57,8 @@ void ShaderGraph::make_default() {
 	connect(n2, 0, n3, 0);
 }
 
-int sg_node_index(const ShaderGraph *g, const ShaderNode *n) {
-	foreachi (auto *nn, g->nodes, i)
+int ShaderGraph::node_index(const ShaderNode *n) const {
+	foreachi (auto *nn, nodes, i)
 		if (nn == n)
 			return i;
 	return -1;
@@ -194,7 +77,7 @@ void ShaderGraph::load(const string &filename) {
 		string type = e.value("type");
 		int x = e.value("x")._int();
 		int y = e.value("y")._int();
-		auto *n = new ShaderNode(type, x, y);
+		auto *n = create_node(type, x, y);
 		for (auto &pp: n->params)
 			pp.value = e.value(pp.name);
 		nodes.add(n);
@@ -227,9 +110,9 @@ void ShaderGraph::save(const string &filename) {
 	xml::Element elinks = {"Links"};
 	for (auto &l: links) {
 		xml::Element e = xml::Element("Link");
-		e.add_attribute("source", i2s(sg_node_index(this, l.source)));
+		e.add_attribute("source", i2s(node_index(l.source)));
 		e.add_attribute("sourceport", i2s(l.source_port));
-		e.add_attribute("dest", i2s(sg_node_index(this, l.dest)));
+		e.add_attribute("dest", i2s(node_index(l.dest)));
 		e.add_attribute("destport", i2s(l.dest_port));
 		elinks.add(e);
 	}
@@ -239,15 +122,8 @@ void ShaderGraph::save(const string &filename) {
 	p.save(filename);
 }
 
-ShaderNode::ShaderNode(const string &_type, int _x, int _y) {
-	type = _type;
-	x = _x;
-	y = _y;
 
-	_build_node(this);
-}
-
-bool ShaderGraph::has_dependency(ShaderNode *s, ShaderNode *d) const {
+bool ShaderGraph::has_dependency(const ShaderNode *s, const ShaderNode *d) const {
 	for (auto &l: links)
 		if (l.source == s and l.dest == d)
 			return true;
@@ -289,22 +165,6 @@ Array<ShaderNode*> ShaderGraph::sorted() const {
 	return snodes;
 }
 
-string sg_build_constant(ShaderNode::Parameter &p) {
-	if (p.type == ShaderValueType::INT) {
-		return p.value;
-	} else if (p.type == ShaderValueType::FLOAT) {
-		return p.value;
-	} else if (p.type == ShaderValueType::COLOR) {
-		color c = p.get_color();
-		return format("vec4(%.2f, %.2f, %.2f, %.2f)", c.r, c.g, c.b, c.a);
-	} else if (p.type == ShaderValueType::VEC2) {
-		return p.value;
-	} else if (p.type == ShaderValueType::VEC3) {
-		return p.value;
-	}
-	return "???";
-}
-
 color ShaderNode::Parameter::get_color() const {
 	if (type != ShaderValueType::COLOR)
 		return Black;
@@ -325,247 +185,22 @@ void ShaderNode::Parameter::set_color(const color &c) {
 	value = string(&ii, 4).hex(true).replace("0x", "#");
 }
 
-
-struct TempVar {
-	string name;
-	ShaderNode *source;
-	int port;
-	ShaderValueType type;
-};
-
-string create_temp(Array<TempVar> &temps, ShaderNode *source, int port, ShaderValueType type) {
-	TempVar t;
-	t.name = format("tmp%d", temps.num + 1);
-	t.source = source;
-	t.port = port;
-	t.type = type;
-	temps.add(t);
-	return t.name;
-}
-
-string create_temp(Array<TempVar> &temps, ShaderNode *source, int port) {
-	return create_temp(temps, source, port, source->output[port].type);
-}
-
-string cast(const string &v, ShaderValueType ts, ShaderValueType td) {
-	if (ts == ShaderValueType::FLOAT and td == ShaderValueType::VEC3)
-		return "(vec3(1,1,1) * " + v + ")";
-	if (ts == ShaderValueType::FLOAT and td == ShaderValueType::COLOR)
-		return "vec4(vec3(1,1,1) * " + v + ", 1)";
-	if (ts == ShaderValueType::COLOR and td == ShaderValueType::VEC3)
-		return v + ".xyz";
-	if (ts == ShaderValueType::VEC3 and td == ShaderValueType::COLOR)
-		return "vec4(" + v + ", 1.0)";
-	return v;
-}
-
-bool can_cast(ShaderValueType ts, ShaderValueType td) {
-	if (ts == td)
-		return true;
-	if (ts == ShaderValueType::FLOAT and td == ShaderValueType::VEC3)
-		return true;
-	if (ts == ShaderValueType::FLOAT and td == ShaderValueType::COLOR)
-		return true;
-	if (ts == ShaderValueType::COLOR and td == ShaderValueType::VEC3)
-		return true;
-	if (ts == ShaderValueType::VEC3 and td == ShaderValueType::COLOR)
-		return true;
-	return false;
-}
-
-string find_temp(Array<TempVar> &temps, ShaderNode *source, int port, ShaderValueType wanted_type) {
-	for (auto &t: temps)
-		if (t.source == source and t.port == port)
-			return cast(t.name, t.type, wanted_type);
-	return "???";
-}
-
-string sg_build_value(const ShaderGraph *g, Array<TempVar> &temps, ShaderNode *n, int i, const string &internal = "") {
-	auto l = g->find_source(n, i);
-	if (l)
-		return find_temp(temps, l->source, l->source_port, n->params[i].type);
-	if (internal != "")
-		return internal;
-	return sg_build_constant(n->params[i]);
-}
-
-string build_helper_vars(const Set<string> &vars) {
-	string source;
-	if (vars.contains("light")) {
-		source +=
-			"struct Light { vec4 color; vec4 pos; float radius, harshness; };\n"
-			"uniform LightBlock { Light light; };\n";
-	}
-	if (vars.contains("fog")) {
-		source +=
-			"struct Fog { vec4 color; float density; };\n"
-			"uniform Fog fog;\n";
-	}
-	if (vars.contains("material")) {
-		source +=
-			"struct Material { vec4 ambient, diffusive, specular, emission; float shininess; };\n"
-			"uniform Material material;\n";
-	}
-	if (vars.contains("normal")) {
-		source +=
-			"layout(location = 0) in vec3 in_normal;\n";
-	}
-	if (vars.contains("uv")) {
-		source +=
-			"layout(location = 1) in vec2 in_uv;\n";
-	}
-	if (vars.contains("pos")) {
-		source +=
-			"layout(location = 2) in vec3 in_pos;\n";
-	}
-	if (vars.contains("texture")) {
-		source +=
-			"uniform sampler2D tex0;\n";
-	}
-	if (vars.contains("cubemap")) {
-		source +=
-			"uniform samplerCube tex4;\n";
-	}
-	if (vars.contains("matview")) {
-		source +=
-			"uniform mat4 mat_v;\n";
-	}
-
-	return source;
-}
-
-string build_helper_functions(const Set<string> &funcs) {
-	string source;
-	if (funcs.contains("rand")) {
-		source += "\nfloat rand(vec2 st) {\n"
-		"	return fract(sin(dot(st.xy ,vec2(12.9898,78.233))) * 43758.5453);\n"
-		"}\n";
-	}
-	if (funcs.contains("noise2d")) {
-		source += "\nfloat noise2d(vec2 p) {\n"
-		"	vec2 i = floor(p*10);\n"
-		"	vec2 f = fract(p*10);\n"
-		"	return mix(mix(rand(i), rand(i + vec2(1.0,0)), smoothstep(0.,1.,f.x)), mix(rand(i + vec2(0.,1.)), rand(i + vec2(1.,1.)), smoothstep(0.,1.,f.x)), smoothstep(0.,1.,f.y));\n"
-		"}\n";
-	}
-	if (funcs.contains("basic_lighting")) {
-		source += "\nvec4 basic_lighting(vec3 n, vec4 diffuse, float ambient, float specular, float shininess, vec4 emission) {\n"
-		"	vec3 l = (mat_v * vec4(light.pos.xyz, 0)).xyz;\n"
-		"	float d = max(-dot(n, l), 0);\n"
-		"	vec4 r = ambient * light.color * (1 - light.harshness) / 2;\n"
-		"	r += light.color * light.harshness * d;\n"
-		"	r *= diffuse;\n"
-		"	r += emission;\n"
-		"	if ((d > 0) && (material.shininess > 1)) {\n"
-		"		vec3 e = normalize(in_pos); // eye dir\n"
-		"		vec3 rl = reflect(l, n);\n"
-		"		float ee = max(-dot(e, rl), 0);\n"
-		"		r += specular * light.color * light.harshness * pow(ee, shininess);\n"
-		"	}\n"
-		"	return r;\n"
-		"}\n";
-	}
-	return source;
-}
-
 string ShaderGraph::build_fragment_source() const {
 	string source = "#version 330 core\n"
 			"#extension GL_ARB_separate_shader_objects : enable\n"
 			"out vec4 out_color;\n";
 
-	Set<string> dependencies;
+	ShaderBuilderContext ctx(this);
 	for (auto *n: nodes)
 		for (string &f: n->dependencies)
-			dependencies.add(f);
+			ctx.dependencies.add(f);
 
-	Array<TempVar> temps;
-
-	source += build_helper_vars(dependencies);
-	source += build_helper_functions(dependencies);
+	source += ctx.build_helper_vars();
+	source += ctx.build_helper_functions();
 
 	source += "\nvoid main() {\n";
-
-	for (auto *n: sorted()) {
-		if (n->type == "Output") {
-			source += "\tout_color = " + sg_build_value(this, temps, n, 0) + ";\n";
-		} else if (n->type == "Color") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + " = " + sg_build_constant(n->params[0]) + ";\n";
-		} else if (n->type == "Vector") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec3 " + t + " = vec3(" + sg_build_value(this, temps, n, 0) + ", " + sg_build_value(this, temps, n, 1) + ", " + sg_build_value(this, temps, n, 2) + ");\n";
-		} else if (n->type == "Texture") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + " = texture(tex0, " + sg_build_value(this, temps, n, 0, "in_uv") + ");\n";
-		} else if (n->type == "Reflection") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + " = texture(tex4, (transpose(mat_v) * vec4(reflect(normalize(in_pos), normalize(in_normal)), 0)).xyz);\n";
-		} else if (n->type == "Normals") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec3 " + t + " = normalize(in_normal);\n";
-		} else if (n->type == "Position") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec3 " + t + " = in_pos;\n";
-		} else if (n->type == "UV") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec2 " + t + " = in_uv;\n";
-		} else if (n->type == "MaterialDiffuse") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + " = " + sg_build_value(this, temps, n, 5, "material.diffusive") + ";\n";
-		} else if (n->type == "MaterialEmission") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + " = " + sg_build_value(this, temps, n, 5, "material.emission") + ";\n";
-		} else if (n->type == "Multiply") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + " = " + sg_build_value(this, temps, n, 0) + " * " + sg_build_value(this, temps, n, 1) + ";\n";
-		} else if (n->type == "Add") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + " = " + sg_build_value(this, temps, n, 0) + " + " + sg_build_value(this, temps, n, 1) + ";\n";
-		} else if (n->type == "Mix") {
-			string t = create_temp(temps, n, 0);
-			string tt = create_temp(temps, n, -1, ShaderValueType::FLOAT);
-			source += "\tfloat " + tt + " = " + sg_build_value(this, temps, n, 2) + ";\n";
-			source += "\tvec4 " + t + " = (1 - " + tt + ") * " + sg_build_value(this, temps, n, 0) + " + " + tt + " * "+ sg_build_value(this, temps, n, 1) + ";\n";
-		} else if (n->type == "Brightness") {
-			string tt = create_temp(temps, n, -1, ShaderValueType::COLOR);
-			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + tt + " = " + sg_build_value(this, temps, n, 0) + ";\n";
-			source += "\tfloat " + t + " = 0.2126 * " + tt + ".r + 0.7152 * " + tt + ".g + 0.0722 * " + tt + ".b;\n";
-		} else if (n->type == "VectorZ") {
-			string t = create_temp(temps, n, 0);
-			source += "\tfloat " + t + " = " + sg_build_value(this, temps, n, 0) + ".z;\n";
-		} else if (n->type == "RescaleVector") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec3 " + t + " = " + sg_build_value(this, temps, n, 0) + " * " + sg_build_value(this, temps, n, 1) + " + " + sg_build_value(this, temps, n, 2) + ";\n";
-		} else if (n->type == "RescaleVector2") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec2 " + t + " = " + sg_build_value(this, temps, n, 0) + " * " + sg_build_value(this, temps, n, 1) + " + " + sg_build_value(this, temps, n, 2) + ";\n";
-		} else if (n->type == "RescaleFloat") {
-			string t = create_temp(temps, n, 0);
-			source += "\tfloat " + t + " = " + sg_build_value(this, temps, n, 0) + " * " + sg_build_value(this, temps, n, 1) + " + " + sg_build_value(this, temps, n, 2) + ";\n";
-		} else if (n->type == "BasicLighting") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + " = basic_lighting(" + sg_build_value(this, temps, n, 5, "in_normal") + ", " + sg_build_value(this, temps, n, 0) + ", " + sg_build_value(this, temps, n, 1) + ", " + sg_build_value(this, temps, n, 2) + ", " + sg_build_value(this, temps, n, 3) + ", " + sg_build_value(this, temps, n, 4) + ");\n";
-		} else if (n->type == "Fog") {
-			string tt = create_temp(temps, n, -1, ShaderValueType::FLOAT);
-			string t = create_temp(temps, n, 0);
-			source += "\tfloat " + tt + " = exp(-in_pos.z * fog.density);\n";
-			source += "\tvec4 " + t + " = (1 - " + tt + ") * fog.color + " + tt + " * " + sg_build_value(this, temps, n, 0) + ";\n";
-		} else if (n->type == "RandomFloat") {
-			string t = create_temp(temps, n, 0);
-			source += "\tfloat " + t + " = noise2d(in_uv);\n";
-		} else if (n->type == "RandomColor") {
-			string t = create_temp(temps, n, 0);
-			source += "\tvec4 " + t + ";\n"
-			"	" + t + ".r = noise2d(in_uv);\n"
-			"	" + t + ".g = noise2d(in_uv);\n"
-			"	" + t + ".b = noise2d(in_uv);\n"
-			"	" + t + ".a = 1.0;\n";
-		} else {
-			source += " unhandled node " + n->type + "\n";
-
-		}
-	}
+	for (auto *n: sorted())
+		source += n->code_pixel(&ctx);
 	source += "}\n";
 	return source;
 }
@@ -608,7 +243,7 @@ void ShaderGraph::remove(ShaderNode *n) {
 	delete n;
 }
 
-ShaderGraph::Link *ShaderGraph::find_source(ShaderNode *d, int dp) const {
+ShaderGraph::Link *ShaderGraph::find_source(const ShaderNode *d, int dp) const {
 	for (auto &l: links)
 		if (l.dest == d and l.dest_port == dp)
 			return &l;
@@ -616,7 +251,7 @@ ShaderGraph::Link *ShaderGraph::find_source(ShaderNode *d, int dp) const {
 }
 
 ShaderNode* ShaderGraph::add(const string &type, int x, int y) {
-	auto n = new ShaderNode(type, x, y);
+	auto n = create_node(type, x, y);
 	nodes.add(n);
 	return n;
 }
