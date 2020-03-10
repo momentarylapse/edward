@@ -129,6 +129,7 @@ void _build_node(ShaderNode *n) {
 		n->output.add({ShaderValueType::COLOR, "out"});
 		n->dependencies.add("basic_lighting");
 		n->dependencies.add("light");
+		n->dependencies.add("matview");
 		n->dependencies.add("material");
 		n->dependencies.add("pos");
 		n->dependencies.add("normal");
@@ -392,8 +393,8 @@ string build_helper_vars(const Set<string> &vars) {
 	string source;
 	if (vars.contains("light")) {
 		source +=
-			"struct Light { vec4 color; vec3 pos; float radius, harshness; };\n"
-			"uniform Light light;\n";
+			"struct Light { vec4 color; vec4 pos; float radius, harshness; };\n"
+			"uniform LightBlock { Light light; };\n";
 	}
 	if (vars.contains("fog")) {
 		source +=
@@ -449,7 +450,7 @@ string build_helper_functions(const Set<string> &funcs) {
 	}
 	if (funcs.contains("basic_lighting")) {
 		source += "\nvec4 basic_lighting(vec3 n, vec4 diffuse, float ambient, float specular, float shininess, vec4 emission) {\n"
-		"	vec3 l = light.pos;\n"
+		"	vec3 l = (mat_v * vec4(light.pos.xyz, 0)).xyz;\n"
 		"	float d = max(-dot(n, l), 0);\n"
 		"	vec4 r = ambient * light.color * (1 - light.harshness) / 2;\n"
 		"	r += light.color * light.harshness * d;\n"
