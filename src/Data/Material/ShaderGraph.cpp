@@ -22,7 +22,7 @@ const Array<string> ShaderGraph::NODE_TYPES = {
 	"--Parameters",
 		"MaterialDiffuse", "MaterialSpecular", "MaterialEmission",
 	"--Operations",
-		"Multiply", "Mix", "Add",
+		"Multiply", "Mix", "Add", "Power",
 		"Brightness", "VectorZ", "RescaleVector", "RescaleVector2", "RescaleFloat",
 		"BasicLighting", "Fog",
 	"--Output",

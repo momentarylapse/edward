@@ -55,7 +55,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tvec3 " + t + " = vec3(" + c->sg_build_value(this, 0) + ", " + c->sg_build_value(this, 1) + ", " + c->sg_build_value(this, 2) + ");\n";
+		return "\tvec3 " + t + " = vec3(" + c->build_value(this, 0) + ", " + c->build_value(this, 1) + ", " + c->build_value(this, 2) + ");\n";
 	}
 };
 
@@ -65,7 +65,7 @@ public:
 		params.add({ShaderValueType::COLOR, "color", "#ff0000ff"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		return "\tout_color = " + c->sg_build_value(this, 0) + ";\n";
+		return "\tout_color = " + c->build_value(this, 0) + ";\n";
 	}
 };
 
@@ -80,7 +80,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tvec4 " + t + " = texture(tex0, " + c->sg_build_value(this, 0, "in_uv") + ");\n";
+		return "\tvec4 " + t + " = texture(tex0, " + c->build_value(this, 0, "in_uv") + ");\n";
 	}
 };
 
@@ -157,7 +157,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tvec4 " + t + " = " + c->sg_build_value(this, 0) + " * " + c->sg_build_value(this, 1) + ";\n";
+		return "\tvec4 " + t + " = " + c->build_value(this, 0) + " * " + c->build_value(this, 1) + ";\n";
 	}
 };
 
@@ -172,8 +172,8 @@ public:
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
 		string tt = c->create_temp(this, -1, ShaderValueType::FLOAT);
-		return "\tfloat " + tt + " = " + c->sg_build_value(this, 2) + ";\n"
-				"\tvec4 " + t + " = (1 - " + tt + ") * " + c->sg_build_value(this, 0) + " + " + tt + " * "+ c->sg_build_value(this, 1) + ";\n";
+		return "\tfloat " + tt + " = " + c->build_value(this, 2) + ";\n"
+				"\tvec4 " + t + " = (1 - " + tt + ") * " + c->build_value(this, 0) + " + " + tt + " * "+ c->build_value(this, 1) + ";\n";
 	}
 };
 
@@ -186,7 +186,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tvec4 " + t + " = " + c->sg_build_value(this, 0) + " + " + c->sg_build_value(this, 1) + ";\n";
+		return "\tvec4 " + t + " = " + c->build_value(this, 0) + " + " + c->build_value(this, 1) + ";\n";
 	}
 };
 
@@ -199,8 +199,21 @@ public:
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string tt = c->create_temp(this, -1, ShaderValueType::COLOR);
 		string t = c->create_temp(this, 0);
-		return "\tvec4 " + tt + " = " + c->sg_build_value(this, 0) + ";\n"
+		return "\tvec4 " + tt + " = " + c->build_value(this, 0) + ";\n"
 				"\tfloat " + t + " = 0.2126 * " + tt + ".r + 0.7152 * " + tt + ".g + 0.0722 * " + tt + ".b;\n";
+	}
+};
+
+class ShaderNodePower : public ShaderNode {
+public:
+	ShaderNodePower(const string &type, int x, int y) : ShaderNode(type, x, y) {
+		params.add({ShaderValueType::FLOAT, "base", "2.0", "range=0:8"});
+		params.add({ShaderValueType::FLOAT, "exponent", "2.0", "range=0:8"});
+		output.add({ShaderValueType::FLOAT, "out"});
+	}
+	string code_pixel(ShaderBuilderContext *c) const override {
+		string t = c->create_temp(this, 0);
+		return "\tfloat " + t + " = pow(" + c->build_value(this, 0) + ", " + c->build_value(this, 1) + ");\n";
 	}
 };
 
@@ -212,7 +225,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tfloat " + t + " = " + c->sg_build_value(this, 0) + ".z;\n";
+		return "\tfloat " + t + " = " + c->build_value(this, 0) + ".z;\n";
 	}
 };
 
@@ -220,17 +233,21 @@ public:
 class ShaderNodeRandomColor : public ShaderNode {
 public:
 	ShaderNodeRandomColor(const string &type, int x, int y) : ShaderNode(type, x, y) {
+		params.add({ShaderValueType::VEC3, "p", "vec3(0,0,0)"});
+		params.add({ShaderValueType::FLOAT, "scale", "4.0", "range=0.1:8"});
+		params.add({ShaderValueType::FLOAT, "detail", "3.0", "range=1:8"});
+		params.add({ShaderValueType::FLOAT, "exponent", "0.8", "range=0:2"});
 		output.add({ShaderValueType::COLOR, "out"});
 	}
 	Array<string> dependencies() const override {
-		return {"rand", "noise2d", "uv"};
+		return {"rand3d", "noise3d", "noise3d_multi"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
 		return "\tvec4 " + t + ";\n"
-		"	" + t + ".r = noise2d(in_uv);\n"
-		"	" + t + ".g = noise2d(in_uv);\n"
-		"	" + t + ".b = noise2d(in_uv);\n"
+		"	" + t + ".r = noise3d_multi(" + c->build_value(this, 0) + " * " + c->build_value(this, 1) + ", " + c->build_value(this, 2) + ", " + c->build_value(this, 3) + ");\n"
+		"	" + t + ".g = noise3d_multi(" + c->build_value(this, 0) + " * " + c->build_value(this, 1) + ", " + c->build_value(this, 2) + ", " + c->build_value(this, 3) + ");\n"
+		"	" + t + ".b = noise3d_multi(" + c->build_value(this, 0) + " * " + c->build_value(this, 1) + ", " + c->build_value(this, 2) + ", " + c->build_value(this, 3) + ");\n"
 		"	" + t + ".a = 1.0;\n";
 	}
 };
@@ -238,14 +255,18 @@ public:
 class ShaderNodeRandomFloat : public ShaderNode {
 public:
 	ShaderNodeRandomFloat(const string &type, int x, int y) : ShaderNode(type, x, y) {
+		params.add({ShaderValueType::VEC3, "pos", "vec3(0,0,0)"});
+		params.add({ShaderValueType::FLOAT, "scale", "4.0", "range=0.1:8"});
+		params.add({ShaderValueType::FLOAT, "detail", "3.0", "range=1:8"});
+		params.add({ShaderValueType::FLOAT, "exponent", "0.8", "range=0:2"});
 		output.add({ShaderValueType::FLOAT, "out"});
 	}
 	Array<string> dependencies() const override {
-		return {"rand", "noise2d", "uv"};
+		return {"rand3d", "noise3d", "noise3d_multi"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tfloat " + t + " = noise2d(in_uv);\n";
+		return "\tfloat " + t + " = noise3d_multi(" + c->build_value(this, 0) + " * " + c->build_value(this, 1) + ", " + c->build_value(this, 2) + ", " + c->build_value(this, 3) + ");\n";
 	}
 };
 
@@ -259,7 +280,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tvec3 " + t + " = " + c->sg_build_value(this, 0) + " * " + c->sg_build_value(this, 1) + " + " + c->sg_build_value(this, 2) + ";\n";
+		return "\tvec3 " + t + " = " + c->build_value(this, 0) + " * " + c->build_value(this, 1) + " + " + c->build_value(this, 2) + ";\n";
 	}
 };
 
@@ -273,7 +294,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tvec2 " + t + " = " + c->sg_build_value(this, 0) + " * " + c->sg_build_value(this, 1) + " + " + c->sg_build_value(this, 2) + ";\n";
+		return "\tvec2 " + t + " = " + c->build_value(this, 0) + " * " + c->build_value(this, 1) + " + " + c->build_value(this, 2) + ";\n";
 	}
 };
 
@@ -287,7 +308,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tfloat " + t + " = " + c->sg_build_value(this, 0) + " * " + c->sg_build_value(this, 1) + " + " + c->sg_build_value(this, 2) + ";\n";
+		return "\tfloat " + t + " = " + c->build_value(this, 0) + " * " + c->build_value(this, 1) + " + " + c->build_value(this, 2) + ";\n";
 	}
 };
 
@@ -307,7 +328,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tvec4 " + t + " = basic_lighting(" + c->sg_build_value(this, 5, "in_normal") + ", " + c->sg_build_value(this, 0) + ", " + c->sg_build_value(this, 1) + ", " + c->sg_build_value(this, 2) + ", " + c->sg_build_value(this, 3) + ", " + c->sg_build_value(this, 4) + ");\n";
+		return "\tvec4 " + t + " = basic_lighting(" + c->build_value(this, 5, "in_normal") + ", " + c->build_value(this, 0) + ", " + c->build_value(this, 1) + ", " + c->build_value(this, 2) + ", " + c->build_value(this, 3) + ", " + c->build_value(this, 4) + ");\n";
 	}
 };
 
@@ -324,7 +345,7 @@ public:
 		string tt = c->create_temp(this, -1, ShaderValueType::FLOAT);
 		string t = c->create_temp(this, 0);
 		return "\tfloat " + tt + " = exp(-(mat_v * mat_m * in_pos).z * fog.density);\n"
-				"\tvec4 " + t + " = (1 - " + tt + ") * fog.color + " + tt + " * " + c->sg_build_value(this, 0) + ";\n";
+				"\tvec4 " + t + " = (1 - " + tt + ") * fog.color + " + tt + " * " + c->build_value(this, 0) + ";\n";
 	}
 };
 
@@ -338,7 +359,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tvec4 " + t + " = " + c->sg_build_value(this, 5, "material.diffusive") + ";\n";
+		return "\tvec4 " + t + " = " + c->build_value(this, 5, "material.diffusive") + ";\n";
 	}
 };
 
@@ -352,7 +373,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tvec4 " + t + " = " + c->sg_build_value(this, 5, "material.specular") + ";\n";
+		return "\tvec4 " + t + " = " + c->build_value(this, 5, "material.specular") + ";\n";
 	}
 };
 
@@ -366,7 +387,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string t = c->create_temp(this, 0);
-		return "\tvec4 " + t + " = " + c->sg_build_value(this, 5, "material.emission") + ";\n";
+		return "\tvec4 " + t + " = " + c->build_value(this, 5, "material.emission") + ";\n";
 	}
 };
 
@@ -395,6 +416,8 @@ ShaderNode *create_node(const string &type, int x, int y) {
 		return new ShaderNodeAdd(type, x, y);
 	} else if (type == "Brightness") {
 		return new ShaderNodeBrightness(type, x, y);
+	} else if (type == "Power") {
+		return new ShaderNodePower(type, x, y);
 	} else if (type == "VectorZ") {
 		return new ShaderNodeVectorZ(type, x, y);
 	} else if (type == "RandomColor") {

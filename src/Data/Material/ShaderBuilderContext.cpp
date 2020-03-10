@@ -105,16 +105,43 @@ string ShaderBuilderContext::build_helper_vars() {
 string ShaderBuilderContext::build_helper_functions() {
 	string source;
 	auto funcs = dependencies;
-	if (funcs.contains("rand")) {
-		source += "\nfloat rand(vec2 st) {\n"
+	if (funcs.contains("rand2d")) {
+		source += "\nfloat rand2d(vec2 st) {\n"
 		"	return fract(sin(dot(st.xy ,vec2(12.9898,78.233))) * 43758.5453);\n"
 		"}\n";
 	}
-	if (funcs.contains("noise2d")) {
-		source += "\nfloat noise2d(vec2 p) {\n"
-		"	vec2 i = floor(p*10);\n"
-		"	vec2 f = fract(p*10);\n"
-		"	return mix(mix(rand(i), rand(i + vec2(1.0,0)), smoothstep(0.,1.,f.x)), mix(rand(i + vec2(0.,1.)), rand(i + vec2(1.,1.)), smoothstep(0.,1.,f.x)), smoothstep(0.,1.,f.y));\n"
+	if (funcs.contains("rand3d")) {
+		source += "\nfloat rand3d(vec3 p) {\n"
+		"	return fract(sin(dot(p ,vec3(12.9898,78.233,4213.1234))) * 43758.5453);\n"
+		"}\n";
+	}
+	if (funcs.contains("noise3d")) {
+		source += "\nfloat noise3d(vec3 p) {\n"
+		"	vec3 i = floor(p);\n"
+		"	vec3 f = fract(p);\n"
+		"	return mix(\n"
+		"		mix(\n"
+		"			mix(rand3d(i),               rand3d(i + vec3(1,0,0)), smoothstep(0,1,f.x)),\n"
+		"			mix(rand3d(i + vec3(0,1,0)), rand3d(i + vec3(1,1,0)), smoothstep(0,1,f.x)),\n"
+		"			smoothstep(0,1,f.y)),\n"
+		"		mix(\n"
+		"			mix(rand3d(i + vec3(0,0,1)), rand3d(i + vec3(1,0,1)), smoothstep(0,1,f.x)),\n"
+		"			mix(rand3d(i + vec3(0,1,1)), rand3d(i + vec3(1,1,1)), smoothstep(0,1,f.x)),\n"
+		"			smoothstep(0,1,f.y)),\n"
+		"		smoothstep(0,1,f.z));\n"
+		"}\n";
+	}
+	if (funcs.contains("noise3d_multi")) {
+		source += "\nfloat noise3d_multi(vec3 p, float detail, float e) {\n"
+		"	float r = 0;\n"
+		"	float ff = fract(detail);\n"
+		"	int i = 0;\n"
+		"	while (i<detail) {\n"
+		"		r += noise3d(p * pow(2, i)) * pow(e, i);\n"
+		"		i ++;\n"
+		"	}\n"
+		"	r += ff * noise3d(p * pow(2, i)) * pow(e, i);\n"
+		"	return r * (1-e) / (1- pow(e, detail));\n"
 		"}\n";
 	}
 	if (funcs.contains("basic_lighting")) {
@@ -163,7 +190,7 @@ string ShaderBuilderContext::find_temp(const ShaderNode *source, int port, Shade
 	return "???";
 }
 
-string ShaderBuilderContext::sg_build_value(const ShaderNode *n, int i, const string &internal) {
+string ShaderBuilderContext::build_value(const ShaderNode *n, int i, const string &internal) {
 	auto l = graph->find_source(n, i);
 	if (l)
 		return find_temp(l->source, l->source_port, n->params[i].type);
