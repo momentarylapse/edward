@@ -37,7 +37,8 @@ string PluginManager::directory;
 
 
 
-PluginManager::PluginManager() {
+PluginManager::PluginManager(const string &dir) {
+	directory = dir;
 	init();
 }
 
@@ -64,6 +65,11 @@ hui::Window *GlobalMainWin = ed;
 
 void PluginManager::init() {
 	Kaba::init();
+	link_plugins();
+	find_plugins();
+}
+
+void PluginManager::link_plugins() {
 
 	GlobalMainWin = ed;
 
@@ -274,9 +280,28 @@ void PluginManager::init() {
 
 	Kaba::declare_class_size("ShaderBuilderContext", sizeof(ShaderBuilderContext));
 	Kaba::link_external_class_func("ShaderBuilderContext.build_value", &ShaderBuilderContext::build_value);
+	Kaba::link_external_class_func("ShaderBuilderContext.build_const", &ShaderBuilderContext::build_const);
 	Kaba::link_external_class_func("ShaderBuilderContext.find_temp", &ShaderBuilderContext::find_temp);
 	Kaba::link_external_class_func("ShaderBuilderContext.create_temp", &ShaderBuilderContext::create_temp);
 	Kaba::link_external_class_func("ShaderBuilderContext.create_out", &ShaderBuilderContext::create_out);
+}
+
+void PluginManager::find_plugins() {
+	string dir0 = PluginManager::directory + "Shader Graph/";
+	auto list = dir_search(dir0, "*", true);
+	for (auto &e: list)
+		if (e.is_dir) {
+			string dir = dir0 + e.name + "/";
+			auto list2 = dir_search(dir, "*.kaba", false);
+			for (auto &e2: list2) {
+				Plugin p;
+				p.filename = dir + e2.name;
+				p.name = e2.name.replace(".kaba", "");
+				p.category = e.name;
+				p.type = PluginType::SHADER_NODE;
+				plugins.add(p);
+			}
+		}
 }
 
 void *PluginManager::create_instance(const string &filename, const string &parent) {
@@ -290,3 +315,6 @@ void *PluginManager::create_instance(const string &filename, const string &paren
 	return nullptr;
 }
 
+void *PluginManager::Plugin::create_instance(const string &parent) const {
+	return PluginManager::create_instance(filename, parent);
+}

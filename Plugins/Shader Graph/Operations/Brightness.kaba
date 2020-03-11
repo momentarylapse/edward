@@ -1,0 +1,12 @@
+use "../../api.kaba"
+
+class NodeBrightness extends ShaderNode
+	void __init__()
+		super.__init__("Brightness")
+		params.add([SHADER_TYPE_COLOR, "color", "#ffffffff", ""])
+		output.add([SHADER_TYPE_FLOAT, "brightness"])
+	override string code_pixel(ShaderBuilderContext c)
+		let a = c.value(self, 0)
+		let t = c.create_out(self, 0)
+		return "
+	float {{t}} = 0.2126 * {{a}}.r + 0.7152 * {{a}}.g + 0.0722 * {{a}}.b;"

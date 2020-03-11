@@ -1,0 +1,15 @@
+use "../../api.kaba"
+
+class NodeFog extends ShaderNode
+	void __init__()
+		super.__init__("Fog")
+		params.add([SHADER_TYPE_COLOR, "diffuse", "#ffffffff", ""])
+		output.add([SHADER_TYPE_COLOR, "out"])
+	override string[] dependencies()
+		return ["fog", "pos", "matview", "matworld"]
+	override string code_pixel(ShaderBuilderContext c)
+		let tt = c.create_temp(self, -1, SHADER_TYPE_FLOAT)
+		let t = c.create_out(self, 0)
+		return "
+	float {{tt}} = exp(-(mat_v * mat_m * in_pos).z * fog.density);
+	vec4 {{t}} = (1 - {{tt}}) * fog.color + {{tt}} * {{c.value(self, 0)}};"

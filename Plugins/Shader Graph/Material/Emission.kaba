@@ -1,0 +1,12 @@
+use "../../api.kaba"
+
+class NodeEmission extends ShaderNode
+	void __init__()
+		super.__init__("Emission")
+		output.add([SHADER_TYPE_COLOR, "emission"])
+	override string[] dependencies()
+		return ["material"]
+	override string code_pixel(ShaderBuilderContext c)
+		let t = c.create_out(self, 0)
+		return "
+	vec4 {{t}} = material.emission;"

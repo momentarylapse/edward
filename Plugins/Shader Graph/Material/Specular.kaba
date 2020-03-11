@@ -1,0 +1,12 @@
+use "../../api.kaba"
+
+class NodeSpecular extends ShaderNode
+	void __init__()
+		super.__init__("Specular")
+		output.add([SHADER_TYPE_FLOAT, "specular"])
+	override string[] dependencies()
+		return ["material"]
+	override string code_pixel(ShaderBuilderContext c)
+		let t = c.create_out(self, 0)
+		return "
+	float {{t}} = material.specular;"

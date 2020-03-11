@@ -1,0 +1,13 @@
+use "../../api.kaba"
+
+class NodeRescaleFloat extends ShaderNode
+	void __init__()
+		super.__init__("RescaleFloat")
+		params.add([SHADER_TYPE_FLOAT, "in", "0.0", ""])
+		params.add([SHADER_TYPE_FLOAT, "scale", "1.0", "range=-2:2"])
+		params.add([SHADER_TYPE_FLOAT, "offset", "0.0", "range=-2:2"])
+		output.add([SHADER_TYPE_FLOAT, "out"])
+	override string code_pixel(ShaderBuilderContext c)
+		let t = c.create_out(self, 0)
+		return "
+	float {{t}} = {{c.value(self, 0)}} * {{c.value(self, 1)}} + {{c.value(self, 2)}};"

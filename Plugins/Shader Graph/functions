@@ -1,0 +1,55 @@
+rand2d
+float rand2d(vec2 st) {
+	return fract(sin(dot(st.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+rand3d
+float rand3d(vec3 p) {
+	return fract(sin(dot(p ,vec3(12.9898,78.233,4213.1234))) * 43758.5453);
+}
+
+	if (funcs.contains("noise3d")) {
+		source += "\nfloat noise3d(vec3 p) {\n"
+		"	vec3 i = floor(p);\n"
+		"	vec3 f = fract(p);\n"
+		"	return mix(\n"
+		"		mix(\n"
+		"			mix(rand3d(i),               rand3d(i + vec3(1,0,0)), smoothstep(0,1,f.x)),\n"
+		"			mix(rand3d(i + vec3(0,1,0)), rand3d(i + vec3(1,1,0)), smoothstep(0,1,f.x)),\n"
+		"			smoothstep(0,1,f.y)),\n"
+		"		mix(\n"
+		"			mix(rand3d(i + vec3(0,0,1)), rand3d(i + vec3(1,0,1)), smoothstep(0,1,f.x)),\n"
+		"			mix(rand3d(i + vec3(0,1,1)), rand3d(i + vec3(1,1,1)), smoothstep(0,1,f.x)),\n"
+		"			smoothstep(0,1,f.y)),\n"
+		"		smoothstep(0,1,f.z));\n"
+		"}\n";
+	}
+	if (funcs.contains("noise3d_multi")) {
+		source += "\nfloat noise3d_multi(vec3 p, float detail, float e) {\n"
+		"	float r = 0;\n"
+		"	float ff = fract(detail);\n"
+		"	int i = 0;\n"
+		"	while (i<detail) {\n"
+		"		r += noise3d(p * pow(2, i)) * pow(e, i);\n"
+		"		i ++;\n"
+		"	}\n"
+		"	r += ff * noise3d(p * pow(2, i)) * pow(e, i);\n"
+		"	return r * (1-e) / (1- pow(e, detail));\n"
+		"}\n";
+	}
+	if (funcs.contains("basic_lighting")) {
+		source += "\nvec4 basic_lighting(vec3 n, vec4 diffuse, float ambient, float specular, float shininess, vec4 emission) {\n"
+		"	vec3 l = (mat_v * vec4(light.pos.xyz, 0)).xyz;\n"
+		"	float d = max(-dot(n, l), 0);\n"
+		"	vec4 r = ambient * light.color * (1 - light.harshness) / 2;\n"
+		"	r += light.color * light.harshness * d;\n"
+		"	r *= diffuse;\n"
+		"	r += emission;\n"
+		"	if ((d > 0) && (material.shininess > 1)) {\n"
+		"		vec3 e = normalize((mat_v * mat_m * in_pos).xyz); // eye dir\n"
+		"		vec3 rl = reflect(l, n);\n"
+		"		float ee = max(-dot(e, rl), 0);\n"
+		"		r += specular * light.color * light.harshness * pow(ee, shininess);\n"
+		"	}\n"
+		"	return r;\n"
+		"}\n";
+	}

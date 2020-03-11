@@ -459,6 +459,9 @@ class ShaderBuilderContext
 	extern string create_out(ShaderNode source, int port)
 	extern string find_temp(ShaderNode source, int port, int wanted_type)
 	extern string build_value(ShaderNode n, int i, string internal)
+	string value(ShaderNode n, int i)
+		return build_value(n, i, "")
+	extern string build_const(ShaderNode n, int i)
 
 class ShaderNode extends Object
 	extern void __init__(string t)

@@ -184,6 +184,11 @@ Edward::Edward(Array<string> arg) :
 	msg_db_r("init modes", 1);*/
 
 
+	if (app->installed)
+		plugins = new PluginManager(app->directory_static + "Plugins/");
+	else
+		plugins = new PluginManager(app->directory + "Plugins/");
+
 	ed->toolbar[hui::TOOLBAR_TOP]->configure(false, true);
 	ed->toolbar[hui::TOOLBAR_LEFT]->configure(false, true);
 
@@ -207,12 +212,6 @@ Edward::Edward(Array<string> arg) :
 	multi_view_3d->subscribe(this, [=]{ cur_mode->on_selection_change(); update_menu(); }, multi_view_3d->MESSAGE_SELECTION_CHANGE);
 	multi_view_3d->subscribe(this, [=]{ cur_mode->on_view_stage_change(); update_menu(); }, multi_view_3d->MESSAGE_VIEWSTAGE_CHANGE);
 	multi_view_3d->subscribe(this, [=]{ cur_mode->multi_view->force_redraw(); });
-
-	plugins = new PluginManager();
-	if (app->installed)
-		PluginManager::directory = app->directory_static + "Plugins/";
-	else
-		PluginManager::directory = app->directory + "Plugins/";
 
 	if (!handle_arguments(arg))
 		mode_model->_new();

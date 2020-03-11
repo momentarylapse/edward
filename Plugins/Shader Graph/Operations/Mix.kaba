@@ -1,0 +1,15 @@
+use "../../api.kaba"
+
+class NodeMix extends ShaderNode
+	void __init__()
+		super.__init__("Mix")
+		params.add([SHADER_TYPE_COLOR, "a", "#ffffffff", ""])
+		params.add([SHADER_TYPE_COLOR, "b", "#ffffffff", ""])
+		params.add([SHADER_TYPE_FLOAT, "factor", "0.5", "range=0:1"])
+		output.add([SHADER_TYPE_COLOR, "out"])
+	override string code_pixel(ShaderBuilderContext c)
+		let t = c.create_out(self, 0)
+		let tt = c.create_temp(self, -1, SHADER_TYPE_FLOAT)
+		return "
+	float {{tt}} = {{c.value(self, 2)}};
+	vec4 {{t}} = (1 - {{tt}}) * {{c.value(self, 0)}} + {{tt}} * {{c.value(self, 1)}};"

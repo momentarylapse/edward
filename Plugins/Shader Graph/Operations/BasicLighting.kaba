@@ -1,8 +1,8 @@
-use "../api.kaba"
+use "../../api.kaba"
 
-class X extends ShaderNode
+class NodeBasicLighting extends ShaderNode
 	void __init__()
-		super.__init__("X")
+		super.__init__("BasicLighting")
 		params.add([SHADER_TYPE_COLOR, "diffuse", "#ffffffff", ""])
 		params.add([SHADER_TYPE_FLOAT, "ambient", "0.3", "range=0:1"])
 		params.add([SHADER_TYPE_FLOAT, "specular", "0.1", "range=0:1"])
@@ -14,10 +14,11 @@ class X extends ShaderNode
 		return ["basic_lighting", "light", "matview", "matworld", "material", "pos", "normal"]
 	override string code_pixel(ShaderBuilderContext c)
 		let n = c.build_value(self, 5, "in_normal")
-		let di = c.build_value(self, 0, "")
-		let am = c.build_value(self, 1, "")
-		let sp = c.build_value(self, 2, "")
-		let sh = c.build_value(self, 3, "")
-		let em = c.build_value(self, 4, "")
+		let di = c.value(self, 0)
+		let am = c.value(self, 1)
+		let sp = c.value(self, 2)
+		let sh = c.value(self, 3)
+		let em = c.value(self, 4)
 		string t = c.create_out(self, 0)
-		return "\tvec4 {{t}} = basic_lighting({{n}}, {{di}}, {{am}}, {{di}}, {{sh}}, {{em}});\n"
+		return "
+	vec4 {{t}} = basic_lighting({{n}}, {{di}}, {{am}}, {{sp}}, {{sh}}, {{em}});"

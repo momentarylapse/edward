@@ -12,10 +12,28 @@
 
 class PluginManager {
 public:
-	PluginManager();
+	PluginManager(const string &dir);
 	virtual ~PluginManager();
 
 	void init();
+	void link_plugins();
+	void find_plugins();
+
+	enum class PluginType {
+		PLUGIN,
+		SHADER_NODE,
+	};
+
+	struct Plugin {
+		string filename;
+		string name;
+		string category;
+		PluginType type;
+
+		void* create_instance(const string &parent) const;
+	};
+	Array<Plugin> plugins;
+
 	void execute(const string &filename);
 
 	static string directory;

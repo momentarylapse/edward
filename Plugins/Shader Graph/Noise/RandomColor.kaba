@@ -1,0 +1,20 @@
+use "../../api.kaba"
+
+class NodeRandomColor extends ShaderNode
+	void __init__()
+		super.__init__("RandomColor")
+		params.add([SHADER_TYPE_VEC3, "p", "vec3(0,0,0)", ""])
+		params.add([SHADER_TYPE_FLOAT, "scale", "4.0", "range=0.1:8"])
+		params.add([SHADER_TYPE_FLOAT, "detail", "3.0", "range=1:8"])
+		params.add([SHADER_TYPE_FLOAT, "exponent", "0.8", "range=0:2"])
+		output.add([SHADER_TYPE_COLOR, "out"])
+	override string[] dependencies()
+		return ["rand3d", "noise3d", "noise3d_multi"]
+	override string code_pixel(ShaderBuilderContext c)
+		let t = c.create_out(self, 0)
+		return "
+	vec4 {{t}};
+	{{t}}.r = noise3d_multi({{c.value(self, 0)}} * {{c.value(self, 1)}},                    {{c.value(self, 2)}}, {{c.value(self, 3)}});
+	{{t}}.g = noise3d_multi({{c.value(self, 0)}} * {{c.value(self, 1)}} + vec3(234,543,31), {{c.value(self, 2)}}, {{c.value(self, 3)}});
+	{{t}}.b = noise3d_multi({{c.value(self, 0)}} * {{c.value(self, 1)}} + vec3(90,422,143), {{c.value(self, 2)}}, {{c.value(self, 3)}});
+	{{t}}.a = 1.0;"

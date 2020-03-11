@@ -1,0 +1,23 @@
+use "../../api.kaba"
+
+class NodePosition extends ShaderNode
+	void __init__()
+		super.__init__("Position")
+		params.add([SHADER_TYPE_INT, "space", "0", "choice=model|world|camera|window"])
+		output.add([SHADER_TYPE_VEC3, "pos"])
+	override string[] dependencies()
+		return ["pos", "matproject", "matview", "matworld"]
+	override string code_pixel(ShaderBuilderContext c)
+		let t = c.create_out(self, 0)
+		if params[0].value == "1" # world
+			return "
+	vec3 {{t}} = (mat_m * in_pos).xyz;"
+		if params[0].value == "2" # cam
+			return "
+	vec3 {{t}} = (mat_v * mat_m * in_pos).xyz;"
+		if params[0].value == "3" # window
+			return "
+	vec3 {{t}} = (mat_p * mat_v * mat_m * in_pos).xyz;"
+		#if params[0].value == "0" # model
+		return "
+	vec3 {{t}} = in_pos.xyz;"

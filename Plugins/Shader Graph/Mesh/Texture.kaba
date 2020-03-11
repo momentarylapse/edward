@@ -1,0 +1,14 @@
+use "../../api.kaba"
+
+class NodeTexture extends ShaderNode
+	void __init__()
+		super.__init__("Texture")
+		params.add([SHADER_TYPE_VEC2, "uv", "-mesh-", ""])
+		output.add([SHADER_TYPE_COLOR, "color"])
+	override string[] dependencies()
+		return ["texture", "uv"]
+	override string code_pixel(ShaderBuilderContext c)
+		let uv = c.build_value(self, 0, "in_uv")
+		let t = c.create_out(self, 0)
+		return "
+	vec4 {{t}} = texture(tex0, {{uv}});"

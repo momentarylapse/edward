@@ -1,0 +1,11 @@
+use "../../api.kaba"
+
+class NodeVectorZ extends ShaderNode
+	void __init__()
+		super.__init__("VectorZ")
+		params.add([SHADER_TYPE_VEC3, "vector", "vec3(0,0,0)", ""])
+		output.add([SHADER_TYPE_FLOAT, "z"])
+	override string code_pixel(ShaderBuilderContext c)
+		let t = c.create_out(self, 0)
+		return "
+	float {{t}} = {{c.value(self, 0)}}.z;"

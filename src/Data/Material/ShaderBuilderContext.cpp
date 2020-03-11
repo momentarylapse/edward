@@ -38,6 +38,8 @@ string cast(const string &v, ShaderValueType ts, ShaderValueType td) {
 		return v + ".xyz";
 	if (ts == ShaderValueType::VEC3 and td == ShaderValueType::COLOR)
 		return "vec4(" + v + ", 1.0)";
+	if (ts == ShaderValueType::VEC2 and td == ShaderValueType::COLOR)
+		return "vec4(" + v + ", 0.0, 1.0)";
 	return v;
 }
 
@@ -51,6 +53,8 @@ bool can_cast(ShaderValueType ts, ShaderValueType td) {
 	if (ts == ShaderValueType::COLOR and td == ShaderValueType::VEC3)
 		return true;
 	if (ts == ShaderValueType::VEC3 and td == ShaderValueType::COLOR)
+		return true;
+	if (ts == ShaderValueType::VEC2 and td == ShaderValueType::COLOR)
 		return true;
 	return false;
 }
@@ -197,6 +201,10 @@ string ShaderBuilderContext::build_value(const ShaderNode *n, int i, const strin
 	if (internal != "")
 		return internal;
 	return sg_build_constant(n->params[i]);
+}
+
+string ShaderBuilderContext::build_const(const ShaderNode *n, int port) {
+	return sg_build_constant(n->params[port]);
 }
 
 

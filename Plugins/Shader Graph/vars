@@ -1,0 +1,25 @@
+light
+	struct Light { vec4 color; vec4 pos; float radius, harshness; };
+	uniform LightBlock { Light light; };
+fog
+	struct Fog { vec4 color; float density; };
+	uniform Fog fog;
+material
+	struct Material { vec4 ambient, diffusive, specular, emission; float shininess; };
+	uniform Material material;
+normal
+	layout(location = 0) in vec3 in_normal;
+uv
+	layout(location = 1) in vec2 in_uv;
+pos
+	layout(location = 2) in vec4 in_pos;
+texture
+	uniform sampler2D tex0;
+cubemap
+	uniform samplerCube tex4;
+matview
+	uniform mat4 mat_v;
+matworld
+	uniform mat4 mat_m;
+matproject
+	uniform mat4 mat_p;

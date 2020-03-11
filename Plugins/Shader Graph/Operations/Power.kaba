@@ -1,0 +1,12 @@
+use "../../api.kaba"
+
+class NodePower extends ShaderNode
+	void __init__()
+		super.__init__("Power")
+		params.add([SHADER_TYPE_FLOAT, "base", "2.0", "range=0:8"])
+		params.add([SHADER_TYPE_FLOAT, "exponent", "2.0", "range=0:8"])
+		output.add([SHADER_TYPE_FLOAT, "out"])
+	override string code_pixel(ShaderBuilderContext c)
+		let t = c.create_out(self, 0)
+		return "
+	float {{t}} = pow({{c.value(self, 0)}}, {{c.value(self, 1)}});"

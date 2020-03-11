@@ -14,29 +14,22 @@
 #include "../../lib/xfile/xml.h"
 #include "../../lib/hui/hui.h"
 #include "../../Stuff/PluginManager.h"
+#include "../../Edward.h"
 
 
 Array<string> ShaderGraph::enumerate() const {
-	auto list = dir_search(PluginManager::directory + "Shader Graph/", "*.kaba", false);
-	msg_write(PluginManager::directory + "Shader Graph/");
-
-	Array<string> r = {"--Constant",
-		"Color", "Vector",
-	"--Mesh",
-		"Texture", "Reflection", "Position", "Normals", "UV",
-	"--Parameters",
-		"MaterialDiffuse", "MaterialSpecular", "MaterialEmission",
-	"--Operations",
-		"Multiply", "Mix", "Add", "Power",
-		"Brightness", "VectorZ", "RescaleVector", "RescaleVector2", "RescaleFloat",
-		"BasicLighting", "Fog",
-	"--Output",
-		"Output",
-	"--Noise",
-		"RandomFloat", "RandomColor"};
-	r.add("--Plugins");
-	for (auto &e: list)
-		r.add(e.name.replace(".kaba", ""));
+	Array<string> r;
+	Set<string> cats;
+	for (auto &p: ed->plugins->plugins)
+		if (p.type == PluginManager::PluginType::SHADER_NODE)
+			cats.add(p.category);
+	for (auto &c: cats) {
+		r.add("--" + c);
+		for (auto &p: ed->plugins->plugins)
+			if (p.type == PluginManager::PluginType::SHADER_NODE)
+				if (p.category == c)
+					r.add(p.name);
+	}
 	return r;
 }
 
@@ -77,7 +70,6 @@ int ShaderGraph::node_index(const ShaderNode *n) const {
 // who needs sanity checks?!?!?
 void ShaderGraph::load(const string &filename) {
 	clear();
-	msg_write("loading graph..." + filename);
 
 	xml::Parser p;
 	p.load(filename);
@@ -103,7 +95,6 @@ void ShaderGraph::load(const string &filename) {
 }
 
 void ShaderGraph::save(const string &filename) {
-	msg_write("saving graph... " + filename);
 	xml::Parser p;
 	xml::Element root = {"ShaderGraph"};
 	xml::Element enodes = {"Nodes"};
@@ -188,10 +179,12 @@ string ShaderGraph::build_fragment_source() const {
 	source += ctx.build_helper_vars();
 	source += ctx.build_helper_functions();
 
-	source += "\nvoid main() {\n";
-	for (auto *n: sorted())
+	source += "\nvoid main() {";
+	for (auto *n: sorted()) {
+		source += "\n\t// " + n->type + "";
 		source += n->code_pixel(&ctx);
-	source += "}\n";
+	}
+	source += "\n}\n";
 	return source;
 }
 
