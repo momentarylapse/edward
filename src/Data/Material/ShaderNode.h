@@ -22,10 +22,13 @@ enum class ShaderValueType {
 	COLOR
 };
 
-class ShaderNode {
+class ShaderNode : public VirtualBase {
 public:
-	ShaderNode(const string &type, int x, int y);
+	ShaderNode(const string &type);
 	virtual ~ShaderNode() {};
+
+	void __init__(const string &t);
+	virtual void __delete__();
 
 	int x, y;
 	string type;
@@ -49,7 +52,7 @@ public:
 
 	virtual Array<string> dependencies() const { return {}; };
 
-	virtual string code_pixel(ShaderBuilderContext *ctx) const = 0;
+	virtual string code_pixel(ShaderBuilderContext *ctx) const { return "?"; };
 };
 
 

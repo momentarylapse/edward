@@ -36,7 +36,7 @@ public:
 
 
 	string create_temp(const ShaderNode *source, int port, ShaderValueType type);
-	string create_temp(const ShaderNode *source, int port);
+	string create_out(const ShaderNode *source, int port);
 	string find_temp(const ShaderNode *source, int port, ShaderValueType wanted_type);
 	string build_value(const ShaderNode *n, int i, const string &internal = "");
 

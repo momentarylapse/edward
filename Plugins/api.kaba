@@ -447,7 +447,52 @@ class Mode
 class Edward
 	Mode* cur_mode
 
+enum
+	SHADER_TYPE_FLOAT
+	SHADER_TYPE_INT
+	SHADER_TYPE_VEC2
+	SHADER_TYPE_VEC3
+	SHADER_TYPE_COLOR
 
+class ShaderBuilderContext
+	extern string create_temp(ShaderNode source, int port, int type)
+	extern string create_out(ShaderNode source, int port)
+	extern string find_temp(ShaderNode source, int port, int wanted_type)
+	extern string build_value(ShaderNode n, int i, string internal)
+
+class ShaderNode extends Object
+	extern void __init__(string t)
+	extern override void __delete__()
+	void __assign__(ShaderNode n)
+		pass
+	int x, y
+	string type
+	
+	class Parameter
+		int type
+		string name
+		string value
+		string options
+		void __init__()
+		void __init__(int t, string n, string v, string o)
+			type = t
+			name = n
+			value = v
+			options = o
+	Parameter[] params
+
+
+	class Port
+		int type
+		string name
+		void __init__()
+		void __init__(int t, string n)
+			type = t
+			name = n
+	Port[] output
+	
+	extern virtual string[] dependencies()
+	extern virtual string code_pixel(ShaderBuilderContext ctx)
 
 extern DataModel* data_model
 extern DataWorld* data_world

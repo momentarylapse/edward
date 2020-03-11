@@ -12,10 +12,15 @@
 #include "../../lib/image/color.h"
 #include "../../lib/file/msg.h"
 #include "../../lib/xfile/xml.h"
+#include "../../lib/hui/hui.h"
+#include "../../Stuff/PluginManager.h"
 
 
-const Array<string> ShaderGraph::NODE_TYPES = {
-	"--Constant",
+Array<string> ShaderGraph::enumerate() const {
+	auto list = dir_search(PluginManager::directory + "Shader Graph/", "*.kaba", false);
+	msg_write(PluginManager::directory + "Shader Graph/");
+
+	Array<string> r = {"--Constant",
 		"Color", "Vector",
 	"--Mesh",
 		"Texture", "Reflection", "Position", "Normals", "UV",
@@ -29,6 +34,11 @@ const Array<string> ShaderGraph::NODE_TYPES = {
 		"Output",
 	"--Noise",
 		"RandomFloat", "RandomColor"};
+	r.add("--Plugins");
+	for (auto &e: list)
+		r.add(e.name.replace(".kaba", ""));
+	return r;
+}
 
 
 
@@ -163,26 +173,6 @@ Array<ShaderNode*> ShaderGraph::sorted() const {
 		}
 
 	return snodes;
-}
-
-color ShaderNode::Parameter::get_color() const {
-	if (type != ShaderValueType::COLOR)
-		return Black;
-	string s = value.replace("#", "").unhex();
-	float r = (float)s[0] / 255.0f;
-	float g = (float)s[1] / 255.0f;
-	float b = (float)s[2] / 255.0f;
-	float a = (float)s[3] / 255.0f;
-	return color(a, r, g, b);
-}
-
-void ShaderNode::Parameter::set_color(const color &c) {
-	if (type != ShaderValueType::COLOR)
-		return;
-	int i[4];
-	c.get_int_argb(i);
-	int ii = (i[1] << 24) + (i[2] << 16) + (i[3] << 8) + i[0];
-	value = string(&ii, 4).hex(true).replace("0x", "#");
 }
 
 string ShaderGraph::build_fragment_source() const {

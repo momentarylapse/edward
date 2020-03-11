@@ -196,8 +196,8 @@ Edward::Edward(Array<string> arg) :
 	mode_administration = new ModeAdministration;
 
 	storage = new Storage();
-
 	storage->set_root_directory(hui::Config.get_str("RootDir", ""));
+
 
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
 	mworld->FFVBinaryMap = true;*/
@@ -209,6 +209,10 @@ Edward::Edward(Array<string> arg) :
 	multi_view_3d->subscribe(this, [=]{ cur_mode->multi_view->force_redraw(); });
 
 	plugins = new PluginManager();
+	if (app->installed)
+		PluginManager::directory = app->directory_static + "Plugins/";
+	else
+		PluginManager::directory = app->directory + "Plugins/";
 
 	if (!handle_arguments(arg))
 		mode_model->_new();
@@ -455,10 +459,7 @@ void Edward::on_send_bug_report()
 
 void Edward::on_execute_plugin() {
 	string temp = storage->dialog_dir[FD_SCRIPT];
-	if (app->installed)
-		storage->dialog_dir[FD_SCRIPT] = app->directory_static + "Plugins/";
-	else
-		storage->dialog_dir[FD_SCRIPT] = app->directory + "Plugins/";
+	storage->dialog_dir[FD_SCRIPT] = PluginManager::directory;
 
 	if (storage->file_dialog(FD_SCRIPT, false, false))
 		plugins->execute(storage->dialog_file_complete);

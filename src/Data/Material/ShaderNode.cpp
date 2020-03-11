@@ -8,6 +8,7 @@
 #include "ShaderNode.h"
 #include "ShaderBuilderContext.h"
 #include "../../lib/image/color.h"
+#include "../../Stuff/PluginManager.h"
 
 string sg_build_constant(ShaderNode::Parameter &p);
 
@@ -27,41 +28,70 @@ string shader_value_type_to_str(ShaderValueType t) {
 
 
 
-ShaderNode::ShaderNode(const string &_type, int _x, int _y) {
+color ShaderNode::Parameter::get_color() const {
+	if (type != ShaderValueType::COLOR)
+		return Black;
+	string s = value.replace("#", "").unhex();
+	float r = (float)s[0] / 255.0f;
+	float g = (float)s[1] / 255.0f;
+	float b = (float)s[2] / 255.0f;
+	float a = (float)s[3] / 255.0f;
+	return color(a, r, g, b);
+}
+
+void ShaderNode::Parameter::set_color(const color &c) {
+	if (type != ShaderValueType::COLOR)
+		return;
+	int i[4];
+	c.get_int_argb(i);
+	int ii = (i[1] << 24) + (i[2] << 16) + (i[3] << 8) + i[0];
+	value = string(&ii, 4).hex(true).replace("0x", "#");
+}
+
+
+ShaderNode::ShaderNode(const string &_type) {
 	type = _type;
-	x = _x;
-	y = _y;
+	x = 0;
+	y = 0;
+}
+
+void ShaderNode::__init__(const string &t) {
+	new(this) ShaderNode(t);
+}
+
+void ShaderNode::__delete__() {
+	this->~ShaderNode();
 }
 
 class ShaderNodeColor : public ShaderNode {
 public:
-	ShaderNodeColor(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeColor(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::COLOR, "value", "#ffffffff"});
 		output.add({ShaderValueType::COLOR, "value"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec4 " + t + " = " + sg_build_constant(params[0]) + ";\n";
 	}
 };
 
 class ShaderNodeVector : public ShaderNode {
 public:
-	ShaderNodeVector(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeVector(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::FLOAT, "x", "0.0", "range=-1:1"});
 		params.add({ShaderValueType::FLOAT, "y", "0.0", "range=-1:1"});
 		params.add({ShaderValueType::FLOAT, "z", "1.0", "range=-1:1"});
 		output.add({ShaderValueType::VEC3, "value"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec3 " + t + " = vec3(" + c->build_value(this, 0) + ", " + c->build_value(this, 1) + ", " + c->build_value(this, 2) + ");\n";
 	}
 };
 
 class ShaderNodeOutput : public ShaderNode {
 public:
-	ShaderNodeOutput(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeOutput(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::COLOR, "color", "#ff0000ff"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
@@ -71,7 +101,7 @@ public:
 
 class ShaderNodeTexture : public ShaderNode {
 public:
-	ShaderNodeTexture(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeTexture(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::VEC2, "uv", "-mesh-"});
 		output.add({ShaderValueType::COLOR, "color"});
 	}
@@ -79,56 +109,56 @@ public:
 		return {"texture", "uv"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec4 " + t + " = texture(tex0, " + c->build_value(this, 0, "in_uv") + ");\n";
 	}
 };
 
 class ShaderNodeReflection : public ShaderNode {
 public:
-	ShaderNodeReflection(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeReflection(const string &type) : ShaderNode(type) {
 		output.add({ShaderValueType::COLOR, "color"});
 	}
 	Array<string> dependencies() const override {
 		return {"cubemap", "normal", "pos", "matview", "matworld"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec4 " + t + " = texture(tex4, (transpose(mat_v) * vec4(reflect(normalize((mat_v * mat_m * in_pos).xyz), normalize(in_normal)), 0)).xyz);\n";
 	}
 };
 
 class ShaderNodeNormals : public ShaderNode {
 public:
-	ShaderNodeNormals(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeNormals(const string &type) : ShaderNode(type) {
 		output.add({ShaderValueType::VEC3, "normals"});
 	}
 	Array<string> dependencies() const override {
 		return {"normal"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec3 " + t + " = normalize(in_normal);\n";
 	}
 };
 
 class ShaderNodeUV : public ShaderNode {
 public:
-	ShaderNodeUV(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeUV(const string &type) : ShaderNode(type) {
 		output.add({ShaderValueType::VEC2, "uv"});
 	}
 	Array<string> dependencies() const override {
 		return {"uv"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec2 " + t + " = in_uv;\n";
 	}
 };
 
 class ShaderNodePosition : public ShaderNode {
 public:
-	ShaderNodePosition(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodePosition(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::INT, "space", "0", "choice=model|world|camera|window"});
 		output.add({ShaderValueType::VEC3, "pos"});
 	}
@@ -136,7 +166,7 @@ public:
 		return {"pos", "matproject", "matview", "matworld"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		if (params[0].value == "1") // world
 			return "\tvec3 " + t + " = (mat_m * in_pos).xyz;\n";
 		if (params[0].value == "2") // cam
@@ -150,27 +180,27 @@ public:
 
 class ShaderNodeMultiply : public ShaderNode {
 public:
-	ShaderNodeMultiply(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeMultiply(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::COLOR, "a", "#ffffffff"});
 		params.add({ShaderValueType::COLOR, "b", "#ffffffff"});
 		output.add({ShaderValueType::COLOR, "out"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec4 " + t + " = " + c->build_value(this, 0) + " * " + c->build_value(this, 1) + ";\n";
 	}
 };
 
 class ShaderNodeMix : public ShaderNode {
 public:
-	ShaderNodeMix(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeMix(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::COLOR, "a", "#ffffffff"});
 		params.add({ShaderValueType::COLOR, "b", "#000000ff"});
 		params.add({ShaderValueType::FLOAT, "factor", "0.5", "range=0:1"});
 		output.add({ShaderValueType::COLOR, "out"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		string tt = c->create_temp(this, -1, ShaderValueType::FLOAT);
 		return "\tfloat " + tt + " = " + c->build_value(this, 2) + ";\n"
 				"\tvec4 " + t + " = (1 - " + tt + ") * " + c->build_value(this, 0) + " + " + tt + " * "+ c->build_value(this, 1) + ";\n";
@@ -179,26 +209,26 @@ public:
 
 class ShaderNodeAdd : public ShaderNode {
 public:
-	ShaderNodeAdd(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeAdd(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::COLOR, "a", "#000000ff"});
 		params.add({ShaderValueType::COLOR, "b", "#000000ff"});
 		output.add({ShaderValueType::COLOR, "out"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec4 " + t + " = " + c->build_value(this, 0) + " + " + c->build_value(this, 1) + ";\n";
 	}
 };
 
 class ShaderNodeBrightness : public ShaderNode {
 public:
-	ShaderNodeBrightness(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeBrightness(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::COLOR, "in", "#ffffffff"});
 		output.add({ShaderValueType::FLOAT, "brightness"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string tt = c->create_temp(this, -1, ShaderValueType::COLOR);
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec4 " + tt + " = " + c->build_value(this, 0) + ";\n"
 				"\tfloat " + t + " = 0.2126 * " + tt + ".r + 0.7152 * " + tt + ".g + 0.0722 * " + tt + ".b;\n";
 	}
@@ -206,25 +236,25 @@ public:
 
 class ShaderNodePower : public ShaderNode {
 public:
-	ShaderNodePower(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodePower(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::FLOAT, "base", "2.0", "range=0:8"});
 		params.add({ShaderValueType::FLOAT, "exponent", "2.0", "range=0:8"});
 		output.add({ShaderValueType::FLOAT, "out"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tfloat " + t + " = pow(" + c->build_value(this, 0) + ", " + c->build_value(this, 1) + ");\n";
 	}
 };
 
 class ShaderNodeVectorZ : public ShaderNode {
 public:
-	ShaderNodeVectorZ(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeVectorZ(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::VEC3, "in", "vec3(0,0,0)"});
 		output.add({ShaderValueType::FLOAT, "z"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tfloat " + t + " = " + c->build_value(this, 0) + ".z;\n";
 	}
 };
@@ -232,7 +262,7 @@ public:
 
 class ShaderNodeRandomColor : public ShaderNode {
 public:
-	ShaderNodeRandomColor(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeRandomColor(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::VEC3, "p", "vec3(0,0,0)"});
 		params.add({ShaderValueType::FLOAT, "scale", "4.0", "range=0.1:8"});
 		params.add({ShaderValueType::FLOAT, "detail", "3.0", "range=1:8"});
@@ -243,7 +273,7 @@ public:
 		return {"rand3d", "noise3d", "noise3d_multi"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec4 " + t + ";\n"
 		"	" + t + ".r = noise3d_multi(" + c->build_value(this, 0) + " * " + c->build_value(this, 1) + ", " + c->build_value(this, 2) + ", " + c->build_value(this, 3) + ");\n"
 		"	" + t + ".g = noise3d_multi(" + c->build_value(this, 0) + " * " + c->build_value(this, 1) + ", " + c->build_value(this, 2) + ", " + c->build_value(this, 3) + ");\n"
@@ -254,7 +284,7 @@ public:
 
 class ShaderNodeRandomFloat : public ShaderNode {
 public:
-	ShaderNodeRandomFloat(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeRandomFloat(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::VEC3, "pos", "vec3(0,0,0)"});
 		params.add({ShaderValueType::FLOAT, "scale", "4.0", "range=0.1:8"});
 		params.add({ShaderValueType::FLOAT, "detail", "3.0", "range=1:8"});
@@ -265,56 +295,56 @@ public:
 		return {"rand3d", "noise3d", "noise3d_multi"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tfloat " + t + " = noise3d_multi(" + c->build_value(this, 0) + " * " + c->build_value(this, 1) + ", " + c->build_value(this, 2) + ", " + c->build_value(this, 3) + ");\n";
 	}
 };
 
 class ShaderNodeRescaleVector : public ShaderNode {
 public:
-	ShaderNodeRescaleVector(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeRescaleVector(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::VEC3, "in", "vec3(0,0,0)"});
 		params.add({ShaderValueType::FLOAT, "scale", "1.0", "range=-2:2"});
 		params.add({ShaderValueType::FLOAT, "offset", "0.0", "range=-10:10"});
 		output.add({ShaderValueType::VEC3, "out"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec3 " + t + " = " + c->build_value(this, 0) + " * " + c->build_value(this, 1) + " + " + c->build_value(this, 2) + ";\n";
 	}
 };
 
 class ShaderNodeRescaleVector2 : public ShaderNode {
 public:
-	ShaderNodeRescaleVector2(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeRescaleVector2(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::VEC2, "in", "vec2(0,0)"});
 		params.add({ShaderValueType::FLOAT, "scale", "1.0", "range=-2:2"});
 		params.add({ShaderValueType::FLOAT, "offset", "0.0", "range=-10:10"});
 		output.add({ShaderValueType::VEC2, "out"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec2 " + t + " = " + c->build_value(this, 0) + " * " + c->build_value(this, 1) + " + " + c->build_value(this, 2) + ";\n";
 	}
 };
 
 class ShaderNodeRescaleFloat : public ShaderNode {
 public:
-	ShaderNodeRescaleFloat(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeRescaleFloat(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::FLOAT, "in", "0.0"});
 		params.add({ShaderValueType::FLOAT, "scale", "1.0", "range=-2:2"});
 		params.add({ShaderValueType::FLOAT, "offset", "0.0", "range=-10:10"});
 		output.add({ShaderValueType::FLOAT, "out"});
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tfloat " + t + " = " + c->build_value(this, 0) + " * " + c->build_value(this, 1) + " + " + c->build_value(this, 2) + ";\n";
 	}
 };
 
 class ShaderNodeBasicLighting : public ShaderNode {
 public:
-	ShaderNodeBasicLighting(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeBasicLighting(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::COLOR, "diffuse", "#ffffffff"});
 		params.add({ShaderValueType::FLOAT, "ambient", "0.3", "range=0:1"});
 		params.add({ShaderValueType::FLOAT, "specular", "0.1", "range=0:1"});
@@ -327,14 +357,14 @@ public:
 		return {"basic_lighting", "light", "matview", "matworld", "material", "pos", "normal"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec4 " + t + " = basic_lighting(" + c->build_value(this, 5, "in_normal") + ", " + c->build_value(this, 0) + ", " + c->build_value(this, 1) + ", " + c->build_value(this, 2) + ", " + c->build_value(this, 3) + ", " + c->build_value(this, 4) + ");\n";
 	}
 };
 
 class ShaderNodeFog : public ShaderNode {
 public:
-	ShaderNodeFog(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeFog(const string &type) : ShaderNode(type) {
 		params.add({ShaderValueType::COLOR, "in", "#ffffffff"});
 		output.add({ShaderValueType::COLOR, "out"});
 	}
@@ -343,7 +373,7 @@ public:
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
 		string tt = c->create_temp(this, -1, ShaderValueType::FLOAT);
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tfloat " + tt + " = exp(-(mat_v * mat_m * in_pos).z * fog.density);\n"
 				"\tvec4 " + t + " = (1 - " + tt + ") * fog.color + " + tt + " * " + c->build_value(this, 0) + ";\n";
 	}
@@ -351,96 +381,116 @@ public:
 
 class ShaderNodeMaterialDiffuse : public ShaderNode {
 public:
-	ShaderNodeMaterialDiffuse(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeMaterialDiffuse(const string &type) : ShaderNode(type) {
 		output.add({ShaderValueType::COLOR, "diffuse"});
 	}
 	Array<string> dependencies() const override {
 		return {"material"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec4 " + t + " = " + c->build_value(this, 5, "material.diffusive") + ";\n";
 	}
 };
 
 class ShaderNodeMaterialSpecular : public ShaderNode {
 public:
-	ShaderNodeMaterialSpecular(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeMaterialSpecular(const string &type) : ShaderNode(type) {
 		output.add({ShaderValueType::FLOAT, "specular"});
 	}
 	Array<string> dependencies() const override {
 		return {"material"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec4 " + t + " = " + c->build_value(this, 5, "material.specular") + ";\n";
 	}
 };
 
 class ShaderNodeMaterialEmission : public ShaderNode {
 public:
-	ShaderNodeMaterialEmission(const string &type, int x, int y) : ShaderNode(type, x, y) {
+	ShaderNodeMaterialEmission(const string &type) : ShaderNode(type) {
 		output.add({ShaderValueType::COLOR, "emission"});
 	}
 	Array<string> dependencies() const override {
 		return {"material"};
 	}
 	string code_pixel(ShaderBuilderContext *c) const override {
-		string t = c->create_temp(this, 0);
+		string t = c->create_out(this, 0);
 		return "\tvec4 " + t + " = " + c->build_value(this, 5, "material.emission") + ";\n";
 	}
 };
 
-ShaderNode *create_node(const string &type, int x, int y) {
+
+ShaderNode *create_internal_node(const string &type) {
 	if (type == "Color") {
-		return new ShaderNodeColor(type, x, y);
+		return new ShaderNodeColor(type);
 	} else if (type == "Vector") {
-		return new ShaderNodeVector(type, x, y);
+		return new ShaderNodeVector(type);
 	} else if (type == "Output") {
-		return new ShaderNodeOutput(type, x, y);
+		return new ShaderNodeOutput(type);
 	} else if (type == "Texture") {
-		return new ShaderNodeTexture(type, x, y);
+		return new ShaderNodeTexture(type);
 	} else if (type == "Reflection") {
-		return new ShaderNodeReflection(type, x, y);
+		return new ShaderNodeReflection(type);
 	} else if (type == "Normals") {
-		return new ShaderNodeNormals(type, x, y);
+		return new ShaderNodeNormals(type);
 	} else if (type == "UV") {
-		return new ShaderNodeUV(type, x, y);
+		return new ShaderNodeUV(type);
 	} else if (type == "Position") {
-		return new ShaderNodePosition(type, x, y);
+		return new ShaderNodePosition(type);
 	} else if (type == "Multiply") {
-		return new ShaderNodeMultiply(type, x, y);
+		return new ShaderNodeMultiply(type);
 	} else if (type == "Mix") {
-		return new ShaderNodeMix(type, x, y);
+		return new ShaderNodeMix(type);
 	} else if (type == "Add") {
-		return new ShaderNodeAdd(type, x, y);
+		return new ShaderNodeAdd(type);
 	} else if (type == "Brightness") {
-		return new ShaderNodeBrightness(type, x, y);
+		return new ShaderNodeBrightness(type);
 	} else if (type == "Power") {
-		return new ShaderNodePower(type, x, y);
+		return new ShaderNodePower(type);
 	} else if (type == "VectorZ") {
-		return new ShaderNodeVectorZ(type, x, y);
+		return new ShaderNodeVectorZ(type);
 	} else if (type == "RandomColor") {
-		return new ShaderNodeRandomColor(type, x, y);
+		return new ShaderNodeRandomColor(type);
 	} else if (type == "RandomFloat") {
-		return new ShaderNodeRandomFloat(type, x, y);
+		return new ShaderNodeRandomFloat(type);
 	} else if (type == "RescaleVector") {
-		return new ShaderNodeRescaleVector(type, x, y);
+		return new ShaderNodeRescaleVector(type);
 	} else if (type == "RescaleVector2") {
-		return new ShaderNodeRescaleVector2(type, x, y);
+		return new ShaderNodeRescaleVector2(type);
 	} else if (type == "RescaleFloat") {
-		return new ShaderNodeRescaleFloat(type, x, y);
+		return new ShaderNodeRescaleFloat(type);
 	} else if (type == "BasicLighting") {
-		return new ShaderNodeBasicLighting(type, x, y);
+		return new ShaderNodeBasicLighting(type);
 	} else if (type == "Fog") {
-		return new ShaderNodeFog(type, x, y);
+		return new ShaderNodeFog(type);
 	} else if (type == "MaterialDiffuse") {
-		return new ShaderNodeMaterialDiffuse(type, x, y);
+		return new ShaderNodeMaterialDiffuse(type);
 	} else if (type == "MaterialSpecular") {
-		return new ShaderNodeMaterialSpecular(type, x, y);
+		return new ShaderNodeMaterialSpecular(type);
 	} else if (type == "MaterialEmission") {
-		return new ShaderNodeMaterialEmission(type, x, y);
+		return new ShaderNodeMaterialEmission(type);
 	}
 	throw Exception("unknown node type: " + type);
+	return nullptr;
+}
+
+ShaderNode *create_node(const string &type, int x, int y) {
+	try{
+		auto filename = PluginManager::directory + "Shader Graph/" + type + ".kaba";
+	if (file_test_existence(filename)) {
+		auto n = (ShaderNode*)PluginManager::create_instance(filename, "ShaderNode");
+		n->x = x;
+		n->y = y;
+		return n;
+	}
+	auto n = create_internal_node(type);
+	n->x = x;
+	n->y = y;
+	return n;
+	} catch (Exception &e) {
+		msg_error(e.message());
+	}
 	return nullptr;
 }

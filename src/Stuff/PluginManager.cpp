@@ -29,36 +29,36 @@
 #include "../Data/Model/Geometry/GeometryTeapot.h"
 #include "../Data/Model/Geometry/GeometryTorus.h"
 #include "../Data/Model/Geometry/GeometryTorusKnot.h"
+#include "../Data/Material/ShaderNode.h"
+#include "../Data/Material/ShaderBuilderContext.h"
+
+
+string PluginManager::directory;
 
 
 
-
-PluginManager::PluginManager()
-{
+PluginManager::PluginManager() {
 	init();
 }
 
-PluginManager::~PluginManager()
-{
+PluginManager::~PluginManager() {
 }
 
-void PluginManager::execute(const string & filename)
-{
+void PluginManager::execute(const string & filename) {
 	Kaba::config.directory = "";
-	try{
-		Kaba::Script *s = Kaba::Load(filename);
+	try {
+		auto *s = Kaba::Load(filename);
 		typedef void func_t();
 		func_t *f = (func_t*)s->match_function("main", "void", {});
 		if (f)
 			f();
-	}catch(Kaba::Exception &e){
+	} catch(Kaba::Exception &e) {
 		ed->error_box(e.message());
 	}
 
 	//Kaba::DeleteAllScripts(true, true);
 }
 
-#define _offsetof(t, x)	((int)(long)((char*)&(((t*)ppp)->x) - ppp))
 
 hui::Window *GlobalMainWin = ed;
 
@@ -250,6 +250,43 @@ void PluginManager::init() {
 	Kaba::link_external_class_func("DataWorld.add_object", &DataWorld::AddObject);
 	Kaba::link_external_class_func("DataWorld.add_terrain", &DataWorld::AddTerrain);
 	Kaba::link_external_class_func("DataWorld.add_new_terrain", &DataWorld::AddNewTerrain);
+
+
+	ShaderNode node("");
+	Kaba::declare_class_size("ShaderNode", sizeof(ShaderNode));
+	Kaba::declare_class_element("ShaderNode.x", &ShaderNode::x);
+	Kaba::declare_class_element("ShaderNode.y", &ShaderNode::y);
+	Kaba::declare_class_element("ShaderNode.type", &ShaderNode::type);
+	Kaba::declare_class_element("ShaderNode.output", &ShaderNode::output);
+	Kaba::declare_class_element("ShaderNode.params", &ShaderNode::params);
+	Kaba::link_external_class_func("ShaderNode.__init__", &ShaderNode::__init__);
+	Kaba::link_external_virtual("ShaderNode.__delete__", &ShaderNode::__delete__, &node);
+	Kaba::link_external_virtual("ShaderNode.code_pixel", &ShaderNode::code_pixel, &node);
+	Kaba::link_external_virtual("ShaderNode.dependencies", &ShaderNode::dependencies, &node);
+	Kaba::declare_class_size("ShaderNode.Parameter", sizeof(ShaderNode::Parameter));
+	Kaba::declare_class_element("ShaderNode.Parameter.type", &ShaderNode::Parameter::type);
+	Kaba::declare_class_element("ShaderNode.Parameter.name", &ShaderNode::Parameter::name);
+	Kaba::declare_class_element("ShaderNode.Parameter.value", &ShaderNode::Parameter::value);
+	Kaba::declare_class_element("ShaderNode.Parameter.options", &ShaderNode::Parameter::options);
+	Kaba::declare_class_size("ShaderNode.Port", sizeof(ShaderNode::Port));
+	Kaba::declare_class_element("ShaderNode.Port.type", &ShaderNode::Port::type);
+	Kaba::declare_class_element("ShaderNode.Port.name", &ShaderNode::Port::name);
+
+	Kaba::declare_class_size("ShaderBuilderContext", sizeof(ShaderBuilderContext));
+	Kaba::link_external_class_func("ShaderBuilderContext.build_value", &ShaderBuilderContext::build_value);
+	Kaba::link_external_class_func("ShaderBuilderContext.find_temp", &ShaderBuilderContext::find_temp);
+	Kaba::link_external_class_func("ShaderBuilderContext.create_temp", &ShaderBuilderContext::create_temp);
+	Kaba::link_external_class_func("ShaderBuilderContext.create_out", &ShaderBuilderContext::create_out);
 }
 
+void *PluginManager::create_instance(const string &filename, const string &parent) {
+	Kaba::config.directory = "";
+	auto s = Kaba::Load(filename);
+	for (auto c: s->classes())
+		if (c->is_derived_from_s(parent)) {
+			return c->create_instance();
+		}
+	throw Exception("no matching class defined");
+	return nullptr;
+}
 

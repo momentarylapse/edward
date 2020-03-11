@@ -49,7 +49,7 @@ public:
 
 	int node_index(const ShaderNode *n) const;
 
-	static const Array<string> NODE_TYPES;
+	Array<string> enumerate() const;
 };
 
 #endif /* SRC_DATA_MATERIAL_SHADERGRAPH_H_ */

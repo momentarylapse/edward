@@ -54,15 +54,16 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 
 	popup = new hui::Menu();
 	hui::Menu *sub = nullptr;
-	for (int i=0; i<graph->NODE_TYPES.num; i++) {
-		string s = graph->NODE_TYPES[i];
+	auto types = graph->enumerate();
+	for (int i=0; i<types.num; i++) {
+		string s = types[i];
 		if (s[0] == '-') {
 			sub = new hui::Menu();
 			popup->add_sub_menu(s.replace("-", ""), "", sub);
 		} else {
-			sub->add(graph->NODE_TYPES[i], "add-node-" + i2s(i));
+			sub->add(types[i], "add-node-" + i2s(i));
 			event("add-node-" + i2s(i), [=]{
-				graph->add(graph->NODE_TYPES[i], 400, 200);
+				graph->add(types[i], 400, 200);
 			});
 		}
 	}

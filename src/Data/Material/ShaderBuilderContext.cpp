@@ -178,7 +178,7 @@ string ShaderBuilderContext::create_temp(const ShaderNode *source, int port, Sha
 	return t.name;
 }
 
-string ShaderBuilderContext::create_temp(const ShaderNode *source, int port) {
+string ShaderBuilderContext::create_out(const ShaderNode *source, int port) {
 	return create_temp(source, port, source->output[port].type);
 }
 
