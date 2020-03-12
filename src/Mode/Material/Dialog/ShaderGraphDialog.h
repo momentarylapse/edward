@@ -20,6 +20,7 @@ public:
 	virtual ~ShaderGraphDialog();
 
 	void draw_node(Painter *p, ShaderNode *n);
+	void draw_cable(Painter *p, ShaderNode *source, int source_port, ShaderNode *dest, int dest_port);
 
 	void on_draw(Painter *p);
 
@@ -62,7 +63,6 @@ public:
 	float view_offset_x, view_offset_y;
 	float proj_x(float x);
 	float proj_y(float y);
-	rect proj_rect(const rect &r);
 
 
 	hui::Menu *popup;

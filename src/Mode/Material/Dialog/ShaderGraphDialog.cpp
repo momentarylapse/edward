@@ -82,10 +82,6 @@ float ShaderGraphDialog::proj_y(float y) {
 	return (y - view_offset_y) * view_scale;
 }
 
-rect ShaderGraphDialog::proj_rect(const rect &r) {
-	return rect(proj_x(r.x1), proj_x(r.x2), proj_y(r.y1), proj_y(r.y2));
-}
-
 float node_get_in_y(ShaderNode *n, int i) {
 	return n->y + NODE_HEADER_HEIGHT + i * NODE_PORT_HEIGHT + NODE_PORT_HEIGHT/2;
 }
@@ -124,8 +120,8 @@ rect node_header_area(ShaderNode *n) {
 void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 	color bg = scheme.GRID;
 	p->set_color(bg);
-	p->set_roundness(NODE_ROUNDNESS * view_scale);
-	p->draw_rect(proj_rect(node_area(n)));
+	p->set_roundness(NODE_ROUNDNESS);
+	p->draw_rect(node_area(n));
 
 	// header
 	int h = n->type.hash();
@@ -133,29 +129,29 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 	if (n == hover.node)
 		bg = scheme.hoverify(bg);
 	p->set_color(bg);
-	p->draw_rect(proj_rect(node_header_area(n)));
+	p->draw_rect(node_header_area(n));
 	p->set_roundness(0);
 
 	p->set_color(scheme.TEXT);
-	p->set_font_size(14 * view_scale);
-	p->draw_str(proj_x(n->x + NODE_WIDTH / 2) - p->get_str_width(n->type) / 2, proj_y(n->y+3), n->type);
+	p->set_font_size(14);
+	p->draw_str(n->x + NODE_WIDTH / 2 - p->get_str_width(n->type) / 2, n->y+3, n->type);
 
-	p->set_font_size(10 * view_scale);
+	p->set_font_size(10);
 
 	// in
 	foreachi (auto &pp, n->params, i) {
 		p->set_color(scheme.TEXT);
 		float y = node_get_in_y(n, i);
 		float yt = y - 4;
-		p->draw_str(proj_x(n->x + 10), proj_y(yt), pp.name);
+		p->draw_str(n->x + 10, yt, pp.name);
 
 		color bg = ColorInterpolate(scheme.BACKGROUND, scheme.GRID, 0.5f);
 		if (pp.type == ShaderValueType::COLOR) {
 			bg = pp.get_color();
 		}
 		p->set_color(bg);
-		p->set_roundness(3 * view_scale);
-		p->draw_rect(proj_rect(node_get_param_rect(n, i)));
+		p->set_roundness(3);
+		p->draw_rect(node_get_param_rect(n, i));
 		p->set_roundness(0);
 		if (pp.type == ShaderValueType::FLOAT) {
 			if (pp.options.head(6) == "range=") {
@@ -165,7 +161,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 				float scale = clampf((pp.value._float() - _min) / (_max - _min), 0, 1);
 				p->set_color(scheme.BACKGROUND);
 				p->set_roundness(3);
-				p->draw_rect(proj_rect(node_get_param_rect(n, i, scale)));
+				p->draw_rect(node_get_param_rect(n, i, scale));
 				p->set_roundness(0);
 			}
 		}
@@ -183,12 +179,12 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 				value = xx[n];
 			}
 		}
-		p->draw_str(proj_x(n->x + NODE_WIDTH / 2 + 2), proj_y(yt), value);
+		p->draw_str(n->x + NODE_WIDTH / 2 + 2, yt, value);
 
 		p->set_color(scheme.TEXT);
 		if (hover.type == HoverData::Type::PORT_IN and n == hover.node and i == hover.port)
 			p->set_color(scheme.hoverify(scheme.TEXT));
-		p->draw_circle(proj_x(n->x - 5), proj_y(y), 5*view_scale);
+		p->draw_circle(n->x - 5, y, 5);
 	}
 
 	// out
@@ -197,10 +193,10 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 		float yt = y - 4;
 		p->set_color(scheme.TEXT);
 		float w = p->get_str_width(pp.name);
-		p->draw_str(proj_x(n->x + NODE_WIDTH - 10) - w, proj_y(yt), pp.name);
+		p->draw_str(n->x + NODE_WIDTH - 10 - w, yt, pp.name);
 		if (hover.type == HoverData::Type::PORT_OUT and n == hover.node and i == hover.port)
 			p->set_color(scheme.hoverify(scheme.TEXT));
-		p->draw_circle(proj_x(n->x + NODE_WIDTH + 5), proj_y(y), 5 * view_scale);
+		p->draw_circle(n->x + NODE_WIDTH + 5, y, 5);
 	}
 }
 
@@ -210,31 +206,64 @@ void ShaderGraphDialog::update_mouse() {
 	my = (e->my / view_scale) + view_offset_y;
 }
 
+
+void draw_arrow(Painter *p, const complex &m, const complex &_d, float length) {
+	complex d = _d / _d.abs();
+	complex e = d * complex::I;
+	Array<complex> pp;
+	pp.add(m + d * length);
+	pp.add(m - d * length + e * length / 2);
+	pp.add(m - d * length * 0.8f);
+	pp.add(m - d * length - e * length / 2);
+	p->draw_polygon(pp);
+}
+
+void ShaderGraphDialog::draw_cable(Painter *p, ShaderNode *source, int source_port, ShaderNode *dest, int dest_port) {
+	p->set_color(Blue);
+	p->set_line_width(2);
+
+	complex p0 = complex(source->x + NODE_WIDTH + 5, node_get_out_y(source, source_port));
+	complex p1 = complex(dest->x - 5, node_get_in_y(dest, dest_port));
+
+	float length = (p1 - p0).abs();
+	Interpolator<complex> inter(Interpolator<complex>::TYPE_CUBIC_SPLINE);
+	inter.add2(p0, complex(length,0));
+	inter.add2(p1, complex(length,0));
+
+	p->set_line_dash({5, 2}, 0);
+	Array<complex> cc;
+	for (float t=0; t<=1.0f; t+=0.025f)
+		cc.add(inter.get(t));
+	p->draw_lines(cc);
+	p->set_line_dash({}, 0);
+
+	draw_arrow(p, inter.get(0.5f), inter.getTang(0.5f), min(length / 7, 14.0f));
+}
+
 void ShaderGraphDialog::on_draw(Painter *p) {
 	//int w = p->width;
 	//int h = p->height;
 	p->set_color(scheme.BACKGROUND);
 	p->draw_rect(p->area());
 
+	float m[4] = {view_scale, 0, 0, view_scale};
+	p->set_transform(m, complex(-view_offset_x, -view_offset_y)*view_scale);
+
 	for (auto *n: graph->nodes)
 		draw_node(p, n);
 
-	p->set_color(Blue);
-	p->set_line_width(2 * view_scale);
-	for (auto &l: graph->links) {
-		p->draw_line(proj_x(l.source->x + NODE_WIDTH + 5), proj_y(node_get_out_y(l.source, l.source_port)),
-				proj_x(l.dest->x - 5), proj_y(node_get_in_y(l.dest, l.dest_port)));
-	}
+	for (auto &l: graph->links)
+		draw_cable(p, l.source, l.source_port, l.dest, l.dest_port);
 
 	if (selection.type == HoverData::Type::PORT_OUT) {
 		auto e = hui::GetEvent();
 		p->set_color(Red);
-		p->draw_line(proj_x(selection.node->x + NODE_WIDTH + 5), proj_y(node_get_out_y(selection.node, selection.port)), proj_x(mx), proj_y(my));
+		p->draw_line(selection.node->x + NODE_WIDTH + 5, node_get_out_y(selection.node, selection.port), mx, my);
 	}
 	if (selection.type == HoverData::Type::PORT_IN) {
 		auto e = hui::GetEvent();
 		p->set_color(Red);
-		p->draw_line(proj_x(selection.node->x - 5), proj_y(node_get_in_y(selection.node, selection.port)), proj_x(mx), proj_y(my));
+		p->draw_line(selection.node->x - 5, node_get_in_y(selection.node, selection.port), mx, my);
 	}
 
 	p->set_font_size(13);
