@@ -9,4 +9,4 @@ class NodeDiffuse extends ShaderNode
 	override string code_pixel(ShaderBuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
-	vec4 {{t}} = material.diffuse;"
+	vec4 {{t}} = material.diffusive;"

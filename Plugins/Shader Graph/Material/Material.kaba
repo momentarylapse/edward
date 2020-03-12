@@ -1,0 +1,24 @@
+use "../../api.kaba"
+
+class NodeMaterial extends ShaderNode
+	void __init__()
+		super.__init__("Material")
+		output.add([SHADER_TYPE_COLOR, "diffuse"])
+		output.add([SHADER_TYPE_FLOAT, "ambient"])
+		output.add([SHADER_TYPE_FLOAT, "specular"])
+		output.add([SHADER_TYPE_FLOAT, "shininess"])
+		output.add([SHADER_TYPE_COLOR, "emission"])
+	override string[] dependencies()
+		return ["material"]
+	override string code_pixel(ShaderBuilderContext c)
+		let di = c.create_out(self, 0)
+		let am = c.create_out(self, 1)
+		let sp = c.create_out(self, 2)
+		let sh = c.create_out(self, 3)
+		let em = c.create_out(self, 4)
+		return "
+	vec4 {{di}} = material.diffusive;
+	float {{am}} = material.ambient.r;
+	float {{sp}} = material.specular.r;
+	float {{sh}} = material.shininess;
+	vec4 {{em}} = material.emission;"
