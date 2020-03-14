@@ -330,20 +330,24 @@ void ShaderGraphDialog::on_left_button_down() {
 }
 
 void ShaderGraphDialog::on_left_button_up() {
-	if (selection.type == HoverData::Type::PORT_OUT and hover.type == HoverData::Type::PORT_IN) {
-		graph->connect(selection.node, selection.port, hover.node, hover.port);
-		on_update();
-	} else if (selection.type == HoverData::Type::PORT_IN and hover.type == HoverData::Type::PORT_OUT) {
-		graph->connect(hover.node, hover.port, selection.node, selection.port);
-		on_update();
-	} else if (selection.type == HoverData::Type::PARAMETER) {
-		auto &pp = selection.node->params[selection.param];
-		if (pp.type == ShaderValueType::FLOAT) {
+	try {
+		if (selection.type == HoverData::Type::PORT_OUT and hover.type == HoverData::Type::PORT_IN) {
+			graph->connect(selection.node, selection.port, hover.node, hover.port);
 			on_update();
+		} else if (selection.type == HoverData::Type::PORT_IN and hover.type == HoverData::Type::PORT_OUT) {
+			graph->connect(hover.node, hover.port, selection.node, selection.port);
+			on_update();
+		} else if (selection.type == HoverData::Type::PARAMETER) {
+			auto &pp = selection.node->params[selection.param];
+			if (pp.type == ShaderValueType::FLOAT) {
+				on_update();
+			}
 		}
+		selection = HoverData();
+		redraw("area");
+	} catch (Exception &e) {
+		ed->error_box(e.message());
 	}
-	selection = HoverData();
-	redraw("area");
 }
 
 void ShaderGraphDialog::on_mouse_move() {

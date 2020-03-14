@@ -53,11 +53,26 @@ void ShaderGraph::clear() {
 void ShaderGraph::make_default() {
 	clear();
 
-	auto n1 = add("Texture", 50, 50);
-	auto n2 = add("BasicLighting", 250, 100);
-	auto n3 = add("Output", 450, 50);
-	connect(n1, 0, n2, 0);
-	connect(n2, 0, n3, 0);
+	try {
+		auto tex = add("Texture", -180, 50);
+		auto mesh = add("Mesh", -180, 320);
+		auto mat = add("Material", -180, 150);
+		auto mul = add("Multiply", 50, 50);
+		auto light = add("BasicLighting", 250, 100);
+		auto out = add("Output", 480, 150);
+		connect(mesh, 2, tex, 0);
+		connect(tex, 0, mul, 0);
+		connect(mat, 0, mul, 1);
+		connect(mul, 0, light, 0);
+		connect(mat, 1, light, 1);
+		connect(mat, 2, light, 2);
+		connect(mat, 3, light, 3);
+		connect(mat, 4, light, 4);
+		connect(mesh, 1, light, 5);
+		connect(light, 0, out, 0);
+	} catch (Exception &e) {
+		ed->error_box(e.message());
+	}
 }
 
 int ShaderGraph::node_index(const ShaderNode *n) const {
@@ -90,7 +105,7 @@ void ShaderGraph::load(const string &filename) {
 		l.source_port = e.value("sourceport")._int();
 		l.dest = nodes[e.value("dest")._int()];
 		l.dest_port = e.value("destport")._int();
-		links.add(l);
+		connect(l.source, l.source_port, l.dest, l.dest_port);
 	}
 }
 
@@ -240,9 +255,13 @@ ShaderNode* ShaderGraph::add(const string &type, int x, int y) {
 }
 
 void ShaderGraph::connect(ShaderNode *s, int sp, ShaderNode *d, int dp) {
+	if (sp < 0 or sp >= s->output.num)
+		throw Exception("invalid source port: " + s->type + " #" + i2s(sp));
+	if (dp < 0 or dp >= d->params.num)
+		throw Exception("invalid target port: " + d->type + " #" + i2s(dp));
 	if (!can_cast(s->output[sp].type, d->params[dp].type))
-		return;
-	unconnect(s, sp, nullptr, -1);
+		throw Exception("invalid cast");
+	//unconnect(s, sp, nullptr, -1);
 	unconnect(nullptr, -1, d, dp);
 	Link l;
 	l.source = s;
