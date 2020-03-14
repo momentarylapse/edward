@@ -64,8 +64,9 @@ string ShaderBuilderContext::build_helper_vars() {
 	auto vars = dependencies;
 	if (vars.contains("light")) {
 		source +=
-			"struct Light { vec4 color; vec4 pos; float radius, harshness; };\n"
-			"uniform LightBlock { Light light; };\n";
+			"struct Light { mat4 proj; vec4 pos, dir, color; float radius, theta, harshness; };\n"
+			"/*layout(binding = 1)*/ uniform LightData { Light light[32]; };\n"
+			"uniform int num_lights = 0;\n";
 	}
 	if (vars.contains("fog")) {
 		source +=
@@ -149,18 +150,18 @@ string ShaderBuilderContext::build_helper_functions() {
 		"}\n";
 	}
 	if (funcs.contains("basic_lighting")) {
-		source += "\nvec4 basic_lighting(vec3 n, vec4 diffuse, float ambient, float specular, float shininess, vec4 emission) {\n"
-		"	vec3 l = (mat_v * vec4(light.pos.xyz, 0)).xyz;\n"
-		"	float d = max(-dot(n, l), 0);\n"
-		"	vec4 r = ambient * light.color * (1 - light.harshness) / 2;\n"
-		"	r += light.color * light.harshness * d;\n"
+		source += "\nvec4 basic_lighting(vec3 n, vec4 diffuse, float ambient, float specular, float shininess, vec4 emission, Light l) {\n"
+		"	vec3 L = (mat_v * vec4(l.dir.xyz, 0)).xyz;\n"
+		"	float d = max(-dot(n, L), 0);\n"
+		"	vec4 r = ambient * l.color * (1 - l.harshness) / 2;\n"
+		"	r += l.color * l.harshness * d;\n"
 		"	r *= diffuse;\n"
 		"	r += emission;\n"
 		"	if ((d > 0) && (material.shininess > 1)) {\n"
 		"		vec3 e = normalize((mat_v * mat_m * in_pos).xyz); // eye dir\n"
-		"		vec3 rl = reflect(l, n);\n"
+		"		vec3 rl = reflect(L, n);\n"
 		"		float ee = max(-dot(e, rl), 0);\n"
-		"		r += specular * light.color * light.harshness * pow(ee, shininess);\n"
+		"		r += specular * l.color * l.harshness * pow(ee, shininess);\n"
 		"	}\n"
 		"	return r;\n"
 		"}\n";

@@ -27,24 +27,25 @@ struct Material {
 };
 
 struct Light {
-	vec4 color;
-	vec4 dir;
-	float radius, harshness;
+	mat4 proj;
+	vec4 pos, dir, color;
+	float radius, theta, harshness;
 };
+uniform int num_lights = 0;
+/*layout(binding = 1)*/ uniform LightData { Light light[32]; };
 
 uniform Material material;
-uniform LightBlock { Light light; };
 
 layout(location = 0) in vec3 in_normal;
 out vec4 color;
 
 void main() {
 	vec3 n = normalize(in_normal);
-	vec3 l = light.dir.xyz;
+	vec3 l = light[0].dir.xyz;
 	float d = max(-dot(n, l), 0);
 	color = material.emission;
-	color += material.ambient * light.color * (1 - light.harshness);
-	color += material.diffusive * light.color * d * light.harshness;
+	color += material.ambient * light[0].color * (1 - light[0].harshness);
+	color += material.diffusive * light[0].color * d * light[0].harshness;
 	color.a = material.diffusive.a;
 }
 

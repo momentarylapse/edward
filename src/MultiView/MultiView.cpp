@@ -120,7 +120,8 @@ MultiView::MultiView(bool mode3d) {
 		shader_lines_3d_colored_wide = nix::Shader::load(app->directory_static + "shader/lines-3d-colored-wide.shader");
 	if (!shader_selection) {
 		shader_selection = nix::Shader::load(app->directory_static + "shader/selection.shader");
-		shader_selection->link_uniform_block("LightBlock", 0);
+		shader_selection->link_uniform_block("LightData", 1);
+		shader_selection->set_int(shader_selection->get_location("num_lights"), 1);
 	}
 
 	reset();
@@ -1139,13 +1140,15 @@ void MultiView::reset_message_3d() {
 }
 
 void MultiView::set_light(const vector &dir, const color &col, float harshness) {
-	nix::SimpleDirectionalLight l;
+	nix::BasicLight l;
+	l.proj = matrix::ID;
 	l.dir = dir;
 	l.col = col;
 	l.radius = -1;
-	l.harshness =harshness;
+	l.theta = pi;
+	l.harshness = harshness;
 	ubo_light->update(&l, sizeof(l));
-	nix::BindUniform(ubo_light, 0);
+	nix::BindUniform(ubo_light, 1);
 }
 
 }

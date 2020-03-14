@@ -115,6 +115,7 @@ void ModeMaterial::update_shader() {
 		delete shader;
 	try {
 		shader = nix::Shader::create(data->appearance.shader_code);
+		shader->link_uniform_block("LightData", 1);
 	} catch (Exception &e) {
 		ed->error_box(e.message());
 		shader = nix::default_shader_3d;
@@ -165,6 +166,7 @@ void ModeMaterial::on_command(const string & id) {
 void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	data->apply_for_rendering();
 	nix::SetShader(shader);
+	shader->set_int(shader->get_location("num_lights"), 1);
 	auto tex = textures;
 	tex.resize(4);
 	tex.add(cube_map);

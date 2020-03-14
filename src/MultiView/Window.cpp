@@ -442,6 +442,8 @@ void Window::draw() {
 	multi_view->set_light(cam->ang * vector::EZ, White, 0.7f);
 	nix::SetMaterial(Black,White,Black,0,White);//Black);
 	set_color(White);
+	nix::SetShader(nix::default_shader_3d);
+	nix::default_shader_3d->set_int(nix::default_shader_3d->get_location("num_lights"), 1);
 
 	// draw the actual data
 	set_projection_matrix();
