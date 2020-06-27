@@ -1,71 +1,73 @@
 Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 	Grid ? "" vertical
-		Expander material_dialog_grp_color "Colors"
-			Grid ? ""
-				Text /ambient "Ambient:"
-				ColorButton mat_am "" expandx
-				---|
-				Text /diffuse "Diffuse:"
-				ColorButton mat_di "" alpha
-				---|
-				Text /specular "Specular:"
-				ColorButton mat_sp ""
-				---|
-				Text /shininess "Shininess:"
-				SpinButton mat_shininess "" range=0:10000:0.1
-				---|
-				Text /emission "Emission:"
-				ColorButton mat_em ""
-		Expander material_dialog_grp_textures "Textures"
-			Grid ? ""
-				ListView mat_textures "Level\\\\Texture" format=tit select-single
-				---|
+		Label header "Material" expandx center big bold
+		Grid ? "" vertical
+			Expander material_dialog_grp_color "Colors"
 				Grid ? ""
-					Button mat_add_texture_level "new level" image=hui:add
-					Button mat_delete_texture_level "delete level" image=hui:delete
-					Button mat_empty_texture_level "Empty" image=hui:clear
-		Expander material_dialog_grp_transparency "Transparency"
-			Grid ? "" vertical
-				RadioButton transparency_mode:none "No transparency"
-				RadioButton transparency_mode:color_key "Color key"
-				RadioButton transparency_mode:function "Function"
-				Grid mat_transp_function_grid "" indent
-					Text material_dialog_t_trans_source "Source:"
-					ComboBox alpha_source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
+					Text /ambient "Ambient" right disabled
+					ColorButton mat_am "" expandx
 					---|
-					Text material_dialog_t_trans_dest "Dest:"
-					ComboBox alpha_dest "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
-				RadioButton transparency_mode:factor "Factor:"
-				Grid mat_transp_alpha_grid "" indent
-					SpinButton alpha_factor "" range=0:100:1
-					Text /percent "%"
-				CheckBox alpha_z_buffer "Z-buffer enabled"
-		Expander material_dialog_grp_reflection "Reflexions"
-			Grid ? "" vertical
-				RadioButton reflection_mode:none "No reflection"
-				RadioButton reflection_mode:cube_static "Cube-map static"
-				ListView reflection_textures "face\\texture" indent
-				RadioButton reflection_mode:cube_dynamic "Cube-map dynamic"
-				ComboBox reflection_size "64 x 64\\128 x 128\\256 x 256\\512 x 512" indent
+					Text /diffuse "Diffuse" right disabled
+					ColorButton mat_di "" alpha
+					---|
+					Text /specular "Specular" right disabled
+					ColorButton mat_sp ""
+					---|
+					Text /shininess "Shininess" right disabled
+					SpinButton mat_shininess "" range=0:10000:0.1
+					---|
+					Text /emission "Emission" right disabled
+					ColorButton mat_em ""
+			Expander material_dialog_grp_textures "Textures"
 				Grid ? ""
-					Text material_dialog_t_refl_density "Density:"
-					SpinButton reflection_density "" range=0:100:1
-					Text /percent "%"
-		Expander material_dialog_grp_shader "Shader"
-			Grid ? ""
-				Edit shader_file "" expandx
-				Button find_shader "" image=hui:open
-		Separator
-		Expander material_dialog_grp_friction "Friction"
-			Grid ? ""
-				Text material_physics_dialog_t_rcstatic "Static:"
-				SpinButton rcstatic "" range=0:100:0.01
-				---|
-				Text material_physics_dialog_t_rcsliding "Sliding:"
-				SpinButton rcsliding "" range=0:100:0.01
-				---|
-				Text material_physics_dialog_t_rcjump "Jumping:"
-				SpinButton rcjump "" range=0:100:0.01
-				---|
-				Text material_physics_dialog_t_rcroll "Rolling resistance:"
-				SpinButton rcroll "" range=0:100:0.01
+					ListView mat_textures "Level\\\\Texture" format=tit select-single
+					---|
+					Grid ? ""
+						Button mat_add_texture_level "new level" image=hui:add
+						Button mat_delete_texture_level "delete level" image=hui:delete
+						Button mat_empty_texture_level "Empty" image=hui:clear
+			Expander material_dialog_grp_transparency "Transparency"
+				Grid ? "" vertical
+					RadioButton transparency_mode:none "No transparency"
+					RadioButton transparency_mode:color_key "Color key"
+					RadioButton transparency_mode:function "Function"
+					Grid mat_transp_function_grid "" indent
+						Text material_dialog_t_trans_source "Source" right disabled
+						ComboBox alpha_source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
+						---|
+						Text material_dialog_t_trans_dest "Dest" right disabled
+						ComboBox alpha_dest "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
+					RadioButton transparency_mode:factor "Factor:"
+					Grid mat_transp_alpha_grid "" indent
+						SpinButton alpha_factor "" range=0:100:1
+						Text /percent "%"
+					CheckBox alpha_z_buffer "Z-buffer enabled"
+			Expander material_dialog_grp_reflection "Reflexions"
+				Grid ? "" vertical
+					RadioButton reflection_mode:none "No reflection"
+					RadioButton reflection_mode:cube_static "Cube-map static"
+					ListView reflection_textures "face\\texture" indent
+					RadioButton reflection_mode:cube_dynamic "Cube-map dynamic"
+					ComboBox reflection_size "64 x 64\\128 x 128\\256 x 256\\512 x 512" indent
+					Grid ? ""
+						Text material_dialog_t_refl_density "Density:"
+						SpinButton reflection_density "" range=0:100:1
+						Text /percent "%"
+			Expander material_dialog_grp_shader "Shader"
+				Grid ? ""
+					Edit shader_file "" expandx
+					Button find_shader "" image=hui:open
+			Separator
+			Expander material_dialog_grp_friction "Friction"
+				Grid ? ""
+					Text material_physics_dialog_t_rcstatic "Static" right disabled
+					SpinButton rcstatic "" range=0:100:0.01
+					---|
+					Text material_physics_dialog_t_rcsliding "Sliding" right disabled
+					SpinButton rcsliding "" range=0:100:0.01
+					---|
+					Text material_physics_dialog_t_rcjump "Jumping" right disabled
+					SpinButton rcjump "" range=0:100:0.01
+					---|
+					Text material_physics_dialog_t_rcroll "Rolling resistance" right disabled
+					SpinButton rcroll "" range=0:100:0.01

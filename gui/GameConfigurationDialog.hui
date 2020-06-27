@@ -1,28 +1,29 @@
-Dialog game-config-dialog "Rudimentary configuration" width=365 height=250
+Dialog game-config-dialog "Rudimentary configuration" width=365 height=250 headerbar closebutton=no resizable
 	Grid ? "" vertical
 		Group g-dir "Directory"
 			Edit root-directory "" disabled
 		Group g-init "Startup game values"
 			Grid ? ""
-				Text t-world "World:"
+				Text t-world "World" right disabled
 				Edit world "" expandx
 				Button find-world "" image=hui:open
 				---|
-				Text t-second-world "Second world"
+				Text t-second-world "Second world" right disabled
 				Edit second-world ""
 				Button find-second-world "" image=hui:open
 				---|
-				Text t-script "Main script:"
+				Text t-script "Main script" right disabled
 				Edit script ""
 				Button find-script "" image=hui:open
 				---|
-				Text t-material "Material:"
+				Text t-material "Material" right disabled
 				Edit material ""
 				Button find-material "" image=hui:open
 				---|
-				Text t-font "Font:"
+				Text t-font "Font" right disabled
 				Edit font ""
 				Button find-font "" image=hui:open
 		Grid ? "" buttonbar
 			Button /cancel "Cancel"
-			Button /ok "OK"
+			---|
+			Button /ok "OK" default

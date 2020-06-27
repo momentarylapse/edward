@@ -1,11 +1,13 @@
 Dialog new_cube_dialog "new cube" width=100 height=50 allow-root
-	Group ncdt_slides "New cube: stripes"
-		Grid ? ""
-			Text /x "X"
-			SpinButton nc_x "" range=1: expandx
-			---|
-			Text /y "Y"
-			SpinButton nc_y "" range=1:
-			---|
-			Text /z "Z"
-			SpinButton nc_z "" range=1:
+	Grid ? "" vertical
+		Text header "New cube" big bold center expandx
+		Group ncdt_slides "Stripes"
+			Grid ? ""
+				Text /x "X" right disabled
+				SpinButton nc_x "" range=1: expandx
+				---|
+				Text /y "Y" right disabled
+				SpinButton nc_y "" range=1:
+				---|
+				Text /z "Z" right disabled
+				SpinButton nc_z "" range=1:

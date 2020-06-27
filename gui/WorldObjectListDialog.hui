@@ -1,100 +1,102 @@
 Dialog world-object-list-dialog "" width=400 height=300
 	Grid ? "" vertical
-		Group g-list "List"
-			ListView list "Type\\Name" expandx
-		Group g-camera "Camera"
-			Grid ? ""
-				Text t-cam-fov "Field of view:"
-				SpinButton cam-fov "" range=0:180:0.1 "tooltip=vertical viewing angle" expandx
-				---|
-				Text t-cam-exposure "Exposure:"
-				SpinButton cam-exposure "" range=0:10:0.01 "tooltip=brightness scale"
-				---|
-				Text t-cam-min-depth "Min depth:"
-				SpinButton cam-min-depth "" range=0:100000000:0.1 "tooltip=near clipping plane"
-				---|
-				Text t-cam-max-depth "Max depth:"
-				SpinButton cam-max-depth "" range=0:100000000:0.1 "tooltip=far clipping plane"
-		Group g-script "Script"
-			Grid ? "" vertical
+		Label header "World" expandx center big bold
+		Grid ? "" vertical
+			Group g-list "List"
+				ListView list "Type\\Name" expandx
+			Group g-camera "Camera"
 				Grid ? ""
-					Text t-script-file "File:"
-					Edit script-file "" expandx
-					Button script-edit "" image=hui:edit
+					Text t-cam-fov "Field of view" right disabled
+					SpinButton cam-fov "" range=0:180:0.1 "tooltip=vertical viewing angle" expandx
 					---|
-					Text t-script-class "Class:"
-					Text script-class ""
-				ListView script-variables "Name\\Type\\Value" height=200 noexpandy
-		Group g-object "Object"
-			Grid ? ""
-				Text t-ob-name "Name:"
-				Edit ob-name "" expandx
-				---|
-				Text t-ob-type "Type:"
+					Text t-cam-exposure "Exposure" right disabled
+					SpinButton cam-exposure "" range=0:10:0.01 "tooltip=brightness scale"
+					---|
+					Text t-cam-min-depth "Min depth" right disabled
+					SpinButton cam-min-depth "" range=0:100000000:0.1 "tooltip=near clipping plane"
+					---|
+					Text t-cam-max-depth "Max depth" right disabled
+					SpinButton cam-max-depth "" range=0:100000000:0.1 "tooltip=far clipping plane"
+			Group g-script "Script"
+				Grid ? "" vertical
+					Grid ? ""
+						Text t-script-file "File" right disabled
+						Edit script-file "" expandx
+						Button script-edit "" image=hui:edit
+						---|
+						Text t-script-class "Class" right disabled
+						Text script-class "" bold
+					ListView script-variables "Name\\Type\\Value" height=200 noexpandy
+			Group g-object "Object"
 				Grid ? ""
-					Edit ob-kind "" expandx disabled
-					Button find_object "" disabled image=hui:open
-					Button edit_object "" image=hui:edit
-		Group g-terrain "Terrain"
-			Grid ? "" vertical
-				Grid ? ""
-					Text t-terrain-file "File:" hgroup=a
-					Edit terrain-file "" expandx
+					Text t-ob-name "Name" right disabled
+					Edit ob-name "" expandx
+					---|
+					Text t-ob-type "Type" right disabled
+					Grid ? ""
+						Edit ob-kind "" expandx disabled
+						Button find_object "" disabled image=hui:open
+						Button edit_object "" image=hui:edit
+			Group g-terrain "Terrain"
+				Grid ? "" vertical
+					Grid ? ""
+						Text t-terrain-file "File" right disabled hgroup=a
+						Edit terrain-file "" expandx
+					Grid ? ""
+						.
+						Text /x "X" center right disabled
+						Text /z "Z" center right disabled
+						---|
+						Text t-terrain-stripes "Stripes" right disabled hgroup=a
+						SpinButton terrain-num-x "" range=1: disabled
+						SpinButton terrain-num-z "" range=1: disabled
+						---|
+						Text t-terrain-raster "Grid size" right disabled
+						Edit terrain-pattern-x "" disabled
+						Edit terrain-pattern-z "" disabled
+						Text /lu "lu"
+			Group g-light "Light" expandx
+				Grid ? "" vertical expandx
+					CheckBox light-enabled "Enabled" expandx
+					Grid ? ""
+						Text t-light-type "Type" right disabled
+						ComboBox light-type "Directional\\Point\\Cone" expandx
+						---|
+						Text t-light-color "Color" right disabled
+						ColorButton light-col ""
+						---|
+						Text t-light-radius "Radius" right disabled
+						Edit light-radius ""
+						---|
+						Text t-light-theta "Theta" right disabled
+						SpinButton light-theta "" range=0:180:1 "tooltip=cone opening angle"
+						---|
+						Text t-light-harshness "Harshness" right disabled
+						SpinButton light-harshness "" range=0:1:0.01 "tooltip=mixing diffuse and ambient parts"
+			Group g-link "Link" expandx
+				Grid ? "" expandx
+					Text t-link-type "Type" right disabled
+					ComboBox link-type "Socket\\Hinge\\Spring\\Universal" expandx
+					---|
+					Text t-link-param "Param" right disabled
+					---|
+					Text t-link-friction "Friction" right disabled
+					SpinButton link-friction "" range=0:1:0.01
+			Group g-location "Location"
 				Grid ? ""
 					.
-					Text /x "X" center
-					Text /z "Z" center
+					Text /x "X" center right disabled
+					Text /y "Y" center right disabled
+					Text /z "Z" center right disabled
 					---|
-					Text t-terrain-stripes "Stripes:" hgroup=a
-					SpinButton terrain-num-x "" range=1: disabled
-					SpinButton terrain-num-z "" range=1: disabled
-					---|
-					Text t-terrain-raster "Grid size:"
-					Edit terrain-pattern-x "" disabled
-					Edit terrain-pattern-z "" disabled
+					Text t-pos "Position" right disabled
+					Edit pos-x "" expandx
+					Edit pos-y "" expandx
+					Edit pos-z "" expandx
 					Text /lu "lu"
-		Group g-light "Light" expandx
-			Grid ? "" vertical expandx
-				CheckBox light-enabled "Enabled" expandx
-				Grid ? ""
-					Text t-light-type "Type:"
-					ComboBox light-type "Directional\\Point\\Cone" expandx
 					---|
-					Text t-light-color "Color:"
-					ColorButton light-col ""
-					---|
-					Text t-light-radius "Radius:"
-					Edit light-radius ""
-					---|
-					Text t-light-theta "Theta:"
-					SpinButton light-theta "" range=0:180:1 "tooltip=cone opening angle"
-					---|
-					Text t-light-harshness "Harshness:"
-					SpinButton light-harshness "" range=0:1:0.01 "tooltip=mixing diffuse and ambient parts"
-		Group g-link "Link" expandx
-			Grid ? "" expandx
-				Text t-link-type "Type:"
-				ComboBox link-type "Socket\\Hinge\\Spring\\Universal" expandx
-				---|
-				Text t-link-param "Param:"
-				---|
-				Text t-link-friction "Friction:"
-				SpinButton link-friction "" range=0:1:0.01
-		Group g-location "Location"
-			Grid ? ""
-				.
-				Text /x "X" center
-				Text /y "Y" center
-				Text /z "Z" center
-				---|
-				Text t-pos "Position"
-				Edit pos-x "" expandx
-				Edit pos-y "" expandx
-				Edit pos-z "" expandx
-				Text /lu "lu"
-				---|
-				Text t-ang "Orientation"
-				Edit ang-x ""
-				Edit ang-y ""
-				Edit ang-z ""
-				Text /degree "°"
+					Text t-ang "Orientation" right disabled
+					Edit ang-x ""
+					Edit ang-y ""
+					Edit ang-z ""
+					Text /degree "°"

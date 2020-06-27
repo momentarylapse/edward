@@ -1,13 +1,15 @@
 Dialog model-deformation-brush-dialog "Deformation" width=350 height=371
 	Grid ? "" vertical
-		Group g-brush "Deformation brush"
-			Grid ? ""
-				Label t-diameter "Diameter"
-				Slider diameter-slider "" expandx
-				Edit diameter "" width=60
-				---|
-				Label t-depth "Depth"
-				Slider depth-slider ""
-				Edit depth ""
-		Group g-type "Function"
-			ListView brush-type "type" nobar
+		Label header "Deformation" expandx center big bold
+		Grid ? "" vertical
+			Group g-brush "Brush"
+				Grid ? ""
+					Label t-diameter "Diameter" right disabled
+					Slider diameter-slider "" expandx
+					Edit diameter "" width=60
+					---|
+					Label t-depth "Depth" right disabled
+					Slider depth-slider ""
+					Edit depth ""
+			Group g-type "Function"
+				ListView brush-type "type" nobar

@@ -1,12 +1,13 @@
-Dialog new_animation_dialog "New animation" width=100 height=50
+Dialog new_animation_dialog "New animation" width=100 height=50 headerbar closebutton=no
 	Grid ? ""
 		Grid ? ""
-			Text new_animation_t_type "type:"
+			Text new_animation_t_type "Type" right disabled
 			ComboBox new_animation_type "vertex\\skeleton"
 			---|
-			Text new_animation_t_index "index"
+			Text new_animation_t_index "Index" right disabled
 			SpinButton new_animation_index "" range=0:
 		---|
 		Grid new_animation_buttonbar "" buttonbar
 			Button /cancel "Cancel" image=hui:cancel
-			DefButton /ok "Ok" image=hui:ok
+			---|
+			Button /ok "Ok" image=hui:ok default

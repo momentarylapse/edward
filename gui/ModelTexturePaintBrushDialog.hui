@@ -1,24 +1,26 @@
 Dialog model-texture-paint-brush-dialog "Deformation" width=350 height=371
 	Grid ? "" vertical
-		Group g-brush "Brush"
-			Grid ? ""
-				Label t-diameter "Diameter"
-				Slider diameter-slider "" expandx
-				Edit diameter "" width=60
-				---|
-				Label t-opacity "Opacity"
-				Slider opacity-slider ""
-				SpinButton opacity "" range=0:1:0.01
-				---|
-				Label t-color "Color"
-				ColorButton color ""
-				---|
-				Label t-alpha "Alpha"
-				Slider alpha-slider ""
-				SpinButton alpha "" range=0:1:0.01
-		Group g-pressure "Pressure"
-			Grid ? "" vertical
-				CheckBox scale-by-pressure "influence size"
-				CheckBox opacity-by-pressure "influence opacity"
-		Group g-type "Shape"
-			ListView brush-type "icon\\type" format=it nobar
+		Label header "Texture paint" expandx center big bold
+		Grid ? "" vertical
+			Group g-brush "Brush"
+				Grid ? ""
+					Label t-diameter "Diameter" right disabled
+					Slider diameter-slider "" expandx
+					Edit diameter "" width=60
+					---|
+					Label t-opacity "Opacity" right disabled
+					Slider opacity-slider ""
+					SpinButton opacity "" range=0:1:0.01
+					---|
+					Label t-color "Color" right disabled
+					ColorButton color ""
+					---|
+					Label t-alpha "Alpha" right disabled
+					Slider alpha-slider ""
+					SpinButton alpha "" range=0:1:0.01
+			Group g-pressure "Pressure"
+				Grid ? "" vertical
+					CheckBox scale-by-pressure "influence size"
+					CheckBox opacity-by-pressure "influence opacity"
+			Group g-type "Shape"
+				ListView brush-type "icon\\type" format=it nobar

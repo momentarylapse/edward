@@ -1,4 +1,4 @@
-Dialog world_dialog "World properties" width=520 height=420
+Dialog world_dialog "World properties" width=520 height=420 resizable headerbar closebutton=no
 	Grid ? "" vertical
 		TabControl world_dialog_tab_control "Background\\Fog\\Physics\\Scripts"
 			Grid ? "" vertical
@@ -10,35 +10,36 @@ Dialog world_dialog "World properties" width=520 height=420
 				RadioButton fog_mode:none "Deactivated" expandx
 				RadioButton fog_mode:linear "Linear"
 				Grid ? "" indent
-					Text world_dialog_t_fog_start "Distance"
+					Text world_dialog_t_fog_start "Distance" right disabled
 					SpinButton fog_start "" range=0:1000000000:0.1 "tooltip=Distance, at which fog starts (intensity 0)"
 					---|
-					Text world_dialog_t_fog_end "to"
+					Text world_dialog_t_fog_end "to" right disabled
 					SpinButton fog_end "" range=0:1000000000:0.1 "tooltip=maximum viewing distance before full fog intensity"
 				Grid ? ""
 					RadioButton fog_mode:exp "Exponential"
 					RadioButton fog_mode:exp2 "Square exponential"
 				Grid ? "" indent
-					Text world_dialog_t_fog_distance "Distance"
+					Text world_dialog_t_fog_distance "Distance" right disabled
 					SpinButton fog_distance "" range=0:1000000000:0.1 "tooltip=fog intensity = exp( - distance / viewing-distance )"
 				ColorButton fog_color ""
 			Grid ? "" vertical
 				CheckBox physics_enabled "Enabled"
 				Group grp_gravitation "Gravity"
 					Grid ? ""
-						Text /x "X"
+						Text /x "X" right disabled
 						SpinButton gravitation_x "" range=::0.1
 						Text /luss "lu/s²"
 						---|
-						Text /y "Y"
+						Text /y "Y" right disabled
 						SpinButton gravitation_y "" range=::0.1
 						Text /luss "lu/s²"
 						---|
-						Text /z "Z"
+						Text /z "Z" right disabled
 						SpinButton gravitation_z "" range=::0.1
 						Text /luss "lu/s²"
 			ListView script_list "File" nobar
 		Grid ? "" buttonbar
-			Button /apply "Apply" image=hui:apply
 			Button /cancel "Cancel" image=hui:cancel
-			DefButton /ok "Ok" image=hui:ok
+			---|
+			Button /ok "Ok" image=hui:ok default
+			Button /apply "Apply" image=hui:apply

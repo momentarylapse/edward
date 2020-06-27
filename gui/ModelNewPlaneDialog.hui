@@ -1,8 +1,10 @@
 Dialog new_plane_dialog "New plane" width=100 height=50 allow-root
-	Group g-plane "New plane: stripes"
-		Grid ? ""
-			Text /x "X"
-			SpinButton np_num_x "" range=1: expandx
-			---|
-			Text /y "Y"
-			SpinButton np_num_y "" range=1:
+	Grid ? "" vertical
+		Text header "New plane" big bold center expandx
+		Group g-plane "Stripes"
+			Grid ? ""
+				Text /x "X" right disabled
+				SpinButton np_num_x "" range=1: expandx
+				---|
+				Text /y "Y" right disabled
+				SpinButton np_num_y "" range=1:

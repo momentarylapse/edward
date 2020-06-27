@@ -1,35 +1,37 @@
 Dialog animation_dialog "Animation" width=260 height=400
 	Grid ? "" vertical
-		Group t_list "Overview"
-			ListView animation_list "#\\type\\num frames\\name"
-		Separator
-		Group t_properties "Properties"
-			Grid ? ""
-				Text t_name "Name:"
-				Edit name "" expandx
-				---|
-				Text t_animationfpsconst "Frames/s const:"
-				SpinButton fps_const "" range=0:100:0.01
-				---|
-				Text t_animationfpsfactor "Frames/s factor:"
-				SpinButton fps_factor "" range=0:100:0.01
-		Group t_frame "Frame"
-			Grid ? ""
-				SpinButton frame "" expandx
-				---|
+		Text header "Animations" big bold center expandx
+		Grid ? "" vertical
+			Group t_list "Overview"
+				ListView animation_list "#\\type\\num frames\\name"
+			Separator
+			Group t_properties "Properties"
 				Grid ? ""
-					Button new_frame "new frame" image=hui:new
-					Button delete_frame "delete" image=hui:delete
-		Group t_simulate "Preview"
-			Grid ? ""
-				Grid ? ""
-					Text ani_dt_sim_speed "Speed:"
-					SpinButton speed "" range=0: expandx
-					Text /percent "%"
+					Text t_name "Name" right disabled
+					Edit name "" expandx
 					---|
-					Text ani_dt_sim_param "Parameter:"
-					SpinButton parameter "0"
-				---|
+					Text t_animationfpsconst "Frames/s const" right disabled
+					SpinButton fps_const "" range=0:100:0.01
+					---|
+					Text t_animationfpsfactor "Frames/s factor" right disabled
+					SpinButton fps_factor "" range=0:100:0.01
+			Group t_frame "Frame"
 				Grid ? ""
-					Button sim_start "Start" image=hui:media-play
-					Button sim_stop "Stop" image=hui:media-stop
+					SpinButton frame "" expandx
+					---|
+					Grid ? ""
+						Button new_frame "new frame" image=hui:new
+						Button delete_frame "delete" image=hui:delete
+			Group t_simulate "Preview"
+				Grid ? ""
+					Grid ? ""
+						Text ani_dt_sim_speed "Speed:"
+						SpinButton speed "" range=0: expandx
+						Text /percent "%"
+						---|
+						Text ani_dt_sim_param "Parameter" right disabled
+						SpinButton parameter "0"
+					---|
+					Grid ? ""
+						Button sim_start "Start" image=hui:media-play
+						Button sim_stop "Stop" image=hui:media-stop
