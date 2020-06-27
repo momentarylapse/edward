@@ -5,9 +5,9 @@ class NodeTexture extends ShaderNode
 		super.__init__("Texture")
 		params.add([SHADER_TYPE_VEC2, "uv", "-mesh-", ""])
 		output.add([SHADER_TYPE_COLOR, "color"])
-	override string[] dependencies()
+	override const string[] dependencies()
 		return ["texture", "uv"]
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let uv = c.build_value(self, 0, "in_uv")
 		let t = c.create_out(self, 0)
 		return "

@@ -11,9 +11,9 @@ class NodeVoronoi extends ShaderNode
 		params.add([SHADER_TYPE_INT, "mode", "0", "choice=cell|edge"])
 		output.add([SHADER_TYPE_FLOAT, "distance"])
 		output.add([SHADER_TYPE_FLOAT, "edge"])
-	override string[] dependencies()
+	override const string[] dependencies()
 		return ["rand3d"]
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let o = c.create_out(self, 0)
 		let o2 = c.create_out(self, 1)
 		let t = c.create_out(self, 2)#c.create_temp(self, -1, SHADER_TYPE_FLOAT)

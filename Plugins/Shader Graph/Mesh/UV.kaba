@@ -4,9 +4,9 @@ class NodeUV extends ShaderNode
 	void __init__()
 		super.__init__("UV")
 		output.add([SHADER_TYPE_VEC2, "uv"])
-	override string[] dependencies()
+	override const string[] dependencies()
 		return ["uv"]
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	vec2 {{t}} = in_uv;"

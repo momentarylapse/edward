@@ -5,9 +5,9 @@ class NodePosition extends ShaderNode
 		super.__init__("Position")
 		params.add([SHADER_TYPE_INT, "space", "0", "choice=model|world|camera|window"])
 		output.add([SHADER_TYPE_VEC3, "pos"])
-	override string[] dependencies()
+	override const string[] dependencies()
 		return ["pos", "matproject", "matview", "matworld"]
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let t = c.create_out(self, 0)
 		if params[0].value == "1" # world
 			return "

@@ -7,9 +7,9 @@ class NodeMesh extends ShaderNode
 		output.add([SHADER_TYPE_VEC3, "pos"])
 		output.add([SHADER_TYPE_VEC3, "normals"])
 		output.add([SHADER_TYPE_VEC2, "uv"])
-	override string[] dependencies()
+	override const string[] dependencies()
 		return ["pos", "normal", "uv", "matproject", "matview", "matworld"]
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let p = c.create_out(self, 0)
 		let n = c.create_out(self, 1)
 		let u = c.create_out(self, 2)

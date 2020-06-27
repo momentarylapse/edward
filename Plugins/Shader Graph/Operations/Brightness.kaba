@@ -5,7 +5,7 @@ class NodeBrightness extends ShaderNode
 		super.__init__("Brightness")
 		params.add([SHADER_TYPE_COLOR, "color", "#ffffffff", ""])
 		output.add([SHADER_TYPE_FLOAT, "brightness"])
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let a = c.value(self, 0)
 		let t = c.create_out(self, 0)
 		return "

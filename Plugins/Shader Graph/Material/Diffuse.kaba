@@ -4,9 +4,9 @@ class NodeDiffuse extends ShaderNode
 	void __init__()
 		super.__init__("Diffuse")
 		output.add([SHADER_TYPE_COLOR, "diffuse"])
-	override string[] dependencies()
+	override const string[] dependencies()
 		return ["material"]
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = material.diffusive;"

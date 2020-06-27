@@ -8,6 +8,7 @@
 \*----------------------------------------------------------------------------*/
 #include "../file/file.h"
 #include "kaba.h"
+#include "lib/common.h"
 #include <cassert>
 
 #include "../config.h"
@@ -24,7 +25,7 @@
 
 namespace Kaba{
 
-string Version = "0.18.1.0";
+string Version = "0.18.5.1";
 
 //#define ScriptDebug
 
@@ -143,13 +144,25 @@ VirtualTable* get_vtable(const VirtualBase *p) {
 	return *(VirtualTable**)p;
 }
 
+const Class *_dyn_type_in_namespace(const VirtualTable *p, const Class *ns) {
+	for (auto *c: ns->classes) {
+		if (c->_vtable_location_target_ == p)
+			return c;
+		auto t = _dyn_type_in_namespace(p, c);
+		if (t)
+			return t;
+	}
+	return nullptr;
+}
+
 // TODO...namespace
 const Class *GetDynamicType(const VirtualBase *p) {
 	auto *pp = get_vtable(p);
-	for (Script *s: _public_scripts_)
-		for (auto *t: s->syntax->base_class->classes)
-			if (t->_vtable_location_target_ == pp)
-				return t;
+	for (Script *s: _public_scripts_) {
+		auto t = _dyn_type_in_namespace(pp, s->syntax->base_class);
+		if (t)
+			return t;
+	}
 	return nullptr;
 }
 
@@ -298,7 +311,7 @@ void ExecuteSingleScriptCommand(const string &cmd)
 // analyse syntax
 
 	// create a main() function
-	Function *func = ps->add_function("--command-func--", TypeVoid, ps->base_class, true);
+	Function *func = ps->add_function("--command-func--", TypeVoid, ps->base_class, Flags::STATIC);
 	func->_var_size = 0; // set to -1...
 
 	// parse

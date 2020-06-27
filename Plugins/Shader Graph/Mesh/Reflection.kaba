@@ -4,9 +4,9 @@ class NodeReflection extends ShaderNode
 	void __init__()
 		super.__init__("Reflection")
 		output.add([SHADER_TYPE_COLOR, "color"])
-	override string[] dependencies()
+	override const string[] dependencies()
 		return ["cubemap", "normal", "pos", "matview", "matworld"]
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = texture(tex4, (transpose(mat_v) * vec4(reflect(normalize((mat_v * mat_m * in_pos).xyz), normalize(in_normal)), 0)).xyz);"

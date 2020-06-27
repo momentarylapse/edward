@@ -8,9 +8,9 @@ class NodeMaterial extends ShaderNode
 		output.add([SHADER_TYPE_FLOAT, "specular"])
 		output.add([SHADER_TYPE_FLOAT, "shininess"])
 		output.add([SHADER_TYPE_COLOR, "emission"])
-	override string[] dependencies()
+	override const string[] dependencies()
 		return ["material"]
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let di = c.create_out(self, 0)
 		let am = c.create_out(self, 1)
 		let sp = c.create_out(self, 2)

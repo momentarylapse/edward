@@ -6,7 +6,7 @@ class NodeMultiply extends ShaderNode
 		params.add([SHADER_TYPE_COLOR, "a", "#ffffffff", ""])
 		params.add([SHADER_TYPE_COLOR, "b", "#ffffffff", ""])
 		output.add([SHADER_TYPE_COLOR, "out"])
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = {{c.value(self, 0)}} * {{c.value(self, 1)}};"

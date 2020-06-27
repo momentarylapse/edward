@@ -4,9 +4,9 @@ class NodeAmbient extends ShaderNode
 	void __init__()
 		super.__init__("Ambient")
 		output.add([SHADER_TYPE_FLOAT, "ambient"])
-	override string[] dependencies()
+	override const string[] dependencies()
 		return ["material"]
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	float {{t}} = material.ambient;"

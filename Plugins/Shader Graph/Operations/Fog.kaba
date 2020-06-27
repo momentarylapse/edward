@@ -5,9 +5,9 @@ class NodeFog extends ShaderNode
 		super.__init__("Fog")
 		params.add([SHADER_TYPE_COLOR, "diffuse", "#ffffffff", ""])
 		output.add([SHADER_TYPE_COLOR, "out"])
-	override string[] dependencies()
+	override const string[] dependencies()
 		return ["fog", "pos", "matview", "matworld"]
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let tt = c.create_temp(self, -1, SHADER_TYPE_FLOAT)
 		let t = c.create_out(self, 0)
 		return "

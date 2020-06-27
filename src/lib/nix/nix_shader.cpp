@@ -5,7 +5,6 @@
 | last update: 2010.03.11 (c) by MichiSoft TM                                  |
 \*----------------------------------------------------------------------------*/
 
-#define HAS_LIB_GL 1
 #if HAS_LIB_GL
 
 #include "nix.h"
@@ -434,7 +433,7 @@ void init_shaders() {
 		"	vec4 color = material.ambient * l.color * (1 - l.harshness) / 2;\n"
 		"	color += material.diffusive * l.color * l.harshness * d;\n"
 		"	color *= tex_col;\n"
-		"	if 	((d > 0) && (material.shininess > 1)) {\n"
+		"	if ((d > 0) && (material.shininess > 1)) {\n"
 		"		vec3 e = normalize(fragmentPos); // eye dir\n"
 		"		vec3 rl = reflect(L, n);\n"
 		"		float ee = max(-dot(e, rl), 0);\n"

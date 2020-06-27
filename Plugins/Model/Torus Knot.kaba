@@ -8,7 +8,9 @@ void CreateTorusKnot(int nx, int ny, int rings, int edges, float r1, float r2, f
 	data_model.paste_geometry(*g, 0)
 	del g
 
-int gcd(int a, int b)
+int gcd(int _a, int _b)
+	int a = _a
+	int b = _b
 	while b != 0
 		int t = b
 		b = a % b

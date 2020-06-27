@@ -106,6 +106,7 @@ public:
 	void _cdecl set_menu(Menu *menu);
 	Menu* _cdecl get_menu();
 	Window* _cdecl get_parent();
+	void _cdecl __set_options(const string &options);
 
 
 	void _cdecl set_cursor_pos(int x,int y);
@@ -168,7 +169,7 @@ private:
 public:
 	GtkWidget *window;
 private:
-	GtkWidget *vbox, *hbox, *menubar, *statusbar;
+	GtkWidget *vbox, *hbox, *menubar, *statusbar, *headerbar;
 	Array<GtkWidget*> gtk_menu;
 	int gtk_num_menus;
 	struct InfoBar {
@@ -178,6 +179,7 @@ private:
 	};
 	Array<InfoBar> info_bars;
 	InfoBar *_get_info_bar(const string &id);
+	void _add_headerbar();
 #endif
 	
 protected:
@@ -197,6 +199,7 @@ public:
 class Dialog : public Window {
 public:
 	Dialog(const string &title, int width, int height, Window *parent, bool allow_parent);
+	Dialog(const string &id, Window *parent);
 	void _cdecl __init_ext__(const string &title, int width, int height, Window *parent, bool allow_parent);
 };
 

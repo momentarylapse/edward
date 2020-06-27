@@ -296,9 +296,8 @@ ControlDrawingArea::ControlDrawingArea(const string &title, const string &id) :
 #if STUPID_HACK
 	delay_timer = new Timer;
 #endif
-	GetPartStrings(title);
 	// FIXME: this needs to be supplied as title... fromSource() won't work...
-	is_opengl = (OptionString.find("opengl") >= 0);
+	is_opengl = option_has(get_option_from_title(title), "opengl");
 	GtkWidget *da;
 	if (is_opengl) {
 		NixGlArea = this;
@@ -330,14 +329,14 @@ ControlDrawingArea::ControlDrawingArea(const string &title, const string &id) :
 	gtk_widget_add_events(da, GDK_POINTER_MOTION_MASK);// | GDK_FOCUS_CHANGE_MASK);// | GDK_POINTER_MOTION_HINT_MASK); // GDK_POINTER_MOTION_HINT_MASK = "fewer motions"
 	gtk_widget_add_events(da, GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK);
 	gtk_widget_add_events(da, GDK_VISIBILITY_NOTIFY_MASK | GDK_SCROLL_MASK);
-	gtk_widget_add_events(da, GDK_SMOOTH_SCROLL_MASK);// | GDK_TOUCHPAD_GESTURE_MASK;
+	gtk_widget_add_events(da, GDK_SMOOTH_SCROLL_MASK | GDK_TOUCHPAD_GESTURE_MASK);
 	//mask = GDK_ALL_EVENTS_MASK;
 //	g_object_set(G_OBJECT(da), "events", mask, NULL);
 
 	widget = da;
 	gtk_widget_set_hexpand(widget, true);
 	gtk_widget_set_vexpand(widget, true);
-	set_options(OptionString);
+	set_options(get_option_from_title(title));
 
 	cur_cairo = nullptr;
 }
@@ -358,9 +357,34 @@ void ControlDrawingArea::make_current() {
 		gtk_gl_area_make_current(GTK_GL_AREA(widget));
 }
 
+void on_gtk_gesture_zoom(GtkGestureZoom *controller, gdouble scale, gpointer user_data) {
+	Control *c = reinterpret_cast<Control*>(user_data);
+	c->panel->win->input.scroll_x = scale;
+	c->panel->win->input.scroll_y = scale;
+	c->notify("hui:gesture-zoom", false);
+}
+
+void on_gtk_gesture_zoom_begin(GtkGestureZoom *controller, GdkEventSequence *sequence, gpointer user_data) {
+	Control *c = reinterpret_cast<Control*>(user_data);
+	c->notify("hui:gesture-zoom-begin", false);
+}
+
+void on_gtk_gesture_zoom_end(GtkGestureZoom *controller, GdkEventSequence *sequence, gpointer user_data) {
+	Control *c = reinterpret_cast<Control*>(user_data);
+	c->notify("hui:gesture-zoom-end", false);
+}
+
 void ControlDrawingArea::__set_option(const string &op, const string &value) {
 	if (op == "makecurrentgl") {
 		make_current();
+	} else if (op == "gesture") {
+		if (value == "zoom") {
+			auto gesture_zoom = gtk_gesture_zoom_new(widget);
+			gtk_event_controller_set_propagation_phase(GTK_EVENT_CONTROLLER (gesture_zoom), GTK_PHASE_TARGET);
+			g_signal_connect(G_OBJECT(gesture_zoom), "scale-changed", G_CALLBACK(&on_gtk_gesture_zoom), this);
+			g_signal_connect(G_OBJECT(gesture_zoom), "begin", G_CALLBACK(&on_gtk_gesture_zoom_begin), this);
+			g_signal_connect(G_OBJECT(gesture_zoom), "end", G_CALLBACK(&on_gtk_gesture_zoom_end), this);
+		}
 	}
 }
 

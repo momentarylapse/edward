@@ -57,9 +57,11 @@ extern const string IDENTIFIER_RETURN_VAR;
 extern const string IDENTIFIER_VTABLE_VAR;
 extern const string IDENTIFIER_ENUM;
 extern const string IDENTIFIER_CONST;
+extern const string IDENTIFIER_OUT;
 extern const string IDENTIFIER_OVERRIDE;
 extern const string IDENTIFIER_VIRTUAL;
 extern const string IDENTIFIER_EXTERN;
+extern const string IDENTIFIER_SELFREF;
 extern const string IDENTIFIER_USE;
 extern const string IDENTIFIER_RETURN;
 extern const string IDENTIFIER_RAISE;
@@ -83,6 +85,7 @@ extern const string IDENTIFIER_MAP;
 extern const string IDENTIFIER_LAMBDA;
 extern const string IDENTIFIER_SORTED;
 extern const string IDENTIFIER_DYN;
+extern const string IDENTIFIER_CALL;
 
 
 //--------------------------------------------------------------------------------------------------
@@ -173,7 +176,8 @@ enum class StatementID {
 	MAP,
 	LAMBDA,
 	SORTED,
-	DYN
+	DYN,
+	CALL
 };
 
 class Statement {

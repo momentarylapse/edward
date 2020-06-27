@@ -8,9 +8,9 @@ class NodeRandomColor extends ShaderNode
 		params.add([SHADER_TYPE_FLOAT, "detail", "3.0", "range=1:8"])
 		params.add([SHADER_TYPE_FLOAT, "exponent", "0.8", "range=0:2"])
 		output.add([SHADER_TYPE_COLOR, "out"])
-	override string[] dependencies()
+	override const string[] dependencies()
 		return ["rand3d", "noise3d", "noise3d_multi"]
-	override string code_pixel(ShaderBuilderContext c)
+	override const string code_pixel(out ShaderBuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	vec4 {{t}};

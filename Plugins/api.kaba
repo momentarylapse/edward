@@ -494,8 +494,8 @@ class ShaderNode extends Object
 			name = n
 	Port[] output
 	
-	extern virtual string[] dependencies()
-	extern virtual string code_pixel(ShaderBuilderContext ctx)
+	extern virtual const string[] dependencies()
+	extern virtual const string code_pixel(out ShaderBuilderContext ctx)
 
 extern DataModel* data_model
 extern DataWorld* data_world
