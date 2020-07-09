@@ -1,5 +1,5 @@
-project('edward', 'cpp', default_options : ['cpp_std=c++14', 'warning_level=1'])
-add_project_arguments('-O2', '-g', '-Wno-unused', '-Wstrict-aliasing=0', '-fno-omit-frame-pointer', language : ['cpp'])
+project('edward', 'cpp', default_options : ['cpp_std=c++14', 'warning_level=1', 'optimization=2', 'debug=true'])
+add_project_arguments('-Wno-unused', '-Wstrict-aliasing=0', '-fno-omit-frame-pointer', language : ['cpp'])
 
 #install_data
 #meson.add_install_script('')
@@ -299,7 +299,6 @@ sources = [
 	'src/lib/kaba/syntax/implicit.cpp',
 	'src/lib/kaba/syntax/lexical.cpp',
 	'src/lib/kaba/syntax/Node.cpp',
-	'src/lib/kaba/syntax/parser.cpp',
 	'src/lib/kaba/syntax/Parser.cpp',
 	'src/lib/kaba/syntax/precompiler.cpp',
 	'src/lib/kaba/syntax/preprocessor.cpp',

@@ -104,7 +104,7 @@ void DataMaterial::apply_for_rendering() {
 void DataMaterial::AppearanceData::update_shader_from_file() {
 	if (shader_file != "") {
 		shader_code = FileReadText(nix::shader_dir + shader_file);
-		if (file_test_existence(nix::shader_dir + shader_file + ".graph")) {
+		if (file_exists(nix::shader_dir + shader_file + ".graph")) {
 			shader_graph->load(nix::shader_dir + shader_file + ".graph");
 			shader_code = shader_graph->build_source();
 			shader_from_graph = true;

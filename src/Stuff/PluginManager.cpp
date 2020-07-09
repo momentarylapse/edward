@@ -290,14 +290,14 @@ void PluginManager::find_plugins() {
 	string dir0 = PluginManager::directory + "Shader Graph/";
 	auto list = dir_search(dir0, "*", true);
 	for (auto &e: list)
-		if (e.is_dir) {
-			string dir = dir0 + e.name + "/";
+		if (file_is_directory(dir0 + e)) {
+			string dir = dir0 + e + "/";
 			auto list2 = dir_search(dir, "*.kaba", false);
 			for (auto &e2: list2) {
 				Plugin p;
-				p.filename = dir + e2.name;
-				p.name = e2.name.replace(".kaba", "");
-				p.category = e.name;
+				p.filename = dir + e2;
+				p.name = e2.replace(".kaba", "");
+				p.category = e;
 				p.type = PluginType::SHADER_NODE;
 				plugins.add(p);
 			}

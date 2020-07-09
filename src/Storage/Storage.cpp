@@ -167,7 +167,7 @@ Array<string> parent_dirs(const string &_filename) {
 
 void Storage::guess_root_directory(const string &filename) {
 	for (auto &d: parent_dirs(filename))
-		if (file_test_existence(d + "game.ini")) {
+		if (file_exists(d + "game.ini")) {
 			set_root_directory(d);
 			return;
 		}
@@ -184,7 +184,7 @@ void Storage::set_root_directory(const string &_directory, bool compact_mode) {
 
 	root_dir = directory;
 
-	compact_mode = !file_test_existence(root_dir + "game.ini");
+	compact_mode = !file_exists(root_dir + "game.ini");
 
 
 	for (int i=0; i<NUM_FDS; i++) {

@@ -29,14 +29,13 @@ DataAdministration::~DataAdministration()
 	delete(file_list);
 }
 
-void DataAdministration::FraesDir(const string &root_dir, const string &dir, const string &extension)
-{
-	Array<DirEntry> list = dir_search(root_dir + dir, "*" + extension, true);
-	for (DirEntry &e: list){
-		if (e.is_dir){
-			FraesDir(root_dir, dir + e.name + "/", extension);
-		}else{
-			cft.add(dir + e.name);
+void DataAdministration::FraesDir(const string &root_dir, const string &dir, const string &extension) {
+	auto list = dir_search(root_dir + dir, "*" + extension, true);
+	for (auto &e: list) {
+		if (file_is_directory(root_dir + dir + "/" + e)) {
+			FraesDir(root_dir, dir + e + "/", extension);
+		} else {
+			cft.add(dir + e);
 		}
 	}
 }
@@ -307,7 +306,7 @@ void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 		}
 		source += a->Name;
 		target += a->Name;
-		if (file_copy(source, target))
+		if (FILE_OP_OK(file_copy(source, target)))
 			num_ok ++;
 	}
 	hui::InfoBox(hui::CurWindow, "info", format("%d von %d Dateien exportiern", num_ok, list.num));

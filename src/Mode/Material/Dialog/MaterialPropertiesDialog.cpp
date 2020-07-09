@@ -214,7 +214,7 @@ void MaterialPropertiesDialog::OnReflectionTextures() {
 				string tf;
 				tf = temp.reflection_texture_file[0];
 				tf[p-1]=temp.reflection_texture_file[0][p-1]+i;
-				if (file_test_existence(nix::texture_dir + tf)) {
+				if (file_exists(nix::texture_dir + tf)) {
 					temp.reflection_texture_file[i] = tf;
 				}
 			}

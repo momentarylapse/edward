@@ -19,7 +19,7 @@ void FormatMaterial::_load(const string &filename, DataMaterial *data, bool deep
 	data->reset();
 
 	File *f = FileOpenText(filename);
-	data->file_time = f->GetDateModification().time;
+	data->file_time = f->mtime().time;
 
 	ffv=f->ReadFileFormatVersion();
 	if (ffv<0){

@@ -14,6 +14,7 @@ extern const Class *TypeIntPs;
 extern const Class *TypeFloatPs;
 extern const Class *TypeBoolPs;
 extern const Class *TypeDate;
+extern const Class *TypeStringList;
 
 
 static File *_kaba_stdin = nullptr;
@@ -25,21 +26,6 @@ static File *_kaba_stdin = nullptr;
 #pragma GCC optimize("0")
 
 
-class DirEntryList : public Array<DirEntry> {
-public:
-	void _cdecl __assign__(const DirEntryList &o)
-	{	*this = o;	}
-	string _cdecl str() {
-		string s = "[";
-		for (int i=0;i<num;i++){
-			if (i > 0)
-				s += ", ";
-			s += (*this)[i].str();
-		}
-		s += "]";
-		return s;
-	}
-};
 
 class KabaFileError : public KabaException {
 public:
@@ -135,28 +121,23 @@ string kaba_file_hash(const string &filename, const string &type) {
 }
 
 void kaba_file_rename(const string &a, const string &b) {
-	if (!file_rename(a, b))
-		kaba_raise_exception(new KabaFileError("can not rename file '" + a + "' -> '" + b + "'"));
+	KABA_EXCEPTION_WRAPPER2(file_rename(a, b), KabaFileError);
 }
 
 void kaba_file_copy(const string &a, const string &b) {
-	if (!file_copy(a, b))
-		kaba_raise_exception(new KabaFileError("can not copy file '" + a + "' -> '" + b + "'"));
+	KABA_EXCEPTION_WRAPPER2(file_copy(a, b), KabaFileError);
 }
 
 void kaba_file_delete(const string &f) {
-	if (!file_delete(f))
-		kaba_raise_exception(new KabaFileError("can not delete file '" + f + "'"));
+	KABA_EXCEPTION_WRAPPER2(file_delete(f), KabaFileError);
 }
 
 void kaba_dir_create(const string &f) {
-	if (!dir_create(f))
-		kaba_raise_exception(new KabaFileError("can not create directory '" + f + "'"));
+	KABA_EXCEPTION_WRAPPER2(dir_create(f), KabaFileError);
 }
 
 void kaba_dir_delete(const string &f) {
-	if (!dir_delete(f))
-		kaba_raise_exception(new KabaFileError("can not delete directory '" + f + "'"));
+	KABA_EXCEPTION_WRAPPER2(dir_delete(f), KabaFileError);
 }
 
 
@@ -168,8 +149,6 @@ void SIAddPackageOS() {
 	const Class *TypeFile = add_type("File", 0);
 	const Class *TypeFileP = add_type_p(TypeFile);
 	const Class *TypeFilesystem = add_type("Filesystem", 0);
-	const Class *TypeDirEntry = add_type("DirEntry", sizeof(DirEntry));
-	const Class *TypeDirEntryList = add_type_l(TypeDirEntry);
 	const Class *TypeFileError = add_type("FileError", sizeof(KabaFileError));
 	//Class *TypeFileNotFoundError= add_type  ("FileError", sizeof(KabaFileNotFoundError));
 	//Class *TypeFileNotWritableError= add_type  ("FileError", sizeof(KabaFileNotWritableError));
@@ -177,9 +156,9 @@ void SIAddPackageOS() {
 	add_class(TypeFile);
 		class_add_funcx(IDENTIFIER_FUNC_DELETE, TypeVoid, &KabaFile::__delete__);
 		//class_add_funcx("getCDate", TypeDate, &File::GetDateCreation);
-		class_add_funcx("get_date", TypeDate, &File::GetDateModification);
+		class_add_funcx("mtime", TypeDate, &File::mtime);
 		//class_add_funcx("getADate", TypeDate, &File::GetDateAccess);
-		class_add_funcx("get_size", TypeInt, &File::get_size);
+		class_add_funcx("get_size", TypeInt, &File::get_size32);
 		class_add_funcx("get_pos", TypeInt, &File::get_pos);
 		class_add_funcx("set_pos", TypeVoid, &File::set_pos, Flags::RAISES_EXCEPTIONS);
 			func_add_param("pos", TypeInt);
@@ -211,22 +190,6 @@ void SIAddPackageOS() {
 			func_add_param("s", TypeString);
 		class_add_funcx("eof", TypeBool, &KabaFile::eof);
 
-	
-	add_class(TypeDirEntry);
-		class_add_elementx("name", TypeString, &DirEntry::name);
-		class_add_elementx("size", TypeInt, &DirEntry::size);
-		class_add_elementx("is_dir", TypeBool, &DirEntry::is_dir);
-		class_add_funcx(IDENTIFIER_FUNC_INIT, TypeVoid, &DirEntry::__init__);
-		class_add_funcx(IDENTIFIER_FUNC_ASSIGN, TypeVoid, &DirEntry::__assign__);
-			func_add_param("other", TypeDirEntry);
-		class_add_funcx("str", TypeString, &DirEntry::str);
-	
-	add_class(TypeDirEntryList);
-		class_add_funcx(IDENTIFIER_FUNC_INIT, TypeVoid, &DirEntryList::__init__);
-		class_add_funcx(IDENTIFIER_FUNC_ASSIGN, TypeVoid, &DirEntryList::__assign__);
-			func_add_param("other", TypeDirEntryList);
-		class_add_funcx("str", TypeString, &DirEntryList::str);
-
 	add_class(TypeFileError);
 		class_derive_from(TypeException, false, false);
 		class_add_funcx(IDENTIFIER_FUNC_INIT, TypeVoid, &KabaFileError::__init__, Flags::OVERRIDE);
@@ -253,7 +216,11 @@ void SIAddPackageOS() {
 		class_add_funcx("write_text", TypeVoid, &kaba_file_write_text, Flags::_STATIC__RAISES_EXCEPTIONS);
 			func_add_param("filename", TypeString);
 			func_add_param("buffer", TypeString);
-		class_add_funcx("exists", TypeBool, &file_test_existence, Flags::STATIC);
+		class_add_funcx("exists", TypeBool, &file_exists, Flags::STATIC);
+			func_add_param("filename", TypeString);
+		class_add_funcx("size", TypeInt64, &file_size, Flags::STATIC);
+			func_add_param("filename", TypeString);
+		class_add_funcx("mtime", TypeDate, &file_mtime, Flags::STATIC);
 			func_add_param("filename", TypeString);
 		class_add_funcx("is_directory", TypeBool, &file_is_directory, Flags::STATIC);
 			func_add_param("filename", TypeString);
@@ -268,7 +235,7 @@ void SIAddPackageOS() {
 			func_add_param("dest", TypeString);
 		class_add_funcx("delete", TypeVoid, &kaba_file_delete, Flags::_STATIC__RAISES_EXCEPTIONS);
 			func_add_param("filename", TypeString);
-		class_add_funcx("search", TypeDirEntryList, &dir_search, Flags::STATIC);
+		class_add_funcx("search", TypeStringList, &dir_search, Flags::STATIC);
 			func_add_param("dir", TypeString);
 			func_add_param("filter", TypeString);
 			func_add_param("show_dirs", TypeBool);

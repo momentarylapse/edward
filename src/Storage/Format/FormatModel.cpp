@@ -745,7 +745,7 @@ void FormatModel::_load(const string &filename, DataModel *data, bool deep) {
 
 
 	File *f = FileOpenText(filename);
-	data->file_time = f->GetDateModification().time;
+	data->file_time = f->mtime().time;
 
 	ffv=f->ReadFileFormatVersion();
 

@@ -72,12 +72,12 @@ void ModeAdministration::create_project_dir(const string &dir)
 	dir_create(dir + "Sounds");
 	dir_create(dir + "Textures");
 
-	if (!file_test_existence(dir + "game.ini")){
+	if (!file_exists(dir + "game.ini")){
 		GameIniData gi;
 		gi.Save(dir);
 	}
 
-	if (!file_test_existence(dir + "config.txt")){
+	if (!file_exists(dir + "config.txt")){
 		File *f = FileCreateText(dir + "config.txt");
 		f->write_comment("// ScreenWidth");
 		f->write_int(800);
@@ -131,7 +131,7 @@ bool ModeAdministration::open()
 	if (!hui::FileDialogDir(hui::CurWindow, _("Open project directory"), ""))
 		return false;
 
-	if (!file_test_existence(hui::Filename + "game.ini")){
+	if (!file_exists(hui::Filename + "game.ini")){
 		ed->error_box(_("game.ini not found"));
 		return false;
 	}

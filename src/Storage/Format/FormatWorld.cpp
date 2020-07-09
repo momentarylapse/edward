@@ -190,7 +190,7 @@ void FormatWorld::_load_old(const string &filename, DataWorld *data, bool deep) 
 	try{
 
 		f = FileOpenText(filename);
-		data->file_time = f->GetDateModification().time;
+		data->file_time = f->mtime().time;
 
 	ffv = f->ReadFileFormatVersion();
 

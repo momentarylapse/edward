@@ -166,20 +166,16 @@ void AdminFile::check(AdminFileList &list)
 	bool really_scan = true;
 
 	// test file existence
-	File *f = NULL;
-	try{
-		f = FileOpen(storage->get_root_dir(Kind) + Name);
-
+	try {
 		// file ok
-		int _time = f->GetDateModification().time;
+		int _time = file_mtime(storage->get_root_dir(Kind) + Name).time;
 		Missing = false;
-		delete(f);
 
 		// different time stamp -> rescan file
 		really_scan = (_time != Time);
 		if (really_scan)
 			remove_all_children();
-	}catch(...){
+	} catch(...) {
 
 		// no file -> missing
 		Missing = true;
@@ -262,10 +258,8 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_SCRIPT){
 		try{
-			File *f = FileOpen(Kaba::config.directory + Name);
-			Time = f->GetDateModification().time;
-			string buf = f->read_complete();
-			delete(f);
+			Time = file_mtime(Kaba::config.directory + Name).time;
+			string buf = FileReadText(Kaba::config.directory + Name);
 			// would be better to compile the script and look for functions having a string constant as a parameter...
 			//   -> would automatically ignore comments and   function( "aaa" + b )
 			for (int i=0;i<buf.num;i++){
@@ -279,12 +273,10 @@ void AdminFile::check(AdminFileList &list)
 		}catch(...){
 			Missing=true;
 		}
-	}else{
-		try{
-			File *f = FileOpen(storage->get_root_dir(Kind) + Name);
-			Time = f->GetDateModification().time;
-			delete(f);
-		}catch(...){
+	} else {
+		try {
+			Time = file_mtime(storage->get_root_dir(Kind) + Name).time;
+		} catch(...) {
 			Missing=true;
 		}
 	}
