@@ -1,4 +1,4 @@
-use "../api.kaba"
+use edward
 
 const float D = 30.0
 const float RMAX = 200.0

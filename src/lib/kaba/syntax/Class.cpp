@@ -10,7 +10,7 @@ ClassElement::ClassElement() {
 	type = nullptr;
 }
 
-ClassElement::ClassElement(const string &_name, const Class *_type, int _offset) {
+ClassElement::ClassElement(const string &_name, const Class *_type, int64 _offset) {
 	name = _name;
 	offset = _offset;
 	type = _type;
@@ -33,7 +33,7 @@ bool type_match(const Class *given, const Class *wanted) {
 		return true;
 
 	// allow any pointer?
-	if ((given->is_pointer()) and (wanted == TypePointer))
+	if (given->is_pointer() and (wanted == TypePointer))
 		return true;
 
 	// FIXME... quick'n'dirty hack to allow nil as parameter
@@ -55,7 +55,7 @@ bool type_match(const Class *given, const Class *wanted) {
 }
 
 
-Class::Class(const string &_name, int _size, SyntaxTree *_owner, const Class *_parent, const Class *_param) {
+Class::Class(const string &_name, int64 _size, SyntaxTree *_owner, const Class *_parent, const Class *_param) {
 	name = _name;
 	owner = _owner;
 	size = _size;
@@ -86,17 +86,31 @@ Class::~Class() {
 			delete c;
 }
 
+bool ns_needed(const Class *ns, const Class *observer_ns) {
+	if (!ns)
+		return false;
+	if (ns == observer_ns)
+		return false;
+	if (ns->name[0] == '-')
+		return false;
+	if (ns->owner->script->used_by_default)
+		if (ns == ns->owner->base_class)
+			return false;
+	return true;
+}
 
-
-string namespacify(const string &name, const Class *name_space) {
-	if (name_space)
-		if (name_space->name[0] != '-')
-			return namespacify(name_space->name + "." + name, name_space->name_space);
+string namespacify_rel(const string &name, const Class *name_space, const Class *observer_ns) {
+	if (ns_needed(name_space, observer_ns))
+		return namespacify_rel(name_space->name + "." + name, name_space->name_space, observer_ns);
 	return name;
 }
 
 string Class::long_name() const {
-	return namespacify(name, name_space);
+	return namespacify_rel(name, name_space, nullptr);
+}
+
+string Class::cname(const Class *ns) const {
+	return namespacify_rel(name, name_space, ns);
 }
 
 bool Class::is_array() const
@@ -400,7 +414,7 @@ void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool overr
 		if (as_virtual and (f->virtual_index < 0)) {
 			if (config.verbose)
 				msg_write("VVVVV +");
-			f->virtual_index = process_class_offset(name, f->name, max(vtable.num, 2));
+			f->virtual_index = process_class_offset(cname(owner->base_class), f->name, max(vtable.num, 2));
 		}
 
 		// override?
@@ -412,11 +426,11 @@ void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool overr
 				orig_index = i;
 			}
 		if (override and !orig)
-			s->do_error(format("can not override function %s, no previous definition", f->signature().c_str()), f->_exp_no, f->_logical_line_no);
+			s->do_error(format("can not override function %s, no previous definition", f->signature()), f->_exp_no, f->_logical_line_no);
 		if (!override and orig) {
 			msg_write(f->signature());
 			msg_write(orig->signature());
-			s->do_error(format("function %s is already defined, use '%s'", f->signature().c_str(), IDENTIFIER_OVERRIDE.c_str()), f->_exp_no, f->_logical_line_no);
+			s->do_error(format("function %s is already defined, use '%s'", f->signature(), IDENTIFIER_OVERRIDE), f->_exp_no, f->_logical_line_no);
 		}
 		if (override) {
 			if (config.verbose)

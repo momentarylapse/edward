@@ -45,45 +45,45 @@ void ConfigurationDialog::load_data()
 //	data->LoadGameIni(ed->RootDir, &GameIniDialog);
 	//GameIniData game = *data->GameIni;
 	GameIniData game;
-	game.Load(storage->root_dir);
-	set_string("world",game.DefWorld);
-	set_string("second-world",game.SecondWorld);
-	set_string("script",game.DefScript);
-	set_string("material",game.DefMaterial);
-	set_string("font",game.DefFont);
+	game.load(storage->root_dir);
+	set_string("world", game.default_world.str());
+	set_string("second-world", game.second_world.str());
+	set_string("script", game.default_script.str());
+	set_string("material", game.default_material.str());
+	set_string("font", game.default_font.str());
 
-	set_string("root-directory",storage->root_dir);
+	set_string("root-directory", storage->root_dir.str());
 }
 
 
 void ConfigurationDialog::on_find_root_dir() {
-	if (hui::FileDialogDir(this,_("Working directory"),storage->root_dir))
-		set_string("root-directory", hui::Filename);
+	if (hui::FileDialogDir(this, _("Working directory"), storage->root_dir))
+		set_string("root-directory", hui::Filename.str());
 }
 
 void ConfigurationDialog::on_find_world() {
 	if (storage->file_dialog(FD_WORLD, false, true))
-		set_string("world", storage->dialog_file_no_ending);
+		set_string("world", storage->dialog_file_no_ending.str());
 }
 
 void ConfigurationDialog::on_find_second_world() {
 	if (storage->file_dialog(FD_WORLD, false, true))
-		set_string("second-world", storage->dialog_file_no_ending);
+		set_string("second-world", storage->dialog_file_no_ending.str());
 }
 
 void ConfigurationDialog::on_find_script() {
 	if (storage->file_dialog(FD_SCRIPT, false, true))
-		set_string("script", storage->dialog_file);
+		set_string("script", storage->dialog_file.str());
 }
 
 void ConfigurationDialog::on_find_material() {
 	if (storage->file_dialog(FD_MATERIAL, false, true))
-		set_string("material", storage->dialog_file_no_ending);
+		set_string("material", storage->dialog_file_no_ending.str());
 }
 
 void ConfigurationDialog::on_find_font() {
 	if (storage->file_dialog(FD_FONT, false, true))
-		set_string("font", storage->dialog_file_no_ending);
+		set_string("font", storage->dialog_file_no_ending.str());
 }
 
 void ConfigurationDialog::on_ok() {
@@ -91,11 +91,11 @@ void ConfigurationDialog::on_ok() {
 		//GameIniAlt=GameIni;
 		GameIniData GameIniExport = *data->GameIni;
 		string dir = get_string("root-directory");
-		GameIniExport.DefWorld = get_string("world");
-		GameIniExport.SecondWorld = get_string("second-world");
-		GameIniExport.DefScript = get_string("script");
-		GameIniExport.DefMaterial = get_string("material");
-		GameIniExport.DefFont = get_string("font");
+		GameIniExport.default_world = get_string("world");
+		GameIniExport.second_world = get_string("second-world");
+		GameIniExport.default_script = get_string("script");
+		GameIniExport.default_material = get_string("material");
+		GameIniExport.default_font = get_string("font");
 //		_exporting_type_ = getInt("export_type");
 //		_exporting_system_ = getInt("ged_system");
 		try {
@@ -110,13 +110,13 @@ void ConfigurationDialog::on_ok() {
 		if (rdc)
 			storage->set_root_directory(get_string("root-directory"));
 //		data->UnlinkGameIni();
-		data->GameIni->DefWorld = get_string("world");
-		data->GameIni->SecondWorld = get_string("second-world");
-		data->GameIni->DefScript = get_string("script");
-		data->GameIni->DefMaterial = get_string("material");
-		data->GameIni->DefFont = get_string("font");
+		data->GameIni->default_world = get_string("world");
+		data->GameIni->second_world = get_string("second-world");
+		data->GameIni->default_script = get_string("script");
+		data->GameIni->default_material = get_string("material");
+		data->GameIni->default_font = get_string("font");
 //		data->LinkGameIni(data->GameIni);
-		data->GameIni->Save(storage->root_dir);
+		data->GameIni->save(storage->root_dir);
 		if (rdc)
 			data->UpdateDatabase();
 	}

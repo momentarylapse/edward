@@ -23,29 +23,27 @@ DataAdministration::DataAdministration() :
 	file_list = new AdminFileList;
 }
 
-DataAdministration::~DataAdministration()
-{
-	delete(GameIni);
-	delete(file_list);
+DataAdministration::~DataAdministration() {
+	delete GameIni;
+	delete file_list;
 }
 
-void DataAdministration::FraesDir(const string &root_dir, const string &dir, const string &extension) {
-	auto list = dir_search(root_dir + dir, "*" + extension, true);
+void DataAdministration::FraesDir(const Path &root_dir, const Path &dir, const string &extension) {
+	auto list = dir_search(root_dir << dir, "*" + extension, true);
 	for (auto &e: list) {
-		if (file_is_directory(root_dir + dir + "/" + e)) {
-			FraesDir(root_dir, dir + e + "/", extension);
+		if (file_is_directory(root_dir << dir << e)) {
+			FraesDir(root_dir, dir << e, extension);
 		} else {
-			cft.add(dir + e);
+			cft.add(dir << e);
 		}
 	}
 }
 
-void DataAdministration::MetaFraesDir(int kind)
-{
+void DataAdministration::MetaFraesDir(int kind) {
 	string extension ="x";
 	cft.clear();
 
-	string dir = storage->get_root_dir(kind);
+	auto dir = storage->get_root_dir(kind);
 	if (kind==FD_WORLD)		extension = ".world";
 	if (kind==FD_TERRAIN)	extension = ".map";
 	if (kind==FD_MODEL)		extension = ".model";
@@ -74,29 +72,28 @@ void DataAdministration::TestRootDirectory()
 	SetRootDirectory(RootDir);*/
 }
 
-bool DataAdministration::save(const string &_filename)
-{
+bool DataAdministration::save(const Path &_filename) {
 	filename = _filename;
 	File* f = NULL;
-	try{
+	try {
 		f = FileCreateText(filename);
 		f->write_comment("// Number Of Files");
 		f->write_int(file_list->num);
 		f->write_comment("// Files (type, filename, date, missing)");
-		for (AdminFile *a: *file_list){
+		for (AdminFile *a: *file_list) {
 			f->write_int(a->Kind);
-			f->write_str(a->Name);
+			f->write_str(a->Name.str());
 			f->write_int(a->Time);
 			f->write_bool(a->Missing);
 		}
 		f->write_comment("// Links (num dests, dests...)");
-		for (AdminFile *a: *file_list){
+		for (AdminFile *a: *file_list) {
 			f->write_int(a->Child.num);
-			for (AdminFile *d: a->Child){
+			for (AdminFile *d: a->Child) {
 				int n=-1;
 				foreachi(AdminFile *aa, *file_list, k)
-					if (d == aa){
-						n=k;
+					if (d == aa) {
+						n = k;
 						break;
 					}
 				f->write_int(n);
@@ -104,66 +101,61 @@ bool DataAdministration::save(const string &_filename)
 		}
 		f->write_str("#");
 		delete(f);
-	}catch(...){}
+	} catch(...) {}
 	return true;
 }
 
-void DataAdministration::SaveDatabase()
-{
-	save(app->directory + "admin_database.txt");
+void DataAdministration::SaveDatabase() {
+	save(app->directory << "admin_database.txt");
 }
 
-void DataAdministration::reset()
-{
+void DataAdministration::reset() {
 	file_list->clear_deep();
 }
 
-bool DataAdministration::load(const string &_filename, bool deep)
-{
+bool DataAdministration::load(const Path &_filename, bool deep) {
 	reset();
 	filename = _filename;
 
-	try{
+	try {
 
 		File *f = FileOpenText(filename);
 		f->read_comment();
 		int num = f->read_int();
-		for (int i=0;i<num;i++){
+		for (int i=0;i<num;i++) {
 			AdminFile *a = new AdminFile;
 			file_list->add(a);
 		}
 		// files
 		f->read_comment();
-		for (AdminFile *a: *file_list){
+		for (AdminFile *a: *file_list) {
 			a->Kind = f->read_int();
-			a->Name = f->read_str().sys_filename();
+			a->Name = f->read_str();
 			a->Time = f->read_int();
 			a->Missing = f->read_bool();
 			a->Checked = false;
 		}
 		// links
 		f->read_comment();
-		for (AdminFile *a: *file_list){
+		for (AdminFile *a: *file_list) {
 			int nd = f->read_int();
-			for (int j=0;j<nd;j++){
+			for (int j=0;j<nd;j++) {
 				int n = f->read_int();
 				a->add_child((*file_list)[n]);
 			}
 		}
 		delete(f);
-	}catch(...){
+	} catch(...) {
 	}
 	notify();
 	return true;
 }
 
-void DataAdministration::LoadDatabase()
-{
-	load(app->directory + "admin_database.txt");
+void DataAdministration::LoadDatabase() {
+	load(app->directory << "admin_database.txt");
 }
 
-AdminFile *AdminFileList::add_engine_files()
-{
+AdminFile *AdminFileList::add_engine_files() {
 	AdminFile *f1 = add_unchecked(-1, "x.exe");
 	AdminFile *f2 = add_unchecked(-1, "config.txt");
 	AdminFile *f3 = add_unchecked(-1, "game.ini");
@@ -172,48 +164,47 @@ AdminFile *AdminFileList::add_engine_files()
 	return f3;
 }
 
-void AdminFileList::add_from_game_ini(GameIniData &game_ini, AdminFile *f)
-{
-	add_unchecked_ae(FD_SCRIPT,  game_ini.DefScript, f);
-	add_unchecked_ae(FD_WORLD,   game_ini.DefWorld, f);
-	add_unchecked_ae(FD_WORLD,   game_ini.SecondWorld, f);
-	add_unchecked_ae(FD_MATERIAL,game_ini.DefMaterial, f);
-	add_unchecked_ae(FD_FONT,    game_ini.DefFont, f);
+void AdminFileList::add_from_game_ini(GameIniData &game_ini, AdminFile *f) {
+	add_unchecked_ae(FD_SCRIPT,  game_ini.default_script, f);
+	add_unchecked_ae(FD_WORLD,   game_ini.default_world, f);
+	add_unchecked_ae(FD_WORLD,   game_ini.second_world, f);
+	add_unchecked_ae(FD_MATERIAL,game_ini.default_material, f);
+	add_unchecked_ae(FD_FONT,    game_ini.default_font, f);
 }
 
 void AdminFileList::add_from_game_ini_export(AdminFileList *source, GameIniData &game_ini)
 {
 	AdminFile *a;
-	if (game_ini.DefScript.num > 0){
-		a = source->get(FD_SCRIPT,  game_ini.DefScript);
+	if (!game_ini.default_script.is_empty()){
+		a = source->get(FD_SCRIPT, game_ini.default_script);
 		if (!a)
 			throw AdminGameExportException("game.ini: script file");
 		add_recursive(a);
 	}
 
-	if (game_ini.DefWorld.num > 0){
-		a = source->get(FD_WORLD,   game_ini.DefWorld + ".world");
+	if (!game_ini.default_world.is_empty()){
+		a = source->get(FD_WORLD, game_ini.default_world.str() + ".world");
 		if (!a)
 			throw AdminGameExportException("game.ini: initial world");
 		add_recursive(a);
 	}
 
-	if (game_ini.SecondWorld.num > 0){
-		a = source->get(FD_WORLD,   game_ini.SecondWorld + ".world");
+	if (!game_ini.second_world.is_empty()){
+		a = source->get(FD_WORLD, game_ini.second_world.str() + ".world");
 		if (!a)
 			throw AdminGameExportException("game.ini: second world");
 		add_recursive(a);
 	}
 
-	if (game_ini.DefMaterial.num > 0){
-		a = source->get(FD_MATERIAL,game_ini.DefMaterial + ".material");
+	if (!game_ini.default_material.is_empty()){
+		a = source->get(FD_MATERIAL, game_ini.default_material.str() + ".material");
 		if (!a)
 			throw AdminGameExportException("game.ini: default material");
 		add_recursive(a);
 	}
 
-	if (game_ini.DefFont.num > 0){
-		a = source->get(FD_FONT,    game_ini.DefFont + ".xfont");
+	if (!game_ini.default_font.is_empty()){
+		a = source->get(FD_FONT, game_ini.default_font.str() + ".xfont");
 		if (!a)
 			throw AdminGameExportException("game.ini: default font");
 		add_recursive(a);
@@ -229,7 +220,7 @@ void DataAdministration::UpdateDatabase()
 	// make sure the "Engine"-files are the first 3 ones
 	AdminFile *f_game_ini = file_list->add_engine_files();
 
-	GameIni->Load(storage->root_dir);
+	GameIni->load(storage->root_dir);
 
 	// find all files
 	// iterate file types
@@ -264,7 +255,23 @@ void DataAdministration::UpdateDatabase()
 	notify();
 }
 
-void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
+Path kind_subdir(int kind) {
+	if ((kind == FD_WORLD) || (kind == FD_TERRAIN))
+		return "Maps";
+	if (kind == FD_MODEL)
+		return "Objects";
+	if ((kind == FD_MATERIAL) || (kind == FD_SHADERFILE))
+		return "Materials";
+	if (kind == FD_FONT)
+		return "Fonts";
+	if ((kind == FD_SCRIPT) || (kind == FD_CAMERAFLIGHT))
+		return "Scripts";
+	if (kind == FD_TEXTURE)
+		return "Textures";
+	return "";
+}
+
+void DataAdministration::ExportGame(const Path &dir, GameIniData &game_ini)
 {
 	if (dir == storage->root_dir)
 		throw AdminGameExportException("export dir = root dir");
@@ -276,36 +283,15 @@ void DataAdministration::ExportGame(const string &dir, GameIniData &game_ini)
 	ed->progress->start(_("Export game"), 0);
 	int num_ok = 0;
 
-	game_ini.Save(dir);
+	game_ini.save(dir);
 
 	foreachi(AdminFile *a, list, i){
 		ed->progress->set((float)i / (float)list.num);
 		if (a->Missing)
 			continue;
 
-		string source = storage->root_dir;
-		string target = dir;
-		if ((a->Kind == FD_WORLD) || (a->Kind == FD_TERRAIN)){
-			source += "Maps/";
-			target += "Maps/";
-		}else if (a->Kind == FD_MODEL){
-			source += "Objects/";
-			target += "Objects/";
-		}else if ((a->Kind == FD_MATERIAL) || (a->Kind == FD_SHADERFILE)){
-			source += "Materials/";
-			target += "Materials/";
-		}else if (a->Kind == FD_FONT){
-			source += "Fonts/";
-			target += "Fonts/";
-		}else if ((a->Kind == FD_SCRIPT) || (a->Kind == FD_CAMERAFLIGHT)){
-			source += "Scripts/";
-			target += "Scripts/";
-		}else if (a->Kind == FD_TEXTURE){
-			source += "Textures/";
-			target += "Textures/";
-		}
-		source += a->Name;
-		target += a->Name;
+		Path source = storage->root_dir << kind_subdir(a->Kind) << a->Name;
+		Path target = dir << kind_subdir(a->Kind) << a->Name;
 		if (FILE_OP_OK(file_copy(source, target)))
 			num_ok ++;
 	}

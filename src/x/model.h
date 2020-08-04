@@ -26,7 +26,11 @@
 
 
 #include "../lib/base/base.h"
+#include "../lib/file/path.h"
 #include "../lib/math/math.h"
+
+class btRigidBody;
+class btCollisionShape;
 
 
 class Model;
@@ -211,7 +215,7 @@ class ModelEffectData {
 public:
 	int vertex;
 	int type;
-	string filename;
+	Path filename;
 	float radius, speed;
 	color am, di, sp;
 };
@@ -242,12 +246,12 @@ enum {
 
 class ModelTemplate {
 public:
-	string filename, script_filename;
+	Path filename, script_filename;
 	Array<TemplateDataScriptVariable> variables;
 	Model *model;
 	Array<ModelEffectData> fx;
-	Array<string> bone_model_filename;
-	Array<string> inventory_filename;
+	Array<Path> bone_model_filename;
+	Array<Path> inventory_filename;
 	Kaba::Script *script;
 
 	ModelTemplate(Model *m);
@@ -261,7 +265,7 @@ public:
 	void _cdecl __init__();
 	void _cdecl __delete__() override;
 
-	void load(const string &filename);
+	void load(const Path &filename);
 	Model *copy(Model *pre_allocated = NULL);
 	void reset_data();
 	void _cdecl make_editable();
@@ -361,7 +365,7 @@ public:
 
 	// template (shared)
 	ModelTemplate *_template;
-	string _cdecl filename();
+	Path _cdecl filename();
 
 	// engine data
 	bool registered;
@@ -382,8 +386,8 @@ public:
 		MetaMove *meta;
 	} anim;
 
-	/*dBodyID*/ void* body_id;
-	/*dGeomID*/ void* geom_id;
+	btRigidBody* body;
+	btCollisionShape* colShape;
 
 	virtual void _cdecl on_init(){}
 	virtual void _cdecl on_delete(){}

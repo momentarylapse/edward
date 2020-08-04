@@ -46,6 +46,9 @@ struct StackFrameInfo {
 	Script *s;
 	Function *f;
 	int64 offset;
+	string str() const {
+		return format(">>  %s : %s()  +0x%x", s->filename.str(), f->long_name(), offset);
+	}
 };
 
 
@@ -87,7 +90,7 @@ StackFrameInfo get_func_from_rip(void *rip)
 		return r;
 
 	// externally linked...
-	for (auto p: Packages){
+	for (auto p: packages){
 		func_from_rip_test_script(r, p, rip, true);
 	}
 	return r;
@@ -209,7 +212,7 @@ const Class* get_type(void *p)
 		return TypeUnknown;
 	void *vtable = *(void**)p;
 	auto scripts = _public_scripts_;
-	for (auto p: Packages)
+	for (auto p: packages)
 		scripts.add(p);
 	for (Script* s: scripts) {
 		auto *r = _get_type(p, vtable, s->syntax->base_class);
@@ -245,7 +248,7 @@ Array<StackFrameInfo> get_stack_trace(void **rbp)
 			r.rbp = rbp;
 			trace.add(r);
 			if (_verbose_exception_)
-				msg_write(">>  " + r.s->filename + " : " + r.f->long_name() + format("()  +%d", r.offset));
+				msg_write(r.str());
 
 		}else{
 			//if (_verbose_exception_)
@@ -294,7 +297,7 @@ void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 	for (auto r: trace){
 
 		if (_verbose_exception_)
-			msg_write(">>  " + r.s->filename + " : " + r.f->long_name() + format("()  +%d", r.offset));
+			msg_write(r.str());
 		auto ebd = get_blocks(r.s, r.f, r.rip, ex_type);
 
 		for (Block *b: ebd.needs_killing){
@@ -339,7 +342,7 @@ void _cdecl kaba_raise_exception(KabaException *kaba_exception)
 	else
 		msg_error("uncaught " + get_type(kaba_exception)->name + ":  " + kaba_exception->message());
 	for (auto r: trace)
-		msg_write(">>  " + r.s->filename + " : " + r.f->long_name() + format("()  + 0x%x", r.offset));
+		msg_write(r.str());
 #endif
 	exit(1);
 }

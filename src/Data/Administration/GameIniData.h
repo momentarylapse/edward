@@ -11,13 +11,12 @@
 #include "../Data.h"
 
 
-class GameIniData
-{
+class GameIniData {
 public:
-	string DefScript, DefWorld, SecondWorld, DefMaterial, DefFont;
+	Path default_script, default_world, second_world, default_material, default_font;
 	void reset();
-	void Load(const string &dir);
-	void Save(const string &dir);
+	void load(const Path &dir);
+	void save(const Path &dir);
 };
 
 

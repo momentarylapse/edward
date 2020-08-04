@@ -111,7 +111,7 @@ void WorldPropertiesDialog::on_physics_enabled() {
 void WorldPropertiesDialog::on_skybox_remove() {
 	int n = get_int("skybox");
 	if (n >= 0)
-		if (temp.SkyBoxFile[n].num > 0) {
+		if (!temp.SkyBoxFile[n].is_empty()) {
 			temp.SkyBoxFile[n] = "";
 			fill_skybox_list();
 		}
@@ -122,7 +122,7 @@ void WorldPropertiesDialog::on_skybox_remove() {
 void WorldPropertiesDialog::on_script_add() {
 	if (storage->file_dialog(FD_SCRIPT, false, true)) {
 		WorldScript s;
-		s.filename = storage->dialog_file_complete.substr(Kaba::config.directory.num, -1);
+		s.filename = storage->dialog_file_complete.relative_to(Kaba::config.directory);
 		temp.scripts.add(s);
 		/*try{
 			auto ss = Kaba::Load(s.filename, true);
@@ -191,6 +191,7 @@ void update_script_data(WorldScript &s) {
 			}
 		}
 	} catch(Exception &e) {
+		msg_error(e.message());
 
 	}
 
@@ -209,8 +210,8 @@ void WorldPropertiesDialog::on_edit_script_vars() {
 void WorldPropertiesDialog::on_edit_script() {
 	int n = get_int("script_list");
 	if (n >= 0) {
-		string filename = Kaba::config.directory + temp.scripts[n].filename;
-		int r = system(("sgribthmaker '" + filename + "'").c_str());
+		auto filename = Kaba::config.directory << temp.scripts[n].filename;
+		int r = system(("sgribthmaker '" + filename.str() + "'").c_str());
 		//hui::OpenDocument(filename);
 	}
 }
@@ -229,7 +230,7 @@ void WorldPropertiesDialog::on_create_script() {
 	FileWriteText(storage->dialog_file_complete, source);
 
 	WorldScript s;
-	s.filename = storage->dialog_file_complete.substr(Kaba::config.directory.num, -1);
+	s.filename = storage->dialog_file_complete.relative_to(Kaba::config.directory);
 	temp.scripts.add(s);
 	fill_script_list();
 }
@@ -262,8 +263,8 @@ void WorldPropertiesDialog::on_fog_mode_exp() {
 void WorldPropertiesDialog::fill_skybox_list() {
 	hui::ComboBoxSeparator = ":";
 	reset("skybox");
-	foreachi(string &sb, temp.SkyBoxFile, i)
-		add_string("skybox", format("%d:%s", i, sb.c_str()));
+	foreachi(auto &sb, temp.SkyBoxFile, i)
+		add_string("skybox", format("%d:%s", i, sb));
 	hui::ComboBoxSeparator = "\\";
 }
 
@@ -275,7 +276,7 @@ void WorldPropertiesDialog::fill_script_list() {
 	hui::ComboBoxSeparator = ":";
 	reset("script_list");
 	for (auto &s: temp.scripts)
-		add_string("script_list", s.filename);
+		add_string("script_list", s.filename.str());
 	enable("remove_script", false);
 	enable("edit_script_vars", false);
 	hui::ComboBoxSeparator = "\\";

@@ -157,7 +157,7 @@ void DataWorld::UpdateData() {
 		t.update_data();
 }
 
-WorldObject* DataWorld::AddObject(const string& filename, const vector& pos) {
+WorldObject* DataWorld::AddObject(const Path &filename, const vector& pos) {
 	WorldObject o;
 	o.pos = pos;
 	o.ang = v_0;//quaternion::ID;
@@ -168,15 +168,14 @@ WorldObject* DataWorld::AddObject(const string& filename, const vector& pos) {
 	return (WorldObject*)execute(new ActionWorldAddObject(o));
 }
 
-WorldTerrain* DataWorld::AddTerrain(const string& filename, const vector& pos)
+WorldTerrain* DataWorld::AddTerrain(const Path &filename, const vector& pos)
 {	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, filename));	}
 
 WorldTerrain* DataWorld::AddNewTerrain(const vector& pos, const vector& size, int num_x, int num_z)
 {	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));	}
 
 
-void DataWorld::ClearSelection()
-{
+void DataWorld::ClearSelection() {
 	for (WorldObject &o: objects)
 		o.is_selected = false;
 	for (WorldTerrain &t: terrains)

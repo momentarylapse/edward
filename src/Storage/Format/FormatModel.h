@@ -18,8 +18,8 @@ class FormatModel : public TypedFormat<DataModel> {
 public:
 	FormatModel();
 
-	void _load(const string &filename, DataModel *data, bool deep) override;
-	void _save(const string &filename, DataModel *data) override;
+	void _load(const Path &filename, DataModel *data, bool deep) override;
+	void _save(const Path &filename, DataModel *data) override;
 
 	void _load_v10(File *f, DataModel *data, bool deep);
 	void _load_v11(File *f, DataModel *data, bool deep);

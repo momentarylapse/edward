@@ -14,7 +14,7 @@ class AdminFileList;
 
 class AdminFile{
 public:
-	string Name;
+	Path Name;
 	int Kind;
 	bool Missing;
 	bool Checked;
@@ -23,7 +23,7 @@ public:
 	int Time;
 
 	AdminFile();
-	AdminFile(const string &filename, int kind);
+	AdminFile(const Path &filename, int kind);
 	void add_child(AdminFile *a);
 	void remove_child(AdminFile *a);
 	void remove_all_children();

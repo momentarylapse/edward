@@ -18,8 +18,8 @@ class FormatModelJson : public TypedFormat<DataModel> {
 public:
 	FormatModelJson();
 
-	void _load(const string &filename, DataModel *data, bool deep) override;
-	void _save(const string &filename, DataModel *data) override;
+	void _load(const Path &filename, DataModel *data, bool deep) override;
+	void _save(const Path &filename, DataModel *data) override;
 
 
 

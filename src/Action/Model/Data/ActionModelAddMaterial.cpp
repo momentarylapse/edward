@@ -8,17 +8,11 @@
 #include "ActionModelAddMaterial.h"
 #include "../../../Data/Model/DataModel.h"
 
-ActionModelAddMaterial::ActionModelAddMaterial(const string &_filename)
-{
+ActionModelAddMaterial::ActionModelAddMaterial(const Path &_filename) {
 	filename = _filename;
 }
 
-ActionModelAddMaterial::~ActionModelAddMaterial()
-{
-}
-
-void *ActionModelAddMaterial::execute(Data *d)
-{
+void *ActionModelAddMaterial::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	auto mat = new ModelMaterial(filename);
@@ -32,8 +26,7 @@ void *ActionModelAddMaterial::execute(Data *d)
 
 
 
-void ActionModelAddMaterial::undo(Data *d)
-{
+void ActionModelAddMaterial::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	delete m->material.pop();

@@ -254,16 +254,14 @@ bool ModeWorldCamera::open()
 	return false;
 }
 
-bool ModeWorldCamera::save()
-{
-	if (data->filename.num > 0)
+bool ModeWorldCamera::save() {
+	if (!data->filename.is_empty())
 		return data->save(data->filename);
 	else
 		return save_as();
 }
 
-bool ModeWorldCamera::save_as()
-{
+bool ModeWorldCamera::save_as() {
 	if (storage->file_dialog(FD_CAMERAFLIGHT, true, true))
 		return data->save(storage->dialog_file_complete);
 	return false;

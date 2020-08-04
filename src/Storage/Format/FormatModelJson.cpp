@@ -131,7 +131,7 @@ string boneToJson(ModelBone &b)
 }
 
 
-void FormatModelJson::_save(const string &filename, DataModel *m) {
+void FormatModelJson::_save(const Path &filename, DataModel *m) {
 
 	File *f = FileCreateText(filename);
 
@@ -286,7 +286,7 @@ string FormatModelJson::rnext()
 	string s;
 	for (int i=0; i<256; i++){
 		char c = f->read_char();
-		if (f->eof())
+		if (f->end())
 			return "";
 		if (is_whitespace(c))
 			continue;
@@ -306,7 +306,7 @@ string FormatModelJson::rnext()
 			if (is_string)
 				if (c == '\"')
 					break;
-			if (f->eof())
+			if (f->end())
 				return s;
 		}
 		break;
@@ -616,7 +616,7 @@ color FormatModelJson::val2col3(Value* v, int offset)
 	return color(1, v->get(offset)->f(), v->get(offset+1)->f(), v->get(offset+2)->f());
 }
 
-void FormatModelJson::_load(const string &filename, DataModel *m, bool deep) {
+void FormatModelJson::_load(const Path &filename, DataModel *m, bool deep) {
 
 	m->reset();
 	m->action_manager->enable(false);
@@ -625,7 +625,7 @@ void FormatModelJson::_load(const string &filename, DataModel *m, bool deep) {
 	f = FileOpenText(filename);
 
 	msg_write("lexical");
-	while (!f->eof())
+	while (!f->end())
 		tokens.add(rnext());
 	cur_token = 0;
 

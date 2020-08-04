@@ -30,14 +30,16 @@
 
 namespace Kaba{
 
-string LibVersion = "0.18.5.2";
-
 
 const string IDENTIFIER_CLASS = "class";
 const string IDENTIFIER_FUNC_INIT = "__init__";
 const string IDENTIFIER_FUNC_DELETE = "__delete__";
 const string IDENTIFIER_FUNC_ASSIGN = "__assign__";
 const string IDENTIFIER_FUNC_GET = "__get__";
+const string IDENTIFIER_FUNC_SET = "__set__";
+const string IDENTIFIER_FUNC_LENGTH = "__length__";
+const string IDENTIFIER_FUNC_STR = "__str__";
+const string IDENTIFIER_FUNC_REPR = "__repr__";
 const string IDENTIFIER_FUNC_SUBARRAY = "__subarray__";
 const string IDENTIFIER_SUPER = "super";
 const string IDENTIFIER_SELF = "self";
@@ -63,6 +65,7 @@ const string IDENTIFIER_EXTERN = "extern";
 //const string IDENTIFIER_ACCESSOR = "accessor";
 const string IDENTIFIER_SELFREF = "selfref";
 const string IDENTIFIER_USE = "use";
+const string IDENTIFIER_IMPORT = "import";
 const string IDENTIFIER_RETURN = "return";
 const string IDENTIFIER_RAISE = "raise";
 const string IDENTIFIER_TRY = "try";
@@ -183,8 +186,10 @@ const Class *TypeFunctionP;
 const Class *TypeFunctionCode;
 const Class *TypeFunctionCodeP;
 
+extern const Class *TypePath;
 
-Array<Script*> Packages;
+
+Array<Script*> packages;
 Script *cur_package = nullptr;
 
 
@@ -202,11 +207,17 @@ Flags flags_mix(const Array<Flags> &f) {
 	return r;
 }
 
-void add_package(const string &name, bool used_by_default) {
+void add_package(const string &name, Flags flags) {
+	for (auto &p: packages)
+		if (p->filename.str() == name) {
+			cur_package = p;
+			return;
+		}
 	Script* s = new Script;
-	s->used_by_default = used_by_default;
+	s->used_by_default = flags_has(flags, Flags::AUTO_IMPORT);
+	s->syntax->base_class->name = name;
 	s->filename = name;
-	Packages.add(s);
+	packages.add(s);
 	cur_package = s;
 }
 
@@ -459,7 +470,7 @@ int get_virtual_index(void *func, const string &tname, const string &name) {
 			}
 		} catch (...) {
 			msg_error("Script class_add_func_virtual(" + tname + "." + name + "):  can't read virtual index");
-			msg_write(string((char*)pp, 4).hex());
+			msg_write(p2s(pp));
 			msg_write(Asm::disassemble(func, 16));
 		}
 	} else {
@@ -572,6 +583,13 @@ void func_add_param(const string &name, const Class *type) {
 	}
 }
 
+class PointerList : public Array<void*> {
+public:
+	bool __contains__(void *x) {
+		return find(x) >= 0;
+	}
+};
+
 void script_make_super_array(Class *t, SyntaxTree *ps)
 {
 	const Class *p = t->param;
@@ -593,6 +611,8 @@ void script_make_super_array(Class *t, SyntaxTree *ps)
 				class_add_funcx("insert", TypeVoid, &DynamicArray::insert_p_single);
 					func_add_param("x", p);
 					func_add_param("index", TypeInt);
+				class_add_funcx("__contains__", TypeBool, &PointerList::__contains__);
+					func_add_param("x", p);
 			}else if (p == TypeFloat32){
 				class_add_funcx(IDENTIFIER_FUNC_INIT, TypeVoid, &Array<float>::__init__);
 				class_add_funcx("add", TypeVoid, &DynamicArray::append_f_single);
@@ -640,7 +660,7 @@ void script_make_super_array(Class *t, SyntaxTree *ps)
 			func_add_param("index", TypeInt);
 		class_add_funcx("resize", TypeVoid, &DynamicArray::simple_resize);
 			func_add_param("num", TypeInt);
-	}else if (p == TypeString or p == TypeAny){
+	}else if (p == TypeString or p == TypeAny or p == TypePath){
 		// handled manually later...
 	}else{
 		msg_error("evil class:  " + t->name);
@@ -651,8 +671,7 @@ void script_make_super_array(Class *t, SyntaxTree *ps)
 
 
 Array<TypeCast> TypeCasts;
-void add_type_cast(int penalty, const Class *source, const Class *dest, const string &cmd)
-{
+void add_type_cast(int penalty, const Class *source, const Class *dest, const string &cmd) {
 	TypeCast c;
 	c.penalty = penalty;
 	c.f = nullptr;
@@ -663,8 +682,8 @@ void add_type_cast(int penalty, const Class *source, const Class *dest, const st
 		}
 	if (!c.f){
 #ifdef _X_USE_HUI_
-		hui::ErrorBox(nullptr, "", "add_type_cast (ScriptInit): " + string(cmd) + " not found");
-		hui::RaiseError("add_type_cast (ScriptInit): " + string(cmd) + " not found");
+		hui::ErrorBox(nullptr, "", "add_type_cast (ScriptInit): " + cmd + " not found");
+		hui::RaiseError("add_type_cast (ScriptInit): " + cmd + " not found");
 #else
 		msg_error("add_type_cast (ScriptInit): " + string(cmd) + " not found"));
 		exit(1);
@@ -715,6 +734,7 @@ void SIAddPackageBase();
 void SIAddPackageKaba();
 void SIAddPackageTime();
 void SIAddPackageOS();
+void SIAddPackageOSPath();
 void SIAddPackageMath();
 void SIAddPackageThread();
 void SIAddPackageHui();
@@ -776,6 +796,7 @@ void init(Asm::InstructionSet instruction_set, Abi abi, bool allow_std_lib) {
 	SIAddStatements();
 
 	SIAddPackageBase();
+	SIAddPackageOSPath();
 	SIAddPackageKaba();
 	SIAddPackageMath();
 	SIAddPackageTime();
@@ -789,27 +810,29 @@ void init(Asm::InstructionSet instruction_set, Abi abi, bool allow_std_lib) {
 	SIAddPackageVulkan();
 	SIAddPackageX();
 
-	cur_package = Packages[0];
+	add_package("base");
 	SIAddXCommands();
 
 
 
 
-	add_type_cast(10, TypeInt, TypeFloat32, "int.float");
-	add_type_cast(10, TypeInt, TypeInt64, "int.int64");
-	add_type_cast(15, TypeInt64, TypeInt, "int64.int");
-	add_type_cast(10, TypeFloat32, TypeFloat64,"float.float64");
-	add_type_cast(20, TypeFloat32, TypeInt, "float.int");
-	add_type_cast(10, TypeInt, TypeChar, "int.char");
-	add_type_cast(20, TypeChar, TypeInt, "char.int");
+	add_type_cast(10, TypeInt, TypeFloat32, "int.__float__");
+	add_type_cast(10, TypeInt, TypeInt64, "int.__int64__");
+	add_type_cast(15, TypeInt64, TypeInt, "int64.__int__");
+	add_type_cast(10, TypeFloat32, TypeFloat64,"float.__float64__");
+	add_type_cast(20, TypeFloat32, TypeInt, "float.__int__");
+	add_type_cast(10, TypeInt, TypeChar, "int.__char__");
+	add_type_cast(20, TypeChar, TypeInt, "char.__int__");
 	add_type_cast(50, TypePointer, TypeBool, "p2b");
 	add_type_cast(50, TypePointer, TypeString, "p2s");
-	cur_package = Packages[2];
+	add_package("math");
 	add_type_cast(50, TypeInt, TypeAny, "@int2any");
 	add_type_cast(50, TypeFloat32, TypeAny, "@float2any");
 	add_type_cast(50, TypeBool, TypeAny, "@bool2any");
 	add_type_cast(50, TypeString, TypeAny, "@str2any");
 	add_type_cast(50, TypePointer, TypeAny, "@pointer2any");
+	add_package("os");
+	add_type_cast(50, TypeString, TypePath, "os.Path.@from_str");
 
 
 	// consistency checks
@@ -831,9 +854,9 @@ void link_external(const string &name, void *pointer) {
 
 	Array<string> names = name.explode(":");
 	string sname = names[0].replace("@list", "[]").replace("@@", ".");
-	for (auto *p: Packages)
+	for (auto *p: packages)
 		foreachi(Function *f, p->syntax->functions, i)
-			if (f->long_name() == sname) {
+			if (f->cname(p->base_class()) == sname) {
 				int n = f->num_params;
 				if (!f->is_static())
 					n ++;
@@ -889,21 +912,21 @@ void _link_external_virtual(const string &name, void *p, void *instance) {
 }
 
 int process_class_offset(const string &class_name, const string &element, int offset) {
-	for (ClassOffsetData &d: ClassOffsets)
+	for (auto &d: ClassOffsets)
 		if ((d.class_name == class_name) and (d.element == element))
 			return d.offset;
 	return offset;
 }
 
 int process_class_size(const string &class_name, int size) {
-	for (ClassSizeData &d: ClassSizes)
+	for (auto &d: ClassSizes)
 		if (d.class_name == class_name)
 			return d.size;
 	return size;
 }
 
 int process_class_num_virtuals(const string &class_name, int num_virtual) {
-	for (ClassOffsetData &d: ClassOffsets)
+	for (auto &d: ClassOffsets)
 		if ((d.class_name == class_name) and (d.is_virtual))
 			num_virtual = max(num_virtual, d.offset + 1);
 	return num_virtual;
@@ -912,7 +935,7 @@ int process_class_num_virtuals(const string &class_name, int num_virtual) {
 void clean_up() {
 	DeleteAllScripts(true, true);
 
-	Packages.clear();
+	packages.clear();
 
 	reset_external_data();
 }

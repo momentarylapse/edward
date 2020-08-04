@@ -15,8 +15,8 @@ class FormatTerrain : public TypedFormat<WorldTerrain> {
 public:
 	FormatTerrain();
 
-	void _load(const string &filename, WorldTerrain *data, bool deep) override;
-	void _save(const string &filename, WorldTerrain *data) override;
+	void _load(const Path &filename, WorldTerrain *data, bool deep) override;
+	void _save(const Path &filename, WorldTerrain *data) override;
 };
 
 #endif /* SRC_STORAGE_FORMAT_FORMATTERRAIN_H_ */

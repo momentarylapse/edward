@@ -43,7 +43,7 @@ struct ModelEffect {
 	float size, speed, intensity;
 	color colors[3];
 	bool inv_quad;
-	string file;
+	Path file;
 
 	void clear();
 	string get_type();
@@ -85,7 +85,7 @@ struct ModelSkin {
 class ModelBone: public MultiView::SingleData {
 public:
 	int parent;
-	string model_file;
+	Path model_file;
 	Model *model;
 	bool const_pos;
 
@@ -204,7 +204,7 @@ public:
 
 	// actions
 	void reconnectBone(int index, int parent);
-	void setBoneModel(int index, const string &filename);
+	void setBoneModel(int index, const Path &filename);
 	void addBone(const vector &pos, int parent);
 	void deleteBone(int index);
 	void deleteSelectedBones();
@@ -258,10 +258,10 @@ public:
 
 		// object-properties
 		string name, description;
-		Array<string> inventary;
+		Array<Path> inventary;
 
 		// script
-		string script_file;
+		Path script_file;
 		Array<ModelScriptVariable> variables;
 		Array<float> script_var;
 		string _script_class;

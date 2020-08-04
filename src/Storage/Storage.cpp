@@ -19,7 +19,7 @@
 
 Storage *storage = nullptr;
 
-static string CANONICAL_SUB_DIR[NUM_FDS];
+Path Storage::CANONICAL_SUB_DIR[NUM_FDS];
 
 Storage::Storage() {
 	formats.add(new FormatFontX());
@@ -31,15 +31,15 @@ Storage::Storage() {
 	formats.add(new FormatTerrain());
 	formats.add(new FormatWorld());
 
-	CANONICAL_SUB_DIR[FD_FONT] = "Fonts/";
-	CANONICAL_SUB_DIR[FD_TERRAIN] = "Maps/";
-	CANONICAL_SUB_DIR[FD_WORLD] = "Maps/";
-	CANONICAL_SUB_DIR[FD_MODEL] = "Objects/";
-	CANONICAL_SUB_DIR[FD_MATERIAL] = "Materials/";
-	CANONICAL_SUB_DIR[FD_SHADERFILE] = "Materials/";
-	CANONICAL_SUB_DIR[FD_SOUND] = "Sounds/";
-	CANONICAL_SUB_DIR[FD_TEXTURE] = "Textures/";
-	CANONICAL_SUB_DIR[FD_SCRIPT] = "Scripts/";
+	CANONICAL_SUB_DIR[FD_FONT] = "Fonts";
+	CANONICAL_SUB_DIR[FD_TERRAIN] = "Maps";
+	CANONICAL_SUB_DIR[FD_WORLD] = "Maps";
+	CANONICAL_SUB_DIR[FD_MODEL] = "Objects";
+	CANONICAL_SUB_DIR[FD_MATERIAL] = "Materials";
+	CANONICAL_SUB_DIR[FD_SHADERFILE] = "Materials";
+	CANONICAL_SUB_DIR[FD_SOUND] = "Sounds";
+	CANONICAL_SUB_DIR[FD_TEXTURE] = "Textures";
+	CANONICAL_SUB_DIR[FD_SCRIPT] = "Scripts";
 }
 
 Storage::~Storage() {
@@ -54,7 +54,7 @@ int data_type(Data *data) {
 	return -1;*/
 }
 
-bool Storage::load(const string &filename, Data *data, bool deep) {
+bool Storage::load(const Path &filename, Data *data, bool deep) {
 	try {
 		int type = data_type(data);
 		string ext = filename.extension();
@@ -82,7 +82,7 @@ bool Storage::load(const string &filename, Data *data, bool deep) {
 	return false;
 }
 
-bool Storage::save(const string &filename, Data *data) {
+bool Storage::save(const Path &filename, Data *data) {
 	try {
 		int type = data_type(data);
 		string ext = filename.extension();
@@ -148,50 +148,32 @@ bool Storage::auto_save(Data *data) {
 
 
 
-
-string canonical(const string &d) {
-	if (d.head(1) == "/")
-		return d.no_recursion();
-	return (get_current_dir() + d).no_recursion();
-}
-
-Array<string> parent_dirs(const string &_filename) {
-	Array<string> dirs;
-	string filename = canonical(_filename);
-	for (int i=filename.num-1; i--; i>=1) {
-		if (filename[i] == '/')
-			dirs.add(filename.substr(0, i+1));
-	}
-	return dirs;
-}
-
-void Storage::guess_root_directory(const string &filename) {
-	for (auto &d: parent_dirs(filename))
-		if (file_exists(d + "game.ini")) {
+void Storage::guess_root_directory(const Path &filename) {
+	for (auto &d: filename.all_parents())
+		if (file_exists(d << "game.ini")) {
 			set_root_directory(d);
 			return;
 		}
 
-	set_root_directory(filename.dirname(), true);
+	set_root_directory(filename.parent(), true);
 }
 
 
-void Storage::set_root_directory(const string &_directory, bool compact_mode) {
-	string directory = canonical(_directory);
-	directory.dir_ensure_ending();
+void Storage::set_root_directory(const Path &_directory, bool compact_mode) {
+	Path directory = _directory.absolute().canonical();
 	if (root_dir == directory)
 		return;
 
 	root_dir = directory;
 
-	compact_mode = !file_exists(root_dir + "game.ini");
+	compact_mode = !file_exists(root_dir << "game.ini");
 
 
 	for (int i=0; i<NUM_FDS; i++) {
 		if (compact_mode)
 			root_dir_kind[i] = root_dir;
 		else
-			root_dir_kind[i] = root_dir + CANONICAL_SUB_DIR[i];
+			root_dir_kind[i] = root_dir << CANONICAL_SUB_DIR[i];
 		dialog_dir[i] = root_dir_kind[i];
 	}
 
@@ -205,7 +187,7 @@ void Storage::set_root_directory(const string &_directory, bool compact_mode) {
 }
 
 
-string Storage::get_root_dir(int kind) {
+Path Storage::get_root_dir(int kind) {
 	if (kind==-1)
 		return root_dir;
 	return root_dir_kind[kind];
@@ -241,12 +223,12 @@ bool Storage::file_dialog(int kind, bool save, bool force_in_root_dir)
 		done = hui::FileDialogOpen(ed, title, dialog_dir[kind], show_filter, filter);
 	if (done) {
 
-		bool in_root_dir = (hui::Filename.sys_filename().find(root_dir_kind[kind].sys_filename()) >= 0);
+		bool in_root_dir = (hui::Filename.is_in(root_dir_kind[kind]));
 
 		if (force_in_root_dir) {
 			if (!in_root_dir) {
-				ed->error_box(hui::Filename.sys_filename());
-				ed->error_box(format(_("The file is not in the appropriate directory: \"%s\"\nor in a subdirectory."), root_dir_kind[kind].sys_filename().c_str()));
+				ed->error_box(hui::Filename.str());
+				ed->error_box(format(_("The file is not in the appropriate directory: \"%s\"\nor in a subdirectory."), root_dir_kind[kind]));
 				return false;
 			}
 		}//else
@@ -255,8 +237,8 @@ bool Storage::file_dialog(int kind, bool save, bool force_in_root_dir)
 		if (in_root_dir)
 			dialog_dir[kind] = hui::Filename.dirname();
 		dialog_file_complete = hui::Filename;
-		dialog_file = dialog_file_complete.substr(root_dir_kind[kind].num, -1);
-		dialog_file_no_ending = no_extension(dialog_file);
+		dialog_file = dialog_file_complete.relative_to(root_dir_kind[kind]);
+		dialog_file_no_ending = dialog_file.no_ext();
 
 		return true;
 	}

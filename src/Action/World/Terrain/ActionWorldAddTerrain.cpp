@@ -12,9 +12,9 @@
 #include "../../../lib/nix/nix.h"
 #include <assert.h>
 
-ActionWorldAddTerrain::ActionWorldAddTerrain(const vector &_pos, const string &_filename) {
+ActionWorldAddTerrain::ActionWorldAddTerrain(const vector &_pos, const Path &_filename) {
 	filename = _filename;
-	assert(filename.num > 0);
+	assert(!filename.is_empty());
 	pos = _pos;
 }
 

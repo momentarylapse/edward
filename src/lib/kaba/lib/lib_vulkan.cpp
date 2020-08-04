@@ -25,12 +25,12 @@ namespace Kaba{
 #pragma GCC optimize("no-inline")
 #pragma GCC optimize("0")
 
-vulkan::Texture* __VulkanLoadTexture(const string &filename) {
+vulkan::Texture* __VulkanLoadTexture(const Path &filename) {
 	KABA_EXCEPTION_WRAPPER(return vulkan::Texture::load(filename));
 	return nullptr;
 }
 
-vulkan::Shader* __VulkanLoadShader(const string &filename) {
+vulkan::Shader* __VulkanLoadShader(const Path &filename) {
 	KABA_EXCEPTION_WRAPPER(return vulkan::Shader::load(filename));
 	return nullptr;
 }
@@ -91,11 +91,12 @@ extern const Class *TypeIntP;
 extern const Class *TypePointerList;
 extern const Class *TypeImage;
 extern const Class *TypeColorList;
+extern const Class *TypePath;
 
 
 
 void SIAddPackageVulkan() {
-	add_package("vulkan", false);
+	add_package("vulkan");
 	
 	auto TypeVertexBuffer	= add_type  ("VertexBuffer", sizeof(vulkan::VertexBuffer));
 	//auto TypeVertexBufferP	= add_type_p(TypeVertexBuffer);
@@ -168,7 +169,7 @@ void SIAddPackageVulkan() {
 			func_add_param("nz", TypeInt);
 			func_add_param("format", TypeString);
 		class_add_funcx("load", TypeTextureP, vul_p(&__VulkanLoadTexture), Flags::STATIC);
-			func_add_param("filename", TypeString);
+			func_add_param("filename", TypePath);
 
 
 	add_class(TypeDynamicTexture);
@@ -205,7 +206,7 @@ void SIAddPackageVulkan() {
 		class_add_funcx(IDENTIFIER_FUNC_INIT, TypeVoid, vul_p(&vulkan::Shader::__init__));
 		class_add_funcx(IDENTIFIER_FUNC_DELETE, TypeVoid, vul_p(&vulkan::Shader::__delete__));
 		class_add_funcx("load", TypeShaderP, vul_p(&__VulkanLoadShader), Flags::STATIC);
-			func_add_param("filename", TypeString);
+			func_add_param("filename", TypePath);
 
 
 	add_class(TypeUBOWrapper);
@@ -350,9 +351,9 @@ void SIAddPackageVulkan() {
 	add_funcx("window_close", TypeVoid, vul_p(&vulkan::window_close), Flags::STATIC);
 		func_add_param("w", TypePointer);
 
-	add_funcx("vulkan_init", TypeVoid, vul_p(&vulkan::init), Flags::STATIC);
+	add_funcx("init", TypeVoid, vul_p(&vulkan::init), Flags::STATIC);
 		func_add_param("win", TypePointer);
-	add_funcx("vulkan_destroy", TypeVoid, vul_p(&vulkan::destroy), Flags::STATIC);
+	add_funcx("destroy", TypeVoid, vul_p(&vulkan::destroy), Flags::STATIC);
 	add_funcx("queue_submit_command_buffer", TypeVoid, vul_p(&vulkan::queue_submit_command_buffer), Flags::STATIC);
 		func_add_param("cb", TypeCommandBuffer);
 		func_add_param("wait_sem", TypeSemaphorePList);

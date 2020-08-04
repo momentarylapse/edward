@@ -8,49 +8,46 @@
 #include "GameIniData.h"
 
 
-void GameIniData::Load(const string &dir)
-{
-	try{
-		File *f = FileOpenText(dir + "game.ini");
+void GameIniData::load(const Path &dir) {
+	try {
+		File *f = FileOpenText(dir << "game.ini");
 		f->read_comment();
-		DefScript = f->read_str();
+		default_script = f->read_str();
 		f->read_comment();
-		DefWorld = f->read_str();
+		default_world = f->read_str();
 		f->read_comment();
-		SecondWorld = f->read_str();
+		second_world = f->read_str();
 		f->read_comment();
-		DefMaterial = f->read_str();
+		default_material = f->read_str();
 		f->read_comment();
-		DefFont = f->read_str();
-		delete(f);
-	}catch(...){}
+		default_font = f->read_str();
+		delete f;
+	} catch(...) {}
 }
 
-void GameIniData::Save(const string &dir)
-{
-	try{
-		File *f = FileCreateText(dir + "game.ini");
+void GameIniData::save(const Path &dir) {
+	try {
+		File *f = FileCreateText(dir << "game.ini");
 		f->write_comment("// Main Script");
-		f->write_str(DefScript);
+		f->write_str(default_script.str());
 		f->write_comment("// Default World");
-		f->write_str(DefWorld);
+		f->write_str(default_world.str());
 		f->write_comment("// Second World");
-		f->write_str(SecondWorld);
+		f->write_str(second_world.str());
 		f->write_comment("// Default Material");
-		f->write_str(DefMaterial);
+		f->write_str(default_material.str());
 		f->write_comment("// Default Font");
-		f->write_str(DefFont);
+		f->write_str(default_font.str());
 		f->write_str("#");
-		delete(f);
-	}catch(...){}
+		delete f;
+	} catch(...) {}
 }
 
 
-void GameIniData::reset()
-{
-	DefScript = "";
-	DefWorld = "";
-	SecondWorld = "";
-	DefMaterial = "";
-	DefFont = "";
+void GameIniData::reset() {
+	default_script = "";
+	default_world = "";
+	second_world = "";
+	default_material = "";
+	default_font = "";
 }

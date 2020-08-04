@@ -57,9 +57,9 @@ void LightmapDialog::FillList()
 {
 	reset("lightmap_list");
 	for (LightmapData::Model &m: lmd->Models)
-		add_string("lightmap_list", m.orig_name + format("\\%dx%d\\%f", m.tex_width, m.tex_height, sqrt(m.area) / m.tex_width));
+		add_string("lightmap_list", format("%s\\%dx%d\\%f", m.orig_name, m.tex_width, m.tex_height, sqrt(m.area) / m.tex_width));
 	for (LightmapData::Terrain &t: lmd->Terrains)
-		add_string("lightmap_list", t.orig_name + format("\\%dx%d\\%f", t.tex_width, t.tex_height, sqrt(t.area) / t.tex_width));
+		add_string("lightmap_list", format("%s\\%dx%d\\%f", t.orig_name, t.tex_width, t.tex_height, sqrt(t.area) / t.tex_width));
 }
 
 void LightmapDialog::OnClose()
@@ -78,8 +78,8 @@ void LightmapDialog::SetData()
 	lmd->emissive_brightness = get_float("brightness");
 	lmd->color_exponent = get_float("exponent");
 	lmd->allow_sun = is_checked("allow_sun");
-	lmd->texture_out_dir = "Lightmap/" + lmd->new_world_name + "/";
-	lmd->model_out_dir = "Lightmap/" + lmd->new_world_name + "/";
+	lmd->texture_out_dir = Path("Lightmap") << lmd->new_world_name;
+	lmd->model_out_dir = Path("Lightmap") << lmd->new_world_name;
 }
 
 static Lightmap::Histogram *hist_p;
@@ -167,7 +167,7 @@ void LightmapDialog::OnResolution()
 void LightmapDialog::OnFindNewWorld()
 {
 	if (storage->file_dialog(FD_WORLD, true, true))
-		set_string("new_world_name", storage->dialog_file_no_ending);
+		set_string("new_world_name", storage->dialog_file_no_ending.str());
 }
 
 void LightmapDialog::OnOk()

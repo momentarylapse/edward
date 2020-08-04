@@ -14,7 +14,7 @@
 #include "../../../Storage/Storage.h"
 #include "../Mesh/ModeModelMeshTexture.h"
 
-string file_secure(const string &filename);
+string file_secure(const Path &filename);
 string render_material(ModelMaterial *m);
 
 ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data):
@@ -54,7 +54,7 @@ void ModelMaterialSelectionDialog::fill_material_list()
 			if (t.material == i)
 				nt ++;
 		string im = render_material(data->material[i]);
-		add_string("material_list", format("%d\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->material[i]->filename).c_str()));
+		add_string("material_list", format("%d\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}
 	set_int("material_list", mode_model_mesh->current_material);
 }

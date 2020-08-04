@@ -44,7 +44,7 @@ void ShaderNode::Parameter::set_color(const color &c) {
 	int i[4];
 	c.get_int_argb(i);
 	int ii = (i[1] << 24) + (i[2] << 16) + (i[3] << 8) + i[0];
-	value = string(&ii, 4).hex(true).replace("0x", "#");
+	value = "#" + i2h(ii, 4);
 }
 
 

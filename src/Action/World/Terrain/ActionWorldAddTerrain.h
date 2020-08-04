@@ -10,10 +10,11 @@
 
 #include "../../Action.h"
 #include "../../../lib/math/math.h"
+#include "../../../lib/file/path.h"
 
 class ActionWorldAddTerrain : public Action {
 public:
-	ActionWorldAddTerrain(const vector &_pos, const string &_filename);
+	ActionWorldAddTerrain(const vector &_pos, const Path &_filename);
 	ActionWorldAddTerrain(const vector &_pos, const vector &_size, int _num_x, int _num_z);
 	string name(){	return "WorldAddTerrain";	}
 
@@ -21,7 +22,7 @@ public:
 	void undo(Data *d) override;
 
 private:
-	string filename;
+	Path filename;
 	vector pos;
 	vector size;
 	int num_x, num_z;

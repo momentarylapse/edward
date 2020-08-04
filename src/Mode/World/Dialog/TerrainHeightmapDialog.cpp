@@ -43,8 +43,7 @@ void TerrainHeightmapDialog::ApplyData()
 
 
 
-void TerrainHeightmapDialog::OnSizeChange()
-{
+void TerrainHeightmapDialog::OnSizeChange() {
 	stretch_x = get_float("stretch_x");
 	stretch_z = get_float("stretch_z");
 	redraw("preview");
@@ -52,11 +51,10 @@ void TerrainHeightmapDialog::OnSizeChange()
 
 
 
-void TerrainHeightmapDialog::OnFindFilter()
-{
-	if (storage->file_dialog(FD_TEXTURE, false, false)){
+void TerrainHeightmapDialog::OnFindFilter() {
+	if (storage->file_dialog(FD_TEXTURE, false, false)) {
 		filter_file = storage->dialog_file_complete;
-		set_string("filter_image", storage->dialog_file);
+		set_string("filter_image", storage->dialog_file.str());
 		filter.load(filter_file);
 		redraw("preview");
 	}
@@ -70,7 +68,7 @@ void TerrainHeightmapDialog::OnFindHeightmap()
 {
 	if (storage->file_dialog(FD_TEXTURE, false, false)){
 		heightmap_file = storage->dialog_file_complete;
-		set_string("height_image", storage->dialog_file);
+		set_string("height_image", storage->dialog_file.str());
 		heightmap.load(heightmap_file);
 		redraw("preview");
 		enable("ok", true);

@@ -56,7 +56,7 @@ private:
 
 class ActionModelMaterialLoadTexture : public Action {
 public:
-	ActionModelMaterialLoadTexture(int index, int level, const string &filename);
+	ActionModelMaterialLoadTexture(int index, int level, const Path &filename);
 	string name(){ return "ModelMaterialAddTexture"; }
 
 	void *execute(Data *d);
@@ -64,7 +64,7 @@ public:
 
 private:
 	int index, level;
-	string filename;
+	Path filename;
 };
 
 

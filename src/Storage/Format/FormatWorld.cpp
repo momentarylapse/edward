@@ -49,7 +49,7 @@ static color s2c(const string &s) {
 	return White;
 }
 
-void FormatWorld::_load(const string &filename, DataWorld *data, bool deep) {
+void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	data->reset();
 
 	string x = FileReadText(filename);
@@ -63,7 +63,7 @@ void FormatWorld::_load(const string &filename, DataWorld *data, bool deep) {
 	if (deep){
 		for (int i=0;i<data->terrains.num;i++){
 			ed->progress->set(_("Terrains"), (float)i / (float)data->terrains.num / 2.0f);
-			data->terrains[i].load(data->terrains[i].pos, engine.map_dir + data->terrains[i].filename + ".map", true);
+			data->terrains[i].load(data->terrains[i].pos, engine.map_dir << data->terrains[i].filename.with(".map"), true);
 		}
 		for (int i=0;i<data->objects.num;i++){
 			//ed->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);
@@ -86,7 +86,7 @@ void FormatWorld::_load(const string &filename, DataWorld *data, bool deep) {
 	}*/
 }
 
-void FormatWorld::_load_xml(const string &filename, DataWorld *data, bool deep) {
+void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	data->cameras.clear();
 	data->lights.clear();
 
@@ -182,7 +182,7 @@ void FormatWorld::_load_xml(const string &filename, DataWorld *data, bool deep) 
 	}
 }
 
-void FormatWorld::_load_old(const string &filename, DataWorld *data, bool deep) {
+void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 
 	File *f = NULL;
 	int ffv;
@@ -308,7 +308,7 @@ void FormatWorld::_load_old(const string &filename, DataWorld *data, bool deep) 
 	}
 }
 
-void FormatWorld::_save(const string &filename, DataWorld *data) {
+void FormatWorld::_save(const Path &filename, DataWorld *data) {
 	/*	if (!SaveTerrains())
 			return;*/
 
@@ -320,9 +320,9 @@ void FormatWorld::_save(const string &filename, DataWorld *data) {
 	auto meta = xml::Element("meta");
 	auto bg = xml::Element("background")
 		.witha("color", c2s(data->meta_data.BackGroundColor));
-	for (string &sb: data->meta_data.SkyBoxFile)
-		if (sb.num > 0)
-			bg.add(xml::Element("skybox").witha("file", sb));
+	for (auto &sb: data->meta_data.SkyBoxFile)
+		if (!sb.is_empty())
+			bg.add(xml::Element("skybox").witha("file", sb.str()));
 	meta.add(bg);
 
 	auto phys = xml::Element("physics")
@@ -341,7 +341,7 @@ void FormatWorld::_save(const string &filename, DataWorld *data) {
 
 	for (auto &s: data->meta_data.scripts) {
 		auto e = xml::Element("script")
-		.witha("file", s.filename);
+		.witha("file", s.filename.str());
 		for (auto &v: s.variables)
 			e.elements.add(xml::Element("var").witha("name", v.name).witha("value", v.value));
 		meta.add(e);
@@ -373,14 +373,14 @@ void FormatWorld::_save(const string &filename, DataWorld *data) {
 
 	for (auto &t: data->terrains) {
 		auto e = xml::Element("terrain")
-		.witha("file", t.filename)
+		.witha("file", t.filename.str())
 		.witha("pos", v2s(t.pos));
 		cont.add(e);
 	}
 
 	for (auto &o: data->objects) {
 		auto e = xml::Element("object")
-		.witha("file", o.filename)
+		.witha("file", o.filename.str())
 		.witha("name", o.name)
 		.witha("pos", v2s(o.pos))
 		.witha("ang", v2s(o.ang));

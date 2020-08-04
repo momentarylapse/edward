@@ -12,10 +12,8 @@
 Array<Model*> ModelManager::originals;
 
 
-Model* ModelManager::load(const string &_filename) {
-	if (_filename == "")
-		return nullptr;
-	string filename = engine.object_dir + _filename + ".model";
+Model* ModelManager::load(const Path &_filename) {
+	auto filename = engine.object_dir << _filename.with(".model");
 	for (auto *o: originals)
 		if (o->_template->filename == filename) {
 			return o->copy();

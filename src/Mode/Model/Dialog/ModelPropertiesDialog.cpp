@@ -59,7 +59,7 @@ const Kaba::Class *get_class(Kaba::Script *s, const string &parent) {
 	for (auto *t: s->syntax->base_class->classes)
 		if (t->is_derived_from_s(parent))
 			return t;
-	throw Exception(format(_("script does not contain a class derived from '%s'"), parent.c_str()));
+	throw Exception(format(_("script does not contain a class derived from '%s'"), parent));
 	return nullptr;
 }
 
@@ -71,7 +71,7 @@ void update_model_script_data(DataModel::MetaData &m) {
 			m.variables.erase(i);
 	m._script_class = "";
 
-	if (m.script_file.num == 0)
+	if (m.script_file.is_empty())
 		return;
 
 
@@ -142,7 +142,7 @@ void ModelPropertiesDialog::LoadData()
 	set_int("num_items", temp.inventary.num);
 	RefillInventaryList();
 	// script
-	set_string("script", temp.script_file);
+	set_string("script", temp.script_file.str());
 	set_int("max_script_vars", temp.script_var.num);
 	RefillScriptVarList();
 }
@@ -213,21 +213,20 @@ string render_material(ModelMaterial *m)
 			c.a = 1;
 			img.set_pixel(x, y, c);
 		}
-	return hui::SetImage(&img, format("image:material-%p", m));
+	return hui::SetImage(&img, format("image:material-%s", p2s(m)));
 }
 
-string file_secure(const string &filename)
-{
-	if (filename.num > 0)
-		return filename;
-	return _("   - no file -");
+string file_secure(const Path &filename) {
+	if (filename.is_empty())
+		return _("   - no file -");
+	return filename.str();
 }
 
 void ModelPropertiesDialog::RefillInventaryList()
 {
 	reset("model_inventary");
-	foreachi(string &it, temp.inventary, i)
-		add_string("model_inventary", format("%d\\%s", i, it.c_str()));
+	foreachi(auto &it, temp.inventary, i)
+		add_string("model_inventary", format("%d\\%s", i, it));
 }
 
 void ModelPropertiesDialog::RefillScriptVarList()
@@ -297,7 +296,7 @@ void ModelPropertiesDialog::OnModelInventary()
 	if (storage->file_dialog(FD_MODEL, false, true)){
 		int n = get_int("");
 		temp.inventary[n] = storage->dialog_file_no_ending;
-		change_string("model_inventary", n, format("%d\\", n) + storage->dialog_file_no_ending);
+		change_string("model_inventary", n, format("%d\\%s", n, storage->dialog_file_no_ending));
 	}
 }
 
@@ -320,7 +319,7 @@ void ModelPropertiesDialog::OnScriptVarEdit()
 void ModelPropertiesDialog::OnScriptFind()
 {
 	if (storage->file_dialog(FD_SCRIPT, false, true)){
-		set_string("script", storage->dialog_file);
+		set_string("script", storage->dialog_file.str());
 		temp.script_file = storage->dialog_file;
 		update_model_script_data(temp);
 		RefillScriptVarList();

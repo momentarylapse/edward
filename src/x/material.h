@@ -2,6 +2,7 @@
 #define MATERIAL_H_
 
 #include "../lib/base/base.h"
+#include "../lib/file/path.h"
 #include "../lib/image/color.h"
 
 #define MATERIAL_MAX_TEXTURES		8
@@ -18,7 +19,7 @@ namespace nix {
 class Material {
 public:
 	// name of the material
-	string name;
+	Path name;
 
 	Array<nix::Texture*> textures;
 	nix::Shader *shader;
@@ -74,11 +75,11 @@ enum {
 
 
 // management
-extern string MaterialDir;
+extern Path MaterialDir;
 void MaterialInit();
 void MaterialEnd();
 void MaterialReset();
 void SetDefaultMaterial(Material *m);
-Material *LoadMaterial(const string &filename);
+Material *LoadMaterial(const Path &filename);
 
 #endif

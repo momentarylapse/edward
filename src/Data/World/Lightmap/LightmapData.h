@@ -9,6 +9,7 @@
 #define LIGHTMAPDATA_H_
 
 #include "../../../lib/base/base.h"
+#include "../../../lib/file/path.h"
 #include "../../../lib/math/math.h"
 
 class DataModel;
@@ -17,8 +18,7 @@ class WorldTerrain;
 class Terrain;
 
 
-class LightmapData
-{
+class LightmapData {
 public:
 	LightmapData(DataWorld *w);
 	virtual ~LightmapData();
@@ -27,10 +27,10 @@ public:
 	bool allow_sun;
 	bool replace_objects;
 
-	string world_name_small;
-	string new_world_name;
-	string model_out_dir;
-	string texture_out_dir;
+	Path world_name_small;
+	Path new_world_name;
+	Path model_out_dir;
+	Path texture_out_dir;
 	float color_exponent;
 	vector min, max, center;
 	float large_distance;
@@ -39,7 +39,7 @@ public:
 	float resolution;
 
 	void Init(DataWorld *w);
-	void AddModel(const string &filename, matrix &mat, int object_index);
+	void AddModel(const Path &filename, matrix &mat, int object_index);
 	void AddTerrain(WorldTerrain &t, int terrain_index);
 	void AddTextureLevels(bool modify = true);
 	void CreateVertices();
@@ -47,33 +47,31 @@ public:
 	void SetResolution(float res);
 	float GuessResolution();
 
-	struct Model
-	{
+	struct Model {
 		int id;
 		DataModel *orig;
 		matrix mat;
 		int offset, num_trias;
-		string orig_name;
-		string new_name;
+		Path orig_name;
+		Path new_name;
 		int object_index;
 		float area;
-		string tex_name;
+		Path tex_name;
 		int tex_width, tex_height;
 	};
 
 	Array<Model> Models;
 
 
-	struct Terrain
-	{
+	struct Terrain {
 		int id;
 		::Terrain *orig;
 		int offset, num_trias;
-		string orig_name;
-		string new_name;
+		Path orig_name;
+		Path new_name;
 		int terrain_index;
 		float area;
-		string tex_name;
+		Path tex_name;
 		int tex_width, tex_height;
 	};
 

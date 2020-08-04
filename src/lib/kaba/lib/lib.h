@@ -20,8 +20,6 @@ namespace Kaba{
 //#define mem_align(x)	((x) + (4 - (x) % 4) % 4)
 #define mem_align(x, n)		((((x) + (n) - 1) / (n) ) * (n))
 
-extern string LibVersion;
-
 class SyntaxTree;
 class Class;
 class Value;
@@ -39,6 +37,10 @@ extern const string IDENTIFIER_FUNC_INIT;
 extern const string IDENTIFIER_FUNC_DELETE;
 extern const string IDENTIFIER_FUNC_ASSIGN;
 extern const string IDENTIFIER_FUNC_GET;
+extern const string IDENTIFIER_FUNC_SET;
+extern const string IDENTIFIER_FUNC_LENGTH;
+extern const string IDENTIFIER_FUNC_STR;
+extern const string IDENTIFIER_FUNC_REPR;
 extern const string IDENTIFIER_FUNC_SUBARRAY;
 extern const string IDENTIFIER_SUPER;
 extern const string IDENTIFIER_SELF;
@@ -63,6 +65,7 @@ extern const string IDENTIFIER_VIRTUAL;
 extern const string IDENTIFIER_EXTERN;
 extern const string IDENTIFIER_SELFREF;
 extern const string IDENTIFIER_USE;
+extern const string IDENTIFIER_IMPORT;
 extern const string IDENTIFIER_RETURN;
 extern const string IDENTIFIER_RAISE;
 extern const string IDENTIFIER_TRY;
@@ -387,7 +390,7 @@ public:
 	bool allow_simplification;
 	bool allow_registers;
 
-	string directory;
+	Path directory;
 	bool verbose;
 	string verbose_func_filter;
 	string verbose_stage_filter;
@@ -468,7 +471,7 @@ int process_class_num_virtuals(const string &class_name, int num_virtual);
 //--------------------------------------------------------------------------------------------------
 // packages
 
-extern Array<Script*> Packages;
+extern Array<Script*> packages;
 
 
 };

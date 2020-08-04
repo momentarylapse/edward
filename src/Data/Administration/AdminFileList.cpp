@@ -11,30 +11,26 @@
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
 
-AdminFile *AdminFileList::get(int kind, const string &name)
-{
-	string _name = name.sys_filename();
+AdminFile *AdminFileList::get(int kind, const Path &name) {
 	for (AdminFile *a: *this)
-		if ((a->Kind == kind) && (a->Name == _name))
+		if ((a->Kind == kind) && (a->Name == name))
 			return a;
 	return NULL;
 }
 
 
 
-AdminFile *AdminFileList::add_unchecked(int kind, const string &filename, AdminFile *source)
+AdminFile *AdminFileList::add_unchecked(int kind, const Path &filename, AdminFile *source)
 {
-	if (filename.num <= 0)
+	if (filename.is_empty())
 		return NULL;
 
-	string _filename = filename.sys_filename();
-
 	// is there already an entry in the database?
-	AdminFile *a = get(kind, _filename);
+	AdminFile *a = get(kind, filename);
 
 	// no list entry yet -> create one
 	if (!a){
-		a = new AdminFile(_filename, kind);
+		a = new AdminFile(filename, kind);
 		add(a);
 	}
 
@@ -44,19 +40,22 @@ AdminFile *AdminFileList::add_unchecked(int kind, const string &filename, AdminF
 	return a;
 }
 
+Path add_ext(const Path &p, const string &ext) {
+	return p.str() + ext;
+}
+
 // same as AddAdminFileUnchecked but used without file extensions
-AdminFile *AdminFileList::add_unchecked_ae(int kind, const string &filename, AdminFile *source)
-{
-	if (filename.num<=0)
+AdminFile *AdminFileList::add_unchecked_ae(int kind, const Path &filename, AdminFile *source) {
+	if (filename.is_empty())
 		return NULL;
-	string filename2 = filename;
-	if (kind==FD_WORLD)		filename2 += ".world";
-	if (kind==FD_TERRAIN)	filename2 += ".map";
-	if (kind==FD_MODEL)		filename2 += ".model";
-	if (kind==FD_MATERIAL)	filename2 += ".material";
-	if (kind==FD_FONT)		filename2 += ".xfont";
-	if (kind==FD_CAMERAFLIGHT)filename2 += ".camera";
-	return add_unchecked(kind, filename2, source);
+	string ext;
+	if (kind==FD_WORLD)		ext = ".world";
+	if (kind==FD_TERRAIN)	ext = ".map";
+	if (kind==FD_MODEL)		ext = ".model";
+	if (kind==FD_MATERIAL)	ext = ".material";
+	if (kind==FD_FONT)		ext = ".xfont";
+	if (kind==FD_CAMERAFLIGHT)ext = ".camera";
+	return add_unchecked(kind, add_ext(filename, ext), source);
 }
 
 void AdminFileList::remove_obsolete()

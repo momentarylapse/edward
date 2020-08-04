@@ -14,7 +14,7 @@
 FormatModel3ds::FormatModel3ds() : TypedFormat<DataModel>(FD_MODEL, "3ds", _("Model 3ds"), Flag::READ) {
 }
 
-void FormatModel3ds::_load(const string &filename, DataModel *m, bool deep) {
+void FormatModel3ds::_load(const Path &filename, DataModel *m, bool deep) {
 
 	m->reset();
 
@@ -129,5 +129,5 @@ void FormatModel3ds::load_mesh(DataModel *m, File *f, int _length)
 
 
 
-void FormatModel3ds::_save(const string &filename, DataModel *data) {
+void FormatModel3ds::_save(const Path &filename, DataModel *data) {
 }

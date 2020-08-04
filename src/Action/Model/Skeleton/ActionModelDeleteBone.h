@@ -25,7 +25,7 @@ private:
 	Array<int> child;
 	vector pos;
 	int parent;
-	string filename;
+	Path filename;
 	void *model;
 	Array<vector> move_dpos;
 	Array<vector> move_ang;

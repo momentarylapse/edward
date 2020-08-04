@@ -12,10 +12,10 @@
 FormatTerrain::FormatTerrain() : TypedFormat<WorldTerrain>(FD_TERRAIN, "terrain", _("Terrain"), Flag::CANONICAL_READ_WRITE) {
 }
 
-void FormatTerrain::_load(const string &filename, WorldTerrain *data, bool deep) {
+void FormatTerrain::_load(const Path &filename, WorldTerrain *data, bool deep) {
 	data->load(v_0, filename, deep);
 }
 
-void FormatTerrain::_save(const string &filename, WorldTerrain *data) {
+void FormatTerrain::_save(const Path &filename, WorldTerrain *data) {
 	data->save(filename);
 }

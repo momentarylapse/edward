@@ -10,6 +10,7 @@
 
 #include "../../lib/base/base.h"
 
+class Path;
 class ShaderNode;
 
 class ShaderGraph {
@@ -20,8 +21,8 @@ public:
 	void clear();
 	void make_default();
 
-	void load(const string &filename);
-	void save(const string &filename);
+	void load(const Path &filename);
+	void save(const Path &filename);
 
 	string build_fragment_source() const;
 	string build_source() const;

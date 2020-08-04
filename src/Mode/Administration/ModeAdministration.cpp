@@ -21,21 +21,18 @@ ModeAdministration::ModeAdministration():
 	dialog = NULL;
 }
 
-ModeAdministration::~ModeAdministration()
-{
+ModeAdministration::~ModeAdministration() {
 }
 
-void ModeAdministration::on_start()
-{
+void ModeAdministration::on_start() {
 	data->LoadDatabase();
 	data->UpdateDatabase();
 	dialog = new AdministrationDialog(ed, true, data);
 	dialog->show();
 }
 
-void ModeAdministration::on_end()
-{
-	delete(dialog);
+void ModeAdministration::on_end() {
+	delete dialog;
 }
 
 void ModeAdministration::on_command(const string& id) {
@@ -45,16 +42,14 @@ void ModeAdministration::on_command(const string& id) {
 		BasicSettings();
 }
 
-void ModeAdministration::BasicSettings()
-{
-	ConfigurationDialog *dlg = new ConfigurationDialog(hui::CurWindow, data, false);
+void ModeAdministration::BasicSettings() {
+	auto dlg = new ConfigurationDialog(hui::CurWindow, data, false);
 	dlg->run();
 	delete dlg;
 }
 
-void ModeAdministration::ExportGame()
-{
-	ConfigurationDialog *dlg = new ConfigurationDialog(hui::CurWindow, data, true);
+void ModeAdministration::ExportGame() {
+	auto dlg = new ConfigurationDialog(hui::CurWindow, data, true);
 	dlg->run();
 	delete dlg;
 
@@ -62,23 +57,17 @@ void ModeAdministration::ExportGame()
 }
 
 
-void ModeAdministration::create_project_dir(const string &dir)
-{
-	dir_create(dir + "Fonts");
-	dir_create(dir + "Materials");
-	dir_create(dir + "Maps");
-	dir_create(dir + "Objects");
-	dir_create(dir + "Scripts");
-	dir_create(dir + "Sounds");
-	dir_create(dir + "Textures");
+void ModeAdministration::create_project_dir(const Path &dir) {
+	for (int k=0; k<NUM_FDS; k++)
+		dir_create(dir << Storage::CANONICAL_SUB_DIR[k]);
 
-	if (!file_exists(dir + "game.ini")){
+	if (!file_exists(dir << "game.ini")) {
 		GameIniData gi;
-		gi.Save(dir);
+		gi.save(dir);
 	}
 
-	if (!file_exists(dir + "config.txt")){
-		File *f = FileCreateText(dir + "config.txt");
+	if (!file_exists(dir << "config.txt")) {
+		File *f = FileCreateText(dir << "config.txt");
 		f->write_comment("// ScreenWidth");
 		f->write_int(800);
 		f->write_comment("// ScreenHeight");
@@ -116,8 +105,7 @@ void ModeAdministration::create_project_dir(const string &dir)
 	}
 }
 
-void ModeAdministration::_new()
-{
+void ModeAdministration::_new() {
 	if (!hui::FileDialogDir(hui::CurWindow, _("Choose a directory for the new project"), ""))
 		return;
 
@@ -126,12 +114,11 @@ void ModeAdministration::_new()
 	data->reset();
 }
 
-bool ModeAdministration::open()
-{
+bool ModeAdministration::open() {
 	if (!hui::FileDialogDir(hui::CurWindow, _("Open project directory"), ""))
 		return false;
 
-	if (!file_exists(hui::Filename + "game.ini")){
+	if (!file_exists(hui::Filename << "game.ini")) {
 		ed->error_box(_("game.ini not found"));
 		return false;
 	}

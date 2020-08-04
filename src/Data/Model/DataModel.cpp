@@ -470,7 +470,7 @@ int DataModel::getNumSelectedSkinVertices() {
 void DataModel::reconnectBone(int index, int parent)
 {	execute(new ActionModelReconnectBone(index, parent));	}
 
-void DataModel::setBoneModel(int index, const string &filename)
+void DataModel::setBoneModel(int index, const Path &filename)
 {	execute(new ActionModelSetSubModel(index, filename));	}
 
 void DataModel::addBone(const vector &pos, int parent)

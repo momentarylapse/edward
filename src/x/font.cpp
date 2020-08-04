@@ -29,7 +29,7 @@
 namespace Gui
 {
 
-string FontDir;
+Path FontDir;
 
 
 
@@ -61,22 +61,22 @@ static string str_utf8_to_ubyte(const string &str)
 	return r;
 }
 
-Font *_cdecl LoadFont(const string &filename)
+Font *_cdecl LoadFont(const Path &filename)
 {
 	// "" -> default font
-	if (filename.num == 0)
+	if (filename.is_empty())
 		return Fonts[0];
 
 	foreachi(Font *ff, Fonts, i)
-		if (ff->filename  == filename.sys_filename())
+		if (ff->filename  == filename)
 			return ff;
-	File *f = FileOpenText(FontDir + filename + ".xfont");
+	File *f = FileOpenText(FontDir << filename.with(".xfont"));
 	if (!f)
 		return engine.default_font;
 	int ffv=f->ReadFileFormatVersion();
 	if (ffv==2){
 		Font *font = new Font;
-		font->filename = filename.sys_filename();
+		font->filename = filename;
 		f->read_comment();
 		font->texture = nix::LoadTexture(f->read_str());
 		int tx = font->texture->width;

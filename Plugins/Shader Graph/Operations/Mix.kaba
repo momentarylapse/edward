@@ -1,4 +1,4 @@
-use "../../api.kaba"
+use edward
 
 class NodeMix extends ShaderNode
 	void __init__()

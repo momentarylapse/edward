@@ -41,7 +41,7 @@ void ModelFXDialog::LoadData()
 {
 	if (temp.type == FX_TYPE_SCRIPT){
 		set_int("fx_tab_control", 0);
-		set_string("script_file", temp.file);
+		set_string("script_file", temp.file.str());
 	}else if (temp.type == FX_TYPE_LIGHT){
 		set_int("fx_tab_control", 1);
 		set_color("mat_am", temp.colors[0]);
@@ -50,7 +50,7 @@ void ModelFXDialog::LoadData()
 		set_float("light_radius", temp.size);
 	}else if (temp.type == FX_TYPE_SOUND){
 		set_int("fx_tab_control", 2);
-		set_string("filename", temp.file);
+		set_string("filename", temp.file.str());
 		set_float("sound_radius", temp.size);
 		set_float("speed", temp.speed * 100.0f);
 	}else if (temp.type == FX_TYPE_FORCEFIELD){
@@ -89,8 +89,8 @@ void ModelFXDialog::ApplyData()
 void ModelFXDialog::OnFindScriptFile()
 {
 	if (storage->file_dialog(FD_SCRIPT,false,true)){
-		string filename = storage->dialog_file;
-		set_string("script_file", storage->dialog_file);
+		Path filename = storage->dialog_file;
+		set_string("script_file", storage->dialog_file.str());
 
 		try{
 			Kaba::Script *s = Kaba::Load(filename, true); // just analyse
@@ -104,19 +104,16 @@ void ModelFXDialog::OnFindScriptFile()
 	}
 }
 
-void ModelFXDialog::OnFindSoundFile()
-{
+void ModelFXDialog::OnFindSoundFile() {
 	if (storage->file_dialog(FD_SOUND,false,true))
-		set_string("filename", storage->dialog_file);
+		set_string("filename", storage->dialog_file.str());
 }
 
-void ModelFXDialog::OnClose()
-{
+void ModelFXDialog::OnClose() {
 	destroy();
 }
 
-void ModelFXDialog::OnOk()
-{
+void ModelFXDialog::OnOk() {
 	ApplyData();
 	destroy();
 }

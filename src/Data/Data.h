@@ -35,7 +35,7 @@ public:
 	virtual void on_post_action_update() {}
 	virtual bool test_sanity(const string &loc) { return true; }
 
-	string filename;
+	Path filename;
 	int file_time;
 	bool binary_file_format;
 	int type;

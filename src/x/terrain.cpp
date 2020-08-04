@@ -41,21 +41,21 @@ Terrain::Terrain()
 	material = LoadMaterial("");
 }
 
-Terrain::Terrain(const string &_filename_, const vector &_pos_)
+Terrain::Terrain(const Path &_filename_, const vector &_pos_)
 {
 	material = NULL;
 	load(_filename_, _pos_);
 }
 
-bool Terrain::load(const string &_filename_, const vector &_pos_, bool deep)
+bool Terrain::load(const Path &_filename_, const vector &_pos_, bool deep)
 {
-	msg_write("loading terrain: " + _filename_);
+	msg_write("loading terrain: " + _filename_.str());
 	msg_right();
 
 	reset();
 
 	filename = _filename_;
-	File *f = FileOpen(engine.map_dir + filename + ".map");
+	File *f = FileOpen(engine.map_dir << filename.with(".map"));
 	if (f){
 
 		int ffv = f->ReadFileFormatVersion();

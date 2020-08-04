@@ -10,17 +10,15 @@
 
 #include "../../Action.h"
 
-class ActionModelAddMaterial : public Action
-{
+class ActionModelAddMaterial : public Action {
 public:
-	ActionModelAddMaterial(const string &filename);
-	virtual ~ActionModelAddMaterial();
-	virtual string name(){	return "ModelAddMaterial";	}
+	ActionModelAddMaterial(const Path &filename);
+	string name() override { return "ModelAddMaterial"; }
 
-	virtual void *execute(Data *d);
-	virtual void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 private:
-	string filename;
+	Path filename;
 };
 
 #endif /* ACTIONMODELADDMATERIAL_H_ */

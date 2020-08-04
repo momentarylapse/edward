@@ -30,7 +30,7 @@ public:
 
 	// properties
 	struct GlobalData {
-		string TextureFile;
+		Path TextureFile;
 
 		int UnknownGlyphNo;
 		int GlyphHeight, GlyphY1, GlyphY2;

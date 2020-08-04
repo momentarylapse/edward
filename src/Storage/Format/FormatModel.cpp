@@ -739,7 +739,7 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 	}
 }
 
-void FormatModel::_load(const string &filename, DataModel *data, bool deep) {
+void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
 	int ffv;
 
@@ -756,7 +756,7 @@ void FormatModel::_load(const string &filename, DataModel *data, bool deep) {
 	}else if (ffv==11){ // new format
 		_load_v11(f, data, deep);
 	}else{
-		throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename.c_str(), ffv, 10, 10));
+		throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename, ffv, 10, 10));
 	}
 
 	delete(f);
@@ -785,8 +785,8 @@ void FormatModel::_load(const string &filename, DataModel *data, bool deep) {
 
 			// test textures
 			for (auto &t: m->texture_levels){
-				if ((!t->texture) and (t->filename.num > 0))
-					warning(format(_("Texture file not loadable: %s"), t->filename.c_str()));
+				if ((!t->texture) and (!t->filename.is_empty()))
+					warning(format(_("Texture file not loadable: %s"), t->filename));
 			}
 		}
 
@@ -800,7 +800,7 @@ void FormatModel::_load(const string &filename, DataModel *data, bool deep) {
 	}
 
 	// FIXME
-	if ((data->meta_data.script_file.num > 0) and (data->meta_data.variables.num == 0)){
+	if ((!data->meta_data.script_file.is_empty()) and (data->meta_data.variables.num == 0)){
 		update_model_script_data(data->meta_data);
 		msg_write(data->meta_data.variables.num);
 		for (int i=0; i<min(data->meta_data.script_var.num, data->meta_data.variables.num); i++){
@@ -863,7 +863,7 @@ Array<ModelPolygon> conv_poly_poly(DataModel *m, const Set<int> &v) {
 	return poly;
 }
 
-void FormatModel::_save(const string &filename, DataModel *data) {
+void FormatModel::_save(const Path &filename, DataModel *data) {
 	if (DataModelAllowUpdating){
 		/*if (AutoGenerateSkin[1])
 			CreateSkin(&Skin[1],&Skin[2],(float)DetailFactor[1]*0.01f);
@@ -922,7 +922,7 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 	f->write_comment("// Materials");
 	f->write_int(data->material.num);
 	for (ModelMaterial *m: data->material){
-		f->write_str(m->filename);
+		f->write_str(m->filename.str());
 		f->write_bool(m->col.user);
 		write_color_argb(f, m->col.ambient);
 		write_color_argb(f, m->col.diffuse);
@@ -936,7 +936,7 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 		f->write_bool(m->alpha.zbuffer);
 		f->write_int(m->texture_levels.num);
 		for (int t=0;t<m->texture_levels.num;t++)
-			f->write_str(m->texture_levels[t]->filename);
+			f->write_str(m->texture_levels[t]->filename.str());
 	}
 
 // physical skin
@@ -1068,7 +1068,7 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 		}else
 			f->write_vector(&b.pos);
 		f->write_int(b.parent);
-		f->write_str(b.model_file);
+		f->write_str(b.model_file.str());
 	}
 
 // animations
@@ -1144,7 +1144,7 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 		if (e.type == FX_TYPE_SCRIPT){
 			f->write_str("Script");
 			f->write_int(e.vertex);
-			f->write_str(e.file);
+			f->write_str(e.file.str());
 			f->write_str("");
 		}else if (e.type == FX_TYPE_LIGHT){
 			f->write_str("Light");
@@ -1157,7 +1157,7 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 			f->write_int(e.vertex);
 			f->write_int((int)e.size);
 			f->write_int((int)(e.speed * 100.0f));
-			f->write_str(e.file);
+			f->write_str(e.file.str());
 		}else if (e.type == FX_TYPE_FORCEFIELD){
 			f->write_str("ForceField");
 			f->write_int(e.vertex);
@@ -1190,13 +1190,13 @@ void FormatModel::_save(const string &filename, DataModel *data) {
 	f->write_comment("// Inventory");
 	f->write_int(data->meta_data.inventary.num);
 	for (int i=0;i<data->meta_data.inventary.num;i++){
-		f->write_str(data->meta_data.inventary[i]);
+		f->write_str(data->meta_data.inventary[i].str());
 		f->write_int(1);
 	}
 
 	// script
 	f->write_comment("// Script");
-	f->write_str(data->meta_data.script_file);
+	f->write_str(data->meta_data.script_file.str());
 	f->write_int(data->meta_data.script_var.num);
 	for (int i=0;i<data->meta_data.script_var.num;i++)
 		f->write_float(data->meta_data.script_var[i]);

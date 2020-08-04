@@ -153,24 +153,24 @@ static void tria_set_mat(LightmapData::Triangle &t, ModelMaterial *m)
 	t.em = m->col.emission;
 }
 
-void LightmapData::AddModel(const string &filename, matrix &mat, int object_index)
+void LightmapData::AddModel(const Path &filename, matrix &mat, int object_index)
 {
 	Model mod;
 	mod.mat = mat;
 	mod.id = Models.num;
 
 	mod.orig_name = filename.basename();
-	msg_write(mod.orig_name);
+	msg_write(mod.orig_name.str());
 	mod.offset = Trias.num;
 	mod.object_index = object_index;
 	mod.area = 0;
 
 	DataModel *m = new DataModel();
 	mod.orig = m;
-	storage->load(engine.object_dir + filename + ".model", m);
+	storage->load(engine.object_dir << filename.with(".model"), m);
 
 
-	mod.new_name = format("Lightmap/%s/%s_%d", world_name_small.c_str(), mod.orig_name.c_str(), mod.id);
+	mod.new_name = format("Lightmap/%s/%s_%d", world_name_small, mod.orig_name, mod.id);
 
 	m->updateNormals();
 	foreachi(auto &p, m->mesh->polygon, i){
@@ -223,7 +223,7 @@ void LightmapData::AddTerrain(WorldTerrain &wt, int terrain_index)
 	ter.id = Terrains.num;
 
 	ter.orig_name = wt.filename.basename();
-	msg_write(ter.orig_name);
+	msg_write(ter.orig_name.str());
 	ter.offset = Trias.num;
 	ter.terrain_index = terrain_index;
 	ter.area = 0;
@@ -231,7 +231,7 @@ void LightmapData::AddTerrain(WorldTerrain &wt, int terrain_index)
 	ter.orig = wt.terrain;
 	::Terrain *tt = wt.terrain;
 
-	ter.new_name = format("Lightmap/%s/%s_%d", world_name_small.c_str(), ter.orig_name.c_str(), ter.id);
+	ter.new_name = format("Lightmap/%s/%s_%d", world_name_small, ter.orig_name, ter.id);
 
 	for (int x=0;x<tt->num_x;x++)
 		for (int z=0;z<tt->num_z;z++){

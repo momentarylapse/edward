@@ -11,7 +11,7 @@
 #include "../../../Storage/Storage.h"
 #include "../../../MultiView/MultiView.h"
 
-static string LastObjectFilename;
+static Path LastObjectFilename;
 
 ModeWorldCreateObject::ModeWorldCreateObject(ModeBase *_parent) :
 	ModeCreation<DataWorld>("WorldCreateObject", _parent)
@@ -21,17 +21,17 @@ ModeWorldCreateObject::ModeWorldCreateObject(ModeBase *_parent) :
 
 void ModeWorldCreateObject::on_start() {
 	filename = LastObjectFilename;
-	if (filename.num == 0)
+	if (filename.is_empty())
 		on_find_object();
 
 	dialog = new hui::Panel();
 	dialog->from_resource("world_new_object_dialog");
-	dialog->set_string("kind", filename);
+	dialog->set_string("kind", filename.str());
 	dialog->enable("name", false);
 	dialog->event("find_object", std::bind(&ModeWorldCreateObject::on_find_object, this));
 	ed->set_side_panel(dialog);
 
-	if (filename.num > 0)
+	if (!filename.is_empty())
 		message = _("place new object");
 
 	ed->activate("");
@@ -52,7 +52,7 @@ void ModeWorldCreateObject::on_find_object() {
 
 
 void ModeWorldCreateObject::on_left_button_down() {
-	if (filename.num > 0) {
+	if (!filename.is_empty()) {
 		data->AddObject(filename, multi_view->get_cursor());
 		//Abort();
 	}

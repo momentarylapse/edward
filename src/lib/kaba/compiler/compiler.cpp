@@ -67,7 +67,7 @@ void try_init_global_var(const Class *type, char* g_var, SyntaxTree *ps) {
 	Function *cf = type->get_default_constructor();
 	if (!cf) {
 		if (type->needs_constructor())
-			ps->do_error("global variable without default constructor...");
+			ps->do_error("static variable without default constructor...");
 		return;
 	}
 	typedef void init_func(void *);
@@ -77,11 +77,12 @@ void try_init_global_var(const Class *type, char* g_var, SyntaxTree *ps) {
 		ff(g_var);
 }
 
-void init_all_global_objects(SyntaxTree *ps)
-{
-	for (Variable *v: ps->base_class->static_variables)
+void init_all_global_objects(SyntaxTree *ps, const Class *c) {
+	for (Variable *v: c->static_variables)
 		if (!v->is_extern)
 			try_init_global_var(v->type, (char*)v->memory, ps);
+	for (auto *cc: c->classes)
+		init_all_global_objects(ps, cc);
 }
 
 static int64 _opcode_rand_state_ = 10000;
@@ -95,7 +96,7 @@ void* get_nice_random_addr()
 
 }
 
-void* get_nice_memory(long size, bool executable, Script *script)
+void* get_nice_memory(int64 size, bool executable, Script *script)
 {
 	if (size == 0)
 		return nullptr;
@@ -184,11 +185,18 @@ int mem_size_needed(const Class *c) {
 	return memory_size;
 }
 
+int mem_size_needed_total(const Class *c) {
+	int size = mem_size_needed(c);
+	for (auto *v: c->static_variables)
+		size += mem_align(v->type->size, 4);
+	for (auto *cc: c->classes)
+		size += mem_size_needed_total(cc);
+	return size;
+}
+
 void Script::allocate_memory()
 {
-	memory_size = mem_size_needed(syntax->base_class);
-	for (auto *v: syntax->base_class->static_variables)
-		memory_size += mem_align(v->type->size, 4);
+	memory_size = mem_size_needed_total(syntax->base_class);
 
 	memory = (char*)get_nice_memory(memory_size, false, this);
 	if (config.verbose)
@@ -214,7 +222,7 @@ void Script::_map_global_variables_to_memory(char *mem, int &offset, char *addre
 		if (v->is_extern) {
 			v->memory = get_external_link(v->name);
 			if (!v->memory)
-				do_error_link("external variable " + v->name + " was not linked");
+				do_error_link(format("external variable '%s' was not linked", v->name));
 		} else {
 			int size_aligned = mem_align(v->type->size, 4);
 			v->memory = &address[offset];
@@ -222,6 +230,8 @@ void Script::_map_global_variables_to_memory(char *mem, int &offset, char *addre
 			//memset(v->memory, 0, v->type->size); // reset all global variables to 0
 		}
 	}
+	for (auto *cc: name_space->classes)
+		_map_global_variables_to_memory(mem, offset, address, cc);
 }
 
 void Script::map_global_variables_to_memory() {
@@ -242,14 +252,13 @@ void Script::align_opcode() {
 
 static int OCORA;
 void Script::CompileOsEntryPoint() {
-	int nf=-1;
-	foreachi(Function *ff, syntax->functions, index)
-		if (ff->long_name() == "main")
-			nf = index;
+	if (!base_class()->get_func("main", TypeVoid, {}))
+		if (!syntax->imported_symbols->get_func("main", TypeVoid, {}))
+			do_error("os entry point: no 'void main()' found");
+
 	// call
-	if (nf>=0)
-		Asm::add_instruction(opcode, opcode_size, Asm::INST_CALL, Asm::param_imm(0, 4));
-	TaskReturnOffset=opcode_size;
+	Asm::add_instruction(opcode, opcode_size, Asm::INST_CALL, Asm::param_imm(0, 4));
+	TaskReturnOffset = opcode_size;
 	OCORA = Asm::OCParam;
 	align_opcode();
 }
@@ -343,19 +352,18 @@ void Script::map_constants_to_opcode() {
 	align_opcode();
 }
 
-void Script::LinkOsEntryPoint()
-{
-	Function *f = nullptr;
-	for (Function *ff: syntax->functions)
-		if (ff->long_name() == "main")
-			f = ff;
-	if (f){
-		int lll = (int_p)f->address - syntax->asm_meta_info->code_origin - TaskReturnOffset;
-		//printf("insert   %d  an %d\n", lll, OCORA);
-		//msg_write(lll);
-		//msg_write(d2h(&lll,4,false));
-		*(int*)&opcode[OCORA] = lll;
-	}
+void Script::LinkOsEntryPoint() {
+	auto *f = base_class()->get_func("main", TypeVoid, {});
+	if (!f)
+		f = syntax->imported_symbols->get_func("main", TypeVoid, {});
+	if (!f)
+		do_error_internal("os entry point missing...");
+
+	int lll = (int_p)f->address - syntax->asm_meta_info->code_origin - TaskReturnOffset;
+	//printf("insert   %d  an %d\n", lll, OCORA);
+	//msg_write(lll);
+	//msg_write(i2h(lll,4));
+	*(int*)&opcode[OCORA] = lll;
 }
 
 bool find_and_replace(char *opcode, int opcode_size, char *pattern, int size, char *insert)
@@ -382,7 +390,7 @@ void import_deep(SyntaxTree *dest, SyntaxTree *source) {
 	source->base_class->constants.clear();
 
 	// don't fully include internal libraries
-	if (source->script->filename.find(".kaba") < 0)
+	if (source->script->filename.basename().find(".kaba") < 0)
 		return;
 
 	dest->base_class->static_variables.append(source->base_class->static_variables);
@@ -560,6 +568,8 @@ void Script::compile() {
 // link functions
 	link_functions();
 	link_virtual_functions_into_vtable(syntax->base_class);
+	if (config.compile_os)
+		link_virtual_functions_into_vtable(syntax->imported_symbols);
 
 
 
@@ -571,7 +581,7 @@ void Script::compile() {
 
 	// initialize global objects
 	if (!config.compile_os)
-		init_all_global_objects(syntax);
+		init_all_global_objects(syntax, syntax->base_class);
 
 	//_expand(Opcode,OpcodeSize);
 

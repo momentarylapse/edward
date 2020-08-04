@@ -13,16 +13,15 @@
 class AdminFile;
 class GameIniData;
 
-class AdminFileList : public Array<AdminFile*>
-{
+class AdminFileList : public Array<AdminFile*> {
 public:
 	void clear();
 	void clear_deep();
 	void sort();
 	void add_recursive(AdminFile *a);
-	AdminFile *add_unchecked(int kind, const string &filename, AdminFile *source = NULL);
-	AdminFile *add_unchecked_ae(int kind, const string &filename, AdminFile *source);
-	AdminFile *get(int kind, const string &name);
+	AdminFile *add_unchecked(int kind, const Path &filename, AdminFile *source = NULL);
+	AdminFile *add_unchecked_ae(int kind, const Path &filename, AdminFile *source);
+	AdminFile *get(int kind, const Path &name);
 	void remove_obsolete();
 
 	AdminFile *add_engine_files();

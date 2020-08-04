@@ -11,13 +11,12 @@
 #include "../../x/terrain.h"
 
 
-bool WorldTerrain::load(const vector &_pos, const string &_filename, bool deep) {
+bool WorldTerrain::load(const vector &_pos, const Path &_filename, bool deep) {
 	view_stage = 0;
 	is_selected = false;
 	is_special = false;
 
-	filename = _filename.substr(engine.map_dir.num, -1);
-	filename.resize(filename.num - 4);
+	filename = _filename.relative_to(engine.map_dir).no_ext();
 
 	terrain = new Terrain();
 	bool Error = !terrain->load(filename, _pos, deep);
@@ -30,9 +29,8 @@ bool WorldTerrain::load(const vector &_pos, const string &_filename, bool deep) 
 	return !Error;
 }
 
-bool WorldTerrain::save(const string &_filename) {
-	filename = _filename.substr(engine.map_dir.num, -1);
-	filename.resize(filename.num - 4);
+bool WorldTerrain::save(const Path &_filename) {
+	filename = _filename.relative_to(engine.map_dir).no_ext();
 
 
 	File *f = NULL;
@@ -54,11 +52,11 @@ bool WorldTerrain::save(const string &_filename) {
 	f->write_comment("// Textures");
 	f->write_int(terrain->material->textures.num);
 	for (int i=0;i<terrain->material->textures.num;i++){
-		f->write_str(terrain->texture_file[i]);
+		f->write_str(terrain->texture_file[i].str());
 		f->write_float(terrain->texture_scale[i].x);
 		f->write_float(terrain->texture_scale[i].z);
 	}
-	f->write_str(terrain->material_file);
+	f->write_str(terrain->material_file.str());
 
 	// height
 	for (int x=0;x<terrain->num_x+1;x++)

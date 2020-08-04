@@ -1,7 +1,7 @@
-use api
+use edward
 use hui
 use thread
-use "helper/psmove.kaba"
+use helper.psmove
 
 enum
 	MODE_NONE
@@ -77,4 +77,4 @@ class X extends Object
 
 void main()
 	let x = new X()
-	RunRepeated(0.03, x, X.step)
+	hui.run_repeated(0.03, x, X.step)

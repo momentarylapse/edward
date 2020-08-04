@@ -11,8 +11,7 @@
 #include "../../../lib/hui/hui.h"
 #include "../../../Data/World/DataWorld.h"
 
-class TerrainHeightmapDialog: public hui::Dialog
-{
+class TerrainHeightmapDialog: public hui::Dialog {
 public:
 	TerrainHeightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data);
 	virtual ~TerrainHeightmapDialog();
@@ -29,8 +28,8 @@ public:
 
 private:
 	DataWorld *data;
-	string heightmap_file;
-	string filter_file;
+	Path heightmap_file;
+	Path filter_file;
 	Image heightmap;
 	Image filter;
 	float stretch_x;

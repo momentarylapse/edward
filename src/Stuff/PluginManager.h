@@ -12,8 +12,8 @@
 
 class PluginManager {
 public:
-	PluginManager(const string &dir);
-	virtual ~PluginManager();
+	PluginManager(const Path &dir);
+	~PluginManager();
 
 	void init();
 	void link_plugins();
@@ -25,7 +25,7 @@ public:
 	};
 
 	struct Plugin {
-		string filename;
+		Path filename;
 		string name;
 		string category;
 		PluginType type;
@@ -34,10 +34,10 @@ public:
 	};
 	Array<Plugin> plugins;
 
-	void execute(const string &filename);
+	void execute(const Path &filename);
 
-	static string directory;
-	static void* create_instance(const string &filename, const string &parent);
+	static Path directory;
+	static void* create_instance(const Path &filename, const string &parent);
 };
 
 #endif /* PLUGINMANAGER_H_ */

@@ -8,6 +8,7 @@
 \*----------------------------------------------------------------------------*/
 #include "../file/file.h"
 #include "kaba.h"
+#include "syntax/Parser.h"
 #include "lib/common.h"
 #include <cassert>
 
@@ -23,26 +24,23 @@
 	#include <windows.h>
 #endif
 
-namespace Kaba{
+namespace Kaba {
 
-string Version = "0.18.5.2";
+string Version = "0.19.-2.4";
 
 //#define ScriptDebug
-
-int GlobalWaitingMode;
-float GlobalTimeToWait;
 
 
 Exception::Exception(const string &_message, const string &_expression, int _line, int _column, Script *s) :
 	Asm::Exception(_message, _expression, _line, _column)
 {
-	text +=  ", " + s->filename;
+	text +=  ", " + s->filename.str();
 }
 
 Exception::Exception(const Asm::Exception &e, Script *s, Function *f) :
 	Asm::Exception(e)
 {
-	text = "assembler: " + message() + ", " + f->long_name() + ": " + s->filename;
+	text = format("assembler: %s, %s: %s", message(), f->long_name(), s->filename);
 }
 
 
@@ -53,21 +51,21 @@ Array<Script*> _dead_scripts_;
 
 
 
-Script *Load(const string &filename, bool just_analyse)
-{
+Script *Load(const Path &filename, bool just_analyse) {
 	//msg_write(string("Lade ",filename));
 	Script *s = nullptr;
 
 	// already loaded?
 	for (Script *ps: _public_scripts_)
-		if (ps->filename == filename.sys_filename())
+		if (ps->filename == filename)
 			return ps;
 	
 	// load
 	s = new Script();
-	try{
+	s->syntax->base_class->name = filename.basename().replace(".kaba", "");
+	try {
 		s->load(filename, just_analyse);
-	}catch(const Exception &e){
+	} catch(const Exception &e) {
 		delete(s);
 		throw e;
 	}
@@ -77,16 +75,16 @@ Script *Load(const string &filename, bool just_analyse)
 	return s;
 }
 
-Script *CreateForSource(const string &buffer, bool just_analyse)
-{
+Script *CreateForSource(const string &buffer, bool just_analyse) {
 	Script *s = new Script;
 	s->just_analyse = just_analyse;
-	try{
-		s->syntax->parse_buffer(buffer, just_analyse);
+	auto parser = s->syntax->parser = new Parser(s->syntax);
+	try {
+		parser->parse_buffer(buffer, just_analyse);
 
 		if (!just_analyse)
 			s->compile();
-	}catch(const Exception &e){
+	} catch(const Exception &e) {
 		delete(s);
 		throw e;
 	}
@@ -174,17 +172,23 @@ struct LoadingScript {
 };
 Array<LoadingScript> loading_script_stack;
 
-void Script::load(const string &_filename, bool _just_analyse)
-{
+
+void Script::load(const Path &_filename, bool _just_analyse) {
 	loading_script_stack.add(this);
 	just_analyse = _just_analyse;
-	filename = _filename.sys_filename();
 
-	try{
+
+	if (_filename.is_relative())
+		filename = (config.directory << _filename).absolute().canonical();
+	else
+		filename = _filename.absolute().canonical();
+	auto parser = syntax->parser = new Parser(syntax);
+
+	try {
 
 	// read file
-		string buffer = FileReadText(config.directory + filename);
-		syntax->parse_buffer(buffer, just_analyse);
+		string buffer = FileReadText(filename);
+		parser->parse_buffer(buffer, just_analyse);
 
 
 		if (!just_analyse)
@@ -197,10 +201,10 @@ void Script::load(const string &_filename, bool _just_analyse)
 				msg_write(Asm::disassemble(opcode, opcode_size));
 		}
 
-	}catch(FileError &e){
+	} catch(FileError &e) {
 		loading_script_stack.pop();
-		do_error("script file not loadable: " + filename);
-	}catch(Exception &e){
+		do_error("script file not loadable: " + filename.str());
+	} catch(Exception &e) {
 		loading_script_stack.pop();
 		throw e;
 	}
@@ -215,35 +219,30 @@ void Script::do_error(const string &str, int override_line)
 	syntax->do_error(str, 0, override_line);
 }
 
-void Script::do_error_internal(const string &str)
-{
+void Script::do_error_internal(const string &str) {
 	do_error("internal compiler error: " + str, 0);
 }
 
-void Script::do_error_link(const string &str)
-{
+void Script::do_error_link(const string &str) {
 	do_error(str, 0);
 }
 
-void Script::set_variable(const string &name, void *data)
-{
+void Script::set_variable(const string &name, void *data) {
 	//msg_write(name);
 	for (auto *v: syntax->base_class->static_variables)
-		if (v->name == name){
+		if (v->name == name) {
 			memcpy(v->memory, data, v->type->size);
 			return;
 		}
-	msg_error("CScript.SetVariable: variable " + name + " not found");
+	msg_error("Script.set_variable: variable " + name + " not found");
 }
 
-Script::Script()
-{
+Script::Script() {
 	filename = "-empty script-";
 	used_by_default = false;
 
 	reference_counter = 0;
 
-	cur_func = nullptr;
 	show_compiler_stats = !config.compile_silently;
 
 	just_analyse = false;
@@ -292,21 +291,23 @@ void ExecuteSingleScriptCommand(const string &cmd)
 
 	// empty script
 	Script *s = new Script();
+	s->filename = "-command line-";
 	SyntaxTree *ps = s->syntax;
+	auto parser = ps->parser = new Parser(ps);
 
-	try{
+	try {
 
 // find expressions
-	ps->Exp.analyse(ps, cmd);
-	if (ps->Exp.line[0].exp.num < 1){
+	parser->Exp.analyse(ps, cmd);
+	if (parser->Exp.line[0].exp.num < 1){
 		//clear_exp_buffer(&ps->Exp);
 		delete(s);
 		return;
 	}
 	
-	for (auto *p: Packages)
-		if ((p->filename == "file") or (p->filename == "image") or (p->filename == "kaba"))
-			ps->add_include_data(p);
+	for (auto *p: packages)
+		if (!p->used_by_default and (p->filename != "x"))
+			ps->add_include_data(p, true);
 
 // analyse syntax
 
@@ -314,15 +315,16 @@ void ExecuteSingleScriptCommand(const string &cmd)
 	Function *func = ps->add_function("--command-func--", TypeVoid, ps->base_class, Flags::STATIC);
 	func->_var_size = 0; // set to -1...
 
+	parser->Exp.reset_parser();
+
 	// parse
-	ps->Exp.reset_parser();
-	ps->parse_complete_command(func->block);
+	parser->parse_complete_command(func->block);
 	
 	// implicit print(...)?
 	if (func->block->params.num > 0 and func->block->params[0]->type != TypeVoid) {
-		auto *n = ps->add_converter_str(func->block->params[0], true);
+		auto *n = parser->add_converter_str(func->block->params[0], true);
 		
-		Array<Node*> links = ps->get_existence("print", nullptr, nullptr, false);
+		auto links = ps->get_existence("print", nullptr, nullptr, false);
 		Function *f = links[0]->as_func();
 
 		Node *cmd = ps->add_node_call(f);
@@ -330,17 +332,12 @@ void ExecuteSingleScriptCommand(const string &cmd)
 		func->block->params[0] = cmd;
 	}
 	for (auto *c: ps->owned_classes)
-		ps->auto_implement_functions(c);
+		parser->auto_implement_functions(c);
 	//ps->show("aaaa");
 
 // compile
 	s->compile();
 
-	/*if (true){
-		printf("%s\n\n", Opcode2Asm(s->ThreadOpcode,s->ThreadOpcodeSize));
-		printf("%s\n\n", Opcode2Asm(s->Opcode,s->OpcodeSize));
-		//msg_write(Opcode2Asm(Opcode,OpcodeSize));
-	}*/
 // execute
 	typedef void void_func();
 	void_func *f = (void_func*)func->address;
@@ -354,17 +351,17 @@ void ExecuteSingleScriptCommand(const string &cmd)
 	delete(s);
 }
 
-void *Script::match_function(const string &name, const string &return_type, const Array<string> &param_types)
-{
+void *Script::match_function(const string &name, const string &return_type, const Array<string> &param_types) {
+	auto ns = base_class();
 	// match
 	for (Function *f: syntax->functions)
-		if (f->long_name().match(name) and (f->literal_return_type->long_name() == return_type) and (param_types.num == f->num_params)){
+		if (f->cname(ns).match(name) and (f->literal_return_type->cname(ns) == return_type) and (param_types.num == f->num_params)) {
 
 			bool params_ok = true;
 			for (int j=0;j<param_types.num;j++)
-				if (f->literal_param_type[j]->long_name() != param_types[j])
+				if (f->literal_param_type[j]->cname(ns) != param_types[j])
 					params_ok = false;
-			if (params_ok){
+			if (params_ok) {
 				if (just_analyse)
 					return (void*)(int_p)0xdeadbeaf;
 				else

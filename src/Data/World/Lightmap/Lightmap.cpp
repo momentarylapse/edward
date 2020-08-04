@@ -136,9 +136,9 @@ void fuzzy_image(Image &im)
 bool Lightmap::RenderTextures()
 {
 	ed->progress->start_cancelable(_("calculating texture"), 0);
-	dir_create(nix::texture_dir + data->texture_out_dir);
-	dir_create(engine.object_dir + data->model_out_dir);
-	dir_create(engine.map_dir + data->model_out_dir);
+	dir_create(nix::texture_dir << data->texture_out_dir);
+	dir_create(engine.object_dir << data->model_out_dir);
+	dir_create(engine.map_dir << data->model_out_dir);
 
 	PrepareTextureRendering();
 
@@ -161,9 +161,9 @@ bool Lightmap::RenderTextures()
 			}
 		}
 
-		m.tex_name = data->texture_out_dir + i2s(mid) + ".tga";
+		m.tex_name = data->texture_out_dir << (i2s(mid) + ".tga");
 		fuzzy_image(im);
-		im.save(nix::texture_dir + m.tex_name);
+		im.save(nix::texture_dir << m.tex_name);
 
 		// edit model
 		for (ModelMaterial *mat: m.orig->material){
@@ -175,8 +175,8 @@ bool Lightmap::RenderTextures()
 			mat->col.emission = Black;
 			mat->col.user = true;
 		}
-		m.new_name = data->model_out_dir + i2s(mid);
-		storage->save(engine.object_dir + m.new_name + ".model", m.orig);
+		m.new_name = data->model_out_dir << i2s(mid);
+		storage->save(engine.object_dir << m.new_name.with(".model"), m.orig);
 	}
 
 	foreachi(LightmapData::Terrain &t, data->Terrains, tid){
@@ -197,16 +197,16 @@ bool Lightmap::RenderTextures()
 			}
 		}
 
-		t.tex_name = data->texture_out_dir + "t" + i2s(tid) + ".tga";
+		t.tex_name = data->texture_out_dir << ("t" + i2s(tid) + ".tga");
 		fuzzy_image(im);
-		im.save(nix::texture_dir + t.tex_name);
+		im.save(nix::texture_dir << t.tex_name);
 
 		// edit Terrain
 		t.orig->texture_file[t.orig->material->textures.num] = t.tex_name;
 		t.orig->texture_scale[t.orig->material->textures.num] = vector(1.0f / t.orig->num_x, 0, 1.0f / t.orig->num_z);
 		t.orig->material->textures.add(NULL);
-		t.new_name = data->model_out_dir + i2s(tid);
-		data->source_world->terrains[tid].save(engine.map_dir + t.new_name + ".map");
+		t.new_name = data->model_out_dir << i2s(tid);
+		data->source_world->terrains[tid].save(engine.map_dir << t.new_name.with(".map"));
 	}
 
 	CreateNewWorld();
@@ -228,6 +228,6 @@ void Lightmap::CreateNewWorld()
 	for (LightmapData::Model &m: data->Models)
 		w.objects[m.object_index].filename = m.new_name;
 
-	storage->save(engine.map_dir + data->new_world_name + ".world", &w);
+	storage->save(engine.map_dir << data->new_world_name.with(".world"), &w);
 }
 

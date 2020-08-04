@@ -16,8 +16,8 @@ class FormatFontX: public TypedFormat<DataFont> {
 public:
 	FormatFontX();
 
-	void _load(const string &filename, DataFont *data, bool deep) override;
-	void _save(const string &filename, DataFont *data) override;
+	void _load(const Path &filename, DataFont *data, bool deep) override;
+	void _save(const Path &filename, DataFont *data) override;
 };
 
 #endif /* SRC_STORAGE_FORMAT_FORMATFONTX_H_ */

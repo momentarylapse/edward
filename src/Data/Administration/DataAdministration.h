@@ -30,21 +30,21 @@ public:
 	virtual ~DataAdministration();
 
 	void reset();
-	bool load(const string &_filename, bool deep = true);
-	bool save(const string &_filename);
+	bool load(const Path &_filename, bool deep = true);
+	bool save(const Path &_filename);
 
-	void FraesDir(const string &root_dir, const string &dir, const string &extension);
+	void FraesDir(const Path &root_dir, const Path &dir, const string &extension);
 	void MetaFraesDir(int kind);
 	void TestRootDirectory();
 	void SaveDatabase();
 	void LoadDatabase();
 	void UpdateDatabase();
 
-	void ExportGame(const string &dir, GameIniData &game_ini);
+	void ExportGame(const Path &dir, GameIniData &game_ini);
 
 	AdminFileList *file_list;
 
-	Array<string> cft;
+	Array<Path> cft;
 
 	GameIniData *GameIni;
 };

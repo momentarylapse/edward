@@ -1,6 +1,6 @@
 use hui
 use os
-use "../api.kaba"
+use edward
 
 string vecToJson(vector v)
 	return "{{v.x}}, {{v.y}}, {{v.z}}"
@@ -97,9 +97,9 @@ string boneToJson(ModelBone b)
 	return str
 
 void main()
-	if !FileDialogSave(edward, "Save JSON", "", "*.js", "*.js")
+	if !hui.file_dialog_save(edward, "Save JSON", "", "*.js", "*.js")
 		return
-	File *f = Filesystem.create_text(HuiFilename)
+	File *f = Filesystem.create_text(hui.filename)
 	
 	int n_tria = 0
 	for p in data_model.mesh.polygon

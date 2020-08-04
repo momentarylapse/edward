@@ -135,7 +135,7 @@ void ActionModelMaterialDeleteTexture::undo(Data *d) {
 
 
 
-ActionModelMaterialLoadTexture::ActionModelMaterialLoadTexture(int _index, int _level, const string &_fn) {
+ActionModelMaterialLoadTexture::ActionModelMaterialLoadTexture(int _index, int _level, const Path &_fn) {
 	index = _index;
 	level = _level;
 	filename = _fn;

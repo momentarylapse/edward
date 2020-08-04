@@ -28,6 +28,7 @@ static ExpKind exp_kind;
 
 ExpressionBuffer::ExpressionBuffer() : cur(dummy) {
 	clear();
+	reset_indent();
 }
 
 string ExpressionBuffer::get_name(int n) {
@@ -226,7 +227,7 @@ void ExpressionBuffer::do_asm_block(const char *source, int &pos, int &line_no) 
 		if (source[pos] == '{')
 			break;
 		if ((source[pos] != ' ') and (source[pos] != '\t') and (source[pos] != '\n'))
-			syntax->do_error("'{' expected after \"asm\"");
+			syntax->do_error("'{' expected after 'asm'");
 		if (source[pos] == '\n')
 			line_breaks ++;
 		pos ++;
@@ -302,7 +303,7 @@ bool ExpressionBuffer::analyse_expression(const char *source, int &pos, Expressi
 
 	// string
 	if (source[pos] == '\"') {
-		for (int i=0;true;i++) {
+		for (int i=0; true; i++) {
 			char c = Temp[TempLength ++] = source[pos ++];
 			// end of string?
 			if ((c == '\"') and (i > 0)) {
@@ -313,23 +314,23 @@ bool ExpressionBuffer::analyse_expression(const char *source, int &pos, Expressi
 				line_no ++;
 				//syntax->DoError("string exceeds line");
 			} else {
+				if (c == '{') {
+					if (source[pos] == '{') {
+						// string interpolation {{..}}
+						for (int j=0; true; j++) {
+							c = Temp[TempLength ++] = source[pos ++];
+							if (c == 0)
+								syntax->do_error("string interpolation exceeds file");
+							if ((c == '}') and (Temp[TempLength-2] == '}'))
+								break;
+						}
+						continue;
+					}
+				}
+
 				// escape sequence
 				if (c == '\\') {
-					if (source[pos] == '\\')
-						Temp[TempLength - 1] = '\\';
-					else if (source[pos] == '\"')
-						Temp[TempLength - 1] = '\"';
-					else if (source[pos] == 'n')
-						Temp[TempLength - 1] = '\n';
-					else if (source[pos] == 'r')
-						Temp[TempLength - 1] = '\r';
-					else if (source[pos] == 't')
-						Temp[TempLength - 1] = '\t';
-					else if (source[pos] == '0')
-						Temp[TempLength - 1] = '\0';
-					else
-						syntax->do_error("unknown escape in string");
-					pos ++;
+					Temp[TempLength ++] = source[pos ++];
 				}
 				continue;
 			}
@@ -348,7 +349,12 @@ bool ExpressionBuffer::analyse_expression(const char *source, int &pos, Expressi
 	// character
 	} else if (source[pos] == '\'') {
 		Temp[TempLength ++] = source[pos ++];
-		Temp[TempLength ++] = source[pos ++];
+		if (source[pos] == '\\') {
+			Temp[TempLength ++] = source[pos ++];
+			Temp[TempLength ++] = source[pos ++];
+		} else {
+			Temp[TempLength ++] = source[pos ++];
+		}
 		Temp[TempLength ++] = source[pos ++];
 		if (Temp[TempLength - 1] != '\'')
 			syntax->do_error("character constant should end with '''");

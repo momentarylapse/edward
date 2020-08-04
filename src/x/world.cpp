@@ -382,7 +382,7 @@ bool World::load(const LevelData &ld) {
 	objects.resize(ld.objects.num);
 	num_reserved_objects = ld.objects.num;
 	foreachi(auto &o, ld.objects, i)
-		if (o.filename.num > 0){
+		if (!o.filename.is_empty()){
 			auto q = quaternion::rotation(o.ang);
 			Object *oo = create_object(o.filename, o.name, o.pos, q, i);
 			ok &= (oo >= 0);
@@ -410,7 +410,7 @@ bool World::load(const LevelData &ld) {
 	return ok;
 }
 
-Terrain *World::create_terrain(const string &filename, const vector &pos) {
+Terrain *World::create_terrain(const Path &filename, const vector &pos) {
 	Terrain *tt = new Terrain(filename, pos);
 
 //	tt->ubo = new vulkan::UniformBuffer(64*3);
@@ -430,11 +430,11 @@ static color s2c(const string &s) {
 	return color(x[3]._float(), x[0]._float(), x[1]._float(), x[2]._float());
 }
 
-bool LevelData::load(const string &filename) {
+bool LevelData::load(const Path &filename) {
 	world_filename = filename;
 
 	xml::Parser p;
-	p.load(engine.map_dir + filename + ".world");
+	p.load(engine.map_dir << filename.with(".world"));
 	auto *meta = p.elements[0].find("meta");
 	if (meta) {
 		for (auto &e: meta->elements) {
@@ -511,7 +511,7 @@ bool LevelData::load(const string &filename) {
 	return true;
 }
 
-bool GodLoadWorld(const string &filename) {
+bool GodLoadWorld(const Path &filename) {
 	LevelData level_data;
 	bool ok = level_data.load(filename);
 	ok &= world.load(level_data);
@@ -573,11 +573,11 @@ int GodFindObjects(vector &pos, float radius, int mode, Array<Object*> &a)
 }
 #endif
 
-Object *World::create_object(const string &filename, const string &name, const vector &pos, const quaternion &ang, int w_index) {
+Object *World::create_object(const Path &filename, const string &name, const vector &pos, const quaternion &ang, int w_index) {
 	if (engine.resetting_game)
 		throw Exception("CreateObject during game reset");
 
-	if (filename == "")
+	if (filename.is_empty())
 		throw Exception("CreateObject: empty filename");
 
 	//msg_write(on);
@@ -595,7 +595,7 @@ Object *World::create_object(const string &filename, const string &name, const v
 
 	m->on_init();
 
-	AddNetMsg(NET_MSG_CREATE_OBJECT, m->object_id, filename);
+	AddNetMsg(NET_MSG_CREATE_OBJECT, m->object_id, filename.str());
 
 	return o;
 }

@@ -28,7 +28,7 @@ public:
 	void BasicSettings();
 	void ExportGame();
 
-	void create_project_dir(const string &dir);
+	void create_project_dir(const Path &dir);
 
 	AdministrationDialog *dialog;
 };

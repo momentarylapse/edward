@@ -11,10 +11,11 @@
 #include "../lib/base/base.h"
 
 class Model;
+class Path;
 
 class ModelManager {
 public:
-	static Model *load(const string &filename);
+	static Model *load(const Path &filename);
 
 	static Array<Model*> originals;
 };

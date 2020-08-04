@@ -9,8 +9,7 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Data/Model/ModelMesh.h"
 
-ActionModelDeleteBone::ActionModelDeleteBone(int _index)
-{
+ActionModelDeleteBone::ActionModelDeleteBone(int _index) {
 	index = _index;
 }
 

@@ -13,6 +13,7 @@
 class Data;
 class File;
 class color;
+class Path;
 
 class FormatError : public Exception {
 public:
@@ -67,8 +68,8 @@ public:
 
 	void warning(const string &message);
 
-	virtual void load(const string &filename, Data *data, bool deep) {}
-	virtual void save(const string &filename, Data *data) {}
+	virtual void load(const Path &filename, Data *data, bool deep) {}
+	virtual void save(const Path &filename, Data *data) {}
 
 	string extension;
 	string description;
@@ -82,13 +83,13 @@ template<class T>
 class TypedFormat : public Format {
 public:
 	TypedFormat(int cat, const string &ext, const string &desc, Flag flags) : Format(cat, ext, desc, flags) {}
-	virtual void _load(const string &filename, T *data, bool deep) {}
-	virtual void _save(const string &filename, T *data) {}
+	virtual void _load(const Path &filename, T *data, bool deep) {}
+	virtual void _save(const Path &filename, T *data) {}
 
-	void load(const string &filename, Data *data, bool deep) override {
+	void load(const Path &filename, Data *data, bool deep) override {
 		_load(filename, dynamic_cast<T*>(data), deep);
 	}
-	void save(const string &filename, Data *data) override {
+	void save(const Path &filename, Data *data) override {
 		_save(filename, dynamic_cast<T*>(data));
 	}
 };

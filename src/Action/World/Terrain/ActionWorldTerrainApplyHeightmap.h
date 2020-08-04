@@ -14,7 +14,7 @@ class DataWorld;
 
 class ActionWorldTerrainApplyHeightmap : public ActionGroup {
 public:
-	ActionWorldTerrainApplyHeightmap(DataWorld *data, const string &heightmap, float height_factor, float stretch_x, float stretch_z, const string &filter);
+	ActionWorldTerrainApplyHeightmap(DataWorld *data, const Path &heightmap, float height_factor, float stretch_x, float stretch_z, const Path &filter);
 	string name(){	return "WorldTerrainApplyHeightmap";	}
 };
 

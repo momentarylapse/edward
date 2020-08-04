@@ -6,6 +6,7 @@
 
 namespace Kaba {
 
+extern const Class *TypePath;
 
 #pragma GCC push_options
 #pragma GCC optimize("no-omit-frame-pointer")
@@ -30,7 +31,7 @@ void __execute_single_command__(const string &cmd) {
 
 
 void SIAddPackageKaba() {
-	add_package("kaba", false);
+	add_package("kaba");
 
 
 	TypeClass 			= add_type  ("Class", sizeof(Class));
@@ -79,6 +80,7 @@ void SIAddPackageKaba() {
 		class_add_elementx("functions", TypeFunctionPList, &Class::functions);
 		class_add_elementx("classes", TypeClassPList, &Class::classes);
 		class_add_elementx("constants", TypeConstantPList, &Class::constants);
+		class_add_elementx("static_variables", TypeVariablePList, &Class::static_variables);
 		class_add_funcx("is_derived_from", TypeBool, &Class::is_derived_from, Flags::PURE);
 			func_add_param("c", TypeClass);
 		class_add_funcx("is_pointer", TypeBool, &Class::is_pointer, Flags::PURE);
@@ -90,14 +92,20 @@ void SIAddPackageKaba() {
 			func_add_param("return_type", TypeClass);
 			func_add_param("params", TypeClassPList);
 		class_add_funcx("long_name", TypeString, &Class::long_name, Flags::PURE);
+		class_add_funcx("cname", TypeString, &Class::cname, Flags::PURE);
+			func_add_param("ns", TypeClassP);
+		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &class_repr, Flags::PURE);
 
 	add_class(TypeClassP);
-		class_add_funcx("str", TypeString, &class_repr, Flags::PURE);
+		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &class_repr, Flags::PURE);
 
 	add_class(TypeFunction);
 		class_add_elementx("name", TypeString, &Function::name);
 		class_add_funcx("long_name", TypeString, &Function::long_name, Flags::PURE);
+		class_add_funcx("cname", TypeString, &Function::cname, Flags::PURE);
+			func_add_param("ns", TypeClassP);
 		class_add_funcx("signature", TypeString, &Function::signature, Flags::PURE);
+			func_add_param("ns", TypeClassP);
 		class_add_elementx("namespace", TypeClassP, &Function::name_space);
 		class_add_elementx("num_params", TypeInt, &Function::num_params);
 		class_add_elementx("var", TypeVariablePList, &Function::var);
@@ -113,9 +121,9 @@ void SIAddPackageKaba() {
 		class_add_elementx("virtual_index", TypeInt, &Function::virtual_index);
 		class_add_elementx("inline_index", TypeInt, &Function::inline_no);
 		class_add_elementx("code", TypeFunctionCodeP, &Function::address);
+		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &func_repr, Flags::PURE);
 
-	add_class(TypeFunctionP);
-		class_add_funcx("str", TypeString, &func_repr, Flags::PURE);
+	//add_class(TypeFunctionP);
 
 	add_class(TypeVariable);
 		class_add_elementx("name", TypeString, &Variable::name);
@@ -135,7 +143,7 @@ void SIAddPackageKaba() {
 		class_add_funcx("constants", TypeConstantPList, &Script::constants, Flags::PURE);
 		class_add_funcx("base_class", TypeClassP, &Script::base_class, Flags::PURE);
 		class_add_funcx("load", TypeScriptP, &__load_script__, Flags::_STATIC__RAISES_EXCEPTIONS);
-			func_add_param("filename", TypeString);
+			func_add_param("filename", TypePath);
 			func_add_param("just_analize", TypeBool);
 		class_add_funcx("create", TypeScriptP, &__create_from_source__, Flags::_STATIC__RAISES_EXCEPTIONS);
 			func_add_param("source", TypeString);
@@ -160,9 +168,8 @@ void SIAddPackageKaba() {
 		func_add_param("length", TypeInt);
 		func_add_param("comments", TypeBool);
 
-	add_ext_var("packages", TypeScriptPList, (void*)&Packages);
+	add_ext_var("packages", TypeScriptPList, (void*)&packages);
 	add_ext_var("statements", TypeStatementPList, (void*)&Statements);
-	add_ext_var("lib_version", TypeString, (void*)&LibVersion);
 	add_ext_var("kaba_version", TypeString, (void*)&Version);
 }
 

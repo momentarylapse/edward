@@ -55,9 +55,9 @@ public:
 
 	bool file_errors_are_critical;
 
-	void set_dirs(const string &texture_dir, const string &map_dir, const string &object_dir, const string &sound_dir, const string &script_dir, const string &material_dir, const string &font_dir);
+	void set_dirs(const Path &texture_dir, const Path &map_dir, const Path &object_dir, const Path &sound_dir, const Path &script_dir, const Path &material_dir, const Path &font_dir);
 
-	string map_dir, sound_dir, script_dir, object_dir;
+	Path map_dir, sound_dir, script_dir, object_dir;
 };
 extern EngineData engine;
 
@@ -70,7 +70,7 @@ public:
 
 class TemplateDataScript {
 public:
-	string filename;
+	Path filename;
 	Array<TemplateDataScriptVariable> variables;
 };
 

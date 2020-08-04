@@ -22,7 +22,7 @@ public:
 
 	void on_left_button_down() override;
 
-	string filename;
+	Path filename;
 };
 
 #endif /* MODEWORLDCREATEOBJECT_H_ */

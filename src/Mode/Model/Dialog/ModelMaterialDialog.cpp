@@ -16,7 +16,7 @@
 #include "../../../lib/nix/nix.h"
 #include "../Mesh/ModeModelMeshTexture.h"
 
-string file_secure(const string &filename);
+string file_secure(const Path &filename);
 string render_material(ModelMaterial *m);
 
 ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) {
@@ -202,7 +202,7 @@ void ModelMaterialDialog::fill_material_list() {
 			if (t.material == i)
 				nt ++;
 		string im = render_material(data->material[i]);
-		add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im.c_str(), file_secure(data->material[i]->filename).c_str()));
+		add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}
 	set_int("material_list", mode_model_mesh->current_material);
 }
@@ -246,7 +246,7 @@ void ModelMaterialDialog::fill_texture_list() {
 		string ext = format(" (%dx%d)", img->width, img->height);
 		if (mat->texture_levels[i]->edited)
 			ext += " *";
-		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, id.c_str(), (file_secure(mat->texture_levels[i]->filename) + ext).c_str()));
+		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(mat->texture_levels[i]->filename) + ext)));
 		delete icon;
 	}
 	set_int("mat_textures", mode_model_mesh_texture->current_texture_level);
@@ -281,7 +281,7 @@ void ModelMaterialDialog::on_texture_level_save() {
 	if (sel >= 0)
 		if (storage->file_dialog(FD_TEXTURE, true, true)) {
 			auto tl = data->material[mode_model_mesh->current_material]->texture_levels[sel];
-			tl->image->save(nix::texture_dir + storage->dialog_file);
+			tl->image->save(nix::texture_dir << storage->dialog_file);
 			tl->filename = storage->dialog_file; // ...
 			tl->edited = false;
 		}

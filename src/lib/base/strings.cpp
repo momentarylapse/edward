@@ -137,46 +137,27 @@ int string::rfind(const string &s, int start) const
 	return -1;
 }
 
-int string::compare(const string &s) const
-{
-	unsigned char *a = (unsigned char*)data;
-	int n = num;
-	if (num > s.num)
-		n = s.num;
-	for (int i=0;i<n;i++){
-		if (s[i] != a[i])
-			return (int)a[i] - (int)s[i];
+int string::compare(const string &s) const {
+	auto a = (unsigned char*)data;
+	auto b = (unsigned char*)s.data;
+	int n = min(num, s.num);
+	for (int i=0; i<n; i++) {
+		if (a[i] != b[i])
+			return (int)a[i] - (int)b[i];
 	}
 	return num - s.num;
 }
 
-inline int ichar(unsigned char a)
-{
-	if ((a >= 'A') and (a <= 'Z'))
-		return (int)a - (int)'A' + (int)'a';
-	return (int)a;
+int string::icompare(const string &s) const {
+	return lower().compare(s.lower());
 }
 
-int string::icompare(const string &s) const
-{
-	unsigned char *a = (unsigned char*)data;
-	int n = num;
-	if (num > s.num)
-		n = s.num;
-	for (int i=0;i<n;i++){
-		if (ichar(s[i]) != ichar(a[i]))
-			return ichar(a[i]) - ichar(s[i]);
-	}
-	return num - s.num;
-}
-
-string string::reverse() const
-{
+string string::reverse() const {
 	string r;
 	r.resize(num);
-	unsigned char *a = (unsigned char*)data;
-	unsigned char *b = (unsigned char*)r.data;
-	for (int i=0;i<num;i++)
+	auto a = (unsigned char*)data;
+	auto b = (unsigned char*)r.data;
+	for (int i=0; i<num; i++)
 		b[num - i - 1] = a[i];
 	return r;
 }
@@ -287,160 +268,7 @@ const char *string::c_str() const
 }
 
 
-// transposes path-strings to the current operating system
-// accepts windows and linux paths ("/" and "\\")
-string string::sys_filename() const
-{
-#if defined(OS_WINDOWS) || defined(OS_MINGW)
-	return replace("/", "\\");
-#else
-	return replace("\\", "/");
-#endif
-}
 
-// ends with '/' or '\'
-string string::dirname() const
-{
-	int i = max(rfind("/"), rfind("\\"));
-	if (i >= 0)
-		return head(i + 1);
-	return "";
-}
-
-string string::basename() const
-{
-	int i = max(rfind("/"), rfind("\\"));
-	if (i >= 0)
-		return tail(num - i - 1);
-	return *this;
-}
-
-// make sure the name ends with a shlash
-void string::dir_ensure_ending()
-{
-	if (num > 0){
-		char lc = (*this)[num - 1];
-		if ((lc != '/') and (lc != '\\'))
-			add('/');
-	}
-}
-
-// remove "/../"
-string string::no_recursion() const
-{
-	string str = replace("\\", "/");
-	Array<string> p = str.explode("/");
-
-	for (int i=1;i<p.num;i++)
-		if ((p[i] == "..") and (p[i-1] != "..")){
-			p.erase(i);
-			p.erase(i - 1);
-			i -= 2;
-		}
-
-	return implode(p, "/");
-}
-
-string string::extension() const
-{
-	int pos = rfind(".");
-	if (pos >= 0)
-		return tail(num - pos - 1).lower();
-	return "";
-}
-
-static bool format_locale_set = false;
-
-// connecting strings
-string format(const string &str,...)
-{
-	string tmp;
-	va_list args;
-
-    // retrieve the variable arguments
-    va_start(args, str);
-
-	//if (!format_locale_set){
-		setlocale(LC_NUMERIC, "C");
-		//format_locale_set = true;
-	//}
-
-#ifdef OS_WINDOWS
-	int len = _vscprintf(str.c_str(), args);
-#else
-	int len = vsnprintf(nullptr, 0, str.c_str(), args);
-#endif
-	tmp.resize(len + 1);
-    va_start(args, str);
-    vsprintf((char*)tmp.data, str.c_str(), args); // C4996
-    // Note: vsprintf is deprecated; consider using vsprintf_s instead
-	tmp.resize(len);
-	va_end(args);
-	
-	return tmp;
-#if 0
-	char *tmp=_file_get_str_();
-	tmp[0]=0;
-
-	va_list marker;
-	va_start(marker,str);
-
-	int l=0,s=strlen(str);
-	for (int i=0;i<s;i++){
-		if ((str[i]=='%')and(str[i+1]=='s')){
-			strcat(tmp,va_arg(marker,char*));
-			i++;
-			l=strlen(tmp);
-		}else if ((str[i]=='%')and(str[i+1]=='d')){
-			strcat(tmp,i2s(va_arg(marker,int)));
-			i++;
-			l=strlen(tmp);
-		}else if ((str[i]=='%')and(str[i+1]=='f')){
-			int fl=3;
-			if (str[i+2]==':'){
-				fl=str[i+3]-'0';
-				i+=3;
-			}else
-				i++;
-			strcat(tmp,f2s((float)va_arg(marker,double),fl));
-			l=strlen(tmp);
-		}else if ((str[i]=='%')and(str[i+1]=='v')){
-			int fl=3;
-			if (str[i+2]==':'){
-				fl=str[i+3]-'0';
-				i+=3;
-			}else
-				i++;
-			/*float *v=(float*)&va_arg(marker,double);
-			va_arg(marker,float);
-			va_arg(marker,float);
-			strcat(tmp,"( ");
-			strcat(tmp,f2s(v[0],fl));
-			strcat(tmp," , ");
-			strcat(tmp,f2s(v[1],fl));
-			strcat(tmp," , ");
-			strcat(tmp,f2s(v[2],fl));
-			strcat(tmp," )");
-			l=strlen(tmp);*/
-msg_write>Error("Todo:  %v");
-		}else{
-			tmp[l]=str[i];
-			tmp[l+1]=0;
-			l++;
-		}
-	}
-	va_end(marker);
-
-	return tmp;
-#endif
-}
-
-// cut the string at the position of a substring
-/*void strcut(char *str,const char *dstr)
-{
-	if (strstr(str,dstr))
-		strstr(str,dstr)[0]=0;
-}*/
 
 // convert an integer to a string (with a given number of decimals)
 string i2s2(int i,int l)
@@ -606,40 +434,42 @@ string p2s(const void *p)
 	return string(tmp);
 }
 
+char hex_nibble(int v) {
+	if (v < 10)
+		return '0' + v;
+	return 'a' + v - 10;
+}
+
 // convert binary data to a hex-code-string
 // inverted:
 //    false:   12.34.56.78
-//    true:    0x78.56.34.12
-string string::hex(bool inverted) const
-{
+//    true:    78563412
+string _str_hex_(const string &s, bool inverted) {
 	string str;
-	if (inverted)
-		str = "0x";
-	unsigned char *c_data = (unsigned char *)data;
-	for (int i=0;i<num;i++){
+	//if (inverted)
+	//	str = "0x";
+	unsigned char *c_data = (unsigned char *)s.data;
+	for (int i=0;i<s.num;i++){
 		int dd;
 		if (inverted)
-			dd = c_data[num - i - 1];
+			dd = c_data[s.num - i - 1];
 		else
 			dd = c_data[i];
 		int c1 = (dd & 15);
 		int c2 = (dd >> 4);
-		if (c2 < 10)
-			str.add('0' + c2);
-		else
-			str.add('a' + c2 - 10);
-		if (c1 < 10)
-			str.add('0' + c1);
-		else
-			str.add('a' + c1 - 10);
-		if ((!inverted)and(i < num - 1))
+		str.add(hex_nibble(c2));
+		str.add(hex_nibble(c1));
+		if ((!inverted) and (i < s.num - 1))
 			str.add('.');
 	}
 	return str;
 }
 
-inline int hex_nibble_to_value(char c)
-{
+string string::hex() const {
+	return _str_hex_(*this, false);
+}
+
+inline int hex_nibble_to_value(char c) {
 	if ((c >= '0') and (c <= '9'))
 		return c - '0';
 	if ((c >= 'a') and (c <= 'f'))
@@ -649,12 +479,9 @@ inline int hex_nibble_to_value(char c)
 	return 0;
 }
 
-string string::unhex() const
-{
+string string::unhex() const {
 	string r;
-	bool rev = ((*this)[1] == 'x');
-	int i0 = rev ? 2 : 0;
-	for (int i=i0; i<num;i++){
+	for (int i=0; i<num;i++){
 		if ((*this)[i] == '.')
 			continue;
 		int v1 = hex_nibble_to_value((*this)[i]);
@@ -662,27 +489,44 @@ string string::unhex() const
 		int v2 = hex_nibble_to_value((*this)[i]);
 		r.add(v1 * 16 + v2);
 	}
-	if (rev)
-		return r.reverse();
 	return r;
 }
 
-string d2h(const void *data, int bytes, bool inverted)
-{	return string((const char*)data, bytes).hex(inverted);	}
+string d2h(const void *data, int bytes)
+{	return string((const char*)data, bytes).hex();	}
 
-string ia2s(const Array<int> &a)
-{
-	string s = "[";
-	for (int i=0;i<a.num;i++){
-		if (i > 0)
-			s += ", ";
-		s += i2s(a[i]);
-	}
-	s += "]";
-	return s;
+string i2h(int64 data, int bytes)
+{	return _str_hex_(string((const char*)&data, bytes), true);	}
+
+string i2h_min(int64 data) {
+	string r;
+	do {
+		r.add(hex_nibble(data & 0xf));
+		data >>= 4;
+	} while (data != 0);
+	return r.reverse();
 }
 
-string fa2s(const Array<float> &a)
+#define MAKE_ARRAY_STR(NAME, T, F) \
+string NAME(const Array<T> &a) { \
+	string s = "["; \
+	for (int i=0; i<a.num; i++) { \
+		if (i > 0) \
+			s += ", "; \
+		s += F(a[i]); \
+	} \
+	s += "]"; \
+	return s; \
+}
+
+string str_quote(const string &s) { return "\"" + s + "\""; }
+
+MAKE_ARRAY_STR(ia2s, int, i2s);
+MAKE_ARRAY_STR(fa2s, float, f2sf);
+MAKE_ARRAY_STR(ba2s, bool, b2s);
+MAKE_ARRAY_STR(sa2s, string, str_quote);
+
+string _fa2s(const Array<float> &a)
 {
 	string s = "[";
 	for (int i=0;i<a.num;i++){
@@ -693,29 +537,186 @@ string fa2s(const Array<float> &a)
 	s += "]";
 	return s;
 }
-string ba2s(const Array<bool> &a)
-{
-	string s = "[";
-	for (int i=0;i<a.num;i++){
-		if (i > 0)
-			s += ", ";
-		s += b2s(a[i]);
+
+
+struct xf_format_data {
+	bool sign, left_justify, fill_zeros, sharp;
+	int width;
+	int decimals;
+	char type;
+	xf_format_data() {
+		sign = false;
+		left_justify = false;
+		fill_zeros = false;
+		sharp = false;
+		type = 0;
+		width = 0;
+		decimals = -1;
 	}
-	s += "]";
-	return s;
+	string apply_justify(const string &s) {
+		if (width <= 0 or fill_zeros)
+			return s;
+		if (left_justify)
+			return s + str_repeat(" ", width - s.num);
+		else
+			return str_repeat(" ", width - s.num) + s;
+	}
+};
+
+xf_format_data xf_parse(const string &f) {
+	xf_format_data r;
+	r.type = f.back();
+	int i0 = 0;
+	// flags
+	for (int i=0; i<f.num; i++) {
+		i0 = i;
+		if (f[i] == '+')
+			r.sign = true;
+		else if (f[i] == '-')
+			r.left_justify = true;
+		else if (f[i] == '0')
+			r.fill_zeros = true;
+		else if (f[i] == '#')
+			r.sharp = true;
+		else
+			break;
+	}
+	if (f[i0] >= '0' and f[i0] <= '9') {
+		r.width = f[i0] - '0';
+		i0 ++;
+		if (f[i0] >= '0' and f[i0] <= '9') {
+			r.width = r.width * 10 + (f[i0] - '0');
+			i0 ++;
+		}
+	}
+	if (f[i0] == '.') {
+		i0 ++;
+		if (f[i0] >= '0' and f[i0] <= '9') {
+			r.decimals = f[i0] - '0';
+			i0 ++;
+		}
+	}
+	if (i0 < f.num-1)
+		throw Exception("format evil: " + f);
+	return r;
 }
 
-string sa2s(const Array<string> &a)
-{
-	string s = "[";
-	for (int i=0;i<a.num;i++){
-		if (i > 0)
-			s += ", ";
-		s += "\"" + a[i] + "\"";
+template<> string _xf_str_(const string &f, int64 value) {
+	auto ff = xf_parse(f);
+	bool negative = false;
+	if (value < 0) {
+		negative = true;
+		value = - value;
 	}
-	s += "]";
-	return s;
+	string s;
+	if (ff.type == 'd') {
+		s = i642s(value);
+	} else if (ff.type == 'x') {
+		s = i2h_min(value);
+	} else {
+		throw Exception("format evil (int): " + f);
+	}
+		
+	int size = s.num;
+	if (negative or ff.sign)
+		size ++;
+	if (ff.type == 'x' and ff.sharp)
+		size += 2;
+	
+	int n_zeros = 0;
+	if (ff.fill_zeros)
+		n_zeros = ff.width;
+	if (ff.decimals >= 0)
+		n_zeros = ff.decimals;
+	s = str_repeat("0", n_zeros - size) + s;
+	if (ff.type == 'x' and ff.sharp)
+		s = "0x" + s;
+
+	// sign
+	if (negative)
+		s = "-" + s;
+	else if (ff.sign)
+		s = "+" + s;
+
+	return ff.apply_justify(s);
 }
+
+template<> string _xf_str_<double>(const string &f, double value) {
+	auto ff = xf_parse(f);
+	string s;
+	int decimals = 6;
+	if (ff.decimals >= 0)
+		decimals = ff.decimals;
+		
+	if (ff.type == 'f') {
+		s = f642s(value, decimals);
+	} else {
+		throw Exception("format evil (float): " + f);
+	}
+	return ff.apply_justify(s);
+}
+
+template<> string _xf_str_(const string &f, const string &value) {
+	auto ff = xf_parse(f);
+	if (ff.type == 's') {
+	} else {
+		throw Exception("format evil (string): " + f);
+	}
+	return ff.apply_justify(value);
+}
+
+template<> string _xf_str_(const string &f, const char *value) {
+	if (f != "s")
+		throw Exception("format evil (string): " + f);
+	return value;
+}
+
+template<> string _xf_str_(const string &f, bool value) { return _xf_str_(f, (int64)value); }
+template<> string _xf_str_(const string &f, int value) { return _xf_str_(f, (int64)value); }
+//template<> string _xf_str_(const string &f, long value) { return _xf_str_(f, (int64)value); }
+template<> string _xf_str_(const string &f, unsigned int value) { return _xf_str_(f, (int64)value); }
+template<> string _xf_str_(const string &f, unsigned long long value) { return _xf_str_(f, (int64)value); }
+//template<> string _xf_str_(const string &f, unsigned long value) { return _xf_str_(f, (int64)value); }
+template<> string _xf_str_(const string &f, float value) { return _xf_str_(f, (double)value); }
+template<> string _xf_str_(const string &f, string value) { return _xf_str_<const string&>(f, value); }
+template<> string _xf_str_(const string &f, char *value) { return _xf_str_<const char*>(f, value); }
+
+// %lx
+
+string format(const string &s) {
+	return s.replace("%%", "%");
+}
+
+
+bool _xf_split_first_(const string &s, string &pre, string &f, string &post) {
+	for (int i=0; i<s.num-1; i++) {
+		if (s[i] == '%') {
+			if (s[i+1] == '%') {
+				i ++;
+				continue;
+			}
+			for (int j=i+1; j<s.num; j++) {
+				if ((s[j] == '.') or (s[j] == '+') or (s[j] == '-') or (s[j] >= '0' and s[j] <= '9')) {
+					f.add(s[j]);
+				} else if ((s[j] == 's') or (s[j] == 'f') or (s[j] == 'd') or (s[j] == 'x') or (s[j] == 'p')) {
+					f.add(s[j]);
+					break;
+				} else if (s[j] == 'l') {
+				} else {
+					throw Exception("xformat: evil format");
+				}
+			}
+			pre = s.head(i).replace("%%", "%");
+			post = s.substr(i+f.num+1, -1);
+			return true;
+		}
+	}
+	pre = s.replace("%%", "%");
+	return false;
+}
+
+
+
 
 // convert a string to an integer
 int string::_int() const
@@ -968,6 +969,13 @@ bool string::match(const string &glob) const
 	return true;
 }
 
+string str_repeat(const string &s, int n) {
+	string r;
+	for (int i=0; i<n; i++)
+		r += s;
+	return r;
+}
+
 int string::utf8len() const
 {
 	int l = 0;
@@ -1086,6 +1094,12 @@ string str_unescape(const string &str)
 		if ((str[i]=='\\')and(str[i+1]=='n')){
 			r += "\n";
 			i ++;
+		}else if ((str[i]=='\\')and(str[i+1]=='r')){
+			r += "\r";
+			i++;
+		}else if ((str[i]=='\\')and(str[i+1]=='0')){
+			r += "\0";
+			i++;
 		}else if ((str[i]=='\\')and(str[i+1]=='\\')){
 			r += "\\";
 			i++;
@@ -1098,8 +1112,12 @@ string str_unescape(const string &str)
 		}else if ((str[i]=='\\')and(str[i+1]=='"')){
 			r += "\"";
 			i++;
-		}else
+		}else if ((str[i]=='\\')and(str[i+1]=='\'')){
+			r += "'";
+			i++;
+		}else{
 			r.add(str[i]);
+		}
 	}
 	return r;
 }
@@ -1114,10 +1132,14 @@ string str_escape(const string &str)
 			r += "\\t";
 		else if (str[i] == '\n')
 			r += "\\n";
+		else if (str[i] == '\r')
+			r += "\\r";
 		else if (str[i] == '\\')
 			r += "\\\\";
 		else if (str[i] == '\"')
 			r += "\\\"";
+		else if (str[i] == '\0')
+			r += "\\0";
 		else
 			r.add(str[i]);
 	}

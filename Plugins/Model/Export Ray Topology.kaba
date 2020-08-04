@@ -1,11 +1,11 @@
 use os
 use hui
-use "../api.kaba"
+use edward
 
 void main()
-	if !FileDialogSave(edward, "Topology", "", "*.top", "*.top")
+	if !hui.file_dialog_save(edward, "Topology", "", "*.top", "*.top")
 		return
-	File *f = Filesystem.create_text(HuiFilename)
+	File *f = Filesystem.create_text(hui.filename)
 	for p in data_model.mesh.polygon
 		vector va = data_model.mesh.vertex[p.side[0].vertex].pos
 		vector vb = data_model.mesh.vertex[p.side[1].vertex].pos

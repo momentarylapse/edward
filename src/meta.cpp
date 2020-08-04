@@ -112,7 +112,7 @@ void MetaReset() {
 	engine.shadow_color = color(0.5f, 0, 0, 0);
 }
 
-void EngineData::set_dirs(const string &texture_dir, const string &_map_dir, const string &_object_dir, const string &_sound_dir, const string &_script_dir, const string &material_dir, const string &font_dir) {
+void EngineData::set_dirs(const Path &texture_dir, const Path &_map_dir, const Path &_object_dir, const Path &_sound_dir, const Path &_script_dir, const Path &material_dir, const Path &font_dir) {
 #if LIB_HAS_VULKAN
 	vulkan::Texture::directory = texture_dir;
 	vulkan::Shader::directory = material_dir;

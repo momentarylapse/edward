@@ -16,7 +16,7 @@
 #include "../../../lib/nix/nix.h"
 #include <assert.h>
 
-string file_secure(const string &filename); // -> ModelPropertiesDialog
+string file_secure(const Path &filename); // -> ModelPropertiesDialog
 
 TerrainPropertiesDialog::TerrainPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int _index) :
 	hui::Dialog("terrain_dialog", 400, 300, _parent, _allow_parent)
@@ -82,7 +82,7 @@ void TerrainPropertiesDialog::FillTextureList()
 			if (i < m->textures.num)
 				tex = m->textures[i];
 		string img = ed->get_tex_image(tex);
-		add_string("textures", format("%d\\%.5f\\%.5f\\%s\\%s", i, temp.TextureScale[i].x * (float)temp.NumX, temp.TextureScale[i].z * (float)temp.NumZ, img.c_str(), file_secure(temp.TextureFile[i]).c_str()));
+		add_string("textures", format("%d\\%.5f\\%.5f\\%s\\%s", i, temp.TextureScale[i].x * (float)temp.NumX, temp.TextureScale[i].z * (float)temp.NumZ, img, file_secure(temp.TextureFile[i])));
 	}
 	enable("delete_texture_level", false);
 	enable("clear_texture_level", false);
@@ -93,12 +93,12 @@ void TerrainPropertiesDialog::FillTextureList()
 
 void TerrainPropertiesDialog::LoadData()
 {
-	set_string("material", temp.MaterialFile);
-	check("default_material", (temp.MaterialFile == ""));
+	set_string("material", temp.MaterialFile.str());
+	check("default_material", temp.MaterialFile.is_empty());
 	enable("material", false);//(temp.MaterialFile != ""));
 	FillTextureList();
 
-	set_string("filename", temp.FileName);
+	set_string("filename", temp.FileName.str());
 	set_int("num_x", temp.NumX);
 	set_int("num_z", temp.NumZ);
 	set_float("pattern_x", temp.Pattern.x);
@@ -124,7 +124,7 @@ void TerrainPropertiesDialog::OnSaveAs()
 	if (!storage->file_dialog(FD_TERRAIN, true, true))
 		return;
 	data->terrains[index].save(storage->dialog_file_complete);
-	set_string("filename", storage->dialog_file_no_ending);
+	set_string("filename", storage->dialog_file_no_ending.str());
 }
 
 
@@ -157,7 +157,7 @@ void TerrainPropertiesDialog::OnDefaultMaterial()
 void TerrainPropertiesDialog::OnMaterialFind()
 {
 	if (storage->file_dialog(FD_MATERIAL, false, true))
-		set_string("material", storage->dialog_file_no_ending);
+		set_string("material", storage->dialog_file_no_ending.str());
 }
 
 

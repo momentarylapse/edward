@@ -14,7 +14,7 @@
 FormatModelPly::FormatModelPly() : TypedFormat<DataModel>(FD_MODEL, "ply", _("Model ply"), Flag::READ) {
 }
 
-void FormatModelPly::_load(const string &filename, DataModel *m, bool deep) {
+void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
 	File *f = NULL;
 
 	//m->material.add(new ModelMaterial());
@@ -114,5 +114,5 @@ void FormatModelPly::_load(const string &filename, DataModel *m, bool deep) {
 		delete(f);
 }
 
-void FormatModelPly::_save(const string &filename, DataModel *data) {
+void FormatModelPly::_save(const Path &filename, DataModel *data) {
 }

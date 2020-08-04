@@ -135,7 +135,7 @@ void AdministrationDialog::ShowDetail(int n, const string &lid)
 	assert(n >= 0);
 	assert(n < l->num);
 	SelectedAdminFile = (*l)[n];
-	set_string("file_details", SelectedAdminFile->Name);
+	set_string("file_details", SelectedAdminFile->Name.str());
 	FillAdminList(2, "file_list_detail_source");
 	FillAdminList(3, "file_list_detail_dest");
 	set_int("ad_tab_control", 2);
@@ -230,29 +230,29 @@ void AdministrationDialog::OnEdit()
 	switch (a->Kind){
 		case -1:
 			if (a->Name == "config.txt")
-				hui::OpenDocument(storage->get_root_dir(a->Kind) + a->Name);
+				hui::OpenDocument(storage->get_root_dir(a->Kind) << a->Name);
 			else if (a->Name == "game.ini")
 				mode_administration->BasicSettings();
 			break;
 		case FD_MODEL:
-			if (storage->load(engine.object_dir + a->Name, mode_model->data, true))
+			if (storage->load(engine.object_dir << a->Name, mode_model->data, true))
 				ed->set_mode(mode_model);
 			break;
 		case FD_MATERIAL:
-			if (storage->load(MaterialDir + a->Name, mode_material->data, true))
+			if (storage->load(MaterialDir << a->Name, mode_material->data, true))
 				ed->set_mode(mode_material);
 			break;
 		case FD_FONT:
-			if (storage->load(Gui::FontDir + a->Name, mode_font->data, true))
+			if (storage->load(Gui::FontDir << a->Name, mode_font->data, true))
 				ed->set_mode(mode_font);
 			break;
 		case FD_WORLD:
-			if (storage->load(engine.map_dir + a->Name, mode_world->data, true))
+			if (storage->load(engine.map_dir << a->Name, mode_world->data, true))
 				ed->set_mode(mode_world);
 			break;
 		case FD_TERRAIN:
 			mode_world->data->reset();
-			if (mode_world->data->AddTerrain(a->Name.substr(0, -5), v_0)){
+			if (mode_world->data->AddTerrain(a->Name.no_ext(), v_0)){
 				ed->set_mode(mode_world);
 			}
 			break;
@@ -269,7 +269,7 @@ void AdministrationDialog::OnEdit()
 		case FD_SHADERFILE:
 		case FD_SCRIPT:
 		case FD_FILE:
-			hui::OpenDocument(storage->get_root_dir(a->Kind) + a->Name);
+			hui::OpenDocument(storage->get_root_dir(a->Kind) << a->Name);
 			break;
 	}
 }

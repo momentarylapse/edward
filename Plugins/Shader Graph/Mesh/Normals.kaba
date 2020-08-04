@@ -1,4 +1,4 @@
-use "../../api.kaba"
+use edward
 
 class NodeNormals extends ShaderNode
 	void __init__()

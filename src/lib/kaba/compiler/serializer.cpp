@@ -224,10 +224,10 @@ string signed_hex(int64 i) {
 		i = -i;
 	}
 	if (i < 256)
-		return s + d2h(&i, 1);
+		return s + "0x" + i2h(i, 1);
 	if (i < 65536)
-		return s + d2h(&i, 2);
-	return s + d2h(&i, 4);
+		return s + "0x" + i2h(i, 2);
+	return s + "0x" + i2h(i, 4);
 }
 
 
@@ -262,7 +262,7 @@ string SerialNodeParam::str(Serializer *ser) const
 		else if (kind == NodeKind::LOCAL_MEMORY)
 			n = signed_hex(p);
 		else if (kind == NodeKind::MEMORY)
-			n = d2h(&p, config.pointer_size);
+			n = "0x" + i2h(p, config.pointer_size);
 		else if (kind == NodeKind::IMMEDIATE)
 			n = guess_constant(p, ser);
 		str = "  (" + type_name_safe(type) + ") " + kind2str(kind) + " " + n;
@@ -301,7 +301,7 @@ void Serializer::cmd_list_out(const string &stage) {
 	if (true) {
 		msg_write("-----------");
 		foreachi(TempVar &v, temp_var, i)
-			msg_write(format("  %d   %d -> %d    %s   %s", i, v.first, v.last, v.type->name.c_str(), v.referenced ? "-referenced-" : ""));
+			msg_write(format("  %d   %d -> %d    %s   %s", i, v.first, v.last, v.type->name, v.referenced ? "-referenced-" : ""));
 		msg_write("--------------------------------");
 	}
 }
@@ -453,7 +453,7 @@ void Serializer::move_param(SerialNodeParam &p, int from, int to) {
 			}
 		if (!found) {
 			msg_error(format("move_param: no RegChannel...  reg_root=%d  from=%d", r, from));
-			msg_write(script->filename + " : " + cur_func->long_name());
+			msg_write(script->filename.str() + " : " + cur_func->long_name());
 		}
 	}
 }
@@ -1962,11 +1962,10 @@ Serializer *CreateSerializer(Script *s, Asm::InstructionWithParamsList *list) {
 }
 
 void Script::assemble_function(int index, Function *f, Asm::InstructionWithParamsList *list) {
-	if (config.verbose and config.allow_output(cur_func, "asm"))
+	if (config.verbose and config.allow_output(f, "asm"))
 		msg_write("serializing " + f->long_name() + " -------------------");
 	f->show("asm");
 
-	cur_func = f;
 	Serializer *d = CreateSerializer(this, list);
 
 	try{
@@ -1991,11 +1990,12 @@ void Script::compile_functions(char *oc, int &ocs) {
 	int func_no = 0;
 	for (Function *f: syntax->functions) {
 		if (f->is_extern()) {
-			f->address = get_external_link(f->long_name() + ":" + i2s(f->num_params));
+			string name = f->cname(f->owner()->base_class);
+			f->address = get_external_link(format("%s:%d", name, f->num_params));
 			if (!f->address)
-				f->address = get_external_link(f->long_name());
+				f->address = get_external_link(name);
 			if (!f->address)
-				do_error_link("external function " + f->long_name() + " not linkable");
+				do_error_link(format("external function '%s:%d' not linkable", name, f->num_params));
 		} else {
 			f->_label = list->create_label("_FUNC_" + i2s(func_no ++));
 		}
@@ -2011,8 +2011,8 @@ void Script::compile_functions(char *oc, int &ocs) {
 	func_offset.add(list->num);
 
 
-	if (config.verbose and config.allow_output(cur_func, "comp:x"))
-		list->show();
+	//if (config.verbose and config.allow_output(cur_func, "comp:x"))
+	//	list->show();
 
 	// assemble into opcode
 	try{

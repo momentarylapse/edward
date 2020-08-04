@@ -42,7 +42,7 @@ static Array<string> TodoStr;
 bool msg_inited = false;
 
 static File *file = nullptr;
-static string msg_file_name = "message.txt";
+static Path msg_file_name = "message.txt";
 static int Shift;
 
 static bool Verbose=false;
@@ -50,34 +50,35 @@ static bool ErrorOccured;
 static string ErrorMsg;
 
 // call only once!
-void msg_init(const string &force_filename, bool verbose)
-{
+void msg_init(const Path &force_filename, bool verbose) {
 	Verbose = false;
 	Shift = 0;
 	ErrorOccured = false;
 	msg_inited = true;
-	if (force_filename != "")
+	if (!force_filename.is_empty())
 		msg_file_name = force_filename;
 	if (!verbose)
 		return;
-	file = FileCreateText(msg_file_name);
+	try {
+		file = FileCreateText(msg_file_name);
+	} catch(...) {}
 	Verbose = verbose;
 #ifdef MSG_LOG_TIMIGS
 	file->write_str("[hh:mm:ss, ms]");
 #endif
 }
 
-void msg_init(bool verbose)
-{
+void msg_init(bool verbose) {
 	msg_init("", verbose);
 }
 
-void msg_set_verbose(bool verbose)
-{
+void msg_set_verbose(bool verbose) {
 	if (Verbose == verbose)
 		return;
 	if (verbose){
-		file = FileCreateText(msg_file_name);
+		try {
+			file = FileCreateText(msg_file_name);
+		} catch(...) {}
 		Shift = 0;
 	}else{
 		msg_end(false);
@@ -85,8 +86,7 @@ void msg_set_verbose(bool verbose)
 	Verbose = verbose;
 }
 
-void msg_add_str(const string &str)
-{
+void msg_add_str(const string &str) {
 	if (!Verbose)	return;
 	int l = str.num;
 	log_pos.add(log_buffer.num);
@@ -277,7 +277,7 @@ string msg_get_trace()
 		if (unw_is_signal_frame(&cursor) > 0)
 			trace.clear();
 
-		string t = format("0x%lx:", pc);
+		string t = format("0x%lx:", (int64)pc);
 
 		char sym[256];
 		if (unw_get_proc_name(&cursor, sym, sizeof(sym), &offset) == 0) {
@@ -286,7 +286,7 @@ string msg_get_trace()
 			char* demangled = abi::__cxa_demangle(sym, nullptr, nullptr, &status);
 			if (status == 0)
 				nameptr = demangled;
-			t += format(" (%s + 0x%lx)", nameptr, offset);
+			t += format(" (%s + 0x%lx)", nameptr, (int64)offset);
 			free(demangled);
 		} else {
 			t += " (\?\?\?)";

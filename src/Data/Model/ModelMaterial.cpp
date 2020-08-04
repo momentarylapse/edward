@@ -35,15 +35,14 @@ ModelMaterial::ModelMaterial() {
 
 
 // ONLY ActionModelAddMaterial
-ModelMaterial::ModelMaterial(const string &_filename) : ModelMaterial() {
+ModelMaterial::ModelMaterial(const Path &_filename) : ModelMaterial() {
 	filename = _filename;
 	makeConsistent();
 }
 
-ModelMaterial::~ModelMaterial()
-{
+ModelMaterial::~ModelMaterial() {
 	if (vb)
-		delete(vb);
+		delete vb;
 	vb = NULL;
 }
 
@@ -66,7 +65,7 @@ void ModelMaterial::TextureLevel::reload_image() {
 	if (filename == "")
 		image = new Image(512, 512, White);
 	else
-		image = Image::load(nix::texture_dir + filename);
+		image = Image::load(nix::texture_dir << filename);
 	edited = false;
 	update_texture();
 }

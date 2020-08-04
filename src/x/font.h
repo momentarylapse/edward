@@ -9,25 +9,23 @@
 #define FONT_H__INCLUDED_
 
 #include "../lib/base/base.h"
+#include "../lib/file/path.h"
 #include "../lib/math/math.h"
 
 namespace nix{
 	class Texture;
 };
 
-namespace Gui
-{
+namespace Gui {
 
-struct Glyph
-{
+struct Glyph {
 	float dx, dx2, x_offset, width;
 	rect src;
 };
 
-class Font
-{
+class Font {
 public:
-	string filename;
+	Path filename;
 	nix::Texture *texture;
 	int unknown_glyph_no;
 	Glyph glyph[256];
@@ -43,8 +41,8 @@ void FontEnd();
 void FontReset();
 
 // fonts
-Font* _cdecl LoadFont(const string &filename);
-extern string FontDir;
+Font* _cdecl LoadFont(const Path &filename);
+extern Path FontDir;
 
 // only used by meta itself and the editor...
 extern Array<Font*> Fonts;

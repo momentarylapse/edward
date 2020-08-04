@@ -28,10 +28,10 @@ CameraController::CameraController(MultiView *_view)
 	rotating = false;
 	zooming = false;
 	show = false;
-	tex_bg = nix::LoadTexture(app->directory_static + "icons/toolbar/multiview/bg.png");
-	tex_move = nix::LoadTexture(app->directory_static + "icons/toolbar/multiview/move.png");
-	tex_rotate= nix::LoadTexture(app->directory_static + "icons/toolbar/multiview/rotate.png");
-	tex_zoom = nix::LoadTexture(app->directory_static + "icons/toolbar/multiview/zoom.png");
+	tex_bg = nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/bg.png");
+	tex_move = nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/move.png");
+	tex_rotate= nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/rotate.png");
+	tex_zoom = nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/zoom.png");
 }
 
 CameraController::~CameraController()

@@ -1,5 +1,5 @@
 use hui
-use "../api.kaba"
+use edward
 
 Dialog *dlg
 
@@ -21,7 +21,7 @@ void OnOk()
 	int nx = dlg.get_int("nx")
 	int ny = dlg.get_int("ny")
 	if gcd(nx, ny) != 1
-		ErrorBox(dlg, "Error", "GreatestCommonDivisor(Loops, Twists) = 1 violated")
+		hui.error_box(dlg, "Error", "GreatestCommonDivisor(Loops, Twists) = 1 violated")
 	else
 		CreateTorusKnot(nx, ny, dlg.get_int("rings"), dlg.get_int("edges"), dlg.get_float("radius1"), dlg.get_float("radius2"), dlg.get_float("radius3"))
 		del dlg

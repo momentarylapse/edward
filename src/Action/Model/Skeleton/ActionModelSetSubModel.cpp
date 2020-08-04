@@ -11,21 +11,18 @@
 
 #include "../../../x/ModelManager.h"
 
-ActionModelSetSubModel::ActionModelSetSubModel(int _index, const string& _filename)
-{
+ActionModelSetSubModel::ActionModelSetSubModel(int _index, const Path &_filename) {
 	index = _index;
 	filename = _filename;
 	model = ModelManager::load(filename);
 }
 
-ActionModelSetSubModel::~ActionModelSetSubModel()
-{
+ActionModelSetSubModel::~ActionModelSetSubModel() {
 	if (model)
-		delete(model);
+		delete model;
 }
 
-void* ActionModelSetSubModel::execute(Data* d)
-{
+void* ActionModelSetSubModel::execute(Data* d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	assert(index >= 0);
 	assert(index < m->bone.num);
@@ -36,14 +33,13 @@ void* ActionModelSetSubModel::execute(Data* d)
 	b.model = model;
 	model = tm;
 
-	string tf = b.model_file;
+	auto tf = b.model_file;
 	b.model_file = filename;
 	filename = tf;
 
 	return b.model;
 }
 
-void ActionModelSetSubModel::undo(Data* d)
-{
+void ActionModelSetSubModel::undo(Data* d) {
 	execute(d);
 }

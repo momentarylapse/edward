@@ -83,7 +83,7 @@ int ShaderGraph::node_index(const ShaderNode *n) const {
 }
 
 // who needs sanity checks?!?!?
-void ShaderGraph::load(const string &filename) {
+void ShaderGraph::load(const Path &filename) {
 	clear();
 
 	xml::Parser p;
@@ -109,7 +109,7 @@ void ShaderGraph::load(const string &filename) {
 	}
 }
 
-void ShaderGraph::save(const string &filename) {
+void ShaderGraph::save(const Path &filename) {
 	xml::Parser p;
 	xml::Element root = {"ShaderGraph"};
 	xml::Element enodes = {"Nodes"};

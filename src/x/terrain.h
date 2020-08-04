@@ -10,6 +10,7 @@
 #define TERRAIN_H__INCLUDED_
 
 #include "../lib/base/base.h"
+#include "../lib/file/path.h"
 #include "../lib/math/math.h"
 #include "material.h"
 class Material;
@@ -51,8 +52,8 @@ public:
 class Terrain {
 public:
 	Terrain();
-	Terrain(const string &filename, const vector &pos);
-	bool load(const string &filename, const vector &pos, bool deep = true);
+	Terrain(const Path &filename, const vector &pos);
+	bool load(const Path &filename, const vector &pos, bool deep = true);
 	~Terrain();
 	void reset();
 	void _cdecl update(int x1,int x2,int z1,int z2,int mode);
@@ -67,7 +68,7 @@ public:
 	void build_vertex_buffer();
 	void draw();
 
-	string filename;
+	Path filename;
 	int type;
 	bool error;
 
@@ -82,9 +83,9 @@ public:
 	int partition[128][128], partition_old[128][128];
 	vector pattern, min, max;
 	Material *material;
-	string material_file;
+	Path material_file;
 
-	string texture_file[MATERIAL_MAX_TEXTURES];
+	Path texture_file[MATERIAL_MAX_TEXTURES];
 	vector texture_scale[MATERIAL_MAX_TEXTURES];
 
 	float dhx, dhz;

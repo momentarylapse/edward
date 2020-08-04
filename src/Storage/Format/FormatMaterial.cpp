@@ -13,7 +13,7 @@
 FormatMaterial::FormatMaterial() : TypedFormat<DataMaterial>(FD_MATERIAL, "material", _("Material"), Flag::CANONICAL_READ_WRITE) {
 }
 
-void FormatMaterial::_load(const string &filename, DataMaterial *data, bool deep) {
+void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) {
 
 	int ffv;
 	data->reset();
@@ -149,13 +149,13 @@ void FormatMaterial::_load(const string &filename, DataMaterial *data, bool deep
 			data->appearance.reflection_mode = REFLECTION_MIRROR;
 		// ShaderFile
 		f->read_comment();
-		string sf = f->read_str();
-		if (sf.num > 0)
-			data->appearance.shader_file = sf + ".fx.glsl";
+		Path sf = f->read_str();
+		if (!sf.is_empty())
+			data->appearance.shader_file = sf.with(".fx.glsl");
 
 		data->appearance.alpha_z_buffer = (data->appearance.transparency_mode != TRANSPARENCY_FUNCTIONS) and (data->appearance.transparency_mode != TRANSPARENCY_FACTOR);
 	}else{
-		throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename.c_str(), ffv, 1, 4));
+		throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename, ffv, 1, 4));
 	}
 
 	if (deep) {
@@ -166,15 +166,15 @@ void FormatMaterial::_load(const string &filename, DataMaterial *data, bool deep
 
 }
 
-void FormatMaterial::_save(const string &filename, DataMaterial *data) {
+void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 
 	File *f = FileCreateText(filename);
 	f->WriteFileFormatVersion(false, 4);
 
 	f->write_comment("// Textures");
 	f->write_int(data->appearance.texture_files.num);
-	for (string &tf: data->appearance.texture_files)
-		f->write_str(tf);
+	for (auto &tf: data->appearance.texture_files)
+		f->write_str(tf.str());
 	f->write_comment("// Colors");
 	write_color_argb(f, data->appearance.ambient);
 	write_color_argb(f, data->appearance.diffuse);
@@ -196,9 +196,9 @@ void FormatMaterial::_save(const string &filename, DataMaterial *data) {
 	f->write_int(data->appearance.reflection_density);
 	f->write_int(data->appearance.reflection_size);
 	for (int i=0;i<6;i++)
-		f->write_str(data->appearance.reflection_texture_file[i]);
+		f->write_str(data->appearance.reflection_texture_file[i].str());
 	f->write_comment("// ShaderFile");
-	f->write_str(data->appearance.shader_file);
+	f->write_str(data->appearance.shader_file.str());
 	f->write_comment("// Physics");
 	f->write_int(data->physics.friction_jump * 1000.0f);
 	f->write_int(data->physics.friction_static * 1000.0f);

@@ -27,7 +27,7 @@ void DataCamera::reset()
 	notify();
 }
 
-bool DataCamera::load(const string& _filename, bool deep)
+bool DataCamera::load(const Path &_filename, bool deep)
 {
 	bool Error = false;
 	reset();
@@ -79,7 +79,7 @@ bool DataCamera::load(const string& _filename, bool deep)
 
 		FileClose(f);
 	}else{
-		ed->error_box(format(_("Invalid file format of the file %s: %d (%d expected)!"), filename.c_str(), ffv, 2));
+		ed->error_box(format(_("Invalid file format of the file %s: %d (%d expected)!"), filename, ffv, 2));
 		Error=true;
 	}
 	delete(f);
@@ -94,7 +94,7 @@ bool DataCamera::load(const string& _filename, bool deep)
 	return !Error;
 }
 
-bool DataCamera::save(const string& _filename)
+bool DataCamera::save(const Path &_filename)
 {
 	filename = _filename;
 	File *f = NULL;

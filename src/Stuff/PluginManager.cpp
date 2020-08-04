@@ -33,11 +33,11 @@
 #include "../Data/Material/ShaderBuilderContext.h"
 
 
-string PluginManager::directory;
+Path PluginManager::directory;
 
 
 
-PluginManager::PluginManager(const string &dir) {
+PluginManager::PluginManager(const Path &dir) {
 	directory = dir;
 	init();
 }
@@ -45,7 +45,7 @@ PluginManager::PluginManager(const string &dir) {
 PluginManager::~PluginManager() {
 }
 
-void PluginManager::execute(const string & filename) {
+void PluginManager::execute(const Path &filename) {
 	Kaba::config.directory = "";
 	try {
 		auto *s = Kaba::Load(filename);
@@ -287,24 +287,25 @@ void PluginManager::link_plugins() {
 }
 
 void PluginManager::find_plugins() {
-	string dir0 = PluginManager::directory + "Shader Graph/";
+	Path dir0 = PluginManager::directory << "Shader Graph";
 	auto list = dir_search(dir0, "*", true);
-	for (auto &e: list)
-		if (file_is_directory(dir0 + e)) {
-			string dir = dir0 + e + "/";
+	for (auto &e: list) {
+		Path dir = dir0 << e;
+		if (file_is_directory(dir)) {
 			auto list2 = dir_search(dir, "*.kaba", false);
 			for (auto &e2: list2) {
 				Plugin p;
-				p.filename = dir + e2;
+				p.filename = dir << e2;
 				p.name = e2.replace(".kaba", "");
 				p.category = e;
 				p.type = PluginType::SHADER_NODE;
 				plugins.add(p);
 			}
 		}
+	}
 }
 
-void *PluginManager::create_instance(const string &filename, const string &parent) {
+void *PluginManager::create_instance(const Path &filename, const string &parent) {
 	Kaba::config.directory = "";
 	auto s = Kaba::Load(filename);
 	for (auto c: s->classes())

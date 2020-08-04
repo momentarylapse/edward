@@ -1,5 +1,6 @@
 use hui
 use nix
+use os
 use x
 
 class Observable
@@ -9,7 +10,7 @@ class Observer
 	#virtual void OnUpdate(Observable o)
 
 class Data extends Observable
-	string filename
+	Path filename
 	int file_time
 	bool binary_file_format
 	int type
@@ -237,7 +238,7 @@ class GeometryPlatonic extends Geometry
 
 
 class ModelMaterial
-	string filename
+	Path filename
 	Material *material
 	int num_textures
 	Texture*[MODEL_MAX_TEXTURES] texture
@@ -369,7 +370,7 @@ class DataModel extends Data
 
 
 class WorldTerrain extends MultiViewSingleData
-	string filename
+	Path filename
 	#WorldTerrainVertex Vertex[]
 	int vertex_buffer_single
 	int show_texture
@@ -379,7 +380,8 @@ class WorldTerrain extends MultiViewSingleData
 
 
 class WorldObject extends MultiViewSingleData
-	string filename, name
+	string filename
+	string name
 	Model *object
 	vector ang
 	void __init__()
@@ -392,8 +394,8 @@ class DataWorld extends Data
 	int ego_index
 
 	# actions
-	extern WorldObject *add_object(string filename, vector pos)
-	extern WorldTerrain *add_terrain(string filename, vector pos)
+	extern WorldObject *add_object(Path filename, vector pos)
+	extern WorldTerrain *add_terrain(Path filename, vector pos)
 	extern WorldTerrain *add_new_terrain(vector pos, vector size, int num_x, int num_z)
 
 enum

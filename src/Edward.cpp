@@ -95,6 +95,8 @@ void Edward::on_event()
 	on_command(id);
 }
 
+void ExternalModelCleanup(Model *m){}
+
 void Edward::on_abort_creation_mode()
 {
 	ModeCreationBase *m = dynamic_cast<ModeCreationBase*>(cur_mode);
@@ -185,9 +187,9 @@ Edward::Edward(Array<string> arg) :
 
 
 	if (app->installed)
-		plugins = new PluginManager(app->directory_static + "Plugins/");
+		plugins = new PluginManager(app->directory_static << "Plugins");
 	else
-		plugins = new PluginManager(app->directory + "Plugins/");
+		plugins = new PluginManager(app->directory << "Plugins");
 
 	ed->toolbar[hui::TOOLBAR_TOP]->configure(false, true);
 	ed->toolbar[hui::TOOLBAR_LEFT]->configure(false, true);
@@ -248,7 +250,7 @@ void Edward::on_destroy() {
 	hui::Config.set_int("Window.Width", w);
 	hui::Config.set_int("Window.Height", h);
 	hui::Config.set_bool("Window.Maximized", is_maximized());
-	hui::Config.set_str("RootDir", storage->root_dir);
+	hui::Config.set_str("RootDir", storage->root_dir.str());
 	hui::Config.set_str("Language", hui::GetCurLanguage());
 	/*HuiConfig.set_bool("LocalDocumentation", LocalDocumentation);
 	HuiConfig.set_str("WorldScriptVarFile", WorldScriptVarFile);
@@ -308,7 +310,7 @@ bool Edward::handle_arguments(Array<string> arg)
 	if (param[param.num-1]=='"')
 		param.resize(param.num-1);
 
-	string ext = param.extension();
+	string ext = Path(param).extension();
 
 	if (ext == "model"){
 		storage->load(param, mode_model->data);
@@ -457,7 +459,7 @@ void Edward::on_send_bug_report()
 {}//	hui::SendBugReport();	}
 
 void Edward::on_execute_plugin() {
-	string temp = storage->dialog_dir[FD_SCRIPT];
+	auto temp = storage->dialog_dir[FD_SCRIPT];
 	storage->dialog_dir[FD_SCRIPT] = PluginManager::directory;
 
 	if (storage->file_dialog(FD_SCRIPT, false, false))
@@ -488,9 +490,9 @@ void Edward::load_key_codes()
 
 	try{
 		try{
-			f = FileOpenText(app->directory + "keys.txt");
+			f = FileOpenText(app->directory << "keys.txt");
 		}catch(...){
-			f = FileOpenText(app->directory_static + "keys.txt");
+			f = FileOpenText(app->directory_static << "keys.txt");
 		}
 		f->read_comment();
 		int nk = f->read_int();
@@ -580,9 +582,8 @@ void Edward::on_command(const string &id)
 }
 
 
-string title_filename(const string &filename)
-{
-	if (filename.num > 0)
+string title_filename(const Path &filename) {
+	if (!filename.is_empty())
 		return filename.basename();// + " (" + filename.dirname() + ")";
 	return _("Unknown");
 }

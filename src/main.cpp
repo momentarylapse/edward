@@ -11,7 +11,7 @@
 #include "Data/Model/DataModel.h"
 #include "Storage/Storage.h"
 
-string AppVersion = "0.4.-1.4";
+string AppVersion = "0.4.-1.5";
 string AppName = "Edward";
 
 
@@ -40,11 +40,11 @@ bool handle_special_args(const Array<string> &arg)
 			int pp = arg[2].find("/Objects/", 0);
 			if (pp > 0){
 				Kaba::config.directory = arg[2].substr(0, pp) + "/Scripts/";
-				msg_write(Kaba::config.directory);
+				msg_write(Kaba::config.directory.str());
 			}
 
 
-			string ext = arg[2].extension();
+			string ext = Path(arg[2]).extension();
 			if (ext == "model"){
 				DataModelAllowUpdating = false;
 				DataModel m;

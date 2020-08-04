@@ -31,7 +31,7 @@ public:
 
 	struct AppearanceData {
 		// properties
-		Array<string> texture_files;
+		Array<Path> texture_files;
 
 		// color
 		color ambient, diffuse, specular, emissive;
@@ -45,10 +45,10 @@ public:
 		// reflection
 		int reflection_mode, reflection_size;
 		float reflection_density;
-		string reflection_texture_file[6];
+		Path reflection_texture_file[6];
 
 		// shader
-		string shader_file;
+		Path shader_file;
 		string shader_code;
 		ShaderGraph *shader_graph;
 		bool shader_from_graph;

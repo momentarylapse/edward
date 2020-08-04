@@ -11,7 +11,7 @@
 FormatFontX::FormatFontX() : TypedFormat<DataFont>(FD_FONT, "xfont", _("Font"), Flag::CANONICAL_READ_WRITE) {
 }
 
-void FormatFontX::_load(const string &filename, DataFont *data, bool deep) {
+void FormatFontX::_load(const Path &filename, DataFont *data, bool deep) {
 
 	int ffv;
 	data->reset();
@@ -97,13 +97,13 @@ void FormatFontX::_load(const string &filename, DataFont *data, bool deep) {
 		data->UpdateTexture();
 }
 
-void FormatFontX::_save(const string &filename, DataFont *data) {
+void FormatFontX::_save(const Path &filename, DataFont *data) {
 
 	File *f = FileCreateText(filename);
 	f->WriteFileFormatVersion(false, 2);
 
 	f->write_comment("// Texture");
-	f->write_str(data->global.TextureFile);
+	f->write_str(data->global.TextureFile.str());
 	f->write_comment("// Num Glyphs");
 	f->write_word(data->glyph.num);
 	f->write_comment("// Glyph Height");

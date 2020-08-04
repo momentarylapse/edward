@@ -11,8 +11,7 @@
 #include "../../Action.h"
 #include "../../../Data/Model/DataModel.h"
 
-class ActionModelEditData : public Action
-{
+class ActionModelEditData : public Action {
 public:
 	ActionModelEditData(const DataModel::MetaData &_data);
 	string name(){ return "ModelEditData"; }

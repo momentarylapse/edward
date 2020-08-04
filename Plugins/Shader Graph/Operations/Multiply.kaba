@@ -1,4 +1,4 @@
-use "../../api.kaba"
+use edward
 
 class NodeMultiply extends ShaderNode
 	void __init__()

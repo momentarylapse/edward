@@ -27,7 +27,7 @@ static float im_interpolate(const Image &im, float x, float y, float stretch_x, 
 	return c2f(im.get_pixel_interpolated(x, y));
 }
 
-ActionWorldTerrainApplyHeightmap::ActionWorldTerrainApplyHeightmap(DataWorld *data, const string &heightmap, float height_factor, float stretch_x, float stretch_z, const string &filter)
+ActionWorldTerrainApplyHeightmap::ActionWorldTerrainApplyHeightmap(DataWorld *data, const Path &heightmap, float height_factor, float stretch_x, float stretch_z, const Path &filter)
 {
 	Image im_height;
 	im_height.load(heightmap);

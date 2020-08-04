@@ -194,7 +194,7 @@ bool ModeModel::import_open_3ds() {
 	return import_load_3ds(storage->dialog_file_complete);
 }
 
-bool ModeModel::import_load_3ds(const string &filename) {
+bool ModeModel::import_load_3ds(const Path &filename) {
 	try {
 		storage->load(filename, data);
 
@@ -214,7 +214,7 @@ bool ModeModel::import_open_json() {
 	return import_load_json(storage->dialog_file_complete);
 }
 
-bool ModeModel::import_load_ply(const string &filename) {
+bool ModeModel::import_load_ply(const Path &filename) {
 	try {
 		storage->load(filename, data);
 
@@ -234,7 +234,7 @@ bool ModeModel::import_open_ply() {
 	return import_load_ply(storage->dialog_file_complete);
 }
 
-bool ModeModel::import_load_json(const string &filename) {
+bool ModeModel::import_load_json(const Path &filename) {
 	try {
 		storage->load(filename, data);
 
@@ -252,7 +252,7 @@ bool ModeModel::export_save_json() {
 	return export_write_json(storage->dialog_file_complete);
 }
 
-bool ModeModel::export_write_json(const string &filename) {
+bool ModeModel::export_write_json(const Path &filename) {
 	return storage->save(filename, data);
 }
 

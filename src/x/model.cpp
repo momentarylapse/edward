@@ -302,7 +302,7 @@ void read_color(File *f, color &c)
 }
 
 // completely load an original model (all data is its own)
-void Model::load(const string &filename)
+void Model::load(const Path &filename)
 {
 	msg_right();
 
@@ -708,8 +708,7 @@ void Model::load(const string &filename)
 }
 
 
-Model::Model()
-{
+Model::Model() {
 	pos = vel = rot = v_0;
 	ang = quaternion::ID;
 	object_id = -1;
@@ -739,12 +738,11 @@ Model::Model()
 	force_int = torque_int = v_0;
 	force_ext = torque_ext = v_0;
 
-	geom_id = 0;
-	body_id = 0;
+	body = nullptr;
+	colShape = nullptr;
 
 
-
-	parent = NULL;
+	parent = nullptr;
 	phys_is_reference = false;
 
 	anim.num_operations = 0;
@@ -831,7 +829,7 @@ Model *Model::copy(Model *pre_allocated)
 	return m;
 }
 
-void ExternalModelCleanup(Model *m){}
+void ExternalModelCleanup(Model *m);
 
 // delete only the data owned by this model
 //    don't delete sub models ...done by meta
@@ -1482,8 +1480,7 @@ string Model::filename()
 #endif
 
 
-void Model::draw_simple(int mat_no, int detail)
-{
+void Model::draw_simple(int mat_no, int detail) {
 	_detail_needed_[detail] = true;
 	auto *s = mesh[detail];
 	auto &sub = s->sub[mat_no];
@@ -1504,7 +1501,6 @@ void Model::draw_simple(int mat_no, int detail)
 	}*/
 }
 
-#if 0
 #if 0
 void Model::SortingTest(vector &pos,const vector &dpos,matrix *mat,bool allow_shadow)
 {
@@ -1542,7 +1538,6 @@ void Model::SortingTest(vector &pos,const vector &dpos,matrix *mat,bool allow_sh
 	// send for sorting
 	MetaAddSorted(this,pos,mat,_Detail_,ld,trans,allow_shadow);
 }
-#endif
 
 void Model::update_vertex_buffer(int mat_no, int detail)
 {
@@ -1594,7 +1589,7 @@ void Model::update_vertex_buffer(int mat_no, int detail)
 }
 #endif
 
-void Model::update_vertex_buffer(int mat_no, int detail){}
+void Model::update_vertex_buffer(int mat_no, int detail) {}
 
 void Model::draw(int detail, bool set_fx, bool allow_shadow)
 {
@@ -1617,7 +1612,7 @@ void Model::draw(int detail, bool set_fx, bool allow_shadow)
 	for (int i=0;i<material.num;i++){
 		//material[i]->apply();
 		nix::SetTextures(material[i]->textures);
-		nix::SetShader(nix::default_shader_3d);
+		nix::SetShader(material[i]->shader);
 
 		// finally... really draw!!!
 		draw_simple(i, detail);
@@ -1625,5 +1620,4 @@ void Model::draw(int detail, bool set_fx, bool allow_shadow)
 		nix::SetAlpha(ALPHA_NONE);
 	}
 }
-
 

@@ -1,7 +1,7 @@
 use hui
 use os
-use "api.kaba"
-use "helper.kaba"
+use edward
+use helper
 
 int anim_index
 
@@ -124,7 +124,7 @@ void _import(string filename)
 		#if fi > 10
 		#	break
 		dlg.set_float("progress", float(fi) / float(num_frames))
-		DoSingleMainLoop()
+		hui.do_single_main_loop()
 		#HuiSleep(0.001)
 	data_model.EndActionGroup()
 	del f
@@ -133,6 +133,6 @@ void _import(string filename)
 void main()
 	_import("/home/michi/Projekte/mocap/digest-smooth")
 	return
-	if not FileDialogOpen(edward, "", "", "*", "*")
+	if not hui.file_dialog_open(edward, "", "", "*", "*")
 		return
-	_import(HuiFilename)
+	_import(hui.filename)

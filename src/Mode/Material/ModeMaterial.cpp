@@ -61,17 +61,17 @@ bool test_save_extras(DataMaterial *data) {
 	if (data->appearance.is_default_shader)
 		return true;
 
-	string dir = storage->dialog_dir[FD_SHADERFILE];
-	if (data->appearance.shader_file == "") {
+	Path dir = storage->dialog_dir[FD_SHADERFILE];
+	if (data->appearance.shader_file.is_empty()) {
 		if (!hui::FileDialogSave(ed, "Shader...", dir, "*.shader", "*.shader"))
 			return false;
-		data->appearance.shader_file = hui::Filename.substr(dir.num, -1);
+		data->appearance.shader_file = hui::Filename.relative_to(dir);
 	}
 
-	FileWriteText(dir + data->appearance.shader_file, data->appearance.shader_code);
+	FileWriteText(dir << data->appearance.shader_file, data->appearance.shader_code);
 
 	if (data->appearance.shader_from_graph)
-		data->appearance.shader_graph->save(dir + data->appearance.shader_file + ".graph");
+		data->appearance.shader_graph->save(dir << data->appearance.shader_file.with(".graph"));
 	return true;
 }
 
@@ -98,7 +98,7 @@ void ModeMaterial::on_data_update() {
 void ModeMaterial::update_textures() {
 	textures.clear();
 
-	for (string &tf: data->appearance.texture_files)
+	for (auto &tf: data->appearance.texture_files)
 		textures.add(nix::LoadTexture(tf));
 	/*if (appearance.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC) {
 		create_fake_dynamic_cube_map(cube_map);

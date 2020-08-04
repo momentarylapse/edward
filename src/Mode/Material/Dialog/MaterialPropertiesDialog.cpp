@@ -14,7 +14,7 @@
 #include "../../../lib/nix/nix.h"
 
 
-string file_secure(const string &filename); // -> ModelPropertiesDialog
+string file_secure(const Path &filename); // -> ModelPropertiesDialog
 
 namespace nix{
 	extern string shader_error; // -> nix
@@ -113,7 +113,7 @@ void MaterialPropertiesDialog::LoadData()
 	enable("reflection_size", ((temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC) or (temp.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC)));
 	enable("reflection_textures", (temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC));
 	enable("reflection_density", (temp.reflection_mode != REFLECTION_NONE));
-	set_string("shader_file", temp.shader_file);
+	set_string("shader_file", temp.shader_file.str());
 
 
 	set_float("rcjump", temp_phys.friction_jump);
@@ -205,6 +205,7 @@ void MaterialPropertiesDialog::OnReflectionMode() {
 }
 
 void MaterialPropertiesDialog::OnReflectionTextures() {
+#if 0
 	int sel=get_int("");
 	if (storage->file_dialog(FD_TEXTURE,false,true)) {
 		temp.reflection_texture_file[sel] = storage->dialog_file;
@@ -223,9 +224,10 @@ void MaterialPropertiesDialog::OnReflectionTextures() {
 		ApplyData();
 		RefillReflTexView();
 	}
+#endif
 }
 
-bool TestShaderFile(const string &filename) {
+bool TestShaderFile(const Path &filename) {
 	auto *shader = nix::Shader::load(filename);
 	shader->unref();
 	return shader;
@@ -234,7 +236,7 @@ bool TestShaderFile(const string &filename) {
 void MaterialPropertiesDialog::OnFindShader() {
 	if (storage->file_dialog(FD_SHADERFILE,false,true)){
 		if (TestShaderFile(storage->dialog_file)){
-			set_string("shader_file", storage->dialog_file);
+			set_string("shader_file", storage->dialog_file.str());
 			temp.shader_file = get_string("shader_file");
 			temp.update_shader_from_file();
 			ApplyData();
@@ -290,12 +292,12 @@ void MaterialPropertiesDialog::ApplyPhysDataDelayed() {
 
 void MaterialPropertiesDialog::RefillReflTexView() {
 	reset("reflection_textures");
-	add_string("reflection_textures", " + X\\" + temp.reflection_texture_file[0]);
-	add_string("reflection_textures", " - X\\" + temp.reflection_texture_file[1]);
-	add_string("reflection_textures", " + Y\\" + temp.reflection_texture_file[2]);
-	add_string("reflection_textures", " - Y\\" + temp.reflection_texture_file[3]);
-	add_string("reflection_textures", " + Z\\" + temp.reflection_texture_file[4]);
-	add_string("reflection_textures", " - Z\\" + temp.reflection_texture_file[5]);
+	add_string("reflection_textures", " + X\\" + temp.reflection_texture_file[0].str());
+	add_string("reflection_textures", " - X\\" + temp.reflection_texture_file[1].str());
+	add_string("reflection_textures", " + Y\\" + temp.reflection_texture_file[2].str());
+	add_string("reflection_textures", " - Y\\" + temp.reflection_texture_file[3].str());
+	add_string("reflection_textures", " + Z\\" + temp.reflection_texture_file[4].str());
+	add_string("reflection_textures", " - Z\\" + temp.reflection_texture_file[5].str());
 }
 
 void MaterialPropertiesDialog::FillTextureList() {
@@ -303,7 +305,7 @@ void MaterialPropertiesDialog::FillTextureList() {
 	for (int i=0;i<temp.texture_files.num;i++) {
 		nix::Texture *tex = nix::LoadTexture(temp.texture_files[i]);
 		string img = ed->get_tex_image(tex);
-		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, img.c_str(), file_secure(temp.texture_files[i]).c_str()));
+		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, img, file_secure(temp.texture_files[i])));
 	}
 	if (temp.texture_files.num == 0)
 		add_string("mat_textures", _("\\\\   - no textures -"));

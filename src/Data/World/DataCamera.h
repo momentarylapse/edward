@@ -20,27 +20,24 @@
 #define CPKCamFlight	10
 #define CPKCamFlightRel	11
 
-class WorldCamPoint: public MultiView::SingleData
-{
+class WorldCamPoint: public MultiView::SingleData {
 public:
 	int Type;
 	vector Vel, Ang;
 	float Duration;
 };
 
-class WorldCamPointVel: public MultiView::SingleData
-{
+class WorldCamPointVel: public MultiView::SingleData {
 };
 
-class DataCamera : public Data
-{
+class DataCamera : public Data {
 public:
 	DataCamera();
 	virtual ~DataCamera();
 
 	void reset();
-	bool load(const string &_filename, bool deep = true);
-	bool save(const string &_filename);
+	bool load(const Path &_filename, bool deep = true);
+	bool save(const Path &_filename);
 
 	void UpdateVel();
 

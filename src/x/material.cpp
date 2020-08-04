@@ -9,7 +9,7 @@
 color file_read_color4i(File *f); // -> model.cpp
 
 
-string MaterialDir;
+Path MaterialDir;
 
 // materials
 static Material *default_material;
@@ -100,9 +100,9 @@ Material* Material::copy() {
 }
 
 
-Material *LoadMaterial(const string &filename) {
+Material *LoadMaterial(const Path &filename) {
 	// an empty name loads the default material
-	if (filename.num == 0)
+	if (filename.is_empty())
 		return default_material->copy();
 
 	for (Material *m: materials)
@@ -111,10 +111,10 @@ Material *LoadMaterial(const string &filename) {
 
 
 	File *f = NULL;
-	msg_write("loading material " + filename);
+	msg_write("loading material " + filename.str());
 	try {
 		msg_right();
-		f = FileOpenText(MaterialDir + filename + ".material");
+		f = FileOpenText(MaterialDir << (filename.str() + ".material"));
 		Material *m = new Material;
 
 		int ffv = f->ReadFileFormatVersion();

@@ -33,7 +33,7 @@ public:
 
 class WorldScript {
 public:
-	string filename;
+	Path filename;
 	string class_name;
 	Array<WorldScriptVariable> variables;
 };
@@ -76,7 +76,7 @@ public:
 
 		// background
 		color BackGroundColor;
-		Array<string> SkyBoxFile;
+		Array<Path> SkyBoxFile;
 
 		// fog
 		bool FogEnabled;
@@ -90,7 +90,7 @@ public:
 		Array<WorldScript> scripts;
 
 		// music
-		Array<string> MusicFile;
+		Array<Path> MusicFile;
 
 		void Reset();
 	};
@@ -99,8 +99,8 @@ public:
 
 
 	// actions
-	WorldObject *AddObject(const string &filename, const vector &pos);
-	WorldTerrain *AddTerrain(const string &filename, const vector &pos);
+	WorldObject *AddObject(const Path &filename, const vector &pos);
+	WorldTerrain *AddTerrain(const Path &filename, const vector &pos);
 	WorldTerrain *AddNewTerrain(const vector &pos, const vector &size, int num_x, int num_z);
 	void Copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains); // actually not an action
 	void Paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains);

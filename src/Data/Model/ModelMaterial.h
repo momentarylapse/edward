@@ -17,11 +17,10 @@ namespace nix{
 
 class Image;
 
-class ModelMaterial
-{
+class ModelMaterial {
 public:
 	ModelMaterial();
-	ModelMaterial(const string &filename);
+	ModelMaterial(const Path &filename);
 	virtual ~ModelMaterial();
 
 	void reset();
@@ -31,13 +30,13 @@ public:
 	void checkTransparency();
 	void applyForRendering();
 
-	string filename;
+	Path filename;
 	Material *material;
 
 	struct TextureLevel {
 		TextureLevel();
 		~TextureLevel();
-		string filename;
+		Path filename;
 		nix::Texture *texture;
 		Image *image;
 		bool edited;

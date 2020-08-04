@@ -22,15 +22,15 @@ public:
 
 class WorldTerrain: public MultiView::SingleData {
 public:
-	string filename;
+	Path filename;
 	//Array<WorldTerrainVertex> Vertex;
 	int VertexBufferSingle;
 	int ShowTexture;
 	bool Changed;
 	Terrain *terrain;
 
-	bool load(const vector &pos, const string &filename, bool deep = true);
-	bool save(const string &filename);
+	bool load(const vector &pos, const Path &filename, bool deep = true);
+	bool save(const Path &filename);
 
 	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
@@ -41,12 +41,12 @@ public:
 
 class WorldEditingTerrain {
 public:
-	string FileName;
+	Path FileName;
 	int NumX, NumZ;
 	vector Pattern;
-	string MaterialFile;
+	Path MaterialFile;
 	int NumTextures;
-	string TextureFile[MATERIAL_MAX_TEXTURES];
+	Path TextureFile[MATERIAL_MAX_TEXTURES];
 	vector TextureScale[MATERIAL_MAX_TEXTURES];
 };
 

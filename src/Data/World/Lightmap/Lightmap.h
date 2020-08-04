@@ -15,8 +15,7 @@
 
 class LightmapData;
 
-class Lightmap
-{
+class Lightmap {
 public:
 	Lightmap(LightmapData *data);
 	virtual ~Lightmap();
@@ -30,8 +29,7 @@ public:
 
 	LightmapData *data;
 
-	struct Histogram
-	{
+	struct Histogram {
 		Histogram(Array<float> &e);
 		float max;
 		Array<float> f;

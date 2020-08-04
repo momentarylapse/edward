@@ -124,16 +124,16 @@ public:
 		}
 		if (LIST_SHOW_SCRIPTS) {
 		foreachi (auto &s, data->meta_data.scripts, i) {
-			add_string("list", "Script\\" + s.filename);
+			add_string("list", "Script\\" + s.filename.str());
 			list_indices.add({MVD_WORLD_SCRIPT, i});
 		}
 		}
 		foreachi (auto &t, data->terrains, i) {
-			add_string("list", "Terrain\\" + t.filename);
+			add_string("list", "Terrain\\" + t.filename.str());
 			list_indices.add({MVD_WORLD_TERRAIN, i});
 		}
 		foreachi (auto &o, data->objects, i) {
-			add_string("list", "Object\\" + ((o.name == "") ? o.filename : o.name));
+			add_string("list", "Object\\" + ((o.name == "") ? o.filename.str() : o.name));
 			list_indices.add({MVD_WORLD_OBJECT, i});
 		}
 		foreachi (auto &l, data->links, i) {
@@ -248,7 +248,7 @@ public:
 		if (ii.type == MVD_WORLD_OBJECT) {
 			auto &o = data->objects[ii.index];
 			set_string("ob-name", o.name);
-			set_string("ob-kind", o.filename);
+			set_string("ob-kind", o.filename.str());
 			set_float("pos-x", o.pos.x);
 			set_float("pos-y", o.pos.y);
 			set_float("pos-z", o.pos.z);
@@ -257,7 +257,7 @@ public:
 			set_float("ang-z", o.ang.z * 180.0f / pi);
 		} else if (ii.type == MVD_WORLD_TERRAIN) {
 			auto &t = data->terrains[ii.index];
-			set_string("terrain-file", t.filename);
+			set_string("terrain-file", t.filename.str());
 			set_int("terrain-num-x", t.terrain->num_x);
 			set_int("terrain-num-z", t.terrain->num_z);
 			set_float("terrain-pattern-x", t.terrain->pattern.x);
@@ -270,7 +270,7 @@ public:
 			set_float("ang-z", 0);
 		} else if (ii.type == MVD_WORLD_SCRIPT) {
 			auto &s = data->meta_data.scripts[ii.index];
-			set_string("script-file", s.filename);
+			set_string("script-file", s.filename.str());
 			set_string("script-class", "???");
 			reset("script-variables");
 			for (auto &v: s.variables)
@@ -345,8 +345,8 @@ public:
 			return;
 		auto &ii = list_indices[editing];
 		if (ii.type == MVD_WORLD_SCRIPT) {
-			string filename = Kaba::config.directory + data->meta_data.scripts[ii.index].filename;
-			int r = system(("sgribthmaker '" + filename + "'").c_str());
+			auto filename = Kaba::config.directory << data->meta_data.scripts[ii.index].filename;
+			int r = system(("sgribthmaker '" + filename.str() + "'").c_str());
 			//hui::OpenDocument(filename);
 		}
 	}
