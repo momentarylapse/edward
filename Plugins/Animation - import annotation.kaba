@@ -23,12 +23,12 @@ float pain(vector[] va, vector[] vb, vector ang)
 quaternion import_torso(vector[] p)
 	int[] index
 	vector[] va, vb
-	for b,i in data_model.bone
+	for b,i in model.bone
 		if b.parent == 0
 			index.add(i)
 			let a = p[i] - p[0]
 			va.add(a / a.length())
-			let bb = data_model.bone[i].pos - data_model.bone[0].pos
+			let bb = model.bone[i].pos - model.bone[0].pos
 			vb.add(bb / bb.length())
 
 	vector ang = vector.0
@@ -45,17 +45,17 @@ quaternion import_torso(vector[] p)
 void import_frame(vector[] p, int frame_no)
 	vector[] pos
 	quaternion[] ang
-	for b,i in data_model.bone
+	for b,i in model.bone
 		pos.add(vector.0)
 		ang.add(quaternion.ID)
-	for b,i in data_model.bone
+	for b,i in model.bone
 		if b.parent < 0
-			pos[i] = p[i] - data_model.bone[i].pos
+			pos[i] = p[i] - model.bone[i].pos
 		else
 			int ip = b.parent
 			
 			# bone vector
-			vector bdpos = data_model.bone[i].pos - data_model.bone[ip].pos
+			vector bdpos = model.bone[i].pos - model.bone[ip].pos
 			#bdpos /= bdpos.length()
 			vector dp = p[i] - p[ip]
 			#dp /= dp.length()
@@ -68,18 +68,18 @@ void import_frame(vector[] p, int frame_no)
 			ang[ip] = q
 	ang[0] = import_torso(p)
 			
-	for b,i in data_model.bone
-			data_model.animation_set_bone(anim_index, frame_no, i, pos[i], ang[i].angles())
+	for b,i in model.bone
+			model.animation_set_bone(anim_index, frame_no, i, pos[i], ang[i].angles())
 
 #void guess_scale(int[] r, int num_frames, int num_bones)
 #	float weight = 0
 #	float ss = 0
-#	for b,i in data_model.bone
+#	for b,i in model.bone
 #		if i >= num_bones
 #			break
 #		if b.parent < 0
 #			continue
-#		vector dpos = b.pos - data_model.bone[b.parent].pos
+#		vector dpos = b.pos - model.bone[b.parent].pos
 #		float w = dpos.length()
 #		weight += w
 #		float ml = 0
@@ -101,9 +101,9 @@ void _import(string filename)
 	f >> num_bones
 	
 	anim_index = 1
-	data_model.BeginActionGroup("import-animation")
-	data_model.add_animation(anim_index, MOVE_TYPE_SKELETAL)
-	data_model.animation_set_data(anim_index, "new", 5, 0)
+	model.begin_action("import-animation")
+	model.add_animation(anim_index, Model.Move.TYPE_SKELETAL)
+	model.animation_set_data(anim_index, "new", 5, 0)
 	
 	matrix mat = matrix.rotation(vector(0.30,0,-0.15))
 	
@@ -113,7 +113,7 @@ void _import(string filename)
 	
 	for fi in 0:num_frames
 		if fi > 0
-			data_model.animation_add_frame(anim_index, fi, data_model.move[anim_index].frame[0])
+			model.animation_add_frame(anim_index, fi, model.move[anim_index].frame[0])
 		vector[] p
 		for bi in 0:num_bones
 			vector pp
@@ -126,7 +126,7 @@ void _import(string filename)
 		dlg.set_float("progress", float(fi) / float(num_frames))
 		hui.do_single_main_loop()
 		#HuiSleep(0.001)
-	data_model.EndActionGroup()
+	model.end_action()
 	del f
 	del dlg
 

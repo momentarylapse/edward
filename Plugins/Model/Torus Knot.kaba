@@ -4,8 +4,8 @@ use edward
 Dialog *dlg
 
 void CreateTorusKnot(int nx, int ny, int rings, int edges, float r1, float r2, float r3)
-	Geometry *g = new GeometryTorusKnot(vector.0, vector.EZ, r1, r2, r3, nx, ny, rings, edges)
-	data_model.paste_geometry(*g, 0)
+	let g = new Geometry.TorusKnot(vector.0, vector.EZ, r1, r2, r3, nx, ny, rings, edges)
+	model.paste_geometry(*g, 0)
 	del g
 
 int gcd(int _a, int _b)

@@ -6,10 +6,10 @@ void main()
 	if !hui.file_dialog_save(edward, "Topology", "", "*.top", "*.top")
 		return
 	File *f = Filesystem.create_text(hui.filename)
-	for p in data_model.mesh.polygon
-		vector va = data_model.mesh.vertex[p.side[0].vertex].pos
-		vector vb = data_model.mesh.vertex[p.side[1].vertex].pos
-		vector vc = data_model.mesh.vertex[p.side[2].vertex].pos
+	for p in model.mesh.polygon
+		vector va = model.mesh.vertex[p.side[0].vertex].pos
+		vector vb = model.mesh.vertex[p.side[1].vertex].pos
+		vector vc = model.mesh.vertex[p.side[2].vertex].pos
 		vector n = p.temp_normal
 		string s
 		if p.material == 1

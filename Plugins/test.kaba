@@ -1,11 +1,11 @@
 use edward
 
 void main()
-	data_model.BeginActionGroup("test")
-	int n = data_model.mesh.vertex.num
-	data_model.add_vertex(vector(10,10,0), 0, -1)
-	data_model.add_vertex(vector(10,0,0), 0, -1)
-	data_model.add_vertex(vector(0,0,0), 0, -1)
-	data_model.add_triangle(n + 0, n + 1, n + 2, 0)
-	data_model.EndActionGroup()
+	model.begin_action("test")
+	int n = model.mesh.vertex.num
+	model.add_vertex(vector(10,10,0), 0, -1)
+	model.add_vertex(vector(10,0,0), 0, -1)
+	model.add_vertex(vector(0,0,0), 0, -1)
+	model.add_triangle(n + 0, n + 1, n + 2, 0)
+	model.end_action()
 	

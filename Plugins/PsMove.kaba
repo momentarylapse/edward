@@ -11,9 +11,9 @@ enum
 
 class X extends Object
 	quaternion q0
-	ActionController* ac
+	MultiView.ActionController* ac
 	MultiView* mv
-	MultiViewWindow* win
+	MultiView.Window* win
 	int mode
 	PsMoveManager pm
 	

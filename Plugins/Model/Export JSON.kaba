@@ -11,7 +11,7 @@ string col3ToJson(color c)
 string qToJson(quaternion q)
 	return "{{q.x}}, {{q.y}}, {{q.z}}, {{q.w}}"
 
-string materialToJson(ModelMaterial m)
+string materialToJson(Model.Material m)
 	string str
 	str += "	{\n"
 	str += "		'DbgColor' : 15658734,\n"
@@ -31,22 +31,22 @@ string materialToJson(ModelMaterial m)
 	str += "	}"
 	return str
 
-vector bone_anim_pos(ModelFrame f, int i)
-	int parent = data_model.bone[i].parent
+vector bone_anim_pos(Model.Move.Frame f, int i)
+	int parent = model.bone[i].parent
 	if parent >= 0
-		vector dpos = data_model.bone[i].pos - data_model.bone[parent].pos
+		vector dpos = model.bone[i].pos - model.bone[parent].pos
 		let q = quaternion(f.skel_ang[parent])
 		return bone_anim_pos(f, parent) + q * dpos
-	return f.skel_dpos[i] + data_model.bone[i].pos
+	return f.skel_dpos[i] + model.bone[i].pos
 
-string moveToJson(ModelMove m)
+string moveToJson(Model.Move m)
 	string str
 	str += "	{\n"
 	str += "		'name': '{{m.name}}',\n"
 	str += "		'fps': {{m.frames_per_sec_const}},\n"
 	str += "		'length': {{(m.frame.num / m.frames_per_sec_const)}},\n"
 	str += "		'hierarchy': [\n"
-	for b,i in data_model.bone
+	for b,i in model.bone
 		str += "			{\n"
 		str += "				'parent': -1,\n" #b.parent
 		str += "				'keys': [\n"
@@ -73,7 +73,7 @@ string moveToJson(ModelMove m)
 		str += "						'scl': [1,1,1]\n"
 		str += "					}\n"
 		str += "				]\n"
-		if i < data_model.bone.num - 1
+		if i < model.bone.num - 1
 			str += "			},\n"
 		else
 			str += "			}\n"
@@ -81,13 +81,13 @@ string moveToJson(ModelMove m)
 	str += "	}"
 	return str
 
-string boneToJson(ModelBone b)
+string boneToJson(Model.Bone b)
 	string str
 	str += "	{\n"
 	str += "		'parent': -1,\n" #b.parent
 	vector pos = b.pos
 	#if b.parent >= 0
-#		pos -= data_model.bone[b.parent].pos
+#		pos -= model.bone[b.parent].pos
 	str += "		'name': 'xxx',\n"
 	str += "		'pos': [{{vecToJson(pos)}}],\n"
 	str += "		'scl': [1,1,1],\n"
@@ -102,19 +102,19 @@ void main()
 	File *f = Filesystem.create_text(hui.filename)
 	
 	int n_tria = 0
-	for p in data_model.mesh.polygon
+	for p in model.mesh.polygon
 		n_tria += p.side.num - 2
 	
 	string str = "{'metadata':{\n"
 	str += "	'formatVersion': 3,\n"
 	str += "	'generatedBy': 'Edward',\n"
-	str += "	'vertices': {{data_model.mesh.vertex.num}},\n"
+	str += "	'vertices': {{model.mesh.vertex.num}},\n"
 	str += "	'faces': {{n_tria}},\n"
 	str += "	'normals': {{(n_tria*3)}},\n"
 	str += "	'colors': 0,\n"
 	str += "	'uvs': 1,\n"
 	str += "	'morphTargets': 0,\n"
-	str += "	'bones': {{data_model.bone.num}}\n"
+	str += "	'bones': {{model.bone.num}}\n"
 	str += "},\n"
 	str += "'influencesPerVertex': 1,\n"
 	str += "'scale': 1.000,\n"
@@ -136,29 +136,29 @@ void main()
 #	str += "		'vertexColors' : false\n"
 #	str += "	}],\n"
 	str += "'materials': [\n"
-	for m,i in data_model.material
+	for m,i in model.material
 		str += materialToJson(m)
-		if i < data_model.material.num - 1
+		if i < model.material.num - 1
 			str += ",\n"
 	str += "],\n"
 	str += "'colors': [],\n"
 	str += "'vertices': [\n"
-	for v,i in data_model.mesh.vertex
+	for v,i in model.mesh.vertex
 		str += "	" + vecToJson(v.pos)
-		if i < data_model.mesh.vertex.num - 1
+		if i < model.mesh.vertex.num - 1
 			str += ",\n"
 	str += "],\n"
 	str += "'uvs': [[0,0]],\n"
 	str += "'normals': [\n"
-	for p,ip in data_model.mesh.polygon
+	for p,ip in model.mesh.polygon
 		for side,k in p.side
 			str += "	" + vecToJson(side.normal)
-			if (ip < data_model.mesh.polygon.num - 1) or (k < p.side.num - 1)
+			if (ip < model.mesh.polygon.num - 1) or (k < p.side.num - 1)
 				str += ",\n"
 	str += "],\n"
 	str += "'faces': [\n"
 	int n_normals = 0
-	for p,ip in data_model.mesh.polygon
+	for p,ip in model.mesh.polygon
 		for side,k in p.side
 			int _a = side.triangulation[0]
 			int _b = side.triangulation[1]
@@ -173,37 +173,37 @@ void main()
 			str += "	42, {{va}}, {{vb}}, {{vc}}, {{p.material}}, "
 			str += "0, 0, 0, "
 			str += "{{na}}, {{nb}}, {{nc}}"
-			if (ip < data_model.mesh.polygon.num - 1) or (k < p.side.num - 1)
+			if (ip < model.mesh.polygon.num - 1) or (k < p.side.num - 1)
 				str += ",\n"
 		n_normals += p.side.num
 	str += "],\n"
 #	str += "'morphTargets': [\n"
-#	for int i, 0, data_model.Move.num
-#		str += moveToJson(data_model.Move[i])
-#		if i < data_model.Move.num - 1
+#	for int i, 0, model.Move.num
+#		str += moveToJson(model.Move[i])
+#		if i < model.Move.num - 1
 #			str += ",\n"
 #	str += "],\n"
 	str += "'bones': [\n"
-	for b,i in data_model.bone
+	for b,i in model.bone
 		str += boneToJson(b)
-		if i < data_model.bone.num - 1
+		if i < model.bone.num - 1
 			str += ",\n"
 	str += "],\n"
 	str += "'skinIndices': ["
-	for v,i in data_model.mesh.vertex
+	for v,i in model.mesh.vertex
 		str += v.bone_index
-		if i < data_model.mesh.vertex.num - 1
+		if i < model.mesh.vertex.num - 1
 			str += ", "
 	str += "],\n"
 	str += "'skinWeights': ["
-	for v,i in data_model.mesh.vertex
+	for v,i in model.mesh.vertex
 		str += "1"
-		if i < data_model.mesh.vertex.num - 1
+		if i < model.mesh.vertex.num - 1
 			str += ", "
 	str += "],\n"
 	str += "'animations': [\n"
 	bool first_anim = true
-	for m,i in data_model.move
+	for m,i in model.move
 		if len(m.frame) == 0
 			continue
 		if !first_anim

@@ -34,8 +34,8 @@ void branch(vector pos0, vector dir0, int num, float radius, float length)
 	float[] r
 	r.add(radius)
 	r.add(0)
-	Geometry *g = new GeometryCylinderComplex(pos, r, 5, 16, 0)
-	data_model.paste_geometry(g, 0)
+	let g = new Geometry.CylinderComplex(pos, r, 5, 16, 0)
+	model.paste_geometry(g, 0)
 	del g
 
 void main()

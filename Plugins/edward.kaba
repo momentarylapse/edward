@@ -1,7 +1,7 @@
 use hui
 use nix
 use os
-use x
+import x
 
 class Observable
 	int dummy
@@ -14,22 +14,63 @@ class Data extends Observable
 	int file_time
 	bool binary_file_format
 	int type
-	extern void BeginActionGroup(string name)
-	extern void EndActionGroup()
-
-
-# "des Pudels Kern", don't change!!!!!!!
-class MultiViewSingleData
-	int view_stage
-	bool is_selected, m_delta, m_old, is_special
-	vector pos
+	extern void begin_action(string name)
+	extern void end_action()
 
 
 
-const int MODEL_MAX_TEXTURES = 8
-const int MODEL_MAX_POLY_VERTICES_PER_FACE = 16
-const int MODEL_MAX_POLY_FACES = 32
-const int MODEL_MAX_POLY_EDGES = 32 * 4
+class MultiView
+
+	class ActionController
+		extern void start_action(MultiView.Window* win, vector m, int constraints)
+		extern void update_action()
+		extern void update_param(vector param)
+		extern void end_action(bool set)
+		vector pos
+
+	class Window
+		quaternion local_ang
+
+	class Camera
+		vector pos
+		quaternion ang
+
+	# "des Pudels Kern", don't change!!!!!!!
+	class SingleData
+		int view_stage
+		bool is_selected, m_delta, m_old, is_special
+		vector pos
+		
+	enum
+		ACTION_SELECT
+		ACTION_MOVE
+		ACTION_ROTATE
+		ACTION_ROTATE_2D
+		ACTION_SCALE
+		ACTION_SCALE_2D
+		ACTION_MIRROR
+		ACTION_ONCE
+
+	enum
+		ACTION_CONSTRAINTS_NONE
+		ACTION_CONSTRAINTS_X
+		ACTION_CONSTRAINTS_Y
+		ACTION_CONSTRAINTS_Z
+		ACTION_CONSTRAINTS_XY
+		ACTION_CONSTRAINTS_XZ
+		ACTION_CONSTRAINTS_YZ
+
+		
+	#extern void on_mouse_move()
+	#extern void set_mouse_action(string name, int type, bool locked) #"ActionModelAnimationTransformBones", mouse_action, false);
+	ActionController* action_con
+	MultiView.Window* mouse_win
+	MultiView.Window* active_win
+	MultiView.Camera cam
+	extern void cam_move(vector dpos)
+	extern void cam_rotate(quaternion dq, bool cam_center)
+	extern void cam_zoom(float factor, bool mouse_rel)
+
 
 
 const int TransparencyModeDefault = 0-1
@@ -47,258 +88,203 @@ enum
 	FXKindSound,
 	FXKindForceField
 
-class ModelEffect
-	int kind, surface, vertex
-	int size, speed, intensity
-	color[3] colors
-	bool inv_quad
-	string file
-	void __assign__(ModelEffect other)
-		nil
-
-class ModelVertex extends MultiViewSingleData
-	int normal_mode
-	int bone_index
-
-	bool normal_dirty
-	int ref_count # triangles
-	int surface
-
-class ModelPolygonSide
-	int vertex
-	int edge
-	int edge_direction # which no of triangle in edge's list are we?
-	vector[MODEL_MAX_TEXTURES] skin_vertex
-	int normal_index
-	vector normal
-	char[3] triangulation
-
-class ModelPolygon extends MultiViewSingleData
-	ModelPolygonSide[] side
-	vector temp_normal
-	bool normal_dirty, triangulation_dirty
-	int material
-	void __init__()
-
-# only for use in MultiView...
-class ModelSkinVertexDummy extends MultiViewSingleData
-
-class ModelBall extends MultiViewSingleData
-	int index
-	float radius
-
-class ModelPolyhedronFace
-	int num_vertices
-	int[MODEL_MAX_POLY_VERTICES_PER_FACE] index
-	plane plane
-
-
-# TODO: dynamical!
-class ModelPolyhedron extends MultiViewSingleData
-	int num_faces
-	ModelPolyhedronFace[MODEL_MAX_POLY_FACES] face
-	int num_svertices
-	int[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_VERTICES_PER_FACE] sindex
-
-	# non redundant edge list!
-	int num_edges
-	int[MODEL_MAX_POLY_EDGES * 2] edge_index
-
-	# "topology"
-	bool[MODEL_MAX_POLY_EDGES * MODEL_MAX_POLY_FACES] edge_on_face # [edge * NumFaces + face]
-	int[MODEL_MAX_POLY_FACES * MODEL_MAX_POLY_FACES] faces_joining_edge # [face1 * NumFaces + face2]
 
 
 
-class ModelTriangle extends MultiViewSingleData
-	int[3] vertex
-	#int[3] edge
-	#int[3] edge_direction # which no of triangle in edge's list are we?
-	vector[MODEL_MAX_TEXTURES][3] skin_vertex
-	int[3] normal_index
-	vector[3] normal
-	vector temp_normal
-	bool normal_dirty
-	int material
+class Model extends Data
+	const int MAX_TEXTURES = 8
+	const int MAX_POLY_VERTICES_PER_FACE = 16
+	const int MAX_POLY_FACES = 32
+	const int MAX_POLY_EDGES = 32 * 4
 
 
-# triangles belonging to one material
-class ModelSubSkin
-	int num_textures # "read only" (updated automatically...)
+	class Material
+		Path filename
+		x.Material *material
+		int num_textures
+		Texture*[Model.MAX_TEXTURES] texture
+		string[Model.MAX_TEXTURES] texture_file
 
-	# triangles
-	ModelTriangle[] triangle
+		bool user_transparency
+		int transparency_mode
+		int alpha_source, alpha_destination
+		float alpha_factor
+		bool alpha_z_buffer
 
+		bool user_color
+		color ambient
+		color diffuse
+		color specular
+		color emission
+		float shininess
+		void __assign__(Material other)
 
-# geometry
-class ModelSkin
-	# general properties
-	int normal_mode_all
-
-	# vertices
-	ModelVertex[] vertex
-
-	# sub skins
-	ModelSubSkin[] sub
-
-class ModelBone extends MultiViewSingleData
-	int parent
-	string model_file
-	Model *model
-	bool const_pos
-
-	# for editing
-	matrix matrix
-	void __init__()
-
-class ModelFrame
-	# skeleton animation
-	vector[] skel_dpos
-	vector[] skel_ang
-
-	# vertex animation
-	vector[4][] dpos
-	vector[] vertex_dpos
-	void __assign__(ModelFrame other)
+	class Effect
+		int kind, surface, vertex
+		int size, speed, intensity
+		color[3] colors
+		bool inv_quad
+		string file
+		void __assign__(Effect other)
+			nil
 
 
-enum
-	MOVE_TYPE_NONE
-	MOVE_TYPE_VERTEX
-	MOVE_TYPE_SKELETAL
+	# only for use in MultiView...
+	class SkinVertexDummy extends MultiView.SingleData
 
-class ModelMove
-	int type
-	ModelFrame[] frame
-	float frames_per_sec_const, frames_per_sec_factor
-	string name
-
-class ModelEdge extends MultiViewSingleData
-	#int NormalMode;
-	int[2] vertex
-	int ref_count
-	int[2] triangle, side
-	bool is_round # for editing
-	float weight # for easify'ing
-
-	# constraints:
-	#  Vertex[0] = surf.Triangle[Triangle[0]].Vertex[Side[0]]
-	#  Vertex[1] = surf.Triangle[Triangle[0]].Vertex[(Side[0] + 1) % 3]
-	#  same for Triangle/Side[1] but Vertex[0 <-> 1]
+	class Ball extends MultiView.SingleData
+		int index
+		float radius
 
 
-class __ModelSurface extends MultiViewSingleData
-	ModelPolygon[] polygon
-	ModelEdge[] edge
-	int[] vertex
-	bool is_physical, is_visible
-	bool is_closed
+	# TODO: dynamical!
+	class Polyhedron extends MultiView.SingleData
+		class Face
+			int num_vertices
+			int[Model.MAX_POLY_VERTICES_PER_FACE] index
+			plane plane
+		int num_faces
+		Face[Model.MAX_POLY_FACES] face
+		int num_svertices
+		int[Model.MAX_POLY_FACES * Model.MAX_POLY_VERTICES_PER_FACE] sindex
 
-	void *model
-	void __init__()
+		# non redundant edge list!
+		int num_edges
+		int[Model.MAX_POLY_EDGES * 2] edge_index
 
-class Geometry
-	ModelVertex[] vertex
-	ModelPolygon[] polygon
-	ModelEdge[] edge
-	bool is_closed
-
-class GeometryBall extends Geometry
-	extern void __init__(vector pos, float radius, int num_x, int num_y)
-
-class GeometryCube extends Geometry
-	extern void __init__(vector pos, vector dv1, vector dv2, vector dv3, int num_1, int num_2, int num_3)
-
-class GeometryCylinder extends Geometry
-	extern void __init__(vector pos1, vector pos2, float radius, int rings, int edges, int end_mode)
-
-class GeometryCylinderComplex extends Geometry
-	extern void __init__(vector[] pos, float[] radius, int rings, int edges, int end_mode)
-
-enum
-	END_OPEN
-	END_FLAT
-	END_ROUND
-	END_LOOP
-
-class GeometrySphere extends Geometry
-	extern void __init__(vector pos, float radius, int num)
-
-class GeometryTorus extends Geometry
-	extern void __init__(vector pos, vector axis, float radius1, float radius2, int num_x, int num_y)
-
-class GeometryTorusKnot extends Geometry
-	extern void __init__(vector pos, vector axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges)
-
-class GeometryPlane extends Geometry
-	extern void __init__(vector pos, vector dv1, vector dv2, int num_x, int num_y)
-
-class GeometryPlatonic extends Geometry
-	extern void __init__(vector pos, float radius, int samples)
+		# "topology"
+		bool[Model.MAX_POLY_EDGES * Model.MAX_POLY_FACES] edge_on_face # [edge * NumFaces + face]
+		int[Model.MAX_POLY_FACES * Model.MAX_POLY_FACES] faces_joining_edge # [face1 * NumFaces + face2]
 
 
-class ModelMaterial
-	Path filename
-	Material *material
-	int num_textures
-	Texture*[MODEL_MAX_TEXTURES] texture
-	string[MODEL_MAX_TEXTURES] texture_file
 
-	bool user_transparency
-	int transparency_mode
-	int alpha_source, alpha_destination
-	float alpha_factor
-	bool alpha_z_buffer
+	class Triangle extends MultiView.SingleData
+		int[3] vertex
+		#int[3] edge
+		#int[3] edge_direction # which no of triangle in edge's list are we?
+		vector[Model.MAX_TEXTURES][3] skin_vertex
+		int[3] normal_index
+		vector[3] normal
+		vector temp_normal
+		bool normal_dirty
+		int material
 
-	bool user_color
-	color ambient
-	color diffuse
-	color specular
-	color emission
-	float shininess
-	void __assign__(ModelMaterial other)
 
-class ModelMetaData
-	# level of detail
-	float[3] detail_dist
-	int[3] detail_factor
-	bool auto_generate_dists
-	bool[3] auto_generate_skin
+	# triangles belonging to one material
+	class SubSkin
+		int num_textures # "read only" (updated automatically...)
 
-	# physics
-	float mass
-	bool active_physics, passive_physics
-	bool auto_generate_tensor
-	matrix3 inertia_tensor
+		# triangles
+		Triangle[] triangle
 
-	# object-properties
-	string name, description
-	string[] inventary
 
-	# script
-	string script_file
-	float[] script_var
-	void __assign__(ModelMetaData other)
+	# geometry
+	class Skin
+		# general properties
+		int normal_mode_all
 
-class ModelSelection
-	int[] vertex, polygon, edge
+		# vertices
+		Geometry.Vertex[] vertex
 
-class ModelMesh
-	ModelVertex[] vertex
-	ModelPolygon[] polygon
-	ModelEdge[] edge
+		# sub skins
+		SubSkin[] sub
+
+	class Bone extends MultiView.SingleData
+		int parent
+		string model_file
+		Model *model
+		bool const_pos
+
+		# for editing
+		matrix matrix
+		void __init__()
+
+
+
+	class Move
+		enum
+			TYPE_NONE
+			TYPE_VERTEX
+			TYPE_SKELETAL
+
+		class Frame
+			# skeleton animation
+			vector[] skel_dpos
+			vector[] skel_ang
+
+			# vertex animation
+			vector[4][] dpos
+			vector[] vertex_dpos
+			void __assign__(Frame other)
+		
+		int type
+		Frame[] frame
+		float frames_per_sec_const, frames_per_sec_factor
+		string name
+
+	class Edge extends MultiView.SingleData
+		#int NormalMode;
+		int[2] vertex
+		int ref_count
+		int[2] triangle, side
+		bool is_round # for editing
+		float weight # for easify'ing
+
+		# constraints:
+		#  Vertex[0] = surf.Triangle[Triangle[0]].Vertex[Side[0]]
+		#  Vertex[1] = surf.Triangle[Triangle[0]].Vertex[(Side[0] + 1) % 3]
+		#  same for Triangle/Side[1] but Vertex[0 <-> 1]
+
+
+	class __Surface extends MultiView.SingleData
+		Geometry.Polygon[] polygon
+		Edge[] edge
+		int[] vertex
+		bool is_physical, is_visible
+		bool is_closed
+
+		void *model
+		void __init__()
+
+	class MetaData
+		# level of detail
+		float[3] detail_dist
+		int[3] detail_factor
+		bool auto_generate_dists
+		bool[3] auto_generate_skin
+
+		# physics
+		float mass
+		bool active_physics, passive_physics
+		bool auto_generate_tensor
+		matrix3 inertia_tensor
+
+		# object-properties
+		string name, description
+		Path[] inventary
+
+		# script
+		Path script_file
+		float[] script_var
+		void __assign__(MetaData other)
+
+	class Selection
+		int[] vertex, polygon, edge
+
+	class Mesh
+		Geometry.Vertex[] vertex
+		Geometry.Polygon[] polygon
+		Edge[] edge
 	
-	# geometry (physical)
-	ModelBall[] ball
-
-class DataModel extends Data
+		# geometry (physical)
+		Ball[] ball
 	
 	# properties
-	ModelBone[] bone
+	Bone[] bone
 
 
 	# properties
-	ModelMove[] move
+	Model.Move[] move
 
 #	int CurrentMove,CurrentFrame
 
@@ -306,24 +292,24 @@ class DataModel extends Data
 #	float TimeScale,TimeParam,SimFrame
 
 	# geometry
-	ModelMesh* mesh
-	ModelMesh* phys_mesh
+	Mesh* mesh
+	Mesh* phys_mesh
 #	MultiViewSingleData SkinVertex[] # only temporary...
 #	int SkinVertMat, SkinVertTL
 
 	# old geometry
-	ModelSkin[4] skin
+	Skin[4] skin
 
 	
 	#ModelPolyhedron Poly[]
 
 	# general properties
-	ModelMaterial[] material
+	Material[] material
 
 	# effects
-	ModelEffect[] fx
+	Effect[] fx
 
-	ModelMetaData meta_data
+	MetaData meta_data
 	
 	extern void clear_selection()
 	extern void selection_from_vertices()
@@ -331,12 +317,12 @@ class DataModel extends Data
 	#extern void SelectOnlySurface(ModelSurface s)
 	
 	extern void add_vertex(vector pos, int bone_index, int normal_mode)
-	extern ModelPolygon *add_triangle(int a, int b, int c, int material)
-	extern ModelPolygon *add_polygon(int[] v, int material)
+	extern Geometry.Polygon *add_triangle(int a, int b, int c, int material)
+	extern Geometry.Polygon *add_polygon(int[] v, int material)
 	extern void delete_polygon(int index)
 	
-	extern void delete_selection(ModelSelection s, bool greedy)
-	extern void invert_polygons(ModelSelection s)
+	extern void delete_selection(Selection s, bool greedy)
+	extern void invert_polygons(Selection s)
 	extern void subtract_selection()
 #	extern void CutOutSelection()
 	extern void convert_selection_to_triangles()
@@ -358,89 +344,112 @@ class DataModel extends Data
 	extern void duplicate_animation(int source, int target)
 	extern void delete_animation(int index)
 	extern void animation_set_data(int index, string name, float fps_const, float fps_factor)
-	extern void animation_add_frame(int index, int frame, ModelFrame f)
+	extern void animation_add_frame(int index, int frame, Move.Frame f)
 	extern void animation_delete_frame(int index, int frame)
 	extern void animation_set_frame_duration(int index, int frame, float duration)
 	extern void animation_set_bone(int move, int frame, int bone, vector dpos, vector ang)
 	
-	void __assign__(DataModel other)
+	void __assign__(Model other)
+
+
+class Geometry
+	class Vertex extends MultiView.SingleData
+		int normal_mode
+		int bone_index
+
+		bool normal_dirty
+		int ref_count # triangles
+		int surface
+
+	class Polygon extends MultiView.SingleData
+		class Side
+			int vertex
+			int edge
+			int edge_direction # which no of triangle in edge's list are we?
+			vector[Model.MAX_TEXTURES] skin_vertex
+			int normal_index
+			vector normal
+			char[3] triangulation
+		Side[] side
+		vector temp_normal
+		bool normal_dirty, triangulation_dirty
+		int material
+		void __init__()
+		
+	Vertex[] vertex
+	Polygon[] polygon
+	Model.Edge[] edge
+	bool is_closed
+	
+	extern static int subtract(Geometry a, Geometry b, Geometry out)
+	extern static int and(Geometry a, Geometry b, Geometry out)
+
+	class Ball extends Geometry
+		extern void __init__(vector pos, float radius, int num_x, int num_y)
+
+	class Cube extends Geometry
+		extern void __init__(vector pos, vector dv1, vector dv2, vector dv3, int num_1, int num_2, int num_3)
+
+	class Cylinder extends Geometry
+		extern void __init__(vector pos1, vector pos2, float radius, int rings, int edges, int end_mode)
+
+	class CylinderComplex extends Geometry
+		extern void __init__(vector[] pos, float[] radius, int rings, int edges, int end_mode)
+
+	enum
+		END_OPEN
+		END_FLAT
+		END_ROUND
+		END_LOOP
+
+	class Sphere extends Geometry
+		extern void __init__(vector pos, float radius, int num)
+
+	class Torus extends Geometry
+		extern void __init__(vector pos, vector axis, float radius1, float radius2, int num_x, int num_y)
+
+	class TorusKnot extends Geometry
+		extern void __init__(vector pos, vector axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges)
+
+	class Plane extends Geometry
+		extern void __init__(vector pos, vector dv1, vector dv2, int num_x, int num_y)
+
+	class Platonic extends Geometry
+		extern void __init__(vector pos, float radius, int samples)
 
 
 
 
-
-class WorldTerrain extends MultiViewSingleData
-	Path filename
-	#WorldTerrainVertex Vertex[]
-	int vertex_buffer_single
-	int show_texture
-	bool changed
-	Terrain *terrain
-	void __init__()
+class World extends Data
 
 
-class WorldObject extends MultiViewSingleData
-	string filename
-	string name
-	Model *object
-	vector ang
-	void __init__()
+	class Terrain extends MultiView.SingleData
+		Path filename
+		#WorldTerrainVertex Vertex[]
+		int vertex_buffer_single
+		int show_texture
+		bool changed
+		x.Terrain* terrain
+		void __init__()
 
 
+	class Object extends MultiView.SingleData
+		string filename
+		string name
+		x.Model* object
+		vector ang
+		void __init__()
 
-class DataWorld extends Data
-	WorldObject[] objects
-	WorldTerrain[] terrains
+
+	Object[] objects
+	Terrain[] terrains
 	int ego_index
 
 	# actions
-	extern WorldObject *add_object(Path filename, vector pos)
-	extern WorldTerrain *add_terrain(Path filename, vector pos)
-	extern WorldTerrain *add_new_terrain(vector pos, vector size, int num_x, int num_z)
+	extern Object *add_object(Path filename, vector pos)
+	extern Terrain *add_terrain(Path filename, vector pos)
+	extern Terrain *add_new_terrain(vector pos, vector size, int num_x, int num_z)
 
-enum
-	ACTION_SELECT
-	ACTION_MOVE
-	ACTION_ROTATE
-	ACTION_ROTATE_2D
-	ACTION_SCALE
-	ACTION_SCALE_2D
-	ACTION_MIRROR
-	ACTION_ONCE
-
-enum
-	ACTION_CONSTRAINTS_NONE
-	ACTION_CONSTRAINTS_X
-	ACTION_CONSTRAINTS_Y
-	ACTION_CONSTRAINTS_Z
-	ACTION_CONSTRAINTS_XY
-	ACTION_CONSTRAINTS_XZ
-	ACTION_CONSTRAINTS_YZ
-
-class ActionController
-	extern void start_action(MultiViewWindow* win, vector m, int constraints)
-	extern void update_action()
-	extern void update_param(vector param)
-	extern void end_action(bool set)
-	vector pos
-
-class MultiViewWindow
-	quaternion local_ang
-
-class MultiViewCamera
-	vector pos
-	quaternion ang
-
-class MultiView
-	#extern void on_mouse_move()
-	#extern void set_mouse_action(string name, int type, bool locked) #"ActionModelAnimationTransformBones", mouse_action, false);
-	ActionController* action_con
-	MultiViewWindow* mouse_win
-	MultiViewWindow* active_win
-	MultiViewCamera cam
-	extern void cam_move(vector dpos)
-	extern void cam_rotate(quaternion dq, bool cam_center)
-	extern void cam_zoom(float factor, bool mouse_rel)
 
 class Mode
 	string name
@@ -499,11 +508,8 @@ class ShaderNode extends Object
 	extern virtual const string[] dependencies()
 	extern virtual const string code_pixel(out ShaderBuilderContext ctx)
 
-extern DataModel* data_model
-extern DataWorld* data_world
+extern Model* model
+extern World* world
 extern Window* edward
 extern Edward* ed
-
-extern int GeometrySubtract(Geometry a, Geometry b, Geometry out)
-extern int GeometryAnd(Geometry a, Geometry b, Geometry out)
 
