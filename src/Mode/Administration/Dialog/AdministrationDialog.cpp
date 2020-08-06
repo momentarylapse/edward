@@ -252,7 +252,7 @@ void AdministrationDialog::OnEdit()
 			break;
 		case FD_TERRAIN:
 			mode_world->data->reset();
-			if (mode_world->data->AddTerrain(a->Name.no_ext(), v_0)){
+			if (mode_world->data->add_terrain(a->Name.no_ext(), v_0)){
 				ed->set_mode(mode_world);
 			}
 			break;

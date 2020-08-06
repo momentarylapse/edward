@@ -53,7 +53,7 @@ void ModeWorldCreateTerrain::onOk()
 	vector pos = multi_view->cam.pos - size / 2;
 	int num_x = dialog->get_int("num_x");
 	int num_z = dialog->get_int("num_z");
-	data->AddNewTerrain(pos, size, num_x, num_z);
+	data->add_new_terrain(pos, size, num_x, num_z);
 	abort();
 }
 

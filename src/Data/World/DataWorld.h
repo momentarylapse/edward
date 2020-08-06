@@ -46,15 +46,15 @@ public:
 	void reset() override;
 
 
-	void GetBoundaryBox(vector &min, vector &max);
-	int GetSelectedObjects();
-	int GetSelectedTerrains();
+	void get_bounding_box(vector &min, vector &max);
+	int get_selected_objects();
+	int get_selected_terrains();
 	int get_selected_cameras();
 	int get_selected_lights();
 
-	void UpdateData();
+	void update_data();
 
-	void ClearSelection();
+	void clear_selection();
 
 	// terrains
 	Array<WorldTerrain> terrains;
@@ -71,40 +71,42 @@ public:
 	struct MetaData {
 
 		// physics
-		bool PhysicsEnabled;
-		vector Gravity;
+		bool physics_enabled;
+		vector gravity;
 
 		// background
-		color BackGroundColor;
-		Array<Path> SkyBoxFile;
+		color background_color;
+		Array<Path> skybox_files;
 
 		// fog
-		bool FogEnabled;
-		int FogMode;
-		float FogStart;
-		float FogEnd;
-		float FogDensity;
-		color FogColor;
+		struct Fog {
+			bool enabled;
+			int mode;
+			float start;
+			float end;
+			float density;
+			color col;
+		} fog;
 
 		// scripts
 		Array<WorldScript> scripts;
 
 		// music
-		Array<Path> MusicFile;
+		Array<Path> music_files;
 
-		void Reset();
+		void reset();
 	};
 	MetaData meta_data;
 
 
 
 	// actions
-	WorldObject *AddObject(const Path &filename, const vector &pos);
-	WorldTerrain *AddTerrain(const Path &filename, const vector &pos);
-	WorldTerrain *AddNewTerrain(const vector &pos, const vector &size, int num_x, int num_z);
-	void Copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains); // actually not an action
-	void Paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains);
-	void DeleteSelection();
+	WorldObject *add_object(const Path &filename, const vector &pos);
+	WorldTerrain *add_terrain(const Path &filename, const vector &pos);
+	WorldTerrain *add_new_terrain(const vector &pos, const vector &size, int num_x, int num_z);
+	void copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains); // actually not an action
+	void paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains);
+	void delete_selection();
 };
 
 #endif /* DATAWORLD_H_ */

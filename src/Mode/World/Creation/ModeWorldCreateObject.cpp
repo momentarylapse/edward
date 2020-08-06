@@ -53,7 +53,7 @@ void ModeWorldCreateObject::on_find_object() {
 
 void ModeWorldCreateObject::on_left_button_down() {
 	if (!filename.is_empty()) {
-		data->AddObject(filename, multi_view->get_cursor());
+		data->add_object(filename, multi_view->get_cursor());
 		//Abort();
 	}
 }

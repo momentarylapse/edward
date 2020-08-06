@@ -34,30 +34,28 @@ DataWorld::DataWorld() :
 	reset();
 }
 
-DataWorld::~DataWorld()
-{
+DataWorld::~DataWorld() {
 }
 
 
-void DataWorld::MetaData::Reset()
-{
-	FogEnabled = false;
-	FogMode = FOG_EXP;
-	FogStart = 1;
-	FogEnd = 1000;
-	FogDensity = 0.0001f;
-	FogColor = color(1, 0.8f, 0.8f, 0.8f);
+void DataWorld::MetaData::reset() {
+	fog.enabled = false;
+	fog.mode = FOG_EXP;
+	fog.start = 1;
+	fog.end = 1000;
+	fog.density = 0.0001f;
+	fog.col = color(1, 0.8f, 0.8f, 0.8f);
 
-	SkyBoxFile.clear();
-	SkyBoxFile.resize(32);
+	skybox_files.clear();
+	skybox_files.resize(32);
 
-	BackGroundColor = color(1, 0.2f, 0.4f, 0.6f);
+	background_color = color(1, 0.2f, 0.4f, 0.6f);
 
-	PhysicsEnabled = false;
-	Gravity = vector(0, -981, 0);
+	physics_enabled = false;
+	gravity = vector(0, -981, 0);
 
 	scripts.clear();
-	MusicFile.clear();
+	music_files.clear();
 }
 
 
@@ -92,22 +90,21 @@ void DataWorld::reset() {
 	sun.harshness = 0.75;
 	lights.add(sun);
 
-	meta_data.Reset();
+	meta_data.reset();
 
 	reset_history();
 	notify();
 }
 
 
-void DataWorld::GetBoundaryBox(vector &min, vector &max)
-{
-	bool found_any=false;
+void DataWorld::get_bounding_box(vector &min, vector &max) {
+	bool found_any = false;
 
 	for (WorldObject &o: objects)
-		if (o.object){
+		if (o.object) {
 			vector min2 = o.pos - vector(1,1,1) * o.object->prop.radius;
 			vector max2 = o.pos + vector(1,1,1) * o.object->prop.radius;
-			if (!found_any){
+			if (!found_any) {
 				min = min2;
 				max = max2;
 			}
@@ -116,10 +113,10 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 			found_any = true; //|=(min2!=max2);
 		}
 	for (WorldTerrain &t: terrains)
-		if (t.terrain){
+		if (t.terrain) {
 			vector min2 = t.terrain->min;
 			vector max2 = t.terrain->max;
-			if (!found_any){
+			if (!found_any) {
 				min = min2;
 				max = max2;
 			}
@@ -127,9 +124,9 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 			max._max(max2);
 			found_any = true;
 		}
-	if (!found_any){
-		min=vector(-100,-100,-100);
-		max=vector( 100, 100, 100);
+	if (!found_any) {
+		min = vector(-100,-100,-100);
+		max = vector( 100, 100, 100);
 	}
 }
 
@@ -142,13 +139,13 @@ void DataWorld::GetBoundaryBox(vector &min, vector &max)
 		return n;                             \
 	}
 
-IMPLEMENT_COUNT_SELECTED(GetSelectedObjects, objects)
-IMPLEMENT_COUNT_SELECTED(GetSelectedTerrains, terrains)
+IMPLEMENT_COUNT_SELECTED(get_selected_objects, objects)
+IMPLEMENT_COUNT_SELECTED(get_selected_terrains, terrains)
 IMPLEMENT_COUNT_SELECTED(get_selected_lights, lights)
 IMPLEMENT_COUNT_SELECTED(get_selected_cameras, cameras)
 
 
-void DataWorld::UpdateData() {
+void DataWorld::update_data() {
 	foreachi(auto &o, objects, i){
 		o.update_data();
 		o.is_special = (i == EgoIndex);
@@ -157,7 +154,7 @@ void DataWorld::UpdateData() {
 		t.update_data();
 }
 
-WorldObject* DataWorld::AddObject(const Path &filename, const vector& pos) {
+WorldObject* DataWorld::add_object(const Path &filename, const vector& pos) {
 	WorldObject o;
 	o.pos = pos;
 	o.ang = v_0;//quaternion::ID;
@@ -168,14 +165,14 @@ WorldObject* DataWorld::AddObject(const Path &filename, const vector& pos) {
 	return (WorldObject*)execute(new ActionWorldAddObject(o));
 }
 
-WorldTerrain* DataWorld::AddTerrain(const Path &filename, const vector& pos)
+WorldTerrain* DataWorld::add_terrain(const Path &filename, const vector& pos)
 {	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, filename));	}
 
-WorldTerrain* DataWorld::AddNewTerrain(const vector& pos, const vector& size, int num_x, int num_z)
+WorldTerrain* DataWorld::add_new_terrain(const vector& pos, const vector& size, int num_x, int num_z)
 {	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));	}
 
 
-void DataWorld::ClearSelection() {
+void DataWorld::clear_selection() {
 	for (WorldObject &o: objects)
 		o.is_selected = false;
 	for (WorldTerrain &t: terrains)
@@ -183,7 +180,7 @@ void DataWorld::ClearSelection() {
 }
 
 
-void DataWorld::Copy(Array<WorldObject> &_objects, Array<WorldTerrain> &_terrains) {
+void DataWorld::copy(Array<WorldObject> &_objects, Array<WorldTerrain> &_terrains) {
 	_objects.clear();
 	_terrains.clear();
 
@@ -195,8 +192,8 @@ void DataWorld::Copy(Array<WorldObject> &_objects, Array<WorldTerrain> &_terrain
 			_terrains.add(t);
 }
 
-void DataWorld::Paste(Array<WorldObject> &o, Array<WorldTerrain> &t)
+void DataWorld::paste(Array<WorldObject> &o, Array<WorldTerrain> &t)
 {	execute(new ActionWorldPaste(o, t));	}
 
-void DataWorld::DeleteSelection()
+void DataWorld::delete_selection()
 {	execute(new ActionWorldDeleteSelection());	}

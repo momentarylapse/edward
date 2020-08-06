@@ -21,7 +21,7 @@ ActionWorldPaste::ActionWorldPaste(Array<WorldObject> &_objects, Array<WorldTerr
 
 void *ActionWorldPaste::compose(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	w->ClearSelection();
+	w->clear_selection();
 
 	for (WorldObject &o: objects)
 		addSubAction(new ActionWorldAddObject(o), w);

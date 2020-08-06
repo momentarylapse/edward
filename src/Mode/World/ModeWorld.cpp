@@ -355,7 +355,7 @@ public:
 
 ModeWorld::ModeWorld() :
 	Mode<DataWorld>("World", NULL, new DataWorld, ed->multi_view_3d, "menu_world") {
-	data->subscribe(this, [=]{ data->UpdateData(); });
+	data->subscribe(this, [=]{ data->update_data(); });
 
 	world_dialog = nullptr;
 	dialog = nullptr;
@@ -406,7 +406,7 @@ void ModeWorld::on_command(const string & id) {
 	if (id == "paste")
 		paste();
 	if (id == "delete")
-		data->DeleteSelection();
+		data->delete_selection();
 
 	if (id == "import_world_properties")
 		import_world_properties();
@@ -603,8 +603,8 @@ void ModeWorld::_new() {
 void ModeWorld::on_draw() {
 	cur_cam->pos = multi_view->cam.pos;
 
-	int num_ob = data->GetSelectedObjects();
-	int num_te = data->GetSelectedTerrains();
+	int num_ob = data->get_selected_objects();
+	int num_te = data->get_selected_terrains();
 	int num_cam = data->get_selected_cameras();
 	int num_li = data->get_selected_lights();
 	if (num_ob + num_te + num_cam + num_li > 0) {
@@ -677,8 +677,8 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
 
 void apply_lighting(DataWorld *w) {
 	auto &m = w->meta_data;
-	nix::SetFog(m.FogMode, m.FogStart, m.FogEnd, m.FogDensity, m.FogColor);
-	nix::EnableFog(m.FogEnabled);
+	nix::SetFog(m.fog.mode, m.fog.start, m.fog.end, m.fog.density, m.fog.col);
+	nix::EnableFog(m.fog.enabled);
 	for (auto &ll: w->lights)
 		if (ll.type == LightType::DIRECTIONAL) {
 			ed->multi_view_3d->set_light(ll.ang.ang2dir(), ll.col, ll.harshness);
@@ -686,7 +686,7 @@ void apply_lighting(DataWorld *w) {
 }
 
 void draw_background(DataWorld *w) {
-	nix::ResetToColor(w->meta_data.BackGroundColor);
+	nix::ResetToColor(w->meta_data.background_color);
 	/*NixSetZ(false,false);
 	NixSetWire(false);
 	NixSetColor(BackGroundColor);
@@ -834,7 +834,7 @@ void ModeWorld::on_start() {
 
 	set_mouse_action(MultiView::ACTION_MOVE);
 
-	data->UpdateData();
+	data->update_data();
 }
 
 void ModeWorld::on_enter() {
@@ -904,8 +904,8 @@ void ModeWorld::ExecuteWorldPropertiesDialog() {
 
 
 void ModeWorld::ExecutePropertiesDialog() {
-	int num_o = data->GetSelectedObjects();
-	int num_t = data->GetSelectedTerrains();
+	int num_o = data->get_selected_objects();
+	int num_t = data->get_selected_terrains();
 
 	if (num_o + num_t == 0) {
 		// nothing selected -> world
@@ -939,7 +939,7 @@ void ModeWorld::ExecuteLightmapDialog() {
 bool ModeWorld::optimize_view() {
 	multi_view->reset_view();
 	vector min, max;
-	data->GetBoundaryBox(min, max);
+	data->get_bounding_box(min, max);
 	multi_view->set_view_box(min, max);
 
 	//ShowEffects = false;
@@ -950,11 +950,11 @@ bool ModeWorld::optimize_view() {
 
 void ModeWorld::load_terrain() {
 	if (storage->file_dialog(FD_TERRAIN, false, true))
-		data->AddTerrain(storage->dialog_file_no_ending, multi_view->cam.pos);
+		data->add_terrain(storage->dialog_file_no_ending, multi_view->cam.pos);
 }
 
 void ModeWorld::set_ego() {
-	if (data->GetSelectedObjects() != 1) {
+	if (data->get_selected_objects() != 1) {
 		ed->set_message(_("Please select exactly one object!"));
 		return;
 	}
@@ -981,7 +981,7 @@ void ModeWorld::import_world_properties() {
 }
 
 void ModeWorld::apply_heightmap() {
-	if (data->GetSelectedTerrains() == 0) {
+	if (data->get_selected_terrains() == 0) {
 		ed->set_message(_("No terrain selected!"));
 		return;
 	}
@@ -997,19 +997,19 @@ void ModeWorld::apply_heightmap() {
 
 
 void ModeWorld::copy() {
-	data->Copy(temp_objects, temp_terrains);
+	data->copy(temp_objects, temp_terrains);
 
 	on_update_menu();
 	ed->set_message(format(_("copied %d objects, %d terrains"), temp_objects.num, temp_terrains.num));
 }
 
 void ModeWorld::paste() {
-	data->Paste(temp_objects, temp_terrains);
+	data->paste(temp_objects, temp_terrains);
 	ed->set_message(format(_("added %d objects, %d terrains"), temp_objects.num, temp_terrains.num));
 }
 
 bool ModeWorld::copyable() {
-	return (data->GetSelectedObjects() + data->GetSelectedTerrains()) > 0;
+	return (data->get_selected_objects() + data->get_selected_terrains()) > 0;
 }
 
 bool ModeWorld::pasteable() {

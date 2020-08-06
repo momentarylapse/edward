@@ -77,7 +77,7 @@ void WorldPropertiesDialog::on_skybox_right_click() {
 void WorldPropertiesDialog::on_skybox_select() {
 	int n = get_int("skybox");
 	if (storage->file_dialog(FD_MODEL,false,true)) {
-		temp.SkyBoxFile[n] = storage->dialog_file_no_ending;
+		temp.skybox_files[n] = storage->dialog_file_no_ending;
 		fill_skybox_list();
 	}
 }
@@ -111,8 +111,8 @@ void WorldPropertiesDialog::on_physics_enabled() {
 void WorldPropertiesDialog::on_skybox_remove() {
 	int n = get_int("skybox");
 	if (n >= 0)
-		if (!temp.SkyBoxFile[n].is_empty()) {
-			temp.SkyBoxFile[n] = "";
+		if (!temp.skybox_files[n].is_empty()) {
+			temp.skybox_files[n] = "";
 			fill_skybox_list();
 		}
 }
@@ -263,7 +263,7 @@ void WorldPropertiesDialog::on_fog_mode_exp() {
 void WorldPropertiesDialog::fill_skybox_list() {
 	hui::ComboBoxSeparator = ":";
 	reset("skybox");
-	foreachi(auto &sb, temp.SkyBoxFile, i)
+	foreachi(auto &sb, temp.skybox_files, i)
 		add_string("skybox", format("%d:%s", i, sb));
 	hui::ComboBoxSeparator = "\\";
 }
@@ -285,22 +285,22 @@ void WorldPropertiesDialog::fill_script_list() {
 
 
 void WorldPropertiesDialog::apply_data() {
-	temp.PhysicsEnabled = is_checked("physics_enabled");
-	temp.Gravity.x = get_float("gravitation_x");
-	temp.Gravity.y = get_float("gravitation_y");
-	temp.Gravity.z = get_float("gravitation_z");
-	temp.BackGroundColor = get_color("bgc");
-	temp.FogEnabled = !is_checked("fog_mode:none");
+	temp.physics_enabled = is_checked("physics_enabled");
+	temp.gravity.x = get_float("gravitation_x");
+	temp.gravity.y = get_float("gravitation_y");
+	temp.gravity.z = get_float("gravitation_z");
+	temp.background_color = get_color("bgc");
+	temp.fog.enabled = !is_checked("fog_mode:none");
 	if (is_checked("fog_mode:linear"))
-		temp.FogMode = FOG_LINEAR;
+		temp.fog.mode = FOG_LINEAR;
 	else if (is_checked("fog_mode:exp"))
-		temp.FogMode = FOG_EXP;
+		temp.fog.mode = FOG_EXP;
 	else if (is_checked("fog_mode:exp2"))
-		temp.FogMode = FOG_EXP2;
-	temp.FogStart = get_float("fog_start");
-	temp.FogEnd = get_float("fog_end");
-	temp.FogDensity = 1.0f / get_float("fog_distance");
-	temp.FogColor = get_color("fog_color");
+		temp.fog.mode = FOG_EXP2;
+	temp.fog.start = get_float("fog_start");
+	temp.fog.end = get_float("fog_end");
+	temp.fog.density = 1.0f / get_float("fog_distance");
+	temp.fog.col = get_color("fog_color");
 
 	data->execute(new ActionWorldEditData(temp));
 }
@@ -327,34 +327,34 @@ void WorldPropertiesDialog::restart() {
 
 void WorldPropertiesDialog::load_data() {
 	set_decimals(WorldFogDec);
-	set_color("bgc", temp.BackGroundColor);
-	if (temp.FogEnabled) {
-		if (temp.FogMode == FOG_LINEAR)
+	set_color("bgc", temp.background_color);
+	if (temp.fog.enabled) {
+		if (temp.fog.mode == FOG_LINEAR)
 			check("fog_mode:linear", true);
-		else if (temp.FogMode == FOG_EXP)
+		else if (temp.fog.mode == FOG_EXP)
 			check("fog_mode:exp", true);
-		else if (temp.FogMode == FOG_EXP2)
+		else if (temp.fog.mode == FOG_EXP2)
 			check("fog_mode:exp2", true);
 	} else {
 		check("fog_mode:none", true);
 	}
-	set_float("fog_start", temp.FogStart);
-	set_float("fog_end", temp.FogEnd);
-	set_float("fog_distance", 1.0f / temp.FogDensity);
-	set_color("fog_color", temp.FogColor);
-	enable("fog_start", temp.FogEnabled and (temp.FogMode == FOG_LINEAR));
-	enable("fog_end", temp.FogEnabled and (temp.FogMode == FOG_LINEAR));
-	enable("fog_distance", temp.FogEnabled and ((temp.FogMode == FOG_EXP) or (temp.FogMode == FOG_EXP2)));
-	enable("fog_color", temp.FogEnabled);
+	set_float("fog_start", temp.fog.start);
+	set_float("fog_end", temp.fog.end);
+	set_float("fog_distance", 1.0f / temp.fog.density);
+	set_color("fog_color", temp.fog.col);
+	enable("fog_start", temp.fog.enabled and (temp.fog.mode == FOG_LINEAR));
+	enable("fog_end", temp.fog.enabled and (temp.fog.mode == FOG_LINEAR));
+	enable("fog_distance", temp.fog.enabled and ((temp.fog.mode == FOG_EXP) or (temp.fog.mode == FOG_EXP2)));
+	enable("fog_color", temp.fog.enabled);
 
 	set_decimals(WorldPhysicsDec);
-	check("physics_enabled", temp.PhysicsEnabled);
-	enable("gravitation_x", temp.PhysicsEnabled);
-	enable("gravitation_y", temp.PhysicsEnabled);
-	enable("gravitation_z", temp.PhysicsEnabled);
-	set_float("gravitation_x", temp.Gravity.x);
-	set_float("gravitation_y", temp.Gravity.y);
-	set_float("gravitation_z", temp.Gravity.z);
+	check("physics_enabled", temp.physics_enabled);
+	enable("gravitation_x", temp.physics_enabled);
+	enable("gravitation_y", temp.physics_enabled);
+	enable("gravitation_z", temp.physics_enabled);
+	set_float("gravitation_x", temp.gravity.x);
+	set_float("gravitation_y", temp.gravity.y);
+	set_float("gravitation_z", temp.gravity.z);
 
 	fill_skybox_list();
 	fill_script_list();

@@ -253,9 +253,9 @@ void PluginManager::link_plugins() {
 	Kaba::declare_class_element("World.terrains", &DataWorld::terrains);
 	Kaba::declare_class_element("World.objects", &DataWorld::objects);
 	Kaba::declare_class_element("World.ego_index", &DataWorld::EgoIndex);
-	Kaba::link_external_class_func("World.add_object", &DataWorld::AddObject);
-	Kaba::link_external_class_func("World.add_terrain", &DataWorld::AddTerrain);
-	Kaba::link_external_class_func("World.add_new_terrain", &DataWorld::AddNewTerrain);
+	Kaba::link_external_class_func("World.add_object", &DataWorld::add_object);
+	Kaba::link_external_class_func("World.add_terrain", &DataWorld::add_terrain);
+	Kaba::link_external_class_func("World.add_new_terrain", &DataWorld::add_new_terrain);
 
 
 	ShaderNode node("");

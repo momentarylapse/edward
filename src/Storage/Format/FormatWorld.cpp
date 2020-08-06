@@ -89,6 +89,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	data->cameras.clear();
 	data->lights.clear();
+	data->meta_data.skybox_files.clear();
 
 	xml::Parser p;
 	p.load(filename);
@@ -96,19 +97,21 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	if (meta) {
 		for (auto &e: meta->elements) {
 			if (e.tag == "background") {
-				data->meta_data.BackGroundColor = s2c(e.value("color", "0 0 0"));
-			} else if (e.tag == "skybox") {
-				data->meta_data.SkyBoxFile.add(e.value("file"));
+				data->meta_data.background_color = s2c(e.value("color", "0 0 0"));
+				for (auto &ee: e.elements) {
+					if (ee.tag == "skybox")
+						data->meta_data.skybox_files.add(ee.value("file"));
+				}
 			} else if (e.tag == "physics") {
-				data->meta_data.PhysicsEnabled = e.value("enabled", "true")._bool();
-				data->meta_data.Gravity = s2v(e.value("gravity", "0 0 0"));
+				data->meta_data.physics_enabled = e.value("enabled", "true")._bool();
+				data->meta_data.gravity = s2v(e.value("gravity", "0 0 0"));
 			} else if (e.tag == "fog") {
-				data->meta_data.FogEnabled = e.value("enabled", "false")._bool();
-				data->meta_data.FogMode = e.value("mode", "0")._int();
-				data->meta_data.FogStart = e.value("start", "0")._float();
-				data->meta_data.FogEnd = e.value("end", "10000")._float();
-				data->meta_data.FogDensity = e.value("density", "0")._float();
-				data->meta_data.FogColor = s2c(e.value("color", "0 0 0"));
+				data->meta_data.fog.enabled = e.value("enabled", "false")._bool();
+				data->meta_data.fog.mode = e.value("mode", "0")._int();
+				data->meta_data.fog.start = e.value("start", "0")._float();
+				data->meta_data.fog.end = e.value("end", "10000")._float();
+				data->meta_data.fog.density = e.value("density", "0")._float();
+				data->meta_data.fog.col = s2c(e.value("color", "0 0 0"));
 			} else if (e.tag == "script") {
 				WorldScript s;
 				s.filename = e.value("file");
@@ -122,6 +125,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 			}
 		}
 	}
+	data->meta_data.skybox_files.resize(32);
 
 
 	auto *cont = p.elements[0].find("3d");
@@ -206,9 +210,9 @@ void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 		}
 		// Gravitation
 		f->read_comment();
-		data->meta_data.Gravity.x = f->read_float();
-		data->meta_data.Gravity.y = f->read_float();
-		data->meta_data.Gravity.z = f->read_float();
+		data->meta_data.gravity.x = f->read_float();
+		data->meta_data.gravity.y = f->read_float();
+		data->meta_data.gravity.z = f->read_float();
 		// EgoIndex
 		f->read_comment();
 		data->EgoIndex = f->read_int();
@@ -216,29 +220,29 @@ void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 		f->read_comment();
 		if (ffv == 9)
 			f->read_bool(); // BackGroundColorEnabled
-		read_color_argb(f, data->meta_data.BackGroundColor);
+		read_color_argb(f, data->meta_data.background_color);
 		if (ffv==9){
-			data->meta_data.SkyBoxFile[0] = f->read_str();
+			data->meta_data.skybox_files[0] = f->read_str();
 		}else{
 			int ns=f->read_int();
-			if (ns > data->meta_data.SkyBoxFile.num)
-				data->meta_data.SkyBoxFile.resize(ns);
+			if (ns > data->meta_data.skybox_files.num)
+				data->meta_data.skybox_files.resize(ns);
 			for (int i=0;i<ns;i++)
-				data->meta_data.SkyBoxFile[i] = f->read_str();
+				data->meta_data.skybox_files[i] = f->read_str();
 		}
 		// Fog
 		f->read_comment();
-		data->meta_data.FogEnabled = f->read_bool();
-		data->meta_data.FogMode = f->read_word();
-		data->meta_data.FogStart = f->read_float();
-		data->meta_data.FogEnd = f->read_float();
-		data->meta_data.FogDensity = f->read_float();
-		read_color_argb(f, data->meta_data.FogColor);
+		data->meta_data.fog.enabled = f->read_bool();
+		data->meta_data.fog.mode = f->read_word();
+		data->meta_data.fog.start = f->read_float();
+		data->meta_data.fog.end = f->read_float();
+		data->meta_data.fog.density = f->read_float();
+		read_color_argb(f, data->meta_data.fog.col);
 		// Music
 		f->read_comment();
 		n = f->read_int();
 		for (int i=0;i<n;i++)
-			data->meta_data.MusicFile.add(f->read_str());
+			data->meta_data.music_files.add(f->read_str());
 		// Objects
 		f->read_comment();
 		n = f->read_int();
@@ -293,7 +297,7 @@ void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 			data->lights[0].col = (am + am2) * 2 + di;
 			data->lights[0].harshness = di.r / data->lights[0].col.r;
 			if (f->read_str() != "#"){
-				data->meta_data.PhysicsEnabled = f->read_bool();
+				data->meta_data.physics_enabled = f->read_bool();
 			}
 		}
 
@@ -319,24 +323,24 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 	{
 	auto meta = xml::Element("meta");
 	auto bg = xml::Element("background")
-		.witha("color", c2s(data->meta_data.BackGroundColor));
-	for (auto &sb: data->meta_data.SkyBoxFile)
+		.witha("color", c2s(data->meta_data.background_color));
+	for (auto &sb: data->meta_data.skybox_files)
 		if (!sb.is_empty())
 			bg.add(xml::Element("skybox").witha("file", sb.str()));
 	meta.add(bg);
 
 	auto phys = xml::Element("physics")
-	.witha("enabled", b2s(data->meta_data.PhysicsEnabled))
-	.witha("gravity", v2s(data->meta_data.Gravity));
+	.witha("enabled", b2s(data->meta_data.physics_enabled))
+	.witha("gravity", v2s(data->meta_data.gravity));
 	meta.add(phys);
 
 	auto f = xml::Element("fog")
-	.witha("enabled", b2s(data->meta_data.FogEnabled))
-	.witha("mode", i2s(data->meta_data.FogMode))
-	.witha("start", f2s(data->meta_data.FogStart, 3))
-	.witha("end", f2s(data->meta_data.FogEnd, 3))
-	.witha("density", f2s(data->meta_data.FogDensity, 6))
-	.witha("color", c2s(data->meta_data.FogColor));
+	.witha("enabled", b2s(data->meta_data.fog.enabled))
+	.witha("mode", i2s(data->meta_data.fog.mode))
+	.witha("start", f2s(data->meta_data.fog.start, 3))
+	.witha("end", f2s(data->meta_data.fog.end, 3))
+	.witha("density", f2s(data->meta_data.fog.density, 6))
+	.witha("color", c2s(data->meta_data.fog.col));
 	meta.add(f);
 
 	for (auto &s: data->meta_data.scripts) {
