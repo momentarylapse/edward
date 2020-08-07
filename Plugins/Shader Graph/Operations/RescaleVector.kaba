@@ -1,13 +1,13 @@
 use edward
 
-class NodeRescaleVector extends ShaderNode
+class NodeRescaleVector extends shader.Node
 	void __init__()
 		super.__init__("RescaleVector")
-		params.add([SHADER_TYPE_VEC3, "in", "vec3(0,0,0)", ""])
-		params.add([SHADER_TYPE_FLOAT, "scale", "1.0", "range=-2:2"])
-		params.add([SHADER_TYPE_FLOAT, "offset", "0.0", "range=-2:2"])
-		output.add([SHADER_TYPE_VEC3, "out"])
-	override const string code_pixel(out ShaderBuilderContext c)
+		params.add([shader.TYPE_VEC3, "in", "vec3(0,0,0)", ""])
+		params.add([shader.TYPE_FLOAT, "scale", "1.0", "range=-2:2"])
+		params.add([shader.TYPE_FLOAT, "offset", "0.0", "range=-2:2"])
+		output.add([shader.TYPE_VEC3, "out"])
+	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	vec3 {{t}} = {{c.value(self, 0)}} * {{c.value(self, 1)}} + vec3(1,1,1) * {{c.value(self, 2)}};"

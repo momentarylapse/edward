@@ -68,7 +68,7 @@ ShaderNode *create_node(const string &type, int x, int y) {
 		for (auto &p: ed->plugins->plugins)
 			if (p.type == PluginManager::PluginType::SHADER_NODE)
 				if (p.name == type) {
-					auto n = (ShaderNode*)p.create_instance("ShaderNode");
+					auto n = (ShaderNode*)p.create_instance("shader.Node");
 					n->x = x;
 					n->y = y;
 					return n;

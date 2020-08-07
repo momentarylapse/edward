@@ -1,13 +1,13 @@
 use edward
 
-class NodePosition extends ShaderNode
+class NodePosition extends shader.Node
 	void __init__()
 		super.__init__("Position")
-		params.add([SHADER_TYPE_INT, "space", "0", "choice=model|world|camera|window"])
-		output.add([SHADER_TYPE_VEC3, "pos"])
+		params.add([shader.TYPE_INT, "space", "0", "choice=model|world|camera|window"])
+		output.add([shader.TYPE_VEC3, "pos"])
 	override const string[] dependencies()
 		return ["pos", "matproject", "matview", "matworld"]
-	override const string code_pixel(out ShaderBuilderContext c)
+	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		if params[0].value == "1" # world
 			return "

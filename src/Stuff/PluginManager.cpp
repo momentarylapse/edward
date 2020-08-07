@@ -259,31 +259,31 @@ void PluginManager::link_plugins() {
 
 
 	ShaderNode node("");
-	Kaba::declare_class_size("ShaderNode", sizeof(ShaderNode));
-	Kaba::declare_class_element("ShaderNode.x", &ShaderNode::x);
-	Kaba::declare_class_element("ShaderNode.y", &ShaderNode::y);
-	Kaba::declare_class_element("ShaderNode.type", &ShaderNode::type);
-	Kaba::declare_class_element("ShaderNode.output", &ShaderNode::output);
-	Kaba::declare_class_element("ShaderNode.params", &ShaderNode::params);
-	Kaba::link_external_class_func("ShaderNode.__init__", &ShaderNode::__init__);
-	Kaba::link_external_virtual("ShaderNode.__delete__", &ShaderNode::__delete__, &node);
-	Kaba::link_external_virtual("ShaderNode.code_pixel", &ShaderNode::code_pixel, &node);
-	Kaba::link_external_virtual("ShaderNode.dependencies", &ShaderNode::dependencies, &node);
-	Kaba::declare_class_size("ShaderNode.Parameter", sizeof(ShaderNode::Parameter));
-	Kaba::declare_class_element("ShaderNode.Parameter.type", &ShaderNode::Parameter::type);
-	Kaba::declare_class_element("ShaderNode.Parameter.name", &ShaderNode::Parameter::name);
-	Kaba::declare_class_element("ShaderNode.Parameter.value", &ShaderNode::Parameter::value);
-	Kaba::declare_class_element("ShaderNode.Parameter.options", &ShaderNode::Parameter::options);
-	Kaba::declare_class_size("ShaderNode.Port", sizeof(ShaderNode::Port));
-	Kaba::declare_class_element("ShaderNode.Port.type", &ShaderNode::Port::type);
-	Kaba::declare_class_element("ShaderNode.Port.name", &ShaderNode::Port::name);
+	Kaba::declare_class_size("shader.Node", sizeof(ShaderNode));
+	Kaba::declare_class_element("shader.Node.x", &ShaderNode::x);
+	Kaba::declare_class_element("shader.Node.y", &ShaderNode::y);
+	Kaba::declare_class_element("shader.Node.type", &ShaderNode::type);
+	Kaba::declare_class_element("shader.Node.output", &ShaderNode::output);
+	Kaba::declare_class_element("shader.Node.params", &ShaderNode::params);
+	Kaba::link_external_class_func("shader.Node.__init__", &ShaderNode::__init__);
+	Kaba::link_external_virtual("shader.Node.__delete__", &ShaderNode::__delete__, &node);
+	Kaba::link_external_virtual("shader.Node.code_pixel", &ShaderNode::code_pixel, &node);
+	Kaba::link_external_virtual("shader.Node.dependencies", &ShaderNode::dependencies, &node);
+	Kaba::declare_class_size("shader.Node.Parameter", sizeof(ShaderNode::Parameter));
+	Kaba::declare_class_element("shader.Node.Parameter.type", &ShaderNode::Parameter::type);
+	Kaba::declare_class_element("shader.Node.Parameter.name", &ShaderNode::Parameter::name);
+	Kaba::declare_class_element("shader.Node.Parameter.value", &ShaderNode::Parameter::value);
+	Kaba::declare_class_element("shader.Node.Parameter.options", &ShaderNode::Parameter::options);
+	Kaba::declare_class_size("shader.Node.Port", sizeof(ShaderNode::Port));
+	Kaba::declare_class_element("shader.Node.Port.type", &ShaderNode::Port::type);
+	Kaba::declare_class_element("shader.Node.Port.name", &ShaderNode::Port::name);
 
-	Kaba::declare_class_size("ShaderBuilderContext", sizeof(ShaderBuilderContext));
-	Kaba::link_external_class_func("ShaderBuilderContext.build_value", &ShaderBuilderContext::build_value);
-	Kaba::link_external_class_func("ShaderBuilderContext.build_const", &ShaderBuilderContext::build_const);
-	Kaba::link_external_class_func("ShaderBuilderContext.find_temp", &ShaderBuilderContext::find_temp);
-	Kaba::link_external_class_func("ShaderBuilderContext.create_temp", &ShaderBuilderContext::create_temp);
-	Kaba::link_external_class_func("ShaderBuilderContext.create_out", &ShaderBuilderContext::create_out);
+	Kaba::declare_class_size("shader.BuilderContext", sizeof(ShaderBuilderContext));
+	Kaba::link_external_class_func("shader.BuilderContext.build_value", &ShaderBuilderContext::build_value);
+	Kaba::link_external_class_func("shader.BuilderContext.build_const", &ShaderBuilderContext::build_const);
+	Kaba::link_external_class_func("shader.BuilderContext.find_temp", &ShaderBuilderContext::find_temp);
+	Kaba::link_external_class_func("shader.BuilderContext.create_temp", &ShaderBuilderContext::create_temp);
+	Kaba::link_external_class_func("shader.BuilderContext.create_out", &ShaderBuilderContext::create_out);
 }
 
 void PluginManager::find_plugins() {

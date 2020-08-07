@@ -1,12 +1,12 @@
 use edward
 
-class NodePower extends ShaderNode
+class NodePower extends shader.Node
 	void __init__()
 		super.__init__("Power")
-		params.add([SHADER_TYPE_FLOAT, "base", "2.0", "range=0:8"])
-		params.add([SHADER_TYPE_FLOAT, "exponent", "2.0", "range=0:8"])
-		output.add([SHADER_TYPE_FLOAT, "out"])
-	override const string code_pixel(out ShaderBuilderContext c)
+		params.add([shader.TYPE_FLOAT, "base", "2.0", "range=0:8"])
+		params.add([shader.TYPE_FLOAT, "exponent", "2.0", "range=0:8"])
+		output.add([shader.TYPE_FLOAT, "out"])
+	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	float {{t}} = pow({{c.value(self, 0)}}, {{c.value(self, 1)}});"

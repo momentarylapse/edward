@@ -1,11 +1,11 @@
 use edward
 
-class NodeColor extends ShaderNode
+class NodeColor extends shader.Node
 	void __init__()
 		super.__init__("Color")
-		params.add([SHADER_TYPE_COLOR, "color", "#ffffffff", ""])
-		output.add([SHADER_TYPE_COLOR, "value"])
-	override const string code_pixel(out ShaderBuilderContext c)
+		params.add([shader.TYPE_COLOR, "color", "#ffffffff", ""])
+		output.add([shader.TYPE_COLOR, "value"])
+	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = {{c.value(self, 0)}};"

@@ -1,12 +1,12 @@
 use edward
 
-class NodeReflection extends ShaderNode
+class NodeReflection extends shader.Node
 	void __init__()
 		super.__init__("Reflection")
-		output.add([SHADER_TYPE_COLOR, "color"])
+		output.add([shader.TYPE_COLOR, "color"])
 	override const string[] dependencies()
 		return ["cubemap", "normal", "pos", "matview", "matworld"]
-	override const string code_pixel(out ShaderBuilderContext c)
+	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = texture(tex4, (transpose(mat_v) * vec4(reflect(normalize((mat_v * mat_m * in_pos).xyz), normalize(in_normal)), 0)).xyz);"

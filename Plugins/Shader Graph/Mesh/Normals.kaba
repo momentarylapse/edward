@@ -1,12 +1,12 @@
 use edward
 
-class NodeNormals extends ShaderNode
+class NodeNormals extends shader.Node
 	void __init__()
 		super.__init__("Normals")
-		output.add([SHADER_TYPE_VEC3, "normals"])
+		output.add([shader.TYPE_VEC3, "normals"])
 	override const string[] dependencies()
 		return ["normal"]
-	override const string code_pixel(out ShaderBuilderContext c)
+	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	vec3 {{t}} = normalize(in_normal);"

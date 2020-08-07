@@ -1,7 +1,7 @@
 use hui
 use nix
 use os
-import x
+#import x
 
 class Observable
 	int dummy
@@ -73,7 +73,7 @@ class MultiView
 
 
 
-const int TransparencyModeDefault = 0-1
+const int TransparencyModeDefault = -1
 const int TransparencyModeNone = 0
 const int TransparencyModeFunctions = 1
 const int TransparencyModeColorKeyHard = 2
@@ -88,6 +88,11 @@ enum
 	FXKindSound,
 	FXKindForceField
 
+class y
+	class Material
+		nix.Shader* shader
+	class Terrain
+	class Model
 
 
 
@@ -100,7 +105,7 @@ class Model extends Data
 
 	class Material
 		Path filename
-		x.Material *material
+		y.Material *material
 		int num_textures
 		Texture*[Model.MAX_TEXTURES] texture
 		string[Model.MAX_TEXTURES] texture_file
@@ -384,6 +389,12 @@ class Geometry
 	extern static int subtract(Geometry a, Geometry b, Geometry out)
 	extern static int and(Geometry a, Geometry b, Geometry out)
 
+	enum
+		END_OPEN
+		END_FLAT
+		END_ROUND
+		END_LOOP
+
 	class Ball extends Geometry
 		extern void __init__(vector pos, float radius, int num_x, int num_y)
 
@@ -395,12 +406,6 @@ class Geometry
 
 	class CylinderComplex extends Geometry
 		extern void __init__(vector[] pos, float[] radius, int rings, int edges, int end_mode)
-
-	enum
-		END_OPEN
-		END_FLAT
-		END_ROUND
-		END_LOOP
 
 	class Sphere extends Geometry
 		extern void __init__(vector pos, float radius, int num)
@@ -429,14 +434,14 @@ class World extends Data
 		int vertex_buffer_single
 		int show_texture
 		bool changed
-		x.Terrain* terrain
+		y.Terrain* terrain
 		void __init__()
 
 
 	class Object extends MultiView.SingleData
 		string filename
 		string name
-		x.Model* object
+		y.Model* object
 		vector ang
 		void __init__()
 
@@ -458,55 +463,56 @@ class Mode
 class Edward
 	Mode* cur_mode
 
-enum
-	SHADER_TYPE_FLOAT
-	SHADER_TYPE_INT
-	SHADER_TYPE_VEC2
-	SHADER_TYPE_VEC3
-	SHADER_TYPE_COLOR
+class shader
+	enum
+		TYPE_FLOAT
+		TYPE_INT
+		TYPE_VEC2
+		TYPE_VEC3
+		TYPE_COLOR
 
-class ShaderBuilderContext
-	extern string create_temp(ShaderNode source, int port, int type)
-	extern string create_out(ShaderNode source, int port)
-	extern string find_temp(ShaderNode source, int port, int wanted_type)
-	extern string build_value(ShaderNode n, int i, string internal)
-	string value(ShaderNode n, int i)
-		return build_value(n, i, "")
-	extern string build_const(ShaderNode n, int i)
+	class BuilderContext
+		extern string create_temp(Node source, int port, int type)
+		extern string create_out(Node source, int port)
+		extern string find_temp(Node source, int port, int wanted_type)
+		extern string build_value(Node n, int i, string internal)
+		string value(Node n, int i)
+			return build_value(n, i, "")
+		extern string build_const(Node n, int i)
 
-class ShaderNode extends Object
-	extern void __init__(string t)
-	extern override void __delete__()
-	void __assign__(ShaderNode n)
-		pass
-	int x, y
-	string type
+	class Node extends Object
+		extern void __init__(string t)
+		extern override void __delete__()
+		void __assign__(Node n)
+			pass
+		int x, y
+		string type
 	
-	class Parameter
-		int type
-		string name
-		string value
-		string options
-		void __init__()
-		void __init__(int t, string n, string v, string o)
-			type = t
-			name = n
-			value = v
-			options = o
-	Parameter[] params
+		class Parameter
+			int type
+			string name
+			string value
+			string options
+			void __init__()
+			void __init__(int t, string n, string v, string o)
+				type = t
+				name = n
+				value = v
+				options = o
+		Parameter[] params
 
 
-	class Port
-		int type
-		string name
-		void __init__()
-		void __init__(int t, string n)
-			type = t
-			name = n
-	Port[] output
+		class Port
+			int type
+			string name
+			void __init__()
+			void __init__(int t, string n)
+				type = t
+				name = n
+		Port[] output
 	
-	extern virtual const string[] dependencies()
-	extern virtual const string code_pixel(out ShaderBuilderContext ctx)
+		extern virtual const string[] dependencies()
+		extern virtual const string code_pixel(out BuilderContext ctx)
 
 extern Model* model
 extern World* world

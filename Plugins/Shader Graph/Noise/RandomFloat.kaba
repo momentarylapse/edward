@@ -1,16 +1,16 @@
 use edward
 
-class NodeRandomFloat extends ShaderNode
+class NodeRandomFloat extends shader.Node
 	void __init__()
 		super.__init__("RandomFloat")
-		params.add([SHADER_TYPE_VEC3, "p", "vec3(0,0,0)", ""])
-		params.add([SHADER_TYPE_FLOAT, "scale", "4.0", "range=0.1:8"])
-		params.add([SHADER_TYPE_FLOAT, "detail", "3.0", "range=1:8"])
-		params.add([SHADER_TYPE_FLOAT, "exponent", "0.8", "range=0:2"])
-		output.add([SHADER_TYPE_FLOAT, "out"])
+		params.add([shader.TYPE_VEC3, "p", "vec3(0,0,0)", ""])
+		params.add([shader.TYPE_FLOAT, "scale", "4.0", "range=0.1:8"])
+		params.add([shader.TYPE_FLOAT, "detail", "3.0", "range=1:8"])
+		params.add([shader.TYPE_FLOAT, "exponent", "0.8", "range=0:2"])
+		output.add([shader.TYPE_FLOAT, "out"])
 	override const string[] dependencies()
 		return ["rand3d", "noise3d", "noise3d_multi"]
-	override const string code_pixel(out ShaderBuilderContext c)
+	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	float {{t}} = noise3d_multi({{c.value(self, 0)}} * {{c.value(self, 1)}}, {{c.value(self, 2)}}, {{c.value(self, 3)}});"

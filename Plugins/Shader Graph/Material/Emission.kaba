@@ -1,12 +1,12 @@
 use edward
 
-class NodeEmission extends ShaderNode
+class NodeEmission extends shader.Node
 	void __init__()
 		super.__init__("Emission")
-		output.add([SHADER_TYPE_COLOR, "emission"])
+		output.add([shader.TYPE_COLOR, "emission"])
 	override const string[] dependencies()
 		return ["material"]
-	override const string code_pixel(out ShaderBuilderContext c)
+	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = material.emission;"

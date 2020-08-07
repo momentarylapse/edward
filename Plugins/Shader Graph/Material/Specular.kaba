@@ -1,12 +1,12 @@
 use edward
 
-class NodeSpecular extends ShaderNode
+class NodeSpecular extends shader.Node
 	void __init__()
 		super.__init__("Specular")
-		output.add([SHADER_TYPE_FLOAT, "specular"])
+		output.add([shader.TYPE_FLOAT, "specular"])
 	override const string[] dependencies()
 		return ["material"]
-	override const string code_pixel(out ShaderBuilderContext c)
+	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	float {{t}} = material.specular;"

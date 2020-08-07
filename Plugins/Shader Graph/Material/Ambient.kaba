@@ -1,12 +1,12 @@
 use edward
 
-class NodeAmbient extends ShaderNode
+class NodeAmbient extends shader.Node
 	void __init__()
 		super.__init__("Ambient")
-		output.add([SHADER_TYPE_FLOAT, "ambient"])
+		output.add([shader.TYPE_FLOAT, "ambient"])
 	override const string[] dependencies()
 		return ["material"]
-	override const string code_pixel(out ShaderBuilderContext c)
+	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	float {{t}} = material.ambient;"

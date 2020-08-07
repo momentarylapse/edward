@@ -1,15 +1,15 @@
 use edward
 
-class NodeMix extends ShaderNode
+class NodeMix extends shader.Node
 	void __init__()
 		super.__init__("Mix")
-		params.add([SHADER_TYPE_COLOR, "a", "#ffffffff", ""])
-		params.add([SHADER_TYPE_COLOR, "b", "#ffffffff", ""])
-		params.add([SHADER_TYPE_FLOAT, "factor", "0.5", "range=0:1"])
-		output.add([SHADER_TYPE_COLOR, "out"])
-	override const string code_pixel(out ShaderBuilderContext c)
+		params.add([shader.TYPE_COLOR, "a", "#ffffffff", ""])
+		params.add([shader.TYPE_COLOR, "b", "#ffffffff", ""])
+		params.add([shader.TYPE_FLOAT, "factor", "0.5", "range=0:1"])
+		output.add([shader.TYPE_COLOR, "out"])
+	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
-		let tt = c.create_temp(self, -1, SHADER_TYPE_FLOAT)
+		let tt = c.create_temp(self, -1, shader.TYPE_FLOAT)
 		return "
 	float {{tt}} = {{c.value(self, 2)}};
 	vec4 {{t}} = (1 - {{tt}}) * {{c.value(self, 0)}} + {{tt}} * {{c.value(self, 1)}};"

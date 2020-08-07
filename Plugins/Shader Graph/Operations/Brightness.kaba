@@ -1,11 +1,11 @@
 use edward
 
-class NodeBrightness extends ShaderNode
+class NodeBrightness extends shader.Node
 	void __init__()
 		super.__init__("Brightness")
-		params.add([SHADER_TYPE_COLOR, "color", "#ffffffff", ""])
-		output.add([SHADER_TYPE_FLOAT, "brightness"])
-	override const string code_pixel(out ShaderBuilderContext c)
+		params.add([shader.TYPE_COLOR, "color", "#ffffffff", ""])
+		output.add([shader.TYPE_FLOAT, "brightness"])
+	override const string code_pixel(out shader.BuilderContext c)
 		let a = c.value(self, 0)
 		let t = c.create_out(self, 0)
 		return "

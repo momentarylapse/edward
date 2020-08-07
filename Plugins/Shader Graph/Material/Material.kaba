@@ -1,16 +1,16 @@
 use edward
 
-class NodeMaterial extends ShaderNode
+class NodeMaterial extends shader.Node
 	void __init__()
 		super.__init__("Material")
-		output.add([SHADER_TYPE_COLOR, "diffuse"])
-		output.add([SHADER_TYPE_FLOAT, "ambient"])
-		output.add([SHADER_TYPE_FLOAT, "specular"])
-		output.add([SHADER_TYPE_FLOAT, "shininess"])
-		output.add([SHADER_TYPE_COLOR, "emission"])
+		output.add([shader.TYPE_COLOR, "diffuse"])
+		output.add([shader.TYPE_FLOAT, "ambient"])
+		output.add([shader.TYPE_FLOAT, "specular"])
+		output.add([shader.TYPE_FLOAT, "shininess"])
+		output.add([shader.TYPE_COLOR, "emission"])
 	override const string[] dependencies()
 		return ["material"]
-	override const string code_pixel(out ShaderBuilderContext c)
+	override const string code_pixel(out shader.BuilderContext c)
 		let di = c.create_out(self, 0)
 		let am = c.create_out(self, 1)
 		let sp = c.create_out(self, 2)

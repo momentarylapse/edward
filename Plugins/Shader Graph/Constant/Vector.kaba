@@ -1,13 +1,13 @@
 use edward
 
-class NodeVector extends ShaderNode
+class NodeVector extends shader.Node
 	void __init__()
 		super.__init__("Vector")
-		params.add([SHADER_TYPE_FLOAT, "x", "0.0", "range=-1:1"])
-		params.add([SHADER_TYPE_FLOAT, "y", "0.0", "range=-1:1"])
-		params.add([SHADER_TYPE_FLOAT, "z", "0.0", "range=-1:1"])
-		output.add([SHADER_TYPE_VEC3, "value"])
-	override const string code_pixel(out ShaderBuilderContext c)
+		params.add([shader.TYPE_FLOAT, "x", "0.0", "range=-1:1"])
+		params.add([shader.TYPE_FLOAT, "y", "0.0", "range=-1:1"])
+		params.add([shader.TYPE_FLOAT, "z", "0.0", "range=-1:1"])
+		output.add([shader.TYPE_VEC3, "value"])
+	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
 	vec3 {{t}} = vec3({{c.value(self, 0)}}, {{c.value(self, 1)}}, {{c.value(self, 2)}});"
