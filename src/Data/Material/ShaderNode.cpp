@@ -64,11 +64,11 @@ void ShaderNode::__delete__() {
 
 
 ShaderNode *create_node(const string &type, int x, int y) {
-	try{
+	try {
 		for (auto &p: ed->plugins->plugins)
 			if (p.type == PluginManager::PluginType::SHADER_NODE)
 				if (p.name == type) {
-					auto n = (ShaderNode*)p.create_instance("shader.Node");
+					auto n = (ShaderNode*)p.create_instance("edward.shader.Node");
 					n->x = x;
 					n->y = y;
 					return n;

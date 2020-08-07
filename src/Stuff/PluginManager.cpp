@@ -308,11 +308,12 @@ void PluginManager::find_plugins() {
 void *PluginManager::create_instance(const Path &filename, const string &parent) {
 	Kaba::config.directory = "";
 	auto s = Kaba::Load(filename);
-	for (auto c: s->classes())
+	for (auto c: s->classes()){
 		if (c->is_derived_from_s(parent)) {
 			return c->create_instance();
 		}
-	throw Exception("no matching class defined");
+	}
+	throw Exception(format("no class derived from '%s' defined", parent));
 	return nullptr;
 }
 
