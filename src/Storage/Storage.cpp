@@ -141,7 +141,7 @@ bool Storage::save_as(Data *data) {
 }
 
 bool Storage::auto_save(Data *data) {
-	if (data->filename == "")
+	if (data->filename.is_empty())
 		return save_as(data);
 	return save(data->filename, data);
 }

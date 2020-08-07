@@ -105,6 +105,7 @@ MultiView::MultiView(bool mode3d) {
 	action_con = new ActionController(this);
 	cam_con = new CameraController(this);
 	m = v = v_0;
+	screen_scale = 1.0f;
 	holding_cursor = false;
 	holding_x = holding_y = 0;
 	allow_mouse_actions = true;
@@ -523,11 +524,11 @@ void MultiView::on_left_button_up() {
 
 
 void MultiView::update_mouse() {
-	m.x = hui::GetEvent()->mx;
-	m.y = hui::GetEvent()->my;
+	m.x = hui::GetEvent()->mx * screen_scale;
+	m.y = hui::GetEvent()->my * screen_scale;
 	m.z = 0;
-	v.x = hui::GetEvent()->dx;
-	v.y = hui::GetEvent()->dy;
+	v.x = hui::GetEvent()->dx * screen_scale;
+	v.y = hui::GetEvent()->dy * screen_scale;
 	v.z = 0;
 
 	lbut = hui::GetEvent()->lbut;
@@ -656,6 +657,7 @@ void MultiView::draw_mouse_pos() {
 
 
 void MultiView::on_draw() {
+	screen_scale = hui::GetEvent()->row_target; // EVIL!
 	timer.reset();
 
 	nix::ResetZ();

@@ -138,6 +138,7 @@ public:
 	Camera cam;
 
 	vector m, v;
+	float screen_scale;
 
 	Window *active_win;
 	Window *mouse_win;

@@ -7301,7 +7301,7 @@ image=hui:ok
 # Resource
 Dialog
 script_vars_dialog
-width=360,height=500
+width=360,height=500,resizable
 0
 0
 1

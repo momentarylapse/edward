@@ -577,7 +577,7 @@ bool WorldTerrain::overlap_rect(MultiView::Window *win, const rect &r) {
 
 bool ModeWorld::save() {
 	for (auto &t: data->terrains) {
-		if (t.filename == "") {
+		if (t.filename.is_empty()) {
 			if (!storage->file_dialog(FD_TERRAIN, true, true))
 				return false;
 			if (!t.save(storage->dialog_file_complete))
