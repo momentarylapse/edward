@@ -211,7 +211,7 @@ void WorldPropertiesDialog::on_edit_script() {
 	int n = get_int("script_list");
 	if (n >= 0) {
 		auto filename = Kaba::config.directory << temp.scripts[n].filename;
-		int r = system(("sgribthmaker '" + filename.str() + "'").c_str());
+		int r = system(format("sgribthmaker '%s'", filename).c_str());
 		//hui::OpenDocument(filename);
 	}
 }
@@ -219,7 +219,7 @@ void WorldPropertiesDialog::on_edit_script() {
 void WorldPropertiesDialog::on_create_script() {
 	if (!storage->file_dialog(FD_SCRIPT, true, true))
 		return;
-	string source = "use api\n\n"\
+	string source = "use y\n\n"\
 			"class X extends Controller\n"\
 			"\toverride void on_init()\n"\
 			"\t\tpass\n\n"\

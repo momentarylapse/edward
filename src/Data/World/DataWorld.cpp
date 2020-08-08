@@ -81,7 +81,7 @@ void DataWorld::reset() {
 	lights.clear();
 	WorldLight sun;
 	sun.pos = vector(0,1000,0);
-	sun.ang = vector(-pi/4,0,0);
+	sun.ang = vector(pi/4,0,0);
 	sun.enabled = true;
 	sun.type = LightType::DIRECTIONAL;
 	sun.radius = 0;
