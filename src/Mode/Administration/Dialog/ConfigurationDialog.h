@@ -10,12 +10,14 @@
 
 #include "../../../lib/hui/hui.h"
 class DataAdministration;
+class GameIniData;
 
 class ConfigurationDialog: public hui::Dialog {
 public:
 	ConfigurationDialog(hui::Window *_parent, DataAdministration *_data, bool _exporting);
 
 	void load_data();
+	void into_game_init(GameIniData &g);
 
 	void on_close();
 	void on_find_root_dir();

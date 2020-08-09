@@ -257,7 +257,7 @@ void Edward::on_destroy() {
 	HuiConfig.set_str("ObjectScriptVarFile", ObjectScriptVarFile);
 	HuiConfig.set_str("ItemScriptVarFile", ItemScriptVarFile);*/
 	//HuiConfig.set_int("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
-	hui::Config.save();
+	hui::Config.save(app->directory << "config.txt");
 	delete storage;
 }
 
@@ -483,36 +483,19 @@ void Edward::on_draw_gl() {
 }
 
 
-int parse_key_code(const string &s) {
-	int key = 0;
-	auto xx = s.explode(" + ");
-	for (auto x: xx) {
-		for (int k=0; k<hui::NUM_KEYS; k++)
-			if (x == hui::GetKeyName(k))
-				key |= k;
-		if (x == "Ctrl")
-			key |= hui::KEY_CONTROL;
-		if (x == "Shift")
-			key |= hui::KEY_SHIFT;
-		if (x == "Alt")
-			key |= hui::KEY_ALT;
-	}
-	return key;
-}
-
-Path keys_file_path() {
-	if (file_exists(app->directory << "keys.txt"))
-		return app->directory << "keys.txt";
-	return app->directory_static << "keys.txt";
-}
 
 void Edward::load_key_codes() {
-	File *f = NULL;
+	hui::Configuration con;
 
-	hui::Configuration con(keys_file_path());
-	con.load();
+	// first installed version
+	con.load(app->directory_static << "keys.txt");
 	for (auto &id: con.map.keys())
-		set_key_code(id, parse_key_code(con.get_str(id, "")));
+		set_key_code(id, hui::ParseKeyCode(con.get_str(id, "")));
+
+	// then override by user keys
+	con.load(app->directory << "keys.txt");
+	for (auto &id: con.map.keys())
+		set_key_code(id, hui::ParseKeyCode(con.get_str(id, "")));
 }
 
 

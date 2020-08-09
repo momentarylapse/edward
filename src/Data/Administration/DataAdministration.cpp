@@ -165,46 +165,46 @@ AdminFile *AdminFileList::add_engine_files() {
 }
 
 void AdminFileList::add_from_game_ini(GameIniData &game_ini, AdminFile *f) {
-	add_unchecked_ae(FD_SCRIPT,  game_ini.default_script, f);
-	add_unchecked_ae(FD_WORLD,   game_ini.default_world, f);
-	add_unchecked_ae(FD_WORLD,   game_ini.second_world, f);
-	add_unchecked_ae(FD_MATERIAL,game_ini.default_material, f);
-	add_unchecked_ae(FD_FONT,    game_ini.default_font, f);
+	add_unchecked_ae(FD_SCRIPT,  game_ini.default_script(), f);
+	add_unchecked_ae(FD_WORLD,   game_ini.default_world(), f);
+	add_unchecked_ae(FD_WORLD,   game_ini.second_world(), f);
+	add_unchecked_ae(FD_MATERIAL,game_ini.default_material(), f);
+	add_unchecked_ae(FD_FONT,    game_ini.default_font(), f);
 }
 
 void AdminFileList::add_from_game_ini_export(AdminFileList *source, GameIniData &game_ini)
 {
 	AdminFile *a;
-	if (!game_ini.default_script.is_empty()){
-		a = source->get(FD_SCRIPT, game_ini.default_script);
+	if (!game_ini.default_script().is_empty()){
+		a = source->get(FD_SCRIPT, game_ini.default_script());
 		if (!a)
 			throw AdminGameExportException("game.ini: script file");
 		add_recursive(a);
 	}
 
-	if (!game_ini.default_world.is_empty()){
-		a = source->get(FD_WORLD, game_ini.default_world.str() + ".world");
+	if (!game_ini.default_world().is_empty()){
+		a = source->get(FD_WORLD, game_ini.default_world().with(".world"));
 		if (!a)
 			throw AdminGameExportException("game.ini: initial world");
 		add_recursive(a);
 	}
 
-	if (!game_ini.second_world.is_empty()){
-		a = source->get(FD_WORLD, game_ini.second_world.str() + ".world");
+	if (!game_ini.second_world().is_empty()){
+		a = source->get(FD_WORLD, game_ini.second_world().with(".world"));
 		if (!a)
 			throw AdminGameExportException("game.ini: second world");
 		add_recursive(a);
 	}
 
-	if (!game_ini.default_material.is_empty()){
-		a = source->get(FD_MATERIAL, game_ini.default_material.str() + ".material");
+	if (!game_ini.default_material().is_empty()){
+		a = source->get(FD_MATERIAL, game_ini.default_material().with(".material"));
 		if (!a)
 			throw AdminGameExportException("game.ini: default material");
 		add_recursive(a);
 	}
 
-	if (!game_ini.default_font.is_empty()){
-		a = source->get(FD_FONT, game_ini.default_font.str() + ".xfont");
+	if (!game_ini.default_font().is_empty()){
+		a = source->get(FD_FONT, game_ini.default_font().with(".xfont"));
 		if (!a)
 			throw AdminGameExportException("game.ini: default font");
 		add_recursive(a);

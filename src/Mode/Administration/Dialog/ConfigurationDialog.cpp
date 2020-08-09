@@ -44,13 +44,13 @@ void ConfigurationDialog::load_data()
 	//GameIniDialog=GameIni;
 //	data->LoadGameIni(ed->RootDir, &GameIniDialog);
 	//GameIniData game = *data->GameIni;
-	GameIniData game;
+	GameIniData &game = *data->GameIni;
 	game.load(storage->root_dir);
-	set_string("world", game.default_world.str());
-	set_string("second-world", game.second_world.str());
-	set_string("script", game.default_script.str());
-	set_string("material", game.default_material.str());
-	set_string("font", game.default_font.str());
+	set_string("world", game.default_world().str());
+	set_string("second-world", game.second_world().str());
+	set_string("script", game.default_script().str());
+	set_string("material", game.default_material().str());
+	set_string("font", game.default_font().str());
 
 	set_string("root-directory", storage->root_dir.str());
 }
@@ -86,16 +86,20 @@ void ConfigurationDialog::on_find_font() {
 		set_string("font", storage->dialog_file_no_ending.str());
 }
 
+void ConfigurationDialog::into_game_init(GameIniData &g) {
+	g.set_str(g.ID_WORLD, get_string("world"));
+	g.set_str(g.ID_WORLD2, get_string("second-world"));
+	g.set_str(g.ID_SCRIPT, get_string("script"));
+	g.set_str(g.ID_MATERIAL, get_string("material"));
+	g.set_str(g.ID_FONT, get_string("font"));
+}
+
 void ConfigurationDialog::on_ok() {
 	if (exporting) {
 		//GameIniAlt=GameIni;
 		GameIniData GameIniExport = *data->GameIni;
 		string dir = get_string("root-directory");
-		GameIniExport.default_world = get_string("world");
-		GameIniExport.second_world = get_string("second-world");
-		GameIniExport.default_script = get_string("script");
-		GameIniExport.default_material = get_string("material");
-		GameIniExport.default_font = get_string("font");
+		into_game_init(GameIniExport);
 //		_exporting_type_ = getInt("export_type");
 //		_exporting_system_ = getInt("ged_system");
 		try {
@@ -110,11 +114,7 @@ void ConfigurationDialog::on_ok() {
 		if (rdc)
 			storage->set_root_directory(get_string("root-directory"));
 //		data->UnlinkGameIni();
-		data->GameIni->default_world = get_string("world");
-		data->GameIni->second_world = get_string("second-world");
-		data->GameIni->default_script = get_string("script");
-		data->GameIni->default_material = get_string("material");
-		data->GameIni->default_font = get_string("font");
+		into_game_init(*data->GameIni);
 //		data->LinkGameIni(data->GameIni);
 		data->GameIni->save(storage->root_dir);
 		if (rdc)
