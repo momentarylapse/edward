@@ -657,6 +657,7 @@ void MultiView::draw_mouse_pos() {
 
 
 void MultiView::on_draw() {
+	nix::StartFrameHui();
 	screen_scale = hui::GetEvent()->row_target; // EVIL!
 	timer.reset();
 
@@ -724,6 +725,7 @@ void MultiView::on_draw() {
 	action_con->draw_post();
 
 	//printf("%f\n", timer.get()*1000.0f);
+	nix::EndFrameHui();
 }
 
 void MultiView::SelectionRect::start_later(const vector &m) {

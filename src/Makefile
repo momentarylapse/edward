@@ -1619,6 +1619,7 @@ install :
 	cp -f '../static/edward.jpg' $(prefix)/share/edward
 	cp -f '../static/hui_resources.txt' $(prefix)/share/edward
 	cp -f '../static/icon.svg' $(prefix)/share/edward
+	cp -f '../static/keys.txt' $(prefix)/share/edward
 	cp -f '../static/license.txt' $(prefix)/share/edward
 	cp -f '../static/license_small.txt' $(prefix)/share/edward
 	cp -rf '../Plugins' $(prefix)/share/edward

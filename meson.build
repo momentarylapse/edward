@@ -442,6 +442,7 @@ install_subdir('static/shader', install_dir : join_paths(get_option('datadir'), 
 install_data('static/edward.jpg', install_dir : join_paths(get_option('datadir'), 'edward'))
 install_data('static/hui_resources.txt', install_dir : join_paths(get_option('datadir'), 'edward'))
 install_data('static/icon.svg', install_dir : join_paths(get_option('datadir'), 'edward'))
+install_data('static/keys.txt', install_dir : join_paths(get_option('datadir'), 'edward'))
 install_data('static/license.txt', install_dir : join_paths(get_option('datadir'), 'edward'))
 install_data('static/license_small.txt', install_dir : join_paths(get_option('datadir'), 'edward'))
 install_subdir('Plugins', install_dir : join_paths(get_option('datadir'), 'edward'))

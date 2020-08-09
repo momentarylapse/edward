@@ -483,48 +483,36 @@ void Edward::on_draw_gl() {
 }
 
 
+int parse_key_code(const string &s) {
+	int key = 0;
+	auto xx = s.explode(" + ");
+	for (auto x: xx) {
+		for (int k=0; k<hui::NUM_KEYS; k++)
+			if (x == hui::GetKeyName(k))
+				key |= k;
+		if (x == "Ctrl")
+			key |= hui::KEY_CONTROL;
+		if (x == "Shift")
+			key |= hui::KEY_SHIFT;
+		if (x == "Alt")
+			key |= hui::KEY_ALT;
+	}
+	return key;
+}
 
-void Edward::load_key_codes()
-{
+Path keys_file_path() {
+	if (file_exists(app->directory << "keys.txt"))
+		return app->directory << "keys.txt";
+	return app->directory_static << "keys.txt";
+}
+
+void Edward::load_key_codes() {
 	File *f = NULL;
 
-	try{
-		try{
-			f = FileOpenText(app->directory << "keys.txt");
-		}catch(...){
-			f = FileOpenText(app->directory_static << "keys.txt");
-		}
-		f->read_comment();
-		int nk = f->read_int();
-		f->read_comment();
-		for (int i=0; i<nk; i++){
-			string id = f->read_str();
-			int key_code = f->read_int();
-			if (id == "execute_plugin")
-				key_code = hui::KEY_CONTROL + hui::KEY_P;
-			if (id == "move_frame_inc")
-				key_code = hui::KEY_CONTROL + hui::KEY_RIGHT;
-			if (id == "move_frame_dec")
-				key_code = hui::KEY_CONTROL + hui::KEY_LEFT;
-			set_key_code(id, key_code);
-		}
-		event("volume_subtract", NULL);
-		set_key_code("volume_subtract", hui::KEY_CONTROL + hui::KEY_J); // TODO ...
-		event("invert_selection", NULL);
-		set_key_code("invert_selection", hui::KEY_CONTROL + hui::KEY_TAB); // TODO ...
-		event("select_all", NULL);
-		set_key_code("select_all", hui::KEY_CONTROL + hui::KEY_A); // TODO ...
-
-		event("finish-action", NULL);
-		set_key_code("finish-action", hui::KEY_CONTROL + hui::KEY_RETURN); // TODO ...
-
-		event("easify_skin", NULL);
-		set_key_code("easify_skin", hui::KEY_CONTROL + hui::KEY_7); // TODO ...
-
-		FileClose(f);
-	}catch(...){
-
-	}
+	hui::Configuration con(keys_file_path());
+	con.load();
+	for (auto &id: con.map.keys())
+		set_key_code(id, parse_key_code(con.get_str(id, "")));
 }
 
 
