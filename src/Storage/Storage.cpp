@@ -54,7 +54,8 @@ int data_type(Data *data) {
 	return -1;*/
 }
 
-bool Storage::load(const Path &filename, Data *data, bool deep) {
+bool Storage::load(const Path &_filename, Data *data, bool deep) {
+	auto filename = _filename.absolute().canonical();
 	try {
 		int type = data_type(data);
 		string ext = filename.extension();
@@ -82,7 +83,8 @@ bool Storage::load(const Path &filename, Data *data, bool deep) {
 	return false;
 }
 
-bool Storage::save(const Path &filename, Data *data) {
+bool Storage::save(const Path &_filename, Data *data) {
+	auto filename = _filename.absolute().canonical();
 	try {
 		int type = data_type(data);
 		string ext = filename.extension();

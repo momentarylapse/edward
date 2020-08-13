@@ -40,7 +40,7 @@ public:
 	float focal_length;
 	float focal_blur;
 
-	void set_view(float aspect_ratio);
+	void update_matrices(float aspect_ratio);
 
 	matrix m_projection, m_view;
 	matrix m_all, im_all;

@@ -108,7 +108,7 @@ void Camera::on_iterate(float dt) {
 
 }
 
-void Camera::set_view(float aspect_ratio) {
+void Camera::update_matrices(float aspect_ratio) {
 	m_projection = matrix::perspective(fov, aspect_ratio, min_depth, max_depth);
 	m_projection = m_projection * matrix::rotation_x(pi);
 	m_view = matrix::rotation_q(ang).transpose() * matrix::translation(-pos);
