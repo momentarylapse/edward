@@ -10,6 +10,7 @@
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/GeometryBall.h"
 #include "../../../../Data/Model/Geometry/GeometrySphere.h"
+#include "../../../../Action/Model/Mesh/Physical/ActionModelAddBall.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/DrawingHelper.h"
@@ -107,7 +108,7 @@ void ModeModelMeshCreateBall::on_left_button_up() {
 			b.index = data->phys_mesh->vertex.num;
 			b.radius = radius;
 			data->phys_mesh->vertex.add(v);
-			data->phys_mesh->ball.add(b);
+			data->execute(new ActionModelAddBall(b));
 
 		} else {
 			data->pasteGeometry(*geo, mode_model_mesh->current_material);

@@ -45,6 +45,12 @@ void MeshSelectionModeSurface::update_multi_view() {
 	multi_view->add_data(MVD_MODEL_POLYGON,
 			data->edit_mesh->polygon,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
+	multi_view->add_data(MVD_MODEL_BALL,
+			data->edit_mesh->ball,
+			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);
+	multi_view->add_data(MVD_MODEL_CYLINDER,
+			data->edit_mesh->cylinder,
+			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);
 }
 
 void MeshSelectionModeSurface::on_draw_win(MultiView::Window *win) {

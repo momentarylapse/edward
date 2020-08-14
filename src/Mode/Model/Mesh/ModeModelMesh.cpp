@@ -122,9 +122,9 @@ void ModeModelMesh::on_end() {
 
 
 
-void ModeModelMesh::on_command(const string & id) {
+void ModeModelMesh::on_command(const string &id) {
 	if (id == "delete")
-		data->delete_selection(data->get_selection(), selection_mode == selection_mode_vertex);
+		data->delete_selection(data->edit_mesh->get_selection(), selection_mode == selection_mode_vertex);
 	if (id == "copy")
 		copy();
 	if (id == "paste")
@@ -257,7 +257,11 @@ void ModeModelMesh::on_draw() {
 	auto s = data->edit_mesh->get_selection();
 	if (s.vertex.num > 0) {
 		nix::SetShader(nix::default_shader_2d);
-		draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num));
+		string t = format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num);
+		if (current_skin == MESH_PHYSICAL)
+			t += format(", %d balls, %d cylinders", s.ball.num, s.cylinder.num);
+				//    %d  %d
+		draw_str(10, nix::target_height - 25, t);
 	}
 }
 
@@ -618,17 +622,26 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, Array
 
 
 void ModeModelMesh::draw_physical(MultiView::Window *win) {
-	mode_model->set_material_creation(1.5f);
 
 	for (auto &b: data->phys_mesh->ball) {
 		auto geo = GeometrySphere(data->phys_mesh->vertex[b.index].pos, b.radius, 6);
 		geo.build(nix::vb_temp);
+		mode_model->set_material_creation(1.5f);
+		if (b.is_selected)
+			mode_model->set_material_selected();
+		if (multi_view->hover.data == &b)
+			mode_model->set_material_hover();
 		nix::DrawTriangles(nix::vb_temp);
 	}
 
 	for (auto &c: data->phys_mesh->cylinder) {
 		auto geo = GeometryCylinder(data->phys_mesh->vertex[c.index[0]].pos, data->phys_mesh->vertex[c.index[1]].pos, c.radius, 1, 24, c.round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT);
 		geo.build(nix::vb_temp);
+		mode_model->set_material_creation(1.5f);
+		if (c.is_selected)
+			mode_model->set_material_selected();
+		if (multi_view->hover.data == &c)
+			mode_model->set_material_hover();
 		nix::DrawTriangles(nix::vb_temp);
 	}
 

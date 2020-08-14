@@ -12,12 +12,10 @@
 class DataModel;
 class vector;
 
-class ActionModelAddPolygon: public ActionGroup
-{
+class ActionModelAddPolygon: public ActionGroup {
 public:
 	ActionModelAddPolygon(Array<int> &_v, int _material, Array<vector> &_sv);
-	virtual ~ActionModelAddPolygon(){}
-	string name(){	return "ModelAddPolygon";	}
+	string name() { return "ModelAddPolygon"; }
 
 	void *compose(Data *d);
 

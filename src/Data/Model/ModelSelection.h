@@ -20,6 +20,8 @@ public:
 	Set<int> edge;
 
 	Set<int> bone;
+	Set<int> cylinder;
+	Set<int> ball;
 
 	void clear();
 	void expand_to_surfaces(ModelMesh *m);

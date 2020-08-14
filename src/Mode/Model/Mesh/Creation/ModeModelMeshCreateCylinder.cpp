@@ -9,6 +9,7 @@
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../Data/Model/Geometry/GeometryCylinder.h"
+#include "../../../../Action/Model/Mesh/Physical/ActionModelAddCylinder.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
@@ -43,8 +44,10 @@ void ModeModelMeshCreateCylinder::on_start() {
 	ed->set_side_panel(dialog);
 
 	bool physical = (mode_model_mesh->current_skin == MESH_PHYSICAL);
-	if (physical)
-		dialog->enable("*", false);
+	if (physical) {
+		dialog->enable("rings", false);
+		dialog->enable("edges", false);
+	}
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
@@ -102,7 +105,7 @@ void ModeModelMeshCreateCylinder::on_left_button_up() {
 			c.index[1] = data->phys_mesh->vertex.num + 1;
 			c.radius = radius;
 			c.round = dialog->is_checked("round");
-			data->phys_mesh->cylinder.add(c);
+			data->execute(new ActionModelAddCylinder(c));
 
 			data->phys_mesh->vertex.add(ModelVertex(pos[0]));
 			data->phys_mesh->vertex.add(ModelVertex(pos[1]));

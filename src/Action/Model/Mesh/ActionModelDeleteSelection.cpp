@@ -9,6 +9,8 @@
 #include "Surface/Helper/ActionModelSurfaceDeletePolygon.h"
 #include "Vertex/Helper/ActionModelDeleteUnusedVertex.h"
 #include "Surface/Helper/ActionModelDeleteEmptySurface.h"
+#include "Physical/ActionModelDeleteBall.h"
+#include "Physical/ActionModelDeleteCylinder.h"
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Data/Model/ModelMesh.h"
 #include "../../../Data/Model/ModelPolygon.h"
@@ -34,8 +36,15 @@ void *ActionModelDeleteSelection::compose(Data *d) {
 		polys = sel.polygon;
 	}
 
+	msg_write(ia2s(polys));
 	foreachb (int i, polys)
 		addSubAction(new ActionModelSurfaceDeletePolygon(i), m);
+
+	foreachb (int i, sel.ball)
+		addSubAction(new ActionModelDeleteBall(i), m);
+	foreachb (int i, sel.cylinder)
+		addSubAction(new ActionModelDeleteCylinder(i), m);
+
 
 	foreachb (int i, sel.vertex)
 		if (m->edit_mesh->vertex[i].ref_count == 0) {

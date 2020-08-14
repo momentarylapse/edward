@@ -739,6 +739,12 @@ ModelSelection ModelMesh::get_selection() const {
 	foreachi(ModelEdge &e, edge, j)
 		if (e.is_selected)
 			s.edge.add(j);
+	foreachi (auto &b, ball, i)
+		if (b.is_selected)
+			s.ball.add(i);
+	foreachi (auto &c, cylinder, i)
+		if (c.is_selected)
+			s.cylinder.add(i);
 	return s;
 }
 
