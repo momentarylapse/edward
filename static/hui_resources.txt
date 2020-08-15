@@ -7344,7 +7344,7 @@ image=hui:ok
 # Resource
 Dialog
 terrain_dialog
-width=435,height=275
+width=435,height=275,resizable,headerbar,closebutton=no
 0
 0
 1
@@ -7535,22 +7535,22 @@ buttonbar
 1
 3
 Button
-apply
-image=hui:apply
+cancel
+image=hui:cancel
 0
 0
 0
 Button
-cancel
-image=hui:cancel
+ok
+image=hui:ok,default
+0
 1
 0
-0
-DefButton
-ok
-image=hui:ok
-2
-0
+Button
+apply
+image=hui:apply
+1
+1
 0
 # Resource
 Dialog
@@ -8091,17 +8091,35 @@ Grid
 vertical
 2
 0
-2
+3
 CheckBox
 physics_enabled
 
 0
 0
 0
+Grid
+?
+
+1
+0
+2
+Label
+t-physics-mode
+right,disabled
+0
+0
+0
+ComboBox
+physics-mode
+expandx
+1
+0
+0
 Group
 grp_gravitation
 
-1
+2
 0
 1
 Grid
@@ -9968,7 +9986,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-992
+994
 # Text
 /ambient
 Ambient
@@ -12871,15 +12889,21 @@ Gravity
 world_dialog/grp_skybox
 Skybox models
 
+world_dialog/physics-mode
+Simple\\Full (using Bullet)
+* Simple: only update positions via velocity\n* Full: gravity, collisions, friction, links
 world_dialog/physics_enabled
 Enabled
 
 world_dialog/script_list
 File
-
+Global scripts - a class derived from y.Controller is instantiated and running in the background\n * double click to edit variables\n * right click to edit
 world_dialog/skybox
 #\\Model
 Models drawn over the sky color\n- double click to select
+world_dialog/t-physics-mode
+Simulation mode
+
 world_dialog/world_dialog
 World properties
 

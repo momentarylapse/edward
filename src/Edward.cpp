@@ -186,24 +186,26 @@ Edward::Edward(Array<string> arg) :
 	msg_db_r("init modes", 1);*/
 
 
-	if (app->installed)
-		plugins = new PluginManager(app->directory_static << "Plugins");
-	else
-		plugins = new PluginManager(app->directory << "Plugins");
-
 	ed->toolbar[hui::TOOLBAR_TOP]->configure(false, true);
 	ed->toolbar[hui::TOOLBAR_LEFT]->configure(false, true);
 
 	multi_view_3d = new MultiView::MultiView(true);
 	multi_view_2d = new MultiView::MultiView(false);
 	mode_model = new ModeModel;
-	mode_material = new ModeMaterial;
 	mode_world = new ModeWorld;
 	mode_font = new ModeFont;
 	mode_administration = new ModeAdministration;
 
 	storage = new Storage();
 	storage->set_root_directory(hui::Config.get_str("RootDir", ""));
+
+	// depends on some mode data
+	if (app->installed)
+		plugins = new PluginManager(app->directory_static << "Plugins");
+	else
+		plugins = new PluginManager(app->directory << "Plugins");
+
+	mode_material = new ModeMaterial;
 
 
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;

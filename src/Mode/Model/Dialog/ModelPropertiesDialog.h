@@ -16,27 +16,24 @@ public:
 	ModelPropertiesDialog(hui::Window *_parent, DataModel *_data);
 	virtual ~ModelPropertiesDialog();
 
-	void LoadData();
-	void ApplyData();
+	void load_data();
+	void apply_data();
 
-	void restart();
-	bool active;
-
-	void RefillInventaryList();
-	void RefillScriptVarList();
-	void FillDetailList();
-	void FillTensorList();
-	void OnGenerateDistsAuto();
-	void OnPhysicsPassive();
-	void OnGenerateTensorAuto();
-	void OnTensorEdit();
-	void OnNumItems();
-	void OnModelInventary();
-	void OnDeleteItem();
-	void OnScriptVarEdit();
-	void OnScriptFind();
-	void OnOk();
-	void OnClose();
+	void refill_inventary_list();
+	void refill_script_var_list();
+	void fill_detail_list();
+	void fill_tensor_list();
+	void on_generate_dists_auto();
+	void on_physics_passive();
+	void on_generate_tensor_auto();
+	void on_tensor_edit();
+	void on_num_items();
+	void on_model_inventary();
+	void on_delete_item();
+	void on_script_var_edit();
+	void on_script_find();
+	void on_ok();
+	void on_close();
 
 private:
 	DataModel *data;

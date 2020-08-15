@@ -101,6 +101,7 @@ void WorldPropertiesDialog::on_close() {
 
 void WorldPropertiesDialog::on_physics_enabled() {
 	bool b = is_checked("");
+	enable("physics-mode", b);
 	enable("gravitation_x", b);
 	enable("gravitation_y", b);
 	enable("gravitation_z", b);
@@ -156,43 +157,42 @@ void WorldPropertiesDialog::on_script_remove() {
 	}
 }
 
+const Kaba::Class *get_class(Kaba::Script *s, const string &parent);
+
 void update_script_data(WorldScript &s) {
 	s.class_name = "";
 	try {
 		auto ss = Kaba::Load(s.filename, true);
 
+		auto t = get_class(ss, "*.Controller");
+
 		Array<string> wanted;
-		for (auto c: ss->syntax->base_class->constants)
+		for (auto c: t->constants)
 			if (c->name == "PARAMETERS" and c->type == Kaba::TypeString)
 				wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
 
-		for (auto *t: ss->syntax->base_class->classes) {
-			if (!t->is_derived_from_s("Controller"))
+		s.class_name = t->cname(t->owner->base_class);
+		for (auto &e: t->elements) {
+			string nn = e.name.replace("_", "").lower();
+			if (!sa_contains(wanted, nn))
 				continue;
-			s.class_name = t->name;
-			for (auto &e: t->elements) {
-				string nn = e.name.replace("_", "").lower();
-				if (!sa_contains(wanted, nn))
-					continue;
-				bool found = false;
-				for (auto &v: s.variables)
-					if (v.name.lower().replace("_", "") == nn) {
-						v.name = e.name;
-						v.type = e.type->name;
-						found = true;
-					}
-				if (found)
-					continue;
+			bool found = false;
+			for (auto &v: s.variables)
+				if (v.name.lower().replace("_", "") == nn) {
+					v.name = e.name;
+					v.type = e.type->name;
+					found = true;
+				}
+			if (found)
+				continue;
 
-				WorldScriptVariable v;
-				v.name = e.name;
-				v.type = e.type->name;
-				s.variables.add(v);
-			}
+			WorldScriptVariable v;
+			v.name = e.name;
+			v.type = e.type->name;
+			s.variables.add(v);
 		}
 	} catch(Exception &e) {
-		msg_error(e.message());
-
+		ed->error_box(e.message());
 	}
 
 }
@@ -211,8 +211,8 @@ void WorldPropertiesDialog::on_edit_script() {
 	int n = get_int("script_list");
 	if (n >= 0) {
 		auto filename = Kaba::config.directory << temp.scripts[n].filename;
-		int r = system(format("sgribthmaker '%s'", filename).c_str());
-		//hui::OpenDocument(filename);
+		//int r = system(format("sgribthmaker '%s'", filename).c_str());
+		hui::OpenDocument(filename);
 	}
 }
 
@@ -221,11 +221,18 @@ void WorldPropertiesDialog::on_create_script() {
 		return;
 	string source = "use y\n\n"\
 			"class X extends Controller\n"\
+			"\tconst string PARAMETERS = \"\"\n"\
 			"\toverride void on_init()\n"\
+			"\t\tpass\n\n"\
+			"\toverride void on_delete()\n"\
 			"\t\tpass\n\n"\
 			"\toverride void on_iterate(float dt)\n"\
 			"\t\tpass\n\n"\
-			"\toverride void on_delete()\n"\
+			"\toverride void on_input()\n"\
+			"\t\tpass\n\n"\
+			"\toverride void on_left_button_down()\n"\
+			"\t\tpass\n\n"\
+			"\toverride void on_key_down(int k)\n"\
 			"\t\tpass\n\n";
 	FileWriteText(storage->dialog_file_complete, source);
 
@@ -286,6 +293,7 @@ void WorldPropertiesDialog::fill_script_list() {
 
 void WorldPropertiesDialog::apply_data() {
 	temp.physics_enabled = is_checked("physics_enabled");
+	temp.physics_mode = (PhysicsMode)get_int("physics-mode");
 	temp.gravity.x = get_float("gravitation_x");
 	temp.gravity.y = get_float("gravitation_y");
 	temp.gravity.z = get_float("gravitation_z");
@@ -349,6 +357,7 @@ void WorldPropertiesDialog::load_data() {
 
 	set_decimals(WorldPhysicsDec);
 	check("physics_enabled", temp.physics_enabled);
+	set_int("physics-mode", (int)temp.physics_mode);
 	enable("gravitation_x", temp.physics_enabled);
 	enable("gravitation_y", temp.physics_enabled);
 	enable("gravitation_z", temp.physics_enabled);

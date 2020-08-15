@@ -806,8 +806,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 		for (int i=0; i<min(data->meta_data.script_var.num, data->meta_data.variables.num); i++){
 			if (data->meta_data.variables[i].type == "float")
 				data->meta_data.variables[i].value = f2s(data->meta_data.script_var[i], 6);
-			msg_write(data->meta_data.variables[i].name);
-			msg_write(data->meta_data.variables[i].value);
+			msg_write(format("  try import var  %s = %s", data->meta_data.variables[i].name, data->meta_data.variables[i].value));
 		}
 	}
 

@@ -1,4 +1,4 @@
-Dialog terrain_dialog "Terrain properties" width=435 height=275
+Dialog terrain_dialog "Terrain properties" width=435 height=275 resizable headerbar closebutton=no
 	Grid ? ""
 		TabControl terrain_dialog_tab_control "properties\\textures\\material\\import"
 			Grid ? ""
@@ -37,6 +37,7 @@ Dialog terrain_dialog "Terrain properties" width=435 height=275
 					Button material_find "" image=hui:open
 		---|
 		Grid ? "" buttonbar
-			Button /apply "Apply" image=hui:apply
 			Button /cancel "Cancel" image=hui:cancel
-			DefButton /ok "Ok" image=hui:ok
+			---|
+			Button /ok "Ok" image=hui:ok default
+			Button /apply "Apply" image=hui:apply

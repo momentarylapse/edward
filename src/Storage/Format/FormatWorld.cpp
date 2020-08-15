@@ -104,6 +104,10 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				}
 			} else if (e.tag == "physics") {
 				data->meta_data.physics_enabled = e.value("enabled", "true")._bool();
+				if (e.value("mode") == "full")
+					data->meta_data.physics_mode = PhysicsMode::FULL_EXTERNAL;
+				else if (e.value("mode") == "simple")
+					data->meta_data.physics_mode = PhysicsMode::SIMPLE;
 				data->meta_data.gravity = s2v(e.value("gravity", "0 0 0"));
 			} else if (e.tag == "fog") {
 				data->meta_data.fog.enabled = e.value("enabled", "false")._bool();
@@ -163,6 +167,8 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				o.name = e.value("name");
 				o.pos = s2v(e.value("pos", "0 0 0"));
 				o.ang = s2v(e.value("ang", "0 0 0"));
+				if (e.value("role") == "ego")
+					data->EgoIndex = data->objects.num;
 				data->objects.add(o);
 			} else if (e.tag == "link") {
 				WorldLink l;
@@ -312,6 +318,14 @@ void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 	}
 }
 
+string phys_mode_name(PhysicsMode m) {
+	if (m == PhysicsMode::SIMPLE)
+		return "simple";
+	if (m == PhysicsMode::FULL_EXTERNAL)
+		return "full";
+	return "";
+}
+
 void FormatWorld::_save(const Path &filename, DataWorld *data) {
 	/*	if (!SaveTerrains())
 			return;*/
@@ -331,7 +345,8 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 
 	auto phys = xml::Element("physics")
 	.witha("enabled", b2s(data->meta_data.physics_enabled))
-	.witha("gravity", v2s(data->meta_data.gravity));
+	.witha("gravity", v2s(data->meta_data.gravity))
+	.witha("mode", phys_mode_name(data->meta_data.physics_mode));
 	meta.add(phys);
 
 	auto f = xml::Element("fog")
@@ -382,12 +397,14 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		cont.add(e);
 	}
 
-	for (auto &o: data->objects) {
+	foreachi (auto &o, data->objects, i) {
 		auto e = xml::Element("object")
 		.witha("file", o.filename.str())
 		.witha("name", o.name)
 		.witha("pos", v2s(o.pos))
 		.witha("ang", v2s(o.ang));
+		if (i == data->EgoIndex)
+			e.add_attribute("role", "ego");
 		cont.add(e);
 	}
 

@@ -24,6 +24,9 @@ Dialog world_dialog "World properties" width=520 height=420 resizable headerbar 
 				ColorButton fog_color ""
 			Grid ? "" vertical
 				CheckBox physics_enabled "Enabled"
+				Grid ? ""
+					Label t-physics-mode "Simulation mode" right disabled
+					ComboBox physics-mode "Simple\\Full (using Bullet)" expandx "tooltip=* Simple: only update positions via velocity\n* Full: gravity, collisions, friction, links"
 				Group grp_gravitation "Gravity"
 					Grid ? ""
 						Text /x "X" right disabled
@@ -37,7 +40,7 @@ Dialog world_dialog "World properties" width=520 height=420 resizable headerbar 
 						Text /z "Z" right disabled
 						SpinButton gravitation_z "" range=::0.1
 						Text /luss "lu/s²"
-			ListView script_list "File" nobar
+			ListView script_list "File" nobar "tooltip=Global scripts - a class derived from y.Controller is instantiated and running in the background\n * double click to edit variables\n * right click to edit"
 		Grid ? "" buttonbar
 			Button /cancel "Cancel" image=hui:cancel
 			---|

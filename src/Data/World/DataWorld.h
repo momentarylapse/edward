@@ -38,6 +38,11 @@ public:
 	Array<WorldScriptVariable> variables;
 };
 
+enum class PhysicsMode {
+	SIMPLE,
+	FULL_EXTERNAL
+};
+
 class DataWorld: public Data {
 public:
 	DataWorld();
@@ -72,6 +77,7 @@ public:
 
 		// physics
 		bool physics_enabled;
+		PhysicsMode physics_mode;
 		vector gravity;
 
 		// background

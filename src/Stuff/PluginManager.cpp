@@ -46,7 +46,7 @@ PluginManager::~PluginManager() {
 }
 
 void PluginManager::execute(const Path &filename) {
-	Kaba::config.directory = "";
+	//Kaba::config.directory = "";
 	try {
 		auto *s = Kaba::Load(filename);
 		typedef void func_t();
@@ -287,7 +287,7 @@ void PluginManager::link_plugins() {
 }
 
 void PluginManager::find_plugins() {
-	Path dir0 = PluginManager::directory << "Shader Graph";
+	Path dir0 = (PluginManager::directory << "Shader Graph").absolute();
 	auto list = dir_search(dir0, "*", true);
 	for (auto &e: list) {
 		Path dir = dir0 << e;
@@ -306,7 +306,7 @@ void PluginManager::find_plugins() {
 }
 
 void *PluginManager::create_instance(const Path &filename, const string &parent) {
-	Kaba::config.directory = "";
+	//Kaba::config.directory = "";
 	auto s = Kaba::Load(filename);
 	for (auto c: s->classes()){
 		if (c->is_derived_from_s(parent)) {

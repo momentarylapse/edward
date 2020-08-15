@@ -916,6 +916,7 @@ void ModeWorld::ExecutePropertiesDialog() {
 			if (t.is_selected)
 				ExecuteTerrainPropertiesDialog(i);
 	} else {
+		ExecuteWorldPropertiesDialog();
 	}
 }
 

@@ -646,6 +646,7 @@ void ModeModelMesh::draw_physical(MultiView::Window *win) {
 	}
 
 
+	mode_model->set_material_creation(1.5f);
 	VertexStagingBuffer vbs;
 	for (auto &t: data->phys_mesh->polygon)
 		if (t.view_stage >= multi_view->view_stage)

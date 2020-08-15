@@ -52,6 +52,7 @@ void DataWorld::MetaData::reset() {
 	background_color = color(1, 0.2f, 0.4f, 0.6f);
 
 	physics_enabled = false;
+	physics_mode = PhysicsMode::FULL_EXTERNAL;
 	gravity = vector(0, -981, 0);
 
 	scripts.clear();
