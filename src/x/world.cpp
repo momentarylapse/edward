@@ -323,20 +323,6 @@ void LevelData::reset() {
 	fog.enabled = false;
 }
 
-color ReadColor3(File *f) {
-	int c[3];
-	for (int i=0;i<3;i++)
-		c[i] = f->read_float();
-	return ColorFromIntRGB(c);
-}
-
-color ReadColor4(File *f) {
-	int c[4];
-	for (int i=0;i<4;i++)
-		c[i] = f->read_float();
-	return ColorFromIntARGB(c);
-}
-
 bool World::load(const LevelData &ld) {
 	net_msg_enabled = false;
 	bool ok = true;

@@ -142,7 +142,7 @@ void CameraDialog::OnAreaDraw(Painter *c)
 //	double dw = dl * a->view_zoom;
 	int nx0 = floor(screen2sample(r.x1 - 1) / dt);
 	int nx1 = ceil(screen2sample(r.x2) / dt);
-	color c1 = ColorInterpolate(bg, ColorGrid, exp_s_mod);
+	color c1 = color::interpolate(bg, ColorGrid, exp_s_mod);
 	color c2 = ColorGrid;
 	for (int n=nx0;n<nx1;n++){
 		c->set_color(((n % 10) == 0) ? c2 : c1);

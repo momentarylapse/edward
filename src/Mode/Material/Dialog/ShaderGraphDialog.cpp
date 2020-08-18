@@ -125,7 +125,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 
 	// header
 	int h = n->type.hash();
-	bg = ColorInterpolate(scheme.GRID, SetColorHSB(1, loopf(h/7.0f, 0, 1), 0.8f, 0.3f), 0.3f);
+	bg = color::interpolate(scheme.GRID, color::hsb(loopf(h/7.0f, 0, 1), 0.8f, 0.3f, 1), 0.3f);
 	if (n == hover.node)
 		bg = scheme.hoverify(bg);
 	p->set_color(bg);
@@ -145,7 +145,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 		float yt = y - 4;
 		p->draw_str(n->x + 10, yt, pp.name);
 
-		color bg = ColorInterpolate(scheme.BACKGROUND, scheme.GRID, 0.5f);
+		color bg = color::interpolate(scheme.BACKGROUND, scheme.GRID, 0.5f);
 		if (pp.type == ShaderValueType::COLOR) {
 			bg = pp.get_color();
 		}
@@ -167,7 +167,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 		}
 		p->set_color(scheme.TEXT);
 		if (graph->find_source(n, i))
-			p->set_color(ColorInterpolate(scheme.TEXT, scheme.GRID, 0.5f));
+			p->set_color(color::interpolate(scheme.TEXT, scheme.GRID, 0.5f));
 		if (n == hover.node and i == hover.param)
 			p->set_color(scheme.hoverify(scheme.TEXT));
 

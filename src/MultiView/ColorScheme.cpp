@@ -52,6 +52,6 @@ ColorScheme::ColorScheme() {
 }
 
 color ColorScheme::hoverify(const color &c) const {
-	return ColorInterpolate(c, HOVER, 0.3f);
+	return color::interpolate(c, HOVER, 0.3f);
 }
 

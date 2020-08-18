@@ -159,8 +159,8 @@ void ModeModelSkeleton::on_set_multi_view() {
 
 void draw_bone(const vector &r, const vector &d, const color &c, MultiView::Window *win) {
 	Array<color> col;
-	col.add(ColorInterpolate(c, scheme.BACKGROUND, 0.5f)); // root
-	col.add(ColorInterpolate(c, scheme.BACKGROUND, 0.8f));
+	col.add(color::interpolate(c, scheme.BACKGROUND, 0.5f)); // root
+	col.add(color::interpolate(c, scheme.BACKGROUND, 0.8f));
 	draw_lines_colored({r,d}, col, false);
 }
 
@@ -207,7 +207,7 @@ void ModeModelSkeleton::draw_skeleton(MultiView::Window *win, Array<ModelBone> &
 			continue;
 		color c = bone[r].is_selected ? scheme.SELECTION : scheme.POINT;
 		if (multi_view->hover.index == r)
-			c = ColorInterpolate(c, scheme.HOVER, 0.3f);
+			c = color::interpolate(c, scheme.HOVER, 0.3f);
 		draw_bone(bone[r].pos, b.pos, c, win);
 	}
 	nix::SetZ(true, true);

@@ -77,16 +77,14 @@ void ModelMaterial::TextureLevel::update_texture() {
 }
 
 // DEPRECATED
-void ModelMaterial::reset()
-{
+void ModelMaterial::reset() {
 }
 
 
-void ModelMaterial::makeConsistent()
-{
+void ModelMaterial::makeConsistent() {
 	material = LoadMaterial(filename);
 
-	if (material->reflection.mode == REFLECTION_CUBE_MAP_DYNAMIC){
+	if (material->reflection.mode == REFLECTION_CUBE_MAP_DYNAMIC) {
 	//	if (!material->cube_map)
 	//		material->cube_map = new nix::CubeMap(material->cube_map_size);
 	//	create_fake_dynamic_cube_map(material->cube_map);
@@ -97,11 +95,10 @@ void ModelMaterial::makeConsistent()
 	checkColors();
 }
 
-void ModelMaterial::checkTransparency()
-{
+void ModelMaterial::checkTransparency() {
 	if (alpha.mode == TRANSPARENCY_DEFAULT)
 		alpha.user = false;
-	if (!alpha.user){
+	if (!alpha.user) {
 		alpha.mode = material->alpha.mode;
 		alpha.source = material->alpha.source;
 		alpha.destination = material->alpha.destination;
@@ -112,12 +109,11 @@ void ModelMaterial::checkTransparency()
 
 
 
-void ModelMaterial::checkTextures()
-{
+void ModelMaterial::checkTextures() {
 
 	msg_write("--------Mat.check textures()");
 	// parent has more texture levels?
-	if (material->textures.num > texture_levels.num){
+	if (material->textures.num > texture_levels.num) {
 		texture_levels.resize(material->textures.num);
 		ed->set_message(_("Number of textures changed to comply with the material!"));
 	}
@@ -143,9 +139,8 @@ void ModelMaterial::checkTextures()
 	}
 }
 
-void ModelMaterial::checkColors()
-{
-	if (!col.user){
+void ModelMaterial::checkColors() {
+	if (!col.user) {
 		col.ambient = material->ambient;
 		col.diffuse = material->diffuse;
 		col.specular = material->specular;
@@ -154,22 +149,21 @@ void ModelMaterial::checkColors()
 	}
 }
 
-void ModelMaterial::applyForRendering()
-{
+void ModelMaterial::applyForRendering() {
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetShader(nix::default_shader_3d);
-	color em = ColorInterpolate(col.emission, White, 0.1f);
+	color em = color::interpolate(col.emission, White, 0.1f);
 	nix::SetMaterial(col.ambient, col.diffuse, col.specular, col.shininess, em);
-	if (true){//MVFXEnabled){
+	if (true) {//MVFXEnabled){
 		nix::SetZ(alpha.zbuffer, alpha.zbuffer);
-		if (alpha.mode == TRANSPARENCY_COLOR_KEY_HARD)
+		if (alpha.mode == TRANSPARENCY_COLOR_KEY_HARD) {
 			nix::SetAlpha(ALPHA_COLOR_KEY_HARD);
-		else if (alpha.mode == TRANSPARENCY_COLOR_KEY_SMOOTH)
+		} else if (alpha.mode == TRANSPARENCY_COLOR_KEY_SMOOTH) {
 			nix::SetAlpha(ALPHA_COLOR_KEY_SMOOTH);
-		else if (alpha.mode == TRANSPARENCY_FUNCTIONS){
+		} else if (alpha.mode == TRANSPARENCY_FUNCTIONS) {
 			nix::SetAlpha(alpha.source, alpha.destination);
 			//NixSetZ(false,false);
-		}else if (alpha.mode == TRANSPARENCY_FACTOR){
+		} else if (alpha.mode == TRANSPARENCY_FACTOR) {
 			nix::SetAlpha(alpha.factor);
 			//NixSetZ(false,false);
 		}

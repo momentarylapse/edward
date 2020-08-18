@@ -575,9 +575,9 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<Mo
 		float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
 		color cc;
 		if (e.is_selected) {
-			cc = ColorInterpolate(scheme.SELECTION, bg, 1-f);
+			cc = color::interpolate(scheme.SELECTION, bg, 1-f);
 		} else {
-			cc = ColorInterpolate(scheme.TEXT, bg, 1-f);
+			cc = color::interpolate(scheme.TEXT, bg, 1-f);
 		}
 		line_color.add(cc);
 		line_color.add(cc);

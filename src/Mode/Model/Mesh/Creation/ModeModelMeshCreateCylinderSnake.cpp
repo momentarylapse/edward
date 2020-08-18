@@ -147,7 +147,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 
 
 		// control polygon
-		set_color(ColorInterpolate(scheme.CREATION_LINE, scheme.BACKGROUND, 0.3f));
+		set_color(color::interpolate(scheme.CREATION_LINE, scheme.BACKGROUND, 0.3f));
 		set_line_width(scheme.LINE_WIDTH_HELPER);
 		draw_lines(pos, true);
 
