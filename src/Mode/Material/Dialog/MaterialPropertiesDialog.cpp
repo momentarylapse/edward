@@ -25,51 +25,53 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	data = _data;
 
 	// dialog
-	event("mat_add_texture_level", [=]{ OnAddTextureLevel(); });
-	event("mat_textures", [=]{ OnTextures(); });
-	event_x("mat_textures", "hui:select", [=]{ OnTexturesSelect(); });
-	event("mat_delete_texture_level", [=]{ OnDeleteTextureLevel(); });
-	event("mat_empty_texture_level", [=]{ OnEmptyTextureLevel(); });
-	event("transparency_mode:none", [=]{ OnTransparencyMode(); });
-	event("transparency_mode:function", [=]{ OnTransparencyMode(); });
-	event("transparency_mode:color_key", [=]{ OnTransparencyMode(); });
-	event("transparency_mode:factor", [=]{ OnTransparencyMode(); });
-	event("reflection_mode:none", [=]{ OnReflectionMode(); });
-	event("reflection_mode:cube_static", [=]{ OnReflectionMode(); });
-	event("reflection_mode:cube_dynamic", [=]{ OnReflectionMode(); });
-	event("reflection_textures", [=]{ OnReflectionTextures(); });
-	event("find_shader", [=]{ OnFindShader(); });
+	event("mat_add_texture_level", [=]{ on_add_texture_level(); });
+	event("mat_textures", [=]{ on_textures(); });
+	event_x("mat_textures", "hui:select", [=]{ on_textures_select(); });
+	event("mat_delete_texture_level", [=]{ on_delete_texture_level(); });
+	event("mat_empty_texture_level", [=]{ on_clear_texture_level(); });
+	event("transparency_mode:none", [=]{ on_transparency_mode(); });
+	event("transparency_mode:function", [=]{ on_transparency_mode(); });
+	event("transparency_mode:color_key", [=]{ on_transparency_mode(); });
+	event("transparency_mode:factor", [=]{ on_transparency_mode(); });
+	event("reflection_mode:none", [=]{ on_reflection_mode(); });
+	event("reflection_mode:cube_static", [=]{ on_reflection_mode(); });
+	event("reflection_mode:cube_dynamic", [=]{ on_reflection_mode(); });
+	event("reflection_textures", [=]{ on_reflection_textures(); });
+	event("find_shader", [=]{ on_find_shader(); });
+	event("shader-clear", [=]{ on_clear_shader(); });
 
 
-	event("mat_am", [=]{ ApplyData(); });
-	event("mat_di", [=]{ ApplyData(); });
-	event("mat_sp", [=]{ ApplyData(); });
-	event("mat_em", [=]{ ApplyData(); });
-	event("mat_shininess", [=]{ ApplyDataDelayed(); });
+	event("mat_am", [=]{ apply_data(); });
+	event("mat_di", [=]{ apply_data(); });
+	event("mat_sp", [=]{ apply_data(); });
+	event("mat_em", [=]{ apply_data(); });
+	event("mat_shininess", [=]{ apply_data_delayed(); });
 
-	event("alpha_factor", [=]{ ApplyDataDelayed(); });
-	event("alpha_source", [=]{ ApplyDataDelayed(); });
-	event("alpha_dest", [=]{ ApplyDataDelayed(); });
-	event("alpha_z_buffer", [=]{ ApplyData(); });
+	event("alpha_factor", [=]{ apply_data_delayed(); });
+	event("alpha_source", [=]{ apply_data_delayed(); });
+	event("alpha_dest", [=]{ apply_data_delayed(); });
+	event("alpha_z_buffer", [=]{ apply_data(); });
 
-	event("rcjump", [=]{ ApplyPhysDataDelayed(); });
-	event("rcstatic", [=]{ ApplyPhysDataDelayed(); });
-	event("rcsliding", [=]{ ApplyPhysDataDelayed(); });
-	event("rcroll", [=]{ ApplyPhysDataDelayed(); });
+	event("rcjump", [=]{ apply_phys_data_delayed(); });
+	event("rcstatic", [=]{ apply_phys_data_delayed(); });
+	event("rcsliding", [=]{ apply_phys_data_delayed(); });
+	event("rcroll", [=]{ apply_phys_data_delayed(); });
 
 	expand("material_dialog_grp_color", 0, true);
+
+	set_options("shader_file", "placeholder=- engine default shader -");
 
 	temp = data->appearance;
 	temp_phys = data->physics;
 	apply_queue_depth = 0;
 	apply_phys_queue_depth = 0;
-	LoadData();
+	load_data();
 	data->subscribe(this, [=]{ on_data_update(); });
 }
 
-void MaterialPropertiesDialog::LoadData()
-{
-	FillTextureList();
+void MaterialPropertiesDialog::load_data() {
+	fill_texture_list();
 	set_color("mat_am", temp.ambient);
 	set_color("mat_di", temp.diffuse);
 	set_color("mat_sp", temp.specular);
@@ -109,7 +111,7 @@ void MaterialPropertiesDialog::LoadData()
 	else
 		set_int("reflection_size", 0);
 	set_int("reflection_density", temp.reflection_density);
-	RefillReflTexView();
+	refill_refl_tex_view();
 	enable("reflection_size", ((temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC) or (temp.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC)));
 	enable("reflection_textures", (temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC));
 	enable("reflection_density", (temp.reflection_mode != REFLECTION_NONE));
@@ -129,54 +131,54 @@ MaterialPropertiesDialog::~MaterialPropertiesDialog() {
 void MaterialPropertiesDialog::on_data_update() {
 	temp = data->appearance;
 	temp_phys = data->physics;
-	LoadData();
+	load_data();
 }
 
-void MaterialPropertiesDialog::OnAddTextureLevel() {
+void MaterialPropertiesDialog::on_add_texture_level() {
 	if (temp.texture_files.num >= MATERIAL_MAX_TEXTURES){
 		ed->error_box(format(_("Only %d texture levels allowed!"), MATERIAL_MAX_TEXTURES));
 		return;
 	}
 	temp.texture_files.add("");
-	ApplyData();
+	apply_data();
 }
 
-void MaterialPropertiesDialog::OnTextures() {
+void MaterialPropertiesDialog::on_textures() {
 	int sel = get_int("");
 	if ((sel >= 0) and (sel < temp.texture_files.num))
 		if (storage->file_dialog(FD_TEXTURE, false, true)) {
 			temp.texture_files[sel] = storage->dialog_file;
-			ApplyData();
+			apply_data();
 			//mmaterial->Texture[sel] = MetaLoadTexture(mmaterial->TextureFile[sel]);
-			FillTextureList();
+			fill_texture_list();
 		}
 }
 
-void MaterialPropertiesDialog::OnTexturesSelect() {
+void MaterialPropertiesDialog::on_textures_select() {
 	int sel = get_int("");
 	enable("mat_delete_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
 	enable("mat_empty_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
 }
 
-void MaterialPropertiesDialog::OnDeleteTextureLevel() {
+void MaterialPropertiesDialog::on_delete_texture_level() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0) {
 		temp.texture_files.erase(sel);
-		ApplyData();
-		FillTextureList();
+		apply_data();
+		fill_texture_list();
 	}
 }
 
-void MaterialPropertiesDialog::OnEmptyTextureLevel() {
+void MaterialPropertiesDialog::on_clear_texture_level() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0) {
 		temp.texture_files[sel] = "";
-		ApplyData();
-		FillTextureList();
+		apply_data();
+		fill_texture_list();
 	}
 }
 
-void MaterialPropertiesDialog::OnTransparencyMode() {
+void MaterialPropertiesDialog::on_transparency_mode() {
 	if (is_checked("transparency_mode:function"))
 		temp.transparency_mode = TRANSPARENCY_FUNCTIONS;
 	else if (is_checked("transparency_mode:color_key"))
@@ -188,10 +190,10 @@ void MaterialPropertiesDialog::OnTransparencyMode() {
 	enable("alpha_factor", temp.transparency_mode == TRANSPARENCY_FACTOR);
 	enable("alpha_source", temp.transparency_mode == TRANSPARENCY_FUNCTIONS);
 	enable("alpha_dest", temp.transparency_mode == TRANSPARENCY_FUNCTIONS);
-	ApplyData();
+	apply_data();
 }
 
-void MaterialPropertiesDialog::OnReflectionMode() {
+void MaterialPropertiesDialog::on_reflection_mode() {
 	if (is_checked("reflection_mode:cube_static"))
 		temp.reflection_mode = REFLECTION_CUBE_MAP_STATIC;
 	else if (is_checked("reflection_mode:cube_dynamic"))
@@ -201,10 +203,10 @@ void MaterialPropertiesDialog::OnReflectionMode() {
 	enable("reflection_size", ((temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC) or (temp.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC)));
 	enable("reflection_textures", (temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC));
 	enable("reflection_density", (temp.reflection_mode != REFLECTION_NONE));
-	ApplyData();
+	apply_data();
 }
 
-void MaterialPropertiesDialog::OnReflectionTextures() {
+void MaterialPropertiesDialog::on_reflection_textures() {
 #if 0
 	int sel=get_int("");
 	if (storage->file_dialog(FD_TEXTURE,false,true)) {
@@ -221,32 +223,39 @@ void MaterialPropertiesDialog::OnReflectionTextures() {
 			}
 
 		}
-		ApplyData();
-		RefillReflTexView();
+		apply_data();
+		refill_refl_tex_view();
 	}
 #endif
 }
 
-bool TestShaderFile(const Path &filename) {
+bool test_shader_file(const Path &filename) {
 	auto *shader = nix::Shader::load(filename);
 	shader->unref();
 	return shader;
 }
 
-void MaterialPropertiesDialog::OnFindShader() {
+void MaterialPropertiesDialog::on_find_shader() {
 	if (storage->file_dialog(FD_SHADERFILE,false,true)){
-		if (TestShaderFile(storage->dialog_file)){
+		if (test_shader_file(storage->dialog_file)){
 			set_string("shader_file", storage->dialog_file.str());
 			temp.shader_file = get_string("shader_file");
 			temp.update_shader_from_file();
-			ApplyData();
+			apply_data();
 		}else{
 			ed->error_box(_("Error in shader file:\n") + nix::shader_error);
 		}
 	}
 }
 
-void MaterialPropertiesDialog::ApplyData() {
+void MaterialPropertiesDialog::on_clear_shader() {
+	set_string("shader_file", "");
+	temp.shader_file = "";
+	temp.update_shader_from_file();
+	apply_data();
+}
+
+void MaterialPropertiesDialog::apply_data() {
 	if (apply_queue_depth > 0)
 		apply_queue_depth --;
 	if (apply_queue_depth > 0)
@@ -267,12 +276,12 @@ void MaterialPropertiesDialog::ApplyData() {
 	data->execute(new ActionMaterialEditAppearance(temp));
 }
 
-void MaterialPropertiesDialog::ApplyDataDelayed() {
+void MaterialPropertiesDialog::apply_data_delayed() {
 	apply_queue_depth ++;
-	hui::RunLater(0.5f, [=]{ ApplyData(); });
+	hui::RunLater(0.5f, [=]{ apply_data(); });
 }
 
-void MaterialPropertiesDialog::ApplyPhysData() {
+void MaterialPropertiesDialog::apply_phys_data() {
 	if (apply_phys_queue_depth> 0)
 		apply_phys_queue_depth --;
 	if (apply_phys_queue_depth > 0)
@@ -285,12 +294,12 @@ void MaterialPropertiesDialog::ApplyPhysData() {
 	data->execute(new ActionMaterialEditPhysics(temp_phys));
 }
 
-void MaterialPropertiesDialog::ApplyPhysDataDelayed() {
+void MaterialPropertiesDialog::apply_phys_data_delayed() {
 	apply_phys_queue_depth ++;
-	hui::RunLater(0.5f, [=]{ ApplyPhysData(); });
+	hui::RunLater(0.5f, [=]{ apply_phys_data(); });
 }
 
-void MaterialPropertiesDialog::RefillReflTexView() {
+void MaterialPropertiesDialog::refill_refl_tex_view() {
 	reset("reflection_textures");
 	add_string("reflection_textures", " + X\\" + temp.reflection_texture_file[0].str());
 	add_string("reflection_textures", " - X\\" + temp.reflection_texture_file[1].str());
@@ -300,7 +309,7 @@ void MaterialPropertiesDialog::RefillReflTexView() {
 	add_string("reflection_textures", " - Z\\" + temp.reflection_texture_file[5].str());
 }
 
-void MaterialPropertiesDialog::FillTextureList() {
+void MaterialPropertiesDialog::fill_texture_list() {
 	reset("mat_textures");
 	for (int i=0;i<temp.texture_files.num;i++) {
 		nix::Texture *tex = nix::LoadTexture(temp.texture_files[i]);

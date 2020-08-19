@@ -16,24 +16,25 @@ public:
 	MaterialPropertiesDialog(hui::Window *_parent, DataMaterial *_data);
 	virtual ~MaterialPropertiesDialog();
 
-	void LoadData();
-	void ApplyData();
-	void ApplyDataDelayed();
-	void ApplyPhysData();
-	void ApplyPhysDataDelayed();
+	void load_data();
+	void apply_data();
+	void apply_data_delayed();
+	void apply_phys_data();
+	void apply_phys_data_delayed();
 
-	void OnTextures();
-	void OnTexturesSelect();
-	void OnAddTextureLevel();
-	void OnDeleteTextureLevel();
-	void OnEmptyTextureLevel();
-	void OnTransparencyMode();
-	void OnReflectionMode();
-	void OnReflectionTextures();
-	void OnFindShader();
+	void on_textures();
+	void on_textures_select();
+	void on_add_texture_level();
+	void on_delete_texture_level();
+	void on_clear_texture_level();
+	void on_transparency_mode();
+	void on_reflection_mode();
+	void on_reflection_textures();
+	void on_find_shader();
+	void on_clear_shader();
 
-	void RefillReflTexView();
-	void FillTextureList();
+	void refill_refl_tex_view();
+	void fill_texture_list();
 
 	void on_data_update();
 

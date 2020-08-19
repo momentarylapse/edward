@@ -450,6 +450,7 @@ void init_shaders() {
 		"}\n"
 		"</FragmentShader>");
 	default_shader_3d->link_uniform_block("LightData", 1);
+	default_shader_3d->filename = "-default 3d-";
 
 
 
@@ -484,6 +485,7 @@ void init_shaders() {
 		"	color *= fragmentColor;\n"
 		"}\n"
 		"</FragmentShader>");
+		default_shader_2d->filename = "-default 2d-";
 
 		default_shader_3d->ref();
 		default_shader_2d->ref();

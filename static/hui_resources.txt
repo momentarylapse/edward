@@ -1824,10 +1824,10 @@ Grid
 
 0
 0
-2
+3
 Edit
 shader_file
-expandx
+expandx,disabled
 0
 0
 0
@@ -1835,6 +1835,12 @@ Button
 find_shader
 image=hui:open
 1
+0
+0
+Button
+shader-clear
+image=hui:delete,toolip=Remove
+2
 0
 0
 Separator
@@ -9986,7 +9992,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-994
+996
 # Text
 /ambient
 Ambient
@@ -10477,6 +10483,9 @@ Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\
 material_dialog/alpha_z_buffer
 Z-buffer enabled
 
+material_dialog/find_shader
+
+Select a shader file...
 material_dialog/header
 Material
 
@@ -10549,6 +10558,9 @@ material_dialog/reflection_size
 material_dialog/reflection_textures
 face\\texture
 
+material_dialog/shader_file
+
+Using the default shader, if left blank
 material_dialog/transparency_mode:color_key
 Color key
 
