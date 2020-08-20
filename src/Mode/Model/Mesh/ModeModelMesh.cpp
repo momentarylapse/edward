@@ -706,7 +706,7 @@ void ModeModelMesh::draw_selection(MultiView::Window *win) {
 	nix::DrawTriangles(vb_marked);
 	ModeModel::set_material_creation();
 	nix::DrawTriangles(vb_creation);
-	nix::SetMaterial(White,White,Black,0,Black);
+	nix::SetMaterial(White, 0.5f, 0,10, Black);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetOffset(0);
 }

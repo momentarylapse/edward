@@ -18,7 +18,7 @@ class NodeMaterial extends shader.Node
 		let em = c.create_out(self, 4)
 		return "
 	vec4 {{di}} = material.diffusive;
-	float {{am}} = material.ambient.r;
-	float {{sp}} = material.specular.r;
+	float {{am}} = material.ambient;
+	float {{sp}} = material.specular;
 	float {{sh}} = material.shininess;
 	vec4 {{em}} = material.emission;"

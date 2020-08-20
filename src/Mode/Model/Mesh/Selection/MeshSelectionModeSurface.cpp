@@ -66,7 +66,7 @@ void MeshSelectionModeSurface::on_draw_win(MultiView::Window *win) {
 	nix::SetOffset(1.0f);
 	mode_model->set_material_hover();
 	nix::DrawTriangles(parent->vb_hover);
-	nix::SetMaterial(White,White,Black,0,Black);
+	nix::SetMaterial(White, 0.5f, 0,10, Black);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetOffset(0);
 }

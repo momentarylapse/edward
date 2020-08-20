@@ -36,9 +36,12 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		}
 		// Colors
 		f->read_comment();
-		read_color_argb(f, data->appearance.ambient);
+		color cc;
+		read_color_argb(f, cc);
 		read_color_argb(f, data->appearance.diffuse);
-		read_color_argb(f, data->appearance.specular);
+		data->appearance.ambient = 0.5f;
+		read_color_argb(f, cc);
+		data->appearance.specular = 0.1f;
 		data->appearance.shininess = f->read_int();
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
@@ -81,9 +84,12 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 	}else if (ffv==2){
 		// Colors
 		f->read_comment();
-		read_color_argb(f, data->appearance.ambient);
+		color cc;
+		read_color_argb(f, cc);
+		data->appearance.ambient = 0.5f;
 		read_color_argb(f, data->appearance.diffuse);
-		read_color_argb(f, data->appearance.specular);
+		read_color_argb(f, cc);
+		data->appearance.specular = 0.1f;
 		data->appearance.shininess = (float)f->read_int();
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
@@ -123,9 +129,12 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 	}else if (ffv==1){
 		// Colors
 		f->read_comment();
-		read_color_argb(f, data->appearance.ambient);
+		color cc;
+		read_color_argb(f, cc);
+		data->appearance.ambient = 0.5f;
 		read_color_argb(f, data->appearance.diffuse);
-		read_color_argb(f, data->appearance.specular);
+		read_color_argb(f, cc);
+		data->appearance.specular = 0.1f;
 		data->appearance.shininess = (float)f->read_int();
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
@@ -176,9 +185,9 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 	for (auto &tf: data->appearance.texture_files)
 		f->write_str(tf.str());
 	f->write_comment("// Colors");
-	write_color_argb(f, data->appearance.ambient);
+	write_color_argb(f, data->appearance.ambient * data->appearance.diffuse);
 	write_color_argb(f, data->appearance.diffuse);
-	write_color_argb(f, data->appearance.specular);
+	write_color_argb(f, data->appearance.specular * data->appearance.diffuse);
 	f->write_int(data->appearance.shininess);
 	write_color_argb(f, data->appearance.emissive);
 	f->write_comment("// Transparency");

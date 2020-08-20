@@ -6,10 +6,10 @@ class NodeFog extends shader.Node
 		params.add([shader.TYPE_COLOR, "diffuse", "#ffffffff", ""])
 		output.add([shader.TYPE_COLOR, "out"])
 	override const string[] dependencies()
-		return ["fog", "pos", "matview", "matworld"]
+		return ["fog", "pos", "matrix"]
 	override const string code_pixel(out shader.BuilderContext c)
 		let tt = c.create_temp(self, -1, shader.TYPE_FLOAT)
 		let t = c.create_out(self, 0)
 		return "
-	float {{tt}} = exp(-(mat_v * mat_m * in_pos).z * fog.density);
+	float {{tt}} = exp(-(matrix.view * matrix.model * in_pos).z * fog.density);
 	vec4 {{t}} = (1 - {{tt}}) * fog.color + {{tt}} * {{c.value(self, 0)}};"

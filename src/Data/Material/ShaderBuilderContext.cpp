@@ -75,7 +75,7 @@ string ShaderBuilderContext::build_helper_vars() {
 	}
 	if (vars.contains("material")) {
 		source +=
-			"struct Material { vec4 ambient, diffusive, specular, emission; float shininess; };\n"
+			"struct Material { vec4 diffusive, emission; float ambient, specular, shininess; };\n"
 			"uniform Material material;\n";
 	}
 	if (vars.contains("normal")) {
@@ -93,14 +93,10 @@ string ShaderBuilderContext::build_helper_vars() {
 	if (vars.contains("cubemap")) {
 		source += "uniform samplerCube tex4;\n";
 	}
-	if (vars.contains("matview")) {
-		source += "uniform mat4 mat_v;\n";
-	}
-	if (vars.contains("matworld")) {
-		source += "uniform mat4 mat_m;\n";
-	}
-	if (vars.contains("matproject")) {
-		source += "uniform mat4 mat_p;\n";
+	if (vars.contains("matrix") or vars.contains("matworld") or vars.contains("matproject")) {
+		source +=
+			"struct Matrix { mat4 model, view, project; };\n"
+			"/*layout(binding = 0)*/ uniform Matrix matrix;\n";
 	}
 
 	return source;
@@ -151,14 +147,14 @@ string ShaderBuilderContext::build_helper_functions() {
 	}
 	if (funcs.contains("basic_lighting")) {
 		source += "\nvec4 basic_lighting(vec3 n, vec4 diffuse, float ambient, float specular, float shininess, vec4 emission, Light l) {\n"
-		"	vec3 L = (mat_v * vec4(l.dir.xyz, 0)).xyz;\n"
+		"	vec3 L = (matrix.view * vec4(l.dir.xyz, 0)).xyz;\n"
 		"	float d = max(-dot(n, L), 0);\n"
 		"	vec4 r = ambient * l.color * (1 - l.harshness) / 2;\n"
 		"	r += l.color * l.harshness * d;\n"
 		"	r *= diffuse;\n"
 		"	r += emission;\n"
 		"	if ((d > 0) && (material.shininess > 1)) {\n"
-		"		vec3 e = normalize((mat_v * mat_m * in_pos).xyz); // eye dir\n"
+		"		vec3 e = normalize((matrix.view * matrix.model * in_pos).xyz); // eye dir\n"
 		"		vec3 rl = reflect(L, n);\n"
 		"		float ee = max(-dot(e, rl), 0);\n"
 		"		r += specular * l.color * l.harshness * pow(ee, shininess);\n"

@@ -5,7 +5,7 @@ fog
 	struct Fog { vec4 color; float density; };
 	uniform Fog fog;
 material
-	struct Material { vec4 ambient, diffusive, specular, emission; float shininess; };
+	struct Material { diffusive, emission; float ambient, specular, shininess; };
 	uniform Material material;
 normal
 	layout(location = 0) in vec3 in_normal;
@@ -17,9 +17,7 @@ texture
 	uniform sampler2D tex0;
 cubemap
 	uniform samplerCube tex4;
-matview
-	uniform mat4 mat_v;
-matworld
-	uniform mat4 mat_m;
-matproject
-	uniform mat4 mat_p;
+matrix
+	struct Matrix { mat4 model, view, project; };
+	uniform Matrix matrix;
+

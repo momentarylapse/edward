@@ -72,9 +72,9 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 
 void MaterialPropertiesDialog::load_data() {
 	fill_texture_list();
-	set_color("mat_am", temp.ambient);
+	set_float("mat_am", temp.ambient);
 	set_color("mat_di", temp.diffuse);
-	set_color("mat_sp", temp.specular);
+	set_float("mat_sp", temp.specular);
 	set_color("mat_em", temp.emissive);
 	set_float("mat_shininess", temp.shininess);
 
@@ -260,9 +260,10 @@ void MaterialPropertiesDialog::apply_data() {
 		apply_queue_depth --;
 	if (apply_queue_depth > 0)
 		return;
-	temp.ambient = get_color("mat_am");
+	msg_todo("MaterialPropertiesDialog::apply_data");
+	temp.ambient = get_float("mat_am");
 	temp.diffuse = get_color("mat_di");
-	temp.specular = get_color("mat_sp");
+	temp.specular = get_float("mat_sp");
 	temp.emissive = get_color("mat_em");
 	temp.shininess = get_float("mat_shininess");
 	temp.alpha_z_buffer = is_checked("alpha_z_buffer");

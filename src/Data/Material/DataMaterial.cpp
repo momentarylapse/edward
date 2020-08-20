@@ -28,9 +28,9 @@ DataMaterial::~DataMaterial() {
 void DataMaterial::AppearanceData::reset() {
 	texture_files.clear();
 
-	ambient = White;
+	ambient = 0.5f;
 	diffuse = White;
-	specular = Black;
+	specular = 0;
 	shininess = 20;
 	emissive = Black;
 
@@ -84,7 +84,7 @@ void DataMaterial::reset() {
 }
 
 void DataMaterial::apply_for_rendering() {
-	nix::SetMaterial(appearance.ambient, appearance.diffuse, appearance.specular, appearance.shininess, appearance.emissive);
+	nix::SetMaterial(appearance.diffuse, appearance.ambient, appearance.specular, appearance.shininess, appearance.emissive);
 
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetZ(true, true);

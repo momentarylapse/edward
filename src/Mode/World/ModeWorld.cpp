@@ -653,7 +653,7 @@ void DrawSelectionObject(Model *o, float alpha, const color &c) {
 		for (int j=0; j<o->material[i]->textures.num; j++)
 			tex.add(NULL);
 		nix::SetTextures(tex);
-		nix::SetMaterial(Black, color(alpha, 0, 0, 0), Black, 0, c);
+		nix::SetMaterial(color(alpha, 0, 0, 0), 0, 0,10, c);
 		//o->just_draw(i, d);
 		nix::DrawTriangles(o->mesh[0]->sub[i].vertex_buffer);
 	}
@@ -663,7 +663,7 @@ void DrawSelectionObject(Model *o, float alpha, const color &c) {
 void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
 	nix::SetAlpha(ALPHA_MATERIAL);
 
-	nix::SetMaterial(Black, color(alpha, 0, 0, 0), Black, 0, c);
+	nix::SetMaterial(color(alpha, 0, 0, 0), 0, 0,10, c);
 
 	nix::SetWorldMatrix(matrix::ID);
 	t->draw();
@@ -714,9 +714,11 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 
 		// prepare...
 		t.terrain->draw();
+		nix::SetShader(nix::default_shader_3d);
 
 		auto mat = t.terrain->material;
-		nix::SetMaterial(mat->ambient, mat->diffuse, mat->specular, mat->shininess, mat->emission);
+		msg_todo("ModeWorld::on_draw_win");
+		nix::SetMaterial(mat->diffuse, 0.5f, 0.1f, mat->shininess, mat->emission);
 		nix::SetTextures(mat->textures);
 		nix::DrawTriangles(t.terrain->vertex_buffer);
 
@@ -739,7 +741,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			for (int i=0;i<o.object->material.num;i++) {
 				auto mat = o.object->material[i];
 				mat->shader = NULL;
-				nix::SetMaterial(mat->ambient, mat->diffuse, mat->specular, mat->shininess, mat->emission);
+				nix::SetMaterial(mat->diffuse, 0.5f, 0.1f, mat->shininess, mat->emission);
 				nix::SetTextures(mat->textures);
 				nix::DrawTriangles(o.object->mesh[0]->sub[i].vertex_buffer);
 			}

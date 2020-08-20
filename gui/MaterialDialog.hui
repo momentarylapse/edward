@@ -4,14 +4,14 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 		Grid ? "" vertical
 			Expander material_dialog_grp_color "Colors"
 				Grid ? ""
-					Text /ambient "Ambient" right disabled
-					ColorButton mat_am "" expandx
-					---|
 					Text /diffuse "Diffuse" right disabled
 					ColorButton mat_di "" alpha
 					---|
+					Text /ambient "Ambient" right disabled
+					SpinButton mat_am "" expandx range=0:1:0.01
+					---|
 					Text /specular "Specular" right disabled
-					ColorButton mat_sp ""
+					SpinButton mat_sp "" range=0:1:0.01
 					---|
 					Text /shininess "Shininess" right disabled
 					SpinButton mat_shininess "" range=0:10000:0.1

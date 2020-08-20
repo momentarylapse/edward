@@ -338,9 +338,9 @@ void ActionController::draw(Window *win) {
 		if (!geo_allow(i, win, m))
 			continue;
 		if (ac_geo_config[i].constraint == mouse_over_constraint)
-			nix::SetMaterial(Black, White, Black, 0, White);
+			nix::SetMaterial(White, 0, 0,10, White);
 		else
-			nix::SetMaterial(Black, Black, Black, 0, ac_geo_config[i].col);
+			nix::SetMaterial(Black, 0, 0,10, ac_geo_config[i].col);
 		nix::DrawTriangles(buf[i]);
 	}
 	nix::SetZ(false, false);

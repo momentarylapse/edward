@@ -153,7 +153,7 @@ void ModelMaterial::applyForRendering() {
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetShader(nix::default_shader_3d);
 	color em = color::interpolate(col.emission, White, 0.1f);
-	nix::SetMaterial(col.ambient, col.diffuse, col.specular, col.shininess, em);
+	nix::SetMaterial(col.diffuse, 0.5f, 0.7f, col.shininess, em);
 	if (true) {//MVFXEnabled){
 		nix::SetZ(alpha.zbuffer, alpha.zbuffer);
 		if (alpha.mode == TRANSPARENCY_COLOR_KEY_HARD) {
