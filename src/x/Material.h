@@ -1,5 +1,5 @@
-#ifndef MATERIAL_H_
-#define MATERIAL_H_
+#ifndef SRC_WORLD_MATERIAL_H_
+#define SRC_WORLD_MATERIAL_H_
 
 #include "../lib/base/base.h"
 #include "../lib/file/path.h"
@@ -7,6 +7,7 @@
 
 #define MATERIAL_MAX_TEXTURES		8
 
+class Path;
 class Model;
 namespace nix {
 	class Texture;
@@ -25,8 +26,8 @@ public:
 	nix::Shader *shader;
 
 	// light
-	color ambient, diffuse, specular, emission;
-	float shininess;
+	color diffuse, emission;
+	float ambient, specular, shininess;
 
 	struct Transparency {
 		int mode;
@@ -80,6 +81,7 @@ void MaterialInit();
 void MaterialEnd();
 void MaterialReset();
 void SetDefaultMaterial(Material *m);
+void MaterialSetDefaultShader(nix::Shader *s);
 Material *LoadMaterial(const Path &filename);
 
 #endif

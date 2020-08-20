@@ -170,7 +170,7 @@ bool Lightmap::RenderTextures()
 			mat->texture_levels.resize(2);
 			mat->texture_levels[1] = new ModelMaterial::TextureLevel();
 			mat->texture_levels[1]->filename = m.tex_name;
-			mat->col.ambient = White;
+			mat->col.ambient = 0.5f;
 			mat->col.diffuse = Black;
 			mat->col.emission = Black;
 			mat->col.user = true;

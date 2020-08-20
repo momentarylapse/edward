@@ -10,14 +10,14 @@ Dialog model_material_dialog "Material" width=350 height=371
 					CheckBox default_colors "Use colors from material"
 					---|
 					Grid ? ""
-						Text /ambient "Ambient" right disabled
-						ColorButton mat_am "" expandx "tooltip=Color in shadows (ambient light)"
-						---|
 						Text /diffuse "Diffuse" right disabled
 						ColorButton mat_di "" alpha "tooltip=Color in direct light"
 						---|
+						Text /ambient "Ambient" right disabled
+						SpinButton mat_am "" expandx "tooltip=Color in shadows (ambient light)" range=0:1:0.01
+						---|
 						Text /specular "Specular" right disabled
-						ColorButton mat_sp "" "tooltip=Color of specular highlights"
+						SpinButton mat_sp "" "tooltip=Color of specular highlights" range=0:1:0.01
 						---|
 						Text /shininess "Shininess" right disabled
 						SpinButton mat_shininess "" range=0:10000:0.1 "tooltip=Harshness of highlights (10=soft, 100=harsh)"

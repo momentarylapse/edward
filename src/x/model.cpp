@@ -21,7 +21,7 @@
 | last update: 2008.10.26 (c) by MichiSoft TM                                  |
 \*----------------------------------------------------------------------------*/
 #include "model.h"
-#include "material.h"
+#include "Material.h"
 #include "world.h"
 #include "../meta.h"
 #if HAS_LIB_VULKAN
@@ -37,6 +37,7 @@
 
 //#define MODEL_MAX_EDGES			65536
 
+float col_frac(const color &a, const color &b);
 
 void MoveTimeAdd(Model *m,int operation_no,float elapsed,float v,bool loop);
 
@@ -341,11 +342,14 @@ void Model::load(const Path &filename)
 		material[i] = m;
 		bool user_colors = f->read_bool();
 		if (user_colors){
-			m->ambient = file_read_color4i(f);
+			color am, sp;
+			am = file_read_color4i(f);
 			m->diffuse = file_read_color4i(f);
-			m->specular = file_read_color4i(f);
+			sp = file_read_color4i(f);
 			m->emission = file_read_color4i(f);
 			m->shininess = (float)f->read_int();
+			m->ambient = col_frac(am, m->diffuse) / 2;
+			m->specular = col_frac(am, White);
 		}else{
 			file_read_color4i(f);
 			file_read_color4i(f);

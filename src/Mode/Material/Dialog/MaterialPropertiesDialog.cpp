@@ -260,7 +260,6 @@ void MaterialPropertiesDialog::apply_data() {
 		apply_queue_depth --;
 	if (apply_queue_depth > 0)
 		return;
-	msg_todo("MaterialPropertiesDialog::apply_data");
 	temp.ambient = get_float("mat_am");
 	temp.diffuse = get_color("mat_di");
 	temp.specular = get_float("mat_sp");

@@ -9,7 +9,7 @@
 #define DATAMATERIAL_H_
 
 #include "../Data.h"
-#include "../../x/material.h"
+#include "../../x/Material.h"
 
 namespace nix {
 	class Texture;

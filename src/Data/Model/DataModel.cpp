@@ -167,7 +167,7 @@ void DataModel::reset() {
 	material[0]->texture_levels[0]->reload_image();
 	material[0]->col.user = true;
 	material[0]->col.diffuse = White;
-	material[0]->col.specular = White;
+	material[0]->col.specular = 0.4f;
 
 	// skeleton
 	bone.clear();

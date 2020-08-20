@@ -8,7 +8,7 @@
 #ifndef MODELMATERIAL_H_
 #define MODELMATERIAL_H_
 
-#include "../../x/material.h"
+#include "../../x/Material.h"
 
 namespace nix{
 	class Texture;
@@ -55,9 +55,9 @@ public:
 
 	struct Color {
 		bool user;
-		color ambient;
+		float ambient;
 		color diffuse;
-		color specular;
+		float specular;
 		color emission;
 		float shininess;
 	} col;

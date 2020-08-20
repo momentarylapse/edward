@@ -41,7 +41,7 @@
 #include "fx/fx.h"
 #endif
 #else // for use in Edward
-#include "x/material.h"
+#include "x/Material.h"
 #include "x/model.h"
 #include "x/ModelManager.h"
 #include "x/font.h"

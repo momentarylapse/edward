@@ -9,7 +9,7 @@
 #define SRC_DATA_WORLD_WORLDTERRAIN_H_
 
 #include "../../MultiView/SingleData.h"
-#include "../../x/material.h"
+#include "../../x/Material.h"
 
 class Terrain;
 

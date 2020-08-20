@@ -12,7 +12,7 @@
 #include "../lib/base/base.h"
 #include "../lib/file/path.h"
 #include "../lib/math/math.h"
-#include "material.h"
+#include "Material.h"
 class Material;
 class TraceData;
 namespace nix {

@@ -1,10 +1,7 @@
-#include "material.h"
+#include "Material.h"
 #include "model.h"
 #include "../lib/file/file.h"
 #include "../lib/nix/nix.h"
-#ifdef _X_ALLOW_X_
-#include "../meta.h"
-#endif
 
 color file_read_color4i(File *f); // -> model.cpp
 
@@ -20,6 +17,7 @@ void MaterialInit() {
 	// create the default material
 	trivial_material = new Material;
 	trivial_material->name = "-default-";
+	trivial_material->shader = nix::default_shader_3d->ref();
 
 	SetDefaultMaterial(trivial_material);
 }
@@ -41,6 +39,13 @@ void SetDefaultMaterial(Material *m) {
 	default_material = m;
 }
 
+void MaterialSetDefaultShader(nix::Shader *s) {
+	default_material->shader->unref();
+	default_material->shader = s->ref();
+
+	nix::default_shader_3d = s;
+}
+
 
 
 Material::Material() {
@@ -48,10 +53,10 @@ Material::Material() {
 	reflection.cube_map = NULL;
 	shader = NULL;
 
-	ambient = White;
+	ambient = 0.5f;
 	diffuse = White;
-	specular = Black;
-	shininess = 0;
+	specular = 0;
+	shininess = 10;
 	emission = Black;
 
 	alpha.mode = TRANSPARENCY_NONE;
@@ -72,8 +77,8 @@ Material::Material() {
 
 Material::~Material() {
 	if (shader)
-		delete shader;
-	//	shader->unref();
+	//	delete shader;
+		shader->unref();
 }
 
 
@@ -94,9 +99,13 @@ Material* Material::copy() {
 		cube_map = FxCubeMapNew(m2->cube_map_size);
 		FxCubeMapCreate(cube_map, model);
 	}*/
-	m->shader = shader;
+	m->shader = shader->ref();
 	m->friction = friction;
 	return m;
+}
+
+float col_frac(const color &a, const color &b) {
+	return (a.r+a.g+a.b) / (b.r+b.g+b.b);
 }
 
 
@@ -114,7 +123,7 @@ Material *LoadMaterial(const Path &filename) {
 	msg_write("loading material " + filename.str());
 	try {
 		msg_right();
-		f = FileOpenText(MaterialDir << (filename.str() + ".material"));
+		f = FileOpenText(MaterialDir << filename.with(".material"));
 		Material *m = new Material;
 
 		int ffv = f->ReadFileFormatVersion();
@@ -129,11 +138,13 @@ Material *LoadMaterial(const Path &filename) {
 			m->textures[i] = nix::LoadTexture(f->read_str());
 		// Colors
 		f->read_comment();
-		m->ambient = file_read_color4i(f);
+		color am = file_read_color4i(f);
 		m->diffuse = file_read_color4i(f);
-		m->specular = file_read_color4i(f);
+		color sp = file_read_color4i(f);
 		m->shininess = (float)f->read_int();
 		m->emission = file_read_color4i(f);
+		m->ambient = col_frac(am, m->diffuse) / 2;
+		m->specular = col_frac(sp, White);
 		// Transparency
 		f->read_comment();
 		m->alpha.mode = f->read_int();

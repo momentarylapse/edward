@@ -12,7 +12,7 @@
 #include "../../../Edward.h"
 #include "../../../Storage/Storage.h"
 #include "../../../x/terrain.h"
-#include "../../../x/material.h"
+#include "../../../x/Material.h"
 #include "../../../lib/nix/nix.h"
 #include <assert.h>
 

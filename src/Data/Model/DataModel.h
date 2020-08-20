@@ -12,7 +12,7 @@
 #include "../../MultiView/SingleData.h"
 #include "../../lib/base/set.h"
 #include "../../x/model.h"
-#include "../../x/material.h"
+#include "../../x/Material.h"
 #include "ModelMaterial.h"
 
 class DataModel;

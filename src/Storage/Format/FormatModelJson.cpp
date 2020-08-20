@@ -19,19 +19,16 @@ FormatModelJson::FormatModelJson() : TypedFormat<DataModel>(FD_MODEL, "json", _(
 static FormatModelJson::Value ValueNone;
 
 // needs reflection
-string vecToJson(vector &v)
-{
+string vecToJson(const vector &v) {
 	return format("%f, %f, %f", -v.x, v.y, v.z);
 }
 
-string col3ToJson(color &c)
-{
+string col3ToJson(const color &c) {
 	return format("%f, %f, %f", c.r, c.g, c.b);
 }
 
 // needs reflection
-string qToJson(quaternion &q)
-{
+string qToJson(const quaternion &q) {
 	return format("%f, %f, %f, %f", -q.x, q.y, q.z, -q.w);
 }
 
@@ -43,9 +40,9 @@ string materialToJson(ModelMaterial *m)
 	str += "		'DbgIndex' : 0,\n";
 	str += "		'DbgName' : 'Test',\n";
 	str += "		'blending' : 'NormalBlending',\n";
-	str += "		'colorAmbient' : [" + col3ToJson(m->col.ambient) + "],\n";
+	str += "		'colorAmbient' : [" + col3ToJson(m->col.diffuse * m->col.ambient * 0.5f) + "],\n";
 	str += "		'colorDiffuse' : [" + col3ToJson(m->col.diffuse) + "],\n";
-	str += "		'colorSpecular' : [" + col3ToJson(m->col.specular) + "],\n";
+	str += "		'colorSpecular' : [" + col3ToJson(White * m->col.specular) + "],\n";
 	str += "		'depthTest' : true,\n";
 	str += "		'depthWrite' : true,\n";
 	str += "		'shading' : 'Phong',\n";

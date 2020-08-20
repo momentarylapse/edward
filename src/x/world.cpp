@@ -17,7 +17,7 @@
 #include "object.h"
 #include "model.h"
 #include "ModelManager.h"
-#include "material.h"
+#include "Material.h"
 #include "terrain.h"
 
 #include "../lib/xfile/xml.h"

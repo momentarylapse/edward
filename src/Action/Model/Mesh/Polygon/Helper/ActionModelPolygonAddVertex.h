@@ -9,7 +9,7 @@
 #define ACTIONMODELPOLYGONADDVERTEX_H_
 
 #include "../../../../ActionGroup.h"
-#include "../../../../../x/material.h"
+#include "../../../../../x/Material.h"
 #include "../../../../../lib/math/math.h"
 
 class ActionModelPolygonAddVertex: public ActionGroup {

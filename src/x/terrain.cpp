@@ -10,7 +10,7 @@
 #include "terrain.h"
 //#include "../lib/vulkan/vulkan.h"
 #include "../lib/nix/nix.h"
-#include "material.h"
+#include "Material.h"
 #include "world.h"
 #include "camera.h"
 #ifdef _X_ALLOW_X_

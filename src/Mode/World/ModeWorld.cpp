@@ -22,7 +22,7 @@
 #include "../../lib/nix/nix.h"
 #include "../../x/camera.h"
 #include "../../x/world.h"
-#include "../../x/material.h"
+#include "../../x/Material.h"
 #include "../../x/model.h"
 #include "../../x/object.h"
 #include "../../x/terrain.h"

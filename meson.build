@@ -427,7 +427,7 @@ sources = [
 	'src/Stuff/Progress.cpp',
 	'src/x/camera.cpp',
 	'src/x/font.cpp',
-	'src/x/material.cpp',
+	'src/x/Material.cpp',
 	'src/x/model.cpp',
 	'src/x/ModelManager.cpp',
 	'src/x/object.cpp',

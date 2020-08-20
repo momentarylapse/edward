@@ -106,9 +106,9 @@ void ModelMaterialDialog::load_data() {
 	enable("mat_sp", col.user);
 	enable("mat_em", col.user);
 	enable("mat_shininess", col.user);
-	set_color("mat_am", col.ambient);
+	set_float("mat_am", col.ambient);
 	set_color("mat_di", col.diffuse);
-	set_color("mat_sp", col.specular);
+	set_float("mat_sp", col.specular);
 	set_color("mat_em", col.emission);
 	set_float("mat_shininess", col.shininess);
 
@@ -144,9 +144,9 @@ void ModelMaterialDialog::apply_data_color() {
 	col.user= !is_checked("default_colors");
 
 	if (col.user) {
-		col.ambient = get_color("mat_am");
+		col.ambient = get_float("mat_am");
 		col.diffuse = get_color("mat_di");
-		col.specular = get_color("mat_sp");
+		col.specular = get_float("mat_sp");
 		col.emission = get_color("mat_em");
 		col.shininess = get_float("mat_shininess");
 	} else {

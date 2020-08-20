@@ -9,7 +9,7 @@
 \*----------------------------------------------------------------------------*/
 #include "object.h"
 #include "world.h"
-#include "material.h"
+#include "Material.h"
 #include "../meta.h"
 #include "../lib/file/file.h"
 
