@@ -19,7 +19,8 @@ enum class ShaderValueType {
 	INT,
 	VEC2,
 	VEC3,
-	COLOR
+	COLOR,
+	LITERAL
 };
 
 class ShaderNode : public VirtualBase {
@@ -51,6 +52,8 @@ public:
 	Array<Port> output;
 
 	virtual Array<string> dependencies() const { return {}; };
+
+	virtual Array<string> uniform_dependencies() const { return {}; };
 
 	virtual string code_pixel(ShaderBuilderContext *ctx) const { return "?"; };
 };

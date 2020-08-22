@@ -470,6 +470,7 @@ class shader
 		TYPE_VEC2
 		TYPE_VEC3
 		TYPE_COLOR
+		TYPE_LITERAL # ...
 
 	class BuilderContext
 		extern string create_temp(Node source, int port, int type)
@@ -512,6 +513,7 @@ class shader
 		Port[] output
 	
 		extern virtual const string[] dependencies()
+		extern virtual const string[] uniform_dependencies()
 		extern virtual const string code_pixel(out BuilderContext ctx)
 
 extern Model* model

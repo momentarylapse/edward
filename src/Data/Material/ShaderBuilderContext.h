@@ -31,6 +31,7 @@ public:
 	ShaderBuilderContext(const ShaderGraph *g);
 
 	Set<string> dependencies;
+	Set<string> uniform_dependencies;
 	Array<TempVar> temps;
 	const ShaderGraph *graph;
 
@@ -41,6 +42,7 @@ public:
 	string build_value(const ShaderNode *n, int i, const string &internal = "");
 	string build_const(const ShaderNode *n, int port);
 
+	string build_uniform_vars();
 	string build_helper_vars();
 	string build_helper_functions();
 };

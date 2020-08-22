@@ -283,6 +283,28 @@ void ShaderGraphDialog::on_key_down() {
 	redraw("area");
 }
 
+class TextInputDialog : public hui::Dialog {
+public:
+	TextInputDialog(hui::Window *parent, const string &orig) : hui::Dialog(_("Text"), 400, 100, parent, false) {
+		reply = orig;
+		from_source("Grid ? '' vertical\n"
+		"	Edit text '' expandx\n"
+		"	Grid ? '' buttonbar\n"
+		"		Button ok 'OK' default");
+		set_string("text", orig);
+		event("ok", [=]{ reply = get_string("text"); destroy(); });
+	}
+	string reply;
+};
+
+string text_input_dialog(hui::Window *parent, const string &orig) {
+	auto dlg = new TextInputDialog(parent, orig);
+	dlg->run();
+	string r = dlg->reply;
+	delete dlg;
+	return r;
+}
+
 void ShaderGraphDialog::on_left_button_down() {
 	update_mouse();
 
@@ -317,6 +339,9 @@ void ShaderGraphDialog::on_left_button_down() {
 				pp.value = i2s(loopi(pp.value._int() + 1, 0, xx.num - 1));
 				on_update();
 			}
+		} else if (pp.type == ShaderValueType::LITERAL) {
+			pp.value = text_input_dialog(win, pp.value);
+			on_update();
 		}
 	} else if (selection.type == HoverData::Type::NODE) {
 		move_dx = mx - selection.node->x;

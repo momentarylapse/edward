@@ -23,6 +23,8 @@ string sg_build_constant(ShaderNode::Parameter &p) {
 		return p.value;
 	} else if (p.type == ShaderValueType::VEC3) {
 		return p.value;
+	} else if (p.type == ShaderValueType::LITERAL) {
+		return p.value;
 	}
 	return "???";
 }
@@ -57,6 +59,14 @@ bool can_cast(ShaderValueType ts, ShaderValueType td) {
 	if (ts == ShaderValueType::VEC2 and td == ShaderValueType::COLOR)
 		return true;
 	return false;
+}
+
+string ShaderBuilderContext::build_uniform_vars() {
+	string source;
+	for (auto &v: uniform_dependencies) {
+		source += "uniform " + v + ";\n";
+	}
+	return source;
 }
 
 string ShaderBuilderContext::build_helper_vars() {

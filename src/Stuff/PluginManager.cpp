@@ -269,6 +269,7 @@ void PluginManager::link_plugins() {
 	Kaba::link_external_virtual("shader.Node.__delete__", &ShaderNode::__delete__, &node);
 	Kaba::link_external_virtual("shader.Node.code_pixel", &ShaderNode::code_pixel, &node);
 	Kaba::link_external_virtual("shader.Node.dependencies", &ShaderNode::dependencies, &node);
+	Kaba::link_external_virtual("shader.Node.uniform_dependencies", &ShaderNode::uniform_dependencies, &node);
 	Kaba::declare_class_size("shader.Node.Parameter", sizeof(ShaderNode::Parameter));
 	Kaba::declare_class_element("shader.Node.Parameter.type", &ShaderNode::Parameter::type);
 	Kaba::declare_class_element("shader.Node.Parameter.name", &ShaderNode::Parameter::name);

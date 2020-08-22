@@ -190,7 +190,11 @@ string ShaderGraph::build_fragment_source() const {
 	for (auto *n: nodes)
 		for (string &f: n->dependencies())
 			ctx.dependencies.add(f);
+	for (auto *n: nodes)
+		for (string &f: n->uniform_dependencies())
+			ctx.uniform_dependencies.add(f);
 
+	source += ctx.build_uniform_vars();
 	source += ctx.build_helper_vars();
 	source += ctx.build_helper_functions();
 
