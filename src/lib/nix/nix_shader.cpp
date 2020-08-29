@@ -209,8 +209,8 @@ void Shader::find_locations() {
 	location[LOCATION_MATRIX_V] = get_location("matrix.view");
 	location[LOCATION_MATRIX_P] = get_location("matrix.project");
 
-	location[LOCATION_MATRIX_MVP] = get_location("mat_mvp");
 	if (location[LOCATION_MATRIX_M] < 0 and location[LOCATION_MATRIX_V] < 0 and location[LOCATION_MATRIX_P] < 0) {
+		location[LOCATION_MATRIX_MVP] = get_location("mat_mvp");
 		location[LOCATION_MATRIX_M] = get_location("mat_m");
 		location[LOCATION_MATRIX_V] = get_location("mat_v");
 		location[LOCATION_MATRIX_P] = get_location("mat_p");

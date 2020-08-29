@@ -21,7 +21,7 @@ class ShaderGraph;
 
 class DataMaterial: public Data {
 public:
-	DataMaterial();
+	DataMaterial(bool with_graph = true);
 	virtual ~DataMaterial();
 
 	void reset() override;
@@ -45,7 +45,7 @@ public:
 		// reflection
 		int reflection_mode, reflection_size;
 		float reflection_density;
-		Path reflection_texture_file[6];
+		Array<Path> reflection_texture_file;
 
 		// shader
 		Path shader_file;
@@ -67,14 +67,14 @@ public:
 		bool Burnable;
 		float BurningTemperature, BurningIntensity;
 
-		void Reset();
+		void reset();
 	};
 	PhysicsData physics;
 
 	struct SoundData {
 		int NumRules;
 
-		void Reset();
+		void reset();
 	};
 	SoundData Sound;
 };

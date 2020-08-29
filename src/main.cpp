@@ -9,6 +9,8 @@
 #include "Edward.h"
 
 #include "Data/Model/DataModel.h"
+#include "Data/Material/DataMaterial.h"
+#include "Data/World/DataWorld.h"
 #include "Storage/Storage.h"
 
 string AppVersion = "0.4.-1.5";
@@ -30,27 +32,39 @@ EdwardApp::EdwardApp() :
 #include "lib/kaba/kaba.h"
 
 extern bool DataModelAllowUpdating;
-bool handle_special_args(const Array<string> &arg)
-{
-	if ((arg[1] == "--update") or (arg[1] == "--check")){
+bool handle_special_args(const Array<string> &arg) {
+	if ((arg[1] == "--update") or (arg[1] == "--check")) {
 		if (arg.num >= 3){
 
 			Kaba::init();
 
 			int pp = arg[2].find("/Objects/", 0);
-			if (pp > 0){
+			if (pp > 0) {
 				Kaba::config.directory = arg[2].substr(0, pp) + "/Scripts/";
 				msg_write(Kaba::config.directory.str());
 			}
 
 
+			Data *data = nullptr;
 			string ext = Path(arg[2]).extension();
-			if (ext == "model"){
+			if (ext == "model") {
+				//MaterialInit();
+				SetDefaultMaterial(new Material);
+				data = new DataModel;
 				DataModelAllowUpdating = false;
-				DataModel m;
-				storage->load(arg[2], &m, false);
+			} else if (ext == "material") {
+				data = new DataMaterial(false);
+			} else if (ext == "world") {
+				data = new DataWorld;
+			}
+
+			if (data) {
+				storage = new Storage();
+				msg_write(arg[2]);
+				storage->load(arg[2], data, false);
 				if (arg[1] == "--update")
-					storage->save(arg[2], &m);
+					storage->save(arg[2], data);
+				delete data;
 				return true;
 			}
 		}
@@ -59,8 +73,7 @@ bool handle_special_args(const Array<string> &arg)
 
 }
 
-bool EdwardApp::on_startup(const Array<string> &arg)
-{
+bool EdwardApp::on_startup(const Array<string> &arg) {
 	if (arg.num >= 2)
 		if (handle_special_args(arg))
 			return false;

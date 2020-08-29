@@ -81,6 +81,10 @@ Material::~Material() {
 		shader->unref();
 }
 
+void Material::add_uniform(const string &name, float *p, int size) {
+	int loc = shader->get_location(name);
+	uniforms.add({loc, p, size});
+}
 
 Material* Material::copy() {
 	Material *m = new Material;
@@ -99,7 +103,8 @@ Material* Material::copy() {
 		cube_map = FxCubeMapNew(m2->cube_map_size);
 		FxCubeMapCreate(cube_map, model);
 	}*/
-	m->shader = shader->ref();
+	if (shader)
+		m->shader = shader->ref();
 	m->friction = friction;
 	return m;
 }
@@ -119,86 +124,73 @@ Material *LoadMaterial(const Path &filename) {
 			return m->copy();
 
 
-	File *f = NULL;
 	msg_write("loading material " + filename.str());
-	try {
-		msg_right();
-		f = FileOpenText(MaterialDir << filename.with(".material"));
-		Material *m = new Material;
 
-		int ffv = f->ReadFileFormatVersion();
-		if (ffv != 4)
-			throw Exception(format("wrong file format: %d (expected: 4)", ffv));
-		m->name = filename;
-		// Textures
-		f->read_comment();
-		int nt = f->read_int();
-		m->textures.resize(nt);
-		for (int i=0;i<nt;i++)
-			m->textures[i] = nix::LoadTexture(f->read_str());
-		// Colors
-		f->read_comment();
-		color am = file_read_color4i(f);
-		m->diffuse = file_read_color4i(f);
-		color sp = file_read_color4i(f);
-		m->shininess = (float)f->read_int();
-		m->emission = file_read_color4i(f);
-		m->ambient = col_frac(am, m->diffuse) / 2;
-		m->specular = col_frac(sp, White);
-		// Transparency
-		f->read_comment();
-		m->alpha.mode = f->read_int();
-		m->alpha.factor = float(f->read_int()) * 0.01f;
-		m->alpha.source = f->read_int();
-		m->alpha.destination = f->read_int();
-		m->alpha.z_buffer = f->read_bool();
-		// Appearance
-		f->read_comment();
-		f->read_int(); //ShiningDensity
-		f->read_int(); // ShiningLength
-		f->read_bool(); // IsWater
-		// Reflection
-		m->reflection.cube_map = NULL;
-		m->reflection.cube_map_size = 0;
-		m->reflection.density = 0;
-		f->read_comment();
-		m->reflection.mode = f->read_int();
-		m->reflection.density = float(f->read_int()) * 0.01f;
-		m->reflection.cube_map_size = f->read_int();
-		nix::Texture *cmt[6];
-		for (int i=0;i<6;i++)
-			cmt[i] = nix::LoadTexture(f->read_str());
-		if (m->reflection.mode == REFLECTION_CUBE_MAP_DYNAMIC){
-			//m->cube_map = FxCubeMapNew(m->cube_map_size);
-			//FxCubeMapCreate(m->cube_map,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
-		}else if (m->reflection.mode == REFLECTION_CUBE_MAP_STATIC){
+	hui::Configuration c;
+	c.load(MaterialDir << filename.with(".material"));
+	Material *m = new Material;
+
+	m->diffuse = color::parse(c.get_str("color.albedo", ""));
+	m->ambient = c.get_float("color.ambient", 0.5f);
+	m->specular = c.get_float("color.specular", 0.1f);
+	m->shininess = c.get_float("color.shininess", 10);
+	m->emission = color::parse(c.get_str("color.emission", ""));
+
+	auto texture_files = c.get_str("textures", "");
+	if (texture_files != "")
+		for (auto &f: texture_files.explode(","))
+			m->textures.add(nix::LoadTexture(f));
+	m->shader = nix::Shader::load(c.get_str("shader", ""));
+
+	m->friction._static = c.get_float("friction.static", 0.5f);
+	m->friction.sliding = c.get_float("friction.slide", 0.5f);
+	m->friction.rolling = c.get_float("friction.roll", 0.5f);
+	m->friction.jump = c.get_float("friction.jump", 0.5f);
+
+	string mode = c.get_str("transparency.mode", "");
+	if (mode == "factor") {
+		m->alpha.mode = TRANSPARENCY_FACTOR;
+		m->alpha.factor = c.get_float("transparency.factor");
+		m->alpha.z_buffer = false;
+	} else if (mode == "function") {
+		m->alpha.mode = TRANSPARENCY_FUNCTIONS;
+		m->alpha.source = c.get_int("transparency.source", 0);
+		m->alpha.destination = c.get_int("transparency.dest", 0);
+		m->alpha.z_buffer = false;
+	} else if (mode == "key-hard") {
+		m->alpha.mode = TRANSPARENCY_COLOR_KEY_HARD;
+	} else if (mode == "key-smooth") {
+		m->alpha.mode = TRANSPARENCY_COLOR_KEY_SMOOTH;
+	} else if (mode != "") {
+		msg_error("unknown transparency mode: " + mode);
+	}
+
+	mode = c.get_str("reflection.mode", "");
+
+	if (mode == "static") {
+		m->reflection.mode = REFLECTION_CUBE_MAP_STATIC;
+		texture_files = c.get_str("reflection.cubemap", "");
+		Array<nix::Texture*> cmt;
+		for (auto &f: texture_files.explode(","))
+			cmt.add(nix::LoadTexture(f));
+		m->reflection.density = c.get_float("reflection.density", 1);
 #if 0
 			m->reflection.cube_map = new nix::CubeMap(m->reflection.cube_map_size);
 			for (int i=0;i<6;i++)
 				m->reflection.cube_map->fill_side(i, cmt[i]);
 #endif
-		}
-		// ShaderFile
-		f->read_comment();
-		string ShaderFile = f->read_str();
-		m->shader = nix::Shader::load(ShaderFile);
-		// Physics
-		f->read_comment();
-		m->friction.jump = (float)f->read_int() * 0.001f;
-		m->friction._static = (float)f->read_int() * 0.001f;
-		m->friction.sliding = (float)f->read_int() * 0.001f;
-		m->friction.rolling = (float)f->read_int() * 0.001f;
-
-		materials.add(m);
-		delete f;
-		msg_left();
-		return m->copy();
-
-	}catch(Exception &e){
-		if (f)
-			delete f;
-		msg_left();
-		throw e;
+	} else if (mode == "dynamic") {
+		m->reflection.mode = REFLECTION_CUBE_MAP_DYNAMIC;
+		m->reflection.density = c.get_float("reflection.density", 1);
+		m->reflection.cube_map_size = c.get_float("reflection.size", 128);
+		//m->cube_map = FxCubeMapNew(m->cube_map_size);
+		//FxCubeMapCreate(m->cube_map,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
+	} else if (mode == "mirror") {
+		m->reflection.mode = REFLECTION_MIRROR;
+	} else if (mode != "") {
+		msg_error("unknown reflection mode: " + mode);
 	}
-	return NULL;
+
+	materials.add(m);
+	return m->copy();
 }

@@ -12,16 +12,19 @@
 
 
 
-DataMaterial::DataMaterial() :
+DataMaterial::DataMaterial(bool with_graph) :
 	Data(FD_MATERIAL)
 {
-	appearance.shader_graph = new ShaderGraph();
+	appearance.shader_graph = nullptr;
+	if (with_graph)
+		appearance.shader_graph = new ShaderGraph();
 	reset();
 }
 
 DataMaterial::~DataMaterial() {
 	reset();
-	delete appearance.shader_graph;
+	if (appearance.shader_graph)
+		delete appearance.shader_graph;
 }
 
 
@@ -42,19 +45,21 @@ void DataMaterial::AppearanceData::reset() {
 	reflection_mode = REFLECTION_NONE;
 	reflection_density = 0;
 	reflection_size = 128;
-	for (int i=0;i<6;i++)
-		reflection_texture_file[i] = "";
+	reflection_texture_file.clear();
+	reflection_texture_file.resize(6);
 
 
 	shader_file = "";
-	shader_graph->make_default();
-	shader_code = shader_graph->build_source();
+	if (shader_graph) {
+		shader_graph->make_default();
+		shader_code = shader_graph->build_source();
+	}
 	shader_from_graph = true;
 	is_default_shader = true;
 }
 
 
-void DataMaterial::PhysicsData::Reset() {
+void DataMaterial::PhysicsData::reset() {
 	friction_jump = 0.7f;
 	friction_static = 0.8f;
 	friction_sliding = 0.5f;
@@ -67,7 +72,7 @@ void DataMaterial::PhysicsData::Reset() {
 }
 
 
-void DataMaterial::SoundData::Reset() {
+void DataMaterial::SoundData::reset() {
 	NumRules = 0;
 }
 
@@ -75,8 +80,8 @@ void DataMaterial::reset() {
 	filename = "";
 
 	appearance.reset();
-	physics.Reset();
-	Sound.Reset();
+	physics.reset();
+	Sound.reset();
 
 
 	reset_history();

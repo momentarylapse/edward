@@ -25,6 +25,14 @@ public:
 	Array<nix::Texture*> textures;
 	nix::Shader *shader;
 
+	struct ShaderUniform {
+		int location;
+		float *p;
+		int size;
+	};
+	Array<ShaderUniform> uniforms;
+	void add_uniform(const string &name, float *p, int size);
+
 	// light
 	color diffuse, emission;
 	float ambient, specular, shininess;
