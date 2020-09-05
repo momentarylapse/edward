@@ -8,6 +8,10 @@
 #include "FormatFontX.h"
 #include "../../Edward.h"
 
+string str_m_to_utf8(const string &s) {
+	return s.replace("&a", "ä").replace("&o", "ö").replace("&u", "ü").replace("&A", "Ä").replace("&O", "Ö").replace("&U", "Ü").replace("&s", "ß");
+}
+
 FormatFontX::FormatFontX() : TypedFormat<DataFont>(FD_FONT, "xfont", _("Font"), Flag::CANONICAL_READ_WRITE) {
 }
 
