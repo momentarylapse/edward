@@ -30,8 +30,8 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	void onPreview();
-	void onOk();
+	void on_preview();
+	void on_ok();
 
 private:
 	vector min, max;
@@ -41,7 +41,7 @@ private:
 	typedef _cdecl vector vec_func(const vector &);
 	vec_func *f;
 
-	void updateFunction();
+	void update_function();
 	vector transform(const vector &v);
 	void apply();
 	void preview();

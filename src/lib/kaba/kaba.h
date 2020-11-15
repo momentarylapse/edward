@@ -9,17 +9,18 @@
 #if !defined(KABA_H__INCLUDED_)
 #define KABA_H__INCLUDED_
 
-namespace Kaba {
+namespace kaba {
 	class Script;
 }
 
 #include "../base/base.h"
+#include "../base/pointer.h"
 #include "../file/path.h"
 #include "asm/asm.h"
 #include "lib/lib.h"
 #include "syntax/SyntaxTree.h"
 
-namespace Kaba{
+namespace kaba {
 
 extern string Version;
 
@@ -34,7 +35,7 @@ struct LinkerException : Exception{};*/
 
 
 // executable (compiled) data
-class Script {
+class Script : public Sharable<Empty> {
 public:
 	// don't call yourself.... better use LoadScript(...)
 	Script();
@@ -77,8 +78,6 @@ public:
 	Path filename;
 	SyntaxTree *syntax;
 
-	int reference_counter;
-
 	char *opcode; // executable code
 	int opcode_size;
 
@@ -100,14 +99,13 @@ public:
 	const Class* base_class();
 };
 
-Script *Load(const Path &filename, bool just_analyse = false);
-Script *CreateForSource(const string &source, bool just_analyse = false);
-void Remove(Script *s);
-void ExecutePublicScripts();
-void DeleteAllScripts(bool even_immortal = false, bool force = false);
-void ExecuteSingleScriptCommand(const string &cmd);
+shared<Script> load(const Path &filename, bool just_analyse = false);
+shared<Script> create_for_source(const string &source, bool just_analyse = false);
+void remove_script(Script *s);
+void delete_all_scripts(bool even_immortal = false, bool force = false);
+void execute_single_script_command(const string &cmd);
 
-const Class *GetDynamicType(const VirtualBase *p);
+const Class *get_dynamic_type(const VirtualBase *p);
 string var2str(const void *p, const Class *type);
 
 };

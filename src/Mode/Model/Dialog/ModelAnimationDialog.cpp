@@ -147,7 +147,7 @@ void ModelAnimationDialog::on_delete_animation() {
 
 void ModelAnimationDialog::on_frame() {
 	int frame_lit = get_int("");
-	int frame = loopi(frame_lit, 0, mode_model_animation->cur_move()->frame.num - 1);
+	int frame = loop(frame_lit, 0, mode_model_animation->cur_move()->frame.num - 1);
 	if (frame != frame_lit)
 		set_int("", frame);
 	mode_model_animation->set_current_frame(frame);

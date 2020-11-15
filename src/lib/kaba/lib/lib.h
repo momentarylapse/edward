@@ -9,7 +9,7 @@
 #if !defined(LIB_H__INCLUDED_)
 #define LIB_H__INCLUDED_
 
-namespace Kaba{
+namespace kaba {
 
 
 #define MAX_OPCODE				(2*65536)	// max. amount of opcode
@@ -42,6 +42,8 @@ extern const string IDENTIFIER_FUNC_LENGTH;
 extern const string IDENTIFIER_FUNC_STR;
 extern const string IDENTIFIER_FUNC_REPR;
 extern const string IDENTIFIER_FUNC_SUBARRAY;
+extern const string IDENTIFIER_FUNC_SHARED_CLEAR;
+extern const string IDENTIFIER_FUNC_SHARED_CREATE;
 extern const string IDENTIFIER_SUPER;
 extern const string IDENTIFIER_SELF;
 extern const string IDENTIFIER_EXTENDS;
@@ -57,6 +59,7 @@ extern const string IDENTIFIER_LET;
 extern const string IDENTIFIER_NAMESPACE;
 extern const string IDENTIFIER_RETURN_VAR;
 extern const string IDENTIFIER_VTABLE_VAR;
+extern const string IDENTIFIER_SHARED_COUNT;
 extern const string IDENTIFIER_ENUM;
 extern const string IDENTIFIER_CONST;
 extern const string IDENTIFIER_OUT;
@@ -64,6 +67,11 @@ extern const string IDENTIFIER_OVERRIDE;
 extern const string IDENTIFIER_VIRTUAL;
 extern const string IDENTIFIER_EXTERN;
 extern const string IDENTIFIER_SELFREF;
+extern const string IDENTIFIER_WEAK;
+extern const string IDENTIFIER_SHARED;
+extern const string IDENTIFIER_OWNED;
+extern const string IDENTIFIER_PURE;
+extern const string IDENTIFIER_THROWS;
 extern const string IDENTIFIER_USE;
 extern const string IDENTIFIER_IMPORT;
 extern const string IDENTIFIER_RETURN;
@@ -75,6 +83,7 @@ extern const string IDENTIFIER_ELSE;
 extern const string IDENTIFIER_WHILE;
 extern const string IDENTIFIER_FOR;
 extern const string IDENTIFIER_IN;
+extern const string IDENTIFIER_AS;
 extern const string IDENTIFIER_BREAK;
 extern const string IDENTIFIER_CONTINUE;
 extern const string IDENTIFIER_PASS;
@@ -90,6 +99,10 @@ extern const string IDENTIFIER_SORTED;
 extern const string IDENTIFIER_DYN;
 extern const string IDENTIFIER_CALL;
 
+
+#ifdef IN
+#undef IN
+#endif
 
 //--------------------------------------------------------------------------------------------------
 // operators
@@ -151,6 +164,9 @@ extern PrimitiveOperator PrimitiveOperators[];
 //--------------------------------------------------------------------------------------------------
 // commands
 
+#ifdef DELETE
+#undef DELETE
+#endif
 
 // statements
 enum class StatementID {
@@ -180,7 +196,8 @@ enum class StatementID {
 	LAMBDA,
 	SORTED,
 	DYN,
-	CALL
+	CALL,
+	WEAK
 };
 
 class Statement {
@@ -347,6 +364,8 @@ enum class InlineID {
 	VECTOR_DIVIDE_VF,
 	VECTOR_DIVIDE_ASSIGN,
 	VECTOR_NEGATE,
+
+	SHARED_POINTER_INIT,
 };
 
 
@@ -473,7 +492,7 @@ int process_class_num_virtuals(const string &class_name, int num_virtual);
 //--------------------------------------------------------------------------------------------------
 // packages
 
-extern Array<Script*> packages;
+extern shared_array<Script> packages;
 
 
 };

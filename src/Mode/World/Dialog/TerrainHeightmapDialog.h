@@ -14,17 +14,16 @@
 class TerrainHeightmapDialog: public hui::Dialog {
 public:
 	TerrainHeightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data);
-	virtual ~TerrainHeightmapDialog();
 
-	void LoadData();
-	void ApplyData();
+	void load_data();
+	void apply_data();
 
-	void OnFindHeightmap();
-	void OnFindFilter();
-	void OnSizeChange();
-	void OnPreviewDraw(Painter *p);
-	void OnOk();
-	void OnClose();
+	void on_find_heightmap();
+	void on_find_filter();
+	void on_size_change();
+	void on_preview_draw(Painter *p);
+	void on_ok();
+	void on_close();
 
 private:
 	DataWorld *data;

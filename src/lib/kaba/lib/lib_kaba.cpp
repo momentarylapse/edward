@@ -4,7 +4,7 @@
 #include "dynamic.h"
 
 
-namespace Kaba {
+namespace kaba {
 
 extern const Class *TypePath;
 
@@ -13,18 +13,18 @@ extern const Class *TypePath;
 #pragma GCC optimize("no-inline")
 #pragma GCC optimize("0")
 
-Script *__load_script__(const string &filename, bool just_analyse) {
-	KABA_EXCEPTION_WRAPPER( return Load(filename, just_analyse); );
+shared<Script> __load_script__(const string &filename, bool just_analyse) {
+	KABA_EXCEPTION_WRAPPER( return load(filename, just_analyse); );
 	return nullptr;
 }
 
-Script *__create_from_source__(const string &source, bool just_analyse) {
-	KABA_EXCEPTION_WRAPPER( return CreateForSource(source, just_analyse); );
+shared<Script> __create_from_source__(const string &source, bool just_analyse) {
+	KABA_EXCEPTION_WRAPPER( return create_for_source(source, just_analyse); );
 	return nullptr;
 }
 
 void __execute_single_command__(const string &cmd) {
-	KABA_EXCEPTION_WRAPPER( ExecuteSingleScriptCommand(cmd); );
+	KABA_EXCEPTION_WRAPPER( execute_single_script_command(cmd); );
 }
 
 #pragma GCC pop_options
@@ -55,7 +55,7 @@ void SIAddPackageKaba() {
 		
 
 	auto *TypeScript = add_type  ("Script", sizeof(Script));
-	auto *TypeScriptP = add_type_p(TypeScript);
+	auto *TypeScriptP = add_type_p(TypeScript, Flags::SHARED);
 	auto *TypeScriptPList = add_type_l(TypeScriptP);
 
 	
@@ -80,7 +80,7 @@ void SIAddPackageKaba() {
 		class_add_elementx("size", TypeInt, &Class::size);
 		class_add_elementx("type", TypeInt, &Class::type);
 		class_add_elementx("parent", TypeClassP, &Class::parent);
-		class_add_elementx("param", TypeClassP, &Class::param);
+		class_add_elementx("param", TypeClassPList, &Class::param);
 		class_add_elementx("namespace", TypeClassP, &Class::name_space);
 		class_add_elementx("elements", TypeClassElementList, &Class::elements);
 		class_add_elementx("functions", TypeFunctionPList, &Class::functions);
@@ -154,7 +154,7 @@ void SIAddPackageKaba() {
 		class_add_funcx("create", TypeScriptP, &__create_from_source__, Flags::_STATIC__RAISES_EXCEPTIONS);
 			func_add_param("source", TypeString);
 			func_add_param("just_analize", TypeBool);
-		class_add_funcx("delete", TypeVoid, &Remove, Flags::STATIC);
+		class_add_funcx("delete", TypeVoid, &remove_script, Flags::STATIC);
 			func_add_param("script", TypeScript);
 		class_add_funcx("execute_single_command", TypeVoid, &__execute_single_command__, Flags::_STATIC__RAISES_EXCEPTIONS);
 			func_add_param("cmd", TypeString);
@@ -164,10 +164,14 @@ void SIAddPackageKaba() {
 		class_add_elementx("id", TypeInt, &Statement::id);
 		class_add_elementx("num_params", TypeInt, &Statement::num_params);
 		
+	add_class(TypeScriptPList);
+		class_add_funcx(IDENTIFIER_FUNC_INIT, TypeVoid, &shared_array<Script>::__init__);
+
 	add_class(TypeClassElementList);
 		class_add_funcx(IDENTIFIER_FUNC_INIT, TypeVoid, &Array<ClassElement>::__init__);
+		class_add_funcx(IDENTIFIER_FUNC_DELETE, TypeVoid, &Array<ClassElement>::clear);
 
-	add_funcx("get_dynamic_type", TypeClassP, &GetDynamicType, Flags::_STATIC__PURE);
+	add_funcx("get_dynamic_type", TypeClassP, &get_dynamic_type, Flags::_STATIC__PURE);
 		func_add_param("p", TypePointer);
 	add_funcx("disassemble", TypeString, &Asm::disassemble, Flags::_STATIC__PURE);
 		func_add_param("p", TypePointer);

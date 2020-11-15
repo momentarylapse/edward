@@ -58,8 +58,8 @@ void ModeModelMeshDeformFunction::on_start()
 	//dialog->setFont("source", "Monospace 10");
 	//dialog->setTabSize("source", 4);
 	dialog->set_string("source", "vector f(vector v)\n\treturn vector(v.x, v.y+(v.x*v.x-v.x), v.z)\n");
-	dialog->event("preview", std::bind(&ModeModelMeshDeformFunction::onPreview, this));
-	dialog->event("ok", std::bind(&ModeModelMeshDeformFunction::onOk, this));
+	dialog->event("preview", [=]{ on_preview(); });
+	dialog->event("ok", [=]{ on_ok(); });
 	ed->set_side_panel(dialog);
 
 	//ed->activate("");
@@ -117,12 +117,12 @@ vector ModeModelMeshDeformFunction::transform(const vector &v)
 	return min + vector(w.x * d.x, w.y * d.y, w.z * d.z);
 }
 
-void ModeModelMeshDeformFunction::onPreview()
+void ModeModelMeshDeformFunction::on_preview()
 {
 	if (has_preview)
 		restore();
 
-	updateFunction();
+	update_function();
 
 	if (!f)
 		return;
@@ -137,20 +137,20 @@ void ModeModelMeshDeformFunction::onPreview()
 	multi_view->force_redraw();
 }
 
-void ModeModelMeshDeformFunction::updateFunction()
+void ModeModelMeshDeformFunction::update_function()
 {
 	if (s)
 		delete s;
-	Kaba::Script *s = NULL;
+	shared<kaba::Script> s;
 	f = NULL;
 	try{
-		s = Kaba::CreateForSource(dialog->get_string("source"));
+		s = kaba::create_for_source(dialog->get_string("source"));
 		f = (vec_func*)s->match_function("*", "vector", {"vector"});
 
 		if (!f)
 			hui::ErrorBox(ed, "error", _("no function of type 'vector f(vector)' found"));
 
-	}catch(Kaba::Exception &e){
+	}catch(kaba::Exception &e){
 		hui::ErrorBox(ed, "error", e.message());
 		f = NULL;
 	}
@@ -170,11 +170,11 @@ void ModeModelMeshDeformFunction::restore()
 	has_preview = false;
 }
 
-void ModeModelMeshDeformFunction::onOk()
+void ModeModelMeshDeformFunction::on_ok()
 {
 	if (has_preview)
 		restore();
-	updateFunction();
+	update_function();
 
 	if (!f)
 		return;

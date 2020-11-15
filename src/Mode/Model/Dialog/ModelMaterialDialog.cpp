@@ -300,10 +300,10 @@ public:
 	void on_ok() {
 		width = get_int("width");
 		height = get_int("height");
-		destroy();
+		request_destroy();
 	}
 	void on_cancel() {
-		destroy();
+		request_destroy();
 	}
 	int width, height;
 

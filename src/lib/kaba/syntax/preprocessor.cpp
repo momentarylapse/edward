@@ -3,7 +3,7 @@
 #include "../../file/file.h"
 #include <type_traits>
 
-namespace Kaba {
+namespace kaba {
 
 typedef void op_func(Value&, Value&, Value&);
 
@@ -121,21 +121,21 @@ bool call_function(Function *f, void *ff, void *ret, const Array<void*> &param) 
 
 
 	if (ptype.num == 0) {
-		if (f->return_type == TypeVoid) {
+		if (f->literal_return_type == TypeVoid) {
 			call0_void(ff, ret, param);
 			return true;
-		} else if (f->return_type == TypeInt) {
+		} else if (f->literal_return_type == TypeInt) {
 			call0<int>(ff, ret, param);
 			return true;
-		} else if (f->return_type == TypeFloat32) {
+		} else if (f->literal_return_type == TypeFloat32) {
 			call0<float>(ff, ret, param);
 			return true;
-		} else if (f->return_type->uses_return_by_memory()) {
+		} else if (f->literal_return_type->uses_return_by_memory()) {
 			call0<CBR>(ff, ret, param);
 			return true;
 		}
 	} else if (ptype.num == 1) {
-		if (f->return_type == TypeVoid) {
+		if (f->literal_return_type == TypeVoid) {
 			if (ptype[0] == TypeInt) {
 				call1_void_x<int>(ff, ret, param);
 				return true;
@@ -163,9 +163,12 @@ bool call_function(Function *f, void *ff, void *ret, const Array<void*> &param) 
 #endif
 				return true;
 			}
-		} else if (f->return_type == TypeInt) {
+		} else if (f->literal_return_type == TypeInt) {
 			if (ptype[0] == TypeInt) {
 				call1<int,int>(ff, ret, param);
+				return true;
+			} else if (ptype[0] == TypeChar) {
+				call1<int,char>(ff, ret, param);
 				return true;
 			} else if (ptype[0] == TypeFloat32) {
 				call1<int,float>(ff, ret, param);
@@ -174,18 +177,18 @@ bool call_function(Function *f, void *ff, void *ret, const Array<void*> &param) 
 				call1<int,CBR>(ff, ret, param);
 				return true;
 			}
-		} else if (f->return_type == TypeBool) {
+		} else if (f->literal_return_type == TypeBool or f->literal_return_type == TypeChar) {
 			if (ptype[0] == TypeInt) {
-				call1<bool,int>(ff, ret, param);
+				call1<char,int>(ff, ret, param);
 				return true;
 			} else if (ptype[0] == TypeFloat32) {
-				call1<bool,float>(ff, ret, param);
+				call1<char,float>(ff, ret, param);
 				return true;
 			} else if (ptype[0]->uses_call_by_reference()) {
-				call1<bool,CBR>(ff, ret, param);
+				call1<char,CBR>(ff, ret, param);
 				return true;
 			}
-		} else if (f->return_type == TypeFloat32) {
+		} else if (f->literal_return_type == TypeFloat32) {
 			if (ptype[0] == TypeInt) {
 				call1<float,int>(ff, ret, param);
 				return true;
@@ -196,12 +199,12 @@ bool call_function(Function *f, void *ff, void *ret, const Array<void*> &param) 
 				call1<float,CBR>(ff, ret, param);
 				return true;
 			}
-		} else if (f->return_type == TypeQuaternion) {
+		} else if (f->literal_return_type == TypeQuaternion) {
 			if (ptype[0]->uses_call_by_reference()) {
 				call1<vec4,CBR>(ff, ret, param);
 				return true;
 			}
-		} else if (f->return_type->uses_return_by_memory()) {
+		} else if (f->literal_return_type->uses_return_by_memory()) {
 			if (ptype[0] == TypeInt) {
 				call1<CBR,int>(ff, ret, param);
 				return true;
@@ -217,17 +220,17 @@ bool call_function(Function *f, void *ff, void *ret, const Array<void*> &param) 
 			}
 		}
 	} else if (ptype.num == 2) {
-		if (f->return_type == TypeInt) {
+		if (f->literal_return_type == TypeInt) {
 			if ((ptype[0] == TypeInt) and(ptype[1] == TypeInt)) {
 				call2<int,int,int>(ff, ret, param);
 				return true;
 			}
-		} else if (f->return_type == TypeFloat32) {
+		} else if (f->literal_return_type == TypeFloat32) {
 			if ((ptype[0] == TypeFloat32) and(ptype[1] == TypeFloat32)) {
 				call2<float,float,float>(ff, ret, param);
 				return true;
 			}
-		} else if (f->return_type == TypeInt64) {
+		} else if (f->literal_return_type == TypeInt64) {
 			if ((ptype[0] == TypeInt64) and(ptype[1] == TypeInt64)) {
 				call2<int64,int64,int64>(ff, ret, param);
 				return true;
@@ -235,17 +238,17 @@ bool call_function(Function *f, void *ff, void *ret, const Array<void*> &param) 
 				call2<int64,int64,int>(ff, ret, param);
 				return true;
 			}
-		} else if (f->return_type == TypeComplex) {
+		} else if (f->literal_return_type == TypeComplex) {
 			if ((ptype[0] == TypeFloat32) and (ptype[1] == TypeFloat32)) {
 				call2<vec2,float,float>(ff, ret, param);
 				return true;
 			}
-		} else if (f->return_type == TypeQuaternion) {
+		} else if (f->literal_return_type == TypeQuaternion) {
 			if ((ptype[0]->uses_call_by_reference()) and(ptype[1] == TypeFloat32)) {
 				call2<vec4,CBR,float>(ff, ret, param);
 				return true;
 			}
-		} else if (f->return_type->uses_return_by_memory()) {
+		} else if (f->literal_return_type->uses_return_by_memory()) {
 			if ((ptype[0] == TypeInt) and(ptype[1] == TypeInt)) {
 				call2<CBR,int,int>(ff, ret, param);
 				return true;
@@ -258,7 +261,7 @@ bool call_function(Function *f, void *ff, void *ret, const Array<void*> &param) 
 			}
 		}
 	} else if (ptype.num == 3) {
-		if (f->return_type == TypeVector) {
+		if (f->literal_return_type == TypeVector) {
 			if ((ptype[0] == TypeFloat32) and (ptype[1] == TypeFloat32) and (ptype[2] == TypeFloat32)) {
 				call3<vec3,float,float,float>(ff, ret, param);
 				return true;
@@ -271,7 +274,7 @@ bool call_function(Function *f, void *ff, void *ret, const Array<void*> &param) 
 			}
 		}*/
 	} else if (ptype.num == 4) {
-		if (f->return_type->_amd64_allow_pass_in_xmm and (f->return_type->size == 16)) { // rect, color, plane, quaternion
+		if (f->literal_return_type->_amd64_allow_pass_in_xmm() and (f->literal_return_type->size == 16)) { // rect, color, plane, quaternion
 			if ((ptype[0] == TypeFloat32) and (ptype[1] == TypeFloat32) and (ptype[2] == TypeFloat32) and (ptype[3] == TypeFloat32)) {
 				call4<vec4,float,float,float,float>(ff, ret, param);
 				return true;
@@ -289,14 +292,14 @@ bool call_function(Function *f, void *ff, void *ret, const Array<void*> &param) 
 }
 
 
-Node *eval_function_call(SyntaxTree *tree, Node *c, Function *f) {
+shared<Node> eval_function_call(SyntaxTree *tree, shared<Node> c, Function *f) {
 	db_out("??? " + f->signature());
 
 	if (!f->is_pure())
 		return c;
 	db_out("-pure");
 
-	if (!Value::can_init(f->return_type))
+	if (!Value::can_init(f->literal_return_type))
 		return c;
 	db_out("-constr");
 
@@ -321,16 +324,16 @@ Node *eval_function_call(SyntaxTree *tree, Node *c, Function *f) {
 	db_out("-param const");
 
 	Value temp;
-	temp.init(f->return_type);
+	temp.init(f->literal_return_type);
 	if (!call_function(f, ff, temp.p(), p))
 		return c;
-	Node *r = tree->add_node_const(tree->add_constant(f->return_type));
+	auto r = tree->add_node_const(tree->add_constant(f->literal_return_type));
 	r->as_const()->set(temp);
 	db_out(">>>  " + r->str(tree->base_class));
 	return r;
 }
 
-bool all_params_are_const(Node *n) {
+bool all_params_are_const(shared<Node> n) {
 	for (int i=0; i<n->params.num; i++)
 		if (n->params[i]->kind != NodeKind::CONSTANT)
 			return false;
@@ -357,7 +360,7 @@ void rec_init(void *p, const Class *type) {
 void rec_delete(void *p, const Class *type) {
 	if (type->is_super_array()) {
 		auto ar = (DynamicArray*)p;
-		rec_resize(ar, 0, type->param);
+		rec_resize(ar, 0, type->param[0]);
 		ar->simple_clear();
 	} else {
 		for (auto &el: type->elements)
@@ -366,7 +369,7 @@ void rec_delete(void *p, const Class *type) {
 }
 
 void rec_resize(DynamicArray *ar, int num, const Class *type) {
-	auto *t_el = type->param;
+	auto *t_el = type->param[0];
 	int num_old = ar->num;
 
 	for (int i=num; i<num_old; i++)
@@ -384,7 +387,7 @@ void rec_assign(void *a, void *b, const Class *type) {
 		auto bb = (DynamicArray*)b;
 		rec_resize(aa, bb->num, type);
 		for (int i=0; i<bb->num; i++)
-			rec_assign(ar_el(aa, i), ar_el(bb, i), type->param);
+			rec_assign(ar_el(aa, i), ar_el(bb, i), type->param[0]);
 
 	} else if (type->is_simple_class()){
 		memcpy(a, b, type->size);
@@ -395,7 +398,7 @@ void rec_assign(void *a, void *b, const Class *type) {
 }
 
 // BEFORE transforming to call-by-reference!
-Node *SyntaxTree::conv_eval_const_func(Node *c) {
+shared<Node> SyntaxTree::conv_eval_const_func(shared<Node> c) {
 	if (c->kind == NodeKind::OPERATOR) {
 		return eval_function_call(this, c, c->as_op()->f);
 	} else if (c->kind == NodeKind::FUNCTION_CALL) {
@@ -404,10 +407,10 @@ Node *SyntaxTree::conv_eval_const_func(Node *c) {
 	return conv_eval_const_func_nofunc(c);
 }
 
-Node *SyntaxTree::conv_eval_const_func_nofunc(Node *c) {
+shared<Node> SyntaxTree::conv_eval_const_func_nofunc(shared<Node> c) {
 	if (c->kind == NodeKind::DYNAMIC_ARRAY) {
 		if (all_params_are_const(c)) {
-			Node *cr = add_node_const(add_constant(c->type));
+			auto cr = add_node_const(add_constant(c->type));
 			DynamicArray *da = &c->params[0]->as_const()->as_array();
 			int index = c->params[1]->as_const()->as_int();
 			rec_assign(cr->as_const()->p(), (char*)da->data + index * da->element_size, c->type);
@@ -416,18 +419,18 @@ Node *SyntaxTree::conv_eval_const_func_nofunc(Node *c) {
 	} else if (c->kind == NodeKind::ARRAY) {
 		// hmmm, not existing, I guess....
 		if (all_params_are_const(c)) {
-			Node *cr = add_node_const(add_constant(c->type));
+			auto cr = add_node_const(add_constant(c->type));
 			int index = c->params[1]->as_const()->as_int();
 			rec_assign(cr->as_const()->p(), (char*)c->params[0]->as_const()->p() + index * c->type->size, c->type);
 			return cr;
 		}
 	} else if (c->kind == NodeKind::ARRAY_BUILDER) {
 		if (all_params_are_const(c)) {
-			Node *c_array = add_node_const(add_constant(c->type));
+			auto c_array = add_node_const(add_constant(c->type));
 			DynamicArray &da = c_array->as_const()->as_array();
 			rec_resize(&da, c->params.num, c->type);
 			for (int i=0; i<c->params.num; i++)
-				rec_assign(ar_el(&da, i), c->params[i]->as_const()->p(), c->type->param);
+				rec_assign(ar_el(&da, i), c->params[i]->as_const()->p(), c->type->param[0]);
 			return c_array;
 		}
 	}
@@ -439,7 +442,7 @@ Node *SyntaxTree::conv_eval_const_func_nofunc(Node *c) {
 
 
 // may not use AddConstant()!!!
-Node *SyntaxTree::pre_process_node_addresses(Node *c) {
+shared<Node> SyntaxTree::pre_process_node_addresses(shared<Node> c) {
 	if (c->kind == NodeKind::INLINE_CALL) {
 		auto *f = c->as_func();
 		//if (!f->is_pure or !f->address_preprocess)
@@ -461,10 +464,10 @@ Node *SyntaxTree::pre_process_node_addresses(Node *c) {
 			return c;
 
 		c->params[0]->link_no = new_addr;
-		return c->params[0];
+		return c->params[0].get();
 
 	} else if (c->kind == NodeKind::REFERENCE) {
-		Node *p0 = c->params[0];
+		auto p0 = c->params[0];
 		if (p0->kind == NodeKind::VAR_GLOBAL) {
 			return new Node(NodeKind::ADDRESS, (int_p)p0->as_global_p(), c->type);
 		} else if (p0->kind == NodeKind::VAR_LOCAL) {
@@ -473,7 +476,7 @@ Node *SyntaxTree::pre_process_node_addresses(Node *c) {
 			return new Node(NodeKind::ADDRESS, (int_p)p0->as_const_p(), c->type);
 		}
 	} else if (c->kind == NodeKind::DEREFERENCE) {
-		Node *p0 = c->params[0];
+		auto p0 = c->params[0];
 		if (p0->kind == NodeKind::ADDRESS) {
 			return new Node(NodeKind::MEMORY, p0->link_no, c->type);
 		} else if (p0->kind == NodeKind::LOCAL_ADDRESS) {
@@ -485,14 +488,14 @@ Node *SyntaxTree::pre_process_node_addresses(Node *c) {
 
 void SyntaxTree::eval_const_expressions(bool allow_func_eval) {
 	if (allow_func_eval) {
-		transform([&](Node *n){ return conv_eval_const_func(n); });
+		transform([&](shared<Node> n){ return conv_eval_const_func(n); });
 	} else {
-		transform([&](Node *n){ return conv_eval_const_func_nofunc(n); });
+		transform([&](shared<Node> n){ return conv_eval_const_func_nofunc(n); });
 	}
 }
 
 void SyntaxTree::pre_processor_addresses() {
-	transform([&](Node *n){ return pre_process_node_addresses(n); });
+	transform([&](shared<Node> n){ return pre_process_node_addresses(n); });
 }
 
 };

@@ -15,35 +15,31 @@ TerrainHeightmapDialog::TerrainHeightmapDialog(hui::Window *_parent, bool _allow
 	from_resource("terrain_heightmap_dialog");
 	data = _data;
 
-	event("cancel", [=]{ OnClose(); });
-	event("hui:close", [=]{ OnClose(); });
-	event("apply", [=]{ ApplyData(); });
-	event("ok", [=]{ OnOk(); });
+	event("cancel", [=]{ on_close(); });
+	event("hui:close", [=]{ on_close(); });
+	event("apply", [=]{ apply_data(); });
+	event("ok", [=]{ on_ok(); });
 
-	event("height_image_find", [=]{ OnFindHeightmap(); });
-	event("stretch_x", [=]{ OnSizeChange(); });
-	event("stretch_z", [=]{ OnSizeChange(); });
-	event("filter_image_find", [=]{ OnFindFilter(); });
-	event_xp("preview", "hui:draw", [=](Painter *p){ OnPreviewDraw(p); });
+	event("height_image_find", [=]{ on_find_heightmap(); });
+	event("stretch_x", [=]{ on_size_change(); });
+	event("stretch_z", [=]{ on_size_change(); });
+	event("filter_image_find", [=]{ on_find_filter(); });
+	event_xp("preview", "hui:draw", [=](Painter *p){ on_preview_draw(p); });
 
 	enable("ok", false);
 
 	stretch_x = 1;
 	stretch_z = 1;
-	LoadData();
+	load_data();
 }
 
-TerrainHeightmapDialog::~TerrainHeightmapDialog()
-{
-}
-
-void TerrainHeightmapDialog::ApplyData()
+void TerrainHeightmapDialog::apply_data()
 {
 }
 
 
 
-void TerrainHeightmapDialog::OnSizeChange() {
+void TerrainHeightmapDialog::on_size_change() {
 	stretch_x = get_float("stretch_x");
 	stretch_z = get_float("stretch_z");
 	redraw("preview");
@@ -51,7 +47,7 @@ void TerrainHeightmapDialog::OnSizeChange() {
 
 
 
-void TerrainHeightmapDialog::OnFindFilter() {
+void TerrainHeightmapDialog::on_find_filter() {
 	if (storage->file_dialog(FD_TEXTURE, false, false)) {
 		filter_file = storage->dialog_file_complete;
 		set_string("filter_image", storage->dialog_file.str());
@@ -64,9 +60,8 @@ void TerrainHeightmapDialog::OnFindFilter() {
 
 
 
-void TerrainHeightmapDialog::OnFindHeightmap()
-{
-	if (storage->file_dialog(FD_TEXTURE, false, false)){
+void TerrainHeightmapDialog::on_find_heightmap() {
+	if (storage->file_dialog(FD_TEXTURE, false, false)) {
 		heightmap_file = storage->dialog_file_complete;
 		set_string("height_image", storage->dialog_file.str());
 		heightmap.load(heightmap_file);
@@ -76,32 +71,29 @@ void TerrainHeightmapDialog::OnFindHeightmap()
 }
 
 
-static float c2f(const color &c)
-{
+static float c2f(const color &c) {
 	return (c.r + c.g + c.b) / 3.0f;
 }
 
 // texture interpolation (without repeating the last half pixel)
-static float im_interpolate(const Image &im, float x, float y, float stretch_x, float stretch_y)
-{
+static float im_interpolate(const Image &im, float x, float y, float stretch_x, float stretch_y) {
 	stretch_x *= im.width;
 	stretch_y *= im.height;
-	x = clampf(x * stretch_x, 0.5f, stretch_x - 0.5f);
-	y = clampf(y * stretch_y, 0.5f, stretch_y - 0.5f);
+	x = clamp(x * stretch_x, 0.5f, stretch_x - 0.5f);
+	y = clamp(y * stretch_y, 0.5f, stretch_y - 0.5f);
 	return c2f(im.get_pixel_interpolated(x, y));
 }
 
-void TerrainHeightmapDialog::OnPreviewDraw(Painter *c)
-{
-	if (heightmap.is_empty()){
+void TerrainHeightmapDialog::on_preview_draw(Painter *c) {
+	if (heightmap.is_empty()) {
 		c->set_color(Black);
 		c->draw_rect(0, 0, c->width, c->height);
-	}else{
+	} else {
 		Image m;
 		int w = c->width, h = c->height;
 		m.create(w, h, White);
 		for (int x=0;x<w;x++)
-			for (int y=0;y<h;y++){
+			for (int y=0;y<h;y++) {
 				float hmx = (float)x / (float)w;
 				float hmy = (float)y / (float)h;
 				float f = im_interpolate(heightmap, hmx, hmy, stretch_x, stretch_z);
@@ -115,25 +107,22 @@ void TerrainHeightmapDialog::OnPreviewDraw(Painter *c)
 
 
 
-void TerrainHeightmapDialog::OnOk()
-{
+void TerrainHeightmapDialog::on_ok() {
 	float height_factor = get_float("height_factor");
 	bool additive = is_checked("height_op:add");
 	data->execute(new ActionWorldTerrainApplyHeightmap(data, heightmap_file, height_factor, stretch_x, stretch_z, filter_file));//, additive));
-	destroy();
+	request_destroy();
 }
 
 
 
-void TerrainHeightmapDialog::OnClose()
-{
-	destroy();
+void TerrainHeightmapDialog::on_close() {
+	request_destroy();
 }
 
 
 
-void TerrainHeightmapDialog::LoadData()
-{
+void TerrainHeightmapDialog::load_data() {
 	set_float("stretch_x", stretch_x);
 	set_float("stretch_z", stretch_z);
 	set_float("height_factor", 100);

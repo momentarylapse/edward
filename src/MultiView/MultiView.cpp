@@ -367,9 +367,9 @@ void activate_next_window(MultiView *mv) {
 void MultiView::on_key_down(int k) {
 	notify_begin();
 
-	if ((k == hui::KEY_ADD) or (k == hui::KEY_NUM_ADD))
+	if ((k == hui::KEY_PLUS) or (k == hui::KEY_NUM_ADD))
 		cam_zoom(SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
-	if ((k == hui::KEY_SUBTRACT) or (k == hui::KEY_NUM_SUBTRACT))
+	if ((k == hui::KEY_MINUS) or (k == hui::KEY_NUM_SUBTRACT))
 		cam_zoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
 	if (k == hui::KEY_RIGHT)
 		cam_move_pixel(-vector::EX * SPEED_MOVE);
@@ -570,9 +570,9 @@ void MultiView::on_mouse_move() {
 		}
 	} else if (moving_cross_x or moving_cross_y) {
 		if (moving_cross_x)
-			window_partition_x = clampf((m.x - area.x1) / area.width(), 0.01f, 0.99f);
+			window_partition_x = clamp((m.x - area.x1) / area.width(), 0.01f, 0.99f);
 		if (moving_cross_y)
-			window_partition_y = clampf((m.y - area.y1) / area.height(), 0.01f, 0.99f);
+			window_partition_y = clamp((m.y - area.y1) / area.height(), 0.01f, 0.99f);
 	} else if (sel_rect.dist >= 0 and allow_select) {
 		sel_rect.dist += abs(v.x) + abs(v.y);
 		if (sel_rect.dist >= MIN_MOUSE_MOVE_TO_INTERACT)

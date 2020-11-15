@@ -345,7 +345,7 @@ public:
 			return;
 		auto &ii = list_indices[editing];
 		if (ii.type == MVD_WORLD_SCRIPT) {
-			auto filename = Kaba::config.directory << data->meta_data.scripts[ii.index].filename;
+			auto filename = kaba::config.directory << data->meta_data.scripts[ii.index].filename;
 			int r = system(("sgribthmaker '" + filename.str() + "'").c_str());
 			//hui::OpenDocument(filename);
 		}

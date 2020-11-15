@@ -175,7 +175,7 @@ void TerrainPropertiesDialog::OnTextureMapComplete()
 
 void TerrainPropertiesDialog::OnClose()
 {
-	destroy();
+	request_destroy();
 }
 
 
@@ -213,7 +213,7 @@ void TerrainPropertiesDialog::OnClearTextureLevel()
 
 void TerrainPropertiesDialog::update_data() {
 	if (index >= data->terrains.num) {
-		destroy();
+		request_destroy();
 		return;
 	}
 
@@ -236,7 +236,7 @@ void TerrainPropertiesDialog::update_data() {
 
 void TerrainPropertiesDialog::OnOk() {
 	ApplyData();
-	destroy();
+	request_destroy();
 }
 
 

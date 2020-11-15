@@ -49,8 +49,8 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, DataModel *_d
 ModelPropertiesDialog::~ModelPropertiesDialog() {
 }
 
-const Kaba::Class *get_class(Kaba::Script *s, const string &parent) {
-	for (auto *t: s->syntax->base_class->classes)
+shared<const kaba::Class> get_class(shared<kaba::Script> s, const string &parent) {
+	for (auto t: s->syntax->base_class->classes)
 		if (t->is_derived_from_s(parent))
 			return t;
 	throw Exception(format(_("script does not contain a class derived from '%s'"), parent));
@@ -72,14 +72,14 @@ void update_model_script_data(DataModel::MetaData &m) {
 	//m.class_name = "";
 	try {
 		msg_write((storage->root_dir_kind[FD_SCRIPT] << m.script_file).str());
-		auto ss = Kaba::Load(storage->root_dir_kind[FD_SCRIPT] << m.script_file, true);
+		auto ss = kaba::load(storage->root_dir_kind[FD_SCRIPT] << m.script_file, true);
 
-		auto *t = get_class(ss, "*.Model");
+		auto t = get_class(ss, "*.Model");
 		m._script_class = t->cname(t->owner->base_class);
 
 		Array<string> wanted;
 		for (auto c: t->constants)
-			if (c->name == "PARAMETERS" and c->type == Kaba::TypeString)
+			if (c->name == "PARAMETERS" and c->type == kaba::TypeString)
 				wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
 
 		//m.class_name = t->name;
@@ -188,7 +188,7 @@ string render_material(ModelMaterial *m) {
 		for (int y=0;y<N;y++) {
 			// ambient + diffuse + emission
 			vector n = img_get_ball_n(x, y, N);
-			float f = clampf(n * light_dir, 0, 1);
+			float f = clamp(n * light_dir, 0.0f, 1.0f);
 			color c = m->col.diffuse * (m->col.ambient * 0.3f + f) + m->col.emission;
 
 			// texture "mapping"
@@ -342,7 +342,7 @@ void ModelPropertiesDialog::apply_data() {
 }
 
 void ModelPropertiesDialog::on_close() {
-	destroy();
+	request_destroy();
 }
 
 void ModelPropertiesDialog::on_ok() {

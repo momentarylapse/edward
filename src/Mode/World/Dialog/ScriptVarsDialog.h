@@ -16,13 +16,12 @@ class ScriptVarsDialog: public hui::Dialog
 {
 public:
 	ScriptVarsDialog(hui::Window *_parent, WorldScript *data);
-	virtual ~ScriptVarsDialog();
 
-	void LoadData();
-	void ApplyData();
+	void load_data();
+	void apply_data();
 
-	void OnOk();
-	void OnClose();
+	void on_ok();
+	void on_close();
 
 private:
 	WorldScript *data;

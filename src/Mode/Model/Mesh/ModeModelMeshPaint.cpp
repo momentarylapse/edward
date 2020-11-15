@@ -135,8 +135,8 @@ public:
 			rmax *= 5;
 
 		// pixel
-		int i0 = clampi(v.x * tl->image->width, 0, tl->image->width);
-		int j0 = clampf(v.y * tl->image->height, 0, tl->image->height);
+		int i0 = clamp(int(v.x * tl->image->width), 0, tl->image->width);
+		int j0 = clamp(int(v.y * tl->image->height), 0, tl->image->height);
 		int di = rmax * tl->image->width;
 		int dj = rmax * tl->image->height;
 
@@ -146,8 +146,8 @@ public:
 		// draw a fuzzy ellipsis UV-space
 		for (int ii=i0-di; ii<i0+di; ii++)
 			for (int jj=j0-dj; jj<j0+dj; jj++) {
-				int i = loopi(ii, 0, tl->image->width);
-				int j = loopi(jj, 0, tl->image->height);
+				int i = loop(ii, 0, tl->image->width);
+				int j = loop(jj, 0, tl->image->height);
 				vector vv = vector((float)ii / (float)tl->image->width, (float)jj / (float)tl->image->height, 0);
 				float dd = quad_2d(iDD, vv-v);
 				float a = exp(-pow(dd / rr, brush.exponent)*2) * opacity;

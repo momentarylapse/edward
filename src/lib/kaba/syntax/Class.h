@@ -2,8 +2,9 @@
 #ifndef CLASS_H_
 #define CLASS_H_
 
+#include "../../base/pointer.h"
 
-namespace Kaba{
+namespace kaba {
 
 class Script;
 class SyntaxTree;
@@ -11,6 +12,7 @@ class Class;
 class Function;
 class Constant;
 class Variable;
+enum class Flags;
 
 
 class ClassElement {
@@ -26,10 +28,10 @@ public:
 
 typedef void *VirtualTable;
 
-class Class {
+class Class : public Sharable<Empty> {
 public:
 	//Class();
-	Class(const string &name, int64 size, SyntaxTree *owner, const Class *parent = nullptr, const Class *param = nullptr);
+	Class(const string &name, int64 size, SyntaxTree *owner, const Class *parent = nullptr, const Array<const Class*> &param = {});
 	~Class();
 	string name;
 	string long_name() const;
@@ -43,34 +45,40 @@ public:
 		SUPER_ARRAY,
 		POINTER,
 		POINTER_SILENT, // pointer silent (&)
+		POINTER_SHARED,
+		POINTER_UNIQUE,
+		FUNCTION,
 		DICT,
 	};
 	Type type;
+	Flags flags;
 
 	bool is_array() const;
 	bool is_super_array() const;
 	bool is_dict() const;
 	bool is_pointer() const;
+	bool is_some_pointer() const;
+	bool is_pointer_shared() const;
 	bool is_pointer_silent() const;
-	bool fully_parsed;
+	bool fully_parsed() const;
 	Array<ClassElement> elements;
-	Array<Function*> functions;
-	Array<Variable*> static_variables;
-	Array<Constant*> constants;
-	Array<const Class*> classes;
+	shared_array<Function> functions;
+	shared_array<Variable> static_variables;
+	shared_array<Constant> constants;
+	shared_array<const Class> classes;
 	const Class *parent; // derived from
-	const Class *param; // for pointers/arrays etc
+	Array<const Class*> param; // for pointers/arrays etc
 	const Class *name_space;
 	SyntaxTree *owner; // to share and be able to delete...
 	int _logical_line_no;
 	int _exp_no;
-	bool _amd64_allow_pass_in_xmm;
+	bool _amd64_allow_pass_in_xmm() const;
 	Array<void*> vtable;
 	void *_vtable_location_compiler_; // may point to const/opcode
 	void *_vtable_location_target_; // (opcode offset adjusted)
 	void *_vtable_location_external_; // from linked classes (just for reference)
 
-	bool force_call_by_value;
+	bool force_call_by_value() const;
 	bool uses_call_by_reference() const;
 	bool uses_return_by_memory() const;
 	bool is_simple_class() const;
@@ -103,6 +111,7 @@ extern const Class *TypeReg64; // dummy for compilation
 extern const Class *TypeReg32; // dummy for compilation
 extern const Class *TypeReg16; // dummy for compilation
 extern const Class *TypeReg8; // dummy for compilation
+extern const Class *TypeDynamic;
 extern const Class *TypeVoid;
 extern const Class *TypePointer;
 extern const Class *TypeBool;

@@ -18,31 +18,25 @@ ModelNewAnimationDialog::ModelNewAnimationDialog(hui::Window *_parent, bool _all
 	set_int("new_animation_index", index);
 	set_int("new_animation_type", type - MOVE_TYPE_VERTEX);
 
-	event("hui:close", std::bind(&ModelNewAnimationDialog::onClose, this));
-	event("cancel", std::bind(&ModelNewAnimationDialog::onClose, this));
-	event("ok", std::bind(&ModelNewAnimationDialog::onOk, this));
+	event("hui:close", [=]{ on_close(); });
+	event("cancel", [=]{ on_close(); });
+	event("ok", [=]{ on_ok(); });
 }
 
-ModelNewAnimationDialog::~ModelNewAnimationDialog()
-{
+void ModelNewAnimationDialog::on_close() {
+	request_destroy();
 }
 
-void ModelNewAnimationDialog::onClose()
-{
-	destroy();
-}
-
-void ModelNewAnimationDialog::onOk()
-{
+void ModelNewAnimationDialog::on_ok() {
 	int index = get_int("new_animation_index");
 	int type = get_int("new_animation_type") + MOVE_TYPE_VERTEX;
 	if (index < data->move.num)
-		if (data->move[index].frame.num > 0){
+		if (data->move[index].frame.num > 0) {
 			ed->error_box(_("This index is already taken by another animation."));
 			return;
 		}
 	data->addAnimation(index, type);
-	destroy();
+	request_destroy();
 }
 
 

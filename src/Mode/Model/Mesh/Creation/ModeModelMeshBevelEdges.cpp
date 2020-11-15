@@ -50,7 +50,7 @@ void ModeModelMeshBevelEdges::on_mouse_move() {
 	data->action_manager->clear_preview();
 
 	radius += (hui::GetEvent()->dx) / multi_view->active_win->zoom();
-	radius = clampf(radius, rad_max * 0.001f, rad_max);
+	radius = clamp(radius, rad_max * 0.001f, rad_max);
 
 	data->set_selection(selection);
 	if (!data->action_manager->preview(new ActionModelBevelEdges(radius)))

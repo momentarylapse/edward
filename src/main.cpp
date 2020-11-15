@@ -36,12 +36,12 @@ bool handle_special_args(const Array<string> &arg) {
 	if ((arg[1] == "--update") or (arg[1] == "--check")) {
 		if (arg.num >= 3){
 
-			Kaba::init();
+			kaba::init();
 
 			int pp = arg[2].find("/Objects/", 0);
 			if (pp > 0) {
-				Kaba::config.directory = arg[2].substr(0, pp) + "/Scripts/";
-				msg_write(Kaba::config.directory.str());
+				kaba::config.directory = arg[2].substr(0, pp) + "/Scripts/";
+				msg_write(kaba::config.directory.str());
 			}
 
 

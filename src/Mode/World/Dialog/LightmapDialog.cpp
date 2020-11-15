@@ -64,7 +64,7 @@ void LightmapDialog::FillList()
 
 void LightmapDialog::OnClose()
 {
-	destroy();
+	request_destroy();
 }
 
 void LightmapDialog::OnType()
@@ -118,7 +118,7 @@ void OnHistDraw(Painter *c)
 
 void OnHistClose()
 {
-	hui::CurWindow->destroy();
+	hui::CurWindow->request_destroy();
 }
 
 void ShowHistogram(Lightmap::Histogram &h, hui::Window *root)
@@ -187,6 +187,6 @@ void LightmapDialog::OnOk()
 	bool ok = lm->Create();
 	delete(lm);
 	if (ok)
-		destroy();
+		request_destroy();
 }
 

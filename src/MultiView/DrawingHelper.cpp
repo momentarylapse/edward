@@ -35,7 +35,7 @@ nix::Texture *create_round_texture(int n) {
 	for (int i=0; i<n; i++)
 		for (int j=0; j<n; j++) {
 			float r = sqrt(pow(i - n/2, 2) + pow(j - n/2, 2));
-			float f = clampf((n*0.45f - r)*0.5f, 0, 1);
+			float f = clamp((n*0.45f - r)*0.5f, 0.0f, 1.0f);
 			im.set_pixel(i, j, color(f, 1, 1, 1));
 		}
 	t->overwrite(im);

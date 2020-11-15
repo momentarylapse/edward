@@ -292,7 +292,7 @@ void ModeModelMeshDeformCylinder::on_mouse_move()
 				d.normalize();
 				float lm = (m - pp) * d;
 				if (la > 30){
-					param[hover].y = clampf(orig_param.y +  lm / la, 0, 1);
+					param[hover].y = clamp(orig_param.y +  lm / la, 0.0f, 1.0f);
 					param[hover].x = param[hover].y;
 				}
 			}

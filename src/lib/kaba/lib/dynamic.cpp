@@ -4,7 +4,7 @@
 #include "exception.h"
 #include "../../any/any.h"
 
-namespace Kaba {
+namespace kaba {
 	
 extern const Class *TypeIntList;
 extern const Class *TypeFloatList;
@@ -28,7 +28,7 @@ void _kaba_array_sort(DynamicArray &array, int offset_by, bool reverse) {
 	for (int i=0; i<array.num; i++) {
 		T *q = (T*)((char*)p + array.element_size);
 		for (int j=i+1; j<array.num; j++) {
-			if (*p > *q xor reverse)
+			if ((*p > *q) xor reverse)
 				array.simple_swap(i, j);
 			q = (T*)((char*)q + array.element_size);
 		}
@@ -44,7 +44,7 @@ void _kaba_array_sort_p(DynamicArray &array, int offset_by, bool reverse) {
 		char **q = p + 1;
 		for (int j=i+1; j<array.num; j++) {
 			T *qq = (T*)(*q + offset_by);
-			if (*pp > *qq xor reverse) {
+			if ((*pp > *qq) xor reverse) {
 				array.simple_swap(i, j);
 				pp = (T*)(*p + offset_by);
 			}
@@ -67,7 +67,7 @@ void _kaba_array_sort_pf(DynamicArray &array, Function *f, bool reverse) {
 		for (int j=i+1; j<array.num; j++) {
 			if (!call_function(f, f->address, &r2, {*q}))
 				kaba_raise_exception(new KabaException("call failed"));
-			if (r1 > r2 xor reverse) {
+			if ((r1 > r2) xor reverse) {
 				array.simple_swap(i, j);
 				std::swap(r1, r2);
 			}
@@ -131,7 +131,7 @@ void kaba_array_add(DynamicArray &array, void *p, const Class *type) {
 	} else if (type == TypeBoolList) {
 		array.append_1_single(*(char*)p);
 	} else {
-		auto *f = type->get_func("add", TypeVoid, {type->param});
+		auto *f = type->get_func("add", TypeVoid, {type->param[0]});
 		if (!f)
 			kaba_raise_exception(new KabaException("can not add to array type " + type->long_name()));
 		typedef void func_t(void*, const void*);
@@ -143,7 +143,7 @@ void kaba_array_add(DynamicArray &array, void *p, const Class *type) {
 DynamicArray _cdecl kaba_array_sort(DynamicArray &array, const Class *type, const string &_by) {
 	if (!type->is_super_array())
 		kaba_raise_exception(new KabaException("type '" + type->name + "' is not an array"));
-	const Class *el = type->param;
+	const Class *el = type->param[0];
 	if (array.element_size != el->size)
 		kaba_raise_exception(new KabaException("element type size mismatch..."));
 
@@ -154,7 +154,7 @@ DynamicArray _cdecl kaba_array_sort(DynamicArray &array, const Class *type, cons
 	const Class *rel = el;
 
 	if (el->is_pointer())
-		rel = el->param;
+		rel = el->param[0];
 
 	string by = _by;
 	bool reverse = false;
@@ -176,7 +176,7 @@ DynamicArray _cdecl kaba_array_sort(DynamicArray &array, const Class *type, cons
 				offset = e.offset;
 			}
 		if (!by_type) {
-			for (auto *f: rel->functions)
+			for (auto *f: weak(rel->functions))
 				if (f->name == by) {
 					if (f->num_params > 0)
 						kaba_raise_exception(new KabaException("can only sort by a function without parameters"));
@@ -257,15 +257,15 @@ string _cdecl var_repr(const void *p, const Class *type) {
 		return b2s(*(bool*)p);
 	} else if (type == TypeClass) {
 		return class_repr((Class*)p);
-	} else if (type == TypeFunction) {
+	} else if (type->type == Class::Type::FUNCTION) {
 		return func_repr((Function*)p);
 	} else if (type == TypeAny) {
 		return ((Any*)p)->repr();
-	} else if (type->is_pointer()) {
+	} else if (type->is_some_pointer()) {
 		auto *pp = *(void**)p;
 		// auto deref?
-		if (pp and (type->param != TypeVoid))
-			return var_repr(pp, type->param);
+		if (pp and (type->param[0] != TypeVoid))
+			return var_repr(pp, type->param[0]);
 		return p2s(pp);
 	} else if (type == TypeString) {
 		return ((string*)p)->repr();
@@ -279,7 +279,7 @@ string _cdecl var_repr(const void *p, const Class *type) {
 		for (int i=0; i<da->num; i++) {
 			if (i > 0)
 				s += ", ";
-			s += var_repr(((char*)da->data) + i * da->element_size, type->param);
+			s += var_repr(((char*)da->data) + i * da->element_size, type->param[0]);
 		}
 		return "[" + s + "]";
 	} else if (type->is_dict()) {
@@ -290,7 +290,7 @@ string _cdecl var_repr(const void *p, const Class *type) {
 				s += ", ";
 			s += var_repr(((char*)da->data) + i * da->element_size, TypeString);
 			s += ": ";
-			s += var_repr(((char*)da->data) + i * da->element_size + sizeof(string), type->param);
+			s += var_repr(((char*)da->data) + i * da->element_size + sizeof(string), type->param[0]);
 		}
 		return "{" + s + "}";
 	} else if (type->elements.num > 0) {
@@ -309,7 +309,7 @@ string _cdecl var_repr(const void *p, const Class *type) {
 		for (int i=0; i<type->array_length; i++) {
 			if (i > 0)
 				s += ", ";
-			s += var_repr(((char*)p) + i * type->param->size, type->param);
+			s += var_repr(((char*)p) + i * type->param[0]->size, type->param[0]);
 		}
 		return "[" + s + "]";
 	}
@@ -362,7 +362,7 @@ Any _cdecl kaba_dyn(const void *var, const Class *type) {
 		auto *t_el = type->get_array_element();
 		for (int i=0; i<da->num; i++) {
 			string key = *(string*)(((char*)da->data) + i * da->element_size);
-			a.map_set(key, kaba_dyn(((char*)da->data) + i * da->element_size + sizeof(string), type->param));
+			a.map_set(key, kaba_dyn(((char*)da->data) + i * da->element_size + sizeof(string), type->param[0]));
 		}
 		return a;
 	}
@@ -377,6 +377,14 @@ Any _cdecl kaba_dyn(const void *var, const Class *type) {
 }
 
 Array<const Class*> func_effective_params(const Function *f);
+
+DynamicArray kaba_xmap(Function *func, DynamicArray *a, const Class *t) {
+	msg_write("xmap " + p2s(a) + " " + p2s(t));
+	msg_write(a->num);
+	msg_write(fa2s(*(Array<float>*)a));
+	msg_write(t->long_name());
+	return kaba_map(func, a);
+}
 
 DynamicArray kaba_map(Function *func, DynamicArray *a) {
 	DynamicArray r;
@@ -412,8 +420,9 @@ void assert_num_params(Function *f, int n) {
 }
 
 void assert_return_type(Function *f, const Class *ret) {
-	if (f->return_type != ret)
-		kaba_raise_exception(new KabaException("call(): function returns " + f->return_type->long_name() + ", " + ret->long_name() + " required"));
+	msg_write("TODO check type");
+	if (f->literal_return_type != ret)
+		kaba_raise_exception(new KabaException("call(): function returns " + f->literal_return_type->long_name() + ", " + ret->long_name() + " required"));
 }
 
 void kaba_call0(Function *func) {

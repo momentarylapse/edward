@@ -46,7 +46,7 @@ void Edward::on_close() {
 }
 
 void Edward::exit() {
-	destroy();
+	request_destroy();
 	app->end();
 }
 
@@ -237,9 +237,6 @@ Edward::Edward(Array<string> arg) :
 }
 
 Edward::~Edward() {
-}
-
-void Edward::on_destroy() {
 	// auto unsubscribe()...
 	delete plugins;
 	delete multi_view_2d;

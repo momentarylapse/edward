@@ -9,8 +9,9 @@
 #define SRC_LIB_KABA_SYNTAX_FUNCTION_H_
 
 #include "../../base/base.h"
+#include "../../base/pointer.h"
 
-namespace Kaba{
+namespace kaba {
 
 class Class;
 class Block;
@@ -19,7 +20,7 @@ enum class InlineID;
 enum class Flags;
 
 
-class Variable {
+class Variable : public Sharable<Empty> {
 public:
 	Variable(const string &name, const Class *type);
 	~Variable();
@@ -37,8 +38,11 @@ public:
 };
 
 // user defined functions
-class Function {
+class Function : public Sharable<Empty> {
 public:
+	Function(const string &name, const Class *return_type, const Class *name_space, Flags flags = Flags(0));
+	~Function();
+
 	SyntaxTree *owner() const;
 	
 	string name;
@@ -47,12 +51,12 @@ public:
 	// parameters (linked to intern variables)
 	int num_params;
 	// block of code
-	Block *block;
+	shared<Block> block;
 	// local variables
-	Array<Variable*> var;
+	shared_array<Variable> var;
 	Array<const Class*> literal_param_type;
 	const Class *name_space;
-	const Class *return_type;
+	const Class *effective_return_type;
 	const Class *literal_return_type;
 	Flags flags;
 	bool auto_declared;
@@ -73,8 +77,6 @@ public:
 	void *address;
 	void *address_preprocess;
 	int _label;
-	Function(const string &name, const Class *return_type, const Class *name_space, Flags flags = Flags(0));
-	~Function();
 	Variable *__get_var(const string &name) const;
 	string create_slightly_hidden_name();
 	void update_parameters_after_parsing();

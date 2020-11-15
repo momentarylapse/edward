@@ -121,9 +121,9 @@ void ConfigurationDialog::on_ok() {
 			data->UpdateDatabase();
 	}
 	exporting = false;
-	destroy();
+	request_destroy();
 }
 
 void ConfigurationDialog::on_close() {
-	destroy();
+	request_destroy();
 }

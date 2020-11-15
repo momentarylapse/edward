@@ -20,30 +20,24 @@ ModelDuplicateAnimationDialog::ModelDuplicateAnimationDialog(hui::Window *_paren
 	hide_control("new_animation_type", true);
 	hide_control("new_animation_t_type", true);
 
-	event("hui:close", std::bind(&ModelDuplicateAnimationDialog::onClose, this));
-	event("cancel", std::bind(&ModelDuplicateAnimationDialog::onClose, this));
-	event("ok", std::bind(&ModelDuplicateAnimationDialog::onOk, this));
+	event("hui:close", std::bind(&ModelDuplicateAnimationDialog::on_close, this));
+	event("cancel", std::bind(&ModelDuplicateAnimationDialog::on_close, this));
+	event("ok", std::bind(&ModelDuplicateAnimationDialog::on_ok, this));
 }
 
-ModelDuplicateAnimationDialog::~ModelDuplicateAnimationDialog()
-{
+void ModelDuplicateAnimationDialog::on_close() {
+	request_destroy();
 }
 
-void ModelDuplicateAnimationDialog::onClose()
-{
-	destroy();
-}
-
-void ModelDuplicateAnimationDialog::onOk()
-{
+void ModelDuplicateAnimationDialog::on_ok() {
 	int index = get_int("new_animation_index");
 	if (index < data->move.num)
-		if (data->move[index].frame.num > 0){
+		if (data->move[index].frame.num > 0) {
 			ed->error_box(_("This index is already taken by another animation."));
 			return;
 		}
 	data->duplicateAnimation(source, index);
-	destroy();
+	request_destroy();
 }
 
 

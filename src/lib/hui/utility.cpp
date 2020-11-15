@@ -4,12 +4,17 @@
 	#include <direct.h>
 	#include <tchar.h>
 	#include <signal.h>
+	#include <windows.h>
 #endif
 #ifdef OS_LINUX
 	#include <sys/time.h>
 	#include <unistd.h>
 #endif
 
+
+#ifdef OS_WINDOWS
+const TCHAR* hui_tchar_str(const string& str);
+#endif
 
 namespace hui
 {
@@ -44,7 +49,7 @@ void OpenDocument(const Path &filename) {
 	ShellExecute(NULL, _T(""), hui_tchar_str(filename.str()), _T(""), _T(""), SW_SHOW);
 #endif
 #ifdef OS_LINUX
-	int r = system(format("xdg-open '%s'", filename).c_str());
+	int r = system(format("gnome-open '%s'", filename).c_str());
 #endif
 }
 

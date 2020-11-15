@@ -253,8 +253,8 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_SCRIPT){
 		try{
-			Time = file_mtime(Kaba::config.directory << Name).time;
-			string buf = FileReadText(Kaba::config.directory << Name);
+			Time = file_mtime(kaba::config.directory << Name).time;
+			string buf = FileReadText(kaba::config.directory << Name);
 			// would be better to compile the script and look for functions having a string constant as a parameter...
 			//   -> would automatically ignore comments and   function( "aaa" + b )
 			for (int i=0;i<buf.num;i++){

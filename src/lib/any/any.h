@@ -27,6 +27,7 @@ public:
 	Any(bool b);
 	Any(const string &s);
 	Any(const Array<Any> &a);
+	Any(const Array<int> &a);
 	Any(const AnyMap&m);
 	Any(const void *p);
 	~Any();
@@ -35,8 +36,22 @@ public:
 	void sync_to_parent();
 	void sync_from_parent();
 	void create_type(int type);
+
+	bool is_empty() const;
+	bool is_string() const;
+	bool is_int() const;
+	bool is_float() const;
+	bool is_bool() const;
+	bool is_pointer() const;
+	bool is_array() const;
+	bool is_map() const;
+
 	string _cdecl str() const;
 	string _cdecl repr() const;
+
+	static Any parse(const string &s);
+
+
 	int _cdecl _int() const;
 	float _cdecl _float() const;
 	bool _cdecl _bool() const;
@@ -53,18 +68,19 @@ public:
 	Any &_cdecl back();
 	int length();
 	
-	int* as_int() const;
-	float* as_float() const;
-	bool* as_bool() const;
-	string* as_string() const;
-	Array<Any>* as_array() const;
-	AnyMap* as_map() const;
-	const void** as_pointer() const;
+	int& as_int() const;
+	float& as_float() const;
+	bool& as_bool() const;
+	string& as_string() const;
+	Array<Any>& as_array() const;
+	AnyMap& as_map() const;
+	const void*& as_pointer() const;
 
 	// map/dict
 	const Any &operator[] (const string &key) const;
 	Any &operator[] (const string &key);
 	Array<string> keys() const;
+	bool has(const string &key) const;
 
 	// data
 	int type;
@@ -93,6 +109,7 @@ public:
 
 	static Any EmptyMap;
 	static Any EmptyArray;
+	static bool allow_simple_output;
 };
 
 

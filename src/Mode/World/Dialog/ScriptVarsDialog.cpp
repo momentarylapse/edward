@@ -15,27 +15,21 @@ ScriptVarsDialog::ScriptVarsDialog(hui::Window *_parent, WorldScript *_data) :
 	from_resource("script_vars_dialog");
 	data = _data;
 
-	event("cancel", std::bind(&ScriptVarsDialog::OnClose, this));
-	event("hui:close", std::bind(&ScriptVarsDialog::OnClose, this));
-	event("ok", std::bind(&ScriptVarsDialog::OnOk, this));
+	event("cancel", [=]{ on_close(); });
+	event("hui:close", [=]{ on_close(); });
+	event("ok", [=]{ on_ok(); });
 
-	LoadData();
+	load_data();
 }
 
-ScriptVarsDialog::~ScriptVarsDialog()
-{
-}
-
-void ScriptVarsDialog::ApplyData()
-{
+void ScriptVarsDialog::apply_data() {
 	for (int i=0; i<data->variables.num; i++)
 		data->variables[i].value = get_cell("variables", i, 2);
 }
 
 
 
-void ScriptVarsDialog::LoadData()
-{
+void ScriptVarsDialog::load_data() {
 	set_string("class", _("Class: ") + data->class_name);
 	if (data->class_name == "")
 		set_string("class", "- no class derived from Controller found -");
@@ -46,14 +40,12 @@ void ScriptVarsDialog::LoadData()
 	enable("variables", data->variables.num > 0);
 }
 
-void ScriptVarsDialog::OnClose()
-{
-	destroy();
+void ScriptVarsDialog::on_close() {
+	request_destroy();
 }
 
-void ScriptVarsDialog::OnOk()
-{
-	ApplyData();
-	destroy();
+void ScriptVarsDialog::on_ok() {
+	apply_data();
+	request_destroy();
 }
 

@@ -18,48 +18,39 @@ ModelEasifyDialog::ModelEasifyDialog(hui::Window *_parent, bool _allow_parent, D
 	data = _data;
 	factor = 0.5f;
 
-	event("hui:close", std::bind(&ModelEasifyDialog::OnClose, this));
-	event("cancel", std::bind(&ModelEasifyDialog::OnClose, this));
-	event("ok", std::bind(&ModelEasifyDialog::OnOk, this));
-	event("quality_factor", std::bind(&ModelEasifyDialog::OnQualityFactor, this));
-	event("quality_slider", std::bind(&ModelEasifyDialog::OnQualitySlider, this));
+	event("hui:close", [=]{ on_close(); });
+	event("cancel", [=]{ on_close(); });
+	event("ok", [=]{ on_ok(); });
+	event("quality_factor", [=]{ on_quality_factor(); });
+	event("quality_slider", [=]{ on_quality_slider(); });
 
-	LoadData();
+	load_data();
 }
 
-ModelEasifyDialog::~ModelEasifyDialog()
-{
-}
-
-void ModelEasifyDialog::LoadData()
-{
+void ModelEasifyDialog::load_data() {
 	set_float("quality_factor", factor * 100.0f);
 	set_float("quality_slider", factor);
 	set_string("eat_vertices", format(_("Vertices: %d (of %d)"), (int)(data->mesh->vertex.num * factor), data->mesh->vertex.num));
 	set_string("eat_polygons", format(_("Polygons: %d (of %d)"), (int)(data->mesh->polygon.num * factor), data->mesh->polygon.num));
 }
 
-void ModelEasifyDialog::OnQualityFactor()
-{
+void ModelEasifyDialog::on_quality_factor() {
 	factor = get_float("quality_factor") / 100.0f;
-	LoadData();
+	load_data();
 }
 
-void ModelEasifyDialog::OnQualitySlider()
-{
+void ModelEasifyDialog::on_quality_slider() {
 	factor = get_float("");
-	LoadData();
+	load_data();
 }
 
-void ModelEasifyDialog::OnClose()
-{
-	destroy();
+void ModelEasifyDialog::on_close() {
+	request_destroy();
 }
 
-void ModelEasifyDialog::OnOk()
-{
+void ModelEasifyDialog::on_ok() {
 	data->easify(factor);
-	destroy();
+	request_destroy();
 }
 
 

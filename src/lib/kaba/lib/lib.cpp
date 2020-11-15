@@ -28,7 +28,7 @@
 
 
 
-namespace Kaba{
+namespace kaba {
 
 
 const string IDENTIFIER_CLASS = "class";
@@ -41,6 +41,8 @@ const string IDENTIFIER_FUNC_LENGTH = "__length__";
 const string IDENTIFIER_FUNC_STR = "__str__";
 const string IDENTIFIER_FUNC_REPR = "__repr__";
 const string IDENTIFIER_FUNC_SUBARRAY = "__subarray__";
+const string IDENTIFIER_FUNC_SHARED_CLEAR = "_clear";
+const string IDENTIFIER_FUNC_SHARED_CREATE = "_create";
 const string IDENTIFIER_SUPER = "super";
 const string IDENTIFIER_SELF = "self";
 const string IDENTIFIER_EXTENDS = "extends";
@@ -56,6 +58,7 @@ const string IDENTIFIER_LET = "let";
 const string IDENTIFIER_NAMESPACE = "namespace";
 const string IDENTIFIER_RETURN_VAR = "-return-";
 const string IDENTIFIER_VTABLE_VAR = "-vtable-";
+const string IDENTIFIER_SHARED_COUNT = "_shared_ref_count";
 const string IDENTIFIER_ENUM = "enum";
 const string IDENTIFIER_CONST = "const";
 const string IDENTIFIER_OUT = "out";
@@ -64,6 +67,11 @@ const string IDENTIFIER_VIRTUAL = "virtual";
 const string IDENTIFIER_EXTERN = "extern";
 //const string IDENTIFIER_ACCESSOR = "accessor";
 const string IDENTIFIER_SELFREF = "selfref";
+const string IDENTIFIER_WEAK = "weak";
+const string IDENTIFIER_SHARED = "shared";
+const string IDENTIFIER_OWNED = "owned";
+const string IDENTIFIER_PURE = "pure";
+const string IDENTIFIER_THROWS = "throws";
 const string IDENTIFIER_USE = "use";
 const string IDENTIFIER_IMPORT = "import";
 const string IDENTIFIER_RETURN = "return";
@@ -75,6 +83,7 @@ const string IDENTIFIER_ELSE = "else";
 const string IDENTIFIER_WHILE = "while";
 const string IDENTIFIER_FOR = "for";
 const string IDENTIFIER_IN = "in";
+const string IDENTIFIER_AS = "as";
 const string IDENTIFIER_BREAK = "break";
 const string IDENTIFIER_CONTINUE = "continue";
 const string IDENTIFIER_PASS = "pass";
@@ -144,8 +153,10 @@ const Class *TypeAny = nullptr;
 const Class *TypeAnyList;
 const Class *TypeAnyDict;
  // internal:
+const Class *TypeDynamic;
 const Class *TypeDynamicArray;
 const Class *TypeDictBase;
+const Class *TypeSharedPointer;
 const Class *TypePointerList;
 const Class *TypeCharPs;
 const Class *TypeBoolPs;
@@ -189,7 +200,7 @@ const Class *TypeFunctionCodeP;
 extern const Class *TypePath;
 
 
-Array<Script*> packages;
+shared_array<Script> packages;
 Script *cur_package = nullptr;
 
 
@@ -198,6 +209,14 @@ static Class *cur_class;
 
 bool flags_has(Flags flags, Flags t) {
 	return ((int(flags) & int(t)) == int(t));
+}
+
+void flags_set(Flags &flags, Flags t) {
+	flags = Flags(int(flags) | int(t));
+}
+
+void flags_clear(Flags &flags, Flags t) {
+	flags = Flags(int(flags) & (~int(t)));
 }
 
 Flags flags_mix(const Array<Flags> &f) {
@@ -210,15 +229,15 @@ Flags flags_mix(const Array<Flags> &f) {
 void add_package(const string &name, Flags flags) {
 	for (auto &p: packages)
 		if (p->filename.str() == name) {
-			cur_package = p;
+			cur_package = p.get();
 			return;
 		}
-	Script* s = new Script;
+	shared<Script> s = new Script;
 	s->used_by_default = flags_has(flags, Flags::AUTO_IMPORT);
 	s->syntax->base_class->name = name;
 	s->filename = name;
 	packages.add(s);
-	cur_package = s;
+	cur_package = s.get();
 }
 
 void __add_class__(Class *t, const Class *name_space) {
@@ -234,7 +253,7 @@ void __add_class__(Class *t, const Class *name_space) {
 const Class *add_type(const string &name, int size, Flags flag, const Class *name_space) {
 	Class *t = new Class(name, size, cur_package->syntax);
 	if (flags_has(flag, Flags::CALL_BY_VALUE))
-		t->force_call_by_value = true;
+		flags_set(t->flags, Flags::FORCE_CALL_BY_VALUE);
 	__add_class__(t, name_space);
 	return t;
 }
@@ -242,15 +261,19 @@ const Class *add_type(const string &name, int size, Flags flag, const Class *nam
 const Class *add_type_p(const Class *sub_type, Flags flag, const string &_name) {
 	string name = _name;
 	if (name == "") {
-		if (flags_has(flag, Flags::SILENT))
+		if (flags_has(flag, Flags::SHARED))
+			name = "shared " + sub_type->name;
+		else if (flags_has(flag, Flags::SILENT))
 			name = sub_type->name + "&";
 		else
 			name = sub_type->name + "*";
 	}
-	Class *t = new Class(name, config.pointer_size, cur_package->syntax, nullptr, sub_type);
+	Class *t = new Class(name, config.pointer_size, cur_package->syntax, nullptr, {sub_type});
 	t->type = Class::Type::POINTER;
 	if (flags_has(flag, Flags::SILENT))
 		t->type = Class::Type::POINTER_SILENT;
+	else if (flags_has(flag, Flags::SHARED))
+		t->type = Class::Type::POINTER_SHARED;
 	__add_class__(t, sub_type->name_space);
 	return t;
 }
@@ -260,7 +283,7 @@ const Class *add_type_a(const Class *sub_type, int array_length, const string &_
 	string name = _name;
 	if (name == "")
 		name = sub_type->name + "[" + i2s(array_length) + "]";
-	Class *t = new Class(name, 0, cur_package->syntax, nullptr, sub_type);
+	Class *t = new Class(name, 0, cur_package->syntax, nullptr, {sub_type});
 	t->size = sub_type->size * array_length;
 	t->type = Class::Type::ARRAY;
 	t->array_length = array_length;
@@ -273,7 +296,7 @@ const Class *add_type_l(const Class *sub_type, const string &_name) {
 	string name = _name;
 	if (name == "")
 		name = sub_type->name + "[]";
-	Class *t = new Class(name, 0, cur_package->syntax, nullptr, sub_type);
+	Class *t = new Class(name, 0, cur_package->syntax, nullptr, {sub_type});
 	t->size = config.super_array_size;
 	t->type = Class::Type::SUPER_ARRAY;
 	script_make_super_array(t);
@@ -285,11 +308,15 @@ const Class *add_type_d(const Class *sub_type, const string &_name) {
 	string name = _name;
 	if (name == "")
 		name = sub_type->name + "{}";
-	Class *t = new Class(name, config.super_array_size, cur_package->syntax, nullptr, sub_type);
+	Class *t = new Class(name, config.super_array_size, cur_package->syntax, nullptr, {sub_type});
 	t->type = Class::Type::DICT;
 	script_make_dict(t);
 	__add_class__(t, sub_type->name_space);
 	return t;
+}
+
+const Class *add_type_f(const Class *ret_type, const Array<const Class*> &params) {
+	return cur_package->syntax->make_class_func(params, ret_type);
 }
 
 //------------------------------------------------------------------------------------------------//
@@ -403,7 +430,7 @@ int _class_override_num_params = -1;
 void _class_add_member_func(const Class *ccc, Function *f, Flags flag) {
 	Class *c = const_cast<Class*>(ccc);
 	if (flags_has(flag, Flags::OVERRIDE)) {
-		foreachi(Function *ff, c->functions, i)
+		foreachi(Function *ff, weak(c->functions), i)
 			if (ff->name == f->name) {
 				if (_class_override_num_params < 0 or _class_override_num_params == ff->num_params) {
 					//msg_write("OVERRIDE");
@@ -443,10 +470,10 @@ Function* class_add_func(const string &name, const Class *return_type, void *fun
 }
 
 int get_virtual_index(void *func, const string &tname, const string &name) {
-	if (config.abi == Abi::WINDOWS_32) {
+	if ((config.abi == Abi::WINDOWS_32) or (config.abi == Abi::WINDOWS_64)) {
 		if (!func)
 			return 0;
-		unsigned char *pp = (unsigned char*)func;
+		unsigned char* pp = (unsigned char*)func;
 		try {
 			//if ((cur_class->vtable) and (pp[0] == 0x8b) and (pp[1] == 0x01) and (pp[2] == 0xff) and (pp[3] == 0x60)){
 			if ((pp[0] == 0x8b) and (pp[1] == 0x44) and (pp[2] == 0x24) and (pp[4] == 0x8b) and (pp[5] == 0x00) and (pp[6] == 0xff) and (pp[7] == 0x60)) {
@@ -455,13 +482,27 @@ int get_virtual_index(void *func, const string &tname, const string &name) {
 				return (int)pp[8] / 4;
 			} else if (pp[0] == 0xe9) {
 				// jmp
-				//msg_write(Asm::Disassemble(func, 16));
+				//msg_write(Asm::disassemble(func, 16));
 				pp = &pp[5] + *(int*)&pp[1];
-				//msg_write(Asm::Disassemble(pp, 16));
+				//msg_write(Asm::disassemble(pp, 16));
 				if ((pp[0] == 0x8b) and (pp[1] == 0x44) and (pp[2] == 0x24) and (pp[4] == 0x8b) and (pp[5] == 0x00) and (pp[6] == 0xff) and (pp[7] == 0x60)) {
+					// x86
 					// 8b.44.24.**    8b.00     ff.60.10
 					// virtual function
-					return (int)pp[8] / 4;
+					return (unsigned int)pp[8] / 4;
+				} else if ((pp[0] == 0x48) and (pp[1] == 0x8b) and (pp[2] == 0x01) and (pp[3] == 0xff) and (pp[4] == 0x60)) {
+					// amd64
+					// 48.8b.01   mov rax, [ecx]
+					// ff.60.NN   jmp [eax+N*8]
+					// virtual function
+					return (unsigned int)pp[5] / 8;
+				} else if ((pp[0] == 0x48) and (pp[1] == 0x8b) and (pp[2] == 0x01) and (pp[3] == 0xff) and (pp[4] == 0xa0)) {
+					// amd64
+					// 48.8b.01            mov rax, [ecx]
+					// ff.a0.NN.NN.NN.NN   jmp [eax+N*8]
+					// virtual function
+					int* ppi = (int*)&pp[5];
+					return *ppi / 8;
 				} else {
 					throw(1);
 				}
@@ -473,6 +514,9 @@ int get_virtual_index(void *func, const string &tname, const string &name) {
 			msg_write(p2s(pp));
 			msg_write(Asm::disassemble(func, 16));
 		}
+	} else if (config.abi == Abi::WINDOWS_64) {
+		msg_error("Script class_add_func_virtual(" + tname + "." + name + "):  can't read virtual index");
+		msg_write(Asm::disassemble(func, 16));
 	} else {
 
 		int_p p = (int_p)func;
@@ -592,14 +636,14 @@ public:
 
 void script_make_super_array(Class *t, SyntaxTree *ps)
 {
-	const Class *p = t->param;
+	const Class *p = t->param[0];
 	t->derive_from(TypeDynamicArray, false);
-	t->param = p;
+	t->param[0] = p;
 	add_class(t);
 
 	Function *sub = t->get_func(IDENTIFIER_FUNC_SUBARRAY, TypeDynamicArray, {nullptr,nullptr});
 	sub->literal_return_type = t;
-	sub->return_type = t;
+	sub->effective_return_type= t;
 
 	// FIXME  wrong for complicated classes
 	if (p->is_simple_class()) {
@@ -706,7 +750,7 @@ void SIAddStatements() {
 	add_statement(IDENTIFIER_FOR, StatementID::FOR_DIGEST, 4); // [INIT, CMP, BLOCK, INC] internally like a while-loop... but a bit different...
 	add_statement(IDENTIFIER_BREAK, StatementID::BREAK);
 	add_statement(IDENTIFIER_CONTINUE, StatementID::CONTINUE);
-	add_statement(IDENTIFIER_NEW, StatementID::NEW);
+	add_statement(IDENTIFIER_NEW, StatementID::NEW, 1);
 	add_statement(IDENTIFIER_DELETE, StatementID::DELETE, 1);
 	add_statement(IDENTIFIER_SIZEOF, StatementID::SIZEOF, 1);
 	add_statement(IDENTIFIER_TYPE, StatementID::TYPE, 1);
@@ -724,6 +768,7 @@ void SIAddStatements() {
 	add_statement(IDENTIFIER_SORTED, StatementID::SORTED);
 	add_statement(IDENTIFIER_DYN, StatementID::DYN);
 	add_statement(IDENTIFIER_CALL, StatementID::CALL);
+	add_statement(IDENTIFIER_WEAK, StatementID::WEAK, 1);
 }
 
 
@@ -785,7 +830,7 @@ void init(Asm::InstructionSet instruction_set, Abi abi, bool allow_std_lib) {
 		}else if (config.instruction_set == Asm::InstructionSet::X86){
 			abi = Abi::GNU_32;
 #ifdef OS_WINDOWS
-			abi = ABI_WINDOWS_32;
+			abi = Abi::WINDOWS_32;
 #endif
 		}else if (config.instruction_set == Asm::InstructionSet::ARM){
 			abi = Abi::GNU_ARM_32;
@@ -864,7 +909,7 @@ void link_external(const string &name, void *pointer) {
 
 	Array<string> names = name.explode(":");
 	string sname = names[0].replace("@list", "[]").replace("@@", ".");
-	for (auto *p: packages)
+	for (auto p: packages)
 		foreachi(Function *f, p->syntax->functions, i)
 			if (f->cname(p->base_class()) == sname) {
 				int n = f->num_params;
@@ -943,7 +988,7 @@ int process_class_num_virtuals(const string &class_name, int num_virtual) {
 }
 
 void clean_up() {
-	DeleteAllScripts(true, true);
+	delete_all_scripts(true, true);
 
 	packages.clear();
 

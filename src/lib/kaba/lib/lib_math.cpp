@@ -19,7 +19,7 @@
 		typedef int Any;
 #endif
 
-namespace Kaba{
+namespace kaba {
 
 #ifdef _X_USE_ALGEBRA_
 	#define algebra_p(p)		(void*)p
@@ -131,11 +131,20 @@ Array<float> _cdecl float_range(float start, float end, float step) {
 	return a;
 }
 
-float _cdecl maxf(float a, float b)
-{	return (a > b) ? a : b;	}
+template<class T>
+T _cdecl x_max(T a, T b) {
+	return max(a,b);
+}
 
-float _cdecl minf(float a, float b)
-{	return (a < b) ? a : b;	}
+template<class T>
+T _cdecl x_min(T a, T b) {
+	return min(a, b);
+}
+
+template<class T>
+T _cdecl x_abs(T x) {
+	return abs(x);
+}
 
 vector _quat_vec_mul(quaternion &a, vector &b)
 {	return a * b;	}
@@ -189,44 +198,44 @@ public:
 		if (type != TYPE_ARRAY)
 			kaba_raise_exception(new KabaException("not an array"));
 		Array<Any> r;
-		r.set_ref(*as_array());
+		r.set_ref(as_array());
 		return r;
 	}
 	Array<int> _as_map() { // FAKE TYPE!!!
 		if (type != TYPE_MAP)
 			kaba_raise_exception(new KabaException("not a map"));
 		Array<int> r;
-		r.set_ref(*(Array<int>*)as_map());
+		r.set_ref((Array<int>&)as_map());
 		return r;
 	}
 	
 	static void unwrap(Any &aa, void *var, const Class *type) {
 		if (type == TypeInt) {
-			*(int*)var = aa._int();
+			*(int*)var = aa.as_int();
 		} else if (type == TypeFloat32) {
-			*(float*)var = aa._float();
+			*(float*)var = aa.as_float();
 		} else if (type == TypeBool) {
-			*(bool*)var = aa._bool();
+			*(bool*)var = aa.as_bool();
 		} else if (type == TypeString) {
-			*(string*)var = aa.str();
+			*(string*)var = aa.as_string();
 		} else if (type->is_pointer()) {
-			*(const void**)var = *aa.as_pointer();
+			*(const void**)var = aa.as_pointer();
 		} else if (type->is_super_array() and (aa.type == TYPE_ARRAY)) {
 			auto *t_el = type->get_array_element();
 			auto *a = (DynamicArray*)var;
-			auto *b = aa.as_array();
-			int n = b->num;
+			auto &b = aa.as_array();
+			int n = b.num;
 			kaba_array_resize(var, type, n);
 			for (int i=0; i<n; i++)
 				unwrap(aa[i], (char*)a->data + i * t_el->size, t_el);
 		} else if (type->is_array() and (aa.type == TYPE_ARRAY)) {
 			auto *t_el = type->get_array_element();
-			auto *b = aa.as_array();
-			int n = min(type->array_length, b->num);
+			auto &b = aa.as_array();
+			int n = min(type->array_length, b.num);
 			for (int i=0; i<n; i++)
-				unwrap((*b)[i], (char*)var + i*t_el->size, t_el);
+				unwrap(b[i], (char*)var + i*t_el->size, t_el);
 		} else if (aa.type == TYPE_MAP) {
-			auto *map = aa.as_map();
+			auto &map = aa.as_map();
 			auto keys = aa.keys();
 			for (auto &e: type->elements)
 				for (string &k: keys)
@@ -236,6 +245,8 @@ public:
 			msg_error("unwrap... "  + aa.str() + " -> " + type->long_name());
 		}
 	}
+	static Any _cdecl parse(const string &s)
+	{ KABA_EXCEPTION_WRAPPER(return Any::parse(s)); return Any(); }
 };
 
 Any kaba_int2any(int i) {
@@ -299,14 +310,14 @@ void SIAddPackageMath() {
 	
 	// dirty hack :P
 	/*if (config.instruction_set == Asm::INSTRUCTION_SET_AMD64)*/ {
-		((Class*)TypeFloat32)->_amd64_allow_pass_in_xmm = true;
-		((Class*)TypeFloat64)->_amd64_allow_pass_in_xmm = true;
-		((Class*)TypeComplex)->_amd64_allow_pass_in_xmm = true;
-		((Class*)TypeQuaternion)->_amd64_allow_pass_in_xmm = true;
-		((Class*)TypeVector)->_amd64_allow_pass_in_xmm = true;
-		((Class*)TypeColor)->_amd64_allow_pass_in_xmm = true;
-		((Class*)TypePlane)->_amd64_allow_pass_in_xmm = true;
-		((Class*)TypeRect)->_amd64_allow_pass_in_xmm = true;
+		flags_set(((Class*)TypeFloat32)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+		flags_set(((Class*)TypeFloat64)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+		flags_set(((Class*)TypeComplex)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+		flags_set(((Class*)TypeQuaternion)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+		flags_set(((Class*)TypeVector)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+		flags_set(((Class*)TypeColor)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+		flags_set(((Class*)TypePlane)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+		flags_set(((Class*)TypeRect)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
 	}
 
 
@@ -760,6 +771,9 @@ void SIAddPackageMath() {
 		class_add_funcx(IDENTIFIER_FUNC_SET, TypeVoid, &KabaAny::_array_set, Flags::RAISES_EXCEPTIONS);
 			func_add_param("index", TypeInt);
 			func_add_param("value", TypeAny);
+		class_add_funcx("is_empty", TypeBool, &Any::is_empty, Flags::PURE);
+		class_add_funcx("has", TypeBool, &Any::has, Flags::PURE);
+			func_add_param("key", TypeString);
 		class_add_funcx("add", TypeVoid, &KabaAny::_array_add, Flags::RAISES_EXCEPTIONS);
 			func_add_param("a", TypeAny);
 		class_add_funcx("drop", TypeVoid, &Any::map_drop, Flags::RAISES_EXCEPTIONS);
@@ -773,6 +787,8 @@ void SIAddPackageMath() {
 		class_add_func("unwrap", TypeVoid, (void*)&KabaAny::unwrap, Flags::RAISES_EXCEPTIONS);
 			func_add_param("var", TypePointer);
 			func_add_param("type", TypeClassP);
+		class_add_func("parse", TypeAny, (void*)&KabaAny::parse, Flags::_STATIC__RAISES_EXCEPTIONS);
+			func_add_param("s", TypeString);
 
 	add_funcx("@int2any", TypeAny, &kaba_int2any, Flags::STATIC);
 		func_add_param("i", TypeInt);
@@ -884,58 +900,66 @@ void SIAddPackageMath() {
 		class_add_func("get_list", TypeVectorList, mf(&Interpolator<vector>::getList), Flags::PURE);
 			func_add_param("t", TypeFloatList);
 
+	// int
+	add_funcx("clamp", TypeInt, &clamp<int>, Flags::_STATIC__PURE);
+		func_add_param("i", TypeInt);
+		func_add_param("min", TypeInt);
+		func_add_param("max", TypeInt);
+	add_funcx("loop", TypeInt, &loop<int>, Flags::_STATIC__PURE);
+		func_add_param("i", TypeInt);
+		func_add_param("min", TypeInt);
+		func_add_param("max", TypeInt);
+	add_funcx("abs", TypeInt, &x_abs<int>, Flags::_STATIC__PURE);
+		func_add_param("i", TypeInt);
+	add_funcx("min", TypeInt, &x_min<int>, Flags::_STATIC__PURE);
+		func_add_param("a", TypeInt);
+		func_add_param("b", TypeInt);
+	add_funcx("max", TypeInt, &x_max<int>, Flags::_STATIC__PURE);
+		func_add_param("a", TypeInt);
+		func_add_param("b", TypeInt);
 	// mathematical
-	add_func("sin", TypeFloat32, (void*)&sinf, Flags::_STATIC__PURE);
+	add_funcx("sin", TypeFloat32, &sinf, Flags::_STATIC__PURE);
 		func_add_param("x", TypeFloat32);
-	add_func("cos", TypeFloat32, (void*)&cosf, Flags::_STATIC__PURE);
+	add_funcx("cos", TypeFloat32, &cosf, Flags::_STATIC__PURE);
 		func_add_param("x", TypeFloat32);
-	add_func("tan", TypeFloat32, (void*)&tanf, Flags::_STATIC__PURE);
+	add_funcx("tan", TypeFloat32, &tanf, Flags::_STATIC__PURE);
 		func_add_param("x", TypeFloat32);
-	add_func("asin", TypeFloat32, (void*)&asinf, Flags::_STATIC__PURE);
+	add_funcx("asin", TypeFloat32, &asinf, Flags::_STATIC__PURE);
 		func_add_param("x", TypeFloat32);
-	add_func("acos", TypeFloat32, (void*)&acosf, Flags::_STATIC__PURE);
+	add_funcx("acos", TypeFloat32, &acosf, Flags::_STATIC__PURE);
 		func_add_param("x", TypeFloat32);
-	add_func("atan", TypeFloat32, (void*)&atanf, Flags::_STATIC__PURE);
+	add_funcx("atan", TypeFloat32, &atanf, Flags::_STATIC__PURE);
 		func_add_param("x", TypeFloat32);
-	add_func("atan2", TypeFloat32, (void*)&atan2f, Flags::_STATIC__PURE);
+	add_funcx("atan2", TypeFloat32, &atan2f, Flags::_STATIC__PURE);
 		func_add_param("x", TypeFloat32);
 		func_add_param("y", TypeFloat32);
-	add_func("sqrt", TypeFloat32, (void*)&sqrtf, Flags::_STATIC__PURE);
+	add_funcx("sqrt", TypeFloat32, &sqrtf, Flags::_STATIC__PURE);
 		func_add_param("x", TypeFloat32);
-	add_func("sqr", TypeFloat32, (void*)&f_sqr, Flags::_STATIC__PURE);
+	add_funcx("sqr", TypeFloat32, &f_sqr, Flags::_STATIC__PURE);
 		func_add_param("x", TypeFloat32);
-	add_func("exp", TypeFloat32, (void*)&expf, Flags::_STATIC__PURE);
+	add_funcx("exp", TypeFloat32, &expf, Flags::_STATIC__PURE);
 		func_add_param("x", TypeFloat32);
-	add_func("log", TypeFloat32, (void*)&logf, Flags::_STATIC__PURE);
+	add_funcx("log", TypeFloat32, &logf, Flags::_STATIC__PURE);
 		func_add_param("x", TypeFloat32);
-	add_func("pow", TypeFloat32, (void*)&powf, Flags::_STATIC__PURE);
+	add_funcx("pow", TypeFloat32, &powf, Flags::_STATIC__PURE);
 		func_add_param("x", TypeFloat32);
 		func_add_param("exp", TypeFloat32);
-	add_func("clamp", TypeFloat32, (void*)&clampf, Flags::_STATIC__PURE);
+	add_funcx("clamp", TypeFloat32, &clamp<float>, Flags::_STATIC__PURE);
 		func_add_param("f", TypeFloat32);
 		func_add_param("min", TypeFloat32);
 		func_add_param("max", TypeFloat32);
-	add_func("loop", TypeFloat32, (void*)&loopf, Flags::_STATIC__PURE);
+	add_funcx("loop", TypeFloat32, &loop<float>, Flags::_STATIC__PURE);
 		func_add_param("f", TypeFloat32);
 		func_add_param("min", TypeFloat32);
 		func_add_param("max", TypeFloat32);
-	add_func("abs", TypeFloat32, (void*)&fabsf, Flags::_STATIC__PURE);
+	add_funcx("abs", TypeFloat32, &abs<float>, Flags::_STATIC__PURE);
 		func_add_param("f", TypeFloat32);
-	add_func("min", TypeFloat32, (void*)&minf, Flags::_STATIC__PURE);
+	add_funcx("min", TypeFloat32, &x_min<float>, Flags::_STATIC__PURE);
 		func_add_param("a", TypeFloat32);
 		func_add_param("b", TypeFloat32);
-	add_func("max", TypeFloat32, (void*)&maxf, Flags::_STATIC__PURE);
+	add_funcx("max", TypeFloat32, &x_max<float>, Flags::_STATIC__PURE);
 		func_add_param("a", TypeFloat32);
 		func_add_param("b", TypeFloat32);
-	// int
-	add_func("clampi", TypeInt, (void*)&clampi, Flags::_STATIC__PURE);
-		func_add_param("i", TypeInt);
-		func_add_param("min", TypeInt);
-		func_add_param("max", TypeInt);
-	add_func("loopi", TypeInt, (void*)&loopi, Flags::_STATIC__PURE);
-		func_add_param("i", TypeInt);
-		func_add_param("min", TypeInt);
-		func_add_param("max", TypeInt);
 	// lists
 	add_func("range", TypeIntList, (void*)&int_range, Flags::_STATIC__PURE);
 		func_add_param("start", TypeInt);
@@ -960,6 +984,7 @@ void SIAddPackageMath() {
 	add_func("rand_seed", TypeVoid, (void*)&srand, Flags::STATIC);
 		func_add_param("seed", TypeInt);
 
+	add_ext_var("_any_allow_simple_output", TypeBool, (void*)&Any::allow_simple_output);
 	
 	// float
 	add_const("pi",  TypeFloat32, (void*)&pi);

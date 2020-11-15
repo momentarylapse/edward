@@ -14,14 +14,13 @@ class DataModel;
 class ModelEasifyDialog: public hui::Dialog {
 public:
 	ModelEasifyDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data);
-	virtual ~ModelEasifyDialog();
 
-	void LoadData();
+	void load_data();
 
-	void OnQualityFactor();
-	void OnQualitySlider();
-	void OnClose();
-	void OnOk();
+	void on_quality_factor();
+	void on_quality_slider();
+	void on_close();
+	void on_ok();
 
 private:
 	DataModel *data;

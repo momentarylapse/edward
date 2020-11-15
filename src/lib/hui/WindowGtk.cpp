@@ -91,6 +91,7 @@ void Window::_init_(const string &title, int width, int height, Window *parent, 
 	win = this;
 	headerbar = nullptr;
 	statusbar = nullptr;
+	requested_destroy = false;
 
 	if ((mode & WIN_MODE_DUMMY) > 0)
 		return;
@@ -184,45 +185,39 @@ void Window::_init_(const string &title, int width, int height, Window *parent, 
 		statusbar = gtk_statusbar_new();
 		gtk_box_pack_start(GTK_BOX(vbox), statusbar, FALSE, FALSE, 0);
 	}
-	
-#ifdef OS_WINDOWS
-	hWnd = nullptr;
-#endif
 }
 
 Window::~Window() {
-	if (!window)
-		return;
+	DBDEL("window", id, this);
 
-	destroy();
+	if (window) {
+		_clean_up_();
+
+		gtk_widget_destroy(window);
+	}
+	DBDEL_DONE();
+
+
+	// no message function (and last window): end program
+//	if (_all_windows_.num == 0)
+//		Application::end();
 }
 
 void Window::__delete__() {
 	this->Window::~Window();
 }
 
-void Window::destroy() {
-	DBDEL("window", id, this);
-	on_destroy();
-
-	_clean_up_();
-
-	gtk_widget_destroy(window);
-	window = nullptr;
-	DBDEL_DONE();
-}
-
-bool Window::got_destroyed() {
-	return window == nullptr;
+void Window::request_destroy() {
+	if (parent) {
+		gtk_dialog_response(GTK_DIALOG(window), GTK_RESPONSE_DELETE_EVENT);
+	}
+	requested_destroy = true;
 }
 
 // should be called after creating (and filling) the window to actually show it
 void Window::show() {
 	allow_input = true;
 	gtk_widget_show(window);
-#ifdef OS_WINDOWS
-	hWnd = (HWND)GDK_WINDOW_HWND(gtk_widget_get_window(window));
-#endif
 }
 
 void Window::run() {
@@ -232,46 +227,16 @@ void Window::run() {
 	msg_write(win->uid);*/
 	string last_id = "";
 
-#ifdef HUI_API_WIN
-	MSG messages;
-	messages.message=0;
-	bool got_message;
-	//while ((WM_QUIT!=messages.message)&&(!WindowClosed[win_no])) {
-	while (WM_QUIT!=messages.message) {
-		bool br=false;
-		for (int i=0;i<_HuiClosedWindow_.size();i++)
-			if (_HuiClosedWindow_[i].UID==uid)
-				br=true;
-		if (br)
-			break;
-		bool allow=true;
-		if (HuiIdleFunction)
-			got_message=(PeekMessage(&messages,nullptr,0U,0U,PM_REMOVE)!=0);
-		else
-			got_message=(GetMessage(&messages,nullptr,0,0)!=0);
-		if (got_message) {
-			allow=false;
-			TranslateMessage(&messages);
-			DispatchMessage(&messages);
-		}
-		if ((HuiIdleFunction)&&(allow))
-			HuiIdleFunction();
-	}
-	if (WM_QUIT==messages.message) {
-		HuiHaveToExit=true;
-		//msg_write("EXIT!!!!!!!!!!");
-	}
-#endif
-#ifdef HUI_API_GTK
-	if (get_parent()) {
+	// hmmmm, gtk_dialog_response() seems to be ignored here...?!?
+	/*if (get_parent()) {
+		msg_write("...dialog");
 		gtk_dialog_run(GTK_DIALOG(window));
-	} else {
-		while(!got_destroyed()) {
+	} else {*/
+		while (!requested_destroy) {
 			Application::do_single_main_loop();
 			Sleep(0.005f);
 		}
-	}
-#endif
+//	}
 }
 
 void Window::set_menu(Menu *_menu) {
@@ -461,6 +426,7 @@ static int make_info_bar_response(const string &id) {
 }
 
 void __GtkOnInfoBarResponse(GtkWidget *widget, int response, gpointer data) {
+	msg_write("on response...?");
 	gtk_widget_destroy(widget);
 	Window *win = (Window*)data;
 
@@ -561,6 +527,8 @@ void Window::__set_options(const string &options) {
 			show_cursor(val_is_positive(val, true));
 		} else if (op == "borderwidth") {
 			set_border_width(val._int());
+		} else if (op == "spacing") {
+			spacing = val._int();
 		}
 	}
 }

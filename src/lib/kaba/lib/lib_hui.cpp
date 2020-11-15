@@ -16,7 +16,7 @@ namespace hui{
 #endif
 }
 
-namespace Kaba{
+namespace kaba {
 
 #ifdef _X_USE_HUI_
 	static hui::Event *_event;
@@ -92,20 +92,23 @@ string _hui_config_get(hui::Configuration &c, const string &key) {
 void SIAddPackageHui() {
 	add_package("hui");
 	
-	const Class *TypeHuiMenu = add_type("Menu",  sizeof(hui::Menu));
-	const Class *TypeHuiMenuP = add_type_p(TypeHuiMenu);
-	const Class *TypeHuiToolbar = add_type("Toolbar",  sizeof(hui::Toolbar));
-	const Class *TypeHuiToolbarP = add_type_p(TypeHuiToolbar);
-	const Class *TypeHuiPanel = add_type("Panel", sizeof(hui::Panel));
-	//const Class *TypeHuiPanelP = add_type_p(TypeHuiPanel);
-	const Class *TypeHuiWindow = add_type("Window", sizeof(hui::Window));
+	auto TypeHuiMenu = add_type("Menu",  sizeof(hui::Menu));
+	auto TypeHuiMenuP = add_type_p(TypeHuiMenu);
+	auto TypeHuiToolbar = add_type("Toolbar",  sizeof(hui::Toolbar));
+	auto TypeHuiToolbarP = add_type_p(TypeHuiToolbar);
+	auto TypeHuiPanel = add_type("Panel", sizeof(hui::Panel));
+	//auto TypeHuiPanelP = add_type_p(TypeHuiPanel);
+	auto TypeHuiWindow = add_type("Window", sizeof(hui::Window));
 	TypeHuiWindowP = add_type_p(TypeHuiWindow);
-	const Class *TypeHuiNixWindow = add_type("NixWindow", sizeof(hui::Window));
-	const Class *TypeHuiDialog = add_type("Dialog", sizeof(hui::Window));
-	const Class *TypeHuiEvent = add_type("Event", sizeof(hui::Event));
-	const Class *TypeHuiEventP = add_type_p(TypeHuiEvent);
-	const Class *TypeHuiPainter = add_type("Painter", sizeof(hui::Painter));
-	const Class *TypeHuiConfiguration = add_type("Configuration", sizeof(hui::Configuration));
+	auto TypeHuiNixWindow = add_type("NixWindow", sizeof(hui::Window));
+	auto TypeHuiDialog = add_type("Dialog", sizeof(hui::Window));
+	auto TypeHuiEvent = add_type("Event", sizeof(hui::Event));
+	auto TypeHuiEventP = add_type_p(TypeHuiEvent);
+	auto TypeHuiPainter = add_type("Painter", sizeof(hui::Painter));
+	auto TypeHuiConfiguration = add_type("Configuration", sizeof(hui::Configuration));
+
+	auto TypeCallback = add_type_f(TypeVoid, {TypeObject});
+	auto TypeCallbackP = add_type_f(TypeVoid, {TypeObject, TypeHuiPainter});
 
 
 	add_class(TypeHuiMenu);
@@ -339,20 +342,29 @@ void SIAddPackageHui() {
 			func_add_param("id", TypeString);
 		class_add_func("event", TypeInt, mf(&KabaPanelWrapper::_kaba_event));
 			func_add_param("id", TypeString);
-			func_add_param("func", TypeFunction);
+			func_add_param("func", TypeCallback);
 		class_add_func("event_o", TypeInt, mf(&KabaPanelWrapper::_kaba_event_o));
 			func_add_param("id", TypeString);
 			func_add_param("handler", TypeObject);
-			func_add_param("func", TypeFunction);
+			func_add_param("func", TypeCallback);
 		class_add_func("event_x", TypeInt, mf(&KabaPanelWrapper::_kaba_event_x));
 			func_add_param("id", TypeString);
 			func_add_param("msg", TypeString);
-			func_add_param("func", TypeFunction);
+			func_add_param("func", TypeCallback);
+		class_add_func("event_x", TypeInt, mf(&KabaPanelWrapper::_kaba_event_x));
+			func_add_param("id", TypeString);
+			func_add_param("msg", TypeString);
+			func_add_param("func", TypeCallbackP);
 		class_add_func("event_ox", TypeInt, mf(&KabaPanelWrapper::_kaba_event_ox));
 			func_add_param("id", TypeString);
 			func_add_param("msg", TypeString);
 			func_add_param("handler", TypeObject);
-			func_add_param("func", TypeFunction);
+			func_add_param("func", TypeCallback);
+		class_add_func("event_ox", TypeInt, mf(&KabaPanelWrapper::_kaba_event_ox));
+			func_add_param("id", TypeString);
+			func_add_param("msg", TypeString);
+			func_add_param("handler", TypeObject);
+			func_add_param("func", TypeCallbackP);
 		class_add_func("remove_event_handler", TypeVoid, mf(&hui::Panel::remove_event_handler));
 			func_add_param("uid", TypeInt);
 		class_set_vtable(hui::Panel);
@@ -366,7 +378,7 @@ void SIAddPackageHui() {
 			func_add_param("height", TypeInt);
 		class_add_func_virtual(IDENTIFIER_FUNC_DELETE, TypeVoid, mf(&hui::Window::__delete__), Flags::OVERRIDE);
 		class_add_func("run", TypeVoid, mf(&hui::Window::run));
-		class_add_func("destroy", TypeVoid, mf(&hui::Window::destroy));
+		class_add_func("destroy", TypeVoid, mf(&hui::Window::request_destroy));
 		class_add_func("show", TypeVoid, mf(&hui::Window::show));
 		class_add_func("hide", TypeVoid, mf(&hui::Window::hide));
 
@@ -481,15 +493,15 @@ void SIAddPackageHui() {
 	
 	// user interface
 	add_func("set_idle_function", TypeVoid, (void*)&HuiSetIdleFunctionKaba, Flags::STATIC);
-		func_add_param("idle_func", TypeFunction);
+		func_add_param("idle_func", TypeCallback);
 	add_func("run_later", TypeInt, (void*)&HuiRunLaterKaba, Flags::STATIC);
 		func_add_param("dt", TypeFloat32);
 		func_add_param("handler", TypeObject);
-		func_add_param("f", TypeFunction);
+		func_add_param("f", TypeCallback);
 	add_func("run_repeated", TypeInt, (void*)&HuiRunRepeatedKaba, Flags::STATIC);
 		func_add_param("dt", TypeFloat32);
 		func_add_param("handler", TypeObject);
-		func_add_param("f", TypeFunction);
+		func_add_param("f", TypeCallback);
 	add_func("cancel_runner", TypeVoid, (void*)&hui::CancelRunner, Flags::STATIC);
 		func_add_param("id", TypeInt);
 	/*add_func("HuiAddKeyCode", TypeVoid, (void*)&hui::AddKeyCode, Flags::STATIC);
@@ -535,8 +547,10 @@ void SIAddPackageHui() {
 		func_add_param("text", TypeString);
 	add_func("create_menu_from_source", TypeHuiMenuP, (void*)&hui::CreateMenuFromSource, Flags::STATIC);
 		func_add_param("source", TypeString);
-	add_func("get_key_name", TypeString, hui_p(&hui::GetKeyName), Flags::_STATIC__PURE);
+	add_func("get_key_name", TypeString, hui_p(&hui::GetKeyCodeName), Flags::_STATIC__PURE);
 		func_add_param("id", TypeInt);
+//	add_func("get_key_char", TypeString, hui_p(&hui::GetKeyChar), Flags::_STATIC__PURE);
+//		func_add_param("id", TypeInt);
 
 	// clipboard
 	add_func("copy_to_clipboard", TypeVoid, (void*)&hui::Clipboard::Copy, Flags::STATIC);
@@ -554,14 +568,12 @@ void SIAddPackageHui() {
 		class_add_element("mouse_y", TypeFloat32, GetDAEvent(my));
 		class_add_element("scroll_x", TypeFloat32, GetDAEvent(scroll_x));
 		class_add_element("scroll_y", TypeFloat32, GetDAEvent(scroll_y));
-		class_add_element("key", TypeInt, GetDAEvent(key));
-		class_add_element("key_code", TypeInt, GetDAEvent(key_code));
+		class_add_element("key", TypeInt, GetDAEvent(key_code));
 		class_add_element("width", TypeInt, GetDAEvent(width));
 		class_add_element("height", TypeInt, GetDAEvent(height));
 		class_add_element("button_l", TypeBool, GetDAEvent(lbut));
 		class_add_element("button_m", TypeBool, GetDAEvent(mbut));
 		class_add_element("button_r", TypeBool, GetDAEvent(rbut));
-		class_add_element("text", TypeString, GetDAEvent(text));
 		class_add_element("row", TypeInt, GetDAEvent(row));
 		class_add_element("column", TypeInt, GetDAEvent(column));
 
@@ -575,12 +587,12 @@ void SIAddPackageHui() {
 	add_const("KEY_ALT",TypeInt,(void*)hui::KEY_ALT);
 	add_const("KEY_LEFT_ALT",TypeInt,(void*)hui::KEY_LALT);
 	add_const("KEY_RIGHT_ALT",TypeInt,(void*)hui::KEY_RALT);
-	add_const("KEY_PLUS",TypeInt,(void*)hui::KEY_ADD);
-	add_const("KEY_MINUS",TypeInt,(void*)hui::KEY_SUBTRACT);
+	add_const("KEY_PLUS",TypeInt,(void*)hui::KEY_PLUS);
+	add_const("KEY_MINUS",TypeInt,(void*)hui::KEY_MINUS);
 	add_const("KEY_FENCE",TypeInt,(void*)hui::KEY_FENCE);
 	add_const("KEY_END",TypeInt,(void*)hui::KEY_END);
-	add_const("KEY_NEXT",TypeInt,(void*)hui::KEY_NEXT);
-	add_const("KEY_PRIOR",TypeInt,(void*)hui::KEY_PRIOR);
+	add_const("KEY_PAGE_UP",TypeInt,(void*)hui::KEY_PAGE_UP);
+	add_const("KEY_PAGE_DOWN",TypeInt,(void*)hui::KEY_PAGE_DOWN);
 	add_const("KEY_UP",TypeInt,(void*)hui::KEY_UP);
 	add_const("KEY_DOWN",TypeInt,(void*)hui::KEY_DOWN);
 	add_const("KEY_LEFT",TypeInt,(void*)hui::KEY_LEFT);
@@ -659,7 +671,7 @@ void SIAddPackageHui() {
 	add_const("KEY_NUM_ENTER",TypeInt,(void*)hui::KEY_NUM_ENTER);
 	add_const("KEY_COMMA",TypeInt,(void*)hui::KEY_COMMA);
 	add_const("KEY_DOT",TypeInt,(void*)hui::KEY_DOT);
-	add_const("KEY_SMALLER",TypeInt,(void*)hui::KEY_SMALLER);
+	add_const("KEY_LESS",TypeInt,(void*)hui::KEY_LESS);
 	add_const("KEY_SZ",TypeInt,(void*)hui::KEY_SZ);
 	add_const("KEY_AE",TypeInt,(void*)hui::KEY_AE);
 	add_const("KEY_OE",TypeInt,(void*)hui::KEY_OE);

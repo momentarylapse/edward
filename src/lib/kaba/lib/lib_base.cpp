@@ -8,9 +8,10 @@
 #include <cstdio>
 
 
-namespace Kaba {
+namespace kaba {
 
 extern const Class *TypeDynamicArray;
+extern const Class *TypeSharedPointer;
 const Class *TypeAbstractList;
 const Class *TypeAbstractDict;
 extern const Class *TypeDictBase;
@@ -175,14 +176,34 @@ public:
 	//Array<bool> _cdecl _not(BoolList &b)	IMPLEMENT_OP(!, bool, bool)
 };
 
+template<class T>
+T list_min(const Array<T> &a) {
+	if (a.num == 0)
+		return 0;
+	T r = a[0];
+	for (int i=1; i<a.num; i++)
+		r = min(r, a[i]);
+	return r;
+}
+template<class T>
+T list_max(const Array<T> &a) {
+	if (a.num == 0)
+		return 0;
+	T r = a[0];
+	for (int i=1; i<a.num; i++)
+		r = max(r, a[i]);
+	return r;
+}
+template<class T>
+T list_sum(const Array<T> &a) {
+	T r = 0;
+	for (int i=0; i<a.num; i++)
+		r += a[i];
+	return r;
+}
+
 class IntList : public Array<int> {
 public:
-	int _cdecl sum() {
-		int r = 0;
-		for (int i=0;i<num;i++)
-			r += (*this)[i];
-		return r;
-	}
 	void _cdecl sort()
 	{	std::sort((int*)data, (int*)data + num);	}
 	void _cdecl unique() {
@@ -251,30 +272,6 @@ public:
 
 class FloatList : public Array<float> {
 public:
-	float _cdecl _max() {
-		float max = 0;
-		if (num > 0)
-			max = (*this)[0];
-		for (int i=1;i<num;i++)
-			if ((*this)[i] > max)
-				max = (*this)[i];
-		return max;
-	}
-	float _cdecl _min() {
-		float min = 0;
-		if (num > 0)
-			min = (*this)[0];
-		for (int i=1;i<num;i++)
-			if ((*this)[i] < min)
-				min = (*this)[i];
-		return min;
-	}
-	float _cdecl sum() {
-		float r = 0;
-		for (int i=0;i<num;i++)
-			r += (*this)[i];
-		return r;
-	}
 	float _cdecl sum2() {
 		float r = 0;
 		for (int i=0;i<num;i++)
@@ -349,6 +346,9 @@ void SIAddXCommands() {
 	add_func("@dyn", TypeAny, (void*)kaba_dyn, Flags::_STATIC__RAISES_EXCEPTIONS);
 		func_add_param("var", TypePointer);
 		func_add_param("class", TypeClassP);
+	add_func("@xmap", TypeDynamicArray, (void*)kaba_xmap, Flags::_STATIC__RAISES_EXCEPTIONS);
+		func_add_param("func", TypeFunctionP);
+		func_add_param("array", TypeDynamic);
 
 	add_func("@call0", TypeVoid, (void*)&kaba_call0, Flags::_STATIC__RAISES_EXCEPTIONS);
 		func_add_param("f", TypeFunctionP);
@@ -379,6 +379,7 @@ void SIAddPackageBase() {
 	TypeReg8			= add_type  ("-reg8-", 1, Flags::CALL_BY_VALUE);
 	TypeObject			= add_type  ("Object", sizeof(VirtualBase)); // base for most virtual classes
 	TypeObjectP			= add_type_p(TypeObject);
+	TypeDynamic			= add_type  ("-dynamic-", 0);
 
 	// "real"
 	TypeVoid			= add_type  ("void", 0, Flags::CALL_BY_VALUE);
@@ -392,6 +393,7 @@ void SIAddPackageBase() {
 	TypeAbstractList	= add_type  ("-abstract-list-", config.super_array_size);
 	TypeAbstractDict	= add_type  ("-abstract-dict-", config.super_array_size);
 	TypeDictBase		= add_type  ("@DictBase",   config.super_array_size);
+	TypeSharedPointer	= add_type  ("@SharedPointer", config.pointer_size);
 
 	TypeException		= add_type  ("Exception", sizeof(KabaException));
 	TypeExceptionP		= add_type_p(TypeException);
@@ -434,6 +436,10 @@ void SIAddPackageBase() {
 			func_add_param("size", TypeInt);
 		class_add_funcx("__mem_remove__", TypeVoid, &DynamicArray::delete_single);
 			func_add_param("index", TypeInt);
+
+	add_class(TypeSharedPointer);
+		class_add_funcx(IDENTIFIER_FUNC_INIT, TypeVoid, nullptr);
+			func_set_inline(InlineID::SHARED_POINTER_INIT);
 
 	// derived   (must be defined after the primitive types and the bases!)
 	TypePointer     = add_type_p(TypeVoid, Flags::CALL_BY_VALUE); // substitute for all pointer types
@@ -654,6 +660,8 @@ void SIAddPackageBase() {
 			func_add_param("by", TypeString);
 		class_add_funcx("explode", TypeStringList, &string::explode, Flags::PURE);
 			func_add_param("str", TypeString);
+		class_add_funcx("parse_tokens", TypeStringList, &string::parse_tokens, Flags::PURE);
+			func_add_param("splitters", TypeString);
 		class_add_funcx("repeat", TypeString, &string::repeat, Flags::PURE);
 			func_add_param("n", TypeInt);
 		class_add_funcx("lower", TypeString, &string::lower, Flags::PURE);
@@ -705,7 +713,9 @@ void SIAddPackageBase() {
 		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &ia2s, Flags::PURE);
 		class_add_func("sort", TypeVoid, mf(&IntList::sort));
 		class_add_func("unique", TypeVoid, mf(&IntList::unique));
-		class_add_func("sum", TypeInt, mf(&IntList::sum), Flags::PURE);
+		class_add_funcx("sum", TypeInt, &list_sum<int>, Flags::PURE);
+		class_add_funcx("min", TypeInt, &list_min<int>, Flags::PURE);
+		class_add_funcx("max", TypeInt, &list_max<int>, Flags::PURE);
 		class_add_func("__iadd__", TypeVoid, mf(&IntList::iadd));
 			func_add_param("other", TypeIntList);
 		class_add_func("__isub__", TypeVoid, mf(&IntList::isub));
@@ -766,10 +776,10 @@ void SIAddPackageBase() {
 	add_class(TypeFloatList);
 		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &fa2s, Flags::PURE);
 		class_add_func("sort", TypeVoid, mf(&FloatList::sort));
-		class_add_func("sum", TypeFloat32, mf(&FloatList::sum), Flags::PURE);
+		class_add_funcx("sum", TypeFloat32, &list_sum<float>, Flags::PURE);
 		class_add_func("sum2", TypeFloat32, mf(&FloatList::sum2), Flags::PURE);
-		class_add_func("max", TypeFloat32, mf(&FloatList::_max), Flags::PURE);
-		class_add_func("min", TypeFloat32, mf(&FloatList::_min), Flags::PURE);
+		class_add_funcx("max", TypeFloat32, &list_max<float>, Flags::PURE);
+		class_add_funcx("min", TypeFloat32, &list_min<float>, Flags::PURE);
 		class_add_func("__iadd__", TypeVoid, mf(&FloatList::iadd));
 			func_add_param("other", TypeFloatList);
 		class_add_func("__isub__", TypeVoid, mf(&FloatList::isub));

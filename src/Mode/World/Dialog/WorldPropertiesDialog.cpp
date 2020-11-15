@@ -123,7 +123,7 @@ void WorldPropertiesDialog::on_skybox_remove() {
 void WorldPropertiesDialog::on_script_add() {
 	if (storage->file_dialog(FD_SCRIPT, false, true)) {
 		WorldScript s;
-		s.filename = storage->dialog_file_complete.relative_to(Kaba::config.directory);
+		s.filename = storage->dialog_file_complete.relative_to(kaba::config.directory);
 		temp.scripts.add(s);
 		/*try{
 			auto ss = Kaba::Load(s.filename, true);
@@ -157,18 +157,18 @@ void WorldPropertiesDialog::on_script_remove() {
 	}
 }
 
-const Kaba::Class *get_class(Kaba::Script *s, const string &parent);
+shared<const kaba::Class> get_class(shared<kaba::Script> s, const string &parent);
 
 void update_script_data(WorldScript &s) {
 	s.class_name = "";
 	try {
-		auto ss = Kaba::Load(s.filename, true);
+		auto ss = kaba::load(s.filename, true);
 
 		auto t = get_class(ss, "*.Controller");
 
 		Array<string> wanted;
 		for (auto c: t->constants)
-			if (c->name == "PARAMETERS" and c->type == Kaba::TypeString)
+			if (c->name == "PARAMETERS" and c->type == kaba::TypeString)
 				wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
 
 		s.class_name = t->cname(t->owner->base_class);
@@ -210,7 +210,7 @@ void WorldPropertiesDialog::on_edit_script_vars() {
 void WorldPropertiesDialog::on_edit_script() {
 	int n = get_int("script_list");
 	if (n >= 0) {
-		auto filename = Kaba::config.directory << temp.scripts[n].filename;
+		auto filename = kaba::config.directory << temp.scripts[n].filename;
 		//int r = system(format("sgribthmaker '%s'", filename).c_str());
 		hui::OpenDocument(filename);
 	}
@@ -237,7 +237,7 @@ void WorldPropertiesDialog::on_create_script() {
 	FileWriteText(storage->dialog_file_complete, source);
 
 	WorldScript s;
-	s.filename = storage->dialog_file_complete.relative_to(Kaba::config.directory);
+	s.filename = storage->dialog_file_complete.relative_to(kaba::config.directory);
 	temp.scripts.add(s);
 	fill_script_list();
 }

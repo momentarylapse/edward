@@ -125,7 +125,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 
 	// header
 	int h = n->type.hash();
-	bg = color::interpolate(scheme.GRID, color::hsb(loopf(h/7.0f, 0, 1), 0.8f, 0.3f, 1), 0.3f);
+	bg = color::interpolate(scheme.GRID, color::hsb(loop(h/7.0f, 0.0f, 1.0f), 0.8f, 0.3f, 1), 0.3f);
 	if (n == hover.node)
 		bg = scheme.hoverify(bg);
 	p->set_color(bg);
@@ -158,7 +158,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 				auto xx = pp.options.substr(6,-1).explode(":");
 				float _min = xx[0]._float();
 				float _max = xx[1]._float();
-				float scale = clampf((pp.value._float() - _min) / (_max - _min), 0, 1);
+				float scale = clamp((pp.value._float() - _min) / (_max - _min), 0.0f, 1.0f);
 				p->set_color(scheme.BACKGROUND);
 				p->set_roundness(3);
 				p->draw_rect(node_get_param_rect(n, i, scale));
@@ -175,7 +175,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 		if (pp.type == ShaderValueType::INT) {
 			if (pp.options.head(7) == "choice=") {
 				auto xx = pp.options.substr(7, -1).explode("|");
-				int n = clampi(value._int(), 0, xx.num - 1);
+				int n = clamp(value._int(), 0, xx.num - 1);
 				value = xx[n];
 			}
 		}
@@ -292,7 +292,10 @@ public:
 		"	Grid ? '' buttonbar\n"
 		"		Button ok 'OK' default");
 		set_string("text", orig);
-		event("ok", [=]{ reply = get_string("text"); destroy(); });
+		event("ok", [=]{
+			reply = get_string("text");
+			request_destroy();
+		});
 	}
 	string reply;
 };
@@ -336,7 +339,7 @@ void ShaderGraphDialog::on_left_button_down() {
 		} else if (pp.type == ShaderValueType::INT) {
 			if (pp.options.head(7) == "choice=") {
 				auto xx = pp.options.substr(7, -1).explode("|");
-				pp.value = i2s(loopi(pp.value._int() + 1, 0, xx.num - 1));
+				pp.value = i2s(loop(pp.value._int() + 1, 0, xx.num - 1));
 				on_update();
 			}
 		} else if (pp.type == ShaderValueType::LITERAL) {
@@ -389,7 +392,7 @@ void ShaderGraphDialog::on_mouse_move() {
 				float _min = xx[0]._float();
 				float _max = xx[1]._float();
 				rect r = node_get_param_rect(hover.node, hover.port);
-				float f = _min + (_max - _min) * clampf((mx - r.x1) / r.width(), 0, 1);
+				float f = _min + (_max - _min) * clamp((mx - r.x1) / r.width(), 0.0f, 1.0f);
 				pp.value = f2s(f, 3);
 			}
 		}
@@ -405,7 +408,7 @@ void ShaderGraphDialog::on_mouse_move() {
 
 void ShaderGraphDialog::on_mouse_wheel() {
 	auto e = hui::GetEvent();
-	view_scale = clampf(view_scale * exp(e->scroll_y * 0.05f), 0.2f, 2);
+	view_scale = clamp(view_scale * exp(e->scroll_y * 0.05f), 0.2f, 2.0f);
 
 	view_offset_x = mx -  e->mx / view_scale;
 	view_offset_y = my -  e->my / view_scale;

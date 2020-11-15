@@ -4,7 +4,7 @@
 
 
 
-namespace Kaba{
+namespace kaba {
 
 
 int SerializerAMD64::fc_begin(Function *__f, const Array<SerialNodeParam> &_params, const SerialNodeParam &ret) {
@@ -41,7 +41,7 @@ int SerializerAMD64::fc_begin(Function *__f, const Array<SerialNodeParam> &_para
 	Array<SerialNodeParam> stack_param;
 	Array<SerialNodeParam> xmm_param;
 	for (SerialNodeParam &p: params){
-		if ((p.type == TypeInt) or (p.type == TypeInt64) or (p.type == TypeChar) or (p.type == TypeBool) or p.type->is_pointer()){
+		if ((p.type == TypeInt) or (p.type == TypeInt64) or (p.type == TypeChar) or (p.type == TypeBool) or p.type->is_some_pointer()){
 			if (reg_param.num < 6){
 				reg_param.add(p);
 			}else{
@@ -111,7 +111,7 @@ void SerializerAMD64::fc_end(int push_size, const Array<SerialNodeParam> &params
 
 	// return > 4b already got copied to [ret] by the function!
 	if ((type != TypeVoid) and (!type->uses_return_by_memory())) {
-		if (type->_amd64_allow_pass_in_xmm) {
+		if (type->_amd64_allow_pass_in_xmm()) {
 			if (type == TypeFloat32) {
 				add_cmd(Asm::INST_MOVSS, ret, p_xmm0);
 			} else if (type == TypeFloat64) {
@@ -201,7 +201,14 @@ void SerializerAMD64::add_pointer_call(const SerialNodeParam &pointer, const Arr
 	call_used = true;
 	int push_size = fc_begin(nullptr, params, ret);
 
-	add_cmd(Asm::INST_MOV, p_rax, pointer);
+	if (pointer.type == TypeFunctionCodeP) {
+		add_cmd(Asm::INST_MOV, p_rax, pointer);
+	} else {
+		//TypeFunctionP
+		add_cmd(Asm::INST_MOV, p_rax, pointer);
+		add_cmd(Asm::INST_ADD, p_rax, param_imm(TypeInt, offsetof(Function, address)));
+		add_cmd(Asm::INST_MOV, p_rax, p_deref_eax);
+	}
 	add_cmd(Asm::INST_CALL, p_rax); // the actual call
 
 	fc_end(push_size, params, ret);
@@ -212,29 +219,29 @@ void SerializerAMD64::add_function_intro_params(Function *f)
 {
 	// return, instance, params
 	Array<Variable*> param;
-	if (f->return_type->uses_return_by_memory()){
-		for (Variable *v: f->var)
+	if (f->effective_return_type->uses_return_by_memory()){
+		for (Variable *v: weak(f->var))
 			if (v->name == IDENTIFIER_RETURN_VAR){
 				param.add(v);
 				break;
 			}
 	}
 	if (!f->is_static()){
-		for (Variable *v: f->var)
+		for (Variable *v: weak(f->var))
 			if (v->name == IDENTIFIER_SELF){
 				param.add(v);
 				break;
 			}
 	}
 	for (int i=0;i<f->num_params;i++)
-		param.add(f->var[i]);
+		param.add(f->var[i].get());
 
 	// map params...
 	Array<Variable*> reg_param;
 	Array<Variable*> stack_param;
 	Array<Variable*> xmm_param;
 	for (Variable *p: param){
-		if ((p->type == TypeInt) or (p->type == TypeChar) or (p->type == TypeBool) or p->type->is_pointer()){
+		if ((p->type == TypeInt) or (p->type == TypeChar) or (p->type == TypeBool) or p->type->is_some_pointer()){
 			if (reg_param.num < 6){
 				reg_param.add(p);
 			}else{

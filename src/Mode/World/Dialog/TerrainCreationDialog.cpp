@@ -15,16 +15,16 @@ TerrainCreationDialog::TerrainCreationDialog(hui::Window *_parent, bool _allow_p
 	from_resource("new_terrain_dialog");
 	data = _data;
 
-	event("cancel", std::bind(&TerrainCreationDialog::OnClose, this));
-	event("hui:close", std::bind(&TerrainCreationDialog::OnClose, this));
-	event("apply", std::bind(&TerrainCreationDialog::ApplyData, this));
-	event("ok", std::bind(&TerrainCreationDialog::OnOk, this));
+	event("cancel", [=]{ OnClose(); });
+	event("hui:close", [=]{ OnClose(); });
+	event("apply", [=]{ ApplyData(); });
+	event("ok", [=]{ OnOk(); });
 
-	event("height_image_find", std::bind(&TerrainCreationDialog::OnFindHeightmap, this));
-	event("num_x", std::bind(&TerrainCreationDialog::OnSizeChange, this));
-	event("num_y", std::bind(&TerrainCreationDialog::OnSizeChange, this));
-	event("terrain_x", std::bind(&TerrainCreationDialog::OnSizeChange, this));
-	event("terrain_y", std::bind(&TerrainCreationDialog::OnSizeChange, this));
+	event("height_image_find", [=]{ OnFindHeightmap(); });
+	event("num_x", [=]{ OnSizeChange(); });
+	event("num_y", [=]{ OnSizeChange(); });
+	event("terrain_x", [=]{ OnSizeChange(); });
+	event("terrain_y", [=]{ OnSizeChange(); });
 
 	LoadData();
 }
@@ -55,14 +55,14 @@ void TerrainCreationDialog::LoadData()
 
 void TerrainCreationDialog::OnOk()
 {
-	destroy();
+	request_destroy();
 }
 
 
 
 void TerrainCreationDialog::OnClose()
 {
-	destroy();
+	request_destroy();
 }
 
 

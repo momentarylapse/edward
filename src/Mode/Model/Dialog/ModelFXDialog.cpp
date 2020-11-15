@@ -93,12 +93,12 @@ void ModelFXDialog::OnFindScriptFile()
 		set_string("script_file", storage->dialog_file.str());
 
 		try{
-			Kaba::Script *s = Kaba::Load(filename, true); // just analyse
+			auto s = kaba::load(filename, true); // just analyse
 			if (!s->match_function("OnEffectCreate", "void", {"effect"}))
 				ed->error_box(_("Script file does not contain a function \"void OnEffectCreate( effect )\""));
 			else if (!s->match_function("OnEffectIterate", "void", {"effect"}))
 				ed->error_box(_("Script file does not contain a function \"void OnEffectIterate( effect )\""));
-		}catch(Kaba::Exception &e){
+		}catch(kaba::Exception &e){
 			ed->error_box(_("Error in script file:") + e.message());
 		}
 	}
@@ -110,12 +110,12 @@ void ModelFXDialog::OnFindSoundFile() {
 }
 
 void ModelFXDialog::OnClose() {
-	destroy();
+	request_destroy();
 }
 
 void ModelFXDialog::OnOk() {
 	ApplyData();
-	destroy();
+	request_destroy();
 }
 
 

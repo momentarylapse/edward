@@ -137,7 +137,7 @@ void ModeModelAnimation::set_current_move(int move_no) {
 }
 
 void ModeModelAnimation::set_current_frame(int frame_no) {
-	current_frame = loopi(frame_no, 0, cur_move()->frame.num - 1);
+	current_frame = loop(frame_no, 0, cur_move()->frame.num - 1);
 	//updateAnimation();
 	state.notify(state.MESSAGE_SET_FRAME);
 	on_update();
@@ -230,7 +230,7 @@ void ModeModelAnimation::duplicate_current_frame() {
 void ModeModelAnimation::iterate_animation(float dt) {
 	if (playing) {
 		sim_frame_time += dt * (cur_move()->frames_per_sec_const + cur_move()->frames_per_sec_factor * time_param) * time_scale;
-		sim_frame_time = loopf(sim_frame_time, 0, cur_move()->duration());
+		sim_frame_time = loop(sim_frame_time, 0.0f, cur_move()->duration());
 		update_animation();
 	}
 }

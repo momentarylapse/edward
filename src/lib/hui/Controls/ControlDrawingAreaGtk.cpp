@@ -16,8 +16,6 @@ static std::thread::id main_thread_id = std::this_thread::get_id();
 
 #define STUPID_HACK 0
 
-#include <GL/gl.h>
-
 #ifdef HUI_API_GTK
 
 namespace hui
@@ -236,20 +234,23 @@ gboolean on_gtk_area_mouse_wheel(GtkWidget *widget, GdkEventScroll *event, gpoin
 }
 
 void _get_hui_key_id_(GdkEventKey *event, int &key, int &key_code) {
+
 	// convert hardware keycode into GDK keyvalue
 	GdkKeymapKey kmk;
 	kmk.keycode = event->hardware_keycode;
-	kmk.group = event->group;
+	kmk.group = 0;//event->group;
 	kmk.level = 0;
 	auto *map = gdk_keymap_get_for_display(gdk_display_get_default());
 	int keyvalue = gdk_keymap_lookup_key(map, &kmk);
-	// TODO GTK3
-	//int keyvalue = event->keyval;
-	//msg_write(keyvalue);
 
+	Event::_text = utf32_to_utf8({(int)gdk_keyval_to_unicode(event->keyval)});
+
+	// yes, gtk3 has a direct event->keyval, but we need the "basic" key (without modifiers)
+
+	//msg_write(format("%d  %d", (int)event->keyval, (int)event->hardware_keycode));
 	// convert GDK keyvalue into HUI key id
 	key = -1;
-	for (int i=0;i<NUM_KEYS;i++)
+	for (int i=0; i<NUM_KEYS; i++)
 		//if ((HuiKeyID[i] == keyvalue)or(HuiKeyID2[i] == keyvalue))
 		if (HuiKeyID[i] == keyvalue)
 			key = i;

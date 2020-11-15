@@ -11,14 +11,12 @@
 #include "../../../lib/hui/hui.h"
 class DataModel;
 
-class ModelDuplicateAnimationDialog: public hui::Dialog
-{
+class ModelDuplicateAnimationDialog: public hui::Dialog {
 public:
 	ModelDuplicateAnimationDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data, int index, int source);
-	virtual ~ModelDuplicateAnimationDialog();
 
-	void onClose();
-	void onOk();
+	void on_close();
+	void on_ok();
 
 private:
 	DataModel *data;

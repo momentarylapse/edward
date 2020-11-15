@@ -9,7 +9,7 @@
 #include "../../file/file.h"
 #include <stdio.h>
 
-namespace Kaba{
+namespace kaba {
 
 string kind2str(NodeKind kind) {
 	if (kind == NodeKind::PLACEHOLDER)
@@ -166,14 +166,13 @@ void Node::show(const Class *ns) const {
 	string orig;
 	msg_write(str(ns) + orig);
 	msg_right();
-	for (Node *p: params)
+	for (auto p: params)
 		if (p)
 			p->show(ns);
 		else
 			msg_write("<-NULL->");
 	msg_left();
 }
-
 
 
 
@@ -189,33 +188,27 @@ Block::Block(Function *f, Block *_parent) :
 	_label_start = _label_end = -1;
 }
 
-Block::~Block() {
-}
 
-
-inline void set_command(Node *&a, Node *b) {
-	a = b;
-}
-
-void Block::add(Node *c) {
+void Block::add(shared<Node> c) {
 	if (c)
 		params.add(c);
 }
 
-void Block::set(int index, Node *c) {
+void Block::set(int index, shared<Node> c) {
 	params[index] = c;
 }
 
-Variable *Block::add_var(const string &name, const Class *type) {
+Variable *Block::add_var(const string &name, const Class *type, bool is_const) {
 	if (get_var(name))
 		function->owner()->do_error(format("variable '%s' already declared in this context", name));
 	Variable *v = new Variable(name, type);
+	v->is_const = is_const;
 	function->var.add(v);
 	vars.add(v);
 	return v;
 }
 
-Variable *Block::get_var(const string &name) {
+Variable *Block::get_var(const string &name) const {
 	for (auto *v: vars)
 		if (v->name == name)
 			return v;
@@ -229,6 +222,11 @@ const Class *Block::name_space() const {
 }
 
 
+// policy:
+//  don't change after creation...
+//  edit the tree by shallow copy, relink to old parameters
+//  relinked params count as "new" Node!
+// ...(although, Block are allowed to be edited)
 Node::Node(NodeKind _kind, int64 _link_no, const Class *_type, bool _const) {
 	type = _type;
 	kind = _kind;
@@ -237,9 +235,6 @@ Node::Node(NodeKind _kind, int64 _link_no, const Class *_type, bool _const) {
 }
 
 Node::~Node() {
-	for (auto &p: params)
-		if (p)
-			delete p;
 }
 
 Node *Node::modifiable() {
@@ -300,26 +295,84 @@ PrimitiveOperator *Node::as_prim_op() const {
 	return (PrimitiveOperator*)link_no;
 }
 
-void Node::set_instance(Node *p) {
+void Node::set_instance(shared<Node> p) {
 #ifndef NDEBUG
 	if (params.num == 0)
 		msg_write("no inst...dfljgkldfjg");
 #endif
-	set_command(params[0], p);
+	params[0] = p;
+	if (this->_pointer_ref_counter > 1) {
+		msg_write("iii");
+		msg_write(msg_get_trace());
+	}
+}
+
+void Node::set_type(const Class *t) {
+	type = t;
+	if (this->_pointer_ref_counter > 1) {
+		msg_write("ttt");
+		msg_write(msg_get_trace());
+	}
 }
 
 void Node::set_num_params(int n) {
 	params.resize(n);
+	if (this->_pointer_ref_counter > 1) {
+		msg_write("nnn");
+		msg_write(msg_get_trace());
+	}
 }
 
-void Node::set_param(int index, Node *p) {
+void Node::set_param(int index, shared<Node> p) {
 #ifndef NDEBUG
 	/*if ((index < 0) or (index >= uparams.num)){
 		show();
 		throw Exception(format("internal: Node.set_param...  %d %d", index, params.num), "", 0);
 	}*/
 #endif
-	set_command(params[index], p);
+	params[index] = p;
+	if (this->_pointer_ref_counter > 1) {
+		msg_write("ppp");
+		msg_write(msg_get_trace());
+	}
+}
+
+shared<Node> Node::shallow_copy() const {
+	auto r = new Node(kind, link_no, type, is_const);
+	r->params = params;
+	return r;
+}
+
+shared<Node> Node::ref(const Class *override_type) const {
+	const Class *t = override_type ? override_type : type->get_pointer();
+
+	shared<Node> c = new Node(NodeKind::REFERENCE, 0, t);
+	c->set_num_params(1);
+	c->set_param(0, const_cast<Node*>(this));
+	return c;
+}
+
+shared<Node> Node::deref(const Class *override_type) const {
+	if (!override_type)
+		override_type = type->param[0];
+	shared<Node> c = new Node(NodeKind::DEREFERENCE, 0, override_type, is_const);
+	c->set_num_params(1);
+	c->set_param(0, const_cast<Node*>(this));
+	return c;
+}
+
+shared<Node> Node::shift(int64 shift, const Class *type) const {
+	shared<Node> c = new Node(NodeKind::ADDRESS_SHIFT, shift, type, is_const);
+	c->set_num_params(1);
+	c->set_param(0, const_cast<Node*>(this));
+	return c;
+}
+
+shared<Node> Node::deref_shift(int64 shift, const Class *type) const {
+	shared<Node> c = new Node(NodeKind::DEREF_ADDRESS_SHIFT, shift, type, is_const);
+	c->set_num_params(1);
+	c->set_param(0, const_cast<Node*>(this));
+	return c;
 }
 
 

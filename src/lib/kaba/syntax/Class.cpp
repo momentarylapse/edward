@@ -1,9 +1,10 @@
 #include "../../base/base.h"
 #include "../kaba.h"
+#include "../lib/common.h"
 #include "../../file/file.h"
 #include "Class.h"
 
-namespace Kaba{
+namespace kaba {
 
 ClassElement::ClassElement() {
 	offset = 0;
@@ -26,6 +27,31 @@ bool ClassElement::hidden() const {
 	return (name[0] == '_') or (name[0] == '-');
 }
 
+bool type_match(const Class *given, const Class *wanted);
+
+bool func_pointer_match(const Class *given, const Class *wanted) {
+	auto g = given->param[0];
+	auto w = wanted->param[0];
+	//msg_write(format("%s   vs   %s", g->name, w->name));
+	if (g->param.num != w->param.num) {
+		//msg_error(format("%s   vs   %s     ###", g->name, w->name));
+		return false;
+	}
+	// hmmm, let's be pedantic for return values
+	if (g->param.back() != w->param.back()) {
+		//msg_error(format("%s   vs   %s     return", g->name, w->name));
+		return false;
+	}
+	// allow down-cast for parameters
+	// ACTUALLY, this is the wrong way!!!!
+	//    but we can't know user types when creating the standard library...
+	for (int i=0; i<g->param.num-1; i++)
+		if (!type_match(g->param[i], w->param[i])) {
+			//msg_error(format("%s   vs   %s     param", g->name, w->name, i));
+			return false;
+		}
+	return true;
+}
 
 bool type_match(const Class *given, const Class *wanted) {
 	// exact match?
@@ -41,21 +67,29 @@ bool type_match(const Class *given, const Class *wanted) {
 		return true;
 
 	// compatible pointers (of same or derived class)
-	if (given->is_pointer() and wanted->is_pointer())
-		return given->param->is_derived_from(wanted->param);
+	if (given->is_pointer() and wanted->is_pointer()) {
+		if (given->param[0]->is_derived_from(wanted->param[0]))
+			return true;
+		if (given->param[0]->type == Class::Type::FUNCTION and wanted->param[0]->type == Class::Type::FUNCTION)
+			return func_pointer_match(given, wanted);
+	}
 
 	if (wanted->is_super_array()) {
 		if (given->is_super_array()) {
-			if (type_match(given->param, wanted->param) and (given->param->size == wanted->param->size))
+			if (type_match(given->param[0], wanted->param[0]) and (given->param[0]->size == wanted->param[0]->size))
 				return true;
 		}
 	}
+
+	if (wanted == TypeDynamic)
+		return true;
 
 	return given->is_derived_from(wanted);
 }
 
 
-Class::Class(const string &_name, int64 _size, SyntaxTree *_owner, const Class *_parent, const Class *_param) {
+Class::Class(const string &_name, int64 _size, SyntaxTree *_owner, const Class *_parent, const Array<const Class*> &_param) {
+	flags = Flags::FULLY_PARSED;
 	name = _name;
 	owner = _owner;
 	size = _size;
@@ -64,9 +98,9 @@ Class::Class(const string &_name, int64 _size, SyntaxTree *_owner, const Class *
 	parent = _parent;
 	param = _param;
 	name_space = nullptr;
-	force_call_by_value = false;
-	fully_parsed = true;
-	_amd64_allow_pass_in_xmm = false;
+	// force_call_by_value = false;
+	// fully_parsed = true;
+	// _amd64_allow_pass_in_xmm = false;
 	_logical_line_no = _exp_no = -1;
 	_vtable_location_target_ = nullptr;
 	_vtable_location_compiler_ = nullptr;
@@ -74,16 +108,18 @@ Class::Class(const string &_name, int64 _size, SyntaxTree *_owner, const Class *
 };
 
 Class::~Class() {
-	for (auto *c: constants)
-		delete c;
-	for (auto *v: static_variables)
-		delete v;
-	for (auto *f: functions)
-		if (f->name_space == this)
-			delete f;
-	for (auto *c: classes)
-		if (c->owner == owner)
-			delete c;
+}
+
+bool Class::force_call_by_value() const {
+	return flags_has(flags, Flags::FORCE_CALL_BY_VALUE);
+}
+
+bool Class::fully_parsed() const {
+	return flags_has(flags, Flags::FULLY_PARSED);
+}
+
+bool Class::_amd64_allow_pass_in_xmm() const {
+	return flags_has(flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
 }
 
 bool reachable_from(const Class *ns, const Class *observer_ns) {
@@ -128,7 +164,13 @@ bool Class::is_super_array() const
 { return type == Type::SUPER_ARRAY; }
 
 bool Class::is_pointer() const
-{ return type == Type::POINTER or type == Type::POINTER_SILENT; }
+{ return type == Type::POINTER or type == Type::POINTER_SILENT /* or type == Type::POINTER_SHARED or type == Type::POINTER_UNIQUE */; }
+
+bool Class::is_some_pointer() const
+{ return type == Type::POINTER or type == Type::POINTER_SILENT  or type == Type::POINTER_SHARED or type == Type::POINTER_UNIQUE; }
+
+bool Class::is_pointer_shared() const
+{ return type == Type::POINTER_SHARED; }
 
 bool Class::is_pointer_silent() const
 { return type == Type::POINTER_SILENT; }
@@ -137,13 +179,13 @@ bool Class::is_dict() const
 { return type == Type::DICT; }
 
 bool Class::uses_call_by_reference() const {
-	return (!force_call_by_value and !is_pointer()) or is_array();
+	return (!force_call_by_value() and !is_pointer()) or is_array();
 }
 
 bool Class::uses_return_by_memory() const {
-	if (_amd64_allow_pass_in_xmm)
+	if (_amd64_allow_pass_in_xmm())
 		return false;
-	return (!force_call_by_value and !is_pointer()) or is_array();
+	return (!force_call_by_value() and !is_pointer()) or is_array();
 }
 
 
@@ -153,7 +195,7 @@ bool Class::is_simple_class() const {
 	if (!uses_call_by_reference())
 		return true;
 	if (is_array())
-		return param->is_simple_class();
+		return param[0]->is_simple_class();
 	if (is_super_array())
 		return false;
 	if (is_dict())
@@ -187,7 +229,7 @@ bool Class::usable_as_super_array() const {
 
 const Class *Class::get_array_element() const {
 	if (is_array() or is_super_array() or is_dict())
-		return param;
+		return param[0];
 	if (is_pointer())
 		return nullptr;
 	if (parent)
@@ -202,7 +244,7 @@ bool Class::needs_constructor() const {
 	if (is_super_array() or is_dict())
 		return true;
 	if (is_array())
-		return param->needs_constructor();
+		return param[0]->needs_constructor();
 	if (vtable.num > 0)
 		return true;
 	if (parent)
@@ -215,9 +257,9 @@ bool Class::needs_constructor() const {
 }
 
 bool Class::is_size_known() const {
-	if (!fully_parsed)
+	if (!fully_parsed())
 		return false;
-	if (is_super_array() or is_dict() or is_pointer())
+	if (is_super_array() or is_dict() or is_some_pointer())
 		return true;
 	for (ClassElement &e: elements)
 		if (!e.type->is_size_known())
@@ -231,7 +273,7 @@ bool Class::needs_destructor() const {
 	if (is_super_array() or is_dict())
 		return true;
 	if (is_array())
-		return param->get_destructor();
+		return param[0]->get_destructor();
 	if (parent) {
 		if (parent->get_destructor())
 			return true;
@@ -269,7 +311,7 @@ bool Class::is_derived_from_s(const string &root) const {
 
 // don't care if static
 Function *Class::get_func(const string &_name, const Class *return_type, const Array<const Class*> &params) const {
-	for (auto *f: functions)
+	for (auto *f: weak(functions))
 		if ((f->name == _name) and (f->literal_return_type == return_type) and (f->num_params == params.num)) {
 			bool match = true;
 			for (int i=0; i<params.num; i++) {
@@ -294,7 +336,7 @@ Function *Class::get_default_constructor() const {
 
 Array<Function*> Class::get_constructors() const {
 	Array<Function*> c;
-	for (auto *f: functions)
+	for (auto *f: weak(functions))
 		if ((f->name == IDENTIFIER_FUNC_INIT) and (f->literal_return_type == TypeVoid))
 			c.add(f);
 	return c;
@@ -309,8 +351,8 @@ Function *Class::get_assign() const {
 }
 
 Function *Class::get_get(const Class *index) const {
-	for (Function *cf: functions) {
-		if (cf->name != "__get__")
+	for (auto *cf: weak(functions)) {
+		if (cf->name != IDENTIFIER_FUNC_GET)
 			continue;
 		if (cf->num_params != 1)
 			continue;
@@ -322,7 +364,7 @@ Function *Class::get_get(const Class *index) const {
 }
 
 Function *Class::get_virtual_function(int virtual_index) const {
-	for (Function *f: functions)
+	for (auto *f: weak(functions))
 		if (f->virtual_index == virtual_index)
 			return f;
 	return nullptr;
@@ -343,7 +385,7 @@ void Class::link_virtual_table() {
 		vtable[1] = mf(&VirtualBase::__delete_external__);
 
 	// link virtual functions into vtable
-	for (Function *cf: functions) {
+	for (auto *cf: weak(functions)) {
 		if (cf->virtual_index >= 0) {
 			//msg_write(i2s(cf->virtual_index) + ": " + cf->signature());
 			if (cf->virtual_index >= vtable.num)
@@ -364,7 +406,7 @@ void Class::link_external_virtual_table(void *p) {
 	VirtualTable *t = (VirtualTable*)p;
 	vtable.clear();
 	int max_vindex = 1;
-	for (Function *cf: functions)
+	for (auto *cf: weak(functions))
 		if (cf->virtual_index >= 0) {
 			cf->address = t[cf->virtual_index];
 			if (cf->virtual_index >= vtable.num)
@@ -400,7 +442,7 @@ bool class_func_match(Function *a, Function *b) {
 
 
 const Class *Class::get_pointer() const {
-	return owner->make_class(name + "*", Class::Type::POINTER, config.pointer_size, 0, nullptr, this, name_space);
+	return owner->make_class(name + "*", Class::Type::POINTER, config.pointer_size, 0, nullptr, {this}, name_space);
 }
 
 const Class *Class::get_root() const {
@@ -429,7 +471,7 @@ void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool overr
 		// override?
 		Function *orig = nullptr;
 		int orig_index = -1;
-		foreachi (Function *ocf, functions, i)
+		foreachi (auto *ocf, weak(functions), i)
 			if (class_func_match(f, ocf)) {
 				orig = ocf;
 				orig_index = i;
@@ -445,8 +487,6 @@ void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool overr
 			if (config.verbose)
 				msg_write("OVERRIDE    " + orig->signature());
 			f->virtual_index = orig->virtual_index;
-			if (orig->name_space == this)
-				delete orig;
 			functions[orig_index] = f;
 		} else {
 			functions.add(f);
@@ -475,7 +515,7 @@ void Class::derive_from(const Class* root, bool increase_size) {
 	elements = parent->elements;
 
 	// inheritance of functions
-	for (Function *f: parent->functions) {
+	for (auto *f: weak(parent->functions)) {
 		if (f->name == IDENTIFIER_FUNC_ASSIGN)
 			continue;
 		Function *ff = f;

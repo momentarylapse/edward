@@ -49,9 +49,7 @@ enum {
 class Edward : public hui::Window {
 public:
 	Edward(Array<string> arg);
-	virtual ~Edward();
-
-	virtual void on_destroy() override;
+	~Edward() override;
 
 	bool handle_arguments(Array<string> arg);
 	void load_key_codes();

@@ -15,10 +15,9 @@ class ModelNewAnimationDialog: public hui::Dialog
 {
 public:
 	ModelNewAnimationDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data, int index, int type);
-	virtual ~ModelNewAnimationDialog();
 
-	void onClose();
-	void onOk();
+	void on_close();
+	void on_ok();
 
 private:
 	DataModel *data;

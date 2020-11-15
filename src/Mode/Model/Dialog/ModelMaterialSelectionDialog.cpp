@@ -68,13 +68,13 @@ void ModelMaterialSelectionDialog::put_answer(int *_answer)
 
 
 void ModelMaterialSelectionDialog::on_close() {
-	destroy();
+	request_destroy();
 }
 
 void ModelMaterialSelectionDialog::on_apply() {
 	if (answer)
 		*answer = get_int("matieral_list");
-	destroy();
+	request_destroy();
 }
 
 void ModelMaterialSelectionDialog::on_material_list_right_click() {
