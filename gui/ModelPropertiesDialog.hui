@@ -1,4 +1,4 @@
-Dialog model_dialog "Model properties" width=550 height=580 resizable headerbar closebutton=no
+Dialog model_dialog "Model properties" width=550 height=580 resizable headerbar closebutton=no borderwidth=0
 	Grid ? ""
 		TabControl model_dialog_tab_control "Level of detail\\Physics\\Inventory\\Script"
 			Grid ? "" vertical

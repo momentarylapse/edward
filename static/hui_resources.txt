@@ -1315,7 +1315,7 @@ disabled,expandx
 0
 Button
 find_rootdir
-image="hui:open"
+image=,hui:open
 2
 0
 0
@@ -1369,7 +1369,7 @@ expandx
 0
 Button
 find_default_world
-image="hui:open"
+image=,hui:open
 2
 0
 0
@@ -1387,7 +1387,7 @@ default_second_world
 0
 Button
 find_default_second_world
-image="hui:open"
+image=,hui:open
 2
 1
 0
@@ -1405,7 +1405,7 @@ default_script
 0
 Button
 find_default_script
-image="hui:open"
+image=,hui:open
 2
 2
 0
@@ -1423,7 +1423,7 @@ default_material
 0
 Button
 find_default_material
-image="hui:open"
+image=,hui:open
 2
 3
 0
@@ -1441,7 +1441,7 @@ default_font
 0
 Button
 find_default_font
-image="hui:open"
+image=,hui:open
 2
 4
 0
@@ -5368,7 +5368,7 @@ range=2:
 # Resource
 Dialog
 model_dialog
-width=550,height=580,resizable,headerbar,closebutton=no
+width=550,height=580,resizable,headerbar,closebutton=no,borderwidth=0
 0
 0
 1
@@ -7232,8 +7232,8 @@ image=hui:cancel
 0
 0
 DefButton
-ok"
-image=hui:ok
+ok
+Ok,image=hui:ok
 1
 0
 0
@@ -7299,8 +7299,8 @@ image=hui:cancel
 0
 0
 DefButton
-ok"
-image=hui:ok
+ok
+Ok,image=hui:ok
 1
 0
 0
@@ -7956,7 +7956,7 @@ image=icons/toolbar/view_pop.png
 # Resource
 Dialog
 world_dialog
-width=520,height=420,resizable,headerbar,closebutton=no
+width=520,height=420,resizable,headerbar,closebutton=no,borderwidth=0
 0
 0
 1
@@ -8413,8 +8413,8 @@ image=hui:cancel
 0
 0
 DefButton
-ok"
-image=hui:ok
+ok
+Ok,image=hui:ok
 2
 0
 0
@@ -9226,8 +9226,8 @@ image=hui:cancel
 0
 0
 DefButton
-ok"
-image=hui:ok
+ok
+Ok,image=hui:ok
 2
 0
 0
@@ -9992,7 +9992,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-996
+995
 # Text
 /ambient
 Ambient
@@ -10034,9 +10034,6 @@ mu
 New
 
 /ok
-Ok
-
-/ok"
 Ok
 
 /open
