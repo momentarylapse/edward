@@ -41,13 +41,10 @@ string SoundDir;
 
 
 void Edward::on_close() {
-	if (allow_termination())
-		exit();
-}
-
-void Edward::exit() {
-	request_destroy();
-	app->end();
+	if (allow_termination()) {
+		//request_destroy();
+		hui::RunLater(0.01f, [=]{ delete this; });
+	}
 }
 
 #define IMPLEMENT_EVENT(EVENT) \
@@ -258,6 +255,9 @@ Edward::~Edward() {
 	//HuiConfig.set_int("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
 	hui::Config.save(app->directory << "config.txt");
 	delete storage;
+
+
+	app->end();
 }
 
 bool Edward::handle_arguments(Array<string> arg)

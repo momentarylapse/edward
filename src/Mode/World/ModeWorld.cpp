@@ -56,6 +56,10 @@ ModeWorld *mode_world = NULL;
 
 const bool LIST_SHOW_SCRIPTS = false;
 
+namespace nix {
+extern Shader *current_shader;
+}
+
 
 
 class WorldObjectListPanel : public hui::Panel {
@@ -679,10 +683,30 @@ void apply_lighting(DataWorld *w) {
 	auto &m = w->meta_data;
 	nix::SetFog(m.fog.mode, m.fog.start, m.fog.end, m.fog.density, m.fog.col);
 	nix::EnableFog(m.fog.enabled);
-	for (auto &ll: w->lights)
+	Array<nix::BasicLight> lights;
+	for (auto &ll: w->lights) {
+		nix::BasicLight l;
+		l.proj = matrix::ID;
+		l.theta = -1;
+		l.radius = -1;
+		l.pos = ll.pos;
+		l.dir = ll.ang.ang2dir();
 		if (ll.type == LightType::DIRECTIONAL) {
-			ed->multi_view_3d->set_light(ll.ang.ang2dir(), ll.col, ll.harshness);
+			//l.theta = pi;
+		} else if (ll.type == LightType::POINT) {
+			l.radius = ll.radius;
+		} else if (ll.type == LightType::CONE) {
+			l.radius = ll.radius;
+			l.theta = ll.theta;
 		}
+		l.col = ll.col;
+		l.harshness = ll.harshness;
+		lights.add(l);
+	}
+	ed->multi_view_3d->ubo_light->update_array(lights);
+	nix::BindUniform(ed->multi_view_3d->ubo_light, 1);
+	nix::SetShader(nix::default_shader_3d);
+	nix::current_shader->set_int(nix::current_shader->get_location("num_lights"), lights.num);
 }
 
 void draw_background(DataWorld *w) {
@@ -700,12 +724,15 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 	if (show_effects) {
 		if (win->type == MultiView::VIEW_PERSPECTIVE)
 			draw_background(data);
-		apply_lighting(data);
 	}
 
 // terrain
 	nix::SetWire(multi_view->wire_mode);
 	nix::SetShader(nix::default_shader_3d);
+
+	if (show_effects)
+		apply_lighting(data);
+
 	foreachi(WorldTerrain &t, data->terrains, i) {
 		if (!t.terrain)
 			continue;
@@ -717,7 +744,6 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		nix::SetShader(nix::default_shader_3d);
 
 		auto mat = t.terrain->material;
-		msg_todo("ModeWorld::on_draw_win");
 		nix::SetMaterial(mat->diffuse, 0.5f, 0.1f, mat->shininess, mat->emission);
 		nix::SetTextures(mat->textures);
 		nix::DrawTriangles(t.terrain->vertex_buffer);

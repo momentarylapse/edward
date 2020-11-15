@@ -53,7 +53,6 @@ public:
 
 	bool handle_arguments(Array<string> arg);
 	void load_key_codes();
-	void exit();
 
 	void idle_function();
 

@@ -23,6 +23,7 @@ void ModeWorldCreateLight::on_start() {
 	dialog->add_list_view("Type", 0, 0, "type");
 	dialog->add_string("type", "Directional");
 	dialog->add_string("type", "Point source");
+	dialog->add_string("type", "Cone");
 	dialog->set_int("type", 1);
 	ed->set_side_panel(dialog);
 }
@@ -42,6 +43,7 @@ void ModeWorldCreateLight::on_left_button_down() {
 	l.harshness = 0.8f;
 	l.type = (LightType)t;
 	l.radius = multi_view->cam.radius;
+	l.theta = (l.type == LightType::CONE) ? 0.7f : 0;
 
 	data->execute(new ActionWorldAddLight(l));
 }
