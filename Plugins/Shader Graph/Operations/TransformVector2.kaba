@@ -1,0 +1,15 @@
+use edward
+
+class NodeTransformVector2 extends shader.Node
+	void __init__()
+		super.__init__("TransformVector2")
+		params.add([shader.TYPE_VEC2, "in", "vec2(0,0)", ""])
+		params.add([shader.TYPE_FLOAT, "angle", "0.0", "range=0:6.283"])
+		params.add([shader.TYPE_FLOAT, "scale", "1.0", "range=-2:2"])
+		params.add([shader.TYPE_FLOAT, "dx", "0.0", "range=-2:2"])
+		params.add([shader.TYPE_FLOAT, "dy", "0.0", "range=-2:2"])
+		output.add([shader.TYPE_VEC2, "out"])
+	override const string code_pixel(out shader.BuilderContext c)
+		let t = c.create_out(self, 0)
+		return "
+	vec2 {{t}} = mat2(cos({{c.value(self, 1)}}),sin({{c.value(self, 1)}}),-sin({{c.value(self, 1)}}),cos({{c.value(self, 1)}})) * {{c.value(self, 0)}} * {{c.value(self, 2)}} + vec2({{c.value(self, 3)}},{{c.value(self, 4)}});"

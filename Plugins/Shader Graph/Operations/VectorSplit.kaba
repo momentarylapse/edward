@@ -1,0 +1,17 @@
+use edward
+
+class NodeVectorSplit extends shader.Node
+	void __init__()
+		super.__init__("VectorSplit")
+		params.add([shader.TYPE_VEC3, "vector", "vec3(0,0,0)", ""])
+		output.add([shader.TYPE_FLOAT, "x"])
+		output.add([shader.TYPE_FLOAT, "y"])
+		output.add([shader.TYPE_FLOAT, "z"])
+	override const string code_pixel(out shader.BuilderContext c)
+		let tx = c.create_out(self, 0)
+		let ty = c.create_out(self, 1)
+		let tz = c.create_out(self, 2)
+		return "
+	float {{tx}} = {{c.value(self, 0)}}.x;
+	float {{ty}} = {{c.value(self, 0)}}.y;
+	float {{tz}} = {{c.value(self, 0)}}.z;"

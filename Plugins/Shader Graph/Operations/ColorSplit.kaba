@@ -1,0 +1,20 @@
+use edward
+
+class NodeColorSplit extends shader.Node
+	void __init__()
+		super.__init__("ColorSplit")
+		params.add([shader.TYPE_VEC4, "color", "#ffffffff", ""])
+		output.add([shader.TYPE_FLOAT, "r"])
+		output.add([shader.TYPE_FLOAT, "g"])
+		output.add([shader.TYPE_FLOAT, "b"])
+		output.add([shader.TYPE_FLOAT, "a"])
+	override const string code_pixel(out shader.BuilderContext c)
+		let tr = c.create_out(self, 0)
+		let tg = c.create_out(self, 1)
+		let tb = c.create_out(self, 2)
+		let ta = c.create_out(self, 3)
+		return "
+	float {{tr}} = {{c.value(self, 0)}}.r;
+	float {{tg}} = {{c.value(self, 0)}}.g;
+	float {{tb}} = {{c.value(self, 0)}}.b;
+	float {{ta}} = {{c.value(self, 0)}}.a;"

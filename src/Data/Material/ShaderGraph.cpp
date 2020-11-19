@@ -216,7 +216,7 @@ string ShaderGraph::build_fragment_source() const {
 string ShaderGraph::build_source() const {
 	string pre =
 			"<Layout>\n"
-			"	version = 330 core\n"
+			"	version = 420\n"
 			"</Layout>\n"
 			"<VertexShader>\n"
 			"struct Matrix { mat4 model, view, project; };\n"

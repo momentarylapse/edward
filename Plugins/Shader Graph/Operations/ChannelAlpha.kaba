@@ -1,0 +1,12 @@
+use edward
+
+class NodeChannelAlpha extends shader.Node
+	void __init__()
+		super.__init__("ChannelAlpha")
+		params.add([shader.TYPE_COLOR, "color", "#ffffffff", ""])
+		output.add([shader.TYPE_FLOAT, "alpha"])
+	override const string code_pixel(out shader.BuilderContext c)
+		let a = c.value(self, 0)
+		let t = c.create_out(self, 0)
+		return "
+	float {{t}} = {{a}}.a;"

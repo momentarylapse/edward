@@ -1,0 +1,11 @@
+use edward
+
+class NodeVectorY extends shader.Node
+	void __init__()
+		super.__init__("VectorY")
+		params.add([shader.TYPE_VEC3, "vector", "vec3(0,0,0)", ""])
+		output.add([shader.TYPE_FLOAT, "y"])
+	override const string code_pixel(out shader.BuilderContext c)
+		let t = c.create_out(self, 0)
+		return "
+	float {{t}} = {{c.value(self, 0)}}.y;"
