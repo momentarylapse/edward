@@ -14,6 +14,9 @@ namespace nix{
 
 Path shader_dir;
 
+const int TYPE_LAYOUT = -41;
+const int TYPE_MODULE = -42;
+
 
 Shader *default_shader_2d = NULL;
 Shader *default_shader_3d = NULL;
@@ -72,6 +75,16 @@ struct ShaderSourcePart {
 	string source;
 };
 
+struct ShaderMetaData {
+	string version, name;
+};
+
+struct ShaderModule {
+	ShaderMetaData meta;
+	string source;
+};
+static Array<ShaderModule> shader_modules;
+
 Array<ShaderSourcePart> get_shader_parts(const string &source) {
 	Array<ShaderSourcePart> parts;
 	int pos = 0;
@@ -106,8 +119,10 @@ Array<ShaderSourcePart> get_shader_parts(const string &source) {
 			p.type = GL_TESS_EVALUATION_SHADER;
 		} else if (tag == "GeometryShader") {
 			p.type = GL_GEOMETRY_SHADER;
+		} else if (tag == "Module") {
+			p.type = TYPE_MODULE;
 		} else if (tag == "Layout") {
-			continue;
+			p.type = TYPE_LAYOUT;
 		} else {
 			msg_error("unknown shader tag: '" + tag + "'");
 			continue;
@@ -129,7 +144,37 @@ string get_inside_of_tag(const string &source, const string &tag) {
 	return source.substr(pos0, pos1 - pos0);
 }
 
-int create_gl_shader(const string &source, int type) {
+string expand_shader_source(const string &source, ShaderMetaData &meta) {
+	string r = source;
+	while (true) {
+		int p = r.find("#import", 0);
+		if (p < 0)
+			break;
+		int p2 = r.find("\n", p);
+		string imp = r.substr(p + 7, p2 - p - 7).replace(" ", "");
+		//msg_error("import '" + imp + "'");
+
+		bool found = false;
+		for (auto &m: shader_modules)
+			if (m.meta.name == imp) {
+				//msg_error("FOUND");
+				r = r.head(p) + "\n// <<\n" + m.source + "\n// >>\n" + r.substr(p2, -1);
+				found = true;
+			}
+		if (!found)
+			throw Exception(format("shader import '%s' not found", imp));
+	}
+
+	string intro;
+	if (meta.version != "")
+		intro += "#version " + meta.version + "\n";
+	if (r.find("GL_ARB_separate_shader_objects", 0) < 0)
+		intro += "#extension GL_ARB_separate_shader_objects : enable\n";
+	return intro + r;
+}
+
+int create_gl_shader(const string &_source, int type, ShaderMetaData &meta) {
+	string source = expand_shader_source(_source, meta);
 	if (source.num == 0)
 		return -1;
 	int gl_shader = glCreateShader(type);
@@ -160,6 +205,22 @@ int create_gl_shader(const string &source, int type) {
 	return gl_shader;
 }
 
+ShaderMetaData parse_meta(string source) {
+	ShaderMetaData m;
+	for (auto &x: source.explode("\n")) {
+		auto y = x.explode("=");
+		if (y.num == 2) {
+			string k = y[0].trim();
+			string v = y[1].trim();
+			if (k == "name")
+				m.name = v;
+			else if (k == "version")
+				m.version = v;
+		}
+	}
+	return m;
+}
+
 Shader *Shader::create(const string &source) {
 	auto parts = get_shader_parts(source);
 
@@ -169,12 +230,24 @@ Shader *Shader::create(const string &source) {
 	int prog = create_empty_shader_program();
 
 	Array<int> shaders;
+	ShaderMetaData meta;
 	for (auto p: parts) {
-		int shader = create_gl_shader(p.source, p.type);
-		shaders.add(shader);
-		if (shader >= 0)
-			glAttachShader(prog, shader);
-		TestGLError("AddShader attach");
+		if (p.type == TYPE_MODULE) {
+			ShaderModule m;
+			m.source = p.source;
+			m.meta = meta;
+			shader_modules.add(m);
+			msg_write("new module '" + m.meta.name + "'");
+			return nullptr;
+		} else if (p.type == TYPE_LAYOUT) {
+			meta = parse_meta(p.source);
+		} else {
+			int shader = create_gl_shader(p.source, p.type, meta);
+			shaders.add(shader);
+			if (shader >= 0)
+				glAttachShader(prog, shader);
+			TestGLError("AddShader attach");
+		}
 	}
 
 	int status;

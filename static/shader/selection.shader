@@ -1,6 +1,7 @@
+<Layout>
+	version = 330 core
+</Layout>
 <VertexShader>
-#version 330 core
-#extension GL_ARB_separate_shader_objects : enable
 
 struct Matrix {
 	mat4 model;
@@ -21,8 +22,6 @@ void main() {
 
 </VertexShader>
 <FragmentShader>
-#version 330 core
-#extension GL_ARB_separate_shader_objects : enable
 
 
 struct Material {

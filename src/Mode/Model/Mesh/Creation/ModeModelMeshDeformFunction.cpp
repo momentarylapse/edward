@@ -52,6 +52,7 @@ ModeModelMeshDeformFunction::~ModeModelMeshDeformFunction()
 
 void ModeModelMeshDeformFunction::on_start()
 {
+	msg_error("maybe we should overthing script management....");
 	// Dialog
 	dialog = new hui::Panel();
 	dialog->from_resource("deformation_function_dialog");

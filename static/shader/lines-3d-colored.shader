@@ -1,5 +1,7 @@
+<Layout>
+	version = 330 core
+</Layout>
 <VertexShader>
-#version 330 core
 
 struct Matrix {
 	mat4 model;
@@ -20,7 +22,6 @@ void main() {
 
 </VertexShader>
 <FragmentShader>
-#version 330 core
 
 in vec4 fragmentColor;
 
