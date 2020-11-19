@@ -165,7 +165,7 @@ Edward::Edward(Array<string> arg) :
 
 	// initialize engine
 	nix::Init();
-	drawing_helper_init();
+	drawing_helper_init(app->directory_static);
 
 	MaterialInit();
 	CameraInit();

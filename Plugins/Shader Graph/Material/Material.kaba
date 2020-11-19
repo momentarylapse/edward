@@ -9,7 +9,7 @@ class NodeMaterial extends shader.Node
 		output.add([shader.TYPE_FLOAT, "shininess"])
 		output.add([shader.TYPE_COLOR, "emission"])
 	override const string[] dependencies()
-		return ["material"]
+		return ["in:material"]
 	override const string code_pixel(out shader.BuilderContext c)
 		let di = c.create_out(self, 0)
 		let am = c.create_out(self, 1)

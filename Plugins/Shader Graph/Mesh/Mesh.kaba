@@ -3,29 +3,29 @@ use edward
 class NodeMesh extends shader.Node
 	void __init__()
 		super.__init__("Mesh")
-		params.add([shader.TYPE_INT, "space", "0", "choice=model|world|camera|window"])
+		params.add([shader.TYPE_INT, "space", "1", "choice=model|world|camera|window"])
 		output.add([shader.TYPE_VEC3, "pos"])
 		output.add([shader.TYPE_VEC3, "normals"])
 		output.add([shader.TYPE_VEC2, "uv"])
 	override const string[] dependencies()
-		return ["pos", "normal", "uv", "matrix"]
+		return ["in:pos", "in:normal", "in:uv", "in:matrix"]
 	override const string code_pixel(out shader.BuilderContext c)
 		let p = c.create_out(self, 0)
 		let n = c.create_out(self, 1)
 		let u = c.create_out(self, 2)
 		if params[0].value == "1" # world
 			return "
-	vec3 {{p}} = (matrix.model * in_pos).xyz;
+	vec3 {{p}} = in_pos.xyz / in_pos.w;
 	vec3 {{n}} = normalize(in_normal);
 	vec2 {{u}} = in_uv;"
 		if params[0].value == "2" # cam
 			return "
-	vec3 {{p}} = (matrix.view * matrix.model * in_pos).xyz;
+	vec3 {{p}} = (matrix.view * in_pos).xyz;
 	vec3 {{n}} = normalize(in_normal);
 	vec2 {{u}} = in_uv;"
 		if params[0].value == "3" # window
 			return "
-	vec3 {{p}} = (matrix.project * matrix.view * matrix.model * in_pos).xyz;
+	vec3 {{p}} = (matrix.project * matrix.view * in_pos).xyz;
 	vec3 {{n}} = normalize(in_normal);
 	vec2 {{u}} = in_uv;"
 		#if params[0].value == "0" # model

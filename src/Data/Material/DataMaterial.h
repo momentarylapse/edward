@@ -54,6 +54,7 @@ public:
 		bool shader_from_graph;
 		bool is_default_shader;
 		void update_shader_from_file();
+		void save_shader_to_file();
 
 		void reset();
 	};

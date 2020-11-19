@@ -5,7 +5,7 @@ class NodeNormals extends shader.Node
 		super.__init__("Normals")
 		output.add([shader.TYPE_VEC3, "normals"])
 	override const string[] dependencies()
-		return ["normal"]
+		return ["in:normal"]
 	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "

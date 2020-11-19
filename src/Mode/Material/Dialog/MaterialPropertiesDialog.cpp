@@ -40,6 +40,7 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	event("reflection_textures", [=]{ on_reflection_textures(); });
 	event("find_shader", [=]{ on_find_shader(); });
 	event("shader-clear", [=]{ on_clear_shader(); });
+	event("shader-save", [=]{ on_shader_save(); });
 
 
 	event("mat_am", [=]{ apply_data(); });
@@ -236,15 +237,24 @@ bool test_shader_file(const Path &filename) {
 }
 
 void MaterialPropertiesDialog::on_find_shader() {
-	if (storage->file_dialog(FD_SHADERFILE,false,true)){
-		if (test_shader_file(storage->dialog_file)){
+	if (storage->file_dialog(FD_SHADERFILE,false,true)) {
+		if (test_shader_file(storage->dialog_file)) {
 			set_string("shader_file", storage->dialog_file.str());
 			temp.shader_file = get_string("shader_file");
 			temp.update_shader_from_file();
 			apply_data();
-		}else{
+		} else {
 			ed->error_box(_("Error in shader file:\n") + nix::shader_error);
 		}
+	}
+}
+
+void MaterialPropertiesDialog::on_shader_save() {
+	if (storage->file_dialog(FD_SHADERFILE,true,true)) {
+		set_string("shader_file", storage->dialog_file.str());
+		temp.shader_file = get_string("shader_file");
+		temp.save_shader_to_file();
+		apply_data();
 	}
 }
 

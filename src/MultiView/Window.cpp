@@ -321,12 +321,8 @@ void Window::set_projection_matrix_pixel() {
 
 void Window::update_matrices() {
 	// camera matrix
-	vector pos = cam->pos;
+	vector pos = cam->get_pos(type == VIEW_PERSPECTIVE);
 	local_ang = view_ang(type, cam);
-	if (type == VIEW_PERSPECTIVE){
-		if (!cam->ignore_radius)
-			pos -= cam->radius * (cam->ang * vector::EZ);
-	}
 	view_matrix = matrix::rotation(local_ang.bar()) * matrix::translation(-pos);
 	nix::SetViewMatrix(view_matrix);
 	pv_matrix = projection_matrix * view_matrix;

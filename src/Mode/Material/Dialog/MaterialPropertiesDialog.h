@@ -31,6 +31,7 @@ public:
 	void on_reflection_mode();
 	void on_reflection_textures();
 	void on_find_shader();
+	void on_shader_save();
 	void on_clear_shader();
 
 	void refill_refl_tex_view();

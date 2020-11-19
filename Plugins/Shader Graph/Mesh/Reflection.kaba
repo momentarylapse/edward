@@ -5,8 +5,9 @@ class NodeReflection extends shader.Node
 		super.__init__("Reflection")
 		output.add([shader.TYPE_COLOR, "color"])
 	override const string[] dependencies()
-		return ["cubemap", "normal", "pos", "matrix"]
+		return ["cubemap", "in:normal", "in:pos", "in:matrix"]
 	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
-	vec4 {{t}} = texture(tex4, (transpose(matrix.view) * vec4(reflect(normalize((matrix.view * matrix.model * in_pos).xyz), normalize(in_normal)), 0)).xyz);"
+	// TODO
+	vec4 {{t}} = texture(tex4, (transpose(matrix.view) * vec4(reflect(normalize((matrix.view * in_pos).xyz), normalize(in_normal)), 0)).xyz);"

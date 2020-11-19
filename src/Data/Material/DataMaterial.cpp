@@ -107,7 +107,7 @@ void DataMaterial::apply_for_rendering() {
 }
 
 void DataMaterial::AppearanceData::update_shader_from_file() {
-	if (shader_file != "") {
+	if (!shader_file.is_empty()) {
 		shader_code = FileReadText(nix::shader_dir << shader_file);
 		if (file_exists(nix::shader_dir << shader_file.with(".graph"))) {
 			shader_graph->load(nix::shader_dir << shader_file.with(".graph"));
@@ -122,6 +122,15 @@ void DataMaterial::AppearanceData::update_shader_from_file() {
 		shader_code = shader_graph->build_source();
 		shader_from_graph = true;
 		is_default_shader = true;
+	}
+}
+
+void DataMaterial::AppearanceData::save_shader_to_file() {
+	if (!shader_file.is_empty()) {
+		shader_code = shader_graph->build_source();
+		shader_graph->save(nix::shader_dir << shader_file.with(".graph"));
+		shader_from_graph = true;
+		is_default_shader = false;
 	}
 }
 

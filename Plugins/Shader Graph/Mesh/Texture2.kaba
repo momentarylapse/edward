@@ -1,14 +1,14 @@
 use edward
 
-class NodeTexture extends shader.Node
+class NodeTexture2 extends shader.Node
 	void __init__()
-		super.__init__("Texture")
+		super.__init__("Texture2")
 		params.add([shader.TYPE_VEC2, "uv", "-mesh-", ""])
 		output.add([shader.TYPE_COLOR, "color"])
 	override const string[] dependencies()
-		return ["texture0", "in:uv"]
+		return ["texture2", "in:uv"]
 	override const string code_pixel(out shader.BuilderContext c)
 		let uv = c.build_value(self, 0, "in_uv")
 		let t = c.create_out(self, 0)
 		return "
-	vec4 {{t}} = texture(tex0, {{uv}});"
+	vec4 {{t}} = texture(tex2, {{uv}});"

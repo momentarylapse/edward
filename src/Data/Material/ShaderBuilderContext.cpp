@@ -72,42 +72,55 @@ string ShaderBuilderContext::build_uniform_vars() {
 string ShaderBuilderContext::build_helper_vars() {
 	string source;
 	auto vars = dependencies;
-	if (vars.contains("light")) {
+	if (vars.contains("in:light")) {
 		source +=
 			"struct Light { mat4 proj; vec4 pos, dir, color; float radius, theta, harshness; };\n"
 			"/*layout(binding = 1)*/ uniform LightData { Light light[32]; };\n"
 			"uniform int num_lights = 0;\n";
 	}
-	if (vars.contains("fog")) {
+	if (vars.contains("in:fog")) {
 		source +=
 			"struct Fog { vec4 color; float density; };\n"
 			"uniform Fog fog;\n";
 	}
-	if (vars.contains("material")) {
+	if (vars.contains("in:material")) {
 		source +=
 			"struct Material { vec4 diffusive, emission; float ambient, specular, shininess; };\n"
 			"uniform Material material;\n";
 	}
-	if (vars.contains("normal")) {
+	if (vars.contains("in:normal")) {
 		source += "layout(location = 0) in vec3 in_normal;\n";
 	}
-	if (vars.contains("uv")) {
+	if (vars.contains("in:uv")) {
 		source += "layout(location = 1) in vec2 in_uv;\n";
 	}
-	if (vars.contains("pos")) {
-		source += "layout(location = 2) in vec4 in_pos;\n";
+	if (vars.contains("in:pos")) {
+		source += "layout(location = 2) in vec4 in_pos; // world\n";
 	}
-	if (vars.contains("texture")) {
+	if (vars.contains("texture0")) {
 		source += "uniform sampler2D tex0;\n";
+	}
+	if (vars.contains("texture1")) {
+		source += "uniform sampler2D tex1;\n";
+	}
+	if (vars.contains("texture2")) {
+		source += "uniform sampler2D tex2;\n";
+	}
+	if (vars.contains("texture3")) {
+		source += "uniform sampler2D tex3;\n";
 	}
 	if (vars.contains("cubemap")) {
 		source += "uniform samplerCube tex4;\n";
 	}
-	if (vars.contains("matrix") or vars.contains("matworld") or vars.contains("matproject")) {
+	if (vars.contains("in:matrix") or vars.contains("matworld") or vars.contains("matproject")) {
 		source +=
 			"struct Matrix { mat4 model, view, project; };\n"
 			"/*layout(binding = 0)*/ uniform Matrix matrix;\n";
 	}
+	if (vars.contains("out:color")) {
+		source += "layout(location = 0) out vec4 out_color;\n";
+	}
+
 
 	return source;
 }
@@ -164,7 +177,7 @@ string ShaderBuilderContext::build_helper_functions() {
 		"	r *= diffuse;\n"
 		"	r += emission;\n"
 		"	if ((d > 0) && (material.shininess > 1)) {\n"
-		"		vec3 e = normalize((matrix.view * matrix.model * in_pos).xyz); // eye dir\n"
+		"		vec3 e = normalize((matrix.view * in_pos).xyz); // eye dir\n"
 		"		vec3 rl = reflect(L, n);\n"
 		"		float ee = max(-dot(e, rl), 0);\n"
 		"		r += specular * l.color * l.harshness * pow(ee, shininess);\n"

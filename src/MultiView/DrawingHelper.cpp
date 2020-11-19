@@ -13,8 +13,8 @@
 
 
 namespace MultiView{
-	//extern nix::Shader *shader_selection;
-	//extern nix::Shader *shader_lines_3d;
+	extern nix::Shader *shader_selection;
+	extern nix::Shader *shader_lines_3d;
 	extern nix::Shader *shader_lines_3d_colored;
 	extern nix::Shader *shader_lines_3d_colored_wide;
 }
@@ -42,11 +42,21 @@ nix::Texture *create_round_texture(int n) {
 	return t;
 }
 
-void drawing_helper_init() {
+void drawing_helper_init(const Path &dir) {
+	msg_write("INIT HELPER");
 	vb_lines = new nix::VertexBuffer("3f,4f");
 	vb_2d = new nix::VertexBuffer("3f,4f,2f");
 	tex_round = create_round_texture(32);
 	tex_text = new nix::Texture();
+
+	nix::Shader::load(dir << "shader/module-surface.shader");
+
+	MultiView::shader_lines_3d = nix::Shader::load(dir << "shader/lines-3d.shader");
+	MultiView::shader_lines_3d_colored = nix::Shader::load(dir << "shader/lines-3d-colored.shader");
+	MultiView::shader_lines_3d_colored_wide = nix::Shader::load(dir << "shader/lines-3d-colored-wide.shader");
+	MultiView::shader_selection = nix::Shader::load(dir << "shader/selection.shader");
+	MultiView::shader_selection->link_uniform_block("LightData", 1);
+	MultiView::shader_selection->set_int(MultiView::shader_selection->get_location("num_lights"), 1);
 }
 
 void set_line_width(float width) {

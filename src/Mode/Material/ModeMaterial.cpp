@@ -20,6 +20,7 @@
 #include "../../Data/Model/Geometry/GeometryTorusKnot.h"
 #include "../../Data/Model/Geometry/GeometryTeapot.h"
 #include "../../MultiView/MultiView.h"
+#include "../../MultiView/Window.h"
 #include "../../lib/nix/nix.h"
 
 const int MATERIAL_NUMX = 48;
@@ -167,6 +168,8 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	data->apply_for_rendering();
 	nix::SetShader(shader);
 	shader->set_int(shader->get_location("num_lights"), 1);
+	auto pos = win->cam->get_pos(true);
+	shader->set_data(shader->get_location("eye_pos"), &pos.x, 12);
 	auto tex = textures;
 	tex.resize(4);
 	tex.add(cube_map);

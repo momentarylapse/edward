@@ -18,8 +18,9 @@ class string;
 class color;
 class Image;
 class rect;
+class Path;
 
-void drawing_helper_init();
+void drawing_helper_init(const Path &dir);
 
 void set_color(const color &c);
 void set_line_width(float width);

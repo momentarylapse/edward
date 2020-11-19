@@ -56,8 +56,11 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 			Expander material_dialog_grp_shader "Shader"
 				Grid ? ""
 					Edit shader_file "" expandx disabled "tooltip=Using the default shader, if left blank"
-					Button find_shader "" image=hui:open "tooltip=Select a shader file..."
-					Button shader-clear "" image=hui:delete "toolip=Remove"
+					---|
+					Grid ? ""
+						Button find_shader "" image=hui:open "tooltip=Select a shader file..."
+						Button shader-save "" image=hui:save-as
+						Button shader-clear "" image=hui:delete "toolip=Remove"
 			Separator
 			Expander material_dialog_grp_friction "Friction"
 				Grid ? ""

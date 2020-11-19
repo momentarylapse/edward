@@ -3,21 +3,21 @@ use edward
 class NodePosition extends shader.Node
 	void __init__()
 		super.__init__("Position")
-		params.add([shader.TYPE_INT, "space", "0", "choice=model|world|camera|window"])
+		params.add([shader.TYPE_INT, "space", "1", "choice=model|world|camera|window"])
 		output.add([shader.TYPE_VEC3, "pos"])
 	override const string[] dependencies()
-		return ["pos", "matrix"]
+		return ["in:pos", "in:matrix"]
 	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		if params[0].value == "1" # world
 			return "
-	vec3 {{t}} = (matrix.model * in_pos).xyz;"
+	vec3 {{t}} = in_pos.xyz / in_pos.w;"
 		if params[0].value == "2" # cam
 			return "
-	vec3 {{t}} = (matrix.view * matrix.model * in_pos).xyz;"
+	vec3 {{t}} = (matrix.view * in_pos).xyz;"
 		if params[0].value == "3" # window
 			return "
-	vec3 {{t}} = (matrix.project * matrix.view * matrix.model * in_pos).xyz;"
+	vec3 {{t}} = (matrix.project * matrix.view * in_pos).xyz;"
 		#if params[0].value == "0" # model
 		return "
-	vec3 {{t}} = in_pos.xyz;"
+	vec3 {{t}} = (inverse(matrix.model) * in_pos).xyz;"

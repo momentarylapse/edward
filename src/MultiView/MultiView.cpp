@@ -49,6 +49,13 @@ void MultiView::Selection::reset() {
 	data = NULL;
 }
 
+vector Camera::get_pos(bool allow_radius) const {
+	vector p = pos;
+	if (allow_radius and !ignore_radius)
+		p -= radius * (ang * vector::EZ);
+	return p;
+}
+
 MultiView::MultiView(bool mode3d) {
 
 	view_stage = 0;
@@ -112,18 +119,6 @@ MultiView::MultiView(bool mode3d) {
 	allow_select = true;
 	edit_coordinate_mode = CoordinateMode::GLOBAL;
 
-
-	if (!shader_lines_3d)
-		shader_lines_3d = nix::Shader::load(app->directory_static << "shader/lines-3d.shader");
-	if (!shader_lines_3d_colored)
-		shader_lines_3d_colored = nix::Shader::load(app->directory_static << "shader/lines-3d-colored.shader");
-	if (!shader_lines_3d_colored_wide)
-		shader_lines_3d_colored_wide = nix::Shader::load(app->directory_static << "shader/lines-3d-colored-wide.shader");
-	if (!shader_selection) {
-		shader_selection = nix::Shader::load(app->directory_static << "shader/selection.shader");
-		shader_selection->link_uniform_block("LightData", 1);
-		shader_selection->set_int(shader_selection->get_location("num_lights"), 1);
-	}
 
 	reset();
 }

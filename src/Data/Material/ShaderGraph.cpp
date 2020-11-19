@@ -54,22 +54,20 @@ void ShaderGraph::make_default() {
 	clear();
 
 	try {
-		auto tex = add("Texture", -180, 50);
+		auto tex = add("Texture0", -180, 50);
 		auto mesh = add("Mesh", -180, 320);
 		auto mat = add("Material", -180, 150);
 		auto mul = add("Multiply", 50, 50);
-		auto light = add("BasicLighting", 250, 100);
-		auto out = add("Output", 480, 150);
+		auto surf = add("SurfaceOutput", 250, 100);
 		connect(mesh, 2, tex, 0);
 		connect(tex, 0, mul, 0);
 		connect(mat, 0, mul, 1);
-		connect(mul, 0, light, 0);
-		connect(mat, 1, light, 1);
-		connect(mat, 2, light, 2);
-		connect(mat, 3, light, 3);
-		connect(mat, 4, light, 4);
-		connect(mesh, 1, light, 5);
-		connect(light, 0, out, 0);
+		connect(mul, 0, surf, 0);
+		connect(mat, 1, surf, 1);
+		connect(mat, 2, surf, 2);
+		connect(mat, 3, surf, 3);
+		connect(mat, 4, surf, 4);
+		connect(mesh, 1, surf, 5);
 	} catch (Exception &e) {
 		ed->error_box(e.message());
 	}
@@ -182,9 +180,6 @@ Array<ShaderNode*> ShaderGraph::sorted() const {
 }
 
 string ShaderGraph::build_fragment_source() const {
-	string source = "#version 330 core\n"
-			"#extension GL_ARB_separate_shader_objects : enable\n"
-			"out vec4 out_color;\n";
 
 	ShaderBuilderContext ctx(this);
 	for (auto *n: nodes)
@@ -193,6 +188,17 @@ string ShaderGraph::build_fragment_source() const {
 	for (auto *n: nodes)
 		for (string &f: n->uniform_dependencies())
 			ctx.uniform_dependencies.add(f);
+
+	string source;
+	if (ctx.dependencies.contains("import:surface")) {
+		source = "#import surface\n";
+		ctx.dependencies.erase("out:color");
+		ctx.dependencies.erase("in:light");
+		ctx.dependencies.erase("in:fog");
+		ctx.dependencies.erase("in:normal");
+		ctx.dependencies.erase("in:uv");
+		ctx.dependencies.erase("in:pos");
+	}
 
 	source += ctx.build_uniform_vars();
 	source += ctx.build_helper_vars();
@@ -209,22 +215,23 @@ string ShaderGraph::build_fragment_source() const {
 
 string ShaderGraph::build_source() const {
 	string pre =
+			"<Layout>\n"
+			"	version = 330 core\n"
+			"</Layout>\n"
 			"<VertexShader>\n"
-			"#version 330 core\n"
-			"#extension GL_ARB_separate_shader_objects : enable\n"
 			"struct Matrix { mat4 model, view, project; };\n"
 			"/*layout(binding = 0)*/ uniform Matrix matrix;\n"
 			"layout(location = 0) in vec3 in_position;\n"
 			"layout(location = 1) in vec3 in_normal;\n"
 			"layout(location = 2) in vec2 in_uv;\n"
-			"layout(location = 0) out vec3 out_normal;\n"
+			"layout(location = 0) out vec4 out_pos; // world space\n"
 			"layout(location = 1) out vec2 out_uv;\n"
-			"layout(location = 2) out vec4 out_pos; // model space\n"
+			"layout(location = 2) out vec3 out_normal;\n"
 			"void main() {\n"
 			"	gl_Position = matrix.project * matrix.view * matrix.model * vec4(in_position, 1);\n"
-			"	out_normal = (matrix.view * matrix.model * vec4(in_normal, 0)).xyz;\n"
+			"	out_normal = (matrix.model * vec4(in_normal, 0)).xyz;\n"
 			"	out_uv = in_uv;\n"
-			"	out_pos = vec4(in_position,1);\n"
+			"	out_pos = matrix.model * vec4(in_position,1);\n"
 			"}\n"
 			"</VertexShader>\n"
 			"<FragmentShader>\n";

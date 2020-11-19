@@ -1,8 +1,8 @@
 use edward
 
-class NodeTexture extends shader.Node
+class NodeTexture0 extends shader.Node
 	void __init__()
-		super.__init__("Texture")
+		super.__init__("Texture0")
 		params.add([shader.TYPE_VEC2, "uv", "-mesh-", ""])
 		output.add([shader.TYPE_COLOR, "color"])
 	override const string[] dependencies()

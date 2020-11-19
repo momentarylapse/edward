@@ -11,7 +11,7 @@ class NodeBasicLighting extends shader.Node
 		params.add([shader.TYPE_VEC3, "normals", "-mesh-", ""])
 		output.add([shader.TYPE_COLOR, "out"])
 	override const string[] dependencies()
-		return ["basic_lighting", "light", "matview", "matworld", "material", "pos", "normal"]
+		return ["basic_lighting", "in:light", "in:matrix", "in:material", "in:pos", "in:normal"]
 	override const string code_pixel(out shader.BuilderContext c)
 		let n = c.build_value(self, 5, "in_normal")
 		let di = c.value(self, 0)

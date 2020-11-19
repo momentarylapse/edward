@@ -54,6 +54,7 @@ struct Camera {
 	quaternion ang;
 	float radius;
 	bool ignore_radius;
+	vector get_pos(bool allow_radius) const;
 };
 
 

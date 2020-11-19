@@ -5,7 +5,7 @@ class NodeDiffuse extends shader.Node
 		super.__init__("Diffuse")
 		output.add([shader.TYPE_COLOR, "diffuse"])
 	override const string[] dependencies()
-		return ["material"]
+		return ["in:material"]
 	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
