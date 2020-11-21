@@ -59,20 +59,20 @@ void ModeMaterial::_new() {
 
 
 bool test_save_extras(DataMaterial *data) {
-	if (data->appearance.is_default_shader)
+	if (data->shader.is_default)
 		return true;
 
 	Path dir = storage->dialog_dir[FD_SHADERFILE];
-	if (data->appearance.shader_file.is_empty()) {
+	if (data->shader.file.is_empty()) {
 		if (!hui::FileDialogSave(ed, "Shader...", dir, "*.shader", "*.shader"))
 			return false;
-		data->appearance.shader_file = hui::Filename.relative_to(dir);
+		data->shader.file = hui::Filename.relative_to(dir);
 	}
 
-	FileWriteText(dir << data->appearance.shader_file, data->appearance.shader_code);
+	FileWriteText(dir << data->shader.file, data->shader.code);
 
-	if (data->appearance.shader_from_graph)
-		data->appearance.shader_graph->save(dir << data->appearance.shader_file.with(".graph"));
+	if (data->shader.from_graph)
+		data->shader.graph->save(dir << data->shader.file.with(".graph"));
 	return true;
 }
 
@@ -112,15 +112,9 @@ void ModeMaterial::update_textures() {
 }
 
 void ModeMaterial::update_shader() {
-	if (shader != nix::default_shader_3d)
-		delete shader;
-	try {
-		shader = nix::Shader::create(data->appearance.shader_code);
-		shader->link_uniform_block("LightData", 1);
-	} catch (Exception &e) {
-		ed->error_box(e.message());
-		shader = nix::default_shader_3d;
-	}
+
+	shader->update(data->shader.code);
+	shader->link_uniform_block("LightData", 1);
 }
 
 
@@ -212,8 +206,7 @@ void ModeMaterial::on_end() {
 	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++)
 		delete MaterialVB[i];
 
-	if (shader != nix::default_shader_3d)
-		delete shader;
+	//shader->unref();
 	shader = NULL;
 
 	delete cube_map;
@@ -246,13 +239,14 @@ void create_fake_dynamic_cube_map(nix::CubeMap *cube_map) {
 
 
 void ModeMaterial::on_start() {
+
 	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("material-toolbar");
 	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
 	t->reset();
 	t->enable(false);
 
 
-	shader = nix::default_shader_3d;
+	shader = nix::Shader::create(data->shader.code);
 	cube_map = new nix::CubeMap(128);
 	create_fake_dynamic_cube_map(cube_map);
 

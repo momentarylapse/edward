@@ -45,8 +45,6 @@ ShaderGraph::~ShaderGraph() {
 
 void ShaderGraph::clear() {
 	links.clear();
-	for (auto *n: nodes)
-		delete n;
 	nodes.clear();
 }
 
@@ -74,7 +72,7 @@ void ShaderGraph::make_default() {
 }
 
 int ShaderGraph::node_index(const ShaderNode *n) const {
-	foreachi (auto *nn, nodes, i)
+	foreachi (auto *nn, weak(nodes), i)
 		if (nn == n)
 			return i;
 	return -1;
@@ -99,9 +97,9 @@ void ShaderGraph::load(const Path &filename) {
 	}
 	for (auto &e: p.elements[0].elements[1].elements) {
 		Link l;
-		l.source = nodes[e.value("source")._int()];
+		l.source = nodes[e.value("source")._int()].get();
 		l.source_port = e.value("sourceport")._int();
-		l.dest = nodes[e.value("dest")._int()];
+		l.dest = nodes[e.value("dest")._int()].get();
 		l.dest_port = e.value("destport")._int();
 		connect(l.source, l.source_port, l.dest, l.dest_port);
 	}
@@ -111,7 +109,7 @@ void ShaderGraph::save(const Path &filename) {
 	xml::Parser p;
 	xml::Element root = {"ShaderGraph"};
 	xml::Element enodes = {"Nodes"};
-	for (auto *n: nodes) {
+	for (auto *n: weak(nodes)) {
 		xml::Element e = {"Node"};
 		e.add_attribute("type", n->type);
 		e.add_attribute("x", i2s(n->x));
@@ -150,7 +148,7 @@ int get_dep_depth(const ShaderGraph *g, ShaderNode *n, int level) {
 		return -1;
 	// recursion
 	int dep = level;
-	for (auto *m: g->nodes)
+	for (auto *m: weak(g->nodes))
 		if (g->has_dependency(m, n))
 			dep = max(dep, get_dep_depth(g, m, level + 1));
 	return dep;
@@ -160,7 +158,7 @@ Array<ShaderNode*> ShaderGraph::sorted() const {
 	Array<ShaderNode*> snodes;
 
 	for (int l=0; l<nodes.num; l++) {
-		for (auto *n: nodes) {
+		for (auto *n: weak(nodes)) {
 			int ll = get_dep_depth(this, n, 0);
 			if (ll == l)
 				snodes.add(n);
@@ -182,10 +180,10 @@ Array<ShaderNode*> ShaderGraph::sorted() const {
 string ShaderGraph::build_fragment_source() const {
 
 	ShaderBuilderContext ctx(this);
-	for (auto *n: nodes)
+	for (auto *n: weak(nodes))
 		for (string &f: n->dependencies())
 			ctx.dependencies.add(f);
-	for (auto *n: nodes)
+	for (auto *n: weak(nodes))
 		for (string &f: n->uniform_dependencies())
 			ctx.uniform_dependencies.add(f);
 

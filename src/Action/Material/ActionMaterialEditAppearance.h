@@ -11,11 +11,9 @@
 #include "../Action.h"
 #include "../../Data/Material/DataMaterial.h"
 
-class ActionMaterialEditAppearance : public Action
-{
+class ActionMaterialEditAppearance : public Action {
 public:
 	ActionMaterialEditAppearance(const DataMaterial::AppearanceData &_app);
-	virtual ~ActionMaterialEditAppearance();
 	string name(){	return "MaterialEditAppearance";	}
 
 	void *execute(Data *d);

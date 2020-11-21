@@ -221,7 +221,7 @@ ShaderMetaData parse_meta(string source) {
 	return m;
 }
 
-Shader *Shader::create(const string &source) {
+void Shader::update(const string &source) {
 	auto parts = get_shader_parts(source);
 
 	if (parts.num == 0)
@@ -238,7 +238,7 @@ Shader *Shader::create(const string &source) {
 			m.meta = meta;
 			shader_modules.add(m);
 			msg_write("new module '" + m.meta.name + "'");
-			return nullptr;
+			return;
 		} else if (p.type == TYPE_LAYOUT) {
 			meta = parse_meta(p.source);
 		} else {
@@ -267,13 +267,26 @@ Shader *Shader::create(const string &source) {
 		glDeleteShader(shader);
 	TestGLError("DeleteShader");
 
-	Shader *s = new Shader;
-	s->program = prog;
+	program = prog;
 	shader_error = "";
 
-	s->find_locations();
+	find_locations();
 
 	TestGLError("CreateShader");
+}
+Shader *Shader::create(const string &source) {
+	Shader *s = new Shader;
+	try {
+		s->update(source);
+		/*if (s->program < 0) {
+			// module
+			//delete s;
+			return nullptr;
+		}*/
+	} catch (...) {
+		delete s;
+		throw;
+	}
 	return s;
 }
 
@@ -343,8 +356,9 @@ Shader::Shader() {
 
 Shader::~Shader() {
 	msg_write("delete shader: " + filename.str());
-	glDeleteProgram(program);
-	TestGLError("NixUnrefShader");
+	if (program >= 0)
+		glDeleteProgram(program);
+	TestGLError("glDeleteProgram");
 	program = -1;
 }
 
@@ -358,7 +372,8 @@ void Shader::unref() {
 	if ((reference_count <= 0) and (program >= 0)) {
 		if ((this == default_shader_3d) or (this == default_shader_2d))
 			return;
-		glDeleteProgram(program);
+		if (program >= 0)
+			glDeleteProgram(program);
 		TestGLError("NixUnrefShader");
 		program = -1;
 		filename = Path::EMPTY;

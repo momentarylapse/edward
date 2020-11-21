@@ -9,11 +9,12 @@
 #define SRC_DATA_MATERIAL_SHADERGRAPH_H_
 
 #include "../../lib/base/base.h"
+#include "../../lib/base/pointer.h"
 
 class Path;
 class ShaderNode;
 
-class ShaderGraph {
+class ShaderGraph : public Sharable<Empty> {
 public:
 	ShaderGraph();
 	~ShaderGraph();
@@ -27,7 +28,7 @@ public:
 	string build_fragment_source() const;
 	string build_source() const;
 
-	Array<ShaderNode*> nodes;
+	shared_array<ShaderNode> nodes;
 
 	Array<ShaderNode*> sorted() const;
 

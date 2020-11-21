@@ -53,15 +53,6 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 						Text material_dialog_t_refl_density "Density:"
 						SpinButton reflection_density "" range=0:100:1
 						Text /percent "%"
-			Expander material_dialog_grp_shader "Shader"
-				Grid ? ""
-					Edit shader_file "" expandx disabled "tooltip=Using the default shader, if left blank"
-					---|
-					Grid ? ""
-						Button find_shader "" image=hui:open "tooltip=Select a shader file..."
-						Button shader-save "" image=hui:save-as
-						Button shader-clear "" image=hui:delete "toolip=Remove"
-			Separator
 			Expander material_dialog_grp_friction "Friction"
 				Grid ? ""
 					Text material_physics_dialog_t_rcstatic "Static" right disabled

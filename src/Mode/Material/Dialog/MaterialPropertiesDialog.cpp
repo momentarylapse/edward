@@ -16,13 +16,15 @@
 
 string file_secure(const Path &filename); // -> ModelPropertiesDialog
 
-namespace nix{
-	extern string shader_error; // -> nix
-};
 
 MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMaterial *_data) {
 	from_resource("material_dialog");
 	data = _data;
+
+	temp = data->appearance;
+	temp_phys = data->physics;
+	apply_queue_depth = 0;
+	apply_phys_queue_depth = 0;
 
 	// dialog
 	event("mat_add_texture_level", [=]{ on_add_texture_level(); });
@@ -38,9 +40,6 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	event("reflection_mode:cube_static", [=]{ on_reflection_mode(); });
 	event("reflection_mode:cube_dynamic", [=]{ on_reflection_mode(); });
 	event("reflection_textures", [=]{ on_reflection_textures(); });
-	event("find_shader", [=]{ on_find_shader(); });
-	event("shader-clear", [=]{ on_clear_shader(); });
-	event("shader-save", [=]{ on_shader_save(); });
 
 
 	event("mat_am", [=]{ apply_data(); });
@@ -62,11 +61,6 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	expand("material_dialog_grp_color", 0, true);
 
 	set_options("shader_file", "placeholder=- engine default shader -");
-
-	temp = data->appearance;
-	temp_phys = data->physics;
-	apply_queue_depth = 0;
-	apply_phys_queue_depth = 0;
 	load_data();
 	data->subscribe(this, [=]{ on_data_update(); });
 }
@@ -116,7 +110,6 @@ void MaterialPropertiesDialog::load_data() {
 	enable("reflection_size", ((temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC) or (temp.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC)));
 	enable("reflection_textures", (temp.reflection_mode == REFLECTION_CUBE_MAP_STATIC));
 	enable("reflection_density", (temp.reflection_mode != REFLECTION_NONE));
-	set_string("shader_file", temp.shader_file.str());
 
 
 	set_float("rcjump", temp_phys.friction_jump);
@@ -228,41 +221,6 @@ void MaterialPropertiesDialog::on_reflection_textures() {
 		refill_refl_tex_view();
 	}
 #endif
-}
-
-bool test_shader_file(const Path &filename) {
-	auto *shader = nix::Shader::load(filename);
-	shader->unref();
-	return shader;
-}
-
-void MaterialPropertiesDialog::on_find_shader() {
-	if (storage->file_dialog(FD_SHADERFILE,false,true)) {
-		if (test_shader_file(storage->dialog_file)) {
-			set_string("shader_file", storage->dialog_file.str());
-			temp.shader_file = get_string("shader_file");
-			temp.update_shader_from_file();
-			apply_data();
-		} else {
-			ed->error_box(_("Error in shader file:\n") + nix::shader_error);
-		}
-	}
-}
-
-void MaterialPropertiesDialog::on_shader_save() {
-	if (storage->file_dialog(FD_SHADERFILE,true,true)) {
-		set_string("shader_file", storage->dialog_file.str());
-		temp.shader_file = get_string("shader_file");
-		temp.save_shader_to_file();
-		apply_data();
-	}
-}
-
-void MaterialPropertiesDialog::on_clear_shader() {
-	set_string("shader_file", "");
-	temp.shader_file = "";
-	temp.update_shader_from_file();
-	apply_data();
 }
 
 void MaterialPropertiesDialog::apply_data() {

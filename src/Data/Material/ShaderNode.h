@@ -9,6 +9,7 @@
 #define SRC_DATA_MATERIAL_SHADERNODE_H_
 
 #include "../../lib/base/base.h"
+#include "../../lib/base/pointer.h"
 
 class color;
 class ShaderBuilderContext;
@@ -23,7 +24,7 @@ enum class ShaderValueType {
 	LITERAL
 };
 
-class ShaderNode : public VirtualBase {
+class ShaderNode : public Sharable<VirtualBase> {
 public:
 	ShaderNode(const string &type);
 	virtual ~ShaderNode() {};

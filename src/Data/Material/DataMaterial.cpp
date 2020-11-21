@@ -15,16 +15,16 @@
 DataMaterial::DataMaterial(bool with_graph) :
 	Data(FD_MATERIAL)
 {
-	appearance.shader_graph = nullptr;
+	shader.graph = nullptr;
 	if (with_graph)
-		appearance.shader_graph = new ShaderGraph();
+		shader.graph = new ShaderGraph();
 	reset();
 }
 
 DataMaterial::~DataMaterial() {
 	reset();
-	if (appearance.shader_graph)
-		delete appearance.shader_graph;
+	if (shader.graph)
+		delete shader.graph;
 }
 
 
@@ -47,15 +47,16 @@ void DataMaterial::AppearanceData::reset() {
 	reflection_size = 128;
 	reflection_texture_file.clear();
 	reflection_texture_file.resize(6);
+}
 
-
-	shader_file = "";
-	if (shader_graph) {
-		shader_graph->make_default();
-		shader_code = shader_graph->build_source();
+void DataMaterial::ShaderData::reset() {
+	file = "";
+	if (graph) {
+		graph->make_default();
+		code = graph->build_source();
 	}
-	shader_from_graph = true;
-	is_default_shader = true;
+	from_graph = true;
+	is_default = true;
 }
 
 
@@ -80,6 +81,7 @@ void DataMaterial::reset() {
 	filename = "";
 
 	appearance.reset();
+	shader.reset();
 	physics.reset();
 	Sound.reset();
 
@@ -106,31 +108,36 @@ void DataMaterial::apply_for_rendering() {
 	}
 }
 
-void DataMaterial::AppearanceData::update_shader_from_file() {
-	if (!shader_file.is_empty()) {
-		shader_code = FileReadText(nix::shader_dir << shader_file);
-		if (file_exists(nix::shader_dir << shader_file.with(".graph"))) {
-			shader_graph->load(nix::shader_dir << shader_file.with(".graph"));
-			shader_code = shader_graph->build_source();
-			shader_from_graph = true;
-		} else {
-			shader_from_graph = false;
-		}
-		is_default_shader = false;
-	} else {
-		shader_graph->make_default();
-		shader_code = shader_graph->build_source();
-		shader_from_graph = true;
-		is_default_shader = true;
+void DataMaterial::ShaderData::load_from_file() {
+	if (file.is_empty()) {
+		set_engine_default();
+		return;
 	}
+	code = FileReadText(nix::shader_dir << file);
+	if (file_exists(nix::shader_dir << file.with(".graph"))) {
+		graph->load(nix::shader_dir << file.with(".graph"));
+		code = graph->build_source();
+		from_graph = true;
+	} else {
+		from_graph = false;
+	}
+	is_default = false;
 }
 
-void DataMaterial::AppearanceData::save_shader_to_file() {
-	if (!shader_file.is_empty()) {
-		shader_code = shader_graph->build_source();
-		shader_graph->save(nix::shader_dir << shader_file.with(".graph"));
-		shader_from_graph = true;
-		is_default_shader = false;
+void DataMaterial::ShaderData::set_engine_default() {
+	file = "";
+	graph->make_default();
+	code = graph->build_source();
+	from_graph = true;
+	is_default = true;
+}
+
+void DataMaterial::ShaderData::save_to_file() {
+	if (!file.is_empty()) {
+		code = graph->build_source();
+		graph->save(nix::shader_dir << file.with(".graph"));
+		from_graph = true;
+		is_default= false;
 	}
 }
 

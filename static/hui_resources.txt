@@ -1542,7 +1542,7 @@ Grid
 vertical
 1
 0
-7
+5
 Expander
 material_dialog_grp_color
 
@@ -1814,57 +1814,9 @@ percent
 0
 0
 Expander
-material_dialog_grp_shader
-
-4
-0
-1
-Grid
-?
-
-0
-0
-2
-Edit
-shader_file
-expandx,disabled
-0
-0
-0
-Grid
-?
-
-0
-1
-3
-Button
-find_shader
-image=hui:open
-0
-0
-0
-Button
-shader-save
-image=hui:save-as
-1
-0
-0
-Button
-shader-clear
-image=hui:delete,toolip=Remove
-2
-0
-0
-Separator
-
-
-5
-0
-0
-Expander
 material_dialog_grp_friction
 
-6
+4
 0
 1
 Grid
@@ -2247,7 +2199,7 @@ material-toolbar
 
 0
 0
-10
+9
 Item
 new
 image=icons/toolbar/new.png
@@ -2300,12 +2252,6 @@ Item
 shader-mode-graph
 image=hui:edit,checkable
 8
-0
-0
-Item
-shader-mode-code
-image=hui:edit,checkable
-9
 0
 0
 # Resource
@@ -10004,7 +9950,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-995
+991
 # Text
 /ambient
 Ambient
@@ -10474,9 +10420,6 @@ Number of photons
 lightmap_dialog/lmt_spacial_resolution
 Spacial resolution
 
-material-toolbar/shader-mode-code
-Shader code
-
 material-toolbar/shader-mode-graph
 Shader graph
 
@@ -10492,9 +10435,6 @@ Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\
 material_dialog/alpha_z_buffer
 Z-buffer enabled
 
-material_dialog/find_shader
-
-Select a shader file...
 material_dialog/header
 Material
 
@@ -10521,9 +10461,6 @@ Friction
 
 material_dialog/material_dialog_grp_reflection
 Reflexions
-
-material_dialog/material_dialog_grp_shader
-Shader
 
 material_dialog/material_dialog_grp_textures
 Textures
@@ -10567,9 +10504,6 @@ material_dialog/reflection_size
 material_dialog/reflection_textures
 face\\texture
 
-material_dialog/shader_file
-
-Using the default shader, if left blank
 material_dialog/transparency_mode:color_key
 Color key
 

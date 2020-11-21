@@ -38,6 +38,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 	try {
 		ffv=f->ReadFileFormatVersion();
 	} catch (...) {
+		ffv = -1;
 		hui::Configuration c;
 		c.load(filename);
 		data->appearance.diffuse = color::parse(c.get_str("color.albedo", ""));
@@ -47,7 +48,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		data->appearance.emissive = color::parse(c.get_str("color.emission", ""));
 
 		data->appearance.texture_files = str_to_paths(c.get_str("textures", ""));
-		data->appearance.shader_file = c.get_str("shader", "");
+		data->shader.file = c.get_str("shader", "");
 
 		data->physics.friction_static = c.get_float("friction.static", 0.5f);
 		data->physics.friction_sliding = c.get_float("friction.slide", 0.5f);
@@ -133,7 +134,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 			data->appearance.reflection_texture_file[i] = f->read_str();
 		// ShaderFile
 		f->read_comment();
-		data->appearance.shader_file = f->read_str();
+		data->shader.file = f->read_str();
 		// Physics
 		f->read_comment();
 		data->physics.friction_jump = (float)f->read_int() * 0.001f;
@@ -183,7 +184,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_comment();
 		string sf = f->read_str();
 		if (sf.num > 0)
-			data->appearance.shader_file = sf + ".fx.glsl";
+			data->shader.file = sf + ".fx.glsl";
 		// Physics
 		f->read_comment();
 		data->physics.friction_jump = (float)f->read_int() * 0.001f;
@@ -228,7 +229,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_comment();
 		Path sf = f->read_str();
 		if (!sf.is_empty())
-			data->appearance.shader_file = sf.with(".fx.glsl");
+			data->shader.file = sf.with(".fx.glsl");
 
 		data->appearance.alpha_z_buffer = (data->appearance.transparency_mode != TRANSPARENCY_FUNCTIONS) and (data->appearance.transparency_mode != TRANSPARENCY_FACTOR);
 	}else{
@@ -236,7 +237,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 	}
 
 	if (deep) {
-		data->appearance.update_shader_from_file();
+		data->shader.load_from_file();
 	}
 
 	delete(f);
@@ -246,7 +247,7 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 	hui::Configuration c;
 
 	c.set_str("textures", paths_to_str(data->appearance.texture_files));
-	c.set_str("shader", data->appearance.shader_file.str());
+	c.set_str("shader", data->shader.file.str());
 
 	c.set_str("color.albedo", data->appearance.diffuse.str());
 	if (data->appearance.emissive != Black)

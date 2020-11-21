@@ -47,19 +47,25 @@ public:
 		float reflection_density;
 		Array<Path> reflection_texture_file;
 
-		// shader
-		Path shader_file;
-		string shader_code;
-		ShaderGraph *shader_graph;
-		bool shader_from_graph;
-		bool is_default_shader;
-		void update_shader_from_file();
-		void save_shader_to_file();
+		void reset();
+	};
+	AppearanceData appearance;
+
+
+
+	struct ShaderData {
+		Path file;
+		string code;
+		ShaderGraph *graph;
+		bool from_graph;
+		bool is_default;
+		void load_from_file();
+		void set_engine_default();
+		void save_to_file();
 
 		void reset();
 	};
-
-	AppearanceData appearance;
+	ShaderData shader;
 
 	struct PhysicsData {
 		float friction_jump, friction_static, friction_sliding, friction_rolling;

@@ -15,6 +15,7 @@
 #include "../../../Data/Material/ShaderNode.h"
 #include "../../../lib/math/rect.h"
 #include "../../../lib/nix/nix.h"
+#include "../../../Storage/Storage.h"
 
 
 const int NODE_WIDTH = 170;
@@ -22,6 +23,17 @@ const int NODE_HEADER_HEIGHT = 22;
 const int NODE_PORT_HEIGHT = 20;
 const float NODE_ROUNDNESS = 8;
 
+namespace nix{
+	extern string shader_error; // -> nix
+};
+
+string file_secure(const Path &filename); // -> ModelPropertiesDialog
+
+bool test_shader_file(const Path &filename) {
+	auto *shader = nix::Shader::load(filename);
+	shader->unref();
+	return shader;
+}
 
 ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	data = _data;
@@ -31,7 +43,7 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	view_scale = 1;
 	view_offset_x = 0;
 	view_offset_y = 0;
-	graph = data->appearance.shader_graph;
+	graph = data->shader.graph;
 
 	from_source("Grid grid '' vertical\n"\
 			"\tGrid ? ''\n"
@@ -39,7 +51,11 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 			"\t\tMultilineEdit source '' disabled\n"\
 			"\tGrid bb '' buttonbar\n"\
 			"\t\tCheckBox show-source 'Show source'\n"
-			"\t\tButton update 'Update'");
+			"\t\tButton update 'Update'\n"
+			"\t\tButton shader-new 'New'\n"
+			"\t\tButton shader-load 'Load'\n"
+			"\t\tButton shader-save 'Save'\n"
+			"\t\tButton shader-default 'Default'\n");
 	event_xp("area", "hui:draw", [=](Painter *p){ on_draw(p); });
 	event_x("area", "hui:mouse-move", [=]{ on_mouse_move(); });
 	event_x("area", "hui:mouse-wheel", [=]{ on_mouse_wheel(); });
@@ -49,6 +65,35 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	event_x("area", "hui:key-down", [=]{ on_key_down(); });
 	event("update", [=]{ on_update(); });
 	event("show-source", [=]{ hide_control("source", !is_checked("")); });
+	event("shader-new", [=]{
+		data->shader.file = "";
+		data->shader.load_from_file();
+		data->shader.is_default = false;
+		data->reset_history(); // TODO: actions
+		data->notify(data->MESSAGE_CHANGE);
+	});
+	event("shader-default", [=]{
+		data->shader.set_engine_default();
+		data->reset_history(); // TODO: actions
+		data->notify(data->MESSAGE_CHANGE);
+	});
+	event("shader-load", [=]{
+		if (storage->file_dialog(FD_SHADERFILE,false,true)) {
+			if (test_shader_file(storage->dialog_file)) {
+				data->shader.file = storage->dialog_file;
+				data->shader.load_from_file();
+				data->notify(data->MESSAGE_CHANGE);
+			} else {
+				ed->error_box(_("Error in shader file:\n") + nix::shader_error);
+			}
+		}
+	});
+	event("shader-save", [=]{
+		if (storage->file_dialog(FD_SHADERFILE,true,true)) {
+			data->shader.file = storage->dialog_file;
+			data->shader.save_to_file();
+		}
+	});
 
 	hide_control("source", true);
 
@@ -249,27 +294,38 @@ void ShaderGraphDialog::on_draw(Painter *p) {
 	float m[4] = {view_scale, 0, 0, view_scale};
 	p->set_transform(m, complex(-view_offset_x, -view_offset_y)*view_scale);
 
-	for (auto *n: graph->nodes)
-		draw_node(p, n);
+	if (data->shader.from_graph and !data->shader.is_default) {
+		for (auto *n: weak(graph->nodes))
+			draw_node(p, n);
 
-	for (auto &l: graph->links)
-		draw_cable(p, l.source, l.source_port, l.dest, l.dest_port);
+		for (auto &l: graph->links)
+			draw_cable(p, l.source, l.source_port, l.dest, l.dest_port);
 
-	if (selection.type == HoverData::Type::PORT_OUT) {
-		auto e = hui::GetEvent();
-		p->set_color(Red);
-		p->draw_line(selection.node->x + NODE_WIDTH + 5, node_get_out_y(selection.node, selection.port), mx, my);
+		if (selection.type == HoverData::Type::PORT_OUT) {
+			auto e = hui::GetEvent();
+			p->set_color(Red);
+			p->draw_line(selection.node->x + NODE_WIDTH + 5, node_get_out_y(selection.node, selection.port), mx, my);
+		}
+		if (selection.type == HoverData::Type::PORT_IN) {
+			auto e = hui::GetEvent();
+			p->set_color(Red);
+			p->draw_line(selection.node->x - 5, node_get_in_y(selection.node, selection.port), mx, my);
+		}
 	}
-	if (selection.type == HoverData::Type::PORT_IN) {
-		auto e = hui::GetEvent();
-		p->set_color(Red);
-		p->draw_line(selection.node->x - 5, node_get_in_y(selection.node, selection.port), mx, my);
-	}
 
-	p->set_font_size(13);
-	p->set_color(Red);
-	if (!data->appearance.shader_from_graph)
-		p->draw_str(20, 20, "not from graph!");
+	float m_id[4] = {1, 0, 0, 1};
+	p->set_transform(m_id, complex(0, 0));
+	p->set_font_size(9);
+	p->set_color(Black);
+	if (data->shader.is_default) {
+		p->draw_str(10, 10, "- engine default -");
+	} else {
+		p->draw_str(10, 10, file_secure(data->shader.file.str()));
+		if (!data->shader.from_graph) {
+			p->set_color(Red);
+			p->draw_str(10, 20, "not from graph!");
+		}
+	}
 }
 
 void ShaderGraphDialog::on_key_down() {
@@ -418,11 +474,11 @@ void ShaderGraphDialog::on_mouse_wheel() {
 
 void ShaderGraphDialog::on_update() {
 	string source = graph->build_source();
-	data->appearance.shader_code = source;
+	data->shader.code = source;
 	set_string("source", source);
 
-	data->appearance.shader_from_graph = true;
-	data->appearance.is_default_shader = false;
+	data->shader.from_graph = true;
+	data->shader.is_default = false;
 	data->reset_history(); // TODO: actions
 	data->notify(data->MESSAGE_CHANGE);
 }
@@ -446,7 +502,7 @@ ShaderGraphDialog::HoverData::HoverData() {
 ShaderGraphDialog::HoverData ShaderGraphDialog::get_hover() {
 	HoverData h;
 
-	for (auto *n: graph->nodes) {
+	for (auto *n: weak(graph->nodes)) {
 		if (node_area(n).inside(mx, my)) {
 			h.type = h.Type::NODE;
 			h.node = n;
