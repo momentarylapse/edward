@@ -3,9 +3,9 @@ use edward
 class NodeSurfaceOutput extends shader.Node
 	void __init__()
 		super.__init__("SurfaceOutput")
-		params.add([shader.TYPE_COLOR, "diffuse", "#ffffffff", ""])
-		params.add([shader.TYPE_FLOAT, "ambient", "0.3", "range=0:1"])
-		params.add([shader.TYPE_FLOAT, "specular", "0.1", "range=0:1"])
+		params.add([shader.TYPE_COLOR, "albedo", "#ffffffff", ""])
+		params.add([shader.TYPE_FLOAT, "roughness", "0.3", "range=0:1"])
+		params.add([shader.TYPE_FLOAT, "reflectivity", "0.1", "range=0:1"])
 		params.add([shader.TYPE_FLOAT, "shininess", "10.0", "range=0:50"])
 		params.add([shader.TYPE_COLOR, "emission", "#000000ff", ""])
 		params.add([shader.TYPE_VEC3, "normal", "vec3(0,0,1)", ""])
@@ -13,12 +13,11 @@ class NodeSurfaceOutput extends shader.Node
 		return ["import:surface"]
 #		return ["basic_lighting", "light", "matview", "matworld", "material", "pos", "normal"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let di = c.value(self, 0)
-		let am = c.value(self, 1)
-		let sp = c.value(self, 2)
-		let sh = c.value(self, 3)
+		let al = c.value(self, 0)
+		let ro = c.value(self, 1)
+		let re = c.value(self, 2)
+		#let sh = c.value(self, 3)
 		let em = c.value(self, 4)
-		#let n = c.build_value(self, 5, "in_normal")
 		let n = c.value(self, 5)
 		return "
-	surface_out({{n}}, {{di}}, {{em}}, {{sp}}, {{sh}});"
+	surface_out({{n}}, {{al}}, {{em}}, {{re}}, {{ro}});"

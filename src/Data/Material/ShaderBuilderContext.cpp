@@ -97,6 +97,9 @@ string ShaderBuilderContext::build_helper_vars() {
 	if (vars.contains("in:pos")) {
 		source += "layout(location = 2) in vec4 in_pos; // world\n";
 	}
+	if (vars.contains("in:eye")) {
+		source += "uniform vec3 eye_pos;\n";
+	}
 	if (vars.contains("texture0")) {
 		source += "uniform sampler2D tex0;\n";
 	}

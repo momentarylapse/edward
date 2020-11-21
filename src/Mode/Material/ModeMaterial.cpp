@@ -21,6 +21,7 @@
 #include "../../Data/Model/Geometry/GeometryTeapot.h"
 #include "../../MultiView/MultiView.h"
 #include "../../MultiView/Window.h"
+#include "../../MultiView/ColorScheme.h"
 #include "../../lib/nix/nix.h"
 
 const int MATERIAL_NUMX = 48;
@@ -113,7 +114,11 @@ void ModeMaterial::update_textures() {
 
 void ModeMaterial::update_shader() {
 
-	shader->update(data->shader.code);
+	try{
+		shader->update(data->shader.code);
+	}catch(Exception &e){
+		msg_error(e.message());
+	}
 	shader->link_uniform_block("LightData", 1);
 }
 
@@ -226,12 +231,12 @@ void create_fake_dynamic_cube_map(nix::CubeMap *cube_map) {
 	im.create(size, size, White);
 	for (int i=0; i<size; i++)
 		for (int j=0; j<size; j++) {
-			float f = 0.2;
+			float f = 0;
 			if ((i % 16) == 0 or (j % 16) == 0)
 				f = 0.5;
 			if ((i % 64) == 0 or (j % 64) == 0)
 				f = 1;
-			im.set_pixel(i, j, color(1, f, f, f));
+			im.set_pixel(i, j, color::interpolate(scheme.BACKGROUND, scheme.GRID, f));
 		}
 	for (int i=0;i<6;i++)
 		cube_map->overwrite_side(i, im);
@@ -245,8 +250,11 @@ void ModeMaterial::on_start() {
 	t->reset();
 	t->enable(false);
 
-
-	shader = nix::Shader::create(data->shader.code);
+	try{
+	shader = nix::Shader::create("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
+	}catch (Exception &e) {
+		msg_error(e.message());
+	}
 	cube_map = new nix::CubeMap(128);
 	create_fake_dynamic_cube_map(cube_map);
 

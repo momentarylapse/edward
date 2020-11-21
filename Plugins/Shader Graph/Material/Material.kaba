@@ -3,22 +3,22 @@ use edward
 class NodeMaterial extends shader.Node
 	void __init__()
 		super.__init__("Material")
-		output.add([shader.TYPE_COLOR, "diffuse"])
-		output.add([shader.TYPE_FLOAT, "ambient"])
-		output.add([shader.TYPE_FLOAT, "specular"])
+		output.add([shader.TYPE_COLOR, "albedo"])
+		output.add([shader.TYPE_FLOAT, "roughness"])
+		output.add([shader.TYPE_FLOAT, "reflectivity"])
 		output.add([shader.TYPE_FLOAT, "shininess"])
 		output.add([shader.TYPE_COLOR, "emission"])
 	override const string[] dependencies()
 		return ["in:material"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let di = c.create_out(self, 0)
-		let am = c.create_out(self, 1)
-		let sp = c.create_out(self, 2)
+		let al = c.create_out(self, 0)
+		let ro = c.create_out(self, 1)
+		let re = c.create_out(self, 2)
 		let sh = c.create_out(self, 3)
 		let em = c.create_out(self, 4)
 		return "
-	vec4 {{di}} = material.diffusive;
-	float {{am}} = material.ambient;
-	float {{sp}} = material.specular;
+	vec4 {{al}} = material.diffusive;
+	float {{ro}} = material.ambient;
+	float {{re}} = material.specular;
 	float {{sh}} = material.shininess;
 	vec4 {{em}} = material.emission;"

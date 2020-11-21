@@ -229,6 +229,8 @@ string ShaderGraph::build_fragment_source() const {
 		ctx.dependencies.erase("in:normal");
 		ctx.dependencies.erase("in:uv");
 		ctx.dependencies.erase("in:pos");
+		ctx.dependencies.erase("in:eye");
+		ctx.dependencies.erase("cubemap");
 	}
 
 	source += ctx.build_uniform_vars();
