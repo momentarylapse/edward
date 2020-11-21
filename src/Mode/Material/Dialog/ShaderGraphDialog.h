@@ -9,6 +9,7 @@
 #define SRC_MODE_MATERIAL_DIALOG_SHADERGRAPHDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../lib/math/rect.h"
 
 class DataMaterial;
 class ShaderGraph;
@@ -33,6 +34,10 @@ public:
 
 	void on_update();
 	void on_reset();
+
+	void request_optimal_view();
+	bool _optimal_view_requested;
+	void _optimize_view(const rect &area);
 
 	struct HoverData {
 		enum class Type {

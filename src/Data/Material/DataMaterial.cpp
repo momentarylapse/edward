@@ -50,13 +50,7 @@ void DataMaterial::AppearanceData::reset() {
 }
 
 void DataMaterial::ShaderData::reset() {
-	file = "";
-	if (graph) {
-		graph->make_default();
-		code = graph->build_source();
-	}
-	from_graph = true;
-	is_default = true;
+	set_engine_default();
 }
 
 
@@ -126,8 +120,11 @@ void DataMaterial::ShaderData::load_from_file() {
 
 void DataMaterial::ShaderData::set_engine_default() {
 	file = "";
-	graph->make_default();
-	code = graph->build_source();
+	code = "";
+	if (graph) {
+		graph->make_default_for_engine();
+		code = graph->build_source();
+	}
 	from_graph = true;
 	is_default = true;
 }

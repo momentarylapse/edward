@@ -23,17 +23,39 @@ const int NODE_HEADER_HEIGHT = 22;
 const int NODE_PORT_HEIGHT = 20;
 const float NODE_ROUNDNESS = 8;
 
+
+const float MIN_VIEW_SCALE = 0.2f;
+const float MAX_VIEW_SCALE = 2.0f;
+
 namespace nix{
 	extern string shader_error; // -> nix
 };
 
 string file_secure(const Path &filename); // -> ModelPropertiesDialog
 
+rect node_area(ShaderNode *n);
+
 bool test_shader_file(const Path &filename) {
 	auto *shader = nix::Shader::load(filename);
 	shader->unref();
 	return shader;
 }
+
+class MultiChoice : public hui::Dialog {
+public:
+	int selected;
+	MultiChoice(const Array<string> &choices, hui::Window *parent) : hui::Dialog("choice", 400, 400, parent, false) {
+		selected = -1;
+		set_options("", "resizable,headerbar");
+		add_list_view("!nobar\\a", 0, 0, "choices");
+		for (auto &c: choices)
+			add_string("choices", c);
+		event_x("choices", "hui:activate", [=] {
+			selected = get_int("choices");
+			request_destroy();
+		});
+	}
+};
 
 ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	data = _data;
@@ -66,10 +88,23 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	event("update", [=]{ on_update(); });
 	event("show-source", [=]{ hide_control("source", !is_checked("")); });
 	event("shader-new", [=]{
+		auto dlg = new MultiChoice({"default", "pure color out", "cube map"}, win);
+		dlg->run();
+		int sel = dlg->selected;
+		delete dlg;
+		if (sel == 0) {
+			graph->make_default_for_engine();
+		} else if (sel == 1) {
+			graph->make_default_basic();
+		} else if (sel == 2) {
+			graph->make_default_cube_map();
+		} else {
+			return;
+		}
 		data->shader.file = "";
-		data->shader.load_from_file();
 		data->shader.is_default = false;
 		data->reset_history(); // TODO: actions
+		request_optimal_view();
 		data->notify(data->MESSAGE_CHANGE);
 	});
 	event("shader-default", [=]{
@@ -82,6 +117,7 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 			if (test_shader_file(storage->dialog_file)) {
 				data->shader.file = storage->dialog_file;
 				data->shader.load_from_file();
+				request_optimal_view();
 				data->notify(data->MESSAGE_CHANGE);
 			} else {
 				ed->error_box(_("Error in shader file:\n") + nix::shader_error);
@@ -114,9 +150,32 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	}
 	popup->add("Reset", "reset");
 	event("reset", [=]{ on_reset(); });
+
+	_optimal_view_requested = true;
 }
 
 ShaderGraphDialog::~ShaderGraphDialog() {
+}
+
+void ShaderGraphDialog::request_optimal_view() {
+	_optimal_view_requested = true;
+	redraw("area");
+}
+
+void ShaderGraphDialog::_optimize_view(const rect &area) {
+	rect ga = rect(1000,-1000,1000,-1000);
+	for (auto *n: weak(graph->nodes)) {
+		auto a = node_area(n);
+		ga.x1 = min(ga.x1, a.x1);
+		ga.y1 = min(ga.y1, a.y1);
+		ga.x2 = max(ga.x2, a.x2);
+		ga.y2 = max(ga.y2, a.y2);
+	}
+	view_scale = clamp(min(area.width() / ga.width(), area.height() / ga.height()), MIN_VIEW_SCALE, MAX_VIEW_SCALE);
+	view_offset_x = ga.mx() - area.mx() / view_scale;
+	view_offset_y = ga.my() - area.my() / view_scale;
+	//virt = (phys / view_scale) + view_offset_x;
+	_optimal_view_requested = false;
 }
 
 float ShaderGraphDialog::proj_x(float x) {
@@ -288,6 +347,8 @@ void ShaderGraphDialog::draw_cable(Painter *p, ShaderNode *source, int source_po
 void ShaderGraphDialog::on_draw(Painter *p) {
 	//int w = p->width;
 	//int h = p->height;
+	if (_optimal_view_requested)
+		_optimize_view(p->area());
 	p->set_color(scheme.BACKGROUND);
 	p->draw_rect(p->area());
 
@@ -464,7 +525,7 @@ void ShaderGraphDialog::on_mouse_move() {
 
 void ShaderGraphDialog::on_mouse_wheel() {
 	auto e = hui::GetEvent();
-	view_scale = clamp(view_scale * exp(e->scroll_y * 0.05f), 0.2f, 2.0f);
+	view_scale = clamp(view_scale * exp(e->scroll_y * 0.05f), MIN_VIEW_SCALE, MAX_VIEW_SCALE);
 
 	view_offset_x = mx -  e->mx / view_scale;
 	view_offset_y = my -  e->my / view_scale;

@@ -20,7 +20,9 @@ public:
 	~ShaderGraph();
 
 	void clear();
-	void make_default();
+	void make_default_for_engine();
+	void make_default_basic();
+	void make_default_cube_map();
 
 	void load(const Path &filename);
 	void save(const Path &filename);
