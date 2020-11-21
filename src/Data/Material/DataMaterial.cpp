@@ -31,10 +31,9 @@ DataMaterial::~DataMaterial() {
 void DataMaterial::AppearanceData::reset() {
 	texture_files.clear();
 
-	ambient = 0.5f;
-	diffuse = White;
-	specular = 0;
-	shininess = 20;
+	roughness = 0.5f;
+	albedo = White;
+	reflectivity = 0;
 	emissive = Black;
 
 	transparency_mode = TRANSPARENCY_NONE;
@@ -85,7 +84,8 @@ void DataMaterial::reset() {
 }
 
 void DataMaterial::apply_for_rendering() {
-	nix::SetMaterial(appearance.diffuse, appearance.ambient, appearance.specular, appearance.shininess, appearance.emissive);
+	float shininess = 30 * (1 - appearance.roughness);
+	nix::SetMaterial(appearance.albedo, appearance.roughness, appearance.reflectivity, shininess, appearance.emissive);
 
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetZ(true, true);

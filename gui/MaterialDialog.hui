@@ -4,20 +4,21 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 		Grid ? "" vertical
 			Expander material_dialog_grp_color "Colors"
 				Grid ? ""
-					Text /diffuse "Diffuse" right disabled
-					ColorButton mat_di "" alpha
+					Text /t-albedo "Albedo" right disabled
+					ColorButton albedo "" alpha
 					---|
-					Text /ambient "Ambient" right disabled
-					SpinButton mat_am "" expandx range=0:1:0.01
+					Text /t-roughness "Roughness" right disabled
+					Grid ? ""
+						Slider slider-roughness "" range=0:1:0.01 expandx
+						SpinButton roughness "" range=0:1:0.01
 					---|
-					Text /specular "Specular" right disabled
-					SpinButton mat_sp "" range=0:1:0.01
+					Text /t-reflectivity "Reflectivity" right disabled
+					Grid ? ""
+						Slider slider-reflectivity "" range=0:1:0.01 expandx
+						SpinButton reflectivity "" range=0:1:0.01
 					---|
-					Text /shininess "Shininess" right disabled
-					SpinButton mat_shininess "" range=0:10000:0.1
-					---|
-					Text /emission "Emission" right disabled
-					ColorButton mat_em ""
+					Text /t-emission "Emission" right disabled
+					ColorButton emission ""
 			Expander material_dialog_grp_textures "Textures"
 				Grid ? ""
 					ListView mat_textures "Level\\\\Texture" format=tit select-single

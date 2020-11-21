@@ -41,10 +41,13 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		ffv = -1;
 		hui::Configuration c;
 		c.load(filename);
-		data->appearance.diffuse = color::parse(c.get_str("color.albedo", ""));
-		data->appearance.ambient = c.get_float("color.ambient", 0.5f);
-		data->appearance.specular = c.get_float("color.specular", 0.1f);
-		data->appearance.shininess = c.get_float("color.shininess", 10);
+		data->appearance.albedo = color::parse(c.get_str("color.albedo", ""));
+		data->appearance.roughness = c.get_float("color.roughness", 0.5f);
+		if (c.has("color.ambient"))
+			data->appearance.roughness = c.get_float("color.ambient", 0.5f);
+		data->appearance.reflectivity = c.get_float("color.reflectivity", 0.1f);
+		if (c.has("color.specular"))
+			data->appearance.roughness = c.get_float("color.specular", 0.5f);
 		data->appearance.emissive = color::parse(c.get_str("color.emission", ""));
 
 		data->appearance.texture_files = str_to_paths(c.get_str("textures", ""));
@@ -107,11 +110,11 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_comment();
 		color cc;
 		read_color_argb(f, cc);
-		read_color_argb(f, data->appearance.diffuse);
-		data->appearance.ambient = 0.5f;
+		read_color_argb(f, data->appearance.albedo);
+		data->appearance.roughness = 0.5f;
 		read_color_argb(f, cc);
-		data->appearance.specular = 0.1f;
-		data->appearance.shininess = f->read_int();
+		data->appearance.reflectivity = 0.1f;
+		/*shininess = */ f->read_int();
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
@@ -155,11 +158,11 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_comment();
 		color cc;
 		read_color_argb(f, cc);
-		data->appearance.ambient = 0.5f;
-		read_color_argb(f, data->appearance.diffuse);
+		data->appearance.roughness = 0.5f;
+		read_color_argb(f, data->appearance.albedo);
 		read_color_argb(f, cc);
-		data->appearance.specular = 0.1f;
-		data->appearance.shininess = (float)f->read_int();
+		data->appearance.reflectivity = 0.1f;
+		/*shininess =*/ (float)f->read_int();
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
@@ -200,11 +203,11 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_comment();
 		color cc;
 		read_color_argb(f, cc);
-		data->appearance.ambient = 0.5f;
-		read_color_argb(f, data->appearance.diffuse);
+		data->appearance.roughness = 0.5f;
+		read_color_argb(f, data->appearance.albedo);
 		read_color_argb(f, cc);
-		data->appearance.specular = 0.1f;
-		data->appearance.shininess = (float)f->read_int();
+		data->appearance.reflectivity = 0.1f;
+		/*shininess =*/ (float)f->read_int();
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
@@ -249,12 +252,11 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 	c.set_str("textures", paths_to_str(data->appearance.texture_files));
 	c.set_str("shader", data->shader.file.str());
 
-	c.set_str("color.albedo", data->appearance.diffuse.str());
+	c.set_str("color.albedo", data->appearance.albedo.str());
 	if (data->appearance.emissive != Black)
 		c.set_str("color.emission", data->appearance.emissive.str());
-	c.set_float("color.ambient", data->appearance.ambient);
-	c.set_float("color.specular", data->appearance.specular);
-	c.set_float("color.shininess", data->appearance.shininess);
+	c.set_float("color.roughness", data->appearance.roughness);
+	c.set_float("color.reflectivity", data->appearance.reflectivity);
 
 	if (data->appearance.transparency_mode == TRANSPARENCY_FACTOR) {
 		c.set_str("transparency.mode", "factor");

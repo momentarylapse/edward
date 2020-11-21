@@ -42,11 +42,24 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	event("reflection_textures", [=]{ on_reflection_textures(); });
 
 
-	event("mat_am", [=]{ apply_data(); });
-	event("mat_di", [=]{ apply_data(); });
-	event("mat_sp", [=]{ apply_data(); });
-	event("mat_em", [=]{ apply_data(); });
-	event("mat_shininess", [=]{ apply_data_delayed(); });
+	event("albedo", [=]{ apply_data(); });
+	event("roughness", [=]{
+		set_float("slider-roughness", get_float(""));
+		apply_data_delayed();
+	});
+	event("slider-roughness", [=]{
+		set_float("roughness", get_float(""));
+		apply_data_delayed();
+	});
+	event("reflectivity", [=]{
+		set_float("slider-reflectivity", get_float(""));
+		apply_data_delayed();
+	});
+	event("slider-reflectivity", [=]{
+		set_float("reflectivity", get_float(""));
+		apply_data_delayed();
+	});
+	event("emission", [=]{ apply_data(); });
 
 	event("alpha_factor", [=]{ apply_data_delayed(); });
 	event("alpha_source", [=]{ apply_data_delayed(); });
@@ -67,11 +80,12 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 
 void MaterialPropertiesDialog::load_data() {
 	fill_texture_list();
-	set_float("mat_am", temp.ambient);
-	set_color("mat_di", temp.diffuse);
-	set_float("mat_sp", temp.specular);
-	set_color("mat_em", temp.emissive);
-	set_float("mat_shininess", temp.shininess);
+	set_color("albedo", temp.albedo);
+	set_float("roughness", temp.roughness);
+	set_float("slider-roughness", temp.roughness);
+	set_float("reflectivity", temp.reflectivity);
+	set_float("slider-reflectivity", temp.reflectivity);
+	set_color("emission", temp.emissive);
 
 	if (temp.transparency_mode == TRANSPARENCY_COLOR_KEY_SMOOTH)
 		check("transparency_mode:color_key", true);
@@ -228,11 +242,10 @@ void MaterialPropertiesDialog::apply_data() {
 		apply_queue_depth --;
 	if (apply_queue_depth > 0)
 		return;
-	temp.ambient = get_float("mat_am");
-	temp.diffuse = get_color("mat_di");
-	temp.specular = get_float("mat_sp");
-	temp.emissive = get_color("mat_em");
-	temp.shininess = get_float("mat_shininess");
+	temp.albedo = get_color("albedo");
+	temp.roughness = get_float("roughness");
+	temp.reflectivity = get_float("reflectivity");
+	temp.emissive = get_color("emission");
 	temp.alpha_z_buffer = is_checked("alpha_z_buffer");
 	temp.alpha_factor = get_float("alpha_factor") * 0.01f;
 	temp.alpha_source = get_int("alpha_source");
@@ -246,7 +259,7 @@ void MaterialPropertiesDialog::apply_data() {
 
 void MaterialPropertiesDialog::apply_data_delayed() {
 	apply_queue_depth ++;
-	hui::RunLater(0.5f, [=]{ apply_data(); });
+	hui::RunLater(0.2f, [=]{ apply_data(); });
 }
 
 void MaterialPropertiesDialog::apply_phys_data() {
@@ -264,7 +277,7 @@ void MaterialPropertiesDialog::apply_phys_data() {
 
 void MaterialPropertiesDialog::apply_phys_data_delayed() {
 	apply_phys_queue_depth ++;
-	hui::RunLater(0.5f, [=]{ apply_phys_data(); });
+	hui::RunLater(0.2f, [=]{ apply_phys_data(); });
 }
 
 void MaterialPropertiesDialog::refill_refl_tex_view() {

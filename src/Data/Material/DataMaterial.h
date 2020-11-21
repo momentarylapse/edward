@@ -34,8 +34,8 @@ public:
 		Array<Path> texture_files;
 
 		// color
-		color diffuse, emissive;
-		float ambient, specular, shininess;
+		color albedo, emissive;
+		float roughness, reflectivity;
 
 		// transparency
 		int transparency_mode, alpha_source, alpha_destination;
