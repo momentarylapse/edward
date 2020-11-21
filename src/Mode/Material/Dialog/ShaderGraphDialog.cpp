@@ -191,13 +191,13 @@ float node_get_in_y(ShaderNode *n, int i) {
 }
 
 float node_get_out_y(ShaderNode *n, int i) {
-	return n->y + NODE_HEADER_HEIGHT + n->params.num * NODE_PORT_HEIGHT + i * NODE_PORT_HEIGHT + NODE_PORT_HEIGHT/2;
+	return n->y + NODE_HEADER_HEIGHT + /*n->params.num * NODE_PORT_HEIGHT*/ + i * NODE_PORT_HEIGHT + NODE_PORT_HEIGHT/2;
 }
 
 rect node_get_param_rect(ShaderNode *n, int i, float fraction=1) {
 	int y = node_get_in_y(n, i);
-	float x0 = n->x + NODE_WIDTH / 2;
-	float x1 = n->x + NODE_WIDTH-10;
+	float x0 = n->x + 30;
+	float x1 = n->x + NODE_WIDTH - 30;
 	return rect(x0, x0 + (x1 - x0) * fraction, y-8, y+8);
 }
 
@@ -212,13 +212,78 @@ rect node_get_in_rect(ShaderNode *n, int i) {
 }
 
 rect node_area(ShaderNode *n) {
-	int h = NODE_HEADER_HEIGHT + n->params.num * NODE_PORT_HEIGHT + n->output.num * NODE_PORT_HEIGHT + 8;
+	int h = NODE_HEADER_HEIGHT + max(n->params.num, n->output.num) * NODE_PORT_HEIGHT + 8;
 	return rect(n->x, n->x + NODE_WIDTH, n->y-5, n->y + h);
 }
 
 rect node_header_area(ShaderNode *n) {
 	int h = NODE_HEADER_HEIGHT;
 	return rect(n->x, n->x + NODE_WIDTH, n->y-5, n->y + h);
+}
+
+bool node_in_pluggable(ShaderNode *n, int i) {
+	if (n->params[i].type == ShaderValueType::LITERAL)
+		return false;
+	if (n->params[i].type == ShaderValueType::INT and (n->params[i].options.head(7) == "choice="))
+		return false;
+	return true;
+}
+
+string short_port_name(const string &n) {
+	if (n == "red")
+		return "r";
+	if (n == "green")
+		return "g";
+	if (n == "blue")
+		return "b";
+	if (n == "alpha")
+		return "a";
+	if (n == "pos")
+		return "p";
+	if (n == "normal" or n == "normals")
+		return "n";
+	if (n == "out" or n == "value" or n == "vector" or n == "color")
+		return "";
+	return n.head(2);
+}
+
+void draw_node_param(Painter *p, ShaderGraphDialog *dlg, ShaderNode *n, ShaderNode::Parameter &pp, int i, float yt) {
+
+	color bg = color::interpolate(scheme.BACKGROUND, scheme.GRID, 0.5f);
+	if (pp.type == ShaderValueType::COLOR) {
+		bg = pp.get_color();
+	}
+	p->set_color(bg);
+	p->set_roundness(3);
+	p->draw_rect(node_get_param_rect(n, i));
+	p->set_roundness(0);
+	if (pp.type == ShaderValueType::FLOAT) {
+		if (pp.options.head(6) == "range=") {
+			auto xx = pp.options.substr(6,-1).explode(":");
+			float _min = xx[0]._float();
+			float _max = xx[1]._float();
+			float scale = clamp((pp.value._float() - _min) / (_max - _min), 0.0f, 1.0f);
+			p->set_color(scheme.BACKGROUND);
+			p->set_roundness(3);
+			p->draw_rect(node_get_param_rect(n, i, scale));
+			p->set_roundness(0);
+		}
+	}
+	p->set_color(scheme.TEXT);
+	if (dlg->graph->find_source(n, i))
+		p->set_color(color::interpolate(scheme.TEXT, scheme.GRID, 0.5f));
+	if (n == dlg->hover.node and i == dlg->hover.param)
+		p->set_color(scheme.hoverify(scheme.TEXT));
+
+	string value = pp.value;
+	if (pp.type == ShaderValueType::INT) {
+		if (pp.options.head(7) == "choice=") {
+			auto xx = pp.options.substr(7, -1).explode("|");
+			int n = clamp(value._int(), 0, xx.num - 1);
+			value = xx[n];
+		}
+	}
+	p->draw_str(n->x + NODE_WIDTH / 2 - p->get_str_width(value)/2, yt, value);
 }
 
 void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
@@ -237,7 +302,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 	p->set_roundness(0);
 
 	p->set_color(scheme.TEXT);
-	p->set_font_size(14);
+	p->set_font_size(12);
 	p->draw_str(n->x + NODE_WIDTH / 2 - p->get_str_width(n->type) / 2, n->y+3, n->type);
 
 	p->set_font_size(10);
@@ -247,48 +312,16 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 		p->set_color(scheme.TEXT);
 		float y = node_get_in_y(n, i);
 		float yt = y - 4;
-		p->draw_str(n->x + 10, yt, pp.name);
+		p->draw_str(n->x + 10, yt, short_port_name(pp.name));
 
-		color bg = color::interpolate(scheme.BACKGROUND, scheme.GRID, 0.5f);
-		if (pp.type == ShaderValueType::COLOR) {
-			bg = pp.get_color();
-		}
-		p->set_color(bg);
-		p->set_roundness(3);
-		p->draw_rect(node_get_param_rect(n, i));
-		p->set_roundness(0);
-		if (pp.type == ShaderValueType::FLOAT) {
-			if (pp.options.head(6) == "range=") {
-				auto xx = pp.options.substr(6,-1).explode(":");
-				float _min = xx[0]._float();
-				float _max = xx[1]._float();
-				float scale = clamp((pp.value._float() - _min) / (_max - _min), 0.0f, 1.0f);
-				p->set_color(scheme.BACKGROUND);
-				p->set_roundness(3);
-				p->draw_rect(node_get_param_rect(n, i, scale));
-				p->set_roundness(0);
-			}
-		}
-		p->set_color(scheme.TEXT);
-		if (graph->find_source(n, i))
-			p->set_color(color::interpolate(scheme.TEXT, scheme.GRID, 0.5f));
-		if (n == hover.node and i == hover.param)
-			p->set_color(scheme.hoverify(scheme.TEXT));
-
-		string value = pp.value;
-		if (pp.type == ShaderValueType::INT) {
-			if (pp.options.head(7) == "choice=") {
-				auto xx = pp.options.substr(7, -1).explode("|");
-				int n = clamp(value._int(), 0, xx.num - 1);
-				value = xx[n];
-			}
-		}
-		p->draw_str(n->x + NODE_WIDTH / 2 + 2, yt, value);
+		if (!graph->find_source(n, i))
+			draw_node_param(p, this, n, pp, i, yt);
 
 		p->set_color(scheme.TEXT);
 		if (hover.type == HoverData::Type::PORT_IN and n == hover.node and i == hover.port)
 			p->set_color(scheme.hoverify(scheme.TEXT));
-		p->draw_circle(n->x - 5, y, 5);
+		if (node_in_pluggable(n, i))
+			p->draw_circle(n->x - 5, y, 5);
 	}
 
 	// out
@@ -296,8 +329,8 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 		float y = node_get_out_y(n, i);
 		float yt = y - 4;
 		p->set_color(scheme.TEXT);
-		float w = p->get_str_width(pp.name);
-		p->draw_str(n->x + NODE_WIDTH - 10 - w, yt, pp.name);
+		float w = p->get_str_width(short_port_name(pp.name));
+		p->draw_str(n->x + NODE_WIDTH - 10 - w, yt, short_port_name(pp.name));
 		if (hover.type == HoverData::Type::PORT_OUT and n == hover.node and i == hover.port)
 			p->set_color(scheme.hoverify(scheme.TEXT));
 		p->draw_circle(n->x + NODE_WIDTH + 5, y, 5);
@@ -569,12 +602,12 @@ ShaderGraphDialog::HoverData ShaderGraphDialog::get_hover() {
 			h.node = n;
 		}
 		for (int i=0; i<n->params.num; i++) {
-			if (node_get_in_rect(n, i).inside(mx, my)) {
+			if (node_get_in_rect(n, i).inside(mx, my) and node_in_pluggable(n, i)) {
 				h.type = h.Type::PORT_IN;
 				h.node = n;
 				h.port = i;
 			}
-			if (node_get_param_rect(n, i).inside(mx, my)) {
+			if (node_get_param_rect(n, i).inside(mx, my) and !graph->find_source(n, i)) {
 				h.type = h.Type::PARAMETER;
 				h.node = n;
 				h.param = i;
