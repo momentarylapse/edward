@@ -24,8 +24,7 @@
 #include "../../MultiView/ColorScheme.h"
 #include "../../lib/nix/nix.h"
 
-const int MATERIAL_NUMX = 48;
-const int MATERIAL_NUMY = 24;
+const int MATERIAL_DETAIL = 32;
 const float MATERIAL_RADIUS1 = 80;
 const float MATERIAL_RADIUS2 = 50;
 
@@ -299,18 +298,18 @@ void ModeMaterial::update_shape() {
 	if (geo)
 		delete(geo);
 	if (shape_type == "torus")
-		geo = new GeometryTorus(v_0, vector::EZ, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_NUMX, MATERIAL_NUMY);
+		geo = new GeometryTorus(v_0, vector::EZ, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_DETAIL*2, MATERIAL_DETAIL);
 	else if (shape_type == "torusknot")
-		geo = new GeometryTorusKnot(v_0, vector::EZ, MATERIAL_RADIUS1, 40, 22, 2, 5, 128, 32);
+		geo = new GeometryTorusKnot(v_0, vector::EZ, MATERIAL_RADIUS1, 40, 22, 2, 5, MATERIAL_DETAIL*10, MATERIAL_DETAIL*2);
 	else if (shape_type == "teapot")
-		geo = new GeometryTeapot(v_0, MATERIAL_RADIUS1, 6);
+		geo = new GeometryTeapot(v_0, MATERIAL_RADIUS1, MATERIAL_DETAIL/3);
 	else if (shape_type == "cube")
 		geo = new GeometryCube(-vector(1,1,1) * MATERIAL_RADIUS1/2, vector::EX * MATERIAL_RADIUS1, vector::EY * MATERIAL_RADIUS1, vector::EZ * MATERIAL_RADIUS1, 1, 1, 1);
 		//geo = new ModelGeometryPlatonic(v_0, MATERIAL_RADIUS1, 6);
 	else if (shape_type == "icosahedron")
 		geo = new GeometryPlatonic(v_0, MATERIAL_RADIUS1, 20);
 	else //if (shape_type == "ball")
-		geo = new GeometryBall(v_0, MATERIAL_RADIUS1, 32, 16);
+		geo = new GeometryBall(v_0, MATERIAL_RADIUS1, MATERIAL_DETAIL, MATERIAL_DETAIL*2);
 	if (shape_smooth)
 		geo->smoothen();
 

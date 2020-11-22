@@ -1,6 +1,6 @@
 <Layout>
 	version = 420
-	name = surface
+	name = surface-simple
 </Layout>
 <Module>
 
@@ -38,9 +38,6 @@ layout(location = 2) in vec3 in_normal;
 layout(location = 0) out vec4 out_color;
 
 const float PI = 3.141592654;
-
-// https://learnopengl.com/PBR/Theory
-// https://learnopengl.com/PBR/Lighting
 
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
@@ -179,14 +176,12 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float reflectivity, float r
 	vec3 p = in_pos.xyz / in_pos.w;
 	vec3 view_dir = normalize(p - eye_pos.xyz);
 	
-	roughness = max(roughness, 0.03);
+	roughness = max(roughness, 0.08);
 	
 ///	float reflectivity = 1-((1-xxx.x) * (1-exp(-pow(dot(d, n),2) * 100)));
 
 	if (reflectivity > 0.01) {
-		vec3 L = reflect(view_dir, n);
-		//for (int i=0; i<30; i++) {
-		//vec3 L = normalize(L0 + vec3(_surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5) / 50);
+		vec3 L = reflect(view_dir, normalize(n));
 		vec4 r = texture(tex4, L);
 		/*if (roughness > 0.1) {
 			r += texture(tex4, reflect(view_dir, normalize(n + vec3(_surf_rand3d(p),0,1) * roughness/10)));
@@ -198,8 +193,7 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float reflectivity, float r
 		
 		
 		
-	//	float R = (1-roughness) + roughness * pow(1 - dot(n, L), 5);
-	//	out_color.rgb += R * r.rgb;
+		
 		
 	//L=-L;
 	vec3 F0 = vec3(0.04);
@@ -228,9 +222,9 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float reflectivity, float r
             
         // add to outgoing radiance Lo
         float NdotL = max(dot(n, L), 0.0);
-        out_color.rgb += (kD * albedo.rgb / PI + specular) * radiance * NdotL/10000;
+        out_color.rgb += (/*kD * albedo.rgb / PI +*/ specular) * radiance * NdotL/3000;
 		
-	//	}
+		
 	}
 	
 

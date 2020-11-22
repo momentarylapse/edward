@@ -50,6 +50,7 @@ void drawing_helper_init(const Path &dir) {
 	tex_text = new nix::Texture();
 
 	nix::Shader::load(dir << "shader/module-surface.shader");
+	nix::Shader::load(dir << "shader/module-surface-simple.shader");
 
 	MultiView::shader_lines_3d = nix::Shader::load(dir << "shader/lines-3d.shader");
 	MultiView::shader_lines_3d_colored = nix::Shader::load(dir << "shader/lines-3d-colored.shader");
