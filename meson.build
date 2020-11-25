@@ -335,6 +335,7 @@ sources = [
 	'src/lib/xfile/xml.cpp',
 	'src/Mode/Administration/Dialog/AdministrationDialog.cpp',
 	'src/Mode/Administration/Dialog/ConfigurationDialog.cpp',
+	'src/Mode/Administration/Dialog/NewProjectDialog.cpp',
 	'src/Mode/Administration/ModeAdministration.cpp',
 	'src/Mode/Font/Dialog/FontDialog.cpp',
 	'src/Mode/Font/ModeFont.cpp',

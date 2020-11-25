@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-74
+75
 # Resource
 Menu
 
@@ -1449,6 +1449,79 @@ Grid
 ?
 buttonbar
 2
+0
+2
+Button
+cancel
+
+0
+0
+0
+Button
+ok
+default
+0
+1
+0
+# Resource
+Dialog
+new-project-dialog
+width=600,height=500,headerbar,resizable,closebutton=no
+0
+0
+1
+Grid
+?
+
+0
+0
+2
+Grid
+?
+vertical
+0
+0
+2
+Group
+g-dir
+
+0
+0
+1
+Grid
+?
+
+0
+0
+2
+Edit
+directory
+disabled,expandx
+0
+0
+0
+Button
+find-directory
+image=hui:open
+1
+0
+0
+Group
+g-template
+
+1
+0
+1
+ListView
+template
+nobar,expandy
+0
+0
+0
+Grid
+?
+buttonbar
+1
 0
 2
 Button
@@ -9962,7 +10035,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-995
+1001
 # Text
 /ambient
 Ambient
@@ -12366,6 +12439,24 @@ model_material_selection_dialog/material_list
 - double click to apply material\n- select and press button \"edit\" to edit\n- selection will be used for new polygons
 model_material_selection_dialog/model_material_selection_dialog
 Select a material
+
+new-project-dialog/cancel
+Cancel
+
+new-project-dialog/g-dir
+Directory
+
+new-project-dialog/g-template
+Template
+
+new-project-dialog/new-project-dialog
+New project
+
+new-project-dialog/ok
+Create
+
+new-project-dialog/template
+name
 
 new_animation_dialog/new_animation_dialog
 New animation

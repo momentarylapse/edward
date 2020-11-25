@@ -10,6 +10,7 @@
 #include "../../Data/Administration/GameIniData.h"
 #include "Dialog/AdministrationDialog.h"
 #include "Dialog/ConfigurationDialog.h"
+#include "Dialog/NewProjectDialog.h"
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
 
@@ -68,12 +69,15 @@ void ModeAdministration::create_project_dir(const Path &dir) {
 }
 
 void ModeAdministration::_new() {
-	if (!hui::FileDialogDir(hui::CurWindow, _("Choose a directory for the new project"), ""))
-		return;
+	auto dlg = new NewProjectDialog(ed);
+	dlg->run();
+	if (dlg->ok) {
 
-	create_project_dir(hui::Filename);
-	storage->set_root_directory(hui::Filename);
-	data->reset();
+		create_project_dir(dlg->directory);
+		storage->set_root_directory(dlg->directory);
+		data->reset();
+	}
+	delete dlg;
 }
 
 bool ModeAdministration::open() {
