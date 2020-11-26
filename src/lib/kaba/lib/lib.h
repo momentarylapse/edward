@@ -409,6 +409,7 @@ public:
 
 	bool allow_simplification;
 	bool allow_registers;
+	bool allow_simplify_consts;
 
 	Path directory;
 	bool verbose;
@@ -422,6 +423,7 @@ public:
 
 	bool compile_os;
 	bool remove_unused;
+	bool use_new_serializer;
 	bool no_function_frame;
 	bool add_entry_point;
 	bool override_variables_offset;
@@ -432,6 +434,8 @@ public:
 	int stack_mem_align;
 	int function_align;
 	int stack_frame_align;
+
+	int function_address_offset;
 
 };
 
