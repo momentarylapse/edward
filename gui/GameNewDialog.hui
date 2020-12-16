@@ -10,4 +10,4 @@ Dialog new-project-dialog "New project" width=600 height=500 headerbar resizable
 		Grid ? "" buttonbar
 			Button cancel "Cancel"
 			---|
-			Button ok "Create" default
+			Button create "Create" default
