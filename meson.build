@@ -53,6 +53,7 @@ sources = [
 	'src/Action/Model/Animation/ActionModelDeleteAnimation.cpp',
 	'src/Action/Model/Animation/ActionModelDuplicateAnimation.cpp',
 	'src/Action/Model/Data/ActionModelAddMaterial.cpp',
+	'src/Action/Model/Data/ActionModelDeleteMaterial.cpp',
 	'src/Action/Model/Data/ActionModelEditData.cpp',
 	'src/Action/Model/Data/ActionModelEditMaterial.cpp',
 	'src/Action/Model/Mesh/Brush/ActionModelBrushComplexify.cpp',

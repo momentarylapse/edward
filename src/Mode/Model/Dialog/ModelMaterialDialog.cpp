@@ -9,6 +9,7 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../Mesh/ModeModelMesh.h"
 #include "../../../Action/Model/Data/ActionModelAddMaterial.h"
+#include "../../../Action/Model/Data/ActionModelDeleteMaterial.h"
 #include "../../../Action/Model/Data/ActionModelEditMaterial.h"
 #include "../../../Action/Model/Data/ActionModelEditData.h"
 #include "../../../Edward.h"
@@ -194,13 +195,18 @@ void ModelMaterialDialog::apply_data_alpha() {
 	apply_queue_depth --;
 }
 
+int count_material_polygons(DataModel *data, int index) {
+	int n = 0;
+	for (auto &t: data->mesh->polygon)
+		if (t.material == index)
+			n ++;
+	return n;
+}
+
 void ModelMaterialDialog::fill_material_list() {
 	reset("material_list");
 	for (int i=0;i<data->material.num;i++) {
-		int nt = 0;
-		for (auto &t: data->mesh->polygon)
-			if (t.material == i)
-				nt ++;
+		int nt = count_material_polygons(data, i);
 		string im = render_material(data->material[i]);
 		add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}
@@ -223,7 +229,11 @@ void ModelMaterialDialog::on_material_load() {
 }
 
 void ModelMaterialDialog::on_material_delete() {
-	ed->error_box(_("not implemented yet"));
+	if (count_material_polygons(data, mode_model_mesh->current_material) > 0) {
+		ed->error_box(_("can only delete materials that are not applied to any polygons"));
+		return;
+	}
+	data->execute(new ActionModelDeleteMaterial(mode_model_mesh->current_material));
 }
 
 void ModelMaterialDialog::on_material_apply() {
