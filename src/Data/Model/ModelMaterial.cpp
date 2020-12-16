@@ -113,10 +113,11 @@ void ModelMaterial::checkTextures() {
 
 	msg_write("--------Mat.check textures()");
 	// parent has more texture levels?
-	if (material->textures.num > texture_levels.num) {
-		texture_levels.resize(material->textures.num);
-		ed->set_message(_("Number of textures changed to comply with the material!"));
-	}
+//	if (material->textures.num > texture_levels.num) {
+//		while (material->textures.num > texture_levels.num)
+//			texture_levels.add(new ModelMaterial::TextureLevel);
+//		ed->set_message(_("Number of textures changed to comply with the material!"));
+//	}
 
 	// load all textures
 	foreachi (auto *t, texture_levels, i) {
