@@ -78,7 +78,7 @@ MultiView::MultiView(bool mode3d) {
 
 	SPEED_MOVE = 20;
 	SPEED_ZOOM_KEY = 1.15f;
-	SPEED_ZOOM_WHEEL = 1.15f;
+	SPEED_ZOOM_WHEEL = 1.05f;
 
 	MIN_MOUSE_MOVE_TO_INTERACT = 5;
 	MOUSE_ROTATION_SPEED = 0.0033f;
@@ -327,13 +327,8 @@ void MultiView::on_command(const string & id) {
 
 void MultiView::on_mouse_wheel() {
 	notify_begin();
-	hui::Event *e = hui::GetEvent();
 
-	// mouse wheel -> zoom
-	if (e->scroll_y > 0)
-		cam_zoom(SPEED_ZOOM_WHEEL, mouse_win->type != VIEW_PERSPECTIVE);
-	if (e->scroll_y < 0)
-		cam_zoom(1.0f / SPEED_ZOOM_WHEEL, mouse_win->type != VIEW_PERSPECTIVE);
+	cam_con->on_mouse_wheel();
 	notify_end();
 }
 
@@ -411,7 +406,7 @@ void MultiView::on_left_button_down() {
 		moving_cross_x = true;
 		moving_cross_y = true;
 	} else if (hover.meta == hover.HOVER_CAMERA_CONTROLLER) {
-		cam_con->onLeftButtonDown();
+		cam_con->on_left_button_down();
 	} else if (hover.meta == hover.HOVER_ACTION_CONTROLLER) {
 		active_win = mouse_win;
 		action_con->on_left_button_down();
@@ -512,7 +507,7 @@ void MultiView::on_left_button_up() {
 	moving_cross_y = false;
 
 	action_con->on_left_button_up();
-	cam_con->onLeftButtonUp();
+	cam_con->on_left_button_up();
 	notify_end();
 }
 
@@ -531,7 +526,7 @@ void MultiView::update_mouse() {
 	rbut = hui::GetEvent()->rbut;
 
 	if (allow_mouse_actions)
-		if (cam_con->isMouseOver())
+		if (cam_con->is_mouse_over())
 			return;
 
 	// which window is the cursor in?
@@ -550,8 +545,8 @@ void MultiView::on_mouse_move() {
 
 	if (action_con->in_use()) {
 		action_con->on_mouse_move();
-	} else if (cam_con->inUse()) {
-		cam_con->onMouseMove();
+	} else if (cam_con->in_use()) {
+		cam_con->on_mouse_move();
 	} else if (sel_rect.active and allow_select) {
 		select_all_in_rectangle(get_select_mode());
 	} else if (view_moving) {
@@ -923,7 +918,7 @@ void MultiView::get_hover() {
 		hover.meta = hover.HOVER_WINDOW_LABEL;
 		return;
 	}
-	if (cam_con->isMouseOver()) {
+	if (cam_con->is_mouse_over()) {
 		hover.meta = hover.HOVER_CAMERA_CONTROLLER;
 		return;
 	}

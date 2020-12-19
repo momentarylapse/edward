@@ -11,29 +11,29 @@
 
 #include "../lib/math/math.h"
 
-namespace nix{
+namespace nix {
 	class Texture;
 };
 
-namespace MultiView{
+namespace MultiView {
 
 class MultiView;
 
-class CameraController
-{
+class CameraController {
 public:
 	CameraController(MultiView *view);
-	virtual ~CameraController();
+	~CameraController();
 
-	bool isMouseOver();
-	void onLeftButtonDown();
-	void onLeftButtonUp();
-	void onMouseMove();
-	void updateRects();
+	bool is_mouse_over();
+	void on_left_button_down();
+	void on_left_button_up();
+	void on_mouse_wheel();
+	void on_mouse_move();
+	void update_rects();
 
 	void draw_icon(const rect &r, nix::Texture *tex, bool active);
 	void draw();
-	bool inUse();
+	bool in_use();
 
 	bool show;
 	bool moving, rotating, zooming;
