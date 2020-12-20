@@ -183,6 +183,8 @@ float _cdecl Font::drawStr(float x, float y, float z, float _height, const strin
 	}
 	nix::SetAlpha(ALPHA_NONE);
 	return w;
+#else
+	return 0;
 #endif
 }
 
@@ -211,8 +213,8 @@ float _cdecl Font::drawStrVert(float x, float y, float z, float _height, const s
 		y+=yf*0.8f;
 	}
 	nix::SetAlpha(ALPHA_NONE);
-	return 0;
 #endif
+	return 0;
 }
 
 };
