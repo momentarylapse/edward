@@ -43,7 +43,6 @@ nix::Texture *create_round_texture(int n) {
 }
 
 void drawing_helper_init(const Path &dir) {
-	msg_write("INIT HELPER");
 	vb_lines = new nix::VertexBuffer("3f,4f");
 	vb_2d = new nix::VertexBuffer("3f,4f,2f");
 	tex_round = create_round_texture(32);
@@ -156,7 +155,7 @@ void draw_2d(const rect &src, const rect &dest, float depth) {
 
 void draw_round_rect(const rect &r) {
 
-	float R = 13;
+	float R = scheme.BOX_ROUNDNESS;
 	float x[4] = {r.x1, r.x1 + R, r.x2 - R, r.x2};
 	float y[4] = {r.y1, r.y1 + R, r.y2 - R, r.y2};
 	float u[4] = {0, 0.5f, 0.5f, 1};
@@ -209,7 +208,7 @@ void draw_str_bg(int x, int y, const string &str, const color &fg, const color &
 		x -= wmax / 2;
 	nix::SetTexture(tex_round);
 	nix::SetAlpha(ALPHA_MATERIAL);
-	float r = 8;
+	float r = scheme.BOX_PADDING;
 	set_color(bg);
 	draw_round_rect(rect(float(x-r), float(x+wmax+r), float(y-r), float(y+h+r)));
 	set_color(fg);

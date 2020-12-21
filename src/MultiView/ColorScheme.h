@@ -40,6 +40,8 @@ public:
 	string FONT_NAME;
 	float FONT_SIZE;
 	float TEXT_LINE_HEIGHT;
+	float BOX_PADDING;
+	float BOX_ROUNDNESS;
 
 	float WINDOW_DIVIDER_THICKNESS;
 

@@ -6,17 +6,27 @@
  */
 
 #include "ColorScheme.h"
+#include "../lib/hui/Config.h"
 
 
 ColorScheme scheme;
 
 
 ColorScheme::ColorScheme() {
-	BACKGROUND = color(1,0.9f,0.9f,0.9f);
-	BACKGROUND_SELECTED = color(1,0.96f,0.96f,0.96f);
+	string name = hui::Config.get_str("view.color-scheme", "dark");
+	if (name == "bright") {
+		BACKGROUND = color(1,0.9f,0.9f,0.9f);
+		BACKGROUND_SELECTED = color(1,0.96f,0.96f,0.96f);
+		GRID = color(1,0.65f,0.65f,0.65f);
+		WINDOW_DIVIDER = color(1, 0.4f, 0.4f, 0.75f);
+	} else {
+		BACKGROUND = color(1,0.25f,0.25f,0.25f);
+		BACKGROUND_SELECTED = color(1,0.29f,0.29f,0.29f);
+		GRID = color(1,0.45f,0.45f,0.45f);
+		WINDOW_DIVIDER = color(1, 0.35f, 0.35f, 0.65f);
+	}
 	SELECTION = color(1, 0.8f,0,0);
 	HOVER = White;
-	GRID = color(1,0.65f,0.65f,0.65f);
 	TEXT = color(1, 0.1f, 0.1f, 0.1f);
 	TEXT_BG = color(1, 0.7f, 0.7f, 0.7f);
 	WINDOW_TITLE = color(1, 0.35f, 0.35f, 0.35f);
@@ -25,7 +35,6 @@ ColorScheme::ColorScheme() {
 	POINT = color(1, 0.2f, 0.2f, 0.9f);
 	POINT_SELECTED = color(1, 0.9f, 0.2f, 0.2f);
 	POINT_SPECIAL = color(1, 0.2f, 0.8f, 0.2f);
-	WINDOW_DIVIDER = color(1, 0.4f, 0.4f, 0.75f);
 	SELECTION_RECT = color(0.2f,0,0,1);
 	SELECTION_RECT_BOUNDARY = color(0.7f,0,0,1);
 	CREATION = color(0.5f, 0.1f, 0.6f, 0.1f);
@@ -49,6 +58,9 @@ ColorScheme::ColorScheme() {
 
 	POINT_RADIUS = 3;
 	POINT_RADIUS_HOVER = 5;
+
+	BOX_PADDING = 8;
+	BOX_ROUNDNESS = 10;
 }
 
 color ColorScheme::hoverify(const color &c) const {
