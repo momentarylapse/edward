@@ -9,7 +9,7 @@
 #include "../../Edward.h"
 #include "../../Data/World/WorldTerrain.h"
 
-FormatTerrain::FormatTerrain() : TypedFormat<WorldTerrain>(FD_TERRAIN, "terrain", _("Terrain"), Flag::CANONICAL_READ_WRITE) {
+FormatTerrain::FormatTerrain() : TypedFormat<WorldTerrain>(FD_TERRAIN, "map", _("Terrain"), Flag::CANONICAL_READ_WRITE) {
 }
 
 void FormatTerrain::_load(const Path &filename, WorldTerrain *data, bool deep) {

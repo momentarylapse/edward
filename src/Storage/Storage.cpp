@@ -54,6 +54,15 @@ int data_type(Data *data) {
 	return -1;*/
 }
 
+int Storage::guess_type(const Path &filename) {
+	string ext = filename.extension();
+	for (auto *f: formats) {
+		if (f->extension == ext)
+			return f->category;
+	}
+	return -1;
+}
+
 bool Storage::load(const Path &_filename, Data *data, bool deep) {
 	auto filename = _filename.absolute().canonical();
 	try {

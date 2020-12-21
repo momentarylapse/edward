@@ -18,6 +18,8 @@ public:
 	Storage();
 	~Storage();
 
+	int guess_type(const Path &filename);
+
 	bool load(const Path &filename, Data *data, bool deep = true);
 	bool save(const Path &filename, Data *data);
 	bool auto_save(Data *data);

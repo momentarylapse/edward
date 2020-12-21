@@ -214,9 +214,6 @@ Edward::Edward(Array<string> arg) :
 	multi_view_3d->subscribe(this, [=]{ cur_mode->on_view_stage_change(); update_menu(); }, multi_view_3d->MESSAGE_VIEWSTAGE_CHANGE);
 	multi_view_3d->subscribe(this, [=]{ cur_mode->multi_view->force_redraw(); });
 
-	if (!handle_arguments(arg))
-		mode_model->_new();
-
 
 	event("hui:close", [=]{ on_close(); });
 	event("exit", [=]{ on_close(); });
@@ -227,6 +224,11 @@ Edward::Edward(Array<string> arg) :
 	event("abort_creation_mode", [=]{ on_abort_creation_mode(); });
 	event_x("nix-area", "hui:draw-gl", [=]{ on_draw_gl(); });
 	set_key_code("abort_creation_mode", hui::KEY_ESCAPE, "hui:cancel");
+
+
+
+	if (!handle_arguments(arg))
+		mode_model->_new();
 
 	//hui::SetIdleFunction([=]{ idleFunction(); });
 	hui::RunLater(0.010f, [=]{ cur_mode->multi_view->force_redraw(); });
@@ -266,14 +268,12 @@ bool Edward::handle_arguments(Array<string> arg)
 		return false;
 
 
-	if (arg[1] == "--update-model"){
-		if (arg.num >= 3){
-			DataModel m;
-			storage->load(arg[2], &m, false);
-			//m.save(arg[2]);
-			::exit(0);
-		}
-		return false;
+	if (arg[1] == "--new-material") {
+		mode_material->_new();
+		return true;
+	} else if (arg[1] == "--new-world") {
+		mode_world->_new();
+		return true;
 	}
 
 	for (int i=1; i<arg.num; i++){
@@ -309,48 +309,24 @@ bool Edward::handle_arguments(Array<string> arg)
 	if (param[param.num-1]=='"')
 		param.resize(param.num-1);
 
-	string ext = Path(param).extension();
+	int type = storage->guess_type(param);
 
-	if (ext == "model"){
+	if (type == FD_MODEL) {
 		storage->load(param, mode_model->data);
 		set_mode(mode_model);
-		/*if (mmodel->Skin[1].Sub[0].Triangle.num==0)
-			mmodel->SetEditMode(EditModeVertex);*/
-	}else if (ext == "material"){
+	} else if (type == FD_MATERIAL) {
 		storage->load(param, mode_material->data);
 		set_mode(mode_material);
-	/*}else if ((ext == "map") || (ext == "terrain")){
-		MakeDirs(param);
-		mworld->Terrain.resize(1);
-		mworld->LoadFromFileTerrain(0, v0, param, true);
-		mworld->OptimizeView();
-		set_mode(ModeWorld);*/
-	}else if (ext == "world"){
+	/*} else if (type == FD_TERRAIN) {
+		mode_world->data->add_terrain(Path(param).no_ext(), vector(0,0,0));
+		set_mode(mode_world);*/
+	} else if (type == FD_WORLD) {
 		storage->load(param, mode_world->data);
 		set_mode(mode_world);
-	}else if (ext == "xfont"){
+	} else if (type == FD_FONT) {
 		storage->load(param, mode_font->data);
 		set_mode(mode_font);
-	}else if (ext == "js"){
-		storage->load(param, mode_model->data);
-		set_mode(mode_model);
-	}else if (ext == "ply"){
-		storage->load(param, mode_model->data);
-		set_mode(mode_model);
-	/*}else if (ext == "mdl"){
-		mmodel->LoadImportFromGameStudioMdl(param);
-		set_mode(ModeModel);
-		WholeWindow=true;
-		mmodel->OptimizeView();
-		//mmodel->Changed=false;
-	}else if (ext == "wmb"){
-		mmodel->LoadImportFromGameStudioWmb(param);
-		set_mode(ModeModel);
-		WholeWindow=true;
-		mmodel->OptimizeView();*/
-	}else if (ext == "3ds"){
-		storage->load(param, mode_model->data);
-	}else{
+	} else {
 		error_box(_("Unknown file extension: ") + param);
 		app->end();
 	}
@@ -358,16 +334,14 @@ bool Edward::handle_arguments(Array<string> arg)
 	return true;
 }
 
-void Edward::optimize_current_view()
-{
+void Edward::optimize_current_view() {
 	cur_mode->optimize_view_recursice();
 }
 
 
 // do we change roots?
 //  -> data loss?
-bool mode_switch_allowed(ModeBase *m)
-{
+bool mode_switch_allowed(ModeBase *m) {
 	if (m->equal_roots(ed->cur_mode))
 		return true;
 	return ed->allow_termination();

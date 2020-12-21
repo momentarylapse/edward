@@ -68,6 +68,13 @@ bool handle_special_args(const Array<string> &arg) {
 				return true;
 			}
 		}
+	} else if (arg[1] == "--update-model") {
+		if (arg.num >= 3) {
+			DataModel m;
+			storage->load(arg[2], &m, false);
+			//m.save(arg[2]);
+		}
+		return true;
 	}
 	return false;
 
