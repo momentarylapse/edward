@@ -54,6 +54,7 @@ public:
 	void get_camera_frame(vector &dir, vector &up, vector &right);
 	void get_active_grid_frame(vector &dir, vector &up, vector &right);
 	void get_edit_frame(vector &dir, vector &up, vector &right);
+	vector get_lighting_eye_pos();
 
 	color get_background_color();
 };

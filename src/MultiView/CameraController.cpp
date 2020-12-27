@@ -27,7 +27,7 @@ CameraController::CameraController(MultiView *_view) {
 	moving = false;
 	rotating = false;
 	zooming = false;
-	show = false;
+	show = true;
 	tex_bg = nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/bg.png");
 	tex_move = nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/move.png");
 	tex_rotate= nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/rotate.png");

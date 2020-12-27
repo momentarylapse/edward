@@ -534,6 +534,12 @@ void Window::get_edit_frame(vector &dir, vector &up, vector &right) {
 		get_active_grid_frame(dir, up, right);
 }
 
+vector Window::get_lighting_eye_pos() {
+	if (type == VIEW_PERSPECTIVE)
+		return cam->get_pos(true);
+	return cam->get_pos(false) - cam->radius * get_direction() * 10;
+}
+
 float Window::zoom() {
 	//return 1000.0f / radius;
 	if (multi_view->mode3d)
