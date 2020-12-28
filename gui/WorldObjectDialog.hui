@@ -9,6 +9,12 @@ Dialog world_object_dialog "Object properties" width=390 height=220
 				Edit kind "" expandx disabled
 				Button find_object "" disabled image=hui:open
 				Button edit_object "" image=hui:edit
+			---|
+			Text t_script "Script:"
+			Grid ? ""
+				Edit script "" expandx disabled
+				Button find_script "" disabled image=hui:open
+				Button edit_script "" image=hui:edit
 		Grid ? ""
 			.
 			Text /x "X" center

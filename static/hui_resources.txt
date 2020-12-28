@@ -9123,7 +9123,7 @@ Grid
 
 0
 0
-4
+6
 Text
 t_name
 
@@ -9162,6 +9162,36 @@ disabled,image=hui:open
 0
 Button
 edit_object
+image=hui:edit
+2
+0
+0
+Text
+t_script
+
+0
+2
+0
+Grid
+?
+
+1
+2
+3
+Edit
+script
+expandx,disabled
+0
+0
+0
+Button
+find_script
+disabled,image=hui:open
+1
+0
+0
+Button
+edit_script
 image=hui:edit
 2
 0
@@ -9436,7 +9466,7 @@ Grid
 
 0
 0
-4
+6
 Text
 t-ob-name
 right,disabled
@@ -9475,6 +9505,36 @@ disabled,image=hui:open
 0
 Button
 edit_object
+image=hui:edit
+2
+0
+0
+Text
+t-ob-script
+right,disabled
+0
+2
+0
+Grid
+?
+
+1
+2
+3
+Edit
+ob-script
+expandx,disabled
+0
+0
+0
+Button
+find-script
+image=hui:open
+1
+0
+0
+Button
+edit-script
 image=hui:edit
 2
 0
@@ -10035,7 +10095,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-1001
+1003
 # Text
 /ambient
 Ambient
@@ -12812,6 +12872,9 @@ Type
 world-object-list-dialog/t-ob-name
 Name
 
+world-object-list-dialog/t-ob-script
+Script
+
 world-object-list-dialog/t-ob-type
 Type
 
@@ -13006,6 +13069,9 @@ Position
 
 world_object_dialog/t_name
 Name:
+
+world_object_dialog/t_script
+Script:
 
 world_object_dialog/t_type
 Type:

@@ -37,6 +37,12 @@ Dialog world-object-list-dialog "" width=400 height=300
 						Edit ob-kind "" expandx disabled
 						Button find_object "" disabled image=hui:open
 						Button edit_object "" image=hui:edit
+					---|
+					Text t-ob-script "Script" right disabled
+					Grid ? ""
+						Edit ob-script "" expandx disabled
+						Button find-script "" image=hui:open
+						Button edit-script "" image=hui:edit
 			Group g-terrain "Terrain"
 				Grid ? "" vertical
 					Grid ? ""

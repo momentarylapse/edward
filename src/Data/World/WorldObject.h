@@ -16,6 +16,7 @@ class Object;
 class WorldObject: public MultiView::SingleData {
 public:
 	Path filename;
+	Path script;
 	string name;
 	Object *object;
 	vector ang;
