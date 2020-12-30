@@ -175,7 +175,7 @@ void WorldObjectListPanel::selection_to_world(const Array<int> &sel) {
 	world->multi_view->select_none();
 
 	for (int s: sel) {
-	auto &ii = list_indices[s];
+		auto &ii = list_indices[s];
 		if (ii.type == MVD_WORLD_OBJECT) {
 			auto &o = data->objects[ii.index];
 			o.is_selected = true;

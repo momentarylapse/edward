@@ -637,6 +637,12 @@ CubeMap::CubeMap(int size) {
 	height = size;
 	type = Type::CUBE;
 	filename = "-cubemap-";
+
+
+	Image im;
+	im.create(size, size, Blue);
+	for (int i=0; i<6; i++)
+		overwrite_side(i, im);
 }
 
 void CubeMap::__init__(int size) {

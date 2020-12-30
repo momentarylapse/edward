@@ -68,17 +68,21 @@ void TestGLError(const char *pos) {
 #if 1
 	int err = glGetError();
 	if (err == GL_NO_ERROR)
-	{}//msg_write("GL_NO_ERROR");
-	else if (err == GL_INVALID_ENUM)
-		msg_error("GL_INVALID_ENUM at " + string(pos));
+		return;
+
+	string t;
+	if (err == GL_INVALID_ENUM)
+		t = "GL_INVALID_ENUM at " + string(pos);
 	else if (err == GL_INVALID_VALUE)
-		msg_error("GL_INVALID_VALUE at " + string(pos));
+		t = "GL_INVALID_VALUE at " + string(pos);
 	else if (err == GL_INVALID_OPERATION)
-		msg_error("GL_INVALID_OPERATION at " + string(pos));
+		t = "GL_INVALID_OPERATION at " + string(pos);
 	else if (err == GL_INVALID_FRAMEBUFFER_OPERATION)
-		msg_error("GL_INVALID_FRAMEBUFFER_OPERATION at " + string(pos));
+		t = "GL_INVALID_FRAMEBUFFER_OPERATION at " + string(pos);
 	else
-		msg_error(i2s(err) + " at " + string(pos));
+		t = i2s(err) + " at " + string(pos);
+	msg_error(t);
+	throw Exception("OpenGL error: " + t);
 #endif
 }
 

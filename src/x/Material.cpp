@@ -2,8 +2,7 @@
 #include "model.h"
 #include "../lib/file/file.h"
 #include "../lib/nix/nix.h"
-
-color file_read_color4i(File *f); // -> model.cpp
+#include "../lib/hui/Config.h"
 
 
 Path MaterialDir;
