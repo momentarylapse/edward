@@ -88,10 +88,10 @@ MultiView::MultiView(bool mode3d) {
 	ubo_light = new nix::UniformBuffer();
 
 	if (mode3d) {
-		win.add(new Window(this, VIEW_BACK));
-		win.add(new Window(this, VIEW_LEFT));
-		win.add(new Window(this, VIEW_TOP));
-		win.add(new Window(this, VIEW_PERSPECTIVE));
+		all_windows.add(new Window(this, VIEW_BACK));
+		all_windows.add(new Window(this, VIEW_LEFT));
+		all_windows.add(new Window(this, VIEW_TOP));
+		all_windows.add(new Window(this, VIEW_PERSPECTIVE));
 
 		// Menu
 		menu = new hui::Menu;
@@ -107,7 +107,7 @@ MultiView::MultiView(bool mode3d) {
 		menu->add(_("Isometric"), "view_isometric");
 		menu->add(_("Perspective"), "view_perspective");
 	} else {
-		win.add(new Window(this, VIEW_2D));
+		all_windows.add(new Window(this, VIEW_2D));
 	}
 	action_con = new ActionController(this);
 	cam_con = new CameraController(this);
@@ -125,7 +125,7 @@ MultiView::MultiView(bool mode3d) {
 
 MultiView::~MultiView() {
 	hui::Config.get_bool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
-	for (auto w: win)
+	for (auto w: all_windows)
 		delete w;
 	delete cam_con;
 	delete action_con;
@@ -135,7 +135,7 @@ MultiView::~MultiView() {
 
 void MultiView::reset() {
 	sel_rect.end();
-	mouse_win = win.back();
+	mouse_win = all_windows.back();
 	active_win = mouse_win;
 
 	view_moving = false;
@@ -220,9 +220,9 @@ void MultiView::cam_zoom(float factor, bool mouse_rel) {
 }
 
 // dir: screen pixels
-void MultiView::cam_move_pixel(const vector &dir) {
-	vector d = active_win->reflection_matrix * dir;
-	cam_move(-(active_win->local_ang * d) / active_win->zoom());
+void MultiView::cam_move_pixel(Window *win, const vector &dir) {
+	vector d = win->reflection_matrix * dir;
+	cam_move(-(win->local_ang * d) / win->zoom());
 }
 
 void MultiView::cam_move(const vector &dpos) {
@@ -344,9 +344,9 @@ void MultiView::on_mouse_leave() {
 void activate_next_window(MultiView *mv) {
 	if (mv->whole_window)
 		return;
-	for (int i=0; i<mv->win.num; i++)
-		if (mv->win[i] == mv->active_win) {
-			mv->active_win = mv->win[(i+1)%mv->win.num];
+	for (int i=0; i<mv->all_windows.num; i++)
+		if (mv->all_windows[i] == mv->active_win) {
+			mv->active_win = mv->all_windows[(i+1)%mv->all_windows.num];
 			mv->notify(mv->MESSAGE_SETTINGS_CHANGE);
 			break;
 		}
@@ -362,17 +362,17 @@ void MultiView::on_key_down(int k) {
 	if ((k == hui::KEY_MINUS) or (k == hui::KEY_NUM_SUBTRACT))
 		cam_zoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
 	if (k == hui::KEY_RIGHT)
-		cam_move_pixel(-vector::EX * SPEED_MOVE);
+		cam_move_pixel(active_win, -vector::EX * SPEED_MOVE);
 	if (k == hui::KEY_LEFT)
-		cam_move_pixel( vector::EX * SPEED_MOVE);
+		cam_move_pixel(active_win,  vector::EX * SPEED_MOVE);
 	if (k == hui::KEY_UP)
-		cam_move_pixel( vector::EY * SPEED_MOVE);
+		cam_move_pixel(active_win,  vector::EY * SPEED_MOVE);
 	if (k == hui::KEY_DOWN)
-		cam_move_pixel(-vector::EY * SPEED_MOVE);
+		cam_move_pixel(active_win, -vector::EY * SPEED_MOVE);
 	if (k == hui::KEY_SHIFT + hui::KEY_UP)
-		cam_move_pixel(-vector::EZ * SPEED_MOVE);
+		cam_move_pixel(active_win, -vector::EZ * SPEED_MOVE);
 	if (k == hui::KEY_SHIFT + hui::KEY_DOWN)
-		cam_move_pixel( vector::EZ * SPEED_MOVE);
+		cam_move_pixel(active_win,  vector::EZ * SPEED_MOVE);
 	if (k == hui::KEY_ESCAPE)
 		action_con->end_action(false);
 	if (k == hui::KEY_TAB)
@@ -530,11 +530,11 @@ void MultiView::update_mouse() {
 			return;
 
 	// which window is the cursor in?
-	for (auto w: win)
+	for (auto w: all_windows)
 		if (w->dest.inside(m.x, m.y))
 			mouse_win = w;
 	if (!mode3d) {
-		mouse_win = win[0];
+		mouse_win = all_windows[0];
 	}
 }
 
@@ -556,7 +556,7 @@ void MultiView::on_mouse_move() {
 			cam_rotate_pixel(v, mbut or ed->get_key(hui::KEY_CONTROL));
 		} else {
 	// camera translation
-			cam_move_pixel(v);
+			cam_move_pixel(active_win, v);
 		}
 	} else if (moving_cross_x or moving_cross_y) {
 		if (moving_cross_x)
@@ -660,33 +660,37 @@ void MultiView::on_draw() {
 	area = nix::target_rect;
 
 	if (!mode3d) {
-		win[0]->dest = area;
-		win[0]->draw();
+		visible_windows = {all_windows[0]};
+		all_windows[0]->dest = area;
+		all_windows[0]->draw();
 	} else if (whole_window) {
-		for (auto w: win)
+		for (auto w: all_windows)
 			w->dest = rect(0,0,0,0);
+		visible_windows = {active_win};
 		active_win->dest = area;
 		active_win->draw();
 	} else {
 		float xm = area.x1 + area.width() * window_partition_x;
 		float ym = area.y1 + area.height() * window_partition_y;
 		float d = scheme.WINDOW_DIVIDER_THICKNESS / 2;
+		visible_windows = {all_windows[0], all_windows[1], all_windows[2], all_windows[3]};
+
 
 		// top left
-		win[0]->dest = rect(area.x1, xm-d+1, area.y1, ym-d+1);
-		win[0]->draw();
+		all_windows[0]->dest = rect(area.x1, xm-d+1, area.y1, ym-d+1);
+		all_windows[0]->draw();
 
 		// top right
-		win[1]->dest = rect(xm+d-1, area.x2, area.y1, ym-d+1);
-		win[1]->draw();
+		all_windows[1]->dest = rect(xm+d-1, area.x2, area.y1, ym-d+1);
+		all_windows[1]->draw();
 
 		// bottom left
-		win[2]->dest = rect(area.x1, xm-d+1, ym+d-1, area.y2);
-		win[2]->draw();
+		all_windows[2]->dest = rect(area.x1, xm-d+1, ym+d-1, area.y2);
+		all_windows[2]->draw();
 
 		// bottom right
-		win[3]->dest = rect(xm+d-1, area.x2, ym+d-1, area.y2);
-		win[3]->draw();
+		all_windows[3]->dest = rect(xm+d-1, area.x2, ym+d-1, area.y2);
+		all_windows[3]->draw();
 
 		nix::SetScissor(nix::target_rect);
 
@@ -923,8 +927,8 @@ void MultiView::get_hover() {
 		return;
 	}
 	if (!whole_window) {
-		float xm = win[0]->dest.x2;
-		float ym = win[0]->dest.y2;
+		float xm = all_windows[0]->dest.x2;
+		float ym = all_windows[0]->dest.y2;
 		if ((m.x >= xm - 5) and (m.x <= xm + 5) and (m.y >= ym - 5) and (m.y <= ym + 5)) {
 			hover.meta = hover.HOVER_WINDOW_DIVIDER_CENTER;
 			return;

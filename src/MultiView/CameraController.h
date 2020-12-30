@@ -18,6 +18,7 @@ namespace nix {
 namespace MultiView {
 
 class MultiView;
+class Window;
 
 class CameraController {
 public:
@@ -36,8 +37,18 @@ public:
 	bool in_use();
 
 	bool show;
-	bool moving, rotating, zooming;
-	rect r, r_move, r_rotate, r_zoom;
+
+	struct Controller {
+		Controller();
+		Window* win;
+		rect r, r_move, r_rotate, r_zoom;
+		bool moving, rotating, zooming;
+		void set(Window *w);
+		bool hover(float mx, float my);
+		void on_left_button_down(float mx, float my);
+	};
+	Array<Controller> controllers;
+
 	rect r2, r_show;
 	MultiView *view;
 	nix::Texture *tex_bg;

@@ -61,7 +61,7 @@ struct Camera {
 class ActionController;
 class CameraController;
 
-typedef std::function<float(const SingleData *p, Window *win, const vector &m, vector &tp, float &z)> HoverDistanceFunction;
+typedef std::function<float(const SingleData *p, Window *all_windows, const vector &m, vector &tp, float &z)> HoverDistanceFunction;
 
 struct DataSet {
 	int type;
@@ -174,7 +174,7 @@ public:
 	void toggle_snap_to_grid();
 	void cam_zoom(float factor, bool mouse_rel);
 	void cam_move(const vector &dpos);
-	void cam_move_pixel(const vector &dir);
+	void cam_move_pixel(Window *win, const vector &dir);
 	void cam_rotate(const quaternion &dang, bool cam_center);
 	void cam_rotate_pixel(const vector &dir, bool cam_center);
 	void clear_data(Data *_data);
@@ -242,7 +242,8 @@ public:
 	void set_edit_coordinate_mode(CoordinateMode mode);
 
 
-	Array<Window*> win;
+	Array<Window*> all_windows;
+	Array<Window*> visible_windows;
 
 	bool lbut, mbut, rbut;
 

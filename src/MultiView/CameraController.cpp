@@ -14,9 +14,9 @@
 
 namespace MultiView{
 
-const int CC_RADIUS = 50;
+const int CC_RADIUS = 40;
 const int CC_MARGIN = 200;
-const int CC_BORDER = 8;
+const int CC_BORDER = 6;
 
 const color ColorBackground = color(0.5f, 1, 1, 1);
 const color ColorIcon = color(0.5f, 0.2f, 0.2f, 0.8f);
@@ -24,36 +24,54 @@ const color ColorIconHover = color(0.7f, 0.4f, 0.4f, 1);
 
 CameraController::CameraController(MultiView *_view) {
 	view = _view;
-	moving = false;
-	rotating = false;
-	zooming = false;
 	show = true;
 	tex_bg = nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/bg.png");
 	tex_move = nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/move.png");
 	tex_rotate= nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/rotate.png");
 	tex_zoom = nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/zoom.png");
+	//controllers.resize(4);
 }
 
 CameraController::~CameraController() {
 }
 
+
+CameraController::Controller::Controller() {
+	win = nullptr;
+	moving = false;
+	rotating = false;
+	zooming = false;
+}
+
+void CameraController::Controller::set(Window *w) {
+	win = w;
+	float margin = min(100.0f, w->dest.width() / 10.0f);
+	r = rect(w->dest.x2 - margin - 3 * CC_RADIUS - 4 * CC_BORDER,
+			w->dest.x2 - margin,
+			w->dest.y1 + margin - CC_BORDER,
+			w->dest.y1 + margin + CC_RADIUS + CC_BORDER);
+	r_move = rect(w->dest.x2 - margin - 3 * CC_RADIUS - 3 * CC_BORDER,
+				w->dest.x2 - margin - 2 * CC_RADIUS - 3 * CC_BORDER,
+				w->dest.y1 + margin,
+				w->dest.y1 + margin + CC_RADIUS);
+	r_rotate = rect(w->dest.x2 - margin - 2 * CC_RADIUS - 2 * CC_BORDER,
+				w->dest.x2 - margin - CC_RADIUS - 2 * CC_BORDER,
+				w->dest.y1 + margin,
+				w->dest.y1 + margin + CC_RADIUS);
+	r_zoom = rect(w->dest.x2 - margin - CC_RADIUS - CC_BORDER,
+				w->dest.x2 - margin - CC_BORDER,
+				w->dest.y1 + margin,
+				w->dest.y1 + margin + CC_RADIUS);
+}
+
+bool CameraController::Controller::hover(float mx, float my) {
+	return r.inside(mx, my);
+}
+
 void CameraController::update_rects() {
-	r = rect(nix::target_width - CC_MARGIN - 3 * CC_RADIUS - 4 * CC_BORDER,
-	         nix::target_width - CC_MARGIN,
-	         nix::target_height / 2 - CC_RADIUS / 2 - CC_BORDER,
-	         nix::target_height / 2 + CC_RADIUS / 2 + CC_BORDER);
-	r_move = rect(nix::target_width - CC_MARGIN - 3 * CC_RADIUS - 3 * CC_BORDER,
-	              nix::target_width - CC_MARGIN - 2 * CC_RADIUS - 3 * CC_BORDER,
-	              nix::target_height / 2 - CC_RADIUS / 2,
-	              nix::target_height / 2 + CC_RADIUS / 2);
-	r_rotate = rect(nix::target_width - CC_MARGIN - 2 * CC_RADIUS - 2 * CC_BORDER,
-	                nix::target_width - CC_MARGIN - CC_RADIUS - 2 * CC_BORDER,
-	                nix::target_height / 2 - CC_RADIUS / 2,
-	                nix::target_height / 2 + CC_RADIUS / 2);
-	r_zoom = rect(nix::target_width - CC_MARGIN - CC_RADIUS - CC_BORDER,
-	              nix::target_width - CC_MARGIN - CC_BORDER,
-	              nix::target_height / 2 - CC_RADIUS / 2,
-	              nix::target_height / 2 + CC_RADIUS / 2);
+	controllers.resize(view->visible_windows.num);
+	foreachi (auto *w, view->visible_windows, i)
+		controllers[i].set(w);
 
 	r2 = rect(nix::target_width - CC_RADIUS / 2 - CC_BORDER,
 	          nix::target_width + CC_RADIUS / 2 + CC_BORDER,
@@ -67,29 +85,41 @@ void CameraController::update_rects() {
 
 bool CameraController::is_mouse_over() {
 	update_rects();
-	return (show and (r.inside(view->m.x, view->m.y))) or r2.inside(view->m.x, view->m.y);
+	if (show) {
+		for (auto &c: controllers)
+			if (c.hover(view->m.x, view->m.y))
+				return true;
+	}
+
+	return r2.inside(view->m.x, view->m.y);
 }
 
 void CameraController::on_left_button_down() {
 	update_rects();
 	if (r_show.inside(view->m.x, view->m.y))
 		show = !show;
-	moving = r_move.inside(view->m.x, view->m.y);
-	rotating = r_rotate.inside(view->m.x, view->m.y);
-	zooming = r_zoom.inside(view->m.x, view->m.y);
+	for (auto &c: controllers) {
+		c.moving = c.r_move.inside(view->m.x, view->m.y);
+		c.rotating = c.r_rotate.inside(view->m.x, view->m.y);
+		c.zooming = c.r_zoom.inside(view->m.x, view->m.y);
+	}
 }
 
 void CameraController::on_left_button_up() {
-	moving = rotating = zooming = false;
+	for (auto &c: controllers) {
+		c.moving = c.rotating = c.zooming = false;
+	}
 }
 
 void CameraController::on_mouse_move() {
-	if (moving)
-		view->cam_move_pixel(vector(view->v.x, view->v.y, 0));
-	if (rotating)
-		view->cam_rotate_pixel(view->v, false);
-	if (zooming)
-		view->cam_zoom(pow(1.007f, view->v.y), false);
+	for (auto &c: controllers) {
+		if (c.moving)
+			view->cam_move_pixel(c.win, vector(view->v.x, view->v.y, 0));
+		if (c.rotating)
+			view->cam_rotate_pixel(view->v, false);
+		if (c.zooming)
+			view->cam_zoom(pow(1.007f, view->v.y), false);
+	}
 }
 
 void CameraController::on_mouse_wheel() {
@@ -129,24 +159,30 @@ void CameraController::draw() {
 	draw_icon(r_show, NULL, false);
 
 	if (show) {
+
+		for (auto &c: controllers) {
 		// elongated background
 		set_color(ColorBackground);
 		nix::SetTexture(tex_bg);
-		draw_2d(rect(0, 0.5f, 0, 1), rect(r.x1, r.x1 + CC_RADIUS/2 + CC_BORDER, r.y1, r.y2), 0);
-		draw_2d(rect(0.5f, 0.5f, 0, 1), rect(r.x1 + CC_RADIUS/2 + CC_BORDER, r.x2 - CC_RADIUS/2 - CC_BORDER, r.y1, r.y2), 0);
-		draw_2d(rect(0.5f, 1, 0, 1), rect(r.x2 - CC_RADIUS/2 - CC_BORDER, r.x2, r.y1, r.y2), 0);
+		draw_2d(rect(0, 0.5f, 0, 1), rect(c.r.x1, c.r.x1 + CC_RADIUS/2 + CC_BORDER, c.r.y1, c.r.y2), 0);
+		draw_2d(rect(0.5f, 0.5f, 0, 1), rect(c.r.x1 + CC_RADIUS/2 + CC_BORDER, c.r.x2 - CC_RADIUS/2 - CC_BORDER, c.r.y1, c.r.y2), 0);
+		draw_2d(rect(0.5f, 1, 0, 1), rect(c.r.x2 - CC_RADIUS/2 - CC_BORDER, c.r.x2, c.r.y1, c.r.y2), 0);
 
 		// icons
-		draw_icon(r_move, tex_move, moving);
-		draw_icon(r_rotate, tex_rotate, rotating);
-		draw_icon(r_zoom, tex_zoom, zooming);
+		draw_icon(c.r_move, tex_move, c.moving);
+		draw_icon(c.r_rotate, tex_rotate, c.rotating);
+		draw_icon(c.r_zoom, tex_zoom, c.zooming);
+		}
 	}
 	nix::SetTexture(NULL);
 	nix::SetAlpha(ALPHA_NONE);
 }
 
 bool CameraController::in_use() {
-	return (moving or rotating or zooming);
+	for (auto &c: controllers)
+		if (c.moving or c.rotating or c.zooming)
+			return true;
+	return false;
 }
 
 };
