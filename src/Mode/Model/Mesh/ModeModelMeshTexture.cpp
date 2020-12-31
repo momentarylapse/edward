@@ -115,16 +115,18 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	s.y1=a.y;
 	s.y2=b.y;
 
+	nix::SetShader(nix::default_shader_2d);
+
 	if (true){//mul->FXEnabled){
 		// background pattern to show transparency
 		color c1 = Black;
 		color c2 = color(1,0.5f,0.5f,0.5f);
 		for (int i=0;i<16;i++)
 			for (int j=0;j<16;j++){
-				r=rect(	(float)i/16.0f*nix::target_width,
-						(float)(i+1)/16.0f*nix::target_width,
-						(float)j/16.0f*nix::target_height,
-						(float)(j+1)/16.0f*nix::target_height);
+				r=rect(	(float)i/16.0f,
+						(float)(i+1)/16.0f,
+						(float)j/16.0f,
+						(float)(j+1)/16.0f);
 				set_color(((i+j)%2==0) ? c1 : c2);
 				draw_2d(rect::ID, r, 0.999f );
 			}
@@ -132,13 +134,13 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	}
 	set_color(color(1,0.8f,0.8f,0.8f));
 	nix::SetTexture(cur_tex);
-	draw_2d(s, nix::target_rect, 0.99f);
-	nix::SetTexture(NULL);
+	draw_2d(s, s, 0.99f);
+	nix::SetTexture(nullptr);
 	nix::SetAlphaM(ALPHA_NONE);
 
 	// rectangle of unity
-	a = win->project(v_0);
-	b = win->project(vector(1, 1, 0));
+	a = v_0;
+	b = vector(1, 1, 0);
 	set_color(Red);
 	set_line_width(scheme.LINE_WIDTH_THIN);
 	draw_line_2d(a.x, a.y, b.x, a.y, 0.98f);
@@ -156,7 +158,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 			continue;
 		Array<vector> v;
 		for (int k=0;k<t.side.num;k++)
-			v.add(win->project(t.side[k].skin_vertex[current_texture_level]));
+			v.add(t.side[k].skin_vertex[current_texture_level]);
 		v.add(v[0]);
 		for (int k=0;k<t.side.num;k++)
 			draw_line_2d(	v[k].x,v[k].y,
