@@ -26,6 +26,8 @@ public:
 	void clear();
 	void expand_to_surfaces(ModelMesh *m);
 	bool consistent_surfaces(ModelMesh *m) const;
+
+	static ModelSelection all(ModelMesh *m);
 };
 
 #endif /* SRC_DATA_MODEL_MODELSELECTION_H_ */

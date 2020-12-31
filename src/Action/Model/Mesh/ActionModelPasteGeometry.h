@@ -12,14 +12,12 @@
 class DataModel;
 class Geometry;
 
-class ActionModelPasteGeometry : public ActionGroup
-{
+class ActionModelPasteGeometry : public ActionGroup {
 public:
 	ActionModelPasteGeometry(Geometry &geo, int material);
-	virtual ~ActionModelPasteGeometry(){}
-	string name(){	return "ModelPasteGeometry";	}
+	string name() override { return "ModelPasteGeometry"; }
 
-	void *compose(Data *d);
+	void *compose(Data *d) override;
 private:
 	Geometry &geo;
 	int default_material;

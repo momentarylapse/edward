@@ -45,3 +45,14 @@ void ModelSelection::expand_to_surfaces(ModelMesh *m) {
 				polygon.add(i);
 }
 
+ModelSelection ModelSelection::all(ModelMesh *m) {
+	ModelSelection r;
+	for (int i=0; i<m->vertex.num; i++)
+		r.vertex.add(i);
+	for (int i=0; i<m->polygon.num; i++)
+		r.polygon.add(i);
+	for (int i=0; i<m->edge.num; i++)
+		r.edge.add(i);
+	return r;
+}
+

@@ -8,8 +8,10 @@
 #include "ActionModelSurfaceVolumeSubtract.h"
 #include "ActionModelDeleteSurface.h"
 #include "../ActionModelPasteGeometry.h"
+#include "../ActionModelDeleteSelection.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Data/Model/Geometry/Geometry.h"
+#include "../../../../Data/Model/ModelSelection.h"
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 
@@ -17,60 +19,37 @@
 ActionModelSurfaceVolumeSubtract::ActionModelSurfaceVolumeSubtract()
 {}
 
-void *ActionModelSurfaceVolumeSubtract::compose(Data *d)
-{
-	msg_todo("ActionModelSurfaceVolumeSubtract");
-#if 0
+void *ActionModelSurfaceVolumeSubtract::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	int n = 0;
-	for (ModelSurface &s: m->surface)
-		if ((s.is_selected) && (s.is_closed))
-			n ++;
-	if (n == 0)
-		throw ActionException("no closed surfaces selected");
 
-	Array<Geometry> geos;
-	for (int bi=m->surface.num-1; bi>=0; bi--){
-		if (m->surface[bi].is_selected){
-			for (int ai=m->surface.num-1; ai>=0; ai--){
-				ModelSurface *a = &m->surface[ai];
-				if ((a->view_stage >= ed->multi_view_3d->view_stage) && (!a->is_selected))
-					SurfaceSubtract(m, a, ai, &m->surface[bi], geos);
-			}
-		}
-	}
-	for (Geometry &g: geos)
-		addSubAction(new ActionModelPasteGeometry(g, 0), m);
-
-	ed->set_message(format(_("%d closed surfaces subtracted"), n));
-#endif
-	return NULL;
-}
-
-void surf2geo(ModelSurface *s, Geometry &g)
-{
-#if 0
-	g.clear();
-	for (int v: s->vertex)
-		g.vertex.add(s->model->vertex[v]);
-	for (ModelPolygon &p: s->polygon){
-		ModelPolygon pp = p;
-		for (int i=0;i<p.side.num;i++)
-			pp.side[i].vertex = s->vertex.find(p.side[i].vertex);
-		g.polygon.add(pp);
-	}
-#endif
-}
-
-void ActionModelSurfaceVolumeSubtract::SurfaceSubtract(DataModel *m, ModelSurface *a, int ai, ModelSurface *b, Array<Geometry> &geos)
-{
 	Geometry ga, gb, gc;
-	surf2geo(a, ga);
-	surf2geo(b, gb);
+	ga.vertex = m->mesh->vertex;
+	gb.vertex = m->mesh->vertex;
+	for (auto &p: m->mesh->polygon)
+		if (p.is_selected)
+			gb.polygon.add(p);
+		else
+			ga.polygon.add(p);
+
+	if (gb.polygon.num == 0)
+		throw ActionException("no polygons selected");
+
+	ga.update_topology();
+	gb.update_topology();
+	ga.remove_unused_vertices();
+	gb.remove_unused_vertices();
+
+	if (!gb.is_closed)
+		throw ActionException("selected surface is not closed");
+
 	int status = GeometrySubtract(ga, gb, gc);
 
-	if (status == 1){
-		geos.add(gc);
-//		addSubAction(new ActionModelDeleteSurface(ai), m);
+	if (status == 1) {
+		auto sel = ModelSelection::all(m->mesh);
+		addSubAction(new ActionModelDeleteSelection(sel, false), d);
+
+		addSubAction(new ActionModelPasteGeometry(gc, 0), d);
+		addSubAction(new ActionModelPasteGeometry(gb, 0), d);
 	}
+	return NULL;
 }
