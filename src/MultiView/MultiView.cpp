@@ -1140,7 +1140,7 @@ void MultiView::reset_message_3d() {
 void MultiView::set_light(const vector &dir, const color &col, float harshness) {
 	nix::BasicLight l;
 	l.proj = matrix::ID;
-	l.dir = vector::EZ;//dir;
+	l.dir = dir;
 	l.col = col;
 	l.radius = -1;
 	l.theta = pi;
