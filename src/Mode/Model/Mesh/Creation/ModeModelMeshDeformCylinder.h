@@ -13,8 +13,7 @@
 
 class Geometry;
 
-class ModeModelMeshDeformCylinder: public ModeCreation<DataModel>
-{
+class ModeModelMeshDeformCylinder: public ModeCreation<DataModel> {
 public:
 	ModeModelMeshDeformCylinder(ModeBase *parent);
 	virtual ~ModeModelMeshDeformCylinder();
@@ -24,18 +23,15 @@ public:
 
 	void on_mouse_move() override;
 	void on_left_button_down() override;
-	void on_left_button_up() override;
 	void on_key_down(int key_code) override;
 	void on_command(const string &id) override;
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	void onPreview();
-	void onOk();
-	void onClose();
+	void on_ok();
 
-	void updateHover();
-	void updateParams();
+	void update_hover();
+	void update_params();
 
 //private:
 	Geometry *geo;

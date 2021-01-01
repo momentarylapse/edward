@@ -13,7 +13,7 @@
 #include "Data/World/DataWorld.h"
 #include "Storage/Storage.h"
 
-string AppVersion = "0.4.-1.5";
+string AppVersion = "0.4.-1.6";
 string AppName = "Edward";
 
 
@@ -23,7 +23,7 @@ EdwardApp::EdwardApp() :
 	app = this;
 	set_property("name", AppName);
 	set_property("version", AppVersion);
-	set_property("copyright", "© 2006-2020 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
+	set_property("copyright", "© 2006-2021 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
 	set_property("comment", _("Editor for game data of the x9 engine"));
 	set_property("website", "http://michi.is-a-geek.org/software");
 	set_property("author", "Michael Ankele <michi@lupina.de>");
