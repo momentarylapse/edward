@@ -43,8 +43,9 @@ void *ActionModelSurfacesSubdivide::compose(Data *d) {
 	// new edge vertices
 	Array<vector> old_edge_vert;
 	int nv_e0 = m->vertex.num;
-	for (int ie: sel.edge) {
-		auto &e = m->edge[ie];
+	for (auto &e: m->edge) {
+		if (!sel.has(e))
+			continue;
 		vector pos = m->vertex[e.vertex[0]].pos + m->vertex[e.vertex[1]].pos;
 		old_edge_vert.add(pos / 2);
 		for (int k=0; k<e.ref_count; k++)

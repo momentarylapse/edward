@@ -12,12 +12,19 @@
 #include "../../lib/base/set.h"
 
 class ModelMesh;
+class ModelEdge;
 
 class ModelSelection {
 public:
 	Set<int> vertex;
 	Set<int> polygon;
-	Set<int> edge;
+
+	struct Edge {
+		int a, b;
+	};
+	Array<Edge> edge;
+	void set(const ModelEdge &e);
+	bool has(const ModelEdge &e) const;
 
 	Set<int> bone;
 	Set<int> cylinder;

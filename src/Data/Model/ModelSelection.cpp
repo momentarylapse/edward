@@ -17,13 +17,34 @@ void ModelSelection::clear() {
 	bone.clear();
 }
 
+void ModelSelection::set(const ModelEdge &e) {
+	if (has(e))
+		return;
+	Edge ee;
+	ee.a = min(e.vertex[0], e.vertex[1]);
+	ee.b = max(e.vertex[0], e.vertex[1]);
+	edge.add(ee);
+}
+
+bool ModelSelection::has(const ModelEdge &e) const {
+	Edge ee;
+	ee.a = min(e.vertex[0], e.vertex[1]);
+	ee.b = max(e.vertex[0], e.vertex[1]);
+	for (auto &eee: edge)
+		if (eee.a == ee.a and eee.b == ee.b)
+			return true;
+	return false;
+}
+
+
+
 bool ModelSelection::consistent_surfaces(ModelMesh *m) const {
-	for (int ei: edge) {
-		auto &e = m->edge[ei];
-		for (int k=0; k<2; k++)
-			if ((e.polygon[k] >= 0) and !polygon.contains(e.polygon[k]))
-				return false;
-	}
+	for (auto &e: m->edge)
+		if (has(e)) {
+			for (int k=0; k<2; k++)
+				if ((e.polygon[k] >= 0) and !polygon.contains(e.polygon[k]))
+					return false;
+		}
 	return true;
 }
 
@@ -51,8 +72,8 @@ ModelSelection ModelSelection::all(ModelMesh *m) {
 		r.vertex.add(i);
 	for (int i=0; i<m->polygon.num; i++)
 		r.polygon.add(i);
-	for (int i=0; i<m->edge.num; i++)
-		r.edge.add(i);
+	for (auto &e: m->edge)
+		r.set(e);
 	return r;
 }
 

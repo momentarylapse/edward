@@ -738,7 +738,7 @@ ModelSelection ModelMesh::get_selection() const {
 			s.polygon.add(j);
 	foreachi(ModelEdge &e, edge, j)
 		if (e.is_selected)
-			s.edge.add(j);
+			s.set(e);
 	foreachi (auto &b, ball, i)
 		if (b.is_selected)
 			s.ball.add(i);
@@ -754,8 +754,8 @@ void ModelMesh::set_selection(const ModelSelection &s) {
 		vertex[v].is_selected = true;
 	for (int p: s.polygon)
 		polygon[p].is_selected = true;
-	for (int e: s.edge)
-		edge[e].is_selected = true;
+	for (auto &e: edge)
+		e.is_selected = s.has(e);
 	model->notify(model->MESSAGE_SELECTION);
 }
 

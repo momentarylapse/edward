@@ -1110,7 +1110,7 @@ void MultiView::view_stage_push() {
 	view_stage ++;
 
 	for (DataSet &d: data)
-		if (d.selectable)
+		//if (d.selectable)
 			for (int i=0;i<d.data->num;i++) {
 				SingleData* sd = MVGetSingleData(d,i);
 				if (sd->is_selected)
@@ -1124,7 +1124,7 @@ void MultiView::view_stage_pop() {
 		return;
 	view_stage --;
 	for (DataSet &d: data)
-		if (d.selectable)
+		//if (d.selectable)
 			for (int i=0;i<d.data->num;i++) {
 				SingleData* sd = MVGetSingleData(d,i);
 				if (sd->view_stage > view_stage)

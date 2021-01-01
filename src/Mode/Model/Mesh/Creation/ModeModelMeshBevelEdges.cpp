@@ -26,12 +26,12 @@ void ModeModelMeshBevelEdges::on_start() {
 	rad_max = -1;
 	for (ModelEdge &e: data->mesh->edge)
 		if ((data->mesh->vertex[e.vertex[0]].is_selected) or (data->mesh->vertex[e.vertex[1]].is_selected)){
-		float l = (data->mesh->vertex[e.vertex[0]].pos - data->mesh->vertex[e.vertex[1]].pos).length();
-		if ((data->mesh->vertex[e.vertex[0]].is_selected) and (data->mesh->vertex[e.vertex[1]].is_selected))
-			l /= 2;
-		if ((l < rad_max) or (rad_max < 0))
-			rad_max = l;
-	}
+			float l = (data->mesh->vertex[e.vertex[0]].pos - data->mesh->vertex[e.vertex[1]].pos).length();
+			if ((data->mesh->vertex[e.vertex[0]].is_selected) and (data->mesh->vertex[e.vertex[1]].is_selected))
+				l /= 2;
+			if ((l < rad_max) or (rad_max < 0))
+				rad_max = l;
+		}
 
 	radius = rad_max / 4;
 
