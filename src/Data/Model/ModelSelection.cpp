@@ -21,7 +21,7 @@ bool ModelSelection::consistent_surfaces(ModelMesh *m) const {
 	for (int ei: edge) {
 		auto &e = m->edge[ei];
 		for (int k=0; k<2; k++)
-			if ((k >= 0) and !polygon.contains(e.polygon[k]))
+			if ((e.polygon[k] >= 0) and !polygon.contains(e.polygon[k]))
 				return false;
 	}
 	return true;

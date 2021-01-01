@@ -23,6 +23,9 @@ public:
 
 	void _load_v10(File *f, DataModel *data, bool deep);
 	void _load_v11(File *f, DataModel *data, bool deep);
+
+	void _save_v11(const Path &filename, DataModel *data);
+	void _save_v11_poly(const Path &filename, DataModel *data);
 };
 
 #endif /* SRC_STORAGE_FORMAT_FORMATMODEL_H_ */

@@ -909,6 +909,12 @@ void FormatModel::_save(const Path &filename, DataModel *data) {
 	// so the materials don't get mixed up
 //	RemoveUnusedData();
 
+	//_save_v11_poly(filename.with(".edit"), data);
+	_save_v11(filename, data);
+
+}
+
+void FormatModel::_save_v11(const Path &filename, DataModel *data) {
 
 	File *f = FileCreateText(filename);
 	f->WriteFileFormatVersion(false, 11);//FFVBinary, 11);
