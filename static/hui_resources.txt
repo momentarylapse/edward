@@ -2786,10 +2786,10 @@ width=400,height=250,allow-root
 1
 Grid
 ?
-
+vertical
 0
 0
-2
+3
 MultilineEdit
 source
 
@@ -2797,10 +2797,28 @@ source
 0
 0
 Grid
+?
+
+1
+0
+2
+Label
+l-coord
+
+0
+0
+0
+ComboBox
+coord
+expandx
+1
+0
+0
+Grid
 deformation_dialog_buttonbar
 buttonbar
+2
 0
-1
 2
 Button
 preview
@@ -2808,9 +2826,9 @@ image=hui:apply
 0
 0
 0
-DefButton
+Button
 ok
-image=hui:ok
+image=hui:ok,default
 1
 0
 0
@@ -10095,7 +10113,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-1003
+1005
 # Text
 /ambient
 Ambient
@@ -10328,8 +10346,14 @@ Axis
 deformation_cylinder_dialog/deformation_cylinder_dialog
 Deformation
 
+deformation_function_dialog/coord
+relative [0:1]\\relative [-1:1]\\absolute
+
 deformation_function_dialog/deformation_function_dialog
 Deformation
+
+deformation_function_dialog/l-coord
+Coordinate system
 
 easify_dialog/easify_dialog
 Easify skin

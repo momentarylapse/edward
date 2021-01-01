@@ -1,7 +1,9 @@
 Dialog deformation_function_dialog "Deformation" width=400 height=250 allow-root
-	Grid ? ""
+	Grid ? "" vertical
 		MultilineEdit source ""
-		---|
+		Grid ? ""
+			Label l-coord "Coordinate system"
+			ComboBox coord "relative [0:1]\\relative [-1:1]\\absolute"" expandx
 		Grid deformation_dialog_buttonbar "" buttonbar
 			Button /preview "Preview" image=hui:apply
-			DefButton /ok "Ok" image=hui:ok
+			Button /ok "Ok" image=hui:ok default

@@ -10,17 +10,17 @@
 
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../lib/base/pointer.h"
 
 class Geometry;
-namespace Kaba{
+namespace kaba {
 	class Script;
 }
-namespace nix{
+namespace nix {
 	class NixTexture;
 };
 
-class ModeModelMeshDeformFunction: public ModeCreation<DataModel>
-{
+class ModeModelMeshDeformFunction: public ModeCreation<DataModel> {
 public:
 	ModeModelMeshDeformFunction(ModeBase *parent);
 	virtual ~ModeModelMeshDeformFunction();
@@ -37,9 +37,15 @@ private:
 	vector min, max;
 	Geometry *geo;
 	nix::Texture *tex;
-	Kaba::Script *s;
+	shared<kaba::Script> script;
 	typedef _cdecl vector vec_func(const vector &);
 	vec_func *f;
+
+	enum class CoordSystem {
+		RELATIVE,
+		RELATIVE_SYM,
+		ABSOLUTE
+	} coord_system;
 
 	void update_function();
 	vector transform(const vector &v);
