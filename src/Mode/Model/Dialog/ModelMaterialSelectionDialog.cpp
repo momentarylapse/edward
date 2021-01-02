@@ -22,20 +22,21 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(hui::Window *_parent,
 {
 	from_resource("model_material_selection_dialog");
 	data = _data;
+	list_id = "material_list";
 	fill_material_list();
 
 	popup_materials = hui::CreateResourceMenu("model-material-list-popup");
 
 	event("hui:close", [=]{ on_close(); });
 	event("apply", [=]{ on_apply(); });
-	event_x("material_list", "hui:activate", [=]{ on_apply(); });
-	event_x("material_list", "hui:right-button-down", [=]{ on_material_list_right_click(); });
+	event_x(list_id, "hui:activate", [=]{ on_apply(); });
+	event_x(list_id, "hui:right-button-down", [=]{ on_material_list_right_click(); });
 	event("add_new_material", [=]{ on_material_add(); });
 	event("add_material", [=]{ on_material_load(); });
 	event("delete_material", [=]{ on_material_delete(); });
 	event("apply_material", [=]{ on_apply(); });
 
-	answer = NULL;
+	answer = -1;
 
 	data->subscribe(this, [=]{ fill_material_list(); });
 }
@@ -45,25 +46,17 @@ ModelMaterialSelectionDialog::~ModelMaterialSelectionDialog() {
 	delete popup_materials;
 }
 
-void ModelMaterialSelectionDialog::fill_material_list()
-{
-	reset("material_list");
-	for (int i=0;i<data->material.num;i++){
+void ModelMaterialSelectionDialog::fill_material_list() {
+	reset(list_id);
+	for (int i=0;i<data->material.num;i++) {
 		int nt = 0;
 		for (auto &t: data->mesh->polygon)
 			if (t.material == i)
 				nt ++;
 		string im = render_material(data->material[i]);
-		add_string("material_list", format("%d\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
+		add_string(list_id, format("%d\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}
-	set_int("material_list", mode_model_mesh->current_material);
-}
-
-void ModelMaterialSelectionDialog::put_answer(int *_answer)
-{
-	answer = _answer;
-	if (answer)
-		*answer = -1;
+	set_int(list_id, mode_model_mesh->current_material);
 }
 
 
@@ -72,18 +65,16 @@ void ModelMaterialSelectionDialog::on_close() {
 }
 
 void ModelMaterialSelectionDialog::on_apply() {
-	if (answer)
-		*answer = get_int("matieral_list");
+	answer = get_int(list_id);
 	request_destroy();
 }
 
 void ModelMaterialSelectionDialog::on_material_list_right_click() {
 	int n = hui::GetEvent()->row;
-	if (n >= 0) {
+	if (n >= 0)
 		mode_model_mesh->set_current_material(n);
-	}
-	popup_materials->enable("apply_material", n>=0);
-	popup_materials->enable("delete_material", n>=0);
+	popup_materials->enable("apply_material", n >= 0);
+	popup_materials->enable("delete_material", n >= 0);
 	popup_materials->open_popup(this);
 }
 

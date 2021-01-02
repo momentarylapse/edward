@@ -416,17 +416,12 @@ void ModeModelMesh::choose_material_for_selection() {
 		return;
 	}
 
-	int SelectionDialogReturnIndex;
-
-
-	// dialog
 	auto *dlg = new ModelMaterialSelectionDialog(ed, false, data);
-	dlg->put_answer(&SelectionDialogReturnIndex);
 	dlg->run();
-	delete dlg;
 
-	if (SelectionDialogReturnIndex >= 0)
-		data->setMaterialSelection(SelectionDialogReturnIndex);
+	if (dlg->answer >= 0)
+		data->setMaterialSelection(dlg->answer);
+	delete dlg;
 }
 
 void ModeModelMesh::choose_mouse_function(int f, bool _lock_action) {

@@ -26,9 +26,9 @@ public:
 
 	void fill_material_list();
 
-	void put_answer(int *_answer);
+	int answer;
 private:
-	int *answer;
+	string list_id;
 	DataModel *data;
 	hui::Menu *popup_materials;
 };
