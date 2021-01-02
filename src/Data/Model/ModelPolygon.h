@@ -41,6 +41,7 @@ public:
 	vector temp_normal;
 	bool normal_dirty, triangulation_dirty;
 	int material;
+	int smooth_group;
 
 	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;

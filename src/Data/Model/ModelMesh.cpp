@@ -80,27 +80,26 @@ bool int_array_has_duplicates(const Array<int> &a) {
 }
 
 
-void ModelMesh::_addPolygon(const Array<int> &v, int _material, const Array<vector> &sv, int index)
-{
+void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vector> &sv, int index) {
 	if (int_array_has_duplicates(v))
 		throw GeometryException("AddPolygon: duplicate vertices");
 
 	ModelPolygon t;
 	t.side.resize(v.num);
-	for (int k=0;k<v.num;k++){
+	for (int k=0;k<v.num;k++) {
 		t.side[k].vertex = v[k];
 		for (int i=0;i<model->material[_material]->texture_levels.num;i++)
 			t.side[k].skin_vertex[i] = sv[i * v.num + k];
 	}
 	for (int k=0;k<v.num;k++){
-		try{
+		try {
 			t.side[k].edge = add_edge_for_new_polygon(t.side[k].vertex, t.side[(k + 1) % v.num].vertex, polygon.num, k);
 			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
-		}catch(GeometryException &e){
+		} catch (GeometryException &e) {
 			// failed -> clean up
 			for (int i=edge.num-1;i>=0;i--)
 				for (int j=0;j<edge[i].ref_count;j++)
-					if (edge[i].polygon[j] == polygon.num){
+					if (edge[i].polygon[j] == polygon.num) {
 						edge[i].ref_count --;
 						if (edge[i].ref_count == 0)
 							edge.resize(i);
@@ -120,7 +119,8 @@ void ModelMesh::_addPolygon(const Array<int> &v, int _material, const Array<vect
 	t.view_stage = ed->multi_view_3d->view_stage;
 	t.normal_dirty = true;
 	t.triangulation_dirty = true;
-	if (index >= 0){
+	t.smooth_group = -1;
+	if (index >= 0) {
 		polygon.insert(t, index);
 
 		// correct edges
@@ -132,11 +132,12 @@ void ModelMesh::_addPolygon(const Array<int> &v, int _material, const Array<vect
 		// correct own edges
 		for (int k=0;k<t.side.num;k++)
 			edge[polygon[index].side[k].edge].polygon[polygon[index].side[k].edge_direction] = index;
-	}else
+	} else {
 		polygon.add(t);
+	}
 }
 
-void ModelMesh::_removePolygon(int index)
+void ModelMesh::_remove_polygon(int index)
 {
 	ModelPolygon &t = polygon[index];
 

@@ -457,7 +457,7 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 			//msg_write(ia2s(_vv));
 			try{
 				msg_write(" + poly " + ia2s(_vv));
-				data->phys_mesh->_addPolygon(_vv, 0, sv);
+				data->phys_mesh->_add_polygon(_vv, 0, sv);
 			}catch(GeometryException &e) {
 				msg_error(e.message);
 			}

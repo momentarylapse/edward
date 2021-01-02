@@ -90,8 +90,8 @@ public:
 	void add_vertex(const vector &pos, int bone, int normal_mode, int index = -1);
 	void remove_lonely_vertex(int v);
 	void _shift_vertex_links(int offset, int delta);
-	void _addPolygon(const Array<int> &v, int material, const Array<vector> &sv, int index = -1);
-	void _removePolygon(int index);
+	void _add_polygon(const Array<int> &v, int material, const Array<vector> &sv, int index = -1);
+	void _remove_polygon(int index);
 
 	bool test_sanity(const string &loc);
 
