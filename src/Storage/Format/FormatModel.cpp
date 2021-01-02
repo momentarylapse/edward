@@ -60,14 +60,13 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 		m->filename = f->read_str();
 		m->col.user = f->read_bool();
 		if (m->col.user){
-			color am, sp;
+			color am, di, sp, em;
 			read_color_argb(f, am);
-			read_color_argb(f, m->col.diffuse);
+			read_color_argb(f, di);
 			read_color_argb(f, sp);
-			read_color_argb(f, m->col.emission);
-			m->col.ambient = col_frac(am, m->col.diffuse) / 2;
-			m->col.specular = col_frac(sp, White);
-			m->col.shininess = (float)f->read_int();
+			read_color_argb(f, em);
+			float shininess = (float)f->read_int();
+			m->col.import(am, di, sp, shininess, em);
 		}
 		m->alpha.mode = f->read_int();
 		m->alpha.user = (m->alpha.mode != TransparencyModeDefault);
@@ -346,14 +345,13 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 		m = new ModelMaterial();
 		m->filename = f->read_str();
 		m->col.user = f->read_bool();
-		color am, sp;
+		color am, di, sp, em;
 		read_color_argb(f, am);
-		read_color_argb(f, m->col.diffuse);
+		read_color_argb(f, di);
 		read_color_argb(f, sp);
-		read_color_argb(f, m->col.emission);
-		m->col.ambient = col_frac(am, m->col.diffuse) / 2;
-		m->col.specular = col_frac(sp, White);
-		m->col.shininess = (float)f->read_int();
+		read_color_argb(f, em);
+		float shininess = (float)f->read_int();
+		m->col.import(em, di, sp, shininess, em);
 		m->alpha.mode = f->read_int();
 		m->alpha.user = (m->alpha.mode != TransparencyModeDefault);
 		m->alpha.source = f->read_int();
@@ -937,11 +935,11 @@ void FormatModel::_save_v11(const Path &filename, DataModel *data) {
 	for (ModelMaterial *m: data->material){
 		f->write_str(m->filename.str());
 		f->write_bool(m->col.user);
-		write_color_argb(f, m->col.diffuse * m->col.ambient * 0.5f);
-		write_color_argb(f, m->col.diffuse);
-		write_color_argb(f, White * m->col.specular);
+		write_color_argb(f, m->col.ambient());
+		write_color_argb(f, m->col.albedo);
+		write_color_argb(f, m->col.specular());
 		write_color_argb(f, m->col.emission);
-		f->write_int(m->col.shininess);
+		f->write_int(m->col.shininess());
 		f->write_int(m->alpha.user ? m->alpha.mode : TransparencyModeDefault);
 		f->write_int(m->alpha.source);
 		f->write_int(m->alpha.destination);

@@ -1677,13 +1677,13 @@ Grid
 2
 2
 Slider
-slider-reflectivity
+slider-metal
 range=0:1:0.01,expandx
 0
 0
 0
 SpinButton
-reflectivity
+metal
 range=0:1:0.01
 1
 0
@@ -3244,7 +3244,7 @@ Grid
 0
 2
 CheckBox
-default_colors
+override-colors
 
 0
 0
@@ -3254,66 +3254,78 @@ Grid
 
 0
 1
-10
+8
 Text
-diffuse
+t-albedo
 right,disabled
 0
 0
 0
 ColorButton
-mat_di
+albedo
 alpha
 1
 0
 0
 Text
-ambient
+t-roughness
 right,disabled
 0
 1
 0
-SpinButton
-mat_am
-expandx,range=0:1:0.01
-1
-1
-0
-Text
-specular
-right,disabled
-0
-2
-0
-SpinButton
-mat_sp
-range=0:1:0.01
-1
-2
-0
-Text
-shininess
-right,disabled
-0
-3
-0
-SpinButton
-mat_shininess
-range=0:10000:0.1
-1
-3
-0
-Text
-emission
-right,disabled
-0
-4
-0
-ColorButton
-mat_em
+Grid
+?
 
 1
-4
+1
+2
+Slider
+slider-roughness
+range=0:1:0.01,expandx
+0
+0
+0
+SpinButton
+roughness
+range=0:1:0.01
+1
+0
+0
+Text
+t-reflectivity
+right,disabled
+0
+2
+0
+Grid
+?
+
+1
+2
+2
+Slider
+slider-metal
+range=0:1:0.01,expandx
+0
+0
+0
+SpinButton
+metal
+range=0:1:0.01
+1
+0
+0
+Text
+t-emission
+right,disabled
+0
+3
+0
+ColorButton
+emission
+
+1
+3
 0
 Expander
 model_material_dialog_grp_textures
@@ -10113,7 +10125,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-1005
+1000
 # Text
 /ambient
 Ambient
@@ -10132,9 +10144,6 @@ Delete
 
 /diffuse
 Diffuse
-
-/emission
-Emission
 
 /lu
 lu
@@ -10181,9 +10190,6 @@ Scale
 /select
 Select
 
-/shininess
-Shininess
-
 /specular
 Specular
 
@@ -10194,7 +10200,7 @@ Albedo
 Emission
 
 /t-reflectivity
-Reflectivity
+Metal
 
 /t-roughness
 Roughness
@@ -10616,6 +10622,9 @@ Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\
 material_dialog/alpha_z_buffer
 Z-buffer enabled
 
+material_dialog/emission
+
+Color in absolute darkness
 material_dialog/header
 Material
 
@@ -12455,27 +12464,12 @@ AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\Al
 model_material_dialog/alpha_z_buffer
 Z-buffer enabled
 
-model_material_dialog/default_colors
-Use colors from material
+model_material_dialog/emission
 
+Color in absolute darkness
 model_material_dialog/header
 Materials
 
-model_material_dialog/mat_am
-
-Color in shadows (ambient light)
-model_material_dialog/mat_di
-
-Color in direct light
-model_material_dialog/mat_em
-
-Color in absolute darkness
-model_material_dialog/mat_shininess
-
-Harshness of highlights (10=soft, 100=harsh)
-model_material_dialog/mat_sp
-
-Color of specular highlights
 model_material_dialog/mat_textures
 Level\\\\Texture
 Mixing texture levels (multitexturing)\n- Actions via right click
@@ -12502,6 +12496,9 @@ Textures
 
 model_material_dialog/model_material_dialog_grp_transparency
 Transparency
+
+model_material_dialog/override-colors
+Override material
 
 model_material_dialog/transparency_mode:color_key
 Color key

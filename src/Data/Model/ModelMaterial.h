@@ -55,11 +55,15 @@ public:
 
 	struct Color {
 		bool user;
-		float ambient;
-		color diffuse;
-		float specular;
+		color albedo;
+		float roughness;
+		float metal;
 		color emission;
-		float shininess;
+
+		color ambient() const;
+		color specular() const;
+		float shininess() const;
+		void import(const color &am, const color &di, const color &sp, float shininess, const color &em);
 	} col;
 
 	nix::VertexBuffer *vb;

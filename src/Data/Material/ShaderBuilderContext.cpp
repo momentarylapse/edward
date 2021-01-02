@@ -85,7 +85,7 @@ string ShaderBuilderContext::build_helper_vars() {
 	}
 	if (vars.contains("in:material")) {
 		source +=
-			"struct Material { vec4 diffusive, emission; float ambient, specular, shininess; };\n"
+			"struct Material { vec4 albedo, emission; float roughness, metal; };\n"
 			"uniform Material material;\n";
 	}
 	if (vars.contains("in:normal")) {
@@ -172,18 +172,18 @@ string ShaderBuilderContext::build_helper_functions() {
 		"}\n";
 	}
 	if (funcs.contains("basic_lighting")) {
-		source += "\nvec4 basic_lighting(vec3 n, vec4 diffuse, float ambient, float specular, float shininess, vec4 emission, Light l) {\n"
+		source += "\nvec4 basic_lighting(vec3 n, vec4 albedo, float roughness, float metal, vec4 emission, Light l) {\n"
 		"	vec3 L = (matrix.view * vec4(l.dir.xyz, 0)).xyz;\n"
 		"	float d = max(-dot(n, L), 0);\n"
-		"	vec4 r = ambient * l.color * (1 - l.harshness) / 2;\n"
+		"	vec4 r = roughness * l.color * (1 - l.harshness) / 2;\n"
 		"	r += l.color * l.harshness * d;\n"
-		"	r *= diffuse;\n"
+		"	r *= albedo;\n"
 		"	r += emission;\n"
-		"	if ((d > 0) && (material.shininess > 1)) {\n"
+		"	if ((d > 0) && (material.roughness < 0.8)) {\n"
 		"		vec3 e = normalize((matrix.view * in_pos).xyz); // eye dir\n"
 		"		vec3 rl = reflect(L, n);\n"
 		"		float ee = max(-dot(e, rl), 0);\n"
-		"		r += specular * l.color * l.harshness * pow(ee, shininess);\n"
+		"		r += (1 - roughness) * l.color * l.harshness * pow(ee, 5 / (1.1 - roughness));\n"
 		"	}\n"
 		"	return r;\n"
 		"}\n";

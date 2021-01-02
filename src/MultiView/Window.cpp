@@ -174,7 +174,7 @@ void Window::draw_grid()
 	if (type == VIEW_2D)
 		return;
 
-	nix::SetTexture(NULL);
+	nix::SetTexture(nullptr);
 	nix::SetZ(false, false);
 	set_projection_matrix();
 
@@ -336,7 +336,7 @@ void Window::draw_data_points() {
 	set_projection_matrix_pixel();
 	nix::SetShader(nix::default_shader_2d);
 	nix::SetAlpha(ALPHA_NONE);
-	nix::SetTexture(NULL);
+	nix::SetTexture(nullptr);
 	foreachi(DataSet &d, multi_view->data, di){
 		if (d.drawable){
 			for (int i=0;i<d.data->num;i++){
@@ -412,7 +412,7 @@ void Window::draw_header() {
 
 void Window::draw() {
 	nix::SetScissor(rect(dest.x1, dest.x2+1, dest.y1, dest.y2));
-	nix::SetTexture(NULL);
+	nix::SetTexture(nullptr);
 
 	color bg = get_background_color();
 
@@ -436,7 +436,7 @@ void Window::draw() {
 	nix::SetZ(true, true);
 	// light
 	multi_view->set_light(cam->ang * vector::EZ, White, 0.7f);
-	nix::SetMaterial(White, 0, 0,10, White);//Black);
+	nix::SetMaterial(White, 0, 0, White);//Black);
 	set_color(White);
 	nix::SetShader(nix::default_shader_3d);
 	nix::default_shader_3d->set_int(nix::default_shader_3d->get_location("num_lights"), 1);
@@ -448,7 +448,7 @@ void Window::draw() {
 
 	nix::SetShader(nix::default_shader_2d);
 	nix::SetAlpha(ALPHA_NONE);
-	nix::SetTexture(NULL);
+	nix::SetTexture(nullptr);
 	set_projection_matrix_pixel();
 
 	draw_data_points();

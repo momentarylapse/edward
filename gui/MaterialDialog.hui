@@ -12,13 +12,13 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 						Slider slider-roughness "" range=0:1:0.01 expandx
 						SpinButton roughness "" range=0:1:0.01
 					---|
-					Text /t-reflectivity "Reflectivity" right disabled
+					Text /t-reflectivity "Metal" right disabled
 					Grid ? ""
-						Slider slider-reflectivity "" range=0:1:0.01 expandx
-						SpinButton reflectivity "" range=0:1:0.01
+						Slider slider-metal "" range=0:1:0.01 expandx
+						SpinButton metal "" range=0:1:0.01
 					---|
 					Text /t-emission "Emission" right disabled
-					ColorButton emission ""
+					ColorButton emission "" "tooltip=Color in absolute darkness"
 			Expander material_dialog_grp_textures "Textures"
 				Grid ? ""
 					ListView mat_textures "Level\\\\Texture" format=tit select-single

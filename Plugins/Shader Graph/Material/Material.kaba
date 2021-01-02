@@ -5,20 +5,17 @@ class NodeMaterial extends shader.Node
 		super.__init__("Material")
 		output.add([shader.TYPE_COLOR, "albedo"])
 		output.add([shader.TYPE_FLOAT, "roughness"])
-		output.add([shader.TYPE_FLOAT, "reflectivity"])
-		output.add([shader.TYPE_FLOAT, "shininess"])
+		output.add([shader.TYPE_FLOAT, "metal"])
 		output.add([shader.TYPE_COLOR, "emission"])
 	override const string[] dependencies()
 		return ["in:material"]
 	override const string code_pixel(out shader.BuilderContext c)
 		let al = c.create_out(self, 0)
 		let ro = c.create_out(self, 1)
-		let re = c.create_out(self, 2)
-		let sh = c.create_out(self, 3)
-		let em = c.create_out(self, 4)
+		let me = c.create_out(self, 2)
+		let em = c.create_out(self, 3)
 		return "
-	vec4 {{al}} = material.diffusive;
-	float {{ro}} = material.ambient;
-	float {{re}} = material.specular;
-	float {{sh}} = material.shininess;
+	vec4 {{al}} = material.albedo;
+	float {{ro}} = material.roughness;
+	float {{me}} = material.metal;
 	vec4 {{em}} = material.emission;"

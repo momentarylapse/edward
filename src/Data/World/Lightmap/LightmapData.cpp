@@ -141,15 +141,15 @@ static void update_tria(LightmapData::Triangle &t)
 
 static void tria_set_mat(LightmapData::Triangle &t, Material *m)
 {
-	t.am = m->diffuse * m->ambient;
-	t.di = m->diffuse;
+	t.am = m->albedo * m->roughness;
+	t.di = m->albedo;
 	t.em = m->emission;
 }
 
 static void tria_set_mat(LightmapData::Triangle &t, ModelMaterial *m)
 {
-	t.am = m->col.diffuse * m->col.ambient;
-	t.di = m->col.diffuse;
+	t.am = m->col.albedo * m->col.roughness;
+	t.di = m->col.albedo;
 	t.em = m->col.emission;
 }
 

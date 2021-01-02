@@ -1,12 +1,12 @@
 use edward
 
-class NodeDiffuse extends shader.Node
+class NodeAlbedo extends shader.Node
 	void __init__()
-		super.__init__("Diffuse")
-		output.add([shader.TYPE_COLOR, "diffuse"])
+		super.__init__("Albedo")
+		output.add([shader.TYPE_COLOR, "albedo"])
 	override const string[] dependencies()
 		return ["in:material"]
 	override const string code_pixel(out shader.BuilderContext c)
 		let t = c.create_out(self, 0)
 		return "
-	vec4 {{t}} = material.diffusive;"
+	vec4 {{t}} = material.albedo;"

@@ -40,13 +40,13 @@ string materialToJson(ModelMaterial *m)
 	str += "		'DbgIndex' : 0,\n";
 	str += "		'DbgName' : 'Test',\n";
 	str += "		'blending' : 'NormalBlending',\n";
-	str += "		'colorAmbient' : [" + col3ToJson(m->col.diffuse * m->col.ambient * 0.5f) + "],\n";
-	str += "		'colorDiffuse' : [" + col3ToJson(m->col.diffuse) + "],\n";
-	str += "		'colorSpecular' : [" + col3ToJson(White * m->col.specular) + "],\n";
+	str += "		'colorAmbient' : [" + col3ToJson(m->col.ambient()) + "],\n";
+	str += "		'colorDiffuse' : [" + col3ToJson(m->col.albedo) + "],\n";
+	str += "		'colorSpecular' : [" + col3ToJson(m->col.specular()) + "],\n";
 	str += "		'depthTest' : true,\n";
 	str += "		'depthWrite' : true,\n";
 	str += "		'shading' : 'Phong',\n";
-	str += "		'specularCoef' : " + f2s(m->col.shininess,6) + ",\n";
+	str += "		'specularCoef' : " + f2s(m->col.shininess(),6) + ",\n";
 	str += "		'transparency' : 1.0,\n";
 	str += "		'transparent' : false,\n";
 	str += "		'vertexColors' : false\n";

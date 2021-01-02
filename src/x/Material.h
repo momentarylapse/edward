@@ -34,8 +34,10 @@ public:
 	void add_uniform(const string &name, float *p, int size);
 
 	// light
-	color diffuse, emission;
-	float ambient, specular, shininess;
+	color albedo, emission;
+	float roughness, metal;
+
+	bool cast_shadow;
 
 	struct Transparency {
 		int mode;

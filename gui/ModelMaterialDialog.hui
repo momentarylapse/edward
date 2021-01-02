@@ -7,23 +7,24 @@ Dialog model_material_dialog "Material" width=350 height=371
 			Separator
 			Expander model_material_dialog_grp_color "Colors"
 				Grid ? ""
-					CheckBox default_colors "Use colors from material"
+					CheckBox override-colors "Override material"
 					---|
 					Grid ? ""
-						Text /diffuse "Diffuse" right disabled
-						ColorButton mat_di "" alpha "tooltip=Color in direct light"
+						Text /t-albedo "Albedo" right disabled
+						ColorButton albedo "" alpha
 						---|
-						Text /ambient "Ambient" right disabled
-						SpinButton mat_am "" expandx "tooltip=Color in shadows (ambient light)" range=0:1:0.01
+						Text /t-roughness "Roughness" right disabled
+						Grid ? ""
+							Slider slider-roughness "" range=0:1:0.01 expandx
+							SpinButton roughness "" range=0:1:0.01
 						---|
-						Text /specular "Specular" right disabled
-						SpinButton mat_sp "" "tooltip=Color of specular highlights" range=0:1:0.01
+						Text /t-reflectivity "Metal" right disabled
+						Grid ? ""
+							Slider slider-metal "" range=0:1:0.01 expandx
+							SpinButton metal "" range=0:1:0.01
 						---|
-						Text /shininess "Shininess" right disabled
-						SpinButton mat_shininess "" range=0:10000:0.1 "tooltip=Harshness of highlights (10=soft, 100=harsh)"
-						---|
-						Text /emission "Emission" right disabled
-						ColorButton mat_em "" "tooltip=Color in absolute darkness"
+						Text /t-emission "Emission" right disabled
+						ColorButton emission "" "tooltip=Color in absolute darkness"
 			Expander model_material_dialog_grp_textures "Textures"
 				ListView mat_textures "Level\\\\Texture" format=tit select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
 			Expander model_material_dialog_grp_transparency "Transparency"

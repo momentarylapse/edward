@@ -31,9 +31,9 @@ DataMaterial::~DataMaterial() {
 void DataMaterial::AppearanceData::reset() {
 	texture_files.clear();
 
-	roughness = 0.5f;
 	albedo = White;
-	reflectivity = 0;
+	roughness = 0.5f;
+	metal = 0;
 	emissive = Black;
 
 	transparency_mode = TRANSPARENCY_NONE;
@@ -84,8 +84,7 @@ void DataMaterial::reset() {
 }
 
 void DataMaterial::apply_for_rendering() {
-	float shininess = 30 * (1 - appearance.roughness);
-	nix::SetMaterial(appearance.albedo, appearance.roughness, appearance.reflectivity, shininess, appearance.emissive);
+	nix::SetMaterial(appearance.albedo, appearance.roughness, appearance.metal, appearance.emissive);
 
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetZ(true, true);
@@ -134,7 +133,7 @@ void DataMaterial::ShaderData::save_to_file() {
 		code = graph->build_source();
 		graph->save(nix::shader_dir << file.with(".graph"));
 		from_graph = true;
-		is_default= false;
+		is_default = false;
 	}
 }
 

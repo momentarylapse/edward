@@ -20,8 +20,8 @@ void main() {
 <FragmentShader>
 
 struct Material {
-	vec4 diffusive, emission;
-	float ambient, specular, shininess;
+	vec4 albedo, emission;
+	float roughness, metal;
 };
 /*layout(binding = 2)*/ uniform Material material;
 

@@ -35,7 +35,7 @@ public:
 
 		// color
 		color albedo, emissive;
-		float roughness, reflectivity;
+		float roughness, metal;
 
 		// transparency
 		int transparency_mode, alpha_source, alpha_destination;

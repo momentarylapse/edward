@@ -52,11 +52,12 @@ Material::Material() {
 	reflection.cube_map = NULL;
 	shader = NULL;
 
-	ambient = 0.5f;
-	diffuse = White;
-	specular = 0;
-	shininess = 10;
+	albedo = White;
+	roughness = 0.5f;
+	metal = 0;
 	emission = Black;
+
+	cast_shadow = true;
 
 	alpha.mode = TRANSPARENCY_NONE;
 	alpha.source = 0;
@@ -87,13 +88,13 @@ void Material::add_uniform(const string &name, float *p, int size) {
 
 Material* Material::copy() {
 	Material *m = new Material;
-	m->ambient = ambient;
-	m->diffuse = diffuse;
-	m->specular = specular;
+	m->albedo = albedo;
+	m->roughness = roughness;
+	m->metal = metal;
 	m->emission = emission;
-	m->shininess = shininess;
 
 	m->textures = textures;
+	m->cast_shadow = cast_shadow;
 
 	m->alpha = alpha;
 	m->reflection = reflection;
@@ -129,10 +130,9 @@ Material *LoadMaterial(const Path &filename) {
 	c.load(MaterialDir << filename.with(".material"));
 	Material *m = new Material;
 
-	m->diffuse = color::parse(c.get_str("color.albedo", ""));
-	m->ambient = c.get_float("color.ambient", 0.5f);
-	m->specular = c.get_float("color.specular", 0.1f);
-	m->shininess = c.get_float("color.shininess", 10);
+	m->albedo = color::parse(c.get_str("color.albedo", ""));
+	m->roughness = c.get_float("color.roughness", 0.5f);
+	m->metal = c.get_float("color.metal", 0.1f);
 	m->emission = color::parse(c.get_str("color.emission", ""));
 
 	auto texture_files = c.get_str("textures", "");

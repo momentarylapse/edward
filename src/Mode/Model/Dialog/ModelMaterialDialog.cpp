@@ -64,12 +64,13 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) {
 	event("transparency_mode:color_key", [=]{ on_transparency_mode(); });
 	event("transparency_mode:factor", [=]{ on_transparency_mode(); });
 
-	event("default_colors", [=]{ on_default_colors(); });
-	event("mat_am", [=]{ apply_data_color(); });
-	event("mat_di", [=]{ apply_data_color(); });
-	event("mat_sp", [=]{ apply_data_color(); });
-	event("mat_em", [=]{ apply_data_color(); });
-	event("mat_shininess", [=]{ apply_data_color(); });
+	event("override-colors", [=]{ on_override_colors(); });
+	event("albedo", [=]{ apply_data_color(); });
+	event("roughness", [=]{ apply_data_color(); });
+	event("slider-roughness", [=]{ apply_data_color(); });
+	event("metal", [=]{ apply_data_color(); });
+	event("slider-metal", [=]{ apply_data_color(); });
+	event("emission", [=]{ apply_data_color(); });
 
 	event("alpha_factor", [=]{ apply_data_alpha(); });
 	event("alpha_source", [=]{ apply_data_alpha(); });
@@ -101,17 +102,19 @@ void ModelMaterialDialog::load_data() {
 	fill_material_list();
 
 	fill_texture_list();
-	check("default_colors", !col.user);
-	enable("mat_am", col.user);
-	enable("mat_di", col.user);
-	enable("mat_sp", col.user);
-	enable("mat_em", col.user);
-	enable("mat_shininess", col.user);
-	set_float("mat_am", col.ambient);
-	set_color("mat_di", col.diffuse);
-	set_float("mat_sp", col.specular);
-	set_color("mat_em", col.emission);
-	set_float("mat_shininess", col.shininess);
+	check("override-colors", col.user);
+	enable("albedo", col.user);
+	enable("roughness", col.user);
+	enable("slider-roughness", col.user);
+	enable("metal", col.user);
+	enable("slider-metal", col.user);
+	enable("emission", col.user);
+	set_color("albedo", col.albedo);
+	set_float("roughness", col.roughness);
+	set_float("slider-roughness", col.roughness);
+	set_float("metal", col.metal);
+	set_float("slider-metal", col.metal);
+	set_color("emission", col.emission);
 
 	if (alpha.mode == TransparencyModeColorKeySmooth)
 		check("transparency_mode:color_key", true);
@@ -142,26 +145,25 @@ void ModelMaterialDialog::apply_data_color() {
 	auto col = data->material[mode_model_mesh->current_material]->col;
 	auto parent = data->material[mode_model_mesh->current_material]->material;
 
-	col.user= !is_checked("default_colors");
+	col.user= is_checked("override-colors");
 
 	if (col.user) {
-		col.ambient = get_float("mat_am");
-		col.diffuse = get_color("mat_di");
-		col.specular = get_float("mat_sp");
+		col.albedo = get_color("albedo");
+		col.roughness = get_float("roughness");
+		col.metal = get_float("metal");
 		col.emission = get_color("mat_em");
-		col.shininess = get_float("mat_shininess");
 	} else {
-		col.ambient = parent->ambient;
-		col.diffuse = parent->diffuse;
-		col.specular = parent->specular;
+		col.albedo = parent->albedo;
+		col.roughness = parent->roughness;
+		col.metal = parent->metal;
 		col.emission = parent->emission;
-		col.shininess = parent->shininess;
 	}
-	enable("mat_am", col.user);
-	enable("mat_di", col.user);
-	enable("mat_sp", col.user);
-	enable("mat_em", col.user);
-	enable("mat_shininess", col.user);
+	enable("albedo", col.user);
+	enable("roughness", col.user);
+	enable("slider-roughness", col.user);
+	enable("metal", col.user);
+	enable("slider-metal", col.user);
+	enable("emission", col.user);
 
 	data->execute(new ActionModelEditMaterial(mode_model_mesh->current_material, col));
 	apply_queue_depth --;
@@ -241,7 +243,7 @@ void ModelMaterialDialog::on_material_apply() {
 }
 
 
-void ModelMaterialDialog::on_default_colors() {
+void ModelMaterialDialog::on_override_colors() {
 	apply_data_color();
 }
 

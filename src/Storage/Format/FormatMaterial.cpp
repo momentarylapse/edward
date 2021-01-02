@@ -43,12 +43,15 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		c.load(filename);
 		data->appearance.albedo = color::parse(c.get_str("color.albedo", ""));
 		data->appearance.roughness = c.get_float("color.roughness", 0.5f);
-		if (c.has("color.ambient"))
-			data->appearance.roughness = c.get_float("color.ambient", 0.5f);
-		data->appearance.reflectivity = c.get_float("color.reflectivity", 0.1f);
-		if (c.has("color.specular"))
-			data->appearance.roughness = c.get_float("color.specular", 0.5f);
+		data->appearance.metal = c.get_float("color.metal", 0.1f);
 		data->appearance.emissive = color::parse(c.get_str("color.emission", ""));
+
+		if (c.has("color.ambient")) {
+			data->appearance.roughness = c.get_float("color.ambient", 0.5f);
+			data->appearance.metal = c.get_float("color.specular", 0.5f);
+		} else if (c.has("color.reflectivity")) {
+			data->appearance.metal = c.get_float("color.reflectivity", 0.1f);
+		}
 
 		data->appearance.texture_files = str_to_paths(c.get_str("textures", ""));
 		data->shader.file = c.get_str("shader", "");
@@ -113,7 +116,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		read_color_argb(f, data->appearance.albedo);
 		data->appearance.roughness = 0.5f;
 		read_color_argb(f, cc);
-		data->appearance.reflectivity = 0.1f;
+		data->appearance.metal = 0.1f;
 		/*shininess = */ f->read_int();
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
@@ -161,7 +164,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		data->appearance.roughness = 0.5f;
 		read_color_argb(f, data->appearance.albedo);
 		read_color_argb(f, cc);
-		data->appearance.reflectivity = 0.1f;
+		data->appearance.metal = 0.1f;
 		/*shininess =*/ (float)f->read_int();
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
@@ -206,7 +209,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		data->appearance.roughness = 0.5f;
 		read_color_argb(f, data->appearance.albedo);
 		read_color_argb(f, cc);
-		data->appearance.reflectivity = 0.1f;
+		data->appearance.metal = 0.1f;
 		/*shininess =*/ (float)f->read_int();
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
@@ -256,7 +259,7 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 	if (data->appearance.emissive != Black)
 		c.set_str("color.emission", data->appearance.emissive.str());
 	c.set_float("color.roughness", data->appearance.roughness);
-	c.set_float("color.reflectivity", data->appearance.reflectivity);
+	c.set_float("color.metal", data->appearance.metal);
 
 	if (data->appearance.transparency_mode == TRANSPARENCY_FACTOR) {
 		c.set_str("transparency.mode", "factor");

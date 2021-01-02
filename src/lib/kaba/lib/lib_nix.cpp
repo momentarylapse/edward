@@ -270,10 +270,9 @@ void SIAddPackageNix() {
 	add_func("set_wire", TypeVoid, nix_p(&nix::SetWire), Flags::STATIC);
 		func_add_param("enabled", TypeBool);
 	add_func("set_material", TypeVoid, nix_p(&nix::SetMaterial), Flags::STATIC);
-		func_add_param("ambient", TypeColor);
-		func_add_param("diffuse", TypeColor);
-		func_add_param("specular", TypeColor);
-		func_add_param("shininess", TypeFloat32);
+		func_add_param("albedo", TypeColor);
+		func_add_param("roughness", TypeFloat32);
+		func_add_param("metal", TypeFloat32);
 		func_add_param("emission", TypeColor);
 	add_func("set_texture", TypeVoid, nix_p(&nix::SetTexture), Flags::STATIC);
 		func_add_param("t", TypeTexture);

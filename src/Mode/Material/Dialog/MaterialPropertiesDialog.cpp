@@ -51,12 +51,12 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 		set_float("roughness", get_float(""));
 		apply_data_delayed();
 	});
-	event("reflectivity", [=]{
-		set_float("slider-reflectivity", get_float(""));
+	event("metal", [=]{
+		set_float("slider-metal", get_float(""));
 		apply_data_delayed();
 	});
-	event("slider-reflectivity", [=]{
-		set_float("reflectivity", get_float(""));
+	event("slider-metal", [=]{
+		set_float("metal", get_float(""));
 		apply_data_delayed();
 	});
 	event("emission", [=]{ apply_data(); });
@@ -83,8 +83,8 @@ void MaterialPropertiesDialog::load_data() {
 	set_color("albedo", temp.albedo);
 	set_float("roughness", temp.roughness);
 	set_float("slider-roughness", temp.roughness);
-	set_float("reflectivity", temp.reflectivity);
-	set_float("slider-reflectivity", temp.reflectivity);
+	set_float("metal", temp.metal);
+	set_float("slider-metal", temp.metal);
 	set_color("emission", temp.emissive);
 
 	if (temp.transparency_mode == TRANSPARENCY_COLOR_KEY_SMOOTH)
@@ -244,7 +244,7 @@ void MaterialPropertiesDialog::apply_data() {
 		return;
 	temp.albedo = get_color("albedo");
 	temp.roughness = get_float("roughness");
-	temp.reflectivity = get_float("reflectivity");
+	temp.metal = get_float("metal");
 	temp.emissive = get_color("emission");
 	temp.alpha_z_buffer = is_checked("alpha_z_buffer");
 	temp.alpha_factor = get_float("alpha_factor") * 0.01f;

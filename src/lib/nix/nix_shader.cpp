@@ -307,10 +307,9 @@ void Shader::find_locations() {
 		location[LOCATION_TEX + i] = get_location("tex" + i2s(i));
 	location[LOCATION_TEX_CUBE] = get_location("tex_cube");
 
-	location[LOCATION_MATERIAL_AMBIENT] = get_location("material.ambient");
-	location[LOCATION_MATERIAL_DIFFUSIVE] = get_location("material.diffusive");
-	location[LOCATION_MATERIAL_SPECULAR] = get_location("material.specular");
-	location[LOCATION_MATERIAL_SHININESS] = get_location("material.shininess");
+	location[LOCATION_MATERIAL_ALBEDO] = get_location("material.albedo");
+	location[LOCATION_MATERIAL_ROUGHNESS] = get_location("material.roughness");
+	location[LOCATION_MATERIAL_METAL] = get_location("material.metal");
 	location[LOCATION_MATERIAL_EMISSION] = get_location("material.emission");
 
 	link_uniform_block("Matrix", 0);
@@ -472,10 +471,9 @@ void Shader::set_default_data() {
 		set_int(location[LOCATION_TEX + i], i);
 	if (tex_cube_level >= 0)
 		set_int(location[LOCATION_TEX_CUBE], tex_cube_level);
-	set_float(location[LOCATION_MATERIAL_AMBIENT], material.ambient);
-	set_color(location[LOCATION_MATERIAL_DIFFUSIVE], material.diffusive);
-	set_float(location[LOCATION_MATERIAL_SPECULAR], material.specular);
-	set_data(location[LOCATION_MATERIAL_SHININESS], &material.shininess, 4);
+	set_color(location[LOCATION_MATERIAL_ALBEDO], material.albedo);
+	set_float(location[LOCATION_MATERIAL_ROUGHNESS], material.roughness);
+	set_float(location[LOCATION_MATERIAL_METAL], material.metal);
 	set_color(location[LOCATION_MATERIAL_EMISSION], material.emission);
 }
 
@@ -519,7 +517,7 @@ void init_shaders() {
 		"\n"
 		"struct Matrix { mat4 model, view, project; };\n"
 		"/*layout(binding = 0)*/ uniform Matrix matrix;\n"
-		"struct Material { vec4 diffusive, emission; float ambient, specular, shininess; };\n"
+		"struct Material { vec4 albedo, emission; float roughness, metal; };\n"
 		"/*layout(binding = 2)*/ uniform Material material;\n"
 		"struct Light { mat4 proj; vec4 pos, dir, color; float radius, theta, harshness; };\n"
 		"uniform int num_lights = 0;\n"
@@ -540,14 +538,15 @@ void init_shaders() {
 		"		attenuation = min(l.radius / length(in_pos - LP), 1);\n"
 		"	}\n"
 		"	float d = max(-dot(n, LD), 0) * attenuation;\n"
-		"	vec4 color = material.diffusive * material.ambient * l.color * (1 - l.harshness) / 2;\n"
-		"	color += material.diffusive * l.color * l.harshness * d;\n"
+		"	vec4 color = material.albedo * material.roughness * l.color * (1 - l.harshness) / 2;\n"
+		"	color += material.albedo * l.color * l.harshness * d;\n"
 		"	color *= tex_col;\n"
-		"	if ((d > 0) && (material.shininess > 1)) {\n"
+		"	if ((d > 0) && (material.roughness < 0.8)) {\n"
 		"		vec3 e = normalize(in_pos); // eye dir\n"
 		"		vec3 rl = reflect(LD, n);\n"
 		"		float ee = max(-dot(e, rl), 0);\n"
-		"		color += material.specular * l.color * l.harshness * pow(ee, material.shininess);\n"
+		"		float shininess = 5 / (1.1 - material.roughness);\n"
+		"		color += (1 - material.roughness) * l.color * l.harshness * pow(ee, shininess);\n"
 		"	}\n"
 		"	return color;\n"
 		"}\n"
@@ -558,7 +557,7 @@ void init_shaders() {
 		"	vec4 tex_col = texture(tex0, in_uv);\n"
 		"	for (int i=0; i<num_lights; i++)\n"
 		"		out_color += basic_lighting(light[i], n, tex_col);\n"
-		"	out_color.a = material.diffusive.a * tex_col.a;\n"
+		"	out_color.a = material.albedo.a * tex_col.a;\n"
 		"}\n"
 		"</FragmentShader>");
 	default_shader_3d->filename = "-default 3d-";

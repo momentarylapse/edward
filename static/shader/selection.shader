@@ -25,8 +25,8 @@ void main() {
 
 
 struct Material {
-	vec4 diffusive, emission;
-	float ambient, specular, shininess;
+	vec4 albedo, emission;
+	float roughness, metal;
 };
 /*layout(binding = 2)*/ uniform Material material;
 
@@ -46,9 +46,9 @@ void main() {
 	vec3 l = light[0].dir.xyz;
 	float d = max(-dot(n, l), 0);
 	color = material.emission;
-	color += material.diffusive * material.ambient * light[0].color * (1 - light[0].harshness);
-	color += material.diffusive * light[0].color * d * light[0].harshness;
-	color.a = material.diffusive.a;
+	color += material.albedo * material.roughness * light[0].color * (1 - light[0].harshness);
+	color += material.albedo * light[0].color * d * light[0].harshness;
+	color.a = material.albedo.a;
 }
 
 </FragmentShader>

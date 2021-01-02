@@ -29,7 +29,7 @@ public:
 	void on_material_delete();
 	void on_material_apply();
 
-	void on_default_colors();
+	void on_override_colors();
 
 	void on_textures();
 	void on_textures_right_click();

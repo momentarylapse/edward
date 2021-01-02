@@ -189,14 +189,14 @@ string render_material(ModelMaterial *m) {
 			// ambient + diffuse + emission
 			vector n = img_get_ball_n(x, y, N);
 			float f = clamp(n * light_dir, 0.0f, 1.0f);
-			color c = m->col.diffuse * (m->col.ambient * 0.3f + f) + m->col.emission;
+			color c = m->col.albedo * (m->col.roughness * 0.3f + f) + m->col.emission;
 
 			// texture "mapping"
 			c = c * tim->get_pixel((x * tim->width) / N, (y * tim->height) / N);
 
 			// specular
-			f = pow(n * light_sp_dir, m->col.shininess) * 0.4f;
-			c += White * m->col.specular * f;
+			f = pow(n * light_sp_dir, 10) * 0.4f;
+			c += White * m->col.metal * f;
 
 			c = c * 0.9f;
 			c.clamp();

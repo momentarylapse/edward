@@ -57,15 +57,14 @@ void ShaderGraph::make_default_for_engine() {
 		auto mat = add("Material", -180, 150);
 		auto mul = add("Multiply", 50, 50);
 		auto surf = add("SurfaceOutput", 250, 100);
-		connect(mesh, 2, tex, 0);
+		connect(mesh, 2, tex, 0); // albedo * tex -> albedo
 		connect(tex, 0, mul, 0);
 		connect(mat, 0, mul, 1);
 		connect(mul, 0, surf, 0);
-		connect(mat, 1, surf, 1);
-		connect(mat, 2, surf, 2);
-		connect(mat, 3, surf, 3);
-		connect(mat, 4, surf, 4);
-		connect(mesh, 1, surf, 5);
+		connect(mat, 1, surf, 1); // roughness
+		connect(mat, 2, surf, 2); // metal
+		connect(mat, 3, surf, 3); // emission
+		connect(mesh, 1, surf, 4); // n
 	} catch (Exception &e) {
 		ed->error_box(e.message());
 	}

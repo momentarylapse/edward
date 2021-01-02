@@ -11,6 +11,8 @@
 
 void create_fake_dynamic_cube_map(nix::CubeMap *cube_map); // DataMaterial.cpp
 
+float col_frac(const color &a, const color &b);
+
 
 ModelMaterial::ModelMaterial() {
 	// file
@@ -81,6 +83,25 @@ void ModelMaterial::reset() {
 }
 
 
+color ModelMaterial::Color::ambient() const {
+	return albedo * roughness * 0.5f;
+}
+
+color ModelMaterial::Color::specular() const {
+	return White * (1 - roughness);
+}
+
+float ModelMaterial::Color::shininess() const {
+	return 5 / (1.1f - roughness);
+}
+
+void ModelMaterial::Color::import(const color &am, const color &di, const color &sp, float shininess, const color &em) {
+	albedo = di;
+	emission = em;
+	roughness = col_frac(am, di) / 2;
+	metal = 0;
+}
+
 void ModelMaterial::makeConsistent() {
 	material = LoadMaterial(filename);
 
@@ -142,10 +163,9 @@ void ModelMaterial::checkTextures() {
 
 void ModelMaterial::checkColors() {
 	if (!col.user) {
-		col.ambient = material->ambient;
-		col.diffuse = material->diffuse;
-		col.specular = material->specular;
-		col.shininess = material->shininess;
+		col.albedo = material->albedo;
+		col.roughness = material->roughness;
+		col.metal = material->metal;
 		col.emission = material->emission;
 	}
 }
@@ -154,7 +174,7 @@ void ModelMaterial::applyForRendering() {
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetShader(nix::default_shader_3d);
 	color em = color::interpolate(col.emission, White, 0.1f);
-	nix::SetMaterial(col.diffuse, col.ambient, col.specular, col.shininess, em);
+	nix::SetMaterial(col.albedo, col.roughness, col.metal, em);
 	if (true) {//MVFXEnabled){
 		nix::SetZ(alpha.zbuffer, alpha.zbuffer);
 		if (alpha.mode == TRANSPARENCY_COLOR_KEY_HARD) {
