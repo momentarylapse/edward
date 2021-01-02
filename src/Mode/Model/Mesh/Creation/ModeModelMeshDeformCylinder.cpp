@@ -41,7 +41,7 @@ const int CYLINDER_RINGS = 24;
 
 	inter = new Interpolator<float>(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 
-	message = _("drag rings, [Control] + click -> copy, [Delete] -> delete, [Ctrl + Return] -> done");
+	message = _("drag rings, [Control] + click -> copy, [Ctrl + Delete] -> delete, [Ctrl + Return] -> done");
 
 	hover = -1;
 	radius = 1;
@@ -311,7 +311,7 @@ void ModeModelMeshDeformCylinder::on_left_button_down() {
 }
 
 void ModeModelMeshDeformCylinder::on_key_down(int k) {
-	if (k == hui::KEY_DELETE) {
+	if (k == hui::KEY_DELETE + hui::KEY_CONTROL) {
 		if ((hover != 0) and (hover != param.num -1)) {
 			param.erase(hover);
 			hover = -1;
