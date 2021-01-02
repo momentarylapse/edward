@@ -149,9 +149,9 @@ void ModelMaterialDialog::apply_data_color() {
 
 	if (col.user) {
 		col.albedo = get_color("albedo");
-		col.roughness = get_float("roughness");
-		col.metal = get_float("metal");
-		col.emission = get_color("mat_em");
+		col.roughness = get_float("slider-roughness");
+		col.metal = get_float("slider-metal");
+		col.emission = get_color("emission");
 	} else {
 		col.albedo = parent->albedo;
 		col.roughness = parent->roughness;

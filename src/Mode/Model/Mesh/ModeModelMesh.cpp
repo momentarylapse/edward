@@ -608,7 +608,7 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, Array
 			continue;
 
 		// draw
-		m->applyForRendering();
+		m->apply_for_rendering(win);
 		nix::SetOffset(0);
 		nix::DrawTriangles(m->vb);
 		nix::SetOffset(0);

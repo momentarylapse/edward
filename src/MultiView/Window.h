@@ -10,6 +10,10 @@
 
 #include "../lib/math/math.h"
 
+namespace nix {
+	class Shader;
+}
+
 namespace MultiView{
 
 class MultiView;
@@ -37,6 +41,8 @@ public:
 	void draw_grid();
 	void draw_data_points();
 	void draw_header();
+
+	void set_shader(nix::Shader *s, int num_lights = 1);
 
 	int active_grid();
 	vector active_grid_direction();

@@ -787,7 +787,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 			}
 
 		for (auto *m: data->material){
-			m->makeConsistent();
+			m->make_consistent();
 
 			// test textures
 			for (auto &t: m->texture_levels){

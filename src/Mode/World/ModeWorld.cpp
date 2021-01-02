@@ -383,7 +383,7 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
 
 
 
-void apply_lighting(DataWorld *w) {
+void apply_lighting(DataWorld *w, MultiView::Window *win) {
 	auto &m = w->meta_data;
 	nix::SetFog(m.fog.mode, m.fog.start, m.fog.end, m.fog.density, m.fog.col);
 	nix::EnableFog(m.fog.enabled);
@@ -409,8 +409,7 @@ void apply_lighting(DataWorld *w) {
 	}
 	ed->multi_view_3d->ubo_light->update_array(lights);
 	nix::BindUniform(ed->multi_view_3d->ubo_light, 1);
-	nix::SetShader(nix::default_shader_3d);
-	nix::current_shader->set_int(nix::current_shader->get_location("num_lights"), lights.num);
+	win->set_shader(nix::default_shader_3d, w->lights.num);
 }
 
 void draw_background(DataWorld *w) {
@@ -435,7 +434,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 	nix::SetShader(nix::default_shader_3d);
 
 	if (show_effects)
-		apply_lighting(data);
+		apply_lighting(data, win);
 
 	foreachi(WorldTerrain &t, data->terrains, i) {
 		if (!t.terrain)

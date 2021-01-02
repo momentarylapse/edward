@@ -174,7 +174,7 @@ vec3 _surf_light_add(Light l, vec3 p, vec3 n, vec3 albedo, float reflectivity, f
 	return col;
 }
 
-void surface_out(vec3 n, vec4 albedo, vec4 emission, float reflectivity, float roughness) {
+void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughness) {
 	out_color = emission;
 	vec3 p = in_pos.xyz / in_pos.w;
 	vec3 view_dir = normalize(p - eye_pos.xyz);
@@ -183,7 +183,7 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float reflectivity, float r
 	
 ///	float reflectivity = 1-((1-xxx.x) * (1-exp(-pow(dot(d, n),2) * 100)));
 
-	if (reflectivity > 0.01) {
+	if (metal > 0.01) {
 		vec3 L = reflect(view_dir, n);
 		//for (int i=0; i<30; i++) {
 		//vec3 L = normalize(L0 + vec3(_surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5) / 50);
@@ -203,7 +203,7 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float reflectivity, float r
 		
 	//L=-L;
 	vec3 F0 = vec3(0.04);
-	F0 = mix(F0, albedo.rgb, reflectivity);
+	F0 = mix(F0, albedo.rgb, metal);
 	
 	
         // calculate per-light radiance
@@ -220,7 +220,7 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float reflectivity, float r
         
         vec3 kS = F;
         vec3 kD = vec3(1.0) - kS;
-        kD *= 1.0 - reflectivity;
+        kD *= 1.0 - metal;
         
         vec3 numerator    = NDF * G * F;
         float denominator = 4.0 * max(dot(n, V), 0.0) * max(dot(n, L), 0.0);
@@ -235,7 +235,7 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float reflectivity, float r
 	
 
 	for (int i=0; i<num_lights; i++)
-		out_color.rgb += _surf_light_add(light[i], p, n, albedo.rgb, reflectivity, roughness, view_dir).rgb;
+		out_color.rgb += _surf_light_add(light[i], p, n, albedo.rgb, metal, roughness, view_dir).rgb;
 	
 /*	float distance = length(p - eye_pos.xyz);
 	float f = exp(-distance / fog.distance);

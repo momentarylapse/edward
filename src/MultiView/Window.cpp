@@ -410,6 +410,13 @@ void Window::draw_header() {
 	set_color(scheme.TEXT);
 }
 
+void Window::set_shader(nix::Shader *s, int num_lights) {
+	nix::SetShader(s);
+	s->set_int(s->get_location("num_lights"), num_lights);
+	vector pos = get_lighting_eye_pos();
+	s->set_data(s->get_location("eye_pos"), &pos.x, sizeof(vector));
+}
+
 void Window::draw() {
 	nix::SetScissor(rect(dest.x1, dest.x2+1, dest.y1, dest.y2));
 	nix::SetTexture(nullptr);
@@ -438,8 +445,7 @@ void Window::draw() {
 	multi_view->set_light(cam->ang * vector::EZ, White, 0.7f);
 	nix::SetMaterial(White, 0, 0, White);//Black);
 	set_color(White);
-	nix::SetShader(nix::default_shader_3d);
-	nix::default_shader_3d->set_int(nix::default_shader_3d->get_location("num_lights"), 1);
+	set_shader(nix::default_shader_3d);
 
 	// draw the actual data
 	set_projection_matrix();

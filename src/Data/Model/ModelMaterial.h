@@ -10,9 +10,13 @@
 
 #include "../../x/Material.h"
 
-namespace nix{
+namespace nix {
 	class Texture;
 	class VertexBuffer;
+};
+
+namespace MultiView {
+	class Window;
 };
 
 class Image;
@@ -24,11 +28,11 @@ public:
 	virtual ~ModelMaterial();
 
 	void reset();
-	void makeConsistent();
-	void checkTextures();
-	void checkColors();
-	void checkTransparency();
-	void applyForRendering();
+	void make_consistent();
+	void check_textures();
+	void check_colors();
+	void check_transparency();
+	void apply_for_rendering(MultiView::Window *win);
 
 	Path filename;
 	Material *material;

@@ -7,6 +7,7 @@
 
 #include "ModelMaterial.h"
 #include "../../lib/nix/nix.h"
+#include "../../MultiView/Window.h"
 #include "../../Edward.h"
 
 void create_fake_dynamic_cube_map(nix::CubeMap *cube_map); // DataMaterial.cpp
@@ -21,11 +22,11 @@ ModelMaterial::ModelMaterial() {
 
 	// color
 	col.user = false;
-	checkColors();
+	check_colors();
 
 	// transparency
 	alpha.user = false;
-	checkTransparency();
+	check_transparency();
 	alpha.mode = TRANSPARENCY_DEFAULT;
 	alpha.destination = 0;
 	alpha.source = 0;
@@ -39,18 +40,18 @@ ModelMaterial::ModelMaterial() {
 // ONLY ActionModelAddMaterial
 ModelMaterial::ModelMaterial(const Path &_filename) : ModelMaterial() {
 	filename = _filename;
-	makeConsistent();
+	make_consistent();
 }
 
 ModelMaterial::~ModelMaterial() {
 	if (vb)
 		delete vb;
-	vb = NULL;
+	vb = nullptr;
 }
 
 ModelMaterial::TextureLevel::TextureLevel() {
-	texture = NULL;
-	image = NULL;
+	texture = nullptr;
+	image = nullptr;
 	edited = false;
 }
 
@@ -102,7 +103,7 @@ void ModelMaterial::Color::import(const color &am, const color &di, const color 
 	metal = 0;
 }
 
-void ModelMaterial::makeConsistent() {
+void ModelMaterial::make_consistent() {
 	material = LoadMaterial(filename);
 
 	if (material->reflection.mode == REFLECTION_CUBE_MAP_DYNAMIC) {
@@ -111,12 +112,12 @@ void ModelMaterial::makeConsistent() {
 	//	create_fake_dynamic_cube_map(material->cube_map);
 	}
 
-	checkTextures();
-	checkTransparency();
-	checkColors();
+	check_textures();
+	check_transparency();
+	check_colors();
 }
 
-void ModelMaterial::checkTransparency() {
+void ModelMaterial::check_transparency() {
 	if (alpha.mode == TRANSPARENCY_DEFAULT)
 		alpha.user = false;
 	if (!alpha.user) {
@@ -130,7 +131,7 @@ void ModelMaterial::checkTransparency() {
 
 
 
-void ModelMaterial::checkTextures() {
+void ModelMaterial::check_textures() {
 
 	msg_write("--------Mat.check textures()");
 	// parent has more texture levels?
@@ -161,7 +162,7 @@ void ModelMaterial::checkTextures() {
 	}
 }
 
-void ModelMaterial::checkColors() {
+void ModelMaterial::check_colors() {
 	if (!col.user) {
 		col.albedo = material->albedo;
 		col.roughness = material->roughness;
@@ -170,9 +171,9 @@ void ModelMaterial::checkColors() {
 	}
 }
 
-void ModelMaterial::applyForRendering() {
+void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 	nix::SetAlpha(ALPHA_NONE);
-	nix::SetShader(nix::default_shader_3d);
+	w->set_shader(nix::default_shader_3d);
 	color em = color::interpolate(col.emission, White, 0.1f);
 	nix::SetMaterial(col.albedo, col.roughness, col.metal, em);
 	if (true) {//MVFXEnabled){
@@ -188,7 +189,7 @@ void ModelMaterial::applyForRendering() {
 			nix::SetAlpha(alpha.factor);
 			//NixSetZ(false,false);
 		}
-		nix::SetShader(material->shader);
+		w->set_shader(material->shader);
 	}
 	Array<nix::Texture*> tex;
 	for (auto *t: texture_levels)
