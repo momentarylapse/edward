@@ -42,10 +42,11 @@ ActionController::ActionController(MultiView *view) {
 	geo.add(new GeometryCylinder( vector::EY*r0,  vector::EY*r1, r, 1, 8));
 	geo.add(new GeometryCylinder(-vector::EZ*r0, -vector::EZ*r1, r, 1, 8));
 	geo.add(new GeometryCylinder( vector::EZ*r0,  vector::EZ*r1, r, 1, 8));
-	r = 0.03f;
+	r = 0.015f;
 	geo_show.add(new GeometryTorus(v_0, vector::EZ, 1.0f, r, 32, 8));
 	geo_show.add(new GeometryTorus(v_0, vector::EY, 1.0f, r, 32, 8));
 	geo_show.add(new GeometryTorus(v_0, vector::EX, 1.0f, r, 32, 8));
+	r = 0.03f;
 	geo_show.add(new GeometryCylinder(-vector::EX*r0, -vector::EX*r1, r, 1, 8));
 	geo_show.add(new GeometryCylinder( vector::EX*r0,  vector::EX*r1, r, 1, 8));
 	geo_show.add(new GeometryCylinder(-vector::EY*r0, -vector::EY*r1, r, 1, 8));
@@ -291,15 +292,15 @@ string ActionController::action_name(int a) {
 }
 
 const ActionController::ACGeoConfig ActionController::ac_geo_config[] = {
-	{color(1, 0.4f, 0.4f, 0.8f),Constraint::XY,0},
-	{color(1, 0.4f, 0.4f, 0.8f),Constraint::XZ,0},
-	{color(1, 0.4f, 0.4f, 0.8f),Constraint::YZ,0},
-	{color(1, 0.8f, 0.8f, 0.8f),Constraint::NEG_X,1},
-	{color(1, 0.8f, 0.8f, 0.8f),Constraint::X,1},
-	{color(1, 0.8f, 0.8f, 0.8f),Constraint::NEG_Y,1},
-	{color(1, 0.8f, 0.8f, 0.8f),Constraint::Y,1},
-	{color(1, 0.8f, 0.8f, 0.8f),Constraint::NEG_Z,1},
-	{color(1, 0.8f, 0.8f, 0.8f),Constraint::Z,1},
+	{color(1, 0.8f, 0.8f, 0.7f),Constraint::XY,0},
+	{color(1, 0.8f, 0.7f, 0.8f),Constraint::XZ,0},
+	{color(1, 0.7f, 0.8f, 0.8f),Constraint::YZ,0},
+	{color(1, 0.8f, 0.5f, 0.5f),Constraint::NEG_X,1},
+	{color(1, 0.8f, 0.5f, 0.5f),Constraint::X,1},
+	{color(1, 0.5f, 0.8f, 0.5f),Constraint::NEG_Y,1},
+	{color(1, 0.5f, 0.8f, 0.5f),Constraint::Y,1},
+	{color(1, 0.5f, 0.5f, 0.8f),Constraint::NEG_Z,1},
+	{color(1, 0.5f, 0.5f, 0.8f),Constraint::Z,1},
 	{color(1, 0.8f, 0.8f, 0.8f),Constraint::FREE,2}
 };
 
@@ -344,9 +345,9 @@ void ActionController::draw(Window *win) {
 		if (!geo_allow(i, win, m))
 			continue;
 		if (ac_geo_config[i].constraint == hover_constraint)
-			nix::SetMaterial(White, 0, 0, White);
+			nix::SetMaterial(White, 1, 0, White);
 		else
-			nix::SetMaterial(Black, 0, 0, ac_geo_config[i].col);
+			nix::SetMaterial(Black, 1, 0, ac_geo_config[i].col);
 		nix::DrawTriangles(buf[i]);
 	}
 	nix::SetZ(false, false);
@@ -399,6 +400,7 @@ void ActionController::draw(Window *win) {
 			else
 				s = format("%.1f%%\n%.1f%%", param.x*100, param.y*100);
 		}
+		set_color(scheme.TEXT);
 		draw_str(x0, y0, s, TextAlign::RIGHT);
 	}
 }
