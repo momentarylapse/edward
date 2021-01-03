@@ -18,8 +18,9 @@ public:
 	virtual void on_start() {}
 	virtual void on_end() {}
 
-	virtual void update_selection() {}
+	virtual void on_update_selection() {}
 	virtual void update_multi_view() {}
+	virtual void on_view_stage_change() {}
 
 	virtual void on_draw_win(MultiView::Window *win) {}
 

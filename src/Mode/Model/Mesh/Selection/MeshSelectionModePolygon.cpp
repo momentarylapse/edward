@@ -119,8 +119,21 @@ bool ModelPolygon::overlap_rect(MultiView::Window *win, const rect &r) {
 	return in_rect(win, r);
 }
 
-void MeshSelectionModePolygon::update_selection() {
+void MeshSelectionModePolygon::on_update_selection() {
 	data->edit_mesh->selection_from_polygons();
+}
+
+void MeshSelectionModePolygon::on_view_stage_change() {
+	for (auto &v: data->mesh->vertex)
+		if (v.is_selected)
+			v.view_stage = multi_view->view_stage;
+		else
+			v.view_stage = min(v.view_stage, multi_view->view_stage);
+	for (auto &e: data->mesh->edge)
+		if (e.is_selected)
+			e.view_stage = multi_view->view_stage;
+		else
+			e.view_stage = min(e.view_stage, multi_view->view_stage);
 }
 
 void MeshSelectionModePolygon::update_multi_view() {

@@ -297,12 +297,13 @@ void ModeModelMesh::on_data_update() {
 
 void ModeModelMesh::on_view_stage_change() {
 	//msg_write("mesh: on view stage change");
+	selection_mode->on_view_stage_change();
 	update_vertex_buffers(data->mesh->vertex);
 }
 
 void ModeModelMesh::on_selection_change() {
 	//msg_write("mesh: on sel change");
-	selection_mode->update_selection();
+	selection_mode->on_update_selection();
 	fill_selection_buffer(data->edit_mesh->vertex);
 }
 

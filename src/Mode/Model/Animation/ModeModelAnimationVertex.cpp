@@ -29,7 +29,7 @@ void ModeModelAnimationVertex::on_start() {
 	chooseMouseFunction(MultiView::ACTION_SELECT);
 
 	data->subscribe(this, [=]{ on_data_change(); });
-	multi_view->subscribe(this, [=]{ mode_model_mesh->selection_mode->update_selection(); }, multi_view->MESSAGE_SELECTION_CHANGE);
+	multi_view->subscribe(this, [=]{ mode_model_mesh->selection_mode->on_update_selection(); }, multi_view->MESSAGE_SELECTION_CHANGE);
 	on_data_change();
 }
 

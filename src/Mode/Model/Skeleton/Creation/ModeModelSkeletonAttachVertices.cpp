@@ -52,7 +52,7 @@ void ModeModelSkeletonAttachVertices::on_data_change() {
 }
 
 void ModeModelSkeletonAttachVertices::on_update_selection() {
-	mode_model_mesh->selection_mode->update_selection();
+	mode_model_mesh->selection_mode->on_update_selection();
 	mode_model_mesh->fill_selection_buffer(data->edit_mesh->vertex);
 }
 

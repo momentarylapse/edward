@@ -35,9 +35,22 @@ void expand_sel_to_surfaces(ModelMesh *m) {
 	m->selection_from_vertices();
 }
 
-void MeshSelectionModeSurface::update_selection() {
+void MeshSelectionModeSurface::on_update_selection() {
 	data->edit_mesh->selection_from_polygons();
 	expand_sel_to_surfaces(data->edit_mesh);
+}
+
+void MeshSelectionModeSurface::on_view_stage_change() {
+	for (auto &v: data->mesh->vertex)
+		if (v.is_selected)
+			v.view_stage = multi_view->view_stage;
+		else
+			v.view_stage = min(v.view_stage, multi_view->view_stage);
+	for (auto &e: data->mesh->edge)
+		if (e.is_selected)
+			e.view_stage = multi_view->view_stage;
+		else
+			e.view_stage = min(e.view_stage, multi_view->view_stage);
 }
 
 void MeshSelectionModeSurface::update_multi_view() {

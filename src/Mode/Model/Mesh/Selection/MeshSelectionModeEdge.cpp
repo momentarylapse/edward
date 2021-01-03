@@ -83,8 +83,22 @@ bool ModelEdge::overlap_rect(MultiView::Window *win, const rect &r) {
 	return in_rect(win, r);
 }
 
-void MeshSelectionModeEdge::update_selection() {
+void MeshSelectionModeEdge::on_update_selection() {
 	data->edit_mesh->selection_from_edges();
+}
+
+void MeshSelectionModeEdge::on_view_stage_change() {
+	for (auto &v: data->mesh->vertex)
+		if (v.is_selected)
+			v.view_stage = multi_view->view_stage;
+		else
+			v.view_stage = min(v.view_stage, multi_view->view_stage);
+	for (auto &p: data->mesh->polygon)
+		if (p.is_selected)
+			p.view_stage = multi_view->view_stage;
+		else
+			p.view_stage = min(p.view_stage, multi_view->view_stage);
+
 }
 
 void MeshSelectionModeEdge::update_multi_view() {

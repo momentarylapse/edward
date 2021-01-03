@@ -18,7 +18,8 @@ public:
 	void on_start() override;
 	void on_end() override;
 
-	void update_selection() override;
+	void on_update_selection() override;
+	void on_view_stage_change() override;
 	void update_multi_view() override;
 
 	void on_draw_win(MultiView::Window *win) override;
