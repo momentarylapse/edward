@@ -8,9 +8,8 @@
 #include "ModelMaterial.h"
 #include "../../lib/nix/nix.h"
 #include "../../MultiView/Window.h"
+#include "../../MultiView/DrawingHelper.h"
 #include "../../Edward.h"
-
-void create_fake_dynamic_cube_map(nix::CubeMap *cube_map); // DataMaterial.cpp
 
 float col_frac(const color &a, const color &b);
 
@@ -190,6 +189,8 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 	Array<nix::Texture*> tex;
 	for (auto *t: texture_levels)
 		tex.add(t->texture.get());
+	tex.resize(5);
+	tex.add(MultiView::cube_map.get());
 //	if (material->cube_map)
 //		tex.add(material->cube_map);
 	nix::SetTextures(tex);

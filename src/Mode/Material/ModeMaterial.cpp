@@ -22,6 +22,7 @@
 #include "../../MultiView/MultiView.h"
 #include "../../MultiView/Window.h"
 #include "../../MultiView/ColorScheme.h"
+#include "../../MultiView/DrawingHelper.h"
 #include "../../lib/nix/nix.h"
 
 const int MATERIAL_DETAIL = 32;
@@ -36,8 +37,6 @@ ModeMaterial::ModeMaterial() :
 	Mode("Material", NULL, new DataMaterial, ed->multi_view_3d, "menu_material")
 {
 	geo = NULL;
-
-	cube_map = NULL;
 
 	appearance_dialog = NULL;
 	shader_graph_dialog = NULL;
@@ -161,13 +160,12 @@ void ModeMaterial::on_command(const string & id) {
 
 void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	data->apply_for_rendering();
-	nix::SetShader(shader.get());
-	shader->set_int(shader->get_location("num_lights"), 1);
+	win->set_shader(shader.get());
 	auto pos = win->get_lighting_eye_pos();//cam->get_pos(true);
 	shader->set_data(shader->get_location("eye_pos"), &pos.x, 12);
 	auto tex = weak(textures);
 	tex.resize(5);
-	tex.add(cube_map);
+	tex.add(MultiView::cube_map.get());
 	nix::SetTextures(tex);
 	nix::SetFog(FOG_EXP, 0,10000,0.001f, Blue);
 
@@ -209,9 +207,6 @@ void ModeMaterial::on_end() {
 
 	//shader->unref();
 	shader = NULL;
-
-	delete cube_map;
-	cube_map = NULL;
 }
 
 
@@ -219,23 +214,6 @@ bool ModeMaterial::save_as() {
 	if (!test_save_extras(data))
 		return false;
 	return storage->save_as(data);
-}
-
-void create_fake_dynamic_cube_map(nix::CubeMap *cube_map) {
-	Image im;
-	int size = cube_map->width;
-	im.create(size, size, White);
-	for (int i=0; i<size; i++)
-		for (int j=0; j<size; j++) {
-			float f = 0;
-			if ((i % 16) == 0 or (j % 16) == 0)
-				f = 0.5;
-			if ((i % 64) == 0 or (j % 64) == 0)
-				f = 1;
-			im.set_pixel(i, j, color::interpolate(scheme.BACKGROUND, scheme.GRID, f));
-		}
-	for (int i=0;i<6;i++)
-		cube_map->overwrite_side(i, im);
 }
 
 
@@ -251,8 +229,6 @@ void ModeMaterial::on_start() {
 	} catch (Exception &e) {
 		msg_error(e.message());
 	}
-	cube_map = new nix::CubeMap(128);
-	create_fake_dynamic_cube_map(cube_map);
 
 	data->subscribe(this, [=]{ on_data_update(); });
 	on_data_update();

@@ -17,6 +17,10 @@ shared<nix::Shader> shader_lines_3d;
 shared<nix::Shader> shader_lines_3d_colored;
 shared<nix::Shader> shader_lines_3d_colored_wide;
 
+namespace MultiView {
+	shared<nix::CubeMap> cube_map;
+}
+
 static nix::Texture *tex_round;
 static nix::Texture *tex_text;
 static string font_name = "Sans";
@@ -41,6 +45,23 @@ nix::Texture *create_round_texture(int n) {
 	return t;
 }
 
+void create_fake_dynamic_cube_map(nix::CubeMap *cube_map) {
+	Image im;
+	int size = cube_map->width;
+	im.create(size, size, White);
+	for (int i=0; i<size; i++)
+		for (int j=0; j<size; j++) {
+			float f = 0;
+			if ((i % 16) == 0 or (j % 16) == 0)
+				f = 0.5;
+			if ((i % 64) == 0 or (j % 64) == 0)
+				f = 1;
+			im.set_pixel(i, j, color::interpolate(scheme.BACKGROUND, scheme.GRID, f));
+		}
+	for (int i=0;i<6;i++)
+		cube_map->overwrite_side(i, im);
+}
+
 void drawing_helper_init(const Path &dir) {
 	vb_lines = new nix::VertexBuffer("3f,4f");
 	vb_2d = new nix::VertexBuffer("3f,4f,2f");
@@ -55,6 +76,9 @@ void drawing_helper_init(const Path &dir) {
 	shader_lines_3d_colored_wide = nix::Shader::load(dir << "shader/lines-3d-colored-wide.shader");
 	shader_selection = nix::Shader::load(dir << "shader/selection.shader");
 	shader_selection->set_int(shader_selection->get_location("num_lights"), 1);
+
+	MultiView::cube_map = new nix::CubeMap(128);
+	create_fake_dynamic_cube_map(MultiView::cube_map.get());
 }
 
 void set_line_width(float width) {

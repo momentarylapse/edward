@@ -48,7 +48,6 @@ public:
 
 
 	shared_array<nix::Texture> textures;
-	nix::CubeMap *cube_map;
 	shared<nix::Shader> shader;
 	void update_textures();
 	void update_shader();

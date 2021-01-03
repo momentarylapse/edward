@@ -13,6 +13,7 @@
 
 namespace nix {
 	class Shader;
+	class CubeMap;
 }
 
 extern shared<nix::Shader> shader_selection;
@@ -23,6 +24,7 @@ extern shared<nix::Shader> shader_lines_3d_colored_wide;
 class vector;
 namespace MultiView {
 	class Window;
+	extern shared<nix::CubeMap> cube_map;
 }
 class string;
 class color;

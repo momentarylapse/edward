@@ -205,7 +205,7 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
 	
 ///	float reflectivity = 1-((1-xxx.x) * (1-exp(-pow(dot(d, n),2) * 100)));
 
-	if (roughness < 0.1 && false) {
+	if (roughness < 0.1) {
 		if (textureSize(tex_cube, 0).x > 10) {
 		vec3 L = reflect(view_dir, n);
 		//for (int i=0; i<30; i++) {
@@ -251,7 +251,7 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
             
         // add to outgoing radiance Lo
         float NdotL = max(dot(n, L), 0.0);
-        out_color.rgb += (kD * albedo.rgb / PI + specular) * radiance * NdotL/10000;
+        out_color.rgb += min((kD * albedo.rgb / PI + specular) * NdotL/10000, 1/PI) * radiance;
 		
 	//	}
 	}}
