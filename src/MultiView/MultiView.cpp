@@ -419,12 +419,12 @@ void MultiView::on_left_button_down() {
 					sel_rect.start_later(m);
 				}
 			} else if (allow_mouse_actions and hover_selected()) {
-				action_con->start_action(active_win, hover.point, ACTION_CONSTRAINTS_NONE);
+				action_con->start_action(active_win, hover.point, ActionController::Constraint::FREE);
 			}
 		} else {
 			if (allow_select) {
 				if (hover_selected() and (get_select_mode() == MultiView::SELECT_SET)) {
-					action_con->start_action(active_win, hover.point, ACTION_CONSTRAINTS_NONE);
+					action_con->start_action(active_win, hover.point, ActionController::Constraint::FREE);
 				} else {
 					get_selected(get_select_mode());
 					sel_rect.start_later(m);
@@ -940,7 +940,7 @@ void MultiView::get_hover() {
 			return;
 		}
 	}
-	if (allow_mouse_actions and action_con->is_mouse_over(hover.point)) {
+	if (allow_mouse_actions and (action_con->get_hover(hover.point) != ActionController::Constraint::UNDEFINED)) {
 		hover.meta = hover.HOVER_ACTION_CONTROLLER;
 		return;
 	}

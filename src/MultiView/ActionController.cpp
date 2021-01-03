@@ -8,6 +8,7 @@
 #include "ActionController.h"
 #include "MultiView.h"
 #include "DrawingHelper.h"
+#include "ColorScheme.h"
 #include "Window.h"
 #include "../Action/ActionMultiView.h"
 #include "../lib/nix/nix.h"
@@ -65,7 +66,7 @@ ActionController::~ActionController() {
 	delete_geo();
 }
 
-void ActionController::start_action(Window *_win, const vector &_m, int _constraints) {
+void ActionController::start_action(Window *_win, const vector &_m, Constraint _constraints) {
 	if (cur_action)
 		end_action(false);
 	if (!multi_view->allow_mouse_actions)
@@ -78,7 +79,7 @@ void ActionController::start_action(Window *_win, const vector &_m, int _constra
 	m0 = _m;
 	pos0 = pos;
 	constraints = _constraints;
-	if (constraints == ACTION_CONSTRAINTS_NONE)
+	if (constraints == Constraint::FREE)
 		pos0 = m0;
 	cur_action = ActionMultiViewFactory(action.name, data);
 	cur_action->execute_logged(data);
@@ -86,42 +87,52 @@ void ActionController::start_action(Window *_win, const vector &_m, int _constra
 }
 
 
-vector transform_ang(Window *w, const vector &ang) {
+vector ActionController::transform_ang(Window *w, const vector &ang) {
 	auto qmv =  w->local_ang;
 	auto qang = quaternion::rotation_v( ang);
 	auto q = qmv * qang * qmv.bar();
 	return q.get_angles();
 }
 
-vector mvac_project_trans(int mode, const vector &v) {
+vector ActionController::project_trans(Constraint mode, const vector &v) {
 	vector r = v;
-	if (mode == ACTION_CONSTRAINTS_X)
+	if (mode == Constraint::X or mode == Constraint::NEG_X)
 		r.y = r.z = 0;
-	else if (mode == ACTION_CONSTRAINTS_Y)
+	else if (mode == Constraint::Y or mode == Constraint::NEG_Y)
 		r.x = r.z = 0;
-	else if (mode == ACTION_CONSTRAINTS_Z)
+	else if (mode == Constraint::Z or mode == Constraint::NEG_Z)
 		r.x = r.y = 0;
-	else if (mode == ACTION_CONSTRAINTS_XY)
+	else if (mode == Constraint::XY)
 		r.z = 0;
-	else if (mode == ACTION_CONSTRAINTS_XZ)
+	else if (mode == Constraint::XZ)
 		r.y = 0;
-	else if (mode == ACTION_CONSTRAINTS_YZ)
+	else if (mode == Constraint::YZ)
 		r.x = 0;
 	return r;
 }
 
-vector mvac_mirror(int mode) {
-	if (mode == ACTION_CONSTRAINTS_X)
+vector ActionController::mirror(Constraint mode) {
+	if (mode == Constraint::X or mode == Constraint::NEG_X)
 		return vector::EX;
-	else if (mode == ACTION_CONSTRAINTS_Y)
+	else if (mode == Constraint::Y or mode == Constraint::NEG_Y)
 		return vector::EY;
-	else if (mode == ACTION_CONSTRAINTS_Z)
+	else if (mode == Constraint::Z or mode == Constraint::NEG_Z)
 		return vector::EZ;
-	else if (mode == ACTION_CONSTRAINTS_XY)
+	else if (mode == Constraint::XY)
 		return vector::EZ;
-	else if (mode == ACTION_CONSTRAINTS_XZ)
+	else if (mode == Constraint::XZ)
 		return vector::EY;
 	return vector::EX;
+}
+
+bool cons_neg(ActionController::Constraint c) {
+	if (c == ActionController::Constraint::NEG_X)
+		return true;
+	if (c == ActionController::Constraint::NEG_Y)
+		return true;
+	if (c == ActionController::Constraint::NEG_Z)
+		return true;
+	return false;
 }
 
 void ActionController::update_action() {
@@ -135,22 +146,23 @@ void ActionController::update_action() {
 	vector dir = active_win->get_direction();
 	vector _param = v_0;
 	if (action.mode == ACTION_MOVE) {
-		_param = mvac_project_trans(constraints, v2 - v1);
+		_param = project_trans(constraints, v2 - v1);
 		_param = multi_view->maybe_snap_v(_param);
 	} else if (action.mode == ACTION_ROTATE) {
-		//_param = mvac_project_trans(constraints, v2 - v1) * 0.003f * multi_view->active_win->zoom();
-		_param = mvac_project_trans(constraints, (v2 - v1) ^ dir) * 0.003f * multi_view->active_win->zoom();
-		if (constraints == ACTION_CONSTRAINTS_NONE)
+		//_param = project_trans(constraints, v2 - v1) * 0.003f * multi_view->active_win->zoom();
+		_param = project_trans(constraints, (v2 - v1) ^ dir) * 0.003f * multi_view->active_win->zoom();
+		if (constraints == Constraint::FREE)
 			_param = transform_ang(active_win, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
 		_param = multi_view->maybe_snap_v2(_param, pi / 180.0);
 	} else if (action.mode == ACTION_SCALE) {
-		_param = vector(1, 1, 1) + mvac_project_trans(constraints, v2 - v1) * 0.01f * multi_view->active_win->zoom();
-		if (constraints == ACTION_CONSTRAINTS_NONE)
+		float sign = cons_neg(constraints) ? -1 : 1;
+		_param = vector(1, 1, 1) + project_trans(constraints, sign * (v2 - v1)) * 0.01f * multi_view->active_win->zoom();
+		if (constraints == Constraint::FREE)
 			_param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
 		_param = multi_view->maybe_snap_v2(_param, 0.01f);
 	} else if (action.mode == ACTION_MIRROR) {
-		_param = mvac_mirror(constraints);
-		if (constraints == ACTION_CONSTRAINTS_NONE)
+		_param = mirror(constraints);
+		if (constraints == Constraint::FREE)
 			_param = active_win->cam->ang * vector::EX;
 	} else {
 		param = v_0;
@@ -202,7 +214,7 @@ void ActionController::end_action(bool set) {
 		delete(cur_action);
 		multi_view->notify(multi_view->MESSAGE_ACTION_ABORT);
 	}
-	cur_action = NULL;
+	cur_action = nullptr;
 	mat = matrix::ID;
 }
 
@@ -216,16 +228,16 @@ bool ActionController::is_selecting() {
 
 void ActionController::reset() {
 	visible = false;
-	constraints = ACTION_CONSTRAINTS_NONE;
-	mouse_over_constraint = -1;
+	constraints = Constraint::FREE;
+	hover_constraint = Constraint::UNDEFINED;
 }
 
 void ActionController::delete_geo() {
 	for (Geometry *g: geo)
-		delete(g);
+		delete g;
 	geo.clear();
 	for (Geometry *g: geo_show)
-		delete(g);
+		delete g;
 	geo_show.clear();
 }
 
@@ -250,29 +262,23 @@ void ActionController::show(bool show) {
 	update();
 }
 
-struct ACGeoConfig {
-	color col;
-	int constraint;
-	int priority;
-};
-
-string constraint_name(int c) {
-	if (c == ACTION_CONSTRAINTS_X)
+string ActionController::constraint_name(Constraint c) {
+	if (c == Constraint::X or c == Constraint::NEG_X)
 		return _("x-axis");
-	if (c == ACTION_CONSTRAINTS_Y)
+	if (c == Constraint::Y or c == Constraint::NEG_Y)
 		return _("y-axis");
-	if (c == ACTION_CONSTRAINTS_Z)
+	if (c == Constraint::Z or c == Constraint::NEG_Z)
 		return _("z-axis");
-	if (c == ACTION_CONSTRAINTS_XY)
+	if (c == Constraint::XY)
 		return _("x-y-plane");
-	if (c == ACTION_CONSTRAINTS_XZ)
+	if (c == Constraint::XZ)
 		return _("x-z-plane");
-	if (c == ACTION_CONSTRAINTS_YZ)
+	if (c == Constraint::YZ)
 		return _("y-z-plane");
 	return "free";
 }
 
-string action_name(int a) {
+string ActionController::action_name(int a) {
 	if (a == ACTION_MOVE)
 		return _("move");
 	if ((a == ACTION_ROTATE) or (a == ACTION_ROTATE_2D))
@@ -284,21 +290,21 @@ string action_name(int a) {
 	return "???";
 }
 
-const ACGeoConfig ac_geo_config[] = {
-	{color(1, 0.4f, 0.4f, 0.8f),ACTION_CONSTRAINTS_XY,0},
-	{color(1, 0.4f, 0.4f, 0.8f),ACTION_CONSTRAINTS_XZ,0},
-	{color(1, 0.4f, 0.4f, 0.8f),ACTION_CONSTRAINTS_YZ,0},
-	{color(1, 0.8f, 0.8f, 0.8f),ACTION_CONSTRAINTS_X,1},
-	{color(1, 0.8f, 0.8f, 0.8f),ACTION_CONSTRAINTS_X,1},
-	{color(1, 0.8f, 0.8f, 0.8f),ACTION_CONSTRAINTS_Y,1},
-	{color(1, 0.8f, 0.8f, 0.8f),ACTION_CONSTRAINTS_Y,1},
-	{color(1, 0.8f, 0.8f, 0.8f),ACTION_CONSTRAINTS_Z,1},
-	{color(1, 0.8f, 0.8f, 0.8f),ACTION_CONSTRAINTS_Z,1},
-	{color(1, 0.8f, 0.8f, 0.8f),ACTION_CONSTRAINTS_NONE,2}
+const ActionController::ACGeoConfig ActionController::ac_geo_config[] = {
+	{color(1, 0.4f, 0.4f, 0.8f),Constraint::XY,0},
+	{color(1, 0.4f, 0.4f, 0.8f),Constraint::XZ,0},
+	{color(1, 0.4f, 0.4f, 0.8f),Constraint::YZ,0},
+	{color(1, 0.8f, 0.8f, 0.8f),Constraint::NEG_X,1},
+	{color(1, 0.8f, 0.8f, 0.8f),Constraint::X,1},
+	{color(1, 0.8f, 0.8f, 0.8f),Constraint::NEG_Y,1},
+	{color(1, 0.8f, 0.8f, 0.8f),Constraint::Y,1},
+	{color(1, 0.8f, 0.8f, 0.8f),Constraint::NEG_Z,1},
+	{color(1, 0.8f, 0.8f, 0.8f),Constraint::Z,1},
+	{color(1, 0.8f, 0.8f, 0.8f),Constraint::FREE,2}
 };
 
-bool geo_allow(int i, Window *win, const matrix &geo_mat) {
-	int c = ac_geo_config[i].constraint;
+bool ActionController::geo_allow(int i, Window *win, const matrix &geo_mat) {
+	auto c = ac_geo_config[i].constraint;
 	vector pp = win->project(geo_mat * v_0);
 	vector ppx = win->project(geo_mat * vector::EX);
 	ppx.z = pp.z;
@@ -307,17 +313,17 @@ bool geo_allow(int i, Window *win, const matrix &geo_mat) {
 	vector ppz = win->project(geo_mat * vector::EZ);
 	ppz.z = pp.z;
 
-	if (c == ACTION_CONSTRAINTS_X)
+	if (c == Constraint::X or c == Constraint::NEG_X)
 		return (ppx - pp).length() > 8;
-	if (c == ACTION_CONSTRAINTS_Y)
+	if (c == Constraint::Y or c == Constraint::NEG_Y)
 		return (ppy - pp).length() > 8;
-	if (c == ACTION_CONSTRAINTS_Z)
+	if (c == Constraint::Z or c == Constraint::NEG_Z)
 		return (ppz - pp).length() > 8;
-	if (c == ACTION_CONSTRAINTS_YZ)
+	if (c == Constraint::YZ)
 		return ((ppy - pp) ^ (ppz - pp)).length() > 300;
-	if (c == ACTION_CONSTRAINTS_XZ)
+	if (c == Constraint::XZ)
 		return ((ppx - pp) ^ (ppz - pp)).length() > 300;
-	if (c == ACTION_CONSTRAINTS_XY)
+	if (c == Constraint::XY)
 		return ((ppx - pp) ^ (ppy - pp)).length() > 300;
 	return true;
 }
@@ -331,13 +337,13 @@ void ActionController::draw(Window *win) {
 	nix::SetZ(false, false);
 	matrix m = mat * geo_mat;
 	nix::SetWorldMatrix(m);
-	nix::SetTexture(NULL);
+	nix::SetTexture(nullptr);
 	nix::SetShader(nix::default_shader_3d);
 	win->set_projection_matrix();
 	foreachi(Geometry *g, geo_show, i) {
 		if (!geo_allow(i, win, m))
 			continue;
-		if (ac_geo_config[i].constraint == mouse_over_constraint)
+		if (ac_geo_config[i].constraint == hover_constraint)
 			nix::SetMaterial(White, 0, 0, White);
 		else
 			nix::SetMaterial(Black, 0, 0, ac_geo_config[i].col);
@@ -352,11 +358,11 @@ void ActionController::draw(Window *win) {
 		set_color(color(1, 0.2f, 0.7f, 0.2f));
 		set_line_width(2.0f);
 		float r = multi_view->cam.radius * 10;
-		if (constraints == ACTION_CONSTRAINTS_X)
+		if (constraints == Constraint::X or constraints == Constraint::NEG_X)
 			draw_line(pos - vector::EX * r, pos + vector::EX * r);
-		if (constraints == ACTION_CONSTRAINTS_Y)
+		if (constraints == Constraint::Y or constraints == Constraint::NEG_Y)
 			draw_line(pos - vector::EY * r, pos + vector::EY * r);
-		if (constraints == ACTION_CONSTRAINTS_Z)
+		if (constraints == Constraint::Z or constraints == Constraint::NEG_Z)
 			draw_line(pos - vector::EZ * r, pos + vector::EZ * r);
 	}
 
@@ -365,8 +371,9 @@ void ActionController::draw(Window *win) {
 	if (win == multi_view->mouse_win) {
 		vector pp = win->project(pos);
 
-		if ((mouse_over_constraint >= 0) and !in_use()) {
-			draw_str(pp.x + 80, pp.y + 40, action_name(action.mode) + ": " + constraint_name(mouse_over_constraint));
+		if ((hover_constraint != Constraint::UNDEFINED) and !in_use()) {
+			set_color(scheme.TEXT);
+			draw_str(pp.x + 80, pp.y + 40, action_name(action.mode) + ": " + constraint_name(hover_constraint));
 		}
 	}
 
@@ -399,12 +406,12 @@ void ActionController::draw(Window *win) {
 void ActionController::draw_post() {
 }
 
-bool ActionController::is_mouse_over(vector &tp) {
-	mouse_over_constraint = -1;
+ActionController::Constraint ActionController::get_hover(vector &tp) {
 	if (!visible)
-		return false;
+		return Constraint::UNDEFINED;
 	float z_min = 1;
 	int priority = -1;
+	auto hover = Constraint::UNDEFINED;
 	foreachi(Geometry *g, geo, i) {
 		vector t;
 		if (!geo_allow(i, multi_view->mouse_win, geo_mat))
@@ -412,26 +419,28 @@ bool ActionController::is_mouse_over(vector &tp) {
 		if (g->is_mouse_over(multi_view->mouse_win, geo_mat, t)) {
 			float z = multi_view->mouse_win->project(t).z;
 			if ((z < z_min) or (ac_geo_config[i].priority >= priority)) {
-				mouse_over_constraint = ac_geo_config[i].constraint;
+				hover = ac_geo_config[i].constraint;
 				priority = ac_geo_config[i].priority;
 				z_min = z;
 				tp = t;
 			}
 		}
 	}
-	return (mouse_over_constraint >= 0);
+	hover_constraint = hover;
+	return hover;
 }
 
 bool ActionController::on_left_button_down() {
 	if (!visible and action.locked)
 		return false;
 	vector hp = multi_view->hover.point;
-	if (is_mouse_over(hp)) {
-		start_action(multi_view->active_win, hp, mouse_over_constraint);
+	hover_constraint = get_hover(hp);
+	if (hover_constraint != Constraint::UNDEFINED) {
+		start_action(multi_view->active_win, hp, hover_constraint);
 		return true;
 	}
 	if (multi_view->hover.index >= 0){
-		start_action(multi_view->active_win, hp, ACTION_CONSTRAINTS_NONE);
+		start_action(multi_view->active_win, hp, Constraint::FREE);
 		return true;
 	}
 	return false;
