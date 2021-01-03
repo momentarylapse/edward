@@ -37,7 +37,6 @@ ModeMaterial::ModeMaterial() :
 {
 	geo = NULL;
 
-	shader = NULL;
 	cube_map = NULL;
 
 	appearance_dialog = NULL;
@@ -100,7 +99,7 @@ void ModeMaterial::update_textures() {
 	textures.clear();
 
 	for (auto &tf: data->appearance.texture_files)
-		textures.add(nix::LoadTexture(tf));
+		textures.add(nix::Texture::load(tf));
 	/*if (appearance.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC) {
 		create_fake_dynamic_cube_map(cube_map);
 		textures.add(cube_map);
@@ -112,13 +111,11 @@ void ModeMaterial::update_textures() {
 }
 
 void ModeMaterial::update_shader() {
-
-	try{
+	try {
 		shader->update(data->shader.code);
-	}catch(Exception &e){
+	} catch(Exception &e) {
 		msg_error(e.message());
 	}
-	shader->link_uniform_block("LightData", 1);
 }
 
 
@@ -164,12 +161,12 @@ void ModeMaterial::on_command(const string & id) {
 
 void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	data->apply_for_rendering();
-	nix::SetShader(shader);
+	nix::SetShader(shader.get());
 	shader->set_int(shader->get_location("num_lights"), 1);
 	auto pos = win->get_lighting_eye_pos();//cam->get_pos(true);
 	shader->set_data(shader->get_location("eye_pos"), &pos.x, 12);
-	auto tex = textures;
-	tex.resize(4);
+	auto tex = weak(textures);
+	tex.resize(5);
 	tex.add(cube_map);
 	nix::SetTextures(tex);
 	nix::SetFog(FOG_EXP, 0,10000,0.001f, Blue);
@@ -249,9 +246,9 @@ void ModeMaterial::on_start() {
 	t->reset();
 	t->enable(false);
 
-	try{
-	shader = nix::Shader::create("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
-	}catch (Exception &e) {
+	try {
+		shader = nix::Shader::create("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
+	} catch (Exception &e) {
 		msg_error(e.message());
 	}
 	cube_map = new nix::CubeMap(128);

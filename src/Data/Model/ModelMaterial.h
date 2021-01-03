@@ -9,6 +9,8 @@
 #define MODELMATERIAL_H_
 
 #include "../../x/Material.h"
+#include "../../lib/base/pointer.h"
+#include "../../lib/nix/nix.h"
 
 namespace nix {
 	class Texture;
@@ -41,7 +43,7 @@ public:
 		TextureLevel();
 		~TextureLevel();
 		Path filename;
-		nix::Texture *texture;
+		shared<nix::Texture> texture;
 		Image *image;
 		bool edited;
 		void reload_image();

@@ -12,12 +12,11 @@
 #include "ColorScheme.h"
 
 
-namespace MultiView{
-	extern nix::Shader *shader_selection;
-	extern nix::Shader *shader_lines_3d;
-	extern nix::Shader *shader_lines_3d_colored;
-	extern nix::Shader *shader_lines_3d_colored_wide;
-}
+shared<nix::Shader> shader_selection;
+shared<nix::Shader> shader_lines_3d;
+shared<nix::Shader> shader_lines_3d_colored;
+shared<nix::Shader> shader_lines_3d_colored_wide;
+
 static nix::Texture *tex_round;
 static nix::Texture *tex_text;
 static string font_name = "Sans";
@@ -51,19 +50,18 @@ void drawing_helper_init(const Path &dir) {
 	nix::Shader::load(dir << "shader/module-surface.shader");
 	nix::Shader::load(dir << "shader/module-surface-simple.shader");
 
-	MultiView::shader_lines_3d = nix::Shader::load(dir << "shader/lines-3d.shader");
-	MultiView::shader_lines_3d_colored = nix::Shader::load(dir << "shader/lines-3d-colored.shader");
-	MultiView::shader_lines_3d_colored_wide = nix::Shader::load(dir << "shader/lines-3d-colored-wide.shader");
-	MultiView::shader_selection = nix::Shader::load(dir << "shader/selection.shader");
-	MultiView::shader_selection->link_uniform_block("LightData", 1);
-	MultiView::shader_selection->set_int(MultiView::shader_selection->get_location("num_lights"), 1);
+	shader_lines_3d = nix::Shader::load(dir << "shader/lines-3d.shader");
+	shader_lines_3d_colored = nix::Shader::load(dir << "shader/lines-3d-colored.shader");
+	shader_lines_3d_colored_wide = nix::Shader::load(dir << "shader/lines-3d-colored-wide.shader");
+	shader_selection = nix::Shader::load(dir << "shader/selection.shader");
+	shader_selection->set_int(shader_selection->get_location("num_lights"), 1);
 }
 
 void set_line_width(float width) {
 	if (width == 1.0f) {
-		nix::SetShader(MultiView::shader_lines_3d_colored);
+		nix::SetShader(shader_lines_3d_colored.get());
 	} else {
-		auto s = MultiView::shader_lines_3d_colored_wide;
+		auto s = shader_lines_3d_colored_wide.get();
 		nix::SetShader(s);
 		s->set_float(s->get_location("target_width"), nix::target_width);
 		s->set_float(s->get_location("target_height"), nix::target_height);
@@ -128,7 +126,7 @@ void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b) 
 	//vector d = (pb - pa).normalized();
 	//vector e = d ^ vector::EZ;
 	float r = 3;
-	nix::SetShader(nix::default_shader_2d);
+	nix::SetShader(nix::Shader::default_2d);
 	draw_rect(pa.x-r, pa.x+r, pa.y-r, pa.y+r, 0);
 	draw_rect(pb.x-r, pb.x+r, pb.y-r, pb.y+r, 0);
 }

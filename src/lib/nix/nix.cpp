@@ -161,7 +161,7 @@ void Init() {
 	SetMaterial(White, 0.5f, 0, color(0.1f, 0.1f, 0.1f, 0.1f));
 	SetProjectionPerspective();
 	SetZ(true, true);
-	SetShader(default_shader_3d);
+	SetShader(Shader::default_3d);
 
 	int vp[4];
 	glGetIntegerv(GL_VIEWPORT, vp);

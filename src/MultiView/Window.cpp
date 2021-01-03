@@ -334,7 +334,7 @@ void Window::draw_data_points() {
 
 	// draw multiview data
 	set_projection_matrix_pixel();
-	nix::SetShader(nix::default_shader_2d);
+	nix::SetShader(nix::Shader::default_2d);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetTexture(nullptr);
 	foreachi(DataSet &d, multi_view->data, di){
@@ -399,7 +399,7 @@ void Window::draw_header() {
 
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + get_str_width(view_kind), dest.y1, dest.y1 + 20);
 
-	nix::SetShader(nix::default_shader_2d);
+	nix::SetShader(nix::Shader::default_2d);
 	set_color(scheme.WINDOW_TITLE);
 	bg = scheme.WINDOW_TITLE_BG;
 	if (ed->is_active("nix-area") and (this == multi_view->active_win)) {}
@@ -425,7 +425,7 @@ void Window::draw() {
 
 	// background color
 	nix::ResetToColor(bg);
-	nix::SetShader(nix::default_shader_2d);
+	nix::SetShader(nix::Shader::default_2d);
 
 	set_projection_matrix();
 	update_matrices();
@@ -445,14 +445,14 @@ void Window::draw() {
 	multi_view->set_light(cam->ang * vector::EZ, White, 0.7f);
 	nix::SetMaterial(White, 0, 0, White);//Black);
 	set_color(White);
-	set_shader(nix::default_shader_3d);
+	set_shader(nix::Shader::default_3d);
 
 	// draw the actual data
 	set_projection_matrix();
 	if (ed->cur_mode)
 		ed->cur_mode->on_draw_win(this);
 
-	nix::SetShader(nix::default_shader_2d);
+	nix::SetShader(nix::Shader::default_2d);
 	nix::SetAlpha(ALPHA_NONE);
 	nix::SetTexture(nullptr);
 	set_projection_matrix_pixel();
@@ -464,7 +464,7 @@ void Window::draw() {
 	// cursor
 	if (this != multi_view->mouse_win) {
 		vector pp = project(multi_view->get_cursor());
-		nix::SetShader(nix::default_shader_2d);
+		nix::SetShader(nix::Shader::default_2d);
 		set_color(scheme.CREATION_LINE);
 		draw_rect(pp.x-2, pp.x+2, pp.y-2, pp.y+2, 0);
 	}

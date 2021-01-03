@@ -98,7 +98,7 @@ void ModeModelMeshTexture::on_end() {
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar"); // -> mesh
 }
 
-#define cur_tex			data->material[mode_model_mesh->current_material]->texture_levels[current_texture_level]->texture
+#define cur_tex			data->material[mode_model_mesh->current_material]->texture_levels[current_texture_level]->texture.get()
 
 
 void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
@@ -115,7 +115,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	s.y1=a.y;
 	s.y2=b.y;
 
-	nix::SetShader(nix::default_shader_2d);
+	nix::SetShader(nix::Shader::default_2d);
 
 	if (true){//mul->FXEnabled){
 		// background pattern to show transparency
@@ -170,7 +170,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 
 
 void ModeModelMeshTexture::on_draw() {
-	nix::SetShader(nix::default_shader_2d);
+	nix::SetShader(nix::Shader::default_2d);
 	auto s = data->get_selection();
 	/*if (data->getNumSelectedVertices() > 0){
 		draw_str(20, 160, format(_("skin: %d"), getNumSelected()));

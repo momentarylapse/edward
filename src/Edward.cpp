@@ -450,12 +450,10 @@ void Edward::on_draw_gl() {
 	cur_mode->on_draw();
 
 	// messages
-	nix::SetShader(nix::default_shader_2d);
+	nix::SetShader(nix::Shader::default_2d);
 	foreachi(string &m, message_str, i)
 		draw_str(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, TextAlign::CENTER);
 }
-
-
 
 void Edward::load_key_codes() {
 	hui::Configuration con;

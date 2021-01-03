@@ -16,7 +16,7 @@ void MaterialInit() {
 	// create the default material
 	trivial_material = new Material;
 	trivial_material->name = "-default-";
-	trivial_material->shader = nix::default_shader_3d->ref();
+	trivial_material->shader = nix::Shader::default_3d;
 
 	SetDefaultMaterial(trivial_material);
 }
@@ -39,10 +39,9 @@ void SetDefaultMaterial(Material *m) {
 }
 
 void MaterialSetDefaultShader(nix::Shader *s) {
-	default_material->shader->unref();
-	default_material->shader = s->ref();
-
-	nix::default_shader_3d = s;
+	msg_error("set default material shader");
+	default_material->shader = s;
+	nix::Shader::default_load = s;
 }
 
 
@@ -53,8 +52,8 @@ Material::Material() {
 	shader = NULL;
 
 	albedo = White;
-	roughness = 0.5f;
-	metal = 0;
+	roughness = 0.6f;
+	metal = 0.0f;
 	emission = Black;
 
 	cast_shadow = true;
@@ -76,9 +75,6 @@ Material::Material() {
 }
 
 Material::~Material() {
-	if (shader)
-	//	delete shader;
-		shader->unref();
 }
 
 void Material::add_uniform(const string &name, float *p, int size) {
@@ -103,8 +99,7 @@ Material* Material::copy() {
 		cube_map = FxCubeMapNew(m2->cube_map_size);
 		FxCubeMapCreate(cube_map, model);
 	}*/
-	if (shader)
-		m->shader = shader->ref();
+	m->shader = shader;
 	m->friction = friction;
 	return m;
 }
@@ -138,7 +133,7 @@ Material *LoadMaterial(const Path &filename) {
 	auto texture_files = c.get_str("textures", "");
 	if (texture_files != "")
 		for (auto &f: texture_files.explode(","))
-			m->textures.add(nix::LoadTexture(f));
+			m->textures.add(nix::Texture::load(f));
 	m->shader = nix::Shader::load(c.get_str("shader", ""));
 
 	m->friction._static = c.get_float("friction.static", 0.5f);
@@ -171,7 +166,7 @@ Material *LoadMaterial(const Path &filename) {
 		texture_files = c.get_str("reflection.cubemap", "");
 		Array<nix::Texture*> cmt;
 		for (auto &f: texture_files.explode(","))
-			cmt.add(nix::LoadTexture(f));
+			cmt.add(nix::Texture::load(f));
 		m->reflection.density = c.get_float("reflection.density", 1);
 #if 0
 			m->reflection.cube_map = new nix::CubeMap(m->reflection.cube_map_size);

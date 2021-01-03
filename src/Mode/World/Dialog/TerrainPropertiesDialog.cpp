@@ -77,10 +77,10 @@ void TerrainPropertiesDialog::FillTextureList()
 
 	reset("textures");
 	for (int i=0;i<temp.NumTextures;i++){
-		nix::Texture *tex = nix::LoadTexture(temp.TextureFile[i]);
+		auto tex = nix::Texture::load(temp.TextureFile[i]);
 		if (tex)
 			if (i < m->textures.num)
-				tex = m->textures[i];
+				tex = m->textures[i].get();
 		string img = ed->get_tex_image(tex);
 		add_string("textures", format("%d\\%.5f\\%.5f\\%s\\%s", i, temp.TextureScale[i].x * (float)temp.NumX, temp.TextureScale[i].z * (float)temp.NumZ, img, file_secure(temp.TextureFile[i])));
 	}

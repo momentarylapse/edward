@@ -376,7 +376,7 @@ void Model::load(const Path &filename)
 			m->textures.resize(nt);
 		for (int t=0;t<nt;t++){
 			string fn = f->read_str();
-			m->textures[t] = nix::LoadTexture(fn);
+			m->textures[t] = nix::Texture::load(fn);
 		}
 	}
 	
@@ -1615,8 +1615,8 @@ void Model::draw(int detail, bool set_fx, bool allow_shadow)
 
 	for (int i=0;i<material.num;i++){
 		//material[i]->apply();
-		nix::SetTextures(material[i]->textures);
-		nix::SetShader(material[i]->shader);
+		nix::SetTextures(weak(material[i]->textures));
+		nix::SetShader(material[i]->shader.get());
 
 		// finally... really draw!!!
 		draw_simple(i, detail);

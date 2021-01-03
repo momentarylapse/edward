@@ -9,6 +9,7 @@
 #define FONT_H__INCLUDED_
 
 #include "../lib/base/base.h"
+#include "../lib/base/pointer.h"
 #include "../lib/file/path.h"
 #include "../lib/math/math.h"
 
@@ -26,7 +27,7 @@ struct Glyph {
 class Font {
 public:
 	Path filename;
-	nix::Texture *texture;
+	shared<nix::Texture> texture;
 	int unknown_glyph_no;
 	Glyph glyph[256];
 	float y_offset, height, x_factor, y_factor;

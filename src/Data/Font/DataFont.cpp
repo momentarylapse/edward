@@ -18,10 +18,6 @@ DataFont::DataFont() :
 	reset();
 }
 
-DataFont::~DataFont()
-{
-}
-
 
 
 // default character set
@@ -44,7 +40,7 @@ void DataFont::reset()
 	filename = "";
 	global.Reset();
 
-	Texture = NULL;
+	Texture = nullptr;
 	TextureWidth = 512;
 	TextureHeight = 256;
 
@@ -73,7 +69,7 @@ void DataFont::reset()
 
 void DataFont::UpdateTexture()
 {
-	Texture = nix::LoadTexture(global.TextureFile);
+	Texture = nix::Texture::load(global.TextureFile);
 	if (Texture){
 		TextureWidth = Texture->width;
 		TextureHeight = Texture->height;

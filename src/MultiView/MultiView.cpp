@@ -20,11 +20,6 @@ hui::Timer timer;
 
 namespace MultiView{
 
-nix::Shader *shader_selection = NULL;
-nix::Shader *shader_lines_3d = NULL;
-nix::Shader *shader_lines_3d_colored = NULL;
-nix::Shader *shader_lines_3d_colored_wide = NULL;
-
 
 
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
@@ -46,7 +41,7 @@ const string MultiView::MESSAGE_ACTION_EXECUTE = "ActionExecute";
 void MultiView::Selection::reset() {
 	meta = HOVER_NONE;
 	index = set = type = -1;
-	data = NULL;
+	data = nullptr;
 }
 
 vector Camera::get_pos(bool allow_radius) const {
@@ -65,8 +60,8 @@ MultiView::MultiView(bool mode3d) {
 	light_enabled = false;
 	whole_window = true;
 	this->mode3d = mode3d;
-	mouse_win = NULL;
-	active_win = NULL;
+	mouse_win = nullptr;
+	active_win = nullptr;
 	allow_mouse_actions = true;
 	area = rect::ID;
 
@@ -143,7 +138,7 @@ void MultiView::reset() {
 	hover.reset();
 	action_con->reset();
 
-	clear_data(NULL);
+	clear_data(nullptr);
 	reset_mouse_action();
 	reset_view();
 }
@@ -175,7 +170,7 @@ void MultiView::reset_view() {
 }
 
 void MultiView::reset_mouse_action() {
-	action_con->cur_action = NULL;
+	action_con->cur_action = nullptr;
 	action_con->action.reset();
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
@@ -694,8 +689,8 @@ void MultiView::on_draw() {
 
 		nix::SetScissor(nix::target_rect);
 
-		nix::SetShader(nix::default_shader_2d);
-		nix::SetTexture(NULL);
+		nix::SetShader(nix::Shader::default_2d);
+		nix::SetTexture(nullptr);
 
 		color c2 = scheme.hoverify(scheme.WINDOW_DIVIDER);
 		set_color((hover.meta == hover.HOVER_WINDOW_DIVIDER_Y or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
@@ -711,7 +706,7 @@ void MultiView::on_draw() {
 	cam_con->draw();
 
 	set_color(scheme.TEXT);
-	nix::SetShader(nix::default_shader_2d);
+	nix::SetShader(nix::Shader::default_2d);
 
 	if (ed->input.inside_smart)
 		draw_mouse_pos();
@@ -735,10 +730,10 @@ void MultiView::SelectionRect::end() {
 void MultiView::SelectionRect::draw(const vector &m) {
 	nix::SetZ(false, false);
 	nix::SetAlphaM(ALPHA_MATERIAL);
-	nix::SetTexture(NULL);
+	nix::SetTexture(nullptr);
 	set_color(scheme.SELECTION_RECT);
 	nix::SetCull(CULL_NONE);
-	nix::SetShader(nix::default_shader_2d);
+	nix::SetShader(nix::Shader::default_2d);
 	draw_rect(m.x, pos0.x, m.y, pos0.y, 0);
 	nix::SetCull(CULL_DEFAULT);
 	set_color(scheme.SELECTION_RECT_BOUNDARY);

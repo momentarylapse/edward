@@ -90,7 +90,7 @@ bool Terrain::load(const Path &_filename_, const vector &_pos_, bool deep)
 				if (num_textures > material->textures.num)
 					material->textures.resize(num_textures);
 				for (int i=0;i<num_textures;i++)
-					material->textures[i] = nix::LoadTexture(texture_file[i]);
+					material->textures[i] = nix::Texture::load(texture_file[i]);
 
 				// height
 				for (int x=0;x<num_x+1;x++)

@@ -78,7 +78,7 @@ Font *_cdecl LoadFont(const Path &filename)
 		Font *font = new Font;
 		font->filename = filename;
 		f->read_comment();
-		font->texture = nix::LoadTexture(f->read_str());
+		font->texture = nix::Texture::load(f->read_str());
 		int tx = font->texture->width;
 		int ty = font->texture->height;
 		f->read_comment();

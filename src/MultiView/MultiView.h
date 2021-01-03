@@ -82,11 +82,6 @@ static const int FLAG_MOVE = 8;
 
 
 
-extern nix::Shader *shader_selection;
-extern nix::Shader *shader_lines_3d;
-extern nix::Shader *shader_lines_3d_colored;
-extern nix::Shader *shader_lines_3d_colored_wide;
-
 
 class MultiView : public Observable<VirtualBase> {
 public:

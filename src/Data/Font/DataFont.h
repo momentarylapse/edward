@@ -9,19 +9,17 @@
 #define DATAFONT_H_
 
 #include "../Data.h"
+#include "../../lib/base/pointer.h"
+#include "../../lib/nix/nix.h"
 
 namespace Gui{
 	class Font;
 }
-namespace nix{
-	class Texture;
-};
 
 
 class DataFont: public Data {
 public:
 	DataFont();
-	virtual ~DataFont();
 
 	void reset();
 
@@ -47,7 +45,7 @@ public:
 	Array<Glyph> glyph;
 
 	// for editing
-	nix::Texture *Texture;
+	shared<nix::Texture> Texture;
 	int TextureWidth, TextureHeight;
 	int Marked;
 

@@ -25,10 +25,10 @@ const color ColorIconHover = color(0.7f, 0.4f, 0.4f, 1);
 CameraController::CameraController(MultiView *_view) {
 	view = _view;
 	show = true;
-	tex_bg = nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/bg.png");
-	tex_move = nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/move.png");
-	tex_rotate= nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/rotate.png");
-	tex_zoom = nix::LoadTexture(app->directory_static << "icons/toolbar/multiview/zoom.png");
+	tex_bg = nix::Texture::load(app->directory_static << "icons/toolbar/multiview/bg.png");
+	tex_move = nix::Texture::load(app->directory_static << "icons/toolbar/multiview/move.png");
+	tex_rotate= nix::Texture::load(app->directory_static << "icons/toolbar/multiview/rotate.png");
+	tex_zoom = nix::Texture::load(app->directory_static << "icons/toolbar/multiview/zoom.png");
 	//controllers.resize(4);
 }
 
@@ -154,7 +154,7 @@ void CameraController::draw() {
 	// show/hide button
 	set_color(ColorBackground);
 	nix::SetTexture(tex_bg);
-	nix::SetShader(nix::default_shader_2d);
+	nix::SetShader(nix::Shader::default_2d);
 	draw_2d(rect::ID, r2, 0);
 	draw_icon(r_show, NULL, false);
 

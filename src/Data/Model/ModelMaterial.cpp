@@ -46,11 +46,9 @@ ModelMaterial::ModelMaterial(const Path &_filename) : ModelMaterial() {
 ModelMaterial::~ModelMaterial() {
 	if (vb)
 		delete vb;
-	vb = nullptr;
 }
 
 ModelMaterial::TextureLevel::TextureLevel() {
-	texture = nullptr;
 	image = nullptr;
 	edited = false;
 }
@@ -58,8 +56,6 @@ ModelMaterial::TextureLevel::TextureLevel() {
 ModelMaterial::TextureLevel::~TextureLevel() {
 	if (image)
 		delete image;
-	if (texture)
-		delete texture;
 }
 
 void ModelMaterial::TextureLevel::reload_image() {
@@ -173,7 +169,7 @@ void ModelMaterial::check_colors() {
 
 void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 	nix::SetAlpha(ALPHA_NONE);
-	w->set_shader(nix::default_shader_3d);
+	w->set_shader(nix::Shader::default_3d);
 	color em = color::interpolate(col.emission, White, 0.1f);
 	nix::SetMaterial(col.albedo, col.roughness, col.metal, em);
 	if (true) {//MVFXEnabled){
@@ -189,11 +185,11 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 			nix::SetAlpha(alpha.factor);
 			//NixSetZ(false,false);
 		}
-		w->set_shader(material->shader);
+		w->set_shader(material->shader.get());
 	}
 	Array<nix::Texture*> tex;
 	for (auto *t: texture_levels)
-		tex.add(t->texture);
+		tex.add(t->texture.get());
 //	if (material->cube_map)
 //		tex.add(material->cube_map);
 	nix::SetTextures(tex);

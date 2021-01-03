@@ -293,7 +293,7 @@ void MaterialPropertiesDialog::refill_refl_tex_view() {
 void MaterialPropertiesDialog::fill_texture_list() {
 	reset("mat_textures");
 	for (int i=0;i<temp.texture_files.num;i++) {
-		nix::Texture *tex = nix::LoadTexture(temp.texture_files[i]);
+		nix::Texture *tex = nix::Texture::load(temp.texture_files[i]);
 		string img = ed->get_tex_image(tex);
 		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, img, file_secure(temp.texture_files[i])));
 	}

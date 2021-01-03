@@ -76,7 +76,7 @@ void MeshSelectionModeSurface::on_draw_win(MultiView::Window *win) {
 	p.add_to_vertex_buffer(m->show_vertices, vbs, 1);
 	vbs.build(parent->vb_hover, 1);
 
-	nix::SetOffset(1.0f);
+	nix::SetOffset(-2.0f);
 	mode_model->set_material_hover();
 	nix::DrawTriangles(parent->vb_hover);
 	nix::SetMaterial(White, 0.5f, 0, Black);

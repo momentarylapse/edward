@@ -48,7 +48,7 @@ void *ActionWorldEditTerrain::execute(Data *d) {
 	t->material->textures.resize(data.NumTextures);
 	for (int i=0;i<t->material->textures.num;i++) {
 		t->texture_file[i] = data.TextureFile[i];
-		t->material->textures[i] = nix::LoadTexture(t->texture_file[i]);
+		t->material->textures[i] = nix::Texture::load(t->texture_file[i]);
 		t->texture_scale[i] = data.TextureScale[i];
 	}
 

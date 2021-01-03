@@ -9,6 +9,16 @@
 #define SRC_MULTIVIEW_DRAWINGHELPER_H_
 
 #include "../lib/base/base.h"
+#include "../lib/base/pointer.h"
+
+namespace nix {
+	class Shader;
+}
+
+extern shared<nix::Shader> shader_selection;
+extern shared<nix::Shader> shader_lines_3d;
+extern shared<nix::Shader> shader_lines_3d_colored;
+extern shared<nix::Shader> shader_lines_3d_colored_wide;
 
 class vector;
 namespace MultiView {

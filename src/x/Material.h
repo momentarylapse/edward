@@ -2,6 +2,7 @@
 #define SRC_WORLD_MATERIAL_H_
 
 #include "../lib/base/base.h"
+#include "../lib/base/pointer.h"
 #include "../lib/file/path.h"
 #include "../lib/image/color.h"
 
@@ -22,8 +23,8 @@ public:
 	// name of the material
 	Path name;
 
-	Array<nix::Texture*> textures;
-	nix::Shader *shader;
+	shared_array<nix::Texture> textures;
+	shared<nix::Shader> shader;
 
 	struct ShaderUniform {
 		int location;

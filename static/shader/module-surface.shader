@@ -15,8 +15,8 @@ struct Light {
 	vec4 color;
 	float radius, theta, harshness;
 };
-uniform int num_lights;
-//uniform int shadow_index = 0;
+uniform int num_lights = 0;
+uniform int shadow_index = -1;
 
 /*layout(binding = 1)*/ uniform LightData {
 	Light light[32];
@@ -28,7 +28,9 @@ struct Fog {
 };
 /*layout(binding = 3)*/ uniform Fog fog;
 
-uniform samplerCube tex4;
+layout(binding = 6) uniform sampler2D tex3;//sampler_shadow;
+layout(binding = 7) uniform sampler2D tex4;//sampler_shadow2;
+uniform samplerCube tex_cube;
 
 
 layout(location = 0) in vec4 in_pos; // world
@@ -121,21 +123,60 @@ float _surf_specular(Light l, vec3 p, vec3 n, float roughness, vec3 view_dir) {
 	return pow(spec_angle, 30*(1-roughness));
 }
 
+float _surf_shadow_pcf_step(vec3 p, vec2 dd, ivec2 ts) {
+	vec2 d = dd / ts * 0.8;
+	vec2 tp = p.xy + d;
+	float epsilon = 0.004;
+	float shadow_z = texture(tex4, p.xy + d).r + epsilon;
+	if (tp.x > 0.38 && tp.y > 0.38 && tp.x < 0.62 && tp.y < 0.62)
+		shadow_z = texture(tex3, (p.xy - vec2(0.5,0.5))*4 + vec2(0.5,0.5) + d).r + epsilon/4;
+	if (p.z > shadow_z)
+		return 1.0;
+	return 0.0;
+}
 
-vec3 _surf_light_add(Light l, vec3 p, vec3 n, vec3 albedo, float reflectivity, float roughness, vec3 view_dir) {
+float _surf_shadow_pcf(vec3 p) {
+	ivec2 ts = textureSize(tex3, 0);
+	float value = 0;//shadow_pcf_step(p, vec2(0,0), ts);
+	const float R = 1.8;
+	const int N = 3;
+	for (int i=0; i<N; i++) {
+		float phi = _surf_rand3d(p + p*i) * 2 * 3.1415;
+		float r = R * sqrt(fract(phi * 235.3545));
+		value += _surf_shadow_pcf_step(p, r * vec2(cos(phi), sin(phi)), ts);
+	}
+	//value += shadow_pcf_step(p, vec2( 1.0, 1.1), ts);
+	//value += shadow_pcf_step(p, vec2(-0.8, 0.9), ts);
+	//value += shadow_pcf_step(p, vec2( 0.7,-0.8), ts);
+	//value += shadow_pcf_step(p, vec2(-0.5,-1.1), ts);
+	return value / N;//(N+1);
+}
+
+vec3 _surf_light_add(Light l, vec3 p, vec3 n, vec3 albedo, float metal, float roughness, vec3 view_dir, bool with_shadow) {
 	float shadow = 1.0;
 	
+	if (with_shadow) {
+		vec4 proj = l.proj * vec4(p,1);
+		proj.xyz /= proj.w;
+		proj.x = (proj.x +1)/2;
+		proj.y = (proj.y +1)/2;
+		proj.z = (proj.z +1)/2;
+	
+		if (proj.x > 0.01 && proj.x < 0.99 && proj.y > 0.01 && proj.y < 0.99 && proj.z < 1.0) {
+			shadow = 1.0 - _surf_shadow_pcf(proj.xyz) * l.harshness;
+		}
+	}
 	
 	
 	vec3 F0 = vec3(0.04);
-	F0 = mix(F0, albedo, reflectivity);
+	F0 = mix(F0, albedo, metal);
 	
 	
         // calculate per-light radiance
         vec3 V = -view_dir;
         vec3 L = -_surf_light_dir(l, p);
         vec3 H = normalize(V + L);
-        vec3 radiance     = l.color.rgb * _surf_brightness(l, p, n)*PI;
+        vec3 radiance     = l.color.rgb * _surf_brightness(l, p, n)*PI * shadow;
         
         // cook-torrance brdf
         float NDF = DistributionGGX(n, H, roughness);
@@ -144,7 +185,7 @@ vec3 _surf_light_add(Light l, vec3 p, vec3 n, vec3 albedo, float reflectivity, f
         
         vec3 kS = F;
         vec3 kD = vec3(1.0) - kS;
-        kD *= 1.0 - reflectivity;
+        kD *= 1.0 - metal;
         
         vec3 numerator    = NDF * G * F;
         float denominator = 4.0 * max(dot(n, V), 0.0) * max(dot(n, L), 0.0);
@@ -153,25 +194,6 @@ vec3 _surf_light_add(Light l, vec3 p, vec3 n, vec3 albedo, float reflectivity, f
         // add to outgoing radiance Lo
         float NdotL = max(dot(n, L), 0.0);
         return (kD * albedo / PI + specular) * radiance * NdotL;
-        
-        
-        
-        
-	
-	
-
-	float b = _surf_brightness(l, p, n) * shadow;
-	float lambert = max(-dot(n, _surf_light_dir(l, p)), 0);
-	
-	float bb = l.harshness * lambert + (1 - l.harshness);
-	vec3 col = albedo * l.color.rgb * bb * b;
-	
-	// specular
-	if (lambert > 0 && reflectivity > 0.01) {
-		float spx = _surf_specular(l, p, n, roughness, view_dir);
-		col = mix(col, spx * l.color.rgb * b, reflectivity);
-	}
-	return col;
 }
 
 void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughness) {
@@ -183,15 +205,16 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
 	
 ///	float reflectivity = 1-((1-xxx.x) * (1-exp(-pow(dot(d, n),2) * 100)));
 
-	if (metal > 0.01) {
+	if (roughness < 0.1 && false) {
+		if (textureSize(tex_cube, 0).x > 10) {
 		vec3 L = reflect(view_dir, n);
 		//for (int i=0; i<30; i++) {
 		//vec3 L = normalize(L0 + vec3(_surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5) / 50);
-		vec4 r = texture(tex4, L);
+		vec4 r = textureCube(tex_cube, -L);
 		/*if (roughness > 0.1) {
-			r += texture(tex4, reflect(view_dir, normalize(n + vec3(_surf_rand3d(p),0,1) * roughness/10)));
-			r += texture(tex4, reflect(view_dir, normalize(n + vec3(1,_surf_rand3d(p),0) * roughness/10)));
-			r += texture(tex4, reflect(view_dir, normalize(n + vec3(0,1,_surf_rand3d(p)) * roughness/10)));
+			r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(_surf_rand3d(p),0,1) * roughness/10)));
+			r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(1,_surf_rand3d(p),0) * roughness/10)));
+			r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(0,1,_surf_rand3d(p)) * roughness/10)));
 			r /= 5;
 		}
 		out_color += r * reflectivity;*/
@@ -231,11 +254,11 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
         out_color.rgb += (kD * albedo.rgb / PI + specular) * radiance * NdotL/10000;
 		
 	//	}
-	}
+	}}
 	
 
 	for (int i=0; i<num_lights; i++)
-		out_color.rgb += _surf_light_add(light[i], p, n, albedo.rgb, metal, roughness, view_dir).rgb;
+		out_color.rgb += _surf_light_add(light[i], p, n, albedo.rgb, metal, roughness, view_dir, i == shadow_index).rgb;
 	
 /*	float distance = length(p - eye_pos.xyz);
 	float f = exp(-distance / fog.distance);
@@ -245,4 +268,5 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
 	
 	out_color.a = albedo.a;
 }
+
 </Module>

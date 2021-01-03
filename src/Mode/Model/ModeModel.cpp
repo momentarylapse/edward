@@ -18,6 +18,7 @@
 #include "Animation/ModeModelAnimation.h"
 #include "../../lib/nix/nix.h"
 #include "../../MultiView/MultiView.h"
+#include "../../MultiView/DrawingHelper.h"
 #include "Mesh/Selection/MeshSelectionModeEdge.h"
 #include "Mesh/Selection/MeshSelectionModePolygon.h"
 #include "Mesh/Selection/MeshSelectionModeSurface.h"
@@ -141,7 +142,7 @@ void ModeModel::on_update_menu() {
 
 void ModeModel::set_material_selected() {
 	nix::SetAlpha(ALPHA_MATERIAL);
-	nix::SetShader(MultiView::shader_selection);
+	nix::SetShader(shader_selection.get());
 	nix::SetMaterial(color(0.3f,0,0,0), 0, 0, Red);
 	//nix::SetMaterial(Black,color(0.3f,0,0,0),Black,0,color(1, 0.5f, 0, 1));
 	nix::SetTexture(NULL);
@@ -149,14 +150,14 @@ void ModeModel::set_material_selected() {
 
 void ModeModel::set_material_hover() {
 	nix::SetAlpha(ALPHA_MATERIAL);
-	nix::SetShader(MultiView::shader_selection);
+	nix::SetShader(shader_selection.get());
 	nix::SetMaterial(color(0.5f,0,0,0), 0, 0, White);
 	nix::SetTexture(NULL);
 }
 
 void ModeModel::set_material_creation(float intensity) {
 	nix::SetAlpha(ALPHA_MATERIAL);
-	nix::SetShader(MultiView::shader_selection);
+	nix::SetShader(shader_selection.get());
 	nix::SetMaterial(color(0.3f*intensity,0.3f,1,0.3f), 0, 1, color(1,0.1f,0.4f,0.1f));
 	nix::SetTexture(NULL);
 }

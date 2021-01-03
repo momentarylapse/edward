@@ -37,7 +37,7 @@ rect node_area(ShaderNode *n);
 
 bool test_shader_file(const Path &filename) {
 	auto *shader = nix::Shader::load(filename);
-	shader->unref();
+	msg_todo("TESTME  test_shader_file");
 	return shader;
 }
 

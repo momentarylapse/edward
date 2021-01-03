@@ -68,7 +68,7 @@ void ModeFont::on_end() {
 void ModeFont::on_draw() {
 	nix::SetZ(false, false);
 	set_color(White);
-	nix::SetShader(nix::default_shader_2d);
+	nix::SetShader(nix::Shader::default_2d);
 	draw_rect(0, (float)nix::target_width, nix::target_height * 0.9f, (float)nix::target_height, 0);
 	set_color(Black);
 	if (dialog)
@@ -215,7 +215,7 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 	nix::SetTexture(NULL);
 	set_color(White);
 	Draw2D(rect::ID, &d);
-	nix::SetTexture(data->Texture);
+	nix::SetTexture(data->Texture.get());
 	set_color(Black);
 	Draw2D(rect::ID, &d);
 	nix::SetTexture(NULL);

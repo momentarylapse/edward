@@ -325,7 +325,7 @@ void ModeWorld::on_draw() {
 			ss.add(format(_("%d cameras"), num_cam));
 		if (num_li > 0)
 			ss.add(format(_("%d lights"), num_li));
-		nix::SetShader(nix::default_shader_2d);
+		nix::SetShader(nix::Shader::default_2d);
 		draw_str(10, 100, _("selected: ") + implode(ss, ", "));
 	}
 }
@@ -409,7 +409,7 @@ void apply_lighting(DataWorld *w, MultiView::Window *win) {
 	}
 	ed->multi_view_3d->ubo_light->update_array(lights);
 	nix::BindUniform(ed->multi_view_3d->ubo_light, 1);
-	win->set_shader(nix::default_shader_3d, w->lights.num);
+	win->set_shader(nix::Shader::default_3d, w->lights.num);
 }
 
 void draw_background(DataWorld *w) {
@@ -431,7 +431,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 
 // terrain
 	nix::SetWire(multi_view->wire_mode);
-	nix::SetShader(nix::default_shader_3d);
+	nix::SetShader(nix::Shader::default_3d);
 
 	if (show_effects)
 		apply_lighting(data, win);
@@ -444,11 +444,11 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 
 		// prepare...
 		t.terrain->draw();
-		nix::SetShader(nix::default_shader_3d);
+		nix::SetShader(nix::Shader::default_3d);
 
 		auto mat = t.terrain->material;
 		nix::SetMaterial(mat->albedo, mat->roughness, mat->metal, mat->emission);
-		nix::SetTextures(mat->textures);
+		nix::SetTextures(weak(mat->textures));
 		nix::DrawTriangles(t.terrain->vertex_buffer);
 
 		if (t.is_selected)
@@ -471,7 +471,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 				auto mat = o.object->material[i];
 				mat->shader = nullptr;
 				nix::SetMaterial(mat->albedo, mat->roughness, mat->metal, mat->emission);
-				nix::SetTextures(mat->textures);
+				nix::SetTextures(weak(mat->textures));
 				nix::DrawTriangles(o.object->mesh[0]->sub[i].vertex_buffer);
 			}
 			//o.object->draw(0, false, false);
