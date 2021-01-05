@@ -27,13 +27,12 @@ ModeModelMeshCreatePlatonic::ModeModelMeshCreatePlatonic(ModeBase *_parent, int 
 
 	pos_chosen = false;
 	radius = 0;
-	geo = NULL;
+	geo = nullptr;
 }
 
-ModeModelMeshCreatePlatonic::~ModeModelMeshCreatePlatonic()
-{
+ModeModelMeshCreatePlatonic::~ModeModelMeshCreatePlatonic() {
 	if (geo)
-		delete(geo);
+		delete geo;
 }
 
 void ModeModelMeshCreatePlatonic::on_start()
@@ -51,35 +50,32 @@ void ModeModelMeshCreatePlatonic::on_start()
 }
 
 
-void ModeModelMeshCreatePlatonic::on_end()
-{
+void ModeModelMeshCreatePlatonic::on_end() {
 	if (dialog)
 		ed->set_side_panel(nullptr);
 }
 
-void ModeModelMeshCreatePlatonic::updateGeometry()
-{
+void ModeModelMeshCreatePlatonic::updateGeometry() {
 	if (geo)
-		delete(geo);
-	if (pos_chosen){
-		if (type == 306){
+		delete geo;
+	if (pos_chosen) {
+		if (type == 306) {
 			int samples = dialog->get_int("ntp_samples");
 			hui::Config.set_int("NewTeapotSamples", samples);
 			geo = new GeometryTeapot(pos, radius, samples);
-		}else{
+		} else {
 			geo = new GeometryPlatonic(pos, radius, type);
 		}
 	}
 }
 
 
-void ModeModelMeshCreatePlatonic::on_left_button_up()
-{
-	if (pos_chosen){
+void ModeModelMeshCreatePlatonic::on_left_button_up() {
+	if (pos_chosen) {
 		data->pasteGeometry(*geo, mode_model_mesh->current_material);
 
 		abort();
-	}else{
+	} else {
 		pos = multi_view->get_cursor();
 		message = _("scale");
 		pos_chosen = true;
@@ -88,11 +84,10 @@ void ModeModelMeshCreatePlatonic::on_left_button_up()
 }
 
 
-void ModeModelMeshCreatePlatonic::on_draw_win(MultiView::Window *win)
-{
+void ModeModelMeshCreatePlatonic::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
-	if (pos_chosen){
+	if (pos_chosen) {
 		mode_model->set_material_creation();
 
 		geo->build(nix::vb_temp);
@@ -105,9 +100,8 @@ void ModeModelMeshCreatePlatonic::on_draw_win(MultiView::Window *win)
 
 
 
-void ModeModelMeshCreatePlatonic::on_mouse_move()
-{
-	if (pos_chosen){
+void ModeModelMeshCreatePlatonic::on_mouse_move() {
+	if (pos_chosen) {
 		vector pos2 = multi_view->get_cursor(pos);
 		radius = (pos2 - pos).length();
 		updateGeometry();

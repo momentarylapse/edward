@@ -43,15 +43,14 @@ void ModeModelMeshCreatePlane::on_end() {
 }
 
 
-void ModeModelMeshCreatePlane::on_left_button_up()
-{
-	if (pos_chosen){
+void ModeModelMeshCreatePlane::on_left_button_up() {
+	if (pos_chosen) {
 		int nx = dialog->get_int("np_num_x");
 		int ny = dialog->get_int("np_num_y");
 		hui::Config.set_int("NewPlaneNumX", nx);
 		hui::Config.set_int("NewPlaneNumY", ny);
 
-		if (invert){
+		if (invert) {
 			pos += length[0];
 			length[0] = -length[0];
 		}
@@ -60,7 +59,7 @@ void ModeModelMeshCreatePlane::on_left_button_up()
 		data->pasteGeometry(pl, mode_model_mesh->current_material);
 
 		abort();
-	}else{
+	} else {
 		pos = multi_view->get_cursor();
 		message = _("Plane: second point");
 		pos_chosen = true;

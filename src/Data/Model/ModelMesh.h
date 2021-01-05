@@ -15,6 +15,7 @@ class ModelSkin;
 class ModelPolygon;
 class ModelSelection;
 class MeshInsideTestData;
+class Geometry;
 
 
 class ModelVertex: public MultiView::SingleData {
@@ -138,6 +139,9 @@ public:
 
 	void set_show_vertices(Array<ModelVertex> &vert);
 	Array<ModelVertex> show_vertices;
+
+
+	void copy_geometry(Geometry &geo);
 };
 
 #endif /* SRC_DATA_MODEL_MODELMESH_H_ */

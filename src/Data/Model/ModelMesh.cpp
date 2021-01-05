@@ -852,3 +852,27 @@ bool ModelCylinder::in_rect(MultiView::Window *win, const rect &r) {
 bool ModelCylinder::overlap_rect(MultiView::Window *win, const rect &r) {
 	return MultiView::SingleData::in_rect(win, r);
 }
+
+
+void ModelMesh::copy_geometry(Geometry &geo) {
+	geo.clear();
+
+	// copy vertices
+	Array<int> vert;
+	foreachi(ModelVertex &v, vertex, vi)
+		if (v.is_selected) {
+			geo.vertex.add(v);
+			vert.add(vi);
+		}
+
+	// copy triangles
+	for (ModelPolygon &t: polygon)
+		if (t.is_selected) {
+			ModelPolygon tt = t;
+			for (int k=0;k<t.side.num;k++)
+				foreachi(int v, vert, vi)
+					if (v == t.side[k].vertex)
+						tt.side[k].vertex = vi;
+			geo.polygon.add(tt);
+		}
+}

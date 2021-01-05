@@ -192,7 +192,6 @@ public:
 	void autoWeldSelectedSurfaces(float d);
 	void setNormalModeSelection(int mode);
 	void setMaterialSelection(int material);
-	void copyGeometry(Geometry &geo); // not an action...
 	void pasteGeometry(Geometry &geo, int default_material);
 	void easify(float factor);
 	void subdivideSelectedSurfaces(const ModelSelection &s);

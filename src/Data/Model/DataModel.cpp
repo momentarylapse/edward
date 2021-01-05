@@ -509,29 +509,6 @@ void DataModel::animationSetFrameDuration(int index, int frame, float duration)
 void DataModel::animationSetBone(int move, int frame, int bone, const vector &dpos, const vector &ang)
 {	execute(new ActionModelAnimationSetBone(move, frame, bone, dpos, ang));	}
 
-void DataModel::copyGeometry(Geometry &geo) {
-	geo.clear();
-
-	// copy vertices
-	Array<int> vert;
-	foreachi(ModelVertex &v, mesh->vertex, vi)
-		if (v.is_selected){
-			geo.vertex.add(v);
-			vert.add(vi);
-		}
-
-	// copy triangles
-	for (ModelPolygon &t: mesh->polygon)
-		if (t.is_selected){
-			ModelPolygon tt = t;
-			for (int k=0;k<t.side.num;k++)
-				foreachi(int v, vert, vi)
-					if (v == t.side[k].vertex)
-						tt.side[k].vertex = vi;
-			geo.polygon.add(tt);
-		}
-}
-
 void DataModel::delete_selection(const ModelSelection &s, bool greedy)
 {	execute(new ActionModelDeleteSelection(s, greedy));	}
 

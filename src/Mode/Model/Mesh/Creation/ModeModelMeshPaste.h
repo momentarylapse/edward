@@ -26,7 +26,7 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	void updateGeometry();
+	void update_geometry();
 
 private:
 	vector dpos0;

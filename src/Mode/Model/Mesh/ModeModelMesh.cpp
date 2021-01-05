@@ -417,12 +417,11 @@ void ModeModelMesh::choose_material_for_selection() {
 		return;
 	}
 
-	auto *dlg = new ModelMaterialSelectionDialog(ed, false, data);
+	auto dlg = ownify(new ModelMaterialSelectionDialog(ed, false, data));
 	dlg->run();
 
 	if (dlg->answer >= 0)
 		data->setMaterialSelection(dlg->answer);
-	delete dlg;
 }
 
 void ModeModelMesh::choose_mouse_function(int f, bool _lock_action) {
@@ -444,7 +443,7 @@ void ModeModelMesh::apply_mouse_function(MultiView::MultiView *mv) {
 }
 
 void ModeModelMesh::copy() {
-	data->copyGeometry(temp_geo);
+	data->edit_mesh->copy_geometry(temp_geo);
 
 	on_update_menu();
 	ed->set_message(format(_("%d vertices, %d triangles copied"), temp_geo.vertex.num, temp_geo.polygon.num));
@@ -465,9 +464,8 @@ void ModeModelMesh::add_effects(int type) {
 		ed->set_message(_("No vertex point selected"));
 		return;
 	}
-	auto *dlg = new ModelFXDialog(ed, false, data, type, -1);
+	auto dlg = ownify(new ModelFXDialog(ed, false, data, type, -1));
 	dlg->run();
-	delete dlg;
 }
 
 void ModeModelMesh::edit_effects() {
@@ -482,9 +480,8 @@ void ModeModelMesh::edit_effects() {
 		ed->set_message(_("One vertex point with effects has to be selected!"));
 		return;
 	}
-	auto *dlg = new ModelFXDialog(ed, false, data, -1, index);
+	auto dlg = ownify(new ModelFXDialog(ed, false, data, -1, index));
 	dlg->run();
-	delete dlg;
 }
 
 void ModeModelMesh::clear_effects() {
@@ -504,9 +501,8 @@ bool ModeModelMesh::pasteable() {
 }
 
 void ModeModelMesh::easify() {
-	auto *dlg = new ModelEasifyDialog(ed, false, data);
+	auto dlg = ownify(new ModelEasifyDialog(ed, false, data));
 	dlg->run();
-	delete dlg;
 }
 
 void ModeModelMesh::set_current_material(int index) {
@@ -525,6 +521,7 @@ void ModeModelMesh::set_current_skin(int index) {
 	if (index == MESH_PHYSICAL) {
 		data->edit_mesh = data->phys_mesh;
 		data->phys_mesh->set_show_vertices(data->phys_mesh->vertex);
+		msg_write("PHYSICAL");
 	}
 	data->reset_history();
 	ed->set_message(_("changing mesh... cleared history"));
