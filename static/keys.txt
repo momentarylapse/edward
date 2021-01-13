@@ -65,6 +65,7 @@ physics = F3
 redo = Ctrl + Y 
 rotate = R 
 save = Ctrl + S 
+save_as = Ctrl + Shift + S 
 scale = S 
 scale_2d = Shift + S 
 select_all = Ctrl + A 

@@ -16,8 +16,8 @@
 FormatModel::FormatModel() : TypedFormat<DataModel>(FD_MODEL, "model", _("Model"), Flag::CANONICAL_READ_WRITE) {
 }
 
+const bool write_external_edit_file = false;
 
-float col_frac(const color &a, const color &b);
 
 void update_model_script_data(DataModel::MetaData &m);
 
@@ -663,10 +663,13 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 	for (int i=0;i<data->meta_data.script_var.num;i++)
 		data->meta_data.script_var[i] = f->read_float();
 
+	_load_v11_edit(f, data, deep);
+}
 
+void FormatModel::_load_v11_edit(File *f, DataModel *data, bool deep) {
 
 // optional data / additional data for editing
-	while (true){
+	while (true) {
 		string s = f->read_str();
 		msg_write("opt:" + s);
 		if (s == "// Editor"){
@@ -745,27 +748,50 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 	}
 }
 
+File *load_file_x(const Path &filename, int &version) {
+
+	File *f = FileOpen(filename);
+	char c = f->read_char();
+	if (c == 'b') {
+		version = f->read_word();
+		return f;
+	} else if (c == 't') {
+		delete f;
+		f = FileOpenText(filename);
+		f->read_char();
+		version = f->read_word();
+		return f;
+	} else {
+		throw FormatError(_("File format unreadable!"));
+	}
+	return nullptr;
+}
+
 void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
 	int ffv;
 
-
-	File *f = FileOpenText(filename);
+	File *f = load_file_x(filename, ffv);
 	data->file_time = f->mtime().time;
 
-	ffv=f->ReadFileFormatVersion();
+	//ffv=f->ReadFileFormatVersion();
 
-	if (ffv<0){
-		throw FormatError(_("File format unreadable!"));
-	}else if (ffv==10){ // old format
+	if (ffv == 10) { // old format
 		_load_v10(f, data, deep);
-	}else if (ffv==11){ // new format
+	} else if (ffv == 11) { // new format
 		_load_v11(f, data, deep);
-	}else{
-		throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename, ffv, 10, 10));
+
+		if (file_exists(filename.with(".edit"))) {
+			int ffv2;
+			auto ff = load_file_x(filename.with(".edit"), ffv2);
+			_load_v11_edit(ff, data, deep);
+			delete ff;
+		}
+	} else {
+		throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename, ffv, 10, 11));
 	}
 
-	delete(f);
+	delete f;
 
 
 
@@ -910,12 +936,53 @@ void FormatModel::_save(const Path &filename, DataModel *data) {
 	//_save_v11_poly(filename.with(".edit"), data);
 	_save_v11(filename, data);
 
+	if (write_external_edit_file)
+		_save_v11_edit(filename, data);
+
+}
+
+void _save_v11_edit_x(File *f, DataModel *data) {
+
+	// additional data for editing
+	f->write_str("// Editor");
+	f->write_bool(data->meta_data.auto_generate_tensor);
+	f->write_bool(data->meta_data.auto_generate_dists);
+	f->write_bool(data->meta_data.auto_generate_skin[1]);
+	f->write_bool(data->meta_data.auto_generate_skin[2]);
+	f->write_int(data->meta_data.detail_factor[1]);
+	f->write_int(data->meta_data.detail_factor[2]);
+	f->write_str("// Normals");
+	for (int i=1;i<4;i++){
+		ModelSkin *s = &data->skin[i];
+		f->write_int(NORMAL_MODE_PER_VERTEX);
+		for (ModelVertex &v: s->vertex)
+			f->write_int(v.normal_mode);
+	}
+	f->write_str("// Polygons");
+	f->write_int(1);
+	f->write_int(data->mesh->polygon.num);
+	for (auto &t: data->mesh->polygon){
+		f->write_int(t.side.num);
+		f->write_int(t.material);
+		for (ModelPolygonSide &ss: t.side){
+			f->write_int(ss.vertex);
+			for (int l=0;l<data->material[t.material]->texture_levels.num;l++){
+				f->write_float(ss.skin_vertex[l].x);
+				f->write_float(ss.skin_vertex[l].y);
+			}
+		}
+	}
+	f->write_bool(false);
+	f->write_bool(true);
+	f->write_int(0);
+
+	f->write_str("#");
 }
 
 void FormatModel::_save_v11(const Path &filename, DataModel *data) {
 
-	File *f = FileCreateText(filename);
-	f->WriteFileFormatVersion(false, 11);//FFVBinary, 11);
+	File *f = FileCreate(filename);
+	f->WriteFileFormatVersion(true, 11);//FFVBinary, 11);
 	f->float_decimals = 5;
 
 // general
@@ -1234,39 +1301,20 @@ void FormatModel::_save_v11(const Path &filename, DataModel *data) {
 		}
 	}
 
-// additional data for editing
-	f->write_comment("// Editor");
-	f->write_bool(data->meta_data.auto_generate_tensor);
-	f->write_bool(data->meta_data.auto_generate_dists);
-	f->write_bool(data->meta_data.auto_generate_skin[1]);
-	f->write_bool(data->meta_data.auto_generate_skin[2]);
-	f->write_int(data->meta_data.detail_factor[1]);
-	f->write_int(data->meta_data.detail_factor[2]);
-	f->write_comment("// Normals");
-	for (int i=1;i<4;i++){
-		ModelSkin *s = &data->skin[i];
-		f->write_int(NORMAL_MODE_PER_VERTEX);
-		for (ModelVertex &v: s->vertex)
-			f->write_int(v.normal_mode);
-	}
-	f->write_comment("// Polygons");
-	f->write_int(1);
-	f->write_int(data->mesh->polygon.num);
-	for (auto &t: data->mesh->polygon){
-		f->write_int(t.side.num);
-		f->write_int(t.material);
-		for (ModelPolygonSide &ss: t.side){
-			f->write_int(ss.vertex);
-			for (int l=0;l<data->material[t.material]->texture_levels.num;l++){
-				f->write_float(ss.skin_vertex[l].x);
-				f->write_float(ss.skin_vertex[l].y);
-			}
-		}
-	}
-	f->write_bool(false);
-	f->write_bool(true);
-	f->write_int(0);
+	if (write_external_edit_file)
+		f->write_str("#");
+	else
+		_save_v11_edit_x(f, data);
 
-	f->write_comment("#");
+	FileClose(f);
+}
+
+void FormatModel::_save_v11_edit(const Path &filename, DataModel *data) {
+	File *f = FileCreate(filename.with(".edit"));
+	f->WriteFileFormatVersion(true, 11);//FFVBinary, 11);
+	f->float_decimals = 5;
+
+	_save_v11_edit_x(f, data);
+
 	FileClose(f);
 }
