@@ -13,6 +13,9 @@ Array<Model*> ModelManager::originals;
 
 
 Model* ModelManager::load(const Path &_filename) {
+	if (_filename.is_empty())
+		return nullptr;
+
 	auto filename = engine.object_dir << _filename.with(".model");
 	for (auto *o: originals)
 		if (o->_template->filename == filename) {

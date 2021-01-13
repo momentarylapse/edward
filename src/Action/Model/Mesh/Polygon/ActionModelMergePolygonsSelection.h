@@ -21,7 +21,7 @@ public:
 	void *compose(Data *d);
 private:
 	void MergePolygonsInSurface(DataModel *m);
-	void MergePolygons(DataModel *m, int edge);
+	void MergePolygons(DataModel *m, int edge, int &max_old_poly);
 };
 
 #endif /* ACTIONMODELMERGESELECTIONSELECTION_H_ */
