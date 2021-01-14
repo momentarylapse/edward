@@ -1291,7 +1291,7 @@ void FormatModel::_save_v11(const Path &filename, DataModel *data) {
 
 
 	if (data->phys_mesh->cylinder.num > 0){
-		f->write_comment("// Cylinders");
+		f->write_str("// Cylinders");
 		f->write_int(data->phys_mesh->cylinder.num);
 		for (auto &c: data->phys_mesh->cylinder){
 			f->write_int(c.index[0]);

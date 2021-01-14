@@ -280,7 +280,6 @@ Texture::Texture(int w, int h, int _nz, const string &_format) : Texture() {
 }
 
 Texture::~Texture() {
-	msg_write("delete Texture " + filename.str());
 	unload();
 	/*foreachi(auto t, textures, i)
 		if (t == this) {
