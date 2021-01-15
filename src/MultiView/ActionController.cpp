@@ -10,6 +10,8 @@
 #include "DrawingHelper.h"
 #include "ColorScheme.h"
 #include "Window.h"
+#include "MouseWrapper.h"
+#include "../Edward.h"
 #include "../Action/ActionMultiView.h"
 #include "../lib/nix/nix.h"
 #include "../Data/Model/Geometry/Geometry.h"
@@ -77,6 +79,7 @@ void ActionController::start_action(Window *_win, const vector &_m, Constraint _
 
 	mat = matrix::ID;
 	active_win = _win;
+	dv = dvp = vector::ZERO;
 	m0 = _m;
 	pos0 = pos;
 	constraints = _constraints;
@@ -85,6 +88,8 @@ void ActionController::start_action(Window *_win, const vector &_m, Constraint _
 	cur_action = ActionMultiViewFactory(action.name, data);
 	cur_action->execute_logged(data);
 	multi_view->notify(multi_view->MESSAGE_ACTION_START);
+
+	MouseWrapper::start(ed->win);
 }
 
 
@@ -139,27 +144,28 @@ bool cons_neg(ActionController::Constraint c) {
 void ActionController::update_action() {
 	if (!cur_action)
 		return;
+	MouseWrapper::update(multi_view);
 
-	vector v2p = multi_view->m;
-	vector v2  = active_win->unproject(v2p, m0);
-	vector v1  = m0;
-	vector v1p = active_win->project(v1);
 	vector dir = active_win->get_direction();
 	vector _param = v_0;
+
+	dvp += multi_view->v;
+	dv += active_win->unproject(m0 + multi_view->v, m0) - active_win->unproject(m0, m0);
+
 	if (action.mode == ACTION_MOVE) {
-		_param = project_trans(constraints, v2 - v1);
+		_param = project_trans(constraints, dv);
 		_param = multi_view->maybe_snap_v(_param);
 	} else if (action.mode == ACTION_ROTATE) {
 		//_param = project_trans(constraints, v2 - v1) * 0.003f * multi_view->active_win->zoom();
-		_param = project_trans(constraints, (v2 - v1) ^ dir) * 0.003f * multi_view->active_win->zoom();
+		_param = project_trans(constraints, dv ^ dir) * 0.003f * multi_view->active_win->zoom();
 		if (constraints == Constraint::FREE)
-			_param = transform_ang(active_win, vector(v1p.y - v2p.y, v1p.x - v2p.x, 0) * 0.003f);
+			_param = transform_ang(active_win, vector(-dvp.y, -dvp.x, 0) * 0.003f);
 		_param = multi_view->maybe_snap_v2(_param, pi / 180.0);
 	} else if (action.mode == ACTION_SCALE) {
 		float sign = cons_neg(constraints) ? -1 : 1;
-		_param = vector(1, 1, 1) + project_trans(constraints, sign * (v2 - v1)) * 0.01f * multi_view->active_win->zoom();
+		_param = vector(1, 1, 1) + project_trans(constraints, sign * dv) * 0.01f * multi_view->active_win->zoom();
 		if (constraints == Constraint::FREE)
-			_param = vector(1, 1, 1) * (1 + (v2p - v1p).x * 0.01f);
+			_param = vector(1, 1, 1) * (1 + dvp.x * 0.01f);
 		_param = multi_view->maybe_snap_v2(_param, 0.01f);
 	} else if (action.mode == ACTION_MIRROR) {
 		_param = mirror(constraints);
@@ -217,6 +223,7 @@ void ActionController::end_action(bool set) {
 	}
 	cur_action = nullptr;
 	mat = matrix::ID;
+	MouseWrapper::stop(ed->win);
 }
 
 bool ActionController::is_selecting() {

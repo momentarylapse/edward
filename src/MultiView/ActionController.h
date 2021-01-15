@@ -61,6 +61,7 @@ public:
 
 	bool visible;
 	vector pos, pos0, m0;
+	vector dv, dvp;
 	vector param;
 	matrix mat;
 	Constraint constraints;
