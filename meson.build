@@ -36,6 +36,15 @@ else
 	add_project_arguments('-DHAS_LIB_DL=0', language : ['cpp'])
 endif
 
+# optional dependency: xlib
+d = cc.find_library('X11', required : false)
+if d.found()
+	add_project_arguments('-DHAS_LIB_XLIB=1', language : ['cpp'])
+	deps += [d]
+else
+	add_project_arguments('-DHAS_LIB_XLIB=0', language : ['cpp'])
+endif
+
 
 sources = [
 	'src/Action/Font/ActionFontEditGlobal.cpp',
@@ -421,6 +430,7 @@ sources = [
 	'src/MultiView/CameraController.cpp',
 	'src/MultiView/ColorScheme.cpp',
 	'src/MultiView/DrawingHelper.cpp',
+	'src/MultiView/MouseWrapper.cpp',
 	'src/MultiView/MultiView.cpp',
 	'src/MultiView/SingleData.cpp',
 	'src/MultiView/Window.cpp',

@@ -9,8 +9,10 @@
 #include "MultiView.h"
 #include "Window.h"
 #include "DrawingHelper.h"
+#include "MouseWrapper.h"
 #include "../lib/nix/nix.h"
 #include "../Edward.h"
+
 
 namespace MultiView{
 
@@ -21,6 +23,8 @@ const int CC_BORDER = 6;
 const color ColorBackground = color(0.5f, 1, 1, 1);
 const color ColorIcon = color(0.5f, 0.2f, 0.2f, 0.8f);
 const color ColorIconHover = color(0.7f, 0.4f, 0.4f, 1);
+
+
 
 CameraController::CameraController(MultiView *_view) {
 	view = _view;
@@ -102,16 +106,22 @@ void CameraController::on_left_button_down() {
 		c.moving = c.r_move.inside(view->m.x, view->m.y);
 		c.rotating = c.r_rotate.inside(view->m.x, view->m.y);
 		c.zooming = c.r_zoom.inside(view->m.x, view->m.y);
+
+		if (c.moving or c.rotating or c.zooming)
+			MouseWrapper::start(ed->win);
 	}
 }
 
 void CameraController::on_left_button_up() {
 	for (auto &c: controllers) {
+		if (c.moving or c.rotating or c.zooming)
+			MouseWrapper::stop(ed->win);
 		c.moving = c.rotating = c.zooming = false;
 	}
 }
 
 void CameraController::on_mouse_move() {
+	MouseWrapper::update(view);
 	for (auto &c: controllers) {
 		if (c.moving)
 			view->cam_move_pixel(c.win, vector(view->v.x, view->v.y, 0));
