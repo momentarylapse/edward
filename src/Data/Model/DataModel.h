@@ -230,7 +230,7 @@ public:
 
 
 	// old geometry
-	ModelSkin skin[4];
+	Array<ModelSkin> skin;
 
 	// general properties
 	Array<ModelMaterial*> material;

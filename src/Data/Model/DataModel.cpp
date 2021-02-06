@@ -106,6 +106,7 @@ DataModel::DataModel() :
 	mesh = new ModelMesh(this);
 	phys_mesh = new ModelMesh(this);
 	edit_mesh = mesh;
+	skin.resize(4);
 }
 
 DataModel::~DataModel() {

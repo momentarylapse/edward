@@ -54,10 +54,475 @@ char read_first_char(const Path &filename) {
 	return f->read_char();
 }
 
+
+Set<int> get_all_poly_vert(DataModel *m) {
+	Set<int> all_vert;
+	for (auto &p: m->phys_mesh->polygon)
+		for (auto &f: p.side)
+			all_vert.add(f.vertex);
+	return all_vert;
+}
+
+Array<Set<int>> split_conv_polyhedra(DataModel *m) {
+	auto all_vert = get_all_poly_vert(m);
+
+	Array<Set<int>> surf;
+
+	while(all_vert.num > 0) {
+		msg_write("----surf");
+		Set<int> cur;
+		cur.add(all_vert.pop());
+		int n = 0;
+		while (cur.num > n) {
+			n = cur.num;
+
+			for (auto &e: m->phys_mesh->edge) {
+				if (cur.contains(e.vertex[0]) and all_vert.contains(e.vertex[1])) {
+					cur.add(e.vertex[1]);
+					all_vert.erase(e.vertex[1]);
+				}
+				if (cur.contains(e.vertex[1]) and all_vert.contains(e.vertex[0])) {
+					cur.add(e.vertex[0]);
+					all_vert.erase(e.vertex[0]);
+				}
+			}
+		}
+		msg_write(ia2s(cur));
+		surf.add(cur);
+	}
+	return surf;
+}
+
+Array<ModelPolygon> conv_poly_poly(DataModel *m, const Set<int> &v) {
+	Array<ModelPolygon> poly;
+	for (auto &p: m->phys_mesh->polygon)
+		if (v.contains(p.side[0].vertex))
+			poly.add(p);
+	return poly;
+}
+
+
+// model
+//   meta
+//   material[]
+//   physmesh
+//     polyhedron[]
+//     cylinder[]
+//     ball[]
+//   triamesh[]
+//     vertices
+//     uv
+//     triangles
+//   skeleton
+//   animation
+//   script
+//   effects
+//   editor
+//     polymesh
+
+// TODO: bone info: bone0:i12, bone1:i12, fraction:i8
+
+class ChunkMeta : public FileChunk<DataModel, DataModel> {
+public:
+	ChunkMeta() : FileChunk("meta") {}
+	void create() override {
+		me = parent;
+	}
+	void read(File *f) override {
+		int version = f->read_int();
+
+		vector temp;
+		f->read_vector(&temp);
+		f->read_vector(&temp);
+		f->read_float();
+
+		// physics
+		me->meta_data.mass = f->read_float();
+		for (int i=0;i<9;i++)
+			me->meta_data.inertia_tensor.e[i] = f->read_float();
+		me->meta_data.active_physics = f->read_bool();
+		me->meta_data.passive_physics = f->read_bool();
+	}
+	void write(File *f) override {
+		// version
+		f->write_int(0);
+
+		vector _min, _max;
+		me->getBoundingBox(_min, _max);
+		f->write_vector(&_min);
+		f->write_vector(&_max);
+		f->write_float(me->getRadius());
+
+		// physics
+		f->write_float(me->meta_data.mass);
+		for (int i=0;i<9;i++)
+			f->write_float(me->meta_data.inertia_tensor.e[i]);
+		f->write_bool(me->meta_data.active_physics);
+		f->write_bool(me->meta_data.passive_physics);
+	}
+};
+
+class ChunkMaterial : public FileChunk<DataModel, ModelMaterial> {
+public:
+	ChunkMaterial() : FileChunk("material") {}
+	void create() override {
+		me = new ModelMaterial;
+		parent->material.add(me);
+	}
+	void read(File *f) override {
+		me->filename = f->read_str();
+		me->col.user = f->read_bool();
+		read_color_argb(f, me->col.albedo);
+		read_color_argb(f, me->col.emission);
+		me->col.metal = f->read_float();
+		me->col.roughness = f->read_float();
+
+		me->alpha.mode = f->read_int();
+		me->alpha.user = (me->alpha.mode != TransparencyModeDefault);
+		me->alpha.source = f->read_int();
+		me->alpha.destination = f->read_int();
+		me->alpha.factor = f->read_float();
+		me->alpha.zbuffer = f->read_bool();
+		int n = f->read_int();
+		me->texture_levels.clear();
+		for (int t=0;t<n;t++) {
+			auto tl = new ModelMaterial::TextureLevel();
+			tl->filename = f->read_str();
+			me->texture_levels.add(tl);
+		}
+	}
+	void write(File *f) override {
+		f->write_str(me->filename.str());
+		f->write_bool(me->col.user);
+		write_color_argb(f, me->col.albedo);
+		write_color_argb(f, me->col.emission);
+		f->write_float(me->col.metal);
+		f->write_float(me->col.roughness);
+		f->write_int(me->alpha.user ? me->alpha.mode : TransparencyModeDefault);
+		f->write_int(me->alpha.source);
+		f->write_int(me->alpha.destination);
+		f->write_float(me->alpha.factor);
+		f->write_bool(me->alpha.zbuffer);
+		f->write_int(me->texture_levels.num);
+		for (int t=0;t<me->texture_levels.num;t++)
+			f->write_str(me->texture_levels[t]->filename.str());
+	}
+};
+
+static int _model_parser_skin_count;
+
+class ChunkTriangleMesh : public FileChunk<DataModel, ModelSkin> {
+public:
+	ChunkTriangleMesh() : FileChunk("triamesh") {}
+	void create() override {
+		me = &parent->skin[_model_parser_skin_count ++];
+	}
+	void read(File *f) override {
+		// vertices
+		int nv = f->read_int();
+		me->vertex.resize(nv);
+		for (int j=0;j<me->vertex.num;j++)
+			f->read_vector(&me->vertex[j].pos);
+		for (int j=0;j<me->vertex.num;j++)
+			me->vertex[j].bone_index = f->read_int();
+		for (int j=0;j<me->vertex.num;j++)
+			me->vertex[j].normal_dirty = false;//true;
+
+		// skin vertices
+		Array<vector> skin_vert;
+		int nsv = f->read_int();
+		skin_vert.resize(nsv);
+		for (int j=0;j<skin_vert.num;j++){
+			skin_vert[j].x = f->read_float();
+			skin_vert[j].y = f->read_float();
+		}
+
+
+
+		// triangles (subs)
+		for (int m=0; m<parent->material.num; m++) {
+			int ntria = f->read_int();
+			me->sub[m].triangle.resize(ntria);
+			// vertex
+			for (int j=0;j<me->sub[m].triangle.num;j++)
+				for (int k=0;k<3;k++)
+					me->sub[m].triangle[j].vertex[k] = f->read_int();
+			// skin vertex
+			for (int tl=0;tl<parent->material[m]->texture_levels.num;tl++)
+				for (int j=0;j<me->sub[m].triangle.num;j++)
+					for (int k=0;k<3;k++){
+						int svi = f->read_int();
+						me->sub[m].triangle[j].skin_vertex[tl][k] = skin_vert[svi];
+					}
+			// normals
+			for (int j=0;j<me->sub[m].triangle.num;j++){
+				for (int k=0;k<3;k++){
+					me->sub[m].triangle[j].normal_index[k] = (int)(unsigned short)f->read_word();
+					me->sub[m].triangle[j].normal[k] = get_normal_by_index(me->sub[m].triangle[j].normal_index[k]);
+				}
+				me->sub[m].triangle[j].normal_dirty = false;
+			}
+		}
+	}
+	void write(File *f) override {
+
+		// verices
+		f->write_int(me->vertex.num);
+		for (ModelVertex &v: me->vertex)
+			f->write_vector(&v.pos);
+		for (ModelVertex &v: me->vertex)
+			f->write_int(v.bone_index);
+
+		// skin vertices
+		int num_skin_v = 0;
+		for (int m=0;m<parent->material.num;m++)
+			num_skin_v += me->sub[m].triangle.num * parent->material[m]->texture_levels.num * 3;
+		f->write_int(num_skin_v);
+		for (int m=0;m<parent->material.num;m++)
+			for (int tl=0;tl<parent->material[m]->texture_levels.num;tl++)
+				for (int j=0;j<me->sub[m].triangle.num;j++)
+					for (int k=0;k<3;k++){
+						f->write_float(me->sub[m].triangle[j].skin_vertex[tl][k].x);
+						f->write_float(me->sub[m].triangle[j].skin_vertex[tl][k].y);
+					}
+
+
+		// sub skins
+		int svi = 0;
+		for (int m=0;m<parent->material.num;m++){
+			ModelSubSkin *sub = &me->sub[m];
+
+			// triangles
+			f->write_int(sub->triangle.num);
+
+			// vertex index
+			for (int j=0;j<sub->triangle.num;j++)
+				for (int k=0;k<3;k++)
+					f->write_int(sub->triangle[j].vertex[k]);
+
+			// skin index
+			for (int tl=0;tl<parent->material[m]->texture_levels.num;tl++)
+				for (int j=0;j<sub->triangle.num;j++)
+					for (int k=0;k<3;k++)
+						f->write_int(svi ++);
+
+			// normal
+			for (int j=0;j<sub->triangle.num;j++)
+				for (int k=0;k<3;k++){
+					if (DataModelAllowUpdating)
+						sub->triangle[j].normal_index[k] = get_normal_index(sub->triangle[j].normal[k]);
+					f->write_word(sub->triangle[j].normal_index[k]);
+				}
+		}
+	}
+};
+
+class ChunkPolygonMesh : public FileChunk<DataModel, ModelMesh> {
+public:
+	ChunkPolygonMesh() : FileChunk("polymesh") {}
+	void define_children() override {
+	}
+	void create() override {
+		me = parent->mesh;
+	}
+	void read(File *f) override {
+
+		foreachi(ModelVertex &v, parent->skin[1].vertex, i)
+			parent->addVertex(v.pos, v.bone_index, v.normal_mode);
+
+		// polygons
+		int num_poly = f->read_int();
+		for (int j=0; j<num_poly; j++) {
+			ModelPolygon t;
+			t.is_selected = false;
+			t.triangulation_dirty = true;
+			int num_faces = f->read_word();
+			t.material = f->read_word();
+			t.smooth_group = (int)f->read_word();
+			if (t.smooth_group == 65535)
+				t.smooth_group = -1;
+			t.side.resize(num_faces);
+			for (int k=0; k<num_faces; k++) {
+				t.side[k].vertex = f->read_int();
+				for (int l=0;l<parent->material[t.material]->texture_levels.num;l++){
+					t.side[k].skin_vertex[l].x = f->read_float();
+					t.side[k].skin_vertex[l].y = f->read_float();
+				}
+			}
+			t.normal_dirty = true;
+			me->polygon.add(t);
+		}
+
+		me->build_topology();
+	}
+	void write(File *f) override {
+
+		// polygons
+		f->write_int(me->polygon.num);
+		for (auto &t: me->polygon) {
+			f->write_word(t.side.num);
+			f->write_word(t.material);
+			f->write_word(t.smooth_group);
+			for (auto &ss: t.side) {
+				f->write_int(ss.vertex);
+				for (int l=0;l<parent->material[t.material]->texture_levels.num;l++){
+					f->write_float(ss.skin_vertex[l].x);
+					f->write_float(ss.skin_vertex[l].y);
+				}
+			}
+		}
+	}
+};
+
+class ChunkPhysicalMesh : public FileChunk<DataModel, ModelMesh> {
+public:
+	ChunkPhysicalMesh() : FileChunk("physmesh") {}
+	void define_children() override {
+	}
+	void create() override {
+		me = parent->phys_mesh;
+	}
+	void read(File *f) override {
+		int version = f->read_int();
+
+		// vertices
+		me->vertex.resize(f->read_int());
+		for (int j=0;j<me->vertex.num;j++)
+			f->read_vector(&me->vertex[j].pos);
+		for (int j=0;j<me->vertex.num;j++)
+			me->vertex[j].bone_index = f->read_int();
+
+		msg_write("phys vert: " + i2s(me->vertex.num));
+
+		// triangles
+		f->read_int();
+
+		// balls
+		me->ball.resize(f->read_int());
+		for (auto &b: me->ball){
+			b.index = f->read_int();
+			b.radius = f->read_float();
+		}
+
+		// polyhedra
+		int num_polys = f->read_int();
+		for (int i=0; i<num_polys; i++) {
+			msg_write("POLYHEDRON! " + format("%d/%d", i, num_polys));
+
+			Array<Array<int>> vv;
+			int num_faces = f->read_int();
+			msg_write("  faces: " + i2s(num_faces));
+			for (int k=0;k<num_faces;k++){
+				int nv = f->read_int();
+				Array<int> vertex;
+				for (int l=0;l<nv;l++) {
+					vertex.add(f->read_int());
+				}
+				msg_write(ia2s(vertex));
+				vv.add(vertex);
+			}
+
+			for (auto &v: vv) {
+				Array<vector> sv;
+				sv.resize(v.num * MATERIAL_MAX_TEXTURES);//data->material[0]->texture_levels.num);
+				//msg_write(ia2s(_vv));
+				try {
+					msg_write(" + poly " + ia2s(v));
+					me->_add_polygon(v, 0, sv);
+				} catch(GeometryException &e) {
+					msg_error(e.message);
+				}
+			}
+		}
+
+		// cylinders
+		int n = f->read_int();
+		for (int i=0; i<n; i++){
+			ModelCylinder c;
+			c.index[0] = f->read_int();
+			c.index[1] = f->read_int();
+			c.radius = f->read_float();
+			c.round = f->read_bool();
+			me->cylinder.add(c);
+		}
+	}
+	void write(File *f) override {
+		// version
+		f->write_int(0);
+
+		// vertices
+		f->write_int(me->vertex.num);
+		for (int j=0;j<me->vertex.num;j++)
+			f->write_vector(&me->vertex[j].pos);
+		// FIXME
+		for (int j=0;j<me->vertex.num;j++)
+			f->write_int(me->vertex[j].bone_index);
+
+		// triangles
+		f->write_int(0);
+
+		// balls
+		f->write_int(me->ball.num);
+		for (auto &b: me->ball){
+			f->write_int(b.index);
+			f->write_float(b.radius);
+		}
+
+		// polyhedra
+		auto surf = split_conv_polyhedra(parent);
+		f->write_int(surf.num);
+		for (auto &pp: surf) {
+			auto p = conv_poly_poly(parent, pp);
+
+			f->write_int(p.num);
+			for (int k=0;k<p.num;k++) {
+				f->write_int(p[k].side.num);
+				for (int l=0;l<p[k].side.num;l++)
+					f->write_int(p[k].side[l].vertex);
+			}
+		}
+
+		// cylinders
+		f->write_int(me->cylinder.num);
+		for (auto &c: me->cylinder){
+			f->write_int(c.index[0]);
+			f->write_int(c.index[1]);
+			f->write_float(c.radius);
+			f->write_bool(c.round);
+		}
+
+	}
+};
+
+class ChunkModel : public FileChunk<DataModel, DataModel> {
+public:
+	ChunkModel() : FileChunk("model") {}
+	void define_children() override {
+		add_child(new ChunkMeta);
+		add_child(new ChunkMaterial);
+		add_child(new ChunkTriangleMesh);
+		add_child(new ChunkPolygonMesh);
+		add_child(new ChunkPhysicalMesh);
+	}
+	void read(File *f) override {
+	}
+	void write(File *f) override {
+	}
+	void write_subs() override {
+		write_sub("meta", me);
+		write_sub_parray("material", me->material);
+		write_sub_array("triamesh", me->skin);
+		write_sub("physmesh", me->phys_mesh);
+		write_sub("polymesh", me->mesh);
+	}
+};
+
+
 class ModelParser : public ChunkedFileParser {
 public:
 	ModelParser() : ChunkedFileParser(8) {
-
+		_model_parser_skin_count = 0;
+		set_base(new ChunkModel);
 	}
 };
 
@@ -70,6 +535,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 		_load_old(filename, data, deep);
 	} else {
 		ModelParser p;
+		data->material.clear();
 		p.read(filename, data);
 	}
 
@@ -128,52 +594,6 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 		data->on_post_action_update();
 }
 
-Set<int> get_all_poly_vert(DataModel *m) {
-	Set<int> all_vert;
-	for (auto &p: m->phys_mesh->polygon)
-		for (auto &f: p.side)
-			all_vert.add(f.vertex);
-	return all_vert;
-}
-
-Array<Set<int>> split_conv_polyhedra(DataModel *m) {
-	auto all_vert = get_all_poly_vert(m);
-
-	Array<Set<int>> surf;
-
-	while(all_vert.num > 0) {
-		msg_write("----surf");
-		Set<int> cur;
-		cur.add(all_vert.pop());
-		int n = 0;
-		while (cur.num > n) {
-			n = cur.num;
-
-			for (auto &e: m->phys_mesh->edge) {
-				if (cur.contains(e.vertex[0]) and all_vert.contains(e.vertex[1])) {
-					cur.add(e.vertex[1]);
-					all_vert.erase(e.vertex[1]);
-				}
-				if (cur.contains(e.vertex[1]) and all_vert.contains(e.vertex[0])) {
-					cur.add(e.vertex[0]);
-					all_vert.erase(e.vertex[0]);
-				}
-			}
-		}
-		msg_write(ia2s(cur));
-		surf.add(cur);
-	}
-	return surf;
-}
-
-Array<ModelPolygon> conv_poly_poly(DataModel *m, const Set<int> &v) {
-	Array<ModelPolygon> poly;
-	for (auto &p: m->phys_mesh->polygon)
-		if (v.contains(p.side[0].vertex))
-			poly.add(p);
-	return poly;
-}
-
 void FormatModel::_save(const Path &filename, DataModel *data) {
 	if (DataModelAllowUpdating){
 		/*if (AutoGenerateSkin[1])
@@ -213,388 +633,9 @@ void FormatModel::_save(const Path &filename, DataModel *data) {
 	// so the materials don't get mixed up
 //	RemoveUnusedData();
 
-	//_save_v11_poly(filename.with(".edit"), data);
-	_save_v11(filename, data);
+	ModelParser p;
+	p.write(filename, data);
 
-	if (write_external_edit_file)
-		_save_v11_edit(filename, data);
+//	_save_v11(filename, data);
 
-}
-
-void _save_v11_edit_x(File *f, DataModel *data) {
-
-	// additional data for editing
-	f->write_str("// Editor");
-	f->write_bool(data->meta_data.auto_generate_tensor);
-	f->write_bool(data->meta_data.auto_generate_dists);
-	f->write_bool(data->meta_data.auto_generate_skin[1]);
-	f->write_bool(data->meta_data.auto_generate_skin[2]);
-	f->write_int(data->meta_data.detail_factor[1]);
-	f->write_int(data->meta_data.detail_factor[2]);
-	f->write_str("// Normals");
-	for (int i=1;i<4;i++){
-		ModelSkin *s = &data->skin[i];
-		f->write_int(NORMAL_MODE_PER_VERTEX);
-		for (ModelVertex &v: s->vertex)
-			f->write_int(v.normal_mode);
-	}
-	f->write_str("// Polygons");
-	f->write_int(1);
-	f->write_int(data->mesh->polygon.num);
-	for (auto &t: data->mesh->polygon){
-		f->write_int(t.side.num);
-		f->write_int(t.material);
-		for (ModelPolygonSide &ss: t.side){
-			f->write_int(ss.vertex);
-			for (int l=0;l<data->material[t.material]->texture_levels.num;l++){
-				f->write_float(ss.skin_vertex[l].x);
-				f->write_float(ss.skin_vertex[l].y);
-			}
-		}
-	}
-	f->write_bool(false);
-	f->write_bool(true);
-	f->write_int(0);
-
-	f->write_str("#");
-}
-
-void FormatModel::_save_v11(const Path &filename, DataModel *data) {
-
-	File *f = FileCreate(filename);
-	f->WriteFileFormatVersion(true, 11);//FFVBinary, 11);
-	f->float_decimals = 5;
-
-// general
-	f->write_comment("// General");
-	vector _min, _max;
-	data->getBoundingBox(_min, _max);
-	f->write_vector(&_min);
-	f->write_vector(&_max);
-	f->write_int(3); // skins...
-	f->write_int(0); // reserved
-	f->write_int(0);
-	f->write_int(0);
-
-// materials
-	f->write_comment("// Materials");
-	f->write_int(data->material.num);
-	for (ModelMaterial *m: data->material){
-		f->write_str(m->filename.str());
-		f->write_bool(m->col.user);
-		write_color_argb(f, m->col.ambient());
-		write_color_argb(f, m->col.albedo);
-		write_color_argb(f, m->col.specular());
-		write_color_argb(f, m->col.emission);
-		f->write_int(m->col.shininess());
-		f->write_int(m->alpha.user ? m->alpha.mode : TransparencyModeDefault);
-		f->write_int(m->alpha.source);
-		f->write_int(m->alpha.destination);
-		f->write_int(m->alpha.factor * 100.0f);
-		f->write_bool(m->alpha.zbuffer);
-		f->write_int(m->texture_levels.num);
-		for (int t=0;t<m->texture_levels.num;t++)
-			f->write_str(m->texture_levels[t]->filename.str());
-	}
-
-// physical skin
-	f->write_comment("// Physical Skin");
-
-	// vertices
-	f->write_int(data->phys_mesh->vertex.num);
-	for (int j=0;j<data->phys_mesh->vertex.num;j++)
-		f->write_int(data->phys_mesh->vertex[j].bone_index);
-	for (int j=0;j<data->phys_mesh->vertex.num;j++)
-		f->write_vector(&data->phys_mesh->vertex[j].pos);
-
-	// triangles
-	f->write_int(0);
-	/*for (int j=0;j<phys_mesh->NumTriangles;j++)
-		for (int k=0;k<3;k++)
-			f->write_int(phys_mesh->Triangle[j].Index[k]);*/
-
-	// balls
-	f->write_int(data->phys_mesh->ball.num);
-	for (auto &b: data->phys_mesh->ball){
-		f->write_int(b.index);
-		f->write_float(b.radius);
-	}
-
-	auto surf = split_conv_polyhedra(data);
-	f->write_int(surf.num);
-	for (auto &pp: surf) {
-		auto p = conv_poly_poly(data, pp);
-
-		f->write_int(p.num);
-		for (int k=0;k<p.num;k++){
-			f->write_int(p[k].side.num);
-			for (int l=0;l<p[k].side.num;l++)
-				f->write_int(p[k].side[l].vertex);
-			f->write_float(0); // plane a,b,c,d
-			f->write_float(0);
-			f->write_float(0);
-			f->write_float(0);
-		}
-		/*f->write_int(p.NumSVertices);
-		for (int k=0;k<p.NumSVertices;k++)
-			f->write_int(p.SIndex[k]);
-		f->write_int(p.NumEdges);
-		for (int k=0;k<p.NumEdges;k++){
-			f->write_int(p.EdgeIndex[k*2 + 0]);
-			f->write_int(p.EdgeIndex[k*2 + 1]);
-		}*/
-		f->write_int(0);
-		f->write_int(0);
-
-		// topology
-		/*for (int k=0;k<p.NumFaces;k++)
-			for (int l=0;l<p.NumFaces;l++)
-				f->write_int(p.FacesJoiningEdge[k * p.NumFaces + l]);
-		for (int k=0;k<p.NumEdges;k++)
-			for (int l=0;l<p.NumFaces;l++)
-				f->write_bool(p.EdgeOnFace[k * p.NumFaces + l]);*/
-		for (int k=0;k<p.num;k++)
-			for (int l=0;l<p.num;l++)
-					f->write_int(0);
-	}
-
-// skin
-	for (int i=1;i<4;i++){
-		ModelSkin *s = &data->skin[i];
-		f->write_comment(format("// Skin[%d]",i));
-
-		// verices
-		f->write_int(s->vertex.num);
-		for (ModelVertex &v: s->vertex)
-			f->write_vector(&v.pos);
-		for (ModelVertex &v: s->vertex)
-			f->write_int(v.bone_index);
-
-		// skin vertices
-		int num_skin_v = 0;
-		for (int m=0;m<data->material.num;m++)
-			num_skin_v += s->sub[m].triangle.num * data->material[m]->texture_levels.num * 3;
-		f->write_int(num_skin_v);
-		for (int m=0;m<data->material.num;m++)
-			for (int tl=0;tl<data->material[m]->texture_levels.num;tl++)
-				for (int j=0;j<s->sub[m].triangle.num;j++)
-					for (int k=0;k<3;k++){
-						f->write_float(s->sub[m].triangle[j].skin_vertex[tl][k].x);
-						f->write_float(s->sub[m].triangle[j].skin_vertex[tl][k].y);
-					}
-
-
-		// sub skins
-		int svi = 0;
-		for (int m=0;m<data->material.num;m++){
-			ModelSubSkin *sub = &s->sub[m];
-
-			// triangles
-			f->write_int(sub->triangle.num);
-
-			// vertex index
-			for (int j=0;j<sub->triangle.num;j++)
-				for (int k=0;k<3;k++)
-					f->write_int(sub->triangle[j].vertex[k]);
-
-			// skin index
-			for (int tl=0;tl<data->material[m]->texture_levels.num;tl++)
-				for (int j=0;j<sub->triangle.num;j++)
-					for (int k=0;k<3;k++)
-						f->write_int(svi ++);
-
-			// normal
-			for (int j=0;j<sub->triangle.num;j++)
-				for (int k=0;k<3;k++){
-					if (DataModelAllowUpdating)
-						sub->triangle[j].normal_index[k] = get_normal_index(sub->triangle[j].normal[k]);
-					f->write_word(sub->triangle[j].normal_index[k]);
-				}
-			f->write_int(0);
-		}
-
-		f->write_int(0);
-	}
-
-// skeleton
-	f->write_comment("// Skeleton");
-	f->write_int(data->bone.num);
-	for (ModelBone &b: data->bone){
-		if (b.parent >= 0){
-			vector dpos = b.pos - data->bone[b.parent].pos;
-			f->write_vector(&dpos);
-		}else
-			f->write_vector(&b.pos);
-		f->write_int(b.parent);
-		f->write_str(b.model_file.str());
-	}
-
-// animations
-	f->write_comment("// Animations");
-	if ((data->move.num == 1) and (data->move[0].frame.num == 0)){
-		f->write_int(0);
-	}else
-		f->write_int(data->move.num);
-	int n_moves = 0;
-	int n_frames_vert = 0;
-	int n_frames_skel = 0;
-	for (int i=0;i<data->move.num;i++)
-		if (data->move[i].frame.num > 0){
-			n_moves ++;
-			if (data->move[i].type == MOVE_TYPE_VERTEX)	n_frames_vert += data->move[i].frame.num;
-			if (data->move[i].type == MOVE_TYPE_SKELETAL)	n_frames_skel += data->move[i].frame.num;
-		}
-	f->write_int(n_moves);
-	f->write_int(n_frames_vert);
-	f->write_int(n_frames_skel);
-	for (int i=0;i<data->move.num;i++)
-		if (data->move[i].frame.num > 0){
-			ModelMove *m = &data->move[i];
-			bool rubber_timing = m->needsRubberTiming();
-			f->write_int(i);
-			f->write_str(m->name);
-			f->write_int(m->type + (rubber_timing ? 128 : 0));
-			f->write_int(m->frame.num);
-			f->write_float(m->frames_per_sec_const);
-			f->write_float(m->frames_per_sec_factor);
-
-			// vertex animation
-			if (m->type == MOVE_TYPE_VERTEX){
-				for (ModelFrame &fr: m->frame){
-					if (rubber_timing)
-						f->write_float(fr.duration);
-					for (int s=0;s<4;s++){
-						// compress (only write != 0)
-						int num_vertices = 0;
-						for (int j=0;j<data->skin[s].vertex.num;j++)
-							if (fr.skin[i].dpos[j] != v_0)
-								num_vertices ++;
-						f->write_int(num_vertices);
-						for (int j=0;j<data->skin[s].vertex.num;j++)
-							if (fr.skin[i].dpos[j] != v_0){
-								f->write_int(j);
-								f->write_vector(&fr.skin[i].dpos[j]);
-							}
-					}
-				}
-			// skeletal animation
-			}else if (m->type == MOVE_TYPE_SKELETAL){
-				for (int j=0;j<data->bone.num;j++)
-					f->write_bool((data->bone[j].parent < 0));
-				f->write_bool(m->interpolated_quadratic);
-				f->write_bool(m->interpolated_loop);
-				for (ModelFrame &fr: m->frame){
-					if (rubber_timing)
-						f->write_float(fr.duration);
-					for (int j=0;j<data->bone.num;j++){
-						f->write_vector(&fr.skel_ang[j]);
-						if (data->bone[j].parent < 0)
-							f->write_vector(&fr.skel_dpos[j]);
-					}
-				}
-			}
-		}
-
-// effects
-	f->write_comment("// Effects");
-	f->write_int(data->fx.num);
-	for (auto &e: data->fx){
-		if (e.type == FX_TYPE_SCRIPT){
-			f->write_str("Script");
-			f->write_int(e.vertex);
-			f->write_str(e.file.str());
-			f->write_str("");
-		}else if (e.type == FX_TYPE_LIGHT){
-			f->write_str("Light");
-			f->write_int(e.vertex);
-			f->write_int((int)e.size);
-			for (int nc=0;nc<3;nc++)
-				write_color_argb(f, e.colors[nc]);
-		}else if (e.type == FX_TYPE_SOUND){
-			f->write_str("Sound");
-			f->write_int(e.vertex);
-			f->write_int((int)e.size);
-			f->write_int((int)(e.speed * 100.0f));
-			f->write_str(e.file.str());
-		}else if (e.type == FX_TYPE_FORCEFIELD){
-			f->write_str("ForceField");
-			f->write_int(e.vertex);
-			f->write_int((int)e.size);
-			f->write_int((int)e.intensity);
-			f->write_bool(e.inv_quad);
-		}
-	}
-
-// properties
-	f->write_comment("// Physics");
-	f->write_float(data->meta_data.mass);
-	for (int i=0;i<9;i++)
-		f->write_float(data->meta_data.inertia_tensor.e[i]);
-	f->write_bool(data->meta_data.active_physics);
-	f->write_bool(data->meta_data.passive_physics);
-	f->write_float(data->getRadius());
-
-	f->write_comment("// LOD-Distances");
-	f->write_float(data->meta_data.detail_dist[0]);
-	f->write_float(data->meta_data.detail_dist[1]);
-	f->write_float(data->meta_data.detail_dist[2]);
-
-// object data
-	f->write_comment("// Object Data");
-	f->write_str(data->meta_data.name);
-	f->write_str(data->meta_data.description);
-
-	// inventory
-	f->write_comment("// Inventory");
-	f->write_int(data->meta_data.inventary.num);
-	for (int i=0;i<data->meta_data.inventary.num;i++){
-		f->write_str(data->meta_data.inventary[i].str());
-		f->write_int(1);
-	}
-
-	// script
-	f->write_comment("// Script");
-	f->write_str(data->meta_data.script_file.str());
-	f->write_int(data->meta_data.script_var.num);
-	for (int i=0;i<data->meta_data.script_var.num;i++)
-		f->write_float(data->meta_data.script_var[i]);
-
-	// new script vars
-	if (data->meta_data.variables.num > 0){
-		f->write_str("// Script Vars");
-		f->write_int(data->meta_data.variables.num);
-		for (auto &v: data->meta_data.variables){
-			f->write_str(v.name);
-			f->write_str(v.value);
-		}
-	}
-
-
-	if (data->phys_mesh->cylinder.num > 0){
-		f->write_str("// Cylinders");
-		f->write_int(data->phys_mesh->cylinder.num);
-		for (auto &c: data->phys_mesh->cylinder){
-			f->write_int(c.index[0]);
-			f->write_int(c.index[1]);
-			f->write_float(c.radius);
-			f->write_bool(c.round);
-		}
-	}
-
-	if (write_external_edit_file)
-		f->write_str("#");
-	else
-		_save_v11_edit_x(f, data);
-
-	FileClose(f);
-}
-
-void FormatModel::_save_v11_edit(const Path &filename, DataModel *data) {
-	File *f = FileCreate(filename.with(".edit"));
-	f->WriteFileFormatVersion(true, 11);//FFVBinary, 11);
-	f->float_decimals = 5;
-
-	_save_v11_edit_x(f, data);
-
-	FileClose(f);
 }

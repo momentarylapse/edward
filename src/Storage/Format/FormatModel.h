@@ -28,7 +28,6 @@ public:
 	//void _load_v11_edit_from_file(File *f, DataModel *data);
 
 	void _save_v11(const Path &filename, DataModel *data);
-	void _save_v11_edit(const Path &filename, DataModel *data);
 };
 
 #endif /* SRC_STORAGE_FORMAT_FORMATMODEL_H_ */
