@@ -434,6 +434,7 @@ sources = [
 	'src/MultiView/MultiView.cpp',
 	'src/MultiView/SingleData.cpp',
 	'src/MultiView/Window.cpp',
+	'src/Storage/Format/old/LoadModelV11.cpp',
 	'src/Storage/Format/Format.cpp',
 	'src/Storage/Format/FormatFontX.cpp',
 	'src/Storage/Format/FormatMaterial.cpp',
