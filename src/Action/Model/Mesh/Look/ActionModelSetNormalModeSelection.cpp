@@ -10,42 +10,50 @@
 #include "../../../../Data/Model/ModelMesh.h"
 #include "../../../../Data/Model/ModelPolygon.h"
 
-ActionModelSetNormalModeSelection::ActionModelSetNormalModeSelection(DataModel *m, int _mode)
-{
+ActionModelSetNormalModeSelection::ActionModelSetNormalModeSelection(DataModel *m, int _mode) {
 	mode = _mode;
-	foreachi(ModelVertex &v, m->mesh->vertex, i)
+	foreachi(auto &v, m->mesh->vertex, i)
 		if (v.is_selected)
 			index.add(i);
+	foreachi(auto &p, m->mesh->polygon, i)
+		if (p.is_selected)
+			p_index.add(i);
+	smooth_group = -1;
+	if (mode == NORMAL_MODE_SMOOTH)
+		smooth_group = randi(50000);
 }
 
-ActionModelSetNormalModeSelection::~ActionModelSetNormalModeSelection()
-{
-}
-
-void *ActionModelSetNormalModeSelection::execute(Data *d)
-{
-	DataModel *m = dynamic_cast<DataModel*>(d);
+void *ActionModelSetNormalModeSelection::execute(Data *d) {
+	auto *m = dynamic_cast<DataModel*>(d);
 
 	// per vertex
 	old_mode.clear();
-	for (int i: index){
+	for (int i: index) {
 		old_mode.add(m->mesh->vertex[i].normal_mode);
 		m->mesh->vertex[i].normal_mode = mode;
 	}
+
+	// per vertex
+	old_group.clear();
+	for (int i: p_index) {
+		old_group.add(m->mesh->polygon[i].smooth_group);
+		m->mesh->polygon[i].smooth_group = smooth_group;
+	}
 	m->setNormalsDirtyByVertices(index);
 
-	return NULL;
+	return nullptr;
 }
 
 
 
-void ActionModelSetNormalModeSelection::undo(Data *d)
-{
-	DataModel *m = dynamic_cast<DataModel*>(d);
+void ActionModelSetNormalModeSelection::undo(Data *d) {
+	auto *m = dynamic_cast<DataModel*>(d);
 
 	// per vertex
 	foreachi(int i, index, ii)
 		m->mesh->vertex[i].normal_mode = old_mode[ii];
+	foreachi (int i, p_index, ii)
+		m->mesh->polygon[i].smooth_group = old_group[ii];
 
 	m->setNormalsDirtyByVertices(index);
 }

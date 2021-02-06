@@ -11,20 +11,22 @@
 #include "../../../Action.h"
 class DataModel;
 
-class ActionModelSetNormalModeSelection: public Action
-{
+class ActionModelSetNormalModeSelection: public Action {
 public:
 	ActionModelSetNormalModeSelection(DataModel *m, int _mode);
-	virtual ~ActionModelSetNormalModeSelection();
-	string name(){	return "ModelSetNormalModeSelection";	}
+	string name() override { return "ModelSetNormalModeSelection"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	int mode;
 	Array<int> index;
 	Array<int> old_mode;
+
+	Array<int> p_index;
+	Array<int> old_group;
+	int smooth_group;
 };
 
 #endif /* ACTIONMODELSETNORMALMODESELECTION_H_ */

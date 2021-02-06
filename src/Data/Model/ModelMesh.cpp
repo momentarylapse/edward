@@ -488,8 +488,7 @@ inline bool find_tria_top(ModelMesh *m, const Array<PolySideData> &pd, Set<int> 
 }
 
 
-void ModelMesh::update_normals()
-{
+void ModelMesh::update_normals() {
 	if (this == model->phys_mesh) {
 		for (auto &v: vertex)
 			v.normal_mode = NORMAL_MODE_HARD;
@@ -499,12 +498,12 @@ void ModelMesh::update_normals()
 
 	// "flat" triangle normals
 	for (ModelPolygon &t: polygon)
-		if (t.normal_dirty){
+		if (t.normal_dirty) {
 			t.normal_dirty = false;
 
 			t.temp_normal = t.get_normal(vertex);
 
-			for (int k=0;k<t.side.num;k++){
+			for (int k=0;k<t.side.num;k++) {
 				t.side[k].normal = t.temp_normal;
 				int e = t.side[k].edge;
 				if (edge[e].ref_count == 2)
@@ -512,8 +511,52 @@ void ModelMesh::update_normals()
 			}
 		}
 
+#define NEW_NORMALS 1
+
+#if NEW_NORMALS
+
+	Array<int> cur_polys;
+	Array<int> cur_faces;
+	Array<int> cur_groups;
+	Set<int> cur_groups_done;
+	if (polygon.num > 0)
+		msg_write(polygon[0].smooth_group);
+	for (int v=0; v<vertex.num; v++) {
+		cur_polys.clear();
+		cur_faces.clear();
+		cur_groups.clear();
+		cur_groups_done.clear();
+		foreachi(auto &p, polygon, i) {
+			if (p.smooth_group < 0)
+				continue;
+			for (int k=0; k<p.side.num; k++) {
+				if (p.side[k].vertex == v) {
+					cur_polys.add(i);
+					cur_faces.add(k);
+					cur_groups.add(p.smooth_group);
+				}
+			}
+		}
+		for (int i=0; i<cur_groups.num; i++) {
+			int g = cur_groups[i];
+			if (cur_groups_done.contains(g))
+				continue;
+			vector n = v_0;
+			for (int k=i; k<cur_groups.num; k++)
+				if (cur_groups[k] == g)
+					n += polygon[cur_polys[k]].temp_normal;
+			n.normalize();
+			for (int k=i; k<cur_groups.num; k++)
+				if (cur_groups[k] == g)
+					polygon[cur_polys[k]].side[cur_faces[k]].normal = n;
+			cur_groups_done.add(g);
+		}
+	}
+
+#else
+
 	// round edges?
-	for (int ip: ee){
+	for (int ip: ee) {
 		ModelEdge &e = edge[ip];
 
 		// adjoined triangles
@@ -618,6 +661,7 @@ void ModelMesh::update_normals()
 			}
 		}
 	}
+#endif
 }
 
 
