@@ -3824,7 +3824,7 @@ selection-grow-smooth-group
 0
 Item
 selection-grow-connected
-
+disabled
 4
 0
 0
@@ -3947,7 +3947,7 @@ menu_model_normals
 
 1
 0
-4
+3
 Item
 just_selection
 disabled
@@ -3964,12 +3964,6 @@ Item
 normal_this_hard
 
 2
-0
-0
-Item
-normal_this_angular
-
-3
 0
 0
 Menu
@@ -10137,7 +10131,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-1002
+1001
 # Text
 /ambient
 Ambient
@@ -11339,11 +11333,8 @@ Torus
 menu_model/new_tria
 New triangle
 
-menu_model/normal_this_angular
-Angular
-
 menu_model/normal_this_hard
-Edgy
+Flat/sharp
 
 menu_model/normal_this_smooth
 Smooth

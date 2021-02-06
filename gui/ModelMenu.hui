@@ -50,7 +50,7 @@ Menu menu_model "Model" disabled
 		Item select_none "Select none"
 		Item invert_selection "Invert"
 		Item selection-grow-smooth-group "Grow along smooth group"
-		Item selection-grow-connected "Grow along connected"
+		Item selection-grow-connected "Grow along connected" disabled
 		Separator
 		Item select_cw "triangles only clockwise" checkable
 	Menu menu_model_creation "Create"
@@ -73,8 +73,7 @@ Menu menu_model "Model" disabled
 		Menu menu_model_normals "Normals"
 			Item just_selection "Selection" disabled
 			Item normal_this_smooth "Smooth"
-			Item normal_this_hard "Edgy"
-			Item normal_this_angular "Angular"
+			Item normal_this_hard "Flat/sharp"
 		Menu menu_model_fx "Effects"
 			Item fx_headline "Selected vertices" disabled
 			Item fx_new_light "Attach light..." image=hui:new

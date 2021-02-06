@@ -243,8 +243,6 @@ void ModeModelMesh::on_command(const string &id) {
 		data->setNormalModeSelection(NORMAL_MODE_SMOOTH);
 	if (id == "normal_this_hard")
 		data->setNormalModeSelection(NORMAL_MODE_HARD);
-	if (id == "normal_this_angular")
-		data->setNormalModeSelection(NORMAL_MODE_ANGULAR);
 
 	if (id == "fx_new_light")
 		add_effects(FX_TYPE_LIGHT);
