@@ -122,6 +122,17 @@ void ModeModelMesh::on_end() {
 
 
 
+void selection_grow_smooth_group(DataModel *data) {
+	for (auto &p: data->edit_mesh->polygon)
+		if (p.is_selected and p.smooth_group >= 0) {
+			for (auto &pp: data->edit_mesh->polygon)
+				if (pp.smooth_group == p.smooth_group)
+					pp.is_selected = true;
+
+		}
+	data->edit_mesh->selection_from_polygons();
+}
+
 void ModeModelMesh::on_command(const string &id) {
 	if (id == "delete")
 		data->delete_selection(data->edit_mesh->get_selection(), selection_mode == selection_mode_vertex);
@@ -133,6 +144,8 @@ void ModeModelMesh::on_command(const string &id) {
 
 	if (id == "select_cw")
 		toggle_select_cw();
+	if (id == "selection-grow-smooth-group")
+		selection_grow_smooth_group(data);
 
 	if (id == "volume_subtract")
 		data->subtractSelection();

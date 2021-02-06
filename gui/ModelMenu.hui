@@ -49,6 +49,8 @@ Menu menu_model "Model" disabled
 		Item select_all "Select all" image=hui:select-all
 		Item select_none "Select none"
 		Item invert_selection "Invert"
+		Item selection-grow-smooth-group "Grow along smooth group"
+		Item selection-grow-connected "Grow along connected"
 		Separator
 		Item select_cw "triangles only clockwise" checkable
 	Menu menu_model_creation "Create"

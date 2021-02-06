@@ -3797,7 +3797,7 @@ menu_model_selection
 
 2
 0
-5
+7
 Item
 select_all
 image=hui:select-all
@@ -3816,16 +3816,28 @@ invert_selection
 2
 0
 0
-Separator
-
+Item
+selection-grow-smooth-group
 
 3
 0
 0
 Item
+selection-grow-connected
+
+4
+0
+0
+Separator
+
+
+5
+0
+0
+Item
 select_cw
 checkable
-4
+6
 0
 0
 Menu
@@ -10125,7 +10137,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-1000
+1002
 # Text
 /ambient
 Ambient
@@ -11380,6 +11392,12 @@ triangles only clockwise
 
 menu_model/select_none
 Select none
+
+menu_model/selection-grow-connected
+Grow along connected
+
+menu_model/selection-grow-smooth-group
+Grow along smooth group
 
 menu_model/send_bug_report
 Report a bug
