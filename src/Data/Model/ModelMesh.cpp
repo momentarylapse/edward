@@ -450,43 +450,6 @@ void ModelMesh::set_all_normals_dirty() {
 		t.normal_dirty = true;
 }
 
-struct PolySideData {
-	int poly;
-	int side;
-};
-
-
-inline int find_other_tria_from_edge(ModelMesh *m, int e, int t) {
-	if (m->edge[e].polygon[0] == t)
-		return m->edge[e].polygon[1];
-	return m->edge[e].polygon[0];
-}
-
-// return: closed circle... don't run again to the left
-inline bool find_tria_top(ModelMesh *m, const Array<PolySideData> &pd, Set<int> &used, bool to_the_right) {
-	int t0 = 0;
-	while(true){
-		int side = pd[t0].side;
-		if (!to_the_right){
-			int ns = m->polygon[pd[t0].poly].side.num;
-			side = (side + ns - 1) % ns;
-		}
-		int e = m->polygon[pd[t0].poly].side[side].edge;
-		if (!m->edge[e].is_round)
-			return false;
-		int tt = find_other_tria_from_edge(m, e, pd[t0].poly);
-		if (tt < 0)
-			return false;
-		t0 = -1;
-		for (int i=0;i<pd.num;i++)
-			if (pd[i].poly == tt)
-				t0 = i;
-		if (t0 <= 0)
-			return (t0 == 0);
-		used.add(t0);
-	}
-}
-
 
 void ModelMesh::update_normals() {
 	if (this == model->phys_mesh) {
@@ -494,33 +457,24 @@ void ModelMesh::update_normals() {
 			v.normal_mode = NORMAL_MODE_HARD;
 	}
 
-	Set<int> ee, vert;
-
-	// "flat" triangle normals
-	for (ModelPolygon &t: polygon)
-		if (t.normal_dirty) {
-			t.normal_dirty = false;
-
-			t.temp_normal = t.get_normal(vertex);
-
-			for (int k=0;k<t.side.num;k++) {
-				t.side[k].normal = t.temp_normal;
-				int e = t.side[k].edge;
-				if (edge[e].ref_count == 2)
-					ee.add(e);
-			}
-		}
-
 #define NEW_NORMALS 1
 
 #if NEW_NORMALS
+
+
+	// "flat" triangle normals
+	for (auto &t: polygon)
+		if (t.normal_dirty) {
+			t.normal_dirty = false;
+			t.temp_normal = t.get_normal(vertex);
+			for (int k=0; k<t.side.num; k++)
+				t.side[k].normal = t.temp_normal;
+		}
 
 	Array<int> cur_polys;
 	Array<int> cur_faces;
 	Array<int> cur_groups;
 	Set<int> cur_groups_done;
-	if (polygon.num > 0)
-		msg_write(polygon[0].smooth_group);
 	for (int v=0; v<vertex.num; v++) {
 		cur_polys.clear();
 		cur_faces.clear();
@@ -554,6 +508,23 @@ void ModelMesh::update_normals() {
 	}
 
 #else
+
+
+	Set<int> ee, vert;
+
+	// "flat" triangle normals
+	for (ModelPolygon &t: polygon)
+		if (t.normal_dirty) {
+			t.normal_dirty = false;
+			t.temp_normal = t.get_normal(vertex);
+
+			for (int k=0;k<t.side.num;k++) {
+				t.side[k].normal = t.temp_normal;
+				int e = t.side[k].edge;
+				if (edge[e].ref_count == 2)
+					ee.add(e);
+			}
+		}
 
 	// round edges?
 	for (int ip: ee) {

@@ -24,21 +24,19 @@ void update_model_script_data(DataModel::MetaData &m);
 bool DataModelAllowUpdating = true;
 
 
-int get_normal_index(vector &n)
-{
+int get_normal_index(vector &n) {
 	int nxy, nz;
-	if ((n.x == 0) and (n.y == 0)){
+	if ((n.x == 0) and (n.y == 0)) {
 		nxy = 0;
 		nz = (n.z < 0) ? 255 : 0;
-	}else{
+	} else {
 		nxy = (int)(atan2(n.y, n.x) / pi / 2 * 255.0f) & 255;
 		nz = (int)(acos(n.z) / pi * 255.0f) & 255;
 	}
 	return nxy + 256 * nz;
 }
 
-vector get_normal_by_index(int index)
-{
+vector get_normal_by_index(int index) {
 	float wz = (float)(index >> 8) * pi / 255.0f;
 	float wxy = (float)(index & 255) * 2 * pi / 255.0f;
 	float swz = sin(wz);
@@ -46,6 +44,81 @@ vector get_normal_by_index(int index)
 		swz = - swz;
 	float cwz = cos(wz);
 	return vector( cos(wxy) * swz, sin(wxy) * swz, cwz);
+}
+
+
+
+int find_other_poly_from_edge(ModelMesh *m, int e, int t) {
+	if (m->edge[e].polygon[0] == t)
+		return m->edge[e].polygon[1];
+	return m->edge[e].polygon[0];
+}
+
+void guess_smooth_groups(DataModel *m) {
+	auto mesh = m->mesh;
+
+	std::function<void(Set<int>&, Set<int>&, ModelPolygon&,int,int,int&)> add_and_grow_outwards = [&](Set<int> &polys, Set<int> &edges, ModelPolygon &p, int index, int g, int &n_found) {
+		if (polys.contains(index))
+			return;
+		p.smooth_group = g;
+		polys.add(index);
+		n_found ++;
+
+		for (int k=0; k<p.side.num; k++) {
+			int ei = p.side[k].edge;
+			edges.add(ei);
+			int pp = find_other_poly_from_edge(mesh, ei, index);
+			if (pp < 0)
+				continue;
+
+
+
+			ModelEdge &e = mesh->edge[ei];
+
+			// adjoined triangles
+			ModelPolygon &t1 = mesh->polygon[e.polygon[0]];
+			ModelPolygon &t2 = mesh->polygon[e.polygon[1]];
+
+			ModelVertex &v1 = mesh->vertex[e.vertex[0]];
+			ModelVertex &v2 = mesh->vertex[e.vertex[1]];
+
+			// round?
+			e.is_round = false;
+			if ((v1.normal_mode == NORMAL_MODE_ANGULAR) or (v2.normal_mode == NORMAL_MODE_ANGULAR))
+				e.is_round = (t1.temp_normal * t2.temp_normal > 0.6f);
+
+			if ((v1.normal_mode == NORMAL_MODE_SMOOTH) or (v2.normal_mode == NORMAL_MODE_SMOOTH))
+				e.is_round = true;
+
+			if (e.is_round)
+				add_and_grow_outwards(polys, edges, mesh->polygon[pp], pp, g, n_found);
+		}
+	};
+
+	for (auto &p: mesh->polygon)
+		p.temp_normal = p.get_normal(mesh->vertex);
+
+
+	foreachi (auto &p, mesh->polygon, i) {
+		if (p.smooth_group >= 0)
+			continue;
+		int g = randi(50000);
+		int n_found = 0;
+
+		Set<int> polys;
+		Set<int> edges;
+
+		add_and_grow_outwards(polys, edges, p, i, g, n_found);
+
+		if (n_found == 1)
+			p.smooth_group = -1;
+	}
+
+	Set<int> groups;
+	for (auto &p: mesh->polygon)
+		if (p.smooth_group >= 0)
+			groups.add(p.smooth_group);
+	msg_write(format(" %d smooth groups found", groups.num));
 }
 
 void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
@@ -316,6 +389,8 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 	skin=&Skin[3];
 	SetNormalMode(NormalModeAngular,true);
 	AlphaZBuffer=(TransparencyMode!=TransparencyModeFunctions)and(TransparencyMode!=TransparencyModeFactor);*/
+
+	guess_smooth_groups(data);
 }
 
 
@@ -664,6 +739,8 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 		data->meta_data.script_var[i] = f->read_float();
 
 	_load_v11_edit(f, data, deep);
+
+	guess_smooth_groups(data);
 }
 
 void FormatModel::_load_v11_edit(File *f, DataModel *data, bool deep) {
