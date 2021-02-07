@@ -174,7 +174,6 @@ public:
 		me->meta_data.description = f->read_str();
 
 		// Inventary
-		f->read_comment();
 		me->meta_data.inventary.resize(f->read_int());
 		for (int i=0;i<me->meta_data.inventary.num;i++)
 			me->meta_data.inventary[i] = f->read_str();
