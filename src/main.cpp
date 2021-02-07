@@ -49,7 +49,7 @@ bool handle_special_args(const Array<string> &arg) {
 			int pp = arg[2].find("/Objects/", 0);
 			if (pp > 0) {
 				kaba::config.directory = arg[2].substr(0, pp) + "/Scripts/";
-				msg_write(kaba::config.directory.str());
+				//msg_write(kaba::config.directory.str());
 			}
 
 
@@ -68,7 +68,7 @@ bool handle_special_args(const Array<string> &arg) {
 
 			if (data) {
 				storage = new Storage();
-				msg_write(arg[2]);
+				msg_write("loading " + arg[2]);
 				storage->load(arg[2], data, false);
 				if (arg[1] == "--update")
 					storage->save(arg[2], data);

@@ -269,6 +269,7 @@ public:
 
 
 		// triangles (subs)
+		me->sub.resize(parent->material.num);
 		for (int m=0; m<parent->material.num; m++) {
 			int ntria = f->read_int();
 			me->sub[m].triangle.resize(ntria);
