@@ -11,6 +11,7 @@
 #include "lib/common.h"
 #include "syntax/Parser.h"
 #include "lib/common.h"
+#include "Interpreter.h"
 #include <cassert>
 
 #include "../config.h"
@@ -27,7 +28,7 @@
 
 namespace kaba {
 
-string Version = "0.19.5.3";
+string Version = "0.19.7.0";
 
 //#define ScriptDebug
 
@@ -177,16 +178,11 @@ void Script::load(const Path &_filename, bool _just_analyse) {
 			compile();
 		/*if (pre_script->FlagShow)
 			pre_script->Show();*/
-		if (!just_analyse and config.verbose){
-			msg_write(format("Opcode: %d bytes", opcode_size));
-			if (config.allow_output_stage("dasm"))
-				msg_write(Asm::disassemble(opcode, opcode_size));
-		}
 
-	} catch(FileError &e) {
+	} catch (FileError &e) {
 		loading_script_stack.pop();
 		do_error("script file not loadable: " + filename.str());
-	} catch(Exception &e) {
+	} catch (Exception &e) {
 		loading_script_stack.pop();
 		throw e;
 	}
@@ -314,6 +310,12 @@ void execute_single_script_command(const string &cmd) {
 
 // compile
 	s->compile();
+
+
+	if (kaba::config.interpreted) {
+		s->interpreter->run("--command-func--");
+		return;
+	}
 
 // execute
 	typedef void void_func();

@@ -14,6 +14,7 @@ extern const Class *TypeDynamicArray;
 extern const Class *TypeSharedPointer;
 const Class *TypeAbstractList;
 const Class *TypeAbstractDict;
+const Class *TypeAbstractTuple;
 extern const Class *TypeDictBase;
 extern const Class *TypeFloat;
 extern const Class *TypePointerList;
@@ -63,6 +64,32 @@ int _cdecl _Char2Int(char c)
 {	return (int)c;	}
 bool _cdecl _Pointer2Bool(void *p)
 {	return (p != nullptr);	}
+
+
+
+static void kaba_int_out(int a) {
+	msg_write("out: " + i2s(a));
+}
+
+static void kaba_float_out(float a) {
+	msg_write("float out..." + d2h(&a, 4));
+	msg_write("out: " + f2s(a, 6));
+}
+
+static float kaba_float_ret() {
+	return 13.0f;
+}
+
+static void _x_call_float() {
+	kaba_float_out(13);
+}
+
+static int kaba_int_ret() {
+	return 2001;
+}
+
+static int extern_variable1 = 13;
+
 
 
 
@@ -392,6 +419,7 @@ void SIAddPackageBase() {
 	TypeDynamicArray	= add_type  ("@DynamicArray", config.super_array_size);
 	TypeAbstractList	= add_type  ("-abstract-list-", config.super_array_size);
 	TypeAbstractDict	= add_type  ("-abstract-dict-", config.super_array_size);
+	TypeAbstractTuple	= add_type  ("-abstract-tuple-", config.super_array_size);
 	TypeDictBase		= add_type  ("@DictBase",   config.super_array_size);
 	TypeSharedPointer	= add_type  ("@SharedPointer", config.pointer_size);
 
@@ -898,6 +926,16 @@ void SIAddPackageBase() {
 		func_add_param("size", TypeInt);
 	add_func("@free", TypeVoid, (void*)&free, Flags::STATIC);
 		func_add_param("p", TypePointer);
+
+	// basic testing
+	add_func("_int_out", TypeVoid, (void*)&kaba_int_out, Flags::STATIC);
+		func_add_param("i", TypeInt);
+	add_func("_float_out", TypeVoid, (void*)&kaba_float_out, Flags::STATIC);
+		func_add_param("f", TypeFloat32);
+	add_func("_call_float", TypeVoid, (void*)&_x_call_float, Flags::STATIC);
+	add_func("_float_ret", TypeFloat32, (void*)&kaba_float_ret, Flags::STATIC);
+	add_func("_int_ret", TypeInt, (void*)&kaba_int_ret, Flags::STATIC);
+	add_ext_var("_extern_variable", TypeInt, &extern_variable1);
 }
 
 

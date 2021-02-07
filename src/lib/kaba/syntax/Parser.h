@@ -70,6 +70,7 @@ public:
 	shared<Node> parse_list(Block *block);
 	shared<Node> build_abstract_dict(const Array<shared<Node>> &el);
 	shared<Node> parse_dict(Block *block);
+	shared<Node> build_abstract_tuple(const Array<shared<Node>> &el);
 
 	const Class *get_constant_type(const string &str);
 	void get_constant_value(const string &str, Value &value);
@@ -77,7 +78,7 @@ public:
 	void parse();
 	void parse_top_level();
 	void parse_all_class_names(Class *ns, int indent0);
-	void parse_all_function_bodies(const Class *name_space);
+	void parse_all_function_bodies();
 	Flags parse_flags(Flags initial = Flags::NONE);
 	void parse_import();
 	void parse_enum(Class *_namespace);
@@ -86,7 +87,8 @@ public:
 	void post_process_newly_parsed_class(Class *c, int size);
 	void skip_parse_class();
 	Function *parse_function_header(Class *name_space, Flags flags0);
-	void skip_parsing_function_body();
+	Function *parse_function_header_new(Class *name_space, Flags flags0);
+	void skip_parsing_function_body(Function *f);
 	void parse_function_body(Function *f);
 	bool parse_function_command(Function *f, int indent0);
 	const Class *parse_type(const Class *ns);
@@ -149,7 +151,7 @@ public:
 
 
 	void auto_implement_add_virtual_table(shared<Node> self, Function *f, const Class *t);
-	void auto_implement_add_child_constructors(shared<Node> self, Function *f, const Class *t);
+	void auto_implement_add_child_constructors(shared<Node> self, Function *f, const Class *t, bool allow_elements_from_parent);
 	void auto_implement_constructor(Function *f, const Class *t, bool allow_parent_constructor);
 	void auto_implement_destructor(Function *f, const Class *t);
 	void auto_implement_assign(Function *f, const Class *t);
@@ -160,6 +162,8 @@ public:
 	void auto_implement_shared_assign(Function *f, const Class *t);
 	void auto_implement_shared_clear(Function *f, const Class *t);
 	void auto_implement_shared_create(Function *f, const Class *t);
+	void auto_implement_owned_clear(Function *f, const Class *t);
+	void auto_implement_owned_assign(Function *f, const Class *t);
 	void auto_implement_functions(const Class *t);
 	
 	SyntaxTree *tree;
@@ -169,6 +173,8 @@ public:
 	int for_index_count;
 	int parser_loop_depth;
 	bool found_dynamic_param;
+
+	Array<Function*> function_needs_parsing;
 };
 
 } /* namespace kaba */

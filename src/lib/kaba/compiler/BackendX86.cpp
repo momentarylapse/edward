@@ -644,7 +644,7 @@ void BackendX86::correct_unallowed_param_combis2(SerialNode &c) {
 
 	if (c.inst == Asm::INST_CMP)
 		if ((c.p[1].kind == NodeKind::IMMEDIATE) and (c.p[1].type->size == 8)) {
-			if (c.p[1].p & 0xffffffff00000000 != 0)
+			if ((c.p[1].p & 0xffffffff00000000) != 0)
 				do_error("cmp immediate > 32bit");
 			c.p[1].type = TypeInt;
 		}
@@ -1106,8 +1106,8 @@ void BackendX86::assemble_cmd_arm(SerialNode &c) {
 
 
 void BackendX86::add_function_intro_frame(int stack_alloc_size) {
-	int reg_bp = (config.instruction_set == Asm::InstructionSet::AMD64) ? Asm::REG_RBP : Asm::REG_EBP;
-	int reg_sp = (config.instruction_set == Asm::InstructionSet::AMD64) ? Asm::REG_RSP : Asm::REG_ESP;
+	int reg_bp = Asm::REG_EBP;
+	int reg_sp = Asm::REG_ESP;
 	//int s = config.pointer_size;
 	list->add2(Asm::INST_PUSH, Asm::param_reg(reg_bp));
 	list->add2(Asm::INST_MOV, Asm::param_reg(reg_bp), Asm::param_reg(reg_sp));

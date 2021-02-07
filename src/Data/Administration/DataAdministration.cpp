@@ -29,7 +29,7 @@ DataAdministration::~DataAdministration() {
 }
 
 void DataAdministration::FraesDir(const Path &root_dir, const Path &dir, const string &extension) {
-	auto list = dir_search(root_dir << dir, "*" + extension, true);
+	auto list = dir_search(root_dir << dir, "*" + extension, "fd");
 	for (auto &e: list) {
 		if (file_is_directory(root_dir << dir << e)) {
 			FraesDir(root_dir, dir << e, extension);
@@ -56,7 +56,8 @@ void DataAdministration::MetaFraesDir(int kind) {
 	if (kind==FD_SOUND)		extension = "";
 	if (extension == "x")
 		return;
-	FraesDir(dir, "", extension);
+	cft = dir_search(dir, "*" + extension, "fr");
+	//FraesDir(dir, "", extension);
 }
 
 void DataAdministration::TestRootDirectory()
