@@ -294,6 +294,11 @@ void ModeModelMesh::on_draw_win(MultiView::Window *win) {
 }
 
 
+void poly_check_undef_view_stage(ModelMesh *m, int vs) {
+	for (auto &p: m->polygon)
+		if (p.view_stage < 0)
+			p.view_stage = vs;
+}
 
 void ModeModelMesh::on_data_update() {
 	// consistency checks
@@ -301,6 +306,8 @@ void ModeModelMesh::on_data_update() {
 		set_current_material(data->material.num - 1);
 	//data->DebugShow();
 	//msg_write(o->getName() + " - " + message);
+
+	poly_check_undef_view_stage(data->edit_mesh, multi_view->view_stage);
 
 
 	fill_selection_buffer(data->edit_mesh->vertex);

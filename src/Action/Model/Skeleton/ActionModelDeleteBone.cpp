@@ -75,7 +75,6 @@ void ActionModelDeleteBone::undo(Data *d)
 	b._matrix = matrix::ID;
 	b.model_file = filename;
 	b.model = (Model*)model;
-	b.view_stage = 0;
 	m->bone.insert(b, index);
 
 	// correct skeleton

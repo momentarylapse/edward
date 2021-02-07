@@ -12,9 +12,6 @@
 
 
 bool WorldTerrain::load(const vector &_pos, const Path &_filename, bool deep) {
-	view_stage = 0;
-	is_selected = false;
-	is_special = false;
 
 	filename = _filename.relative_to(engine.map_dir).no_ext();
 

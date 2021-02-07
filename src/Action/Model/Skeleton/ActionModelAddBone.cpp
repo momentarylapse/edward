@@ -24,8 +24,6 @@ void *ActionModelAddBone::execute(Data *d)
 	b.pos = pos;
 	b._matrix = matrix::ID;
 	b.model = NULL;
-	b.view_stage = 0;
-	b.is_special = b.is_selected = false;
 	m->bone.add(b);
 
 	// correct animations

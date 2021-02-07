@@ -21,9 +21,6 @@ void* ActionCameraAddPoint::execute(Data* d)
 	DataCamera *w = dynamic_cast<DataCamera*>(d);
 
 	WorldCamPoint p;
-	p.view_stage = 0;
-	p.is_selected = false;
-	p.is_special = false;
 	p.pos = pos;
 	p.Ang = ang;
 	p.Vel = vel;
