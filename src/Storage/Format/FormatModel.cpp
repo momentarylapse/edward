@@ -162,6 +162,35 @@ public:
 	}
 };
 
+class ChunkOldMeta : public FileChunk<DataModel, DataModel> {
+public:
+	ChunkOldMeta() : FileChunk("xxx1") {}
+	void create() override {
+		me = parent;
+	}
+	void read(File *f) override {
+		// Object Data
+		me->meta_data.name = f->read_str();
+		me->meta_data.description = f->read_str();
+
+		// Inventary
+		f->read_comment();
+		me->meta_data.inventary.resize(f->read_int());
+		for (int i=0;i<me->meta_data.inventary.num;i++)
+			me->meta_data.inventary[i] = f->read_str();
+	}
+	void write(File *f) override {
+		// object data
+		f->write_str(me->meta_data.name);
+		f->write_str(me->meta_data.description);
+
+		// inventory
+		f->write_int(me->meta_data.inventary.num);
+		for (int i=0;i<me->meta_data.inventary.num;i++)
+			f->write_str(me->meta_data.inventary[i].str());
+	}
+};
+
 class ChunkMaterial : public FileChunk<DataModel, ModelMaterial> {
 public:
 	ChunkMaterial() : FileChunk("material") {}
@@ -232,7 +261,7 @@ public:
 		Array<vector> skin_vert;
 		int nsv = f->read_int();
 		skin_vert.resize(nsv);
-		for (int j=0;j<skin_vert.num;j++){
+		for (int j=0;j<skin_vert.num;j++) {
 			skin_vert[j].x = f->read_float();
 			skin_vert[j].y = f->read_float();
 		}
@@ -250,13 +279,13 @@ public:
 			// skin vertex
 			for (int tl=0;tl<parent->material[m]->texture_levels.num;tl++)
 				for (int j=0;j<me->sub[m].triangle.num;j++)
-					for (int k=0;k<3;k++){
+					for (int k=0;k<3;k++) {
 						int svi = f->read_int();
 						me->sub[m].triangle[j].skin_vertex[tl][k] = skin_vert[svi];
 					}
 			// normals
-			for (int j=0;j<me->sub[m].triangle.num;j++){
-				for (int k=0;k<3;k++){
+			for (int j=0;j<me->sub[m].triangle.num;j++) {
+				for (int k=0;k<3;k++) {
 					me->sub[m].triangle[j].normal_index[k] = (int)(unsigned short)f->read_word();
 					me->sub[m].triangle[j].normal[k] = get_normal_by_index(me->sub[m].triangle[j].normal_index[k]);
 				}
@@ -281,7 +310,7 @@ public:
 		for (int m=0;m<parent->material.num;m++)
 			for (int tl=0;tl<parent->material[m]->texture_levels.num;tl++)
 				for (int j=0;j<me->sub[m].triangle.num;j++)
-					for (int k=0;k<3;k++){
+					for (int k=0;k<3;k++) {
 						f->write_float(me->sub[m].triangle[j].skin_vertex[tl][k].x);
 						f->write_float(me->sub[m].triangle[j].skin_vertex[tl][k].y);
 					}
@@ -289,7 +318,7 @@ public:
 
 		// sub skins
 		int svi = 0;
-		for (int m=0;m<parent->material.num;m++){
+		for (int m=0;m<parent->material.num;m++) {
 			ModelSubSkin *sub = &me->sub[m];
 
 			// triangles
@@ -308,7 +337,7 @@ public:
 
 			// normal
 			for (int j=0;j<sub->triangle.num;j++)
-				for (int k=0;k<3;k++){
+				for (int k=0;k<3;k++) {
 					if (DataModelAllowUpdating)
 						sub->triangle[j].normal_index[k] = get_normal_index(sub->triangle[j].normal[k]);
 					f->write_word(sub->triangle[j].normal_index[k]);
@@ -344,7 +373,7 @@ public:
 			t.side.resize(num_faces);
 			for (int k=0; k<num_faces; k++) {
 				t.side[k].vertex = f->read_int();
-				for (int l=0;l<parent->material[t.material]->texture_levels.num;l++){
+				for (int l=0;l<parent->material[t.material]->texture_levels.num;l++) {
 					t.side[k].skin_vertex[l].x = f->read_float();
 					t.side[k].skin_vertex[l].y = f->read_float();
 				}
@@ -365,7 +394,7 @@ public:
 			f->write_word(t.smooth_group);
 			for (auto &ss: t.side) {
 				f->write_int(ss.vertex);
-				for (int l=0;l<parent->material[t.material]->texture_levels.num;l++){
+				for (int l=0;l<parent->material[t.material]->texture_levels.num;l++) {
 					f->write_float(ss.skin_vertex[l].x);
 					f->write_float(ss.skin_vertex[l].y);
 				}
@@ -399,7 +428,7 @@ public:
 
 		// balls
 		me->ball.resize(f->read_int());
-		for (auto &b: me->ball){
+		for (auto &b: me->ball) {
 			b.index = f->read_int();
 			b.radius = f->read_float();
 		}
@@ -412,7 +441,7 @@ public:
 			Array<Array<int>> vv;
 			int num_faces = f->read_int();
 			msg_write("  faces: " + i2s(num_faces));
-			for (int k=0;k<num_faces;k++){
+			for (int k=0;k<num_faces;k++) {
 				int nv = f->read_int();
 				Array<int> vertex;
 				for (int l=0;l<nv;l++) {
@@ -437,7 +466,7 @@ public:
 
 		// cylinders
 		int n = f->read_int();
-		for (int i=0; i<n; i++){
+		for (int i=0; i<n; i++) {
 			ModelCylinder c;
 			c.index[0] = f->read_int();
 			c.index[1] = f->read_int();
@@ -463,7 +492,7 @@ public:
 
 		// balls
 		f->write_int(me->ball.num);
-		for (auto &b: me->ball){
+		for (auto &b: me->ball) {
 			f->write_int(b.index);
 			f->write_float(b.radius);
 		}
@@ -484,13 +513,279 @@ public:
 
 		// cylinders
 		f->write_int(me->cylinder.num);
-		for (auto &c: me->cylinder){
+		for (auto &c: me->cylinder) {
 			f->write_int(c.index[0]);
 			f->write_int(c.index[1]);
 			f->write_float(c.radius);
 			f->write_bool(c.round);
 		}
 
+	}
+};
+
+
+class ChunkSkeleton : public FileChunk<DataModel, DataModel> {
+public:
+	ChunkSkeleton() : FileChunk("skeleton") {}
+	void create() override {
+		me = parent;
+	}
+	void read(File *f) override {
+		me->bone.resize(f->read_int());
+		for (auto &b: me->bone) {
+			f->read_vector(&b.pos);
+			b.parent = f->read_int();
+			if ((b.parent < 0) or (b.parent >= me->bone.num))
+				b.parent = -1;
+			if (b.parent >= 0)
+				b.pos += me->bone[b.parent].pos;
+			b.model_file = f->read_str();
+			b.const_pos = false;
+			b.is_selected = b.m_old = false;
+		}
+	}
+	void write(File *f) override {
+		f->write_int(me->bone.num);
+		for (auto &b: me->bone) {
+			if (b.parent >= 0) {
+				vector dpos = b.pos - me->bone[b.parent].pos;
+				f->write_vector(&dpos);
+			} else {
+				f->write_vector(&b.pos);
+			}
+			f->write_int(b.parent);
+			f->write_str(b.model_file.str());
+		}
+	}
+};
+
+class ChunkAnimation : public FileChunk<DataModel, DataModel> {
+public:
+	ChunkAnimation() : FileChunk("animation") {}
+	void create() override {
+		me = parent;
+	}
+	void read(File *f) override {
+		int version = f->read_int();
+		// TODO FIXME
+
+		me->move.resize(f->read_int());
+		int num_anims = f->read_int();
+		f->read_int();
+		f->read_int();
+		for (int i=0;i<num_anims;i++) {
+			int anim_index = f->read_int();
+			me->move.resize(anim_index + 1);
+			ModelMove *m = &me->move[anim_index];
+			m->name = f->read_str();
+			m->type = f->read_int();
+			bool rubber_timing = (m->type & 128);
+			m->type = m->type & 0x7f;
+			m->frame.resize(f->read_int());
+			m->frames_per_sec_const = f->read_float();
+			m->frames_per_sec_factor = f->read_float();
+
+			// vertex animation
+			if (m->type == MOVE_TYPE_VERTEX) {
+				for (ModelFrame &fr: m->frame) {
+					fr.duration = 1;
+					if (rubber_timing)
+						fr.duration = f->read_float();
+					for (int s=0;s<4;s++) {
+						fr.skin[s].dpos.resize(me->skin[s].vertex.num);
+						int num_vertices = f->read_int();
+						for (int j=0;j<num_vertices;j++) {
+							int vertex_index = f->read_int();
+							f->read_vector(&fr.skin[s].dpos[vertex_index]);
+						}
+					}
+				}
+			}else if (m->type == MOVE_TYPE_SKELETAL) {
+				Array<bool> VarDeltaPos;
+				VarDeltaPos.resize(me->bone.num);
+				for (int j=0;j<me->bone.num;j++)
+					VarDeltaPos[j] = f->read_bool();
+				m->interpolated_quadratic = f->read_bool();
+				m->interpolated_loop = f->read_bool();
+				for (ModelFrame &fr: m->frame) {
+					fr.duration = 1;
+					if (rubber_timing)
+						fr.duration = f->read_float();
+					fr.skel_dpos.resize(me->bone.num);
+					fr.skel_ang.resize(me->bone.num);
+					for (int j=0;j<me->bone.num;j++) {
+						f->read_vector(&fr.skel_ang[j]);
+						if (VarDeltaPos[j])
+							f->read_vector(&fr.skel_dpos[j]);
+					}
+				}
+			}else{
+				throw FormatError("unknown animation type: " + i2s(m->type));
+			}
+		}
+	}
+	void write(File *f) override {
+		f->write_int(0);
+
+		// move headers
+		f->write_int(me->move.num);
+		int n_frames_vert = 0;
+		int n_frames_skel = 0;
+		for (auto &m: me->move) {
+			f->write_str(m.name);
+			f->write_int(m.type);
+			if (m.type == MOVE_TYPE_VERTEX)
+				f->write_int(n_frames_vert);
+			else //if (m.type == MOVE_TYPE_SKELETAL)
+				f->write_int(n_frames_skel);
+			f->write_int(m.frame.num);
+			f->write_float(m.frames_per_sec_const);
+			f->write_float(m.frames_per_sec_factor);
+			f->write_bool(m.interpolated_quadratic);
+			f->write_bool(m.interpolated_loop);
+
+			if (m.type == MOVE_TYPE_VERTEX)
+				n_frames_vert += m.frame.num;
+			else //if (m.type == MOVE_TYPE_SKELETAL)
+				n_frames_skel += m.frame.num;
+		}
+
+
+		// vertex animation frames
+		f->write_int(n_frames_vert);
+		for (auto &m: me->move)
+			if (m.type == MOVE_TYPE_VERTEX)
+				for (auto &fr: m.frame) {
+					f->write_float(fr.duration);
+					for (int s=0; s<4; s++) {
+						// compress (only write != 0)
+						int num_vertices = 0;
+						for (int j=0;j<me->skin[s].vertex.num;j++)
+							if (fr.skin[s].dpos[j] != v_0)
+								num_vertices ++;
+						f->write_int(num_vertices);
+						for (int j=0;j<me->skin[s].vertex.num;j++)
+							if (fr.skin[s].dpos[j] != v_0) {
+								f->write_int(j);
+								f->write_vector(&fr.skin[s].dpos[j]);
+							}
+					}
+				}
+
+		// skeleton animation frames
+		f->write_int(n_frames_skel);
+		for (auto &m: me->move)
+			if (m.type == MOVE_TYPE_SKELETAL)
+				for (auto &fr: m.frame) {
+					f->write_float(fr.duration);
+					for (int j=0;j<me->bone.num;j++) {
+						f->write_vector(&fr.skel_ang[j]);
+						if (me->bone[j].parent < 0)
+							f->write_vector(&fr.skel_dpos[j]);
+					}
+				}
+	}
+};
+
+class ChunkEffect : public FileChunk<DataModel, ModelEffect> {
+public:
+	ChunkEffect() : FileChunk("effect") {}
+	void create() override {
+		parent->fx.add(ModelEffect());
+		me = &parent->fx.back();
+	}
+	void read(File *f) override {
+		string fxkind = f->read_str();
+		me->type = -1;
+		if (fxkind == "script") {
+			me->type = FX_TYPE_SCRIPT;
+			me->vertex = f->read_int();
+			me->file = f->read_str();
+			f->read_str();
+		} else if (fxkind == "light") {
+			me->type = FX_TYPE_LIGHT;
+			me->vertex = f->read_int();
+			me->size = f->read_float();
+			for (int j=0;j<3;j++)
+				read_color_argb(f,me->colors[j]);
+		} else if (fxkind == "sound") {
+			me->type = FX_TYPE_SOUND;
+			me->vertex = f->read_int();
+			me->size = f->read_float();
+			me->speed = f->read_float();
+			me->file = f->read_str();
+		} else if (fxkind == "forcefield") {
+			me->type = FX_TYPE_FORCEFIELD;
+			me->vertex = f->read_int();
+			me->size = f->read_float();
+			me->intensity = f->read_float();
+			me->inv_quad = f->read_bool();
+		} else {
+			throw FormatError("unknown effect: " + fxkind);
+		}
+	}
+	void write(File *f) override {
+		if (me->type == FX_TYPE_SCRIPT) {
+			f->write_str("script");
+			f->write_int(me->vertex);
+			f->write_str(me->file.str());
+			f->write_str("");
+		} else if (me->type == FX_TYPE_LIGHT) {
+			f->write_str("light");
+			f->write_int(me->vertex);
+			f->write_float(me->size);
+			for (int nc=0;nc<3;nc++)
+				write_color_argb(f, me->colors[nc]);
+		} else if (me->type == FX_TYPE_SOUND) {
+			f->write_str("sound");
+			f->write_int(me->vertex);
+			f->write_float(me->size);
+			f->write_float(me->speed);
+			f->write_str(me->file.str());
+		} else if (me->type == FX_TYPE_FORCEFIELD) {
+			f->write_str("forcefield");
+			f->write_int(me->vertex);
+			f->write_float(me->size);
+			f->write_float(me->intensity);
+			f->write_bool(me->inv_quad);
+		} else {
+			f->write_str("???");
+		}
+	}
+};
+
+class ChunkScript : public FileChunk<DataModel, DataModel> {
+public:
+	ChunkScript() : FileChunk("script") {}
+	void create() override {
+		me = parent;
+	}
+	void read(File *f) override {
+		me->meta_data.script_file = f->read_str();
+		me->meta_data.script_var.resize(f->read_int());
+		for (int i=0;i<me->meta_data.script_var.num;i++)
+			me->meta_data.script_var[i] = f->read_float();
+
+		int n = f->read_int();
+		for (int i=0; i<n; i++) {
+			ModelScriptVariable v;
+			v.name = f->read_str();
+			v.value = f->read_str();
+			me->meta_data.variables.add(v);
+		}
+	}
+	void write(File *f) override {
+		f->write_str(me->meta_data.script_file.str());
+		f->write_int(me->meta_data.script_var.num);
+		for (int i=0;i<me->meta_data.script_var.num;i++)
+			f->write_float(me->meta_data.script_var[i]);
+
+		// new script vars
+		f->write_int(me->meta_data.variables.num);
+		for (auto &v: me->meta_data.variables) {
+			f->write_str(v.name);
+			f->write_str(v.value);
+		}
 	}
 };
 
@@ -503,6 +798,11 @@ public:
 		add_child(new ChunkTriangleMesh);
 		add_child(new ChunkPolygonMesh);
 		add_child(new ChunkPhysicalMesh);
+		add_child(new ChunkSkeleton);
+		add_child(new ChunkAnimation);
+		add_child(new ChunkScript);
+		add_child(new ChunkEffect);
+		add_child(new ChunkOldMeta);
 	}
 	void read(File *f) override {
 	}
@@ -514,6 +814,14 @@ public:
 		write_sub_array("triamesh", me->skin);
 		write_sub("physmesh", me->phys_mesh);
 		write_sub("polymesh", me->mesh);
+		if (me->bone.num > 0)
+			write_sub("skeleton", me);
+		write_sub("animation", me);
+		write_sub("script", me);
+		write_sub_array("effect", me->fx);
+
+		if (me->meta_data.name != "" or me->meta_data.description != "" or me->meta_data.inventary.num > 0)
+			write_sub("xxx1", me);
 	}
 };
 
@@ -546,42 +854,50 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
 
 
-	if (deep){
+	if (deep) {
 
 		// import...
 		if (data->mesh->polygon.num == 0)
 			data->importFromTriangleSkin(1);
 
 		for (ModelMove &m: data->move)
-			if (m.type == MOVE_TYPE_VERTEX){
+			if (m.type == MOVE_TYPE_VERTEX) {
 				for (ModelFrame &f: m.frame)
 					f.vertex_dpos = f.skin[1].dpos;
 			}
 
-		for (auto *m: data->material){
+		for (auto *m: data->material) {
 			m->make_consistent();
 
 			// test textures
-			for (auto &t: m->texture_levels){
+			for (auto &t: m->texture_levels) {
 				if ((!t->texture) and (!t->filename.is_empty()))
 					warning(format(_("Texture file not loadable: %s"), t->filename));
+			}
+		}
+		for (auto &b: data->bone) {
+			try {
+				if (!b.model)
+					b.model = ModelManager::load(b.model_file);
+			} catch(Exception &e) {
+				msg_error(e.message());
 			}
 		}
 
 
 
 		// TODO -> mode...
-		/*if (this == mode_model->data){
+		/*if (this == mode_model->data) {
 			ed->SetTitle(filename);
 			ResetView();
 		}*/
 	}
 
 	// FIXME
-	if ((!data->meta_data.script_file.is_empty()) and (data->meta_data.variables.num == 0)){
+	if ((!data->meta_data.script_file.is_empty()) and (data->meta_data.variables.num == 0)) {
 		update_model_script_data(data->meta_data);
 		msg_write(data->meta_data.variables.num);
-		for (int i=0; i<min(data->meta_data.script_var.num, data->meta_data.variables.num); i++){
+		for (int i=0; i<min(data->meta_data.script_var.num, data->meta_data.variables.num); i++) {
 			if (data->meta_data.variables[i].type == "float")
 				data->meta_data.variables[i].value = f2s(data->meta_data.script_var[i], 6);
 			msg_write(format("  try import var  %s = %s", data->meta_data.variables[i].name, data->meta_data.variables[i].value));
@@ -595,7 +911,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 }
 
 void FormatModel::_save(const Path &filename, DataModel *data) {
-	if (DataModelAllowUpdating){
+	if (DataModelAllowUpdating) {
 		/*if (AutoGenerateSkin[1])
 			CreateSkin(&Skin[1],&Skin[2],(float)DetailFactor[1]*0.01f);
 
@@ -619,8 +935,8 @@ void FormatModel::_save(const Path &filename, DataModel *data) {
 
 		// export...
 		data->mesh->export_to_triangle_skin(data->skin[1]);
-		for (int d=1;d<4;d++){
-			if (data->skin[d].sub.num != data->material.num){
+		for (int d=1;d<4;d++) {
+			if (data->skin[d].sub.num != data->material.num) {
 				data->skin[d].sub.resize(data->material.num);
 			}
 		}
