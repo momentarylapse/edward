@@ -238,13 +238,13 @@ public:
 	}
 };
 
-static int _model_parser_skin_count;
+static int _model_parser_tria_mesh_count;
 
 class ChunkTriangleMesh : public FileChunk<DataModel, ModelSkin> {
 public:
 	ChunkTriangleMesh() : FileChunk("triamesh") {}
 	void create() override {
-		me = &parent->skin[_model_parser_skin_count ++];
+		me = &parent->skin[1 + _model_parser_tria_mesh_count ++];
 	}
 	void read(File *f) override {
 		// vertices
@@ -531,6 +531,7 @@ public:
 		me = parent;
 	}
 	void read(File *f) override {
+		int version = f->read_int();
 		me->bone.resize(f->read_int());
 		for (auto &b: me->bone) {
 			f->read_vector(&b.pos);
@@ -543,8 +544,10 @@ public:
 			b.const_pos = false;
 			b.is_selected = b.m_old = false;
 		}
+		f->read_str();
 	}
 	void write(File *f) override {
+		f->write_int(0);
 		f->write_int(me->bone.num);
 		for (auto &b: me->bone) {
 			if (b.parent >= 0) {
@@ -556,9 +559,27 @@ public:
 			f->write_int(b.parent);
 			f->write_str(b.model_file.str());
 		}
+		f->write_str("");
 	}
 };
 
+void import_animations(DataModel *me, const Array<ModelFrame> &frames_vert, const Array<ModelFrame> &frames_skel, const Array<int> &offsets) {
+	//msg_write(ia2s(offsets));
+	foreachi (auto &m, me->move, mi) {
+		if (m.type == MOVE_TYPE_VERTEX)
+			m.frame = frames_vert.sub(offsets[mi], m.frame.num);
+		else if (m.type == MOVE_TYPE_SKELETAL) {
+			//msg_write(format("sk %d  %d    %d", offsets[mi], m.frame.num, frames_skel.num));
+			for (int i=0; i<m.frame.num; i++)
+				m.frame[i] = frames_skel[offsets[mi] + i];
+			//m.frame = frames_skel.sub(offsets[mi], m.frame.num);
+		}
+	}
+}
+
+
+// TODO later write skeleton animations into separate file...
+// TODO flat frame list
 class ChunkAnimation : public FileChunk<DataModel, DataModel> {
 public:
 	ChunkAnimation() : FileChunk("animation") {}
@@ -567,73 +588,80 @@ public:
 	}
 	void read(File *f) override {
 		int version = f->read_int();
-		// TODO FIXME
 
-		me->move.resize(f->read_int());
+		// headers
 		int num_anims = f->read_int();
-		f->read_int();
-		f->read_int();
-		for (int i=0;i<num_anims;i++) {
-			int anim_index = f->read_int();
-			me->move.resize(anim_index + 1);
-			ModelMove *m = &me->move[anim_index];
-			m->name = f->read_str();
-			m->type = f->read_int();
-			bool rubber_timing = (m->type & 128);
-			m->type = m->type & 0x7f;
-			m->frame.resize(f->read_int());
-			m->frames_per_sec_const = f->read_float();
-			m->frames_per_sec_factor = f->read_float();
+		me->move.resize(num_anims);
+		Array<int> frame_offset;
+		for (auto &m: me->move) {
+			m.name = f->read_str();
+			m.id = f->read_int();
+			m.type = f->read_char();
+			frame_offset.add(f->read_int());
+			m.frame.resize(f->read_int());
+			m.frames_per_sec_const = f->read_float();
+			m.frames_per_sec_factor = f->read_float();
+			// flags
+			m.interpolated_quadratic = f->read_bool();
+			m.interpolated_loop = f->read_bool();
+		}
 
-			// vertex animation
-			if (m->type == MOVE_TYPE_VERTEX) {
-				for (ModelFrame &fr: m->frame) {
-					fr.duration = 1;
-					if (rubber_timing)
-						fr.duration = f->read_float();
-					for (int s=0;s<4;s++) {
-						fr.skin[s].dpos.resize(me->skin[s].vertex.num);
-						int num_vertices = f->read_int();
-						for (int j=0;j<num_vertices;j++) {
-							int vertex_index = f->read_int();
-							f->read_vector(&fr.skin[s].dpos[vertex_index]);
-						}
-					}
+		// vertex animation frames
+		int n_frames_vert = f->read_int();
+		Array<ModelFrame> frames_vert;
+		frames_vert.resize(n_frames_vert);
+		for (auto &fr: frames_vert) {
+			fr.duration = f->read_float();
+			for (int s=0; s<4; s++) {
+				fr.skin[s].dpos.resize(me->skin[s].vertex.num);
+				int num_vertices = f->read_int();
+				for (int j=0;j<num_vertices;j++) {
+					int vertex_index = f->read_int();
+					f->read_vector(&fr.skin[s].dpos[vertex_index]);
 				}
-			}else if (m->type == MOVE_TYPE_SKELETAL) {
-				Array<bool> VarDeltaPos;
-				VarDeltaPos.resize(me->bone.num);
-				for (int j=0;j<me->bone.num;j++)
-					VarDeltaPos[j] = f->read_bool();
-				m->interpolated_quadratic = f->read_bool();
-				m->interpolated_loop = f->read_bool();
-				for (ModelFrame &fr: m->frame) {
-					fr.duration = 1;
-					if (rubber_timing)
-						fr.duration = f->read_float();
-					fr.skel_dpos.resize(me->bone.num);
-					fr.skel_ang.resize(me->bone.num);
-					for (int j=0;j<me->bone.num;j++) {
-						f->read_vector(&fr.skel_ang[j]);
-						if (VarDeltaPos[j])
-							f->read_vector(&fr.skel_dpos[j]);
-					}
-				}
-			}else{
-				throw FormatError("unknown animation type: " + i2s(m->type));
 			}
 		}
+
+
+		int n_frames_skel = f->read_int();
+		Array<bool> var_delta_pos;
+		int num_bones = f->read_int();
+		var_delta_pos.resize(num_bones);
+		for (int j=0; j<num_bones; j++)
+			var_delta_pos[j] = f->read_bool();
+		Array<ModelFrame> frames_skel;
+		frames_skel.resize(n_frames_skel);
+		for (auto &fr: frames_skel) {
+			fr.duration = f->read_float();
+			fr.skel_dpos.resize(num_bones);
+			fr.skel_ang.resize(num_bones);
+			for (int j=0;j<num_bones;j++)
+				f->read_vector(&fr.skel_ang[j]);
+			for (int j=0;j<num_bones;j++)
+				if (var_delta_pos[j])
+					f->read_vector(&fr.skel_dpos[j]);
+		}
+
+		import_animations(parent, frames_vert, frames_skel, frame_offset);
 	}
 	void write(File *f) override {
 		f->write_int(0);
 
-		// move headers
-		f->write_int(me->move.num);
+		// headers
+		int num_moves = 0;
+		for (auto &m: me->move)
+			if (m.frame.num > 0)
+				num_moves ++;
+		f->write_int(num_moves);//me->move.num);
 		int n_frames_vert = 0;
 		int n_frames_skel = 0;
-		for (auto &m: me->move) {
+		foreachi (auto &m, me->move, index) {
+			if (m.frame.num == 0)
+				continue;
 			f->write_str(m.name);
-			f->write_int(m.type);
+			f->write_int(m.id);
+			f->write_char(m.type);
+			// offset
 			if (m.type == MOVE_TYPE_VERTEX)
 				f->write_int(n_frames_vert);
 			else //if (m.type == MOVE_TYPE_SKELETAL)
@@ -641,6 +669,7 @@ public:
 			f->write_int(m.frame.num);
 			f->write_float(m.frames_per_sec_const);
 			f->write_float(m.frames_per_sec_factor);
+			// flags
 			f->write_bool(m.interpolated_quadratic);
 			f->write_bool(m.interpolated_loop);
 
@@ -674,15 +703,18 @@ public:
 
 		// skeleton animation frames
 		f->write_int(n_frames_skel);
+		f->write_int(parent->bone.num);
+		for (auto &b: parent->bone)
+			f->write_bool(b.parent < 0);
 		for (auto &m: me->move)
 			if (m.type == MOVE_TYPE_SKELETAL)
 				for (auto &fr: m.frame) {
 					f->write_float(fr.duration);
-					for (int j=0;j<me->bone.num;j++) {
+					for (int j=0;j<me->bone.num;j++)
 						f->write_vector(&fr.skel_ang[j]);
+					for (int j=0;j<me->bone.num;j++)
 						if (me->bone[j].parent < 0)
 							f->write_vector(&fr.skel_dpos[j]);
-					}
 				}
 	}
 };
@@ -811,13 +843,15 @@ public:
 	void write_subs() override {
 		write_sub("meta", me);
 		write_sub_parray("material", me->material);
-		write_sub_array("triamesh", me->skin);
+		write_sub_array("triamesh", me->skin.sub(1, -1));
 		write_sub("physmesh", me->phys_mesh);
 		write_sub("polymesh", me->mesh);
 		if (me->bone.num > 0)
 			write_sub("skeleton", me);
-		write_sub("animation", me);
-		write_sub("script", me);
+		if (me->move.num > 0)
+			write_sub("animation", me);
+		if (!me->meta_data.script_file.is_empty() or me->meta_data.script_var.num > 0)
+			write_sub("script", me);
 		write_sub_array("effect", me->fx);
 
 		if (me->meta_data.name != "" or me->meta_data.description != "" or me->meta_data.inventary.num > 0)
@@ -829,9 +863,18 @@ public:
 class ModelParser : public ChunkedFileParser {
 public:
 	ModelParser() : ChunkedFileParser(8) {
-		_model_parser_skin_count = 0;
+		_model_parser_tria_mesh_count = 0;
 		set_base(new ChunkModel);
 	}
+	void on_notify() override {}
+	void on_unhandled() override {
+		ed->set_message("unhandled chunk " + context.str());
+	}
+	void on_error(const string &message) override {
+		ed->error_box(message);
+	}
+	void on_warn(const string &message) override {}
+	void on_info(const string &message) override {}
 };
 
 void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {

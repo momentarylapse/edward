@@ -109,6 +109,7 @@ struct ModelFrame {
 
 struct ModelMove {
 	int type;
+	int id;
 	Array<ModelFrame> frame;
 	float frames_per_sec_const, frames_per_sec_factor;
 	bool interpolated_quadratic, interpolated_loop;
