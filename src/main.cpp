@@ -33,7 +33,15 @@ EdwardApp::EdwardApp() :
 
 extern bool DataModelAllowUpdating;
 bool handle_special_args(const Array<string> &arg) {
-	if ((arg[1] == "--update") or (arg[1] == "--check")) {
+	if (arg[1] == "--help") {
+		msg_write("call:");
+		msg_write("  FILE");
+		msg_write("  --help");
+		msg_write("  --check FILE");
+		msg_write("  --update FILE");
+		msg_write("  --update-model FILE   (deprecated?)");
+		return true;
+	} else if ((arg[1] == "--update") or (arg[1] == "--check")) {
 		if (arg.num >= 3){
 
 			kaba::init();

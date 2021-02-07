@@ -114,9 +114,7 @@ void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vec
 	// closed?
 //	updateClosed();
 
-	t.is_selected = false;
 	t.material = _material;
-	t.view_stage = ed->multi_view_3d->view_stage;
 	t.normal_dirty = true;
 	t.triangulation_dirty = true;
 	t.smooth_group = -1;
@@ -260,8 +258,6 @@ int ModelMesh::add_edge_for_new_polygon(int a, int b, int tria, int side)
 	ModelEdge ee;
 	ee.vertex[0] = a;
 	ee.vertex[1] = b;
-	ee.is_selected = false;
-	ee.is_special = false;
 	ee.is_round = false;
 	ee.ref_count = 1;
 	ee.polygon[0] = tria;
@@ -804,7 +800,6 @@ void ModelMesh::add_vertex(const vector &pos, int bone, int normal_mode, int ind
 	vv.pos = pos;
 	vv.normal_mode = normal_mode;
 	vv.bone_index = bone;
-	vv.view_stage = ed->multi_view_3d->view_stage;
 	vv.ref_count = 0;
 	if (index >= 0) {
 		vertex.insert(vv, index);

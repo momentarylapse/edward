@@ -640,11 +640,24 @@ void MultiView::draw_mouse_pos() {
 	}
 }
 
+// FIXME only update on signal
+void check_undef_view_stages(MultiView *mv) {
+	for (auto data: mv->data) {
+		char *p = (char*)data.data->data;
+		for (int i=0; i<data.data->num; i++) {
+			if (((SingleData*)p)->view_stage < 0)
+				((SingleData*)p)->view_stage = mv->view_stage;
+			p += data.data->element_size;
+		}
+	}
+}
 
 void MultiView::on_draw() {
 	nix::StartFrameHui();
 	screen_scale = hui::GetEvent()->row_target; // EVIL!
 	timer.reset();
+
+	check_undef_view_stages(this);
 
 	nix::ResetZ();
 	nix::SetProjectionOrtho(false);

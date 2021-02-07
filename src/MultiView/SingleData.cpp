@@ -13,7 +13,7 @@
 namespace MultiView {
 
 SingleData::SingleData() {
-	view_stage = 0;
+	view_stage = -1;
 	is_selected = false;
 	m_delta = false;
 	m_old = false;
