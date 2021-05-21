@@ -343,7 +343,7 @@ public:
 	string data;
 	ValueString(const string &str)
 	{
-		data = str.substr(1, str.num - 2);
+		data = str.sub(1, -1);
 	}
 	virtual string s()
 	{ return data; }
@@ -425,7 +425,7 @@ FormatModelJson::Value *FormatModelJson::read_struct()
 		}
 
 		next();
-		string key = s.substr(1, s.num - 2);
+		string key = s.sub(1, -1);
 		//msg_write("key: " + key);
 		next(); // :
 		Value *child = read_value();

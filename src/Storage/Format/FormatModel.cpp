@@ -567,7 +567,7 @@ void import_animations(DataModel *me, const Array<ModelFrame> &frames_vert, cons
 	//msg_write(ia2s(offsets));
 	foreachi (auto &m, me->move, mi) {
 		if (m.type == MOVE_TYPE_VERTEX)
-			m.frame = frames_vert.sub(offsets[mi], m.frame.num);
+			m.frame = frames_vert.sub_ref(offsets[mi], offsets[mi] + m.frame.num);
 		else if (m.type == MOVE_TYPE_SKELETAL) {
 			//msg_write(format("sk %d  %d    %d", offsets[mi], m.frame.num, frames_skel.num));
 			for (int i=0; i<m.frame.num; i++)
@@ -843,7 +843,7 @@ public:
 	void write_subs() override {
 		write_sub("meta", me);
 		write_sub_parray("material", me->material);
-		write_sub_array("triamesh", me->skin.sub(1, -1));
+		write_sub_array("triamesh", me->skin.sub_ref(1));
 		write_sub("physmesh", me->phys_mesh);
 		write_sub("polymesh", me->mesh);
 		if (me->bone.num > 0)

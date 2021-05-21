@@ -8,9 +8,7 @@
 \*----------------------------------------------------------------------------*/
 #include "../file/file.h"
 #include "kaba.h"
-#include "lib/common.h"
 #include "syntax/Parser.h"
-#include "lib/common.h"
 #include "Interpreter.h"
 #include <cassert>
 
@@ -28,7 +26,7 @@
 
 namespace kaba {
 
-string Version = "0.19.7.0";
+string Version = "0.19.12.0";
 
 //#define ScriptDebug
 
@@ -308,20 +306,26 @@ void execute_single_script_command(const string &cmd) {
 		parser->auto_implement_functions(c);
 	//ps->show("aaaa");
 
+
+	if (config.verbose)
+		tree->show("parse:a");
+
 // compile
 	s->compile();
 
 
-	if (kaba::config.interpreted) {
+	if (config.interpreted) {
 		s->interpreter->run("--command-func--");
 		return;
 	}
 
 // execute
-	typedef void void_func();
-	void_func *f = (void_func*)func->address;
-	if (f)
-		f();
+	if (config.abi == config.native_abi) {
+		typedef void void_func();
+		void_func *f = (void_func*)func->address;
+		if (f)
+			f();
+	}
 
 	} catch(const Exception &e) {
 		e.print();
@@ -342,7 +346,7 @@ void *Script::match_function(const string &name, const string &return_type, cons
 				if (just_analyse)
 					return (void*)(int_p)0xdeadbeaf;
 				else
-					return f->address;
+					return (void*)(int_p)f->address;
 			}
 		}
 
@@ -373,7 +377,7 @@ void *Script::match_class_function(const string &_class, bool allow_derived, con
 				if (just_analyse)
 					return (void*)(int_p)0xdeadbeaf;
 				else
-					return f->address;
+					return (void*)(int_p)f->address;
 			}
 		}
 	}

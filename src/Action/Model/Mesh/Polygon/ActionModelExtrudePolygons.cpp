@@ -118,7 +118,7 @@ void ActionModelExtrudePolygons::extrude_surface(DataModel *m) {
 		sv.add(vector(0,0,0));
 		sv.add(vector(0,1,0));
 		sv.add(vector(1,1,0));
-		addSubAction(new ActionModelAddPolygonSingleTexture(sewing.sub(i, 4), mode_model_mesh->current_material, sv), m);
+		addSubAction(new ActionModelAddPolygonSingleTexture(sewing.sub_ref(i, 4), mode_model_mesh->current_material, sv), m);
 	}
 }
 
@@ -165,7 +165,7 @@ void ActionModelExtrudePolygons::extrude_surface_indep(DataModel *m) {
 		sv.add(vector(0,0,0));
 		sv.add(vector(0,1,0));
 		sv.add(vector(1,1,0));
-		addSubAction(new ActionModelAddPolygonSingleTexture(sewing.sub(i, 4), mode_model_mesh->current_material, sv), m);
+		addSubAction(new ActionModelAddPolygonSingleTexture(sewing.sub_ref(i, 4), mode_model_mesh->current_material, sv), m);
 	}
 
 }

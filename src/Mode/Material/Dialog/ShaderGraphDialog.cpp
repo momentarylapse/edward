@@ -259,7 +259,7 @@ void draw_node_param(Painter *p, ShaderGraphDialog *dlg, ShaderNode *n, ShaderNo
 	p->set_roundness(0);
 	if (pp.type == ShaderValueType::FLOAT) {
 		if (pp.options.head(6) == "range=") {
-			auto xx = pp.options.substr(6,-1).explode(":");
+			auto xx = pp.options.sub(6).explode(":");
 			float _min = xx[0]._float();
 			float _max = xx[1]._float();
 			float scale = clamp((pp.value._float() - _min) / (_max - _min), 0.0f, 1.0f);
@@ -278,7 +278,7 @@ void draw_node_param(Painter *p, ShaderGraphDialog *dlg, ShaderNode *n, ShaderNo
 	string value = pp.value;
 	if (pp.type == ShaderValueType::INT) {
 		if (pp.options.head(7) == "choice=") {
-			auto xx = pp.options.substr(7, -1).explode("|");
+			auto xx = pp.options.sub(7).explode("|");
 			int n = clamp(value._int(), 0, xx.num - 1);
 			value = xx[n];
 		}
@@ -473,7 +473,7 @@ void ShaderGraphDialog::on_left_button_down() {
 		auto &pp = selection.node->params[selection.param];
 		if (pp.type == ShaderValueType::FLOAT) {
 			if (pp.options.head(6) == "range=") {
-				auto xx = pp.options.substr(6,-1).explode(":");
+				auto xx = pp.options.sub(6).explode(":");
 				float _min = xx[0]._float();
 				float _max = xx[1]._float();
 				rect r = node_get_param_rect(selection.node, selection.port);
@@ -488,7 +488,7 @@ void ShaderGraphDialog::on_left_button_down() {
 			}
 		} else if (pp.type == ShaderValueType::INT) {
 			if (pp.options.head(7) == "choice=") {
-				auto xx = pp.options.substr(7, -1).explode("|");
+				auto xx = pp.options.sub(7).explode("|");
 				pp.value = i2s(loop(pp.value._int() + 1, 0, xx.num - 1));
 				on_update();
 			}
@@ -538,7 +538,7 @@ void ShaderGraphDialog::on_mouse_move() {
 		auto &pp = selection.node->params[selection.param];
 		if (pp.type == ShaderValueType::FLOAT) {
 			if (pp.options.head(6) == "range=") {
-				auto xx = pp.options.substr(6,-1).explode(":");
+				auto xx = pp.options.sub(6).explode(":");
 				float _min = xx[0]._float();
 				float _max = xx[1]._float();
 				rect r = node_get_param_rect(hover.node, hover.port);

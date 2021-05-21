@@ -9,6 +9,7 @@
 #define SRC_LIB_XFILE_PDF_H_
 
 #include "../base/base.h"
+#include "../base/pointer.h"
 #include "../image/Painter.h"
 
 class Path;
@@ -25,10 +26,21 @@ class Parser;
 
 
 struct Page {
-	int width, height;
+	float width, height;
 	string content;
 };
 
+
+class TTF;
+
+struct FontData {
+	bool true_type;
+	string name, internal_name;
+	int id, id_widths, id_descr, id_file;
+	Array<int> widths;
+	string file_contents;
+	shared<TTF> ttf;
+};
 
 class PagePainter : public ::Painter {
 public:
@@ -70,20 +82,32 @@ public:
 };
 
 class Parser {
+	friend class PagePainter;
 public:
 	Parser();
 	~Parser();
-	Painter *add_page(float width, float height);
-	void end();
 
-	File *f;
+	void __init__();
+	void __delete__();
+
+	void set_page_size(float width, float height);
+
+	Painter *add_page();
+	void save(const Path &filename);
+
+private:
 	Array<Page*> pages;
-	Array<string> font_names;
+	//Array<string> font_names;
+	float page_width, page_height;
 
-	int font_id(const string &name);
+	Painter *current_painter;
+
+	Array<FontData> font_data;
+	//int font_id(const string &name);
+	FontData *font_get(const string &name);
 };
 
-Parser *save(const Path &filename);
+void add_font_directory(const Path &dir);
 
 }
 

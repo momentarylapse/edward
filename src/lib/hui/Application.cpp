@@ -50,22 +50,26 @@ Application::Application(const string &app_name, const string &def_lang, int fla
 
 	ComboBoxSeparator = "\\";
 	_using_language_ = false;
-	SetDefaultErrorHandler(nullptr);
+	if ((flags & FLAG_NO_ERROR_HANDLER) == 0)
+		SetDefaultErrorHandler(nullptr);
 
 	if (file_exists(directory << "config.txt"))
 		Config.load(directory << "config.txt");
 
 
-	if (flags & FLAG_LOAD_RESOURCE)
+	if ((flags & FLAG_DONT_LOAD_RESOURCE) == 0)
 		LoadResource(directory_static << "hui_resources.txt");
 
 	if (def_lang.num > 0)
 		SetLanguage(Config.get_str("Language", def_lang));
 
 
+#ifdef OS_LINUX
 	if (file_exists(directory_static << "icon.svg"))
 		set_property("logo", (directory_static << "icon.svg").str());
-	else if (file_exists(directory_static << "icon.png"))
+	else
+#endif
+	if (file_exists(directory_static << "icon.png"))
 		set_property("logo", (directory_static << "icon.png").str());
 	else if (file_exists(directory_static << "icon.ico"))
 		set_property("logo", (directory_static << "icon.ico").str());

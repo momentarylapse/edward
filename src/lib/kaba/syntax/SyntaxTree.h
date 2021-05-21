@@ -2,16 +2,20 @@
 #define SYNTAX_TREE_H__INCLUDED_
 
 
-#include "lexical.h"
 #include <functional>
+#include "lexical.h"
 #include "Class.h"
 #include "Constant.h"
+#include "Flags.h"
 #include "Function.h"
 #include "Node.h"
-#include "../lib/common.h"
+#include "Block.h"
+#include "Operator.h"
+#include "Variable.h"
+#include "Identifier.h"
+#include "Inline.h"
+#include "Statement.h"
 
-
-class complex;
 
 namespace Asm {
 	struct MetaInfo;
@@ -21,16 +25,7 @@ namespace kaba {
 
 class Script;
 class SyntaxTree;
-class Operator;
-class Function;
-class Variable;
-class Node;
-class Constant;
-class Block;
 class Parser;
-enum class StatementID;
-enum class InlineID;
-enum class OperatorID;
 
 
 // macros
@@ -39,17 +34,6 @@ struct Define {
 	Array<string> dest;
 };
 
-
-class Operator {
-public:
-	PrimitiveOperator *primitive;
-	const Class *return_type, *param_type_1, *param_type_2;
-
-	SyntaxTree *owner;
-	Function *f;
-
-	string sig(const Class *ns) const;
-};
 
 
 struct AsmBlock {
@@ -138,7 +122,7 @@ public:
 	shared<Node> add_node_dyn_array(shared<Node> array, shared<Node> index);
 	shared<Node> add_node_array(shared<Node> array, shared<Node> index);
 	shared<Node> add_node_constructor(Function *f);
-	shared<Node> make_fake_constructor(const Class *t, Block *block, const Class *param_type);
+	shared<Node> make_fake_constructor(const Class *t, const Class *param_type);
 	//shared<Node> add_node_block(Block *b);
 	shared<Node> cp_node(shared<Node> c);
 

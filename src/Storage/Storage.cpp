@@ -207,7 +207,7 @@ Path Storage::get_root_dir(int kind) {
 static string no_extension(const string &filename) {
 	int p = filename.rfind(".");
 	if (p >= 0)
-		return filename.substr(0, p);
+		return filename.sub(0, p);
 	return filename;
 }
 

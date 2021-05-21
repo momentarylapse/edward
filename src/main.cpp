@@ -18,7 +18,7 @@ string AppName = "Edward";
 
 
 EdwardApp::EdwardApp() :
-	hui::Application("edward", "English", hui::FLAG_LOAD_RESOURCE)
+	hui::Application("edward", "English", 0)
 {
 	app = this;
 	set_property("name", AppName);
@@ -48,7 +48,7 @@ bool handle_special_args(const Array<string> &arg) {
 
 			int pp = arg[2].find("/Objects/", 0);
 			if (pp > 0) {
-				kaba::config.directory = arg[2].substr(0, pp) + "/Scripts/";
+				kaba::config.directory = Path(arg[2].sub(0, pp)) << "Scripts";
 				//msg_write(kaba::config.directory.str());
 			}
 

@@ -1,6 +1,5 @@
 #include "../../base/base.h"
 #include "../kaba.h"
-#include "../lib/common.h"
 #include "../../file/file.h"
 #include "Class.h"
 
@@ -177,6 +176,9 @@ bool Class::is_pointer_owned() const
 
 bool Class::is_pointer_silent() const
 { return type == Type::POINTER_SILENT; }
+
+bool Class::is_interface() const
+{ return type == Type::INTERFACE; }
 
 bool Class::is_dict() const
 { return type == Type::DICT; }
@@ -384,7 +386,7 @@ void Class::link_virtual_table() {
 	if (parent)
 		for (int i=0; i<parent->vtable.num; i++)
 			vtable[i] = parent->vtable[i];
-	if (config.abi == Abi::WINDOWS_32)
+	if ((config.abi == Abi::X86_WINDOWS) or (config.abi == Abi::AMD64_WINDOWS))
 		vtable[0] = mf(&VirtualBase::__delete_external__);
 	else
 		vtable[1] = mf(&VirtualBase::__delete_external__);
@@ -398,7 +400,7 @@ void Class::link_virtual_table() {
 				//vtable.resize(cf.virtual_index + 1);
 			if (config.verbose)
 				msg_write("VIRTUAL   " + i2s(cf->virtual_index) + "   " + cf->signature());
-			vtable[cf->virtual_index] = cf->address;
+			vtable[cf->virtual_index] = (void*)cf->address;
 		}
 		if (cf->needs_overriding) {
 			msg_error("needs overriding: " + cf->signature());
@@ -413,7 +415,7 @@ void Class::link_external_virtual_table(void *p) {
 	int max_vindex = 1;
 	for (auto *cf: weak(functions))
 		if (cf->virtual_index >= 0) {
-			cf->address = t[cf->virtual_index];
+			cf->address = (int_p)t[cf->virtual_index];
 			if (cf->virtual_index >= vtable.num)
 				max_vindex = max(max_vindex, cf->virtual_index);
 		}
@@ -425,7 +427,7 @@ void Class::link_external_virtual_table(void *p) {
 	for (int i=0; i<vtable.num; i++)
 		vtable[i] = t[i];
 	// this should also link the "real" c++ destructor
-	if ((config.abi == Abi::WINDOWS_32) or (config.abi == Abi::WINDOWS_64))
+	if ((config.abi == Abi::X86_WINDOWS) or (config.abi == Abi::AMD64_WINDOWS))
 		vtable[0] = mf(&VirtualBase::__delete_external__);
 	else
 		vtable[1] = mf(&VirtualBase::__delete_external__);
@@ -471,6 +473,8 @@ void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool overr
 			if (config.verbose)
 				msg_write("VVVVV +");
 			f->virtual_index = process_class_offset(cname(owner->base_class), f->name, max(vtable.num, 2));
+			if ((f->name == IDENTIFIER_FUNC_DELETE) and (config.abi == Abi::AMD64_WINDOWS or config.abi == Abi::X86_WINDOWS))
+				f->virtual_index = 1;
 		}
 
 		// override?
@@ -492,6 +496,16 @@ void Class::add_function(SyntaxTree *s, Function *f, bool as_virtual, bool overr
 			if (config.verbose)
 				msg_write("OVERRIDE    " + orig->signature());
 			f->virtual_index = orig->virtual_index;
+			//f->flags = orig->flags;
+			// don't copy __INIT_FILL_ALL_PARAMS etc...
+			// better copy one-by-one for now
+			if (flags_has(orig->flags, Flags::CONST)) {
+				if (auto self = f->__get_var(IDENTIFIER_SELF))
+					flags_set(self->flags, Flags::CONST);
+				flags_set(f->flags, Flags::CONST);
+			}
+			if (flags_has(orig->flags, Flags::SELFREF))
+				flags_set(f->flags, Flags::SELFREF);
 			functions[orig_index] = f;
 		} else {
 			functions.add(f);
@@ -547,6 +561,7 @@ void Class::derive_from(const Class* root, bool increase_size) {
 
 void *Class::create_instance() const {
 	void *p = malloc(size);
+	memset(p, 0, size);
 	Function *c = get_default_constructor();
 	if (c) {
 		typedef void con_func(void *);

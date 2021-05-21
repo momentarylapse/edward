@@ -44,14 +44,14 @@ int TaskReturnOffset;
 void add_esp_add(Asm::InstructionWithParamsList *list,int d) {
 	if (d > 0) {
 		if (d > 120)
-			list->add2(Asm::INST_ADD, Asm::param_reg(Asm::REG_ESP), Asm::param_imm(d, 4));
+			list->add2(Asm::InstID::ADD, Asm::param_reg(Asm::RegID::ESP), Asm::param_imm(d, 4));
 		else
-			list->add2(Asm::INST_ADD, Asm::param_reg(Asm::REG_ESP), Asm::param_imm(d, 1));
+			list->add2(Asm::InstID::ADD, Asm::param_reg(Asm::RegID::ESP), Asm::param_imm(d, 1));
 	} else if (d < 0) {
 		if (d < -120)
-			list->add2(Asm::INST_SUB, Asm::param_reg(Asm::REG_ESP), Asm::param_imm(-d, 4));
+			list->add2(Asm::InstID::SUB, Asm::param_reg(Asm::RegID::ESP), Asm::param_imm(-d, 4));
 		else
-			list->add2(Asm::INST_SUB, Asm::param_reg(Asm::REG_ESP), Asm::param_imm(-d, 1));
+			list->add2(Asm::InstID::SUB, Asm::param_reg(Asm::RegID::ESP), Asm::param_imm(-d, 1));
 	}
 }
 
@@ -69,14 +69,14 @@ void try_init_global_var(const Class *type, char* g_var, SyntaxTree *ps) {
 	}
 	typedef void init_func(void *);
 	//msg_write("global init: " + v.type->name);
-	init_func *ff = (init_func*)cf->address;
+	auto ff = (init_func*)(int_p)cf->address;
 	if (ff)
 		ff(g_var);
 }
 
 void init_all_global_objects(SyntaxTree *ps, const Class *c) {
 	for (auto *v: weak(c->static_variables))
-		if (!v->is_extern)
+		if (!v->is_extern())
 			try_init_global_var(v->type, (char*)v->memory, ps);
 	for (auto *cc: weak(c->classes))
 		init_all_global_objects(ps, cc);
@@ -106,38 +106,54 @@ void* get_nice_memory(int64 size, bool executable, Script *script) {
 		msg_write("get nice...");
 
 #if defined(OS_WINDOWS) || defined(OS_MINGW)
-	mem = (char*)VirtualAlloc(nullptr, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	int prot = PAGE_READWRITE;
+	if (executable) {
+		prot = PAGE_EXECUTE_READWRITE;
+	}
 #else
-
 	int prot = PROT_READ | PROT_WRITE;
 	int flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE;
 	if (executable) {
 		prot |= PROT_EXEC;
 		flags |= MAP_EXECUTABLE;
 	}
+#endif
 
 	// try in 32bit distance from current opcode
 	for (int i=0; i<10000; i++) {
 		void *addr0 = get_nice_random_addr();
+#if defined(OS_WINDOWS) || defined(OS_MINGW)
+		mem = (char *)VirtualAlloc(addr0, size, MEM_COMMIT | MEM_RESERVE, prot);
+#else
 		//opcode = (char*)mmap(addr0, max_opcode, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED | MAP_ANONYMOUS | MAP_EXECUTABLE | MAP_32BIT, -1, 0);
 		mem = (char*)mmap(addr0, size, prot, flags, -1, 0);
-		if ((int_p)mem != -1) {
+		if ((int_p)mem == -1)
+			mem = nullptr;
+#endif
+
+		if (mem) {
 			if (config.verbose)
 				printf("%d  %p  ->  %p\n", i, addr0, mem);
 			if (labs((int_p)mem - (int_p)addr0) < 2000000000)
 				return mem;
 			//munmap(mem, size);
-			if (config.verbose)
+			//if (config.verbose)
 				msg_write("...try again");
 		}
 		if (i > 5000) {
+#if defined(OS_WINDOWS) || defined(OS_MINGW)
+#else
 			prot |= PROT_EXEC;
 			flags |= MAP_EXECUTABLE | MAP_FIXED;
+#endif
 		}
 	}
 	//script->do_error(format("och, can't allocate %dkb memory in a usable address range", size/1024));
 
 	// no?...ok, try anywhere
+#if defined(OS_WINDOWS) || defined(OS_MINGW)
+	mem = (char*)VirtualAlloc(nullptr, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+#else
 	mem = (char*)mmap(nullptr, size, prot, flags, -1, 0);
 	if ((int_p)mem == -1)
 		mem = nullptr;
@@ -217,7 +233,7 @@ void Script::update_constant_locations() {
 
 void Script::_map_global_variables_to_memory(char *mem, int &offset, char *address, const Class *name_space) {
 	for (auto *v: weak(name_space->static_variables)) {
-		if (v->is_extern) {
+		if (v->is_extern()) {
 			v->memory = get_external_link(v->cname(name_space, name_space->owner->base_class));
 			if (!v->memory)
 				do_error_link(format("external variable '%s' was not linked", v->cname(name_space, name_space->owner->base_class)));
@@ -255,7 +271,7 @@ void Script::CompileOsEntryPoint() {
 			do_error("os entry point: no 'void main()' found");
 
 	// call
-	Asm::add_instruction(opcode, opcode_size, Asm::INST_CALL, Asm::param_imm(0, 4));
+	Asm::add_instruction(opcode, opcode_size, Asm::InstID::CALL, Asm::param_imm(0, 4));
 	TaskReturnOffset = opcode_size;
 	OCORA = Asm::OCParam;
 	align_opcode();
@@ -356,11 +372,11 @@ void Script::LinkOsEntryPoint() {
 	if (!f)
 		do_error_internal("os entry point missing...");
 
-	int lll = (int_p)f->address - syntax->asm_meta_info->code_origin - TaskReturnOffset;
+	int64 lll = f->address - syntax->asm_meta_info->code_origin - TaskReturnOffset;
 	//printf("insert   %d  an %d\n", lll, OCORA);
 	//msg_write(lll);
 	//msg_write(i2h(lll,4));
-	*(int*)&opcode[OCORA] = lll;
+	*(int*)&opcode[OCORA] = (int)lll;
 }
 
 bool find_and_replace(char *opcode, int opcode_size, char *pattern, int size, char *insert) {
@@ -422,11 +438,11 @@ void import_includes(Script *s) {
 
 void Script::link_functions() {
 	for (Asm::WantedLabel &l: functions_to_link) {
-		string name = l.name.substr(10, -1);
+		string name = l.name.sub(10);
 		bool found = false;
 		for (Function *f: syntax->functions)
 			if (f->name == name) {
-				*(int*)&opcode[l.pos] = (int_p)f->address - (syntax->asm_meta_info->code_origin + l.pos + 4);
+				*(int*)&opcode[l.pos] = (int)(f->address - (syntax->asm_meta_info->code_origin + l.pos + 4));
 				found = true;
 				break;
 			}
@@ -435,7 +451,7 @@ void Script::link_functions() {
 	}
 	for (int n: function_vars_to_link) {
 		int64 p = (n + 0xefef0000);
-		int64 q = (int_p)syntax->functions[n]->address;
+		int64 q = syntax->functions[n]->address;
 		if (!find_and_replace(opcode, opcode_size, (char*)&p, config.pointer_size, (char*)&q))
 			do_error_link("could not link function as variable: " + syntax->functions[n]->signature());
 	}
@@ -502,7 +518,7 @@ void parse_magic_linker_string(SyntaxTree *s) {
 					continue;
 				if (x[0] == '\t') {
 					if (d and x.find(":")) {
-						auto y = x.substr(1, -1).explode(":");
+						auto y = x.sub(1).explode(":");
 						link_external(y[0], d->get_symbol(y[1], s->script));
 					}
 				} else {
@@ -512,6 +528,66 @@ void parse_magic_linker_string(SyntaxTree *s) {
 		}
 
 }
+
+
+
+#ifdef OS_WINDOWS
+
+// https://pmeerw.net/blog/programming/RtlAddFunctionTable.html
+
+typedef union _UNWIND_CODE {
+	struct {
+		uint8_t CodeOffset;
+		uint8_t UnwindOp : 4;
+		uint8_t OpInfo : 4;
+	};
+	USHORT FrameOffset;
+} UNWIND_CODE;
+
+typedef struct _UNWIND_INFO {
+	uint8_t Version : 3;
+	uint8_t Flags : 5;
+	uint8_t SizeOfProlog;
+	uint8_t CountOfCodes;
+	uint8_t FrameRegister : 4;
+	uint8_t FrameOffset : 4;
+	UNWIND_CODE UnwindCode[1];
+	/*	UNWIND_CODE MoreUnwindCode[((CountOfCodes + 1) & ~1) - 1];
+	 *	OPTIONAL ULONG ExceptionHandler;
+	 *	OPTIONAL ULONG ExceptionData[]; */
+} UNWIND_INFO;
+
+// very experimental
+void register_functions(Script* s) {
+	int nf = s->functions().num;
+	RUNTIME_FUNCTION* function_table = new RUNTIME_FUNCTION[nf];
+	UNWIND_INFO* unwind_info = new UNWIND_INFO[nf];
+	foreachi (auto* f, s->functions(), i) {
+		unwind_info[i].Version = 1;
+		unwind_info[i].Flags = UNW_FLAG_EHANDLER;
+		unwind_info[i].SizeOfProlog = 0;
+		unwind_info[i].CountOfCodes = 0;
+		unwind_info[i].FrameRegister = 0;
+		unwind_info[i].FrameOffset = 0;
+		*(DWORD*)&unwind_info[i].UnwindCode = 0;
+
+		function_table[i].BeginAddress = (int_p)f->block->_start - (int_p)s->opcode;
+		function_table[i].EndAddress = (int_p)f->block->_end - (int_p)s->opcode;
+		function_table[i].UnwindInfoAddress = (int_p)&unwind_info[i] - (int_p)s->opcode;
+	}
+	RtlAddFunctionTable(function_table, nf, (int_p)s->opcode);
+
+
+	if (false) {
+		DWORD64 dyn_base = 0;
+		auto q = RtlLookupFunctionEntry((DWORD64)&register_functions, &dyn_base, NULL);
+		printf("lookup 'reg_func' %p %llx\n", q, dyn_base); // no function table entry
+		q = RtlLookupFunctionEntry(s->functions()[0]->address, &dyn_base, NULL);
+		printf("lookup 'f[0]' %p %llx\n", q, dyn_base); // no function table entry
+		fflush(stdout);
+	}
+}
+#endif
 
 // generate opcode
 void Script::compile() {
@@ -583,6 +659,11 @@ void Script::compile() {
 	}
 	if (config.allow_output_stage("dasm"))
 		msg_write(Asm::disassemble(opcode, opcode_size));
+
+
+#ifdef OS_WINDOWS
+	register_functions(this);
+#endif
 }
 
 };

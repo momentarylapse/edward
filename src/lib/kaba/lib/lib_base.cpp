@@ -1,7 +1,7 @@
 #include "../kaba.h"
-#include "common.h"
-#include "exception.h"
-#include "dynamic.h"
+#include "lib.h"
+#include "../dynamic/exception.h"
+#include "../dynamic/dynamic.h"
 #include "../../file/file.h"
 #include <algorithm>
 #include <math.h>
@@ -15,6 +15,7 @@ extern const Class *TypeSharedPointer;
 const Class *TypeAbstractList;
 const Class *TypeAbstractDict;
 const Class *TypeAbstractTuple;
+extern const Class *TypeStringAutoCast;
 extern const Class *TypeDictBase;
 extern const Class *TypeFloat;
 extern const Class *TypePointerList;
@@ -44,8 +45,8 @@ void _cdecl kaba_print(const string &str)
 {	printf("%s%s", str.c_str(), kaba_print_postfix.c_str()); fflush(stdout);	}
 void _cdecl kaba_cstringout(char *str)
 {	kaba_print(str);	}
-string _cdecl kaba_binary(const char *p, int length)
-{	return string(p, length);	}
+bytes _cdecl kaba_binary(const char *p, int length)
+{	return bytes(p, length);	}
 int _cdecl _Float2Int(float f)
 {	return (int)f;	}
 double _cdecl _Float2Float64(float f)
@@ -88,6 +89,10 @@ static int kaba_int_ret() {
 	return 2001;
 }
 
+static void kaba_xxx(int a, int b, int c, int d, int e, int f, int g, int h) {
+	msg_write(format("xxx  %d %d %d %d %d %d %d %d", a, b, c, d, e, f, g, h));
+}
+
 static int extern_variable1 = 13;
 
 
@@ -123,6 +128,9 @@ public:
 	}
 	void __adds__(const Array<string> &o) {
 		append(o);
+	}
+	string str() const {
+		return sa2s(*this);
 	}
 };
 
@@ -161,13 +169,16 @@ string kaba_char_repr(char c) {
 }
 
 
-string kaba_string_format(const string &s, const string &fmt) {
-	try {
-		return _xf_str_<const string&>(fmt + "s", s);
-	} catch(::Exception &e) {
-		return "{ERROR: " + e.message() + "}";
+class KabaString : public string {
+public:
+	string format(const string& fmt) const {
+		try {
+			return _xf_str_<const string&>(fmt + "s", *this);
+		} catch (::Exception& e) {
+			return "{ERROR: " + e.message() + "}";
+		}
 	}
-}
+};
 
 
 
@@ -201,6 +212,10 @@ public:
 	Array<bool> _cdecl ne2(bool x)	IMPLEMENT_OP2(!=, bool, bool)
 
 	//Array<bool> _cdecl _not(BoolList &b)	IMPLEMENT_OP(!, bool, bool)
+
+	string str() const {
+		return ba2s(*this);
+	}
 };
 
 template<class T>
@@ -231,8 +246,9 @@ T list_sum(const Array<T> &a) {
 
 class IntList : public Array<int> {
 public:
-	void _cdecl sort()
-	{	std::sort((int*)data, (int*)data + num);	}
+	void _cdecl sort() {
+		std::sort((int*)data, (int*)data + num);
+	}
 	void _cdecl unique() {
 		int ndiff = 0;
 		int i0 = 1;
@@ -251,6 +267,9 @@ public:
 			if ((*this)[i] == v)
 				return true;
 		return false;
+	}
+	string str() const {
+		return ia2s(*this);
 	}
 	
 	// a += b
@@ -306,8 +325,13 @@ public:
 		return r;
 	}
 
-	void _cdecl sort()
-	{	std::sort((float*)data, (float*)data + num);	}
+	void _cdecl sort() {
+		std::sort((float*)data, (float*)data + num);
+	}
+
+	string str() const {
+		return fa2s(*this);
+	}
 	
 	// a += b
 	void _cdecl iadd(FloatList &b)	IMPLEMENT_IOP(+=, float)
@@ -486,6 +510,7 @@ void SIAddPackageBase() {
 	TypeCharPs      = add_type_p(TypeChar, Flags::SILENT);
 	TypeCString     = add_type_a(TypeChar, 256, "cstring");	// cstring := char[256]
 	TypeString      = add_type_l(TypeChar, "string");	// string := char[]
+	TypeStringAutoCast = add_type("-string-auto-cast-", config.super_array_size);	// string := char[]
 	TypeStringList  = add_type_l(TypeString);
 
 	TypeIntDict     = add_type_d(TypeInt);
@@ -711,13 +736,13 @@ void SIAddPackageBase() {
 		class_add_funcx("utf8_to_utf32", TypeIntList, &string::utf8_to_utf32, Flags::PURE);
 		class_add_funcx("utf8_length", TypeInt, &string::utf8len, Flags::PURE);
 		class_add_funcx(IDENTIFIER_FUNC_REPR, TypeString, &string::repr, Flags::PURE);
-		class_add_funcx("format", TypeString, &kaba_string_format, Flags::PURE);
+		class_add_funcx("format", TypeString, &KabaString::format, Flags::PURE);
 			func_add_param("fmt", TypeString);
 
 
 
 	add_class(TypeBoolList);
-		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &ba2s, Flags::PURE);
+		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &BoolList::str, Flags::PURE);
 		class_add_func("__and__", TypeBoolList, mf(&BoolList::_and), Flags::PURE);
 			func_add_param("other", TypeBoolList);
 		class_add_func("__or__", TypeBoolList, mf(&BoolList::_or), Flags::PURE);
@@ -738,7 +763,7 @@ void SIAddPackageBase() {
 	
 	
 	add_class(TypeIntList);
-		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &ia2s, Flags::PURE);
+		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &IntList::str, Flags::PURE);
 		class_add_func("sort", TypeVoid, mf(&IntList::sort));
 		class_add_func("unique", TypeVoid, mf(&IntList::unique));
 		class_add_funcx("sum", TypeInt, &list_sum<int>, Flags::PURE);
@@ -802,7 +827,7 @@ void SIAddPackageBase() {
 			func_add_param("other", TypeInt);
 
 	add_class(TypeFloatList);
-		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &fa2s, Flags::PURE);
+		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &FloatList::str, Flags::PURE);
 		class_add_func("sort", TypeVoid, mf(&FloatList::sort));
 		class_add_funcx("sum", TypeFloat32, &list_sum<float>, Flags::PURE);
 		class_add_func("sum2", TypeFloat32, mf(&FloatList::sum2), Flags::PURE);
@@ -885,7 +910,7 @@ void SIAddPackageBase() {
 			func_add_param("o", TypeStringList);
 		class_add_funcx("__adds__", TypeVoid, &StringList::__adds__);
 			func_add_param("o", TypeStringList);
-		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &sa2s, Flags::PURE);
+		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &StringList::str, Flags::PURE);
 
 
 	// constants
@@ -916,7 +941,7 @@ void SIAddPackageBase() {
 	/*add_func("cprint", TypeVoid, (void*)&_cstringout, Flags::STATIC);
 		func_add_param("str", TypeCString);*/
 	add_func("print", TypeVoid, (void*)&kaba_print, Flags::STATIC);
-		func_add_param("str", TypeString);
+		func_add_param("str", TypeStringAutoCast);//, (Flags)((int)Flags::CONST | (int)Flags::AUTO_CAST));
 	add_ext_var("_print_postfix", TypeString, &kaba_print_postfix);
 	add_func("binary", TypeString, (void*)&kaba_binary, Flags::STATIC);
 		func_add_param("p", TypePointer);
@@ -935,6 +960,15 @@ void SIAddPackageBase() {
 	add_func("_call_float", TypeVoid, (void*)&_x_call_float, Flags::STATIC);
 	add_func("_float_ret", TypeFloat32, (void*)&kaba_float_ret, Flags::STATIC);
 	add_func("_int_ret", TypeInt, (void*)&kaba_int_ret, Flags::STATIC);
+	add_func("_xxx", TypeVoid, (void*)&kaba_xxx, Flags::STATIC);
+		func_add_param("a", TypeInt);
+		func_add_param("b", TypeInt);
+		func_add_param("c", TypeInt);
+		func_add_param("d", TypeInt);
+		func_add_param("e", TypeInt);
+		func_add_param("f", TypeInt);
+		func_add_param("g", TypeInt);
+		func_add_param("h", TypeInt);
 	add_ext_var("_extern_variable", TypeInt, &extern_variable1);
 }
 

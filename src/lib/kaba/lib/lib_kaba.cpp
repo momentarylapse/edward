@@ -1,7 +1,7 @@
 #include "../kaba.h"
-#include "common.h"
-#include "exception.h"
-#include "dynamic.h"
+#include "lib.h"
+#include "../dynamic/exception.h"
+#include "../dynamic/dynamic.h"
 
 
 namespace kaba {
@@ -35,6 +35,20 @@ void show_func(Function *f) {
 	f->show("");
 	config.verbose = false;
 }
+
+class ClassX : public Class {
+public:
+	string repr() const {
+		return class_repr(this);
+	}
+};
+
+class FunctionX : public Function {
+public:
+	string repr() const {
+		return func_repr(this);
+	}
+};
 
 void SIAddPackageKaba() {
 	add_package("kaba");
@@ -100,7 +114,7 @@ void SIAddPackageKaba() {
 		class_add_funcx("long_name", TypeString, &Class::long_name, Flags::PURE);
 		class_add_funcx("cname", TypeString, &Class::cname, Flags::PURE);
 			func_add_param("ns", TypeClassP);
-		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &class_repr, Flags::PURE);
+		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &ClassX::repr, Flags::PURE);
 
 	add_class(TypeClassP);
 		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &class_repr, Flags::PURE);
@@ -127,14 +141,15 @@ void SIAddPackageKaba() {
 		class_add_elementx("virtual_index", TypeInt, &Function::virtual_index);
 		class_add_elementx("inline_index", TypeInt, &Function::inline_no);
 		class_add_elementx("code", TypeFunctionCodeP, &Function::address);
-		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &func_repr, Flags::PURE);
+		class_add_funcx(IDENTIFIER_FUNC_STR, TypeString, &FunctionX::repr, Flags::PURE);
 
 	//add_class(TypeFunctionP);
 
 	add_class(TypeVariable);
 		class_add_elementx("name", TypeString, &Variable::name);
 		class_add_elementx("type", TypeClassP, &Variable::type);
-		class_add_elementx("is_const", TypeBool, &Variable::is_const);
+		class_add_funcx("is_const", TypeBool, &Variable::is_const);
+		class_add_funcx("is_extern", TypeBool, &Variable::is_extern);
 		
 	add_class(TypeConstant);
 		class_add_elementx("name", TypeString, &Constant::name);

@@ -1,5 +1,4 @@
 #include "../kaba.h"
-#include "../lib/common.h"
 #include "Parser.h"
 #include "../asm/asm.h"
 #include "../../file/file.h"
@@ -152,15 +151,15 @@ shared<Node> SyntaxTree::add_node_operator_by_inline(InlineID inline_index, cons
 
 
 shared<Node> SyntaxTree::add_node_local(Variable *v, const Class *type) {
-	return new Node(NodeKind::VAR_LOCAL, (int_p)v, type, v->is_const);
+	return new Node(NodeKind::VAR_LOCAL, (int_p)v, type, v->is_const());
 }
 
 shared<Node> SyntaxTree::add_node_local(Variable *v) {
-	return new Node(NodeKind::VAR_LOCAL, (int_p)v, v->type, v->is_const);
+	return new Node(NodeKind::VAR_LOCAL, (int_p)v, v->type, v->is_const());
 }
 
 shared<Node> SyntaxTree::add_node_global(Variable *v) {
-	return new Node(NodeKind::VAR_GLOBAL, (int_p)v, v->type, v->is_const);
+	return new Node(NodeKind::VAR_GLOBAL, (int_p)v, v->type, v->is_const());
 }
 
 shared<Node> SyntaxTree::add_node_parray(shared<Node> p, shared<Node> index, const Class *type) {
@@ -1181,47 +1180,49 @@ shared<Node> SyntaxTree::conv_func_inline(shared<Node> n) {
 }
 
 
-void MapLVSX86Return(Function *f) {
-	if (f->literal_return_type->uses_return_by_memory()) {
-		foreachi(auto v, f->var, i)
-			if (v->name == IDENTIFIER_RETURN_VAR) {
-				v->_offset = f->_param_size;
-				f->_param_size += 4;
-			}
-	}
+void MapLVSX86Return(Function *f, int64 &stack_offset) {
+	foreachi (auto v, f->var, i)
+		if (v->name == IDENTIFIER_RETURN_VAR) {
+			v->_offset = stack_offset;
+			stack_offset += config.pointer_size;
+		}
 }
 
-void MapLVSX86Self(Function *f) {
-	if (!f->is_static()) {
-		foreachi(auto v, f->var, i)
-			if (v->name == IDENTIFIER_SELF) {
-				v->_offset = f->_param_size;
-				f->_param_size += 4;
-			}
-	}
+void MapLVSX86Self(Function *f, int64 &stack_offset) {
+	foreachi (auto v, f->var, i)
+		if (v->name == IDENTIFIER_SELF) {
+			v->_offset = stack_offset;
+			stack_offset += config.pointer_size;
+		}
 }
 
 void SyntaxTree::map_local_variables_to_stack() {
 	for (Function *f: functions) {
-		f->_param_size = 2 * config.pointer_size; // space for return value and eBP
+
 		if (config.instruction_set == Asm::InstructionSet::X86) {
 			f->_var_size = 0;
+			int64 stack_offset = 2 * config.pointer_size; // space for eIP and eBP
+			// offsets to stack pointer (for push parameters)
 
-			if (config.abi == Abi::WINDOWS_32) {
+			if (config.abi == Abi::X86_WINDOWS) {
 				// map "self" to the VERY first parameter
-				MapLVSX86Self(f);
+				if (!f->is_static())
+					MapLVSX86Self(f, stack_offset);
 
 				// map "-return-" to the first parameter
-				MapLVSX86Return(f);
+				if (f->literal_return_type->uses_return_by_memory())
+					MapLVSX86Return(f, stack_offset);
 			} else {
 				// map "-return-" to the VERY first parameter
-				MapLVSX86Return(f);
+				if (f->literal_return_type->uses_return_by_memory())
+					MapLVSX86Return(f, stack_offset);
 
 				// map "self" to the first parameter
-				MapLVSX86Self(f);
+				if (!f->is_static())
+					MapLVSX86Self(f, stack_offset);
 			}
 
-			foreachi(auto v, f->var, i) {
+			foreachi (auto v, f->var, i) {
 				if (!f->is_static() and (v->name == IDENTIFIER_SELF))
 					continue;
 				if (v->name == IDENTIFIER_RETURN_VAR)
@@ -1229,8 +1230,8 @@ void SyntaxTree::map_local_variables_to_stack() {
 				int s = mem_align(v->type->size, 4);
 				if (i < f->num_params) {
 					// parameters
-					v->_offset = f->_param_size;
-					f->_param_size += s;
+					v->_offset = stack_offset;
+					stack_offset += s;
 				} else {
 					// "real" local variables
 					v->_offset = - f->_var_size - s;
@@ -1239,16 +1240,48 @@ void SyntaxTree::map_local_variables_to_stack() {
 			}
 		} else if (config.instruction_set == Asm::InstructionSet::AMD64) {
 			f->_var_size = 0;
+			int64 stack_offset = 2 * config.pointer_size; // space for rIP and rBP
+			// offsets to stack pointer (for push parameters)
 
-			foreachi(auto v, f->var, i) {
-				long long s = mem_align(v->type->size, 4);
-				v->_offset = - f->_var_size - s;
-				f->_var_size += s;
+			if (config.abi == Abi::AMD64_WINDOWS) {
+
+				// map "self" to the VERY first parameter
+				if (!f->is_static())
+					MapLVSX86Self(f, stack_offset);
+
+				// map "-return-" to the first parameter
+				if (f->literal_return_type->uses_return_by_memory())
+					MapLVSX86Return(f, stack_offset);
+
+				foreachi(auto v, f->var, i) {
+					if (!f->is_static() and (v->name == IDENTIFIER_SELF))
+						continue;
+					if (v->name == IDENTIFIER_RETURN_VAR)
+						continue;
+					if (i < f->num_params) {
+						// parameters
+						int s = 8;
+						v->_offset = stack_offset;
+						stack_offset += s;
+					} else {
+						// "real" local variables
+						int64 s = mem_align(v->type->size, 4);
+						f->_var_size += s;
+						v->_offset = -f->_var_size;
+					}
+				}
+			} else {
+				// TODO map push parameters...
+				foreachi (auto v, f->var, i) {
+					int64 s = mem_align(v->type->size, 4);
+					f->_var_size += s;
+					v->_offset = -f->_var_size;
+				}
 			}
 		} else if (config.instruction_set == Asm::InstructionSet::ARM) {
 			f->_var_size = 0;
 
-			foreachi(auto v, f->var, i) {
+			foreachi (auto v, f->var, i) {
 				int s = mem_align(v->type->size, 4);
 				v->_offset = f->_var_size;// + s;
 				f->_var_size += s;

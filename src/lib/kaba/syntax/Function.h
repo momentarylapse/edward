@@ -5,8 +5,7 @@
  *      Author: michi
  */
 
-#ifndef SRC_LIB_KABA_SYNTAX_FUNCTION_H_
-#define SRC_LIB_KABA_SYNTAX_FUNCTION_H_
+#pragma once
 
 #include "../../base/base.h"
 #include "../../base/pointer.h"
@@ -16,28 +15,11 @@ namespace kaba {
 class Class;
 class Block;
 class SyntaxTree;
+class Variable;
 enum class InlineID;
 enum class Flags;
 
 
-class Variable : public Sharable<Empty> {
-public:
-	Variable(const string &name, const Class *type);
-	~Variable();
-	const Class *type; // for creating instances
-	string name;
-	string long_name(const Class *ns) const;
-	string cname(const Class *ns, const Class *ns_obs) const;
-	int64 _offset; // for compilation
-	void *memory;
-	bool memory_owner;
-	bool is_extern;
-	bool is_const;
-	bool explicitly_constructed;
-	int _label;
-};
-
-// user defined functions
 class Function : public Sharable<Empty> {
 public:
 	Function(const string &name, const Class *return_type, const Class *name_space, Flags flags = Flags(0));
@@ -71,10 +53,10 @@ public:
 	bool needs_overriding;
 	int num_slightly_hidden_vars;
 	// for compilation...
-	int64 _var_size, _param_size;
+	int64 _var_size;
 	int _logical_line_no;
 	int _exp_no;
-	void *address;
+	int64 address;
 	void *address_preprocess;
 	int _label;
 	Variable *__get_var(const string &name) const;
@@ -88,7 +70,5 @@ public:
 };
 
 
-
 }
 
-#endif /* SRC_LIB_KABA_SYNTAX_FUNCTION_H_ */

@@ -503,11 +503,11 @@ bool vertex_in_tria(sCol &a, sCol &b, sCol &c, sCol &v, float &slope)
 
 void combine_contours(Array<Array<sCol> > &c, int ca, int ia, int cb, int ib)
 {
-	Array<sCol> temp = c[ca].sub(ia, c[ca].num - ia) + c[ca].sub(0, ia);
+	Array<sCol> temp = c[ca].sub_ref(ia, c[ca].num - ia) + c[ca].sub_ref(0, ia);
 	c[ca] = temp;
 
 	// copy one point
-	temp = c[cb].sub(ib, c[cb].num - ib) + c[cb].sub(0, ib + 1);
+	temp = c[cb].sub_ref(ib, c[cb].num - ib) + c[cb].sub_ref(0, ib + 1);
 	c[ca].append(temp);
 
 	c.erase(cb);
@@ -653,17 +653,17 @@ bool combine_polygons(Array<Array<sCol> > &c, int ia, int ib)
 	//msg_write(ia2s(equals));
 	Array<sCol> temp;
 	if (equals[0] < equals[2])
-		temp = c[ia].sub(0, equals[0] + 1);
+		temp = c[ia].sub_ref(0, equals[0] + 1);
 	else
 		temp = c[ia];
 	if (equals[1] > equals[3]){
-		temp += c[ib].sub(equals[1] + 1, -1);
-		temp += c[ib].sub(0, equals[3]);
+		temp += c[ib].sub_ref(equals[1] + 1);
+		temp += c[ib].sub_ref(0, equals[3]);
 	}else{
-		temp += c[ib].sub(1, c[ib].num - 2);
+		temp += c[ib].sub_ref(1, c[ib].num - 2);
 	}
 	if (equals[0] < equals[2])
-		temp += c[ia].sub(equals[2], -1);
+		temp += c[ia].sub_ref(equals[2]);
 	//msg_write(format("%d %d    %d", c[ia].num, c[ib].num, temp.num));
 	c[ia] = temp;
 	c.erase(ib);

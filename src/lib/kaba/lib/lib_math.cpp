@@ -3,8 +3,8 @@
 #include "../../base/map.h"
 #include "../kaba.h"
 #include "../../config.h"
-#include "common.h"
-#include "exception.h"
+#include "lib.h"
+#include "../dynamic/exception.h"
 
 #ifdef _X_USE_ALGEBRA_
 	#include "../../algebra/algebra.h"
@@ -148,10 +148,6 @@ T _cdecl x_abs(T x) {
 
 vector _quat_vec_mul(quaternion &a, vector &b)
 {	return a * b;	}
-color _col_mul_c(color &a, color &b)
-{	return a * b;	}
-color _col_mul_f(color &a, float b)
-{	return a * b;	}
 
 
 complex __complex_set(float x, float y)
@@ -170,6 +166,26 @@ complex op_complex_sub(complex &a, complex &b) { return a - b; }
 complex op_complex_mul(complex &a, complex &b) { return a * b; }
 complex op_complex_div(complex &a, complex &b) { return a / b; }
 
+class KabaComplex : public complex {
+public:
+	void assign(const complex &o) {
+		*(complex*)this = o;
+	}
+};
+
+class KabaVector : public vector {
+public:
+	void assign(const vector &o) {
+		*(vector*)this = o;
+	}
+};
+
+class KabaRect : public rect{
+public:
+	void assign(const rect& o) {
+		*(rect*)this = o;
+	}
+};
 
 
 #pragma GCC push_options
@@ -278,6 +294,22 @@ public:
 	}
 };
 
+class KabaColor : public color {
+public:
+	color mul_f(float f) const {
+		return *this * f;
+	}
+	color mul_c(const color &c) const {
+		return *this * c;
+	}
+	void init(float r, float g, float b, float a) {
+		*(color*)this = color(a, r, g, b);
+	}
+	void assign(const color &o) {
+		*(color*)this = o;
+	}
+};
+
 
 void SIAddPackageMath() {
 	add_package("math", Flags::AUTO_IMPORT);
@@ -312,12 +344,15 @@ void SIAddPackageMath() {
 	/*if (config.instruction_set == Asm::INSTRUCTION_SET_AMD64)*/ {
 		flags_set(((Class*)TypeFloat32)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
 		flags_set(((Class*)TypeFloat64)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
-		flags_set(((Class*)TypeComplex)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
-		flags_set(((Class*)TypeQuaternion)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
-		flags_set(((Class*)TypeVector)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
-		flags_set(((Class*)TypeColor)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
-		flags_set(((Class*)TypePlane)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
-		flags_set(((Class*)TypeRect)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+		if (config.abi == Abi::AMD64_GNU) {
+			// not on windows!
+			flags_set(((Class*)TypeComplex)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+			flags_set(((Class*)TypeQuaternion)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+			flags_set(((Class*)TypeVector)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+			flags_set(((Class*)TypeColor)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+			flags_set(((Class*)TypePlane)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+			flags_set(((Class*)TypeRect)->flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+		}
 	}
 
 
@@ -344,7 +379,7 @@ void SIAddPackageMath() {
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, (void*)__complex_set);
 			func_add_param("x", TypeFloat32);
 			func_add_param("y", TypeFloat32);	
-		add_operator(OperatorID::ASSIGN, TypeVoid, TypeComplex, TypeComplex, InlineID::CHUNK_ASSIGN);
+		add_operator(OperatorID::ASSIGN, TypeVoid, TypeComplex, TypeComplex, InlineID::CHUNK_ASSIGN, mf(&KabaComplex::assign));
 		add_operator(OperatorID::ADD, TypeComplex, TypeComplex, TypeComplex, InlineID::COMPLEX_ADD, (void*)op_complex_add);
 		add_operator(OperatorID::SUBTRACT, TypeComplex, TypeComplex, TypeComplex, InlineID::COMPLEX_SUBTRACT, (void*)op_complex_sub);
 		add_operator(OperatorID::MULTIPLY, TypeComplex, TypeComplex, TypeComplex, InlineID::COMPLEX_MULTIPLY, (void*)op_complex_mul);
@@ -442,7 +477,7 @@ void SIAddPackageMath() {
 		class_add_const("EX", TypeVector, (void*)&vector::EX);
 		class_add_const("EY", TypeVector, (void*)&vector::EY);
 		class_add_const("EZ", TypeVector, (void*)&vector::EZ);
-		add_operator(OperatorID::ASSIGN, TypeVoid, TypeVector, TypeVector, InlineID::CHUNK_ASSIGN);
+		add_operator(OperatorID::ASSIGN, TypeVoid, TypeVector, TypeVector, InlineID::CHUNK_ASSIGN, mf(&KabaVector::assign));
 		add_operator(OperatorID::EQUAL, TypeBool, TypeVector, TypeVector, InlineID::CHUNK_EQUAL);
 		add_operator(OperatorID::ADD, TypeVector, TypeVector, TypeVector, InlineID::VECTOR_ADD);
 		add_operator(OperatorID::SUBTRACT, TypeVector, TypeVector, TypeVector, InlineID::VECTOR_SUBTRACT);
@@ -525,7 +560,7 @@ void SIAddPackageMath() {
 			func_add_param("x2", TypeFloat32);
 			func_add_param("y1", TypeFloat32);
 			func_add_param("y2", TypeFloat32);
-		add_operator(OperatorID::ASSIGN, TypeVoid, TypeRect, TypeRect, InlineID::CHUNK_ASSIGN);
+		add_operator(OperatorID::ASSIGN, TypeVoid, TypeRect, TypeRect, InlineID::CHUNK_ASSIGN, mf(&KabaRect::assign));
 		add_operator(OperatorID::EQUAL, TypeBool, TypeRect, TypeRect, InlineID::CHUNK_EQUAL);
 	
 	add_class(TypeColor);
@@ -542,9 +577,9 @@ void SIAddPackageMath() {
 			func_add_param("o", TypeColor);
 		class_add_func("__subs__", TypeVoid, mf(&color::operator-=));
 			func_add_param("o", TypeColor);
-		class_add_func("__mul__", TypeColor, (void*)&_col_mul_f, Flags::PURE);
+		class_add_funcx("__mul__", TypeColor, &KabaColor::mul_f, Flags::PURE);
 			func_add_param("f", TypeFloat32);
-		class_add_func("__mul__", TypeColor, (void*)&_col_mul_c, Flags::PURE);
+		class_add_funcx("__mul__", TypeColor, &KabaColor::mul_c, Flags::PURE);
 			func_add_param("c", TypeColor);
 		class_add_funcx("hsb", TypeColor, &color::hsb, Flags::_STATIC__PURE);
 			func_add_param("h", TypeFloat32);
@@ -566,7 +601,7 @@ void SIAddPackageMath() {
 			func_add_param("g", TypeFloat32);
 			func_add_param("b", TypeFloat32);
 			func_add_param("a", TypeFloat32);
-		add_operator(OperatorID::ASSIGN, TypeVoid, TypeColor, TypeColor, InlineID::CHUNK_ASSIGN);
+		add_operator(OperatorID::ASSIGN, TypeVoid, TypeColor, TypeColor, InlineID::CHUNK_ASSIGN, mf(&KabaColor::assign));
 		add_operator(OperatorID::EQUAL, TypeBool, TypeColor, TypeColor, InlineID::CHUNK_EQUAL);
 		// color
 		class_add_const("WHITE",  TypeColor, (void*)&White);

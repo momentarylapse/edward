@@ -52,7 +52,7 @@ void WinTrySendByKeyCode(Window *win, int key_code) {
 
 static gboolean on_gtk_window_close(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
 	Window *win = (Window *)user_data;
-	Event e = Event("", "hui:close");
+	Event e = Event("", EventID::CLOSE);
 	if (win->_send_event_(&e))
 		return true;
 	win->on_close_request();
@@ -73,7 +73,7 @@ static gboolean on_gtk_window_focus(GtkWidget *widget, GdkEventFocus *event, gpo
 
 static void on_gtk_window_resize(GtkWidget *widget, gpointer user_data) {
 	Window *win = (Window *)user_data;
-	Event e = Event("", "hui:resize");
+	Event e = Event("", EventID::RESIZE);
 	win->_send_event_(&e);
 }
 
@@ -208,7 +208,7 @@ void Window::__delete__() {
 }
 
 void Window::request_destroy() {
-	if (parent) {
+	if (parent_window) {
 		gtk_dialog_response(GTK_DIALOG(window), GTK_RESPONSE_DELETE_EVENT);
 	}
 	requested_destroy = true;
@@ -353,11 +353,10 @@ void Window::show_cursor(bool show) {
 #endif
 }
 
-extern int GtkAreaMouseSet;
-extern int GtkAreaMouseSetX, GtkAreaMouseSetY;
 
 // relative to Interior
 void Window::set_cursor_pos(int x, int y) {
+#if 0
 	if (main_input_control) {
 		//msg_write(format("set cursor %d %d  ->  %d %d", (int)input.x, (int)input.y, x, y));
 		GtkAreaMouseSet = 2;
@@ -376,6 +375,7 @@ void Window::set_cursor_pos(int x, int y) {
 		::SetCursorPos(x + r.left, y + r.top);
 #endif
 	}
+#endif
 }
 
 void Window::set_maximized(bool maximized) {
@@ -432,7 +432,7 @@ void __GtkOnInfoBarResponse(GtkWidget *widget, int response, gpointer data) {
 
 	int index = response - 1234;
 	if (index >= 0 and index < __info_bar_responses.num) {
-		Event e = Event(__info_bar_responses[index], "hui:info");
+		Event e = Event(__info_bar_responses[index], EventID::INFO);
 		win->_send_event_(&e);
 	}
 	//win->infobar = nullptr;
@@ -457,7 +457,7 @@ void Window::set_info_text(const string &str, const Array<string> &options) {
 	string id = "default";
 	for (string &o: options)
 		if (o.head(3) == "id=")
-			id = o.substr(3, -1);
+			id = o.sub(3);
 
 	auto infobar = _get_info_bar(id);
 

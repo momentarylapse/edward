@@ -5,7 +5,6 @@
  *      Author: michi
  */
 #include "../kaba.h"
-#include "../lib/common.h"
 #include "../asm/asm.h"
 #include "../../file/file.h"
 #include <stdio.h>
@@ -13,31 +12,6 @@
 namespace kaba {
 
 string namespacify_rel(const string &name, const Class *name_space, const Class *observer_ns);
-
-Variable::Variable(const string &_name, const Class *_type) {
-	name = _name;
-	type = _type;
-	_offset = 0;
-	is_extern = false;
-	is_const = false;
-	explicitly_constructed = false;
-	memory = nullptr;
-	memory_owner = false;
-	_label = -1;
-}
-
-Variable::~Variable() {
-	if (memory_owner)
-		free(memory);
-}
-
-string Variable::long_name(const Class *ns) const {
-	return namespacify_rel(name, ns, nullptr);
-}
-
-string Variable::cname(const Class *ns, const Class *ns_obs) const {
-	return namespacify_rel(name, ns, ns_obs);
-}
 
 
 Function::Function(const string &_name, const Class *_return_type, const Class *_name_space, Flags _flags) {
@@ -48,15 +22,15 @@ Function::Function(const string &_name, const Class *_return_type, const Class *
 	literal_return_type = _return_type;
 	name_space = _name_space;
 	flags = _flags;
-	auto_declared = false;;
-	_param_size = 0;
+	auto_declared = false;
 	_var_size = 0;
 	_logical_line_no = -1;
 	_exp_no = -1;
 	inline_no = InlineID::NONE;
 	virtual_index = -1;
 	num_slightly_hidden_vars = 0;
-	address = address_preprocess = nullptr;
+	address = 0;
+	address_preprocess = nullptr;
 	_label = -1;
 	needs_overriding = false;
 }
@@ -159,7 +133,7 @@ void Function::update_parameters_after_parsing() {
 	// class function
 	if (!is_static()) {
 		if (!__get_var(IDENTIFIER_SELF))
-			block->add_var(IDENTIFIER_SELF, name_space, is_const());
+			block->add_var(IDENTIFIER_SELF, name_space, is_const() ? Flags::CONST : Flags::NONE);
 	}
 }
 
@@ -172,7 +146,7 @@ Function *Function::create_dummy_clone(const Class *_name_space) const {
 	f->literal_param_type = literal_param_type;
 	for (int i=0; i<num_params; i++) {
 		f->block->add_var(var[i]->name, var[i]->type);
-		f->var[i]->is_const = var[i]->is_const;
+		f->var[i]->flags = var[i]->flags;
 	}
 
 	f->virtual_index = virtual_index;
