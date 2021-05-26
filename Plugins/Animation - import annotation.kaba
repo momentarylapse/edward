@@ -3,32 +3,32 @@ use os
 use edward
 use helper
 
-int anim_index
+var anim_index: int
 
 
-quaternion xang(vector ang)
+func xang(ang: vector) -> quaternion
 	float l = ang.length()
 	vector ax = vector.EZ
 	if l > 0
 		ax = ang / l
 	return quaternion(ax, l)
 
-float pain(vector[] va, vector[] vb, vector ang)
-	let q = xang(ang)
+func pain(va: vector[], vb: vector[], ang: vector) -> float
+	var q = xang(ang)
 	float w = 0
 	for j in 0:len(va)
 		w += (va[j] - q*vb[j]).length_sqr()
 	return w
 
-quaternion import_torso(vector[] p)
+func import_torso(p: vector[]) -> quaternion
 	int[] index
 	vector[] va, vb
 	for b,i in model.bone
 		if b.parent == 0
 			index.add(i)
-			let a = p[i] - p[0]
+			var a = p[i] - p[0]
 			va.add(a / a.length())
-			let bb = model.bone[i].pos - model.bone[0].pos
+			var bb = model.bone[i].pos - model.bone[0].pos
 			vb.add(bb / bb.length())
 
 	vector ang = vector.0
@@ -42,7 +42,7 @@ quaternion import_torso(vector[] p)
 		ang -= da# * 0.000001
 	return xang(ang)
 
-void import_frame(vector[] p, int frame_no)
+func import_frame(p: vector[], frame_no: int)
 	vector[] pos
 	quaternion[] ang
 	for b,i in model.bone
@@ -64,7 +64,7 @@ void import_frame(vector[] p, int frame_no)
 #			float ff = dp.length() / bdpos.length()
 #			if ff < 1
 #				dp.z = sqrt(bdpos.length_sqr() - dp.length_sqr())
-			let q = rot_onto(bdpos, dp)
+			var q = rot_onto(bdpos, dp)
 			ang[ip] = q
 	ang[0] = import_torso(p)
 			
@@ -93,8 +93,8 @@ void import_frame(vector[] p, int frame_no)
 #	scale = ss / weight * 0.8
 #	print("scale: " + scale)
 
-void _import(string filename)
-	let f = Filesystem.open_text(filename)
+func _import(filename: string)
+	var f = Filesystem.open_text(filename)
 	string t
 	int num_bones, num_frames
 	f >> num_frames
@@ -107,7 +107,7 @@ void _import(string filename)
 	
 	matrix mat = matrix.rotation(vector(0.30,0,-0.15))
 	
-	let dlg = new Dialog("", 300, 30, edward, false)
+	var dlg = new Dialog("", 300, 30, edward, false)
 	dlg.add_progress_bar("", 0, 0, "progress")
 	dlg.show()
 	
@@ -130,7 +130,7 @@ void _import(string filename)
 	del f
 	del dlg
 
-void main()
+func main()
 	_import("/home/michi/Projekte/mocap/digest-smooth")
 	return
 	if not hui.file_dialog_open(edward, "", "", "*", "*")

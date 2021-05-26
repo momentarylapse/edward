@@ -2,16 +2,16 @@ use hui
 use os
 use edward
 
-string vecToJson(vector v)
+func vecToJson(v: vector) -> string
 	return "{{v.x}}, {{v.y}}, {{v.z}}"
 
-string col3ToJson(color c)
+func col3ToJson(c: color) -> string
 	return "{{c.r}}, {{c.g}}, {{c.b}}"
 
-string qToJson(quaternion q)
+func qToJson(q: quaternion) -> string
 	return "{{q.x}}, {{q.y}}, {{q.z}}, {{q.w}}"
 
-string materialToJson(Model.Material m)
+func materialToJson(m: Model.Material) -> string
 	string str
 	str += "	{\n"
 	str += "		'DbgColor' : 15658734,\n"
@@ -31,15 +31,15 @@ string materialToJson(Model.Material m)
 	str += "	}"
 	return str
 
-vector bone_anim_pos(Model.Move.Frame f, int i)
+func bone_anim_pos(f: Model.Move.Frame, i: int) -> vector
 	int parent = model.bone[i].parent
 	if parent >= 0
 		vector dpos = model.bone[i].pos - model.bone[parent].pos
-		let q = quaternion(f.skel_ang[parent])
+		var q = quaternion(f.skel_ang[parent])
 		return bone_anim_pos(f, parent) + q * dpos
 	return f.skel_dpos[i] + model.bone[i].pos
 
-string moveToJson(Model.Move m)
+func moveToJson(m: Model.Move) -> string
 	string str
 	str += "	{\n"
 	str += "		'name': '{{m.name}}',\n"
@@ -51,10 +51,10 @@ string moveToJson(Model.Move m)
 		str += "				'parent': -1,\n" #b.parent
 		str += "				'keys': [\n"
 		for f,j in m.frame
-			let q = quaternion(f.skel_ang[i])
-			let dpos = bone_anim_pos(f, i) # - b.pos
+			var q = quaternion(f.skel_ang[i])
+			var dpos = bone_anim_pos(f, i) # - b.pos
 #			if b.parent >= 0
-#				let dq = QuaternionRotationV(f.skel_ang[b.parent])
+#				var dq = QuaternionRotationV(f.skel_ang[b.parent])
 #				#dpos -= dq * bone_anim_pos(f, b.parent)
 #				q *= dq.bar()
 			print(dpos)
@@ -65,7 +65,7 @@ string moveToJson(Model.Move m)
 			str += "						'scl': [1,1,1]\n"
 			str += "					},\n"
 		# looping...
-		let q = quaternion(m.frame[0].skel_ang[i])
+		var q = quaternion(m.frame[0].skel_ang[i])
 		str += "					{\n"
 		str += "						'time': {{(m.frame.num / m.frames_per_sec_const)}},\n"
 		str += "						'pos': [0,0,0],\n"
@@ -81,7 +81,7 @@ string moveToJson(Model.Move m)
 	str += "	}"
 	return str
 
-string boneToJson(Model.Bone b)
+func boneToJson(b: Model.Bone) -> string
 	string str
 	str += "	{\n"
 	str += "		'parent': -1,\n" #b.parent
@@ -96,7 +96,7 @@ string boneToJson(Model.Bone b)
 	str += "	}"
 	return str
 
-void main()
+func main()
 	if !hui.file_dialog_save(edward, "Save JSON", "", "*.js", "*.js")
 		return
 	File *f = Filesystem.create_text(hui.filename)
@@ -105,58 +105,58 @@ void main()
 	for p in model.mesh.polygon
 		n_tria += p.side.num - 2
 	
-	string str = "{'metadata':{\n"
-	str += "	'formatVersion': 3,\n"
-	str += "	'generatedBy': 'Edward',\n"
-	str += "	'vertices': {{model.mesh.vertex.num}},\n"
-	str += "	'faces': {{n_tria}},\n"
-	str += "	'normals': {{(n_tria*3)}},\n"
-	str += "	'colors': 0,\n"
-	str += "	'uvs': 1,\n"
-	str += "	'morphTargets': 0,\n"
-	str += "	'bones': {{model.bone.num}}\n"
-	str += "},\n"
-	str += "'influencesPerVertex': 1,\n"
-	str += "'scale': 1.000,\n"
-#	str += "'materials': [\n"
-#	str += "	{\n"
-#	str += "		'DbgColor' : 15658734,\n"
-#	str += "		'DbgIndex' : 0,\n"
-#	str += "		'DbgName' : 'Michi 1',\n"
-#	str += "		'blending' : 'NormalBlending',\n"
-#	str += "		'colorAmbient' : [0.75, 0.75, 0.75],\n"
-#	str += "		'colorDiffuse' : [1.0, 1.0, 1.0],\n"
-#	str += "		'colorSpecular' : [0.5, 0.5, 0.5],\n"
-#	str += "		'depthTest' : true,\n"
-#	str += "		'depthWrite' : true,\n"
-#	str += "		'shading' : 'Phong',\n"
-#	str += "		'specularCoef' : 50,\n"
-#	str += "		'transparency' : 1.0,\n"
-#	str += "		'transparent' : false,\n"
-#	str += "		'vertexColors' : false\n"
-#	str += "	}],\n"
-	str += "'materials': [\n"
+	string s = "{'metadata':{\n"
+	s += "	'formatVersion': 3,\n"
+	s += "	'generatedBy': 'Edward',\n"
+	s += "	'vertices': {{model.mesh.vertex.num}},\n"
+	s += "	'faces': {{n_tria}},\n"
+	s += "	'normals': {{(n_tria*3)}},\n"
+	s += "	'colors': 0,\n"
+	s += "	'uvs': 1,\n"
+	s += "	'morphTargets': 0,\n"
+	s += "	'bones': {{model.bone.num}}\n"
+	s += "},\n"
+	s += "'influencesPerVertex': 1,\n"
+	s += "'scale': 1.000,\n"
+#	s += "'materials': [\n"
+#	s += "	{\n"
+#	s += "		'DbgColor' : 15658734,\n"
+#	s += "		'DbgIndex' : 0,\n"
+#	s += "		'DbgName' : 'Michi 1',\n"
+#	s += "		'blending' : 'NormalBlending',\n"
+#	s += "		'colorAmbient' : [0.75, 0.75, 0.75],\n"
+#	s += "		'colorDiffuse' : [1.0, 1.0, 1.0],\n"
+#	s += "		'colorSpecular' : [0.5, 0.5, 0.5],\n"
+#	s += "		'depthTest' : true,\n"
+#	s += "		'depthWrite' : true,\n"
+#	s += "		'shading' : 'Phong',\n"
+#	s += "		'specularCoef' : 50,\n"
+#	s += "		'transparency' : 1.0,\n"
+#	s += "		'transparent' : false,\n"
+#	s += "		'vertexColors' : false\n"
+#	s += "	}],\n"
+	s += "'materials': [\n"
 	for m,i in model.material
-		str += materialToJson(m)
+		s += materialToJson(m)
 		if i < model.material.num - 1
-			str += ",\n"
-	str += "],\n"
-	str += "'colors': [],\n"
-	str += "'vertices': [\n"
+			s += ",\n"
+	s += "],\n"
+	s += "'colors': [],\n"
+	s += "'vertices': [\n"
 	for v,i in model.mesh.vertex
-		str += "	" + vecToJson(v.pos)
+		s += "	" + vecToJson(v.pos)
 		if i < model.mesh.vertex.num - 1
-			str += ",\n"
-	str += "],\n"
-	str += "'uvs': [[0,0]],\n"
-	str += "'normals': [\n"
+			s += ",\n"
+	s += "],\n"
+	s += "'uvs': [[0,0]],\n"
+	s += "'normals': [\n"
 	for p,ip in model.mesh.polygon
 		for side,k in p.side
-			str += "	" + vecToJson(side.normal)
+			s += "	" + vecToJson(side.normal)
 			if (ip < model.mesh.polygon.num - 1) or (k < p.side.num - 1)
-				str += ",\n"
-	str += "],\n"
-	str += "'faces': [\n"
+				s += ",\n"
+	s += "],\n"
+	s += "'faces': [\n"
 	int n_normals = 0
 	for p,ip in model.mesh.polygon
 		for side,k in p.side
@@ -170,48 +170,48 @@ void main()
 			int nb = n_normals + _b
 			int nc = n_normals + _c
 			vector n = p.temp_normal
-			str += "	42, {{va}}, {{vb}}, {{vc}}, {{p.material}}, "
-			str += "0, 0, 0, "
-			str += "{{na}}, {{nb}}, {{nc}}"
+			s += "	42, {{va}}, {{vb}}, {{vc}}, {{p.material}}, "
+			s += "0, 0, 0, "
+			s += "{{na}}, {{nb}}, {{nc}}"
 			if (ip < model.mesh.polygon.num - 1) or (k < p.side.num - 1)
-				str += ",\n"
+				s += ",\n"
 		n_normals += p.side.num
-	str += "],\n"
-#	str += "'morphTargets': [\n"
+	s += "],\n"
+#	s += "'morphTargets': [\n"
 #	for int i, 0, model.Move.num
 #		str += moveToJson(model.Move[i])
 #		if i < model.Move.num - 1
 #			str += ",\n"
-#	str += "],\n"
-	str += "'bones': [\n"
+#	s += "],\n"
+	s += "'bones': [\n"
 	for b,i in model.bone
-		str += boneToJson(b)
+		s += boneToJson(b)
 		if i < model.bone.num - 1
-			str += ",\n"
-	str += "],\n"
-	str += "'skinIndices': ["
+			s += ",\n"
+	s += "],\n"
+	s += "'skinIndices': ["
 	for v,i in model.mesh.vertex
-		str += v.bone_index
+		s += str(v.bone_index)
 		if i < model.mesh.vertex.num - 1
-			str += ", "
-	str += "],\n"
-	str += "'skinWeights': ["
+			s += ", "
+	s += "],\n"
+	s += "'skinWeights': ["
 	for v,i in model.mesh.vertex
-		str += "1"
+		s += "1"
 		if i < model.mesh.vertex.num - 1
-			str += ", "
-	str += "],\n"
-	str += "'animations': [\n"
+			s += ", "
+	s += "],\n"
+	s += "'animations': [\n"
 	bool first_anim = true
 	for m,i in model.move
 		if len(m.frame) == 0
 			continue
 		if !first_anim
-			str += ",\n"
-		str += moveToJson(m)
+			s += ",\n"
+		s += moveToJson(m)
 		first_anim = false
-	str += "]\n"
-	str += "}"
-	str = str.replace("'", "\"")
-	f << str
+	s += "]\n"
+	s += "}"
+	s = s.replace("'", "\"")
+	f << s
 	del f

@@ -8,9 +8,9 @@ class NodeVectorSplit extends shader.Node
 		output.add([shader.TYPE_FLOAT, "y"])
 		output.add([shader.TYPE_FLOAT, "z"])
 	override const string code_pixel(out shader.BuilderContext c)
-		let tx = c.create_out(self, 0)
-		let ty = c.create_out(self, 1)
-		let tz = c.create_out(self, 2)
+		var tx = c.create_out(self, 0)
+		var ty = c.create_out(self, 1)
+		var tz = c.create_out(self, 2)
 		return "
 	float {{tx}} = {{c.value(self, 0)}}.x;
 	float {{ty}} = {{c.value(self, 0)}}.y;

@@ -1,19 +1,19 @@
 use edward
 
-const int MAX_LENGTH = 12
-const float BRANCH_PROB = 2.8
-const float BRANCH_FACTOR = 0.7
-const float BRANCH_ANGLE = 0.5
-const float DIR_RAND = 0.2
+const MAX_LENGTH = 12
+const BRANCH_PROB = 2.8
+const BRANCH_FACTOR = 0.7
+const BRANCH_ANGLE = 0.5
+const DIR_RAND = 0.2
 
-vector get_rotated(vector dir)
+func get_rotated(dir: vector) -> vector
 	vector v1 = vector.cross(dir, vector.EX).normalized()
 	vector v2 = vector.cross(dir, v1)
 	float w = rand(2 * pi)
 	vector bdir = (dir * 0.5 + cos(w) * v1 + sin(w) * v2).normalized()
 	return bdir
 
-void branch(vector pos0, vector dir0, int num, float radius, float length)
+func branch(pos0: vector, dir0: vector, num: int, radius: float, length: float)
 	vector dir = dir0
 	vector p = pos0
 	vector[] pos
@@ -34,9 +34,9 @@ void branch(vector pos0, vector dir0, int num, float radius, float length)
 	float[] r
 	r.add(radius)
 	r.add(0)
-	let g = new Geometry.CylinderComplex(pos, r, 5, 16, 0)
+	var g = new Geometry.CylinderComplex(pos, r, 5, 16, 0)
 	model.paste_geometry(g, 0)
 	del g
 
-void main()
+func main()
 	branch(vector.0, vector.EY, MAX_LENGTH, 5, 40)

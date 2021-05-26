@@ -1,6 +1,6 @@
 use edward
 
-void main()
+func main()
 	model.begin_action("test")
 	int n = model.mesh.vertex.num
 	model.add_vertex(vector(10,10,0), 0, -1)

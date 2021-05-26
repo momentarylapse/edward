@@ -1,15 +1,15 @@
 use edward
 
-const float D = 30.0
-const float RMAX = 200.0
+const D = 30.0
+const RMAX = 200.0
 
-float f(vector _p)
+func f(_p: vector) -> float
 	vector p = _p + vector(0.2,0.1,0)
 	vector d = p.normalized()
 	float r = 1 + abs(cos(d.x*pi*4) * 0.5 + cos(d.y*pi) * 0.5) + abs(cos(d.x*pi*8) * 0.2 + cos(d.y*pi*5) * 0.2)
 	return p.length() - r*20
 
-int single_p_from_mask(int mask)
+func single_p_from_mask(mask: int) -> int
 	if mask == 1+2+4
 		return 0
 	if mask == 1+8+16
@@ -22,7 +22,7 @@ int single_p_from_mask(int mask)
 	return -1
 
 # e list dependent!
-int some_p_from_mask(int mask)
+func some_p_from_mask(mask: int) -> int
 	if mask == 1+4+8+32
 		return 1 # 02|13
 	if mask == 2+4+8+16
@@ -32,8 +32,8 @@ int some_p_from_mask(int mask)
 	print("MASK: {{mask}}")
 	return -1
 
-void check_tetra(vector[] p, float[] ff, int[] i)
-	let e = [0,1, 0,2, 0,3, 1,2, 1,3, 2,3]
+func check_tetra(p: vector[], ff: float[], i: int[])
+	var e = [0,1, 0,2, 0,3, 1,2, 1,3, 2,3]
 	int mask = 0
 	int nv = len(model.mesh.vertex)
 	for k in 0:6
@@ -44,7 +44,7 @@ void check_tetra(vector[] p, float[] ff, int[] i)
 			mask += 1<<k
 	if len(model.mesh.vertex) == nv + 3
 		int ex = single_p_from_mask(mask)
-		let sig = [1.0, -1.0, 1.0, -1.0]
+		var sig = [1.0, -1.0, 1.0, -1.0]
 		if ff[i[ex]] * sig[ex] < 0
 			model.add_triangle(nv, nv+2, nv+1, 0)
 		else
@@ -60,7 +60,7 @@ void check_tetra(vector[] p, float[] ff, int[] i)
 			model.add_triangle(nv, nv+1, nv+2, 0)
 			model.add_triangle(nv+2, nv+1, nv+3, 0)
 
-void make_tetra(vector[] p, int[] i)
+func make_tetra(p: vector[], i: int[])
 	int nv = len(model.mesh.vertex)
 	for k in i
 		model.add_vertex(p[k], 0, 1)
@@ -71,20 +71,20 @@ void make_tetra(vector[] p, int[] i)
 	
 
 # process cube cell
-void check_cube(vector p)
+func check_cube(p: vector)
 	# cube corners + center
-	let q = [p, p + vector(D,0,0), p + vector(0,D,0), p + vector(D,D,0), p + vector(0,0,D), p + vector(D,0,D), p + vector(0,D,D), p + vector(D,D,D), p + vector(D,D,D)/2]
-	let ff = map(f, q)
+	var q = [p, p + vector(D,0,0), p + vector(0,D,0), p + vector(D,D,0), p + vector(0,0,D), p + vector(D,0,D), p + vector(0,D,D), p + vector(D,D,D), p + vector(D,D,D)/2]
+	var ff = map(f, q)
 	#if ff.min() * ff.max() > 0
 	#	return
 	
 	# bottom, top, front, back, left, right
-	let e = [0,1,2,8, 2,1,3,8,  5,4,6,8, 5,6,7,8,  1,0,4,8, 1,4,5,8,  2,3,6,8, 6,3,7,8,  0,2,4,8, 4,2,6,8,  3,1,5,8, 3,5,7,8]
+	var e = [0,1,2,8, 2,1,3,8,  5,4,6,8, 5,6,7,8,  1,0,4,8, 1,4,5,8,  2,3,6,8, 6,3,7,8,  0,2,4,8, 4,2,6,8,  3,1,5,8, 3,5,7,8]
 	for i in 0:12
 		check_tetra(q, ff, e[i*4:i*4+4])
 		#make_tetra(q, e[i*4:i*4+4])
 
-void main()
+func main()
 	int nv = len(model.mesh.vertex)
 	
 	model.begin_action("Iso Surface")

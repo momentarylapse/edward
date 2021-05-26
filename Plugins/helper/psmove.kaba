@@ -1,4 +1,4 @@
-const string KABA_LINK = "/usr/lib/libpsmoveapi.so
+const KABA_LINK = "/usr/lib/libpsmoveapi.so
 	_psmove_init:psmove_init
 	_psmove_count_connected:psmove_count_connected
 	_psmove_reinit:psmove_reinit
@@ -39,42 +39,42 @@ class PSMoveTracker
 class PSMoveFusion
 class PSMove
 
-extern int _psmove_count_connected()
-extern int _psmove_init(int version)
-extern void _psmove_reinit()
+func extern _psmove_count_connected() -> int
+func extern _psmove_init(version: int) -> int
+func extern _psmove_reinit()
 
-extern PSMove* _psmove_connect()
-extern PSMove* _psmove_connect_by_id(int i)
-extern int _psmove_connection_type(PSMove* p)
-extern void _psmove_disconnect(PSMove* move)
-extern char[0]* _psmove_get_serial(PSMove* p)
-extern int _psmove_pair(PSMove* move)
-extern void _psmove_set_leds(PSMove* p, char r, char g, char b)
-extern int _psmove_update_leds(PSMove* p)
-extern void _psmove_set_rumble(PSMove* p, char rumble)
-extern void _psmove_enable_orientation(PSMove* p, int m)
-extern int _psmove_has_orientation(PSMove* p)
-extern void _psmove_reset_orientation(PSMove* p)
-extern int _psmove_poll(PSMove* p)
-extern int _psmove_get_buttons(PSMove* p)
-extern int _psmove_get_battery(PSMove* p)
-extern int _psmove_get_trigger(PSMove* p)
-extern void _psmove_get_accelerometer_frame(PSMove *move, int frame, float *ax, float *ay, float *az)
-extern void _psmove_get_gyroscope_frame(PSMove *move, int frame, float *gx, float *gy, float *gz)
+func extern _psmove_connect() -> PSMove*
+func extern _psmove_connect_by_id(i: int) -> PSMove*
+func extern _psmove_connection_type(p: PSMove*) -> int
+func extern _psmove_disconnect(move: PSMove*)
+func extern _psmove_get_serial(p: PSMove*) -> char[0]*
+func extern _psmove_pair(move: PSMove*) -> int
+func extern _psmove_set_leds(p: PSMove*, r: char, g: char, b: char)
+func extern _psmove_update_leds(p: PSMove*) -> int
+func extern _psmove_set_rumble(p: PSMove*, rumble: char)
+func extern _psmove_enable_orientation(p: PSMove*, m: int)
+func extern _psmove_has_orientation(p: PSMove*) -> int
+func extern _psmove_reset_orientation(p: PSMove*)
+func extern _psmove_poll(p: PSMove*) -> int
+func extern _psmove_get_buttons(p: PSMove*) -> int
+func extern _psmove_get_battery(p: PSMove*) -> int
+func extern _psmove_get_trigger(p: PSMove*) -> int
+func extern _psmove_get_accelerometer_frame(move: PSMove*, frame: int, ax: float*, ay: float*, az: float*)
+func extern _psmove_get_gyroscope_frame(move: PSMove*, frame: int, gx: float*, gy: float*, gz: float*)
 # frame 1 = Frame_SecondHalf
 
-extern PSMoveTracker* _psmove_tracker_new()
-extern void _psmove_tracker_free(PSMoveTracker* tracker)
-extern void _psmove_tracker_set_mirror(PSMoveTracker* tracker, int m)
-extern void _psmove_tracker_set_exposure(PSMoveTracker* tracker, int m)
-extern int _psmove_tracker_enable(PSMoveTracker* tracker, PSMove* p)
-extern int _psmove_tracker_update(PSMoveTracker* tracker, PSMove* move)
-extern void _psmove_tracker_update_image(PSMoveTracker* tracker)
+func extern _psmove_tracker_new() -> PSMoveTracker*
+func extern _psmove_tracker_free(tracker: PSMoveTracker*)
+func extern _psmove_tracker_set_mirror(tracker: PSMoveTracker*, m: int)
+func extern _psmove_tracker_set_exposure(tracker: PSMoveTracker*, m: int)
+func extern _psmove_tracker_enable(tracker: PSMoveTracker*, p: PSMove*) -> int
+func extern _psmove_tracker_update(tracker: PSMoveTracker*, move: PSMove*) -> int
+func extern _psmove_tracker_update_image(tracker: PSMoveTracker*)
 
-extern PSMoveFusion* _psmove_fusion_new(PSMoveTracker* tracker, float a, float b)
-extern void _psmove_fusion_free(PSMoveFusion* fusion)
-extern void _psmove_fusion_get_position(PSMoveFusion *fusion, PSMove *psmove, float *x, float *y, float *z)
-extern matrix* _psmove_fusion_get_modelview_matrix(PSMoveFusion* fusion, PSMove* move)
+func extern _psmove_fusion_new(tracker: PSMoveTracker*, a: float, b: float) -> PSMoveFusion*
+func extern _psmove_fusion_free(fusion: PSMoveFusion*)
+func extern _psmove_fusion_get_position(fusion: PSMoveFusion*, psmove: PSMove*, x: float*, y: float*, z: float*)
+func extern _psmove_fusion_get_modelview_matrix(fusion: PSMoveFusion*, move: PSMove*) -> matrix*
 
 
 enum
@@ -89,30 +89,30 @@ enum
 	Btn_MOVE = 524288 # Move button, big front button
 	Btn_T = 1048576 # Trigger, on the back
 
-class PsMoveController
-	PSMove* psmove
-	vector pos, dpos, pos_last
-	vector acc, rot, mag
-	color col
-	quaternion ang, dang
-	float trigger, rumble
-	bool[8] button
-	PsMoveManager* manager
-	void __init__(PSMove *m, PsMoveManager man)
-		manager = &man
+class MyPSMoveController
+	var psmove: PSMove*
+	var pos, dpos, pos_last: vector
+	var acc, rot, mag: vector
+	var col: color
+	var ang, dang: quaternion
+	var trigger, rumble: float
+	var button: bool[8]
+	var manager: PsMoveManager*
+	func __init__(m: PSMove*, man: PsMoveManager*)
+		manager = man
 		psmove = m
 		_psmove_enable_orientation(m, 1)
 		if _psmove_has_orientation(m) == 0
 			print(" ERROR: no orientation")
 		while _psmove_tracker_enable(manager.tracker, m) != 2 # Tracker_CALIBRATED
 			pass
-		col = Black
+		col = color.BLACK
 		rumble = 0
 		trigger = 0
 		ang = quaternion.ID
 		dang = quaternion.ID
 
-	void update()
+	func update()
 		if !psmove
 			return
 
@@ -126,8 +126,8 @@ class PsMoveController
 		pos_last = pos
 
 		matrix *mat = _psmove_fusion_get_modelview_matrix(manager.fusion, psmove)
-		matrix s = matrix.scale(1,  1,  -1)
-		quaternion q = quaternion(s * *mat * s)
+		var s = matrix.scale(1,  1,  -1)
+		var q = quaternion(s * *mat * s)
 		dang = ang * q
 		ang = q.bar()
 		#ang = quaternion::rotation_m( *mat)
@@ -150,27 +150,25 @@ class PsMoveController
 		button[6] = ((_buttons & Btn_PS) != 0)
 		button[7] = ((_buttons & Btn_MOVE) != 0)
 
-	void reset_orientation()
+	func reset_orientation()
 		_psmove_reset_orientation(psmove)
 		ang = quaternion.ID
 
 class PsMoveManager
-	PSMoveTracker* tracker
-	PSMoveFusion* fusion
-	PsMoveController*[] psmoves
-	void __init__()
-		tracker = nil
-		fusion = nil
+	var tracker: PSMoveTracker* = nil
+	var fusion: PSMoveFusion* = nil
+	var psmoves: MyPSMoveController*[]
+	func __init__()
 		int vv = 262152 #4<<16 + 0<<8 + 8
 		if _psmove_init(vv) != 1
 			print("VERSION MISMATCH!")
-	void __delete()
+	func __delete()
 		psmoves.clear()
 		if fusion
 			_psmove_fusion_free(fusion)
 		if tracker
 			_psmove_tracker_free(tracker)
-	void connect()
+	func connect()
 		int n = _psmove_count_connected()
 		print("{{n}} found")
 		tracker = _psmove_tracker_new()
@@ -180,10 +178,10 @@ class PsMoveManager
 		for i in 0:n
 			print("- controller {{i}} -")
 			#let p = _psmove_connect()
-			let p = _psmove_connect_by_id(i)
-			psmoves.add(new PsMoveController(p, self))
+			var p = _psmove_connect_by_id(i)
+			psmoves.add(new MyPSMoveController(p, &self))
 
-	void update()
+	func update()
 		if !tracker
 			return
 		for m in psmoves
@@ -193,7 +191,7 @@ class PsMoveManager
 		_psmove_tracker_update(tracker, nil)
 
 
-void main()
+func main()
 	PsMoveManager m
 	m.connect()
 	

@@ -1,8 +1,8 @@
 use edward
 
-const int N = 10
+const N = 10
 
-void main()
+func main()
 	world.begin_action("CreateArmy")
 	for i in 0:N
 		for j in 0:N

@@ -1,8 +1,8 @@
 use edward
 
-const int n = 256
+const n = 256
 
-void main()
+func main()
 	float a = sqrt(n) * 2 * pi
 	
 	model.begin_action("Normals")

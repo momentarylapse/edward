@@ -4,42 +4,42 @@ use os
 #import x
 
 class Observable
-	int dummy
+	var dummy: int
 	
 class Observer
 	#virtual void OnUpdate(Observable o)
 
 class Data extends Observable
-	Path filename
-	int file_time
-	bool binary_file_format
-	int type
-	extern void begin_action(string name)
-	extern void end_action()
+	var filename: Path
+	var file_time: int
+	var binary_file_format: bool
+	var type: int
+	func extern begin_action(name: string)
+	func extern end_action()
 
 
 
 class MultiView
 
 	class ActionController
-		extern void start_action(MultiView.Window* win, vector m, int constraints)
-		extern void update_action()
-		extern void update_param(vector param)
-		extern void end_action(bool set)
-		vector pos
+		func extern start_action(win: MultiView.Window*, m: vector, constraints: int)
+		func extern update_action()
+		func extern update_param(param: vector)
+		func extern end_action(set: bool)
+		var pos: vector
 
 	class Window
-		quaternion local_ang
+		var local_ang: quaternion
 
 	class Camera
-		vector pos
-		quaternion ang
+		var pos: vector
+		var ang: quaternion
 
 	# "des Pudels Kern", don't change!!!!!!!
 	class SingleData
-		int view_stage
-		bool is_selected, m_delta, m_old, is_special
-		vector pos
+		var view_stage: int
+		var is_selected, m_delta, m_old, is_special: bool
+		var pos: vector
 		
 	enum
 		ACTION_SELECT
@@ -63,22 +63,22 @@ class MultiView
 		
 	#extern void on_mouse_move()
 	#extern void set_mouse_action(string name, int type, bool locked) #"ActionModelAnimationTransformBones", mouse_action, false);
-	ActionController* action_con
-	MultiView.Window* mouse_win
-	MultiView.Window* active_win
-	MultiView.Camera cam
-	extern void cam_move(vector dpos)
-	extern void cam_rotate(quaternion dq, bool cam_center)
-	extern void cam_zoom(float factor, bool mouse_rel)
+	var action_con: ActionController*
+	var mouse_win: MultiView.Window*
+	var active_win: MultiView.Window*
+	var cam: MultiView.Camera
+	func extern cam_move(dpos: vector)
+	func extern cam_rotate(dq: quaternion, cam_center: bool)
+	func extern cam_zoom(factor: float, mouse_rel: bool)
 
 
 
-const int TransparencyModeDefault = -1
-const int TransparencyModeNone = 0
-const int TransparencyModeFunctions = 1
-const int TransparencyModeColorKeyHard = 2
-const int TransparencyModeColorKeySmooth = 3
-const int TransparencyModeFactor = 4
+const TransparencyModeDefault = -1
+const TransparencyModeNone = 0
+const TransparencyModeFunctions = 1
+const TransparencyModeColorKeyHard = 2
+const TransparencyModeColorKeySmooth = 3
+const TransparencyModeFactor = 4
 
 # effects
 enum
@@ -90,47 +90,47 @@ enum
 
 class y
 	class Material
-		nix.Shader* shader
+		var shader: nix.Shader*
 	class Terrain
 	class Model
 
 
 
 class Model extends Data
-	const int MAX_TEXTURES = 8
-	const int MAX_POLY_VERTICES_PER_FACE = 16
-	const int MAX_POLY_FACES = 32
-	const int MAX_POLY_EDGES = 32 * 4
+	const MAX_TEXTURES = 8
+	const MAX_POLY_VERTICES_PER_FACE = 16
+	const MAX_POLY_FACES = 32
+	const MAX_POLY_EDGES = 32 * 4
 
 
 	class Material
-		Path filename
-		y.Material *material
-		int num_textures
-		Texture*[Model.MAX_TEXTURES] texture
-		string[Model.MAX_TEXTURES] texture_file
+		var filename: Path
+		var material: y.Material*
+		var num_textures: int
+		var texture: Texture*[Model.MAX_TEXTURES]
+		var texture_file: string[Model.MAX_TEXTURES]
 
-		bool user_transparency
-		int transparency_mode
-		int alpha_source, alpha_destination
-		float alpha_factor
-		bool alpha_z_buffer
+		var user_transparency: bool
+		var transparency_mode: int
+		var alpha_source, alpha_destination: int
+		var alpha_factor: float
+		var alpha_z_buffer: bool
 
-		bool user_color
-		color ambient
-		color diffuse
-		color specular
-		color emission
-		float shininess
-		void __assign__(Material other)
+		var user_color: bool
+		var ambient: color
+		var diffuse: color
+		var specular: color
+		var emission: color
+		var shininess: float
+		func __assign__(other: Material)
 
 	class Effect
-		int kind, surface, vertex
-		int size, speed, intensity
-		color[3] colors
-		bool inv_quad
-		string file
-		void __assign__(Effect other)
+		var kind, surface, vertex: int
+		var size, speed, intensity: int
+		var colors: color[3]
+		var inv_quad: bool
+		var file: string
+		func __assign__(other: Effect)
 			nil
 
 
@@ -138,71 +138,71 @@ class Model extends Data
 	class SkinVertexDummy extends MultiView.SingleData
 
 	class Ball extends MultiView.SingleData
-		int index
-		float radius
+		var index: int
+		var radius: float
 
 
 	# TODO: dynamical!
 	class Polyhedron extends MultiView.SingleData
 		class Face
-			int num_vertices
-			int[Model.MAX_POLY_VERTICES_PER_FACE] index
-			plane plane
-		int num_faces
-		Face[Model.MAX_POLY_FACES] face
-		int num_svertices
-		int[Model.MAX_POLY_FACES * Model.MAX_POLY_VERTICES_PER_FACE] sindex
+			var num_vertices: int
+			var index: int[Model.MAX_POLY_VERTICES_PER_FACE]
+			var plane: plane
+		var num_faces: int
+		var face: Face[Model.MAX_POLY_FACES]
+		var num_svertices: int
+		var sindex: int[Model.MAX_POLY_FACES * Model.MAX_POLY_VERTICES_PER_FACE]
 
 		# non redundant edge list!
-		int num_edges
-		int[Model.MAX_POLY_EDGES * 2] edge_index
+		var num_edges: int
+		var edge_index: int[Model.MAX_POLY_EDGES * 2]
 
 		# "topology"
-		bool[Model.MAX_POLY_EDGES * Model.MAX_POLY_FACES] edge_on_face # [edge * NumFaces + face]
-		int[Model.MAX_POLY_FACES * Model.MAX_POLY_FACES] faces_joining_edge # [face1 * NumFaces + face2]
+		var edge_on_face: bool[Model.MAX_POLY_EDGES * Model.MAX_POLY_FACES] # [edge * NumFaces + face]
+		var faces_joining_edge: int[Model.MAX_POLY_FACES * Model.MAX_POLY_FACES] # [face1 * NumFaces + face2]
 
 
 
 	class Triangle extends MultiView.SingleData
-		int[3] vertex
+		var vertex: int[3]
 		#int[3] edge
 		#int[3] edge_direction # which no of triangle in edge's list are we?
-		vector[Model.MAX_TEXTURES][3] skin_vertex
-		int[3] normal_index
-		vector[3] normal
-		vector temp_normal
-		bool normal_dirty
-		int material
+		var skin_vertex: vector[Model.MAX_TEXTURES][3]
+		var normal_index: int[3]
+		var normal: vector[3]
+		var temp_normal: vector
+		var normal_dirty: bool
+		var material: int
 
 
 	# triangles belonging to one material
 	class SubSkin
-		int num_textures # "read only" (updated automatically...)
+		var num_textures: int
 
 		# triangles
-		Triangle[] triangle
+		var triangle: Triangle[]
 
 
 	# geometry
 	class Skin
 		# general properties
-		int normal_mode_all
+		var normal_mode_all: int
 
 		# vertices
-		Geometry.Vertex[] vertex
+		var vertex: Geometry.Vertex[]
 
 		# sub skins
-		SubSkin[] sub
+		var sub: SubSkin[]
 
 	class Bone extends MultiView.SingleData
-		int parent
-		string model_file
-		Model *model
-		bool const_pos
+		var parent: int
+		var model_file: string
+		var model: Model*
+		var const_pos: bool
 
 		# for editing
-		matrix matrix
-		void __init__()
+		var matrix: matrix
+		func __init__()
 
 
 
@@ -214,26 +214,26 @@ class Model extends Data
 
 		class Frame
 			# skeleton animation
-			vector[] skel_dpos
-			vector[] skel_ang
+			var skel_dpos: vector[]
+			var skel_ang: vector[]
 
 			# vertex animation
-			vector[4][] dpos
-			vector[] vertex_dpos
-			void __assign__(Frame other)
+			var dpos: vector[4][]
+			var vertex_dpos: vector[]
+			func __assign__(other: Frame)
 		
-		int type
-		Frame[] frame
-		float frames_per_sec_const, frames_per_sec_factor
-		string name
+		var type: int
+		var frame: Frame[]
+		var frames_per_sec_const, frames_per_sec_factor: float
+		var name: string
 
 	class Edge extends MultiView.SingleData
 		#int NormalMode;
-		int[2] vertex
-		int ref_count
-		int[2] triangle, side
-		bool is_round # for editing
-		float weight # for easify'ing
+		var vertex: int[2]
+		var ref_count: int
+		var triangle, side: int[2]
+		var is_round: bool
+		var weight: float
 
 		# constraints:
 		#  Vertex[0] = surf.Triangle[Triangle[0]].Vertex[Side[0]]
@@ -242,54 +242,54 @@ class Model extends Data
 
 
 	class __Surface extends MultiView.SingleData
-		Geometry.Polygon[] polygon
-		Edge[] edge
-		int[] vertex
-		bool is_physical, is_visible
-		bool is_closed
+		var polygon: Geometry.Polygon[]
+		var edge: Edge[]
+		var vertex: int[]
+		var is_physical, is_visible: bool
+		var is_closed: bool
 
-		void *model
-		void __init__()
+		var model: void*
+		func __init__()
 
 	class MetaData
 		# level of detail
-		float[3] detail_dist
-		int[3] detail_factor
-		bool auto_generate_dists
-		bool[3] auto_generate_skin
+		var detail_dist: float[3]
+		var detail_factor: int[3]
+		var auto_generate_dists: bool
+		var auto_generate_skin: bool[3]
 
 		# physics
-		float mass
-		bool active_physics, passive_physics
-		bool auto_generate_tensor
-		matrix3 inertia_tensor
+		var mass: float
+		var active_physics, passive_physics: bool
+		var auto_generate_tensor: bool
+		var inertia_tensor: matrix3
 
 		# object-properties
-		string name, description
-		Path[] inventary
+		var name, description: string
+		var inventary: Path[]
 
 		# script
-		Path script_file
-		float[] script_var
-		void __assign__(MetaData other)
+		var script_file: Path
+		var script_var: float[]
+		func __assign__(other: MetaData)
 
 	class Selection
-		int[] vertex, polygon, edge
+		var vertex, polygon, edge: int[]
 
 	class Mesh
-		Geometry.Vertex[] vertex
-		Geometry.Polygon[] polygon
-		Edge[] edge
+		var vertex: Geometry.Vertex[]
+		var polygon: Geometry.Polygon[]
+		var edge: Edge[]
 	
 		# geometry (physical)
-		Ball[] ball
+		var ball: Ball[]
 	
 	# properties
-	Bone[] bone
+	var bone: Bone[]
 
 
 	# properties
-	Model.Move[] move
+	var move: Model.Move[]
 
 #	int CurrentMove,CurrentFrame
 
@@ -297,97 +297,97 @@ class Model extends Data
 #	float TimeScale,TimeParam,SimFrame
 
 	# geometry
-	Mesh* mesh
-	Mesh* phys_mesh
+	var mesh: Mesh*
+	var phys_mesh: Mesh*
 #	MultiViewSingleData SkinVertex[] # only temporary...
 #	int SkinVertMat, SkinVertTL
 
 	# old geometry
-	Skin[4] skin
+	var skin: Skin[4]
 
 	
 	#ModelPolyhedron Poly[]
 
 	# general properties
-	Material[] material
+	var material: Material[]
 
 	# effects
-	Effect[] fx
+	var fx: Effect[]
 
-	MetaData meta_data
+	var meta_data: MetaData
 	
-	extern void clear_selection()
-	extern void selection_from_vertices()
-	extern void selection_from_polygons()
+	func extern clear_selection()
+	func extern selection_from_vertices()
+	func extern selection_from_polygons()
 	#extern void SelectOnlySurface(ModelSurface s)
 	
-	extern void add_vertex(vector pos, int bone_index, int normal_mode)
-	extern Geometry.Polygon *add_triangle(int a, int b, int c, int material)
-	extern Geometry.Polygon *add_polygon(int[] v, int material)
-	extern void delete_polygon(int index)
+	func extern add_vertex(pos: vector, bone_index: int, normal_mode: int)
+	func extern add_triangle(a: int, b: int, c: int, material: int) -> Geometry.Polygon*
+	func extern add_polygon(v: int[], material: int) -> Geometry.Polygon*
+	func extern delete_polygon(index: int)
 	
-	extern void delete_selection(Selection s, bool greedy)
-	extern void invert_polygons(Selection s)
-	extern void subtract_selection()
+	func extern delete_selection(s: Selection, greedy: bool)
+	func extern invert_polygons(s: Selection)
+	func extern subtract_selection()
 #	extern void CutOutSelection()
-	extern void convert_selection_to_triangles()
+	func extern convert_selection_to_triangles()
 #	extern void AlignToGridSelection(float grid_d)
 #	extern void NearifySelectedVertices()
 #	extern void CollapseSelectedVertices()
-	extern void bevel_selected_vertices(float radius)
+	func extern bevel_selected_vertices(radius: float)
 #	extern void FlattenSelectedVertices()
-	extern void triangulate_selected_vertices()
-	extern void extrude_selected_polygons(float offset)
+	func extern triangulate_selected_vertices()
+	func extern extrude_selected_polygons(offset: float)
 #	extern void AutoWeldSelectedSurfaces(float d)
 #	extern void SetNormalModeSelection(int mode)
 #	extern void SetNormalModeAll(int mode)
 #	extern void SetMaterialSelection(int material)
 #	extern void Easify(float factor)
-	extern void paste_geometry(Geometry g, int default_material)
+	func extern paste_geometry(g: Geometry, default_material: int)
 	
-	extern void add_animation(int index, int type)
-	extern void duplicate_animation(int source, int target)
-	extern void delete_animation(int index)
-	extern void animation_set_data(int index, string name, float fps_const, float fps_factor)
-	extern void animation_add_frame(int index, int frame, Move.Frame f)
-	extern void animation_delete_frame(int index, int frame)
-	extern void animation_set_frame_duration(int index, int frame, float duration)
-	extern void animation_set_bone(int move, int frame, int bone, vector dpos, vector ang)
+	func extern add_animation(index: int, type: int)
+	func extern duplicate_animation(source: int, target: int)
+	func extern delete_animation(index: int)
+	func extern animation_set_data(index: int, name: string, fps_const: float, fps_factor: float)
+	func extern animation_add_frame(index: int, frame: int, f: Move.Frame)
+	func extern animation_delete_frame(index: int, frame: int)
+	func extern animation_set_frame_duration(index: int, frame: int, duration: float)
+	func extern animation_set_bone(move: int, frame: int, bone: int, dpos: vector, ang: vector)
 	
-	void __assign__(Model other)
+	func __assign__(other: Model)
 
 
 class Geometry
 	class Vertex extends MultiView.SingleData
-		int normal_mode
-		int bone_index
+		var normal_mode: int
+		var bone_index: int
 
-		bool normal_dirty
-		int ref_count # triangles
-		int surface
+		var normal_dirty: bool
+		var ref_count: int
+		var surface: int
 
 	class Polygon extends MultiView.SingleData
 		class Side
-			int vertex
-			int edge
-			int edge_direction # which no of triangle in edge's list are we?
-			vector[Model.MAX_TEXTURES] skin_vertex
-			int normal_index
-			vector normal
-			char[3] triangulation
-		Side[] side
-		vector temp_normal
-		bool normal_dirty, triangulation_dirty
-		int material
-		void __init__()
+			var vertex: int
+			var edge: int
+			var edge_direction: int
+			var skin_vertex: vector[Model.MAX_TEXTURES]
+			var normal_index: int
+			var normal: vector
+			var triangulation: char[3]
+		var side: Side[]
+		var temp_normal: vector
+		var normal_dirty, triangulation_dirty: bool
+		var material: int
+		func __init__()
 		
-	Vertex[] vertex
-	Polygon[] polygon
-	Model.Edge[] edge
-	bool is_closed
+	var vertex: Vertex[]
+	var polygon: Polygon[]
+	var edge: Model.Edge[]
+	var is_closed: bool
 	
-	extern static int subtract(Geometry a, Geometry b, Geometry out)
-	extern static int and(Geometry a, Geometry b, Geometry out)
+	func extern static subtract(a: Geometry, b: Geometry, out _out: Geometry) -> int
+	func extern static and(a: Geometry, b: Geometry, out _out: Geometry) -> int
 
 	enum
 		END_OPEN
@@ -396,31 +396,31 @@ class Geometry
 		END_LOOP
 
 	class Ball extends Geometry
-		extern void __init__(vector pos, float radius, int num_x, int num_y)
+		func extern __init__(pos: vector, radius: float, num_x: int, num_y: int)
 
 	class Cube extends Geometry
-		extern void __init__(vector pos, vector dv1, vector dv2, vector dv3, int num_1, int num_2, int num_3)
+		func extern __init__(pos: vector, dv1: vector, dv2: vector, dv3: vector, num_1: int, num_2: int, num_3: int)
 
 	class Cylinder extends Geometry
-		extern void __init__(vector pos1, vector pos2, float radius, int rings, int edges, int end_mode)
+		func extern __init__(pos1: vector, pos2: vector, radius: float, rings: int, edges: int, end_mode: int)
 
 	class CylinderComplex extends Geometry
-		extern void __init__(vector[] pos, float[] radius, int rings, int edges, int end_mode)
+		func extern __init__(pos: vector[], radius: float[], rings: int, edges: int, end_mode: int)
 
 	class Sphere extends Geometry
-		extern void __init__(vector pos, float radius, int num)
+		func extern __init__(pos: vector, radius: float, num: int)
 
 	class Torus extends Geometry
-		extern void __init__(vector pos, vector axis, float radius1, float radius2, int num_x, int num_y)
+		func extern __init__(pos: vector, axis: vector, radius1: float, radius2: float, num_x: int, num_y: int)
 
 	class TorusKnot extends Geometry
-		extern void __init__(vector pos, vector axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges)
+		func extern __init__(pos: vector, axis: vector, radius1: float, radius2: float, radius3: float, turns: int, twists: int, rings: int, edges: int)
 
 	class Plane extends Geometry
-		extern void __init__(vector pos, vector dv1, vector dv2, int num_x, int num_y)
+		func extern __init__(pos: vector, dv1: vector, dv2: vector, num_x: int, num_y: int)
 
 	class Platonic extends Geometry
-		extern void __init__(vector pos, float radius, int samples)
+		func extern __init__(pos: vector, radius: float, samples: int)
 
 
 
@@ -429,39 +429,39 @@ class World extends Data
 
 
 	class Terrain extends MultiView.SingleData
-		Path filename
+		var filename: Path
 		#WorldTerrainVertex Vertex[]
-		int vertex_buffer_single
-		int show_texture
-		bool changed
-		y.Terrain* terrain
-		void __init__()
+		var vertex_buffer_single: int
+		var show_texture: int
+		var changed: bool
+		var terrain: y.Terrain*
+		func __init__()
 
 
 	class Object extends MultiView.SingleData
-		string filename
-		string name
-		y.Model* object
-		vector ang
-		void __init__()
+		var filename: string
+		var name: string
+		var object: y.Model*
+		var ang: vector
+		func __init__()
 
 
-	Object[] objects
-	Terrain[] terrains
-	int ego_index
+	var objects: Object[]
+	var terrains: Terrain[]
+	var ego_index: int
 
 	# actions
-	extern Object *add_object(Path filename, vector pos)
-	extern Terrain *add_terrain(Path filename, vector pos)
-	extern Terrain *add_new_terrain(vector pos, vector size, int num_x, int num_z)
+	func extern add_object(filename: Path, pos: vector) -> Object*
+	func extern add_terrain(filename: Path, pos: vector) -> Terrain*
+	func extern add_new_terrain(pos: vector, size: vector, num_x: int, num_z: int) -> Terrain*
 
 
 class Mode
-	string name
-	MultiView* multi_view
+	var name: string
+	var multi_view: MultiView*
 
 class Edward
-	Mode* cur_mode
+	var cur_mode: Mode*
 
 class shader
 	enum
@@ -473,51 +473,51 @@ class shader
 		TYPE_LITERAL # ...
 
 	class BuilderContext
-		extern string create_temp(Node source, int port, int type)
-		extern string create_out(Node source, int port)
-		extern string find_temp(Node source, int port, int wanted_type)
-		extern string build_value(Node n, int i, string internal)
-		string value(Node n, int i)
+		func extern create_temp(source: Node, port: int, type: int) -> string
+		func extern create_out(source: Node, port: int) -> string
+		func extern find_temp(source: Node, port: int, wanted_type: int) -> string
+		func extern build_value(n: Node, i: int, internal: string) -> string
+		func value(n: Node, i: int) -> string
 			return build_value(n, i, "")
-		extern string build_const(Node n, int i)
+		func extern build_const(n: Node, i: int) -> string
 
 	class Node extends Object
-		extern void __init__(string t)
-		extern override void __delete__()
-		void __assign__(Node n)
+		func extern __init__(t: string)
+		func extern override __delete__()
+		func __assign__(n: Node)
 			pass
-		int x, y
-		string type
+		var x, y: int
+		var type: string
 	
 		class Parameter
-			int type
-			string name
-			string value
-			string options
-			void __init__()
-			void __init__(int t, string n, string v, string o)
+			var type: int
+			var name: string
+			var value: string
+			var options: string
+			func __init__()
+			func __init__(t: int, n: string, v: string, o: string)
 				type = t
 				name = n
 				value = v
 				options = o
-		Parameter[] params
+		var params: Parameter[]
 
 
 		class Port
-			int type
-			string name
-			void __init__()
-			void __init__(int t, string n)
+			var type: int
+			var name: string
+			func __init__()
+			func __init__(t: int, n: string)
 				type = t
 				name = n
-		Port[] output
+		var output: Port[]
 	
-		extern virtual const string[] dependencies()
-		extern virtual const string[] uniform_dependencies()
-		extern virtual const string code_pixel(out BuilderContext ctx)
+		func extern virtual const dependencies() -> string[]
+		func extern virtual const uniform_dependencies() -> string[]
+		func extern virtual const code_pixel(out ctx: BuilderContext) -> string
 
-extern Model* model
-extern World* world
-extern Window* edward
-extern Edward* ed
+var extern model: Model*
+var extern world: World*
+var extern edward: Window*
+var extern ed: Edward*
 

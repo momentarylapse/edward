@@ -6,7 +6,7 @@ class NodeChannelGreen extends shader.Node
 		params.add([shader.TYPE_COLOR, "color", "#ffffffff", ""])
 		output.add([shader.TYPE_FLOAT, "green"])
 	override const string code_pixel(out shader.BuilderContext c)
-		let a = c.value(self, 0)
-		let t = c.create_out(self, 0)
+		var a = c.value(self, 0)
+		var t = c.create_out(self, 0)
 		return "
 	float {{t}} = {{a}}.g;"

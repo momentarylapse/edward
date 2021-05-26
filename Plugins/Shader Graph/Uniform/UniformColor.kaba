@@ -8,6 +8,6 @@ class NodeUniformColor extends shader.Node
 	override const string[] uniform_dependencies()
 		return ["vec4 {{params[0].value}}"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let t = c.create_out(self, 0)
+		var t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = {{c.value(self, 0)}};"

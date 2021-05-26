@@ -1,8 +1,8 @@
 use edward
 
-const float R = 20.0
+const R = 20.0
 
-void add5(int nv, int v0, int v1, int v2, int v3, int v4)
+func add5(nv: int, v0: int, v1: int, v2: int, v3: int, v4: int)
 	int[] v
 	v.add(nv + v0)
 	v.add(nv + v1)
@@ -11,7 +11,7 @@ void add5(int nv, int v0, int v1, int v2, int v3, int v4)
 	v.add(nv + v4)
 	model.add_polygon(v, 0)
 
-void main()
+func main()
 	int nv = model.mesh.vertex.num
 	
 	model.begin_action("CreateDodecahedron")

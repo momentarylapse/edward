@@ -8,7 +8,7 @@ class NodeTexture1 extends shader.Node
 	override const string[] dependencies()
 		return ["texture1", "in:uv"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let uv = c.build_value(self, 0, "in_uv")
-		let t = c.create_out(self, 0)
+		var uv = c.build_value(self, 0, "in_uv")
+		var t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = texture(tex1, {{uv}});"

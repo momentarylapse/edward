@@ -12,11 +12,11 @@ class NodeBasicLighting extends shader.Node
 	override const string[] dependencies()
 		return ["basic_lighting", "in:light", "in:matrix", "in:material", "in:pos", "in:normal"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let n = c.build_value(self, 5, "in_normal")
-		let al = c.value(self, 0)
-		let ro = c.value(self, 1)
-		let me = c.value(self, 2)
-		let em = c.value(self, 4)
+		var n = c.build_value(self, 5, "in_normal")
+		var al = c.value(self, 0)
+		var ro = c.value(self, 1)
+		var me = c.value(self, 2)
+		var em = c.value(self, 4)
 		string t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = vec4(0,0,0,0);

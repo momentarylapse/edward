@@ -1,5 +1,5 @@
 # b = q*a
-quaternion rot_onto(vector a, vector b)
+func rot_onto(a: vector, b: vector) -> quaternion
 	vector n = vector.cross(a, b)
 	n /= n.length()
 	vector e1 = a / a.length()
@@ -7,10 +7,10 @@ quaternion rot_onto(vector a, vector b)
 	float ang = atan2(vector.dot(b, e2), vector.dot(b, e1))
 	return quaternion(n, ang).bar()
 
-void __main()
-	let qq = quaternion(vector(0.2, 0.5, -0.4))
+func __main()
+	var qq = quaternion(vector(0.2, 0.5, -0.4))
 	vector a = vector(7,-2,4)
 	vector b = qq*a
-	let q = rot_onto(a, b)
+	var q = rot_onto(a, b)
 	print(q*a)
 	print(b)

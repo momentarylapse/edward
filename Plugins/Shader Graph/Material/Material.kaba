@@ -10,10 +10,10 @@ class NodeMaterial extends shader.Node
 	override const string[] dependencies()
 		return ["in:material"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let al = c.create_out(self, 0)
-		let ro = c.create_out(self, 1)
-		let me = c.create_out(self, 2)
-		let em = c.create_out(self, 3)
+		var al = c.create_out(self, 0)
+		var ro = c.create_out(self, 1)
+		var me = c.create_out(self, 2)
+		var em = c.create_out(self, 3)
 		return "
 	vec4 {{al}} = material.albedo;
 	float {{ro}} = material.roughness;

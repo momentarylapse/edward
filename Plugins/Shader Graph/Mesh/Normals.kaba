@@ -7,6 +7,6 @@ class NodeNormals extends shader.Node
 	override const string[] dependencies()
 		return ["in:normal"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let t = c.create_out(self, 0)
+		var t = c.create_out(self, 0)
 		return "
 	vec3 {{t}} = normalize(in_normal);"

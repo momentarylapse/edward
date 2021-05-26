@@ -1,12 +1,12 @@
 use hui
 use edward
 
-void CreateTorusKnot(int nx, int ny, int rings, int edges, float r1, float r2, float r3)
-	let g = new Geometry.TorusKnot(vector.0, vector.EZ, r1, r2, r3, nx, ny, rings, edges)
+func CreateTorusKnot(nx: int, ny: int, rings: int, edges: int, r1: float, r2: float, r3: float)
+	var g = new Geometry.TorusKnot(vector.0, vector.EZ, r1, r2, r3, nx, ny, rings, edges)
 	model.paste_geometry(*g, 0)
 	del g
 
-int gcd(int _a, int _b)
+func gcd(_a: int, _b: int) -> int
 	int a = _a
 	int b = _b
 	while b != 0
@@ -17,7 +17,7 @@ int gcd(int _a, int _b)
 
 
 class TorusDialog extends Dialog
-	void __init__(Window parent)
+	func __init__(parent: Window)
 		super.__init__("Torus Knot", 300, 300, parent, false)
 		#set_options("", "resizable,headerbar")
 		add_grid("", 0, 0, "table")
@@ -40,7 +40,7 @@ class TorusDialog extends Dialog
 	
 		event("ok", on_ok)
 
-	void on_ok()
+	func on_ok()
 		int nx = get_int("nx")
 		int ny = get_int("ny")
 		if gcd(nx, ny) != 1
@@ -49,8 +49,8 @@ class TorusDialog extends Dialog
 			CreateTorusKnot(nx, ny, get_int("rings"), get_int("edges"), get_float("radius1"), get_float("radius2"), get_float("radius3"))
 		destroy()
 
-void main()
+func main()
 
-	let dlg = new TorusDialog(edward)	
+	var dlg = new TorusDialog(edward)	
 	dlg.run()
 	del dlg

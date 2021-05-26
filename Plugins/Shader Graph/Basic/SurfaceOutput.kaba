@@ -12,11 +12,11 @@ class NodeSurfaceOutput extends shader.Node
 		return ["import:surface"]
 #		return ["basic_lighting", "light", "matview", "matworld", "material", "pos", "normal"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let al = c.value(self, 0)
-		let ro = c.value(self, 1)
-		let me = c.value(self, 2)
-		let em = c.value(self, 3)
-		let n = c.value(self, 4)
+		var al = c.value(self, 0)
+		var ro = c.value(self, 1)
+		var me = c.value(self, 2)
+		var em = c.value(self, 3)
+		var n = c.value(self, 4)
 		return "
 	surface_out({{n}}, {{al}}, {{em}}, {{me}}, {{ro}});"
 

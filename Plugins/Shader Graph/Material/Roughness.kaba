@@ -7,6 +7,6 @@ class NodeRoughness extends shader.Node
 	override const string[] dependencies()
 		return ["in:material"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let t = c.create_out(self, 0)
+		var t = c.create_out(self, 0)
 		return "
 	float {{t}} = material.roughness;"

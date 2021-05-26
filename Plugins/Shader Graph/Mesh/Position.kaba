@@ -8,7 +8,7 @@ class NodePosition extends shader.Node
 	override const string[] dependencies()
 		return ["in:pos", "in:matrix"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let t = c.create_out(self, 0)
+		var t = c.create_out(self, 0)
 		if params[0].value == "1" # world
 			return "
 	vec3 {{t}} = in_pos.xyz / in_pos.w;"

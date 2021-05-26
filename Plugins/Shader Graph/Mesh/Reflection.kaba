@@ -7,7 +7,7 @@ class NodeReflection extends shader.Node
 	override const string[] dependencies()
 		return ["cubemap", "in:normal", "in:pos", "in:matrix", "in:eye"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let t = c.create_out(self, 0)
+		var t = c.create_out(self, 0)
 		return "
 	// TODO
 	vec4 {{t}} = texture(tex4, reflect(normalize(in_pos.xyz - eye_pos), normalize(in_normal)));"

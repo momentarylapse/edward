@@ -10,20 +10,20 @@ enum
 	MODE_CAM_ROTATE_EGO # move
 
 class X extends Object
-	quaternion q0
-	MultiView.ActionController* ac
-	MultiView* mv
-	MultiView.Window* win
-	int mode
-	PsMoveManager pm
+	var q0: quaternion
+	var ac: MultiView.ActionController*
+	var mv: MultiView*
+	var win: MultiView.Window*
+	var mode: int
+	var pm: PsMoveManager
 	
-	override void __init__()
+	func override __init__()
 		mode = MODE_NONE
 		
 		pm.connect()
 		print("plugin: {{len(pm.psmoves)}} controller found...")
 	
-	void start_grab(PsMoveController m, int _mode)
+	func start_grab(m: PsMoveController, _mode: int)
 		mode = _mode
 		mv = ed.cur_mode.multi_view
 		ac = mv.action_con
@@ -32,15 +32,15 @@ class X extends Object
 		if mode == MODE_OBJECT_ROTATE
 			ac.start_action(win, ac.pos, 0)
 		
-	void end_grab()
+	func end_grab()
 		if mode == MODE_OBJECT_ROTATE
 			ac.end_action(true)
 		mode = MODE_NONE
-	quaternion rel_ang(PsMoveController m)
+	func rel_ang(m: PsMoveController) -> quaternion
 		return win.local_ang * (m.ang * q0.bar()) * win.local_ang.bar()
 		#return m.ang * win.local_ang.bar()
-	void update_hold(PsMoveController m)
-		let qq = rel_ang(m) # * q0.bar()
+	func update_hold(m: PsMoveController)
+		var qq = rel_ang(m) # * q0.bar()
 		#print(qq.angles())
 		if mode == MODE_OBJECT_ROTATE
 			ac.update_param(qq.angles())
@@ -49,7 +49,7 @@ class X extends Object
 		else if mode == MODE_CAM_ROTATE
 			mv.cam_rotate(m.dang, false)
 	
-	void step()
+	func step()
 		pm.update()
 		#if ed.cur_mode.name == "ModelAnimationSkeleton"
 		for m in pm.psmoves
@@ -75,6 +75,6 @@ class X extends Object
 			#print(str(m.button))
 			#print(m.ang)
 
-void main()
-	let x = new X()
+func main()
+	var x = new X()
 	hui.run_repeated(0.03, x, X.step)

@@ -8,8 +8,8 @@ class NodeFog extends shader.Node
 	override const string[] dependencies()
 		return ["in:fog", "in:pos", "in:matrix"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let tt = c.create_temp(self, -1, shader.TYPE_FLOAT)
-		let t = c.create_out(self, 0)
+		var tt = c.create_temp(self, -1, shader.TYPE_FLOAT)
+		var t = c.create_out(self, 0)
 		return "
 	float {{tt}} = exp(-(matrix.view * in_pos).z * fog.density);
 	vec4 {{t}} = (1 - {{tt}}) * fog.color + {{tt}} * {{c.value(self, 0)}};"

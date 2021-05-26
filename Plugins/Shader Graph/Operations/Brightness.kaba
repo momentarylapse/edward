@@ -6,7 +6,7 @@ class NodeBrightness extends shader.Node
 		params.add([shader.TYPE_COLOR, "color", "#ffffffff", ""])
 		output.add([shader.TYPE_FLOAT, "brightness"])
 	override const string code_pixel(out shader.BuilderContext c)
-		let a = c.value(self, 0)
-		let t = c.create_out(self, 0)
+		var a = c.value(self, 0)
+		var t = c.create_out(self, 0)
 		return "
 	float {{t}} = 0.2126 * {{a}}.r + 0.7152 * {{a}}.g + 0.0722 * {{a}}.b;"

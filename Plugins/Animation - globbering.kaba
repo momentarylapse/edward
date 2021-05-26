@@ -1,7 +1,7 @@
 use edward
 
-void main()
-	let m = &model.move[0]
+func main()
+	var m = &model.move[0]
 
 	#HuiInfoBox(MainWin,i2s(Skin[1].NumVertices),i2s(move->NumFrames))
 	for f,fi in m.frame

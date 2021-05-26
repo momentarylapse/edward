@@ -6,6 +6,6 @@ class NodeVectorX extends shader.Node
 		params.add([shader.TYPE_VEC3, "vector", "vec3(0,0,0)", ""])
 		output.add([shader.TYPE_FLOAT, "x"])
 	override const string code_pixel(out shader.BuilderContext c)
-		let t = c.create_out(self, 0)
+		var t = c.create_out(self, 0)
 		return "
 	float {{t}} = {{c.value(self, 0)}}.x;"

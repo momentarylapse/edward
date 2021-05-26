@@ -14,9 +14,9 @@ class NodeVoronoi extends shader.Node
 	override const string[] dependencies()
 		return ["rand3d"]
 	override const string code_pixel(out shader.BuilderContext c)
-		let o = c.create_out(self, 0)
-		let o2 = c.create_out(self, 1)
-		let t = c.create_out(self, 2)#c.create_temp(self, -1, shader.TYPE_FLOAT)
+		var o = c.create_out(self, 0)
+		var o2 = c.create_out(self, 1)
+		var t = c.create_out(self, 2)#c.create_temp(self, -1, shader.TYPE_FLOAT)
 		return "
 	float {{o2}} = 10000;
 	float {{t}} = 10000;
