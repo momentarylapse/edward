@@ -1,12 +1,12 @@
 use edward
 
 class NodeAlbedo extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("Albedo")
 		output.add([shader.TYPE_COLOR, "albedo"])
-	override const string[] dependencies()
+	func override const dependencies() -> string[]
 		return ["in:material"]
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = material.albedo;"

@@ -1,7 +1,7 @@
 use edward
 
 class NodeBasicLighting extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("BasicLighting")
 		params.add([shader.TYPE_COLOR, "albedo", "#ffffffff", ""])
 		params.add([shader.TYPE_FLOAT, "roughness", "0.3", "range=0:1"])
@@ -9,9 +9,9 @@ class NodeBasicLighting extends shader.Node
 		params.add([shader.TYPE_COLOR, "emission", "#000000ff", ""])
 		params.add([shader.TYPE_VEC3, "normals", "-mesh-", ""])
 		output.add([shader.TYPE_COLOR, "out"])
-	override const string[] dependencies()
+	func override const dependencies() -> string[]
 		return ["basic_lighting", "in:light", "in:matrix", "in:material", "in:pos", "in:normal"]
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var n = c.build_value(self, 5, "in_normal")
 		var al = c.value(self, 0)
 		var ro = c.value(self, 1)

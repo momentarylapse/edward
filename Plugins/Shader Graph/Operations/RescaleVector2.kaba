@@ -1,13 +1,13 @@
 use edward
 
 class NodeRescaleVector2 extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("RescaleVector2")
 		params.add([shader.TYPE_VEC2, "in", "vec2(0,0)", ""])
 		params.add([shader.TYPE_FLOAT, "scale", "1.0", "range=-2:2"])
 		params.add([shader.TYPE_FLOAT, "offset", "0.0", "range=-2:2"])
 		output.add([shader.TYPE_VEC2, "out"])
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	vec2 {{t}} = {{c.value(self, 0)}} * {{c.value(self, 1)}} + vec2(1,1) * {{c.value(self, 2)}};"

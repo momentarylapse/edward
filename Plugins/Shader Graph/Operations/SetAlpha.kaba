@@ -1,12 +1,12 @@
 use edward
 
 class NodeSetAlpha extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("SetAlpha")
 		params.add([shader.TYPE_COLOR, "in", "#ffffffff", ""])
 		params.add([shader.TYPE_FLOAT, "a", "1.0", "range=0:1"])
 		output.add([shader.TYPE_COLOR, "out"])
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = vec4({{c.value(self, 0)}}.rgb, {{c.value(self, 1)}});"

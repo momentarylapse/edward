@@ -1,7 +1,7 @@
 use edward
 
 class NodeVoronoi extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("Voronoi")
 		params.add([shader.TYPE_VEC3, "p", "vec3(0,0,0)", ""])
 		params.add([shader.TYPE_FLOAT, "scale", "4.0", "range=0.1:8"])
@@ -11,9 +11,9 @@ class NodeVoronoi extends shader.Node
 		params.add([shader.TYPE_INT, "mode", "0", "choice=cell|edge"])
 		output.add([shader.TYPE_FLOAT, "distance"])
 		output.add([shader.TYPE_FLOAT, "edge"])
-	override const string[] dependencies()
+	func override const dependencies() -> string[]
 		return ["rand3d"]
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var o = c.create_out(self, 0)
 		var o2 = c.create_out(self, 1)
 		var t = c.create_out(self, 2)#c.create_temp(self, -1, shader.TYPE_FLOAT)

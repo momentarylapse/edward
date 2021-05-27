@@ -1,13 +1,13 @@
 use edward
 
 class NodePosition extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("Position")
 		params.add([shader.TYPE_INT, "space", "1", "choice=model|world|camera|window"])
 		output.add([shader.TYPE_VEC3, "pos"])
-	override const string[] dependencies()
+	func override const dependencies() -> string[]
 		return ["in:pos", "in:matrix"]
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		if params[0].value == "1" # world
 			return "

@@ -1,11 +1,11 @@
 use edward
 
 class NodeOutput extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("Output")
 		params.add([shader.TYPE_COLOR, "color", "#ff0000ff", ""])
-	override const string[] dependencies()
+	func override const dependencies() -> string[]
 		return ["out:color"]
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		return "
 	out_color = {{c.value(self, 0)}};"

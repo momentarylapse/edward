@@ -1,11 +1,11 @@
 use edward
 
 class NodeVectorZ extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("VectorZ")
 		params.add([shader.TYPE_VEC3, "vector", "vec3(0,0,0)", ""])
 		output.add([shader.TYPE_FLOAT, "z"])
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	float {{t}} = {{c.value(self, 0)}}.z;"

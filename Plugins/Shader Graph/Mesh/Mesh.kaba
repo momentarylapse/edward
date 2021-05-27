@@ -1,15 +1,15 @@
 use edward
 
 class NodeMesh extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("Mesh")
 		params.add([shader.TYPE_INT, "space", "1", "choice=model|world|camera|window"])
 		output.add([shader.TYPE_VEC3, "pos"])
 		output.add([shader.TYPE_VEC3, "normals"])
 		output.add([shader.TYPE_VEC2, "uv"])
-	override const string[] dependencies()
+	func override const dependencies() -> string[]
 		return ["in:pos", "in:normal", "in:uv", "in:matrix"]
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var p = c.create_out(self, 0)
 		var n = c.create_out(self, 1)
 		var u = c.create_out(self, 2)

@@ -1,12 +1,12 @@
 use edward
 
 class NodeAdd extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("Add")
 		params.add([shader.TYPE_COLOR, "a", "#ffffffff", ""])
 		params.add([shader.TYPE_COLOR, "b", "#ffffffff", ""])
 		output.add([shader.TYPE_COLOR, "out"])
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = {{c.value(self, 0)}} + {{c.value(self, 1)}};"

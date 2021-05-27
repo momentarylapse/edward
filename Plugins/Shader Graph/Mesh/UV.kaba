@@ -1,12 +1,12 @@
 use edward
 
 class NodeUV extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("UV")
 		output.add([shader.TYPE_VEC2, "uv"])
-	override const string[] dependencies()
+	func override const dependencies() -> string[]
 		return ["uv"]
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	vec2 {{t}} = in_uv;"

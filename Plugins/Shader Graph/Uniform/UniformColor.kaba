@@ -1,13 +1,13 @@
 use edward
 
 class NodeUniformColor extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("UniformColor")
 		params.add([shader.TYPE_LITERAL, "name", "xxx", ""])
 		output.add([shader.TYPE_COLOR, "value"])
-	override const string[] uniform_dependencies()
+	func override const uniform_dependencies() -> string[]
 		return ["vec4 {{params[0].value}}"]
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = {{c.value(self, 0)}};"

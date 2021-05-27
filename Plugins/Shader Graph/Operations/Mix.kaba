@@ -1,13 +1,13 @@
 use edward
 
 class NodeMix extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("Mix")
 		params.add([shader.TYPE_COLOR, "a", "#ffffffff", ""])
 		params.add([shader.TYPE_COLOR, "b", "#ffffffff", ""])
 		params.add([shader.TYPE_FLOAT, "factor", "0.5", "range=0:1"])
 		output.add([shader.TYPE_COLOR, "out"])
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		var tt = c.create_temp(self, -1, shader.TYPE_FLOAT)
 		return "

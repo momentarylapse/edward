@@ -1,11 +1,11 @@
 use edward
 
 class NodeDiscard extends shader.Node
-	void __init__()
+	func __init__()
 		super.__init__("Discard")
 		params.add([shader.TYPE_FLOAT, "value", "0.0", "range=0:1"])
 		params.add([shader.TYPE_FLOAT, "threshold", "0.5", "range=0:1"])
-	override const string code_pixel(out shader.BuilderContext c)
+	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var v = c.value(self, 0)
 		var t = c.value(self, 1)
 		return "
