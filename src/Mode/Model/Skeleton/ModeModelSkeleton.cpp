@@ -189,7 +189,8 @@ void ModeModelSkeleton::draw_skeleton(MultiView::Window *win, Array<ModelBone> &
 		if (!b.model)
 			continue;
 		b.model->_matrix = b._matrix;
-		b.model->draw(0, false, false);
+		//b.model->draw(0, false, false);
+		// TODO draw sub models
 	}
 	nix::set_model_matrix(matrix::ID);
 

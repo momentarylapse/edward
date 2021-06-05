@@ -8,7 +8,7 @@
 #include "ActionWorldAddTerrain.h"
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Data/World/WorldTerrain.h"
-#include "../../../x/terrain.h"
+#include "../../../y/Terrain.h"
 #include "../../../lib/nix/nix.h"
 #include <assert.h>
 

@@ -8,7 +8,7 @@
 #ifndef MODELMATERIAL_H_
 #define MODELMATERIAL_H_
 
-#include "../../x/Material.h"
+#include "../../y/Material.h"
 #include "../../lib/base/pointer.h"
 #include "../../lib/nix/nix.h"
 

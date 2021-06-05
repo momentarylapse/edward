@@ -15,7 +15,7 @@
 #include "../../Data/Font/DataFont.h"
 #include "../../Data/Font/Import/ImporterCairo.h"
 #include "Dialog/FontDialog.h"
-#include "../../x/font.h"
+#include "../../y/Font.h"
 
 ModeFont *mode_font = NULL;
 

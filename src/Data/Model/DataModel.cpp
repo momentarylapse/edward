@@ -58,7 +58,7 @@
 #include "../../Action/Model/Skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../Action/Model/Skeleton/ActionModelReconnectBone.h"
 #include "../../Action/Model/Skeleton/ActionModelSetSubModel.h"
-#include "../../x/ModelManager.h"
+#include "../../y/ModelManager.h"
 
 const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
 const string DataModel::MESSAGE_MATERIAL_CHANGE = "MaterialChange";
@@ -486,7 +486,7 @@ void DataModel::deleteSelectedBones()
 void DataModel::boneAttachVertices(int index, const Array<int> &vertices)
 {	execute(new ActionModelAttachVerticesToBone(vertices, index));	}
 
-void DataModel::addAnimation(int index, int type)
+void DataModel::addAnimation(int index, AnimationType type)
 {	execute(new ActionModelAddAnimation(index, type));	}
 
 void DataModel::duplicateAnimation(int source, int target)
@@ -646,12 +646,12 @@ ModelFrame ModelMove::interpolate(float time)
 	ModelFrame &f0 = frame[frame0];
 	ModelFrame &f1 = frame[frame1];
 
-	if (type == MOVE_TYPE_VERTEX){
+	if (type == AnimationType::VERTEX){
 		int n = f0.vertex_dpos.num;
 		f.vertex_dpos.resize(n);
 		for (int i=0; i<n; i++)
 			f.vertex_dpos[i] = (1 - t) * f0.vertex_dpos[i] + t * f1.vertex_dpos[i];
-	}else if (type == MOVE_TYPE_SKELETAL){
+	}else if (type == AnimationType::SKELETAL){
 		int n = f0.skel_ang.num;
 		f.skel_ang.resize(n);
 		f.skel_dpos.resize(n);

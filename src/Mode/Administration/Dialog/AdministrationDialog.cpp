@@ -11,8 +11,8 @@
 #include "../../../Data/Administration/AdminFileList.h"
 #include "../../../Edward.h"
 #include "../../../Storage/Storage.h"
-#include "../../../meta.h"
-#include "../../../x/font.h"
+#include "../../../y/EngineData.h"
+#include "../../../y/Font.h"
 #include "../../../Mode/Model/ModeModel.h"
 #include "../../../Mode/Material/ModeMaterial.h"
 #include "../../../Mode/World/ModeWorld.h"
@@ -20,7 +20,7 @@
 #include "../ModeAdministration.h"
 #include <assert.h>
 
-#include "../../../x/ModelManager.h"
+#include "../../../y/ModelManager.h"
 
 AdministrationDialog::AdministrationDialog(hui::Window* _parent, bool _allow_parent, DataAdministration *_data):
 	hui::Dialog("ad_dialog", 400, 300, _parent, _allow_parent)

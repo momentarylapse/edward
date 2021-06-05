@@ -24,7 +24,7 @@ EdwardApp::EdwardApp() :
 	set_property("name", AppName);
 	set_property("version", AppVersion);
 	set_property("copyright", "© 2006-2021 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
-	set_property("comment", _("Editor for game data of the x9 engine"));
+	set_property("comment", _("Editor for game data of the y engine"));
 	set_property("website", "http://michi.is-a-geek.org/software");
 	set_property("author", "Michael Ankele <michi@lupina.de>");
 }

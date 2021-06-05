@@ -21,13 +21,13 @@
 |                                                                              |
 | last update: 2008.01.22 (c) by MichiSoft TM                                  |
 \*----------------------------------------------------------------------------*/
-#if !defined(MODEL_H__INCLUDED_)
-#define MODEL_H__INCLUDED_
+#pragma once
 
 
 #include "../lib/base/base.h"
 #include "../lib/file/path.h"
 #include "../lib/math/math.h"
+#include "../y/Entity.h"
 
 class btRigidBody;
 class btCollisionShape;
@@ -41,10 +41,11 @@ class Material;
 class TraceData;
 class Terrain;
 class TemplateDataScriptVariable;
+class CollisionData;
 namespace nix {
 	class VertexBuffer;
 }
-namespace Kaba {
+namespace kaba {
 	class Script;
 }
 
@@ -54,10 +55,15 @@ namespace Kaba {
 #define MODEL_MAX_POLY_VERTICES_PER_FACE	16
 #define MODEL_MAX_MOVE_OPS				8
 
+class Mesh;
 
 
 class SubMesh {
 public:
+	SubMesh();
+	void create_vb();
+	void update_vb(Mesh *mesh);
+
 	int num_triangles;
 
 	// vertices
@@ -78,6 +84,10 @@ public:
 // visual skin
 class Mesh {
 public:
+	void create_vb();
+	void update_vb();
+	void post_process();
+
 	Array<int> bone_index; // skeletal reference
 	Array<vector> vertex;
 
@@ -88,7 +98,7 @@ public:
 
 	Model *owner;
 
-	Mesh* copy(Model *new_owner);
+	Mesh *copy(Model *new_owner);
 };
 
 // the face of a polyhedron (=> a polygon)
@@ -106,16 +116,15 @@ public:
 	ConvexPolyhedronFace face[MODEL_MAX_POLY_FACES];
 
 	// non redundant vertex list!
-	int num_vertices;
-	int *vertex;
+	Array<int> vertex;
 
 	// non redundant edge list!
 	int num_edges;
-	int *edge_index;
+	Array<int> edge_index;
 
 	// "topology"
-	bool *edge_on_face; // [edge * num_faces + face]
-	int *faces_joining_edge; // [face1 * num_faces + face2]
+	Array<bool> edge_on_face; // [edge * num_faces + face]
+	Array<int> faces_joining_edge; // [face1 * num_faces + face2]
 };
 
 // a ball (for the physical skin)
@@ -161,10 +170,18 @@ public:
 	Array<plane> pl;
 };
 
+enum class AnimationType {
+	NONE,
+	VERTEX,
+	SKELETAL
+};
+
 // single animation
 class Move {
 public:
-	int type; // skeletal/vertex
+	string name;
+	int id;
+	AnimationType type;
 	int num_frames;
 	int frame0;
 
@@ -186,27 +203,30 @@ public:
 	// skeletal animation data
 	//Array<Array<vector>> skel_dpos; //   [frame,bone]
 	//Array<Array<quaternion>> skel_ang; //   [frame,bone]
-	vector *skel_dpos;
-	quaternion *skel_ang;
+	Array<vector> skel_dpos;
+	Array<quaternion> skel_ang;
 
 	// vertex animation data
 	struct {
 		//Array<Array<vector>> dpos; // vertex animation data   [frame,vertex]
-		vector* dpos;
+		Array<vector> dpos;
 	} mesh[4];
-};
-
-// types of animation
-enum {
-	MOVE_TYPE_NONE,
-	MOVE_TYPE_VERTEX,
-	MOVE_TYPE_SKELETAL
 };
 
 // commands for animation (move operations)
 class MoveOperation {
 public:
-	int move, operation;
+	// move operations
+	enum class Command {
+		SET,			// overwrite
+		SET_NEW_KEYED,	// overwrite, if current doesn't equal 0
+		SET_OLD_KEYED,	// overwrite, if last equals 0
+		ADD_1_FACTOR,	// w = w_old         + w_new * f
+		MIX_1_FACTOR,	// w = w_old * (1-f) + w_new * f
+		MIX_2_FACTOR	// w = w_old * a     + w_new * b
+	};
+	int move;
+	Command command;
 	float time, param1, param2;
 };
 
@@ -223,7 +243,8 @@ public:
 class Bone {
 public:
 	int parent;
-	vector pos;
+	vector delta_pos;
+	vector rest_pos;
 	Model *model;
 	// current skeletal data
 	matrix dmatrix;
@@ -235,14 +256,10 @@ enum {
 	MESH_HIGH,
 	MESH_MEDIUM,
 	MESH_LOW,
-	MODEL_NUM_MESHES
+	MODEL_NUM_MESHES,
+
+	MESH_PHYSICAL = 42 // for edward
 };
-#define MESH_DYNAMIC					8
-#define MESH_DYNAMIC_VIEW_HIGH			(MESH_DYNAMIC | MESH_HIGH)
-#define MESH_DYNAMIC_VIEW_MEDIUM		(MESH_DYNAMIC | MESH_MEDIUM)
-#define MESH_DYNAMIC_VIEW_LOW			(MESH_DYNAMIC | MESH_LOW)
-#define MESH_PHYSICAL					42
-#define MESH_DYNAMIC_PHYSICAL			43
 
 class ModelTemplate {
 public:
@@ -252,12 +269,12 @@ public:
 	Array<ModelEffectData> fx;
 	Array<Path> bone_model_filename;
 	Array<Path> inventory_filename;
-	Kaba::Script *script;
+	kaba::Script *script;
 
 	ModelTemplate(Model *m);
 };
 
-class Model : public VirtualBase {
+class Model : public Entity {
 public:
 	Model();
 	~Model() override;
@@ -265,7 +282,6 @@ public:
 	void _cdecl __init__();
 	void _cdecl __delete__() override;
 
-	void load(const Path &filename);
 	Model *copy(Model *pre_allocated = NULL);
 	void reset_data();
 	void _cdecl make_editable();
@@ -273,47 +289,39 @@ public:
 
 	static bool AllowDeleteRecursive;
 
-	// animate me
-	void do_animation(float elapsed);
+	// animation
+	vector _cdecl get_vertex(int index);
 
 	// skeleton
-	vector _cdecl _GetBonePos(int index);
-	void _cdecl SetBoneModel(int index, Model *sub);
-
-	// animation
-	vector _cdecl GetVertex(int index,int mesh);
+	vector _cdecl get_bone_rest_pos(int index) const;
+	void _cdecl set_bone_model(int index, Model *sub);
 
 	// helper functions for collision detection
 	void _UpdatePhysAbsolute_();
 	void _ResetPhysAbsolute_();
 
-	bool _cdecl Trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
-	bool _cdecl TraceMesh(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
+	bool _cdecl trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
+	bool _cdecl trace_mesh(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
 
 	// animation
-	void _cdecl ResetAnimation();
-	bool _cdecl IsAnimationDone(int operation_no);
-	bool _cdecl Animate(int mode, float param1, float param2, int move_no, float &time, float elapsed, float vel_param, bool loop);
-	int _cdecl GetFrames(int move_no);
-	void _cdecl BeginEditAnimation();
-	void _cdecl BeginEdit(int detail);
-	void _cdecl EndEdit(int detail);
+	void _cdecl reset_animation();
+	bool _cdecl is_animation_done(int operation_no);
+	bool _cdecl animate_x(MoveOperation::Command cmd, float param1, float param2, int move_no, float &time, float dt, float vel_param, bool loop);
+	bool _cdecl animate(MoveOperation::Command cmd, int move_no, float &time, float dt, bool loop);
+	int _cdecl get_frames(int move_no);
+	void _cdecl begin_edit_animation();
+	void _cdecl begin_edit(int detail);
+	void _cdecl end_edit(int detail);
+	void do_animation(float elapsed);
 
 	// drawing
-	void update_vertex_buffer(int mat_no, int detail);
-	void draw(int detail, bool set_fx, bool allow_shadow);
-	void draw_simple(int material, int detail);
+	//void update_vertex_buffer(int mat_no, int detail);
 
 	// visible skins (shared)
 	Mesh *mesh[MODEL_NUM_MESHES];
-	bool mesh_is_reference[MODEL_NUM_MESHES];
 
 	// material (own)
 	Array<Material*> material;
-
-	// dynamical data (own)
-	Array<vector> vertex_dyn[MODEL_NUM_MESHES]; // here the animated vertices are stored before rendering
-	Array<vector> normal_dyn[MODEL_NUM_MESHES];
 	
 	// physical skin (shared)
 	PhysicalMesh *phys;
@@ -370,30 +378,30 @@ public:
 	// engine data
 	bool registered;
 	bool _detail_needed_[MODEL_NUM_MESHES]; // per frame
-	int _detail_; // per view (more than once a frame...)
 
 	// effects (own)
 	Array<Fx::Effect*> fx;
 
 	// skeleton (own)
 	Array<Bone> bone;
-	Array<vector> bone_pos_0;
 
 	// move operations
 	struct AnimationData {
 		int num_operations;
 		MoveOperation operation[MODEL_MAX_MOVE_OPS];
-		MetaMove *meta;
+		MetaMove *meta; // shared
+
+		// dynamical data (own)
+		Mesh *mesh[MODEL_NUM_MESHES]; // here the animated vertices are stored before rendering
 	} anim;
 
 	btRigidBody* body;
 	btCollisionShape* colShape;
 
-	virtual void _cdecl on_init(){}
-	virtual void _cdecl on_delete(){}
-	virtual void _cdecl on_collide_m(Model *o){}
-	virtual void _cdecl on_collide_t(Terrain *t){}
-	virtual void _cdecl on_iterate(float dt){}
+	virtual void _cdecl on_init() {}
+	virtual void _cdecl on_delete() {}
+	virtual void _cdecl on_collide(const CollisionData &col) {}
+	virtual void _cdecl on_iterate(float dt) {}
 };
 
 
@@ -407,16 +415,6 @@ enum {
 	NORMAL_MODE_PRE = 16,
 };
 
-
-// move operations
-enum {
-	MOVE_OP_SET,			// overwrite
-	MOVE_OP_SET_NEW_KEYED,	// overwrite, if current doesn't equal 0
-	MOVE_OP_SET_OLD_KEYED,	// overwrite, if last equals 0
-	MOVE_OP_ADD_1_FACTOR,	// w = w_old         + w_new * f
-	MOVE_OP_MIX_1_FACTOR,	// w = w_old * (1-f) + w_new * f
-	MOVE_OP_MIX_2_FACTOR	// w = w_old * a     + w_new * b
-};
 
 enum {
 	FX_TYPE_SCRIPT,
@@ -436,6 +434,4 @@ extern int NumObservers;
 #define SET_MATERIAL_TRANSPARENCY		4
 #define SET_MATERIAL_APPEARANCE			6
 
-
-#endif
 

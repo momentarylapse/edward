@@ -7,16 +7,15 @@
 |                                                                              |
 | last update: 2009.11.22 (c) by MichiSoft TM                                  |
 \*----------------------------------------------------------------------------*/
-#if !defined(CAMERA_H__INCLUDED_)
-#define CAMERA_H__INCLUDED_
+#pragma once
 
 
 #include "../lib/base/base.h"
 #include "../lib/math/math.h"
-#include "../meta.h"
+#include "../y/Entity.h"
 
 
-class Camera : public XContainer {
+class Camera : public Entity {
 public:
 	Camera(const vector &pos, const quaternion &ang, const rect &dest);
 	~Camera() override;
@@ -62,5 +61,4 @@ extern Array<Camera*> cameras;
 extern Camera *cam; // "camera"
 extern Camera *cur_cam; // currently rendering
 
-#endif
 

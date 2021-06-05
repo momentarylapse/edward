@@ -11,7 +11,7 @@
 #include "../../Data/Model/ModelPolygon.h"
 #include "../../Mode/Model/ModeModel.h"
 #include "../../Edward.h"
-#include "../../x/ModelManager.h"
+#include "../../y/ModelManager.h"
 #include "../../lib/xfile/chunked.h"
 
 FormatModel::FormatModel() : TypedFormat<DataModel>(FD_MODEL, "model", _("Model"), Flag::CANONICAL_READ_WRITE) {
@@ -37,15 +37,7 @@ int get_normal_index(vector &n) {
 	return nxy + 256 * nz;
 }
 
-vector get_normal_by_index(int index) {
-	float wz = (float)(index >> 8) * pi / 255.0f;
-	float wxy = (float)(index & 255) * 2 * pi / 255.0f;
-	float swz = sin(wz);
-	if (swz < 0)
-		swz = - swz;
-	float cwz = cos(wz);
-	return vector( cos(wxy) * swz, sin(wxy) * swz, cwz);
-}
+vector get_normal_by_index(int index);
 
 
 
@@ -195,6 +187,7 @@ public:
 	ChunkMaterial() : FileChunk("material") {}
 	void create() override {
 		me = new ModelMaterial;
+		msg_write(p2s(parent));
 		parent->material.add(me);
 	}
 	void read(File *f) override {
@@ -566,9 +559,9 @@ public:
 void import_animations(DataModel *me, const Array<ModelFrame> &frames_vert, const Array<ModelFrame> &frames_skel, const Array<int> &offsets) {
 	//msg_write(ia2s(offsets));
 	foreachi (auto &m, me->move, mi) {
-		if (m.type == MOVE_TYPE_VERTEX)
+		if (m.type == AnimationType::VERTEX)
 			m.frame = frames_vert.sub_ref(offsets[mi], offsets[mi] + m.frame.num);
-		else if (m.type == MOVE_TYPE_SKELETAL) {
+		else if (m.type == AnimationType::SKELETAL) {
 			//msg_write(format("sk %d  %d    %d", offsets[mi], m.frame.num, frames_skel.num));
 			for (int i=0; i<m.frame.num; i++)
 				m.frame[i] = frames_skel[offsets[mi] + i];
@@ -596,7 +589,7 @@ public:
 		for (auto &m: me->move) {
 			m.name = f->read_str();
 			m.id = f->read_int();
-			m.type = f->read_char();
+			m.type = (AnimationType)f->read_char();
 			frame_offset.add(f->read_int());
 			m.frame.resize(f->read_int());
 			m.frames_per_sec_const = f->read_float();
@@ -660,11 +653,11 @@ public:
 				continue;
 			f->write_str(m.name);
 			f->write_int(m.id);
-			f->write_char(m.type);
+			f->write_char((int)m.type);
 			// offset
-			if (m.type == MOVE_TYPE_VERTEX)
+			if (m.type == AnimationType::VERTEX)
 				f->write_int(n_frames_vert);
-			else //if (m.type == MOVE_TYPE_SKELETAL)
+			else //if (m.type == AnimationType::SKELETAL)
 				f->write_int(n_frames_skel);
 			f->write_int(m.frame.num);
 			f->write_float(m.frames_per_sec_const);
@@ -673,9 +666,9 @@ public:
 			f->write_bool(m.interpolated_quadratic);
 			f->write_bool(m.interpolated_loop);
 
-			if (m.type == MOVE_TYPE_VERTEX)
+			if (m.type == AnimationType::VERTEX)
 				n_frames_vert += m.frame.num;
-			else //if (m.type == MOVE_TYPE_SKELETAL)
+			else if (m.type == AnimationType::SKELETAL)
 				n_frames_skel += m.frame.num;
 		}
 
@@ -683,7 +676,7 @@ public:
 		// vertex animation frames
 		f->write_int(n_frames_vert);
 		for (auto &m: me->move)
-			if (m.type == MOVE_TYPE_VERTEX)
+			if (m.type == AnimationType::VERTEX)
 				for (auto &fr: m.frame) {
 					f->write_float(fr.duration);
 					for (int s=0; s<4; s++) {
@@ -707,7 +700,7 @@ public:
 		for (auto &b: parent->bone)
 			f->write_bool(b.parent < 0);
 		for (auto &m: me->move)
-			if (m.type == MOVE_TYPE_SKELETAL)
+			if (m.type == AnimationType::SKELETAL)
 				for (auto &fr: m.frame) {
 					f->write_float(fr.duration);
 					for (int j=0;j<me->bone.num;j++)
@@ -904,7 +897,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 			data->importFromTriangleSkin(1);
 
 		for (ModelMove &m: data->move)
-			if (m.type == MOVE_TYPE_VERTEX) {
+			if (m.type == AnimationType::VERTEX) {
 				for (ModelFrame &f: m.frame)
 					f.vertex_dpos = f.skin[1].dpos;
 			}

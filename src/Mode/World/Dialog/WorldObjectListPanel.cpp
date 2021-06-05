@@ -18,8 +18,8 @@
 #include "../../../Storage/Storage.h"
 #include "../../../Action/World/Object/ActionWorldEditObject.h"
 #include "../../../MultiView/MultiView.h"
-#include "../../../x/object.h"
-#include "../../../x/terrain.h"
+#include "../../../y/Object.h"
+#include "../../../y/Terrain.h"
 #include "../../../lib/kaba/kaba.h"
 #include "../../../Edward.h"
 

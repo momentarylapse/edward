@@ -13,11 +13,11 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Data/Model/ModelMesh.h"
 #include "../../../Data/Model/ModelPolygon.h"
-#include "../../../x/object.h"
-#include "../../../x/terrain.h"
-#include "../../../meta.h"
+#include "../../../y/Object.h"
+#include "../../../y/Terrain.h"
+#include "../../../y/EngineData.h"
 #include "../../../Storage/Storage.h"
-#include "../../../x/ModelManager.h"
+#include "../../../y/ModelManager.h"
 
 bool LightmapData::Triangle::intersect(const Ray &r, vector &cp) const
 {

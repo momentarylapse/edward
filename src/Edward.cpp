@@ -21,13 +21,13 @@
 #include "MultiView/ColorScheme.h"
 #include "MultiView/DrawingHelper.h"
 #include "Storage/Storage.h"
-#include "x/world.h"
-#include "x/camera.h"
+#include "y/World.h"
+#include "y/Camera.h"
 #include "meta.h"
-#include "x/font.h"
+#include "y/Font.h"
 #include "lib/kaba/kaba.h"
 #include "lib/nix/nix.h"
-#include "x/ModelManager.h"
+#include "y/ModelManager.h"
 
 Edward *ed = NULL;
 EdwardApp *app = NULL;

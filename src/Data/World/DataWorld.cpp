@@ -14,9 +14,9 @@
 #include "../../Mode/World/ModeWorld.h"
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
-#include "../../x/object.h"
-#include "../../x/terrain.h"
-#include "../../x/world.h"
+#include "../../y/Object.h"
+#include "../../y/Terrain.h"
+#include "../../y/World.h"
 #include "../../meta.h"
 #include "../../Action/World/Object/ActionWorldAddObject.h"
 #include "../../Action/World/Terrain/ActionWorldAddTerrain.h"
@@ -24,7 +24,7 @@
 #include "../../Action/World/ActionWorldDeleteSelection.h"
 #include "../../lib/nix/nix.h"
 #include "../../MultiView/MultiView.h"
-#include "../../x/ModelManager.h"
+#include "../../y/ModelManager.h"
 
 
 

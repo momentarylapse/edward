@@ -14,7 +14,7 @@
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Edward.h"
 #include "../../../Storage/Storage.h"
-#include "../../../x/ModelManager.h"
+#include "../../../y/ModelManager.h"
 
 LightmapDialog::LightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
 	hui::Dialog("", 400, 400, _parent, _allow_parent)

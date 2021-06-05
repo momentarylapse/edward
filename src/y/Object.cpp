@@ -7,11 +7,21 @@
 |                                                                              |
 | last updated: 2008.10.26 (c) by MichiSoft TM                                 |
 \*----------------------------------------------------------------------------*/
-#include "object.h"
-#include "world.h"
+#include "Object.h"
 #include "Material.h"
-#include "../meta.h"
+#include "World.h"
+#include "../y/EngineData.h"
 #include "../lib/file/file.h"
+
+#if HAS_LIB_BULLET
+#include <btBulletDynamicsCommon.h>
+
+
+btVector3 bt_set_v(const vector &v);
+btQuaternion bt_set_q(const quaternion &q);
+vector bt_get_v(const btVector3 &v);
+#endif
+
 
 static int num_insane=0;
 
@@ -75,17 +85,42 @@ Object::Object()
 	//msg_left();
 }
 
+
 void Object::add_force(const vector &f, const vector &rho) {
 	if (engine.elapsed<=0)
 		return;
 	if (!physics_data.active)
 		return;
-	force_ext += f;
-	torque_ext += vector::cross(rho, f);
-	//TestVectorSanity(f, "f addf");
-	//TestVectorSanity(rho, "rho addf");
-	//TestVectorSanity(torque, "Torque addf");
-	unfreeze(this);
+	if (world.physics_mode == PhysicsMode::FULL_EXTERNAL) {
+#if HAS_LIB_BULLET
+		body->activate(); // why doesn't this happen automatically?!? bug in bullet?
+		body->applyForce(bt_set_v(f), bt_set_v(rho));
+#endif
+	} else {
+		force_ext += f;
+		torque_ext += vector::cross(rho, f);
+		//TestVectorSanity(f, "f addf");
+		//TestVectorSanity(rho, "rho addf");
+		//TestVectorSanity(torque, "Torque addf");
+		unfreeze(this);
+	}
+}
+
+void Object::add_impulse(const vector &p, const vector &rho) {
+	if (engine.elapsed<=0)
+		return;
+	if (!physics_data.active)
+		return;
+	if (world.physics_mode == PhysicsMode::FULL_EXTERNAL) {
+#if HAS_LIB_BULLET
+		body->activate();
+		body->applyImpulse(bt_set_v(p), bt_set_v(rho));
+#endif
+	} else {
+		vel += p / physics_data.mass;
+		//rot += ...;
+		unfreeze(this);
+	}
 }
 
 void Object::add_torque(const vector &t) {
@@ -93,9 +128,33 @@ void Object::add_torque(const vector &t) {
 		return;
 	if (!physics_data.active)
 		return;
-	torque_ext += t;
-	//TestVectorSanity(Torque,"Torque addt");
-	unfreeze(this);
+	if (world.physics_mode == PhysicsMode::FULL_EXTERNAL) {
+#if HAS_LIB_BULLET
+		body->activate();
+		body->applyTorque(bt_set_v(t));
+#endif
+	} else {
+		torque_ext += t;
+		//TestVectorSanity(Torque,"Torque addt");
+		unfreeze(this);
+	}
+}
+
+void Object::add_torque_impulse(const vector &l) {
+	if (engine.elapsed <= 0)
+		return;
+	if (!physics_data.active)
+		return;
+	if (world.physics_mode == PhysicsMode::FULL_EXTERNAL) {
+#if HAS_LIB_BULLET
+		body->activate();
+		body->applyTorqueImpulse(bt_set_v(l));
+#endif
+	} else {
+		//rot += ...
+		//TestVectorSanity(Torque,"Torque addt");
+		unfreeze(this);
+	}
 }
 
 void Object::make_visible(bool _visible_) {
@@ -222,4 +281,32 @@ void Object::update_data() {
 	}
 
 	// set ode data..
+}
+
+
+void Object::update_motion() {
+#if HAS_LIB_BULLET
+	btTransform trans;
+	body->setLinearVelocity(bt_set_v(vel));
+	body->setAngularVelocity(bt_set_v(rot));
+	trans.setRotation(bt_set_q(ang));
+	trans.setOrigin(bt_set_v(pos));
+	body->getMotionState()->setWorldTransform(trans);
+#endif
+}
+
+void Object::update_mass() {
+#if HAS_LIB_BULLET
+	if (physics_data.active) {
+		btScalar mass(physics_data.active);
+		btVector3 localInertia(physics_data.theta_0._00, physics_data.theta_0._11, physics_data.theta_0._22);
+		//if (colShape)
+		//	colShape->calculateLocalInertia(mass, localInertia);
+		body->setMassProps(physics_data.mass, localInertia);
+	} else {
+		btScalar mass(0);
+		btVector3 localInertia(0, 0, 0);
+		//body->setMassProps(physics_data.mass, localInertia);
+	}
+#endif
 }

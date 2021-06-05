@@ -31,7 +31,7 @@ ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
 	// create one dummy animation
 	empty_move = new ModelMove;
 	empty_move->name = "-empty move-";
-	empty_move->type = MOVE_TYPE_NONE;
+	empty_move->type = AnimationType::NONE;
 	empty_move->frames_per_sec_const = 1;
 	empty_move->frames_per_sec_factor = 0;
 	empty_move->interpolated_quadratic = 0;
@@ -128,9 +128,9 @@ void ModeModelAnimation::set_current_move(int move_no) {
 		}
 	set_current_frame(0);
 
-	if (cur_move()->type == MOVE_TYPE_SKELETAL)
+	if (cur_move()->type == AnimationType::SKELETAL)
 		ed->set_mode(mode_model_animation_skeleton);
-	else if (cur_move()->type == MOVE_TYPE_VERTEX)
+	else if (cur_move()->type == AnimationType::VERTEX)
 		ed->set_mode(mode_model_animation_vertex);
 	else
 		ed->set_mode(mode_model_animation_none);
@@ -158,7 +158,7 @@ void ModeModelAnimation::update_animation() {
 		vertex[i].is_selected = v.is_selected;
 	}
 
-	if (cur_move()->type == MOVE_TYPE_SKELETAL) {
+	if (cur_move()->type == AnimationType::SKELETAL) {
 		update_skeleton();
 		foreachi(auto &v, data->mesh->vertex, i){
 			if (v.bone_index >= data->bone.num) {
@@ -168,7 +168,7 @@ void ModeModelAnimation::update_animation() {
 				vertex[i].pos = b._matrix * (v.pos - b.pos);
 			}
 		}
-	} else if (cur_move()->type == MOVE_TYPE_VERTEX) {
+	} else if (cur_move()->type == AnimationType::VERTEX) {
 		auto f = get_interpolation();
 		foreachi(auto &v, data->mesh->vertex, i)
 			vertex[i].pos = v.pos + f.vertex_dpos[i];
@@ -187,7 +187,7 @@ void ModeModelAnimation::update_animation() {
 void ModeModelAnimation::update_skeleton() {
 	bone = data->bone;
 
-	if (cur_move()->type != MOVE_TYPE_SKELETAL) {
+	if (cur_move()->type != AnimationType::SKELETAL) {
 		return;
 	}
 	auto f = get_interpolation();

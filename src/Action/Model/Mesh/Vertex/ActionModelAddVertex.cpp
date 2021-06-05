@@ -28,7 +28,7 @@ void *ActionModelAddVertex::execute(Data *d) {
 
 	// correct animations
 	for (ModelMove &move: m->move) {
-		if (move.type == MOVE_TYPE_VERTEX) {
+		if (move.type == AnimationType::VERTEX) {
 			for (ModelFrame &f: move.frame)
 				f.vertex_dpos.resize(m->edit_mesh->vertex.num);
 		}
@@ -47,7 +47,7 @@ void ActionModelAddVertex::undo(Data *d) {
 
 	// correct animations
 	for (ModelMove &move: m->move)
-		if (move.type == MOVE_TYPE_VERTEX) {
+		if (move.type == AnimationType::VERTEX) {
 			for (ModelFrame &f: move.frame)
 				f.vertex_dpos.resize(m->edit_mesh->vertex.num);
 		}

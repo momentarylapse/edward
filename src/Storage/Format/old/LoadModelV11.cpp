@@ -11,7 +11,7 @@
 #include "../../../Data/Model/ModelPolygon.h"
 #include "../../../Mode/Model/ModeModel.h"
 #include "../../../Edward.h"
-#include "../../../x/ModelManager.h"
+#include "../../../y/ModelManager.h"
 
 vector get_normal_by_index(int index);
 
@@ -89,24 +89,7 @@ void guess_smooth_groups(DataModel *m) {
 	msg_write(format(" %d smooth groups found", groups.num));
 }
 
-File *load_file_x(const Path &filename, int &version) {
-
-	File *f = FileOpen(filename);
-	char c = f->read_char();
-	if (c == 'b') {
-		version = f->read_word();
-		return f;
-	} else if (c == 't') {
-		delete f;
-		f = FileOpenText(filename);
-		f->read_char();
-		version = f->read_word();
-		return f;
-	} else {
-		throw FormatError(_("File format unreadable!"));
-	}
-	return nullptr;
-}
+File *load_file_x(const Path &filename, int &version);
 
 void FormatModel::_load_old(const Path &filename, DataModel *data, bool deep) {
 	// old format
@@ -284,13 +267,13 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 		data->move.resize(anim_index + 1);
 		ModelMove *m = &data->move[anim_index];
 		m->name = f->read_str();
-		m->type = f->read_int();
+		m->type = (AnimationType)f->read_int();
 		m->frame.resize(f->read_int());
 		m->frames_per_sec_const = f->read_float();
 		m->frames_per_sec_factor = f->read_float();
 
 		// vertex animation
-		if (m->type == MOVE_TYPE_VERTEX){
+		if (m->type == AnimationType::VERTEX){
 			for (int fr=0;fr<m->frame.num;fr++){
 				m->frame[fr].duration = 1;
 				for (int s=0;s<4;s++){
@@ -302,7 +285,7 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 					}
 				}
 			}
-		}else if (m->type == MOVE_TYPE_SKELETAL){
+		}else if (m->type == AnimationType::SKELETAL){
 			Array<bool> VarDeltaPos;
 			VarDeltaPos.resize(data->bone.num);
 			for (int j=0;j<data->bone.num;j++)
@@ -632,15 +615,15 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 		data->move.resize(anim_index + 1);
 		ModelMove *m = &data->move[anim_index];
 		m->name = f->read_str();
-		m->type = f->read_int();
-		bool rubber_timing = (m->type & 128);
-		m->type = m->type & 0x7f;
+		int tt = f->read_int();
+		m->type = (AnimationType)(tt & 0x7f);
+		bool rubber_timing = (tt & 128);
 		m->frame.resize(f->read_int());
 		m->frames_per_sec_const = f->read_float();
 		m->frames_per_sec_factor = f->read_float();
 
 		// vertex animation
-		if (m->type == MOVE_TYPE_VERTEX){
+		if (m->type == AnimationType::VERTEX){
 			for (ModelFrame &fr: m->frame){
 				fr.duration = 1;
 				if (rubber_timing)
@@ -654,7 +637,7 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 					}
 				}
 			}
-		}else if (m->type == MOVE_TYPE_SKELETAL){
+		}else if (m->type == AnimationType::SKELETAL){
 			Array<bool> VarDeltaPos;
 			VarDeltaPos.resize(data->bone.num);
 			for (int j=0;j<data->bone.num;j++)
@@ -674,7 +657,7 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 				}
 			}
 		}else{
-			throw FormatError("unknown animation type: " + i2s(m->type));
+			throw FormatError("unknown animation type: " + i2s((int)m->type));
 		}
 	}
 	// Effects

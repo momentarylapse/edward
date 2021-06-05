@@ -9,7 +9,7 @@
 #define ACTIONMODELSKINVERTICESFROMPROJECTION_H_
 
 #include "../../../Action.h"
-#include "../../../../x/Material.h"
+#include "../../../../y/Material.h"
 #include "../../../../Data/Model/SkinGenerator.h"
 class DataModel;
 

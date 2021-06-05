@@ -7,24 +7,25 @@
 | last updated: 2008.11.02 (c) by MichiSoft TM                                 |
 \*----------------------------------------------------------------------------*/
 
-#include "terrain.h"
-//#include "../lib/vulkan/vulkan.h"
-#include "../lib/nix/nix.h"
+#include "Terrain.h"
+#include "Camera.h"
 #include "Material.h"
-#include "world.h"
-#include "camera.h"
+#include "World.h"
+#include "../y/EngineData.h"
 #ifdef _X_ALLOW_X_
-#include "../meta.h"
 //#include "../fx/light.h"
 #endif
+#include "../lib/nix/nix.h"
+
+nix::Texture *load_texture(const Path &file);
+
 
 #define Index(x,z)		((x)*(num_z+1)+(z))
 #define Index2(t,x,z)	((x)*(t->num_z+1)+(z))
 //#define max(a,b)		(((a)>(b))?(a):(b))
 //#define min(a,b)		(((a)<(b))?(a):(b))
 
-void Terrain::reset()
-{
+void Terrain::reset() {
 	filename = "";
 	error = false;
 	num_x = num_z = 0;
@@ -32,17 +33,16 @@ void Terrain::reset()
 	vertex_buffer = NULL;
 }
 
-Terrain::Terrain()
-{
+Terrain::Terrain() : Entity(Type::TERRAIN) {
 	material = NULL;
 	ubo = nullptr;
+	body = nullptr;
+	colShape = nullptr;
 //	dset = nullptr;
 	reset();
-	material = LoadMaterial("");
 }
 
-Terrain::Terrain(const Path &_filename_, const vector &_pos_)
-{
+Terrain::Terrain(const Path &_filename_, const vector &_pos_) : Terrain() {
 	material = NULL;
 	load(_filename_, _pos_);
 }
@@ -77,8 +77,8 @@ bool Terrain::load(const Path &_filename_, const vector &_pos_, bool deep)
 			int num_textures = f->read_int();
 			for (int i=0;i<num_textures;i++){
 				texture_file[i] = f->read_str();
-				texture_scale[i].x = f->read_float();
-				texture_scale[i].y = 0;
+				texture_scale[i].x = num_x * f->read_float();
+				texture_scale[i].y = 0.107f + i * 0.231f; // rotation
 				texture_scale[i].z = f->read_float();
 			}
 			// Material
@@ -90,7 +90,8 @@ bool Terrain::load(const Path &_filename_, const vector &_pos_, bool deep)
 				if (num_textures > material->textures.num)
 					material->textures.resize(num_textures);
 				for (int i=0;i<num_textures;i++)
-					material->textures[i] = nix::Texture::load(texture_file[i]);
+					if (!texture_file[i].is_empty())
+						material->textures[i] = load_texture(texture_file[i]);
 
 				// height
 				for (int x=0;x<num_x+1;x++)
@@ -100,7 +101,7 @@ bool Terrain::load(const Path &_filename_, const vector &_pos_, bool deep)
 					for (int z=0;z<num_z/32+1;z++)
 						partition[x][z] = -1;
 
-				vertex_buffer = new nix::VertexBuffer("3f,3f,2f");
+				vertex_buffer = new nix::VertexBuffer("3f,3f" + string(",2f").repeat(material->textures.num));
 			}
 		}else{
 			msg_error(format("wrong file format: %d (4 expected)",ffv));
@@ -329,7 +330,7 @@ void Terrain::get_triangle_hull(TriangleHull *h, vector &_pos_, float _radius_)
 		}
 }
 
-inline bool TracePattern(Terrain *t, const vector &p1,const vector &p2, TraceData &data, int x, int z, float y_min, int dir, float range)
+inline bool TracePattern(Terrain *t, const vector &p1,const vector &p2, CollisionData &data, int x, int z, float y_min, int dir, float range)
 {
 	// trace beam too high above this pattern?
 	if ( (t->height[Index2(t,x,z)]<y_min) && (t->height[Index2(t,x,z+1)]<y_min) && (t->height[Index2(t,x+1,z)]<y_min) && (t->height[Index2(t,x+1,z+1)]<y_min) )
@@ -365,22 +366,21 @@ inline bool TracePattern(Terrain *t, const vector &p1,const vector &p2, TraceDat
 	if ((dir==2)&&(tp.x>p1.x))	return false;
 	if ((dir==3)&&(tp.z>p1.z))	return false;
 
-	data.point = tp;
-	data.terrain = t;
-	data.type = TRACE_TYPE_TERRAIN;
+	data.p= tp;
+	data.t = t;
 	return true;
 }
 
-bool Terrain::trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test)
+bool Terrain::trace(const vector &p1, const vector &p2, const vector &dir, float range, CollisionData &data, bool simple_test)
 {
 	float dmin = range + 1;
 	vector c;
 
 	if ((p2.x==p1.x)&&(p2.z==p1.z)&&(p2.y<p1.y)){
 		float h=gimme_height(p1);
-		if (p2.y<h){
-			data.point = vector(p1.x,h,p1.z);
-			data.terrain = this;
+		if (p2.y < h){
+			data.p = vector(p1.x,h,p1.z);
+			data.t = this;
 			return true;
 		}
 	}
@@ -549,14 +549,17 @@ void Terrain::build_vertex_buffer() {
 						}
 					}}
 
-					// multitexturing
-					float ta[8],tb[8],tc[8],td[8];
-					for (int i=0;i<material->textures.num;i++){
-						ta[i*2]=(float) x   *texture_scale[i].x,	ta[i*2+1]=(float) z   *texture_scale[i].z;
-						tb[i*2]=(float)(x+e)*texture_scale[i].x,	tb[i*2+1]=(float) z   *texture_scale[i].z;
-						tc[i*2]=(float) x   *texture_scale[i].x,	tc[i*2+1]=(float)(z+e)*texture_scale[i].z;
-						td[i*2]=(float)(x+e)*texture_scale[i].x,	td[i*2+1]=(float)(z+e)*texture_scale[i].z;
-					}
+					float u1 = (float) x    / (float)num_x;//*texture_scale[i].x;
+					float u2 = (float)(x+e) / (float)num_x;//*texture_scale[i].x;
+					float v1 = (float) z    / (float)num_z;//*texture_scale[i].z;
+					float v2 = (float)(z+e) / (float)num_z;//*texture_scale[i].z;
+
+					uv.add(u1);	uv.add(v1);
+					uv.add(u1);	uv.add(v2);
+					uv.add(u2);	uv.add(v2);
+					uv.add(u1);	uv.add(v1);
+					uv.add(u2);	uv.add(v2);
+					uv.add(u2);	uv.add(v1);
 
 					/*vertices.add({va,na,ta[0],ta[1]});
 					vertices.add({vc,nc,tc[0],tc[1]});
@@ -564,12 +567,12 @@ void Terrain::build_vertex_buffer() {
 					vertices.add({va,na,ta[0],ta[1]});
 					vertices.add({vd,nd,td[0],td[1]});
 					vertices.add({vb,nb,tb[0],tb[1]});*/
-					p.add(va);	n.add(na);	uv.add(ta[0]);	uv.add(ta[1]);
-					p.add(vc);	n.add(nc);	uv.add(tc[0]);	uv.add(tc[1]);
-					p.add(vd);	n.add(nd);	uv.add(td[0]);	uv.add(td[1]);
-					p.add(va);	n.add(na);	uv.add(ta[0]);	uv.add(ta[1]);
-					p.add(vd);	n.add(nd);	uv.add(td[0]);	uv.add(td[1]);
-					p.add(vb);	n.add(nb);	uv.add(tb[0]);	uv.add(tb[1]);
+					p.add(va);	n.add(na);
+					p.add(vc);	n.add(nc);
+					p.add(vd);	n.add(nd);
+					p.add(va);	n.add(na);
+					p.add(vd);	n.add(nd);
+					p.add(vb);	n.add(nb);
 
 #if 0
 					// add to buffer

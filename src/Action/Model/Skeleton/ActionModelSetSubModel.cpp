@@ -9,7 +9,7 @@
 #include "../../../Data/Model/DataModel.h"
 #include <assert.h>
 
-#include "../../../x/ModelManager.h"
+#include "../../../y/ModelManager.h"
 
 ActionModelSetSubModel::ActionModelSetSubModel(int _index, const Path &_filename) {
 	index = _index;

@@ -11,8 +11,8 @@
 #include "../../../Action/World/Terrain/ActionWorldEditTerrain.h"
 #include "../../../Edward.h"
 #include "../../../Storage/Storage.h"
-#include "../../../x/terrain.h"
-#include "../../../x/Material.h"
+#include "../../../y/Terrain.h"
+#include "../../../y/Material.h"
 #include "../../../lib/nix/nix.h"
 #include <assert.h>
 

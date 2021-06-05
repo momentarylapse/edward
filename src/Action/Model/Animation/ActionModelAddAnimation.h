@@ -10,17 +10,19 @@
 
 #include "../../Action.h"
 
-class ActionModelAddAnimation: public Action
-{
+enum class AnimationType;
+
+class ActionModelAddAnimation: public Action {
 public:
-	ActionModelAddAnimation(int index, int type);
-	string name(){	return "ModelAddAnimation";	}
+	ActionModelAddAnimation(int index, AnimationType type);
+	string name() { return "ModelAddAnimation"; }
 
 	void *execute(Data *d);
 	void undo(Data *d);
 
 private:
-	int index, type;
+	int index;
+	AnimationType type;
 };
 
 #endif /* ACTIONMODELADDANIMATION_H_ */

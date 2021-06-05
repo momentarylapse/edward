@@ -7,8 +7,9 @@
 
 
 #include "WorldTerrain.h"
-#include "../../meta.h"
-#include "../../x/terrain.h"
+#include "../../y/EngineData.h"
+#include "../../y/Terrain.h"
+#include "../../lib/file/file.h"
 
 
 bool WorldTerrain::load(const vector &_pos, const Path &_filename, bool deep) {

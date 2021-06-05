@@ -6,20 +6,23 @@
 |                                                                              |
 | last updated: 2008.06.23 (c) by MichiSoft TM                                 |
 \*----------------------------------------------------------------------------*/
-#if !defined(TERRAIN_H__INCLUDED_)
-#define TERRAIN_H__INCLUDED_
+#pragma once
 
 #include "../lib/base/base.h"
 #include "../lib/file/path.h"
 #include "../lib/math/math.h"
+#include "../y/Entity.h"
 #include "Material.h"
 class Material;
-class TraceData;
+class CollisionData;
 namespace nix {
 	class VertexBuffer;
 	class UniformBuffer;
 	//class DescriptorSet;
 };
+
+class btRigidBody;
+class btCollisionShape;
 
 enum {
 	TerrainTypeContingous,
@@ -49,7 +52,7 @@ public:
 	int *edge_index;
 };
 
-class Terrain {
+class Terrain : public Entity {
 public:
 	Terrain();
 	Terrain(const Path &filename, const vector &pos);
@@ -62,7 +65,7 @@ public:
 
 	void get_triangle_hull(TriangleHull *hull, vector &pos, float radius);
 
-	bool _cdecl trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
+	bool _cdecl trace(const vector &p1, const vector &p2, const vector &dir, float range, CollisionData &data, bool simple_test);
 
 	void calc_detail();
 	void build_vertex_buffer();
@@ -91,11 +94,14 @@ public:
 	float dhx, dhz;
 
 
+	btRigidBody* body;
+	btCollisionShape* colShape;
+
+
 	bool changed;
 	bool redraw, force_redraw;
 	vector pos_old;
 };
 
 
-#endif
 

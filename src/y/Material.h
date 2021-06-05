@@ -1,5 +1,4 @@
-#ifndef SRC_WORLD_MATERIAL_H_
-#define SRC_WORLD_MATERIAL_H_
+#pragma once
 
 #include "../lib/base/base.h"
 #include "../lib/base/pointer.h"
@@ -98,4 +97,3 @@ void SetDefaultMaterial(Material *m);
 void MaterialSetDefaultShader(nix::Shader *s);
 Material *LoadMaterial(const Path &filename);
 
-#endif

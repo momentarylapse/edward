@@ -22,9 +22,9 @@
 |                                                                              |
 | last updated: 2009.12.09 (c) by MichiSoft TM                                 |
 \*----------------------------------------------------------------------------*/
-#include "font.h"
+#include "Font.h"
 #include "../lib/nix/nix.h"
-#include "../meta.h"
+#include "../y/EngineData.h"
 
 namespace Gui
 {

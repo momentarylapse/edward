@@ -566,7 +566,7 @@ void FormatModelJson::importMoves(DataModel *m, Value *v)
 	for (int i=0; i<v->getCount(); i++){
 		Value *va = v->get(i);
 		ModelMove move;
-		move.type = MOVE_TYPE_SKELETAL;
+		move.type = AnimationType::SKELETAL;
 		move.name = va->get("name")->s();
 		move.frames_per_sec_const = va->get("fps")->f();
 		move.frames_per_sec_factor = 0;

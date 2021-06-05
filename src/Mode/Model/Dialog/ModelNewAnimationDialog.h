@@ -10,11 +10,11 @@
 
 #include "../../../lib/hui/hui.h"
 class DataModel;
+enum class AnimationType;
 
-class ModelNewAnimationDialog: public hui::Dialog
-{
+class ModelNewAnimationDialog: public hui::Dialog {
 public:
-	ModelNewAnimationDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data, int index, int type);
+	ModelNewAnimationDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data, int index, AnimationType type);
 
 	void on_close();
 	void on_ok();

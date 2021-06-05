@@ -16,11 +16,11 @@
 #include "../Font/DataFont.h"
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
-#include "../../meta.h"
-#include "../../x/terrain.h"
-#include "../../x/font.h"
+#include "../../y/EngineData.h"
+#include "../../y/Terrain.h"
+#include "../../y/Font.h"
 #include "../../lib/kaba/kaba.h"
-#include "../../x/ModelManager.h"
+#include "../../y/ModelManager.h"
 
 AdminFile::AdminFile() {
 	Kind = -1;

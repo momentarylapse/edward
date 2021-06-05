@@ -10,7 +10,7 @@
 
 #include "../Data.h"
 #include "../../MultiView/SingleData.h"
-#include "../../x/Material.h"
+#include "../../y/Material.h"
 
 class DataWorld;
 class Terrain;
@@ -20,6 +20,7 @@ class WorldLight;
 class WorldObject;
 class WorldTerrain;
 class WorldCamera;
+enum class PhysicsMode;
 
 namespace nix {
 	enum class FogMode;
@@ -38,11 +39,6 @@ public:
 	Path filename;
 	string class_name;
 	Array<WorldScriptVariable> variables;
-};
-
-enum class PhysicsMode {
-	SIMPLE,
-	FULL_EXTERNAL
 };
 
 class DataWorld: public Data {

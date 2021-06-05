@@ -55,9 +55,9 @@ void ModelAnimationDialog::load_data() {
 	foreachi(ModelMove &m, data->move, i)
 		if (m.frame.num > 0) {
 			string str = i2s(i) + "\\";
-			if (m.type == MOVE_TYPE_VERTEX)
+			if (m.type == AnimationType::VERTEX)
 				str += _("Vertex");
-			else if (m.type == MOVE_TYPE_SKELETAL)
+			else if (m.type == AnimationType::SKELETAL)
 				str += _("Skeleton");
 			else
 				str += "???";
@@ -73,7 +73,7 @@ void ModelAnimationDialog::load_data() {
 }
 
 void ModelAnimationDialog::fill_animation() {
-	bool b = (mode_model_animation->cur_move()->type != MOVE_TYPE_NONE);
+	bool b = (mode_model_animation->cur_move()->type != AnimationType::NONE);
 	enable("name", b);
 	enable("frame", b);
 	enable("new_frame", b);
@@ -132,7 +132,7 @@ void ModelAnimationDialog::on_animation_list_right_click() {
 
 void ModelAnimationDialog::on_add_animation() {
 	int index = get_first_free_index();
-	int type = (data->bone.num > 0) ? MOVE_TYPE_SKELETAL : MOVE_TYPE_VERTEX;
+	auto type = (data->bone.num > 0) ? AnimationType::SKELETAL : AnimationType::VERTEX;
 
 	auto *dlg = new ModelNewAnimationDialog(win, false, data, index, type);
 	dlg->run();

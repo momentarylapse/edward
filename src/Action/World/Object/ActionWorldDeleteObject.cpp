@@ -7,10 +7,10 @@
 
 #include "ActionWorldDeleteObject.h"
 #include "../../../Data/World/DataWorld.h"
-#include "../../../x/object.h"
+#include "../../../y/Object.h"
 #include <assert.h>
 
-#include "../../../x/ModelManager.h"
+#include "../../../y/ModelManager.h"
 
 ActionWorldDeleteObject::ActionWorldDeleteObject(int _index) {
 	index = _index;

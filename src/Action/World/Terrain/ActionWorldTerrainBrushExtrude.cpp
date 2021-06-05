@@ -8,7 +8,7 @@
 #include "ActionWorldTerrainBrushExtrude.h"
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Data/World/WorldTerrain.h"
-#include "../../../x/terrain.h"
+#include "../../../y/Terrain.h"
 
 ActionWorldTerrainBrushExtrude::ActionWorldTerrainBrushExtrude(int _index, const vector &_pos, float _radius, float _depth) {
 	index = _index;

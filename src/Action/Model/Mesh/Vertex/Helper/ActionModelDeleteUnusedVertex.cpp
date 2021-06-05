@@ -15,8 +15,7 @@
 
 // can only delete lonely vertices!
 
-ActionModelDeleteUnusedVertex::ActionModelDeleteUnusedVertex(int _vertex)
-{
+ActionModelDeleteUnusedVertex::ActionModelDeleteUnusedVertex(int _vertex) {
 	vertex = _vertex;
 }
 
@@ -28,7 +27,7 @@ void ActionModelDeleteUnusedVertex::undo(Data *d) {
 	// correct animations
 	int i = 0;
 	for (ModelMove &mv: m->move)
-		if (mv.type == MOVE_TYPE_VERTEX){
+		if (mv.type == AnimationType::VERTEX){
 			for (ModelFrame &f: mv.frame)
 				f.vertex_dpos.insert(move[i ++], vertex);
 		}
@@ -57,7 +56,7 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d) {
 	// move data
 	move.clear();
 	for (ModelMove &mv: m->move)
-		if (mv.type == MOVE_TYPE_VERTEX) {
+		if (mv.type == AnimationType::VERTEX) {
 			for (ModelFrame &f: mv.frame) {
 				move.add(f.vertex_dpos[vertex]);
 				f.vertex_dpos.erase(vertex);

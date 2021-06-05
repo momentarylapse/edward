@@ -6,7 +6,7 @@
  */
 
 #include "WorldObject.h"
-#include "../../x/object.h"
+#include "../../y/Object.h"
 
 void WorldObject::update_data() {
 	if (!object)

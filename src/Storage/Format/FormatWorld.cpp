@@ -13,11 +13,11 @@
 #include "../../Data/World/WorldObject.h"
 #include "../../Data/World/WorldTerrain.h"
 #include "../../Edward.h"
-#include "../../x/model.h"
-#include "../../x/object.h"
-#include "../../x/world.h"
-#include "../../meta.h"
-#include "../../x/ModelManager.h"
+#include "../../y/Model.h"
+#include "../../y/Object.h"
+#include "../../y/World.h"
+#include "../../y/EngineData.h"
+#include "../../y/ModelManager.h"
 #include "../../lib/xfile/xml.h"
 
 FormatWorld::FormatWorld() : TypedFormat<DataWorld>(FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
@@ -53,6 +53,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	data->reset();
 
 	string x = FileReadText(filename);
+	msg_write(x.head(10));
 	if (x[0] == 't')
 		_load_old(filename, data, deep);
 	else
@@ -60,12 +61,12 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 
 
 
-	if (deep){
-		for (int i=0;i<data->terrains.num;i++){
+	if (deep) {
+		for (int i=0;i<data->terrains.num;i++) {
 			ed->progress->set(_("Terrains"), (float)i / (float)data->terrains.num / 2.0f);
 			data->terrains[i].load(data->terrains[i].pos, engine.map_dir << data->terrains[i].filename.with(".map"), true);
 		}
-		for (int i=0;i<data->objects.num;i++){
+		for (int i=0;i<data->objects.num;i++) {
 			//ed->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);
 			data->objects[i].object = (Object*)ModelManager::load(data->objects[i].filename);
 			data->objects[i].object->pos = data->objects[i].pos;

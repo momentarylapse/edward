@@ -11,8 +11,8 @@
 #include "../Data.h"
 #include "../../MultiView/SingleData.h"
 #include "../../lib/base/set.h"
-#include "../../x/model.h"
-#include "../../x/Material.h"
+#include "../../y/Model.h"
+#include "../../y/Material.h"
 #include "ModelMaterial.h"
 
 class DataModel;
@@ -101,7 +101,7 @@ struct ModelFrame {
 };
 
 struct ModelMove {
-	int type;
+	AnimationType type;
 	int id;
 	Array<ModelFrame> frame;
 	float frames_per_sec_const, frames_per_sec_factor;
@@ -208,7 +208,7 @@ public:
 	Array<ModelMove> move;
 
 	// actions
-	void addAnimation(int index, int type);
+	void addAnimation(int index, AnimationType type);
 	void duplicateAnimation(int source, int target);
 	void deleteAnimation(int index);
 	void setAnimationData(int index, const string &name, float fps_const, float fps_factor);

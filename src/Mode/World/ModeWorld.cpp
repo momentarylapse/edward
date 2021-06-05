@@ -20,12 +20,12 @@
 #include "../../Data/World/WorldTerrain.h"
 #include "../../Data/World/WorldCamera.h"
 #include "../../lib/nix/nix.h"
-#include "../../x/camera.h"
-#include "../../x/world.h"
-#include "../../x/Material.h"
-#include "../../x/model.h"
-#include "../../x/object.h"
-#include "../../x/terrain.h"
+#include "../../y/Camera.h"
+#include "../../y/World.h"
+#include "../../y/Material.h"
+#include "../../y/Model.h"
+#include "../../y/Object.h"
+#include "../../y/Terrain.h"
 #include "Dialog/TerrainPropertiesDialog.h"
 #include "Dialog/TerrainHeightmapDialog.h"
 #include "Dialog/LightmapDialog.h"
@@ -178,7 +178,7 @@ float WorldObject::hover_distance(MultiView::Window *win, const vector &mv, vect
 	Object *o = object;
 	if (!o)
 		return -1;
-	int d = o->_detail_;
+	int d = 0;//o->_detail_;
 	if ((d<0)or(d>2))
 		return -1;
 	for (int i=0;i<o->mesh[d]->vertex.num;i++) {
@@ -215,7 +215,7 @@ bool WorldObject::in_rect(MultiView::Window *win, const rect &r) {
 	Object *m = object;
 	if (!m)
 		return false;
-	int d = m->_detail_;
+	int d = 0;//m->_detail_;
 	if ((d<0)or(d>2))
 		return false;
 	vector min, max;
@@ -257,9 +257,9 @@ float WorldTerrain::hover_distance(MultiView::Window *win, const vector &mv, vec
 	float r = win->cam->radius * 100;
 	vector a = win->unproject(mv);
 	vector b = win->unproject(mv, win->cam->pos + win->get_direction() * r);
-	TraceData td;
+	CollisionData td;
 	bool hit = t->trace(a, b, v_0, r, td, false);
-	tp = td.point;
+	tp = td.p;
 	z = win->project(tp).z;
 	return hit ? 0 : -1;
 }
@@ -351,7 +351,7 @@ void ModeWorld::on_leave() {
 void DrawSelectionObject(Model *o, float alpha, const color &c) {
 	if (!o)
 		return;
-	int d = o->_detail_;
+	int d = 0;//o->_detail_;
 	if ((d<0) or (d>3))
 		return;
 	nix::set_model_matrix(o->_matrix);
@@ -475,7 +475,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 				nix::draw_triangles(o.object->mesh[0]->sub[i].vertex_buffer);
 			}
 			//o.object->draw(0, false, false);
-			o.object->_detail_ = 0;
+			//o.object->_detail_ = 0;
 		}
 	}
 	nix::set_wire(false);
