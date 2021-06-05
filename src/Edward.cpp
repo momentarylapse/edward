@@ -39,7 +39,6 @@ string SoundDir;
 #endif
 
 
-
 void Edward::on_close() {
 	if (allow_termination()) {
 		//request_destroy();
@@ -119,7 +118,7 @@ Edward::Edward(Array<string> arg) :
 	set_target("vgrid");
 	add_grid("", 0, 0, "root-table");
 	set_target("root-table");
-	add_drawing_area("!grabfocus,opengl", 0, 0, "nix-area");
+	add_drawing_area("!grabfocus,opengl=4.2", 0, 0, "nix-area");
 	add_revealer("!slide=left", 1, 0, "side-bar-revealer");
 	set_target("side-bar-revealer");
 	add_grid("!noexpandx,width=360", 0, 0, "side-bar-grid");

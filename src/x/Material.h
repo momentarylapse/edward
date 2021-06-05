@@ -19,6 +19,7 @@ namespace nix {
 }
 
 
+
 // types of transparency
 enum class TransparencyMode {
 	NONE = 0,
