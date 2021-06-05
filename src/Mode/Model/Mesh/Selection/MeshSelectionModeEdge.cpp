@@ -114,7 +114,7 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win) {
 	if (multi_view->hover.index < 0)
 		return;
 
-	nix::SetZ(false, false);
+	nix::set_z(false, false);
 	set_line_width(scheme.LINE_WIDTH_MEDIUM);
 	auto m = data->edit_mesh;
 	auto &e = m->edge[multi_view->hover.index];
@@ -123,7 +123,7 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win) {
 	p.add(m->show_vertices[e.vertex[1]].pos);
 	Array<color> c = {scheme.HOVER, scheme.HOVER};
 	draw_lines_colored(p, c, false);
-	nix::SetZ(true, true);
+	nix::set_z(true, true);
 }
 
 

@@ -36,12 +36,12 @@ void DataMaterial::AppearanceData::reset() {
 	metal = 0;
 	emissive = Black;
 
-	transparency_mode = TRANSPARENCY_NONE;
-	alpha_source = alpha_destination = 0;
+	transparency_mode = TransparencyMode::NONE;
+	alpha_source = alpha_destination = nix::Alpha::ZERO;
 	alpha_factor = 0.5f;
 	alpha_z_buffer = true;
 
-	reflection_mode = REFLECTION_NONE;
+	reflection_mode = ReflectionMode::NONE;
 	reflection_density = 0;
 	reflection_size = 128;
 	reflection_texture_file.clear();
@@ -84,20 +84,20 @@ void DataMaterial::reset() {
 }
 
 void DataMaterial::apply_for_rendering() {
-	nix::SetMaterial(appearance.albedo, appearance.roughness, appearance.metal, appearance.emissive);
+	nix::set_material(appearance.albedo, appearance.roughness, appearance.metal, appearance.emissive);
 
-	nix::SetAlpha(ALPHA_NONE);
-	nix::SetZ(true, true);
-	if (appearance.transparency_mode == TRANSPARENCY_COLOR_KEY_HARD) {
-		nix::SetAlpha(ALPHA_COLOR_KEY_HARD);
-	} else if (appearance.transparency_mode == TRANSPARENCY_COLOR_KEY_SMOOTH) {
-		nix::SetAlpha(ALPHA_COLOR_KEY_SMOOTH);
-	} else if (appearance.transparency_mode == TRANSPARENCY_FUNCTIONS) {
-		nix::SetAlpha(appearance.alpha_source, appearance.alpha_destination);
-		nix::SetZ(false, false);
-	} else if (appearance.transparency_mode == TRANSPARENCY_FACTOR) {
-		nix::SetAlpha(appearance.alpha_factor);
-		nix::SetZ(false, false);
+	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::set_z(true, true);
+	if (appearance.transparency_mode == TransparencyMode::COLOR_KEY_HARD) {
+		nix::set_alpha(nix::AlphaMode::COLOR_KEY_HARD);
+	} else if (appearance.transparency_mode == TransparencyMode::COLOR_KEY_SMOOTH) {
+		nix::set_alpha(nix::AlphaMode::COLOR_KEY_SMOOTH);
+	} else if (appearance.transparency_mode == TransparencyMode::FUNCTIONS) {
+		nix::set_alpha(appearance.alpha_source, appearance.alpha_destination);
+		nix::set_z(false, false);
+	} else if (appearance.transparency_mode == TransparencyMode::FACTOR) {
+		//nix::set_alpha(appearance.alpha_factor);
+		nix::set_z(false, false);
 	}
 }
 

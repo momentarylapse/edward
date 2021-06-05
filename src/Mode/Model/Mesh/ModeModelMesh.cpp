@@ -267,7 +267,7 @@ void ModeModelMesh::on_command(const string &id) {
 void ModeModelMesh::on_draw() {
 	auto s = data->edit_mesh->get_selection();
 	if (s.vertex.num > 0) {
-		nix::SetShader(nix::Shader::default_2d);
+		nix::set_shader(nix::Shader::default_2d);
 		string t = format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num);
 		if (current_skin == MESH_PHYSICAL)
 			t += format(", %d balls, %d cylinders", s.ball.num, s.cylinder.num);
@@ -552,7 +552,7 @@ void ModeModelMesh::set_current_skin(int index) {
 }
 
 void ModeModelMesh::draw_effects(MultiView::Window *win) {
-	nix::SetShader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d);
 	for (ModelEffect &fx: data->fx) {
 		vector p = win->project(data->mesh->vertex[fx.vertex].pos);
 		if ((p.z > 0) and (p.z < 1))
@@ -564,7 +564,7 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<Mo
 	color bg = win->get_background_color();
 	auto *multi_view = win->multi_view;
 
-	nix::SetOffset(-2);
+	nix::set_offset(-2);
 	set_line_width(selection_filter ? scheme.LINE_WIDTH_MEDIUM : scheme.LINE_WIDTH_THIN);
 	Array<vector> line_pos;
 	Array<color> line_color;
@@ -596,7 +596,7 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<Mo
 		line_pos.add(vertex[e.vertex[1]].pos);
 	}
 	draw_lines_colored(line_pos, line_color, false);
-	nix::SetOffset(0);
+	nix::set_offset(0);
 }
 
 void ModeModelMesh::draw_edges(MultiView::Window *win, ModelMesh *m, Array<ModelVertex> &vertex, bool only_selected) {
@@ -620,11 +620,11 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, Array
 
 		// draw
 		m->apply_for_rendering(win);
-		nix::SetOffset(0);
-		nix::DrawTriangles(m->vb);
-		nix::SetOffset(0);
-		//nix::SetShader(NULL);
-		//nix::SetTexture(NULL);
+		nix::set_offset(0);
+		nix::draw_triangles(m->vb);
+		nix::set_offset(0);
+		//nix::set_shader(NULL);
+		//nix::set_texture(NULL);
 	}
 
 	if (!multi_view->wire_mode)
@@ -642,7 +642,7 @@ void ModeModelMesh::draw_physical(MultiView::Window *win) {
 			mode_model->set_material_selected();
 		if (multi_view->hover.data == &b)
 			mode_model->set_material_hover();
-		nix::DrawTriangles(nix::vb_temp);
+		nix::draw_triangles(nix::vb_temp);
 	}
 
 	for (auto &c: data->phys_mesh->cylinder) {
@@ -653,7 +653,7 @@ void ModeModelMesh::draw_physical(MultiView::Window *win) {
 			mode_model->set_material_selected();
 		if (multi_view->hover.data == &c)
 			mode_model->set_material_hover();
-		nix::DrawTriangles(nix::vb_temp);
+		nix::draw_triangles(nix::vb_temp);
 	}
 
 
@@ -663,9 +663,9 @@ void ModeModelMesh::draw_physical(MultiView::Window *win) {
 		if (t.view_stage >= multi_view->view_stage)
 			t.add_to_vertex_buffer(data->phys_mesh->vertex, vbs, 1);
 	vbs.build(nix::vb_temp, 1);
-	nix::SetOffset(-0.5f);
-	nix::DrawTriangles(nix::vb_temp);
-	nix::SetOffset(0);
+	nix::set_offset(-0.5f);
+	nix::draw_triangles(nix::vb_temp);
+	nix::set_offset(0);
 	draw_edges(win, data->phys_mesh, data->phys_mesh->vertex, false);
 }
 
@@ -709,17 +709,17 @@ void ModeModelMesh::fill_selection_buffer(Array<ModelVertex> &vertex) {
 }
 
 void ModeModelMesh::draw_selection(MultiView::Window *win) {
-	nix::SetZ(true,true);
-	nix::SetAlpha(ALPHA_NONE);
+	nix::set_z(true,true);
+	nix::set_alpha(nix::AlphaMode::NONE);
 
-	nix::SetOffset(-1.0f);
+	nix::set_offset(-1.0f);
 	ModeModel::set_material_selected();
-	nix::DrawTriangles(vb_marked);
+	nix::draw_triangles(vb_marked);
 	ModeModel::set_material_creation();
-	nix::DrawTriangles(vb_creation);
-	nix::SetMaterial(White, 0.5f, 0, Black);
-	nix::SetAlpha(ALPHA_NONE);
-	nix::SetOffset(0);
+	nix::draw_triangles(vb_creation);
+	nix::set_material(White, 0.5f, 0, Black);
+	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::set_offset(0);
 }
 
 void ModeModelMesh::set_selection_mode(MeshSelectionMode *mode) {

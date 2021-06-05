@@ -30,13 +30,6 @@ public:
 	GeometryException(const string &message) : ActionException(message){}
 };
 
-#define TransparencyModeDefault			-1
-#define TransparencyModeNone			0
-#define TransparencyModeFunctions		1
-#define TransparencyModeColorKeyHard	2
-#define TransparencyModeColorKeySmooth	3
-#define TransparencyModeFactor			4
-
 
 struct ModelEffect {
 	int type, vertex;

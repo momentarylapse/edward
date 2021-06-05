@@ -57,7 +57,7 @@ void ModeModelMeshPaste::on_draw_win(MultiView::Window* win) {
 	if (geo) {
 		mode_model->set_material_creation();
 		geo->build(nix::vb_temp);
-		nix::DrawTriangles(nix::vb_temp);
+		nix::draw_triangles(nix::vb_temp);
 	}
 }
 

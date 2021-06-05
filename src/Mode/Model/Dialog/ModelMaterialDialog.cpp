@@ -116,25 +116,25 @@ void ModelMaterialDialog::load_data() {
 	set_float("slider-metal", col.metal);
 	set_color("emission", col.emission);
 
-	if (alpha.mode == TransparencyModeColorKeySmooth)
+	if (alpha.mode == TransparencyMode::COLOR_KEY_SMOOTH)
 		check("transparency_mode:color_key", true);
-	else if (alpha.mode == TransparencyModeColorKeyHard)
+	else if (alpha.mode == TransparencyMode::COLOR_KEY_HARD)
 		check("transparency_mode:color_key", true);
-	else if (alpha.mode == TransparencyModeFactor)
+	else if (alpha.mode == TransparencyMode::FACTOR)
 		check("transparency_mode:factor", true);
-	else if (alpha.mode == TransparencyModeFunctions)
+	else if (alpha.mode == TransparencyMode::FUNCTIONS)
 		check("transparency_mode:function", true);
-	else if (alpha.mode == TransparencyModeNone)
+	else if (alpha.mode == TransparencyMode::NONE)
 		check("transparency_mode:none", true);
 	else
 		check("transparency_mode:material", true);
-	enable("alpha_factor", alpha.mode == TransparencyModeFactor);
-	enable("alpha_source", alpha.mode == TransparencyModeFunctions);
-	enable("alpha_dest", alpha.mode == TransparencyModeFunctions);
+	enable("alpha_factor", alpha.mode == TransparencyMode::FACTOR);
+	enable("alpha_source", alpha.mode == TransparencyMode::FUNCTIONS);
+	enable("alpha_dest", alpha.mode == TransparencyMode::FUNCTIONS);
 	set_float("alpha_factor", alpha.factor * 100.0f);
 	check("alpha_z_buffer", alpha.zbuffer);
-	set_int("alpha_source", alpha.source);
-	set_int("alpha_dest", alpha.destination);
+	set_int("alpha_source", (int)alpha.source);
+	set_int("alpha_dest", (int)alpha.destination);
 }
 
 
@@ -174,24 +174,24 @@ void ModelMaterialDialog::apply_data_alpha() {
 	auto alpha = data->material[mode_model_mesh->current_material]->alpha;
 
 	if (is_checked("transparency_mode:function"))
-		alpha.mode = TransparencyModeFunctions;
+		alpha.mode = TransparencyMode::FUNCTIONS;
 	else if (is_checked("transparency_mode:color_key"))
-		alpha.mode = TransparencyModeColorKeyHard;
+		alpha.mode = TransparencyMode::COLOR_KEY_HARD;
 	else if (is_checked("transparency_mode:factor"))
-		alpha.mode = TransparencyModeFactor;
+		alpha.mode = TransparencyMode::FACTOR;
 	else if (is_checked("transparency_mode:none"))
-		alpha.mode = TransparencyModeNone;
+		alpha.mode = TransparencyMode::NONE;
 	else
-		alpha.mode = TransparencyModeDefault;
+		alpha.mode = TransparencyMode::DEFAULT;
 
-	enable("alpha_factor", alpha.mode == TransparencyModeFactor);
-	enable("alpha_source", alpha.mode == TransparencyModeFunctions);
-	enable("alpha_dest", alpha.mode == TransparencyModeFunctions);
+	enable("alpha_factor", alpha.mode == TransparencyMode::FACTOR);
+	enable("alpha_source", alpha.mode == TransparencyMode::FUNCTIONS);
+	enable("alpha_dest", alpha.mode == TransparencyMode::FUNCTIONS);
 
 	alpha.zbuffer = is_checked("alpha_z_buffer");
 	alpha.factor = get_float("alpha_factor") * 0.01f;
-	alpha.source = get_int("alpha_source");
-	alpha.destination = get_int("alpha_dest");
+	alpha.source = (nix::Alpha)get_int("alpha_source");
+	alpha.destination = (nix::Alpha)get_int("alpha_dest");
 
 	data->execute(new ActionModelEditMaterial(mode_model_mesh->current_material, alpha));
 	apply_queue_depth --;

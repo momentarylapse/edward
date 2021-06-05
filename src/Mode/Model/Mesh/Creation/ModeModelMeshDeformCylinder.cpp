@@ -156,7 +156,7 @@ void ModeModelMeshDeformCylinder::update_params() {
 
 void ModeModelMeshDeformCylinder::on_draw_post() {
 	if (hover >= 0) {
-		nix::SetShader(nix::Shader::default_2d);
+		nix::set_shader(nix::Shader::default_2d);
 		set_color(scheme.TEXT);
 		draw_str(multi_view->m.x + 40, multi_view->m.y + 40, format("radius: %s  (%.1f%%)", multi_view->format_length(param[hover].z * radius), param[hover].z * 100));
 	}
@@ -168,13 +168,13 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win) {
 	if (geo) {
 		ModeModel::set_material_creation(0.3f);
 		geo->build(nix::vb_temp);
-		nix::DrawTriangles(nix::vb_temp);
+		nix::draw_triangles(nix::vb_temp);
 	}
 
 	set_line_width(scheme.LINE_WIDTH_MEDIUM);
 	set_color(scheme.CREATION_LINE);
-	nix::SetAlpha(ALPHA_NONE);
-	nix::SetZ(false, false);
+	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::set_z(false, false);
 	draw_line(axis[0], axis[1]);
 
 	vector e1 = dir.ortho();
@@ -185,7 +185,7 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win) {
 		draw_circle(m, dir, radius * p.z);
 	}
 
-	nix::SetZ(true, true);
+	nix::set_z(true, true);
 }
 
 inline bool hover_line(vector &a, vector &b, vector &m, vector &tp) {

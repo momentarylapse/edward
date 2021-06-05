@@ -109,13 +109,13 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	vector a = win->unproject(v_0);
 	vector b = win->unproject(vector((float)nix::target_width,(float)nix::target_height,0));
 
-	nix::SetZ(false, false);
+	nix::set_z(false, false);
 	s.x1=a.x;
 	s.x2=b.x;
 	s.y1=a.y;
 	s.y2=b.y;
 
-	nix::SetShader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d);
 
 	if (true){//mul->FXEnabled){
 		// background pattern to show transparency
@@ -130,13 +130,13 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 				set_color(((i+j)%2==0) ? c1 : c2);
 				draw_2d(rect::ID, r, 0.999f );
 			}
-		nix::SetAlphaSD(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
+		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	}
 	set_color(color(1,0.8f,0.8f,0.8f));
-	nix::SetTexture(cur_tex);
+	nix::set_texture(cur_tex);
 	draw_2d(s, s, 0.99f);
-	nix::SetTexture(nullptr);
-	nix::SetAlphaM(ALPHA_NONE);
+	nix::set_texture(nullptr);
+	nix::set_alpha(nix::AlphaMode::NONE);
 
 	// rectangle of unity
 	a = v_0;
@@ -170,7 +170,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 
 
 void ModeModelMeshTexture::on_draw() {
-	nix::SetShader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d);
 	auto s = data->get_selection();
 	/*if (data->getNumSelectedVertices() > 0){
 		draw_str(20, 160, format(_("skin: %d"), getNumSelected()));

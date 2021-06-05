@@ -270,7 +270,7 @@ void World::reset() {
 
 	// initial data for empty world...
 	fog._color = White;
-	fog.mode = 0;//FOG_EXP;
+	fog.mode = 0;//nix::FogMode::EXP;
 	fog.distance = 10000;
 	fog.enabled = false;
 	fog.start = 0;
@@ -1121,18 +1121,18 @@ void GodDraw()
 
 	// force fields ....(obsolete?!)
 #ifdef _X_ALLOW_X_
-	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_ONE);
-	nix::SetCull(CULL_NONE);
-	nix::SetZ(false,true);
+	nix::set_alpha(ALPHA_SOURCE_ALPHA, ALPHA_ONE);
+	nix::set_cull(CULL_NONE);
+	nix::set_z(false,true);
 	for (int i=0;i<world.NumForceFields;i++)
 		if (world.ForceField[i]->Visible){
 			color c=color(world.ForceField[i]->TimeToLife/4,1,1,1);
-			nix::SetMaterial(c,c,Black,0,Black);
+			nix::set_material(c,c,Black,0,Black);
 			//Fx::DrawBall(ForceField[i]->Pos,ForceField[i]->Radius,8,16);
 		}
-	nix::SetZ(true,true);
-	nix::SetCull(CULL_DEFAULT);
-	nix::SetAlpha(ALPHA_NONE);
+	nix::set_z(true,true);
+	nix::set_cull(CULL_DEFAULT);
+	nix::set_alpha(nix::AlphaMode::NONE);
 #endif
 }
 #endif
@@ -1225,9 +1225,9 @@ void World::register_model(Model *m) {
 		Material *mat = m->material[i];
 		bool trans = false;//!mat->alpha.z_buffer; //false;
 		/*if (mat->TransparencyMode>0){
-			if (mat->TransparencyMode == TransparencyModeFunctions)
+			if (mat->TransparencyMode == TransparencyMode::FUNCTIONS)
 				trans = true;
-			if (mat->TransparencyMode == TransparencyModeFactor)
+			if (mat->TransparencyMode == TransparencyMode::FACTOR)
 				trans = true;
 		}*/
 
@@ -1439,9 +1439,9 @@ void GodDrawSorted()
 // non-transparent models
 	// overlapping each other
 	if (engine.ZBufferEnabled)
-		nix::SetZ(true,true);
+		nix::set_z(true,true);
 	else
-		nix::SetZ(false,false);
+		nix::set_z(false,false);
 
 	// drawing
 	draw_pmv(cur_cam->pmvd.opaque);
@@ -1449,14 +1449,14 @@ void GodDrawSorted()
 //transparent models
 	// test but don't write
 	if (engine.ZBufferEnabled)
-		nix::SetZ(false,true);
+		nix::set_z(false,true);
 
 	// drawing
 	draw_pmv(cur_cam->pmvd.trans);
 
 	
 	// reset the z buffer
-	nix::SetZ(true,true);
+	nix::set_z(true,true);
 }
 
 #endif

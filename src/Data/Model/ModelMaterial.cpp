@@ -26,9 +26,9 @@ ModelMaterial::ModelMaterial() {
 	// transparency
 	alpha.user = false;
 	check_transparency();
-	alpha.mode = TRANSPARENCY_DEFAULT;
-	alpha.destination = 0;
-	alpha.source = 0;
+	alpha.mode = TransparencyMode::DEFAULT;
+	alpha.destination = nix::Alpha::ZERO;
+	alpha.source = nix::Alpha::ZERO;
 	alpha.factor = 50;
 	alpha.zbuffer = true;
 
@@ -101,7 +101,7 @@ void ModelMaterial::Color::import(const color &am, const color &di, const color 
 void ModelMaterial::make_consistent() {
 	material = LoadMaterial(filename);
 
-	if (material->reflection.mode == REFLECTION_CUBE_MAP_DYNAMIC) {
+	if (material->reflection.mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
 	//	if (!material->cube_map)
 	//		material->cube_map = new nix::CubeMap(material->cube_map_size);
 	//	create_fake_dynamic_cube_map(material->cube_map);
@@ -113,7 +113,7 @@ void ModelMaterial::make_consistent() {
 }
 
 void ModelMaterial::check_transparency() {
-	if (alpha.mode == TRANSPARENCY_DEFAULT)
+	if (alpha.mode == TransparencyMode::DEFAULT)
 		alpha.user = false;
 	if (!alpha.user) {
 		alpha.mode = material->alpha.mode;
@@ -167,21 +167,21 @@ void ModelMaterial::check_colors() {
 }
 
 void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
-	nix::SetAlpha(ALPHA_NONE);
+	nix::set_alpha(nix::AlphaMode::NONE);
 	w->set_shader(nix::Shader::default_3d);
 	color em = color::interpolate(col.emission, White, 0.1f);
-	nix::SetMaterial(col.albedo, col.roughness, col.metal, em);
+	nix::set_material(col.albedo, col.roughness, col.metal, em);
 	if (true) {//MVFXEnabled){
-		nix::SetZ(alpha.zbuffer, alpha.zbuffer);
-		if (alpha.mode == TRANSPARENCY_COLOR_KEY_HARD) {
-			nix::SetAlpha(ALPHA_COLOR_KEY_HARD);
-		} else if (alpha.mode == TRANSPARENCY_COLOR_KEY_SMOOTH) {
-			nix::SetAlpha(ALPHA_COLOR_KEY_SMOOTH);
-		} else if (alpha.mode == TRANSPARENCY_FUNCTIONS) {
-			nix::SetAlpha(alpha.source, alpha.destination);
+		nix::set_z(alpha.zbuffer, alpha.zbuffer);
+		if (alpha.mode == TransparencyMode::COLOR_KEY_HARD) {
+			nix::set_alpha(nix::AlphaMode::COLOR_KEY_HARD);
+		} else if (alpha.mode == TransparencyMode::COLOR_KEY_SMOOTH) {
+			nix::set_alpha(nix::AlphaMode::COLOR_KEY_SMOOTH);
+		} else if (alpha.mode == TransparencyMode::FUNCTIONS) {
+			nix::set_alpha(alpha.source, alpha.destination);
 			//NixSetZ(false,false);
-		} else if (alpha.mode == TRANSPARENCY_FACTOR) {
-			nix::SetAlpha(alpha.factor);
+		} else if (alpha.mode == TransparencyMode::FACTOR) {
+			//nix::set_alpha(alpha.factor);
 			//NixSetZ(false,false);
 		}
 		w->set_shader(material->shader.get());
@@ -193,6 +193,6 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 	tex.add(MultiView::cube_map.get());
 //	if (material->cube_map)
 //		tex.add(material->cube_map);
-	nix::SetTextures(tex);
+	nix::set_textures(tex);
 }
 

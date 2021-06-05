@@ -15,6 +15,7 @@
 namespace nix {
 	class Texture;
 	class VertexBuffer;
+	enum class Alpha;
 };
 
 namespace MultiView {
@@ -53,8 +54,8 @@ public:
 
 	struct Alpha {
 		bool user;
-		int mode;
-		int source, destination;
+		TransparencyMode mode;
+		nix::Alpha source, destination;
 		float factor;
 		bool zbuffer;
 	} alpha;

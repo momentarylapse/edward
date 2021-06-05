@@ -76,7 +76,7 @@ void ModeModelMeshCreatePlane::on_draw_win(MultiView::Window *win) {
 		geo.add(GeometryPlane(pos, length[1], length[0], 1,1));
 		geo.build(nix::vb_temp);
 		mode_model->set_material_creation();
-		nix::DrawTriangles(nix::vb_temp);
+		nix::draw_triangles(nix::vb_temp);
 	}
 }
 

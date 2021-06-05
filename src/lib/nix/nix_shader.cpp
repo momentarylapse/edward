@@ -56,7 +56,7 @@ void UniformBuffer::update_array(const DynamicArray &a) {
 	glBufferData(GL_UNIFORM_BUFFER, a.num * a.element_size, a.data, GL_DYNAMIC_DRAW);
 }
 
-void BindUniform(UniformBuffer *ub, int index) {
+void bind_uniform(UniformBuffer *ub, int index) {
 	//glUniformBlockBinding(program, index, 0);
 	glBindBufferBase(GL_UNIFORM_BUFFER, index, ub->buffer);
 }
@@ -350,19 +350,19 @@ Shader::~Shader() {
 	program = -1;
 }
 
-void DeleteAllShaders() {
+void delete_all_shaders() {
 	return;
 	shaders.clear();
 	init_shaders();
 }
 
-void SetShader(Shader *s) {
+void set_shader(Shader *s) {
 	if (s == nullptr)
 		s = Shader::default_3d;
 	Shader::_current_ = s;
 	current_program = s->program;
 	glUseProgram(current_program);
-	TestGLError("SetProgram");
+	TestGLError("glUseProgram");
 
 	//s->set_default_data();
 }
@@ -426,8 +426,8 @@ void Shader::set_matrix(int location, const matrix &m) {
 }
 
 void Shader::set_default_data() {
-	set_matrix(location[LOCATION_MATRIX_MVP], world_view_projection_matrix);
-	set_matrix(location[LOCATION_MATRIX_M], world_matrix);
+	set_matrix(location[LOCATION_MATRIX_MVP], model_view_projection_matrix);
+	set_matrix(location[LOCATION_MATRIX_M], model_matrix);
 	set_matrix(location[LOCATION_MATRIX_V], view_matrix);
 	set_matrix(location[LOCATION_MATRIX_P], projection_matrix);
 	for (int i=0; i<NIX_MAX_TEXTURELEVELS; i++)

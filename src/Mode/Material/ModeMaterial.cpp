@@ -99,10 +99,10 @@ void ModeMaterial::update_textures() {
 
 	for (auto &tf: data->appearance.texture_files)
 		textures.add(nix::Texture::load(tf));
-	/*if (appearance.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC) {
+	/*if (appearance.reflection_mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
 		create_fake_dynamic_cube_map(cube_map);
 		textures.add(cube_map);
-	} else if (appearance.reflection_mode == REFLECTION_CUBE_MAP_STATIC) {
+	} else if (appearance.reflection_mode == ReflectionMode::CUBE_MAP_STATIC) {
 		for (int i=0;i<6;i++)
 			temp.cube_map->fill_side(i, nix::LoadTexture(appearance.reflection_texture_file[i]));
 		temp.textures.add(temp.cube_map);
@@ -166,15 +166,15 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	auto tex = weak(textures);
 	tex.resize(5);
 	tex.add(MultiView::cube_map.get());
-	nix::SetTextures(tex);
-	nix::SetFog(FOG_EXP, 0,10000,0.001f, Blue);
+	nix::set_textures(tex);
+	nix::set_fog(nix::FogMode::EXP, 0,10000,0.001f, Blue);
 
-	nix::DrawTriangles(MaterialVB[max(data->appearance.texture_files.num, 1)]);
+	nix::draw_triangles(MaterialVB[max(data->appearance.texture_files.num, 1)]);
 
 
-	nix::EnableFog(false);
-	nix::SetAlpha(ALPHA_NONE);
-	nix::SetZ(true,true);
+	nix::enable_fog(false);
+	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::set_z(true,true);
 }
 
 

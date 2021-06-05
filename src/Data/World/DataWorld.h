@@ -21,7 +21,9 @@ class WorldObject;
 class WorldTerrain;
 class WorldCamera;
 
-
+namespace nix {
+	enum class FogMode;
+}
 
 
 class WorldScriptVariable {
@@ -87,7 +89,7 @@ public:
 		// fog
 		struct Fog {
 			bool enabled;
-			int mode;
+			nix::FogMode mode;
 			float start;
 			float end;
 			float density;

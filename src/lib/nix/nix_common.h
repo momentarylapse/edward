@@ -54,7 +54,7 @@ extern int current_program;
 
 
 extern matrix view_matrix, projection_matrix;
-extern matrix world_matrix, world_view_projection_matrix;
+extern matrix model_matrix, model_view_projection_matrix;
 
 
 

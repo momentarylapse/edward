@@ -357,11 +357,11 @@ void Model::load(const Path &filename)
 			file_read_color4i(f);
 			f->read_int();
 		}
-		int alpha_mode = f->read_int();
-		if (alpha_mode != TRANSPARENCY_DEFAULT){
+		auto alpha_mode = (TransparencyMode)f->read_int();
+		if (alpha_mode != TransparencyMode::DEFAULT){
 			m->alpha.mode = alpha_mode;
-			m->alpha.source = f->read_int();
-			m->alpha.destination = f->read_int();
+			m->alpha.source = (nix::Alpha)f->read_int();
+			m->alpha.destination = (nix::Alpha)f->read_int();
 			m->alpha.factor = (float)f->read_int() * 0.01f;
 			m->alpha.z_buffer = f->read_bool();
 		}else{
@@ -1495,8 +1495,8 @@ void Model::draw_simple(int mat_no, int detail) {
 		update_vertex_buffer(mat_no, detail);
 
 
-	nix::SetWorldMatrix(_matrix);
-	nix::DrawTriangles(sub.vertex_buffer);
+	nix::set_model_matrix(_matrix);
+	nix::draw_triangles(sub.vertex_buffer);
 
 /*	if ((m->cube_map >= 0) and (m->reflection_density > 0)){
 		//_Pos_ = *_matrix_get_translation_(_matrix);
@@ -1527,9 +1527,9 @@ void Model::SortingTest(vector &pos,const vector &dpos,matrix *mat,bool allow_sh
 
 	// transparent?
 	if (Material[0].TransparencyMode>0){
-		if (Material[0].TransparencyMode==TransparencyModeFunctions)
+		if (Material[0].TransparencyMode==TransparencyMode::FUNCTIONS)
 			trans=true;
-		if (Material[0].TransparencyMode==TransparencyModeFactor)
+		if (Material[0].TransparencyMode==TransparencyMode::FACTOR)
 			trans=true;
 	}
 
@@ -1615,13 +1615,13 @@ void Model::draw(int detail, bool set_fx, bool allow_shadow)
 
 	for (int i=0;i<material.num;i++){
 		//material[i]->apply();
-		nix::SetTextures(weak(material[i]->textures));
-		nix::SetShader(material[i]->shader.get());
+		nix::set_textures(weak(material[i]->textures));
+		nix::set_shader(material[i]->shader.get());
 
 		// finally... really draw!!!
 		draw_simple(i, detail);
 		//NixSetShader(-1);
-		nix::SetAlpha(ALPHA_NONE);
+		nix::set_alpha(nix::AlphaMode::NONE);
 	}
 }
 

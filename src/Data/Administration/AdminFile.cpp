@@ -237,7 +237,7 @@ void AdminFile::check(AdminFileList &list)
 		if (storage->load(MaterialDir << Name, &m, false)){
 			Time = m.file_time;
 			add_possible_link(l, FD_SHADERFILE, m.shader.file);
-			if (m.appearance.reflection_mode == REFLECTION_CUBE_MAP_STATIC)
+			if (m.appearance.reflection_mode == ReflectionMode::CUBE_MAP_STATIC)
 				for (int i=0;i<6;i++)
 					add_possible_link(l, FD_TEXTURE, m.appearance.reflection_texture_file[i]);
 			for (Path &tf: m.appearance.texture_files)

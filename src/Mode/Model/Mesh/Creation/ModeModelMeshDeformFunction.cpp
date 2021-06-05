@@ -101,8 +101,8 @@ void ModeModelMeshDeformFunction::on_draw_win(MultiView::Window* win) {
 	ModeModel::set_material_creation();
 	geo->build(nix::vb_temp);
 
-	nix::SetTexture(tex);
-	nix::DrawTriangles(nix::vb_temp);
+	nix::set_texture(tex);
+	nix::draw_triangles(nix::vb_temp);
 }
 
 vector ModeModelMeshDeformFunction::transform(const vector &v) {

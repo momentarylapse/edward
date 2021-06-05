@@ -111,7 +111,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				data->meta_data.gravity = s2v(e.value("gravity", "0 0 0"));
 			} else if (e.tag == "fog") {
 				data->meta_data.fog.enabled = e.value("enabled", "false")._bool();
-				data->meta_data.fog.mode = e.value("mode", "0")._int();
+				data->meta_data.fog.mode = (nix::FogMode)e.value("mode", "0")._int();
 				data->meta_data.fog.start = e.value("start", "0")._float();
 				data->meta_data.fog.end = e.value("end", "10000")._float();
 				data->meta_data.fog.density = e.value("density", "0")._float();
@@ -241,7 +241,7 @@ void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 		// Fog
 		f->read_comment();
 		data->meta_data.fog.enabled = f->read_bool();
-		data->meta_data.fog.mode = f->read_word();
+		data->meta_data.fog.mode = (nix::FogMode)f->read_word();
 		data->meta_data.fog.start = f->read_float();
 		data->meta_data.fog.end = f->read_float();
 		data->meta_data.fog.density = f->read_float();
@@ -372,7 +372,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 
 	auto f = xml::Element("fog")
 	.witha("enabled", b2s(data->meta_data.fog.enabled))
-	.witha("mode", i2s(data->meta_data.fog.mode))
+	.witha("mode", i2s((int)data->meta_data.fog.mode))
 	.witha("start", f2s(data->meta_data.fog.start, 3))
 	.witha("end", f2s(data->meta_data.fog.end, 3))
 	.witha("density", f2s(data->meta_data.fog.density, 6))

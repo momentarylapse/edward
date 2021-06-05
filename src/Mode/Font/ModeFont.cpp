@@ -66,9 +66,9 @@ void ModeFont::on_end() {
 
 
 void ModeFont::on_draw() {
-	nix::SetZ(false, false);
+	nix::set_z(false, false);
 	set_color(White);
-	nix::SetShader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d);
 	draw_rect(0, (float)nix::target_width, nix::target_height * 0.9f, (float)nix::target_height, 0);
 	set_color(Black);
 	if (dialog)
@@ -209,16 +209,16 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 	int NumY = data->TextureHeight / data->global.GlyphHeight;
 
 	// background
-	nix::SetAlpha(ALPHA_MATERIAL);
-	nix::SetZ(false, false);
+	nix::set_alpha(nix::AlphaMode::MATERIAL);
+	nix::set_z(false, false);
 	rect d = rect(0, (float)data->TextureWidth, 0, (float)data->TextureHeight);
-	nix::SetTexture(NULL);
+	nix::set_texture(NULL);
 	set_color(White);
 	Draw2D(rect::ID, &d);
-	nix::SetTexture(data->Texture.get());
+	nix::set_texture(data->Texture.get());
 	set_color(Black);
 	Draw2D(rect::ID, &d);
-	nix::SetTexture(NULL);
+	nix::set_texture(NULL);
 
 	// grid (horizontal lines)
 	set_line_width(1.0f);
@@ -255,7 +255,7 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 		x = x2;
 	}
 
-	nix::SetAlpha(ALPHA_NONE);
+	nix::set_alpha(nix::AlphaMode::NONE);
 }
 
 

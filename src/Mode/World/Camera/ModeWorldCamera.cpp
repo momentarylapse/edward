@@ -211,7 +211,7 @@ void ModeWorldCamera::on_draw_win(MultiView::Window *win)
 {
 	parent->on_draw_win(win);
 
-	nix::SetWorldMatrix(matrix::ID);
+	nix::set_model_matrix(matrix::ID);
 	set_line_width(1.0f);
 
 	vector last_pos = v_0;

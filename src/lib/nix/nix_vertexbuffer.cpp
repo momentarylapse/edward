@@ -93,16 +93,17 @@ int VertexBuffer::count() const {
 }
 
 void VertexBuffer::create_rect(const rect &d, const rect &s) {
-	Array<vector> p = {vector(d.x1,d.y1,0), vector(d.x1,d.y2,0), vector(d.x2,d.y2,0),  vector(d.x1,d.y1,0), vector(d.x2,d.y2,0), vector(d.x2,d.y1,0)};
+	Array<vector> p = {{d.x1,d.y1,0}, {d.x1,d.y2,0}, {d.x2,d.y2,0},  {d.x1,d.y1,0}, {d.x2,d.y2,0}, {d.x2,d.y1,0}};
+	Array<vector> n = {{0,0,1}, {0,0,1}, {0,0,1},  {0,0,1}, {0,0,1}, {0,0,1}};
 	Array<float> uv = {s.x1,s.y1, s.x1,s.y2, s.x2,s.y2,  s.x1,s.y1, s.x2,s.y2, s.x2,s.y1};
 	update(0, p);
-	update(1, p);
+	update(1, n);
 	update(2, uv);
 }
 
 int _current_vb_attr_ = 0;
 
-void SetVertexBuffer(VertexBuffer *vb) {
+void bind_vertex_buffer(VertexBuffer *vb) {
 	for (int i=0; i<vb->num_attributes; i++) {
 		auto &a = vb->attr[i];
 		glEnableVertexAttribArray(i);

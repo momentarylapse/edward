@@ -15,6 +15,7 @@ namespace nix {
 	class Texture;
 	class CubeMap;
 	class Shader;
+	enum class Alpha;
 };
 
 class ShaderGraph;
@@ -38,12 +39,14 @@ public:
 		float roughness, metal;
 
 		// transparency
-		int transparency_mode, alpha_source, alpha_destination;
+		TransparencyMode transparency_mode;
+		nix::Alpha alpha_source, alpha_destination;
 		float alpha_factor;
 		bool alpha_z_buffer;
 
 		// reflection
-		int reflection_mode, reflection_size;
+		ReflectionMode reflection_mode;
+		int reflection_size;
 		float reflection_density;
 		Array<Path> reflection_texture_file;
 

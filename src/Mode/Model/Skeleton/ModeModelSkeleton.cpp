@@ -191,9 +191,9 @@ void ModeModelSkeleton::draw_skeleton(MultiView::Window *win, Array<ModelBone> &
 		b.model->_matrix = b._matrix;
 		b.model->draw(0, false, false);
 	}
-	nix::SetWorldMatrix(matrix::ID);
+	nix::set_model_matrix(matrix::ID);
 
-	nix::SetZ(false, false);
+	nix::set_z(false, false);
 	set_line_width(thin ? scheme.LINE_WIDTH_THIN : scheme.LINE_WIDTH_BONE);
 
 	for (ModelBone &b: bone) {
@@ -210,7 +210,7 @@ void ModeModelSkeleton::draw_skeleton(MultiView::Window *win, Array<ModelBone> &
 			c = color::interpolate(c, scheme.HOVER, 0.3f);
 		draw_bone(bone[r].pos, b.pos, c, win);
 	}
-	nix::SetZ(true, true);
+	nix::set_z(true, true);
 }
 
 

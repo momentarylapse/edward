@@ -7,6 +7,8 @@
 
 Path MaterialDir;
 
+nix::Texture *load_texture(const Path &file);
+
 // materials
 static Material *default_material;
 static Material *trivial_material;
@@ -39,7 +41,6 @@ void SetDefaultMaterial(Material *m) {
 }
 
 void MaterialSetDefaultShader(nix::Shader *s) {
-	msg_error("set default material shader");
 	default_material->shader = s;
 	nix::Shader::default_load = s;
 }
@@ -58,13 +59,13 @@ Material::Material() {
 
 	cast_shadow = true;
 
-	alpha.mode = TRANSPARENCY_NONE;
-	alpha.source = 0;
-	alpha.destination = 0;
+	alpha.mode = TransparencyMode::NONE;
+	alpha.source = nix::Alpha::ZERO;
+	alpha.destination = nix::Alpha::ZERO;
 	alpha.factor = 1;
 	alpha.z_buffer = true;
 
-	reflection.mode = REFLECTION_NONE;
+	reflection.mode = ReflectionMode::NONE;
 	reflection.density = 0;
 	reflection.cube_map_size = 0;
 
@@ -143,18 +144,18 @@ Material *LoadMaterial(const Path &filename) {
 
 	string mode = c.get_str("transparency.mode", "");
 	if (mode == "factor") {
-		m->alpha.mode = TRANSPARENCY_FACTOR;
+		m->alpha.mode = TransparencyMode::FACTOR;
 		m->alpha.factor = c.get_float("transparency.factor");
 		m->alpha.z_buffer = false;
 	} else if (mode == "function") {
-		m->alpha.mode = TRANSPARENCY_FUNCTIONS;
-		m->alpha.source = c.get_int("transparency.source", 0);
-		m->alpha.destination = c.get_int("transparency.dest", 0);
+		m->alpha.mode = TransparencyMode::FUNCTIONS;
+		m->alpha.source = (nix::Alpha)c.get_int("transparency.source", 0);
+		m->alpha.destination = (nix::Alpha)c.get_int("transparency.dest", 0);
 		m->alpha.z_buffer = false;
 	} else if (mode == "key-hard") {
-		m->alpha.mode = TRANSPARENCY_COLOR_KEY_HARD;
+		m->alpha.mode = TransparencyMode::COLOR_KEY_HARD;
 	} else if (mode == "key-smooth") {
-		m->alpha.mode = TRANSPARENCY_COLOR_KEY_SMOOTH;
+		m->alpha.mode = TransparencyMode::COLOR_KEY_SMOOTH;
 	} else if (mode != "") {
 		msg_error("unknown transparency mode: " + mode);
 	}
@@ -162,7 +163,7 @@ Material *LoadMaterial(const Path &filename) {
 	mode = c.get_str("reflection.mode", "");
 
 	if (mode == "static") {
-		m->reflection.mode = REFLECTION_CUBE_MAP_STATIC;
+		m->reflection.mode = ReflectionMode::CUBE_MAP_STATIC;
 		texture_files = c.get_str("reflection.cubemap", "");
 		Array<nix::Texture*> cmt;
 		for (auto &f: texture_files.explode(","))
@@ -174,13 +175,13 @@ Material *LoadMaterial(const Path &filename) {
 				m->reflection.cube_map->fill_side(i, cmt[i]);
 #endif
 	} else if (mode == "dynamic") {
-		m->reflection.mode = REFLECTION_CUBE_MAP_DYNAMIC;
+		m->reflection.mode = ReflectionMode::CUBE_MAP_DYNAMIC;
 		m->reflection.density = c.get_float("reflection.density", 1);
 		m->reflection.cube_map_size = c.get_float("reflection.size", 128);
 		//m->cube_map = FxCubeMapNew(m->cube_map_size);
 		//FxCubeMapCreate(m->cube_map,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
 	} else if (mode == "mirror") {
-		m->reflection.mode = REFLECTION_MIRROR;
+		m->reflection.mode = ReflectionMode::MIRROR;
 	} else if (mode != "") {
 		msg_error("unknown reflection mode: " + mode);
 	}

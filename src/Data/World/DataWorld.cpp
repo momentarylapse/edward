@@ -40,7 +40,7 @@ DataWorld::~DataWorld() {
 
 void DataWorld::MetaData::reset() {
 	fog.enabled = false;
-	fog.mode = FOG_EXP;
+	fog.mode = nix::FogMode::EXP;
 	fog.start = 1;
 	fog.end = 1000;
 	fog.density = 0.0001f;

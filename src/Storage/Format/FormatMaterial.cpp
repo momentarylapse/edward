@@ -63,18 +63,18 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 
 		string m = c.get_str("transparency.mode", "");
 		if (m == "factor") {
-			data->appearance.transparency_mode = TRANSPARENCY_FACTOR;
+			data->appearance.transparency_mode = TransparencyMode::FACTOR;
 			data->appearance.alpha_factor = c.get_float("transparency.factor");
 			data->appearance.alpha_z_buffer = false;
 		} else if (m == "function") {
-			data->appearance.transparency_mode = TRANSPARENCY_FUNCTIONS;
-			data->appearance.alpha_source = c.get_int("transparency.source", 0);
-			data->appearance.alpha_destination = c.get_int("transparency.dest", 0);
+			data->appearance.transparency_mode = TransparencyMode::FUNCTIONS;
+			data->appearance.alpha_source = (nix::Alpha)c.get_int("transparency.source", 0);
+			data->appearance.alpha_destination = (nix::Alpha)c.get_int("transparency.dest", 0);
 			data->appearance.alpha_z_buffer = false;
 		} else if (m == "key-hard") {
-			data->appearance.transparency_mode = TRANSPARENCY_COLOR_KEY_HARD;
+			data->appearance.transparency_mode = TransparencyMode::COLOR_KEY_HARD;
 		} else if (m == "key-smooth") {
-			data->appearance.transparency_mode = TRANSPARENCY_COLOR_KEY_SMOOTH;
+			data->appearance.transparency_mode = TransparencyMode::COLOR_KEY_SMOOTH;
 		} else if (m != "") {
 			msg_error("unknown transparency mode: " + m);
 		}
@@ -82,16 +82,16 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		m = c.get_str("reflection.mode", "");
 
 		if (m == "static") {
-			data->appearance.reflection_mode = REFLECTION_CUBE_MAP_STATIC;
+			data->appearance.reflection_mode = ReflectionMode::CUBE_MAP_STATIC;
 			data->appearance.reflection_texture_file = str_to_paths(c.get_str("reflection.cubemap", ""));
 			data->appearance.reflection_texture_file.resize(6);
 			data->appearance.reflection_density = c.get_float("reflection.density", 1);
 		} else if (m == "dynamic") {
-			data->appearance.reflection_mode = REFLECTION_CUBE_MAP_DYNAMIC;
+			data->appearance.reflection_mode = ReflectionMode::CUBE_MAP_DYNAMIC;
 			data->appearance.reflection_density = c.get_float("reflection.density", 1);
 			data->appearance.reflection_size = c.get_float("reflection.size", 128);
 		} else if (m == "mirror") {
-			data->appearance.reflection_mode = REFLECTION_MIRROR;
+			data->appearance.reflection_mode = ReflectionMode::MIRROR;
 		} else if (m != "") {
 			msg_error("unknown reflection mode: " + m);
 		}
@@ -121,10 +121,10 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
-		data->appearance.transparency_mode = f->read_int();
+		data->appearance.transparency_mode = (TransparencyMode)f->read_int();
 		data->appearance.alpha_factor = (float)f->read_int() * 0.01f;
-		data->appearance.alpha_source = f->read_int();
-		data->appearance.alpha_destination = f->read_int();
+		data->appearance.alpha_source = (nix::Alpha)f->read_int();
+		data->appearance.alpha_destination = (nix::Alpha)f->read_int();
 		data->appearance.alpha_z_buffer = f->read_bool();
 		// Appearance
 		f->read_comment();
@@ -133,7 +133,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_bool();
 		// Reflection
 		f->read_comment();
-		data->appearance.reflection_mode = f->read_int();
+		data->appearance.reflection_mode = (ReflectionMode)f->read_int();
 		data->appearance.reflection_density = (float)f->read_int();
 		data->appearance.reflection_size = f->read_int();
 		for (int i=0;i<6;i++)
@@ -155,7 +155,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 			data->Sound.NumRules=0;
 		}
 
-		//AlphaZBuffer=(TransparencyMode!=TransparencyModeFunctions)and(TransparencyMode!=TransparencyModeFactor);
+		//AlphaZBuffer=(TransparencyMode!=TransparencyMode::FUNCTIONS)and(TransparencyMode!=TransparencyMode::FACTOR);
 	}else if (ffv==2){
 		// Colors
 		f->read_comment();
@@ -169,22 +169,22 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
-		data->appearance.transparency_mode = f->read_int();
+		data->appearance.transparency_mode = (TransparencyMode)f->read_int();
 		data->appearance.alpha_factor = (float)f->read_int() * 0.01f;
-		data->appearance.alpha_source = f->read_int();
-		data->appearance.alpha_destination = f->read_int();
+		data->appearance.alpha_source = (nix::Alpha)f->read_int();
+		data->appearance.alpha_destination = (nix::Alpha)f->read_int();
 		// Appearance
 		f->read_comment();
 		int MetalDensity = f->read_int();
 		if (MetalDensity > 0){
-			data->appearance.reflection_mode = REFLECTION_METAL;
+			data->appearance.reflection_mode = ReflectionMode::METAL;
 			data->appearance.reflection_density = (float)MetalDensity;
 		}
 		f->read_int();
 		f->read_int();
 		bool Mirror = f->read_bool();
 		if (Mirror)
-			data->appearance.reflection_mode = REFLECTION_MIRROR;
+			data->appearance.reflection_mode = ReflectionMode::MIRROR;
 		f->read_bool();
 		// ShaderFile
 		f->read_comment();
@@ -200,7 +200,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		data->physics.vmin_jump = (float)f->read_int() * 0.001f;
 		data->physics.vmin_sliding = (float)f->read_int() * 0.001f;
 
-		data->appearance.alpha_z_buffer=(data->appearance.transparency_mode != TRANSPARENCY_FUNCTIONS) and (data->appearance.transparency_mode != TRANSPARENCY_FACTOR);
+		data->appearance.alpha_z_buffer=(data->appearance.transparency_mode != TransparencyMode::FUNCTIONS) and (data->appearance.transparency_mode != TransparencyMode::FACTOR);
 	}else if (ffv==1){
 		// Colors
 		f->read_comment();
@@ -214,30 +214,30 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
-		data->appearance.transparency_mode = f->read_int();
+		data->appearance.transparency_mode = (TransparencyMode)f->read_int();
 		data->appearance.alpha_factor = (float)f->read_int() * 0.01f;
-		data->appearance.alpha_source = f->read_int();
-		data->appearance.alpha_destination = f->read_int();
+		data->appearance.alpha_source = (nix::Alpha)f->read_int();
+		data->appearance.alpha_destination = (nix::Alpha)f->read_int();
 		// Appearance
 		f->read_comment();
 		int MetalDensity = f->read_int();
 		if (MetalDensity > 0){
-			data->appearance.reflection_mode = REFLECTION_METAL;
+			data->appearance.reflection_mode = ReflectionMode::METAL;
 			data->appearance.reflection_density = (float)MetalDensity;
 		}
 		f->read_int();
 		f->read_int();
-		data->appearance.reflection_mode = (f->read_bool() ? REFLECTION_MIRROR : REFLECTION_NONE);
+		data->appearance.reflection_mode = (f->read_bool() ? ReflectionMode::MIRROR : ReflectionMode::NONE);
 		bool Mirror = f->read_bool();
 		if (Mirror)
-			data->appearance.reflection_mode = REFLECTION_MIRROR;
+			data->appearance.reflection_mode = ReflectionMode::MIRROR;
 		// ShaderFile
 		f->read_comment();
 		Path sf = f->read_str();
 		if (!sf.is_empty())
 			data->shader.file = sf.with(".fx.glsl");
 
-		data->appearance.alpha_z_buffer = (data->appearance.transparency_mode != TRANSPARENCY_FUNCTIONS) and (data->appearance.transparency_mode != TRANSPARENCY_FACTOR);
+		data->appearance.alpha_z_buffer = (data->appearance.transparency_mode != TransparencyMode::FUNCTIONS) and (data->appearance.transparency_mode != TransparencyMode::FACTOR);
 	}else{
 		//throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename, ffv, 1, 4));
 	}
@@ -261,31 +261,31 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 	c.set_float("color.roughness", data->appearance.roughness);
 	c.set_float("color.metal", data->appearance.metal);
 
-	if (data->appearance.transparency_mode == TRANSPARENCY_FACTOR) {
+	if (data->appearance.transparency_mode == TransparencyMode::FACTOR) {
 		c.set_str("transparency.mode", "factor");
 		c.set_float("transparency.factor", data->appearance.alpha_factor);
-	} else if (data->appearance.transparency_mode == TRANSPARENCY_FUNCTIONS) {
+	} else if (data->appearance.transparency_mode == TransparencyMode::FUNCTIONS) {
 		c.set_str("transparency.mode", "function");
-		c.set_int("transparency.source", data->appearance.alpha_source);
-		c.set_int("transparency.dest", data->appearance.alpha_destination);
-	} else if (data->appearance.transparency_mode == TRANSPARENCY_COLOR_KEY_HARD) {
+		c.set_int("transparency.source", (int)data->appearance.alpha_source);
+		c.set_int("transparency.dest", (int)data->appearance.alpha_destination);
+	} else if (data->appearance.transparency_mode == TransparencyMode::COLOR_KEY_HARD) {
 		c.set_str("transparency.mode", "key-hard");
-	} else if (data->appearance.transparency_mode == TRANSPARENCY_COLOR_KEY_SMOOTH) {
+	} else if (data->appearance.transparency_mode == TransparencyMode::COLOR_KEY_SMOOTH) {
 		c.set_str("transparency.mode", "key-smooth");
 	}
-	/*if (data->appearance.transparency_mode != TRANSPARENCY_NONE) {
+	/*if (data->appearance.transparency_mode != TransparencyMode::NONE) {
 		c.set_bool("transparency.zbuffer", data->appearance.alpha_z_buffer);
 	}*/
 
-	if (data->appearance.reflection_mode == REFLECTION_CUBE_MAP_STATIC) {
+	if (data->appearance.reflection_mode == ReflectionMode::CUBE_MAP_STATIC) {
 		c.set_str("reflection.mode", "static");
 		c.set_str("reflection.cubemap", paths_to_str(data->appearance.reflection_texture_file));
 		c.set_float("reflection.density", data->appearance.reflection_density);
-	} else if (data->appearance.reflection_mode == REFLECTION_CUBE_MAP_DYNAMIC) {
+	} else if (data->appearance.reflection_mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
 		c.set_str("reflection.mode", "dynamic");
 		c.set_float("reflection.density", data->appearance.reflection_density);
 		c.set_int("reflection.size", data->appearance.reflection_size);
-	} else if (data->appearance.reflection_mode == REFLECTION_MIRROR) {
+	} else if (data->appearance.reflection_mode == ReflectionMode::MIRROR) {
 		c.set_str("reflection.mode", "mirror");
 	}
 

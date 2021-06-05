@@ -35,12 +35,12 @@ void MeshSelectionModePolygon::on_draw_win(MultiView::Window *win) {
 	p.add_to_vertex_buffer(m->show_vertices, vbs, 1);
 	vbs.build(parent->vb_hover, 1);
 
-	nix::SetOffset(-2.0f);
+	nix::set_offset(-2.0f);
 	mode_model->set_material_hover();
-	nix::DrawTriangles(parent->vb_hover);
-	nix::SetMaterial(White, 0.5f, 0, Black);
-	nix::SetAlpha(ALPHA_NONE);
-	nix::SetOffset(0);
+	nix::draw_triangles(parent->vb_hover);
+	nix::set_material(White, 0.5f, 0, Black);
+	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::set_offset(0);
 }
 
 

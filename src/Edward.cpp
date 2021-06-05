@@ -164,7 +164,7 @@ Edward::Edward(Array<string> arg) :
 	set_maximized(maximized);
 
 	// initialize engine
-	nix::Init();
+	nix::init();
 	drawing_helper_init(app->directory_static);
 
 	MaterialInit();
@@ -443,16 +443,18 @@ void Edward::on_execute_plugin() {
 
 void Edward::on_draw_gl() {
 	auto e = hui::GetEvent();
-	nix::SetViewport(rect(0, e->column, 0, e->row));
+	nix::start_frame_hui();
+	nix::set_viewport(rect(0, e->column, 0, e->row));
 
 	if (cur_mode->multi_view)
 		cur_mode->multi_view->on_draw();
 	cur_mode->on_draw();
 
 	// messages
-	nix::SetShader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d);
 	foreachi(string &m, message_str, i)
 		draw_str(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, TextAlign::CENTER);
+	nix::end_frame_hui();
 }
 
 void Edward::load_key_codes() {

@@ -626,7 +626,7 @@ void Terrain::draw() {
 	material->apply();
 
 	// the actual drawing
-	nix::SetWorldMatrix(matrix::ID);
+	nix::set_model_matrix(matrix::ID);
 	nix::Draw3D(vertex_buffer);
 #endif
 

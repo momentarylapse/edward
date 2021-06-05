@@ -653,15 +653,14 @@ void check_undef_view_stages(MultiView *mv) {
 }
 
 void MultiView::on_draw() {
-	nix::StartFrameHui();
 	screen_scale = hui::GetEvent()->row_target; // EVIL!
 	timer.reset();
 
 	check_undef_view_stages(this);
 
-	nix::ResetZ();
-	nix::SetProjectionOrtho(false);
-	nix::SetZ(true,true);
+	nix::clear_z();
+	nix::set_projection_ortho_pixel();
+	nix::set_z(true,true);
 	set_color(scheme.TEXT);
 	set_font(scheme.FONT_NAME, scheme.FONT_SIZE);
 
@@ -700,10 +699,10 @@ void MultiView::on_draw() {
 		all_windows[3]->dest = rect(xm+d-1, area.x2, ym+d-1, area.y2);
 		all_windows[3]->draw();
 
-		nix::SetScissor(nix::target_rect);
+		nix::set_scissor(nix::target_rect);
 
-		nix::SetShader(nix::Shader::default_2d);
-		nix::SetTexture(nullptr);
+		nix::set_shader(nix::Shader::default_2d);
+		nix::set_texture(nullptr);
 
 		color c2 = scheme.hoverify(scheme.WINDOW_DIVIDER);
 		set_color((hover.meta == hover.HOVER_WINDOW_DIVIDER_Y or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
@@ -712,14 +711,14 @@ void MultiView::on_draw() {
 		draw_rect(xm-d, xm+d, area.y1, area.y2, 0);
 	}
 
-	nix::SetProjectionOrtho(false);
+	nix::set_projection_ortho_pixel();
 	if (sel_rect.active)
 		sel_rect.draw(m);
 
 	cam_con->draw();
 
 	set_color(scheme.TEXT);
-	nix::SetShader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d);
 
 	if (ed->input.inside_smart)
 		draw_mouse_pos();
@@ -727,7 +726,6 @@ void MultiView::on_draw() {
 	action_con->draw_post();
 
 	//printf("%f\n", timer.get()*1000.0f);
-	nix::EndFrameHui();
 }
 
 void MultiView::SelectionRect::start_later(const vector &m) {
@@ -741,22 +739,22 @@ void MultiView::SelectionRect::end() {
 }
 
 void MultiView::SelectionRect::draw(const vector &m) {
-	nix::SetZ(false, false);
-	nix::SetAlphaM(ALPHA_MATERIAL);
-	nix::SetTexture(nullptr);
+	nix::set_z(false, false);
+	nix::set_alpha(nix::AlphaMode::MATERIAL);
+	nix::set_texture(nullptr);
 	set_color(scheme.SELECTION_RECT);
-	nix::SetCull(CULL_NONE);
-	nix::SetShader(nix::Shader::default_2d);
+	nix::set_cull(nix::CullMode::NONE);
+	nix::set_shader(nix::Shader::default_2d);
 	draw_rect(m.x, pos0.x, m.y, pos0.y, 0);
-	nix::SetCull(CULL_DEFAULT);
+	nix::set_cull(nix::CullMode::DEFAULT);
 	set_color(scheme.SELECTION_RECT_BOUNDARY);
 	set_line_width(scheme.LINE_WIDTH_THIN);
 	draw_line_2d(pos0.x, pos0.y, pos0.x, m.y, 0);
 	draw_line_2d(m.x, pos0.y, m.x, m.y, 0);
 	draw_line_2d(pos0.x, pos0.y, m.x, pos0.y, 0);
 	draw_line_2d(pos0.x, m.y, m.x, m.y, 0);
-	nix::SetAlphaM(ALPHA_NONE);
-	nix::SetZ(true, true);
+	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::set_z(true, true);
 }
 
 rect MultiView::SelectionRect::get(const vector &m) {
@@ -1154,7 +1152,7 @@ void MultiView::set_light(const vector &dir, const color &col, float harshness) 
 	l.theta = pi;
 	l.harshness = harshness;
 	ubo_light->update(&l, sizeof(l));
-	nix::BindUniform(ubo_light, 1);
+	nix::bind_uniform(ubo_light, 1);
 }
 
 }

@@ -81,11 +81,11 @@ void ModeModelMeshSplitPolygon::on_draw_win(MultiView::Window *win) {
 		}
 
 
-		nix::SetZ(false, false);
+		nix::set_z(false, false);
 		set_color(scheme.CREATION_LINE);
 		set_line_width(scheme.LINE_WIDTH_MEDIUM);
 		for (int k=0;k<v.num;k++)
 			draw_line(v[k], pos);
-		nix::SetZ(true, true);
+		nix::set_z(true, true);
 	}
 }

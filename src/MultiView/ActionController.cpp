@@ -342,24 +342,24 @@ void ActionController::draw(Window *win) {
 		return;
 	if (!visible)
 		return;
-	nix::SetZ(false, false);
+	nix::set_z(false, false);
 	matrix m = mat * geo_mat;
-	nix::SetWorldMatrix(m);
-	nix::SetTexture(nullptr);
-	nix::SetShader(nix::Shader::default_3d);
+	nix::set_model_matrix(m);
+	nix::set_texture(nullptr);
+	nix::set_shader(nix::Shader::default_3d);
 	win->set_projection_matrix();
 	foreachi(Geometry *g, geo_show, i) {
 		if (!geo_allow(i, win, m))
 			continue;
 		if (ac_geo_config[i].constraint == hover_constraint)
-			nix::SetMaterial(White, 1, 0, White);
+			nix::set_material(White, 1, 0, White);
 		else
-			nix::SetMaterial(Black, 1, 0, ac_geo_config[i].col);
-		nix::DrawTriangles(buf[i]);
+			nix::set_material(Black, 1, 0, ac_geo_config[i].col);
+		nix::draw_triangles(buf[i]);
 	}
-	nix::SetZ(false, false);
-	nix::SetAlpha(ALPHA_NONE);
-	nix::SetWorldMatrix(matrix::ID);
+	nix::set_z(false, false);
+	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::set_model_matrix(matrix::ID);
 	win->set_projection_matrix_pixel();
 
 	if (in_use()) {
@@ -374,7 +374,7 @@ void ActionController::draw(Window *win) {
 			draw_line(pos - vector::EZ * r, pos + vector::EZ * r);
 	}
 
-	nix::SetShader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d);
 
 	if (win == multi_view->mouse_win) {
 		vector pp = win->project(pos);

@@ -83,10 +83,10 @@ void drawing_helper_init(const Path &dir) {
 
 void set_line_width(float width) {
 	if (width == 1.0f) {
-		nix::SetShader(shader_lines_3d_colored.get());
+		nix::set_shader(shader_lines_3d_colored.get());
 	} else {
 		auto s = shader_lines_3d_colored_wide.get();
-		nix::SetShader(s);
+		nix::set_shader(s);
 		s->set_float(s->get_location("target_width"), nix::target_width);
 		s->set_float(s->get_location("target_height"), nix::target_height);
 		s->set_float(s->get_location("line_width"), width);
@@ -115,7 +115,7 @@ void draw_lines_colored(const Array<vector> &p, const Array<color> &c, bool cont
 	//set_line_width(2);
 	vb_lines->update(0, p);
 	vb_lines->update(1, c);
-	nix::DrawLines(vb_lines, contiguous);
+	nix::draw_lines(vb_lines, contiguous);
 }
 
 void draw_line(const vector &l1, const vector &l2) {
@@ -140,17 +140,17 @@ void draw_circle(const vector &pos, const vector &n, float radius) {
 
 
 void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b) {
-	nix::SetZ(false, false);
+	nix::set_z(false, false);
 	set_color(scheme.TEXT);
 	set_line_width(scheme.LINE_WIDTH_HELPER);
 	draw_line(a, b);
-	//nix::SetZ(true, true);
+	//nix::set_z(true, true);
 	vector pa = win->project(a);
 	vector pb = win->project(b);
 	//vector d = (pb - pa).normalized();
 	//vector e = d ^ vector::EZ;
 	float r = 3;
-	nix::SetShader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d);
 	draw_rect(pa.x-r, pa.x+r, pa.y-r, pa.y+r, 0);
 	draw_rect(pb.x-r, pb.x+r, pb.y-r, pb.y+r, 0);
 }
@@ -170,7 +170,7 @@ void draw_2d(const rect &src, const rect &dest, float depth) {
 	vb_2d->update(0, Array<vector>{a,b,c, c,b,d});
 	vb_2d->update(1, Array<color>{col,col,col, col,col,col});
 	vb_2d->update(2, Array<float>{src.x1,src.y1, src.x2,src.y1, src.x1,src.y2,  src.x1,src.y2, src.x2,src.y1, src.x2,src.y2});
-	nix::DrawTriangles(vb_2d);
+	nix::draw_triangles(vb_2d);
 }
 
 
@@ -207,7 +207,7 @@ void _draw_str(float x, float y, const string &str) {
 	render_text(str, im);
 	if (im.width > 0) {
 		tex_text->overwrite(im);
-		SetTexture(tex_text);
+		set_texture(tex_text);
 		draw_2d(rect::ID, rect(x, x + im.width, y, y + im.height), 0);
 	}
 }
@@ -228,14 +228,14 @@ void draw_str_bg(int x, int y, const string &str, const color &fg, const color &
 		x -= wmax;
 	else if (align == TextAlign::CENTER)
 		x -= wmax / 2;
-	nix::SetTexture(tex_round);
-	nix::SetAlpha(ALPHA_MATERIAL);
+	nix::set_texture(tex_round);
+	nix::set_alpha(nix::AlphaMode::MATERIAL);
 	float r = scheme.BOX_PADDING;
 	set_color(bg);
 	draw_round_rect(rect(float(x-r), float(x+wmax+r), float(y-r), float(y+h+r)));
 	set_color(fg);
-	nix::SetTexture(nullptr);
-	nix::SetAlpha(ALPHA_SOURCE_ALPHA, ALPHA_SOURCE_INV_ALPHA);
+	nix::set_texture(nullptr);
+	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	foreachi (string &s, xx, i) {
 		if (align == TextAlign::RIGHT)
 			_draw_str(x+wmax-ww[i], y+line_h*i, s);
@@ -244,7 +244,7 @@ void draw_str_bg(int x, int y, const string &str, const color &fg, const color &
 		else if (align == TextAlign::LEFT)
 			_draw_str(x, y+line_h*i, s);
 	}
-	nix::SetAlpha(ALPHA_NONE);
+	nix::set_alpha(nix::AlphaMode::NONE);
 	set_color(c0);
 }
 

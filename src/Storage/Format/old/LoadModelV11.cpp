@@ -153,10 +153,10 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 			float shininess = (float)f->read_int();
 			m->col.import(am, di, sp, shininess, em);
 		}
-		m->alpha.mode = f->read_int();
-		m->alpha.user = (m->alpha.mode != TransparencyModeDefault);
-		m->alpha.source = f->read_int();
-		m->alpha.destination = f->read_int();
+		m->alpha.mode = (TransparencyMode)f->read_int();
+		m->alpha.user = (m->alpha.mode != TransparencyMode::DEFAULT);
+		m->alpha.source = (nix::Alpha)f->read_int();
+		m->alpha.destination = (nix::Alpha)f->read_int();
 		m->alpha.factor = (float)f->read_int() * 0.01f;
 		m->alpha.zbuffer = f->read_bool();
 		int n = f->read_int();
@@ -400,7 +400,7 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 	SetNormalMode(NormalModeAngular,true);
 	skin=&Skin[3];
 	SetNormalMode(NormalModeAngular,true);
-	AlphaZBuffer=(TransparencyMode!=TransparencyModeFunctions)and(TransparencyMode!=TransparencyModeFactor);*/
+	AlphaZBuffer=(TransparencyMode!=TransparencyMode::FUNCTIONS)and(TransparencyMode!=TransparencyMode::FACTOR);*/
 
 	guess_smooth_groups(data);
 }
@@ -439,10 +439,10 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 		read_color_argb(f, em);
 		float shininess = (float)f->read_int();
 		m->col.import(em, di, sp, shininess, em);
-		m->alpha.mode = f->read_int();
-		m->alpha.user = (m->alpha.mode != TransparencyModeDefault);
-		m->alpha.source = f->read_int();
-		m->alpha.destination = f->read_int();
+		m->alpha.mode = (TransparencyMode)f->read_int();
+		m->alpha.user = (m->alpha.mode != TransparencyMode::DEFAULT);
+		m->alpha.source = (nix::Alpha)f->read_int();
+		m->alpha.destination = (nix::Alpha)f->read_int();
 		m->alpha.factor = (float)f->read_int() * 0.01f;
 		m->alpha.zbuffer = f->read_bool();
 		int n = f->read_int();

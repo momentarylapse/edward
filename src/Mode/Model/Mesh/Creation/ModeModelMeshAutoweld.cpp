@@ -79,7 +79,7 @@ void ModeModelMeshAutoweld::on_draw_win(MultiView::Window* win)
 {
 	parent->on_draw_win(win);
 
-	nix::SetTexture(NULL);
+	nix::set_texture(NULL);
 	float r = 5;
 	int n = 0;
 #if 0

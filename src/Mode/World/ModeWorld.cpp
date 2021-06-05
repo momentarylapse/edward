@@ -325,7 +325,7 @@ void ModeWorld::on_draw() {
 			ss.add(format(_("%d cameras"), num_cam));
 		if (num_li > 0)
 			ss.add(format(_("%d lights"), num_li));
-		nix::SetShader(nix::Shader::default_2d);
+		nix::set_shader(nix::Shader::default_2d);
 		draw_str(10, 100, _("selected: ") + implode(ss, ", "));
 	}
 }
@@ -354,39 +354,39 @@ void DrawSelectionObject(Model *o, float alpha, const color &c) {
 	int d = o->_detail_;
 	if ((d<0) or (d>3))
 		return;
-	nix::SetWorldMatrix(o->_matrix);
-	nix::SetAlpha(ALPHA_MATERIAL);
+	nix::set_model_matrix(o->_matrix);
+	nix::set_alpha(nix::AlphaMode::MATERIAL);
 	for (int i=0;i<o->material.num;i++) {
 		Array<nix::Texture*> tex;
 		for (int j=0; j<o->material[i]->textures.num; j++)
 			tex.add(NULL);
-		nix::SetTextures(tex);
-		nix::SetMaterial(color(alpha, 0, 0, 0), 0, 0, c);
+		nix::set_textures(tex);
+		nix::set_material(color(alpha, 0, 0, 0), 0, 0, c);
 		//o->just_draw(i, d);
-		nix::DrawTriangles(o->mesh[0]->sub[i].vertex_buffer);
+		nix::draw_triangles(o->mesh[0]->sub[i].vertex_buffer);
 	}
-	nix::SetAlpha(ALPHA_NONE);
+	nix::set_alpha(nix::AlphaMode::NONE);
 }
 
 void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
-	nix::SetAlpha(ALPHA_MATERIAL);
+	nix::set_alpha(nix::AlphaMode::MATERIAL);
 
-	nix::SetMaterial(color(alpha, 0, 0, 0), 0, 0, c);
+	nix::set_material(color(alpha, 0, 0, 0), 0, 0, c);
 
-	nix::SetWorldMatrix(matrix::ID);
+	nix::set_model_matrix(matrix::ID);
 	t->draw();
-	nix::DrawTriangles(t->vertex_buffer);
+	nix::draw_triangles(t->vertex_buffer);
 
 
-	nix::SetAlpha(ALPHA_NONE);
+	nix::set_alpha(nix::AlphaMode::NONE);
 }
 
 
 
 void apply_lighting(DataWorld *w, MultiView::Window *win) {
 	auto &m = w->meta_data;
-	nix::SetFog(m.fog.mode, m.fog.start, m.fog.end, m.fog.density, m.fog.col);
-	nix::EnableFog(m.fog.enabled);
+	nix::set_fog(m.fog.mode, m.fog.start, m.fog.end, m.fog.density, m.fog.col);
+	nix::enable_fog(m.fog.enabled);
 	Array<nix::BasicLight> lights;
 	for (auto &ll: w->lights) {
 		nix::BasicLight l;
@@ -408,12 +408,12 @@ void apply_lighting(DataWorld *w, MultiView::Window *win) {
 		lights.add(l);
 	}
 	ed->multi_view_3d->ubo_light->update_array(lights);
-	nix::BindUniform(ed->multi_view_3d->ubo_light, 1);
+	nix::bind_uniform(ed->multi_view_3d->ubo_light, 1);
 	win->set_shader(nix::Shader::default_3d, w->lights.num);
 }
 
 void draw_background(DataWorld *w) {
-	nix::ResetToColor(w->meta_data.background_color);
+	nix::clear_color(w->meta_data.background_color);
 	/*NixSetZ(false,false);
 	NixSetWire(false);
 	NixSetColor(BackGroundColor);
@@ -430,8 +430,8 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 	}
 
 // terrain
-	nix::SetWire(multi_view->wire_mode);
-	nix::SetShader(nix::Shader::default_3d);
+	nix::set_wire(multi_view->wire_mode);
+	nix::set_shader(nix::Shader::default_3d);
 
 	if (show_effects)
 		apply_lighting(data, win);
@@ -444,12 +444,12 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 
 		// prepare...
 		t.terrain->draw();
-		nix::SetShader(nix::Shader::default_3d);
+		nix::set_shader(nix::Shader::default_3d);
 
 		auto mat = t.terrain->material;
-		nix::SetMaterial(mat->albedo, mat->roughness, mat->metal, mat->emission);
-		nix::SetTextures(weak(mat->textures));
-		nix::DrawTriangles(t.terrain->vertex_buffer);
+		nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
+		nix::set_textures(weak(mat->textures));
+		nix::draw_triangles(t.terrain->vertex_buffer);
 
 		if (t.is_selected)
 			DrawTerrainColored(t.terrain, Red, TSelectionAlpha);
@@ -466,19 +466,19 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		if (o.view_stage < multi_view->view_stage)
 			continue;
 		if (o.object) {
-			nix::SetWorldMatrix(matrix::translation(o.pos) * matrix::rotation(o.ang));
+			nix::set_model_matrix(matrix::translation(o.pos) * matrix::rotation(o.ang));
 			for (int i=0;i<o.object->material.num;i++) {
 				auto mat = o.object->material[i];
 				mat->shader = nullptr;
-				nix::SetMaterial(mat->albedo, mat->roughness, mat->metal, mat->emission);
-				nix::SetTextures(weak(mat->textures));
-				nix::DrawTriangles(o.object->mesh[0]->sub[i].vertex_buffer);
+				nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
+				nix::set_textures(weak(mat->textures));
+				nix::draw_triangles(o.object->mesh[0]->sub[i].vertex_buffer);
 			}
 			//o.object->draw(0, false, false);
 			o.object->_detail_ = 0;
 		}
 	}
-	nix::SetWire(false);
+	nix::set_wire(false);
 
 	// object selection
 	for (WorldObject &o: data->objects)
@@ -488,8 +488,8 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			DrawSelectionObject(o.object, OSelectionAlpha, Green);
 	if ((multi_view->hover.index >= 0) and (multi_view->hover.type == MVD_WORLD_OBJECT))
 		DrawSelectionObject(data->objects[multi_view->hover.index].object, OSelectionAlpha, White);
-	nix::SetAlpha(ALPHA_NONE);
-	nix::SetWorldMatrix(matrix::ID);
+	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::set_model_matrix(matrix::ID);
 
 
 	// lights
@@ -553,8 +553,8 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		}
 	}
 
-	nix::SetZ(true,true);
-	nix::EnableFog(false);
+	nix::set_z(true,true);
+	nix::enable_fog(false);
 }
 
 

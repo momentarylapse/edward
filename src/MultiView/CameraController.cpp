@@ -144,14 +144,14 @@ void CameraController::on_mouse_wheel() {
 }
 
 void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active) {
-	nix::SetTexture(tex_bg);
+	nix::set_texture(tex_bg);
 	if (active or rr.inside(view->m.x, view->m.y))
 		set_color(ColorIconHover);
 	else
 		set_color(ColorIcon);
 	draw_2d(rect::ID, rr, 0);
 	if (tex) {
-		nix::SetTexture(tex);
+		nix::set_texture(tex);
 		set_color(White);
 		draw_2d(rect::ID, rr, 0);
 	}
@@ -159,12 +159,12 @@ void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active)
 
 void CameraController::draw() {
 	update_rects();
-	nix::SetAlpha(ALPHA_MATERIAL);
+	nix::set_alpha(nix::AlphaMode::MATERIAL);
 
 	// show/hide button
 	set_color(ColorBackground);
-	nix::SetTexture(tex_bg);
-	nix::SetShader(nix::Shader::default_2d);
+	nix::set_texture(tex_bg);
+	nix::set_shader(nix::Shader::default_2d);
 	draw_2d(rect::ID, r2, 0);
 	draw_icon(r_show, NULL, false);
 
@@ -173,7 +173,7 @@ void CameraController::draw() {
 		for (auto &c: controllers) {
 		// elongated background
 		set_color(ColorBackground);
-		nix::SetTexture(tex_bg);
+		nix::set_texture(tex_bg);
 		draw_2d(rect(0, 0.5f, 0, 1), rect(c.r.x1, c.r.x1 + CC_RADIUS/2 + CC_BORDER, c.r.y1, c.r.y2), 0);
 		draw_2d(rect(0.5f, 0.5f, 0, 1), rect(c.r.x1 + CC_RADIUS/2 + CC_BORDER, c.r.x2 - CC_RADIUS/2 - CC_BORDER, c.r.y1, c.r.y2), 0);
 		draw_2d(rect(0.5f, 1, 0, 1), rect(c.r.x2 - CC_RADIUS/2 - CC_BORDER, c.r.x2, c.r.y1, c.r.y2), 0);
@@ -184,8 +184,8 @@ void CameraController::draw() {
 		draw_icon(c.r_zoom, tex_zoom, c.zooming);
 		}
 	}
-	nix::SetTexture(NULL);
-	nix::SetAlpha(ALPHA_NONE);
+	nix::set_texture(NULL);
+	nix::set_alpha(nix::AlphaMode::NONE);
 }
 
 bool CameraController::in_use() {
