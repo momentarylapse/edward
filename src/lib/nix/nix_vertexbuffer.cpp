@@ -33,7 +33,7 @@ VertexBuffer::VertexBuffer(const string &f) {
 		b.count = 0;
 
 		auto &a = attr[i];
-		glGenBuffers(1, &b.buffer);
+		glCreateBuffers(1, &b.buffer);
 		a.buffer = b.buffer;
 		a.normalized = false;
 		a.stride = 0;
@@ -84,8 +84,7 @@ void VertexBuffer::update(int index, const DynamicArray &a) {
 	if (index < 0 or index >= num_buffers)
 		throw Exception("VertexBuffer: invalid index " + i2s(index));
 	buf[index].count = a.num;
-	glBindBuffer(GL_ARRAY_BUFFER, buf[index].buffer);
-	glBufferData(GL_ARRAY_BUFFER, a.num * a.element_size, a.data, GL_STATIC_DRAW);
+	glNamedBufferData(buf[index].buffer, a.num * a.element_size, a.data, GL_STATIC_DRAW);
 }
 
 int VertexBuffer::count() const {
@@ -107,11 +106,8 @@ void bind_vertex_buffer(VertexBuffer *vb) {
 	for (int i=0; i<vb->num_attributes; i++) {
 		auto &a = vb->attr[i];
 		glEnableVertexAttribArray(i);
-		TestGLError("set vb 1");
 		glBindBuffer(GL_ARRAY_BUFFER, a.buffer);
-		TestGLError("set vb 2");
 		glVertexAttribPointer(i, a.num_components, a.type, a.normalized, 0, (void*)0);//a.stride, (void*)a.offset);
-		TestGLError("set vb 3");
 		glVertexAttribDivisor(i, a.divisor);
 	}
 
@@ -122,6 +118,7 @@ void bind_vertex_buffer(VertexBuffer *vb) {
 }
 
 void init_vertex_buffers() {
+	//glCreateVertexArrays
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 

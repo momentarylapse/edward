@@ -5,14 +5,14 @@
 #include "../lib/config.h"
 #ifdef _X_USE_HUI_
 	#include "../lib/hui/hui.h"
+	#include "ResourceManager.h"
+	#include "EngineData.h"
 #elif defined(_X_USE_HUI_MINIMAL_)
 	#include "../lib/hui_minimal/hui.h"
+	#include "../helper/ResourceManager.h"
+	#include "../y/EngineData.h"
 #endif
 
-
-Path MaterialDir;
-
-nix::Texture *load_texture(const Path &file);
 
 // materials
 static Material *default_material;
@@ -128,7 +128,7 @@ Material *LoadMaterial(const Path &filename) {
 	msg_write("loading material " + filename.str());
 
 	hui::Configuration c;
-	if (!c.load(MaterialDir << filename.with(".material"))) {
+	if (!c.load(engine.material_dir << filename.with(".material"))) {
 		/*if (engine.ignore_missing_files) {
 			msg_error("material file missing: " + filename.str());
 			return default_material->copy();
@@ -146,8 +146,8 @@ Material *LoadMaterial(const Path &filename) {
 	auto texture_files = c.get_str("textures", "");
 	if (texture_files != "")
 		for (auto &f: texture_files.explode(","))
-			m->textures.add(load_texture(f));
-	m->shader = nix::Shader::load(c.get_str("shader", ""));
+			m->textures.add(ResourceManager::load_texture(f));
+	m->shader = ResourceManager::load_shader(c.get_str("shader", ""));
 
 	m->friction._static = c.get_float("friction.static", 0.5f);
 	m->friction.sliding = c.get_float("friction.slide", 0.5f);
@@ -179,7 +179,7 @@ Material *LoadMaterial(const Path &filename) {
 		texture_files = c.get_str("reflection.cubemap", "");
 		Array<nix::Texture*> cmt;
 		for (auto &f: texture_files.explode(","))
-			cmt.add(load_texture(f));
+			cmt.add(ResourceManager::load_texture(f));
 		m->reflection.density = c.get_float("reflection.density", 1);
 #if 0
 			m->reflection.cube_map = new nix::CubeMap(m->reflection.cube_map_size);

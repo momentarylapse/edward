@@ -14,11 +14,15 @@
 #include "../../../Action/Model/Data/ActionModelEditData.h"
 #include "../../../Edward.h"
 #include "../../../Storage/Storage.h"
-#include "../../../lib/nix/nix.h"
+#include "../../../y/EngineData.h"
 #include "../Mesh/ModeModelMeshTexture.h"
 
 string file_secure(const Path &filename);
 string render_material(ModelMaterial *m);
+
+namespace nix {
+	enum class Alpha;
+}
 
 ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) {
 	from_resource("model_material_dialog");
@@ -293,7 +297,7 @@ void ModelMaterialDialog::on_texture_level_save() {
 	if (sel >= 0)
 		if (storage->file_dialog(FD_TEXTURE, true, true)) {
 			auto tl = data->material[mode_model_mesh->current_material]->texture_levels[sel];
-			tl->image->save(nix::texture_dir << storage->dialog_file);
+			tl->image->save(engine.texture_dir << storage->dialog_file);
 			tl->filename = storage->dialog_file; // ...
 			tl->edited = false;
 		}

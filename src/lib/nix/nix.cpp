@@ -23,46 +23,8 @@ extern unsigned int VertexArrayID;
 
 namespace nix{
 
-string version = "0.13.6.0";
+string version = "0.13.7.0";
 
-
-// libraries (in case Visual C++ is used)
-//#pragma comment(lib,"opengl32.lib")
-//#pragma comment(lib,"glu32.lib")
-//#pragma comment(lib,"glut32.lib")
-//#pragma comment(lib,"glaux.lib ")
-//#ifdef NIX_ALLOW_VIDEO_TEXTURE
-//	#pragma comment(lib,"strmiids.lib")
-//	#pragma comment(lib,"vfw32.lib")
-//#endif
-
-
-
-/*
-libraries to link:
-
--lwinmm
--lcomctl32
--lkernel32
--luser32
--lgdi32
--lwinspool
--lcomdlg32
--ladvapi32
--lshell32
--lole32
--loleaut32
--luuid
--lodbc32
--lodbccp32
--lwinmm
--lgdi32
--lwsock32
--lopengl32
--lglu32
--lvfw_avi32
--lvfw_ms32
-*/
 
 
 void TestGLError(const char *pos) {
@@ -87,28 +49,20 @@ void TestGLError(const char *pos) {
 #endif
 }
 
-// things'n'stuff
-int FontGlyphWidth[256];
-
 
 //int device_width, device_height;
 int target_width, target_height; // render target size (window/texture) but relative to viewport!
 rect target_rect;
-bool Fullscreen;
-callback_function *RefillAllVertexBuffers = NULL;
-
-int MaxVideoTextureSize=256;
 
 
 Fog fog;
 
+Array<string> extensions;
 
 
 
 //#define ENABLE_INDEX_BUFFERS
 
-// shader files
-int glShaderCurrent = 0;
 
 
 void MatrixOut(matrix &m) {
@@ -126,6 +80,48 @@ void mout(matrix &m) {
 	msg_write(format("		%f	%f	%f	%f",m._30,m._31,m._32,m._33));
 }
 
+// https://github.com/fendevel/Guide-to-Modern-OpenGL-Functions
+void message_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, GLchar const* message, void const* user_param) {
+	auto const src_str = [source]() {
+		switch (source)
+		{
+		case GL_DEBUG_SOURCE_API: return "API";
+		case GL_DEBUG_SOURCE_WINDOW_SYSTEM: return "WINDOW SYSTEM";
+		case GL_DEBUG_SOURCE_SHADER_COMPILER: return "SHADER COMPILER";
+		case GL_DEBUG_SOURCE_THIRD_PARTY: return "THIRD PARTY";
+		case GL_DEBUG_SOURCE_APPLICATION: return "APPLICATION";
+		case GL_DEBUG_SOURCE_OTHER: return "OTHER";
+		}
+		return "?";
+	}();
+
+	auto const type_str = [type]() {
+		switch (type)
+		{
+		case GL_DEBUG_TYPE_ERROR: return "ERROR";
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: return "DEPRECATED_BEHAVIOR";
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: return "UNDEFINED_BEHAVIOR";
+		case GL_DEBUG_TYPE_PORTABILITY: return "PORTABILITY";
+		case GL_DEBUG_TYPE_PERFORMANCE: return "PERFORMANCE";
+		case GL_DEBUG_TYPE_MARKER: return "MARKER";
+		case GL_DEBUG_TYPE_OTHER: return "OTHER";
+		}
+		return "?";
+	}();
+
+	auto const severity_str = [severity]() {
+		switch (severity) {
+		case GL_DEBUG_SEVERITY_NOTIFICATION: return "NOTIFICATION";
+		case GL_DEBUG_SEVERITY_LOW: return "LOW";
+		case GL_DEBUG_SEVERITY_MEDIUM: return "MEDIUM";
+		case GL_DEBUG_SEVERITY_HIGH: return "HIGH";
+		}
+		return "?";
+	}();
+
+	msg_error(format("%s, %s, %s, %d: %s", src_str, type_str, severity_str, id, message));
+}
+
 void init() {
 	//if (Usable)
 	//	return;
@@ -137,18 +133,31 @@ void init() {
 	msg_write(string("OpenGL: ") + (char*)glGetString(GL_VERSION));
 	msg_write(string("Renderer: ") + (char*)glGetString(GL_RENDERER));
 	msg_write(string("GLSL: ") + (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-	
 
-	Fullscreen = false; // before nix is started, we're hopefully not in fullscreen mode
+#ifdef OS_WINDOWS
+	GLenum err = glewInit();
+	if (GLEW_OK != err) {
+		/* Problem: glewInit failed, something is seriously wrong. */
+		msg_error((const char*)glewGetErrorString(err));
+	}
+#endif
 
-	// reset data
-	RefillAllVertexBuffers = NULL;
+	int num_extension = 0;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &num_extension);
+	for (int i = 0; i < num_extension; i++) {
+		extensions.add((char*)glGetStringi(GL_EXTENSIONS, i));
+	}
 
 
 	// default values of the engine
 	model_matrix = matrix::ID;
 	view_matrix = matrix::ID;
 	projection_matrix = matrix::ID;
+
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
+	glDebugMessageCallback(message_callback, nullptr);
 
 
 
@@ -189,8 +198,6 @@ void kill_device_objects() {
 void reincarnate_device_objects() {
 	// textures
 	reincarnate_textures();
-	if (RefillAllVertexBuffers)
-		RefillAllVertexBuffers();
 }
 
 
@@ -198,20 +205,24 @@ void reincarnate_device_objects() {
 #define GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX 0x9049
 
 int total_mem() {
-	GLint total_mem_kb = 0;
-	glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX, &total_mem_kb);
-	int err = glGetError();
-	if (err == GL_NO_ERROR)
-		return total_mem_kb;
+	if (sa_contains(extensions, "GL_NVX_gpu_memory_info")) {
+		GLint total_mem_kb = 0;
+		glGetIntegerv(GL_GPU_MEM_INFO_TOTAL_AVAILABLE_MEM_NVX, &total_mem_kb);
+		int err = glGetError();
+		if (err == GL_NO_ERROR)
+			return total_mem_kb;
+	}
 	return -1;
 }
 
 int available_mem() {
-	GLint cur_avail_mem_kb = 0;
-	glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX, &cur_avail_mem_kb);
-	int err = glGetError();
-	if (err == GL_NO_ERROR)
-		return cur_avail_mem_kb;
+	if (sa_contains(extensions, "GL_NVX_gpu_memory_info")) {
+		GLint cur_avail_mem_kb = 0;
+		glGetIntegerv(GL_GPU_MEM_INFO_CURRENT_AVAILABLE_MEM_NVX, &cur_avail_mem_kb);
+		int err = glGetError();
+		if (err == GL_NO_ERROR)
+			return cur_avail_mem_kb;
+	}
 	return -1;
 }
 
@@ -220,7 +231,7 @@ int available_mem() {
 // shoot down windows
 void KillWindows()
 {
-#ifdef OS_WINDOWS
+/*#ifdef OS_WINDOWS
 	HANDLE t;
 	OpenProcessToken(	GetCurrentProcess(),TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,&t);
 	_TOKEN_PRIVILEGES tp;
@@ -230,7 +241,7 @@ void KillWindows()
 	AdjustTokenPrivileges(t,FALSE,&tp,0,NULL,0);
 	InitiateSystemShutdown(NULL,(win_str)hui_tchar_str("Resistance is futile!"),10,TRUE,FALSE);
 	//ExitWindowsEx(EWX_SHUTDOWN | EWX_FORCE,0);
-#endif
+#endif*/
 }
 
 
@@ -243,7 +254,6 @@ void set_wire(bool wire) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glEnable(GL_CULL_FACE);
 	}
-	TestGLError("set_wire");
 }
 
 void set_cull(CullMode mode) {
@@ -255,7 +265,6 @@ void set_cull(CullMode mode) {
 		glCullFace(GL_FRONT);
 	if (mode == CullMode::CW)
 		glCullFace(GL_BACK);
-	TestGLError("set_cull");
 }
 
 void set_z(bool write, bool test) {
@@ -275,7 +284,6 @@ void set_z(bool write, bool test) {
 			glDisable(GL_DEPTH_TEST);
 		}
 	}
-	TestGLError("SetZ");
 }
 
 void set_offset(float offset) {
@@ -293,7 +301,6 @@ void set_alpha(AlphaMode mode) {
 	switch (mode) {
 		case AlphaMode::NONE:
 			glDisable(GL_BLEND);
-			TestGLError("SetAlpha b");
 			break;
 		case AlphaMode::COLOR_KEY_HARD:
 		case AlphaMode::COLOR_KEY_SMOOTH:
@@ -310,7 +317,6 @@ void set_alpha(AlphaMode mode) {
 			glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 			break;
 	}
-	TestGLError("set_alpha");
 }
 
 void set_alpha_mode(AlphaMode mode) {
@@ -346,7 +352,6 @@ void set_alpha(Alpha src, Alpha dst) {
 	glEnable(GL_BLEND);
 	//glDisable(GL_ALPHA_TEST);
 	glBlendFunc(OGLGetAlphaMode(src), OGLGetAlphaMode(dst));
-	TestGLError("SetAlphaII");
 }
 
 void set_alpha_sd(Alpha src,Alpha dst) {
@@ -387,7 +392,6 @@ void set_stencil(StencilOp mode, unsigned long param) {
 		else if (mode == StencilOp::MASK_GREATER)
 			glStencilFunc(GL_GREATER,param,0xffffffff);
 	}
-	TestGLError("SetStencil");
 }
 
 // mode=FogLinear:			start/end
@@ -395,7 +399,6 @@ void set_stencil(StencilOp mode, unsigned long param) {
 void set_fog(FogMode mode,float start,float end,float density,const color &c) {
 	fog.density = density;
 	fog._color = c;
-	//TestGLError("SetFog");
 }
 
 void enable_fog(bool Enabled)

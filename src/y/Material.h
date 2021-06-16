@@ -89,7 +89,6 @@ public:
 
 
 // management
-extern Path MaterialDir;
 void MaterialInit();
 void MaterialEnd();
 void MaterialReset();

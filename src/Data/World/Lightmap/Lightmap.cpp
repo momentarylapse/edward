@@ -136,7 +136,7 @@ void fuzzy_image(Image &im)
 bool Lightmap::RenderTextures()
 {
 	ed->progress->start_cancelable(_("calculating texture"), 0);
-	dir_create(nix::texture_dir << data->texture_out_dir);
+	dir_create(engine.texture_dir << data->texture_out_dir);
 	dir_create(engine.object_dir << data->model_out_dir);
 	dir_create(engine.map_dir << data->model_out_dir);
 
@@ -163,7 +163,7 @@ bool Lightmap::RenderTextures()
 
 		m.tex_name = data->texture_out_dir << (i2s(mid) + ".tga");
 		fuzzy_image(im);
-		im.save(nix::texture_dir << m.tex_name);
+		im.save(engine.texture_dir << m.tex_name);
 
 		// edit model
 		for (ModelMaterial *mat: m.orig->material){
@@ -199,7 +199,7 @@ bool Lightmap::RenderTextures()
 
 		t.tex_name = data->texture_out_dir << ("t" + i2s(tid) + ".tga");
 		fuzzy_image(im);
-		im.save(nix::texture_dir << t.tex_name);
+		im.save(engine.texture_dir << t.tex_name);
 
 		// edit Terrain
 		t.orig->texture_file[t.orig->material->textures.num] = t.tex_name;

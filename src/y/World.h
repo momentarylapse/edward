@@ -60,6 +60,16 @@ struct PartialModel {
 	void clear();
 };
 
+struct PartialModelMulti {
+	Model *model;
+	Material *material;
+	Array<matrix> matrices;
+	int mat_index;
+	float d;
+	bool shadow, transparent;
+	void clear();
+};
+
 // network messages
 struct GodNetMessage {
 	int msg, arg_i[4];
@@ -85,6 +95,8 @@ public:
 	Object *create_object_x(const Path &filename, const string &name, const vector &pos, const quaternion &ang, const Path &script, int w_index = -1);
 	Terrain *create_terrain(const Path &filename, const vector &pos);
 
+	Object* create_object_multi(const Path &filename, const Array<vector> &pos, const Array<quaternion> &ang);
+
 	void register_object(Object *o, int index);
 	void unregister_object(Object *o);
 	void set_active_physics(Object *o, bool active, bool passive);//, bool test_collisions);
@@ -94,6 +106,8 @@ public:
 
 	void register_model(Model *m);
 	void unregister_model(Model *m);
+
+	void register_model_multi(Model *m, const Array<matrix> &matrices);
 
 	void add_link(Link *l);
 
@@ -138,6 +152,7 @@ public:
 	Array<Terrain*> terrains;
 
 	Array<PartialModel> sorted_opaque, sorted_trans;
+	Array<PartialModelMulti> sorted_multi;
 
 
 	Array<LevelData::Script> scripts;

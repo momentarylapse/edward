@@ -29,8 +29,6 @@
 namespace Gui
 {
 
-Path FontDir;
-
 
 
 // fonts
@@ -70,7 +68,7 @@ Font *_cdecl LoadFont(const Path &filename)
 	foreachi(Font *ff, Fonts, i)
 		if (ff->filename  == filename)
 			return ff;
-	File *f = FileOpenText(FontDir << filename.with(".xfont"));
+	File *f = FileOpenText(engine.font_dir << filename.with(".xfont"));
 	if (!f)
 		return engine.default_font;
 	int ffv=f->ReadFileFormatVersion();

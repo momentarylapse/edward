@@ -13,9 +13,10 @@
 #ifdef _X_ALLOW_X_
 #include "../world/Model.h"
 #include "../world/Material.h"
+#include "../helper/ResourceManager.h"
 #else
 #include "Model.h"
-#include "Material.h"
+#include "ResourceManager.h"
 #endif
 
 EngineData engine;
@@ -63,23 +64,23 @@ EngineData::EngineData() {
 
 
 
-void EngineData::set_dirs(const Path &texture_dir, const Path &_map_dir, const Path &_object_dir, const Path &_sound_dir, const Path &_script_dir, const Path &material_dir, const Path &font_dir) {
+void EngineData::set_dirs(const Path &_texture_dir, const Path &_map_dir, const Path &_object_dir, const Path &_sound_dir, const Path &_script_dir, const Path &_material_dir, const Path &_font_dir) {
 #if HAS_LIB_VULKAN
-	vulkan::Texture::directory = texture_dir;
-	vulkan::Shader::directory = material_dir;
+	vulkan::Texture::directory = _texture_dir;
+	vulkan::Shader::directory = _material_dir;
 #endif
-	nix::texture_dir = texture_dir;
-	nix::shader_dir = material_dir;
+	ResourceManager::texture_dir = _texture_dir;
+	ResourceManager::shader_dir = _material_dir;
+	texture_dir = _texture_dir;
+	shader_dir = _material_dir;
 
 	map_dir = _map_dir;
 	object_dir = _object_dir;
 	sound_dir = _sound_dir;
 	script_dir = _script_dir;
-	MaterialDir = material_dir;
-#if 0
-	Gui::FontDir = font_dir;
-#endif
-	kaba::config.directory = script_dir;
+	material_dir = _material_dir;
+	font_dir = _font_dir;
+	kaba::config.directory = _script_dir;
 }
 
 

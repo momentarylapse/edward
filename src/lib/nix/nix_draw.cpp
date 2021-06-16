@@ -25,8 +25,6 @@ void draw_triangles(VertexBuffer *vb) {
 	bind_vertex_buffer(vb);
 
 	glDrawArrays(GL_TRIANGLES, 0, vb->count()); // Starting from vertex 0; 3 vertices total -> 1 triangle
-
-	TestGLError("draw_triangles");
 }
 
 void draw_instanced_triangles(VertexBuffer *vb, int count) {
@@ -37,8 +35,6 @@ void draw_instanced_triangles(VertexBuffer *vb, int count) {
 	bind_vertex_buffer(vb);
 
 	glDrawArraysInstanced(GL_TRIANGLES, 0, vb->count(), count); // Starting from vertex 0; 3 vertices total -> 1 triangle
-
-	TestGLError("draw_instanced_triangles");
 }
 
 
@@ -53,7 +49,6 @@ void draw_lines(VertexBuffer *vb, bool contiguous) {
 		glDrawArrays(GL_LINE_STRIP, 0, vb->count());
 	else
 		glDrawArrays(GL_LINES, 0, vb->count());
-	TestGLError("draw_lines");
 }
 
 void draw_points(VertexBuffer *vb) {
@@ -64,25 +59,21 @@ void draw_points(VertexBuffer *vb) {
 	bind_vertex_buffer(vb);
 
 	glDrawArrays(GL_POINTS, 0, vb->count());
-	TestGLError("draw_points");
 }
 
 
 void clear(const color &c) {
 	glClearColor(c.r, c.g, c.b, c.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	TestGLError("clear");
 }
 
 void clear_color(const color &c) {
 	glClearColor(c.r, c.g, c.b, c.a);
 	glClear(GL_COLOR_BUFFER_BIT);
-	TestGLError("clear_color");
 }
 
 void clear_z() {
 	glClear(GL_DEPTH_BUFFER_BIT);
-	TestGLError("clear_z");
 }
 
 };

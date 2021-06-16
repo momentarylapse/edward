@@ -239,11 +239,11 @@ void AdministrationDialog::OnEdit()
 				ed->set_mode(mode_model);
 			break;
 		case FD_MATERIAL:
-			if (storage->load(MaterialDir << a->Name, mode_material->data, true))
+			if (storage->load(engine.material_dir << a->Name, mode_material->data, true))
 				ed->set_mode(mode_material);
 			break;
 		case FD_FONT:
-			if (storage->load(Gui::FontDir << a->Name, mode_font->data, true))
+			if (storage->load(engine.font_dir << a->Name, mode_font->data, true))
 				ed->set_mode(mode_font);
 			break;
 		case FD_WORLD:

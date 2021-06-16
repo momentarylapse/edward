@@ -80,8 +80,6 @@ void init_shaders();
 void _cdecl delete_all_shaders();
 void _cdecl set_shader(Shader *s);
 
-extern Path shader_dir;
-
 
 };
 

@@ -324,6 +324,8 @@ shared<Node> Parser::parse_operand_extension_array(shared<Node> operand, Block *
 			f->set_param(1, index);
 			f->set_param(2, index2);
 			return f;
+		} else {
+			do_error(format("function '%s.%s(int,int) -> %s' required by '[a:b]' missing", operand->type->name, IDENTIFIER_FUNC_SUBARRAY, operand->type->name));
 		}
 	}
 
@@ -3211,7 +3213,7 @@ Class *Parser::parse_class_header(Class *_namespace, int &offset0) {
 	// parent class
 	if (Exp.cur == IDENTIFIER_EXTENDS) {
 		Exp.next();
-		const Class *parent = parse_type(_namespace); // force
+		auto parent = parse_type(_namespace); // force
 		if (!parent->fully_parsed())
 			return nullptr;
 			//do_error(format("parent class '%s' not fully parsed yet", parent->long_name()));
@@ -3221,7 +3223,7 @@ Class *Parser::parse_class_header(Class *_namespace, int &offset0) {
 
 	if (Exp.cur == IDENTIFIER_IMPLEMENTS) {
 		Exp.next();
-		const Class *parent = parse_type(_namespace); // force
+		auto parent = parse_type(_namespace); // force
 		if (!parent->fully_parsed())
 			return nullptr;
 		_class->derive_from(parent, true);
@@ -3274,7 +3276,7 @@ bool Parser::parse_class(Class *_namespace) {
 			skip_parsing_function_body(f);
 			continue;
 		} else if (Exp.cur == IDENTIFIER_CONST) {
-			parse_named_const_new(_class, tree->root_of_all_evil->block.get());
+			parse_named_const(_class, tree->root_of_all_evil->block.get());
 			continue;
 		} else if (Exp.cur == IDENTIFIER_VAR) {
 			if (_class->is_interface())
@@ -3285,6 +3287,8 @@ bool Parser::parse_class(Class *_namespace) {
 			do_error("unknown definition inside a class");
 		}
 
+		// DEPRECATED
+#if 0
 		Flags flags = parse_flags();
 
 		auto type = parse_type(_class); // force
@@ -3332,6 +3336,7 @@ bool Parser::parse_class(Class *_namespace) {
 				break;
 			Exp.next();
 		}
+#endif
 	}
 
 	post_process_newly_parsed_class(_class, _offset);
@@ -3435,26 +3440,14 @@ shared<Node> Parser::parse_and_eval_const(Block *block, const Class *type) {
 
 	cv = tree->transform_node(cv, [&](shared<Node> n) { return tree->conv_eval_const_func(n); });
 
-	if (cv->kind != NodeKind::CONSTANT)
+	if (cv->kind != NodeKind::CONSTANT) {
+		//cv->show(TypeVoid);
 		do_error("constant value expected");
+	}
 	return cv;
 }
 
-void Parser::parse_named_const_old(const string &name, const Class *type, Class *name_space, Block *block) {
-	if (Exp.cur != "=")
-		do_error("'=' expected after const name");
-	Exp.next();
-
-	// find const value
-	auto cv = parse_and_eval_const(block, type);
-	Constant *c_value = cv->as_const();
-
-	auto *c = tree->add_constant(type, name_space);
-	c->set(*c_value);
-	c->name = name;
-}
-
-void Parser::parse_named_const_new(Class *name_space, Block *block) {
+void Parser::parse_named_const(Class *name_space, Block *block) {
 	Exp.next(); // 'const'
 	string name = Exp.cur;
 	Exp.next();
@@ -3541,38 +3534,6 @@ void Parser::parse_class_variable_declaration(const Class *ns, Block *block, int
 			ClassInitializers init = {ns->elements.num - 1, c_value};
 			cc->initializers.add(init);
 		}
-	}
-}
-
-void Parser::parse_global_variable_def_old(Block *block, Flags flags0) {
-	do_error("deprecated class variable declaration");
-	Flags flags = parse_flags(flags0);
-
-	const Class *type = parse_type(block->name_space()); // force
-
-	for (int j=0;true;j++) {
-		expect_no_new_line();
-
-		// name
-		string name = Exp.cur;
-		Exp.next();
-
-		if (flags_has(flags, Flags::CONST)) {
-			parse_named_const_old(name, type, tree->base_class, block);
-		} else {
-			auto *v = new Variable(name, type);
-			flags_set(v->flags, flags);
-			tree->base_class->static_variables.add(v);
-		}
-
-		if ((Exp.cur != ",") and !Exp.end_of_line())
-			do_error("',' or newline expected after definition of a global variable");
-
-		// last one?
-		if (Exp.end_of_line())
-			break;
-
-		Exp.next(); // ','
 	}
 }
 
@@ -3902,7 +3863,7 @@ void Parser::parse_top_level() {
 			skip_parsing_function_body(f);
 
 		} else if (Exp.cur == IDENTIFIER_CONST) {
-			parse_named_const_new(tree->base_class, tree->root_of_all_evil->block.get());
+			parse_named_const(tree->base_class, tree->root_of_all_evil->block.get());
 
 		} else if (Exp.cur == IDENTIFIER_VAR) {
 			int offset = 0;
@@ -3910,22 +3871,6 @@ void Parser::parse_top_level() {
 
 		} else {
 			do_error("unknown top level definition");
-
-			// type of definition
-			bool is_function = false;
-			for (int j=1;j<Exp.cur_line->exp.num-1;j++)
-				if (Exp.cur_line->exp[j].name == "(")
-				    is_function = true;
-
-			// function?
-			if (is_function) {
-				auto f = parse_function_header_old(tree->base_class, Flags::STATIC);
-				skip_parsing_function_body(f);
-
-			// global variables/consts
-			} else {
-				parse_global_variable_def_old(tree->root_of_all_evil->block.get(), Flags::STATIC);
-			}
 		}
 		if (!Exp.end_of_file())
 			Exp.next_line();

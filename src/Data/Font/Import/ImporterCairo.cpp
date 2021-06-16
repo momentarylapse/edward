@@ -8,7 +8,8 @@
 #include "ImporterCairo.h"
 #include "../DataFont.h"
 #include "../../../lib/image/image.h"
-#include "../../../lib/nix/nix.h"
+//#include "../../../lib/nix/nix.h"
+#include "../../../y/ResourceManager.h"
 #include <pango/pangocairo.h>
 
 static const int ImportCairoTrySize[][2] =
@@ -42,7 +43,7 @@ bool ImporterCairo::Import(DataFont *f, const string &font_name)
 		bool ok = TryImport(f, font_name, ImportCairoTrySize[n][0], ImportCairoTrySize[n][1], im);
 		if (ok){
 			f->global.TextureFile = Path("Font") << (font_name + ".tga");
-			im.save(nix::texture_dir << f->global.TextureFile);
+			im.save(ResourceManager::texture_dir << f->global.TextureFile);
 			f->notify();
 			return true;
 		}

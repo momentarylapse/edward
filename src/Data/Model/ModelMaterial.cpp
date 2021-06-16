@@ -9,6 +9,7 @@
 #include "../../lib/nix/nix.h"
 #include "../../MultiView/Window.h"
 #include "../../MultiView/DrawingHelper.h"
+#include "../../y/ResourceManager.h"
 #include "../../Edward.h"
 
 float col_frac(const color &a, const color &b);
@@ -63,7 +64,7 @@ void ModelMaterial::TextureLevel::reload_image() {
 	if (filename == "")
 		image = new Image(512, 512, White);
 	else
-		image = Image::load(nix::texture_dir << filename);
+		image = Image::load(ResourceManager::texture_dir << filename);
 	edited = false;
 	update_texture();
 }

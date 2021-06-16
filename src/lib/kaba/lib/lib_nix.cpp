@@ -66,6 +66,7 @@ const Class *TypeVertexBufferP;
 const Class *TypeTexture;
 const Class *TypeTextureP;
 const Class *TypeTexturePList;
+const Class *TypeVolumeTexture;
 const Class *TypeImageTexture;
 const Class *TypeDepthBuffer;
 const Class *TypeDepthBufferP;
@@ -85,6 +86,7 @@ void SIAddPackageNix() {
 	TypeTextureP		= add_type_p(TypeTexture);
 	TypeTexturePList	= add_type_l(TypeTextureP);
 	TypeImageTexture	= add_type  ("ImageTexture", sizeof(nix::Texture));
+	TypeVolumeTexture	= add_type  ("VolumeTexture", sizeof(nix::Texture));
 	TypeDepthBuffer		= add_type  ("DepthBuffer", sizeof(nix::Texture));
 	TypeDepthBufferP	= add_type_p(TypeDepthBuffer);
 	TypeFrameBuffer		= add_type  ("FrameBuffer", sizeof(nix::FrameBuffer));
@@ -112,11 +114,6 @@ void SIAddPackageNix() {
 			func_add_param("width", TypeInt);
 			func_add_param("height", TypeInt);
 			func_add_param("format", TypeString);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, nix_p(&nix::Texture::__init3__));
-			func_add_param("nx", TypeInt);
-			func_add_param("ny", TypeInt);
-			func_add_param("nz", TypeInt);
-			func_add_param("format", TypeString);
 		class_add_func(IDENTIFIER_FUNC_DELETE, TypeVoid, nix_p(&nix::Texture::__delete__));
 		class_add_func("overwrite", TypeVoid, nix_p(&nix::Texture::overwrite));
 			func_add_param("image", TypeImage);
@@ -126,13 +123,18 @@ void SIAddPackageNix() {
 			func_add_param("data", TypeFloatList);
 		class_add_func("write_float", TypeVoid, nix_p(&nix::Texture::write_float));
 			func_add_param("data", TypeFloatList);
-			func_add_param("nx", TypeInt);
-			func_add_param("ny", TypeInt);
-			func_add_param("nz", TypeInt);
 		class_add_func("load", TypeTextureP, nix_p(&__LoadTexture), Flags::_STATIC__RAISES_EXCEPTIONS);
 			func_add_param("filename", TypePath);
 		class_add_element("width", TypeInt, nix_p(&nix::Texture::width));
 		class_add_element("height", TypeInt, nix_p(&nix::Texture::height));
+
+	add_class(TypeVolumeTexture);
+		class_derive_from(TypeTexture, false, false);
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, nix_p(&nix::VolumeTexture::__init__));
+			func_add_param("nx", TypeInt);
+			func_add_param("ny", TypeInt);
+			func_add_param("nz", TypeInt);
+			func_add_param("format", TypeString);
 
 	add_class(TypeImageTexture);
 		class_derive_from(TypeTexture, false, false);
@@ -143,14 +145,16 @@ void SIAddPackageNix() {
 
 	add_class(TypeDepthBuffer);
 		class_derive_from(TypeTexture, false, false);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, nix_p(&nix::DepthBuffer::__init__));
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, nix_p(&nix::DepthBuffer::__init__), Flags::OVERRIDE);
 			func_add_param("width", TypeInt);
 			func_add_param("height", TypeInt);
+			func_add_param("format", TypeString);
 
 	add_class(TypeCubeMap);
 		class_derive_from(TypeTexture, false, false);
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, nix_p(&nix::CubeMap::__init__));
 			func_add_param("size", TypeInt);
+			func_add_param("format", TypeString);
 
 	add_class(TypeFrameBuffer);
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, nix_p(&nix::FrameBuffer::__init__));
@@ -294,13 +298,13 @@ void SIAddPackageNix() {
 	//add_ext_var("fullscreen", TypeBool, nix_p(&nix::Fullscreen));
 
 	// alpha operations
-	add_enum("nix::AlphaMode::NONE",             TypeInt, nix_p(nix::AlphaMode::NONE));
+	add_enum("ALPHA_NONE",             TypeInt, nix_p(nix::AlphaMode::NONE));
 	add_enum("ALPHA_ZERO",             TypeInt, nix_p(nix::Alpha::ZERO));
 	add_enum("ALPHA_ONE",              TypeInt, nix_p(nix::Alpha::ONE));
 	add_enum("ALPHA_COLOR_KEY",        TypeInt, nix_p(nix::AlphaMode::COLOR_KEY_SMOOTH));
-	add_enum("nix::AlphaMode::COLOR_KEY_HARD",   TypeInt, nix_p(nix::AlphaMode::COLOR_KEY_HARD));
+	add_enum("ALPHA_COLOR_KEY_HARD",   TypeInt, nix_p(nix::AlphaMode::COLOR_KEY_HARD));
 	add_enum("ALPHA_ADD",              TypeInt, nix_p(nix::AlphaMode::ADD));
-	add_enum("nix::AlphaMode::MATERIAL",         TypeInt, nix_p(nix::AlphaMode::MATERIAL));
+	add_enum("ALPHA_MATERIAL",         TypeInt, nix_p(nix::AlphaMode::MATERIAL));
 	add_enum("ALPHA_SOURCE_COLOR",     TypeInt, nix_p(nix::Alpha::SOURCE_COLOR));
 	add_enum("ALPHA_SOURCE_INV_COLOR", TypeInt, nix_p(nix::Alpha::SOURCE_INV_COLOR));
 	add_enum("ALPHA_SOURCE_ALPHA",     TypeInt, nix_p(nix::Alpha::SOURCE_ALPHA));
@@ -323,8 +327,8 @@ void SIAddPackageNix() {
 	add_enum("STENCIL_RESET",              TypeInt, nix_p(nix::StencilOp::RESET));
 	// fog
 	add_enum("FOG_LINEAR", TypeInt, nix_p(nix::FogMode::LINEAR));
-	add_enum("nix::FogMode::EXP",    TypeInt, nix_p(nix::FogMode::EXP));
-	add_enum("nix::FogMode::EXP2",   TypeInt, nix_p(nix::FogMode::EXP2));
+	add_enum("FOG_EXP",    TypeInt, nix_p(nix::FogMode::EXP));
+	add_enum("FOG_EXP2",   TypeInt, nix_p(nix::FogMode::EXP2));
 
 
 	add_ext_var("vb_temp", TypeVertexBufferP, nix_p(&nix::vb_temp));

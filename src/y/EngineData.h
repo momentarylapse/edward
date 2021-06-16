@@ -58,7 +58,7 @@ public:
 
 	void set_dirs(const Path &texture_dir, const Path &map_dir, const Path &object_dir, const Path &sound_dir, const Path &script_dir, const Path &material_dir, const Path &font_dir);
 
-	Path map_dir, sound_dir, script_dir, object_dir;
+	Path map_dir, sound_dir, script_dir, object_dir, texture_dir, shader_dir, material_dir, font_dir;
 
 	RenderPath *renderer;
 };

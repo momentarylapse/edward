@@ -18,7 +18,6 @@
 #include "../../Storage/Storage.h"
 #include "../../y/EngineData.h"
 #include "../../y/Terrain.h"
-#include "../../y/Font.h"
 #include "../../lib/kaba/kaba.h"
 #include "../../y/ModelManager.h"
 
@@ -234,7 +233,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_MATERIAL){
 		DataMaterial m;
-		if (storage->load(MaterialDir << Name, &m, false)){
+		if (storage->load(engine.material_dir << Name, &m, false)){
 			Time = m.file_time;
 			add_possible_link(l, FD_SHADERFILE, m.shader.file);
 			if (m.appearance.reflection_mode == ReflectionMode::CUBE_MAP_STATIC)
@@ -246,7 +245,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_FONT){
 		DataFont f;
-		if (storage->load(Gui::FontDir << Name, &f, false)){
+		if (storage->load(engine.font_dir << Name, &f, false)){
 			Time = f.file_time;
 			add_possible_link(l, FD_TEXTURE, f.global.TextureFile);
 		}else

@@ -47,6 +47,8 @@ void kill_device_objects();
 void reincarnate_device_objects();
 void kill();
 
+enum class FogMode;
+
 // engine properties
 void _cdecl set_wire(bool enabled);
 void _cdecl set_cull(CullMode mode);

@@ -43,7 +43,6 @@ void FontReset();
 
 // fonts
 Font* _cdecl LoadFont(const Path &filename);
-extern Path FontDir;
 
 // only used by meta itself and the editor...
 extern Array<Font*> Fonts;

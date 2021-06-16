@@ -112,10 +112,6 @@ enum class FogMode {
 
 //extern int device_width, device_height;						// render target size (window, won't change)
 extern int target_width, target_height;						// current render target size (window/texture)
-extern bool Fullscreen;
-
-extern Path texture_dir;
-extern int MaxVideoTextureSize;
 
 class VertexBuffer;
 extern VertexBuffer *vb_temp; // vertex buffer for 1-frame geometries

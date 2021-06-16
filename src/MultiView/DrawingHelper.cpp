@@ -77,7 +77,7 @@ void drawing_helper_init(const Path &dir) {
 	shader_selection = nix::Shader::load(dir << "shader/selection.shader");
 	shader_selection->set_int(shader_selection->get_location("num_lights"), 1);
 
-	MultiView::cube_map = new nix::CubeMap(128);
+	MultiView::cube_map = new nix::CubeMap(128, "rgba:i8");
 	create_fake_dynamic_cube_map(MultiView::cube_map.get());
 }
 
