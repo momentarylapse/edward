@@ -75,7 +75,7 @@ void drawing_helper_init(const Path &dir) {
 	shader_lines_3d_colored = nix::Shader::load(dir << "shader/lines-3d-colored.shader");
 	shader_lines_3d_colored_wide = nix::Shader::load(dir << "shader/lines-3d-colored-wide.shader");
 	shader_selection = nix::Shader::load(dir << "shader/selection.shader");
-	shader_selection->set_int(shader_selection->get_location("num_lights"), 1);
+	shader_selection->set_int("num_lights", 1);
 
 	MultiView::cube_map = new nix::CubeMap(128, "rgba:i8");
 	create_fake_dynamic_cube_map(MultiView::cube_map.get());
@@ -87,9 +87,9 @@ void set_line_width(float width) {
 	} else {
 		auto s = shader_lines_3d_colored_wide.get();
 		nix::set_shader(s);
-		s->set_float(s->get_location("target_width"), nix::target_width);
-		s->set_float(s->get_location("target_height"), nix::target_height);
-		s->set_float(s->get_location("line_width"), width);
+		s->set_float("target_width", nix::target_width);
+		s->set_float("target_height", nix::target_height);
+		s->set_float("line_width", width);
 	}
 }
 

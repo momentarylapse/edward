@@ -210,7 +210,7 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
 		vec3 L = reflect(view_dir, n);
 		//for (int i=0; i<30; i++) {
 		//vec3 L = normalize(L0 + vec3(_surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5) / 50);
-		vec4 r = textureCube(tex_cube, -L);
+		vec4 r = texture(tex_cube, -L);
 		/*if (roughness > 0.1) {
 			r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(_surf_rand3d(p),0,1) * roughness/10)));
 			r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(1,_surf_rand3d(p),0) * roughness/10)));

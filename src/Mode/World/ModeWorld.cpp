@@ -408,7 +408,7 @@ void apply_lighting(DataWorld *w, MultiView::Window *win) {
 		lights.add(l);
 	}
 	ed->multi_view_3d->ubo_light->update_array(lights);
-	nix::bind_uniform(ed->multi_view_3d->ubo_light, 1);
+	nix::bind_buffer(ed->multi_view_3d->ubo_light, 1);
 	win->set_shader(nix::Shader::default_3d, w->lights.num);
 }
 

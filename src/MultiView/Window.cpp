@@ -412,9 +412,9 @@ void Window::draw_header() {
 
 void Window::set_shader(nix::Shader *s, int num_lights) {
 	nix::set_shader(s);
-	s->set_int(s->get_location("num_lights"), num_lights);
+	s->set_int("num_lights", num_lights);
 	vector pos = get_lighting_eye_pos();
-	s->set_data(s->get_location("eye_pos"), &pos.x, sizeof(vector));
+	s->set_floats("eye_pos", &pos.x, 3);
 }
 
 void Window::draw() {
