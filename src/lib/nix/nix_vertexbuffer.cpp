@@ -105,7 +105,6 @@ VertexBuffer::VertexBuffer(const string &_f) {
 
 		auto &a = attr[i];
 		glCreateBuffers(1, &b.buffer);
-		//msg_write(format("  BUF  %d", b.buffer));
 		a.buffer = b.buffer;
 		a.normalized = false;
 		a.divisor = 0;
@@ -139,8 +138,8 @@ VertexBuffer::VertexBuffer(const string &_f) {
 VertexBuffer::~VertexBuffer() {
 	for (int i=0; i<num_buffers; i++)
 		glDeleteBuffers(1, &buf[i].buffer);
-	msg_error(format("  DEL VAO %d", vao));
-	glDeleteVertexArrays(1, &vao);
+	if (allow_separate_vertex_arrays)
+		glDeleteVertexArrays(1, &vao);
 }
 
 void VertexBuffer::__init__(const string &f) {
