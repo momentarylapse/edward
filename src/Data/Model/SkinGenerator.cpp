@@ -54,12 +54,12 @@ void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, i
 {
 	vector n = p.temp_normal;
 	vector d1 = n.ortho();
-	vector d2 = n ^ d1;
+	vector d2 = vector::cross(n, d1);
 	matrix R = matrix(d1, d2, n);
 	float sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0, su = 0, sv = 0, sux = 0, suy = 0, svx = 0, svy = 0;
 	for (ModelPolygonSide &s: p.side){
-		float x = d1 * v[s.vertex].pos;
-		float y = d2 * v[s.vertex].pos;
+		float x = vector::dot(d1, v[s.vertex].pos);
+		float y = vector::dot(d2, v[s.vertex].pos);
 		float u = s.skin_vertex[level].x;
 		float v = s.skin_vertex[level].y;
 		sx += x;
@@ -110,7 +110,7 @@ static vector get_cloud_normal(const Array<ModelVertex> &pp, const Array<int> &v
 	}
 	for (int i=0;i<p.num;i++)
 		for (int j=i+1;j<p.num;j++){
-			vector d = (p[i] ^ p[j]);
+			vector d = vector::cross(p[i], p[j]);
 			float l = d.length();
 			if (l > 0.1f)
 				return d / l;
@@ -123,12 +123,12 @@ void SkinGenerator::init_point_cloud_boundary(const Array<ModelVertex> &p, const
 	vector n = get_cloud_normal(p, v);
 	vector d[2];
 	d[0] = n.ortho();
-	d[1] = d[0] ^ n;
+	d[1] = vector::cross(d[0], n);
 	float boundary[2][2], l[2];
 	for (int k=0;k<2;k++){
-		boundary[k][0] = boundary[k][1] = d[k] * p[v[0]].pos;
+		boundary[k][0] = boundary[k][1] = vector::dot(d[k], p[v[0]].pos);
 		for (int vi: const_cast<Array<int>&>(v)){
-			float f = d[k] * p[vi].pos;
+			float f = vector::dot(d[k], p[vi].pos);
 			if (f < boundary[k][0])
 				boundary[k][0] = f;
 			if (f > boundary[k][1])

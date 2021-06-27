@@ -9,6 +9,7 @@
 #define SRC_DATA_WORLD_WORLDLIGHT_H_
 
 #include "../../MultiView/SingleData.h"
+#include "../../lib/image/color.h"
 
 
 enum class LightType {

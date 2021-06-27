@@ -89,6 +89,6 @@ void ModeModelMeshCreatePlane::on_mouse_move() {
 		multi_view->mouse_win->get_edit_frame(dir0, dir1, dir2);
 		length[0] = dir1 * vector::dot(dir1, pos2 - pos);
 		length[1] = dir2 * vector::dot(dir2, pos2 - pos);
-		invert = (((length[0] ^ length[1]) * dir0) > 0);
+		invert = (vector::dot(vector::cross(length[0], length[1]), dir0) > 0);
 	}
 }

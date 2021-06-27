@@ -14,7 +14,7 @@ GeometryTorus::GeometryTorus(const vector &pos, const vector &axis, float radius
 {
 	vector d1 = axis.ortho();
 	d1.normalize();
-	vector d2 = d1 ^ axis;
+	vector d2 = vector::cross(d1, axis);
 
 	// create vertices
 	for (int i=0;i<num_x;i++)

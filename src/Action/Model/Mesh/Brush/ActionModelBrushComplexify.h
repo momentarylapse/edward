@@ -9,11 +9,10 @@
 #define SRC_ACTION_MODEL_MESH_BRUSH_ACTIONMODELBRUSHCOMPLEXIFY_H_
 
 #include "../../../ActionGroup.h"
-#include "../../../../lib/math/math.h"
+#include "../../../../lib/math/vector.h"
 class DataModel;
 
-class ActionModelBrushComplexify: public ActionGroup
-{
+class ActionModelBrushComplexify: public ActionGroup {
 public:
 	ActionModelBrushComplexify(const vector &pos, const vector &n, float radius, float min_dist);
 	string name(){	return "ModelBrushComplexify";	}

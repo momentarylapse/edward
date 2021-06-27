@@ -9,10 +9,9 @@
 #define ACTIONMODELADDBONE_H_
 
 #include "../../Action.h"
-#include "../../../lib/math/math.h"
+#include "../../../lib/math/vector.h"
 
-class ActionModelAddBone: public Action
-{
+class ActionModelAddBone: public Action {
 public:
 	ActionModelAddBone(const vector &_pos, int _parent);
 	string name(){	return "ModelAddBone";	}

@@ -9,14 +9,12 @@
 #define ACTIONCAMERAADDPOINT_H_
 
 #include "../../Action.h"
-#include "../../../lib/math/math.h"
+#include "../../../lib/math/vector.h"
 class DataCamera;
 
-class ActionCameraAddPoint: public Action
-{
+class ActionCameraAddPoint: public Action {
 public:
 	ActionCameraAddPoint(DataCamera *d, const vector &_pos, const vector &_vel, const vector &_ang, float _dt);
-	virtual ~ActionCameraAddPoint(){}
 	string name(){	return "CameraAddPoint";	}
 
 	void *execute(Data *d);

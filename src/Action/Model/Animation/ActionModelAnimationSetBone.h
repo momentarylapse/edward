@@ -9,11 +9,10 @@
 #define SRC_ACTION_MODEL_ANIMATION_ACTIONMODELANIMATIONSETBONE_H_
 
 #include "../../Action.h"
-#include "../../../lib/math/math.h"
+#include "../../../lib/math/vector.h"
 class DataModel;
 
-class ActionModelAnimationSetBone: public Action
-{
+class ActionModelAnimationSetBone: public Action {
 public:
 	ActionModelAnimationSetBone(int move, int frame, int bone, const vector &dpos, const vector &ang);
 	string name(){ return "ModelAnimationSetBone"; }

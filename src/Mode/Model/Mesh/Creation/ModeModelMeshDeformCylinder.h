@@ -10,6 +10,8 @@
 
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
+#include "../../../../lib/math/interpolation.h"
+#include "../../../../lib/math/vector.h"
 
 class Geometry;
 

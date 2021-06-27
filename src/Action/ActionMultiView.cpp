@@ -23,9 +23,6 @@ ActionMultiView::ActionMultiView() {
 	mat = matrix::ID;
 }
 
-ActionMultiView::~ActionMultiView() {
-}
-
 
 
 void ActionMultiView::abort(Data *d) {

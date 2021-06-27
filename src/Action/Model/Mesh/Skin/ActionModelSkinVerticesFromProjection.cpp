@@ -6,6 +6,7 @@
  */
 
 #include "ActionModelSkinVerticesFromProjection.h"
+#include "../../../../lib/math/vector.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../Data/Model/ModelMesh.h"
 #include "../../../../Data/Model/ModelPolygon.h"

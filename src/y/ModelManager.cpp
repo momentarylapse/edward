@@ -8,6 +8,7 @@
 #include "ModelManager.h"
 #include "Model.h"
 #include "../y/EngineData.h"
+#include "../lib/math/complex.h"
 #include "../lib/kaba/kaba.h"
 #include "../lib/config.h"
 #ifdef _X_ALLOW_X_
@@ -25,9 +26,45 @@
 Array<Model*> ModelManager::originals;
 
 
+File *load_file_x(const Path &filename, int &version) {
 
-color file_read_color4i(File *f);
-vector get_normal_by_index(int index);
+	File *f = FileOpen(filename);
+	char c = f->read_char();
+	if (c == 'b') {
+		version = f->read_word();
+		return f;
+	} else if (c == 't') {
+		delete f;
+		f = FileOpenText(filename);
+		f->read_char();
+		version = f->read_word();
+		return f;
+	} else {
+		throw Exception("File format unreadable!");
+	}
+	return nullptr;
+}
+
+
+color file_read_color4i(File *f) {
+	int a = f->read_int();
+	int r = f->read_int();
+	int g = f->read_int();
+	int b = f->read_int();
+	return color((float)a/255.0f, (float)r/255.0f, (float)g/255.0f, (float)b/255.0f);
+}
+
+
+vector get_normal_by_index(int index) {
+	float wz = (float)(index >> 8) * pi / 255.0f;
+	float wxy = (float)(index & 255) * 2 * pi / 255.0f;
+	float swz = sin(wz);
+	if (swz < 0)
+		swz = - swz;
+	float cwz = cos(wz);
+	return vector( cos(wxy) * swz, sin(wxy) * swz, cwz);
+}
+
 void AppraiseDimensions(Model *m);
 void PostProcessPhys(Model *m, PhysicalMesh *s);
 
@@ -137,10 +174,14 @@ public:
 		int nv = f->read_int();
 		me->vertex.resize(nv);
 		me->bone_index.resize(nv);
+		me->bone_weight.resize(nv);
 		for (int j=0; j<nv; j++)
 			f->read_vector(&me->vertex[j]);
-		for (int j=0; j<nv; j++)
-			me->bone_index[j] = f->read_int();
+		for (int j=0; j<nv; j++) {
+			me->bone_index[j] = {0,0,0,0};
+			me->bone_index[j].i = f->read_int();
+			me->bone_weight[j] = {1,0,0,0};
+		}
 
 		// skin vertices
 		Array<complex> skin_vert;
@@ -508,7 +549,7 @@ Model* ModelManager::loadx(const Path &_filename, const Path &_script) {
 	AppraiseDimensions(m);
 
 	for (int i=0; i<MODEL_NUM_MESHES; i++)
-		m->mesh[i]->post_process();
+		m->mesh[i]->post_process(m->uses_bone_animations());
 
 	PostProcessPhys(m, m->phys);
 
@@ -517,9 +558,10 @@ Model* ModelManager::loadx(const Path &_filename, const Path &_script) {
 
 	// skeleton
 	if (m->bone.num > 0) {
+		m->anim.dmatrix.resize(m->bone.num);
 		for (int i=0; i<m->bone.num; i++) {
 			m->bone[i].rest_pos = m->get_bone_rest_pos(i);
-			m->bone[i].dmatrix = matrix::translation(m->bone[i].rest_pos);
+			m->anim.dmatrix[i] = matrix::translation(m->bone[i].rest_pos);
 		}
 	}
 

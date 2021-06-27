@@ -9,11 +9,10 @@
 #define ACTIONMODELBRUSHSMOOTH_H_
 
 #include "../../../Action.h"
-#include "../../../../lib/math/math.h"
+#include "../../../../lib/math/vector.h"
 class DataModel;
 
-class ActionModelBrushSmooth: public Action
-{
+class ActionModelBrushSmooth: public Action {
 public:
 	ActionModelBrushSmooth(const vector &pos, const vector &n, float radius);
 	string name(){	return "ModelBrushSmooth";	}

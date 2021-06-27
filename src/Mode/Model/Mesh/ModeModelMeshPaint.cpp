@@ -13,6 +13,7 @@
 #include "../../../MultiView/ColorScheme.h"
 #include "../../../Edward.h"
 #include "../../../lib/nix/nix.h"
+#include "../../../lib/math/complex.h"
 #include "../../../Action/Model/Mesh/Brush/ActionModelBrushExtrude.h"
 #include "../../../Action/Model/Mesh/Brush/ActionModelBrushSmooth.h"
 #include "../../../Action/Model/Mesh/Brush/ActionModelBrushComplexify.h"

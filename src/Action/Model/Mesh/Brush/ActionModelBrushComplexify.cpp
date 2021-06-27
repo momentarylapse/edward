@@ -7,19 +7,17 @@
 
 #include "ActionModelBrushComplexify.h"
 
-ActionModelBrushComplexify::ActionModelBrushComplexify(const vector &_pos, const vector &_n, float _radius, float _min_dist)
-{
+ActionModelBrushComplexify::ActionModelBrushComplexify(const vector &_pos, const vector &_n, float _radius, float _min_dist) {
 	pos = _pos;
 	n = _n;
 	radius = _radius;
 	min_dist = _min_dist;
 }
 
-void *ActionModelBrushComplexify::compose(Data *d)
-{
+void *ActionModelBrushComplexify::compose(Data *d) {
 	// TODO: make list of all edges in selection < min_dist
 	// split edges
 	// all polygons in selection: if radius too large: add center
-	return NULL;
+	return nullptr;
 }
 

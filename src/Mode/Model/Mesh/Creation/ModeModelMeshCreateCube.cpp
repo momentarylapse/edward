@@ -50,7 +50,7 @@ void ModeModelMeshCreateCube::update_geometry() {
 		geo = new GeometryCube(pos-length[2]/2, length[0], length[1], length[2], num_1, num_2, num_3);
 	} else {
 		float min_thick = 10 / ed->multi_view_3d->active_win->zoom(); // 10 px
-		vector n = length[0] ^ length[1];
+		vector n = vector::cross(length[0], length[1]);
 		n.normalize();
 		geo = new GeometryCube(pos, length[0], length[1], n * min_thick, 1, 1, 1);
 	}
@@ -58,20 +58,20 @@ void ModeModelMeshCreateCube::update_geometry() {
 
 
 bool ModeModelMeshCreateCube::set_dpos3() {
-	vector n = (length[0] ^ length[1]).normalized();
+	vector n = vector::cross(length[0], length[1]).normalized();
 	vector dpos = multi_view->get_cursor() - pos2;
 	float min_thick = 10 / ed->multi_view_3d->active_win->zoom(); // 10 px
 
 
-	if (fabs(multi_view->mouse_win->get_edit_direction() * n) > 0.90f) {
+	if (fabs(vector::dot(multi_view->mouse_win->get_edit_direction(), n)) > 0.90f) {
 		// cursor in cube plane -> use radius
 		length[2] = n * multi_view->maybe_snap_f(max(dpos.length(), min_thick)) * 2;
-		if (multi_view->mouse_win->get_direction() * n < 0)
+		if (vector::dot(multi_view->mouse_win->get_direction(), n) < 0)
 			length[2] = -length[2];
 		return true;
 	}
 
-	length[2] = multi_view->maybe_snap_v(n * (n * dpos)) * 2;
+	length[2] = multi_view->maybe_snap_v(n * vector::dot(n, dpos)) * 2;
 	if (length[2].length() < min_thick)
 		length[2] = n * min_thick;
 	return false;
@@ -157,8 +157,8 @@ void ModeModelMeshCreateCube::on_draw_win(MultiView::Window *win) {
 		if (set_dpos3()) {
 			draw_helper_line(win, pos2, m);
 		} else {
-			vector n = (length[0] ^ length[1]).normalized();
-			draw_helper_line(win, m + n * (n * (pos2-m)), m);
+			vector n = vector::cross(length[0], length[1]).normalized();
+			draw_helper_line(win, m + n * vector::dot(n, pos2-m), m);
 		}
 	}
 }

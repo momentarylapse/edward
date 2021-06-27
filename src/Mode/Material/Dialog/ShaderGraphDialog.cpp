@@ -14,6 +14,8 @@
 #include "../../../Data/Material/ShaderGraph.h"
 #include "../../../Data/Material/ShaderNode.h"
 #include "../../../lib/math/rect.h"
+#include "../../../lib/math/complex.h"
+#include "../../../lib/math/interpolation.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../Storage/Storage.h"
 

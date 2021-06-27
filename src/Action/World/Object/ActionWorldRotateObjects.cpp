@@ -12,6 +12,7 @@
 #include "../../../Data/World/WorldLight.h"
 #include "../../../Data/World/WorldLink.h"
 #include "../../../Edward.h"
+#include "../../../lib/math/quaternion.h"
 
 ActionWorldRotateObjects::ActionWorldRotateObjects(DataWorld *d) :
 	ActionMultiView()
@@ -74,19 +75,19 @@ void *ActionWorldRotateObjects::execute(Data *d) {
 	foreachi(int i, index, ii) {
 		if (type[ii] == MVD_WORLD_OBJECT) {
 			w->objects[i].pos = mat * old_data[ii];
-			w->objects[i].ang = VecAngAdd(old_ang[ii], q.get_angles());
+			w->objects[i].ang = (q * quaternion::rotation(old_ang[ii])).get_angles();
 		} else if (type[ii] == MVD_WORLD_CAMERA) {
 			w->cameras[i].pos = mat * old_data[ii];
-			w->cameras[i].ang = VecAngAdd(old_ang[ii], q.get_angles());
+			w->cameras[i].ang = (q * quaternion::rotation(old_ang[ii])).get_angles();
 		} else if (type[ii] == MVD_WORLD_LIGHT) {
 			w->lights[i].pos = mat * old_data[ii];
-			w->lights[i].ang = VecAngAdd(old_ang[ii], q.get_angles());
+			w->lights[i].ang = (q * quaternion::rotation(old_ang[ii])).get_angles();
 		} else if (type[ii] == MVD_WORLD_LINK) {
 			w->links[i].pos = mat * old_data[ii];
-			w->links[i].ang = VecAngAdd(old_ang[ii], q.get_angles());
+			w->links[i].ang = (q * quaternion::rotation(old_ang[ii])).get_angles();
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 

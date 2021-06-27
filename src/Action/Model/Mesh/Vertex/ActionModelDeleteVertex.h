@@ -9,13 +9,11 @@
 #define ACTIONMODELDELETEVERTEX_H_
 
 #include "../../../Action.h"
-#include "../../../../lib/math/math.h"
+#include "../../../../lib/math/vector.h"
 
-class ActionModelDeleteVertex: public Action
-{
+class ActionModelDeleteVertex: public Action {
 public:
 	ActionModelDeleteVertex(int _vertex);
-	virtual ~ActionModelDeleteVertex();
 	string name(){	return "ModelDeleteVertex";	}
 
 	void *execute(Data *d);

@@ -41,7 +41,7 @@ void LightmapRadiosity::Compute()
 				//msg_write(f2s(r, 3));
 				d /= r;
 				float f;//=1/(pi*r*r)*vector::dot(d,n1)*vector::dot(d,n2)*d_max*d_max/2;
-				f = reflection / pi / (r*r) * (d * a.n) * (d * b.n);
+				f = reflection / pi / (r*r) * vector::dot(d, a.n) * vector::dot(d, b.n);
 				//f = reflection / pi * pow(r, -1.9) *0.5f * vector::dot(d, v->n) * vector::dot(d, w->n);
 				if (f < 0)
 					f = -f;

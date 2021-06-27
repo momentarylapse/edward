@@ -9,6 +9,8 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Camera.h"
+#include "../lib/math/vector.h"
+#include "../lib/math/matrix.h"
 #include "../y/EngineData.h"
 
 

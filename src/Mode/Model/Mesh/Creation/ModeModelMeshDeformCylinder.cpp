@@ -14,6 +14,7 @@
 #include "../../../../Edward.h"
 #include "../../../../lib/nix/nix.h"
 #include "../../../../lib/kaba/kaba.h"
+#include "../../../../lib/math/random.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
 #include "../../../../MultiView/DrawingHelper.h"
@@ -53,11 +54,11 @@ ModeModelMeshDeformCylinder::~ModeModelMeshDeformCylinder() {
 
 vector get_ev(matrix3 &m) {
 	vector v = vector::EZ;
-	float vmax = v * (m * v);
+	float vmax = vector::dot(v, m * v);
 	Random r;
 	for (int i=0; i<10000; i++) {
 		vector vv = r.dir();
-		float val = vv * (m * vv);
+		float val = vector::dot(vv, m * vv);
 		if (val < vmax) {
 			vmax = val;
 			v = vv;
@@ -99,7 +100,7 @@ void get_axis(DataModel *data, vector axis[2], float &radius) {
 	radius = 0;
 	foreachi(ModelVertex &v, data->mesh->vertex, i)
 		if (v.is_selected) {
-			float l = (v.pos - m) * dir;
+			float l = vector::dot(v.pos - m, dir);
 			ll[0] = min(ll[0], l);
 			ll[1] = max(ll[1], l);
 			float r = VecLineDistance(v.pos, m, m + dir);
@@ -178,7 +179,7 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win) {
 	draw_line(axis[0], axis[1]);
 
 	vector e1 = dir.ortho();
-	vector e2 = dir ^ e1;
+	vector e2 = vector::cross(dir, e1);
 	foreachi(vector &p, param, ip) {
 		set_color((ip == hover) ? scheme.SELECTION : scheme.CREATION_LINE);
 		vector m = axis[0] + (axis[1] - axis[0]) * p.y;
@@ -209,7 +210,7 @@ inline bool hover_line(vector &a, vector &b, vector &m, vector &tp) {
 void ModeModelMeshDeformCylinder::update_hover() {
 	hover = -1;
 	vector e1 = dir.ortho();
-	vector e2 = dir ^ e1;
+	vector e2 = vector::cross(dir, e1);
 	foreachi(vector &p, param, ip) {
 		vector m = axis[0] + (axis[1] - axis[0]) * p.y;
 		vector v =  multi_view->mouse_win->project(m + e1 * radius * p.z);
@@ -235,7 +236,7 @@ vector ModeModelMeshDeformCylinder::transform(const vector &v) {
 	float ll = (axis[1] - axis[0]).length();
 
 	// axial and radial cylinder components
-	float l = (v - axis[0]) * dir;
+	float l = vector::dot(v - axis[0], dir);
 	vector r = v - axis[0] - l * dir;
 
 	float f = inter->get(l / ll);
@@ -283,7 +284,7 @@ void ModeModelMeshDeformCylinder::on_mouse_move() {
 				vector d = (a1 - a0);
 				float la = d.length();
 				d.normalize();
-				float lm = (m - pp) * d;
+				float lm = vector::dot(m - pp, d);
 				if (la > 30) {
 					param[hover].y = clamp(orig_param.y +  lm / la, 0.0f, 1.0f);
 					param[hover].x = param[hover].y;

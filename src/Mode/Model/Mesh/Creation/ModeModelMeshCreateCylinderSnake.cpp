@@ -15,6 +15,7 @@
 #include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../MultiView/ColorScheme.h"
 #include "../../../../lib/nix/nix.h"
+#include "../../../../lib/math/interpolation.h"
 
 const float CYLINDER_CLOSING_DISTANCE = 20;
 

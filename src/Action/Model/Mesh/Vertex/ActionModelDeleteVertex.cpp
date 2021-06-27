@@ -13,11 +13,6 @@ ActionModelDeleteVertex::ActionModelDeleteVertex(int _vertex)
 
 }
 
-ActionModelDeleteVertex::~ActionModelDeleteVertex()
-{
-	// TODO Auto-generated destructor stub
-}
-
 void ActionModelDeleteVertex::undo(Data *d)
 {
 }

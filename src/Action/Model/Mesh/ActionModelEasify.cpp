@@ -63,7 +63,7 @@ static float get_weight(ModelMesh *m, ModelEdge &e, Array<Array<PolyRef> > &ref)
 		// how much does the plane change
 		vector area = p.get_area_vector(m->vertex);
 		vector area2 = get_deformed_area(m, p, rr[i].side, new_pos);
-		w += (area ^ area2).length() / (area.length() + area2.length()) * 4;
+		w += vector::cross(area, area2).length() / (area.length() + area2.length()) * 4;
 	}
 
 	// edge length
@@ -112,7 +112,7 @@ void ActionModelEasify::CalculateWeights(ModelMesh *m) {
 				if (eee != ei) {
 					vector nv = (m->vertex[m->edge[eee].vertex[0]].pos + m->vertex[m->edge[eee].vertex[1]].pos) / 2;
 
-					vector area = (m->vertex[m->edge[ei].vertex[0]].pos - nv) ^ (m->vertex[m->edge[ei].vertex[1]].pos - nv);
+					vector area = vector::cross(m->vertex[m->edge[ei].vertex[0]].pos - nv, m->vertex[m->edge[ei].vertex[1]].pos - nv);
 					m->edge[eee].weight +=  area.length();
 				}
 

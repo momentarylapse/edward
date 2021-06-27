@@ -74,8 +74,8 @@ static float get_ang(const Array<ModelVertex> &vertex, int a, int b, int c, cons
 	vector v2 = vertex[c].pos - vertex[b].pos;
 	v1.normalize();
 	v2.normalize();
-	float x = (v1 ^ v2) * flat_n;
-	float y = v1 * v2;
+	float x = vector::dot(vector::cross(v1, v2), flat_n);
+	float y = vector::dot(v1, v2);
 	return atan2(x, y);
 }
 

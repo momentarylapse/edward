@@ -9,11 +9,10 @@
 #define ACTIONMODELBRUSHEXTRUDE_H_
 
 #include "../../../Action.h"
-#include "../../../../lib/math/math.h"
+#include "../../../../lib/math/vector.h"
 class DataModel;
 
-class ActionModelBrushExtrude: public Action
-{
+class ActionModelBrushExtrude: public Action {
 public:
 	ActionModelBrushExtrude(const vector &pos, const vector &n, float radius, float depth);
 	string name(){	return "ModelBrushExtrude";	}

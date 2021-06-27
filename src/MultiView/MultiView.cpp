@@ -14,6 +14,7 @@
 #include "CameraController.h"
 #include "SingleData.h"
 #include "../lib/nix/nix.h"
+#include "../lib/math/plane.h"
 
 
 hui::Timer timer;

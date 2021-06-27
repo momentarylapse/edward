@@ -9,7 +9,7 @@
 #define CAMERACONTROLLER_H_
 
 
-#include "../lib/math/math.h"
+#include "../lib/math/rect.h"
 
 namespace nix {
 	class Texture;

@@ -11,7 +11,7 @@
 #include "../lib/base/base.h"
 #include "../lib/base/pointer.h"
 #include "../lib/file/path.h"
-#include "../lib/math/math.h"
+#include "../lib/math/rect.h"
 
 namespace nix{
 	class Texture;

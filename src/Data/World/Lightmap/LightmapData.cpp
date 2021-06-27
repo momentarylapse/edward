@@ -136,7 +136,7 @@ static void update_tria(LightmapData::Triangle &t)
 	t.ray[0] = Ray(t.v[0], t.v[1]);
 	t.ray[1] = Ray(t.v[1], t.v[2]);
 	t.ray[2] = Ray(t.v[2], t.v[0]);
-	t.area = ((t.v[1] - t.v[0]) ^ (t.v[2] - t.v[0])).length() / 2;
+	t.area = vector::cross(t.v[1] - t.v[0], t.v[2] - t.v[0]).length() / 2;
 }
 
 static void tria_set_mat(LightmapData::Triangle &t, Material *m)
@@ -353,7 +353,7 @@ void LightmapData::CreateVertices()
 		int h = ter.tex_height;
 
 		for (int i=ter.offset;i<ter.offset + ter.num_trias;i++){
-			LightmapData::Triangle &t = Trias[i];
+			auto &t = Trias[i];
 			for (int k=0;k<3;k++){
 				t.sv[k].x = t.v[k].x - ter.orig->pos.x;
 				t.sv[k].y = t.v[k].z - ter.orig->pos.z;
@@ -373,9 +373,9 @@ bool LightmapData::IsVisible(const vector &a, const vector &b, int ignore_tria1,
 	Ray r = Ray(a, b);
 
 	for (int ti=0;ti<Trias.num;ti++){
-		if ((ti == ignore_tria1) || (ti == ignore_tria2))
+		if ((ti == ignore_tria1) or (ti == ignore_tria2))
 			continue;
-		LightmapData::Triangle &t = Trias[ti];
+		auto &t = Trias[ti];
 		vector cp;
 /*		if (VecLineDistance(tria[t].m, p, p2) > tria[t].r)
 		//if (_vec_line_distance_(tria[t].m, p1, p2) > tria[t].r)
@@ -394,9 +394,9 @@ bool LightmapData::IsVisible(Vertex &a, Vertex &b)
 	if (a.tria_id == b.tria_id)
 		return false;
 	vector dir = b.pos - a.pos;
-	if (a.n * dir < 0)
+	if (vector::dot(a.n, dir) < 0)
 		return false;
-	if (b.n * dir > 0)
+	if (vector::dot(b.n, dir) > 0)
 		return false;
 
 	return IsVisible(a.pos, b.pos, a.tria_id, b.tria_id);

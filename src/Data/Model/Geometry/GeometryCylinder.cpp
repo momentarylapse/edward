@@ -8,6 +8,7 @@
 #include "GeometryCylinder.h"
 #include "GeometryBall.h"
 #include "../DataModel.h"
+#include "../../../lib/math/interpolation.h"
 
 #define _cyl_vert(i, j)         ( edges      * (i) +(j) % edges)
 #define _cyl_svert(i, j)        sv[(edges + 1) * (i) +(j) % (edges + 1)]
@@ -109,11 +110,11 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 		vector dir = inter.getTang(t).normalized();
 
 		// moving frame
-		vector u = r_last ^ dir;
+		vector u = vector::cross(r_last, dir);
 		if (i == 0)
 			u = dir.ortho();
 		u.normalize();
-		vector r = (dir ^ u).normalized();
+		vector r = vector::cross(dir, u).normalized();
 		r_last = r;
 		matrix frame = make_frame(p0, dir, u, r);
 		if (i == 0)
@@ -152,9 +153,9 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 		vector dir0 = inter.getTang(0);
 		vector u0 = dir0.ortho();
 		u0.normalize();
-		vector r0 = dir0 ^ u0;
+		vector r0 = vector::cross(dir0, u0);
 		r0.normalize();
-		float phi = atan2(u0 * r_last, r0 * r_last);
+		float phi = atan2(vector::dot(u0, r_last), vector::dot(r0, r_last));
 		int dj = (int)((float)edges * (phi / 2 / pi));
 		if (dj < edges)
 			dj += (1-dj/edges) * edges;

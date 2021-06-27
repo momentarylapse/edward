@@ -63,7 +63,7 @@ void ActionModelMergePolygonsSelection::MergePolygonsInSurface(DataModel *m) {
 			if (p1.normal_dirty)
 				p1.temp_normal = p1.get_normal(m->edit_mesh->vertex);
 
-			if (p0.temp_normal * p1.temp_normal < 0.99f)
+			if (vector::dot(p0.temp_normal, p1.temp_normal) < 0.99f)
 				continue;
 
 			if (polygons_count_shared_vertices(p0, p1) != 2)

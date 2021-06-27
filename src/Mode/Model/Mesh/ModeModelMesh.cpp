@@ -578,11 +578,11 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<Mo
 
 		float w = 1;
 		if (e.polygon[0] >= 0 and e.polygon[1] >= 0)
-			w = min(m->polygon[e.polygon[0]].temp_normal * dir, m->polygon[e.polygon[1]].temp_normal * dir);
+			w = min(vector::dot(m->polygon[e.polygon[0]].temp_normal, dir), vector::dot(m->polygon[e.polygon[1]].temp_normal, dir));
 		else if (e.polygon[0] >= 0)
-			w = m->polygon[e.polygon[0]].temp_normal * dir;
+			w = vector::dot(m->polygon[e.polygon[0]].temp_normal, dir);
 		else if (e.polygon[1] >= 0)
-			w = m->polygon[e.polygon[1]].temp_normal * dir;
+			w = vector::dot(m->polygon[e.polygon[1]].temp_normal, dir);
 		float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
 		color cc;
 		if (e.is_selected) {

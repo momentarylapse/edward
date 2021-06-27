@@ -298,7 +298,7 @@ bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<sCol> 
 	c_in.erase(0);
 	vector edge_dir = s.vertex[s.edge[c_out[0].edge].vertex[1]].pos - s.vertex[s.edge[c_out[0].edge].vertex[0]].pos;
 	int last_poly = s.edge[c_out[0].edge].polygon[0];
-	if (t->temp_normal * edge_dir < 0)
+	if (vector::dot(t->temp_normal, edge_dir) < 0)
 		last_poly = s.edge[c_out[0].edge].polygon[1];
 
 
@@ -484,12 +484,10 @@ float get_ang(Array<sCol> &c, int i, const vector &flat_n)
 		ia = c.num -1;
 	if (ic >= c.num)
 		ic = 0;
-	vector v1 = c[i].p - c[ia].p;
-	vector v2 = c[ic].p - c[i].p;
-	v1.normalize();
-	v2.normalize();
-	float x = (v1 ^ v2) * flat_n;
-	float y = v1 * v2;
+	vector v1 = (c[i].p - c[ia].p).normalized();
+	vector v2 = (c[ic].p - c[i].p).normalized();
+	float x = vector::dot(vector::cross(v1, v2), flat_n);
+	float y = vector::dot(v1, v2);
 	return atan2(x, y);
 }
 

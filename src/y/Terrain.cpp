@@ -13,6 +13,8 @@
 #include "World.h"
 #include "../y/EngineData.h"
 #include "../lib/config.h"
+#include "../lib/math/vector.h"
+#include "../lib/math/plane.h"
 #ifdef _X_ALLOW_X_
 #include "../helper/ResourceManager.h"
 //#include "../fx/light.h"
@@ -20,6 +22,7 @@
 #include "ResourceManager.h"
 #endif
 #include "../lib/nix/nix.h"
+#include "../lib/file/file.h"
 
 
 #define Index(x,z)		((x)*(num_z+1)+(z))

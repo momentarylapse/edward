@@ -8,7 +8,9 @@
 #ifndef SKINGENERATOR_H_
 #define SKINGENERATOR_H_
 
-#include "../../lib/math/math.h"
+#include "../../lib/math/vector.h"
+#include "../../lib/math/matrix.h"
+
 class vector;
 namespace MultiView{
 	class Window;
@@ -16,8 +18,7 @@ namespace MultiView{
 class ModelPolygon;
 class ModelVertex;
 
-class SkinGenerator
-{
+class SkinGenerator {
 public:
 	SkinGenerator();
 	virtual ~SkinGenerator();
@@ -33,8 +34,7 @@ private:
 	matrix m;
 };
 
-class SkinGeneratorMulti
-{
+class SkinGeneratorMulti {
 public:
 	SkinGeneratorMulti();
 	SkinGeneratorMulti(const SkinGenerator &sg);

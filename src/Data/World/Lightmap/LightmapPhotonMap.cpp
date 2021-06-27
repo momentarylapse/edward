@@ -51,7 +51,7 @@ vector get_rand_dir(const vector &n)
 		dir.y = randf(2) - 1;
 		dir.z = randf(2) - 1;
 	}while (dir.length_sqr() > 1);
-	if ((dir * n) < 0)
+	if (vector::dot(dir, n) < 0)
 		dir = - dir;
 	dir.normalize();
 	return dir;
@@ -332,7 +332,7 @@ void pm_tree_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, i
 				pm_tree_get_list(lm, p, n, 2 * b, l, lnum, max_r2, thread_id);
 		}
 
-		if (t->p->n * n < 0)
+		if (vector::dot(t->p->n, n) < 0)
 			return;
 
 		float d2 = (p - t->p->pos).length_sqr();

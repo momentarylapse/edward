@@ -9,6 +9,9 @@
 #define MULTIVIEW_H_
 
 #include "../lib/base/base.h"
+#include "../lib/math/vector.h"
+#include "../lib/math/quaternion.h"
+#include "../lib/math/rect.h"
 #include "../Stuff/Observable.h"
 
 class Data;

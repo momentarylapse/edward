@@ -26,14 +26,14 @@ void* ActionModelBrushSmooth::execute(Data* d) {
 			index.add(i);
 			pos_old.add(m->edit_mesh->vertex[i].pos);
 			vector d = (m->edit_mesh->vertex[i].pos - pos);
-			d = d - (d * n) * n * exp(- d2 / r2 * 2);
+			d = d - vector::dot(d, n) * n * exp(- d2 / r2 * 2);
 			m->edit_mesh->vertex[i].pos = pos + d;
 		}
 	}
 	m->setNormalsDirtyByVertices(index);
 
 
-	return NULL;
+	return nullptr;
 }
 
 void ActionModelBrushSmooth::undo(Data* d) {

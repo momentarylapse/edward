@@ -21,7 +21,7 @@ GeometryCube::GeometryCube(const vector &_pos, const vector &dv1, const vector &
 	num[2] = num_3;
 
 	// check orientation
-	if ((dv[0] ^ dv[1]) * dv[2] < 0){
+	if (vector::dot(vector::cross(dv[0], dv[1]), dv[2]) < 0){
 		pos += dv[2];
 		dv[2] = - dv[2];
 	}

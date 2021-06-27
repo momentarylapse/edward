@@ -52,7 +52,7 @@ vector VecCloudGetNormal(Array<vector> &v)
 	for (int i=-50;i<50;i++)
 		for (int j=0;j<100;j++){
 			vector a = vector(i/100.0f*2*pi, j/100.0f*2*pi, 0).ang2dir();
-			float l = a * (I * a);
+			float l = vector::dot(a, (I * a));
 			if (l > lmax){
 				lmax = l;
 				amax = a;
@@ -66,7 +66,7 @@ void PlaneFromPointCloud(plane &pl, Array<vector> &v)
 	pl.n = VecCloudGetNormal(v);
 	pl.d = 0;
 	for (int i=0;i<v.num;i++)
-		pl.d -= pl.n * v[i];
+		pl.d -= vector::dot(pl.n, v[i]);
 	pl.d /= v.num;
 }
 

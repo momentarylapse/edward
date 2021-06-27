@@ -8,8 +8,7 @@
 #include "../../../Data/Model/DataModel.h"
 #include "ActionModelAnimationTransformBones.h"
 
-ActionModelAnimationTransformBones::ActionModelAnimationTransformBones(DataModel *d, int _move, int _frame)
-{
+ActionModelAnimationTransformBones::ActionModelAnimationTransformBones(DataModel *d, int _move, int _frame) {
 	move = _move;
 	frame = _frame;
 
@@ -22,25 +21,21 @@ ActionModelAnimationTransformBones::ActionModelAnimationTransformBones(DataModel
 		}
 }
 
-void *ActionModelAnimationTransformBones::execute(Data *d)
-{
-	DataModel *m = dynamic_cast<DataModel*>(d);
-	quaternion q;
-	q = quaternion::rotation_m( mat);
-	vector dang = q.get_angles();
+void *ActionModelAnimationTransformBones::execute(Data *d) {
+	auto m = dynamic_cast<DataModel*>(d);
+	auto q = quaternion::rotation_m( mat);
 	foreachi(int i, index, ii){
-		m->move[move].frame[frame].skel_ang[i] = VecAngAdd(old_data[ii], dang);
+		m->move[move].frame[frame].skel_ang[i] = (q * quaternion::rotation(old_data[ii])).get_angles();
 		if (m->bone[i].parent < 0)
 			m->move[move].frame[frame].skel_dpos[i] = mat * (old_dpos[ii] + m->bone[i].pos) - m->bone[i].pos; //+ dpos;
 	}
-	return NULL;
+	return nullptr;
 }
 
 
 
-void ActionModelAnimationTransformBones::undo(Data *d)
-{
-	DataModel *m = dynamic_cast<DataModel*>(d);
+void ActionModelAnimationTransformBones::undo(Data *d) {
+	auto m = dynamic_cast<DataModel*>(d);
 	foreachi(int i, index, ii){
 		m->move[move].frame[frame].skel_ang[i] = old_data[ii];
 		m->move[move].frame[frame].skel_dpos[i] = old_dpos[ii];

@@ -9,19 +9,17 @@
 #define ACTIONMODELAUTOMAP_H_
 
 #include "../../../Action.h"
-#include "../../../../lib/math/math.h"
+#include "../../../../lib/math/vector.h"
 class DataModel;
 
-class ActionModelAutomap : public Action
-{
+class ActionModelAutomap : public Action {
 public:
 	ActionModelAutomap(int material, int texture_level);
-	virtual ~ActionModelAutomap();
-	virtual string name(){	return "ModelAutoMap";	}
-	virtual const string &message();
+	string name() override { return "ModelAutoMap"; }
+	const string &message() override;
 
-	virtual void *execute(Data *d);
-	virtual void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	int material;

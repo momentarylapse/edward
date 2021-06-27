@@ -11,14 +11,9 @@
 #include "../../../../Data/Model/ModelMesh.h"
 #include "../../../../Data/Model/ModelPolygon.h"
 
-ActionModelAutomap::ActionModelAutomap(int _material, int _texture_level)
-{
+ActionModelAutomap::ActionModelAutomap(int _material, int _texture_level) {
 	material = _material;
 	texture_level = _texture_level;
-}
-
-ActionModelAutomap::~ActionModelAutomap()
-{
 }
 
 struct Island {
@@ -48,7 +43,7 @@ Array<int> group_by_dirs(DataModel *m, const vector *dir, int num_dirs)
 	foreachi(ModelPolygon &p, m->mesh->polygon, i){
 		Array<float> d;
 		for (int k=0;k<num_dirs;k++)
-			d.add(p.temp_normal * dir[k]);
+			d.add(vector::dot(p.temp_normal, dir[k]));
 		r.add(max_index(d));
 	}
 	return r;
@@ -119,7 +114,7 @@ Array<Island> get_islands(DataModel *m)
 void Island::map_primitive(DataModel *m)
 {
 	vector e1 = dir.ortho();
-	vector e2 = dir ^ e1;
+	vector e2 = vector::cross(dir, e1);
 	skin.clear();
 
 	// map (project on plane)
@@ -127,7 +122,7 @@ void Island::map_primitive(DataModel *m)
 		ModelPolygon &pp = m->mesh->polygon[i];
 		for (int k=0;k<pp.side.num;k++){
 			vector v = m->mesh->vertex[pp.side[k].vertex].pos;
-			vector t = vector(v * e1, v * e2, 0);
+			vector t = vector(vector::dot(v, e1), vector::dot(v, e2), 0);
 			skin.add(t);
 		}
 	}
@@ -137,10 +132,10 @@ void Island::map_primitive(DataModel *m)
 	float w_min;
 	for (float phi=0; phi<pi; phi += 0.05f){
 		vector v = vector(cos(phi), sin(phi), 0);
-		float p_min = v * skin[0];
-		float p_max = v * skin[0];
+		float p_min = vector::dot(v, skin[0]);
+		float p_max = vector::dot(v, skin[0]);
 		for (int i=1; i<skin.num;i++){
-			float p = v * skin[i];
+			float p = vector::dot(v, skin[i]);
 			p_min = min(p_min, p);
 			p_max = max(p_max, p);
 		}

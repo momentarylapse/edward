@@ -12,7 +12,7 @@
 
 #include "../lib/base/base.h"
 #include "../lib/file/path.h"
-#include "../lib/math/math.h"
+#include "../lib/image/color.h"
 #include "../y/Entity.h"
 #include "LevelData.h"
 

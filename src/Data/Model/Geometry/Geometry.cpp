@@ -318,7 +318,7 @@ bool Geometry::is_inside(const vector &p) const
 	for (ModelPolygon &t: *(Array<ModelPolygon>*)(&polygon)){
 
 		// plane test
-		if (((p - vertex[t.side[0].vertex].pos) * t.temp_normal > 0) == (t.temp_normal.x > 0))
+		if ((vector::dot(p - vertex[t.side[0].vertex].pos, t.temp_normal) > 0) == (t.temp_normal.x > 0))
 			continue;
 
 		// polygon data
@@ -387,7 +387,7 @@ bool Geometry::is_mouse_over(MultiView::Window *win, const matrix &mat, vector &
 {
 	for (ModelPolygon &p: polygon){
 		// care for the sense of rotation?
-		if (p.temp_normal * win->get_direction() > 0)
+		if (vector::dot(p.temp_normal, win->get_direction()) > 0)
 			continue;
 
 		// project all points

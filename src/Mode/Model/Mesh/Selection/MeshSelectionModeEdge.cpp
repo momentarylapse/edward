@@ -55,11 +55,11 @@ float ModelEdge::hover_distance(MultiView::Window *win, const vector &M, vector 
 		return -1;
 	d /= l;
 	vector d2 = vector(d.y, -d.x, 0);
-	float dd = fabs(d2 * (M - pp0));
+	float dd = fabs(vector::dot(d2, M - pp0));
 	if (dd > rr)
 		return -1;
 
-	float f = (pp0 + d * ((M - pp0) * d)).factor_between(pp0, pp1);
+	float f = (pp0 + d * vector::dot(M - pp0, d)).factor_between(pp0, pp1);
 	tp = m->show_vertices[vertex[0]].pos * (1 - f) + m->show_vertices[vertex[1]].pos * f;
 	z = z0 * (1 - f) + z1 * f;
 	return dd;

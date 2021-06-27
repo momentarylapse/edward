@@ -71,6 +71,10 @@ void drawing_helper_init(const Path &dir) {
 	nix::Shader::load(dir << "shader/module-surface.shader");
 	nix::Shader::load(dir << "shader/module-surface-simple.shader");
 
+
+	nix::Shader::load(dir << "shader/module-vertex-default.shader");
+	nix::Shader::load(dir << "shader/module-vertex-animated.shader");
+
 	shader_lines_3d = nix::Shader::load(dir << "shader/lines-3d.shader");
 	shader_lines_3d_colored = nix::Shader::load(dir << "shader/lines-3d-colored.shader");
 	shader_lines_3d_colored_wide = nix::Shader::load(dir << "shader/lines-3d-colored-wide.shader");

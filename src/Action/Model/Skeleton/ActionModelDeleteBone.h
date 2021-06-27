@@ -9,10 +9,9 @@
 #define ACTIONMODELDELETEBONE_H_
 
 #include "../../Action.h"
-#include "../../../lib/math/math.h"
+#include "../../../lib/math/vector.h"
 
-class ActionModelDeleteBone: public Action
-{
+class ActionModelDeleteBone: public Action {
 public:
 	ActionModelDeleteBone(int _index);
 	string name(){	return "ModelDeleteBone";	}

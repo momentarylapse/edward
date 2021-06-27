@@ -44,11 +44,11 @@ static float circum_radius(const vector &p1, const vector &p2, const vector &p3,
 {
 	vector a = p2 - p1;
 	vector b = p3 - p1;
-	vector n = a ^ b;
+	vector n = vector::cross(a, b);
 	if (n.length() < a.length_sqr() * 0.1f)
 		return -1;
 	n.normalize();
-	vector a_ortho = a ^ n;
+	vector a_ortho = vector::cross(a, n);
 	a_ortho.normalize();
 	float mu = vector::dot(b, b - a) / (2 * vector::dot(a_ortho, b));
 	//float r = sqrt(vector::dot(a, a) + mu*mu);

@@ -11,15 +11,13 @@
 #include "Action.h"
 class Data;
 #include "../lib/file/file.h"
-#include "../lib/math/math.h"
+#include "../lib/math/matrix.h"
 
 class Data;
 
-class ActionMultiView: public Action
-{
+class ActionMultiView: public Action {
 public:
 	ActionMultiView();
-	virtual ~ActionMultiView();
 
 	// continuous editing
 	virtual void abort(Data *d);

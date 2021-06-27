@@ -24,48 +24,25 @@
 #include "Model.h"
 #include "Material.h"
 #include "World.h"
+#include "../lib/math/complex.h"
 #include "../meta.h"
 #if HAS_LIB_VULKAN
 #include "../lib/vulkan/vulkan.h"
 #else
 #include "../lib/nix/nix.h"
 #endif
-#include "../lib/file/file.h"
+#include "../lib/file/msg.h"
 
 
 #define DynamicNormalCorrect
 
 
-//#define MODEL_MAX_EDGES			65536
-
-
-
-float col_frac(const color &a, const color &b);
 
 void MoveTimeAdd(Model *m,int operation_no,float elapsed,float v,bool loop);
 
 bool Model::AllowDeleteRecursive = true;
 
 
-
-File *load_file_x(const Path &filename, int &version) {
-
-	File *f = FileOpen(filename);
-	char c = f->read_char();
-	if (c == 'b') {
-		version = f->read_word();
-		return f;
-	} else if (c == 't') {
-		delete f;
-		f = FileOpenText(filename);
-		f->read_char();
-		version = f->read_word();
-		return f;
-	} else {
-		throw Exception("File format unreadable!");
-	}
-	return nullptr;
-}
 
 
 ModelTemplate::ModelTemplate(Model *m) {
@@ -96,8 +73,8 @@ Mesh* Mesh::copy(Model *new_owner) {
 		ss.vertex_buffer = nullptr;
 		//ss.force_update = true;
 	}
-	s->create_vb();
-	s->update_vb();
+	s->create_vb(new_owner->uses_bone_animations());
+	s->update_vb(new_owner->uses_bone_animations());
 
 	s->owner = new_owner;
 	return s;
@@ -186,61 +163,64 @@ void AppraiseDimensions(Model *m) {
 
 
 
-void SubMesh::create_vb() {
-	vertex_buffer = new nix::VertexBuffer("3f,3f,2f");
-
-#if HAS_LIB_VULKAN
-	vertex_buffer = new vulkan::VertexBuffer();
-#endif
+void SubMesh::create_vb(bool animated) {
+	if (animated)
+		vertex_buffer = new nix::VertexBuffer("3f,3f,2f,4i,4f");
+	else
+		vertex_buffer = new nix::VertexBuffer("3f,3f,2f");
 }
-void Mesh::create_vb() {
+void Mesh::create_vb(bool animated) {
 	for (auto &s: sub)
-		s.create_vb();
+		s.create_vb(animated);
 }
 
-void SubMesh::update_vb(Mesh *mesh) {
-	Array<vector> p, n;
-	Array<float> uv;
-	for (int i=0; i<num_triangles; i++) {
-		for (int k=0; k<3; k++) {
-			int vi = triangle_index[i*3+k];
-			p.add(mesh->vertex[vi]);
-			n.add(normal[i*3+k]);
-			uv.add(skin_vertex[i*6+k*2  ]);
-			uv.add(skin_vertex[i*6+k*2+1]);
+void SubMesh::update_vb(Mesh *mesh, bool animated) {
+	if (true) {
+		Array<vector> p, n;
+		Array<complex> uv;
+		for (int i=0; i<num_triangles; i++) {
+			for (int k=0; k<3; k++) {
+				int vi = triangle_index[i*3+k];
+				p.add(mesh->vertex[vi]);
+				n.add(normal[i*3+k]);
+				uv.add(complex(skin_vertex[i*6+k*2  ], skin_vertex[i*6+k*2+1]));
+			}
 		}
+		vertex_buffer->update(0, p);
+		vertex_buffer->update(1, n);
+		vertex_buffer->update(2, uv);
+	} else {
+		// no... only mesh->vertex is properly indexed right now.... (-_-)'
+		vertex_buffer->update_index(triangle_index);
+		vertex_buffer->update(0, mesh->vertex);
+		vertex_buffer->update(1, normal);
+		vertex_buffer->update(2, skin_vertex);
 	}
-	vertex_buffer->update(0, p);
-	vertex_buffer->update(1, n);
-	vertex_buffer->update(2, uv);
 
-
-#if HAS_LIB_VULKAN
-	Array<vulkan::Vertex1> vertices;
-	for (int i=0; i<num_triangles; i++) {
-		vulkan::Vertex1 v;
-		for (int k=0; k<3; k++) {
-			int vi = triangle_index[i*3+k];
-			v.delta_pos = mesh->vertex[vi];
-			v.normal = normal[i*3+k];
-			v.u = skin_vertex[i*6+k*2  ];
-			v.v = skin_vertex[i*6+k*2+1];
-			vertices.add(v);
+	if (animated) {
+		Array<ivec4> bone_index;
+		Array<vec4> bone_weight;
+		for (int i=0; i<num_triangles; i++) {
+			for (int k=0; k<3; k++) {
+				int vi = triangle_index[i*3+k];
+				bone_index.add(mesh->bone_index[vi]);
+				bone_weight.add(mesh->bone_weight[vi]);
+			}
 		}
+		vertex_buffer->update(3, bone_index);
+		vertex_buffer->update(4, bone_weight);
 	}
-	vertex_buffer->build1(vertices);
-#endif
 }
 
-void Mesh::update_vb() {
+void Mesh::update_vb(bool animated) {
 	for (auto &s: sub)
-		s.update_vb(this);
+		s.update_vb(this, animated);
 }
 
-void Mesh::post_process() {
+void Mesh::post_process(bool animated) {
 
-	create_vb();
-	update_vb();
+	create_vb(animated);
+	update_vb(animated);
 
 	// bounding box
 	min = max = v_0;
@@ -259,29 +239,10 @@ void PostProcessPhys(Model *m, PhysicalMesh *s) {
 	m->_ResetPhysAbsolute_();
 }
 
-color file_read_color4i(File *f) {
-	int a = f->read_int();
-	int r = f->read_int();
-	int g = f->read_int();
-	int b = f->read_int();
-	return color((float)a/255.0f, (float)r/255.0f, (float)g/255.0f, (float)b/255.0f);
-}
-
-
-vector get_normal_by_index(int index) {
-	float wz = (float)(index >> 8) * pi / 255.0f;
-	float wxy = (float)(index & 255) * 2 * pi / 255.0f;
-	float swz = sin(wz);
-	if (swz < 0)
-		swz = - swz;
-	float cwz = cos(wz);
-	return vector( cos(wxy) * swz, sin(wxy) * swz, cwz);
-}
-
 void Model::reset_data() {
 	registered = false;
 	object_id = -1;
-	parent = NULL;
+	parent = nullptr;
 	
 	for (int i=0; i<MODEL_NUM_MESHES; i++) {
 		_detail_needed_[i] = false;
@@ -330,14 +291,15 @@ Model::Model() : Entity(Type::MODEL) {
 	ground_normal = v_0;
 
 	is_copy = false;
-	_template = NULL;
+	_template = nullptr;
 
 	for (int i=0;i<MODEL_NUM_MESHES;i++) {
 		_detail_needed_[i] = false;
-		mesh[i] = NULL;
+		mesh[i] = nullptr;
 	}
-	anim.meta = NULL;
-	phys = NULL;
+	anim.meta = nullptr;
+	anim.buf = nullptr;
+	phys = nullptr;
 
 	vel_surf = acc = v_0;
 	force_int = torque_int = v_0;
@@ -364,6 +326,11 @@ void CopyPhysicalSkin(PhysicalMesh *orig, PhysicalMesh **copy)
 	(**copy) = (*orig);
 }
 #endif
+
+
+bool Model::uses_bone_animations() const {
+	return (bone.num > 0);
+}
 
 Model *Model::copy(Model *pre_allocated) {
 	if (is_copy)
@@ -397,21 +364,17 @@ Model *Model::copy(Model *pre_allocated) {
 	m->registered = false;
 	m->visible = true;
 
-#if 1
 	// skins
-	if (anim.meta or (bone.num > 0)) {
-		for (int i=0; i<MODEL_NUM_MESHES; i++) {
-			// mostly needs it's own vertex_buffer...but well
-			m->anim.mesh[i] = mesh[i]->copy(m);
-		}
+	if (uses_bone_animations()) {
+		m->anim.dmatrix.resize(bone.num);
+		m->anim.buf = new nix::UniformBuffer;
 	}
-#endif
 
 	// skeleton
 	m->bone = bone;
 	for (int i=0;i<bone.num;i++)
 		if (bone[i].model)
-			m->bone[i].model = NULL;//CopyModel(bone[i].model, allow_script_init);
+			m->bone[i].model = nullptr;//CopyModel(bone[i].model, allow_script_init);
 
 	// effects
 	// loaded by ResetData()
@@ -593,6 +556,7 @@ void Model::do_animation(float elapsed) {
 			int f1 = m->frame0 + fr; // current frame (absolute)
 			int f2 = m->frame0 + (fr+1)%m->num_frames; // next frame (absolute)
 
+#if 0
 			// transform vertices
 			for (int s=0;s<MODEL_NUM_MESHES;s++)
 				if (_detail_needed_[s]){
@@ -606,6 +570,7 @@ void Model::do_animation(float elapsed) {
 					for (int i=0;i<sk->sub.num;i++)
 						sk->sub[i].force_update = true;
 				}
+#endif
 		}
 	}
 
@@ -698,14 +663,21 @@ void Model::do_animation(float elapsed) {
 		}
 
 		// bone has root -> align to root
-		if (b->parent >= 0)
+		//vector dpos = b->delta_pos;
+		auto t0 = matrix::translation(-b->rest_pos);
+		if (b->parent >= 0) {
 			b->cur_pos = bone[b->parent].dmatrix * b->delta_pos;
+			//dpos = b->cur_pos - b->rest_pos;
+		}
 
 		// create matrices (model -> skeleton)
 		auto t = matrix::translation(b->cur_pos);
 		auto r = matrix::rotation_q(b->cur_ang);
 		b->dmatrix = t * r;
+		anim.dmatrix[i] = t * r * t0;
 	}
+
+#if 0
 
 	// create the animated data
 	if (bone.num > 0)
@@ -737,6 +709,7 @@ void Model::do_animation(float elapsed) {
 				offset += sub->num_triangles;
 			}
 		}
+#endif
 
 
 	
@@ -929,10 +902,10 @@ bool Model::TraceMesh(const vector &p1, const vector &p2, const vector &dir, flo
 vector _cdecl Model::get_vertex(int index) {
 	auto s = mesh[MESH_HIGH];
 	vector v;
-	if (anim.meta) { // animated
-		int b = s->bone_index[index];
+	if (uses_bone_animations()) { // animated
+		int b = s->bone_index[index].i;
 		v = s->vertex[index] - bone[b].rest_pos;
-		v = bone[b].dmatrix * v;
+		v = anim.dmatrix[b] * v;
 		v = _matrix * v;
 	} else { // static
 		v = _matrix * s->vertex[index];
@@ -1047,7 +1020,7 @@ void Model::begin_edit(int detail) {
 
 // force an update for this model/skin
 void Model::end_edit(int detail) {
-	mesh[detail]->update_vb();
+	mesh[detail]->update_vb(uses_bone_animations());
 	//for (int i=0; i<material.num; i++)
 	//	mesh[detail]->sub[i].force_update = true;
 }

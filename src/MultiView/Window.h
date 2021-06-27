@@ -8,7 +8,12 @@
 #ifndef MULTIVIEWWINDOW_H_
 #define MULTIVIEWWINDOW_H_
 
-#include "../lib/math/math.h"
+#include "../lib/math/matrix.h"
+#include "../lib/math/vector.h"
+#include "../lib/math/rect.h"
+#include "../lib/math/quaternion.h"
+
+class color;
 
 namespace nix {
 	class Shader;

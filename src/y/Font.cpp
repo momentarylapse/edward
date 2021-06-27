@@ -24,6 +24,7 @@
 \*----------------------------------------------------------------------------*/
 #include "Font.h"
 #include "../lib/nix/nix.h"
+#include "../lib/file/file.h"
 #include "../y/EngineData.h"
 
 namespace Gui
