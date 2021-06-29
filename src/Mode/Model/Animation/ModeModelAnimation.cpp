@@ -160,15 +160,17 @@ void ModeModelAnimation::update_animation() {
 
 	if (cur_move()->type == AnimationType::SKELETAL) {
 		update_skeleton();
-		// TODO
-		msg_write("TODO: skeleton animation with weights");
+
 		foreachi(auto &v, data->mesh->vertex, i){
-			if (v.bone_index.i >= data->bone.num) {
-				vertex[i].pos = v.pos;
-			} else {
-				ModelBone &b = data->bone[v.bone_index.i];
-				vertex[i].pos = b._matrix * (v.pos - b.pos);
+			vector pp = v_0;
+			for (int k=0; k<4; k++) {
+				if ((&v.bone_index.i)[k] < 0)
+					continue;
+
+				ModelBone &b = data->bone[(&v.bone_index.i)[k]];
+				pp += (b._matrix * (v.pos - b.pos)) * (&v.bone_weight.x)[k];
 			}
+			vertex[i].pos = pp;
 		}
 	} else if (cur_move()->type == AnimationType::VERTEX) {
 		auto f = get_interpolation();
