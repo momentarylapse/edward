@@ -160,11 +160,13 @@ void ModeModelAnimation::update_animation() {
 
 	if (cur_move()->type == AnimationType::SKELETAL) {
 		update_skeleton();
+		// TODO
+		msg_write("TODO: skeleton animation with weights");
 		foreachi(auto &v, data->mesh->vertex, i){
-			if (v.bone_index >= data->bone.num) {
+			if (v.bone_index.i >= data->bone.num) {
 				vertex[i].pos = v.pos;
 			} else {
-				ModelBone &b = data->bone[v.bone_index];
+				ModelBone &b = data->bone[v.bone_index.i];
 				vertex[i].pos = b._matrix * (v.pos - b.pos);
 			}
 		}

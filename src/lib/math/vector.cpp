@@ -82,6 +82,23 @@ float vec2::length() const {
 	return sqrtf( x*x + y*y );
 }
 
+// scale to length 1
+void vec2::normalize() {
+	float l = length();
+	if (l > 0)
+		*this /= l;
+	else
+		*this = vec2::EY;
+}
+
+// scale to length 1
+vec2 vec2::normalized() const {
+	float l = length();
+	if (l == 0)
+		return vec2::EY;
+	return *this / l;
+}
+
 
 //------------------------------------------------------------------------------------------------//
 //                                            vector                                                //
@@ -522,4 +539,21 @@ string vec4::str() const {
 // real length of the vec4
 float vec4::length() const {
 	return sqrtf( x*x + y*y + z*z + w*w );
+}
+
+// scale to length 1
+void vec4::normalize() {
+	float l = length();
+	if (l > 0)
+		*this /= l;
+	else
+		*this = vec4::EW;
+}
+
+// scale to length 1
+vec4 vec4::normalized() const {
+	float l = length();
+	if (l == 0)
+		return vec4::EW;
+	return *this / l;
 }

@@ -94,7 +94,8 @@ ModelVertex::ModelVertex(const vector &_pos) {
 	pos = _pos;
 	ref_count = 0;
 	normal_mode = NORMAL_MODE_ANGULAR;
-	bone_index = -1;
+	bone_index = {-1,-1,-1,-1};
+	bone_weight = {1,0,0,0};
 	normal_dirty = false;
 }
 
@@ -213,7 +214,7 @@ void DataModel::importFromTriangleSkin(int index) {
 	ModelSkin &s = skin[index];
 	begin_action_group("ImportFromTriangleSkin");
 	foreachi(ModelVertex &v, s.vertex, i) {
-		addVertex(v.pos, v.bone_index);
+		addVertex(v.pos, v.bone_index, v.bone_weight);
 	}
 	for (int i=0;i<material.num;i++) {
 		for (ModelTriangle &t: s.sub[i].triangle) {
@@ -235,7 +236,7 @@ void DataModel::importFromTriangleSkin(int index) {
 				// copy all vertices m(-_-)m
 				int nv0 = mesh->vertex.num;
 				for (int k=0; k<3; k++) {
-					addVertex(mesh->vertex[v[k]].pos, mesh->vertex[v[k]].bone_index);
+					addVertex(mesh->vertex[v[k]].pos, mesh->vertex[v[k]].bone_index, mesh->vertex[v[k]].bone_weight);
 					v[k] = nv0 + k;
 				}
 				addPolygonWithSkin(v, sv, i);
@@ -327,8 +328,8 @@ void DataModel::selectionFromVertices() {
 }
 
 
-void DataModel::addVertex(const vector &pos, int bone_index, int normal_mode)
-{	execute(new ActionModelAddVertex(pos, bone_index, normal_mode));	}
+void DataModel::addVertex(const vector &pos, const ivec4 &bone_index, const vec4 &bone_weight, int normal_mode)
+{	execute(new ActionModelAddVertex(pos, bone_index, bone_weight, normal_mode));	}
 
 ModelPolygon *DataModel::addTriangle(int a, int b, int c, int material) {
 	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture({a,b,c}, material, {vector::EY, v_0, vector::EX}));

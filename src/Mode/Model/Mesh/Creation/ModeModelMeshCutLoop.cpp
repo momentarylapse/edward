@@ -108,7 +108,7 @@ void ModeModelMeshCutLoop::on_left_button_up() {
 
 	// add new points on edges
 	for (vector &p: pos)
-		data->addVertex(p, 0, NORMAL_MODE_ANGULAR);
+		data->addVertex(p, {0,0,0,0}, {1,0,0,0}, NORMAL_MODE_ANGULAR);
 
 	// save some data
 	Array<ModelPolygon> temp_polys;

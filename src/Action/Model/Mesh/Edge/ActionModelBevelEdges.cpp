@@ -43,7 +43,8 @@ struct VertexData
 struct VertexToCome
 {
 	vector pos;
-	int bone;
+	ivec4 bone;
+	vec4 bone_weight;
 	int ref_count;
 	int v;
 	VertexToCome(){	ref_count = 0;	}
@@ -108,7 +109,7 @@ void ActionModelBevelEdges::build_vertices(Array<VertexToCome> &vv, DataModel *m
 	for (VertexToCome &v: vv)
 		if (v.ref_count > 0){
 			v.v = m->edit_mesh->vertex.num;
-			addSubAction(new ActionModelAddVertex(v.pos, v.bone), m);
+			addSubAction(new ActionModelAddVertex(v.pos, v.bone, v.bone_weight), m);
 		}
 }
 
@@ -189,8 +190,10 @@ void ActionModelBevelEdges::bevelSurface(ModelMesh *m)
 		d.normalize();
 		ev[0][i].pos = m->vertex[e.vertex[0]].pos + d * length;
 		ev[0][i].bone = m->vertex[e.vertex[0]].bone_index;
+		ev[0][i].bone_weight = m->vertex[e.vertex[0]].bone_weight;
 		ev[1][i].pos = m->vertex[e.vertex[1]].pos - d * length;
 		ev[1][i].bone = m->vertex[e.vertex[1]].bone_index;
+		ev[1][i].bone_weight = m->vertex[e.vertex[1]].bone_weight;
 	}
 
 	// (potentially) new vertices in polygons
@@ -203,6 +206,7 @@ void ActionModelBevelEdges::bevelSurface(ModelMesh *m)
 			dir1.normalize();
 			pv[i][k].pos = m->vertex[p.side[k].vertex].pos + (dir0 + dir1) * length;
 			pv[i][k].bone = m->vertex[p.side[k].vertex].bone_index;
+			pv[i][k].bone_weight = m->vertex[p.side[k].vertex].bone_weight;
 		}
 	}
 

@@ -230,7 +230,7 @@ void FormatModelJson::_save(const Path &filename, DataModel *m) {
 	str += "],\n";
 	str += "'skinIndices': [";
 	foreachi(auto &v, m->mesh->vertex, i){
-		str += i2s(v.bone_index);
+		str += i2s(v.bone_index.i);
 		if (i < m->mesh->vertex.num - 1)
 			str += ", ";
 	}
@@ -594,8 +594,10 @@ void FormatModelJson::importMoves(DataModel *m, Value *v)
 void FormatModelJson::importBoneIndices(DataModel *m, Value *v, int num_influences)
 {
 	msg_write("boneIndices");
-	foreachi(auto &vert, m->mesh->vertex, i)
-		vert.bone_index = v->get(i * num_influences)->i();
+	foreachi(auto &vert, m->mesh->vertex, i) {
+		vert.bone_index = {v->get(i * num_influences)->i(), 0,0,0};
+		vert.bone_weight = {1,0,0,0};
+	}
 }
 
 vector FormatModelJson::val2vec(Value* v, int offset)

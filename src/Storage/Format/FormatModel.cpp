@@ -244,8 +244,10 @@ public:
 		me->vertex.resize(nv);
 		for (int j=0;j<me->vertex.num;j++)
 			f->read_vector(&me->vertex[j].pos);
-		for (int j=0;j<me->vertex.num;j++)
-			me->vertex[j].bone_index = f->read_int();
+		for (int j=0;j<me->vertex.num;j++) {
+			me->vertex[j].bone_index = {f->read_int(), 0, 0, 0};
+			me->vertex[j].bone_weight = {1,0,0,0};
+		}
 		for (int j=0;j<me->vertex.num;j++)
 			me->vertex[j].normal_dirty = false;//true;
 
@@ -293,7 +295,7 @@ public:
 		for (ModelVertex &v: me->vertex)
 			f->write_vector(&v.pos);
 		for (ModelVertex &v: me->vertex)
-			f->write_int(v.bone_index);
+			f->write_int(v.bone_index.i);
 
 		// skin vertices
 		int num_skin_v = 0;
@@ -350,7 +352,7 @@ public:
 	void read(File *f) override {
 
 		foreachi(ModelVertex &v, parent->skin[1].vertex, i)
-			parent->addVertex(v.pos, v.bone_index, v.normal_mode);
+			parent->addVertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
 
 		// polygons
 		int num_poly = f->read_int();
@@ -411,8 +413,10 @@ public:
 		me->vertex.resize(f->read_int());
 		for (int j=0;j<me->vertex.num;j++)
 			f->read_vector(&me->vertex[j].pos);
-		for (int j=0;j<me->vertex.num;j++)
-			me->vertex[j].bone_index = f->read_int();
+		for (int j=0;j<me->vertex.num;j++) {
+			me->vertex[j].bone_index = {f->read_int(), 0,0,0};
+			me->vertex[j].bone_weight = {1,0,0,0};
+		}
 
 		msg_write("phys vert: " + i2s(me->vertex.num));
 
@@ -478,7 +482,7 @@ public:
 			f->write_vector(&me->vertex[j].pos);
 		// FIXME
 		for (int j=0;j<me->vertex.num;j++)
-			f->write_int(me->vertex[j].bone_index);
+			f->write_int(me->vertex[j].bone_index.i);
 
 		// triangles
 		f->write_int(0);

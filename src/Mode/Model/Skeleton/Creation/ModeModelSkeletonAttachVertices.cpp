@@ -22,7 +22,7 @@ ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _pare
 void ModeModelSkeletonAttachVertices::on_start() {
 	// relative to absolute pos
 	for (auto &v: data->edit_mesh->vertex)
-		v.is_selected = (v.bone_index == bone_index);
+		v.is_selected = (v.bone_index.i == bone_index);
 	data->selectionFromVertices();
 
 	//mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);

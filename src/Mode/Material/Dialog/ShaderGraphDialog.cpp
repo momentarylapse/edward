@@ -18,6 +18,7 @@
 #include "../../../lib/math/interpolation.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../Storage/Storage.h"
+#include "../../../y/ResourceManager.h"
 
 
 const int NODE_WIDTH = 170;
@@ -38,7 +39,7 @@ string file_secure(const Path &filename); // -> ModelPropertiesDialog
 rect node_area(ShaderNode *n);
 
 bool test_shader_file(const Path &filename) {
-	auto *shader = nix::Shader::load(filename);
+	auto *shader = ResourceManager::load_surface_shader(filename, "default");
 	msg_todo("TESTME  test_shader_file");
 	return shader;
 }

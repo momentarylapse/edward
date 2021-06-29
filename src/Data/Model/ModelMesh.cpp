@@ -793,13 +793,14 @@ Array<int> ModelMesh::get_boundary_loop(int v0)
 	return loop;
 }
 
-void ModelMesh::add_vertex(const vector &pos, int bone, int normal_mode, int index) {
+void ModelMesh::add_vertex(const vector &pos, const ivec4 &bone, const vec4 &bone_weight, int normal_mode, int index) {
 
 	// new vertex
 	ModelVertex vv;
 	vv.pos = pos;
 	vv.normal_mode = normal_mode;
 	vv.bone_index = bone;
+	vv.bone_weight = bone_weight;
 	vv.ref_count = 0;
 	if (index >= 0) {
 		vertex.insert(vv, index);

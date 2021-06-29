@@ -24,6 +24,7 @@
 #include "../../MultiView/ColorScheme.h"
 #include "../../MultiView/DrawingHelper.h"
 #include "../../lib/nix/nix.h"
+#include "../../y/ResourceManager.h"
 
 const int MATERIAL_DETAIL = 32;
 const float MATERIAL_RADIUS1 = 80;
@@ -111,7 +112,7 @@ void ModeMaterial::update_textures() {
 
 void ModeMaterial::update_shader() {
 	try {
-		shader->update(data->shader.code);
+		shader->update(ResourceManager::expand_shader_source(data->shader.code, "default"));
 	} catch(Exception &e) {
 		msg_error(e.message());
 	}

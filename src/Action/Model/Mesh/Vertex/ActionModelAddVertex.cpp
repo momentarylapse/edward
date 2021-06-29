@@ -11,9 +11,10 @@
 #include "../../../../Data/Model/ModelPolygon.h"
 #include <assert.h>
 
-ActionModelAddVertex::ActionModelAddVertex(const vector &_pos, int _bone_index, int _normal_mode) {
+ActionModelAddVertex::ActionModelAddVertex(const vector &_pos, const ivec4 &_bone_index, const vec4 &_bone_weight, int _normal_mode) {
 	pos = _pos;
 	bone_index = _bone_index;
+	bone_weight = _bone_weight;
 	normal_mode = _normal_mode;
 	if (normal_mode < 0)
 		normal_mode = NORMAL_MODE_ANGULAR;
@@ -24,7 +25,7 @@ ActionModelAddVertex::ActionModelAddVertex(const vector &_pos, int _bone_index, 
 void *ActionModelAddVertex::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	m->edit_mesh->add_vertex(pos, bone_index, normal_mode);
+	m->edit_mesh->add_vertex(pos, bone_index, bone_weight, normal_mode);
 
 	// correct animations
 	for (ModelMove &move: m->move) {

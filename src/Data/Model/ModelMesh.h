@@ -21,7 +21,8 @@ class Geometry;
 class ModelVertex: public MultiView::SingleData {
 public:
 	int normal_mode;
-	int bone_index;
+	ivec4 bone_index;
+	vec4 bone_weight;
 
 	bool normal_dirty;
 	int ref_count; // polygons
@@ -88,7 +89,7 @@ public:
 	void clear();
 
 	// low level (un-action'ed)
-	void add_vertex(const vector &pos, int bone, int normal_mode, int index = -1);
+	void add_vertex(const vector &pos, const ivec4 &bone, const vec4 &weight, int normal_mode, int index = -1);
 	void remove_lonely_vertex(int v);
 	void _shift_vertex_links(int offset, int delta);
 	void _add_polygon(const Array<int> &v, int material, const Array<vector> &sv, int index = -1);

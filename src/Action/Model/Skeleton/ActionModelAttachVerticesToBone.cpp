@@ -19,12 +19,16 @@ void* ActionModelAttachVerticesToBone::execute(Data* d) {
 
 	// save old bone indices
 	old_bone.clear();
-	for (int i: index)
+	for (int i: index) {
 		old_bone.add(m->edit_mesh->vertex[i].bone_index);
+		old_bone_weight.add(m->edit_mesh->vertex[i].bone_weight);
+	}
 
 	// apply
-	for (int i: index)
-		m->edit_mesh->vertex[i].bone_index = bone_index;
+	for (int i: index) {
+		m->edit_mesh->vertex[i].bone_index = {bone_index, 0, 0, 0};
+		m->edit_mesh->vertex[i].bone_weight = {1, 0, 0, 0};
+	}
 	return NULL;
 }
 
@@ -32,8 +36,10 @@ void ActionModelAttachVerticesToBone::undo(Data* d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	// restore old bone indices
-	foreachi(int i, index, ii)
+	foreachi(int i, index, ii) {
 		m->edit_mesh->vertex[i].bone_index = old_bone[ii];
+		m->edit_mesh->vertex[i].bone_weight = old_bone_weight[ii];
+	}
 }
 
 

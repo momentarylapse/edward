@@ -23,7 +23,7 @@ void MaterialInit() {
 	// create the default material
 	trivial_material = new Material;
 	trivial_material->name = "-default-";
-	trivial_material->shader = nix::Shader::default_3d;
+	//trivial_material->shader_path = nix::Shader::default_3d;
 
 	SetDefaultMaterial(trivial_material);
 }
@@ -45,17 +45,16 @@ void SetDefaultMaterial(Material *m) {
 	default_material = m;
 }
 
-void MaterialSetDefaultShader(nix::Shader *s) {
-	default_material->shader = s;
+/*void MaterialSetDefaultShader(nix::Shader *s) {
+	default_material->shader[0] = s;
 	nix::Shader::default_load = s;
-}
+}*/
 
 
 
 Material::Material() {
 	// default values
-	reflection.cube_map = NULL;
-	shader = NULL;
+	reflection.cube_map = nullptr;
 
 	albedo = White;
 	roughness = 0.6f;
@@ -84,12 +83,12 @@ Material::~Material() {
 }
 
 void Material::add_uniform(const string &name, float *p, int size) {
-	int loc = shader->get_location(name);
-	uniforms.add({loc, p, size});
+	uniforms.add({name, p, size});
 }
 
 Material* Material::copy() {
 	Material *m = new Material;
+	m->name = name;
 	m->albedo = albedo;
 	m->roughness = roughness;
 	m->metal = metal;
@@ -105,7 +104,9 @@ Material* Material::copy() {
 		cube_map = FxCubeMapNew(m2->cube_map_size);
 		FxCubeMapCreate(cube_map, model);
 	}*/
-	m->shader = shader;
+	for (int i=0; i<3; i++)
+		m->shader[i] = shader[i];
+	m->shader_path = shader_path;
 	m->friction = friction;
 	return m;
 }
@@ -137,6 +138,7 @@ Material *LoadMaterial(const Path &filename) {
 		}*/
 	}
 	Material *m = new Material;
+	m->name = filename;
 
 	m->albedo = color::parse(c.get_str("color.albedo", ""));
 	m->roughness = c.get_float("color.roughness", 0.5f);
@@ -147,7 +149,7 @@ Material *LoadMaterial(const Path &filename) {
 	if (texture_files != "")
 		for (auto &f: texture_files.explode(","))
 			m->textures.add(ResourceManager::load_texture(f));
-	m->shader = ResourceManager::load_shader(c.get_str("shader", ""));
+	m->shader_path = c.get_str("shader", "");
 
 	m->friction._static = c.get_float("friction.static", 0.5f);
 	m->friction.sliding = c.get_float("friction.slide", 0.5f);
@@ -200,4 +202,15 @@ Material *LoadMaterial(const Path &filename) {
 
 	materials.add(m);
 	return m->copy();
+}
+
+void Material::prepare_shader(ShaderVariant v) {
+	if (shader[(int)v])
+		return;
+	string vv = "default";
+	if (v == ShaderVariant::ANIMATED)
+		vv = "animated";
+	if (v == ShaderVariant::INSTANCED)
+		vv = "instanced";
+	shader[(int)v] = ResourceManager::load_surface_shader(shader_path, vv);
 }

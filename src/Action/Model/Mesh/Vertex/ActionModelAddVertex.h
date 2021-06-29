@@ -13,15 +13,16 @@
 
 class ActionModelAddVertex: public Action {
 public:
-	ActionModelAddVertex(const vector &_pos, int _bone_index = 0, int _normal_mode = -1);
-	string name(){ return "ModelAddVertex"; }
+	ActionModelAddVertex(const vector &_pos, const ivec4 &_bone_index = {0,0,0,0}, const vec4 &_bone_weight = {1,0,0,0}, int _normal_mode = -1);
+	string name() override { return "ModelAddVertex"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	vector pos;
-	int bone_index;
+	ivec4 bone_index;
+	vec4 bone_weight;
 	int normal_mode;
 };
 

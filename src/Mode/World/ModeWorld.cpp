@@ -469,7 +469,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			nix::set_model_matrix(matrix::translation(o.pos) * matrix::rotation(o.ang));
 			for (int i=0;i<o.object->material.num;i++) {
 				auto mat = o.object->material[i];
-				mat->shader = nullptr;
+				//mat->shader = nullptr;
 				nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
 				nix::set_textures(weak(mat->textures));
 				nix::draw_triangles(o.object->mesh[0]->sub[i].vertex_buffer);

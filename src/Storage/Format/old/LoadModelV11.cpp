@@ -163,7 +163,8 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 	f->read_comment();
 	data->phys_mesh->vertex.resize(f->read_int());
 	for (auto &v: data->phys_mesh->vertex){
-		v.bone_index = max(f->read_int(), 0);
+		v.bone_index = {max(f->read_int(), 0), 0, 0, 0};
+		v.bone_weight = {1,0,0,0};
 		f->read_vector(&v.pos);
 	}
 
@@ -207,9 +208,10 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 		// vertices
 		data->skin[i].vertex.resize(f->read_int());
 		for (int j=0;j<data->skin[i].vertex.num;j++){
-			data->skin[i].vertex[j].bone_index = f->read_int();
-			if (data->skin[i].vertex[j].bone_index < 0)
-				data->skin[i].vertex[j].bone_index = 0;
+			data->skin[i].vertex[j].bone_index = {f->read_int(), 0, 0, 0};
+			data->skin[i].vertex[j].bone_index = {1,0,0,0};
+			if (data->skin[i].vertex[j].bone_index.i < 0)
+				data->skin[i].vertex[j].bone_index.i = 0;
 			f->read_vector(&data->skin[i].vertex[j].pos);
 			if (normal_mode_all == NORMAL_MODE_PER_VERTEX)
 				data->skin[i].vertex[j].normal_mode = f->read_byte();
@@ -448,8 +450,10 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 	// vertices
 	f->read_comment();
 	data->phys_mesh->vertex.resize(f->read_int());
-	for (int j=0;j<data->phys_mesh->vertex.num;j++)
-		data->phys_mesh->vertex[j].bone_index = f->read_int();
+	for (int j=0;j<data->phys_mesh->vertex.num;j++) {
+		data->phys_mesh->vertex[j].bone_index = {f->read_int(), 0, 0, 0};
+		data->phys_mesh->vertex[j].bone_weight = {1, 0, 0, 0};
+	}
 	for (int j=0;j<data->phys_mesh->vertex.num;j++)
 		f->read_vector(&data->phys_mesh->vertex[j].pos);
 
@@ -516,7 +520,7 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 					int nv = data->phys_mesh->vertex.num;
 					relink.append({v, nv});
 					msg_write(format("  relink %d  %d", v, nv));
-					data->phys_mesh->add_vertex(data->phys_mesh->vertex[v].pos, 0, 0);
+					data->phys_mesh->add_vertex(data->phys_mesh->vertex[v].pos, {0,0,0,0}, {1,0,0,0}, 0);
 					v = nv;
 				}
 			}
@@ -542,8 +546,10 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 		data->skin[i].vertex.resize(f->read_int());
 		for (int j=0;j<data->skin[i].vertex.num;j++)
 			f->read_vector(&data->skin[i].vertex[j].pos);
-		for (int j=0;j<data->skin[i].vertex.num;j++)
-			data->skin[i].vertex[j].bone_index = f->read_int();
+		for (int j=0;j<data->skin[i].vertex.num;j++) {
+			data->skin[i].vertex[j].bone_index = {f->read_int(), 0,0,0};
+			data->skin[i].vertex[j].bone_weight = {1,0,0,0};
+		}
 		for (int j=0;j<data->skin[i].vertex.num;j++)
 			data->skin[i].vertex[j].normal_dirty = false;//true;
 
@@ -766,7 +772,7 @@ void FormatModel::_load_v11_edit(File *f, DataModel *data, bool deep) {
 		}else if (s == "// Polygons"){
 			//data->begin_action_group("LoadPolygonData");
 			foreachi(ModelVertex &v, data->skin[1].vertex, i)
-				data->addVertex(v.pos, v.bone_index, v.normal_mode);
+				data->addVertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
 			int ns = f->read_int();
 			for (int i=0;i<ns;i++){
 				int nv = f->read_int();

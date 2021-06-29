@@ -23,6 +23,7 @@
 #include "Storage/Storage.h"
 #include "y/World.h"
 #include "y/Camera.h"
+#include "y/ResourceManager.h"
 #include "meta.h"
 #include "y/Font.h"
 #include "lib/kaba/kaba.h"
@@ -165,6 +166,9 @@ Edward::Edward(Array<string> arg) :
 	// initialize engine
 	nix::init();
 	drawing_helper_init(app->directory_static);
+
+	ResourceManager::load_shader("module-vertex-default.shader");
+	//ResourceManager::default_shader
 
 	MaterialInit();
 	CameraInit();

@@ -161,7 +161,7 @@ public:
 	void createSkin(ModelSkin *src, ModelSkin *dst, float quality_factor);
 
 	// high level (actions)
-	void addVertex(const vector &pos, int bone_index = 0, int normal_mode = -1);
+	void addVertex(const vector &pos, const ivec4 &bone_index = {0,0,0,0}, const vec4 &bone_weight = {1,0,0,0}, int normal_mode = -1);
 	ModelPolygon *addTriangle(int a, int b, int c, int material);
 	ModelPolygon *addPolygon(const Array<int> &v, int material);
 	ModelPolygon *addPolygonWithSkin(const Array<int> &v, const Array<vector> &sv, int material);

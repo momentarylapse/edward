@@ -29,6 +29,8 @@ private:
 	Array<vector> move_dpos;
 	Array<vector> move_ang;
 	Array<int> vertex;
+	Array<ivec4> vertex_bone;
+	Array<vec4> vertex_bone_weight;
 };
 
 #endif /* ACTIONMODELDELETEBONE_H_ */

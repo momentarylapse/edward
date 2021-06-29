@@ -9,10 +9,9 @@
 #define ACTIONMODELATTACHVERTICESTOBONE_H_
 
 #include "../../Action.h"
-#include "../../../lib/math/math.h"
+#include "../../../lib/math/vector.h"
 
-class ActionModelAttachVerticesToBone: public Action
-{
+class ActionModelAttachVerticesToBone: public Action {
 public:
 	ActionModelAttachVerticesToBone(const Array<int> &_index, int _bone_index);
 	string name(){	return "ModelAttachVerticesToBone";	}
@@ -23,7 +22,8 @@ public:
 private:
 	int bone_index;
 	Array<int> index;
-	Array<int> old_bone;
+	Array<ivec4> old_bone;
+	Array<vec4> old_bone_weight;
 };
 
 #endif /* ACTIONMODELATTACHVERTICESTOBONE_H_ */

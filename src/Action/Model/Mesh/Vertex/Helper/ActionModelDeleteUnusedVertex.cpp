@@ -22,7 +22,7 @@ ActionModelDeleteUnusedVertex::ActionModelDeleteUnusedVertex(int _vertex) {
 void ActionModelDeleteUnusedVertex::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	m->edit_mesh->add_vertex(pos, bone, normal_mode, vertex);
+	m->edit_mesh->add_vertex(pos, bone, bone_weight, normal_mode, vertex);
 
 	// correct animations
 	int i = 0;
@@ -52,6 +52,7 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d) {
 	pos = v.pos;
 	normal_mode = v.normal_mode;
 	bone = v.bone_index;
+	bone_weight = v.bone_weight;
 
 	// move data
 	move.clear();

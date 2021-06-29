@@ -38,6 +38,12 @@ enum class ReflectionMode {
 	CUBE_MAP_DYNAMIC
 };
 
+enum class ShaderVariant {
+	DEFAULT,
+	ANIMATED,
+	INSTANCED
+};
+
 // visual and physical properties
 class Material {
 public:
@@ -45,10 +51,12 @@ public:
 	Path name;
 
 	shared_array<nix::Texture> textures;
-	shared<nix::Shader> shader;
+	shared<nix::Shader> shader[3];
+	Path shader_path;
+	void prepare_shader(ShaderVariant v);
 
 	struct ShaderUniform {
-		int location;
+		string name;
 		float *p;
 		int size;
 	};
@@ -93,6 +101,6 @@ void MaterialInit();
 void MaterialEnd();
 void MaterialReset();
 void SetDefaultMaterial(Material *m);
-void MaterialSetDefaultShader(nix::Shader *s);
+//void MaterialSetDefaultShader(nix::Shader *s);
 Material *LoadMaterial(const Path &filename);
 

@@ -9,7 +9,7 @@
 #define ACTIONMODELDELETEUNUSEDVERTEX_H_
 
 #include "../../../../Action.h"
-#include "../../../../../lib/math/math.h"
+#include "../../../../../lib/math/vector.h"
 #include "../../../../../Data/Model/DataModel.h" // can't we use Array<ModelEffect> ?!?!?
 
 class ModelEffect;
@@ -17,7 +17,6 @@ class ModelEffect;
 class ActionModelDeleteUnusedVertex: public Action {
 public:
 	ActionModelDeleteUnusedVertex(int _vertex);
-	virtual ~ActionModelDeleteUnusedVertex(){}
 	string name(){	return "ModelDeleteUnusedVertex";	}
 
 	void *execute(Data *d);
@@ -26,7 +25,9 @@ public:
 private:
 	int vertex;
 	vector pos;
-	int bone, normal_mode;
+	ivec4 bone;
+	vec4 bone_weight;
+	int normal_mode;
 	Array<vector> move;
 	Array<ModelEffect> fx;
 	Array<int> fx_index;

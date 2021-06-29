@@ -72,7 +72,7 @@ void ModeModelAnimationSkeleton::chooseMouseFunction(int f) {
 float bone_hover(const MultiView::SingleData *pp, MultiView::Window *win, const vector &m, vector &tp, float &z, ModeModelAnimationSkeleton *me) {
 	float dmin = 100;
 	for (auto &p: me->data->mesh->polygon) {
-		if (pp == &mode_model_animation->bone[me->data->mesh->vertex[p.side[0].vertex].bone_index]) {
+		if (pp == &mode_model_animation->bone[me->data->mesh->vertex[p.side[0].vertex].bone_index.i]) {
 			float d = poly_hover(&p, win, m, tp, z, mode_model_animation->vertex);
 			if (d >= 0 and d < dmin)
 				dmin = d;
@@ -104,7 +104,7 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
 
 	VertexStagingBuffer vbs;
 	for (ModelPolygon &p: data->mesh->polygon)
-		if (data->mesh->vertex[p.side[0].vertex].bone_index == multi_view->hover.index)
+		if (data->mesh->vertex[p.side[0].vertex].bone_index.i == multi_view->hover.index)
 			p.add_to_vertex_buffer(mode_model_animation->vertex, vbs, 1);
 	vbs.build(mode_model_mesh->vb_hover, 1);
 
@@ -145,7 +145,7 @@ void ModeModelAnimationSkeleton::updateSelection() {
 
 	// select geometry
 	for (auto &v: data->mesh->vertex)
-		v.is_selected = data->bone[v.bone_index].is_selected;
+		v.is_selected = data->bone[v.bone_index.i].is_selected;
 	data->selectionFromVertices();
 
 	mode_model_mesh->fill_selection_buffer(mode_model_animation->vertex);

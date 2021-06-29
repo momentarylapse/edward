@@ -52,12 +52,46 @@ void *ActionModelDeleteBone::execute(Data *d)
 
 	// save + correct vertices
 	vertex.clear();
-	foreachi(ModelVertex &v, m->edit_mesh->vertex, vi)
-		if (v.bone_index == index){
-			v.bone_index = -1;
+	foreachi(ModelVertex &v, m->edit_mesh->vertex, vi){
+		bool found = false;
+		if ((v.bone_index.i == index) and (v.bone_weight.x > 0)) {
+			v.bone_weight.x = 0;
+			found = true;
+		} else if ((v.bone_index.j == index) and (v.bone_weight.y > 0)) {
+			v.bone_weight.y = 0;
+			found = true;
+		} else if ((v.bone_index.k == index) and (v.bone_weight.z > 0)) {
+			v.bone_weight.z = 0;
+			found = true;
+		} else if ((v.bone_index.l == index) and (v.bone_weight.w > 0)) {
+			v.bone_weight.w = 0;
+			found = true;
+		}
+
+		if (found) {
 			vertex.add(vi);
-		}else if (v.bone_index > index)
-			v.bone_index --;
+			vertex_bone.add(v.bone_index);
+			vertex_bone_weight.add(v.bone_weight);
+			if (v.bone_weight.length() > 0) {
+				v.bone_weight.normalize();
+			} else {
+				v.bone_weight = {1,0,0,0};
+				v.bone_index = {0,0,0,0};
+			}
+		}
+	}
+
+	// shift vertex references
+	foreachi(ModelVertex &v, m->edit_mesh->vertex, vi) {
+		if (v.bone_index.i > index)
+			v.bone_index.i --;
+		if (v.bone_index.j > index)
+			v.bone_index.j --;
+		if (v.bone_index.k > index)
+			v.bone_index.k --;
+		if (v.bone_index.l > index)
+			v.bone_index.l --;
+	}
 
 	m->bone.erase(index);
 	return NULL;
@@ -97,11 +131,20 @@ void ActionModelDeleteBone::undo(Data *d)
 		}
 
 	// correct vertices
-	for (ModelVertex &v: m->edit_mesh->vertex)
-		if (v.bone_index >= index)
-			v.bone_index ++;
-	for (int vi: vertex)
-		m->edit_mesh->vertex[vi].bone_index = index;
+	for (ModelVertex &v: m->edit_mesh->vertex) {
+		if (v.bone_index.i >= index)
+			v.bone_index.i ++;
+		if (v.bone_index.j >= index)
+			v.bone_index.j ++;
+		if (v.bone_index.k >= index)
+			v.bone_index.k ++;
+		if (v.bone_index.l >= index)
+			v.bone_index.l ++;
+	}
+	foreachi (int vi, vertex, i) {
+		m->edit_mesh->vertex[vi].bone_index = vertex_bone[i];
+		m->edit_mesh->vertex[vi].bone_weight = vertex_bone_weight[i];
+	}
 }
 
 

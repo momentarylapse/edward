@@ -250,22 +250,6 @@ string ShaderGraph::build_source() const {
 			"<Layout>\n"
 			"	version = 420\n"
 			"</Layout>\n"
-			"<VertexShader>\n"
-			"struct Matrix { mat4 model, view, project; };\n"
-			"/*layout(binding = 0)*/ uniform Matrix matrix;\n"
-			"layout(location = 0) in vec3 in_position;\n"
-			"layout(location = 1) in vec3 in_normal;\n"
-			"layout(location = 2) in vec2 in_uv;\n"
-			"layout(location = 0) out vec4 out_pos; // world space\n"
-			"layout(location = 1) out vec2 out_uv;\n"
-			"layout(location = 2) out vec3 out_normal;\n"
-			"void main() {\n"
-			"	gl_Position = matrix.project * matrix.view * matrix.model * vec4(in_position, 1);\n"
-			"	out_normal = (matrix.model * vec4(in_normal, 0)).xyz;\n"
-			"	out_uv = in_uv;\n"
-			"	out_pos = matrix.model * vec4(in_position,1);\n"
-			"}\n"
-			"</VertexShader>\n"
 			"<FragmentShader>\n";
 	string post = "</FragmentShader>\n";
 
