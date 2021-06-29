@@ -137,7 +137,7 @@ void ModeModelAnimation::set_current_move(int move_no) {
 }
 
 void ModeModelAnimation::set_current_frame(int frame_no) {
-	current_frame = loop(frame_no, 0, cur_move()->frame.num - 1);
+	current_frame = loop(frame_no, 0, cur_move()->frame.num);
 	//updateAnimation();
 	state.notify(state.MESSAGE_SET_FRAME);
 	on_update();

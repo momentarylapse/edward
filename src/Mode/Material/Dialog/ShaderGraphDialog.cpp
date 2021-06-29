@@ -492,7 +492,7 @@ void ShaderGraphDialog::on_left_button_down() {
 		} else if (pp.type == ShaderValueType::INT) {
 			if (pp.options.head(7) == "choice=") {
 				auto xx = pp.options.sub(7).explode("|");
-				pp.value = i2s(loop(pp.value._int() + 1, 0, xx.num - 1));
+				pp.value = i2s(loop(pp.value._int() + 1, 0, xx.num));
 				on_update();
 			}
 		} else if (pp.type == ShaderValueType::LITERAL) {
