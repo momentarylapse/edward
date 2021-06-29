@@ -9,37 +9,24 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Data/Model/ModelMesh.h"
 
-ActionModelAttachVerticesToBone::ActionModelAttachVerticesToBone(const Array<int> &_index, int _bone_index) {
+ActionModelAttachVerticesToBone::ActionModelAttachVerticesToBone(const Array<int> &_index, const Array<ivec4> &_bone, const Array<vec4> &_weight) {
 	index = _index;
-	bone_index = _bone_index;
+	bone = _bone;
+	weight = _weight;
 }
 
 void* ActionModelAttachVerticesToBone::execute(Data* d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	// save old bone indices
-	old_bone.clear();
-	for (int i: index) {
-		old_bone.add(m->edit_mesh->vertex[i].bone_index);
-		old_bone_weight.add(m->edit_mesh->vertex[i].bone_weight);
+	foreachi (int i, index, ii) {
+		std::swap(m->edit_mesh->vertex[i].bone_index, bone[ii]);
+		std::swap(m->edit_mesh->vertex[i].bone_weight, weight[ii]);
 	}
-
-	// apply
-	for (int i: index) {
-		m->edit_mesh->vertex[i].bone_index = {bone_index, 0, 0, 0};
-		m->edit_mesh->vertex[i].bone_weight = {1, 0, 0, 0};
-	}
-	return NULL;
+	return nullptr;
 }
 
 void ActionModelAttachVerticesToBone::undo(Data* d) {
-	DataModel *m = dynamic_cast<DataModel*>(d);
-
-	// restore old bone indices
-	foreachi(int i, index, ii) {
-		m->edit_mesh->vertex[i].bone_index = old_bone[ii];
-		m->edit_mesh->vertex[i].bone_weight = old_bone_weight[ii];
-	}
+	execute(d);
 }
 
 

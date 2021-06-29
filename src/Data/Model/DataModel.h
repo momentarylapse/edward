@@ -201,7 +201,7 @@ public:
 	void addBone(const vector &pos, int parent);
 	void deleteBone(int index);
 	void deleteSelectedBones();
-	void boneAttachVertices(int index, const Array<int> &vertices);
+	void boneAttachVertices(const Array<int> &vertices, const Array<ivec4> &bone, const Array<vec4> &weight);
 
 
 	// properties

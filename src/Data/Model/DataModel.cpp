@@ -484,8 +484,8 @@ void DataModel::deleteBone(int index)
 void DataModel::deleteSelectedBones()
 {	execute(new ActionModelDeleteBoneSelection(this));	}
 
-void DataModel::boneAttachVertices(int index, const Array<int> &vertices)
-{	execute(new ActionModelAttachVerticesToBone(vertices, index));	}
+void DataModel::boneAttachVertices(const Array<int> &vertices, const Array<ivec4> &bone, const Array<vec4> &weight)
+{	execute(new ActionModelAttachVerticesToBone(vertices, bone, weight));	}
 
 void DataModel::addAnimation(int index, AnimationType type)
 {	execute(new ActionModelAddAnimation(index, type));	}

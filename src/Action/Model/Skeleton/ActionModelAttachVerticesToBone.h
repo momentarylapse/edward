@@ -13,17 +13,16 @@
 
 class ActionModelAttachVerticesToBone: public Action {
 public:
-	ActionModelAttachVerticesToBone(const Array<int> &_index, int _bone_index);
-	string name(){	return "ModelAttachVerticesToBone";	}
+	ActionModelAttachVerticesToBone(const Array<int> &index, const Array<ivec4> &bone, const Array<vec4> &weight);
+	string name() override { return "ModelAttachVerticesToBone"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
-	int bone_index;
 	Array<int> index;
-	Array<ivec4> old_bone;
-	Array<vec4> old_bone_weight;
+	Array<ivec4> bone;
+	Array<vec4> weight;
 };
 
 #endif /* ACTIONMODELATTACHVERTICESTOBONE_H_ */

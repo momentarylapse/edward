@@ -20,15 +20,25 @@ public:
 
 	void on_command(const string &id) override;
 
+	void on_mouse_move() override;
+	void on_left_button_down() override;
+	void on_left_button_up() override;
+
 	void on_draw_win(MultiView::Window *win) override;
 
 	void on_set_multi_view() override;
 
 	void on_data_change();
-	void on_update_selection();
+
+	void apply();
 
 private:
 	int bone_index;
+	bool brushing;
+	float distance;
+	vector last_pos;
+
+	float radius();
 };
 
 #endif /* MODEMODELSKELETONATTACHVERTICES_H_ */
