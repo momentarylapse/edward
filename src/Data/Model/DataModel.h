@@ -49,16 +49,15 @@ public:
 	//int Edge[3];
 	//int EdgeDirection[3]; // which no of triangle in edge's list are we?
 	vector skin_vertex[MATERIAL_MAX_TEXTURES][3];
-	int normal_index[3];
 	vector normal[3];
 	vector temp_normal;
 	bool normal_dirty;
-	int Material;
+	int material;
 };
 
 
 // triangles belonging to one material
-struct ModelSubSkin {
+struct ModelTriangleSubMesh {
 	int num_textures; // "read only" (updated automatically...)
 
 	// triangles
@@ -66,13 +65,13 @@ struct ModelSubSkin {
 };
 
 
-// geometry
-struct ModelSkin {
+// exported geometry
+struct ModelTriangleMesh {
 	// vertices
 	Array<ModelVertex> vertex;
 
 	// sub skins
-	Array<ModelSubSkin> sub;
+	Array<ModelTriangleSubMesh> sub;
 };
 
 class ModelBone: public MultiView::SingleData {
@@ -132,15 +131,15 @@ public:
 
 	void reset() override;
 
-	void importFromTriangleSkin(int index);
+	void import_from_triangle_mesh(int index);
 
-	void debugShow();
+	void debug_show();
 	bool test_sanity(const string &loc) override;
 	void on_post_action_update() override;
 
-	void setNormalsDirtyByVertices(const Array<int> &index);
-	void setAllNormalsDirty();
-	void updateNormals();
+	void set_normals_dirty_by_vertices(const Array<int> &index);
+	void set_all_normals_dirty();
+	void update_normals();
 
 
 
@@ -158,7 +157,7 @@ public:
 	void getBoundingBox(vector &min, vector &max);
 	void generateDetailDists(float *dist);
 	matrix3 generateInertiaTensor(float mass);
-	void createSkin(ModelSkin *src, ModelSkin *dst, float quality_factor);
+	void create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *dst, float quality_factor);
 
 	// high level (actions)
 	void addVertex(const vector &pos, const ivec4 &bone_index = {0,0,0,0}, const vec4 &bone_weight = {1,0,0,0}, int normal_mode = -1);
@@ -224,7 +223,7 @@ public:
 
 
 	// old geometry
-	Array<ModelSkin> skin;
+	Array<ModelTriangleMesh> triangle_mesh;
 
 	// general properties
 	Array<ModelMaterial*> material;

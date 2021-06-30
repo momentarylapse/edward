@@ -41,13 +41,13 @@ public:
 
 class WorldEditingTerrain {
 public:
-	Path FileName;
-	int NumX, NumZ;
-	vector Pattern;
-	Path MaterialFile;
-	int NumTextures;
-	Path TextureFile[MATERIAL_MAX_TEXTURES];
-	vector TextureScale[MATERIAL_MAX_TEXTURES];
+	Path filename;
+	int num_x, num_z;
+	vector pattern;
+	Path material_file;
+	int num_textures;
+	Path texture_file[MATERIAL_MAX_TEXTURES];
+	vector texture_scale[MATERIAL_MAX_TEXTURES];
 };
 
 

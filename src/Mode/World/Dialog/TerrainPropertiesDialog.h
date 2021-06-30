@@ -18,23 +18,23 @@ public:
 	TerrainPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int _index);
 	virtual ~TerrainPropertiesDialog();
 
-	void LoadData();
-	void ApplyData();
+	void load_data();
+	void apply_data();
 
-	void FillTextureList();
+	void fill_texture_list();
 
-	void OnSaveAs();
-	void OnTextures();
-	void OnTexturesEdit();
-	void OnTexturesSelect();
-	void OnAddTextureLevel();
-	void OnDeleteTextureLevel();
-	void OnClearTextureLevel();
-	void OnTextureMapComplete();
-	void OnDefaultMaterial();
-	void OnMaterialFind();
-	void OnOk();
-	void OnClose();
+	void on_save_as();
+	void on_textures();
+	void on_textures_edit();
+	void on_textures_select();
+	void on_add_texture_level();
+	void on_delete_texture_level();
+	void on_clear_texture_level();
+	void on_texture_map_complete();
+	void on_default_material();
+	void on_material_find();
+	void on_ok();
+	void on_close();
 
 	void update_data();
 

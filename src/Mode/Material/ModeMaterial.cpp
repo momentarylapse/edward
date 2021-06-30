@@ -99,7 +99,7 @@ void ModeMaterial::update_textures() {
 	textures.clear();
 
 	for (auto &tf: data->appearance.texture_files)
-		textures.add(nix::Texture::load(tf));
+		textures.add(ResourceManager::load_texture(tf));
 	/*if (appearance.reflection_mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
 		create_fake_dynamic_cube_map(cube_map);
 		textures.add(cube_map);

@@ -133,8 +133,15 @@ nix::Texture* ResourceManager::load_texture(const Path& filename) {
 		if (fn == t->filename)
 			return t->valid ? t : nullptr;
 
-	auto t = nix::Texture::load(fn);
-	textures.add(t);
-	return t;
+	try {
+		auto t = nix::Texture::load(fn);
+		textures.add(t);
+		return t;
+	} catch(Exception &e) {
+		if (!engine.ignore_missing_files)
+			throw;
+		msg_error(e.message());
+		return nullptr;
+	}
 }
 

@@ -152,9 +152,9 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 	}
 	// create subs...
 	for (int k=0;k<4;k++){
-		data->skin[k].sub.resize(data->material.num);
+		data->triangle_mesh[k].sub.resize(data->material.num);
 		for (int j=0;j<data->material.num;j++)
-			data->skin[k].sub[j].num_textures = 1;
+			data->triangle_mesh[k].sub[j].num_textures = 1;
 	}
 
 // Physical Skin
@@ -169,11 +169,11 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 	}
 
 	// triangles
-	data->skin[0].sub[0].triangle.resize(f->read_int());
-	for (int j=0;j<data->skin[0].sub[0].triangle.num;j++){
-		data->skin[0].sub[0].triangle[j].normal_dirty = true;
+	data->triangle_mesh[0].sub[0].triangle.resize(f->read_int());
+	for (int j=0;j<data->triangle_mesh[0].sub[0].triangle.num;j++){
+		data->triangle_mesh[0].sub[0].triangle[j].normal_dirty = true;
 		for (int k=0;k<3;k++)
-			data->skin[0].sub[0].triangle[j].vertex[k] = f->read_int();
+			data->triangle_mesh[0].sub[0].triangle[j].vertex[k] = f->read_int();
 	}
 
 	// balls
@@ -206,18 +206,18 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 		normal_mode_all -= (normal_mode_all & NORMAL_MODE_PRE);
 
 		// vertices
-		data->skin[i].vertex.resize(f->read_int());
-		for (int j=0;j<data->skin[i].vertex.num;j++){
-			data->skin[i].vertex[j].bone_index = {f->read_int(), 0, 0, 0};
-			data->skin[i].vertex[j].bone_index = {1,0,0,0};
-			if (data->skin[i].vertex[j].bone_index.i < 0)
-				data->skin[i].vertex[j].bone_index.i = 0;
-			f->read_vector(&data->skin[i].vertex[j].pos);
+		data->triangle_mesh[i].vertex.resize(f->read_int());
+		for (int j=0;j<data->triangle_mesh[i].vertex.num;j++){
+			data->triangle_mesh[i].vertex[j].bone_index = {f->read_int(), 0, 0, 0};
+			data->triangle_mesh[i].vertex[j].bone_index = {1,0,0,0};
+			if (data->triangle_mesh[i].vertex[j].bone_index.i < 0)
+				data->triangle_mesh[i].vertex[j].bone_index.i = 0;
+			f->read_vector(&data->triangle_mesh[i].vertex[j].pos);
 			if (normal_mode_all == NORMAL_MODE_PER_VERTEX)
-				data->skin[i].vertex[j].normal_mode = f->read_byte();
+				data->triangle_mesh[i].vertex[j].normal_mode = f->read_byte();
 			else
-				data->skin[i].vertex[j].normal_mode = normal_mode_all;
-			data->skin[i].vertex[j].normal_dirty = true;
+				data->triangle_mesh[i].vertex[j].normal_mode = normal_mode_all;
+			data->triangle_mesh[i].vertex[j].normal_dirty = true;
 		}
 
 		// skin vertices
@@ -232,15 +232,16 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 		// triangles (subs)
 		int num_trias = f->read_int();
 		for (int t=0;t<data->material.num;t++)
-			data->skin[i].sub[t].triangle.resize(f->read_int());
+			data->triangle_mesh[i].sub[t].triangle.resize(f->read_int());
 		for (int t=0;t<data->material.num;t++)
-			for (int j=0;j<data->skin[i].sub[t].triangle.num;j++)
+			for (int j=0;j<data->triangle_mesh[i].sub[t].triangle.num;j++)
 				for (int k=0;k<3;k++){
-					data->skin[i].sub[t].triangle[j].vertex[k] = f->read_int();
+					data->triangle_mesh[i].sub[t].triangle[j].vertex[k] = f->read_int();
 					int svi = f->read_int();
-					data->skin[i].sub[t].triangle[j].skin_vertex[0][k] = skin_vert[svi];
-					data->skin[i].sub[t].triangle[j].normal_index[k] = (int)f->read_byte();
-					data->skin[i].sub[t].triangle[j].normal_dirty = true;
+					data->triangle_mesh[i].sub[t].triangle[j].skin_vertex[0][k] = skin_vert[svi];
+					int normal_index = (int)f->read_byte();
+					//data->triangle_mesh[i].sub[t].triangle[j].normal[k] = get_normal_by_index(normal_index);
+					data->triangle_mesh[i].sub[t].triangle[j].normal_dirty = true;
 				}
 	}
 
@@ -279,7 +280,7 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 			for (int fr=0;fr<m->frame.num;fr++){
 				m->frame[fr].duration = 1;
 				for (int s=0;s<4;s++){
-					m->frame[fr].skin[s].dpos.resize(data->skin[s].vertex.num);
+					m->frame[fr].skin[s].dpos.resize(data->triangle_mesh[s].vertex.num);
 					int num_vertices = f->read_int();
 					for (int j=0;j<num_vertices;j++){
 						int vertex_index = f->read_int();
@@ -440,9 +441,9 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 	}
 	// create subs...
 	for (int k=0;k<4;k++){
-		data->skin[k].sub.resize(data->material.num);
+		data->triangle_mesh[k].sub.resize(data->material.num);
 		for (int j=0;j<data->material.num;j++)
-			data->skin[k].sub[j].num_textures = data->material[j]->texture_levels.num;
+			data->triangle_mesh[k].sub[j].num_textures = data->material[j]->texture_levels.num;
 	}
 
 // Physical Skin
@@ -543,15 +544,15 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 
 		// vertices
 		f->read_comment();
-		data->skin[i].vertex.resize(f->read_int());
-		for (int j=0;j<data->skin[i].vertex.num;j++)
-			f->read_vector(&data->skin[i].vertex[j].pos);
-		for (int j=0;j<data->skin[i].vertex.num;j++) {
-			data->skin[i].vertex[j].bone_index = {f->read_int(), 0,0,0};
-			data->skin[i].vertex[j].bone_weight = {1,0,0,0};
+		data->triangle_mesh[i].vertex.resize(f->read_int());
+		for (int j=0;j<data->triangle_mesh[i].vertex.num;j++)
+			f->read_vector(&data->triangle_mesh[i].vertex[j].pos);
+		for (int j=0;j<data->triangle_mesh[i].vertex.num;j++) {
+			data->triangle_mesh[i].vertex[j].bone_index = {f->read_int(), 0,0,0};
+			data->triangle_mesh[i].vertex[j].bone_weight = {1,0,0,0};
 		}
-		for (int j=0;j<data->skin[i].vertex.num;j++)
-			data->skin[i].vertex[j].normal_dirty = false;//true;
+		for (int j=0;j<data->triangle_mesh[i].vertex.num;j++)
+			data->triangle_mesh[i].vertex[j].normal_dirty = false;//true;
 
 		// skin vertices
 		skin_vert.resize(f->read_int());
@@ -564,25 +565,25 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 
 		// triangles (subs)
 		for (int m=0;m<data->material.num;m++){
-			data->skin[i].sub[m].triangle.resize(f->read_int());
+			data->triangle_mesh[i].sub[m].triangle.resize(f->read_int());
 			// vertex
-			for (int j=0;j<data->skin[i].sub[m].triangle.num;j++)
+			for (int j=0;j<data->triangle_mesh[i].sub[m].triangle.num;j++)
 				for (int k=0;k<3;k++)
-					data->skin[i].sub[m].triangle[j].vertex[k] = f->read_int();
+					data->triangle_mesh[i].sub[m].triangle[j].vertex[k] = f->read_int();
 			// skin vertex
 			for (int tl=0;tl<data->material[m]->texture_levels.num;tl++)
-				for (int j=0;j<data->skin[i].sub[m].triangle.num;j++)
+				for (int j=0;j<data->triangle_mesh[i].sub[m].triangle.num;j++)
 					for (int k=0;k<3;k++){
 						int svi = f->read_int();
-						data->skin[i].sub[m].triangle[j].skin_vertex[tl][k] = skin_vert[svi];
+						data->triangle_mesh[i].sub[m].triangle[j].skin_vertex[tl][k] = skin_vert[svi];
 					}
 			// normals
-			for (int j=0;j<data->skin[i].sub[m].triangle.num;j++){
+			for (int j=0;j<data->triangle_mesh[i].sub[m].triangle.num;j++){
 				for (int k=0;k<3;k++){
-					data->skin[i].sub[m].triangle[j].normal_index[k] = (int)(unsigned short)f->read_word();
-					data->skin[i].sub[m].triangle[j].normal[k] = get_normal_by_index(data->skin[i].sub[m].triangle[j].normal_index[k]);
+					int normal_index = (int)(unsigned short)f->read_word();
+					data->triangle_mesh[i].sub[m].triangle[j].normal[k] = get_normal_by_index(normal_index);
 				}
-				data->skin[i].sub[m].triangle[j].normal_dirty = false;
+				data->triangle_mesh[i].sub[m].triangle[j].normal_dirty = false;
 			}
 			f->read_int();
 		}
@@ -635,7 +636,7 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 				if (rubber_timing)
 					fr.duration = f->read_float();
 				for (int s=0;s<4;s++){
-					fr.skin[s].dpos.resize(data->skin[s].vertex.num);
+					fr.skin[s].dpos.resize(data->triangle_mesh[s].vertex.num);
 					int num_vertices = f->read_int();
 					for (int j=0;j<num_vertices;j++){
 						int vertex_index = f->read_int();
@@ -759,7 +760,7 @@ void FormatModel::_load_v11_edit(File *f, DataModel *data, bool deep) {
 			data->meta_data.detail_factor[2] = f->read_int();
 		}else if (s == "// Normals"){
 			for (int i=1;i<4;i++){
-				ModelSkin *s = &data->skin[i];
+				ModelTriangleMesh *s = &data->triangle_mesh[i];
 				int normal_mode_all = f->read_int();
 				if (normal_mode_all == NORMAL_MODE_PER_VERTEX){
 					for (ModelVertex &v: s->vertex)
@@ -771,7 +772,7 @@ void FormatModel::_load_v11_edit(File *f, DataModel *data, bool deep) {
 			}
 		}else if (s == "// Polygons"){
 			//data->begin_action_group("LoadPolygonData");
-			foreachi(ModelVertex &v, data->skin[1].vertex, i)
+			foreachi(ModelVertex &v, data->triangle_mesh[1].vertex, i)
 				data->addVertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
 			int ns = f->read_int();
 			for (int i=0;i<ns;i++){

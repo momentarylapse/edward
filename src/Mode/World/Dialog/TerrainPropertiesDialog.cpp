@@ -13,6 +13,7 @@
 #include "../../../Storage/Storage.h"
 #include "../../../y/Terrain.h"
 #include "../../../y/Material.h"
+#include "../../../y/ResourceManager.h"
 #include "../../../lib/nix/nix.h"
 #include <assert.h>
 
@@ -27,62 +28,64 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(hui::Window *_parent, bool _all
 	assert(index >= 0);
 	assert(index < data->terrains.num);
 
-	event("cancel", [=]{ OnClose(); });
-	event("hui:close", [=]{ OnClose(); });
-	event("apply", [=]{ ApplyData(); });
-	event("ok", [=]{ OnOk(); });
+	event("cancel", [=]{ on_close(); });
+	event("hui:close", [=]{ on_close(); });
+	event("apply", [=]{ apply_data(); });
+	event("ok", [=]{ on_ok(); });
 
-	event("add_texture_level", [=]{ OnAddTextureLevel(); });
-	event("delete_texture_level", [=]{ OnDeleteTextureLevel(); });
-	event("clear_texture_level", [=]{ OnClearTextureLevel(); });
-	event("texture_map_complete", [=]{ OnTextureMapComplete(); });
-	event("textures", [=]{ OnTextures(); });
-	event_x("textures", "hui:change", [=]{ OnTexturesEdit(); });
-	event_x("textures", "hui:select", [=]{ OnTexturesSelect(); });
-	event("material_find", [=]{ OnMaterialFind(); });
-	event("default_material", [=]{ OnDefaultMaterial(); });
-	event("terrain_save_as", [=]{ OnSaveAs(); });
+	event("add_texture_level", [=]{ on_add_texture_level(); });
+	event("delete_texture_level", [=]{ on_delete_texture_level(); });
+	event("clear_texture_level", [=]{ on_clear_texture_level(); });
+	event("texture_map_complete", [=]{ on_texture_map_complete(); });
+	event("textures", [=]{ on_textures(); });
+	event_x("textures", "hui:change", [=]{ on_textures_edit(); });
+	event_x("textures", "hui:select", [=]{ on_textures_select(); });
+	event("material_find", [=]{ on_material_find(); });
+	event("default_material", [=]{ on_default_material(); });
+	event("terrain_save_as", [=]{ on_save_as(); });
 
 	data->subscribe(this, [=]{ update_data(); });
 
 	update_data();
 }
 
-TerrainPropertiesDialog::~TerrainPropertiesDialog()
-{
+TerrainPropertiesDialog::~TerrainPropertiesDialog() {
 	data->unsubscribe(this);
 }
 
-void TerrainPropertiesDialog::ApplyData()
-{
-	temp.MaterialFile = get_string("material");
+void TerrainPropertiesDialog::apply_data() {
+	temp.material_file = get_string("material");
 	data->execute(new ActionWorldEditTerrain(index, temp));
 }
 
 
 
-void TerrainPropertiesDialog::OnTextures()
-{
+void TerrainPropertiesDialog::on_textures() {
 	int n = get_int("textures");
-	if (storage->file_dialog(FD_TEXTURE, false, true)){
-		temp.TextureFile[n] = storage->dialog_file;
-		FillTextureList();
+	if (storage->file_dialog(FD_TEXTURE, false, true)) {
+		temp.texture_file[n] = storage->dialog_file;
+		fill_texture_list();
 	}
 }
 
 
-void TerrainPropertiesDialog::FillTextureList()
-{
+void TerrainPropertiesDialog::fill_texture_list() {
 	Material *m = LoadMaterial(get_string("material"));
 
 	reset("textures");
-	for (int i=0;i<temp.NumTextures;i++){
-		auto tex = nix::Texture::load(temp.TextureFile[i]);
-		if (tex)
+	for (int i=0;i<temp.num_textures;i++) {
+		nix::Texture *tex = nullptr;
+		if (!temp.texture_file[i].is_empty()) {
+			try {
+				tex = ResourceManager::load_texture(temp.texture_file[i]);
+			} catch (Exception &e) {
+			}
+		}
+		if (!tex)
 			if (i < m->textures.num)
 				tex = m->textures[i].get();
 		string img = ed->get_tex_image(tex);
-		add_string("textures", format("%d\\%.5f\\%.5f\\%s\\%s", i, temp.TextureScale[i].x * (float)temp.NumX, temp.TextureScale[i].z * (float)temp.NumZ, img, file_secure(temp.TextureFile[i])));
+		add_string("textures", format("%d\\%.5f\\%.5f\\%s\\%s", i, temp.texture_scale[i].x, temp.texture_scale[i].z, img, file_secure(temp.texture_file[i])));
 	}
 	enable("delete_texture_level", false);
 	enable("clear_texture_level", false);
@@ -91,36 +94,33 @@ void TerrainPropertiesDialog::FillTextureList()
 
 
 
-void TerrainPropertiesDialog::LoadData()
-{
-	set_string("material", temp.MaterialFile.str());
-	check("default_material", temp.MaterialFile.is_empty());
+void TerrainPropertiesDialog::load_data() {
+	set_string("material", temp.material_file.str());
+	check("default_material", temp.material_file.is_empty());
 	enable("material", false);//(temp.MaterialFile != ""));
-	FillTextureList();
+	fill_texture_list();
 
-	set_string("filename", temp.FileName.str());
-	set_int("num_x", temp.NumX);
-	set_int("num_z", temp.NumZ);
-	set_float("pattern_x", temp.Pattern.x);
-	set_float("pattern_z", temp.Pattern.z);
+	set_string("filename", temp.filename.str());
+	set_int("num_x", temp.num_x);
+	set_int("num_z", temp.num_z);
+	set_float("pattern_x", temp.pattern.x);
+	set_float("pattern_z", temp.pattern.z);
 }
 
 
 
-void TerrainPropertiesDialog::OnTexturesEdit()
-{
+void TerrainPropertiesDialog::on_textures_edit() {
 	int col = hui::GetEvent()->column;
 	int row = hui::GetEvent()->row;
 	if (col == 1)
-		temp.TextureScale[row].x = s2f(get_cell("textures", row, col)) / (float)temp.NumX;
+		temp.texture_scale[row].x = s2f(get_cell("textures", row, col));
 	else if (col == 2)
-		temp.TextureScale[row].z = s2f(get_cell("textures", row, col)) / (float)temp.NumZ;
+		temp.texture_scale[row].z = s2f(get_cell("textures", row, col));
 }
 
 
 
-void TerrainPropertiesDialog::OnSaveAs()
-{
+void TerrainPropertiesDialog::on_save_as() {
 	if (!storage->file_dialog(FD_TERRAIN, true, true))
 		return;
 	data->terrains[index].save(storage->dialog_file_complete);
@@ -129,86 +129,78 @@ void TerrainPropertiesDialog::OnSaveAs()
 
 
 
-void TerrainPropertiesDialog::OnDeleteTextureLevel()
-{
+void TerrainPropertiesDialog::on_delete_texture_level() {
 	int n = get_int("textures");
-	if (temp.NumTextures <= 1){
+	if (temp.num_textures <= 1) {
 		ed->error_box(_("There has to be at least one texture level!"));
 		return;
 	}
-	for (int i=n;i<temp.NumTextures-1;i++){
-		temp.TextureFile[i] = temp.TextureFile[i+1];
-		temp.TextureScale[i] = temp.TextureScale[i+1];
+	for (int i=n;i<temp.num_textures-1;i++) {
+		temp.texture_file[i] = temp.texture_file[i+1];
+		temp.texture_scale[i] = temp.texture_scale[i+1];
 	}
-	temp.NumTextures --;
+	temp.num_textures --;
 
-	FillTextureList();
+	fill_texture_list();
 }
 
 
 
-void TerrainPropertiesDialog::OnDefaultMaterial()
-{
+void TerrainPropertiesDialog::on_default_material() {
 	set_string("material", "");
 }
 
 
 
-void TerrainPropertiesDialog::OnMaterialFind()
-{
+void TerrainPropertiesDialog::on_material_find() {
 	if (storage->file_dialog(FD_MATERIAL, false, true))
 		set_string("material", storage->dialog_file_no_ending.str());
 }
 
 
 
-void TerrainPropertiesDialog::OnTextureMapComplete()
-{
+void TerrainPropertiesDialog::on_texture_map_complete() {
 	int s = get_int("textures");
-	temp.TextureScale[s].x = 1.0f / temp.NumX;
-	temp.TextureScale[s].z = 1.0f / temp.NumZ;
+	temp.texture_scale[s].x = 1.0f;
+	temp.texture_scale[s].z = 1.0f;
 
-	FillTextureList();
+	fill_texture_list();
 }
 
 
 
-void TerrainPropertiesDialog::OnClose()
-{
+void TerrainPropertiesDialog::on_close() {
 	request_destroy();
 }
 
 
 
-void TerrainPropertiesDialog::OnAddTextureLevel()
-{
-	if (temp.NumTextures >= MATERIAL_MAX_TEXTURES){
+void TerrainPropertiesDialog::on_add_texture_level() {
+	if (temp.num_textures >= MATERIAL_MAX_TEXTURES) {
 		ed->error_box(format(_("No more than %d textures per terrain allowed!"), MATERIAL_MAX_TEXTURES));
 		return;
 	}
-	int l = temp.NumTextures;
-	temp.TextureFile[l] = "";
-	temp.TextureScale[l] = vector(0.1f,0,0.1f);
-	temp.NumTextures ++;
+	int l = temp.num_textures;
+	temp.texture_file[l] = "";
+	temp.texture_scale[l] = vector(0.1f,0,0.1f);
+	temp.num_textures ++;
 
-	FillTextureList();
+	fill_texture_list();
 }
 
-void TerrainPropertiesDialog::OnTexturesSelect()
-{
+void TerrainPropertiesDialog::on_textures_select() {
 	int s = get_int("textures");
 	enable("delete_texture_level", s >= 0);
 	enable("clear_texture_level", s >= 0);
 	enable("texture_map_complete", s >= 0);
 }
 
-void TerrainPropertiesDialog::OnClearTextureLevel()
-{
+void TerrainPropertiesDialog::on_clear_texture_level() {
 	int s = get_int("textures");
 	if (s >= 0)
-		temp.TextureFile[s] = "";
+		temp.texture_file[s] = "";
 
-	FillTextureList();
+	fill_texture_list();
 }
 
 void TerrainPropertiesDialog::update_data() {
@@ -219,23 +211,23 @@ void TerrainPropertiesDialog::update_data() {
 
 	Terrain *t = data->terrains[index].terrain;
 	assert(t);
-	temp.FileName = data->terrains[index].filename;
-	temp.NumX = t->num_x;
-	temp.NumZ = t->num_z;
-	temp.Pattern = t->pattern;
-	temp.NumTextures = t->material->textures.num;
-	for (int i=0; i<temp.NumTextures; i++) {
-		temp.TextureFile[i] = t->texture_file[i];
-		temp.TextureScale[i] = t->texture_scale[i];
+	temp.filename = data->terrains[index].filename;
+	temp.num_x = t->num_x;
+	temp.num_z = t->num_z;
+	temp.pattern = t->pattern;
+	temp.num_textures = t->material->textures.num;
+	for (int i=0; i<temp.num_textures; i++) {
+		temp.texture_file[i] = t->texture_file[i];
+		temp.texture_scale[i] = t->texture_scale[i];
 	}
-	temp.MaterialFile = t->material_file;
-	LoadData();
+	temp.material_file = t->material_file;
+	load_data();
 }
 
 
 
-void TerrainPropertiesDialog::OnOk() {
-	ApplyData();
+void TerrainPropertiesDialog::on_ok() {
+	apply_data();
 	request_destroy();
 }
 

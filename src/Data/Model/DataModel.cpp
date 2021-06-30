@@ -107,7 +107,7 @@ DataModel::DataModel() :
 	mesh = new ModelMesh(this);
 	phys_mesh = new ModelMesh(this);
 	edit_mesh = mesh;
-	skin.resize(4);
+	triangle_mesh.resize(4);
 }
 
 DataModel::~DataModel() {
@@ -151,10 +151,10 @@ void DataModel::reset() {
 
 	filename = "";
 	for (int i=0;i<4;i++) {
-		skin[i].vertex.clear();
+		triangle_mesh[i].vertex.clear();
 		for (int j=0;j<material.num;j++)
-			skin[i].sub[j].triangle.clear();
-		skin[i].sub.resize(1);
+			triangle_mesh[i].sub[j].triangle.clear();
+		triangle_mesh[i].sub.resize(1);
 	}
 
 	mesh->clear();
@@ -178,8 +178,8 @@ void DataModel::reset() {
 
 
 	for (int i=0;i<4;i++){
-		skin[i].sub.resize(1);
-		skin[i].sub[0].num_textures = 1;
+		triangle_mesh[i].sub.resize(1);
+		triangle_mesh[i].sub[0].num_textures = 1;
 	}
 
 	meta_data.reset();
@@ -188,7 +188,7 @@ void DataModel::reset() {
 	notify();
 }
 
-void DataModel::debugShow() {
+void DataModel::debug_show() {
 	msg_write("------------");
 	msg_write(mesh->vertex.num);
 	msg_write(mesh->polygon.num);
@@ -206,12 +206,12 @@ void DataModel::on_post_action_update() {
 }
 
 
-void DataModel::importFromTriangleSkin(int index) {
+void DataModel::import_from_triangle_mesh(int index) {
 	mesh->vertex.clear();
 	mesh->polygon.clear();
 	mesh->edge.clear();
 
-	ModelSkin &s = skin[index];
+	ModelTriangleMesh &s = triangle_mesh[index];
 	begin_action_group("ImportFromTriangleSkin");
 	foreachi(ModelVertex &v, s.vertex, i) {
 		addVertex(v.pos, v.bone_index, v.bone_weight);
@@ -245,7 +245,7 @@ void DataModel::importFromTriangleSkin(int index) {
 	}
 
 #if 0
-	ModelSkin &ps = skin[0];
+	ModelTriangleMesh &ps = triangle_mesh[0];
 	foreachi(ModelVertex &v, ps.vertex, i){
 		phys_mesh->addVertex(v.pos, v.bone_index);
 	}
@@ -295,17 +295,17 @@ void DataModel::getBoundingBox(vector &min, vector &max) {
 	phys_mesh->get_bounding_box(min, max, true);
 }
 
-void DataModel::setNormalsDirtyByVertices(const Array<int> &index) {
+void DataModel::set_normals_dirty_by_vertices(const Array<int> &index) {
 	mesh->set_normals_dirty_by_vertices(index);
 }
 
-void DataModel::setAllNormalsDirty() {
+void DataModel::set_all_normals_dirty() {
 	mesh->set_all_normals_dirty();
 	phys_mesh->set_all_normals_dirty();
 }
 
 
-void DataModel::updateNormals() {
+void DataModel::update_normals() {
 	mesh->update_normals();
 	phys_mesh->update_normals();
 }
@@ -351,8 +351,8 @@ ModelPolygon *DataModel::addPolygonWithSkin(const Array<int> &v, const Array<vec
 
 
 
-void DataModel::createSkin(ModelSkin *src, ModelSkin *dst, float quality_factor) {
-	msg_todo("DataModel::CreateSkin");
+void DataModel::create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *dst, float quality_factor) {
+	msg_todo("DataModel.create_triangle_mesh");
 }
 
 
@@ -365,7 +365,7 @@ float DataModel::getRadius() {
 
 float DetailDistTemp1,DetailDistTemp2,DetailDistTemp3;
 
-int get_num_trias(DataModel *m, ModelSkin *s) {
+int get_num_trias(DataModel *m, ModelTriangleMesh *s) {
 	int n = 0;
 	for (int i=0;i<m->material.num;i++)
 		n += s->sub[i].triangle.num;
@@ -377,9 +377,9 @@ void DataModel::generateDetailDists(float *dist) {
 	dist[0] = radius * 10;
 	dist[1] = radius * 40;
 	dist[2] = radius * 80;
-	if (get_num_trias(this, &skin[3]) == 0)
+	if (get_num_trias(this, &triangle_mesh[3]) == 0)
 		dist[1] = dist[2];
-	if (get_num_trias(this, &skin[2]) == 0)
+	if (get_num_trias(this, &triangle_mesh[2]) == 0)
 		dist[0] = dist[1];
 }
 

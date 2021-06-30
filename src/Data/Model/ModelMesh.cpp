@@ -307,7 +307,7 @@ void ModelMesh::importFromTriangleSkin(int index) {
 	polygon.clear();
 	edge.clear();
 
-	ModelSkin &s = skin[index];
+	ModelTriangleMesh &s = skin[index];
 	begin_action_group("ImportFromTriangleSkin");
 	foreachi(ModelVertex &v, s.vertex, i){
 		addVertex(v.pos);
@@ -343,7 +343,7 @@ void ModelMesh::importFromTriangleSkin(int index) {
 	}
 
 
-	ModelSkin &ps = skin[0];
+	ModelTriangleMesh &ps = skin[0];
 	foreachi(ModelVertex &v, ps.vertex, i){
 		addVertex(v.pos);
 		vertex[i].bone_index = v.bone_index;
@@ -388,7 +388,7 @@ void ModelMesh::importFromTriangleSkin(int index) {
 }
 #endif
 
-void ModelMesh::export_to_triangle_skin(ModelSkin &sk) {
+void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk) {
 	sk.vertex = vertex;
 	sk.sub.clear();
 	sk.sub.resize(model->material.num);

@@ -431,7 +431,6 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 
 // terrain
 	nix::set_wire(multi_view->wire_mode);
-	nix::set_shader(nix::Shader::default_3d);
 
 	if (show_effects)
 		apply_lighting(data, win);
@@ -444,9 +443,15 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 
 		// prepare...
 		t.terrain->draw();
-		nix::set_shader(nix::Shader::default_3d);
-
 		auto mat = t.terrain->material;
+		mat->prepare_shader(ShaderVariant::DEFAULT);
+
+		auto s = mat->shader[0].get();
+		nix::set_shader(nix::Shader::default_3d);
+//		nix::set_shader(s);
+		s->set_floats("pattern0", &t.terrain->texture_scale[0].x, 3);
+		s->set_floats("pattern1", &t.terrain->texture_scale[1].x, 3);
+
 		nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
 		nix::set_textures(weak(mat->textures));
 		nix::draw_triangles(t.terrain->vertex_buffer);
@@ -461,6 +466,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		//GodDraw();
 		//MetaDrawSorted();
 		//NixSetWire(false);
+	nix::set_shader(nix::Shader::default_3d);
 
 	for (WorldObject &o: data->objects) {
 		if (o.view_stage < multi_view->view_stage)

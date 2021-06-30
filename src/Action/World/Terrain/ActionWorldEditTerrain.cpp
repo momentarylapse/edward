@@ -8,6 +8,7 @@
 #include "ActionWorldEditTerrain.h"
 #include "../../../Data/World/DataWorld.h"
 #include "../../../y/Terrain.h"
+#include "../../../y/ResourceManager.h"
 #include "../../../lib/nix/nix.h"
 #include <assert.h>
 
@@ -30,26 +31,23 @@ void *ActionWorldEditTerrain::execute(Data *d) {
 	Terrain *t = w->terrains[index].terrain;
 
 	// swap
-	WorldEditingTerrain old_data;
-	old_data.NumX = t->num_x;
-	old_data.NumZ = t->num_z;
-	old_data.Pattern = t->pattern;
-	old_data.MaterialFile = t->material_file;
-	old_data.NumTextures = t->material->textures.num;
-	for (int i=0;i<t->material->textures.num;i++) {
-		old_data.TextureFile[i] = t->texture_file[i];
-		old_data.TextureScale[i] = t->texture_scale[i];
+	if (false) {
+		std::swap(data.num_x, t->num_x);
+		std::swap(data.num_z, t->num_z);
 	}
-	/*t->num_x = data.NumX;
-	t->num_z = data.NumZ;
-	t->pattern = data.Pattern;*/
-	t->material_file = data.MaterialFile;
+	std::swap(data.pattern, t->pattern);
+	std::swap(data.material_file, t->material_file);
+	int num_tex_prev = t->material->textures.num;
 	//t->material->copy_from(NULL, LoadMaterial(t->material_file), false);
-	t->material->textures.resize(data.NumTextures);
+	t->material->textures.resize(data.num_textures);
 	for (int i=0;i<t->material->textures.num;i++) {
-		t->texture_file[i] = data.TextureFile[i];
-		t->material->textures[i] = nix::Texture::load(t->texture_file[i]);
-		t->texture_scale[i] = data.TextureScale[i];
+		std::swap(data.texture_file[i], t->texture_file[i]);
+		std::swap(data.texture_scale[i], t->texture_scale[i]);
+		try {
+			t->material->textures[i] = ResourceManager::load_texture(t->texture_file[i]);
+		} catch(Exception &e) {
+			msg_error(e.message());
+		}
 	}
 
 	// update
@@ -59,7 +57,7 @@ void *ActionWorldEditTerrain::execute(Data *d) {
 	}*/
 	t->force_redraw = true;
 
-	data = old_data;
+	data.num_textures = num_tex_prev;
 
 	return NULL;
 }

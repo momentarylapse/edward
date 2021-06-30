@@ -24,6 +24,11 @@ void update_model_script_data(DataModel::MetaData &m);
 
 bool DataModelAllowUpdating = true;
 
+ivec4 read_ivec4(File *f);
+vec4 read_vec4(File *f);
+void write_ivec4(File *f, const ivec4 &v);
+void write_vec4(File *f, const vec4 &v);
+
 
 int get_normal_index(vector &n) {
 	int nxy, nz;
@@ -232,11 +237,11 @@ public:
 
 static int _model_parser_tria_mesh_count;
 
-class ChunkTriangleMesh : public FileChunk<DataModel, ModelSkin> {
+class ChunkTriangleMeshOld : public FileChunk<DataModel, ModelTriangleMesh> {
 public:
-	ChunkTriangleMesh() : FileChunk("triamesh") {}
+	ChunkTriangleMeshOld() : FileChunk("triamesh") {}
 	void create() override {
-		me = &parent->skin[1 + _model_parser_tria_mesh_count ++];
+		me = &parent->triangle_mesh[1 + _model_parser_tria_mesh_count ++];
 	}
 	void read(File *f) override {
 		// vertices
@@ -281,21 +286,92 @@ public:
 			// normals
 			for (int j=0;j<me->sub[m].triangle.num;j++) {
 				for (int k=0;k<3;k++) {
-					me->sub[m].triangle[j].normal_index[k] = (int)(unsigned short)f->read_word();
-					me->sub[m].triangle[j].normal[k] = get_normal_by_index(me->sub[m].triangle[j].normal_index[k]);
+					int normal_index = (int)(unsigned short)f->read_word();
+					me->sub[m].triangle[j].normal[k] = get_normal_by_index(normal_index);
 				}
 				me->sub[m].triangle[j].normal_dirty = false;
 			}
 		}
 	}
 	void write(File *f) override {
+	}
+};
 
-		// verices
+class ChunkMesh : public FileChunk<DataModel, ModelTriangleMesh> {
+public:
+	ChunkMesh() : FileChunk("mesh") {}
+	void create() override {
+		me = &parent->triangle_mesh[1 + _model_parser_tria_mesh_count ++];
+	}
+	void read(File *f) override {
+		int version = f->read_int();
+		int flags = f->read_int();
+		// vertices
+		int nv = f->read_int();
+		me->vertex.resize(nv);
+		for (int j=0;j<me->vertex.num;j++)
+			f->read_vector(&me->vertex[j].pos);
+		if (flags & 0x1)
+			for (int j=0;j<me->vertex.num;j++) {
+				me->vertex[j].bone_index = read_ivec4(f);
+				me->vertex[j].bone_weight = read_vec4(f);
+			}
+		for (int j=0;j<me->vertex.num;j++)
+			me->vertex[j].normal_dirty = false;//true;
+
+		// skin vertices
+		Array<vector> skin_vert;
+		int nsv = f->read_int();
+		skin_vert.resize(nsv);
+		for (int j=0;j<skin_vert.num;j++) {
+			skin_vert[j].x = f->read_float();
+			skin_vert[j].y = f->read_float();
+		}
+
+
+
+		// triangles (subs)
+		me->sub.resize(parent->material.num);
+		for (int m=0; m<parent->material.num; m++) {
+			int ntria = f->read_int();
+			me->sub[m].triangle.resize(ntria);
+			// vertex
+			for (int j=0;j<me->sub[m].triangle.num;j++)
+				for (int k=0;k<3;k++)
+					me->sub[m].triangle[j].vertex[k] = f->read_int();
+			// skin vertex
+			for (int tl=0;tl<parent->material[m]->texture_levels.num;tl++)
+				for (int j=0;j<me->sub[m].triangle.num;j++)
+					for (int k=0;k<3;k++) {
+						int svi = f->read_int();
+						me->sub[m].triangle[j].skin_vertex[tl][k] = skin_vert[svi];
+					}
+			// normals
+			for (int j=0;j<me->sub[m].triangle.num;j++) {
+				for (int k=0;k<3;k++) {
+					int normal_index = (int)(unsigned short)f->read_word();
+					me->sub[m].triangle[j].normal[k] = get_normal_by_index(normal_index);
+				}
+				me->sub[m].triangle[j].normal_dirty = false;
+			}
+		}
+	}
+	void write(File *f) override {
+		f->write_int(0); // version
+		int flags = 0;
+		if (parent->move.num > 0)
+			flags |= 1;
+		f->write_int(flags); // flags
+
+		// vertices
 		f->write_int(me->vertex.num);
 		for (ModelVertex &v: me->vertex)
 			f->write_vector(&v.pos);
-		for (ModelVertex &v: me->vertex)
-			f->write_int(v.bone_index.i);
+		if (parent->move.num > 0)
+			for (ModelVertex &v: me->vertex) {
+				write_ivec4(f, v.bone_index);
+				write_vec4(f, v.bone_weight);
+			}
 
 		// skin vertices
 		int num_skin_v = 0;
@@ -314,7 +390,7 @@ public:
 		// sub skins
 		int svi = 0;
 		for (int m=0;m<parent->material.num;m++) {
-			ModelSubSkin *sub = &me->sub[m];
+			auto *sub = &me->sub[m];
 
 			// triangles
 			f->write_int(sub->triangle.num);
@@ -333,9 +409,7 @@ public:
 			// normal
 			for (int j=0;j<sub->triangle.num;j++)
 				for (int k=0;k<3;k++) {
-					if (DataModelAllowUpdating)
-						sub->triangle[j].normal_index[k] = get_normal_index(sub->triangle[j].normal[k]);
-					f->write_word(sub->triangle[j].normal_index[k]);
+					f->write_word(get_normal_index(sub->triangle[j].normal[k]));
 				}
 		}
 	}
@@ -351,7 +425,7 @@ public:
 	}
 	void read(File *f) override {
 
-		foreachi(ModelVertex &v, parent->skin[1].vertex, i)
+		foreachi(ModelVertex &v, parent->triangle_mesh[1].vertex, i)
 			parent->addVertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
 
 		// polygons
@@ -610,7 +684,7 @@ public:
 		for (auto &fr: frames_vert) {
 			fr.duration = f->read_float();
 			for (int s=0; s<4; s++) {
-				fr.skin[s].dpos.resize(me->skin[s].vertex.num);
+				fr.skin[s].dpos.resize(me->triangle_mesh[s].vertex.num);
 				int num_vertices = f->read_int();
 				for (int j=0;j<num_vertices;j++) {
 					int vertex_index = f->read_int();
@@ -686,11 +760,11 @@ public:
 					for (int s=0; s<4; s++) {
 						// compress (only write != 0)
 						int num_vertices = 0;
-						for (int j=0;j<me->skin[s].vertex.num;j++)
+						for (int j=0;j<me->triangle_mesh[s].vertex.num;j++)
 							if (fr.skin[s].dpos[j] != v_0)
 								num_vertices ++;
 						f->write_int(num_vertices);
-						for (int j=0;j<me->skin[s].vertex.num;j++)
+						for (int j=0;j<me->triangle_mesh[s].vertex.num;j++)
 							if (fr.skin[s].dpos[j] != v_0) {
 								f->write_int(j);
 								f->write_vector(&fr.skin[s].dpos[j]);
@@ -824,7 +898,7 @@ public:
 	void define_children() override {
 		add_child(new ChunkMeta);
 		add_child(new ChunkMaterial);
-		add_child(new ChunkTriangleMesh);
+		add_child(new ChunkMesh);
 		add_child(new ChunkPolygonMesh);
 		add_child(new ChunkPhysicalMesh);
 		add_child(new ChunkSkeleton);
@@ -832,6 +906,7 @@ public:
 		add_child(new ChunkScript);
 		add_child(new ChunkEffect);
 		add_child(new ChunkOldMeta);
+		add_child(new ChunkTriangleMeshOld);
 	}
 	void read(File *f) override {
 	}
@@ -840,7 +915,7 @@ public:
 	void write_subs() override {
 		write_sub("meta", me);
 		write_sub_parray("material", me->material);
-		write_sub_array("triamesh", me->skin.sub_ref(1));
+		write_sub_array("mesh", me->triangle_mesh.sub_ref(1));
 		write_sub("physmesh", me->phys_mesh);
 		write_sub("polymesh", me->mesh);
 		if (me->bone.num > 0)
@@ -898,7 +973,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
 		// import...
 		if (data->mesh->polygon.num == 0)
-			data->importFromTriangleSkin(1);
+			data->import_from_triangle_mesh(1);
 
 		for (ModelMove &m: data->move)
 			if (m.type == AnimationType::VERTEX) {
@@ -968,16 +1043,16 @@ void FormatModel::_save(const Path &filename, DataModel *data) {
 
 	#ifdef FORCE_UPDATE_NORMALS
 		for (int d=1;d<4;d++)
-			for (int j=0;j<skin[d].NumVertices;j++)
-				skin[d].vertex[j].normal_dirty = true;
+			for (int j=0;j<triangle_mesh[d].NumVertices;j++)
+				triangle_mesh[d].vertex[j].normal_dirty = true;
 	#endif
-		data->updateNormals();
+		data->update_normals();
 
 		// export...
-		data->mesh->export_to_triangle_skin(data->skin[1]);
+		data->mesh->export_to_triangle_mesh(data->triangle_mesh[1]);
 		for (int d=1;d<4;d++) {
-			if (data->skin[d].sub.num != data->material.num) {
-				data->skin[d].sub.resize(data->material.num);
+			if (data->triangle_mesh[d].sub.num != data->material.num) {
+				data->triangle_mesh[d].sub.resize(data->material.num);
 			}
 		}
 

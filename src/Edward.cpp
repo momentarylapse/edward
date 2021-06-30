@@ -24,6 +24,7 @@
 #include "y/World.h"
 #include "y/Camera.h"
 #include "y/ResourceManager.h"
+#include "y/EngineData.h"
 #include "meta.h"
 #include "y/Font.h"
 #include "lib/kaba/kaba.h"
@@ -167,6 +168,7 @@ Edward::Edward(Array<string> arg) :
 	nix::init();
 	drawing_helper_init(app->directory_static);
 
+	engine.ignore_missing_files = true;
 	ResourceManager::load_shader("module-vertex-default.shader");
 	//ResourceManager::default_shader
 

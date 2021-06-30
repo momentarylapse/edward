@@ -82,7 +82,7 @@ bool Terrain::load(const Path &_filename_, const vector &_pos_, bool deep)
 			int num_textures = f->read_int();
 			for (int i=0;i<num_textures;i++){
 				texture_file[i] = f->read_str();
-				texture_scale[i].x = num_x * f->read_float();
+				texture_scale[i].x = f->read_float();
 				texture_scale[i].y = 0.107f + i * 0.231f; // rotation
 				texture_scale[i].z = f->read_float();
 			}

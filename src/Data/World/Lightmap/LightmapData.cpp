@@ -172,7 +172,7 @@ void LightmapData::AddModel(const Path &filename, matrix &mat, int object_index)
 
 	mod.new_name = format("Lightmap/%s/%s_%d", world_name_small, mod.orig_name, mod.id);
 
-	m->updateNormals();
+	m->update_normals();
 	foreachi(auto &p, m->mesh->polygon, i){
 		if (p.triangulation_dirty)
 			p.update_triangulation(m->mesh->vertex);

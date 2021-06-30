@@ -39,7 +39,7 @@ void *ActionModelSetNormalModeSelection::execute(Data *d) {
 		old_group.add(m->mesh->polygon[i].smooth_group);
 		m->mesh->polygon[i].smooth_group = smooth_group;
 	}
-	m->setNormalsDirtyByVertices(index);
+	m->set_normals_dirty_by_vertices(index);
 
 	return nullptr;
 }
@@ -55,7 +55,7 @@ void ActionModelSetNormalModeSelection::undo(Data *d) {
 	foreachi (int i, p_index, ii)
 		m->mesh->polygon[i].smooth_group = old_group[ii];
 
-	m->setNormalsDirtyByVertices(index);
+	m->set_normals_dirty_by_vertices(index);
 }
 
 

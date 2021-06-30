@@ -54,6 +54,39 @@ color file_read_color4i(File *f) {
 	return color((float)a/255.0f, (float)r/255.0f, (float)g/255.0f, (float)b/255.0f);
 }
 
+ivec4 read_ivec4(File *f) {
+	ivec4 v;
+	v.i = f->read_int();
+	v.j = f->read_int();
+	v.k = f->read_int();
+	v.l = f->read_int();
+	return v;
+}
+
+vec4 read_vec4(File *f) {
+	vec4 v;
+	v.x = f->read_float();
+	v.y = f->read_float();
+	v.z = f->read_float();
+	v.w = f->read_float();
+	return v;
+}
+
+void write_ivec4(File *f, const ivec4 &v) {
+	f->write_int(v.i);
+	f->write_int(v.j);
+	f->write_int(v.k);
+	f->write_int(v.l);
+}
+
+void write_vec4(File *f, const vec4 &v) {
+	f->write_float(v.x);
+	f->write_float(v.y);
+	f->write_float(v.z);
+	f->write_float(v.w);
+}
+
+
 
 vector get_normal_by_index(int index) {
 	float wz = (float)(index >> 8) * pi / 255.0f;
@@ -162,14 +195,17 @@ public:
 
 static int _model_parser_tria_mesh_count;
 
-class ChunkTriangleMesh : public FileChunk<Model, Mesh> {
+class ChunkMesh : public FileChunk<Model, Mesh> {
 public:
-	ChunkTriangleMesh() : FileChunk("triamesh") {}
+	ChunkMesh() : FileChunk("mesh") {}
 	void create() override {
 		me = new Mesh;
 		parent->mesh[_model_parser_tria_mesh_count ++] = me;
 	}
 	void read(File *f) override {
+		int version = f->read_int();
+		int flags = f->read_int();
+
 		// vertices
 		int nv = f->read_int();
 		me->vertex.resize(nv);
@@ -177,11 +213,11 @@ public:
 		me->bone_weight.resize(nv);
 		for (int j=0; j<nv; j++)
 			f->read_vector(&me->vertex[j]);
-		for (int j=0; j<nv; j++) {
-			me->bone_index[j] = {0,0,0,0};
-			me->bone_index[j].i = f->read_int();
-			me->bone_weight[j] = {1,0,0,0};
-		}
+		if (flags & 0x1)
+			for (int j=0; j<nv; j++) {
+				me->bone_index[j] = read_ivec4(f);
+				me->bone_weight[j] = read_vec4(f);
+			}
 
 		// skin vertices
 		Array<complex> skin_vert;
@@ -474,7 +510,7 @@ public:
 	void define_children() override {
 		add_child(new ChunkMeta);
 		add_child(new ChunkMaterial);
-		add_child(new ChunkTriangleMesh);
+		add_child(new ChunkMesh);
 		add_child(new ChunkPhysicalMesh);
 		add_child(new ChunkSkeleton);
 		add_child(new ChunkAnimation);
