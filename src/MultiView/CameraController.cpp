@@ -133,14 +133,10 @@ void CameraController::on_mouse_move() {
 }
 
 void CameraController::on_mouse_wheel() {
-
 	hui::Event *e = hui::GetEvent();
 
 	// mouse wheel -> zoom
-	if (e->scroll_y > 0)
-		view->cam_zoom(view->SPEED_ZOOM_WHEEL, view->mouse_win->type != VIEW_PERSPECTIVE);
-	if (e->scroll_y < 0)
-		view->cam_zoom(1.0f / view->SPEED_ZOOM_WHEEL, view->mouse_win->type != VIEW_PERSPECTIVE);
+	view->cam_zoom(exp( - view->SPEED_ZOOM_WHEEL * e->scroll_y), view->mouse_win->type != VIEW_PERSPECTIVE);
 }
 
 void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active) {

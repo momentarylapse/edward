@@ -171,11 +171,12 @@ void ModeModel::_new() {
 }
 
 bool ModeModel::open() {
-	if (!storage->open(data))
+	return ed->universal_open(FD_MODEL);
+	/*if (!storage->open(data))
 		return false;
 
 	ed->set_mode(this);
-	mode_model_mesh->optimize_view();
+	mode_model_mesh->optimize_view();*/
 	return true;
 }
 

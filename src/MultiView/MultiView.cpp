@@ -72,9 +72,9 @@ MultiView::MultiView(bool mode3d) {
 	window_partition_x = 0.5f;
 	window_partition_y = 0.5f;
 
-	SPEED_MOVE = 20;
-	SPEED_ZOOM_KEY = 1.15f;
-	SPEED_ZOOM_WHEEL = 1.05f;
+	SPEED_MOVE = hui::Config.get_float("MultiView.MoveSpeed", 20);
+	SPEED_ZOOM_KEY = hui::Config.get_float("MultiView.ZoomSpeedKey", 1.15f);
+	SPEED_ZOOM_WHEEL = hui::Config.get_float("MultiView.ZoomSpeedWheel", 0.10f);
 
 	MIN_MOUSE_MOVE_TO_INTERACT = 5;
 	MOUSE_ROTATION_SPEED = 0.0033f;
@@ -120,7 +120,10 @@ MultiView::MultiView(bool mode3d) {
 }
 
 MultiView::~MultiView() {
-	hui::Config.get_bool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
+	hui::Config.set_bool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
+	hui::Config.set_float("MultiView.ZoomSpeedWheel", SPEED_ZOOM_WHEEL);
+	hui::Config.set_float("MultiView.ZoomSpeedKey", SPEED_ZOOM_KEY);
+	hui::Config.set_float("MultiView.MoveSpeed", SPEED_MOVE);
 	for (auto w: all_windows)
 		delete w;
 	delete cam_con;

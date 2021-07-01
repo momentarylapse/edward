@@ -40,6 +40,8 @@ Storage::Storage() {
 	CANONICAL_SUB_DIR[FD_SOUND] = "Sounds";
 	CANONICAL_SUB_DIR[FD_TEXTURE] = "Textures";
 	CANONICAL_SUB_DIR[FD_SCRIPT] = "Scripts";
+
+	dialog_file_kind = -1;
 }
 
 Storage::~Storage() {
@@ -185,7 +187,7 @@ void Storage::set_root_directory(const Path &_directory, bool compact_mode) {
 			root_dir_kind[i] = root_dir;
 		else
 			root_dir_kind[i] = root_dir << CANONICAL_SUB_DIR[i];
-		dialog_dir[i] = root_dir_kind[i];
+		last_dir[i] = root_dir_kind[i];
 	}
 
 	engine.set_dirs(root_dir_kind[FD_TEXTURE],
@@ -204,54 +206,117 @@ Path Storage::get_root_dir(int kind) {
 	return root_dir_kind[kind];
 }
 
-static string no_extension(const string &filename) {
-	int p = filename.rfind(".");
-	if (p >= 0)
-		return filename.sub(0, p);
-	return filename;
+string fd_ext(int kind) {
+	if (kind == FD_MODEL)
+		return "model";
+	if (kind == FD_TEXTURE)
+		return "jpg,bmp,tga,png,avi";
+	if (kind == FD_SOUND)
+		return "wav,ogg";
+	if (kind == FD_MATERIAL)
+		return "material";
+	if (kind == FD_TERRAIN)
+		return "map";
+	if (kind == FD_WORLD)
+		return "world";
+	if (kind == FD_SHADERFILE)
+		return "shader";
+	if (kind == FD_FONT)
+		return "xfont";
+	if (kind == FD_SCRIPT)
+		return "kaba";
+	if (kind == FD_CAMERAFLIGHT)
+		return "camera";
+	if (kind == FD_FILE)
+		return "*";
+	return "?";
 }
 
-bool Storage::file_dialog(int kind, bool save, bool force_in_root_dir)
-{
+string fd_name(int kind) {
+	if (kind == FD_MODEL)
+		return _("Model");
+	if (kind == FD_TEXTURE)
+		return _("Texture");
+	if (kind == FD_SOUND)
+		return _("Sound file");
+	if (kind == FD_MATERIAL)
+		return _("Material");
+	if (kind == FD_TERRAIN)
+		return _("Terrain");
+	if (kind == FD_WORLD)
+		return _("World");
+	if (kind == FD_SHADERFILE)
+		return _("Shader");
+	if (kind == FD_FONT)
+		return _("Font");
+	if (kind == FD_SCRIPT)
+		return _("Script");
+	if (kind == FD_CAMERAFLIGHT)
+		return _("Camera file");
+	if (kind == FD_FILE)
+		return _("arbitrary file");
+	return "?";
+}
+
+bool Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir) {
 	int done;
 
 	string title, show_filter, filter;
-	if (kind==FD_MODEL){		title=_("Model file");	show_filter=_("Models (*.model)");			filter="*.model";	}
-	if (kind==FD_TEXTURE){	title=_("Texture file");	show_filter=_("Textures (bmp,jpg,tga,png,avi)");filter="*.jpg;*.bmp;*.tga;*.png;*.avi";	}
-	if (kind==FD_SOUND){		title=_("Sound file");		show_filter=_("Sounds (wav,ogg)");			filter="*.wav;*.ogg";	}
-	if (kind==FD_MATERIAL){	title=_("Material file");	show_filter=_("Materials (*.material)");	filter="*.material";	}
-	if (kind==FD_TERRAIN){	title=_("Terrain files");	show_filter=_("Terrains (*.map)");			filter="*.map";	}
-	if (kind==FD_WORLD){		title=_("World file");		show_filter=_("Worlds (*.world)");			filter="*.world";	}
-	if (kind==FD_SHADERFILE){title=_("Shader file");	show_filter=_("Shader files (*.shader)");	filter="*.shader";	}
-	if (kind==FD_FONT){		title=_("Font file");		show_filter=_("Font files (*.xfont)");	filter="*.xfont";	}
-	if (kind==FD_SCRIPT){	title=_("Script file");	show_filter=_("Script files (*.kaba)");	filter="*.kaba";	}
-	if (kind==FD_CAMERAFLIGHT){title=_("Camera file");	show_filter=_("Camera files (*.camera)");	filter="*.camera";	}
-	if (kind==FD_FILE){		title=_("arbitrary file");	show_filter=_("Files (*.*)");				filter="*";	}
+	auto add_kind = [&] (const string &t, const string &sf, const string &f) {
+		if (show_filter != "")
+			show_filter += ", ";
+		show_filter += sf;
+		if (filter != "")
+			filter += ";";
+		filter += f;
+
+		if (title == "")
+			title = t;
+	};
+	auto ext2filter = [] (const string &ext) {
+		auto xx = ext.explode(",");
+		Array<string> ff;
+		for (auto &x: xx)
+			ff.add("*." + x);
+		return implode(ff, ";");
+	};
+	for (auto k: kind) {
+		add_kind(fd_name(k), format("%s (*.%s)", fd_name(k), fd_ext(k)), ext2filter(fd_ext(k)));
+	}
 
 	if (save)
-		done = hui::FileDialogSave(ed, title, dialog_dir[kind], show_filter, filter);
+		done = hui::FileDialogSave(ed, title, last_dir[preferred], show_filter, filter);
 	else
-		done = hui::FileDialogOpen(ed, title, dialog_dir[kind], show_filter, filter);
-	if (done) {
+		done = hui::FileDialogOpen(ed, title, last_dir[preferred], show_filter, filter);
+	if (!done)
+		return false;
 
-		bool in_root_dir = (hui::Filename.is_in(root_dir_kind[kind]));
-
-		if (force_in_root_dir) {
-			if (!in_root_dir) {
-				ed->error_box(hui::Filename.str());
-				ed->error_box(format(_("The file is not in the appropriate directory: \"%s\"\nor in a subdirectory."), root_dir_kind[kind]));
-				return false;
+	dialog_file_kind = FD_FILE;
+	for (auto k: kind) {
+		for (auto &ext: fd_ext(k).explode(","))
+			if (hui::Filename.extension() == ext) {
+				dialog_file_kind = k;
 			}
-		}//else
-			//MakeDirs(HuiFileDialogPath);
-
-		if (in_root_dir)
-			dialog_dir[kind] = hui::Filename.dirname();
-		dialog_file_complete = hui::Filename;
-		dialog_file = dialog_file_complete.relative_to(root_dir_kind[kind]);
-		dialog_file_no_ending = dialog_file.no_ext();
-
-		return true;
 	}
-	return false;
+
+
+	bool in_root_dir = (hui::Filename.is_in(root_dir_kind[dialog_file_kind]));
+
+	if (force_in_root_dir and !in_root_dir) {
+		ed->error_box(hui::Filename.str());
+		ed->error_box(format(_("The file is not in the appropriate directory: \"%s\"\nor in a subdirectory."), root_dir_kind[dialog_file_kind]));
+		return false;
+	}//else
+		//MakeDirs(HuiFileDialogPath);
+
+	if (in_root_dir)
+		last_dir[dialog_file_kind] = hui::Filename.dirname();
+	dialog_file_complete = hui::Filename;
+	dialog_file = dialog_file_complete.relative_to(root_dir_kind[dialog_file_kind]);
+	dialog_file_no_ending = dialog_file.no_ext();
+	return true;
+}
+
+bool Storage::file_dialog(int kind, bool save, bool force_in_root_dir) {
+	return file_dialog_x({kind}, kind, save, force_in_root_dir);
 }

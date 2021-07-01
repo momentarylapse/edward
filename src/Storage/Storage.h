@@ -39,12 +39,14 @@ public:
 	Path get_root_dir(int kind);
 
 	bool file_dialog(int kind, bool save, bool force_in_root_dir);
+	bool file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir);
 
 	Path root_dir;
 
-	Path dialog_dir[NUM_FDS];
+	Path last_dir[NUM_FDS];
 	Path root_dir_kind[NUM_FDS]; // absolute
 	Path dialog_file, dialog_file_complete, dialog_file_no_ending;
+	int dialog_file_kind;
 	Array<Path> possible_sub_dir;
 };
 

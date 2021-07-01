@@ -437,12 +437,12 @@ void Edward::on_send_bug_report()
 {}//	hui::SendBugReport();	}
 
 void Edward::on_execute_plugin() {
-	auto temp = storage->dialog_dir[FD_SCRIPT];
-	storage->dialog_dir[FD_SCRIPT] = PluginManager::directory;
+	auto temp = storage->last_dir[FD_SCRIPT];
+	storage->last_dir[FD_SCRIPT] = PluginManager::directory;
 
 	if (storage->file_dialog(FD_SCRIPT, false, false))
 		plugins->execute(storage->dialog_file_complete);
-	storage->dialog_dir[FD_SCRIPT] = temp;
+	storage->last_dir[FD_SCRIPT] = temp;
 }
 
 
@@ -497,8 +497,7 @@ void Edward::error_box(const string &message) {
 	//hui::ErrorBox(this, _("Error"), message);
 }
 
-void Edward::on_command(const string &id)
-{
+void Edward::on_command(const string &id) {
 	if (id == "model_new")
 		mode_model->_new();
 	if (id == "model_open")
@@ -528,6 +527,26 @@ void Edward::on_command(const string &id)
 		set_mode(mode_administration);
 	if (id == "opt_view")
 		optimize_current_view();
+}
+
+bool Edward::universal_open(int preferred_type) {
+	if (!storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false))
+		return false;
+
+	if (storage->dialog_file_kind == FD_MODEL) {
+		storage->load(storage->dialog_file_complete, mode_model->data);
+		set_mode(mode_model);
+		mode_model_mesh->optimize_view();
+	} else if (storage->dialog_file_kind == FD_WORLD) {
+		storage->load(storage->dialog_file_complete, mode_world->data);
+		set_mode(mode_world);
+		mode_world->optimize_view();
+	} else if (storage->dialog_file_kind == FD_MATERIAL) {
+		storage->load(storage->dialog_file_complete, mode_material->data);
+		set_mode(mode_material);
+		mode_material->optimize_view();
+	}
+	return true;
 }
 
 

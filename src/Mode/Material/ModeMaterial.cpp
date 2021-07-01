@@ -61,7 +61,7 @@ bool test_save_extras(DataMaterial *data) {
 	if (data->shader.is_default)
 		return true;
 
-	Path dir = storage->dialog_dir[FD_SHADERFILE];
+	Path dir = storage->last_dir[FD_SHADERFILE];
 	if (data->shader.file.is_empty()) {
 		if (!hui::FileDialogSave(ed, "Shader...", dir, "*.shader", "*.shader"))
 			return false;
@@ -181,12 +181,13 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 
 
 bool ModeMaterial::open() {
-	if (!storage->open(data))
+	return ed->universal_open(FD_MATERIAL);
+	/*if (!storage->open(data))
 		return false;
 
 	optimize_view();
 	ed->set_mode(mode_material);
-	return true;
+	return true;*/
 }
 
 

@@ -617,12 +617,13 @@ void ModeWorld::on_update_menu() {
 
 
 bool ModeWorld::open() {
-	if (!storage->open(data))
+	return ed->universal_open(FD_WORLD);
+	/*if (!storage->open(data))
 		return false;
 
 	ed->set_mode(mode_world);
 	optimize_view();
-	return true;
+	return true;*/
 }
 
 void ModeWorld::ExecuteWorldPropertiesDialog() {

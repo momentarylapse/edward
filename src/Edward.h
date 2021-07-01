@@ -63,6 +63,8 @@ public:
 	void on_command(const string &id);
 	void on_close();
 
+	bool universal_open(int preferred_type);
+
 	virtual void _cdecl on_draw_gl();
 	virtual void _cdecl on_key_down() override;
 	virtual void _cdecl on_key_up() override;
