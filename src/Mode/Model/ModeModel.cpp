@@ -143,23 +143,23 @@ void ModeModel::on_update_menu() {
 void ModeModel::set_material_selected() {
 	nix::set_alpha(nix::AlphaMode::MATERIAL);
 	nix::set_shader(shader_selection.get());
-	nix::set_material(color(0.3f,0,0,0), 0, 0, Red);
+	nix::set_material(color(0.3f,0,0,0), 0, 0, color(1, 0.8f,0,0));
 	//nix::set_material(Black,color(0.3f,0,0,0),Black,0,color(1, 0.5f, 0, 1));
-	nix::set_texture(NULL);
+	nix::set_texture(nullptr);
 }
 
 void ModeModel::set_material_hover() {
 	nix::set_alpha(nix::AlphaMode::MATERIAL);
 	nix::set_shader(shader_selection.get());
 	nix::set_material(color(0.5f,0,0,0), 0, 0, White);
-	nix::set_texture(NULL);
+	nix::set_texture(nullptr);
 }
 
 void ModeModel::set_material_creation(float intensity) {
 	nix::set_alpha(nix::AlphaMode::MATERIAL);
 	nix::set_shader(shader_selection.get());
 	nix::set_material(color(0.3f*intensity,0.3f,1,0.3f), 0, 1, color(1,0.1f,0.4f,0.1f));
-	nix::set_texture(NULL);
+	nix::set_texture(nullptr);
 }
 
 void ModeModel::_new() {

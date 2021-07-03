@@ -7,6 +7,7 @@
 
 #include "DrawingHelper.h"
 #include "../lib/nix/nix.h"
+#include "../y/ResourceManager.h"
 #include "MultiView.h"
 #include "Window.h"
 #include "ColorScheme.h"
@@ -68,18 +69,24 @@ void drawing_helper_init(const Path &dir) {
 	tex_round = create_round_texture(32);
 	tex_text = new nix::Texture();
 
-	nix::Shader::load(dir << "shader/module-surface.shader");
-	nix::Shader::load(dir << "shader/module-surface-simple.shader");
+	try {
+
+		ResourceManager::load_shader(dir << "shader/module-surface.shader");
+		ResourceManager::load_shader(dir << "shader/module-surface-simple.shader");
 
 
-	nix::Shader::load(dir << "shader/module-vertex-default.shader");
-	nix::Shader::load(dir << "shader/module-vertex-animated.shader");
+		ResourceManager::load_shader(dir << "shader/module-vertex-default.shader");
+		ResourceManager::load_shader(dir << "shader/module-vertex-animated.shader");
 
-	shader_lines_3d = nix::Shader::load(dir << "shader/lines-3d.shader");
-	shader_lines_3d_colored = nix::Shader::load(dir << "shader/lines-3d-colored.shader");
-	shader_lines_3d_colored_wide = nix::Shader::load(dir << "shader/lines-3d-colored-wide.shader");
-	shader_selection = nix::Shader::load(dir << "shader/selection.shader");
-	shader_selection->set_int("num_lights", 1);
+		shader_lines_3d = nix::Shader::load(dir << "shader/lines-3d.shader");
+		shader_lines_3d_colored = nix::Shader::load(dir << "shader/lines-3d-colored.shader");
+		shader_lines_3d_colored_wide = nix::Shader::load(dir << "shader/lines-3d-colored-wide.shader");
+		shader_selection = ResourceManager::load_shader(dir << "shader/selection.shader");
+		shader_selection->set_int("num_lights", 1);
+	} catch (Exception &e) {
+		msg_error(e.message());
+		throw;
+	}
 
 	MultiView::cube_map = new nix::CubeMap(128, "rgba:i8");
 	create_fake_dynamic_cube_map(MultiView::cube_map.get());

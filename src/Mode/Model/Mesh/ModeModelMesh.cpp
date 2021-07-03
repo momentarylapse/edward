@@ -566,7 +566,7 @@ void ModeModelMesh::draw_effects(MultiView::Window *win) {
 	}
 }
 
-void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, Array<ModelVertex> &vertex, bool selection_filter) {
+void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, const Array<ModelVertex> &vertex, bool selection_filter) {
 	color bg = win->get_background_color();
 	auto *multi_view = win->multi_view;
 
@@ -628,9 +628,6 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, Array
 		m->apply_for_rendering(win);
 		nix::set_offset(0);
 		nix::draw_triangles(m->vb);
-		nix::set_offset(0);
-		//nix::set_shader(NULL);
-		//nix::set_texture(NULL);
 	}
 
 	if (!multi_view->wire_mode)
@@ -717,12 +714,14 @@ void ModeModelMesh::fill_selection_buffer(Array<ModelVertex> &vertex) {
 void ModeModelMesh::draw_selection(MultiView::Window *win) {
 	nix::set_z(true,true);
 	nix::set_alpha(nix::AlphaMode::NONE);
-
 	nix::set_offset(-1.0f);
+
 	ModeModel::set_material_selected();
 	nix::draw_triangles(vb_marked);
+
 	ModeModel::set_material_creation();
 	nix::draw_triangles(vb_creation);
+
 	nix::set_material(White, 0.5f, 0, Black);
 	nix::set_alpha(nix::AlphaMode::NONE);
 	nix::set_offset(0);
