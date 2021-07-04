@@ -298,6 +298,17 @@ static void set_weight(ivec4 &bones, vec4 &weights, int bone, float weight) {
 	weights /= vec4_sum(weights);
 }
 
+static float get_weight(ivec4 &bones, vec4 &weights, int bone) {
+	int prev = ivec4_find(bones, bone);
+	if (prev >= 0)
+		return vec4_get(weights, prev);
+	return 0;
+}
+
+static void add_weight(ivec4 &bones, vec4 &weights, int bone, float dweight) {
+	set_weight(bones, weights, bone, min(get_weight(bones, weights, bone) + dweight, 1.0f));
+}
+
 void ModeModelSkeletonAttachVertices::apply() {
 
 	vector pos = multi_view->hover.point;
@@ -319,7 +330,7 @@ void ModeModelSkeletonAttachVertices::apply() {
 			continue;
 		auto bb = v.bone_index;
 		auto ww = v.bone_weight;
-		set_weight(bb, ww, bone_index, weight0 * exp(-pow(r/R, bp.exponent)*2));
+		add_weight(bb, ww, bone_index, weight0 * exp(-pow(r/R, bp.exponent)*2));
 		index.add(i);
 		bone.add(bb);
 		bone_weight.add(ww);

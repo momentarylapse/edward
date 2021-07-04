@@ -618,16 +618,7 @@ void ModeModelMesh::draw_mesh(MultiView::Window *win, ModelMesh *mesh, const Arr
 		draw_edges(win, mesh, vertex, false, true, false);
 	} else {
 
-		// draw all materials separately
-		foreachi(ModelMaterial *m, data->material, mi) {
-			if (!m->vb)
-				continue;
-
-			// draw
-			m->apply_for_rendering(win);
-			nix::set_offset(0);
-			nix::draw_triangles(m->vb);
-		}
+		draw_polygons(win, mesh, vertex);
 
 		if (selection_mode_surface->is_active()) {
 			draw_edges(win, mesh, vertex, true, false, selectable);
@@ -645,7 +636,7 @@ void ModeModelMesh::draw_mesh(MultiView::Window *win, ModelMesh *mesh, const Arr
 void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, const Array<ModelVertex> &vertex) {
 
 	// draw all materials separately
-	foreachi(ModelMaterial *m, data->material, mi) {
+	for (auto *m: data->material) {
 		if (!m->vb)
 			continue;
 
