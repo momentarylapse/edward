@@ -125,6 +125,8 @@ void ModeModelSkeletonAttachVertices::on_end() {
 	data->unsubscribe(this);
 	multi_view->unsubscribe(this);
 
+	ed->set_side_panel(nullptr);
+
 	mode_model->allow_selection_modes(false);
 
 	//parent->on_update(data, "");

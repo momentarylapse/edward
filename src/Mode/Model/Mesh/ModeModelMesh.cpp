@@ -103,6 +103,7 @@ void ModeModelMesh::on_start() {
 
 	set_selection_mode(selection_mode);
 	mode_model->allow_selection_modes(true);
+	on_data_update();
 }
 
 void ModeModelMesh::on_enter() {
@@ -280,14 +281,14 @@ void ModeModelMesh::on_draw() {
 void ModeModelMesh::on_draw_win(MultiView::Window *win) {
 
 	// visible skin
-	draw_polygons(win, data->mesh, data->mesh->vertex);
+	draw_mesh(win, data->mesh, data->mesh->vertex, true);
 
 	mode_model_skeleton->draw_skeleton(win, data->bone, true);
 
 	if (current_skin == MESH_PHYSICAL)
 		draw_physical(win);
 
-	draw_selection(win);
+	draw_creation_preview(win);
 
 	if (allow_draw_hover)
 		selection_mode->on_draw_win(win);
@@ -567,17 +568,21 @@ void ModeModelMesh::draw_effects(MultiView::Window *win) {
 }
 
 void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, const Array<ModelVertex> &vertex, bool selection_filter) {
+}
+
+void ModeModelMesh::draw_edges(MultiView::Window *win, ModelMesh *m, const Array<ModelVertex> &vertex, bool selected, bool non_selected, bool as_selected) {
+
 	color bg = win->get_background_color();
 	auto *multi_view = win->multi_view;
 
 	nix::set_offset(-2);
-	set_line_width(selection_filter ? scheme.LINE_WIDTH_MEDIUM : scheme.LINE_WIDTH_THIN);
+	set_line_width(as_selected ? scheme.LINE_WIDTH_MEDIUM : scheme.LINE_WIDTH_THIN);
 	Array<vector> line_pos;
 	Array<color> line_color;
 
 	vector dir = win->get_direction();
 	for (auto &e: m->edge) {
-		if (e.is_selected != selection_filter)
+		if (!(e.is_selected and selected) and !(!e.is_selected and non_selected))
 			continue;
 		if (min(vertex[e.vertex[0]].view_stage, vertex[e.vertex[1]].view_stage) < multi_view->view_stage)
 			continue;
@@ -591,7 +596,7 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, const Ar
 			w = vector::dot(m->polygon[e.polygon[1]].temp_normal, dir);
 		float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
 		color cc;
-		if (e.is_selected) {
+		if (as_selected) {
 			cc = color::interpolate(scheme.SELECTION, bg, 1-f);
 		} else {
 			cc = color::interpolate(scheme.TEXT, bg, 1-f);
@@ -605,19 +610,39 @@ void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, const Ar
 	nix::set_offset(0);
 }
 
-void ModeModelMesh::draw_edges(MultiView::Window *win, ModelMesh *m, Array<ModelVertex> &vertex, bool only_selected) {
-	if (!only_selected)
-		_draw_edges(data, win, m, vertex, false);
-	_draw_edges(data, win, m, vertex, true);
-}
-
 
 // always visible mesh!
-void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, Array<ModelVertex> &vertex) {
+void ModeModelMesh::draw_mesh(MultiView::Window *win, ModelMesh *mesh, const Array<ModelVertex> &vertex, bool selectable) {
 	if (multi_view->wire_mode) {
-		draw_edges(win, mesh, vertex, false);
-		return;
+		draw_edges(win, mesh, vertex, true, false, selectable);
+		draw_edges(win, mesh, vertex, false, true, false);
+	} else {
+
+		// draw all materials separately
+		foreachi(ModelMaterial *m, data->material, mi) {
+			if (!m->vb)
+				continue;
+
+			// draw
+			m->apply_for_rendering(win);
+			nix::set_offset(0);
+			nix::draw_triangles(m->vb);
+		}
+
+		if (selection_mode_surface->is_active()) {
+			draw_edges(win, mesh, vertex, true, false, selectable);
+		} else {
+			draw_edges(win, mesh, vertex, true, false, selectable);
+			draw_edges(win, mesh, vertex, false, true, false);
+		}
 	}
+
+	if (selectable)
+		draw_selection(win);
+}
+
+// always visible mesh!
+void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, const Array<ModelVertex> &vertex) {
 
 	// draw all materials separately
 	foreachi(ModelMaterial *m, data->material, mi) {
@@ -630,8 +655,6 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, Array
 		nix::draw_triangles(m->vb);
 	}
 
-	if (!multi_view->wire_mode)
-		draw_edges(win, mesh, vertex, selection_mode_surface->is_active());
 }
 
 
@@ -669,12 +692,12 @@ void ModeModelMesh::draw_physical(MultiView::Window *win) {
 	nix::set_offset(-0.5f);
 	nix::draw_triangles(nix::vb_temp);
 	nix::set_offset(0);
-	draw_edges(win, data->phys_mesh, data->phys_mesh->vertex, false);
+	draw_edges(win, data->phys_mesh, data->phys_mesh->vertex, false, true, false);
 }
 
 
 
-void ModeModelMesh::update_vertex_buffers(Array<ModelVertex> &vertex) {
+void ModeModelMesh::update_vertex_buffers(const Array<ModelVertex> &vertex) {
 	//msg_write("update vertex buffers!!!!!!!!!!");
 	// draw all materials separately
 	foreachi(ModelMaterial *m, data->material, mi) {
@@ -699,7 +722,7 @@ void ModeModelMesh::update_vertex_buffers(Array<ModelVertex> &vertex) {
 
 
 
-void ModeModelMesh::fill_selection_buffer(Array<ModelVertex> &vertex) {
+void ModeModelMesh::fill_selection_buffer(const Array<ModelVertex> &vertex) {
 
 	// create selection buffers
 	VertexStagingBuffer vbs;
@@ -712,12 +735,20 @@ void ModeModelMesh::fill_selection_buffer(Array<ModelVertex> &vertex) {
 }
 
 void ModeModelMesh::draw_selection(MultiView::Window *win) {
-	nix::set_z(true,true);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::set_z(true, true);
 	nix::set_offset(-1.0f);
 
 	ModeModel::set_material_selected();
 	nix::draw_triangles(vb_marked);
+
+	nix::set_material(White, 0.5f, 0, Black);
+	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::set_offset(0);
+}
+
+void ModeModelMesh::draw_creation_preview(MultiView::Window *win) {
+	nix::set_z(true, true);
+	nix::set_offset(-1.0f);
 
 	ModeModel::set_material_creation();
 	nix::draw_triangles(vb_creation);

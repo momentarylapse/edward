@@ -177,7 +177,7 @@ void draw_coord_basis(MultiView::Window *win, const ModelBone &b) {
 }
 
 void ModeModelSkeleton::on_draw_win(MultiView::Window *win) {
-	mode_model_mesh->draw_polygons(win, data->mesh, data->mesh->vertex);
+	mode_model_mesh->draw_mesh(win, data->mesh, data->mesh->vertex, false);
 	draw_skeleton(win, data->bone);
 }
 

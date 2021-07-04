@@ -45,9 +45,11 @@ public:
 	void on_draw() override;
 
 	void draw_effects(MultiView::Window *win);
-	void draw_edges(MultiView::Window *win, ModelMesh *m, Array<ModelVertex> &vertex, bool only_selected);
-	void draw_polygons(MultiView::Window *win, ModelMesh *m, Array<ModelVertex> &vertex);
+	void draw_mesh(MultiView::Window *win, ModelMesh *m, const Array<ModelVertex> &vertex, bool selectable);
+	void draw_edges(MultiView::Window *win, ModelMesh *m, const Array<ModelVertex> &vertex, bool selected, bool non_selected, bool as_selected);
+	void draw_polygons(MultiView::Window *win, ModelMesh *m, const Array<ModelVertex> &vertex);
 	void draw_selection(MultiView::Window *win);
+	void draw_creation_preview(MultiView::Window *win);
 	void draw_physical(MultiView::Window *win);
 	//void draw_all(MultiView::Window *win, Array<ModelVertex> &vertex);
 
@@ -87,8 +89,8 @@ public:
 	int current_skin;
 	void set_current_skin(int skin);
 
-	void update_vertex_buffers(Array<ModelVertex> &vertex);
-	void fill_selection_buffer(Array<ModelVertex> &vertex);
+	void update_vertex_buffers(const Array<ModelVertex> &vertex);
+	void fill_selection_buffer(const Array<ModelVertex> &vertex);
 
 	void toggle_select_cw();
 	bool select_cw;
