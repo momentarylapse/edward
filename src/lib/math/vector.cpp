@@ -557,3 +557,71 @@ vec4 vec4::normalized() const {
 		return vec4::EW;
 	return *this / l;
 }
+
+
+
+
+
+int vec4::argmin() const {
+	int n = 0;
+	float m = (*this)[0];
+	for (int i=1; i<3; i++)
+		if ((*this)[i] < m) {
+			n = i;
+			m = (*this)[i];
+		}
+	return n;
+}
+
+int vec4::argmax() const {
+	int n = 0;
+	float m = (*this)[0];
+	for (int i=1; i<3; i++)
+		if ((*this)[i] > m) {
+			n = i;
+			m = (*this)[i];
+		}
+	return n;
+}
+
+float vec4::sum() const {
+	return x + y + z + w;
+}
+
+float &vec4::operator[](int index) {
+	auto vv = &x;
+	return vv[index];
+}
+
+float vec4::operator[](int index) const {
+	auto vv = &x;
+	return vv[index];
+}
+
+
+
+int ivec4::find(int x) const {
+	if (i == x)
+		return 0;
+	if (j == x)
+		return 1;
+	if (k == x)
+		return 2;
+	if (l == x)
+		return 3;
+	return -1;
+}
+
+int &ivec4::operator[](int index) {
+	auto vv = &i;
+	return vv[index];
+}
+
+int ivec4::operator[](int index) const {
+	auto vv = &i;
+	return vv[index];
+}
+
+
+
+

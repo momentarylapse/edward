@@ -16,75 +16,27 @@
 #include "../../../../y/ResourceManager.h"
 #include "../../Mesh/Selection/MeshSelectionModePolygon.h"
 
-int ivec4_find(const ivec4 &v, int x) {
-	if (v.i == x)
-		return 0;
-	if (v.j == x)
-		return 1;
-	if (v.k == x)
-		return 2;
-	if (v.l == x)
-		return 3;
-	return -1;
-}
-
-int vec4_min(const vec4 &v) {
-	int n = 0;
-	float m = v.x;
-	if (v.y < m) {
-		n = 1;
-		m = v.y;
-	}
-	if (v.z < m) {
-		n = 2;
-		m = v.z;
-	}
-	if (v.w < m) {
-		n = 3;
-		m = v.w;
-	}
-	return n;
-}
-
-void vec4_set(vec4 &v, int i, float x) {
-	auto vv = &v.x;
-	vv[i] = x;
-}
-
-float vec4_get(vec4 &v, int i) {
-	auto vv = &v.x;
-	return vv[i];
-}
-
-void ivec4_set(ivec4 &v, int i, int x) {
-	auto vv = &v.i;
-	vv[i] = x;
-}
-
-float vec4_sum(const vec4 &v) {
-	return v.x + v.y + v.z + v.w;
-}
 
 static void set_weight(ivec4 &bones, vec4 &weights, int bone, float weight) {
-	int prev = ivec4_find(bones, bone);
+	int prev = bones.find(bone);
 	if (prev >= 0) {
 		// sum(other) != 1-weight
-		weights *= (1-weight) / max(vec4_sum(weights) - vec4_get(weights, prev), 0.001f);
-		vec4_set(weights, prev, weight);
+		weights *= (1-weight) / max(weights.sum() - weights[prev], 0.001f);
+		weights[prev] = weight;
 	} else {
-		prev = vec4_min(weights);
-		weights *= (1-weight) / max(vec4_sum(weights) - vec4_get(weights, prev), 0.001f);
-		vec4_set(weights, prev, weight);
-		ivec4_set(bones, prev, bone);
+		prev = weights.argmin();
+		weights *= (1-weight) / max(weights.sum() - weights[prev], 0.001f);
+		weights[prev] = weight;
+		bones[prev] = bone;
 	}
 
-	weights /= vec4_sum(weights);
+	weights /= weights.sum();
 }
 
 static float get_weight(ivec4 &bones, vec4 &weights, int bone) {
-	int prev = ivec4_find(bones, bone);
+	int prev = bones.find(bone);
 	if (prev >= 0)
-		return vec4_get(weights, prev);
+		return weights[prev];
 	return 0;
 }
 
