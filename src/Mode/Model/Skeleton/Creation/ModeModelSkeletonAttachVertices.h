@@ -38,6 +38,9 @@ private:
 	float distance;
 	vector last_pos;
 
+	nix::VertexBuffer *vb_weight = nullptr;
+	nix::Shader *shader = nullptr;
+
 	float radius();
 };
 

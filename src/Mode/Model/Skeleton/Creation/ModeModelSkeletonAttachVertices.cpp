@@ -13,7 +13,84 @@
 #include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../MultiView/ColorScheme.h"
 #include "../../../../Data/Model/ModelMesh.h"
+#include "../../../../y/ResourceManager.h"
 #include "../../Mesh/Selection/MeshSelectionModePolygon.h"
+
+int ivec4_find(const ivec4 &v, int x) {
+	if (v.i == x)
+		return 0;
+	if (v.j == x)
+		return 1;
+	if (v.k == x)
+		return 2;
+	if (v.l == x)
+		return 3;
+	return -1;
+}
+
+int vec4_min(const vec4 &v) {
+	int n = 0;
+	float m = v.x;
+	if (v.y < m) {
+		n = 1;
+		m = v.y;
+	}
+	if (v.z < m) {
+		n = 2;
+		m = v.z;
+	}
+	if (v.w < m) {
+		n = 3;
+		m = v.w;
+	}
+	return n;
+}
+
+void vec4_set(vec4 &v, int i, float x) {
+	auto vv = &v.x;
+	vv[i] = x;
+}
+
+float vec4_get(vec4 &v, int i) {
+	auto vv = &v.x;
+	return vv[i];
+}
+
+void ivec4_set(ivec4 &v, int i, int x) {
+	auto vv = &v.i;
+	vv[i] = x;
+}
+
+float vec4_sum(const vec4 &v) {
+	return v.x + v.y + v.z + v.w;
+}
+
+static void set_weight(ivec4 &bones, vec4 &weights, int bone, float weight) {
+	int prev = ivec4_find(bones, bone);
+	if (prev >= 0) {
+		// sum(other) != 1-weight
+		weights *= (1-weight) / max(vec4_sum(weights) - vec4_get(weights, prev), 0.001f);
+		vec4_set(weights, prev, weight);
+	} else {
+		prev = vec4_min(weights);
+		weights *= (1-weight) / max(vec4_sum(weights) - vec4_get(weights, prev), 0.001f);
+		vec4_set(weights, prev, weight);
+		ivec4_set(bones, prev, bone);
+	}
+
+	weights /= vec4_sum(weights);
+}
+
+static float get_weight(ivec4 &bones, vec4 &weights, int bone) {
+	int prev = ivec4_find(bones, bone);
+	if (prev >= 0)
+		return vec4_get(weights, prev);
+	return 0;
+}
+
+static void add_weight(ivec4 &bones, vec4 &weights, int bone, float dweight) {
+	set_weight(bones, weights, bone, min(get_weight(bones, weights, bone) + dweight, 1.0f));
+}
 
 struct WBrushConfig {
 	float exponent;
@@ -116,6 +193,21 @@ void ModeModelSkeletonAttachVertices::on_start() {
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);
 
+	if (!vb_weight)
+		vb_weight = new nix::VertexBuffer("3f,3fn,2f,f");
+	VertexStagingBuffer vbs;
+	for (ModelPolygon &t: data->mesh->polygon) {
+		t.add_to_vertex_buffer(data->mesh->vertex, vbs, 1);
+		vbs.build(vb_weight, 1);
+	}
+	if (!shader) {
+		try {
+		shader = ResourceManager::load_shader("vertex-weight.shader");
+		} catch(Exception &e) {
+			msg_error(e.message());
+		}
+	}
+
 	data->subscribe(this, [=]{ on_data_change(); });
 
 	on_data_change();
@@ -134,60 +226,48 @@ void ModeModelSkeletonAttachVertices::on_end() {
 
 void ModeModelSkeletonAttachVertices::on_data_change() {
 	mode_model_mesh->selection_mode->update_multi_view();
+
+	Array<float> ww;
+	for (ModelPolygon &t: data->mesh->polygon) {
+		for (int i=0; i<t.side.num-2; i++) {
+			auto &a = t.side[t.side[i].triangulation[0]];
+			auto &b = t.side[t.side[i].triangulation[1]];
+			auto &c = t.side[t.side[i].triangulation[2]];
+			auto &va = data->mesh->vertex[a.vertex];
+			auto &vb = data->mesh->vertex[b.vertex];
+			auto &vc = data->mesh->vertex[c.vertex];
+			ww.add(get_weight(va.bone_index, va.bone_weight, bone_index));
+			ww.add(get_weight(vb.bone_index, vb.bone_weight, bone_index));
+			ww.add(get_weight(vc.bone_index, vc.bone_weight, bone_index));
+		}
+	}
+	vb_weight->update(3, ww);
 }
 
 void ModeModelSkeletonAttachVertices::on_command(const string &id) {
 }
 
 
-void _draw_weights(MultiView::Window *win, ModelMesh *m, int bone_index) {
-	color bg = win->get_background_color();
-	auto *multi_view = win->multi_view;
-
-	nix::set_offset(-2);
-	set_line_width(scheme.LINE_WIDTH_MEDIUM);
-	Array<vector> line_pos;
-	Array<color> line_color;
-
-	vector dir, up, right;
-	win->get_camera_frame(dir, up, right);
-	for (auto &v: m->vertex) {
-		float w = 0;
-		if (v.bone_index.i == bone_index)
-			w = max(w, v.bone_weight.x);
-		if (v.bone_index.j == bone_index)
-			w = max(w, v.bone_weight.y);
-		if (v.bone_index.k == bone_index)
-			w = max(w, v.bone_weight.z);
-		if (v.bone_index.l == bone_index)
-			w = max(w, v.bone_weight.w);
-		if (w == 0)
-			continue;
-
-		color cc = scheme.SELECTION;
-		line_color.add(cc);
-		line_color.add(cc);
-		line_pos.add(v.pos);
-		line_pos.add(v.pos - right * w * win->cam->radius * 0.02f);
-	}
-	draw_lines_colored(line_pos, line_color, false);
-	nix::set_offset(0);
-}
-
 void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win) {
 	mode_model_mesh->on_draw_win(win);
 
-	_draw_weights(win, data->mesh, bone_index);
+	// weights
+	ModeModel::set_material_selected();
+	nix::set_shader(shader);
+	nix::draw_triangles(vb_weight);
+	nix::set_offset(0);
+	nix::set_alpha(nix::AlphaMode::NONE);
 
-	if (multi_view->hover.index < 0)
-		return;
-	vector pos = multi_view->hover.point;
-	vector n = data->mesh->polygon[multi_view->hover.index].temp_normal;
 
-	set_color(scheme.CREATION_LINE);
-	set_line_width(scheme.LINE_WIDTH_MEDIUM);
-	float radius = dialog->get_float("diameter") / 2;
-	draw_circle(pos, n, radius);
+	if (multi_view->hover.index >= 0) {
+		vector pos = multi_view->hover.point;
+		vector n = data->mesh->polygon[multi_view->hover.index].temp_normal;
+
+		set_color(scheme.CREATION_LINE);
+		set_line_width(scheme.LINE_WIDTH_MEDIUM);
+		float radius = dialog->get_float("diameter") / 2;
+		draw_circle(pos, n, radius);
+	}
 }
 
 float ModeModelSkeletonAttachVertices::radius() {
@@ -231,82 +311,6 @@ void ModeModelSkeletonAttachVertices::on_left_button_up() {
 
 void ModeModelSkeletonAttachVertices::on_set_multi_view() {
 	mode_model_mesh->on_set_multi_view();
-}
-
-int ivec4_find(const ivec4 &v, int x) {
-	if (v.i == x)
-		return 0;
-	if (v.j == x)
-		return 1;
-	if (v.k == x)
-		return 2;
-	if (v.l == x)
-		return 3;
-	return -1;
-}
-
-int vec4_min(const vec4 &v) {
-	int n = 0;
-	float m = v.x;
-	if (v.y < m) {
-		n = 1;
-		m = v.y;
-	}
-	if (v.z < m) {
-		n = 2;
-		m = v.z;
-	}
-	if (v.w < m) {
-		n = 3;
-		m = v.w;
-	}
-	return n;
-}
-
-void vec4_set(vec4 &v, int i, float x) {
-	auto vv = &v.x;
-	vv[i] = x;
-}
-
-float vec4_get(vec4 &v, int i) {
-	auto vv = &v.x;
-	return vv[i];
-}
-
-void ivec4_set(ivec4 &v, int i, int x) {
-	auto vv = &v.i;
-	vv[i] = x;
-}
-
-float vec4_sum(const vec4 &v) {
-	return v.x + v.y + v.z + v.w;
-}
-
-static void set_weight(ivec4 &bones, vec4 &weights, int bone, float weight) {
-	int prev = ivec4_find(bones, bone);
-	if (prev >= 0) {
-		// sum(other) != 1-weight
-		weights *= (1-weight) / max(vec4_sum(weights) - vec4_get(weights, prev), 0.001f);
-		vec4_set(weights, prev, weight);
-	} else {
-		prev = vec4_min(weights);
-		weights *= (1-weight) / max(vec4_sum(weights) - vec4_get(weights, prev), 0.001f);
-		vec4_set(weights, prev, weight);
-		ivec4_set(bones, prev, bone);
-	}
-
-	weights /= vec4_sum(weights);
-}
-
-static float get_weight(ivec4 &bones, vec4 &weights, int bone) {
-	int prev = ivec4_find(bones, bone);
-	if (prev >= 0)
-		return vec4_get(weights, prev);
-	return 0;
-}
-
-static void add_weight(ivec4 &bones, vec4 &weights, int bone, float dweight) {
-	set_weight(bones, weights, bone, min(get_weight(bones, weights, bone) + dweight, 1.0f));
 }
 
 void ModeModelSkeletonAttachVertices::apply() {
