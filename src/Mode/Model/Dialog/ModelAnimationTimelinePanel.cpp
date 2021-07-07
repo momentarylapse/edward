@@ -11,6 +11,11 @@
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
 
+namespace hui {
+	void get_style_colors(Panel *p, const string &id, Map<string,color> &colors);
+}
+
+
 ModelAnimationTimelinePanel::ModelAnimationTimelinePanel() {
 	add_drawing_area("!height=80,noexpandy", 0, 0, "area");
 	time_scale = 100;
@@ -58,8 +63,13 @@ string ModelAnimationTimelinePanel::get_time_str_fuzzy(double t, double dt) {
 
 void ModelAnimationTimelinePanel::on_draw(Painter *c) {
 	double MIN_GRID_DIST = 10.0;
-	color bg = White;
-	color ColorGrid = color(1, 0.75f, 0.75f, 0.75f);
+
+	Map<string,color> colors;
+	hui::get_style_colors(this, "area", colors);
+
+	color bg = colors["insensitive_bg_color"];
+	color fg = colors["fg_color"];
+	color color_grid = color::interpolate(fg, bg, 0.4f);//color(1, 0.75f, 0.75f, 0.75f);
 
 	c->set_line_width(0.8f);
 	c->set_color(bg);
@@ -74,14 +84,14 @@ void ModelAnimationTimelinePanel::on_draw(Painter *c) {
 //	double dw = dl * a->view_zoom;
 	int nx0 = floor(screen2sample(r.x1 - 1) / dt);
 	int nx1 = ceil(screen2sample(r.x2) / dt);
-	color c1 = color::interpolate(bg, ColorGrid, exp_s_mod);
-	color c2 = ColorGrid;
+	color c1 = color::interpolate(bg, color_grid, exp_s_mod);
+	color c2 = color_grid;
 	for (int n=nx0;n<nx1;n++) {
 		c->set_color(((n % 10) == 0) ? c2 : c1);
 		int xx = sample2screen(n * dt);
 		c->draw_line(xx, 0, xx, c->height);
 	}
-	c->set_color(ColorGrid);
+	c->set_color(fg);
 	for (int n=nx0;n<nx1;n++) {
 		if ((sample2screen(dt) - sample2screen(0)) > 30) {
 			if ((((n % 10) % 3) == 0) && ((n % 10) != 9) && ((n % 10) != -9))
@@ -94,16 +104,24 @@ void ModelAnimationTimelinePanel::on_draw(Painter *c) {
 
 	ModelMove *move = mode_model_animation->cur_move();
 	float dur = move->duration();
-	c->set_color(color(0.15f, 0, 0, 1));
+	c->set_color(color(0.15f, 0.2f, 0.2f, 1));
 	c->draw_rect(rect(sample2screen(0), sample2screen(dur), r.y1, r.y2));
 
 	float t = 0;
 	foreachi(ModelFrame &f, move->frame, i) {
-		c->set_color((i == mode_model_animation->current_frame) ? Red : Black);
+		c->set_color((i == mode_model_animation->current_frame) ? Red : fg);
 		c->set_line_width((i == hover) ? 5.0f : 2.2f);
 		float x = sample2screen(t);
 		c->draw_line(x, r.y1, x, r.y2);
 		t += f.duration;
+	}
+	{
+		c->set_color(fg);
+		c->set_line_width((move->frame.num == hover) ? 5.0f : 2.2f);
+		float x = sample2screen(t);
+		c->set_line_dash({10,10}, 0);
+		c->draw_line(x, r.y1, x, r.y2);
+		c->set_line_dash({}, 0);
 	}
 
 	/*Array<float> v;
@@ -150,14 +168,15 @@ void ModelAnimationTimelinePanel::on_mouse_move() {
 			mode_model_animation->data->animationSetFrameDuration(mode_model_animation->current_move, hover - 1, dur);
 		}
 	} else {
-		update_hover();
+		hover = get_hover();
+		redraw("area");
 	}
 
 	parasite->on_timeline_mouse_move();
 }
 
 void ModelAnimationTimelinePanel::on_left_button_down() {
-	if (hover >= 0)
+	if (hover >= 0 and hover < mode_model_animation->cur_move()->frame.num)
 		mode_model_animation->set_current_frame(hover);
 
 
@@ -177,16 +196,21 @@ void ModelAnimationTimelinePanel::on_mouse_wheel() {
 	redraw("area");
 }
 
-void ModelAnimationTimelinePanel::update_hover() {
-	hover = -1;
+int ModelAnimationTimelinePanel::get_hover() {
 	float t = 0;
+	float R = 5;
 	foreachi(ModelFrame &f, mode_model_animation->cur_move()->frame, i){
 		float x = sample2screen(t);
-		if (fabs(mx - x) < 5)
-			hover = i;
+		if (fabs(mx - x) < R)
+			return i;
 		t += f.duration;
 	}
-	redraw("area");
+	{
+		float x = sample2screen(t);
+		if (fabs(mx - x) < R)
+			return mode_model_animation->cur_move()->frame.num;
+	}
+	return -1;
 }
 
 void ModelAnimationTimelinePanel::set_parasite(TimeLineParasite* p) {

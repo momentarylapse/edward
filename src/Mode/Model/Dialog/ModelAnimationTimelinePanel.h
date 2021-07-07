@@ -35,7 +35,7 @@ public:
 	float screen2sample(float x);
 	float sample2screen(float x);
 	string get_time_str_fuzzy(double t, double dt);
-	void update_hover();
+	int get_hover();
 
 	float mx;
 	int hover;
