@@ -11,6 +11,8 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 
+class BrushPanel;
+
 class ModeModelSkeletonAttachVertices: public ModeCreation<DataModel> {
 public:
 	ModeModelSkeletonAttachVertices(ModeBase *_parent, int _bone_index);
@@ -41,7 +43,7 @@ private:
 	nix::VertexBuffer *vb_weight = nullptr;
 	nix::Shader *shader = nullptr;
 
-	float radius();
+	BrushPanel *brush_panel();
 };
 
 #endif /* MODEMODELSKELETONATTACHVERTICES_H_ */

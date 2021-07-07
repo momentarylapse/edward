@@ -11,6 +11,7 @@
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/DrawingHelper.h"
 #include "../../../MultiView/ColorScheme.h"
+#include "../../../Stuff/BrushPanel.h"
 #include "../../../Edward.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../lib/math/complex.h"
@@ -21,35 +22,6 @@
 ModeModelMeshPaint *mode_model_mesh_paint = NULL;
 
 
-struct BrushConfig {
-	float exponent;
-	string name;
-
-	string get_icon() const {
-		Image im;
-		int n = 48;
-		im.create(n, n, White);
-		for (int i=0; i<n; i++)
-			for (int j=0; j<n; j++) {
-				vector vv = vector((float)i / (float)n - 0.5f, (float)j / (float)n - 0.5f, 0) * 2;
-				float dd = vv * vv;
-				float a = exp(-pow(dd, exponent)*2);
-				im.set_pixel(i, j, a * Black + (1-a) * White);
-
-			}
-		return hui::SetImage(&im, "image:paint-brush-" + name);
-	}
-};
-
-const int NUM_BRUSHES = 6;
-const BrushConfig BRUSH_PARAM[NUM_BRUSHES] = {
-		{400.0f, "extra hard"},
-		{4.0f, "hard"},
-		{2.0f, "medium"},
-		{1.0f, "medium soft"},
-		{0.5f, "soft"},
-		{0.25f, "extra soft"}
-};
 
 
 // map from 3d-world-space into UV-space for a polygon
@@ -100,13 +72,9 @@ complex eigen_value_2d(const matrix &m) {
 
 class ActionModelBrushTexturePaint: public Action {
 public:
-	ActionModelBrushTexturePaint(const vector &_pos, const vector &_n, float _radius, int _poly, const color &_col, float _opacity, const BrushConfig &_brush) {
-		pos = _pos;
+	ActionModelBrushTexturePaint(const vector &_n, int _poly, const BrushState &_brush) {
 		n = _n;
-		radius = _radius;
 		poly = _poly;
-		col = _col;
-		opacity = _opacity;
 		brush = _brush;
 	}
 	string name(){	return "ModelBrushTexturePaint";	}
@@ -120,7 +88,7 @@ public:
 		vector e2 = n ^ e1;
 
 		matrix D;
-		vector v = map_uv(m->mesh, poly, pos, D);
+		vector v = map_uv(m->mesh, poly, brush.m0, D);
 
 		auto DD = D * D.transpose();
 		auto iDD = inv_2d(DD);
@@ -129,7 +97,7 @@ public:
 
 		// maximal pixel area from ellipsis
 		auto ev = eigen_value_2d(DD);
-		float rmax = sqrt(max(ev.x, ev.y)) * radius * 1.2f;
+		float rmax = sqrt(max(ev.x, ev.y)) * brush.R * 1.2f;
 		if (brush.exponent < 1.2f)
 			rmax *= 2;
 		if (brush.exponent < 0.8f)
@@ -142,7 +110,7 @@ public:
 		int dj = rmax * tl->image->height;
 
 
-		float rr = radius * radius;
+		float rr = brush.R * brush.R;
 
 		// draw a fuzzy ellipsis UV-space
 		for (int ii=i0-di; ii<i0+di; ii++)
@@ -151,10 +119,10 @@ public:
 				int j = loop(jj, 0, tl->image->height);
 				vector vv = vector((float)ii / (float)tl->image->width, (float)jj / (float)tl->image->height, 0);
 				float dd = quad_2d(iDD, vv-v);
-				float a = exp(-pow(dd / rr, brush.exponent)*2) * opacity;
+				float a = exp(-pow(dd / rr, brush.exponent)*2) * brush.opacity;
 				if (a > threshold) {
 					color c = tl->image->get_pixel(i, j);
-					tl->image->set_pixel(i, j, (1-a) * c + a * col);
+					tl->image->set_pixel(i, j, (1-a) * c + a * brush.col);
 				}
 			}
 
@@ -168,62 +136,12 @@ public:
 	}
 
 private:
-	vector pos, n;
-	float radius;
+	vector n;
 	int poly;
-	color col;
-	float opacity;
-	BrushConfig brush;
+	BrushState brush;
 };
 
 
-
-class PaintBrushPanel : public hui::Panel {
-public:
-	PaintBrushPanel(ModeModelMeshPaint *_mode) {
-		mode = _mode;
-
-		base_diameter = mode->multi_view->cam.radius * 0.1f;
-
-		from_resource("model-texture-paint-brush-dialog");
-
-		event("diameter-slider", [=]{ on_diameter_slider(); });
-		event("opacity-slider", [=]{ on_opacity_slider(); });
-		event("alpha-slider", [=]{ on_alpha_slider(); });
-
-		for (int i=0; i<NUM_BRUSHES; i++)
-			add_string("brush-type", BRUSH_PARAM[i].get_icon() + "\\" + BRUSH_PARAM[i].name);
-		set_float("diameter-slider", 0.5f);
-		set_float("opacity-slider", 1.0f);
-		set_float("alpha-slider", 1.0f);
-
-		set_string("diameter", f2s(base_diameter, 2));
-		set_float("opacity", 1.0f);
-		set_float("alpha", 1.0f);
-		set_int("brush-type", 2);
-		set_color("color", Red);
-		check("scale-by-pressure", true);
-		check("opacity-by-pressure", true);
-	}
-
-	void on_diameter_slider() {
-		float x = get_float("");
-		set_string("diameter", f2s(base_diameter * exp((x - 0.5f) * 4), 2));
-	}
-
-	void on_opacity_slider() {
-		float x = get_float("");
-		set_float("opacity", x);
-	}
-
-	void on_alpha_slider() {
-		float x = get_float("");
-		set_float("alpha", x);
-	}
-
-	ModeModelMeshPaint *mode;
-	float base_diameter;
-};
 
 
 
@@ -236,7 +154,7 @@ ModeModelMeshPaint::ModeModelMeshPaint(ModeBase *_parent) :
 
 void ModeModelMeshPaint::on_start() {
 
-	dialog = new PaintBrushPanel(this);
+	dialog = new BrushPanel(multi_view, "model-texture-paint-brush-dialog");
 	ed->set_side_panel(dialog);
 
 	auto *t = ed->toolbar[hui::TOOLBAR_LEFT];
@@ -281,7 +199,7 @@ void ModeModelMeshPaint::on_draw_win(MultiView::Window *win) {
 		return;
 	vector pos = multi_view->hover.point;
 	vector n = data->mesh->polygon[multi_view->hover.index].temp_normal;
-	float radius = dialog->get_float("diameter") / 2;
+	float radius = dialog->radius0();
 
 	set_color(scheme.CREATION_LINE);
 	set_line_width(scheme.LINE_WIDTH_MEDIUM);
@@ -302,14 +220,10 @@ float ModeModelMeshPaint::radius() {
 Action *ModeModelMeshPaint::get_action() {
 	vector pos = multi_view->hover.point;
 	vector n = data->mesh->polygon[multi_view->hover.index].temp_normal;
-	int type = dialog->get_int("brush-type");
-	auto col = dialog->get_color("color");
-	col.a = dialog->get_float("alpha");
-	float opacity = dialog->get_float("opacity");
-	if (dialog->is_checked("opacity-by-pressure"))
-		col.a *= hui::GetEvent()->pressure;
 
-	return new ActionModelBrushTexturePaint(pos, n, radius(), multi_view->hover.index, col, opacity, BRUSH_PARAM[type]);
+	auto brush = dialog->prepare(pos);
+
+	return new ActionModelBrushTexturePaint(n, multi_view->hover.index, brush);
 }
 
 void ModeModelMeshPaint::on_left_button_down() {

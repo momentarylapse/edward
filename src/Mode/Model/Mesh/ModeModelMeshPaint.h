@@ -10,7 +10,7 @@
 
 #include "ModeModelMesh.h"
 
-class PaintBrushPanel;
+class BrushPanel;
 
 class ModeModelMeshPaint: public Mode<DataModel> {
 public:
@@ -18,7 +18,7 @@ public:
 	void on_start() override;
 	void on_end() override;
 
-	PaintBrushPanel *dialog;
+	BrushPanel *dialog;
 
 	void on_selection_change() override;
 	void on_set_multi_view() override;

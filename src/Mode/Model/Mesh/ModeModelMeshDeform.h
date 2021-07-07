@@ -15,7 +15,6 @@ class DeformBrushPanel;
 class ModeModelMeshDeform: public Mode<DataModel> {
 public:
 	ModeModelMeshDeform(ModeBase *parent);
-	virtual ~ModeModelMeshDeform();
 	void on_start() override;
 	void on_end() override;
 

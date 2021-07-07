@@ -11,6 +11,7 @@
 #include "../../../MultiView/MultiView.h"
 #include "../../../MultiView/DrawingHelper.h"
 #include "../../../MultiView/ColorScheme.h"
+//#include "../../../Stuff/BrushPanel.h"
 #include "../../../Edward.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../Action/Model/Mesh/Brush/ActionModelBrushExtrude.h"
@@ -62,12 +63,9 @@ ModeModelMeshDeform::ModeModelMeshDeform(ModeBase *_parent) :
 	distance = 1;
 }
 
-ModeModelMeshDeform::~ModeModelMeshDeform() {
-}
-
 void ModeModelMeshDeform::on_start() {
 
-	dialog = new DeformBrushPanel(multi_view);
+	dialog = new DeformBrushPanel(multi_view);//, "model-deformation-brush-dialog");
 	ed->set_side_panel(dialog);
 
 	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_LEFT];
