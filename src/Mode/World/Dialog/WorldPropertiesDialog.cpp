@@ -221,18 +221,18 @@ void WorldPropertiesDialog::on_create_script() {
 		return;
 	string source = "use y\n\n"\
 			"class X extends Controller\n"\
-			"\tconst string PARAMETERS = \"\"\n"\
-			"\toverride void on_init()\n"\
+			"\tconst PARAMETERS = \"\"\n"\
+			"\tfunc override on_init()\n"\
 			"\t\tpass\n\n"\
-			"\toverride void on_delete()\n"\
+			"\tfunc override on_delete()\n"\
 			"\t\tpass\n\n"\
-			"\toverride void on_iterate(float dt)\n"\
+			"\tfunc override on_iterate(dt: float)\n"\
 			"\t\tpass\n\n"\
-			"\toverride void on_input()\n"\
+			"\tfunc override on_input()\n"\
 			"\t\tpass\n\n"\
-			"\toverride void on_left_button_down()\n"\
+			"\tfunc override on_left_button_down()\n"\
 			"\t\tpass\n\n"\
-			"\toverride void on_key_down(int k)\n"\
+			"\tfunc override on_key_down(k: int)\n"\
 			"\t\tpass\n\n";
 	FileWriteText(storage->dialog_file_complete, source);
 

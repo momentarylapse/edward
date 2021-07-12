@@ -106,3 +106,6 @@ Dialog world-object-list-dialog "" width=400 height=300
 					Edit ang-y ""
 					Edit ang-z ""
 					Text /degree "°"
+			Group g-components "Components"
+				Grid ? ""
+					ListView component-list "file\\class" nobar height=80 noexpandy

@@ -27,11 +27,14 @@
 
 const bool LIST_SHOW_SCRIPTS = false;
 
+shared<const kaba::Class> get_class(shared<kaba::Script> s, const string &parent);
+
 
 WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
 	from_resource("world-object-list-dialog");
 
 	popup = hui::CreateResourceMenu("world-object-list-popup");
+	popup_component = hui::CreateResourceMenu("world-object-list-component-popup");
 
 	world = w;
 	data = world->data;
@@ -51,7 +54,8 @@ WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
 	event("cam-max-depth", [=]{ on_change(); });
 	event("cam-exposure", [=]{ on_change(); });
 	event("script-edit", [=]{ on_script_edit(); });
-	event("find-script", [=]{ on_find_script(); });
+	event_x("component-list", "hui:right-button-down", [=] { on_component_list_right_click(); });
+	event("component-add", [=] { on_component_add(); });
 
 	fill_list();
 
@@ -66,20 +70,40 @@ WorldObjectListPanel::~WorldObjectListPanel() {
 	world->multi_view->unsubscribe(this);
 	data->unsubscribe(this);
 	delete popup;
+	delete popup_component;
 }
 
-void WorldObjectListPanel::on_find_script() {
+void WorldObjectListPanel::on_component_add() {
 	if (!storage->file_dialog(FD_SCRIPT, false, true))
 		return;
 
-	auto &ii = list_indices[editing];
-	if (ii.type != MVD_WORLD_OBJECT)
+
+	try {
+		auto ss = kaba::load(storage->root_dir_kind[FD_SCRIPT] << storage->dialog_file, true);
+		auto t = get_class(ss, "*.Component");
+		if (!t) {
+			ed->error_box(_("no class derived from 'Component' found"));
+			return;
+		}
+
+		auto &ii = list_indices[editing];
+		if (ii.type != MVD_WORLD_OBJECT)
+			return;
+		auto &o = data->objects[ii.index];
+		WorldObject oo = o;
+		ScriptInstanceData sd;
+		sd.filename = storage->dialog_file;
+		sd.class_name = t->cname(t->owner->base_class);
+
+		oo.components.add(sd);
+		auto a = new ActionWorldEditObject(ii.index, oo);
+		data->execute(a);
+
+
+	} catch (Exception &e) {
+		ed->error_box(e.message());
 		return;
-	auto &o = data->objects[ii.index];
-	WorldObject oo = o;
-	oo.script = storage->dialog_file;
-	auto a = new ActionWorldEditObject(ii.index, oo);
-	data->execute(a);
+	}
 }
 
 void WorldObjectListPanel::fill_list() {
@@ -169,6 +193,12 @@ void WorldObjectListPanel::on_list_select() {
 		set_editing(-1);
 }
 
+void WorldObjectListPanel::on_component_list_right_click() {
+	int row = hui::GetEvent()->row;
+	popup_component->enable("component-delete", row >= 0);
+	popup_component->open_popup(this);
+}
+
 void WorldObjectListPanel::selection_to_world(const Array<int> &sel) {
 	allow_sel_change_signal = false;
 
@@ -206,6 +236,7 @@ void WorldObjectListPanel::set_editing(int s) {
 		hide_control("g-camera", true);
 		hide_control("g-script", true);
 		hide_control("g-location", true);
+		hide_control("g-component", true);
 		return;
 	}
 
@@ -217,14 +248,19 @@ void WorldObjectListPanel::set_editing(int s) {
 	hide_control("g-camera", ii.type != MVD_WORLD_CAMERA);
 	hide_control("g-script", ii.type != MVD_WORLD_SCRIPT);
 	hide_control("g-location", ii.type == MVD_WORLD_SCRIPT);
+	hide_control("g-component", ii.type != MVD_WORLD_OBJECT); // for now...
+
+	reset("component-list");
 
 	if (ii.type == MVD_WORLD_OBJECT) {
 		auto &o = data->objects[ii.index];
 		set_string("ob-name", o.name);
 		set_string("ob-kind", o.filename.str());
-		set_string("ob-script", o.script.str());
-		if (o.script.is_empty())
-			set_string("ob-script", o.object->_template->script_filename.str());
+//		set_string("ob-script", o.script.str());
+//		if (o.script.is_empty())
+//			set_string("ob-script", o.object->_template->script_filename.str());
+		for (auto &c: o.components)
+			add_string("component-list", c.filename.str() + "\\" + c.class_name);
 		set_float("pos-x", o.pos.x);
 		set_float("pos-y", o.pos.y);
 		set_float("pos-z", o.pos.z);

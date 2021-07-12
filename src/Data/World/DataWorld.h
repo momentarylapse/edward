@@ -34,12 +34,14 @@ public:
 	string value;
 };
 
-class WorldScript {
+class ScriptInstanceData {
 public:
 	Path filename;
 	string class_name;
 	Array<WorldScriptVariable> variables;
 };
+
+class WorldScript : public ScriptInstanceData {};
 
 class DataWorld: public Data {
 public:

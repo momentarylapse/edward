@@ -12,11 +12,12 @@
 #include "../../lib/file/path.h"
 
 class Object;
+class ScriptInstanceData;
 
 class WorldObject: public MultiView::SingleData {
 public:
 	Path filename;
-	Path script;
+	Array<ScriptInstanceData> components;
 	string name;
 	Object *object;
 	vector ang;

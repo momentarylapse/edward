@@ -167,9 +167,16 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				o.object = NULL;
 				o.filename = e.value("file");
 				o.name = e.value("name");
-				o.script = e.value("script");
+				//o.script = e.value("script");
 				o.pos = s2v(e.value("pos", "0 0 0"));
 				o.ang = s2v(e.value("ang", "0 0 0"));
+				for (auto &ee: e.elements)
+					if (ee.tag == "component") {
+						ScriptInstanceData sd;
+						sd.filename = ee.value("script", "");
+						sd.class_name = ee.value("class", "");
+						o.components.add(sd);
+					}
 				if (e.value("role") == "ego")
 					data->EgoIndex = data->objects.num;
 				data->objects.add(o);
@@ -418,8 +425,12 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		.witha("name", o.name)
 		.witha("pos", v2s(o.pos))
 		.witha("ang", v2s(o.ang));
-		if (!o.script.is_empty() and o.script != o.object->_template->script_filename)
-			e.add_attribute("script", o.script.str());
+		for (auto &c: o.components)
+			e.add(xml::Element("component")
+				.witha("script", c.filename.str())
+				.witha("class", c.class_name));
+		//if (!o.script.is_empty() and o.script != o.object->_template->script_filename)
+		//	e.add_attribute("script", o.script.str());
 		if (i == data->EgoIndex)
 			e.add_attribute("role", "ego");
 		cont.add(e);

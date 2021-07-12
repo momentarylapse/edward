@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-75
+76
 # Resource
 Menu
 
@@ -9341,6 +9341,25 @@ Ok,image=hui:ok
 0
 0
 # Resource
+Menu
+world-object-list-component-popup
+
+0
+0
+2
+Item
+component-add
+
+0
+0
+0
+Item
+component-delete
+
+1
+0
+0
+# Resource
 Dialog
 world-object-list-dialog
 width=400,height=300
@@ -9364,7 +9383,7 @@ Grid
 vertical
 1
 0
-8
+9
 Group
 g-list
 
@@ -9881,6 +9900,24 @@ degree
 4
 2
 0
+Group
+g-components
+
+8
+0
+1
+Grid
+?
+
+0
+0
+1
+ListView
+component-list
+nobar,height=80,noexpandy
+0
+0
+0
 # Resource
 Menu
 world-object-list-popup
@@ -10131,7 +10168,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-1001
+1005
 # Text
 /ambient
 Ambient
@@ -12800,6 +12837,12 @@ add object
 world-edit-toolbar/terrain_create
 add terrain
 
+world-object-list-component-popup/component-add
+Add...
+
+world-object-list-component-popup/component-delete
+Delete
+
 world-object-list-dialog/cam-exposure
 
 brightness scale
@@ -12812,8 +12855,14 @@ far clipping plane
 world-object-list-dialog/cam-min-depth
 
 near clipping plane
+world-object-list-dialog/component-list
+file\\class
+
 world-object-list-dialog/g-camera
 Camera
+
+world-object-list-dialog/g-components
+Components
 
 world-object-list-dialog/g-light
 Light

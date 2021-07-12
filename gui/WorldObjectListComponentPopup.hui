@@ -1,0 +1,3 @@
+Menu world-object-list-component-popup ""
+	Item component-add "Add..."
+	Item component-delete "Delete"

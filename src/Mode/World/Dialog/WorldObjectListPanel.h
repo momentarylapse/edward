@@ -27,18 +27,21 @@ public:
 	int editing;
 	bool allow_sel_change_signal;
 	hui::Menu *popup;
+	hui::Menu *popup_component;
 
 	WorldObjectListPanel(ModeWorld *w);
 	~WorldObjectListPanel();
-	void on_find_script();
 	void fill_list();
 	void selection_from_world();
 	void on_list_right_click();
+	void on_component_list_right_click();
 	void on_list_select();
 	void selection_to_world(const Array<int> &sel);
 	void set_editing(int s);
 	void on_change();
 	void on_script_edit();
+	void on_component_add();
+	void on_component_delete();
 };
 
 
