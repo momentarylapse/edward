@@ -1,0 +1,7 @@
+Dialog component-selection-dialog "Component" width=300 height=450 headerbar closebutton=no resizable borderwidth=0
+	Grid ? ""
+		ListView list "Class\\File"
+		Grid ? "" buttonbar
+			Button /cancel "Cancel"
+			---|
+			Button /ok "Ok" default

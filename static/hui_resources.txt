@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-76
+77
 # Resource
 Menu
 
@@ -562,6 +562,43 @@ ok
 image=hui:ok
 1
 0
+0
+# Resource
+Dialog
+component-selection-dialog
+width=300,height=450,headerbar,closebutton=no,resizable,borderwidth=0
+0
+0
+1
+Grid
+?
+
+0
+0
+2
+ListView
+list
+
+0
+0
+0
+Grid
+?
+buttonbar
+1
+0
+2
+Button
+cancel
+
+0
+0
+0
+Button
+ok
+default
+0
+1
 0
 # Resource
 Dialog
@@ -10168,7 +10205,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-1005
+1007
 # Text
 /ambient
 Ambient
@@ -10385,6 +10422,12 @@ type
 
 campoint_dialog/campoint_type
 PositionSet\\PositionAdd\\AngleSet\\Position & Angle Set\\Flight\\FlightRelative
+
+component-selection-dialog/component-selection-dialog
+Component
+
+component-selection-dialog/list
+Class\\File
 
 deformation_cylinder_dialog/axis
 X\\Y\\Z
