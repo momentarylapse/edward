@@ -8876,7 +8876,7 @@ menu_world_operation
 
 4
 0
-10
+11
 Item
 menu_world_sign_terrain
 disabled
@@ -8920,21 +8920,27 @@ height_to_terrain
 0
 0
 Item
-own_figure
+objects-add-component
 
 7
+0
+0
+Item
+own_figure
+
+8
 0
 0
 Separator
 
 
-8
+9
 0
 0
 Item
 create_lightmap
 image=hui:convert
-9
+10
 0
 0
 Menu
@@ -10205,7 +10211,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-1007
+1008
 # Text
 /ambient
 Ambient
@@ -12174,6 +12180,9 @@ Open...
 
 menu_world/new
 New
+
+menu_world/objects-add-component
+Add component...
 
 menu_world/open
 Open...

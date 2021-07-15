@@ -477,14 +477,12 @@ void Edward::load_key_codes() {
 }
 
 
-void Edward::remove_message()
-{
+void Edward::remove_message() {
 	message_str.erase(0);
 	cur_mode->multi_view->force_redraw();
 }
 
-void Edward::set_message(const string &message)
-{
+void Edward::set_message(const string &message) {
 	msg_write(message);
 	message_str.add(message);
 	cur_mode->multi_view->force_redraw();

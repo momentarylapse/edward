@@ -130,6 +130,9 @@ void ModeWorld::on_command(const string & id) {
 	if (id == "terrain_load")
 		load_terrain();
 
+	if (id == "objects-add-component")
+		dialog->on_component_add();
+
 	if (id == "mode_world")
 		ed->set_mode(mode_world);
 	if (id == "mode_world_camera")

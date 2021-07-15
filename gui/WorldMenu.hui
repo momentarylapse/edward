@@ -62,6 +62,7 @@ Menu menu_world "World" disabled
 		Separator
 		Item menu_world_sign_object "Objects" disabled
 		Item height_to_terrain "Height = terrain"
+		Item objects-add-component "Add component..."
 		Item own_figure "Own character"
 		Separator
 		Item create_lightmap "Render lightmap..." image=hui:convert

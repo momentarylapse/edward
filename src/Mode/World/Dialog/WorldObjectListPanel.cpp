@@ -76,19 +76,27 @@ WorldObjectListPanel::~WorldObjectListPanel() {
 }
 
 void WorldObjectListPanel::on_component_add() {
-	auto &ii = list_indices[editing];
-	if (ii.type != MVD_WORLD_OBJECT)
-		return;
-	auto &o = data->objects[ii.index];
+	//auto &ii = list_indices[editing];
+	//if (ii.type != MVD_WORLD_OBJECT)
+	//	return;
 
 	ScriptInstanceData sd;
 	if (!ComponentSelectionDialog::choose(win, sd))
 		return;
 
-	WorldObject oo = o;
-	oo.components.add(sd);
-	auto a = new ActionWorldEditObject(ii.index, oo);
-	data->execute(a);
+	data->begin_action_group("add-component");
+	foreachi (auto &o, data->objects, i) {
+		if (!o.is_selected)
+			continue;
+	//auto &o = data->objects[ii.index];
+
+
+		WorldObject oo = o;
+		oo.components.add(sd);
+		auto a = new ActionWorldEditObject(i, oo);
+		data->execute(a);
+	}
+	data->end_action_group();
 }
 
 void WorldObjectListPanel::on_component_delete() {

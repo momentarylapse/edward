@@ -58,6 +58,7 @@ new_point = N
 new_spat =  
 new_tria = Return 
 new_tria_u = U 
+objects-add-component = Insert
 open = Ctrl + O 
 own_figure = F 
 paste = Ctrl + V 
