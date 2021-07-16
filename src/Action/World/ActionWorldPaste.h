@@ -12,18 +12,20 @@
 class DataWorld;
 class WorldObject;
 class WorldTerrain;
+class WorldLight;
+class WorldCamera;
 
-class ActionWorldPaste : public ActionGroup
-{
+class ActionWorldPaste : public ActionGroup {
 public:
-	ActionWorldPaste(Array<WorldObject> &_objects, Array<WorldTerrain> &_terrains);
-	virtual ~ActionWorldPaste(){}
-	string name(){	return "WorldPaste";	}
+	ActionWorldPaste(Array<WorldObject> &_objects, Array<WorldTerrain> &_terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights);
+	string name() { return "WorldPaste"; }
 
 	void *compose(Data *d);
 private:
 	Array<WorldObject> &objects;
 	Array<WorldTerrain> &terrains;
+	Array<WorldCamera> cameras;
+	Array<WorldLight> lights;
 };
 
 #endif /* ACTIONWORLDPASTE_H_ */

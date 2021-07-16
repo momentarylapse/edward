@@ -110,8 +110,8 @@ public:
 	WorldObject *add_object(const Path &filename, const vector &pos);
 	WorldTerrain *add_terrain(const Path &filename, const vector &pos);
 	WorldTerrain *add_new_terrain(const vector &pos, const vector &size, int num_x, int num_z);
-	void copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains); // actually not an action
-	void paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains);
+	void copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights); // actually not an action
+	void paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights);
 	void delete_selection();
 };
 

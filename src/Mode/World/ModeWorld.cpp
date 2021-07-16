@@ -739,23 +739,23 @@ void ModeWorld::apply_heightmap() {
 
 
 void ModeWorld::copy() {
-	data->copy(temp_objects, temp_terrains);
+	data->copy(temp_objects, temp_terrains, temp_cameras, temp_lights);
 
 	on_update_menu();
-	ed->set_message(format(_("copied %d objects, %d terrains"), temp_objects.num, temp_terrains.num));
+	ed->set_message(format(_("copied %d objects, %d terrains, %d lights"), temp_objects.num, temp_terrains.num, temp_lights.num));
 }
 
 void ModeWorld::paste() {
-	data->paste(temp_objects, temp_terrains);
-	ed->set_message(format(_("added %d objects, %d terrains"), temp_objects.num, temp_terrains.num));
+	data->paste(temp_objects, temp_terrains, temp_cameras, temp_lights);
+	ed->set_message(format(_("added %d objects, %d terrains, %d lights"), temp_objects.num, temp_terrains.num, temp_lights.num));
 }
 
 bool ModeWorld::copyable() {
-	return (data->get_selected_objects() + data->get_selected_terrains()) > 0;
+	return (data->get_selected_objects() + data->get_selected_terrains() + data->get_selected_lights()) > 0;
 }
 
 bool ModeWorld::pasteable() {
-	return (temp_objects.num + temp_terrains.num) > 0;
+	return (temp_objects.num + temp_terrains.num + temp_lights.num) > 0;
 }
 
 void ModeWorld::on_set_multi_view() {

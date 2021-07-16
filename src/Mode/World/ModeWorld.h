@@ -69,6 +69,8 @@ public:
 
 	Array<WorldObject> temp_objects;
 	Array<WorldTerrain> temp_terrains;
+	Array<WorldCamera> temp_cameras;
+	Array<WorldLight> temp_lights;
 };
 
 extern ModeWorld* mode_world;

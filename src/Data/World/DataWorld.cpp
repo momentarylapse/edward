@@ -180,20 +180,28 @@ void DataWorld::clear_selection() {
 }
 
 
-void DataWorld::copy(Array<WorldObject> &_objects, Array<WorldTerrain> &_terrains) {
+void DataWorld::copy(Array<WorldObject> &_objects, Array<WorldTerrain> &_terrains, Array<WorldCamera> &_cameras, Array<WorldLight> &_lights) {
 	_objects.clear();
 	_terrains.clear();
+	_cameras.clear();
+	_lights.clear();
 
-	for (WorldObject &o: objects)
+	for (auto &o: objects)
 		if (o.is_selected)
 			_objects.add(o);
-	for (WorldTerrain &t: terrains)
+	for (auto &t: terrains)
 		if (t.is_selected)
 			_terrains.add(t);
+	for (auto &c: cameras)
+		if (c.is_selected)
+			_cameras.add(c);
+	for (auto &l: lights)
+		if (l.is_selected)
+			_lights.add(l);
 }
 
-void DataWorld::paste(Array<WorldObject> &o, Array<WorldTerrain> &t)
-{	execute(new ActionWorldPaste(o, t));	}
+void DataWorld::paste(Array<WorldObject> &o, Array<WorldTerrain> &t, Array<WorldCamera> &c, Array<WorldLight> &l)
+{	execute(new ActionWorldPaste(o, t, c, l));	}
 
 void DataWorld::delete_selection()
 {	execute(new ActionWorldDeleteSelection());	}
