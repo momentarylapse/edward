@@ -144,6 +144,13 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				c.min_depth = e.value("minDepth", "1")._float();
 				c.max_depth = e.value("maxDepth", "10000")._float();
 				c.exposure = e.value("exposure", "1")._float();
+				for (auto &ee: e.elements)
+					if (ee.tag == "component") {
+						ScriptInstanceData sd;
+						sd.filename = ee.value("script", "");
+						sd.class_name = ee.value("class", "");
+						c.components.add(sd);
+					}
 				data->cameras.add(c);
 			} else if (e.tag == "light") {
 				WorldLight l;
@@ -156,11 +163,25 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				l.col = s2c(e.value("color", "1 1 1"));
 				l.ang = s2v(e.value("ang", "0 0 0"));
 				l.pos= s2v(e.value("pos", "0 0 0"));
+				for (auto &ee: e.elements)
+					if (ee.tag == "component") {
+						ScriptInstanceData sd;
+						sd.filename = ee.value("script", "");
+						sd.class_name = ee.value("class", "");
+						l.components.add(sd);
+					}
 				data->lights.add(l);
 			} else if (e.tag == "terrain") {
 				WorldTerrain t;
 				t.filename = e.value("file");
 				t.pos = s2v(e.value("pos", "0 0 0"));
+				for (auto &ee: e.elements)
+					if (ee.tag == "component") {
+						ScriptInstanceData sd;
+						sd.filename = ee.value("script", "");
+						sd.class_name = ee.value("class", "");
+						t.components.add(sd);
+					}
 				data->terrains.add(t);
 			} else if (e.tag == "object") {
 				WorldObject o;
@@ -193,6 +214,13 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				l.object[1] = e.value("b")._int();
 				l.pos = s2v(e.value("pos", "0 0 0"));
 				l.ang = s2v(e.value("ang", "0 0 0"));
+				for (auto &ee: e.elements)
+					if (ee.tag == "component") {
+						ScriptInstanceData sd;
+						sd.filename = ee.value("script", "");
+						sd.class_name = ee.value("class", "");
+						l.components.add(sd);
+					}
 				//l.radius = e.value("radius")._float();
 				data->links.add(l);
 			} else {
@@ -352,6 +380,10 @@ xml::Element encode_light(WorldLight &l) {
 		e.add_attribute("radius", f2s(l.radius, 3));
 		e.add_attribute("theta", f2s(l.theta, 3));
 	}
+	for (auto &c: l.components)
+		e.add(xml::Element("component")
+			.witha("script", c.filename.str())
+			.witha("class", c.class_name));
 	return e;
 }
 
@@ -406,6 +438,10 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		.witha("minDepth", f2s(c.min_depth, 3))
 		.witha("maxDepth", f2s(c.max_depth, 3))
 		.witha("exposure", f2s(c.exposure, 3));
+		for (auto &com: c.components)
+			e.add(xml::Element("component")
+				.witha("script", com.filename.str())
+				.witha("class", com.class_name));
 		cont.add(e);
 	}
 
@@ -416,6 +452,10 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		auto e = xml::Element("terrain")
 		.witha("file", t.filename.str())
 		.witha("pos", v2s(t.pos));
+		for (auto &c: t.components)
+			e.add(xml::Element("component")
+				.witha("script", c.filename.str())
+				.witha("class", c.class_name));
 		cont.add(e);
 	}
 
@@ -445,6 +485,10 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		//.witha("pivotA", v2s(l.pos - data->objects[l.object[0]].pos))
 		//.witha("pivotB", v2s(l.pos - data->objects[l.object[1]].pos))
 		.witha("ang", v2s(l.ang));
+		for (auto &c: l.components)
+			e.add(xml::Element("component")
+				.witha("script", c.filename.str())
+				.witha("class", c.class_name));
 		cont.add(e);
 	}
 	w.add(cont);

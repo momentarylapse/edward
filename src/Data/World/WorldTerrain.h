@@ -12,6 +12,7 @@
 #include "../../y/Material.h"
 
 class Terrain;
+class ScriptInstanceData;
 
 /*class WorldTerrainVertex: public MultiView::SingleData
 {
@@ -28,6 +29,8 @@ public:
 	int ShowTexture;
 	bool Changed;
 	Terrain *terrain;
+
+	Array<ScriptInstanceData> components;
 
 	bool load(const vector &pos, const Path &filename, bool deep = true);
 	bool save(const Path &filename);

@@ -10,15 +10,18 @@
 
 #include "../../MultiView/SingleData.h"
 
+class ScriptInstanceData;
+
 
 class WorldCamera: public MultiView::SingleData {
 public:
-	WorldCamera();
 	string name;
-	vector ang;
-	float fov;
-	float min_depth, max_depth;
-	float exposure;
+	vector ang = vector::ZERO;
+	float fov = pi/4;
+	float min_depth = 1;
+	float max_depth = 10000;
+	float exposure = 1;
+	Array<ScriptInstanceData> components;
 };
 
 

@@ -28,15 +28,6 @@ string light_type(LightType t) {
 	return "???";
 }
 
-WorldLight::WorldLight() {
-	theta = 0;
-	radius = 0;
-	ang = v_0;
-	type = LightType::POINT;
-	col = White;
-	enabled = true;
-	harshness = 0.7f;
-}
 
 color WorldLight::ambient() {
 	return col * ((1 - harshness) / 2);

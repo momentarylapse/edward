@@ -10,6 +10,7 @@
 
 #include "../../MultiView/SingleData.h"
 
+class ScriptInstanceData;
 
 enum class LinkType {
 	SOCKET,
@@ -22,12 +23,12 @@ string link_type_canonical(LinkType t);
 
 class WorldLink: public MultiView::SingleData {
 public:
-	WorldLink();
-	LinkType type;
-	int object[2];
-	vector ang;
-	float param[4];
-	float friction;
+	LinkType type = LinkType::SOCKET;
+	int object[2] = {-1,-1};
+	vector ang = vector::ZERO;
+	float param[4] = {0,0,0,0};
+	float friction = 0;
+	Array<ScriptInstanceData> components;
 };
 
 

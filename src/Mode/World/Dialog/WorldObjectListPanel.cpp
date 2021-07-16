@@ -18,6 +18,7 @@
 #include "../../../Data/World/WorldCamera.h"
 #include "../../../Storage/Storage.h"
 #include "../../../Action/World/Object/ActionWorldEditObject.h"
+#include "../../../Action/World/ActionWorldSelectionAddComponent.h"
 #include "../../../MultiView/MultiView.h"
 #include "../../../y/Object.h"
 #include "../../../y/Terrain.h"
@@ -76,32 +77,17 @@ WorldObjectListPanel::~WorldObjectListPanel() {
 }
 
 void WorldObjectListPanel::on_component_add() {
-	//auto &ii = list_indices[editing];
-	//if (ii.type != MVD_WORLD_OBJECT)
-	//	return;
-
-	ScriptInstanceData sd;
-	if (!ComponentSelectionDialog::choose(win, sd))
+	ScriptInstanceData component;
+	if (!ComponentSelectionDialog::choose(win, component))
 		return;
 
-	data->begin_action_group("add-component");
-	foreachi (auto &o, data->objects, i) {
-		if (!o.is_selected)
-			continue;
-	//auto &o = data->objects[ii.index];
-
-
-		WorldObject oo = o;
-		oo.components.add(sd);
-		auto a = new ActionWorldEditObject(i, oo);
-		data->execute(a);
-	}
-	data->end_action_group();
+	data->execute(new ActionWorldSelectionAddComponent(data, component));
 }
 
+// TODO...
 void WorldObjectListPanel::on_component_delete() {
 	auto &ii = list_indices[editing];
-	if (ii.type != MVD_WORLD_OBJECT)
+	if (ii.type != MVD_WORLD_OBJECT and ii.type != MVD_WORLD_TERRAIN and ii.type != MVD_WORLD_LIGHT and ii.type != MVD_WORLD_CAMERA and ii.type != MVD_WORLD_LINK)
 		return;
 	auto &o = data->objects[ii.index];
 
@@ -257,7 +243,7 @@ void WorldObjectListPanel::set_editing(int s) {
 	hide_control("g-camera", ii.type != MVD_WORLD_CAMERA);
 	hide_control("g-script", ii.type != MVD_WORLD_SCRIPT);
 	hide_control("g-location", ii.type == MVD_WORLD_SCRIPT);
-	hide_control("g-components", ii.type != MVD_WORLD_OBJECT); // for now...
+	hide_control("g-components", ii.type != MVD_WORLD_OBJECT and ii.type != MVD_WORLD_TERRAIN and ii.type != MVD_WORLD_LIGHT and ii.type != MVD_WORLD_CAMERA and ii.type != MVD_WORLD_LINK);
 
 	reset("component-list");
 
@@ -283,6 +269,8 @@ void WorldObjectListPanel::set_editing(int s) {
 		set_int("terrain-num-z", t.terrain->num_z);
 		set_float("terrain-pattern-x", t.terrain->pattern.x);
 		set_float("terrain-pattern-z", t.terrain->pattern.z);
+		for (auto &c: t.components)
+			add_string("component-list", format("%s\\%s", c.class_name, c.filename));
 		set_float("pos-x", t.pos.x);
 		set_float("pos-y", t.pos.y);
 		set_float("pos-z", t.pos.z);
@@ -303,6 +291,8 @@ void WorldObjectListPanel::set_editing(int s) {
 		set_int("light-type", (int)l.type);
 		set_float("light-radius", l.radius);
 		set_float("light-harshness", l.harshness);
+		for (auto &c: l.components)
+			add_string("component-list", format("%s\\%s", c.class_name, c.filename));
 		set_float("pos-x", l.pos.x);
 		set_float("pos-y", l.pos.y);
 		set_float("pos-z", l.pos.z);
@@ -315,6 +305,8 @@ void WorldObjectListPanel::set_editing(int s) {
 		set_float("cam-min-depth", c.min_depth);
 		set_float("cam-max-depth", c.max_depth);
 		set_float("cam-exposure", c.exposure);
+		for (auto &com: c.components)
+			add_string("component-list", format("%s\\%s", com.class_name, com.filename));
 		set_float("pos-x", c.pos.x);
 		set_float("pos-y", c.pos.y);
 		set_float("pos-z", c.pos.z);
@@ -325,6 +317,8 @@ void WorldObjectListPanel::set_editing(int s) {
 		auto &l = data->links[ii.index];
 		set_int("link-type", (int)l.type);
 		set_float("link-friction", l.friction);
+		for (auto &c: l.components)
+			add_string("component-list", format("%s\\%s", c.class_name, c.filename));
 		set_float("pos-x", l.pos.x);
 		set_float("pos-y", l.pos.y);
 		set_float("pos-z", l.pos.z);
