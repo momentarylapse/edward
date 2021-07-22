@@ -20,6 +20,7 @@
 #include "../../Data/World/WorldTerrain.h"
 #include "../../Data/World/WorldCamera.h"
 #include "../../lib/nix/nix.h"
+#include "../../lib/math/vec2.h"
 #include "../../y/Camera.h"
 #include "../../y/World.h"
 #include "../../y/Material.h"
@@ -177,7 +178,7 @@ void ModeWorld::on_command(const string & id) {
 vector tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
-float WorldObject::hover_distance(MultiView::Window *win, const vector &mv, vector &tp, float &z) {
+float WorldObject::hover_distance(MultiView::Window *win, const vec2 &mv, vector &tp, float &z) {
 	Object *o = object;
 	if (!o)
 		return -1;
@@ -199,7 +200,7 @@ float WorldObject::hover_distance(MultiView::Window *win, const vector &mv, vect
 		float f,g;
 		float az=a.z,bz=b.z,cz=c.z;
 		a.z=b.z=c.z=0;
-		GetBaryCentric(mv,a,b,c,f,g);
+		GetBaryCentric(vector(mv.x,mv.y,0),a,b,c,f,g);
 		if ((f>=0)and(g>=0)and(f+g<=1)) {
 			float z=az + f*(bz-az) + g*(cz-az);
 			if (z<z_min) {
@@ -225,7 +226,7 @@ bool WorldObject::in_rect(MultiView::Window *win, const rect &r) {
 	for (int i=0;i<m->mesh[d]->vertex.num;i++) {
 		tmv[i] = m->_matrix * m->mesh[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
-		if (r.inside(pmv[i].x, pmv[i].y))
+		if (r.inside({pmv[i].x, pmv[i].y}))
 			return true;
 	}
 	return false;
@@ -252,14 +253,14 @@ bool WorldObject::overlap_rect(MultiView::Window *win, const rect &r) {
 	return in_rect(win, r);
 }
 
-float WorldTerrain::hover_distance(MultiView::Window *win, const vector &mv, vector &tp, float &z) {
+float WorldTerrain::hover_distance(MultiView::Window *win, const vec2 &mv, vector &tp, float &z) {
 	//msg_db_f(format("IMOT index= %d",index).c_str(),3);
 	Terrain *t = terrain;
 	if (!t)
 		return -1;
 	float r = win->cam->radius * 100;
-	vector a = win->unproject(mv);
-	vector b = win->unproject(mv, win->cam->pos + win->get_direction() * r);
+	vector a = win->unproject(vector(mv.x,mv.y,0));
+	vector b = win->unproject(vector(mv.x,mv.y,0), win->cam->pos + win->get_direction() * r);
 	CollisionData td;
 	bool hit = t->trace(a, b, v_0, r, td, false);
 	tp = td.p;

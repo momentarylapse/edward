@@ -35,7 +35,7 @@ public:
 	bool load(const vector &pos, const Path &filename, bool deep = true);
 	bool save(const Path &filename);
 
-	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
+	float hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 

@@ -840,7 +840,7 @@ void ModelMesh::_shift_vertex_links(int offset, int delta) {
 
 
 // TODO
-float ModelBall::hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) {
+float ModelBall::hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) {
 	return MultiView::SingleData::hover_distance(win, m, tp, z);
 }
 
@@ -852,7 +852,7 @@ bool ModelBall::overlap_rect(MultiView::Window *win, const rect &r) {
 	return MultiView::SingleData::in_rect(win, r);
 }
 
-float ModelCylinder::hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) {
+float ModelCylinder::hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) {
 	return MultiView::SingleData::hover_distance(win, m, tp, z);
 }
 

@@ -189,7 +189,7 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win) {
 	nix::set_z(true, true);
 }
 
-inline bool hover_line(vector &a, vector &b, vector &m, vector &tp) {
+inline bool hover_line(const vector &a, const vector &b, const vector &m, vector &tp) {
 	const float r = 8;
 	if ((b-a).length_sqr() < r*r)
 		if (((a+b)/2 - m).length_sqr() < r*r) {
@@ -219,7 +219,7 @@ void ModeModelMeshDeformCylinder::update_hover() {
 			float ang = (float)i / (float)CYLINDER_EDGES * 2 * pi;
 			vector w = multi_view->mouse_win->project(m + (e1 * cos(ang) + e2 * sin(ang)) * radius * p.z);
 			w.z = 0;
-			if (hover_line(v, w, multi_view->m, hover_tp)) {
+			if (hover_line(v, w, {multi_view->m,0}, hover_tp)) {
 				hover = ip;
 				orig_param = p;
 				return;
@@ -268,7 +268,7 @@ void ModeModelMeshDeformCylinder::preview() {
 void ModeModelMeshDeformCylinder::on_mouse_move() {
 	if (hui::GetEvent()->lbut) {
 		if (hover >= 0) {
-			vector m = multi_view->m;
+			vector m = {multi_view->m, 0};
 			vector a0 = multi_view->mouse_win->project(axis[0]);
 			vector a1 = multi_view->mouse_win->project(axis[1]);
 			vector pp = hover_tp;//multi_view->mouse_win->project(hover_tp);

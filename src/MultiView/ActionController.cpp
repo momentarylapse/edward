@@ -149,8 +149,8 @@ void ActionController::update_action() {
 	vector dir = active_win->get_direction();
 	vector _param = v_0;
 
-	dvp += multi_view->v;
-	dv += active_win->unproject(m0 + multi_view->v, m0) - active_win->unproject(m0, m0);
+	dvp += {multi_view->v,0};
+	dv += active_win->unproject(m0 + vector(multi_view->v,0), m0) - active_win->unproject(m0, m0);
 
 	if (action.mode == ACTION_MOVE) {
 		_param = project_trans(constraints, dv);

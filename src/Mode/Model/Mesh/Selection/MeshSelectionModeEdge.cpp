@@ -13,6 +13,7 @@
 #include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../MultiView/ColorScheme.h"
 #include "../../../../lib/nix/nix.h"
+#include "../../../../lib/math/vec2.h"
 #include "../ModeModelMesh.h"
 #include "../../Skeleton/ModeModelSkeleton.h"
 #include "MeshSelectionModePolygon.h"
@@ -28,7 +29,7 @@ void MeshSelectionModeEdge::on_start() {
 }
 
 
-float ModelEdge::hover_distance(MultiView::Window *win, const vector &M, vector &tp, float &z) {
+float ModelEdge::hover_distance(MultiView::Window *win, const vec2 &M, vector &tp, float &z) {
 
 	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
 
@@ -41,7 +42,7 @@ float ModelEdge::hover_distance(MultiView::Window *win, const vector &M, vector 
 		return -1;
 	const float rr = 50;
 	rect r = rect(min(pp0.x, pp1.x) - rr, max(pp0.x, pp1.x) + rr, min(pp0.y, pp1.y) - rr, max(pp0.y, pp1.y) + rr);
-	if (!r.inside(M.x, M.y))
+	if (!r.inside(M))
 		return -1;
 
 	//VecLineNearestPoint()
@@ -55,11 +56,11 @@ float ModelEdge::hover_distance(MultiView::Window *win, const vector &M, vector 
 		return -1;
 	d /= l;
 	vector d2 = vector(d.y, -d.x, 0);
-	float dd = fabs(vector::dot(d2, M - pp0));
+	float dd = fabs(vector::dot(d2, vec3(M.x,M.y,0) - pp0));
 	if (dd > rr)
 		return -1;
 
-	float f = (pp0 + d * vector::dot(M - pp0, d)).factor_between(pp0, pp1);
+	float f = (pp0 + d * vector::dot(vec3(M.x,M.y,0) - pp0, d)).factor_between(pp0, pp1);
 	tp = m->show_vertices[vertex[0]].pos * (1 - f) + m->show_vertices[vertex[1]].pos * f;
 	z = z0 * (1 - f) + z1 * f;
 	return dd;
@@ -73,7 +74,7 @@ bool ModelEdge::in_rect(MultiView::Window *win, const rect &r) {
 		vector pp = win->project(m->show_vertices[vertex[k]].pos);
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
-		if (!r.inside(pp.x, pp.y))
+		if (!r.inside({pp.x, pp.y}))
 			return false;
 	}
 	return true;

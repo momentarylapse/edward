@@ -107,7 +107,7 @@ MultiView::MultiView(bool mode3d) {
 	}
 	action_con = new ActionController(this);
 	cam_con = new CameraController(this);
-	m = v = v_0;
+	m = v = {0,0};
 	screen_scale = 1.0f;
 	holding_cursor = false;
 	holding_x = holding_y = 0;
@@ -210,7 +210,7 @@ void MultiView::set_view_stage(int *view_stage, bool allow_handle) {}
 void MultiView::cam_zoom(float factor, bool mouse_rel) {
 	vector mup;
 	if (mouse_rel)
-		mup = mouse_win->unproject(m, cam.pos);
+		mup = mouse_win->unproject({m,0}, cam.pos);
 	cam.radius /= factor;
 	if (mouse_rel)
 		cam.pos += (1 - 1/factor) * (mup - cam.pos);
@@ -515,10 +515,8 @@ void MultiView::on_left_button_up() {
 void MultiView::update_mouse() {
 	m.x = hui::GetEvent()->mx * screen_scale;
 	m.y = hui::GetEvent()->my * screen_scale;
-	m.z = 0;
 	v.x = hui::GetEvent()->dx * screen_scale;
 	v.y = hui::GetEvent()->dy * screen_scale;
-	v.z = 0;
 
 	lbut = hui::GetEvent()->lbut;
 	mbut = hui::GetEvent()->mbut;
@@ -530,7 +528,7 @@ void MultiView::update_mouse() {
 
 	// which window is the cursor in?
 	for (auto w: all_windows)
-		if (w->dest.inside(m.x, m.y))
+		if (w->dest.inside(m))
 			mouse_win = w;
 	if (!mode3d) {
 		mouse_win = all_windows[0];
@@ -552,10 +550,10 @@ void MultiView::on_mouse_move() {
 		int t = active_win->type;
 		if ((t == VIEW_PERSPECTIVE) or (t == VIEW_ISOMETRIC)) {
 	// camera rotation
-			cam_rotate_pixel(v, mbut or ed->get_key(hui::KEY_CONTROL));
+			cam_rotate_pixel({v,0}, mbut or ed->get_key(hui::KEY_CONTROL));
 		} else {
 	// camera translation
-			cam_move_pixel(active_win, v);
+			cam_move_pixel(active_win, {v,0});
 		}
 	} else if (moving_cross_x or moving_cross_y) {
 		if (moving_cross_x)
@@ -732,7 +730,7 @@ void MultiView::on_draw() {
 	//printf("%f\n", timer.get()*1000.0f);
 }
 
-void MultiView::SelectionRect::start_later(const vector &m) {
+void MultiView::SelectionRect::start_later(const vec2 &m) {
 	pos0 = m;
 	dist = 0;
 }
@@ -742,7 +740,7 @@ void MultiView::SelectionRect::end() {
 	dist = -1;
 }
 
-void MultiView::SelectionRect::draw(const vector &m) {
+void MultiView::SelectionRect::draw(const vec2 &m) {
 	nix::set_z(false, false);
 	nix::set_alpha(nix::AlphaMode::MATERIAL);
 	nix::set_texture(nullptr);
@@ -761,7 +759,7 @@ void MultiView::SelectionRect::draw(const vector &m) {
 	nix::set_z(true, true);
 }
 
-rect MultiView::SelectionRect::get(const vector &m) {
+rect MultiView::SelectionRect::get(const vec2 &m) {
 	return rect(min(m.x, pos0.x), max(m.x, pos0.x), min(m.y, pos0.y), max(m.y, pos0.y));
 }
 
@@ -910,14 +908,14 @@ vector MultiView::get_cursor() {
 	if (edit_coordinate_mode == CoordinateMode::GLOBAL) {
 		plane pl = plane(mouse_win->active_grid_direction(), 0);
 		vector tp;
-		if (pl.intersect_line(mouse_win->unproject(m), mouse_win->unproject(m + vector(0,0,0.999999f)), tp))
+		if (pl.intersect_line(mouse_win->unproject({m,0}), mouse_win->unproject({m,0.999999f}), tp))
 			return maybe_snap_v(tp);
 	}
-	return maybe_snap_v(mouse_win->unproject(m, cam.pos));
+	return maybe_snap_v(mouse_win->unproject({m,0}, cam.pos));
 }
 
 vector MultiView::get_cursor(const vector &depth_reference) {
-	return mouse_win->unproject(m, depth_reference);
+	return mouse_win->unproject({m,0}, depth_reference);
 }
 
 
@@ -928,7 +926,7 @@ void MultiView::get_hover() {
 		return;
 
 
-	if (menu and (mouse_win->name_dest.inside(m.x, m.y))) {
+	if (menu and (mouse_win->name_dest.inside(m))) {
 		hover.meta = hover.HOVER_WINDOW_LABEL;
 		return;
 	}

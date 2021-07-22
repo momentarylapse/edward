@@ -98,9 +98,8 @@ void ModeModelMeshCreateCylinderSnake::on_left_button_up() {
 		abort();
 	} else {
 		if (pos.num > 2) {
-			vector pp = multi_view->mouse_win->project(pos[0]);
-			pp.z = 0;
-			if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE) {
+			vec2 pp = multi_view->mouse_win->project(pos[0]).xy();
+			if ((pp - multi_view->m).length() < CYLINDER_CLOSING_DISTANCE) {
 				closed = true;
 				ready_for_scaling = true;
 				on_mouse_move();
@@ -177,9 +176,8 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 		if (win == multi_view->mouse_win)
 			draw_helper_line(win, pos.back(), multi_view->get_cursor());
 	} else if (pos.num > 2) {
-		vector pp = multi_view->mouse_win->project(pos[0]);
-		pp.z = 0;
-		if ((pp - multi_view->m).length_fuzzy() < CYLINDER_CLOSING_DISTANCE) {
+		vec2 pp = multi_view->mouse_win->project(pos[0]).xy();
+		if ((pp - multi_view->m).length() < CYLINDER_CLOSING_DISTANCE) {
 			nix::set_shader(nix::Shader::default_2d);
 			draw_str(pp.x, pp.y, _("Close path"));
 		}

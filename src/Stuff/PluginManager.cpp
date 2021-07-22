@@ -260,8 +260,7 @@ void PluginManager::link_plugins() {
 
 	ShaderNode node("");
 	kaba::declare_class_size("shader.Node", sizeof(ShaderNode));
-	kaba::declare_class_element("shader.Node.x", &ShaderNode::x);
-	kaba::declare_class_element("shader.Node.y", &ShaderNode::y);
+	kaba::declare_class_element("shader.Node.pos", &ShaderNode::pos);
 	kaba::declare_class_element("shader.Node.type", &ShaderNode::type);
 	kaba::declare_class_element("shader.Node.output", &ShaderNode::output);
 	kaba::declare_class_element("shader.Node.params", &ShaderNode::params);

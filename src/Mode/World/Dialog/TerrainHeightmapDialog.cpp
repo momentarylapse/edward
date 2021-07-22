@@ -8,6 +8,8 @@
 #include "TerrainHeightmapDialog.h"
 #include "../../../Action/World/Terrain/ActionWorldTerrainApplyHeightmap.h"
 #include "../../../Storage/Storage.h"
+#include "../../../lib/math/rect.h"
+#include "../../../lib/math/vec2.h"
 
 TerrainHeightmapDialog::TerrainHeightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
 	hui::Dialog("terrain_heightmap_dialog", 400, 300, _parent, _allow_parent)
@@ -87,7 +89,7 @@ static float im_interpolate(const Image &im, float x, float y, float stretch_x, 
 void TerrainHeightmapDialog::on_preview_draw(Painter *c) {
 	if (heightmap.is_empty()) {
 		c->set_color(Black);
-		c->draw_rect(0, 0, c->width, c->height);
+		c->draw_rect(c->area());
 	} else {
 		Image m;
 		int w = c->width, h = c->height;
@@ -101,7 +103,7 @@ void TerrainHeightmapDialog::on_preview_draw(Painter *c) {
 					f *= im_interpolate(filter, hmx, hmy, 1, 1);
 				m.set_pixel(x, y, color(1, f, f, f));
 			}
-		c->draw_image(0, 0, &m);
+		c->draw_image({0, 0}, &m);
 	}
 }
 

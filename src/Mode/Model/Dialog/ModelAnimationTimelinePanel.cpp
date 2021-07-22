@@ -10,6 +10,7 @@
 #include "../../../Data/Model/DataModel.h"
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
+#include "../../../lib/math/vec2.h"
 
 namespace hui {
 	void get_style_colors(Panel *p, const string &id, Map<string,color> &colors);
@@ -73,7 +74,7 @@ void ModelAnimationTimelinePanel::on_draw(Painter *c) {
 
 	c->set_line_width(0.8f);
 	c->set_color(bg);
-	c->draw_rect(0, 0, c->width, c->height);
+	c->draw_rect(c->area());
 	c->set_font_size(8);
 
 	rect r = rect(0, c->width, 0, c->height);
@@ -88,17 +89,17 @@ void ModelAnimationTimelinePanel::on_draw(Painter *c) {
 	color c2 = color_grid;
 	for (int n=nx0;n<nx1;n++) {
 		c->set_color(((n % 10) == 0) ? c2 : c1);
-		int xx = sample2screen(n * dt);
-		c->draw_line(xx, 0, xx, c->height);
+		float xx = (float)sample2screen(n * dt);
+		c->draw_line({xx, 0}, {xx, (float)c->height});
 	}
 	c->set_color(fg);
 	for (int n=nx0;n<nx1;n++) {
 		if ((sample2screen(dt) - sample2screen(0)) > 30) {
 			if ((((n % 10) % 3) == 0) && ((n % 10) != 9) && ((n % 10) != -9))
-				c->draw_str(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 3));
+				c->draw_str({sample2screen(n * dt) + 2, r.y1}, get_time_str_fuzzy(n * dt, dt * 3));
 		} else {
 			if ((n % 10) == 0)
-				c->draw_str(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 10));
+				c->draw_str({sample2screen(n * dt) + 2, r.y1}, get_time_str_fuzzy(n * dt, dt * 10));
 		}
 	}
 
@@ -112,7 +113,7 @@ void ModelAnimationTimelinePanel::on_draw(Painter *c) {
 		c->set_color((i == mode_model_animation->current_frame) ? Red : fg);
 		c->set_line_width((i == hover) ? 5.0f : 2.2f);
 		float x = sample2screen(t);
-		c->draw_line(x, r.y1, x, r.y2);
+		c->draw_line({x, r.y1}, {x, r.y2});
 		t += f.duration;
 	}
 	{
@@ -120,7 +121,7 @@ void ModelAnimationTimelinePanel::on_draw(Painter *c) {
 		c->set_line_width((move->frame.num == hover) ? 5.0f : 2.2f);
 		float x = sample2screen(t);
 		c->set_line_dash({10,10}, 0);
-		c->draw_line(x, r.y1, x, r.y2);
+		c->draw_line({x, r.y1}, {x, r.y2});
 		c->set_line_dash({}, 0);
 	}
 
@@ -146,7 +147,7 @@ void ModelAnimationTimelinePanel::on_draw(Painter *c) {
 		c->set_line_width(1.5f);
 		c->set_color(Green);
 		float x = sample2screen(mode_model_animation->sim_frame_time);
-		c->draw_line(x, r.y1, x, r.y2);
+		c->draw_line({x, r.y1}, {x, r.y2});
 	}
 
 	parasite->on_timeline_draw(c);

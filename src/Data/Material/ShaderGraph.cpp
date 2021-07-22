@@ -144,8 +144,8 @@ void ShaderGraph::save(const Path &filename) {
 	for (auto *n: weak(nodes)) {
 		xml::Element e = {"Node"};
 		e.add_attribute("type", n->type);
-		e.add_attribute("x", i2s(n->x));
-		e.add_attribute("y", i2s(n->y));
+		e.add_attribute("x", i2s((int)n->pos.x));
+		e.add_attribute("y", i2s((int)n->pos.y));
 		for (auto &p: n->params) {
 			e.add_attribute(p.name, p.value);
 		}

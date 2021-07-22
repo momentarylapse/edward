@@ -10,8 +10,7 @@
 
 #include "../../../lib/hui/hui.h"
 
-class TimeLineParasite
-{
+class TimeLineParasite {
 public:
 	virtual ~TimeLineParasite(){}
 	virtual void on_timeline_left_button_down(){}

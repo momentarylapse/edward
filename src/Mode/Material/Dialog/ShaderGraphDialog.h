@@ -10,6 +10,7 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../lib/math/rect.h"
+#include "../../../lib/math/vec2.h"
 
 class DataMaterial;
 class ShaderGraph;
@@ -62,12 +63,11 @@ public:
 	ShaderGraph *graph;
 
 	void update_mouse();
-	float mx, my;
-	int move_dx, move_dy;
+	vec2 m;
+	vec2 move_d;
 	float view_scale;
-	float view_offset_x, view_offset_y;
-	float proj_x(float x);
-	float proj_y(float y);
+	vec2 view_offset;
+	vec2 proj(const vec2 &p);
 
 
 	hui::Menu *popup;

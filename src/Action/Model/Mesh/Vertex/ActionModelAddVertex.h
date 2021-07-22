@@ -10,6 +10,7 @@
 
 #include "../../../Action.h"
 #include "../../../../lib/math/vector.h"
+#include "../../../../lib/math/vec4.h"
 
 class ActionModelAddVertex: public Action {
 public:

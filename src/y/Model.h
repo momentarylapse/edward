@@ -27,6 +27,7 @@
 #include "../lib/base/base.h"
 #include "../lib/file/path.h"
 #include "../lib/math/vector.h"
+#include "../lib/math/vec4.h"
 #include "../lib/math/matrix.h"
 #include "../lib/math/matrix3.h"
 #include "../lib/math/plane.h"

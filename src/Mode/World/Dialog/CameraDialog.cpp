@@ -9,6 +9,7 @@
 #include "../Camera/ModeWorldCamera.h"
 #include "../../../Data/World/DataCamera.h"
 #include "../../../Action/World/Camera/ActionCameraMoveTimeSelection.h"
+#include "../../../lib/math/vec2.h"
 #include "../../../Edward.h"
 #include "../../../MultiView/MultiView.h"
 
@@ -131,7 +132,7 @@ void CameraDialog::OnAreaDraw(Painter *c)
 	//HuiPainter *c = beginDraw("cam_area");
 	c->set_line_width(0.8f);
 	c->set_color(bg);
-	c->draw_rect(0, 0, c->width, c->height);
+	c->draw_rect(c->area());
 	c->set_font_size(8);
 
 	rect r = rect(0, c->width, 0, c->height);
@@ -146,17 +147,17 @@ void CameraDialog::OnAreaDraw(Painter *c)
 	color c2 = ColorGrid;
 	for (int n=nx0;n<nx1;n++){
 		c->set_color(((n % 10) == 0) ? c2 : c1);
-		int xx = sample2screen(n * dt);
-		c->draw_line(xx, 0, xx, c->height);
+		float xx = sample2screen(n * dt);
+		c->draw_line({xx, 0}, {xx, (float)c->height});
 	}
 	c->set_color(ColorGrid);
 	for (int n=nx0;n<nx1;n++){
 		if ((sample2screen(dt) - sample2screen(0)) > 30){
 			if ((((n % 10) % 3) == 0) && ((n % 10) != 9) && ((n % 10) != -9))
-				c->draw_str(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 3));
+				c->draw_str({(float)sample2screen(n * dt) + 2, r.y1}, get_time_str_fuzzy(n * dt, dt * 3));
 		}else{
 			if ((n % 10) == 0)
-				c->draw_str(sample2screen(n * dt) + 2, r.y1, get_time_str_fuzzy(n * dt, dt * 10));
+				c->draw_str({(float)sample2screen(n * dt) + 2, r.y1}, get_time_str_fuzzy(n * dt, dt * 10));
 		}
 	}
 
@@ -168,7 +169,7 @@ void CameraDialog::OnAreaDraw(Painter *c)
 	foreachi(WorldCamPoint &p, data->Point, i){
 		c->set_color(p.is_selected ? Red : Black);
 		c->set_line_width((i == hover) ? 5.0f : 2.2f);
-		c->draw_line(time_pos[i], r.y1, time_pos[i], r.y2);
+		c->draw_line({time_pos[i], r.y1}, {time_pos[i], r.y2});
 		float t1 = t0 + p.Duration;
 		t0 = t1;
 	}
@@ -188,13 +189,13 @@ void CameraDialog::OnAreaDraw(Painter *c)
 	for (int i=0; i<N; i++){
 		float t0 = (float)i / (float)N * dur;
 		float t1 = (float)(i+1) / (float)N * dur;
-		c->draw_line(sample2screen(t0), r.y2 - v[i]/v_max * r.height(), sample2screen(t1), r.y2 - v[i+1]/v_max * r.height());
+		c->draw_line({sample2screen(t0), r.y2 - v[i]/v_max * r.height()}, {sample2screen(t1), r.y2 - v[i+1]/v_max * r.height()});
 	}
 
 	if (mode->preview){
 		c->set_line_width(1.5f);
 		c->set_color(Green);
-		c->draw_line(sample2screen(mode->preview_time), r.y1, sample2screen(mode->preview_time), r.y2);
+		c->draw_line({sample2screen(mode->preview_time), r.y1}, {sample2screen(mode->preview_time), r.y2});
 	}
 	//c->end();
 }

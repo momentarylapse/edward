@@ -14,6 +14,7 @@
 namespace nix {
 	class Texture;
 };
+class vec2;
 
 namespace MultiView {
 
@@ -44,8 +45,8 @@ public:
 		rect r, r_move, r_rotate, r_zoom;
 		bool moving, rotating, zooming;
 		void set(Window *w);
-		bool hover(float mx, float my);
-		void on_left_button_down(float mx, float my);
+		bool hover(const vec2 &m);
+		void on_left_button_down(const vec2 &m);
 	};
 	Array<Controller> controllers;
 

@@ -11,6 +11,7 @@
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
 #include "../../../../lib/nix/nix.h"
+#include "../../../../lib/math/vec2.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../Animation/ModeModelAnimation.h"
@@ -55,7 +56,7 @@ void MeshSelectionModePolygon::on_start() {
 
 
 
-float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vector &M, vector &tp, float &z, const Array<ModelVertex> &vertex) {
+float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vec2 &M, vector &tp, float &z, const Array<ModelVertex> &vertex) {
 	// care for the sense of rotation?
 	if (vector::dot(pol->temp_normal, win->get_direction()) > 0)
 		return -1;
@@ -77,7 +78,7 @@ float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vector &M, vec
 		int b = pol->side[k].triangulation[1];
 		int c = pol->side[k].triangulation[2];
 		float f,g;
-		GetBaryCentric(M, p[a], p[b], p[c], f, g);
+		GetBaryCentric(vector(M.x,M.y,0), p[a], p[b], p[c], f, g);
 		// cursor in triangle?
 		if ((f>0) and (g>0) and (f+g<1)) {
 			vector va = vertex[pol->side[a].vertex].pos;
@@ -91,7 +92,7 @@ float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vector &M, vec
 	return -1;
 }
 
-float ModelPolygon::hover_distance(MultiView::Window *win, const vector &M, vector &tp, float &z) {
+float ModelPolygon::hover_distance(MultiView::Window *win, const vec2 &M, vector &tp, float &z) {
 	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
 	return poly_hover(this, win, M, tp, z, m->show_vertices);
 }
@@ -109,7 +110,7 @@ bool ModelPolygon::in_rect(MultiView::Window *win, const rect &r) {
 		vector pp = win->project(m->show_vertices[side[k].vertex].pos);
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
-		if (r.inside(pp.x, pp.y))
+		if (r.inside({pp.x, pp.y}))
 			return true;
 	}
 	return false;

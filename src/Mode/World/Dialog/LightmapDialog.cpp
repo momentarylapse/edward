@@ -15,6 +15,8 @@
 #include "../../../Edward.h"
 #include "../../../Storage/Storage.h"
 #include "../../../y/ModelManager.h"
+#include "../../../lib/math/vec2.h"
+#include "../../../lib/math/rect.h"
 
 LightmapDialog::LightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
 	hui::Dialog("", 400, 400, _parent, _allow_parent)
@@ -93,10 +95,10 @@ void OnHistDraw(Painter *c)
 	float hh = h - 40;
 	float scale = w / hist_p->max;
 	c->set_color(White);
-	c->draw_rect(0, 0, w, hh);
+	c->draw_rect(rect(0, w, 0, hh));
 	c->set_color(Black);
 	c->set_line_width(0.8f);
-	c->draw_line(0, hh, w, hh);
+	c->draw_line({0, hh}, {w, hh});
 	float grid_dist_min = 40 / scale; // 40 pixel
 	int dec = floor(log10(grid_dist_min)) + 1;
 	float d = pow(10.0f, (float)dec);
@@ -104,15 +106,15 @@ void OnHistDraw(Painter *c)
 		d /= 2;
 	c->set_color(Grey);
 	for (float x=0; x<hist_p->max; x+=d){
-		c->draw_str(scale * x, hh + 3, f2s(x, max(0, 1-dec)));
-		c->draw_line(scale * x, 0, scale * x, hh);
+		c->draw_str({scale * x, hh + 3}, f2s(x, max(0, 1-dec)));
+		c->draw_line({scale * x, 0}, {scale * x, hh});
 	}
 	c->set_color(Black);
 	c->set_font("Sans", 12, true, false);
-	c->draw_str(w / 2 - 40, hh + 20, _("Brightness"));
+	c->draw_str({w / 2 - 40, hh + 20}, _("Brightness"));
 	c->set_line_width(1.5f);
 	for (int i=0;i<hist_p->f.num-1;i++)
-		c->draw_line((w * i) / hist_p->f.num, hh - hh * hist_p->f[i], (w * (i + 1)) / hist_p->f.num, hh - hh * hist_p->f[i + 1]);
+		c->draw_line({(w * i) / hist_p->f.num, hh - hh * hist_p->f[i]}, {(w * (i + 1)) / hist_p->f.num, hh - hh * hist_p->f[i + 1]});
 	//c->end();
 }
 

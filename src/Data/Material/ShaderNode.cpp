@@ -52,8 +52,7 @@ void ShaderNode::Parameter::set_color(const color &c) {
 
 ShaderNode::ShaderNode(const string &_type) {
 	type = _type;
-	x = 0;
-	y = 0;
+	pos = {0,0};
 }
 
 void ShaderNode::__init__(const string &t) {
@@ -71,8 +70,7 @@ ShaderNode *create_node(const string &type, int x, int y) {
 			if (p.type == PluginManager::PluginType::SHADER_NODE)
 				if (p.name == type) {
 					auto n = (ShaderNode*)p.create_instance("*.shader.Node");
-					n->x = x;
-					n->y = y;
+					n->pos = vec2(x,y);
 					return n;
 		}
 		throw Exception("node type unknown: " + type);

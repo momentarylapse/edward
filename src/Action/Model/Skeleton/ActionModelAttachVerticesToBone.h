@@ -9,7 +9,7 @@
 #define ACTIONMODELATTACHVERTICESTOBONE_H_
 
 #include "../../Action.h"
-#include "../../../lib/math/vector.h"
+#include "../../../lib/math/vec4.h"
 
 class ActionModelAttachVerticesToBone: public Action {
 public:

@@ -13,11 +13,9 @@
 #include "../../../../Data/Model/DataModel.h"
 #include "../../Dialog/ModelAnimationTimelinePanel.h"
 
-class ModeModelAnimationInterpolateFrames: public ModeCreation<DataModel>, public TimeLineParasite
-{
+class ModeModelAnimationInterpolateFrames: public ModeCreation<DataModel>, public TimeLineParasite {
 public:
 	ModeModelAnimationInterpolateFrames(ModeBase *_parent);
-	virtual ~ModeModelAnimationInterpolateFrames();
 
 	virtual void on_start();
 	virtual void on_end();

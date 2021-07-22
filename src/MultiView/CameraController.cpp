@@ -68,8 +68,8 @@ void CameraController::Controller::set(Window *w) {
 				w->dest.y1 + margin + CC_RADIUS);
 }
 
-bool CameraController::Controller::hover(float mx, float my) {
-	return r.inside(mx, my);
+bool CameraController::Controller::hover(const vec2 &m) {
+	return r.inside(m);
 }
 
 void CameraController::update_rects() {
@@ -91,21 +91,21 @@ bool CameraController::is_mouse_over() {
 	update_rects();
 	if (show) {
 		for (auto &c: controllers)
-			if (c.hover(view->m.x, view->m.y))
+			if (c.hover(view->m))
 				return true;
 	}
 
-	return r2.inside(view->m.x, view->m.y);
+	return r2.inside(view->m);
 }
 
 void CameraController::on_left_button_down() {
 	update_rects();
-	if (r_show.inside(view->m.x, view->m.y))
+	if (r_show.inside(view->m))
 		show = !show;
 	for (auto &c: controllers) {
-		c.moving = c.r_move.inside(view->m.x, view->m.y);
-		c.rotating = c.r_rotate.inside(view->m.x, view->m.y);
-		c.zooming = c.r_zoom.inside(view->m.x, view->m.y);
+		c.moving = c.r_move.inside(view->m);
+		c.rotating = c.r_rotate.inside(view->m);
+		c.zooming = c.r_zoom.inside(view->m);
 
 		if (c.moving or c.rotating or c.zooming)
 			MouseWrapper::start(ed->win);
@@ -126,7 +126,7 @@ void CameraController::on_mouse_move() {
 		if (c.moving)
 			view->cam_move_pixel(c.win, vector(view->v.x, view->v.y, 0));
 		if (c.rotating)
-			view->cam_rotate_pixel(view->v, false);
+			view->cam_rotate_pixel({view->v,0}, false);
 		if (c.zooming)
 			view->cam_zoom(pow(1.007f, view->v.y), false);
 	}
@@ -141,7 +141,7 @@ void CameraController::on_mouse_wheel() {
 
 void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active) {
 	nix::set_texture(tex_bg);
-	if (active or rr.inside(view->m.x, view->m.y))
+	if (active or rr.inside(view->m))
 		set_color(ColorIconHover);
 	else
 		set_color(ColorIcon);

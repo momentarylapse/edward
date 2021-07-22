@@ -10,6 +10,7 @@
 
 #include "../lib/base/base.h"
 #include "../lib/math/vector.h"
+#include "../lib/math/vec2.h"
 #include "../lib/math/quaternion.h"
 #include "../lib/math/rect.h"
 #include "../Stuff/Observable.h"
@@ -64,7 +65,7 @@ struct Camera {
 class ActionController;
 class CameraController;
 
-typedef std::function<float(const SingleData *p, Window *all_windows, const vector &m, vector &tp, float &z)> HoverDistanceFunction;
+typedef std::function<float(const SingleData *p, Window *all_windows, const vec2 &m, vector &tp, float &z)> HoverDistanceFunction;
 
 struct DataSet {
 	int type;
@@ -136,7 +137,7 @@ public:
 	bool allow_mouse_actions;
 	Camera cam;
 
-	vector m, v;
+	vec2 m, v;
 	float screen_scale;
 
 	Window *active_win;
@@ -261,11 +262,11 @@ public:
 	struct SelectionRect {
 		bool active;
 		int dist;
-		vector pos0;
-		void start_later(const vector &m);
+		vec2 pos0;
+		void start_later(const vec2 &m);
 		void end();
-		rect get(const vector &m);
-		void draw(const vector &m);
+		rect get(const vec2 &m);
+		void draw(const vec2 &m);
 	};
 	SelectionRect sel_rect;
 	bool allow_select;

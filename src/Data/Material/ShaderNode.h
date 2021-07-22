@@ -10,6 +10,7 @@
 
 #include "../../lib/base/base.h"
 #include "../../lib/base/pointer.h"
+#include "../../lib/math/vec2.h"
 
 class color;
 class ShaderBuilderContext;
@@ -32,7 +33,7 @@ public:
 	void __init__(const string &t);
 	virtual void __delete__();
 
-	int x, y;
+	vec2 pos;
 	string type;
 
 	struct Parameter {

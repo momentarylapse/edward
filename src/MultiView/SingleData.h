@@ -12,6 +12,7 @@
 #include "../lib/math/vector.h"
 
 class rect;
+class vec2;
 
 namespace MultiView{
 
@@ -25,7 +26,7 @@ public:
 	int view_stage;
 	bool is_selected, m_delta, m_old, is_special;
 	vector pos;
-	virtual float hover_distance(Window *win, const vector &m, vector &tp, float &z);
+	virtual float hover_distance(Window *win, const vec2 &m, vector &tp, float &z);
 	virtual bool overlap_rect(Window *win, const rect &r);
 	virtual bool in_rect(Window *win, const rect &r);
 };

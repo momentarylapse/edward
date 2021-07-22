@@ -406,7 +406,7 @@ bool Geometry::is_mouse_over(MultiView::Window *win, const matrix &mat, vector &
 
 		// test all sub-triangles
 		p.update_triangulation(vertex);
-		vector M = win->multi_view->m;
+		vector M = vector(win->multi_view->m, 0);
 		for (int k=p.side.num-3; k>=0; k--){
 			int a = p.side[k].triangulation[0];
 			int b = p.side[k].triangulation[1];

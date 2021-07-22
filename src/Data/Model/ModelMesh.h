@@ -9,6 +9,7 @@
 #define SRC_DATA_MODEL_MODELMESH_H_
 
 #include "../../MultiView/SingleData.h"
+#include "../../lib/math/vec4.h"
 
 class DataModel;
 class ModelTriangleMesh;
@@ -44,7 +45,7 @@ public:
 	//  Vertex[1] = surf.Polygon[Triangle[0]].Vertex[(Side[0] + 1) % 3]
 	//  same for Polygon/Side[1] but Vertex[0 <-> 1]
 
-	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
+	float hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 };
@@ -58,7 +59,7 @@ public:
 	int index;
 	float radius;
 
-	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
+	float hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 };
@@ -69,7 +70,7 @@ public:
 	float radius;
 	bool round;
 
-	float hover_distance(MultiView::Window *win, const vector &m, vector &tp, float &z) override;
+	float hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 };
