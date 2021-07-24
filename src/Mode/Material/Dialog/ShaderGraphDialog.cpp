@@ -336,7 +336,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 
 void ShaderGraphDialog::update_mouse() {
 	auto e = hui::GetEvent();
-	m = (vec2(e->mx, e->my) / view_scale) + view_offset;
+	m = (e->m / view_scale) + view_offset;
 }
 
 
@@ -541,7 +541,7 @@ void ShaderGraphDialog::on_mouse_move() {
 		}
 	} else if (selection.type == HoverData::Type::VIEW) {
 		auto e = hui::GetEvent();
-		view_offset = move_d - (vec2(e->mx, e->my) / view_scale);
+		view_offset = move_d - (e->m / view_scale);
 	} else {
 		hover = get_hover();
 	}
@@ -550,9 +550,9 @@ void ShaderGraphDialog::on_mouse_move() {
 
 void ShaderGraphDialog::on_mouse_wheel() {
 	auto e = hui::GetEvent();
-	view_scale = clamp(view_scale * exp(e->scroll_y * 0.05f), MIN_VIEW_SCALE, MAX_VIEW_SCALE);
+	view_scale = clamp(view_scale * exp(e->scroll.y * 0.05f), MIN_VIEW_SCALE, MAX_VIEW_SCALE);
 
-	view_offset = m -  vec2(e->mx, e->my) / view_scale;
+	view_offset = m -  e->m / view_scale;
 
 	redraw("area");
 }

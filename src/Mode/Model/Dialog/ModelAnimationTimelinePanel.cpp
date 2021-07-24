@@ -154,7 +154,7 @@ void ModelAnimationTimelinePanel::on_draw(Painter *c) {
 }
 
 void ModelAnimationTimelinePanel::on_mouse_move() {
-	mx = hui::GetEvent()->mx;
+	mx = hui::GetEvent()->m.x;
 	if (hui::GetEvent()->lbut) {
 		if (hover > 0) {
 
@@ -189,8 +189,8 @@ void ModelAnimationTimelinePanel::on_left_button_up() {
 }
 
 void ModelAnimationTimelinePanel::on_mouse_wheel() {
-	mx = hui::GetEvent()->mx;
-	float time_scale_new = min(time_scale * pow(1.1f, hui::GetEvent()->scroll_y), 1000.0f);
+	mx = hui::GetEvent()->m.x;
+	float time_scale_new = min(time_scale * pow(1.1f, hui::GetEvent()->scroll.y), 1000.0f);
 	time_offset += mx * (1.0f / time_scale - 1.0f / time_scale_new);
 	time_scale = time_scale_new;
 	//UpdateTimePos();

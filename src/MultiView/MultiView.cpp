@@ -513,10 +513,8 @@ void MultiView::on_left_button_up() {
 
 
 void MultiView::update_mouse() {
-	m.x = hui::GetEvent()->mx * screen_scale;
-	m.y = hui::GetEvent()->my * screen_scale;
-	v.x = hui::GetEvent()->dx * screen_scale;
-	v.y = hui::GetEvent()->dy * screen_scale;
+	m = hui::GetEvent()->m * screen_scale;
+	v = hui::GetEvent()->d * screen_scale;
 
 	lbut = hui::GetEvent()->lbut;
 	mbut = hui::GetEvent()->mbut;

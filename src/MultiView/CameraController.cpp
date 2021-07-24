@@ -136,7 +136,7 @@ void CameraController::on_mouse_wheel() {
 	hui::Event *e = hui::GetEvent();
 
 	// mouse wheel -> zoom
-	view->cam_zoom(exp( - view->SPEED_ZOOM_WHEEL * e->scroll_y), view->mouse_win->type != VIEW_PERSPECTIVE);
+	view->cam_zoom(exp( - view->SPEED_ZOOM_WHEEL * e->scroll.y), view->mouse_win->type != VIEW_PERSPECTIVE);
 }
 
 void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active) {

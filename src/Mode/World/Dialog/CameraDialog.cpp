@@ -204,7 +204,7 @@ void CameraDialog::OnAreaLeftButtonDown()
 {
 	if ((hover >= 0) && (data->Point[hover].is_selected)){
 		mouse_distance = 0;
-		mt_time0 = screen2sample(hui::GetEvent()->mx);
+		mt_time0 = screen2sample(hui::GetEvent()->m.x);
 	}else{
 		foreachi(WorldCamPoint &p, data->Point, i)
 			p.is_selected = (i == hover);
@@ -225,11 +225,11 @@ void CameraDialog::OnAreaLeftButtonUp()
 
 void CameraDialog::OnAreaMouseMove()
 {
-	int mx = hui::GetEvent()->mx;
+	int mx = hui::GetEvent()->m.x;
 
 	if (hui::GetEvent()->lbut){
 		if (mouse_distance >= 0)
-			mouse_distance += abs(hui::GetEvent()->dx);
+			mouse_distance += abs(hui::GetEvent()->d.x);
 		if (mouse_distance > 5){
 			if (mt_action){
 				mt_action->undo(data);
@@ -253,8 +253,8 @@ void CameraDialog::OnAreaMouseMove()
 
 void CameraDialog::OnAreaMouseWheel()
 {
-	float time_scale_new = min(time_scale * (float)pow(1.1f, hui::GetEvent()->scroll_y), 1000.0f);
-	time_offset += hui::GetEvent()->mx * (1.0f / time_scale - 1.0f / time_scale_new);
+	float time_scale_new = min(time_scale * (float)pow(1.1f, hui::GetEvent()->scroll.y), 1000.0f);
+	time_offset += hui::GetEvent()->m.x * (1.0f / time_scale - 1.0f / time_scale_new);
 	time_scale = time_scale_new;
 	UpdateTimePos();
 	redraw("cam_area");
