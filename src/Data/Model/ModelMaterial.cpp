@@ -173,8 +173,9 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 	w->set_shader(nix::Shader::default_3d);
 	color em = color::interpolate(col.emission, White, 0.1f);
 	nix::set_material(col.albedo, col.roughness, col.metal, em);
+	nix::set_z(true, true);
 	if (true) {//MVFXEnabled){
-		nix::set_z(alpha.zbuffer, alpha.zbuffer);
+		//nix::set_z(alpha.zbuffer, alpha.zbuffer);
 		auto mode = alpha.mode;
 		auto source = alpha.source;
 		auto dest = alpha.destination;
@@ -189,10 +190,10 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 			nix::set_alpha(nix::AlphaMode::COLOR_KEY_SMOOTH);
 		} else if (mode == TransparencyMode::FUNCTIONS) {
 			nix::set_alpha(source, dest);
-			//NixSetZ(false,false);
+			nix::set_z(false, true);
 		} else if (mode == TransparencyMode::FACTOR) {
 			//nix::set_alpha(alpha.factor);
-			//NixSetZ(false,false);
+			nix::set_z(false, true);
 		}
 		material->prepare_shader(ShaderVariant::DEFAULT);
 		w->set_shader(material->shader[0].get());

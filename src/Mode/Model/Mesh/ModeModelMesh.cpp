@@ -645,7 +645,8 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, const
 		nix::set_offset(0);
 		nix::draw_triangles(m->vb);
 	}
-
+	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::set_z(true, true);
 }
 
 
