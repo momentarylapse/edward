@@ -137,7 +137,6 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 			m->col.import(am, di, sp, shininess, em);
 		}
 		m->alpha.mode = (TransparencyMode)f->read_int();
-		m->alpha.user = (m->alpha.mode != TransparencyMode::DEFAULT);
 		m->alpha.source = (nix::Alpha)f->read_int();
 		m->alpha.destination = (nix::Alpha)f->read_int();
 		m->alpha.factor = (float)f->read_int() * 0.01f;
@@ -426,7 +425,6 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 		float shininess = (float)f->read_int();
 		m->col.import(em, di, sp, shininess, em);
 		m->alpha.mode = (TransparencyMode)f->read_int();
-		m->alpha.user = (m->alpha.mode != TransparencyMode::DEFAULT);
 		m->alpha.source = (nix::Alpha)f->read_int();
 		m->alpha.destination = (nix::Alpha)f->read_int();
 		m->alpha.factor = (float)f->read_int() * 0.01f;

@@ -204,7 +204,6 @@ public:
 		me->col.roughness = f->read_float();
 
 		me->alpha.mode = (TransparencyMode)f->read_int();
-		me->alpha.user = (me->alpha.mode != TransparencyMode::DEFAULT);
 		me->alpha.source = (nix::Alpha)f->read_int();
 		me->alpha.destination = (nix::Alpha)f->read_int();
 		me->alpha.factor = f->read_float();
@@ -224,7 +223,7 @@ public:
 		write_color_argb(f, me->col.emission);
 		f->write_float(me->col.metal);
 		f->write_float(me->col.roughness);
-		f->write_int((int)(me->alpha.user ? me->alpha.mode : TransparencyMode::DEFAULT));
+		f->write_int((int)me->alpha.mode);
 		f->write_int((int)me->alpha.source);
 		f->write_int((int)me->alpha.destination);
 		f->write_float(me->alpha.factor);

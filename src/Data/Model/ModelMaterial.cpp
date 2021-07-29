@@ -25,15 +25,14 @@ ModelMaterial::ModelMaterial() {
 	check_colors();
 
 	// transparency
-	alpha.user = false;
-	check_transparency();
 	alpha.mode = TransparencyMode::DEFAULT;
 	alpha.destination = nix::Alpha::ZERO;
 	alpha.source = nix::Alpha::ZERO;
 	alpha.factor = 50;
 	alpha.zbuffer = true;
+	check_transparency();
 
-	vb = NULL;
+	vb = nullptr;
 }
 
 
@@ -113,11 +112,13 @@ void ModelMaterial::make_consistent() {
 	check_colors();
 }
 
+bool ModelMaterial::Alpha::user_defined() const {
+	return mode != TransparencyMode::DEFAULT;
+}
+
 void ModelMaterial::check_transparency() {
-	if (alpha.mode == TransparencyMode::DEFAULT)
-		alpha.user = false;
-	if (!alpha.user) {
-		alpha.mode = material->alpha.mode;
+	if (!alpha.user_defined()) {
+		//alpha.mode = material->alpha.mode;
 		alpha.source = material->alpha.source;
 		alpha.destination = material->alpha.destination;
 		alpha.factor	= material->alpha.factor;
@@ -129,7 +130,7 @@ void ModelMaterial::check_transparency() {
 
 void ModelMaterial::check_textures() {
 
-	msg_write("--------Mat.check textures()");
+	//msg_write("--------Mat.check textures()");
 	// parent has more texture levels?
 //	if (material->textures.num > texture_levels.num) {
 //		while (material->textures.num > texture_levels.num)
@@ -174,14 +175,22 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 	nix::set_material(col.albedo, col.roughness, col.metal, em);
 	if (true) {//MVFXEnabled){
 		nix::set_z(alpha.zbuffer, alpha.zbuffer);
-		if (alpha.mode == TransparencyMode::COLOR_KEY_HARD) {
+		auto mode = alpha.mode;
+		auto source = alpha.source;
+		auto dest = alpha.destination;
+		if (alpha.mode == TransparencyMode::DEFAULT) {
+			mode = material->alpha.mode;
+			source = material->alpha.source;
+			dest = material->alpha.destination;
+		}
+		if (mode == TransparencyMode::COLOR_KEY_HARD) {
 			nix::set_alpha(nix::AlphaMode::COLOR_KEY_HARD);
-		} else if (alpha.mode == TransparencyMode::COLOR_KEY_SMOOTH) {
+		} else if (mode == TransparencyMode::COLOR_KEY_SMOOTH) {
 			nix::set_alpha(nix::AlphaMode::COLOR_KEY_SMOOTH);
-		} else if (alpha.mode == TransparencyMode::FUNCTIONS) {
-			nix::set_alpha(alpha.source, alpha.destination);
+		} else if (mode == TransparencyMode::FUNCTIONS) {
+			nix::set_alpha(source, dest);
 			//NixSetZ(false,false);
-		} else if (alpha.mode == TransparencyMode::FACTOR) {
+		} else if (mode == TransparencyMode::FACTOR) {
 			//nix::set_alpha(alpha.factor);
 			//NixSetZ(false,false);
 		}

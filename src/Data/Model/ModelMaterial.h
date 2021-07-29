@@ -53,7 +53,7 @@ public:
 	Array<TextureLevel*> texture_levels;
 
 	struct Alpha {
-		bool user;
+		bool user_defined() const;
 		TransparencyMode mode;
 		nix::Alpha source, destination;
 		float factor;
