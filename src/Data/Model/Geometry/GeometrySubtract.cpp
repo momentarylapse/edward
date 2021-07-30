@@ -42,7 +42,7 @@ bool find_contour_inside(const Geometry &m, ModelPolygon &t, const Geometry &s, 
 float get_ang(Array<Col> &c, int i, const vector &flat_n);
 bool vertex_in_tria(Col &a, Col &b, Col &c, Col &v, float &slope);
 void combine_contours(Array<Array<Col> > &c, int ca, int ia, int cb, int ib);
-void triangulate_contours(Geometry &m, ModelPolygon &t, Array<Array<Col> > &c);
+void triangulate_contours(const Geometry &m, ModelPolygon &t, Array<Array<Col> > &c);
 bool combine_polygons(Array<Array<Col> > &c, int ia, int ib);
 void simplify_filling(Array<Array<Col> > &c);
 void sort_and_join_contours(const Geometry &m, ModelPolygon &t, const Geometry &b, Array<Array<Col> > &c, bool inverse);

@@ -309,15 +309,16 @@ bool Geometry::is_closed() const {
 	return true;
 }
 
-bool Geometry::is_inside(const vector &p) const
-{
+bool Geometry::is_inside(const vector &p) const {
 	// how often does a ray from p intersect the surface?
 	int n = 0;
 	Array<vector> v;
-	for (ModelPolygon &t: *(Array<ModelPolygon>*)(&polygon)){
+	vector dir = {1, 0.0001f, 0.00002f};
+
+	for (auto &t: polygon) {
 
 		// plane test
-		if ((vector::dot(p - vertex[t.side[0].vertex].pos, t.temp_normal) > 0) == (t.temp_normal.x > 0))
+		if ((vector::dot(p - vertex[t.side[0].vertex].pos, t.temp_normal) > 0) == (vector::dot(t.temp_normal, dir) > 0))
 			continue;
 
 		// polygon data
@@ -349,7 +350,7 @@ bool Geometry::is_inside(const vector &p) const
 		if (t.triangulation_dirty)
 			t.update_triangulation(vertex);
 		for (int k=t.side.num-2;k>=0;k--)
-			if (LineIntersectsTriangle(v[t.side[k].triangulation[0]], v[t.side[k].triangulation[1]], v[t.side[k].triangulation[2]], p, p + vector::EX, col, false))
+			if (LineIntersectsTriangle(v[t.side[k].triangulation[0]], v[t.side[k].triangulation[1]], v[t.side[k].triangulation[2]], p, p + dir, col, false))
 				if (col.x > p.x)
 					n ++;
 	}

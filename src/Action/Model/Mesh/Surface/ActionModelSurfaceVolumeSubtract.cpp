@@ -51,11 +51,15 @@ void *ActionModelSurfaceVolumeSubtract::compose(Data *d) {
 		Geometry gc;
 		int status = GeometrySubtract(g, gsel, gc);
 		changed |= (status == 1);
-		gsub.add(gc);
+		if (status == 1) {
+			gsub.add(gc);
+		} else {
+			gsub.add(g);
+		}
 
 	}
 
-	if (changed) {
+	if (changed or true) {
 		auto sel = ModelSelection::all(m->mesh);
 		addSubAction(new ActionModelDeleteSelection(sel, false), d);
 
