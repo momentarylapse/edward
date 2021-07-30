@@ -12,62 +12,58 @@
 
 
 
-class sCol
-{
+class Col {
 public:
-	enum{
+	enum {
 		TYPE_OWN_EDGE_IN,
 		TYPE_OWN_EDGE_OUT,
 		TYPE_OTHER_EDGE,
 		TYPE_OLD_VERTEX
 	};
-	sCol(){}
-	sCol(const vector &_p, int _side);
-	sCol(const vector &_p, int _type, int _polygon, int _edge, int _side);
+	Col() {}
+	Col(const vector &_p, int _side);
+	Col(const vector &_p, int _type, int _polygon, int _edge, int _side);
 	float get_f(Geometry &m, ModelPolygon *t);
-	bool operator==(const sCol &other) const;
+	bool operator==(const Col &other) const;
 	vector p;
 	int type;
 	int polygon, edge, side;
 	string str() const;
 };
 
-Array<sCol> col;
+Array<Col> col;
 
-bool CollidePolygons(Geometry &m, ModelPolygon *t1, ModelPolygon *t2, int t2_index);
-bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_index);
-bool PolygonInsideSurface(Geometry &m, ModelPolygon *t, Geometry &s);
-void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<sCol> > &c_out, bool inverse);
-bool find_contour_boundary(Geometry &s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
-bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse);
-float get_ang(Array<sCol> &c, int i, const vector &flat_n);
-bool vertex_in_tria(sCol &a, sCol &b, sCol &c, sCol &v, float &slope);
-void combine_contours(Array<Array<sCol> > &c, int ca, int ia, int cb, int ib);
-void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<sCol> > &c);
-bool combine_polygons(Array<Array<sCol> > &c, int ia, int ib);
-void simplify_filling(Array<Array<sCol> > &c);
-void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Array<sCol> > &c, bool inverse);
-void PolygonSubtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geometry &out, bool keep_inside);
-bool SurfaceSubtractUnary(Geometry &a, Geometry &b, Geometry &out, bool keep_inside);
+bool collide_polygons(Geometry &m, ModelPolygon *t1, ModelPolygon *t2, int t2_index);
+bool collide_polygon_surface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_index);
+bool polygon_inside_surface(Geometry &m, ModelPolygon *t, Geometry &s);
+void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<Col> > &c_out, bool inverse);
+bool find_contour_boundary(Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse);
+bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse);
+float get_ang(Array<Col> &c, int i, const vector &flat_n);
+bool vertex_in_tria(Col &a, Col &b, Col &c, Col &v, float &slope);
+void combine_contours(Array<Array<Col> > &c, int ca, int ia, int cb, int ib);
+void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<Col> > &c);
+bool combine_polygons(Array<Array<Col> > &c, int ia, int ib);
+void simplify_filling(Array<Array<Col> > &c);
+void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Array<Col> > &c, bool inverse);
+void polygon_subtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geometry &out, bool keep_inside);
+bool surface_subtract_unary(Geometry &a, Geometry &b, Geometry &out, bool keep_inside);
 
 
 
-float sCol::get_f(Geometry &m, ModelPolygon *t)
-{
+float Col::get_f(Geometry &m, ModelPolygon *t) {
 	if (type == TYPE_OLD_VERTEX)
 		return 0;
-	if ((type == TYPE_OWN_EDGE_OUT) || (type == TYPE_OWN_EDGE_IN))
+	if ((type == TYPE_OWN_EDGE_OUT) or (type == TYPE_OWN_EDGE_IN))
 		return p.factor_between(m.vertex[t->side[side].vertex].pos, m.vertex[t->side[(side + 1) % t->side.num].vertex].pos);
 	throw ActionException("unhandled col type");
 }
 
-string sCol::str() const
-{
+string Col::str() const {
 	return format("[%d]\tp=%d\te=%d\ts=%d\t(%.1f\t%.1f\t%.1f)", type, polygon, edge, side, p.x, p.y, p.z);
 }
 
-sCol::sCol(const vector &_p, int _side)
-{
+Col::Col(const vector &_p, int _side) {
 	p = _p;
 	type = TYPE_OLD_VERTEX;
 	polygon = -1;
@@ -75,8 +71,7 @@ sCol::sCol(const vector &_p, int _side)
 	side = _side;
 }
 
-sCol::sCol(const vector &_p, int _type, int _polygon, int _edge, int _side)
-{
+Col::Col(const vector &_p, int _type, int _polygon, int _edge, int _side) {
 	p = _p;
 	type = _type;
 	polygon = _polygon;
@@ -84,14 +79,12 @@ sCol::sCol(const vector &_p, int _type, int _polygon, int _edge, int _side)
 	side = _side;
 }
 
-bool sCol::operator==(const sCol &other) const
-{
-	return (type == other.type) && (p == other.p) && (edge == other.edge) && (side == other.side);
+bool Col::operator==(const Col &other) const {
+	return (type == other.type) and (p == other.p) and (edge == other.edge) and (side == other.side);
 }
 
 #if 0
-bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1, ModelPolygon *t2, int t2_index)
-{
+bool ActionModelSurfaceSubtract::collide_polygons(DataModel *m, ModelPolygon *t1, ModelPolygon *t2, int t2_index) {
 	msg_db_r("CollidePolygons", 1);
 	Array<vector> v1, v2;
 	for (int k=0;k<t1->side.num;k++)
@@ -109,22 +102,22 @@ bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1,
 	for (int k=1;k<t2->side.num;k++)
 		if (pl1.distance(v2[0]) * pl1.distance(v2[k]) < 0)
 			all_same_side = false;
-	if (all_same_side){
+	if (all_same_side) {
 		msg_db_l(1);
 		return false;
 	}
 
 	// collide edges of t2 with pl1
 	Array<int> vv1 = t1->triangulate(m);
-	for (int k=0;k<t2->side.num;k++){
+	for (int k=0;k<t2->side.num;k++) {
 		int k2 = (k + 1) % t2->side.num;
 		vector col;
-		for (int i=0;i<vv1.num;i+=3){
+		for (int i=0;i<vv1.num;i+=3) {
 			if (!LineIntersectsTriangle2(pl1, v1[vv1[i+0]], v1[vv1[i+1]], v1[vv1[i+2]], v2[k], v2[k2], col, false))
 				continue;
 			if (!col.between(v2[k], v2[k2]))
 				continue;
-			t_col.add(sCol(col, false, t2_index, k));
+			t_col.add(Col(col, false, t2_index, k));
 			bcol = true;
 		}
 		//return true;
@@ -132,30 +125,29 @@ bool ActionModelSurfaceSubtract::CollidePolygons(DataModel *m, ModelPolygon *t1,
 
 	// collide edges of t1 with pl2
 	Array<int> vv2 = t2->triangulate(m);
-	for (int k=0;k<t1->side.num;k++){
+	for (int k=0;k<t1->side.num;k++) {
 		int k2 = (k + 1) % t1->side.num;
 		vector col;
-		for (int i=0;i<vv2.num;i+=3){
+		for (int i=0;i<vv2.num;i+=3) {
 			if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], v1[k], v1[k2], col, false))
 				continue;
 			if (!col.between(v1[k], v1[k2]))
 				continue;
-			t_col.add(sCol(col, true, t2_index, k));
+			t_col.add(Col(col, true, t2_index, k));
 			bcol = true;
 		}
 		//return true;
 	}
 
 
-	foreach(sCol &c, t_col)
+	foreach(Col &c, t_col)
 		AddSubAction(new ActionModelAddVertex(c.p), m);
 	msg_db_l(1);
 	return bcol;
 }
 #endif
 
-bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_index)
-{
+bool collide_polygon_surface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_index) {
 	col.clear();
 
 	// polygon's data
@@ -168,7 +160,7 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 	Array<int> vv = pa->triangulate(a.vertex);
 
 	// collide polygon <-> surface's edges
-	foreachi(ModelEdge &e, b.edge, ei){
+	foreachi(ModelEdge &e, b.edge, ei) {
 		vector ve[2];
 		for (int k=0;k<2;k++)
 			ve[k] = b.vertex[e.vertex[k]].pos;
@@ -178,15 +170,15 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 			continue;
 
 		vector pos;
-		for (int i=0;i<vv.num;i+=3){
+		for (int i=0;i<vv.num;i+=3) {
 			if (!LineIntersectsTriangle2(pl, v[vv[i+0]], v[vv[i+1]], v[vv[i+2]], ve[0], ve[1], pos, false))
 				continue;
-			col.add(sCol(pos, sCol::TYPE_OTHER_EDGE, t_index, ei, -1));
+			col.add(Col(pos, Col::TYPE_OTHER_EDGE, t_index, ei, -1));
 		}
 	}
 
 	// collide polygon's edges <-> surface's polygons
-	foreachi(ModelPolygon &pb, b.polygon, ti){
+	foreachi(ModelPolygon &pb, b.polygon, ti) {
 		// polygon's data
 		Array<vector> v2;
 		for (int k=0;k<pb.side.num;k++)
@@ -195,7 +187,7 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 		pl2 = plane::from_point_normal( b.vertex[pb.side[0].vertex].pos, pb.temp_normal);
 
 		Array<int> vv2 = pb.triangulate(b.vertex);
-		for (int kk=0;kk<pa->side.num;kk++){
+		for (int kk=0;kk<pa->side.num;kk++) {
 			vector ve[2];
 			for (int k=0;k<2;k++)
 				ve[k] = a.vertex[pa->side[(kk + k) % pa->side.num].vertex].pos;
@@ -205,11 +197,11 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 				continue;
 
 			vector pos;
-			for (int i=0;i<vv2.num;i+=3){
+			for (int i=0;i<vv2.num;i+=3) {
 				if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], ve[0], ve[1], pos, false))
 					continue;
-				int type = (pl2.distance(ve[0]) > 0) ? sCol::TYPE_OWN_EDGE_IN : sCol::TYPE_OWN_EDGE_OUT;
-				col.add(sCol(pos, type, ti, pa->side[kk].edge, kk));
+				int type = (pl2.distance(ve[0]) > 0) ? Col::TYPE_OWN_EDGE_IN : Col::TYPE_OWN_EDGE_OUT;
+				col.add(Col(pos, type, ti, pa->side[kk].edge, kk));
 			}
 		}
 	}
@@ -221,20 +213,18 @@ bool CollidePolygonSurface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_ind
 }
 
 // we assume t does not collide with s...!
-bool PolygonInsideSurface(Geometry &m, ModelPolygon *t, Geometry &s)
-{
+bool polygon_inside_surface(Geometry &m, ModelPolygon *t, Geometry &s) {
 	for (ModelPolygonSide &side: t->side)
 		if (!s.is_inside(m.vertex[side.vertex].pos))
 			return false;
 	return true;
 }
 
-bool find_contour_boundary(Geometry &s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse)
-{
+bool find_contour_boundary(Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse) {
 	// find first
 	int last_poly = -1;
-	foreachi(sCol &c, c_in, i)
-		if (c.type == c.TYPE_OWN_EDGE_IN){
+	foreachi(Col &c, c_in, i)
+		if (c.type == c.TYPE_OWN_EDGE_IN) {
 			last_poly = c.polygon;
 			c_out.add(c);
 			c_in.erase(i);
@@ -245,14 +235,14 @@ bool find_contour_boundary(Geometry &s, Array<sCol> &c_in, Array<sCol> &c_out, b
 		return false;
 
 
-	while(true){
+	while(true) {
 		//msg_write(".");
 		// find col on same s.poly as the last col
 		bool found = false;
-		foreachi(sCol &c, c_in, i)
-			if (c.type == c.TYPE_OTHER_EDGE){
+		foreachi(Col &c, c_in, i)
+			if (c.type == c.TYPE_OTHER_EDGE) {
 				for (int k=0;k<2;k++)
-					if (s.edge[c.edge].polygon[k] == last_poly){
+					if (s.edge[c.edge].polygon[k] == last_poly) {
 						//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 						c_out.add(c);
 						last_poly = s.edge[c.edge].polygon[1 - k];
@@ -269,8 +259,8 @@ bool find_contour_boundary(Geometry &s, Array<sCol> &c_in, Array<sCol> &c_out, b
 
 
 		// find col on same s.edge as the last col
-		foreachi(sCol &c, c_in, i)
-			if ((c.type == c.TYPE_OWN_EDGE_OUT) && (c.polygon == last_poly)){
+		foreachi(Col &c, c_in, i)
+			if ((c.type == c.TYPE_OWN_EDGE_OUT) and (c.polygon == last_poly)) {
 				//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 				c_out.add(c);
 				c_in.erase(i);
@@ -280,19 +270,18 @@ bool find_contour_boundary(Geometry &s, Array<sCol> &c_in, Array<sCol> &c_out, b
 		msg_write(c_out.num);
 		c_out += c_in;
 		msg_error("evil contour");
-		foreachi(sCol &c, c_out, i)
+		foreachi(Col &c, c_out, i)
 			msg_write(i2s(i) + " " + c.str());
 		throw ActionException("contour starting on boundary but not ending on boundary found");
 	}
 	return false;
 }
 
-bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<sCol> &c_in, Array<sCol> &c_out, bool inverse)
-{
+bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse) {
 	if (c_in.num == 0)
 		return false;
 
-	if (c_in[0].type != sCol::TYPE_OTHER_EDGE)
+	if (c_in[0].type != Col::TYPE_OTHER_EDGE)
 		throw ActionException("internal contour without internal point..." + i2s(c_in[0].type));
 	c_out.add(c_in[0]);
 	c_in.erase(0);
@@ -304,13 +293,13 @@ bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<sCol> 
 
 	//throw ActionException("internal contour not implemented");
 
-	while(true){
+	while(true) {
 		// find col on same s.poly as the last col
 		bool found = false;
-		foreachi(sCol &c, c_in, i)
-			if (c.type == c.TYPE_OTHER_EDGE){
+		foreachi(Col &c, c_in, i)
+			if (c.type == c.TYPE_OTHER_EDGE) {
 				for (int k=0;k<2;k++)
-					if (s.edge[c.edge].polygon[k] == last_poly){
+					if (s.edge[c.edge].polygon[k] == last_poly) {
 						//msg_write(format("%d  %d  - %d", c.type, c.polygon, c.edge));
 						c_out.add(c);
 						last_poly = s.edge[c.edge].polygon[1 - k];
@@ -332,10 +321,9 @@ bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<sCol> 
 	return false;
 }
 
-void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<sCol> > &c_out, bool inverse)
-{
+void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<Col> > &c_out, bool inverse) {
 	int ni = 0, no = 0;
-	for (sCol &cc: col){
+	for (Col &cc: col) {
 		if (cc.type == cc.TYPE_OWN_EDGE_IN)
 			ni ++;
 		if (cc.type == cc.TYPE_OWN_EDGE_OUT)
@@ -345,67 +333,66 @@ void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<sCol> 
 	if (ni != no)
 		throw ActionException("ni != no");
 
-	Array<sCol> temp;
-	while (find_contour_boundary(s, col, temp, inverse)){
+	Array<Col> temp;
+	while (find_contour_boundary(s, col, temp, inverse)) {
 		c_out.add(temp);
 		temp.clear();
 	}
 
-	while (find_contour_inside(m, t, s, col, temp, inverse)){
+	while (find_contour_inside(m, t, s, col, temp, inverse)) {
 		c_out.add(temp);
 		temp.clear();
 	}
 
-	if (inverse){
-		for (Array<sCol> &cc: c_out)
+	if (inverse) {
+		for (auto &cc: c_out)
 			cc.reverse();
 	}
 
 	sort_and_join_contours(m, t, s, c_out, inverse);
 
-	for (Array<sCol> &cc: c_out){
+	for (auto &cc: c_out) {
 		msg_write("contour");
-		foreachi(sCol &c, cc, i)
+		foreachi(Col &c, cc, i)
 			msg_write(i2s(i) + " " + c.str());
-		if (cc.num < 3){
+		if (cc.num < 3) {
 			for (int i=0;i<t->side.num;i++)
 				ed->multi_view_3d->add_message_3d("p"+i2s(i), m.vertex[t->side[i].vertex].pos);
-			foreachi(sCol &c, cc, i)
+			foreachi(Col &c, cc, i)
 				ed->multi_view_3d->add_message_3d("x"+i2s(i), c.p);
 			throw ActionException("contour with num<3");
 		}
 	}
 }
 
-void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Array<sCol> > &c_in, bool inverse)
-{
+void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Array<Col> > &c_in, bool inverse) {
 	// find old vertices
-	Array<sCol> v;
-	for (int k=0;k<t->side.num;k++){
+	Array<Col> v;
+	for (int k=0;k<t->side.num;k++) {
 		vector pos = m.vertex[t->side[k].vertex].pos;
 		if (b.is_inside(pos) == inverse)
-			v.add(sCol(pos, k));
+			v.add(Col(pos, k));
 	}
 
-	Array<Array<sCol> > c_out;
+	Array<Array<Col> > c_out;
 
 	// find purely internal contours
 	bool boundary_points = false;
 	for (int i=c_in.num-1; i>=0; i--)
-		if (c_in[i][0].type == sCol::TYPE_OTHER_EDGE){
+		if (c_in[i][0].type == Col::TYPE_OTHER_EDGE) {
 			c_out.add(c_in[i]);
 			c_in.erase(i);
-		}else{
+		} else {
 			boundary_points = true;
 		}
 
 	// find contours on boundary and connect with old vertices
-	while(c_in.num > 0){
-		Array<sCol> cc = c_in.pop();
+	while (c_in.num > 0) {
+		Array<Col> cc = c_in.pop();
 		//msg_write("------con");
 
 		// expand current contour
-		while(true){
+		while(true) {
 
 			int side = cc.back().side;
 			float f = cc.back().get_f(m, t);
@@ -414,18 +401,18 @@ void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Arr
 			//msg_write(format("%d %f  -> %d %f", side0, f0, side, f));
 
 			// loop already closed?
-			bool closed = (side == side0) && (f0 > f);
+			bool closed = (side == side0) and (f0 > f);
 
 			// search new contours
 			float fmin = 2;
 			if (closed) // don't cross the start/finish line
 				fmin = f0;
 			int imin = -1;
-			foreachi(Array<sCol> &ccc, c_in, i)
-				if (ccc[0].side == side){
+			foreachi(Array<Col> &ccc, c_in, i)
+				if (ccc[0].side == side) {
 					float ff = ccc[0].get_f(m, t);
 					//msg_write(f2s(ff, 3));
-					if ((ff > f) && (ff < fmin)){
+					if ((ff > f) and (ff < fmin)) {
 						//msg_write("found");
 						fmin = ff;
 						imin = i;
@@ -433,7 +420,7 @@ void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Arr
 				}
 
 			// add new contour
-			if (imin >= 0){
+			if (imin >= 0) {
 				cc.append(c_in[imin]);
 				c_in.erase(imin);
 				continue;
@@ -445,8 +432,8 @@ void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Arr
 
 			// search old vertices
 			bool found = false;
-			foreachi(sCol &ccc, v, i){
-				if (ccc.side == ((side + 1) % t->side.num)){
+			foreachi(Col &ccc, v, i) {
+				if (ccc.side == ((side + 1) % t->side.num)) {
 					cc.add(ccc);
 					v.erase(i);
 					found = true;
@@ -465,7 +452,7 @@ void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Arr
 
 
 	// without boundary contours the old vertices build their own contour
-	if (v.num > 0){
+	if (v.num > 0) {
 		if (boundary_points)
 			throw ActionException("unused old points with boundary contours...");
 		c_out.add(v);
@@ -476,8 +463,7 @@ void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Arr
 }
 
 
-float get_ang(Array<sCol> &c, int i, const vector &flat_n)
-{
+float get_ang(Array<Col> &c, int i, const vector &flat_n) {
 	int ia = i - 1;
 	int ic = i + 1;
 	if (ia < 0)
@@ -491,35 +477,52 @@ float get_ang(Array<sCol> &c, int i, const vector &flat_n)
 	return atan2(x, y);
 }
 
-bool vertex_in_tria(sCol &a, sCol &b, sCol &c, sCol &v, float &slope)
-{
+// assuming co-planar
+bool vertex_in_tria(Col &a, Col &b, Col &c, Col &v, float &slope) {
 	float f, g;
 	GetBaryCentric(v.p, b.p, c.p, a.p, f, g);
 	slope = f / g;
-	return ((f > 0) && (g > 0) && (f + g < 1));
+	return ((f > 0) and (g > 0) and (f + g < 1));
 }
 
-void combine_contours(Array<Array<sCol> > &c, int ca, int ia, int cb, int ib)
-{
-	Array<sCol> temp = c[ca].sub_ref(ia, c[ca].num - ia) + c[ca].sub_ref(0, ia);
-	c[ca] = temp;
+string contour_str(const Array<Col>  &contour) {
+	string s;
+	for (auto &p: contour) {
+		if (s.num > 0)
+			s += " >> ";
+		s += p.p.str();
+	}
+	return s;
+}
 
-	// copy one point
-	temp = c[cb].sub_ref(ib, c[cb].num - ib) + c[cb].sub_ref(0, ib + 1);
+void combine_contours(Array<Array<Col> > &c, int ca, int ia, int cb, int ib) {
+	//msg_write(format("COMBINE  %d:%d  %d:%d", ca, ia, cb, ib));
+	//msg_write(contour_str(c[ca]));
+	//msg_write(contour_str(c[cb]));
+	auto temp = c[ca].sub_ref(ia) + c[ca].sub_ref(0, ia);
+	c[ca] = temp;
+	//msg_write(contour_str(temp));
+
+	// duplicate one point
+	temp = c[cb].sub_ref(ib) + c[cb].sub_ref(0, ib + 1);
+	//msg_write(contour_str(temp));
 	c[ca].append(temp);
+	//msg_write(contour_str(c[ca]));
 
 	c.erase(cb);
 }
 
-void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<sCol> > &contours)
-{
+void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<Col>> &contours) {
 	if (contours.num == 1)
 		return;
-	Array<Array<sCol> > temp = contours;
-	Array<Array<sCol> > output;
+	Array<Array<Col> > temp = contours;
+	Array<Array<Col> > output;
 
 
-	while(contours.num > 0){
+	while (contours.num > 0) {
+		//printf("---------- %d contours     n=%s\n", contours.num, t->temp_normal.str().c_str());
+		//for (auto &c: contours)
+		//	printf("  %s\n", contour_str(c).c_str());
 
 		// find largest angle (sharpest)
 		// TODO: prevent colinear triangles!
@@ -527,13 +530,16 @@ void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<sCol> > &con
 		int c_max;
 		float f_max = 0;
 		int inside_i = -1, inside_c;
-		foreachi(Array<sCol> &c, contours, ci)
-		for (int i=0;i<c.num;i++){
+		foreachi(auto &c, contours, ci)
+		for (int i=0;i<c.num;i++) {
+			//printf("   cc   %d: %d\n", ci, i);
 			int i_p1 = (i+1) % c.num;
 			int i_p2 = (i+2) % c.num;
 			float f = get_ang(c, i_p1, t->temp_normal);
-			if (f < 0)
+			if (f < 0) {
+				//printf(" ang < 0\n");
 				continue;
+			}
 			// cheat: ...
 			float f_n = get_ang(c, i_p2, t->temp_normal);
 			float f_l = get_ang(c, i, t->temp_normal);
@@ -542,24 +548,26 @@ void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<sCol> > &con
 			if (f_l >= 0)
 				f += 0.001f / (f_l + 0.001f);
 
-			if (f > f_max){
+			if (f > f_max) {
 				int cur_inside_i = -1;
 				int cur_inside_c = -1;
 				float cur_inside_slope = -1;
 				// other vertices within this triangle?
 				bool ok = true;
-				foreachi(Array<sCol> &other, contours, cj)
-				for (int j=0;j<other.num;j++){
+				foreachi(auto &other, contours, cj)
+				for (int j=0;j<other.num;j++) {
 					if (&c == &other)
-						if ((j == i) || (j == i_p1) || (j == i_p2))
+						if ((j == i) or (j == i_p1) or (j == i_p2))
 							continue;
 					float slope;
-					if (vertex_in_tria(c[i], c[i_p1], c[i_p2], other[j], slope)){
-						if (&c == &other){
+					if (vertex_in_tria(c[i], c[i_p1], c[i_p2], other[j], slope)) {
+						//printf("   vit  %d: %d\n", cj, j);
+						if (&c == &other) {
+							//printf("  NOT OK\n");
 							ok = false;
 							break;
 						}
-						if ((slope < cur_inside_slope) || (cur_inside_i < 0)){
+						if ((slope < cur_inside_slope) or (cur_inside_i < 0)) {
 							cur_inside_i = j;
 							cur_inside_c = cj;
 							cur_inside_slope = slope;
@@ -567,7 +575,7 @@ void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<sCol> > &con
 					}
 				}
 
-				if (ok){
+				if (ok) {
 					f_max = f;
 					i_max = i;
 					c_max = ci;
@@ -577,20 +585,20 @@ void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<sCol> > &con
 			}
 		}
 
-		if (i_max < 0){
+		if (i_max < 0) {
 			/*for (int i=0;i<contours.num;i++)
-				for (int j=0;j<contours[i].num;j++){
+				for (int j=0;j<contours[i].num;j++) {
 					ed->multi_view_3d->AddMessage3d(format("%d:%d", i, j), contours[i][j].p);
 				}*/
 			throw ActionException("could not fill contours");
 		}
 
 
-		if (inside_i < 0){
-			/*msg_write("--");
-			msg_write(format("%d  %d", c_max, i_max));
-			msg_write(format("%d %d %d", i_max, (i_max+1) % contours[c_max].num, (i_max+2) % contours[c_max].num));*/
-			Array<sCol> tt;
+		if (inside_i < 0) {
+			//msg_write("-->");
+			//msg_write(format("%d  %d", c_max, i_max));
+			//msg_write(format("%d %d %d", i_max, (i_max+1) % contours[c_max].num, (i_max+2) % contours[c_max].num));
+			Array<Col> tt;
 			tt.add(contours[c_max][i_max]);
 			tt.add(contours[c_max][(i_max+1) % contours[c_max].num]);
 			tt.add(contours[c_max][(i_max+2) % contours[c_max].num]);
@@ -599,10 +607,10 @@ void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<sCol> > &con
 			contours[c_max].erase((i_max+1) % contours[c_max].num);
 			if (contours[c_max].num < 3)
 				contours.erase(c_max);
-		}else{
-			/*msg_write("-- inside");
-			msg_write(format("%d  %d   %d %d", c_max, i_max, inside_c, inside_i));*/
-			Array<sCol> tt;
+		} else {
+			//msg_write("--> inside");
+			//msg_write(format("%d  %d   %d %d", c_max, i_max, inside_c, inside_i));
+			Array<Col> tt;
 			tt.add(contours[c_max][i_max]);
 			tt.add(contours[c_max][(i_max+1) % contours[c_max].num]);
 			tt.add(contours[inside_c][inside_i]);
@@ -612,7 +620,7 @@ void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<sCol> > &con
 		}
 	}
 
-	/*foreach(Array<sCol> &cc, output){
+	/*foreach(Array<sCol> &cc, output) {
 		msg_write("out");
 		foreachi(sCol &c, cc, i)
 			msg_write(i2s(i) + " " + c.str());
@@ -621,19 +629,18 @@ void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<sCol> > &con
 	contours = output;
 }
 
-bool combine_polygons(Array<Array<sCol> > &c, int ia, int ib)
-{
+bool combine_polygons(Array<Array<Col> > &c, int ia, int ib) {
 	Array<int> equals;
-	foreachi(sCol &a, c[ia], cia)
-		foreachi(sCol &b, c[ib], cib)
-			if (a == b){
+	foreachi(Col &a, c[ia], cia)
+		foreachi(Col &b, c[ib], cib)
+			if (a == b) {
 				equals.add(cia);
 				equals.add(cib);
 			}
 	if (equals.num != 4)
 		return false;
 
-	if ((equals[0] == 0) && (equals[2] == c[ia].num-1)){
+	if ((equals[0] == 0) and (equals[2] == c[ia].num-1)) {
 		int t = equals[0];
 		equals[0] = equals[2];
 		equals[2] = t;
@@ -649,16 +656,16 @@ bool combine_polygons(Array<Array<sCol> > &c, int ia, int ib)
 
 	//msg_write("combine");
 	//msg_write(ia2s(equals));
-	Array<sCol> temp;
+	Array<Col> temp;
 	if (equals[0] < equals[2])
 		temp = c[ia].sub_ref(0, equals[0] + 1);
 	else
 		temp = c[ia];
-	if (equals[1] > equals[3]){
+	if (equals[1] > equals[3]) {
 		temp += c[ib].sub_ref(equals[1] + 1);
 		temp += c[ib].sub_ref(0, equals[3]);
-	}else{
-		temp += c[ib].sub_ref(1, c[ib].num - 2);
+	} else {
+		temp += c[ib].sub_ref(1, -1);
 	}
 	if (equals[0] < equals[2])
 		temp += c[ia].sub_ref(equals[2]);
@@ -668,25 +675,24 @@ bool combine_polygons(Array<Array<sCol> > &c, int ia, int ib)
 	return true;
 }
 
-void simplify_filling(Array<Array<sCol> > &c)
-{
+void simplify_filling(Array<Array<Col> > &c) {
 	if (c.num == 1)
 		return;
 
 	/*msg_write("prae sim");
-	foreach(Array<sCol> &cc, c){
+	foreach(Array<sCol> &cc, c) {
 			msg_write("out");
 			foreachi(sCol &ccc, cc, i)
 				msg_write(i2s(i) + " " + ccc.str());
 		}*/
 
 	bool found = true;
-	while(found){
+	while(found) {
 		found = false;
 
 		for (int ci=0;ci<c.num;ci++)
 			for (int cj=ci+1;cj<c.num;cj++)
-				if (combine_polygons(c, ci, cj)){
+				if (combine_polygons(c, ci, cj)) {
 					ci = cj = c.num;
 					found = true;
 				}
@@ -694,7 +700,7 @@ void simplify_filling(Array<Array<sCol> > &c)
 
 
 	/*msg_write("post sim");
-	foreach(Array<sCol> &cc, c){
+	foreach(Array<sCol> &cc, c) {
 			msg_write("out");
 			foreachi(sCol &ccc, cc, i)
 				msg_write(i2s(i) + " " + ccc.str());
@@ -702,15 +708,14 @@ void simplify_filling(Array<Array<sCol> > &c)
 }
 
 
-void PolygonSubtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geometry &out, bool keep_inside)
-{
+void polygon_subtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geometry &out, bool keep_inside) {
 	bool inverse = keep_inside;
 
 	msg_write("-----sub");
 	msg_write(col.num);
 
 	// find contours
-	Array<Array<sCol> > contours;
+	Array<Array<Col> > contours;
 	find_contours(a, t, b, contours, inverse);
 
 	triangulate_contours(a, t, contours);
@@ -721,14 +726,14 @@ void PolygonSubtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geo
 	sg.init_polygon(a.vertex, *t);
 
 	// create new surfaces
-	for (Array<sCol> &c: contours){
+	for (auto &c: contours) {
 		//if (inverse)
 		//	c.reverse();
 
 		// create contour vertices
 		Array<int> vv;
 		Array<vector> sv;
-		for (int i=0;i<c.num;i++){
+		for (int i=0;i<c.num;i++) {
 			vv.add(out.vertex.num);
 			out.add_vertex(c[i].p);
 		}
@@ -736,7 +741,7 @@ void PolygonSubtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geo
 		// skin vertices
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			for (int i=0;i<c.num;i++)
-				if (c[i].type == sCol::TYPE_OLD_VERTEX)
+				if (c[i].type == Col::TYPE_OLD_VERTEX)
 					sv.add(t->side[c[i].side].skin_vertex[l]);
 				else
 					sv.add(sg.get(c[i].p, l));
@@ -748,21 +753,20 @@ void PolygonSubtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geo
 }
 
 // out = a - b (just surface diff)
-bool SurfaceSubtractUnary(Geometry &a, Geometry &b, Geometry &out, bool keep_inside)
-{
+bool surface_subtract_unary(Geometry &a, Geometry &b, Geometry &out, bool keep_inside) {
 	bool has_changes = false;
 
 	out.vertex = a.vertex;
 
 	// collide both surfaces and create additional polygons
-	foreachi(ModelPolygon &p, a.polygon, i)
-		if (CollidePolygonSurface(a, &p, b, i)){
-			PolygonSubtract(a, &p, i, b, out, keep_inside);
+	foreachi(auto &p, a.polygon, i)
+		if (collide_polygon_surface(a, &p, b, i)) {
+			polygon_subtract(a, &p, i, b, out, keep_inside);
 			has_changes = true;
-		}else if (PolygonInsideSurface(a, &p, b) == keep_inside){
+		} else if (polygon_inside_surface(a, &p, b) == keep_inside) {
 			ModelPolygon pp = p;
 			out.polygon.add(pp);
-		}else{
+		} else {
 			has_changes = true;
 		}
 
@@ -772,8 +776,7 @@ bool SurfaceSubtractUnary(Geometry &a, Geometry &b, Geometry &out, bool keep_ins
 
 
 // out = a - b
-int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
-{
+int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out) {
 	a.update_topology();
 	b.update_topology();
 	for (ModelPolygon &p: a.polygon)
@@ -787,16 +790,16 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 
 	//try{
 
-	diff |= SurfaceSubtractUnary(a, b, out, false);
+	diff |= surface_subtract_unary(a, b, out, false);
 
-	if (a.is_closed){
+	if (a.is_closed) {
 		Geometry t;
-		diff |= SurfaceSubtractUnary(b, a, t, true);
+		diff |= surface_subtract_unary(b, a, t, true);
 		t.invert();
 		out.add(t);
 	}
 
-	/*}catch(ActionException &e){
+	/*}catch(ActionException &e) {
 		msg_error(e.message);
 		return false;
 	}*/
@@ -810,8 +813,7 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out)
 }
 
 // out = a & b
-int GeometryAnd(Geometry &a, Geometry &b, Geometry &out)
-{
+int GeometryAnd(Geometry &a, Geometry &b, Geometry &out) {
 	a.update_topology();
 	b.update_topology();
 	for (ModelPolygon &p: a.polygon)
@@ -825,15 +827,15 @@ int GeometryAnd(Geometry &a, Geometry &b, Geometry &out)
 
 	//try{
 
-	diff |= SurfaceSubtractUnary(a, b, out, true);
+	diff |= surface_subtract_unary(a, b, out, true);
 
-	if (a.is_closed){
+	if (a.is_closed) {
 		Geometry t;
-		diff |= SurfaceSubtractUnary(b, a, t, true);
+		diff |= surface_subtract_unary(b, a, t, true);
 		out.add(t);
 	}
 
-	/*}catch(ActionException &e){
+	/*}catch(ActionException &e) {
 		msg_error(e.message);
 		return false;
 	}*/
