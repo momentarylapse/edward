@@ -251,7 +251,7 @@ void Geometry::build(nix::VertexBuffer *vb) const {
 }
 
 
-int Geometry::add_edge(int a, int b, int tria, int side)
+int Geometry::add_edge(int a, int b, int tria, int side) const
 {
 	foreachi(ModelEdge &e, edge, i){
 		if ((e.vertex[0] == a) and (e.vertex[1] == b)){
@@ -287,27 +287,26 @@ int Geometry::add_edge(int a, int b, int tria, int side)
 	return edge.num - 1;
 }
 
-void Geometry::update_topology()
-{
+void Geometry::update_topology() const {
 	// clear
 	edge.clear();
 
 	// add all triangles
-	foreachi(ModelPolygon &t, polygon, ti){
+	foreachi(auto &t, polygon, ti) {
 
 		// edges
-		for (int k=0;k<t.side.num;k++){
+		for (int k=0; k<t.side.num; k++) {
 			t.side[k].edge = add_edge(t.side[k].vertex, t.side[(k + 1) % t.side.num].vertex, ti, k);
 			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
 		}
 	}
-	// closed?
-	is_closed = true;
-	for (ModelEdge &e: edge)
-		if (e.ref_count != 2){
-			is_closed = false;
-			break;
-		}
+}
+
+bool Geometry::is_closed() const {
+	for (auto &e: edge)
+		if (e.ref_count != 2)
+			return false;
+	return true;
 }
 
 bool Geometry::is_inside(const vector &p) const
@@ -359,24 +358,22 @@ bool Geometry::is_inside(const vector &p) const
 	return ((n % 2) == 1);
 }
 
-void Geometry::invert()
-{
-	for (ModelPolygon &p: polygon)
+void Geometry::invert() {
+	for (auto &p: polygon)
 		p.invert();
 }
 
-void Geometry::remove_unused_vertices()
-{
-	for (ModelVertex &v: vertex)
+void Geometry::remove_unused_vertices() {
+	for (auto &v: vertex)
 		v.ref_count = 0;
-	for (ModelPolygon &p: polygon)
+	for (auto &p: polygon)
 		for (int i=0;i<p.side.num;i++)
 			vertex[p.side[i].vertex].ref_count ++;
-	foreachib(ModelVertex &v, vertex, vi)
-		if (v.ref_count == 0){
+	foreachib(auto &v, vertex, vi)
+		if (v.ref_count == 0) {
 			vertex.erase(vi);
 			// correct vertex indices
-			for (ModelPolygon &p: polygon)
+			for (auto &p: polygon)
 				for (int i=0;i<p.side.num;i++)
 					if (p.side[i].vertex > vi)
 						p.side[i].vertex --;
@@ -424,4 +421,62 @@ bool Geometry::is_mouse_over(MultiView::Window *win, const matrix &mat, vector &
 		}
 	}
 	return false;
+}
+
+void geo_poly_find_connected(const Geometry &g, int p0, Set<int> &polys) {
+	Set<int> verts;
+	bool found_more = true;
+
+	auto add_poly = [&verts, &polys, &found_more, &g] (int i) {
+		polys.add(i);
+		for (auto &f: g.polygon[i].side)
+			verts.add(f.vertex);
+		found_more = true;
+	};
+	add_poly(p0);
+
+
+	auto vertex_overlap = [&verts] (const ModelPolygon &p) {
+		for (auto &f: p.side)
+			if (verts.contains(f.vertex))
+				return true;
+		return false;
+	};
+
+
+	while (found_more) {
+		found_more = false;
+		foreachi (auto &p, g.polygon, i) {
+			if (polys.contains(i))
+				continue;
+			if (vertex_overlap(p))
+				add_poly(i);
+		}
+	}
+}
+
+Array<Geometry> Geometry::split_connected() const {
+	Array<Geometry> r;
+	Set<int> poly_used;
+
+	foreachi (auto &p, polygon, i) {
+		if (poly_used.contains(i))
+			continue;
+
+		Geometry g;
+		g.vertex = vertex;
+
+		Set<int> g_polys;
+		geo_poly_find_connected(*this, i, g_polys);
+
+		for (int j: g_polys) {
+			g.polygon.add(polygon[j]);
+			poly_used.add(j);
+		}
+
+		g.remove_unused_vertices();
+		r.add(g);
+	}
+
+	return r;
 }

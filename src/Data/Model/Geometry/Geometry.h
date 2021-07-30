@@ -43,8 +43,8 @@ public:
 	void transform(const matrix &mat);
 	void smoothen();
 
-	int add_edge(int a, int b, int tria, int side);
-	void update_topology();
+	int add_edge(int a, int b, int tria, int side) const;
+	void update_topology() const;
 	void remove_unused_vertices();
 	bool is_inside(const vector &v) const;
 
@@ -55,12 +55,14 @@ public:
 
 	Array<ModelVertex> vertex;
 	Array<ModelPolygon> polygon;
-	Array<ModelEdge> edge;
+	mutable Array<ModelEdge> edge;
 
-	bool is_closed;
+	bool is_closed() const;
+
+	Array<Geometry> split_connected() const;
 };
 
-int GeometrySubtract(Geometry &a, Geometry &b, Geometry &c);
-int GeometryAnd(Geometry &a, Geometry &b, Geometry &c);
+int GeometrySubtract(const Geometry &a, const Geometry &b, Geometry &c);
+int GeometryAnd(const Geometry &a, const Geometry &b, Geometry &c);
 
 #endif /* GEOMETRY_H_ */

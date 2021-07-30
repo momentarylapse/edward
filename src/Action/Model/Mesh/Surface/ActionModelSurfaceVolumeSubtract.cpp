@@ -22,34 +22,46 @@ ActionModelSurfaceVolumeSubtract::ActionModelSurfaceVolumeSubtract()
 void *ActionModelSurfaceVolumeSubtract::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	Geometry ga, gb, gc;
-	ga.vertex = m->mesh->vertex;
-	gb.vertex = m->mesh->vertex;
+	Geometry gsel, gunsel;
+	gsel.vertex = m->mesh->vertex;
+	gunsel.vertex = m->mesh->vertex;
 	for (auto &p: m->mesh->polygon)
 		if (p.is_selected)
-			gb.polygon.add(p);
+			gsel.polygon.add(p);
 		else
-			ga.polygon.add(p);
+			gunsel.polygon.add(p);
 
-	if (gb.polygon.num == 0)
+	if (gsel.polygon.num == 0)
 		throw ActionException("no polygons selected");
 
-	ga.update_topology();
-	gb.update_topology();
-	ga.remove_unused_vertices();
-	gb.remove_unused_vertices();
+	gsel.update_topology();
+	gunsel.update_topology();
+	gsel.remove_unused_vertices();
+	gunsel.remove_unused_vertices();
 
-	if (!gb.is_closed)
+	if (!gsel.is_closed())
 		throw ActionException("selected surface is not closed");
 
-	int status = GeometrySubtract(ga, gb, gc);
+	auto gunsel_components = gunsel.split_connected();
+	Array<Geometry> gsub;
+	bool changed = false;
 
-	if (status == 1) {
+	for (auto &g: gunsel_components) {
+
+		Geometry gc;
+		int status = GeometrySubtract(g, gsel, gc);
+		changed |= (status == 1);
+		gsub.add(gc);
+
+	}
+
+	if (changed) {
 		auto sel = ModelSelection::all(m->mesh);
 		addSubAction(new ActionModelDeleteSelection(sel, false), d);
 
-		addSubAction(new ActionModelPasteGeometry(gc, 0), d);
-		addSubAction(new ActionModelPasteGeometry(gb, 0), d);
+		for (auto &g: gsub)
+			addSubAction(new ActionModelPasteGeometry(g, 0), d);
+		addSubAction(new ActionModelPasteGeometry(gsel, 0), d);
 	}
-	return NULL;
+	return nullptr;
 }

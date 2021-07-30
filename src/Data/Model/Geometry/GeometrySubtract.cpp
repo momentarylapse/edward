@@ -23,7 +23,7 @@ public:
 	Col() {}
 	Col(const vector &_p, int _side);
 	Col(const vector &_p, int _type, int _polygon, int _edge, int _side);
-	float get_f(Geometry &m, ModelPolygon *t);
+	float get_f(const Geometry &m, ModelPolygon &t);
 	bool operator==(const Col &other) const;
 	vector p;
 	int type;
@@ -33,29 +33,29 @@ public:
 
 Array<Col> col;
 
-bool collide_polygons(Geometry &m, ModelPolygon *t1, ModelPolygon *t2, int t2_index);
-bool collide_polygon_surface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_index);
-bool polygon_inside_surface(Geometry &m, ModelPolygon *t, Geometry &s);
-void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<Col> > &c_out, bool inverse);
-bool find_contour_boundary(Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse);
-bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse);
+bool collide_polygons(const Geometry &m, ModelPolygon &t1, ModelPolygon &t2, int t2_index);
+bool collide_polygon_surface(const Geometry &a, ModelPolygon &pa, const Geometry &b, int t_index);
+bool polygon_inside_surface(const Geometry &m, ModelPolygon &t, const Geometry &s);
+void find_contours(const Geometry &m, ModelPolygon &t, const Geometry &s, Array<Array<Col> > &c_out, bool inverse);
+bool find_contour_boundary(const Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse);
+bool find_contour_inside(const Geometry &m, ModelPolygon &t, const Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse);
 float get_ang(Array<Col> &c, int i, const vector &flat_n);
 bool vertex_in_tria(Col &a, Col &b, Col &c, Col &v, float &slope);
 void combine_contours(Array<Array<Col> > &c, int ca, int ia, int cb, int ib);
-void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<Col> > &c);
+void triangulate_contours(Geometry &m, ModelPolygon &t, Array<Array<Col> > &c);
 bool combine_polygons(Array<Array<Col> > &c, int ia, int ib);
 void simplify_filling(Array<Array<Col> > &c);
-void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Array<Col> > &c, bool inverse);
-void polygon_subtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geometry &out, bool keep_inside);
-bool surface_subtract_unary(Geometry &a, Geometry &b, Geometry &out, bool keep_inside);
+void sort_and_join_contours(const Geometry &m, ModelPolygon &t, const Geometry &b, Array<Array<Col> > &c, bool inverse);
+void polygon_subtract(const Geometry &a, ModelPolygon &t, int t_index, const Geometry &b, Geometry &out, bool keep_inside);
+bool surface_subtract_unary(const Geometry &a, const Geometry &b, Geometry &out, bool keep_inside);
 
 
 
-float Col::get_f(Geometry &m, ModelPolygon *t) {
+float Col::get_f(const Geometry &m, ModelPolygon &t) {
 	if (type == TYPE_OLD_VERTEX)
 		return 0;
 	if ((type == TYPE_OWN_EDGE_OUT) or (type == TYPE_OWN_EDGE_IN))
-		return p.factor_between(m.vertex[t->side[side].vertex].pos, m.vertex[t->side[(side + 1) % t->side.num].vertex].pos);
+		return p.factor_between(m.vertex[t.side[side].vertex].pos, m.vertex[t.side[(side + 1) % t.side.num].vertex].pos);
 	throw ActionException("unhandled col type");
 }
 
@@ -147,17 +147,17 @@ bool ActionModelSurfaceSubtract::collide_polygons(DataModel *m, ModelPolygon *t1
 }
 #endif
 
-bool collide_polygon_surface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_index) {
+bool collide_polygon_surface(const Geometry &a, ModelPolygon &pa, const Geometry &b, int t_index) {
 	col.clear();
 
 	// polygon's data
 	Array<vector> v;
-	for (int k=0;k<pa->side.num;k++)
-		v.add(a.vertex[pa->side[k].vertex].pos);
+	for (int k=0;k<pa.side.num;k++)
+		v.add(a.vertex[pa.side[k].vertex].pos);
 	plane pl;
-	pl = plane::from_point_normal( a.vertex[pa->side[0].vertex].pos, pa->temp_normal);
+	pl = plane::from_point_normal( a.vertex[pa.side[0].vertex].pos, pa.temp_normal);
 
-	Array<int> vv = pa->triangulate(a.vertex);
+	Array<int> vv = pa.triangulate(a.vertex);
 
 	// collide polygon <-> surface's edges
 	foreachi(ModelEdge &e, b.edge, ei) {
@@ -187,10 +187,10 @@ bool collide_polygon_surface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_i
 		pl2 = plane::from_point_normal( b.vertex[pb.side[0].vertex].pos, pb.temp_normal);
 
 		Array<int> vv2 = pb.triangulate(b.vertex);
-		for (int kk=0;kk<pa->side.num;kk++) {
+		for (int kk=0;kk<pa.side.num;kk++) {
 			vector ve[2];
 			for (int k=0;k<2;k++)
-				ve[k] = a.vertex[pa->side[(kk + k) % pa->side.num].vertex].pos;
+				ve[k] = a.vertex[pa.side[(kk + k) % pa.side.num].vertex].pos;
 
 			// crossing plane?
 			if (pl2.distance(ve[0]) * pl2.distance(ve[1]) > 0)
@@ -201,7 +201,7 @@ bool collide_polygon_surface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_i
 				if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], ve[0], ve[1], pos, false))
 					continue;
 				int type = (pl2.distance(ve[0]) > 0) ? Col::TYPE_OWN_EDGE_IN : Col::TYPE_OWN_EDGE_OUT;
-				col.add(Col(pos, type, ti, pa->side[kk].edge, kk));
+				col.add(Col(pos, type, ti, pa.side[kk].edge, kk));
 			}
 		}
 	}
@@ -213,14 +213,14 @@ bool collide_polygon_surface(Geometry &a, ModelPolygon *pa, Geometry &b, int t_i
 }
 
 // we assume t does not collide with s...!
-bool polygon_inside_surface(Geometry &m, ModelPolygon *t, Geometry &s) {
-	for (ModelPolygonSide &side: t->side)
+bool polygon_inside_surface(const Geometry &m, ModelPolygon &t, const Geometry &s) {
+	for (auto &side: t.side)
 		if (!s.is_inside(m.vertex[side.vertex].pos))
 			return false;
 	return true;
 }
 
-bool find_contour_boundary(Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse) {
+bool find_contour_boundary(const Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse) {
 	// find first
 	int last_poly = -1;
 	foreachi(Col &c, c_in, i)
@@ -277,7 +277,7 @@ bool find_contour_boundary(Geometry &s, Array<Col> &c_in, Array<Col> &c_out, boo
 	return false;
 }
 
-bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse) {
+bool find_contour_inside(const Geometry &m, ModelPolygon &t, const Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse) {
 	if (c_in.num == 0)
 		return false;
 
@@ -287,7 +287,7 @@ bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<Col> &
 	c_in.erase(0);
 	vector edge_dir = s.vertex[s.edge[c_out[0].edge].vertex[1]].pos - s.vertex[s.edge[c_out[0].edge].vertex[0]].pos;
 	int last_poly = s.edge[c_out[0].edge].polygon[0];
-	if (vector::dot(t->temp_normal, edge_dir) < 0)
+	if (vector::dot(t.temp_normal, edge_dir) < 0)
 		last_poly = s.edge[c_out[0].edge].polygon[1];
 
 
@@ -321,7 +321,7 @@ bool find_contour_inside(Geometry &m, ModelPolygon *t, Geometry &s, Array<Col> &
 	return false;
 }
 
-void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<Col> > &c_out, bool inverse) {
+void find_contours(const Geometry &m, ModelPolygon &t, const Geometry &s, Array<Array<Col> > &c_out, bool inverse) {
 	int ni = 0, no = 0;
 	for (Col &cc: col) {
 		if (cc.type == cc.TYPE_OWN_EDGE_IN)
@@ -356,8 +356,8 @@ void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<Col> >
 		foreachi(Col &c, cc, i)
 			msg_write(i2s(i) + " " + c.str());
 		if (cc.num < 3) {
-			for (int i=0;i<t->side.num;i++)
-				ed->multi_view_3d->add_message_3d("p"+i2s(i), m.vertex[t->side[i].vertex].pos);
+			for (int i=0;i<t.side.num;i++)
+				ed->multi_view_3d->add_message_3d("p"+i2s(i), m.vertex[t.side[i].vertex].pos);
 			foreachi(Col &c, cc, i)
 				ed->multi_view_3d->add_message_3d("x"+i2s(i), c.p);
 			throw ActionException("contour with num<3");
@@ -365,11 +365,11 @@ void find_contours(Geometry &m, ModelPolygon *t, Geometry &s, Array<Array<Col> >
 	}
 }
 
-void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Array<Col> > &c_in, bool inverse) {
+void sort_and_join_contours(const Geometry &m, ModelPolygon &t, const Geometry &b, Array<Array<Col> > &c_in, bool inverse) {
 	// find old vertices
 	Array<Col> v;
-	for (int k=0;k<t->side.num;k++) {
-		vector pos = m.vertex[t->side[k].vertex].pos;
+	for (int k=0;k<t.side.num;k++) {
+		vector pos = m.vertex[t.side[k].vertex].pos;
 		if (b.is_inside(pos) == inverse)
 			v.add(Col(pos, k));
 	}
@@ -433,7 +433,7 @@ void sort_and_join_contours(Geometry &m, ModelPolygon *t, Geometry &b, Array<Arr
 			// search old vertices
 			bool found = false;
 			foreachi(Col &ccc, v, i) {
-				if (ccc.side == ((side + 1) % t->side.num)) {
+				if (ccc.side == ((side + 1) % t.side.num)) {
 					cc.add(ccc);
 					v.erase(i);
 					found = true;
@@ -512,7 +512,7 @@ void combine_contours(Array<Array<Col> > &c, int ca, int ia, int cb, int ib) {
 	c.erase(cb);
 }
 
-void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<Col>> &contours) {
+void triangulate_contours(const Geometry &m, ModelPolygon &t, Array<Array<Col>> &contours) {
 	if (contours.num == 1)
 		return;
 	Array<Array<Col> > temp = contours;
@@ -535,14 +535,14 @@ void triangulate_contours(Geometry &m, ModelPolygon *t, Array<Array<Col>> &conto
 			//printf("   cc   %d: %d\n", ci, i);
 			int i_p1 = (i+1) % c.num;
 			int i_p2 = (i+2) % c.num;
-			float f = get_ang(c, i_p1, t->temp_normal);
+			float f = get_ang(c, i_p1, t.temp_normal);
 			if (f < 0) {
 				//printf(" ang < 0\n");
 				continue;
 			}
 			// cheat: ...
-			float f_n = get_ang(c, i_p2, t->temp_normal);
-			float f_l = get_ang(c, i, t->temp_normal);
+			float f_n = get_ang(c, i_p2, t.temp_normal);
+			float f_l = get_ang(c, i, t.temp_normal);
 			if (f_n >= 0)
 				f += 0.001f / (f_n + 0.001f);
 			if (f_l >= 0)
@@ -708,7 +708,7 @@ void simplify_filling(Array<Array<Col> > &c) {
 }
 
 
-void polygon_subtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Geometry &out, bool keep_inside) {
+void polygon_subtract(const Geometry &a, ModelPolygon &t, int t_index, const Geometry &b, Geometry &out, bool keep_inside) {
 	bool inverse = keep_inside;
 
 	msg_write("-----sub");
@@ -723,7 +723,7 @@ void polygon_subtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Ge
 	simplify_filling(contours);
 
 	SkinGeneratorMulti sg;
-	sg.init_polygon(a.vertex, *t);
+	sg.init_polygon(a.vertex, t);
 
 	// create new surfaces
 	for (auto &c: contours) {
@@ -742,28 +742,28 @@ void polygon_subtract(Geometry &a, ModelPolygon *t, int t_index, Geometry &b, Ge
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			for (int i=0;i<c.num;i++)
 				if (c[i].type == Col::TYPE_OLD_VERTEX)
-					sv.add(t->side[c[i].side].skin_vertex[l]);
+					sv.add(t.side[c[i].side].skin_vertex[l]);
 				else
 					sv.add(sg.get(c[i].p, l));
 
 		// fill contour with polygons
 		out.add_polygon(vv, sv);
-		out.polygon.back().material = t->material;
+		out.polygon.back().material = t.material;
 	}
 }
 
 // out = a - b (just surface diff)
-bool surface_subtract_unary(Geometry &a, Geometry &b, Geometry &out, bool keep_inside) {
+bool surface_subtract_unary(const Geometry &a, const Geometry &b, Geometry &out, bool keep_inside) {
 	bool has_changes = false;
 
 	out.vertex = a.vertex;
 
 	// collide both surfaces and create additional polygons
 	foreachi(auto &p, a.polygon, i)
-		if (collide_polygon_surface(a, &p, b, i)) {
-			polygon_subtract(a, &p, i, b, out, keep_inside);
+		if (collide_polygon_surface(a, p, b, i)) {
+			polygon_subtract(a, p, i, b, out, keep_inside);
 			has_changes = true;
-		} else if (polygon_inside_surface(a, &p, b) == keep_inside) {
+		} else if (polygon_inside_surface(a, p, b) == keep_inside) {
 			ModelPolygon pp = p;
 			out.polygon.add(pp);
 		} else {
@@ -776,14 +776,15 @@ bool surface_subtract_unary(Geometry &a, Geometry &b, Geometry &out, bool keep_i
 
 
 // out = a - b
-int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out) {
+int GeometrySubtract(const Geometry &a, const Geometry &b, Geometry &out) {
 	a.update_topology();
 	b.update_topology();
-	for (ModelPolygon &p: a.polygon)
+
+	for (auto &p: a.polygon)
 		p.temp_normal = p.get_normal(a.vertex);
-	for (ModelPolygon &p: b.polygon)
+	for (auto &p: b.polygon)
 		p.temp_normal = p.get_normal(b.vertex);
-	if (!b.is_closed)
+	if (!b.is_closed())
 		return -1;
 
 	bool diff = false;
@@ -792,7 +793,7 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out) {
 
 	diff |= surface_subtract_unary(a, b, out, false);
 
-	if (a.is_closed) {
+	if (a.is_closed()) {
 		Geometry t;
 		diff |= surface_subtract_unary(b, a, t, true);
 		t.invert();
@@ -809,18 +810,19 @@ int GeometrySubtract(Geometry &a, Geometry &b, Geometry &out) {
 	out.get_bounding_box(min, max);
 	out.weld((max - min).length() / 4000);
 
+	// changed?
 	return diff ? 1 : 0;
 }
 
 // out = a & b
-int GeometryAnd(Geometry &a, Geometry &b, Geometry &out) {
+int GeometryAnd(const Geometry &a, const Geometry &b, Geometry &out) {
 	a.update_topology();
 	b.update_topology();
-	for (ModelPolygon &p: a.polygon)
+	for (auto &p: a.polygon)
 		p.temp_normal = p.get_normal(a.vertex);
-	for (ModelPolygon &p: b.polygon)
+	for (auto &p: b.polygon)
 		p.temp_normal = p.get_normal(b.vertex);
-	if (!b.is_closed)
+	if (!b.is_closed())
 		return -1;
 
 	bool diff = false;
@@ -829,7 +831,7 @@ int GeometryAnd(Geometry &a, Geometry &b, Geometry &out) {
 
 	diff |= surface_subtract_unary(a, b, out, true);
 
-	if (a.is_closed) {
+	if (a.is_closed()) {
 		Geometry t;
 		diff |= surface_subtract_unary(b, a, t, true);
 		out.add(t);
