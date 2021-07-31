@@ -12,10 +12,11 @@
 
 class ActionModelSurfaceVolumeSubtract : public ActionGroup {
 public:
-	ActionModelSurfaceVolumeSubtract();
+	ActionModelSurfaceVolumeSubtract(int view_stage);
 	string name() override { return "ModelSurfaceVolumeSubtract"; }
 
 	void *compose(Data *d) override;
+	int view_stage;
 };
 
 #endif /* ACTIONMODELSURFACEVOLUMESUBTRACT_H_ */

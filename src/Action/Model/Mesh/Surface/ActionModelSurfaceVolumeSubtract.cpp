@@ -16,8 +16,9 @@
 #include "../../../../MultiView/MultiView.h"
 
 
-ActionModelSurfaceVolumeSubtract::ActionModelSurfaceVolumeSubtract()
-{}
+ActionModelSurfaceVolumeSubtract::ActionModelSurfaceVolumeSubtract(int _view_stage) {
+	view_stage = _view_stage;
+}
 
 void *ActionModelSurfaceVolumeSubtract::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
@@ -26,10 +27,12 @@ void *ActionModelSurfaceVolumeSubtract::compose(Data *d) {
 	gsel.vertex = m->mesh->vertex;
 	gunsel.vertex = m->mesh->vertex;
 	for (auto &p: m->mesh->polygon)
-		if (p.is_selected)
-			gsel.polygon.add(p);
-		else
-			gunsel.polygon.add(p);
+		if (p.view_stage >= view_stage) {
+			if (p.is_selected)
+				gsel.polygon.add(p);
+			else
+				gunsel.polygon.add(p);
+		}
 
 	if (gsel.polygon.num == 0)
 		throw ActionException("no polygons selected");
@@ -60,7 +63,7 @@ void *ActionModelSurfaceVolumeSubtract::compose(Data *d) {
 	}
 
 	if (changed or true) {
-		auto sel = ModelSelection::all(m->mesh);
+		auto sel = ModelSelection::all(m->mesh).filter_view_stage(m->mesh, view_stage);
 		addSubAction(new ActionModelDeleteSelection(sel, false), d);
 
 		for (auto &g: gsub)

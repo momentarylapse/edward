@@ -521,8 +521,8 @@ void DataModel::invert_polygons(const ModelSelection &s) {
 	execute(new ActionModelSurfaceInvert(s.polygon, s.consistent_surfaces(mesh)));
 }
 
-void DataModel::subtractSelection()
-{	execute(new ActionModelSurfaceVolumeSubtract());	}
+void DataModel::subtractSelection(int view_stage)
+{	execute(new ActionModelSurfaceVolumeSubtract(view_stage));	}
 
 void DataModel::andSelection()
 {	execute(new ActionModelSurfaceVolumeAnd());	}

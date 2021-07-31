@@ -169,7 +169,7 @@ public:
 
 	void delete_selection(const ModelSelection &s, bool greedy = false);
 	void invert_polygons(const ModelSelection &s);
-	void subtractSelection();
+	void subtractSelection(int view_stage);
 	void andSelection();
 	void cutOutSelection();
 	void convertSelectionToTriangles();

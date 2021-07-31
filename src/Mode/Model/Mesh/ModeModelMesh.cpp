@@ -149,7 +149,7 @@ void ModeModelMesh::on_command(const string &id) {
 		selection_grow_smooth_group(data);
 
 	if (id == "volume_subtract")
-		data->subtractSelection();
+		data->subtractSelection(multi_view->view_stage);
 	if (id == "volume_and")
 		data->andSelection();
 	if (id == "invert_trias")

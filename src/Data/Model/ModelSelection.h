@@ -34,6 +34,8 @@ public:
 	void expand_to_surfaces(ModelMesh *m);
 	bool consistent_surfaces(ModelMesh *m) const;
 
+	ModelSelection filter_view_stage(ModelMesh *m, int view_stage) const;
+
 	static ModelSelection all(ModelMesh *m);
 };
 

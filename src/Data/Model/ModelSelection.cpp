@@ -66,6 +66,19 @@ void ModelSelection::expand_to_surfaces(ModelMesh *m) {
 				polygon.add(i);
 }
 
+ModelSelection ModelSelection::filter_view_stage(ModelMesh *m, int view_stage) const {
+	ModelSelection r;
+	for (int i: vertex)
+		if (m->vertex[i].view_stage >= view_stage)
+			r.vertex.add(i);
+	for (int i: polygon)
+		if (m->polygon[i].view_stage >= view_stage)
+			r.polygon.add(i);
+	//for (auto &e: m->edge)
+	//	r.set(e);
+	return r;
+}
+
 ModelSelection ModelSelection::all(ModelMesh *m) {
 	ModelSelection r;
 	for (int i=0; i<m->vertex.num; i++)
