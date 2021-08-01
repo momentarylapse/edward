@@ -1,0 +1,956 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{29AA0AD3-D9F4-0865-3664-BCDE98055887}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);HAS_LIB_GTK3=1;HAS_LIB_ZLIB=1;HAS_LIB_GL=1;HAS_LIB_UNWIND=0;HAS_LIB_DL=0;HAS_LIB_XLIB=0</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <ObjectFileName>$(IntDir)\%(RelativeDir)\%(Filename).obj</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions);HAS_LIB_GTK3=1;HAS_LIB_ZLIB=1;HAS_LIB_GL=1;HAS_LIB_UNWIND=0;HAS_LIB_DL=0;HAS_LIB_XLIB=0</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ObjectFileName>$(IntDir)\%(RelativeDir)\%(Filename).obj</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN64;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);HAS_LIB_GTK3=1;HAS_LIB_ZLIB=1;HAS_LIB_GL=1;HAS_LIB_UNWIND=0;HAS_LIB_DL=0;HAS_LIB_XLIB=0</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)\%(RelativeDir)\%(Filename).obj</ObjectFileName>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN64;NDEBUG;_WINDOWS;%(PreprocessorDefinitions);HAS_LIB_GTK3=1;HAS_LIB_ZLIB=1;HAS_LIB_GL=1;HAS_LIB_UNWIND=0;HAS_LIB_DL=0;HAS_LIB_XLIB=0</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)\%(RelativeDir)\%(Filename).obj</ObjectFileName>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Action\Font\ActionFontEditGlobal.cpp" />
+    <ClCompile Include="src\Action\Font\ActionFontEditGlyph.cpp" />
+    <ClCompile Include="src\Action\Material\ActionMaterialEditAppearance.cpp" />
+    <ClCompile Include="src\Action\Material\ActionMaterialEditPhysics.cpp" />
+    <ClCompile Include="src\Action\Model\Animation\ActionModelAddAnimation.cpp" />
+    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationAddFrame.cpp" />
+    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationDeleteFrame.cpp" />
+    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationSetBone.cpp" />
+    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationSetData.cpp" />
+    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationSetFrameDuration.cpp" />
+    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationTransformBones.cpp" />
+    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationTransformVertices.cpp" />
+    <ClCompile Include="src\Action\Model\Animation\ActionModelDeleteAnimation.cpp" />
+    <ClCompile Include="src\Action\Model\Animation\ActionModelDuplicateAnimation.cpp" />
+    <ClCompile Include="src\Action\Model\Data\ActionModelAddMaterial.cpp" />
+    <ClCompile Include="src\Action\Model\Data\ActionModelDeleteMaterial.cpp" />
+    <ClCompile Include="src\Action\Model\Data\ActionModelEditData.cpp" />
+    <ClCompile Include="src\Action\Model\Data\ActionModelEditMaterial.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Brush\ActionModelBrushComplexify.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Brush\ActionModelBrushExtrude.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Brush\ActionModelBrushSmooth.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Edge\ActionModelBevelEdges.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Edge\ActionModelCollapseEdge.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Edge\ActionModelSplitEdge.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Effects\ActionModelAddEffects.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Effects\ActionModelClearEffects.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Effects\ActionModelEditEffect.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Look\ActionModelSetMaterial.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Look\ActionModelSetNormalModeSelection.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Physical\ActionModelAddBall.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Physical\ActionModelAddCylinder.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Physical\ActionModelDeleteBall.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Physical\ActionModelDeleteCylinder.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Polygon\Helper\ActionModelPolygonAddVertex.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Polygon\Helper\ActionModelPolygonRemoveVertex.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygon.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygonAutoSkin.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygonSingleTexture.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygonWithSkinGenerator.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelCutOutPolygons.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelExtrudePolygons.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelMergePolygonsSelection.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelSplitPolygon.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelTriangulateSelection.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Skin\ActionModelAutomap.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Skin\ActionModelSkinVerticesFromProjection.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Skin\ActionModelTransformSkinVertices.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\Helper\ActionModelAddEmptySurface.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\Helper\ActionModelDeleteEmptySurface.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\Helper\ActionModelJoinSurfaces.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\Helper\ActionModelSurfaceAddPolygon.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\Helper\ActionModelSurfaceDeletePolygon.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\Helper\ActionModelSurfaceRelinkPolygon.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelAutoWeldSelection.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelDeleteSurface.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceAutoWeld.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceCopy.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceInvert.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfacesSubdivide.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeAnd.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeSubtract.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\Helper\ActionModelDeleteUnusedVertex.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\Helper\ActionModelMoveVertex.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelAddVertex.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelAlignToGrid.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelBevelVertices.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelCollapseVertices.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelDeleteVertex.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelFlattenVertices.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelNearifyVertices.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelTransformVertices.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelTriangulateVertices.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\ActionModelDeleteSelection.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\ActionModelEasify.cpp" />
+    <ClCompile Include="src\Action\Model\Mesh\ActionModelPasteGeometry.cpp" />
+    <ClCompile Include="src\Action\Model\Skeleton\ActionModelAddBone.cpp" />
+    <ClCompile Include="src\Action\Model\Skeleton\ActionModelAttachVerticesToBone.cpp" />
+    <ClCompile Include="src\Action\Model\Skeleton\ActionModelDeleteBone.cpp" />
+    <ClCompile Include="src\Action\Model\Skeleton\ActionModelDeleteBoneSelection.cpp" />
+    <ClCompile Include="src\Action\Model\Skeleton\ActionModelReconnectBone.cpp" />
+    <ClCompile Include="src\Action\Model\Skeleton\ActionModelSetSubModel.cpp" />
+    <ClCompile Include="src\Action\Model\Skeleton\ActionModelTransformBones.cpp" />
+    <ClCompile Include="src\Action\World\Camera\ActionCameraAddPoint.cpp" />
+    <ClCompile Include="src\Action\World\Camera\ActionCameraMoveSelection.cpp" />
+    <ClCompile Include="src\Action\World\Camera\ActionCameraMoveTimeSelection.cpp" />
+    <ClCompile Include="src\Action\World\Helper\ActionWorldTerrainEditHeight.cpp" />
+    <ClCompile Include="src\Action\World\Light\ActionWorldAddLight.cpp" />
+    <ClCompile Include="src\Action\World\Light\ActionWorldDeleteLight.cpp" />
+    <ClCompile Include="src\Action\World\Link\ActionWorldAddLink.cpp" />
+    <ClCompile Include="src\Action\World\Link\ActionWorldDeleteLink.cpp" />
+    <ClCompile Include="src\Action\World\Object\ActionWorldAddObject.cpp" />
+    <ClCompile Include="src\Action\World\Object\ActionWorldDeleteObject.cpp" />
+    <ClCompile Include="src\Action\World\Object\ActionWorldEditObject.cpp" />
+    <ClCompile Include="src\Action\World\Object\ActionWorldRotateObjects.cpp" />
+    <ClCompile Include="src\Action\World\Terrain\ActionWorldAddTerrain.cpp" />
+    <ClCompile Include="src\Action\World\Terrain\ActionWorldDeleteTerrain.cpp" />
+    <ClCompile Include="src\Action\World\Terrain\ActionWorldEditTerrain.cpp" />
+    <ClCompile Include="src\Action\World\Terrain\ActionWorldTerrainApplyHeightmap.cpp" />
+    <ClCompile Include="src\Action\World\Terrain\ActionWorldTerrainBrushExtrude.cpp" />
+    <ClCompile Include="src\Action\World\ActionWorldDeleteSelection.cpp" />
+    <ClCompile Include="src\Action\World\ActionWorldEditData.cpp" />
+    <ClCompile Include="src\Action\World\ActionWorldMoveSelection.cpp" />
+    <ClCompile Include="src\Action\World\ActionWorldPaste.cpp" />
+    <ClCompile Include="src\Action\World\ActionWorldSelectionAddComponent.cpp" />
+    <ClCompile Include="src\Action\World\ActionWorldSetEgo.cpp" />
+    <ClCompile Include="src\Action\Action.cpp" />
+    <ClCompile Include="src\Action\ActionGroup.cpp" />
+    <ClCompile Include="src\Action\ActionManager.cpp" />
+    <ClCompile Include="src\Action\ActionMultiView.cpp" />
+    <ClCompile Include="src\Data\Administration\AdminFile.cpp" />
+    <ClCompile Include="src\Data\Administration\AdminFileList.cpp" />
+    <ClCompile Include="src\Data\Administration\DataAdministration.cpp" />
+    <ClCompile Include="src\Data\Administration\GameIniData.cpp" />
+    <ClCompile Include="src\Data\Font\Import\ImporterCairo.cpp" />
+    <ClCompile Include="src\Data\Font\DataFont.cpp" />
+    <ClCompile Include="src\Data\Material\DataMaterial.cpp" />
+    <ClCompile Include="src\Data\Material\ShaderBuilderContext.cpp" />
+    <ClCompile Include="src\Data\Material\ShaderGraph.cpp" />
+    <ClCompile Include="src\Data\Material\ShaderNode.cpp" />
+    <ClCompile Include="src\Data\Model\Geometry\Geometry.cpp" />
+    <ClCompile Include="src\Data\Model\Geometry\GeometryBall.cpp" />
+    <ClCompile Include="src\Data\Model\Geometry\GeometryCube.cpp" />
+    <ClCompile Include="src\Data\Model\Geometry\GeometryCylinder.cpp" />
+    <ClCompile Include="src\Data\Model\Geometry\GeometryPlane.cpp" />
+    <ClCompile Include="src\Data\Model\Geometry\GeometryPlatonic.cpp" />
+    <ClCompile Include="src\Data\Model\Geometry\GeometrySphere.cpp" />
+    <ClCompile Include="src\Data\Model\Geometry\GeometrySubtract.cpp" />
+    <ClCompile Include="src\Data\Model\Geometry\GeometryTeapot.cpp" />
+    <ClCompile Include="src\Data\Model\Geometry\GeometryTorus.cpp" />
+    <ClCompile Include="src\Data\Model\Geometry\GeometryTorusKnot.cpp" />
+    <ClCompile Include="src\Data\Model\BspTree.cpp" />
+    <ClCompile Include="src\Data\Model\DataModel.cpp" />
+    <ClCompile Include="src\Data\Model\ModelMaterial.cpp" />
+    <ClCompile Include="src\Data\Model\ModelMesh.cpp" />
+    <ClCompile Include="src\Data\Model\ModelPolygon.cpp" />
+    <ClCompile Include="src\Data\Model\ModelSelection.cpp" />
+    <ClCompile Include="src\Data\Model\SkinGenerator.cpp" />
+    <ClCompile Include="src\Data\World\Lightmap\Lightmap.cpp" />
+    <ClCompile Include="src\Data\World\Lightmap\LightmapData.cpp" />
+    <ClCompile Include="src\Data\World\Lightmap\LightmapPhotonMap.cpp" />
+    <ClCompile Include="src\Data\World\Lightmap\LightmapPhotonMapImageSpace.cpp" />
+    <ClCompile Include="src\Data\World\Lightmap\LightmapRadiosity.cpp" />
+    <ClCompile Include="src\Data\World\Lightmap\LightmapRayTracing.cpp" />
+    <ClCompile Include="src\Data\World\DataCamera.cpp" />
+    <ClCompile Include="src\Data\World\DataWorld.cpp" />
+    <ClCompile Include="src\Data\World\WorldCamera.cpp" />
+    <ClCompile Include="src\Data\World\WorldLight.cpp" />
+    <ClCompile Include="src\Data\World\WorldLink.cpp" />
+    <ClCompile Include="src\Data\World\WorldObject.cpp" />
+    <ClCompile Include="src\Data\World\WorldTerrain.cpp" />
+    <ClCompile Include="src\Data\Data.cpp" />
+    <ClCompile Include="src\lib\any\any.cpp" />
+    <ClCompile Include="src\lib\base\array.cpp" />
+    <ClCompile Include="src\lib\base\pointer.cpp" />
+    <ClCompile Include="src\lib\base\strings.cpp" />
+    <ClCompile Include="src\lib\file\file.cpp" />
+    <ClCompile Include="src\lib\file\file_op.cpp" />
+    <ClCompile Include="src\lib\file\msg.cpp" />
+    <ClCompile Include="src\lib\file\path.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\Control.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlButtonGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlCheckBoxGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlColorButtonGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlComboBoxGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlDrawingAreaGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlEditGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlExpanderGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlGridGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlGroupGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlLabelGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlListViewGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlMenuButtonGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlMultilineEditGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlPanedGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlProgressBarGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlRadioButtonGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlRevealerGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlScrollerGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlSeparatorGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlSliderGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlSpinButtonGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlTabControlGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlToggleButtonGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ControlTreeViewGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\MenuItemGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\MenuItemSeparatorGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\MenuItemSeparatorWin.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\MenuItemSubmenuGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\MenuItemSubmenuWin.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\MenuItemToggleGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\MenuItemToggleWin.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\MenuItemWin.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ToolItemButtonGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ToolItemButtonWin.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ToolItemMenuButtonGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ToolItemMenuButtonWin.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ToolItemSeparatorGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ToolItemSeparatorWin.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ToolItemToggleButtonGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Controls\ToolItemToggleButtonWin.cpp" />
+    <ClCompile Include="src\lib\hui\Application.cpp" />
+    <ClCompile Include="src\lib\hui\Callback.cpp" />
+    <ClCompile Include="src\lib\hui\Clipboard.cpp" />
+    <ClCompile Include="src\lib\hui\common_dlg.cpp" />
+    <ClCompile Include="src\lib\hui\common_dlg_gtk.cpp" />
+    <ClCompile Include="src\lib\hui\common_dlg_win.cpp" />
+    <ClCompile Include="src\lib\hui\Config.cpp" />
+    <ClCompile Include="src\lib\hui\error.cpp" />
+    <ClCompile Include="src\lib\hui\Event.cpp" />
+    <ClCompile Include="src\lib\hui\hui.cpp" />
+    <ClCompile Include="src\lib\hui\language.cpp" />
+    <ClCompile Include="src\lib\hui\main_gtk.cpp" />
+    <ClCompile Include="src\lib\hui\main_win.cpp" />
+    <ClCompile Include="src\lib\hui\Menu.cpp" />
+    <ClCompile Include="src\lib\hui\MenuGtk.cpp" />
+    <ClCompile Include="src\lib\hui\MenuWin.cpp" />
+    <ClCompile Include="src\lib\hui\PainterGtk.cpp" />
+    <ClCompile Include="src\lib\hui\Panel.cpp" />
+    <ClCompile Include="src\lib\hui\Resource.cpp" />
+    <ClCompile Include="src\lib\hui\Timer.cpp" />
+    <ClCompile Include="src\lib\hui\Toolbar.cpp" />
+    <ClCompile Include="src\lib\hui\ToolbarGtk.cpp" />
+    <ClCompile Include="src\lib\hui\ToolbarWin.cpp" />
+    <ClCompile Include="src\lib\hui\utility.cpp" />
+    <ClCompile Include="src\lib\hui\Window.cpp" />
+    <ClCompile Include="src\lib\hui\window_control.cpp" />
+    <ClCompile Include="src\lib\hui\window_control_gtk.cpp" />
+    <ClCompile Include="src\lib\hui\window_control_win.cpp" />
+    <ClCompile Include="src\lib\hui\WindowGtk.cpp" />
+    <ClCompile Include="src\lib\hui\WindowWin.cpp" />
+    <ClCompile Include="src\lib\image\color.cpp" />
+    <ClCompile Include="src\lib\image\image.cpp" />
+    <ClCompile Include="src\lib\image\image_bmp.cpp" />
+    <ClCompile Include="src\lib\image\image_jpg.cpp" />
+    <ClCompile Include="src\lib\image\image_png.cpp" />
+    <ClCompile Include="src\lib\image\image_tga.cpp" />
+    <ClCompile Include="src\lib\image\ImagePainter.cpp" />
+    <ClCompile Include="src\lib\kaba\asm\asm.cpp" />
+    <ClCompile Include="src\lib\kaba\asm\asm_arm.cpp" />
+    <ClCompile Include="src\lib\kaba\asm\asm_x86.cpp" />
+    <ClCompile Include="src\lib\kaba\compiler\Backend.cpp" />
+    <ClCompile Include="src\lib\kaba\compiler\BackendAmd64.cpp" />
+    <ClCompile Include="src\lib\kaba\compiler\BackendARM.cpp" />
+    <ClCompile Include="src\lib\kaba\compiler\BackendX86.cpp" />
+    <ClCompile Include="src\lib\kaba\compiler\CommandList.cpp" />
+    <ClCompile Include="src\lib\kaba\compiler\compiler.cpp" />
+    <ClCompile Include="src\lib\kaba\compiler\mapper.cpp" />
+    <ClCompile Include="src\lib\kaba\compiler\serializer.cpp" />
+    <ClCompile Include="src\lib\kaba\compiler\SerializerX.cpp" />
+    <ClCompile Include="src\lib\kaba\compiler\SerialNode.cpp" />
+    <ClCompile Include="src\lib\kaba\dynamic\call.cpp" />
+    <ClCompile Include="src\lib\kaba\dynamic\dynamic.cpp" />
+    <ClCompile Include="src\lib\kaba\dynamic\exception.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\dict.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\extern.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib_base.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib_doc.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib_hui.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib_image.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib_kaba.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib_math.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib_net.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib_nix.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib_os.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib_threads.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib_time.cpp" />
+    <ClCompile Include="src\lib\kaba\lib\lib_vulkan.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\Block.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\Class.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\Constant.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\Function.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\Identifier.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\implicit.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\lexical.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\Node.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\Operator.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\Parser.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\precompiler.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\preprocessor.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\Statement.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\SyntaxTree.cpp" />
+    <ClCompile Include="src\lib\kaba\syntax\Variable.cpp" />
+    <ClCompile Include="src\lib\kaba\CompilerConfiguration.cpp" />
+    <ClCompile Include="src\lib\kaba\Interpreter.cpp" />
+    <ClCompile Include="src\lib\kaba\kaba.cpp" />
+    <ClCompile Include="src\lib\math\complex.cpp" />
+    <ClCompile Include="src\lib\math\interpolation.cpp" />
+    <ClCompile Include="src\lib\math\math.cpp" />
+    <ClCompile Include="src\lib\math\matrix.cpp" />
+    <ClCompile Include="src\lib\math\matrix3.cpp" />
+    <ClCompile Include="src\lib\math\plane.cpp" />
+    <ClCompile Include="src\lib\math\quaternion.cpp" />
+    <ClCompile Include="src\lib\math\random.cpp" />
+    <ClCompile Include="src\lib\math\ray.cpp" />
+    <ClCompile Include="src\lib\math\rect.cpp" />
+    <ClCompile Include="src\lib\math\vec2.cpp" />
+    <ClCompile Include="src\lib\math\vec4.cpp" />
+    <ClCompile Include="src\lib\math\vector.cpp" />
+    <ClCompile Include="src\lib\net\BinaryBuffer.cpp" />
+    <ClCompile Include="src\lib\net\net.cpp" />
+    <ClCompile Include="src\lib\net\Socket.cpp" />
+    <ClCompile Include="src\lib\nix\nix.cpp" />
+    <ClCompile Include="src\lib\nix\nix_buffer.cpp" />
+    <ClCompile Include="src\lib\nix\nix_draw.cpp" />
+    <ClCompile Include="src\lib\nix\nix_framebuffer.cpp" />
+    <ClCompile Include="src\lib\nix\nix_light.cpp" />
+    <ClCompile Include="src\lib\nix\nix_shader.cpp" />
+    <ClCompile Include="src\lib\nix\nix_textures.cpp" />
+    <ClCompile Include="src\lib\nix\nix_vertexbuffer.cpp" />
+    <ClCompile Include="src\lib\nix\nix_view.cpp" />
+    <ClCompile Include="src\lib\threads\Mutex.cpp" />
+    <ClCompile Include="src\lib\threads\Thread.cpp" />
+    <ClCompile Include="src\lib\threads\ThreadedWork.cpp" />
+    <ClCompile Include="src\lib\xfile\chunked.cpp" />
+    <ClCompile Include="src\lib\xfile\pdf.cpp" />
+    <ClCompile Include="src\lib\xfile\xml.cpp" />
+    <ClCompile Include="src\Mode\Administration\Dialog\AdministrationDialog.cpp" />
+    <ClCompile Include="src\Mode\Administration\Dialog\ConfigurationDialog.cpp" />
+    <ClCompile Include="src\Mode\Administration\Dialog\NewProjectDialog.cpp" />
+    <ClCompile Include="src\Mode\Administration\ModeAdministration.cpp" />
+    <ClCompile Include="src\Mode\Font\Dialog\FontDialog.cpp" />
+    <ClCompile Include="src\Mode\Font\ModeFont.cpp" />
+    <ClCompile Include="src\Mode\Material\Dialog\MaterialPropertiesDialog.cpp" />
+    <ClCompile Include="src\Mode\Material\Dialog\ShaderGraphDialog.cpp" />
+    <ClCompile Include="src\Mode\Material\ModeMaterial.cpp" />
+    <ClCompile Include="src\Mode\Model\Animation\Creation\ModeModelAnimationInterpolateFrames.cpp" />
+    <ClCompile Include="src\Mode\Model\Animation\ModeModelAnimation.cpp" />
+    <ClCompile Include="src\Mode\Model\Animation\ModeModelAnimationNone.cpp" />
+    <ClCompile Include="src\Mode\Model\Animation\ModeModelAnimationSkeleton.cpp" />
+    <ClCompile Include="src\Mode\Model\Animation\ModeModelAnimationVertex.cpp" />
+    <ClCompile Include="src\Mode\Model\Dialog\ModelAnimationDialog.cpp" />
+    <ClCompile Include="src\Mode\Model\Dialog\ModelAnimationTimelinePanel.cpp" />
+    <ClCompile Include="src\Mode\Model\Dialog\ModelDuplicateAnimationDialog.cpp" />
+    <ClCompile Include="src\Mode\Model\Dialog\ModelEasifyDialog.cpp" />
+    <ClCompile Include="src\Mode\Model\Dialog\ModelFXDialog.cpp" />
+    <ClCompile Include="src\Mode\Model\Dialog\ModelMaterialDialog.cpp" />
+    <ClCompile Include="src\Mode\Model\Dialog\ModelMaterialSelectionDialog.cpp" />
+    <ClCompile Include="src\Mode\Model\Dialog\ModelNewAnimationDialog.cpp" />
+    <ClCompile Include="src\Mode\Model\Dialog\ModelPropertiesDialog.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshAutoweld.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshBevelEdges.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateBall.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateCube.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateCylinder.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateCylinderSnake.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreatePlane.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreatePlatonic.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreatePolygon.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateTorus.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateVertex.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCutLoop.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshDeformCylinder.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshDeformFunction.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshExtrudePolygons.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshPaste.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshSplitPolygon.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Selection\MeshSelectionMode.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Selection\MeshSelectionModeEdge.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Selection\MeshSelectionModePolygon.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Selection\MeshSelectionModeSurface.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\Selection\MeshSelectionModeVertex.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\ModeModelMesh.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\ModeModelMeshDeform.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\ModeModelMeshMaterial.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\ModeModelMeshPaint.cpp" />
+    <ClCompile Include="src\Mode\Model\Mesh\ModeModelMeshTexture.cpp" />
+    <ClCompile Include="src\Mode\Model\Skeleton\Creation\ModeModelSkeletonAttachVertices.cpp" />
+    <ClCompile Include="src\Mode\Model\Skeleton\Creation\ModeModelSkeletonCreateBone.cpp" />
+    <ClCompile Include="src\Mode\Model\Skeleton\ModeModelSkeleton.cpp" />
+    <ClCompile Include="src\Mode\Model\ModeModel.cpp" />
+    <ClCompile Include="src\Mode\World\Camera\Creation\ModeWorldCameraCreatePoint.cpp" />
+    <ClCompile Include="src\Mode\World\Camera\ModeWorldCamera.cpp" />
+    <ClCompile Include="src\Mode\World\Creation\ModeWorldCreateLight.cpp" />
+    <ClCompile Include="src\Mode\World\Creation\ModeWorldCreateLink.cpp" />
+    <ClCompile Include="src\Mode\World\Creation\ModeWorldCreateObject.cpp" />
+    <ClCompile Include="src\Mode\World\Creation\ModeWorldCreateTerrain.cpp" />
+    <ClCompile Include="src\Mode\World\Dialog\CameraDialog.cpp" />
+    <ClCompile Include="src\Mode\World\Dialog\ComponentSelectionDialog.cpp" />
+    <ClCompile Include="src\Mode\World\Dialog\LightmapDialog.cpp" />
+    <ClCompile Include="src\Mode\World\Dialog\ObjectPropertiesDialog.cpp" />
+    <ClCompile Include="src\Mode\World\Dialog\ScriptVarsDialog.cpp" />
+    <ClCompile Include="src\Mode\World\Dialog\SelectionPropertiesDialog.cpp" />
+    <ClCompile Include="src\Mode\World\Dialog\TerrainCreationDialog.cpp" />
+    <ClCompile Include="src\Mode\World\Dialog\TerrainHeightmapDialog.cpp" />
+    <ClCompile Include="src\Mode\World\Dialog\TerrainPropertiesDialog.cpp" />
+    <ClCompile Include="src\Mode\World\Dialog\WorldObjectListPanel.cpp" />
+    <ClCompile Include="src\Mode\World\Dialog\WorldPropertiesDialog.cpp" />
+    <ClCompile Include="src\Mode\World\Terrain\ModeWorldTerrain.cpp" />
+    <ClCompile Include="src\Mode\World\ModeWorld.cpp" />
+    <ClCompile Include="src\Mode\Mode.cpp" />
+    <ClCompile Include="src\Mode\ModeCreation.cpp" />
+    <ClCompile Include="src\Mode\ModeNone.cpp" />
+    <ClCompile Include="src\MultiView\ActionController.cpp" />
+    <ClCompile Include="src\MultiView\CameraController.cpp" />
+    <ClCompile Include="src\MultiView\ColorScheme.cpp" />
+    <ClCompile Include="src\MultiView\DrawingHelper.cpp" />
+    <ClCompile Include="src\MultiView\MouseWrapper.cpp" />
+    <ClCompile Include="src\MultiView\MultiView.cpp" />
+    <ClCompile Include="src\MultiView\SingleData.cpp" />
+    <ClCompile Include="src\MultiView\Window.cpp" />
+    <ClCompile Include="src\Storage\Format\old\LoadModelV11.cpp" />
+    <ClCompile Include="src\Storage\Format\Format.cpp" />
+    <ClCompile Include="src\Storage\Format\FormatFontX.cpp" />
+    <ClCompile Include="src\Storage\Format\FormatMaterial.cpp" />
+    <ClCompile Include="src\Storage\Format\FormatModel.cpp" />
+    <ClCompile Include="src\Storage\Format\FormatModel3ds.cpp" />
+    <ClCompile Include="src\Storage\Format\FormatModelJson.cpp" />
+    <ClCompile Include="src\Storage\Format\FormatModelPly.cpp" />
+    <ClCompile Include="src\Storage\Format\FormatTerrain.cpp" />
+    <ClCompile Include="src\Storage\Format\FormatWorld.cpp" />
+    <ClCompile Include="src\Storage\Storage.cpp" />
+    <ClCompile Include="src\Stuff\BrushPanel.cpp" />
+    <ClCompile Include="src\Stuff\Observable.cpp" />
+    <ClCompile Include="src\Stuff\PluginManager.cpp" />
+    <ClCompile Include="src\Stuff\Progress.cpp" />
+    <ClCompile Include="src\y\Camera.cpp" />
+    <ClCompile Include="src\y\EngineData.cpp" />
+    <ClCompile Include="src\y\Entity.cpp" />
+    <ClCompile Include="src\y\Font.cpp" />
+    <ClCompile Include="src\y\LevelData.cpp" />
+    <ClCompile Include="src\y\Link.cpp" />
+    <ClCompile Include="src\y\Material.cpp" />
+    <ClCompile Include="src\y\Model.cpp" />
+    <ClCompile Include="src\y\ModelManager.cpp" />
+    <ClCompile Include="src\y\Object.cpp" />
+    <ClCompile Include="src\y\ResourceManager.cpp" />
+    <ClCompile Include="src\y\Terrain.cpp" />
+    <ClCompile Include="src\y\World.cpp" />
+    <ClCompile Include="src\Edward.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\meta.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Action\Font\ActionFontEditGlobal.h" />
+    <ClInclude Include="src\Action\Font\ActionFontEditGlyph.h" />
+    <ClInclude Include="src\Action\Material\ActionMaterialEditAppearance.h" />
+    <ClInclude Include="src\Action\Material\ActionMaterialEditPhysics.h" />
+    <ClInclude Include="src\Action\Model\Animation\ActionModelAddAnimation.h" />
+    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationAddFrame.h" />
+    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationDeleteFrame.h" />
+    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationSetBone.h" />
+    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationSetData.h" />
+    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationSetFrameDuration.h" />
+    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationTransformBones.h" />
+    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationTransformVertices.h" />
+    <ClInclude Include="src\Action\Model\Animation\ActionModelDeleteAnimation.h" />
+    <ClInclude Include="src\Action\Model\Animation\ActionModelDuplicateAnimation.h" />
+    <ClInclude Include="src\Action\Model\Data\ActionModelAddMaterial.h" />
+    <ClInclude Include="src\Action\Model\Data\ActionModelDeleteMaterial.h" />
+    <ClInclude Include="src\Action\Model\Data\ActionModelEditData.h" />
+    <ClInclude Include="src\Action\Model\Data\ActionModelEditMaterial.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Brush\ActionModelBrushComplexify.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Brush\ActionModelBrushExtrude.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Brush\ActionModelBrushSmooth.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Edge\ActionModelBevelEdges.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Edge\ActionModelCollapseEdge.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Edge\ActionModelSplitEdge.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Effects\ActionModelAddEffects.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Effects\ActionModelClearEffects.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Effects\ActionModelEditEffect.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Look\ActionModelSetMaterial.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Look\ActionModelSetNormalModeSelection.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Physical\ActionModelAddBall.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Physical\ActionModelAddCylinder.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Physical\ActionModelDeleteBall.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Physical\ActionModelDeleteCylinder.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Polygon\Helper\ActionModelPolygonAddVertex.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Polygon\Helper\ActionModelPolygonRemoveVertex.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygon.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygonAutoSkin.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygonSingleTexture.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygonWithSkinGenerator.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelCutOutPolygons.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelExtrudePolygons.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelMergePolygonsSelection.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelSplitPolygon.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelTriangulateSelection.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Skin\ActionModelAutomap.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Skin\ActionModelSkinVerticesFromProjection.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Skin\ActionModelTransformSkinVertices.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\Helper\ActionModelAddEmptySurface.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\Helper\ActionModelDeleteEmptySurface.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\Helper\ActionModelJoinSurfaces.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\Helper\ActionModelSurfaceAddPolygon.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\Helper\ActionModelSurfaceDeletePolygon.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\Helper\ActionModelSurfaceRelinkPolygon.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelAutoWeldSelection.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelDeleteSurface.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceAutoWeld.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceCopy.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceInvert.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfacesSubdivide.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeAnd.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeSubtract.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Vertex\Helper\ActionModelDeleteUnusedVertex.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Vertex\Helper\ActionModelMoveVertex.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelAddVertex.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelAlignToGrid.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelBevelVertices.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelCollapseVertices.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelDeleteVertex.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelFlattenVertices.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelNearifyVertices.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelTransformVertices.h" />
+    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelTriangulateVertices.h" />
+    <ClInclude Include="src\Action\Model\Mesh\ActionModelDeleteSelection.h" />
+    <ClInclude Include="src\Action\Model\Mesh\ActionModelEasify.h" />
+    <ClInclude Include="src\Action\Model\Mesh\ActionModelPasteGeometry.h" />
+    <ClInclude Include="src\Action\Model\Skeleton\ActionModelAddBone.h" />
+    <ClInclude Include="src\Action\Model\Skeleton\ActionModelAttachVerticesToBone.h" />
+    <ClInclude Include="src\Action\Model\Skeleton\ActionModelDeleteBone.h" />
+    <ClInclude Include="src\Action\Model\Skeleton\ActionModelDeleteBoneSelection.h" />
+    <ClInclude Include="src\Action\Model\Skeleton\ActionModelReconnectBone.h" />
+    <ClInclude Include="src\Action\Model\Skeleton\ActionModelSetSubModel.h" />
+    <ClInclude Include="src\Action\Model\Skeleton\ActionModelTransformBones.h" />
+    <ClInclude Include="src\Action\World\Camera\ActionCameraAddPoint.h" />
+    <ClInclude Include="src\Action\World\Camera\ActionCameraMoveSelection.h" />
+    <ClInclude Include="src\Action\World\Camera\ActionCameraMoveTimeSelection.h" />
+    <ClInclude Include="src\Action\World\Helper\ActionWorldTerrainEditHeight.h" />
+    <ClInclude Include="src\Action\World\Light\ActionWorldAddLight.h" />
+    <ClInclude Include="src\Action\World\Light\ActionWorldDeleteLight.h" />
+    <ClInclude Include="src\Action\World\Link\ActionWorldAddLink.h" />
+    <ClInclude Include="src\Action\World\Link\ActionWorldDeleteLink.h" />
+    <ClInclude Include="src\Action\World\Object\ActionWorldAddObject.h" />
+    <ClInclude Include="src\Action\World\Object\ActionWorldDeleteObject.h" />
+    <ClInclude Include="src\Action\World\Object\ActionWorldEditObject.h" />
+    <ClInclude Include="src\Action\World\Object\ActionWorldRotateObjects.h" />
+    <ClInclude Include="src\Action\World\Terrain\ActionWorldAddTerrain.h" />
+    <ClInclude Include="src\Action\World\Terrain\ActionWorldDeleteTerrain.h" />
+    <ClInclude Include="src\Action\World\Terrain\ActionWorldEditTerrain.h" />
+    <ClInclude Include="src\Action\World\Terrain\ActionWorldTerrainApplyHeightmap.h" />
+    <ClInclude Include="src\Action\World\Terrain\ActionWorldTerrainBrushExtrude.h" />
+    <ClInclude Include="src\Action\World\ActionWorldDeleteSelection.h" />
+    <ClInclude Include="src\Action\World\ActionWorldEditData.h" />
+    <ClInclude Include="src\Action\World\ActionWorldMoveSelection.h" />
+    <ClInclude Include="src\Action\World\ActionWorldPaste.h" />
+    <ClInclude Include="src\Action\World\ActionWorldSelectionAddComponent.h" />
+    <ClInclude Include="src\Action\World\ActionWorldSetEgo.h" />
+    <ClInclude Include="src\Action\Action.h" />
+    <ClInclude Include="src\Action\ActionGroup.h" />
+    <ClInclude Include="src\Action\ActionManager.h" />
+    <ClInclude Include="src\Action\ActionMultiView.h" />
+    <ClInclude Include="src\Data\Administration\AdminFile.h" />
+    <ClInclude Include="src\Data\Administration\AdminFileList.h" />
+    <ClInclude Include="src\Data\Administration\DataAdministration.h" />
+    <ClInclude Include="src\Data\Administration\GameIniData.h" />
+    <ClInclude Include="src\Data\Font\Import\ImporterCairo.h" />
+    <ClInclude Include="src\Data\Font\DataFont.h" />
+    <ClInclude Include="src\Data\Material\DataMaterial.h" />
+    <ClInclude Include="src\Data\Material\ShaderBuilderContext.h" />
+    <ClInclude Include="src\Data\Material\ShaderGraph.h" />
+    <ClInclude Include="src\Data\Material\ShaderNode.h" />
+    <ClInclude Include="src\Data\Model\Geometry\Geometry.h" />
+    <ClInclude Include="src\Data\Model\Geometry\GeometryBall.h" />
+    <ClInclude Include="src\Data\Model\Geometry\GeometryCube.h" />
+    <ClInclude Include="src\Data\Model\Geometry\GeometryCylinder.h" />
+    <ClInclude Include="src\Data\Model\Geometry\GeometryPlane.h" />
+    <ClInclude Include="src\Data\Model\Geometry\GeometryPlatonic.h" />
+    <ClInclude Include="src\Data\Model\Geometry\GeometrySphere.h" />
+    <ClInclude Include="src\Data\Model\Geometry\GeometryTeapot.h" />
+    <ClInclude Include="src\Data\Model\Geometry\GeometryTorus.h" />
+    <ClInclude Include="src\Data\Model\Geometry\GeometryTorusKnot.h" />
+    <ClInclude Include="src\Data\Model\BspTree.h" />
+    <ClInclude Include="src\Data\Model\DataModel.h" />
+    <ClInclude Include="src\Data\Model\ModelMaterial.h" />
+    <ClInclude Include="src\Data\Model\ModelMesh.h" />
+    <ClInclude Include="src\Data\Model\ModelPolygon.h" />
+    <ClInclude Include="src\Data\Model\ModelSelection.h" />
+    <ClInclude Include="src\Data\Model\SkinGenerator.h" />
+    <ClInclude Include="src\Data\World\Lightmap\Lightmap.h" />
+    <ClInclude Include="src\Data\World\Lightmap\LightmapData.h" />
+    <ClInclude Include="src\Data\World\Lightmap\LightmapPhotonMap.h" />
+    <ClInclude Include="src\Data\World\Lightmap\LightmapPhotonMapImageSpace.h" />
+    <ClInclude Include="src\Data\World\Lightmap\LightmapRadiosity.h" />
+    <ClInclude Include="src\Data\World\Lightmap\LightmapRayTracing.h" />
+    <ClInclude Include="src\Data\World\DataCamera.h" />
+    <ClInclude Include="src\Data\World\DataWorld.h" />
+    <ClInclude Include="src\Data\World\WorldCamera.h" />
+    <ClInclude Include="src\Data\World\WorldLight.h" />
+    <ClInclude Include="src\Data\World\WorldLink.h" />
+    <ClInclude Include="src\Data\World\WorldObject.h" />
+    <ClInclude Include="src\Data\World\WorldTerrain.h" />
+    <ClInclude Include="src\Data\Data.h" />
+    <ClInclude Include="src\lib\any\any.h" />
+    <ClInclude Include="src\lib\base\array.h" />
+    <ClInclude Include="src\lib\base\base.h" />
+    <ClInclude Include="src\lib\base\macros.h" />
+    <ClInclude Include="src\lib\base\map.h" />
+    <ClInclude Include="src\lib\base\pointer.h" />
+    <ClInclude Include="src\lib\base\set.h" />
+    <ClInclude Include="src\lib\base\strings.h" />
+    <ClInclude Include="src\lib\file\file.h" />
+    <ClInclude Include="src\lib\file\file_op.h" />
+    <ClInclude Include="src\lib\file\msg.h" />
+    <ClInclude Include="src\lib\file\path.h" />
+    <ClInclude Include="src\lib\hui\Controls\Control.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlButton.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlCheckBox.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlColorButton.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlComboBox.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlDrawingArea.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlEdit.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlExpander.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlGrid.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlGroup.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlLabel.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlListView.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlMenuButton.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlMultilineEdit.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlPaned.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlProgressBar.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlRadioButton.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlRevealer.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlScroller.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlSeparator.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlSlider.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlSpinButton.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlTabControl.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlToggleButton.h" />
+    <ClInclude Include="src\lib\hui\Controls\ControlTreeView.h" />
+    <ClInclude Include="src\lib\hui\Controls\MenuItem.h" />
+    <ClInclude Include="src\lib\hui\Controls\MenuItemSeparator.h" />
+    <ClInclude Include="src\lib\hui\Controls\MenuItemSubmenu.h" />
+    <ClInclude Include="src\lib\hui\Controls\MenuItemToggle.h" />
+    <ClInclude Include="src\lib\hui\Controls\ToolItemButton.h" />
+    <ClInclude Include="src\lib\hui\Controls\ToolItemMenuButton.h" />
+    <ClInclude Include="src\lib\hui\Controls\ToolItemSeparator.h" />
+    <ClInclude Include="src\lib\hui\Controls\ToolItemToggleButton.h" />
+    <ClInclude Include="src\lib\hui\Application.h" />
+    <ClInclude Include="src\lib\hui\Callback.h" />
+    <ClInclude Include="src\lib\hui\Clipboard.h" />
+    <ClInclude Include="src\lib\hui\common.h" />
+    <ClInclude Include="src\lib\hui\common_dlg.h" />
+    <ClInclude Include="src\lib\hui\Config.h" />
+    <ClInclude Include="src\lib\hui\error.h" />
+    <ClInclude Include="src\lib\hui\Event.h" />
+    <ClInclude Include="src\lib\hui\hui.h" />
+    <ClInclude Include="src\lib\hui\internal.h" />
+    <ClInclude Include="src\lib\hui\language.h" />
+    <ClInclude Include="src\lib\hui\main.h" />
+    <ClInclude Include="src\lib\hui\Menu.h" />
+    <ClInclude Include="src\lib\hui\Painter.h" />
+    <ClInclude Include="src\lib\hui\Panel.h" />
+    <ClInclude Include="src\lib\hui\Resource.h" />
+    <ClInclude Include="src\lib\hui\Timer.h" />
+    <ClInclude Include="src\lib\hui\Toolbar.h" />
+    <ClInclude Include="src\lib\hui\utility.h" />
+    <ClInclude Include="src\lib\hui\Window.h" />
+    <ClInclude Include="src\lib\image\color.h" />
+    <ClInclude Include="src\lib\image\image.h" />
+    <ClInclude Include="src\lib\image\image_bmp.h" />
+    <ClInclude Include="src\lib\image\image_jpg.h" />
+    <ClInclude Include="src\lib\image\image_png.h" />
+    <ClInclude Include="src\lib\image\image_tga.h" />
+    <ClInclude Include="src\lib\image\ImagePainter.h" />
+    <ClInclude Include="src\lib\image\Painter.h" />
+    <ClInclude Include="src\lib\kaba\asm\asm.h" />
+    <ClInclude Include="src\lib\kaba\asm\internal.h" />
+    <ClInclude Include="src\lib\kaba\compiler\Backend.h" />
+    <ClInclude Include="src\lib\kaba\compiler\BackendAmd64.h" />
+    <ClInclude Include="src\lib\kaba\compiler\BackendARM.h" />
+    <ClInclude Include="src\lib\kaba\compiler\BackendX86.h" />
+    <ClInclude Include="src\lib\kaba\compiler\CommandList.h" />
+    <ClInclude Include="src\lib\kaba\compiler\serializer.h" />
+    <ClInclude Include="src\lib\kaba\compiler\SerializerX.h" />
+    <ClInclude Include="src\lib\kaba\compiler\SerialNode.h" />
+    <ClInclude Include="src\lib\kaba\dynamic\call.h" />
+    <ClInclude Include="src\lib\kaba\dynamic\dynamic.h" />
+    <ClInclude Include="src\lib\kaba\dynamic\exception.h" />
+    <ClInclude Include="src\lib\kaba\lib\dict.h" />
+    <ClInclude Include="src\lib\kaba\lib\extern.h" />
+    <ClInclude Include="src\lib\kaba\lib\lib.h" />
+    <ClInclude Include="src\lib\kaba\syntax\Block.h" />
+    <ClInclude Include="src\lib\kaba\syntax\Class.h" />
+    <ClInclude Include="src\lib\kaba\syntax\Constant.h" />
+    <ClInclude Include="src\lib\kaba\syntax\Flags.h" />
+    <ClInclude Include="src\lib\kaba\syntax\Function.h" />
+    <ClInclude Include="src\lib\kaba\syntax\Identifier.h" />
+    <ClInclude Include="src\lib\kaba\syntax\Inline.h" />
+    <ClInclude Include="src\lib\kaba\syntax\lexical.h" />
+    <ClInclude Include="src\lib\kaba\syntax\Node.h" />
+    <ClInclude Include="src\lib\kaba\syntax\Operator.h" />
+    <ClInclude Include="src\lib\kaba\syntax\Parser.h" />
+    <ClInclude Include="src\lib\kaba\syntax\Statement.h" />
+    <ClInclude Include="src\lib\kaba\syntax\SyntaxTree.h" />
+    <ClInclude Include="src\lib\kaba\syntax\Variable.h" />
+    <ClInclude Include="src\lib\kaba\CompilerConfiguration.h" />
+    <ClInclude Include="src\lib\kaba\Interpreter.h" />
+    <ClInclude Include="src\lib\kaba\kaba.h" />
+    <ClInclude Include="src\lib\math\complex.h" />
+    <ClInclude Include="src\lib\math\interpolation.h" />
+    <ClInclude Include="src\lib\math\math.h" />
+    <ClInclude Include="src\lib\math\matrix.h" />
+    <ClInclude Include="src\lib\math\matrix3.h" />
+    <ClInclude Include="src\lib\math\plane.h" />
+    <ClInclude Include="src\lib\math\quaternion.h" />
+    <ClInclude Include="src\lib\math\random.h" />
+    <ClInclude Include="src\lib\math\ray.h" />
+    <ClInclude Include="src\lib\math\rect.h" />
+    <ClInclude Include="src\lib\math\vec2.h" />
+    <ClInclude Include="src\lib\math\vec4.h" />
+    <ClInclude Include="src\lib\math\vector.h" />
+    <ClInclude Include="src\lib\net\BinaryBuffer.h" />
+    <ClInclude Include="src\lib\net\net.h" />
+    <ClInclude Include="src\lib\net\Socket.h" />
+    <ClInclude Include="src\lib\nix\nix.h" />
+    <ClInclude Include="src\lib\nix\nix_buffer.h" />
+    <ClInclude Include="src\lib\nix\nix_common.h" />
+    <ClInclude Include="src\lib\nix\nix_config.h" />
+    <ClInclude Include="src\lib\nix\nix_draw.h" />
+    <ClInclude Include="src\lib\nix\nix_framebuffer.h" />
+    <ClInclude Include="src\lib\nix\nix_light.h" />
+    <ClInclude Include="src\lib\nix\nix_shader.h" />
+    <ClInclude Include="src\lib\nix\nix_textures.h" />
+    <ClInclude Include="src\lib\nix\nix_vertexbuffer.h" />
+    <ClInclude Include="src\lib\nix\nix_view.h" />
+    <ClInclude Include="src\lib\threads\Mutex.h" />
+    <ClInclude Include="src\lib\threads\Thread.h" />
+    <ClInclude Include="src\lib\threads\ThreadedWork.h" />
+    <ClInclude Include="src\lib\xfile\chunked.h" />
+    <ClInclude Include="src\lib\xfile\pdf.h" />
+    <ClInclude Include="src\lib\xfile\xml.h" />
+    <ClInclude Include="src\lib\config.h" />
+    <ClInclude Include="src\Mode\Administration\Dialog\AdministrationDialog.h" />
+    <ClInclude Include="src\Mode\Administration\Dialog\ConfigurationDialog.h" />
+    <ClInclude Include="src\Mode\Administration\Dialog\NewProjectDialog.h" />
+    <ClInclude Include="src\Mode\Administration\ModeAdministration.h" />
+    <ClInclude Include="src\Mode\Font\Dialog\FontDialog.h" />
+    <ClInclude Include="src\Mode\Font\ModeFont.h" />
+    <ClInclude Include="src\Mode\Material\Dialog\MaterialPropertiesDialog.h" />
+    <ClInclude Include="src\Mode\Material\Dialog\ShaderGraphDialog.h" />
+    <ClInclude Include="src\Mode\Material\ModeMaterial.h" />
+    <ClInclude Include="src\Mode\Model\Animation\Creation\ModeModelAnimationInterpolateFrames.h" />
+    <ClInclude Include="src\Mode\Model\Animation\ModeModelAnimation.h" />
+    <ClInclude Include="src\Mode\Model\Animation\ModeModelAnimationNone.h" />
+    <ClInclude Include="src\Mode\Model\Animation\ModeModelAnimationSkeleton.h" />
+    <ClInclude Include="src\Mode\Model\Animation\ModeModelAnimationVertex.h" />
+    <ClInclude Include="src\Mode\Model\Dialog\ModelAnimationDialog.h" />
+    <ClInclude Include="src\Mode\Model\Dialog\ModelAnimationTimelinePanel.h" />
+    <ClInclude Include="src\Mode\Model\Dialog\ModelDuplicateAnimationDialog.h" />
+    <ClInclude Include="src\Mode\Model\Dialog\ModelEasifyDialog.h" />
+    <ClInclude Include="src\Mode\Model\Dialog\ModelFXDialog.h" />
+    <ClInclude Include="src\Mode\Model\Dialog\ModelMaterialDialog.h" />
+    <ClInclude Include="src\Mode\Model\Dialog\ModelMaterialSelectionDialog.h" />
+    <ClInclude Include="src\Mode\Model\Dialog\ModelNewAnimationDialog.h" />
+    <ClInclude Include="src\Mode\Model\Dialog\ModelPropertiesDialog.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshAutoweld.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshBevelEdges.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateBall.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateCube.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateCylinder.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateCylinderSnake.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreatePlane.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreatePlatonic.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreatePolygon.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateTorus.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateVertex.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCutLoop.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshDeformCylinder.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshDeformFunction.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshExtrudePolygons.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshPaste.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshSplitPolygon.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Selection\MeshSelectionMode.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Selection\MeshSelectionModeEdge.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Selection\MeshSelectionModePolygon.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Selection\MeshSelectionModeSurface.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\Selection\MeshSelectionModeVertex.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\ModeModelMesh.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\ModeModelMeshDeform.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\ModeModelMeshMaterial.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\ModeModelMeshPaint.h" />
+    <ClInclude Include="src\Mode\Model\Mesh\ModeModelMeshTexture.h" />
+    <ClInclude Include="src\Mode\Model\Skeleton\Creation\ModeModelSkeletonAttachVertices.h" />
+    <ClInclude Include="src\Mode\Model\Skeleton\Creation\ModeModelSkeletonCreateBone.h" />
+    <ClInclude Include="src\Mode\Model\Skeleton\ModeModelSkeleton.h" />
+    <ClInclude Include="src\Mode\Model\ModeModel.h" />
+    <ClInclude Include="src\Mode\World\Camera\Creation\ModeWorldCameraCreatePoint.h" />
+    <ClInclude Include="src\Mode\World\Camera\ModeWorldCamera.h" />
+    <ClInclude Include="src\Mode\World\Creation\ModeWorldCreateLight.h" />
+    <ClInclude Include="src\Mode\World\Creation\ModeWorldCreateLink.h" />
+    <ClInclude Include="src\Mode\World\Creation\ModeWorldCreateObject.h" />
+    <ClInclude Include="src\Mode\World\Creation\ModeWorldCreateTerrain.h" />
+    <ClInclude Include="src\Mode\World\Dialog\CameraDialog.h" />
+    <ClInclude Include="src\Mode\World\Dialog\ComponentSelectionDialog.h" />
+    <ClInclude Include="src\Mode\World\Dialog\LightmapDialog.h" />
+    <ClInclude Include="src\Mode\World\Dialog\ObjectPropertiesDialog.h" />
+    <ClInclude Include="src\Mode\World\Dialog\ScriptVarsDialog.h" />
+    <ClInclude Include="src\Mode\World\Dialog\SelectionPropertiesDialog.h" />
+    <ClInclude Include="src\Mode\World\Dialog\TerrainCreationDialog.h" />
+    <ClInclude Include="src\Mode\World\Dialog\TerrainHeightmapDialog.h" />
+    <ClInclude Include="src\Mode\World\Dialog\TerrainPropertiesDialog.h" />
+    <ClInclude Include="src\Mode\World\Dialog\WorldObjectListPanel.h" />
+    <ClInclude Include="src\Mode\World\Dialog\WorldPropertiesDialog.h" />
+    <ClInclude Include="src\Mode\World\Terrain\ModeWorldTerrain.h" />
+    <ClInclude Include="src\Mode\World\ModeWorld.h" />
+    <ClInclude Include="src\Mode\Mode.h" />
+    <ClInclude Include="src\Mode\ModeCreation.h" />
+    <ClInclude Include="src\Mode\ModeNone.h" />
+    <ClInclude Include="src\MultiView\ActionController.h" />
+    <ClInclude Include="src\MultiView\CameraController.h" />
+    <ClInclude Include="src\MultiView\ColorScheme.h" />
+    <ClInclude Include="src\MultiView\DrawingHelper.h" />
+    <ClInclude Include="src\MultiView\MouseWrapper.h" />
+    <ClInclude Include="src\MultiView\MultiView.h" />
+    <ClInclude Include="src\MultiView\SingleData.h" />
+    <ClInclude Include="src\MultiView\Window.h" />
+    <ClInclude Include="src\Storage\Format\Format.h" />
+    <ClInclude Include="src\Storage\Format\FormatFontX.h" />
+    <ClInclude Include="src\Storage\Format\FormatMaterial.h" />
+    <ClInclude Include="src\Storage\Format\FormatModel.h" />
+    <ClInclude Include="src\Storage\Format\FormatModel3ds.h" />
+    <ClInclude Include="src\Storage\Format\FormatModelJson.h" />
+    <ClInclude Include="src\Storage\Format\FormatModelPly.h" />
+    <ClInclude Include="src\Storage\Format\FormatTerrain.h" />
+    <ClInclude Include="src\Storage\Format\FormatWorld.h" />
+    <ClInclude Include="src\Storage\Storage.h" />
+    <ClInclude Include="src\Stuff\BrushPanel.h" />
+    <ClInclude Include="src\Stuff\Observable.h" />
+    <ClInclude Include="src\Stuff\PluginManager.h" />
+    <ClInclude Include="src\Stuff\Progress.h" />
+    <ClInclude Include="src\y\Camera.h" />
+    <ClInclude Include="src\y\EngineData.h" />
+    <ClInclude Include="src\y\Entity.h" />
+    <ClInclude Include="src\y\Font.h" />
+    <ClInclude Include="src\y\LevelData.h" />
+    <ClInclude Include="src\y\Link.h" />
+    <ClInclude Include="src\y\Material.h" />
+    <ClInclude Include="src\y\Model.h" />
+    <ClInclude Include="src\y\ModelManager.h" />
+    <ClInclude Include="src\y\Object.h" />
+    <ClInclude Include="src\y\ResourceManager.h" />
+    <ClInclude Include="src\y\Terrain.h" />
+    <ClInclude Include="src\y\World.h" />
+    <ClInclude Include="src\Edward.h" />
+    <ClInclude Include="src\meta.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
