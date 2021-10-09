@@ -364,6 +364,7 @@ void x86_init() {
 	add_inst(InstID::DB		,0x00	,0	,-1	,Ib	,-1);
 	add_inst(InstID::DW		,0x00	,0	,-1	,Iw	,-1);
 	add_inst(InstID::DD		,0x00	,0	,-1	,Id	,-1);
+	add_inst(InstID::DQ		,0x00	,0	,-1	,Iq	,-1);
 	add_inst(InstID::ADD		,0x00	,1	,-1	,Eb	,Gb);
 	add_inst(InstID::ADD		,0x01	,1	,-1	,Ew	,Gw, OPT_SMALL_PARAM);
 	add_inst(InstID::ADD		,0x01	,1	,-1	,Ed	,Gd, OPT_MEDIUM_PARAM);
@@ -986,11 +987,23 @@ void x86_init() {
 	add_inst(InstID::UCOMISS,   0x2e0f,   2, -1, Xx, XMd);
 	add_inst(InstID::UCOMISD,   0x2e0f66, 3, -1, Xx, XMq);
 
+	add_inst(InstID::WRMSR,     0x300f, 2, -1, -1, -1);
+	add_inst(InstID::RDTSC,     0x310f, 2, -1, -1, -1);
+	add_inst(InstID::RDMSR,     0x320f, 2, -1, -1, -1);
+	add_inst(InstID::RDPMC,     0x330f, 2, -1, -1, -1);
+	add_inst(InstID::CPUID,     0xa20f, 2, -1, -1, -1);
+	add_inst(InstID::LFENCE,    0xe8ae0f, 3, -1, -1, -1);
+	add_inst(InstID::MFENCE,    0xf0ae0f, 3, -1, -1, -1);
+	add_inst(InstID::SFENCE,    0xf8ae0f, 3, -1, -1, -1);
+	add_inst(InstID::CLFLUSH,   0xae0f, 2, 7, Mb, -1);
+	add_inst(InstID::REP,       0xf3, 1, -1, -1, -1);
+
+
 	if (set == InstructionSet::AMD64) {
-		add_inst(InstID::SYSCALL,	0x050f, 2, -1, -1, -1);
-		add_inst(InstID::SYSRET,	0x070f, 2, -1, -1, -1);
-		add_inst(InstID::SYSENTER,	0x340f, 2, -1, -1, -1);
-		add_inst(InstID::SYSEXIT,	0x350f, 2, -1, -1, -1);
+		add_inst(InstID::SYSCALL,   0x050f, 2, -1, -1, -1);
+		add_inst(InstID::SYSRET,    0x070f, 2, -1, -1, -1);
+		add_inst(InstID::SYSENTER,  0x340f, 2, -1, -1, -1);
+		add_inst(InstID::SYSEXIT,   0x350f, 2, -1, -1, -1);
 	}
 }
 
@@ -1361,7 +1374,7 @@ string x86_disassemble(void *_code_,int length,bool allow_comments) {
 			// cap correct?
 			if (ci.cap >= 0)
 				ok &= ((unsigned char)ci.cap == (((unsigned)cur[ci.code_size] >> 3) & 0x07));
-			if ((ok) and (ci.has_modrm)) {
+			if (ok and ci.has_modrm) {
 				InstructionParam p1, p2;
 				UnfuzzyParam(p1, ci.param1);
 				UnfuzzyParam(p2, ci.param2);

@@ -130,6 +130,7 @@ const InstructionName instruction_names[(int)InstID::NUM_INSTRUCTION_NAMES + 1] 
 	{InstID::DB,		"db"},
 	{InstID::DW,		"dw"},
 	{InstID::DD,		"dd"},
+	{InstID::DQ,		"dq"},
 	{InstID::DS,		"ds"},
 	{InstID::DZ,		"dz"},
 	{InstID::ALIGN_OPCODE,	":align:"},
@@ -316,11 +317,21 @@ const InstructionName instruction_names[(int)InstID::NUM_INSTRUCTION_NAMES + 1] 
 	{InstID::UCOMISS,   "ucomiss",   64+3, 64+1},
 	{InstID::UCOMISD,   "ucomisd",   64+3, 64+1},
 
+	{InstID::WRMSR,    "wrmsr"},
+	{InstID::RDTSC,    "rdtsc"},
+	{InstID::RDMSR,    "rdmsr"},
+	{InstID::RDPMC,    "rdpmc"},
+	{InstID::CPUID,    "cpuid"},
+	{InstID::LFENCE,   "lfence"},
+	{InstID::MFENCE,   "mfence"},
+	{InstID::SFENCE,   "sfence"},
+	{InstID::CLFLUSH,  "clflush"},
+
 	// amd64
-	{InstID::SYSCALL,	"syscall"},
-	{InstID::SYSRET,	"sysret"},
-	{InstID::SYSENTER,	"sysenter"},
-	{InstID::SYSEXIT,	"sysexit"},
+	{InstID::SYSCALL,  "syscall"},
+	{InstID::SYSRET,   "sysret"},
+	{InstID::SYSENTER, "sysenter"},
+	{InstID::SYSEXIT,  "sysexit"},
 
 	{InstID::B,		"b"},
 	{InstID::BL,		"bl"},
@@ -1301,14 +1312,13 @@ void InstructionWithParamsList::append_from_source(const string &_code) {
 			continue;
 
 		} else if (cmd == "db") {
-			so("Daten:   1 byte");
-			add_data_inst(this, 1);
+			add_data_inst(this, SIZE_8);
 		} else if (cmd == "dw") {
-			so("Daten:   2 byte");
-			add_data_inst(this, 2);
+			add_data_inst(this, SIZE_16);
 		} else if (cmd == "dd") {
-			so("Daten:   4 byte");
-			add_data_inst(this, 4);
+			add_data_inst(this, SIZE_32);
+		} else if (cmd == "dq") {
+			add_data_inst(this, SIZE_64);
 		}/*else if ((cmd == "ds") or (cmd == "dz")) {
 			so("Daten:   String");
 			char *s = (char*)p1.value;
