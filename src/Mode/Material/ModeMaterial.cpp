@@ -174,7 +174,7 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 
 
 	nix::enable_fog(false);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	nix::set_z(true,true);
 }
 

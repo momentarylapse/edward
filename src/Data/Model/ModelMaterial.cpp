@@ -71,7 +71,7 @@ void ModelMaterial::TextureLevel::reload_image() {
 void ModelMaterial::TextureLevel::update_texture() {
 	if (!texture)
 		texture = new nix::Texture();
-	texture->overwrite(*image);
+	texture->override(*image);
 }
 
 // DEPRECATED
@@ -169,7 +169,7 @@ void ModelMaterial::check_colors() {
 }
 
 void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	w->set_shader(nix::Shader::default_3d);
 	color em = color::interpolate(col.emission, White, 0.1f);
 	nix::set_material(col.albedo, col.roughness, col.metal, em);
@@ -185,9 +185,9 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 			dest = material->alpha.destination;
 		}
 		if (mode == TransparencyMode::COLOR_KEY_HARD) {
-			nix::set_alpha(nix::AlphaMode::COLOR_KEY_HARD);
+			nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 		} else if (mode == TransparencyMode::COLOR_KEY_SMOOTH) {
-			nix::set_alpha(nix::AlphaMode::COLOR_KEY_SMOOTH);
+			nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 		} else if (mode == TransparencyMode::FUNCTIONS) {
 			nix::set_alpha(source, dest);
 			nix::set_z(false, true);

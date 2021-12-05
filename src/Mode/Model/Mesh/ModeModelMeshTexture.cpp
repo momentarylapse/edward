@@ -136,7 +136,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	nix::set_texture(cur_tex);
 	draw_2d(s, s, 0.99f);
 	nix::set_texture(nullptr);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 
 	// rectangle of unity
 	a = v_0;

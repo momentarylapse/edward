@@ -210,7 +210,7 @@ void Window::draw_grid()
 		draw_grid_3d(bg, this, 1, (d.y - DMIN) / (1-DMIN));
 	if (d.x > DMIN)
 		draw_grid_3d(bg, this, 0, (d.x - DMIN) / (1-DMIN));
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 }
 
 int Window::active_grid() {
@@ -335,7 +335,7 @@ void Window::draw_data_points() {
 	// draw multiview data
 	set_projection_matrix_pixel();
 	nix::set_shader(nix::Shader::default_2d);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	nix::set_texture(nullptr);
 	foreachi(DataSet &d, multi_view->data, di){
 		if (d.drawable){
@@ -387,7 +387,7 @@ void Window::draw_data_points() {
 					_draw_str(p.x+3, p.y, i2s(i));
 				}
 			}
-			nix::set_alpha(nix::AlphaMode::NONE);
+			nix::disable_alpha();
 		}
 	}
 
@@ -453,7 +453,7 @@ void Window::draw() {
 		ed->cur_mode->on_draw_win(this);
 
 	nix::set_shader(nix::Shader::default_2d);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	nix::set_texture(nullptr);
 	set_projection_matrix_pixel();
 

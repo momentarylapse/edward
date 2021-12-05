@@ -40,7 +40,7 @@ const int CUBE_SIZE = 20;
 	}
 
 	tex = new nix::Texture;
-	tex->overwrite(im);
+	tex->override(im);
 
 	//mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
 }

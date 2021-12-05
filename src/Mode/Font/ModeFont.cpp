@@ -209,7 +209,7 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 	int NumY = data->TextureHeight / data->global.GlyphHeight;
 
 	// background
-	nix::set_alpha(nix::AlphaMode::MATERIAL);
+	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::set_z(false, false);
 	rect d = rect(0, (float)data->TextureWidth, 0, (float)data->TextureHeight);
 	nix::set_texture(NULL);
@@ -255,7 +255,7 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 		x = x2;
 	}
 
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 }
 
 

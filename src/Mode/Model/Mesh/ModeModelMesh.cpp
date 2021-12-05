@@ -645,7 +645,7 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, const
 		nix::set_offset(0);
 		nix::draw_triangles(m->vb);
 	}
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	nix::set_z(true, true);
 }
 
@@ -734,7 +734,7 @@ void ModeModelMesh::draw_selection(MultiView::Window *win) {
 	nix::draw_triangles(vb_marked);
 
 	nix::set_material(White, 0.5f, 0, Black);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	nix::set_offset(0);
 }
 
@@ -746,7 +746,7 @@ void ModeModelMesh::draw_creation_preview(MultiView::Window *win) {
 	nix::draw_triangles(vb_creation);
 
 	nix::set_material(White, 0.5f, 0, Black);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	nix::set_offset(0);
 }
 

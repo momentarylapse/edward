@@ -174,7 +174,7 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win) {
 
 	set_line_width(scheme.LINE_WIDTH_MEDIUM);
 	set_color(scheme.CREATION_LINE);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	nix::set_z(false, false);
 	draw_line(axis[0], axis[1]);
 

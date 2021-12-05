@@ -155,14 +155,14 @@ void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active)
 
 void CameraController::draw() {
 	update_rects();
-	nix::set_alpha(nix::AlphaMode::MATERIAL);
+	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 
 	// show/hide button
 	set_color(ColorBackground);
 	nix::set_texture(tex_bg);
 	nix::set_shader(nix::Shader::default_2d);
 	draw_2d(rect::ID, r2, 0);
-	draw_icon(r_show, NULL, false);
+	draw_icon(r_show, nullptr, false);
 
 	if (show) {
 
@@ -180,8 +180,8 @@ void CameraController::draw() {
 		draw_icon(c.r_zoom, tex_zoom, c.zooming);
 		}
 	}
-	nix::set_texture(NULL);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::set_texture(nullptr);
+	nix::disable_alpha();
 }
 
 bool CameraController::in_use() {

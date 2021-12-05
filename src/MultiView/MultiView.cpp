@@ -740,7 +740,7 @@ void MultiView::SelectionRect::end() {
 
 void MultiView::SelectionRect::draw(const vec2 &m) {
 	nix::set_z(false, false);
-	nix::set_alpha(nix::AlphaMode::MATERIAL);
+	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::set_texture(nullptr);
 	set_color(scheme.SELECTION_RECT);
 	nix::set_cull(nix::CullMode::NONE);
@@ -753,7 +753,7 @@ void MultiView::SelectionRect::draw(const vec2 &m) {
 	draw_line_2d(m.x, pos0.y, m.x, m.y, 0);
 	draw_line_2d(pos0.x, pos0.y, m.x, pos0.y, 0);
 	draw_line_2d(pos0.x, m.y, m.x, m.y, 0);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	nix::set_z(true, true);
 }
 

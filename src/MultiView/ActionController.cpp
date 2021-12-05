@@ -358,7 +358,7 @@ void ActionController::draw(Window *win) {
 		nix::draw_triangles(buf[i]);
 	}
 	nix::set_z(false, false);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	nix::set_model_matrix(matrix::ID);
 	win->set_projection_matrix_pixel();
 

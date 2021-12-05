@@ -2756,6 +2756,9 @@
     <Filter Include="src\Stuff">
       <UniqueIdentifier>{2504A039-A78F-EFEE-3C53-E8989AD0BDFD}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\x">
+      <UniqueIdentifier>{68121DA6-4944-440F-E574-03E64ACFCFE2}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\y">
       <UniqueIdentifier>{B4C155E0-F4CA-9BCF-C13C-B164BBA71B0C}</UniqueIdentifier>
     </Filter>

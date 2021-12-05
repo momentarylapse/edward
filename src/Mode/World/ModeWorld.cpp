@@ -359,7 +359,7 @@ void DrawSelectionObject(Model *o, float alpha, const color &c) {
 	if ((d<0) or (d>3))
 		return;
 	nix::set_model_matrix(o->_matrix);
-	nix::set_alpha(nix::AlphaMode::MATERIAL);
+	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	for (int i=0;i<o->material.num;i++) {
 		Array<nix::Texture*> tex;
 		for (int j=0; j<o->material[i]->textures.num; j++)
@@ -369,11 +369,11 @@ void DrawSelectionObject(Model *o, float alpha, const color &c) {
 		//o->just_draw(i, d);
 		nix::draw_triangles(o->mesh[0]->sub[i].vertex_buffer);
 	}
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 }
 
 void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
-	nix::set_alpha(nix::AlphaMode::MATERIAL);
+	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 
 	nix::set_material(color(alpha, 0, 0, 0), 0, 0, c);
 
@@ -382,7 +382,7 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
 	nix::draw_triangles(t->vertex_buffer);
 
 
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 }
 
 
@@ -498,7 +498,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			DrawSelectionObject(o.object, OSelectionAlpha, Green);
 	if ((multi_view->hover.index >= 0) and (multi_view->hover.type == MVD_WORLD_OBJECT))
 		DrawSelectionObject(data->objects[multi_view->hover.index].object, OSelectionAlpha, White);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	nix::set_model_matrix(matrix::ID);
 
 

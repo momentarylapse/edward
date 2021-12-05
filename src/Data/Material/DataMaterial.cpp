@@ -87,12 +87,12 @@ void DataMaterial::reset() {
 void DataMaterial::apply_for_rendering() {
 	nix::set_material(appearance.albedo, appearance.roughness, appearance.metal, appearance.emissive);
 
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	nix::set_z(true, true);
 	if (appearance.transparency_mode == TransparencyMode::COLOR_KEY_HARD) {
-		nix::set_alpha(nix::AlphaMode::COLOR_KEY_HARD);
+		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	} else if (appearance.transparency_mode == TransparencyMode::COLOR_KEY_SMOOTH) {
-		nix::set_alpha(nix::AlphaMode::COLOR_KEY_SMOOTH);
+		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	} else if (appearance.transparency_mode == TransparencyMode::FUNCTIONS) {
 		nix::set_alpha(appearance.alpha_source, appearance.alpha_destination);
 		nix::set_z(false, false);

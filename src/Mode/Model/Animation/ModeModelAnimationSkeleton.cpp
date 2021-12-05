@@ -112,7 +112,7 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
 	mode_model->set_material_hover();
 	nix::draw_triangles(mode_model_mesh->vb_hover);
 	nix::set_material(White, 0.5f, 0, Black);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 	nix::set_offset(0);
 }
 

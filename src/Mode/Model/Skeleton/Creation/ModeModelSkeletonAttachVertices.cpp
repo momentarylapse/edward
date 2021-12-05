@@ -134,7 +134,7 @@ void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win) {
 	nix::set_shader(shader);
 	nix::draw_triangles(vb_weight);
 	nix::set_offset(0);
-	nix::set_alpha(nix::AlphaMode::NONE);
+	nix::disable_alpha();
 
 
 	if (multi_view->hover.index >= 0) {
