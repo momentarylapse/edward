@@ -337,6 +337,7 @@ void Window::draw_data_points() {
 	nix::set_shader(nix::Shader::default_2d);
 	nix::disable_alpha();
 	nix::set_texture(nullptr);
+	nix::set_offset(-2.0f);
 	foreachi(DataSet &d, multi_view->data, di){
 		if (d.drawable){
 			for (int i=0;i<d.data->num;i++){
@@ -390,6 +391,7 @@ void Window::draw_data_points() {
 			nix::disable_alpha();
 		}
 	}
+	nix::set_offset(0);
 
 }
 
@@ -489,7 +491,6 @@ vector Window::project(const vector &p) {
 	vector r = pv_matrix.project(p);
 	r.x = nix::target_width * (r.x + 1) / 2;
 	r.y = nix::target_height * (-r.y + 1) / 2;
-	r.z = (r.z + 1) / 2;
 	return r;
 }
 
@@ -497,9 +498,8 @@ vector Window::unproject(const vector &p) {
 	vector r;
 	r.x = p.x*2/nix::target_width - 1;
 	r.y = - p.y*2/nix::target_height + 1;
-	r.z = p.z*2 - 1;
+	r.z = p.z;
 	return ipv_matrix.project(r);
-	//return pv_matrix.unproject(r);
 }
 
 vector Window::unproject(const vector &p, const vector &o) {
@@ -507,7 +507,7 @@ vector Window::unproject(const vector &p, const vector &o) {
 	vector r;
 	r.x = p.x*2/nix::target_width - 1;
 	r.y = - p.y*2/nix::target_height + 1;
-	r.z = op.z*2 - 1;
+	r.z = op.z;
 	return ipv_matrix.project(r);
 }
 
