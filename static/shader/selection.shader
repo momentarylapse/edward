@@ -47,7 +47,8 @@ void main() {
 	
 	// specular
 	vec3 H = normalize(l + view_dir);
-	color += light[0].color * (material.emission + vec4(1,1,1,1))/2 * pow(dot(n, H), 15);
+	if (dot(n, H) < 0)
+		color += light[0].color * (material.emission + vec4(1,1,1,1))/2 * pow(-dot(n, H), 20);
 	
 	color.a = material.albedo.a;
 }

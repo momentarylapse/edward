@@ -185,6 +185,7 @@ float WorldObject::hover_distance(MultiView::Window *win, const vec2 &mv, vector
 	int d = 0;//o->_detail_;
 	if ((d<0)or(d>2))
 		return -1;
+	o->_matrix = matrix::translation(pos) * matrix::rotation(ang);
 	for (int i=0;i<o->mesh[d]->vertex.num;i++) {
 		tmv[i] = o->_matrix * o->mesh[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
@@ -223,6 +224,7 @@ bool WorldObject::in_rect(MultiView::Window *win, const rect &r) {
 	if ((d<0)or(d>2))
 		return false;
 	vector min, max;
+	m->_matrix = matrix::translation(pos) * matrix::rotation(ang);
 	for (int i=0;i<m->mesh[d]->vertex.num;i++) {
 		tmv[i] = m->_matrix * m->mesh[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
@@ -352,13 +354,14 @@ void ModeWorld::on_leave() {
 
 
 
-void DrawSelectionObject(Model *o, float alpha, const color &c) {
+void DrawSelectionObject(const WorldObject &oo, float alpha, const color &c) {
+	auto o = oo.object;
 	if (!o)
 		return;
 	int d = 0;//o->_detail_;
 	if ((d<0) or (d>3))
 		return;
-	nix::set_model_matrix(o->_matrix);
+	nix::set_model_matrix(matrix::translation(oo.pos) * matrix::rotation(oo.ang));
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	for (int i=0;i<o->material.num;i++) {
 		Array<nix::Texture*> tex;
@@ -494,11 +497,11 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 	// object selection
 	for (WorldObject &o: data->objects)
 		if (o.is_selected)
-			DrawSelectionObject(o.object, OSelectionAlpha, Red);
+			DrawSelectionObject(o, OSelectionAlpha, Red);
 		else if (o.is_special)
-			DrawSelectionObject(o.object, OSelectionAlpha, Green);
+			DrawSelectionObject(o, OSelectionAlpha, Green);
 	if ((multi_view->hover.index >= 0) and (multi_view->hover.type == MVD_WORLD_OBJECT))
-		DrawSelectionObject(data->objects[multi_view->hover.index].object, OSelectionAlpha, White);
+		DrawSelectionObject(data->objects[multi_view->hover.index], OSelectionAlpha, White);
 	nix::disable_alpha();
 	nix::set_model_matrix(matrix::ID);
 
