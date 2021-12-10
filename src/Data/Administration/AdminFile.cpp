@@ -202,7 +202,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_TERRAIN){
 		WorldTerrain t;
-		if (t.load(v_0, engine.map_dir << Name, false)){
+		if (t.load(engine.map_dir << Name, false)){
 			Time = 0; // TODO
 			for (int i=0;i<t.terrain->material->textures.num;i++)
 				add_possible_link(l, FD_TEXTURE, t.terrain->texture_file[i]);

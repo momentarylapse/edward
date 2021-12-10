@@ -32,7 +32,7 @@ public:
 
 	Array<ScriptInstanceData> components;
 
-	bool load(const vector &pos, const Path &filename, bool deep = true);
+	bool load(const Path &filename, bool deep = true);
 	bool save(const Path &filename);
 
 	float hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) override;

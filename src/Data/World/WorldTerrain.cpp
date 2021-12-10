@@ -12,7 +12,7 @@
 #include "../../lib/file/file.h"
 
 
-bool WorldTerrain::load(const vector &_pos, const Path &_filename, bool deep) {
+bool WorldTerrain::load(const Path &_filename, bool deep) {
 
 	filename = _filename.relative_to(engine.map_dir).no_ext();
 

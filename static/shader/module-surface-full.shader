@@ -1,6 +1,6 @@
 <Layout>
 	version = 420
-	name = surface
+	name = surface-forward
 </Layout>
 <Module>
 

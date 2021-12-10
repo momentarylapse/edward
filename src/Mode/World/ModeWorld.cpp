@@ -451,7 +451,11 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		// prepare...
 		t.terrain->prepare_draw(multi_view->cam.pos - t.pos);
 		auto mat = t.terrain->material;
-		mat->_prepare_shader(RenderPathType(1), ShaderVariant::DEFAULT);
+		try {
+			mat->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
+		} catch (Exception &e) {
+			msg_error(e.message());
+		}
 
 		auto s = mat->shader[0].get();
 		nix::set_shader(nix::Shader::default_3d);

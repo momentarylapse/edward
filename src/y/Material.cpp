@@ -223,7 +223,8 @@ void Material::_prepare_shader(RenderPathType render_path_type, ShaderVariant v)
 		vv = "animated";
 	if (v == ShaderVariant::INSTANCED)
 		vv = "instanced";
-	string rpt = ((int)render_path_type == 2) ? "deferred" : "forward";
+	static const string RENDER_PATH_NAME[3] = {"", "forward", "deferred"};
+	const string &rpt = RENDER_PATH_NAME[(int)render_path_type];
 	shader[i] = ResourceManager::load_surface_shader(shader_path, rpt, vv);
 }
 
