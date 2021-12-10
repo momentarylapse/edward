@@ -20,12 +20,13 @@ ActionWorldTerrainBrushExtrude::ActionWorldTerrainBrushExtrude(int _index, const
 void* ActionWorldTerrainBrushExtrude::execute(Data* d)
 {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	Terrain *t = w->terrains[index].terrain;
+	auto tt = w->terrains[index];
+	Terrain *t = tt.terrain;
 
 	float r2 = radius * radius;
 
 	for (int i=0;i<t->vertex.num;i++){
-		float d2 = (pos - t->vertex[i]).length_sqr();
+		float d2 = (pos - t->vertex[i] - tt.pos).length_sqr();
 		if (d2 < r2 * 2){
 			v_index.add(i);
 			old_height.add(t->height[i]);
