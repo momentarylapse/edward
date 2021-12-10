@@ -242,7 +242,7 @@ void Geometry::get_bounding_box(vector &min, vector &max)
 
 void Geometry::build(nix::VertexBuffer *vb) const {
 	VertexStagingBuffer vbs;
-	int num_textures = vb->num_buffers - 2;
+	int num_textures = vb->num_attributes - 2;
 	for (auto &p: const_cast<Array<ModelPolygon>&>(polygon)){
 		p.triangulation_dirty = true;
 		p.add_to_vertex_buffer(vertex, vbs, num_textures);

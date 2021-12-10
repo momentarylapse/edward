@@ -39,7 +39,7 @@ string file_secure(const Path &filename); // -> ModelPropertiesDialog
 rect node_area(ShaderNode *n);
 
 bool test_shader_file(const Path &filename) {
-	auto *shader = ResourceManager::load_surface_shader(filename, "default");
+	auto *shader = ResourceManager::load_surface_shader(filename, "", "default");
 	msg_todo("TESTME  test_shader_file");
 	return shader;
 }

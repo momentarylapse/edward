@@ -5,20 +5,37 @@
  *      Author: michi
  */
 
-#ifndef SRC_WORLD_MODELMANAGER_H_
-#define SRC_WORLD_MODELMANAGER_H_
+#pragma once
 
 #include "../lib/base/base.h"
+#include "../lib/base/pointer.h"
+#include "../lib/file/path.h"
 
 class Model;
 class Path;
+class SolidBody;
+class MeshCollider;
+class Animator;
+class Skeleton;
+
+
+class ModelTemplate : public Sharable<Empty> {
+public:
+	Path filename;
+	Model *model;
+	Array<Path> bone_model_filename;
+	SolidBody *solid_body;
+	MeshCollider *mesh_collider;
+	Animator *animator;
+	Skeleton *skeleton;
+
+
+	ModelTemplate(Model *m);
+};
 
 class ModelManager {
 public:
 	static Model *load(const Path &filename);
-	static Model *loadx(const Path &filename, const Path &script);
 
 	static Array<Model*> originals;
 };
-
-#endif /* SRC_WORLD_MODELMANAGER_H_ */

@@ -10,6 +10,7 @@
 #include "../../../../../Data/Model/ModelMesh.h"
 #include "../../../../../Edward.h"
 #include "../../../../../MultiView/MultiView.h"
+#include "../../../../../y/components/Animator.h"
 #include <assert.h>
 
 

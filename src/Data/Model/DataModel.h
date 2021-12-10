@@ -23,6 +23,7 @@ class ModelVertex;
 class ModelEdge;
 class Geometry;
 class ModelSelection;
+enum class AnimationType;
 
 
 class GeometryException : public ActionException {

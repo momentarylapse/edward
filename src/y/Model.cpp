@@ -22,38 +22,27 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Model.h"
+#include "ModelManager.h"
+#include "Entity3D.h"
 #include "Material.h"
 #include "World.h"
 #include "../lib/math/complex.h"
 #include "../meta.h"
-#if HAS_LIB_VULKAN
-#include "../lib/vulkan/vulkan.h"
-#else
-#include "../lib/nix/nix.h"
-#endif
+#include "../graphics-impl.h"
 #include "../lib/file/msg.h"
+#include "components/Animator.h"
 
 
 #define DynamicNormalCorrect
 
+const kaba::Class *Model::_class = nullptr;
 
 
-void MoveTimeAdd(Model *m,int operation_no,float elapsed,float v,bool loop);
+
 
 bool Model::AllowDeleteRecursive = true;
 
 
-
-
-ModelTemplate::ModelTemplate(Model *m) {
-	script = NULL;
-	model = m;
-}
-
-MetaMove::MetaMove() {
-	num_frames_skeleton = 0;
-	num_frames_vertex = 0;
-}
 
 
 SubMesh::SubMesh() {
@@ -73,8 +62,9 @@ Mesh* Mesh::copy(Model *new_owner) {
 		ss.vertex_buffer = nullptr;
 		//ss.force_update = true;
 	}
-	s->create_vb(new_owner->uses_bone_animations());
-	s->update_vb(new_owner->uses_bone_animations());
+	bool using_animation = owner->_template->animator;
+	s->create_vb(using_animation);
+	s->update_vb(using_animation);
 
 	s->owner = new_owner;
 	return s;
@@ -122,59 +112,40 @@ void Model::_UpdatePhysAbsolute_()
 #endif
 
 // mark data as obsolete
-void Model::_ResetPhysAbsolute_()
-{
-	phys_absolute.is_ok=false;
+void Model::_ResetPhysAbsolute_() {
+#if 0
+	auto col = (MeshCollider*)get_component(MeshCollider::_class);
+	if (col)
+		col->phys_absolute.is_ok=false;
 	for (int i=0;i<bone.num;i++)
 		if (bone[i].model)
 			bone[i].model->_ResetPhysAbsolute_();
-}
-
-//--------------------------------------------------------------------------------------------------
-// hopefully these functions will be obsolete with the next fileformat
-
-// how big is the model
-void AppraiseDimensions(Model *m) {
-	float rad = 0;
-	
-	// bounding box (visual mesh[0])
-	m->prop.min = m->prop.max = v_0;
-	for (int i=0;i<m->mesh[0]->vertex.num;i++) {
-		m->prop.min._min(m->mesh[0]->vertex[i]);
-		m->prop.max._max(m->mesh[0]->vertex[i]);
-		float r = _vec_length_fuzzy_(m->mesh[0]->vertex[i]);
-		if (r > rad)
-			rad = r;
-	}
-
-	// physical skin
-	for (int i=0;i<m->phys->vertex.num;i++) {
-		float r = _vec_length_fuzzy_(m->phys->vertex[i]);
-		if (r > rad)
-			rad = r;
-	}
-	for (auto &b: m->phys->balls) {
-		float r = _vec_length_fuzzy_(m->phys->vertex[b.index]) + b.radius;
-		if (r > rad)
-			rad = r;
-	}
-	m->prop.radius = rad;
+#endif
 }
 
 
 
+// TODO: move this into the renderer
 void SubMesh::create_vb(bool animated) {
 	if (animated)
-		vertex_buffer = new nix::VertexBuffer("3f,3f,2f,4i,4f");
+		vertex_buffer = new VertexBuffer("3f,3f,2f,4i,4f");
 	else
-		vertex_buffer = new nix::VertexBuffer("3f,3f,2f");
+		vertex_buffer = new VertexBuffer("3f,3f,2f");
 }
 void Mesh::create_vb(bool animated) {
 	for (auto &s: sub)
 		s.create_vb(animated);
 }
 
+struct VertexAnimated {
+	vector p, n;
+	float u,v;
+	ivec4 bone;
+	vec4 weight;
+};
+
 void SubMesh::update_vb(Mesh *mesh, bool animated) {
+#if 0
 	if (true) {
 		Array<vector> p, n;
 		Array<complex> uv;
@@ -196,19 +167,26 @@ void SubMesh::update_vb(Mesh *mesh, bool animated) {
 		vertex_buffer->update(1, normal);
 		vertex_buffer->update(2, skin_vertex);
 	}
+#endif
 
 	if (animated) {
-		Array<ivec4> bone_index;
-		Array<vec4> bone_weight;
+		Array<VertexAnimated> vertex;
 		for (int i=0; i<num_triangles; i++) {
 			for (int k=0; k<3; k++) {
 				int vi = triangle_index[i*3+k];
-				bone_index.add(mesh->bone_index[vi]);
-				bone_weight.add(mesh->bone_weight[vi]);
+				vertex.add({mesh->vertex[vi], normal[i*3+k], skin_vertex[i*6+k*2  ], skin_vertex[i*6+k*2+1], mesh->bone_index[vi], mesh->bone_weight[vi]});
 			}
 		}
-		vertex_buffer->update(3, bone_index);
-		vertex_buffer->update(4, bone_weight);
+		vertex_buffer->update(vertex);
+	} else {
+		Array<Vertex1> vertex;
+		for (int i=0; i<num_triangles; i++) {
+			for (int k=0; k<3; k++) {
+				int vi = triangle_index[i*3+k];
+				vertex.add({mesh->vertex[vi], normal[i*3+k], skin_vertex[i*6+k*2  ], skin_vertex[i*6+k*2+1]});
+			}
+		}
+		vertex_buffer->update(vertex);
 	}
 }
 
@@ -233,86 +211,31 @@ void Mesh::post_process(bool animated) {
 	}
 }
 
-void PostProcessPhys(Model *m, PhysicalMesh *s) {
-	m->phys_absolute.p.clear();
-	m->phys_absolute.pl.clear();
-	m->_ResetPhysAbsolute_();
-}
 
 void Model::reset_data() {
 	registered = false;
-	object_id = -1;
-	parent = nullptr;
 	
 	for (int i=0; i<MODEL_NUM_MESHES; i++) {
 		_detail_needed_[i] = false;
 	}
 
-	// "auto-animate"
-	anim.num_operations = -1;
-	anim.operation[0].move = 0;
-	anim.operation[0].time = 0;
-	anim.operation[0].command = MoveOperation::Command::SET;
-	anim.operation[0].param1 = 0;
-	anim.operation[0].param2 = 0;
-	if (anim.meta) {
-		for (int i=0; i<anim.meta->move.num; i++)
-			if (anim.meta->move[i].num_frames > 0) {
-				anim.operation[0].move = i;
-				break;
-			}
-	}
-
-	if (physics_data.active)
-		physics_data.mass_inv = 1.0f / physics_data.mass;
-	else
-		physics_data.mass_inv = 0;
-	physics_data.theta = physics_data.theta_0;
-	physics_data.g_factor = 1;
-	physics_data.test_collisions = true;
 	prop.allow_shadow = false;
-	
-	vel = rot = v_0;
 }
 
 
-Model::Model() : Entity(Type::MODEL) {
-	pos = vel = rot = v_0;
-	ang = quaternion::ID;
-	object_id = -1;
+
+Model::Model() {
+	component_type = Model::_class;
+
 	registered = false;
-	on_ground = false;
 	visible = true;
-	rotating  = true;
-	moved = false;
-	frozen = false;
-	time_till_freeze = 0;
-	ground_id = -1;
-	ground_normal = v_0;
 
 	is_copy = false;
-	_template = nullptr;
 
 	for (int i=0;i<MODEL_NUM_MESHES;i++) {
 		_detail_needed_[i] = false;
 		mesh[i] = nullptr;
 	}
-	anim.meta = nullptr;
-	anim.buf = nullptr;
-	phys = nullptr;
-
-	vel_surf = acc = v_0;
-	force_int = torque_int = v_0;
-	force_ext = torque_ext = v_0;
-
-	body = nullptr;
-	colShape = nullptr;
-
-
-	parent = nullptr;
-	phys_is_reference = false;
-
-	anim.num_operations = 0;
 }
 
 void Model::__init__() {
@@ -328,9 +251,6 @@ void CopyPhysicalSkin(PhysicalMesh *orig, PhysicalMesh **copy)
 #endif
 
 
-bool Model::uses_bone_animations() const {
-	return (bone.num > 0);
-}
 
 Model *Model::copy(Model *pre_allocated) {
 	if (is_copy)
@@ -341,16 +261,11 @@ Model *Model::copy(Model *pre_allocated) {
 		m = new Model();
 
 	m->prop = prop;
-	m->physics_data = physics_data;
 	m->_template = _template;
 	m->script_data = script_data;
 
 	for (Material* mat: material)
 		m->material.add(mat->copy());
-
-	m->anim.meta = anim.meta;
-
-	m->fx.clear();
 	
 
 	// "copy" presettings (just using references)
@@ -359,22 +274,8 @@ Model *Model::copy(Model *pre_allocated) {
 		m->mesh[i] = mesh[i];
 		m->_detail_needed_[i] = false;
 	}
-	m->phys = phys;
-	m->phys_is_reference = true;
 	m->registered = false;
 	m->visible = true;
-
-	// skins
-	if (uses_bone_animations()) {
-		m->anim.dmatrix.resize(bone.num);
-		m->anim.buf = new nix::UniformBuffer;
-	}
-
-	// skeleton
-	m->bone = bone;
-	for (int i=0;i<bone.num;i++)
-		if (bone[i].model)
-			m->bone[i].model = nullptr;//CopyModel(bone[i].model, allow_script_init);
 
 	// effects
 	// loaded by ResetData()
@@ -396,26 +297,6 @@ void ExternalModelCleanup(Model *m);
 Model::~Model() {
 	ExternalModelCleanup(this);
 
-	if (AllowDeleteRecursive) {
-		// delete sub models
-		for (Bone &b: bone)
-			if (b.model)
-				delete b.model;
-
-		// delete inventary
-		for (Model *i: script_data.inventary)
-			if (i)
-				delete i;
-	}
-
-	// animation
-	if (anim.meta and !is_copy)
-		delete anim.meta;
-
-	// physical
-	if (phys and !phys_is_reference)
-		delete phys;
-
 	// skin
 	for (int i=0;i<MODEL_NUM_MESHES;i++)
 		if (mesh[i]) {
@@ -434,23 +315,12 @@ Model::~Model() {
 
 	for (Material* m: material)
 		delete m;
-
-	// template
-	if (!is_copy)
-		delete _template;
 }
 
 void Model::__delete__() {
 	this->Model::~Model();
 }
 
-// non-animated state
-vector Model::get_bone_rest_pos(int index) const {
-	auto &b = bone[index];
-	if (b.parent >= 0)
-		return b.delta_pos + get_bone_rest_pos(b.parent);
-	return b.delta_pos;
-}
 
 int get_num_trias(Mesh *s) {
 	int n = 0;
@@ -477,259 +347,6 @@ int get_num_trias(Mesh *s) {
 			GodRegisterModel(sub);
 	}
 }*/
-
-Model *Model::root() {
-	Model *next = this;
-	while (next->parent)
-		next = next->parent;
-	return next;
-}
-
-void Model::do_animation(float elapsed) {
-
-	// recursion
-	for (auto &b: bone)
-		if (b.model) {
-			b.model->_matrix = _matrix * b.dmatrix;
-			b.model->do_animation(elapsed);
-		}
-
-	if (!anim.meta)
-		return;
-
-	// FIXME
-	for (int s=0;s<MODEL_NUM_MESHES;s++)
-		_detail_needed_[s] = true;
-
-
-	// for handling special cases (-1,-2)
-	int num_ops = anim.num_operations;
-
-	// "auto-animated"
-	if (anim.num_operations == -1){
-		// default: just run a single animation
-		MoveTimeAdd(this, 0, elapsed, 0, true);
-		num_ops = 1;
-	}
-
-	// skeleton edited by script...
-	if (anim.num_operations == -2){
-		num_ops = 0;
-	}
-
-	// make sure we have something to store the animated data in...
-#if 0
-	for (int s=0;s<MODEL_NUM_MESHES;s++)
-		if (_detail_needed_[s]) {
-///			anim.vertex[s].resize(mesh[s]->vertex.num);
-			//memset(anim.vertex[s], 0, sizeof(vector) * Skin[s]->vertex.num);
-///			memcpy(&anim.vertex[s][0], &mesh[s]->vertex[0], sizeof(vector) * mesh[s]->vertex.num);
-			int nt = get_num_trias(mesh[s]);
-//			anim.normal[s].resize(nt * 3);
-			int offset = 0;
-			for (int i=0;i<material.num;i++){
-				memcpy(&anim.normal[s][offset], &mesh[s]->sub[i].normal[0], sizeof(vector) * mesh[s]->sub[i].num_triangles * 3);
-				offset += mesh[s]->sub[i].num_triangles;
-			}
-		}
-#endif
-
-
-// vertex animation
-
-	bool vertex_animated = false;
-	for (int op=0;op<num_ops;op++){
-		if (anim.operation[op].move < 0)
-			continue;
-		Move *m = &anim.meta->move[anim.operation[op].move];
-		//msg_write(GetFilename() + format(" %d %d %p %d", op, anim.operation[op].move, m, m->num_frames));
-		if (m->num_frames == 0)
-			continue;
-
-
-		if (m->type == AnimationType::VERTEX){
-			vertex_animated=true;
-
-			// frame data
-			int fr=(int)(anim.operation[op].time); // current frame (relative)
-			float dt=anim.operation[op].time-(float)fr;
-			int f1 = m->frame0 + fr; // current frame (absolute)
-			int f2 = m->frame0 + (fr+1)%m->num_frames; // next frame (absolute)
-
-#if 0
-			// transform vertices
-			for (int s=0;s<MODEL_NUM_MESHES;s++)
-				if (_detail_needed_[s]){
-					auto *sk = mesh[s];
-					auto *a = anim.mesh[s];
-					for (int p=0;p<sk->vertex.num;p++){
-						vector dp1 = anim.meta->mesh[s + 1].dpos[f1 * sk->vertex.num + p]; // first value
-						vector dp2 = anim.meta->mesh[s + 1].dpos[f2 * sk->vertex.num + p]; // second value
-						a->vertex[p] = sk->vertex[p] + dp1*(1-dt) + dp2*dt;
-					}
-					for (int i=0;i<sk->sub.num;i++)
-						sk->sub[i].force_update = true;
-				}
-#endif
-		}
-	}
-
-// skeletal animation
-
-	for (int i=0;i<bone.num;i++){
-		Bone *b = &bone[i];
-
-		// reset (only if not being edited by script)
-		/*if (Numanim.operations != -2){
-			b->cur_ang = quaternion::ID;//quaternion(1, v_0);
-			b->cur_pos = b->Pos;
-		}*/
-
-		// operations
-		for (int iop=0;iop<num_ops;iop++){
-			MoveOperation *op = &anim.operation[iop];
-			if (op->move < 0)
-				continue;
-			Move *m = &anim.meta->move[op->move];
-			if (m->num_frames == 0)
-				continue;
-			if (m->type != AnimationType::SKELETAL)
-				continue;
-			quaternion w,w0,w1,w2,w3;
-			vector p,p1,p2;
-
-		// calculate the alignment belonging to this argument
-			int fr = (int)(op->time); // current frame (relative)
-			int f1 = m->frame0 + fr; // current frame (absolute)
-			int f2 = m->frame0 + (fr+1)%m->num_frames; // next frame (absolute)
-			float df = op->time-(float)fr; // time since start of current frame
-			w1 = anim.meta->skel_ang[f1 * bone.num + i]; // first value
-			p1 = anim.meta->skel_dpos[f1*bone.num + i];
-			w2 = anim.meta->skel_ang[f2*bone.num + i]; // second value
-			p2 = anim.meta->skel_dpos[f2*bone.num + i];
-			m->inter_quad = false;
-			/*if (m->InterQuad){
-				w0=m->ang[i][(f-1+m->NumFrames)%m->NumFrames]; // last value
-				w3=m->ang[i][(f+2             )%m->NumFrames]; // third value
-				// interpolate the current alignment
-				w = quaternion::interpolate(w0,w1,w2,w3,df);
-				p=(1.0f-df)*p1+df*p2 + SkeletonDPos[i];
-			}else*/{
-				// interpolate the current alignment
-				w = quaternion::interpolate(w1,w2,df);
-				p=(1.0f-df)*p1+df*p2 + b->delta_pos;
-			}
-
-
-		// execute the operations
-
-			// overwrite
-			if (op->command == op->Command::SET){
-				b->cur_ang = w;
-				b->cur_pos = p;
-
-			// overwrite, if current doesn't equal 0
-			}else if (op->command == op->Command::SET_NEW_KEYED){
-				if (w.w!=1)
-					b->cur_ang=w;
-				if (p!=v_0)
-					b->cur_pos=p;
-
-			// overwrite, if last equals 0
-			}else if (op->command == op->Command::SET_OLD_KEYED){
-				if (b->cur_ang.w==1)
-					b->cur_ang=w;
-				if (b->cur_pos==v_0)
-					b->cur_pos=p;
-
-			// w = w_old         + w_new * f
-			}else if (op->command == op->Command::ADD_1_FACTOR){
-				w = w.scale_angle(op->param1);
-				b->cur_ang = w * b->cur_ang;
-				b->cur_pos += op->param1 * p;
-
-			// w = w_old * (1-f) + w_new * f
-			}else if (op->command == op->Command::MIX_1_FACTOR){
-				b->cur_ang = quaternion::interpolate( b->cur_ang, w, op->param1);
-				b->cur_pos = (1 - op->param1) * b->cur_pos + op->param1 * p;
-
-			// w = w_old * a     + w_new * b
-			}else if (op->command == op->Command::MIX_2_FACTOR){
-				b->cur_ang = b->cur_ang.scale_angle(op->param1);
-				w = w.scale_angle(op->param2);
-				b->cur_ang = quaternion::interpolate( b->cur_ang, w, 0.5f);
-				b->cur_pos = op->param1 * b->cur_pos + op->param2 * p;
-			}
-		}
-
-		// bone has root -> align to root
-		//vector dpos = b->delta_pos;
-		auto t0 = matrix::translation(-b->rest_pos);
-		if (b->parent >= 0) {
-			b->cur_pos = bone[b->parent].dmatrix * b->delta_pos;
-			//dpos = b->cur_pos - b->rest_pos;
-		}
-
-		// create matrices (model -> skeleton)
-		auto t = matrix::translation(b->cur_pos);
-		auto r = matrix::rotation_q(b->cur_ang);
-		b->dmatrix = t * r;
-		anim.dmatrix[i] = t * r * t0;
-	}
-
-#if 0
-
-	// create the animated data
-	if (bone.num > 0)
-		for (int s=0;s<MODEL_NUM_MESHES;s++){
-			if (!_detail_needed_[s])
-				continue;
-			auto sk = mesh[s];
-			// transform vertices
-			for (int p=0;p<sk->vertex.num;p++){
-				int b = sk->bone_index[p];
-				vector pp = sk->vertex[p] - bone[b].rest_pos;
-				// interpolate vertex
-				anim.mesh[s]->vertex[p] = bone[b].dmatrix * pp;
-				//anim.vertex[s][p]=pp;
-			}
-			// normal vectors
-			int offset = 0;
-			for (int mm=0;mm<sk->sub.num;mm++){
-				auto sub = &sk->sub[mm];
-			#ifdef DynamicNormalCorrect
-				for (int t=0;t<sub->num_triangles*3;t++)
-					anim.mesh[s]->sub[mm].normal[t] = bone[sk->bone_index[sub->triangle_index[t]]].dmatrix.transform_normal(sub->normal[t]);
-					//anim.normal[s][t + offset] = ...
-					//anim.normal[s][t + offset]=sub->Normal[t];
-			#else
-				memcpy(&anim.normal[s][offset], &sub->Normal[0], sub->num_triangles * 3 * sizeof(vector));
-			#endif
-				sub->force_update = true;
-				offset += sub->num_triangles;
-			}
-		}
-#endif
-
-
-	
-	// reset for the next frame
-	for (int s=0;s<MODEL_NUM_MESHES;s++)
-		_detail_needed_[s] = false;
-
-	// update effects
-	/*for (int i=0;i<NumFx;i++){
-		sEffect **pfx=(sEffect**)fx;
-		int nn=0;
-		while( (*pfx) ){
-			vector vp;
-			VecTransform(vp, Matrix, Skin[0]->vertex[(*pfx)->vertex]);
-			FxUpdateByModel(*pfx,vp,vp);
-			pfx++;
-		}
-	}*/
-
-}
 
 
 #if 0
@@ -901,114 +518,9 @@ bool Model::TraceMesh(const vector &p1, const vector &p2, const vector &dir, flo
 
 vector _cdecl Model::get_vertex(int index) {
 	auto s = mesh[MESH_HIGH];
-	vector v;
-	if (uses_bone_animations()) { // animated
-		int b = s->bone_index[index].i;
-		v = s->vertex[index] - bone[b].rest_pos;
-		v = anim.dmatrix[b] * v;
-		v = _matrix * v;
-	} else { // static
-		v = _matrix * s->vertex[index];
-	}
-	return v;
+	return _matrix * s->vertex[index];
 }
 
-// reset all animation data for a model (needed in each frame before applying animations!)
-void Model::reset_animation() {
-	anim.num_operations = 0;
-}
-
-// did the animation reach its end?
-bool Model::is_animation_done(int operation_no) {
-	int move_no = anim.operation[operation_no].move;
-	if (move_no < 0)
-		return true;
-	// in case animation doesn't exist
-	if (anim.meta->move[move_no].num_frames == 0)
-		return true;
-	return (anim.operation[operation_no].time >= (float)(anim.meta->move[move_no].num_frames - 1));
-}
-
-
-// dumbly add the correct animation time, ignore animation's ending
-void MoveTimeAdd(Model *m, int operation_no, float elapsed, float v, bool loop) {
-	auto &op = m->anim.operation[operation_no];
-	int move_no = op.move;
-	if (move_no < 0)
-		return;
-	Move *move = &m->anim.meta->move[move_no];
-	if (move->num_frames == 0)
-		return; // in case animation doesn't exist
-
-	// how many frames have passed
-	float dt = elapsed * ( move->frames_per_sec_const + move->frames_per_sec_factor * v );
-
-	// add the correct time
-	op.time += dt;
-	// time may now be way out of range of the animation!!!
-
-	if (m->is_animation_done(operation_no)) {
-		if (loop)
-			op.time -= float(move->num_frames) * (int)((float)(op.time / move->num_frames));
-		else
-			op.time = (float)(move->num_frames) - 1;
-	}
-}
-
-// apply an animate to a model
-//   a new animation "layer" is being added for mixing several animations
-//   the variable <time> is being increased
-bool Model::animate_x(MoveOperation::Command cmd, float param1, float param2, int move_no, float &time, float dt, float vel_param, bool loop) {
-	if (!anim.meta)
-		return false;
-	if (anim.num_operations < 0){
-		anim.num_operations = 0;
-	}else if (anim.num_operations >= MODEL_MAX_MOVE_OPS - 1){
-		msg_error("Model.Animate(): no more than " + i2s(MODEL_MAX_MOVE_OPS) + " animation layers allowed");
-		return false;
-	}
-	int index = -1;
-	foreachi (auto &m, anim.meta->move, i)
-		if (m.id == move_no)
-			index = i;
-	if (index < 0) {
-		msg_error("move id not existing: " + i2s(move_no));
-		return false;
-	}
-	int n = anim.num_operations ++;
-	anim.operation[n].move = index;
-	anim.operation[n].command = cmd;
-	anim.operation[n].param1 = param1;
-	anim.operation[n].param2 = param2;
-	anim.operation[n].time = time;
-
-	MoveTimeAdd(this, n, dt, vel_param, loop);
-	time = anim.operation[n].time;
-	return is_animation_done(n);
-}
-
-bool Model::animate(MoveOperation::Command cmd, int move_no, float &time, float dt, bool loop) {
-	return animate_x(cmd, 0, 0, move_no, time, dt, 0, loop);
-
-}
-
-// get the number of frames for a particular animation
-int Model::get_frames(int move_no) {
-	if (!anim.meta)
-		return 0;
-	return anim.meta->move[move_no].num_frames;
-}
-
-// edit skelettal animation via script
-void Model::begin_edit_animation() {
-	if (!anim.meta)
-		return;
-	anim.num_operations = -2;
-	for (int i=0;i<bone.num;i++){
-		bone[i].cur_ang = quaternion::ID;
-		bone[i].cur_pos = bone[i].delta_pos;
-	}
-}
 
 // make sure, the model/skin is editable and not just a reference.... (soon)
 void Model::begin_edit(int detail) {
@@ -1020,7 +532,7 @@ void Model::begin_edit(int detail) {
 
 // force an update for this model/skin
 void Model::end_edit(int detail) {
-	mesh[detail]->update_vb(uses_bone_animations());
+	mesh[detail]->update_vb(owner->get_component<Animator>());
 	//for (int i=0; i<material.num; i++)
 	//	mesh[detail]->sub[i].force_update = true;
 }
@@ -1033,6 +545,11 @@ Path Model::filename() {
 	if (_template)
 		return _template->filename;
 	return "?";
+}
+
+void Model::update_matrix() {
+	if (owner)
+		_matrix = get_owner<Entity3D>()->get_matrix();
 }
 
 #if 0

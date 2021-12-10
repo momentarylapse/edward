@@ -12,9 +12,13 @@
 #include "../lib/file/file.h"
 //#include "../lib/vulkan/vulkan.h"
 #include "../lib/nix/nix.h"
+#include "../lib/kaba/kaba.h"
 #include "../y/EngineData.h"
+#include "../y/Component.h"
+#include "../y/ComponentManager.h"
 #include "../meta.h"
 #include "ModelManager.h"
+#include "Entity3D.h"
 #include "Link.h"
 #include "Material.h"
 #include "Model.h"
@@ -22,10 +26,17 @@
 #include "Terrain.h"
 #include "World.h"
 
+#include "components/SolidBody.h"
+#include "components/Collider.h"
+#include "components/Animator.h"
+#include "components/Skeleton.h"
+
 #ifdef _X_ALLOW_X_
-#include "../fx/Light.h"
+#include "Light.h"
 #include "../fx/Particle.h"
 #include "../fx/ParticleManager.h"
+#include "../plugins/PluginManager.h"
+#include "../helper/PerformanceMonitor.h"
 #endif
 
 #ifdef _X_ALLOW_X_
@@ -34,7 +45,6 @@
 
 #if HAS_LIB_BULLET
 #include <btBulletDynamicsCommon.h>
-#include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 //#include <BulletCollision/CollisionShapes/btConvexPointCloudShape.h>
 #include <BulletCollision/CollisionShapes/btConvexHullShape.h>
 #endif
@@ -90,10 +100,8 @@ World world;
 
 #ifdef _X_ALLOW_X_
 void DrawSplashScreen(const string &str, float per);
-void ScriptingObjectInit(Object *o);
 #else
 void DrawSplashScreen(const string &str, float per){}
-void ScriptingObjectInit(Object *o){}
 #endif
 
 
@@ -116,9 +124,8 @@ void AddNetMsg(int msg, int argi0, const string &args)
 
 int num_insane=0;
 
-inline bool TestVectorSanity(vector &v, const char *name)
-{
-	if (inf_v(v)){
+inline bool TestVectorSanity(vector &v, const char *name) {
+	if (inf_v(v)) {
 		num_insane++;
 		v=v_0;
 		if (num_insane>100)
@@ -135,10 +142,19 @@ inline bool TestVectorSanity(vector &v, const char *name)
 
 
 
-void GodInit() {
+void GodInit(int ch_iter) {
+#ifdef _X_ALLOW_X_
+	world.ch_iterate = PerformanceMonitor::create_channel("world", ch_iter);
+	world.ch_animation = PerformanceMonitor::create_channel("animation", ch_iter);
+#endif
 }
 
 void GodEnd() {
+}
+
+void send_collision(SolidBody *a, const CollisionData &col) {
+	for (auto c: a->owner->components)
+		c->on_collide(col);
 }
 
 #if HAS_LIB_BULLET
@@ -150,16 +166,16 @@ void myTickCallback(btDynamicsWorld *world, btScalar timeStep) {
 		auto contactManifold = dispatcher->getManifoldByIndexInternal(i);
 		auto obA = const_cast<btCollisionObject*>(contactManifold->getBody0());
 		auto obB = const_cast<btCollisionObject*>(contactManifold->getBody1());
-		auto a = static_cast<Object*>(obA->getUserPointer());
-		auto b = static_cast<Object*>(obB->getUserPointer());
+		auto a = static_cast<SolidBody*>(obA->getUserPointer());
+		auto b = static_cast<SolidBody*>(obB->getUserPointer());
 		int np = contactManifold->getNumContacts();
 		for (int j=0; j<np; j++) {
 			auto &pt = contactManifold->getContactPoint(j);
 			if (pt.getDistance() <= 0) {
-				if (a->physics_data.active)
-					a->on_collide({b, nullptr, nullptr, bt_get_v(pt.m_positionWorldOnB), bt_get_v(pt.m_normalWorldOnB)});
-				if (b->physics_data.active)
-					b->on_collide({a, nullptr, nullptr, bt_get_v(pt.m_positionWorldOnA), -bt_get_v(pt.m_normalWorldOnB)});
+				if (a->active)
+					send_collision(a, {b, nullptr, nullptr, bt_get_v(pt.m_positionWorldOnB), bt_get_v(pt.m_normalWorldOnB)});
+				if (b->active)
+					send_collision(b, {a, nullptr, nullptr, bt_get_v(pt.m_positionWorldOnA), -bt_get_v(pt.m_normalWorldOnB)});
 			}
 		}
 	}
@@ -186,9 +202,6 @@ World::World() {
 #endif
 
 
-	terrain_object = new Object();
-	terrain_object->update_matrix();
-
 	reset();
 }
 
@@ -206,17 +219,15 @@ void World::reset() {
 	net_msg_enabled = false;
 	net_messages.clear();
 
+	observers.clear();
+
 	gravity = v_0;
 
-	// terrains
-	for (auto *t: terrains)
-		delete t;
-	terrains.clear();
+	for (auto *o: entities)
+		delete o;
+	entities.clear();
 
-	// objects
-	for (auto *o: objects)
-		if (o)
-			delete o;//unregister_object(o); // actual deleting done by ModelManager
+	terrains.clear();
 	objects.clear();
 	num_reserved_objects = 0;
 	
@@ -228,8 +239,8 @@ void World::reset() {
 	sorted_opaque.clear();
 
 #ifdef _X_ALLOW_X_
-	for (auto *l: lights)
-		delete l;
+	//for (auto *l: lights)
+	//	delete l->owner;
 	lights.clear();
 
 	particle_manager->clear();
@@ -273,6 +284,14 @@ void World::reset() {
 #endif
 }
 
+void World::save(const Path &filename) {
+	LevelData l;
+	l.save(filename);
+}
+
+void World::load_soon(const Path &filename) {
+	next_filename = filename;
+}
 
 bool World::load(const LevelData &ld) {
 	net_msg_enabled = false;
@@ -288,12 +307,22 @@ bool World::load(const LevelData &ld) {
 
 #ifdef _X_ALLOW_X_
 	for (auto &l: ld.lights) {
-		auto *ll = new Light(l.pos, l.ang.ang2dir(), l._color, l.radius, l.theta);
+		auto o = new Entity3D(l.pos, quaternion::rotation(l.ang));
+		auto *ll = new Light(l._color, l.radius, l.theta);
 		ll->light.harshness = l.harshness;
 		ll->enabled = l.enabled;
 		if (ll->light.radius < 0)
 			ll->allow_shadow = true;
-		add_light(ll);
+		o->_add_component_external_(ll);
+		lights.add(ll);
+
+		for (auto &cc: l.components) {
+			//msg_write("add component " + cc.class_name);
+	#ifdef _X_ALLOW_X_
+			auto type = PluginManager::find_class(cc.filename, cc.class_name);
+			auto comp = o->add_component(type, cc.var);
+	#endif
+		}
 	}
 #endif
 
@@ -302,50 +331,71 @@ bool World::load(const LevelData &ld) {
 	for (int i=0; i<skybox.num; i++) {
 		skybox[i] = ModelManager::load(ld.skybox_filename[i]);
 		if (skybox[i])
-			skybox[i]->ang = quaternion::rotation_v(ld.skybox_ang[i]);
+			skybox[i]->owner = new Entity3D(v_0, quaternion::rotation_v(ld.skybox_ang[i]));
 	}
 	background = ld.background_color;
 
 	for (auto &c: ld.cameras) {
-		cam->pos = c.pos;
-		cam->ang = quaternion::rotation(c.ang);
-		cam->min_depth = c.min_depth;
-		cam->max_depth = c.max_depth;
-		cam->exposure = c.exposure;
-		cam->fov = c.fov;
-		break;
+		auto cc = add_camera(c.pos, quaternion::rotation(c.ang), rect::ID);
+		cam = cc;
+		cc->min_depth = c.min_depth;
+		cc->max_depth = c.max_depth;
+		cc->exposure = c.exposure;
+		cc->fov = c.fov;
+
+		for (auto &cc: c.components) {
+			//msg_write("add component " + cc.class_name);
+	#ifdef _X_ALLOW_X_
+			auto type = PluginManager::find_class(cc.filename, cc.class_name);
+			auto comp = cam->owner->add_component(type, cc.var);
+	#endif
+		}
+	}
+	auto cameras = ComponentManager::get_listx<Camera>();
+	if (cameras->num == 0) {
+		msg_error("no camera defined... creating one");
+		cam = add_camera(v_0, quaternion::ID, rect::ID);
 	}
 
 	// objects
-	ego = NULL;
+	ego = nullptr;
 	objects.clear(); // make sure the "missing" objects are NULL
 	objects.resize(ld.objects.num);
 	num_reserved_objects = ld.objects.num;
 	foreachi(auto &o, ld.objects, i)
-		if (!o.filename.is_empty()){
-			auto q = quaternion::rotation(o.ang);
-			Object *oo = create_object_x(o.filename, o.name, o.pos, q, o.script, i);
-			ok &= (oo != nullptr);
-			if (oo){
-				oo->vel = o.vel;
-				oo->rot = o.rot;
+		if (!o.filename.is_empty()) {
+			try {
+				auto q = quaternion::rotation(o.ang);
+				auto *oo = create_object_no_reg_x(o.filename, o.name, o.pos, q, o.components);
+				request_next_object_index(i);
+				register_entity(oo);
+				if (ld.ego_index == i)
+					ego = oo;
+				if (i % 5 == 0)
+					DrawSplashScreen("Objects", (float)i / (float)ld.objects.num / 5 * 3);
+			} catch (...) {
+				ok = false;
 			}
-			if (ld.ego_index == i)
-				ego = oo;
-			if (i % 5 == 0)
-				DrawSplashScreen("Objects", (float)i / (float)ld.objects.num / 5 * 3);
 		}
-	add_all_objects_to_lists = true;
 
 	// terrains
-	foreachi(auto &t, ld.terrains, i){
+	foreachi(auto &t, ld.terrains, i) {
 		DrawSplashScreen("Terrain...", 0.6f + (float)i / (float)ld.terrains.num * 0.4f);
-		Terrain *tt = create_terrain(t.filename, t.pos);
+		auto tt = create_terrain_no_reg(t.filename, t.pos);
+
+		for (auto &cc: t.components) {
+			//msg_write("add component " + cc.class_name);
+	#ifdef _X_ALLOW_X_
+			auto type = PluginManager::find_class(cc.filename, cc.class_name);
+			auto comp = tt->owner->add_component(type, cc.var);
+	#endif
+		}
+		register_entity(tt->get_owner<Entity3D>());
 		ok &= !tt->error;
 	}
 
 	for (auto &l: ld.links) {
-		Object *b = nullptr;
+		Entity3D *b = nullptr;
 		if (l.object[1] >= 0)
 			b = objects[l.object[1]];
 		add_link(Link::create(l.type, objects[l.object[0]], b, l.pos, quaternion::rotation(l.ang)));
@@ -365,79 +415,108 @@ void World::add_link(Link *l) {
 }
 
 
-static Array<float> hh;
+Terrain *World::create_terrain_no_reg(const Path &filename, const vector &pos) {
+
+	auto o = create_entity(pos, quaternion::ID);
+
+	auto t = (Terrain*)o->add_component(Terrain::_class, "");
+	t->load(filename);
+	terrains.add(t);
+
+	auto col = (TerrainCollider*)o->add_component(TerrainCollider::_class, "");
+
+	auto sb = (SolidBody*)o->add_component(SolidBody::_class, "");
+	sb->mass = 10000.0f;
+	sb->theta_0 = matrix3::ZERO;
+	sb->passive = true;
+
+	return t;
+}
 
 Terrain *World::create_terrain(const Path &filename, const vector &pos) {
-	Terrain *tt = new Terrain(filename, pos);
-
-	float a=10000, b=0;
-	for (float f: tt->height){
-		a = min(a, f);
-		b = max(b, f);
-	}
-	printf("%f   %f\n", a, b);
-
-	msg_write(tt->pattern.str());
-
-	//tt->colShape = new btStaticPlaneShape(btVector3(0,1,0), 0);
-	hh.clear();
-	for (int z=0; z<tt->num_z+1; z++)
-		for (int x=0; x<tt->num_x+1; x++)
-			hh.add(tt->height[x * (tt->num_z+1) + z]);
-#if HAS_LIB_BULLET
-	auto hf = new btHeightfieldTerrainShape(tt->num_x+1, tt->num_z+1, hh.data, 1.0f, -600, 600, 1, PHY_FLOAT, false);
-	hf->setLocalScaling(bt_set_v(tt->pattern + vector(0,1,0)));
-	tt->colShape = hf;
-	btTransform startTransform = bt_set_trafo(pos + vector(tt->pattern.x * tt->num_x, 0, tt->pattern.z * tt->num_z)/2, quaternion::ID);
-	btScalar mass(0.f);
-	btVector3 localInertia(0, 0, 0);
-
-	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, tt->colShape, localInertia);
-	tt->body = new btRigidBody(rbInfo);
-	tt->body->setUserPointer(terrain_object);
-
-	dynamicsWorld->addRigidBody(tt->body);
-#endif
-
-	terrains.add(tt);
-	return tt;
+	auto t = create_terrain_no_reg(filename, pos);
+	register_entity(t->get_owner<Entity3D>());
+	return t;
 }
 
 bool GodLoadWorld(const Path &filename) {
 	LevelData level_data;
-	bool ok = level_data.load(filename);
+	bool ok = level_data.load(engine.map_dir << filename.with(".world"));
 	ok &= world.load(level_data);
 	return ok;
 }
 
-Object *World::create_object(const Path &filename, const vector &pos, const quaternion &ang) {
-	return create_object_x(filename, "", pos, ang, "");
+Entity3D *World::create_entity(const vector &pos, const quaternion &ang) {
+	return new Entity3D(pos, ang);
 }
 
-Object *World::create_object_x(const Path &filename, const string &name, const vector &pos, const quaternion &ang, const Path &script, int w_index) {
+void World::register_entity(Entity3D *e) {
+	if (auto m = e->get_component<Model>())
+		register_object(e);
+
+	entities.add(e);
+	e->on_init_rec();
+
+
+	if (auto m = e->get_component<Model>())
+		register_model(m);
+
+#if HAS_LIB_BULLET
+	if (auto sb = e->get_component<SolidBody>())
+		dynamicsWorld->addRigidBody(sb->body);
+#endif
+
+	msg_data.e = e;
+	notify("entity-add");
+}
+
+Entity3D *World::create_object(const Path &filename, const vector &pos, const quaternion &ang) {
+	auto o = create_object_no_reg_x(filename, "", pos, ang, {});
+	register_entity(o);
+	return o;
+}
+
+Entity3D *World::create_object_no_reg(const Path &filename, const vector &pos, const quaternion &ang) {
+	return create_object_no_reg_x(filename, "", pos, ang, {});
+}
+
+Entity3D *World::create_object_no_reg_x(const Path &filename, const string &name, const vector &pos, const quaternion &ang, const Array<LevelData::ScriptData> &components) {
 	if (engine.resetting_game)
-		throw Exception("CreateObject during game reset");
+		throw Exception("create_object during game reset");
 
 	if (filename.is_empty())
-		throw Exception("CreateObject: empty filename");
+		throw Exception("create_object: empty filename");
+
+	auto o = create_entity(pos, ang);
 
 	//msg_write(on);
-	auto *o = static_cast<Object*>(ModelManager::loadx(filename, script));
+	auto *m = ModelManager::load(filename);
+	m->script_data.name = name;
 
-	o->script_data.name = name;
-	o->pos = pos;
-	o->ang = ang;
-	o->update_matrix();
-	o->update_theta();
+	o->_add_component_external_(m);
+	m->update_matrix();
 
 
-	register_object(o, w_index);
+	// automatic components
+	if (m->_template->solid_body) {
+		auto col = (MeshCollider*)o->add_component(MeshCollider::_class, "");
+		auto sb = (SolidBody*)o->add_component(SolidBody::_class, "");
+	}
 
-	o->on_init();
+	if (m->_template->skeleton)
+		o->add_component(Skeleton::_class, "");
 
-	AddNetMsg(NET_MSG_CREATE_OBJECT, o->object_id, filename.str());
+	if (m->_template->animator)
+		o->add_component(Animator::_class, "");
+
+	// user components
+	for (auto &cc: components) {
+		//msg_write("add component " + cc.class_name);
+#ifdef _X_ALLOW_X_
+		auto type = PluginManager::find_class(cc.filename, cc.class_name);
+		auto comp = o->add_component(type, cc.var);
+#endif
+	}
 
 	return o;
 }
@@ -478,140 +557,56 @@ void World::register_model_multi(Model *m, const Array<matrix> &matrices) {
 	m->registered = true;
 }
 
-void World::register_object(Object *o, int index) {
-	int on = index;
-	if (on < 0){
+void World::request_next_object_index(int i) {
+	next_object_index = i;
+}
+
+void World::register_object(Entity3D *o) {
+	int on = next_object_index;
+	next_object_index = -1;
+	if (on < 0) {
 		// ..... better use a list of "empty" objects???
 		for (int i=num_reserved_objects; i<objects.num; i++)
 			if (!objects[i])
 				on = i;
-	}else{
+	} else {
 		if (on >= objects.num)
 			objects.resize(on+1);
-		if (objects[on]){
-			msg_error("CreateObject:  object index already in use " + i2s(on));
+		if (objects[on]) {
+			msg_error("register_object:  object index already in use " + i2s(on));
 			return;
 		}
 	}
-	if (on < 0){
+	if (on < 0) {
 		on = objects.num;
-		objects.add(NULL);
+		objects.add(nullptr);
 	}
-	objects[on] = (Object*)o;
-
-	register_model(o);
+	objects[on] = o;
 
 	o->object_id = on;
 
-#if HAS_LIB_BULLET
-	if (o->phys->balls.num + o->phys->cylinders.num + o->phys->poly.num > 0) {
-		auto comp = new btCompoundShape(false, 0);
-		for (auto &b: o->phys->balls) {
-			vector a = o->phys->vertex[b.index];
-			auto bb = new btSphereShape(btScalar(b.radius));
-			comp->addChildShape(bt_set_trafo(a, quaternion::ID), bb);
-		}
-		for (auto &c: o->phys->cylinders) {
-			vector a = o->phys->vertex[c.index[0]];
-			vector b = o->phys->vertex[c.index[1]];
-			auto cc = new btCylinderShapeZ(bt_set_v(vector(c.radius, c.radius, (b - a).length() / 2)));
-			auto q = quaternion::rotation((a-b).dir2ang());
-			comp->addChildShape(bt_set_trafo((a+b)/2, q), cc);
-			if (c.round) {
-				auto bb1 = new btSphereShape(btScalar(c.radius));
-				comp->addChildShape(bt_set_trafo(a, quaternion::ID), bb1);
-				auto bb2 = new btSphereShape(btScalar(c.radius));
-				comp->addChildShape(bt_set_trafo(b, quaternion::ID), bb2);
-			}
-		}
-		for (auto &p: o->phys->poly) {
-			if (true){
-				Set<int> vv;
-				for (int i=0; i<p.num_faces; i++)
-					for (int k=0; k<p.face[i].num_vertices; k++){
-						vv.add(p.face[i].index[k]);
-					}
-				// btConvexPointCloudShape not working!
-				auto pp = new btConvexHullShape();
-				for (int i: vv)
-					pp->addPoint(bt_set_v(o->phys->vertex[i]));
-				comp->addChildShape(bt_set_trafo(v_0, quaternion::ID), pp);
-			} else {
-				// ARGH, btConvexPointCloudShape not working
-				//   let's use a crude box for now... (-_-)'
-				vector a, b;
-				a = b = o->phys->vertex[p.face[0].index[0]];
-				for (int i=0; i<p.num_faces; i++)
-					for (int k=0; k<p.face[i].num_vertices; k++){
-						auto vv = o->phys->vertex[p.face[i].index[k]];
-						a._min(vv);
-						b._max(vv);
-					}
-				auto pp = new btBoxShape(bt_set_v((b-a) / 2));
-				comp->addChildShape(bt_set_trafo((a+b)/2, quaternion::ID), pp);
-
-			}
-		}
-		o->colShape = comp;
-	}
-
-	/*if (o->phys->balls.num > 0) {
-		auto &b = o->phys->balls[0];
-		o->colShape = new btSphereShape(btScalar(b.radius));
-	} else if (o->phys->cylinders.num > 0) {
-		auto &c = o->phys->cylinders[0];
-		vector a = o->mesh[0]->vertex[c.index[0]];
-		vector b = o->mesh[0]->vertex[c.index[1]];
-		o->colShape = new btCylinderShapeZ(bt_set_v(vector(c.radius, c.radius, (b - a).length())));
-	} else if (o->phys->poly.num > 0) {
-
-	} else {
-	}*/
-
-	btTransform startTransform = bt_set_trafo(o->pos, o->ang);
-
-	btScalar mass(o->physics_data.active ? o->physics_data.mass : 0);
-	btVector3 localInertia(0, 0, 0);
-	//if (isDynamic)
-	if (o->colShape) {
-		o->colShape->calculateLocalInertia(mass, localInertia);
-		o->physics_data.theta_0._00 = localInertia.x();
-		o->physics_data.theta_0._11 = localInertia.y();
-		o->physics_data.theta_0._22 = localInertia.z();
-	}
-
-	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, o->colShape, localInertia);
-	o->body = new btRigidBody(rbInfo);
-
-	o->body->setUserPointer(o);
-	o->update_mass();
-
-	if (o->physics_data.active or o->physics_data.passive)
-		dynamicsWorld->addRigidBody(o->body);
-	//else if (o->physics_data.test_collisions)
-	//	dynamicsWorld->addCollisionObject(o->body);
-#endif
-
+	//AddNetMsg(NET_MSG_CREATE_OBJECT, o->object_id, filename.str());
 }
 
 
-void World::set_active_physics(Object *o, bool active, bool passive) { //, bool test_collisions) {
+void World::set_active_physics(Entity3D *o, bool active, bool passive) { //, bool test_collisions) {
+	auto sb = o->get_component<SolidBody>();
+	auto c = o->get_component<Collider>();
+
 #if HAS_LIB_BULLET
-	btScalar mass(active ? o->physics_data.mass : 0);
-	btVector3 localInertia(0, 0, 0);
-	if (o->colShape) {
-		o->colShape->calculateLocalInertia(mass, localInertia);
-		o->physics_data.theta_0._00 = localInertia.x();
-		o->physics_data.theta_0._11 = localInertia.y();
-		o->physics_data.theta_0._22 = localInertia.z();
+	btScalar mass(active ? sb->mass : 0);
+	btVector3 local_inertia(0, 0, 0);
+	if (c->col_shape) {
+		c->col_shape->calculateLocalInertia(mass, local_inertia);
+		sb->theta_0._00 = local_inertia.x();
+		sb->theta_0._11 = local_inertia.y();
+		sb->theta_0._22 = local_inertia.z();
 	}
-	o->body->setMassProps(mass, localInertia);
-	if (passive and !o->physics_data.passive)
-		dynamicsWorld->addRigidBody(o->body);
-	if (!passive and o->physics_data.passive)
-		dynamicsWorld->removeRigidBody(o->body);
+	sb->body->setMassProps(mass, local_inertia);
+	if (passive and !sb->passive)
+		dynamicsWorld->addRigidBody(sb->body);
+	if (!passive and sb->passive)
+		dynamicsWorld->removeRigidBody(sb->body);
 
 	/*if (!passive and test_collisions) {
 		msg_error("FIXME pure collision");
@@ -620,57 +615,81 @@ void World::set_active_physics(Object *o, bool active, bool passive) { //, bool 
 #endif
 
 
-	o->physics_data.active = active;
-	o->physics_data.passive = passive;
-	//o->physics_data.test_collisions = test_collisions;
+	sb->active = active;
+	sb->passive = passive;
+	//b->test_collisions = test_collisions;
 }
 
 // un-object a model
-void World::unregister_object(Object *m) {
+void World::unregister_object(Entity3D *m) {
 	if (m->object_id < 0)
 		return;
 
-#if HAS_LIB_BULLET
-	if (m->body) {
-		dynamicsWorld->removeRigidBody(m->body);
-		delete m->body->getMotionState();
-		delete m->body;
-		delete m->colShape;
-		m->body = nullptr;
-		m->colShape = nullptr;
-	}
-#endif
-
 	// ego...
 	if (m == ego)
-		ego = NULL;
+		ego = nullptr;
 
 	AddNetMsg(NET_MSG_DELETE_OBJECT, m->object_id, "");
 
 	// remove from list
-	objects[m->object_id] = NULL;
+	objects[m->object_id] = nullptr;
 	m->object_id = -1;
 }
 
 void World::_delete(Entity* x) {
 	if (unregister(x)) {
-		x->on_delete();
+		msg_error("DEL");
+		x->on_delete_rec();
 		delete x;
 	}
 }
 
+void World::subscribe(const string &msg, const Callback &f) {
+	observers.add({msg, &f});
+}
+
+void World::notify(const string &msg) {
+	for (auto &o: observers)
+		if (o.msg == msg) {
+			(*o.f)();
+		}
+}
+
+void World::unregister_entity(Entity3D *e) {
+	msg_write("U1");
+	if (e->object_id >= 0)
+		unregister_object(e);
+	msg_write("U2");
+
+#if HAS_LIB_BULLET
+	if (auto sb = e->get_component<SolidBody>())
+		dynamicsWorld->removeRigidBody(sb->body);
+#endif
+	msg_write("U3");
+
+	if (auto m = e->get_component<Model>())
+		unregister_model(m);
+	msg_write("U4");
+
+	foreachi(auto *o, entities, i)
+		if (o == e) {
+			msg_write("UX1");
+			msg_data.e = o;
+			notify("entity-delete");
+			msg_write("UX2");
+			entities.erase(i);
+			msg_write("UX3");
+			return;
+		}
+	msg_write("U5");
+}
 
 bool World::unregister(Entity* x) {
 	//msg_error("World.unregister  " + i2s((int)x->type));
-	if (x->type == Entity::Type::MODEL) {
-		foreachi(auto *o, objects, i)
-			if (o == x) {
-				//msg_write(" -> OBJECT");
-				unregister_model(o);
-				unregister_object(o);
-				return true;
-			}
-	} else if (x->type == Entity::Type::LIGHT) {
+	if (x->type == Entity::Type::ENTITY3D) {
+		auto e = (Entity3D*)x;
+		unregister_entity(e);
+/*	} else if (x->type == Entity::Type::LIGHT) {
 #ifdef _X_ALLOW_X_
 		foreachi(auto *l, lights, i)
 			if (l == x) {
@@ -678,7 +697,7 @@ bool World::unregister(Entity* x) {
 				lights.erase(i);
 				return true;
 			}
-#endif
+#endif*/
 	} else if (x->type == Entity::Type::LINK) {
 		foreachi(auto *l, links, i)
 			if (l == x) {
@@ -713,16 +732,15 @@ void PartialModel::clear() {
 void World::register_model(Model *m) {
 	if (m->registered)
 		return;
-	
-	for (int i=0;i<m->material.num;i++){
+	msg_write("reg model " + m->filename().str());
+
+	for (int i=0;i<m->material.num;i++) {
 		Material *mat = m->material[i];
 		bool trans = false;//!mat->alpha.z_buffer; //false;
-		/*if (mat->TransparencyMode>0){
-			if (mat->TransparencyMode == TransparencyModeFunctions)
-				trans = true;
-			if (mat->TransparencyMode == TransparencyModeFactor)
-				trans = true;
-		}*/
+		if (mat->alpha.mode == TransparencyMode::FUNCTIONS)
+			trans = true;
+		if (mat->alpha.mode == TransparencyMode::FACTOR)
+			trans = true;
 
 		PartialModel p;
 		p.model = m;
@@ -747,9 +765,16 @@ void World::register_model(Model *m) {
 	m->registered = true;
 	
 	// sub models
-	for (int i=0;i<m->bone.num;i++)
-		if (m->bone[i].model)
-			register_model(m->bone[i].model);
+	msg_write("R sk");
+	msg_write(p2s(m->owner));
+	if (m->owner)
+	if (auto sk = m->owner->get_component<Skeleton>()) {
+		msg_write("....sk");
+		for (auto &b: sk->bones)
+			if (auto *mm = b.get_component<Model>())
+				register_model(mm);
+	}
+	msg_write("/reg");
 }
 
 // remove a model from the (possible) rendering list
@@ -782,57 +807,72 @@ void World::unregister_model(Model *m) {
 	//printf("%d\n", m->NumBones);
 
 	// sub models
-	for (int i=0;i<m->bone.num;i++)
-		if (m->bone[i].model)
-			unregister_model(m->bone[i].model);
+	if (m->owner)
+	if (auto sk = m->owner->get_component<Skeleton>()) {
+		for (auto &b: sk->bones)
+			if (auto *mm = b.get_component<Model>())
+				unregister_model(mm);
+	}
+	msg_write("/unreg");
 }
 
 void World::iterate_physics(float dt) {
+	auto list = ComponentManager::get_listx<SolidBody>();
+
 	if (physics_mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
 		dynamicsWorld->setGravity(bt_set_v(gravity));
 		dynamicsWorld->stepSimulation(dt, 10);
 
-		btTransform trans;
-		for (auto *o: objects)
-			if (o and o->physics_data.active) {
-				o->body->getMotionState()->getWorldTransform(trans);
-				o->pos = bt_get_v(trans.getOrigin());
-				o->ang = bt_get_q(trans.getRotation());
-				o->vel = bt_get_v(o->body->getLinearVelocity());
-				o->rot = bt_get_v(o->body->getAngularVelocity());
-
-			} else {
-
-				//dynamicsWorld->contactTest(o->body, myTickCallback);
-			}
+		for (auto *o: *list)
+			o->get_state_from_bullet();
 #endif
 	} else if (physics_mode == PhysicsMode::SIMPLE) {
-		for (auto *o: objects)
-			if (o)
-				o->do_physics(dt);
+		for (auto *o: *list)
+			o->do_simple_physics(dt);
 	}
 
-	for (auto *o: objects)
-		if (o)
-			o->_matrix = matrix::translation(o->pos) * matrix::rotation(o->ang);
+	for (auto *sb: *list) {
+		if (auto m = sb->owner->get_component<Model>())
+			m->update_matrix();
+	}
 }
 
 void World::iterate_animations(float dt) {
-	for (auto *o: objects)
-		if (o and o->anim.meta)
-			o->do_animation(dt);
+#ifdef _X_ALLOW_X_
+	PerformanceMonitor::begin(ch_animation);
+	auto list = ComponentManager::get_listx<Animator>();
+	for (auto *o: *list)
+		o->do_animation(dt);
+
+
+	// TODO
+	auto list2 = ComponentManager::get_listx<Skeleton>();
+	for (auto *o: *list2) {
+		for (auto &b: o->bones) {
+			if (auto *mm = b.get_component<Model>()) {
+//				b.dmatrix = matrix::translation(b.cur_pos) * matrix::rotation(b.cur_ang);
+//				mm->_matrix = o->get_owner<Entity3D>()->get_matrix() * b.dmatrix;
+			}
+		}
+	}
+		//o->do_animation(dt);
+	PerformanceMonitor::end(ch_animation);
+#endif
 }
 
 void World::iterate(float dt) {
 	if (dt == 0)
 		return;
+#ifdef _X_ALLOW_X_
+	PerformanceMonitor::begin(ch_iterate);
 	if (engine.physics_enabled) {
 		iterate_physics(dt);
 	} else {
-		for (auto *o: objects)
+		/*for (auto *o: objects)
 			if (o)
-				o->update_matrix();
+				if (auto m = o->get_component<Model>())
+					m->update_matrix();*/
 	}
 
 #ifdef _X_ALLOW_X_
@@ -842,12 +882,53 @@ void World::iterate(float dt) {
 			delete s;
 		}
 	}
-	audio::set_listener(cam->pos, cam->ang, v_0, 100000);
+	audio::set_listener(cam->get_owner<Entity3D>()->pos, cam->get_owner<Entity3D>()->ang, v_0, 100000);
+#endif
+
+	PerformanceMonitor::end(ch_iterate);
 #endif
 }
 
-void World::add_light(Light *l) {
+Light *World::add_light_parallel(const quaternion &ang, const color &c) {
+#ifdef _X_ALLOW_X_
+	auto o = new Entity3D(v_0, ang);
+	entities.add(o);
+
+	auto l = new Light(c, -1, -1);
+	o->_add_component_external_(l);
 	lights.add(l);
+	return l;
+#else
+	return nullptr;
+#endif
+}
+
+Light *World::add_light_point(const vector &p, const color &c, float r) {
+#ifdef _X_ALLOW_X_
+	auto o = new Entity3D(p, quaternion::ID);
+	entities.add(o);
+
+	auto l = new Light(c, r, -1);
+	o->_add_component_external_(l);
+	lights.add(l);
+	return l;
+#else
+	return nullptr;
+#endif
+}
+
+Light *World::add_light_cone(const vector &p, const quaternion &ang, const color &c, float r, float t) {
+#ifdef _X_ALLOW_X_
+	auto o = new Entity3D(p, ang);
+	entities.add(o);
+
+	auto l = new Light(c, r, t);
+	o->_add_component_external_(l);
+	lights.add(l);
+	return l;
+#else
+	return nullptr;
+#endif
 }
 
 void World::add_particle(Particle *p) {
@@ -862,23 +943,28 @@ void World::add_sound(audio::Sound *s) {
 
 
 void World::shift_all(const vector &dpos) {
-	for (auto *t: terrains)
-		t->pos += dpos;
-	for (auto *o: objects)
-		if (o)
-			o->pos += dpos;
+	for (auto *e: entities) {
+		e->pos += dpos;
+		//if (auto m = e->get_component<Model>())
+		//	m->update_matrix();
+	}
+	auto list = ComponentManager::get_listx<Model>();
+	for (auto *m: *list)
+		m->update_matrix();
 #ifdef _X_ALLOW_X_
 	for (auto *s: sounds)
 		s->pos += dpos;
 	particle_manager->shift_all(dpos);
 #endif
+	msg_data.v = dpos;
+	notify("shift");
 }
 
 vector World::get_g(const vector &pos) const {
 	return gravity;
 }
 
-bool World::trace(const vector &p1, const vector &p2, CollisionData &d, bool simple_test, Model *o_ignore) {
+bool World::trace(const vector &p1, const vector &p2, CollisionData &d, bool simple_test, Entity3D *o_ignore) {
 #if HAS_LIB_BULLET
 	btCollisionWorld::ClosestRayResultCallback ray_callback(bt_set_v(p1), bt_set_v(p2));
 	//ray_callback.m_collisionFilterMask = FILTER_CAMERA;
@@ -886,12 +972,13 @@ bool World::trace(const vector &p1, const vector &p2, CollisionData &d, bool sim
 // Perform raycast
 	this->dynamicsWorld->getCollisionWorld()->rayTest(bt_set_v(p1), bt_set_v(p2), ray_callback);
 	if (ray_callback.hasHit()) {
+		auto sb = static_cast<SolidBody*>(ray_callback.m_collisionObject->getUserPointer());
 		d.p = bt_get_v(ray_callback.m_hitPointWorld);
 		d.n = bt_get_v(ray_callback.m_hitNormalWorld);
-		d.m = static_cast<Object*>(ray_callback.m_collisionObject->getUserPointer());
+		d.sb = sb;
 
 		// ignore...
-		if (d.m and d.m == o_ignore) {
+		if (d.sb and d.sb->get_owner<Entity3D>() == o_ignore) {
 			vector dir = (p2 - p1).normalized();
 			return trace(d.p + dir * 2, p2, d, simple_test, o_ignore);
 		}

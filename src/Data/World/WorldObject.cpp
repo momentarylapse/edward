@@ -11,9 +11,9 @@
 void WorldObject::update_data() {
 	if (!object)
 		return;
-	object->pos = pos;
+	/*object->pos = pos;
 	object->ang = quaternion::rotation_v(ang);
-	object->update_matrix();
+	object->update_matrix();*/
 }
 
 

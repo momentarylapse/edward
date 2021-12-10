@@ -1,8 +1,8 @@
 #include "Material.h"
 #include "Model.h"
 #include "../lib/file/file.h"
-#include "../lib/nix/nix.h"
 #include "../lib/config.h"
+#include "../graphics-impl.h"
 #ifdef _X_USE_HUI_
 	#include "../lib/hui/hui.h"
 	#include "ResourceManager.h"
@@ -23,7 +23,7 @@ void MaterialInit() {
 	// create the default material
 	trivial_material = new Material;
 	trivial_material->name = "-default-";
-	//trivial_material->shader_path = nix::Shader::default_3d;
+	//trivial_material->shader_path = Shader::default_3d;
 
 	SetDefaultMaterial(trivial_material);
 }
@@ -45,9 +45,9 @@ void SetDefaultMaterial(Material *m) {
 	default_material = m;
 }
 
-/*void MaterialSetDefaultShader(nix::Shader *s) {
+/*void MaterialSetDefaultShader(Shader *s) {
 	default_material->shader[0] = s;
-	nix::Shader::default_load = s;
+	Shader::default_load = s;
 }*/
 
 
@@ -64,8 +64,8 @@ Material::Material() {
 	cast_shadow = true;
 
 	alpha.mode = TransparencyMode::NONE;
-	alpha.source = nix::Alpha::ZERO;
-	alpha.destination = nix::Alpha::ZERO;
+	alpha.source = Alpha::ZERO;
+	alpha.destination = Alpha::ZERO;
 	alpha.factor = 1;
 	alpha.z_buffer = true;
 
@@ -113,6 +113,12 @@ Material* Material::copy() {
 
 float col_frac(const color &a, const color &b) {
 	return (a.r+a.g+a.b) / (b.r+b.g+b.b);
+}
+
+static const Alpha FILE_ALPHAS[] = {Alpha::ZERO, Alpha::ONE, Alpha::SOURCE_COLOR, Alpha::SOURCE_INV_COLOR, Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, Alpha::DEST_COLOR, Alpha::DEST_INV_COLOR, Alpha::DEST_ALPHA, Alpha::DEST_INV_ALPHA};
+
+Alpha parse_alpha(int a) {
+	return FILE_ALPHAS[clamp(a, 0, 10)];
 }
 
 
@@ -163,8 +169,8 @@ Material *LoadMaterial(const Path &filename) {
 		m->alpha.z_buffer = false;
 	} else if (mode == "function") {
 		m->alpha.mode = TransparencyMode::FUNCTIONS;
-		m->alpha.source = (nix::Alpha)c.get_int("transparency.source", 0);
-		m->alpha.destination = (nix::Alpha)c.get_int("transparency.dest", 0);
+		m->alpha.source = parse_alpha(c.get_int("transparency.source", 0));
+		m->alpha.destination = parse_alpha(c.get_int("transparency.dest", 0));
 		m->alpha.z_buffer = false;
 	} else if (mode == "key-hard") {
 		m->alpha.mode = TransparencyMode::COLOR_KEY_HARD;
@@ -179,12 +185,12 @@ Material *LoadMaterial(const Path &filename) {
 	if (mode == "static") {
 		m->reflection.mode = ReflectionMode::CUBE_MAP_STATIC;
 		texture_files = c.get_str("reflection.cubemap", "");
-		Array<nix::Texture*> cmt;
+		Array<Texture*> cmt;
 		for (auto &f: texture_files.explode(","))
 			cmt.add(ResourceManager::load_texture(f));
 		m->reflection.density = c.get_float("reflection.density", 1);
 #if 0
-			m->reflection.cube_map = new nix::CubeMap(m->reflection.cube_map_size);
+			m->reflection.cube_map = new CubeMap(m->reflection.cube_map_size);
 			for (int i=0;i<6;i++)
 				m->reflection.cube_map->fill_side(i, cmt[i]);
 #endif
@@ -204,13 +210,25 @@ Material *LoadMaterial(const Path &filename) {
 	return m->copy();
 }
 
-void Material::prepare_shader(ShaderVariant v) {
-	if (shader[(int)v])
+inline int shader_index(RenderPathType render_path_type, ShaderVariant v) {
+	return (int)v + 3 * ((int)render_path_type - 1);
+}
+
+void Material::_prepare_shader(RenderPathType render_path_type, ShaderVariant v) {
+	int i = shader_index(render_path_type, v);
+	if (shader[i])
 		return;
 	string vv = "default";
 	if (v == ShaderVariant::ANIMATED)
 		vv = "animated";
 	if (v == ShaderVariant::INSTANCED)
 		vv = "instanced";
-	shader[(int)v] = ResourceManager::load_surface_shader(shader_path, vv);
+	string rpt = ((int)render_path_type == 2) ? "deferred" : "forward";
+	shader[i] = ResourceManager::load_surface_shader(shader_path, rpt, vv);
+}
+
+Shader *Material::get_shader(RenderPathType render_path_type, ShaderVariant v) {
+	int i = shader_index(render_path_type, v);
+	_prepare_shader(render_path_type, v);
+	return shader[i].get();
 }

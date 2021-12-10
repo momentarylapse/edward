@@ -10,6 +10,7 @@
 #include "ModelNewAnimationDialog.h"
 #include "ModelDuplicateAnimationDialog.h"
 #include "../Animation/ModeModelAnimation.h"
+#include "../../../y/components/Animator.h"
 
 
 ModelAnimationDialog::ModelAnimationDialog(DataModel *_data) {

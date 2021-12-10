@@ -14,10 +14,20 @@
 
 
 void VertexStagingBuffer::build(nix::VertexBuffer *vb, int num_textures) {
-	vb->update(0, p);
+	Array<float> temp;
+	int d = 3 + 3 + 2*num_textures;
+	temp.resize(p.num * d);
+	for (int i=0; i<p.num; i++) {
+		*(vector*)&temp[i * d] = p[i];
+		*(vector*)&temp[i * d + 3] = n[i];
+		for (int l=0; l<num_textures; l++)
+			*(vec2*)&temp[i * d + 6 + l*2] = *(vec2*)&uv[l][2*i];
+	}
+	vb->update(temp);
+	/*vb->update(0, p);
 	vb->update(1, n);
 	for (int l=0; l<num_textures; l++)
-		vb->update(l+2, uv[l]);
+		vb->update(l+2, uv[l]);*/
 
 }
 

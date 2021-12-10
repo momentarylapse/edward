@@ -40,7 +40,11 @@ EngineData::EngineData() {
 
 	width = 0;
 	height = 0;
-	renderer = nullptr;
+	window_renderer = nullptr;
+	gui_renderer = nullptr;
+	post_processor = nullptr;
+	hdr_renderer = nullptr;
+	render_path = nullptr;
 
 	detail_level = 100;
 	detail_factor_inv = 1.0f;
@@ -62,13 +66,7 @@ EngineData::EngineData() {
 	game_running = false;
 }
 
-
-
 void EngineData::set_dirs(const Path &_texture_dir, const Path &_map_dir, const Path &_object_dir, const Path &_sound_dir, const Path &_script_dir, const Path &_material_dir, const Path &_font_dir) {
-#if HAS_LIB_VULKAN
-	vulkan::Texture::directory = _texture_dir;
-	vulkan::Shader::directory = _material_dir;
-#endif
 	ResourceManager::texture_dir = _texture_dir;
 	ResourceManager::shader_dir = _material_dir;
 	texture_dir = _texture_dir;

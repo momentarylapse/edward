@@ -12,6 +12,7 @@
 #include "../../Mode/Model/ModeModel.h"
 #include "../../Edward.h"
 #include "../../y/ModelManager.h"
+#include "../../y/components/Animator.h"
 #include "../../lib/xfile/chunked.h"
 
 FormatModel::FormatModel() : TypedFormat<DataModel>(FD_MODEL, "model", _("Model"), Flag::CANONICAL_READ_WRITE) {

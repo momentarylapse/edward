@@ -16,6 +16,7 @@
 #include "../Dialog/ModelAnimationDialog.h"
 #include "../Dialog/ModelAnimationTimelinePanel.h"
 #include "../Mesh/Selection/MeshSelectionModePolygon.h"
+#include "../../../y/components/Animator.h"
 
 ModeModelAnimation *mode_model_animation = NULL;
 

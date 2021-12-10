@@ -15,14 +15,12 @@
 #include "../lib/math/quaternion.h"
 #include "../lib/math/rect.h"
 #include "../lib/math/matrix.h"
-#include "../y/Entity.h"
+#include "../y/Component.h"
 
 
-class Camera : public Entity {
+class Camera : public Component {
 public:
-	Camera(const vector &pos, const quaternion &ang, const rect &dest);
-	~Camera() override;
-	void reset();
+	Camera(const rect &dest);
 	
 	rect dest;
 
@@ -31,8 +29,6 @@ public:
 
 	float min_depth, max_depth;
 	
-	vector pos;
-	quaternion ang;
 	float fov;
 	float exposure;
 	float bloom_radius;
@@ -41,6 +37,9 @@ public:
 	bool focus_enabled;
 	float focal_length;
 	float focal_blur;
+
+	matrix view_matrix() const;
+	matrix projection_matrix(float aspect_ratio) const;
 
 	void update_matrices(float aspect_ratio);
 
@@ -53,14 +52,16 @@ public:
 
 	void _cdecl __init__(const vector &pos, const quaternion &ang, const rect &dest);
 	void _cdecl __delete__() override;
+
+	static const kaba::Class *_class;
 };
 
 void CameraInit();
 void CameraReset();
 void CameraCalcMove(float dt);
 void CameraShiftAll(const vector &dpos);
+Camera *add_camera(const vector &pos, const quaternion &ang, const rect &dest);
 
-extern Array<Camera*> cameras;
 extern Camera *cam; // "camera"
 extern Camera *cur_cam; // currently rendering
 

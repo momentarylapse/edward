@@ -24,43 +24,32 @@
 #pragma once
 
 
+//#include "Entity3D.h"
+#include "../graphics-fwd.h"
+#include "../y/Component.h"
 #include "../lib/base/base.h"
+#include "../lib/base/pointer.h"
 #include "../lib/file/path.h"
-#include "../lib/math/vector.h"
-#include "../lib/math/vec4.h"
 #include "../lib/math/matrix.h"
 #include "../lib/math/matrix3.h"
 #include "../lib/math/plane.h"
-#include "../lib/math/quaternion.h"
+#include "../lib/math/vec4.h"
 #include "../lib/image/color.h"
-#include "../y/Entity.h"
-
-class btRigidBody;
-class btCollisionShape;
 
 
 class Model;
-namespace Fx {
-	class Effect;
-}
 class Material;
 class TraceData;
-class Terrain;
 class TemplateDataScriptVariable;
-class CollisionData;
-namespace nix {
-	class VertexBuffer;
-	class Buffer;
-}
+class ModelTemplate;
+class MeshCollider;
+class SolidBody;
+class Animator;
 namespace kaba {
 	class Script;
 }
 
 
-#define MODEL_MAX_POLY_FACES			32
-#define MODEL_MAX_POLY_EDGES			(MODEL_MAX_POLY_FACES*4)
-#define MODEL_MAX_POLY_VERTICES_PER_FACE	16
-#define MODEL_MAX_MOVE_OPS				8
 
 class Mesh;
 
@@ -82,7 +71,7 @@ public:
 	// normals
 	Array<vector> normal;
 
-	nix::VertexBuffer *vertex_buffer;
+	VertexBuffer *vertex_buffer;
 
 	// refill the vertex buffer etc...
 	bool force_update;
@@ -109,157 +98,6 @@ public:
 	Mesh *copy(Model *new_owner);
 };
 
-// the face of a polyhedron (=> a polygon)
-class ConvexPolyhedronFace {
-public:
-	int num_vertices;
-	int index[MODEL_MAX_POLY_VERTICES_PER_FACE];
-	plane pl; // in model space
-};
-
-// a convex polyhedron (for the physical skin)
-class ConvexPolyhedron {
-public:
-	int num_faces;
-	ConvexPolyhedronFace face[MODEL_MAX_POLY_FACES];
-
-	// non redundant vertex list!
-	Array<int> vertex;
-
-	// non redundant edge list!
-	int num_edges;
-	Array<int> edge_index;
-
-	// "topology"
-	Array<bool> edge_on_face; // [edge * num_faces + face]
-	Array<int> faces_joining_edge; // [face1 * num_faces + face2]
-};
-
-// a ball (for the physical skin)
-class Ball {
-public:
-	int index;
-	float radius;
-};
-
-// a cylinder (for the physical skin)
-class Cylinder {
-public:
-	int index[2];
-	float radius;
-	bool round;
-};
-
-// data for collision detection
-class PhysicalMesh {
-public:
-	Array<int> bone_nr;
-	Array<vector> vertex; // original vertices
-	Array<vector> vertex_dyn; // here the animated vertices are stored before collision detection
-
-	/*int num_triangles;
-	unsigned short *triangle_index;*/
-
-	/*int NumEdges;
-	unsigned short *EdgeIndex;*/
-
-	Array<Ball> balls;
-
-	Array<Cylinder> cylinders;
-
-	Array<ConvexPolyhedron> poly;
-};
-
-// physical skin, but in world coordinates
-class PhysicalMeshAbsolute {
-public:
-	bool is_ok;
-	Array<vector> p;
-	Array<plane> pl;
-};
-
-enum class AnimationType {
-	NONE,
-	VERTEX,
-	SKELETAL
-};
-
-// single animation
-class Move {
-public:
-	string name;
-	int id;
-	AnimationType type;
-	int num_frames;
-	int frame0;
-
-	// properties
-	float frames_per_sec_const, frames_per_sec_factor;
-	bool inter_quad, inter_loop;
-};
-
-// a list of animations
-class MetaMove {
-public:
-	MetaMove();
-	// universal animation data
-	Array<Move> move;
-
-	int num_frames_skeleton, num_frames_vertex;
-
-
-	// skeletal animation data
-	//Array<Array<vector>> skel_dpos; //   [frame,bone]
-	//Array<Array<quaternion>> skel_ang; //   [frame,bone]
-	Array<vector> skel_dpos;
-	Array<quaternion> skel_ang;
-
-	// vertex animation data
-	struct {
-		//Array<Array<vector>> dpos; // vertex animation data   [frame,vertex]
-		Array<vector> dpos;
-	} mesh[4];
-};
-
-// commands for animation (move operations)
-class MoveOperation {
-public:
-	// move operations
-	enum class Command {
-		SET,			// overwrite
-		SET_NEW_KEYED,	// overwrite, if current doesn't equal 0
-		SET_OLD_KEYED,	// overwrite, if last equals 0
-		ADD_1_FACTOR,	// w = w_old         + w_new * f
-		MIX_1_FACTOR,	// w = w_old * (1-f) + w_new * f
-		MIX_2_FACTOR	// w = w_old * a     + w_new * b
-	};
-	int move;
-	Command command;
-	float time, param1, param2;
-};
-
-// to store data to create effects (when copying models)
-class ModelEffectData {
-public:
-	int vertex;
-	int type;
-	Path filename;
-	float radius, speed;
-	color am, di, sp;
-};
-
-class Bone {
-public:
-	int parent;
-	vector delta_pos;
-	vector rest_pos;
-	Model *model;
-	// current skeletal data
-	quaternion cur_ang;
-	vector cur_pos;
-	matrix dmatrix;
-};
-
 enum {
 	MESH_HIGH,
 	MESH_MEDIUM,
@@ -269,20 +107,7 @@ enum {
 	MESH_PHYSICAL = 42 // for edward
 };
 
-class ModelTemplate {
-public:
-	Path filename, script_filename;
-	Array<TemplateDataScriptVariable> variables;
-	Model *model;
-	Array<ModelEffectData> fx;
-	Array<Path> bone_model_filename;
-	Array<Path> inventory_filename;
-	kaba::Script *script;
-
-	ModelTemplate(Model *m);
-};
-
-class Model : public Entity {
+class Model : public Component {
 public:
 	Model();
 	~Model() override;
@@ -294,15 +119,13 @@ public:
 	void reset_data();
 	void _cdecl make_editable();
 	//void Update();
+	void _cdecl begin_edit(int detail);
+	void _cdecl end_edit(int detail);
 
 	static bool AllowDeleteRecursive;
 
 	// animation
 	vector _cdecl get_vertex(int index);
-
-	// skeleton
-	vector _cdecl get_bone_rest_pos(int index) const;
-	void _cdecl set_bone_model(int index, Model *sub);
 
 	// helper functions for collision detection
 	void _UpdatePhysAbsolute_();
@@ -310,17 +133,6 @@ public:
 
 	bool _cdecl trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
 	bool _cdecl trace_mesh(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
-
-	// animation
-	void _cdecl reset_animation();
-	bool _cdecl is_animation_done(int operation_no);
-	bool _cdecl animate_x(MoveOperation::Command cmd, float param1, float param2, int move_no, float &time, float dt, float vel_param, bool loop);
-	bool _cdecl animate(MoveOperation::Command cmd, int move_no, float &time, float dt, bool loop);
-	int _cdecl get_frames(int move_no);
-	void _cdecl begin_edit_animation();
-	void _cdecl begin_edit(int detail);
-	void _cdecl end_edit(int detail);
-	void do_animation(float elapsed);
 
 	// drawing
 	//void update_vertex_buffer(int mat_no, int detail);
@@ -330,11 +142,6 @@ public:
 
 	// material (own)
 	Array<Material*> material;
-	
-	// physical skin (shared)
-	PhysicalMesh *phys;
-	bool phys_is_reference;
-	PhysicalMeshAbsolute phys_absolute;
 
 	// properties
 	struct Properties {
@@ -342,78 +149,30 @@ public:
 		float radius;
 		vector min, max; // "bounding box"
 		bool allow_shadow;
-		bool flexible;
 	} prop;
 
 	bool is_copy;
 
-	// physics
-	struct PhysicsData {
-		float mass, mass_inv, g_factor;
-		matrix3 theta_0, theta, theta_inv;
-		bool active, passive;
-		bool test_collisions;
-	} physics_data;
-
 	// script data (own)
 	struct ScriptData {
-		string name, description;
-		Array<Model*> inventary;
-		Array<float> var;
+		string name;
 	} script_data;
 
-	int object_id;
-	Model *parent;
-	Model *_cdecl root();
-	bool on_ground, visible, rotating, moved, frozen;
-	float time_till_freeze;
-	int ground_id;
-	vector ground_normal;
+	bool visible;
 
-
-	vector pos, vel, vel_surf, /*pos_old,*/ acc;
-	quaternion ang /*,ang_old*/;
-	vector rot;
 	matrix _matrix, matrix_old;
+	void update_matrix();
 
-	vector force_int, torque_int;
-	vector force_ext, torque_ext;
-
-	// template (shared)
-	ModelTemplate *_template;
-	Path _cdecl filename();
+	// template
+	shared<ModelTemplate> _template;
+	Path filename();
 
 	// engine data
 	bool registered;
 	bool _detail_needed_[MODEL_NUM_MESHES]; // per frame
 
-	// effects (own)
-	Array<Fx::Effect*> fx;
 
-	// skeleton (own)
-	Array<Bone> bone;
-
-	// move operations
-	struct AnimationData {
-		int num_operations;
-		MoveOperation operation[MODEL_MAX_MOVE_OPS];
-		MetaMove *meta; // shared
-
-		// dynamical data (own)
-		//Mesh *mesh[MODEL_NUM_MESHES]; // here the animated vertices are stored before rendering
-
-		Array<matrix> dmatrix;
-		nix::Buffer *buf;
-	} anim;
-	bool uses_bone_animations() const;
-
-	btRigidBody* body;
-	btCollisionShape* colShape;
-
-	virtual void _cdecl on_init() {}
-	virtual void _cdecl on_delete() {}
-	virtual void _cdecl on_collide(const CollisionData &col) {}
-	virtual void _cdecl on_iterate(float dt) {}
+	static const kaba::Class *_class;
 };
 
 

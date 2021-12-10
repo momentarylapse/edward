@@ -69,8 +69,6 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 		for (int i=0;i<data->objects.num;i++) {
 			//ed->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);
 			data->objects[i].object = (Object*)ModelManager::load(data->objects[i].filename);
-			data->objects[i].object->pos = data->objects[i].pos;
-			data->objects[i].object->ang = quaternion::rotation(data->objects[i].ang);
 //			if (Objects[i].object)
 //				GodRegisterModel(Objects[i].object);
 		}
@@ -356,13 +354,7 @@ void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 	}
 }
 
-string phys_mode_name(PhysicsMode m) {
-	if (m == PhysicsMode::SIMPLE)
-		return "simple";
-	if (m == PhysicsMode::FULL_EXTERNAL)
-		return "full";
-	return "";
-}
+string phys_mode_name(PhysicsMode m);
 
 xml::Element encode_light(WorldLight &l) {
 	auto e = xml::Element("light")

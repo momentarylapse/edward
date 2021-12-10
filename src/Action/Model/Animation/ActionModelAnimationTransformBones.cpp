@@ -7,6 +7,7 @@
 
 #include "../../../Data/Model/DataModel.h"
 #include "ActionModelAnimationTransformBones.h"
+#include "../../../lib/math/quaternion.h"
 
 ActionModelAnimationTransformBones::ActionModelAnimationTransformBones(DataModel *d, int _move, int _frame) {
 	move = _move;

@@ -12,6 +12,7 @@
 #include "../../../Mode/Model/ModeModel.h"
 #include "../../../Edward.h"
 #include "../../../y/ModelManager.h"
+#include "../../../y/components/Animator.h"
 
 vector get_normal_by_index(int index);
 

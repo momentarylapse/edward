@@ -7,6 +7,11 @@
 
 #include "ModelManager.h"
 #include "Model.h"
+#include "Entity3D.h"
+#include "components/Collider.h"
+#include "components/Animator.h"
+#include "components/SolidBody.h"
+#include "components/Skeleton.h"
 #include "../y/EngineData.h"
 #include "../lib/math/complex.h"
 #include "../lib/kaba/kaba.h"
@@ -19,11 +24,24 @@
 #endif
 #include "../lib/file/file.h"
 #include "../lib/xfile/chunked.h"
-#include "../lib/nix/nix.h"
+#include "../graphics-impl.h"
 #include "../meta.h"
 #include "Material.h"
 
+
+Alpha parse_alpha(int a); // Material.h
+
+
 Array<Model*> ModelManager::originals;
+
+ModelTemplate::ModelTemplate(Model *m) {
+	model = m;
+	solid_body = nullptr;
+	mesh_collider = nullptr;
+	animator = nullptr;
+	skeleton = nullptr;
+}
+
 
 
 File *load_file_x(const Path &filename, int &version) {
@@ -98,8 +116,52 @@ vector get_normal_by_index(int index) {
 	return vector( cos(wxy) * swz, sin(wxy) * swz, cwz);
 }
 
-void AppraiseDimensions(Model *m);
-void PostProcessPhys(Model *m, PhysicalMesh *s);
+
+
+//--------------------------------------------------------------------------------------------------
+// hopefully these functions will be obsolete with the next fileformat
+
+// how big is the model
+void AppraiseDimensions(Model *m) {
+	float rad = 0;
+
+	// bounding box (visual mesh[0])
+	m->prop.min = m->prop.max = v_0;
+	for (int i=0;i<m->mesh[0]->vertex.num;i++) {
+		m->prop.min._min(m->mesh[0]->vertex[i]);
+		m->prop.max._max(m->mesh[0]->vertex[i]);
+		float r = _vec_length_fuzzy_(m->mesh[0]->vertex[i]);
+		if (r > rad)
+			rad = r;
+	}
+
+	// physical skin
+	auto col = m->_template->mesh_collider;
+	if (col) {
+		for (int i=0;i<col->phys->vertex.num;i++) {
+			float r = _vec_length_fuzzy_(col->phys->vertex[i]);
+			if (r > rad)
+				rad = r;
+		}
+		for (auto &b: col->phys->balls) {
+			float r = _vec_length_fuzzy_(col->phys->vertex[b.index]) + b.radius;
+			if (r > rad)
+				rad = r;
+		}
+	}
+	m->prop.radius = rad;
+}
+
+
+void PostProcessPhys(Model *m, PhysicalMesh *s) {
+	auto col = m->_template->mesh_collider;
+	if (col) {
+		col->phys_absolute.p.clear();
+		col->phys_absolute.pl.clear();
+	}
+	m->_ResetPhysAbsolute_();
+}
+
 
 namespace modelmanager {
 
@@ -111,17 +173,18 @@ public:
 	}
 	void read(File *f) override {
 		int version = f->read_int();
+		auto sb = me->_template->solid_body;
 
 		f->read_vector(&me->prop.min);
 		f->read_vector(&me->prop.max);
 		me->prop.radius = f->read_float();
 
 		// physics
-		me->physics_data.mass = f->read_float();
+		sb->mass = f->read_float();
 		for (int i=0;i<9;i++)
-			me->physics_data.theta_0.e[i] = f->read_float();
-		me->physics_data.active = f->read_bool();
-		me->physics_data.passive = f->read_bool();
+			sb->theta_0.e[i] = f->read_float();
+		sb->active = f->read_bool();
+		sb->passive = f->read_bool();
 	}
 	void write(File *f) override {}
 };
@@ -135,12 +198,12 @@ public:
 	void read(File *f) override {
 		// Object Data
 		me->script_data.name = f->read_str();
-		me->script_data.description = f->read_str();
+		/*me->script_data.description =*/ f->read_str();
 
 		// Inventary
-		me->script_data.inventary.resize(f->read_int());
-		for (int i=0;i<me->script_data.inventary.num;i++)
-			me->script_data.inventary[i] = ModelManager::load(f->read_str());
+		int n = f->read_int();
+		for (int i=0;i<n;i++)
+			f->read_str();
 	}
 	void write(File *f) override {}
 };
@@ -171,8 +234,8 @@ public:
 		auto alpha_mode = (TransparencyMode)f->read_int();
 		if (alpha_mode != TransparencyMode::DEFAULT) {
 			me->alpha.mode = alpha_mode;
-			me->alpha.source = (nix::Alpha)f->read_int();
-			me->alpha.destination = (nix::Alpha)f->read_int();
+			me->alpha.source = parse_alpha(f->read_int());
+			me->alpha.destination = parse_alpha(f->read_int());
 			me->alpha.factor = f->read_float();
 			me->alpha.z_buffer = f->read_bool();
 		} else {
@@ -200,6 +263,7 @@ public:
 	ChunkMesh() : FileChunk("mesh") {}
 	void create() override {
 		me = new Mesh;
+		me->owner = parent;
 		parent->mesh[_model_parser_tria_mesh_count ++] = me;
 	}
 	void read(File *f) override {
@@ -265,7 +329,7 @@ public:
 	}
 	void create() override {
 		me = new PhysicalMesh;
-		parent->phys = me;
+		parent->_template->mesh_collider->phys = me;
 	}
 	void read(File *f) override {
 		int version = f->read_int();
@@ -326,12 +390,18 @@ public:
 	}
 	void read(File *f) override {
 		int version = f->read_int();
-		me->bone.resize(f->read_int());
-		for (auto &b: me->bone) {
-			f->read_vector(&b.delta_pos);
-			b.parent = f->read_int();
-			string filename = f->read_str();
-			b.model = ModelManager::load(filename);
+		auto sk = me->_template->skeleton;
+		int n = f->read_int();
+		sk->bones.resize(n);
+		sk->parents.resize(n);
+		sk->dpos.resize(n);
+		sk->pos0.resize(n);
+		sk->filename.resize(n);
+		foreachi (auto &b, sk->bones, i) {
+			f->read_vector(&sk->dpos[i]);
+			sk->parents[i] = f->read_int();
+			sk->filename[i] = f->read_str();
+			//b.model = ModelManager::load(filename);
 		}
 		f->read_str();
 	}
@@ -367,16 +437,18 @@ public:
 #if 1
 		int version = f->read_int();
 
-		me->anim.meta = new MetaMove;
-		auto meta = me->anim.meta;
+
+		auto meta = new MetaMove;
+		me->_template->animator->meta = meta;
 
 		// headers
 		int num_anims = f->read_int();
 		meta->move.resize(num_anims);
 		Array<int> frame_offset;
-		for (auto &m: meta->move) {
+		foreachi (auto &m, meta->move, i) {
 			m.name = f->read_str();
 			m.id = f->read_int();
+			m.id = i;
 			m.type = (AnimationType)f->read_char();
 			m.frame0 = f->read_int();
 			m.num_frames = f->read_int();
@@ -391,8 +463,8 @@ public:
 		meta->num_frames_vertex = f->read_int();
 		for (int s=0; s<4; s++) {
 			int n_vert = 0;
-			if (parent->phys)
-				n_vert = parent->phys->vertex.num;
+			if (parent->_template->mesh_collider->phys)
+				n_vert = parent->_template->mesh_collider->phys->vertex.num;
 			if (s > 0)
 				n_vert = parent->mesh[s - 1]->vertex.num;
 			meta->mesh[s].dpos.resize(meta->num_frames_vertex * n_vert);
@@ -400,7 +472,7 @@ public:
 		for (int fr=0; fr<meta->num_frames_vertex; fr++) {
 			/*fr.duration =*/ f->read_float();
 			for (int s=0; s<4; s++) {
-				int np = parent->phys->vertex.num;
+				int np = parent->_template->mesh_collider->phys->vertex.num;
 				if (s >= 1)
 					np = parent->mesh[s - 1]->vertex.num;
 				int num_vertices = f->read_int();
@@ -411,11 +483,12 @@ public:
 			}
 		}
 
+		auto sk = parent->_template->skeleton;
 
 		meta->num_frames_skeleton = f->read_int();
 		if (meta->num_frames_skeleton > 0){
-			meta->skel_dpos.resize(meta->num_frames_skeleton * parent->bone.num);
-			meta->skel_ang.resize(meta->num_frames_skeleton * parent->bone.num);
+			meta->skel_dpos.resize(meta->num_frames_skeleton * sk->bones.num);
+			meta->skel_ang.resize(meta->num_frames_skeleton * sk->bones.num);
 		}
 		Array<bool> var_delta_pos;
 		int num_bones = f->read_int();
@@ -428,17 +501,19 @@ public:
 			for (int j=0; j<num_bones; j++) {
 				vector v;
 				f->read_vector(&v);
-				meta->skel_ang[fr * parent->bone.num + j] = quaternion::rotation_v(v);
+				meta->skel_ang[fr * sk->bones.num + j] = quaternion::rotation_v(v);
 			}
 
 			for (int j=0; j<num_bones; j++)
 				if (var_delta_pos[j])
-					f->read_vector(&meta->skel_dpos[fr * parent->bone.num + j]);
+					f->read_vector(&meta->skel_dpos[fr * sk->bones.num + j]);
 		}
 #endif
 	}
 	void write(File *f) override {}
 };
+
+/*class ModelEffectData;
 
 class ChunkEffect : public FileChunk<Model, ModelEffectData> {
 public:
@@ -479,7 +554,7 @@ public:
 		}
 	}
 	void write(File *f) override {}
-};
+};*/
 
 class ChunkScript : public FileChunk<Model, Model> {
 public:
@@ -488,17 +563,16 @@ public:
 		me = parent;
 	}
 	void read(File *f) override {
-		me->_template->script_filename = f->read_str();
-		me->script_data.var.resize(f->read_int());
-		for (int i=0;i<me->script_data.var.num;i++)
-			me->script_data.var[i] = f->read_float();
-
+		f->read_str(); // filename
 		int n = f->read_int();
+		for (int i=0;i<n;i++)
+			f->read_float();
+
+		n = f->read_int();
 		for (int i=0; i<n; i++) {
 			TemplateDataScriptVariable v;
 			v.name = f->read_str().lower().replace("_", "");
 			v.value = f->read_str();
-			me->_template->variables.add(v);
 		}
 	}
 	void write(File *f) override {}
@@ -515,7 +589,7 @@ public:
 		add_child(new ChunkSkeleton);
 		add_child(new ChunkAnimation);
 		add_child(new ChunkScript);
-		add_child(new ChunkEffect);
+//		add_child(new ChunkEffect);
 		add_child(new ChunkOldMeta);
 	}
 	void read(File *f) override {}
@@ -542,64 +616,63 @@ public:
 
 }
 
-
-
-Model* fancy_copy(Model *m, const Path &_script) {
-	Model *c = nullptr;
-#ifdef _X_ALLOW_X_
-	Path script = m->_template->script_filename;
-	if (!_script.is_empty())
-		script = _script;
-	//msg_write(format("MODEL  %s   %s", m->_template->filename, script));
-	if (!script.is_empty())
-		c = (Model*)plugin_manager.create_instance(script, "y.Model", m->_template->variables);
-#endif
-	if (!c)
-		c = new Model();
-	return m->copy(c);
+Model* fancy_copy(Model *orig) {
+	Model *clone = new Model();
+	//clone->owner = new Entity3D(Entity::Type::ENTITY3D);
+	return orig->copy(clone);
 }
 
 Model* ModelManager::load(const Path &_filename) {
-	return loadx(_filename, "");
-}
-
-Model* ModelManager::loadx(const Path &_filename, const Path &_script) {
 	if (_filename == "")
 		return nullptr;
 	auto filename = engine.object_dir << _filename.with(".model");
 	for (auto *o: originals)
 		if (o->_template->filename == filename) {
-			return fancy_copy(o, _script);
+			return fancy_copy(o);
 		}
 
+	msg_write("loading " + filename.str());
 	Model *m = new Model();
 	m->_template = new ModelTemplate(m);
 	m->_template->filename = filename;
-	msg_write("loading " + filename.str());
+	m->_template->solid_body = new SolidBody;
+	m->_template->mesh_collider = new MeshCollider;
+	m->_template->animator = new Animator;
+	m->_template->skeleton = new Skeleton;
+
 	modelmanager::ModelParser p;
 	p.read(filename, m);
 
+
+
+	// remove unneeded components
+	/*if (m->_template->mesh_collider->phys->balls.num + ... == 0) {
+		delete m->_template->mesh_collider;
+		m->_template->mesh_collider = nullptr;
+	}*/
+	if (!m->_template->solid_body->active and !m->_template->solid_body->passive) {
+		delete m->_template->solid_body;
+		m->_template->solid_body = nullptr;
+	}
+	if (!m->_template->animator->meta) {
+		delete m->_template->animator;
+		m->_template->animator = nullptr;
+	}
+	if (m->_template->skeleton->bones.num == 0) {
+		delete m->_template->skeleton;
+		m->_template->skeleton = nullptr;
+	}
 
 
 	// do some post processing...
 	AppraiseDimensions(m);
 
 	for (int i=0; i<MODEL_NUM_MESHES; i++)
-		m->mesh[i]->post_process(m->uses_bone_animations());
+		m->mesh[i]->post_process(m->_template->animator);
 
-	PostProcessPhys(m, m->phys);
-
-
+	PostProcessPhys(m, m->_template->mesh_collider->phys);
 
 
-	// skeleton
-	if (m->bone.num > 0) {
-		m->anim.dmatrix.resize(m->bone.num);
-		for (int i=0; i<m->bone.num; i++) {
-			m->bone[i].rest_pos = m->get_bone_rest_pos(i);
-			m->anim.dmatrix[i] = matrix::translation(m->bone[i].rest_pos);
-		}
-	}
 
 
 
@@ -609,5 +682,5 @@ Model* ModelManager::loadx(const Path &_filename, const Path &_script) {
 
 	//m->load(filename);
 	originals.add(m);
-	return fancy_copy(m, _script);
+	return fancy_copy(m);
 }

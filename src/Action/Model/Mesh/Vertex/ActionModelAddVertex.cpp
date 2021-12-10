@@ -9,6 +9,7 @@
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Data/Model/ModelMesh.h"
 #include "../../../../Data/Model/ModelPolygon.h"
+#include "../../../../y/components/Animator.h"
 #include <assert.h>
 
 ActionModelAddVertex::ActionModelAddVertex(const vector &_pos, const ivec4 &_bone_index, const vec4 &_bone_weight, int _normal_mode) {

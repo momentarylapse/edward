@@ -9,10 +9,16 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Camera.h"
+#include "Entity3D.h"
+#include "World.h"
+#include "../y/Entity.h"
+#include "../y/ComponentManager.h"
 #include "../lib/math/vector.h"
 #include "../lib/math/matrix.h"
 #include "../y/EngineData.h"
 
+
+const kaba::Class *Camera::_class = nullptr;
 
 
 #define CPKSetCamPos	0
@@ -24,9 +30,17 @@
 
 
 
-Array<Camera*> cameras;
-Camera *cam; // "camera"
-Camera *cur_cam; // currently rendering
+Camera *cam = nullptr; // "camera"
+Camera *cur_cam = nullptr; // currently rendering
+
+Camera *add_camera(const vector &pos, const quaternion &ang, const rect &dest) {
+	auto o = world.create_entity(pos, ang);
+
+	auto c = new Camera(dest);
+	o->_add_component_external_(c);
+	world.register_entity(o);
+	return c;
+}
 
 
 void CameraInit() {
@@ -34,14 +48,13 @@ void CameraInit() {
 }
 
 void CameraReset() {
-	entity_del(cameras);
-
-	// create the main-view ("cam")
-	cam = new Camera(v_0, quaternion::ID, rect::ID);
+	cam = nullptr;
 	cur_cam = cam;
 }
 
-void Camera::reset() {
+Camera::Camera(const rect &_dest) {
+	component_type = _class;
+
 	fov = pi / 4;
 	exposure = 1.0f;
 	bloom_radius = 10;
@@ -56,42 +69,21 @@ void Camera::reset() {
 	min_depth = 1.0f;
 	max_depth = 1000000.0f;
 
-	enabled = false;
-	dest = rect::ID;
-
-	show = false;
-	
-	pos = v_0;
-	ang = quaternion::ID;
-
 	m_projection = matrix::ID;
 	m_view = matrix::ID;
 	m_all = matrix::ID;
 	im_all = matrix::ID;
-}
 
-Camera::Camera(const vector &_pos, const quaternion &_ang, const rect &_dest) : Entity(Entity::Type::CAMERA) {
-	reset();
 	enabled = true;
 	show = true;
 
-	// register
-	entity_reg(this, cameras);
-
-	pos = _pos;
-	ang = _ang;
 	dest = _dest;
 }
 
-Camera::~Camera() {
-	// unregister
-	entity_unreg(this, cameras);
-}
 
-
-void Camera::__init__(const vector &_pos, const quaternion &_ang, const rect &_dest) {
-	new(this) Camera(_pos, _ang, _dest);
-}
+//void Camera::__init__(const vector &_pos, const quaternion &_ang, const rect &_dest) {
+	//new(this) Camera(_pos, _ang, _dest);
+//}
 
 void Camera::__delete__() {
 	this->Camera::~Camera();
@@ -99,50 +91,59 @@ void Camera::__delete__() {
 
 
 void CameraCalcMove(float dt) {
-	for (Camera *v: cameras){
-		if (!v->enabled)
+	auto cameras = ComponentManager::get_listx<Camera>();
+	for (auto c: *cameras){
+		if (!c->enabled)
 			continue;
-		v->on_iterate(dt);
+		c->on_iterate(dt);
 	}
 }
 
 void Camera::on_iterate(float dt) {
 }
 
-void Camera::update_matrices(float aspect_ratio) {
-	m_projection = matrix::perspective(fov, aspect_ratio, min_depth, max_depth, false);
-	m_projection = m_projection * matrix::rotation_x(pi);
-	m_view = matrix::rotation_q(ang).transpose() * matrix::translation(-pos);
+// view space -> relative screen space (API independent)
+// (-1,-1) = top left
+// (+1,+1) = bottom right
+matrix Camera::projection_matrix(float aspect_ratio) const {
+	// flip the y-axis
+	return matrix::perspective(fov, aspect_ratio, min_depth, max_depth, false) * matrix::scale(1,-1,1);
+}
 
-	m_all = m_projection * m_view;
+matrix Camera::view_matrix() const {
+	auto o = get_owner<Entity3D>();
+	return matrix::rotation_q(o->ang).transpose() * matrix::translation(-o->pos);
+}
+
+void Camera::update_matrices(float aspect_ratio) {
+	m_projection = projection_matrix(aspect_ratio);
+	m_view = view_matrix();
+
+	// TODO fix.... use own projection matrix?
+
+	auto m_rel = matrix::translation(vector(0.5f * engine.physical_aspect_ratio, 0.5f, 0.5f)) * matrix::scale(0.5f * engine.physical_aspect_ratio, 0.5f, 0.5f);
+
+	m_all = m_rel * m_projection * m_view;
 	im_all = m_all.inverse();
 }
 
 // into [0:R]x[0:1] system!
 vector Camera::project(const vector &v) {
-	//auto vv = m_all.project(v);
-	float x = m_all._00 * v.x + m_all._01 * v.y + m_all._02 * v.z + m_all._03;
-	float y = m_all._10 * v.x + m_all._11 * v.y + m_all._12 * v.z + m_all._13;
-	float z = m_all._20 * v.x + m_all._21 * v.y + m_all._22 * v.z + m_all._23;
-	float w = m_all._30 * v.x + m_all._31 * v.y + m_all._32 * v.z + m_all._33;
-	if (w == 0)
-		return vector(0, 0, -1);
-	return vector((x/w * 0.5f + 0.5f) * engine.physical_aspect_ratio, 0.5f + y/w * 0.5f, z/w * 0.5f + 0.5f);
+	return m_all.project(v);
+	//return vector((vv.x * 0.5f + 0.5f) * engine.physical_aspect_ratio, 0.5f + vv.y * 0.5f, vv.z * 0.5f + 0.5f);
 }
 
 vector Camera::unproject(const vector &v) {
-	float xx = (v.x/engine.physical_aspect_ratio - 0.5f) * 2;
+	return im_all.project(v);
+	/*float xx = (v.x/engine.physical_aspect_ratio - 0.5f) * 2;
 	float yy = (v.y - 0.5f) * 2;
 	float zz = (v.z - 0.5f) * 2;
-	float x = im_all._00 * xx + im_all._01 * yy + im_all._02 * zz + im_all._03;
-	float y = im_all._10 * xx + im_all._11 * yy + im_all._12 * zz + im_all._13;
-	float z = im_all._20 * xx + im_all._21 * yy + im_all._22 * zz + im_all._23;
-	float w = im_all._30 * xx + im_all._31 * yy + im_all._32 * zz + im_all._33;
-	return vector(x, y, z) / w;
+	return im_all.project(vector(xx,yy,zz));*/
 }
 
 void CameraShiftAll(const vector &dpos) {
-	for (Camera *c: cameras)
-		c->pos += dpos;
+	auto cameras = ComponentManager::get_listx<Camera>();
+	for (auto c: *cameras)
+		c->get_owner<Entity3D>()->pos += dpos;
 }
 

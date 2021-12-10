@@ -696,7 +696,7 @@ void ModeModelMesh::update_vertex_buffers(const Array<ModelVertex> &vertex) {
 		int num_tex = m->texture_levels.num;
 		if (!m->vb)
 			m->vb = new nix::VertexBuffer(vb_format(num_tex));
-		if (m->vb->num_buffers-2 != num_tex) {
+		if (m->vb->num_attributes-2 != num_tex) {
 			delete m->vb;
 			m->vb = new nix::VertexBuffer(vb_format(num_tex));
 		}

@@ -7,6 +7,7 @@
 
 #include "ActionModelAnimationAddFrame.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../y/components/Animator.h"
 #include <assert.h>
 
 ActionModelAnimationAddFrame::ActionModelAnimationAddFrame(int _index, int _frame, const ModelFrame &_f)

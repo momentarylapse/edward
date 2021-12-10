@@ -17,6 +17,8 @@ namespace Gui {
 }
 
 
+class TargetRenderer;
+class Renderer;
 class RenderPath;
 
 class EngineData {
@@ -48,7 +50,13 @@ public:
 	// output rendering/frame buffer resolution (might be smaller than the physical screen resolution)
 	int width, height;
 
-	// the "real world" aspect ratio of the output image (screen or window)
+
+	// dynamic resolution scaling
+	float resolution_scale_x = 1.0f;
+	float resolution_scale_y = 1.0f;
+
+
+	// the "real world" aspect ratio (cm/cm) of the output image (screen or window)
 	float physical_aspect_ratio;
 
 	bool first_frame;
@@ -60,7 +68,11 @@ public:
 
 	Path map_dir, sound_dir, script_dir, object_dir, texture_dir, shader_dir, material_dir, font_dir;
 
-	RenderPath *renderer;
+	TargetRenderer *window_renderer;
+	Renderer *gui_renderer;
+	Renderer *hdr_renderer;
+	Renderer *post_processor;
+	RenderPath *render_path;
 };
 extern EngineData engine;
 

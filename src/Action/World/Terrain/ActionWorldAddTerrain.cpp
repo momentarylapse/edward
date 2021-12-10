@@ -47,7 +47,7 @@ void *ActionWorldAddTerrain::execute(Data *d) {
 
 	if (filename == "") {
 		t.terrain = new Terrain();
-		t.terrain->pos = pos;
+		//t.terrain->pos = pos;
 		t.terrain->num_x = num_x;
 		t.terrain->num_z = num_z;
 		int num = (num_x + 1) * (num_z + 1);
@@ -73,7 +73,7 @@ void *ActionWorldAddTerrain::execute(Data *d) {
 		t.terrain->max = pos + size;
 		t.terrain->force_redraw = true;
 	} else {
-		t.terrain = new Terrain(filename, pos);
+		t.terrain = new Terrain(filename);
 		t.filename = filename;
 	}
 

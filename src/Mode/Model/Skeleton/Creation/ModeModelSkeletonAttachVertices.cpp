@@ -70,13 +70,16 @@ void ModeModelSkeletonAttachVertices::on_start() {
 	if (!vb_weight)
 		vb_weight = new nix::VertexBuffer("3f,3fn,2f,f");
 	VertexStagingBuffer vbs;
+#if 0
 	for (ModelPolygon &t: data->mesh->polygon) {
 		t.add_to_vertex_buffer(data->mesh->vertex, vbs, 1);
 		vbs.build(vb_weight, 1);
 	}
+#endif
+	ed->error_box("TODO....");
 	if (!shader) {
 		try {
-		shader = ResourceManager::load_shader("vertex-weight.shader");
+			shader = ResourceManager::load_shader("vertex-weight.shader");
 		} catch(Exception &e) {
 			msg_error(e.message());
 		}
@@ -101,6 +104,8 @@ void ModeModelSkeletonAttachVertices::on_end() {
 void ModeModelSkeletonAttachVertices::on_data_change() {
 	mode_model_mesh->selection_mode->update_multi_view();
 
+	// TODO
+#if 0
 	Array<float> ww;
 	for (ModelPolygon &t: data->mesh->polygon) {
 		for (int i=0; i<t.side.num-2; i++) {
@@ -116,6 +121,7 @@ void ModeModelSkeletonAttachVertices::on_data_change() {
 		}
 	}
 	vb_weight->update(3, ww);
+#endif
 }
 
 void ModeModelSkeletonAttachVertices::on_command(const string &id) {

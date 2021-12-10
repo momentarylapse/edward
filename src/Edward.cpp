@@ -174,7 +174,7 @@ Edward::Edward(Array<string> arg) :
 
 	MaterialInit();
 	CameraInit();
-	GodInit();
+	GodInit(0);
 
 	/*RegisterFileTypes();
 

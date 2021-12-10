@@ -44,20 +44,30 @@ class LevelData {
 public:
 	LevelData();
 	bool load(const Path &filename);
+	void save(const Path &filename);
 
+
+	class ScriptData {
+	public:
+		Path filename;
+		string class_name;
+		string var;
+		Array<TemplateDataScriptVariable> variables;
+	};
 
 	class Terrain {
 	public:
 		Path filename;
 		vector pos;
+		Array<ScriptData> components;
 	};
 
 	class Object {
 	public:
 		Path filename;
-		Path script;
 		string name;
-		vector pos, ang, vel, rot;
+		vector pos, ang;
+		Array<ScriptData> components;
 	};
 
 	class Light {
@@ -66,18 +76,14 @@ public:
 		vector pos, ang;
 		color _color;
 		float radius, theta, harshness;
+		Array<ScriptData> components;
 	};
 
 	class Camera {
 	public:
 		vector pos, ang;
 		float fov, min_depth, max_depth, exposure;
-	};
-
-	class Script {
-	public:
-		Path filename;
-		Array<TemplateDataScriptVariable> variables;
+		Array<ScriptData> components;
 	};
 
 	class Link {
@@ -85,6 +91,7 @@ public:
 		int object[2];
 		LinkType type;
 		vector pos, ang;
+		Array<ScriptData> components;
 	};
 
 	Path world_filename;
@@ -94,7 +101,7 @@ public:
 	Array<Object> objects;
 	Array<Terrain> terrains;
 	int ego_index;
-	Array<Script> scripts;
+	Array<ScriptData> scripts;
 	Array<Light> lights;
 	Array<Link> links;
 

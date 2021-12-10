@@ -11,6 +11,7 @@
 
 
 #include "../lib/base/base.h"
+#include "../lib/base/callable.h"
 #include "../lib/file/path.h"
 #include "../lib/image/color.h"
 #include "../y/Entity.h"
@@ -21,6 +22,8 @@ class Model;
 class Object;
 class Material;
 class Terrain;
+class SolidBody;
+class Entity3D;
 class TemplateDataScriptVariable;
 class Light;
 class ParticleManager;
@@ -78,7 +81,8 @@ struct GodNetMessage {
 
 class CollisionData {
 public:
-	Model *m, *sub;
+	SolidBody *sb;
+	Model *sub;
 	Terrain *t;
 	vector p, n;
 };
@@ -91,15 +95,30 @@ public:
 	~World();
 	void reset();
 	bool load(const LevelData &ld);
-	Object *create_object(const Path &filename, const vector &pos, const quaternion &ang);
-	Object *create_object_x(const Path &filename, const string &name, const vector &pos, const quaternion &ang, const Path &script, int w_index = -1);
+
+	Path next_filename;
+	void load_soon(const Path &filename);
+	void save(const Path &filename);
+
+	Entity3D *create_entity(const vector &pos, const quaternion &ang);
+	Array<Entity3D*> entities;
+	void register_entity(Entity3D *e);
+	void unregister_entity(Entity3D *e);
+
+	Entity3D *create_object(const Path &filename, const vector &pos, const quaternion &ang);
+	Entity3D *create_object_no_reg(const Path &filename, const vector &pos, const quaternion &ang);
+	Entity3D *create_object_no_reg_x(const Path &filename, const string &name, const vector &pos, const quaternion &ang, const Array<LevelData::ScriptData> &components);
 	Terrain *create_terrain(const Path &filename, const vector &pos);
+	Terrain *create_terrain_no_reg(const Path &filename, const vector &pos);
 
 	Object* create_object_multi(const Path &filename, const Array<vector> &pos, const Array<quaternion> &ang);
 
-	void register_object(Object *o, int index);
-	void unregister_object(Object *o);
-	void set_active_physics(Object *o, bool active, bool passive);//, bool test_collisions);
+	int next_object_index = -1;
+	void request_next_object_index(int i);
+
+	void register_object(Entity3D *o);
+	void unregister_object(Entity3D *o);
+	void set_active_physics(Entity3D *o, bool active, bool passive);//, bool test_collisions);
 
 	bool unregister(Entity *o);
 	void _delete(Entity *o);
@@ -117,7 +136,9 @@ public:
 	Fog fog;
 
 	Array<Light*> lights;
-	void add_light(Light *l);
+	Light *add_light_parallel(const quaternion &ang, const color &c);
+	Light *add_light_point(const vector &p, const color &c, float r);
+	Light *add_light_cone(const vector &p, const quaternion &ang, const color &c, float r, float t);
 
 	ParticleManager *particle_manager;
 	void add_particle(Particle *p);
@@ -144,9 +165,8 @@ public:
 	Array<GodNetMessage> net_messages;
 
 	// content of the world
-	Array<Object*> objects;
-	Object *ego;
-	Object *terrain_object;
+	Array<Entity3D*> objects;
+	Entity3D *ego;
 	int num_reserved_objects;
 
 	Array<Terrain*> terrains;
@@ -155,11 +175,7 @@ public:
 	Array<PartialModelMulti> sorted_multi;
 
 
-	Array<LevelData::Script> scripts;
-
-
-	// esotherical (not in the world)
-	bool add_all_objects_to_lists;
+	Array<LevelData::ScriptData> scripts;
 
 
 	btDefaultCollisionConfiguration* collisionConfiguration;
@@ -173,15 +189,32 @@ public:
 	PhysicsMode physics_mode;
 
 
-	bool _cdecl trace(const vector &p1, const vector &p2, CollisionData &d, bool simple_test, Model *o_ignore = NULL);
+	bool _cdecl trace(const vector &p1, const vector &p2, CollisionData &d, bool simple_test, Entity3D *o_ignore = nullptr);
 
 	Array<audio::Sound*> sounds;
 	void add_sound(audio::Sound *s);
+
+	typedef void callback();
+	using Callback = Callable<void()>;
+	struct Observer {
+		string msg;
+		const Callback *f;
+	};
+	void subscribe(const string &msg, const Callback &f);
+	void notify(const string &msg);
+
+	Array<Observer> observers;
+	struct MessageData {
+		Entity3D *e;
+		vector v;
+	} msg_data;
+
+	int ch_iterate = -1, ch_animation = -1;
 };
 extern World world;
 
 
-void GodInit();
+void GodInit(int ch_iter);
 void GodEnd();
 bool GodLoadWorld(const Path &filename);
 

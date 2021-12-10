@@ -532,9 +532,16 @@
     <ClCompile Include="src\Stuff\Observable.cpp" />
     <ClCompile Include="src\Stuff\PluginManager.cpp" />
     <ClCompile Include="src\Stuff\Progress.cpp" />
+    <ClCompile Include="src\y\components\Animator.cpp" />
+    <ClCompile Include="src\y\components\Collider.cpp" />
+    <ClCompile Include="src\y\components\Skeleton.cpp" />
+    <ClCompile Include="src\y\components\SolidBody.cpp" />
     <ClCompile Include="src\y\Camera.cpp" />
+    <ClCompile Include="src\y\Component.cpp" />
+    <ClCompile Include="src\y\ComponentManager.cpp" />
     <ClCompile Include="src\y\EngineData.cpp" />
     <ClCompile Include="src\y\Entity.cpp" />
+    <ClCompile Include="src\y\Entity3D.cpp" />
     <ClCompile Include="src\y\Font.cpp" />
     <ClCompile Include="src\y\LevelData.cpp" />
     <ClCompile Include="src\y\Link.cpp" />
@@ -703,6 +710,7 @@
     <ClInclude Include="src\lib\any\any.h" />
     <ClInclude Include="src\lib\base\array.h" />
     <ClInclude Include="src\lib\base\base.h" />
+    <ClInclude Include="src\lib\base\callable.h" />
     <ClInclude Include="src\lib\base\macros.h" />
     <ClInclude Include="src\lib\base\map.h" />
     <ClInclude Include="src\lib\base\pointer.h" />
@@ -938,9 +946,16 @@
     <ClInclude Include="src\Stuff\Observable.h" />
     <ClInclude Include="src\Stuff\PluginManager.h" />
     <ClInclude Include="src\Stuff\Progress.h" />
+    <ClInclude Include="src\y\components\Animator.h" />
+    <ClInclude Include="src\y\components\Collider.h" />
+    <ClInclude Include="src\y\components\Skeleton.h" />
+    <ClInclude Include="src\y\components\SolidBody.h" />
     <ClInclude Include="src\y\Camera.h" />
+    <ClInclude Include="src\y\Component.h" />
+    <ClInclude Include="src\y\ComponentManager.h" />
     <ClInclude Include="src\y\EngineData.h" />
     <ClInclude Include="src\y\Entity.h" />
+    <ClInclude Include="src\y\Entity3D.h" />
     <ClInclude Include="src\y\Font.h" />
     <ClInclude Include="src\y\LevelData.h" />
     <ClInclude Include="src\y\Link.h" />
@@ -952,6 +967,8 @@
     <ClInclude Include="src\y\Terrain.h" />
     <ClInclude Include="src\y\World.h" />
     <ClInclude Include="src\Edward.h" />
+    <ClInclude Include="src\graphics-fwd.h" />
+    <ClInclude Include="src\graphics-impl.h" />
     <ClInclude Include="src\meta.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

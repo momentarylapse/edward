@@ -1249,13 +1249,34 @@
     <ClCompile Include="src\Stuff\Progress.cpp">
       <Filter>src\Stuff</Filter>
     </ClCompile>
+    <ClCompile Include="src\y\components\Animator.cpp">
+      <Filter>src\y\components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\components\Collider.cpp">
+      <Filter>src\y\components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\components\Skeleton.cpp">
+      <Filter>src\y\components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\components\SolidBody.cpp">
+      <Filter>src\y\components</Filter>
+    </ClCompile>
     <ClCompile Include="src\y\Camera.cpp">
+      <Filter>src\y</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\Component.cpp">
+      <Filter>src\y</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\ComponentManager.cpp">
       <Filter>src\y</Filter>
     </ClCompile>
     <ClCompile Include="src\y\EngineData.cpp">
       <Filter>src\y</Filter>
     </ClCompile>
     <ClCompile Include="src\y\Entity.cpp">
+      <Filter>src\y</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\Entity3D.cpp">
       <Filter>src\y</Filter>
     </ClCompile>
     <ClCompile Include="src\y\Font.cpp">
@@ -1756,6 +1777,9 @@
       <Filter>src\lib\base</Filter>
     </ClInclude>
     <ClInclude Include="src\lib\base\base.h">
+      <Filter>src\lib\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\base\callable.h">
       <Filter>src\lib\base</Filter>
     </ClInclude>
     <ClInclude Include="src\lib\base\macros.h">
@@ -2463,13 +2487,34 @@
     <ClInclude Include="src\Stuff\Progress.h">
       <Filter>src\Stuff</Filter>
     </ClInclude>
+    <ClInclude Include="src\y\components\Animator.h">
+      <Filter>src\y\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\components\Collider.h">
+      <Filter>src\y\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\components\Skeleton.h">
+      <Filter>src\y\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\components\SolidBody.h">
+      <Filter>src\y\components</Filter>
+    </ClInclude>
     <ClInclude Include="src\y\Camera.h">
+      <Filter>src\y</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\Component.h">
+      <Filter>src\y</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\ComponentManager.h">
       <Filter>src\y</Filter>
     </ClInclude>
     <ClInclude Include="src\y\EngineData.h">
       <Filter>src\y</Filter>
     </ClInclude>
     <ClInclude Include="src\y\Entity.h">
+      <Filter>src\y</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\Entity3D.h">
       <Filter>src\y</Filter>
     </ClInclude>
     <ClInclude Include="src\y\Font.h">
@@ -2503,6 +2548,12 @@
       <Filter>src\y</Filter>
     </ClInclude>
     <ClInclude Include="src\Edward.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics-fwd.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics-impl.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\meta.h">
@@ -2756,11 +2807,11 @@
     <Filter Include="src\Stuff">
       <UniqueIdentifier>{2504A039-A78F-EFEE-3C53-E8989AD0BDFD}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\x">
-      <UniqueIdentifier>{68121DA6-4944-440F-E574-03E64ACFCFE2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\y">
       <UniqueIdentifier>{B4C155E0-F4CA-9BCF-C13C-B164BBA71B0C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\y\components">
+      <UniqueIdentifier>{7A426122-E275-6026-D24D-6F0229161478}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -10,6 +10,8 @@
 #include "../../Data/Model/DataModel.h"
 #include "../../Data/Model/ModelMesh.h"
 #include "../../Data/Model/ModelPolygon.h"
+#include "../../y/components/Animator.h"
+#include "../../lib/math/quaternion.h"
 
 FormatModelJson::FormatModelJson() : TypedFormat<DataModel>(FD_MODEL, "json", _("Model json"), Flag::READ_WRITE) {
 	f = nullptr;

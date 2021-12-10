@@ -17,7 +17,7 @@ bool WorldTerrain::load(const vector &_pos, const Path &_filename, bool deep) {
 	filename = _filename.relative_to(engine.map_dir).no_ext();
 
 	terrain = new Terrain();
-	bool Error = !terrain->load(filename, _pos, deep);
+	bool Error = !terrain->load(filename, deep);
 
 	if (Error) {
 		delete(terrain);
@@ -71,6 +71,6 @@ bool WorldTerrain::save(const Path &_filename) {
 void WorldTerrain::update_data() {
 	if (!terrain)
 		return;
-	terrain->pos = pos;
+	//terrain->pos = pos;
 }
 

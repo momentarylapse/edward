@@ -7,6 +7,7 @@
 
 #include "ModelNewAnimationDialog.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../y/components/Animator.h"
 #include "../../../Edward.h"
 
 ModelNewAnimationDialog::ModelNewAnimationDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data, int index, AnimationType type):

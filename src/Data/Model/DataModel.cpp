@@ -59,6 +59,7 @@
 #include "../../Action/Model/Skeleton/ActionModelReconnectBone.h"
 #include "../../Action/Model/Skeleton/ActionModelSetSubModel.h"
 #include "../../y/ModelManager.h"
+#include "../../y/components/Animator.h"
 
 const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
 const string DataModel::MESSAGE_MATERIAL_CHANGE = "MaterialChange";

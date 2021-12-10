@@ -122,10 +122,17 @@ void draw_lines(const Array<vector> &p, bool contiguous) {
 	draw_lines_colored(p, c, contiguous);
 }
 
+struct LineVertex {
+	vector p;
+	color c;
+};
+
 void draw_lines_colored(const Array<vector> &p, const Array<color> &c, bool contiguous) {
 	//set_line_width(2);
-	vb_lines->update(0, p);
-	vb_lines->update(1, c);
+	Array<LineVertex> v;
+	for (int i=0; i<p.num; i++)
+		v.add({p[i], c[i]});
+	vb_lines->update(v);
 	nix::draw_lines(vb_lines, contiguous);
 }
 
@@ -171,6 +178,12 @@ void draw_rect(float x1, float x2, float y1, float y2, float depth) {
 	draw_2d(rect::ID, rect(x1, x2, y1, y2), depth);
 }
 
+struct Vertex2d {
+	vector p;
+	color c;
+	vec2 uv;
+};
+
 void draw_2d(const rect &src, const rect &dest, float depth) {
 	vector a = vector(dest.x1, dest.y1, depth);
 	vector b = vector(dest.x2, dest.y1, depth);
@@ -178,9 +191,8 @@ void draw_2d(const rect &src, const rect &dest, float depth) {
 	vector d = vector(dest.x2, dest.y2, depth);
 	color col = _cur_color_;
 
-	vb_2d->update(0, Array<vector>{a,b,c, c,b,d});
-	vb_2d->update(1, Array<color>{col,col,col, col,col,col});
-	vb_2d->update(2, Array<float>{src.x1,src.y1, src.x2,src.y1, src.x1,src.y2,  src.x1,src.y2, src.x2,src.y1, src.x2,src.y2});
+	vb_2d->update(Array<Vertex2d>{{a, col, {src.x1,src.y1}},{b, col, {src.x2,src.y1}},{c, col, {src.x1,src.y2}},
+	                              {c, col, {src.x1,src.y2}},{b, col, {src.x2,src.y1}},{d, col, {src.x2,src.y2}}});
 	nix::draw_triangles(vb_2d);
 }
 

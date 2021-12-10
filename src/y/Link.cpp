@@ -6,8 +6,9 @@
  */
 
 #include "Link.h"
-#include "Object.h"
+#include "Entity3D.h"
 #include "../lib/file/msg.h"
+#include "components/SolidBody.h"
 
 
 #if HAS_LIB_BULLET
@@ -19,27 +20,31 @@ btQuaternion bt_set_q(const quaternion &q);
 
 
 
-Link::Link(LinkType t, Object *_a, Object *_b) : Entity(Type::LINK) {
+Link::Link(LinkType t, Entity3D *_a, Entity3D *_b) : Entity(Type::LINK) {
 	link_type = t;
-	a = _a;
-	b = _b;
+	a = nullptr;
+	b = nullptr;
+	if (_a)
+		a = _a->get_component<SolidBody>();
+	if (_b)
+		b = _b->get_component<SolidBody>();
 	con = nullptr;
 }
 
 
 void Link::_create_link_data(vector &pa, vector &pb, quaternion &iqa, quaternion &iqb, const vector &pos) {
-	iqa = a->ang.bar();
+	iqa = a->get_owner<Entity3D>()->ang.bar();
 	iqb = quaternion::ID;
-	pa = iqa * (pos - a->pos);
+	pa = iqa * (pos - a->get_owner<Entity3D>()->pos);
 	pb = pos;
 	if (b) {
-		iqb = b->ang.bar();
-		pb = iqb * (pos - b->pos);
+		iqb = b->get_owner<Entity3D>()->ang.bar();
+		pb = iqb * (pos - b->get_owner<Entity3D>()->pos);
 	}
 }
 
 
-LinkSocket::LinkSocket(Object *_a, Object *_b, const vector &pos) : Link(LinkType::SOCKET, _a, _b) {
+LinkSocket::LinkSocket(Entity3D *_a, Entity3D *_b, const vector &pos) : Link(LinkType::SOCKET, _a, _b) {
 	vector pa, pb;
 	quaternion iqa, iqb;
 	_create_link_data(pa, pb, iqa, iqb, pos);
@@ -60,7 +65,7 @@ LinkSocket::LinkSocket(Object *_a, Object *_b, const vector &pos) : Link(LinkTyp
 #endif
 }
 
-LinkHinge::LinkHinge(Object *_a, Object *_b, const vector &pos, const quaternion &ang) : Link(LinkType::HINGE, _a, _b) {
+LinkHinge::LinkHinge(Entity3D *_a, Entity3D *_b, const vector &pos, const quaternion &ang) : Link(LinkType::HINGE, _a, _b) {
 	vector pa, pb;
 	quaternion iqa, iqb;
 	_create_link_data(pa, pb, iqa, iqb, pos);
@@ -86,7 +91,7 @@ LinkHinge::LinkHinge(Object *_a, Object *_b, const vector &pos, const quaternion
 #endif
 }
 
-LinkUniversal::LinkUniversal(Object *_a, Object *_b, const vector &pos, const quaternion &ang) : Link(LinkType::UNIVERSAL, _a, _b) {
+LinkUniversal::LinkUniversal(Entity3D *_a, Entity3D *_b, const vector &pos, const quaternion &ang) : Link(LinkType::UNIVERSAL, _a, _b) {
 	vector pa, pb;
 	quaternion iqa, iqb;
 	_create_link_data(pa, pb, iqa, iqb, pos);
@@ -102,7 +107,8 @@ LinkUniversal::LinkUniversal(Object *_a, Object *_b, const vector &pos, const qu
 #endif
 }
 
-Link *Link::create(LinkType type, Object *a, Object *b, const vector &pos, const quaternion &ang) {
+Link *Link::create(LinkType type, Entity3D *a, Entity3D *b, const vector &pos, const quaternion &ang) {
+	msg_write(format("LINK   %d   %s  %s", (int)type, p2s(a), p2s(b)));
 	if (type == LinkType::SOCKET) {
 		return new LinkSocket(a, b, pos);
 	} else if (type == LinkType::HINGE) {
@@ -120,8 +126,9 @@ Link::~Link() {
 
 void Link::set_motor(float v, float max) {
 #if HAS_LIB_BULLET
-	if (link_type == LinkType::HINGE)
+	if (link_type == LinkType::HINGE) {
 		((btHingeConstraint*)con)->enableAngularMotor(max > 0, v, max);
+	}
 #endif
 }
 

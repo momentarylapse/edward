@@ -58,7 +58,7 @@ void LightmapData::Init(DataWorld *w)
 
 	// load data
 	foreachi(WorldObject &o, w->objects, i)
-		if ((o.is_selected) && (!o.object->physics_data.active)){
+		if ((o.is_selected) /*&& (!o.object->physics_data.active)*/){
 			o.object->update_matrix();
 			AddModel(o.filename, o.object->_matrix, i);
 		}
@@ -348,14 +348,14 @@ void LightmapData::CreateVertices()
 			t.Rasterize(this, i);
 		}
 	}
-	for (Terrain &ter: Terrains){
+	/*for (Terrain &ter: Terrains){
 		int w = ter.tex_width;
 		int h = ter.tex_height;
 
 		for (int i=ter.offset;i<ter.offset + ter.num_trias;i++){
 			auto &t = Trias[i];
 			for (int k=0;k<3;k++){
-				t.sv[k].x = t.v[k].x - ter.orig->pos.x;
+				t.sv[k].x = t.v[k].x - ter.pos.x;
 				t.sv[k].y = t.v[k].z - ter.orig->pos.z;
 				t.sv[k].z = 0;
 				t.sv[k].x *= (float)w / (ter.orig->pattern.x * ter.orig->num_x);
@@ -364,7 +364,7 @@ void LightmapData::CreateVertices()
 
 			t.Rasterize(this, i);
 		}
-	}
+	}*/
 	msg_write("Vertices: " + i2s(Vertices.num));
 }
 

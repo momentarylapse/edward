@@ -262,7 +262,7 @@ float WorldTerrain::hover_distance(MultiView::Window *win, const vec2 &mv, vecto
 	vector a = win->unproject(vector(mv.x,mv.y,0));
 	vector b = win->unproject(vector(mv.x,mv.y,0), win->cam->pos + win->get_direction() * r);
 	CollisionData td;
-	bool hit = t->trace(a, b, v_0, r, td, false);
+	bool hit = t->trace(a - pos, b - pos, v_0, r, td, false);
 	tp = td.p;
 	z = win->project(tp).z;
 	return hit ? 0 : -1;
@@ -272,7 +272,7 @@ bool WorldTerrain::in_rect(MultiView::Window *win, const rect &r) {
 	Terrain *t = terrain;
 	vector min,max;
 	for (int i=0;i<8;i++) {
-		vector v=t->pos+vector((i%2)==0?t->min.x:t->max.x,((i/2)%2)==0?t->min.y:t->max.y,((i/4)%2)==0?t->min.z:t->max.z);
+		vector v = pos+vector((i%2)==0?t->min.x:t->max.x,((i/2)%2)==0?t->min.y:t->max.y,((i/4)%2)==0?t->min.z:t->max.z);
 		vector p = win->project(v);
 		if (i==0)
 			min=max=p;
@@ -313,7 +313,7 @@ void ModeWorld::_new() {
 
 
 void ModeWorld::on_draw() {
-	cur_cam->pos = multi_view->cam.pos;
+	//cur_cam->pos = multi_view->cam.pos;
 
 	int num_ob = data->get_selected_objects();
 	int num_te = data->get_selected_terrains();
@@ -372,13 +372,13 @@ void DrawSelectionObject(Model *o, float alpha, const color &c) {
 	nix::disable_alpha();
 }
 
-void DrawTerrainColored(Terrain *t, const color &c, float alpha) {
+void DrawTerrainColored(Terrain *t, const color &c, float alpha, const vector &cam_pos) {
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 
 	nix::set_material(color(alpha, 0, 0, 0), 0, 0, c);
 
-	nix::set_model_matrix(matrix::ID);
-	t->draw();
+	//nix::set_model_matrix(matrix::ID);
+	//t->prepare_draw(cam_pos);
 	nix::draw_triangles(t->vertex_buffer);
 
 
@@ -446,9 +446,9 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			continue;
 
 		// prepare...
-		t.terrain->draw();
+		t.terrain->prepare_draw(multi_view->cam.pos - t.pos);
 		auto mat = t.terrain->material;
-		mat->prepare_shader(ShaderVariant::DEFAULT);
+		mat->_prepare_shader(RenderPathType(1), ShaderVariant::DEFAULT);
 
 		auto s = mat->shader[0].get();
 		nix::set_shader(nix::Shader::default_3d);
@@ -456,14 +456,15 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		s->set_floats("pattern0", &t.terrain->texture_scale[0].x, 3);
 		s->set_floats("pattern1", &t.terrain->texture_scale[1].x, 3);
 
+		nix::set_model_matrix(matrix::translation(t.pos));
 		nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
 		nix::set_textures(weak(mat->textures));
 		nix::draw_triangles(t.terrain->vertex_buffer);
 
 		if (t.is_selected)
-			DrawTerrainColored(t.terrain, Red, TSelectionAlpha);
+			DrawTerrainColored(t.terrain, Red, TSelectionAlpha, multi_view->cam.pos);
 		if ((multi_view->hover.type == MVD_WORLD_TERRAIN) and (multi_view->hover.index == i))
-			DrawTerrainColored(t.terrain, White, TMouseOverAlpha);
+			DrawTerrainColored(t.terrain, White, TMouseOverAlpha, multi_view->cam.pos);
 	}
 
 // objects (models)

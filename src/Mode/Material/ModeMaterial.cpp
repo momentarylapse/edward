@@ -112,7 +112,7 @@ void ModeMaterial::update_textures() {
 
 void ModeMaterial::update_shader() {
 	try {
-		shader->update(ResourceManager::expand_shader_source(data->shader.code, "default"));
+		shader->update(ResourceManager::expand_vertex_shader_source(data->shader.code, "default"));
 	} catch(Exception &e) {
 		msg_error(e.message());
 	}
