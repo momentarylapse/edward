@@ -29,6 +29,11 @@
 
 const bool LIST_SHOW_SCRIPTS = false;
 
+
+const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
+
+
+
 shared<const kaba::Class> get_class(shared<kaba::Script> s, const string &parent);
 
 
@@ -290,7 +295,7 @@ void WorldObjectListPanel::set_editing(int s) {
 		check("light-enabled", l.enabled);
 		set_color("light-col", l.col);
 		set_int("light-type", (int)l.type);
-		set_float("light-radius", l.radius);
+		set_float("light-radius", l.radius * LIGHT_RADIUS_FACTOR_LO);
 		set_float("light-harshness", l.harshness);
 		set_float("light-theta", l.theta * 360.0f / pi);
 		for (auto &c: l.components)
@@ -339,7 +344,7 @@ void WorldObjectListPanel::on_change() {
 		l.type = (LightType)get_int("light-type");
 		l.enabled = is_checked("light-enabled");
 		l.harshness = get_float("light-harshness");
-		l.radius = get_float("light-radius");
+		l.radius = get_float("light-radius") / LIGHT_RADIUS_FACTOR_LO;
 		l.theta = get_float("light-theta") * pi / 360.0f;
 		l.col = get_color("light-col");
 		world->multi_view->force_redraw();

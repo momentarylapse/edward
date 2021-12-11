@@ -568,6 +568,9 @@ void draw_tangent_circle(MultiView::Window *win, const vector &p, const vector &
 	draw_line(p, c - sin(w) * e1 - cos(w) * e2);
 }
 
+const float LIGHT_RADIUS_FACTOR_HI = 0.03f;
+const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
+
 void ModeWorld::draw_lights(MultiView::Window *win) {
 	for (auto &l: data->lights) {
 		if (l.view_stage < multi_view->view_stage)
@@ -584,13 +587,13 @@ void ModeWorld::draw_lights(MultiView::Window *win) {
 			draw_line(l.pos, l.pos + l.ang.ang2dir() * win->cam->radius * 0.1f);
 		} else if (l.type == LightType::POINT) {
 			//draw_circle(l.pos, win->get_direction(), l.radius);
-			draw_circle(l.pos, win->get_direction(), l.radius * 0.1f);
-			draw_circle(l.pos, win->get_direction(), l.radius * 0.01f);
+			draw_circle(l.pos, win->get_direction(), l.radius * LIGHT_RADIUS_FACTOR_LO);
+			draw_circle(l.pos, win->get_direction(), l.radius * LIGHT_RADIUS_FACTOR_HI);
 		} else if (l.type == LightType::CONE) {
-			draw_line(l.pos, l.pos + l.ang.ang2dir() * l.radius * 0.1f);
-			draw_circle(l.pos + l.ang.ang2dir() * l.radius*0.1f,  l.ang.ang2dir(), l.radius * tan(l.theta) * 0.1f);
-			draw_circle(l.pos + l.ang.ang2dir() * l.radius*0.01f, l.ang.ang2dir(), l.radius * tan(l.theta) * 0.01f);
-			draw_tangent_circle(win, l.pos, l.pos + l.ang.ang2dir() * l.radius*0.1f, l.ang.ang2dir(), l.radius * tan(l.theta) * 0.1f);
+			draw_line(l.pos, l.pos + l.ang.ang2dir() * l.radius * LIGHT_RADIUS_FACTOR_LO);
+			draw_circle(l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_LO, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
+			draw_circle(l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_HI, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_HI);
+			draw_tangent_circle(win, l.pos, l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_LO, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
 		}
 	}
 }

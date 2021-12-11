@@ -982,7 +982,8 @@ void MultiView::get_hover() {
 						continue;
 					}
 				}
-				dist_min = hover_dist;
+				if (hover_dist > 0)
+					dist_min = hover_dist;
 				hover.index = i;
 				hover.set = di;
 				hover.type = d.type;
