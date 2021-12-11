@@ -19,8 +19,8 @@
 
 ModeFont *mode_font = NULL;
 
-ModeFont::ModeFont() :
-	Mode("Font", NULL, new DataFont, ed->multi_view_2d, "menu_font")
+ModeFont::ModeFont(MultiView::MultiView *mv) :
+	Mode("Font", NULL, new DataFont, mv, "menu_font")
 {
 	font = new Gui::Font;
 

@@ -19,8 +19,8 @@ ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
 float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vec2 &M, vector &tp, float &z, const Array<ModelVertex> &vertex);
 
-ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent) :
-	Mode<DataModel>("ModelAnimationSkeleton", _parent, ed->multi_view_3d, "menu_move"),
+ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent, MultiView::MultiView *mv) :
+	Mode<DataModel>("ModelAnimationSkeleton", _parent, mv, "menu_move"),
 	current_move(((ModeModelAnimation*)parent)->current_move),
 	current_frame(((ModeModelAnimation*)parent)->current_frame)
 {

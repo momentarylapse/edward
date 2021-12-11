@@ -18,7 +18,7 @@ class ModelSkinVertexDummy;
 
 class ModeModelMeshTexture: public Mode<DataModel> {
 public:
-	ModeModelMeshTexture(ModeBase *parent);
+	ModeModelMeshTexture(ModeBase *parent, MultiView::MultiView *mv);
 
 	class State : public Observable<VirtualBase> {
 	public:

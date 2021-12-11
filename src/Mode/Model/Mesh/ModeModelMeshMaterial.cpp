@@ -14,8 +14,8 @@
 
 ModeModelMeshMaterial *mode_model_mesh_material = NULL;
 
-ModeModelMeshMaterial::ModeModelMeshMaterial(ModeBase *_parent) :
-			Mode<DataModel>("ModelMeshMaterial", _parent, ed->multi_view_3d, "menu_model") {
+ModeModelMeshMaterial::ModeModelMeshMaterial(ModeBase *_parent, MultiView::MultiView *mv) :
+			Mode<DataModel>("ModelMeshMaterial", _parent, mv, "menu_model") {
 	dialog = nullptr;
 }
 

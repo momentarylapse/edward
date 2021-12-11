@@ -49,7 +49,7 @@ void ModeModelMeshCreateCube::update_geometry() {
 
 		geo = new GeometryCube(pos-length[2]/2, length[0], length[1], length[2], num_1, num_2, num_3);
 	} else {
-		float min_thick = 10 / ed->multi_view_3d->active_win->zoom(); // 10 px
+		float min_thick = 10 / multi_view->active_win->zoom(); // 10 px
 		vector n = vector::cross(length[0], length[1]);
 		n.normalize();
 		geo = new GeometryCube(pos, length[0], length[1], n * min_thick, 1, 1, 1);
@@ -60,7 +60,7 @@ void ModeModelMeshCreateCube::update_geometry() {
 bool ModeModelMeshCreateCube::set_dpos3() {
 	vector n = vector::cross(length[0], length[1]).normalized();
 	vector dpos = multi_view->get_cursor() - pos2;
-	float min_thick = 10 / ed->multi_view_3d->active_win->zoom(); // 10 px
+	float min_thick = 10 / multi_view->active_win->zoom(); // 10 px
 
 
 	if (fabs(vector::dot(multi_view->mouse_win->get_edit_direction(), n)) > 0.90f) {

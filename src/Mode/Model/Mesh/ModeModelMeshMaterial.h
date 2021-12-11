@@ -14,7 +14,7 @@ class ModelMaterialDialog;
 
 class ModeModelMeshMaterial: public Mode<DataModel> {
 public:
-	ModeModelMeshMaterial(ModeBase *parent);
+	ModeModelMeshMaterial(ModeBase *parent, MultiView::MultiView *mv);
 	void on_start() override;
 	void on_end() override;
 

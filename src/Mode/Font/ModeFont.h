@@ -18,7 +18,7 @@ namespace Gui{
 
 class ModeFont: public Mode<DataFont> {
 public:
-	ModeFont();
+	ModeFont(MultiView::MultiView *mv);
 	virtual ~ModeFont();
 
 	void on_start() override;

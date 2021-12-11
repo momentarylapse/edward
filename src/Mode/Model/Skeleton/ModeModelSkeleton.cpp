@@ -25,8 +25,8 @@
 ModeModelSkeleton *mode_model_skeleton = NULL;
 
 
-ModeModelSkeleton::ModeModelSkeleton(ModeBase *_parent) :
-	Mode<DataModel>("ModelSkeleton", _parent, ed->multi_view_3d, "menu_skeleton")
+ModeModelSkeleton::ModeModelSkeleton(ModeBase *_parent, MultiView::MultiView *mv) :
+	Mode<DataModel>("ModelSkeleton", _parent, mv, "menu_skeleton")
 {
 	mouse_action = -1;
 }

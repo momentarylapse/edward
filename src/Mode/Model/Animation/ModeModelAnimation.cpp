@@ -22,12 +22,12 @@ ModeModelAnimation *mode_model_animation = NULL;
 
 const string ModeModelAnimation::State::MESSAGE_SET_FRAME = "SetFrame";
 
-ModeModelAnimation::ModeModelAnimation(ModeBase *_parent) :
-	Mode<DataModel>("ModelAnimation", _parent, ed->multi_view_3d, "menu_move")
+ModeModelAnimation::ModeModelAnimation(ModeBase *_parent, MultiView::MultiView *mv) :
+	Mode<DataModel>("ModelAnimation", _parent, mv, "menu_move")
 {
-	mode_model_animation_none = new ModeModelAnimationNone(this);
-	mode_model_animation_skeleton = new ModeModelAnimationSkeleton(this);
-	mode_model_animation_vertex = new ModeModelAnimationVertex(this);
+	mode_model_animation_none = new ModeModelAnimationNone(this, mv);
+	mode_model_animation_skeleton = new ModeModelAnimationSkeleton(this, mv);
+	mode_model_animation_vertex = new ModeModelAnimationVertex(this, mv);
 
 	// create one dummy animation
 	empty_move = new ModelMove;

@@ -193,9 +193,9 @@ Edward::Edward(Array<string> arg) :
 
 	multi_view_3d = new MultiView::MultiView(true);
 	multi_view_2d = new MultiView::MultiView(false);
-	mode_model = new ModeModel;
-	mode_world = new ModeWorld;
-	mode_font = new ModeFont;
+	mode_model = new ModeModel(multi_view_3d, multi_view_2d);
+	mode_world = new ModeWorld(multi_view_3d);
+	mode_font = new ModeFont(multi_view_2d);
 	mode_administration = new ModeAdministration;
 
 	storage = new Storage();
@@ -213,11 +213,15 @@ Edward::Edward(Array<string> arg) :
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
 	mworld->FFVBinaryMap = true;*/
 
-	//subscribe(multi_view_2d);
 	multi_view_3d->subscribe(this, [=]{ update_menu(); }, multi_view_3d->MESSAGE_SETTINGS_CHANGE);
 	multi_view_3d->subscribe(this, [=]{ cur_mode->on_selection_change(); update_menu(); }, multi_view_3d->MESSAGE_SELECTION_CHANGE);
 	multi_view_3d->subscribe(this, [=]{ cur_mode->on_view_stage_change(); update_menu(); }, multi_view_3d->MESSAGE_VIEWSTAGE_CHANGE);
 	multi_view_3d->subscribe(this, [=]{ cur_mode->multi_view->force_redraw(); });
+
+	multi_view_2d->subscribe(this, [=]{ update_menu(); }, multi_view_2d->MESSAGE_SETTINGS_CHANGE);
+	multi_view_2d->subscribe(this, [=]{ cur_mode->on_selection_change(); update_menu(); }, multi_view_2d->MESSAGE_SELECTION_CHANGE);
+	multi_view_2d->subscribe(this, [=]{ cur_mode->on_view_stage_change(); update_menu(); }, multi_view_2d->MESSAGE_VIEWSTAGE_CHANGE);
+	multi_view_2d->subscribe(this, [=]{ cur_mode->multi_view->force_redraw(); });
 
 
 	event("hui:close", [=]{ on_close(); });

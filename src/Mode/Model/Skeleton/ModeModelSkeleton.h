@@ -15,7 +15,7 @@ class DataModel;
 
 class ModeModelSkeleton: public Mode<DataModel> {
 public:
-	ModeModelSkeleton(ModeBase *_parent);
+	ModeModelSkeleton(ModeBase *_parent, MultiView::MultiView *mv);
 
 	void on_start() override;
 	void on_end() override;

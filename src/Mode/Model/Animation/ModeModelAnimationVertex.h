@@ -15,7 +15,7 @@ class DataModel;
 
 class ModeModelAnimationVertex: public Mode<DataModel> {
 public:
-	ModeModelAnimationVertex(ModeBase *parent);
+	ModeModelAnimationVertex(ModeBase *parent, MultiView::MultiView *mv);
 
 	void on_start() override;
 	void on_end() override;

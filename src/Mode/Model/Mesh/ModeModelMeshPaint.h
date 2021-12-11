@@ -14,7 +14,7 @@ class BrushPanel;
 
 class ModeModelMeshPaint: public Mode<DataModel> {
 public:
-	ModeModelMeshPaint(ModeBase *parent);
+	ModeModelMeshPaint(ModeBase *parent, MultiView::MultiView *mv);
 	void on_start() override;
 	void on_end() override;
 

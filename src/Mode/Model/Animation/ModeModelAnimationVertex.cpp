@@ -15,8 +15,8 @@
 
 ModeModelAnimationVertex *mode_model_animation_vertex = NULL;
 
-ModeModelAnimationVertex::ModeModelAnimationVertex(ModeBase* _parent) :
-	Mode<DataModel>("ModelAnimationVertex", _parent, ed->multi_view_3d, "menu_move")
+ModeModelAnimationVertex::ModeModelAnimationVertex(ModeBase* _parent, MultiView::MultiView *mv) :
+	Mode<DataModel>("ModelAnimationVertex", _parent, mv, "menu_move")
 {
 	mouse_action = -1;
 }

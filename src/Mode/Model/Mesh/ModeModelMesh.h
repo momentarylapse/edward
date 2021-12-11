@@ -20,7 +20,7 @@ class MeshSelectionMode;
 
 class ModeModelMesh: public Mode<DataModel> {
 public:
-	ModeModelMesh(ModeBase *parent);
+	ModeModelMesh(ModeBase *parent, MultiView::MultiView *mv3, MultiView::MultiView *mv2);
 	virtual ~ModeModelMesh();
 
 	class State : public Observable<VirtualBase> {

@@ -13,8 +13,8 @@
 
 ModeModelAnimationNone *mode_model_animation_none = NULL;
 
-ModeModelAnimationNone::ModeModelAnimationNone(ModeBase* _parent) :
-	Mode<DataModel>("ModelAnimationNone", _parent, ed->multi_view_3d, "menu_move")
+ModeModelAnimationNone::ModeModelAnimationNone(ModeBase* _parent, MultiView::MultiView *mv) :
+	Mode<DataModel>("ModelAnimationNone", _parent, mv, "menu_move")
 {
 }
 

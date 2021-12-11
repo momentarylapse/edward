@@ -14,7 +14,7 @@
 
 class ModeModel: public Mode<DataModel> {
 public:
-	ModeModel();
+	ModeModel(MultiView::MultiView *mv3, MultiView::MultiView *mv2);
 	virtual ~ModeModel();
 
 	void on_start() override;

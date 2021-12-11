@@ -21,8 +21,8 @@ const string ModeModelMeshTexture::State::MESSAGE_TEXTURE_LEVEL_CHANGE = "Textur
 
 ModeModelMeshTexture *mode_model_mesh_texture = NULL;
 
-ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent) :
-	Mode<DataModel>("ModelMeshTexture", _parent, ed->multi_view_2d, "menu_model")
+ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent, MultiView::MultiView *mv) :
+	Mode<DataModel>("ModelMeshTexture", _parent, mv, "menu_model")
 {
 	current_texture_level = 0;
 	dialog = nullptr;
@@ -66,7 +66,7 @@ int ModeModelMeshTexture::getNumSelected()
 void ModeModelMeshTexture::on_start() {
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-texture-toolbar");
 
-	multi_view->view_stage = ed->multi_view_3d->view_stage;
+	multi_view->view_stage = parent->multi_view->view_stage;
 	mode_model_mesh->apply_mouse_function(multi_view);
 
 	fetchData();

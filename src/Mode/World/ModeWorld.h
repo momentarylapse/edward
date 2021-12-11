@@ -16,7 +16,7 @@ class WorldObjectListPanel;
 
 class ModeWorld: public Mode<DataWorld> {
 public:
-	ModeWorld();
+	ModeWorld(MultiView::MultiView *mv);
 	virtual ~ModeWorld();
 
 	void on_start() override;
@@ -50,6 +50,8 @@ public:
 	void load_terrain();
 	void set_ego();
 	void apply_heightmap();
+
+	void apply_lighting(MultiView::Window *win);
 
 	void ExecutePropertiesDialog();
 	void ExecuteWorldPropertiesDialog();

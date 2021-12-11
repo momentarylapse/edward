@@ -27,12 +27,12 @@
 
 ModeModel *mode_model = NULL;
 
-ModeModel::ModeModel() :
+ModeModel::ModeModel(MultiView::MultiView *mv3, MultiView::MultiView *mv2) :
 	Mode<DataModel>("Model", NULL, new DataModel, NULL, "")
 {
-	mode_model_mesh = new ModeModelMesh(this);
-	mode_model_skeleton = new ModeModelSkeleton(this);
-	mode_model_animation = new ModeModelAnimation(this);
+	mode_model_mesh = new ModeModelMesh(this, mv3, mv2);
+	mode_model_skeleton = new ModeModelSkeleton(this, mv3);
+	mode_model_animation = new ModeModelAnimation(this, mv3);
 }
 
 ModeModel::~ModeModel() {

@@ -15,7 +15,7 @@ class DataModel;
 
 class ModeModelAnimationNone: public Mode<DataModel> {
 public:
-	ModeModelAnimationNone(ModeBase *parent);
+	ModeModelAnimationNone(ModeBase *parent, MultiView::MultiView *mv);
 
 	void on_start() override;
 	void on_end() override;

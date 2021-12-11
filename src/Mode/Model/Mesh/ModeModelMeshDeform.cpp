@@ -56,8 +56,8 @@ public:
 	float base_diameter, base_depth;
 };
 
-ModeModelMeshDeform::ModeModelMeshDeform(ModeBase *_parent) :
-		Mode<DataModel>("ModelMeshDeform", _parent, ed->multi_view_3d, "menu_model") {
+ModeModelMeshDeform::ModeModelMeshDeform(ModeBase *_parent, MultiView::MultiView *mv) :
+		Mode<DataModel>("ModelMeshDeform", _parent, mv, "menu_model") {
 	dialog = nullptr;
 	brushing = false;
 	distance = 1;

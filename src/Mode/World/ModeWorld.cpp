@@ -62,8 +62,8 @@ extern Shader *current_shader;
 
 
 
-ModeWorld::ModeWorld() :
-	Mode<DataWorld>("World", NULL, new DataWorld, ed->multi_view_3d, "menu_world") {
+ModeWorld::ModeWorld(MultiView::MultiView *mv) :
+	Mode<DataWorld>("World", NULL, new DataWorld, mv, "menu_world") {
 	data->subscribe(this, [=]{ data->update_data(); });
 
 	world_dialog = nullptr;
@@ -390,12 +390,12 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha, const vector &c
 
 
 
-void apply_lighting(DataWorld *w, MultiView::Window *win) {
-	auto &m = w->meta_data;
+void ModeWorld::apply_lighting(MultiView::Window *win) {
+	auto &m = data->meta_data;
 	nix::set_fog(m.fog.mode, m.fog.start, m.fog.end, m.fog.density, m.fog.col);
 	nix::enable_fog(m.fog.enabled);
 	Array<nix::BasicLight> lights;
-	for (auto &ll: w->lights) {
+	for (auto &ll: data->lights) {
 		nix::BasicLight l;
 		l.proj = matrix::ID;
 		l.theta = -1;
@@ -416,8 +416,8 @@ void apply_lighting(DataWorld *w, MultiView::Window *win) {
 		l.harshness = ll.harshness;
 		lights.add(l);
 	}
-	ed->multi_view_3d->ubo_light->update_array(lights);
-	nix::bind_buffer(ed->multi_view_3d->ubo_light, 1);
+	multi_view->ubo_light->update_array(lights);
+	nix::bind_buffer(multi_view->ubo_light, 1);
 	//win->set_shader(nix::Shader::default_3d, w->lights.num);
 }
 
@@ -627,7 +627,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 	}
 
 	if (show_effects)
-		apply_lighting(data, win);
+		apply_lighting(win);
 
 	draw_terrains(win);
 	draw_objects(win);

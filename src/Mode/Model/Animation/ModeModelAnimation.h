@@ -17,7 +17,7 @@ class ModelAnimationTimelinePanel;
 
 class ModeModelAnimation: public Mode<DataModel> {
 public:
-	ModeModelAnimation(ModeBase *parent);
+	ModeModelAnimation(ModeBase *parent, MultiView::MultiView *mv);
 	virtual ~ModeModelAnimation();
 
 	class State : public Observable<VirtualBase> {

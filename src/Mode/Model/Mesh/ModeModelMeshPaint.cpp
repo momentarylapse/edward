@@ -145,8 +145,8 @@ private:
 
 
 
-ModeModelMeshPaint::ModeModelMeshPaint(ModeBase *_parent) :
-		Mode<DataModel>("ModelMeshPaint", _parent, ed->multi_view_3d, "menu_model") {
+ModeModelMeshPaint::ModeModelMeshPaint(ModeBase *_parent, MultiView::MultiView *mv) :
+		Mode<DataModel>("ModelMeshPaint", _parent, mv, "menu_model") {
 	dialog = nullptr;
 	brushing = false;
 	distance = 1;

@@ -62,8 +62,8 @@ string vb_format(int num_tex) {
 	return f;
 }
 
-ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
-	Mode<DataModel>("ModelMesh", _parent, ed->multi_view_3d, "menu_model") {
+ModeModelMesh::ModeModelMesh(ModeBase *_parent, MultiView::MultiView *mv3, MultiView::MultiView *mv2) :
+	Mode<DataModel>("ModelMesh", _parent, mv3, "menu_model") {
 
 	selection_mode = NULL;
 	current_material = 0;
@@ -83,10 +83,10 @@ ModeModelMesh::ModeModelMesh(ModeBase *_parent) :
 	selection_mode_edge = new MeshSelectionModeEdge(this);
 	selection_mode_polygon = new MeshSelectionModePolygon(this);
 	selection_mode_surface = new MeshSelectionModeSurface(this);
-	mode_model_mesh_texture = new ModeModelMeshTexture(this);
-	mode_model_mesh_material = new ModeModelMeshMaterial(this);
-	mode_model_mesh_deform = new ModeModelMeshDeform(this);
-	mode_model_mesh_paint = new ModeModelMeshPaint(this);
+	mode_model_mesh_texture = new ModeModelMeshTexture(this, mv2);
+	mode_model_mesh_material = new ModeModelMeshMaterial(this, mv3);
+	mode_model_mesh_deform = new ModeModelMeshDeform(this, mv3);
+	mode_model_mesh_paint = new ModeModelMeshPaint(this, mv3);
 
 	selection_mode = selection_mode_polygon;
 }
