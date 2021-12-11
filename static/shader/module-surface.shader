@@ -111,7 +111,6 @@ float _surf_brightness(Light l, vec3 p, vec3 n) {
 		return b;
 	
 	// cone
-	return 0;
 	float t = acos(dot(l.dir.xyz, normalize(p - l.pos.xyz)));
 	float tmax = l.theta;
 	return b * (1 - smoothstep(tmax*0.8, tmax, t));

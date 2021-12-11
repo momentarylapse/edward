@@ -545,6 +545,29 @@ void ModeWorld::draw_cameras(MultiView::Window *win) {
 	}
 }
 
+void draw_tangent_circle(MultiView::Window *win, const vector &p, const vector &c, const vector &n, float r) {
+
+	vector e1 = n.ortho();
+	vector e2 = n ^ e1;
+	e1 *= r;
+	e2 *= r;
+	vec2 pc = win->project(c).xy();
+	int N = 64;
+	int i_max = 0;
+	float d_max = 0;
+	for (int i=0; i<=N; i++) {
+		float w = i * 2 * pi / N;
+		vec2 pp = win->project(c + sin(w) * e1 + cos(w) * e2).xy();
+		if ((pp - pc).length() > d_max) {
+			i_max = i;
+			d_max = (pp - pc).length();
+		}
+	}
+	float w = i_max * 2 * pi / N;
+	draw_line(p, c + sin(w) * e1 + cos(w) * e2);
+	draw_line(p, c - sin(w) * e1 - cos(w) * e2);
+}
+
 void ModeWorld::draw_lights(MultiView::Window *win) {
 	for (auto &l: data->lights) {
 		if (l.view_stage < multi_view->view_stage)
@@ -560,12 +583,14 @@ void ModeWorld::draw_lights(MultiView::Window *win) {
 		if (l.type == LightType::DIRECTIONAL) {
 			draw_line(l.pos, l.pos + l.ang.ang2dir() * win->cam->radius * 0.1f);
 		} else if (l.type == LightType::POINT) {
-			draw_circle(l.pos, win->get_direction(), l.radius);
+			//draw_circle(l.pos, win->get_direction(), l.radius);
 			draw_circle(l.pos, win->get_direction(), l.radius * 0.1f);
+			draw_circle(l.pos, win->get_direction(), l.radius * 0.01f);
 		} else if (l.type == LightType::CONE) {
-			draw_line(l.pos, l.pos + l.ang.ang2dir() * l.radius);
-			draw_circle(l.pos + l.ang.ang2dir() * l.radius,      l.ang.ang2dir(), l.radius * tan(l.theta));
-			draw_circle(l.pos + l.ang.ang2dir() * l.radius*0.1f, l.ang.ang2dir(), l.radius * tan(l.theta) * 0.1f);
+			draw_line(l.pos, l.pos + l.ang.ang2dir() * l.radius * 0.1f);
+			draw_circle(l.pos + l.ang.ang2dir() * l.radius*0.1f,  l.ang.ang2dir(), l.radius * tan(l.theta) * 0.1f);
+			draw_circle(l.pos + l.ang.ang2dir() * l.radius*0.01f, l.ang.ang2dir(), l.radius * tan(l.theta) * 0.01f);
+			draw_tangent_circle(win, l.pos, l.pos + l.ang.ang2dir() * l.radius*0.1f, l.ang.ang2dir(), l.radius * tan(l.theta) * 0.1f);
 		}
 	}
 }

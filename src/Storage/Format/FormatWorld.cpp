@@ -159,6 +159,8 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				l.type = LightType::POINT;
 				if (e.value("type") == "directional")
 					l.type = LightType::DIRECTIONAL;
+				else if (e.value("type") == "cone")
+					l.type = LightType::CONE;
 				l.radius = e.value("radius", "0")._float();
 				l.theta = e.value("theta", "0")._float();
 				l.harshness = e.value("harshness", "0.8")._float();
