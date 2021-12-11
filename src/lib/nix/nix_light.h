@@ -34,8 +34,8 @@ struct BasicLight {
 	alignas(16) vector pos;
 	alignas(16) vector dir;
 	alignas(16) color col;
-	alignas(16) float radius;
-	float theta, harshness;
+	/*alignas(16)*/ float radius;
+	float theta, harshness, _dummy;
 };
 
 };

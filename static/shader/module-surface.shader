@@ -110,6 +110,8 @@ float _surf_brightness(Light l, vec3 p, vec3 n) {
 	if (l.theta < 0)
 		return b;
 	
+	// cone
+	return 0;
 	float t = acos(dot(l.dir.xyz, normalize(p - l.pos.xyz)));
 	float tmax = l.theta;
 	return b * (1 - smoothstep(tmax*0.8, tmax, t));
@@ -205,6 +207,7 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
 	
 ///	float reflectivity = 1-((1-xxx.x) * (1-exp(-pow(dot(d, n),2) * 100)));
 
+#if 0
 	if (roughness < 0.1) {
 		if (textureSize(tex_cube, 0).x > 10) {
 		vec3 L = reflect(view_dir, n);
@@ -255,6 +258,7 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
 		
 	//	}
 	}}
+#endif
 	
 
 	for (int i=0; i<num_lights; i++)

@@ -31,6 +31,13 @@ public:
 	void on_draw() override;
 	void on_draw_win(MultiView::Window *win) override;
 
+	void draw_background(MultiView::Window *win);
+	void draw_terrains(MultiView::Window *win);
+	void draw_objects(MultiView::Window *win);
+	void draw_cameras(MultiView::Window *win);
+	void draw_lights(MultiView::Window *win);
+	void draw_links(MultiView::Window *win);
+
 
 	void _new();
 	bool open();

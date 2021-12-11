@@ -48,6 +48,7 @@ WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
 	event("light-type", [=]{ on_change(); });
 	event("light-col", [=]{ on_change(); });
 	event("light-harshness", [=]{ on_change(); });
+	event("light-theta", [=]{ on_change(); });
 	event("light-radius", [=]{ on_change(); });
 	event("link-type", [=]{ on_change(); });
 	event("link-friction", [=]{ on_change(); });
@@ -291,6 +292,7 @@ void WorldObjectListPanel::set_editing(int s) {
 		set_int("light-type", (int)l.type);
 		set_float("light-radius", l.radius);
 		set_float("light-harshness", l.harshness);
+		set_float("light-theta", l.theta * 360.0f / pi);
 		for (auto &c: l.components)
 			add_string("component-list", format("%s\\%s", c.class_name, c.filename));
 		set_float("pos-x", l.pos.x);
@@ -338,6 +340,7 @@ void WorldObjectListPanel::on_change() {
 		l.enabled = is_checked("light-enabled");
 		l.harshness = get_float("light-harshness");
 		l.radius = get_float("light-radius");
+		l.theta = get_float("light-theta") * pi / 360.0f;
 		l.col = get_color("light-col");
 		world->multi_view->force_redraw();
 	} else if (ii.type == MVD_WORLD_CAMERA) {

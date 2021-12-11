@@ -404,23 +404,25 @@ void apply_lighting(DataWorld *w, MultiView::Window *win) {
 		l.dir = ll.ang.ang2dir();
 		if (ll.type == LightType::DIRECTIONAL) {
 			//l.theta = pi;
+			l.col = ll.col;
 		} else if (ll.type == LightType::POINT) {
 			l.radius = ll.radius;
+			l.col = ll.col * (ll.radius * ll.radius / 100);
 		} else if (ll.type == LightType::CONE) {
 			l.radius = ll.radius;
 			l.theta = ll.theta;
+			l.col = ll.col * (ll.radius * ll.radius / 100);
 		}
-		l.col = ll.col;
 		l.harshness = ll.harshness;
 		lights.add(l);
 	}
 	ed->multi_view_3d->ubo_light->update_array(lights);
 	nix::bind_buffer(ed->multi_view_3d->ubo_light, 1);
-	win->set_shader(nix::Shader::default_3d, w->lights.num);
+	//win->set_shader(nix::Shader::default_3d, w->lights.num);
 }
 
-void draw_background(DataWorld *w) {
-	nix::clear_color(w->meta_data.background_color);
+void ModeWorld::draw_background(MultiView::Window *win) {
+	nix::clear_color(data->meta_data.background_color);
 	/*NixSetZ(false,false);
 	NixSetWire(false);
 	NixSetColor(BackGroundColor);
@@ -430,23 +432,13 @@ void draw_background(DataWorld *w) {
 }
 
 
-void ModeWorld::on_draw_win(MultiView::Window *win) {
-	if (show_effects) {
-		if (win->type == MultiView::VIEW_PERSPECTIVE)
-			draw_background(data);
-	}
-
-// terrain
-	nix::set_wire(multi_view->wire_mode);
-
-	if (show_effects)
-		apply_lighting(data, win);
-
+void ModeWorld::draw_terrains(MultiView::Window *win) {
 	foreachi(WorldTerrain &t, data->terrains, i) {
 		if (!t.terrain)
 			continue;
 		if (t.view_stage < multi_view->view_stage)
 			continue;
+		nix::set_wire(multi_view->wire_mode);
 
 		// prepare...
 		t.terrain->prepare_draw(multi_view->cam.pos - t.pos);
@@ -458,8 +450,8 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		}
 
 		auto s = mat->shader[0].get();
-		nix::set_shader(nix::Shader::default_3d);
-//		nix::set_shader(s);
+		//nix::set_shader(nix::Shader::default_3d);
+		win->set_shader(s, data->lights.num);
 		s->set_floats("pattern0", &t.terrain->texture_scale[0].x, 3);
 		s->set_floats("pattern1", &t.terrain->texture_scale[1].x, 3);
 
@@ -468,17 +460,22 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		nix::set_textures(weak(mat->textures));
 		nix::draw_triangles(t.terrain->vertex_buffer);
 
+		nix::set_wire(false);
+
+		//nix::set_shader(nix::Shader::default_3d);
 		if (t.is_selected)
 			DrawTerrainColored(t.terrain, Red, TSelectionAlpha, multi_view->cam.pos);
 		if ((multi_view->hover.type == MVD_WORLD_TERRAIN) and (multi_view->hover.index == i))
 			DrawTerrainColored(t.terrain, White, TMouseOverAlpha, multi_view->cam.pos);
 	}
+}
 
-// objects (models)
-		//GodDraw();
-		//MetaDrawSorted();
-		//NixSetWire(false);
+void ModeWorld::draw_objects(MultiView::Window *win) {
+	//GodDraw();
+	//MetaDrawSorted();
+	//NixSetWire(false);
 	nix::set_shader(nix::Shader::default_3d);
+	nix::set_wire(multi_view->wire_mode);
 
 	for (WorldObject &o: data->objects) {
 		if (o.view_stage < multi_view->view_stage)
@@ -487,6 +484,16 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			nix::set_model_matrix(matrix::translation(o.pos) * matrix::rotation(o.ang));
 			for (int i=0;i<o.object->material.num;i++) {
 				auto mat = o.object->material[i];
+				try {
+					mat->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
+				} catch (Exception &e) {
+					msg_error(e.message());
+				}
+
+				auto s = mat->shader[0].get();
+				//nix::set_shader(nix::Shader::default_3d);
+				win->set_shader(s, data->lights.num);
+
 				//mat->shader = nullptr;
 				nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
 				nix::set_textures(weak(mat->textures));
@@ -508,22 +515,9 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		DrawSelectionObject(data->objects[multi_view->hover.index], OSelectionAlpha, White);
 	nix::disable_alpha();
 	nix::set_model_matrix(matrix::ID);
+}
 
-
-	// lights
-	for (auto &l: data->lights) {
-		if (l.view_stage < multi_view->view_stage)
-			continue;
-
-		set_color(color(1, 0.9f, 0.6f, 0.3f));
-		set_line_width(scheme.LINE_WIDTH_MEDIUM);
-		if (l.is_selected) {
-			//set_color(Red);
-			set_line_width(scheme.LINE_WIDTH_THICK);
-		}
-		draw_line(l.pos, l.pos + l.ang.ang2dir() * win->cam->radius * 0.1f);
-	}
-
+void ModeWorld::draw_cameras(MultiView::Window *win) {
 	for (auto &c: data->cameras) {
 		if (c.view_stage < multi_view->view_stage)
 			continue;
@@ -549,7 +543,34 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		draw_line(c.pos + ez - ex - ey, c.pos + ez + ex - ey);
 		draw_line(c.pos + ez + ex - ey, c.pos + ez + ex + ey);
 	}
+}
 
+void ModeWorld::draw_lights(MultiView::Window *win) {
+	for (auto &l: data->lights) {
+		if (l.view_stage < multi_view->view_stage)
+			continue;
+
+		set_color(color(1, 0.9f, 0.6f, 0.3f));
+		set_line_width(scheme.LINE_WIDTH_MEDIUM);
+		if (l.is_selected) {
+			//set_color(Red);
+			set_line_width(scheme.LINE_WIDTH_THICK);
+		}
+
+		if (l.type == LightType::DIRECTIONAL) {
+			draw_line(l.pos, l.pos + l.ang.ang2dir() * win->cam->radius * 0.1f);
+		} else if (l.type == LightType::POINT) {
+			draw_circle(l.pos, win->get_direction(), l.radius);
+			draw_circle(l.pos, win->get_direction(), l.radius * 0.1f);
+		} else if (l.type == LightType::CONE) {
+			draw_line(l.pos, l.pos + l.ang.ang2dir() * l.radius);
+			draw_circle(l.pos + l.ang.ang2dir() * l.radius,      l.ang.ang2dir(), l.radius * tan(l.theta));
+			draw_circle(l.pos + l.ang.ang2dir() * l.radius*0.1f, l.ang.ang2dir(), l.radius * tan(l.theta) * 0.1f);
+		}
+	}
+}
+
+void ModeWorld::draw_links(MultiView::Window *win) {
 	for (auto &l: data->links) {
 		if (l.view_stage < multi_view->view_stage)
 			continue;
@@ -558,8 +579,7 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 		set_line_width(scheme.LINE_WIDTH_THIN);
 		if (l.is_selected) {
 			//set_color(Red);
-			set_line_width(5);
-			set_line_width(scheme.LINE_WIDTH_MEDIUM);
+			set_line_width(scheme.LINE_WIDTH_THICK);
 		}
 		draw_line(l.pos, data->objects[l.object[0]].pos);
 		if (l.object[1] >= 0)
@@ -570,6 +590,23 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 			draw_line(l.pos - d, l.pos + d);
 		}
 	}
+}
+
+void ModeWorld::on_draw_win(MultiView::Window *win) {
+	if (show_effects) {
+		if (win->type == MultiView::VIEW_PERSPECTIVE)
+			draw_background(win);
+	}
+
+	if (show_effects)
+		apply_lighting(data, win);
+
+	draw_terrains(win);
+	draw_objects(win);
+	draw_cameras(win);
+	draw_lights(win);
+	draw_links(win);
+
 
 	nix::set_z(true,true);
 	nix::enable_fog(false);

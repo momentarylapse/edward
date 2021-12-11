@@ -72,10 +72,10 @@ Dialog world-object-list-dialog "" width=400 height=300
 						ColorButton light-col ""
 						---|
 						Text t-light-radius "Radius" right disabled
-						Edit light-radius ""
+						SpinButton light-radius "" range=0::0.1
 						---|
 						Text t-light-theta "Theta" right disabled
-						SpinButton light-theta "" range=0:180:1 "tooltip=cone opening angle"
+						SpinButton light-theta "" range=0:180:0.1 "tooltip=cone opening angle"
 						---|
 						Text t-light-harshness "Harshness" right disabled
 						SpinButton light-harshness "" range=0:1:0.01 "tooltip=mixing diffuse and ambient parts"

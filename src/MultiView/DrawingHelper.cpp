@@ -71,8 +71,10 @@ void drawing_helper_init(const Path &dir) {
 
 	try {
 
+		ResourceManager::default_shader = "default.shader";
+
 		ResourceManager::load_shader(dir << "shader/module-surface.shader");
-		ResourceManager::load_shader(dir << "shader/module-surface-simple.shader");
+		//ResourceManager::load_shader(dir << "shader/module-surface-simple.shader");
 
 
 		ResourceManager::load_shader(dir << "shader/module-vertex-default.shader");
