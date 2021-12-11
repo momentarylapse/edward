@@ -8114,7 +8114,7 @@ grp_skybox
 1
 ListView
 skybox
-
+reorderable
 0
 0
 0
@@ -10084,7 +10084,7 @@ world-skybox-popup
 
 0
 0
-4
+5
 Item
 title
 disabled
@@ -10098,15 +10098,21 @@ Separator
 0
 0
 Item
+skybox-add
+image=hui:add
+2
+0
+0
+Item
 skybox-select
 image=hui:open
-2
+3
 0
 0
 Item
 skybox-remove
 image=hui:delete
-3
+4
 0
 0
 # Resource
@@ -10211,7 +10217,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-1008
+1009
 # Text
 /ambient
 Ambient
@@ -13068,6 +13074,9 @@ Script
 
 world-script-popup/world-script-popup
 Script
+
+world-skybox-popup/skybox-add
+Add...
 
 world-skybox-popup/skybox-remove
 Remove

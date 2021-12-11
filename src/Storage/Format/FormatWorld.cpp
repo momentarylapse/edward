@@ -132,7 +132,6 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 			}
 		}
 	}
-	data->meta_data.skybox_files.resize(32);
 
 
 	auto *cont = p.elements[0].find("3d");

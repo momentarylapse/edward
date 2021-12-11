@@ -47,7 +47,6 @@ void DataWorld::MetaData::reset() {
 	fog.col = color(1, 0.8f, 0.8f, 0.8f);
 
 	skybox_files.clear();
-	skybox_files.resize(32);
 
 	background_color = color(1, 0.2f, 0.4f, 0.6f);
 

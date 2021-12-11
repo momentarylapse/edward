@@ -5,7 +5,7 @@ Dialog world_dialog "World properties" width=520 height=420 resizable headerbar 
 				Group grp_bg_color "Color"
 					ColorButton bgc "" alpha "tooltip=Sky color"
 				Group grp_skybox "Skybox models"
-					ListView skybox "#\\Model" "tooltip=Models drawn over the sky color\n- double click to select"
+					ListView skybox "#\\Model" "tooltip=Models drawn over the sky color\n- double click to select" reorderable
 			Grid ? "" vertical
 				RadioButton fog_mode:none "Deactivated" expandx
 				RadioButton fog_mode:linear "Linear"

@@ -40,6 +40,8 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event("fog_mode:exp2", [=]{ on_fog_mode_exp(); });
 	event_x("skybox", "hui:activate", [=]{ on_skybox_select(); });
 	event_x("skybox", "hui:right-button-down", [=]{ on_skybox_right_click(); });
+	event_x("skybox", "hui:move", [=]{ on_skybox_move(); });
+	event("skybox-add", [=]{ on_skybox_add(); });
 	event("skybox-remove", [=]{ on_skybox_remove(); });
 	event("skybox-select", [=]{ on_skybox_select(); });
 	event("physics_enabled", [=]{ on_physics_enabled(); });
@@ -67,11 +69,23 @@ WorldPropertiesDialog::~WorldPropertiesDialog() {
 	delete popup_script;
 }
 
+void WorldPropertiesDialog::on_skybox_move() {
+	temp.skybox_files.move(hui::GetEvent()->row, hui::GetEvent()->row_target);
+	fill_skybox_list();
+}
+
 void WorldPropertiesDialog::on_skybox_right_click() {
 	int n = hui::GetEvent()->row;
 	popup_skybox->enable("skybox-select", n >= 0);
 	popup_skybox->enable("skybox-remove", n >= 0);
 	popup_skybox->open_popup(this);
+}
+
+void WorldPropertiesDialog::on_skybox_add() {
+	if (storage->file_dialog(FD_MODEL,false,true)) {
+		temp.skybox_files.add(storage->dialog_file_no_ending);
+		fill_skybox_list();
+	}
 }
 
 void WorldPropertiesDialog::on_skybox_select() {
@@ -111,11 +125,10 @@ void WorldPropertiesDialog::on_physics_enabled() {
 
 void WorldPropertiesDialog::on_skybox_remove() {
 	int n = get_int("skybox");
-	if (n >= 0)
-		if (!temp.skybox_files[n].is_empty()) {
-			temp.skybox_files[n] = "";
-			fill_skybox_list();
-		}
+	if (n >= 0) {
+		temp.skybox_files.erase(n);
+		fill_skybox_list();
+	}
 }
 
 

@@ -26,6 +26,8 @@ public:
 	void on_fog_mode_exp();
 	void on_fog_enabled();
 	void on_skybox_right_click();
+	void on_skybox_move();
+	void on_skybox_add();
 	void on_skybox_select();
 	void on_skybox_remove();
 	void on_physics_enabled();

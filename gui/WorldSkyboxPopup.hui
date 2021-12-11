@@ -1,5 +1,6 @@
 Menu world-skybox-popup "Skybox"
 	Item title "Skybox" disabled
 	Separator
+	Item skybox-add "Add..." image=hui:add
 	Item skybox-select "Select..." image=hui:open
 	Item skybox-remove "Remove" image=hui:delete
