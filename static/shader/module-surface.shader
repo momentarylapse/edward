@@ -206,58 +206,57 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
 	
 ///	float reflectivity = 1-((1-xxx.x) * (1-exp(-pow(dot(d, n),2) * 100)));
 
-#if 0
-	if (roughness < 0.1) {
+	if (roughness < 0.2) {
 		if (textureSize(tex_cube, 0).x > 10) {
-		vec3 L = reflect(view_dir, n);
-		//for (int i=0; i<30; i++) {
-		//vec3 L = normalize(L0 + vec3(_surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5) / 50);
-		vec4 r = texture(tex_cube, -L);
-		/*if (roughness > 0.1) {
-			r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(_surf_rand3d(p),0,1) * roughness/10)));
-			r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(1,_surf_rand3d(p),0) * roughness/10)));
-			r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(0,1,_surf_rand3d(p)) * roughness/10)));
-			r /= 5;
+			vec3 L = reflect(view_dir, n);
+			//for (int i=0; i<30; i++) {
+			//vec3 L = normalize(L0 + vec3(_surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5) / 50);
+			vec4 r = vec4(0);//texture(tex_cube, -L);
+			if (roughness > 0.02) {
+				for (int i=0; i<5; i++)
+					r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(_surf_rand3d(p+vec3(i,0,0))-0.5,_surf_rand3d(p+vec3(0,i,0))-0.5,_surf_rand3d(p+vec3(0,0,i))-0.5) * pow(roughness, 2) * 4)));
+				//r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(1,_surf_rand3d(p),0) * roughness/2)));
+				//r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(0,1,_surf_rand3d(p)) * roughness/2)));
+				r /= 5;
+			}
+			//out_color += r * reflectivity;*/
+			
+			
+			
+			//	float R = (1-roughness) + roughness * pow(1 - dot(n, L), 5);
+			//	out_color.rgb += R * r.rgb;
+				
+			//L=-L;
+			vec3 F0 = vec3(0.04);
+			F0 = mix(F0, albedo.rgb, metal);
+			
+			
+		        // calculate per-light radiance
+		        vec3 V = -view_dir;
+		        vec3 H = normalize(V + L);
+		        vec3 radiance     = r.rgb*PI;
+		        
+		        // cook-torrance brdf
+		        float NDF = DistributionGGX(n, H, roughness);
+		        float G   = GeometrySmith(n, V, L, roughness);
+		        vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);
+		        //out_color.rgb = F;
+		        //return;
+		        
+		        vec3 kS = F;
+		        vec3 kD = vec3(1.0) - kS;
+		        kD *= 1.0 - metal;
+		        
+		        vec3 numerator    = NDF * G * F;
+		        float denominator = 4.0 * max(dot(n, V), 0.0) * max(dot(n, L), 0.0);
+		        vec3 specular     = numerator / max(denominator, 0.001);
+		            
+		        // add to outgoing radiance Lo
+		        float NdotL = max(dot(n, L), 0.0);
+		        out_color.rgb += min((kD * albedo.rgb / PI + specular) * NdotL/10000, 1/PI) * radiance;
+			
 		}
-		out_color += r * reflectivity;*/
-		
-		
-		
-	//	float R = (1-roughness) + roughness * pow(1 - dot(n, L), 5);
-	//	out_color.rgb += R * r.rgb;
-		
-	//L=-L;
-	vec3 F0 = vec3(0.04);
-	F0 = mix(F0, albedo.rgb, metal);
-	
-	
-        // calculate per-light radiance
-        vec3 V = -view_dir;
-        vec3 H = normalize(V + L);
-        vec3 radiance     = r.rgb*PI;
-        
-        // cook-torrance brdf
-        float NDF = DistributionGGX(n, H, roughness);
-        float G   = GeometrySmith(n, V, L, roughness);
-        vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);
-        //out_color.rgb = F;
-        //return;
-        
-        vec3 kS = F;
-        vec3 kD = vec3(1.0) - kS;
-        kD *= 1.0 - metal;
-        
-        vec3 numerator    = NDF * G * F;
-        float denominator = 4.0 * max(dot(n, V), 0.0) * max(dot(n, L), 0.0);
-        vec3 specular     = numerator / max(denominator, 0.001);
-            
-        // add to outgoing radiance Lo
-        float NdotL = max(dot(n, L), 0.0);
-        out_color.rgb += min((kD * albedo.rgb / PI + specular) * NdotL/10000, 1/PI) * radiance;
-		
-	//	}
-	}}
-#endif
+	}
 	
 
 	for (int i=0; i<num_lights; i++)
