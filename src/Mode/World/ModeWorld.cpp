@@ -54,11 +54,6 @@
 #define TMouseOverAlpha				0.20f
 
 
-namespace nix {
-extern Shader *current_shader;
-}
-
-
 
 ModeWorld::ModeWorld(MultiView::MultiView *mv) :
 	Mode<DataWorld>("World", NULL, new DataWorld, mv, "menu_world") {
@@ -428,6 +423,14 @@ void ModeWorld::draw_background(MultiView::Window *win) {
 	NixSetZ(true,true);*/
 }
 
+void _set_textures(const Array<nix::Texture*> &_tex) {
+	Array<nix::Texture*> tex = _tex;
+	while (tex.num < 5)
+		tex.add(tex_white.get());
+	tex.add(MultiView::cube_map.get());
+
+	nix::set_textures(tex);
+}
 
 void ModeWorld::draw_terrains(MultiView::Window *win) {
 	foreachi(WorldTerrain &t, data->terrains, i) {
@@ -448,14 +451,13 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 			msg_error(e.message());
 		}
 
-		//nix::set_shader(nix::Shader::default_3d);
 		win->set_shader(s, data->lights.num);
 		s->set_floats("pattern0", &t.terrain->texture_scale[0].x, 3);
 		s->set_floats("pattern1", &t.terrain->texture_scale[1].x, 3);
 
 		nix::set_model_matrix(matrix::translation(t.pos));
 		nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
-		nix::set_textures(weak(mat->textures));
+		_set_textures(weak(mat->textures));
 		nix::draw_triangles(t.terrain->vertex_buffer);
 
 		nix::set_wire(false);
@@ -471,7 +473,6 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 void ModeWorld::draw_objects(MultiView::Window *win) {
 	//GodDraw();
 	//MetaDrawSorted();
-	//NixSetWire(false);
 	nix::set_shader(nix::Shader::default_3d);
 	nix::set_wire(multi_view->wire_mode);
 
@@ -490,13 +491,12 @@ void ModeWorld::draw_objects(MultiView::Window *win) {
 					msg_error(e.message());
 				}
 
-				//nix::set_shader(nix::Shader::default_3d);
 				win->set_shader(s, data->lights.num);
 
-				//mat->shader = nullptr;
 				nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
-				nix::set_textures(weak(mat->textures));
+				_set_textures(weak(mat->textures));
 				nix::draw_triangles(o.object->mesh[0]->sub[i].vertex_buffer);
+
 			}
 			//o.object->draw(0, false, false);
 			//o.object->_detail_ = 0;

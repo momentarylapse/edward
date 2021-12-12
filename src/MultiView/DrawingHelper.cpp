@@ -27,6 +27,7 @@ static nix::Texture *tex_text;
 static string font_name = "Sans";
 static float font_size = 12;
 static color _cur_color_ = White;
+shared<nix::Texture> tex_white;
 
 static nix::VertexBuffer *vb_lines = nullptr;
 static nix::VertexBuffer *vb_2d = nullptr;
@@ -68,6 +69,10 @@ void drawing_helper_init(const Path &dir) {
 	vb_2d = new nix::VertexBuffer("3f,4f,2f");
 	tex_round = create_round_texture(32);
 	tex_text = new nix::Texture();
+	tex_white = new nix::Texture();
+	Image im;
+	im.create(32, 32, White);
+	tex_white->override(im);
 
 	try {
 

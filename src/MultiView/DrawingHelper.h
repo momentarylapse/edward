@@ -12,6 +12,7 @@
 
 namespace nix {
 	class Shader;
+	class Texture;
 	class CubeMap;
 }
 
@@ -19,6 +20,7 @@ extern shared<nix::Shader> shader_selection;
 extern shared<nix::Shader> shader_lines_3d;
 extern shared<nix::Shader> shader_lines_3d_colored;
 extern shared<nix::Shader> shader_lines_3d_colored_wide;
+extern shared<nix::Texture> tex_white;
 
 class vector;
 namespace MultiView {
