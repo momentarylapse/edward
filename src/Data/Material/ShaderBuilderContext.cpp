@@ -116,16 +116,16 @@ uniform Material material;
 		source += "uniform vec3 eye_pos;\n";
 	}
 	if (vars.contains("texture0")) {
-		source += "uniform(binding = 4) sampler2D tex0;\n";
+		source += "layout(binding = 4) uniform sampler2D tex0;\n";
 	}
 	if (vars.contains("texture1")) {
-		source += "uniform(binding=5) sampler2D tex1;\n";
+		source += "layout(binding = 5) uniform sampler2D tex1;\n";
 	}
 	if (vars.contains("texture2")) {
-		source += "uniform(binding=6) sampler2D tex2;\n";
+		source += "layout(binding = 6) uniform sampler2D tex2;\n";
 	}
 	if (vars.contains("texture3")) {
-		source += "uniform(binding=7) sampler2D tex3;\n";
+		source += "layout(binding = 7) uniform sampler2D tex3;\n";
 	}
 	if (vars.contains("cubemap")) {
 		source += "uniform samplerCube tex_cube;\n";

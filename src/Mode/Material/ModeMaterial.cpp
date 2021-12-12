@@ -164,8 +164,6 @@ void ModeMaterial::on_command(const string & id) {
 void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	data->apply_for_rendering();
 	win->set_shader(shader.get());
-	auto pos = win->get_lighting_eye_pos();//cam->get_pos(true);
-	shader->set_floats("eye_pos", &pos.x, 3);
 	auto tex = weak(textures);
 	tex.resize(5);
 	tex.add(MultiView::cube_map.get());

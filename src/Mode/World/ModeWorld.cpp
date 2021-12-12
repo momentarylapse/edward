@@ -397,7 +397,7 @@ void ModeWorld::apply_lighting(MultiView::Window *win) {
 		l.proj = matrix::ID;
 		l.theta = -1;
 		l.radius = -1;
-		l.pos = ll.pos;
+		l.pos = win->view_matrix * ll.pos;
 		l.dir = win->local_ang.bar() * ll.ang.ang2dir();
 		if (ll.type == LightType::DIRECTIONAL) {
 			//l.theta = pi;
@@ -440,13 +440,14 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 		// prepare...
 		t.terrain->prepare_draw(multi_view->cam.pos - t.pos);
 		auto mat = t.terrain->material;
+		auto s = nix::Shader::load("");
 		try {
 			mat->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
+			s = mat->shader[0].get();
 		} catch (Exception &e) {
 			msg_error(e.message());
 		}
 
-		auto s = mat->shader[0].get();
 		//nix::set_shader(nix::Shader::default_3d);
 		win->set_shader(s, data->lights.num);
 		s->set_floats("pattern0", &t.terrain->texture_scale[0].x, 3);
@@ -481,13 +482,14 @@ void ModeWorld::draw_objects(MultiView::Window *win) {
 			nix::set_model_matrix(matrix::translation(o.pos) * matrix::rotation(o.ang));
 			for (int i=0;i<o.object->material.num;i++) {
 				auto mat = o.object->material[i];
+				auto s = nix::Shader::load("");
 				try {
 					mat->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
+					s = mat->shader[0].get();
 				} catch (Exception &e) {
 					msg_error(e.message());
 				}
 
-				auto s = mat->shader[0].get();
 				//nix::set_shader(nix::Shader::default_3d);
 				win->set_shader(s, data->lights.num);
 

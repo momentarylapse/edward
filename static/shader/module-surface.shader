@@ -12,8 +12,10 @@ struct Material {
 	float roughness, metal;
 };
 uniform Material material;
-//struct Matrix { mat4 model, view, project; };
-///*layout(binding = 0)*/ uniform Matrix matrix;
+struct Matrix {
+	mat4 model, view, project;
+};
+/*layout(binding = 0)*/ uniform Matrix matrix;
 
 #endif
 
@@ -228,10 +230,10 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
 			//vec3 L = normalize(L0 + vec3(_surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5, _surf_rand3d(p)-0.5) / 50);
 			vec4 r = vec4(0);//texture(tex_cube, -L);
 			if (roughness > 0.02) {
-				for (int i=0; i<5; i++)
-					r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(_surf_rand3d(p+vec3(i,0,0))-0.5,_surf_rand3d(p+vec3(0,i,0))-0.5,_surf_rand3d(p+vec3(0,0,i))-0.5) * pow(roughness, 2) * 4)));
-				//r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(1,_surf_rand3d(p),0) * roughness/2)));
-				//r += texture(tex_cube, reflect(view_dir, normalize(n + vec3(0,1,_surf_rand3d(p)) * roughness/2)));
+				for (int i=0; i<5; i++) {
+					vec3 nn = normalize(n + vec3(_surf_rand3d(p+vec3(i,0,0))-0.5,_surf_rand3d(p+vec3(0,i,0))-0.5,_surf_rand3d(p+vec3(0,0,i))-0.5) * pow(roughness, 2) * 4);
+					r += texture(tex_cube, transpose(mat3(matrix.view)) * reflect(view_dir, nn));
+				}
 				r /= 5;
 			}
 			//out_color += r * reflectivity;*/
