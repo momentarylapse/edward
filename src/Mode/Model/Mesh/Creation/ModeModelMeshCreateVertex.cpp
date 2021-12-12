@@ -19,7 +19,7 @@ void ModeModelMeshCreateVertex::on_start() {
 	message = _("place new vertex");
 
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_vertex);
-	mode_model->allow_selection_modes(false);
+	ed->mode_model->allow_selection_modes(false);
 }
 
 

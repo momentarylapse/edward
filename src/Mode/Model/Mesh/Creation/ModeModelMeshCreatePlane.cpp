@@ -13,6 +13,7 @@
 #include "../../../../lib/nix/nix.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/DrawingHelper.h"
 
 ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(ModeBase *_parent) :
 	ModeCreation<DataModel>("ModelMeshCreatePlane", _parent)
@@ -75,7 +76,7 @@ void ModeModelMeshCreatePlane::on_draw_win(MultiView::Window *win) {
 		auto geo = GeometryPlane(pos, length[0], length[1], 1,1);
 		geo.add(GeometryPlane(pos, length[1], length[0], 1,1));
 		geo.build(nix::vb_temp);
-		mode_model->set_material_creation();
+		set_material_creation();
 		nix::draw_triangles(nix::vb_temp);
 	}
 }

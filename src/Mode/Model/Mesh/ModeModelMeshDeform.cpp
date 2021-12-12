@@ -75,7 +75,7 @@ void ModeModelMeshDeform::on_start() {
 
 	// enter
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_polygon);
-	mode_model->allow_selection_modes(false);
+	ed->mode_model->allow_selection_modes(false);
 	mode_model_mesh->set_allow_draw_hover(false);
 
 
@@ -90,7 +90,7 @@ void ModeModelMeshDeform::on_end() {
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar"); // back to mesh....ARGH
 
 	multi_view->set_allow_action(true);
-	mode_model->allow_selection_modes(true);
+	ed->mode_model->allow_selection_modes(true);
 	mode_model_mesh->set_allow_draw_hover(true);
 	ed->set_side_panel(nullptr);
 }

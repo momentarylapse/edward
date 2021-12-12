@@ -29,7 +29,7 @@ void ModeModelMeshSplitPolygon::on_start() {
 	message = _("place new vertex into polygon");
 
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_polygon);
-	mode_model->allow_selection_modes(false);
+	ed->mode_model->allow_selection_modes(false);
 
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);

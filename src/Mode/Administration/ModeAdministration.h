@@ -33,6 +33,4 @@ public:
 	AdministrationDialog *dialog;
 };
 
-extern ModeAdministration *mode_administration;
-
 #endif /* MODEADMINISTRATION_H_ */

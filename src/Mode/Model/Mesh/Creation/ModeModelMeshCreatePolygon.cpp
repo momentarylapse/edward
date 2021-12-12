@@ -23,7 +23,7 @@ ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
 	message = format(_("Select polygon: %d -> [Ctrl + Return]"), 0);
 
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_vertex);
-	mode_model->allow_selection_modes(false);
+	ed->mode_model->allow_selection_modes(false);
 }
 
 

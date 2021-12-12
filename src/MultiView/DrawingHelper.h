@@ -5,8 +5,7 @@
  *      Author: michi
  */
 
-#ifndef SRC_MULTIVIEW_DRAWINGHELPER_H_
-#define SRC_MULTIVIEW_DRAWINGHELPER_H_
+#pragma once
 
 #include "../lib/base/base.h"
 #include "../lib/base/pointer.h"
@@ -61,4 +60,8 @@ void set_font(const string &name, float size);
 
 void render_text(const string &text, Image &im);
 
-#endif /* SRC_MULTIVIEW_DRAWINGHELPER_H_ */
+
+
+void set_material_selected();
+void set_material_hover();
+void set_material_creation(float intensity = 1.0f);

@@ -129,8 +129,8 @@ Edward::Edward(Array<string> arg) :
 	show();
 
 	ed = this;
-	no_mode = new ModeNone;
-	cur_mode = no_mode;
+	mode_none = new ModeNone;
+	cur_mode = mode_none;
 	side_panel = nullptr;
 	bottom_panel = nullptr;
 
@@ -196,7 +196,7 @@ Edward::Edward(Array<string> arg) :
 	mode_model = new ModeModel(multi_view_3d, multi_view_2d);
 	mode_world = new ModeWorld(multi_view_3d);
 	mode_font = new ModeFont(multi_view_2d);
-	mode_administration = new ModeAdministration;
+	mode_admin = new ModeAdministration;
 
 	storage = new Storage();
 	storage->set_root_directory(hui::Config.get_str("RootDir", ""));
@@ -237,7 +237,7 @@ Edward::Edward(Array<string> arg) :
 
 
 	if (!handle_arguments(arg))
-		mode_model->_new();
+		universal_new(FD_MODEL);
 
 	//hui::SetIdleFunction([=]{ idleFunction(); });
 	hui::RunLater(0.010f, [=]{ cur_mode->multi_view->force_redraw(); });
@@ -278,10 +278,10 @@ bool Edward::handle_arguments(Array<string> arg)
 
 
 	if (arg[1] == "--new-material") {
-		mode_material->_new();
+		universal_new(FD_MATERIAL);
 		return true;
 	} else if (arg[1] == "--new-world") {
-		mode_world->_new();
+		universal_new(FD_WORLD);
 		return true;
 	}
 
@@ -501,34 +501,73 @@ void Edward::error_box(const string &message) {
 
 void Edward::on_command(const string &id) {
 	if (id == "model_new")
-		mode_model->_new();
+		universal_new(FD_MODEL);
 	if (id == "model_open")
-		mode_model->open();
+		universal_open(FD_MODEL);
 	if (id == "material_new")
-		mode_material->_new();
+		universal_new(FD_MATERIAL);
 	if (id == "material_open")
-		mode_material->open();
+		universal_open(FD_MATERIAL);
 	if (id == "world_new")
-		mode_world->_new();
+		universal_new(FD_WORLD);
 	if (id == "world_open")
-		mode_world->open();
+		universal_open(FD_WORLD);
 	if (id == "font_new")
-		mode_font->_new();
+		universal_new(FD_FONT);
 	if (id == "font_open")
-		mode_font->open();
+		universal_open(FD_FONT);
 	if (id == "project_new")
-		mode_administration->_new();
+		mode_admin->_new();
 	if (id == "project_open")
-		mode_administration->open();
+		mode_admin->open();
 	if (id == "project_settings") {
-		auto *dlg = new ConfigurationDialog(ed, mode_administration->data, false);
+		auto *dlg = new ConfigurationDialog(ed, mode_admin->data, false);
 		dlg->run();
 		delete dlg;
 	}
 	if (id == "administrate")
-		set_mode(mode_administration);
+		set_mode(mode_admin);
 	if (id == "opt_view")
 		optimize_current_view();
+}
+
+ModeBase *Edward::get_mode(int preferred_type) {
+	if (preferred_type == FD_MODEL)
+		return mode_model;
+	if (preferred_type == FD_WORLD)
+		return mode_world;
+	if (preferred_type == FD_MATERIAL)
+		return mode_material;
+	if (preferred_type == FD_FONT)
+		return mode_font;
+	return mode_none;
+}
+
+bool Edward::universal_new(int preferred_type) {
+	if (!allow_termination())
+		return false;
+	/*auto m = get_mode(preferred_type);
+	m->_new();
+	set_mode(m);
+	m->optimize_view();*/
+	if (preferred_type == FD_MODEL) {
+		mode_model->_new();
+		set_mode(mode_model);
+		mode_model_mesh->optimize_view();
+	} else if (preferred_type == FD_WORLD) {
+		mode_world->_new();
+		set_mode(mode_world);
+		mode_world->optimize_view();
+	} else if (preferred_type == FD_MATERIAL) {
+		mode_material->_new();
+		set_mode(mode_material);
+		mode_material->optimize_view();
+	} else if (preferred_type == FD_FONT) {
+		mode_font->_new();
+		set_mode(mode_font);
+		mode_font->optimize_view();
+	}
+	return true;
 }
 
 bool Edward::universal_open(int preferred_type) {
@@ -588,8 +627,7 @@ void Edward::update_menu()
 	}
 }
 
-bool Edward::allow_termination()
-{
+bool Edward::allow_termination() {
 	if (!cur_mode)
 		return true;
 	Data *d = cur_mode->get_data();

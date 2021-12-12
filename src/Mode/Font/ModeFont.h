@@ -47,6 +47,4 @@ public:
 	Gui::Font *font;
 };
 
-extern ModeFont* mode_font;
-
 #endif /* MODEFONT_H_ */

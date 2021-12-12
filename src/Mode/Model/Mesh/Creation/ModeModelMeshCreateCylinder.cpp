@@ -153,7 +153,7 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win) {
 			draw_line(pos[0], multi_view->get_cursor());
 	}
 	if (pos.num == 2) {
-		mode_model->set_material_creation();
+		set_material_creation();
 		geo->build(nix::vb_temp);
 		nix::draw_triangles(nix::vb_temp);
 

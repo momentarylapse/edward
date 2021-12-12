@@ -128,7 +128,7 @@ void ModeModelMeshCreateBall::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
 	if (pos_chosen) {
-		mode_model->set_material_creation();
+		set_material_creation();
 		geo->build(nix::vb_temp);
 		nix::draw_triangles(nix::vb_temp);
 

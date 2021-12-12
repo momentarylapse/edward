@@ -29,7 +29,7 @@ void ModeModelMeshCutLoop::on_start() {
 	message = _("click on an edge to cut");
 
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_edge);
-	mode_model->allow_selection_modes(false);
+	ed->mode_model->allow_selection_modes(false);
 
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);

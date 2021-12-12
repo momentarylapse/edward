@@ -135,7 +135,7 @@ void ModeModelSkeleton::on_start() {
 
 
 	choose_mouse_function(MultiView::ACTION_MOVE);
-	mode_model->allow_selection_modes(false);
+	ed->mode_model->allow_selection_modes(false);
 	mode_model_mesh->update_vertex_buffers(data->mesh->vertex);
 }
 

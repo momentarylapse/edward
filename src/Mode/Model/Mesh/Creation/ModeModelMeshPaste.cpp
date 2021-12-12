@@ -9,6 +9,7 @@
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../MultiView/MultiView.h"
+#include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../Edward.h"
 #include "../../../../lib/nix/nix.h"
 
@@ -55,7 +56,7 @@ void ModeModelMeshPaste::on_draw_win(MultiView::Window* win) {
 	parent->on_draw_win(win);
 
 	if (geo) {
-		mode_model->set_material_creation();
+		set_material_creation();
 		geo->build(nix::vb_temp);
 		nix::draw_triangles(nix::vb_temp);
 	}

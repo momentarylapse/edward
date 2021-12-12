@@ -21,6 +21,12 @@ namespace MultiView{
 	class MultiView;
 };
 
+class ModeModel;
+class ModeMaterial;
+class ModeWorld;
+class ModeFont;
+class ModeAdministration;
+
 
 
 // multiview data
@@ -63,6 +69,8 @@ public:
 	void on_command(const string &id);
 	void on_close();
 
+	ModeBase *get_mode(int preferred_type);
+	bool universal_new(int preferred_type);
 	bool universal_open(int preferred_type);
 
 	virtual void _cdecl on_draw_gl();
@@ -93,7 +101,12 @@ public:
 	void update_menu();
 	void optimize_current_view();
 
-	ModeBase *no_mode;
+	ModeBase *mode_none;
+	ModeModel* mode_model;
+	ModeMaterial* mode_material;
+	ModeWorld* mode_world;
+	ModeFont* mode_font;
+	ModeAdministration* mode_admin;
 	ModeBase *cur_mode;
 	Array<ModeBase*> mode_queue;
 

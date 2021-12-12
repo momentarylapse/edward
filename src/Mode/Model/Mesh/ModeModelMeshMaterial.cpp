@@ -31,7 +31,7 @@ void ModeModelMeshMaterial::on_start() {
 
 	// enter
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_polygon);
-	mode_model->allow_selection_modes(false);
+	ed->mode_model->allow_selection_modes(false);
 }
 
 void ModeModelMeshMaterial::on_end() {
@@ -39,7 +39,7 @@ void ModeModelMeshMaterial::on_end() {
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar"); // back to mesh....ARGH
 
 	multi_view->set_allow_action(true);
-	mode_model->allow_selection_modes(true);
+	ed->mode_model->allow_selection_modes(true);
 }
 
 void ModeModelMeshMaterial::on_set_multi_view() {

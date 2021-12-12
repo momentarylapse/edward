@@ -14,6 +14,7 @@
 #include "../../../../lib/kaba/kaba.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../Action/ActionGroup.h"
 #include "../../../../Action/Model/Mesh/Vertex/Helper/ActionModelMoveVertex.h"
 #include "../Selection/MeshSelectionModePolygon.h"
@@ -98,7 +99,7 @@ void ModeModelMeshDeformFunction::on_end() {
 void ModeModelMeshDeformFunction::on_draw_win(MultiView::Window* win) {
 	parent->on_draw_win(win);
 
-	ModeModel::set_material_creation();
+	set_material_creation();
 	geo->build(nix::vb_temp);
 
 	nix::set_texture(tex);

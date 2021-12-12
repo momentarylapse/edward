@@ -144,7 +144,7 @@ void AdministrationDialog::ShowDetail(int n, const string &lid)
 
 void AdministrationDialog::OnExportGame()
 {
-	mode_administration->ExportGame();
+	ed->mode_admin->ExportGame();
 }
 
 AdminFileList *AdministrationDialog::get_list(const string &lid)
@@ -210,11 +210,11 @@ AdminFile* AdministrationDialog::GetSingleSelectedFile()
 
 void AdministrationDialog::OnClose()
 {
-	ed->set_mode(mode_model);
+	ed->set_mode(ed->mode_model);
 }
 
 void AdministrationDialog::OnExit()
-{	ed->set_mode(mode_model);	}
+{	ed->set_mode(ed->mode_model);	}
 
 void AdministrationDialog::OnRename()
 {}//{	data->Rename();	}
@@ -232,28 +232,28 @@ void AdministrationDialog::OnEdit()
 			if (a->Name == "config.txt")
 				hui::OpenDocument(storage->get_root_dir(a->Kind) << a->Name);
 			else if (a->Name == "game.ini")
-				mode_administration->BasicSettings();
+				ed->mode_admin->BasicSettings();
 			break;
 		case FD_MODEL:
-			if (storage->load(engine.object_dir << a->Name, mode_model->data, true))
-				ed->set_mode(mode_model);
+			if (storage->load(engine.object_dir << a->Name, ed->mode_model->data, true))
+				ed->set_mode(ed->mode_model);
 			break;
 		case FD_MATERIAL:
-			if (storage->load(engine.material_dir << a->Name, mode_material->data, true))
-				ed->set_mode(mode_material);
+			if (storage->load(engine.material_dir << a->Name, ed->mode_material->data, true))
+				ed->set_mode(ed->mode_material);
 			break;
 		case FD_FONT:
-			if (storage->load(engine.font_dir << a->Name, mode_font->data, true))
-				ed->set_mode(mode_font);
+			if (storage->load(engine.font_dir << a->Name, ed->mode_font->data, true))
+				ed->set_mode(ed->mode_font);
 			break;
 		case FD_WORLD:
-			if (storage->load(engine.map_dir << a->Name, mode_world->data, true))
-				ed->set_mode(mode_world);
+			if (storage->load(engine.map_dir << a->Name, ed->mode_world->data, true))
+				ed->set_mode(ed->mode_world);
 			break;
 		case FD_TERRAIN:
-			mode_world->data->reset();
-			if (mode_world->data->add_terrain(a->Name.no_ext(), v_0)){
-				ed->set_mode(mode_world);
+			ed->mode_world->data->reset();
+			if (ed->mode_world->data->add_terrain(a->Name.no_ext(), v_0)){
+				ed->set_mode(ed->mode_world);
 			}
 			break;
 		case FD_CAMERAFLIGHT:
@@ -283,6 +283,6 @@ void AdministrationDialog::OnFileList()
 
 void AdministrationDialog::OnRudimentaryConfiguration()
 {
-	mode_administration->BasicSettings();
+	ed->mode_admin->BasicSettings();
 }
 

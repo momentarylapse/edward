@@ -75,8 +75,8 @@ void PluginManager::link_plugins() {
 
 	kaba::link_external("edward", &GlobalMainWin);
 	kaba::link_external("ed", &ed);
-	kaba::link_external("model", &mode_model->data);
-	kaba::link_external("world", &mode_world->data);
+	kaba::link_external("model", &ed->mode_model->data);
+	kaba::link_external("world", &ed->mode_world->data);
 
 	kaba::declare_class_element("Edward.cur_mode", &Edward::cur_mode);
 

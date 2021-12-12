@@ -17,8 +17,6 @@
 #include "Dialog/FontDialog.h"
 #include "../../y/Font.h"
 
-ModeFont *mode_font = NULL;
-
 ModeFont::ModeFont(MultiView::MultiView *mv) :
 	Mode("Font", NULL, new DataFont, mv, "menu_font")
 {
@@ -121,7 +119,6 @@ bool ModeFont::open()
 		return false;
 
 	optimize_view();
-	ed->set_mode(mode_font);
 	return true;
 }
 
@@ -134,7 +131,6 @@ void ModeFont::_new()
 
 	data->reset();
 	optimize_view();
-	ed->set_mode(mode_font);
 }
 
 
@@ -175,7 +171,7 @@ void ModeFont::on_data_update() {
 
 void Draw2D(const rect &source, const rect *dest)
 {
-	MultiView::MultiView *mv = mode_font->multi_view;
+	MultiView::MultiView *mv = ed->mode_font->multi_view;
 	rect d;
 	if (dest){
 		d=rect(	nix::target_width/2-(mv->cam.pos.x-dest->x1)*mv->active_win->zoom(),
@@ -188,7 +184,7 @@ void Draw2D(const rect &source, const rect *dest)
 }
 
 void DrawLineH(float x1, float x2, float y) {
-	MultiView::MultiView *mv = mode_font->multi_view;
+	MultiView::MultiView *mv = ed->mode_font->multi_view;
 	x1 = nix::target_width/2-(mv->cam.pos.x - x1)*mv->active_win->zoom();
 	x2 = nix::target_width/2-(mv->cam.pos.x - x2)*mv->active_win->zoom();
 	y  = nix::target_height/2-(mv->cam.pos.y - y )*mv->active_win->zoom();
@@ -196,7 +192,7 @@ void DrawLineH(float x1, float x2, float y) {
 }
 
 void DrawLineV(float x, float y1, float y2) {
-	MultiView::MultiView *mv = mode_font->multi_view;
+	MultiView::MultiView *mv = ed->mode_font->multi_view;
 	x  = nix::target_width/2-(mv->cam.pos.x - x )*mv->active_win->zoom();
 	y1 = nix::target_height/2-(mv->cam.pos.y - y1)*mv->active_win->zoom();
 	y2 = nix::target_height/2-(mv->cam.pos.y - y2)*mv->active_win->zoom();

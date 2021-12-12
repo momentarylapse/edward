@@ -10,6 +10,7 @@
 #include "../../../../Edward.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../lib/nix/nix.h"
 #include "../../../../lib/math/vec2.h"
 #include "../ModeModelMesh.h"
@@ -37,7 +38,7 @@ void MeshSelectionModePolygon::on_draw_win(MultiView::Window *win) {
 	vbs.build(parent->vb_hover, 1);
 
 	nix::set_offset(-2.0f);
-	mode_model->set_material_hover();
+	set_material_hover();
 	nix::draw_triangles(parent->vb_hover);
 	nix::set_material(White, 0.5f, 0, Black);
 	nix::disable_alpha();

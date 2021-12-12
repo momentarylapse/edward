@@ -42,8 +42,6 @@
 #include "Terrain/ModeWorldTerrain.h"
 #include "../../lib/kaba/kaba.h"
 
-ModeWorld *mode_world = NULL;
-
 
 #define RotationMouseSpeed			0.002f
 #define TerrainHeightMapFactorDec	4
@@ -135,7 +133,7 @@ void ModeWorld::on_command(const string & id) {
 		dialog->on_component_add();
 
 	if (id == "mode_world")
-		ed->set_mode(mode_world);
+		ed->set_mode(get_root());
 	if (id == "mode_world_camera")
 		ed->set_mode(mode_world_camera);
 	if (id == "mode_world_terrain")
@@ -309,7 +307,6 @@ void ModeWorld::_new() {
 
 	data->reset();
 	optimize_view();
-	ed->set_mode(mode_world);
 }
 
 
@@ -679,7 +676,7 @@ void ModeWorld::on_update_menu() {
 
 	ed->check("show_fx", show_effects);
 
-	ed->check("mode_world", mode_world->is_ancestor_of(ed->cur_mode) and !mode_world_camera->is_ancestor_of(ed->cur_mode) and !mode_world_terrain->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_world", get_root()->is_ancestor_of(ed->cur_mode) and !mode_world_camera->is_ancestor_of(ed->cur_mode) and !mode_world_terrain->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_world_camera", mode_world_camera->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_world_terrain", mode_world_terrain->is_ancestor_of(ed->cur_mode));
 

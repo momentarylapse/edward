@@ -90,7 +90,7 @@ void ModeModelAnimation::on_start() {
 
 
 	data->subscribe(this, [=]{ on_update(); });
-	mode_model->allow_selection_modes(false);
+	ed->mode_model->allow_selection_modes(false);
 
 	timer.reset();
 	runner = hui::RunRepeated(0.020f, [=]{ idle_function(); });

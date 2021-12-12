@@ -82,6 +82,4 @@ public:
 	Array<WorldLight> temp_lights;
 };
 
-extern ModeWorld* mode_world;
-
 #endif /* MODEWORLD_H_ */

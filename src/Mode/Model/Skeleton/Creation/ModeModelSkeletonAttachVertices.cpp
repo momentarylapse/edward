@@ -62,7 +62,7 @@ void ModeModelSkeletonAttachVertices::on_start() {
 	ed->set_side_panel(dialog);
 
 	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_polygon);
-	mode_model->allow_selection_modes(false);
+	ed->mode_model->allow_selection_modes(false);
 
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);
@@ -96,7 +96,7 @@ void ModeModelSkeletonAttachVertices::on_end() {
 
 	ed->set_side_panel(nullptr);
 
-	mode_model->allow_selection_modes(false);
+	ed->mode_model->allow_selection_modes(false);
 
 	//parent->on_update(data, "");
 }
@@ -136,7 +136,7 @@ void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win) {
 	mode_model_mesh->on_draw_win(win);
 
 	// weights
-	ModeModel::set_material_selected();
+	set_material_selected();
 	nix::set_shader(shader);
 	nix::draw_triangles(vb_weight);
 	nix::set_offset(0);

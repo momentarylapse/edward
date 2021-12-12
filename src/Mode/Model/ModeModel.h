@@ -42,15 +42,9 @@ public:
 	bool export_save_json();
 	bool export_write_json(const Path &filename);
 
-	static void set_material_selected();
-	static void set_material_hover();
-	static void set_material_creation(float intensity = 1.0f);
-
 	void run_properties_dialog();
 
 	void allow_selection_modes(bool allow);
 };
-
-extern ModeModel* mode_model;
 
 #endif /* MODEMODEL_H_ */

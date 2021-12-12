@@ -102,13 +102,13 @@ void ModeModelMesh::on_start() {
 	update_vertex_buffers(data->mesh->vertex);
 
 	set_selection_mode(selection_mode);
-	mode_model->allow_selection_modes(true);
+	ed->mode_model->allow_selection_modes(true);
 	on_data_update();
 }
 
 void ModeModelMesh::on_enter() {
 	current_material = 0;
-	mode_model->allow_selection_modes(true);
+	ed->mode_model->allow_selection_modes(true);
 	multi_view->set_allow_action(true);
 	multi_view->set_allow_select(true);
 }
@@ -655,27 +655,27 @@ void ModeModelMesh::draw_physical(MultiView::Window *win) {
 	for (auto &b: data->phys_mesh->ball) {
 		auto geo = GeometrySphere(data->phys_mesh->vertex[b.index].pos, b.radius, 6);
 		geo.build(nix::vb_temp);
-		mode_model->set_material_creation(1.5f);
+		set_material_creation(1.5f);
 		if (b.is_selected)
-			mode_model->set_material_selected();
+			set_material_selected();
 		if (multi_view->hover.data == &b)
-			mode_model->set_material_hover();
+			set_material_hover();
 		nix::draw_triangles(nix::vb_temp);
 	}
 
 	for (auto &c: data->phys_mesh->cylinder) {
 		auto geo = GeometryCylinder(data->phys_mesh->vertex[c.index[0]].pos, data->phys_mesh->vertex[c.index[1]].pos, c.radius, 1, 24, c.round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT);
 		geo.build(nix::vb_temp);
-		mode_model->set_material_creation(1.5f);
+		set_material_creation(1.5f);
 		if (c.is_selected)
-			mode_model->set_material_selected();
+			set_material_selected();
 		if (multi_view->hover.data == &c)
-			mode_model->set_material_hover();
+			set_material_hover();
 		nix::draw_triangles(nix::vb_temp);
 	}
 
 
-	mode_model->set_material_creation(1.5f);
+	set_material_creation(1.5f);
 	VertexStagingBuffer vbs;
 	for (auto &t: data->phys_mesh->polygon)
 		if (t.view_stage >= multi_view->view_stage)
@@ -730,7 +730,7 @@ void ModeModelMesh::draw_selection(MultiView::Window *win) {
 	nix::set_z(true, true);
 	nix::set_offset(-1.0f);
 
-	ModeModel::set_material_selected();
+	set_material_selected();
 	nix::draw_triangles(vb_marked);
 
 	nix::set_material(White, 0.5f, 0, Black);
@@ -742,7 +742,7 @@ void ModeModelMesh::draw_creation_preview(MultiView::Window *win) {
 	nix::set_z(true, true);
 	nix::set_offset(-1.0f);
 
-	ModeModel::set_material_creation();
+	set_material_creation();
 	nix::draw_triangles(vb_creation);
 
 	nix::set_material(White, 0.5f, 0, Black);

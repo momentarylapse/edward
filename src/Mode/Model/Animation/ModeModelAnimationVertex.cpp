@@ -24,7 +24,7 @@ ModeModelAnimationVertex::ModeModelAnimationVertex(ModeBase* _parent, MultiView:
 void ModeModelAnimationVertex::on_start() {
 	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-animation-vertex-toolbar");
 
-	mode_model->allow_selection_modes(true);
+	ed->mode_model->allow_selection_modes(true);
 
 	chooseMouseFunction(MultiView::ACTION_SELECT);
 

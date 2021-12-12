@@ -14,12 +14,10 @@
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
 
-ModeAdministration *mode_administration;
-
 ModeAdministration::ModeAdministration():
-	Mode<DataAdministration>("Administration", NULL, new DataAdministration, NULL, "menu_administration")
+	Mode<DataAdministration>("Administration", nullptr, new DataAdministration, nullptr, "menu_administration")
 {
-	dialog = NULL;
+	dialog = nullptr;
 }
 
 ModeAdministration::~ModeAdministration() {

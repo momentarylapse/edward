@@ -13,6 +13,7 @@
 #include "../../../../Data/Model/Geometry/GeometryTeapot.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../MultiView/Window.h"
+#include "../../../../MultiView/DrawingHelper.h"
 #include "../../../../lib/nix/nix.h"
 
 
@@ -88,7 +89,7 @@ void ModeModelMeshCreatePlatonic::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
 	if (pos_chosen) {
-		mode_model->set_material_creation();
+		set_material_creation();
 
 		geo->build(nix::vb_temp);
 		nix::draw_triangles(nix::vb_temp);

@@ -35,12 +35,12 @@ ModeMaterial *mode_material = NULL;
 #define __MATERIAL_MAX_TEXTURES		4
 
 ModeMaterial::ModeMaterial(MultiView::MultiView *mv) :
-	Mode("Material", NULL, new DataMaterial, mv, "menu_material")
+	Mode("Material", nullptr, new DataMaterial, mv, "menu_material")
 {
-	geo = NULL;
+	geo = nullptr;
 
-	appearance_dialog = NULL;
-	shader_graph_dialog = NULL;
+	appearance_dialog = nullptr;
+	shader_graph_dialog = nullptr;
 	shader_edit_mode = ShaderEditMode::NONE;
 
 	shape_type = hui::Config.get_str("MaterialShapeType", "teapot");
@@ -53,7 +53,6 @@ ModeMaterial::~ModeMaterial() {
 void ModeMaterial::_new() {
 	data->reset();
 	optimize_view();
-	ed->set_mode(mode_material);
 }
 
 
@@ -211,7 +210,7 @@ void ModeMaterial::on_end() {
 		delete MaterialVB[i];
 
 	//shader->unref();
-	shader = NULL;
+	shader = nullptr;
 }
 
 

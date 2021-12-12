@@ -167,7 +167,7 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win) {
 	parent->on_draw_win(win);
 
 	if (geo) {
-		ModeModel::set_material_creation(0.3f);
+		set_material_creation(0.3f);
 		geo->build(nix::vb_temp);
 		nix::draw_triangles(nix::vb_temp);
 	}
