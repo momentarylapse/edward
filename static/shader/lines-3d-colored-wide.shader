@@ -1,5 +1,5 @@
 <Layout>
-	version = 330 core
+	version = 420
 </Layout>
 <VertexShader>
 
@@ -10,14 +10,14 @@ struct Matrix {
 };
 /*layout(binding = 0)*/ uniform Matrix matrix;
 
-layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec4 inColor;
+layout(location=0) in vec3 in_pos;
+layout(location=1) in vec4 in_color;
 
-out vec4 fragmentColor0;
+layout(location=0) out vec4 out_color;
 
 void main() {
-	gl_Position = matrix.project * matrix.view * matrix.model * vec4(inPosition, 1);
-	fragmentColor0 = inColor;
+	gl_Position = matrix.project * matrix.view * matrix.model * vec4(in_pos, 1);
+	out_color = in_color;
 }
 
 </VertexShader>
@@ -26,8 +26,8 @@ void main() {
 layout (lines) in;
 layout (triangle_strip, max_vertices = 4) out;
 
-in vec4 fragmentColor0[];
-out vec4 fragmentColor;
+layout(location=0) in vec4 in_color[];
+layout(location=0) out vec4 out_color;
 
 uniform float target_width = 1024, target_height = 768;
 uniform float line_width = 4;
@@ -41,19 +41,19 @@ void main() {
 	d = vec2(d.x / target_width*2, d.y / target_height*2);
 
 	gl_Position = gl_in[0].gl_Position - vec4(d*w0,0,0);
-	fragmentColor = fragmentColor0[0];
+	out_color = in_color[0];
 	EmitVertex();
 
 	gl_Position = gl_in[1].gl_Position - vec4(d*w1,0,0);
-	fragmentColor = fragmentColor0[1];
+	out_color = in_color[1];
 	EmitVertex();
     
 	gl_Position = gl_in[0].gl_Position + vec4(d*w0,0,0);
-	fragmentColor = fragmentColor0[0];
+	out_color = in_color[0];
 	EmitVertex();
 
 	gl_Position = gl_in[1].gl_Position + vec4(d*w1,0,0);
-	fragmentColor = fragmentColor0[1];
+	out_color = in_color[1];
 	EmitVertex();
     
 	EndPrimitive();
@@ -62,12 +62,12 @@ void main() {
 </GeometryShader>
 <FragmentShader>
 
-in vec4 fragmentColor;
+layout(location=0) in vec4 in_color;
 
-out vec4 color;
+out vec4 out_color;
 
 void main() {
-	color = fragmentColor;
+	out_color = in_color;
 }
 
 </FragmentShader>

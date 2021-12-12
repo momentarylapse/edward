@@ -1,21 +1,23 @@
 <Layout>
-	version = 330 core
+	version = 420
 </Layout>
 <VertexShader>
 
 
-struct Matrix { mat4 model, view, project; };
-/*layout(binding = 0)*/ uniform Matrix matrix;
+struct Matrix {
+	mat4 model, view, project;
+};
+/*layout(binding=0)*/ uniform Matrix matrix;
 
-layout(location = 0) in vec3 in_position;
-layout(location = 1) in vec3 in_normal;
-layout(location = 2) in vec2 in_uv;
-layout(location = 3) in float in_weight;
+layout(location=0) in vec3 in_position;
+layout(location=1) in vec3 in_normal;
+layout(location=2) in vec2 in_uv;
+layout(location=3) in float in_weight;
 
-layout(location = 0) out vec4 out_pos; // world space
-layout(location = 1) out vec2 out_uv;
-layout(location = 2) out vec3 out_normal;
-layout(location = 3) out float out_weight;
+layout(location=0) out vec4 out_pos; // view space
+layout(location=1) out vec3 out_normal;
+layout(location=2) out vec2 out_uv;
+layout(location=3) out float out_weight;
 
 void main() {
 	gl_Position = matrix.project * matrix.view * matrix.model * vec4(in_position, 1);
@@ -31,7 +33,9 @@ void main() {
 <FragmentShader>
 
 
-struct Material { vec4 albedo, emission; float roughness, metal; };
+struct Material {
+	vec4 albedo, emission; float roughness, metal;
+};
 uniform Material material;
 
 struct Light {
@@ -40,15 +44,19 @@ struct Light {
 	float radius, theta, harshness;
 };
 uniform int num_lights = 0;
-/*layout(binding = 1)*/ uniform LightData { Light light[32]; };
+/*layout(binding=1)*/ uniform LightData {
+	Light light[32];
+};
 
-struct Matrix { mat4 model, view, project; };
-/*layout(binding = 0)*/ uniform Matrix matrix;
+struct Matrix {
+	mat4 model, view, project;
+};
+/*layout(binding=0)*/ uniform Matrix matrix;
 
-layout(location = 0) in vec4 in_pos; // world space
-layout(location = 1) in vec2 in_uv;
-layout(location = 2) in vec3 in_normal;
-layout(location = 3) in float in_weight;
+layout(location=0) in vec4 in_pos; // view space
+layout(location=1) in vec3 in_normal;
+layout(location=2) in vec2 in_uv;
+layout(location=3) in float in_weight;
 
 out vec4 color;
 

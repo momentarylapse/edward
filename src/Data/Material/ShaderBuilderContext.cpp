@@ -74,9 +74,17 @@ string ShaderBuilderContext::build_helper_vars() {
 	auto vars = dependencies;
 	if (vars.contains("in:light")) {
 		source +=
-			"struct Light { mat4 proj; vec4 pos, dir, color; float radius, theta, harshness; };\n"
-			"/*layout(binding = 1)*/ uniform LightData { Light light[32]; };\n"
-			"uniform int num_lights = 0;\n";
+R"foodelim(struct Light {
+	mat4 proj;
+	vec4 pos, dir, color;
+	float radius, theta, harshness;
+};
+#ifdef vulkan
+#else
+/*layout(binding=1)*/ uniform LightData { Light light[32]; };
+uniform int num_lights = 0;
+#endif
+)foodelim";
 	}
 	if (vars.contains("in:fog")) {
 		source +=
@@ -85,43 +93,53 @@ string ShaderBuilderContext::build_helper_vars() {
 	}
 	if (vars.contains("in:material")) {
 		source +=
-			"struct Material { vec4 albedo, emission; float roughness, metal; };\n"
-			"uniform Material material;\n";
-	}
-	if (vars.contains("in:normal")) {
-		source += "layout(location = 0) in vec3 in_normal;\n";
-	}
-	if (vars.contains("in:uv")) {
-		source += "layout(location = 1) in vec2 in_uv;\n";
+R"foodelim(struct Material {
+	vec4 albedo, emission;
+	float roughness, metal;
+};
+#ifdef vulkan
+#else
+uniform Material material;
+#endif
+)foodelim";
 	}
 	if (vars.contains("in:pos")) {
-		source += "layout(location = 2) in vec4 in_pos; // world\n";
+		source += "layout(location=0) in vec4 in_pos; // view space\n";
+	}
+	if (vars.contains("in:normal")) {
+		source += "layout(location=1) in vec3 in_normal;\n";
+	}
+	if (vars.contains("in:uv")) {
+		source += "layout(location=2) in vec2 in_uv;\n";
 	}
 	if (vars.contains("in:eye")) {
 		source += "uniform vec3 eye_pos;\n";
 	}
 	if (vars.contains("texture0")) {
-		source += "uniform sampler2D tex0;\n";
+		source += "uniform(binding = 4) sampler2D tex0;\n";
 	}
 	if (vars.contains("texture1")) {
-		source += "uniform sampler2D tex1;\n";
+		source += "uniform(binding=5) sampler2D tex1;\n";
 	}
 	if (vars.contains("texture2")) {
-		source += "uniform sampler2D tex2;\n";
+		source += "uniform(binding=6) sampler2D tex2;\n";
 	}
 	if (vars.contains("texture3")) {
-		source += "uniform sampler2D tex3;\n";
+		source += "uniform(binding=7) sampler2D tex3;\n";
 	}
 	if (vars.contains("cubemap")) {
-		source += "uniform samplerCube tex4;\n";
+		source += "uniform samplerCube tex_cube;\n";
 	}
-	if (vars.contains("in:matrix") or vars.contains("matworld") or vars.contains("matproject")) {
+	if (vars.contains("in:matrix")) {
 		source +=
-			"struct Matrix { mat4 model, view, project; };\n"
-			"/*layout(binding = 0)*/ uniform Matrix matrix;\n";
+R"foodelim(struct Matrix {
+	mat4 model, view, project;
+};
+/*layout(binding=0)*/ uniform Matrix matrix;
+)foodelim";
 	}
 	if (vars.contains("out:color")) {
-		source += "layout(location = 0) out vec4 out_color;\n";
+		source += "layout(location=0) out vec4 out_color;\n";
 	}
 
 

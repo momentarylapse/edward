@@ -398,7 +398,7 @@ void ModeWorld::apply_lighting(MultiView::Window *win) {
 		l.theta = -1;
 		l.radius = -1;
 		l.pos = ll.pos;
-		l.dir = ll.ang.ang2dir();
+		l.dir = win->local_ang.bar() * ll.ang.ang2dir();
 		if (ll.type == LightType::DIRECTIONAL) {
 			//l.theta = pi;
 			l.col = ll.col;

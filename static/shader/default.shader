@@ -1,24 +1,11 @@
 <Layout>
 	version = 420
 	bindings = [[buffer,buffer,sampler,sampler,sampler,sampler,sampler]]
-	pushsize = 0
-	input = [vec3,vec3,vec2]
-	topology = triangles
 </Layout>
 <FragmentShader>
 #import surface
 
-#ifdef vulkan
-#else
-
-struct Material { vec4 albedo, emission; float roughness, metal; };
-uniform Material material;
-//struct Matrix { mat4 model, view, project; };
-///*layout(binding = 0)*/ uniform Matrix matrix;
-
-#endif
-
-layout(binding = 4) uniform sampler2D tex0;
+layout(binding=4) uniform sampler2D tex0;
 
 void main() {
 	// Mesh

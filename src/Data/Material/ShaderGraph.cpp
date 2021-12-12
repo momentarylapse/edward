@@ -229,6 +229,8 @@ string ShaderGraph::build_fragment_source() const {
 		ctx.dependencies.erase("in:uv");
 		ctx.dependencies.erase("in:pos");
 		ctx.dependencies.erase("in:eye");
+		ctx.dependencies.erase("in:matrix");
+		ctx.dependencies.erase("in:material");
 		ctx.dependencies.erase("cubemap");
 	}
 
@@ -247,10 +249,12 @@ string ShaderGraph::build_fragment_source() const {
 
 string ShaderGraph::build_source() const {
 	string pre =
-			"<Layout>\n"
-			"	version = 420\n"
-			"</Layout>\n"
-			"<FragmentShader>\n";
+R"foodelim(<Layout>
+	version = 420
+	bindings = [[buffer,buffer,sampler,sampler,sampler,sampler,sampler]]
+</Layout>
+<FragmentShader>
+)foodelim";
 	string post = "</FragmentShader>\n";
 
 	return pre + build_fragment_source() + post;

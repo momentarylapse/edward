@@ -4,6 +4,19 @@
 </Layout>
 <Module>
 
+#ifdef vulkan
+#else
+
+struct Material {
+	vec4 albedo, emission;
+	float roughness, metal;
+};
+uniform Material material;
+//struct Matrix { mat4 model, view, project; };
+///*layout(binding = 0)*/ uniform Matrix matrix;
+
+#endif
+
 
 uniform vec3 eye_pos;
 
@@ -18,7 +31,7 @@ struct Light {
 uniform int num_lights = 0;
 uniform int shadow_index = -1;
 
-/*layout(binding = 1)*/ uniform LightData {
+/*layout(binding=1)*/ uniform LightData {
 	Light light[32];
 };
 
@@ -28,16 +41,18 @@ struct Fog {
 };
 /*layout(binding = 3)*/ uniform Fog fog;
 
-layout(binding = 6) uniform sampler2D tex3;//sampler_shadow;
-layout(binding = 7) uniform sampler2D tex4;//sampler_shadow2;
+layout(binding=2) uniform sampler2D tex3;//sampler_shadow;
+layout(binding=3) uniform sampler2D tex4;//sampler_shadow2;
+#define tex_shadow0 tex3
+#define tex_shadow1 tex4
 uniform samplerCube tex_cube;
 
 
-layout(location = 0) in vec4 in_pos; // world
-layout(location = 1) in vec2 in_uv;
-layout(location = 2) in vec3 in_normal;
+layout(location=0) in vec4 in_pos; // view space
+layout(location=1) in vec3 in_normal;
+layout(location=2) in vec2 in_uv;
 
-layout(location = 0) out vec4 out_color;
+layout(location=0) out vec4 out_color;
 
 const float PI = 3.141592654;
 

@@ -416,7 +416,8 @@ void Window::set_shader(nix::Shader *s, int num_lights) {
 	nix::set_shader(s);
 	s->set_int("num_lights", num_lights);
 	vector pos = get_lighting_eye_pos();
-	s->set_floats("eye_pos", &pos.x, 3);
+	//s->set_floats("eye_pos", &pos.x, 3);
+	s->set_floats("eye_pos", &v_0.x, 3);
 }
 
 void Window::draw() {
@@ -444,7 +445,7 @@ void Window::draw() {
 
 	nix::set_z(true, true);
 	// light
-	multi_view->set_light(cam->ang * vector::EZ, White, 0.7f);
+	multi_view->set_light(this, cam->ang * vector::EZ, White, 0.7f);
 	nix::set_material(White, 0, 0, White);//Black);
 	set_color(White);
 	set_shader(nix::Shader::default_3d);

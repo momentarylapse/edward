@@ -1,5 +1,5 @@
 <Layout>
-	version = 330 core
+	version = 420
 </Layout>
 <VertexShader>
 
@@ -10,25 +10,25 @@ struct Matrix {
 };
 /*layout(binding = 0)*/ uniform Matrix matrix;
 
-layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec4 inColor;
+layout(location=0) in vec3 in_pos;
+layout(location=1) in vec4 in_color;
 
-out vec4 fragmentColor;
+layout(location=0) out vec4 out_color;
 
 void main() {
-	gl_Position = matrix.project * matrix.view * matrix.model * vec4(inPosition, 1);
-	fragmentColor = inColor;
+	gl_Position = matrix.project * matrix.view * matrix.model * vec4(in_pos, 1);
+	out_color = in_color;
 }
 
 </VertexShader>
 <FragmentShader>
 
-in vec4 fragmentColor;
+layout(location=0) in vec4 in_color;
 
-out vec4 color;
+out vec4 out_color;
 
 void main() {
-	color = fragmentColor;
+	out_color = in_color;
 }
 
 </FragmentShader>

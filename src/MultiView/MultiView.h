@@ -128,7 +128,7 @@ public:
 	bool light_enabled;
 
 	nix::UniformBuffer *ubo_light;
-	void set_light(const vector &dir, const color &col, float harshness);
+	void set_light(Window *win, const vector &dir, const color &col, float harshness);
 
 	bool snap_to_grid;
 

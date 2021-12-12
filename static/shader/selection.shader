@@ -1,5 +1,5 @@
 <Layout>
-	version = 330 core
+	version = 420
 </Layout>
 <VertexShader>
 #import vertex-default
@@ -7,7 +7,10 @@
 <FragmentShader>
 
 
-struct Material { vec4 albedo, emission; float roughness, metal; };
+struct Material {
+	vec4 albedo, emission;
+	float roughness, metal;
+};
 uniform Material material;
 
 struct Light {
@@ -18,12 +21,14 @@ struct Light {
 uniform int num_lights = 0;
 /*layout(binding = 1)*/ uniform LightData { Light light[32]; };
 
-struct Matrix { mat4 model, view, project; };
+struct Matrix {
+	mat4 model, view, project;
+};
 /*layout(binding = 0)*/ uniform Matrix matrix;
 
-layout(location = 0) in vec4 in_pos; // world space
-layout(location = 1) in vec2 in_uv;
-layout(location = 2) in vec3 in_normal;
+layout(location=0) in vec4 in_pos; // view space
+layout(location=1) in vec3 in_normal;
+layout(location=2) in vec2 in_uv;
 
 out vec4 color;
 
