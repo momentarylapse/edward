@@ -207,7 +207,7 @@ Edward::Edward(Array<string> arg) :
 	else
 		plugins = new PluginManager(app->directory << "Plugins");
 
-	mode_material = new ModeMaterial;
+	mode_material = new ModeMaterial(multi_view_3d);
 
 
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;

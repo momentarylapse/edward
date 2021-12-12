@@ -20,7 +20,7 @@ namespace nix {
 
 class ModeMaterial: public Mode<DataMaterial> {
 public:
-	ModeMaterial();
+	ModeMaterial(MultiView::MultiView *mv);
 	virtual ~ModeMaterial();
 
 	void on_start() override;

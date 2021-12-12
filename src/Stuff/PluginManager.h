@@ -17,6 +17,7 @@ public:
 
 	void init();
 	void link_plugins();
+	void link_plugins_later();
 	void find_plugins();
 
 	enum class PluginType {

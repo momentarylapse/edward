@@ -34,8 +34,8 @@ ModeMaterial *mode_material = NULL;
 
 #define __MATERIAL_MAX_TEXTURES		4
 
-ModeMaterial::ModeMaterial() :
-	Mode("Material", NULL, new DataMaterial, ed->multi_view_3d, "menu_material")
+ModeMaterial::ModeMaterial(MultiView::MultiView *mv) :
+	Mode("Material", NULL, new DataMaterial, mv, "menu_material")
 {
 	geo = NULL;
 
@@ -111,8 +111,11 @@ void ModeMaterial::update_textures() {
 }
 
 void ModeMaterial::update_shader() {
+	msg_write("update shader");
 	try {
-		shader->update(ResourceManager::expand_vertex_shader_source(data->shader.code, "default"));
+		auto code = ResourceManager::expand_vertex_shader_source(data->shader.code, "default");
+		code = ResourceManager::expand_fragment_shader_source(code, "forward");
+		shader->update(code);
 	} catch(Exception &e) {
 		msg_error(e.message());
 	}
@@ -220,6 +223,7 @@ bool ModeMaterial::save_as() {
 
 
 void ModeMaterial::on_start() {
+	msg_write("Material.on start");
 
 	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("material-toolbar");
 	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
