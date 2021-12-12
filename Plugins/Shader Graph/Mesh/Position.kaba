@@ -11,13 +11,13 @@ class NodePosition extends shader.Node
 		var t = c.create_out(self, 0)
 		if params[0].value == "1" # world
 			return "
-	vec3 {{t}} = in_pos.xyz / in_pos.w;"
+	vec3 {{t}} = (inverse(matrix.view) * (in_pos / in_pos.w)).xyz;"
 		if params[0].value == "2" # cam
 			return "
-	vec3 {{t}} = (matrix.view * in_pos).xyz;"
+	vec3 {{t}} = in_pos.xyz / in_pos.w;"
 		if params[0].value == "3" # window
 			return "
-	vec3 {{t}} = (matrix.project * matrix.view * in_pos).xyz;"
+	vec3 {{t}} = (matrix.project * (in_pos / in_pos.w)).xyz;"
 		#if params[0].value == "0" # model
 		return "
-	vec3 {{t}} = (inverse(matrix.model) * in_pos).xyz;"
+	vec3 {{t}} = (inverse(matrix.view * matrix.model) * (in_pos / in_pos.w)).xyz;"
