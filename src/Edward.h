@@ -72,7 +72,7 @@ public:
 	ModeBase *get_mode(int type);
 	bool universal_new(int type);
 	bool universal_open(int preferred_type);
-	bool universal_edit(int type, const Path &filename);
+	bool universal_edit(int type, const Path &filename, bool relative_path);
 
 	virtual void _cdecl on_draw_gl();
 	virtual void _cdecl on_key_down() override;

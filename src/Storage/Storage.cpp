@@ -206,7 +206,7 @@ Path Storage::get_root_dir(int kind) {
 	return root_dir_kind[kind];
 }
 
-string fd_ext(int kind) {
+string Storage::fd_ext(int kind) {
 	if (kind == FD_MODEL)
 		return "model";
 	if (kind == FD_TEXTURE)

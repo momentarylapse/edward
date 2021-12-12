@@ -323,21 +323,8 @@ bool Edward::handle_arguments(Array<string> arg)
 
 	int type = storage->guess_type(param);
 
-	if (type == FD_MODEL) {
-		storage->load(param, mode_model->data);
-		set_mode(mode_model);
-	} else if (type == FD_MATERIAL) {
-		storage->load(param, mode_material->data);
-		set_mode(mode_material);
-	/*} else if (type == FD_TERRAIN) {
-		mode_world->data->add_terrain(Path(param).no_ext(), vector(0,0,0));
-		set_mode(mode_world);*/
-	} else if (type == FD_WORLD) {
-		storage->load(param, mode_world->data);
-		set_mode(mode_world);
-	} else if (type == FD_FONT) {
-		storage->load(param, mode_font->data);
-		set_mode(mode_font);
+	if (type >= 0) {
+		universal_edit(type, param, false);
 	} else {
 		error_box(_("Unknown file extension: ") + param);
 		app->end();
@@ -593,9 +580,26 @@ bool Edward::universal_open(int preferred_type) {
 	return true;
 }
 
-bool Edward::universal_edit(int type, const Path &filename) {
+Path add_extension_if_needed(int type, const Path &filename) {
+	auto e = filename.extension();
+	if (e.num == 0)
+		return filename.with("." + storage->fd_ext(type));
+	return filename;
+}
+
+Path make_absolute_path(int type, const Path &filename, bool relative_path) {
+	if (relative_path)
+		return storage->get_root_dir(type) << filename;
+	return filename;
+}
+
+bool Edward::universal_edit(int type, const Path &_filename, bool relative_path) {
 	if (!allow_termination())
 		return false;
+	msg_write("EDIT");
+	msg_write(_filename.str());
+	Path filename = make_absolute_path(type, add_extension_if_needed(type, _filename), relative_path);
+	msg_write(filename.str());
 	switch (type){
 		case -1:
 			if (filename.basename() == "config.txt")
@@ -604,25 +608,32 @@ bool Edward::universal_edit(int type, const Path &filename) {
 				mode_admin->BasicSettings();
 			break;
 		case FD_MODEL:
-			if (storage->load(filename, mode_model->data, true))
+			if (storage->load(filename, mode_model->data, true)) {
 				set_mode(mode_model);
+				mode_model_mesh->optimize_view();
+			}
 			break;
 		case FD_MATERIAL:
-			if (storage->load(filename, mode_material->data, true))
+			if (storage->load(filename, mode_material->data, true)) {
 				set_mode(mode_material);
+				mode_material->optimize_view();
+			}
 			break;
 		case FD_FONT:
 			if (storage->load(filename, mode_font->data, true))
 				set_mode(mode_font);
 			break;
 		case FD_WORLD:
-			if (storage->load(filename, mode_world->data, true))
+			if (storage->load(filename, mode_world->data, true)) {
 				set_mode(mode_world);
+				mode_world->optimize_view();
+			}
 			break;
 		case FD_TERRAIN:
 			mode_world->data->reset();
-			if (mode_world->data->add_terrain(filename.relative_to(engine.map_dir).no_ext(), v_0)){
+			if (mode_world->data->add_terrain(filename.relative_to(engine.map_dir).no_ext(), v_0)) {
 				set_mode(mode_world);
+				mode_world->optimize_view();
 			}
 			break;
 		case FD_CAMERAFLIGHT:

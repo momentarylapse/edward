@@ -65,6 +65,7 @@ WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
 	event_x("component-list", "hui:right-button-down", [=] { on_component_list_right_click(); });
 	event("component-add", [=] { on_component_add(); });
 	event("component-delete", [=] { on_component_delete(); });
+	event("edit_object", [=] { on_object_edit(); });
 
 	fill_list();
 
@@ -105,6 +106,15 @@ void WorldObjectListPanel::on_component_delete() {
 	oo.components.erase(row);
 	auto a = new ActionWorldEditObject(ii.index, oo);
 	data->execute(a);
+}
+
+void WorldObjectListPanel::on_object_edit() {
+	auto &ii = list_indices[editing];
+	if (ii.type != MVD_WORLD_OBJECT)
+		return;
+	auto &o = data->objects[ii.index];
+
+	ed->universal_edit(FD_MODEL, o.filename, true);
 }
 
 void WorldObjectListPanel::fill_list() {

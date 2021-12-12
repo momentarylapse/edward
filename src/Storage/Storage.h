@@ -37,6 +37,7 @@ public:
 	void guess_root_directory(const Path &filename);
 
 	Path get_root_dir(int kind);
+	string fd_ext(int kind);
 
 	bool file_dialog(int kind, bool save, bool force_in_root_dir);
 	bool file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir);

@@ -226,7 +226,7 @@ void AdministrationDialog::OnEdit() {
 	AdminFile *a = GetSingleSelectedFile();
 	if (!a)
 		return;
-	ed->universal_edit(a->Kind, storage->get_root_dir(a->Kind) << a->Name);
+	ed->universal_edit(a->Kind, a->Name, true);
 }
 
 void AdministrationDialog::OnFileList() {
