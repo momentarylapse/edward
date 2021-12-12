@@ -32,8 +32,10 @@ ConfigurationDialog::ConfigurationDialog(hui::Window* _parent, DataAdministratio
 	load_data();
 }
 
-void ConfigurationDialog::load_data()
-{
+const Array<string> WINDOW_MODES = {"windowed", "windowed-fullscreen", "fullscreen"};
+const Array<string> RENDER_PATHS = {"direct", "forward", "deferred"};
+
+void ConfigurationDialog::load_data() {
 	if (exporting){
 		#ifdef HUI_OS_WINDOWS
 			setInt("ged_system", 1);
@@ -51,6 +53,12 @@ void ConfigurationDialog::load_data()
 	set_string("script", game.default_script().str());
 	set_string("material", game.default_material().str());
 	set_string("font", game.default_font().str());
+
+	set_int("render-path", max(0, RENDER_PATHS.find(game.get_str("renderer.path", "forward"))));
+	set_int("mode", max(0, WINDOW_MODES.find(game.get_str("screen.mode", "windowed"))));
+	check("hdr", true);
+	set_int("fps-target", game.get_int("renderer.target-framerate", 60));
+	set_float("scale-min", game.get_float("renderer.resolution-scale-min", 1.0f));
 
 	set_string("root-directory", storage->root_dir.str());
 }
@@ -92,6 +100,11 @@ void ConfigurationDialog::into_game_init(GameIniData &g) {
 	g.set_str(g.ID_SCRIPT, get_string("script"));
 	g.set_str(g.ID_MATERIAL, get_string("material"));
 	g.set_str(g.ID_FONT, get_string("font"));
+
+	g.set_str("screen.mode", WINDOW_MODES[get_int("mode")]);
+	g.set_str("renderer.path", RENDER_PATHS[get_int("render-path")]);
+	g.set_int("renderer.target-framerate", get_int("fps-target"));
+	g.set_float("renderer.resolution-scale-min", get_float("scale-min"));
 }
 
 void ConfigurationDialog::on_ok() {

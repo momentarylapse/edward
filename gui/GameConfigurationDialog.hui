@@ -1,28 +1,49 @@
-Dialog game-config-dialog "Rudimentary configuration" width=365 height=250 headerbar closebutton=no resizable
+Dialog game-config-dialog "Game configuration" width=365 height=250 headerbar closebutton=no resizable
 	Grid ? "" vertical
 		Group g-dir "Directory"
 			Edit root-directory "" disabled
-		Group g-init "Startup game values"
+		TabControl tab "Startup game values\\Graphics" expandy
 			Grid ? ""
-				Text t-world "World" right disabled
+				Label t-world "World" right disabled
 				Edit world "" expandx
 				Button find-world "" image=hui:open
 				---|
-				Text t-second-world "Second world" right disabled
+				Label t-second-world "Second world" right disabled
 				Edit second-world ""
 				Button find-second-world "" image=hui:open
 				---|
-				Text t-script "Main script" right disabled
+				Label t-script "Main script" right disabled
 				Edit script ""
 				Button find-script "" image=hui:open
 				---|
-				Text t-material "Material" right disabled
+				Label t-material "Material" right disabled
 				Edit material ""
 				Button find-material "" image=hui:open
 				---|
-				Text t-font "Font" right disabled
+				Label t-font "Font" right disabled
 				Edit font ""
 				Button find-font "" image=hui:open
+			Grid ? ""
+				Label t-mode "Mode" right disabled
+				ComboBox mode "windowed\\windowed fullscreen\\fullscreen" expandx
+				---|
+				Label t-resolution "Resolution" right disabled
+				ComboBox resolution "1920 x 1080\\1024 x 768" disabled
+				---|
+				Label t-render-path "Render path" right disabled
+				ComboBox render-path "direct\\forward\\deferred shading" "tooltip=Strategy for rendering:\n * direct: fast but no post processing\n * forward: fast\n * deferred: heavier, allows more light sources"
+				---|
+				Label t-quality "Quality" right disabled
+				ComboBox quality "physics based rendering" disabled
+				---|
+				.
+				CheckBox hdr "high dynamic range" disabled
+				---|
+				Label t-fps-target "Target fps" right disabled
+				SpinButton fps-target "" range=1:9999 "tooltip=Trying to keep this amount of frames per second"
+				---|
+				Label t-scale-min "Scale min" right disabled
+				SpinButton scale-min "" range=0:1:0.01 "tooltip=Allow dynamic resolution scaling down to this fraction of the target resolution"
 		Grid ? "" buttonbar
 			Button /cancel "Cancel"
 			---|
