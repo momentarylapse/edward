@@ -338,7 +338,7 @@ void ModeWorld::on_draw() {
 void ModeWorld::on_end() {
 	if (world_dialog)
 		delete world_dialog;
-	world_dialog = NULL;
+	world_dialog = nullptr;
 
 	ed->toolbar[hui::TOOLBAR_TOP]->reset();
 	ed->toolbar[hui::TOOLBAR_TOP]->enable(false);

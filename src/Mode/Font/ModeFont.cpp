@@ -169,9 +169,8 @@ void ModeFont::on_data_update() {
 
 // FIXME argh.... should be unnecessary thanks to better projection system now!!!!
 
-void Draw2D(const rect &source, const rect *dest)
-{
-	MultiView::MultiView *mv = ed->mode_font->multi_view;
+void Draw2D(MultiView::Window *win, const rect &source, const rect *dest) {
+	MultiView::MultiView *mv = win->multi_view;
 	rect d;
 	if (dest){
 		d=rect(	nix::target_width/2-(mv->cam.pos.x-dest->x1)*mv->active_win->zoom(),
@@ -183,16 +182,16 @@ void Draw2D(const rect &source, const rect *dest)
 		draw_2d(source, nix::target_rect, 0);
 }
 
-void DrawLineH(float x1, float x2, float y) {
-	MultiView::MultiView *mv = ed->mode_font->multi_view;
+void DrawLineH(MultiView::Window *win, float x1, float x2, float y) {
+	MultiView::MultiView *mv = win->multi_view;
 	x1 = nix::target_width/2-(mv->cam.pos.x - x1)*mv->active_win->zoom();
 	x2 = nix::target_width/2-(mv->cam.pos.x - x2)*mv->active_win->zoom();
 	y  = nix::target_height/2-(mv->cam.pos.y - y )*mv->active_win->zoom();
 	draw_line_2d(x1, y, x2, y, 0);
 }
 
-void DrawLineV(float x, float y1, float y2) {
-	MultiView::MultiView *mv = ed->mode_font->multi_view;
+void DrawLineV(MultiView::Window *win, float x, float y1, float y2) {
+	MultiView::MultiView *mv = win->multi_view;
 	x  = nix::target_width/2-(mv->cam.pos.x - x )*mv->active_win->zoom();
 	y1 = nix::target_height/2-(mv->cam.pos.y - y1)*mv->active_win->zoom();
 	y2 = nix::target_height/2-(mv->cam.pos.y - y2)*mv->active_win->zoom();
@@ -210,21 +209,21 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 	rect d = rect(0, (float)data->TextureWidth, 0, (float)data->TextureHeight);
 	nix::set_texture(NULL);
 	set_color(White);
-	Draw2D(rect::ID, &d);
+	Draw2D(win, rect::ID, &d);
 	nix::set_texture(data->Texture.get());
 	set_color(Black);
-	Draw2D(rect::ID, &d);
+	Draw2D(win, rect::ID, &d);
 	nix::set_texture(NULL);
 
 	// grid (horizontal lines)
 	set_line_width(1.0f);
 	for (int i=0;i<NumY;i++){
 		set_color(color(0.3f,0.0f,0.8f,0.0f));
-		DrawLineH(0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY1);
+		DrawLineH(win, 0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY1);
 		set_color(color(0.3f,0.0f,1.0f,0.0f));
-		DrawLineH(0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY2);
+		DrawLineH(win, 0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY2);
 		set_color(color(0.5f,0.5f,0.5f,0.5f));
-		DrawLineH(0, data->TextureWidth,(i+1)*data->global.GlyphHeight);
+		DrawLineH(win, 0, data->TextureWidth,(i+1)*data->global.GlyphHeight);
 	}
 
 	// separate glyphs
@@ -239,15 +238,15 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 		if (i == data->Marked){
 			d = rect(x, x2, y, y + data->global.GlyphHeight);
 			set_color(color(0.2f,1,0,0));
-			Draw2D(rect::ID, &d);
+			Draw2D(win, rect::ID, &d);
 		}
 		set_line_width(1.0f);
 		set_color(color(0.3f,0.8f,0.0f,0.0f));
-		DrawLineV(x + g.X1, y + data->global.GlyphY1, y + data->global.GlyphY2);
+		DrawLineV(win, x + g.X1, y + data->global.GlyphY1, y + data->global.GlyphY2);
 		set_color(color(0.3f,0.8f,0.0f,0.0f));
-		DrawLineV(x + g.X2, y + data->global.GlyphY1, y + data->global.GlyphY2);
+		DrawLineV(win, x + g.X2, y + data->global.GlyphY1, y + data->global.GlyphY2);
 		set_color(color(0.3f,0.5f,0.5f,0.5f));
-		DrawLineV(x2, y, y + data->global.GlyphHeight);
+		DrawLineV(win, x2, y, y + data->global.GlyphHeight);
 		x = x2;
 	}
 

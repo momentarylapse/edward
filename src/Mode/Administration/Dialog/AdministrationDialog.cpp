@@ -222,67 +222,20 @@ void AdministrationDialog::OnRename()
 void AdministrationDialog::OnDelete()
 {}//{	madmin->Delete();	}
 
-void AdministrationDialog::OnEdit()
-{
+void AdministrationDialog::OnEdit() {
 	AdminFile *a = GetSingleSelectedFile();
 	if (!a)
 		return;
-	switch (a->Kind){
-		case -1:
-			if (a->Name == "config.txt")
-				hui::OpenDocument(storage->get_root_dir(a->Kind) << a->Name);
-			else if (a->Name == "game.ini")
-				ed->mode_admin->BasicSettings();
-			break;
-		case FD_MODEL:
-			if (storage->load(engine.object_dir << a->Name, ed->mode_model->data, true))
-				ed->set_mode(ed->mode_model);
-			break;
-		case FD_MATERIAL:
-			if (storage->load(engine.material_dir << a->Name, ed->mode_material->data, true))
-				ed->set_mode(ed->mode_material);
-			break;
-		case FD_FONT:
-			if (storage->load(engine.font_dir << a->Name, ed->mode_font->data, true))
-				ed->set_mode(ed->mode_font);
-			break;
-		case FD_WORLD:
-			if (storage->load(engine.map_dir << a->Name, ed->mode_world->data, true))
-				ed->set_mode(ed->mode_world);
-			break;
-		case FD_TERRAIN:
-			ed->mode_world->data->reset();
-			if (ed->mode_world->data->add_terrain(a->Name.no_ext(), v_0)){
-				ed->set_mode(ed->mode_world);
-			}
-			break;
-		case FD_CAMERAFLIGHT:
-			/*mode_world->data->Reset();
-			strcpy(mworld->CamScriptFile,a->Name);
-			if (mworld->LoadCameraScript()){
-				SetMode(ModeWorld);
-				mworld->OptimizeView();
-			}*/
-			break;
-		case FD_TEXTURE:
-		case FD_SOUND:
-		case FD_SHADERFILE:
-		case FD_SCRIPT:
-		case FD_FILE:
-			hui::OpenDocument(storage->get_root_dir(a->Kind) << a->Name);
-			break;
-	}
+	ed->universal_edit(a->Kind, storage->get_root_dir(a->Kind) << a->Name);
 }
 
-void AdministrationDialog::OnFileList()
-{
+void AdministrationDialog::OnFileList() {
 	string id = hui::GetEvent()->id;
 	int n = get_int(id);
 	ShowDetail(n, id);
 }
 
-void AdministrationDialog::OnRudimentaryConfiguration()
-{
+void AdministrationDialog::OnRudimentaryConfiguration() {
 	ed->mode_admin->BasicSettings();
 }
 

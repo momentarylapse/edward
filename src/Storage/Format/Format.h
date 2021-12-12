@@ -47,6 +47,7 @@ enum {
 	FD_SCRIPT,
 	FD_CAMERAFLIGHT,
 	FD_FILE, // any file
+	FD_PROJECT,
 	NUM_FDS
 };
 

@@ -63,7 +63,6 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 }
 
 WorldPropertiesDialog::~WorldPropertiesDialog() {
-	ed->mode_world->world_dialog = nullptr;
 	data->unsubscribe(this);
 	delete popup_skybox;
 	delete popup_script;

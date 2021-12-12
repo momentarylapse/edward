@@ -283,6 +283,9 @@ bool Edward::handle_arguments(Array<string> arg)
 	} else if (arg[1] == "--new-world") {
 		universal_new(FD_WORLD);
 		return true;
+	} else if (arg[1] == "--new-font") {
+		universal_new(FD_FONT);
+		return true;
 	}
 
 	for (int i=1; i<arg.num; i++){
@@ -586,6 +589,57 @@ bool Edward::universal_open(int preferred_type) {
 		storage->load(storage->dialog_file_complete, mode_material->data);
 		set_mode(mode_material);
 		mode_material->optimize_view();
+	}
+	return true;
+}
+
+bool Edward::universal_edit(int type, const Path &filename) {
+	if (!allow_termination())
+		return false;
+	switch (type){
+		case -1:
+			if (filename.basename() == "config.txt")
+				hui::OpenDocument(filename);
+			else if (filename.basename() == "game.ini")
+				mode_admin->BasicSettings();
+			break;
+		case FD_MODEL:
+			if (storage->load(filename, mode_model->data, true))
+				set_mode(mode_model);
+			break;
+		case FD_MATERIAL:
+			if (storage->load(filename, mode_material->data, true))
+				set_mode(mode_material);
+			break;
+		case FD_FONT:
+			if (storage->load(filename, mode_font->data, true))
+				set_mode(mode_font);
+			break;
+		case FD_WORLD:
+			if (storage->load(filename, mode_world->data, true))
+				set_mode(mode_world);
+			break;
+		case FD_TERRAIN:
+			mode_world->data->reset();
+			if (mode_world->data->add_terrain(filename.relative_to(engine.map_dir).no_ext(), v_0)){
+				set_mode(mode_world);
+			}
+			break;
+		case FD_CAMERAFLIGHT:
+			/*mode_world->data->Reset();
+			strcpy(mworld->CamScriptFile,a->Name);
+			if (mworld->LoadCameraScript()){
+				SetMode(ModeWorld);
+				mworld->OptimizeView();
+			}*/
+			break;
+		case FD_TEXTURE:
+		case FD_SOUND:
+		case FD_SHADERFILE:
+		case FD_SCRIPT:
+		case FD_FILE:
+			hui::OpenDocument(filename);
+			break;
 	}
 	return true;
 }

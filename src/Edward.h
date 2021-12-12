@@ -69,9 +69,10 @@ public:
 	void on_command(const string &id);
 	void on_close();
 
-	ModeBase *get_mode(int preferred_type);
-	bool universal_new(int preferred_type);
+	ModeBase *get_mode(int type);
+	bool universal_new(int type);
 	bool universal_open(int preferred_type);
+	bool universal_edit(int type, const Path &filename);
 
 	virtual void _cdecl on_draw_gl();
 	virtual void _cdecl on_key_down() override;
