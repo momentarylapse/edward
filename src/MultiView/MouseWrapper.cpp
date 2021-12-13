@@ -10,7 +10,9 @@
 #include "../lib/math/math.h"
 #include "MultiView.h"
 
+#ifdef OS_LINUX
 #define HAS_LIB_X11 1
+#endif
 
 #if HAS_LIB_X11
 

@@ -122,8 +122,12 @@ void DataMaterial::ShaderData::set_engine_default() {
 	file = "";
 	code = "";
 	if (graph) {
+#ifdef OS_WINDOWS
+		msg_error("TODO  DataMaterial::ShaderData::set_engine_default()");
+#else
 		graph->make_default_for_engine();
 		code = graph->build_source();
+#endif
 	}
 	from_graph = true;
 	is_default = true;

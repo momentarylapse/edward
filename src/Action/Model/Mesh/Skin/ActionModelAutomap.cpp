@@ -129,7 +129,7 @@ void Island::map_primitive(DataModel *m)
 
 	// find rotation with smallest width
 	float phi_min = -1;
-	float w_min;
+	float w_min = 0;
 	for (float phi=0; phi<pi; phi += 0.05f){
 		vector v = vector(cos(phi), sin(phi), 0);
 		float p_min = vector::dot(v, skin[0]);

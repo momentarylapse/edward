@@ -88,10 +88,10 @@ public:
 	virtual void _save(const Path &filename, T *data) {}
 
 	void load(const Path &filename, Data *data, bool deep) override {
-		_load(filename, dynamic_cast<T*>(data), deep);
+		_load(filename, reinterpret_cast<T*>(data), deep);
 	}
 	void save(const Path &filename, Data *data) override {
-		_save(filename, dynamic_cast<T*>(data));
+		_save(filename, reinterpret_cast<T*>(data));
 	}
 };
 

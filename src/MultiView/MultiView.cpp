@@ -614,7 +614,7 @@ string MultiView::get_unit_by_zoom(vector &v) {
 	float l = active_win->get_grid_d() * 10.1f;
 
 	int n = floor(log10(l) / 3.0f);
-	v /= exp10(n * 3);
+	v /= pow(10.0f, n * 3);
 	if ((n >= -8) and  (n <= 8))
 		return units[n + 8];
 	return format("*10^%d", n*3);

@@ -41,7 +41,7 @@ Window::Window(MultiView *_view, int _type)
 #define GRID_CONST	5.0f
 
 float Window::get_grid_d() {
-	return exp10(ceil(log10(GRID_CONST / zoom())));
+	return pow(10.0f, ceil(log10(GRID_CONST / zoom())));
 }
 
 int grid_level(int i) {
