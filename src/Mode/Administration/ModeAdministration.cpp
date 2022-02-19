@@ -42,16 +42,11 @@ void ModeAdministration::on_command(const string& id) {
 }
 
 void ModeAdministration::BasicSettings() {
-	auto dlg = new ConfigurationDialog(hui::CurWindow, data, false);
-	dlg->run();
-	delete dlg;
+	hui::fly(new ConfigurationDialog(hui::CurWindow, data, false));
 }
 
 void ModeAdministration::ExportGame() {
-	auto dlg = new ConfigurationDialog(hui::CurWindow, data, true);
-	dlg->run();
-	delete dlg;
-
+	hui::fly(new ConfigurationDialog(hui::CurWindow, data, true));
 	// data->ExportGame(...);
 }
 
@@ -68,26 +63,27 @@ void ModeAdministration::create_project_dir(const Path &dir) {
 
 void ModeAdministration::_new() {
 	auto dlg = new NewProjectDialog(ed);
-	dlg->run();
-	if (dlg->ok) {
-
-		create_project_dir(dlg->directory);
-		storage->set_root_directory(dlg->directory);
-		data->reset();
-	}
-	delete dlg;
+	hui::fly(dlg, [this, dlg] {
+		if (dlg->ok) {
+			create_project_dir(dlg->directory);
+			storage->set_root_directory(dlg->directory);
+			data->reset();
+		}
+	});
 }
 
 bool ModeAdministration::open() {
-	if (!hui::FileDialogDir(hui::CurWindow, _("Open project directory"), ""))
-		return false;
+	hui::file_dialog_dir(hui::CurWindow, _("Open project directory"), "", {}, [this] (const Path &path) {
+		if (!path)
+			return;
+		if (!file_exists(path << "game.ini")) {
+			ed->error_box(_("game.ini not found"));
+			//return false;
+		}
 
-	if (!file_exists(hui::Filename << "game.ini")) {
-		ed->error_box(_("game.ini not found"));
-		return false;
-	}
-
-	storage->set_root_directory(hui::Filename);
-	data->reset();
+		storage->set_root_directory(path);
+		data->reset();
+	});
+	// TODO callback...
 	return true;
 }

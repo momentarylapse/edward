@@ -39,7 +39,7 @@ void ModeModelMeshExtrudePolygons::on_left_button_down() {
 void ModeModelMeshExtrudePolygons::on_mouse_move() {
 	cleanUp();
 
-	offset += (hui::GetEvent()->d.x) / multi_view->active_win->zoom();
+	offset += (hui::get_event()->d.x) / multi_view->active_win->zoom();
 	preview();
 
 	message = _("Extrude: Offset via mouse, left click = done" + multi_view->format_length(offset));

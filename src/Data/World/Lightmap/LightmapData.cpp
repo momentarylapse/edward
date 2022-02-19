@@ -304,12 +304,11 @@ void LightmapData::Triangle::Rasterize(LightmapData *l, int i)
 	for (int x=r.x1-1;x<r.x2+1;x++)
 		for (int y=r.y1-1;y<r.y2+1;y++){
 			vector c = vector((float)x + 0.5f, (float)y + 0.5f, 0);
-			float f, g;
-			GetBaryCentric(c, sv[0], sv[1], sv[2], f, g);
-			if ((f >= 0) && (g >= 0) && (f + g <= 1)){
+			auto fg = bary_centric(c, sv[0], sv[1], sv[2]);
+			if ((fg.x >= 0) && (fg.y >= 0) && (fg.x + fg.y <= 1)){
 				Vertex vv;
-				vv.pos = v[0] + f * (v[1] - v[0]) + g * (v[2] - v[0]);
-				vv.n = n[0] + f * (n[1] - n[0]) + g * (n[2] - n[0]);
+				vv.pos = v[0] + fg.x * (v[1] - v[0]) + fg.y * (v[2] - v[0]);
+				vv.n = n[0] + fg.x * (n[1] - n[0]) + fg.y * (n[2] - n[0]);
 				vv.x = x;
 				vv.y = y;
 				vv.tria_id = i;

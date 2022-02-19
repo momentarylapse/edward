@@ -49,7 +49,7 @@ void Progress::set(float progress)
 void Progress::start(const string &str, float progress)
 {
 	if (!dlg)
-		dlg = hui::CreateResourceDialog("progress_dialog", hui::CurWindow);
+		dlg = hui::create_resource_dialog("progress_dialog", hui::CurWindow);
 	dlg->set_string("progress_bar", str);
 	dlg->set_float("progress_bar", progress);
 	dlg->show();
@@ -78,7 +78,7 @@ void Progress::on_close()
 void Progress::start_cancelable(const string &str, float progress)
 {
 	if (!dlg)
-		dlg = hui::CreateResourceDialog("progress_cancelable_dialog", hui::CurWindow);
+		dlg = hui::create_resource_dialog("progress_cancelable_dialog", hui::CurWindow);
 	dlg->set_string("progress_bar", str);
 	dlg->set_float("progress_bar", progress);
 	dlg->show();

@@ -72,14 +72,14 @@ MultiView::MultiView(bool mode3d) {
 	window_partition_x = 0.5f;
 	window_partition_y = 0.5f;
 
-	SPEED_MOVE = hui::Config.get_float("MultiView.MoveSpeed", 20);
-	SPEED_ZOOM_KEY = hui::Config.get_float("MultiView.ZoomSpeedKey", 1.15f);
-	SPEED_ZOOM_WHEEL = hui::Config.get_float("MultiView.ZoomSpeedWheel", 0.10f);
+	SPEED_MOVE = hui::config.get_float("MultiView.MoveSpeed", 20);
+	SPEED_ZOOM_KEY = hui::config.get_float("MultiView.ZoomSpeedKey", 1.15f);
+	SPEED_ZOOM_WHEEL = hui::config.get_float("MultiView.ZoomSpeedWheel", 0.10f);
 
 	MIN_MOUSE_MOVE_TO_INTERACT = 5;
 	MOUSE_ROTATION_SPEED = 0.0033f;
 
-	allow_infinite_scrolling = hui::Config.get_bool("MultiView.InfiniteScrolling", false);
+	allow_infinite_scrolling = hui::config.get_bool("MultiView.InfiniteScrolling", false);
 
 	ubo_light = new nix::UniformBuffer();
 
@@ -90,7 +90,7 @@ MultiView::MultiView(bool mode3d) {
 		all_windows.add(new Window(this, VIEW_PERSPECTIVE));
 
 		// Menu
-		menu = new hui::Menu;
+		menu = new hui::Menu(ed);
 		menu->add(_("View"), "view_menu_sign");
 		//menu->enableItem("view_menu_sign", false);
 		menu->add_separator();
@@ -120,10 +120,10 @@ MultiView::MultiView(bool mode3d) {
 }
 
 MultiView::~MultiView() {
-	hui::Config.set_bool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
-	hui::Config.set_float("MultiView.ZoomSpeedWheel", SPEED_ZOOM_WHEEL);
-	hui::Config.set_float("MultiView.ZoomSpeedKey", SPEED_ZOOM_KEY);
-	hui::Config.set_float("MultiView.MoveSpeed", SPEED_MOVE);
+	hui::config.set_bool("MultiView.InfiniteScrolling", allow_infinite_scrolling);
+	hui::config.set_float("MultiView.ZoomSpeedWheel", SPEED_ZOOM_WHEEL);
+	hui::config.set_float("MultiView.ZoomSpeedKey", SPEED_ZOOM_KEY);
+	hui::config.set_float("MultiView.MoveSpeed", SPEED_MOVE);
 	for (auto w: all_windows)
 		delete w;
 	delete cam_con;
@@ -513,12 +513,12 @@ void MultiView::on_left_button_up() {
 
 
 void MultiView::update_mouse() {
-	m = hui::GetEvent()->m * screen_scale;
-	v = hui::GetEvent()->d * screen_scale;
+	m = hui::get_event()->m * screen_scale;
+	v = hui::get_event()->d * screen_scale;
 
-	lbut = hui::GetEvent()->lbut;
-	mbut = hui::GetEvent()->mbut;
-	rbut = hui::GetEvent()->rbut;
+	lbut = hui::get_event()->lbut;
+	mbut = hui::get_event()->mbut;
+	rbut = hui::get_event()->rbut;
 
 	if (allow_mouse_actions)
 		if (cam_con->is_mouse_over())
@@ -653,7 +653,7 @@ void check_undef_view_stages(MultiView *mv) {
 }
 
 void MultiView::on_draw() {
-	screen_scale = hui::GetEvent()->row_target; // EVIL!
+	screen_scale = hui::get_event()->row_target; // EVIL!
 	timer.reset();
 
 	check_undef_view_stages(this);

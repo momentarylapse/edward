@@ -135,8 +135,7 @@ void ShowHistogram(Lightmap::Histogram &h, hui::Window *root)
 	dlg->event_xp("area", "hui:draw", std::bind(&OnHistDraw, std::placeholders::_1));
 	dlg->event("hui:close", &OnHistClose);
 	dlg->event("close", &OnHistClose);
-	dlg->run();
-	delete(dlg);
+	hui::fly(dlg);
 }
 
 void LightmapDialog::OnPreview()
@@ -166,10 +165,10 @@ void LightmapDialog::OnResolution()
 	FillList();
 }
 
-void LightmapDialog::OnFindNewWorld()
-{
-	if (storage->file_dialog(FD_WORLD, true, true))
+void LightmapDialog::OnFindNewWorld() {
+	storage->file_dialog(FD_WORLD, true, true, [this] {
 		set_string("new_world_name", storage->dialog_file_no_ending.str());
+	});
 }
 
 void LightmapDialog::OnOk()

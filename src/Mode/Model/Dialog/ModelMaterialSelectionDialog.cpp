@@ -25,7 +25,7 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(hui::Window *_parent,
 	list_id = "material_list";
 	fill_material_list();
 
-	popup_materials = hui::CreateResourceMenu("model-material-list-popup");
+	popup_materials = hui::create_resource_menu("model-material-list-popup", this);
 
 	event("hui:close", [=]{ on_close(); });
 	event("apply", [=]{ on_apply(); });
@@ -70,7 +70,7 @@ void ModelMaterialSelectionDialog::on_apply() {
 }
 
 void ModelMaterialSelectionDialog::on_material_list_right_click() {
-	int n = hui::GetEvent()->row;
+	int n = hui::get_event()->row;
 	if (n >= 0)
 		mode_model_mesh->set_current_material(n);
 	popup_materials->enable("apply_material", n >= 0);
@@ -83,16 +83,17 @@ void ModelMaterialSelectionDialog::on_material_add() {
 }
 
 void ModelMaterialSelectionDialog::on_material_load() {
-	if (storage->file_dialog(FD_MATERIAL, false, true))
+	storage->file_dialog(FD_MATERIAL, false, true, [this] {
 		data->execute(new ActionModelAddMaterial(storage->dialog_file_no_ending));
+	});
 }
 
 void ModelMaterialSelectionDialog::on_material_delete() {
-	hui::ErrorBox(win, "", _("not implemented yet"));
+	hui::error_box(win, "", _("not implemented yet"));
 }
 
 void ModelMaterialSelectionDialog::on_material_edit() {
-	hui::ErrorBox(win, "", _("not implemented yet"));
+	hui::error_box(win, "", _("not implemented yet"));
 }
 
 

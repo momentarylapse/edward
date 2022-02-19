@@ -70,9 +70,9 @@ public:
 	void on_close();
 
 	ModeBase *get_mode(int type);
-	bool universal_new(int type);
-	bool universal_open(int preferred_type);
-	bool universal_edit(int type, const Path &filename, bool relative_path);
+	void universal_new(int type);
+	void universal_open(int preferred_type);
+	void universal_edit(int type, const Path &filename, bool relative_path);
 
 	virtual void _cdecl on_draw_gl();
 	virtual void _cdecl on_key_down() override;
@@ -97,7 +97,7 @@ public:
 
 	void on_execute_plugin();
 
-	bool allow_termination();
+	void allow_termination(hui::Callback on_success, hui::Callback on_fail = nullptr);
 
 	void update_menu();
 	void optimize_current_view();

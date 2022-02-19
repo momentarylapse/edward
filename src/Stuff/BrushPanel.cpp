@@ -104,7 +104,7 @@ float BrushPanel::radius0() {
 float BrushPanel::radius() {
 	float r = radius0();
 	if (is_checked("scale-by-pressure"))
-		r *= hui::GetEvent()->pressure;
+		r *= hui::get_event()->pressure;
 	return r;
 }
 
@@ -117,7 +117,7 @@ BrushState BrushPanel::prepare(const vector &m) {
 
 	bs.opacity = get_float("opacity");
 	if (is_checked("opacity-by-pressure"))
-		bs.opacity *= hui::GetEvent()->pressure;
+		bs.opacity *= hui::get_event()->pressure;
 
 	bs.R = radius();
 

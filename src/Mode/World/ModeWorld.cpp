@@ -74,13 +74,14 @@ ModeWorld::~ModeWorld() {
 	data->unsubscribe(this);
 }
 
-bool ModeWorld::save_as() {
+void ModeWorld::save_as() {
 	for (auto &t: data->terrains)
 		if (t.filename == "") {
-			if (!storage->file_dialog(FD_TERRAIN, true, true))
-				return false;
-			if (!t.save(storage->dialog_file_complete))
-				return false;
+			storage->file_dialog(FD_TERRAIN, true, true, [this, &t] {
+				t.save(storage->dialog_file_complete);
+				save_as();
+			});
+			return;
 		}
 	return storage->save_as(data);
 }
@@ -137,12 +138,12 @@ void ModeWorld::on_command(const string & id) {
 	if (id == "camscript_create")
 		ed->set_mode(mode_world_camera);
 	if (id == "camscript_load")
-		if (storage->file_dialog(FD_CAMERAFLIGHT, false, true)) {
+		storage->file_dialog(FD_CAMERAFLIGHT, false, true, [this] {
 			if (mode_world_camera->data->load(storage->dialog_file_complete))
 				ed->set_mode(mode_world_camera);
 			else
 				mode_world_camera->data->reset();
-		}
+		});
 	if (id == "edit_terrain_vertices")
 		ed->set_mode(mode_world_terrain);
 	if (id == "create_lightmap")
@@ -191,17 +192,16 @@ float WorldObject::hover_distance(MultiView::Window *win, const vec2 &mv, vector
 		vector c=pmv[o->mesh[d]->sub[mm].triangle_index[i*3+2]];
 		if ((a.z<=0)or(b.z<=0)or(c.z<=0)or(a.z>=1)or(b.z>=1)or(c.z>=1))
 			continue;
-		float f,g;
 		float az=a.z,bz=b.z,cz=c.z;
 		a.z=b.z=c.z=0;
-		GetBaryCentric(vector(mv.x,mv.y,0),a,b,c,f,g);
-		if ((f>=0)and(g>=0)and(f+g<=1)) {
-			float z=az + f*(bz-az) + g*(cz-az);
+		auto fg = bary_centric(vector(mv.x,mv.y,0),a,b,c);
+		if ((fg.x>=0)and(fg.y>=0)and(fg.x+fg.y<=1)) {
+			float z=az + fg.x*(bz-az) + fg.y*(cz-az);
 			if (z<z_min) {
 				z_min=z;
 				tp=tmv[o->mesh[d]->sub[mm].triangle_index[i*3  ]]
-					+ f*(tmv[o->mesh[d]->sub[mm].triangle_index[i*3+1]]-tmv[o->mesh[d]->sub[mm].triangle_index[i*3  ]])
-					+ g*(tmv[o->mesh[d]->sub[mm].triangle_index[i*3+2]]-tmv[o->mesh[d]->sub[mm].triangle_index[i*3  ]]);
+					+ fg.x*(tmv[o->mesh[d]->sub[mm].triangle_index[i*3+1]]-tmv[o->mesh[d]->sub[mm].triangle_index[i*3  ]])
+					+ fg.y*(tmv[o->mesh[d]->sub[mm].triangle_index[i*3+2]]-tmv[o->mesh[d]->sub[mm].triangle_index[i*3  ]]);
 			}
 		}
 	}
@@ -282,26 +282,26 @@ bool WorldTerrain::overlap_rect(MultiView::Window *win, const rect &r) {
 
 
 
-bool ModeWorld::save() {
+void ModeWorld::save() {
 	for (auto &t: data->terrains) {
 		if (t.filename.is_empty()) {
-			if (!storage->file_dialog(FD_TERRAIN, true, true))
-				return false;
-			if (!t.save(storage->dialog_file_complete))
-				return false;
+			storage->file_dialog(FD_TERRAIN, true, true, [this, &t] {
+			if (t.save(storage->dialog_file_complete))
+				save();
+			});
+			return;
 		}
 	}
-	return storage->auto_save(data);
+	storage->auto_save(data);
 }
 
 
 
 void ModeWorld::_new() {
-	if (!ed->allow_termination())
-		return;
-
-	data->reset();
-	optimize_view();
+	ed->allow_termination([this] {
+		data->reset();
+		optimize_view();
+	});
 }
 
 
@@ -692,8 +692,8 @@ void ModeWorld::on_update_menu() {
 
 
 
-bool ModeWorld::open() {
-	return ed->universal_open(FD_WORLD);
+void ModeWorld::open() {
+	ed->universal_open(FD_WORLD);
 	/*if (!storage->open(data))
 		return false;
 
@@ -739,15 +739,11 @@ void ModeWorld::ExecutePropertiesDialog() {
 
 
 void ModeWorld::ExecuteTerrainPropertiesDialog(int index) {
-	auto *dlg = new TerrainPropertiesDialog(ed, false, data, index);
-	dlg->run();
-	delete dlg;
+	hui::run(new TerrainPropertiesDialog(ed, false, data, index));
 }
 
 void ModeWorld::ExecuteLightmapDialog() {
-	auto *dlg = new LightmapDialog(ed, false, data);
-	dlg->run();
-	delete dlg;
+	hui::fly(new LightmapDialog(ed, false, data));
 }
 
 
@@ -764,8 +760,9 @@ bool ModeWorld::optimize_view() {
 }
 
 void ModeWorld::load_terrain() {
-	if (storage->file_dialog(FD_TERRAIN, false, true))
+	storage->file_dialog(FD_TERRAIN, false, true, [this] {
 		data->add_terrain(storage->dialog_file_no_ending, multi_view->cam.pos);
+	});
 }
 
 void ModeWorld::set_ego() {
@@ -786,13 +783,13 @@ void ModeWorld::toggle_show_effects() {
 
 
 void ModeWorld::import_world_properties() {
-	if (storage->file_dialog(FD_WORLD, false, false)) {
+	storage->file_dialog(FD_WORLD, false, false, [this] {
 		DataWorld w;
 		if (storage->load(storage->dialog_file_complete, &w, false))
 			data->execute(new ActionWorldEditData(w.meta_data));
 		else
 			ed->error_box(_("World could not be loaded correctly!"));
-	}
+	});
 }
 
 void ModeWorld::apply_heightmap() {
@@ -800,9 +797,7 @@ void ModeWorld::apply_heightmap() {
 		ed->set_message(_("No terrain selected!"));
 		return;
 	}
-	auto *dlg = new TerrainHeightmapDialog(ed, false, data);
-	dlg->run();
-	delete dlg;
+	hui::fly(new TerrainHeightmapDialog(ed, false, data));
 }
 
 

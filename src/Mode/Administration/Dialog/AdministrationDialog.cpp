@@ -230,7 +230,7 @@ void AdministrationDialog::OnEdit() {
 }
 
 void AdministrationDialog::OnFileList() {
-	string id = hui::GetEvent()->id;
+	string id = hui::get_event()->id;
 	int n = get_int(id);
 	ShowDetail(n, id);
 }

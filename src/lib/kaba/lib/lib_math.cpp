@@ -60,7 +60,6 @@ extern const Class *TypeColorList;
 extern const Class *TypeMatrix3;
 extern const Class *TypeIntList;
 extern const Class *TypeBoolList;
-extern const Class *TypeFloatPs;
 extern const Class *TypeAny;
 extern const Class *TypeAnyList;
 extern const Class *TypeAnyDict;
@@ -130,10 +129,13 @@ public:
 	{ return var2str(this, TypeAnyDict); }
 };
 
-Array<int> _cdecl int_range(int start, int end) {
+Array<int> _cdecl int_range(int start, int end, int step) {
+	if (end == DynamicArray::MAGIC_END_INDEX) {
+		end = start;
+		start = 0;
+	}
 	Array<int> a;
-	//a.__init__(); // done by kaba-constructors for temp variables
-	for (int i=start; i<end; i++)
+	for (int i=start; i<end; i+=step)
 		a.add(i);
 	return a;
 }
@@ -457,10 +459,10 @@ void SIAddPackageMath() {
 		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, &KabaVector<vec2>::init2);
 			func_add_param("x", TypeFloat32);
 			func_add_param("y", TypeFloat32);
-		class_add_const("0", TypeVector, &vec2::ZERO);
-		class_add_const("O", TypeVector, &vec2::ZERO);
-		class_add_const("EX", TypeVector, &vec2::EX);
-		class_add_const("EY", TypeVector, &vec2::EY);
+		class_add_const("0", TypeVec2, &vec2::ZERO);
+		class_add_const("O", TypeVec2, &vec2::ZERO);
+		class_add_const("EX", TypeVec2, &vec2::EX);
+		class_add_const("EY", TypeVec2, &vec2::EY);
 		add_operator(OperatorID::ASSIGN, TypeVoid, TypeVec2, TypeVec2, InlineID::CHUNK_ASSIGN, &KabaVector<vec2>::assign);
 		add_operator(OperatorID::EQUAL, TypeBool, TypeVec2, TypeVec2, InlineID::CHUNK_EQUAL, &vec2::operator==);
 		add_operator(OperatorID::ADD, TypeVec2, TypeVec2, TypeVec2, InlineID::VEC2_ADD, &vec2::operator+);
@@ -1029,19 +1031,18 @@ void SIAddPackageMath() {
 	// lists
 	add_func("range", TypeIntList, (void*)&int_range, Flags::_STATIC__PURE);
 		func_add_param("start", TypeInt);
-		func_add_param("end", TypeInt);
-	add_func("rangef", TypeFloatList, (void*)&float_range, Flags::_STATIC__PURE);
+		func_add_param_def("end", TypeInt, (const void*)(int_p)DynamicArray::MAGIC_END_INDEX);
+		func_add_param_def("step", TypeInt, (const void*)(int_p)1);
+	add_func("range", TypeFloatList, (void*)&float_range, Flags::_STATIC__PURE);
 		func_add_param("start", TypeFloat32);
 		func_add_param("end", TypeFloat32);
 		func_add_param("step", TypeFloat32);
 	// other types
-	add_func("bary_centric", TypeVoid, (void*)&GetBaryCentric, Flags::_STATIC__PURE);
+	add_func("bary_centric", TypeVec2, (void*)&bary_centric, Flags::_STATIC__PURE);
 		func_add_param("p", TypeVector);
 		func_add_param("a", TypeVector);
 		func_add_param("b", TypeVector);
 		func_add_param("c", TypeVector);
-		func_add_param("f", TypeFloatPs);
-		func_add_param("g", TypeFloatPs);
 	// random numbers
 	add_func("randi", TypeInt, &randi, Flags::STATIC);
 		func_add_param("max", TypeInt);

@@ -13,12 +13,13 @@
 
 class ComponentSelectionDialog: public hui::Dialog {
 public:
-	ComponentSelectionDialog(hui::Window *parent, ScriptInstanceData &data);
+	using Callback = std::function<void(const ScriptInstanceData &component)>;
 
-	ScriptInstanceData *data;
-	bool selected;
+	ComponentSelectionDialog(hui::Window *parent, Callback on_select);
+
+	Callback on_select;
 	Array<ScriptInstanceData> available;
 
 
-	static bool choose(hui::Window *parent, ScriptInstanceData &data);
+	static void choose(hui::Window *parent, Callback on_select);
 };

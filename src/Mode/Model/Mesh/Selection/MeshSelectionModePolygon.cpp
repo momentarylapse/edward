@@ -78,14 +78,13 @@ float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vec2 &M, vecto
 		int a = pol->side[k].triangulation[0];
 		int b = pol->side[k].triangulation[1];
 		int c = pol->side[k].triangulation[2];
-		float f,g;
-		GetBaryCentric(vector(M.x,M.y,0), p[a], p[b], p[c], f, g);
+		auto fg = bary_centric(vector(M.x,M.y,0), p[a], p[b], p[c]);
 		// cursor in triangle?
-		if ((f>0) and (g>0) and (f+g<1)) {
+		if ((fg.x>0) and (fg.y>0) and (fg.x+fg.y<1)) {
 			vector va = vertex[pol->side[a].vertex].pos;
 			vector vb = vertex[pol->side[b].vertex].pos;
 			vector vc = vertex[pol->side[c].vertex].pos;
-			tp = va+f*(vb-va)+g*(vc-va);
+			tp = va+fg.x*(vb-va)+fg.y*(vc-va);
 			z = win->project(tp).z;
 			return 0;
 		}

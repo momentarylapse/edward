@@ -43,11 +43,11 @@ void ModeWorldCreateObject::on_end() {
 }
 
 void ModeWorldCreateObject::on_find_object() {
-	if (storage->file_dialog(FD_MODEL, false, true)) {
+	storage->file_dialog(FD_MODEL, false, true, [this] {
 		filename = storage->dialog_file_no_ending;
 		LastObjectFilename = filename;
 		message = _("place new object");
-	}
+	});
 }
 
 

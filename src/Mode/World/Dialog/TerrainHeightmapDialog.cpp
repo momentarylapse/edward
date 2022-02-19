@@ -50,12 +50,12 @@ void TerrainHeightmapDialog::on_size_change() {
 
 
 void TerrainHeightmapDialog::on_find_filter() {
-	if (storage->file_dialog(FD_TEXTURE, false, false)) {
+	storage->file_dialog(FD_TEXTURE, false, false, [this] {
 		filter_file = storage->dialog_file_complete;
 		set_string("filter_image", storage->dialog_file.str());
 		filter.load(filter_file);
 		redraw("preview");
-	}
+	});
 }
 
 
@@ -63,13 +63,13 @@ void TerrainHeightmapDialog::on_find_filter() {
 
 
 void TerrainHeightmapDialog::on_find_heightmap() {
-	if (storage->file_dialog(FD_TEXTURE, false, false)) {
+	storage->file_dialog(FD_TEXTURE, false, false, [this] {
 		heightmap_file = storage->dialog_file_complete;
 		set_string("height_image", storage->dialog_file.str());
 		heightmap.load(heightmap_file);
 		redraw("preview");
 		enable("ok", true);
-	}
+	});
 }
 
 

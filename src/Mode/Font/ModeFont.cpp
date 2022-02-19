@@ -75,18 +75,18 @@ void ModeFont::on_draw() {
 
 
 
-bool ModeFont::save_as() {
-	return storage->save_as(data);
+void ModeFont::save_as() {
+	storage->save_as(data);
 }
 
 
 
 
-bool ModeFont::save() {
-	if (data->filename == "")
-		return save_as();
-	storage->save(data->filename, data);
-	return true;
+void ModeFont::save() {
+	if (data->filename)
+		storage->save(data->filename, data);
+	else
+		save_as();
 }
 
 
@@ -113,24 +113,19 @@ void ModeFont::on_command(const string & id)
 
 
 
-bool ModeFont::open()
-{
-	if (!storage->open(data))
-		return false;
-
-	optimize_view();
-	return true;
+void ModeFont::open() {
+	storage->open(data, [this] {
+		optimize_view();
+	});
 }
 
 
 
-void ModeFont::_new()
-{
-	if (!ed->allow_termination())
-		return;
-
-	data->reset();
-	optimize_view();
+void ModeFont::_new() {
+	ed->allow_termination([this] {
+		data->reset();
+		optimize_view();
+	});
 }
 
 
@@ -172,14 +167,15 @@ void ModeFont::on_data_update() {
 void Draw2D(MultiView::Window *win, const rect &source, const rect *dest) {
 	MultiView::MultiView *mv = win->multi_view;
 	rect d;
-	if (dest){
+	if (dest) {
 		d=rect(	nix::target_width/2-(mv->cam.pos.x-dest->x1)*mv->active_win->zoom(),
 				nix::target_width/2-(mv->cam.pos.x-dest->x2)*mv->active_win->zoom(),
 				nix::target_height/2-(mv->cam.pos.y-dest->y1)*mv->active_win->zoom(),
 				nix::target_height/2-(mv->cam.pos.y-dest->y2)*mv->active_win->zoom());
 		draw_2d(source, d, 0);
-	}else
+	} else {
 		draw_2d(source, nix::target_rect, 0);
+	}
 }
 
 void DrawLineH(MultiView::Window *win, float x1, float x2, float y) {
@@ -265,11 +261,12 @@ bool ModeFont::optimize_view()
 	return true;
 }
 
-void ModeFont::Import()
-{
-	if (hui::SelectFont(ed, _("Import font"))){
-		ImporterCairo imp;
-		imp.Import(data, hui::Fontname);
-	}
+void ModeFont::Import() {
+	hui::select_font(ed, _("Import font"), {}, [this] (const string &font) {
+		if (font != "") {
+			ImporterCairo imp;
+			imp.Import(data, font);
+		}
+	});
 }
 

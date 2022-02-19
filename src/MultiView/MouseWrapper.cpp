@@ -86,7 +86,7 @@ void start(hui::Window *w) {
 	x11_get_cursor(x0, y0);
 	x11_set_cursor(x_hold, y_hold);
 
-	x11_runner = hui::RunRepeated(0.01f, [=] {
+	x11_runner = hui::run_repeated(0.01f, [=] {
 		int xx, yy;
 		x11_get_cursor(xx, yy);
 
@@ -103,7 +103,7 @@ void stop(hui::Window *w) {
 		return;
 
 #if HAS_LIB_X11
-	hui::CancelRunner(x11_runner);
+	hui::cancel_runner(x11_runner);
 	x11_runner = -1;
 
 	x11_set_cursor(x0, y0);

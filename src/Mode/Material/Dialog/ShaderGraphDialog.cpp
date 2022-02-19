@@ -53,7 +53,7 @@ public:
 		add_list_view("!nobar\\a", 0, 0, "choices");
 		for (auto &c: choices)
 			add_string("choices", c);
-		event_x("choices", "hui:activate", [=] {
+		event_x("choices", "hui:activate", [this] {
 			selected = get_int("choices");
 			request_destroy();
 		});
@@ -80,42 +80,42 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 			"\t\tButton shader-load 'Load'\n"
 			"\t\tButton shader-save 'Save'\n"
 			"\t\tButton shader-default 'Default'\n");
-	event_xp("area", "hui:draw", [=](Painter *p){ on_draw(p); });
-	event_x("area", "hui:mouse-move", [=]{ on_mouse_move(); });
-	event_x("area", "hui:mouse-wheel", [=]{ on_mouse_wheel(); });
-	event_x("area", "hui:left-button-down", [=]{ on_left_button_down(); });
-	event_x("area", "hui:left-button-up", [=]{ on_left_button_up(); });
-	event_x("area", "hui:right-button-down", [=]{ on_right_button_down(); });
-	event_x("area", "hui:key-down", [=]{ on_key_down(); });
-	event("update", [=]{ on_update(); });
-	event("show-source", [=]{ hide_control("source", !is_checked("")); });
-	event("shader-new", [=]{
+	event_xp("area", "hui:draw", [this] (Painter *p){ on_draw(p); });
+	event_x("area", "hui:mouse-move", [this] { on_mouse_move(); });
+	event_x("area", "hui:mouse-wheel", [this] { on_mouse_wheel(); });
+	event_x("area", "hui:left-button-down", [this] { on_left_button_down(); });
+	event_x("area", "hui:left-button-up", [this] { on_left_button_up(); });
+	event_x("area", "hui:right-button-down", [this] { on_right_button_down(); });
+	event_x("area", "hui:key-down", [this] { on_key_down(); });
+	event("update", [this] { on_update(); });
+	event("show-source", [this] { hide_control("source", !is_checked("")); });
+	event("shader-new", [this] {
 		auto dlg = new MultiChoice({"default", "pure color out", "cube map"}, win);
-		dlg->run();
-		int sel = dlg->selected;
-		delete dlg;
-		if (sel == 0) {
-			graph->make_default_for_engine();
-		} else if (sel == 1) {
-			graph->make_default_basic();
-		} else if (sel == 2) {
-			graph->make_default_cube_map();
-		} else {
-			return;
-		}
-		data->shader.file = "";
-		data->shader.is_default = false;
-		data->reset_history(); // TODO: actions
-		request_optimal_view();
-		data->notify(data->MESSAGE_CHANGE);
+		hui::fly(dlg, [this, dlg] {
+			int sel = dlg->selected;
+			if (sel == 0) {
+				graph->make_default_for_engine();
+			} else if (sel == 1) {
+				graph->make_default_basic();
+			} else if (sel == 2) {
+				graph->make_default_cube_map();
+			} else {
+				return;
+			}
+			data->shader.file = "";
+			data->shader.is_default = false;
+			data->reset_history(); // TODO: actions
+			request_optimal_view();
+			data->notify(data->MESSAGE_CHANGE);
+		});
 	});
-	event("shader-default", [=]{
+	event("shader-default", [this] {
 		data->shader.set_engine_default();
 		data->reset_history(); // TODO: actions
 		data->notify(data->MESSAGE_CHANGE);
 	});
-	event("shader-load", [=]{
-		if (storage->file_dialog(FD_SHADERFILE,false,true)) {
+	event("shader-load", [this] {
+		storage->file_dialog(FD_SHADERFILE,false,true, [this] {
 			if (test_shader_file(storage->dialog_file)) {
 				data->shader.file = storage->dialog_file;
 				data->shader.load_from_file();
@@ -124,34 +124,35 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 			} else {
 				ed->error_box(_("Error in shader file:\n") + nix::shader_error);
 			}
-		}
+		});
 	});
-	event("shader-save", [=]{
-		if (storage->file_dialog(FD_SHADERFILE,true,true)) {
+	event("shader-save", [this]{
+		storage->file_dialog(FD_SHADERFILE,true,true, [this] {
 			data->shader.file = storage->dialog_file;
 			data->shader.save_to_file();
-		}
+		});
 	});
 
 	hide_control("source", true);
 
-	popup = new hui::Menu();
+	popup = new hui::Menu(this);
 	hui::Menu *sub = nullptr;
 	auto types = graph->enumerate();
 	for (int i=0; i<types.num; i++) {
 		string s = types[i];
 		if (s[0] == '-') {
-			sub = new hui::Menu();
+			sub = new hui::Menu(this);
 			popup->add_sub_menu(s.replace("-", ""), "", sub);
 		} else {
 			sub->add(types[i], "add-node-" + i2s(i));
-			event("add-node-" + i2s(i), [=]{
-				graph->add(types[i], 400, 200);
+			auto t = types[i];
+			event("add-node-" + i2s(i), [this, t] {
+				graph->add(t, 400, 200);
 			});
 		}
 	}
 	popup->add("Reset", "reset");
-	event("reset", [=]{ on_reset(); });
+	event("reset", [this] { on_reset(); });
 
 	_optimal_view_requested = true;
 }
@@ -335,7 +336,7 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 }
 
 void ShaderGraphDialog::update_mouse() {
-	auto e = hui::GetEvent();
+	auto e = hui::get_event();
 	m = (e->m / view_scale) + view_offset;
 }
 
@@ -392,12 +393,12 @@ void ShaderGraphDialog::on_draw(Painter *p) {
 			draw_cable(p, l.source, l.source_port, l.dest, l.dest_port);
 
 		if (selection.type == HoverData::Type::PORT_OUT) {
-			auto e = hui::GetEvent();
+			auto e = hui::get_event();
 			p->set_color(Red);
 			p->draw_line({selection.node->pos.x + NODE_WIDTH + 5, node_get_out_y(selection.node, selection.port)}, m);
 		}
 		if (selection.type == HoverData::Type::PORT_IN) {
-			auto e = hui::GetEvent();
+			auto e = hui::get_event();
 			p->set_color(Red);
 			p->draw_line({selection.node->pos.x - 5, node_get_in_y(selection.node, selection.port)}, m);
 		}
@@ -419,7 +420,7 @@ void ShaderGraphDialog::on_draw(Painter *p) {
 }
 
 void ShaderGraphDialog::on_key_down() {
-	auto e = hui::GetEvent();
+	auto e = hui::get_event();
 	if (e->key_code == hui::KEY_DELETE)
 		if (selection.node) {
 			graph->remove(selection.node);
@@ -438,7 +439,7 @@ public:
 		"	Grid ? '' buttonbar\n"
 		"		Button ok 'OK' default");
 		set_string("text", orig);
-		event("ok", [=]{
+		event("ok", [this] {
 			reply = get_string("text");
 			request_destroy();
 		});
@@ -446,12 +447,11 @@ public:
 	string reply;
 };
 
-string text_input_dialog(hui::Window *parent, const string &orig) {
+void text_input_dialog(hui::Window *parent, const string &orig, std::function<void(const string &)> cb) {
 	auto dlg = new TextInputDialog(parent, orig);
-	dlg->run();
-	string r = dlg->reply;
-	delete dlg;
-	return r;
+	hui::fly(dlg, [dlg, cb] {
+		cb(dlg->reply);
+	});
 }
 
 void ShaderGraphDialog::on_left_button_down() {
@@ -478,10 +478,10 @@ void ShaderGraphDialog::on_left_button_down() {
 			}
 		} else if (pp.type == ShaderValueType::COLOR) {
 			color col = pp.get_color();
-			if (hui::SelectColor(win, col)) {
-				pp.set_color(hui::Color);
+			hui::select_color(win, "", col, [this, &pp] (const color &c) {
+				pp.set_color(c);
 				on_update();
-			}
+			});
 		} else if (pp.type == ShaderValueType::INT) {
 			if (pp.options.head(7) == "choice=") {
 				auto xx = pp.options.sub(7).explode("|");
@@ -489,8 +489,10 @@ void ShaderGraphDialog::on_left_button_down() {
 				on_update();
 			}
 		} else if (pp.type == ShaderValueType::LITERAL) {
-			pp.value = text_input_dialog(win, pp.value);
-			on_update();
+			text_input_dialog(win, pp.value, [this, &pp] (const string &s) {
+				pp.value = s;
+				on_update();
+			});
 		}
 	} else if (selection.type == HoverData::Type::NODE) {
 		move_d = m - selection.node->pos;
@@ -540,7 +542,7 @@ void ShaderGraphDialog::on_mouse_move() {
 			}
 		}
 	} else if (selection.type == HoverData::Type::VIEW) {
-		auto e = hui::GetEvent();
+		auto e = hui::get_event();
 		view_offset = move_d - (e->m / view_scale);
 	} else {
 		hover = get_hover();
@@ -549,7 +551,7 @@ void ShaderGraphDialog::on_mouse_move() {
 }
 
 void ShaderGraphDialog::on_mouse_wheel() {
-	auto e = hui::GetEvent();
+	auto e = hui::get_event();
 	view_scale = clamp(view_scale * exp(e->scroll.y * 0.05f), MIN_VIEW_SCALE, MAX_VIEW_SCALE);
 
 	view_offset = m -  e->m / view_scale;

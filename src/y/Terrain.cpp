@@ -351,9 +351,9 @@ inline bool TracePattern(Terrain *t, const vector &pos, const vector &p1,const v
 
 	// scan both triangles
 	vector tp;
-	if (LineIntersectsTriangle(a,b,d,p1,p2,tp,false))
+	if (line_intersects_triangle(a,b,d,p1,p2,tp))
 		dmin1=(tp-p1).length();
-	if (LineIntersectsTriangle(a,c,d,p1,p2,ttp,false)){
+	if (line_intersects_triangle(a,c,d,p1,p2,ttp)){
 		dmin2=(tp-p1).length();
 		if (dmin2<dmin1){ // better than the first one?
 			dmin1=dmin2;

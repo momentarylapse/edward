@@ -350,7 +350,7 @@ bool Geometry::is_inside(const vector &p) const {
 		if (t.triangulation_dirty)
 			t.update_triangulation(vertex);
 		for (int k=t.side.num-2;k>=0;k--)
-			if (LineIntersectsTriangle(v[t.side[k].triangulation[0]], v[t.side[k].triangulation[1]], v[t.side[k].triangulation[2]], p, p + dir, col, false))
+			if (line_intersects_triangle(v[t.side[k].triangulation[0]], v[t.side[k].triangulation[1]], v[t.side[k].triangulation[2]], p, p + dir, col))
 				if (col.x > p.x)
 					n ++;
 	}
@@ -409,14 +409,13 @@ bool Geometry::is_mouse_over(MultiView::Window *win, const matrix &mat, vector &
 			int a = p.side[k].triangulation[0];
 			int b = p.side[k].triangulation[1];
 			int c = p.side[k].triangulation[2];
-			float f,g;
-			GetBaryCentric(M, v[a], v[b], v[c], f, g);
+			auto fg = bary_centric(M, v[a], v[b], v[c]);
 			// cursor in triangle?
-			if ((f>0) and (g>0) and (f+g<1)){
+			if ((fg.x>0) and (fg.y>0) and (fg.x+fg.y<1)){
 				vector va = vertex[p.side[a].vertex].pos;
 				vector vb = vertex[p.side[b].vertex].pos;
 				vector vc = vertex[p.side[c].vertex].pos;
-				tp = mat * (va + f*(vb-va) + g*(vc-va));
+				tp = mat * (va + fg.x*(vb-va) + fg.y*(vc-va));
 				return true;
 			}
 		}

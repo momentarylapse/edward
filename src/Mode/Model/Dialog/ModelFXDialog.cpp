@@ -86,27 +86,27 @@ void ModelFXDialog::ApplyData()
 		data->selectionAddEffects(temp);
 }
 
-void ModelFXDialog::OnFindScriptFile()
-{
-	if (storage->file_dialog(FD_SCRIPT,false,true)){
+void ModelFXDialog::OnFindScriptFile() {
+	storage->file_dialog(FD_SCRIPT,false,true, [this] {
 		Path filename = storage->dialog_file;
 		set_string("script_file", storage->dialog_file.str());
 
-		try{
+		try {
 			auto s = kaba::load(filename, true); // just analyse
 			if (!s->match_function("OnEffectCreate", "void", {"effect"}))
 				ed->error_box(_("Script file does not contain a function \"void OnEffectCreate( effect )\""));
 			else if (!s->match_function("OnEffectIterate", "void", {"effect"}))
 				ed->error_box(_("Script file does not contain a function \"void OnEffectIterate( effect )\""));
-		}catch(kaba::Exception &e){
+		} catch(kaba::Exception &e) {
 			ed->error_box(_("Error in script file:") + e.message());
 		}
-	}
+	});
 }
 
 void ModelFXDialog::OnFindSoundFile() {
-	if (storage->file_dialog(FD_SOUND,false,true))
+	storage->file_dialog(FD_SOUND,false,true, [this] {
 		set_string("filename", storage->dialog_file.str());
+	});
 }
 
 void ModelFXDialog::OnClose() {

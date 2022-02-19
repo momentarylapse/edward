@@ -90,9 +90,8 @@ static float get_ang(const Array<ModelVertex> &vertex, int a, int b, int c, cons
 }
 
 static bool vertex_in_tria(const Array<ModelVertex> &vertex, int a, int b, int c, int v) {
-	float f, g;
-	GetBaryCentric(vertex[v].pos, vertex[a].pos, vertex[b].pos, vertex[c].pos, f, g);
-	return ((f > 0) and (g > 0) and (f + g < 1));
+	auto fg = bary_centric(vertex[v].pos, vertex[a].pos, vertex[b].pos, vertex[c].pos);
+	return ((fg.x > 0) and (fg.y > 0) and (fg.x + fg.y < 1));
 }
 
 /*static vector get_cloud_normal(DataModel *m, const Array<int> &v)

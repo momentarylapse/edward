@@ -62,10 +62,10 @@ void TerrainPropertiesDialog::apply_data() {
 
 void TerrainPropertiesDialog::on_textures() {
 	int n = get_int("textures");
-	if (storage->file_dialog(FD_TEXTURE, false, true)) {
+	storage->file_dialog(FD_TEXTURE, false, true, [this, n] {
 		temp.texture_file[n] = storage->dialog_file;
 		fill_texture_list();
-	}
+	});
 }
 
 
@@ -110,8 +110,8 @@ void TerrainPropertiesDialog::load_data() {
 
 
 void TerrainPropertiesDialog::on_textures_edit() {
-	int col = hui::GetEvent()->column;
-	int row = hui::GetEvent()->row;
+	int col = hui::get_event()->column;
+	int row = hui::get_event()->row;
 	if (col == 1)
 		temp.texture_scale[row].x = s2f(get_cell("textures", row, col));
 	else if (col == 2)
@@ -121,10 +121,10 @@ void TerrainPropertiesDialog::on_textures_edit() {
 
 
 void TerrainPropertiesDialog::on_save_as() {
-	if (!storage->file_dialog(FD_TERRAIN, true, true))
-		return;
-	data->terrains[index].save(storage->dialog_file_complete);
-	set_string("filename", storage->dialog_file_no_ending.str());
+	storage->file_dialog(FD_TERRAIN, true, true, [this] {
+		data->terrains[index].save(storage->dialog_file_complete);
+		set_string("filename", storage->dialog_file_no_ending.str());
+	});
 }
 
 
@@ -153,8 +153,9 @@ void TerrainPropertiesDialog::on_default_material() {
 
 
 void TerrainPropertiesDialog::on_material_find() {
-	if (storage->file_dialog(FD_MATERIAL, false, true))
+	storage->file_dialog(FD_MATERIAL, false, true, [this] {
 		set_string("material", storage->dialog_file_no_ending.str());
+	});
 }
 
 

@@ -151,10 +151,10 @@ void ModeModelMeshDeformFunction::update_function() {
 		f = (vec_func*)script->match_function("*", "math.vector", {"math.vector"});
 
 		if (!f)
-			hui::ErrorBox(ed, "error", _("no function of type 'vector f(vector)' found"));
+			hui::error_box(ed, "error", _("no function of type 'vector f(vector)' found"));
 
 	} catch (kaba::Exception &e) {
-		hui::ErrorBox(ed, "error", e.message());
+		hui::error_box(ed, "error", e.message());
 		f = nullptr;
 	}
 }

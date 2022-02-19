@@ -266,7 +266,7 @@ void ModeModelMeshDeformCylinder::preview() {
 }
 
 void ModeModelMeshDeformCylinder::on_mouse_move() {
-	if (hui::GetEvent()->lbut) {
+	if (hui::get_event()->lbut) {
 		if (hover >= 0) {
 			vector m = {multi_view->m, 0};
 			vector a0 = multi_view->mouse_win->project(axis[0]);

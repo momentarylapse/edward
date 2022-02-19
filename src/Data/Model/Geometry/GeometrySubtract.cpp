@@ -171,7 +171,7 @@ bool collide_polygon_surface(const Geometry &a, ModelPolygon &pa, const Geometry
 
 		vector pos;
 		for (int i=0;i<vv.num;i+=3) {
-			if (!LineIntersectsTriangle2(pl, v[vv[i+0]], v[vv[i+1]], v[vv[i+2]], ve[0], ve[1], pos, false))
+			if (!line_intersects_triangle2(pl, v[vv[i+0]], v[vv[i+1]], v[vv[i+2]], ve[0], ve[1], pos))
 				continue;
 			col.add(Col(pos, Col::TYPE_OTHER_EDGE, t_index, ei, -1));
 		}
@@ -198,7 +198,7 @@ bool collide_polygon_surface(const Geometry &a, ModelPolygon &pa, const Geometry
 
 			vector pos;
 			for (int i=0;i<vv2.num;i+=3) {
-				if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], ve[0], ve[1], pos, false))
+				if (!line_intersects_triangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], ve[0], ve[1], pos))
 					continue;
 				int type = (pl2.distance(ve[0]) > 0) ? Col::TYPE_OWN_EDGE_IN : Col::TYPE_OWN_EDGE_OUT;
 				col.add(Col(pos, type, ti, pa.side[kk].edge, kk));
@@ -479,10 +479,9 @@ float get_ang(Array<Col> &c, int i, const vector &flat_n) {
 
 // assuming co-planar
 bool vertex_in_tria(Col &a, Col &b, Col &c, Col &v, float &slope) {
-	float f, g;
-	GetBaryCentric(v.p, b.p, c.p, a.p, f, g);
-	slope = f / g;
-	return ((f > 0) and (g > 0) and (f + g < 1));
+	auto fg = bary_centric(v.p, b.p, c.p, a.p);
+	slope = fg.x / fg.y;
+	return ((fg.x > 0) and (fg.y > 0) and (fg.x + fg.y < 1));
 }
 
 string contour_str(const Array<Col>  &contour) {

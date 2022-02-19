@@ -26,20 +26,20 @@ public:
 
 
 	void _new();
-	bool open();
-	bool save();
-	bool save_as();
+	void open();
+	void save();
+	void save_as();
 
-	bool import_open_3ds();
+	void import_open_3ds();
 	bool import_load_3ds(const Path &filename);
 
-	bool import_open_json();
+	void import_open_json();
 	bool import_load_json(const Path &filename);
 
-	bool import_open_ply();
+	void import_open_ply();
 	bool import_load_ply(const Path &filename);
 
-	bool export_save_json();
+	void export_save_json();
 	bool export_write_json(const Path &filename);
 
 	void run_properties_dialog();

@@ -40,9 +40,9 @@ void ModeModelMeshCreateCube::update_geometry() {
 		int num_1 = dialog->get_int("nc_x");
 		int num_2 = dialog->get_int("nc_y");
 		int num_3 = dialog->get_int("nc_z");
-		hui::Config.set_int("NewCubeNumX", num_1);
-		hui::Config.set_int("NewCubeNumY", num_2);
-		hui::Config.set_int("NewCubeNumZ", num_3);
+		hui::config.set_int("NewCubeNumX", num_1);
+		hui::config.set_int("NewCubeNumY", num_2);
+		hui::config.set_int("NewCubeNumZ", num_3);
 
 		if (mode_model_mesh->current_skin == MESH_PHYSICAL)
 			num_1 = num_2 = num_3 = 1;
@@ -125,9 +125,9 @@ void ModeModelMeshCreateCube::on_start() {
 	dialog = new hui::Panel();
 	dialog->from_resource("new_cube_dialog");
 
-	dialog->set_int("nc_x", hui::Config.get_int("NewCubeNumX", 1));
-	dialog->set_int("nc_y", hui::Config.get_int("NewCubeNumY", 1));
-	dialog->set_int("nc_z", hui::Config.get_int("NewCubeNumZ", 1));
+	dialog->set_int("nc_x", hui::config.get_int("NewCubeNumX", 1));
+	dialog->set_int("nc_y", hui::config.get_int("NewCubeNumY", 1));
+	dialog->set_int("nc_z", hui::config.get_int("NewCubeNumZ", 1));
 	ed->set_side_panel(dialog);
 
 	bool physical = (mode_model_mesh->current_skin == MESH_PHYSICAL);

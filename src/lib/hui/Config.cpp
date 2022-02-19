@@ -19,7 +19,7 @@ namespace hui
 	//int _tchar_str_size_(TCHAR *str);
 #endif
 
-Configuration Config;
+Configuration config;
 
 Configuration::Configuration() {
 	loaded = false;
@@ -116,17 +116,25 @@ bool Configuration::load(const Path &filename) {
 		} else {
 			// new format
 			f->set_pos(0);
+			string _namespace;
 			while (!f->end()) {
 				string s = f->read_str();
 				if (s.num == 0)
 					continue;
+
 				if (s[0] == '#') {
 					comments.add(s);
-					continue;
-				}
-				int p = s.find("=");
-				if (p >= 0) {
-					map.set(s.head(p).replace(" ", ""), _parse_value(s.sub(p+1)));
+				} else if (s[0] == '[') {
+					_namespace = s.replace("[", "").replace("]", "").trim();
+				} else {
+					int p = s.find("=");
+					if (p >= 0) {
+						string key = s.head(p).trim();
+						if (_namespace.num > 0)
+							key = _namespace + "." + key;
+						string value = _parse_value(s.sub(p+1));
+						map.set(key, value);
+					}
 				}
 			}
 		}
@@ -166,12 +174,37 @@ string str_simple_repr(const string &v) {
 	return "'" + v.replace("'", "\\'") + "'";
 }
 
+string config_get_namespace(const string &key) {
+	int p = key.rfind(".");
+	if (p >= 0)
+		return key.sub_ref(0, p);
+	return "";
+}
+
+string config_get_base(const string &key) {
+	int p = key.rfind(".");
+	if (p >= 0)
+		return key.sub_ref(p + 1);
+	return key;
+}
+
 void Configuration::save(const Path &filename) {
 	dir_create(filename.parent());
 	try {
 		File *f = FileCreateText(filename);
+		Set<string> namespaces;
 		for (auto &e: map)
-			f->write_str(format("%s = %s", e.key, str_simple_repr(e.value)));
+			namespaces.add(config_get_namespace(e.key));
+		for (auto &e: map)
+			if (config_get_namespace(e.key) == "")
+				f->write_str(format("%s = %s", e.key, str_simple_repr(e.value)));
+		for (auto &n: namespaces)
+			if (n.num > 0) {
+				f->write_str(format("\n[%s]", n));
+				for (auto &e: map)
+					if (config_get_namespace(e.key) == n)
+						f->write_str(format("\t%s = %s", config_get_base(e.key), str_simple_repr(e.value)));
+			}
 
 		if (comments.num > 0)
 			f->write_str("");

@@ -132,7 +132,7 @@ void ModeWorldCamera::previewStart()
 	preview_time = 0;
 	preview = true;
 	multi_view->cam.ignore_radius = true;
-	hui::RunLater(0.020f, [=]{ previewUpdate(); });
+	hui::run_later(0.020f, [=]{ previewUpdate(); });
 	//notify();
 }
 
@@ -155,7 +155,7 @@ void ModeWorldCamera::previewUpdate()
 	if (preview_time > duration)
 		previewStop();
 	if (preview)
-		hui::RunLater(0.050f, [=]{ previewUpdate(); });
+		hui::run_later(0.050f, [=]{ previewUpdate(); });
 	//notify();
 }
 
@@ -240,30 +240,30 @@ void ModeWorldCamera::on_draw_win(MultiView::Window *win)
 
 }
 
-void ModeWorldCamera::_new()
-{
-	if (ed->allow_termination())
+void ModeWorldCamera::_new() {
+	ed->allow_termination([this] {
 		data->reset();
+	});
 }
 
-bool ModeWorldCamera::open()
-{
-	if (ed->allow_termination())
-		if (storage->file_dialog(FD_CAMERAFLIGHT, false, true))
-			return data->load(storage->dialog_file_complete);
-	return false;
+void ModeWorldCamera::open() {
+	ed->allow_termination([this] {
+		storage->file_dialog(FD_CAMERAFLIGHT, false, true, [this] {
+			data->load(storage->dialog_file_complete);
+		});
+	});
 }
 
-bool ModeWorldCamera::save() {
-	if (!data->filename.is_empty())
-		return data->save(data->filename);
+void ModeWorldCamera::save() {
+	if (data->filename)
+		save_as();
 	else
-		return save_as();
+		data->save(data->filename);
 }
 
-bool ModeWorldCamera::save_as() {
-	if (storage->file_dialog(FD_CAMERAFLIGHT, true, true))
+void ModeWorldCamera::save_as() {
+	storage->file_dialog(FD_CAMERAFLIGHT, true, true, [this] {
 		return data->save(storage->dialog_file_complete);
-	return false;
+	});
 }
 

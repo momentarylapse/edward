@@ -40,8 +40,8 @@ shared<const kaba::Class> get_class(shared<kaba::Script> s, const string &parent
 WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
 	from_resource("world-object-list-dialog");
 
-	popup = hui::CreateResourceMenu("world-object-list-popup");
-	popup_component = hui::CreateResourceMenu("world-object-list-component-popup");
+	popup = hui::create_resource_menu("world-object-list-popup", this);
+	popup_component = hui::create_resource_menu("world-object-list-component-popup", this);
 
 	world = w;
 	data = world->data;
@@ -84,11 +84,9 @@ WorldObjectListPanel::~WorldObjectListPanel() {
 }
 
 void WorldObjectListPanel::on_component_add() {
-	ScriptInstanceData component;
-	if (!ComponentSelectionDialog::choose(win, component))
-		return;
-
-	data->execute(new ActionWorldSelectionAddComponent(data, component));
+	ComponentSelectionDialog::choose(win, [this] (const ScriptInstanceData &component) {
+		data->execute(new ActionWorldSelectionAddComponent(data, component));
+	});
 }
 
 // TODO...
@@ -189,7 +187,7 @@ void WorldObjectListPanel::selection_from_world() {
 }
 
 void WorldObjectListPanel::on_list_right_click() {
-	int row = hui::GetEvent()->row;
+	int row = hui::get_event()->row;
 	popup->enable("delete", row >= 0);
 	popup->open_popup(win);
 }
@@ -205,7 +203,7 @@ void WorldObjectListPanel::on_list_select() {
 }
 
 void WorldObjectListPanel::on_component_list_right_click() {
-	int row = hui::GetEvent()->row;
+	int row = hui::get_event()->row;
 	popup_component->enable("component-delete", row >= 0);
 	popup_component->open_popup(this);
 }

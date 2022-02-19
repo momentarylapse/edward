@@ -42,8 +42,8 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) {
 	mode_model_mesh->state.subscribe(this, [=]{ load_data(); }, mode_model_mesh->state.MESSAGE_CURRENT_MATERIAL_CHANGE);
 	mode_model_mesh_texture->state.subscribe(this, [=]{ load_data(); }, mode_model_mesh_texture->state.MESSAGE_TEXTURE_LEVEL_CHANGE);
 
-	popup_materials = hui::CreateResourceMenu("model-material-list-popup");
-	popup_textures = hui::CreateResourceMenu("model-texture-list-popup");
+	popup_materials = hui::create_resource_menu("model-material-list-popup", this);
+	popup_textures = hui::create_resource_menu("model-texture-list-popup", this);
 
 	event_x("material_list", "hui:select", [=]{ on_material_list_select(); });
 	event_x("material_list", "hui:right-button-down", [=]{ on_material_list_right_click(); });
@@ -230,8 +230,9 @@ void ModelMaterialDialog::on_material_add() {
 }
 
 void ModelMaterialDialog::on_material_load() {
-	if (storage->file_dialog(FD_MATERIAL, false, true))
+	storage->file_dialog(FD_MATERIAL, false, true, [this] {
 		data->execute(new ActionModelAddMaterial(storage->dialog_file_no_ending));
+	});
 }
 
 void ModelMaterialDialog::on_material_delete() {
@@ -288,19 +289,20 @@ void ModelMaterialDialog::on_textures() {
 void ModelMaterialDialog::on_texture_level_load() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0)
-		if (storage->file_dialog(FD_TEXTURE, false, true))
+		storage->file_dialog(FD_TEXTURE, false, true, [this, sel] {
 			data->execute(new ActionModelMaterialLoadTexture(mode_model_mesh->current_material, sel, storage->dialog_file));
+		});
 }
 
 void ModelMaterialDialog::on_texture_level_save() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0)
-		if (storage->file_dialog(FD_TEXTURE, true, true)) {
+		storage->file_dialog(FD_TEXTURE, true, true, [this, sel] {
 			auto tl = data->material[mode_model_mesh->current_material]->texture_levels[sel];
 			tl->image->save(engine.texture_dir << storage->dialog_file);
 			tl->filename = storage->dialog_file; // ...
 			tl->edited = false;
-		}
+		});
 }
 
 class TextureScaleDialog : public hui::Dialog {
@@ -323,13 +325,12 @@ public:
 	}
 	int width, height;
 
-	static bool ask(hui::Window *parent, int &w, int &h) {
+	static void ask(hui::Window *parent, int &w, int &h, std::function<void(int,int)> cb_success) {
 		auto *dlg = new TextureScaleDialog(parent, w, h);
-		dlg->run();
-		w = dlg->width;
-		h = dlg->height;
-		delete dlg;
-		return w > 0;
+		hui::run(dlg, [dlg, cb_success] {
+			if (dlg->width > 0)
+				cb_success(dlg->width, dlg->height);
+		});
 	}
 };
 
@@ -338,8 +339,9 @@ void ModelMaterialDialog::on_texture_level_scale() {
 	if (sel >= 0) {
 		auto tl = data->material[mode_model_mesh->current_material]->texture_levels[sel];
 		int w = tl->image->width, h = tl->image->height;
-		if (TextureScaleDialog::ask(win, w, h))
-			data->execute(new ActionModelMaterialScaleTexture(mode_model_mesh->current_material, sel, w, h));
+		TextureScaleDialog::ask(win, w, h, [this, sel] (int _w, int _h) {
+			data->execute(new ActionModelMaterialScaleTexture(mode_model_mesh->current_material, sel, _w, _h));
+		});
 	}
 }
 
@@ -370,7 +372,7 @@ void ModelMaterialDialog::on_transparency_mode() {
 }
 
 void ModelMaterialDialog::on_material_list_right_click() {
-	int n = hui::GetEvent()->row;
+	int n = hui::get_event()->row;
 	if (n >= 0) {
 		mode_model_mesh->set_current_material(n);
 	}
@@ -380,7 +382,7 @@ void ModelMaterialDialog::on_material_list_right_click() {
 }
 
 void ModelMaterialDialog::on_textures_right_click() {
-	int n = hui::GetEvent()->row;
+	int n = hui::get_event()->row;
 	if (n >= 0) {
 		mode_model_mesh_texture->set_current_texture_level(n);
 	}

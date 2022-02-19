@@ -43,8 +43,8 @@ ModeMaterial::ModeMaterial(MultiView::MultiView *mv) :
 	shader_graph_dialog = nullptr;
 	shader_edit_mode = ShaderEditMode::NONE;
 
-	shape_type = hui::Config.get_str("MaterialShapeType", "teapot");
-	shape_smooth = hui::Config.get_bool("MaterialShapeSmooth", true);
+	shape_type = hui::config.get_str("MaterialShapeType", "teapot");
+	shape_smooth = hui::config.get_bool("MaterialShapeSmooth", true);
 }
 
 ModeMaterial::~ModeMaterial() {
@@ -56,30 +56,39 @@ void ModeMaterial::_new() {
 }
 
 
-bool test_save_extras(DataMaterial *data) {
-	if (data->shader.is_default)
-		return true;
-
-	Path dir = storage->last_dir[FD_SHADERFILE];
-	if (data->shader.file.is_empty()) {
-		if (!hui::FileDialogSave(ed, "Shader...", dir, "*.shader", "*.shader"))
-			return false;
-		data->shader.file = hui::Filename.relative_to(dir);
+void test_save_extras(DataMaterial *data, hui::Callback cb_success) {
+	if (data->shader.is_default) {
+		cb_success();
+		return;
 	}
 
-	FileWriteText(dir << data->shader.file, data->shader.code);
+	auto f = [data, cb_success] (const Path &dir) {
+		FileWriteText(dir << data->shader.file, data->shader.code);
 
-	if (data->shader.from_graph)
-		data->shader.graph->save(dir << data->shader.file.with(".graph"));
-	return true;
+		if (data->shader.from_graph)
+			data->shader.graph->save(dir << data->shader.file.with(".graph"));
+		cb_success();
+	};
+
+	Path dir = storage->last_dir[FD_SHADERFILE];
+	if (data->shader.file) {
+		f(dir);
+	} else {
+		hui::file_dialog_save(ed, "Shader...", dir, {"filter=*.shader", "showfilter=*.shader"}, [data, dir, f] (const Path &path) {
+			if (path) {
+				data->shader.file = path.relative_to(dir);
+				f(dir);
+			}
+		});
+	}
 }
 
 
 
-bool ModeMaterial::save() {
-	if (!test_save_extras(data))
-		return false;
-	return storage->auto_save(data);
+void ModeMaterial::save() {
+	test_save_extras(data, [this] {
+		storage->auto_save(data);
+	});
 }
 
 
@@ -180,8 +189,8 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 
 
 
-bool ModeMaterial::open() {
-	return ed->universal_open(FD_MATERIAL);
+void ModeMaterial::open() {
+	ed->universal_open(FD_MATERIAL);
 	/*if (!storage->open(data))
 		return false;
 
@@ -212,10 +221,10 @@ void ModeMaterial::on_end() {
 }
 
 
-bool ModeMaterial::save_as() {
-	if (!test_save_extras(data))
-		return false;
-	return storage->save_as(data);
+void ModeMaterial::save_as() {
+	test_save_extras(data, [this] {
+		storage->save_as(data);
+	});
 }
 
 
@@ -245,8 +254,8 @@ void ModeMaterial::on_start() {
 		MaterialVB[i] = new nix::VertexBuffer(f);
 	}
 
-	shape_type = hui::Config.get_str("MaterialShapeType", "teapot");
-	shape_smooth = hui::Config.get_bool("MaterialShapeSmooth", true);
+	shape_type = hui::config.get_str("MaterialShapeType", "teapot");
+	shape_smooth = hui::config.get_bool("MaterialShapeSmooth", true);
 
 
 	multi_view->set_allow_select(false);
@@ -259,13 +268,13 @@ void ModeMaterial::on_start() {
 
 void ModeMaterial::set_shape_type(const string &type) {
 	shape_type = type;
-	hui::Config.set_str("MaterialShapeType", shape_type);
+	hui::config.set_str("MaterialShapeType", shape_type);
 	update_shape();
 }
 
 void ModeMaterial::set_shape_smooth(bool smooth) {
 	shape_smooth = smooth;
-	hui::Config.set_bool("MaterialShapeSmooth", shape_smooth);
+	hui::config.set_bool("MaterialShapeSmooth", shape_smooth);
 	update_shape();
 }
 

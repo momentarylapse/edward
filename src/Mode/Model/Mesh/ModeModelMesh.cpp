@@ -442,11 +442,11 @@ void ModeModelMesh::choose_material_for_selection() {
 		return;
 	}
 
-	auto dlg = ownify(new ModelMaterialSelectionDialog(ed, false, data));
-	dlg->run();
-
-	if (dlg->answer >= 0)
-		data->setMaterialSelection(dlg->answer);
+	auto dlg = new ModelMaterialSelectionDialog(ed, false, data);
+	hui::run(dlg, [this, dlg] {
+		if (dlg->answer >= 0)
+			data->setMaterialSelection(dlg->answer);
+	});
 }
 
 void ModeModelMesh::choose_mouse_function(int f, bool _lock_action) {
@@ -489,8 +489,7 @@ void ModeModelMesh::add_effects(int type) {
 		ed->set_message(_("No vertex point selected"));
 		return;
 	}
-	auto dlg = ownify(new ModelFXDialog(ed, false, data, type, -1));
-	dlg->run();
+	hui::fly(new ModelFXDialog(ed, false, data, type, -1));
 }
 
 void ModeModelMesh::edit_effects() {
@@ -505,8 +504,7 @@ void ModeModelMesh::edit_effects() {
 		ed->set_message(_("One vertex point with effects has to be selected!"));
 		return;
 	}
-	auto dlg = ownify(new ModelFXDialog(ed, false, data, -1, index));
-	dlg->run();
+	hui::fly(new ModelFXDialog(ed, false, data, -1, index));
 }
 
 void ModeModelMesh::clear_effects() {
@@ -526,8 +524,7 @@ bool ModeModelMesh::pasteable() {
 }
 
 void ModeModelMesh::easify() {
-	auto dlg = ownify(new ModelEasifyDialog(ed, false, data));
-	dlg->run();
+	hui::fly(new ModelEasifyDialog(ed, false, data));
 }
 
 void ModeModelMesh::set_current_material(int index) {

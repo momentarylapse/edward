@@ -133,7 +133,7 @@ void CameraController::on_mouse_move() {
 }
 
 void CameraController::on_mouse_wheel() {
-	hui::Event *e = hui::GetEvent();
+	hui::Event *e = hui::get_event();
 
 	// mouse wheel -> zoom
 	view->cam_zoom(exp( - view->SPEED_ZOOM_WHEEL * e->scroll.y), view->mouse_win->type != VIEW_PERSPECTIVE);

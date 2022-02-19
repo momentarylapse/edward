@@ -296,7 +296,7 @@ void DataAdministration::ExportGame(const Path &dir, GameIniData &game_ini)
 		if (FILE_OP_OK(file_copy(source, target)))
 			num_ok ++;
 	}
-	hui::InfoBox(hui::CurWindow, "info", format("%d von %d Dateien exportiern", num_ok, list.num));
+	hui::info_box(hui::CurWindow, "info", format("%d von %d Dateien exportiern", num_ok, list.num));
 
 	ed->progress->end();
 }

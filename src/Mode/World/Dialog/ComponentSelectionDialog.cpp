@@ -28,44 +28,38 @@ Array<ScriptInstanceData> enumerate_components() {
 }
 
 
-ComponentSelectionDialog::ComponentSelectionDialog(hui::Window *parent, ScriptInstanceData &_data) :
+ComponentSelectionDialog::ComponentSelectionDialog(hui::Window *parent, Callback _on_select) :
 		hui::Dialog("component-selection-dialog", parent)
 {
-	selected = false;
-	data = &_data;
+	on_select = _on_select;
 
 	available = enumerate_components();
 	for (auto &c: available)
 		add_string("list", format("%s\\%s", c.class_name, c.filename));
 
-	event_x("list", "hui:select", [=] {
+	event_x("list", "hui:select", [this] {
 		int row = get_int("list");
 		enable("ok", row >= 0);
 	});
-	event_x("list", "hui:activate", [=] {
+	event_x("list", "hui:activate", [this] {
 		int row = get_int("list");
 		if (row >= 0) {
-			selected = true;
-			*data = available[row];
+			on_select(available[row]);
 			request_destroy();
 		}
 	});
-	event("cancel", [=] {
+	event("cancel", [this] {
 		request_destroy();
 	});
-	event("ok", [=] {
+	event("ok", [this] {
 		int row = get_int("list");
-		if (row >= 0) {
-			selected = true;
-			*data = available[row];
-		}
+		if (row >= 0)
+			on_select(available[row]);
 		request_destroy();
 	});
 }
 
 
-bool ComponentSelectionDialog::choose(hui::Window *parent, ScriptInstanceData &data) {
-	auto dlg = ownify(new ComponentSelectionDialog(parent, data));
-	dlg->run();
-	return dlg->selected;
+void ComponentSelectionDialog::choose(hui::Window *parent, Callback on_select) {
+	hui::fly(new ComponentSelectionDialog(parent, on_select));
 }

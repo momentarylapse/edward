@@ -121,42 +121,41 @@ bool Storage::save(const Path &_filename, Data *data) {
 }
 
 // canonical
-bool Storage::open(Data *data) {
-	if (!ed->allow_termination())
-		return false;
+void Storage::open(Data *data, Callback on_success) {
+	ed->allow_termination([this, data, on_success] {
+		int type = data_type(data);
+		file_dialog(type, false, false, [this, data, on_success] {
+			guess_root_directory(dialog_file_complete);
 
-	int type = data_type(data);
-	if (!file_dialog(type, false, false))
-		return false;
-
-	guess_root_directory(dialog_file_complete);
-
-	try {
-		return storage->load(dialog_file_complete, data);
-	} catch(...) {
-		return false;
-	}
+			try {
+				if (storage->load(dialog_file_complete, data))
+					on_success();
+			} catch(...) {
+			}
+		});
+	});
 }
 
 // canonical
-bool Storage::save_as(Data *data) {
+void Storage::save_as(Data *data, Callback on_success) {
 	int type = data_type(data);
-	if (!file_dialog(type, true, false))
-		return false;
+	file_dialog(type, true, false, [this, data, on_success] {
+		guess_root_directory(dialog_file_complete);
 
-	guess_root_directory(dialog_file_complete);
-
-	try {
-		return save(dialog_file_complete, data);
-	} catch (...) {
-		return false;
-	}
+		try {
+			if (save(dialog_file_complete, data))
+				on_success();
+		} catch (...) {
+		}
+	});
 }
 
-bool Storage::auto_save(Data *data) {
-	if (data->filename.is_empty())
-		return save_as(data);
-	return save(data->filename, data);
+void Storage::auto_save(Data *data, Callback on_success) {
+	if (data->filename)
+		if (save(data->filename, data))
+			on_success();
+	else
+		save_as(data, on_success);
 }
 
 
@@ -258,7 +257,7 @@ string fd_name(int kind) {
 	return "?";
 }
 
-bool Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir) {
+void Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir, Callback on_select) {
 	int done;
 
 	string title, show_filter, filter;
@@ -284,39 +283,42 @@ bool Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bo
 		add_kind(fd_name(k), format("%s (*.%s)", fd_name(k), fd_ext(k)), ext2filter(fd_ext(k)));
 	}
 
+
+	auto on_select_base = [on_select, this, kind, force_in_root_dir] (const Path &path) {
+		dialog_file_kind = FD_FILE;
+		for (auto k: kind) {
+			for (auto &ext: fd_ext(k).explode(","))
+				if (path.extension() == ext) {
+					dialog_file_kind = k;
+				}
+		}
+
+
+		bool in_root_dir = (path.is_in(root_dir_kind[dialog_file_kind]));
+
+		if (force_in_root_dir and !in_root_dir) {
+			ed->error_box(path.str());
+			ed->error_box(format(_("The file is not in the appropriate directory: \"%s\"\nor in a subdirectory."), root_dir_kind[dialog_file_kind]));
+			return;
+		}//else
+			//MakeDirs(HuiFileDialogPath);
+
+		if (in_root_dir)
+			last_dir[dialog_file_kind] = path.dirname();
+		dialog_file_complete = path;
+		dialog_file = dialog_file_complete.relative_to(root_dir_kind[dialog_file_kind]);
+		dialog_file_no_ending = dialog_file.no_ext();
+		on_select();
+	};
+
+
 	if (save)
-		done = hui::FileDialogSave(ed, title, last_dir[preferred], show_filter, filter);
+		hui::file_dialog_save(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter}, on_select_base);
 	else
-		done = hui::FileDialogOpen(ed, title, last_dir[preferred], show_filter, filter);
-	if (!done)
-		return false;
+		hui::file_dialog_open(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter}, on_select_base);
 
-	dialog_file_kind = FD_FILE;
-	for (auto k: kind) {
-		for (auto &ext: fd_ext(k).explode(","))
-			if (hui::Filename.extension() == ext) {
-				dialog_file_kind = k;
-			}
-	}
-
-
-	bool in_root_dir = (hui::Filename.is_in(root_dir_kind[dialog_file_kind]));
-
-	if (force_in_root_dir and !in_root_dir) {
-		ed->error_box(hui::Filename.str());
-		ed->error_box(format(_("The file is not in the appropriate directory: \"%s\"\nor in a subdirectory."), root_dir_kind[dialog_file_kind]));
-		return false;
-	}//else
-		//MakeDirs(HuiFileDialogPath);
-
-	if (in_root_dir)
-		last_dir[dialog_file_kind] = hui::Filename.dirname();
-	dialog_file_complete = hui::Filename;
-	dialog_file = dialog_file_complete.relative_to(root_dir_kind[dialog_file_kind]);
-	dialog_file_no_ending = dialog_file.no_ext();
-	return true;
 }
 
-bool Storage::file_dialog(int kind, bool save, bool force_in_root_dir) {
-	return file_dialog_x({kind}, kind, save, force_in_root_dir);
+void Storage::file_dialog(int kind, bool save, bool force_in_root_dir, Callback on_select) {
+	file_dialog_x({kind}, kind, save, force_in_root_dir, on_select);
 }

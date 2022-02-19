@@ -28,8 +28,8 @@ void ModeModelMeshCreatePlane::on_start() {
 	// Dialog
 	dialog = new hui::Panel();
 	dialog->from_resource("new_plane_dialog");
-	dialog->set_int("np_num_x", hui::Config.get_int("NewPlaneNumX", 4));
-	dialog->set_int("np_num_y",hui::Config.get_int("NewPlaneNumY", 4));
+	dialog->set_int("np_num_x", hui::config.get_int("NewPlaneNumX", 4));
+	dialog->set_int("np_num_y",hui::config.get_int("NewPlaneNumY", 4));
 	ed->set_side_panel(dialog);
 
 	multi_view->set_allow_select(false);
@@ -48,8 +48,8 @@ void ModeModelMeshCreatePlane::on_left_button_up() {
 	if (pos_chosen) {
 		int nx = dialog->get_int("np_num_x");
 		int ny = dialog->get_int("np_num_y");
-		hui::Config.set_int("NewPlaneNumX", nx);
-		hui::Config.set_int("NewPlaneNumY", ny);
+		hui::config.set_int("NewPlaneNumX", nx);
+		hui::config.set_int("NewPlaneNumY", ny);
 
 		if (invert) {
 			pos += length[0];

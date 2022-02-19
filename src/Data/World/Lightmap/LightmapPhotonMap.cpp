@@ -124,14 +124,13 @@ void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vec
 		if (!_vec_between_(cp, p, p2))
 			continue;
 
-		float ff, gg;
-		GetBaryCentric(cp, t.v[0], t.v[1], t.v[2], ff, gg);
+		auto fg = bary_centric(cp, t.v[0], t.v[1], t.v[2]);
 
 		hit_tria = ti;
 		hit_p = cp;
 		p2 = cp;
-		f = ff;
-		g = gg;
+		f = fg.x;
+		g = fg.y;
 	}
 
 	if (hit_tria < 0)

@@ -93,7 +93,7 @@ void ModeModelAnimation::on_start() {
 	ed->mode_model->allow_selection_modes(false);
 
 	timer.reset();
-	runner = hui::RunRepeated(0.020f, [=]{ idle_function(); });
+	runner = hui::run_repeated(0.020f, [=]{ idle_function(); });
 	set_current_move(getFirstMove());
 
 	//ed->set_mode(mode_model_animation_none);
@@ -113,7 +113,7 @@ void ModeModelAnimation::on_update_menu() {
 
 
 void ModeModelAnimation::on_end() {
-	hui::CancelRunner(runner);
+	hui::cancel_runner(runner);
 	data->unsubscribe(this);
 	ed->set_side_panel(nullptr);
 	ed->set_bottom_panel(nullptr);

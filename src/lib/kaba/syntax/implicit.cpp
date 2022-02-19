@@ -783,9 +783,15 @@ void Parser::auto_implement_callable_constructor(Function *f, const Class *t) {
 void Parser::auto_implement_callable_fp_call(Function *f, const Class *t) {
 	auto self = tree->add_node_local(f->__get_var(IDENTIFIER_SELF));
 
-	auto call = new Node(NodeKind::POINTER_CALL, 0, f->literal_return_type);
+	// contains a Function* pointer, extract its raw pointer
+	auto raw = tree->add_node_statement(StatementID::RAW_FUNCTION_POINTER);
+	raw->type = TypeFunctionCodeP;
+	raw->set_param(0, get_callable_fp(t, self));
+
+	// call its raw pointer
+	auto call = new Node(NodeKind::CALL_RAW_POINTER, 0, f->literal_return_type);
 	call->set_num_params(1 + get_callable_param_types(t).num);
-	call->set_param(0, get_callable_fp(t, self));
+	call->set_param(0, raw);
 	for (int i=0; i<f->num_params; i++)
 		call->set_param(i+1, tree->add_node_local(f->var[i].get()));
 
@@ -828,7 +834,7 @@ void Parser::auto_implement_callable_bind_call(Function *f, const Class *t) {
 
 
 
-Function *SyntaxTree::add_func_header(Class *t, const string &name, const Class *return_type, const Array<const Class*> &param_types, const Array<string> &param_names, Function *cf, Flags flags) {
+Function *SyntaxTree::add_func_header(Class *t, const string &name, const Class *return_type, const Array<const Class*> &param_types, const Array<string> &param_names, Function *cf, Flags flags, const shared_array<Node> &def_params) {
 	Function *f = add_function(name, return_type, t, flags); // always member-function??? no...?
 	f->auto_declared = true;
 	foreachi (auto &p, param_types, i) {
@@ -837,6 +843,7 @@ Function *SyntaxTree::add_func_header(Class *t, const string &name, const Class 
 		flags_set(v->flags, Flags::CONST);
 		f->num_params ++;
 	}
+	f->default_parameters = def_params;
 	//msg_write("ADD " + f->signature(TypeVoid));
 	f->update_parameters_after_parsing();
 	bool override = cf;
@@ -874,8 +881,9 @@ void remove_inherited_constructors(Class *t) {
 void redefine_inherited_constructors(Class *t, SyntaxTree *tree) {
 	for (auto *pcc: t->parent->get_constructors()) {
 		auto c = t->get_same_func(IDENTIFIER_FUNC_INIT, pcc);
-		if (needs_new(c))
-			tree->add_func_header(t, IDENTIFIER_FUNC_INIT, TypeVoid, pcc->literal_param_type, class_func_param_names(pcc), c);
+		if (needs_new(c)) {
+			auto ff = tree->add_func_header(t, IDENTIFIER_FUNC_INIT, TypeVoid, pcc->literal_param_type, class_func_param_names(pcc), c, Flags::NONE, pcc->default_parameters);
+		}
 	}
 }
 

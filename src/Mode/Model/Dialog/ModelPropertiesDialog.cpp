@@ -261,8 +261,8 @@ void ModelPropertiesDialog::on_generate_tensor_auto() {
 
 void ModelPropertiesDialog::on_tensor_edit() {
 	// constraint: symmetric tensor!
-	int row = hui::GetEvent()->row;
-	int col = hui::GetEvent()->column;
+	int row = hui::get_event()->row;
+	int col = hui::get_event()->column;
 	if (row != col - 1) {
 		set_cell("", col-1, row+1, get_cell("", row, col));
 	}
@@ -275,11 +275,11 @@ void ModelPropertiesDialog::on_num_items() {
 }
 
 void ModelPropertiesDialog::on_model_inventary() {
-	if (storage->file_dialog(FD_MODEL, false, true)) {
+	storage->file_dialog(FD_MODEL, false, true, [this] {
 		int n = get_int("");
 		temp.inventary[n] = storage->dialog_file_no_ending;
 		change_string("model_inventary", n, format("%d\\%s", n, storage->dialog_file_no_ending));
-	}
+	});
 }
 
 void ModelPropertiesDialog::on_delete_item() {
@@ -292,17 +292,17 @@ void ModelPropertiesDialog::on_delete_item() {
 
 // script
 void ModelPropertiesDialog::on_script_var_edit() {
-	int row = hui::GetEvent()->row;
+	int row = hui::get_event()->row;
 	temp.variables[row].value = get_cell("variables", row, 2);
 }
 
 void ModelPropertiesDialog::on_script_find() {
-	if (storage->file_dialog(FD_SCRIPT, false, true)) {
+	storage->file_dialog(FD_SCRIPT, false, true, [this] {
 		set_string("script", storage->dialog_file.str());
 		temp.script_file = storage->dialog_file;
 		update_model_script_data(temp);
 		refill_script_var_list();
-	}
+	});
 }
 
 void ModelPropertiesDialog::apply_data() {

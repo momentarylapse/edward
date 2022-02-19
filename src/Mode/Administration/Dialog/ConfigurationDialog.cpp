@@ -65,33 +65,40 @@ void ConfigurationDialog::load_data() {
 
 
 void ConfigurationDialog::on_find_root_dir() {
-	if (hui::FileDialogDir(this, _("Working directory"), storage->root_dir))
-		set_string("root-directory", hui::Filename.str());
+	hui::file_dialog_dir(this, _("Working directory"), storage->root_dir, {}, [this] (const Path &path) {
+		if (path)
+			set_string("root-directory", path.str());
+	});
 }
 
 void ConfigurationDialog::on_find_world() {
-	if (storage->file_dialog(FD_WORLD, false, true))
+	storage->file_dialog(FD_WORLD, false, true, [this] {
 		set_string("world", storage->dialog_file_no_ending.str());
+	});
 }
 
 void ConfigurationDialog::on_find_second_world() {
-	if (storage->file_dialog(FD_WORLD, false, true))
+	storage->file_dialog(FD_WORLD, false, true, [this] {
 		set_string("second-world", storage->dialog_file_no_ending.str());
+	});
 }
 
 void ConfigurationDialog::on_find_script() {
-	if (storage->file_dialog(FD_SCRIPT, false, true))
+	storage->file_dialog(FD_SCRIPT, false, true, [this] {
 		set_string("script", storage->dialog_file.str());
+	});
 }
 
 void ConfigurationDialog::on_find_material() {
-	if (storage->file_dialog(FD_MATERIAL, false, true))
+	storage->file_dialog(FD_MATERIAL, false, true, [this] {
 		set_string("material", storage->dialog_file_no_ending.str());
+	});
 }
 
 void ConfigurationDialog::on_find_font() {
-	if (storage->file_dialog(FD_FONT, false, true))
+	storage->file_dialog(FD_FONT, false, true, [this] {
 		set_string("font", storage->dialog_file_no_ending.str());
+	});
 }
 
 void ConfigurationDialog::into_game_init(GameIniData &g) {

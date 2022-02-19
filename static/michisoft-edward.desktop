@@ -3,11 +3,10 @@ Version=1.0
 Type=Application
 Name=Edward Game Editor
 Name[de]=Edward Spiele Editor
-Comment=Editor for the MichiSoft x9 Game Engine
-Comment[de]=Editor der MichiSoft x9 Spiele-Engine
+Comment=Editor for the MichiSoft y Game Engine
+Comment[de]=Editor der MichiSoft y Spiele-Engine
 Categories=Graphics;3DGraphics;
-TryExec=/usr/local/bin/edward
-Exec=/usr/local/bin/edward
-Icon=/usr/local/share/edward/icon.svg
+Exec=${INSTALL_PREFIX}/bin/edward
+Icon=${INSTALL_PREFIX}/share/edward/icon.svg
 MimeType=application/x-michisoft-x-model;application/x-michisoft-x-terrain;application/x-michisoft-x-world;application/x-michisoft-x-font;application/x-michisoft-x-material
 

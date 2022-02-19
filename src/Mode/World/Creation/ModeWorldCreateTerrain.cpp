@@ -19,7 +19,7 @@ ModeWorldCreateTerrain::ModeWorldCreateTerrain(ModeBase *_parent) :
 void ModeWorldCreateTerrain::on_start()
 {
 	// Dialog
-	dialog = hui::CreateResourceDialog("new_terrain_dialog", ed);
+	dialog = hui::create_resource_dialog("new_terrain_dialog", ed);
 	dialog->show();
 
 	dialog->event("cancel", std::bind(&ModeWorldCreateTerrain::onClose, this));

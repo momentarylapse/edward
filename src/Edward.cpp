@@ -42,10 +42,10 @@ string SoundDir;
 
 
 void Edward::on_close() {
-	if (allow_termination()) {
+	allow_termination([this] {
 		//request_destroy();
-		hui::RunLater(0.01f, [=]{ delete this; });
-	}
+		hui::run_later(0.01f, [this]{ delete this; });
+	});
 }
 
 #define IMPLEMENT_EVENT(EVENT) \
@@ -68,7 +68,7 @@ IMPLEMENT_EVENT(on_right_button_up)
 
 void Edward::on_key_down()
 {
-	int key_code = hui::GetEvent()->key_code;
+	int key_code = hui::get_event()->key_code;
 	if (cur_mode->multi_view)
 		cur_mode->multi_view->on_key_down(key_code);
 	cur_mode->on_key_down(key_code);
@@ -76,7 +76,7 @@ void Edward::on_key_down()
 
 void Edward::on_key_up()
 {
-	int key_code = hui::GetEvent()->key_code;
+	int key_code = hui::get_event()->key_code;
 	if (cur_mode->multi_view)
 		cur_mode->multi_view->on_key_up(key_code);
 	cur_mode->on_key_up(key_code);
@@ -84,9 +84,9 @@ void Edward::on_key_up()
 
 void Edward::on_event()
 {
-	string id = hui::GetEvent()->id;
+	string id = hui::get_event()->id;
 	if (id.num == 0)
-		id = hui::GetEvent()->message;
+		id = hui::get_event()->message;
 	if (cur_mode->multi_view)
 		cur_mode->multi_view->on_command(id);
 	cur_mode->on_command_recursive(id);
@@ -139,9 +139,9 @@ Edward::Edward(Array<string> arg) :
 	load_key_codes();
 
 	// configuration
-	int w = hui::Config.get_int("Window.Width", 800);
-	int h = hui::Config.get_int("Window.Height", 600);
-	bool maximized = hui::Config.get_bool("Window.Maximized", false);
+	int w = hui::config.get_int("Window.Width", 800);
+	int h = hui::config.get_int("Window.Height", 600);
+	bool maximized = hui::config.get_bool("Window.Maximized", false);
 	set_size(w, h);
 
 	//HuiConfigread_int("Api", api, NIX_API_OPENGL);
@@ -199,7 +199,7 @@ Edward::Edward(Array<string> arg) :
 	mode_admin = new ModeAdministration;
 
 	storage = new Storage();
-	storage->set_root_directory(hui::Config.get_str("RootDir", ""));
+	storage->set_root_directory(hui::config.get_str("RootDir", ""));
 
 	// depends on some mode data
 	if (app->installed)
@@ -240,8 +240,8 @@ Edward::Edward(Array<string> arg) :
 		universal_new(FD_MODEL);
 
 	//hui::SetIdleFunction([=]{ idleFunction(); });
-	hui::RunLater(0.010f, [=]{ cur_mode->multi_view->force_redraw(); });
-	hui::RunLater(0.100f, [=]{ optimize_current_view(); });
+	hui::run_later(0.010f, [=]{ cur_mode->multi_view->force_redraw(); });
+	hui::run_later(0.100f, [=]{ optimize_current_view(); });
 }
 
 Edward::~Edward() {
@@ -252,19 +252,19 @@ Edward::~Edward() {
 	// saving the configuration data...
 	int w, h;
 	get_size_desired(w, h);
-	hui::Config.set_int("Window.X", -1);//r.x1);
-	hui::Config.set_int("Window.Y", -1);//r.y1);
-	hui::Config.set_int("Window.Width", w);
-	hui::Config.set_int("Window.Height", h);
-	hui::Config.set_bool("Window.Maximized", is_maximized());
-	hui::Config.set_str("RootDir", storage->root_dir.str());
-	hui::Config.set_str("Language", hui::GetCurLanguage());
+	hui::config.set_int("Window.X", -1);//r.x1);
+	hui::config.set_int("Window.Y", -1);//r.y1);
+	hui::config.set_int("Window.Width", w);
+	hui::config.set_int("Window.Height", h);
+	hui::config.set_bool("Window.Maximized", is_maximized());
+	hui::config.set_str("RootDir", storage->root_dir.str());
+	hui::config.set_str("Language", hui::get_cur_language());
 	/*HuiConfig.set_bool("LocalDocumentation", LocalDocumentation);
 	HuiConfig.set_str("WorldScriptVarFile", WorldScriptVarFile);
 	HuiConfig.set_str("ObjectScriptVarFile", ObjectScriptVarFile);
 	HuiConfig.set_str("ItemScriptVarFile", ItemScriptVarFile);*/
 	//HuiConfig.set_int("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
-	hui::Config.save(app->directory << "config.txt");
+	hui::config.save(app->directory << "config.txt");
 	delete storage;
 
 
@@ -340,92 +340,96 @@ void Edward::optimize_current_view() {
 
 // do we change roots?
 //  -> data loss?
-bool mode_switch_allowed(ModeBase *m) {
-	if (m->equal_roots(ed->cur_mode))
-		return true;
-	return ed->allow_termination();
+void mode_switch_allowed(ModeBase *m, hui::Callback on_success) {
+	if (m->equal_roots(ed->cur_mode)) {
+		on_success();
+	} else {
+		ed->allow_termination(on_success);
+	}
 }
 
-void Edward::set_mode(ModeBase *m) {
-	if (cur_mode == m)
+void Edward::set_mode(ModeBase *_m) {
+	if (cur_mode == _m)
 		return;
-	if (!mode_switch_allowed(m))
-		return;
+	mode_switch_allowed(_m, [this, _m] {
+		auto m = _m;
 
-	// recursive use...
-	mode_queue.add(m);
-	if (mode_queue.num > 1)
-		return;
+		// recursive use...
+		mode_queue.add(m);
+		if (mode_queue.num > 1)
+			return;
 
-	cur_mode->on_leave();
-	if (cur_mode->get_data()) {
-		cur_mode->get_data()->unsubscribe(this);
-		cur_mode->get_data()->action_manager->unsubscribe(this);
-	}
-
-	m = mode_queue[0];
-	while (m) {
-
-		// close current modes
-		while (cur_mode) {
-			if (cur_mode->is_ancestor_of(m))
-				break;
-			msg_write("end " + cur_mode->name);
-			cur_mode->on_end();
-			if (cur_mode->multi_view)
-				cur_mode->multi_view->pop_settings();
-			cur_mode = cur_mode->parent;
+		cur_mode->on_leave();
+		if (cur_mode->get_data()) {
+			cur_mode->get_data()->unsubscribe(this);
+			cur_mode->get_data()->action_manager->unsubscribe(this);
 		}
 
-		//multi_view_3d->ResetMouseAction();
-		//multi_view_2d->ResetMouseAction();
+		m = mode_queue[0];
+		while (m) {
 
-		// start new modes
-		while (cur_mode != m) {
-			cur_mode = cur_mode->get_next_child_to(m);
-			msg_write("start " + cur_mode->name);
-			if (cur_mode->multi_view)
-				cur_mode->multi_view->push_settings();
-			cur_mode->on_start();
-		}
-		cur_mode->on_enter();
-		cur_mode->on_set_multi_view();
+			// close current modes
+			while (cur_mode) {
+				if (cur_mode->is_ancestor_of(m))
+					break;
+				msg_write("end " + cur_mode->name);
+				cur_mode->on_end();
+				if (cur_mode->multi_view)
+					cur_mode->multi_view->pop_settings();
+				cur_mode = cur_mode->parent;
+			}
 
-		// nested set calls?
-		mode_queue.erase(0);
-		m = NULL;
-		if (mode_queue.num > 0)
-			m = mode_queue[0];
-	}
+			//multi_view_3d->ResetMouseAction();
+			//multi_view_2d->ResetMouseAction();
 
-	set_menu(hui::CreateResourceMenu(cur_mode->menu_id));
-	update_menu();
-	cur_mode->on_enter(); // ????
-	if (cur_mode->get_data()) {
-		cur_mode->get_data()->subscribe(this, [=]{
-			cur_mode->multi_view->force_redraw();
-			update_menu();
-		}, Data::MESSAGE_SELECTION);
-		cur_mode->get_data()->subscribe(this, [=]{
+			// start new modes
+			while (cur_mode != m) {
+				cur_mode = cur_mode->get_next_child_to(m);
+				msg_write("start " + cur_mode->name);
+				if (cur_mode->multi_view)
+					cur_mode->multi_view->push_settings();
+				cur_mode->on_start();
+			}
+			cur_mode->on_enter();
 			cur_mode->on_set_multi_view();
-			cur_mode->multi_view->force_redraw();
-			update_menu();
-		}, Data::MESSAGE_CHANGE);
-		auto *am = cur_mode->get_data()->action_manager;
-		am->subscribe(this, [=]{
-			error_box(format(_("Action failed: %s\nReason: %s"), am->error_location.c_str(), am->error_message.c_str()));
-		}, am->MESSAGE_FAILED);
-		am->subscribe(this, [=]{
-			set_message(_("Saved!"));
-			update_menu();
-		}, am->MESSAGE_SAVED);
-	}
 
-	cur_mode->multi_view->force_redraw();
+			// nested set calls?
+			mode_queue.erase(0);
+			m = NULL;
+			if (mode_queue.num > 0)
+				m = mode_queue[0];
+		}
+
+		set_menu(hui::create_resource_menu(cur_mode->menu_id, this));
+		update_menu();
+		cur_mode->on_enter(); // ????
+		if (cur_mode->get_data()) {
+			cur_mode->get_data()->subscribe(this, [=]{
+				cur_mode->multi_view->force_redraw();
+				update_menu();
+			}, Data::MESSAGE_SELECTION);
+			cur_mode->get_data()->subscribe(this, [=]{
+				cur_mode->on_set_multi_view();
+				cur_mode->multi_view->force_redraw();
+				update_menu();
+			}, Data::MESSAGE_CHANGE);
+			auto *am = cur_mode->get_data()->action_manager;
+			am->subscribe(this, [=]{
+				error_box(format(_("Action failed: %s\nReason: %s"), am->error_location.c_str(), am->error_message.c_str()));
+			}, am->MESSAGE_FAILED);
+			am->subscribe(this, [=]{
+				set_message(_("Saved!"));
+				update_menu();
+			}, am->MESSAGE_SAVED);
+		}
+
+		cur_mode->multi_view->force_redraw();
+	});
 }
 
-void Edward::on_about()
-{	hui::AboutBox(this);	}
+void Edward::on_about() {
+	hui::about_box(this);
+}
 
 void Edward::on_send_bug_report()
 {}//	hui::SendBugReport();	}
@@ -434,14 +438,15 @@ void Edward::on_execute_plugin() {
 	auto temp = storage->last_dir[FD_SCRIPT];
 	storage->last_dir[FD_SCRIPT] = PluginManager::directory;
 
-	if (storage->file_dialog(FD_SCRIPT, false, false))
+	storage->file_dialog(FD_SCRIPT, false, false, [this, temp] {
 		plugins->execute(storage->dialog_file_complete);
-	storage->last_dir[FD_SCRIPT] = temp;
+		storage->last_dir[FD_SCRIPT] = temp;
+	});
 }
 
 
 void Edward::on_draw_gl() {
-	auto e = hui::GetEvent();
+	auto e = hui::get_event();
 	nix::start_frame_hui();
 	nix::set_viewport(rect(0, e->column, 0, e->row));
 
@@ -462,12 +467,12 @@ void Edward::load_key_codes() {
 	// first installed version
 	con.load(app->directory_static << "keys.txt");
 	for (auto &id: con.map.keys())
-		set_key_code(id, hui::ParseKeyCode(con.get_str(id, "")));
+		set_key_code(id, hui::parse_key_code(con.get_str(id, "")));
 
 	// then override by user keys
 	con.load(app->directory << "keys.txt");
 	for (auto &id: con.map.keys())
-		set_key_code(id, hui::ParseKeyCode(con.get_str(id, "")));
+		set_key_code(id, hui::parse_key_code(con.get_str(id, "")));
 }
 
 
@@ -480,7 +485,7 @@ void Edward::set_message(const string &message) {
 	msg_write(message);
 	message_str.add(message);
 	cur_mode->multi_view->force_redraw();
-	hui::RunLater(2.0f, [=]{ remove_message(); });
+	hui::run_later(2.0f, [this]{ remove_message(); });
 }
 
 
@@ -511,9 +516,7 @@ void Edward::on_command(const string &id) {
 	if (id == "project_open")
 		mode_admin->open();
 	if (id == "project_settings") {
-		auto *dlg = new ConfigurationDialog(ed, mode_admin->data, false);
-		dlg->run();
-		delete dlg;
+		hui::fly(new ConfigurationDialog(ed, mode_admin->data, false));
 	}
 	if (id == "administrate")
 		set_mode(mode_admin);
@@ -533,51 +536,48 @@ ModeBase *Edward::get_mode(int preferred_type) {
 	return mode_none;
 }
 
-bool Edward::universal_new(int preferred_type) {
-	if (!allow_termination())
-		return false;
-	/*auto m = get_mode(preferred_type);
-	m->_new();
-	set_mode(m);
-	m->optimize_view();*/
-	if (preferred_type == FD_MODEL) {
-		mode_model->_new();
-		set_mode(mode_model);
-		mode_model_mesh->optimize_view();
-	} else if (preferred_type == FD_WORLD) {
-		mode_world->_new();
-		set_mode(mode_world);
-		mode_world->optimize_view();
-	} else if (preferred_type == FD_MATERIAL) {
-		mode_material->_new();
-		set_mode(mode_material);
-		mode_material->optimize_view();
-	} else if (preferred_type == FD_FONT) {
-		mode_font->_new();
-		set_mode(mode_font);
-		mode_font->optimize_view();
-	}
-	return true;
+void Edward::universal_new(int preferred_type) {
+	allow_termination([this, preferred_type] {
+		/*auto m = get_mode(preferred_type);
+		m->_new();
+		set_mode(m);
+		m->optimize_view();*/
+		if (preferred_type == FD_MODEL) {
+			mode_model->_new();
+			set_mode(mode_model);
+			mode_model_mesh->optimize_view();
+		} else if (preferred_type == FD_WORLD) {
+			mode_world->_new();
+			set_mode(mode_world);
+			mode_world->optimize_view();
+		} else if (preferred_type == FD_MATERIAL) {
+			mode_material->_new();
+			set_mode(mode_material);
+			mode_material->optimize_view();
+		} else if (preferred_type == FD_FONT) {
+			mode_font->_new();
+			set_mode(mode_font);
+			mode_font->optimize_view();
+		}
+	});
 }
 
-bool Edward::universal_open(int preferred_type) {
-	if (!storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false))
-		return false;
-
-	if (storage->dialog_file_kind == FD_MODEL) {
-		storage->load(storage->dialog_file_complete, mode_model->data);
-		set_mode(mode_model);
-		mode_model_mesh->optimize_view();
-	} else if (storage->dialog_file_kind == FD_WORLD) {
-		storage->load(storage->dialog_file_complete, mode_world->data);
-		set_mode(mode_world);
-		mode_world->optimize_view();
-	} else if (storage->dialog_file_kind == FD_MATERIAL) {
-		storage->load(storage->dialog_file_complete, mode_material->data);
-		set_mode(mode_material);
-		mode_material->optimize_view();
-	}
-	return true;
+void Edward::universal_open(int preferred_type) {
+	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false, [this] {
+		if (storage->dialog_file_kind == FD_MODEL) {
+			storage->load(storage->dialog_file_complete, mode_model->data);
+			set_mode(mode_model);
+			mode_model_mesh->optimize_view();
+		} else if (storage->dialog_file_kind == FD_WORLD) {
+			storage->load(storage->dialog_file_complete, mode_world->data);
+			set_mode(mode_world);
+			mode_world->optimize_view();
+		} else if (storage->dialog_file_kind == FD_MATERIAL) {
+			storage->load(storage->dialog_file_complete, mode_material->data);
+			set_mode(mode_material);
+			mode_material->optimize_view();
+		}
+	});
 }
 
 Path add_extension_if_needed(int type, const Path &filename) {
@@ -593,66 +593,66 @@ Path make_absolute_path(int type, const Path &filename, bool relative_path) {
 	return filename;
 }
 
-bool Edward::universal_edit(int type, const Path &_filename, bool relative_path) {
-	if (!allow_termination())
-		return false;
-	msg_write("EDIT");
-	msg_write(_filename.str());
-	Path filename = make_absolute_path(type, add_extension_if_needed(type, _filename), relative_path);
-	msg_write(filename.str());
-	switch (type){
-		case -1:
-			if (filename.basename() == "config.txt")
+void Edward::universal_edit(int type, const Path &_filename, bool relative_path) {
+	allow_termination([this, type, _filename, relative_path] {
+		msg_write("EDIT");
+		msg_write(_filename.str());
+		Path filename = make_absolute_path(type, add_extension_if_needed(type, _filename), relative_path);
+		msg_write(filename.str());
+		switch (type){
+			case -1:
+				if (filename.basename() == "config.txt")
+					hui::OpenDocument(filename);
+				else if (filename.basename() == "game.ini")
+					mode_admin->BasicSettings();
+				break;
+			case FD_MODEL:
+				if (storage->load(filename, mode_model->data, true)) {
+					set_mode(mode_model);
+					mode_model_mesh->optimize_view();
+				}
+				break;
+			case FD_MATERIAL:
+				if (storage->load(filename, mode_material->data, true)) {
+					set_mode(mode_material);
+					mode_material->optimize_view();
+				}
+				break;
+			case FD_FONT:
+				if (storage->load(filename, mode_font->data, true))
+					set_mode(mode_font);
+				break;
+			case FD_WORLD:
+				if (storage->load(filename, mode_world->data, true)) {
+					set_mode(mode_world);
+					mode_world->optimize_view();
+				}
+				break;
+			case FD_TERRAIN:
+				mode_world->data->reset();
+				if (mode_world->data->add_terrain(filename.relative_to(engine.map_dir).no_ext(), v_0)) {
+					set_mode(mode_world);
+					mode_world->optimize_view();
+				}
+				break;
+			case FD_CAMERAFLIGHT:
+				/*mode_world->data->Reset();
+				strcpy(mworld->CamScriptFile,a->Name);
+				if (mworld->LoadCameraScript()){
+					SetMode(ModeWorld);
+					mworld->OptimizeView();
+				}*/
+				break;
+			case FD_TEXTURE:
+			case FD_SOUND:
+			case FD_SHADERFILE:
+			case FD_SCRIPT:
+			case FD_FILE:
 				hui::OpenDocument(filename);
-			else if (filename.basename() == "game.ini")
-				mode_admin->BasicSettings();
-			break;
-		case FD_MODEL:
-			if (storage->load(filename, mode_model->data, true)) {
-				set_mode(mode_model);
-				mode_model_mesh->optimize_view();
-			}
-			break;
-		case FD_MATERIAL:
-			if (storage->load(filename, mode_material->data, true)) {
-				set_mode(mode_material);
-				mode_material->optimize_view();
-			}
-			break;
-		case FD_FONT:
-			if (storage->load(filename, mode_font->data, true))
-				set_mode(mode_font);
-			break;
-		case FD_WORLD:
-			if (storage->load(filename, mode_world->data, true)) {
-				set_mode(mode_world);
-				mode_world->optimize_view();
-			}
-			break;
-		case FD_TERRAIN:
-			mode_world->data->reset();
-			if (mode_world->data->add_terrain(filename.relative_to(engine.map_dir).no_ext(), v_0)) {
-				set_mode(mode_world);
-				mode_world->optimize_view();
-			}
-			break;
-		case FD_CAMERAFLIGHT:
-			/*mode_world->data->Reset();
-			strcpy(mworld->CamScriptFile,a->Name);
-			if (mworld->LoadCameraScript()){
-				SetMode(ModeWorld);
-				mworld->OptimizeView();
-			}*/
-			break;
-		case FD_TEXTURE:
-		case FD_SOUND:
-		case FD_SHADERFILE:
-		case FD_SCRIPT:
-		case FD_FILE:
-			hui::OpenDocument(filename);
-			break;
-	}
-	return true;
+				break;
+		}
+		//return true;
+	});
 }
 
 
@@ -692,22 +692,31 @@ void Edward::update_menu()
 	}
 }
 
-bool Edward::allow_termination() {
-	if (!cur_mode)
-		return true;
+void Edward::allow_termination(hui::Callback on_success, hui::Callback on_fail) {
+	if (!cur_mode) {
+		on_success();
+		return;
+	}
 	Data *d = cur_mode->get_data();
-	if (!d)
-		return true;
-	if (d->action_manager->is_save())
-		return true;
-	string answer = hui::QuestionBox(this,_("Quite a polite question"),_("You increased entropy. Do you wish to save your work?"),true);
-	if (answer == "hui:cancel")
-		return false;
-	if (answer == "hui:no")
-		return true;
-	//bool saved = cur_mode->save();
-	//return saved;
-	return false;
+	if (!d) {
+		on_success();
+		return;
+	}
+	if (d->action_manager->is_save()) {
+		on_success();
+		return;
+	}
+	hui::question_box(this,_("Quite a polite question"),_("You increased entropy. Do you wish to save your work?"), [on_success, on_fail] (const string &answer) {
+		if (answer == "hui:cancel") {
+			on_fail();
+		} else if (answer == "hui:no") {
+			on_success();
+		} else {
+			//bool saved = cur_mode->save();
+			//return saved;
+			on_fail();
+		}
+	}, true);
 }
 
 string Edward::get_tex_image(nix::Texture *tex)

@@ -37,9 +37,9 @@ void ModeModelMeshCreateCylinder::on_start() {
 	dialog = new hui::Panel();
 	dialog->from_resource("new_cylinder_dialog");
 
-	dialog->set_int("rings", hui::Config.get_int("NewCylinderRings", 4));
-	dialog->set_int("edges", hui::Config.get_int("NewCylinderEdges", 8));
-	dialog->check("round", hui::Config.get_bool("NewCylinderRound", false));
+	dialog->set_int("rings", hui::config.get_int("NewCylinderRings", 4));
+	dialog->set_int("edges", hui::config.get_int("NewCylinderEdges", 8));
+	dialog->check("round", hui::config.get_bool("NewCylinderRound", false));
 
 	ed->set_side_panel(dialog);
 
@@ -68,9 +68,9 @@ void ModeModelMeshCreateCylinder::update_geometry() {
 		bool round = dialog->is_checked("round");
 		int rings = dialog->get_int("rings");
 		int edges = dialog->get_int("edges");
-		hui::Config.set_int("NewCylinderRings", rings);
-		hui::Config.set_int("NewCylinderEdges", edges);
-		hui::Config.set_bool("NewCylinderRound", round);
+		hui::config.set_int("NewCylinderRings", rings);
+		hui::config.set_int("NewCylinderEdges", edges);
+		hui::config.set_bool("NewCylinderRound", round);
 
 		Array<float> r = {radius, radius};
 		geo = new GeometryCylinder(pos, r, rings, edges, round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT);

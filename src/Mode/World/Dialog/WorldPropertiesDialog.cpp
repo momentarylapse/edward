@@ -26,8 +26,8 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	data = _data;
 	active = true;
 
-	popup_skybox = hui::CreateResourceMenu("world-skybox-popup");
-	popup_script = hui::CreateResourceMenu("world-script-popup");
+	popup_skybox = hui::create_resource_menu("world-skybox-popup", this);
+	popup_script = hui::create_resource_menu("world-script-popup", this);
 
 	event("cancel", [=]{ on_close(); });
 	event("hui:close", [=]{ on_close(); });
@@ -69,35 +69,35 @@ WorldPropertiesDialog::~WorldPropertiesDialog() {
 }
 
 void WorldPropertiesDialog::on_skybox_move() {
-	temp.skybox_files.move(hui::GetEvent()->row, hui::GetEvent()->row_target);
+	temp.skybox_files.move(hui::get_event()->row, hui::get_event()->row_target);
 	fill_skybox_list();
 }
 
 void WorldPropertiesDialog::on_skybox_right_click() {
-	int n = hui::GetEvent()->row;
+	int n = hui::get_event()->row;
 	popup_skybox->enable("skybox-select", n >= 0);
 	popup_skybox->enable("skybox-remove", n >= 0);
 	popup_skybox->open_popup(this);
 }
 
 void WorldPropertiesDialog::on_skybox_add() {
-	if (storage->file_dialog(FD_MODEL,false,true)) {
+	storage->file_dialog(FD_MODEL,false,true, [this] {
 		temp.skybox_files.add(storage->dialog_file_no_ending);
 		fill_skybox_list();
-	}
+	});
 }
 
 void WorldPropertiesDialog::on_skybox_select() {
 	int n = get_int("skybox");
-	if (storage->file_dialog(FD_MODEL,false,true)) {
+	storage->file_dialog(FD_MODEL,false,true, [this, n] {
 		temp.skybox_files[n] = storage->dialog_file_no_ending;
 		fill_skybox_list();
-	}
+	});
 }
 
 
 void WorldPropertiesDialog::on_script_right_click() {
-	int n = hui::GetEvent()->row;
+	int n = hui::get_event()->row;
 	popup_script->enable("remove_script", n >= 0);
 	popup_script->enable("edit_script_vars", n >= 0);
 	popup_script->open_popup(this);
@@ -133,7 +133,7 @@ void WorldPropertiesDialog::on_skybox_remove() {
 
 
 void WorldPropertiesDialog::on_script_add() {
-	if (storage->file_dialog(FD_SCRIPT, false, true)) {
+	storage->file_dialog(FD_SCRIPT, false, true, [this] {
 		WorldScript s;
 		s.filename = storage->dialog_file_complete.relative_to(kaba::config.directory);
 		temp.scripts.add(s);
@@ -156,7 +156,7 @@ void WorldPropertiesDialog::on_script_add() {
 
 		}*/
 		fill_script_list();
-	}
+	});
 }
 
 
@@ -213,9 +213,7 @@ void WorldPropertiesDialog::on_edit_script_vars() {
 	int n = get_int("script_list");
 	if (n >= 0) {
 		update_script_data(temp.scripts[n]);
-		auto dlg = new ScriptVarsDialog(this, &temp.scripts[n]);
-		dlg->run();
-		delete dlg;
+		hui::fly(new ScriptVarsDialog(this, &temp.scripts[n]));
 	}
 }
 
@@ -229,29 +227,37 @@ void WorldPropertiesDialog::on_edit_script() {
 }
 
 void WorldPropertiesDialog::on_create_script() {
-	if (!storage->file_dialog(FD_SCRIPT, true, true))
-		return;
-	string source = "use y\n\n"\
-			"class X extends Controller\n"\
-			"\tconst PARAMETERS = \"\"\n"\
-			"\tfunc override on_init()\n"\
-			"\t\tpass\n\n"\
-			"\tfunc override on_delete()\n"\
-			"\t\tpass\n\n"\
-			"\tfunc override on_iterate(dt: float)\n"\
-			"\t\tpass\n\n"\
-			"\tfunc override on_input()\n"\
-			"\t\tpass\n\n"\
-			"\tfunc override on_left_button_down()\n"\
-			"\t\tpass\n\n"\
-			"\tfunc override on_key_down(k: int)\n"\
-			"\t\tpass\n\n";
-	FileWriteText(storage->dialog_file_complete, source);
+	storage->file_dialog(FD_SCRIPT, true, true, [this] {
+		string source = R""""(use y
 
-	WorldScript s;
-	s.filename = storage->dialog_file_complete.relative_to(kaba::config.directory);
-	temp.scripts.add(s);
-	fill_script_list();
+class X extends Controller
+	const PARAMETERS = ""
+
+	func override on_init()
+		pass
+
+	func override on_delete()
+		pass
+
+	func override on_iterate(dt: float)
+		pass
+
+	func override on_input()
+		pass
+
+	func override on_left_button_down()
+		pass
+
+	func override on_key_down(k: int)
+		pass
+)"""";
+		FileWriteText(storage->dialog_file_complete, source);
+
+		WorldScript s;
+		s.filename = storage->dialog_file_complete.relative_to(kaba::config.directory);
+		temp.scripts.add(s);
+		fill_script_list();
+	});
 }
 
 

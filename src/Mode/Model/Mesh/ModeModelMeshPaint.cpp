@@ -39,12 +39,11 @@ vector map_uv(ModelMesh *m, int poly, const vector &pos, matrix &D) {
 		vector sa = p.side[ta].skin_vertex[0];
 		vector sb = p.side[tb].skin_vertex[0];
 		vector sc = p.side[tc].skin_vertex[0];
-		float f, g;
-		GetBaryCentric(pos, a, b, c, f, g);
-		if (f >= 0 and g >= 0 and f+g <= 1) {
+		auto fg = bary_centric(pos, a, b, c);
+		if (fg.x >= 0 and fg.y >= 0 and fg.x + fg.y <= 1) {
 			D = matrix(sb-sa, sc-sa, v_0) * matrix(b-a, c-a, vector::cross(b-a, c-a)).inverse();
 			//D = matrix::ID;
-			return sa + f * (sb - sa) + g * (sc - sa);
+			return sa + fg.x * (sb - sa) + fg.y * (sc - sa);
 		}
 	}
 	return v_0;
@@ -213,7 +212,7 @@ void ModeModelMeshPaint::on_selection_change() {
 float ModeModelMeshPaint::radius() {
 	float radius = dialog->get_float("diameter") / 2;
 	if (dialog->is_checked("scale-by-pressure"))
-		radius *= hui::GetEvent()->pressure;
+		radius *= hui::get_event()->pressure;
 	return radius;
 }
 

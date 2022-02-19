@@ -40,7 +40,7 @@ ModelAnimationDialog::ModelAnimationDialog(DataModel *_data) {
 	mode_model_animation->state.subscribe(this, [=]{ load_data(); });
 	//fillAnimation();
 
-	popup = hui::CreateResourceMenu("model-animation-list-popup");
+	popup = hui::create_resource_menu("model-animation-list-popup", this);
 
 	load_data();
 }
@@ -95,9 +95,7 @@ void ModelAnimationDialog::fill_animation() {
 void ModelAnimationDialog::on_copy_animation() {
 	int index = get_first_free_index();
 
-	auto *dlg = new ModelDuplicateAnimationDialog(win, false, data, index, mode_model_animation->current_move);
-	dlg->run();
-	delete dlg;
+	hui::run(new ModelDuplicateAnimationDialog(win, false, data, index, mode_model_animation->current_move));
 }
 
 int ModelAnimationDialog::get_selected_animation() {
@@ -125,7 +123,7 @@ void ModelAnimationDialog::on_animation_list_select() {
 }
 
 void ModelAnimationDialog::on_animation_list_right_click() {
-	int n = hui::GetEvent()->row;
+	int n = hui::get_event()->row;
 	popup->enable("animation_copy", n >= 0);
 	popup->enable("animation_delete", n >= 0);
 	popup->open_popup(this);
@@ -135,9 +133,7 @@ void ModelAnimationDialog::on_add_animation() {
 	int index = get_first_free_index();
 	auto type = (data->bone.num > 0) ? AnimationType::SKELETAL : AnimationType::VERTEX;
 
-	auto *dlg = new ModelNewAnimationDialog(win, false, data, index, type);
-	dlg->run();
-	delete dlg;
+	hui::run(new ModelNewAnimationDialog(win, false, data, index, type));
 }
 
 void ModelAnimationDialog::on_delete_animation() {

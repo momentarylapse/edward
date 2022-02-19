@@ -37,9 +37,9 @@ public:
 	void loadData();
 
 	void _new();
-	bool open();
-	bool save();
-	bool save_as();
+	void open();
+	void save();
+	void save_as();
 
 	void previewStart();
 	void previewStop();

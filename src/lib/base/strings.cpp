@@ -64,6 +64,7 @@ bytes::bytes(const bytes &s) {
 bytes::bytes(bytes &&s) {
 	init(sizeof(unsigned char));
 	exchange(s);
+	s.clear();
 }
 
 void bytes::__init__() {
@@ -72,6 +73,11 @@ void bytes::__init__() {
 
 bytes::~bytes() {
 	clear();
+}
+
+void bytes::operator = (bytes &&s) {
+	exchange(s);
+	s.clear();
 }
 
 bool bytes::operator == (const bytes &s) const {
@@ -266,6 +272,10 @@ string::string() : bytes() {}
 string::string(const char *str) : bytes(str) {}
 
 string::string(const void *str, int l) : bytes(str, l) {}
+
+#if __cplusplus >= 202002L
+string::string(const char8_t *str) : bytes((const char*)str) {}
+#endif
 
 string::string(const string &s) {
 	init(sizeof(unsigned char));

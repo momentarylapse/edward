@@ -9,8 +9,10 @@
 
 #ifdef HUI_API_GTK
 
-namespace hui
-{
+namespace hui {
+
+void control_link(Control *parent, Control *child);
+void control_unlink(Control *parent, Control *child);
 
 void on_gtk_expander_expand(GObject* object, GParamSpec *param_spec, gpointer user_data);
 
@@ -35,9 +37,23 @@ ControlRevealer::ControlRevealer(const string &title, const string &id) :
 
 void ControlRevealer::add(Control *child, int x, int y) {
 	GtkWidget *child_widget = child->get_frame();
+#if GTK_CHECK_VERSION(4,0,0)
+	gtk_revealer_set_child(GTK_REVEALER(widget), child_widget);
+#else
 	gtk_container_add(GTK_CONTAINER(widget), child_widget);
-	children.add(child);
-	child->parent = this;
+#endif
+	control_link(this, child);
+}
+
+void ControlRevealer::remove_child(Control *child) {
+	msg_write("Revealer.remove");
+#if GTK_CHECK_VERSION(4,0,0)
+	gtk_revealer_set_child(GTK_REVEALER(widget), nullptr);
+#else
+	GtkWidget *child_widget = child->get_frame();
+	gtk_container_remove(GTK_CONTAINER(widget), child_widget);
+#endif
+	control_unlink(this, child);
 }
 
 void ControlRevealer::reveal(bool reveal) {

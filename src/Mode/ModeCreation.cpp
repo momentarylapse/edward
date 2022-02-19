@@ -41,6 +41,6 @@ void ModeCreationBase::on_set_multi_view() {
 
 void ModeCreationBase::abort() {
 	assert(parent);
-	hui::RunLater(0.01f, [=]{ ed->set_mode(parent); });
+	hui::run_later(0.01f, [this]{ ed->set_mode(parent); });
 }
 

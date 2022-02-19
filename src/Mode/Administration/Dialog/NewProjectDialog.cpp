@@ -18,11 +18,13 @@ NewProjectDialog::NewProjectDialog(hui::Window *parent) : hui::Dialog("new-proje
 	enable("create", false);
 
 	event("find-directory", [=]{
-		if (hui::FileDialogDir(hui::CurWindow, _("Choose a directory for the new project"), "")) {
-			directory = hui::Filename;
-			set_string("directory", directory.str());
-			enable("create", true);
-		}
+		hui::file_dialog_dir(hui::CurWindow, _("Choose a directory for the new project"), "", {}, [this] (const Path &path) {
+			if (path) {
+				directory = path;
+				set_string("directory", directory.str());
+				enable("create", true);
+			}
+		});
 	});
 	event("cancel", [=]{
 		request_destroy();

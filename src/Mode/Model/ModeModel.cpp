@@ -143,30 +143,29 @@ void ModeModel::_new() {
 	mode_model_mesh->optimize_view();
 }
 
-bool ModeModel::open() {
-	return ed->universal_open(FD_MODEL);
+void ModeModel::open() {
+	ed->universal_open(FD_MODEL);
 	/*if (!storage->open(data))
 		return false;
 
 	ed->set_mode(this);
 	mode_model_mesh->optimize_view();*/
-	return true;
 }
 
-bool ModeModel::save() {
-	return storage->auto_save(data);
+void ModeModel::save() {
+	storage->auto_save(data);
 }
 
-bool ModeModel::save_as() {
-	return storage->save_as(data);
+void ModeModel::save_as() {
+	storage->save_as(data);
 }
 
-bool ModeModel::import_open_3ds() {
-	if (!ed->allow_termination())
-		return false;
-	if (!storage->file_dialog(FD_FILE, false, false))
-		return false;
-	return import_load_3ds(storage->dialog_file_complete);
+void ModeModel::import_open_3ds() {
+	ed->allow_termination([this] {
+		storage->file_dialog(FD_FILE, false, false, [this] {
+			import_load_3ds(storage->dialog_file_complete);
+		});
+	});
 }
 
 bool ModeModel::import_load_3ds(const Path &filename) {
@@ -181,12 +180,12 @@ bool ModeModel::import_load_3ds(const Path &filename) {
 	}
 }
 
-bool ModeModel::import_open_json() {
-	if (!ed->allow_termination())
-		return false;
-	if (!storage->file_dialog(FD_FILE, false, false))
-		return false;
-	return import_load_json(storage->dialog_file_complete);
+void ModeModel::import_open_json() {
+	ed->allow_termination([this] {
+		storage->file_dialog(FD_FILE, false, false, [this] {
+			import_load_json(storage->dialog_file_complete);
+		});
+	});
 }
 
 bool ModeModel::import_load_ply(const Path &filename) {
@@ -201,12 +200,12 @@ bool ModeModel::import_load_ply(const Path &filename) {
 	}
 }
 
-bool ModeModel::import_open_ply() {
-	if (!ed->allow_termination())
-		return false;
-	if (!storage->file_dialog(FD_FILE, false, false))
-		return false;
-	return import_load_ply(storage->dialog_file_complete);
+void ModeModel::import_open_ply() {
+	ed->allow_termination([this] {
+		storage->file_dialog(FD_FILE, false, false, [this] {
+			import_load_ply(storage->dialog_file_complete);
+		});
+	});
 }
 
 bool ModeModel::import_load_json(const Path &filename) {
@@ -221,10 +220,10 @@ bool ModeModel::import_load_json(const Path &filename) {
 	}
 }
 
-bool ModeModel::export_save_json() {
-	if (!storage->file_dialog(FD_FILE, true, false))
-		return false;
-	return export_write_json(storage->dialog_file_complete);
+void ModeModel::export_save_json() {
+	storage->file_dialog(FD_FILE, true, false, [this] {
+		export_write_json(storage->dialog_file_complete);
+	});
 }
 
 bool ModeModel::export_write_json(const Path &filename) {
@@ -232,9 +231,7 @@ bool ModeModel::export_write_json(const Path &filename) {
 }
 
 void ModeModel::run_properties_dialog() {
-	auto dlg = new ModelPropertiesDialog(ed, data);
-	dlg->run();
-	delete dlg;
+	hui::fly(new ModelPropertiesDialog(ed, data));
 }
 
 void ModeModel::allow_selection_modes(bool allow) {

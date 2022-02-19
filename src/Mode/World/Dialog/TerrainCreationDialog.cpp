@@ -67,10 +67,10 @@ void TerrainCreationDialog::OnClose()
 
 
 
-void TerrainCreationDialog::OnFindHeightmap()
-{
-	if (storage->file_dialog(FD_TEXTURE, false, false))
+void TerrainCreationDialog::OnFindHeightmap() {
+	storage->file_dialog(FD_TEXTURE, false, false, [this] {
 		set_string("height_image", storage->dialog_file_complete.str());
+	});
 }
 
 

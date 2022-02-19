@@ -13,7 +13,7 @@ ColorScheme scheme;
 
 
 ColorScheme::ColorScheme() {
-	string name = hui::Config.get_str("view.color-scheme", "dark");
+	string name = hui::config.get_str("view.color-scheme", "dark");
 	if (name == "bright") {
 		BACKGROUND = color(1,0.9f,0.9f,0.9f);
 		BACKGROUND_SELECTED = color(1,0.96f,0.96f,0.96f);
