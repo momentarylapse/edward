@@ -20,7 +20,12 @@
 #include <X11/extensions/XInput2.h>
 #include <X11/Xmd.h>
 
+
+#if HAS_LIB_GTK4
+#include <gdk/x11/gdkx.h>
+#else
 #include <gdk/gdkx.h>
+#endif
 #endif
 
 
@@ -39,11 +44,18 @@ static bool holding = false;
 
 #if HAS_LIB_X11
 static auto get_x11_window(hui::Window *w) {
+#if HAS_LIB_GTK4
+	auto surf = gtk_native_get_surface(GTK_NATIVE(w->window));
+	if (!surf)
+		return 0uL;
+	return gdk_x11_surface_get_xid(GDK_SURFACE(surf));
+#else
 	auto ww = gtk_widget_get_window(w->window);
 	if (!ww)
 		return 0uL;
 	return GDK_WINDOW_XID(ww);
 	//return gdk_x11_window_get_xid(ww);
+#endif
 }
 
 
