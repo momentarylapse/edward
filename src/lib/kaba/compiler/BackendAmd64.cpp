@@ -193,7 +193,7 @@ void BackendAmd64::add_function_call(Function *f, const Array<SerialNodeParam> &
 	int push_size = function_call_pre(params, ret, f->is_static());
 
 	if (f->address != 0) {
-		if (dist_fits_32bit(f->address, script->opcode)) {
+		if (dist_fits_32bit(f->address, module->opcode)) {
 			// 32bit call distance
 			insert_cmd(Asm::InstID::CALL, param_imm(TypeReg32, f->address)); // the actual call
 			// function pointer will be shifted later...(asm translates to RIP-relative)
@@ -203,7 +203,7 @@ void BackendAmd64::add_function_call(Function *f, const Array<SerialNodeParam> &
 			insert_cmd(Asm::InstID::CALL, p_rax);
 		}
 	} else if (f->_label >= 0) {
-		if (f->owner() == script->syntax) {
+		if (f->owner() == module->syntax) {
 			// 32bit call distance
 			insert_cmd(Asm::InstID::CALL, param_label(TypeInt, f->_label));
 		} else {
@@ -360,20 +360,23 @@ void BackendAmd64::add_function_intro_params(Function *f) {
 				break;
 			}
 	}
-	if (!f->is_static()) {
+
+	// self: already in params!
+	/*if (!f->is_static()) {
 		for (Variable *v: weak(f->var))
 			if (v->name == IDENTIFIER_SELF) {
 				param.add(v);
 				break;
 			}
-	}
+	}*/
+
+	for (int i=0;i<f->num_params;i++)
+		param.add(f->var[i].get());
+
 	// windows: self before return
 	if ((param.num == 2) and (config.abi == Abi::AMD64_WINDOWS) and param[1]->type->is_some_pointer()) {
 		param.swap(0, 1);
 	}
-
-	for (int i=0;i<f->num_params;i++)
-		param.add(f->var[i].get());
 
 	// map params...
 	Array<Variable*> reg_param;

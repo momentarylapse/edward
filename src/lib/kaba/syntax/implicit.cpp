@@ -18,10 +18,33 @@ const Class *get_callable_return_type(const Class *fp);
 Array<const Class*> get_callable_capture_types(const Class *fp);
 
 
+void db_add_print_node(Parser *p, shared<Block> block, shared<Node> node) {
+	auto ff = p->tree->required_func_global("print");
+	auto cmd = p->tree->add_node_call(ff);
+	cmd->set_param(0, p->add_converter_str(node, false));
+	block->add(cmd);
+}
+
+void db_add_print_label(Parser *p, shared<Block> block, const string &s) {
+	auto c = p->tree->add_constant(TypeString);
+	c->as_string() = s;
+	db_add_print_node(p, block, p->tree->add_node_const(c));
+}
+
+void db_add_print_label_node(Parser *p, shared<Block> block, const string &s, shared<Node> node) {
+	auto c = p->tree->add_constant(TypeString);
+	c->as_string() = s;
+
+	auto ff = p->tree->required_func_global("print");
+	auto cmd = p->tree->add_node_call(ff);
+	cmd->set_param(0, p->link_operator_id(OperatorID::ADD, p->tree->add_node_const(c), p->add_converter_str(node, false)));
+	block->add(cmd);
+}
+
+
 void Parser::do_error_implicit(Function *f, const string &str) {
-	int line = max(f->_logical_line_no, f->name_space->_logical_line_no);
-	int ex = max(f->_exp_no, f->name_space->_exp_no);
-	do_error(format("[auto generating %s] : %s", f->signature(), str), ex, line);
+	int token_id = max(f->token_id, f->name_space->token_id);
+	do_error(format("[auto generating %s] : %s", f->signature(), str), token_id);
 }
 
 void Parser::auto_implement_add_virtual_table(shared<Node> self, Function *f, const Class *t) {
@@ -103,8 +126,8 @@ void Parser::auto_implement_regular_constructor(Function *f, const Class *t, boo
 			if (f_same) {
 				// first, try same signature
 				auto n_init_parent = tree->add_node_member_call(f_same, self);
-				for (int i=0; i<f_same->num_params; i++)
-					n_init_parent->set_param(i+1, tree->add_node_local(f->var[i].get()));
+				for (int i=1; i<f_same->num_params; i++)
+					n_init_parent->set_param(i, tree->add_node_local(f->var[i].get()));
 				f->block->add(n_init_parent);
 			} else if (f_def) {
 				// then, try default constructor
@@ -129,9 +152,9 @@ void Parser::auto_implement_super_array_constructor(Function *f, const Class *t)
 	auto self = tree->add_node_local(f->__get_var(IDENTIFIER_SELF));
 
 	auto te = t->get_array_element();
-	auto ff = t->get_func("__mem_init__", TypeVoid, {TypeInt});
+	auto ff = t->get_member_func("__mem_init__", TypeVoid, {TypeInt});
 	f->block->add(tree->add_node_member_call(ff,
-			self,
+			self, -1,
 			{tree->add_node_const(tree->add_constant_int(te->size))}));
 }
 
@@ -160,9 +183,9 @@ void Parser::auto_implement_dict_constructor(Function *f, const Class *t) {
 	auto self = tree->add_node_local(f->__get_var(IDENTIFIER_SELF));
 
 	auto te = t->get_array_element();
-	auto ff = t->get_func("__mem_init__", TypeVoid, {TypeInt});
+	auto ff = t->get_member_func("__mem_init__", TypeVoid, {TypeInt});
 	f->block->add(tree->add_node_member_call(ff,
-			self,
+			self, -1,
 			{tree->add_node_const(tree->add_constant_int(te->size + TypeString->size))}));
 }
 
@@ -184,7 +207,7 @@ void Parser::auto_implement_regular_destructor(Function *f, const Class *t) {
 	auto self = tree->add_node_local(f->__get_var(IDENTIFIER_SELF));
 
 	if (t->is_super_array() or t->is_dict()) {
-		Function *f_clear = t->get_func("clear", TypeVoid, {});
+		Function *f_clear = t->get_member_func("clear", TypeVoid, {});
 		if (!f_clear)
 			do_error_implicit(f, "clear() missing");
 		f->block->add(tree->add_node_member_call(f_clear, self));
@@ -201,7 +224,7 @@ void Parser::auto_implement_regular_destructor(Function *f, const Class *t) {
 		}
 	} else if (t->is_pointer_shared() or t->is_pointer_owned()) {
 		// call clear()
-		auto f_clear = t->get_func(IDENTIFIER_FUNC_SHARED_CLEAR, TypeVoid, {});
+		auto f_clear = t->get_member_func(IDENTIFIER_FUNC_SHARED_CLEAR, TypeVoid, {});
 		if (!f_clear)
 			do_error_implicit(f, IDENTIFIER_FUNC_SHARED_CLEAR + "() missing");
 		f->block->add(tree->add_node_member_call(f_clear,
@@ -227,7 +250,7 @@ void Parser::auto_implement_regular_destructor(Function *f, const Class *t) {
 		if (t->parent) {
 			Function *ff = t->parent->get_destructor();
 			if (ff)
-				f->block->add(tree->add_node_member_call(ff, self, {}, true));
+				f->block->add(tree->add_node_member_call(ff, self, -1, {}, true));
 			else if (t->parent->needs_destructor())
 				do_error_implicit(f, "parent destructor missing");
 		}
@@ -258,7 +281,7 @@ void Parser::auto_implement_shared_destructor(Function *f, const Class *t) {
 	auto self = tree->add_node_local(f->__get_var(IDENTIFIER_SELF));
 
 	// call clear()
-	auto f_clear = t->get_func(IDENTIFIER_FUNC_SHARED_CLEAR, TypeVoid, {});
+	auto f_clear = t->get_member_func(IDENTIFIER_FUNC_SHARED_CLEAR, TypeVoid, {});
 	if (!f_clear)
 		do_error_implicit(f, IDENTIFIER_FUNC_SHARED_CLEAR + "() missing");
 	f->block->add(tree->add_node_member_call(f_clear, self));
@@ -304,7 +327,7 @@ void Parser::auto_implement_super_array_destructor(Function *f, const Class *t) 
 	auto te = t->get_array_element();
 	auto self = tree->add_node_local(f->__get_var(IDENTIFIER_SELF));
 
-	Function *f_clear = t->get_func("clear", TypeVoid, {});
+	Function *f_clear = t->get_member_func("clear", TypeVoid, {});
 	if (!f_clear)
 		do_error_implicit(f, "clear() missing");
 	f->block->add(tree->add_node_member_call(f_clear, self));
@@ -348,7 +371,7 @@ void Parser::auto_implement_super_array_assign(Function *f, const Class *t) {
 	auto n_other = tree->add_node_local(f->__get_var("other"));
 	auto n_self = tree->add_node_local(f->__get_var(IDENTIFIER_SELF));
 
-	Function *f_resize = t->get_func("resize", TypeVoid, {TypeInt});
+	Function *f_resize = t->get_member_func("resize", TypeVoid, {TypeInt});
 	if (!f_resize)
 		do_error_implicit(f, format("no %s.resize(int) found", t->long_name()));
 
@@ -416,7 +439,7 @@ void Parser::auto_implement_super_array_clear(Function *f, const Class *t) {
 	}
 
 	// clear
-	auto cmd_clear = tree->add_node_member_call(t->get_func("__mem_clear__", TypeVoid, {}), self);
+	auto cmd_clear = tree->add_node_member_call(t->get_member_func("__mem_clear__", TypeVoid, {}), self);
 	f->block->add(cmd_clear);
 }
 
@@ -464,7 +487,7 @@ void Parser::auto_implement_super_array_resize(Function *f, const Class *t) {
 	}
 
 	// resize
-	auto c_resize = tree->add_node_member_call(t->get_func("__mem_resize__", TypeVoid, {TypeInt}), self);
+	auto c_resize = tree->add_node_member_call(t->get_member_func("__mem_resize__", TypeVoid, {TypeInt}), self);
 	c_resize->set_param(1, num);
 	f->block->add(c_resize);
 
@@ -516,7 +539,7 @@ void Parser::auto_implement_super_array_remove(Function *f, const Class *t) {
 	}
 
 	// resize
-	auto c_remove = tree->add_node_member_call(t->get_func("__mem_remove__", TypeVoid, {TypeInt}), self);
+	auto c_remove = tree->add_node_member_call(t->get_member_func("__mem_remove__", TypeVoid, {TypeInt}), self);
 	c_remove->set_param(1, index);
 	f->block->params.add(c_remove);
 }
@@ -534,7 +557,7 @@ void Parser::auto_implement_super_array_add(Function *f, const Class *t) {
 	// resize(self.num + 1)
 	auto cmd_1 = tree->add_node_const(tree->add_constant_int(1));
 	auto cmd_add = tree->add_node_operator_by_inline(InlineID::INT_ADD, self_num, cmd_1);
-	auto cmd_resize = tree->add_node_member_call(t->get_func("resize", TypeVoid, {TypeInt}), self);
+	auto cmd_resize = tree->add_node_member_call(t->get_member_func("resize", TypeVoid, {TypeInt}), self);
 	cmd_resize->set_param(1, cmd_add);
 	b->add(cmd_resize);
 
@@ -558,7 +581,7 @@ void Parser::auto_implement_shared_assign(Function *f, const Class *t) {
 	auto self_p = self->shift(0, t->param[0]->get_pointer());
 
 	// call clear()
-	auto f_clear = t->get_func(IDENTIFIER_FUNC_SHARED_CLEAR, TypeVoid, {});
+	auto f_clear = t->get_member_func(IDENTIFIER_FUNC_SHARED_CLEAR, TypeVoid, {});
 	if (!f_clear)
 		do_error_implicit(f, IDENTIFIER_FUNC_SHARED_CLEAR + "() missing");
 	auto call_clear = tree->add_node_member_call(f_clear, self);
@@ -668,7 +691,7 @@ void Parser::auto_implement_shared_create(Function *f, const Class *t) {
 
 
 	// r = p
-	auto f_assign = t->get_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, {p->type});
+	auto f_assign = t->get_member_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, {p->type});
 	if (!f_assign)
 		do_error_implicit(f, "= missing...");
 	auto call_assign = tree->add_node_member_call(f_assign, r);
@@ -691,7 +714,7 @@ void Parser::auto_implement_owned_assign(Function *f, const Class *t) {
 	auto self_p = self->shift(0, t->param[0]->get_pointer());
 
 	// call clear()
-	auto f_clear = t->get_func(IDENTIFIER_FUNC_SHARED_CLEAR, TypeVoid, {});
+	auto f_clear = t->get_member_func(IDENTIFIER_FUNC_SHARED_CLEAR, TypeVoid, {});
 	if (!f_clear)
 		do_error_implicit(f, IDENTIFIER_FUNC_SHARED_CLEAR + "() missing");
 	auto call_clear = tree->add_node_member_call(f_clear, self);
@@ -783,6 +806,8 @@ void Parser::auto_implement_callable_constructor(Function *f, const Class *t) {
 void Parser::auto_implement_callable_fp_call(Function *f, const Class *t) {
 	auto self = tree->add_node_local(f->__get_var(IDENTIFIER_SELF));
 
+	//db_add_print_label(this, f->block, "== callable.call ==");
+
 	// contains a Function* pointer, extract its raw pointer
 	auto raw = tree->add_node_statement(StatementID::RAW_FUNCTION_POINTER);
 	raw->type = TypeFunctionCodeP;
@@ -792,8 +817,8 @@ void Parser::auto_implement_callable_fp_call(Function *f, const Class *t) {
 	auto call = new Node(NodeKind::CALL_RAW_POINTER, 0, f->literal_return_type);
 	call->set_num_params(1 + get_callable_param_types(t).num);
 	call->set_param(0, raw);
-	for (int i=0; i<f->num_params; i++)
-		call->set_param(i+1, tree->add_node_local(f->var[i].get()));
+	for (int i=1; i<f->num_params; i++) // skip "self"
+		call->set_param(i, tree->add_node_local(f->var[i].get()));
 
 	if (f->literal_return_type == TypeVoid) {
 		f->block->add(call);
@@ -810,17 +835,41 @@ void Parser::auto_implement_callable_fp_call(Function *f, const Class *t) {
 void Parser::auto_implement_callable_bind_call(Function *f, const Class *t) {
 	auto self = tree->add_node_local(f->__get_var(IDENTIFIER_SELF));
 
+	//db_add_print_label(this, f->block, "== bind.call ==");
+
 	auto fp = get_callable_fp(t, self);
 	auto call = tree->add_node_member_call(fp->type->param[0]->get_call(), fp);
 	int index = 1;
 	//for (int i=0; i<f->num_params; i++)
 	//	call->set_param(i+1, tree->add_node_local(f->var[i].get()));
-	for (auto *v: weak(f->var))
-		if (v->name.num == 1)
-			call->set_param(index ++, tree->add_node_local(v));
-	for (auto &e: t->elements)
-		if (e.name.head(7) == "capture")
-			call->set_param(index ++, self->shift(e.offset, e.type));
+
+	/*int
+	for (int index=0; index<nn; index++) {
+
+	}*/
+
+	shared_array<Node> params;
+
+	for (auto *v: weak(f->var)) {
+		//msg_write("V " + v->name);
+		if (v->name.num == 1) {
+			//db_add_print_label_node(this, f->block, "  param " + v->name + ": ", tree->add_node_local(v));
+			params.add(tree->add_node_local(v));
+			//call->set_param(index ++, tree->add_node_local(v));
+		}
+	}
+	for (auto &e: t->elements) {
+		//msg_write("E " + e.name);
+		if (e.name.head(7) == "capture") {
+			int n = e.name.replace("capture", "").replace("_ref", "")._int();
+			params.insert(self->shift(e.offset, e.type), n);
+			//db_add_print_label_node(this, f->block, "  capture " + e.name + ": ", self->shift(e.offset, e.type));
+			//call->set_param(index ++, self->shift(e.offset, e.type));
+		}
+	}
+
+	foreachi(auto &p, params, i)
+		call->set_param(i+1, p);
 
 	if (f->literal_return_type == TypeVoid) {
 		f->block->add(call);
@@ -833,10 +882,11 @@ void Parser::auto_implement_callable_bind_call(Function *f, const Class *t) {
 }
 
 
-
+// skip the "self" parameter!
 Function *SyntaxTree::add_func_header(Class *t, const string &name, const Class *return_type, const Array<const Class*> &param_types, const Array<string> &param_names, Function *cf, Flags flags, const shared_array<Node> &def_params) {
 	Function *f = add_function(name, return_type, t, flags); // always member-function??? no...?
 	f->auto_declared = true;
+	f->token_id = t->token_id;
 	foreachi (auto &p, param_types, i) {
 		f->literal_param_type.add(p);
 		auto v = f->block->add_var(param_names[i], p);
@@ -844,8 +894,9 @@ Function *SyntaxTree::add_func_header(Class *t, const string &name, const Class 
 		f->num_params ++;
 	}
 	f->default_parameters = def_params;
-	//msg_write("ADD " + f->signature(TypeVoid));
 	f->update_parameters_after_parsing();
+	if (config.verbose)
+		msg_write("ADD HEADER " + f->signature(TypeVoid));
 	bool override = cf;
 	t->add_function(this, f, false, override);
 	return f;
@@ -905,12 +956,17 @@ bool can_fully_construct(const Class *t) {
 		return false;
 	if (t->elements.num > FULL_CONSTRUCTOR_MAX_PARAMS)
 		return false;
-	for (auto &e: t->elements)
+	int num_el = 0;
+	for (auto &e: t->elements) {
+		if (e.hidden())
+			continue;
 		if (!e.type->get_assign() and e.type->uses_call_by_reference()) {
 			msg_write(format("class %s auto constructor prevented by element %s %s", t->name, e.name, e.type->name));
 			return false;
 		}
-	return true;
+		num_el ++;
+	}
+	return num_el > 0;
 }
 
 bool class_should_assign(const Class *t) {
@@ -978,12 +1034,12 @@ void SyntaxTree::add_missing_function_headers_for_class(Class *t) {
 			t->get_assign()->inline_no = InlineID::CHUNK_ASSIGN;
 	} else if (t->is_callable_fp()) {
 		add_func_header(t, IDENTIFIER_FUNC_INIT, TypeVoid, {TypePointer}, {"p"});
-		add_func_header(t, "call", get_callable_return_type(t), get_callable_param_types(t), {"a", "b", "c", "d", "e", "f", "g", "h"}, nullptr, Flags::CONST)->virtual_index = TypeCallableBase->get_call()->virtual_index;
+		add_func_header(t, IDENTIFIER_FUNC_CALL, get_callable_return_type(t), get_callable_param_types(t), {"a", "b", "c", "d", "e", "f", "g", "h"}, nullptr, Flags::CONST)->virtual_index = TypeCallableBase->get_call()->virtual_index;
 	} else if (t->is_callable_bind()) {
 		auto types = get_callable_capture_types(t);
 		types.insert(TypePointer, 0);
 		add_func_header(t, IDENTIFIER_FUNC_INIT, TypeVoid, types, {"p", "a", "b", "c", "d", "e", "f", "g", "h"});
-		add_func_header(t, "call", get_callable_return_type(t), get_callable_param_types(t), {"a", "b", "c", "d", "e", "f", "g", "h"}, nullptr, Flags::CONST)->virtual_index = TypeCallableBase->get_call()->virtual_index;
+		add_func_header(t, IDENTIFIER_FUNC_CALL, get_callable_return_type(t), get_callable_param_types(t), {"a", "b", "c", "d", "e", "f", "g", "h"}, nullptr, Flags::CONST)->virtual_index = TypeCallableBase->get_call()->virtual_index;
 	} else { // regular classes
 		if (t->can_memcpy()) {
 			if (has_user_constructors(t)) {
@@ -1028,8 +1084,8 @@ void SyntaxTree::add_missing_function_headers_for_class(Class *t) {
 	}
 }
 
-Function* class_get_func(const Class *t, const string &name, const Class *return_type, const Array<const Class*> &params) {
-	Function *cf = t->get_func(name, return_type, params);
+Function* class_get_member_func(const Class *t, const string &name, const Class *return_type, const Array<const Class*> &params) {
+	Function *cf = t->get_member_func(name, return_type, params);
 	if (cf) {
 		Function *f = cf;
 		f->needs_overriding = false; // we're about to implement....
@@ -1050,7 +1106,7 @@ Function* prepare_auto_impl(const Class *t, Function *f) {
 		return f;
 	}
 	return nullptr;
-	t->owner->script->do_error_internal("prepare class func..." + f->signature());
+	t->owner->module->do_error_internal("prepare class func..." + f->signature());
 	return f;
 }
 
@@ -1066,10 +1122,10 @@ void Parser::auto_implement_functions(const Class *t) {
 	if (t->is_super_array()) {
 		auto_implement_super_array_constructor(prepare_auto_impl(t, t->get_default_constructor()), t);
 		auto_implement_super_array_destructor(prepare_auto_impl(t, t->get_destructor()), t);
-		auto_implement_super_array_clear(prepare_auto_impl(t, t->get_func("clear", TypeVoid, {})), t);
-		auto_implement_super_array_resize(prepare_auto_impl(t, t->get_func("resize", TypeVoid, {TypeInt})), t);
-		auto_implement_super_array_remove(prepare_auto_impl(t, t->get_func("remove", TypeVoid, {TypeInt})), t);
-		auto_implement_super_array_add(class_get_func(t, "add", TypeVoid, {nullptr}), t);
+		auto_implement_super_array_clear(prepare_auto_impl(t, t->get_member_func("clear", TypeVoid, {})), t);
+		auto_implement_super_array_resize(prepare_auto_impl(t, t->get_member_func("resize", TypeVoid, {TypeInt})), t);
+		auto_implement_super_array_remove(prepare_auto_impl(t, t->get_member_func("remove", TypeVoid, {TypeInt})), t);
+		auto_implement_super_array_add(class_get_member_func(t, "add", TypeVoid, {nullptr}), t);
 		auto_implement_super_array_assign(prepare_auto_impl(t, t->get_assign()), t);
 	} else if (t->is_array()) {
 		auto_implement_array_constructor(prepare_auto_impl(t, t->get_default_constructor()), t);
@@ -1080,17 +1136,17 @@ void Parser::auto_implement_functions(const Class *t) {
 	} else if (t->is_pointer_shared()) {
 		auto_implement_shared_constructor(prepare_auto_impl(t, t->get_default_constructor()), t);
 		auto_implement_shared_destructor(prepare_auto_impl(t, t->get_destructor()), t);
-		auto_implement_shared_clear(prepare_auto_impl(t, t->get_func(IDENTIFIER_FUNC_SHARED_CLEAR, TypeVoid, {})), t);
-		auto_implement_shared_assign(prepare_auto_impl(t, t->get_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, {t->param[0]->get_pointer()})), t);
-		auto_implement_shared_assign(prepare_auto_impl(t, t->get_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, {t})), t);
+		auto_implement_shared_clear(prepare_auto_impl(t, t->get_member_func(IDENTIFIER_FUNC_SHARED_CLEAR, TypeVoid, {})), t);
+		auto_implement_shared_assign(prepare_auto_impl(t, t->get_member_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, {t->param[0]->get_pointer()})), t);
+		auto_implement_shared_assign(prepare_auto_impl(t, t->get_member_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, {t})), t);
 		auto_implement_shared_create(prepare_auto_impl(t, t->get_func(IDENTIFIER_FUNC_SHARED_CREATE, t, {t->param[0]->get_pointer()})), t);
 	} else if (t->is_pointer_owned()) {
 		auto_implement_shared_constructor(prepare_auto_impl(t, t->get_default_constructor()), t);
 		auto_implement_shared_destructor(prepare_auto_impl(t, t->get_destructor()), t);
-		auto_implement_owned_clear(prepare_auto_impl(t, t->get_func(IDENTIFIER_FUNC_SHARED_CLEAR, TypeVoid, {})), t);
-		auto_implement_owned_assign(prepare_auto_impl(t, t->get_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, {t->param[0]->get_pointer()})), t);
-		//auto_implement_shared_assign(prepare_auto_impl(t, t->get_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, {t})), t);
-		//auto_implement_shared_create(prepare_auto_impl(t, t->get_func(IDENTIFIER_FUNC_SHARED_CREATE, t, {t->param[0]->get_pointer()})), t);
+		auto_implement_owned_clear(prepare_auto_impl(t, t->get_member_func(IDENTIFIER_FUNC_SHARED_CLEAR, TypeVoid, {})), t);
+		auto_implement_owned_assign(prepare_auto_impl(t, t->get_member_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, {t->param[0]->get_pointer()})), t);
+		//auto_implement_shared_assign(prepare_auto_impl(t, t->get_func(IDENTIFIER_FUNC_ASSIGN, TypeVoid, {nullptr, t})), t);
+		//auto_implement_shared_create(prepare_auto_impl(t, t->get_func(IDENTIFIER_FUNC_SHARED_CREATE, t, {nullptr, t->param[0]->get_pointer()})), t);
 	} else if (t->is_callable_fp()) {
 		for (auto *cf: t->get_constructors())
 			auto_implement_callable_constructor(prepare_auto_impl(t, cf), t);

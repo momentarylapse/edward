@@ -46,7 +46,7 @@ class MeshCollider;
 class SolidBody;
 class Animator;
 namespace kaba {
-	class Script;
+	class Module;
 }
 
 

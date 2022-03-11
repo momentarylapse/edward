@@ -169,7 +169,7 @@ void WorldPropertiesDialog::on_script_remove() {
 	}
 }
 
-shared<const kaba::Class> get_class(shared<kaba::Script> s, const string &parent);
+shared<const kaba::Class> get_class(shared<kaba::Module> s, const string &parent);
 
 void update_script_data(WorldScript &s) {
 	s.class_name = "";

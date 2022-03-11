@@ -25,7 +25,7 @@ namespace kaba {
 #define mem_align(x, n)		((((x) + (n) - 1) / (n) ) * (n))
 
 class SyntaxTree;
-class Script;
+class Module;
 class Class;
 class Value;
 class Function;
@@ -33,8 +33,8 @@ class Variable;
 class Constant;
 
 
-void script_make_super_array(Class *t, SyntaxTree *ps = nullptr);
-void script_make_dict(Class *t, SyntaxTree *ps = nullptr);
+void kaba_make_super_array(Class *t, SyntaxTree *ps = nullptr);
+void kaba_make_dict(Class *t, SyntaxTree *ps = nullptr);
 
 
 
@@ -63,7 +63,7 @@ void clean_up();
 
 
 
-extern shared_array<Script> packages;
+extern shared_array<Module> packages;
 
 
 template<class T>
@@ -89,7 +89,11 @@ Function *add_func(const string &name, const Class *return_type, T func, Flags f
 
 void func_set_inline(InlineID index);
 void func_add_param(const string &name, const Class *type, Flags flags = Flags::CONST);
-void func_add_param_def(const string &name, const Class *type, const void *p, Flags flags = Flags::CONST);
+void func_add_param_def_x(const string &name, const Class *type, const void *p, Flags flags = Flags::CONST);
+template<class T>
+void func_add_param_def(const string &name, const Class *type, T p, Flags flags = Flags::CONST) {
+	func_add_param_def_x(name, type, &p, flags);
+}
 Class *add_class(const Class *root_type);
 void class_add_element_x(const string &name, const Class *type, int offset, Flags flag = Flags::NONE);
 template<class T>
@@ -102,7 +106,7 @@ void class_add_element(const string &name, const Class *type, T p, Flags flag = 
 
 Function* class_add_func_x(const string &name, const Class *return_type, void *func, Flags = Flags::NONE);
 // version: null
-Function* class_add_func(const string &name, const Class *return_type, nullptr_t func, Flags flag = Flags::NONE);
+Function* class_add_func(const string &name, const Class *return_type, std::nullptr_t func, Flags flag = Flags::NONE);
 // version: regular function
 template <typename R, typename ...Args>
 Function* class_add_func(const string &name, const Class *return_type, R (*func)(Args...), Flags flag = Flags::NONE) {
@@ -149,7 +153,7 @@ void add_type_cast(int penalty, const Class *source, const Class *dest, const st
 void add_operator_x(OperatorID primitive_op, const Class *return_type, const Class *param_type1, const Class *param_type2, InlineID inline_index, void *func = nullptr);
 // version: no function
 void add_operator(OperatorID primitive_op, const Class *return_type, const Class *param_type1, const Class *param_type2, InlineID inline_index);
-void add_operator(OperatorID primitive_op, const Class* return_type, const Class* param_type1, const Class* param_type2, InlineID inline_index, nullptr_t func);
+void add_operator(OperatorID primitive_op, const Class* return_type, const Class* param_type1, const Class* param_type2, InlineID inline_index, std::nullptr_t func);
 // version: regular function
 template <typename R, typename ...Args>
 void add_operator(OperatorID primitive_op, const Class *return_type, const Class *param_type1, const Class *param_type2, InlineID inline_index, R (*func)(Args...)) {

@@ -14,7 +14,7 @@
 
 class Geometry;
 namespace kaba {
-	class Script;
+	class Module;
 }
 namespace nix {
 	class NixTexture;
@@ -37,7 +37,7 @@ private:
 	vector min, max;
 	Geometry *geo;
 	nix::Texture *tex;
-	shared<kaba::Script> script;
+	shared<kaba::Module> script;
 	typedef _cdecl vector vec_func(const vector &);
 	vec_func *f;
 

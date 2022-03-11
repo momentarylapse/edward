@@ -49,7 +49,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, DataModel *_d
 ModelPropertiesDialog::~ModelPropertiesDialog() {
 }
 
-shared<const kaba::Class> get_class(shared<kaba::Script> s, const string &parent) {
+shared<const kaba::Class> get_class(shared<kaba::Module> s, const string &parent) {
 	for (auto t: s->syntax->base_class->classes)
 		if (t->is_derived_from_s(parent))
 			return t;

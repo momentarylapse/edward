@@ -34,7 +34,7 @@ const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
 
 
 
-shared<const kaba::Class> get_class(shared<kaba::Script> s, const string &parent);
+shared<const kaba::Class> get_class(shared<kaba::Module> s, const string &parent);
 
 
 WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {

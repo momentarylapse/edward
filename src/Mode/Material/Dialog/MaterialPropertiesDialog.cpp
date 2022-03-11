@@ -72,7 +72,7 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	event("rcsliding", [this]{ apply_phys_data_delayed(); });
 	event("rcroll", [this]{ apply_phys_data_delayed(); });
 
-	expand("material_dialog_grp_color", 0, true);
+	expand_row("material_dialog_grp_color", 0, true);
 
 	set_options("shader_file", "placeholder=- engine default shader -");
 	load_data();

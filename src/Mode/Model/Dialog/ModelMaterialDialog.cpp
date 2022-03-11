@@ -84,7 +84,7 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) {
 	hide_control("model_material_dialog_grp_color", !full);
 	hide_control("model_material_dialog_grp_transparency", !full);
 
-	expand_all("model_material_dialog_grp_textures", true);
+	expand("model_material_dialog_grp_textures", true);
 
 	load_data();
 	apply_queue_depth = 0;

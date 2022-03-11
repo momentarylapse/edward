@@ -572,7 +572,7 @@ int BackendARM::fc_begin(const Array<SerialNodeParam> &_params, const SerialNode
 			} else {
 				stack_param.add(p);
 			}
-		} else if ((p.type == TypeFloat32) /*or (p.type == TypeFloat64)*/) {
+		} else if (p.type == TypeFloat32 /*or (p.type == TypeFloat64)*/) {
 			if (float_param.num < 8) {
 				float_param.add(p);
 			} else {
@@ -657,12 +657,12 @@ void BackendARM::add_function_call(Function *f, const Array<SerialNodeParam> &pa
 	serializer->call_used = true;
 	int push_size = fc_begin(params, ret, f->is_static());
 
-	if ((f->owner() == script->syntax) and (!f->is_extern())) {
+	if ((f->owner() == module->syntax) and (!f->is_extern())) {
 		insert_cmd(Asm::InstID::CALL, param_label(TypePointer, f->_label));
 	} else {
 		if (f->address == 0)
-			script->do_error_link("could not link function " + f->long_name());
-		if (reachable_arm(f->address, this->script->opcode)) {
+			module->do_error_link("could not link function " + f->long_name());
+		if (reachable_arm(f->address, this->module->opcode)) {
 			insert_cmd(Asm::InstID::CALL, param_imm(TypePointer, f->address)); // the actual call
 			// function pointer will be shifted later...
 		} else {

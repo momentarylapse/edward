@@ -36,8 +36,28 @@ string kind2str(NodeKind kind) {
 		return "statement";
 	if (kind == NodeKind::OPERATOR)
 		return "operator";
-	if (kind == NodeKind::PRIMITIVE_OPERATOR)
-		return "PRIMITIVE operator";
+	if (kind == NodeKind::ABSTRACT_TOKEN)
+		return "token";
+	if (kind == NodeKind::ABSTRACT_OPERATOR)
+		return "abstract operator";
+	if (kind == NodeKind::ABSTRACT_ELEMENT)
+		return "abstract element";
+	if (kind == NodeKind::ABSTRACT_CALL)
+		return "abstract call";
+	if (kind == NodeKind::ABSTRACT_TYPE_SHARED)
+		return "shared";
+	if (kind == NodeKind::ABSTRACT_TYPE_OWNED)
+		return "owned";
+	if (kind == NodeKind::ABSTRACT_TYPE_POINTER)
+		return "pointer";
+	if (kind == NodeKind::ABSTRACT_TYPE_LIST)
+		return "list";
+	if (kind == NodeKind::ABSTRACT_TYPE_DICT)
+		return "dict";
+	if (kind == NodeKind::ABSTRACT_TYPE_CALLABLE)
+		return "callable type";
+	if (kind == NodeKind::ABSTRACT_VAR)
+		return "var";
 	if (kind == NodeKind::BLOCK)
 		return "block";
 	if (kind == NodeKind::ADDRESS_SHIFT)
@@ -100,7 +120,8 @@ string kind2str(NodeKind kind) {
 }
 
 
-string Node::sig(const Class *ns) const {
+string Node::signature(const Class *ns) const {
+	//string t = (kind == NodeKind::ABSTRACT_TOKEN) ? " " : type->cname(ns) + " ";
 	string t = type->cname(ns) + " ";
 	if (kind == NodeKind::PLACEHOLDER)
 		return "";
@@ -126,8 +147,10 @@ string Node::sig(const Class *ns) const {
 		return t + as_statement()->name;
 	if (kind == NodeKind::OPERATOR)
 		return as_op()->sig(ns);
-	if (kind == NodeKind::PRIMITIVE_OPERATOR)
-		return as_prim_op()->name;
+	if (kind == NodeKind::ABSTRACT_TOKEN)
+		return "<" + ((ExpressionBuffer*)(int_p)link_no)->get_token(token_id) + ">";
+	if (kind == NodeKind::ABSTRACT_OPERATOR)
+		return "<" + as_abstract_op()->name + ">";
 	if (kind == NodeKind::BLOCK)
 		return "";//p2s(as_block());
 	if (kind == NodeKind::ADDRESS_SHIFT)
@@ -145,7 +168,7 @@ string Node::sig(const Class *ns) const {
 	if (kind == NodeKind::DEREF_ADDRESS_SHIFT)
 		return t + i2s(link_no);
 	if (kind == NodeKind::CLASS)
-		return as_class()->name;
+		return as_class()->cname(ns);
 	if (kind == NodeKind::REGISTER)
 		return t + Asm::get_reg_name((Asm::RegID)link_no);
 	if (kind == NodeKind::ADDRESS)
@@ -160,7 +183,7 @@ string Node::sig(const Class *ns) const {
 }
 
 string Node::str(const Class *ns) const {
-	return "<" + kind2str(kind) + ">  " + sig(ns);
+	return "<" + kind2str(kind) + ">  " + signature(ns);
 }
 
 
@@ -172,7 +195,7 @@ void Node::show(const Class *ns) const {
 		if (p)
 			p->show(ns);
 		else
-			msg_write("<-NULL->");
+			msg_write("<NULL>");
 	msg_left();
 }
 
@@ -185,11 +208,12 @@ void Node::show(const Class *ns) const {
 //  edit the tree by shallow copy, relink to old parameters
 //  relinked params count as "new" Node!
 // ...(although, Block are allowed to be edited)
-Node::Node(NodeKind _kind, int64 _link_no, const Class *_type, bool _const) {
+Node::Node(NodeKind _kind, int64 _link_no, const Class *_type, bool _const, int _token_id) {
 	type = _type;
 	kind = _kind;
 	link_no = _link_no;
 	is_const = _const;
+	token_id = _token_id;
 }
 
 Node::~Node() {
@@ -257,8 +281,8 @@ Statement *Node::as_statement() const {
 	return (Statement*)link_no;
 }
 
-PrimitiveOperator *Node::as_prim_op() const {
-	return (PrimitiveOperator*)link_no;
+AbstractOperator *Node::as_abstract_op() const {
+	return (AbstractOperator*)link_no;
 }
 
 void Node::set_instance(shared<Node> p) {
@@ -297,14 +321,16 @@ void Node::set_param(int index, shared<Node> p) {
 	}*/
 #endif
 	params[index] = p;
+#if 0
 	if (this->_pointer_ref_counter > 1) {
 		msg_write("ppp");
 		msg_write(msg_get_trace());
 	}
+#endif
 }
 
 shared<Node> Node::shallow_copy() const {
-	auto r = new Node(kind, link_no, type, is_const);
+	auto r = new Node(kind, link_no, type, is_const, token_id);
 	r->params = params;
 	return r;
 }
@@ -312,7 +338,7 @@ shared<Node> Node::shallow_copy() const {
 shared<Node> Node::ref(const Class *override_type) const {
 	const Class *t = override_type ? override_type : type->get_pointer();
 
-	shared<Node> c = new Node(NodeKind::REFERENCE, 0, t);
+	shared<Node> c = new Node(NodeKind::REFERENCE, 0, t, false, token_id);
 	c->set_num_params(1);
 	c->set_param(0, const_cast<Node*>(this));
 	return c;
@@ -321,21 +347,21 @@ shared<Node> Node::ref(const Class *override_type) const {
 shared<Node> Node::deref(const Class *override_type) const {
 	if (!override_type)
 		override_type = type->param[0];
-	shared<Node> c = new Node(NodeKind::DEREFERENCE, 0, override_type, is_const);
+	shared<Node> c = new Node(NodeKind::DEREFERENCE, 0, override_type, is_const, token_id);
 	c->set_num_params(1);
 	c->set_param(0, const_cast<Node*>(this));
 	return c;
 }
 
 shared<Node> Node::shift(int64 shift, const Class *type) const {
-	shared<Node> c = new Node(NodeKind::ADDRESS_SHIFT, shift, type, is_const);
+	shared<Node> c = new Node(NodeKind::ADDRESS_SHIFT, shift, type, is_const, token_id);
 	c->set_num_params(1);
 	c->set_param(0, const_cast<Node*>(this));
 	return c;
 }
 
 shared<Node> Node::deref_shift(int64 shift, const Class *type) const {
-	shared<Node> c = new Node(NodeKind::DEREF_ADDRESS_SHIFT, shift, type, is_const);
+	shared<Node> c = new Node(NodeKind::DEREF_ADDRESS_SHIFT, shift, type, is_const, token_id);
 	c->set_num_params(1);
 	c->set_param(0, const_cast<Node*>(this));
 	return c;

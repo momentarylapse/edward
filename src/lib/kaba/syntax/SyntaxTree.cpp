@@ -30,21 +30,23 @@ shared<Node> conv_break_down_med_level(SyntaxTree *tree, shared<Node> c);
 
 string Operator::sig(const Class *ns) const {
 	if (param_type_1 and param_type_2)
-		return format("(%s) %s (%s)", param_type_1->cname(ns), primitive->name, param_type_2->cname(ns));
+		return format("(%s) %s (%s)", param_type_1->cname(ns), abstract->name, param_type_2->cname(ns));
 	if (param_type_1)
-		return format("(%s) %s", param_type_1->cname(ns), primitive->name);
-	return format("%s (%s)", primitive->name, param_type_2->cname(ns));
+		return format("(%s) %s", param_type_1->cname(ns), abstract->name);
+	return format("%s (%s)", abstract->name, param_type_2->cname(ns));
 }
 
 
 // recursive
 shared<Node> SyntaxTree::cp_node(shared<Node> c) {
 	shared<Node> cmd;
-	if (c->kind == NodeKind::BLOCK)
-		cmd = new Block(c->as_block()->function, c->as_block()->parent);
-	else
-		cmd = new Node(c->kind, c->link_no, c->type);
-	cmd->is_const = c->is_const;
+	if (c->kind == NodeKind::BLOCK) {
+		cmd = new Block(c->as_block()->function, c->as_block()->parent, c->type);
+		cmd->as_block()->vars = c->as_block()->vars;
+	} else {
+		cmd = new Node(c->kind, c->link_no, c->type, c->is_const);
+	}
+	cmd->token_id = c->token_id;
 	cmd->set_num_params(c->params.num);
 	for (int i=0;i<c->params.num;i++)
 		if (c->params[i])
@@ -52,34 +54,30 @@ shared<Node> SyntaxTree::cp_node(shared<Node> c) {
 	return cmd;
 }
 
-const Class *SyntaxTree::make_class_callable_fp(Function *f) {
-	auto params = f->literal_param_type;
-	if (!f->is_static())
-		params.insert(f->name_space, 0);
-	if (params.num == 0)
-		return make_class_callable_fp({TypeVoid}, f->literal_return_type);
-	return make_class_callable_fp(params, f->literal_return_type);
-	//return TypeFunctionP;
+const Class *SyntaxTree::make_class_callable_fp(Function *f, int token_id) {
+	return make_class_callable_fp(f->literal_param_type, f->literal_return_type, token_id);
 }
 
-string make_callable_signature(const Array<const Class*> &param, const Class *ret) {
+string make_callable_signature(const Array<const Class*> &params, const Class *ret) {
 	// maybe some day...
-	string params;// = param->name;
-	for (int i=0; i<param.num; i++) {
+	string signature;// = param->name;
+	for (int i=0; i<params.num; i++) {
 		if (i > 0)
-			params += ",";
-		params += class_name_might_need_parantheses(param[i]);
+			signature += ",";
+		signature += class_name_might_need_parantheses(params[i]);
 	}
-	if (param.num > 1)
-		params = "(" + params + ")";
-	if (param.num == 0 or (param.num == 1 and param[0] == TypeVoid)) {
-		params = "void";
+	if (params.num == 0)
+		signature = "void";
+	if (params.num > 1)
+		signature = "(" + signature + ")";
+	if (params.num == 0 or (params.num == 1 and params[0] == TypeVoid)) {
+		signature = "void";
 	}
-	return params + "->" + class_name_might_need_parantheses(ret);
+	return signature + "->" + class_name_might_need_parantheses(ret);
 }
 
-const Class *SyntaxTree::make_class_callable_fp(const Array<const Class*> &param, const Class *ret) {
-
+// input {}->R  OR  void->void   BOTH create  void->R
+const Class *SyntaxTree::make_class_callable_fp(const Array<const Class*> &param, const Class *ret, int token_id) {
 	string name = make_callable_signature(param, ret);
 
 	auto params_ret = param;
@@ -87,29 +85,42 @@ const Class *SyntaxTree::make_class_callable_fp(const Array<const Class*> &param
 		params_ret = {};
 	params_ret.add(ret);
 
-	auto ff = make_class("Callable(" + name + ")", Class::Type::CALLABLE_FUNCTION_POINTER, TypeCallableBase->size, 0, nullptr, params_ret, base_class);
-	return make_class(name, Class::Type::POINTER, config.pointer_size, 0, nullptr, {ff}, base_class);
+	auto ff = make_class("Callable[" + name + "]", Class::Type::CALLABLE_FUNCTION_POINTER, TypeCallableBase->size, 0, nullptr, params_ret, base_class, token_id);
+	return make_class(name, Class::Type::POINTER, config.pointer_size, 0, nullptr, {ff}, base_class, token_id);
 	//return make_class(name, Class::Type::CALLABLE_FUNCTION_POINTER, TypeCallableBase->size, 0, nullptr, params_ret, base_class);
 }
 
-const Class *SyntaxTree::make_class_callable_bind(const Array<const Class*> &param, const Class *ret, const Array<const Class*> &binds) {
+// inner callable: params [A,B,C,D,E]
+// captures: [-,x0,-,-,x1]
+// class CallableBind
+//     func __init__(f, c0, c1)
+//     func call(a,b,c)
+//         f(a,x0,b,c,c1)
+// (A,C,D) -> R
+const Class *SyntaxTree::make_class_callable_bind(const Array<const Class*> &params, const Class *ret, const Array<const Class*> &captures, const Array<bool> &capture_via_ref, int token_id) {
 
-	string name = make_callable_signature(param, ret);
+	string name = make_callable_signature(params, ret);
 
-	auto params_ret = param;
-	if ((param.num == 1) and (param[0] == TypeVoid))
-		params_ret = {};
-	params_ret.add(ret);
+	Array<const Class*> outer_params_ret;
+	//if ((params.num == 1) and (params[0] == TypeVoid))
+	//	outer_params_ret = {};
+	for (int i=0; i<params.num; i++)
+		if (!captures[i])
+			outer_params_ret.add(params[i]);
+	outer_params_ret.add(ret);
 
 	static int unique_bind_counter = 0;
 
-	auto t = (Class*)make_class("<bind-" + i2s(unique_bind_counter++) + ">", Class::Type::CALLABLE_BIND, TypeCallableBase->size, 0, nullptr, params_ret, base_class);
+	auto t = (Class*)make_class("<bind-" + i2s(unique_bind_counter++) + ">", Class::Type::CALLABLE_BIND, TypeCallableBase->size, 0, nullptr, outer_params_ret, base_class, token_id);
 	int offset = t->size;
-	int i = 0;
-	for (auto &b: binds) {
+	foreachi (auto b, captures, i) {
+		if (!b)
+			continue;
+		if (capture_via_ref[i])
+			b = b->get_pointer();
 		if (type_needs_alignment(b))
 			offset = mem_align(offset, 4);
-		auto el = ClassElement("capture" + i2s(i ++), b, offset);
+		auto el = ClassElement(format("capture%d%s", i, capture_via_ref[i] ? "_ref" : ""), b, offset);
 		offset += b->size;
 		t->elements.add(el);
 	}
@@ -117,28 +128,28 @@ const Class *SyntaxTree::make_class_callable_bind(const Array<const Class*> &par
 
 	for (auto &e: t->elements)
 		if (e.name == "_fp")
-			e.type = make_class_callable_fp(param + binds, ret);
+			e.type = make_class_callable_fp(params, ret, token_id);
 
 	add_missing_function_headers_for_class(t);
 	return t;
 }
 
-shared<Node> SyntaxTree::add_node_statement(StatementID id) {
+shared<Node> SyntaxTree::add_node_statement(StatementID id, int token_id, const Class *type) {
 	auto *s = statement_from_id(id);
-	shared<Node> c = new Node(NodeKind::STATEMENT, (int64)s, TypeVoid);
+	auto c = new Node(NodeKind::STATEMENT, (int64)s, type, false, token_id);
 	c->set_num_params(s->num_params);
 	return c;
 }
 
 // virtual call, if func is virtual
-shared<Node> SyntaxTree::add_node_member_call(Function *f, const shared<Node> inst, const shared_array<Node> &params, bool force_non_virtual) {
+shared<Node> SyntaxTree::add_node_member_call(Function *f, const shared<Node> inst, int token_id, const shared_array<Node> &params, bool force_non_virtual) {
 	shared<Node> c;
 	if ((f->virtual_index >= 0) and !force_non_virtual) {
-		c = new Node(NodeKind::CALL_VIRTUAL, (int_p)f, f->literal_return_type, true);
+		c = new Node(NodeKind::CALL_VIRTUAL, (int_p)f, f->literal_return_type, true, token_id);
 	} else {
-		c = new Node(NodeKind::CALL_FUNCTION, (int_p)f, f->literal_return_type, true);
+		c = new Node(NodeKind::CALL_FUNCTION, (int_p)f, f->literal_return_type, true, token_id);
 	}
-	c->set_num_params(f->num_params + 1);
+	c->set_num_params(f->num_params);
 	c->set_instance(inst);
 	foreachi (auto p, params, i)
 		c->set_param(i + 1, p);
@@ -146,30 +157,27 @@ shared<Node> SyntaxTree::add_node_member_call(Function *f, const shared<Node> in
 }
 
 // non-member!
-shared<Node> SyntaxTree::add_node_call(Function *f) {
+shared<Node> SyntaxTree::add_node_call(Function *f, int token_id) {
 	// FIXME: literal_return_type???
-	shared<Node> c = new Node(NodeKind::CALL_FUNCTION, (int_p)f, f->literal_return_type, true);
-	if (f->is_static())
+	shared<Node> c = new Node(NodeKind::CALL_FUNCTION, (int_p)f, f->literal_return_type, true, token_id);
 		c->set_num_params(f->num_params);
-	else
-		c->set_num_params(f->num_params + 1);
 	return c;
 }
 
-shared<Node> SyntaxTree::add_node_func_name(Function *f) {
-	return new Node(NodeKind::FUNCTION, (int_p)f, TypeUnknown, true);
+shared<Node> SyntaxTree::add_node_func_name(Function *f, int token_id) {
+	return new Node(NodeKind::FUNCTION, (int_p)f, TypeUnknown, true, token_id);
 }
 
-shared<Node> SyntaxTree::add_node_class(const Class *c) {
-	return new Node(NodeKind::CLASS, (int_p)c, TypeClassP, true);
+shared<Node> SyntaxTree::add_node_class(const Class *c, int token_id) {
+	return new Node(NodeKind::CLASS, (int_p)c, TypeClassP, true, token_id);
 }
 
 
-shared<Node> SyntaxTree::add_node_operator(Operator *op, const shared<Node> p1, const shared<Node> p2, const Class *override_type) {
+shared<Node> SyntaxTree::add_node_operator(Operator *op, const shared<Node> p1, const shared<Node> p2, int token_id, const Class *override_type) {
 	if (!override_type)
 		override_type = op->return_type;
-	shared<Node> cmd = new Node(NodeKind::OPERATOR, (int_p)op, override_type, true);
-	if (op->primitive->param_flags == 3) {
+	shared<Node> cmd = new Node(NodeKind::OPERATOR, (int_p)op, override_type, true, token_id);
+	if (op->abstract->param_flags == 3) {
 		cmd->set_num_params(2); // binary
 		cmd->set_param(0, p1);
 		cmd->set_param(1, p2);
@@ -180,30 +188,30 @@ shared<Node> SyntaxTree::add_node_operator(Operator *op, const shared<Node> p1, 
 	return cmd;
 }
 
-shared<Node> SyntaxTree::add_node_operator_by_inline(InlineID inline_index, const shared<Node> p1, const shared<Node> p2, const Class *override_type) {
+shared<Node> SyntaxTree::add_node_operator_by_inline(InlineID inline_index, const shared<Node> p1, const shared<Node> p2, int token_id, const Class *override_type) {
 	for (auto *op: operators)
 		if (op->f->inline_no == inline_index)
-			return add_node_operator(op, p1, p2, override_type);
+			return add_node_operator(op, p1, p2, token_id, override_type);
 
 	do_error(format("operator inline index not found: %d", (int)inline_index));
 	return nullptr;
 }
 
 
-shared<Node> SyntaxTree::add_node_local(Variable *v, const Class *type) {
-	return new Node(NodeKind::VAR_LOCAL, (int_p)v, type, v->is_const());
+shared<Node> SyntaxTree::add_node_local(Variable *v, const Class *type, int token_id) {
+	return new Node(NodeKind::VAR_LOCAL, (int_p)v, type, v->is_const(), token_id);
 }
 
-shared<Node> SyntaxTree::add_node_local(Variable *v) {
-	return new Node(NodeKind::VAR_LOCAL, (int_p)v, v->type, v->is_const());
+shared<Node> SyntaxTree::add_node_local(Variable *v, int token_id) {
+	return new Node(NodeKind::VAR_LOCAL, (int_p)v, v->type, v->is_const(), token_id);
 }
 
-shared<Node> SyntaxTree::add_node_global(Variable *v) {
-	return new Node(NodeKind::VAR_GLOBAL, (int_p)v, v->type, v->is_const());
+shared<Node> SyntaxTree::add_node_global(Variable *v, int token_id) {
+	return new Node(NodeKind::VAR_GLOBAL, (int_p)v, v->type, v->is_const(), token_id);
 }
 
 shared<Node> SyntaxTree::add_node_parray(shared<Node> p, shared<Node> index, const Class *type) {
-	shared<Node> cmd_el = new Node(NodeKind::POINTER_AS_ARRAY, 0, type);
+	shared<Node> cmd_el = new Node(NodeKind::POINTER_AS_ARRAY, 0, type, false, index->token_id);
 	cmd_el->set_num_params(2);
 	cmd_el->set_param(0, p);
 	cmd_el->set_param(1, index);
@@ -211,15 +219,17 @@ shared<Node> SyntaxTree::add_node_parray(shared<Node> p, shared<Node> index, con
 }
 
 shared<Node> SyntaxTree::add_node_dyn_array(shared<Node> array, shared<Node> index) {
-	shared<Node> cmd_el = new Node(NodeKind::DYNAMIC_ARRAY, 0, array->type->get_array_element());
+	shared<Node> cmd_el = new Node(NodeKind::DYNAMIC_ARRAY, 0, array->type->get_array_element(), false, index->token_id);
 	cmd_el->set_num_params(2);
 	cmd_el->set_param(0, array);
 	cmd_el->set_param(1, index);
 	return cmd_el;
 }
 
-shared<Node> SyntaxTree::add_node_array(shared<Node> array, shared<Node> index) {
-	auto *el = new Node(NodeKind::ARRAY, 0, array->type->param[0]);
+shared<Node> SyntaxTree::add_node_array(shared<Node> array, shared<Node> index, const Class *type) {
+	if (!type)
+		type = array->type->param[0];
+	auto *el = new Node(NodeKind::ARRAY, 0, type, false, index->token_id);
 	el->set_num_params(2);
 	el->set_param(0, array);
 	el->set_param(1, index);
@@ -231,7 +241,7 @@ shared<Node> SyntaxTree::add_node_array(shared<Node> array, shared<Node> index) 
 	return new Node(NodeKind::BLOCK, (long long)(int_p)b, TypeVoid);
 }*/
 
-SyntaxTree::SyntaxTree(Script *_script) {
+SyntaxTree::SyntaxTree(Module *_module) {
 	base_class = new Class("-base-", 0, this);
 	_base_class = base_class;
 	imported_symbols = new Class("-imported-", 0, this);
@@ -241,7 +251,7 @@ SyntaxTree::SyntaxTree(Script *_script) {
 	flag_string_const_as_cstring = false;
 	flag_function_pointer_as_code = false;
 	flag_immortal = false;
-	script = _script;
+	module = _module;
 	asm_meta_info = new Asm::MetaInfo(config.pointer_size);
 	parser = nullptr;
 }
@@ -256,7 +266,7 @@ void SyntaxTree::default_import() {
 shared<Node> SyntaxTree::make_constructor_static(shared<Node> n, const string &name) {
 	for (auto *f: weak(n->type->functions))
 		if (f->name == name) {
-			auto nn = add_node_call(f);
+			auto nn = add_node_call(f, n->token_id);
 			for (int i=0; i<n->params.num-1; i++)
 				nn->set_param(i, n->params[i+1]);
 			//nn->params = n->params.sub(1,-1);
@@ -270,6 +280,7 @@ void SyntaxTree::digest() {
 		show("digest:pre");
 
 	// turn vector(x,y,z) into vector._create(x,y,z)
+	// TODO make more universal! maybe general __create__() function as fake constructor?
 	transform([&](shared<Node> n){
 		if (n->kind != NodeKind::CONSTRUCTOR_AS_FUNCTION)
 			return n;
@@ -338,8 +349,8 @@ void SyntaxTree::digest() {
 }
 
 
-void SyntaxTree::do_error(const string &str, int override_exp_no, int override_line) {
-	parser->do_error(str, override_exp_no, override_line);
+void SyntaxTree::do_error(const string &str, int override_token_id) {
+	parser->do_error(str, override_token_id);
 }
 
 
@@ -396,22 +407,22 @@ Function *SyntaxTree::add_function(const string &name, const Class *return_type,
 
 
 
-shared<Node> SyntaxTree::add_node_const(Constant *c) {
-	return new Node(NodeKind::CONSTANT, (int_p)c, c->type.get(), true);
+shared<Node> SyntaxTree::add_node_const(Constant *c, int token_id) {
+	return new Node(NodeKind::CONSTANT, (int_p)c, c->type.get(), true, token_id);
 }
 
 /*shared<Node> SyntaxTree::add_node_block(Block *b) {
 	return new Node(NodeKind::BLOCK, (int_p)b, TypeVoid);
 }*/
 
-PrimitiveOperator *Parser::which_primitive_operator(const string &name, int param_flags) {
+AbstractOperator *Parser::which_abstract_operator(const string &name, int param_flags) {
 	for (int i=0; i<(int)OperatorID::_COUNT_; i++)
-		if (name == PrimitiveOperators[i].name and param_flags == PrimitiveOperators[i].param_flags)
-			return &PrimitiveOperators[i];
+		if ((name == abstract_operators[i].name) and (param_flags == abstract_operators[i].param_flags))
+			return &abstract_operators[i];
 
 	// old hack
 	if (name == "!")
-		return &PrimitiveOperators[(int)OperatorID::NEGATE];
+		return &abstract_operators[(int)OperatorID::NEGATE];
 
 	return nullptr;
 }
@@ -636,18 +647,18 @@ shared_array<Node> SyntaxTree::get_existence(const string &name, Block *block, c
 		return links;
 
 	// then the statements
-	auto s = Parser::which_statement(name);
+	/*auto s = Parser::which_statement(name);
 	if (s) {
 		//return {add_node_statement(s->id)};
 		auto n = new Node(NodeKind::STATEMENT, (int_p)s, TypeVoid);
 		n->set_num_params(s->num_params);
 		return {n};
-	}
+	}*/
 
 	// operators
-	auto w = parser->which_primitive_operator(name, 2); // negate/not...
+	auto w = parser->which_abstract_operator(name, 2); // negate/not...
 	if (w)
-		return {new Node(NodeKind::PRIMITIVE_OPERATOR, (int_p)w, TypeUnknown)};
+		return {new Node(NodeKind::ABSTRACT_OPERATOR, (int_p)w, TypeUnknown)};
 
 	// in include files (only global)...
 	links.append(get_existence_global(name, imported_symbols.get()));
@@ -657,10 +668,10 @@ shared_array<Node> SyntaxTree::get_existence(const string &name, Block *block, c
 	return links;
 }
 
-Function *SyntaxTree::required_func_global(const string &name) {
+Function *SyntaxTree::required_func_global(const string &name, int token_id) {
 	auto links = get_existence(name, nullptr, base_class);
 	if (links.num == 0)
-		do_error(format("internal error: '%s()' not found????", name));
+		do_error(format("internal error: '%s()' not found????", name), token_id);
 	return links[0]->as_func();
 }
 
@@ -681,16 +692,13 @@ const Class *SyntaxTree::find_root_type_by_name(const string &name, const Class 
 	return nullptr;
 }
 
-Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, const Class *ns) {
+Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, const Class *ns, int token_id) {
 	if (find_root_type_by_name(name, ns, false))
-		do_error("class already exists");
+		do_error("class already exists", token_id);
 
 	Class *t = new Class(name, size, this, parent, params);
 	t->type = type;
-	if (cur_exp_buf) {
-		t->_logical_line_no = cur_exp_buf->get_line_no();
-		t->_exp_no = cur_exp_buf->cur_exp;
-	}
+	t->token_id = token_id;
 	owned_classes.add(t);
 	
 	// link namespace
@@ -703,12 +711,12 @@ Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int si
 	if (t->is_super_array() or t->is_dict()) {
 		t->derive_from(TypeDynamicArray, false); // we already set its size!
 		if (params[0]->needs_constructor() and !params[0]->get_default_constructor())
-			do_error(format("can not create a dynamic array from type '%s', missing default constructor", params[0]->long_name()));
+			do_error(format("can not create a dynamic array from type '%s', missing default constructor", params[0]->long_name()), token_id);
 		t->param = params;
 		add_missing_function_headers_for_class(t);
 	} else if (t->is_array()) {
 		if (params[0]->needs_constructor() and !params[0]->get_default_constructor())
-			do_error(format("can not create an array from type '%s', missing default constructor", params[0]->long_name()));
+			do_error(format("can not create an array from type '%s', missing default constructor", params[0]->long_name()), token_id);
 		t->param = params;
 		add_missing_function_headers_for_class(t);
 	} else if (t->is_pointer_shared() or t->is_pointer_owned()) {
@@ -734,31 +742,31 @@ Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int si
 	return t;
 }
 
-const Class *SyntaxTree::make_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, const Class *ns) {
+const Class *SyntaxTree::make_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, const Class *ns, int token_id) {
 	//msg_write("make class " + name + " ns=" + ns->long_name() + " param=" + param->long_name());
-	
+
 	// check if it already exists
 	auto *tt = find_root_type_by_name(name, ns, false);
 	if (tt)
 		return tt;
 
 	// add new class
-	return create_new_class(name, type, size, array_size, parent, params, ns);
+	return create_new_class(name, type, size, array_size, parent, params, ns, token_id);
 }
 
-const Class *SyntaxTree::make_class_super_array(const Class *element_type) {
+const Class *SyntaxTree::make_class_super_array(const Class *element_type, int token_id) {
 	string name = class_name_might_need_parantheses(element_type) + "[]";
-	return make_class(name, Class::Type::SUPER_ARRAY, config.super_array_size, -1, TypeDynamicArray, {element_type}, element_type->name_space);
+	return make_class(name, Class::Type::SUPER_ARRAY, config.super_array_size, -1, TypeDynamicArray, {element_type}, element_type->name_space, token_id);
 }
 
-const Class *SyntaxTree::make_class_array(const Class *element_type, int num_elements) {
+const Class *SyntaxTree::make_class_array(const Class *element_type, int num_elements, int token_id) {
 	string name = class_name_might_need_parantheses(element_type) + format("[%d]", num_elements);
-	return make_class(name, Class::Type::ARRAY, element_type->size * num_elements, num_elements, nullptr, {element_type}, element_type->name_space);
+	return make_class(name, Class::Type::ARRAY, element_type->size * num_elements, num_elements, nullptr, {element_type}, element_type->name_space, token_id);
 }
 
-const Class *SyntaxTree::make_class_dict(const Class *element_type) {
+const Class *SyntaxTree::make_class_dict(const Class *element_type, int token_id) {
 	string name = class_name_might_need_parantheses(element_type) + "{}";
-	return make_class(name, Class::Type::DICT, config.super_array_size, 0, TypeDictBase, {element_type}, element_type->name_space);
+	return make_class(name, Class::Type::DICT, config.super_array_size, 0, TypeDictBase, {element_type}, element_type->name_space, token_id);
 }
 
 shared<Node> SyntaxTree::conv_cbr(shared<Node> c, Variable *var) {
@@ -804,7 +812,7 @@ shared<Node> SyntaxTree::conv_calls(shared<Node> c) {
 			if (c->is_function()) {
 				auto f = c->as_func();
 				int param_offset = f->is_static() ? 0 : 1;
-				if ((j >= param_offset) and (flags_has(f->var[j - param_offset]->flags, Flags::OUT)))
+				if ((j >= param_offset) and (flags_has(f->var[j]->flags, Flags::OUT)))
 					return true;
 			}
 			return false;
@@ -907,26 +915,14 @@ void SyntaxTree::convert_call_by_reference() {
 		msg_write("ConvertCallByReference");
 	// convert functions
 	for (Function *f: functions) {
-		
-		// TODO: convert self...
-		if (!f->is_static() and f->name_space->uses_call_by_reference()) {
-			for (auto v: weak(f->var))
-				if (v->name == IDENTIFIER_SELF) {
-					//msg_write("CONV SELF....");
-					v->type = v->type->get_pointer();
-
-					// usage inside the function
-					transform_block(f->block.get(), [&](shared<Node> n){ return conv_cbr(n, v); });
-				}
-		}
 
 		// parameter: array/class as reference
-		for (int j=0;j<f->num_params;j++)
-			if (f->var[j]->type->uses_call_by_reference() or flags_has(f->var[j]->flags, Flags::OUT)) {
-				f->var[j]->type = f->var[j]->type->get_pointer();
+		for (auto v: weak(f->var).sub_ref(0, f->num_params))
+			if (v->type->uses_call_by_reference() or flags_has(v->flags, Flags::OUT)) {
+				v->type = v->type->get_pointer();
 
 				// usage inside the function
-				transform_block(f->block.get(), [&](shared<Node> n){ return conv_cbr(n, f->var[j].get()); });
+				transform_block(f->block.get(), [&](shared<Node> n){ return conv_cbr(n, v); });
 			}
 	}
 
@@ -986,6 +982,7 @@ shared<Node> SyntaxTree::conv_break_down_low_level(shared<Node> c) {
 				add_node_operator_by_inline(InlineID::INT_MULTIPLY,
 						c->params[1], // ref
 						add_node_const(add_constant_int(el_type->size))),
+				c->token_id,
 				el_type->get_pointer())->deref();
 
 	} else if (c->kind == NodeKind::POINTER_AS_ARRAY) {
@@ -1004,6 +1001,7 @@ shared<Node> SyntaxTree::conv_break_down_low_level(shared<Node> c) {
 				add_node_operator_by_inline(InlineID::INT_MULTIPLY,
 						c->params[1], // index
 						add_node_const(add_constant_int(el_type->size))),
+				c->token_id,
 				el_type->get_pointer())->deref();
 	} else if (c->kind == NodeKind::ADDRESS_SHIFT) {
 
@@ -1018,6 +1016,7 @@ shared<Node> SyntaxTree::conv_break_down_low_level(shared<Node> c) {
 		return add_node_operator_by_inline(__get_pointer_add_int(),
 				c->params[0]->ref(), // struct
 				add_node_const(add_constant_int(c->link_no)),
+				c->token_id,
 				el_type->get_pointer())->deref();
 
 	} else if (c->kind == NodeKind::DEREF_ADDRESS_SHIFT) {
@@ -1035,6 +1034,7 @@ shared<Node> SyntaxTree::conv_break_down_low_level(shared<Node> c) {
 		return add_node_operator_by_inline(__get_pointer_add_int(),
 				c->params[0], // ref struct
 				add_node_const(add_constant_int(c->link_no)),
+				c->token_id,
 				el_type->get_pointer())->deref();
 	}
 	return c;
@@ -1161,7 +1161,7 @@ shared<Node> SyntaxTree::conv_break_down_high_level(shared<Node> n, Block *b) {
 		vv->explicitly_constructed = true;
 		auto dummy = add_node_local(vv);
 		
-		auto ib = add_node_call(n->as_func());
+		auto ib = add_node_call(n->as_func(), n->token_id);
 		ib->params = n->params;
 		ib->set_instance(dummy);
 		if (config.verbose)
@@ -1172,7 +1172,7 @@ shared<Node> SyntaxTree::conv_break_down_high_level(shared<Node> n, Block *b) {
 		return dummy;
 	} else if (n->kind == NodeKind::ARRAY_BUILDER) {
 		auto *t_el = n->type->get_array_element();
-		Function *cf = n->type->get_func("add", TypeVoid, {t_el});
+		Function *cf = n->type->get_member_func("add", TypeVoid, {t_el});
 		if (!cf)
 			do_error(format("[..]: can not find '%s.add(%s)' function???", n->type->long_name(), t_el->long_name()));
 
@@ -1183,7 +1183,7 @@ shared<Node> SyntaxTree::conv_break_down_high_level(shared<Node> n, Block *b) {
 
 		Block *bb = new Block(f, b);
 		for (int i=0; i<n->params.num; i++){
-			auto cc = add_node_member_call(cf, array);
+			auto cc = add_node_member_call(cf, array, n->token_id);
 			cc->set_param(1, n->params[i]);
 			bb->add(cc);
 		}
@@ -1191,7 +1191,7 @@ shared<Node> SyntaxTree::conv_break_down_high_level(shared<Node> n, Block *b) {
 		return array;
 	} else if (n->kind == NodeKind::DICT_BUILDER) {
 		auto *t_el = n->type->get_array_element();
-		Function *cf = n->type->get_func("__set__", TypeVoid, {TypeString, t_el});
+		Function *cf = n->type->get_member_func("__set__", TypeVoid, {TypeString, t_el});
 		if (!cf)
 			do_error(format("[..]: can not find '%s.__set__(string,%s)' function???", n->type->long_name(), t_el->long_name()));
 
@@ -1202,7 +1202,7 @@ shared<Node> SyntaxTree::conv_break_down_high_level(shared<Node> n, Block *b) {
 
 		Block *bb = new Block(f, b);
 		for (int i=0; i<n->params.num/2; i++){
-			auto cc = add_node_member_call(cf, array);
+			auto cc = add_node_member_call(cf, array, n->token_id);
 			cc->set_param(1, n->params[i*2]);
 			cc->set_param(2, n->params[i*2+1]);
 			bb->add(cc);
@@ -1464,15 +1464,15 @@ void SyntaxTree::map_local_variables_to_stack() {
 }
 
 
-// no included scripts may be deleted before us!!!
+// no included modules may be deleted before us!!!
 SyntaxTree::~SyntaxTree() {
-	// delete all classes, functions etc created by this script
+	// delete all classes, functions etc created by this module
 }
 
 void SyntaxTree::show(const string &stage) {
 	if (!config.allow_output_stage(stage))
 		return;
-	msg_write(format("--------- Syntax of %s  %s ---------", script->filename, stage));
+	msg_write(format("--------- Syntax of %s  %s ---------", module->filename, stage));
 	msg_right();
 	for (auto *f: functions)
 		if (!f->is_extern())
