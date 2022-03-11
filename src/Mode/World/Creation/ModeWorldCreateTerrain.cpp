@@ -16,39 +16,36 @@ ModeWorldCreateTerrain::ModeWorldCreateTerrain(ModeBase *_parent) :
 	message = _("new terrain...");
 }
 
-void ModeWorldCreateTerrain::on_start()
-{
+void ModeWorldCreateTerrain::on_start() {
 	// Dialog
 	dialog = hui::create_resource_dialog("new_terrain_dialog", ed);
 	dialog->show();
 
-	dialog->event("cancel", std::bind(&ModeWorldCreateTerrain::onClose, this));
-	dialog->event("hui:close", std::bind(&ModeWorldCreateTerrain::onClose, this));
-	dialog->event("ok", std::bind(&ModeWorldCreateTerrain::onOk, this));
+	dialog->event("cancel", [this] { on_close(); });
+	dialog->event("hui:close", [this] { on_close(); });
+	dialog->event("ok", [this] { on_ok(); });
 
-	//dialog->event("height_image_find", std::bind(&ModeWorldCreateTerrain::OnFindHeightmap, this));
-	dialog->event("num_x", std::bind(&ModeWorldCreateTerrain::onSizeChange, this));
-	dialog->event("num_z", std::bind(&ModeWorldCreateTerrain::onSizeChange, this));
-	dialog->event("terrain_x", std::bind(&ModeWorldCreateTerrain::onSizeChange, this));
-	dialog->event("terrain_z", std::bind(&ModeWorldCreateTerrain::onSizeChange, this));
+	//dialog->event("height_image_find", [this] { OnFindHeightmap(); });
+	dialog->event("num_x", [this] { on_size_change(); });
+	dialog->event("num_z", [this] { on_size_change(); });
+	dialog->event("terrain_x", [this] { on_size_change(); });
+	dialog->event("terrain_z", [this] { on_size_change(); });
 
 	dialog->set_float("height_factor", 100);
 	dialog->set_int("num_x", 64);
 	dialog->set_int("num_z", 64);
 	dialog->set_float("terrain_x", multi_view->cam.radius);//1000);
 	dialog->set_float("terrain_z", multi_view->cam.radius);//1000);
-	onSizeChange();
+	on_size_change();
 
 }
 
-void ModeWorldCreateTerrain::on_end()
-{
+void ModeWorldCreateTerrain::on_end() {
 	delete(dialog);
 	dialog = NULL;
 }
 
-void ModeWorldCreateTerrain::onOk()
-{
+void ModeWorldCreateTerrain::on_ok() {
 	vector size = vector(dialog->get_float("terrain_x"), 0, dialog->get_float("terrain_z"));
 	vector pos = multi_view->cam.pos - size / 2;
 	int num_x = dialog->get_int("num_x");
@@ -57,19 +54,16 @@ void ModeWorldCreateTerrain::onOk()
 	abort();
 }
 
-void ModeWorldCreateTerrain::onClose()
-{
+void ModeWorldCreateTerrain::on_close() {
 	abort();
 }
 
-void ModeWorldCreateTerrain::onSizeChange()
-{
+void ModeWorldCreateTerrain::on_size_change() {
 	dialog->set_float("pattern_x", dialog->get_float("terrain_x") / (float)dialog->get_int("num_x"));
 	dialog->set_float("pattern_z", dialog->get_float("terrain_z") / (float)dialog->get_int("num_z"));
 }
 
-void ModeWorldCreateTerrain::on_draw_win(MultiView::Window *win)
-{
+void ModeWorldCreateTerrain::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 }
 

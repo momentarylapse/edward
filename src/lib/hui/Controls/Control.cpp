@@ -509,6 +509,11 @@ void Control::notify(const string &message, bool is_default) {
 		msg_error("HuiControl.Notify without panel: " + id);
 		return;
 	}
+	Window *win = panel->win;
+	if (!win) {
+		msg_error("HuiControl.Notify without window: " + id);
+		return;
+	}
 	panel->_set_cur_id_(id);
 	if (id.num == 0)
 		return;
@@ -523,7 +528,6 @@ void Control::notify(const string &message, bool is_default) {
 		return;
 	}
 
-	Window *win = panel->win;
 	if (this == win->main_input_control) {
 		if (message == EventID::MOUSE_MOVE) {
 			win->on_mouse_move();

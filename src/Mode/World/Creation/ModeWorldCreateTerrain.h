@@ -20,9 +20,9 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	void onOk();
-	void onClose();
-	void onSizeChange();
+	void on_ok();
+	void on_close();
+	void on_size_change();
 };
 
 #endif /* MODEWORLDCREATETERRAIN_H_ */

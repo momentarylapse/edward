@@ -57,6 +57,7 @@ void *ActionWorldAddTerrain::execute(Data *d) {
 		t.terrain->pattern.x = size.x / num_x;
 		t.terrain->pattern.y = 0;
 		t.terrain->pattern.z = size.z / num_z;
+		t.terrain->material = new Material;
 		t.terrain->material->textures.clear();
 		t.terrain->material->textures.add(NULL);
 		t.terrain->texture_scale[0].x = 1.0f;
