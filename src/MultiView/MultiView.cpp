@@ -920,8 +920,8 @@ vector MultiView::get_cursor(const vector &depth_reference) {
 void MultiView::get_hover() {
 	hover.reset();
 
-	if (!ed->input.inside_smart)
-		return;
+	//if (!ed->input.inside_smart)
+	//	return;
 
 
 	if (menu and (mouse_win->name_dest.inside(m))) {

@@ -90,11 +90,11 @@ void CameraController::update_rects() {
 bool CameraController::is_mouse_over() {
 	update_rects();
 	if (show) {
-		for (auto &c: controllers)
+		for (auto &c: controllers) {
 			if (c.hover(view->m))
 				return true;
+		}
 	}
-
 	return r2.inside(view->m);
 }
 
@@ -107,8 +107,9 @@ void CameraController::on_left_button_down() {
 		c.rotating = c.r_rotate.inside(view->m);
 		c.zooming = c.r_zoom.inside(view->m);
 
-		if (c.moving or c.rotating or c.zooming)
+		if (c.moving or c.rotating or c.zooming) {
 			MouseWrapper::start(ed->win);
+		}
 	}
 }
 

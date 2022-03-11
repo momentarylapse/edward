@@ -126,7 +126,9 @@ void stop(hui::Window *w) {
 
 void update(MultiView::MultiView *view) {
 #if HAS_LIB_X11
-	view->v = vec2(dx, dy);
+	if (x11_window) {
+		view->v = vec2(dx, dy);
+	}
 #endif
 	dx = dy = 0;
 }
