@@ -739,7 +739,7 @@ void ModeWorld::ExecutePropertiesDialog() {
 
 
 void ModeWorld::ExecuteTerrainPropertiesDialog(int index) {
-	hui::run(new TerrainPropertiesDialog(ed, false, data, index));
+	hui::fly(new TerrainPropertiesDialog(ed, false, data, index));
 }
 
 void ModeWorld::ExecuteLightmapDialog() {

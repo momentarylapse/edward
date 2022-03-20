@@ -129,7 +129,8 @@ void Storage::open(Data *data, Callback on_success) {
 
 			try {
 				if (storage->load(dialog_file_complete, data))
-					on_success();
+					if (on_success)
+						on_success();
 			} catch(...) {
 			}
 		});
@@ -144,18 +145,21 @@ void Storage::save_as(Data *data, Callback on_success) {
 
 		try {
 			if (save(dialog_file_complete, data))
-				on_success();
+				if (on_success)
+					on_success();
 		} catch (...) {
 		}
 	});
 }
 
 void Storage::auto_save(Data *data, Callback on_success) {
-	if (data->filename)
+	if (data->filename) {
 		if (save(data->filename, data))
-			on_success();
-	else
+			if (on_success)
+				on_success();
+	} else {
 		save_as(data, on_success);
+	}
 }
 
 
