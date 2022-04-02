@@ -172,7 +172,12 @@ string render_material(ModelMaterial *m) {
 	if (!tex)
 		if (m->material->textures.num > 0)
 			tex = m->material->textures[0];*/
-	auto tim = m->texture_levels[0]->image;
+	static Image default_image;
+	if (default_image.width == 0)
+		default_image.create(16, 16, White);
+	auto tim = &default_image;
+	if (m->texture_levels.num > 0)
+		tim = m->texture_levels[0]->image;
 
 	const int N = 48;
 

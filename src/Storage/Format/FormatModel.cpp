@@ -922,7 +922,7 @@ public:
 			write_sub("skeleton", me);
 		if (me->move.num > 0)
 			write_sub("animation", me);
-		if (!me->meta_data.script_file.is_empty() or me->meta_data.script_var.num > 0)
+		if (me->meta_data.script_file or me->meta_data.script_var.num > 0)
 			write_sub("script", me);
 		write_sub_array("effect", me->fx);
 
@@ -986,7 +986,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
 			// test textures
 			for (auto &t: m->texture_levels) {
-				if ((!t->texture) and (!t->filename.is_empty()))
+				if (!t->texture and t->filename)
 					warning(format(_("Texture file not loadable: %s"), t->filename));
 			}
 		}
@@ -1009,7 +1009,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 	}
 
 	// FIXME
-	if ((!data->meta_data.script_file.is_empty()) and (data->meta_data.variables.num == 0)) {
+	if (data->meta_data.script_file and (data->meta_data.variables.num == 0)) {
 		update_model_script_data(data->meta_data);
 		msg_write(data->meta_data.variables.num);
 		for (int i=0; i<min(data->meta_data.script_var.num, data->meta_data.variables.num); i++) {
@@ -1017,6 +1017,11 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 				data->meta_data.variables[i].value = f2s(data->meta_data.script_var[i], 6);
 			msg_write(format("  try import var  %s = %s", data->meta_data.variables[i].name, data->meta_data.variables[i].value));
 		}
+	}
+
+
+	if (data->material.num == 0) {
+		data->material.add(new ModelMaterial);
 	}
 
 
