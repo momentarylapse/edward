@@ -28,13 +28,6 @@ class SyntaxTree;
 class Parser;
 
 
-// macros
-struct Define {
-	string source;
-	Array<string> dest;
-};
-
-
 
 struct AsmBlock {
 	string block;
@@ -50,7 +43,7 @@ public:
 	~SyntaxTree();
 
 	void default_import();
-	void add_include_data(shared<Module> s, bool indirect);
+	void import_data(shared<Module> s, bool indirect, const string &as_name);
 
 	void do_error(const string &msg, int override_token_id = -1);
 	
@@ -157,10 +150,8 @@ public:
 	shared<Class> imported_symbols;
 	Array<const Class*> owned_classes;
 	shared_array<Module> includes;
-	Array<Define> defines;
 	owned<Asm::MetaInfo> asm_meta_info;
 	Array<AsmBlock> asm_blocks;
-	Array<Operator*> operators;
 	Array<Function*> functions;
 
 	shared<Function> root_of_all_evil;
