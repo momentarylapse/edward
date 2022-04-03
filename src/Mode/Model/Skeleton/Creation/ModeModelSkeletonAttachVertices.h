@@ -12,6 +12,7 @@
 #include "../../../../Data/Model/DataModel.h"
 
 class BrushPanel;
+class VertexStagingBuffer;
 
 class ModeModelSkeletonAttachVertices: public ModeCreation<DataModel> {
 public:
@@ -42,6 +43,8 @@ private:
 
 	nix::VertexBuffer *vb_weight = nullptr;
 	nix::Shader *shader = nullptr;
+
+	VertexStagingBuffer *vbs = nullptr;
 
 	BrushPanel *brush_panel();
 };

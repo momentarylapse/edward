@@ -68,15 +68,12 @@ void ModeModelSkeletonAttachVertices::on_start() {
 	multi_view->set_allow_select(false);
 
 	if (!vb_weight)
-		vb_weight = new nix::VertexBuffer("3f,3fn,2f,f");
-	VertexStagingBuffer vbs;
-#if 0
-	for (ModelPolygon &t: data->mesh->polygon) {
-		t.add_to_vertex_buffer(data->mesh->vertex, vbs, 1);
-		vbs.build(vb_weight, 1);
-	}
-#endif
-	ed->error_box("TODO....");
+		vb_weight = new nix::VertexBuffer("3f,3fn,2f");
+	if (!vbs)
+		vbs = new VertexStagingBuffer;
+	for (ModelPolygon &t: data->mesh->polygon)
+		t.add_to_vertex_buffer(data->mesh->vertex, *vbs, 1);
+	vbs->build(vb_weight, 1);
 	if (!shader) {
 		try {
 			shader = ResourceManager::load_shader("vertex-weight.shader");
@@ -85,7 +82,7 @@ void ModeModelSkeletonAttachVertices::on_start() {
 		}
 	}
 
-	data->subscribe(this, [=]{ on_data_change(); });
+	data->subscribe(this, [this]{ on_data_change(); });
 
 	on_data_change();
 }
@@ -104,9 +101,7 @@ void ModeModelSkeletonAttachVertices::on_end() {
 void ModeModelSkeletonAttachVertices::on_data_change() {
 	mode_model_mesh->selection_mode->update_multi_view();
 
-	// TODO
-#if 0
-	Array<float> ww;
+	int n = 0;
 	for (ModelPolygon &t: data->mesh->polygon) {
 		for (int i=0; i<t.side.num-2; i++) {
 			auto &a = t.side[t.side[i].triangulation[0]];
@@ -115,13 +110,13 @@ void ModeModelSkeletonAttachVertices::on_data_change() {
 			auto &va = data->mesh->vertex[a.vertex];
 			auto &vb = data->mesh->vertex[b.vertex];
 			auto &vc = data->mesh->vertex[c.vertex];
-			ww.add(get_weight(va.bone_index, va.bone_weight, bone_index));
-			ww.add(get_weight(vb.bone_index, vb.bone_weight, bone_index));
-			ww.add(get_weight(vc.bone_index, vc.bone_weight, bone_index));
+			vbs->uv[0][n] = get_weight(va.bone_index, va.bone_weight, bone_index);
+			vbs->uv[0][n+2] = get_weight(vb.bone_index, vb.bone_weight, bone_index);
+			vbs->uv[0][n+4] = get_weight(vc.bone_index, vc.bone_weight, bone_index);
+			n += 6;
 		}
 	}
-	vb_weight->update(3, ww);
-#endif
+	vbs->build(vb_weight, 1);
 }
 
 void ModeModelSkeletonAttachVertices::on_command(const string &id) {
@@ -139,7 +134,7 @@ void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win) {
 	set_material_selected();
 	nix::set_shader(shader);
 	nix::draw_triangles(vb_weight);
-	nix::set_offset(0);
+	nix::set_offset(2);
 	nix::disable_alpha();
 
 

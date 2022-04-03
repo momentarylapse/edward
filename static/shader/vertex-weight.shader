@@ -12,19 +12,16 @@ struct Matrix {
 layout(location=0) in vec3 in_position;
 layout(location=1) in vec3 in_normal;
 layout(location=2) in vec2 in_uv;
-layout(location=3) in float in_weight;
 
 layout(location=0) out vec4 out_pos; // view space
 layout(location=1) out vec3 out_normal;
-layout(location=2) out vec2 out_uv;
-layout(location=3) out float out_weight;
+layout(location=2) out float out_weight;
 
 void main() {
 	gl_Position = matrix.project * matrix.view * matrix.model * vec4(in_position, 1);
 	out_normal = (matrix.model * vec4(in_normal, 0)).xyz;
-	out_uv = in_uv;
 	out_pos = matrix.model * vec4(in_position, 1);
-	out_weight = in_weight;
+	out_weight = in_uv.x;
 }
 
 
@@ -34,7 +31,8 @@ void main() {
 
 
 struct Material {
-	vec4 albedo, emission; float roughness, metal;
+	vec4 albedo, emission;
+	float roughness, metal;
 };
 uniform Material material;
 
@@ -55,8 +53,7 @@ struct Matrix {
 
 layout(location=0) in vec4 in_pos; // view space
 layout(location=1) in vec3 in_normal;
-layout(location=2) in vec2 in_uv;
-layout(location=3) in float in_weight;
+layout(location=2) in float in_weight;
 
 out vec4 color;
 
@@ -100,7 +97,8 @@ void main() {
 	
 	// specular
 	vec3 H = normalize(l + view_dir);
-	color += light[0].color * (c + vec4(1,1,1,1))/2 * pow(dot(n, H), 15);
+	if (dot(n, H) < 0)
+		color += light[0].color * (c + vec4(1,1,1,1))/2 * pow(-dot(n, H), 15);
 	
 	color.a = 0.7;// * min(in_weight * 10, 1);
 }
