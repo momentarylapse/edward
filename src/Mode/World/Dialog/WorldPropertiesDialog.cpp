@@ -29,31 +29,31 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	popup_skybox = hui::create_resource_menu("world-skybox-popup", this);
 	popup_script = hui::create_resource_menu("world-script-popup", this);
 
-	event("cancel", [=]{ on_close(); });
-	event("hui:close", [=]{ on_close(); });
-	event("apply", [=]{ apply_data(); });
-	event("ok", [=]{ on_ok(); });
+	event("cancel", [this] { on_close(); });
+	event("hui:close", [this] { on_close(); });
+	event("apply", [this] { apply_data(); });
+	event("ok", [this] { on_ok(); });
 
-	event("fog_mode:none", [=]{ on_fog_mode_none(); });
-	event("fog_mode:linear", [=]{ on_fog_mode_linear(); });
-	event("fog_mode:exp", [=]{ on_fog_mode_exp(); });
-	event("fog_mode:exp2", [=]{ on_fog_mode_exp(); });
-	event_x("skybox", "hui:activate", [=]{ on_skybox_select(); });
-	event_x("skybox", "hui:right-button-down", [=]{ on_skybox_right_click(); });
-	event_x("skybox", "hui:move", [=]{ on_skybox_move(); });
-	event("skybox-add", [=]{ on_skybox_add(); });
-	event("skybox-remove", [=]{ on_skybox_remove(); });
-	event("skybox-select", [=]{ on_skybox_select(); });
-	event("physics_enabled", [=]{ on_physics_enabled(); });
-	event_x("script_list", "hui:right-button-down", [=]{ on_script_right_click(); });
-	event_x("script_list", "hui:activate", [=]{ on_edit_script_vars(); });
-	event("remove_script", [=]{ on_script_remove(); });
-	event("add_script", [=]{ on_script_add(); });
-	event("create_script", [=]{ on_create_script(); });
-	event("edit_script_vars", [=]{ on_edit_script_vars(); });
-	event("edit_script", [=]{ on_edit_script(); });
+	event("fog_mode:none", [this] { on_fog_mode_none(); });
+	event("fog_mode:linear", [this] { on_fog_mode_linear(); });
+	event("fog_mode:exp", [this] { on_fog_mode_exp(); });
+	event("fog_mode:exp2", [this] { on_fog_mode_exp(); });
+	event_x("skybox", "hui:activate", [this] { on_skybox_select(); });
+	event_x("skybox", "hui:right-button-down", [this] { on_skybox_right_click(); });
+	event_x("skybox", "hui:move", [this] { on_skybox_move(); });
+	event("skybox-add", [this] { on_skybox_add(); });
+	event("skybox-remove", [this] { on_skybox_remove(); });
+	event("skybox-select", [this] { on_skybox_select(); });
+	event("physics_enabled", [this] { on_physics_enabled(); });
+	event_x("script_list", "hui:right-button-down", [this] { on_script_right_click(); });
+	event_x("script_list", "hui:activate", [this] { on_edit_script_vars(); });
+	event("remove_script", [this] { on_script_remove(); });
+	event("add_script", [this] { on_script_add(); });
+	event("create_script", [this] { on_create_script(); });
+	event("edit_script_vars", [this] { on_edit_script_vars(); });
+	event("edit_script", [this] { on_edit_script(); });
 
-	data->subscribe(this, [=]{
+	data->subscribe(this, [this] {
 		temp = data->meta_data;
 		load_data();
 	});
