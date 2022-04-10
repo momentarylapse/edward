@@ -6,14 +6,15 @@
  */
 
 #include "WorldPropertiesDialog.h"
+#include "ScriptVarsDialog.h"
+#include "../ModeWorld.h"
 #include "../../../Edward.h"
 #include "../../../Storage/Storage.h"
-#include "../ModeWorld.h"
 #include "../../../Action/World/ActionWorldEditData.h"
 #include "../../../MultiView/MultiView.h"
 #include "../../../lib/kaba/kaba.h"
 #include "../../../lib/nix/nix.h"
-#include "ScriptVarsDialog.h"
+#include "../../../y/World.h"
 
 #define WorldPhysicsDec			3
 #define WorldLightDec			1
@@ -311,7 +312,10 @@ void WorldPropertiesDialog::fill_script_list() {
 
 void WorldPropertiesDialog::apply_data() {
 	temp.physics_enabled = is_checked("physics_enabled");
-	temp.physics_mode = (PhysicsMode)get_int("physics-mode");
+	if (get_int("physics-mode") == 1)
+		temp.physics_mode = PhysicsMode::FULL_EXTERNAL;
+	else
+		temp.physics_mode = PhysicsMode::SIMPLE;
 	temp.gravity.x = get_float("gravitation_x");
 	temp.gravity.y = get_float("gravitation_y");
 	temp.gravity.z = get_float("gravitation_z");
@@ -375,7 +379,10 @@ void WorldPropertiesDialog::load_data() {
 
 	set_decimals(WorldPhysicsDec);
 	check("physics_enabled", temp.physics_enabled);
-	set_int("physics-mode", (int)temp.physics_mode);
+	if (temp.physics_mode == PhysicsMode::FULL_EXTERNAL)
+		set_int("physics-mode", 1);
+	else
+		set_int("physics-mode", 0);
 	enable("gravitation_x", temp.physics_enabled);
 	enable("gravitation_y", temp.physics_enabled);
 	enable("gravitation_z", temp.physics_enabled);
