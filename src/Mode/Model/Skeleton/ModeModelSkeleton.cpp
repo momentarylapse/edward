@@ -22,6 +22,8 @@
 
 
 
+void draw_model(MultiView::Window *win, Model *m, int num_lights); // ModeWorld.cpp
+
 ModeModelSkeleton *mode_model_skeleton = NULL;
 
 
@@ -164,12 +166,18 @@ void draw_bone(const vector &r, const vector &d, const color &c, MultiView::Wind
 	draw_lines_colored({r,d}, col, false);
 }
 
+matrix get_bone_frame(const ModelBone &b) {
+	if (mode_model_animation->is_ancestor_of(ed->cur_mode))
+		return b._matrix;
+	return matrix::translation(b.pos);
+}
+
 void draw_coord_basis(MultiView::Window *win, const ModelBone &b) {
 	vector o = b.pos;
+	matrix m = get_bone_frame(b);
 	vector e[3] = {vector::EX, vector::EY, vector::EZ};
-	if (ed->cur_mode == mode_model_animation)
-		for (int i=0;i<3;i++)
-			e[i] = b._matrix.transform_normal(e[i]);
+	for (int i=0;i<3;i++)
+		e[i] = m.transform_normal(e[i]);
 	for (int i=0; i<3; i++) {
 		color cc = scheme.AXIS[i];
 		draw_lines_colored({o, o + e[i] * 40 / win->zoom()}, {cc,cc}, false);
@@ -188,9 +196,8 @@ void ModeModelSkeleton::draw_skeleton(MultiView::Window *win, Array<ModelBone> &
 			continue;
 		if (!b.model)
 			continue;
-		b.model->_matrix = b._matrix;
-		//b.model->draw(0, false, false);
-		// TODO draw sub models
+		nix::set_model_matrix(get_bone_frame(b));
+		draw_model(win, b.model, 1);
 	}
 	nix::set_model_matrix(matrix::ID);
 

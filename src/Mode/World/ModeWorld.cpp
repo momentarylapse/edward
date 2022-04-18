@@ -470,6 +470,28 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 	}
 }
 
+void draw_model(MultiView::Window *win, Model *m, int num_lights) {
+	for (int i=0;i<m->material.num;i++) {
+		auto mat = m->material[i];
+		auto s = nix::Shader::load("");
+		try {
+			mat->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
+			s = mat->shader[0].get();
+		} catch (Exception &e) {
+			msg_error(e.message());
+		}
+
+		win->set_shader(s, num_lights);
+
+		nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
+		_set_textures(weak(mat->textures));
+		nix::draw_triangles(m->mesh[0]->sub[i].vertex_buffer);
+
+	}
+	//o.object->draw(0, false, false);
+	//o.object->_detail_ = 0;
+}
+
 void ModeWorld::draw_objects(MultiView::Window *win) {
 	//GodDraw();
 	//MetaDrawSorted();
@@ -481,25 +503,7 @@ void ModeWorld::draw_objects(MultiView::Window *win) {
 			continue;
 		if (o.object) {
 			nix::set_model_matrix(matrix::translation(o.pos) * matrix::rotation(o.ang));
-			for (int i=0;i<o.object->material.num;i++) {
-				auto mat = o.object->material[i];
-				auto s = nix::Shader::load("");
-				try {
-					mat->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
-					s = mat->shader[0].get();
-				} catch (Exception &e) {
-					msg_error(e.message());
-				}
-
-				win->set_shader(s, data->lights.num);
-
-				nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
-				_set_textures(weak(mat->textures));
-				nix::draw_triangles(o.object->mesh[0]->sub[i].vertex_buffer);
-
-			}
-			//o.object->draw(0, false, false);
-			//o.object->_detail_ = 0;
+			draw_model(win, o.object, data->lights.num);
 		}
 	}
 	nix::set_wire(false);
