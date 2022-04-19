@@ -4,4 +4,5 @@ Menu world-script-popup "Script"
 	Item add_script "Add..." image=hui:add
 	Item create_script "Create new..." image=hui:new
 	Item edit_script "Edit..."
+	Item edit_script_vars "Variables..."
 	Item remove_script "Remove" image=hui:delete

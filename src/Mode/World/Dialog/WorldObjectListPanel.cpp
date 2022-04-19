@@ -8,6 +8,7 @@
 
 #include "WorldObjectListPanel.h"
 #include "ComponentSelectionDialog.h"
+#include "ScriptVarsDialog.h"
 #include "../ModeWorld.h"
 #include "../../../Data/World/DataWorld.h"
 #include "../../../Data/World/DataCamera.h"
@@ -47,29 +48,30 @@ WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
 	data = world->data;
 	editing = -1;
 	allow_sel_change_signal = true;
-	event_x("list", "hui:select", [=]{ on_list_select(); });
-	event_x("list", "hui:right-button-down", [=]{ on_list_right_click(); });
-	event("light-enabled", [=]{ on_change(); });
-	event("light-type", [=]{ on_change(); });
-	event("light-col", [=]{ on_change(); });
-	event("light-harshness", [=]{ on_change(); });
-	event("light-theta", [=]{ on_change(); });
-	event("light-radius", [=]{ on_change(); });
-	event("link-type", [=]{ on_change(); });
-	event("link-friction", [=]{ on_change(); });
-	event("cam-fov", [=]{ on_change(); });
-	event("cam-min-depth", [=]{ on_change(); });
-	event("cam-max-depth", [=]{ on_change(); });
-	event("cam-exposure", [=]{ on_change(); });
-	event("script-edit", [=]{ on_script_edit(); });
-	event_x("component-list", "hui:right-button-down", [=] { on_component_list_right_click(); });
-	event("component-add", [=] { on_component_add(); });
-	event("component-delete", [=] { on_component_delete(); });
-	event("edit_object", [=] { on_object_edit(); });
+	event_x("list", "hui:select", [this] { on_list_select(); });
+	event_x("list", "hui:right-button-down", [this] { on_list_right_click(); });
+	event("light-enabled", [this] { on_change(); });
+	event("light-type", [this] { on_change(); });
+	event("light-col", [this] { on_change(); });
+	event("light-harshness", [this] { on_change(); });
+	event("light-theta", [this] { on_change(); });
+	event("light-radius", [this] { on_change(); });
+	event("link-type", [this] { on_change(); });
+	event("link-friction", [this] { on_change(); });
+	event("cam-fov", [this] { on_change(); });
+	event("cam-min-depth", [this] { on_change(); });
+	event("cam-max-depth", [this] { on_change(); });
+	event("cam-exposure", [this] { on_change(); });
+	event("script-edit", [this] { on_script_edit(); });
+	event_x("component-list", "hui:right-button-down", [this] { on_component_list_right_click(); });
+	event("component-add", [this] { on_component_add(); });
+	event("component-delete", [this] { on_component_delete(); });
+	event("component-variables", [this] { on_component_edit_variables(); });
+	event("edit_object", [this] { on_object_edit(); });
 
 	fill_list();
 
-	data->subscribe(this, [=]{ fill_list(); }, data->MESSAGE_CHANGE);
+	data->subscribe(this, [this] { fill_list(); }, data->MESSAGE_CHANGE);
 	w->multi_view->subscribe(this, [=] {
 		if (allow_sel_change_signal)
 			selection_from_world();
@@ -92,7 +94,7 @@ void WorldObjectListPanel::on_component_add() {
 // TODO...
 void WorldObjectListPanel::on_component_delete() {
 	auto &ii = list_indices[editing];
-	if (ii.type != MVD_WORLD_OBJECT and ii.type != MVD_WORLD_TERRAIN and ii.type != MVD_WORLD_LIGHT and ii.type != MVD_WORLD_CAMERA and ii.type != MVD_WORLD_LINK)
+	if (ii.type != MVD_WORLD_OBJECT)// and ii.type != MVD_WORLD_TERRAIN and ii.type != MVD_WORLD_LIGHT and ii.type != MVD_WORLD_CAMERA and ii.type != MVD_WORLD_LINK)
 		return;
 	auto &o = data->objects[ii.index];
 
@@ -104,6 +106,26 @@ void WorldObjectListPanel::on_component_delete() {
 	oo.components.erase(row);
 	auto a = new ActionWorldEditObject(ii.index, oo);
 	data->execute(a);
+}
+
+
+void WorldObjectListPanel::on_component_edit_variables() {
+	auto &ii = list_indices[editing];
+	if (ii.type != MVD_WORLD_OBJECT)// and ii.type != MVD_WORLD_TERRAIN and ii.type != MVD_WORLD_LIGHT and ii.type != MVD_WORLD_CAMERA and ii.type != MVD_WORLD_LINK)
+		return;
+	auto &o = data->objects[ii.index];
+
+	int row = get_int("component-list");
+	if (row < 0 or row >= o.components.num)
+		return;
+
+	WorldObject oo = o;
+	auto &com = oo.components[row];
+	auto dlg = new ScriptVarsDialog(win, &com);
+	hui::fly(dlg, [] {});
+
+	//auto a = new ActionWorldEditObject(ii.index, oo);
+	//data->execute(a);
 }
 
 void WorldObjectListPanel::on_object_edit() {

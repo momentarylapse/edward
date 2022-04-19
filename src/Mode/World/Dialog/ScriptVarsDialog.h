@@ -10,12 +10,12 @@
 
 #include "../../../lib/hui/hui.h"
 
-class WorldScript;
+class ScriptInstanceData;
 
 class ScriptVarsDialog: public hui::Dialog
 {
 public:
-	ScriptVarsDialog(hui::Window *_parent, WorldScript *data);
+	ScriptVarsDialog(hui::Window *_parent, ScriptInstanceData *data);
 
 	void load_data();
 	void apply_data();
@@ -23,8 +23,10 @@ public:
 	void on_ok();
 	void on_close();
 
+	bool data_changed = false;
+
 private:
-	WorldScript *data;
+	ScriptInstanceData *data;
 };
 
 #endif /* SRC_MODE_WORLD_DIALOG_SCRIPTVARSDIALOG_H_ */

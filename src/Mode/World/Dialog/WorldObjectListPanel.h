@@ -42,6 +42,7 @@ public:
 	void on_script_edit();
 	void on_component_add();
 	void on_component_delete();
+	void on_component_edit_variables();
 	void on_object_edit();
 };
 

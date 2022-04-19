@@ -9473,7 +9473,7 @@ world-object-list-component-popup
 
 0
 0
-2
+3
 Item
 component-add
 
@@ -9481,9 +9481,15 @@ component-add
 0
 0
 Item
-component-delete
+component-variables
 
 1
+0
+0
+Item
+component-delete
+
+2
 0
 0
 # Resource
@@ -10125,7 +10131,7 @@ world-script-popup
 
 0
 0
-6
+7
 Item
 title
 disabled
@@ -10157,9 +10163,15 @@ edit_script
 0
 0
 Item
+edit_script_vars
+
+5
+0
+0
+Item
 remove_script
 image=hui:delete
-5
+6
 0
 0
 # Resource
@@ -10301,7 +10313,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-1022
+1024
 # Text
 /ambient
 Ambient
@@ -13024,6 +13036,9 @@ Add...
 world-object-list-component-popup/component-delete
 Delete
 
+world-object-list-component-popup/component-variables
+Variables...
+
 world-object-list-dialog/cam-exposure
 
 brightness scale
@@ -13188,6 +13203,9 @@ Create new...
 
 world-script-popup/edit_script
 Edit...
+
+world-script-popup/edit_script_vars
+Variables...
 
 world-script-popup/remove_script
 Remove
