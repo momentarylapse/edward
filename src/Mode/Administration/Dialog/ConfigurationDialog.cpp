@@ -19,15 +19,15 @@ ConfigurationDialog::ConfigurationDialog(hui::Window* _parent, DataAdministratio
 	data = _data;
 
 	// dialog
-	event("hui:close", [=]{ on_close(); });
-	event("cancel", [=]{ on_close(); });
-	event("ok", [=]{ on_ok(); });
-	//event("find-rootdir", [=]{ OnFindRootdir(); });
-	event("find-world", [=]{ on_find_world(); });
-	event("find-second-world", [=]{ on_find_second_world(); });
-	event("find-script", [=]{ on_find_script(); });
-	event("find-material", [=]{ on_find_material(); });
-	event("find-font", [=]{ on_find_font(); });
+	event("hui:close", [this] { on_close(); });
+	event("cancel", [this] { on_close(); });
+	event("ok", [this] { on_ok(); });
+	//event("find-rootdir", [this] { OnFindRootdir(); });
+	event("find-world", [this] { on_find_world(); });
+	event("find-second-world", [this] { on_find_second_world(); });
+	event("find-script", [this] { on_find_script(); });
+	event("find-material", [this] { on_find_material(); });
+	event("find-font", [this] { on_find_font(); });
 
 	load_data();
 }
@@ -54,11 +54,11 @@ void ConfigurationDialog::load_data() {
 	set_string("material", game.default_material().str());
 	set_string("font", game.default_font().str());
 
-	set_int("render-path", max(0, RENDER_PATHS.find(game.get_str("renderer.path", "forward"))));
-	set_int("mode", max(0, WINDOW_MODES.find(game.get_str("screen.mode", "windowed"))));
+	set_int("render-path", max(0, RENDER_PATHS.find(game.get_str(game.ID_RENDER_PATH, "forward"))));
+	set_int("mode", max(0, WINDOW_MODES.find(game.get_str(game.ID_SCREEN_MODE, "windowed"))));
 	check("hdr", true);
-	set_int("fps-target", game.get_int("renderer.target-framerate", 60));
-	set_float("scale-min", game.get_float("renderer.resolution-scale-min", 1.0f));
+	set_int("fps-target", game.get_int(game.ID_RENDERER_FRAMERATE, 60));
+	set_float("scale-min", game.get_float(game.ID_RESOLUTION_SCALE_MIN, 1.0f));
 
 	set_string("root-directory", storage->root_dir.str());
 }
@@ -108,10 +108,10 @@ void ConfigurationDialog::into_game_init(GameIniData &g) {
 	g.set_str(g.ID_MATERIAL, get_string("material"));
 	g.set_str(g.ID_FONT, get_string("font"));
 
-	g.set_str("screen.mode", WINDOW_MODES[get_int("mode")]);
-	g.set_str("renderer.path", RENDER_PATHS[get_int("render-path")]);
-	g.set_int("renderer.target-framerate", get_int("fps-target"));
-	g.set_float("renderer.resolution-scale-min", get_float("scale-min"));
+	g.set_str(g.ID_SCREEN_MODE, WINDOW_MODES[get_int("mode")]);
+	g.set_str(g.ID_RENDER_PATH, RENDER_PATHS[get_int("render-path")]);
+	g.set_int(g.ID_RENDERER_FRAMERATE, get_int("fps-target"));
+	g.set_float(g.ID_RESOLUTION_SCALE_MIN, get_float("scale-min"));
 }
 
 void ConfigurationDialog::on_ok() {

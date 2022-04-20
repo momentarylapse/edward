@@ -15,7 +15,7 @@
 class GameIniData : public hui::Configuration {
 public:
 	//Path default_script, default_world, second_world, default_material, default_font;
-	void reset();
+	void reset_default();
 	void load(const Path &dir);
 	void save(const Path &dir);
 
@@ -30,6 +30,10 @@ public:
 	static const string ID_WORLD2;
 	static const string ID_MATERIAL;
 	static const string ID_FONT;
+	static const string ID_SCREEN_MODE;;
+	static const string ID_RENDER_PATH;
+	static const string ID_RENDERER_FRAMERATE;
+	static const string ID_RESOLUTION_SCALE_MIN;
 };
 
 

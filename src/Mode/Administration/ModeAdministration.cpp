@@ -57,6 +57,7 @@ void ModeAdministration::create_project_dir(const Path &dir) {
 
 	if (!file_exists(dir << "game.ini")) {
 		GameIniData gi;
+		gi.reset_default();
 		gi.save(dir);
 	}
 }
