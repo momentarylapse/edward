@@ -3,10 +3,10 @@ use edward
 class NodeVector extends shader.Node
 	func __init__()
 		super.__init__("Vector")
-		params.add([shader.TYPE_FLOAT, "x", "0.0", "range=-1:1"])
-		params.add([shader.TYPE_FLOAT, "y", "0.0", "range=-1:1"])
-		params.add([shader.TYPE_FLOAT, "z", "0.0", "range=-1:1"])
-		output.add([shader.TYPE_VEC3, "value"])
+		params.add([shader.Type.FLOAT, "x", "0.0", "range=-1:1"])
+		params.add([shader.Type.FLOAT, "y", "0.0", "range=-1:1"])
+		params.add([shader.Type.FLOAT, "z", "0.0", "range=-1:1"])
+		output.add([shader.Type.VEC3, "value"])
 	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "

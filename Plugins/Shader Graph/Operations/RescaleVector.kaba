@@ -3,10 +3,10 @@ use edward
 class NodeRescaleVector extends shader.Node
 	func __init__()
 		super.__init__("RescaleVector")
-		params.add([shader.TYPE_VEC3, "in", "vec3(0,0,0)", ""])
-		params.add([shader.TYPE_FLOAT, "scale", "1.0", "range=-2:2"])
-		params.add([shader.TYPE_FLOAT, "offset", "0.0", "range=-2:2"])
-		output.add([shader.TYPE_VEC3, "out"])
+		params.add([shader.Type.VEC3, "in", "vec3(0,0,0)", ""])
+		params.add([shader.Type.FLOAT, "scale", "1.0", "range=-2:2"])
+		params.add([shader.Type.FLOAT, "offset", "0.0", "range=-2:2"])
+		output.add([shader.Type.VEC3, "out"])
 	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "

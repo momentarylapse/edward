@@ -3,9 +3,9 @@ use edward
 class NodeMultiply extends shader.Node
 	func __init__()
 		super.__init__("Multiply")
-		params.add([shader.TYPE_COLOR, "a", "#ffffffff", ""])
-		params.add([shader.TYPE_COLOR, "b", "#ffffffff", ""])
-		output.add([shader.TYPE_COLOR, "out"])
+		params.add([shader.Type.COLOR, "a", "#ffffffff", ""])
+		params.add([shader.Type.COLOR, "b", "#ffffffff", ""])
+		output.add([shader.Type.COLOR, "out"])
 	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "

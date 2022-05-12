@@ -107,7 +107,9 @@ void DataMaterial::ShaderData::load_from_file() {
 		set_engine_default();
 		return;
 	}
-	code = FileReadText(ResourceManager::shader_dir << file);
+	if (file_exists(ResourceManager::shader_dir << file)) {
+		code = FileReadText(ResourceManager::shader_dir << file);
+	}
 	if (file_exists(ResourceManager::shader_dir << file.with(".graph"))) {
 		graph->load(ResourceManager::shader_dir << file.with(".graph"));
 		code = graph->build_source();
@@ -134,8 +136,9 @@ void DataMaterial::ShaderData::set_engine_default() {
 }
 
 void DataMaterial::ShaderData::save_to_file() {
-	if (!file.is_empty()) {
+	if (file) {
 		code = graph->build_source();
+		FileWriteText(ResourceManager::shader_dir << file, code);
 		graph->save(ResourceManager::shader_dir << file.with(".graph"));
 		from_graph = true;
 		is_default = false;

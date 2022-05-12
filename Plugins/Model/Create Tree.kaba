@@ -34,7 +34,7 @@ func branch(pos0: vector, dir0: vector, num: int, radius: float, length: float)
 	float[] r
 	r.add(radius)
 	r.add(0)
-	var g = new Geometry.CylinderComplex(pos, r, 5, 16, 0)
+	var g = new Geometry.CylinderComplex(pos, r, 5, 16, Geometry.EndMode.OPEN)
 	model.paste_geometry(g, 0)
 	del g
 

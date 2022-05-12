@@ -3,8 +3,8 @@ use edward
 class NodeVectorZ extends shader.Node
 	func __init__()
 		super.__init__("VectorZ")
-		params.add([shader.TYPE_VEC3, "vector", "vec3(0,0,0)", ""])
-		output.add([shader.TYPE_FLOAT, "z"])
+		params.add([shader.Type.VEC3, "vector", "vec3(0,0,0)", ""])
+		output.add([shader.Type.FLOAT, "z"])
 	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "

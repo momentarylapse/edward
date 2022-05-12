@@ -3,7 +3,7 @@ use edward
 class NodeMetal extends shader.Node
 	func __init__()
 		super.__init__("Metal")
-		output.add([shader.TYPE_FLOAT, "metal"])
+		output.add([shader.Type.FLOAT, "metal"])
 	func override const dependencies() -> string[]
 		return ["in:material"]
 	func override const code_pixel(out c: shader.BuilderContext) -> string

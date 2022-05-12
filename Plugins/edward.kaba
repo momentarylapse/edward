@@ -20,9 +20,28 @@ class Data extends Observable
 
 
 class MultiView
+		
+	enum Action
+		SELECT
+		MOVE
+		ROTATE
+		ROTATE_2D
+		SCALE
+		SCALE_2D
+		MIRROR
+		ONCE
+
+	enum ActionConstraints
+		NONE
+		X
+		Y
+		Z
+		XY
+		XZ
+		YZ
 
 	class ActionController
-		func extern start_action(win: MultiView.Window*, m: vector, constraints: int)
+		func extern start_action(win: MultiView.Window*, m: vector, constraints: ActionConstraints)
 		func extern update_action()
 		func extern update_param(param: vector)
 		func extern end_action(set: bool)
@@ -40,25 +59,6 @@ class MultiView
 		var view_stage: int
 		var is_selected, m_delta, m_old, is_special: bool
 		var pos: vector
-		
-	enum
-		ACTION_SELECT
-		ACTION_MOVE
-		ACTION_ROTATE
-		ACTION_ROTATE_2D
-		ACTION_SCALE
-		ACTION_SCALE_2D
-		ACTION_MIRROR
-		ACTION_ONCE
-
-	enum
-		ACTION_CONSTRAINTS_NONE
-		ACTION_CONSTRAINTS_X
-		ACTION_CONSTRAINTS_Y
-		ACTION_CONSTRAINTS_Z
-		ACTION_CONSTRAINTS_XY
-		ACTION_CONSTRAINTS_XZ
-		ACTION_CONSTRAINTS_YZ
 
 		
 	#extern void on_mouse_move()
@@ -81,12 +81,12 @@ const TransparencyModeColorKeySmooth = 3
 const TransparencyModeFactor = 4
 
 # effects
-enum
-	FXKindScript,
-	FXKindLight,
-	FXKindFog,
-	FXKindSound,
-	FXKindForceField
+enum FxKind
+	Script,
+	Light,
+	Fog,
+	Sound,
+	ForceField
 
 class y
 	class Material
@@ -207,10 +207,10 @@ class Model extends Data
 
 
 	class Move
-		enum
-			TYPE_NONE
-			TYPE_VERTEX
-			TYPE_SKELETAL
+		enum Type
+			NONE
+			VERTEX
+			SKELETAL
 
 		class Frame
 			# skeleton animation
@@ -345,7 +345,7 @@ class Model extends Data
 #	extern void Easify(float factor)
 	func extern paste_geometry(g: Geometry, default_material: int)
 	
-	func extern add_animation(index: int, type: int)
+	func extern add_animation(index: int, type: Move.Type)
 	func extern duplicate_animation(source: int, target: int)
 	func extern delete_animation(index: int)
 	func extern animation_set_data(index: int, name: string, fps_const: float, fps_factor: float)
@@ -389,11 +389,11 @@ class Geometry
 	func extern static subtract(a: Geometry, b: Geometry, out _out: Geometry) -> int
 	func extern static and(a: Geometry, b: Geometry, out _out: Geometry) -> int
 
-	enum
-		END_OPEN
-		END_FLAT
-		END_ROUND
-		END_LOOP
+	enum EndMode
+		OPEN
+		FLAT
+		ROUND
+		LOOP
 
 	class Ball extends Geometry
 		func extern __init__(pos: vector, radius: float, num_x: int, num_y: int)
@@ -402,10 +402,10 @@ class Geometry
 		func extern __init__(pos: vector, dv1: vector, dv2: vector, dv3: vector, num_1: int, num_2: int, num_3: int)
 
 	class Cylinder extends Geometry
-		func extern __init__(pos1: vector, pos2: vector, radius: float, rings: int, edges: int, end_mode: int)
+		func extern __init__(pos1: vector, pos2: vector, radius: float, rings: int, edges: int, end_mode: EndMode)
 
 	class CylinderComplex extends Geometry
-		func extern __init__(pos: vector[], radius: float[], rings: int, edges: int, end_mode: int)
+		func extern __init__(pos: vector[], radius: float[], rings: int, edges: int, end_mode: EndMode)
 
 	class Sphere extends Geometry
 		func extern __init__(pos: vector, radius: float, num: int)
@@ -464,16 +464,16 @@ class Edward
 	var cur_mode: Mode*
 
 class shader
-	enum
-		TYPE_FLOAT
-		TYPE_INT
-		TYPE_VEC2
-		TYPE_VEC3
-		TYPE_COLOR
-		TYPE_LITERAL # ...
+	enum Type
+		FLOAT
+		INT
+		VEC2
+		VEC3
+		COLOR
+		LITERAL # ...
 
 	class BuilderContext
-		func extern create_temp(source: Node, port: int, type: int) -> string
+		func extern create_temp(source: Node, port: int, type: Type) -> string
 		func extern create_out(source: Node, port: int) -> string
 		func extern find_temp(source: Node, port: int, wanted_type: int) -> string
 		func extern build_value(n: Node, i: int, internal: string) -> string
@@ -490,12 +490,12 @@ class shader
 		var type: string
 	
 		class Parameter
-			var type: int
+			var type: Type
 			var name: string
 			var value: string
 			var options: string
 			func __init__()
-			func __init__(t: int, n: string, v: string, o: string)
+			func __init__(t: Type, n: string, v: string, o: string)
 				type = t
 				name = n
 				value = v
@@ -504,10 +504,10 @@ class shader
 
 
 		class Port
-			var type: int
+			var type: Type
 			var name: string
 			func __init__()
-			func __init__(t: int, n: string)
+			func __init__(t: Type, n: string)
 				type = t
 				name = n
 		var output: Port[]

@@ -3,7 +3,7 @@ use edward
 class NodeRoughness extends shader.Node
 	func __init__()
 		super.__init__("Roughness")
-		output.add([shader.TYPE_FLOAT, "roughness"])
+		output.add([shader.Type.FLOAT, "roughness"])
 	func override const dependencies() -> string[]
 		return ["in:material"]
 	func override const code_pixel(out c: shader.BuilderContext) -> string

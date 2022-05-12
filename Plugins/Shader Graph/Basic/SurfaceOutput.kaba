@@ -3,11 +3,11 @@ use edward
 class NodeSurfaceOutput extends shader.Node
 	func __init__()
 		super.__init__("SurfaceOutput")
-		params.add([shader.TYPE_COLOR, "albedo", "#ffffffff", ""])
-		params.add([shader.TYPE_FLOAT, "roughness", "0.3", "range=0:1"])
-		params.add([shader.TYPE_FLOAT, "metal", "0.1", "range=0:1"])
-		params.add([shader.TYPE_COLOR, "emission", "#000000ff", ""])
-		params.add([shader.TYPE_VEC3, "normal", "vec3(0,0,1)", ""])
+		params.add([shader.Type.COLOR, "albedo", "#ffffffff", ""])
+		params.add([shader.Type.FLOAT, "roughness", "0.3", "range=0:1"])
+		params.add([shader.Type.FLOAT, "metal", "0.1", "range=0:1"])
+		params.add([shader.Type.COLOR, "emission", "#000000ff", ""])
+		params.add([shader.Type.VEC3, "normal", "vec3(0,0,1)", ""])
 	func override const dependencies() -> string[]
 		return ["import:surface"]
 #		return ["basic_lighting", "in:light", "in:matrix", "in:material", "in:pos", "in:normal"]

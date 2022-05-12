@@ -3,11 +3,11 @@ use edward
 class NodeColorSplit extends shader.Node
 	func __init__()
 		super.__init__("ColorSplit")
-		params.add([shader.TYPE_COLOR, "color", "#ffffffff", ""])
-		output.add([shader.TYPE_FLOAT, "r"])
-		output.add([shader.TYPE_FLOAT, "g"])
-		output.add([shader.TYPE_FLOAT, "b"])
-		output.add([shader.TYPE_FLOAT, "a"])
+		params.add([shader.Type.COLOR, "color", "#ffffffff", ""])
+		output.add([shader.Type.FLOAT, "r"])
+		output.add([shader.Type.FLOAT, "g"])
+		output.add([shader.Type.FLOAT, "b"])
+		output.add([shader.Type.FLOAT, "a"])
 	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var tr = c.create_out(self, 0)
 		var tg = c.create_out(self, 1)

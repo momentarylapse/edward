@@ -3,8 +3,8 @@ use edward
 class NodeChannelGreen extends shader.Node
 	func __init__()
 		super.__init__("ChannelGreen")
-		params.add([shader.TYPE_COLOR, "color", "#ffffffff", ""])
-		output.add([shader.TYPE_FLOAT, "green"])
+		params.add([shader.Type.COLOR, "color", "#ffffffff", ""])
+		output.add([shader.Type.FLOAT, "green"])
 	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var a = c.value(self, 0)
 		var t = c.create_out(self, 0)

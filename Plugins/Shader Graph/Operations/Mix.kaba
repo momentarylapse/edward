@@ -3,13 +3,13 @@ use edward
 class NodeMix extends shader.Node
 	func __init__()
 		super.__init__("Mix")
-		params.add([shader.TYPE_COLOR, "a", "#ffffffff", ""])
-		params.add([shader.TYPE_COLOR, "b", "#ffffffff", ""])
-		params.add([shader.TYPE_FLOAT, "factor", "0.5", "range=0:1"])
-		output.add([shader.TYPE_COLOR, "out"])
+		params.add([shader.Type.COLOR, "a", "#ffffffff", ""])
+		params.add([shader.Type.COLOR, "b", "#ffffffff", ""])
+		params.add([shader.Type.FLOAT, "factor", "0.5", "range=0:1"])
+		output.add([shader.Type.COLOR, "out"])
 	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
-		var tt = c.create_temp(self, -1, shader.TYPE_FLOAT)
+		var tt = c.create_temp(self, -1, shader.Type.FLOAT)
 		return "
 	float {{tt}} = {{c.value(self, 2)}};
 	vec4 {{t}} = (1 - {{tt}}) * {{c.value(self, 0)}} + {{tt}} * {{c.value(self, 1)}};"

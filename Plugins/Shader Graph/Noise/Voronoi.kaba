@@ -3,20 +3,20 @@ use edward
 class NodeVoronoi extends shader.Node
 	func __init__()
 		super.__init__("Voronoi")
-		params.add([shader.TYPE_VEC3, "p", "vec3(0,0,0)", ""])
-		params.add([shader.TYPE_FLOAT, "scale", "4.0", "range=0.1:8"])
-		params.add([shader.TYPE_FLOAT, "randomness", "0.5", "range=0:1"])
-		params.add([shader.TYPE_FLOAT, "exponent", "2", "range=0:10"])
-		output.add([shader.TYPE_COLOR, "out"])
-		params.add([shader.TYPE_INT, "mode", "0", "choice=cell|edge"])
-		output.add([shader.TYPE_FLOAT, "distance"])
-		output.add([shader.TYPE_FLOAT, "edge"])
+		params.add([shader.Type.VEC3, "p", "vec3(0,0,0)", ""])
+		params.add([shader.Type.FLOAT, "scale", "4.0", "range=0.1:8"])
+		params.add([shader.Type.FLOAT, "randomness", "0.5", "range=0:1"])
+		params.add([shader.Type.FLOAT, "exponent", "2", "range=0:10"])
+		output.add([shader.Type.COLOR, "out"])
+		params.add([shader.Type.INT, "mode", "0", "choice=cell|edge"])
+		output.add([shader.Type.FLOAT, "distance"])
+		output.add([shader.Type.FLOAT, "edge"])
 	func override const dependencies() -> string[]
 		return ["rand3d"]
 	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var o = c.create_out(self, 0)
 		var o2 = c.create_out(self, 1)
-		var t = c.create_out(self, 2)#c.create_temp(self, -1, shader.TYPE_FLOAT)
+		var t = c.create_out(self, 2)#c.create_temp(self, -1, shader.Type.FLOAT)
 		return "
 	float {{o2}} = 10000;
 	float {{t}} = 10000;

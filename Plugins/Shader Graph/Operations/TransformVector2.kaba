@@ -3,12 +3,12 @@ use edward
 class NodeTransformVector2 extends shader.Node
 	func __init__()
 		super.__init__("TransformVector2")
-		params.add([shader.TYPE_VEC2, "in", "vec2(0,0)", ""])
-		params.add([shader.TYPE_FLOAT, "angle", "0.0", "range=0:6.283"])
-		params.add([shader.TYPE_FLOAT, "scale", "1.0", "range=-2:2"])
-		params.add([shader.TYPE_FLOAT, "dx", "0.0", "range=-2:2"])
-		params.add([shader.TYPE_FLOAT, "dy", "0.0", "range=-2:2"])
-		output.add([shader.TYPE_VEC2, "out"])
+		params.add([shader.Type.VEC2, "in", "vec2(0,0)", ""])
+		params.add([shader.Type.FLOAT, "angle", "0.0", "range=0:6.283"])
+		params.add([shader.Type.FLOAT, "scale", "1.0", "range=-2:2"])
+		params.add([shader.Type.FLOAT, "dx", "0.0", "range=-2:2"])
+		params.add([shader.Type.FLOAT, "dy", "0.0", "range=-2:2"])
+		output.add([shader.Type.VEC2, "out"])
 	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "

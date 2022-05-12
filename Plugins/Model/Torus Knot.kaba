@@ -50,7 +50,4 @@ class TorusDialog extends Dialog
 		destroy()
 
 func main()
-
-	var dlg = new TorusDialog(edward)	
-	dlg.run()
-	del dlg
+	hui.fly(new TorusDialog(edward))

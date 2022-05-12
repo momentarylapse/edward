@@ -102,7 +102,7 @@ func _import(filename: string)
 	
 	anim_index = 1
 	model.begin_action("import-animation")
-	model.add_animation(anim_index, Model.Move.TYPE_SKELETAL)
+	model.add_animation(anim_index, Model.Move.Type.SKELETAL)
 	model.animation_set_data(anim_index, "new", 5, 0)
 	
 	matrix mat = matrix.rotation(vector(0.30,0,-0.15))
@@ -133,6 +133,6 @@ func _import(filename: string)
 func main()
 	_import("/home/michi/Projekte/mocap/digest-smooth")
 	return
-	if not hui.file_dialog_open(edward, "", "", "*", "*")
-		return
-	_import(hui.filename)
+	#if not hui.file_dialog_open(edward, "", "", "*", "*")
+	#	return
+	#_import(hui.filename)

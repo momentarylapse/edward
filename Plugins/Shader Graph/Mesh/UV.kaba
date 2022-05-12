@@ -3,7 +3,7 @@ use edward
 class NodeUV extends shader.Node
 	func __init__()
 		super.__init__("UV")
-		output.add([shader.TYPE_VEC2, "uv"])
+		output.add([shader.Type.VEC2, "uv"])
 	func override const dependencies() -> string[]
 		return ["uv"]
 	func override const code_pixel(out c: shader.BuilderContext) -> string
