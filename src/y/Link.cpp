@@ -6,7 +6,7 @@
  */
 
 #include "Link.h"
-#include "Entity3D.h"
+#include "../y/Entity.h"
 #include "../lib/file/msg.h"
 #include "components/SolidBody.h"
 
@@ -20,7 +20,7 @@ btQuaternion bt_set_q(const quaternion &q);
 
 
 
-Link::Link(LinkType t, Entity3D *_a, Entity3D *_b) : Entity(Type::LINK) {
+Link::Link(LinkType t, Entity *_a, Entity *_b) : BaseClass(Type::LINK) {
 	link_type = t;
 	a = nullptr;
 	b = nullptr;
@@ -33,18 +33,18 @@ Link::Link(LinkType t, Entity3D *_a, Entity3D *_b) : Entity(Type::LINK) {
 
 
 void Link::_create_link_data(vector &pa, vector &pb, quaternion &iqa, quaternion &iqb, const vector &pos) {
-	iqa = a->get_owner<Entity3D>()->ang.bar();
+	iqa = a->owner->ang.bar();
 	iqb = quaternion::ID;
-	pa = iqa * (pos - a->get_owner<Entity3D>()->pos);
+	pa = iqa * (pos - a->owner->pos);
 	pb = pos;
 	if (b) {
-		iqb = b->get_owner<Entity3D>()->ang.bar();
-		pb = iqb * (pos - b->get_owner<Entity3D>()->pos);
+		iqb = b->owner->ang.bar();
+		pb = iqb * (pos - b->owner->pos);
 	}
 }
 
 
-LinkSocket::LinkSocket(Entity3D *_a, Entity3D *_b, const vector &pos) : Link(LinkType::SOCKET, _a, _b) {
+LinkSocket::LinkSocket(Entity *_a, Entity *_b, const vector &pos) : Link(LinkType::SOCKET, _a, _b) {
 	vector pa, pb;
 	quaternion iqa, iqb;
 	_create_link_data(pa, pb, iqa, iqb, pos);
@@ -65,7 +65,7 @@ LinkSocket::LinkSocket(Entity3D *_a, Entity3D *_b, const vector &pos) : Link(Lin
 #endif
 }
 
-LinkHinge::LinkHinge(Entity3D *_a, Entity3D *_b, const vector &pos, const quaternion &ang) : Link(LinkType::HINGE, _a, _b) {
+LinkHinge::LinkHinge(Entity *_a, Entity *_b, const vector &pos, const quaternion &ang) : Link(LinkType::HINGE, _a, _b) {
 	vector pa, pb;
 	quaternion iqa, iqb;
 	_create_link_data(pa, pb, iqa, iqb, pos);
@@ -91,7 +91,7 @@ LinkHinge::LinkHinge(Entity3D *_a, Entity3D *_b, const vector &pos, const quater
 #endif
 }
 
-LinkUniversal::LinkUniversal(Entity3D *_a, Entity3D *_b, const vector &pos, const quaternion &ang) : Link(LinkType::UNIVERSAL, _a, _b) {
+LinkUniversal::LinkUniversal(Entity *_a, Entity *_b, const vector &pos, const quaternion &ang) : Link(LinkType::UNIVERSAL, _a, _b) {
 	vector pa, pb;
 	quaternion iqa, iqb;
 	_create_link_data(pa, pb, iqa, iqb, pos);
@@ -107,7 +107,7 @@ LinkUniversal::LinkUniversal(Entity3D *_a, Entity3D *_b, const vector &pos, cons
 #endif
 }
 
-Link *Link::create(LinkType type, Entity3D *a, Entity3D *b, const vector &pos, const quaternion &ang) {
+Link *Link::create(LinkType type, Entity *a, Entity *b, const vector &pos, const quaternion &ang) {
 	msg_write(format("LINK   %d   %s  %s", (int)type, p2s(a), p2s(b)));
 	if (type == LinkType::SOCKET) {
 		return new LinkSocket(a, b, pos);

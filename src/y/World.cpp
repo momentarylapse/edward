@@ -9,16 +9,16 @@
 \*----------------------------------------------------------------------------*/
 
 #include <algorithm>
+#include "../lib/config.h"
 #include "../lib/file/file.h"
-//#include "../lib/vulkan/vulkan.h"
 #include "../lib/nix/nix.h"
 #include "../lib/kaba/kaba.h"
 #include "../y/EngineData.h"
 #include "../y/Component.h"
 #include "../y/ComponentManager.h"
+#include "../y/Entity.h"
 #include "../meta.h"
 #include "ModelManager.h"
-#include "Entity3D.h"
 #include "Link.h"
 #include "Material.h"
 #include "Model.h"
@@ -50,9 +50,6 @@
 #endif
 
 #include "Camera.h"
-
-
-//vulkan::DescriptorSet *rp_create_dset(const Array<vulkan::Texture*> &tex, vulkan::UniformBuffer *ubo);
 
 
 
@@ -173,9 +170,9 @@ void myTickCallback(btDynamicsWorld *world, btScalar timeStep) {
 			auto &pt = contactManifold->getContactPoint(j);
 			if (pt.getDistance() <= 0) {
 				if (a->active)
-					send_collision(a, {b, nullptr, nullptr, bt_get_v(pt.m_positionWorldOnB), bt_get_v(pt.m_normalWorldOnB)});
+					send_collision(a, {b->owner, b, bt_get_v(pt.m_positionWorldOnB), bt_get_v(pt.m_normalWorldOnB)});
 				if (b->active)
-					send_collision(b, {a, nullptr, nullptr, bt_get_v(pt.m_positionWorldOnA), -bt_get_v(pt.m_normalWorldOnB)});
+					send_collision(b, {a->owner, a, bt_get_v(pt.m_positionWorldOnA), -bt_get_v(pt.m_normalWorldOnB)});
 			}
 		}
 	}
@@ -183,8 +180,6 @@ void myTickCallback(btDynamicsWorld *world, btScalar timeStep) {
 #endif
 
 World::World() {
-//	ubo_light = nullptr;
-//	ubo_fog = nullptr;
 
 #ifdef _X_ALLOW_X_
 	particle_manager = new ParticleManager();
@@ -227,8 +222,7 @@ void World::reset() {
 		delete o;
 	entities.clear();
 
-	terrains.clear();
-	objects.clear();
+	_objects.clear();
 	num_reserved_objects = 0;
 	
 	for (auto &s: sorted_trans)
@@ -293,6 +287,16 @@ void World::load_soon(const Path &filename) {
 	next_filename = filename;
 }
 
+void add_components(Entity *ent, const Array<LevelData::ScriptData> &components) {
+	for (auto &cc: components) {
+		msg_write("add component " + cc.class_name);
+#ifdef _X_ALLOW_X_
+		auto type = PluginManager::find_class(cc.filename, cc.class_name);
+		auto comp = ent->add_component(type, cc.var);
+#endif
+	}
+}
+
 bool World::load(const LevelData &ld) {
 	net_msg_enabled = false;
 	bool ok = true;
@@ -307,22 +311,15 @@ bool World::load(const LevelData &ld) {
 
 #ifdef _X_ALLOW_X_
 	for (auto &l: ld.lights) {
-		auto o = new Entity3D(l.pos, quaternion::rotation(l.ang));
+		auto o = new Entity(l.pos, quaternion::rotation(l.ang));
 		auto *ll = new Light(l._color, l.radius, l.theta);
 		ll->light.harshness = l.harshness;
 		ll->enabled = l.enabled;
 		if (ll->light.radius < 0)
 			ll->allow_shadow = true;
 		o->_add_component_external_(ll);
-		lights.add(ll);
-
-		for (auto &cc: l.components) {
-			//msg_write("add component " + cc.class_name);
-	#ifdef _X_ALLOW_X_
-			auto type = PluginManager::find_class(cc.filename, cc.class_name);
-			auto comp = o->add_component(type, cc.var);
-	#endif
-		}
+		add_components(o, l.components);
+		register_entity(o);
 	}
 #endif
 
@@ -331,74 +328,64 @@ bool World::load(const LevelData &ld) {
 	for (int i=0; i<skybox.num; i++) {
 		skybox[i] = ModelManager::load(ld.skybox_filename[i]);
 		if (skybox[i])
-			skybox[i]->owner = new Entity3D(v_0, quaternion::rotation_v(ld.skybox_ang[i]));
+			skybox[i]->owner = new Entity(v_0, quaternion::rotation_v(ld.skybox_ang[i]));
 	}
 	background = ld.background_color;
 
 	for (auto &c: ld.cameras) {
 		auto cc = add_camera(c.pos, quaternion::rotation(c.ang), rect::ID);
-		cam = cc;
+		cam_main = cc;
 		cc->min_depth = c.min_depth;
 		cc->max_depth = c.max_depth;
 		cc->exposure = c.exposure;
 		cc->fov = c.fov;
 
-		for (auto &cc: c.components) {
-			//msg_write("add component " + cc.class_name);
-	#ifdef _X_ALLOW_X_
-			auto type = PluginManager::find_class(cc.filename, cc.class_name);
-			auto comp = cam->owner->add_component(type, cc.var);
-	#endif
-		}
+		add_components(cam_main->owner, c.components);
 	}
 	auto cameras = ComponentManager::get_listx<Camera>();
 	if (cameras->num == 0) {
 		msg_error("no camera defined... creating one");
-		cam = add_camera(v_0, quaternion::ID, rect::ID);
+		cam_main = add_camera(v_0, quaternion::ID, rect::ID);
 	}
 
 	// objects
 	ego = nullptr;
-	objects.clear(); // make sure the "missing" objects are NULL
-	objects.resize(ld.objects.num);
+	_objects.clear(); // make sure the "missing" objects are NULL
+	_objects.resize(ld.objects.num);
 	num_reserved_objects = ld.objects.num;
 	foreachi(auto &o, ld.objects, i)
 		if (!o.filename.is_empty()) {
-			try {
+			//try {
 				auto q = quaternion::rotation(o.ang);
-				auto *oo = create_object_no_reg_x(o.filename, o.name, o.pos, q, o.components);
+				auto *oo = create_object_no_reg_x(o.filename, o.name, o.pos, q);
+				add_components(oo, o.components);
 				request_next_object_index(i);
 				register_entity(oo);
 				if (ld.ego_index == i)
 					ego = oo;
 				if (i % 5 == 0)
 					DrawSplashScreen("Objects", (float)i / (float)ld.objects.num / 5 * 3);
-			} catch (...) {
+
+			/*} catch (...) {
 				ok = false;
-			}
+			}*/
 		}
 
 	// terrains
 	foreachi(auto &t, ld.terrains, i) {
 		DrawSplashScreen("Terrain...", 0.6f + (float)i / (float)ld.terrains.num * 0.4f);
 		auto tt = create_terrain_no_reg(t.filename, t.pos);
+		register_entity(tt->owner);
 
-		for (auto &cc: t.components) {
-			//msg_write("add component " + cc.class_name);
-	#ifdef _X_ALLOW_X_
-			auto type = PluginManager::find_class(cc.filename, cc.class_name);
-			auto comp = tt->owner->add_component(type, cc.var);
-	#endif
-		}
-		register_entity(tt->get_owner<Entity3D>());
+		add_components(tt->owner, t.components);
 		ok &= !tt->error;
 	}
 
 	for (auto &l: ld.links) {
-		Entity3D *b = nullptr;
+		Entity *b = nullptr;
 		if (l.object[1] >= 0)
-			b = objects[l.object[1]];
-		add_link(Link::create(l.type, objects[l.object[0]], b, l.pos, quaternion::rotation(l.ang)));
+			b = _objects[l.object[1]];
+		add_link(Link::create(l.type, _objects[l.object[0]], b, l.pos, quaternion::rotation(l.ang)));
 	}
 
 	scripts = ld.scripts;
@@ -421,7 +408,6 @@ Terrain *World::create_terrain_no_reg(const Path &filename, const vector &pos) {
 
 	auto t = (Terrain*)o->add_component(Terrain::_class, "");
 	t->load(filename);
-	terrains.add(t);
 
 	auto col = (TerrainCollider*)o->add_component(TerrainCollider::_class, "");
 
@@ -435,7 +421,7 @@ Terrain *World::create_terrain_no_reg(const Path &filename, const vector &pos) {
 
 Terrain *World::create_terrain(const Path &filename, const vector &pos) {
 	auto t = create_terrain_no_reg(filename, pos);
-	register_entity(t->get_owner<Entity3D>());
+	register_entity(t->owner);
 	return t;
 }
 
@@ -446,13 +432,18 @@ bool GodLoadWorld(const Path &filename) {
 	return ok;
 }
 
-Entity3D *World::create_entity(const vector &pos, const quaternion &ang) {
-	return new Entity3D(pos, ang);
+Entity *World::create_entity(const vector &pos, const quaternion &ang) {
+	return new Entity(pos, ang);
 }
 
-void World::register_entity(Entity3D *e) {
+void World::register_entity(Entity *e) {
 	if (auto m = e->get_component<Model>())
 		register_object(e);
+
+#ifdef _X_ALLOW_X_
+	if (auto l = e->get_component<Light>())
+		lights.add(l);
+#endif
 
 	entities.add(e);
 	e->on_init_rec();
@@ -470,17 +461,17 @@ void World::register_entity(Entity3D *e) {
 	notify("entity-add");
 }
 
-Entity3D *World::create_object(const Path &filename, const vector &pos, const quaternion &ang) {
-	auto o = create_object_no_reg_x(filename, "", pos, ang, {});
+Entity *World::create_object(const Path &filename, const vector &pos, const quaternion &ang) {
+	auto o = create_object_no_reg_x(filename, "", pos, ang);
 	register_entity(o);
 	return o;
 }
 
-Entity3D *World::create_object_no_reg(const Path &filename, const vector &pos, const quaternion &ang) {
-	return create_object_no_reg_x(filename, "", pos, ang, {});
+Entity *World::create_object_no_reg(const Path &filename, const vector &pos, const quaternion &ang) {
+	return create_object_no_reg_x(filename, "", pos, ang);
 }
 
-Entity3D *World::create_object_no_reg_x(const Path &filename, const string &name, const vector &pos, const quaternion &ang, const Array<LevelData::ScriptData> &components) {
+Entity *World::create_object_no_reg_x(const Path &filename, const string &name, const vector &pos, const quaternion &ang) {
 	if (engine.resetting_game)
 		throw Exception("create_object during game reset");
 
@@ -508,15 +499,6 @@ Entity3D *World::create_object_no_reg_x(const Path &filename, const string &name
 
 	if (m->_template->animator)
 		o->add_component(Animator::_class, "");
-
-	// user components
-	for (auto &cc: components) {
-		//msg_write("add component " + cc.class_name);
-#ifdef _X_ALLOW_X_
-		auto type = PluginManager::find_class(cc.filename, cc.class_name);
-		auto comp = o->add_component(type, cc.var);
-#endif
-	}
 
 	return o;
 }
@@ -561,27 +543,27 @@ void World::request_next_object_index(int i) {
 	next_object_index = i;
 }
 
-void World::register_object(Entity3D *o) {
+void World::register_object(Entity *o) {
 	int on = next_object_index;
 	next_object_index = -1;
 	if (on < 0) {
 		// ..... better use a list of "empty" objects???
-		for (int i=num_reserved_objects; i<objects.num; i++)
-			if (!objects[i])
+		for (int i=num_reserved_objects; i<_objects.num; i++)
+			if (!_objects[i])
 				on = i;
 	} else {
-		if (on >= objects.num)
-			objects.resize(on+1);
-		if (objects[on]) {
+		if (on >= _objects.num)
+			_objects.resize(on+1);
+		if (_objects[on]) {
 			msg_error("register_object:  object index already in use " + i2s(on));
 			return;
 		}
 	}
 	if (on < 0) {
-		on = objects.num;
-		objects.add(nullptr);
+		on = _objects.num;
+		_objects.add(nullptr);
 	}
-	objects[on] = o;
+	_objects[on] = o;
 
 	o->object_id = on;
 
@@ -589,7 +571,7 @@ void World::register_object(Entity3D *o) {
 }
 
 
-void World::set_active_physics(Entity3D *o, bool active, bool passive) { //, bool test_collisions) {
+void World::set_active_physics(Entity *o, bool active, bool passive) { //, bool test_collisions) {
 	auto sb = o->get_component<SolidBody>();
 	auto c = o->get_component<Collider>();
 
@@ -621,7 +603,7 @@ void World::set_active_physics(Entity3D *o, bool active, bool passive) { //, boo
 }
 
 // un-object a model
-void World::unregister_object(Entity3D *m) {
+void World::unregister_object(Entity *m) {
 	if (m->object_id < 0)
 		return;
 
@@ -632,16 +614,8 @@ void World::unregister_object(Entity3D *m) {
 	AddNetMsg(NET_MSG_DELETE_OBJECT, m->object_id, "");
 
 	// remove from list
-	objects[m->object_id] = nullptr;
+	_objects[m->object_id] = nullptr;
 	m->object_id = -1;
-}
-
-void World::_delete(Entity* x) {
-	if (unregister(x)) {
-		msg_error("DEL");
-		x->on_delete_rec();
-		delete x;
-	}
 }
 
 void World::subscribe(const string &msg, const Callback &f) {
@@ -655,39 +629,31 @@ void World::notify(const string &msg) {
 		}
 }
 
-void World::unregister_entity(Entity3D *e) {
-	msg_write("U1");
+void World::unregister_entity(Entity *e) {
 	if (e->object_id >= 0)
 		unregister_object(e);
-	msg_write("U2");
 
 #if HAS_LIB_BULLET
 	if (auto sb = e->get_component<SolidBody>())
 		dynamicsWorld->removeRigidBody(sb->body);
 #endif
-	msg_write("U3");
 
 	if (auto m = e->get_component<Model>())
 		unregister_model(m);
-	msg_write("U4");
 
 	foreachi(auto *o, entities, i)
 		if (o == e) {
-			msg_write("UX1");
 			msg_data.e = o;
 			notify("entity-delete");
-			msg_write("UX2");
 			entities.erase(i);
-			msg_write("UX3");
 			return;
 		}
-	msg_write("U5");
 }
 
-bool World::unregister(Entity* x) {
+bool World::unregister(BaseClass* x) {
 	//msg_error("World.unregister  " + i2s((int)x->type));
-	if (x->type == Entity::Type::ENTITY3D) {
-		auto e = (Entity3D*)x;
+	if (x->type == BaseClass::Type::ENTITY) {
+		auto e = (Entity*)x;
 		unregister_entity(e);
 /*	} else if (x->type == Entity::Type::LIGHT) {
 #ifdef _X_ALLOW_X_
@@ -698,14 +664,14 @@ bool World::unregister(Entity* x) {
 				return true;
 			}
 #endif*/
-	} else if (x->type == Entity::Type::LINK) {
+	} else if (x->type == BaseClass::Type::LINK) {
 		foreachi(auto *l, links, i)
 			if (l == x) {
 				//msg_write(" -> LINK");
 				links.erase(i);
 				return true;
 			}
-	} else if (x->type == Entity::Type::SOUND) {
+	} else if (x->type == BaseClass::Type::SOUND) {
 #ifdef _X_ALLOW_X_
 		foreachi(auto *s, sounds, i)
 			if (s == x) {
@@ -714,7 +680,7 @@ bool World::unregister(Entity* x) {
 				return true;
 			}
 #endif
-	} else if (x->type == Entity::Type::PARTICLE or x->type == Entity::Type::BEAM) {
+	} else if (x->type == BaseClass::Type::PARTICLE or x->type == BaseClass::Type::BEAM) {
 #ifdef _X_ALLOW_X_
 		if (particle_manager->unregister((Particle*)x))
 			return true;
@@ -745,8 +711,6 @@ void World::register_model(Model *m) {
 		PartialModel p;
 		p.model = m;
 		p.material = mat;
-//		p.ubo = new vulkan::UniformBuffer(64*3);
-//		p.dset = rp_create_dset(mat->textures, p.ubo);
 		p.mat_index = i;
 		p.transparent = trans;
 		p.shadow = false;
@@ -765,11 +729,11 @@ void World::register_model(Model *m) {
 	m->registered = true;
 	
 	// sub models
-	msg_write("R sk");
-	msg_write(p2s(m->owner));
+	//msg_write("R sk");
+	//msg_write(p2s(m->owner));
 	if (m->owner)
 	if (auto sk = m->owner->get_component<Skeleton>()) {
-		msg_write("....sk");
+		//msg_write("....sk");
 		for (auto &b: sk->bones)
 			if (auto *mm = b.get_component<Model>())
 				register_model(mm);
@@ -791,7 +755,7 @@ void World::unregister_model(Model *m) {
 		}
 	foreachib (auto &s, sorted_opaque, i)
 		if (s.model == m) {
-			msg_write("R");
+			//msg_write("R");
 			s.clear();
 			sorted_opaque.erase(i);
 		}
@@ -882,7 +846,7 @@ void World::iterate(float dt) {
 			delete s;
 		}
 	}
-	audio::set_listener(cam->get_owner<Entity3D>()->pos, cam->get_owner<Entity3D>()->ang, v_0, 100000);
+	audio::set_listener(cam_main->owner->pos, cam_main->owner->ang, v_0, 100000);
 #endif
 
 	PerformanceMonitor::end(ch_iterate);
@@ -891,40 +855,37 @@ void World::iterate(float dt) {
 
 Light *World::add_light_parallel(const quaternion &ang, const color &c) {
 #ifdef _X_ALLOW_X_
-	auto o = new Entity3D(v_0, ang);
-	entities.add(o);
+	auto o = create_entity(v_0, ang);
 
 	auto l = new Light(c, -1, -1);
 	o->_add_component_external_(l);
-	lights.add(l);
+	register_entity(o);
 	return l;
 #else
 	return nullptr;
 #endif
 }
 
-Light *World::add_light_point(const vector &p, const color &c, float r) {
+Light *World::add_light_point(const vector &pos, const color &c, float r) {
 #ifdef _X_ALLOW_X_
-	auto o = new Entity3D(p, quaternion::ID);
-	entities.add(o);
+	auto o = create_entity(pos, quaternion::ID);
 
 	auto l = new Light(c, r, -1);
 	o->_add_component_external_(l);
-	lights.add(l);
+	register_entity(o);
 	return l;
 #else
 	return nullptr;
 #endif
 }
 
-Light *World::add_light_cone(const vector &p, const quaternion &ang, const color &c, float r, float t) {
+Light *World::add_light_cone(const vector &pos, const quaternion &ang, const color &c, float r, float t) {
 #ifdef _X_ALLOW_X_
-	auto o = new Entity3D(p, ang);
-	entities.add(o);
+	auto o = create_entity(pos, ang);
 
 	auto l = new Light(c, r, t);
 	o->_add_component_external_(l);
-	lights.add(l);
+	register_entity(o);
 	return l;
 #else
 	return nullptr;
@@ -964,7 +925,7 @@ vector World::get_g(const vector &pos) const {
 	return gravity;
 }
 
-bool World::trace(const vector &p1, const vector &p2, CollisionData &d, bool simple_test, Entity3D *o_ignore) {
+bool World::trace(const vector &p1, const vector &p2, CollisionData &d, bool simple_test, Entity *o_ignore) {
 #if HAS_LIB_BULLET
 	btCollisionWorld::ClosestRayResultCallback ray_callback(bt_set_v(p1), bt_set_v(p2));
 	//ray_callback.m_collisionFilterMask = FILTER_CAMERA;
@@ -973,14 +934,15 @@ bool World::trace(const vector &p1, const vector &p2, CollisionData &d, bool sim
 	this->dynamicsWorld->getCollisionWorld()->rayTest(bt_set_v(p1), bt_set_v(p2), ray_callback);
 	if (ray_callback.hasHit()) {
 		auto sb = static_cast<SolidBody*>(ray_callback.m_collisionObject->getUserPointer());
-		d.p = bt_get_v(ray_callback.m_hitPointWorld);
+		d.pos = bt_get_v(ray_callback.m_hitPointWorld);
 		d.n = bt_get_v(ray_callback.m_hitNormalWorld);
-		d.sb = sb;
+		d.entity = sb->owner;
+		d.body = sb;
 
 		// ignore...
-		if (d.sb and d.sb->get_owner<Entity3D>() == o_ignore) {
+		if (sb and sb->owner == o_ignore) {
 			vector dir = (p2 - p1).normalized();
-			return trace(d.p + dir * 2, p2, d, simple_test, o_ignore);
+			return trace(d.pos + dir * 2, p2, d, simple_test, o_ignore);
 		}
 		return true;
 	}

@@ -37,7 +37,7 @@ void Skeleton::on_init() {
 
 	// skeleton
 	for (int i=0; i<bones.num; i++) {
-		bones[i].parent = get_owner<Entity3D>();
+		bones[i].parent = owner;
 		pos0[i] = _calc_bone_rest_pos(i);
 		bones[i].pos = pos0[i];
 		bones[i].ang = quaternion::ID;

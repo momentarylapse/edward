@@ -9,9 +9,9 @@
 #include "Collider.h"
 #include "../World.h"
 #include "../Object.h"
-#include "../Entity3D.h"
 #include "../Model.h"
 #include "../ModelManager.h"
+#include "../../y/Entity.h"
 #include "../../y/EngineData.h"
 #include "../../lib/math/quaternion.h"
 #include "../../lib/file/msg.h"
@@ -97,7 +97,7 @@ void SolidBody::copy_data(SolidBody *source) {
 
 
 void SolidBody::on_init() {
-	auto o = get_owner<Entity3D>();
+	auto o = owner;
 	auto m = owner->get_component<Model>();
 
 	// import
@@ -229,8 +229,7 @@ void SolidBody::do_simple_physics(float dt) {
 	if (dt <= 0)
 		return;
 
-	auto o = get_owner<Entity3D>();
-	auto m = owner->get_component<Model>();
+	auto o = owner;
 
 
 	if (active) {
@@ -279,9 +278,12 @@ void SolidBody::do_simple_physics(float dt) {
 	}
 
 	// new orientation
-	m->update_matrix();
+	auto m = owner->get_component<Model>();
+	if (m) {
+		m->update_matrix();
 
-	m->_ResetPhysAbsolute_();
+		m->_ResetPhysAbsolute_();
+	}
 
 	// reset forces
 	force_int = torque_int = v_0;
@@ -316,7 +318,7 @@ void SolidBody::do_simple_physics(float dt) {
 
 // rotate inertia tensor into world coordinates
 void SolidBody::get_theta_world(matrix3 &theta_world, matrix3 &theta_world_inv) {
-	auto r = matrix3::rotation_q(get_owner<Entity3D>()->ang);
+	auto r = matrix3::rotation_q(owner->ang);
 	auto r_inv = r.transpose();
 	theta_world = (r * theta_0 * r_inv);
 
@@ -341,15 +343,18 @@ void SolidBody::update_data() {
 }
 
 
-void SolidBody::update_motion() {
+void SolidBody::update_motion(int mask) {
 #if HAS_LIB_BULLET
+	auto o = owner;
 	btTransform trans;
-	body->setLinearVelocity(bt_set_v(vel));
-	body->setAngularVelocity(bt_set_v(rot));
-	auto o = get_owner<Entity3D>();
-	trans.setRotation(bt_set_q(o->ang));
-	trans.setOrigin(bt_set_v(o->pos));
-	body->getMotionState()->setWorldTransform(trans);
+	if (mask & 1)
+		body->getWorldTransform().setOrigin(bt_set_v(o->pos));
+	if (mask & 2)
+		body->getWorldTransform().setRotation(bt_set_q(o->ang));
+	if (mask & 4)
+		body->setLinearVelocity(bt_set_v(vel));
+	if (mask & 8)
+		body->setAngularVelocity(bt_set_v(rot));
 #endif
 }
 
@@ -374,8 +379,8 @@ void SolidBody::get_state_from_bullet() {
 	if (active) {
 		btTransform trans;
 		body->getMotionState()->getWorldTransform(trans);
-		get_owner<Entity3D>()->pos = bt_get_v(trans.getOrigin());
-		get_owner<Entity3D>()->ang = bt_get_q(trans.getRotation());
+		owner->pos = bt_get_v(trans.getOrigin());
+		owner->ang = bt_get_q(trans.getRotation());
 		vel = bt_get_v(body->getLinearVelocity());
 		rot = bt_get_v(body->getAngularVelocity());
 	} else {

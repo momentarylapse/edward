@@ -1,46 +1,29 @@
 /*
  * Entity.h
  *
- *  Created on: 16.08.2020
+ *  Created on: Jul 15, 2021
  *      Author: michi
  */
 
 #pragma once
 
-#include "../lib/base/base.h"
+#include "../lib/math/vector.h"
+#include "../lib/math/quaternion.h"
+#include "BaseClass.h"
 
+class matrix;
 class Component;
 
-namespace kaba {
-	class Class;
-}
 
-
-class Entity : public VirtualBase {
+class Entity : public BaseClass {
 public:
-	enum class Type {
-		NONE,
-		ENTITY3D,
-		CONTROLLER,
-		LINK,
-		SOUND,
-		PARTICLE,
-		BEAM,
-		UI_NODE,
-		UI_TEXT,
-		UI_PICTURE,
-		UI_MODEL,
-	};
+	Entity();
+	Entity(const vector &pos, const quaternion &ang);
+	~Entity();
 
-	Entity(Type t);
-	virtual ~Entity();
-	virtual void _cdecl on_iterate(float dt){}
-	virtual void _cdecl on_init(){}
-	virtual void _cdecl on_delete(){}
 	void on_init_rec();
 	void on_delete_rec();
 
-	Type type;
 	Array<Component*> components;
 	Component *_get_component_untyped_(const kaba::Class *type) const;
 	Component *add_component(const kaba::Class *type, const string &var);
@@ -52,14 +35,15 @@ public:
 	}
 
 	void _add_component_external_(Component *c);
-};
 
 
-class EntityManager {
-public:
-	static void reset();
-	static void delete_later(Entity *p);
-	static void delete_selection();
-private:
-	static Array<Entity*> selection;
+	vector pos;
+	quaternion ang;
+	matrix get_local_matrix() const;
+	matrix get_matrix() const;
+
+	int object_id;
+	Entity *parent;
+	Entity *_cdecl root() const;
 };
+

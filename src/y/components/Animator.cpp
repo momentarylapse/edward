@@ -314,5 +314,5 @@ vector Animator::get_vertex(int index) {
 	auto sk = owner->get_component<Skeleton>();
 	auto s = m->mesh[MESH_HIGH];
 	int b = s->bone_index[index].i;
-	return m->get_owner<Entity3D>()->get_matrix() * dmatrix[b] * s->vertex[index] - sk->pos0[b];
+	return m->owner->get_matrix() * dmatrix[b] * s->vertex[index] - sk->pos0[b];
 }

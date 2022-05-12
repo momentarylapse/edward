@@ -11,10 +11,10 @@
 #include "../lib/base/base.h"
 #include "../lib/file/path.h"
 #include "../lib/math/vector.h"
-#include "../y/Entity.h"
 #include "../y/Component.h"
 #include "Material.h"
 #include "../graphics-fwd.h"
+#include "../y/BaseClass.h"
 class Material;
 class CollisionData;
 //class DescriptorSet;
@@ -28,6 +28,11 @@ enum class TerrainType {
 #define TerrainUpdateVertices	2
 #define TerrainUpdatePlanes		4
 #define TerrainUpdateAll		7
+
+#define TERRAIN_MAX_SIZE	65536
+#define TERRAIN_LOG_CHUNK_SIZE	6
+#define TERRAIN_CHUNK_SIZE	(1 << TERRAIN_LOG_CHUNK_SIZE)
+#define TERRAIN_MAX_CHUNKS (TERRAIN_MAX_SIZE / TERRAIN_CHUNK_SIZE)
 
 
 // a list of triangles for collision detection
@@ -75,7 +80,8 @@ public:
 	Array<vector> vertex, normal;
 	Array<plane> pl; // for collision detection
 	VertexBuffer *vertex_buffer;
-	int partition[128][128], partition_old[128][128];
+	int chunk_lod[TERRAIN_MAX_CHUNKS][TERRAIN_MAX_CHUNKS];
+	int chunk_lod_old[TERRAIN_MAX_CHUNKS][TERRAIN_MAX_CHUNKS];
 	vector pattern, min, max;
 	Material *material;
 	Path material_file;

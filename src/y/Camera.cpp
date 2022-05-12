@@ -9,13 +9,12 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Camera.h"
-#include "Entity3D.h"
 #include "World.h"
 #include "../y/Entity.h"
 #include "../y/ComponentManager.h"
+#include "../y/EngineData.h"
 #include "../lib/math/vector.h"
 #include "../lib/math/matrix.h"
-#include "../y/EngineData.h"
 
 
 const kaba::Class *Camera::_class = nullptr;
@@ -30,8 +29,7 @@ const kaba::Class *Camera::_class = nullptr;
 
 
 
-Camera *cam = nullptr; // "camera"
-Camera *cur_cam = nullptr; // currently rendering
+Camera *cam_main = nullptr; // "camera"
 
 Camera *add_camera(const vector &pos, const quaternion &ang, const rect &dest) {
 	auto o = world.create_entity(pos, ang);
@@ -48,8 +46,7 @@ void CameraInit() {
 }
 
 void CameraReset() {
-	cam = nullptr;
-	cur_cam = cam;
+	cam_main = nullptr;
 }
 
 Camera::Camera(const rect &_dest) {
@@ -111,7 +108,7 @@ matrix Camera::projection_matrix(float aspect_ratio) const {
 }
 
 matrix Camera::view_matrix() const {
-	auto o = get_owner<Entity3D>();
+	auto o = owner;
 	return matrix::rotation_q(o->ang).transpose() * matrix::translation(-o->pos);
 }
 
@@ -144,6 +141,6 @@ vector Camera::unproject(const vector &v) {
 void CameraShiftAll(const vector &dpos) {
 	auto cameras = ComponentManager::get_listx<Camera>();
 	for (auto c: *cameras)
-		c->get_owner<Entity3D>()->pos += dpos;
+		c->owner->pos += dpos;
 }
 

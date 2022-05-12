@@ -24,7 +24,6 @@
 #pragma once
 
 
-//#include "Entity3D.h"
 #include "../graphics-fwd.h"
 #include "../y/Component.h"
 #include "../lib/base/base.h"
@@ -45,9 +44,6 @@ class ModelTemplate;
 class MeshCollider;
 class SolidBody;
 class Animator;
-namespace kaba {
-	class Module;
-}
 
 
 
@@ -142,6 +138,7 @@ public:
 
 	// material (own)
 	Array<Material*> material;
+	Array<int> num_uvs;
 
 	// properties
 	struct Properties {

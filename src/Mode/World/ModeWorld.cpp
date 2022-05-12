@@ -258,7 +258,7 @@ float WorldTerrain::hover_distance(MultiView::Window *win, const vec2 &mv, vecto
 	vector b = win->unproject(vector(mv.x,mv.y,0), win->cam->pos + win->get_direction() * r);
 	CollisionData td;
 	bool hit = t->trace(a - pos, b - pos, v_0, r, td, false);
-	tp = td.p + pos;
+	tp = td.pos + pos;
 	z = win->project(tp).z;
 	return hit ? 0 : -1;
 }

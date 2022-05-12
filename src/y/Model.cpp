@@ -23,9 +23,9 @@
 
 #include "Model.h"
 #include "ModelManager.h"
-#include "Entity3D.h"
 #include "Material.h"
 #include "World.h"
+#include "../y/Entity.h"
 #include "../lib/math/complex.h"
 #include "../meta.h"
 #include "../graphics-impl.h"
@@ -549,7 +549,7 @@ Path Model::filename() {
 
 void Model::update_matrix() {
 	if (owner)
-		_matrix = get_owner<Entity3D>()->get_matrix();
+		_matrix = owner->get_matrix();
 }
 
 #if 0

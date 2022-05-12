@@ -8,7 +8,7 @@
 #pragma once
 
 #include "../../y/Component.h"
-#include "../Entity3D.h"
+#include "../../y/Entity.h"
 
 class Model;
 class Path;
@@ -22,7 +22,7 @@ public:
 	void on_init() override;
 	void on_delete() override;
 
-	Array<Entity3D> bones; // pos relative to parent entity (skeleton)
+	Array<Entity> bones; // pos relative to parent entity (skeleton)
 	Array<int> parents;
 	Array<vector> pos0; // relative to parent entity (skeleton)
 	Array<vector> dpos; // relative to parent bone

@@ -1,22 +1,24 @@
 /*
  * Entity.cpp
  *
- *  Created on: 16.08.2020
+ *  Created on: Jul 15, 2021
  *      Author: michi
  */
 
 #include "Entity.h"
 #include "Component.h"
 #include "ComponentManager.h"
+#include "../lib/math/matrix.h"
 #include "../lib/kaba/syntax/Class.h"
 
 
-Array<Entity*> EntityManager::selection;
+Entity::Entity() : Entity(vector::ZERO, quaternion::ID) {}
 
-
-
-Entity::Entity(Type t) {
-	type = t;
+Entity::Entity(const vector &_pos, const quaternion &_ang) : BaseClass(BaseClass::Type::ENTITY) {
+	pos = _pos;
+	ang = _ang;
+	parent = nullptr;
+	object_id = -1;
 }
 
 // hmm, no, let's not do too much here...
@@ -31,13 +33,16 @@ Entity::~Entity() {
 		//msg_write("auto unreg...");
 		world.unregister(this);
 	}
-	//msg_write("/~Entity " + i2s((int)type));*/
+	msg_write("/~Entity " + i2s((int)type));*/
 }
 
 void Entity::on_init_rec() {
+	//msg_write("init rec");
 	on_init();
-	for (auto c: components)
+	for (auto c: components) {
+		//msg_write(" -> " + c->component_type->name);
 		c->on_init();
+	}
 }
 
 void Entity::on_delete_rec() {
@@ -50,7 +55,9 @@ void Entity::on_delete_rec() {
 // TODO (later) optimize...
 Component *Entity::add_component(const kaba::Class *type, const string &var) {
 	auto c = add_component_no_init(type, var);
+
 //	c->on_init();
+	// don't init now, wait until the on_init_rec() later (via World.register_entity())!
 	return c;
 }
 
@@ -69,26 +76,32 @@ void Entity::_add_component_external_(Component *c) {
 }
 
 Component *Entity::_get_component_untyped_(const kaba::Class *type) const {
-	for (auto *c: components)
+	//msg_write("get " + type->name);
+	for (auto *c: components) {
+		//msg_write(p2s(c->component_type));
+		//msg_write("... " + c->component_type->name);
 		if (c->component_type->is_derived_from(type))
 			return c;
+	}
 	return nullptr;
 }
 
 
+matrix Entity::get_local_matrix() const {
+	return matrix::translation(pos) * matrix::rotation(ang);
+}
 
-void EntityManager::reset() {
-	selection.clear();
+matrix Entity::get_matrix() const {
+	if (parent)
+		return parent->get_matrix() * get_local_matrix();
+	return get_local_matrix();
 }
 
 
-void EntityManager::delete_later(Entity *p) {
-	selection.add(p);
-}
-
-void EntityManager::delete_selection() {
-	for (auto *p: selection)
-		delete p;
-	selection.clear();
+Entity *Entity::root() const {
+	Entity *next = const_cast<Entity*>(this);
+	while (next->parent)
+		next = next->parent;
+	return next;
 }
 

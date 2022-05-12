@@ -7,14 +7,14 @@
 
 #pragma once
 
-#include "../y/Entity.h"
+#include "../y/BaseClass.h"
 
 class vector;
 class quaternion;
 
 class btTypedConstraint;
 
-class Entity3D;
+class Entity;
 class SolidBody;
 
 
@@ -27,9 +27,9 @@ enum class LinkType {
 	SLIDER
 };
 
-class Link : public Entity {
+class Link : public BaseClass {
 public:
-	Link(LinkType type, Entity3D *a, Entity3D *b);
+	Link(LinkType type, Entity *a, Entity *b);
 	~Link();
 
 	void set_motor(float v, float max);
@@ -42,25 +42,25 @@ public:
 
 	void _create_link_data(vector &pa, vector &pb, quaternion &iqa, quaternion &iqb, const vector &pos);
 
-	static Link* create(LinkType type, Entity3D *a, Entity3D *b, const vector &pos, const quaternion &ang);
+	static Link* create(LinkType type, Entity *a, Entity *b, const vector &pos, const quaternion &ang);
 };
 
 class LinkSocket : public Link {
 public:
-	LinkSocket(Entity3D *a, Entity3D *b, const vector &pos);
-	void __init__(Entity3D *a, Entity3D *b, const vector &pos);
+	LinkSocket(Entity *a, Entity *b, const vector &pos);
+	void __init__(Entity *a, Entity *b, const vector &pos);
 };
 
 class LinkHinge : public Link {
 public:
-	LinkHinge(Entity3D *a, Entity3D *b, const vector &pos, const quaternion &ang);
-	void __init__(Entity3D *a, Entity3D *b, const vector &pos, const quaternion &ang);
+	LinkHinge(Entity *a, Entity *b, const vector &pos, const quaternion &ang);
+	void __init__(Entity *a, Entity *b, const vector &pos, const quaternion &ang);
 };
 
 class LinkUniversal : public Link {
 public:
-	LinkUniversal(Entity3D *a, Entity3D *b, const vector &pos, const quaternion &ang);
-	void __init__(Entity3D *a, Entity3D *b, const vector &pos, const quaternion &ang);
+	LinkUniversal(Entity *a, Entity *b, const vector &pos, const quaternion &ang);
+	void __init__(Entity *a, Entity *b, const vector &pos, const quaternion &ang);
 };
 
 

@@ -7,11 +7,11 @@
 
 #include "ModelManager.h"
 #include "Model.h"
-#include "Entity3D.h"
 #include "components/Collider.h"
 #include "components/Animator.h"
 #include "components/SolidBody.h"
 #include "components/Skeleton.h"
+#include "../y/Entity.h"
 #include "../y/EngineData.h"
 #include "../lib/math/complex.h"
 #include "../lib/kaba/kaba.h"
@@ -245,12 +245,12 @@ public:
 			f->read_bool();
 		}
 		int nt = f->read_int();
+		parent->num_uvs.add(nt);
 		if (nt > me->textures.num)
 			me->textures.resize(nt);
 		for (int t=0;t<nt;t++) {
 			Path fn = f->read_str();
-			if (!fn.is_empty())
-				me->textures[t] = ResourceManager::load_texture(fn);
+			me->textures[t] = ResourceManager::load_texture(fn);
 		}
 	}
 	void write(File *f) override {}
@@ -296,17 +296,18 @@ public:
 		me->sub.resize(parent->material.num);
 		for (int m=0;m<parent->material.num;m++) {
 			auto *sub = &me->sub[m];
+			int num_uvs = parent->num_uvs[m];
 			// triangles
 			sub->num_triangles = f->read_int();
 			sub->triangle_index.resize(sub->num_triangles * 3);
-			sub->skin_vertex.resize(parent->material[m]->textures.num * sub->num_triangles * 6);
+			sub->skin_vertex.resize(num_uvs * sub->num_triangles * 6);
 			sub->normal.resize(sub->num_triangles * 3);
 			// vertices
 			for (int i=0;i<sub->num_triangles * 3;i++)
 				sub->triangle_index[i] = f->read_int();
 			// skin vertices
 			//msg_write(format("%d  %d", parent->material[m]->textures.num, sub->num_triangles));
-			for (int i=0;i<parent->material[m]->textures.num * sub->num_triangles * 3;i++){
+			for (int i=0;i<num_uvs * sub->num_triangles * 3;i++){
 				int sv = f->read_int();
 				sub->skin_vertex[i * 2    ] = skin_vert[sv].x;
 				sub->skin_vertex[i * 2 + 1] = skin_vert[sv].y;

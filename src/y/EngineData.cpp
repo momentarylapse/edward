@@ -7,6 +7,7 @@
 
 
 #include "EngineData.h"
+#include "../lib/config.h"
 #include "../lib/nix/nix.h"
 //#include "../lib/vulkan/vulkan.h"
 #include "../lib/kaba/kaba.h"
@@ -44,7 +45,7 @@ EngineData::EngineData() {
 	gui_renderer = nullptr;
 	post_processor = nullptr;
 	hdr_renderer = nullptr;
-	render_path = nullptr;
+	world_renderer = nullptr;
 
 	detail_level = 100;
 	detail_factor_inv = 1.0f;

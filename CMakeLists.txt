@@ -427,12 +427,12 @@ set(SOURCE
 	src/y/components/Collider.cpp
 	src/y/components/Skeleton.cpp
 	src/y/components/SolidBody.cpp
+	src/y/BaseClass.cpp
 	src/y/Camera.cpp
 	src/y/Component.cpp
 	src/y/ComponentManager.cpp
 	src/y/EngineData.cpp
 	src/y/Entity.cpp
-	src/y/Entity3D.cpp
 	src/y/Font.cpp
 	src/y/LevelData.cpp
 	src/y/Link.cpp

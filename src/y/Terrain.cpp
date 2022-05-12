@@ -9,8 +9,8 @@
 
 #include "Terrain.h"
 #include "Material.h"
-#include "Entity3D.h"
 #include "World.h"
+#include "../y/Entity.h"
 #include "../y/EngineData.h"
 #include "../lib/config.h"
 #include "../lib/math/vector.h"
@@ -67,8 +67,6 @@ bool Terrain::load(const Path &_filename_, bool deep) {
 			num_z = f->read_int();
 			int num = (num_x + 1) * (num_z + 1);
 			height.resize(num);
-			normal.resize(num);
-			vertex.resize(num);
 			pattern.x = f->read_float();
 			pattern.y = 0;
 			pattern.z = f->read_float();
@@ -90,16 +88,16 @@ bool Terrain::load(const Path &_filename_, bool deep) {
 				if (num_textures > material->textures.num)
 					material->textures.resize(num_textures);
 				for (int i=0;i<num_textures;i++)
-					if (!texture_file[i].is_empty())
+					if (texture_file[i])
 						material->textures[i] = ResourceManager::load_texture(texture_file[i]);
 
 				// height
 				for (int x=0;x<num_x+1;x++)
 					for (int z=0;z<num_z+1;z++)
 						height[Index(x,z)] = f->read_float();
-				for (int x=0;x<num_x/32+1;x++)
-					for (int z=0;z<num_z/32+1;z++)
-						partition[x][z] = -1;
+				for (int x=0;x<num_x/TERRAIN_CHUNK_SIZE+1;x++)
+					for (int z=0;z<num_z/TERRAIN_CHUNK_SIZE+1;z++)
+						chunk_lod[x][z] = -1;
 
 //#ifdef USING_VULKAN
 				vertex_buffer = new VertexBuffer("3f,3f,2f");
@@ -149,6 +147,11 @@ void Terrain::update(int x1,int x2,int z1,int z2,int mode) {
 	bool up=((mode & TerrainUpdatePlanes)>0);
 	float dhx,dhz;
 
+	if (un)
+		normal.resize(height.num);
+	if (uv)
+		vertex.resize(height.num);
+
 	pl.resize(num_x * num_z * 2);
 
 	// create (soft) normal vectors and vertices
@@ -193,7 +196,7 @@ void Terrain::update(int x1,int x2,int z1,int z2,int mode) {
 
 float Terrain::gimme_height(const vector &p) // liefert die interpolierte Hoehe zu einer Position
 {
-	auto o = get_owner<Entity3D>();
+	auto o = owner;
 	float x = p.x - o->pos.x;
 	float z = p.z - o->pos.z;
 	if ((x<=min.x)||(z<=min.z)||(x>=max.x)||(z>=max.z))
@@ -230,25 +233,26 @@ float Terrain::gimme_height_n(const vector &p, vector &n) {
 // Daten fuer das Darstellen des Bodens
 void Terrain::calc_detail(const vector &cam_pos) {
 	vector dpos = cam_pos;
-	if (owner) {
-		auto o = get_owner<Entity3D>();
-		dpos -= o->pos;
-	}
-	for (int x1=0;x1<(num_x-1)/32+1;x1++)
-		for (int z1=0;z1<(num_z-1)/32+1;z1++) {
-			int lx=(x1*32>num_x-32)?(num_x%32):32;
-			int lz=(z1*32>num_z-32)?(num_z%32):32;
-			int x0=x1*32;
-			int z0=z1*32;
+	if (owner)
+		dpos -= owner->pos;
+
+	for (int x1=0;x1<(num_x-1)/TERRAIN_CHUNK_SIZE+1;x1++)
+		for (int z1=0;z1<(num_z-1)/TERRAIN_CHUNK_SIZE+1;z1++) {
+			int lx=(x1*TERRAIN_CHUNK_SIZE>num_x-TERRAIN_CHUNK_SIZE)?(num_x%TERRAIN_CHUNK_SIZE):TERRAIN_CHUNK_SIZE;
+			int lz=(z1*TERRAIN_CHUNK_SIZE>num_z-TERRAIN_CHUNK_SIZE)?(num_z%TERRAIN_CHUNK_SIZE):TERRAIN_CHUNK_SIZE;
+			int x0=x1*TERRAIN_CHUNK_SIZE;
+			int z0=z1*TERRAIN_CHUNK_SIZE;
 			float depth = (dpos - vertex[Index(x0+lx/2,z0+lz/2)]).length() / pattern.x;
-			int e=32;
+
+			/*int e=32;
 			if (depth<500)	e=32;
 			if (depth<320)	e=16;
 			if (depth<160)	e=8;
 			if (depth<100)	e=4;
 			if (depth<70)	e=2;
-			if (depth<40)	e=1;
-			partition[x1][z1]=e;
+			if (depth<40)	e=1;*/
+			//msg_write(format("%.1f   %f", depth, log(depth / 40)));
+			chunk_lod[x1][z1] = clamp((int)log(depth / 20), 0, TERRAIN_LOG_CHUNK_SIZE);
 		}
 }
 
@@ -276,7 +280,7 @@ inline void add_edge(int &num, int e0, int e1)
 //    get a part of the terrain
 void Terrain::get_triangle_hull(TriangleHull *h, vector &_pos_, float _radius_)
 {
-	auto o = get_owner<Entity3D>();
+	auto o = owner;
 
 	h->p = &vertex[0];
 	h->index = TempVertexIndex;
@@ -369,8 +373,8 @@ inline bool TracePattern(Terrain *t, const vector &pos, const vector &p1,const v
 	if ((dir==2) and (tp.x>p1.x))	return false;
 	if ((dir==3) and (tp.z>p1.z))	return false;
 
-	data.p= tp;
-	data.t = t;
+	data.pos= tp;
+	data.entity = t->owner;
 	return true;
 }
 
@@ -379,7 +383,7 @@ bool Terrain::trace(const vector &p1, const vector &p2, const vector &dir, float
 	vector pr2 = p2;
 	vector pos = v_0;
 	if (owner) {
-		auto o = get_owner<Entity3D>();
+		auto o = owner;
 		pr1 -= o->pos;
 		pr2 -= o->pos;
 		pos = o->pos;
@@ -390,8 +394,8 @@ bool Terrain::trace(const vector &p1, const vector &p2, const vector &dir, float
 	if ((p2.x==p1.x) and (p2.z==p1.z) and (p2.y<p1.y)){
 		float h=gimme_height(p1);
 		if (p2.y < h){
-			data.p = vector(p1.x,h,p1.z);
-			data.t = this;
+			data.pos = vector(p1.x,h,p1.z);
+			data.entity = owner;
 			return true;
 		}
 	}
@@ -469,29 +473,31 @@ void Terrain::build_vertex_buffer() {
 	Array<vector> p,n;
 	Array<float> uv;
 
-	// number of 32-blocks (including the partially filled ones)
-	int nx = ( num_x - 1 ) / 32 + 1;
-	int nz = ( num_z - 1 ) / 32 + 1;
+	// number of blocks (including the partially filled ones)
+	int nx = (num_x - 1) / TERRAIN_CHUNK_SIZE + 1;
+	int nz = (num_z - 1) / TERRAIN_CHUNK_SIZE + 1;
 	/*nx=num_x/32;
 	nz=num_z/32;*/
 
-	// loop through the 32-blocks
-	for (int x1=0;x1<nx;x1++)
-		for (int z1=0;z1<nz;z1++){
+	// loop through the blocks
+	for (int x1=0; x1<nx; x1++)
+		for (int z1=0; z1<nz; z1++) {
 
 			// block size?    (32 or cut off...)
-			int lx = ( x1 * 32 > num_x - 32 ) ? ( num_x % 32 ) : 32;
-			int lz = ( z1 * 32 > num_z - 32 ) ? ( num_z % 32 ) : 32;
+			int lx = (x1 * TERRAIN_CHUNK_SIZE > num_x - TERRAIN_CHUNK_SIZE) ? (num_x % TERRAIN_CHUNK_SIZE) : TERRAIN_CHUNK_SIZE;
+			int lz = (z1 * TERRAIN_CHUNK_SIZE > num_z - TERRAIN_CHUNK_SIZE) ? (num_z % TERRAIN_CHUNK_SIZE) : TERRAIN_CHUNK_SIZE;
 
 			// start
-			int x0=x1*32;
-			int z0=z1*32;
-			int e=partition[x1][z1];
-			if (e<0)	continue;
+			int x0 = x1 * TERRAIN_CHUNK_SIZE;
+			int z0 = z1 * TERRAIN_CHUNK_SIZE;
+			int l = chunk_lod[x1][z1];
+			if (l < 0)
+				continue;
+			int e = 1<<l;
 
 			// loop through the squares
 			for (int x=x0;x<=x0+lx-e;x+=e)
-				for (int z=z0;z<=z0+lz-e;z+=e){
+				for (int z=z0;z<=z0+lz-e;z+=e) {
 					// x,z "real" pattern indices
 
 					// vertices
@@ -507,56 +513,72 @@ void Terrain::build_vertex_buffer() {
 					vector nd=normal[Index(x+e,z+e)];
 
 					// left border correction
-					if (x==x0)		if (x1>0){ int p=partition[x1-1][z1];	if (p>0)	if (e<p){
-						int a0=p*int(z/p);
-						if (a0+p<=num_z){
-							float t0=float(z%p)/(float)p;
-							float t1=t0+float(e)/float(p);
-							va=vertex[Index(x,a0)]*(1-t0)+vertex[Index(x,a0+p)]*t0;
-							na=normal[Index(x,a0)]*(1-t0)+normal[Index(x,a0+p)]*t0;
-							vc=vertex[Index(x,a0)]*(1-t1)+vertex[Index(x,a0+p)]*t1;
-							nc=normal[Index(x,a0)]*(1-t1)+normal[Index(x,a0+p)]*t1;
+					if (x==x0 and x1>0) {
+						int ll = chunk_lod[x1-1][z1];
+						int p = 1 << ll;
+						if (p>0 and e<p) {
+							int a0=p*int(z/p);
+							if (a0+p<=num_z) {
+								float t0=float(z%p)/(float)p;
+								float t1=t0+float(e)/float(p);
+								va=vertex[Index(x,a0)]*(1-t0)+vertex[Index(x,a0+p)]*t0;
+								na=normal[Index(x,a0)]*(1-t0)+normal[Index(x,a0+p)]*t0;
+								vc=vertex[Index(x,a0)]*(1-t1)+vertex[Index(x,a0+p)]*t1;
+								nc=normal[Index(x,a0)]*(1-t1)+normal[Index(x,a0+p)]*t1;
+							}
 						}
-					}}
+					}
 
 					// right border correction
-					if (x==x0+32-e)	if (x1<nx-1){ int p=partition[x1+1][z1];	if (p>0)	if (e<p){
-						int a0=p*int(z/p);
-						if (a0+p<num_x){
-							float t0=float(z%p)/(float)p;
-							float t1=t0+float(e)/float(p);
-							vb=vertex[Index(x+e,a0)]*(1-t0)+vertex[Index(x+e,a0+p)]*t0;
-							nb=normal[Index(x+e,a0)]*(1-t0)+normal[Index(x+e,a0+p)]*t0;
-							vd=vertex[Index(x+e,a0)]*(1-t1)+vertex[Index(x+e,a0+p)]*t1;
-							nd=normal[Index(x+e,a0)]*(1-t1)+normal[Index(x+e,a0+p)]*t1;
+					if (x==x0+TERRAIN_CHUNK_SIZE-e and x1<nx-1) {
+						int ll = chunk_lod[x1+1][z1];
+						int p = 1 << l;
+						if (p>0 and e<p) {
+							int a0=p*int(z/p);
+							if (a0+p<num_x) {
+								float t0=float(z%p)/(float)p;
+								float t1=t0+float(e)/float(p);
+								vb=vertex[Index(x+e,a0)]*(1-t0)+vertex[Index(x+e,a0+p)]*t0;
+								nb=normal[Index(x+e,a0)]*(1-t0)+normal[Index(x+e,a0+p)]*t0;
+								vd=vertex[Index(x+e,a0)]*(1-t1)+vertex[Index(x+e,a0+p)]*t1;
+								nd=normal[Index(x+e,a0)]*(1-t1)+normal[Index(x+e,a0+p)]*t1;
+							}
 						}
-					}}
+					}
 
 					// bottom border correction
-					if (z==z0)		if (z1>0){ int p=partition[x1][z1-1];	if (p>0)	if (e<p){
-						int a0=p*int(x/p);
-						if (a0+p<=num_x){
-							float t0=float(x%p)/(float)p;
-							float t1=t0+float(e)/float(p);
-							va=vertex[Index(a0,z)]*(1-t0)+vertex[Index(a0+p,z)]*t0;
-							na=normal[Index(a0,z)]*(1-t0)+normal[Index(a0+p,z)]*t0;
-							vb=vertex[Index(a0,z)]*(1-t1)+vertex[Index(a0+p,z)]*t1;
-							nb=normal[Index(a0,z)]*(1-t1)+normal[Index(a0+p,z)]*t1;
+					if (z==z0 and z1>0) {
+						int l = chunk_lod[x1][z1-1];
+						int p = 1 << l;
+						if (p>0 and e<p) {
+							int a0=p*int(x/p);
+							if (a0+p<=num_x) {
+								float t0=float(x%p)/(float)p;
+								float t1=t0+float(e)/float(p);
+								va=vertex[Index(a0,z)]*(1-t0)+vertex[Index(a0+p,z)]*t0;
+								na=normal[Index(a0,z)]*(1-t0)+normal[Index(a0+p,z)]*t0;
+								vb=vertex[Index(a0,z)]*(1-t1)+vertex[Index(a0+p,z)]*t1;
+								nb=normal[Index(a0,z)]*(1-t1)+normal[Index(a0+p,z)]*t1;
+							}
 						}
-					}}
+					}
 
 					// top border correction
-					if (z==z0+32-e)		if (z1<nz-1){ int p=partition[x1][z1+1];	if (p>0)	if (e<p){
-						int a0=p*int(x/p);
-						if (a0+p<num_z){
-							float t0=float(x%p)/(float)p;
-							float t1=t0+float(e)/float(p);
-							vc=vertex[Index(a0,z+e)]*(1-t0)+vertex[Index(a0+p,z+e)]*t0;
-							nc=normal[Index(a0,z+e)]*(1-t0)+normal[Index(a0+p,z+e)]*t0;
-							vd=vertex[Index(a0,z+e)]*(1-t1)+vertex[Index(a0+p,z+e)]*t1;
-							nd=normal[Index(a0,z+e)]*(1-t1)+normal[Index(a0+p,z+e)]*t1;
+					if (z==z0+TERRAIN_CHUNK_SIZE-e and z1<nz-1) {
+						int l = chunk_lod[x1][z1+1];
+						int p = 1 << l;
+						if (p>0 and e<p) {
+							int a0=p*int(x/p);
+							if (a0+p<num_z) {
+								float t0=float(x%p)/(float)p;
+								float t1=t0+float(e)/float(p);
+								vc=vertex[Index(a0,z+e)]*(1-t0)+vertex[Index(a0+p,z+e)]*t0;
+								nc=normal[Index(a0,z+e)]*(1-t0)+normal[Index(a0+p,z+e)]*t0;
+								vd=vertex[Index(a0,z+e)]*(1-t1)+vertex[Index(a0+p,z+e)]*t1;
+								nd=normal[Index(a0,z+e)]*(1-t1)+normal[Index(a0+p,z+e)]*t1;
+							}
 						}
-					}}
+					}
 
 					float u1 = (float) x    / (float)num_x;//*texture_scale[i].x;
 					float u2 = (float)(x+e) / (float)num_x;//*texture_scale[i].x;
@@ -583,24 +605,6 @@ void Terrain::build_vertex_buffer() {
 					p.add(vd);	n.add(nd);
 					p.add(vb);	n.add(nb);
 
-#if 0
-					// add to buffer
-					if (material->textures.num==1){
-						vertex_buffer->addTria(va,na,ta[0],ta[1],
-												vc,nc,tc[0],tc[1],
-												vd,nd,td[0],td[1]);
-						vertex_buffer->addTria(va,na,ta[0],ta[1],
-												vd,nd,td[0],td[1],
-												vb,nb,tb[0],tb[1]);
-					}else{
-						vertex_buffer->addTriaM(va,na,ta,
-												vc,nc,tc,
-												vd,nd,td);
-						vertex_buffer->addTriaM(va,na,ta,
-												vd,nd,td,
-												vb,nb,tb);
-					}
-#endif
 				}
 		}
 	Array<Vertex1> vertex;
@@ -608,12 +612,6 @@ void Terrain::build_vertex_buffer() {
 		vertex.add({p[i], n[i], uv[i*2], uv[i*2+1]});
 	}
 	vertex_buffer->update(vertex);
-#if 0
-//	vertex_buffer->build1(vertices);
-	vertex_buffer->update(0, p);
-	vertex_buffer->update(1, n);
-	vertex_buffer->update(2, uv);
-#endif
 }
 
 void Terrain::prepare_draw(const vector &cam_pos) {
@@ -625,34 +623,23 @@ void Terrain::prepare_draw(const vector &cam_pos) {
 
 
 	// do we have to recreate the terrain?
-	if (force_redraw)
+	if (force_redraw) {
 		redraw = true;
-	else
-		for (int x=0;x<num_x/32;x++)
-			for (int z=0;z<num_z/32;z++)
-				if (partition_old[x][z]!=partition[x][z])
+	} else {
+		for (int x=0; x<num_x/TERRAIN_CHUNK_SIZE; x++)
+			for (int z=0; z<num_z/TERRAIN_CHUNK_SIZE; z++)
+				if (chunk_lod_old[x][z] != chunk_lod[x][z])
 					redraw = true;
+	}
 
 	// recreate (in vertex buffer)
 	if (redraw)
 		build_vertex_buffer();
 
-#if 0
-#ifdef _X_ALLOW_X_
-	Light::Apply(cur_cam->pos);
-#endif
-
-	material->apply();
-
-	// the actual drawing
-	nix::set_model_matrix(matrix::ID);
-	nix::Draw3D(vertex_buffer);
-#endif
-
 	pos_old = cam_pos;
 	force_redraw = false;
-	for (int x=0;x<num_x/32;x++)
-		for (int z=0;z<num_z/32;z++)
-			partition_old[x][z]=partition[x][z];
+	for (int x=0; x<num_x/TERRAIN_CHUNK_SIZE; x++)
+		for (int z=0; z<num_z/TERRAIN_CHUNK_SIZE; z++)
+			chunk_lod_old[x][z] = chunk_lod[x][z];
 }
 

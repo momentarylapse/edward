@@ -219,7 +219,7 @@ string phys_mode_name(PhysicsMode m) {
 #include "Model.h"
 #include "Terrain.h"
 #include "Camera.h"
-#include "Entity3D.h"
+#include "../y/Entity.h"
 #include "../y/ComponentManager.h"
 #ifdef _X_ALLOW_X_
 #include "../plugins/PluginManager.h"

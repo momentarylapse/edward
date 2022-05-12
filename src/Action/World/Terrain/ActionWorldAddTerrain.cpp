@@ -66,7 +66,7 @@ void *ActionWorldAddTerrain::execute(Data *d) {
 		//t.terrain->material->copy_from(NULL, LoadMaterial(""), false);
 		for (int x=0;x<num_x/32+1;x++)
 			for (int z=0;z<num_z/32+1;z++)
-				t.terrain->partition[x][z] = -1;
+				t.terrain->chunk_lod[x][z] = -1;
 		t.terrain->vertex_buffer = new nix::VertexBuffer("3f,3f,2f");
 		t.terrain->update(-1, -1, -1, -1, TerrainUpdateAll);
 		// bounding box

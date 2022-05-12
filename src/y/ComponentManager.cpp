@@ -13,9 +13,9 @@
 #include "../meta.h"
 #include "../plugins/PluginManager.h"
 #include "../helper/PerformanceMonitor.h"
+#endif
 #include "../lib/kaba/syntax/Class.h"
 #include "../lib/kaba/syntax/Function.h"
-#endif
 
 #include "../lib/file/msg.h"
 
@@ -35,8 +35,9 @@ public:
 		foreachi (auto *cc, list, i)
 			if (cc == c) {
 				list.erase(i);
-				break;
+				return;
 			}
+		msg_error("failed to remove component from list: " + c->component_type->name);
 	}
 };
 
