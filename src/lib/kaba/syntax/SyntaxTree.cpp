@@ -1,5 +1,5 @@
 #include "../kaba.h"
-#include "Parser.h"
+#include "../parser/Parser.h"
 #include "../asm/asm.h"
 #include "../../file/file.h"
 #include <stdio.h>
@@ -16,8 +16,6 @@ extern const Class *TypeCallableBase;
 extern const Class *TypeMatrix;
 extern const Class *TypeVec2;
 
-extern ExpressionBuffer *cur_exp_buf;
-
 bool is_func(shared<Node> n);
 
 string class_name_might_need_parantheses(const Class *t);
@@ -28,31 +26,7 @@ static shared_array<Node> _transform_insert_before_;
 shared<Node> conv_break_down_med_level(SyntaxTree *tree, shared<Node> c);
 
 
-string Operator::sig(const Class *ns) const {
-	if (param_type_1 and param_type_2)
-		return format("(%s) %s (%s)", param_type_1->cname(ns), abstract->name, param_type_2->cname(ns));
-	if (param_type_1)
-		return format("(%s) %s", param_type_1->cname(ns), abstract->name);
-	return format("%s (%s)", abstract->name, param_type_2->cname(ns));
-}
 
-
-// recursive
-shared<Node> SyntaxTree::cp_node(shared<Node> c) {
-	shared<Node> cmd;
-	if (c->kind == NodeKind::BLOCK) {
-		cmd = new Block(c->as_block()->function, c->as_block()->parent, c->type);
-		cmd->as_block()->vars = c->as_block()->vars;
-	} else {
-		cmd = new Node(c->kind, c->link_no, c->type, c->is_const);
-	}
-	cmd->token_id = c->token_id;
-	cmd->set_num_params(c->params.num);
-	for (int i=0;i<c->params.num;i++)
-		if (c->params[i])
-			cmd->set_param(i, cp_node(c->params[i]));
-	return cmd;
-}
 
 const Class *SyntaxTree::make_class_callable_fp(Function *f, int token_id) {
 	return make_class_callable_fp(f->literal_param_type, f->literal_return_type, token_id);
@@ -111,7 +85,7 @@ const Class *SyntaxTree::make_class_callable_bind(const Array<const Class*> &par
 
 	static int unique_bind_counter = 0;
 
-	auto t = (Class*)make_class("<bind-" + i2s(unique_bind_counter++) + ">", Class::Type::CALLABLE_BIND, TypeCallableBase->size, 0, nullptr, outer_params_ret, base_class, token_id);
+	auto t = (Class*)make_class(format(":bind-%d:", unique_bind_counter++), Class::Type::CALLABLE_BIND, TypeCallableBase->size, 0, nullptr, outer_params_ret, base_class, token_id);
 	int offset = t->size;
 	foreachi (auto b, captures, i) {
 		if (!b)
@@ -134,115 +108,6 @@ const Class *SyntaxTree::make_class_callable_bind(const Array<const Class*> &par
 	return t;
 }
 
-shared<Node> SyntaxTree::add_node_statement(StatementID id, int token_id, const Class *type) {
-	auto *s = statement_from_id(id);
-	auto c = new Node(NodeKind::STATEMENT, (int64)s, type, false, token_id);
-	c->set_num_params(s->num_params);
-	return c;
-}
-
-// virtual call, if func is virtual
-shared<Node> SyntaxTree::add_node_member_call(Function *f, const shared<Node> inst, int token_id, const shared_array<Node> &params, bool force_non_virtual) {
-	shared<Node> c;
-	if ((f->virtual_index >= 0) and !force_non_virtual) {
-		c = new Node(NodeKind::CALL_VIRTUAL, (int_p)f, f->literal_return_type, true, token_id);
-	} else {
-		c = new Node(NodeKind::CALL_FUNCTION, (int_p)f, f->literal_return_type, true, token_id);
-	}
-	c->set_num_params(f->num_params);
-	c->set_instance(inst);
-	foreachi (auto p, params, i)
-		c->set_param(i + 1, p);
-	return c;
-}
-
-// non-member!
-shared<Node> SyntaxTree::add_node_call(Function *f, int token_id) {
-	// FIXME: literal_return_type???
-	shared<Node> c = new Node(NodeKind::CALL_FUNCTION, (int_p)f, f->literal_return_type, true, token_id);
-		c->set_num_params(f->num_params);
-	return c;
-}
-
-shared<Node> SyntaxTree::add_node_func_name(Function *f, int token_id) {
-	return new Node(NodeKind::FUNCTION, (int_p)f, TypeUnknown, true, token_id);
-}
-
-shared<Node> SyntaxTree::add_node_class(const Class *c, int token_id) {
-	return new Node(NodeKind::CLASS, (int_p)c, TypeClassP, true, token_id);
-}
-
-
-shared<Node> SyntaxTree::add_node_operator(Operator *op, const shared<Node> p1, const shared<Node> p2, int token_id, const Class *override_type) {
-	if (!override_type)
-		override_type = op->return_type;
-	shared<Node> cmd = new Node(NodeKind::OPERATOR, (int_p)op, override_type, true, token_id);
-	if (op->abstract->param_flags == 3) {
-		cmd->set_num_params(2); // binary
-		cmd->set_param(0, p1);
-		cmd->set_param(1, p2);
-	} else {
-		cmd->set_num_params(1); // unary
-		cmd->set_param(0, p1);
-	}
-	return cmd;
-}
-
-extern Array<Operator*> global_operators;
-
-shared<Node> SyntaxTree::add_node_operator_by_inline(InlineID inline_index, const shared<Node> p1, const shared<Node> p2, int token_id, const Class *override_type) {
-	for (auto *op: global_operators)
-		if (op->f->inline_no == inline_index)
-			return add_node_operator(op, p1, p2, token_id, override_type);
-
-	do_error(format("operator inline index not found: %d", (int)inline_index));
-	return nullptr;
-}
-
-
-shared<Node> SyntaxTree::add_node_local(Variable *v, const Class *type, int token_id) {
-	return new Node(NodeKind::VAR_LOCAL, (int_p)v, type, v->is_const(), token_id);
-}
-
-shared<Node> SyntaxTree::add_node_local(Variable *v, int token_id) {
-	return new Node(NodeKind::VAR_LOCAL, (int_p)v, v->type, v->is_const(), token_id);
-}
-
-shared<Node> SyntaxTree::add_node_global(Variable *v, int token_id) {
-	return new Node(NodeKind::VAR_GLOBAL, (int_p)v, v->type, v->is_const(), token_id);
-}
-
-shared<Node> SyntaxTree::add_node_parray(shared<Node> p, shared<Node> index, const Class *type) {
-	shared<Node> cmd_el = new Node(NodeKind::POINTER_AS_ARRAY, 0, type, false, index->token_id);
-	cmd_el->set_num_params(2);
-	cmd_el->set_param(0, p);
-	cmd_el->set_param(1, index);
-	return cmd_el;
-}
-
-shared<Node> SyntaxTree::add_node_dyn_array(shared<Node> array, shared<Node> index) {
-	shared<Node> cmd_el = new Node(NodeKind::DYNAMIC_ARRAY, 0, array->type->get_array_element(), false, index->token_id);
-	cmd_el->set_num_params(2);
-	cmd_el->set_param(0, array);
-	cmd_el->set_param(1, index);
-	return cmd_el;
-}
-
-shared<Node> SyntaxTree::add_node_array(shared<Node> array, shared<Node> index, const Class *type) {
-	if (!type)
-		type = array->type->param[0];
-	auto *el = new Node(NodeKind::ARRAY, 0, type, false, index->token_id);
-	el->set_num_params(2);
-	el->set_param(0, array);
-	el->set_param(1, index);
-	return el;
-}
-
-/*shared<Node> SyntaxTree::add_node_block(Block *b)
-{
-	return new Node(NodeKind::BLOCK, (long long)(int_p)b, TypeVoid);
-}*/
-
 SyntaxTree::SyntaxTree(Module *_module) {
 	base_class = new Class("-base-", 0, this);
 	_base_class = base_class;
@@ -262,19 +127,6 @@ void SyntaxTree::default_import() {
 	for (auto p: packages)
 		if (p->used_by_default)
 			import_data(p, false, "");
-}
-
-
-shared<Node> SyntaxTree::make_constructor_static(shared<Node> n, const string &name) {
-	for (auto *f: weak(n->type->functions))
-		if (f->name == name) {
-			auto nn = add_node_call(f, n->token_id);
-			for (int i=0; i<n->params.num-1; i++)
-				nn->set_param(i, n->params[i+1]);
-			//nn->params = n->params.sub(1,-1);
-			return nn;
-		}
-	return n;
 }
 
 void SyntaxTree::digest() {
@@ -408,14 +260,6 @@ Function *SyntaxTree::add_function(const string &name, const Class *return_type,
 }
 
 
-
-shared<Node> SyntaxTree::add_node_const(Constant *c, int token_id) {
-	return new Node(NodeKind::CONSTANT, (int_p)c, c->type.get(), true, token_id);
-}
-
-/*shared<Node> SyntaxTree::add_node_block(Block *b) {
-	return new Node(NodeKind::BLOCK, (int_p)b, TypeVoid);
-}*/
 
 AbstractOperator *Parser::which_abstract_operator(const string &name, int param_flags) {
 	for (int i=0; i<(int)OperatorID::_COUNT_; i++)
@@ -654,6 +498,15 @@ const Class *SyntaxTree::find_root_type_by_name(const string &name, const Class 
 	return nullptr;
 }
 
+
+int kaba_int_passthrough(int i);
+int op_int_add(int a, int b);
+bool op_int_eq(int a, int b);
+bool op_int_neq(int a, int b);
+int enum_parse(const string&, const Class*);
+Array<int> enum_all(const Class*);
+
+
 Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, const Class *ns, int token_id) {
 	if (find_root_type_by_name(name, ns, false))
 		do_error("class already exists", token_id);
@@ -700,6 +553,45 @@ Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int si
 		//add_missing_function_headers_for_class(t); // later... depending on the bind variables
 	//} else if (t->type == Class::Type::PRODUCT) {
 	//	add_missing_function_headers_for_class(t);
+	} else if (t->is_enum()) {
+		t->flags = Flags::FORCE_CALL_BY_VALUE; // FORCE_CALL_BY_VALUE
+
+		kaba::add_class(t);
+		class_add_func("from_int", t, &kaba_int_passthrough, Flags::_STATIC__PURE);
+			func_set_inline(InlineID::PASSTHROUGH);
+			func_add_param("i", TypeInt);
+		//class_add_func(IDENTIFIER_FUNC_STR, TypeString, &i2s, Flags::PURE);
+		class_add_func("__int__", TypeInt, &kaba_int_passthrough, Flags::PURE);
+			func_set_inline(InlineID::PASSTHROUGH);
+		class_add_func("parse", t, &enum_parse, Flags::_STATIC__PURE);
+			func_add_param("label", TypeString);
+			func_add_param("type", TypeClassP);
+		class_add_func("all", TypeDynamicArray, &enum_all, Flags::_STATIC__PURE);
+			func_add_param("type", TypeClassP);
+		add_operator(OperatorID::ASSIGN, TypeVoid, t, t, InlineID::INT_ASSIGN);
+		add_operator(OperatorID::ADD, t, t, t, InlineID::INT_ADD, &op_int_add);
+		add_operator(OperatorID::ADDS, TypeVoid, t, t, InlineID::INT_ADD_ASSIGN);
+		add_operator(OperatorID::EQUAL, TypeBool, t, t, InlineID::INT_EQUAL, &op_int_eq);
+		add_operator(OperatorID::NOTEQUAL, TypeBool, t, t, InlineID::INT_NOT_EQUAL, &op_int_neq);
+		add_operator(OperatorID::BIT_AND, t, t, t, InlineID::INT_AND);
+		add_operator(OperatorID::BIT_OR, t, t, t, InlineID::INT_OR);
+
+		for (auto f: weak(t->functions)) {
+			if (f->name == "parse") {
+				f->default_parameters.resize(2);
+				auto c = add_constant(TypeClassP, t);
+				c->as_int64() = (int_p)t;
+				f->mandatory_params = 1;
+				f->default_parameters[1] = add_node_const(c, t->token_id);
+			} else if (f->name == "all") {
+				f->literal_return_type = make_class_super_array(t, t->token_id);
+				f->default_parameters.resize(1);
+				auto c = add_constant(TypeClassP, t);
+				c->as_int64() = (int_p)t;
+				f->mandatory_params = 0;
+				f->default_parameters[0] = add_node_const(c, t->token_id);
+			}
+		}
 	}
 	return t;
 }
@@ -860,7 +752,7 @@ shared<Node> SyntaxTree::conv_return_by_memory(shared<Node> n, Function *f) {
 	if (!p_ret)
 		do_error("-return- not found...");
 	auto ret = p_ret->deref();
-	auto cmd_assign = parser->link_operator_id(OperatorID::ASSIGN, ret, n->params[0]);
+	auto cmd_assign = parser->con.link_operator_id(OperatorID::ASSIGN, ret, n->params[0]);
 	if (!cmd_assign)
 		do_error(format("no '=' operator for return from function found: '%s'", f->long_name()));
 	_transform_insert_before_.add(cmd_assign);
@@ -877,6 +769,8 @@ void SyntaxTree::convert_call_by_reference() {
 		msg_write("ConvertCallByReference");
 	// convert functions
 	for (Function *f: functions) {
+		if (f->literal_return_type == TypeUnknown)
+			continue;
 
 		// parameter: array/class as reference
 		for (auto v: weak(f->var).sub_ref(0, f->num_params))
@@ -890,7 +784,7 @@ void SyntaxTree::convert_call_by_reference() {
 
 	// convert return...
 	for (Function *f: functions)
-		if (f->literal_return_type->uses_return_by_memory())
+		if (f->literal_return_type->uses_return_by_memory() and (f->literal_return_type != TypeUnknown))
 			//convert_return_by_memory(this, f->block, f);
 			transform_block(f->block.get(), [&](shared<Node> n){ return conv_return_by_memory(n, f); });
 
@@ -919,7 +813,7 @@ InlineID __get_pointer_add_int() {
 shared<Node> conv_break_down_med_level(SyntaxTree *tree, shared<Node> c) {
 	if (c->kind == NodeKind::DYNAMIC_ARRAY) {
 		return tree->conv_break_down_low_level(
-				tree->add_node_parray(
+				add_node_parray(
 						c->params[0]->shift(0, c->type->get_pointer()),
 						c->params[1], c->type));
 	}
@@ -1080,16 +974,18 @@ void SyntaxTree::transformb_block(Block *block, std::function<shared<Node>(share
 
 // split arrays and address shifts into simpler commands...
 void SyntaxTree::transform(std::function<shared<Node>(shared<Node>)> F) {
-	for (Function *f: functions) {
-		parser->cur_func = f;
-		transform_block(f->block.get(), F);
-	}
+	for (Function *f: functions)
+		if (!f->is_template()) {
+			parser->cur_func = f;
+			transform_block(f->block.get(), F);
+		}
 }
 void SyntaxTree::transformb(std::function<shared<Node>(shared<Node>, Block*)> F) {
-	for (Function *f: functions) {
-		parser->cur_func = f;
-		transformb_block(f->block.get(), F);
-	}
+	for (Function *f: functions)
+		if (!f->is_template()) {
+			parser->cur_func = f;
+			transformb_block(f->block.get(), F);
+		}
 }
 
 bool node_is_executable(shared<Node> n) {
@@ -1135,8 +1031,13 @@ shared<Node> SyntaxTree::conv_break_down_high_level(shared<Node> n, Block *b) {
 	} else if (n->kind == NodeKind::ARRAY_BUILDER) {
 		auto *t_el = n->type->get_array_element();
 		Function *cf = n->type->get_member_func("add", TypeVoid, {t_el});
-		if (!cf)
+		if (!cf) {
+			msg_error("AAA");
+			n->show();
+			msg_write(p2s(n->type));
+			msg_write(n->type->name);
 			do_error(format("[..]: can not find '%s.add(%s)' function???", n->type->long_name(), t_el->long_name()));
+		}
 
 		// temp var
 		auto *f = b->function;
@@ -1221,7 +1122,7 @@ shared<Node> SyntaxTree::conv_break_down_high_level(shared<Node> n, Block *b) {
 			// -> assign into variable before the loop
 			auto *v = b->add_var(b->function->create_slightly_hidden_name(), array->type);
 
-			auto assign = parser->link_operator_id(OperatorID::ASSIGN, add_node_local(v), array);
+			auto assign = parser->con.link_operator_id(OperatorID::ASSIGN, add_node_local(v), array);
 			_transform_insert_before_.add(assign);
 
 			array = add_node_local(v);

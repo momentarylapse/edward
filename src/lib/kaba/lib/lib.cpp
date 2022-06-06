@@ -316,7 +316,7 @@ void add_operator_x(OperatorID primitive_op, const Class *return_type, const Cla
 
 	//if (!c->uses_call_by_reference())
 	if (o->abstract->left_modifiable and !c->uses_call_by_reference())
-		flags = flags_mix({flags, Flags::STATIC});
+		flags_set(flags, Flags::STATIC);
 
 	if (!flags_has(flags, Flags::STATIC)) {
 		add_class(c);
@@ -519,6 +519,7 @@ void add_const(const string &name, const Class *type, const void *value) {
 
 void add_ext_var(const string &name, const Class *type, void *var) {
 	auto *v = new Variable(name, type);
+	flags_set(v->flags, Flags::EXTERN); // prevent initialization when importing
 	cur_package->syntax->base_class->static_variables.add(v);
 	if (config.allow_std_lib)
 		v->memory = var;
@@ -568,7 +569,7 @@ void func_add_param_def_x(const string &name, const Class *type, const void *p, 
 		if (type == TypeFloat32)
 			c->as_float() = *(float*)p;
 		cur_func->default_parameters.resize(cur_func->num_params - 1);
-		cur_func->default_parameters.add(cur_package->syntax->add_node_const(c));
+		cur_func->default_parameters.add(add_node_const(c));
 	}
 }
 
@@ -690,7 +691,7 @@ void SIAddPackageOSPath();
 void SIAddPackageMath();
 void SIAddPackageThread();
 void SIAddPackageHui();
-void SIAddPackageNix();
+void SIAddPackageGl();
 void SIAddPackageNet();
 void SIAddPackageImage();
 void SIAddPackageDoc();
@@ -727,7 +728,7 @@ void init(Abi abi, bool allow_std_lib) {
 	SIAddPackageOS();
 	SIAddPackageImage();
 	SIAddPackageHui();
-	SIAddPackageNix();
+	SIAddPackageGl();
 	SIAddPackageNet();
 	SIAddPackageThread();
 	SIAddPackageDoc();

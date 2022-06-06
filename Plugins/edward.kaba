@@ -1,5 +1,5 @@
 use hui
-use nix
+use gl
 use os
 #import x
 
@@ -90,7 +90,7 @@ enum FxKind
 
 class y
 	class Material
-		var shader: nix.Shader*
+		var shader: gl.Shader*
 	class Terrain
 	class Model
 

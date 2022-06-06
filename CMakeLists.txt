@@ -264,28 +264,31 @@ set(SOURCE
 	src/lib/kaba/lib/lib.cpp
 	src/lib/kaba/lib/lib_base.cpp
 	src/lib/kaba/lib/lib_doc.cpp
+	src/lib/kaba/lib/lib_gl.cpp
 	src/lib/kaba/lib/lib_hui.cpp
 	src/lib/kaba/lib/lib_image.cpp
 	src/lib/kaba/lib/lib_kaba.cpp
 	src/lib/kaba/lib/lib_math.cpp
 	src/lib/kaba/lib/lib_net.cpp
-	src/lib/kaba/lib/lib_nix.cpp
 	src/lib/kaba/lib/lib_os.cpp
 	src/lib/kaba/lib/lib_threads.cpp
 	src/lib/kaba/lib/lib_time.cpp
 	src/lib/kaba/lib/lib_vulkan.cpp
+	src/lib/kaba/parser/abstract.cpp
+	src/lib/kaba/parser/Concretifier.cpp
+	src/lib/kaba/parser/implicit.cpp
+	src/lib/kaba/parser/import.cpp
+	src/lib/kaba/parser/lexical.cpp
+	src/lib/kaba/parser/macros.cpp
+	src/lib/kaba/parser/Parser.cpp
+	src/lib/kaba/parser/template.cpp
 	src/lib/kaba/syntax/Block.cpp
 	src/lib/kaba/syntax/Class.cpp
 	src/lib/kaba/syntax/Constant.cpp
 	src/lib/kaba/syntax/Function.cpp
 	src/lib/kaba/syntax/Identifier.cpp
-	src/lib/kaba/syntax/implicit.cpp
-	src/lib/kaba/syntax/import.cpp
-	src/lib/kaba/syntax/lexical.cpp
-	src/lib/kaba/syntax/macros.cpp
 	src/lib/kaba/syntax/Node.cpp
 	src/lib/kaba/syntax/Operator.cpp
-	src/lib/kaba/syntax/Parser.cpp
 	src/lib/kaba/syntax/preprocessor.cpp
 	src/lib/kaba/syntax/Statement.cpp
 	src/lib/kaba/syntax/SyntaxTree.cpp

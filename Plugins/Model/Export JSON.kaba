@@ -12,24 +12,24 @@ func qToJson(q: quaternion) -> string
 	return "{{q.x}}, {{q.y}}, {{q.z}}, {{q.w}}"
 
 func materialToJson(m: Model.Material) -> string
-	string str
-	str += "	{\n"
-	str += "		'DbgColor' : 15658734,\n"
-	str += "		'DbgIndex' : 0,\n"
-	str += "		'DbgName' : 'Test',\n"
-	str += "		'blending' : 'NormalBlending',\n"
-	str += "		'colorAmbient' : [{{col3ToJson(m.ambient)}}],\n"
-	str += "		'colorDiffuse' : [{{col3ToJson(m.diffuse)}}],\n"
-	str += "		'colorSpecular' : [{{col3ToJson(m.specular)}}],\n"
-	str += "		'depthTest' : true,\n"
-	str += "		'depthWrite' : true,\n"
-	str += "		'shading' : 'Phong',\n"
-	str += "		'specularCoef' : {{m.shininess}},\n"
-	str += "		'transparency' : 1.0,\n"
-	str += "		'transparent' : false,\n"
-	str += "		'vertexColors' : false\n"
-	str += "	}"
-	return str
+	string s
+	s += "	{\n"
+	s += "		'DbgColor' : 15658734,\n"
+	s += "		'DbgIndex' : 0,\n"
+	s += "		'DbgName' : 'Test',\n"
+	s += "		'blending' : 'NormalBlending',\n"
+	s += "		'colorAmbient' : [{{col3ToJson(m.ambient)}}],\n"
+	s += "		'colorDiffuse' : [{{col3ToJson(m.diffuse)}}],\n"
+	s += "		'colorSpecular' : [{{col3ToJson(m.specular)}}],\n"
+	s += "		'depthTest' : true,\n"
+	s += "		'depthWrite' : true,\n"
+	s += "		'shading' : 'Phong',\n"
+	s += "		'specularCoef' : {{m.shininess}},\n"
+	s += "		'transparency' : 1.0,\n"
+	s += "		'transparent' : false,\n"
+	s += "		'vertexColors' : false\n"
+	s += "	}"
+	return s
 
 func bone_anim_pos(f: Model.Move.Frame, i: int) -> vector
 	int parent = model.bone[i].parent
@@ -40,16 +40,16 @@ func bone_anim_pos(f: Model.Move.Frame, i: int) -> vector
 	return f.skel_dpos[i] + model.bone[i].pos
 
 func moveToJson(m: Model.Move) -> string
-	string str
-	str += "	{\n"
-	str += "		'name': '{{m.name}}',\n"
-	str += "		'fps': {{m.frames_per_sec_const}},\n"
-	str += "		'length': {{(m.frame.num / m.frames_per_sec_const)}},\n"
-	str += "		'hierarchy': [\n"
+	string s
+	s += "	{\n"
+	s += "		'name': '{{m.name}}',\n"
+	s += "		'fps': {{m.frames_per_sec_const}},\n"
+	s += "		'length': {{(m.frame.num / m.frames_per_sec_const)}},\n"
+	s += "		'hierarchy': [\n"
 	for b,i in model.bone
-		str += "			{\n"
-		str += "				'parent': -1,\n" #b.parent
-		str += "				'keys': [\n"
+		s += "			{\n"
+		s += "				'parent': -1,\n" #b.parent
+		s += "				'keys': [\n"
 		for f,j in m.frame
 			var q = quaternion(f.skel_ang[i])
 			var dpos = bone_anim_pos(f, i) # - b.pos
@@ -58,53 +58,51 @@ func moveToJson(m: Model.Move) -> string
 #				#dpos -= dq * bone_anim_pos(f, b.parent)
 #				q *= dq.bar()
 			print(dpos)
-			str += "					{\n"
-			str += "						'time': {{(j / m.frames_per_sec_const)}},\n"
-			str += "						'pos': [{{vecToJson(dpos)}}],\n"
-			str += "						'rot': [{{qToJson(q)}}],\n"
-			str += "						'scl': [1,1,1]\n"
-			str += "					},\n"
+			s += "					{\n"
+			s += "						'time': {{(j / m.frames_per_sec_const)}},\n"
+			s += "						'pos': [{{vecToJson(dpos)}}],\n"
+			s += "						'rot': [{{qToJson(q)}}],\n"
+			s += "						'scl': [1,1,1]\n"
+			s += "					},\n"
 		# looping...
 		var q = quaternion(m.frame[0].skel_ang[i])
-		str += "					{\n"
-		str += "						'time': {{(m.frame.num / m.frames_per_sec_const)}},\n"
-		str += "						'pos': [0,0,0],\n"
-		str += "						'rot': [{{qToJson(q)}}],\n"
-		str += "						'scl': [1,1,1]\n"
-		str += "					}\n"
-		str += "				]\n"
+		s += "					{\n"
+		s += "						'time': {{(m.frame.num / m.frames_per_sec_const)}},\n"
+		s += "						'pos': [0,0,0],\n"
+		s += "						'rot': [{{qToJson(q)}}],\n"
+		s += "						'scl': [1,1,1]\n"
+		s += "					}\n"
+		s += "				]\n"
 		if i < model.bone.num - 1
-			str += "			},\n"
+			s += "			},\n"
 		else
-			str += "			}\n"
-	str += "		]\n"
-	str += "	}"
-	return str
+			s += "			}\n"
+	s += "		]\n"
+	s += "	}"
+	return s
 
 func boneToJson(b: Model.Bone) -> string
-	string str
-	str += "	{\n"
-	str += "		'parent': -1,\n" #b.parent
+	string s
+	s += "	{\n"
+	s += "		'parent': -1,\n" #b.parent
 	vector pos = b.pos
 	#if b.parent >= 0
 #		pos -= model.bone[b.parent].pos
-	str += "		'name': 'xxx',\n"
-	str += "		'pos': [{{vecToJson(pos)}}],\n"
-	str += "		'scl': [1,1,1],\n"
-	str += "		'rot': [0,0,0],\n"
-	str += "		'rotq': [0,0,0,1]\n"
-	str += "	}"
-	return str
+	s += "		'name': 'xxx',\n"
+	s += "		'pos': [{{vecToJson(pos)}}],\n"
+	s += "		'scl': [1,1,1],\n"
+	s += "		'rot': [0,0,0],\n"
+	s += "		'rotq': [0,0,0,1]\n"
+	s += "	}"
+	return s
 
-func main()
-	if !hui.file_dialog_save(edward, "Save JSON", "", "*.js", "*.js")
-		return
-	File *f = Filesystem.create_text(hui.filename)
+func save_file(filename: Path)
+	var f = Filesystem.create_text(filename)
 	
 	int n_tria = 0
 	for p in model.mesh.polygon
 		n_tria += p.side.num - 2
-	
+
 	string s = "{'metadata':{\n"
 	s += "	'formatVersion': 3,\n"
 	s += "	'generatedBy': 'Edward',\n"
@@ -215,3 +213,8 @@ func main()
 	s = s.replace("'", "\"")
 	f << s
 	del f
+
+
+func main()
+	hui.file_dialog_save(edward, "Save JSON", "", ["filter=*.js"], save_file)
+	

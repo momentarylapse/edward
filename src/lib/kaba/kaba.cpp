@@ -8,7 +8,8 @@
 \*----------------------------------------------------------------------------*/
 #include "../file/file.h"
 #include "kaba.h"
-#include "syntax/Parser.h"
+#include "parser/Parser.h"
+#include "parser/Concretifier.h"
 #include "Interpreter.h"
 #include <cassert>
 
@@ -23,7 +24,7 @@
 
 namespace kaba {
 
-string Version = "0.19.18.5";
+string Version = "0.19.19.0";
 
 //#define ScriptDebug
 
@@ -31,13 +32,18 @@ string Version = "0.19.18.5";
 Exception::Exception(const string &_message, const string &_expression, int _line, int _column, Module *s) :
 	Asm::Exception(_message, _expression, _line, _column)
 {
-	text +=  ", " + s->filename.str();
+	filename = s->filename;
 }
 
 Exception::Exception(const Asm::Exception &e, Module *s, Function *f) :
 	Asm::Exception(e)
 {
-	text = format("assembler: %s, %s: %s", message(), f->long_name(), s->filename);
+	filename = s->filename;
+	text = format("assembler: %s, %s", message(), f->long_name());
+}
+
+string Exception::message() const {
+	return format("%s, %s", Asm::Exception::message(), filename);
 }
 
 
@@ -291,20 +297,20 @@ void execute_single_command(const string &cmd) {
 		msg_write("ABSTRACT SINGLE:");
 		func->block->show();
 	}
-	parser->concretify_node(func->block.get(), func->block.get(), func->name_space);
+	parser->con.concretify_node(func->block.get(), func->block.get(), func->name_space);
 	
 	// implicit print(...)?
 	if (func->block->params.num > 0 and func->block->params[0]->type != TypeVoid) {
-		auto n = parser->add_converter_str(func->block->params[0], true);
+		auto n = parser->con.add_converter_str(func->block->params[0], true);
 		
 		auto f = tree->required_func_global("print");
 
-		auto cmd = tree->add_node_call(f);
+		auto cmd = add_node_call(f);
 		cmd->set_param(0, n);
 		func->block->params[0] = cmd;
 	}
 	for (auto *c: tree->owned_classes)
-		parser->auto_implement_functions(c);
+		parser->auto_implementer.auto_implement_functions(c);
 	//ps->show("aaaa");
 
 

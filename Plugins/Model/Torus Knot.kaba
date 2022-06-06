@@ -40,7 +40,7 @@ class TorusDialog extends Dialog
 	
 		event("ok", on_ok)
 
-	func on_ok()
+	func mut on_ok()
 		int nx = get_int("nx")
 		int ny = get_int("ny")
 		if gcd(nx, ny) != 1

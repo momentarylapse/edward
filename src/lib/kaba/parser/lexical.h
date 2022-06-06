@@ -1,6 +1,8 @@
 
-#ifndef LEXICAL_H_
-#define LEXICAL_H_
+#ifndef SRC_LIB_KABA_PARSER_LEXICAL_H_
+#define SRC_LIB_KABA_PARSER_LEXICAL_H_
+
+#include "../../base/base.h"
 
 namespace kaba {
 
@@ -66,7 +68,9 @@ public:
 	int next_line_indent() const;
 
 	int cur_token() const;
+	int consume_token();
 	void next();
+	string consume();
 	void rewind();
 	bool end_of_line() const;
 	bool almost_end_of_line() const;
@@ -118,4 +122,4 @@ inline bool is_sign(char c) {
 
 };
 
-#endif /* LEXICAL_H_ */
+#endif /* SRC_LIB_KABA_PARSER_LEXICAL_H_ */
