@@ -300,15 +300,15 @@ void Window::set_projection_matrix() {
 	float cy = (dest.y1 + dest.y2) / 2;
 	if (type == VIEW_PERSPECTIVE){
 		float height = dest.height();
-		nix::set_projection_perspective_ext(cx, cy, height, height, r / 1000, r * 1000);
+		nix::set_projection_perspective_ext({cx, cy}, {height, height}, r / 1000, r * 1000);
 		reflection_matrix = matrix::scale( 1, -1, 1);
 	}else if (type == VIEW_2D){
 		float height = zoom();
-		nix::set_projection_ortho_ext(cx, cy, -height, height, -1, 1);
+		nix::set_projection_ortho_ext({cx, cy}, {-height, height}, -1, 1);
 		reflection_matrix = matrix::scale( -1, 1, 1);
 	}else{
 		float height = zoom();
-		nix::set_projection_ortho_ext(cx, cy, height, -height, - r * 100, r * 100);
+		nix::set_projection_ortho_ext({cx, cy}, {height, -height}, - r * 100, r * 100);
 		reflection_matrix = matrix::scale( 1, -1, 1);
 	}
 	projection_matrix = nix::projection_matrix;
