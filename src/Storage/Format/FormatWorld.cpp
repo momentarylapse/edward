@@ -18,7 +18,11 @@
 #include "../../y/World.h"
 #include "../../y/EngineData.h"
 #include "../../y/ModelManager.h"
-#include "../../lib/xfile/xml.h"
+#include "../../lib/os/date.h"
+#include "../../lib/os/file.h"
+#include "../../lib/os/filesystem.h"
+#include "../../lib/os/formatter.h"
+#include "../../lib/doc/xml.h"
 
 FormatWorld::FormatWorld() : TypedFormat<DataWorld>(FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
 }
@@ -52,7 +56,7 @@ static color s2c(const string &s) {
 void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	data->reset();
 
-	string x = FileReadText(filename);
+	string x = os::fs::read_text(filename);
 	msg_write(x.head(10));
 	if (x[0] == 't')
 		_load_old(filename, data, deep);
@@ -235,15 +239,17 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 
 void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 
-	File *f = NULL;
+	TextLinesFormatter *f = nullptr;
 	int ffv;
 
 	try{
 
-		f = FileOpenText(filename);
-		data->file_time = f->mtime().time;
+		f = new TextLinesFormatter(os::fs::open(filename, "rt"));
+		data->file_time = os::fs::mtime(filename).time;
 
-	ffv = f->ReadFileFormatVersion();
+	//ffv = f->ReadFileFormatVersion();
+		f->read(1);
+		ffv = f->read_word();
 
 	if ((ffv==10) or (ffv==9)){ // new format
 		// Terrains
@@ -351,10 +357,10 @@ void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 	}else{
 		throw Exception(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename.c_str(), ffv, 8, 10));
 	}
-	FileClose(f);
+	delete f;
 
 	}catch(Exception &e){
-		FileClose(f);
+		delete f;
 		throw e;
 	}
 }

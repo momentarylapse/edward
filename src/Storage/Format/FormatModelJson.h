@@ -12,7 +12,7 @@
 #include "../../Data/Model/DataModel.h"
 
 class DataModel;
-class File;
+class TextLinesFormatter;
 
 class FormatModelJson : public TypedFormat<DataModel> {
 public:
@@ -59,7 +59,7 @@ public:
 	void importBoneIndices(DataModel *m, Value *v, int num_influences);
 	void importMoves(DataModel *m, Value *v);
 
-	File *f;
+	TextLinesFormatter *f;
 };
 
 #endif /* SRC_STORAGE_FORMAT_FORMATMODELJSON_H_ */

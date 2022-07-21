@@ -13,11 +13,12 @@
 #include "ActionController.h"
 #include "CameraController.h"
 #include "SingleData.h"
+#include "../lib/os/time.h"
 #include "../lib/nix/nix.h"
 #include "../lib/math/plane.h"
 
 
-hui::Timer timer;
+os::Timer timer;
 
 namespace MultiView{
 

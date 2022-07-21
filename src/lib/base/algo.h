@@ -9,7 +9,6 @@
 #define SRC_LIB_BASE_ALGO_H_
 
 #include "array.h"
-#include <functional>
 
 template<class T, class F>
 T *find_if(const Array<T> &array, F f) {
@@ -88,15 +87,6 @@ Array<U> transform(const Array<T> &array, F f) {
 	Array<U> r;
 	for (T &e: array)
 		r.add(f(e));
-	return r;
-}
-
-template<class T>
-Array<T> reverse(const Array<T> &array) {
-	Array<T> r;
-	r.resize(array.num);
-	for (int i=0; i<array.num; i++)
-		r[array.num - i - 1] = array[i];
 	return r;
 }
 

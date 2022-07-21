@@ -14,8 +14,9 @@
 #include "Format/FormatModelPly.h"
 #include "Format/FormatTerrain.h"
 #include "Format/FormatWorld.h"
-#include "../Edward.h"
+#include "../lib/os/filesystem.h"
 #include "../y/EngineData.h"
+#include "../Edward.h"
 
 Storage *storage = nullptr;
 
@@ -166,7 +167,7 @@ void Storage::auto_save(Data *data, Callback on_success) {
 
 void Storage::guess_root_directory(const Path &filename) {
 	for (auto &d: filename.all_parents())
-		if (file_exists(d << "game.ini")) {
+		if (os::fs::exists(d << "game.ini")) {
 			set_root_directory(d);
 			return;
 		}
@@ -182,7 +183,7 @@ void Storage::set_root_directory(const Path &_directory, bool compact_mode) {
 
 	root_dir = directory;
 
-	compact_mode = !file_exists(root_dir << "game.ini");
+	compact_mode = !os::fs::exists(root_dir << "game.ini");
 
 
 	for (int i=0; i<NUM_FDS; i++) {

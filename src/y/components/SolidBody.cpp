@@ -14,7 +14,7 @@
 #include "../../y/Entity.h"
 #include "../../y/EngineData.h"
 #include "../../lib/math/quaternion.h"
-#include "../../lib/file/msg.h"
+#include "../../lib/os/msg.h"
 
 const kaba::Class *SolidBody::_class = nullptr;
 

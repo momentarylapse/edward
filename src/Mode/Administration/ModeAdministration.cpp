@@ -6,11 +6,12 @@
  */
 
 #include "ModeAdministration.h"
-#include "../../Data/Administration/DataAdministration.h"
-#include "../../Data/Administration/GameIniData.h"
 #include "Dialog/AdministrationDialog.h"
 #include "Dialog/ConfigurationDialog.h"
 #include "Dialog/NewProjectDialog.h"
+#include "../../lib/os/filesystem.h"
+#include "../../Data/Administration/DataAdministration.h"
+#include "../../Data/Administration/GameIniData.h"
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
 
@@ -53,9 +54,9 @@ void ModeAdministration::ExportGame() {
 
 void ModeAdministration::create_project_dir(const Path &dir) {
 	for (int k=0; k<NUM_FDS; k++)
-		dir_create(dir << Storage::CANONICAL_SUB_DIR[k]);
+		os::fs::create_directory(dir << Storage::CANONICAL_SUB_DIR[k]);
 
-	if (!file_exists(dir << "game.ini")) {
+	if (!os::fs::exists(dir << "game.ini")) {
 		GameIniData gi;
 		gi.reset_default();
 		gi.save(dir);
@@ -77,7 +78,7 @@ bool ModeAdministration::open() {
 	hui::file_dialog_dir(hui::CurWindow, _("Open project directory"), "", {}, [this] (const Path &path) {
 		if (!path)
 			return;
-		if (!file_exists(path << "game.ini")) {
+		if (!os::fs::exists(path << "game.ini")) {
 			ed->error_box(_("game.ini not found"));
 			//return false;
 		}

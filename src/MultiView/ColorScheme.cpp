@@ -6,7 +6,7 @@
  */
 
 #include "ColorScheme.h"
-#include "../lib/hui/Config.h"
+#include "../lib/hui/hui.h"
 
 
 ColorScheme scheme;

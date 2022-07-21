@@ -1,4 +1,4 @@
-#include "../file/file.h"
+#include "../base/base.h"
 
 #ifndef __ANY_INCLUDED__
 #define __ANY_INCLUDED__
@@ -68,7 +68,7 @@ public:
 	const Any &operator[] (int index) const;
 	Any &operator[] (int index);
 	Any &_cdecl back();
-	int length();
+	int length() const;
 	
 	int& as_int() const;
 	float& as_float() const;

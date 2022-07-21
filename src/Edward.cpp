@@ -27,12 +27,13 @@
 #include "y/EngineData.h"
 #include "meta.h"
 #include "y/Font.h"
+#include "lib/doc/config.h"
 #include "lib/kaba/kaba.h"
 #include "lib/nix/nix.h"
 #include "y/ModelManager.h"
 
-Edward *ed = NULL;
-EdwardApp *app = NULL;
+Edward *ed = nullptr;
+EdwardApp *app = nullptr;
 
 extern string AppName;
 
@@ -112,7 +113,7 @@ void Edward::idle_function()
 		hui::Sleep(0.010f);*/
 }
 
-Edward::Edward(Array<string> arg) :
+Edward::Edward() :
 	hui::Window(AppName, 800, 600)
 {
 	set_border_width(0);
@@ -236,8 +237,7 @@ Edward::Edward(Array<string> arg) :
 
 
 
-	if (!handle_arguments(arg))
-		universal_new(FD_MODEL);
+	//universal_new(FD_MODEL);
 
 	//hui::SetIdleFunction([=]{ idleFunction(); });
 	hui::run_later(0.010f, [=]{ cur_mode->multi_view->force_redraw(); });
@@ -271,6 +271,7 @@ Edward::~Edward() {
 	app->end();
 }
 
+#if 0
 bool Edward::handle_arguments(Array<string> arg)
 {
 	if (arg.num < 2)
@@ -332,6 +333,7 @@ bool Edward::handle_arguments(Array<string> arg)
 	}
 	return true;
 }
+#endif
 
 void Edward::optimize_current_view() {
 	cur_mode->optimize_view_recursice();
@@ -462,7 +464,7 @@ void Edward::on_draw_gl() {
 }
 
 void Edward::load_key_codes() {
-	hui::Configuration con;
+	Configuration con;
 
 	// first installed version
 	con.load(app->directory_static << "keys.txt");

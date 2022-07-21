@@ -7,7 +7,8 @@
 
 #include "LightmapPhotonMap.h"
 #include "LightmapData.h"
-#include "../../../lib/file/file.h"
+#include "../../../lib/os/file.h"
+#include "../../../lib/os/time.h"
 #include "../../../lib/image/image.h"
 #include "../../Model/DataModel.h"
 #include "../../../Stuff/Progress.h"
@@ -75,7 +76,7 @@ void LightmapPhotonMap::DoStep(int index, int worker_id)
 
 bool LightmapPhotonMap::OnStatus()
 {
-	hui::Sleep(0.050f);
+	os::sleep(0.050f);
 	int cur = done + get_done();
 	ed->progress->set(format(_("%d of %d"), cur, num_photons), (float)cur / (float)num_photons);
 	return !ed->progress->is_cancelled();

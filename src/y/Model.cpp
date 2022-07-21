@@ -29,7 +29,7 @@
 #include "../lib/math/complex.h"
 #include "../meta.h"
 #include "../graphics-impl.h"
-#include "../lib/file/msg.h"
+#include "../lib/os/msg.h"
 #include "components/Animator.h"
 
 

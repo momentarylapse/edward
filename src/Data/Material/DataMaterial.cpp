@@ -9,6 +9,8 @@
 #include "ShaderGraph.h"
 #include "../../Storage/Storage.h"
 #include "../../lib/nix/nix.h"
+#include "../../lib/os/filesystem.h"
+#include "../../lib/os/file.h"
 #include "../../y/ResourceManager.h"
 
 
@@ -107,10 +109,10 @@ void DataMaterial::ShaderData::load_from_file() {
 		set_engine_default();
 		return;
 	}
-	if (file_exists(ResourceManager::shader_dir << file)) {
-		code = FileReadText(ResourceManager::shader_dir << file);
+	if (os::fs::exists(ResourceManager::shader_dir << file)) {
+		code = os::fs::read_text(ResourceManager::shader_dir << file);
 	}
-	if (file_exists(ResourceManager::shader_dir << file.with(".graph"))) {
+	if (os::fs::exists(ResourceManager::shader_dir << file.with(".graph"))) {
 		graph->load(ResourceManager::shader_dir << file.with(".graph"));
 		code = graph->build_source();
 		from_graph = true;
@@ -138,7 +140,7 @@ void DataMaterial::ShaderData::set_engine_default() {
 void DataMaterial::ShaderData::save_to_file() {
 	if (file) {
 		code = graph->build_source();
-		FileWriteText(ResourceManager::shader_dir << file, code);
+		os::fs::write_text(ResourceManager::shader_dir << file, code);
 		graph->save(ResourceManager::shader_dir << file.with(".graph"));
 		from_graph = true;
 		is_default = false;

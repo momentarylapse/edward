@@ -11,6 +11,8 @@
 #include "../../Data/Model/ModelMesh.h"
 #include "../../Data/Model/ModelPolygon.h"
 #include "../../y/components/Animator.h"
+#include "../../lib/os/file.h"
+#include "../../lib/os/formatter.h"
 #include "../../lib/math/quaternion.h"
 
 FormatModelJson::FormatModelJson() : TypedFormat<DataModel>(FD_MODEL, "json", _("Model json"), Flag::READ_WRITE) {
@@ -132,7 +134,7 @@ string boneToJson(ModelBone &b)
 
 void FormatModelJson::_save(const Path &filename, DataModel *m) {
 
-	File *f = FileCreateText(filename);
+	auto *f = new TextLinesFormatter(os::fs::open(filename, "rt"));
 
 	int n_tria = 0;
 	for (int ip=0; ip<m->mesh->polygon.num; ip++){
@@ -285,7 +287,7 @@ string FormatModelJson::rnext()
 	string s;
 	for (int i=0; i<256; i++){
 		char c = f->read_char();
-		if (f->end())
+		if (f->is_end())
 			return "";
 		if (is_whitespace(c))
 			continue;
@@ -305,7 +307,7 @@ string FormatModelJson::rnext()
 			if (is_string)
 				if (c == '\"')
 					break;
-			if (f->end())
+			if (f->is_end())
 				return s;
 		}
 		break;
@@ -623,10 +625,10 @@ void FormatModelJson::_load(const Path &filename, DataModel *m, bool deep) {
 	m->action_manager->enable(false);
 
 	try{
-	f = FileOpenText(filename);
+	f = new TextLinesFormatter(os::fs::open(filename, "rt"));
 
 	msg_write("lexical");
-	while (!f->end())
+	while (!f->is_end())
 		tokens.add(rnext());
 	cur_token = 0;
 

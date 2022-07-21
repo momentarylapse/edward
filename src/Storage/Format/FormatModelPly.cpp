@@ -10,18 +10,20 @@
 #include "../../Data/Model/DataModel.h"
 #include "../../Data/Model/ModelMesh.h"
 #include "../../Data/Model/ModelPolygon.h"
+#include "../../lib/os/file.h"
+#include "../../lib/os/formatter.h"
 
 FormatModelPly::FormatModelPly() : TypedFormat<DataModel>(FD_MODEL, "ply", _("Model ply"), Flag::READ) {
 }
 
 void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
-	File *f = NULL;
+	TextLinesFormatter *f = nullptr;
 
 	//m->material.add(new ModelMaterial());
 
 	try {
 
-	f = FileOpenText(filename);
+	f = new TextLinesFormatter(os::fs::open(filename, "rt"));
 
 	struct Element {
 		string name;

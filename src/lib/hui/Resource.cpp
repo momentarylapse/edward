@@ -1,4 +1,7 @@
 #include "hui.h"
+#include "../os/file.h"
+#include "../os/filesystem.h"
+#include "../os/formatter.h"
 #include "../math/math.h"
 #include "Controls/Control.h"
 #include "internal.h"
@@ -47,7 +50,7 @@ Resource *Resource::get_node(const string &id) const {
 	return nullptr;
 }
 
-void load_resource_command7(File *f, Resource *c) {
+void load_resource_command7(TextLinesFormatter *f, Resource *c) {
 	c->type = f->read_str();
 	c->id = f->read_str();
 	if (c->id == "?")
@@ -88,10 +91,10 @@ void load_resource(const Path &filename) {
 	_languages_.clear();
 
 	try{
-		File *f = FileOpenText(filename);
-		int ffv = f->ReadFileFormatVersion();
+		auto f = new TextLinesFormatter(os::fs::open(filename, "rt"));
+		int ffv = f->read_str().sub_ref(1)._int();
 		if (ffv != 7) {
-			FileClose(f);
+			delete f;
 			msg_error("hui resource version is " + i2s(ffv) + " (7 expected)");
 			return;
 		}
@@ -145,8 +148,8 @@ void load_resource(const Path &filename) {
 			}
 			_languages_.add(hl);
 		}
-		FileClose(f);
-	}catch(Exception &e) {
+		delete f;
+	} catch (Exception &e) {
 		msg_error(e.message());
 	}
 }

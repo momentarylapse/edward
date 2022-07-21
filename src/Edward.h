@@ -10,6 +10,7 @@
 
 #include "lib/hui/hui.h"
 #include "lib/base/map.h"
+#include "lib/os/time.h"
 #include "Mode/Mode.h"
 #include "Stuff/Progress.h"
 #include "Stuff/PluginManager.h"
@@ -54,10 +55,9 @@ enum {
 
 class Edward : public hui::Window {
 public:
-	Edward(Array<string> arg);
+	Edward();
 	~Edward() override;
 
-	bool handle_arguments(Array<string> arg);
 	void load_key_codes();
 
 	void idle_function();
@@ -126,7 +126,7 @@ public:
 	Map<nix::Texture*, string> icon_image;
 	string get_tex_image(nix::Texture *tex);
 
-	hui::Timer timer;
+	os::Timer timer;
 };
 
 extern Edward *ed;

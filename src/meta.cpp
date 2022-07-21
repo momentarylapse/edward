@@ -22,7 +22,7 @@
 |                                                                              |
 | last updated: 2009.12.09 (c) by MichiSoft TM                                 |
 \*----------------------------------------------------------------------------*/
-#include "lib/file/file.h"
+#include "lib/os/msg.h"
 #include "meta.h"
 #ifdef _X_ALLOW_X_
 #else // for use in Edward

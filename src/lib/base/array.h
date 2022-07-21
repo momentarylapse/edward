@@ -208,7 +208,10 @@ public:
 		s.data = ((T*)this->data) + start;
 		return s;
 	}
-	Array<T> _cdecl sub_ref(int start, int end = MAGIC_END_INDEX) const {
+	const Array<T> _cdecl sub_ref(int start, int end = MAGIC_END_INDEX) const {
+		return sub_ref_as<Array<T>>(start, end);
+	}
+	Array<T> _cdecl sub_ref_nc(int start, int end = MAGIC_END_INDEX) {
 		return sub_ref_as<Array<T>>(start, end);
 	}
 

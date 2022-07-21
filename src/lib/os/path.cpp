@@ -6,7 +6,7 @@
  */
 
 #include "path.h"
-#include "file_op.h"
+#include "filesystem.h"
 
 //const string SEPARATOR = "/";
 //const string SEPARATOR_OTHER = "\\";
@@ -88,6 +88,14 @@ bool Path::operator <(const Path &p) const {
 
 bool Path::operator >(const Path &p) const {
 	return compare(p) > 0;
+}
+
+bool Path::operator <=(const Path &p) const {
+	return compare(p) <= 0;
+}
+
+bool Path::operator >=(const Path &p) const {
+	return compare(p) >= 0;
 }
 
 Path::operator bool() const {
@@ -175,7 +183,7 @@ string Path::dirname() const {
 
 Path Path::absolute() const {
 	if (is_relative())
-		return get_current_dir() << *this;
+		return os::fs::current_directory() << *this;
 	return *this;
 }
 

@@ -19,6 +19,9 @@
 #include "../../y/EngineData.h"
 #include "../../y/Terrain.h"
 #include "../../lib/kaba/kaba.h"
+#include "../../lib/os/file.h"
+#include "../../lib/os/filesystem.h"
+#include "../../lib/os/date.h"
 #include "../../y/ModelManager.h"
 
 AdminFile::AdminFile() {
@@ -162,7 +165,7 @@ void AdminFile::check(AdminFileList &list)
 	// test file existence
 	try {
 		// file ok
-		int _time = file_mtime(storage->get_root_dir(Kind) << Name).time;
+		int _time = os::fs::mtime(storage->get_root_dir(Kind) << Name).time;
 		Missing = false;
 
 		// different time stamp -> rescan file
@@ -252,8 +255,8 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_SCRIPT){
 		try{
-			Time = file_mtime(kaba::config.directory << Name).time;
-			string buf = FileReadText(kaba::config.directory << Name);
+			Time = os::fs::mtime(kaba::config.directory << Name).time;
+			string buf = os::fs::read_text(kaba::config.directory << Name);
 			// would be better to compile the script and look for functions having a string constant as a parameter...
 			//   -> would automatically ignore comments and   function( "aaa" + b )
 			for (int i=0;i<buf.num;i++){
@@ -269,7 +272,7 @@ void AdminFile::check(AdminFileList &list)
 		}
 	} else {
 		try {
-			Time = file_mtime(storage->get_root_dir(Kind) << Name).time;
+			Time = os::fs::mtime(storage->get_root_dir(Kind) << Name).time;
 		} catch(...) {
 			Missing=true;
 		}

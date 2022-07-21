@@ -17,6 +17,7 @@
 #include "../../math/complex.h"
 #include "../../any/any.h"
 #include "../../base/callable.h"
+#include "../../os/msg.h"
 
 
 namespace kaba {
@@ -164,7 +165,7 @@ const Class *add_type_p(const Class *sub_type, Flags flag, const string &_name) 
 	string name = _name;
 	if (name == "") {
 		if (flags_has(flag, Flags::SHARED))
-			name = "shared " + sub_type->name;
+			name = sub_type->name + " shared";
 		else
 			name = sub_type->name + "*";
 	}
@@ -727,11 +728,11 @@ void init(Abi abi, bool allow_std_lib) {
 	SIAddPackageTime();
 	SIAddPackageOS();
 	SIAddPackageImage();
-	SIAddPackageHui();
+	SIAddPackageDoc();
+	SIAddPackageHui(); // depends on doc
 	SIAddPackageGl();
 	SIAddPackageNet();
 	SIAddPackageThread();
-	SIAddPackageDoc();
 	SIAddPackageVulkan();
 
 	add_package("base");

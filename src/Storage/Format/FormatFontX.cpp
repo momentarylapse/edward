@@ -7,6 +7,10 @@
 
 #include "FormatFontX.h"
 #include "../../Edward.h"
+#include "../../lib/os/date.h"
+#include "../../lib/os/file.h"
+#include "../../lib/os/filesystem.h"
+#include "../../lib/os/formatter.h"
 
 string str_m_to_utf8(const string &s) {
 	return s.replace("&a", "ä").replace("&o", "ö").replace("&u", "ü").replace("&A", "Ä").replace("&O", "Ö").replace("&U", "Ü").replace("&s", "ß");
@@ -20,10 +24,12 @@ void FormatFontX::_load(const Path &filename, DataFont *data, bool deep) {
 	int ffv;
 	data->reset();
 
-	File *f = FileOpenText(filename);
-	data->file_time = f->mtime().time;
+	auto f = new TextLinesFormatter(os::fs::open(filename, "rt"));
+	data->file_time = os::fs::mtime(filename).time;
 
-	ffv = f->ReadFileFormatVersion();
+	//ffv = f->ReadFileFormatVersion();
+	f->read(1);
+	ffv = f->read_word();
 	if (ffv == 1) {
 
 		f->read_comment();
@@ -103,8 +109,10 @@ void FormatFontX::_load(const Path &filename, DataFont *data, bool deep) {
 
 void FormatFontX::_save(const Path &filename, DataFont *data) {
 
-	File *f = FileCreateText(filename);
-	f->WriteFileFormatVersion(false, 2);
+	auto f = new TextLinesFormatter(os::fs::open(filename, "wt"));
+	//f->WriteFileFormatVersion(false, 2);
+	f->write("t");
+	f->write_word(2);
 
 	f->write_comment("// Texture");
 	f->write_str(data->global.TextureFile.str());

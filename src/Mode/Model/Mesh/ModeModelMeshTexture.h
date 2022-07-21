@@ -10,7 +10,6 @@
 
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
-#include "../../../lib/file/file.h"
 
 class DataModel;
 class ModelMaterialDialog;

@@ -1,6 +1,7 @@
 #include "image.h"
-#include "../file/file.h"
-#include "../math/math.h"
+#include "../os/msg.h"
+#include "../os/path.h"
+#include "../os/filesystem.h"
 
 #include "image_bmp.h"
 #include "image_tga.h"
@@ -45,7 +46,7 @@ void Image::_load_flipped(const Path &filename) {
 	data.clear();
 
 	// file ok?
-	if (!file_exists(filename)) {
+	if (!os::fs::exists(filename)) {
 		msg_error("Image.load: file does not exist: " + filename.str());
 		return;
 	}

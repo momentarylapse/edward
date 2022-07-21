@@ -10,9 +10,12 @@
 #include "../../../Data/Model/ModelMesh.h"
 #include "../../../Data/Model/ModelPolygon.h"
 #include "../../../Mode/Model/ModeModel.h"
-#include "../../../Edward.h"
 #include "../../../y/ModelManager.h"
 #include "../../../y/components/Animator.h"
+#include "../../../lib/os/file.h"
+#include "../../../lib/os/filesystem.h"
+#include "../../../lib/os/formatter.h"
+#include "../../../Edward.h"
 
 vector get_normal_by_index(int index);
 
@@ -90,20 +93,20 @@ void guess_smooth_groups(DataModel *m) {
 	msg_write(format(" %d smooth groups found", groups.num));
 }
 
-File *load_file_x(const Path &filename, int &version);
+BinaryFormatter *load_file_x(const Path &filename, int &version);
 
 void FormatModel::_load_old(const Path &filename, DataModel *data, bool deep) {
 	// old format
 
 	int ffv;
-	File *f = load_file_x(filename, ffv);
+	auto f = load_file_x(filename, ffv);
 
 	if (ffv == 10) {
 		_load_v10(f, data, deep);
 	} else if (ffv == 11) {
 		_load_v11(f, data, deep);
 
-		if (file_exists(filename.with(".edit"))) {
+		if (os::fs::exists(filename.with(".edit"))) {
 			int ffv2;
 			auto ff = load_file_x(filename.with(".edit"), ffv2);
 			_load_v11_edit(ff, data, deep);
@@ -117,7 +120,8 @@ void FormatModel::_load_old(const Path &filename, DataModel *data, bool deep) {
 }
 
 
-void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
+template<class F>
+void FormatModel::_load_v10(F *f, DataModel *data, bool deep) {
 
 	Array<vector> skin_vert;
 
@@ -392,7 +396,8 @@ void FormatModel::_load_v10(File *f, DataModel *data, bool deep) {
 }
 
 
-void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
+template<class F>
+void FormatModel::_load_v11(F *f, DataModel *data, bool deep) {
 
 
 	Array<vector> skin_vert;
@@ -744,7 +749,8 @@ void FormatModel::_load_v11(File *f, DataModel *data, bool deep) {
 	guess_smooth_groups(data);
 }
 
-void FormatModel::_load_v11_edit(File *f, DataModel *data, bool deep) {
+template<class F>
+void FormatModel::_load_v11_edit(F *f, DataModel *data, bool deep) {
 
 // optional data / additional data for editing
 	while (true) {
@@ -831,9 +837,11 @@ void FormatModel::_load_v11_edit(File *f, DataModel *data, bool deep) {
 
 void FormatModel::_save_v11(const Path &filename, DataModel *data) {
 
-	File *f = FileCreate(filename);
-	f->WriteFileFormatVersion(true, 11);//FFVBinary, 11);
-	f->float_decimals = 5;
+	auto f = new BinaryFormatter(os::fs::open(filename, "wb"));
+	//f->WriteFileFormatVersion(true, 11);//FFVBinary, 11);
+	f->write("b");
+	f->write_word(11);
+	//f->float_decimals = 5;
 
 
 
@@ -853,5 +861,5 @@ void FormatModel::_save_v11(const Path &filename, DataModel *data) {
 	f->write_int(data->meta_data.detail_factor[1]);
 	f->write_int(data->meta_data.detail_factor[2]);
 
-	FileClose(f);
+	delete f;
 }

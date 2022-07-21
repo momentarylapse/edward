@@ -12,7 +12,7 @@
 #include "../../Data/Model/DataModel.h"
 
 class DataModel;
-class File;
+class BinaryFormatter;
 
 class FormatModel3ds : public TypedFormat<DataModel> {
 public:
@@ -21,7 +21,7 @@ public:
 	void _load(const Path &filename, DataModel *data, bool deep) override;
 	void _save(const Path &filename, DataModel *data) override;
 
-	void load_mesh(DataModel *m, File *f, int _length);
+	void load_mesh(DataModel *m, BinaryFormatter *f, int _length);
 };
 
 #endif /* SRC_STORAGE_FORMAT_FORMATMODEL3DS_H_ */

@@ -10,6 +10,8 @@
 #include "../../Data/Model/DataModel.h"
 #include "../../Data/Model/ModelMesh.h"
 #include "../../Data/Model/ModelPolygon.h"
+#include "../../lib/os/file.h"
+#include "../../lib/os/formatter.h"
 
 FormatModel3ds::FormatModel3ds() : TypedFormat<DataModel>(FD_MODEL, "3ds", _("Model 3ds"), Flag::READ) {
 }
@@ -18,7 +20,7 @@ void FormatModel3ds::_load(const Path &filename, DataModel *m, bool deep) {
 
 	m->reset();
 
-	File *f = FileOpen(filename);
+	auto f = new BinaryFormatter(os::fs::open(filename, "rb"));
 
 	while(true){
 		int id = f->read_word();
@@ -60,7 +62,7 @@ void FormatModel3ds::_load(const Path &filename, DataModel *m, bool deep) {
 			break;
 	}
 
-	FileClose(f);
+	delete f;
 
 	m->import_from_triangle_mesh(1);
 	m->reset_history();
@@ -68,7 +70,7 @@ void FormatModel3ds::_load(const Path &filename, DataModel *m, bool deep) {
 
 
 
-void FormatModel3ds::load_mesh(DataModel *m, File *f, int _length)
+void FormatModel3ds::load_mesh(DataModel *m, BinaryFormatter *f, int _length)
 {
 	msg_right();
 	int NumVerticesOld = m->triangle_mesh[1].vertex.num;

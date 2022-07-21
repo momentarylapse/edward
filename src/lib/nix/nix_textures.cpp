@@ -11,7 +11,8 @@
 #include "nix.h"
 #include "nix_common.h"
 #include "../image/image.h"
-#include "../file/file.h"
+#include "../os/msg.h"
+#include "../os/filesystem.h"
 
 // management:
 //  Texture.load()
@@ -173,7 +174,7 @@ Texture *Texture::load(const Path &filename) {
 		return nullptr;
 
 	// test existence
-	if (!file_exists(filename))
+	if (!os::fs::exists(filename))
 		throw Exception("texture file does not exist: " + filename.str());
 
 	Texture *t = new Texture;
@@ -192,7 +193,7 @@ void Texture::reload() {
 	msg_write("loading texture: " + filename.str());
 
 	// test the file's existence
-	if (!file_exists(filename))
+	if (!os::fs::exists(filename))
 		throw Exception("texture file does not exist!");
 
 	string extension = filename.extension();

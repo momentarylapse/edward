@@ -9,7 +9,9 @@
 #include "WorldTerrain.h"
 #include "../../y/EngineData.h"
 #include "../../y/Terrain.h"
-#include "../../lib/file/file.h"
+#include "../../lib/os/file.h"
+#include "../../lib/os/filesystem.h"
+#include "../../lib/os/formatter.h"
 
 
 bool WorldTerrain::load(const Path &_filename, bool deep) {
@@ -31,12 +33,14 @@ bool WorldTerrain::save(const Path &_filename) {
 	filename = _filename.relative_to(engine.map_dir).no_ext();
 
 
-	File *f = NULL;
+	BinaryFormatter *f = nullptr;
 
 	try{
-		f = FileCreate(_filename);
+		f = new BinaryFormatter(os::fs::open(_filename, "wb"));
 
-	f->WriteFileFormatVersion(true, 4);
+		//f->WriteFileFormatVersion(true, 4);
+	f->write_byte('b');
+	f->write_word(4);
 	f->write_byte(0);
 
 	// Metrics
@@ -61,7 +65,7 @@ bool WorldTerrain::save(const Path &_filename) {
 		for (int z=0;z<terrain->num_z+1;z++)
 			f->write_float(terrain->height[x*(terrain->num_z+1) + z]);
 
-	FileClose(f);
+	delete f;
 
 	}catch(Exception &e){}
 

@@ -21,7 +21,9 @@
 #include "ResourceManager.h"
 #endif
 #include "../graphics-impl.h"
-#include "../lib/file/file.h"
+#include "../lib/os/file.h"
+#include "../lib/os/formatter.h"
+#include "../lib/os/msg.h"
 
 const kaba::Class *Terrain::_class = nullptr;
 
@@ -55,10 +57,14 @@ bool Terrain::load(const Path &_filename_, bool deep) {
 	reset();
 
 	filename = _filename_;
-	File *f = FileOpen(engine.map_dir << filename.with(".map"));
+	auto f = new BinaryFormatter(os::fs::open(engine.map_dir << filename.with(".map"), "rb"));
 	if (f) {
+		//int ffv = f->read_ReadFileFormatVersion();
 
-		int ffv = f->ReadFileFormatVersion();
+		char c = f->read_char();
+		if (c != 'b')
+			return false;
+		int ffv = f->read_word();
 		if (ffv == 4) {
 			f->read_byte();
 			// Metrics
@@ -110,7 +116,7 @@ bool Terrain::load(const Path &_filename_, bool deep) {
 			error = true;
 		}
 
-		FileClose(f);
+		delete f;
 
 
 		// generate normal vectors
@@ -125,6 +131,7 @@ bool Terrain::load(const Path &_filename_, bool deep) {
 	} else {
 		error = true;
 	}
+	msg_write("/terrain");
 	msg_left();
 	return !error;
 }

@@ -1,5 +1,7 @@
 #include "ResourceManager.h"
-#include "../lib/file/file.h"
+#include "../lib/os/filesystem.h"
+#include "../lib/os/file.h"
+#include "../lib/os/msg.h"
 #include "../lib/nix/nix.h"
 #ifdef _X_USE_HUI_
 	#include "../lib/hui/hui.h"
@@ -22,7 +24,7 @@ Path guess_absolute_path(const Path &filename, const Array<Path> dirs) {
 		return filename;
 
 	for (auto &d: dirs)
-		if (file_exists(d << filename))
+		if (os::fs::exists(d << filename))
 			return d << filename;
 
 	return Path::EMPTY;
@@ -121,7 +123,7 @@ Shader* ResourceManager::load_surface_shader(const Path& _filename, const string
 
 	msg_write("loading shader: " + fnx.str());
 
-	string source = expand_vertex_shader_source(FileReadText(fn), variant);
+	string source = expand_vertex_shader_source(os::fs::read_text(fn), variant);
 	source = expand_fragment_shader_source(source, render_path);
 	auto shader = Shader::create(source);
 

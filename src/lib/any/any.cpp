@@ -1,8 +1,8 @@
 #include "any.h"
 #include "../base/map.h"
-#include "../config.h"
+#include "../os/msg.h"
 
-#ifdef _X_USE_KABA_
+#if __has_include("../kaba/kaba.h")
 #include "../kaba/kaba.h"
 namespace kaba {
 	extern const Class *TypeAnyList;
@@ -360,6 +360,11 @@ void any_parse_part(Any &a, const Array<string> &tokens, int &pos) {
 		a.create_type(Any::TYPE_ARRAY);
 		pos ++;
 		while (tokens[pos] != "]") {
+			if (tokens[pos] == ",") {
+				a.add(Any());
+				pos ++;
+				continue;
+			}
 			a.as_array().resize(a.as_array().num + 1);
 			any_parse_part(a.as_array().back(), tokens, pos);
 			if (tokens[pos] == "]")
@@ -414,6 +419,8 @@ void any_parse_part(Any &a, const Array<string> &tokens, int &pos) {
 
 Any Any::parse(const string &s) {
 	auto tokens = s.parse_tokens(",:[](){}\"");
+	if (tokens.num == 0)
+		return Any();
 	int pos = 0;
 
 	Any r;
@@ -426,7 +433,8 @@ bool Any::_bool() const {
 		return as_bool();
 	if (is_int())
 		return as_int() != 0;
-	throw Exception("can not interpret as bool: " + type_name(type));
+	return false;
+	//throw Exception("can not interpret as bool: " + type_name(type));
 }
 
 int Any::_int() const {
@@ -438,7 +446,8 @@ int Any::_int() const {
 		return (int)as_float();
 	if (is_string())
 		return as_string()._int();
-	throw Exception("can not interpret as int: " + type_name(type));
+	return 0;
+	//throw Exception("can not interpret as int: " + type_name(type));
 }
 
 float Any::_float() const {
@@ -448,7 +457,8 @@ float Any::_float() const {
 		return as_float();
 	if (is_string())
 		return as_string()._float();
-	throw Exception("can not interpret as float: " + type_name(type));
+	return 0;
+	//throw Exception("can not interpret as float: " + type_name(type));
 }
 
 void Any::operator = (const Any &a) {
@@ -561,7 +571,7 @@ void Any::append(const Any &a) {
 	}
 }
 
-int Any::length() {
+int Any::length() const {
 	if (is_array())
 		return as_array().num;
 	if (is_map())

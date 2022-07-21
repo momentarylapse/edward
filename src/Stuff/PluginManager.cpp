@@ -8,6 +8,7 @@
 #include "PluginManager.h"
 
 #include "../lib/kaba/kaba.h"
+#include "../lib/os/filesystem.h"
 #include "../Edward.h"
 #include "../MultiView/MultiView.h"
 #include "../MultiView/ActionController.h"
@@ -288,11 +289,11 @@ void PluginManager::link_plugins() {
 
 void PluginManager::find_plugins() {
 	Path dir0 = (PluginManager::directory << "Shader Graph").absolute();
-	auto list = dir_search(dir0, "*", "fd");
+	auto list = os::fs::search(dir0, "*", "fd");
 	for (auto &e: list) {
 		Path dir = dir0 << e;
-		if (file_is_directory(dir)) {
-			auto list2 = dir_search(dir, "*.kaba", "f");
+		if (os::fs::is_directory(dir)) {
+			auto list2 = os::fs::search(dir, "*.kaba", "f");
 			for (auto &e2: list2) {
 				Plugin p;
 				p.filename = dir << e2;

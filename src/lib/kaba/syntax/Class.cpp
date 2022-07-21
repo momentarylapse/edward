@@ -1,6 +1,6 @@
 #include "../../base/base.h"
 #include "../kaba.h"
-#include "../../file/file.h"
+#include "../../os/msg.h"
 #include "Class.h"
 
 namespace kaba {
@@ -71,6 +71,12 @@ bool type_match(const Class *given, const Class *wanted) {
 
 	// compatible pointers (of same or derived class)
 	if (given->is_pointer() and wanted->is_pointer()) {
+		if (given->param[0]->is_derived_from(wanted->param[0]))
+			return true;
+	}
+
+	// compatible shared pointers (of same or derived class)
+	if (given->is_pointer_shared() and wanted->is_pointer_shared()) {
 		if (given->param[0]->is_derived_from(wanted->param[0]))
 			return true;
 	}

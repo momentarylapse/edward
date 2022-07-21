@@ -130,7 +130,7 @@ bool ActionModelEasify::EasifyStep(ModelMesh *m) {
 	// remove least important
 	float min = 0;
 	foreachi(ModelEdge &e, m->edge, ei)
-		if ((e.weight < min) || (_edge < 0)) {
+		if ((e.weight < min) or (_edge < 0)) {
 			min = e.weight;
 			_edge = ei;
 		}
@@ -154,23 +154,21 @@ bool ActionModelEasify::EasifyStep(ModelMesh *m) {
 }
 
 
-ActionModelEasify::ActionModelEasify(float _factor)
-{
+ActionModelEasify::ActionModelEasify(float _factor) {
 	factor = _factor;
 }
 
-void *ActionModelEasify::compose(Data *d)
-{
+void *ActionModelEasify::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
-	hui::Timer t;
+	os::Timer t;
 
 	//CalculateWeights(m);
 	int n = (int)((float)m->edit_mesh->polygon.num * factor);
-	while(m->edit_mesh->polygon.num > n)
+	while (m->edit_mesh->polygon.num > n)
 		if (!EasifyStep(m->edit_mesh))
 			break;
 
 	float dt = t.get();
 	msg_write(format("easify: %f", dt));
-	return NULL;
+	return nullptr;
 }

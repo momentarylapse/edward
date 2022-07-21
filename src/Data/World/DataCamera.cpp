@@ -8,18 +8,19 @@
 #include "DataCamera.h"
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
+#include "../../lib/os/filesystem.h"
+#include "../../lib/os/file.h"
+#include "../../lib/os/formatter.h"
 
 DataCamera::DataCamera() :
 	Data(FD_CAMERAFLIGHT)
 {
 }
 
-DataCamera::~DataCamera()
-{
+DataCamera::~DataCamera() {
 }
 
-void DataCamera::reset()
-{
+void DataCamera::reset() {
 	filename = "";
 	Point.clear();
 	Vel.clear();
@@ -27,19 +28,19 @@ void DataCamera::reset()
 	notify();
 }
 
-bool DataCamera::load(const Path &_filename, bool deep)
-{
+bool DataCamera::load(const Path &_filename, bool deep) {
 	bool Error = false;
 	reset();
 
 	filename = _filename;
-	File *f = NULL;
+	TextLinesFormatter *f = nullptr;
 
 	try{
 
-	f = FileOpenText(filename);
-	int ffv=f->ReadFileFormatVersion();
-	if (ffv == 2){
+	f = new TextLinesFormatter(os::fs::open(filename, "rt"));
+	f->read(1);
+	int ffv=f->read_word();
+	if (ffv == 2) {
 
 		f->read_comment();
 		int n = f->read_int();
@@ -77,12 +78,11 @@ bool DataCamera::load(const Path &_filename, bool deep)
 			Point.add(c);
 		}
 
-		FileClose(f);
 	}else{
 		ed->error_box(format(_("Invalid file format of the file %s: %d (%d expected)!"), filename, ffv, 2));
 		Error=true;
 	}
-	delete(f);
+	delete f;
 	UpdateVel();
 	reset_history();
 	notify();
@@ -97,13 +97,14 @@ bool DataCamera::load(const Path &_filename, bool deep)
 bool DataCamera::save(const Path &_filename)
 {
 	filename = _filename;
-	File *f = NULL;
+	TextLinesFormatter *f = nullptr;
 
 	try{
 
-	f = FileCreateText(filename);
-	f->float_decimals = 4;
-	f->WriteFileFormatVersion(false, 2);
+	f = new TextLinesFormatter(os::fs::open(filename, "wt"));
+	//f->float_decimals = 4;
+	f->write("t");
+	f->write_word(2);
 
 	f->write_comment("// Number Of CamPoints");
 	f->write_int(Point.num);
@@ -132,12 +133,11 @@ bool DataCamera::save(const Path &_filename)
 	}
 	f->write_comment("#");
 
-	delete(f);
+	delete f;
 	ed->set_message(_("Camera script saved!"));
 	action_manager->mark_current_as_save();
 
-	}catch(Exception &e){
-		FileClose(f);
+	} catch(Exception &e) {
 		msg_error(e.message());
 	}
 

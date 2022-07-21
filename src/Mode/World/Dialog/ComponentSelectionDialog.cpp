@@ -8,12 +8,13 @@
 #include "ComponentSelectionDialog.h"
 #include "../../../Storage/Storage.h"
 #include "../../../lib/kaba/kaba.h"
+#include "../../../lib/os/filesystem.h"
 
 
 // seems quick enough
 Array<ScriptInstanceData> enumerate_components() {
 	Array<ScriptInstanceData> r;
-	auto files = dir_search(storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
+	auto files = os::fs::search(storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
 	for (auto &f: files) {
 		try {
 			auto s = kaba::load(storage->root_dir_kind[FD_SCRIPT] << f, true);

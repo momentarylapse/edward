@@ -6,14 +6,13 @@
 |                                                                              |
 | last updated: 2010.07.07 (c) by MichiSoft TM                                 |
 \*----------------------------------------------------------------------------*/
-#include "../file/file.h"
+#include "../os/file.h"
+#include "../os/msg.h"
 #include "kaba.h"
 #include "parser/Parser.h"
 #include "parser/Concretifier.h"
 #include "Interpreter.h"
 #include <cassert>
-
-#include "../config.h"
 
 #ifdef OS_LINUX
 	#include <sys/mman.h>
@@ -24,7 +23,7 @@
 
 namespace kaba {
 
-string Version = "0.19.19.0";
+string Version = "0.19.20.0";
 
 //#define ScriptDebug
 
@@ -171,14 +170,14 @@ void Module::load(const Path &_filename, bool _just_analyse) {
 		syntax->default_import();
 
 	// read file
-		string buffer = FileReadText(filename);
+		string buffer = os::fs::read_text(filename);
 		parser->parse_buffer(buffer, just_analyse);
 
 
 		if (!just_analyse)
 			compile();
 
-	} catch (FileError &e) {
+	} catch (os::fs::FileError &e) {
 		loading_module_stack.pop();
 		do_error("module file not loadable: " + filename.str());
 	} catch (Exception &e) {
@@ -269,8 +268,6 @@ void execute_single_command(const string &cmd) {
 	auto parser = new Parser(tree);
 	tree->parser = parser;
 
-	try {
-
 // find expressions
 	parser->Exp.analyse(tree, cmd);
 	if (parser->Exp.empty()) {
@@ -332,10 +329,6 @@ void execute_single_command(const string &cmd) {
 		void_func *f = (void_func*)func->address;
 		if (f)
 			f();
-	}
-
-	} catch(const Exception &e) {
-		e.print();
 	}
 }
 

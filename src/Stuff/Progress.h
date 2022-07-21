@@ -9,6 +9,7 @@
 #define PROGRESS_H_
 
 #include "../lib/hui/hui.h"
+#include "../lib/os/time.h"
 
 class Progress : public hui::EventHandler
 {
@@ -31,7 +32,7 @@ private:
 	hui::Window *dlg;
 	bool Cancelled;
 	string message;
-	hui::Timer timer;
+	os::Timer timer;
 	float time_running;
 };
 

@@ -28,7 +28,7 @@
 #include "../y/Component.h"
 #include "../lib/base/base.h"
 #include "../lib/base/pointer.h"
-#include "../lib/file/path.h"
+#include "../lib/os/path.h"
 #include "../lib/math/matrix.h"
 #include "../lib/math/matrix3.h"
 #include "../lib/math/plane.h"

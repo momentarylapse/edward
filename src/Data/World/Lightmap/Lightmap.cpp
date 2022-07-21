@@ -16,6 +16,7 @@
 #include "../../../Data/World/WorldTerrain.h"
 #include "../../../y/Terrain.h"
 #include "../../../y/EngineData.h"
+#include "../../../lib/os/filesystem.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../Storage/Storage.h"
 #include "../../../y/ModelManager.h"
@@ -136,9 +137,9 @@ void fuzzy_image(Image &im)
 bool Lightmap::RenderTextures()
 {
 	ed->progress->start_cancelable(_("calculating texture"), 0);
-	dir_create(engine.texture_dir << data->texture_out_dir);
-	dir_create(engine.object_dir << data->model_out_dir);
-	dir_create(engine.map_dir << data->model_out_dir);
+	os::fs::create_directory(engine.texture_dir << data->texture_out_dir);
+	os::fs::create_directory(engine.object_dir << data->model_out_dir);
+	os::fs::create_directory(engine.map_dir << data->model_out_dir);
 
 	PrepareTextureRendering();
 

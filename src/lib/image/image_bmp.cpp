@@ -1,7 +1,7 @@
 #include "image.h"
 #include <stdio.h>
-#include "../file/file.h"
-//#include "../hui/hui.h"
+#include "../os/file.h"
+#include "../os/msg.h"
 
 /*static const char *sys_str_f(const string &s)
 {
@@ -160,7 +160,7 @@ void image_load_bmp(const Path &filename, Image &image)
 
 void image_save_bmp(const Path &filename, const Image &image) {
 	try {
-		File *f = FileCreate(filename);
+		auto f = os::fs::open(filename, "wb");
 		image.set_mode(Image::Mode::RGBA);
 
 		int row_size = 4 * (int)((image.width * 3 + 3) / 4);
@@ -179,7 +179,7 @@ void image_save_bmp(const Path &filename, const Image &image) {
 		*(short*)(&Header[28]) = 24; // bits
 		*(int*)(&Header[30]) = 0; // compression
 		*(int*)(&Header[34]) = data_size;
-		f->write_buffer(Header, 56);
+		f->write(Header, 56);
 		unsigned char *row = new unsigned char[row_size + 16];
 		for (int y=image.height-1;y>=0;y--) {
 			unsigned int *d = ((unsigned int*)image.data.data) + (y * image.width);
@@ -190,11 +190,11 @@ void image_save_bmp(const Path &filename, const Image &image) {
 				*(p ++) = (*d);
 				d ++;
 			}
-			f->write_buffer(row, row_size);
+			f->write(row, row_size);
 		}
 		delete[](row);
 
-		FileClose(f);
+		delete f;
 	} catch(...) {
 	}
 }

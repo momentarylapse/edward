@@ -17,7 +17,7 @@
 #include "../lib/kaba/syntax/Class.h"
 #include "../lib/kaba/syntax/Function.h"
 
-#include "../lib/file/msg.h"
+#include "../lib/os/msg.h"
 
 static int ch_component = -1;
 

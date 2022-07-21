@@ -1,7 +1,7 @@
 # created by xmake
 
 project(edward)
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.21)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_BUILD_TYPE Debug)
@@ -161,10 +161,10 @@ set(SOURCE
 	src/lib/base/array.cpp
 	src/lib/base/pointer.cpp
 	src/lib/base/strings.cpp
-	src/lib/file/file.cpp
-	src/lib/file/file_op.cpp
-	src/lib/file/msg.cpp
-	src/lib/file/path.cpp
+	src/lib/doc/chunked.cpp
+	src/lib/doc/config.cpp
+	src/lib/doc/pdf.cpp
+	src/lib/doc/xml.cpp
 	src/lib/hui/Controls/Control.cpp
 	src/lib/hui/Controls/ControlButtonGtk.cpp
 	src/lib/hui/Controls/ControlCheckBoxGtk.cpp
@@ -212,7 +212,6 @@ set(SOURCE
 	src/lib/hui/common_dlg.cpp
 	src/lib/hui/common_dlg_gtk.cpp
 	src/lib/hui/common_dlg_win.cpp
-	src/lib/hui/Config.cpp
 	src/lib/hui/error.cpp
 	src/lib/hui/Event.cpp
 	src/lib/hui/hui.cpp
@@ -225,7 +224,6 @@ set(SOURCE
 	src/lib/hui/PainterGtk.cpp
 	src/lib/hui/Panel.cpp
 	src/lib/hui/Resource.cpp
-	src/lib/hui/Timer.cpp
 	src/lib/hui/Toolbar.cpp
 	src/lib/hui/ToolbarGtk.cpp
 	src/lib/hui/ToolbarWin.cpp
@@ -321,12 +319,18 @@ set(SOURCE
 	src/lib/nix/nix_textures.cpp
 	src/lib/nix/nix_vertexbuffer.cpp
 	src/lib/nix/nix_view.cpp
+	src/lib/os/CommandLineParser.cpp
+	src/lib/os/date.cpp
+	src/lib/os/file.cpp
+	src/lib/os/filesystem.cpp
+	src/lib/os/formatter.cpp
+	src/lib/os/msg.cpp
+	src/lib/os/path.cpp
+	src/lib/os/stream.cpp
+	src/lib/os/time.cpp
 	src/lib/threads/Mutex.cpp
 	src/lib/threads/Thread.cpp
 	src/lib/threads/ThreadedWork.cpp
-	src/lib/xfile/chunked.cpp
-	src/lib/xfile/pdf.cpp
-	src/lib/xfile/xml.cpp
 	src/Mode/Administration/Dialog/AdministrationDialog.cpp
 	src/Mode/Administration/Dialog/ConfigurationDialog.cpp
 	src/Mode/Administration/Dialog/NewProjectDialog.cpp

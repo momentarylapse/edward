@@ -5,13 +5,13 @@
  *      Author: michi
  */
 
-#include "../../Edward.h"
-#include "../../Storage/Storage.h"
 #include "ModeMaterial.h"
-#include "../../Data/Material/DataMaterial.h"
-#include "../../Data/Material/ShaderGraph.h"
 #include "Dialog/MaterialPropertiesDialog.h"
 #include "Dialog/ShaderGraphDialog.h"
+#include "../../Edward.h"
+#include "../../Storage/Storage.h"
+#include "../../Data/Material/DataMaterial.h"
+#include "../../Data/Material/ShaderGraph.h"
 #include "../../Data/Model/DataModel.h"
 #include "../../Data/Model/Geometry/GeometryCube.h"
 #include "../../Data/Model/Geometry/GeometryBall.h"
@@ -23,6 +23,7 @@
 #include "../../MultiView/Window.h"
 #include "../../MultiView/ColorScheme.h"
 #include "../../MultiView/DrawingHelper.h"
+#include "../../lib/os/file.h"
 #include "../../lib/nix/nix.h"
 #include "../../y/ResourceManager.h"
 
@@ -63,7 +64,7 @@ void test_save_extras(DataMaterial *data, hui::Callback cb_success) {
 	}
 
 	auto f = [data, cb_success] (const Path &dir) {
-		FileWriteText(dir << data->shader.file, data->shader.code);
+		os::fs::write_text(dir << data->shader.file, data->shader.code);
 
 		if (data->shader.from_graph)
 			data->shader.graph->save(dir << data->shader.file.with(".graph"));

@@ -9,7 +9,7 @@
 #define SRC_DATA_WORLD_WORLDOBJECT_H_
 
 #include "../../MultiView/SingleData.h"
-#include "../../lib/file/path.h"
+#include "../../lib/os/path.h"
 
 class Object;
 class ScriptInstanceData;

@@ -15,6 +15,9 @@
 #include "../Font/DataFont.h"
 #include "../../Edward.h"
 #include "../../Storage/Storage.h"
+#include "../../lib/os/file.h"
+#include "../../lib/os/filesystem.h"
+#include "../../lib/os/formatter.h"
 
 DataAdministration::DataAdministration() :
 	Data(-1)
@@ -29,9 +32,9 @@ DataAdministration::~DataAdministration() {
 }
 
 void DataAdministration::FraesDir(const Path &root_dir, const Path &dir, const string &extension) {
-	auto list = dir_search(root_dir << dir, "*" + extension, "fd");
+	auto list = os::fs::search(root_dir << dir, "*" + extension, "fd");
 	for (auto &e: list) {
-		if (file_is_directory(root_dir << dir << e)) {
+		if (os::fs::is_directory(root_dir << dir << e)) {
 			FraesDir(root_dir, dir << e, extension);
 		} else {
 			cft.add(dir << e);
@@ -56,7 +59,7 @@ void DataAdministration::MetaFraesDir(int kind) {
 	if (kind==FD_SOUND)		extension = "";
 	if (extension == "x")
 		return;
-	cft = dir_search(dir, "*" + extension, "fr");
+	cft = os::fs::search(dir, "*" + extension, "fr");
 	//FraesDir(dir, "", extension);
 }
 
@@ -75,9 +78,9 @@ void DataAdministration::TestRootDirectory()
 
 bool DataAdministration::save(const Path &_filename) {
 	filename = _filename;
-	File* f = NULL;
+	TextLinesFormatter* f = nullptr;
 	try {
-		f = FileCreateText(filename);
+		f = new TextLinesFormatter(os::fs::open(filename, "wt"));
 		f->write_comment("// Number Of Files");
 		f->write_int(file_list->num);
 		f->write_comment("// Files (type, filename, date, missing)");
@@ -120,7 +123,7 @@ bool DataAdministration::load(const Path &_filename, bool deep) {
 
 	try {
 
-		File *f = FileOpenText(filename);
+		auto f = new TextLinesFormatter(os::fs::open(filename, "rt"));
 		f->read_comment();
 		int num = f->read_int();
 		for (int i=0;i<num;i++) {
@@ -293,7 +296,7 @@ void DataAdministration::ExportGame(const Path &dir, GameIniData &game_ini)
 
 		Path source = storage->root_dir << kind_subdir(a->Kind) << a->Name;
 		Path target = dir << kind_subdir(a->Kind) << a->Name;
-		if (FILE_OP_OK(file_copy(source, target)))
+		if (FILE_OP_OK(os::fs::copy(source, target)))
 			num_ok ++;
 	}
 	hui::info_box(hui::CurWindow, "info", format("%d von %d Dateien exportiern", num_ok, list.num));

@@ -12,6 +12,7 @@
 #include "../../../Storage/Storage.h"
 #include "../../../Action/World/ActionWorldEditData.h"
 #include "../../../MultiView/MultiView.h"
+#include "../../../lib/os/file.h"
 #include "../../../lib/kaba/kaba.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../y/World.h"
@@ -252,7 +253,7 @@ class X extends Controller
 	func override on_key_down(k: int)
 		pass
 )"""";
-		FileWriteText(storage->dialog_file_complete, source);
+		os::fs::write_text(storage->dialog_file_complete, source);
 
 		WorldScript s;
 		s.filename = storage->dialog_file_complete.relative_to(kaba::config.directory);

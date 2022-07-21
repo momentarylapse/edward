@@ -6,6 +6,7 @@
  */
 
 #include "GameIniData.h"
+#include "../../lib/any/any.h"
 
 
 const string GameIniData::ID_SCRIPT = "default.main-script";
@@ -19,11 +20,11 @@ const string GameIniData::ID_RENDERER_FRAMERATE = "renderer.target-framerate";
 const string GameIniData::ID_RESOLUTION_SCALE_MIN = "renderer.resolution-scale-min";
 
 void GameIniData::load(const Path &dir) {
-	hui::Configuration::load(dir << "game.ini");
+	Configuration::load(dir << "game.ini");
 }
 
 void GameIniData::save(const Path &dir) {
-	hui::Configuration::save(dir << "game.ini");
+	Configuration::save(dir << "game.ini");
 }
 
 Path GameIniData::default_font() const {
@@ -53,7 +54,7 @@ void GameIniData::reset_default() {
 	set_str(ID_WORLD2, "");
 	set_str(ID_MATERIAL, "");
 	set_str(ID_FONT, "");
-	set_str("default.additional-scripts", "");
+	set_str_array("default.additional-scripts", {});
 
 	set_str(ID_SCREEN_MODE, "windowed");
 	set_str("screen.width", "1920");

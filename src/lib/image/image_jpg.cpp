@@ -1,5 +1,6 @@
 #include "image.h"
-#include "../file/file.h"
+#include "../os/file.h"
+#include "../os/msg.h"
 #include "../math/math.h"
 
 #define USE_FAST_COSINE_TRAFO	1
@@ -412,7 +413,7 @@ void jpg_decode(unsigned char *b,s_jpg_color_info ci)
 
 void image_load_jpg(const Path &filename, Image &image)
 {
-	string tt = FileRead(filename);
+	bytes tt = os::fs::read_binary(filename);
 	unsigned char *buf = (unsigned char*)tt.data;
 
 	unsigned char *b=buf;

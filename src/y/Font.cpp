@@ -24,7 +24,9 @@
 \*----------------------------------------------------------------------------*/
 #include "Font.h"
 #include "../lib/nix/nix.h"
-#include "../lib/file/file.h"
+#include "../lib/os/file.h"
+#include "../lib/os/formatter.h"
+#include "../lib/os/msg.h"
 #include "../y/EngineData.h"
 
 namespace Gui
@@ -69,10 +71,12 @@ Font *_cdecl LoadFont(const Path &filename)
 	foreachi(Font *ff, Fonts, i)
 		if (ff->filename  == filename)
 			return ff;
-	File *f = FileOpenText(engine.font_dir << filename.with(".xfont"));
+	auto f = new TextLinesFormatter(os::fs::open(engine.font_dir << filename.with(".xfont"), "rt"));
 	if (!f)
 		return engine.default_font;
-	int ffv=f->ReadFileFormatVersion();
+	//int ffv=f->ReadFileFormatVersion();
+	f->read(1);
+	int ffv = f->read_word();
 	if (ffv==2){
 		Font *font = new Font;
 		font->filename = filename;
@@ -132,7 +136,7 @@ Font *_cdecl LoadFont(const Path &filename)
 	}else{
 		msg_error(format("wrong file format: %d (expected: 2)",ffv));
 	}
-	FileClose(f);
+	delete f;
 
 	return Fonts.back();
 }

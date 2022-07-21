@@ -10,7 +10,7 @@
 #include "ModelSelection.h"
 #include "Geometry/Geometry.h"
 #include "BspTree.h"
-#include "../../lib/file/msg.h"
+#include "../../lib/os/msg.h"
 #include "../../lib/base/set.h"
 #include "../../Edward.h"
 #include "../../MultiView/MultiView.h"

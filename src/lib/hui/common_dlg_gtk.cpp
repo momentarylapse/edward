@@ -1,6 +1,9 @@
 #include "hui.h"
 #ifdef HUI_API_GTK
 
+#include "../os/file.h"
+#include "../os/filesystem.h"
+
 namespace hui
 {
 
@@ -445,8 +448,8 @@ void on_gtk_about_dialog_response(GtkDialog *self, gint response_id, gpointer us
 void about_box(Window *win) {
 	// load license
 	if (Application::get_property("license") == "")
-		if (file_exists(Application::directory_static << "license_small.txt"))
-			Application::set_property("license", FileRead(Application::directory_static << "license_small.txt"));
+		if (os::fs::exists(Application::directory_static << "license_small.txt"))
+			Application::set_property("license", os::fs::read_text(Application::directory_static << "license_small.txt"));
 
 	// author list
 	auto authors = sa2ca_nt(Application::get_property("author").explode(";"));

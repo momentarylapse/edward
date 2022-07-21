@@ -12,7 +12,6 @@
 #include "../../Data/Model/DataModel.h"
 
 class DataModel;
-class File;
 
 class FormatModelPly : public TypedFormat<DataModel> {
 public:

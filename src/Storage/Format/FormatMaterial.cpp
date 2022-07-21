@@ -9,20 +9,32 @@
 #include "../../Edward.h"
 #include "../../Data/Material/ShaderGraph.h"
 #include "../../lib/nix/nix.h"
+#include "../../lib/doc/config.h"
+#include "../../lib/os/formatter.h"
+
+color any2color(const Any &a);
+Any color2any(const color &c) {
+	Any r = Any::EmptyArray;
+	r.add(c.r);
+	r.add(c.g);
+	r.add(c.b);
+	r.add(c.a);
+	return r;
+}
 
 FormatMaterial::FormatMaterial() : TypedFormat<DataMaterial>(FD_MATERIAL, "material", _("Material"), Flag::CANONICAL_READ_WRITE) {
 }
 
-string paths_to_str(const Array<Path> &files) {
+Array<string> paths_to_str_arr(const Array<Path> &files) {
 	Array<string> r;
 	for (auto f: files)
 		r.add(f.str());
-	return implode(r, ",");
+	return r;
 }
 
-Array<Path> str_to_paths(const string &s) {
+Array<Path> str_arr_to_paths(const Array<string> &s) {
 	Array<Path> r;
-	for (auto &x: s.explode(","))
+	for (auto &x: s)
 		r.add(x);
 	return r;
 }
@@ -32,19 +44,21 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 	int ffv;
 	data->reset();
 
-	File *f = FileOpenText(filename);
+	TextLinesFormatter *f = nullptr;
+
+	/*File *f = FileOpenText(filename);
 	data->file_time = f->mtime().time;
 
 	try {
 		ffv=f->ReadFileFormatVersion();
-	} catch (...) {
+	} catch (...) {*/
 		ffv = -1;
-		hui::Configuration c;
+		Configuration c;
 		c.load(filename);
-		data->appearance.albedo = color::parse(c.get_str("color.albedo", ""));
+		data->appearance.albedo = any2color(c.get("color.albedo", Any()));
 		data->appearance.roughness = c.get_float("color.roughness", 0.5f);
 		data->appearance.metal = c.get_float("color.metal", 0.1f);
-		data->appearance.emissive = color::parse(c.get_str("color.emission", ""));
+		data->appearance.emissive = any2color(c.get("color.emission", Any()));
 
 		if (c.has("color.ambient")) {
 			data->appearance.roughness = c.get_float("color.ambient", 0.5f);
@@ -53,7 +67,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 			data->appearance.metal = c.get_float("color.reflectivity", 0.1f);
 		}
 
-		data->appearance.texture_files = str_to_paths(c.get_str("textures", ""));
+		data->appearance.texture_files = str_arr_to_paths(c.get_str_array("textures"));
 		data->shader.file = c.get_str("shader", "");
 
 		data->physics.friction_static = c.get_float("friction.static", 0.5f);
@@ -83,7 +97,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 
 		if (m == "static") {
 			data->appearance.reflection_mode = ReflectionMode::CUBE_MAP_STATIC;
-			data->appearance.reflection_texture_file = str_to_paths(c.get_str("reflection.cubemap", ""));
+			data->appearance.reflection_texture_file = str_arr_to_paths(c.get_str_array("reflection.cubemap"));
 			data->appearance.reflection_texture_file.resize(6);
 			data->appearance.reflection_density = c.get_float("reflection.density", 1);
 		} else if (m == "dynamic") {
@@ -95,7 +109,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		} else if (m != "") {
 			msg_error("unknown reflection mode: " + m);
 		}
-	}
+	//}
 
 	/*if (ffv<0){
 		throw FormatError(_("File format unreadable!"));
@@ -250,14 +264,14 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 }
 
 void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
-	hui::Configuration c;
+	Configuration c;
 
-	c.set_str("textures", paths_to_str(data->appearance.texture_files));
+	c.set_str_array("textures", paths_to_str_arr(data->appearance.texture_files));
 	c.set_str("shader", data->shader.file.str());
 
-	c.set_str("color.albedo", data->appearance.albedo.str());
+	c.set("color.albedo", color2any(data->appearance.albedo));
 	if (data->appearance.emissive != Black)
-		c.set_str("color.emission", data->appearance.emissive.str());
+		c.set("color.emission", color2any(data->appearance.emissive));
 	c.set_float("color.roughness", data->appearance.roughness);
 	c.set_float("color.metal", data->appearance.metal);
 
@@ -279,7 +293,7 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 
 	if (data->appearance.reflection_mode == ReflectionMode::CUBE_MAP_STATIC) {
 		c.set_str("reflection.mode", "static");
-		c.set_str("reflection.cubemap", paths_to_str(data->appearance.reflection_texture_file));
+		c.set_str_array("reflection.cubemap", paths_to_str_arr(data->appearance.reflection_texture_file));
 		c.set_float("reflection.density", data->appearance.reflection_density);
 	} else if (data->appearance.reflection_mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
 		c.set_str("reflection.mode", "dynamic");

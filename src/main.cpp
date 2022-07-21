@@ -5,9 +5,9 @@
  *      Author: michi
  */
 
-#include "lib/hui/hui.h"
 #include "Edward.h"
-
+#include "lib/os/CommandLineParser.h"
+#include "lib/hui/hui.h"
 #include "Data/Model/DataModel.h"
 #include "Data/Material/DataMaterial.h"
 #include "Data/World/DataWorld.h"
@@ -32,72 +32,99 @@ EdwardApp::EdwardApp() :
 #include "lib/kaba/kaba.h"
 
 extern bool DataModelAllowUpdating;
-bool handle_special_args(const Array<string> &arg) {
-	if (arg[1] == "--help") {
-		msg_write("call:");
-		msg_write("  FILE");
-		msg_write("  --help");
-		msg_write("  --check FILE");
-		msg_write("  --update FILE");
-		msg_write("  --update-model FILE   (deprecated?)");
-		return true;
-	} else if ((arg[1] == "--update") or (arg[1] == "--check")) {
-		if (arg.num >= 3){
+void update_file(const Path &filename, bool allow_write) {
 
-			kaba::init();
+	kaba::init();
 
-			int pp = arg[2].find("/Objects/", 0);
-			if (pp > 0) {
-				kaba::config.directory = Path(arg[2].sub(0, pp)) << "Scripts";
-				//msg_write(kaba::config.directory.str());
-			}
-
-
-			Data *data = nullptr;
-			string ext = Path(arg[2]).extension();
-			if (ext == "model") {
-				//MaterialInit();
-				SetDefaultMaterial(new Material);
-				data = new DataModel;
-				DataModelAllowUpdating = false;
-			} else if (ext == "material") {
-				data = new DataMaterial(false);
-			} else if (ext == "world") {
-				data = new DataWorld;
-			}
-
-			if (data) {
-				storage = new Storage();
-				msg_write("loading " + arg[2]);
-				storage->load(arg[2], data, false);
-				if (arg[1] == "--update")
-					storage->save(arg[2], data);
-				delete data;
-				return true;
-			}
-		}
-	} else if (arg[1] == "--update-model") {
-		if (arg.num >= 3) {
-			DataModel m;
-			storage->load(arg[2], &m, false);
-			//m.save(arg[2]);
-		}
-		return true;
+	int pp = filename.str().find("/Objects/", 0);
+	if (pp > 0) {
+		kaba::config.directory = Path(filename.str().sub(0, pp)) << "Scripts";
+		//msg_write(kaba::config.directory.str());
 	}
-	return false;
 
+
+	Data *data = nullptr;
+	string ext = filename.extension();
+	if (ext == "model") {
+		//MaterialInit();
+		SetDefaultMaterial(new Material);
+		data = new DataModel;
+		DataModelAllowUpdating = false;
+	} else if (ext == "material") {
+		data = new DataMaterial(false);
+	} else if (ext == "world") {
+		data = new DataWorld;
+	}
+
+	if (data) {
+		storage = new Storage();
+		msg_write("loading " + filename.str());
+		storage->load(filename, data, false);
+		if (allow_write)
+			storage->save(filename, data);
+		delete data;
+	}
 }
 
 bool EdwardApp::on_startup(const Array<string> &arg) {
-	if (arg.num >= 2)
+	CommandLineParser p;
+	p.info(AppName, "");
+	p.option("--execute", "FILENAME", "(NOT WORKING) execute a script", [] (const string &a) {
+		//plugins->execute(a);
+	});
+	p.cmd("-h/--help", "", "show this help page", [&p] (const Array<string> &arg) {
+		p.show();
+	});
+	p.cmd("--update-model", "FILENAME", "load and re-write a model (deprecated?)", [] (const Array<string> &arg) {
+		DataModel m;
+		storage->load(arg[0], &m, false);
+		//m.save(arg[2]);
+	});
+	p.cmd("--update", "FILENAME", "load and re-write a file", [] (const Array<string> &arg) {
+		update_file(arg[0], true);
+	});
+	p.cmd("--check", "FILENAME", "load file and check for errors", [] (const Array<string> &arg) {
+		update_file(arg[0], false);;
+	});
+	p.cmd("--new-material", "", "open editor in material mode", [] (const Array<string> &arg) {
+		ed = new Edward();
+		ed->universal_new(FD_MATERIAL);
+	});
+	p.cmd("--new-font", "", "open editor in font mode", [] (const Array<string> &arg) {
+		ed = new Edward();
+		ed->universal_new(FD_FONT);
+	});
+	p.cmd("--new-world", "", "open editor in world mode", [] (const Array<string> &arg) {
+		ed = new Edward();
+		ed->universal_new(FD_WORLD);
+	});
+	p.cmd("", "[FILENAME]", "open editor and load a file", [] (const Array<string> &arg) {
+		msg_write(AppName + " " + AppVersion);
+		msg_write("");
+
+		ed = new Edward();
+
+		if (arg.num > 0) {
+			int type = storage->guess_type(arg[0]);
+
+			if (type >= 0) {
+				ed->universal_edit(type, arg[0], false);
+			} else {
+				ed->error_box(_("Unknown file extension: ") + arg[0]);
+				app->end();
+			}
+		} else {
+			ed->universal_new(FD_MODEL);
+		}
+	});
+	p.parse(arg);
+
+
+	/*if (arg.num >= 2)
 		if (handle_special_args(arg))
-			return false;
+			return false;*/
 
-	msg_write(AppName + " " + AppVersion);
-	msg_write("");
-
-	ed = new Edward(arg);
-	return true;
+	return ed;
 }
 
 HUI_EXECUTE(EdwardApp)

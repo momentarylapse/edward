@@ -8,6 +8,7 @@
 |                                                                              |
 | last updated: 2010.07.14 (c) by MichiSoft TM                                 |
 \*----------------------------------------------------------------------------*/
+#include "msg.h"
 #include "file.h"
 #include <stdio.h>
 #include <stdarg.h>
@@ -41,7 +42,7 @@ static Array<string> TodoStr;
 
 bool msg_inited = true;
 
-static File *file = nullptr;
+static os::fs::FileStream *file = nullptr;
 static Path msg_file_name = "message.txt";
 static int Shift;
 
@@ -55,12 +56,12 @@ void msg_init(const Path &force_filename, bool verbose) {
 	Shift = 0;
 	ErrorOccured = false;
 	msg_inited = true;
-	if (!force_filename.is_empty())
+	if (force_filename)
 		msg_file_name = force_filename;
 	if (!verbose)
 		return;
 	try {
-		file = FileCreateText(msg_file_name);
+		file = os::fs::open(msg_file_name, "wt");
 	} catch(...) {}
 #ifdef MSG_LOG_TIMIGS
 	file->write_str("[hh:mm:ss, ms]");
@@ -74,9 +75,9 @@ void msg_init(bool verbose) {
 void msg_set_verbose(bool verbose) {
 	if (Verbose == verbose)
 		return;
-	if (verbose){
+	if (verbose) {
 		try {
-			file = FileCreateText(msg_file_name);
+			file = os::fs::open(msg_file_name, "wt");
 		} catch(...) {}
 		Shift = 0;
 	}else{
@@ -109,7 +110,7 @@ void msg_write(const string &str) {
 	string s = string("\t").repeat(Shift) + str;
 	msg_add_str(s.replace("\t", "    "));
 	if (file)
-		file->write_str(s);
+		file->write(s + "\n");
 }
 
 
@@ -192,7 +193,7 @@ void msg_end(bool del_file) {
 	//if (!msg_inited)	return;
 	if (!file)		return;
 	if (!Verbose)	return;
-	file->write_str("\n\n\n\n"\
+	file->write("\n\n\n\n"\
 " #                       # \n"\
 "###                     ###\n"\
 " #     natural death     # \n"\

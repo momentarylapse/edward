@@ -8,7 +8,8 @@
 #ifndef PLUGINMANAGER_H_
 #define PLUGINMANAGER_H_
 
-#include "../lib/file/file.h"
+#include "../lib/base/base.h"
+#include "../lib/os/path.h"
 
 class PluginManager {
 public:

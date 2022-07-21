@@ -10,6 +10,7 @@
 
 #include "../../Mode.h"
 #include "../../../Data/Model/DataModel.h"
+#include "../../../lib/os/time.h"
 
 class DataModel;
 class ModelAnimationDialog;
@@ -49,7 +50,7 @@ public:
 	float play_loop;
 	float sim_frame_time;
 
-	hui::Timer timer;
+	os::Timer timer;
 	int runner;
 
 	void idle_function();

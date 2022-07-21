@@ -10,7 +10,7 @@
 #include "../Model.h"
 #include "../ModelManager.h"
 #include "../../y/Entity.h"
-#include "../../lib/file/msg.h"
+#include "../../lib/os/msg.h"
 #include "../../graphics-impl.h"
 
 

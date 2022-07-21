@@ -8,8 +8,8 @@
 #include "LevelData.h"
 #include "Link.h"
 #include "World.h"
-#include "../lib/file/file.h"
-#include "../lib/xfile/xml.h"
+#include "../lib/os/file.h"
+#include "../lib/doc/xml.h"
 #include "../y/EngineData.h"
 #include "../meta.h"
 
@@ -24,7 +24,7 @@ LevelData::LevelData() {
 	physics_mode = PhysicsMode::FULL_EXTERNAL;
 }
 
-color ReadColor3(File *f) {
+/*color ReadColor3(Formatter *f) {
 	int c[3];
 	for (int i=0;i<3;i++)
 		c[i] = f->read_float();
@@ -36,7 +36,7 @@ color ReadColor4(File *f) {
 	for (int i=0;i<4;i++)
 		c[i] = f->read_float();
 	return color::from_int_argb(c);
-}
+}*/
 
 
 

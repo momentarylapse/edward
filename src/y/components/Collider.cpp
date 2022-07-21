@@ -12,7 +12,7 @@
 #include "../../y/Entity.h"
 #include "../../lib/base/set.h"
 #include "../../lib/math/quaternion.h"
-#include "../../lib/file/msg.h"
+#include "../../lib/os/msg.h"
 
 #if HAS_LIB_BULLET
 #include <btBulletDynamicsCommon.h>

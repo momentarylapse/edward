@@ -9,10 +9,10 @@
 #define GAMEINIDATA_H_
 
 #include "../Data.h"
-#include "../../lib/hui/Config.h"
+#include "../../lib/doc/config.h"
 
 
-class GameIniData : public hui::Configuration {
+class GameIniData : public Configuration {
 public:
 	//Path default_script, default_world, second_world, default_material, default_font;
 	void reset_default();

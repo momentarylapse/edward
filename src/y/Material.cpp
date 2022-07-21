@@ -1,14 +1,14 @@
 #include "Material.h"
 #include "Model.h"
-#include "../lib/file/file.h"
 #include "../lib/config.h"
+#include "../lib/os/msg.h"
+#include "../lib/doc/config.h"
+#include "../lib/any/any.h"
 #include "../graphics-impl.h"
-#ifdef _X_USE_HUI_
-	#include "../lib/hui/hui.h"
+#if __has_include("ResourceManager.h")
 	#include "ResourceManager.h"
 	#include "EngineData.h"
-#elif defined(_X_USE_HUI_MINIMAL_)
-	#include "../lib/hui_minimal/hui.h"
+#else
 	#include "../helper/ResourceManager.h"
 	#include "../y/EngineData.h"
 #endif
@@ -121,6 +121,21 @@ Alpha parse_alpha(int a) {
 	return FILE_ALPHAS[clamp(a, 0, 10)];
 }
 
+color any2color(const Any &a) {
+	if (a.is_string())
+		return color::parse(a.str());
+	if (a.is_array() and (a.length() >= 3)) {
+		color c = White;
+		c.r = a[0]._float();
+		c.g = a[1]._float();
+		c.b = a[2]._float();
+		if (a.length() >= 4)
+			c.a = a[3]._float();
+		return c;
+	}
+	return color(0,0,0,0);
+}
+
 
 Material *LoadMaterial(const Path &filename) {
 	// an empty name loads the default material
@@ -134,7 +149,7 @@ Material *LoadMaterial(const Path &filename) {
 
 	msg_write("loading material " + filename.str());
 
-	hui::Configuration c;
+	Configuration c;
 	if (!c.load(engine.material_dir << filename.with(".material"))) {
 		/*if (engine.ignore_missing_files) {
 			msg_error("material file missing: " + filename.str());
@@ -146,15 +161,14 @@ Material *LoadMaterial(const Path &filename) {
 	Material *m = new Material;
 	m->name = filename;
 
-	m->albedo = color::parse(c.get_str("color.albedo", ""));
+	m->albedo = any2color(c.get("color.albedo"));
 	m->roughness = c.get_float("color.roughness", 0.5f);
 	m->metal = c.get_float("color.metal", 0.1f);
-	m->emission = color::parse(c.get_str("color.emission", ""));
+	m->emission = any2color(c.get("color.emission"));
 
-	auto texture_files = c.get_str("textures", "");
-	if (texture_files != "")
-		for (auto &f: texture_files.explode(","))
-			m->textures.add(ResourceManager::load_texture(f));
+	auto texture_files = c.get_str_array("textures");
+	for (auto &f: texture_files)
+		m->textures.add(ResourceManager::load_texture(f));
 	m->shader_path = c.get_str("shader", "");
 
 	m->friction._static = c.get_float("friction.static", 0.5f);
@@ -184,9 +198,9 @@ Material *LoadMaterial(const Path &filename) {
 
 	if (mode == "static") {
 		m->reflection.mode = ReflectionMode::CUBE_MAP_STATIC;
-		texture_files = c.get_str("reflection.cubemap", "");
+		texture_files = c.get_str_array("reflection.cubemap");
 		Array<Texture*> cmt;
-		for (auto &f: texture_files.explode(","))
+		for (auto &f: texture_files)
 			cmt.add(ResourceManager::load_texture(f));
 		m->reflection.density = c.get_float("reflection.density", 1);
 #if 0
