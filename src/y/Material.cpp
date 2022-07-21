@@ -133,7 +133,7 @@ color any2color(const Any &a) {
 			c.a = a[3]._float();
 		return c;
 	}
-	return color(0,0,0,0);
+	return Black;
 }
 
 
