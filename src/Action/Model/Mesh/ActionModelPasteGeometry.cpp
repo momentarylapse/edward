@@ -31,7 +31,7 @@ void *ActionModelPasteGeometry::compose(Data *d) {
 		Array<int> v;
 		for (int k=0;k<t.side.num;k++)
 			v.add(nv + t.side[k].vertex);
-		Array<vector> sv;
+		Array<vec3> sv;
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			for (int k=0;k<t.side.num;k++)
 				sv.add(t.side[k].skin_vertex[l]);

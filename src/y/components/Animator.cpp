@@ -59,14 +59,14 @@ void Animator::on_init() {
 	auto sk = m->owner->get_component<Skeleton>();
 	dmatrix.resize(sk->bones.num);
 	for (int i=0; i<sk->bones.num; i++) {
-		dmatrix[i] = matrix::translation(sk->pos0[i]);
+		dmatrix[i] = mat4::translation(sk->pos0[i]);
 	}
 
 #ifdef USING_OPENGL
 	buf = new UniformBuffer;
 #endif
 #ifdef USING_VULKAN
-	buf = new UniformBuffer(sk->bones.num * sizeof(matrix));
+	buf = new UniformBuffer(sk->bones.num * sizeof(mat4));
 #endif
 }
 
@@ -137,7 +137,7 @@ void Animator::do_animation(float elapsed) {
 			if (move->type != AnimationType::SKELETAL)
 				continue;
 			quaternion w,w0,w1,w2,w3;
-			vector p,p1,p2;
+			vec3 p,p1,p2;
 
 		// calculate the alignment belonging to this argument
 			int fr = (int)(op->time); // current frame (relative)
@@ -204,16 +204,16 @@ void Animator::do_animation(float elapsed) {
 		}
 
 		// bone has parent -> align to parent
-		//vector dpos = b->delta_pos;
-		auto t0 = matrix::translation(- sk->pos0[i]);
+		//vec3 dpos = b->delta_pos;
+		auto t0 = mat4::translation(- sk->pos0[i]);
 		if (sk->parents[i] >= 0) {
 			b->pos = sk->bones[sk->parents[i]].pos + sk->bones[sk->parents[i]].ang * sk->dpos[i];
 			//dpos = b->cur_pos - b->rest_pos;
 		}
 
 		// create matrices (model -> skeleton)
-		auto t = matrix::translation(b->pos);
-		auto r = matrix::rotation_q(b->ang);
+		auto t = mat4::translation(b->pos);
+		auto r = mat4::rotation_q(b->ang);
 		//b->dmatrix = t * r;
 		dmatrix[i] = t * r * t0;
 	}
@@ -309,7 +309,7 @@ int Animator::get_frames(int move_no) {
 }
 
 
-vector Animator::get_vertex(int index) {
+vec3 Animator::get_vertex(int index) {
 	auto m = owner->get_component<Model>();
 	auto sk = owner->get_component<Skeleton>();
 	auto s = m->mesh[MESH_HIGH];

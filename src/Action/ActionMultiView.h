@@ -10,7 +10,7 @@
 
 #include "Action.h"
 class Data;
-#include "../lib/math/matrix.h"
+#include "../lib/math/mat4.h"
 
 class Data;
 
@@ -21,12 +21,12 @@ public:
 	// continuous editing
 	virtual void abort(Data *d);
 	void abort_and_notify(Data *d);
-	void update_and_notify(Data *d, const matrix &m);
+	void update_and_notify(Data *d, const mat4 &m);
 
 protected:
 	Array<int> index;
-	matrix mat;
-	Array<vector> old_data;
+	mat4 mat;
+	Array<vec3> old_data;
 };
 
 ActionMultiView *ActionMultiViewFactory(const string &name, Data *d);

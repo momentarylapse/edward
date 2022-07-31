@@ -75,7 +75,7 @@ void FormatModel3ds::load_mesh(DataModel *m, BinaryFormatter *f, int _length)
 	msg_right();
 	int NumVerticesOld = m->triangle_mesh[1].vertex.num;
 	int end_pos = f->get_pos() + _length - 6;
-	Array<vector> skin_vert;
+	Array<vec3> skin_vert;
 	while(f->get_pos() < end_pos){
 		int id = f->read_word();
 		int length = f->read_int();

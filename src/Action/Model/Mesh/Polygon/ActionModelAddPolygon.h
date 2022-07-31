@@ -10,11 +10,11 @@
 
 #include "../../../ActionGroup.h"
 class DataModel;
-class vector;
+class vec3;
 
 class ActionModelAddPolygon: public ActionGroup {
 public:
-	ActionModelAddPolygon(Array<int> &_v, int _material, Array<vector> &_sv);
+	ActionModelAddPolygon(Array<int> &_v, int _material, Array<vec3> &_sv);
 	string name() { return "ModelAddPolygon"; }
 
 	void *compose(Data *d);
@@ -22,7 +22,7 @@ public:
 private:
 	Array<int> &v;
 	int material;
-	Array<vector> &sv;
+	Array<vec3> &sv;
 };
 
 #endif /* ACTIONMODELADDPOLYGON_H_ */

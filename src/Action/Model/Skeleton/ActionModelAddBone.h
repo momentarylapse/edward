@@ -8,19 +8,19 @@
 #ifndef ACTIONMODELADDBONE_H_
 #define ACTIONMODELADDBONE_H_
 
+#include "../../../lib/math/vec3.h"
 #include "../../Action.h"
-#include "../../../lib/math/vector.h"
 
 class ActionModelAddBone: public Action {
 public:
-	ActionModelAddBone(const vector &_pos, int _parent);
+	ActionModelAddBone(const vec3 &_pos, int _parent);
 	string name(){	return "ModelAddBone";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);
 
 private:
-	vector pos;
+	vec3 pos;
 	int parent;
 };
 

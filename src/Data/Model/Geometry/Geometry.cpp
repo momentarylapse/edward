@@ -33,12 +33,12 @@ void Geometry::clear()
 	vertex.clear();
 }
 
-void Geometry::add_vertex(const vector &pos)
+void Geometry::add_vertex(const vec3 &pos)
 {
 	vertex.add(ModelVertex(pos));
 }
 
-void Geometry::add_polygon(const Array<int> &v, const Array<vector> &sv)
+void Geometry::add_polygon(const Array<int> &v, const Array<vec3> &sv)
 {
 	ModelPolygon p;
 	p.side.resize(v.num);
@@ -61,7 +61,7 @@ void Geometry::add_polygon_auto_texture(const Array<int> &v)
 	SkinGenerator sg;
 	sg.init_point_cloud_boundary(vertex, v);
 
-	Array<vector> sv;
+	Array<vec3> sv;
 	for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 		for (int k=0; k<v.num; k++)
 			sv.add(sg.get(vertex[v[k]].pos));
@@ -69,9 +69,9 @@ void Geometry::add_polygon_auto_texture(const Array<int> &v)
 	add_polygon(v, sv);
 }
 
-void Geometry::add_polygon_single_texture(const Array<int> &v, const Array<vector> &sv)
+void Geometry::add_polygon_single_texture(const Array<int> &v, const Array<vec3> &sv)
 {
-	Array<vector> sv2;
+	Array<vec3> sv2;
 	for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 		for (int k=0; k<v.num; k++)
 			sv2.add(sv[k]);
@@ -79,10 +79,10 @@ void Geometry::add_polygon_single_texture(const Array<int> &v, const Array<vecto
 	add_polygon(v, sv2);
 }
 
-void Geometry::add_bezier3(const Array<vector> &v, int num_x, int num_y, float epsilon)
+void Geometry::add_bezier3(const Array<vec3> &v, int num_x, int num_y, float epsilon)
 {
-	vector vv[4][4] = {{v[0], v[1], v[2], v[3]}, {v[4], v[5], v[6], v[7]}, {v[8], v[9], v[10], v[11]}, {v[12], v[13], v[14], v[15]}};
-	Array<vector> pp;
+	vec3 vv[4][4] = {{v[0], v[1], v[2], v[3]}, {v[4], v[5], v[6], v[7]}, {v[8], v[9], v[10], v[11]}, {v[12], v[13], v[14], v[15]}};
+	Array<vec3> pp;
 	Array<int> vn;
 	vn.resize((num_x+1) * (num_y+1));
 	bool merged_vertices = false;
@@ -90,13 +90,13 @@ void Geometry::add_bezier3(const Array<vector> &v, int num_x, int num_y, float e
 		for (int j=0; j<=num_y; j++){
 			float ti = (float)i / (float)num_x;
 			float tj = (float)j / (float)num_y;
-			vector p = v_0;
+			vec3 p = v_0;
 			for (int k=0; k<=3; k++)
 				for (int l=0; l<=3; l++)
 					p += Bernstein3(k, ti) * Bernstein3(l, tj) * vv[k][l];
 			int old = -1;
 			if (epsilon > 0){
-				foreachi(vector &vv, pp, ii)
+				foreachi(vec3 &vv, pp, ii)
 					if ((p-vv).length_fuzzy() < epsilon)
 						old = vn[ii];
 			}
@@ -116,11 +116,11 @@ void Geometry::add_bezier3(const Array<vector> &v, int num_x, int num_y, float e
 			vv.add(vn[ i   *(num_y+1)+j+1]);
 			vv.add(vn[(i+1)*(num_y+1)+j+1]);
 			vv.add(vn[(i+1)*(num_y+1)+j]);
-			Array<vector> sv;
-			sv.add(vector((float) i    / (float)num_y, (float) j    / (float)num_y, 0));
-			sv.add(vector((float) i    / (float)num_y, (float)(j+1) / (float)num_y, 0));
-			sv.add(vector((float)(i+1) / (float)num_y, (float)(j+1) / (float)num_y, 0));
-			sv.add(vector((float)(i+1) / (float)num_y, (float) j    / (float)num_y, 0));
+			Array<vec3> sv;
+			sv.add(vec3((float) i    / (float)num_y, (float) j    / (float)num_y, 0));
+			sv.add(vec3((float) i    / (float)num_y, (float)(j+1) / (float)num_y, 0));
+			sv.add(vec3((float)(i+1) / (float)num_y, (float)(j+1) / (float)num_y, 0));
+			sv.add(vec3((float)(i+1) / (float)num_y, (float) j    / (float)num_y, 0));
 			if (merged_vertices)
 				for (int k=0;k<vv.num;k++)
 					for (int kk=k+1;kk<vv.num;kk++)
@@ -192,7 +192,7 @@ void Geometry::weld(const Geometry &geo, float epsilon)
 
 void Geometry::smoothen()
 {
-	Array<vector> n;
+	Array<vec3> n;
 	n.resize(vertex.num);
 
 	// sum all normals (per vertex)
@@ -212,7 +212,7 @@ void Geometry::smoothen()
 	}
 }
 
-void Geometry::transform(const matrix &mat)
+void Geometry::transform(const mat4 &mat)
 {
 	for (ModelVertex &v: vertex)
 		v.pos = mat * v.pos;
@@ -227,7 +227,7 @@ void Geometry::transform(const matrix &mat)
 	}
 }
 
-void Geometry::get_bounding_box(vector &min, vector &max)
+void Geometry::get_bounding_box(vec3 &min, vec3 &max)
 {
 	if (vertex.num > 0){
 		min = max = vertex[0].pos;
@@ -309,16 +309,16 @@ bool Geometry::is_closed() const {
 	return true;
 }
 
-bool Geometry::is_inside(const vector &p) const {
+bool Geometry::is_inside(const vec3 &p) const {
 	// how often does a ray from p intersect the surface?
 	int n = 0;
-	Array<vector> v;
-	vector dir = {1, 0.0001f, 0.00002f};
+	Array<vec3> v;
+	vec3 dir = {1, 0.0001f, 0.00002f};
 
 	for (auto &t: polygon) {
 
 		// plane test
-		if ((vector::dot(p - vertex[t.side[0].vertex].pos, t.temp_normal) > 0) == (vector::dot(t.temp_normal, dir) > 0))
+		if ((vec3::dot(p - vertex[t.side[0].vertex].pos, t.temp_normal) > 0) == (vec3::dot(t.temp_normal, dir) > 0))
 			continue;
 
 		// polygon data
@@ -346,7 +346,7 @@ bool Geometry::is_inside(const vector &p) const {
 			continue;
 
 		// real intersection
-		vector col;
+		vec3 col;
 		if (t.triangulation_dirty)
 			t.update_triangulation(vertex);
 		for (int k=t.side.num-2;k>=0;k--)
@@ -381,18 +381,18 @@ void Geometry::remove_unused_vertices() {
 		}
 }
 
-bool Geometry::is_mouse_over(MultiView::Window *win, const matrix &mat, vector &tp)
+bool Geometry::is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp)
 {
 	for (ModelPolygon &p: polygon){
 		// care for the sense of rotation?
-		if (vector::dot(p.temp_normal, win->get_direction()) > 0)
+		if (vec3::dot(p.temp_normal, win->get_direction()) > 0)
 			continue;
 
 		// project all points
-		Array<vector> v;
+		Array<vec3> v;
 		bool out = false;
 		for (int k=0;k<p.side.num;k++){
-			vector pp = win->project(mat * vertex[p.side[k].vertex].pos);
+			vec3 pp = win->project(mat * vertex[p.side[k].vertex].pos);
 			if ((pp.z <= 0) or (pp.z >= 1)){
 				out = true;
 				break;
@@ -404,7 +404,7 @@ bool Geometry::is_mouse_over(MultiView::Window *win, const matrix &mat, vector &
 
 		// test all sub-triangles
 		p.update_triangulation(vertex);
-		vector M = vector(win->multi_view->m, 0);
+		vec3 M = vec3(win->multi_view->m, 0);
 		for (int k=p.side.num-3; k>=0; k--){
 			int a = p.side[k].triangulation[0];
 			int b = p.side[k].triangulation[1];
@@ -412,9 +412,9 @@ bool Geometry::is_mouse_over(MultiView::Window *win, const matrix &mat, vector &
 			auto fg = bary_centric(M, v[a], v[b], v[c]);
 			// cursor in triangle?
 			if ((fg.x>0) and (fg.y>0) and (fg.x+fg.y<1)){
-				vector va = vertex[p.side[a].vertex].pos;
-				vector vb = vertex[p.side[b].vertex].pos;
-				vector vc = vertex[p.side[c].vertex].pos;
+				vec3 va = vertex[p.side[a].vertex].pos;
+				vec3 vb = vertex[p.side[b].vertex].pos;
+				vec3 vc = vertex[p.side[c].vertex].pos;
 				tp = mat * (va + fg.x*(vb-va) + fg.y*(vc-va));
 				return true;
 			}

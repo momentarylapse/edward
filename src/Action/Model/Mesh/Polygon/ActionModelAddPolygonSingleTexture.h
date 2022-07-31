@@ -10,11 +10,11 @@
 
 #include "../../../ActionGroup.h"
 class DataModel;
-class vector;
+class vec3;
 
 class ActionModelAddPolygonSingleTexture: public ActionGroup {
 public:
-	ActionModelAddPolygonSingleTexture(const Array<int> &_v, int _material, const Array<vector> &_sv);
+	ActionModelAddPolygonSingleTexture(const Array<int> &_v, int _material, const Array<vec3> &_sv);
 	string name(){	return "ModelAddPolygonSingleTexture";	}
 
 	void *compose(Data *d);
@@ -22,7 +22,7 @@ public:
 private:
 	Array<int> v;
 	int material;
-	Array<vector> sv;
+	Array<vec3> sv;
 };
 
 #endif /* ACTIONMODELADDPOLYGONSINGLETEXTURE_H_ */

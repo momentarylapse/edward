@@ -9,8 +9,8 @@
 #define ACTIONMODELDELETEUNUSEDVERTEX_H_
 
 #include "../../../../Action.h"
-#include "../../../../../lib/math/vector.h"
 #include "../../../../../Data/Model/DataModel.h" // can't we use Array<ModelEffect> ?!?!?
+#include "../../../../../lib/math/vec3.h"
 
 class ModelEffect;
 
@@ -24,11 +24,11 @@ public:
 
 private:
 	int vertex;
-	vector pos;
+	vec3 pos;
 	ivec4 bone;
 	vec4 bone_weight;
 	int normal_mode;
-	Array<vector> move;
+	Array<vec3> move;
 	Array<ModelEffect> fx;
 	Array<int> fx_index;
 };

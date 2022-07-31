@@ -21,11 +21,11 @@ public:
 		TYPE_OLD_VERTEX
 	};
 	Col() {}
-	Col(const vector &_p, int _side);
-	Col(const vector &_p, int _type, int _polygon, int _edge, int _side);
+	Col(const vec3 &_p, int _side);
+	Col(const vec3 &_p, int _type, int _polygon, int _edge, int _side);
 	float get_f(const Geometry &m, ModelPolygon &t);
 	bool operator==(const Col &other) const;
-	vector p;
+	vec3 p;
 	int type;
 	int polygon, edge, side;
 	string str() const;
@@ -39,7 +39,7 @@ bool polygon_inside_surface(const Geometry &m, ModelPolygon &t, const Geometry &
 void find_contours(const Geometry &m, ModelPolygon &t, const Geometry &s, Array<Array<Col> > &c_out, bool inverse);
 bool find_contour_boundary(const Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse);
 bool find_contour_inside(const Geometry &m, ModelPolygon &t, const Geometry &s, Array<Col> &c_in, Array<Col> &c_out, bool inverse);
-float get_ang(Array<Col> &c, int i, const vector &flat_n);
+float get_ang(Array<Col> &c, int i, const vec3 &flat_n);
 bool vertex_in_tria(Col &a, Col &b, Col &c, Col &v, float &slope);
 void combine_contours(Array<Array<Col> > &c, int ca, int ia, int cb, int ib);
 void triangulate_contours(const Geometry &m, ModelPolygon &t, Array<Array<Col> > &c);
@@ -63,7 +63,7 @@ string Col::str() const {
 	return format("[%d]\tp=%d\te=%d\ts=%d\t(%.1f\t%.1f\t%.1f)", type, polygon, edge, side, p.x, p.y, p.z);
 }
 
-Col::Col(const vector &_p, int _side) {
+Col::Col(const vec3 &_p, int _side) {
 	p = _p;
 	type = TYPE_OLD_VERTEX;
 	polygon = -1;
@@ -71,7 +71,7 @@ Col::Col(const vector &_p, int _side) {
 	side = _side;
 }
 
-Col::Col(const vector &_p, int _type, int _polygon, int _edge, int _side) {
+Col::Col(const vec3 &_p, int _type, int _polygon, int _edge, int _side) {
 	p = _p;
 	type = _type;
 	polygon = _polygon;
@@ -86,7 +86,7 @@ bool Col::operator==(const Col &other) const {
 #if 0
 bool ActionModelSurfaceSubtract::collide_polygons(DataModel *m, ModelPolygon *t1, ModelPolygon *t2, int t2_index) {
 	msg_db_r("CollidePolygons", 1);
-	Array<vector> v1, v2;
+	Array<vec3> v1, v2;
 	for (int k=0;k<t1->side.num;k++)
 		v1.add(m->vertex[t1->side[k].vertex].pos);
 	for (int k=0;k<t2->side.num;k++)
@@ -111,7 +111,7 @@ bool ActionModelSurfaceSubtract::collide_polygons(DataModel *m, ModelPolygon *t1
 	Array<int> vv1 = t1->triangulate(m);
 	for (int k=0;k<t2->side.num;k++) {
 		int k2 = (k + 1) % t2->side.num;
-		vector col;
+		vec3 col;
 		for (int i=0;i<vv1.num;i+=3) {
 			if (!LineIntersectsTriangle2(pl1, v1[vv1[i+0]], v1[vv1[i+1]], v1[vv1[i+2]], v2[k], v2[k2], col, false))
 				continue;
@@ -127,7 +127,7 @@ bool ActionModelSurfaceSubtract::collide_polygons(DataModel *m, ModelPolygon *t1
 	Array<int> vv2 = t2->triangulate(m);
 	for (int k=0;k<t1->side.num;k++) {
 		int k2 = (k + 1) % t1->side.num;
-		vector col;
+		vec3 col;
 		for (int i=0;i<vv2.num;i+=3) {
 			if (!LineIntersectsTriangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], v1[k], v1[k2], col, false))
 				continue;
@@ -151,7 +151,7 @@ bool collide_polygon_surface(const Geometry &a, ModelPolygon &pa, const Geometry
 	col.clear();
 
 	// polygon's data
-	Array<vector> v;
+	Array<vec3> v;
 	for (int k=0;k<pa.side.num;k++)
 		v.add(a.vertex[pa.side[k].vertex].pos);
 	plane pl;
@@ -161,7 +161,7 @@ bool collide_polygon_surface(const Geometry &a, ModelPolygon &pa, const Geometry
 
 	// collide polygon <-> surface's edges
 	foreachi(ModelEdge &e, b.edge, ei) {
-		vector ve[2];
+		vec3 ve[2];
 		for (int k=0;k<2;k++)
 			ve[k] = b.vertex[e.vertex[k]].pos;
 
@@ -169,7 +169,7 @@ bool collide_polygon_surface(const Geometry &a, ModelPolygon &pa, const Geometry
 		if (pl.distance(ve[0]) * pl.distance(ve[1]) > 0)
 			continue;
 
-		vector pos;
+		vec3 pos;
 		for (int i=0;i<vv.num;i+=3) {
 			if (!line_intersects_triangle2(pl, v[vv[i+0]], v[vv[i+1]], v[vv[i+2]], ve[0], ve[1], pos))
 				continue;
@@ -180,7 +180,7 @@ bool collide_polygon_surface(const Geometry &a, ModelPolygon &pa, const Geometry
 	// collide polygon's edges <-> surface's polygons
 	foreachi(ModelPolygon &pb, b.polygon, ti) {
 		// polygon's data
-		Array<vector> v2;
+		Array<vec3> v2;
 		for (int k=0;k<pb.side.num;k++)
 			v2.add(b.vertex[pb.side[k].vertex].pos);
 		plane pl2;
@@ -188,7 +188,7 @@ bool collide_polygon_surface(const Geometry &a, ModelPolygon &pa, const Geometry
 
 		Array<int> vv2 = pb.triangulate(b.vertex);
 		for (int kk=0;kk<pa.side.num;kk++) {
-			vector ve[2];
+			vec3 ve[2];
 			for (int k=0;k<2;k++)
 				ve[k] = a.vertex[pa.side[(kk + k) % pa.side.num].vertex].pos;
 
@@ -196,7 +196,7 @@ bool collide_polygon_surface(const Geometry &a, ModelPolygon &pa, const Geometry
 			if (pl2.distance(ve[0]) * pl2.distance(ve[1]) > 0)
 				continue;
 
-			vector pos;
+			vec3 pos;
 			for (int i=0;i<vv2.num;i+=3) {
 				if (!line_intersects_triangle2(pl2, v2[vv2[i+0]], v2[vv2[i+1]], v2[vv2[i+2]], ve[0], ve[1], pos))
 					continue;
@@ -285,9 +285,9 @@ bool find_contour_inside(const Geometry &m, ModelPolygon &t, const Geometry &s, 
 		throw ActionException("internal contour without internal point..." + i2s(c_in[0].type));
 	c_out.add(c_in[0]);
 	c_in.erase(0);
-	vector edge_dir = s.vertex[s.edge[c_out[0].edge].vertex[1]].pos - s.vertex[s.edge[c_out[0].edge].vertex[0]].pos;
+	vec3 edge_dir = s.vertex[s.edge[c_out[0].edge].vertex[1]].pos - s.vertex[s.edge[c_out[0].edge].vertex[0]].pos;
 	int last_poly = s.edge[c_out[0].edge].polygon[0];
-	if (vector::dot(t.temp_normal, edge_dir) < 0)
+	if (vec3::dot(t.temp_normal, edge_dir) < 0)
 		last_poly = s.edge[c_out[0].edge].polygon[1];
 
 
@@ -369,7 +369,7 @@ void sort_and_join_contours(const Geometry &m, ModelPolygon &t, const Geometry &
 	// find old vertices
 	Array<Col> v;
 	for (int k=0;k<t.side.num;k++) {
-		vector pos = m.vertex[t.side[k].vertex].pos;
+		vec3 pos = m.vertex[t.side[k].vertex].pos;
 		if (b.is_inside(pos) == inverse)
 			v.add(Col(pos, k));
 	}
@@ -463,17 +463,17 @@ void sort_and_join_contours(const Geometry &m, ModelPolygon &t, const Geometry &
 }
 
 
-float get_ang(Array<Col> &c, int i, const vector &flat_n) {
+float get_ang(Array<Col> &c, int i, const vec3 &flat_n) {
 	int ia = i - 1;
 	int ic = i + 1;
 	if (ia < 0)
 		ia = c.num -1;
 	if (ic >= c.num)
 		ic = 0;
-	vector v1 = (c[i].p - c[ia].p).normalized();
-	vector v2 = (c[ic].p - c[i].p).normalized();
-	float x = vector::dot(vector::cross(v1, v2), flat_n);
-	float y = vector::dot(v1, v2);
+	vec3 v1 = (c[i].p - c[ia].p).normalized();
+	vec3 v2 = (c[ic].p - c[i].p).normalized();
+	float x = vec3::dot(vec3::cross(v1, v2), flat_n);
+	float y = vec3::dot(v1, v2);
 	return atan2(x, y);
 }
 
@@ -731,7 +731,7 @@ void polygon_subtract(const Geometry &a, ModelPolygon &t, int t_index, const Geo
 
 		// create contour vertices
 		Array<int> vv;
-		Array<vector> sv;
+		Array<vec3> sv;
 		for (int i=0;i<c.num;i++) {
 			vv.add(out.vertex.num);
 			out.add_vertex(c[i].p);
@@ -805,7 +805,7 @@ int GeometrySubtract(const Geometry &a, const Geometry &b, Geometry &out) {
 	}*/
 
 
-	vector min, max;
+	vec3 min, max;
 	out.get_bounding_box(min, max);
 	out.weld((max - min).length() / 4000);
 
@@ -842,7 +842,7 @@ int GeometryAnd(const Geometry &a, const Geometry &b, Geometry &out) {
 	}*/
 
 
-	vector min, max;
+	vec3 min, max;
 	out.get_bounding_box(min, max);
 	out.weld((max - min).length() / 4000);
 

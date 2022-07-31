@@ -10,7 +10,7 @@
 
 #include "../../../ActionGroup.h"
 class DataModel;
-class vector;
+class vec3;
 
 class ActionModelTriangulateSelection: public ActionGroup
 {

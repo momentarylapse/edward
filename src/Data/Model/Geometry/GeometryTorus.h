@@ -9,13 +9,13 @@
 #define GEOMETRYTORUS_H_
 
 #include "Geometry.h"
-class vector;
+class vec3;
 
 class GeometryTorus : public Geometry
 {
 public:
-	GeometryTorus(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y);
-	void _cdecl __init__(const vector &pos, const vector &axis, float radius1, float radius2, int num_x, int num_y);
+	GeometryTorus(const vec3 &pos, const vec3 &axis, float radius1, float radius2, int num_x, int num_y);
+	void _cdecl __init__(const vec3 &pos, const vec3 &axis, float radius1, float radius2, int num_x, int num_y);
 };
 
 #endif /* GEOMETRYTORUS_H_ */

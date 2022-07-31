@@ -3,9 +3,9 @@ use edward
 const D = 30.0
 const RMAX = 200.0
 
-func f(_p: vector) -> float
-	vector p = _p + vector(0.2,0.1,0)
-	vector d = p.normalized()
+func f(_p: vec3) -> float
+	var p = _p + vec3(0.2,0.1,0)
+	var d = p.normalized()
 	float r = 1 + abs(cos(d.x*pi*4) * 0.5 + cos(d.y*pi) * 0.5) + abs(cos(d.x*pi*8) * 0.2 + cos(d.y*pi*5) * 0.2)
 	return p.length() - r*20
 
@@ -32,7 +32,7 @@ func some_p_from_mask(mask: int) -> int
 	print("MASK: {{mask}}")
 	return -1
 
-func check_tetra(p: vector[], ff: float[], i: int[])
+func check_tetra(p: vec3[], ff: float[], i: int[])
 	var e = [0,1, 0,2, 0,3, 1,2, 1,3, 2,3]
 	int mask = 0
 	int nv = len(model.mesh.vertex)
@@ -60,7 +60,7 @@ func check_tetra(p: vector[], ff: float[], i: int[])
 			model.add_triangle(nv, nv+1, nv+2, 0)
 			model.add_triangle(nv+2, nv+1, nv+3, 0)
 
-func make_tetra(p: vector[], i: int[])
+func make_tetra(p: vec3[], i: int[])
 	int nv = len(model.mesh.vertex)
 	for k in i
 		model.add_vertex(p[k], 0, 1)
@@ -71,9 +71,9 @@ func make_tetra(p: vector[], i: int[])
 	
 
 # process cube cell
-func check_cube(p: vector)
+func check_cube(p: vec3)
 	# cube corners + center
-	var q = [p, p + vector(D,0,0), p + vector(0,D,0), p + vector(D,D,0), p + vector(0,0,D), p + vector(D,0,D), p + vector(0,D,D), p + vector(D,D,D), p + vector(D,D,D)/2]
+	var q = [p, p + vec3(D,0,0), p + vec3(0,D,0), p + vec3(D,D,0), p + vec3(0,0,D), p + vec3(D,0,D), p + vec3(0,D,D), p + vec3(D,D,D), p + vec3(D,D,D)/2]
 	var ff = map(f, q)
 	#if ff.min() * ff.max() > 0
 	#	return
@@ -92,7 +92,7 @@ func main()
 	for x in -RMAX:RMAX:D
 		for y in -RMAX:RMAX:D
 			for z in -RMAX:RMAX:D
-				check_cube(vector(x,y,z))
+				check_cube(vec3(x,y,z))
 
 	model.end_action()
 	

@@ -8,23 +8,23 @@
 #ifndef ACTIONMODELBRUSHSMOOTH_H_
 #define ACTIONMODELBRUSHSMOOTH_H_
 
+#include "../../../../lib/math/vec3.h"
 #include "../../../Action.h"
-#include "../../../../lib/math/vector.h"
 class DataModel;
 
 class ActionModelBrushSmooth: public Action {
 public:
-	ActionModelBrushSmooth(const vector &pos, const vector &n, float radius);
+	ActionModelBrushSmooth(const vec3 &pos, const vec3 &n, float radius);
 	string name(){	return "ModelBrushSmooth";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);
 
 private:
-	vector pos, n;
+	vec3 pos, n;
 	float radius;
 	Array<int> index;
-	Array<vector> pos_old;
+	Array<vec3> pos_old;
 };
 
 #endif /* ACTIONMODELBRUSHSMOOTH_H_ */

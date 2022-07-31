@@ -31,9 +31,9 @@ private:
 	Array<int> edge_directions;
 	Array<int> polygons;
 	Array<int> polygon_sides;
-	Array<vector> pos;
+	Array<vec3> pos;
 
-	bool find_loop(int edge, const vector &v);
+	bool find_loop(int edge, const vec3 &v);
 	void calculate_edge_positions(float f);
 };
 

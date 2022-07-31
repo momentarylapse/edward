@@ -29,8 +29,8 @@
 #include "../lib/base/base.h"
 #include "../lib/base/pointer.h"
 #include "../lib/os/path.h"
-#include "../lib/math/matrix.h"
-#include "../lib/math/matrix3.h"
+#include "../lib/math/mat4.h"
+#include "../lib/math/mat3.h"
 #include "../lib/math/plane.h"
 #include "../lib/math/vec4.h"
 #include "../lib/image/color.h"
@@ -65,7 +65,7 @@ public:
 	Array<float> skin_vertex;
 
 	// normals
-	Array<vector> normal;
+	Array<vec3> normal;
 
 	VertexBuffer *vertex_buffer;
 
@@ -82,12 +82,12 @@ public:
 
 	Array<ivec4> bone_index; // skeletal reference
 	Array<vec4> bone_weight;
-	Array<vector> vertex;
+	Array<vec3> vertex;
 
 	Array<SubMesh> sub;
 
 	// bounding box
-	vector min, max;
+	vec3 min, max;
 
 	Model *owner;
 
@@ -121,14 +121,14 @@ public:
 	static bool AllowDeleteRecursive;
 
 	// animation
-	vector _cdecl get_vertex(int index);
+	vec3 _cdecl get_vertex(int index);
 
 	// helper functions for collision detection
 	void _UpdatePhysAbsolute_();
 	void _ResetPhysAbsolute_();
 
-	bool _cdecl trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
-	bool _cdecl trace_mesh(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test);
+	bool _cdecl trace(const vec3 &p1, const vec3 &p2, const vec3 &dir, float range, TraceData &data, bool simple_test);
+	bool _cdecl trace_mesh(const vec3 &p1, const vec3 &p2, const vec3 &dir, float range, TraceData &data, bool simple_test);
 
 	// drawing
 	//void update_vertex_buffer(int mat_no, int detail);
@@ -144,7 +144,7 @@ public:
 	struct Properties {
 		float detail_dist[MODEL_NUM_MESHES];
 		float radius;
-		vector min, max; // "bounding box"
+		vec3 min, max; // "bounding box"
 		bool allow_shadow;
 	} prop;
 
@@ -157,7 +157,7 @@ public:
 
 	bool visible;
 
-	matrix _matrix, matrix_old;
+	mat4 _matrix, matrix_old;
 	void update_matrix();
 
 	// template

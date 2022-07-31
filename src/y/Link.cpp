@@ -14,7 +14,7 @@
 #if HAS_LIB_BULLET
 #include <btBulletDynamicsCommon.h>
 
-btVector3 bt_set_v(const vector &v);
+btVector3 bt_set_v(const vec3 &v);
 btQuaternion bt_set_q(const quaternion &q);
 #endif
 
@@ -32,7 +32,7 @@ Link::Link(LinkType t, Entity *_a, Entity *_b) : BaseClass(Type::LINK) {
 }
 
 
-void Link::_create_link_data(vector &pa, vector &pb, quaternion &iqa, quaternion &iqb, const vector &pos) {
+void Link::_create_link_data(vec3 &pa, vec3 &pb, quaternion &iqa, quaternion &iqb, const vec3 &pos) {
 	iqa = a->owner->ang.bar();
 	iqb = quaternion::ID;
 	pa = iqa * (pos - a->owner->pos);
@@ -44,8 +44,8 @@ void Link::_create_link_data(vector &pa, vector &pb, quaternion &iqa, quaternion
 }
 
 
-LinkSocket::LinkSocket(Entity *_a, Entity *_b, const vector &pos) : Link(LinkType::SOCKET, _a, _b) {
-	vector pa, pb;
+LinkSocket::LinkSocket(Entity *_a, Entity *_b, const vec3 &pos) : Link(LinkType::SOCKET, _a, _b) {
+	vec3 pa, pb;
 	quaternion iqa, iqb;
 	_create_link_data(pa, pb, iqa, iqb, pos);
 #if HAS_LIB_BULLET
@@ -65,8 +65,8 @@ LinkSocket::LinkSocket(Entity *_a, Entity *_b, const vector &pos) : Link(LinkTyp
 #endif
 }
 
-LinkHinge::LinkHinge(Entity *_a, Entity *_b, const vector &pos, const quaternion &ang) : Link(LinkType::HINGE, _a, _b) {
-	vector pa, pb;
+LinkHinge::LinkHinge(Entity *_a, Entity *_b, const vec3 &pos, const quaternion &ang) : Link(LinkType::HINGE, _a, _b) {
+	vec3 pa, pb;
 	quaternion iqa, iqb;
 	_create_link_data(pa, pb, iqa, iqb, pos);
 #if HAS_LIB_BULLET
@@ -77,22 +77,22 @@ LinkHinge::LinkHinge(Entity *_a, Entity *_b, const vector &pos, const quaternion
 			*b->body,
 			bt_set_v(pa),
 			bt_set_v(pb),
-			bt_set_v(iqa * ang * vector::EZ),
-			bt_set_v(iqb * ang * vector::EZ),
+			bt_set_v(iqa * ang * vec3::EZ),
+			bt_set_v(iqb * ang * vec3::EZ),
 			true);
 	} else {
 		//msg_write("-----------add hinge 1");
 		con = new btHingeConstraint(
 			*a->body,
 			bt_set_v(pa),
-			bt_set_v(iqa * ang * vector::EZ),
+			bt_set_v(iqa * ang * vec3::EZ),
 			true);
 	}
 #endif
 }
 
-LinkUniversal::LinkUniversal(Entity *_a, Entity *_b, const vector &pos, const quaternion &ang) : Link(LinkType::UNIVERSAL, _a, _b) {
-	vector pa, pb;
+LinkUniversal::LinkUniversal(Entity *_a, Entity *_b, const vec3 &pos, const quaternion &ang) : Link(LinkType::UNIVERSAL, _a, _b) {
+	vec3 pa, pb;
 	quaternion iqa, iqb;
 	_create_link_data(pa, pb, iqa, iqb, pos);
 	//msg_write("-----------add universal");
@@ -101,13 +101,13 @@ LinkUniversal::LinkUniversal(Entity *_a, Entity *_b, const vector &pos, const qu
 		*a->body,
 		*b->body,
 		bt_set_v(pos),
-		bt_set_v(ang * vector::EZ),
-		bt_set_v(ang * vector::EY));
+		bt_set_v(ang * vec3::EZ),
+		bt_set_v(ang * vec3::EY));
 	((btUniversalConstraint*)con)->setLimit(4, 0,0.1f);
 #endif
 }
 
-Link *Link::create(LinkType type, Entity *a, Entity *b, const vector &pos, const quaternion &ang) {
+Link *Link::create(LinkType type, Entity *a, Entity *b, const vec3 &pos, const quaternion &ang) {
 	msg_write(format("LINK   %d   %s  %s", (int)type, p2s(a), p2s(b)));
 	if (type == LinkType::SOCKET) {
 		return new LinkSocket(a, b, pos);
@@ -132,7 +132,7 @@ void Link::set_motor(float v, float max) {
 #endif
 }
 
-/*void Link::set_axis(const vector &v) {
+/*void Link::set_axis(const vec3 &v) {
 	auto vv = bt_set_v(v);
 	if (type == LinkType::HINGE)
 		((btHingeConstraint*)con)->setAxis(vv);

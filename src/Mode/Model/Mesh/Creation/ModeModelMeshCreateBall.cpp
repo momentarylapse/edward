@@ -140,7 +140,7 @@ void ModeModelMeshCreateBall::on_draw_win(MultiView::Window *win) {
 
 void ModeModelMeshCreateBall::on_mouse_move() {
 	if (pos_chosen) {
-		vector pos2 = multi_view->get_cursor(pos);
+		vec3 pos2 = multi_view->get_cursor(pos);
 		radius = (pos2 - pos).length();
 		if (multi_view->snap_to_grid)
 			radius = multi_view->snap_f(radius);

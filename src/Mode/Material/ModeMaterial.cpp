@@ -284,13 +284,13 @@ void ModeMaterial::update_shape() {
 	if (geo)
 		delete(geo);
 	if (shape_type == "torus")
-		geo = new GeometryTorus(v_0, vector::EZ, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_DETAIL*2, MATERIAL_DETAIL);
+		geo = new GeometryTorus(v_0, vec3::EZ, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_DETAIL*2, MATERIAL_DETAIL);
 	else if (shape_type == "torusknot")
-		geo = new GeometryTorusKnot(v_0, vector::EZ, MATERIAL_RADIUS1, 40, 22, 2, 5, MATERIAL_DETAIL*10, MATERIAL_DETAIL*2);
+		geo = new GeometryTorusKnot(v_0, vec3::EZ, MATERIAL_RADIUS1, 40, 22, 2, 5, MATERIAL_DETAIL*10, MATERIAL_DETAIL*2);
 	else if (shape_type == "teapot")
 		geo = new GeometryTeapot(v_0, MATERIAL_RADIUS1, MATERIAL_DETAIL/3);
 	else if (shape_type == "cube")
-		geo = new GeometryCube(-vector(1,1,1) * MATERIAL_RADIUS1/2, vector::EX * MATERIAL_RADIUS1, vector::EY * MATERIAL_RADIUS1, vector::EZ * MATERIAL_RADIUS1, 1, 1, 1);
+		geo = new GeometryCube(-vec3(1,1,1) * MATERIAL_RADIUS1/2, vec3::EX * MATERIAL_RADIUS1, vec3::EY * MATERIAL_RADIUS1, vec3::EZ * MATERIAL_RADIUS1, 1, 1, 1);
 		//geo = new ModelGeometryPlatonic(v_0, MATERIAL_RADIUS1, 6);
 	else if (shape_type == "icosahedron")
 		geo = new GeometryPlatonic(v_0, MATERIAL_RADIUS1, 20);
@@ -310,7 +310,7 @@ void ModeMaterial::update_shape() {
 bool ModeMaterial::optimize_view() {
 	multi_view->reset_view();
 	if (geo) {
-		vector min, max;
+		vec3 min, max;
 		geo->get_bounding_box(min, max);
 		multi_view->set_view_box(min, max);
 	}

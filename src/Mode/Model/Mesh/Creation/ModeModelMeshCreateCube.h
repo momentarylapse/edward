@@ -32,8 +32,8 @@ public:
 	bool set_dpos3();
 
 private:
-	vector pos, pos2;
-	vector length[3];
+	vec3 pos, pos2;
+	vec3 length[3];
 	bool pos_chosen;
 	bool pos2_chosen;
 	Geometry *geo;

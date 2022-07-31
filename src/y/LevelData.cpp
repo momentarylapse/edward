@@ -40,9 +40,9 @@ color ReadColor4(File *f) {
 
 
 
-static vector s2v(const string &s) {
+static vec3 s2v(const string &s) {
 	auto x = s.explode(" ");
-	return vector(x[0]._float(), x[1]._float(), x[2]._float());
+	return vec3(x[0]._float(), x[1]._float(), x[2]._float());
 }
 
 // RGBA
@@ -199,7 +199,7 @@ bool LevelData::load(const Path &filename) {
 }
 
 
-static string v2s(const vector &v) {
+static string v2s(const vec3 &v) {
 	return format("%.3f %.3f %.3f", v.x, v.y, v.z);
 }
 

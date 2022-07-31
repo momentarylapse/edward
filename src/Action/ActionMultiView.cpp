@@ -20,7 +20,7 @@
 #include "Model/Skeleton/ActionModelTransformBones.h"
 
 ActionMultiView::ActionMultiView() {
-	mat = matrix::ID;
+	mat = mat4::ID;
 }
 
 
@@ -36,7 +36,7 @@ void ActionMultiView::abort_and_notify(Data *d) {
 	d->notify(message());
 }
 
-void ActionMultiView::update_and_notify(Data *d, const matrix &m) {
+void ActionMultiView::update_and_notify(Data *d, const mat4 &m) {
 	abort(d);
 	mat = m;
 	execute(d);

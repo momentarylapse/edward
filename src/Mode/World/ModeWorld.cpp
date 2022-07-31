@@ -169,17 +169,17 @@ void ModeWorld::on_command(const string & id) {
 }
 
 #define MODEL_MAX_VERTICES	65536
-vector tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
+vec3 tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
-float WorldObject::hover_distance(MultiView::Window *win, const vec2 &mv, vector &tp, float &z) {
+float WorldObject::hover_distance(MultiView::Window *win, const vec2 &mv, vec3 &tp, float &z) {
 	Object *o = object;
 	if (!o)
 		return -1;
 	int d = 0;//o->_detail_;
 	if ((d<0)or(d>2))
 		return -1;
-	o->_matrix = matrix::translation(pos) * matrix::rotation(ang);
+	o->_matrix = mat4::translation(pos) * mat4::rotation(ang);
 	for (int i=0;i<o->mesh[d]->vertex.num;i++) {
 		tmv[i] = o->_matrix * o->mesh[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
@@ -187,14 +187,14 @@ float WorldObject::hover_distance(MultiView::Window *win, const vec2 &mv, vector
 	float z_min=1;
 	for (int mm=0;mm<o->material.num;mm++)
 	for (int i=0;i<o->mesh[d]->sub[mm].num_triangles;i++) {
-		vector a=pmv[o->mesh[d]->sub[mm].triangle_index[i*3  ]];
-		vector b=pmv[o->mesh[d]->sub[mm].triangle_index[i*3+1]];
-		vector c=pmv[o->mesh[d]->sub[mm].triangle_index[i*3+2]];
+		vec3 a=pmv[o->mesh[d]->sub[mm].triangle_index[i*3  ]];
+		vec3 b=pmv[o->mesh[d]->sub[mm].triangle_index[i*3+1]];
+		vec3 c=pmv[o->mesh[d]->sub[mm].triangle_index[i*3+2]];
 		if ((a.z<=0)or(b.z<=0)or(c.z<=0)or(a.z>=1)or(b.z>=1)or(c.z>=1))
 			continue;
 		float az=a.z,bz=b.z,cz=c.z;
 		a.z=b.z=c.z=0;
-		auto fg = bary_centric(vector(mv.x,mv.y,0),a,b,c);
+		auto fg = bary_centric(vec3(mv.x,mv.y,0),a,b,c);
 		if ((fg.x>=0)and(fg.y>=0)and(fg.x+fg.y<=1)) {
 			float z=az + fg.x*(bz-az) + fg.y*(cz-az);
 			if (z<z_min) {
@@ -216,8 +216,8 @@ bool WorldObject::in_rect(MultiView::Window *win, const rect &r) {
 	int d = 0;//m->_detail_;
 	if ((d<0)or(d>2))
 		return false;
-	vector min, max;
-	m->_matrix = matrix::translation(pos) * matrix::rotation(ang);
+	vec3 min, max;
+	m->_matrix = mat4::translation(pos) * mat4::rotation(ang);
 	for (int i=0;i<m->mesh[d]->vertex.num;i++) {
 		tmv[i] = m->_matrix * m->mesh[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
@@ -227,9 +227,9 @@ bool WorldObject::in_rect(MultiView::Window *win, const rect &r) {
 	return false;
 	for (int mm=0;mm<m->material.num;mm++)
 	for (int i=0;i<m->mesh[d]->sub[mm].num_triangles;i++) {
-		vector a=pmv[m->mesh[d]->sub[mm].triangle_index[i*3  ]];
-		vector b=pmv[m->mesh[d]->sub[mm].triangle_index[i*3+1]];
-		vector c=pmv[m->mesh[d]->sub[mm].triangle_index[i*3+2]];
+		vec3 a=pmv[m->mesh[d]->sub[mm].triangle_index[i*3  ]];
+		vec3 b=pmv[m->mesh[d]->sub[mm].triangle_index[i*3+1]];
+		vec3 c=pmv[m->mesh[d]->sub[mm].triangle_index[i*3+2]];
 		if ((a.z<=0)or(b.z<=0)or(c.z<=0)or(a.z>=1)or(b.z>=1)or(c.z>=1))
 			continue;
 		if (i==0)
@@ -248,14 +248,14 @@ bool WorldObject::overlap_rect(MultiView::Window *win, const rect &r) {
 	return in_rect(win, r);
 }
 
-float WorldTerrain::hover_distance(MultiView::Window *win, const vec2 &mv, vector &tp, float &z) {
+float WorldTerrain::hover_distance(MultiView::Window *win, const vec2 &mv, vec3 &tp, float &z) {
 	//msg_db_f(format("IMOT index= %d",index).c_str(),3);
 	Terrain *t = terrain;
 	if (!t)
 		return -1;
 	float r = win->cam->radius * 100;
-	vector a = win->unproject(vector(mv.x,mv.y,0));
-	vector b = win->unproject(vector(mv.x,mv.y,0), win->cam->pos + win->get_direction() * r);
+	vec3 a = win->unproject(vec3(mv.x,mv.y,0));
+	vec3 b = win->unproject(vec3(mv.x,mv.y,0), win->cam->pos + win->get_direction() * r);
 	CollisionData td;
 	bool hit = t->trace(a - pos, b - pos, v_0, r, td, false);
 	tp = td.pos + pos;
@@ -265,10 +265,10 @@ float WorldTerrain::hover_distance(MultiView::Window *win, const vec2 &mv, vecto
 
 bool WorldTerrain::in_rect(MultiView::Window *win, const rect &r) {
 	Terrain *t = terrain;
-	vector min,max;
+	vec3 min,max;
 	for (int i=0;i<8;i++) {
-		vector v = pos+vector((i%2)==0?t->min.x:t->max.x,((i/2)%2)==0?t->min.y:t->max.y,((i/4)%2)==0?t->min.z:t->max.z);
-		vector p = win->project(v);
+		vec3 v = pos+vec3((i%2)==0?t->min.x:t->max.x,((i/2)%2)==0?t->min.y:t->max.y,((i/4)%2)==0?t->min.z:t->max.z);
+		vec3 p = win->project(v);
 		if (i==0)
 			min=max=p;
 		min._min(p);
@@ -353,7 +353,7 @@ void DrawSelectionObject(const WorldObject &oo, float alpha, const color &c) {
 	int d = 0;//o->_detail_;
 	if ((d<0) or (d>3))
 		return;
-	nix::set_model_matrix(matrix::translation(oo.pos) * matrix::rotation(oo.ang));
+	nix::set_model_matrix(mat4::translation(oo.pos) * mat4::rotation(oo.ang));
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	for (int i=0;i<o->material.num;i++) {
 		Array<nix::Texture*> tex;
@@ -367,7 +367,7 @@ void DrawSelectionObject(const WorldObject &oo, float alpha, const color &c) {
 	nix::disable_alpha();
 }
 
-void DrawTerrainColored(Terrain *t, const color &c, float alpha, const vector &cam_pos) {
+void DrawTerrainColored(Terrain *t, const color &c, float alpha, const vec3 &cam_pos) {
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 
 	nix::set_material(color(alpha, 0, 0, 0), 0, 0, c);
@@ -389,7 +389,7 @@ void ModeWorld::apply_lighting(MultiView::Window *win) {
 	Array<nix::BasicLight> lights;
 	for (auto &ll: data->lights) {
 		nix::BasicLight l;
-		l.proj = matrix::ID;
+		l.proj = mat4::ID;
 		l.theta = -1;
 		l.radius = -1;
 		l.pos = win->view_matrix * ll.pos;
@@ -455,7 +455,7 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 		s->set_floats("pattern0", &t.terrain->texture_scale[0].x, 3);
 		s->set_floats("pattern1", &t.terrain->texture_scale[1].x, 3);
 
-		nix::set_model_matrix(matrix::translation(t.pos));
+		nix::set_model_matrix(mat4::translation(t.pos));
 		nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
 		_set_textures(weak(mat->textures));
 		nix::draw_triangles(t.terrain->vertex_buffer);
@@ -502,7 +502,7 @@ void ModeWorld::draw_objects(MultiView::Window *win) {
 		if (o.view_stage < multi_view->view_stage)
 			continue;
 		if (o.object) {
-			nix::set_model_matrix(matrix::translation(o.pos) * matrix::rotation(o.ang));
+			nix::set_model_matrix(mat4::translation(o.pos) * mat4::rotation(o.ang));
 			draw_model(win, o.object, data->lights.num);
 		}
 	}
@@ -517,7 +517,7 @@ void ModeWorld::draw_objects(MultiView::Window *win) {
 	if ((multi_view->hover.index >= 0) and (multi_view->hover.type == MVD_WORLD_OBJECT))
 		DrawSelectionObject(data->objects[multi_view->hover.index], OSelectionAlpha, White);
 	nix::disable_alpha();
-	nix::set_model_matrix(matrix::ID);
+	nix::set_model_matrix(mat4::ID);
 }
 
 void ModeWorld::draw_cameras(MultiView::Window *win) {
@@ -534,9 +534,9 @@ void ModeWorld::draw_cameras(MultiView::Window *win) {
 		auto q = quaternion::rotation_v(c.ang);
 		float r = win->cam->radius * 0.1f;
 		float rr = r * tan(c.fov / 2);
-		vector ex = q * vector::EX * rr * 1.333f;
-		vector ey = q * vector::EY * rr;
-		vector ez = q * vector::EZ * r;
+		vec3 ex = q * vec3::EX * rr * 1.333f;
+		vec3 ey = q * vec3::EY * rr;
+		vec3 ez = q * vec3::EZ * r;
 		draw_line(c.pos, c.pos + ez + ex + ey);
 		draw_line(c.pos, c.pos + ez - ex + ey);
 		draw_line(c.pos, c.pos + ez + ex - ey);
@@ -548,10 +548,10 @@ void ModeWorld::draw_cameras(MultiView::Window *win) {
 	}
 }
 
-void draw_tangent_circle(MultiView::Window *win, const vector &p, const vector &c, const vector &n, float r) {
+void draw_tangent_circle(MultiView::Window *win, const vec3 &p, const vec3 &c, const vec3 &n, float r) {
 
-	vector e1 = n.ortho();
-	vector e2 = n ^ e1;
+	vec3 e1 = n.ortho();
+	vec3 e2 = n ^ e1;
 	e1 *= r;
 	e2 *= r;
 	vec2 pc = win->project(c).xy();
@@ -617,7 +617,7 @@ void ModeWorld::draw_links(MultiView::Window *win) {
 			draw_line(l.pos, data->objects[l.object[1]].pos);
 		if (l.is_selected) {
 			set_line_width(scheme.LINE_WIDTH_THICK);
-			vector d = quaternion::rotation(l.ang) * vector::EZ * multi_view->cam.radius * 0.1;
+			vec3 d = quaternion::rotation(l.ang) * vec3::EZ * multi_view->cam.radius * 0.1;
 			draw_line(l.pos - d, l.pos + d);
 		}
 	}
@@ -753,7 +753,7 @@ void ModeWorld::ExecuteLightmapDialog() {
 
 bool ModeWorld::optimize_view() {
 	multi_view->reset_view();
-	vector min, max;
+	vec3 min, max;
 	data->get_bounding_box(min, max);
 	multi_view->set_view_box(min, max);
 

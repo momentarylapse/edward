@@ -28,7 +28,7 @@ ModeModelMeshCreateTorus::ModeModelMeshCreateTorus(ModeBase *_parent) :
 	rad_chosen = false;
 	radius1 = 0;
 	radius2 = 0;
-	axis = vector::EZ;
+	axis = vec3::EZ;
 	geo = NULL;
 }
 
@@ -113,7 +113,7 @@ void ModeModelMeshCreateTorus::on_mouse_move()
 {
 	axis = multi_view->mouse_win->get_direction();
 	if (pos_chosen){
-		vector m = multi_view->get_cursor(pos);
+		vec3 m = multi_view->get_cursor(pos);
 		if (rad_chosen){
 			radius2 = (m - pos).length() * RADIUS_FACTOR;
 			radius2 = multi_view->maybe_snap_f(radius2);

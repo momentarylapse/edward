@@ -45,8 +45,8 @@ ModeWorldCamera::ModeWorldCamera(ModeBase *_parent, Data *_data) :
 	preview = false;
 
 
-	inter_pos = new Interpolator<vector>(Interpolator<vector>::TYPE_CUBIC_SPLINE);
-	inter_ang = new Interpolator<vector>(Interpolator<vector>::TYPE_ANGULAR_LERP);
+	inter_pos = new Interpolator<vec3>(Interpolator<vec3>::TYPE_CUBIC_SPLINE);
+	inter_ang = new Interpolator<vec3>(Interpolator<vec3>::TYPE_ANGULAR_LERP);
 }
 
 ModeWorldCamera::~ModeWorldCamera() {
@@ -211,14 +211,14 @@ void ModeWorldCamera::on_draw_win(MultiView::Window *win)
 {
 	parent->on_draw_win(win);
 
-	nix::set_model_matrix(matrix::ID);
+	nix::set_model_matrix(mat4::ID);
 	set_line_width(1.0f);
 
-	vector last_pos = v_0;
-	vector last_vel = v_0;
+	vec3 last_pos = v_0;
+	vec3 last_vel = v_0;
 	for (WorldCamPoint &c: data->Point){
 		if (c.Type == CPKCamFlight){
-			Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE);
+			Interpolator<vec3> inter(Interpolator<vec3>::TYPE_CUBIC_SPLINE);
 			inter.add2(last_pos, last_vel, 0);
 			inter.add2(c.pos, c.Vel, c.Duration);
 			inter.normalize();

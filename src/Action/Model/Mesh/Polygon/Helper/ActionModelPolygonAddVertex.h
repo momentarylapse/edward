@@ -8,13 +8,13 @@
 #ifndef ACTIONMODELPOLYGONADDVERTEX_H_
 #define ACTIONMODELPOLYGONADDVERTEX_H_
 
+#include "../../../../../lib/math/vec3.h"
 #include "../../../../ActionGroup.h"
 #include "../../../../../y/Material.h"
-#include "../../../../../lib/math/vector.h"
 
 class ActionModelPolygonAddVertex: public ActionGroup {
 public:
-	ActionModelPolygonAddVertex(int _poly, int _side, int _vertex, const vector *_sv);
+	ActionModelPolygonAddVertex(int _poly, int _side, int _vertex, const vec3 *_sv);
 	string name() override { return "ModelPolygonAddVertex"; }
 
 	void *compose(Data *d) override;
@@ -23,7 +23,7 @@ private:
 	int poly;
 	int side;
 	int vertex;
-	vector sv[MATERIAL_MAX_TEXTURES];
+	vec3 sv[MATERIAL_MAX_TEXTURES];
 };
 
 #endif /* ACTIONMODELPOLYGONADDVERTEX_H_ */

@@ -66,15 +66,15 @@ quaternion bt_get_q(const btQuaternion &q) {
 	return r;
 }
 
-vector bt_get_v(const btVector3 &v) {
-	vector r;
+vec3 bt_get_v(const btVector3 &v) {
+	vec3 r;
 	r.x = v.x();
 	r.y = v.y();
 	r.z = v.z();
 	return r;
 }
 
-btVector3 bt_set_v(const vector &v) {
+btVector3 bt_set_v(const vec3 &v) {
 	return btVector3(v.x, v.y, v.z);
 }
 
@@ -82,7 +82,7 @@ btQuaternion bt_set_q(const quaternion &q) {
 	return btQuaternion(q.x, q.y, q.z, q.w);
 }
 
-btTransform bt_set_trafo(const vector &p, const quaternion &q) {
+btTransform bt_set_trafo(const vec3 &p, const quaternion &q) {
 	btTransform trafo;
 	trafo.setIdentity();
 	trafo.setOrigin(bt_set_v(p));
@@ -121,7 +121,7 @@ void AddNetMsg(int msg, int argi0, const string &args)
 
 int num_insane=0;
 
-inline bool TestVectorSanity(vector &v, const char *name) {
+inline bool TestVectorSanity(vec3 &v, const char *name) {
 	if (inf_v(v)) {
 		num_insane++;
 		v=v_0;
@@ -402,7 +402,7 @@ void World::add_link(Link *l) {
 }
 
 
-Terrain *World::create_terrain_no_reg(const Path &filename, const vector &pos) {
+Terrain *World::create_terrain_no_reg(const Path &filename, const vec3 &pos) {
 
 	auto o = create_entity(pos, quaternion::ID);
 
@@ -413,13 +413,13 @@ Terrain *World::create_terrain_no_reg(const Path &filename, const vector &pos) {
 
 	auto sb = (SolidBody*)o->add_component(SolidBody::_class, "");
 	sb->mass = 10000.0f;
-	sb->theta_0 = matrix3::ZERO;
+	sb->theta_0 = mat3::ZERO;
 	sb->passive = true;
 
 	return t;
 }
 
-Terrain *World::create_terrain(const Path &filename, const vector &pos) {
+Terrain *World::create_terrain(const Path &filename, const vec3 &pos) {
 	auto t = create_terrain_no_reg(filename, pos);
 	register_entity(t->owner);
 	return t;
@@ -432,7 +432,7 @@ bool GodLoadWorld(const Path &filename) {
 	return ok;
 }
 
-Entity *World::create_entity(const vector &pos, const quaternion &ang) {
+Entity *World::create_entity(const vec3 &pos, const quaternion &ang) {
 	return new Entity(pos, ang);
 }
 
@@ -461,17 +461,17 @@ void World::register_entity(Entity *e) {
 	notify("entity-add");
 }
 
-Entity *World::create_object(const Path &filename, const vector &pos, const quaternion &ang) {
+Entity *World::create_object(const Path &filename, const vec3 &pos, const quaternion &ang) {
 	auto o = create_object_no_reg_x(filename, "", pos, ang);
 	register_entity(o);
 	return o;
 }
 
-Entity *World::create_object_no_reg(const Path &filename, const vector &pos, const quaternion &ang) {
+Entity *World::create_object_no_reg(const Path &filename, const vec3 &pos, const quaternion &ang) {
 	return create_object_no_reg_x(filename, "", pos, ang);
 }
 
-Entity *World::create_object_no_reg_x(const Path &filename, const string &name, const vector &pos, const quaternion &ang) {
+Entity *World::create_object_no_reg_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang) {
 	if (engine.resetting_game)
 		throw Exception("create_object during game reset");
 
@@ -503,22 +503,22 @@ Entity *World::create_object_no_reg_x(const Path &filename, const string &name, 
 	return o;
 }
 
-Object* World::create_object_multi(const Path &filename, const Array<vector> &pos, const Array<quaternion> &ang) {
+Object* World::create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang) {
 
 
 	//msg_write(on);
 	auto *o = static_cast<Object*>(ModelManager::load(filename));
 
-	Array<matrix> matrices;
+	Array<mat4> matrices;
 	for (int i=0; i<pos.num; i++) {
-		matrices.add(matrix::translation(pos[i]) * matrix::rotation(ang[i]));
+		matrices.add(mat4::translation(pos[i]) * mat4::rotation(ang[i]));
 	}
 	register_model_multi(o, matrices);
 
 	return o;
 }
 
-void World::register_model_multi(Model *m, const Array<matrix> &matrices) {
+void World::register_model_multi(Model *m, const Array<mat4> &matrices) {
 
 	if (m->registered)
 		return;
@@ -866,7 +866,7 @@ Light *World::add_light_parallel(const quaternion &ang, const color &c) {
 #endif
 }
 
-Light *World::add_light_point(const vector &pos, const color &c, float r) {
+Light *World::add_light_point(const vec3 &pos, const color &c, float r) {
 #ifdef _X_ALLOW_X_
 	auto o = create_entity(pos, quaternion::ID);
 
@@ -879,7 +879,7 @@ Light *World::add_light_point(const vector &pos, const color &c, float r) {
 #endif
 }
 
-Light *World::add_light_cone(const vector &pos, const quaternion &ang, const color &c, float r, float t) {
+Light *World::add_light_cone(const vec3 &pos, const quaternion &ang, const color &c, float r, float t) {
 #ifdef _X_ALLOW_X_
 	auto o = create_entity(pos, ang);
 
@@ -903,7 +903,7 @@ void World::add_sound(audio::Sound *s) {
 }
 
 
-void World::shift_all(const vector &dpos) {
+void World::shift_all(const vec3 &dpos) {
 	for (auto *e: entities) {
 		e->pos += dpos;
 		//if (auto m = e->get_component<Model>())
@@ -921,11 +921,11 @@ void World::shift_all(const vector &dpos) {
 	notify("shift");
 }
 
-vector World::get_g(const vector &pos) const {
+vec3 World::get_g(const vec3 &pos) const {
 	return gravity;
 }
 
-bool World::trace(const vector &p1, const vector &p2, CollisionData &d, bool simple_test, Entity *o_ignore) {
+bool World::trace(const vec3 &p1, const vec3 &p2, CollisionData &d, bool simple_test, Entity *o_ignore) {
 #if HAS_LIB_BULLET
 	btCollisionWorld::ClosestRayResultCallback ray_callback(bt_set_v(p1), bt_set_v(p2));
 	//ray_callback.m_collisionFilterMask = FILTER_CAMERA;
@@ -941,7 +941,7 @@ bool World::trace(const vector &p1, const vector &p2, CollisionData &d, bool sim
 
 		// ignore...
 		if (sb and sb->owner == o_ignore) {
-			vector dir = (p2 - p1).normalized();
+			vec3 dir = (p2 - p1).normalized();
 			return trace(d.pos + dir * 2, p2, d, simple_test, o_ignore);
 		}
 		return true;

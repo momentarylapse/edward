@@ -9,7 +9,7 @@
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Data/Model/ModelMesh.h"
 
-ActionModelBrushSmooth::ActionModelBrushSmooth(const vector &_pos, const vector &_n, float _radius) {
+ActionModelBrushSmooth::ActionModelBrushSmooth(const vec3 &_pos, const vec3 &_n, float _radius) {
 	pos = _pos;
 	n = _n;
 	radius = _radius;
@@ -25,8 +25,8 @@ void* ActionModelBrushSmooth::execute(Data* d) {
 		if (d2 < r2 * 2) {
 			index.add(i);
 			pos_old.add(m->edit_mesh->vertex[i].pos);
-			vector d = (m->edit_mesh->vertex[i].pos - pos);
-			d = d - vector::dot(d, n) * n * exp(- d2 / r2 * 2);
+			vec3 d = (m->edit_mesh->vertex[i].pos - pos);
+			d = d - vec3::dot(d, n) * n * exp(- d2 / r2 * 2);
 			m->edit_mesh->vertex[i].pos = pos + d;
 		}
 	}

@@ -9,7 +9,7 @@
 #include "../../../Data/Model/DataModel.h"
 #include <assert.h>
 
-ActionModelAddBone::ActionModelAddBone(const vector &_pos, int _parent)
+ActionModelAddBone::ActionModelAddBone(const vec3 &_pos, int _parent)
 {
 	pos = _pos;
 	parent = _parent;
@@ -22,7 +22,7 @@ void *ActionModelAddBone::execute(Data *d)
 	b.parent = parent;
 	b.const_pos = false;
 	b.pos = pos;
-	b._matrix = matrix::ID;
+	b._matrix = mat4::ID;
 	b.model = NULL;
 	m->bone.add(b);
 

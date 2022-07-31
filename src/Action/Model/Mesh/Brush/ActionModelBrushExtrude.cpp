@@ -9,7 +9,7 @@
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../Data/Model/ModelMesh.h"
 
-ActionModelBrushExtrude::ActionModelBrushExtrude(const vector &_pos, const vector &_n, float _radius, float _depth) {
+ActionModelBrushExtrude::ActionModelBrushExtrude(const vec3 &_pos, const vec3 &_n, float _radius, float _depth) {
 	pos = _pos;
 	n = _n;
 	radius = _radius;

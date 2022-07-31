@@ -29,7 +29,7 @@ void LightmapPhotonMapImageSpace::CreateTextures()
 	// fill with photon events
 	for (PhotonEvent &p: photon){
 		LightmapData::Triangle &t = data->Trias[p.tria];
-		vector sv = t.sv[0] + (t.sv[1] - t.sv[0]) * p.f + (t.sv[2] - t.sv[0]) * p.g;
+		vec3 sv = t.sv[0] + (t.sv[1] - t.sv[0]) * p.f + (t.sv[2] - t.sv[0]) * p.g;
 		int x = sv.x + 0.5f;
 		int y = sv.y + 0.5f;
 		float v_inv_area = t.num_vertices / t.area;

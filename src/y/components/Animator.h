@@ -12,9 +12,9 @@
 #include "../../graphics-fwd.h"
 
 class Model;
-class vector;
+class vec3;
 class quaternion;
-class matrix;
+class mat4;
 class MetaMove;
 
 
@@ -50,15 +50,15 @@ public:
 
 
 	// skeletal animation data
-	//Array<Array<vector>> skel_dpos; //   [frame,bone]
+	//Array<Array<vec3>> skel_dpos; //   [frame,bone]
 	//Array<Array<quaternion>> skel_ang; //   [frame,bone]
-	Array<vector> skel_dpos;
+	Array<vec3> skel_dpos;
 	Array<quaternion> skel_ang;
 
 	// vertex animation data
 	struct {
-		//Array<Array<vector>> dpos; // vertex animation data   [frame,vertex]
-		Array<vector> dpos;
+		//Array<Array<vec3>> dpos; // vertex animation data   [frame,vertex]
+		Array<vec3> dpos;
 	} mesh[4];
 };
 
@@ -100,7 +100,7 @@ public:
 	// dynamical data (own)
 	//Mesh *mesh[MODEL_NUM_MESHES]; // here the animated vertices are stored before rendering
 
-	Array<matrix> dmatrix;
+	Array<mat4> dmatrix;
 	Buffer *buf;
 
 	// animation
@@ -115,7 +115,7 @@ public:
 
 
 
-	vector get_vertex(int index);
+	vec3 get_vertex(int index);
 
 	static const kaba::Class *_class;
 };

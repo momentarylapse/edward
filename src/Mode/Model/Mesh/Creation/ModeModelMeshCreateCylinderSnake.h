@@ -29,9 +29,9 @@ public:
 	void update_geometry();
 
 private:
-	Array<vector> pos;
+	Array<vec3> pos;
 	bool ready_for_scaling;
-	vector length;
+	vec3 length;
 	float radius;
 	bool closed;
 	Geometry *geo;

@@ -13,7 +13,7 @@
 #define _cyl_vert(i, j)         ( edges      * (i) +(j) % edges)
 #define _cyl_svert(i, j)        sv[(edges + 1) * (i) +(j) % (edges + 1)]
 
-GeometryCylinder::GeometryCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, int end_mode)
+GeometryCylinder::GeometryCylinder(Array<vec3> &pos, Array<float> &radius, int rings, int edges, int end_mode)
 {
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 	for (float r: radius)
@@ -21,15 +21,15 @@ GeometryCylinder::GeometryCylinder(Array<vector> &pos, Array<float> &radius, int
 	inter_r.normalize();
 
 	// vertices (interpolated on path)
-	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
-	for (vector &p: pos)
+	Interpolator<vec3> inter(Interpolator<vec3>::TYPE_CUBIC_SPLINE_NOTANG);
+	for (vec3 &p: pos)
 		inter.add(p);
 	inter.normalize();
 
 	buildFromPath(inter, inter_r, rings, edges, end_mode);
 }
 
-GeometryCylinder::GeometryCylinder(Array<vector> &pos, float radius, int rings, int edges, int end_mode)
+GeometryCylinder::GeometryCylinder(Array<vec3> &pos, float radius, int rings, int edges, int end_mode)
 {
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 	inter_r.add(radius);
@@ -37,15 +37,15 @@ GeometryCylinder::GeometryCylinder(Array<vector> &pos, float radius, int rings, 
 	inter_r.normalize();
 
 	// vertices (interpolated on path)
-	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
-	for (vector &p: pos)
+	Interpolator<vec3> inter(Interpolator<vec3>::TYPE_CUBIC_SPLINE_NOTANG);
+	for (vec3 &p: pos)
 		inter.add(p);
 	inter.normalize();
 
 	buildFromPath(inter, inter_r, rings, edges, end_mode);
 }
 
-GeometryCylinder::GeometryCylinder(const vector &pos1, const vector &pos2, float radius, int rings, int edges, int end_mode)
+GeometryCylinder::GeometryCylinder(const vec3 &pos1, const vec3 &pos2, float radius, int rings, int edges, int end_mode)
 {
 	Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
 	inter_r.add(radius);
@@ -53,7 +53,7 @@ GeometryCylinder::GeometryCylinder(const vector &pos1, const vector &pos2, float
 	inter_r.normalize();
 
 	// vertices (interpolated on path)
-	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
+	Interpolator<vec3> inter(Interpolator<vec3>::TYPE_CUBIC_SPLINE_NOTANG);
 	inter.add(pos1);
 	inter.add(pos2);
 	inter.normalize();
@@ -61,19 +61,19 @@ GeometryCylinder::GeometryCylinder(const vector &pos1, const vector &pos2, float
 	buildFromPath(inter, inter_r, rings, edges, end_mode);
 }
 
-void GeometryCylinder::__init2__(Array<vector>& pos, Array<float>& radius, int rings, int edges, int end_mode)
+void GeometryCylinder::__init2__(Array<vec3>& pos, Array<float>& radius, int rings, int edges, int end_mode)
 {
 	new (this) GeometryCylinder(pos, radius, rings, edges, end_mode);
 }
 
-void GeometryCylinder::__init__(const vector& pos1, const vector& pos2, float radius, int rings, int edges, int end_mode)
+void GeometryCylinder::__init__(const vec3& pos1, const vec3& pos2, float radius, int rings, int edges, int end_mode)
 {
 	new (this) GeometryCylinder(pos1, pos2, radius, rings, edges, end_mode);
 }
 
-matrix make_frame(const vector &pos, const vector &dir, const vector &up, const vector right) {
-	auto rot = matrix(right, up, dir);
-	auto trans = matrix::translation(pos);
+mat4 make_frame(const vec3 &pos, const vec3 &dir, const vec3 &up, const vec3 right) {
+	auto rot = mat4(right, up, dir);
+	auto trans = mat4::translation(pos);
 	return trans * rot;
 }
 
@@ -81,42 +81,42 @@ static Geometry half_ball(float radius, int edges, bool upper) {
 	float scale = upper ? 1 : -1;
 	auto ball = GeometryBall(v_0, radius, edges/2, edges);
 	for (int i=ball.polygon.num-1; i>=0; i--) {
-		vector m = v_0;
+		vec3 m = v_0;
 		for (int k=0; k<ball.polygon[i].side.num; k++)
 			m += ball.vertex[ball.polygon[i].side[k].vertex].pos;
 		if (m.y * scale > 0)
 			ball.polygon.erase(i);
 	}
-	matrix rot = matrix::rotation_x(pi/2);
+	mat4 rot = mat4::rotation_x(pi/2);
 	ball.transform(rot);
 	ball.remove_unused_vertices();
 	return ball;
 }
 
-void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<float> &inter_r, int rings, int edges, int end_mode)
+void GeometryCylinder::buildFromPath(Interpolator<vec3> &inter, Interpolator<float> &inter_r, int rings, int edges, int end_mode)
 {
 	if (end_mode == END_LOOP){
 		inter.close();
 		inter_r.close();
 	}
-	Array<vector> sv;
-	vector r_last = v_0;
+	Array<vec3> sv;
+	vec3 r_last = v_0;
 	int rings_vertex = (end_mode == END_LOOP) ? rings : (rings + 1);
-	matrix frame0, frame1;
+	mat4 frame0, frame1;
 	for (int i=0; i<=rings; i++){
 		// interpolated point on path
 		float t = (float)i / (float)rings;
-		vector p0 = inter.get(t);
-		vector dir = inter.getTang(t).normalized();
+		vec3 p0 = inter.get(t);
+		vec3 dir = inter.getTang(t).normalized();
 
 		// moving frame
-		vector u = vector::cross(r_last, dir);
+		vec3 u = vec3::cross(r_last, dir);
 		if (i == 0)
 			u = dir.ortho();
 		u.normalize();
-		vector r = vector::cross(dir, u).normalized();
+		vec3 r = vec3::cross(dir, u).normalized();
 		r_last = r;
-		matrix frame = make_frame(p0, dir, u, r);
+		mat4 frame = make_frame(p0, dir, u, r);
 		if (i == 0)
 			frame0 = frame;
 		frame1 = frame;
@@ -125,10 +125,10 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 		float radius = inter_r.get(t);
 		for (int j=0; j<=edges; j++){
 			float w = pi*2*(float)j/(float)edges;
-			vector p = frame * (vector((float)cos(w), (float)sin(w), 0) * radius);
+			vec3 p = frame * (vec3((float)cos(w), (float)sin(w), 0) * radius);
 			if ((j < edges) and (i < rings_vertex))
 				add_vertex(p);
-			sv.add(vector((float)j / (float)edges, t, 0));
+			sv.add(vec3((float)j / (float)edges, t, 0));
 		}
 	}
 
@@ -140,7 +140,7 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 			v.add(_cyl_vert(i, j+1));
 			v.add(_cyl_vert(i, j));
 			v.add(_cyl_vert(i+1, j));
-			Array<vector> _sv;
+			Array<vec3> _sv;
 			_sv.add(_cyl_svert(i+1, j+1));
 			_sv.add(_cyl_svert(i, j+1));
 			_sv.add(_cyl_svert(i, j));
@@ -150,12 +150,12 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 
 	if (end_mode == END_LOOP){
 		// how much did the 3-bein rotate?
-		vector dir0 = inter.getTang(0);
-		vector u0 = dir0.ortho();
+		vec3 dir0 = inter.getTang(0);
+		vec3 u0 = dir0.ortho();
 		u0.normalize();
-		vector r0 = vector::cross(dir0, u0);
+		vec3 r0 = vec3::cross(dir0, u0);
 		r0.normalize();
-		float phi = atan2(vector::dot(u0, r_last), vector::dot(r0, r_last));
+		float phi = atan2(vec3::dot(u0, r_last), vec3::dot(r0, r_last));
 		int dj = (int)((float)edges * (phi / 2 / pi));
 		if (dj < edges)
 			dj += (1-dj/edges) * edges;
@@ -168,7 +168,7 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 			v.add(_cyl_vert(i, j+1));
 			v.add(_cyl_vert(i, j));
 			v.add(_cyl_vert(0, j+dj));
-			Array<vector> _sv;
+			Array<vec3> _sv;
 			_sv.add(_cyl_svert(rings, j+1));
 			_sv.add(_cyl_svert(i, j+1));
 			_sv.add(_cyl_svert(i, j));
@@ -184,7 +184,7 @@ void GeometryCylinder::buildFromPath(Interpolator<vector> &inter, Interpolator<f
 		sv.clear();
 		for (int j=0; j<edges; j++){
 			float w = pi*2 * (float)j / (float)edges;
-			sv.add(vector(0.5f + (float)sin(w)/2, 0.5f + (float)cos(w)/2, 0));
+			sv.add(vec3(0.5f + (float)sin(w)/2, 0.5f + (float)cos(w)/2, 0));
 		}
 
 		// polygons

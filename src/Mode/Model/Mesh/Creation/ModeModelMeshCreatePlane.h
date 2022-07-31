@@ -24,8 +24,8 @@ public:
 	void on_draw_win(MultiView::Window *win) override;
 
 private:
-	vector pos, pos2;
-	vector length[2];
+	vec3 pos, pos2;
+	vec3 length[2];
 	bool pos_chosen;
 	bool invert;
 };

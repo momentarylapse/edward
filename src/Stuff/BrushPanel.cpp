@@ -30,7 +30,7 @@ struct WBrushConfig {
 		color bg = fg.with_alpha(0);
 		for (int i=0; i<n; i++)
 			for (int j=0; j<n; j++) {
-				vector vv = vector((float)i / (float)n - 0.5f, (float)j / (float)n - 0.5f, 0) * 2;
+				vec3 vv = vec3((float)i / (float)n - 0.5f, (float)j / (float)n - 0.5f, 0) * 2;
 				float dd = vv * vv;
 				float a = exp(-pow(dd, exponent)*2);
 				im.set_pixel(i, j, a * fg + (1-a) * bg);
@@ -108,7 +108,7 @@ float BrushPanel::radius() {
 	return r;
 }
 
-BrushState BrushPanel::prepare(const vector &m) {
+BrushState BrushPanel::prepare(const vec3 &m) {
 	BrushState bs;
 	bs.m0 = m;
 
@@ -129,7 +129,7 @@ BrushState BrushPanel::prepare(const vector &m) {
 }
 
 
-float BrushState::get(const vector &v) const {
+float BrushState::get(const vec3 &v) const {
 	float r = (v - m0).length();
 	if (r > R)
 		return 0;

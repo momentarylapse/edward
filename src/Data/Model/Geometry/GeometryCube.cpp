@@ -8,10 +8,10 @@
 #include "GeometryCube.h"
 #include "../DataModel.h"
 
-GeometryCube::GeometryCube(const vector &_pos, const vector &dv1, const vector &dv2, const vector &dv3, int num_1, int num_2, int num_3)
+GeometryCube::GeometryCube(const vec3 &_pos, const vec3 &dv1, const vec3 &dv2, const vec3 &dv3, int num_1, int num_2, int num_3)
 {
-	vector pos = _pos;
-	vector dv[3];
+	vec3 pos = _pos;
+	vec3 dv[3];
 	int num[3];
 	dv[0] = dv1;
 	dv[1] = dv2;
@@ -21,7 +21,7 @@ GeometryCube::GeometryCube(const vector &_pos, const vector &dv1, const vector &
 	num[2] = num_3;
 
 	// check orientation
-	if (vector::dot(vector::cross(dv[0], dv[1]), dv[2]) < 0){
+	if (vec3::dot(vec3::cross(dv[0], dv[1]), dv[2]) < 0){
 		pos += dv[2];
 		dv[2] = - dv[2];
 	}
@@ -38,7 +38,7 @@ GeometryCube::GeometryCube(const vector &_pos, const vector &dv1, const vector &
 		for (int x=0;x<=num[nx];x++)
 			for (int y=0;y<=num[ny];y++){
 				int xx = ((nz == 2) ^ (z == 0)) ? x : num[nx] - x;
-				vector dp = dv[nx] * (float)xx / (float)num[nx] + dv[ny] * (float)y / (float)num[ny] + dv[nz] * z;
+				vec3 dp = dv[nx] * (float)xx / (float)num[nx] + dv[ny] * (float)y / (float)num[ny] + dv[nz] * z;
 				add_vertex(pos + dp);
 			}
 		// create new triangles
@@ -49,11 +49,11 @@ GeometryCube::GeometryCube(const vector &_pos, const vector &dv1, const vector &
 				v.add(nv + (num[ny]+1)* x   +y);
 				v.add(nv + (num[ny]+1)*(x+1)+y);
 				v.add(nv + (num[ny]+1)*(x+1)+y+1);
-				Array<vector> sv;
-				sv.add(vector((float) x   /(float)num[nx],(float)(y+1)/(float)num[ny],0));
-				sv.add(vector((float) x   /(float)num[nx],(float) y   /(float)num[ny],0));
-				sv.add(vector((float)(x+1)/(float)num[nx],(float) y   /(float)num[ny],0));
-				sv.add(vector((float)(x+1)/(float)num[nx],(float)(y+1)/(float)num[ny],0));
+				Array<vec3> sv;
+				sv.add(vec3((float) x   /(float)num[nx],(float)(y+1)/(float)num[ny],0));
+				sv.add(vec3((float) x   /(float)num[nx],(float) y   /(float)num[ny],0));
+				sv.add(vec3((float)(x+1)/(float)num[nx],(float) y   /(float)num[ny],0));
+				sv.add(vec3((float)(x+1)/(float)num[nx],(float)(y+1)/(float)num[ny],0));
 				add_polygon_single_texture(v, sv);
 			}
 		nv += (num[nx] + 1) * (num[ny] + 1);
@@ -66,7 +66,7 @@ GeometryCube::GeometryCube(const vector &_pos, const vector &dv1, const vector &
 
 }
 
-void GeometryCube::__init__(const vector& pos, const vector& dv1, const vector& dv2, const vector& dv3, int num_1, int num_2, int num_3)
+void GeometryCube::__init__(const vec3& pos, const vec3& dv1, const vec3& dv2, const vec3& dv3, int num_1, int num_2, int num_3)
 {
 	new (this) GeometryCube(pos, dv1, dv2, dv3, num_1, num_2, num_3);
 }

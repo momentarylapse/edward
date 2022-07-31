@@ -81,8 +81,8 @@ void ModeModelMeshDeformFunction::on_start() {
 			first = false;
 		}
 
-	vector d = max - min;
-	geo = new GeometryCube(min, vector::EX * d.x, vector::EY * d.y, vector::EZ * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
+	vec3 d = max - min;
+	geo = new GeometryCube(min, vec3::EX * d.x, vec3::EY * d.y, vec3::EZ * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
@@ -106,9 +106,9 @@ void ModeModelMeshDeformFunction::on_draw_win(MultiView::Window* win) {
 	nix::draw_triangles(nix::vb_temp);
 }
 
-vector ModeModelMeshDeformFunction::transform(const vector &v) {
-	vector v0 = v_0;
-	vector scale = vector(1,1,1);
+vec3 ModeModelMeshDeformFunction::transform(const vec3 &v) {
+	vec3 v0 = v_0;
+	vec3 scale = vec3(1,1,1);
 
 	if (coord_system == CoordSystem::RELATIVE) {
 		v0 = min;
@@ -117,10 +117,10 @@ vector ModeModelMeshDeformFunction::transform(const vector &v) {
 		v0 = (min + max) / 2;
 		scale = (max - min) / 2;
 	}
-	vector vv = v - v0;
-	vv = vector(vv.x / scale.x, vv.y / scale.y, vv.z / scale.z);
-	vector w = (*f)(vv);
-	return vector(w.x * scale.x, w.y * scale.y, w.z * scale.z) + v0;
+	vec3 vv = v - v0;
+	vv = vec3(vv.x / scale.x, vv.y / scale.y, vv.z / scale.z);
+	vec3 w = (*f)(vv);
+	return vec3(w.x * scale.x, w.y * scale.y, w.z * scale.z) + v0;
 }
 
 void ModeModelMeshDeformFunction::on_preview() {
@@ -161,8 +161,8 @@ void ModeModelMeshDeformFunction::update_function() {
 
 void ModeModelMeshDeformFunction::restore() {
 	delete geo;
-	vector d = max - min;
-	geo = new GeometryCube(min, vector::EX * d.x, vector::EY * d.y, vector::EZ * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
+	vec3 d = max - min;
+	geo = new GeometryCube(min, vec3::EX * d.x, vec3::EY * d.y, vec3::EZ * d.z, CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
 	multi_view->force_redraw();
 
 	foreachi(int vi, index, ii)

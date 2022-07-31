@@ -42,7 +42,7 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 					if (e.vertex[1-k] >= n_vert)
 						continue;
 
-					vector dir = m->edit_mesh->vertex[e.vertex[1-k]].pos - m->edit_mesh->vertex[e.vertex[k]].pos;
+					vec3 dir = m->edit_mesh->vertex[e.vertex[1-k]].pos - m->edit_mesh->vertex[e.vertex[k]].pos;
 					float edge_length = dir.length();
 					if (edge_length < length + epsilon)
 						continue;

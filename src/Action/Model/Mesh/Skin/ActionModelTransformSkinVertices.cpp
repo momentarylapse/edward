@@ -29,7 +29,7 @@ void *ActionModelTransformSkinVertices::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(int k, index, ii) {
 		ModelPolygon &t = m->mesh->polygon[tria[ii]];
-		vector &v = t.side[k].skin_vertex[texture_level];
+		vec3 &v = t.side[k].skin_vertex[texture_level];
 		v = mat * v;
 	}
 	return NULL;
@@ -41,7 +41,7 @@ void ActionModelTransformSkinVertices::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	foreachi(int k, index, i) {
 		ModelPolygon &t = m->mesh->polygon[tria[i]];
-		vector &v = t.side[k].skin_vertex[texture_level];
+		vec3 &v = t.side[k].skin_vertex[texture_level];
 		v = old_data[i];
 	}
 }

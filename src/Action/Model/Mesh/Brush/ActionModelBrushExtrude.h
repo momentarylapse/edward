@@ -8,23 +8,23 @@
 #ifndef ACTIONMODELBRUSHEXTRUDE_H_
 #define ACTIONMODELBRUSHEXTRUDE_H_
 
+#include "../../../../lib/math/vec3.h"
 #include "../../../Action.h"
-#include "../../../../lib/math/vector.h"
 class DataModel;
 
 class ActionModelBrushExtrude: public Action {
 public:
-	ActionModelBrushExtrude(const vector &pos, const vector &n, float radius, float depth);
+	ActionModelBrushExtrude(const vec3 &pos, const vec3 &n, float radius, float depth);
 	string name(){	return "ModelBrushExtrude";	}
 
 	void *execute(Data *d);
 	void undo(Data *d);
 
 private:
-	vector pos, n;
+	vec3 pos, n;
 	float radius, depth;
 	Array<int> index;
-	Array<vector> pos_old;
+	Array<vec3> pos_old;
 };
 
 #endif /* ACTIONMODELBRUSHEXTRUDE_H_ */

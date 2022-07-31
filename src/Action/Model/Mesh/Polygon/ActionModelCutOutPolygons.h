@@ -11,7 +11,7 @@
 #include "../../../ActionGroup.h"
 class DataModel;
 class ModelSurface;
-class vector;
+class vec3;
 
 class ActionModelCutOutPolygons: public ActionGroup {
 public:

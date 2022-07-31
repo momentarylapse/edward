@@ -11,7 +11,7 @@
 #include "../../../ModeCreation.h"
 #include "../../../../Data/Model/DataModel.h"
 #include "../../../../lib/math/interpolation.h"
-#include "../../../../lib/math/vector.h"
+#include "../../../../lib/math/vec3.h"
 
 class Geometry;
 
@@ -39,23 +39,23 @@ public:
 //private:
 	Geometry *geo;
 
-	vector transform(const vector &v);
+	vec3 transform(const vec3 &v);
 	void preview();
 	void restore();
 
-	vector dir;
-	vector axis[2];
+	vec3 dir;
+	vec3 axis[2];
 	float radius;
-	Array<vector> param;
+	Array<vec3> param;
 	int hover;
-	vector hover_tp;
-	vector orig_param;
+	vec3 hover_tp;
+	vec3 orig_param;
 
 	Interpolator<float> *inter;
 
 	bool has_preview;
 	Array<int> index;
-	Array<vector> old_pos;
+	Array<vec3> old_pos;
 };
 
 #endif /* SRC_MODE_MODEL_MESH_CREATION_MODEMODELMESHDEFORMCYLINDER_H_ */

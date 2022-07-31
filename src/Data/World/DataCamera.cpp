@@ -162,9 +162,9 @@ float DataCamera::GetDuration() const
 	return d;
 }
 
-Interpolator<vector> DataCamera::BuildPosInterpolator() const
+Interpolator<vec3> DataCamera::BuildPosInterpolator() const
 {
-	Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE);
+	Interpolator<vec3> inter(Interpolator<vec3>::TYPE_CUBIC_SPLINE);
 	if (Point.num > 0)
 		if (Point[0].Type == CPKCamFlight)
 			inter.jump(v_0, v_0);
@@ -179,9 +179,9 @@ Interpolator<vector> DataCamera::BuildPosInterpolator() const
 	return inter;
 }
 
-Interpolator<vector> DataCamera::BuildAngInterpolator() const
+Interpolator<vec3> DataCamera::BuildAngInterpolator() const
 {
-	Interpolator<vector> inter(Interpolator<vector>::TYPE_ANGULAR_LERP);
+	Interpolator<vec3> inter(Interpolator<vec3>::TYPE_ANGULAR_LERP);
 	if (Point.num > 0)
 		if (Point[0].Type == CPKCamFlight)
 			inter.jump(v_0, v_0);

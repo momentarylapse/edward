@@ -8,10 +8,10 @@
 #ifndef SKINGENERATOR_H_
 #define SKINGENERATOR_H_
 
-#include "../../lib/math/vector.h"
-#include "../../lib/math/matrix.h"
+#include "../../lib/math/vec3.h"
+#include "../../lib/math/mat4.h"
 
-class vector;
+class vec3;
 namespace MultiView{
 	class Window;
 };
@@ -22,16 +22,16 @@ class SkinGenerator {
 public:
 	SkinGenerator();
 	virtual ~SkinGenerator();
-	void init_affine(const vector &dir_u, float f_u, const vector &dir_v, float f_v);
-	void init_projective(const matrix &_m);
+	void init_affine(const vec3 &dir_u, float f_u, const vec3 &dir_v, float f_v);
+	void init_projective(const mat4 &_m);
 	void init_projective(MultiView::Window *win);
 	void init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, int level);
 	void init_point_cloud_boundary(const Array<ModelVertex> &p, const Array<int> &v);
 
-	vector get(const vector &v) const;
+	vec3 get(const vec3 &v) const;
 
 private:
-	matrix m;
+	mat4 m;
 };
 
 class SkinGeneratorMulti {
@@ -41,7 +41,7 @@ public:
 	virtual ~SkinGeneratorMulti();
 	void init_polygon(const Array<ModelVertex> &v, ModelPolygon &p);
 
-	vector get(const vector &v, int level) const;
+	vec3 get(const vec3 &v, int level) const;
 
 private:
 	SkinGenerator *gen;

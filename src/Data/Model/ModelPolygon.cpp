@@ -18,8 +18,8 @@ void VertexStagingBuffer::build(nix::VertexBuffer *vb, int num_textures) {
 	int d = 3 + 3 + 2*num_textures;
 	temp.resize(p.num * d);
 	for (int i=0; i<p.num; i++) {
-		*(vector*)&temp[i * d] = p[i];
-		*(vector*)&temp[i * d + 3] = n[i];
+		*(vec3*)&temp[i * d] = p[i];
+		*(vec3*)&temp[i * d + 3] = n[i];
 		for (int l=0; l<num_textures; l++)
 			*(vec2*)&temp[i * d + 6 + l*2] = *(vec2*)&uv[l][2*i];
 	}
@@ -31,12 +31,12 @@ void VertexStagingBuffer::build(nix::VertexBuffer *vb, int num_textures) {
 
 }
 
-vector ModelPolygon::get_area_vector(const Array<ModelVertex> &vertex) const {
+vec3 ModelPolygon::get_area_vector(const Array<ModelVertex> &vertex) const {
 	// Newell's method
-	vector n = v_0;
-	vector p1 = vertex[side.back().vertex].pos;
+	vec3 n = v_0;
+	vec3 p1 = vertex[side.back().vertex].pos;
 	for (int i=0; i<side.num; i++) {
-		vector p0 = p1;
+		vec3 p0 = p1;
 		p1 = vertex[side[i].vertex].pos;
 		n.x += (p0.y - p1.y) * (p0.z + p1.z);
 		n.y += (p0.z - p1.z) * (p0.x + p1.x);
@@ -45,12 +45,12 @@ vector ModelPolygon::get_area_vector(const Array<ModelVertex> &vertex) const {
 	return n * 0.5f;
 }
 
-vector ModelPolygon::get_normal(const Array<ModelVertex> &vertex) const {
+vec3 ModelPolygon::get_normal(const Array<ModelVertex> &vertex) const {
 	// Newell's method
-	vector n = v_0;
-	vector p1 = vertex[side.back().vertex].pos;
+	vec3 n = v_0;
+	vec3 p1 = vertex[side.back().vertex].pos;
 	for (int i=0; i<side.num; i++) {
-		vector p0 = p1;
+		vec3 p0 = p1;
 		p1 = vertex[side[i].vertex].pos;
 		n.x += (p0.y - p1.y) * (p0.z + p1.z);
 		n.y += (p0.z - p1.z) * (p0.x + p1.x);
@@ -68,8 +68,8 @@ Array<int> ModelPolygon::get_vertices() const {
 	return v;
 }
 
-Array<vector> ModelPolygon::get_skin_vertices() const {
-	Array<vector> sv;
+Array<vec3> ModelPolygon::get_skin_vertices() const {
+	Array<vec3> sv;
 	sv.resize(side.num * MATERIAL_MAX_TEXTURES);
 	int n = 0;
 	for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
@@ -79,13 +79,13 @@ Array<vector> ModelPolygon::get_skin_vertices() const {
 }
 
 
-static float get_ang(const Array<ModelVertex> &vertex, int a, int b, int c, const vector &flat_n) {
-	vector v1 = vertex[b].pos - vertex[a].pos;
-	vector v2 = vertex[c].pos - vertex[b].pos;
+static float get_ang(const Array<ModelVertex> &vertex, int a, int b, int c, const vec3 &flat_n) {
+	vec3 v1 = vertex[b].pos - vertex[a].pos;
+	vec3 v2 = vertex[c].pos - vertex[b].pos;
 	v1.normalize();
 	v2.normalize();
-	float x = vector::dot(vector::cross(v1, v2), flat_n);
-	float y = vector::dot(v1, v2);
+	float x = vec3::dot(vec3::cross(v1, v2), flat_n);
+	float y = vec3::dot(v1, v2);
 	return atan2(x, y);
 }
 

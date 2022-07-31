@@ -11,7 +11,7 @@
 #include "../../Action.h"
 #include "../../../lib/base/set.h"
 class DataCamera;
-class vector;
+class vec3;
 
 class ActionCameraMoveTimeSelection: public Action
 {

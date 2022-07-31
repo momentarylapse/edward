@@ -14,7 +14,7 @@
 #include "../../../../Data/Model/ModelPolygon.h"
 #include "../../../../Data/Model/SkinGenerator.h"
 
-ActionModelSplitPolygon::ActionModelSplitPolygon(int _polygon, const vector &_pos) :
+ActionModelSplitPolygon::ActionModelSplitPolygon(int _polygon, const vec3 &_pos) :
 	pos(_pos)
 {
 	polygon = _polygon;
@@ -44,7 +44,7 @@ void *ActionModelSplitPolygon::compose(Data *d) {
 		v.add(temp.side[k].vertex);
 		v.add(temp.side[(k+1)%temp.side.num].vertex);
 		v.add(new_vertex);
-		Array<vector> sv;
+		Array<vec3> sv;
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++) {
 			sv.add(temp.side[k].skin_vertex[l]);
 			sv.add(temp.side[(k+1)%temp.side.num].skin_vertex[l]);

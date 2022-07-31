@@ -48,7 +48,7 @@ public:
 	Value *read_struct();
 	Value *read_array();
 
-	vector val2vec(Value *v, int offset = 0);
+	vec3 val2vec(Value *v, int offset = 0);
 	quaternion val2quat(Value *v, int offset = 0);
 	color val2col3(Value *v, int offset = 0);
 

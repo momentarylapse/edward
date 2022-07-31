@@ -9,13 +9,13 @@
 #define ACTIONWORLDADDTERRAIN_H_
 
 #include "../../Action.h"
-#include "../../../lib/math/vector.h"
+#include "../../../lib/math/vec3.h"
 #include "../../../lib/os/path.h"
 
 class ActionWorldAddTerrain : public Action {
 public:
-	ActionWorldAddTerrain(const vector &_pos, const Path &_filename);
-	ActionWorldAddTerrain(const vector &_pos, const vector &_size, int _num_x, int _num_z);
+	ActionWorldAddTerrain(const vec3 &_pos, const Path &_filename);
+	ActionWorldAddTerrain(const vec3 &_pos, const vec3 &_size, int _num_x, int _num_z);
 	string name(){	return "WorldAddTerrain";	}
 
 	void *execute(Data *d) override;
@@ -23,8 +23,8 @@ public:
 
 private:
 	Path filename;
-	vector pos;
-	vector size;
+	vec3 pos;
+	vec3 size;
 	int num_x, num_z;
 };
 

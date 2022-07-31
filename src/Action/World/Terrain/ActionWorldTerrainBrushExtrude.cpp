@@ -10,7 +10,7 @@
 #include "../../../Data/World/WorldTerrain.h"
 #include "../../../y/Terrain.h"
 
-ActionWorldTerrainBrushExtrude::ActionWorldTerrainBrushExtrude(int _index, const vector &_pos, float _radius, float _depth) {
+ActionWorldTerrainBrushExtrude::ActionWorldTerrainBrushExtrude(int _index, const vec3 &_pos, float _radius, float _depth) {
 	index = _index;
 	pos = _pos;
 	radius = _radius;

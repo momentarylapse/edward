@@ -6,23 +6,23 @@ use helper
 var anim_index: int
 
 
-func xang(ang: vector) -> quaternion
-	float l = ang.length()
-	vector ax = vector.EZ
+func xang(ang: vec3) -> quaternion
+	float l = len(ang)
+	var ax = vec3.EZ
 	if l > 0
 		ax = ang / l
 	return quaternion(ax, l)
 
-func pain(va: vector[], vb: vector[], ang: vector) -> float
+func pain(va: vec3[], vb: vec3[], ang: vec3) -> float
 	var q = xang(ang)
 	float w = 0
 	for j in 0:len(va)
 		w += (va[j] - q*vb[j]).length_sqr()
 	return w
 
-func import_torso(p: vector[]) -> quaternion
+func import_torso(p: vec3[]) -> quaternion
 	int[] index
-	vector[] va, vb
+	vec3[] va, vb
 	for b,i in model.bone
 		if b.parent == 0
 			index.add(i)
@@ -31,22 +31,22 @@ func import_torso(p: vector[]) -> quaternion
 			var bb = model.bone[i].pos - model.bone[0].pos
 			vb.add(bb / bb.length())
 
-	vector ang = vector.0
+	vec3 ang = vec3.0
 	float eps = 0.001
 	for i in 0:3000
 		float w0 = pain(va, vb, ang)
-		float wx = pain(va, vb, ang + eps * vector.EX)
-		float wy = pain(va, vb, ang + eps * vector.EY)
-		float wz = pain(va, vb, ang + eps * vector.EZ)
-		vector da = vector(wx - w0, wy - w0, wz - w0)
+		float wx = pain(va, vb, ang + eps * vec3.EX)
+		float wy = pain(va, vb, ang + eps * vec3.EY)
+		float wz = pain(va, vb, ang + eps * vec3.EZ)
+		vec3 da = vec3(wx - w0, wy - w0, wz - w0)
 		ang -= da# * 0.000001
 	return xang(ang)
 
-func import_frame(p: vector[], frame_no: int)
-	vector[] pos
+func import_frame(p: vec3[], frame_no: int)
+	vec3[] pos
 	quaternion[] ang
 	for b,i in model.bone
-		pos.add(vector.0)
+		pos.add(vec3.0)
 		ang.add(quaternion.ID)
 	for b,i in model.bone
 		if b.parent < 0
@@ -55,9 +55,9 @@ func import_frame(p: vector[], frame_no: int)
 			int ip = b.parent
 			
 			# bone vector
-			vector bdpos = model.bone[i].pos - model.bone[ip].pos
+			vec3 bdpos = model.bone[i].pos - model.bone[ip].pos
 			#bdpos /= bdpos.length()
-			vector dp = p[i] - p[ip]
+			vec3 dp = p[i] - p[ip]
 			#dp /= dp.length()
 #			vector ax = VecCrossProduct(bdpos, dp)
 #			ax /= ax.length()
@@ -94,7 +94,7 @@ func import_frame(p: vector[], frame_no: int)
 #	print("scale: " + scale)
 
 func _import(filename: string)
-	var f = Filesystem.open_text(filename)
+	var f = new TextLinesFormatter(os.fs.open(filename, "rt"))
 	string t
 	int num_bones, num_frames
 	f >> num_frames
@@ -105,7 +105,7 @@ func _import(filename: string)
 	model.add_animation(anim_index, Model.Move.Type.SKELETAL)
 	model.animation_set_data(anim_index, "new", 5, 0)
 	
-	matrix mat = matrix.rotation(vector(0.30,0,-0.15))
+	var mat = mat4.rotation(vec3(0.30,0,-0.15))
 	
 	var dlg = new Dialog("", 300, 30, edward, false)
 	dlg.add_progress_bar("", 0, 0, "progress")
@@ -114,11 +114,11 @@ func _import(filename: string)
 	for fi in 0:num_frames
 		if fi > 0
 			model.animation_add_frame(anim_index, fi, model.move[anim_index].frame[0])
-		vector[] p
+		vec3[] p
 		for bi in 0:num_bones
-			vector pp
+			vec3 pp
 			f >> pp
-			pp = mat * vector(pp.x*1.7,-pp.y*1.8,-pp.z)
+			pp = mat * vec3(pp.x*1.7,-pp.y*1.8,-pp.z)
 			p.add(pp)
 		import_frame(p, fi)
 		#if fi > 10

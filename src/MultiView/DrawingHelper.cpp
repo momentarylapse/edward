@@ -118,10 +118,10 @@ void set_color(const color &c) {
 
 
 void draw_line_2d(float x1, float y1, float x2, float y2, float depth) {
-	draw_line(vector(x1, y1, depth), vector(x2, y2, depth));
+	draw_line(vec3(x1, y1, depth), vec3(x2, y2, depth));
 }
 
-void draw_lines(const Array<vector> &p, bool contiguous) {
+void draw_lines(const Array<vec3> &p, bool contiguous) {
 	Array<color> c;
 	c.resize(p.num);
 	for (int i=0; i<c.num; i++)
@@ -130,11 +130,11 @@ void draw_lines(const Array<vector> &p, bool contiguous) {
 }
 
 struct LineVertex {
-	vector p;
+	vec3 p;
 	color c;
 };
 
-void draw_lines_colored(const Array<vector> &p, const Array<color> &c, bool contiguous) {
+void draw_lines_colored(const Array<vec3> &p, const Array<color> &c, bool contiguous) {
 	//set_line_width(2);
 	Array<LineVertex> v;
 	for (int i=0; i<p.num; i++)
@@ -143,19 +143,19 @@ void draw_lines_colored(const Array<vector> &p, const Array<color> &c, bool cont
 	nix::draw_lines(vb_lines, contiguous);
 }
 
-void draw_line(const vector &l1, const vector &l2) {
+void draw_line(const vec3 &l1, const vec3 &l2) {
 	draw_lines_colored({l1, l2}, {_cur_color_, _cur_color_}, false);
 }
 
 
-void draw_circle(const vector &pos, const vector &n, float radius) {
+void draw_circle(const vec3 &pos, const vec3 &n, float radius) {
 
-	vector e1 = n.ortho();
-	vector e2 = n ^ e1;
+	vec3 e1 = n.ortho();
+	vec3 e2 = n ^ e1;
 	e1 *= radius;
 	e2 *= radius;
 	int N = 64;
-	Array<vector> p;
+	Array<vec3> p;
 	for (int i=0; i<=N; i++) {
 		float w = i * 2 * pi / N;
 		p.add(pos + sin(w) * e1 + cos(w) * e2);
@@ -164,14 +164,14 @@ void draw_circle(const vector &pos, const vector &n, float radius) {
 }
 
 
-void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b) {
+void draw_helper_line(MultiView::Window *win, const vec3 &a, const vec3 &b) {
 	nix::set_z(false, false);
 	set_color(scheme.TEXT);
 	set_line_width(scheme.LINE_WIDTH_HELPER);
 	draw_line(a, b);
 	//nix::set_z(true, true);
-	vector pa = win->project(a);
-	vector pb = win->project(b);
+	vec3 pa = win->project(a);
+	vec3 pb = win->project(b);
 	//vector d = (pb - pa).normalized();
 	//vector e = d ^ vector::EZ;
 	float r = 3;
@@ -186,16 +186,16 @@ void draw_rect(float x1, float x2, float y1, float y2, float depth) {
 }
 
 struct Vertex2d {
-	vector p;
+	vec3 p;
 	color c;
 	vec2 uv;
 };
 
 void draw_2d(const rect &src, const rect &dest, float depth) {
-	vector a = vector(dest.x1, dest.y1, depth);
-	vector b = vector(dest.x2, dest.y1, depth);
-	vector c = vector(dest.x1, dest.y2, depth);
-	vector d = vector(dest.x2, dest.y2, depth);
+	vec3 a = vec3(dest.x1, dest.y1, depth);
+	vec3 b = vec3(dest.x2, dest.y1, depth);
+	vec3 c = vec3(dest.x1, dest.y2, depth);
+	vec3 d = vec3(dest.x2, dest.y2, depth);
 	color col = _cur_color_;
 
 	vb_2d->update(Array<Vertex2d>{{a, col, {src.x1,src.y1}},{b, col, {src.x2,src.y1}},{c, col, {src.x1,src.y2}},

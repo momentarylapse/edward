@@ -40,7 +40,7 @@ void *ActionModelNearifyVertices::execute(Data *d)
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	old_pos.clear();
-	vector v = v_0;
+	vec3 v = v_0;
 
 	for (int i: index){
 		// save old data

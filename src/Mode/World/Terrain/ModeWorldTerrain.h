@@ -30,15 +30,15 @@ public:
 
 	void on_draw_win(MultiView::Window *win) override;
 
-	Action *get_action(const vector &pos);
-	void apply(const vector &pos);
+	Action *get_action(const vec3 &pos);
+	void apply(const vec3 &pos);
 
 	TerrainDeformBrushPanel *dialog;
 
 private:
 	float base_diameter, base_depth;
 	bool brushing;
-	vector last_pos;
+	vec3 last_pos;
 };
 
 extern ModeWorldTerrain *mode_world_terrain;

@@ -9,12 +9,12 @@
 #define ACTIONMODELMOVEVERTEX_H_
 
 #include "../../../../Action.h"
-#include "../../../../../lib/math/vector.h"
+#include "../../../../../lib/math/vec3.h"
 class DataModel;
 
 class ActionModelMoveVertex: public Action {
 public:
-	ActionModelMoveVertex(int _vertex, const vector &_pos);
+	ActionModelMoveVertex(int _vertex, const vec3 &_pos);
 	string name(){	return "ModelMoveVertex";	}
 
 	void *execute(Data *d);
@@ -22,7 +22,7 @@ public:
 
 private:
 	int vertex;
-	vector pos;
+	vec3 pos;
 };
 
 #endif /* ACTIONMODELMOVEVERTEX_H_ */

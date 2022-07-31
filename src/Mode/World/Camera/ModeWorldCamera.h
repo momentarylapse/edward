@@ -50,7 +50,7 @@ public:
 	CameraDialog *dialog;
 
 	bool edit_vel, edit_ang;
-	Interpolator<vector> *inter_pos, *inter_ang;
+	Interpolator<vec3> *inter_pos, *inter_ang;
 
 	bool preview;
 	float preview_time;

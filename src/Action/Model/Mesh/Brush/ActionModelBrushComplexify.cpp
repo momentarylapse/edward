@@ -7,7 +7,7 @@
 
 #include "ActionModelBrushComplexify.h"
 
-ActionModelBrushComplexify::ActionModelBrushComplexify(const vector &_pos, const vector &_n, float _radius, float _min_dist) {
+ActionModelBrushComplexify::ActionModelBrushComplexify(const vec3 &_pos, const vec3 &_n, float _radius, float _min_dist) {
 	pos = _pos;
 	n = _n;
 	radius = _radius;

@@ -39,7 +39,7 @@ private:
 	int bone_index;
 	bool brushing;
 	float distance;
-	vector last_pos;
+	vec3 last_pos;
 
 	nix::VertexBuffer *vb_weight = nullptr;
 	nix::Shader *shader = nullptr;

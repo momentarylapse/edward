@@ -17,7 +17,7 @@
 
 
 namespace nix {
-	extern matrix projection_matrix;
+	extern mat4 projection_matrix;
 }
 void _draw_str(float x, float y, const string &d);
 
@@ -65,16 +65,16 @@ float grid_density(int level, float d_err) {
 	return min(pow(10.0f, d_err-1.0f) * LOW_MAX, MID_MAX);
 }
 
-rect win_get_bounds(Window *w, const vector &ax1, const vector &ax2) {
-	vector p[4];
-	p[0] = w->unproject(vector(w->dest.x1, w->dest.my(), 0), w->cam->pos);
-	p[1] = w->unproject(vector(w->dest.x2, w->dest.my(), 0), w->cam->pos);
-	p[2] = w->unproject(vector(w->dest.mx(), w->dest.y1, 0), w->cam->pos);
-	p[3] = w->unproject(vector(w->dest.mx(), w->dest.y2, 0), w->cam->pos);
-	p[0] = w->unproject(vector(w->dest.x1, w->dest.y1, 0), w->cam->pos);
-	p[1] = w->unproject(vector(w->dest.x2, w->dest.y1, 0), w->cam->pos);
-	p[2] = w->unproject(vector(w->dest.x1, w->dest.y2, 0), w->cam->pos);
-	p[3] = w->unproject(vector(w->dest.x2, w->dest.y2, 0), w->cam->pos);
+rect win_get_bounds(Window *w, const vec3 &ax1, const vec3 &ax2) {
+	vec3 p[4];
+	p[0] = w->unproject(vec3(w->dest.x1, w->dest.my(), 0), w->cam->pos);
+	p[1] = w->unproject(vec3(w->dest.x2, w->dest.my(), 0), w->cam->pos);
+	p[2] = w->unproject(vec3(w->dest.mx(), w->dest.y1, 0), w->cam->pos);
+	p[3] = w->unproject(vec3(w->dest.mx(), w->dest.y2, 0), w->cam->pos);
+	p[0] = w->unproject(vec3(w->dest.x1, w->dest.y1, 0), w->cam->pos);
+	p[1] = w->unproject(vec3(w->dest.x2, w->dest.y1, 0), w->cam->pos);
+	p[2] = w->unproject(vec3(w->dest.x1, w->dest.y2, 0), w->cam->pos);
+	p[3] = w->unproject(vec3(w->dest.x2, w->dest.y2, 0), w->cam->pos);
 
 	rect r = rect::ID;
 	for (int i=0; i<4; i++) {
@@ -96,7 +96,7 @@ rect move_rect(const rect &r, int dx, int dy) {
 	return rect(r.x1 + r.width() * dx, r.x2 + r.width() * dx, r.y1 + r.height() * dy, r.y2 + r.height() * dy);
 }
 
-void add_grid(const rect &r, Array<vector> p[4], Array<color> col[4], float D, float DERR, const vector &dir_1, const vector &dir_2, float alpha) {
+void add_grid(const rect &r, Array<vec3> p[4], Array<color> col[4], float D, float DERR, const vec3 &dir_1, const vec3 &dir_2, float alpha) {
 
 	int ix0 = int(ceil(r.x1 / D));
 	int ix1 = int(floor(r.x2 / D));
@@ -133,19 +133,19 @@ void draw_grid_3d(const color &bg, Window *w, int plane, float alpha) {
 	float D = w->get_grid_d();
 	float DERR = log10(D) - log10(GRID_CONST / w->zoom());
 
-	Array<vector> p[4];
+	Array<vec3> p[4];
 	Array<color> col[4];
 
-	vector dir_1, dir_2;
+	vec3 dir_1, dir_2;
 	if (plane == 2) {
-		dir_1 = vector::EX;
-		dir_2 = vector::EY;
+		dir_1 = vec3::EX;
+		dir_2 = vec3::EY;
 	} else if (plane == 1) {
-		dir_1 = vector::EX;
-		dir_2 = vector::EZ;
+		dir_1 = vec3::EX;
+		dir_2 = vec3::EZ;
 	} else if (plane == 0) {
-		dir_1 = vector::EY;
-		dir_2 = vector::EZ;
+		dir_1 = vec3::EY;
+		dir_2 = vec3::EZ;
 	}
 
 
@@ -197,7 +197,7 @@ void Window::draw_grid()
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	color bg = get_background_color();
 
-	vector d = get_direction();
+	vec3 d = get_direction();
 	d.x = abs(d.x);
 	d.y = abs(d.y);
 	d.z = abs(d.z);
@@ -214,7 +214,7 @@ void Window::draw_grid()
 }
 
 int Window::active_grid() {
-	vector d = get_direction();
+	vec3 d = get_direction();
 	d.x = abs(d.x);
 	d.y = abs(d.y);
 	d.z = abs(d.z);
@@ -225,13 +225,13 @@ int Window::active_grid() {
 	return 2;
 }
 
-vector Window::active_grid_direction() {
-	vector dd = vector::EZ;
+vec3 Window::active_grid_direction() {
+	vec3 dd = vec3::EZ;
 	int ag = active_grid();
 	if (ag == 0)
-		dd = vector::EX;
+		dd = vec3::EX;
 	if (ag == 1)
-		dd = vector::EY;
+		dd = vec3::EY;
 
 	if (dd * get_direction() < 0)
 		return -dd;
@@ -248,23 +248,23 @@ quaternion view_ang(int type, Camera *cam)
 {
 	quaternion ang;
 	if (type == VIEW_FRONT){
-		ang = quaternion::rotation_a( vector::EY, -pi);
+		ang = quaternion::rotation_a( vec3::EY, -pi);
 	}else if (type == VIEW_BACK){
 		ang = quaternion::ID;
 	}else if (type == VIEW_RIGHT){
-		ang = quaternion::rotation_a( vector::EY, -pi/2);
+		ang = quaternion::rotation_a( vec3::EY, -pi/2);
 	}else if (type == VIEW_LEFT){
-		ang = quaternion::rotation_a( vector::EY, pi/2);
+		ang = quaternion::rotation_a( vec3::EY, pi/2);
 	}else if (type == VIEW_TOP){
-		ang = quaternion::rotation_a( vector::EX, pi/2);
+		ang = quaternion::rotation_a( vec3::EX, pi/2);
 	}else if (type == VIEW_BOTTOM){
-		ang = quaternion::rotation_a( vector::EX, -pi/2);
+		ang = quaternion::rotation_a( vec3::EX, -pi/2);
 	}else if (type == VIEW_PERSPECTIVE){
 		ang = cam->ang;
 	}else if (type == VIEW_ISOMETRIC){
 		ang = cam->ang;
 	}else if (type == VIEW_2D){
-		ang = quaternion::rotation_a( vector::EY, -pi);
+		ang = quaternion::rotation_a( vec3::EY, -pi);
 	}
 	return ang;
 }
@@ -301,29 +301,29 @@ void Window::set_projection_matrix() {
 	if (type == VIEW_PERSPECTIVE){
 		float height = dest.height();
 		nix::set_projection_perspective_ext({cx, cy}, {height, height}, r / 1000, r * 1000);
-		reflection_matrix = matrix::scale( 1, -1, 1);
+		reflection_matrix = mat4::scale( 1, -1, 1);
 	}else if (type == VIEW_2D){
 		float height = zoom();
 		nix::set_projection_ortho_ext({cx, cy}, {-height, height}, -1, 1);
-		reflection_matrix = matrix::scale( -1, 1, 1);
+		reflection_matrix = mat4::scale( -1, 1, 1);
 	}else{
 		float height = zoom();
 		nix::set_projection_ortho_ext({cx, cy}, {height, -height}, - r * 100, r * 100);
-		reflection_matrix = matrix::scale( 1, -1, 1);
+		reflection_matrix = mat4::scale( 1, -1, 1);
 	}
 	projection_matrix = nix::projection_matrix;
 }
 
 void Window::set_projection_matrix_pixel() {
-	nix::set_view_matrix(matrix::ID);
+	nix::set_view_matrix(mat4::ID);
 	nix::set_projection_ortho_pixel();
 }
 
 void Window::update_matrices() {
 	// camera matrix
-	vector pos = cam->get_pos(type == VIEW_PERSPECTIVE);
+	vec3 pos = cam->get_pos(type == VIEW_PERSPECTIVE);
 	local_ang = view_ang(type, cam);
-	view_matrix = matrix::rotation(local_ang.bar()) * matrix::translation(-pos);
+	view_matrix = mat4::rotation(local_ang.bar()) * mat4::translation(-pos);
 	nix::set_view_matrix(view_matrix);
 	pv_matrix = projection_matrix * view_matrix;
 	ipv_matrix = pv_matrix.inverse();
@@ -346,7 +346,7 @@ void Window::draw_data_points() {
 				if (sd->view_stage < multi_view->view_stage)
 					continue;
 
-				vector p = project(sd->pos);
+				vec3 p = project(sd->pos);
 				//if (!dest.inside(p.x,  p.y))
 				if ((p.x<dest.x1)or(p.y<dest.y1)or(p.x>dest.x2)or(p.y>dest.y2)or(p.z<=0)or(p.z>=1))
 					continue;
@@ -382,7 +382,7 @@ void Window::draw_data_points() {
 				if (sd->view_stage < multi_view->view_stage)
 					continue;
 				if (sd->is_selected){
-					vector p = project(sd->pos);
+					vec3 p = project(sd->pos);
 					if ((p.x<dest.x1)or(p.y<dest.y1)or(p.x>dest.x2)or(p.y>dest.y2)or(p.z<=0)or(p.z>=1))
 						continue;
 					_draw_str(p.x+3, p.y, i2s(i));
@@ -415,7 +415,7 @@ void Window::draw_header() {
 void Window::set_shader(nix::Shader *s, int num_lights) {
 	nix::set_shader(s);
 	s->set_int("num_lights", num_lights);
-	vector pos = get_lighting_eye_pos();
+	vec3 pos = get_lighting_eye_pos();
 	//s->set_floats("eye_pos", &pos.x, 3);
 	s->set_floats("eye_pos", &v_0.x, 3);
 }
@@ -434,7 +434,7 @@ void Window::draw() {
 	update_matrices();
 
 
-	nix::set_model_matrix(matrix::ID);
+	nix::set_model_matrix(mat4::ID);
 	//nix::set_z(true,true);
 	nix::set_z(type != VIEW_2D, type != VIEW_2D);
 	nix::set_wire(false);
@@ -445,7 +445,7 @@ void Window::draw() {
 
 	nix::set_z(true, true);
 	// light
-	multi_view->set_light(this, cam->ang * vector::EZ, White, 0.7f);
+	multi_view->set_light(this, cam->ang * vec3::EZ, White, 0.7f);
 	nix::set_material(White, 0, 0, White);//Black);
 	set_color(White);
 	set_shader(nix::Shader::default_3d);
@@ -466,7 +466,7 @@ void Window::draw() {
 
 	// cursor
 	if (this != multi_view->mouse_win) {
-		vector pp = project(multi_view->get_cursor());
+		vec3 pp = project(multi_view->get_cursor());
 		nix::set_shader(nix::Shader::default_2d);
 		set_color(scheme.CREATION_LINE);
 		draw_rect(pp.x-2, pp.x+2, pp.y-2, pp.y+2, 0);
@@ -481,67 +481,67 @@ void Window::draw() {
 	draw_header();
 
 	for (auto &m: multi_view->message3d){
-		vector p = project(m.pos);
+		vec3 p = project(m.pos);
 		if (p.z > 0)
 			draw_str(p.x, p.y, m.str);
 	}
 }
 
 
-vector Window::project(const vector &p) {
-	vector r = pv_matrix.project(p);
+vec3 Window::project(const vec3 &p) {
+	vec3 r = pv_matrix.project(p);
 	r.x = nix::target_width * (r.x + 1) / 2;
 	r.y = nix::target_height * (-r.y + 1) / 2;
 	return r;
 }
 
-vector Window::unproject(const vector &p) {
-	vector r;
+vec3 Window::unproject(const vec3 &p) {
+	vec3 r;
 	r.x = p.x*2/nix::target_width - 1;
 	r.y = - p.y*2/nix::target_height + 1;
 	r.z = p.z;
 	return ipv_matrix.project(r);
 }
 
-vector Window::unproject(const vector &p, const vector &o) {
-	vector op = project(o);
-	vector r;
+vec3 Window::unproject(const vec3 &p, const vec3 &o) {
+	vec3 op = project(o);
+	vec3 r;
 	r.x = p.x*2/nix::target_width - 1;
 	r.y = - p.y*2/nix::target_height + 1;
 	r.z = op.z;
 	return ipv_matrix.project(r);
 }
 
-vector Window::get_direction() {
-	return local_ang * vector::EZ;
+vec3 Window::get_direction() {
+	return local_ang * vec3::EZ;
 }
 
-vector Window::get_edit_direction() {
+vec3 Window::get_edit_direction() {
 	if (multi_view->edit_coordinate_mode == MultiView::CoordinateMode::CAMERA)
 		return get_direction();
 	return active_grid_direction();
 }
 
-void Window::get_camera_frame(vector &dir, vector &up, vector &right) {
+void Window::get_camera_frame(vec3 &dir, vec3 &up, vec3 &right) {
 	dir = get_direction();
-	up = local_ang * vector::EY;
+	up = local_ang * vec3::EY;
 	right = dir ^ up;
 }
 
-void Window::get_active_grid_frame(vector &dir, vector &up, vector &right) {
+void Window::get_active_grid_frame(vec3 &dir, vec3 &up, vec3 &right) {
 	dir = active_grid_direction();
 	up = dir.ortho();
 	right = dir ^ up;
 }
 
-void Window::get_edit_frame(vector &dir, vector &up, vector &right) {
+void Window::get_edit_frame(vec3 &dir, vec3 &up, vec3 &right) {
 	if (multi_view->edit_coordinate_mode == MultiView::CoordinateMode::CAMERA)
 		get_camera_frame(dir, up, right);
 	else
 		get_active_grid_frame(dir, up, right);
 }
 
-vector Window::get_lighting_eye_pos() {
+vec3 Window::get_lighting_eye_pos() {
 	if (type == VIEW_PERSPECTIVE)
 		return cam->get_pos(true);
 	return cam->get_pos(false) - cam->radius * get_direction() * 10;

@@ -29,10 +29,10 @@ void *ActionModelSurfacesSubdivide::compose(Data *d) {
 
 	// new polygon vertices
 	int nv_p0 = m->vertex.num;
-	Array<vector> new_poly_vert;
+	Array<vec3> new_poly_vert;
 	for (int ip: sel.polygon) {
 		auto &p = m->polygon[ip];
-		vector pos = v_0;
+		vec3 pos = v_0;
 		for (int k=0; k<p.side.num; k++)
 			pos += m->vertex[p.side[k].vertex].pos;
 		pos /= p.side.num;
@@ -41,12 +41,12 @@ void *ActionModelSurfacesSubdivide::compose(Data *d) {
 	}
 
 	// new edge vertices
-	Array<vector> old_edge_vert;
+	Array<vec3> old_edge_vert;
 	int nv_e0 = m->vertex.num;
 	for (auto &e: m->edge) {
 		if (!sel.has(e))
 			continue;
-		vector pos = m->vertex[e.vertex[0]].pos + m->vertex[e.vertex[1]].pos;
+		vec3 pos = m->vertex[e.vertex[0]].pos + m->vertex[e.vertex[1]].pos;
 		old_edge_vert.add(pos / 2);
 		for (int k=0; k<e.ref_count; k++)
 			pos += new_poly_vert[e.polygon[k]];
@@ -56,7 +56,7 @@ void *ActionModelSurfacesSubdivide::compose(Data *d) {
 
 	// move old vertices
 	for (int v: sel.vertex){
-		vector F = v_0, R = v_0, P = m->vertex[v].pos;
+		vec3 F = v_0, R = v_0, P = m->vertex[v].pos;
 		int n = 0;
 		foreachi(ModelPolygon &p, m->polygon, i)
 			for (int k=0; k<p.side.num; k++)
@@ -72,16 +72,16 @@ void *ActionModelSurfacesSubdivide::compose(Data *d) {
 
 	// subdivide polygons
 	Array<Array<int> > nv;
-	Array<Array<vector> > nsv;
+	Array<Array<vec3> > nsv;
 	Array<int> nmat;
 	for (int i: sel.polygon) {
 		auto &p = m->polygon[i];
 		Array<int> v = p.get_vertices();
-		Array<vector> sv = p.get_skin_vertices();
+		Array<vec3> sv = p.get_skin_vertices();
 		int mat = p.material;
 
 		// average skin vertex
-		vector sv_med[MATERIAL_MAX_TEXTURES];
+		vec3 sv_med[MATERIAL_MAX_TEXTURES];
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++){
 			sv_med[l] = v_0;
 			for (int k=0; k<p.side.num; k++)
@@ -97,7 +97,7 @@ void *ActionModelSurfacesSubdivide::compose(Data *d) {
 			vv.add(nv_p0 + i);
 			vv.add(nv_e0 + p.side[(k + p.side.num - 1) % p.side.num].edge);
 			nv.add(vv);
-			Array<vector> svv;
+			Array<vec3> svv;
 			for (int l=0;l<MATERIAL_MAX_TEXTURES;l++){
 				svv.add(p.side[k].skin_vertex[l]);
 				svv.add((p.side[k].skin_vertex[l] + p.side[(k+1)%p.side.num].skin_vertex[l]) / 2);

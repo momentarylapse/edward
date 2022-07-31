@@ -21,8 +21,8 @@ SingleData::SingleData() {
 	pos = v_0;
 }
 
-float SingleData::hover_distance(Window *win, const vec2 &m, vector &tp, float &z) {
-	vector p = win->project(pos);
+float SingleData::hover_distance(Window *win, const vec2 &m, vec3 &tp, float &z) {
+	vec3 p = win->project(pos);
 	if ((p.z <= 0) or (p.z >= 1))
 		return -1;
 	z = p.z;
@@ -31,12 +31,12 @@ float SingleData::hover_distance(Window *win, const vec2 &m, vector &tp, float &
 }
 
 bool SingleData::in_rect(Window *win, const rect &r) {
-	vector p = win->project(pos);
+	vec3 p = win->project(pos);
 	return r.inside(p.xy());
 }
 
 bool SingleData::overlap_rect(Window *win, const rect &r) {
-	vector p = win->project(pos);
+	vec3 p = win->project(pos);
 	return r.inside(p.xy());
 }
 

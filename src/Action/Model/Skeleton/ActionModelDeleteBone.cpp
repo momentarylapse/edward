@@ -106,7 +106,7 @@ void ActionModelDeleteBone::undo(Data *d)
 	b.parent = parent;
 	b.const_pos = false;
 	b.pos = pos;
-	b._matrix = matrix::ID;
+	b._matrix = mat4::ID;
 	b.model_file = filename;
 	b.model = (Model*)model;
 	m->bone.insert(b, index);

@@ -2,20 +2,18 @@ use os
 use hui
 use edward
 
-func main()
-	if !hui.file_dialog_save(edward, "Save STL", "", "*.stl", "*.stl")
-		return
-	File *f = Filesystem.create_text(hui.filename)
+func open(filename: Path)
+	var f = new TextLinesFormatter(os.fs.open(filename, "ct"))
 	f << "solid test"
 	for p in model.mesh.polygon
 		for k in 0:p.side.num - 2
 			int a = p.side[k].triangulation[0]
 			int b = p.side[k].triangulation[1]
 			int c = p.side[k].triangulation[2]
-			vector va = model.mesh.vertex[p.side[a].vertex].pos
-			vector vb = model.mesh.vertex[p.side[b].vertex].pos
-			vector vc = model.mesh.vertex[p.side[c].vertex].pos
-			vector n = p.temp_normal
+			var va = model.mesh.vertex[p.side[a].vertex].pos
+			var vb = model.mesh.vertex[p.side[b].vertex].pos
+			var vc = model.mesh.vertex[p.side[c].vertex].pos
+			var n = p.temp_normal
 			f << "facet normal {{n.x}} {{n.y}} {{n.z}}"
 			f << "    outer loop"
 			f << "        vertex {{va.x}} {{va.y}} {{va.z}}"
@@ -25,3 +23,7 @@ func main()
 			f << "endfacet"
 	f << "end solid"
 	del f
+
+
+func main()
+	hui.file_dialog_save(edward, "Save STL", "", ["filter=*.stl", "showfilter=*.stl"], open)

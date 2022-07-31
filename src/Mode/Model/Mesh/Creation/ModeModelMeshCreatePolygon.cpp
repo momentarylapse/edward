@@ -49,8 +49,8 @@ void ModeModelMeshCreatePolygon::on_draw_win(MultiView::Window *win) {
 	set_color(scheme.CREATION_LINE);
 	set_line_width(scheme.LINE_WIDTH_MEDIUM);
 	for (int i=1;i<selection.num;i++) {
-		vector pa = data->edit_mesh->vertex[selection[i - 1]].pos;
-		vector pb = data->edit_mesh->vertex[selection[i    ]].pos;
+		vec3 pa = data->edit_mesh->vertex[selection[i - 1]].pos;
+		vec3 pb = data->edit_mesh->vertex[selection[i    ]].pos;
 		draw_line(pa, pb);
 	}
 	if (selection.num > 0) {

@@ -10,7 +10,7 @@
 
 #include "../../ActionMultiView.h"
 class DataWorld;
-class vector;
+class vec3;
 
 class ActionWorldRotateObjects: public ActionMultiView {
 public:
@@ -20,7 +20,7 @@ public:
 	void *execute(Data *d) override;
 	void undo(Data *d) override;
 private:
-	Array<vector> old_ang;
+	Array<vec3> old_ang;
 	Array<int> type;
 };
 

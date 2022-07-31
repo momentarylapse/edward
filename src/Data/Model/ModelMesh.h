@@ -29,7 +29,7 @@ public:
 	int ref_count; // polygons
 
 	ModelVertex();
-	ModelVertex(const vector &pos);
+	ModelVertex(const vec3 &pos);
 };
 
 class ModelEdge: public MultiView::SingleData {
@@ -45,7 +45,7 @@ public:
 	//  Vertex[1] = surf.Polygon[Triangle[0]].Vertex[(Side[0] + 1) % 3]
 	//  same for Polygon/Side[1] but Vertex[0 <-> 1]
 
-	float hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) override;
+	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 };
@@ -59,7 +59,7 @@ public:
 	int index;
 	float radius;
 
-	float hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) override;
+	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 };
@@ -70,7 +70,7 @@ public:
 	float radius;
 	bool round;
 
-	float hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) override;
+	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 };
@@ -90,10 +90,10 @@ public:
 	void clear();
 
 	// low level (un-action'ed)
-	void add_vertex(const vector &pos, const ivec4 &bone, const vec4 &weight, int normal_mode, int index = -1);
+	void add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &weight, int normal_mode, int index = -1);
 	void remove_lonely_vertex(int v);
 	void _shift_vertex_links(int offset, int delta);
-	void _add_polygon(const Array<int> &v, int material, const Array<vector> &sv, int index = -1);
+	void _add_polygon(const Array<int> &v, int material, const Array<vec3> &sv, int index = -1);
 	void _remove_polygon(int index);
 
 	bool test_sanity(const string &loc);
@@ -105,9 +105,9 @@ public:
 	void merge_edges();
 
 	MeshInsideTestData *inside_data;
-	bool is_inside(const vector &p);
+	bool is_inside(const vec3 &p);
 	void begin_inside_tests();
-	bool inside_test(const vector &p);
+	bool inside_test(const vec3 &p);
 	void end_inside_tests();
 	Array<int> get_boundary_loop(int v0);
 	Array<Array<int> > get_connected_components();
@@ -127,7 +127,7 @@ public:
 	void on_post_action_update();
 	void import_from_triangle_skin(int index);
 	void export_to_triangle_mesh(ModelTriangleMesh &trias);
-	void get_bounding_box(vector &min, vector &max, bool dont_reset = false);
+	void get_bounding_box(vec3 &min, vec3 &max, bool dont_reset = false);
 	void set_normals_dirty_by_vertices(const Array<int> &index);
 	void set_all_normals_dirty();
 	void update_normals();

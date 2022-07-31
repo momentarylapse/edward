@@ -19,7 +19,7 @@ ModeModelMeshPaste::ModeModelMeshPaste(ModeBase* _parent) :
 	message = _("move, [left click] to insert");
 	geo = nullptr;
 
-	vector min, max;
+	vec3 min, max;
 	mode_model_mesh->temp_geo.get_bounding_box(min, max);
 	dpos0 = (max + min) / 2;
 }
@@ -66,8 +66,8 @@ void ModeModelMeshPaste::update_geometry() {
 	msg_write("update");
 	if (geo)
 		delete geo;
-	matrix m;
-	m = matrix::translation( multi_view->get_cursor() - dpos0);
+	mat4 m;
+	m = mat4::translation( multi_view->get_cursor() - dpos0);
 	geo = new Geometry;
 	geo->add(mode_model_mesh->temp_geo);
 	geo->transform(m);

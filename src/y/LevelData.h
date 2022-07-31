@@ -11,7 +11,7 @@
 
 #include "../lib/base/base.h"
 #include "../lib/os/path.h"
-#include "../lib/math/vector.h"
+#include "../lib/math/vec3.h"
 #include "../lib/image/color.h"
 #include "../y/Entity.h"
 
@@ -58,7 +58,7 @@ public:
 	class Terrain {
 	public:
 		Path filename;
-		vector pos;
+		vec3 pos;
 		Array<ScriptData> components;
 	};
 
@@ -66,14 +66,14 @@ public:
 	public:
 		Path filename;
 		string name;
-		vector pos, ang;
+		vec3 pos, ang;
 		Array<ScriptData> components;
 	};
 
 	class Light {
 	public:
 		bool enabled;
-		vector pos, ang;
+		vec3 pos, ang;
 		color _color;
 		float radius, theta, harshness;
 		Array<ScriptData> components;
@@ -81,7 +81,7 @@ public:
 
 	class Camera {
 	public:
-		vector pos, ang;
+		vec3 pos, ang;
 		float fov, min_depth, max_depth, exposure;
 		Array<ScriptData> components;
 	};
@@ -90,13 +90,13 @@ public:
 	public:
 		int object[2];
 		LinkType type;
-		vector pos, ang;
+		vec3 pos, ang;
 		Array<ScriptData> components;
 	};
 
 	Path world_filename;
 	Array<Path> skybox_filename;
-	Array<vector> skybox_ang;
+	Array<vec3> skybox_ang;
 	color background_color;
 	Array<Object> objects;
 	Array<Terrain> terrains;
@@ -109,7 +109,7 @@ public:
 
 	bool physics_enabled;
 	PhysicsMode physics_mode;
-	vector gravity;
+	vec3 gravity;
 	Fog fog;
 };
 

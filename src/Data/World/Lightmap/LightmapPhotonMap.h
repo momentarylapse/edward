@@ -48,7 +48,7 @@ public:
 
 	struct PhotonEvent
 	{
-		vector pos, n, dir;
+		vec3 pos, n, dir;
 		color c; // power
 		int tria;
 		float f, g;
@@ -66,13 +66,13 @@ public:
 	struct Branch
 	{
 		PhotonEvent* p;
-		vector min, max;
+		vec3 min, max;
 		int dir;
 		Branch *left, *right;
 	};
 	Array<Branch> tree;
 
-	void Trace(Array<PhotonEvent> &ph, const vector &pos, const vector &dir, const color &c, int ignore_tria, int n);
+	void Trace(Array<PhotonEvent> &ph, const vec3 &pos, const vec3 &dir, const color &c, int ignore_tria, int n);
 };
 
 #endif /* LIGHTMAPPHOTONMAP_H_ */

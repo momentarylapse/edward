@@ -9,7 +9,7 @@
 #define GEOMETRYCYLINDER_H_
 
 #include "Geometry.h"
-class vector;
+class vec3;
 
 template<class T>
 class Interpolator;
@@ -17,11 +17,11 @@ class Interpolator;
 class GeometryCylinder : public Geometry
 {
 public:
-	GeometryCylinder(Array<vector> &pos, Array<float> &radius, int rings, int edges, int end_mode = END_FLAT);
-	GeometryCylinder(Array<vector> &pos, float radius, int rings, int edges, int end_mode = END_FLAT);
-	GeometryCylinder(const vector &pos1, const vector &pos2, float radius, int rings, int edges, int end_mode = END_FLAT);
-	void _cdecl __init2__(Array<vector> &pos, Array<float> &radius, int rings, int edges, int end_mode);
-	void _cdecl __init__(const vector &pos1, const vector &pos2, float radius, int rings, int edges, int end_mode);
+	GeometryCylinder(Array<vec3> &pos, Array<float> &radius, int rings, int edges, int end_mode = END_FLAT);
+	GeometryCylinder(Array<vec3> &pos, float radius, int rings, int edges, int end_mode = END_FLAT);
+	GeometryCylinder(const vec3 &pos1, const vec3 &pos2, float radius, int rings, int edges, int end_mode = END_FLAT);
+	void _cdecl __init2__(Array<vec3> &pos, Array<float> &radius, int rings, int edges, int end_mode);
+	void _cdecl __init__(const vec3 &pos1, const vec3 &pos2, float radius, int rings, int edges, int end_mode);
 
 	enum{
 		END_OPEN,
@@ -31,7 +31,7 @@ public:
 	};
 
 private:
-	void buildFromPath(Interpolator<vector> &inter, Interpolator<float> &inter_r, int rings, int edges, int end_mode);
+	void buildFromPath(Interpolator<vec3> &inter, Interpolator<float> &inter_r, int rings, int edges, int end_mode);
 };
 
 #endif /* GEOMETRYCYLINDER_H_ */

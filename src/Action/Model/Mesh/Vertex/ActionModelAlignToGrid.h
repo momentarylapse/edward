@@ -10,7 +10,7 @@
 
 #include "../../../Action.h"
 class DataModel;
-class vector;
+class vec3;
 
 class ActionModelAlignToGrid : public Action
 {
@@ -26,7 +26,7 @@ public:
 
 private:
 	Array<int> index;
-	Array<vector> old_pos;
+	Array<vec3> old_pos;
 	float grid_dist;
 };
 

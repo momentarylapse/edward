@@ -10,7 +10,7 @@
 
 #include "../../ActionMultiView.h"
 class DataModel;
-class vector;
+class vec3;
 
 class ActionModelAnimationTransformBones: public ActionMultiView
 {
@@ -23,7 +23,7 @@ public:
 
 private:
 	int move, frame;
-	Array<vector> old_dpos;
+	Array<vec3> old_dpos;
 };
 
 #endif /* ACTIONMODELANIMATIONTRANSFORMBONES_H_ */

@@ -23,18 +23,18 @@ ActionModelFlattenVertices::~ActionModelFlattenVertices()
 {
 }
 
-vector VecCloudGetNormal(Array<vector> &v)
+vec3 VecCloudGetNormal(Array<vec3> &v)
 {
-	vector m = v_0;
+	vec3 m = v_0;
 	for (int i=0;i<v.num;i++)
 		m += v[i];
 	m /= v.num;
 
-	matrix3 I;
+	mat3 I;
 	memset(&I, 0, sizeof(I));
 
-	for (vector &p: v){
-		vector dp = p - m;
+	for (vec3 &p: v){
+		vec3 dp = p - m;
 		I._00 += dp.y*dp.y + dp.z*dp.z;
 		I._11 += dp.z*dp.z + dp.x*dp.x;
 		I._22 += dp.x*dp.x + dp.y*dp.y;
@@ -47,12 +47,12 @@ vector VecCloudGetNormal(Array<vector> &v)
 	I._21 = I._12;
 
 
-	vector amax = v_0;
+	vec3 amax = v_0;
 	float lmax = 0;
 	for (int i=-50;i<50;i++)
 		for (int j=0;j<100;j++){
-			vector a = vector(i/100.0f*2*pi, j/100.0f*2*pi, 0).ang2dir();
-			float l = vector::dot(a, (I * a));
+			vec3 a = vec3(i/100.0f*2*pi, j/100.0f*2*pi, 0).ang2dir();
+			float l = vec3::dot(a, (I * a));
 			if (l > lmax){
 				lmax = l;
 				amax = a;
@@ -61,12 +61,12 @@ vector VecCloudGetNormal(Array<vector> &v)
 	return amax;
 }
 
-void PlaneFromPointCloud(plane &pl, Array<vector> &v)
+void PlaneFromPointCloud(plane &pl, Array<vec3> &v)
 {
 	pl.n = VecCloudGetNormal(v);
 	pl.d = 0;
 	for (int i=0;i<v.num;i++)
-		pl.d -= vector::dot(pl.n, v[i]);
+		pl.d -= vec3::dot(pl.n, v[i]);
 	pl.d /= v.num;
 }
 
@@ -74,7 +74,7 @@ void* ActionModelFlattenVertices::execute(Data* d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	Array<vector> cloud;
+	Array<vec3> cloud;
 	plane pl;
 
 	for (int i: index)

@@ -50,7 +50,7 @@ void ModeModelMeshCreateCube::update_geometry() {
 		geo = new GeometryCube(pos-length[2]/2, length[0], length[1], length[2], num_1, num_2, num_3);
 	} else {
 		float min_thick = 10 / multi_view->active_win->zoom(); // 10 px
-		vector n = vector::cross(length[0], length[1]);
+		vec3 n = vec3::cross(length[0], length[1]);
 		n.normalize();
 		geo = new GeometryCube(pos, length[0], length[1], n * min_thick, 1, 1, 1);
 	}
@@ -58,20 +58,20 @@ void ModeModelMeshCreateCube::update_geometry() {
 
 
 bool ModeModelMeshCreateCube::set_dpos3() {
-	vector n = vector::cross(length[0], length[1]).normalized();
-	vector dpos = multi_view->get_cursor() - pos2;
+	vec3 n = vec3::cross(length[0], length[1]).normalized();
+	vec3 dpos = multi_view->get_cursor() - pos2;
 	float min_thick = 10 / multi_view->active_win->zoom(); // 10 px
 
 
-	if (fabs(vector::dot(multi_view->mouse_win->get_edit_direction(), n)) > 0.90f) {
+	if (fabs(vec3::dot(multi_view->mouse_win->get_edit_direction(), n)) > 0.90f) {
 		// cursor in cube plane -> use radius
 		length[2] = n * multi_view->maybe_snap_f(max(dpos.length(), min_thick)) * 2;
-		if (vector::dot(multi_view->mouse_win->get_direction(), n) < 0)
+		if (vec3::dot(multi_view->mouse_win->get_direction(), n) < 0)
 			length[2] = -length[2];
 		return true;
 	}
 
-	length[2] = multi_view->maybe_snap_v(n * vector::dot(n, dpos)) * 2;
+	length[2] = multi_view->maybe_snap_v(n * vec3::dot(n, dpos)) * 2;
 	if (length[2].length() < min_thick)
 		length[2] = n * min_thick;
 	return false;
@@ -102,11 +102,11 @@ void ModeModelMeshCreateCube::on_left_button_up() {
 void ModeModelMeshCreateCube::on_mouse_move() {
 	if (pos_chosen) {
 		if (!pos2_chosen) {
-			vector pos2 = multi_view->get_cursor();
-			vector dir[3];
+			vec3 pos2 = multi_view->get_cursor();
+			vec3 dir[3];
 			multi_view->mouse_win->get_edit_frame(dir[0], dir[1], dir[2]);
-			length[0] = dir[2] * vector::dot(dir[2], pos2 - pos);
-			length[1] = dir[1] * vector::dot(dir[1], pos2 - pos);
+			length[0] = dir[2] * vec3::dot(dir[2], pos2 - pos);
+			length[1] = dir[1] * vec3::dot(dir[1], pos2 - pos);
 			update_geometry();
 
 			message = _("Cube base area: ") + multi_view->format_length(length[0].length()) + " x " + multi_view->format_length(length[1].length());
@@ -153,12 +153,12 @@ void ModeModelMeshCreateCube::on_draw_win(MultiView::Window *win) {
 		nix::draw_triangles(nix::vb_temp);
 	}
 	if (pos2_chosen and win == multi_view->mouse_win) {
-		vector m = multi_view->get_cursor();
+		vec3 m = multi_view->get_cursor();
 		if (set_dpos3()) {
 			draw_helper_line(win, pos2, m);
 		} else {
-			vector n = vector::cross(length[0], length[1]).normalized();
-			draw_helper_line(win, m + n * vector::dot(n, pos2-m), m);
+			vec3 n = vec3::cross(length[0], length[1]).normalized();
+			draw_helper_line(win, m + n * vec3::dot(n, pos2-m), m);
 		}
 	}
 }

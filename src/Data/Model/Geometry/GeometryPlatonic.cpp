@@ -8,7 +8,7 @@
 #include "GeometryPlatonic.h"
 #include "../DataModel.h"
 
-GeometryPlatonic::GeometryPlatonic(const vector &pos, float radius, int type)
+GeometryPlatonic::GeometryPlatonic(const vec3 &pos, float radius, int type)
 {
 	if (type == 4)
 		AddTetrahedron(pos, radius);
@@ -21,32 +21,32 @@ GeometryPlatonic::GeometryPlatonic(const vector &pos, float radius, int type)
 }
 
 
-void GeometryPlatonic::AddTetrahedron(const vector &pos, float radius)
+void GeometryPlatonic::AddTetrahedron(const vec3 &pos, float radius)
 {
 	int nv = vertex.num;
 
 	float r = radius / sqrt(3.0f/2);
-	add_vertex(pos + vector( 1, 0, -1/sqrt(2.0f)) * r);
-	add_vertex(pos + vector(-1, 0, -1/sqrt(2.0f)) * r);
-	add_vertex(pos + vector( 0, 1,  1/sqrt(2.0f)) * r);
-	add_vertex(pos + vector( 0,-1,  1/sqrt(2.0f)) * r);
+	add_vertex(pos + vec3( 1, 0, -1/sqrt(2.0f)) * r);
+	add_vertex(pos + vec3(-1, 0, -1/sqrt(2.0f)) * r);
+	add_vertex(pos + vec3( 0, 1,  1/sqrt(2.0f)) * r);
+	add_vertex(pos + vec3( 0,-1,  1/sqrt(2.0f)) * r);
 	add_easy(nv, {0, 1, 2});
 	add_easy(nv, {1, 0, 3});
 	add_easy(nv, {0, 2, 3});
 	add_easy(nv, {1, 3, 2});
 }
 
-void GeometryPlatonic::AddOctahedron(const vector &pos, float radius)
+void GeometryPlatonic::AddOctahedron(const vec3 &pos, float radius)
 {
 	int nv = vertex.num;
 
 	float r = radius;
-	add_vertex(pos + vector( 1, 0, 0) * r);
-	add_vertex(pos + vector(-1, 0, 0) * r);
-	add_vertex(pos + vector( 0, 1, 0) * r);
-	add_vertex(pos + vector( 0,-1, 0) * r);
-	add_vertex(pos + vector( 0, 0, 1) * r);
-	add_vertex(pos + vector( 0, 0,-1) * r);
+	add_vertex(pos + vec3( 1, 0, 0) * r);
+	add_vertex(pos + vec3(-1, 0, 0) * r);
+	add_vertex(pos + vec3( 0, 1, 0) * r);
+	add_vertex(pos + vec3( 0,-1, 0) * r);
+	add_vertex(pos + vec3( 0, 0, 1) * r);
+	add_vertex(pos + vec3( 0, 0,-1) * r);
 	add_easy(nv, {0, 2, 4});
 	add_easy(nv, {4, 2, 1});
 	add_easy(nv, {1, 2, 5});
@@ -57,32 +57,32 @@ void GeometryPlatonic::AddOctahedron(const vector &pos, float radius)
 	add_easy(nv, {1, 3, 4});
 }
 
-void GeometryPlatonic::AddDodecahedron(const vector &pos, float radius)
+void GeometryPlatonic::AddDodecahedron(const vec3 &pos, float radius)
 {
 	int nv = vertex.num;
 
 	float phi = (1 + sqrt(5.0f))/2;
 	float r = radius / sqrt(3.0f);
-	add_vertex(pos + vector( 1, 1, 1) * r);
-	add_vertex(pos + vector( 1, 1,-1) * r);
-	add_vertex(pos + vector( 1,-1, 1) * r);
-	add_vertex(pos + vector( 1,-1,-1) * r);
-	add_vertex(pos + vector(-1, 1, 1) * r);
-	add_vertex(pos + vector(-1, 1,-1) * r);
-	add_vertex(pos + vector(-1,-1, 1) * r);
-	add_vertex(pos + vector(-1,-1,-1) * r);
-	add_vertex(pos + vector(0, 1/phi, phi) * r);
-	add_vertex(pos + vector(0, 1/phi,-phi) * r);
-	add_vertex(pos + vector(0,-1/phi, phi) * r);
-	add_vertex(pos + vector(0,-1/phi,-phi) * r);
-	add_vertex(pos + vector( 1/phi, phi,0) * r);
-	add_vertex(pos + vector( 1/phi,-phi,0) * r);
-	add_vertex(pos + vector(-1/phi, phi,0) * r);
-	add_vertex(pos + vector(-1/phi,-phi,0) * r);
-	add_vertex(pos + vector( phi,0, 1/phi) * r);
-	add_vertex(pos + vector(-phi,0, 1/phi) * r);
-	add_vertex(pos + vector( phi,0,-1/phi) * r);
-	add_vertex(pos + vector(-phi,0,-1/phi) * r);
+	add_vertex(pos + vec3( 1, 1, 1) * r);
+	add_vertex(pos + vec3( 1, 1,-1) * r);
+	add_vertex(pos + vec3( 1,-1, 1) * r);
+	add_vertex(pos + vec3( 1,-1,-1) * r);
+	add_vertex(pos + vec3(-1, 1, 1) * r);
+	add_vertex(pos + vec3(-1, 1,-1) * r);
+	add_vertex(pos + vec3(-1,-1, 1) * r);
+	add_vertex(pos + vec3(-1,-1,-1) * r);
+	add_vertex(pos + vec3(0, 1/phi, phi) * r);
+	add_vertex(pos + vec3(0, 1/phi,-phi) * r);
+	add_vertex(pos + vec3(0,-1/phi, phi) * r);
+	add_vertex(pos + vec3(0,-1/phi,-phi) * r);
+	add_vertex(pos + vec3( 1/phi, phi,0) * r);
+	add_vertex(pos + vec3( 1/phi,-phi,0) * r);
+	add_vertex(pos + vec3(-1/phi, phi,0) * r);
+	add_vertex(pos + vec3(-1/phi,-phi,0) * r);
+	add_vertex(pos + vec3( phi,0, 1/phi) * r);
+	add_vertex(pos + vec3(-phi,0, 1/phi) * r);
+	add_vertex(pos + vec3( phi,0,-1/phi) * r);
+	add_vertex(pos + vec3(-phi,0,-1/phi) * r);
 	add_easy(nv, {14, 12, 1, 9, 5});
 	add_easy(nv, {12, 14, 4, 8, 0});
 	add_easy(nv, {13, 15, 7, 11, 3});
@@ -97,29 +97,29 @@ void GeometryPlatonic::AddDodecahedron(const vector &pos, float radius)
 	add_easy(nv, {8, 10, 2, 16, 0});
 }
 
-void GeometryPlatonic::__init__(const vector& pos, float radius, int type)
+void GeometryPlatonic::__init__(const vec3& pos, float radius, int type)
 {
 	new (this) GeometryPlatonic(pos, radius, type);
 }
 
-void GeometryPlatonic::AddIcosahedron(const vector &pos, float radius)
+void GeometryPlatonic::AddIcosahedron(const vec3 &pos, float radius)
 {
 	int nv = vertex.num;
 
 	float phi = (1 + sqrt(5.0f))/2;
 	float r = radius / sqrt(phi * sqrt(5.0f));
-	add_vertex(pos + vector( 0, 1, phi) * r);
-	add_vertex(pos + vector( 0, 1,-phi) * r);
-	add_vertex(pos + vector( 0,-1, phi) * r);
-	add_vertex(pos + vector( 0,-1,-phi) * r);
-	add_vertex(pos + vector( 1, phi, 0) * r);
-	add_vertex(pos + vector( 1,-phi, 0) * r);
-	add_vertex(pos + vector(-1, phi, 0) * r);
-	add_vertex(pos + vector(-1,-phi, 0) * r);
-	add_vertex(pos + vector( phi, 0, 1) * r);
-	add_vertex(pos + vector(-phi, 0, 1) * r);
-	add_vertex(pos + vector( phi, 0,-1) * r);
-	add_vertex(pos + vector(-phi, 0,-1) * r);
+	add_vertex(pos + vec3( 0, 1, phi) * r);
+	add_vertex(pos + vec3( 0, 1,-phi) * r);
+	add_vertex(pos + vec3( 0,-1, phi) * r);
+	add_vertex(pos + vec3( 0,-1,-phi) * r);
+	add_vertex(pos + vec3( 1, phi, 0) * r);
+	add_vertex(pos + vec3( 1,-phi, 0) * r);
+	add_vertex(pos + vec3(-1, phi, 0) * r);
+	add_vertex(pos + vec3(-1,-phi, 0) * r);
+	add_vertex(pos + vec3( phi, 0, 1) * r);
+	add_vertex(pos + vec3(-phi, 0, 1) * r);
+	add_vertex(pos + vec3( phi, 0,-1) * r);
+	add_vertex(pos + vec3(-phi, 0,-1) * r);
 	add_easy(nv, {0, 2, 8});
 	add_easy(nv, {2, 0, 9});
 	add_easy(nv, {3, 1,10});

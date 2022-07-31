@@ -8,8 +8,8 @@
 #ifndef ACTIONMODELAUTOMAP_H_
 #define ACTIONMODELAUTOMAP_H_
 
+#include "../../../../lib/math/vec3.h"
 #include "../../../Action.h"
-#include "../../../../lib/math/vector.h"
 class DataModel;
 
 class ActionModelAutomap : public Action {
@@ -24,7 +24,7 @@ public:
 private:
 	int material;
 	int texture_level;
-	Array<vector> old_pos;
+	Array<vec3> old_pos;
 };
 
 #endif /* ACTIONMODELAUTOMAP_H_ */

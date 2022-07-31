@@ -69,7 +69,7 @@ ModeWorldTerrain::~ModeWorldTerrain() {
 }
 
 
-Action *ModeWorldTerrain::get_action(const vector &pos) {
+Action *ModeWorldTerrain::get_action(const vec3 &pos) {
 	float radius = dialog->get_float("diameter") / 2;
 	float depth = dialog->get_float("depth") * BRUSH_PARTITION;
 	int type = dialog->get_int("brush_type");
@@ -82,7 +82,7 @@ Action *ModeWorldTerrain::get_action(const vector &pos) {
 	return a;
 }
 
-void ModeWorldTerrain::apply(const vector &pos) {
+void ModeWorldTerrain::apply(const vec3 &pos) {
 	Action *a = get_action(pos);
 	data->execute(a);
 	last_pos = pos;
@@ -115,9 +115,9 @@ void ModeWorldTerrain::on_mouse_move() {
 		return;
 	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_WORLD_TERRAIN))
 		return;
-	vector pos = multi_view->hover.point;
+	vec3 pos = multi_view->hover.point;
 	float radius = dialog->get_float("diameter") / 2;
-	vector dir = pos - last_pos;
+	vec3 dir = pos - last_pos;
 	dir.normalize();
 	float dl = radius * BRUSH_PARTITION;
 	while ((pos - last_pos).length() > dl) {
@@ -129,7 +129,7 @@ void ModeWorldTerrain::on_left_button_down() {
 	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_WORLD_TERRAIN))
 		return;
 	data->begin_action_group("TerrainBrush");
-	vector pos = multi_view->hover.point;
+	vec3 pos = multi_view->hover.point;
 	brushing = true;
 
 	apply(pos);
@@ -148,10 +148,10 @@ void ModeWorldTerrain::on_draw_win(MultiView::Window* win) {
 	parent->on_draw_win(win);
 	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_WORLD_TERRAIN))
 		return;
-	vector pos = multi_view->hover.point;
+	vec3 pos = multi_view->hover.point;
 	float radius = dialog->get_float("diameter") / 2;
 
 	set_color(scheme.CREATION_LINE);
 	set_line_width(scheme.LINE_WIDTH_HELPER);
-	draw_circle(pos, vector::EY, radius);
+	draw_circle(pos, vec3::EY, radius);
 }

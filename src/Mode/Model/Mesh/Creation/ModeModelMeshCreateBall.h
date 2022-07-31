@@ -33,7 +33,7 @@ public:
 	void onTypePhysical();
 
 private:
-	vector pos;
+	vec3 pos;
 	float radius;
 	bool pos_chosen;
 	Geometry *geo;

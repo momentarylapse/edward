@@ -13,8 +13,8 @@
 #include "../y/Entity.h"
 #include "../y/ComponentManager.h"
 #include "../y/EngineData.h"
-#include "../lib/math/vector.h"
-#include "../lib/math/matrix.h"
+#include "../lib/math/vec3.h"
+#include "../lib/math/mat4.h"
 
 
 const kaba::Class *Camera::_class = nullptr;
@@ -31,7 +31,7 @@ const kaba::Class *Camera::_class = nullptr;
 
 Camera *cam_main = nullptr; // "camera"
 
-Camera *add_camera(const vector &pos, const quaternion &ang, const rect &dest) {
+Camera *add_camera(const vec3 &pos, const quaternion &ang, const rect &dest) {
 	auto o = world.create_entity(pos, ang);
 
 	auto c = new Camera(dest);
@@ -66,10 +66,10 @@ Camera::Camera(const rect &_dest) {
 	min_depth = 1.0f;
 	max_depth = 1000000.0f;
 
-	m_projection = matrix::ID;
-	m_view = matrix::ID;
-	m_all = matrix::ID;
-	im_all = matrix::ID;
+	m_projection = mat4::ID;
+	m_view = mat4::ID;
+	m_all = mat4::ID;
+	im_all = mat4::ID;
 
 	enabled = true;
 	show = true;
@@ -78,7 +78,7 @@ Camera::Camera(const rect &_dest) {
 }
 
 
-//void Camera::__init__(const vector &_pos, const quaternion &_ang, const rect &_dest) {
+//void Camera::__init__(const vec3 &_pos, const quaternion &_ang, const rect &_dest) {
 	//new(this) Camera(_pos, _ang, _dest);
 //}
 
@@ -102,14 +102,14 @@ void Camera::on_iterate(float dt) {
 // view space -> relative screen space (API independent)
 // (-1,-1) = top left
 // (+1,+1) = bottom right
-matrix Camera::projection_matrix(float aspect_ratio) const {
+mat4 Camera::projection_matrix(float aspect_ratio) const {
 	// flip the y-axis
-	return matrix::perspective(fov, aspect_ratio, min_depth, max_depth, false) * matrix::scale(1,-1,1);
+	return mat4::perspective(fov, aspect_ratio, min_depth, max_depth, false) * mat4::scale(1,-1,1);
 }
 
-matrix Camera::view_matrix() const {
+mat4 Camera::view_matrix() const {
 	auto o = owner;
-	return matrix::rotation_q(o->ang).transpose() * matrix::translation(-o->pos);
+	return mat4::rotation_q(o->ang).transpose() * mat4::translation(-o->pos);
 }
 
 void Camera::update_matrices(float aspect_ratio) {
@@ -118,27 +118,27 @@ void Camera::update_matrices(float aspect_ratio) {
 
 	// TODO fix.... use own projection matrix?
 
-	auto m_rel = matrix::translation(vector(0.5f * engine.physical_aspect_ratio, 0.5f, 0.5f)) * matrix::scale(0.5f * engine.physical_aspect_ratio, 0.5f, 0.5f);
+	auto m_rel = mat4::translation(vec3(0.5f * engine.physical_aspect_ratio, 0.5f, 0.5f)) * mat4::scale(0.5f * engine.physical_aspect_ratio, 0.5f, 0.5f);
 
 	m_all = m_rel * m_projection * m_view;
 	im_all = m_all.inverse();
 }
 
 // into [0:R]x[0:1] system!
-vector Camera::project(const vector &v) {
+vec3 Camera::project(const vec3 &v) {
 	return m_all.project(v);
-	//return vector((vv.x * 0.5f + 0.5f) * engine.physical_aspect_ratio, 0.5f + vv.y * 0.5f, vv.z * 0.5f + 0.5f);
+	//return vec3((vv.x * 0.5f + 0.5f) * engine.physical_aspect_ratio, 0.5f + vv.y * 0.5f, vv.z * 0.5f + 0.5f);
 }
 
-vector Camera::unproject(const vector &v) {
+vec3 Camera::unproject(const vec3 &v) {
 	return im_all.project(v);
 	/*float xx = (v.x/engine.physical_aspect_ratio - 0.5f) * 2;
 	float yy = (v.y - 0.5f) * 2;
 	float zz = (v.z - 0.5f) * 2;
-	return im_all.project(vector(xx,yy,zz));*/
+	return im_all.project(vec3(xx,yy,zz));*/
 }
 
-void CameraShiftAll(const vector &dpos) {
+void CameraShiftAll(const vec3 &dpos) {
 	auto cameras = ComponentManager::get_listx<Camera>();
 	for (auto c: *cameras)
 		c->owner->pos += dpos;

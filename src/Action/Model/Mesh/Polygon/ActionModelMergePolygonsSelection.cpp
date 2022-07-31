@@ -63,7 +63,7 @@ void ActionModelMergePolygonsSelection::MergePolygonsInSurface(DataModel *m) {
 			if (p1.normal_dirty)
 				p1.temp_normal = p1.get_normal(m->edit_mesh->vertex);
 
-			if (vector::dot(p0.temp_normal, p1.temp_normal) < 0.99f)
+			if (vec3::dot(p0.temp_normal, p1.temp_normal) < 0.99f)
 				continue;
 
 			if (polygons_count_shared_vertices(p0, p1) != 2)
@@ -101,7 +101,7 @@ void ActionModelMergePolygonsSelection::MergePolygons(DataModel *m, int edge, in
 	p1.side.pop();
 	p0.side += p1.side;
 	Array<int> v = p0.get_vertices();
-	Array<vector> sv = p0.get_skin_vertices();
+	Array<vec3> sv = p0.get_skin_vertices();
 
 	for (int k=0; k<2; k++)
 		if (e.polygon[k] < max_old_poly)

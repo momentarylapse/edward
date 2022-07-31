@@ -22,7 +22,7 @@ public:
 
 class FormatUnhandledError : public FormatError {
 public:
-	FormatUnhandledError() : FormatError("") {}
+	FormatUnhandledError() : FormatError("format unhandled") {}
 };
 
 template<class F>

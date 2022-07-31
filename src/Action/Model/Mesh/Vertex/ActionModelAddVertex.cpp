@@ -12,7 +12,7 @@
 #include "../../../../y/components/Animator.h"
 #include <assert.h>
 
-ActionModelAddVertex::ActionModelAddVertex(const vector &_pos, const ivec4 &_bone_index, const vec4 &_bone_weight, int _normal_mode) {
+ActionModelAddVertex::ActionModelAddVertex(const vec3 &_pos, const ivec4 &_bone_index, const vec4 &_bone_weight, int _normal_mode) {
 	pos = _pos;
 	bone_index = _bone_index;
 	bone_weight = _bone_weight;

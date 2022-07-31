@@ -9,7 +9,7 @@
 #define SINGLEDATA_H_
 
 
-#include "../lib/math/vector.h"
+#include "../lib/math/vec3.h"
 
 class rect;
 class vec2;
@@ -25,8 +25,8 @@ public:
 	virtual ~SingleData() {}
 	int view_stage;
 	bool is_selected, m_delta, m_old, is_special;
-	vector pos;
-	virtual float hover_distance(Window *win, const vec2 &m, vector &tp, float &z);
+	vec3 pos;
+	virtual float hover_distance(Window *win, const vec2 &m, vec3 &tp, float &z);
 	virtual bool overlap_rect(Window *win, const rect &r);
 	virtual bool in_rect(Window *win, const rect &r);
 };

@@ -15,14 +15,14 @@
 
 
 
-static vector get_deformed_area(ModelMesh *m, ModelPolygon &t, int index, const vector &new_pos) {
+static vec3 get_deformed_area(ModelMesh *m, ModelPolygon &t, int index, const vec3 &new_pos) {
 	// Newell's method
-	vector n = v_0;
-	vector p1 = m->vertex[t.side.back().vertex].pos;
+	vec3 n = v_0;
+	vec3 p1 = m->vertex[t.side.back().vertex].pos;
 	if ((t.side.num - 1) == index)
 		p1 = new_pos;
 	for (int i=0; i<t.side.num; i++) {
-		vector p0 = p1;
+		vec3 p0 = p1;
 		if (i == index)
 			p1 = new_pos;
 		else
@@ -44,7 +44,7 @@ static float get_weight(ModelMesh *m, ModelEdge &e, Array<Array<PolyRef> > &ref)
 	float w = 0;
 	int a = e.vertex[0];
 	int b = e.vertex[1];
-	vector new_pos = (m->vertex[a].pos + m->vertex[b].pos) / 2;
+	vec3 new_pos = (m->vertex[a].pos + m->vertex[b].pos) / 2;
 
 	Array<PolyRef> rr;
 	rr.append(ref[a]);
@@ -61,9 +61,9 @@ static float get_weight(ModelMesh *m, ModelEdge &e, Array<Array<PolyRef> > &ref)
 		ModelPolygon &p = m->polygon[rr[i].poly];
 
 		// how much does the plane change
-		vector area = p.get_area_vector(m->vertex);
-		vector area2 = get_deformed_area(m, p, rr[i].side, new_pos);
-		w += vector::cross(area, area2).length() / (area.length() + area2.length()) * 4;
+		vec3 area = p.get_area_vector(m->vertex);
+		vec3 area2 = get_deformed_area(m, p, rr[i].side, new_pos);
+		w += vec3::cross(area, area2).length() / (area.length() + area2.length()) * 4;
 	}
 
 	// edge length
@@ -110,9 +110,9 @@ void ActionModelEasify::CalculateWeights(ModelMesh *m) {
 			// compute damage...
 			for (int eee: ee)
 				if (eee != ei) {
-					vector nv = (m->vertex[m->edge[eee].vertex[0]].pos + m->vertex[m->edge[eee].vertex[1]].pos) / 2;
+					vec3 nv = (m->vertex[m->edge[eee].vertex[0]].pos + m->vertex[m->edge[eee].vertex[1]].pos) / 2;
 
-					vector area = vector::cross(m->vertex[m->edge[ei].vertex[0]].pos - nv, m->vertex[m->edge[ei].vertex[1]].pos - nv);
+					vec3 area = vec3::cross(m->vertex[m->edge[ei].vertex[0]].pos - nv, m->vertex[m->edge[ei].vertex[1]].pos - nv);
 					m->edge[eee].weight +=  area.length();
 				}
 

@@ -380,13 +380,13 @@ bool ModeModelMesh::optimize_view() {
 	bool ww = mv->whole_window;
 	mv->reset_view();
 	mv->whole_window = ww;
-	vector min, max;
+	vec3 min, max;
 	data->mesh->get_bounding_box(min, max);
 	if (min != max)
 		mv->set_view_box(min, max);
 
 	ed->multi_view_2d->reset_view();
-	ed->multi_view_2d->cam.pos = vector(0.5f, 0.5f, 0);
+	ed->multi_view_2d->cam.pos = vec3(0.5f, 0.5f, 0);
 	/*if ((Bone.num > 0) and (Vertex.num <= 0))
 		SetSubMode(SubModeSkeleton);
 	if (SubMode == SubModeSkeleton)
@@ -558,7 +558,7 @@ void ModeModelMesh::set_current_skin(int index) {
 void ModeModelMesh::draw_effects(MultiView::Window *win) {
 	nix::set_shader(nix::Shader::default_2d);
 	for (ModelEffect &fx: data->fx) {
-		vector p = win->project(data->mesh->vertex[fx.vertex].pos);
+		vec3 p = win->project(data->mesh->vertex[fx.vertex].pos);
 		if ((p.z > 0) and (p.z < 1))
 			draw_str(p.x, p.y, fx.get_type());
 	}
@@ -574,10 +574,10 @@ void ModeModelMesh::draw_edges(MultiView::Window *win, ModelMesh *m, const Array
 
 	nix::set_offset(-2);
 	set_line_width(as_selected ? scheme.LINE_WIDTH_MEDIUM : scheme.LINE_WIDTH_THIN);
-	Array<vector> line_pos;
+	Array<vec3> line_pos;
 	Array<color> line_color;
 
-	vector dir = win->get_direction();
+	vec3 dir = win->get_direction();
 	for (auto &e: m->edge) {
 		if (!(e.is_selected and selected) and !(!e.is_selected and non_selected))
 			continue;
@@ -586,11 +586,11 @@ void ModeModelMesh::draw_edges(MultiView::Window *win, ModelMesh *m, const Array
 
 		float w = 1;
 		if (e.polygon[0] >= 0 and e.polygon[1] >= 0)
-			w = min(vector::dot(m->polygon[e.polygon[0]].temp_normal, dir), vector::dot(m->polygon[e.polygon[1]].temp_normal, dir));
+			w = min(vec3::dot(m->polygon[e.polygon[0]].temp_normal, dir), vec3::dot(m->polygon[e.polygon[1]].temp_normal, dir));
 		else if (e.polygon[0] >= 0)
-			w = vector::dot(m->polygon[e.polygon[0]].temp_normal, dir);
+			w = vec3::dot(m->polygon[e.polygon[0]].temp_normal, dir);
 		else if (e.polygon[1] >= 0)
-			w = vector::dot(m->polygon[e.polygon[1]].temp_normal, dir);
+			w = vec3::dot(m->polygon[e.polygon[1]].temp_normal, dir);
 		float f = 0.5f - 0.4f*w;//0.7f - 0.3f * w;
 		color cc;
 		if (as_selected) {

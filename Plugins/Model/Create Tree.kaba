@@ -6,17 +6,17 @@ const BRANCH_FACTOR = 0.7
 const BRANCH_ANGLE = 0.5
 const DIR_RAND = 0.2
 
-func get_rotated(dir: vector) -> vector
-	vector v1 = vector.cross(dir, vector.EX).normalized()
-	vector v2 = vector.cross(dir, v1)
+func get_rotated(dir: vec3) -> vec3
+	var v1 = vec3.cross(dir, vec3.EX).normalized()
+	var v2 = vec3.cross(dir, v1)
 	float w = rand(2 * pi)
-	vector bdir = (dir * 0.5 + cos(w) * v1 + sin(w) * v2).normalized()
+	var bdir = (dir * 0.5 + cos(w) * v1 + sin(w) * v2).normalized()
 	return bdir
 
-func branch(pos0: vector, dir0: vector, num: int, radius: float, length: float)
-	vector dir = dir0
-	vector p = pos0
-	vector[] pos
+func branch(pos0: vec3, dir0: vec3, num: int, radius: float, length: float)
+	var dir = dir0
+	var p = pos0
+	vec3[] pos
 	pos.add(pos0)
 	for i in 1:num
 		dir.x += rand(DIR_RAND * 2) - DIR_RAND
@@ -27,7 +27,7 @@ func branch(pos0: vector, dir0: vector, num: int, radius: float, length: float)
 		pos.add(p)
 		
 		if rand(1) < BRANCH_PROB
-			vector bdir = get_rotated(dir)
+			var bdir = get_rotated(dir)
 			int bnum = (num - i + 0.5) * BRANCH_FACTOR
 			if bnum > 1
 				branch(p, bdir, bnum, radius / num * bnum, length)
@@ -39,4 +39,4 @@ func branch(pos0: vector, dir0: vector, num: int, radius: float, length: float)
 	del g
 
 func main()
-	branch(vector.0, vector.EY, MAX_LENGTH, 5, 40)
+	branch(vec3.0, vec3.EY, MAX_LENGTH, 5, 40)

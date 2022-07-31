@@ -158,9 +158,9 @@ void ModelPropertiesDialog::fill_tensor_list() {
 }
 
 
-vector img_get_ball_n(int x, int y, int N) {
+vec3 img_get_ball_n(int x, int y, int N) {
 	//vector n = vector(x - N/2, y - N/2, 0);
-	vector n = vector(x - N/2, y - N/2, 0);
+	vec3 n = vec3(x - N/2, y - N/2, 0);
 	n.z = - sqrt(N*N/2 - n.x*n.x - n.y*n.y);
 	n.normalize();
 	return n;
@@ -184,23 +184,23 @@ string render_material(ModelMaterial *m) {
 	// simulate a lit sphere
 	Image img;
 	img.create(N, N, Black);
-	vector light_dir = vector(-1, -1, -1);
+	vec3 light_dir = vec3(-1, -1, -1);
 	light_dir.normalize();
-	vector cam_dir = - vector::EZ;
-	vector light_sp_dir = light_dir + cam_dir;
+	vec3 cam_dir = - vec3::EZ;
+	vec3 light_sp_dir = light_dir + cam_dir;
 	light_sp_dir.normalize();
 	for (int x=0;x<N;x++)
 		for (int y=0;y<N;y++) {
 			// ambient + diffuse + emission
-			vector n = img_get_ball_n(x, y, N);
-			float f = clamp(vector::dot(n, light_dir), 0.0f, 1.0f);
+			vec3 n = img_get_ball_n(x, y, N);
+			float f = clamp(vec3::dot(n, light_dir), 0.0f, 1.0f);
 			color c = m->col.albedo * (m->col.roughness * 0.3f + f) + m->col.emission;
 
 			// texture "mapping"
 			c = c * tim->get_pixel((x * tim->width) / N, (y * tim->height) / N);
 
 			// specular
-			f = pow(vector::dot(n, light_sp_dir), 10) * 0.4f;
+			f = pow(vec3::dot(n, light_sp_dir), 10) * 0.4f;
 			c += White * m->col.metal * f;
 
 			c = c * 0.9f;

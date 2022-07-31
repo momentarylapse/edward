@@ -380,7 +380,7 @@ void Shader::set_color_l(int location, const color &c) {
 	glProgramUniform4fv(program, location, 1, (float*)&c);
 }
 
-void Shader::set_matrix_l(int location, const matrix &m) {
+void Shader::set_matrix_l(int location, const mat4 &m) {
 	if (location < 0)
 		return;
 	glProgramUniformMatrix4fv(program, location, 1, GL_FALSE, (float*)&m);
@@ -398,7 +398,7 @@ void Shader::set_color(const string &name, const color &c) {
 	set_color_l(get_location(name), c);
 }
 
-void Shader::set_matrix(const string &name, const matrix &m) {
+void Shader::set_matrix(const string &name, const mat4 &m) {
 	set_matrix_l(get_location(name), m);
 }
 

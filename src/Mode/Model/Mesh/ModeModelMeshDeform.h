@@ -36,7 +36,7 @@ public:
 private:
 	bool brushing;
 	float distance;
-	vector last_pos;
+	vec3 last_pos;
 };
 
 extern ModeModelMeshDeform *mode_model_mesh_deform;

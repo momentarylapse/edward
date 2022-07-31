@@ -91,7 +91,7 @@ void ModelEffect::clear()
 	inv_quad = false;
 }
 
-ModelVertex::ModelVertex(const vector &_pos) {
+ModelVertex::ModelVertex(const vec3 &_pos) {
 	pos = _pos;
 	ref_count = 0;
 	normal_mode = NORMAL_MODE_ANGULAR;
@@ -133,7 +133,7 @@ void DataModel::MetaData::reset() {
 	active_physics = true;
 	passive_physics = true;
 	auto_generate_tensor = true;
-	inertia_tensor = matrix3::ID;
+	inertia_tensor = mat3::ID;
 
 	// object data
 	name = "";
@@ -224,7 +224,7 @@ void DataModel::import_from_triangle_mesh(int index) {
 			Array<int> v;
 			for (int k=0;k<3;k++)
 				v.add(t.vertex[k]);
-			Array<vector> sv;
+			Array<vec3> sv;
 			for (int tl=0;tl<material[i]->texture_levels.num;tl++)
 				for (int k=0;k<3;k++)
 					sv.add(t.skin_vertex[tl][k]);
@@ -291,7 +291,7 @@ void DataModel::import_from_triangle_mesh(int index) {
 }
 
 
-void DataModel::getBoundingBox(vector &min, vector &max) {
+void DataModel::getBoundingBox(vec3 &min, vec3 &max) {
 	mesh->get_bounding_box(min, max);
 	phys_mesh->get_bounding_box(min, max, true);
 }
@@ -329,24 +329,24 @@ void DataModel::selectionFromVertices() {
 }
 
 
-void DataModel::addVertex(const vector &pos, const ivec4 &bone_index, const vec4 &bone_weight, int normal_mode)
+void DataModel::addVertex(const vec3 &pos, const ivec4 &bone_index, const vec4 &bone_weight, int normal_mode)
 {	execute(new ActionModelAddVertex(pos, bone_index, bone_weight, normal_mode));	}
 
 ModelPolygon *DataModel::addTriangle(int a, int b, int c, int material) {
-	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture({a,b,c}, material, {vector::EY, v_0, vector::EX}));
+	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture({a,b,c}, material, {vec3::EY, v_0, vec3::EX}));
 }
 
 ModelPolygon *DataModel::addPolygon(const Array<int> &v, int material)
 {
-	Array<vector> sv;
+	Array<vec3> sv;
 	for (int i=0;i<v.num;i++) {
 		float w = (float)i / (float)v.num * 2 * pi;
-		sv.add(vector(0.5f + cos(w) * 0.5f, 0.5f + sin(w), 0));
+		sv.add(vec3(0.5f + cos(w) * 0.5f, 0.5f + sin(w), 0));
 	}
 	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
-ModelPolygon *DataModel::addPolygonWithSkin(const Array<int> &v, const Array<vector> &sv, int material) {
+ModelPolygon *DataModel::addPolygonWithSkin(const Array<int> &v, const Array<vec3> &sv, int material) {
 	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
 }
 
@@ -387,12 +387,12 @@ void DataModel::generateDetailDists(float *dist) {
 
 #define n_theta		16
 
-matrix3 DataModel::generateInertiaTensor(float mass)
+mat3 DataModel::generateInertiaTensor(float mass)
 {
 //	sModeModelSkin *p = &Skin[0];
 
 	// estimate size
-	vector min, max;
+	vec3 min, max;
 	mesh->get_bounding_box(min, max);
 	/*for (int i=0;i<Ball.num;i++){
 		sModeModelBall *b = &Ball[i];
@@ -408,7 +408,7 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 	//float dv=(max.x-min.x)/n_theta*(max.y-min.y)/n_theta*(max.z-min.z)/n_theta;
 	int num_ds=0;
 
-	matrix3 t;
+	mat3 t;
 	for (int i=0;i<9;i++)
 		t.e[i] = 0;
 
@@ -420,7 +420,7 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 			float y=min.y+(float(j)+0.5f)*(max.y-min.y)/n_theta;
 			for (int k=0;k<n_theta;k++){
 				float z=min.z+(float(k)+0.5f)*(max.z-min.z)/n_theta;
-				vector r=vector(x,y,z);
+				vec3 r=vec3(x,y,z);
 				//msg_write(string2("%f		%f		%f",r.x,r.y,r.z));
 
 				bool inside=false;
@@ -457,7 +457,7 @@ matrix3 DataModel::generateInertiaTensor(float mass)
 		t._21 = t._12;
 		t._02 = t._20;
 	}else
-		t = matrix3::ID;
+		t = mat3::ID;
 
 	return t;
 }
@@ -476,7 +476,7 @@ void DataModel::reconnectBone(int index, int parent)
 void DataModel::setBoneModel(int index, const Path &filename)
 {	execute(new ActionModelSetSubModel(index, filename));	}
 
-void DataModel::addBone(const vector &pos, int parent)
+void DataModel::addBone(const vec3 &pos, int parent)
 {	execute(new ActionModelAddBone(pos, parent));	}
 
 void DataModel::deleteBone(int index)
@@ -509,7 +509,7 @@ void DataModel::animationDeleteFrame(int index, int frame)
 void DataModel::animationSetFrameDuration(int index, int frame, float duration)
 {	execute(new ActionModelAnimationSetFrameDuration(index, frame, duration));	}
 
-void DataModel::animationSetBone(int move, int frame, int bone, const vector &dpos, const vector &ang)
+void DataModel::animationSetBone(int move, int frame, int bone, const vec3 &dpos, const vec3 &ang)
 {	execute(new ActionModelAnimationSetBone(move, frame, bone, dpos, ang));	}
 
 void DataModel::delete_selection(const ModelSelection &s, bool greedy)

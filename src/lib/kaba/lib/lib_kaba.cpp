@@ -1,5 +1,6 @@
 #include "../kaba.h"
 #include "lib.h"
+#include "list.h"
 #include "../dynamic/exception.h"
 #include "../dynamic/dynamic.h"
 
@@ -47,6 +48,14 @@ class FunctionX : public Function {
 public:
 	string repr() const {
 		return func_repr(this);
+	}
+};
+
+template<class T>
+class XSharedArray : public shared_array<T> {
+public:
+	void __init__() {
+		new(this) shared_array<T>;
 	}
 };
 
@@ -182,10 +191,10 @@ void SIAddPackageKaba() {
 		class_add_element("num_params", TypeInt, &Statement::num_params);
 		
 	add_class(TypeModulePList);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, &shared_array<Module>::__init__);
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, &XSharedArray<Module>::__init__);
 
 	add_class(TypeClassElementList);
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, &Array<ClassElement>::__init__);
+		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, &XList<ClassElement>::__init__);
 		class_add_func(IDENTIFIER_FUNC_DELETE, TypeVoid, &Array<ClassElement>::clear);
 
 	add_func("get_dynamic_type", TypeClassP, &get_dynamic_type, Flags::_STATIC__PURE);

@@ -68,7 +68,7 @@ void Skeleton::reset() {
 }
 
 // non-animated state
-vector Skeleton::_calc_bone_rest_pos(int index) const {
+vec3 Skeleton::_calc_bone_rest_pos(int index) const {
 	if (parents[index] >= 0)
 		return dpos[index] + _calc_bone_rest_pos(parents[index]);
 	return dpos[index];

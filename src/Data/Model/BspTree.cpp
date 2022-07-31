@@ -76,7 +76,7 @@ void BspTree::add(ModelPolygon &p, ModelMesh *m, float epsilon)
 		b = new BspBranch(pl);
 }
 
-bool BspTree::inside(const vector &v)
+bool BspTree::inside(const vec3 &v)
 {
 	BspBranch *bb = b;
 	bool _inside = false;

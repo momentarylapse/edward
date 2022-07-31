@@ -8,7 +8,7 @@
 #include "ActionCameraAddPoint.h"
 #include "../../../Data/World/DataCamera.h"
 
-ActionCameraAddPoint::ActionCameraAddPoint(DataCamera *d, const vector &_pos, const vector &_vel, const vector &_ang, float _dt)
+ActionCameraAddPoint::ActionCameraAddPoint(DataCamera *d, const vec3 &_pos, const vec3 &_vel, const vec3 &_ang, float _dt)
 {
 	pos = _pos;
 	vel = _vel;

@@ -35,7 +35,7 @@ public:
 	bool load(const Path &filename, bool deep = true);
 	bool save(const Path &filename);
 
-	float hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) override;
+	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 
@@ -46,11 +46,11 @@ class WorldEditingTerrain {
 public:
 	Path filename;
 	int num_x, num_z;
-	vector pattern;
+	vec3 pattern;
 	Path material_file;
 	int num_textures;
 	Path texture_file[MATERIAL_MAX_TEXTURES];
-	vector texture_scale[MATERIAL_MAX_TEXTURES];
+	vec3 texture_scale[MATERIAL_MAX_TEXTURES];
 };
 
 

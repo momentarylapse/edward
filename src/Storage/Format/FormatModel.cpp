@@ -35,7 +35,7 @@ void write_ivec4(BinaryFormatter *f, const ivec4 &v);
 void write_vec4(BinaryFormatter *f, const vec4 &v);
 
 
-int get_normal_index(vector &n) {
+int get_normal_index(vec3 &n) {
 	int nxy, nz;
 	if ((n.x == 0) and (n.y == 0)) {
 		nxy = 0;
@@ -47,7 +47,7 @@ int get_normal_index(vector &n) {
 	return nxy + 256 * nz;
 }
 
-vector get_normal_by_index(int index);
+vec3 get_normal_by_index(int index);
 
 
 
@@ -133,7 +133,7 @@ public:
 	void read(BinaryFormatter *f) override {
 		int version = f->read_int();
 
-		vector temp;
+		vec3 temp;
 		f->read_vector(&temp);
 		f->read_vector(&temp);
 		f->read_float();
@@ -149,7 +149,7 @@ public:
 		// version
 		f->write_int(0);
 
-		vector _min, _max;
+		vec3 _min, _max;
 		me->getBoundingBox(_min, _max);
 		f->write_vector(&_min);
 		f->write_vector(&_max);
@@ -197,7 +197,7 @@ public:
 	ChunkMaterial() : FileChunk("material") {}
 	void create() override {
 		me = new ModelMaterial;
-		msg_write(p2s(parent));
+		//msg_write(p2s(parent));
 		parent->material.add(me);
 	}
 	void read(BinaryFormatter *f) override {
@@ -261,7 +261,7 @@ public:
 			me->vertex[j].normal_dirty = false;//true;
 
 		// skin vertices
-		Array<vector> skin_vert;
+		Array<vec3> skin_vert;
 		int nsv = f->read_int();
 		skin_vert.resize(nsv);
 		for (int j=0;j<skin_vert.num;j++) {
@@ -324,7 +324,7 @@ public:
 			me->vertex[j].normal_dirty = false;//true;
 
 		// skin vertices
-		Array<vector> skin_vert;
+		Array<vec3> skin_vert;
 		int nsv = f->read_int();
 		skin_vert.resize(nsv);
 		for (int j=0;j<skin_vert.num;j++) {
@@ -527,7 +527,7 @@ public:
 			}
 
 			for (auto &v: vv) {
-				Array<vector> sv;
+				Array<vec3> sv;
 				sv.resize(v.num * MATERIAL_MAX_TEXTURES);//data->material[0]->texture_levels.num);
 				//msg_write(ia2s(_vv));
 				try {
@@ -626,7 +626,7 @@ public:
 		f->write_int(me->bone.num);
 		for (auto &b: me->bone) {
 			if (b.parent >= 0) {
-				vector dpos = b.pos - me->bone[b.parent].pos;
+				vec3 dpos = b.pos - me->bone[b.parent].pos;
 				f->write_vector(&dpos);
 			} else {
 				f->write_vector(&b.pos);

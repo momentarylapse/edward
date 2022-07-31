@@ -11,10 +11,10 @@
 
 
 #include "../lib/base/base.h"
-#include "../lib/math/vector.h"
+#include "../lib/math/vec3.h"
 #include "../lib/math/quaternion.h"
 #include "../lib/math/rect.h"
-#include "../lib/math/matrix.h"
+#include "../lib/math/mat4.h"
 #include "../y/Component.h"
 
 
@@ -38,19 +38,19 @@ public:
 	float focal_length;
 	float focal_blur;
 
-	matrix view_matrix() const;
-	matrix projection_matrix(float aspect_ratio) const;
+	mat4 view_matrix() const;
+	mat4 projection_matrix(float aspect_ratio) const;
 
 	void update_matrices(float aspect_ratio);
 
-	matrix m_projection, m_view;
-	matrix m_all, im_all;
-	vector _cdecl project(const vector &v);
-	vector _cdecl unproject(const vector &v);
+	mat4 m_projection, m_view;
+	mat4 m_all, im_all;
+	vec3 _cdecl project(const vec3 &v);
+	vec3 _cdecl unproject(const vec3 &v);
 
 	void _cdecl on_iterate(float dt) override;
 
-	void _cdecl __init__(const vector &pos, const quaternion &ang, const rect &dest);
+	void _cdecl __init__(const vec3 &pos, const quaternion &ang, const rect &dest);
 	void _cdecl __delete__() override;
 
 	static const kaba::Class *_class;
@@ -59,8 +59,8 @@ public:
 void CameraInit();
 void CameraReset();
 void CameraCalcMove(float dt);
-void CameraShiftAll(const vector &dpos);
-Camera *add_camera(const vector &pos, const quaternion &ang, const rect &dest);
+void CameraShiftAll(const vec3 &dpos);
+Camera *add_camera(const vec3 &pos, const quaternion &ang, const rect &dest);
 
 extern Camera *cam_main; // "camera"
 

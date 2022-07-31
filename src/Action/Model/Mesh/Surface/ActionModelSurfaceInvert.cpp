@@ -35,7 +35,7 @@ void ActionModelSurfaceInvert::invert_polygons(DataModel *m) {
 
 			// swap skin vertices
 			for (int tl=0;tl<MATERIAL_MAX_TEXTURES;tl++){
-				vector tv = t.side[k].skin_vertex[tl];
+				vec3 tv = t.side[k].skin_vertex[tl];
 				t.side[k].skin_vertex[tl] = t.side[kk].skin_vertex[tl];
 				t.side[kk].skin_vertex[tl] = tv;
 			}

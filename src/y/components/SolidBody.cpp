@@ -23,24 +23,24 @@ const kaba::Class *SolidBody::_class = nullptr;
 #include <btBulletDynamicsCommon.h>
 
 
-btVector3 bt_set_v(const vector &v);
+btVector3 bt_set_v(const vec3 &v);
 btQuaternion bt_set_q(const quaternion &q);
-vector bt_get_v(const btVector3 &v);
+vec3 bt_get_v(const btVector3 &v);
 quaternion bt_get_q(const btQuaternion &q);
-btTransform bt_set_trafo(const vector &p, const quaternion &q);
+btTransform bt_set_trafo(const vec3 &p, const quaternion &q);
 #endif
 
 
 static int num_insane=0;
 
 
-inline bool ainf_v(vector &v) {
+inline bool ainf_v(vec3 &v) {
 	if (inf_v(v))
 		return true;
 	return (v.length_fuzzy() > 100000000000.0f);
 }
 
-inline bool TestVectorSanity(vector &v,char *name) {
+inline bool TestVectorSanity(vec3 &v,char *name) {
 	if (ainf_v(v)) {
 		num_insane++;
 		v=v_0;
@@ -152,7 +152,7 @@ SolidBody::~SolidBody() {
 
 
 
-void SolidBody::add_force(const vector &f, const vector &rho) {
+void SolidBody::add_force(const vec3 &f, const vec3 &rho) {
 	if (engine.elapsed<=0)
 		return;
 	if (!active)
@@ -164,7 +164,7 @@ void SolidBody::add_force(const vector &f, const vector &rho) {
 #endif
 	} else {
 		force_ext += f;
-		torque_ext += vector::cross(rho, f);
+		torque_ext += vec3::cross(rho, f);
 		//TestVectorSanity(f, "f addf");
 		//TestVectorSanity(rho, "rho addf");
 		//TestVectorSanity(torque, "Torque addf");
@@ -172,7 +172,7 @@ void SolidBody::add_force(const vector &f, const vector &rho) {
 	}
 }
 
-void SolidBody::add_impulse(const vector &p, const vector &rho) {
+void SolidBody::add_impulse(const vec3 &p, const vec3 &rho) {
 	if (engine.elapsed<=0)
 		return;
 	if (!active)
@@ -189,7 +189,7 @@ void SolidBody::add_impulse(const vector &p, const vector &rho) {
 	}
 }
 
-void SolidBody::add_torque(const vector &t) {
+void SolidBody::add_torque(const vec3 &t) {
 	if (engine.elapsed <= 0)
 		return;
 	if (!active)
@@ -206,7 +206,7 @@ void SolidBody::add_torque(const vector &t) {
 	}
 }
 
-void SolidBody::add_torque_impulse(const vector &l) {
+void SolidBody::add_torque_impulse(const vec3 &l) {
 	if (engine.elapsed <= 0)
 		return;
 	if (!active)
@@ -264,12 +264,12 @@ void SolidBody::do_simple_physics(float dt) {
 			o->ang += q_dot * dt;
 			o->ang.normalize();
 
-			matrix3 theta_world, theta_world_inv;
+			mat3 theta_world, theta_world_inv;
 			get_theta_world(theta_world, theta_world_inv);
 
 			#ifdef _realistic_calculation_
 
-				vector L = theta_world * rot + torque_int * dt;
+				vec3 L = theta_world * rot + torque_int * dt;
 				rot = theta_world_inv * L;
 			#else
 				rot += theta_world_inv * torque_int * dt;
@@ -317,8 +317,8 @@ void SolidBody::do_simple_physics(float dt) {
 
 
 // rotate inertia tensor into world coordinates
-void SolidBody::get_theta_world(matrix3 &theta_world, matrix3 &theta_world_inv) {
-	auto r = matrix3::rotation_q(owner->ang);
+void SolidBody::get_theta_world(mat3 &theta_world, mat3 &theta_world_inv) {
+	auto r = mat3::rotation_q(owner->ang);
 	auto r_inv = r.transpose();
 	theta_world = (r * theta_0 * r_inv);
 
@@ -326,7 +326,7 @@ void SolidBody::get_theta_world(matrix3 &theta_world, matrix3 &theta_world_inv) 
 		theta_world_inv = theta_world.inverse();
 	} else {
 		// Theta and ThetaInv already = identity
-		theta_world_inv = matrix3::ZERO;
+		theta_world_inv = mat3::ZERO;
 	}
 }
 

@@ -28,14 +28,14 @@ FormatWorld::FormatWorld() : TypedFormat<DataWorld>(FD_WORLD, "world", _("World"
 }
 
 
-static string v2s(const vector &v) {
+static string v2s(const vec3 &v) {
 	return format("%.3f %.3f %.3f", v.x, v.y, v.z);
 }
 
-static vector s2v(const string &s) {
+static vec3 s2v(const string &s) {
 	auto x = s.explode(" ");
 	if (x.num >= 3)
-		return vector(x[0]._float(), x[1]._float(), x[2]._float());
+		return vec3(x[0]._float(), x[1]._float(), x[2]._float());
 	return v_0;
 }
 

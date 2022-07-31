@@ -22,7 +22,7 @@ Object::Object() {
 	script_data.name = "-terrain-";
 	visible = false;
 	prop.radius = 30000000;
-	_matrix = matrix::ID;
+	_matrix = mat4::ID;
 }
 
 

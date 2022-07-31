@@ -34,11 +34,11 @@ public:
 	void on_ok();
 
 private:
-	vector min, max;
+	vec3 min, max;
 	Geometry *geo;
 	nix::Texture *tex;
 	shared<kaba::Module> script;
-	typedef _cdecl vector vec_func(const vector &);
+	typedef _cdecl vec3 vec_func(const vec3 &);
 	vec_func *f;
 
 	enum class CoordSystem {
@@ -48,14 +48,14 @@ private:
 	} coord_system;
 
 	void update_function();
-	vector transform(const vector &v);
+	vec3 transform(const vec3 &v);
 	void apply();
 	void preview();
 	void restore();
 
 	bool has_preview;
 	Array<int> index;
-	Array<vector> old_pos;
+	Array<vec3> old_pos;
 };
 
 #endif /* SRC_MODE_MODEL_MESH_CREATION_MODEMODELMESHDEFORMFUNCTION_H_ */

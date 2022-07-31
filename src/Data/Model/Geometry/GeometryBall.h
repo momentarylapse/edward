@@ -13,8 +13,8 @@
 class GeometryBall : public Geometry
 {
 public:
-	GeometryBall(const vector &pos, float radius, int num_x, int num_y);
-	void _cdecl __init__(const vector &pos, float radius, int num_x, int num_y);
+	GeometryBall(const vec3 &pos, float radius, int num_x, int num_y);
+	void _cdecl __init__(const vec3 &pos, float radius, int num_x, int num_y);
 };
 
 #endif /* GEOMETRYBALL_H_ */

@@ -79,7 +79,7 @@ void ModeModelMeshCreateCylinder::update_geometry() {
 
 void ModeModelMeshCreateCylinder::on_mouse_move() {
 	if (pos.num == 2) {
-		vector p = multi_view->get_cursor(pos.back());
+		vec3 p = multi_view->get_cursor(pos.back());
 		radius = (p - pos.back()).length();
 		if (multi_view->snap_to_grid)
 			radius = multi_view->snap_f(radius);
@@ -138,7 +138,7 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win) {
 		set_color(scheme.CREATION_LINE);
 		nix::set_shader(nix::Shader::default_2d);
 		for (int i=0;i<pos.num;i++) {
-			vector pp = win->project(pos[i]);
+			vec3 pp = win->project(pos[i]);
 			draw_rect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
 

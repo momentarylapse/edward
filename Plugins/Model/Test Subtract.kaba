@@ -2,8 +2,8 @@ use edward
 
 func main()
 
-	var a = new Geometry.Cube(vector(-50, -50, -10), vector.EX * 100, vector.EY * 100, vector.EZ * 20, 1, 1, 1)
-	var b = new Geometry.Cube(vector(-10.1, -10.2, -50), vector.EX * 20, vector.EY * 20, vector.EZ * 100, 1, 1, 1)
+	var a = new Geometry.Cube(vec3(-50, -50, -10), vec3.EX * 100, vec3.EY * 100, vec3.EZ * 20, 1, 1, 1)
+	var b = new Geometry.Cube(vec3(-10.1, -10.2, -50), vec3.EX * 20, vec3.EY * 20, vec3.EZ * 100, 1, 1, 1)
 	Geometry c
 	Geometry.subtract(a, b, c)
 	del a

@@ -9,7 +9,7 @@
 
 #include "../y/BaseClass.h"
 
-class vector;
+class vec3;
 class quaternion;
 
 class btTypedConstraint;
@@ -40,27 +40,27 @@ public:
 	SolidBody *a;
 	SolidBody *b;
 
-	void _create_link_data(vector &pa, vector &pb, quaternion &iqa, quaternion &iqb, const vector &pos);
+	void _create_link_data(vec3 &pa, vec3 &pb, quaternion &iqa, quaternion &iqb, const vec3 &pos);
 
-	static Link* create(LinkType type, Entity *a, Entity *b, const vector &pos, const quaternion &ang);
+	static Link* create(LinkType type, Entity *a, Entity *b, const vec3 &pos, const quaternion &ang);
 };
 
 class LinkSocket : public Link {
 public:
-	LinkSocket(Entity *a, Entity *b, const vector &pos);
-	void __init__(Entity *a, Entity *b, const vector &pos);
+	LinkSocket(Entity *a, Entity *b, const vec3 &pos);
+	void __init__(Entity *a, Entity *b, const vec3 &pos);
 };
 
 class LinkHinge : public Link {
 public:
-	LinkHinge(Entity *a, Entity *b, const vector &pos, const quaternion &ang);
-	void __init__(Entity *a, Entity *b, const vector &pos, const quaternion &ang);
+	LinkHinge(Entity *a, Entity *b, const vec3 &pos, const quaternion &ang);
+	void __init__(Entity *a, Entity *b, const vec3 &pos, const quaternion &ang);
 };
 
 class LinkUniversal : public Link {
 public:
-	LinkUniversal(Entity *a, Entity *b, const vector &pos, const quaternion &ang);
-	void __init__(Entity *a, Entity *b, const vector &pos, const quaternion &ang);
+	LinkUniversal(Entity *a, Entity *b, const vec3 &pos, const quaternion &ang);
+	void __init__(Entity *a, Entity *b, const vec3 &pos, const quaternion &ang);
 };
 
 

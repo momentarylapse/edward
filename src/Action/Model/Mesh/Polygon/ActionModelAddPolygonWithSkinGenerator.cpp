@@ -23,7 +23,7 @@ void *ActionModelAddPolygonWithSkinGenerator::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	Array<vector> sv;
+	Array<vec3> sv;
 	for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 		for (int k=0;k<v.num;k++)
 			sv.add(sg.get(m->edit_mesh->vertex[v[k]].pos, l));

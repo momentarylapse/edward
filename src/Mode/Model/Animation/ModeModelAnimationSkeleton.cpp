@@ -18,7 +18,7 @@
 
 ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
-float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vec2 &M, vector &tp, float &z, const Array<ModelVertex> &vertex);
+float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vec2 &M, vec3 &tp, float &z, const Array<ModelVertex> &vertex);
 
 ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent, MultiView::MultiView *mv) :
 	Mode<DataModel>("ModelAnimationSkeleton", _parent, mv, "menu_move"),
@@ -70,7 +70,7 @@ void ModeModelAnimationSkeleton::chooseMouseFunction(int f) {
 }
 
 
-float bone_hover(const MultiView::SingleData *pp, MultiView::Window *win, const vec2 &m, vector &tp, float &z, ModeModelAnimationSkeleton *me) {
+float bone_hover(const MultiView::SingleData *pp, MultiView::Window *win, const vec2 &m, vec3 &tp, float &z, ModeModelAnimationSkeleton *me) {
 	float dmin = 100;
 	for (auto &p: me->data->mesh->polygon) {
 		if (pp == &mode_model_animation->bone[me->data->mesh->vertex[p.side[0].vertex].bone_index.i]) {
@@ -91,7 +91,7 @@ void ModeModelAnimationSkeleton::on_set_multi_view() {
 	multi_view->add_data(MVD_SKELETON_BONE,
 			mode_model_animation->bone,
 			MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);
-	multi_view->set_hover_func(MVD_SKELETON_BONE, [=](const MultiView::SingleData *pp, MultiView::Window *win, const vec2 &m, vector &tp, float &z){ return bone_hover(pp, win, m, tp, z, this); });
+	multi_view->set_hover_func(MVD_SKELETON_BONE, [=](const MultiView::SingleData *pp, MultiView::Window *win, const vec2 &m, vec3 &tp, float &z){ return bone_hover(pp, win, m, tp, z, this); });
 }
 
 void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {

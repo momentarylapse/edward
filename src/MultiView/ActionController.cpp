@@ -28,33 +28,33 @@ namespace MultiView {
 
 ActionController::ActionController(MultiView *view) {
 	multi_view = view;
-	geo_mat = matrix::ID;
-	mat = matrix::ID;
+	geo_mat = mat4::ID;
+	mat = mat4::ID;
 
 
 	float r0 = 1.333f;
 	float r1 = 0.666f;
 	float r = 0.1f;
-	geo.add(new GeometryTorus(v_0, vector::EZ, 1.0f, r, 32, 8));
-	geo.add(new GeometryTorus(v_0, vector::EY, 1.0f, r, 32, 8));
-	geo.add(new GeometryTorus(v_0, vector::EX, 1.0f, r, 32, 8));
-	geo.add(new GeometryCylinder(-vector::EX*r0, -vector::EX*r1, r, 1, 8));
-	geo.add(new GeometryCylinder( vector::EX*r0,  vector::EX*r1, r, 1, 8));
-	geo.add(new GeometryCylinder(-vector::EY*r0, -vector::EY*r1, r, 1, 8));
-	geo.add(new GeometryCylinder( vector::EY*r0,  vector::EY*r1, r, 1, 8));
-	geo.add(new GeometryCylinder(-vector::EZ*r0, -vector::EZ*r1, r, 1, 8));
-	geo.add(new GeometryCylinder( vector::EZ*r0,  vector::EZ*r1, r, 1, 8));
+	geo.add(new GeometryTorus(v_0, vec3::EZ, 1.0f, r, 32, 8));
+	geo.add(new GeometryTorus(v_0, vec3::EY, 1.0f, r, 32, 8));
+	geo.add(new GeometryTorus(v_0, vec3::EX, 1.0f, r, 32, 8));
+	geo.add(new GeometryCylinder(-vec3::EX*r0, -vec3::EX*r1, r, 1, 8));
+	geo.add(new GeometryCylinder( vec3::EX*r0,  vec3::EX*r1, r, 1, 8));
+	geo.add(new GeometryCylinder(-vec3::EY*r0, -vec3::EY*r1, r, 1, 8));
+	geo.add(new GeometryCylinder( vec3::EY*r0,  vec3::EY*r1, r, 1, 8));
+	geo.add(new GeometryCylinder(-vec3::EZ*r0, -vec3::EZ*r1, r, 1, 8));
+	geo.add(new GeometryCylinder( vec3::EZ*r0,  vec3::EZ*r1, r, 1, 8));
 	r = 0.015f;
-	geo_show.add(new GeometryTorus(v_0, vector::EZ, 1.0f, r, 32, 8));
-	geo_show.add(new GeometryTorus(v_0, vector::EY, 1.0f, r, 32, 8));
-	geo_show.add(new GeometryTorus(v_0, vector::EX, 1.0f, r, 32, 8));
+	geo_show.add(new GeometryTorus(v_0, vec3::EZ, 1.0f, r, 32, 8));
+	geo_show.add(new GeometryTorus(v_0, vec3::EY, 1.0f, r, 32, 8));
+	geo_show.add(new GeometryTorus(v_0, vec3::EX, 1.0f, r, 32, 8));
 	r = 0.03f;
-	geo_show.add(new GeometryCylinder(-vector::EX*r0, -vector::EX*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder( vector::EX*r0,  vector::EX*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder(-vector::EY*r0, -vector::EY*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder( vector::EY*r0,  vector::EY*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder(-vector::EZ*r0, -vector::EZ*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder( vector::EZ*r0,  vector::EZ*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder(-vec3::EX*r0, -vec3::EX*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder( vec3::EX*r0,  vec3::EX*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder(-vec3::EY*r0, -vec3::EY*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder( vec3::EY*r0,  vec3::EY*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder(-vec3::EZ*r0, -vec3::EZ*r1, r, 1, 8));
+	geo_show.add(new GeometryCylinder( vec3::EZ*r0,  vec3::EZ*r1, r, 1, 8));
 
 	for (auto g: geo_show){
 		auto *vb = new nix::VertexBuffer("3f,3fn,2f");
@@ -69,7 +69,7 @@ ActionController::~ActionController() {
 	delete_geo();
 }
 
-void ActionController::start_action(Window *_win, const vector &_m, Constraint _constraints) {
+void ActionController::start_action(Window *_win, const vec3 &_m, Constraint _constraints) {
 	if (cur_action)
 		end_action(false);
 	if (!multi_view->allow_mouse_actions)
@@ -77,9 +77,9 @@ void ActionController::start_action(Window *_win, const vector &_m, Constraint _
 	if (action.name == "")
 		return;
 
-	mat = matrix::ID;
+	mat = mat4::ID;
 	active_win = _win;
-	dv = dvp = vector::ZERO;
+	dv = dvp = vec3::ZERO;
 	m0 = _m;
 	pos0 = pos;
 	constraints = _constraints;
@@ -93,15 +93,15 @@ void ActionController::start_action(Window *_win, const vector &_m, Constraint _
 }
 
 
-vector ActionController::transform_ang(Window *w, const vector &ang) {
+vec3 ActionController::transform_ang(Window *w, const vec3 &ang) {
 	auto qmv =  w->local_ang;
 	auto qang = quaternion::rotation_v( ang);
 	auto q = qmv * qang * qmv.bar();
 	return q.get_angles();
 }
 
-vector ActionController::project_trans(Constraint mode, const vector &v) {
-	vector r = v;
+vec3 ActionController::project_trans(Constraint mode, const vec3 &v) {
+	vec3 r = v;
 	if (mode == Constraint::X or mode == Constraint::NEG_X)
 		r.y = r.z = 0;
 	else if (mode == Constraint::Y or mode == Constraint::NEG_Y)
@@ -117,18 +117,18 @@ vector ActionController::project_trans(Constraint mode, const vector &v) {
 	return r;
 }
 
-vector ActionController::mirror(Constraint mode) {
+vec3 ActionController::mirror(Constraint mode) {
 	if (mode == Constraint::X or mode == Constraint::NEG_X)
-		return vector::EX;
+		return vec3::EX;
 	else if (mode == Constraint::Y or mode == Constraint::NEG_Y)
-		return vector::EY;
+		return vec3::EY;
 	else if (mode == Constraint::Z or mode == Constraint::NEG_Z)
-		return vector::EZ;
+		return vec3::EZ;
 	else if (mode == Constraint::XY)
-		return vector::EZ;
+		return vec3::EZ;
 	else if (mode == Constraint::XZ)
-		return vector::EY;
-	return vector::EX;
+		return vec3::EY;
+	return vec3::EX;
 }
 
 bool cons_neg(ActionController::Constraint c) {
@@ -146,11 +146,11 @@ void ActionController::update_action() {
 		return;
 	MouseWrapper::update(multi_view);
 
-	vector dir = active_win->get_direction();
-	vector _param = v_0;
+	vec3 dir = active_win->get_direction();
+	vec3 _param = v_0;
 
 	dvp += {multi_view->v,0};
-	dv += active_win->unproject(m0 + vector(multi_view->v,0), m0) - active_win->unproject(m0, m0);
+	dv += active_win->unproject(m0 + vec3(multi_view->v,0), m0) - active_win->unproject(m0, m0);
 
 	if (action.mode == ACTION_MOVE) {
 		_param = project_trans(constraints, dv);
@@ -159,46 +159,46 @@ void ActionController::update_action() {
 		//_param = project_trans(constraints, v2 - v1) * 0.003f * multi_view->active_win->zoom();
 		_param = project_trans(constraints, dv ^ dir) * 0.003f * multi_view->active_win->zoom();
 		if (constraints == Constraint::FREE)
-			_param = transform_ang(active_win, vector(-dvp.y, -dvp.x, 0) * 0.003f);
+			_param = transform_ang(active_win, vec3(-dvp.y, -dvp.x, 0) * 0.003f);
 		_param = multi_view->maybe_snap_v2(_param, pi / 180.0);
 	} else if (action.mode == ACTION_SCALE) {
 		float sign = cons_neg(constraints) ? -1 : 1;
-		_param = vector(1, 1, 1) + project_trans(constraints, sign * dv) * 0.01f * multi_view->active_win->zoom();
+		_param = vec3(1, 1, 1) + project_trans(constraints, sign * dv) * 0.01f * multi_view->active_win->zoom();
 		if (constraints == Constraint::FREE)
-			_param = vector(1, 1, 1) * (1 + dvp.x * 0.01f);
+			_param = vec3(1, 1, 1) * (1 + dvp.x * 0.01f);
 		_param = multi_view->maybe_snap_v2(_param, 0.01f);
 	} else if (action.mode == ACTION_MIRROR) {
 		_param = mirror(constraints);
 		if (constraints == Constraint::FREE)
-			_param = active_win->cam->ang * vector::EX;
+			_param = active_win->cam->ang * vec3::EX;
 	} else {
 		param = v_0;
 	}
 	update_param(_param);
 }
 
-void ActionController::update_param(const vector &_param) {
+void ActionController::update_param(const vec3 &_param) {
 	if (!cur_action)
 		return;
 
-	auto m_dt = matrix::translation(pos0);
-	auto m_dti = matrix::translation(-pos0);
+	auto m_dt = mat4::translation(pos0);
+	auto m_dti = mat4::translation(-pos0);
 
 	param = _param;
 	if (action.mode == ACTION_MOVE) {
-		mat = matrix::translation(param);
+		mat = mat4::translation(param);
 	} else if (action.mode == ACTION_ROTATE) {
-		mat = matrix::rotation(param);
+		mat = mat4::rotation(param);
 		mat = m_dt * mat * m_dti;
 	} else if (action.mode == ACTION_SCALE) {
-		mat = matrix::scale(param.x, param.y, param.z);
+		mat = mat4::scale(param.x, param.y, param.z);
 		mat = m_dt * mat * m_dti;
 	} else if (action.mode == ACTION_MIRROR) {
 		plane pl = plane::from_point_normal(v_0, param);
-		mat = matrix::reflection(pl);
+		mat = mat4::reflection(pl);
 		mat = m_dt * mat * m_dti;
 	} else {
-		mat = matrix::ID;
+		mat = mat4::ID;
 	}
 	cur_action->update_and_notify(data, mat);
 
@@ -222,7 +222,7 @@ void ActionController::end_action(bool set) {
 		multi_view->notify(multi_view->MESSAGE_ACTION_ABORT);
 	}
 	cur_action = nullptr;
-	mat = matrix::ID;
+	mat = mat4::ID;
 	MouseWrapper::stop(ed->win);
 }
 
@@ -258,8 +258,8 @@ void ActionController::update() {
 	float f = multi_view->cam.radius * 0.15f;
 	if (multi_view->whole_window)
 		f /= 2;
-	auto s = matrix::scale(f, f, f);
-	auto t = matrix::translation(pos);
+	auto s = mat4::scale(f, f, f);
+	auto t = mat4::translation(pos);
 	geo_mat = t * s;
 
 	multi_view->force_redraw();
@@ -311,14 +311,14 @@ const ActionController::ACGeoConfig ActionController::ac_geo_config[] = {
 	{color(1, 0.8f, 0.8f, 0.8f),Constraint::FREE,2}
 };
 
-bool ActionController::geo_allow(int i, Window *win, const matrix &geo_mat) {
+bool ActionController::geo_allow(int i, Window *win, const mat4 &geo_mat) {
 	auto c = ac_geo_config[i].constraint;
-	vector pp = win->project(geo_mat * v_0);
-	vector ppx = win->project(geo_mat * vector::EX);
+	vec3 pp = win->project(geo_mat * v_0);
+	vec3 ppx = win->project(geo_mat * vec3::EX);
 	ppx.z = pp.z;
-	vector ppy = win->project(geo_mat * vector::EY);
+	vec3 ppy = win->project(geo_mat * vec3::EY);
 	ppy.z = pp.z;
-	vector ppz = win->project(geo_mat * vector::EZ);
+	vec3 ppz = win->project(geo_mat * vec3::EZ);
 	ppz.z = pp.z;
 
 	if (c == Constraint::X or c == Constraint::NEG_X)
@@ -343,7 +343,7 @@ void ActionController::draw(Window *win) {
 	if (!visible)
 		return;
 	nix::set_z(false, false);
-	matrix m = mat * geo_mat;
+	mat4 m = mat * geo_mat;
 	nix::set_model_matrix(m);
 	nix::set_texture(nullptr);
 	nix::set_shader(nix::Shader::default_3d);
@@ -359,7 +359,7 @@ void ActionController::draw(Window *win) {
 	}
 	nix::set_z(false, false);
 	nix::disable_alpha();
-	nix::set_model_matrix(matrix::ID);
+	nix::set_model_matrix(mat4::ID);
 	win->set_projection_matrix_pixel();
 
 	if (in_use()) {
@@ -367,17 +367,17 @@ void ActionController::draw(Window *win) {
 		set_line_width(2.0f);
 		float r = multi_view->cam.radius * 10;
 		if (constraints == Constraint::X or constraints == Constraint::NEG_X)
-			draw_line(pos - vector::EX * r, pos + vector::EX * r);
+			draw_line(pos - vec3::EX * r, pos + vec3::EX * r);
 		if (constraints == Constraint::Y or constraints == Constraint::NEG_Y)
-			draw_line(pos - vector::EY * r, pos + vector::EY * r);
+			draw_line(pos - vec3::EY * r, pos + vec3::EY * r);
 		if (constraints == Constraint::Z or constraints == Constraint::NEG_Z)
-			draw_line(pos - vector::EZ * r, pos + vector::EZ * r);
+			draw_line(pos - vec3::EZ * r, pos + vec3::EZ * r);
 	}
 
 	nix::set_shader(nix::Shader::default_2d);
 
 	if (win == multi_view->mouse_win) {
-		vector pp = win->project(pos);
+		vec3 pp = win->project(pos);
 
 		if ((hover_constraint != Constraint::UNDEFINED) and !in_use()) {
 			set_color(scheme.TEXT);
@@ -386,20 +386,20 @@ void ActionController::draw(Window *win) {
 	}
 
 	if (in_use() and (win == multi_view->active_win)) {
-		vector pp = win->project(pos);
+		vec3 pp = win->project(pos);
 
 		float x0 = pp.x + 120;//multi_view->m.x + 100;//win->dest.x1 + 120;
 		float y0 = pp.y + 40;//multi_view->m.y + 50;//win->dest.y1 + 100;
 
 		string s;
 		if (action.mode == ACTION_MOVE) {
-			vector t = param;
+			vec3 t = param;
 			string unit = multi_view->get_unit_by_zoom(t);
 			s = f2s(t.x, 2) + " " + unit + "\n" + f2s(t.y, 2) + " " + unit;
 			if (multi_view->mode3d)
 				s += "\n" + f2s(t.z, 2) + " " + unit;
 		} else if ((action.mode == ACTION_ROTATE) or (action.mode == ACTION_ROTATE_2D)) {
-			vector r = param * 180.0f / pi;
+			vec3 r = param * 180.0f / pi;
 			s = format("%.1f°\n%.1f°\n%.1f°", r.x, r.y, r.z);
 		} else if ((action.mode == ACTION_SCALE) or (action.mode == ACTION_SCALE_2D)) {
 			if (multi_view->mode3d)
@@ -415,14 +415,14 @@ void ActionController::draw(Window *win) {
 void ActionController::draw_post() {
 }
 
-ActionController::Constraint ActionController::get_hover(vector &tp) {
+ActionController::Constraint ActionController::get_hover(vec3 &tp) {
 	if (!visible)
 		return Constraint::UNDEFINED;
 	float z_min = 1;
 	int priority = -1;
 	auto hover = Constraint::UNDEFINED;
 	foreachi(Geometry *g, geo, i) {
-		vector t;
+		vec3 t;
 		if (!geo_allow(i, multi_view->mouse_win, geo_mat))
 			continue;
 		if (g->is_mouse_over(multi_view->mouse_win, geo_mat, t)) {
@@ -442,7 +442,7 @@ ActionController::Constraint ActionController::get_hover(vector &tp) {
 bool ActionController::on_left_button_down() {
 	if (!visible and action.locked)
 		return false;
-	vector hp = multi_view->hover.point;
+	vec3 hp = multi_view->hover.point;
 	hover_constraint = get_hover(hp);
 	if (hover_constraint != Constraint::UNDEFINED) {
 		start_action(multi_view->active_win, hp, hover_constraint);

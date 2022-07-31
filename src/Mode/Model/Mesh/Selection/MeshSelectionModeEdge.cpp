@@ -29,15 +29,15 @@ void MeshSelectionModeEdge::on_start() {
 }
 
 
-float ModelEdge::hover_distance(MultiView::Window *win, const vec2 &M, vector &tp, float &z) {
+float ModelEdge::hover_distance(MultiView::Window *win, const vec2 &M, vec3 &tp, float &z) {
 
 	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
 
 	// project all points
-	vector pp0 = win->project(m->show_vertices[vertex[0]].pos);
+	vec3 pp0 = win->project(m->show_vertices[vertex[0]].pos);
 	if ((pp0.z <= 0) or (pp0.z >= 1))
 		return -1;
-	vector pp1 = win->project(m->show_vertices[vertex[1]].pos);
+	vec3 pp1 = win->project(m->show_vertices[vertex[1]].pos);
 	if ((pp1.z <= 0) or (pp1.z >= 1))
 		return -1;
 	const float rr = 50;
@@ -50,17 +50,17 @@ float ModelEdge::hover_distance(MultiView::Window *win, const vec2 &M, vector &t
 	float z0 = pp0.z;
 	float z1 = pp1.z;
 	pp0.z = pp1.z = 0;
-	vector d = pp1 - pp0;
+	vec3 d = pp1 - pp0;
 	float l = d.length();
 	if (l < 2)
 		return -1;
 	d /= l;
-	vector d2 = vector(d.y, -d.x, 0);
-	float dd = fabs(vector::dot(d2, vec3(M.x,M.y,0) - pp0));
+	vec3 d2 = vec3(d.y, -d.x, 0);
+	float dd = fabs(vec3::dot(d2, vec3(M.x,M.y,0) - pp0));
 	if (dd > rr)
 		return -1;
 
-	float f = (pp0 + d * vector::dot(vec3(M.x,M.y,0) - pp0, d)).factor_between(pp0, pp1);
+	float f = (pp0 + d * vec3::dot(vec3(M.x,M.y,0) - pp0, d)).factor_between(pp0, pp1);
 	tp = m->show_vertices[vertex[0]].pos * (1 - f) + m->show_vertices[vertex[1]].pos * f;
 	z = z0 * (1 - f) + z1 * f;
 	return dd;
@@ -71,7 +71,7 @@ bool ModelEdge::in_rect(MultiView::Window *win, const rect &r) {
 
 	// all vertices within rectangle?
 	for (int k=0; k<2; k++) {
-		vector pp = win->project(m->show_vertices[vertex[k]].pos);
+		vec3 pp = win->project(m->show_vertices[vertex[k]].pos);
 		if ((pp.z <= 0) or (pp.z >= 1))
 			return false;
 		if (!r.inside({pp.x, pp.y}))
@@ -119,7 +119,7 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win) {
 	set_line_width(scheme.LINE_WIDTH_MEDIUM);
 	auto m = data->edit_mesh;
 	auto &e = m->edge[multi_view->hover.index];
-	Array<vector> p;
+	Array<vec3> p;
 	p.add(m->show_vertices[e.vertex[0]].pos);
 	p.add(m->show_vertices[e.vertex[1]].pos);
 	Array<color> c = {scheme.HOVER, scheme.HOVER};

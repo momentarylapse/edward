@@ -17,7 +17,7 @@
 #include "../../../../lib/nix/nix.h"
 
 
-void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b);
+void draw_helper_line(MultiView::Window *win, const vec3 &a, const vec3 &b);
 
 ModeModelMeshCreatePlatonic::ModeModelMeshCreatePlatonic(ModeBase *_parent, int _type) :
 	ModeCreation<DataModel>("ModelMeshCreatePlatonic", _parent)
@@ -103,7 +103,7 @@ void ModeModelMeshCreatePlatonic::on_draw_win(MultiView::Window *win) {
 
 void ModeModelMeshCreatePlatonic::on_mouse_move() {
 	if (pos_chosen) {
-		vector pos2 = multi_view->get_cursor(pos);
+		vec3 pos2 = multi_view->get_cursor(pos);
 		radius = (pos2 - pos).length();
 		updateGeometry();
 	}

@@ -8,6 +8,7 @@
 #include "Edward.h"
 #include "lib/os/CommandLineParser.h"
 #include "lib/hui/hui.h"
+#include "lib/kaba/kaba.h"
 #include "Data/Model/DataModel.h"
 #include "Data/Material/DataMaterial.h"
 #include "Data/World/DataWorld.h"
@@ -28,8 +29,6 @@ EdwardApp::EdwardApp() :
 	set_property("website", "http://michi.is-a-geek.org/software");
 	set_property("author", "Michael Ankele <michi@lupina.de>");
 }
-
-#include "lib/kaba/kaba.h"
 
 extern bool DataModelAllowUpdating;
 void update_file(const Path &filename, bool allow_write) {
@@ -74,11 +73,6 @@ bool EdwardApp::on_startup(const Array<string> &arg) {
 	});
 	p.cmd("-h/--help", "", "show this help page", [&p] (const Array<string> &arg) {
 		p.show();
-	});
-	p.cmd("--update-model", "FILENAME", "load and re-write a model (deprecated?)", [] (const Array<string> &arg) {
-		DataModel m;
-		storage->load(arg[0], &m, false);
-		//m.save(arg[2]);
 	});
 	p.cmd("--update", "FILENAME", "load and re-write a file", [] (const Array<string> &arg) {
 		update_file(arg[0], true);

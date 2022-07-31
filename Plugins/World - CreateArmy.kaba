@@ -6,6 +6,6 @@ func main()
 	world.begin_action("CreateArmy")
 	for i in 0:N
 		for j in 0:N
-			vector pos = vector(i * 200, 120, j * 200)
+			vec3 pos = vec3(i * 200, 120, j * 200)
 			world.add_object("Characters/1st Char/1st", pos)
 	world.end_action()

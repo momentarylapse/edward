@@ -9,7 +9,7 @@
 #define MULTIVIEW_H_
 
 #include "../lib/base/base.h"
-#include "../lib/math/vector.h"
+#include "../lib/math/vec3.h"
 #include "../lib/math/vec2.h"
 #include "../lib/math/quaternion.h"
 #include "../lib/math/rect.h"
@@ -54,18 +54,18 @@ enum {
 };
 
 struct Camera {
-	vector pos;
+	vec3 pos;
 	quaternion ang;
 	float radius;
 	bool ignore_radius;
-	vector get_pos(bool allow_radius) const;
+	vec3 get_pos(bool allow_radius) const;
 };
 
 
 class ActionController;
 class CameraController;
 
-typedef std::function<float(const SingleData *p, Window *all_windows, const vec2 &m, vector &tp, float &z)> HoverDistanceFunction;
+typedef std::function<float(const SingleData *p, Window *all_windows, const vec2 &m, vec3 &tp, float &z)> HoverDistanceFunction;
 
 struct DataSet {
 	int type;
@@ -128,7 +128,7 @@ public:
 	bool light_enabled;
 
 	nix::UniformBuffer *ubo_light;
-	void set_light(Window *win, const vector &dir, const color &col, float harshness);
+	void set_light(Window *win, const vec3 &dir, const color &col, float harshness);
 
 	bool snap_to_grid;
 
@@ -157,7 +157,7 @@ public:
 		int meta;
 		int set, index, type;
 		SingleData *data;
-		vector point;
+		vec3 point;
 		void reset();
 	};
 	Selection hover;
@@ -172,17 +172,17 @@ public:
 	void toggle_wire();
 	void toggle_snap_to_grid();
 	void cam_zoom(float factor, bool mouse_rel);
-	void cam_move(const vector &dpos);
-	void cam_move_pixel(Window *win, const vector &dir);
+	void cam_move(const vec3 &dpos);
+	void cam_move_pixel(Window *win, const vec3 &dir);
 	void cam_rotate(const quaternion &dang, bool cam_center);
-	void cam_rotate_pixel(const vector &dir, bool cam_center);
+	void cam_rotate_pixel(const vec3 &dir, bool cam_center);
 	void clear_data(Data *_data);
 	void add_data(int type, const DynamicArray &a, int flags);
 	void set_hover_func(int type, HoverDistanceFunction f);
 	void set_view_stage(int *view_stage, bool allow_handle);
 	void reset();
 	void reset_view();
-	void set_view_box(const vector &min, const vector &max);
+	void set_view_box(const vec3 &min, const vec3 &max);
 	void set_allow_select(bool allow);
 	void set_allow_action(bool allow);
 	void push_settings();
@@ -203,7 +203,7 @@ public:
 	void select_none();
 	void invert_selection();
 	bool has_selection();
-	vector get_selection_center();
+	vec3 get_selection_center();
 
 	void hold_cursor(bool holding);
 	void start_selection_rect();
@@ -221,17 +221,17 @@ public:
 	bool hover_selected();
 	bool has_selectable_data();
 
-	string get_unit_by_zoom(vector &v);
+	string get_unit_by_zoom(vec3 &v);
 	string format_length(float l);
-	static vector snap_v2(const vector &v, float d);
-	vector snap_v(const vector &v);
+	static vec3 snap_v2(const vec3 &v, float d);
+	vec3 snap_v(const vec3 &v);
 	float snap_f(float f);
-	vector maybe_snap_v2(const vector &v, float d);
-	vector maybe_snap_v(const vector &v);
+	vec3 maybe_snap_v2(const vec3 &v, float d);
+	vec3 maybe_snap_v(const vec3 &v);
 	float maybe_snap_f(float f);
 
-	vector get_cursor();
-	vector get_cursor(const vector &depth_reference);
+	vec3 get_cursor();
+	vec3 get_cursor(const vec3 &depth_reference);
 
 	enum class CoordinateMode {
 		GLOBAL,
@@ -274,7 +274,7 @@ public:
 
 
 	int moving_win;
-	vector moving_start, moving_dp;
+	vec3 moving_start, moving_dp;
 
 	bool moving_cross_x;
 	bool moving_cross_y;
@@ -285,10 +285,10 @@ public:
 
 	struct Message3d {
 		string str;
-		vector pos;
+		vec3 pos;
 	};
 	Array<Message3d> message3d;
-	void add_message_3d(const string &str, const vector &pos);
+	void add_message_3d(const string &str, const vec3 &pos);
 	void reset_message_3d();
 
 

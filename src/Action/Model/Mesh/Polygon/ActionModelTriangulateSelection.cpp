@@ -36,7 +36,7 @@ void *ActionModelTriangulateSelection::compose(Data *d)
 					Array<int> v;
 					for (int k=0;k<3;k++)
 						v.add(temp.side[vv[i*3+k]].vertex);
-					Array<vector> sv;
+					Array<vec3> sv;
 					for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 						for (int k=0;k<3;k++)
 							sv.add(temp.side[vv[i*3+k]].skin_vertex[l]);

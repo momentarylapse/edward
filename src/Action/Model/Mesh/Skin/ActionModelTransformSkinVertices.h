@@ -9,7 +9,7 @@
 #define ACTIONMODELTRANSFORMSKINVERTICES_H_
 
 #include "../../../ActionMultiView.h"
-class vector;
+class vec3;
 class DataModel;
 
 class ActionModelTransformSkinVertices: public ActionMultiView {

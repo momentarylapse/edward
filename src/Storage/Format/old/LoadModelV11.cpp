@@ -17,7 +17,7 @@
 #include "../../../lib/os/formatter.h"
 #include "../../../Edward.h"
 
-vector get_normal_by_index(int index);
+vec3 get_normal_by_index(int index);
 
 
 int find_other_poly_from_edge(ModelMesh *m, int e, int t) {
@@ -123,7 +123,7 @@ void FormatModel::_load_old(const Path &filename, DataModel *data, bool deep) {
 template<class F>
 void FormatModel::_load_v10(F *f, DataModel *data, bool deep) {
 
-	Array<vector> skin_vert;
+	Array<vec3> skin_vert;
 
 	// Materials
 	f->read_comment();
@@ -400,10 +400,10 @@ template<class F>
 void FormatModel::_load_v11(F *f, DataModel *data, bool deep) {
 
 
-	Array<vector> skin_vert;
+	Array<vec3> skin_vert;
 
 	// General
-	vector tv;
+	vec3 tv;
 	f->read_comment();
 	// bounding box
 	f->read_vector(&tv);
@@ -531,7 +531,7 @@ void FormatModel::_load_v11(F *f, DataModel *data, bool deep) {
 			}
 		}
 		for (auto &_vv: vv) {
-			Array<vector> sv;
+			Array<vec3> sv;
 			sv.resize(_vv.num * MATERIAL_MAX_TEXTURES);//data->material[0]->texture_levels.num);
 			//msg_write(ia2s(_vv));
 			try{

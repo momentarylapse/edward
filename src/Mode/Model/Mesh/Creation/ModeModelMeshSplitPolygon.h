@@ -22,7 +22,7 @@ public:
 	void on_draw_win(MultiView::Window *win) override;
 
 private:
-	vector pos = v_0;
+	vec3 pos = v_0;
 	int polygon = -1, edge = -1;
 	float factor = 0;
 };

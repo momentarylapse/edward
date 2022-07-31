@@ -51,7 +51,7 @@ public:
 	void reset() override;
 
 
-	void get_bounding_box(vector &min, vector &max);
+	void get_bounding_box(vec3 &min, vec3 &max);
 	int get_selected_objects();
 	int get_selected_terrains();
 	int get_selected_cameras();
@@ -78,7 +78,7 @@ public:
 		// physics
 		bool physics_enabled;
 		PhysicsMode physics_mode;
-		vector gravity;
+		vec3 gravity;
 
 		// background
 		color background_color;
@@ -107,9 +107,9 @@ public:
 
 
 	// actions
-	WorldObject *add_object(const Path &filename, const vector &pos);
-	WorldTerrain *add_terrain(const Path &filename, const vector &pos);
-	WorldTerrain *add_new_terrain(const vector &pos, const vector &size, int num_x, int num_z);
+	WorldObject *add_object(const Path &filename, const vec3 &pos);
+	WorldTerrain *add_terrain(const Path &filename, const vec3 &pos);
+	WorldTerrain *add_new_terrain(const vec3 &pos, const vec3 &size, int num_x, int num_z);
 	void copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights); // actually not an action
 	void paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights);
 	void delete_selection();

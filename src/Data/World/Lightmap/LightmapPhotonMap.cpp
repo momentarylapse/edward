@@ -44,15 +44,15 @@ LightmapPhotonMap::~LightmapPhotonMap()
 }
 
 
-vector get_rand_dir(const vector &n)
+vec3 get_rand_dir(const vec3 &n)
 {
-	vector dir;
+	vec3 dir;
 	do{
 		dir.x = randf(2) - 1;
 		dir.y = randf(2) - 1;
 		dir.z = randf(2) - 1;
 	}while (dir.length_sqr() > 1);
-	if (vector::dot(dir, n) < 0)
+	if (vec3::dot(dir, n) < 0)
 		dir = - dir;
 	dir.normalize();
 	return dir;
@@ -66,9 +66,9 @@ void LightmapPhotonMap::DoStep(int index, int worker_id)
 		f = randf(1.0f);
 		g = randf(1.0f);
 	}while(f + g > 1);
-	vector p = t.v[0] + (t.v[1] - t.v[0]) * f + (t.v[2] - t.v[0]) * g;
+	vec3 p = t.v[0] + (t.v[1] - t.v[0]) * f + (t.v[2] - t.v[0]) * g;
 
-	vector dir = get_rand_dir(t.pl.n);
+	vec3 dir = get_rand_dir(t.pl.n);
 	color c = t.em * (3.0f / (t.em.r + t.em.g + t.em.b));
 	//msg_write(format("%d / %d", j, n_photons));
 	Trace(thread_photon[worker_id], p, dir, c * energy_per_photon, cur_em_tria, 0);
@@ -104,21 +104,21 @@ void LightmapPhotonMap::PrepareTextureRendering()
 	CreateBalancedTree();
 }
 
-void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vector &dir, const color &c, int ignore_tria, int n)
+void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vec3 &p, const vec3 &dir, const color &c, int ignore_tria, int n)
 {
 //	msg_db_f("PMTrace", 1);
-	vector p2 = p + dir * data->large_distance;
+	vec3 p2 = p + dir * data->large_distance;
 	Ray r = Ray(p, p2);
 	//printf("%f   %f   %f\n", dir.x, dir.y, dir.z);
 	// trace
 	int hit_tria = -1;
-	vector hit_p;
+	vec3 hit_p;
 	float f, g;
 	for (int ti=0;ti<data->Trias.num;ti++){
 		if (ti == ignore_tria)
 			continue;
 		LightmapData::Triangle &t = data->Trias[ti];
-		vector cp;
+		vec3 cp;
 
 		if (!t.intersect(r, cp))
 			continue;
@@ -155,7 +155,7 @@ void LightmapPhotonMap::Trace(Array<PhotonEvent> &ph, const vector &p, const vec
 	float u = randf(1);
 	if (u < 0.5f){
 		// reflect
-		vector dir2 = get_rand_dir(t.pl.n);
+		vec3 dir2 = get_rand_dir(t.pl.n);
 		Trace(ph, hit_p, dir2, e.c, hit_tria, n + 1);
 	}else{
 		// absorb
@@ -241,7 +241,7 @@ void pm_balance(int b, LightmapPhotonMap::PhotonEvent** p, int pnum, LightmapPho
 	}
 
 	// plane
-	vector d = t->max - t->min;
+	vec3 d = t->max - t->min;
 	t->dir = 0;
 	if ((d.y > d.x) && (d.y > d.z))
 		t->dir = 1;
@@ -306,7 +306,7 @@ inline void pm_insert(LightmapPhotonMap::PhotonEvent *p, LightmapPhotonMap::Phot
 }
 
 int nsearch, nadd;
-void pm_tree_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, int b, LightmapPhotonMap::PhotonEvent *l[], int &lnum, float &max_r2, int thread_id)
+void pm_tree_get_list(LightmapPhotonMap *lm, const vec3 &p, const vec3 &n, int b, LightmapPhotonMap::PhotonEvent *l[], int &lnum, float &max_r2, int thread_id)
 {
 	if (b >= lm->tree.num)
 		return;
@@ -332,12 +332,12 @@ void pm_tree_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, i
 				pm_tree_get_list(lm, p, n, 2 * b, l, lnum, max_r2, thread_id);
 		}
 
-		if (vector::dot(t->p->n, n) < 0)
+		if (vec3::dot(t->p->n, n) < 0)
 			return;
 
 		float d2 = (p - t->p->pos).length_sqr();
 		//printf("%f  %d\n", d2, b);
-		if ((d2 < max_r2) && (vector::dot(n, t->p->n) > 0.7f)){
+		if ((d2 < max_r2) && (vec3::dot(n, t->p->n) > 0.7f)){
 			//printf("----found!!! %f\n", d2);
 			t->p->tree_r2[thread_id] = d2;
 			pm_insert(t->p, l, lnum, thread_id);
@@ -347,7 +347,7 @@ void pm_tree_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, i
 	}
 }
 
-void pm_get_list(LightmapPhotonMap *lm, const vector &p, const vector &n, LightmapPhotonMap::PhotonEvent *l[], int &lnum, float max_r2, int thread_id)
+void pm_get_list(LightmapPhotonMap *lm, const vec3 &p, const vec3 &n, LightmapPhotonMap::PhotonEvent *l[], int &lnum, float max_r2, int thread_id)
 {
 	for (int i=0;i<lm->photon.num;i++){
 

@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelSkinVerticesFromProjection.h"
-#include "../../../../lib/math/vector.h"
+#include "../../../../lib/math/vec3.h"
 #include "../../../../MultiView/MultiView.h"
 #include "../../../../Data/Model/ModelMesh.h"
 #include "../../../../Data/Model/ModelPolygon.h"
@@ -34,7 +34,7 @@ void *ActionModelSkinVerticesFromProjection::execute(Data *d) {
 	foreachi(int k, vert_on_tria, i) {
 		ModelPolygon &t = m->mesh->polygon[tria[i]];
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++) {
-			vector &v = t.side[k].skin_vertex[l];
+			vec3 &v = t.side[k].skin_vertex[l];
 			old_pos[l].add(v);
 			v = sg.get(m->mesh->vertex[t.side[k].vertex].pos);
 		}

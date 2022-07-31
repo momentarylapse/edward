@@ -13,7 +13,7 @@
 #include "../y/Entity.h"
 #include "../y/EngineData.h"
 #include "../lib/config.h"
-#include "../lib/math/vector.h"
+#include "../lib/math/vec3.h"
 #include "../lib/math/plane.h"
 #ifdef _X_ALLOW_X_
 #include "../helper/ResourceManager.h"
@@ -123,8 +123,8 @@ bool Terrain::load(const Path &_filename_, bool deep) {
 		if (deep)
 			update(-1, -1, -1, -1, TerrainUpdateAll);
 		// bounding box
-		min = vector(0,0,0);
-		max = vector(pattern.x * num_x, 0, pattern.z * num_z);
+		min = vec3(0,0,0);
+		max = vec3(pattern.x * num_x, 0, pattern.z * num_z);
 
 		changed = false;
 		force_redraw = true;
@@ -174,19 +174,19 @@ void Terrain::update(int x1,int x2,int z1,int z2,int mode) {
 					dhz=height[Index(i,j+2)]-height[Index(i,j-2)];
 				else
 					dhz=0;
-				normal[n]=vector(-dhx/pattern.x,4,-dhz/pattern.z);
+				normal[n]=vec3(-dhx/pattern.x,4,-dhz/pattern.z);
 				normal[n].normalize();
 			}
 			if (uv)
-				vertex[n]=vector(pattern.x*(float)i,height[n],pattern.z*(float)j);
+				vertex[n]=vec3(pattern.x*(float)i,height[n],pattern.z*(float)j);
 		}
 	if (uv){
 		int j = z2;
 		for (int i=x1;i<=x2;i++)
-			vertex[Index(i,j)]=vector(pattern.x*(float)i,height[Index(i,j)],pattern.z*(float)j);
+			vertex[Index(i,j)]=vec3(pattern.x*(float)i,height[Index(i,j)],pattern.z*(float)j);
 		int i = x2;
 		for (j=z1;j<=z2;j++)
-			vertex[Index(i,j)]=vector(pattern.x*(float)i,height[Index(i,j)],pattern.z*(float)j);
+			vertex[Index(i,j)]=vec3(pattern.x*(float)i,height[Index(i,j)],pattern.z*(float)j);
 	}
 
 	// update planes (for collision detection)
@@ -201,7 +201,7 @@ void Terrain::update(int x1,int x2,int z1,int z2,int mode) {
 	force_redraw = true;
 }
 
-float Terrain::gimme_height(const vector &p) // liefert die interpolierte Hoehe zu einer Position
+float Terrain::gimme_height(const vec3 &p) // liefert die interpolierte Hoehe zu einer Position
 {
 	auto o = owner;
 	float x = p.x - o->pos.x;
@@ -229,17 +229,17 @@ float Terrain::gimme_height(const vector &p) // liefert die interpolierte Hoehe 
 	return he+o->pos.y;
 }
 
-float Terrain::gimme_height_n(const vector &p, vector &n) {
+float Terrain::gimme_height_n(const vec3 &p, vec3 &n) {
 	float he = gimme_height(p);
-	vector vdx = vector(pattern.x, dhx,0        );
-	vector vdz = vector(0        ,-dhz,pattern.z);
-	n = vector::cross(vdz, vdx).normalized();
+	vec3 vdx = vec3(pattern.x, dhx,0        );
+	vec3 vdz = vec3(0        ,-dhz,pattern.z);
+	n = vec3::cross(vdz, vdx).normalized();
 	return he;
 }
 
 // Daten fuer das Darstellen des Bodens
-void Terrain::calc_detail(const vector &cam_pos) {
-	vector dpos = cam_pos;
+void Terrain::calc_detail(const vec3 &cam_pos) {
+	vec3 dpos = cam_pos;
 	if (owner)
 		dpos -= owner->pos;
 
@@ -285,7 +285,7 @@ inline void add_edge(int &num, int e0, int e1)
 
 // for collision detection:
 //    get a part of the terrain
-void Terrain::get_triangle_hull(TriangleHull *h, vector &_pos_, float _radius_)
+void Terrain::get_triangle_hull(TriangleHull *h, vec3 &_pos_, float _radius_)
 {
 	auto o = owner;
 
@@ -300,8 +300,8 @@ void Terrain::get_triangle_hull(TriangleHull *h, vector &_pos_, float _radius_)
 	h->num_edges = 0;
 
 	// how much do we need
-	vector _min_ = _pos_ - vector(1,1,1) * _radius_ - o->pos;
-	vector _max_ = _pos_ + vector(1,1,1) * _radius_ - o->pos;
+	vec3 _min_ = _pos_ - vec3(1,1,1) * _radius_ - o->pos;
+	vec3 _max_ = _pos_ + vec3(1,1,1) * _radius_ - o->pos;
 
 	int x0=int(_min_.x/pattern.x);	if (x0<0)	x0=0;
 	int z0=int(_min_.z/pattern.z);	if (z0<0)	z0=0;
@@ -344,24 +344,24 @@ void Terrain::get_triangle_hull(TriangleHull *h, vector &_pos_, float _radius_)
 		}
 }
 
-inline bool TracePattern(Terrain *t, const vector &pos, const vector &p1,const vector &p2, CollisionData &data, int x, int z, float y_min, int dir, float range)
+inline bool TracePattern(Terrain *t, const vec3 &pos, const vec3 &p1,const vec3 &p2, CollisionData &data, int x, int z, float y_min, int dir, float range)
 {
 	// trace beam too high above this pattern?
 	if ( (t->height[Index2(t,x,z)]<y_min) and (t->height[Index2(t,x,z+1)]<y_min) and (t->height[Index2(t,x+1,z)]<y_min) and (t->height[Index2(t,x+1,z+1)]<y_min) )
 		return false;
 
 	// 4 vertices for 2 triangles
-	vector a = pos + t->vertex[Index2(t,x  ,z  )];
-	vector b = pos + t->vertex[Index2(t,x+1,z  )];
-	vector c = pos + t->vertex[Index2(t,x  ,z+1)];
-	vector d = pos + t->vertex[Index2(t,x+1,z+1)];
+	vec3 a = pos + t->vertex[Index2(t,x  ,z  )];
+	vec3 b = pos + t->vertex[Index2(t,x+1,z  )];
+	vec3 c = pos + t->vertex[Index2(t,x  ,z+1)];
+	vec3 d = pos + t->vertex[Index2(t,x+1,z+1)];
 
 	float dmin1 = range, dmin2 = range;
-	vector ttp;
-	vector v;
+	vec3 ttp;
+	vec3 v;
 
 	// scan both triangles
-	vector tp;
+	vec3 tp;
 	if (line_intersects_triangle(a,b,d,p1,p2,tp))
 		dmin1=(tp-p1).length();
 	if (line_intersects_triangle(a,c,d,p1,p2,ttp)){
@@ -385,10 +385,10 @@ inline bool TracePattern(Terrain *t, const vector &pos, const vector &p1,const v
 	return true;
 }
 
-bool Terrain::trace(const vector &p1, const vector &p2, const vector &dir, float range, CollisionData &data, bool simple_test) {
-	vector pr1 = p1;
-	vector pr2 = p2;
-	vector pos = v_0;
+bool Terrain::trace(const vec3 &p1, const vec3 &p2, const vec3 &dir, float range, CollisionData &data, bool simple_test) {
+	vec3 pr1 = p1;
+	vec3 pr2 = p2;
+	vec3 pos = v_0;
 	if (owner) {
 		auto o = owner;
 		pr1 -= o->pos;
@@ -396,12 +396,12 @@ bool Terrain::trace(const vector &p1, const vector &p2, const vector &dir, float
 		pos = o->pos;
 	}
 	float dmin = range + 1;
-	vector c;
+	vec3 c;
 
 	if ((p2.x==p1.x) and (p2.z==p1.z) and (p2.y<p1.y)){
 		float h=gimme_height(p1);
 		if (p2.y < h){
-			data.pos = vector(p1.x,h,p1.z);
+			data.pos = vec3(p1.x,h,p1.z);
 			data.entity = owner;
 			return true;
 		}
@@ -477,7 +477,7 @@ bool Terrain::trace(const vector &p1, const vector &p2, const vector &dir, float
 
 void Terrain::build_vertex_buffer() {
 	//Array<vulkan::Vertex1> vertices;
-	Array<vector> p,n;
+	Array<vec3> p,n;
 	Array<float> uv;
 
 	// number of blocks (including the partially filled ones)
@@ -508,16 +508,16 @@ void Terrain::build_vertex_buffer() {
 					// x,z "real" pattern indices
 
 					// vertices
-					vector va=vertex[Index(x  ,z  )];
-					vector vb=vertex[Index(x+e,z  )];
-					vector vc=vertex[Index(x  ,z+e)];
-					vector vd=vertex[Index(x+e,z+e)];
+					vec3 va=vertex[Index(x  ,z  )];
+					vec3 vb=vertex[Index(x+e,z  )];
+					vec3 vc=vertex[Index(x  ,z+e)];
+					vec3 vd=vertex[Index(x+e,z+e)];
 
 					// normal vectors
-					vector na=normal[Index(x  ,z  )];
-					vector nb=normal[Index(x+e,z  )];
-					vector nc=normal[Index(x  ,z+e)];
-					vector nd=normal[Index(x+e,z+e)];
+					vec3 na=normal[Index(x  ,z  )];
+					vec3 nb=normal[Index(x+e,z  )];
+					vec3 nc=normal[Index(x  ,z+e)];
+					vec3 nd=normal[Index(x+e,z+e)];
 
 					// left border correction
 					if (x==x0 and x1>0) {
@@ -621,7 +621,7 @@ void Terrain::build_vertex_buffer() {
 	vertex_buffer->update(vertex);
 }
 
-void Terrain::prepare_draw(const vector &cam_pos) {
+void Terrain::prepare_draw(const vec3 &cam_pos) {
 	redraw = false;
 	// c d
 	// a b

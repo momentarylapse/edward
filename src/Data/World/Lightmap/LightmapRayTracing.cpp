@@ -38,14 +38,14 @@ void LightmapRayTracing::Compute()
 			if (data->IsVisible(a, b)){
 
 
-				vector d = b.pos - a.pos;
+				vec3 d = b.pos - a.pos;
 				float r = d.length();
 				if (r < r_min)
 					r = r_min;
 				//msg_write(f2s(r, 3));
 				d /= r;
 				float f;//=1/(pi*r*r)*vector::dot(d,n1)*vector::dot(d,n2)*d_max*d_max/2;
-				f = reflection / pi / (r*r) * vector::dot(d, a.n) * vector::dot(d, b.n);
+				f = reflection / pi / (r*r) * vec3::dot(d, a.n) * vec3::dot(d, b.n);
 				//f = reflection / pi * pow(r, -1.9) *0.5f * vector::dot(d, v->n) * vector::dot(d, w->n);
 				if (f < 0)
 					f = -f;
@@ -62,7 +62,7 @@ void LightmapRayTracing::Compute()
 	for (LightmapData::Light &l: data->Lights){
 		if (l.Directional && (!data->allow_sun))
 			continue;
-		vector p = l.Pos;
+		vec3 p = l.Pos;
 		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
 			if ((vi & 255) == 0){
 				ed->progress->set(format(_("%d of %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
@@ -76,7 +76,7 @@ void LightmapRayTracing::Compute()
 			if (!data->IsVisible(v.pos, p, v.tria_id, -1))
 				continue;
 			if (l.Directional){
-				v.rad += (v.dif * l.Diffuse) * vector::dot(v.n, l.Dir);
+				v.rad += (v.dif * l.Diffuse) * vec3::dot(v.n, l.Dir);
 			}else{
 			}
 			v.rad = White;

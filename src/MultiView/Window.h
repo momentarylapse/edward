@@ -8,8 +8,8 @@
 #ifndef MULTIVIEWWINDOW_H_
 #define MULTIVIEWWINDOW_H_
 
-#include "../lib/math/matrix.h"
-#include "../lib/math/vector.h"
+#include "../lib/math/mat4.h"
+#include "../lib/math/vec3.h"
 #include "../lib/math/rect.h"
 #include "../lib/math/quaternion.h"
 
@@ -29,11 +29,11 @@ public:
 	Window(MultiView *view, int type);
 
 	int type;
-	matrix projection_matrix;
-	matrix reflection_matrix;
-	matrix view_matrix;
-	matrix pv_matrix;
-	matrix ipv_matrix;
+	mat4 projection_matrix;
+	mat4 reflection_matrix;
+	mat4 view_matrix;
+	mat4 pv_matrix;
+	mat4 ipv_matrix;
 	rect dest;
 	rect name_dest;
 	MultiView *multi_view;
@@ -50,22 +50,22 @@ public:
 	void set_shader(nix::Shader *s, int num_lights = 1);
 
 	int active_grid();
-	vector active_grid_direction();
+	vec3 active_grid_direction();
 
-	vector project(const vector &p);
-	vector unproject(const vector &p);
-	vector unproject(const vector &p, const vector &o);
+	vec3 project(const vec3 &p);
+	vec3 unproject(const vec3 &p);
+	vec3 unproject(const vec3 &p, const vec3 &o);
 
 	void update_matrices();
 	void set_projection_matrix();
 	void set_projection_matrix_pixel();
 
-	vector get_direction();
-	vector get_edit_direction();
-	void get_camera_frame(vector &dir, vector &up, vector &right);
-	void get_active_grid_frame(vector &dir, vector &up, vector &right);
-	void get_edit_frame(vector &dir, vector &up, vector &right);
-	vector get_lighting_eye_pos();
+	vec3 get_direction();
+	vec3 get_edit_direction();
+	void get_camera_frame(vec3 &dir, vec3 &up, vec3 &right);
+	void get_active_grid_frame(vec3 &dir, vec3 &up, vec3 &right);
+	void get_edit_frame(vec3 &dir, vec3 &up, vec3 &right);
+	vec3 get_lighting_eye_pos();
 
 	color get_background_color();
 };

@@ -19,7 +19,7 @@ public:
 	virtual void on_left_button_down();
 
 private:
-	vector pos;
+	vec3 pos;
 	bool pos_chosen;
 	int bone_parent;
 };

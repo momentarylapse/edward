@@ -8,8 +8,8 @@
 #ifndef ACTIONMODELDELETEVERTEX_H_
 #define ACTIONMODELDELETEVERTEX_H_
 
+#include "../../../../lib/math/vec3.h"
 #include "../../../Action.h"
-#include "../../../../lib/math/vector.h"
 
 class ActionModelDeleteVertex: public Action {
 public:
@@ -21,7 +21,7 @@ public:
 
 private:
 	int vertex;
-	vector pos;
+	vec3 pos;
 	int normal_mode;
 };
 

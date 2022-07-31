@@ -20,9 +20,9 @@ public:
 	Array<ScriptInstanceData> components;
 	string name;
 	Object *object;
-	vector ang;
+	vec3 ang;
 
-	float hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) override;
+	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 

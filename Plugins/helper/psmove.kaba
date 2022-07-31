@@ -74,7 +74,7 @@ func extern _psmove_tracker_update_image(tracker: PSMoveTracker*)
 func extern _psmove_fusion_new(tracker: PSMoveTracker*, a: float, b: float) -> PSMoveFusion*
 func extern _psmove_fusion_free(fusion: PSMoveFusion*)
 func extern _psmove_fusion_get_position(fusion: PSMoveFusion*, psmove: PSMove*, x: float*, y: float*, z: float*)
-func extern _psmove_fusion_get_modelview_matrix(fusion: PSMoveFusion*, move: PSMove*) -> matrix*
+func extern _psmove_fusion_get_modelview_matrix(fusion: PSMoveFusion*, move: PSMove*) -> mat4*
 
 
 enum

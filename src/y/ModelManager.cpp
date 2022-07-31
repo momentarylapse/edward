@@ -109,14 +109,14 @@ void write_vec4(BinaryFormatter *f, const vec4 &v) {
 
 
 
-vector get_normal_by_index(int index) {
+vec3 get_normal_by_index(int index) {
 	float wz = (float)(index >> 8) * pi / 255.0f;
 	float wxy = (float)(index & 255) * 2 * pi / 255.0f;
 	float swz = sin(wz);
 	if (swz < 0)
 		swz = - swz;
 	float cwz = cos(wz);
-	return vector( cos(wxy) * swz, sin(wxy) * swz, cwz);
+	return vec3( cos(wxy) * swz, sin(wxy) * swz, cwz);
 }
 
 
@@ -503,7 +503,7 @@ public:
 			/*fr.duration =*/ f->read_float();
 
 			for (int j=0; j<num_bones; j++) {
-				vector v;
+				vec3 v;
 				f->read_vector(&v);
 				meta->skel_ang[fr * sk->bones.num + j] = quaternion::rotation_v(v);
 			}

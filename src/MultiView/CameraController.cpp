@@ -125,7 +125,7 @@ void CameraController::on_mouse_move() {
 	MouseWrapper::update(view);
 	for (auto &c: controllers) {
 		if (c.moving)
-			view->cam_move_pixel(c.win, vector(view->v.x, view->v.y, 0));
+			view->cam_move_pixel(c.win, vec3(view->v.x, view->v.y, 0));
 		if (c.rotating)
 			view->cam_rotate_pixel({view->v,0}, false);
 		if (c.zooming)

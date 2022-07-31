@@ -67,7 +67,7 @@ void ActionModelExtrudePolygons::extrude_surface(DataModel *m) {
 
 	// move selected polygons
 	for (int v: sel_vert){
-		vector dir = v_0;
+		vec3 dir = v_0;
 		for (auto &t: m->edit_mesh->polygon)
 			if (t.is_selected)
 				for (int k=0;k<t.side.num;k++)
@@ -113,11 +113,11 @@ void ActionModelExtrudePolygons::extrude_surface(DataModel *m) {
 
 
 	for (int i=0; i<sewing.num; i+=4) {
-		Array<vector> sv;
-		sv.add(vector(1,0,0));
-		sv.add(vector(0,0,0));
-		sv.add(vector(0,1,0));
-		sv.add(vector(1,1,0));
+		Array<vec3> sv;
+		sv.add(vec3(1,0,0));
+		sv.add(vec3(0,0,0));
+		sv.add(vec3(0,1,0));
+		sv.add(vec3(1,1,0));
 		addSubAction(new ActionModelAddPolygonSingleTexture(sewing.sub_ref(i, i+4), mode_model_mesh->current_material, sv), m);
 	}
 }
@@ -135,7 +135,7 @@ void ActionModelExtrudePolygons::extrude_surface_indep(DataModel *m) {
 		for (int k=0;k<t.side.num;k++)
 			sel_vert.add(t.side[k].vertex);
 
-		vector n = t.temp_normal;
+		vec3 n = t.temp_normal;
 
 
 		// copy/move boundary vertices
@@ -160,11 +160,11 @@ void ActionModelExtrudePolygons::extrude_surface_indep(DataModel *m) {
 
 
 	for (int i=0; i<sewing.num; i+=4) {
-		Array<vector> sv;
-		sv.add(vector(1,0,0));
-		sv.add(vector(0,0,0));
-		sv.add(vector(0,1,0));
-		sv.add(vector(1,1,0));
+		Array<vec3> sv;
+		sv.add(vec3(1,0,0));
+		sv.add(vec3(0,0,0));
+		sv.add(vec3(0,1,0));
+		sv.add(vec3(1,1,0));
 		addSubAction(new ActionModelAddPolygonSingleTexture(sewing.sub_ref(i, i+4), mode_model_mesh->current_material, sv), m);
 	}
 

@@ -12,13 +12,13 @@
 #include "../../../lib/nix/nix.h"
 #include <assert.h>
 
-ActionWorldAddTerrain::ActionWorldAddTerrain(const vector &_pos, const Path &_filename) {
+ActionWorldAddTerrain::ActionWorldAddTerrain(const vec3 &_pos, const Path &_filename) {
 	filename = _filename;
 	assert(!filename.is_empty());
 	pos = _pos;
 }
 
-ActionWorldAddTerrain::ActionWorldAddTerrain(const vector &_pos, const vector &_size, int _num_x, int _num_z) {
+ActionWorldAddTerrain::ActionWorldAddTerrain(const vec3 &_pos, const vec3 &_size, int _num_x, int _num_z) {
 	pos = _pos;
 	size = _size;
 	num_x = _num_x;

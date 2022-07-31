@@ -63,7 +63,7 @@ struct PartialModel {
 struct PartialModelMulti {
 	Model *model;
 	Material *material;
-	Array<matrix> matrices;
+	Array<mat4> matrices;
 	int mat_index;
 	float d;
 	bool shadow, transparent;
@@ -80,7 +80,7 @@ class CollisionData {
 public:
 	Entity *entity;
 	SolidBody *body;
-	vector pos, n;
+	vec3 pos, n;
 };
 
 
@@ -96,18 +96,18 @@ public:
 	void load_soon(const Path &filename);
 	void save(const Path &filename);
 
-	Entity *create_entity(const vector &pos, const quaternion &ang);
+	Entity *create_entity(const vec3 &pos, const quaternion &ang);
 	Array<Entity*> entities;
 	void register_entity(Entity *e);
 	void unregister_entity(Entity *e);
 
-	Entity *create_object(const Path &filename, const vector &pos, const quaternion &ang);
-	Entity *create_object_no_reg(const Path &filename, const vector &pos, const quaternion &ang);
-	Entity *create_object_no_reg_x(const Path &filename, const string &name, const vector &pos, const quaternion &ang);
-	Terrain *create_terrain(const Path &filename, const vector &pos);
-	Terrain *create_terrain_no_reg(const Path &filename, const vector &pos);
+	Entity *create_object(const Path &filename, const vec3 &pos, const quaternion &ang);
+	Entity *create_object_no_reg(const Path &filename, const vec3 &pos, const quaternion &ang);
+	Entity *create_object_no_reg_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang);
+	Terrain *create_terrain(const Path &filename, const vec3 &pos);
+	Terrain *create_terrain_no_reg(const Path &filename, const vec3 &pos);
 
-	Object* create_object_multi(const Path &filename, const Array<vector> &pos, const Array<quaternion> &ang);
+	Object* create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang);
 
 	int next_object_index = -1;
 	void request_next_object_index(int i);
@@ -121,7 +121,7 @@ public:
 	void register_model(Model *m);
 	void unregister_model(Model *m);
 
-	void register_model_multi(Model *m, const Array<matrix> &matrices);
+	void register_model_multi(Model *m, const Array<mat4> &matrices);
 
 	void add_link(Link *l);
 
@@ -132,8 +132,8 @@ public:
 
 	Array<Light*> lights;
 	Light *add_light_parallel(const quaternion &ang, const color &c);
-	Light *add_light_point(const vector &p, const color &c, float r);
-	Light *add_light_cone(const vector &p, const quaternion &ang, const color &c, float r, float t);
+	Light *add_light_point(const vec3 &p, const color &c, float r);
+	Light *add_light_cone(const vec3 &p, const quaternion &ang, const color &c, float r, float t);
 
 	ParticleManager *particle_manager;
 	void add_particle(Particle *p);
@@ -142,13 +142,13 @@ public:
 	void iterate_physics(float dt);
 	void iterate_animations(float dt);
 
-	void shift_all(const vector &dpos);
-	vector get_g(const vector &pos) const;
+	void shift_all(const vec3 &dpos);
+	vec3 get_g(const vec3 &pos) const;
 
 
 	float speed_of_sound;
 
-	vector gravity;
+	vec3 gravity;
 
 
 	int physics_num_steps, physics_num_link_steps;
@@ -179,7 +179,7 @@ public:
 	PhysicsMode physics_mode;
 
 
-	bool _cdecl trace(const vector &p1, const vector &p2, CollisionData &d, bool simple_test, Entity *o_ignore = nullptr);
+	bool _cdecl trace(const vec3 &p1, const vec3 &p2, CollisionData &d, bool simple_test, Entity *o_ignore = nullptr);
 
 	Array<audio::Sound*> sounds;
 	void add_sound(audio::Sound *s);
@@ -196,7 +196,7 @@ public:
 	Array<Observer> observers;
 	struct MessageData {
 		Entity *e;
-		vector v;
+		vec3 v;
 	} msg_data;
 
 	int ch_iterate = -1, ch_animation = -1;

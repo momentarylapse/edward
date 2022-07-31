@@ -28,7 +28,7 @@ public:
 	void update_geometry();
 
 private:
-	vector pos, axis;
+	vec3 pos, axis;
 	float radius1, radius2;
 	bool pos_chosen, rad_chosen;
 	Geometry *geo;

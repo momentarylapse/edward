@@ -40,17 +40,17 @@ static int find_closest_sel(ModelMesh *m, int i0)
 	return imin;
 }
 
-static float circum_radius(const vector &p1, const vector &p2, const vector &p3, vector &m)
+static float circum_radius(const vec3 &p1, const vec3 &p2, const vec3 &p3, vec3 &m)
 {
-	vector a = p2 - p1;
-	vector b = p3 - p1;
-	vector n = vector::cross(a, b);
+	vec3 a = p2 - p1;
+	vec3 b = p3 - p1;
+	vec3 n = vec3::cross(a, b);
 	if (n.length() < a.length_sqr() * 0.1f)
 		return -1;
 	n.normalize();
-	vector a_ortho = vector::cross(a, n);
+	vec3 a_ortho = vec3::cross(a, n);
 	a_ortho.normalize();
-	float mu = vector::dot(b, b - a) / (2 * vector::dot(a_ortho, b));
+	float mu = vec3::dot(b, b - a) / (2 * vec3::dot(a_ortho, b));
 	//float r = sqrt(vector::dot(a, a) + mu*mu);
 	m = p1 + a/2 + a_ortho * mu;
 	return (m - p1).length();//r;
@@ -58,7 +58,7 @@ static float circum_radius(const vector &p1, const vector &p2, const vector &p3,
 
 static bool tria_ok(ModelMesh *m, int i0, int i1, int i2, float &r)
 {
-	vector cm;
+	vec3 cm;
 	r = circum_radius(m->vertex[i0].pos, m->vertex[i1].pos, m->vertex[i2].pos, cm);
 	if (r < 0)
 		return false;

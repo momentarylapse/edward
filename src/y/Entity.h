@@ -7,18 +7,18 @@
 
 #pragma once
 
-#include "../lib/math/vector.h"
+#include "../lib/math/vec3.h"
 #include "../lib/math/quaternion.h"
 #include "BaseClass.h"
 
-class matrix;
+class mat4;
 class Component;
 
 
 class Entity : public BaseClass {
 public:
 	Entity();
-	Entity(const vector &pos, const quaternion &ang);
+	Entity(const vec3 &pos, const quaternion &ang);
 	~Entity();
 
 	void on_init_rec();
@@ -37,10 +37,10 @@ public:
 	void _add_component_external_(Component *c);
 
 
-	vector pos;
+	vec3 pos;
 	quaternion ang;
-	matrix get_local_matrix() const;
-	matrix get_matrix() const;
+	mat4 get_local_matrix() const;
+	mat4 get_matrix() const;
 
 	int object_id;
 	Entity *parent;

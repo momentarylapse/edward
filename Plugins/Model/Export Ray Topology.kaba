@@ -2,15 +2,14 @@ use os
 use hui
 use edward
 
-func main()
-	if !hui.file_dialog_save(edward, "Topology", "", "*.top", "*.top")
-		return
-	File *f = Filesystem.create_text(hui.filename)
+
+func open(filename: Path)
+	var f = new TextLinesFormatter(os.fs.open(filename, "ct"))
 	for p in model.mesh.polygon
-		vector va = model.mesh.vertex[p.side[0].vertex].pos
-		vector vb = model.mesh.vertex[p.side[1].vertex].pos
-		vector vc = model.mesh.vertex[p.side[2].vertex].pos
-		vector n = p.temp_normal
+		var va = model.mesh.vertex[p.side[0].vertex].pos
+		var vb = model.mesh.vertex[p.side[1].vertex].pos
+		var vc = model.mesh.vertex[p.side[2].vertex].pos
+		var n = p.temp_normal
 		string s
 		if p.material == 1
 			s = "portal"
@@ -23,3 +22,6 @@ func main()
 			s += " 0"
 		f << s
 	del f
+
+func main()
+	hui.file_dialog_save(edward, "Topology", "", ["filter=*.top", "showfilter=*.top"], open)

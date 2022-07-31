@@ -48,7 +48,7 @@ int edge_get_opposite_polygon(ModelEdge &e, int poly, int &side) {
 }
 
 
-bool ModeModelMeshCutLoop::find_loop(int edge, const vector &v) {
+bool ModeModelMeshCutLoop::find_loop(int edge, const vec3 &v) {
 	auto *m = data->edit_mesh;
 
 	valid_loop = false;
@@ -107,7 +107,7 @@ void ModeModelMeshCutLoop::on_left_button_up() {
 	data->begin_action_group("CutLoop");
 
 	// add new points on edges
-	for (vector &p: pos)
+	for (vec3 &p: pos)
 		data->addVertex(p, {0,0,0,0}, {1,0,0,0}, NORMAL_MODE_ANGULAR);
 
 	// save some data
@@ -155,7 +155,7 @@ void ModeModelMeshCutLoop::on_draw_win(MultiView::Window *win) {
 		return;
 
 	int edge0 = multi_view->hover.index;
-	vector pos0 = multi_view->hover.point;
+	vec3 pos0 = multi_view->hover.point;
 	if (edge0 < 0)
 		return;
 

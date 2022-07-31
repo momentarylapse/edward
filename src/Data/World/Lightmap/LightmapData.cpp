@@ -19,7 +19,7 @@
 #include "../../../Storage/Storage.h"
 #include "../../../y/ModelManager.h"
 
-bool LightmapData::Triangle::intersect(const Ray &r, vector &cp) const
+bool LightmapData::Triangle::intersect(const Ray &r, vec3 &cp) const
 {
 	bool r0 = (r.dot(ray[0]) > 0);
 	bool r1 = (r.dot(ray[1]) > 0);
@@ -136,7 +136,7 @@ static void update_tria(LightmapData::Triangle &t)
 	t.ray[0] = Ray(t.v[0], t.v[1]);
 	t.ray[1] = Ray(t.v[1], t.v[2]);
 	t.ray[2] = Ray(t.v[2], t.v[0]);
-	t.area = vector::cross(t.v[1] - t.v[0], t.v[2] - t.v[0]).length() / 2;
+	t.area = vec3::cross(t.v[1] - t.v[0], t.v[2] - t.v[0]).length() / 2;
 }
 
 static void tria_set_mat(LightmapData::Triangle &t, Material *m)
@@ -153,7 +153,7 @@ static void tria_set_mat(LightmapData::Triangle &t, ModelMaterial *m)
 	t.em = m->col.emission;
 }
 
-void LightmapData::AddModel(const Path &filename, matrix &mat, int object_index)
+void LightmapData::AddModel(const Path &filename, mat4 &mat, int object_index)
 {
 	Model mod;
 	mod.mat = mat;
@@ -285,12 +285,12 @@ void LightmapData::AddTextureLevels(bool modify)
 	}
 }
 
-rect get_tria_skin_boundary(vector sv[3])
+rect get_tria_skin_boundary(vec3 sv[3])
 {
-	vector _min = sv[0];
+	vec3 _min = sv[0];
 	_min._min(sv[1]);
 	_min._min(sv[2]);
-	vector _max = sv[0];
+	vec3 _max = sv[0];
 	_max._max(sv[1]);
 	_max._max(sv[2]);
 	return rect(_min.x, _max.x, _min.y, _max.y);
@@ -303,7 +303,7 @@ void LightmapData::Triangle::Rasterize(LightmapData *l, int i)
 	int v_offset = l->Vertices.num;
 	for (int x=r.x1-1;x<r.x2+1;x++)
 		for (int y=r.y1-1;y<r.y2+1;y++){
-			vector c = vector((float)x + 0.5f, (float)y + 0.5f, 0);
+			vec3 c = vec3((float)x + 0.5f, (float)y + 0.5f, 0);
 			auto fg = bary_centric(c, sv[0], sv[1], sv[2]);
 			if ((fg.x >= 0) && (fg.y >= 0) && (fg.x + fg.y <= 1)){
 				Vertex vv;
@@ -367,7 +367,7 @@ void LightmapData::CreateVertices()
 	msg_write("Vertices: " + i2s(Vertices.num));
 }
 
-bool LightmapData::IsVisible(const vector &a, const vector &b, int ignore_tria1, int ignore_tria2)
+bool LightmapData::IsVisible(const vec3 &a, const vec3 &b, int ignore_tria1, int ignore_tria2)
 {
 	Ray r = Ray(a, b);
 
@@ -375,7 +375,7 @@ bool LightmapData::IsVisible(const vector &a, const vector &b, int ignore_tria1,
 		if ((ti == ignore_tria1) or (ti == ignore_tria2))
 			continue;
 		auto &t = Trias[ti];
-		vector cp;
+		vec3 cp;
 /*		if (VecLineDistance(tria[t].m, p, p2) > tria[t].r)
 		//if (_vec_line_distance_(tria[t].m, p1, p2) > tria[t].r)
 			continue;*/
@@ -392,10 +392,10 @@ bool LightmapData::IsVisible(Vertex &a, Vertex &b)
 {
 	if (a.tria_id == b.tria_id)
 		return false;
-	vector dir = b.pos - a.pos;
-	if (vector::dot(a.n, dir) < 0)
+	vec3 dir = b.pos - a.pos;
+	if (vec3::dot(a.n, dir) < 0)
 		return false;
-	if (vector::dot(b.n, dir) > 0)
+	if (vec3::dot(b.n, dir) > 0)
 		return false;
 
 	return IsVisible(a.pos, b.pos, a.tria_id, b.tria_id);

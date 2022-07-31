@@ -29,8 +29,8 @@ public:
 	void update_geometry();
 
 private:
-	Array<vector> pos;
-	vector length;
+	Array<vec3> pos;
+	vec3 length;
 	float radius;
 	Geometry *geo;
 };

@@ -12,8 +12,8 @@ func main()
 		for v,vi in model.mesh.vertex
 		
 			# ortsabhaengige Phase
-			float tt = t + ( v.pos.x + v.pos.y + v.pos.z ) * 0.02
+			float tt = t + (v.pos.x + v.pos.y + v.pos.z) * 0.02
 			
 			# Animation
-			f.vertex_dpos[vi] = vector( sin( tt ), sin( tt + 1.2 ), sin( tt + 2.7 ) ) * 4.0
+			f.vertex_dpos[vi] = vec3(sin(tt), sin(tt + 1.2), sin(tt + 2.7)) * 4.0
 			# TODO: as action

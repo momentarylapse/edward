@@ -59,10 +59,10 @@ void ModeModelMeshSplitPolygon::on_draw_win(MultiView::Window *win) {
 	edge = -1;
 
 	if (polygon >= 0) {
-		vector pp = win->project(pos);
+		vec3 pp = win->project(pos);
 		pp.z = 0;
 		auto &poly = data->mesh->polygon[polygon];
-		Array<vector> v, p;
+		Array<vec3> v, p;
 		for (int k=0;k<poly.side.num;k++) {
 			v.add(data->mesh->vertex[poly.side[k].vertex].pos);
 			p.add(win->project(v[k]));

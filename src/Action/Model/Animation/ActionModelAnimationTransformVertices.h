@@ -10,7 +10,7 @@
 
 #include "../../ActionMultiView.h"
 class DataModel;
-class vector;
+class vec3;
 
 class ActionModelAnimationTransformVertices: public ActionMultiView
 {

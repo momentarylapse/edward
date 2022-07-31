@@ -183,7 +183,7 @@ void TerrainPropertiesDialog::on_add_texture_level() {
 	}
 	int l = temp.num_textures;
 	temp.texture_file[l] = "";
-	temp.texture_scale[l] = vector(0.1f,0,0.1f);
+	temp.texture_scale[l] = vec3(0.1f,0,0.1f);
 	temp.num_textures ++;
 
 	fill_texture_list();

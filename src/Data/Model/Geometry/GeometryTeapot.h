@@ -9,13 +9,13 @@
 #define GEOMETRYTEAPOT_H_
 
 #include "Geometry.h"
-class vector;
+class vec3;
 
 class GeometryTeapot : public Geometry
 {
 public:
-	GeometryTeapot(const vector &pos, float radius, int samples);
-	void _cdecl __init__(const vector &pos, float radius, int samples);
+	GeometryTeapot(const vec3 &pos, float radius, int samples);
+	void _cdecl __init__(const vec3 &pos, float radius, int samples);
 };
 
 #endif /* GEOMETRYTEAPOT_H_ */

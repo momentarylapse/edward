@@ -138,7 +138,7 @@ void Mesh::create_vb(bool animated) {
 }
 
 struct VertexAnimated {
-	vector p, n;
+	vec3 p, n;
 	float u,v;
 	ivec4 bone;
 	vec4 weight;
@@ -147,7 +147,7 @@ struct VertexAnimated {
 void SubMesh::update_vb(Mesh *mesh, bool animated) {
 #if 0
 	if (true) {
-		Array<vector> p, n;
+		Array<vec3> p, n;
 		Array<complex> uv;
 		for (int i=0; i<num_triangles; i++) {
 			for (int k=0; k<3; k++) {
@@ -351,16 +351,16 @@ int get_num_trias(Mesh *s) {
 
 #if 0
 
-float line_dist(const vector &pa, const vector &da, const vector &pb, const vector &db, vector &pointa, vector &pointb)
+float line_dist(const vec3 &pa, const vec3 &da, const vec3 &pb, const vec3 &db, vec3 &pointa, vec3 &pointb)
 {
 	plane pl;
-	vector n = da ^ db; // shortest direction
+	vec3 n = da ^ db; // shortest direction
 	n.normalize();
 	pl = plane::from_point_normal( pb, n ^ db); // line b in pl
 	pl.intersect_line(pa, pa + da, pointa);
 	float d = VecLineDistance(pointa, pb, pb + db);
-	vector x1 = pointa - n * d;
-	vector x2 = pointa + n * d;
+	vec3 x1 = pointa - n * d;
+	vec3 x2 = pointa + n * d;
 	if (VecLineDistance(x1, pb, pb + db) < VecLineDistance(x2, pb, pb + db))
 		pointb = x1;
 	else
@@ -374,20 +374,20 @@ float line_dist(const vector &pa, const vector &da, const vector &pb, const vect
 // kuerzester Abstand:
 // spaeter mit _vec_between_ und unterschiedlichen TPs rechnen, statt mit _vec_length_
 //###############################################################################
-bool Model::Trace(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test)
+bool Model::Trace(const vec3 &p1, const vec3 &p2, const vec3 &dir, float range, TraceData &data, bool simple_test)
 {
 	if (!physics_data.passive)
 		return false;
 	
 	bool hit=false;
-	vector c;
+	vec3 c;
 	float dmin=range;
 	// skeleton -> recursion
 	if (bone.num>0){
-		vector c;
+		vec3 c;
 		for (int i=0;i<bone.num;i++)
 			if (bone[i].model){
-				vector p2t=p1+dmin*p2;
+				vec3 p2t=p1+dmin*p2;
 				if (bone[i].model->Trace(p1, p2t, dir, dmin, data, simple_test)){
 					if (simple_test)
 						return true;
@@ -412,7 +412,7 @@ bool Model::Trace(const vector &p1, const vector &p2, const vector &dir, float r
 
 // Modell nah genug am Trace-Strahl?
 	plane pl;
-	vector tm = (p1+p2)/2; // Mittelpunkt des Trace-Strahles
+	vec3 tm = (p1+p2)/2; // Mittelpunkt des Trace-Strahles
 	// Wuerfel um Modell und Trace-Mittelpunkt berschneiden sich?
 	if (!delta_pos.bounding_cube(tm, prop.radius + range / 2))
 		return false;
@@ -425,7 +425,7 @@ bool Model::Trace(const vector &p1, const vector &p2, const vector &dir, float r
 
 	// sich selbst absolut ausrichten
 	_UpdatePhysAbsolute_();
-	vector *p = &phys_absolute.p[0];
+	vec3 *p = &phys_absolute.p[0];
 
 	//msg_write(this->_template->filename);
 
@@ -457,11 +457,11 @@ bool Model::Trace(const vector &p1, const vector &p2, const vector &dir, float r
 	}
 
 	for (auto &c: phys->cylinders){
-		vector &ca = p[c.index[0]];
-		vector &cb = p[c.index[1]];
-		vector cd = cb - ca;
+		vec3 &ca = p[c.index[0]];
+		vec3 &cb = p[c.index[1]];
+		vec3 cd = cb - ca;
 		cd.normalize();
-		vector cp, tp;
+		vec3 cp, tp;
 		float d = line_dist(p1, dir, ca, cd, tp, cp);
 		if (d > c.radius)
 			continue;
@@ -509,14 +509,14 @@ bool Model::Trace(const vector &p1, const vector &p2, const vector &dir, float r
 }
 
 
-bool Model::TraceMesh(const vector &p1, const vector &p2, const vector &dir, float range, TraceData &data, bool simple_test)
+bool Model::TraceMesh(const vec3 &p1, const vec3 &p2, const vec3 &dir, float range, TraceData &data, bool simple_test)
 {
 	return false;
 }
 #endif
 
 
-vector _cdecl Model::get_vertex(int index) {
+vec3 _cdecl Model::get_vertex(int index) {
 	auto s = mesh[MESH_HIGH];
 	return _matrix * s->vertex[index];
 }
@@ -553,11 +553,11 @@ void Model::update_matrix() {
 }
 
 #if 0
-void Model::SortingTest(vector &delta_pos,const vector &dpos,matrix *mat,bool allow_shadow)
+void Model::SortingTest(vec3 &delta_pos,const vec3 &dpos,matrix *mat,bool allow_shadow)
 {
 	for (int i=0;i<bone.num;i++)
 		if (boneModel[i]){
-			vector sub_pos;
+			vec3 sub_pos;
 			MatrixMultiply(boneMatrix[i],*mat,boneDMatrix[i]);
 			VecTransform(sub_pos,boneMatrix[i],v_0);
 			boneModel[i]->SortingTest(sub_pos,dpos,&BoneMatrix[i],allow_shadow);

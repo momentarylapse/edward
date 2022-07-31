@@ -106,8 +106,8 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	rect s,r;
 	color c;
 
-	vector a = win->unproject(v_0);
-	vector b = win->unproject(vector((float)nix::target_width,(float)nix::target_height,0));
+	vec3 a = win->unproject(v_0);
+	vec3 b = win->unproject(vec3((float)nix::target_width,(float)nix::target_height,0));
 
 	nix::set_z(false, false);
 	s.x1=a.x;
@@ -140,7 +140,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 
 	// rectangle of unity
 	a = v_0;
-	b = vector(1, 1, 0);
+	b = vec3(1, 1, 0);
 	set_color(Red);
 	set_line_width(scheme.LINE_WIDTH_THIN);
 	draw_line_2d(a.x, a.y, b.x, a.y, 0.98f);
@@ -156,7 +156,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 			continue;
 		if (t.view_stage < multi_view->view_stage)
 			continue;
-		Array<vector> v;
+		Array<vec3> v;
 		for (int k=0;k<t.side.num;k++)
 			v.add(t.side[k].skin_vertex[current_texture_level]);
 		v.add(v[0]);

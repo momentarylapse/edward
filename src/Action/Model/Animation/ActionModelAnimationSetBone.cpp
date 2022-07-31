@@ -10,7 +10,7 @@
 #include "../../../Data/Model/DataModel.h"
 #include <assert.h>
 
-ActionModelAnimationSetBone::ActionModelAnimationSetBone(int _move, int _frame, int _bone, const vector& _dpos, const vector& _ang)
+ActionModelAnimationSetBone::ActionModelAnimationSetBone(int _move, int _frame, int _bone, const vec3& _dpos, const vec3& _ang)
 {
 	move = _move;
 	frame = _frame;

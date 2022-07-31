@@ -46,10 +46,10 @@ void MultiView::Selection::reset() {
 	data = nullptr;
 }
 
-vector Camera::get_pos(bool allow_radius) const {
-	vector p = pos;
+vec3 Camera::get_pos(bool allow_radius) const {
+	vec3 p = pos;
 	if (allow_radius and !ignore_radius)
-		p -= radius * (ang * vector::EZ);
+		p -= radius * (ang * vec3::EZ);
 	return p;
 }
 
@@ -153,7 +153,7 @@ void MultiView::reset_view() {
 	cam.ang = quaternion::ID;
 	if (mode3d) {
 		cam.radius = 100;
-		cam.ang = quaternion::rotation_v(vector(0.4f, 0, 0));
+		cam.ang = quaternion::rotation_v(vec3(0.4f, 0, 0));
 	} else {
 		cam.radius = 1;
 	}
@@ -209,7 +209,7 @@ void MultiView::set_view_stage(int *view_stage, bool allow_handle) {}
 
 
 void MultiView::cam_zoom(float factor, bool mouse_rel) {
-	vector mup;
+	vec3 mup;
 	if (mouse_rel)
 		mup = mouse_win->unproject({m,0}, cam.pos);
 	cam.radius /= factor;
@@ -220,34 +220,34 @@ void MultiView::cam_zoom(float factor, bool mouse_rel) {
 }
 
 // dir: screen pixels
-void MultiView::cam_move_pixel(Window *win, const vector &dir) {
-	vector d = win->reflection_matrix * dir;
+void MultiView::cam_move_pixel(Window *win, const vec3 &dir) {
+	vec3 d = win->reflection_matrix * dir;
 	cam_move(-(win->local_ang * d) / win->zoom());
 }
 
-void MultiView::cam_move(const vector &dpos) {
+void MultiView::cam_move(const vec3 &dpos) {
 	cam.pos += dpos;
 	notify(MESSAGE_CAMERA_CHANGE);
 }
 
 // dir: screen pixels...yap
-void MultiView::cam_rotate_pixel(const vector &dir, bool cam_center) {
-	vector dang = vector(dir.y, dir.x, 0) * MOUSE_ROTATION_SPEED;
+void MultiView::cam_rotate_pixel(const vec3 &dir, bool cam_center) {
+	vec3 dang = vec3(dir.y, dir.x, 0) * MOUSE_ROTATION_SPEED;
 	// could have used reflection_matrix... but...only VIEW_PERSPECTIVE...
 	cam_rotate(quaternion::rotation_v(dang), cam_center);
 }
 
 void MultiView::cam_rotate(const quaternion &dq, bool cam_center) {
 	if (cam_center)
-		cam.pos -= cam.radius * (cam.ang * vector::EZ);
+		cam.pos -= cam.radius * (cam.ang * vec3::EZ);
 	cam.ang = cam.ang * dq;
 	if (cam_center)
-		cam.pos += cam.radius * (cam.ang * vector::EZ);
+		cam.pos += cam.radius * (cam.ang * vec3::EZ);
 	action_con->update();
 	notify(MESSAGE_CAMERA_CHANGE);
 }
 
-void MultiView::set_view_box(const vector &min, const vector &max) {
+void MultiView::set_view_box(const vec3 &min, const vec3 &max) {
 	cam.pos = (min + max) / 2;
 	float r = (max - min).length_fuzzy() * 1.8f;// * ((float)NixScreenWidth / (float)nix::target_width);
 	if (r > 0)
@@ -362,17 +362,17 @@ void MultiView::on_key_down(int k) {
 	if ((k == hui::KEY_MINUS) or (k == hui::KEY_NUM_SUBTRACT))
 		cam_zoom(1.0f / SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
 	if (k == hui::KEY_RIGHT)
-		cam_move_pixel(active_win, -vector::EX * SPEED_MOVE);
+		cam_move_pixel(active_win, -vec3::EX * SPEED_MOVE);
 	if (k == hui::KEY_LEFT)
-		cam_move_pixel(active_win,  vector::EX * SPEED_MOVE);
+		cam_move_pixel(active_win,  vec3::EX * SPEED_MOVE);
 	if (k == hui::KEY_UP)
-		cam_move_pixel(active_win,  vector::EY * SPEED_MOVE);
+		cam_move_pixel(active_win,  vec3::EY * SPEED_MOVE);
 	if (k == hui::KEY_DOWN)
-		cam_move_pixel(active_win, -vector::EY * SPEED_MOVE);
+		cam_move_pixel(active_win, -vec3::EY * SPEED_MOVE);
 	if (k == hui::KEY_SHIFT + hui::KEY_UP)
-		cam_move_pixel(active_win, -vector::EZ * SPEED_MOVE);
+		cam_move_pixel(active_win, -vec3::EZ * SPEED_MOVE);
 	if (k == hui::KEY_SHIFT + hui::KEY_DOWN)
-		cam_move_pixel(active_win,  vector::EZ * SPEED_MOVE);
+		cam_move_pixel(active_win,  vec3::EZ * SPEED_MOVE);
 	if (k == hui::KEY_ESCAPE)
 		action_con->end_action(false);
 	if (k == hui::KEY_TAB)
@@ -610,7 +610,7 @@ void MultiView::force_redraw() {
 }
 
 
-string MultiView::get_unit_by_zoom(vector &v) {
+string MultiView::get_unit_by_zoom(vec3 &v) {
 	const char *units[] = {"y", "z", "a", "f", "p", "n", "\u00b5", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"};
 	float l = active_win->get_grid_d() * 10.1f;
 
@@ -622,13 +622,13 @@ string MultiView::get_unit_by_zoom(vector &v) {
 }
 
 string MultiView::format_length(float l) {
-	vector v = vector(l, 0, 0);
+	vec3 v = vec3(l, 0, 0);
 	string unit = get_unit_by_zoom(v);
 	return f2s(v.x,2) + " " + unit;
 }
 
 void MultiView::draw_mouse_pos() {
-	vector m = get_cursor();
+	vec3 m = get_cursor();
 	string unit = get_unit_by_zoom(m);
 	string sx = f2s(m.x,2) + " " + unit;
 	string sy = f2s(m.y,2) + " " + unit;
@@ -842,8 +842,8 @@ bool MultiView::has_selection() {
 	return false;
 }
 
-vector MultiView::get_selection_center() {
-	vector min = v_0, max = v_0;
+vec3 MultiView::get_selection_center() {
+	vec3 min = v_0, max = v_0;
 	bool first = true;
 	for (DataSet &d: data)
 		for (int i=0;i<d.data->num;i++) {
@@ -861,15 +861,15 @@ vector MultiView::get_selection_center() {
 	return (min + max) / 2;
 }
 
-vector MultiView::snap_v2(const vector &v, float d) {
-	vector w;
+vec3 MultiView::snap_v2(const vec3 &v, float d) {
+	vec3 w;
 	w.x = d * roundf(v.x / d);
 	w.y = d * roundf(v.y / d);
 	w.z = d * roundf(v.z / d);
 	return w;
 }
 
-vector MultiView::snap_v(const vector &v) {
+vec3 MultiView::snap_v(const vec3 &v) {
 	return snap_v2(v, active_win->get_grid_d());
 }
 
@@ -878,13 +878,13 @@ float MultiView::snap_f(float f) {
 	return d * roundf(f / d);
 }
 
-vector MultiView::maybe_snap_v2(const vector &v, float d) {
+vec3 MultiView::maybe_snap_v2(const vec3 &v, float d) {
 	if (snap_to_grid)
 		return snap_v2(v, d);
 	return v;
 }
 
-vector MultiView::maybe_snap_v(const vector &v) {
+vec3 MultiView::maybe_snap_v(const vec3 &v) {
 	if (snap_to_grid)
 		return snap_v(v);
 	return v;
@@ -901,19 +901,19 @@ void MultiView::set_edit_coordinate_mode(CoordinateMode mode) {
 	notify(MESSAGE_SETTINGS_CHANGE);
 }
 
-vector MultiView::get_cursor() {
+vec3 MultiView::get_cursor() {
 	if (hover.data)
 		return hover.point;
 	if (edit_coordinate_mode == CoordinateMode::GLOBAL) {
 		plane pl = plane(mouse_win->active_grid_direction(), 0);
-		vector tp;
+		vec3 tp;
 		if (pl.intersect_line(mouse_win->unproject({m,0}), mouse_win->unproject({m,0.999999f}), tp))
 			return maybe_snap_v(tp);
 	}
 	return maybe_snap_v(mouse_win->unproject({m,0}, cam.pos));
 }
 
-vector MultiView::get_cursor(const vector &depth_reference) {
+vec3 MultiView::get_cursor(const vec3 &depth_reference) {
 	return mouse_win->unproject({m,0}, depth_reference);
 }
 
@@ -962,7 +962,7 @@ void MultiView::get_hover() {
 
 				// trace
 				float z;
-				vector tp, mop;
+				vec3 tp, mop;
 				float hover_dist;
 				if (d.func_hover)
 					hover_dist = d.func_hover(sd, mouse_win, m, tp, z);
@@ -1075,7 +1075,7 @@ void MultiView::hold_cursor(bool holding) {
 
 
 
-void MultiView::add_message_3d(const string &str, const vector &pos) {
+void MultiView::add_message_3d(const string &str, const vec3 &pos) {
 	Message3d m;
 	m.str = str;
 	m.pos = pos;
@@ -1145,9 +1145,9 @@ void MultiView::reset_message_3d() {
 	message3d.clear();
 }
 
-void MultiView::set_light(Window *win, const vector &dir, const color &col, float harshness) {
+void MultiView::set_light(Window *win, const vec3 &dir, const color &col, float harshness) {
 	nix::BasicLight l;
-	l.proj = matrix::ID;
+	l.proj = mat4::ID;
 	l.dir = win->local_ang.bar() * dir;
 	l.col = col;
 	l.radius = -1;

@@ -80,7 +80,7 @@ bool int_array_has_duplicates(const Array<int> &a) {
 }
 
 
-void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vector> &sv, int index) {
+void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vec3> &sv, int index) {
 	if (int_array_has_duplicates(v))
 		throw GeometryException("AddPolygon: duplicate vertices");
 
@@ -320,7 +320,7 @@ void ModelMesh::importFromTriangleSkin(int index) {
 			Array<int> v;
 			for (int k=0;k<3;k++)
 				v.add(t.vertex[k]);
-			Array<vector> sv;
+			Array<vec3> sv;
 			for (int tl=0;tl<material[i]->texture_levels.num;tl++)
 				for (int k=0;k<3;k++)
 					sv.add(t.skin_vertex[tl][k]);
@@ -411,7 +411,7 @@ void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk) {
 }
 
 
-void ModelMesh::get_bounding_box(vector &min, vector &max, bool dont_reset) {
+void ModelMesh::get_bounding_box(vec3 &min, vec3 &max, bool dont_reset) {
 	if (!dont_reset)
 		min = max = v_0;
 
@@ -421,8 +421,8 @@ void ModelMesh::get_bounding_box(vector &min, vector &max, bool dont_reset) {
 	}
 
 	for (auto &b: ball){
-		min._min(vertex[b.index].pos - vector(1,1,1) * b.radius);
-		max._max(vertex[b.index].pos + vector(1,1,1) * b.radius);
+		min._min(vertex[b.index].pos - vec3(1,1,1) * b.radius);
+		max._max(vertex[b.index].pos + vec3(1,1,1) * b.radius);
 	}
 }
 
@@ -491,7 +491,7 @@ void ModelMesh::update_normals() {
 			int g = cur_groups[i];
 			if (cur_groups_done.contains(g))
 				continue;
-			vector n = v_0;
+			vec3 n = v_0;
 			for (int k=i; k<cur_groups.num; k++)
 				if (cur_groups[k] == g)
 					n += polygon[cur_polys[k]].temp_normal;
@@ -584,7 +584,7 @@ void ModelMesh::update_normals() {
 		if (vertex[ip].normal_mode == NORMAL_MODE_SMOOTH){
 
 			// average normal
-			vector n = v_0;
+			vec3 n = v_0;
 			for (int i=0;i<pd.num;i++)
 				n += polygon[pd[i].poly].side[pd[i].side].normal;
 			n.normalize();
@@ -617,7 +617,7 @@ void ModelMesh::update_normals() {
 			}
 
 			// average normal
-			vector n = v_0;
+			vec3 n = v_0;
 			for (int i=0;i<used.num;i++)
 				n += polygon[pd[used[i]].poly].side[pd[used[i]].side].normal;
 			n.normalize();
@@ -724,7 +724,7 @@ void ModelMesh::begin_inside_tests()
 #endif
 }
 
-bool ModelMesh::inside_test(const vector &p)
+bool ModelMesh::inside_test(const vec3 &p)
 {
 	if (!inside_data)
 		return false;
@@ -793,7 +793,7 @@ Array<int> ModelMesh::get_boundary_loop(int v0)
 	return loop;
 }
 
-void ModelMesh::add_vertex(const vector &pos, const ivec4 &bone, const vec4 &bone_weight, int normal_mode, int index) {
+void ModelMesh::add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &bone_weight, int normal_mode, int index) {
 
 	// new vertex
 	ModelVertex vv;
@@ -840,7 +840,7 @@ void ModelMesh::_shift_vertex_links(int offset, int delta) {
 
 
 // TODO
-float ModelBall::hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) {
+float ModelBall::hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) {
 	return MultiView::SingleData::hover_distance(win, m, tp, z);
 }
 
@@ -852,7 +852,7 @@ bool ModelBall::overlap_rect(MultiView::Window *win, const rect &r) {
 	return MultiView::SingleData::in_rect(win, r);
 }
 
-float ModelCylinder::hover_distance(MultiView::Window *win, const vec2 &m, vector &tp, float &z) {
+float ModelCylinder::hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) {
 	return MultiView::SingleData::hover_distance(win, m, tp, z);
 }
 

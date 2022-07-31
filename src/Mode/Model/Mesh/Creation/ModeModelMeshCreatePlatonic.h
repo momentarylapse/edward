@@ -31,7 +31,7 @@ public:
 private:
 	Geometry *geo;
 	int type;
-	vector pos;
+	vec3 pos;
 	float radius;
 	bool pos_chosen;
 };

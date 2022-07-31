@@ -9,12 +9,12 @@ func main()
 	
 	model.begin_action("CreateGon")
 	
-	model.add_vertex(vector.0, 0, -1)
-	model.add_vertex(vector.EZ * height, 0, -1)
+	model.add_vertex(vec3.0, 0, -1)
+	model.add_vertex(vec3.EZ * height, 0, -1)
 	for i in 0:N
 		float w = float(i) * 2 * pi / N
-		model.add_vertex(vector(cos(w), sin(w), 0) * R, 0, -1)
-		model.add_vertex(vector(cos(w), sin(w), 0) * R + vector.EZ * height, 0, -1)
+		model.add_vertex(vec3(cos(w), sin(w), 0) * R, 0, -1)
+		model.add_vertex(vec3(cos(w), sin(w), 0) * R + vec3.EZ * height, 0, -1)
 	
 	int[] v
 	for i in 0:N

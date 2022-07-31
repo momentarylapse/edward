@@ -16,7 +16,7 @@ class ScriptInstanceData;
 class WorldCamera: public MultiView::SingleData {
 public:
 	string name;
-	vector ang = vector::ZERO;
+	vec3 ang = vec3::ZERO;
 	float fov = pi/4;
 	float min_depth = 1;
 	float max_depth = 10000;

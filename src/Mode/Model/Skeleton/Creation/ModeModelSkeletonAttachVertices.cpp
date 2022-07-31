@@ -139,8 +139,8 @@ void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win) {
 
 
 	if (multi_view->hover.index >= 0) {
-		vector pos = multi_view->hover.point;
-		vector n = data->mesh->polygon[multi_view->hover.index].temp_normal;
+		vec3 pos = multi_view->hover.point;
+		vec3 n = data->mesh->polygon[multi_view->hover.index].temp_normal;
 
 		set_color(scheme.CREATION_LINE);
 		set_line_width(scheme.LINE_WIDTH_MEDIUM);
@@ -154,7 +154,7 @@ void ModeModelSkeletonAttachVertices::on_mouse_move() {
 		return;
 	if (multi_view->hover.index < 0)
 		return;
-	vector pos = multi_view->hover.point;
+	vec3 pos = multi_view->hover.point;
 	distance += (pos - last_pos).length();
 	last_pos = pos;
 	if (distance > brush_panel()->radius() * 0.7f) {
@@ -167,7 +167,7 @@ void ModeModelSkeletonAttachVertices::on_left_button_down() {
 	if (multi_view->hover.index < 0)
 		return;
 	data->begin_action_group("brush");
-	vector pos = multi_view->hover.point;
+	vec3 pos = multi_view->hover.point;
 	distance = 0;
 	last_pos = pos;
 	brushing = true;
@@ -187,8 +187,8 @@ void ModeModelSkeletonAttachVertices::on_set_multi_view() {
 
 void ModeModelSkeletonAttachVertices::apply() {
 
-	vector pos = multi_view->hover.point;
-	vector n = data->mesh->polygon[multi_view->hover.index].temp_normal;
+	vec3 pos = multi_view->hover.point;
+	vec3 n = data->mesh->polygon[multi_view->hover.index].temp_normal;
 
 	auto bp = brush_panel();
 	auto brush = bp->prepare(pos);

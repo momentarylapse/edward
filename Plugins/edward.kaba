@@ -41,24 +41,24 @@ class MultiView
 		YZ
 
 	class ActionController
-		func extern start_action(win: MultiView.Window*, m: vector, constraints: ActionConstraints)
+		func extern start_action(win: MultiView.Window*, m: vec3, constraints: ActionConstraints)
 		func extern update_action()
-		func extern update_param(param: vector)
+		func extern update_param(param: vec3)
 		func extern end_action(set: bool)
-		var pos: vector
+		var pos: vec3
 
 	class Window
 		var local_ang: quaternion
 
 	class Camera
-		var pos: vector
+		var pos: vec3
 		var ang: quaternion
 
 	# "des Pudels Kern", don't change!!!!!!!
 	class SingleData
 		var view_stage: int
 		var is_selected, m_delta, m_old, is_special: bool
-		var pos: vector
+		var pos: vec3
 
 		
 	#extern void on_mouse_move()
@@ -67,7 +67,7 @@ class MultiView
 	var mouse_win: MultiView.Window*
 	var active_win: MultiView.Window*
 	var cam: MultiView.Camera
-	func extern cam_move(dpos: vector)
+	func extern cam_move(dpos: vec3)
 	func extern cam_rotate(dq: quaternion, cam_center: bool)
 	func extern cam_zoom(factor: float, mouse_rel: bool)
 
@@ -167,10 +167,10 @@ class Model extends Data
 		var vertex: int[3]
 		#int[3] edge
 		#int[3] edge_direction # which no of triangle in edge's list are we?
-		var skin_vertex: vector[Model.MAX_TEXTURES][3]
+		var skin_vertex: vec3[Model.MAX_TEXTURES][3]
 		var normal_index: int[3]
-		var normal: vector[3]
-		var temp_normal: vector
+		var normal: vec3[3]
+		var temp_normal: vec3
 		var normal_dirty: bool
 		var material: int
 
@@ -201,7 +201,7 @@ class Model extends Data
 		var const_pos: bool
 
 		# for editing
-		var matrix: matrix
+		var matrix: mat4
 		func __init__()
 
 
@@ -214,12 +214,12 @@ class Model extends Data
 
 		class Frame
 			# skeleton animation
-			var skel_dpos: vector[]
-			var skel_ang: vector[]
+			var skel_dpos: vec3[]
+			var skel_ang: vec3[]
 
 			# vertex animation
-			var dpos: vector[4][]
-			var vertex_dpos: vector[]
+			var dpos: vec3[4][]
+			var vertex_dpos: vec3[]
 			func __assign__(other: Frame)
 		
 		var type: int
@@ -262,7 +262,7 @@ class Model extends Data
 		var mass: float
 		var active_physics, passive_physics: bool
 		var auto_generate_tensor: bool
-		var inertia_tensor: matrix3
+		var inertia_tensor: mat3
 
 		# object-properties
 		var name, description: string
@@ -321,7 +321,7 @@ class Model extends Data
 	func extern selection_from_polygons()
 	#extern void SelectOnlySurface(ModelSurface s)
 	
-	func extern add_vertex(pos: vector, bone_index: int, normal_mode: int)
+	func extern add_vertex(pos: vec3, bone_index: int, normal_mode: int)
 	func extern add_triangle(a: int, b: int, c: int, material: int) -> Geometry.Polygon*
 	func extern add_polygon(v: int[], material: int) -> Geometry.Polygon*
 	func extern delete_polygon(index: int)
@@ -352,7 +352,7 @@ class Model extends Data
 	func extern animation_add_frame(index: int, frame: int, f: Move.Frame)
 	func extern animation_delete_frame(index: int, frame: int)
 	func extern animation_set_frame_duration(index: int, frame: int, duration: float)
-	func extern animation_set_bone(move: int, frame: int, bone: int, dpos: vector, ang: vector)
+	func extern animation_set_bone(move: int, frame: int, bone: int, dpos: vec3, ang: vec3)
 	
 	func __assign__(other: Model)
 
@@ -371,12 +371,12 @@ class Geometry
 			var vertex: int
 			var edge: int
 			var edge_direction: int
-			var skin_vertex: vector[Model.MAX_TEXTURES]
+			var skin_vertex: vec3[Model.MAX_TEXTURES]
 			var normal_index: int
-			var normal: vector
+			var normal: vec3
 			var triangulation: char[3]
 		var side: Side[]
-		var temp_normal: vector
+		var temp_normal: vec3
 		var normal_dirty, triangulation_dirty: bool
 		var material: int
 		func __init__()
@@ -396,31 +396,31 @@ class Geometry
 		LOOP
 
 	class Ball extends Geometry
-		func extern __init__(pos: vector, radius: float, num_x: int, num_y: int)
+		func extern __init__(pos: vec3, radius: float, num_x: int, num_y: int)
 
 	class Cube extends Geometry
-		func extern __init__(pos: vector, dv1: vector, dv2: vector, dv3: vector, num_1: int, num_2: int, num_3: int)
+		func extern __init__(pos: vec3, dv1: vec3, dv2: vec3, dv3: vec3, num_1: int, num_2: int, num_3: int)
 
 	class Cylinder extends Geometry
-		func extern __init__(pos1: vector, pos2: vector, radius: float, rings: int, edges: int, end_mode: EndMode)
+		func extern __init__(pos1: vec3, pos2: vec3, radius: float, rings: int, edges: int, end_mode: EndMode)
 
 	class CylinderComplex extends Geometry
-		func extern __init__(pos: vector[], radius: float[], rings: int, edges: int, end_mode: EndMode)
+		func extern __init__(pos: vec3[], radius: float[], rings: int, edges: int, end_mode: EndMode)
 
 	class Sphere extends Geometry
-		func extern __init__(pos: vector, radius: float, num: int)
+		func extern __init__(pos: vec3, radius: float, num: int)
 
 	class Torus extends Geometry
-		func extern __init__(pos: vector, axis: vector, radius1: float, radius2: float, num_x: int, num_y: int)
+		func extern __init__(pos: vec3, axis: vec3, radius1: float, radius2: float, num_x: int, num_y: int)
 
 	class TorusKnot extends Geometry
-		func extern __init__(pos: vector, axis: vector, radius1: float, radius2: float, radius3: float, turns: int, twists: int, rings: int, edges: int)
+		func extern __init__(pos: vec3, axis: vec3, radius1: float, radius2: float, radius3: float, turns: int, twists: int, rings: int, edges: int)
 
 	class Plane extends Geometry
-		func extern __init__(pos: vector, dv1: vector, dv2: vector, num_x: int, num_y: int)
+		func extern __init__(pos: vec3, dv1: vec3, dv2: vec3, num_x: int, num_y: int)
 
 	class Platonic extends Geometry
-		func extern __init__(pos: vector, radius: float, samples: int)
+		func extern __init__(pos: vec3, radius: float, samples: int)
 
 
 
@@ -442,7 +442,7 @@ class World extends Data
 		var filename: string
 		var name: string
 		var object: y.Model*
-		var ang: vector
+		var ang: vec3
 		func __init__()
 
 
@@ -451,9 +451,9 @@ class World extends Data
 	var ego_index: int
 
 	# actions
-	func extern add_object(filename: Path, pos: vector) -> Object*
-	func extern add_terrain(filename: Path, pos: vector) -> Terrain*
-	func extern add_new_terrain(pos: vector, size: vector, num_x: int, num_z: int) -> Terrain*
+	func extern add_object(filename: Path, pos: vec3) -> Object*
+	func extern add_terrain(filename: Path, pos: vec3) -> Terrain*
+	func extern add_new_terrain(pos: vec3, size: vec3, num_x: int, num_z: int) -> Terrain*
 
 
 class Mode

@@ -12,7 +12,7 @@
 #include "../Surface/Helper/ActionModelJoinSurfaces.h"
 #include <assert.h>
 
-ActionModelAddPolygon::ActionModelAddPolygon(Array<int> &_v, int _material, Array<vector> &_sv) :
+ActionModelAddPolygon::ActionModelAddPolygon(Array<int> &_v, int _material, Array<vec3> &_sv) :
 	v(_v), sv(_sv)
 {
 	material = _material;

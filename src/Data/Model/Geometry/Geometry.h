@@ -14,8 +14,8 @@
 
 class ModelVertex;
 class ModelPolygon;
-class vector;
-class matrix;
+class vec3;
+class mat4;
 namespace nix {
 	class VertexBuffer;
 };
@@ -27,11 +27,11 @@ class Geometry {
 public:
 	void clear();
 
-	void add_vertex(const vector &pos);
-	void add_polygon(const Array<int> &v, const Array<vector> &sv);
-	void add_polygon_single_texture(const Array<int> &v, const Array<vector> &sv);
+	void add_vertex(const vec3 &pos);
+	void add_polygon(const Array<int> &v, const Array<vec3> &sv);
+	void add_polygon_single_texture(const Array<int> &v, const Array<vec3> &sv);
 	void add_polygon_auto_texture(const Array<int> &v);
-	void add_bezier3(const Array<vector> &v, int num_x, int num_y, float epsilon);
+	void add_bezier3(const Array<vec3> &v, int num_x, int num_y, float epsilon);
 	void add(const Geometry &geo);
 	void add_easy(int v0, const Array<int> &delta);
 
@@ -40,16 +40,16 @@ public:
 
 	void invert();
 
-	void transform(const matrix &mat);
+	void transform(const mat4 &mat);
 	void smoothen();
 
 	int add_edge(int a, int b, int tria, int side) const;
 	void update_topology() const;
 	void remove_unused_vertices();
-	bool is_inside(const vector &v) const;
+	bool is_inside(const vec3 &v) const;
 
-	void get_bounding_box(vector &min, vector &max);
-	bool is_mouse_over(MultiView::Window *win, const matrix &mat, vector &tp);
+	void get_bounding_box(vec3 &min, vec3 &max);
+	bool is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp);
 
 	void build(nix::VertexBuffer *vb) const;
 

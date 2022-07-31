@@ -29,7 +29,7 @@ public:
 private:
 	Array<int> tria;
 	Array<int> vert_on_tria;
-	Array<vector> old_pos[MATERIAL_MAX_TEXTURES];
+	Array<vec3> old_pos[MATERIAL_MAX_TEXTURES];
 	SkinGenerator sg;
 };
 

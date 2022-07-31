@@ -25,7 +25,7 @@ class WorldLink: public MultiView::SingleData {
 public:
 	LinkType type = LinkType::SOCKET;
 	int object[2] = {-1,-1};
-	vector ang = vector::ZERO;
+	vec3 ang = vec3::ZERO;
 	float param[4] = {0,0,0,0};
 	float friction = 0;
 	Array<ScriptInstanceData> components;

@@ -11,7 +11,7 @@
 struct BspBranch;
 class ModelMesh;
 class ModelPolygon;
-class vector;
+class vec3;
 
 class BspTree {
 public:
@@ -19,7 +19,7 @@ public:
 	BspBranch *b;
 	~BspTree();
 	void add(ModelPolygon &p, ModelMesh *m, float epsilon);
-	bool inside(const vector &v);
+	bool inside(const vec3 &v);
 };
 
 #endif /* BSPTREE_H_ */

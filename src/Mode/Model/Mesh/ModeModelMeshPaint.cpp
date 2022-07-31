@@ -26,22 +26,22 @@ ModeModelMeshPaint *mode_model_mesh_paint = NULL;
 
 // map from 3d-world-space into UV-space for a polygon
 // D: Tp -> Tuv
-vector map_uv(ModelMesh *m, int poly, const vector &pos, matrix &D) {
+vec3 map_uv(ModelMesh *m, int poly, const vec3 &pos, mat4 &D) {
 	auto &p = m->polygon[poly];
 
 	for (int k=0; k<p.side.num-2; k++) {
 		int ta = p.side[k].triangulation[0];
 		int tb = p.side[k].triangulation[1];
 		int tc = p.side[k].triangulation[2];
-		vector a = m->vertex[p.side[ta].vertex].pos;
-		vector b = m->vertex[p.side[tb].vertex].pos;
-		vector c = m->vertex[p.side[tc].vertex].pos;
-		vector sa = p.side[ta].skin_vertex[0];
-		vector sb = p.side[tb].skin_vertex[0];
-		vector sc = p.side[tc].skin_vertex[0];
+		vec3 a = m->vertex[p.side[ta].vertex].pos;
+		vec3 b = m->vertex[p.side[tb].vertex].pos;
+		vec3 c = m->vertex[p.side[tc].vertex].pos;
+		vec3 sa = p.side[ta].skin_vertex[0];
+		vec3 sb = p.side[tb].skin_vertex[0];
+		vec3 sc = p.side[tc].skin_vertex[0];
 		auto fg = bary_centric(pos, a, b, c);
 		if (fg.x >= 0 and fg.y >= 0 and fg.x + fg.y <= 1) {
-			D = matrix(sb-sa, sc-sa, v_0) * matrix(b-a, c-a, vector::cross(b-a, c-a)).inverse();
+			D = mat4(sb-sa, sc-sa, v_0) * mat4(b-a, c-a, vec3::cross(b-a, c-a)).inverse();
 			//D = matrix::ID;
 			return sa + fg.x * (sb - sa) + fg.y * (sc - sa);
 		}
@@ -49,9 +49,9 @@ vector map_uv(ModelMesh *m, int poly, const vector &pos, matrix &D) {
 	return v_0;
 }
 
-matrix inv_2d(const matrix &DD) {
+mat4 inv_2d(const mat4 &DD) {
 	float det = DD._00 * DD._11 - DD._01 * DD._10;
-	matrix i;
+	mat4 i;
 	i._00 = DD._11;
 	i._01 = -DD._10;
 	i._10 = -DD._01;
@@ -59,11 +59,11 @@ matrix inv_2d(const matrix &DD) {
 	return i * (1 / det);
 }
 
-float quad_2d(const matrix &DD, const vector &v) {
+float quad_2d(const mat4 &DD, const vec3 &v) {
 	return (v.x*v.x*DD._00 + v.y*v.y*DD._11 + 2*v.x*v.y*DD._01);
 }
 
-complex eigen_value_2d(const matrix &m) {
+complex eigen_value_2d(const mat4 &m) {
 	float d = sqrt( (m._00 + m._11)*(m._00 + m._11) - 4*(m._00*m._11 - m._01*m._01));
 	return complex(m._00+m._11 + d, m._00+m._11 - d) / 2;
 }
@@ -71,7 +71,7 @@ complex eigen_value_2d(const matrix &m) {
 
 class ActionModelBrushTexturePaint: public Action {
 public:
-	ActionModelBrushTexturePaint(const vector &_n, int _poly, const BrushState &_brush) {
+	ActionModelBrushTexturePaint(const vec3 &_n, int _poly, const BrushState &_brush) {
 		n = _n;
 		poly = _poly;
 		brush = _brush;
@@ -83,11 +83,11 @@ public:
 
 		auto *tl = m->material[m->mesh->polygon[poly].material]->texture_levels[0];
 
-		vector e1 = n.ortho();
-		vector e2 = n ^ e1;
+		vec3 e1 = n.ortho();
+		vec3 e2 = n ^ e1;
 
-		matrix D;
-		vector v = map_uv(m->mesh, poly, brush.m0, D);
+		mat4 D;
+		vec3 v = map_uv(m->mesh, poly, brush.m0, D);
 
 		auto DD = D * D.transpose();
 		auto iDD = inv_2d(DD);
@@ -116,7 +116,7 @@ public:
 			for (int jj=j0-dj; jj<j0+dj; jj++) {
 				int i = loop(ii, 0, tl->image->width);
 				int j = loop(jj, 0, tl->image->height);
-				vector vv = vector((float)ii / (float)tl->image->width, (float)jj / (float)tl->image->height, 0);
+				vec3 vv = vec3((float)ii / (float)tl->image->width, (float)jj / (float)tl->image->height, 0);
 				float dd = quad_2d(iDD, vv-v);
 				float a = exp(-pow(dd / rr, brush.exponent)*2) * brush.opacity;
 				if (a > threshold) {
@@ -135,7 +135,7 @@ public:
 	}
 
 private:
-	vector n;
+	vec3 n;
 	int poly;
 	BrushState brush;
 };
@@ -196,8 +196,8 @@ void ModeModelMeshPaint::on_draw_win(MultiView::Window *win) {
 
 	if (multi_view->hover.index < 0)
 		return;
-	vector pos = multi_view->hover.point;
-	vector n = data->mesh->polygon[multi_view->hover.index].temp_normal;
+	vec3 pos = multi_view->hover.point;
+	vec3 n = data->mesh->polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->radius0();
 
 	set_color(scheme.CREATION_LINE);
@@ -217,8 +217,8 @@ float ModeModelMeshPaint::radius() {
 }
 
 Action *ModeModelMeshPaint::get_action() {
-	vector pos = multi_view->hover.point;
-	vector n = data->mesh->polygon[multi_view->hover.index].temp_normal;
+	vec3 pos = multi_view->hover.point;
+	vec3 n = data->mesh->polygon[multi_view->hover.index].temp_normal;
 
 	auto brush = dialog->prepare(pos);
 
@@ -229,7 +229,7 @@ void ModeModelMeshPaint::on_left_button_down() {
 	if (multi_view->hover.index < 0)
 		return;
 	data->begin_action_group("brush");
-	vector pos = multi_view->hover.point;
+	vec3 pos = multi_view->hover.point;
 	distance = 0;
 	last_pos = pos;
 	brushing = true;
@@ -248,7 +248,7 @@ void ModeModelMeshPaint::on_mouse_move() {
 		return;
 	if (multi_view->hover.index < 0)
 		return;
-	vector pos = multi_view->hover.point;
+	vec3 pos = multi_view->hover.point;
 	distance += (pos - last_pos).length();
 	last_pos = pos;
 	if (distance > radius() * 0.7f) {

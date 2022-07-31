@@ -10,12 +10,12 @@
 
 #include "../../ActionMultiView.h"
 class DataCamera;
-class vector;
+class vec3;
 
 class ActionCameraMoveSelection: public ActionMultiView
 {
 public:
-	ActionCameraMoveSelection(DataCamera *d, const vector &_param, const vector &_pos0);
+	ActionCameraMoveSelection(DataCamera *d, const vec3 &_param, const vec3 &_pos0);
 	virtual ~ActionCameraMoveSelection(){}
 	string name(){	return "CameraMoveSelection";	}
 
@@ -23,7 +23,7 @@ public:
 	void undo(Data *d);
 private:
 	Array<int> index_vel;
-	Array<vector> old_vel;
+	Array<vec3> old_vel;
 };
 
 #endif /* ACTIONCAMERAMOVESELECTION_H_ */

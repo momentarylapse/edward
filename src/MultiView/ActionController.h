@@ -9,9 +9,9 @@
 #define ACTIONCONTROLLER_H_
 
 #include "../lib/base/base.h"
-#include "../lib/math/vector.h"
-#include "../lib/math/matrix.h"
 #include "../lib/image/color.h"
+#include "../lib/math/mat4.h"
+#include "../lib/math/vec3.h"
 
 class ActionMultiView;
 class Geometry;
@@ -62,15 +62,15 @@ public:
 	};
 
 	bool visible;
-	vector pos, pos0, m0;
-	vector dv, dvp;
-	vector param;
-	matrix mat;
+	vec3 pos, pos0, m0;
+	vec3 dv, dvp;
+	vec3 param;
+	mat4 mat;
 	Constraint constraints;
 	Array<Geometry*> geo_show;
 	Array<Geometry*> geo;
 	Array<nix::VertexBuffer*> buf;
-	matrix geo_mat;
+	mat4 geo_mat;
 	Constraint hover_constraint;
 	MultiView *multi_view;
 	Window *active_win;
@@ -86,18 +86,18 @@ public:
 	bool on_left_button_down();
 	void on_mouse_move();
 	void on_left_button_up();
-	Constraint get_hover(vector &tp);
+	Constraint get_hover(vec3 &tp);
 	bool in_use();
-	void start_action(Window *active_win, const vector &m, Constraint constraints);
+	void start_action(Window *active_win, const vec3 &m, Constraint constraints);
 	void update_action();
-	void update_param(const vector &p);
+	void update_param(const vec3 &p);
 	void end_action(bool set);
 	bool is_selecting();
 
 
-	static vector transform_ang(Window *w, const vector &ang);
-	static vector project_trans(Constraint mode, const vector &v);
-	static vector mirror(Constraint mode);
+	static vec3 transform_ang(Window *w, const vec3 &ang);
+	static vec3 project_trans(Constraint mode, const vec3 &v);
+	static vec3 mirror(Constraint mode);
 
 
 	static string constraint_name(Constraint c);
@@ -112,7 +112,7 @@ public:
 		int priority;
 	};
 	static const ACGeoConfig ac_geo_config[];
-	static bool geo_allow(int i, Window *win, const matrix &geo_mat);
+	static bool geo_allow(int i, Window *win, const mat4 &geo_mat);
 };
 
 };

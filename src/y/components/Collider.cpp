@@ -19,8 +19,8 @@
 #include <BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h>
 
 
-btVector3 bt_set_v(const vector &v);
-btTransform bt_set_trafo(const vector &p, const quaternion &q);
+btVector3 bt_set_v(const vec3 &v);
+btTransform bt_set_trafo(const vec3 &p, const quaternion &q);
 #endif
 
 
@@ -60,14 +60,14 @@ void MeshCollider::on_init() {
 	if (phys->balls.num + phys->cylinders.num + phys->poly.num > 0) {
 		auto comp = new btCompoundShape(false, 0);
 		for (auto &b: phys->balls) {
-			vector a = phys->vertex[b.index];
+			vec3 a = phys->vertex[b.index];
 			auto bb = new btSphereShape(btScalar(b.radius));
 			comp->addChildShape(bt_set_trafo(a, quaternion::ID), bb);
 		}
 		for (auto &c: phys->cylinders) {
-			vector a = phys->vertex[c.index[0]];
-			vector b = phys->vertex[c.index[1]];
-			auto cc = new btCylinderShapeZ(bt_set_v(vector(c.radius, c.radius, (b - a).length() / 2)));
+			vec3 a = phys->vertex[c.index[0]];
+			vec3 b = phys->vertex[c.index[1]];
+			auto cc = new btCylinderShapeZ(bt_set_v(vec3(c.radius, c.radius, (b - a).length() / 2)));
 			auto q = quaternion::rotation((a-b).dir2ang());
 			comp->addChildShape(bt_set_trafo((a+b)/2, q), cc);
 			if (c.round) {
@@ -92,7 +92,7 @@ void MeshCollider::on_init() {
 			} else {
 				// ARGH, btConvexPointCloudShape not working
 				//   let's use a crude box for now... (-_-)'
-				vector a, b;
+				vec3 a, b;
 				a = b = phys->vertex[p.face[0].index[0]];
 				for (int i=0; i<p.num_faces; i++)
 					for (int k=0; k<p.face[i].num_vertices; k++){
@@ -113,9 +113,9 @@ void MeshCollider::on_init() {
 		o->colShape = new btSphereShape(btScalar(b.radius));
 	} else if (phys->cylinders.num > 0) {
 		auto &c = phys->cylinders[0];
-		vector a = o->mesh[0]->vertex[c.index[0]];
-		vector b = o->mesh[0]->vertex[c.index[1]];
-		o->colShape = new btCylinderShapeZ(bt_set_v(vector(c.radius, c.radius, (b - a).length())));
+		vec3 a = o->mesh[0]->vertex[c.index[0]];
+		vec3 b = o->mesh[0]->vertex[c.index[1]];
+		o->colShape = new btCylinderShapeZ(bt_set_v(vec3(c.radius, c.radius, (b - a).length())));
 	} else if (phys->poly.num > 0) {
 
 	} else {
@@ -146,11 +146,11 @@ void TerrainCollider::on_init() {
 
 #if HAS_LIB_BULLET
 	auto hf = new btHeightfieldTerrainShape(t->num_x+1, t->num_z+1, hh.data, 1.0f, -d, d, 1, PHY_FLOAT, false);
-	hf->setLocalScaling(bt_set_v(t->pattern + vector(0,1,0)));
+	hf->setLocalScaling(bt_set_v(t->pattern + vec3(0,1,0)));
 
 	// bullet assumes the origin in the center of the terrain!
 	auto comp = new btCompoundShape(false, 0);
-	comp->addChildShape(bt_set_trafo(vector(t->pattern.x * t->num_x, 0, t->pattern.z * t->num_z)/2, quaternion::ID), hf);
+	comp->addChildShape(bt_set_trafo(vec3(t->pattern.x * t->num_x, 0, t->pattern.z * t->num_z)/2, quaternion::ID), hf);
 	col_shape = comp;
 #endif
 }

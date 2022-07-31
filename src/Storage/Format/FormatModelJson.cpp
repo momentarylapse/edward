@@ -23,7 +23,7 @@ FormatModelJson::FormatModelJson() : TypedFormat<DataModel>(FD_MODEL, "json", _(
 static FormatModelJson::Value ValueNone;
 
 // needs reflection
-string vecToJson(const vector &v) {
+string vecToJson(const vec3 &v) {
 	return format("%f, %f, %f", -v.x, v.y, v.z);
 }
 
@@ -58,7 +58,7 @@ string materialToJson(ModelMaterial *m)
 	return str;
 }
 
-vector getMoveDPos(DataModel *m, ModelFrame &f, int bi)
+vec3 getMoveDPos(DataModel *m, ModelFrame &f, int bi)
 {
 	ModelBone &b = m->bone[bi];
 	int r = b.parent;
@@ -70,7 +70,7 @@ vector getMoveDPos(DataModel *m, ModelFrame &f, int bi)
 	return q * (b.pos - pb.pos) + getMoveDPos(m, f, r);
 }
 
-void getMoveData(DataModel *m, ModelFrame &f, int b, quaternion &q, vector &t)
+void getMoveData(DataModel *m, ModelFrame &f, int b, quaternion &q, vec3 &t)
 {
 	q = quaternion::rotation_v( f.skel_ang[b]);
 	t = getMoveDPos(m, f, b);//f.skel_dpos[b];
@@ -79,7 +79,7 @@ void getMoveData(DataModel *m, ModelFrame &f, int b, quaternion &q, vector &t)
 string moveToJson(ModelMove &m, DataModel *model)
 {
 	quaternion q;
-	vector t;
+	vec3 t;
 	string str;
 	str += "	{\n";
 	str += "		'name': '" + m.name + "',\n";
@@ -211,7 +211,7 @@ void FormatModelJson::_save(const Path &filename, DataModel *m) {
 			int na = n_normals + a;
 			int nb = n_normals + b;
 			int nc = n_normals + c;
-			vector n = p.temp_normal;
+			vec3 n = p.temp_normal;
 			str += format("	42, %d, %d, %d, %d, 0, 0, 0, %d, %d, %d", va, vc, vb, p.material, na, nc, nb);
 			if ((ip < m->mesh->polygon.num - 1) or (k < p.side.num - 3))
 				str += ",\n";
@@ -604,9 +604,9 @@ void FormatModelJson::importBoneIndices(DataModel *m, Value *v, int num_influenc
 	}
 }
 
-vector FormatModelJson::val2vec(Value* v, int offset)
+vec3 FormatModelJson::val2vec(Value* v, int offset)
 {
-	return vector(v->get(offset)->f(), v->get(offset+1)->f(), v->get(offset+2)->f());
+	return vec3(v->get(offset)->f(), v->get(offset+1)->f(), v->get(offset+2)->f());
 }
 
 quaternion FormatModelJson::val2quat(Value* v, int offset)

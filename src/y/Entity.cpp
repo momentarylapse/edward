@@ -8,13 +8,13 @@
 #include "Entity.h"
 #include "Component.h"
 #include "ComponentManager.h"
-#include "../lib/math/matrix.h"
+#include "../lib/math/mat4.h"
 #include "../lib/kaba/syntax/Class.h"
 
 
-Entity::Entity() : Entity(vector::ZERO, quaternion::ID) {}
+Entity::Entity() : Entity(vec3::ZERO, quaternion::ID) {}
 
-Entity::Entity(const vector &_pos, const quaternion &_ang) : BaseClass(BaseClass::Type::ENTITY) {
+Entity::Entity(const vec3 &_pos, const quaternion &_ang) : BaseClass(BaseClass::Type::ENTITY) {
 	pos = _pos;
 	ang = _ang;
 	parent = nullptr;
@@ -87,11 +87,11 @@ Component *Entity::_get_component_untyped_(const kaba::Class *type) const {
 }
 
 
-matrix Entity::get_local_matrix() const {
-	return matrix::translation(pos) * matrix::rotation(ang);
+mat4 Entity::get_local_matrix() const {
+	return mat4::translation(pos) * mat4::rotation(ang);
 }
 
-matrix Entity::get_matrix() const {
+mat4 Entity::get_matrix() const {
 	if (parent)
 		return parent->get_matrix() * get_local_matrix();
 	return get_local_matrix();

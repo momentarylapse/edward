@@ -52,7 +52,7 @@ void DataWorld::MetaData::reset() {
 
 	physics_enabled = false;
 	physics_mode = PhysicsMode::FULL_EXTERNAL;
-	gravity = vector(0, -981, 0);
+	gravity = vec3(0, -981, 0);
 
 	scripts.clear();
 	music_files.clear();
@@ -80,8 +80,8 @@ void DataWorld::reset() {
 
 	lights.clear();
 	WorldLight sun;
-	sun.pos = vector(0,1000,0);
-	sun.ang = vector(pi/4,0,0);
+	sun.pos = vec3(0,1000,0);
+	sun.ang = vec3(pi/4,0,0);
 	sun.enabled = true;
 	sun.type = LightType::DIRECTIONAL;
 	sun.radius = 0;
@@ -97,13 +97,13 @@ void DataWorld::reset() {
 }
 
 
-void DataWorld::get_bounding_box(vector &min, vector &max) {
+void DataWorld::get_bounding_box(vec3 &min, vec3 &max) {
 	bool found_any = false;
 
 	for (WorldObject &o: objects)
 		if (o.object) {
-			vector min2 = o.pos - vector(1,1,1) * o.object->prop.radius;
-			vector max2 = o.pos + vector(1,1,1) * o.object->prop.radius;
+			vec3 min2 = o.pos - vec3(1,1,1) * o.object->prop.radius;
+			vec3 max2 = o.pos + vec3(1,1,1) * o.object->prop.radius;
 			if (!found_any) {
 				min = min2;
 				max = max2;
@@ -114,8 +114,8 @@ void DataWorld::get_bounding_box(vector &min, vector &max) {
 		}
 	for (WorldTerrain &t: terrains)
 		if (t.terrain) {
-			vector min2 = t.terrain->min;
-			vector max2 = t.terrain->max;
+			vec3 min2 = t.terrain->min;
+			vec3 max2 = t.terrain->max;
 			if (!found_any) {
 				min = min2;
 				max = max2;
@@ -125,8 +125,8 @@ void DataWorld::get_bounding_box(vector &min, vector &max) {
 			found_any = true;
 		}
 	if (!found_any) {
-		min = vector(-100,-100,-100);
-		max = vector( 100, 100, 100);
+		min = vec3(-100,-100,-100);
+		max = vec3( 100, 100, 100);
 	}
 }
 
@@ -154,7 +154,7 @@ void DataWorld::update_data() {
 		t.update_data();
 }
 
-WorldObject* DataWorld::add_object(const Path &filename, const vector& pos) {
+WorldObject* DataWorld::add_object(const Path &filename, const vec3& pos) {
 	WorldObject o;
 	o.pos = pos;
 	o.ang = v_0;//quaternion::ID;
@@ -164,10 +164,10 @@ WorldObject* DataWorld::add_object(const Path &filename, const vector& pos) {
 	return (WorldObject*)execute(new ActionWorldAddObject(o));
 }
 
-WorldTerrain* DataWorld::add_terrain(const Path &filename, const vector& pos)
+WorldTerrain* DataWorld::add_terrain(const Path &filename, const vec3& pos)
 {	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, filename));	}
 
-WorldTerrain* DataWorld::add_new_terrain(const vector& pos, const vector& size, int num_x, int num_z)
+WorldTerrain* DataWorld::add_new_terrain(const vec3& pos, const vec3& size, int num_x, int num_z)
 {	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));	}
 
 

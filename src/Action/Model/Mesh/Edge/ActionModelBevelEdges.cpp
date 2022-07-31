@@ -42,7 +42,7 @@ struct VertexData
 
 struct VertexToCome
 {
-	vector pos;
+	vec3 pos;
 	ivec4 bone;
 	vec4 bone_weight;
 	int ref_count;
@@ -66,7 +66,7 @@ struct PolygonToCome
 struct PolygonRelink
 {
 	Array<VertexToCome*> v;
-	Array<vector> sv;
+	Array<vec3> sv;
 	void init(ModelPolygon *p)
 	{
 		if (v.num == 0){
@@ -117,7 +117,7 @@ void ActionModelBevelEdges::do_poly_relink(ModelPolygon &p, PolygonRelink &r, in
 {
 	Array<int> v;
 	int material = p.material;
-	Array<vector> sv;
+	Array<vec3> sv;
 
 	SkinGeneratorMulti sg;
 	sg.init_polygon(m->edit_mesh->vertex, p);
@@ -147,7 +147,7 @@ void ActionModelBevelEdges::do_poly_relink(ModelPolygon &p, PolygonRelink &r, in
 	//sv.resize(v.num);
 
 	// transpose sv
-	Array<vector> ssv;
+	Array<vec3> ssv;
 	ssv.resize(v.num * MATERIAL_MAX_TEXTURES);
 	for (int k=0; k<v.num; k++)
 		for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
@@ -186,7 +186,7 @@ void ActionModelBevelEdges::bevelSurface(ModelMesh *m)
 
 	// (potentially) new vertices on edges
 	foreachi(ModelEdge &e, m->edge, i){
-		vector d = m->vertex[e.vertex[1]].pos - m->vertex[e.vertex[0]].pos;
+		vec3 d = m->vertex[e.vertex[1]].pos - m->vertex[e.vertex[0]].pos;
 		d.normalize();
 		ev[0][i].pos = m->vertex[e.vertex[0]].pos + d * length;
 		ev[0][i].bone = m->vertex[e.vertex[0]].bone_index;
@@ -200,8 +200,8 @@ void ActionModelBevelEdges::bevelSurface(ModelMesh *m)
 	foreachi(ModelPolygon &p, m->polygon, i){
 		pv[i].resize(p.side.num);
 		for (int k=0;k<p.side.num;k++){
-			vector dir0 = m->vertex[p.side[(k+p.side.num-1)%p.side.num].vertex].pos - m->vertex[p.side[k].vertex].pos;
-			vector dir1 = m->vertex[p.side[(k+1           )%p.side.num].vertex].pos - m->vertex[p.side[k].vertex].pos;
+			vec3 dir0 = m->vertex[p.side[(k+p.side.num-1)%p.side.num].vertex].pos - m->vertex[p.side[k].vertex].pos;
+			vec3 dir1 = m->vertex[p.side[(k+1           )%p.side.num].vertex].pos - m->vertex[p.side[k].vertex].pos;
 			dir0.normalize();
 			dir1.normalize();
 			pv[i][k].pos = m->vertex[p.side[k].vertex].pos + (dir0 + dir1) * length;

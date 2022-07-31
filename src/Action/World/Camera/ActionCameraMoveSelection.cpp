@@ -8,7 +8,7 @@
 #include "ActionCameraMoveSelection.h"
 #include "../../../Data/World/DataCamera.h"
 
-ActionCameraMoveSelection::ActionCameraMoveSelection(DataCamera *d, const vector &_param, const vector &_pos0) :
+ActionCameraMoveSelection::ActionCameraMoveSelection(DataCamera *d, const vec3 &_param, const vec3 &_pos0) :
 	ActionMultiView()
 {
 	// list of selected objects and save old pos

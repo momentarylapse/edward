@@ -28,7 +28,7 @@ void *ActionModelCollapseEdge::compose(Data *d) {
 	int v[2] = {e.vertex[0], e.vertex[1]};
 
 	// move one edge vertex to center
-	vector pos = (m->vertex[v[0]].pos + m->vertex[v[1]].pos) / 2;
+	vec3 pos = (m->vertex[v[0]].pos + m->vertex[v[1]].pos) / 2;
 	addSubAction(new ActionModelMoveVertex(v[0], pos), mod);
 
 	// any polygon using this edge -> remove 1 vertex

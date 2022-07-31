@@ -49,9 +49,9 @@ public:
 	int vertex[3];
 	//int Edge[3];
 	//int EdgeDirection[3]; // which no of triangle in edge's list are we?
-	vector skin_vertex[MATERIAL_MAX_TEXTURES][3];
-	vector normal[3];
-	vector temp_normal;
+	vec3 skin_vertex[MATERIAL_MAX_TEXTURES][3];
+	vec3 normal[3];
+	vec3 temp_normal;
 	bool normal_dirty;
 	int material;
 };
@@ -83,21 +83,21 @@ public:
 	bool const_pos;
 
 	// for editing
-	matrix _matrix;
+	mat4 _matrix;
 };
 
 struct ModelFrame {
 	float duration;
 
 	// skeleton animation
-	Array<vector> skel_dpos;
-	Array<vector> skel_ang;
+	Array<vec3> skel_dpos;
+	Array<vec3> skel_ang;
 
 	// vertex animation
 	struct{
-		Array<vector> dpos;
+		Array<vec3> dpos;
 	}skin[4];
-	Array<vector> vertex_dpos;
+	Array<vec3> vertex_dpos;
 };
 
 struct ModelMove {
@@ -155,16 +155,16 @@ public:
 
 
 	float getRadius();
-	void getBoundingBox(vector &min, vector &max);
+	void getBoundingBox(vec3 &min, vec3 &max);
 	void generateDetailDists(float *dist);
-	matrix3 generateInertiaTensor(float mass);
+	mat3 generateInertiaTensor(float mass);
 	void create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *dst, float quality_factor);
 
 	// high level (actions)
-	void addVertex(const vector &pos, const ivec4 &bone_index = {0,0,0,0}, const vec4 &bone_weight = {1,0,0,0}, int normal_mode = -1);
+	void addVertex(const vec3 &pos, const ivec4 &bone_index = {0,0,0,0}, const vec4 &bone_weight = {1,0,0,0}, int normal_mode = -1);
 	ModelPolygon *addTriangle(int a, int b, int c, int material);
 	ModelPolygon *addPolygon(const Array<int> &v, int material);
-	ModelPolygon *addPolygonWithSkin(const Array<int> &v, const Array<vector> &sv, int material);
+	ModelPolygon *addPolygonWithSkin(const Array<int> &v, const Array<vec3> &sv, int material);
 
 	void delete_polygon(int index);
 
@@ -198,7 +198,7 @@ public:
 	// actions
 	void reconnectBone(int index, int parent);
 	void setBoneModel(int index, const Path &filename);
-	void addBone(const vector &pos, int parent);
+	void addBone(const vec3 &pos, int parent);
 	void deleteBone(int index);
 	void deleteSelectedBones();
 	void boneAttachVertices(const Array<int> &vertices, const Array<ivec4> &bone, const Array<vec4> &weight);
@@ -215,7 +215,7 @@ public:
 	void animationAddFrame(int index, int frame, const ModelFrame &f);
 	void animationDeleteFrame(int index, int frame);
 	void animationSetFrameDuration(int index, int frame, float duration);
-	void animationSetBone(int move, int frame, int bone, const vector &dpos, const vector &ang);
+	void animationSetBone(int move, int frame, int bone, const vec3 &dpos, const vec3 &ang);
 
 	// geometry
 	ModelMesh *mesh;
@@ -247,7 +247,7 @@ public:
 		float mass;
 		bool active_physics, passive_physics;
 		bool auto_generate_tensor;
-		matrix3 inertia_tensor;
+		mat3 inertia_tensor;
 
 		// object-properties
 		string name, description;

@@ -108,8 +108,8 @@ void ModeModelMeshDeform::on_draw_win(MultiView::Window *win) {
 
 	if (multi_view->hover.index < 0)
 		return;
-	vector pos = multi_view->hover.point;
-	vector n = data->mesh->polygon[multi_view->hover.index].temp_normal;
+	vec3 pos = multi_view->hover.point;
+	vec3 n = data->mesh->polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->get_float("diameter") / 2;
 
 	set_color(scheme.CREATION_LINE);
@@ -123,8 +123,8 @@ void ModeModelMeshDeform::on_selection_change() {
 
 
 Action *ModeModelMeshDeform::get_action() {
-	vector pos = multi_view->hover.point;
-	vector n = data->mesh->polygon[multi_view->hover.index].temp_normal;
+	vec3 pos = multi_view->hover.point;
+	vec3 n = data->mesh->polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->get_float("diameter") / 2;
 	float depth = dialog->get_float("depth");
 	int type = dialog->get_int("brush-type");
@@ -145,7 +145,7 @@ void ModeModelMeshDeform::on_left_button_down() {
 	if (multi_view->hover.index < 0)
 		return;
 	data->begin_action_group("brush");
-	vector pos = multi_view->hover.point;
+	vec3 pos = multi_view->hover.point;
 	distance = 0;
 	last_pos = pos;
 	brushing = true;
@@ -164,7 +164,7 @@ void ModeModelMeshDeform::on_mouse_move() {
 		return;
 	if (multi_view->hover.index < 0)
 		return;
-	vector pos = multi_view->hover.point;
+	vec3 pos = multi_view->hover.point;
 	float radius = dialog->get_float("diameter") / 2;
 	distance += (pos - last_pos).length();
 	last_pos = pos;

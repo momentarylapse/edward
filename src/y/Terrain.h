@@ -10,7 +10,7 @@
 
 #include "../lib/base/base.h"
 #include "../lib/os/path.h"
-#include "../lib/math/vector.h"
+#include "../lib/math/vec3.h"
 #include "../y/Component.h"
 #include "Material.h"
 #include "../graphics-fwd.h"
@@ -39,7 +39,7 @@ enum class TerrainType {
 class TriangleHull {
 public:
 	// large list of vertices
-	vector *p;
+	vec3 *p;
 
 	int num_vertices;
 	int *index;
@@ -60,16 +60,16 @@ public:
 	~Terrain();
 	void reset();
 	void _cdecl update(int x1,int x2,int z1,int z2,int mode);
-	float _cdecl gimme_height(const vector &p);
-	float _cdecl gimme_height_n(const vector &p, vector &n);
+	float _cdecl gimme_height(const vec3 &p);
+	float _cdecl gimme_height_n(const vec3 &p, vec3 &n);
 
-	void get_triangle_hull(TriangleHull *hull, vector &pos, float radius);
+	void get_triangle_hull(TriangleHull *hull, vec3 &pos, float radius);
 
-	bool _cdecl trace(const vector &p1, const vector &p2, const vector &dir, float range, CollisionData &data, bool simple_test);
+	bool _cdecl trace(const vec3 &p1, const vec3 &p2, const vec3 &dir, float range, CollisionData &data, bool simple_test);
 
-	void calc_detail(const vector &cam_pos);
+	void calc_detail(const vec3 &cam_pos);
 	void build_vertex_buffer();
-	void prepare_draw(const vector &cam_pos);
+	void prepare_draw(const vec3 &cam_pos);
 
 	Path filename;
 	TerrainType terrain_type;
@@ -77,24 +77,24 @@ public:
 
 	int num_x, num_z;
 	Array<float> height;
-	Array<vector> vertex, normal;
+	Array<vec3> vertex, normal;
 	Array<plane> pl; // for collision detection
 	VertexBuffer *vertex_buffer;
 	int chunk_lod[TERRAIN_MAX_CHUNKS][TERRAIN_MAX_CHUNKS];
 	int chunk_lod_old[TERRAIN_MAX_CHUNKS][TERRAIN_MAX_CHUNKS];
-	vector pattern, min, max;
+	vec3 pattern, min, max;
 	Material *material;
 	Path material_file;
 
 	Path texture_file[MATERIAL_MAX_TEXTURES];
-	vector texture_scale[MATERIAL_MAX_TEXTURES];
+	vec3 texture_scale[MATERIAL_MAX_TEXTURES];
 
 	float dhx, dhz;
 
 
 	bool changed;
 	bool redraw, force_redraw;
-	vector pos_old;
+	vec3 pos_old;
 
 
 	static const kaba::Class *_class;

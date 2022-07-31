@@ -9,17 +9,17 @@
 #define GEOMETRYPLATONIC_H_
 
 #include "Geometry.h"
-class vector;
+class vec3;
 
 class GeometryPlatonic : public Geometry
 {
 public:
-	GeometryPlatonic(const vector &pos, float radius, int type);
-	void _cdecl __init__(const vector &pos, float radius, int type);
-	void AddTetrahedron(const vector &pos, float radius);
-	void AddOctahedron(const vector &pos, float radius);
-	void AddDodecahedron(const vector &pos, float radius);
-	void AddIcosahedron(const vector &pos, float radius);
+	GeometryPlatonic(const vec3 &pos, float radius, int type);
+	void _cdecl __init__(const vec3 &pos, float radius, int type);
+	void AddTetrahedron(const vec3 &pos, float radius);
+	void AddOctahedron(const vec3 &pos, float radius);
+	void AddDodecahedron(const vec3 &pos, float radius);
+	void AddIcosahedron(const vec3 &pos, float radius);
 };
 
 #endif /* GEOMETRYPLATONIC_H_ */

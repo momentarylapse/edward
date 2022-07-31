@@ -24,13 +24,13 @@ public:
 
 	Array<Entity> bones; // pos relative to parent entity (skeleton)
 	Array<int> parents;
-	Array<vector> pos0; // relative to parent entity (skeleton)
-	Array<vector> dpos; // relative to parent bone
+	Array<vec3> pos0; // relative to parent entity (skeleton)
+	Array<vec3> dpos; // relative to parent bone
 	Array<Path> filename;
 
 	void reset();
 
-	vector _calc_bone_rest_pos(int index) const;
+	vec3 _calc_bone_rest_pos(int index) const;
 	void _cdecl set_bone_model(int index, Model *sub);
 
 

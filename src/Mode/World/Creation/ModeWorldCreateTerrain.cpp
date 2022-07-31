@@ -46,8 +46,8 @@ void ModeWorldCreateTerrain::on_end() {
 }
 
 void ModeWorldCreateTerrain::on_ok() {
-	vector size = vector(dialog->get_float("terrain_x"), 0, dialog->get_float("terrain_z"));
-	vector pos = multi_view->cam.pos - size / 2;
+	vec3 size = vec3(dialog->get_float("terrain_x"), 0, dialog->get_float("terrain_z"));
+	vec3 pos = multi_view->cam.pos - size / 2;
 	int num_x = dialog->get_int("num_x");
 	int num_z = dialog->get_int("num_z");
 	data->add_new_terrain(pos, size, num_x, num_z);

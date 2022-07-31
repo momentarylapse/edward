@@ -12,7 +12,7 @@
 #include "../../Surface/Helper/ActionModelSurfaceDeletePolygon.h"
 #include "../../Surface/Helper/ActionModelSurfaceAddPolygon.h"
 
-ActionModelPolygonAddVertex::ActionModelPolygonAddVertex(int _poly, int _side, int _vertex, const vector* _sv) {
+ActionModelPolygonAddVertex::ActionModelPolygonAddVertex(int _poly, int _side, int _vertex, const vec3* _sv) {
 	poly = _poly;
 	side = _side;
 	vertex = _vertex;
@@ -27,7 +27,7 @@ void* ActionModelPolygonAddVertex::compose(Data* d) {
 
 	// save old polygon data
 	Array<int> v = t.get_vertices();
-	Array<vector> _sv = t.get_skin_vertices();
+	Array<vec3> _sv = t.get_skin_vertices();
 	int material = t.material;
 
 	// insert vertex

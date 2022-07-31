@@ -37,7 +37,7 @@ public:
 private:
 	bool brushing;
 	float distance;
-	vector last_pos;
+	vec3 last_pos;
 };
 
 extern ModeModelMeshPaint *mode_model_mesh_paint;

@@ -159,23 +159,23 @@ void ModeModelSkeleton::on_set_multi_view() {
 
 
 
-void draw_bone(const vector &r, const vector &d, const color &c, MultiView::Window *win) {
+void draw_bone(const vec3 &r, const vec3 &d, const color &c, MultiView::Window *win) {
 	Array<color> col;
 	col.add(color::interpolate(c, scheme.BACKGROUND, 0.5f)); // root
 	col.add(color::interpolate(c, scheme.BACKGROUND, 0.8f));
 	draw_lines_colored({r,d}, col, false);
 }
 
-matrix get_bone_frame(const ModelBone &b) {
+mat4 get_bone_frame(const ModelBone &b) {
 	if (mode_model_animation->is_ancestor_of(ed->cur_mode))
 		return b._matrix;
-	return matrix::translation(b.pos);
+	return mat4::translation(b.pos);
 }
 
 void draw_coord_basis(MultiView::Window *win, const ModelBone &b) {
-	vector o = b.pos;
-	matrix m = get_bone_frame(b);
-	vector e[3] = {vector::EX, vector::EY, vector::EZ};
+	vec3 o = b.pos;
+	mat4 m = get_bone_frame(b);
+	vec3 e[3] = {vec3::EX, vec3::EY, vec3::EZ};
 	for (int i=0;i<3;i++)
 		e[i] = m.transform_normal(e[i]);
 	for (int i=0; i<3; i++) {
@@ -199,7 +199,7 @@ void ModeModelSkeleton::draw_skeleton(MultiView::Window *win, Array<ModelBone> &
 		nix::set_model_matrix(get_bone_frame(b));
 		draw_model(win, b.model, 1);
 	}
-	nix::set_model_matrix(matrix::ID);
+	nix::set_model_matrix(mat4::ID);
 
 	nix::set_z(false, false);
 	set_line_width(thin ? scheme.LINE_WIDTH_THIN : scheme.LINE_WIDTH_BONE);

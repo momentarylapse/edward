@@ -8,8 +8,8 @@
 #pragma once
 
 #include "../../y/Component.h"
-#include "../../lib/math/matrix3.h"
-#include "../../lib/math/vector.h"
+#include "../../lib/math/mat3.h"
+#include "../../lib/math/vec3.h"
 
 class Model;
 
@@ -25,15 +25,15 @@ public:
 
 
 	float mass, g_factor;
-	matrix3 theta_0;
+	mat3 theta_0;
 	bool active, passive;
 	bool test_collisions;
 
 
-	vector force_int, torque_int;
-	vector force_ext, torque_ext;
+	vec3 force_int, torque_int;
+	vec3 force_ext, torque_ext;
 
-	vector vel, vel_surf, rot, acc;
+	vec3 vel, vel_surf, rot, acc;
 
 	bool rotating, moved, frozen;
 	float time_till_freeze;
@@ -46,13 +46,13 @@ public:
 
 	void _cdecl update_data(); // script...
 
-	void get_theta_world(matrix3 &theta_world, matrix3 &theta_world_inv);
+	void get_theta_world(mat3 &theta_world, mat3 &theta_world_inv);
 	void do_simple_physics(float dt);
 
-	void _cdecl add_force(const vector &f, const vector &rho);
-	void _cdecl add_impulse(const vector &p, const vector &rho);
-	void _cdecl add_torque(const vector &t);
-	void _cdecl add_torque_impulse(const vector &l);
+	void _cdecl add_force(const vec3 &f, const vec3 &rho);
+	void _cdecl add_impulse(const vec3 &p, const vec3 &rho);
+	void _cdecl add_torque(const vec3 &t);
+	void _cdecl add_torque_impulse(const vec3 &l);
 
 	void _cdecl make_visible(bool visible);
 	void update_motion(int mask);

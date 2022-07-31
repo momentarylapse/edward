@@ -77,7 +77,7 @@ void ModeModelMeshCreateCylinderSnake::update_geometry() {
 
 void ModeModelMeshCreateCylinderSnake::on_mouse_move() {
 	if (ready_for_scaling) {
-		vector p = multi_view->get_cursor(pos.back());
+		vec3 p = multi_view->get_cursor(pos.back());
 		radius = (p - pos.back()).length();
 		radius = multi_view->maybe_snap_f(radius);
 		float min_rad = 10 / multi_view->active_win->zoom(); // 10 px
@@ -141,7 +141,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 		set_color(scheme.CREATION_LINE);
 		nix::set_shader(nix::Shader::default_2d);
 		for (int i=0;i<pos.num;i++) {
-			vector pp = win->project(pos[i]);
+			vec3 pp = win->project(pos[i]);
 			draw_rect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
 
@@ -156,8 +156,8 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 
 
 		// spline curve
-		Interpolator<vector> inter(Interpolator<vector>::TYPE_CUBIC_SPLINE_NOTANG);
-		for (vector &p: pos)
+		Interpolator<vec3> inter(Interpolator<vec3>::TYPE_CUBIC_SPLINE_NOTANG);
+		for (vec3 &p: pos)
 			inter.add(p);
 		if (!ready_for_scaling)
 			inter.add(multi_view->get_cursor());

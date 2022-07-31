@@ -11,7 +11,7 @@
 #include "../../../../../Data/Model/ModelPolygon.h"
 #include <assert.h>
 
-ActionModelMoveVertex::ActionModelMoveVertex(int _vertex, const vector &_pos) {
+ActionModelMoveVertex::ActionModelMoveVertex(int _vertex, const vec3 &_pos) {
 	vertex = _vertex;
 	pos = _pos;
 }

@@ -22,7 +22,7 @@ extern shared<nix::Shader> shader_lines_3d_colored;
 extern shared<nix::Shader> shader_lines_3d_colored_wide;
 extern shared<nix::Texture> tex_white;
 
-class vector;
+class vec3;
 namespace MultiView {
 	class Window;
 	extern shared<nix::CubeMap> cube_map;
@@ -37,17 +37,17 @@ void drawing_helper_init(const Path &dir);
 
 void set_color(const color &c);
 void set_line_width(float width);
-void draw_helper_line(MultiView::Window *win, const vector &a, const vector &b);
-void draw_circle(const vector &pos, const vector &n, float radius);
+void draw_helper_line(MultiView::Window *win, const vec3 &a, const vec3 &b);
+void draw_circle(const vec3 &pos, const vec3 &n, float radius);
 
 
 void draw_rect(float x1, float x2, float y1, float y2, float depth);
 void draw_2d(const rect &src, const rect &dest, float depth);
 
 void draw_line_2d(float x1, float y1, float x2, float y2, float depth);
-void draw_line(const vector &l1, const vector &l2);
-void draw_lines(const Array<vector> &p, bool contiguous);
-void draw_lines_colored(const Array<vector> &p, const Array<color> &c, bool contiguous);
+void draw_line(const vec3 &l1, const vec3 &l2);
+void draw_lines(const Array<vec3> &p, bool contiguous);
+void draw_lines_colored(const Array<vec3> &p, const Array<color> &c, bool contiguous);
 
 enum class TextAlign {
 	LEFT,

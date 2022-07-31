@@ -163,7 +163,7 @@ void ModeModelAnimation::update_animation() {
 		update_skeleton();
 
 		foreachi(auto &v, data->mesh->vertex, i){
-			vector pp = v_0;
+			vec3 pp = v_0;
 			for (int k=0; k<4; k++) {
 				if ((&v.bone_index.i)[k] < 0)
 					continue;
@@ -204,8 +204,8 @@ void ModeModelAnimation::update_skeleton() {
 			ModelBone &pb = data->bone[b.parent];
 			bone[i].pos = pb._matrix * (b.pos - pb.pos); // cur_mat * dpos_at_rest
 		}
-		auto trans = matrix::translation( bone[i].pos);
-		auto rot = matrix::rotation(f.skel_ang[i]);
+		auto trans = mat4::translation( bone[i].pos);
+		auto rot = mat4::rotation(f.skel_ang[i]);
 		b._matrix = trans * rot;
 		bone[i]._matrix = b._matrix;
 	}

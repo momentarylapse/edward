@@ -10,17 +10,17 @@
 
 #include "../../../ActionGroup.h"
 class DataModel;
-class vector;
+class vec3;
 
 class ActionModelSplitPolygon: public ActionGroup {
 public:
-	ActionModelSplitPolygon(int _polygon, const vector &_pos);
+	ActionModelSplitPolygon(int _polygon, const vec3 &_pos);
 	string name(){	return "ModelSplitPolygon";	}
 
 	void *compose(Data *d);
 private:
 	int polygon;
-	const vector &pos;
+	const vec3 &pos;
 };
 
 #endif /* ACTIONMODELSPLITPOLYGON_H_ */

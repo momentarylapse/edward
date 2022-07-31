@@ -10,11 +10,11 @@
 
 #include "../../../lib/base/base.h"
 #include "../../../lib/os/path.h"
-#include "../../../lib/math/vector.h"
-#include "../../../lib/math/matrix.h"
 #include "../../../lib/math/ray.h"
 #include "../../../lib/math/plane.h"
 #include "../../../lib/image/color.h"
+#include "../../../lib/math/mat4.h"
+#include "../../../lib/math/vec3.h"
 
 class DataModel;
 class DataWorld;
@@ -36,14 +36,14 @@ public:
 	Path model_out_dir;
 	Path texture_out_dir;
 	float color_exponent;
-	vector min, max, center;
+	vec3 min, max, center;
 	float large_distance;
 	float area;
 
 	float resolution;
 
 	void Init(DataWorld *w);
-	void AddModel(const Path &filename, matrix &mat, int object_index);
+	void AddModel(const Path &filename, mat4 &mat, int object_index);
 	void AddTerrain(WorldTerrain &t, int terrain_index);
 	void AddTextureLevels(bool modify = true);
 	void CreateVertices();
@@ -54,7 +54,7 @@ public:
 	struct Model {
 		int id;
 		DataModel *orig;
-		matrix mat;
+		mat4 mat;
 		int offset, num_trias;
 		Path orig_name;
 		Path new_name;
@@ -84,7 +84,7 @@ public:
 	// a "real" polygon in the models
 	struct Triangle
 	{
-		vector v[3], sv[3], n[3], m;
+		vec3 v[3], sv[3], n[3], m;
 		Ray ray[3];
 		float r;
 		/*bool inv;
@@ -97,7 +97,7 @@ public:
 		color am, di, em;
 		float area;
 		int num_vertices;
-		bool intersect(const Ray &r, vector &cp) const;
+		bool intersect(const Ray &r, vec3 &cp) const;
 		void Rasterize(LightmapData *l, int i);
 	};
 	Array<Triangle> Trias;
@@ -106,7 +106,7 @@ public:
 	struct Vertex
 	{
 		int x, y;
-		vector pos, n;
+		vec3 pos, n;
 		float area;
 		color rad, _rad2, am, dif, em;
 		int tria_id, mod_id, ter_id;
@@ -115,7 +115,7 @@ public:
 	};
 	Array<Vertex> Vertices;
 
-	bool IsVisible(const vector &a, const vector &b, int ignore_tria1, int ignore_tria2);
+	bool IsVisible(const vec3 &a, const vec3 &b, int ignore_tria1, int ignore_tria2);
 	bool IsVisible(Vertex &a, Vertex &b);
 
 
@@ -123,7 +123,7 @@ public:
 	{
 		bool Directional;
 		float Radius;
-		vector Pos, Dir;
+		vec3 Pos, Dir;
 		color Ambient, Diffuse, Specular;
 		//Array<int> visible[light_num_diffuse];
 	};

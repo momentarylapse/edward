@@ -29,7 +29,7 @@ public:
 	void update_geometry();
 
 private:
-	vector dpos0;
+	vec3 dpos0;
 	Geometry *geo;
 };
 

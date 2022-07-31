@@ -12,7 +12,7 @@
 
 // might create a "disjoint" surface -> don't use alone!
 
-ActionModelSurfaceAddPolygon::ActionModelSurfaceAddPolygon(const Array<int> &_v, int _material, const Array<vector> &_sv, int _index) {
+ActionModelSurfaceAddPolygon::ActionModelSurfaceAddPolygon(const Array<int> &_v, int _material, const Array<vec3> &_sv, int _index) {
 	index = _index;
 	v = _v;
 	material = _material;

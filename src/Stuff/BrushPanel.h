@@ -8,7 +8,7 @@
 #pragma once
 
 #include "../lib/hui/hui.h"
-#include "../lib/math/vector.h"
+#include "../lib/math/vec3.h"
 
 namespace MultiView {
 	class MultiView;
@@ -19,10 +19,10 @@ public:
 	float opacity = 1.0f;
 	float exponent = 2.0f;
 	float R = 1.0f;
-	vector m0 = vector::ZERO;
+	vec3 m0 = vec3::ZERO;
 	color col = White;
 
-	float get(const vector &v) const;
+	float get(const vec3 &v) const;
 };
 
 class BrushPanel : public hui::Panel {
@@ -33,7 +33,7 @@ public:
 	void on_opacity_slider();
 	void on_alpha_slider();
 
-	BrushState prepare(const vector &m);
+	BrushState prepare(const vec3 &m);
 	float radius();
 	float radius0();
 

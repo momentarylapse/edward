@@ -27,7 +27,7 @@ class WorldLight: public MultiView::SingleData {
 public:
 	string name;
 	LightType type = LightType::POINT;
-	vector ang = vector::ZERO;
+	vec3 ang = vec3::ZERO;
 	float radius = 100;
 	float theta = 0;
 	bool enabled = true;

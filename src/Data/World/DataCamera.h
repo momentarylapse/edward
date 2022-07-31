@@ -10,7 +10,7 @@
 
 #include "../Data.h"
 #include "../../MultiView/SingleData.h"
-#include "../../lib/math/vector.h"
+#include "../../lib/math/vec3.h"
 #include "../../lib/math/interpolation.h"
 
 
@@ -24,7 +24,7 @@
 class WorldCamPoint: public MultiView::SingleData {
 public:
 	int Type;
-	vector Vel, Ang;
+	vec3 Vel, Ang;
 	float Duration;
 };
 
@@ -43,8 +43,8 @@ public:
 	void UpdateVel();
 
 	float GetDuration() const;
-	Interpolator<vector> BuildPosInterpolator() const;
-	Interpolator<vector> BuildAngInterpolator() const;
+	Interpolator<vec3> BuildPosInterpolator() const;
+	Interpolator<vec3> BuildAngInterpolator() const;
 
 	Array<WorldCamPoint> Point;
 	Array<WorldCamPointVel> Vel;

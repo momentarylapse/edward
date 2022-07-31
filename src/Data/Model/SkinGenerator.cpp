@@ -15,16 +15,16 @@
 
 SkinGenerator::SkinGenerator()
 {
-	m = matrix::ID;
+	m = mat4::ID;
 }
 
 SkinGenerator::~SkinGenerator()
 {
 }
 
-void SkinGenerator::init_affine(const vector &dir_u, float f_u, const vector &dir_v, float f_v)
+void SkinGenerator::init_affine(const vec3 &dir_u, float f_u, const vec3 &dir_v, float f_v)
 {
-	m = matrix::ID;
+	m = mat4::ID;
 	m._00 = dir_u.x;
 	m._01 = dir_u.y;
 	m._02 = dir_u.z;
@@ -35,7 +35,7 @@ void SkinGenerator::init_affine(const vector &dir_u, float f_u, const vector &di
 	m._13 = f_v;
 }
 
-void SkinGenerator::init_projective(const matrix &_m)
+void SkinGenerator::init_projective(const mat4 &_m)
 {
 	m = _m;
 }
@@ -43,23 +43,23 @@ void SkinGenerator::init_projective(const matrix &_m)
 void SkinGenerator::init_projective(MultiView::Window *win)
 {
 	rect d = win->dest;
-	matrix s, t1, t2;
-	s = matrix::scale( nix::target_width / (d.x2 - d.x1) / 2, - nix::target_height / (d.y2 - d.y1) / 2, 1);
-	t2 = matrix::translation( vector(- d.x1 / nix::target_width * 2, - d.y1 / nix::target_height * 2, 0));
-	t1 = matrix::translation( vector(1, -1, 0));
+	mat4 s, t1, t2;
+	s = mat4::scale( nix::target_width / (d.x2 - d.x1) / 2, - nix::target_height / (d.y2 - d.y1) / 2, 1);
+	t2 = mat4::translation( vec3(- d.x1 / nix::target_width * 2, - d.y1 / nix::target_height * 2, 0));
+	t1 = mat4::translation( vec3(1, -1, 0));
 	init_projective(t2 * s * t1 * win->pv_matrix);
 }
 
 void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, int level)
 {
-	vector n = p.temp_normal;
-	vector d1 = n.ortho();
-	vector d2 = vector::cross(n, d1);
-	matrix R = matrix(d1, d2, n);
+	vec3 n = p.temp_normal;
+	vec3 d1 = n.ortho();
+	vec3 d2 = vec3::cross(n, d1);
+	mat4 R = mat4(d1, d2, n);
 	float sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0, su = 0, sv = 0, sux = 0, suy = 0, svx = 0, svy = 0;
 	for (ModelPolygonSide &s: p.side){
-		float x = vector::dot(d1, v[s.vertex].pos);
-		float y = vector::dot(d2, v[s.vertex].pos);
+		float x = vec3::dot(d1, v[s.vertex].pos);
+		float y = vec3::dot(d2, v[s.vertex].pos);
 		float u = s.skin_vertex[level].x;
 		float v = s.skin_vertex[level].y;
 		sx += x;
@@ -74,7 +74,7 @@ void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, i
 		suy += u*y;
 		svy += v*y;
 	}
-	matrix mm = matrix::ID;
+	mat4 mm = mat4::ID;
 	mm._00 = sxx;
 	mm._01 = sxy;
 	mm._02 = sx;
@@ -84,11 +84,11 @@ void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, i
 	mm._20 = sx;
 	mm._21 = sy;
 	mm._22 = p.side.num;
-	matrix imm;
+	mat4 imm;
 	imm = mm.inverse();
-	vector uu = imm * vector(sux, suy, su);
-	vector vv = imm * vector(svx, svy, sv);
-	m = matrix::ID;
+	vec3 uu = imm * vec3(sux, suy, su);
+	vec3 vv = imm * vec3(svx, svy, sv);
+	m = mat4::ID;
 	m._00 = uu.x;
 	m._01 = uu.y;
 	m._03 = uu.z;
@@ -96,21 +96,21 @@ void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, i
 	m._11 = vv.y;
 	m._13 = vv.z;
 	m._22 = 0;
-	matrix iR = R.inverse();
+	mat4 iR = R.inverse();
 	m = m * iR;
 }
 
 
-static vector get_cloud_normal(const Array<ModelVertex> &pp, const Array<int> &v)
+static vec3 get_cloud_normal(const Array<ModelVertex> &pp, const Array<int> &v)
 {
-	Array<vector> p;
+	Array<vec3> p;
 	for (int i=1;i<v.num;i++){
 		p.add(pp[v[i]].pos - pp[v[0]].pos);
 		p.back().normalize();
 	}
 	for (int i=0;i<p.num;i++)
 		for (int j=i+1;j<p.num;j++){
-			vector d = vector::cross(p[i], p[j]);
+			vec3 d = vec3::cross(p[i], p[j]);
 			float l = d.length();
 			if (l > 0.1f)
 				return d / l;
@@ -120,15 +120,15 @@ static vector get_cloud_normal(const Array<ModelVertex> &pp, const Array<int> &v
 
 void SkinGenerator::init_point_cloud_boundary(const Array<ModelVertex> &p, const Array<int> &v)
 {
-	vector n = get_cloud_normal(p, v);
-	vector d[2];
+	vec3 n = get_cloud_normal(p, v);
+	vec3 d[2];
 	d[0] = n.ortho();
-	d[1] = vector::cross(d[0], n);
+	d[1] = vec3::cross(d[0], n);
 	float boundary[2][2], l[2];
 	for (int k=0;k<2;k++){
-		boundary[k][0] = boundary[k][1] = vector::dot(d[k], p[v[0]].pos);
+		boundary[k][0] = boundary[k][1] = vec3::dot(d[k], p[v[0]].pos);
 		for (int vi: const_cast<Array<int>&>(v)){
-			float f = vector::dot(d[k], p[vi].pos);
+			float f = vec3::dot(d[k], p[vi].pos);
 			if (f < boundary[k][0])
 				boundary[k][0] = f;
 			if (f > boundary[k][1])
@@ -140,9 +140,9 @@ void SkinGenerator::init_point_cloud_boundary(const Array<ModelVertex> &p, const
 
 }
 
-vector SkinGenerator::get(const vector& v) const
+vec3 SkinGenerator::get(const vec3& v) const
 {
-	vector p = m.project(v);
+	vec3 p = m.project(v);
 	p.z = 0;
 	return p;
 }
@@ -170,7 +170,7 @@ void SkinGeneratorMulti::init_polygon(const Array<ModelVertex> &v, ModelPolygon 
 		gen[i].init_polygon(v, p, i);
 }
 
-vector SkinGeneratorMulti::get(const vector& v, int level) const
+vec3 SkinGeneratorMulti::get(const vec3& v, int level) const
 {
 	return gen[level].get(v);
 }

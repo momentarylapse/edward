@@ -44,7 +44,7 @@ void *ActionModelSplitEdge::compose(Data *d) {
 
 
 	// add vertex
-	vector pos = m->vertex[e.vertex[0]].pos * (1 - factor) + m->vertex[e.vertex[1]].pos * factor;
+	vec3 pos = m->vertex[e.vertex[0]].pos * (1 - factor) + m->vertex[e.vertex[1]].pos * factor;
 	addSubAction(new ActionModelAddVertex(pos), mod);
 	int new_vertex = m->vertex.num - 1;
 
@@ -55,7 +55,7 @@ void *ActionModelSplitEdge::compose(Data *d) {
 		int poly = ee.polygon[i];
 		ModelPolygon &t = m->polygon[poly];
 
-		vector isv[MATERIAL_MAX_TEXTURES];
+		vec3 isv[MATERIAL_MAX_TEXTURES];
 		float f = (i == 0) ? factor : 1 - factor;
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			isv[l] = t.side[ee.side[i]].skin_vertex[l] * (1 - f) + t.side[(ee.side[i] + 1) % t.side.num].skin_vertex[l] * f;

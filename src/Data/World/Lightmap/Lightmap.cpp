@@ -204,7 +204,7 @@ bool Lightmap::RenderTextures()
 
 		// edit Terrain
 		t.orig->texture_file[t.orig->material->textures.num] = t.tex_name;
-		t.orig->texture_scale[t.orig->material->textures.num] = vector(1.0f, 0, 1.0f);
+		t.orig->texture_scale[t.orig->material->textures.num] = vec3(1.0f, 0, 1.0f);
 		t.orig->material->textures.add(NULL);
 		t.new_name = data->model_out_dir << i2s(tid);
 		data->source_world->terrains[tid].save(engine.map_dir << t.new_name.with(".map"));

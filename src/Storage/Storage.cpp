@@ -90,7 +90,10 @@ bool Storage::load(const Path &_filename, Data *data, bool deep) {
 		}
 		throw FormatUnhandledError();
 	} catch (Exception &e) {
-		ed->error_box(e.message());
+		if (ed)
+			ed->error_box(e.message());
+		else
+			msg_error(e.message());
 	}
 	return false;
 }

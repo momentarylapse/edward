@@ -9,7 +9,7 @@
 #define ACTIONMODELSURFACEDELETEPOLYGON_H_
 
 #include "../../../../Action.h"
-class vector;
+class vec3;
 
 class ActionModelSurfaceDeletePolygon: public Action {
 public:
@@ -23,7 +23,7 @@ private:
 	int index;
 	int material;
 	Array<int> vertex;
-	Array<vector> skin;
+	Array<vec3> skin;
 };
 
 #endif /* ACTIONMODELSURFACEDELETEPOLYGON_H_ */

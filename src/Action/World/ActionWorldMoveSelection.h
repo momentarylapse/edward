@@ -10,7 +10,7 @@
 
 #include "../ActionMultiView.h"
 class DataWorld;
-class vector;
+class vec3;
 
 class ActionWorldMoveSelection: public ActionMultiView {
 public:

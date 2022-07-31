@@ -9,7 +9,7 @@
 
 #include "../../y/Component.h"
 #include "../../lib/math/plane.h"
-#include "../../lib/math/vector.h"
+#include "../../lib/math/vec3.h"
 
 class Model;
 class Terrain;
@@ -68,8 +68,8 @@ public:
 class PhysicalMesh {
 public:
 	Array<int> bone_nr;
-	Array<vector> vertex; // original vertices
-	Array<vector> vertex_dyn; // here the animated vertices are stored before collision detection
+	Array<vec3> vertex; // original vertices
+	Array<vec3> vertex_dyn; // here the animated vertices are stored before collision detection
 
 	/*int num_triangles;
 	unsigned short *triangle_index;*/
@@ -88,7 +88,7 @@ public:
 class PhysicalMeshAbsolute {
 public:
 	bool is_ok;
-	Array<vector> p;
+	Array<vec3> p;
 	Array<plane> pl;
 };
 
