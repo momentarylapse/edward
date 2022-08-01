@@ -335,8 +335,8 @@ void ModeWorld::on_end() {
 		delete world_dialog;
 	world_dialog = nullptr;
 
-	ed->toolbar[hui::TOOLBAR_TOP]->reset();
-	ed->toolbar[hui::TOOLBAR_TOP]->enable(false);
+	ed->get_toolbar(hui::TOOLBAR_TOP)->reset();
+	ed->get_toolbar(hui::TOOLBAR_TOP)->enable(false);
 }
 
 
@@ -646,8 +646,8 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 
 
 void ModeWorld::on_start() {
-	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("world-toolbar");
-	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar");
+	ed->get_toolbar(hui::TOOLBAR_TOP)->set_by_id("world-toolbar");
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("world-edit-toolbar");
 
 	set_mouse_action(MultiView::ACTION_MOVE);
 
@@ -655,8 +655,8 @@ void ModeWorld::on_start() {
 }
 
 void ModeWorld::on_enter() {
-	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("world-toolbar");
-	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar");
+	ed->get_toolbar(hui::TOOLBAR_TOP)->set_by_id("world-toolbar");
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("world-edit-toolbar");
 
 	dialog = new WorldObjectListPanel(this);
 	ed->set_side_panel(dialog);

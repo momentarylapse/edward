@@ -207,7 +207,7 @@ void ModeMaterial::on_end() {
 	ed->set_side_panel(nullptr);
 	ed->set_bottom_panel(nullptr);
 
-	auto *t = ed->toolbar[hui::TOOLBAR_TOP];
+	auto *t = ed->get_toolbar(hui::TOOLBAR_TOP);
 	t->reset();
 	t->enable(false);
 
@@ -232,8 +232,8 @@ void ModeMaterial::save_as() {
 void ModeMaterial::on_start() {
 	msg_write("Material.on start");
 
-	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("material-toolbar");
-	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
+	ed->get_toolbar(hui::TOOLBAR_TOP)->set_by_id("material-toolbar");
+	auto t = ed->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 

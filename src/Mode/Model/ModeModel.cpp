@@ -39,8 +39,8 @@ ModeModel::~ModeModel() {
 
 
 void ModeModel::on_start() {
-	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("model-toolbar");
-	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
+	ed->get_toolbar(hui::TOOLBAR_TOP)->set_by_id("model-toolbar");
+	auto t = ed->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 }
@@ -53,7 +53,7 @@ void ModeModel::on_enter() {
 
 
 void ModeModel::on_end() {
-	hui::Toolbar *t = ed->toolbar[hui::TOOLBAR_TOP];
+	hui::Toolbar *t = ed->get_toolbar(hui::TOOLBAR_TOP);
 	t->reset();
 	t->enable(false);
 }

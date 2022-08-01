@@ -22,14 +22,14 @@ ModeModelAnimationVertex::ModeModelAnimationVertex(ModeBase* _parent, MultiView:
 }
 
 void ModeModelAnimationVertex::on_start() {
-	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-animation-vertex-toolbar");
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-animation-vertex-toolbar");
 
 	ed->mode_model->allow_selection_modes(true);
 
 	chooseMouseFunction(MultiView::ACTION_SELECT);
 
-	data->subscribe(this, [=]{ on_data_change(); });
-	multi_view->subscribe(this, [=]{ mode_model_mesh->selection_mode->on_update_selection(); }, multi_view->MESSAGE_SELECTION_CHANGE);
+	data->subscribe(this, [this]{ on_data_change(); });
+	multi_view->subscribe(this, [this]{ mode_model_mesh->selection_mode->on_update_selection(); }, multi_view->MESSAGE_SELECTION_CHANGE);
 	on_data_change();
 }
 

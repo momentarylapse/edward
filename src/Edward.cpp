@@ -189,8 +189,8 @@ Edward::Edward() :
 	msg_db_r("init modes", 1);*/
 
 
-	ed->toolbar[hui::TOOLBAR_TOP]->configure(false, true);
-	ed->toolbar[hui::TOOLBAR_LEFT]->configure(false, true);
+	ed->get_toolbar(hui::TOOLBAR_TOP)->configure(false, true);
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->configure(false, true);
 
 	multi_view_3d = new MultiView::MultiView(true);
 	multi_view_2d = new MultiView::MultiView(false);
@@ -742,11 +742,11 @@ string Edward::get_tex_image(nix::Texture *tex)
 	return img;
 }
 
-void Edward::set_side_panel(hui::Panel *panel) {
+void Edward::set_side_panel(shared<hui::Panel> panel) {
 	if (side_panel) {
 		// close
 		expand("side-bar-revealer", false);
-		delete side_panel;
+		unembed(side_panel.get());
 		side_panel = nullptr;
 	}
 	if (panel) {
@@ -757,11 +757,11 @@ void Edward::set_side_panel(hui::Panel *panel) {
 	}
 }
 
-void Edward::set_bottom_panel(hui::Panel *panel) {
+void Edward::set_bottom_panel(shared<hui::Panel> panel) {
 	if (bottom_panel) {
 		// close
 		//reveal("side-bar-revealer", false);
-		delete bottom_panel;
+		unembed(bottom_panel.get());
 		bottom_panel = nullptr;
 	}
 	if (panel) {

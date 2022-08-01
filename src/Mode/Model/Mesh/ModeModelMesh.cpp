@@ -95,7 +95,7 @@ ModeModelMesh::~ModeModelMesh() {
 }
 
 void ModeModelMesh::on_start() {
-	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar");
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar");
 
 	data->subscribe(this, [=]{ on_data_update(); });
 
@@ -116,7 +116,7 @@ void ModeModelMesh::on_enter() {
 void ModeModelMesh::on_end() {
 	data->unsubscribe(this);
 
-	auto *t = ed->toolbar[hui::TOOLBAR_LEFT];
+	auto *t = ed->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 }

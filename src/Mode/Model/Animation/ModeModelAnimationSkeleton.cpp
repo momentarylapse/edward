@@ -30,7 +30,7 @@ ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent, MultiV
 }
 
 void ModeModelAnimationSkeleton::on_start() {
-	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-animation-skeleton-toolbar");
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-animation-skeleton-toolbar");
 
 	foreachi(ModelBone &b, data->bone, i)
 		mode_model_animation->bone[i].is_selected = b.is_selected;

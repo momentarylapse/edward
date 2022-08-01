@@ -24,7 +24,7 @@ void ModeModelMeshMaterial::on_start() {
 	dialog = new ModelMaterialDialog(data);
 	ed->set_side_panel(dialog);
 
-	auto *t = ed->toolbar[hui::TOOLBAR_LEFT];
+	auto *t = ed->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 	multi_view->set_allow_action(false);
@@ -36,7 +36,7 @@ void ModeModelMeshMaterial::on_start() {
 
 void ModeModelMeshMaterial::on_end() {
 	ed->set_side_panel(nullptr);
-	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar"); // back to mesh....ARGH
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar"); // back to mesh....ARGH
 
 	multi_view->set_allow_action(true);
 	ed->mode_model->allow_selection_modes(true);

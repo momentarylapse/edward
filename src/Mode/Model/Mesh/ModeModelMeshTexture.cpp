@@ -64,7 +64,7 @@ int ModeModelMeshTexture::getNumSelected()
 
 
 void ModeModelMeshTexture::on_start() {
-	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-texture-toolbar");
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-texture-toolbar");
 
 	multi_view->view_stage = parent->multi_view->view_stage;
 	mode_model_mesh->apply_mouse_function(multi_view);
@@ -95,7 +95,7 @@ void ModeModelMeshTexture::on_end() {
 	multi_view->unsubscribe(this);
 	skin_vertex.clear();
 	ed->set_side_panel(nullptr);
-	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-mesh-toolbar"); // -> mesh
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar"); // -> mesh
 }
 
 #define cur_tex			data->material[mode_model_mesh->current_material]->texture_levels[current_texture_level]->texture.get()

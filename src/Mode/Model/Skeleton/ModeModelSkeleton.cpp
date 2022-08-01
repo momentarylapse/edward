@@ -129,7 +129,7 @@ void ModeModelSkeleton::on_update_menu() {
 
 
 void ModeModelSkeleton::on_start() {
-	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("model-skeleton-toolbar");
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-skeleton-toolbar");
 
 	data->subscribe(this, [=]{
 		mode_model_mesh->update_vertex_buffers(data->mesh->vertex);

@@ -59,9 +59,9 @@ void ModeWorldCamera::on_start() {
 	dialog = new CameraDialog(this);
 	ed->set_bottom_panel(dialog);
 
-	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-camera-toolbar");
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("world-camera-toolbar");
 
-	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
+	auto t = ed->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 
@@ -82,7 +82,7 @@ void ModeWorldCamera::on_end() {
 	ed->set_bottom_panel(nullptr);
 
 	multi_view->clear_data(data);
-	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar"); // ...
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("world-edit-toolbar"); // ...
 }
 
 void ModeWorldCamera::addPoint() {

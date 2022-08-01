@@ -56,7 +56,7 @@ void ModeFont::on_end() {
 	data->unsubscribe(this);
 	ed->set_side_panel(nullptr);
 
-	auto *t = ed->toolbar[hui::TOOLBAR_TOP];
+	auto *t = ed->get_toolbar(hui::TOOLBAR_TOP);
 	t->reset();
 	t->enable(false);
 }
@@ -130,10 +130,9 @@ void ModeFont::_new() {
 
 
 
-void ModeFont::on_start()
-{
-	ed->toolbar[hui::TOOLBAR_TOP]->set_by_id("font-toolbar");
-	auto t = ed->toolbar[hui::TOOLBAR_LEFT];
+void ModeFont::on_start() {
+	ed->get_toolbar(hui::TOOLBAR_TOP)->set_by_id("font-toolbar");
+	auto t = ed->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 
@@ -143,7 +142,7 @@ void ModeFont::on_start()
 	ed->set_side_panel(dialog);
 
 
-	data->subscribe(this, [=]{ on_data_update(); });
+	data->subscribe(this, [this] { on_data_update(); });
 	on_data_update();
 }
 

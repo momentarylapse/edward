@@ -118,9 +118,9 @@ public:
 
 	PluginManager *plugins;
 
-	hui::Panel *side_panel, *bottom_panel;
-	void set_side_panel(hui::Panel *panel);
-	void set_bottom_panel(hui::Panel *panel);
+	shared<hui::Panel> side_panel, bottom_panel;
+	void set_side_panel(shared<hui::Panel> panel);
+	void set_bottom_panel(shared<hui::Panel> panel);
 
 
 	Map<nix::Texture*, string> icon_image;
@@ -131,8 +131,7 @@ public:
 
 extern Edward *ed;
 
-class EdwardApp : public hui::Application
-{
+class EdwardApp : public hui::Application {
 public:
 	EdwardApp();
 	virtual bool on_startup(const Array<string> &arg) override;

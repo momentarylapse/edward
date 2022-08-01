@@ -92,8 +92,8 @@ void ModeWorldTerrain::on_start() {
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);
 
-	ed->toolbar[hui::TOOLBAR_LEFT]->reset();
-	ed->toolbar[hui::TOOLBAR_LEFT]->enable(false);
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->reset();
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->enable(false);
 
 
 	dialog = new TerrainDeformBrushPanel(multi_view);
@@ -107,7 +107,7 @@ void ModeWorldTerrain::on_end() {
 	multi_view->set_allow_select(true);
 	if (brushing)
 		data->end_action_group();
-	ed->toolbar[hui::TOOLBAR_LEFT]->set_by_id("world-edit-toolbar"); // -> world
+	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("world-edit-toolbar"); // -> world
 }
 
 void ModeWorldTerrain::on_mouse_move() {
