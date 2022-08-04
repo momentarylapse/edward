@@ -35,8 +35,6 @@ public:
 	Panel(const string &id, Panel *parent);
 	Panel();
 	virtual ~Panel();
-	void __init__();
-	virtual void __delete__();
 	void _ClearPanel_();
 
 	void activate(const string &control_id);
@@ -99,7 +97,7 @@ public:
 	void embed_source(const string &source, const string &parent_id, int x, int y);
 	void embed_resource(Resource &c, const string &parent_id, int x, int y);
 	void _embed_resource(const string &ns, Resource &c, const string &parent_id, int x, int y);
-	void embed(shared<Panel> panel, const string &parent_id, int x, int y);
+	void embed(/*shared<Panel>*/ Panel *panel, const string &parent_id, int x, int y);
 	void unembed(Panel *p);
 
 // using controls

@@ -11,19 +11,26 @@
 #include "Controls/Control.h"
 #include "Controls/ControlDrawingArea.h"
 #include "Painter.h"
+#if __has_include("../image/image.h")
+#include "../image/image.h"
+#define HAS_IMAGE
+#endif
 
 namespace hui {
 
 #ifdef HUI_API_GTK
 
-Painter::Painter() {
+Painter::Painter(cairo_surface_t *_surf, cairo_t *_cr, int w, int h) {
 	win = nullptr;
-	cr = nullptr;
+	target_surface = _surf;
+	cr = _cr;
 	layout = nullptr;
-	target_surface = nullptr;
+	if (cr)
+		layout = pango_cairo_create_layout(cr);
+
 	font_desc = nullptr;
-	width = 0;
-	height = 0;
+	width = w;
+	height = h;
 	mode_fill = true;
 	cur_font_bold = false;
 	cur_font_italic = false;
@@ -32,21 +39,14 @@ Painter::Painter() {
 	corner_radius = 0;
 	_initial_offset_x = 0;
 	_initial_offset_y = 0;
+
+	set_font("Sans", 16, false, false);
 }
 
-Painter::Painter(Panel *panel, const string &_id) {
+Painter::Painter(Panel *panel, const string &_id) : Painter(nullptr, nullptr, 0, 0) {
 	win = panel->win;
 	id = _id;
-	cr = nullptr;
-	layout = nullptr;
-	target_surface = nullptr;
-	font_desc = nullptr;
-	width = 0;
-	height = 0;
-	mode_fill = true;
-	ControlDrawingArea *c = dynamic_cast<ControlDrawingArea*>(panel->_get_control_(id));
-	corner_radius = 0;
-	if (c) {
+	if (auto c = dynamic_cast<ControlDrawingArea*>(panel->_get_control_(id))) {
 		cr = (cairo_t*)c->cur_cairo;
 //		cr = gdk_cairo_create(gtk_widget_get_window(c->widget));
 		layout = pango_cairo_create_layout(cr);
@@ -59,13 +59,14 @@ Painter::Painter(Panel *panel, const string &_id) {
 		width = gdk_window_get_width(gtk_widget_get_window(c->widget));
 		height = gdk_window_get_height(gtk_widget_get_window(c->widget));
 #endif
-		set_font("Sans", 16, false, false);
 
 		// might be translated already
 		cairo_matrix_t m;
 		cairo_get_matrix(cr, &m);
 		_initial_offset_x = m.x0;
 		_initial_offset_y = m.y0;
+
+		set_font("Sans", 16, false, false);
 	}
 }
 
@@ -79,8 +80,8 @@ Painter::~Painter() {
 		pango_font_description_free(font_desc);
 	if (target_surface)
 		cairo_surface_destroy(target_surface);
-//	cairo_destroy(cr);
-	cr = nullptr;
+	if (!win)
+		cairo_destroy(cr);
 }
 
 void Painter::set_color(const color &c) {
@@ -245,7 +246,7 @@ void Painter::draw_circle(const vec2 &c, float radius) {
 }
 
 void Painter::draw_image(const vec2 &d, const Image *image) {
-#ifdef _X_USE_IMAGE_
+#ifdef HAS_IMAGE
 	if (!cr)
 		return;
 	image->set_mode(Image::Mode::BGRA);
@@ -266,7 +267,7 @@ void Painter::draw_image(const vec2 &d, const Image *image) {
 }
 
 void Painter::draw_mask_image(const vec2 &d, const Image *image) {
-#ifdef _X_USE_IMAGE_
+#ifdef HAS_IMAGE
 	if (!cr)
 		return;
 	image->set_mode(Image::Mode::BGRA);
@@ -333,7 +334,6 @@ void Painter::set_fill(bool fill) {
 void Painter::set_transform(float *rot, const vec2 &offset) {
 	cairo_matrix_t m;
 
-
 	if (rot) {
 		m.xx = rot[0];
 		m.xy = rot[1];
@@ -345,25 +345,6 @@ void Painter::set_transform(float *rot, const vec2 &offset) {
 	cairo_set_matrix(cr, &m);
 }
 
-
-
-Painter *start_image_paint(Image *im) {
-	im->set_mode(Image::Mode::BGRA);
-
-	Painter *p = new Painter;
-	p->target_surface = cairo_image_surface_create_for_data((unsigned char*)im->data.data, CAIRO_FORMAT_ARGB32, im->width, im->height, im->width*4);
-	p->cr = cairo_create(p->target_surface);
-	p->layout = pango_cairo_create_layout(p->cr);
-
-	p->width = im->width;
-	p->height = im->height;
-	p->set_font("Sans", 16, false, false);
-	return p;
-}
-
-void end_image_paint(Image *im, ::Painter *p) {
-	delete p;
-}
 
 };
 

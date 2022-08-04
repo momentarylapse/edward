@@ -45,7 +45,9 @@ string SoundDir;
 void Edward::on_close() {
 	allow_termination([this] {
 		//request_destroy();
-		hui::run_later(0.01f, [this]{ delete this; });
+		hui::run_later(0.01f, [this] {
+			delete this;
+		});
 	});
 }
 
@@ -659,18 +661,17 @@ void Edward::universal_edit(int type, const Path &_filename, bool relative_path)
 
 
 string title_filename(const Path &filename) {
-	if (!filename.is_empty())
+	if (filename)
 		return filename.basename();// + " (" + filename.dirname() + ")";
 	return _("Unknown");
 }
 
 
-void Edward::update_menu()
-{
+void Edward::update_menu() {
 	cur_mode->on_update_menu_recursive();
 
 	Data *d = cur_mode->get_data();
-	if (d){
+	if (d) {
 		enable("undo", d->action_manager->undoable());
 		enable("redo", d->action_manager->redoable());
 		string title = title_filename(d->filename) + " - " + AppName;
@@ -679,13 +680,13 @@ void Edward::update_menu()
 		set_title(title);
 		if (cur_mode->multi_view)
 			enable("view_pop", cur_mode->multi_view->view_stage > 0);
-	}else{
+	} else {
 		set_title(AppName);
 	}
 
 	// general multiview stuff
 	MultiView::MultiView *mv = cur_mode->multi_view;
-	if (mv){
+	if (mv) {
 		check("whole_window", mv->whole_window);
 		check("grid", mv->grid_enabled);
 		check("light", mv->light_enabled);
@@ -721,19 +722,18 @@ void Edward::allow_termination(hui::Callback on_success, hui::Callback on_fail) 
 	}, true);
 }
 
-string Edward::get_tex_image(nix::Texture *tex)
-{
+string Edward::get_tex_image(nix::Texture *tex) {
 	if (icon_image.contains(tex))
 		return icon_image[tex];
 
 	string img;
-	if (tex){
+	if (tex) {
 		Image im;
 		tex->read(im);
 		auto *small = im.scale(48, 48);
 		img = hui::SetImage(small);
 		delete small;
-	}else{
+	} else {
 		Image empty;
 		empty.create(48, 48, White);
 		img = hui::SetImage(&empty);
@@ -752,7 +752,7 @@ void Edward::set_side_panel(shared<hui::Panel> panel) {
 	if (panel) {
 		// open
 		side_panel = panel;
-		ed->embed(panel, "side-bar-grid", 0, 0);
+		ed->embed(panel.get(), "side-bar-grid", 0, 0);
 		expand("side-bar-revealer", true);
 	}
 }
@@ -767,7 +767,7 @@ void Edward::set_bottom_panel(shared<hui::Panel> panel) {
 	if (panel) {
 		// open
 		bottom_panel = panel;
-		ed->embed(panel, "vgrid", 0, 1);
+		ed->embed(panel.get(), "vgrid", 0, 1);
 		//reveal("side-bar-revealer", true);
 	}
 }

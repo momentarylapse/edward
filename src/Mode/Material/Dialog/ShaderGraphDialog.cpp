@@ -175,7 +175,7 @@ void ShaderGraphDialog::_optimize_view(const rect &area) {
 		ga.y2 = max(ga.y2, a.y2);
 	}
 	view_scale = clamp(min(area.width() / ga.width(), area.height() / ga.height()), MIN_VIEW_SCALE, MAX_VIEW_SCALE);
-	view_offset = ga.m() - area.m() / view_scale;
+	view_offset = ga.center() - area.center() / view_scale;
 	//virt = (phys / view_scale) + view_offset_x;
 	_optimal_view_requested = false;
 }

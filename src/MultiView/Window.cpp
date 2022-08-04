@@ -67,10 +67,10 @@ float grid_density(int level, float d_err) {
 
 rect win_get_bounds(Window *w, const vec3 &ax1, const vec3 &ax2) {
 	vec3 p[4];
-	p[0] = w->unproject(vec3(w->dest.x1, w->dest.my(), 0), w->cam->pos);
-	p[1] = w->unproject(vec3(w->dest.x2, w->dest.my(), 0), w->cam->pos);
-	p[2] = w->unproject(vec3(w->dest.mx(), w->dest.y1, 0), w->cam->pos);
-	p[3] = w->unproject(vec3(w->dest.mx(), w->dest.y2, 0), w->cam->pos);
+	p[0] = w->unproject(vec3(w->dest.x1, w->dest.center().y, 0), w->cam->pos);
+	p[1] = w->unproject(vec3(w->dest.x2, w->dest.center().y, 0), w->cam->pos);
+	p[2] = w->unproject(vec3(w->dest.center().x, w->dest.y1, 0), w->cam->pos);
+	p[3] = w->unproject(vec3(w->dest.center().x, w->dest.y2, 0), w->cam->pos);
 	p[0] = w->unproject(vec3(w->dest.x1, w->dest.y1, 0), w->cam->pos);
 	p[1] = w->unproject(vec3(w->dest.x2, w->dest.y1, 0), w->cam->pos);
 	p[2] = w->unproject(vec3(w->dest.x1, w->dest.y2, 0), w->cam->pos);
