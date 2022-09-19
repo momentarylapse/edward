@@ -79,7 +79,7 @@ void MeshCollider::on_init() {
 		}
 		for (auto &p: phys->poly) {
 			if (true){
-				Set<int> vv;
+				base::set<int> vv;
 				for (int i=0; i<p.num_faces; i++)
 					for (int k=0; k<p.face[i].num_vertices; k++){
 						vv.add(p.face[i].index[k]);

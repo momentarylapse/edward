@@ -82,7 +82,7 @@ void *ActionModelSurfaceAutoWeld::compose(Data *d)
 		throw ActionException("s1 evil post");
 
 	// remove obsolete vertices
-	Set<int> vv;
+	base::set<int> vv;
 	for (int w: wb)
 		vv.add(w);
 	foreachb(int ww, vv){

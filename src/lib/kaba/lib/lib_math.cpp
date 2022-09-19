@@ -139,7 +139,7 @@ public:
 	}
 };
 
-class AnyDict : public Map<string,Any> {
+class AnyDict : public base::map<string,Any> {
 public:
 	void __delete__() {
 		this->~AnyDict();
@@ -213,7 +213,34 @@ public:
 	}
 };
 
-class KabaRect : public rect{
+template<class T>
+class KabaMatrix : public T {
+public:
+	void _cdecl imul(const T &m) {
+		*(T*)this *= m;
+	}
+	T _cdecl mul(const T &m) {
+		return *(T*)this * m;
+	}
+	template<class V>
+	V _cdecl mul_v(const V &v) {
+		return *(T*)this * v;
+	}
+	static T _cdecl rotation_v(const vec3& v) {
+		return T::rotation(v);
+	}
+	static T _cdecl rotation_q(const quaternion& q) {
+		return T::rotation(q);
+	}
+	static T _cdecl scale_f(float x, float y, float z) {
+		return T::scale(x, y, z);
+	}
+	static T _cdecl scale_v(const vec3& v) {
+		return T::scale(v);
+	}
+};
+
+class KabaRect : public rect {
 public:
 	void assign(const rect& o) {
 		*(rect*)this = o;
@@ -751,7 +778,7 @@ void SIAddPackageMath() {
 		class_add_func("transpose", TypeMat4, &mat4::transpose, Flags::PURE);
 		class_add_func("translation", TypeMat4, &mat4::translation, Flags::_STATIC__PURE);
 			func_add_param("trans", TypeVec3);
-		class_add_func("rotation", TypeMat4, &mat4::rotation_v, Flags::_STATIC__PURE);
+		class_add_func("rotation", TypeMat4, &KabaMatrix<mat4>::rotation_v, Flags::_STATIC__PURE);
 			func_add_param("ang", TypeVec3);
 		class_add_func("rotation_x", TypeMat4, &mat4::rotation_x, Flags::_STATIC__PURE);
 			func_add_param("ang", TypeFloat32);
@@ -759,12 +786,14 @@ void SIAddPackageMath() {
 			func_add_param("ang", TypeFloat32);
 		class_add_func("rotation_z", TypeMat4, &mat4::rotation_z, Flags::_STATIC__PURE);
 			func_add_param("ang", TypeFloat32);
-		class_add_func("rotation", TypeMat4, &mat4::rotation_q, Flags::_STATIC__PURE);
+		class_add_func("rotation", TypeMat4, &KabaMatrix<mat4>::rotation_q, Flags::_STATIC__PURE);
 			func_add_param("ang", TypeQuaternion);
-		class_add_func("scale", TypeMat4, &mat4::scale, Flags::_STATIC__PURE);
+		class_add_func("scale", TypeMat4, &KabaMatrix<mat4>::scale_f, Flags::_STATIC__PURE);
 			func_add_param("s_x", TypeFloat32);
 			func_add_param("s_y", TypeFloat32);
 			func_add_param("s_z", TypeFloat32);
+		class_add_func("scale", TypeMat4, &KabaMatrix<mat4>::scale_v, Flags::_STATIC__PURE);
+			func_add_param("s", TypeVec3);
 		class_add_func("perspective", TypeMat4, &mat4::perspective, Flags::_STATIC__PURE);
 			func_add_param("fovy", TypeFloat32);
 			func_add_param("aspect", TypeFloat32);
@@ -773,10 +802,10 @@ void SIAddPackageMath() {
 			func_add_param("z_sym", TypeBool);
 		add_operator(OperatorID::ASSIGN, TypeVoid, TypeMat4, TypeMat4, InlineID::CHUNK_ASSIGN, &KabaVector<mat4>::assign);
 		add_operator(OperatorID::EQUAL, TypeBool, TypeMat4, TypeMat4, InlineID::CHUNK_EQUAL);
-		add_operator(OperatorID::MULTIPLY, TypeMat4, TypeMat4, TypeMat4, InlineID::NONE, &mat4::mul);
-		add_operator(OperatorID::MULTIPLY, TypeVec3, TypeMat4, TypeVec3, InlineID::NONE, &mat4::mul_v);
-		add_operator(OperatorID::MULTIPLYS, TypeVoid, TypeMat4, TypeMat4, InlineID::NONE, &mat4::imul);
-	
+		add_operator(OperatorID::MULTIPLY, TypeMat4, TypeMat4, TypeMat4, InlineID::NONE, &KabaMatrix<mat4>::mul);
+		add_operator(OperatorID::MULTIPLY, TypeVec3, TypeMat4, TypeVec3, InlineID::NONE, &KabaMatrix<mat4>::mul_v<vec3>);
+		add_operator(OperatorID::MULTIPLYS, TypeVoid, TypeMat4, TypeMat4, InlineID::NONE, &KabaMatrix<mat4>::imul);
+
 	add_class(TypeMat3);
 		class_add_element("_11", TypeFloat32, 0);
 		class_add_element("_21", TypeFloat32, 4);
@@ -793,10 +822,20 @@ void SIAddPackageMath() {
 		class_add_const("0", TypeMat3, &mat3::ZERO);
 		class_add_func(IDENTIFIER_FUNC_STR, TypeString, &mat3::str, Flags::PURE);
 		class_add_func("inverse", TypeMat3, &mat3::inverse, Flags::PURE);
+		class_add_func("rotation", TypeMat3, &KabaMatrix<mat3>::rotation_v, Flags::_STATIC__PURE);
+			func_add_param("ang", TypeVec3);
+		class_add_func("rotation", TypeMat3, &KabaMatrix<mat3>::rotation_q, Flags::_STATIC__PURE);
+			func_add_param("ang", TypeQuaternion);
+		class_add_func("scale", TypeMat3, &KabaMatrix<mat3>::scale_f, Flags::_STATIC__PURE);
+			func_add_param("s_x", TypeFloat32);
+			func_add_param("s_y", TypeFloat32);
+			func_add_param("s_z", TypeFloat32);
+		class_add_func("scale", TypeMat3, &KabaMatrix<mat3>::scale_v, Flags::_STATIC__PURE);
+			func_add_param("s", TypeVec3);
 		add_operator(OperatorID::ASSIGN, TypeVoid, TypeMat3, TypeMat3, InlineID::CHUNK_ASSIGN, &KabaVector<mat3>::assign);
 		add_operator(OperatorID::EQUAL, TypeBool, TypeMat3, TypeMat3, InlineID::CHUNK_EQUAL);
-		add_operator(OperatorID::MULTIPLY, TypeMat3, TypeMat3, TypeMat3, InlineID::NONE, &mat3::mul);
-		add_operator(OperatorID::MULTIPLY, TypeVec3, TypeMat3, TypeVec3, InlineID::NONE, &mat3::mul_v);
+		add_operator(OperatorID::MULTIPLY, TypeMat3, TypeMat3, TypeMat3, InlineID::NONE, &KabaMatrix<mat3>::mul);
+		add_operator(OperatorID::MULTIPLY, TypeVec3, TypeMat3, TypeVec3, InlineID::NONE, &KabaMatrix<mat3>::mul_v<vec3>);
 	
 	add_class(TypeVli);
 		class_add_element("sign", TypeBool, 0);

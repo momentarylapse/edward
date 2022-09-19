@@ -318,7 +318,7 @@ void SolidBody::do_simple_physics(float dt) {
 
 // rotate inertia tensor into world coordinates
 void SolidBody::get_theta_world(mat3 &theta_world, mat3 &theta_world_inv) {
-	auto r = mat3::rotation_q(owner->ang);
+	auto r = mat3::rotation(owner->ang);
 	auto r_inv = r.transpose();
 	theta_world = (r * theta_0 * r_inv);
 

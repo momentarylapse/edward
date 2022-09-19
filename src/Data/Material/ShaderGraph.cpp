@@ -19,7 +19,7 @@
 
 Array<string> ShaderGraph::enumerate() const {
 	Array<string> r;
-	Set<string> cats;
+	base::set<string> cats;
 	for (auto &p: ed->plugins->plugins)
 		if (p.type == PluginManager::PluginType::SHADER_NODE)
 			cats.add(p.category);

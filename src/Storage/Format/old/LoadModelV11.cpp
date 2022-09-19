@@ -29,7 +29,7 @@ int find_other_poly_from_edge(ModelMesh *m, int e, int t) {
 void guess_smooth_groups(DataModel *m) {
 	auto mesh = m->mesh;
 
-	std::function<void(Set<int>&, Set<int>&, ModelPolygon&,int,int,int&)> add_and_grow_outwards = [&](Set<int> &polys, Set<int> &edges, ModelPolygon &p, int index, int g, int &n_found) {
+	std::function<void(base::set<int>&, base::set<int>&, ModelPolygon&,int,int,int&)> add_and_grow_outwards = [&](base::set<int> &polys, base::set<int> &edges, ModelPolygon &p, int index, int g, int &n_found) {
 		if (polys.contains(index))
 			return;
 		p.smooth_group = g;
@@ -77,8 +77,8 @@ void guess_smooth_groups(DataModel *m) {
 		int g = randi(50000);
 		int n_found = 0;
 
-		Set<int> polys;
-		Set<int> edges;
+		base::set<int> polys;
+		base::set<int> edges;
 
 		add_and_grow_outwards(polys, edges, p, i, g, n_found);
 
@@ -86,7 +86,7 @@ void guess_smooth_groups(DataModel *m) {
 			p.smooth_group = -1;
 	}
 
-	Set<int> groups;
+	base::set<int> groups;
 	for (auto &p: mesh->polygon)
 		if (p.smooth_group >= 0)
 			groups.add(p.smooth_group);

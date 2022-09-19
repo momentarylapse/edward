@@ -27,7 +27,7 @@
 #include "y/EngineData.h"
 #include "meta.h"
 #include "y/Font.h"
-#include "lib/doc/config.h"
+#include "lib/os/config.h"
 #include "lib/kaba/kaba.h"
 #include "lib/nix/nix.h"
 #include "y/ModelManager.h"
@@ -208,7 +208,7 @@ Edward::Edward() :
 	if (app->installed)
 		plugins = new PluginManager(app->directory_static << "Plugins");
 	else
-		plugins = new PluginManager(app->directory << "Plugins");
+		plugins = new PluginManager(app->directory_static << ".." << "Plugins");
 
 	mode_material = new ModeMaterial(multi_view_3d);
 

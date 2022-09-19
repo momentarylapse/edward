@@ -43,7 +43,7 @@ nix::Texture *create_round_texture(int n) {
 			float f = clamp((n*0.45f - r)*0.5f, 0.0f, 1.0f);
 			im.set_pixel(i, j, color(f, 1, 1, 1));
 		}
-	t->override(im);
+	t->write(im);
 	return t;
 }
 
@@ -61,7 +61,7 @@ void create_fake_dynamic_cube_map(nix::CubeMap *cube_map) {
 			im.set_pixel(i, j, color::interpolate(scheme.BACKGROUND, scheme.GRID, f));
 		}
 	for (int i=0;i<6;i++)
-		cube_map->override_side(i, im);
+		cube_map->write_side(i, im);
 }
 
 void drawing_helper_init(const Path &dir) {
@@ -72,7 +72,7 @@ void drawing_helper_init(const Path &dir) {
 	tex_white = new nix::Texture();
 	Image im;
 	im.create(32, 32, White);
-	tex_white->override(im);
+	tex_white->write(im);
 
 	try {
 
@@ -236,7 +236,7 @@ void _draw_str(float x, float y, const string &str) {
 	Image im;
 	render_text(str, im);
 	if (im.width > 0) {
-		tex_text->override(im);
+		tex_text->write(im);
 		set_texture(tex_text);
 		draw_2d(rect::ID, rect(x, x + im.width, y, y + im.height), 0);
 	}

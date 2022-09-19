@@ -423,8 +423,8 @@ bool Geometry::is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp)
 	return false;
 }
 
-void geo_poly_find_connected(const Geometry &g, int p0, Set<int> &polys) {
-	Set<int> verts;
+void geo_poly_find_connected(const Geometry &g, int p0, base::set<int> &polys) {
+	base::set<int> verts;
 	bool found_more = true;
 
 	auto add_poly = [&verts, &polys, &found_more, &g] (int i) {
@@ -457,7 +457,7 @@ void geo_poly_find_connected(const Geometry &g, int p0, Set<int> &polys) {
 
 Array<Geometry> Geometry::split_connected() const {
 	Array<Geometry> r;
-	Set<int> poly_used;
+	base::set<int> poly_used;
 
 	foreachi (auto &p, polygon, i) {
 		if (poly_used.contains(i))
@@ -466,7 +466,7 @@ Array<Geometry> Geometry::split_connected() const {
 		Geometry g;
 		g.vertex = vertex;
 
-		Set<int> g_polys;
+		base::set<int> g_polys;
 		geo_poly_find_connected(*this, i, g_polys);
 
 		for (int j: g_polys) {

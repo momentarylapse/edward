@@ -17,7 +17,7 @@ void ActionModelCollapseVertices::CollapseVertices(DataModel *m)
 {
 	msg_todo("collapse vertives");
 #if 0
-	Set<int> vert;
+	base::set<int> vert;
 	vector pos = v_0;
 	for (int v: s.vertex)
 		if (m->vertex[v].is_selected){

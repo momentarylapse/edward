@@ -16,6 +16,7 @@
 #endif
 #if defined(OS_WINDOWS) || defined(OS_MINGW)
 	#include <windows.h>
+	#include "../../base/iter.h"
 #endif
 #include <errno.h>
 
@@ -317,13 +318,13 @@ void _map_constants_to_memory(char *mem, int &offset, char *address, const Class
 			offset += mem_align(c->mapping_size(), 4);
 		}
 
-	/*foreachi(Constant *c, syntax->constants, i)
+	/*for (auto&& [i,c]: enumerate(syntax->constants))
 		if ((c->mapping_size() > 1) and used[i]) {
 			cnst[i] = (char*)(syntax->asm_meta_info->code_origin + opcode_size);
 			c->map_into(&opcode[opcode_size], cnst[i]);
 			opcode_size += mem_align(c->mapping_size(), 4);
 		}
-	foreachi(Constant *c, syntax->constants, i)
+	for (auto&& [i,c]: enumerate(syntax->constants))
 		if ((c->mapping_size() == 1) and used[i]) {
 			cnst[i] = (char*)(syntax->asm_meta_info->code_origin + opcode_size);
 			c->map_into(&opcode[opcode_size], cnst[i]);
@@ -348,7 +349,7 @@ void Module::map_constants_to_memory(char *mem, int &offset, char *address) {
 	msg_write(format("     USED:    %d / %d", n, used.num));
 	int size0 = opcode_size;
 
-	foreachi(Constant *c, syntax->constants, i) {
+	for (auto&& [i,c]: enumerate(syntax->constants)) {
 		cnst[i] = (char*)(syntax->asm_meta_info->code_origin + opcode_size);
 		c->map_into(&opcode[opcode_size], cnst[i]);
 		opcode_size += mem_align(c->mapping_size(), 4);
@@ -420,7 +421,7 @@ void import_deep(SyntaxTree *dest, SyntaxTree *source) {
 	}
 }
 
-void find_all_includes_rec(Module *s, Set<Module*> &includes) {
+void find_all_includes_rec(Module *s, base::set<Module*> &includes) {
 	for (Module *i: weak(s->syntax->includes)) {
 		//if (i->filename.find(".kaba") < 0)
 		//	continue;
@@ -431,7 +432,7 @@ void find_all_includes_rec(Module *s, Set<Module*> &includes) {
 
 // only for "os"
 void import_includes(Module *s) {
-	Set<Module*> includes;
+	base::set<Module*> includes;
 	find_all_includes_rec(s, includes);
 
 	for (Module *i: includes)
@@ -565,7 +566,7 @@ void register_functions(Module* s) {
 	int nf = s->functions().num;
 	RUNTIME_FUNCTION* function_table = new RUNTIME_FUNCTION[nf];
 	UNWIND_INFO* unwind_info = new UNWIND_INFO[nf];
-	foreachi (auto* f, s->functions(), i) {
+	for (auto&& [i,f]: enumerate(s->functions())) {
 		unwind_info[i].Version = 1;
 		unwind_info[i].Flags = UNW_FLAG_EHANDLER;
 		unwind_info[i].SizeOfProlog = 0;

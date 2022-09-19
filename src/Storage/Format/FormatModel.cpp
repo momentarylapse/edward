@@ -57,22 +57,22 @@ char read_first_char(const Path &filename) {
 }
 
 
-Set<int> get_all_poly_vert(DataModel *m) {
-	Set<int> all_vert;
+base::set<int> get_all_poly_vert(DataModel *m) {
+	base::set<int> all_vert;
 	for (auto &p: m->phys_mesh->polygon)
 		for (auto &f: p.side)
 			all_vert.add(f.vertex);
 	return all_vert;
 }
 
-Array<Set<int>> split_conv_polyhedra(DataModel *m) {
+Array<base::set<int>> split_conv_polyhedra(DataModel *m) {
 	auto all_vert = get_all_poly_vert(m);
 
-	Array<Set<int>> surf;
+	Array<base::set<int>> surf;
 
-	while(all_vert.num > 0) {
+	while (all_vert.num > 0) {
 		msg_write("----surf");
-		Set<int> cur;
+		base::set<int> cur;
 		cur.add(all_vert.pop());
 		int n = 0;
 		while (cur.num > n) {
@@ -95,7 +95,7 @@ Array<Set<int>> split_conv_polyhedra(DataModel *m) {
 	return surf;
 }
 
-Array<ModelPolygon> conv_poly_poly(DataModel *m, const Set<int> &v) {
+Array<ModelPolygon> conv_poly_poly(DataModel *m, const base::set<int> &v) {
 	Array<ModelPolygon> poly;
 	for (auto &p: m->phys_mesh->polygon)
 		if (v.contains(p.side[0].vertex))

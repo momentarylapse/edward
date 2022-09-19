@@ -11,7 +11,7 @@
 #include <math.h>
 
 namespace hui {
-	void get_style_colors(Panel *p, const string &id, Map<string,color> &colors);
+	void get_style_colors(Panel *p, const string &id, base::map<string,color> &colors);
 }
 
 
@@ -20,7 +20,7 @@ struct WBrushConfig {
 	string name;
 
 	string get_icon(hui::Panel *p) const {
-		Map<string,color> colors;
+		base::map<string,color> colors;
 		hui::get_style_colors(p, "brush-type", colors);
 
 		Image im;

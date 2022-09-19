@@ -41,7 +41,7 @@ public:
 	}
 };
 
-Map<const kaba::Class*, ComponentListX> component_lists;
+base::map<const kaba::Class*, ComponentListX> component_lists;
 
 bool class_func_did_override(const kaba::Class *type, const string &fname) {
 #ifdef _X_ALLOW_X_

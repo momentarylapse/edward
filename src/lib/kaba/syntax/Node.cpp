@@ -6,6 +6,7 @@
  */
 #include "../kaba.h"
 #include "../asm/asm.h"
+#include "../../base/iter.h"
 #include "../../os/msg.h"
 #include <stdio.h>
 
@@ -375,11 +376,14 @@ shared<Node> Node::deref_shift(int64 shift, const Class *type, int token_id) con
 
 
 // recursive
-shared<Node> cp_node(shared<Node> c) {
+shared<Node> cp_node(shared<Node> c, Block *parent_block) {
 	shared<Node> cmd;
 	if (c->kind == NodeKind::BLOCK) {
-		cmd = new Block(c->as_block()->function, c->as_block()->parent, c->type);
+		if (!parent_block)
+			parent_block = c->as_block()->parent;
+		cmd = new Block(c->as_block()->function, parent_block, c->type);
 		cmd->as_block()->vars = c->as_block()->vars;
+		parent_block = cmd->as_block();
 	} else {
 		cmd = new Node(c->kind, c->link_no, c->type, c->is_const);
 	}
@@ -387,7 +391,7 @@ shared<Node> cp_node(shared<Node> c) {
 	cmd->set_num_params(c->params.num);
 	for (int i=0;i<c->params.num;i++)
 		if (c->params[i])
-			cmd->set_param(i, cp_node(c->params[i]));
+			cmd->set_param(i, cp_node(c->params[i], parent_block));
 	return cmd;
 }
 
@@ -426,7 +430,7 @@ shared<Node> add_node_member_call(Function *f, const shared<Node> inst, int toke
 	}
 	c->set_num_params(f->num_params);
 	c->set_instance(inst);
-	foreachi (auto p, params, i)
+	for (auto&& [i,p]: enumerate(params))
 		c->set_param(i + 1, p);
 	return c;
 }

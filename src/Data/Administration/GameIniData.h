@@ -9,7 +9,7 @@
 #define GAMEINIDATA_H_
 
 #include "../Data.h"
-#include "../../lib/doc/config.h"
+#include "../../lib/os/config.h"
 
 
 class GameIniData : public Configuration {

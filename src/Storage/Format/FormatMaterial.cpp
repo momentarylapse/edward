@@ -9,7 +9,7 @@
 #include "../../Edward.h"
 #include "../../Data/Material/ShaderGraph.h"
 #include "../../lib/nix/nix.h"
-#include "../../lib/doc/config.h"
+#include "../../lib/os/config.h"
 #include "../../lib/os/formatter.h"
 
 color any2color(const Any &a);

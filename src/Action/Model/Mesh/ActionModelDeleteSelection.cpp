@@ -23,7 +23,7 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(const ModelSelection &s, 
 void *ActionModelDeleteSelection::compose(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	Set<int> polys;
+	base::set<int> polys;
 
 	if (greedy) {
 		foreachib(ModelPolygon &t, m->edit_mesh->polygon, ti) {

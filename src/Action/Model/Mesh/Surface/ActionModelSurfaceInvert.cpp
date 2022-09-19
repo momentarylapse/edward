@@ -11,7 +11,7 @@
 #include "../../../../Data/Model/ModelPolygon.h"
 #include <assert.h>
 
-ActionModelSurfaceInvert::ActionModelSurfaceInvert(const Set<int> &_poly, bool _consistent) {
+ActionModelSurfaceInvert::ActionModelSurfaceInvert(const base::set<int> &_poly, bool _consistent) {
 	poly = _poly;
 	consistent = _consistent;
 }

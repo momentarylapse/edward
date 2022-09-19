@@ -16,8 +16,8 @@ class ModelEdge;
 
 class ModelSelection {
 public:
-	Set<int> vertex;
-	Set<int> polygon;
+	base::set<int> vertex;
+	base::set<int> polygon;
 
 	struct Edge {
 		int a, b;
@@ -26,9 +26,9 @@ public:
 	void set(const ModelEdge &e);
 	bool has(const ModelEdge &e) const;
 
-	Set<int> bone;
-	Set<int> cylinder;
-	Set<int> ball;
+	base::set<int> bone;
+	base::set<int> cylinder;
+	base::set<int> ball;
 
 	void clear();
 	void expand_to_surfaces(ModelMesh *m);

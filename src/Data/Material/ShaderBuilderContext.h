@@ -30,8 +30,8 @@ class ShaderBuilderContext {
 public:
 	ShaderBuilderContext(const ShaderGraph *g);
 
-	Set<string> dependencies;
-	Set<string> uniform_dependencies;
+	base::set<string> dependencies;
+	base::set<string> uniform_dependencies;
 	Array<TempVar> temps;
 	const ShaderGraph *graph;
 

@@ -3,6 +3,7 @@
 #include "../../os/msg.h"
 #include "../../base/set.h"
 #include "../../base/algo.h"
+#include "../../base/iter.h"
 #include "Parser.h"
 #include "template.h"
 
@@ -254,7 +255,7 @@ shared<Node> Parser::parse_abstract_operand_extension_call(shared<Node> link, Bl
 	auto node = new Node(NodeKind::ABSTRACT_CALL, 0, TypeUnknown);
 	node->set_num_params(params.num + 1);
 	node->set_param(0, link);
-	foreachi (auto p, params, i)
+	for (auto&& [i,p]: enumerate(params))
 		node->set_param(i + 1, p);
 
 	return node;
@@ -572,7 +573,7 @@ const Class *merge_type_tuple_into_product(SyntaxTree *tree, const Array<const C
 	auto c = const_cast<Class*>(tree->make_class("("+name+")", Class::Type::PRODUCT, size, -1, nullptr, classes, tree->_base_class.get(), token_id));
 	if (c->elements.num == 0) {
 		int offset = 0;
-		foreachi (auto &cc, classes, i) {
+		for (auto&& [i,cc]: enumerate(classes)) {
 			c->elements.add(ClassElement("e" + i2s(i), cc, offset));
 			offset += cc->size;
 		}
@@ -781,9 +782,14 @@ shared<Node> Parser::parse_abstract_for_header(Block *block) {
 	auto var = parse_abstract_token();
 
 	// index
-	shared<Node> index;
-	if (try_consume(","))
-		index = parse_abstract_token();
+	shared<Node> key;
+	if (try_consume("=>")) {
+		// key => value
+		key = var;
+		var = parse_abstract_token();
+	} else if (try_consume(",")) {
+		key = parse_abstract_token();
+	}
 
 
 	expect_identifier(IDENTIFIER_IN, "'in' expected after variable in 'for ...'");
@@ -794,6 +800,9 @@ shared<Node> Parser::parse_abstract_for_header(Block *block) {
 
 	if (try_consume(":")) {
 		// range
+
+		if (key)
+			do_error("no key=>value allowed in START:END for loop", key);
 
 		auto val1 = parse_abstract_operand_greedy(block);
 
@@ -817,10 +826,10 @@ shared<Node> Parser::parse_abstract_for_header(Block *block) {
 
 
 		auto cmd_for = add_node_statement(StatementID::FOR_ARRAY, token0, TypeUnknown);
-		// [VAR, INDEX, ARRAY, BLOCK]
+		// [VAR, KEY, ARRAY, BLOCK]
 
 		cmd_for->set_param(0, var);
-		cmd_for->set_param(1, index);
+		cmd_for->set_param(1, key);
 		cmd_for->set_param(2, array);
 		//cmd_for->set_uparam(3, loop_block);
 
@@ -1174,6 +1183,7 @@ shared_array<Node> parse_comma_sep_token_list(Parser *p) {
 
 // local (variable) definitions...
 shared<Node> Parser::parse_abstract_statement_var(Block *block) {
+	bool is_let = (Exp.cur == IDENTIFIER_LET);
 	Exp.next(); // "var"/"let"
 
 	// tuple "var (x,y) = ..."
@@ -1193,7 +1203,7 @@ shared<Node> Parser::parse_abstract_statement_var(Block *block) {
 		assign->set_param(0, tuple);
 		assign->set_param(1, rhs);
 
-		auto node = new Node(NodeKind::ABSTRACT_VAR, 0, TypeUnknown);
+		auto node = new Node(NodeKind::ABSTRACT_VAR, (int)is_let, TypeUnknown);
 		node->set_num_params(3);
 		//node->set_param(0, type); // no type
 		node->set_param(1, cp_node(tuple));
@@ -1224,7 +1234,7 @@ shared<Node> Parser::parse_abstract_statement_var(Block *block) {
 		assign->set_param(0, names[0]);
 		assign->set_param(1, rhs);
 
-		auto node = new Node(NodeKind::ABSTRACT_VAR, 0, TypeUnknown);
+		auto node = new Node(NodeKind::ABSTRACT_VAR, (int)is_let, TypeUnknown);
 		node->set_num_params(3);
 		node->set_param(0, type); // type
 		node->set_param(1, names[0]->shallow_copy()); // name
@@ -1236,7 +1246,7 @@ shared<Node> Parser::parse_abstract_statement_var(Block *block) {
 	expect_new_line();
 
 	for (auto &n: names) {
-		auto node = new Node(NodeKind::ABSTRACT_VAR, 0, TypeUnknown);
+		auto node = new Node(NodeKind::ABSTRACT_VAR, (int)is_let, TypeUnknown);
 		node->set_num_params(2);
 		node->set_param(0, type); // type
 		node->set_param(1, n); // name
@@ -1317,11 +1327,17 @@ shared<Node> Parser::parse_abstract_statement_lambda(Block *block) {
 shared<Node> Parser::parse_abstract_statement_sorted(Block *block) {
 	int token0 = Exp.consume_token(); // "sorted"
 
+	auto node = add_node_statement(StatementID::SORTED, token0, TypeUnknown);
+
+	if (Exp.cur != "(") {
+		node->set_num_params(0);
+		return node;
+	}
+
 	auto params = parse_abstract_call_parameters(block);
+	node->set_param(0, params[0]);
 	if (params.num < 0 or params.num > 2)
 		do_error_exp("sorted(array, criterion=\"\") expects 1 or 2 parameters");
-	auto node = add_node_statement(StatementID::SORTED, token0, TypeUnknown);
-	node->set_param(0, params[0]);
 	if (params.num >= 2) {
 		node->set_param(1, params[1]);
 	} else {
@@ -1720,7 +1736,7 @@ void Parser::post_process_newly_parsed_class(Class *_class, int size) {
 
 	// virtual functions?     (derived -> _class->num_virtual)
 //	_class->vtable = cur_virtual_index;
-	//foreach(ClassFunction &cf, _class->function)
+	//for (ClassFunction &cf, _class->function)
 	//	_class->num_virtual = max(_class->num_virtual, cf.virtual_index);
 	if (_class->vtable.num > 0) {
 		if (_class->parent) {
@@ -1815,13 +1831,13 @@ shared<Node> Parser::parse_and_eval_const(Block *block, const Class *type) {
 		type = cv->type;
 	}
 
-	cv = tree->transform_node(cv, [&] (shared<Node> n) {
-		return tree->conv_eval_const_func(n);
+	cv = tree->transform_node(cv, [this] (shared<Node> n) {
+		return tree->conv_eval_const_func(tree->conv_fake_constructors(n));
 	});
 
 	if (cv->kind != NodeKind::CONSTANT) {
 		//cv->show(TypeVoid);
-		do_error("constant value expected", cv);
+		do_error("constant value expected, but expression can not be evaluated at compile time", cv);
 	}
 	return cv;
 }

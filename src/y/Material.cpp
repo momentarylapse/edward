@@ -2,7 +2,7 @@
 #include "Model.h"
 #include "../lib/config.h"
 #include "../lib/os/msg.h"
-#include "../lib/doc/config.h"
+#include "../lib/os/config.h"
 #include "../lib/any/any.h"
 #include "../graphics-impl.h"
 #if __has_include("ResourceManager.h")

@@ -409,7 +409,7 @@ void ModeWorld::apply_lighting(MultiView::Window *win) {
 		lights.add(l);
 	}
 	multi_view->ubo_light->update_array(lights);
-	nix::bind_buffer(multi_view->ubo_light, 1);
+	nix::bind_buffer(1, multi_view->ubo_light);
 	//win->set_shader(nix::Shader::default_3d, w->lights.num);
 }
 

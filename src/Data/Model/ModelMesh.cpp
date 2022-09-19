@@ -144,7 +144,7 @@ void ModelMesh::_remove_polygon(int index)
 		vertex[t.side[k].vertex].ref_count --;
 	}
 
-	Set<int> obsolete;
+	base::set<int> obsolete;
 
 	// remove from its edges
 	for (int k=0;k<t.side.num;k++){
@@ -428,7 +428,7 @@ void ModelMesh::get_bounding_box(vec3 &min, vec3 &max, bool dont_reset) {
 
 void ModelMesh::set_normals_dirty_by_vertices(const Array<int> &index)
 {
-	Set<int> sindex;
+	base::set<int> sindex;
 	for (int i=0; i<index.num; i++)
 		sindex.add(index[i]);
 
@@ -470,7 +470,7 @@ void ModelMesh::update_normals() {
 	Array<int> cur_polys;
 	Array<int> cur_faces;
 	Array<int> cur_groups;
-	Set<int> cur_groups_done;
+	base::set<int> cur_groups_done;
 	for (int v=0; v<vertex.num; v++) {
 		cur_polys.clear();
 		cur_faces.clear();
@@ -506,7 +506,7 @@ void ModelMesh::update_normals() {
 #else
 
 
-	Set<int> ee, vert;
+	base::set<int> ee, vert;
 
 	// "flat" triangle normals
 	for (ModelPolygon &t: polygon)
@@ -600,7 +600,7 @@ void ModelMesh::update_normals() {
 		while (pd.num > 0){
 
 			// start with the 1st triangle
-			Set<int> used;
+			base::set<int> used;
 			used.add(0);
 
 			// search to the right

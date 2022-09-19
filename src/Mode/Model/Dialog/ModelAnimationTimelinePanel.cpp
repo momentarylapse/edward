@@ -13,7 +13,7 @@
 #include "../../../lib/math/vec2.h"
 
 namespace hui {
-	void get_style_colors(Panel *p, const string &id, Map<string,color> &colors);
+	void get_style_colors(Panel *p, const string &id, base::map<string,color> &colors);
 }
 
 
@@ -65,7 +65,7 @@ string ModelAnimationTimelinePanel::get_time_str_fuzzy(double t, double dt) {
 void ModelAnimationTimelinePanel::on_draw(Painter *c) {
 	double MIN_GRID_DIST = 10.0;
 
-	Map<string,color> colors;
+	base::map<string,color> colors;
 	hui::get_style_colors(this, "area", colors);
 
 	color bg = colors["insensitive_bg_color"];

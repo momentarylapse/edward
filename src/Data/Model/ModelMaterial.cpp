@@ -71,7 +71,7 @@ void ModelMaterial::TextureLevel::reload_image() {
 void ModelMaterial::TextureLevel::update_texture() {
 	if (!texture)
 		texture = new nix::Texture();
-	texture->override(*image);
+	texture->write(*image);
 }
 
 // DEPRECATED

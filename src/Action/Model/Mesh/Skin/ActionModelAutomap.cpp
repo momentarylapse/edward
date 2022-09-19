@@ -17,7 +17,7 @@ ActionModelAutomap::ActionModelAutomap(int _material, int _texture_level) {
 }
 
 struct Island {
-	Set<int> p;
+	base::set<int> p;
 	vec3 dir;
 	rect r;
 	Array<vec3> skin;
@@ -49,9 +49,9 @@ Array<int> group_by_dirs(DataModel *m, const vec3 *dir, int num_dirs)
 	return r;
 }
 
-Set<int> extract_connected(Set<int> &set, DataModel *m)
+base::set<int> extract_connected(base::set<int> &set, DataModel *m)
 {
-	Set<int> r;
+	base::set<int> r;
 	int i = set[0];
 	r.add(i);
 	set.erase(i);
@@ -80,7 +80,7 @@ Set<int> extract_connected(Set<int> &set, DataModel *m)
 	return r;
 }
 
-Array<Island> find_connected(Set<int> &set, DataModel *m, const vec3 &dir)
+Array<Island> find_connected(base::set<int> &set, DataModel *m, const vec3 &dir)
 {
 	Array<Island> islands;
 	while(set.num > 0){
@@ -99,7 +99,7 @@ Array<Island> get_islands(DataModel *m)
 	Array<Island> islands;
 	Array<int> g = group_by_dirs(m, dir, num_dirs);
 	for (int k=0;k<num_dirs;k++){
-		Set<int> set;
+		base::set<int> set;
 		foreachi(int gg, g, i)
 			if (gg == k)
 				set.add(i);

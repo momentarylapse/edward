@@ -7,6 +7,7 @@
 
 #include "ControlListView.h"
 #include "../hui.h"
+#include "../../base/iter.h"
 
 
 #ifdef HUI_API_GTK
@@ -85,7 +86,7 @@ Array<GType> CreateTypeList(const string &_format, int size) {
 void configure_tree_view_columns(Control *c, GtkWidget *view, const string &_format, const Array<string> &parts) {
 	string format_string = make_format_string_useful(_format, parts.num);
 
-	foreachi (char f, format_string, i){
+	for (auto&& [i,f]: enumerate(format_string)) {
 		GtkCellRenderer *renderer;
 		GtkTreeViewColumn *column;
 		if (f == 'C') {
@@ -299,6 +300,8 @@ void set_list_cell(GtkListStore *store, GtkTreeIter &iter, int column, const str
 		GdkPixbuf *p = (GdkPixbuf*)get_gtk_image_pixbuf(str);
 		if (p)
 			gtk_list_store_set(store, &iter, column, p, -1);
+		else if (str != "")
+			msg_error("no image: " + str);
 	}
 }
 

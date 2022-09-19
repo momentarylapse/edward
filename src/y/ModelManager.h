@@ -19,7 +19,7 @@ class Animator;
 class Skeleton;
 
 
-class ModelTemplate : public Sharable<Empty> {
+class ModelTemplate : public Sharable<base::Empty> {
 public:
 	Path filename;
 	Model *model;

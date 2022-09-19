@@ -73,7 +73,7 @@ static bool tria_ok(ModelMesh *m, int i0, int i1, int i2, float &r)
 	return true;
 }
 
-static int find_for_edge(ModelMesh *m, int i0, int i1, Set<int> used)
+static int find_for_edge(ModelMesh *m, int i0, int i1, base::set<int> used)
 {
 	float rmin = 0;
 	int imin = -1;
@@ -92,7 +92,7 @@ static int find_for_edge(ModelMesh *m, int i0, int i1, Set<int> used)
 	return imin;
 }
 
-void ActionModelTriangulateVertices::add_tria(Data*d, int i0, int i1, int i2, Set<int> &used, Array<int> &boundary)
+void ActionModelTriangulateVertices::add_tria(Data*d, int i0, int i1, int i2, base::set<int> &used, Array<int> &boundary)
 {
 	Array<int> v;
 	v.add(i0);
@@ -130,7 +130,7 @@ void *ActionModelTriangulateVertices::compose(Data *d)
 {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	Set<int> used;
+	base::set<int> used;
 	Array<int> boundary;
 
 	int i0 = find_rand_sel(m->edit_mesh);

@@ -15,7 +15,7 @@ class DataModel;
 
 class ActionModelSurfaceInvert : public Action {
 public:
-	ActionModelSurfaceInvert(const Set<int> &poly, bool consistent);
+	ActionModelSurfaceInvert(const base::set<int> &poly, bool consistent);
 	string name(){	return "ModelSurfaceInvert";	}
 
 	void *execute(Data *d);
@@ -26,8 +26,8 @@ public:
 private:
 	void invert_polygons(DataModel *m);
 	void invert_edges(DataModel *m);
-	Set<int> poly;
-	Set<int> edges;
+	base::set<int> poly;
+	base::set<int> edges;
 	bool consistent;
 };
 

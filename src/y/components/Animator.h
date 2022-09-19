@@ -40,7 +40,7 @@ public:
 };
 
 // a list of animations
-class MetaMove : public Sharable<Empty> {
+class MetaMove : public Sharable<base::Empty> {
 public:
 	MetaMove();
 	// universal animation data

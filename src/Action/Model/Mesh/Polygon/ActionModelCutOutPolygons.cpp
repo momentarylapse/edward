@@ -29,7 +29,7 @@ void *ActionModelCutOutPolygons::compose(Data *d)
 
 void ActionModelCutOutPolygons::CutOutSurface(DataModel *m)
 {
-	Set<int> sel_poly;
+	base::set<int> sel_poly;
 	foreachi(ModelPolygon &t, m->edit_mesh->polygon, ti)
 		if (t.is_selected)
 			sel_poly.add(ti);
@@ -37,7 +37,7 @@ void ActionModelCutOutPolygons::CutOutSurface(DataModel *m)
 		return;
 
 	// find boundary
-	Set<int> boundary;
+	base::set<int> boundary;
 	for (ModelEdge &e: m->edit_mesh->edge)
 		if (e.ref_count == 2)
 			if ((m->edit_mesh->polygon[e.polygon[0]].is_selected != m->edit_mesh->polygon[e.polygon[1]].is_selected)){

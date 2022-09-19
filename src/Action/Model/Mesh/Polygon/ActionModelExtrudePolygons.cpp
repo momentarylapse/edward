@@ -35,7 +35,7 @@ void *ActionModelExtrudePolygons::compose(Data *d) {
 
 
 void ActionModelExtrudePolygons::extrude_surface(DataModel *m) {
-	Set<int> sel_poly, sel_vert;
+	base::set<int> sel_poly, sel_vert;
 	foreachi(auto &t, m->edit_mesh->polygon, ti)
 		if (t.is_selected) {
 			sel_poly.add(ti);
@@ -46,7 +46,7 @@ void ActionModelExtrudePolygons::extrude_surface(DataModel *m) {
 		return;
 
 	// find boundary
-	Set<int> boundary;
+	base::set<int> boundary;
 	for (ModelEdge &e: m->edit_mesh->edge) {
 		int n_sel = 0;
 		for (int k=0;k<e.ref_count;k++)

@@ -213,7 +213,7 @@ void Animator::do_animation(float elapsed) {
 
 		// create matrices (model -> skeleton)
 		auto t = mat4::translation(b->pos);
-		auto r = mat4::rotation_q(b->ang);
+		auto r = mat4::rotation(b->ang);
 		//b->dmatrix = t * r;
 		dmatrix[i] = t * r * t0;
 	}

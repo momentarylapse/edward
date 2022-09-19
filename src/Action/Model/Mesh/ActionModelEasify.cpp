@@ -99,7 +99,7 @@ void ActionModelEasify::CalculateWeights(ModelMesh *m) {
 			Array<PolyRef> rr;
 			rr.append(ref[e.vertex[0]]);
 			rr.append(ref[e.vertex[1]]);
-			Set<int> ee;
+			base::set<int> ee;
 			for (int i=0;i<rr.num;i++) {
 				ModelPolygon &p = m->polygon[rr[i].poly];
 				int k = rr[i].side;

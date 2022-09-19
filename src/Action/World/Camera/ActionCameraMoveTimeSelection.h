@@ -23,7 +23,7 @@ public:
 	void *execute(Data *d);
 	void undo(Data *d);
 private:
-	Set<int> index;
+	base::set<int> index;
 	float pos0;
 	float param;
 	Array<float> old_data;

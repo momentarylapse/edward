@@ -14,7 +14,7 @@
 class Path;
 class ShaderNode;
 
-class ShaderGraph : public Sharable<Empty> {
+class ShaderGraph : public Sharable<base::Empty> {
 public:
 	ShaderGraph();
 	~ShaderGraph();

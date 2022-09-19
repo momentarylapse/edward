@@ -16,8 +16,8 @@
 Path ResourceManager::shader_dir;
 Path ResourceManager::texture_dir;
 Path ResourceManager::default_shader;
-static Map<Path,Shader*> shaders;
-static Map<Path,Texture*> textures;
+static base::map<Path,Shader*> shaders;
+static base::map<Path,Texture*> textures;
 
 Path guess_absolute_path(const Path &filename, const Array<Path> dirs) {
 	if (filename.is_absolute())

@@ -17,6 +17,7 @@
 #include "../../math/complex.h"
 #include "../../any/any.h"
 #include "../../base/callable.h"
+#include "../../base/iter.h"
 #include "../../os/msg.h"
 
 
@@ -182,8 +183,7 @@ const Class *add_type_a(const Class *sub_type, int array_length, const string &_
 	string name = _name;
 	if (name == "")
 		name = sub_type->name + "[" + i2s(array_length) + "]";
-	Class *t = new Class(name, 0, cur_package->syntax, nullptr, {sub_type});
-	t->size = sub_type->size * array_length;
+	Class *t = new Class(name, sub_type->size * array_length, cur_package->syntax, nullptr, {sub_type});
 	t->type = Class::Type::ARRAY;
 	t->array_length = array_length;
 	__add_class__(t, sub_type->name_space);
@@ -195,14 +195,14 @@ const Class *add_type_l(const Class *sub_type, const string &_name) {
 	string name = _name;
 	if (name == "")
 		name = sub_type->name + "[]";
-	Class *t = new Class(name, 0, cur_package->syntax, nullptr, {sub_type});
-	t->size = config.super_array_size;
+	Class *t = new Class(name, config.super_array_size, cur_package->syntax, nullptr, {sub_type});
 	t->type = Class::Type::SUPER_ARRAY;
 	kaba_make_super_array(t);
 	__add_class__(t, sub_type->name_space);
 	return t;
 }
 
+// dict
 const Class *add_type_d(const Class *sub_type, const string &_name) {
 	string name = _name;
 	if (name == "")
@@ -211,6 +211,15 @@ const Class *add_type_d(const Class *sub_type, const string &_name) {
 	t->type = Class::Type::DICT;
 	kaba_make_dict(t);
 	__add_class__(t, sub_type->name_space);
+	return t;
+}
+
+// enum
+const Class *add_type_e(const string &name, const Class *_namespace) {
+	Class *t = new Class(name, sizeof(int), cur_package->syntax);
+	t->type = Class::Type::ENUM;
+	flags_set(t->flags, Flags::FORCE_CALL_BY_VALUE);
+	__add_class__(t, _namespace);
 	return t;
 }
 
@@ -368,7 +377,7 @@ void class_derive_from(const Class *parent, bool increase_size, bool copy_vtable
 void _class_add_member_func(const Class *ccc, Function *f, Flags flag) {
 	Class *c = const_cast<Class*>(ccc);
 	if (flags_has(flag, Flags::OVERRIDE)) {
-		foreachi(Function *ff, weak(c->functions), i)
+		for (auto&& [i, ff]: enumerate(weak(c->functions)))
 			if (ff->name == f->name) {
 				//msg_write("OVERRIDE");
 				c->functions[i] = f;
@@ -377,7 +386,7 @@ void _class_add_member_func(const Class *ccc, Function *f, Flags flag) {
 		msg_error(format("could not override %s.%s", c->name, f->name));
 	} else {
 		// name alone is not enough for matching...
-		/*foreachi(ClassFunction &ff, c->functions, i)
+		/*for (auto&& [i,ff]: enumerate(c->functions))
 			if (ff.name == f.name) {
 				if (_class_override_num_params < 0 or _class_override_num_params == ff.param_types.num) {
 					msg_error("missing override " + c->name + "." + f.name);
@@ -502,7 +511,7 @@ void class_add_const(const string &name, const Class *type, const void *value) {
 	c->name = name;
 
 	// enums can't be referenced...
-	if (type == TypeInt)
+	if (type == TypeInt or type->is_enum())
 		*(const void**)c->p() = value;
 	else if (value)
 		memcpy(c->p(), value, type->size);

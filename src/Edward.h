@@ -123,7 +123,7 @@ public:
 	void set_bottom_panel(shared<hui::Panel> panel);
 
 
-	Map<nix::Texture*, string> icon_image;
+	base::map<nix::Texture*, string> icon_image;
 	string get_tex_image(nix::Texture *tex);
 
 	os::Timer timer;

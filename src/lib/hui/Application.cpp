@@ -28,7 +28,7 @@ extern Callback _idle_function_;
 GtkApplication *Application::application = nullptr;
 
 
-Map<string, string> Application::_properties_;
+base::map<string, string> Application::_properties_;
 
 Path Application::filename;
 Path Application::directory;
@@ -112,7 +112,7 @@ Path strip_dev_dirs(const Path &p) {
 //   filename -> executable file
 //   directory ->
 //      NONINSTALLED:  binary dir
-//      INSTALLED:     ~/.MY_APP/
+//      INSTALLED:     ~/.MY_APP/      <<< now always this
 //   directory_static ->
 //      NONINSTALLED:  binary dir/static/
 //      INSTALLED:     /usr/local/share/MY_APP/
@@ -154,10 +154,8 @@ void Application::guess_directories(const Array<string> &arg, const string &app_
 			directory_static = prefix << "share" << app_name;
 		}
 
-		if (installed) {
-			directory = format("%s/.%s/", getenv("HOME"), app_name);
-			os::fs::create_directory(directory);
-		}
+		directory = format("%s/.%s/", getenv("HOME"), app_name);
+		os::fs::create_directory(directory);
 	#endif
 }
 

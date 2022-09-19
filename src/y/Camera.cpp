@@ -109,7 +109,7 @@ mat4 Camera::projection_matrix(float aspect_ratio) const {
 
 mat4 Camera::view_matrix() const {
 	auto o = owner;
-	return mat4::rotation_q(o->ang).transpose() * mat4::translation(-o->pos);
+	return mat4::rotation(o->ang).transpose() * mat4::translation(-o->pos);
 }
 
 void Camera::update_matrices(float aspect_ratio) {
