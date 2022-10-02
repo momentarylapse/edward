@@ -18,9 +18,10 @@ Array<ScriptInstanceData> enumerate_components() {
 	for (auto &f: files) {
 		try {
 			auto s = kaba::load(storage->root_dir_kind[FD_SCRIPT] << f, true);
-			for (auto c: s->classes())
-				if (c->is_derived_from_s("y.Component") and c->name != "Component")
+			for (auto c: s->classes()) {
+				if (c->is_derived_from_s("ecs.Component") and c->name != "Component")
 					r.add({f, c->name});
+			}
 		} catch (Exception &e) {
 			msg_error(e.message());
 		}
