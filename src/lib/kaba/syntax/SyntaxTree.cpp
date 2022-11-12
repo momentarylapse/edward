@@ -1,5 +1,6 @@
 #include "../kaba.h"
 #include "../parser/Parser.h"
+#include "../parser/template.h"
 #include "../asm/asm.h"
 #include "../../os/msg.h"
 #include "../../base/iter.h"
@@ -29,8 +30,8 @@ shared<Node> conv_break_down_med_level(SyntaxTree *tree, shared<Node> c);
 
 
 
-const Class *SyntaxTree::make_class_callable_fp(Function *f, int token_id) {
-	return make_class_callable_fp(f->literal_param_type, f->literal_return_type, token_id);
+const Class *SyntaxTree::request_implicit_class_callable_fp(Function *f, int token_id) {
+	return request_implicit_class_callable_fp(f->literal_param_type, f->literal_return_type, token_id);
 }
 
 string make_callable_signature(const Array<const Class*> &params, const Class *ret) {
@@ -52,7 +53,7 @@ string make_callable_signature(const Array<const Class*> &params, const Class *r
 }
 
 // input {}->R  OR  void->void   BOTH create  void->R
-const Class *SyntaxTree::make_class_callable_fp(const Array<const Class*> &param, const Class *ret, int token_id) {
+const Class *SyntaxTree::request_implicit_class_callable_fp(const Array<const Class*> &param, const Class *ret, int token_id) {
 	string name = make_callable_signature(param, ret);
 
 	auto params_ret = param;
@@ -60,8 +61,8 @@ const Class *SyntaxTree::make_class_callable_fp(const Array<const Class*> &param
 		params_ret = {};
 	params_ret.add(ret);
 
-	auto ff = make_class("Callable[" + name + "]", Class::Type::CALLABLE_FUNCTION_POINTER, TypeCallableBase->size, 0, nullptr, params_ret, base_class, token_id);
-	return make_class(name, Class::Type::POINTER, config.pointer_size, 0, nullptr, {ff}, base_class, token_id);
+	auto ff = request_implicit_class("Callable[" + name + "]", Class::Type::CALLABLE_FUNCTION_POINTER, TypeCallableBase->size, 0, nullptr, params_ret, base_class, token_id);
+	return request_implicit_class(name, Class::Type::POINTER, config.pointer_size, 0, nullptr, {ff}, base_class, token_id);
 	//return make_class(name, Class::Type::CALLABLE_FUNCTION_POINTER, TypeCallableBase->size, 0, nullptr, params_ret, base_class);
 }
 
@@ -72,7 +73,7 @@ const Class *SyntaxTree::make_class_callable_fp(const Array<const Class*> &param
 //     func call(a,b,c)
 //         f(a,x0,b,c,c1)
 // (A,C,D) -> R
-const Class *SyntaxTree::make_class_callable_bind(const Array<const Class*> &params, const Class *ret, const Array<const Class*> &captures, const Array<bool> &capture_via_ref, int token_id) {
+const Class *SyntaxTree::request_implicit_class_callable_bind(const Array<const Class*> &params, const Class *ret, const Array<const Class*> &captures, const Array<bool> &capture_via_ref, int token_id) {
 
 	string name = make_callable_signature(params, ret);
 
@@ -86,7 +87,7 @@ const Class *SyntaxTree::make_class_callable_bind(const Array<const Class*> &par
 
 	static int unique_bind_counter = 0;
 
-	auto t = (Class*)make_class(format(":bind-%d:", unique_bind_counter++), Class::Type::CALLABLE_BIND, TypeCallableBase->size, 0, nullptr, outer_params_ret, base_class, token_id);
+	auto t = (Class*)create_new_class(format(":bind-%d:", unique_bind_counter++), Class::Type::CALLABLE_BIND, TypeCallableBase->size, 0, nullptr, outer_params_ret, base_class, token_id);
 	int offset = t->size;
 	for (auto [i,b]: enumerate(captures)) {
 		if (!b)
@@ -104,16 +105,16 @@ const Class *SyntaxTree::make_class_callable_bind(const Array<const Class*> &par
 
 	for (auto &e: t->elements)
 		if (e.name == "_fp")
-			e.type = make_class_callable_fp(params, ret, token_id);
+			e.type = request_implicit_class_callable_fp(params, ret, token_id);
 
 	add_missing_function_headers_for_class(t);
 	return t;
 }
 
 SyntaxTree::SyntaxTree(Module *_module) {
-	base_class = new Class("-base-", 0, this);
+	base_class = new Class(Class::Type::REGULAR, "-base-", 0, this);
 	_base_class = base_class;
-	imported_symbols = new Class("-imported-", 0, this);
+	imported_symbols = new Class(Class::Type::REGULAR, "-imported-", 0, this);
 	root_of_all_evil = new Function("-root-", TypeVoid, base_class, Flags::STATIC);
 
 
@@ -330,12 +331,12 @@ shared_array<Node> SyntaxTree::get_element_of(shared<Node> operand, const string
 	//operand = force_concrete_type(operand);
 	const Class *type = operand->type;
 	bool deref = false;
-	bool only_static = false;
+	bool allow_member = true;
 
 	if (operand->kind == NodeKind::CLASS) {
 		// referencing class functions
 		type = operand->as_class();
-		only_static = true;
+		allow_member = false;
 	} else if (type->is_some_pointer()) {
 		// pointer -> dereference
 		type = type->param[0];
@@ -354,7 +355,7 @@ shared_array<Node> SyntaxTree::get_element_of(shared<Node> operand, const string
 
 
 	// find element
-	if (!only_static) {
+	if (allow_member) {
 		for (auto &e: type->elements)
 			if (name == e.name) {
 				// direct
@@ -389,22 +390,20 @@ shared_array<Node> SyntaxTree::get_element_of(shared<Node> operand, const string
 			}
 	}
 	for (auto *c: weak(type->constants))
-		if (name == c->name) {
+		if (name == c->name)
 			return {add_node_const(c, token_id)};
-		}
+
 	for (auto *v: weak(type->static_variables))
-		if (name == v->name) {
+		if (name == v->name)
 			return {add_node_global(v, token_id)};
-		}
 
 	// sub-class
 	for (auto *c: weak(type->classes))
-		if (name == c->name) {
+		if (name == c->name)
 			return {add_node_class(c, token_id)};
-		}
 
 
-	if (deref and !only_static)
+	if (deref and allow_member)
 		operand = operand->deref();
 
 	// class function?
@@ -412,7 +411,7 @@ shared_array<Node> SyntaxTree::get_element_of(shared<Node> operand, const string
 	for (auto *cf: weak(type->functions))
 		if (name == cf->name) {
 			links.add(add_node_func_name(cf, token_id));
-			if (!cf->is_static() and !only_static)
+			if (cf->is_member() and allow_member)
 				links.back()->params.add(cp_node(operand));
 		}
 	return links;
@@ -422,12 +421,11 @@ shared_array<Node> SyntaxTree::get_existence_block(const string &name, Block *bl
 	Function *f = block->function;
 
 	// first test local variables
-	auto *v = block->get_var(name);
-	if (v)
+	if (auto *v = block->get_var(name))
 		return {add_node_local(v, token_id)};
 
 	// self.x?
-	if (!f->is_static()) {
+	if (f->is_member()) {
 		auto self = add_node_local(f->__get_var(IDENTIFIER_SELF), token_id);
 		auto links = get_element_of(self, name, token_id);
 		if (links.num > 0)
@@ -453,8 +451,7 @@ shared_array<Node> SyntaxTree::get_existence(const string &name, Block *block, c
 		return links;
 
 	// then the statements
-	/*auto s = Parser::which_statement(name);
-	if (s) {
+	/*if (auto s = Parser::which_statement(name)) {
 		//return {add_node_statement(s->id)};
 		auto n = new Node(NodeKind::STATEMENT, (int_p)s, TypeVoid);
 		n->set_num_params(s->num_params);
@@ -462,8 +459,7 @@ shared_array<Node> SyntaxTree::get_existence(const string &name, Block *block, c
 	}*/
 
 	// operators
-	auto w = parser->which_abstract_operator(name, 2); // negate/not...
-	if (w)
+	if (auto w = parser->which_abstract_operator(name, 2)) // negate/not...
 		return {new Node(NodeKind::ABSTRACT_OPERATOR, (int_p)w, TypeUnknown, token_id)};
 
 	// in include files (only global)...
@@ -510,10 +506,9 @@ Array<int> enum_all(const Class*);
 Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, const Class *ns, int token_id) {
 	//msg_write("CREATE " + name);
 	if (find_root_type_by_name(name, ns, false))
-		do_error("class already exists", token_id);
+		do_error(format("class '%s' already exists", name), token_id);
 
-	Class *t = new Class(name, size, this, parent, params);
-	t->type = type;
+	Class *t = new Class(type, name, size, this, parent, params);
 	t->token_id = token_id;
 	owned_classes.add(t);
 	
@@ -539,6 +534,10 @@ Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int si
 		//t->derive_from(TypeSharedPointer, true);
 		t->param = params;
 		add_missing_function_headers_for_class(t);
+	} else if (t->is_optional()) {
+		if (params[0]->needs_constructor() and !params[0]->get_default_constructor())
+			do_error(format("can not create an optional from type '%s', missing default constructor", params[0]->long_name()), token_id);
+		add_missing_function_headers_for_class(t);
 	} else if (t->type == Class::Type::FUNCTION) {
 		t->derive_from(TypeFunction, true);
 		t->param = params;
@@ -552,8 +551,13 @@ Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int si
 		t->functions.clear(); // don't inherit call() with specific types!
 		t->param = params;
 		//add_missing_function_headers_for_class(t); // later... depending on the bind variables
-	//} else if (t->type == Class::Type::PRODUCT) {
-	//	add_missing_function_headers_for_class(t);
+	} else if (t->type == Class::Type::PRODUCT) {
+		int offset = 0;
+		for (auto&& [i,cc]: enumerate(params)) {
+			t->elements.add(ClassElement("e" + i2s(i), cc, offset));
+			offset += cc->size;
+		}
+		add_missing_function_headers_for_class(t);
 	} else if (t->is_enum()) {
 		t->flags = Flags::FORCE_CALL_BY_VALUE; // FORCE_CALL_BY_VALUE
 
@@ -585,7 +589,7 @@ Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int si
 				f->mandatory_params = 1;
 				f->default_parameters[1] = add_node_const(c, t->token_id);
 			} else if (f->name == "all") {
-				f->literal_return_type = make_class_super_array(t, t->token_id);
+				f->literal_return_type = request_implicit_class_super_array(t, t->token_id);
 				f->default_parameters.resize(1);
 				auto c = add_constant(TypeClassP, t);
 				c->as_int64() = (int_p)t;
@@ -597,31 +601,38 @@ Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int si
 	return t;
 }
 
-const Class *SyntaxTree::make_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, const Class *ns, int token_id) {
+// X[], X{}, X*, X shared, (X,Y,Z), X->Y
+const Class *SyntaxTree::request_implicit_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, const Class *ns, int token_id) {
 	//msg_write("make class " + name + " ns=" + ns->long_name());// + " params=" + param->long_name());
 
 	// check if it already exists
-	auto *tt = find_root_type_by_name(name, ns, false);
-	if (tt)
+	if (auto *tt = implicit_class_registry::find(name, type, array_size, params))
 		return tt;
 
 	// add new class
-	return create_new_class(name, type, size, array_size, parent, params, ns, token_id);
+	auto t = create_new_class(name, type, size, array_size, parent, params, ns, token_id);
+	implicit_class_registry::add(t);
+	return t;
 }
 
-const Class *SyntaxTree::make_class_super_array(const Class *element_type, int token_id) {
+const Class *SyntaxTree::request_implicit_class_super_array(const Class *element_type, int token_id) {
 	string name = class_name_might_need_parantheses(element_type) + "[]";
-	return make_class(name, Class::Type::SUPER_ARRAY, config.super_array_size, -1, TypeDynamicArray, {element_type}, element_type->name_space, token_id);
+	return request_implicit_class(name, Class::Type::SUPER_ARRAY, config.super_array_size, -1, TypeDynamicArray, {element_type}, element_type->name_space, token_id);
 }
 
-const Class *SyntaxTree::make_class_array(const Class *element_type, int num_elements, int token_id) {
+const Class *SyntaxTree::request_implicit_class_array(const Class *element_type, int num_elements, int token_id) {
 	string name = class_name_might_need_parantheses(element_type) + format("[%d]", num_elements);
-	return make_class(name, Class::Type::ARRAY, element_type->size * num_elements, num_elements, nullptr, {element_type}, element_type->name_space, token_id);
+	return request_implicit_class(name, Class::Type::ARRAY, element_type->size * num_elements, num_elements, nullptr, {element_type}, element_type->name_space, token_id);
 }
 
-const Class *SyntaxTree::make_class_dict(const Class *element_type, int token_id) {
+const Class *SyntaxTree::request_implicit_class_dict(const Class *element_type, int token_id) {
 	string name = class_name_might_need_parantheses(element_type) + "{}";
-	return make_class(name, Class::Type::DICT, config.super_array_size, 0, TypeDictBase, {element_type}, element_type->name_space, token_id);
+	return request_implicit_class(name, Class::Type::DICT, config.super_array_size, 0, TypeDictBase, {element_type}, element_type->name_space, token_id);
+}
+
+const Class *SyntaxTree::request_implicit_class_optional(const Class *param, int token_id) {
+	string name = class_name_might_need_parantheses(param) + "?";
+	return request_implicit_class(name, Class::Type::OPTIONAL, param->size + 1, 0, nullptr, {param}, param->name_space, token_id);
 }
 
 shared<Node> SyntaxTree::conv_cbr(shared<Node> c, Variable *var) {
@@ -681,7 +692,7 @@ shared<Node> SyntaxTree::conv_calls(shared<Node> c) {
 			}
 
 		// return: array reference (-> dereference)
-		if ((c->type->is_array()) /*or (c->Type->IsSuperArray)*/) {
+		if (c->type->is_array() /*or c->type->is_super_array()*/) {
 			r->set_type(c->type->get_pointer());
 			return r->deref();
 		}
@@ -693,7 +704,7 @@ shared<Node> SyntaxTree::conv_calls(shared<Node> c) {
 	if (c->kind == NodeKind::OPERATOR) {
 		// parameters: super array as reference
 		for (int j=0;j<c->params.num;j++)
-			if ((c->params[j]->type->is_array()) or (c->params[j]->type->is_super_array())) {
+			if (c->params[j]->type->is_array() or c->params[j]->type->is_super_array()) {
 				c->set_param(j, c->params[j]->ref());
 				// REALLY ?!?!?!?  FIXME?!?!?
 				msg_error("this might be bad");
@@ -1289,7 +1300,7 @@ void SyntaxTree::map_local_variables_to_stack() {
 
 			if (config.abi == Abi::X86_WINDOWS) {
 				// map "self" to the VERY first parameter
-				if (!f->is_static())
+				if (f->is_member())
 					MapLVSX86Self(f, stack_offset);
 
 				// map "-return-" to the first parameter
@@ -1301,12 +1312,12 @@ void SyntaxTree::map_local_variables_to_stack() {
 					MapLVSX86Return(f, stack_offset);
 
 				// map "self" to the first parameter
-				if (!f->is_static())
+				if (f->is_member())
 					MapLVSX86Self(f, stack_offset);
 			}
 
 			for (auto&& [i,v]: enumerate(weak(f->var))) {
-				if (!f->is_static() and (v->name == IDENTIFIER_SELF))
+				if (f->is_member() and (v->name == IDENTIFIER_SELF))
 					continue;
 				if (v->name == IDENTIFIER_RETURN_VAR)
 					continue;
@@ -1329,7 +1340,7 @@ void SyntaxTree::map_local_variables_to_stack() {
 			if (config.abi == Abi::AMD64_WINDOWS) {
 
 				// map "self" to the VERY first parameter
-				if (!f->is_static())
+				if (f->is_member())
 					MapLVSX86Self(f, stack_offset);
 
 				// map "-return-" to the first parameter
@@ -1337,7 +1348,7 @@ void SyntaxTree::map_local_variables_to_stack() {
 					MapLVSX86Return(f, stack_offset);
 
 				for (auto&& [i,v]: enumerate(weak(f->var))) {
-					if (!f->is_static() and (v->name == IDENTIFIER_SELF))
+					if (f->is_member() and (v->name == IDENTIFIER_SELF))
 						continue;
 					if (v->name == IDENTIFIER_RETURN_VAR)
 						continue;

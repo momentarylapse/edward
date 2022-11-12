@@ -89,7 +89,7 @@ Array<base::set<int>> split_conv_polyhedra(DataModel *m) {
 				}
 			}
 		}
-		msg_write(ia2s(cur));
+		msg_write(str(cur));
 		surf.add(cur);
 	}
 	return surf;
@@ -522,7 +522,7 @@ public:
 				for (int l=0;l<nv;l++) {
 					vertex.add(f->read_int());
 				}
-				msg_write(ia2s(vertex));
+				msg_write(str(vertex));
 				vv.add(vertex);
 			}
 
@@ -531,7 +531,7 @@ public:
 				sv.resize(v.num * MATERIAL_MAX_TEXTURES);//data->material[0]->texture_levels.num);
 				//msg_write(ia2s(_vv));
 				try {
-					msg_write(" + poly " + ia2s(v));
+					msg_write(" + poly " + str(v));
 					me->_add_polygon(v, 0, sv);
 				} catch(GeometryException &e) {
 					msg_error(e.message);

@@ -163,6 +163,7 @@ set(SOURCE
 	src/lib/base/strings.cpp
 	src/lib/doc/chunked.cpp
 	src/lib/doc/pdf.cpp
+	src/lib/doc/ttf.cpp
 	src/lib/doc/xml.cpp
 	src/lib/hui/Controls/Control.cpp
 	src/lib/hui/Controls/ControlButtonGtk.cpp
@@ -328,6 +329,7 @@ set(SOURCE
 	src/lib/os/msg.cpp
 	src/lib/os/path.cpp
 	src/lib/os/stream.cpp
+	src/lib/os/terminal.cpp
 	src/lib/os/time.cpp
 	src/lib/threads/Mutex.cpp
 	src/lib/threads/Thread.cpp

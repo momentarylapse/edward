@@ -36,7 +36,7 @@ void *ActionModelDeleteSelection::compose(Data *d) {
 		polys = sel.polygon;
 	}
 
-	msg_write(ia2s(polys));
+	msg_write(str(polys));
 	foreachb (int i, polys)
 		addSubAction(new ActionModelSurfaceDeletePolygon(i), m);
 

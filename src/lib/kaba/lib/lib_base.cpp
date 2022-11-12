@@ -4,13 +4,12 @@
 #include "../dynamic/exception.h"
 #include "../dynamic/dynamic.h"
 #include "../../os/msg.h"
+#include "../../os/terminal.h"
 #include "../../base/callable.h"
+#include "../../base/map.h"
 #include <algorithm>
 #include <math.h>
 #include <cstdio>
-
-
-#include "../../base/map.h"
 
 
 namespace kaba {
@@ -27,10 +26,7 @@ extern const Class *TypeObjectP;
 extern const Class *TypeBoolList;
 extern const Class *TypeIntP;
 extern const Class *TypeIntList;
-extern const Class *TypeIntArray;
 extern const Class *TypeFloatP;
-extern const Class *TypeFloatArray;
-extern const Class *TypeFloatArrayP;
 extern const Class *TypeFloatList;
 extern const Class *TypeFloat64List;
 extern const Class *TypeStringList;
@@ -42,13 +38,8 @@ extern const Class *TypeAny;
 int enum_parse(const string &label, const Class *type);
 
 
-static string kaba_print_postfix = "\n";
-void _cdecl kaba_print(const string &str) {
-	printf("%s%s", str.c_str(), kaba_print_postfix.c_str()); fflush(stdout);
-}
-
 void _cdecl kaba_cstringout(char *str) {
-	kaba_print(str);
+	os::terminal::print(str);
 }
 
 bytes _cdecl kaba_binary(char *p, int length) {
@@ -243,7 +234,7 @@ Array<int> enum_all(const Class *e) {
 
 void SIAddXCommands() {
 
-	add_func("@sorted", TypeDynamicArray, &kaba_array_sort, Flags::_STATIC__RAISES_EXCEPTIONS);
+	add_func("@sorted", TypeDynamicArray, &array_sort, Flags::_STATIC__RAISES_EXCEPTIONS);
 		func_add_param("list", TypePointer);
 		func_add_param("class", TypeClassP);
 		func_add_param("by", TypeString);
@@ -256,10 +247,10 @@ void SIAddXCommands() {
 //	add_func("@map", TypeDynamicArray, &kaba_map, Flags::_STATIC__RAISES_EXCEPTIONS);
 //		func_add_param("func", TypeFunctionP);
 //		func_add_param("array", TypePointer);
-	add_func("@dyn", TypeAny, &kaba_dyn, Flags::_STATIC__RAISES_EXCEPTIONS);
+	add_func("@dyn", TypeAny, &dynify, Flags::_STATIC__RAISES_EXCEPTIONS);
 		func_add_param("var", TypePointer);
 		func_add_param("class", TypeClassP);
-	add_func("@xmap", TypeDynamicArray, &kaba_xmap, Flags::_STATIC__RAISES_EXCEPTIONS);
+	add_func("@xmap", TypeDynamicArray, &array_map, Flags::_STATIC__RAISES_EXCEPTIONS);
 		func_add_param("f", TypeCallableBase);
 		func_add_param("array", TypeDynamic);
 		func_add_param("t1", TypeClassP);
@@ -361,10 +352,7 @@ void SIAddPackageBase() {
 	TypeBoolList    = add_type_l(TypeBool);
 	TypeIntP        = add_type_p(TypeInt);
 	TypeIntList     = add_type_l(TypeInt);
-	TypeIntArray    = add_type_a(TypeInt, 1, "int[?]");
 	TypeFloatP      = add_type_p(TypeFloat);
-	TypeFloatArray  = add_type_a(TypeFloat, 1, "float[?]");
-	TypeFloatArrayP = add_type_p(TypeFloatArray);
 	TypeFloatList   = add_type_l(TypeFloat);
 	TypeFloat64List = add_type_l(TypeFloat64);
 	TypeCString     = add_type_a(TypeChar, 256, "cstring");	// cstring := char[256]
@@ -609,7 +597,7 @@ void SIAddPackageBase() {
 		class_add_func(IDENTIFIER_FUNC_STR, TypeString, &BoolList::str, Flags::PURE);
 		class_add_func("all", TypeBool, &BoolList::all, Flags::PURE);
 		class_add_func("any", TypeBool, &BoolList::any, Flags::PURE);
-		class_add_func("__bool__", TypeBool, &BoolList::all, Flags::PURE);
+		//class_add_func("__bool__", TypeBool, &BoolList::all, Flags::PURE);
 		add_operator(OperatorID::AND, TypeBoolList, TypeBoolList, TypeBoolList, InlineID::NONE, &BoolList::and_values);
 		add_operator(OperatorID::OR, TypeBoolList, TypeBoolList, TypeBoolList, InlineID::NONE, &BoolList::or_values);
 		add_operator(OperatorID::EQUAL, TypeBoolList, TypeBoolList, TypeBoolList, InlineID::NONE, &BoolList::eq_values);
@@ -766,9 +754,9 @@ void SIAddPackageBase() {
 	// debug output
 	/*add_func("cprint", TypeVoid, &_cstringout, Flags::STATIC);
 		func_add_param("str", TypeCString);*/
-	add_func("print", TypeVoid, &kaba_print, Flags::STATIC);
+	add_func("print", TypeVoid, &os::terminal::print, Flags::STATIC);
 		func_add_param("str", TypeStringAutoCast);//, (Flags)((int)Flags::CONST | (int)Flags::AUTO_CAST));
-	add_ext_var("_print_postfix", TypeString, &kaba_print_postfix);
+	add_ext_var("_print_postfix", TypeString, &os::terminal::_print_postfix_);
 	add_func("as_binary", TypeString, &kaba_binary, Flags::STATIC);
 		func_add_param("p", TypePointer, Flags::REF);
 		func_add_param("length", TypeInt);
@@ -799,6 +787,19 @@ void SIAddPackageBase() {
 	add_ext_var("_extern_variable", TypeInt, &extern_variable1);
 
 	link_external("xxx_delete", (void*)&xxx_delete);
+
+
+	add_type_cast(10, TypeInt, TypeFloat32, "int.__float__");
+	add_type_cast(10, TypeInt, TypeFloat64, "int.__float64__");
+	add_type_cast(10, TypeInt, TypeInt64, "int.__int64__");
+	add_type_cast(200, TypeInt64, TypeInt, "int64.__int__");
+	add_type_cast(10, TypeFloat32, TypeFloat64,"float.__float64__");
+	add_type_cast(200, TypeFloat32, TypeInt, "float.__int__");
+	add_type_cast(200, TypeInt, TypeChar, "int.__char__");
+	add_type_cast(20, TypeChar, TypeInt, "char.__int__");
+	//add_type_cast(30, TypeBoolList, TypeBool, "bool[].__bool__");
+	add_type_cast(50, TypePointer, TypeBool, "p2b");
+	//add_type_cast(50, TypePointer, TypeString, "p2s");
 }
 
 

@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "../kaba.h"
+#include "../parser/template.h"
 #include "lib.h"
 #include "dict.h"
 #include "../dynamic/exception.h"
@@ -66,12 +67,9 @@ const Class *TypePointerList;
 const Class *TypeBoolList;
 const Class *TypeIntP;
 const Class *TypeIntList;
-const Class *TypeIntArray;
 const Class *TypeIntDict;
 const Class *TypeFloatP;
 const Class *TypeFloatList;
-const Class *TypeFloatArray;
-const Class *TypeFloatArrayP;
 const Class *TypeFloatDict;
 const Class *TypeFloat64List;
 const Class *TypeComplex;
@@ -80,8 +78,6 @@ const Class *TypeStringList;
 const Class *TypeStringDict;
 const Class *TypeVec2;
 const Class *TypeVec2List;
-const Class *TypeVec3Array;
-const Class *TypeVec3ArrayP;
 const Class *TypeVec3List;
 const Class *TypeMat4;
 const Class *TypePlane;
@@ -155,7 +151,7 @@ void __add_class__(Class *t, const Class *name_space) {
 }
 
 const Class *add_type(const string &name, int size, Flags flag, const Class *name_space) {
-	Class *t = new Class(name, size, cur_package->syntax);
+	Class *t = new Class(Class::Type::REGULAR, name, size, cur_package->syntax);
 	if (flags_has(flag, Flags::CALL_BY_VALUE))
 		flags_set(t->flags, Flags::FORCE_CALL_BY_VALUE);
 	__add_class__(t, name_space);
@@ -170,11 +166,11 @@ const Class *add_type_p(const Class *sub_type, Flags flag, const string &_name) 
 		else
 			name = sub_type->name + "*";
 	}
-	Class *t = new Class(name, config.pointer_size, cur_package->syntax, nullptr, {sub_type});
-	t->type = Class::Type::POINTER;
+	Class *t = new Class(Class::Type::POINTER, name, config.pointer_size, cur_package->syntax, nullptr, {sub_type});
 	if (flags_has(flag, Flags::SHARED))
 		t->type = Class::Type::POINTER_SHARED;
 	__add_class__(t, sub_type->name_space);
+	implicit_class_registry::add(t);
 	return t;
 }
 
@@ -183,10 +179,10 @@ const Class *add_type_a(const Class *sub_type, int array_length, const string &_
 	string name = _name;
 	if (name == "")
 		name = sub_type->name + "[" + i2s(array_length) + "]";
-	Class *t = new Class(name, sub_type->size * array_length, cur_package->syntax, nullptr, {sub_type});
-	t->type = Class::Type::ARRAY;
+	Class *t = new Class(Class::Type::ARRAY, name, sub_type->size * array_length, cur_package->syntax, nullptr, {sub_type});
 	t->array_length = array_length;
 	__add_class__(t, sub_type->name_space);
+	implicit_class_registry::add(t);
 	return t;
 }
 
@@ -195,10 +191,10 @@ const Class *add_type_l(const Class *sub_type, const string &_name) {
 	string name = _name;
 	if (name == "")
 		name = sub_type->name + "[]";
-	Class *t = new Class(name, config.super_array_size, cur_package->syntax, nullptr, {sub_type});
-	t->type = Class::Type::SUPER_ARRAY;
+	Class *t = new Class(Class::Type::SUPER_ARRAY, name, config.super_array_size, cur_package->syntax, nullptr, {sub_type});
 	kaba_make_super_array(t);
 	__add_class__(t, sub_type->name_space);
+	implicit_class_registry::add(t);
 	return t;
 }
 
@@ -207,17 +203,16 @@ const Class *add_type_d(const Class *sub_type, const string &_name) {
 	string name = _name;
 	if (name == "")
 		name = sub_type->name + "{}";
-	Class *t = new Class(name, config.super_array_size, cur_package->syntax, nullptr, {sub_type});
-	t->type = Class::Type::DICT;
+	Class *t = new Class(Class::Type::DICT, name, config.super_array_size, cur_package->syntax, nullptr, {sub_type});
 	kaba_make_dict(t);
 	__add_class__(t, sub_type->name_space);
+	implicit_class_registry::add(t);
 	return t;
 }
 
 // enum
 const Class *add_type_e(const string &name, const Class *_namespace) {
-	Class *t = new Class(name, sizeof(int), cur_package->syntax);
-	t->type = Class::Type::ENUM;
+	Class *t = new Class(Class::Type::ENUM, name, sizeof(int), cur_package->syntax);
 	flags_set(t->flags, Flags::FORCE_CALL_BY_VALUE);
 	__add_class__(t, _namespace);
 	return t;
@@ -260,9 +255,9 @@ const Class *add_type_f(const Class *ret_type, const Array<const Class*> &params
 	params_ret.add(ret_type);
 
 	//auto ff = cur_package->syntax->make_class("Callable[" + name + "]", Class::Type::CALLABLE_FUNCTION_POINTER, TypeCallableBase->size, 0, nullptr, params_ret, cur_package->syntax->base_class);
-	Class *ff = new Class("XCallable[" + name + "]", /*TypeCallableBase->size*/ sizeof(KabaCallable<void()>), cur_package->syntax, nullptr, params_ret);
-	ff->type = Class::Type::CALLABLE_FUNCTION_POINTER;
+	Class *ff = new Class(Class::Type::CALLABLE_FUNCTION_POINTER, "XCallable[" + name + "]", /*TypeCallableBase->size*/ sizeof(KabaCallable<void()>), cur_package->syntax, nullptr, params_ret);
 	__add_class__(ff, cur_package->syntax->base_class);
+	implicit_class_registry::add(ff);
 
 	auto ptr_param = [] (const Class *p) {
 		return p->is_pointer() or p->uses_call_by_reference();
@@ -278,13 +273,16 @@ const Class *add_type_f(const Class *ret_type, const Array<const Class*> &params
 			class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, &KabaCallable<void(void*)>::__init__);
 				func_add_param("fp", TypePointer);
 			class_add_func_virtual("call", TypeVoid, &KabaCallable<void(void*)>::operator());
+				func_add_param("a", params[0]);
 		} else if (params.num == 2 and ptr_param(params[0]) and ptr_param(params[1])) {
 			class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, &KabaCallable<void(void*,void*)>::__init__);
 				func_add_param("fp", TypePointer);
 			class_add_func_virtual("call", TypeVoid, &KabaCallable<void(void*,void*)>::operator());
+				func_add_param("a", params[0]);
+				func_add_param("b", params[1]);
 		}
 	}
-	return cur_package->syntax->make_class(name, Class::Type::POINTER, config.pointer_size, 0, nullptr, {ff}, cur_package->syntax->base_class, -1);
+	return cur_package->syntax->request_implicit_class(name, Class::Type::POINTER, config.pointer_size, 0, nullptr, {ff}, cur_package->syntax->base_class, -1);
 
 	/*auto c = cur_package->syntax->make_class_callable_fp(params, ret_type);
 	add_class(c);
@@ -512,7 +510,10 @@ void class_add_const(const string &name, const Class *type, const void *value) {
 
 	// enums can't be referenced...
 	if (type == TypeInt or type->is_enum())
-		*(const void**)c->p() = value;
+		c->as_int64() = (int_p)value;
+		//*(const void**)c->p() = value;
+	else if (type == TypeString)
+		c->as_string() = *(const string*)value;
 	else if (value)
 		memcpy(c->p(), value, type->size);
 }
@@ -660,29 +661,6 @@ void init(Abi abi, bool allow_std_lib) {
 
 	add_package("base");
 	SIAddXCommands();
-
-
-
-
-	add_type_cast(10, TypeInt, TypeFloat32, "int.__float__");
-	add_type_cast(10, TypeInt, TypeFloat64, "int.__float64__");
-	add_type_cast(10, TypeInt, TypeInt64, "int.__int64__");
-	add_type_cast(15, TypeInt64, TypeInt, "int64.__int__");
-	add_type_cast(10, TypeFloat32, TypeFloat64,"float.__float64__");
-	add_type_cast(20, TypeFloat32, TypeInt, "float.__int__");
-	add_type_cast(10, TypeInt, TypeChar, "int.__char__");
-	add_type_cast(20, TypeChar, TypeInt, "char.__int__");
-	add_type_cast(30, TypeBoolList, TypeBool, "bool[].__bool__");
-	add_type_cast(50, TypePointer, TypeBool, "p2b");
-	add_type_cast(50, TypePointer, TypeString, "p2s");
-	add_package("math");
-	add_type_cast(50, TypeInt, TypeAny, "math.@int2any");
-	add_type_cast(50, TypeFloat32, TypeAny, "math.@float2any");
-	add_type_cast(50, TypeBool, TypeAny, "math.@bool2any");
-	add_type_cast(50, TypeString, TypeAny, "math.@str2any");
-	add_type_cast(50, TypePointer, TypeAny, "math.@pointer2any");
-	add_package("os");
-	add_type_cast(50, TypeString, TypePath, "os.Path.@from_str");
 
 
 	// consistency checks

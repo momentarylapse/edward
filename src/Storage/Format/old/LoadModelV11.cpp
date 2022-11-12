@@ -488,7 +488,7 @@ void FormatModel::_load_v11(F *f, DataModel *data, bool deep) {
 			for (int l=0;l<nv;l++) {
 				vertex.add(f->read_int());
 			}
-			msg_write(ia2s(vertex));
+			msg_write(str(vertex));
 			vv.add(vertex);
 			// plane xyzd
 			f->read_float();
@@ -535,7 +535,7 @@ void FormatModel::_load_v11(F *f, DataModel *data, bool deep) {
 			sv.resize(_vv.num * MATERIAL_MAX_TEXTURES);//data->material[0]->texture_levels.num);
 			//msg_write(ia2s(_vv));
 			try{
-				msg_write(" + poly " + ia2s(_vv));
+				msg_write(" + poly " + str(_vv));
 				data->phys_mesh->_add_polygon(_vv, 0, sv);
 			}catch(GeometryException &e) {
 				msg_error(e.message);
