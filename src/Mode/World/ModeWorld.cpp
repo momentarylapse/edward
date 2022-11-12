@@ -414,13 +414,8 @@ void ModeWorld::apply_lighting(MultiView::Window *win) {
 }
 
 void ModeWorld::draw_background(MultiView::Window *win) {
-	nix::clear_color(data->meta_data.background_color);
-	/*NixSetZ(false,false);
-	NixSetWire(false);
-	NixSetColor(BackGroundColor);
-	NixDraw2D(r_id, NixTargetRect, 0);
-	NixSetWire(ed->multi_view_3d->wire_mode);
-	NixSetZ(true,true);*/
+	// gtk is rendering in sRGB!
+	nix::clear_color(data->meta_data.background_color.lin_to_srgb());
 }
 
 void _set_textures(const Array<nix::Texture*> &_tex) {
@@ -627,10 +622,8 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 	if (show_effects) {
 		if (win->type == MultiView::VIEW_PERSPECTIVE)
 			draw_background(win);
-	}
-
-	if (show_effects)
 		apply_lighting(win);
+	}
 
 	draw_terrains(win);
 	draw_objects(win);

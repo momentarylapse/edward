@@ -445,7 +445,7 @@ void Window::draw() {
 
 	nix::set_z(true, true);
 	// light
-	multi_view->set_light(this, cam->ang * vec3::EZ, White, 0.7f);
+	multi_view->set_light(this, cam->ang * vec3::EZ, White, 0.5f);
 	nix::set_material(White, 0, 0, White);//Black);
 	set_color(White);
 	set_shader(nix::Shader::default_3d);

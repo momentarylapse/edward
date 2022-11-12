@@ -454,6 +454,7 @@ void Edward::on_draw_gl() {
 	nix::start_frame_hui();
 	nix::set_viewport(rect(0, e->column, 0, e->row));
 
+	//nix::set_srgb(true);
 	if (cur_mode->multi_view)
 		cur_mode->multi_view->on_draw();
 	cur_mode->on_draw();

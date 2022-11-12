@@ -24,5 +24,10 @@ void main() {
 	// SurfaceOutput
 	surface_out(tmp2, tmp9, tmp7, tmp6, tmp5);
 	//out_color = vec4(in_uv,0,1);
+	
+	// gamma correction (gtk does not auto-correct linear -> sRGB)
+	out_color.r = pow(out_color.r, 2.2);
+	out_color.g = pow(out_color.g, 2.2);
+	out_color.b = pow(out_color.b, 2.2);
 }
 </FragmentShader>
