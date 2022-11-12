@@ -41,6 +41,10 @@ extern string AppName;
 string SoundDir;
 #endif
 
+namespace hui {
+	extern bool color_button_linear;
+}
+
 
 void Edward::on_close() {
 	allow_termination([this] {
@@ -130,6 +134,8 @@ Edward::Edward() :
 	expand("side-bar-revealer", false);
 	set_border_width(5);
 	show();
+
+	hui::color_button_linear = true;
 
 	ed = this;
 	mode_none = new ModeNone;
