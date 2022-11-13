@@ -25,6 +25,8 @@ string sg_build_constant(ShaderNode::Parameter &p) {
 		return p.value;
 	} else if (p.type == ShaderValueType::LITERAL) {
 		return p.value;
+	} else if (p.type == ShaderValueType::TEXT) {
+		return p.value;
 	}
 	return "???";
 }

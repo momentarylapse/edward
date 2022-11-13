@@ -238,6 +238,9 @@ string ShaderGraph::build_fragment_source() const {
 	source += ctx.build_helper_vars();
 	source += ctx.build_helper_functions();
 
+	for (auto *n: sorted())
+		source += n->code_pixel_pre(&ctx);
+
 	source += "\nvoid main() {";
 	for (auto *n: sorted()) {
 		source += "\n\t// " + n->type + "";

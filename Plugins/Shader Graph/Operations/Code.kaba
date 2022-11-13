@@ -1,0 +1,24 @@
+use edward
+
+class NodeCode extends shader.Node
+	func_name: string
+
+	func __init__()
+		super.__init__("Code")
+		params.add([shader.Type.COLOR, "a", "#ffffffff", ""])
+		params.add([shader.Type.COLOR, "b", "#ffffffff", ""])
+		params.add([shader.Type.COLOR, "c", "#ffffffff", ""])
+		params.add([shader.Type.COLOR, "d", "#ffffffff", ""])
+		params.add([shader.Type.TEXT, "code", "return A;", ""])
+		output.add([shader.Type.COLOR, "out"])
+		func_name = "func_{{rand(1000000)}}"
+	func override code_pixel_pre(out c: shader.BuilderContext) -> string
+		let code = params[4].value.replace("\n", "\n\t")
+		return "
+vec4 {{func_name}}(vec4 A, vec4 B, vec4 C, vec4 D) {
+	{{code}}
+}"
+	func override code_pixel(out c: shader.BuilderContext) -> string
+		var t = c.create_out(self, 0)
+		return "
+	vec4 {{t}} = {{func_name}}({{c.value(self, 0)}}, {{c.value(self, 1)}}, {{c.value(self, 2)}}, {{c.value(self, 3)}});"

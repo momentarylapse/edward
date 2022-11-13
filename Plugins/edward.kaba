@@ -471,6 +471,7 @@ class shader
 		VEC3
 		COLOR
 		LITERAL # ...
+		TEXT
 
 	class BuilderContext
 		func extern create_temp(source: Node, port: int, type: Type) -> string
@@ -494,26 +495,17 @@ class shader
 			var name: string
 			var value: string
 			var options: string
-			func __init__()
-			func __init__(t: Type, n: string, v: string, o: string)
-				type = t
-				name = n
-				value = v
-				options = o
 		var params: Parameter[]
 
 
 		class Port
 			var type: Type
 			var name: string
-			func __init__()
-			func __init__(t: Type, n: string)
-				type = t
-				name = n
 		var output: Port[]
 	
 		func extern virtual const dependencies() -> string[]
 		func extern virtual const uniform_dependencies() -> string[]
+		func extern virtual const code_pixel_pre(out ctx: BuilderContext) -> string
 		func extern virtual const code_pixel(out ctx: BuilderContext) -> string
 
 var extern model: Model*

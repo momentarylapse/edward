@@ -24,6 +24,8 @@ string shader_value_type_to_str(ShaderValueType t) {
 		return "vec2";
 	if (t == ShaderValueType::LITERAL)
 		return "literal";
+	if (t == ShaderValueType::TEXT)
+		return "text";
 	return "???";
 }
 

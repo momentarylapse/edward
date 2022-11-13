@@ -280,6 +280,8 @@ void draw_node_param(Painter *p, ShaderGraphDialog *dlg, ShaderNode *n, ShaderNo
 			int n = clamp(value._int(), 0, xx.num - 1);
 			value = xx[n];
 		}
+	} else if (pp.type == ShaderValueType::TEXT) {
+		value = "...";
 	}
 	p->draw_str({n->pos.x + NODE_WIDTH / 2 - p->get_str_width(value)/2, yt}, value);
 }
@@ -430,6 +432,28 @@ void ShaderGraphDialog::on_key_down() {
 	redraw("area");
 }
 
+class MultiLineTextInputDialog : public hui::Dialog {
+public:
+	MultiLineTextInputDialog(hui::Window *parent, const string &orig) : hui::Dialog(_("Text"), 500, 300, parent, false) {
+		reply = orig;
+		set_options("", "resizable,headerbar,closebutton=no,borderwidth=0");
+		set_title(_("Text"));
+		add_multiline_edit("", 0, 0, "text");
+		set_target(":header:");
+		add_button("Cancel", 0, 0, "cancel");
+		add_button("!default\\Ok", 0, 1, "ok");
+		set_string("text", orig);
+		event("ok", [this] {
+			reply = get_string("text");
+			request_destroy();
+		});
+		event("cancel", [this] {
+			request_destroy();
+		});
+	}
+	string reply;
+};
+
 class TextInputDialog : public hui::Dialog {
 public:
 	TextInputDialog(hui::Window *parent, const string &orig) : hui::Dialog(_("Text"), 400, 100, parent, false) {
@@ -447,8 +471,15 @@ public:
 	string reply;
 };
 
-void text_input_dialog(hui::Window *parent, const string &orig, std::function<void(const string &)> cb) {
+void small_text_input_dialog(hui::Window *parent, const string &orig, std::function<void(const string &)> cb) {
 	auto dlg = new TextInputDialog(parent, orig);
+	hui::fly(dlg, [dlg, cb] {
+		cb(dlg->reply);
+	});
+}
+
+void large_text_input_dialog(hui::Window *parent, const string &orig, std::function<void(const string &)> cb) {
+	auto dlg = new MultiLineTextInputDialog(parent, orig);
 	hui::fly(dlg, [dlg, cb] {
 		cb(dlg->reply);
 	});
@@ -489,7 +520,12 @@ void ShaderGraphDialog::on_left_button_down() {
 				on_update();
 			}
 		} else if (pp.type == ShaderValueType::LITERAL) {
-			text_input_dialog(win, pp.value, [this, &pp] (const string &s) {
+			small_text_input_dialog(win, pp.value, [this, &pp] (const string &s) {
+				pp.value = s;
+				on_update();
+			});
+		} else if (pp.type == ShaderValueType::TEXT) {
+			large_text_input_dialog(win, pp.value, [this, &pp] (const string &s) {
 				pp.value = s;
 				on_update();
 			});

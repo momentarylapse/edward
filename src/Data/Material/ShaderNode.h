@@ -22,7 +22,8 @@ enum class ShaderValueType {
 	VEC2,
 	VEC3,
 	COLOR,
-	LITERAL
+	LITERAL,
+	TEXT
 };
 
 class ShaderNode : public Sharable<VirtualBase> {
@@ -58,6 +59,7 @@ public:
 	virtual Array<string> uniform_dependencies() const { return {}; };
 
 	virtual string code_pixel(ShaderBuilderContext *ctx) const { return "?"; };
+	virtual string code_pixel_pre(ShaderBuilderContext *ctx) const { return ""; };
 };
 
 
