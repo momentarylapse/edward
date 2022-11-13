@@ -244,10 +244,6 @@ Edward::Edward() :
 	set_key_code("abort_creation_mode", hui::KEY_ESCAPE, "hui:cancel");
 
 
-
-	//universal_new(FD_MODEL);
-
-	//hui::SetIdleFunction([=]{ idleFunction(); });
 	hui::run_later(0.010f, [=]{ cur_mode->multi_view->force_redraw(); });
 	hui::run_later(0.100f, [=]{ optimize_current_view(); });
 }
@@ -615,7 +611,7 @@ void Edward::universal_edit(int type, const Path &_filename, bool relative_path)
 				if (filename.basename() == "config.txt")
 					hui::OpenDocument(filename);
 				else if (filename.basename() == "game.ini")
-					mode_admin->BasicSettings();
+					mode_admin->basic_settings();
 				break;
 			case FD_MODEL:
 				if (storage->load(filename, mode_model->data, true)) {

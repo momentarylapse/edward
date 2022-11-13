@@ -13,9 +13,11 @@
 class NewProjectDialog : public hui::Dialog {
 public:
 	NewProjectDialog(hui::Window *parent);
-	virtual ~NewProjectDialog();
+
+	void update();
 
 	Path directory;
+	string first_world;
 	int _template;
 	bool ok;
 };

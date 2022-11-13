@@ -25,10 +25,11 @@ public:
 
 	void on_command(const string &id) override;
 
-	void BasicSettings();
-	void ExportGame();
+	void basic_settings();
+	void export_game();
 
-	void create_project_dir(const Path &dir);
+	void create_project(const Path &dir, const string &first_world);
+	void upgrade_project(const Path &dir);
 
 	AdministrationDialog *dialog;
 };

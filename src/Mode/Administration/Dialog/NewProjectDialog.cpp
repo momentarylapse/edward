@@ -22,9 +22,12 @@ NewProjectDialog::NewProjectDialog(hui::Window *parent) : hui::Dialog("new-proje
 			if (path) {
 				directory = path;
 				set_string("directory", directory.str());
-				enable("create", true);
+				update();
 			}
 		});
+	});
+	event("first-world", [this] {
+		update();
 	});
 	event("cancel", [this] {
 		request_destroy();
@@ -35,6 +38,9 @@ NewProjectDialog::NewProjectDialog(hui::Window *parent) : hui::Dialog("new-proje
 	});
 }
 
-NewProjectDialog::~NewProjectDialog() {
+void NewProjectDialog::update() {
+	first_world = get_string("first-world");
+	msg_write(format("update  %d  %d", first_world.num, (int)directory.is_empty()));
+	enable("create", first_world.num > 0 and !directory.is_empty());
 }
 

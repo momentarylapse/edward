@@ -13,6 +13,7 @@
 #include "Data/Material/DataMaterial.h"
 #include "Data/World/DataWorld.h"
 #include "Storage/Storage.h"
+#include "Mode/Administration/ModeAdministration.h"
 
 string AppVersion = "0.4.-1.6";
 string AppName = "Edward";
@@ -24,7 +25,7 @@ EdwardApp::EdwardApp() :
 	app = this;
 	set_property("name", AppName);
 	set_property("version", AppVersion);
-	set_property("copyright", "© 2006-2021 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
+	set_property("copyright", "© 2006-2022 by MichiSoft TM"); // ??? min=2004 (objectmaker) max=2006
 	set_property("comment", _("Editor for game data of the y engine"));
 	set_property("website", "http://michi.is-a-geek.org/software");
 	set_property("author", "Michael Ankele <michi@lupina.de>");
@@ -74,23 +75,31 @@ bool EdwardApp::on_startup(const Array<string> &arg) {
 	p.cmd("-h/--help", "", "show this help page", [&p] (const Array<string> &arg) {
 		p.show();
 	});
-	p.cmd("--update", "FILENAME", "load and re-write a file", [] (const Array<string> &arg) {
+	p.cmd("file update", "FILENAME", "load and re-write a file", [] (const Array<string> &arg) {
 		update_file(arg[0], true);
 	});
-	p.cmd("--check", "FILENAME", "load file and check for errors", [] (const Array<string> &arg) {
+	p.cmd("file check", "FILENAME", "load file and check for errors", [] (const Array<string> &arg) {
 		update_file(arg[0], false);;
 	});
-	p.cmd("--new-material", "", "open editor in material mode", [] (const Array<string> &arg) {
+	p.cmd("new material", "", "open editor in material mode", [] (const Array<string> &arg) {
 		ed = new Edward();
 		ed->universal_new(FD_MATERIAL);
 	});
-	p.cmd("--new-font", "", "open editor in font mode", [] (const Array<string> &arg) {
+	p.cmd("new font", "", "open editor in font mode", [] (const Array<string> &arg) {
 		ed = new Edward();
 		ed->universal_new(FD_FONT);
 	});
-	p.cmd("--new-world", "", "open editor in world mode", [] (const Array<string> &arg) {
+	p.cmd("new world", "", "open editor in world mode", [] (const Array<string> &arg) {
 		ed = new Edward();
 		ed->universal_new(FD_WORLD);
+	});
+	p.cmd("project create", "DIR FIRST_WORLD", "create a new project", [] (const Array<string> &arg) {
+		ModeAdministration mode_admin;
+		mode_admin.create_project(arg[0], arg[1]);
+	});
+	p.cmd("project upgrade", "DIR", "upgrade scripts of a project", [] (const Array<string> &arg) {
+		ModeAdministration mode_admin;
+		mode_admin.upgrade_project(arg[0]);
 	});
 	p.cmd("", "[FILENAME]", "open editor and load a file", [] (const Array<string> &arg) {
 		msg_write(AppName + " " + AppVersion);

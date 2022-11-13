@@ -142,13 +142,11 @@ void AdministrationDialog::ShowDetail(int n, const string &lid)
 }
 
 
-void AdministrationDialog::OnExportGame()
-{
-	ed->mode_admin->ExportGame();
+void AdministrationDialog::OnExportGame() {
+	ed->mode_admin->export_game();
 }
 
-AdminFileList *AdministrationDialog::get_list(const string &lid)
-{
+AdminFileList *AdministrationDialog::get_list(const string &lid) {
 	if (lid == "file_list_cur")
 		return &file_list[0];
 	if (lid == "file_list_all")
@@ -236,6 +234,6 @@ void AdministrationDialog::OnFileList() {
 }
 
 void AdministrationDialog::OnRudimentaryConfiguration() {
-	ed->mode_admin->BasicSettings();
+	ed->mode_admin->basic_settings();
 }
 

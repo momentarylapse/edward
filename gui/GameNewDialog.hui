@@ -5,6 +5,9 @@ Dialog new-project-dialog "New project" width=600 height=500 headerbar resizable
 				Grid ? ""
 					Edit directory "" disabled expandx
 					Button find-directory "" image=hui:open
+			Group g-world "First world"
+				Grid ? ""
+					Edit first-world "" expandx "tooltip=Name of the starting world"
 			Group g-template "Template"
 				ListView template "name" nobar expandy
 		Grid ? "" buttonbar

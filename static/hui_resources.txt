@@ -1602,7 +1602,7 @@ Grid
 vertical
 0
 0
-2
+3
 Group
 g-dir
 
@@ -1628,9 +1628,27 @@ image=hui:open
 0
 0
 Group
-g-template
+g-world
 
 1
+0
+1
+Grid
+?
+
+0
+0
+1
+Edit
+first-world
+expandx
+0
+0
+0
+Group
+g-template
+
+2
 0
 1
 ListView
@@ -10313,7 +10331,7 @@ image=icons/toolbar/configure.png
 # Language
 English
 # Number Of IDs
-1024
+1026
 # Text
 /ambient
 Ambient
@@ -12766,11 +12784,17 @@ Cancel
 new-project-dialog/create
 Create
 
+new-project-dialog/first-world
+
+Name of the starting world
 new-project-dialog/g-dir
 Directory
 
 new-project-dialog/g-template
 Template
+
+new-project-dialog/g-world
+First world
 
 new-project-dialog/new-project-dialog
 New project
