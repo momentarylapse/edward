@@ -82,13 +82,15 @@ static void create_directory_recursive(const Path &dir) {
 	}
 }
 
-static void sync_files(const Path &source, const Path &dest) {
+static void sync_files(const Path &source, const Path &dest, bool required) {
 	create_directory_recursive(dest.parent());
 	if (os::fs::exists(dest)) {
 		if (os::fs::read_binary(dest) == os::fs::read_binary(source)) {
 			msg_write(format("%sOK%s  %s", os::terminal::GREEN, os::terminal::END, dest));
 			return;
 		}
+	} else if (!required) {
+		return;
 	}
 	msg_write(format("%sCOPY%s  %s", os::terminal::YELLOW, os::terminal::END, dest));
 	os::fs::copy(source, dest);
@@ -115,7 +117,8 @@ void ModeAdministration::upgrade_project(const Path &dir) {
 		auto list = os::fs::search(engine_api_dir, "*.kaba", "rf");
 		for (auto &f: list) {
 			auto dest = dir << "Scripts" << f;
-			sync_files(engine_api_dir << f, dest);
+			bool required = true;//f.is_in("y");
+			sync_files(engine_api_dir << f, dest, required);
 		}
 	}
 }
