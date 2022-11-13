@@ -120,6 +120,8 @@ void ModeAdministration::upgrade_project(const Path &dir) {
 			bool required = true;//f.is_in("y");
 			sync_files(engine_api_dir << f, dest, required);
 		}
+	} else {
+		throw Exception("'EngineDir' is not set in config.txt");
 	}
 }
 
@@ -127,9 +129,13 @@ void ModeAdministration::_new() {
 	auto dlg = new NewProjectDialog(ed);
 	hui::fly(dlg, [this, dlg] {
 		if (dlg->ok) {
-			create_project(dlg->directory, dlg->first_world);
-			storage->set_root_directory(dlg->directory);
-			data->reset();
+			try {
+				create_project(dlg->directory, dlg->first_world);
+				storage->set_root_directory(dlg->directory);
+				data->reset();
+			} catch (Exception &e) {
+				ed->error_box(e.message());
+			}
 		}
 	});
 }
