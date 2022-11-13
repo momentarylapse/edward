@@ -16,6 +16,7 @@
 #include "../lib/os/time.h"
 #include "../lib/nix/nix.h"
 #include "../lib/math/plane.h"
+#include "../y/ResourceManager.h"
 
 
 os::Timer timer;
@@ -115,6 +116,8 @@ MultiView::MultiView(bool mode3d) {
 	allow_mouse_actions = true;
 	allow_select = true;
 	edit_coordinate_mode = CoordinateMode::GLOBAL;
+
+	shader_out = ResourceManager::load_shader("multiview-out.shader");
 
 
 	reset();
@@ -653,11 +656,27 @@ void check_undef_view_stages(MultiView *mv) {
 	}
 }
 
+void ensure_fb_size(MultiView *mv, const rect &r) {
+	// we should not re-create when shrinking... but then we would need to
+	// think harder about some transformations etc...
+	if (mv->frame_buffer)
+		if (mv->frame_buffer->width == r.width() and mv->frame_buffer->height == r.height())
+			return;
+	auto zbuffer = new nix::DepthBuffer(r.width(), r.height(), "d24s8");
+	auto tex = new nix::Texture(r.width(), r.height(), "rgba:f32");
+	mv->frame_buffer = new nix::FrameBuffer({tex, zbuffer});
+}
+
 void MultiView::on_draw() {
 	screen_scale = hui::get_event()->row_target; // EVIL!
 	timer.reset();
 
 	check_undef_view_stages(this);
+
+	area = nix::target_rect;
+	ensure_fb_size(this, area);
+
+	nix::bind_frame_buffer(frame_buffer.get());
 
 	nix::clear_z();
 	nix::set_projection_ortho_pixel();
@@ -665,7 +684,6 @@ void MultiView::on_draw() {
 	set_color(scheme.TEXT);
 	set_font(scheme.FONT_NAME, scheme.FONT_SIZE);
 
-	area = nix::target_rect;
 
 	if (!mode3d) {
 		visible_windows = {all_windows[0]};
@@ -725,6 +743,15 @@ void MultiView::on_draw() {
 		draw_mouse_pos();
 
 	action_con->draw_post();
+
+	nix::bind_frame_buffer(nix::FrameBuffer::DEFAULT);
+	nix::set_shader(shader_out.get());
+	//nix::vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
+	nix::vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
+	nix::set_texture(weak(frame_buffer->color_attachments)[0]);
+	nix::set_z(false, false);
+	nix::set_cull(nix::CullMode::NONE);
+	nix::draw_triangles(nix::vb_temp);
 
 	//printf("%f\n", timer.get()*1000.0f);
 }

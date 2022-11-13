@@ -33,13 +33,13 @@ ControlColorButton::ControlColorButton(const string &title, const string &id) :
 	_last_set = Black;
 }
 
-static color color_gtk_to_user(const color &c) {
+color color_gtk_to_user(const color &c) {
 	if (color_button_linear)
 		return c.srgb_to_lin();
 	return c;
 }
 
-static color color_user_to_gtk(const color &c) {
+color color_user_to_gtk(const color &c) {
 	if (color_button_linear)
 		return c.lin_to_srgb();
 	return c;

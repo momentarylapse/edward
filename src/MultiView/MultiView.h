@@ -20,6 +20,7 @@ class Data;
 namespace nix {
 	class Shader;
 	class UniformBuffer;
+	class FrameBuffer;
 }
 
 namespace MultiView {
@@ -129,6 +130,9 @@ public:
 
 	nix::UniformBuffer *ubo_light;
 	void set_light(Window *win, const vec3 &dir, const color &col, float harshness);
+
+	shared<nix::FrameBuffer> frame_buffer;
+	shared<nix::Shader> shader_out;
 
 	bool snap_to_grid;
 

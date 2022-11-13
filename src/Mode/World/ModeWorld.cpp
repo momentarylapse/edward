@@ -414,8 +414,7 @@ void ModeWorld::apply_lighting(MultiView::Window *win) {
 }
 
 void ModeWorld::draw_background(MultiView::Window *win) {
-	// gtk is rendering in sRGB!
-	nix::clear_color(data->meta_data.background_color.lin_to_srgb());
+	nix::clear_color(data->meta_data.background_color);
 }
 
 void _set_textures(const Array<nix::Texture*> &_tex) {

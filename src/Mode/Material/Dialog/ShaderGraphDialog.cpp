@@ -249,7 +249,7 @@ void draw_node_param(Painter *p, ShaderGraphDialog *dlg, ShaderNode *n, ShaderNo
 
 	color bg = color::interpolate(scheme.BACKGROUND, scheme.GRID, 0.5f);
 	if (pp.type == ShaderValueType::COLOR) {
-		bg = pp.get_color();
+		bg = pp.get_color().lin_to_srgb();
 	}
 	p->set_color(bg);
 	p->set_roundness(3);

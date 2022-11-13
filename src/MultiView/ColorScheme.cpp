@@ -15,36 +15,36 @@ ColorScheme scheme;
 ColorScheme::ColorScheme() {
 	string name = hui::config.get_str("view.color-scheme", "dark");
 	if (name == "bright") {
-		BACKGROUND = color(1,0.9f,0.9f,0.9f);
-		BACKGROUND_SELECTED = color(1,0.96f,0.96f,0.96f);
-		GRID = color(1,0.65f,0.65f,0.65f);
-		WINDOW_DIVIDER = color(1, 0.4f, 0.4f, 0.75f);
-		POINT = color(1, 0.2f, 0.2f, 0.9f);
+		BACKGROUND = color(1,0.9f,0.9f,0.9f).srgb_to_lin();
+		BACKGROUND_SELECTED = color(1,0.96f,0.96f,0.96f).srgb_to_lin();
+		GRID = color(1,0.65f,0.65f,0.65f).srgb_to_lin();
+		WINDOW_DIVIDER = color(1, 0.4f, 0.4f, 0.75f).srgb_to_lin();
+		POINT = color(1, 0.2f, 0.2f, 0.9f).srgb_to_lin();
 	} else {
-		BACKGROUND = color(1,0.25f,0.25f,0.25f);
-		BACKGROUND_SELECTED = color(1,0.29f,0.29f,0.29f);
-		GRID = color(1,0.45f,0.45f,0.45f);
-		WINDOW_DIVIDER = color(1, 0.35f, 0.35f, 0.65f);
-		POINT = color(1, 0.1f, 0.1f, 0.7f);
+		BACKGROUND = color(1,0.25f,0.25f,0.25f).srgb_to_lin();
+		BACKGROUND_SELECTED = color(1,0.29f,0.29f,0.29f).srgb_to_lin();
+		GRID = color(1,0.45f,0.45f,0.45f).srgb_to_lin();
+		WINDOW_DIVIDER = color(1, 0.35f, 0.35f, 0.65f).srgb_to_lin();
+		POINT = color(1, 0.1f, 0.1f, 0.7f).srgb_to_lin();
 	}
-	SELECTION = color(1, 0.8f,0,0);
+	SELECTION = color(1, 0.8f,0,0).srgb_to_lin();
 	HOVER = White;
-	TEXT = color(1, 0.1f, 0.1f, 0.1f);
-	TEXT_BG = color(1, 0.7f, 0.7f, 0.7f);
-	WINDOW_TITLE = color(1, 0.35f, 0.35f, 0.35f);
-	WINDOW_TITLE_BG = TEXT_BG;//color(1, 0.4f, 0.4f, 0.4f);
+	TEXT = color(1, 0.1f, 0.1f, 0.1f).srgb_to_lin();
+	TEXT_BG = color(1, 0.7f, 0.7f, 0.7f).srgb_to_lin();
+	WINDOW_TITLE = color(1, 0.35f, 0.35f, 0.35f).srgb_to_lin();
+	WINDOW_TITLE_BG = TEXT_BG;//color(1, 0.4f, 0.4f, 0.4f).srgb_to_lin();
 	//ColorWindowType = color(1, 0.5f, 0.5f, 0.5f);
-	POINT_SELECTED = color(1, 0.9f, 0.2f, 0.2f);
-	POINT_SPECIAL = color(1, 0.2f, 0.8f, 0.2f);
-	SELECTION_RECT = color(0.2f,0,0,1);
-	SELECTION_RECT_BOUNDARY = color(0.7f,0,0,1);
-	CREATION = color(0.5f, 0.1f, 0.6f, 0.1f);
-	CREATION_LINE = color(1, 0.1f, 0.8f, 0.1f);
-	HELPER_LINE = color(1, 0.2f, 0.2f, 0.2f);
+	POINT_SELECTED = color(1, 0.9f, 0.2f, 0.2f).srgb_to_lin();
+	POINT_SPECIAL = color(1, 0.2f, 0.8f, 0.2f).srgb_to_lin();
+	SELECTION_RECT = color(0.2f,0,0,1).srgb_to_lin();
+	SELECTION_RECT_BOUNDARY = color(0.7f,0,0,1).srgb_to_lin();
+	CREATION = color(0.5f, 0.1f, 0.6f, 0.1f).srgb_to_lin();
+	CREATION_LINE = color(1, 0.1f, 0.8f, 0.1f).srgb_to_lin();
+	HELPER_LINE = color(1, 0.2f, 0.2f, 0.2f).srgb_to_lin();
 
-	AXIS[0] = color(1, 0.8f, 0.2f, 0.2f);
-	AXIS[1] = color(1, 0.2f, 0.8f, 0.2f);
-	AXIS[2] = color(1, 0.3f, 0.3f, 1.0f);
+	AXIS[0] = color(1, 0.8f, 0.2f, 0.2f).srgb_to_lin();
+	AXIS[1] = color(1, 0.2f, 0.8f, 0.2f).srgb_to_lin();
+	AXIS[2] = color(1, 0.3f, 0.3f, 1.0f).srgb_to_lin();
 
 	FONT_NAME = "Sans Semi-Bold";
 	FONT_SIZE = 12;
