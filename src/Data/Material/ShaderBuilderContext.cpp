@@ -114,6 +114,9 @@ uniform Material material;
 	if (vars.contains("in:uv")) {
 		source += "layout(location=2) in vec2 in_uv;\n";
 	}
+	if (vars.contains("in:color")) {
+		source += "layout(location=3) in vec4 in_color;\n";
+	}
 	if (vars.contains("in:eye")) {
 		source += "uniform vec3 eye_pos;\n";
 	}

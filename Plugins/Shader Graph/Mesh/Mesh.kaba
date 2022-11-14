@@ -7,29 +7,35 @@ class NodeMesh extends shader.Node
 		output.add([shader.Type.VEC3, "pos"])
 		output.add([shader.Type.VEC3, "normals"])
 		output.add([shader.Type.VEC2, "uv"])
+		output.add([shader.Type.COLOR, "color"])
 	func override const dependencies() -> string[]
-		return ["in:pos", "in:normal", "in:uv", "in:matrix"]
+		return ["in:pos", "in:normal", "in:uv", "in:color", "in:matrix"]
 	func override const code_pixel(out c: shader.BuilderContext) -> string
 		var p = c.create_out(self, 0)
 		var n = c.create_out(self, 1)
 		var u = c.create_out(self, 2)
+		var cc = c.create_out(self, 3)
 		if params[0].value == "1" # world
 			return "
 	vec3 {{p}} = in_pos.xyz / in_pos.w;
 	vec3 {{n}} = normalize(in_normal);
-	vec2 {{u}} = in_uv;"
+	vec2 {{u}} = in_uv;
+	vec4 {{cc}} = in_color;"
 		if params[0].value == "2" # cam
 			return "
 	vec3 {{p}} = (matrix.view * in_pos).xyz;
 	vec3 {{n}} = normalize(in_normal);
-	vec2 {{u}} = in_uv;"
+	vec2 {{u}} = in_uv;
+	vec4 {{cc}} = in_color;"
 		if params[0].value == "3" # window
 			return "
 	vec3 {{p}} = (matrix.project * matrix.view * in_pos).xyz;
 	vec3 {{n}} = normalize(in_normal);
-	vec2 {{u}} = in_uv;"
+	vec2 {{u}} = in_uv;
+	vec4 {{cc}} = in_color;"
 		#if params[0].value == "0" # model
 		return "
 	vec3 {{p}} = in_pos.xyz;
 	vec3 {{n}} = normalize(in_normal);
-	vec2 {{u}} = in_uv;"
+	vec2 {{u}} = in_uv;
+	vec4 {{cc}} = in_color;"
