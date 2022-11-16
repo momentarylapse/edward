@@ -65,6 +65,8 @@ void ModeModelMeshDeformFunction::on_start() {
 
 	//ed->activate("");
 
+	context = kaba::Context::create();
+
 	data->getBoundingBox(max, min);
 	bool first = true;
 	foreachi(ModelVertex &v, data->mesh->vertex, i)
@@ -94,6 +96,7 @@ void ModeModelMeshDeformFunction::on_end() {
 	ed->set_side_panel(nullptr);
 	delete geo;
 	script = nullptr;
+	context = nullptr;
 }
 
 void ModeModelMeshDeformFunction::on_draw_win(MultiView::Window* win) {
@@ -147,7 +150,7 @@ void ModeModelMeshDeformFunction::update_function() {
 
 	f = nullptr;
 	try {
-		script = kaba::create_for_source(dialog->get_string("source"));
+		script = context->create_module_for_source(dialog->get_string("source"));
 		f = (vec_func*)script->match_function("*", "math.vector", {"math.vector"});
 
 		if (!f)

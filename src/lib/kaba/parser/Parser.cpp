@@ -54,9 +54,10 @@ int64 s2i2(const string &str) {
 
 Parser::Parser(SyntaxTree *t) :
 	Exp(t->expressions),
-	con(this, t),
+	con(t->module->context, this, t),
 	auto_implementer(this, t)
 {
+	context = t->module->context;
 	tree = t;
 	cur_func = nullptr;
 	Exp.cur_line = nullptr;
@@ -583,7 +584,7 @@ const Class *merge_type_tuple_into_product(SyntaxTree *tree, const Array<const C
 			name += ",";
 		name += c->name;
 	}
-	return tree->request_implicit_class("("+name+")", Class::Type::PRODUCT, size, -1, nullptr, classes, tree->_base_class.get(), token_id);
+	return tree->request_implicit_class("("+name+")", Class::Type::PRODUCT, size, -1, nullptr, classes, token_id);
 }
 
 shared<Node> Parser::parse_abstract_token() {
@@ -848,7 +849,7 @@ void Parser::post_process_for(shared<Node> cmd_for) {
 		auto *loop_block = cmd_for->params[3].get();
 
 	// ref.
-		var->type = var->type->get_pointer();
+		var->type = tree->get_pointer(var->type);
 		n_var->type = var->type;
 		tree->transform_node(loop_block, [this, var] (shared<Node> n) {
 			return tree->conv_cbr(n, var);
@@ -1586,7 +1587,7 @@ bool type_needs_alignment(const Class *t) {
 void parser_class_add_element(Parser *p, Class *_class, const string &name, const Class *type, Flags flags, int &_offset, int token_id) {
 
 	// override?
-	ClassElement *orig = find_by_element(_class->elements, &ClassElement::name, name);
+	ClassElement *orig = base::find_by_element(_class->elements, &ClassElement::name, name);
 
 	bool override = flags_has(flags, Flags::OVERRIDE);
 	if (override and ! orig)
@@ -1614,7 +1615,7 @@ void parser_class_add_element(Parser *p, Class *_class, const string &name, cons
 	} else {
 		if (type_needs_alignment(type))
 			_offset = mem_align(_offset, 4);
-		_offset = process_class_offset(_class->cname(p->tree->base_class), name, _offset);
+		_offset = p->context->external->process_class_offset(_class->cname(p->tree->base_class), name, _offset);
 		auto el = ClassElement(name, type, _offset);
 		_offset += type->size;
 		_class->elements.add(el);
@@ -1704,7 +1705,7 @@ bool Parser::parse_class(Class *_namespace) {
 				flags_set(flags, Flags::VIRTUAL);
 			auto f = parse_function_header(_class, flags);
 			skip_parsing_function_body(f);
-		} else if (Exp.cur == IDENTIFIER_CONST) {
+		} else if ((Exp.cur == IDENTIFIER_CONST) or (Exp.cur == IDENTIFIER_LET)) {
 			parse_named_const(_class, tree->root_of_all_evil->block.get());
 		} else if (try_consume(IDENTIFIER_VAR)) {
 			parse_class_variable_declaration(_class, tree->root_of_all_evil->block.get(), _offset);
@@ -1736,6 +1737,7 @@ bool Parser::parse_class(Class *_namespace) {
 }
 
 void Parser::post_process_newly_parsed_class(Class *_class, int size) {
+	auto external = context->external.get();
 
 	// virtual functions?     (derived -> _class->num_virtual)
 //	_class->vtable = cur_virtual_index;
@@ -1748,7 +1750,7 @@ void Parser::post_process_newly_parsed_class(Class *_class, int size) {
 			// element "-vtable-" being derived
 		} else {
 			for (ClassElement &e: _class->elements)
-				e.offset = process_class_offset(_class->cname(tree->base_class), e.name, e.offset + config.pointer_size);
+				e.offset = external->process_class_offset(_class->cname(tree->base_class), e.name, e.offset + config.pointer_size);
 
 			auto el = ClassElement(IDENTIFIER_VTABLE_VAR, TypePointer, 0);
 			_class->elements.insert(el, 0);
@@ -1762,7 +1764,7 @@ void Parser::post_process_newly_parsed_class(Class *_class, int size) {
 	for (auto &e: _class->elements)
 		if (type_needs_alignment(e.type))
 			size = mem_align(size, 4);
-	_class->size = process_class_size(_class->cname(tree->base_class), size);
+	_class->size = external->process_class_size(_class->cname(tree->base_class), size);
 
 
 	tree->add_missing_function_headers_for_class(_class);
@@ -1815,7 +1817,6 @@ bool Parser::try_consume(const string &identifier) {
 }
 
 
-bool type_match_with_cast(shared<Node> node, bool is_modifiable, const Class *wanted, CastingData &cd);
 
 shared<Node> Parser::parse_and_eval_const(Block *block, const Class *type) {
 
@@ -1824,7 +1825,7 @@ shared<Node> Parser::parse_and_eval_const(Block *block, const Class *type) {
 
 	if (type) {
 		CastingData cast;
-		if (type_match_with_cast(cv, false, type, cast)) {
+		if (con.type_match_with_cast(cv, false, type, cast)) {
 			cv = con.apply_type_cast(cast, cv, type);
 		} else {
 			do_error(format("constant value of type '%s' expected", type->long_name()), cv);
@@ -1846,7 +1847,7 @@ shared<Node> Parser::parse_and_eval_const(Block *block, const Class *type) {
 }
 
 void Parser::parse_named_const(Class *name_space, Block *block) {
-	Exp.next(); // 'const'
+	Exp.next(); // 'const' / 'let'
 	string name = Exp.consume();
 
 	const Class *type = nullptr;
@@ -2072,7 +2073,7 @@ Function *Parser::parse_function_header(Class *name_space, Flags flags) {
 	expect_new_line("newline expected after parameter list");
 
 	if (f->is_template()) {
-		TemplateManager::add_template(f, template_param_names);
+		context->template_manager->add_template(f, template_param_names);
 		name_space->add_template_function(tree, f, flags_has(flags, Flags::VIRTUAL), flags_has(flags, Flags::OVERRIDE));
 	} else {
 		con.concretify_function_header(f);
@@ -2235,7 +2236,7 @@ void Parser::parse_top_level() {
 			auto f = parse_function_header(tree->base_class, Flags::STATIC);
 			skip_parsing_function_body(f);
 
-		} else if (Exp.cur == IDENTIFIER_CONST) {
+		} else if ((Exp.cur == IDENTIFIER_CONST) or (Exp.cur == IDENTIFIER_LET)) {
 			parse_named_const(tree->base_class, tree->root_of_all_evil->block.get());
 
 		} else if (try_consume(IDENTIFIER_VAR)) {

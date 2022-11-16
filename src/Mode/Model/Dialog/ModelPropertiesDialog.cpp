@@ -72,7 +72,8 @@ void update_model_script_data(DataModel::MetaData &m) {
 	//m.class_name = "";
 	try {
 		msg_write((storage->root_dir_kind[FD_SCRIPT] << m.script_file).str());
-		auto ss = kaba::load(storage->root_dir_kind[FD_SCRIPT] << m.script_file, true);
+		auto c = ownify(kaba::Context::create());
+		auto ss = c->load_module(storage->root_dir_kind[FD_SCRIPT] << m.script_file, true);
 
 		auto t = get_class(ss, "*.Model");
 		m._script_class = t->cname(t->owner->base_class);

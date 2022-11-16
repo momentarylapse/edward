@@ -17,7 +17,8 @@ Array<ScriptInstanceData> enumerate_components() {
 	auto files = os::fs::search(storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
 	for (auto &f: files) {
 		try {
-			auto s = kaba::load(storage->root_dir_kind[FD_SCRIPT] << f, true);
+			auto context = ownify(kaba::Context::create());
+			auto s = context->load_module(storage->root_dir_kind[FD_SCRIPT] << f, true);
 			for (auto c: s->classes()) {
 				if (c->is_derived_from_s("ecs.Component") and c->name != "Component")
 					r.add({f, c->name});

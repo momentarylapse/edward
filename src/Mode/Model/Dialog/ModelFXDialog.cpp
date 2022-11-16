@@ -92,7 +92,8 @@ void ModelFXDialog::OnFindScriptFile() {
 		set_string("script_file", storage->dialog_file.str());
 
 		try {
-			auto s = kaba::load(filename, true); // just analyse
+			auto c = ownify(kaba::Context::create());
+			auto s = c->load_module(filename, true); // just analyse
 			if (!s->match_function("OnEffectCreate", "void", {"effect"}))
 				ed->error_box(_("Script file does not contain a function \"void OnEffectCreate( effect )\""));
 			else if (!s->match_function("OnEffectIterate", "void", {"effect"}))

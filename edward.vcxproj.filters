@@ -862,10 +862,16 @@
     <ClCompile Include="src\lib\kaba\CompilerConfiguration.cpp">
       <Filter>src\lib\kaba</Filter>
     </ClCompile>
+    <ClCompile Include="src\lib\kaba\Context.cpp">
+      <Filter>src\lib\kaba</Filter>
+    </ClCompile>
     <ClCompile Include="src\lib\kaba\Interpreter.cpp">
       <Filter>src\lib\kaba</Filter>
     </ClCompile>
     <ClCompile Include="src\lib\kaba\kaba.cpp">
+      <Filter>src\lib\kaba</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lib\kaba\Module.cpp">
       <Filter>src\lib\kaba</Filter>
     </ClCompile>
     <ClCompile Include="src\lib\math\complex.cpp">
@@ -2145,10 +2151,16 @@
     <ClInclude Include="src\lib\kaba\CompilerConfiguration.h">
       <Filter>src\lib\kaba</Filter>
     </ClInclude>
+    <ClInclude Include="src\lib\kaba\Context.h">
+      <Filter>src\lib\kaba</Filter>
+    </ClInclude>
     <ClInclude Include="src\lib\kaba\Interpreter.h">
       <Filter>src\lib\kaba</Filter>
     </ClInclude>
     <ClInclude Include="src\lib\kaba\kaba.h">
+      <Filter>src\lib\kaba</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lib\kaba\Module.h">
       <Filter>src\lib\kaba</Filter>
     </ClInclude>
     <ClInclude Include="src\lib\math\complex.h">
@@ -2768,9 +2780,6 @@
     <Filter Include="src\lib\doc">
       <UniqueIdentifier>{71410E6E-87C0-EE20-BAEF-9044CC4AD485}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\lib\file">
-      <UniqueIdentifier>{596C5346-3ACF-8974-B6F3-FC96F58AE493}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\lib\hui">
       <UniqueIdentifier>{FDD61BAD-BC45-3E2C-366F-FF481FD83243}</UniqueIdentifier>
     </Filter>
@@ -2815,9 +2824,6 @@
     </Filter>
     <Filter Include="src\lib\threads">
       <UniqueIdentifier>{00B3DEB1-3DBC-9488-47E6-BB73557F0D00}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\lib\xfile">
-      <UniqueIdentifier>{87F43273-B0B1-C1EC-F4A8-E622B9C0AE32}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Mode">
       <UniqueIdentifier>{033B1084-006B-8586-E637-20D70829C77D}</UniqueIdentifier>

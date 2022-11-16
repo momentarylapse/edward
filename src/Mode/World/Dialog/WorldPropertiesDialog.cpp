@@ -176,7 +176,8 @@ shared<const kaba::Class> get_class(shared<kaba::Module> s, const string &parent
 void update_script_data(WorldScript &s) {
 	s.class_name = "";
 	try {
-		auto ss = kaba::load(s.filename, true);
+		auto context = ownify(kaba::Context::create());
+		auto ss = context->load_module(s.filename, true);
 
 		auto t = get_class(ss, "*.Controller");
 

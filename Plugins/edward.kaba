@@ -73,12 +73,12 @@ class MultiView
 
 
 
-const TransparencyModeDefault = -1
-const TransparencyModeNone = 0
-const TransparencyModeFunctions = 1
-const TransparencyModeColorKeyHard = 2
-const TransparencyModeColorKeySmooth = 3
-const TransparencyModeFactor = 4
+let TransparencyModeDefault = -1
+let TransparencyModeNone = 0
+let TransparencyModeFunctions = 1
+let TransparencyModeColorKeyHard = 2
+let TransparencyModeColorKeySmooth = 3
+let TransparencyModeFactor = 4
 
 # effects
 enum FxKind
@@ -97,10 +97,10 @@ class y
 
 
 class Model extends Data
-	const MAX_TEXTURES = 8
-	const MAX_POLY_VERTICES_PER_FACE = 16
-	const MAX_POLY_FACES = 32
-	const MAX_POLY_EDGES = 32 * 4
+	let MAX_TEXTURES = 8
+	let MAX_POLY_VERTICES_PER_FACE = 16
+	let MAX_POLY_FACES = 32
+	let MAX_POLY_EDGES = 32 * 4
 
 
 	class Material
@@ -503,13 +503,14 @@ class shader
 			var name: string
 		var output: Port[]
 	
-		func extern virtual const dependencies() -> string[]
-		func extern virtual const uniform_dependencies() -> string[]
-		func extern virtual const code_pixel_pre(out ctx: BuilderContext) -> string
-		func extern virtual const code_pixel(out ctx: BuilderContext) -> string
+		func extern virtual dependencies() -> string[]
+		func extern virtual uniform_dependencies() -> string[]
+		func extern virtual code_pixel_pre(out ctx: BuilderContext) -> string
+		func extern virtual code_pixel(out ctx: BuilderContext) -> string
 
 var extern model: Model*
 var extern world: World*
 var extern edward: Window*
+
 var extern ed: Edward*
 

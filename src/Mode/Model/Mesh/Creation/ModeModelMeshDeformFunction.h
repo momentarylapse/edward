@@ -14,6 +14,7 @@
 
 class Geometry;
 namespace kaba {
+	class Context;
 	class Module;
 }
 namespace nix {
@@ -37,6 +38,7 @@ private:
 	vec3 min, max;
 	Geometry *geo;
 	nix::Texture *tex;
+	owned<kaba::Context> context;
 	shared<kaba::Module> script;
 	typedef _cdecl vec3 vec_func(const vec3 &);
 	vec_func *f;
