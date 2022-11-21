@@ -140,14 +140,16 @@ void Animator::do_animation(float elapsed) {
 			vec3 p,p1,p2;
 
 		// calculate the alignment belonging to this argument
-			int fr = (int)(op->time); // current frame (relative)
+			float t = max(op->time, 0.0f);
+			int fr = (int)t; // current frame (relative)
 			int f1 = move->frame0 + fr; // current frame (absolute)
 			int f2 = move->frame0 + (fr+1)%move->num_frames; // next frame (absolute)
-			float df = op->time-(float)fr; // time since start of current frame
+			float df = t-(float)fr; // time since start of current frame
+			//msg_write(format("%d   %d  %d    %d", i, f1, sk->bones.num, meta->skel_ang.num));
 			w1 = meta->skel_ang[f1 * sk->bones.num + i]; // first value
-			p1 = meta->skel_dpos[f1*sk->bones.num + i];
-			w2 = meta->skel_ang[f2*sk->bones.num + i]; // second value
-			p2 = meta->skel_dpos[f2*sk->bones.num + i];
+			p1 = meta->skel_dpos[f1 * sk->bones.num + i];
+			w2 = meta->skel_ang[f2 * sk->bones.num + i]; // second value
+			p2 = meta->skel_dpos[f2 * sk->bones.num + i];
 			move->inter_quad = false;
 			/*if (m->InterQuad){
 				w0=m->ang[i][(f-1+m->NumFrames)%m->NumFrames]; // last value

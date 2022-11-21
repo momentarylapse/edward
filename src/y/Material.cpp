@@ -225,21 +225,20 @@ Material *LoadMaterial(const Path &filename) {
 }
 
 inline int shader_index(RenderPathType render_path_type, ShaderVariant v) {
-	return (int)v + 3 * ((int)render_path_type - 1);
+	return (int)v + (int)ShaderVariant::_NUM * ((int)render_path_type - 1);
 }
 
 void Material::_prepare_shader(RenderPathType render_path_type, ShaderVariant v) {
 	int i = shader_index(render_path_type, v);
 	if (shader[i])
 		return;
-	string vv = "default";
-	if (v == ShaderVariant::ANIMATED)
-		vv = "animated";
-	if (v == ShaderVariant::INSTANCED)
-		vv = "instanced";
+	static const string VARIANT_NAME[5] = {"default", "animated", "instanced", "lines", "points"};
+	const string &vv = VARIANT_NAME[(int)v];
+	static const string GEOMETRY_NAME[5] = {"", "", "", "lines", "points"};
+	const string &gg = GEOMETRY_NAME[(int)v];
 	static const string RENDER_PATH_NAME[3] = {"", "forward", "deferred"};
 	const string &rpt = RENDER_PATH_NAME[(int)render_path_type];
-	shader[i] = ResourceManager::load_surface_shader(shader_path, rpt, vv);
+	shader[i] = ResourceManager::load_surface_shader(shader_path, rpt, vv, gg);
 }
 
 Shader *Material::get_shader(RenderPathType render_path_type, ShaderVariant v) {
