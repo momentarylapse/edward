@@ -16,11 +16,7 @@
 
 namespace nix{
 
-// textures
 void init_textures();
-void release_textures();
-void reincarnate_textures();
-
 
 
 class Texture : public Sharable<base::Empty> {
@@ -47,8 +43,6 @@ public:
 	Texture();
 	Texture(int width, int height, const string &format);
 	~Texture();
-	void _cdecl __init__(int width, int height, const string &format);
-	void _cdecl __delete__();
 
 	void _cdecl write(const Image &image);
 	void _cdecl read(Image &image) const;
@@ -67,32 +61,28 @@ public:
 
 	void _cdecl set_options(const string &op) const;
 
-	static Texture* _cdecl load(const Path &filename);
+	static xfer<Texture> _cdecl load(const Path &filename);
 };
 
 
 class TextureMultiSample : public Texture {
 public:
 	TextureMultiSample(int width, int height, int samples, const string &format);
-	void _cdecl __init__(int width, int height, int samples, const string &format);
 };
 
 class VolumeTexture : public Texture {
 public:
 	VolumeTexture(int nx, int ny, int nz, const string &format);
-	void _cdecl __init__(int nx, int ny, int nz, const string &format);
 };
 
 class ImageTexture : public Texture {
 public:
 	ImageTexture(int width, int height, const string &format);
-	void _cdecl __init__(int width, int height, const string &format);
 };
 
 class DepthBuffer : public Texture {
 public:
 	DepthBuffer(int width, int height, const string &format);
-	void _cdecl __init__(int width, int height, const string &format);
 };
 
 class RenderBuffer : public Texture {
@@ -104,7 +94,6 @@ public:
 class CubeMap : public Texture {
 public:
 	CubeMap(int size, const string &format);
-	void _cdecl __init__(int size, const string &format);
 
 	void _cdecl write_side(int side, const Image &image);
 	void _cdecl fill_side(int side, Texture *source);
@@ -113,6 +102,7 @@ public:
 
 void _cdecl set_texture(Texture *texture);
 void _cdecl set_textures(const Array<Texture*> &textures);
+void bind_texture(int binding, Texture *t);
 void bind_image(int binding, Texture *t, int level, int layer, bool writable);
 
 extern int tex_cube_level;

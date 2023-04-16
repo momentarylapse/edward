@@ -150,7 +150,7 @@ Material *LoadMaterial(const Path &filename) {
 	msg_write("loading material " + filename.str());
 
 	Configuration c;
-	if (!c.load(engine.material_dir << filename.with(".material"))) {
+	if (!c.load(engine.material_dir | filename.with(".material"))) {
 		/*if (engine.ignore_missing_files) {
 			msg_error("material file missing: " + filename.str());
 			return default_material->copy();

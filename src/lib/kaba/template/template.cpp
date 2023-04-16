@@ -6,8 +6,8 @@
  */
 
 #include "../kaba.h"
-#include "Parser.h"
-#include "Concretifier.h"
+#include "../parser/Parser.h"
+#include "../parser/Concretifier.h"
 #include "template.h"
 #include "../../os/msg.h"
 #include "../../base/iter.h"
@@ -103,18 +103,32 @@ Function *TemplateManager::get_instantiated(Parser *parser, Function *f0, const 
 }
 
 void TemplateManager::match_parameter_type(shared<Node> p, const Class *t, std::function<void(const string&, const Class*)> f) {
-	//msg_write("  match..." + t->name);
-	//p->show();
 	if (p->kind == NodeKind::ABSTRACT_TOKEN) {
 		// direct
 		string token = p->as_token();
 		f(token, t);
 	} else if (p->kind == NodeKind::ABSTRACT_TYPE_LIST) {
-		if (t->is_super_array())
+		if (t->is_list())
 			match_parameter_type(p->params[0], t->get_array_element(), f);
-	} else if (p->kind == NodeKind::ABSTRACT_TYPE_POINTER) {
-		if (t->is_pointer())
+	} else if (p->kind == NodeKind::ABSTRACT_TYPE_POINTER or p->kind == NodeKind::ABSTRACT_TYPE_STAR) {
+		if (t->is_pointer_raw())
 			match_parameter_type(p->params[0], t->param[0], f);
+	} else if (p->kind == NodeKind::ABSTRACT_TYPE_REFERENCE) {
+		if (t->is_reference())
+			match_parameter_type(p->params[0], t->param[0], f);
+	} else if (p->kind == NodeKind::ABSTRACT_TYPE_SHARED) {
+		if (t->is_pointer_shared())
+			match_parameter_type(p->params[0], t->param[0], f);
+	} else if (p->kind == NodeKind::ABSTRACT_TYPE_SHARED_NOT_NULL) {
+		if (t->is_pointer_shared_not_null())
+			match_parameter_type(p->params[0], t->param[0], f);
+	} else if (p->kind == NodeKind::ARRAY) {
+		if (p->params[0]->kind == NodeKind::ABSTRACT_TYPE_POINTER and t->is_pointer_raw())
+			match_parameter_type(p->params[1], t->param[0], f);
+		else if (p->params[0]->kind == NodeKind::ABSTRACT_TYPE_SHARED and t->is_pointer_shared())
+			match_parameter_type(p->params[1], t->param[0], f);
+		else if (p->params[0]->kind == NodeKind::ABSTRACT_TYPE_SHARED_NOT_NULL and t->is_pointer_shared_not_null())
+			match_parameter_type(p->params[1], t->param[0], f);
 	}
 }
 
@@ -137,6 +151,10 @@ Function *TemplateManager::get_instantiated_matching(Parser *parser, Function *f
 					msg_error("FOUND: " + token + " = " + arg_types[j]->name);
 			}
 	};
+
+	if (params.num != f0->abstract_param_types.num)
+		parser->do_error(format("not able to match all template parameters: %d parameters given, %d expected", params.num, f0->abstract_param_types.num), token_id);
+
 
 	for (auto&& [i,p]: enumerate(weak(params))) {
 		if (p->type == TypeUnknown)
@@ -218,6 +236,7 @@ Function *TemplateManager::instantiate(Parser *parser, Template &t, const Array<
 		parser->tree->functions.add(f);
 
 	} catch (kaba::Exception &e) {
+		//msg_write(e.message());
 		parser->do_error(format("failed to instantiate template %s: %s", f->name, e.message()), token_id);
 	}
 

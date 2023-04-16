@@ -39,6 +39,36 @@ bool Application::installed;
 Array<string> Application::_args;
 
 
+void _init_global_css_classes_() {
+	string css = R"foo(
+.hui-no-padding { padding: 1px; }
+.hui-more-padding { padding: 8px; }
+.hui-big-font { font-size: 125%; }
+.hui-huge-font { font-size: 150%; }
+.hui-small-font { font-size: 75%; }
+.hui-no-border { border-style: none; }
+)foo";
+#if GTK_CHECK_VERSION(4,0,0)
+	css += ".hui-rotate-left { transform: rotate(90deg); } /* check? */\n";
+	css += ".hui-rotate-right { transform: rotate(-90deg); }\n";
+#endif
+
+	auto *css_provider = gtk_css_provider_new();
+
+#if GTK_CHECK_VERSION(4,0,0)
+	gtk_css_provider_load_from_data(css_provider, (char*)css.data, css.num);
+	gtk_style_context_add_provider_for_display(gdk_display_get_default(), GTK_STYLE_PROVIDER(css_provider),  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+#else
+	GError *error = nullptr;
+	gtk_css_provider_load_from_data(css_provider, (char*)css.data, css.num, &error);
+	if (error) {
+		msg_error(string("css: ") + error->message + " (" + css + ")");
+		return;
+	}
+	gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(css_provider),  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+#endif
+}
+
 Application::Application(const string &app_name, const string &def_lang, int flags) {
 
 #ifdef HUI_API_GTK
@@ -55,30 +85,33 @@ Application::Application(const string &app_name, const string &def_lang, int fla
 	if ((flags & FLAG_NO_ERROR_HANDLER) == 0)
 		SetDefaultErrorHandler(nullptr);
 
-	if (os::fs::exists(directory << "config.txt"))
-		config.load(directory << "config.txt");
+	if (os::fs::exists(directory | "config.txt"))
+		config.load(directory | "config.txt");
 
 
 	if ((flags & FLAG_DONT_LOAD_RESOURCE) == 0)
-		load_resource(directory_static << "hui_resources.txt");
+		load_resource(directory_static | "hui_resources.txt");
 
 	if (def_lang.num > 0)
 		set_language(config.get_str("Language", def_lang));
 
 
 #ifdef OS_LINUX
-	if (os::fs::exists(directory_static << "icon.svg"))
-		set_property("logo", (directory_static << "icon.svg").str());
+	if (os::fs::exists(directory_static | "icon.svg"))
+		set_property("logo", (directory_static | "icon.svg").str());
 	else
 #endif
-	if (os::fs::exists(directory_static << "icon.png"))
-		set_property("logo", (directory_static << "icon.png").str());
-	else if (os::fs::exists(directory_static << "icon.ico"))
-		set_property("logo", (directory_static << "icon.ico").str());
+	if (os::fs::exists(directory_static | "icon.png"))
+		set_property("logo", (directory_static | "icon.png").str());
+	else if (os::fs::exists(directory_static | "icon.ico"))
+		set_property("logo", (directory_static | "icon.ico").str());
 
 
 #if GTK_CHECK_VERSION(4,0,0)
 	application = gtk_application_new(nullptr, G_APPLICATION_NON_UNIQUE);
+#else
+	_MakeUsable_();
+	_init_global_css_classes_();
 #endif
 }
 
@@ -86,7 +119,7 @@ Application::~Application() {
 	//foreachb(Window *w, _all_windows_)
 	//	delete(w);
 	if (config.changed)
-		config.save(directory << "config.txt");
+		config.save(directory | "config.txt");
 	if ((msg_inited) /*&& (HuiMainLevel == 0)*/)
 		msg_end();
 
@@ -137,7 +170,7 @@ void Application::guess_directories(const Array<string> &arg, const string &app_
 
 	// first, assume a local/non-installed version
 	directory = initial_working_directory; //strip_dev_dirs(filename.parent());
-	directory_static = directory << "static";
+	directory_static = directory | "static";
 
 #ifdef INSTALL_PREFIX
 	// our build system should define this:
@@ -151,7 +184,7 @@ void Application::guess_directories(const Array<string> &arg, const string &app_
 		// installed version?
 		if (filename.is_in(prefix) or (filename.str().find("/") < 0)) {
 			installed = true;
-			directory_static = prefix << "share" << app_name;
+			directory_static = prefix | "share" | app_name;
 		}
 
 		directory = format("%s/.%s/", getenv("HOME"), app_name);
@@ -165,9 +198,7 @@ static bool keep_running = true;
 
 int Application::run() {
 #if GTK_CHECK_VERSION(4,0,0)
-	return g_application_run(G_APPLICATION (application), 0, nullptr);
-	while (keep_running)
-		do_single_main_loop();
+	return g_application_run(G_APPLICATION(application), 0, nullptr);
 #else
 	gtk_main();
 #endif
@@ -177,10 +208,13 @@ int Application::run() {
 }
 
 
+#if GTK_CHECK_VERSION(4,0,0)
 static void on_gtk_application_activate(GApplication *_g_app, gpointer user_data) {
 	auto app = reinterpret_cast<Application*>(user_data);
+	_init_global_css_classes_();
 	app->on_startup(app->_args);
 }
+#endif
 
 
 

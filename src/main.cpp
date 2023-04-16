@@ -38,7 +38,7 @@ void update_file(const Path &filename, bool allow_write) {
 
 	int pp = filename.str().find("/Objects/", 0);
 	if (pp > 0) {
-		kaba::config.directory = Path(filename.str().sub(0, pp)) << "Scripts";
+		kaba::config.directory = Path(filename.str().sub(0, pp)) | "Scripts";
 		//msg_write(kaba::config.directory.str());
 	}
 

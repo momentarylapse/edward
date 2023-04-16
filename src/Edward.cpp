@@ -212,9 +212,9 @@ Edward::Edward() :
 
 	// depends on some mode data
 	if (app->installed)
-		plugins = new PluginManager(app->directory_static << "Plugins");
+		plugins = new PluginManager(app->directory_static | "Plugins");
 	else
-		plugins = new PluginManager(app->directory_static << ".." << "Plugins");
+		plugins = new PluginManager(app->directory_static | ".." | "Plugins");
 
 	mode_material = new ModeMaterial(multi_view_3d);
 
@@ -268,7 +268,7 @@ Edward::~Edward() {
 	HuiConfig.set_str("ObjectScriptVarFile", ObjectScriptVarFile);
 	HuiConfig.set_str("ItemScriptVarFile", ItemScriptVarFile);*/
 	//HuiConfig.set_int("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
-	hui::config.save(app->directory << "config.txt");
+	hui::config.save(app->directory | "config.txt");
 	delete storage;
 
 
@@ -462,7 +462,7 @@ void Edward::on_draw_gl() {
 	cur_mode->on_draw();
 
 	// messages
-	nix::set_shader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d.get());
 	foreachi(string &m, message_str, i)
 		draw_str(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, TextAlign::CENTER);
 	nix::end_frame_hui();
@@ -472,12 +472,12 @@ void Edward::load_key_codes() {
 	Configuration con;
 
 	// first installed version
-	con.load(app->directory_static << "keys.txt");
+	con.load(app->directory_static | "keys.txt");
 	for (auto &id: con.map.keys())
 		set_key_code(id, hui::parse_key_code(con.get_str(id, "")));
 
 	// then override by user keys
-	con.load(app->directory << "keys.txt");
+	con.load(app->directory | "keys.txt");
 	for (auto &id: con.map.keys())
 		set_key_code(id, hui::parse_key_code(con.get_str(id, "")));
 }
@@ -497,8 +497,8 @@ void Edward::set_message(const string &message) {
 
 
 void Edward::error_box(const string &message) {
-	set_info_text(message, {"error", "allow-close"});
-	//hui::ErrorBox(this, _("Error"), message);
+	//set_info_text(message, {"error", "allow-close"});
+	hui::error_box(this, _("Error"), message);
 }
 
 void Edward::on_command(const string &id) {
@@ -596,7 +596,7 @@ Path add_extension_if_needed(int type, const Path &filename) {
 
 Path make_absolute_path(int type, const Path &filename, bool relative_path) {
 	if (relative_path)
-		return storage->get_root_dir(type) << filename;
+		return storage->get_root_dir(type) | filename;
 	return filename;
 }
 

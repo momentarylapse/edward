@@ -26,8 +26,8 @@ Path guess_absolute_path(const Path &filename, const Array<Path> dirs) {
 		return filename;
 
 	for (auto &d: dirs)
-		if (os::fs::exists(d << filename))
-			return d << filename;
+		if (os::fs::exists(d | filename))
+			return d | filename;
 
 	return Path::EMPTY;
 	/*if (engine.ignore_missing_files) {
@@ -42,14 +42,14 @@ Shader* ResourceManager::load_shader(const Path& filename) {
 	if (!filename)
 		return Shader::load("");
 
-	Path fn = guess_absolute_path(filename, {shader_dir, hui::Application::directory_static << "shader"});
+	Path fn = guess_absolute_path(filename, {shader_dir, hui::Application::directory_static | "shader"});
 	if (!fn) {
 		if (engine.ignore_missing_files) {
 			msg_error("missing shader: " + filename.str());
 			return Shader::load("");
 		}
 		throw Exception("missing shader: " + filename.str());
-		//fn = shader_dir << filename;
+		//fn = shader_dir | filename;
 	}
 
 	for (auto s: shader_map)
@@ -110,14 +110,14 @@ Shader* ResourceManager::load_surface_shader(const Path& _filename, const string
 	if (!filename)
 		return Shader::load("");
 
-	Path fn = guess_absolute_path(filename, {shader_dir, hui::Application::directory_static << "shader"});
+	Path fn = guess_absolute_path(filename, {shader_dir, hui::Application::directory_static | "shader"});
 	if (fn.is_empty()) {
 		if (engine.ignore_missing_files) {
 			msg_error("missing shader: " + filename.str());
 			return Shader::load("");
 		}
 		throw Exception("missing shader: " + filename.str());
-		//fn = shader_dir << filename;
+		//fn = shader_dir | filename;
 	}
 
 	Path fnx = fn.with(":" + variant + ":" + render_path +  ":" + geo);

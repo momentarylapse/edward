@@ -63,7 +63,7 @@ void ModeAdministration::create_project(const Path &dir, const string &first_wor
 	gi.set_str(GameIniData::ID_WORLD, first_world);
 	gi.save(dir);
 
-	Path world_file = dir << "Maps" << (first_world + ".world");
+	Path world_file = dir | "Maps" | (first_world + ".world");
 	msg_write(format("%sCREATE%s  %s", os::terminal::YELLOW, os::terminal::END, world_file));
 	DataWorld w;
 	Storage s;
@@ -100,12 +100,12 @@ void ModeAdministration::upgrade_project(const Path &dir) {
 	Storage s; // create CANONICAL_SUB_DIR[]
 
 	for (int k=0; k<NUM_FDS; k++)
-		create_directory_recursive(dir << Storage::CANONICAL_SUB_DIR[k]);
+		create_directory_recursive(dir | Storage::CANONICAL_SUB_DIR[k]);
 
-	if (os::fs::exists(dir << "game.ini")) {
-		msg_write(format("%sOK%s  %s", os::terminal::GREEN, os::terminal::END, (dir << "game.ini")));
+	if (os::fs::exists(dir | "game.ini")) {
+		msg_write(format("%sOK%s  %s", os::terminal::GREEN, os::terminal::END, (dir | "game.ini")));
 	} else {
-		msg_write(format("%sCREATE%s  %s", os::terminal::YELLOW, os::terminal::END, (dir << "game.ini")));
+		msg_write(format("%sCREATE%s  %s", os::terminal::YELLOW, os::terminal::END, (dir | "game.ini")));
 		GameIniData gi;
 		gi.reset_default();
 		gi.save(dir);
@@ -113,12 +113,12 @@ void ModeAdministration::upgrade_project(const Path &dir) {
 
 	if (hui::config.has("EngineDir")) {
 		Path engine_dir = hui::config.get_str("EngineDir");
-		Path engine_api_dir = engine_dir << "api";
+		Path engine_api_dir = engine_dir | "api";
 		auto list = os::fs::search(engine_api_dir, "*.kaba", "rf");
 		for (auto &f: list) {
-			auto dest = dir << "Scripts" << f;
+			auto dest = dir | "Scripts" | f;
 			bool required = true;//f.is_in("y");
-			sync_files(engine_api_dir << f, dest, required);
+			sync_files(engine_api_dir | f, dest, required);
 		}
 	} else {
 		throw Exception("'EngineDir' is not set in config.txt");
@@ -144,7 +144,7 @@ bool ModeAdministration::open() {
 	hui::file_dialog_dir(hui::CurWindow, _("Open project directory"), "", {}, [this] (const Path &path) {
 		if (!path)
 			return;
-		if (!os::fs::exists(path << "game.ini")) {
+		if (!os::fs::exists(path | "game.ini")) {
 			ed->error_box(_("game.ini not found"));
 			//return false;
 		}

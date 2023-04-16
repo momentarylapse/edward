@@ -78,17 +78,17 @@ void drawing_helper_init(const Path &dir) {
 
 		ResourceManager::default_shader = "default.shader";
 
-		ResourceManager::load_shader(dir << "shader/module-surface.shader");
-		//ResourceManager::load_shader(dir << "shader/module-surface-simple.shader");
+		ResourceManager::load_shader(dir | "shader/module-surface.shader");
+		//ResourceManager::load_shader(dir | "shader/module-surface-simple.shader");
 
 
-		ResourceManager::load_shader(dir << "shader/module-vertex-default.shader");
-		ResourceManager::load_shader(dir << "shader/module-vertex-animated.shader");
+		ResourceManager::load_shader(dir | "shader/module-vertex-default.shader");
+		ResourceManager::load_shader(dir | "shader/module-vertex-animated.shader");
 
-		shader_lines_3d = nix::Shader::load(dir << "shader/lines-3d.shader");
-		shader_lines_3d_colored = nix::Shader::load(dir << "shader/lines-3d-colored.shader");
-		shader_lines_3d_colored_wide = nix::Shader::load(dir << "shader/lines-3d-colored-wide.shader");
-		shader_selection = ResourceManager::load_shader(dir << "shader/selection.shader");
+		shader_lines_3d = nix::Shader::load(dir | "shader/lines-3d.shader");
+		shader_lines_3d_colored = nix::Shader::load(dir | "shader/lines-3d-colored.shader");
+		shader_lines_3d_colored_wide = nix::Shader::load(dir | "shader/lines-3d-colored-wide.shader");
+		shader_selection = ResourceManager::load_shader(dir | "shader/selection.shader");
 		shader_selection->set_int("num_lights", 1);
 	} catch (Exception &e) {
 		msg_error(e.message());
@@ -175,7 +175,7 @@ void draw_helper_line(MultiView::Window *win, const vec3 &a, const vec3 &b) {
 	//vector d = (pb - pa).normalized();
 	//vector e = d ^ vector::EZ;
 	float r = 3;
-	nix::set_shader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d.get());
 	draw_rect(pa.x-r, pa.x+r, pa.y-r, pa.y+r, 0);
 	draw_rect(pb.x-r, pb.x+r, pb.y-r, pb.y+r, 0);
 }

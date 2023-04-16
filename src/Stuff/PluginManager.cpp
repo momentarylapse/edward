@@ -291,15 +291,15 @@ void PluginManager::link_plugins() {
 }
 
 void PluginManager::find_plugins() {
-	Path dir0 = (PluginManager::directory << "Shader Graph").absolute();
+	Path dir0 = (PluginManager::directory | "Shader Graph").absolute();
 	auto list = os::fs::search(dir0, "*", "fd");
 	for (auto &e: list) {
-		Path dir = dir0 << e;
+		Path dir = dir0 | e;
 		if (os::fs::is_directory(dir)) {
 			auto list2 = os::fs::search(dir, "*.kaba", "f");
 			for (auto &e2: list2) {
 				Plugin p;
-				p.filename = dir << e2;
+				p.filename = dir | e2;
 				p.name = e2.str().replace(".kaba", "");
 				p.category = e.str();
 				p.type = PluginType::SHADER_NODE;

@@ -75,12 +75,11 @@ public:
 	void _init_(const string &title, int width, int height, Window *parent, bool allow_parent, int mode);
 	void _init_generic_(Window *parent, bool allow_parent, int mode);
 	void _clean_up_();
+	void _wait_till_closed();
 
 	void _cdecl request_destroy();
 
 	// the window
-	void _run(Callback cb = nullptr);
-	void _fly(Callback cb = nullptr);
 	bool is_dialog();
 	void _cdecl show();
 	void _cdecl hide();
@@ -97,7 +96,7 @@ public:
 	void _cdecl get_size(int &width, int &height);
 	void _cdecl set_size_desired(int width, int height);
 	void _cdecl get_size_desired(int &width, int &height);
-	void _cdecl set_menu(Menu *menu);
+	void _cdecl set_menu(xfer<Menu> menu);
 	Menu* _cdecl get_menu();
 	Window* _cdecl get_parent();
 	void _cdecl __set_options(const string &options);
@@ -105,12 +104,6 @@ public:
 
 	void _cdecl set_cursor_pos(int x,int y);
 	void _cdecl show_cursor(bool show);
-
-	// status bar
-	void _cdecl enable_statusbar(bool enabled);
-	//bool _cdecl is_statusbar_enabled();
-	void _cdecl set_status_text(const string &str);
-	void _cdecl set_info_text(const string &str, const Array<string> &options);
 
 	// events by overwriting
 	virtual void _cdecl on_mouse_move(){}
@@ -159,22 +152,16 @@ public:
 	GtkWidget *window;
 private:
 public:
-	GtkWidget *vbox, *hbox, *menubar, *statusbar;
+	GtkWidget *vbox, *hbox, *menubar;
 	shared<Control> header_bar;
 	Array<GtkWidget*> gtk_menu;
 	int gtk_num_menus;
-	struct InfoBar {
-		GtkWidget *widget;
-		GtkWidget *label;
-		string id;
-	};
-	Array<InfoBar> info_bars;
-	InfoBar *_get_info_bar(const string &id);
 	void _add_headerbar();
 #endif
 	
 protected:
-	Menu *menu, *popup;
+	owned<Menu> menu;
+	Menu *popup;
 	bool statusbar_enabled;
 	bool allowed, allow_keys;
 	Window *parent_window;
@@ -221,8 +208,8 @@ public:
 };
 
 
-void run(Window *win, Callback cb = nullptr);
-void fly(Window *win, Callback cb = nullptr);
+void run(shared<Window> win, Callback cb = nullptr);
+void fly(shared<Window> win, Callback cb = nullptr);
 
 
 

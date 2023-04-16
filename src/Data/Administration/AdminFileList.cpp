@@ -13,7 +13,7 @@
 
 AdminFile *AdminFileList::get(int kind, const Path &name) {
 	for (AdminFile *a: *this)
-		if ((a->Kind == kind) && (a->Name == name))
+		if ((a->Kind == kind) and (a->Name == name))
 			return a;
 	return NULL;
 }
@@ -23,7 +23,7 @@ AdminFile *AdminFileList::get(int kind, const Path &name) {
 AdminFile *AdminFileList::add_unchecked(int kind, const Path &filename, AdminFile *source)
 {
 	if (filename.is_empty())
-		return NULL;
+		return nullptr;
 
 	// is there already an entry in the database?
 	AdminFile *a = get(kind, filename);

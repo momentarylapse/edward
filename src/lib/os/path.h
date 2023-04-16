@@ -23,8 +23,8 @@ public:
 	void __delete__();
 
 	void operator=(const Path &p);
-	void operator<<=(const Path &p);
-	Path operator<<(const Path &p) const;
+	void operator|=(const Path &p);
+	Path operator|(const Path &p) const;
 	bool operator==(const Path &p) const;
 	bool operator!=(const Path &p) const;
 	bool operator<(const Path &p) const;
@@ -35,6 +35,7 @@ public:
 	int compare(const Path &p) const;
 
 	string str() const;
+	string repr() const;
 	const char *c_str() const;
 	bool is_relative() const;
 	bool is_absolute() const;

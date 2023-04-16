@@ -42,8 +42,8 @@ bool ImporterCairo::Import(DataFont *f, const string &font_name)
 	while (ImportCairoTrySize[n][0] > 0){
 		bool ok = TryImport(f, font_name, ImportCairoTrySize[n][0], ImportCairoTrySize[n][1], im);
 		if (ok){
-			f->global.TextureFile = Path("Font") << (font_name + ".tga");
-			im.save(ResourceManager::texture_dir << f->global.TextureFile);
+			f->global.TextureFile = Path("Font") | (font_name + ".tga");
+			im.save(ResourceManager::texture_dir | f->global.TextureFile);
 			f->notify();
 			return true;
 		}

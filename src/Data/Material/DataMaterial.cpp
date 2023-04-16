@@ -109,11 +109,11 @@ void DataMaterial::ShaderData::load_from_file() {
 		set_engine_default();
 		return;
 	}
-	if (os::fs::exists(ResourceManager::shader_dir << file)) {
-		code = os::fs::read_text(ResourceManager::shader_dir << file);
+	if (os::fs::exists(ResourceManager::shader_dir | file)) {
+		code = os::fs::read_text(ResourceManager::shader_dir | file);
 	}
-	if (os::fs::exists(ResourceManager::shader_dir << file.with(".graph"))) {
-		graph->load(ResourceManager::shader_dir << file.with(".graph"));
+	if (os::fs::exists(ResourceManager::shader_dir | file.with(".graph"))) {
+		graph->load(ResourceManager::shader_dir | file.with(".graph"));
 		code = graph->build_source();
 		from_graph = true;
 	} else {
@@ -140,8 +140,8 @@ void DataMaterial::ShaderData::set_engine_default() {
 void DataMaterial::ShaderData::save_to_file() {
 	if (file) {
 		code = graph->build_source();
-		os::fs::write_text(ResourceManager::shader_dir << file, code);
-		graph->save(ResourceManager::shader_dir << file.with(".graph"));
+		os::fs::write_text(ResourceManager::shader_dir | file, code);
+		graph->save(ResourceManager::shader_dir | file.with(".graph"));
 		from_graph = true;
 		is_default = false;
 	}

@@ -64,10 +64,10 @@ void test_save_extras(DataMaterial *data, hui::Callback cb_success) {
 	}
 
 	auto f = [data, cb_success] (const Path &dir) {
-		os::fs::write_text(dir << data->shader.file, data->shader.code);
+		os::fs::write_text(dir | data->shader.file, data->shader.code);
 
 		if (data->shader.from_graph)
-			data->shader.graph->save(dir << data->shader.file.with(".graph"));
+			data->shader.graph->save(dir | data->shader.file.with(".graph"));
 		cb_success();
 	};
 

@@ -346,7 +346,7 @@ void ActionController::draw(Window *win) {
 	mat4 m = mat * geo_mat;
 	nix::set_model_matrix(m);
 	nix::set_texture(nullptr);
-	nix::set_shader(nix::Shader::default_3d);
+	nix::set_shader(nix::Shader::default_3d.get());
 	win->set_projection_matrix();
 	foreachi(Geometry *g, geo_show, i) {
 		if (!geo_allow(i, win, m))
@@ -374,7 +374,7 @@ void ActionController::draw(Window *win) {
 			draw_line(pos - vec3::EZ * r, pos + vec3::EZ * r);
 	}
 
-	nix::set_shader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d.get());
 
 	if (win == multi_view->mouse_win) {
 		vec3 pp = win->project(pos);

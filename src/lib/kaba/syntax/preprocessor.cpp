@@ -80,7 +80,7 @@ void *ar_el(DynamicArray *ar, int i) {
 int host_size(const Class *_type);
 
 void rec_init(void *p, const Class *type) {
-	if (type->is_super_array()) {
+	if (type->is_list()) {
 		((DynamicArray*)p)->init(host_size(type->get_array_element()));
 	} else {
 		for (auto &el: type->elements)
@@ -89,7 +89,7 @@ void rec_init(void *p, const Class *type) {
 }
 
 void rec_delete(void *p, const Class *type) {
-	if (type->is_super_array()) {
+	if (type->is_list()) {
 		auto ar = (DynamicArray*)p;
 		rec_resize(ar, 0, type->param[0]);
 		ar->simple_clear();
@@ -113,7 +113,7 @@ void rec_resize(DynamicArray *ar, int num, const Class *type) {
 }
 
 void rec_assign(void *a, void *b, const Class *type) {
-	if (type->is_super_array()) {
+	if (type->is_list()) {
 		auto aa = (DynamicArray*)a;
 		auto bb = (DynamicArray*)b;
 		rec_resize(aa, bb->num, type);
@@ -227,7 +227,7 @@ shared<Node> SyntaxTree::pre_process_node_addresses(shared<Node> c) {
 		c->params[0]->link_no = new_addr;
 		return c->params[0].get();
 
-	} else if (c->kind == NodeKind::REFERENCE) {
+	} else if ((c->kind == NodeKind::REFERENCE_RAW) or (c->kind == NodeKind::REFERENCE_NEW)) {
 		auto p0 = c->params[0];
 		if (p0->kind == NodeKind::VAR_GLOBAL) {
 			return new Node(NodeKind::ADDRESS, (int_p)p0->as_global_p(), c->type);
@@ -249,14 +249,20 @@ shared<Node> SyntaxTree::pre_process_node_addresses(shared<Node> c) {
 
 void SyntaxTree::eval_const_expressions(bool allow_func_eval) {
 	if (allow_func_eval) {
-		transform([&](shared<Node> n){ return conv_eval_const_func(n); });
+		transform([this] (shared<Node> n) {
+			return conv_eval_const_func(n);
+		});
 	} else {
-		transform([&](shared<Node> n){ return conv_eval_const_func_nofunc(n); });
+		transform([this] (shared<Node> n) {
+			return conv_eval_const_func_nofunc(n);
+		});
 	}
 }
 
 void SyntaxTree::pre_processor_addresses() {
-	transform([&](shared<Node> n){ return pre_process_node_addresses(n); });
+	transform([this] (shared<Node> n) {
+		return pre_process_node_addresses(n);
+	});
 }
 
 };

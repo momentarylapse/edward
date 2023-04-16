@@ -1,5 +1,6 @@
 #include "../kaba.h"
 #include "lib.h"
+#include "shared.h"
 #include "../dynamic/exception.h"
 
 
@@ -12,7 +13,7 @@ namespace kaba {
 
 #ifdef KABA_EXPORT_NET
 	#define net_p(p)		p
-	static NetAddress *_addr;
+	[[maybe_unused]] static NetAddress *_addr;
 	#define GetDAAddress(x)			int_p(&_addr->x)-int_p(_addr)
 #else
 	typedef int Socket;
@@ -22,11 +23,6 @@ namespace kaba {
 	#define GetDAAddress(x)			0
 #endif
 
-const Class *TypeNetAddress;
-const Class *TypeSocket;
-const Class *TypeSocketP;
-
-
 
 #pragma GCC push_options
 #pragma GCC optimize("no-omit-frame-pointer")
@@ -34,17 +30,17 @@ const Class *TypeSocketP;
 #pragma GCC optimize("0")
 
 
-Socket* __socket_listen__(int port, bool block) {
+xfer<Socket> __socket_listen__(int port, bool block) {
 	KABA_EXCEPTION_WRAPPER( return Socket::listen(port, block); );
 	return nullptr;
 }
 
-Socket* __socket_connect__(const string &host, int port) {
+xfer<Socket> __socket_connect__(const string &host, int port) {
 	KABA_EXCEPTION_WRAPPER( return Socket::connect(host, port); );
 	return nullptr;
 }
 
-Socket* __socket_create_udp__(int port) {
+xfer<Socket> __socket_create_udp__(int port) {
 	KABA_EXCEPTION_WRAPPER( return Socket::create_udp(port); );
 	return nullptr;
 }
@@ -54,23 +50,25 @@ Socket* __socket_create_udp__(int port) {
 void SIAddPackageNet(Context *c) {
 	add_package(c, "net");
 
-	TypeNetAddress  = add_type  ("NetAddress", sizeof(NetAddress));
-	TypeSocket      = add_type  ("Socket", sizeof(Socket));
-	TypeSocketP     = add_type_p(TypeSocket);
-	auto TypeBinaryBuffer = add_type  ("BinaryBuffer", sizeof(BinaryBuffer));
+	auto TypeNetAddress  = add_type("NetAddress", sizeof(NetAddress));
+	auto TypeSocket      = add_type("Socket", sizeof(Socket));
+	auto TypeSocketXfer  = add_type_p_xfer(TypeSocket);
+	auto TypeBinaryBuffer = add_type("BinaryBuffer", sizeof(BinaryBuffer));
+
+	lib_create_pointer_xfer(TypeSocketXfer);
 
 
 	add_class(TypeNetAddress);
 		class_add_element("host", TypeString, net_p(&NetAddress::host));
 		class_add_element("port", TypeInt, net_p(&NetAddress::port));
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, net_p(&NetAddress::__init__));
-		class_add_func(IDENTIFIER_FUNC_DELETE, TypeVoid, net_p(&NetAddress::__delete__));
+		class_add_func(Identifier::Func::INIT, TypeVoid, net_p(&NetAddress::__init__));
+		class_add_func(Identifier::Func::DELETE, TypeVoid, net_p(&NetAddress::__delete__));
 
 	add_class(TypeSocket);
 		class_add_element("uid", TypeInt, net_p(&Socket::uid));
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, net_p(&Socket::__init__));
-		class_add_func(IDENTIFIER_FUNC_DELETE, TypeVoid, net_p(&Socket::__delete__));
-		class_add_func("accept", TypeSocketP, net_p(&Socket::accept));
+		class_add_func(Identifier::Func::INIT, TypeVoid, net_p(&Socket::__init__));
+		class_add_func(Identifier::Func::DELETE, TypeVoid, net_p(&Socket::__delete__));
+		class_add_func("accept", TypeSocketXfer, net_p(&Socket::accept));
 		class_add_func("close", TypeVoid, net_p(&Socket::close));
 		class_add_func("set_blocking", TypeVoid, net_p(&Socket::set_blocking));
 			func_add_param("block", TypeBool);
@@ -85,19 +83,19 @@ void SIAddPackageNet(Context *c) {
 		class_add_func("can_write", TypeBool, net_p(&Socket::can_write));
 		class_add_func("is_connected", TypeBool, net_p(&Socket::is_connected));
 
-		class_add_func("listen", TypeSocketP, net_p(&__socket_listen__), Flags::_STATIC__RAISES_EXCEPTIONS);
+		class_add_func("listen", TypeSocketXfer, net_p(&__socket_listen__), Flags::STATIC | Flags::RAISES_EXCEPTIONS);
 			func_add_param("port", TypeInt);
 			func_add_param("block", TypeBool);
-		class_add_func("connect", TypeSocketP, net_p(&__socket_connect__), Flags::_STATIC__RAISES_EXCEPTIONS);
+		class_add_func("connect", TypeSocketXfer, net_p(&__socket_connect__), Flags::STATIC | Flags::RAISES_EXCEPTIONS);
 			func_add_param("addr", TypeString);
 			func_add_param("port", TypeInt);
-		class_add_func("create_udp", TypeSocketP, net_p(&__socket_create_udp__), Flags::_STATIC__RAISES_EXCEPTIONS);
+		class_add_func("create_udp", TypeSocketXfer, net_p(&__socket_create_udp__), Flags::STATIC | Flags::RAISES_EXCEPTIONS);
 			func_add_param("port", TypeInt);
 
 	add_class(TypeBinaryBuffer);
 		class_add_element("data", TypeString, net_p(&BinaryBuffer::data));
-		class_add_func(IDENTIFIER_FUNC_INIT, TypeVoid, net_p(&BinaryBuffer::__init__));
-		class_add_func(IDENTIFIER_FUNC_DELETE, TypeVoid, net_p(&BinaryBuffer::__delete__));
+		class_add_func(Identifier::Func::INIT, TypeVoid, net_p(&BinaryBuffer::__init__));
+		class_add_func(Identifier::Func::DELETE, TypeVoid, net_p(&BinaryBuffer::__delete__));
 		class_add_func("__rshift__", TypeVoid, net_p((void(BinaryBuffer::*)(int&))&BinaryBuffer::operator>>));
 			func_add_param("i", TypeInt, Flags::OUT);
 		class_add_func("__rshift__", TypeVoid, net_p((void(BinaryBuffer::*)(float&))&BinaryBuffer::operator>>));

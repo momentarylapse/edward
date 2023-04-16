@@ -32,12 +32,12 @@ DataAdministration::~DataAdministration() {
 }
 
 void DataAdministration::FraesDir(const Path &root_dir, const Path &dir, const string &extension) {
-	auto list = os::fs::search(root_dir << dir, "*" + extension, "fd");
+	auto list = os::fs::search(root_dir | dir, "*" + extension, "fd");
 	for (auto &e: list) {
-		if (os::fs::is_directory(root_dir << dir << e)) {
-			FraesDir(root_dir, dir << e, extension);
+		if (os::fs::is_directory(root_dir | dir | e)) {
+			FraesDir(root_dir, dir | e, extension);
 		} else {
-			cft.add(dir << e);
+			cft.add(dir | e);
 		}
 	}
 }
@@ -110,7 +110,7 @@ bool DataAdministration::save(const Path &_filename) {
 }
 
 void DataAdministration::SaveDatabase() {
-	save(app->directory << "admin_database.txt");
+	save(app->directory | "admin_database.txt");
 }
 
 void DataAdministration::reset() {
@@ -156,7 +156,7 @@ bool DataAdministration::load(const Path &_filename, bool deep) {
 }
 
 void DataAdministration::LoadDatabase() {
-	load(app->directory << "admin_database.txt");
+	load(app->directory | "admin_database.txt");
 }
 
 AdminFile *AdminFileList::add_engine_files() {
@@ -294,8 +294,8 @@ void DataAdministration::ExportGame(const Path &dir, GameIniData &game_ini)
 		if (a->Missing)
 			continue;
 
-		Path source = storage->root_dir << kind_subdir(a->Kind) << a->Name;
-		Path target = dir << kind_subdir(a->Kind) << a->Name;
+		Path source = storage->root_dir | kind_subdir(a->Kind) | a->Name;
+		Path target = dir | kind_subdir(a->Kind) | a->Name;
 		if (FILE_OP_OK(os::fs::copy(source, target)))
 			num_ok ++;
 	}

@@ -57,7 +57,7 @@ bool Terrain::load(const Path &_filename_, bool deep) {
 	reset();
 
 	filename = _filename_;
-	auto f = new BinaryFormatter(os::fs::open(engine.map_dir << filename.with(".map"), "rb"));
+	auto f = new BinaryFormatter(os::fs::open(engine.map_dir | filename.with(".map"), "rb"));
 	if (f) {
 		//int ffv = f->read_ReadFileFormatVersion();
 

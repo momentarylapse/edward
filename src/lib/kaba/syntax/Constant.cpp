@@ -25,13 +25,13 @@ Value::~Value() {
 bool Value::can_init(const Class *t) {
 	if (!t->needs_constructor())
 		return true;
-	if (t->is_super_array())
+	if (t->is_list())
 		return true;
 	return false;
 }
 
 int host_size(const Class *_type) {
-	if (_type->is_super_array())
+	if (_type->is_list())
 		return sizeof(DynamicArray);
 	return _type->size;
 }
@@ -40,7 +40,7 @@ void Value::init(const Class *_type) {
 	clear();
 	type = _type;
 
-	if (type->is_super_array()) {
+	if (type->is_list()) {
 		value.resize(sizeof(DynamicArray));
 		as_array().init(host_size(type->get_array_element()));
 	} else {
@@ -50,7 +50,7 @@ void Value::init(const Class *_type) {
 
 void Value::clear() {
 	if (type)
-		if (type->is_super_array())
+		if (type->is_list())
 			as_array().simple_clear();
 
 	value.clear();
@@ -70,7 +70,7 @@ int& Value::as_int() const {
 	return *(int*)value.data;
 }
 
-long long& Value::as_int64() const {
+int64& Value::as_int64() const {
 	return *(long long*)value.data;
 }
 
@@ -97,8 +97,8 @@ DynamicArray& Value::as_array() const {
 int map_size_complex(void *p, const Class *type) {
 	if (type == TypeCString)
 		return strlen((char*)p) + 1;
-	if (type->is_super_array()) {
-		int size = config.super_array_size;
+	if (type->is_list()) {
+		int size = config.target.dynamic_array_size;
 		auto *ar = (DynamicArray*)p;
 		for (int i=0; i<ar->num; i++)
 			size += map_size_complex((char*)ar->data + i * ar->element_size, type->get_array_element());
@@ -115,22 +115,21 @@ int Value::mapping_size() const {
 // additional data (array ...) into free parts after <locked>
 // direct memory always pre-locked!
 char *map_into_complex(char *memory, char *locked, long addr_off, char *p, const Class *type) {
-	if (type->is_super_array()) {
+	if (type->is_list()) {
 		DynamicArray *ar = (DynamicArray*)p;
 
 		auto *el = type->get_array_element();
 
-		int direct_size = config.super_array_size;
 		int indirect_size = el->size * ar->num; // target!
 		char *ar_target = locked;
 		locked += indirect_size;
 
 		*(void**)&memory[0] = ar_target + addr_off; // .data
-		*(int*)&memory[config.pointer_size    ] = ar->num;
-		*(int*)&memory[config.pointer_size + 4] = 0; // .reserved
-		*(int*)&memory[config.pointer_size + 8] = el->size; // target size!
+		*(int*)&memory[config.target.pointer_size    ] = ar->num;
+		*(int*)&memory[config.target.pointer_size + 4] = 0; // .reserved
+		*(int*)&memory[config.target.pointer_size + 8] = el->size; // target size!
 
-		if (type->param[0]->is_super_array()) {
+		if (type->param[0]->is_list()) {
 			for (int i=0; i<ar->num; i++) {
 				int el_offset = i * el->size;
 				int el_offset_host = i * ar->element_size;
@@ -169,17 +168,17 @@ Constant::Constant(const Class *_type, SyntaxTree *_owner) {
 	name = "-none-";
 	owner = _owner;
 	used = false;
-	address = p();
+	address_compiler = address_runtime = p();
 }
 
 void Constant::init(const Class *_type) {
 	Value::init(_type);
-	address = p();
+	address_compiler = address_runtime = p();
 }
 
 void Constant::set(const Value &v) {
 	Value::set(v);
-	address = p();
+	address_compiler = address_runtime = p();
 }
 
 string Constant::str() const {

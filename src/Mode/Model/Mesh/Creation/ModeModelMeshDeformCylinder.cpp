@@ -157,7 +157,7 @@ void ModeModelMeshDeformCylinder::update_params() {
 
 void ModeModelMeshDeformCylinder::on_draw_post() {
 	if (hover >= 0) {
-		nix::set_shader(nix::Shader::default_2d);
+		nix::set_shader(nix::Shader::default_2d.get());
 		set_color(scheme.TEXT);
 		draw_str(multi_view->m.x + 40, multi_view->m.y + 40, format("radius: %s  (%.1f%%)", multi_view->format_length(param[hover].z * radius), param[hover].z * 100));
 	}

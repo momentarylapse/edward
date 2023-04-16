@@ -51,7 +51,7 @@ void Menu::add_separator() {
 	_add(new MenuItemSeparator());
 }
 
-void Menu::add_sub_menu(const string &name, const string &id, Menu *menu) {
+void Menu::add_sub_menu(const string &name, const string &id, xfer<Menu> menu) {
 	if (menu)
 		_add(new MenuItemSubmenu(name, menu, id));
 }
@@ -66,10 +66,10 @@ void Menu::set_panel(Panel *_panel) {
 	for (Control *c: weak(items)) {
 		c->panel = panel;
 #if GTK_CHECK_VERSION(4,0,0)
-		if (auto b = dynamic_cast<MenuItem*>(c)) {
+		/*if (auto b = dynamic_cast<MenuItem*>(c)) {
 			//msg_write("UP  " + get_gtk_action_name(b->id, panel) + "    " + b->id);
 			//g_menu_item_set_detailed_action(b->item, get_gtk_action_name(b->id, panel).c_str());
-		}
+		}*/
 #else
 		if (panel)
 			try_add_accel(c->widget, c->id, panel);
@@ -90,7 +90,7 @@ Menu *Menu::get_sub_menu_by_id(const string &id) {
 	for (Control *c: weak(items)) {
 		if (auto s = dynamic_cast<MenuItemSubmenu*>(c)) {
 			if (s->id == id)
-				return s->sub_menu;
+				return s->sub_menu.get();
 			if (Menu *m = s->sub_menu->get_sub_menu_by_id(id))
 				return m;
 		}

@@ -165,7 +165,7 @@ void AdminFile::check(AdminFileList &list)
 	// test file existence
 	try {
 		// file ok
-		int _time = os::fs::mtime(storage->get_root_dir(Kind) << Name).time;
+		int _time = os::fs::mtime(storage->get_root_dir(Kind) | Name).time;
 		Missing = false;
 
 		// different time stamp -> rescan file
@@ -191,7 +191,7 @@ void AdminFile::check(AdminFileList &list)
 	Array<s_admin_link> l;
 	if (Kind==FD_WORLD){
 		DataWorld w;
-		if (storage->load(engine.map_dir << Name, &w, false)){
+		if (storage->load(engine.map_dir | Name, &w, false)){
 			Time = w.file_time;
 			for (int i=0;i<w.terrains.num;i++)
 				add_possible_link(l, FD_TERRAIN, w.terrains[i].filename);
@@ -205,7 +205,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_TERRAIN){
 		WorldTerrain t;
-		if (t.load(engine.map_dir << Name, false)){
+		if (t.load(engine.map_dir | Name, false)){
 			Time = 0; // TODO
 			for (int i=0;i<t.terrain->material->textures.num;i++)
 				add_possible_link(l, FD_TEXTURE, t.terrain->texture_file[i]);
@@ -214,7 +214,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_MODEL){
 		DataModel m;
-		if (storage->load(engine.object_dir << Name, &m, false)){
+		if (storage->load(engine.object_dir | Name, &m, false)){
 			Time = m.file_time;
 			for (int i=0;i<m.bone.num;i++)
 				add_possible_link(l, FD_MODEL, m.bone[i].model_file);
@@ -236,7 +236,7 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_MATERIAL){
 		DataMaterial m;
-		if (storage->load(engine.material_dir << Name, &m, false)){
+		if (storage->load(engine.material_dir | Name, &m, false)){
 			Time = m.file_time;
 			add_possible_link(l, FD_SHADERFILE, m.shader.file);
 			if (m.appearance.reflection_mode == ReflectionMode::CUBE_MAP_STATIC)
@@ -248,15 +248,15 @@ void AdminFile::check(AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_FONT){
 		DataFont f;
-		if (storage->load(engine.font_dir << Name, &f, false)){
+		if (storage->load(engine.font_dir | Name, &f, false)){
 			Time = f.file_time;
 			add_possible_link(l, FD_TEXTURE, f.global.TextureFile);
 		}else
 			Missing=true;
 	}else if (Kind==FD_SCRIPT){
 		try{
-			Time = os::fs::mtime(kaba::config.directory << Name).time;
-			string buf = os::fs::read_text(kaba::config.directory << Name);
+			Time = os::fs::mtime(kaba::config.directory | Name).time;
+			string buf = os::fs::read_text(kaba::config.directory | Name);
 			// would be better to compile the script and look for functions having a string constant as a parameter...
 			//   -> would automatically ignore comments and   function( "aaa" + b )
 			for (int i=0;i<buf.num;i++){
@@ -265,14 +265,14 @@ void AdminFile::check(AdminFileList &list)
 						add_possible_link(l,ScriptLink[j].type,StringAfterString);
 				// #include must be handled differently (relative path...)
 				if (StringBegin(buf,i,ScriptLink[0].str))
-					add_possible_link(l, ScriptLink[0].type, (Name.parent() << StringAfterString).canonical());
+					add_possible_link(l, ScriptLink[0].type, (Name.parent() | StringAfterString).canonical());
 			}
 		}catch(...){
 			Missing=true;
 		}
 	} else {
 		try {
-			Time = os::fs::mtime(storage->get_root_dir(Kind) << Name).time;
+			Time = os::fs::mtime(storage->get_root_dir(Kind) | Name).time;
 		} catch(...) {
 			Missing=true;
 		}

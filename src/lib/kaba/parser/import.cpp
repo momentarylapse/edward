@@ -24,7 +24,6 @@ const int MAX_IMPORT_DIRECTORY_PARENTS = 5;
 
 namespace kaba {
 
-extern ExpressionBuffer *cur_exp_buf;
 extern Array<shared<Module>> loading_module_stack;
 void SetImmortal(SyntaxTree *ps);
 
@@ -49,13 +48,13 @@ Path import_dir_match(const Path &dir0, const string &name) {
 		string e = dir_has(filename, canonical_import_name(xx[i]));
 		if (e == "")
 			return Path::EMPTY;
-		filename <<= e;
+		filename |= e;
 	}
 	{
 		// direct file  zzz.kaba?
 		string e = dir_has(filename, canonical_import_name(xx.back() + ".kaba"));
 		if (e != "") {
-			filename <<= e;
+			filename |= e;
 			return filename;
 		}
 
@@ -63,29 +62,29 @@ Path import_dir_match(const Path &dir0, const string &name) {
 		e = dir_has(filename, canonical_import_name(xx.back()));
 		if (e == "")
 			return Path::EMPTY;
-		filename <<= e;
-		if (os::fs::exists(filename << "__main__.kaba"))
-			return filename << "__main__.kaba";
-		if (os::fs::exists(filename << (xx.back() + ".kaba")))
-			return filename << (xx.back() + ".kaba");
-		if (os::fs::exists(filename << "main.kaba"))
-			return filename << "main.kaba";
+		filename |= e;
+		if (os::fs::exists(filename | "__main__.kaba"))
+			return filename | "__main__.kaba";
+		if (os::fs::exists(filename | (xx.back() + ".kaba")))
+			return filename | (xx.back() + ".kaba");
+		if (os::fs::exists(filename | "main.kaba"))
+			return filename | "main.kaba";
 		return Path::EMPTY;
 	}
 	return filename;
 
-	if (os::fs::exists(dir0 << name))
-		return dir0 << name;
+	if (os::fs::exists(dir0 | name))
+		return dir0 | name;
 	return Path::EMPTY;
 }
 
 Path find_installed_lib_import(const string &name) {
-	Path kaba_dir = hui::Application::directory.parent() << "kaba";
+	Path kaba_dir = hui::Application::directory.parent() | "kaba";
 	if (hui::Application::directory.basename()[0] == '.')
-		kaba_dir = hui::Application::directory.parent() << ".kaba";
-	Path kaba_dir_static = hui::Application::directory_static.parent() << "kaba";
+		kaba_dir = hui::Application::directory.parent() | ".kaba";
+	Path kaba_dir_static = hui::Application::directory_static.parent() | "kaba";
 	for (auto &dir: Array<Path>({kaba_dir, kaba_dir_static})) {
-		auto path = (dir << "lib" << name).canonical();
+		auto path = (dir | "lib" | name).canonical();
 		if (os::fs::exists(path))
 			return path;
 	}
@@ -101,7 +100,7 @@ Path find_import(Module *s, const string &_name) {
 		return find_installed_lib_import(name.sub(2));
 
 	for (int i=0; i<MAX_IMPORT_DIRECTORY_PARENTS; i++) {
-		Path filename = import_dir_match((s->filename.parent() << string("../").repeat(i)).canonical(), name);
+		Path filename = import_dir_match((s->filename.parent() | string("../").repeat(i)).canonical(), name);
 		if (filename)
 			return filename;
 	}
@@ -112,7 +111,7 @@ Path find_import(Module *s, const string &_name) {
 	return Path::EMPTY;
 }
 
-shared<Module> get_import(Parser *parser, const string &name, int token) {
+shared<Module> get_import(Parser *parser, const string &name, int token_id) {
 
 	// internal packages?
 	for (auto p: parser->context->packages)
@@ -121,11 +120,11 @@ shared<Module> get_import(Parser *parser, const string &name, int token) {
 
 	Path filename = find_import(parser->tree->module, name);
 	if (!filename)
-		parser->do_error(format("can not find import '%s'", name), token);
+		parser->do_error(format("can not find import '%s'", name), token_id);
 
 	for (auto ss: weak(loading_module_stack))
 		if (ss->filename == filename)
-			parser->do_error("recursive import", token);
+			parser->do_error("recursive import", token_id);
 
 	msg_right();
 	shared<Module> include;
@@ -135,17 +134,11 @@ shared<Module> get_import(Parser *parser, const string &name, int token) {
 	} catch (Exception &e) {
 		msg_left();
 
-		int token_id = parser->Exp.cur_token();
-		string expr = parser->Exp.get_token(token_id);
+		e.text = e.message() + format("\n...imported from:");
 		e.line = parser->Exp.token_physical_line_no(token_id);
 		e.column = parser->Exp.token_line_offset(token_id);
-		e.text += format("\n...imported from:\nline %d, %s", e.line+1, parser->tree->module->filename);
+		e.filename = parser->tree->module->filename;
 		throw e;
-		//msg_write(e.message);
-		//msg_write("...");
-		string msg = e.message() + "\nimported file:";
-		//string msg = "in imported file:\n\"" + e.message + "\"";
-		parser->do_error(msg, token);
 	}
 
 	msg_left();
@@ -179,7 +172,7 @@ void namespace_import_contents(Class *parent, const Class *child) {
 
 Class *get_namespace_for_import(SyntaxTree *tree, const string &name) {
 	auto xx = name.explode(".");
-	Class *ns = tree->base_class;
+	Class *ns = tree->imported_symbols.get();
 	flags_set(ns->flags, Flags::EXTERN); // "don't delete contents..."
 
 	auto get_next = [tree] (Class *ns, const string &name) {
@@ -200,7 +193,7 @@ void SyntaxTree::import_data(shared<Module> s, bool indirect, const string &as_n
 		if (i == s)
 			return;
 
-	SyntaxTree *ps = s->syntax;
+	SyntaxTree *ps = s->tree.get();
 	if (flag_immortal)
 		SetImmortal(ps);
 

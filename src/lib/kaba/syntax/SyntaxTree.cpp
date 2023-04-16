@@ -1,6 +1,6 @@
 #include "../kaba.h"
 #include "../parser/Parser.h"
-#include "../parser/template.h"
+#include "../template/template.h"
 #include "../asm/asm.h"
 #include "../../os/msg.h"
 #include "../../base/iter.h"
@@ -13,10 +13,10 @@ namespace kaba {
 
 extern const Class *TypeDynamicArray;
 extern const Class *TypeDictBase;
-extern const Class *TypeSharedPointer;
 extern const Class *TypeCallableBase;
 extern const Class *TypeMat4;
 extern const Class *TypeVec2;
+extern const Class *TypeSpecialFunctionRef;
 
 bool is_func(shared<Node> n);
 
@@ -62,7 +62,7 @@ const Class *SyntaxTree::request_implicit_class_callable_fp(const Array<const Cl
 	params_ret.add(ret);
 
 	auto ff = request_implicit_class("Callable[" + name + "]", Class::Type::CALLABLE_FUNCTION_POINTER, TypeCallableBase->size, 0, nullptr, params_ret, token_id);
-	return request_implicit_class(name, Class::Type::POINTER, config.pointer_size, 0, nullptr, {ff}, token_id);
+	return request_implicit_class(name, Class::Type::POINTER_RAW, config.target.pointer_size, 0, nullptr, {ff}, token_id);
 	//return make_class(name, Class::Type::CALLABLE_FUNCTION_POINTER, TypeCallableBase->size, 0, nullptr, params_ret, base_class);
 }
 
@@ -116,7 +116,7 @@ SyntaxTree::SyntaxTree(Module *_module) {
 	flag_function_pointer_as_code = false;
 	flag_immortal = false;
 	module = _module;
-	asm_meta_info = new Asm::MetaInfo(config.pointer_size);
+	asm_meta_info = new Asm::MetaInfo(config.target.pointer_size);
 
 	base_class = new Class(Class::Type::REGULAR, "-base-", 0, this);
 	_base_class = base_class;
@@ -261,9 +261,9 @@ Function *SyntaxTree::add_function(const string &name, const Class *return_type,
 
 
 
-AbstractOperator *Parser::which_abstract_operator(const string &name, int param_flags) {
+AbstractOperator *Parser::which_abstract_operator(const string &name, OperatorFlags param_flags) {
 	for (int i=0; i<(int)OperatorID::_COUNT_; i++)
-		if ((name == abstract_operators[i].name) and (param_flags == abstract_operators[i].param_flags))
+		if ((name == abstract_operators[i].name) and ((int)param_flags == (abstract_operators[i].flags & OperatorFlags::BINARY)))
 			return &abstract_operators[i];
 
 	// old hack
@@ -343,20 +343,22 @@ shared_array<Node> SyntaxTree::get_element_of(shared<Node> operand, const string
 		// referencing class functions
 		type = operand->as_class();
 		allow_member = false;
-	} else if (type->is_some_pointer()) {
+	//} else if (type->is_some_pointer()) {
+	} else if (type->is_some_pointer_not_null()) {
 		// pointer -> dereference
 		type = type->param[0];
 		deref = true;
 	}
 
 	// super
-	if (type->parent and (name == IDENTIFIER_SUPER)) {
+	if (type->parent and (name == Identifier::SUPER)) {
 		operand->token_id = token_id;
+		auto t_ref = request_implicit_class_reference(type->parent, token_id);
 		if (deref) {
-			operand->type = get_pointer(type->parent, token_id);
+			operand->type = t_ref;
 			return {operand};
 		}
-		return {operand->ref(get_pointer(type->parent, token_id))};
+		return {operand->ref_new(t_ref)};
 	}
 
 
@@ -432,7 +434,7 @@ shared_array<Node> SyntaxTree::get_existence_block(const string &name, Block *bl
 
 	// self.x?
 	if (f->is_member()) {
-		auto self = add_node_local(f->__get_var(IDENTIFIER_SELF), token_id);
+		auto self = add_node_local(f->__get_var(Identifier::SELF), token_id);
 		auto links = get_element_of(self, name, token_id);
 		if (links.num > 0)
 			return links;
@@ -465,7 +467,7 @@ shared_array<Node> SyntaxTree::get_existence(const string &name, Block *block, c
 	}*/
 
 	// operators
-	if (auto w = parser->which_abstract_operator(name, 2)) // negate/not...
+	if (auto w = parser->which_abstract_operator(name, OperatorFlags::UNARY_RIGHT)) // negate/not...
 		return {new Node(NodeKind::ABSTRACT_OPERATOR, (int_p)w, TypeUnknown, token_id)};
 
 	// in include files (only global)...
@@ -481,6 +483,12 @@ Function *SyntaxTree::required_func_global(const string &name, int token_id) {
 	if (links.num == 0)
 		do_error(format("internal error: '%s()' not found????", name), token_id);
 	return links[0]->as_func();
+}
+
+
+void SyntaxTree::add_missing_function_headers_for_class(Class *t) {
+	AutoImplementer a(nullptr, this);
+	a.add_missing_function_headers_for_class(t);
 }
 
 // expression naming a type
@@ -501,22 +509,14 @@ const Class *SyntaxTree::find_root_type_by_name(const string &name, const Class 
 }
 
 
-int kaba_int_passthrough(int i);
-int op_int_add(int a, int b);
-bool op_int_eq(int a, int b);
-bool op_int_neq(int a, int b);
-int enum_parse(const string&, const Class*);
-Array<int> enum_all(const Class*);
-
-
-Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, const Class *ns, int token_id) {
+Class *SyntaxTree::create_new_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, Class *ns, int token_id) {
 	if (find_root_type_by_name(name, ns, false))
 		do_error(format("class '%s' already exists", name), token_id);
 	return create_new_class_no_check(name, type, size, array_size, parent, params, ns, token_id);
 }
 
 
-Class *SyntaxTree::create_new_class_no_check(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, const Class *ns, int token_id) {
+Class *SyntaxTree::create_new_class_no_check(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, Class *ns, int token_id) {
 	//msg_write("CREATE " + name);
 
 	Class *t = new Class(type, name, size, this, parent, params);
@@ -524,91 +524,11 @@ Class *SyntaxTree::create_new_class_no_check(const string &name, Class::Type typ
 	owned_classes.add(t);
 	
 	// link namespace
-	(const_cast<Class*>(ns))->classes.add(t);
+	ns->classes.add(t);
 	t->name_space = ns;
 	
-	// ->derive_from() will overwrite params!!!
-
-	t->array_length = max(array_size, 0);
-	if (t->is_super_array() or t->is_dict()) {
-		t->derive_from(TypeDynamicArray, false); // we already set its size!
-		if (params[0]->needs_constructor() and !params[0]->get_default_constructor())
-			do_error(format("can not create a dynamic array from type '%s', missing default constructor", params[0]->long_name()), token_id);
-		t->param = params;
-		add_missing_function_headers_for_class(t);
-	} else if (t->is_array()) {
-		if (params[0]->needs_constructor() and !params[0]->get_default_constructor())
-			do_error(format("can not create an array from type '%s', missing default constructor", params[0]->long_name()), token_id);
-		t->param = params;
-		add_missing_function_headers_for_class(t);
-	} else if (t->is_pointer_shared() or t->is_pointer_owned()) {
-		//t->derive_from(TypeSharedPointer, true);
-		t->param = params;
-		add_missing_function_headers_for_class(t);
-	} else if (t->is_optional()) {
-		if (params[0]->needs_constructor() and !params[0]->get_default_constructor())
-			do_error(format("can not create an optional from type '%s', missing default constructor", params[0]->long_name()), token_id);
-		add_missing_function_headers_for_class(t);
-	} else if (t->type == Class::Type::FUNCTION) {
-		t->derive_from(TypeFunction, true);
-		t->param = params;
-	} else if (t->is_callable_fp()) {
-		t->derive_from(TypeCallableBase, true);
-		t->functions.clear(); // don't inherit call() with specific types!
-		t->param = params;
-		add_missing_function_headers_for_class(t);
-	} else if (t->is_callable_bind()) {
-		t->derive_from(TypeCallableBase, true);
-		t->functions.clear(); // don't inherit call() with specific types!
-		t->param = params;
-		//add_missing_function_headers_for_class(t); // later... depending on the bind variables
-	} else if (t->type == Class::Type::PRODUCT) {
-		int offset = 0;
-		for (auto&& [i,cc]: enumerate(params)) {
-			t->elements.add(ClassElement("e" + i2s(i), cc, offset));
-			offset += cc->size;
-		}
-		add_missing_function_headers_for_class(t);
-	} else if (t->is_enum()) {
-		t->flags = Flags::FORCE_CALL_BY_VALUE; // FORCE_CALL_BY_VALUE
-
-		kaba::add_class(t);
-		class_add_func("from_int", t, &kaba_int_passthrough, Flags::_STATIC__PURE);
-			func_set_inline(InlineID::PASSTHROUGH);
-			func_add_param("i", TypeInt);
-		//class_add_func(IDENTIFIER_FUNC_STR, TypeString, &i2s, Flags::PURE);
-		class_add_func("__int__", TypeInt, &kaba_int_passthrough, Flags::PURE);
-			func_set_inline(InlineID::PASSTHROUGH);
-		class_add_func("parse", t, &enum_parse, Flags::_STATIC__PURE);
-			func_add_param("label", TypeString);
-			func_add_param("type", TypeClassP);
-		class_add_func("all", TypeDynamicArray, &enum_all, Flags::_STATIC__PURE);
-			func_add_param("type", TypeClassP);
-		add_operator(OperatorID::ASSIGN, TypeVoid, t, t, InlineID::INT_ASSIGN);
-		add_operator(OperatorID::ADD, t, t, t, InlineID::INT_ADD, &op_int_add);
-		add_operator(OperatorID::ADDS, TypeVoid, t, t, InlineID::INT_ADD_ASSIGN);
-		add_operator(OperatorID::EQUAL, TypeBool, t, t, InlineID::INT_EQUAL, &op_int_eq);
-		add_operator(OperatorID::NOTEQUAL, TypeBool, t, t, InlineID::INT_NOT_EQUAL, &op_int_neq);
-		add_operator(OperatorID::BIT_AND, t, t, t, InlineID::INT_AND);
-		add_operator(OperatorID::BIT_OR, t, t, t, InlineID::INT_OR);
-
-		for (auto f: weak(t->functions)) {
-			if (f->name == "parse") {
-				f->default_parameters.resize(2);
-				auto c = add_constant(TypeClassP, t);
-				c->as_int64() = (int_p)t;
-				f->mandatory_params = 1;
-				f->default_parameters[1] = add_node_const(c, t->token_id);
-			} else if (f->name == "all") {
-				f->literal_return_type = request_implicit_class_super_array(t, t->token_id);
-				f->default_parameters.resize(1);
-				auto c = add_constant(TypeClassP, t);
-				c->as_int64() = (int_p)t;
-				f->mandatory_params = 0;
-				f->default_parameters[0] = add_node_const(c, t->token_id);
-			}
-		}
-	}
+	AutoImplementer ai(nullptr, this);
+	ai.complete_type(t, array_size, token_id);
 	return t;
 }
 
@@ -627,12 +547,54 @@ const Class *SyntaxTree::request_implicit_class(const string &name, Class::Type 
 }
 
 const Class *SyntaxTree::get_pointer(const Class *base, int token_id) {
-	return request_implicit_class(class_name_might_need_parantheses(base) + "*", Class::Type::POINTER, config.pointer_size, 0, nullptr, {base}, token_id);
+//	return request_implicit_class(class_name_might_need_parantheses(base) + "*", Class::Type::POINTER_RAW, config.target.pointer_size, 0, nullptr, {base}, token_id);
+	return request_implicit_class_pointer(base, token_id);
 }
 
-const Class *SyntaxTree::request_implicit_class_super_array(const Class *element_type, int token_id) {
+const Class *SyntaxTree::request_implicit_class_pointer(const Class *base, int token_id) {
+	if (!base->name_space)
+		do_error("ptr[..] not allowed for: " + base->long_name(), token_id); // TODO
+	return request_implicit_class(class_name_might_need_parantheses(base) + "*", Class::Type::POINTER_RAW, config.target.pointer_size, 0, nullptr, {base}, token_id);
+//	return request_implicit_class(format("%s[%s]", Identifier::RAW_POINTER, base->name), Class::Type::POINTER_RAW, config.target.pointer_size, 0, nullptr, {base}, token_id);
+}
+
+const Class *SyntaxTree::request_implicit_class_shared(const Class *base, int token_id) {
+	if (!base->name_space)
+		do_error("shared[..] not allowed for: " + base->long_name(), token_id); // TODO
+	return request_implicit_class(format("%s[%s]", Identifier::SHARED, base->name), Class::Type::POINTER_SHARED, config.target.pointer_size, 0, nullptr, {base}, token_id);
+}
+
+const Class *SyntaxTree::request_implicit_class_shared_not_null(const Class *base, int token_id) {
+	if (!base->name_space)
+		do_error("shared![..] not allowed for: " + base->long_name(), token_id); // TODO
+	return request_implicit_class(format("%s![%s]", Identifier::SHARED, base->name), Class::Type::POINTER_SHARED_NOT_NULL, config.target.pointer_size, 0, nullptr, {base}, token_id);
+}
+
+const Class *SyntaxTree::request_implicit_class_owned(const Class *base, int token_id) {
+	if (!base->name_space)
+		do_error("owned[..] not allowed for: " + base->long_name(), token_id);
+	return request_implicit_class(format("%s[%s]", Identifier::OWNED, base->name), Class::Type::POINTER_OWNED, config.target.pointer_size, 0, nullptr, {base}, token_id);
+}
+
+const Class *SyntaxTree::request_implicit_class_owned_not_null(const Class *base, int token_id) {
+	if (!base->name_space)
+		do_error("owned![..] not allowed for: " + base->long_name(), token_id);
+	return request_implicit_class(format("%s![%s]", Identifier::OWNED, base->name), Class::Type::POINTER_OWNED_NOT_NULL, config.target.pointer_size, 0, nullptr, {base}, token_id);
+}
+
+const Class *SyntaxTree::request_implicit_class_xfer(const Class *base, int token_id) {
+	if (!base->name_space)
+		do_error("xfer[..] not allowed for: " + base->long_name(), token_id);
+	return request_implicit_class(format("%s[%s]", Identifier::XFER, base->name), Class::Type::POINTER_XFER, config.target.pointer_size, 0, nullptr, {base}, token_id);
+}
+
+const Class *SyntaxTree::request_implicit_class_reference(const Class *base, int token_id) {
+	return request_implicit_class(class_name_might_need_parantheses(base) + "&", Class::Type::REFERENCE, config.target.pointer_size, 0, nullptr, {base}, token_id);
+}
+
+const Class *SyntaxTree::request_implicit_class_list(const Class *element_type, int token_id) {
 	string name = class_name_might_need_parantheses(element_type) + "[]";
-	return request_implicit_class(name, Class::Type::SUPER_ARRAY, config.super_array_size, -1, TypeDynamicArray, {element_type}, token_id);
+	return request_implicit_class(name, Class::Type::LIST, config.target.dynamic_array_size, -1, TypeDynamicArray, {element_type}, token_id);
 }
 
 const Class *SyntaxTree::request_implicit_class_array(const Class *element_type, int num_elements, int token_id) {
@@ -642,7 +604,7 @@ const Class *SyntaxTree::request_implicit_class_array(const Class *element_type,
 
 const Class *SyntaxTree::request_implicit_class_dict(const Class *element_type, int token_id) {
 	string name = class_name_might_need_parantheses(element_type) + "{}";
-	return request_implicit_class(name, Class::Type::DICT, config.super_array_size, 0, TypeDictBase, {element_type}, token_id);
+	return request_implicit_class(name, Class::Type::DICT, config.target.dynamic_array_size, 0, TypeDictBase, {element_type}, token_id);
 }
 
 const Class *SyntaxTree::request_implicit_class_optional(const Class *param, int token_id) {
@@ -678,7 +640,7 @@ shared<Node> SyntaxTree::conv_calls(shared<Node> c) {
 	if ((c->kind == NodeKind::STATEMENT) and (c->as_statement()->id == StatementID::RETURN))
 		if (c->params.num > 0) {
 			if ((c->params[0]->type->is_array()) /*or (c->Param[j]->Type->IsSuperArray)*/) {
-				c->set_param(0, c->params[0]->ref(this));
+				c->set_param(0, c->params[0]->ref_raw(this));
 			}
 			return c;
 		}
@@ -692,7 +654,8 @@ shared<Node> SyntaxTree::conv_calls(shared<Node> c) {
 				return true;
 			if (c->is_function()) {
 				auto f = c->as_func();
-				int param_offset = f->is_static() ? 0 : 1;
+				int param_offset = 0;//f->is_static() ? 0 : 1;
+				// TODO does g++ keep const refs to instance?!
 				if ((j >= param_offset) and (flags_has(f->var[j]->flags, Flags::OUT)))
 					return true;
 			}
@@ -702,7 +665,7 @@ shared<Node> SyntaxTree::conv_calls(shared<Node> c) {
 		// parameters, instance: class as reference
 		for (int j=0;j<c->params.num;j++)
 			if (c->params[j] and needs_conversion(j)) {
-				r->set_param(j, c->params[j]->ref(this));
+				r->set_param(j, c->params[j]->ref_raw(this));
 				changed = true;
 			}
 
@@ -714,24 +677,13 @@ shared<Node> SyntaxTree::conv_calls(shared<Node> c) {
 		if (changed)
 			return r;
 	}
-
-	// special string / list operators
-	if (c->kind == NodeKind::OPERATOR) {
-		// parameters: super array as reference
-		for (int j=0;j<c->params.num;j++)
-			if (c->params[j]->type->is_array() or c->params[j]->type->is_super_array()) {
-				c->set_param(j, c->params[j]->ref(this));
-				// REALLY ?!?!?!?  FIXME?!?!?
-				msg_error("this might be bad");
-			}
-  	}
 	return c;
 }
 
 
 // remove &*x
 shared<Node> SyntaxTree::conv_easyfy_ref_deref(shared<Node> c, int l) {
-	if (c->kind == NodeKind::REFERENCE) {
+	if ((c->kind == NodeKind::REFERENCE_RAW) or (c->kind == NodeKind::REFERENCE_NEW)) {
 		if (c->params[0]->kind == NodeKind::DEREFERENCE) {
 			// remove 2 knots...
 			return c->params[0]->params[0];
@@ -773,7 +725,7 @@ shared<Node> SyntaxTree::conv_return_by_memory(shared<Node> n, Function *f) {
 	// convert into   *-return- = param
 	shared<Node> p_ret;
 	for (Variable *v: weak(f->var))
-		if (v->name == IDENTIFIER_RETURN_VAR) {
+		if (v->name == Identifier::RETURN_VAR) {
 			p_ret = add_node_local(v);
 		}
 	if (!p_ret)
@@ -781,7 +733,7 @@ shared<Node> SyntaxTree::conv_return_by_memory(shared<Node> n, Function *f) {
 	auto ret = p_ret->deref();
 	auto cmd_assign = parser->con.link_operator_id(OperatorID::ASSIGN, ret, n->params[0]);
 	if (!cmd_assign)
-		do_error(format("no '=' operator for return from function found: '%s'", f->long_name()));
+		do_error(format("no operator '%s = %s' for return from function found: '%s'", ret->type->long_name(), n->params[0]->type->long_name(), f->long_name()));
 	_transform_insert_before_.add(cmd_assign);
 
 	return add_node_statement(StatementID::RETURN);
@@ -805,7 +757,9 @@ void SyntaxTree::convert_call_by_reference() {
 				v->type = get_pointer(v->type, -1);
 
 				// usage inside the function
-				transform_block(f->block.get(), [&](shared<Node> n){ return conv_cbr(n, v); });
+				transform_block(f->block.get(), [this, v](shared<Node> n) {
+					return conv_cbr(n, v);
+				});
 			}
 	}
 
@@ -813,25 +767,33 @@ void SyntaxTree::convert_call_by_reference() {
 	for (Function *f: functions)
 		if (f->literal_return_type->uses_return_by_memory() and (f->literal_return_type != TypeUnknown))
 			//convert_return_by_memory(this, f->block, f);
-			transform_block(f->block.get(), [&](shared<Node> n){ return conv_return_by_memory(n, f); });
+			transform_block(f->block.get(), [this, f](shared<Node> n) {
+				return conv_return_by_memory(n, f);
+			});
 
 	// convert function calls
-	transform([&](shared<Node> n){ return conv_calls(n); });
+	transform([this](shared<Node> n) {
+		return conv_calls(n);
+	});
 }
 
 
 void SyntaxTree::simplify_ref_deref() {
 	// remove &*
-	transform([&](shared<Node> n){ return conv_easyfy_ref_deref(n, 0); });
+	transform([this] (shared<Node> n) {
+		return conv_easyfy_ref_deref(n, 0);
+	});
 }
 
 void SyntaxTree::simplify_shift_deref() {
 	// remove &*
-	transform([&](shared<Node> n){ return conv_easyfy_shift_deref(n, 0); });
+	transform([this] (shared<Node> n) {
+		return conv_easyfy_shift_deref(n, 0);
+	});
 }
 
 InlineID __get_pointer_add_int() {
-	if (config.instruction_set == Asm::InstructionSet::AMD64)
+	if (config.target.instruction_set == Asm::InstructionSet::AMD64)
 		return InlineID::INT64_ADD_INT;
 	return InlineID::INT_ADD;
 }
@@ -841,7 +803,7 @@ shared<Node> conv_break_down_med_level(SyntaxTree *tree, shared<Node> c) {
 	if (c->kind == NodeKind::DYNAMIC_ARRAY) {
 		return tree->conv_break_down_low_level(
 				add_node_parray(
-						c->params[0]->shift(0, tree->get_pointer(c->type, c->token_id)),
+						c->params[0]->change_type(tree->get_pointer(c->type, c->token_id)),
 						c->params[1], c->type));
 	}
 	return c;
@@ -861,7 +823,7 @@ shared<Node> SyntaxTree::conv_break_down_low_level(shared<Node> c) {
 //             -> index
 
 		return add_node_operator_by_inline(__get_pointer_add_int(),
-				c->params[0]->ref(this), // array
+				c->params[0]->ref_new(this), // array
 				add_node_operator_by_inline(InlineID::INT_MULTIPLY,
 						c->params[1], // ref
 						add_node_const(add_constant_int(el_type->size))),
@@ -896,8 +858,12 @@ shared<Node> SyntaxTree::conv_break_down_low_level(shared<Node> c) {
 // * -> + -> & struct
 //        -> shift
 
+		//if (c->link_no == 0)
+		//	return c->params[0]->ref_raw(this)->deref(el_type);
+		// FIXME this causes a bug, probably by omtimizing away *(&x) and changing types
+
 		return add_node_operator_by_inline(__get_pointer_add_int(),
-				c->params[0]->ref(this), // struct
+				c->params[0]->ref_raw(this), // struct
 				add_node_const(add_constant_int(c->link_no)),
 				c->token_id,
 				get_pointer(el_type, c->token_id))->deref();
@@ -911,6 +877,9 @@ shared<Node> SyntaxTree::conv_break_down_low_level(shared<Node> c) {
 //
 // * -> + -> struct_pointer
 //        -> shift
+
+		//if (c->link_no == 0)
+		//	return c->params[0]->deref(el_type);
 
 		// create command for shift constant
 		// address = &struct + shift
@@ -1001,14 +970,14 @@ void SyntaxTree::transformb_block(Block *block, std::function<shared<Node>(share
 // split arrays and address shifts into simpler commands...
 void SyntaxTree::transform(std::function<shared<Node>(shared<Node>)> F) {
 	for (Function *f: functions)
-		if (!f->is_template()) {
+		if (!f->is_template() and !f->is_macro()) {
 			parser->cur_func = f;
 			transform_block(f->block.get(), F);
 		}
 }
 void SyntaxTree::transformb(std::function<shared<Node>(shared<Node>, Block*)> F) {
 	for (Function *f: functions)
-		if (!f->is_template()) {
+		if (!f->is_template() and !f->is_macro()) {
 			parser->cur_func = f;
 			transformb_block(f->block.get(), F);
 		}
@@ -1017,7 +986,9 @@ void SyntaxTree::transformb(std::function<shared<Node>(shared<Node>, Block*)> F)
 bool node_is_executable(shared<Node> n) {
 	if ((n->kind == NodeKind::CONSTANT) or (n->kind == NodeKind::VAR_LOCAL) or (n->kind == NodeKind::VAR_GLOBAL))
 		return false;
-	if ((n->kind == NodeKind::ADDRESS_SHIFT) or (n->kind == NodeKind::ARRAY) or (n->kind == NodeKind::DYNAMIC_ARRAY) or (n->kind == NodeKind::REFERENCE) or (n->kind == NodeKind::DEREFERENCE) or (n->kind == NodeKind::DEREF_ADDRESS_SHIFT))
+	if ((n->kind == NodeKind::ADDRESS_SHIFT) or (n->kind == NodeKind::ARRAY) or (n->kind == NodeKind::DYNAMIC_ARRAY)
+			or (n->kind == NodeKind::REFERENCE_RAW) or (n->kind == NodeKind::REFERENCE_NEW) or (n->kind == NodeKind::DEREFERENCE)
+			or (n->kind == NodeKind::DEREF_ADDRESS_SHIFT))
 		return node_is_executable(n->params[0]);
 	return true;
 }
@@ -1044,7 +1015,7 @@ shared<Node> SyntaxTree::conv_class_and_func_to_const(shared<Node> n) {
 		return add_node_const(add_constant_pointer(TypeClassP, n->as_class()));
 	}
 	if (n->kind == NodeKind::SPECIAL_FUNCTION_NAME) {
-		return add_node_const(add_constant_pointer(TypeSpecialFunctionP, n->as_special_function()));
+		return add_node_const(add_constant_pointer(TypeSpecialFunctionRef, n->as_special_function()));
 	}
 	return n;
 }
@@ -1154,7 +1125,7 @@ shared<Node> SyntaxTree::conv_break_down_high_level(shared<Node> n, Block *b) {
 		nn->set_param(3, cmd_inc); // add to loop-block
 
 		return nn;
-	} else if ((n->kind == NodeKind::STATEMENT) and (n->as_statement()->id == StatementID::FOR_ARRAY)) {
+	} else if ((n->kind == NodeKind::STATEMENT) and (n->as_statement()->id == StatementID::FOR_CONTAINER)) {
 
 		// [VAR, INDEX, ARRAY, BLOCK]
 		auto var = n->params[0];
@@ -1187,9 +1158,9 @@ shared<Node> SyntaxTree::conv_break_down_high_level(shared<Node> n, Block *b) {
 		nn->set_param(0, add_node_operator_by_inline(InlineID::INT_ASSIGN, index, val0));
 
 		shared<Node> val1;
-		if (array->type->usable_as_super_array()) {
+		if (array->type->usable_as_list()) {
 			// array.num
-			val1 = array->shift(config.pointer_size, TypeInt, array->token_id);
+			val1 = array->shift(config.target.pointer_size, TypeInt, array->token_id);
 		} else {
 			// array.size
 			val1 = add_node_const(add_constant_int(array->type->array_length));
@@ -1206,14 +1177,14 @@ shared<Node> SyntaxTree::conv_break_down_high_level(shared<Node> n, Block *b) {
 
 		// array[index]
 		shared<Node> el;
-		if (array->type->usable_as_super_array()) {
+		if (array->type->usable_as_list()) {
 			el = add_node_dyn_array(array, index);
 		} else {
 			el = add_node_array(array, index);
 		}
 
 		// &for_var = &array[index]
-		auto cmd_var_assign = add_node_operator_by_inline(InlineID::POINTER_ASSIGN, var, el->ref(this));
+		auto cmd_var_assign = add_node_operator_by_inline(InlineID::POINTER_ASSIGN, var, el->ref_raw(this));
 		block->params.insert(cmd_var_assign, 0);
 
 		return nn;
@@ -1251,6 +1222,13 @@ shared<Node> SyntaxTree::conv_break_down_high_level(shared<Node> n, Block *b) {
 		//bb->show();
 		return bb;
 
+	} else if ((n->kind == NodeKind::STATEMENT) and (n->as_statement()->id == StatementID::RAW_FUNCTION_POINTER)) {
+		// only extract explicit raw_function_pointer()
+		// skip implicit from callable...
+		if (n->params[0]->kind == NodeKind::CONSTANT) {
+			n->params[0]->as_const()->type = TypeFunctionCodeP;
+			return n->params[0];
+		}
 	}
 
 	// TODO experimental dynamic type insertion
@@ -1294,29 +1272,29 @@ shared<Node> SyntaxTree::conv_func_inline(shared<Node> n) {
 
 void MapLVSX86Return(Function *f, int64 &stack_offset) {
 	for (auto &v: f->var)
-		if (v->name == IDENTIFIER_RETURN_VAR) {
+		if (v->name == Identifier::RETURN_VAR) {
 			v->_offset = stack_offset;
-			stack_offset += config.pointer_size;
+			stack_offset += config.target.pointer_size;
 		}
 }
 
 void MapLVSX86Self(Function *f, int64 &stack_offset) {
 	for (auto &v: f->var)
-		if (v->name == IDENTIFIER_SELF) {
+		if (v->name == Identifier::SELF) {
 			v->_offset = stack_offset;
-			stack_offset += config.pointer_size;
+			stack_offset += config.target.pointer_size;
 		}
 }
 
 void SyntaxTree::map_local_variables_to_stack() {
 	for (Function *f: functions) {
 
-		if (config.instruction_set == Asm::InstructionSet::X86) {
+		if (config.target.instruction_set == Asm::InstructionSet::X86) {
 			f->_var_size = 0;
-			int64 stack_offset = 2 * config.pointer_size; // space for eIP and eBP
+			int64 stack_offset = 2 * config.target.pointer_size; // space for eIP and eBP
 			// offsets to stack pointer (for push parameters)
 
-			if (config.abi == Abi::X86_WINDOWS) {
+			if (config.target.abi == Abi::X86_WINDOWS) {
 				// map "self" to the VERY first parameter
 				if (f->is_member())
 					MapLVSX86Self(f, stack_offset);
@@ -1335,9 +1313,9 @@ void SyntaxTree::map_local_variables_to_stack() {
 			}
 
 			for (auto&& [i,v]: enumerate(weak(f->var))) {
-				if (f->is_member() and (v->name == IDENTIFIER_SELF))
+				if (f->is_member() and (v->name == Identifier::SELF))
 					continue;
-				if (v->name == IDENTIFIER_RETURN_VAR)
+				if (v->name == Identifier::RETURN_VAR)
 					continue;
 				int s = mem_align(v->type->size, 4);
 				if (i < f->num_params) {
@@ -1350,12 +1328,12 @@ void SyntaxTree::map_local_variables_to_stack() {
 					f->_var_size += s;
 				}
 			}
-		} else if (config.instruction_set == Asm::InstructionSet::AMD64) {
+		} else if (config.target.instruction_set == Asm::InstructionSet::AMD64) {
 			f->_var_size = 0;
-			int64 stack_offset = 2 * config.pointer_size; // space for rIP and rBP
+			int64 stack_offset = 2 * config.target.pointer_size; // space for rIP and rBP
 			// offsets to stack pointer (for push parameters)
 
-			if (config.abi == Abi::AMD64_WINDOWS) {
+			if (config.target.abi == Abi::AMD64_WINDOWS) {
 
 				// map "self" to the VERY first parameter
 				if (f->is_member())
@@ -1366,9 +1344,9 @@ void SyntaxTree::map_local_variables_to_stack() {
 					MapLVSX86Return(f, stack_offset);
 
 				for (auto&& [i,v]: enumerate(weak(f->var))) {
-					if (f->is_member() and (v->name == IDENTIFIER_SELF))
+					if (f->is_member() and (v->name == Identifier::SELF))
 						continue;
-					if (v->name == IDENTIFIER_RETURN_VAR)
+					if (v->name == Identifier::RETURN_VAR)
 						continue;
 					if (i < f->num_params) {
 						// parameters
@@ -1390,7 +1368,7 @@ void SyntaxTree::map_local_variables_to_stack() {
 					v->_offset = -f->_var_size;
 				}
 			}
-		} else if (config.instruction_set == Asm::InstructionSet::ARM) {
+		} else if (config.target.is_arm()) {
 			f->_var_size = 0;
 
 			for (auto v: weak(f->var)) {

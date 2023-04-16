@@ -139,7 +139,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 
 		// control points
 		set_color(scheme.CREATION_LINE);
-		nix::set_shader(nix::Shader::default_2d);
+		nix::set_shader(nix::Shader::default_2d.get());
 		for (int i=0;i<pos.num;i++) {
 			vec3 pp = win->project(pos[i]);
 			draw_rect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
@@ -178,7 +178,7 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 	} else if (pos.num > 2) {
 		vec2 pp = multi_view->mouse_win->project(pos[0]).xy();
 		if ((pp - multi_view->m).length() < CYLINDER_CLOSING_DISTANCE) {
-			nix::set_shader(nix::Shader::default_2d);
+			nix::set_shader(nix::Shader::default_2d.get());
 			draw_str(pp.x, pp.y, _("Close path"));
 		}
 	}

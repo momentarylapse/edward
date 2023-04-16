@@ -80,8 +80,8 @@ void LightmapDialog::SetData()
 	lmd->emissive_brightness = get_float("brightness");
 	lmd->color_exponent = get_float("exponent");
 	lmd->allow_sun = is_checked("allow_sun");
-	lmd->texture_out_dir = Path("Lightmap") << lmd->new_world_name;
-	lmd->model_out_dir = Path("Lightmap") << lmd->new_world_name;
+	lmd->texture_out_dir = Path("Lightmap") | lmd->new_world_name;
+	lmd->model_out_dir = Path("Lightmap") | lmd->new_world_name;
 }
 
 static Lightmap::Histogram *hist_p;

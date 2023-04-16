@@ -20,11 +20,11 @@ const string GameIniData::ID_RENDERER_FRAMERATE = "renderer.target-framerate";
 const string GameIniData::ID_RESOLUTION_SCALE_MIN = "renderer.resolution-scale-min";
 
 void GameIniData::load(const Path &dir) {
-	Configuration::load(dir << "game.ini");
+	Configuration::load(dir | "game.ini");
 }
 
 void GameIniData::save(const Path &dir) {
-	Configuration::save(dir << "game.ini");
+	Configuration::save(dir | "game.ini");
 }
 
 Path GameIniData::default_font() const {

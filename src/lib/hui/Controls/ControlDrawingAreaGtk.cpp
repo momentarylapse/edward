@@ -34,6 +34,10 @@ static base::set<ControlDrawingArea*> _recently_deleted_areas;
 
 color color_from_gdk(const GdkRGBA &gcol);
 
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 void get_style_colors(Panel *p, const string &id, base::map<string,color> &colors) {
 	auto c = p->_get_control_(id);
 	if (!c)
@@ -48,6 +52,8 @@ void get_style_colors(Panel *p, const string &id, base::map<string,color> &color
 			colors.set(name, color_from_gdk(cc));
 	}
 }
+
+#pragma GCC diagnostic pop
 
 
 /*---------------------------------------------------------------------------------*
@@ -308,7 +314,6 @@ void win_set_input_more(Window *win, T *event) {
 
 void on_gtk_gesture_motion(GtkEventControllerMotion *controller, double x, double y, gpointer user_data) {
 	auto c = reinterpret_cast<Control*>(user_data);
-	static int nn = 0;
 	win_set_mouse_pos(c->panel->win, (float)x, (float)y);
 	win_set_modifier_keys(c->panel->win);
 #if GTK_CHECK_VERSION(4,0,0)
@@ -916,10 +921,10 @@ void ControlDrawingArea::__set_option(const string &op, const string &value) {
 	}
 }
 
-static bool __drawing_area_queue_redraw(void *p) {
+/*static bool __drawing_area_queue_redraw(void *p) {
 	gtk_widget_queue_draw(GTK_WIDGET(p));
 	return false;
-}
+}*/
 
 void ControlDrawingArea::redraw()
 {

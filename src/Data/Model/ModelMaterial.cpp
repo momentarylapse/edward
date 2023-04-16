@@ -63,7 +63,7 @@ void ModelMaterial::TextureLevel::reload_image() {
 	if (filename == "")
 		image = new Image(512, 512, White);
 	else
-		image = Image::load(ResourceManager::texture_dir << filename);
+		image = Image::load(ResourceManager::texture_dir | filename);
 	edited = false;
 	update_texture();
 }
@@ -170,7 +170,7 @@ void ModelMaterial::check_colors() {
 
 void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 	nix::disable_alpha();
-	w->set_shader(nix::Shader::default_3d);
+	w->set_shader(nix::Shader::default_3d.get());
 	color em = color::interpolate(col.emission, White, 0.1f);
 	nix::set_material(col.albedo, col.roughness, col.metal, em);
 	nix::set_z(true, true);

@@ -136,7 +136,7 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win) {
 
 		// control points
 		set_color(scheme.CREATION_LINE);
-		nix::set_shader(nix::Shader::default_2d);
+		nix::set_shader(nix::Shader::default_2d.get());
 		for (int i=0;i<pos.num;i++) {
 			vec3 pp = win->project(pos[i]);
 			draw_rect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);

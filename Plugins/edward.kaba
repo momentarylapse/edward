@@ -3,6 +3,9 @@ use gl
 use os
 #import x
 
+
+let MAX_TEXTURES = 8
+
 class Observable
 	var dummy: int
 	
@@ -50,12 +53,12 @@ class MultiView
 	class Window
 		var local_ang: quaternion
 
-	class Camera
+	struct Camera
 		var pos: vec3
 		var ang: quaternion
 
 	# "des Pudels Kern", don't change!!!!!!!
-	class SingleData
+	struct SingleData
 		var view_stage: int
 		var is_selected, m_delta, m_old, is_special: bool
 		var pos: vec3
@@ -95,20 +98,99 @@ class y
 	class Model
 
 
+struct Edge extends MultiView.SingleData
+	#int NormalMode;
+	var vertex: int[2]
+	var ref_count: int
+	var triangle, side: int[2]
+	var is_round: bool
+	var weight: float
+
+	# constraints:
+	#  Vertex[0] = surf.Triangle[Triangle[0]].Vertex[Side[0]]
+	#  Vertex[1] = surf.Triangle[Triangle[0]].Vertex[(Side[0] + 1) % 3]
+	#  same for Triangle/Side[1] but Vertex[0 <-> 1]
+
+class Geometry
+	struct Vertex extends MultiView.SingleData
+		var normal_mode: int
+		var bone_index: int
+
+		var normal_dirty: bool
+		var ref_count: int
+		var surface: int
+
+	struct Polygon extends MultiView.SingleData
+		struct Side
+			var vertex: int
+			var edge: int
+			var edge_direction: int
+			var skin_vertex: vec3[MAX_TEXTURES]
+			var normal_index: int
+			var normal: vec3
+			var triangulation: char[3]
+		var side: Side[]
+		var temp_normal: vec3
+		var normal_dirty, triangulation_dirty: bool
+		var material: int
+		func __init__()
+		
+	var vertex: Vertex[]
+	var polygon: Polygon[]
+	var edge: Edge[]
+	var is_closed: bool
+	
+	func extern static subtract(a: Geometry, b: Geometry, out _out: Geometry) -> int
+	func extern static and(a: Geometry, b: Geometry, out _out: Geometry) -> int
+
+	enum EndMode
+		OPEN
+		FLAT
+		ROUND
+		LOOP
+
+	class Ball extends Geometry
+		func extern __init__(pos: vec3, radius: float, num_x: int, num_y: int)
+
+	class Cube extends Geometry
+		func extern __init__(pos: vec3, dv1: vec3, dv2: vec3, dv3: vec3, num_1: int, num_2: int, num_3: int)
+
+	class Cylinder extends Geometry
+		func extern __init__(pos1: vec3, pos2: vec3, radius: float, rings: int, edges: int, end_mode: EndMode)
+
+	class CylinderComplex extends Geometry
+		func extern __init__(pos: vec3[], radius: float[], rings: int, edges: int, end_mode: EndMode)
+
+	class Sphere extends Geometry
+		func extern __init__(pos: vec3, radius: float, num: int)
+
+	class Torus extends Geometry
+		func extern __init__(pos: vec3, axis: vec3, radius1: float, radius2: float, num_x: int, num_y: int)
+
+	class TorusKnot extends Geometry
+		func extern __init__(pos: vec3, axis: vec3, radius1: float, radius2: float, radius3: float, turns: int, twists: int, rings: int, edges: int)
+
+	class Plane extends Geometry
+		func extern __init__(pos: vec3, dv1: vec3, dv2: vec3, num_x: int, num_y: int)
+
+	class Platonic extends Geometry
+		func extern __init__(pos: vec3, radius: float, samples: int)
+
+
+
 
 class Model extends Data
-	let MAX_TEXTURES = 8
 	let MAX_POLY_VERTICES_PER_FACE = 16
 	let MAX_POLY_FACES = 32
 	let MAX_POLY_EDGES = 32 * 4
 
 
-	class Material
+	struct Material
 		var filename: Path
 		var material: y.Material*
 		var num_textures: int
-		var texture: Texture*[Model.MAX_TEXTURES]
-		var texture_file: string[Model.MAX_TEXTURES]
+		var texture: Texture*[MAX_TEXTURES]
+		var texture_file: string[MAX_TEXTURES]
 
 		var user_transparency: bool
 		var transparency_mode: int
@@ -124,7 +206,7 @@ class Model extends Data
 		var shininess: float
 		func __assign__(other: Material)
 
-	class Effect
+	struct Effect
 		var kind, surface, vertex: int
 		var size, speed, intensity: int
 		var colors: color[3]
@@ -135,16 +217,16 @@ class Model extends Data
 
 
 	# only for use in MultiView...
-	class SkinVertexDummy extends MultiView.SingleData
+	struct SkinVertexDummy extends MultiView.SingleData
 
-	class Ball extends MultiView.SingleData
+	struct Ball extends MultiView.SingleData
 		var index: int
 		var radius: float
 
 
 	# TODO: dynamical!
-	class Polyhedron extends MultiView.SingleData
-		class Face
+	struct Polyhedron extends MultiView.SingleData
+		struct Face
 			var num_vertices: int
 			var index: int[Model.MAX_POLY_VERTICES_PER_FACE]
 			var plane: plane
@@ -163,11 +245,11 @@ class Model extends Data
 
 
 
-	class Triangle extends MultiView.SingleData
+	struct Triangle extends MultiView.SingleData
 		var vertex: int[3]
 		#int[3] edge
 		#int[3] edge_direction # which no of triangle in edge's list are we?
-		var skin_vertex: vec3[Model.MAX_TEXTURES][3]
+		var skin_vertex: vec3[MAX_TEXTURES][3]
 		var normal_index: int[3]
 		var normal: vec3[3]
 		var temp_normal: vec3
@@ -176,7 +258,7 @@ class Model extends Data
 
 
 	# triangles belonging to one material
-	class SubSkin
+	struct SubSkin
 		var num_textures: int
 
 		# triangles
@@ -184,7 +266,7 @@ class Model extends Data
 
 
 	# geometry
-	class Skin
+	struct Skin
 		# general properties
 		var normal_mode_all: int
 
@@ -194,7 +276,7 @@ class Model extends Data
 		# sub skins
 		var sub: SubSkin[]
 
-	class Bone extends MultiView.SingleData
+	struct Bone extends MultiView.SingleData
 		var parent: int
 		var model_file: string
 		var model: Model*
@@ -206,13 +288,13 @@ class Model extends Data
 
 
 
-	class Move
+	struct Move
 		enum Type
 			NONE
 			VERTEX
 			SKELETAL
 
-		class Frame
+		struct Frame
 			# skeleton animation
 			var skel_dpos: vec3[]
 			var skel_ang: vec3[]
@@ -227,31 +309,18 @@ class Model extends Data
 		var frames_per_sec_const, frames_per_sec_factor: float
 		var name: string
 
-	class Edge extends MultiView.SingleData
-		#int NormalMode;
-		var vertex: int[2]
-		var ref_count: int
-		var triangle, side: int[2]
-		var is_round: bool
-		var weight: float
 
-		# constraints:
-		#  Vertex[0] = surf.Triangle[Triangle[0]].Vertex[Side[0]]
-		#  Vertex[1] = surf.Triangle[Triangle[0]].Vertex[(Side[0] + 1) % 3]
-		#  same for Triangle/Side[1] but Vertex[0 <-> 1]
+#	struct __Surface extends MultiView.SingleData
+#		var polygon: Geometry.Polygon[]
+#		var edge: Edge[]
+#		var vertex: int[]
+#		var is_physical, is_visible: bool
+#		var is_closed: bool
+#
+#		var model: void*
+#		func __init__()
 
-
-	class __Surface extends MultiView.SingleData
-		var polygon: Geometry.Polygon[]
-		var edge: Edge[]
-		var vertex: int[]
-		var is_physical, is_visible: bool
-		var is_closed: bool
-
-		var model: void*
-		func __init__()
-
-	class MetaData
+	struct MetaData
 		# level of detail
 		var detail_dist: float[3]
 		var detail_factor: int[3]
@@ -273,10 +342,10 @@ class Model extends Data
 		var script_var: float[]
 		func __assign__(other: MetaData)
 
-	class Selection
+	struct Selection
 		var vertex, polygon, edge: int[]
 
-	class Mesh
+	struct Mesh
 		var vertex: Geometry.Vertex[]
 		var polygon: Geometry.Polygon[]
 		var edge: Edge[]
@@ -357,78 +426,11 @@ class Model extends Data
 	func __assign__(other: Model)
 
 
-class Geometry
-	class Vertex extends MultiView.SingleData
-		var normal_mode: int
-		var bone_index: int
-
-		var normal_dirty: bool
-		var ref_count: int
-		var surface: int
-
-	class Polygon extends MultiView.SingleData
-		class Side
-			var vertex: int
-			var edge: int
-			var edge_direction: int
-			var skin_vertex: vec3[Model.MAX_TEXTURES]
-			var normal_index: int
-			var normal: vec3
-			var triangulation: char[3]
-		var side: Side[]
-		var temp_normal: vec3
-		var normal_dirty, triangulation_dirty: bool
-		var material: int
-		func __init__()
-		
-	var vertex: Vertex[]
-	var polygon: Polygon[]
-	var edge: Model.Edge[]
-	var is_closed: bool
-	
-	func extern static subtract(a: Geometry, b: Geometry, out _out: Geometry) -> int
-	func extern static and(a: Geometry, b: Geometry, out _out: Geometry) -> int
-
-	enum EndMode
-		OPEN
-		FLAT
-		ROUND
-		LOOP
-
-	class Ball extends Geometry
-		func extern __init__(pos: vec3, radius: float, num_x: int, num_y: int)
-
-	class Cube extends Geometry
-		func extern __init__(pos: vec3, dv1: vec3, dv2: vec3, dv3: vec3, num_1: int, num_2: int, num_3: int)
-
-	class Cylinder extends Geometry
-		func extern __init__(pos1: vec3, pos2: vec3, radius: float, rings: int, edges: int, end_mode: EndMode)
-
-	class CylinderComplex extends Geometry
-		func extern __init__(pos: vec3[], radius: float[], rings: int, edges: int, end_mode: EndMode)
-
-	class Sphere extends Geometry
-		func extern __init__(pos: vec3, radius: float, num: int)
-
-	class Torus extends Geometry
-		func extern __init__(pos: vec3, axis: vec3, radius1: float, radius2: float, num_x: int, num_y: int)
-
-	class TorusKnot extends Geometry
-		func extern __init__(pos: vec3, axis: vec3, radius1: float, radius2: float, radius3: float, turns: int, twists: int, rings: int, edges: int)
-
-	class Plane extends Geometry
-		func extern __init__(pos: vec3, dv1: vec3, dv2: vec3, num_x: int, num_y: int)
-
-	class Platonic extends Geometry
-		func extern __init__(pos: vec3, radius: float, samples: int)
-
-
-
 
 class World extends Data
 
 
-	class Terrain extends MultiView.SingleData
+	struct Terrain extends MultiView.SingleData
 		var filename: Path
 		#WorldTerrainVertex Vertex[]
 		var vertex_buffer_single: int
@@ -438,7 +440,7 @@ class World extends Data
 		func __init__()
 
 
-	class Object extends MultiView.SingleData
+	struct Object extends MultiView.SingleData
 		var filename: string
 		var name: string
 		var object: y.Model*
@@ -490,7 +492,7 @@ class shader
 		var x, y: int
 		var type: string
 	
-		class Parameter
+		struct Parameter
 			var type: Type
 			var name: string
 			var value: string
@@ -498,7 +500,7 @@ class shader
 		var params: Parameter[]
 
 
-		class Port
+		struct Port
 			var type: Type
 			var name: string
 		var output: Port[]

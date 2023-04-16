@@ -3,7 +3,8 @@
 #include "Interpreter.h"
 #include "parser/Parser.h"
 #include "parser/Concretifier.h"
-#include "parser/template.h"
+#include "template/template.h"
+#include "compiler/Compiler.h"
 #include "../os/msg.h"
 
 namespace kaba {
@@ -35,7 +36,7 @@ string Exception::message() const {
 
 Path absolute_module_path(const Path &filename) {
 	if (filename.is_relative())
-		return (config.directory << filename).absolute().canonical();
+		return (config.directory | filename).absolute().canonical();
 	else
 		return filename.absolute().canonical();
 }
@@ -79,12 +80,13 @@ shared<Module> Context::create_module_for_source(const string &buffer, bool just
     auto s = create_empty_module("<from-source>");
 	s->just_analyse = just_analyse;
 	s->filename = config.default_filename;
-	s->syntax->parser = new Parser(s->syntax);
-	s->syntax->default_import();
-	s->syntax->parser->parse_buffer(buffer, just_analyse);
+	s->tree->parser = new Parser(s->tree.get());
+	s->tree->default_import();
+	s->tree->parser->parse_buffer(buffer, just_analyse);
 
 	if (!just_analyse)
-		s->compile();
+		Compiler::compile(s.get());
+
 	return s;
 }
 
@@ -110,7 +112,7 @@ void Context::execute_single_command(const string &cmd) {
 	//msg_write("command: " + cmd);
 
     auto s = create_empty_module("<command-line>");
-	auto tree = s->syntax;
+	auto tree = s->tree.get();
 	tree->default_import();
 	auto parser = new Parser(tree);
 	tree->parser = parser;
@@ -154,7 +156,7 @@ void Context::execute_single_command(const string &cmd) {
 		func->block->params[0] = cmd;
 	}
 	for (auto *c: tree->owned_classes)
-		parser->auto_implementer.auto_implement_functions(c);
+		parser->auto_implementer.implement_functions(c);
 	//ps->show("aaaa");
 
 
@@ -162,16 +164,16 @@ void Context::execute_single_command(const string &cmd) {
 		tree->show("parse:a");
 
 // compile
-	s->compile();
+	Compiler::compile(s.get());
 
 
-	if (config.interpreted) {
+	if (config.target.interpreted) {
 		s->interpreter->run("--command-func--");
 		return;
 	}
 
 // execute
-	if (config.abi == config.native_abi) {
+	if (config.target.is_native) {
 		typedef void void_func();
 		void_func *f = (void_func*)func->address;
 		if (f)
@@ -196,7 +198,7 @@ const Class *_dyn_type_in_namespace(const VirtualTable *p, const Class *ns) {
 const Class *Context::get_dynamic_type(const VirtualBase *p) const {
 	auto *pp = get_vtable(p);
 	for (auto s: public_modules) {
-		auto t = _dyn_type_in_namespace(pp, s->syntax->base_class);
+		auto t = _dyn_type_in_namespace(pp, s->tree->base_class);
 		if (t)
 			return t;
 	}
@@ -215,7 +217,7 @@ void Context::clean_up() {
 
 extern Context *_secret_lib_context_;
 
-Context *Context::create() {
+xfer<Context> Context::create() {
 	auto c = new Context;
 	c->packages = _secret_lib_context_->packages;
 	c->type_casts = _secret_lib_context_->type_casts;

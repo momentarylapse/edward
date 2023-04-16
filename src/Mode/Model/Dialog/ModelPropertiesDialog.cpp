@@ -50,7 +50,7 @@ ModelPropertiesDialog::~ModelPropertiesDialog() {
 }
 
 shared<const kaba::Class> get_class(shared<kaba::Module> s, const string &parent) {
-	for (auto t: s->syntax->base_class->classes)
+	for (auto t: s->tree->base_class->classes)
 		if (t->is_derived_from_s(parent))
 			return t;
 	throw Exception(format(_("script does not contain a class derived from '%s'"), parent));
@@ -71,9 +71,9 @@ void update_model_script_data(DataModel::MetaData &m) {
 
 	//m.class_name = "";
 	try {
-		msg_write((storage->root_dir_kind[FD_SCRIPT] << m.script_file).str());
+		msg_write((storage->root_dir_kind[FD_SCRIPT] | m.script_file).str());
 		auto c = ownify(kaba::Context::create());
-		auto ss = c->load_module(storage->root_dir_kind[FD_SCRIPT] << m.script_file, true);
+		auto ss = c->load_module(storage->root_dir_kind[FD_SCRIPT] | m.script_file, true);
 
 		auto t = get_class(ss, "*.Model");
 		m._script_class = t->cname(t->owner->base_class);

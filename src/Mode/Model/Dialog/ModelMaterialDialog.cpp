@@ -299,7 +299,7 @@ void ModelMaterialDialog::on_texture_level_save() {
 	if (sel >= 0)
 		storage->file_dialog(FD_TEXTURE, true, true, [this, sel] {
 			auto tl = data->material[mode_model_mesh->current_material]->texture_levels[sel];
-			tl->image->save(engine.texture_dir << storage->dialog_file);
+			tl->image->save(engine.texture_dir | storage->dialog_file);
 			tl->filename = storage->dialog_file; // ...
 			tl->edited = false;
 		});

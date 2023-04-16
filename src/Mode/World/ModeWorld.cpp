@@ -323,7 +323,7 @@ void ModeWorld::on_draw() {
 			ss.add(format(_("%d cameras"), num_cam));
 		if (num_li > 0)
 			ss.add(format(_("%d lights"), num_li));
-		nix::set_shader(nix::Shader::default_2d);
+		nix::set_shader(nix::Shader::default_2d.get());
 		draw_str(10, 100, _("selected: ") + implode(ss, ", "));
 	}
 }
@@ -489,7 +489,7 @@ void draw_model(MultiView::Window *win, Model *m, int num_lights) {
 void ModeWorld::draw_objects(MultiView::Window *win) {
 	//GodDraw();
 	//MetaDrawSorted();
-	nix::set_shader(nix::Shader::default_3d);
+	nix::set_shader(nix::Shader::default_3d.get());
 	nix::set_wire(multi_view->wire_mode);
 
 	for (WorldObject &o: data->objects) {

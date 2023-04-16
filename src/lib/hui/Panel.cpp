@@ -416,7 +416,7 @@ void Panel::embed_source(const string &buffer, const string &parent_id, int x, i
 }
 
 // TODO shared<> auto-cast...
-void Panel::embed(/*shared<Panel>*/ Panel *panel, const string &parent_id, int x, int y) {
+void Panel::embed(shared<Panel> panel, const string &parent_id, int x, int y) {
 	if (!panel)
 		return;
 	if (!panel->root_control) {
@@ -434,11 +434,11 @@ void Panel::embed(/*shared<Panel>*/ Panel *panel, const string &parent_id, int x
 	if (parent_id.num > 0 and !_get_control_(parent_id))
 		msg_error(parent_id + " not found...embed");
 	_insert_control_(panel->root_control, x, y);
-	panel->root_control->panel = panel;//.get();
+	panel->root_control->panel = panel.get();
 
 #if GTK_CHECK_VERSION(4,0,0)
 	//msg_error("ATTACH ACTION GROUP  " + p2s(panel.get()));
-	gtk_widget_insert_action_group(win->window, p2s(panel/*.get()*/).c_str(), G_ACTION_GROUP(panel->action_group));
+	gtk_widget_insert_action_group(win->window, p2s(panel.get()).c_str(), G_ACTION_GROUP(panel->action_group));
 #endif
 }
 
@@ -815,7 +815,7 @@ string decode_gtk_action(const string &name) {
 #if GTK_CHECK_VERSION(4,0,0)
 void Panel::_on_menu_action_(GSimpleAction *simple, GVariant *parameter, gpointer user_data) {
 	auto panel = static_cast<Panel*>(user_data);
-	auto win = panel->win;
+	//auto win = panel->win;
 	//string id = g_variant_get_string(parameter, nullptr);
 
 	GValue value = {0,};

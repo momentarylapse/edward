@@ -19,7 +19,7 @@ BackendAmd64::BackendAmd64(Serializer *s) : BackendX86(s) {
 	// rax, rcx, rdx
 	map_reg_root = {Asm::RegRoot::A, Asm::RegRoot::C, Asm::RegRoot::D};
 
-	if (config.abi == Abi::AMD64_WINDOWS) {
+	if (config.target.abi == Abi::AMD64_WINDOWS) {
 		// rcx, rdx, r8, r9
 		param_regs_root = {Asm::RegRoot::C, Asm::RegRoot::D, Asm::RegRoot::R8, Asm::RegRoot::R9};
 		max_xmm_params = 4;
@@ -38,7 +38,7 @@ BackendAmd64::BackendAmd64(Serializer *s) : BackendX86(s) {
 BackendAmd64::~BackendAmd64() {
 }
 
-static Asm::InstID trafo_inst_float(Asm::InstID inst, const Class *t) {
+[[maybe_unused]] static Asm::InstID trafo_inst_float(Asm::InstID inst, const Class *t) {
 	if (t == TypeFloat64) {
 		if (inst == Asm::InstID::FADD)
 			return Asm::InstID::ADDSD;
@@ -61,7 +61,7 @@ static Asm::InstID trafo_inst_float(Asm::InstID inst, const Class *t) {
 	return Asm::InstID::INVALID;
 }
 
-static bool inst_is_arithmetic(Asm::InstID i) {
+[[maybe_unused]] static bool inst_is_arithmetic(Asm::InstID i) {
 	if ((i == Asm::InstID::IMUL) /*or (i == Asm::InstID::IDIV)*/ or (i == Asm::InstID::ADD) or (i == Asm::InstID::SUB))
 		return true;
 	if ((i == Asm::InstID::AND) or (i == Asm::InstID::OR) or (i == Asm::InstID::XOR))
@@ -201,7 +201,7 @@ void BackendAmd64::add_function_call(Function *f, const Array<SerialNodeParam> &
 			insert_cmd(Asm::InstID::CALL, p_rax);
 		}
 	} else if (f->_label >= 0) {
-		if (f->owner() == module->syntax) {
+		if (f->owner() == module->tree) {
 			// 32bit call distance
 			insert_cmd(Asm::InstID::CALL, param_label(TypeInt, f->_label));
 		} else {
@@ -250,7 +250,7 @@ int BackendAmd64::function_call_pre(const Array<SerialNodeParam> &_params, const
 
 	// return as _very_ first parameter
 	if (type->uses_return_by_memory()) {
-		if ((config.abi == Abi::AMD64_WINDOWS) and !is_static and params[0].type->is_some_pointer())
+		if ((config.target.abi == Abi::AMD64_WINDOWS) and !is_static and params[0].type->is_some_pointer())
 			params.insert(insert_reference(ret), 1);
 		else
 			params.insert(insert_reference(ret), 0);
@@ -269,7 +269,7 @@ int BackendAmd64::function_call_pre(const Array<SerialNodeParam> &_params, const
 			if (reg_param_counter < param_regs_root.num) {
 				reg_param.add(p);
 				reg_param_root.add(param_regs_root[reg_param_counter ++]);
-				if (config.abi == Abi::AMD64_WINDOWS)
+				if (config.target.abi == Abi::AMD64_WINDOWS)
 					xmm_param_counter ++;
 			} else {
 				stack_param.add(p);
@@ -278,7 +278,7 @@ int BackendAmd64::function_call_pre(const Array<SerialNodeParam> &_params, const
 			if (xmm_param_counter < max_xmm_params) {
 				xmm_param.add(p);
 				xmm_param_reg.add((Asm::RegID)((int)Asm::RegID::XMM0 + (xmm_param_counter ++)));
-				if (config.abi == Abi::AMD64_WINDOWS)
+				if (config.target.abi == Abi::AMD64_WINDOWS)
 					reg_param_counter++;
 			} else {
 				stack_param.add(p);
@@ -291,7 +291,7 @@ int BackendAmd64::function_call_pre(const Array<SerialNodeParam> &_params, const
 	// push parameters onto stack
 	push_size = 8 * stack_param.num;
 	if (stack_param.num > 0) {
-		if (config.abi == Abi::AMD64_WINDOWS) {
+		if (config.target.abi == Abi::AMD64_WINDOWS) {
 			// TODO optimize... don't push, just write into stack
 			push_size += 32;
 		}
@@ -306,7 +306,7 @@ int BackendAmd64::function_call_pre(const Array<SerialNodeParam> &_params, const
 			insert_cmd(Asm::InstID::MOV, param_preg(p.type, get_reg(Asm::RegRoot::A, p.type->size)), p);
 			insert_cmd(Asm::InstID::PUSH, p_rax);
 		}
-		if (config.abi == Abi::AMD64_WINDOWS) {
+		if (config.target.abi == Abi::AMD64_WINDOWS) {
 			push_size -= 32;
 			insert_cmd(Asm::InstID::SUB, param_preg(TypePointer, Asm::RegID::RSP), param_imm(TypeChar, 32));
 		}
@@ -357,7 +357,7 @@ void BackendAmd64::add_function_intro_params(Function *f) {
 	Array<Variable*> param;
 	if (f->effective_return_type->uses_return_by_memory()) {
 		for (Variable *v: weak(f->var))
-			if (v->name == IDENTIFIER_RETURN_VAR) {
+			if (v->name == Identifier::RETURN_VAR) {
 				param.add(v);
 				break;
 			}
@@ -366,7 +366,7 @@ void BackendAmd64::add_function_intro_params(Function *f) {
 	// self: already in params!
 	/*if (!f->is_static()) {
 		for (Variable *v: weak(f->var))
-			if (v->name == IDENTIFIER_SELF) {
+			if (v->name == Identifier::SELF) {
 				param.add(v);
 				break;
 			}
@@ -376,7 +376,7 @@ void BackendAmd64::add_function_intro_params(Function *f) {
 		param.add(f->var[i].get());
 
 	// windows: self before return
-	if ((param.num == 2) and (config.abi == Abi::AMD64_WINDOWS) and param[1]->type->is_some_pointer()) {
+	if ((param.num == 2) and (config.target.abi == Abi::AMD64_WINDOWS) and param[1]->type->is_some_pointer()) {
 		param.swap(0, 1);
 	}
 
@@ -393,7 +393,7 @@ void BackendAmd64::add_function_intro_params(Function *f) {
 			if (reg_param_counter < param_regs_root.num) {
 				reg_param.add(p);
 				reg_param_root.add(param_regs_root[reg_param_counter ++]);
-				if (config.abi == Abi::AMD64_WINDOWS)
+				if (config.target.abi == Abi::AMD64_WINDOWS)
 					xmm_param_counter ++;
 			} else {
 				stack_param.add(p);
@@ -402,7 +402,7 @@ void BackendAmd64::add_function_intro_params(Function *f) {
 			if (xmm_param_counter < max_xmm_params) {
 				xmm_param.add(p);
 				xmm_param_reg.add((Asm::RegID)((int)Asm::RegID::XMM0 + (xmm_param_counter ++)));
-				if (config.abi == Abi::AMD64_WINDOWS)
+				if (config.target.abi == Abi::AMD64_WINDOWS)
 					reg_param_counter ++;
 			} else {
 				stack_param.add(p);
@@ -442,9 +442,9 @@ void BackendAmd64::add_function_intro_params(Function *f) {
 	}
 
 	// get parameters from stack
-	foreachb(Variable *p, stack_param) {
+	foreachb([[maybe_unused]] Variable *p, stack_param) {
 		// variables are already where expect them ([rbp+...])
-		if (config.abi != Abi::AMD64_WINDOWS)
+		if (config.target.abi != Abi::AMD64_WINDOWS)
 			do_error("func with stack...");
 		/*int s = 8;
 		add_cmd(Asm::inst_push, p);
@@ -456,7 +456,7 @@ void BackendAmd64::add_function_intro_params(Function *f) {
 
 // so far not used... x86 also implements both...
 void BackendAmd64::add_function_intro_frame(int stack_alloc_size) {
-	if (config.abi == Abi::AMD64_WINDOWS)
+	if (config.target.abi == Abi::AMD64_WINDOWS)
 		stack_alloc_size += 32; // shadow space
 
 	auto reg_bp = Asm::RegID::RBP;

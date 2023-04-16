@@ -720,7 +720,7 @@ void MultiView::on_draw() {
 
 		nix::set_scissor(nix::target_rect);
 
-		nix::set_shader(nix::Shader::default_2d);
+		nix::set_shader(nix::Shader::default_2d.get());
 		nix::set_texture(nullptr);
 
 		color c2 = scheme.hoverify(scheme.WINDOW_DIVIDER);
@@ -737,7 +737,7 @@ void MultiView::on_draw() {
 	cam_con->draw();
 
 	set_color(scheme.TEXT);
-	nix::set_shader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d.get());
 
 	if (ed->input.inside_smart)
 		draw_mouse_pos();
@@ -772,7 +772,7 @@ void MultiView::SelectionRect::draw(const vec2 &m) {
 	nix::set_texture(nullptr);
 	set_color(scheme.SELECTION_RECT);
 	nix::set_cull(nix::CullMode::NONE);
-	nix::set_shader(nix::Shader::default_2d);
+	nix::set_shader(nix::Shader::default_2d.get());
 	draw_rect(m.x, pos0.x, m.y, pos0.y, 0);
 	nix::set_cull(nix::CullMode::DEFAULT);
 	set_color(scheme.SELECTION_RECT_BOUNDARY);

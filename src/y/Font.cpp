@@ -71,7 +71,7 @@ Font *_cdecl LoadFont(const Path &filename)
 	foreachi(Font *ff, Fonts, i)
 		if (ff->filename  == filename)
 			return ff;
-	auto f = new TextLinesFormatter(os::fs::open(engine.font_dir << filename.with(".xfont"), "rt"));
+	auto f = new TextLinesFormatter(os::fs::open(engine.font_dir | filename.with(".xfont"), "rt"));
 	if (!f)
 		return engine.default_font;
 	//int ffv=f->ReadFileFormatVersion();

@@ -1,7 +1,7 @@
 # created by xmake
 
-project(edward)
 cmake_minimum_required(VERSION 3.21)
+project(edward)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_BUILD_TYPE Debug)
@@ -249,7 +249,7 @@ set(SOURCE
 	src/lib/kaba/compiler/BackendARM.cpp
 	src/lib/kaba/compiler/BackendX86.cpp
 	src/lib/kaba/compiler/CommandList.cpp
-	src/lib/kaba/compiler/compiler.cpp
+	src/lib/kaba/compiler/Compiler.cpp
 	src/lib/kaba/compiler/mapper.cpp
 	src/lib/kaba/compiler/serializer.cpp
 	src/lib/kaba/compiler/SerializerX.cpp
@@ -276,12 +276,12 @@ set(SOURCE
 	src/lib/kaba/lib/list.cpp
 	src/lib/kaba/parser/abstract.cpp
 	src/lib/kaba/parser/Concretifier.cpp
-	src/lib/kaba/parser/implicit.cpp
 	src/lib/kaba/parser/import.cpp
 	src/lib/kaba/parser/lexical.cpp
 	src/lib/kaba/parser/macros.cpp
 	src/lib/kaba/parser/Parser.cpp
-	src/lib/kaba/parser/template.cpp
+	src/lib/kaba/parser/Transformer.cpp
+	src/lib/kaba/parser/type_matching.cpp
 	src/lib/kaba/syntax/Block.cpp
 	src/lib/kaba/syntax/Class.cpp
 	src/lib/kaba/syntax/Constant.cpp
@@ -293,6 +293,17 @@ set(SOURCE
 	src/lib/kaba/syntax/Statement.cpp
 	src/lib/kaba/syntax/SyntaxTree.cpp
 	src/lib/kaba/syntax/Variable.cpp
+	src/lib/kaba/template/implicit.cpp
+	src/lib/kaba/template/implicit_array.cpp
+	src/lib/kaba/template/implicit_callable.cpp
+	src/lib/kaba/template/implicit_dict.cpp
+	src/lib/kaba/template/implicit_enum.cpp
+	src/lib/kaba/template/implicit_list.cpp
+	src/lib/kaba/template/implicit_optional.cpp
+	src/lib/kaba/template/implicit_pointer.cpp
+	src/lib/kaba/template/implicit_product.cpp
+	src/lib/kaba/template/implicit_regular.cpp
+	src/lib/kaba/template/template.cpp
 	src/lib/kaba/CompilerConfiguration.cpp
 	src/lib/kaba/Context.cpp
 	src/lib/kaba/Interpreter.cpp

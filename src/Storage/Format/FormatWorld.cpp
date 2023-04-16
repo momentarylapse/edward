@@ -69,7 +69,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 		try {
 		for (int i=0;i<data->terrains.num;i++) {
 			ed->progress->set(_("Terrains"), (float)i / (float)data->terrains.num / 2.0f);
-			data->terrains[i].load(engine.map_dir << data->terrains[i].filename.with(".map"), true);
+			data->terrains[i].load(engine.map_dir | data->terrains[i].filename.with(".map"), true);
 		}
 		for (int i=0;i<data->objects.num;i++) {
 			//ed->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);

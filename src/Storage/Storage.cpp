@@ -170,7 +170,7 @@ void Storage::auto_save(Data *data, Callback on_success) {
 
 void Storage::guess_root_directory(const Path &filename) {
 	for (auto &d: filename.all_parents())
-		if (os::fs::exists(d << "game.ini")) {
+		if (os::fs::exists(d | "game.ini")) {
 			set_root_directory(d);
 			return;
 		}
@@ -186,14 +186,14 @@ void Storage::set_root_directory(const Path &_directory, bool compact_mode) {
 
 	root_dir = directory;
 
-	compact_mode = !os::fs::exists(root_dir << "game.ini");
+	compact_mode = !os::fs::exists(root_dir | "game.ini");
 
 
 	for (int i=0; i<NUM_FDS; i++) {
 		if (compact_mode)
 			root_dir_kind[i] = root_dir;
 		else
-			root_dir_kind[i] = root_dir << CANONICAL_SUB_DIR[i];
+			root_dir_kind[i] = root_dir | CANONICAL_SUB_DIR[i];
 		last_dir[i] = root_dir_kind[i];
 	}
 
