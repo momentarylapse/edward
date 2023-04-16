@@ -232,6 +232,7 @@ void WorldPropertiesDialog::on_edit_script() {
 void WorldPropertiesDialog::on_create_script() {
 	storage->file_dialog(FD_SCRIPT, true, true, [this] {
 		string source = R""""(use y
+use y.ui
 
 class X extends Controller
 	const PARAMETERS = ""
@@ -251,7 +252,7 @@ class X extends Controller
 	func override on_left_button_down()
 		pass
 
-	func override on_key_down(k: int)
+	func override on_key_down(k: Key)
 		pass
 )"""";
 		os::fs::write_text(storage->dialog_file_complete, source);

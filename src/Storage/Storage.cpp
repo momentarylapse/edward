@@ -293,6 +293,8 @@ void Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bo
 
 
 	auto on_select_base = [on_select, this, kind, force_in_root_dir] (const Path &path) {
+		if (!path)
+			return;
 		dialog_file_kind = FD_FILE;
 		for (auto k: kind) {
 			for (auto &ext: fd_ext(k).explode(","))
