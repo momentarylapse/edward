@@ -367,7 +367,7 @@ void SolidBody::update_mass() {
 		//	colShape->calculateLocalInertia(mass, localInertia);
 		body->setMassProps(_mass, local_inertia);
 	} else {
-		btScalar _mass(0);
+		//btScalar _mass(0);
 		btVector3 local_inertia(0, 0, 0);
 		//body->setMassProps(mass, localInertia);
 	}

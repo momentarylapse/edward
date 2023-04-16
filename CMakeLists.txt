@@ -449,8 +449,10 @@ set(SOURCE
 	src/Stuff/Progress.cpp
 	src/y/components/Animator.cpp
 	src/y/components/Collider.cpp
+	src/y/components/MultiInstance.cpp
 	src/y/components/Skeleton.cpp
 	src/y/components/SolidBody.cpp
+	src/y/components/UserMesh.cpp
 	src/y/BaseClass.cpp
 	src/y/Camera.cpp
 	src/y/Component.cpp

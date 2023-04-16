@@ -69,7 +69,7 @@ Component *Entity::add_component_no_init(const kaba::Class *type, const string &
 }
 
 void Entity::_add_component_external_(Component *c) {
-	ComponentManager::add_to_list(c, ComponentManager::get_component_type_family(c->component_type));
+	ComponentManager::_register(c);
 	components.add(c);
 	c->owner = this;
 	//c->on_init();

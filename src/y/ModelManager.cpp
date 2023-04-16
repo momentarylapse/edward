@@ -175,7 +175,7 @@ public:
 		me = parent;
 	}
 	void read(BinaryFormatter *f) override {
-		int version = f->read_int();
+		[[maybe_unused]] int version = f->read_int();
 		auto sb = me->_template->solid_body;
 
 		f->read_vector(&me->prop.min);
@@ -270,7 +270,7 @@ public:
 		parent->mesh[_model_parser_tria_mesh_count ++] = me;
 	}
 	void read(BinaryFormatter *f) override {
-		int version = f->read_int();
+		[[maybe_unused]] int version = f->read_int();
 		int flags = f->read_int();
 
 		// vertices
@@ -336,7 +336,7 @@ public:
 		parent->_template->mesh_collider->phys = me;
 	}
 	void read(BinaryFormatter *f) override {
-		int version = f->read_int();
+		[[maybe_unused]] int version = f->read_int();
 
 		// vertices
 		int num_vert = f->read_int();
@@ -393,7 +393,7 @@ public:
 		me = parent;
 	}
 	void read(BinaryFormatter *f) override {
-		int version = f->read_int();
+		[[maybe_unused]] int version = f->read_int();
 		auto sk = me->_template->skeleton;
 		int n = f->read_int();
 		sk->bones.resize(n);
@@ -401,7 +401,7 @@ public:
 		sk->dpos.resize(n);
 		sk->pos0.resize(n);
 		sk->filename.resize(n);
-		foreachi (auto &b, sk->bones, i) {
+		foreachi ([[maybe_unused]] auto &b, sk->bones, i) {
 			f->read_vector(&sk->dpos[i]);
 			sk->parents[i] = f->read_int();
 			sk->filename[i] = f->read_str();
@@ -439,7 +439,7 @@ public:
 	}
 	void read(BinaryFormatter *f) override {
 #if 1
-		int version = f->read_int();
+		[[maybe_unused]] int version = f->read_int();
 
 
 		auto meta = new MetaMove;

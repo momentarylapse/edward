@@ -21,6 +21,9 @@
 
 	namespace vulkan {
 		class Texture;
+		class VolumeTexture;
+		class StorageTexture;
+		class CubeMap;
 		class Shader;
 		class VertexBuffer;
 		class FrameBuffer;
@@ -29,7 +32,10 @@
 		class UniformBuffer;
 		enum class Alpha;
 		enum class AlphaMode;
-		class Pipeline;
+		enum class CullMode;
+		class GraphicsPipeline;
+		class ComputePipeline;
+		class RayPipeline;
 		class DescriptorSet;
 		class RenderPass;
 		class CommandBuffer;
@@ -37,6 +43,8 @@
 		class Fence;
 		class SwapChain;
 		class DescriptorPool;
+		class Device;
+		class AccelerationStructure;
 	}
 
 	using Texture = vulkan::Texture;
@@ -44,16 +52,20 @@
 	using VertexBuffer = vulkan::VertexBuffer;
 	using FrameBuffer = vulkan::FrameBuffer;
 	using DepthBuffer = vulkan::DepthBuffer;
-	using CubeMap = vulkan::Texture; // TODO
+	using CubeMap = vulkan::CubeMap;
+	using VolumeTexture = vulkan::VolumeTexture;
 	using Buffer = vulkan::Buffer;
 	using UniformBuffer = vulkan::UniformBuffer;
-	using Pipeline = vulkan::Pipeline;
+	using GraphicsPipeline = vulkan::GraphicsPipeline;
+	using ComputePipeline = vulkan::ComputePipeline;
+	using RayPipeline = vulkan::RayPipeline;
 	using CommandBuffer = vulkan::CommandBuffer;
 	using DescriptorSet = vulkan::DescriptorSet;
 	using RenderPass = vulkan::RenderPass;
 
 	using Alpha = vulkan::Alpha;
 	using AlphaMode = vulkan::AlphaMode;
+	using CullMode = vulkan::CullMode;
 
 #endif
 #ifdef USING_OPENGL
@@ -67,6 +79,7 @@
 		class FrameBuffer;
 		class DepthBuffer;
 		class CubeMap;
+		class VolumeTexture;
 		class Buffer;
 		class UniformBuffer;
 		enum class Alpha;
@@ -79,6 +92,7 @@
 	using FrameBuffer = nix::FrameBuffer;
 	using DepthBuffer = nix::DepthBuffer;
 	using CubeMap = nix::CubeMap;
+	using VolumeTexture = nix::VolumeTexture;
 	using Buffer = nix::Buffer;
 	using UniformBuffer = nix::UniformBuffer;
 
@@ -86,3 +100,9 @@
 	using AlphaMode = nix::AlphaMode;
 
 #endif
+
+enum class PrimitiveTopology {
+	TRIANGLES,
+	LINES,
+	POINTS
+};

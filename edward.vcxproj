@@ -559,8 +559,10 @@
     <ClCompile Include="src\Stuff\Progress.cpp" />
     <ClCompile Include="src\y\components\Animator.cpp" />
     <ClCompile Include="src\y\components\Collider.cpp" />
+    <ClCompile Include="src\y\components\MultiInstance.cpp" />
     <ClCompile Include="src\y\components\Skeleton.cpp" />
     <ClCompile Include="src\y\components\SolidBody.cpp" />
+    <ClCompile Include="src\y\components\UserMesh.cpp" />
     <ClCompile Include="src\y\BaseClass.cpp" />
     <ClCompile Include="src\y\Camera.cpp" />
     <ClCompile Include="src\y\Component.cpp" />
@@ -997,8 +999,10 @@
     <ClInclude Include="src\Stuff\Progress.h" />
     <ClInclude Include="src\y\components\Animator.h" />
     <ClInclude Include="src\y\components\Collider.h" />
+    <ClInclude Include="src\y\components\MultiInstance.h" />
     <ClInclude Include="src\y\components\Skeleton.h" />
     <ClInclude Include="src\y\components\SolidBody.h" />
+    <ClInclude Include="src\y\components\UserMesh.h" />
     <ClInclude Include="src\y\BaseClass.h" />
     <ClInclude Include="src\y\Camera.h" />
     <ClInclude Include="src\y\Component.h" />

@@ -170,6 +170,7 @@ Material *LoadMaterial(const Path &filename) {
 	for (auto &f: texture_files)
 		m->textures.add(ResourceManager::load_texture(f));
 	m->shader_path = c.get_str("shader", "");
+	m->cast_shadow = c.get_bool("shadow.cast", true);
 
 	m->friction._static = c.get_float("friction.static", 0.5f);
 	m->friction.sliding = c.get_float("friction.slide", 0.5f);
@@ -199,7 +200,7 @@ Material *LoadMaterial(const Path &filename) {
 	if (mode == "static") {
 		m->reflection.mode = ReflectionMode::CUBE_MAP_STATIC;
 		texture_files = c.get_str_array("reflection.cubemap");
-		Array<Texture*> cmt;
+		shared_array<Texture> cmt;
 		for (auto &f: texture_files)
 			cmt.add(ResourceManager::load_texture(f));
 		m->reflection.density = c.get_float("reflection.density", 1);
@@ -245,4 +246,13 @@ Shader *Material::get_shader(RenderPathType render_path_type, ShaderVariant v) {
 	int i = shader_index(render_path_type, v);
 	_prepare_shader(render_path_type, v);
 	return shader[i].get();
+}
+
+bool Material::is_transparent() const {
+	//!alpha.z_buffer; //false;
+	if (alpha.mode == TransparencyMode::FUNCTIONS)
+		return true;
+	if (alpha.mode == TransparencyMode::FACTOR)
+		return true;
+	return false;
 }

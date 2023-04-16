@@ -1330,10 +1330,16 @@
     <ClCompile Include="src\y\components\Collider.cpp">
       <Filter>src\y\components</Filter>
     </ClCompile>
+    <ClCompile Include="src\y\components\MultiInstance.cpp">
+      <Filter>src\y\components</Filter>
+    </ClCompile>
     <ClCompile Include="src\y\components\Skeleton.cpp">
       <Filter>src\y\components</Filter>
     </ClCompile>
     <ClCompile Include="src\y\components\SolidBody.cpp">
+      <Filter>src\y\components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\components\UserMesh.cpp">
       <Filter>src\y\components</Filter>
     </ClCompile>
     <ClCompile Include="src\y\BaseClass.cpp">
@@ -2640,10 +2646,16 @@
     <ClInclude Include="src\y\components\Collider.h">
       <Filter>src\y\components</Filter>
     </ClInclude>
+    <ClInclude Include="src\y\components\MultiInstance.h">
+      <Filter>src\y\components</Filter>
+    </ClInclude>
     <ClInclude Include="src\y\components\Skeleton.h">
       <Filter>src\y\components</Filter>
     </ClInclude>
     <ClInclude Include="src\y\components\SolidBody.h">
+      <Filter>src\y\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\components\UserMesh.h">
       <Filter>src\y\components</Filter>
     </ClInclude>
     <ClInclude Include="src\y\BaseClass.h">

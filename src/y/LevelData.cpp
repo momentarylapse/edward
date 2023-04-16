@@ -199,6 +199,7 @@ bool LevelData::load(const Path &filename) {
 }
 
 
+#if 0
 static string v2s(const vec3 &v) {
 	return format("%.3f %.3f %.3f", v.x, v.y, v.z);
 }
@@ -207,6 +208,7 @@ static string v2s(const vec3 &v) {
 static string c2s(const color &c) {
 	return format("%.3f %.3f %.3f %.3f", c.r, c.g, c.b, c.a);
 }
+#endif
 
 string phys_mode_name(PhysicsMode m) {
 	if (m == PhysicsMode::SIMPLE)

@@ -74,7 +74,7 @@ void Animator::on_init() {
 
 
 void Animator::do_animation(float elapsed) {
-	auto m = owner->get_component<Model>();
+	[[maybe_unused]] auto m = owner->get_component<Model>();
 	auto sk = owner->get_component<Skeleton>();
 
 	// recursion
@@ -99,7 +99,7 @@ void Animator::do_animation(float elapsed) {
 
 // vertex animation
 
-	bool vertex_animated = false;
+	[[maybe_unused]] bool vertex_animated = false;
 	for (int op=0;op<num_ops;op++){
 		if (operation[op].move < 0)
 			continue;
@@ -110,13 +110,13 @@ void Animator::do_animation(float elapsed) {
 
 
 		if (m->type == AnimationType::VERTEX){
-			vertex_animated=true;
+			vertex_animated = true;
 
 			// frame data
-			int fr=(int)(operation[op].time); // current frame (relative)
-			float dt = operation[op].time-(float)fr;
-			int f1 = m->frame0 + fr; // current frame (absolute)
-			int f2 = m->frame0 + (fr+1)%m->num_frames; // next frame (absolute)
+			[[maybe_unused]] int fr = (int)(operation[op].time); // current frame (relative)
+			[[maybe_unused]] float dt = operation[op].time - (float)fr;
+			[[maybe_unused]] int f1 = m->frame0 + fr; // current frame (absolute)
+			[[maybe_unused]] int f2 = m->frame0 + (fr+1)%m->num_frames; // next frame (absolute)
 
 		}
 	}

@@ -91,6 +91,8 @@ public:
 	Material();
 	~Material();
 	Material *copy();
+
+	bool is_transparent() const;
 };
 
 

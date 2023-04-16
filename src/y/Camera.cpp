@@ -88,7 +88,7 @@ void Camera::__delete__() {
 
 
 void CameraCalcMove(float dt) {
-	auto cameras = ComponentManager::get_listx<Camera>();
+	auto cameras = ComponentManager::get_list_family<Camera>();
 	for (auto c: *cameras){
 		if (!c->enabled)
 			continue;
@@ -139,7 +139,7 @@ vec3 Camera::unproject(const vec3 &v) {
 }
 
 void CameraShiftAll(const vec3 &dpos) {
-	auto cameras = ComponentManager::get_listx<Camera>();
+	auto cameras = ComponentManager::get_list_family<Camera>();
 	for (auto c: *cameras)
 		c->owner->pos += dpos;
 }

@@ -12,6 +12,14 @@
 #include "../y/EngineData.h"
 #include "../graphics-impl.h"
 
+#if __has_include("../world/Material.h")
+	#include "../world/components/UserMesh.h"
+	#include "../world/Material.h"
+#else
+	#include "components/UserMesh.h"
+	#include "Material.h"
+#endif
+
 
 Path ResourceManager::shader_dir;
 Path ResourceManager::texture_dir;
@@ -137,6 +145,7 @@ Shader* ResourceManager::load_surface_shader(const Path& _filename, const string
 	if (geo != "")
 		source = expand_geometry_shader_source(source, geo);
 	source = expand_fragment_shader_source(source, render_path);
+
 	auto shader = Shader::create(source);
 
 	//auto s = Shader::load(fn);
@@ -154,7 +163,7 @@ Shader* ResourceManager::load_surface_shader(const Path& _filename, const string
 
 
 	shaders.add(shader);
-	shader_map.add({filename, shader});
+	shader_map.add({fnx, shader});
 	return shader;
 }
 
@@ -162,7 +171,7 @@ Shader* ResourceManager::create_shader(const string &source) {
 	return Shader::create(source);
 }
 
-Texture* ResourceManager::load_texture(const Path& filename) {
+shared<Texture> ResourceManager::load_texture(const Path& filename) {
 	if (filename.is_empty())
 		return nullptr;
 
@@ -205,5 +214,25 @@ void ResourceManager::clear() {
 	shader_map.clear();
 	textures.clear();
 	texture_map.clear();
+}
+
+
+
+Shader *user_mesh_shader(UserMesh *m, RenderPathType type) {
+	if (!m->shader_cache[(int)type - 1]) {
+		static const string RENDER_PATH_NAME[3] = {"", "forward", "deferred"};
+		const string &rpt = RENDER_PATH_NAME[(int)type];
+		m->shader_cache[(int)type - 1] = ResourceManager::load_surface_shader(m->material->shader_path, rpt, m->vertex_shader_module, m->geometry_shader_module);
+	}
+	return m->shader_cache[(int)type - 1];
+}
+
+Shader *user_mesh_shadow_shader(UserMesh *m, Material *mat, RenderPathType type) {
+	if (!m->shader_cache_shadow[(int)type - 1]) {
+		static const string RENDER_PATH_NAME[3] = {"", "forward", "deferred"};
+		const string &rpt = RENDER_PATH_NAME[(int)type];
+		m->shader_cache_shadow[(int)type - 1] = ResourceManager::load_surface_shader(mat->shader_path, rpt, m->vertex_shader_module, m->geometry_shader_module);
+	}
+	return m->shader_cache_shadow[(int)type - 1];
 }
 

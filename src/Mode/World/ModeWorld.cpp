@@ -437,7 +437,7 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 		// prepare...
 		t.terrain->prepare_draw(multi_view->cam.pos - t.pos);
 		auto mat = t.terrain->material;
-		auto s = nix::Shader::load("");
+		auto s = nix::Shader::default_3d.get();
 		try {
 			mat->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
 			s = mat->shader[0].get();
@@ -467,7 +467,7 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 void draw_model(MultiView::Window *win, Model *m, int num_lights) {
 	for (int i=0;i<m->material.num;i++) {
 		auto mat = m->material[i];
-		auto s = nix::Shader::load("");
+		auto s = nix::Shader::default_3d.get();
 		try {
 			mat->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
 			s = mat->shader[0].get();

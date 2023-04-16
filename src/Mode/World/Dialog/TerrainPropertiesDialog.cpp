@@ -74,7 +74,7 @@ void TerrainPropertiesDialog::fill_texture_list() {
 
 	reset("textures");
 	for (int i=0;i<temp.num_textures;i++) {
-		nix::Texture *tex = nullptr;
+		shared<nix::Texture> tex;
 		if (!temp.texture_file[i].is_empty()) {
 			try {
 				tex = ResourceManager::load_texture(temp.texture_file[i]);
@@ -83,8 +83,8 @@ void TerrainPropertiesDialog::fill_texture_list() {
 		}
 		if (!tex)
 			if (i < m->textures.num)
-				tex = m->textures[i].get();
-		string img = ed->get_tex_image(tex);
+				tex = m->textures[i];
+		string img = ed->get_tex_image(tex.get());
 		add_string("textures", format("%d\\%.5f\\%.5f\\%s\\%s", i, temp.texture_scale[i].x, temp.texture_scale[i].z, img, file_secure(temp.texture_file[i])));
 	}
 	enable("delete_texture_level", false);

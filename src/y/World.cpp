@@ -30,6 +30,7 @@
 #include "components/Collider.h"
 #include "components/Animator.h"
 #include "components/Skeleton.h"
+#include "components/MultiInstance.h"
 
 #ifdef _X_ALLOW_X_
 #include "Light.h"
@@ -292,7 +293,7 @@ void add_components(Entity *ent, const Array<LevelData::ScriptData> &components)
 		msg_write("add component " + cc.class_name);
 #ifdef _X_ALLOW_X_
 		auto type = PluginManager::find_class(cc.filename, cc.class_name);
-		auto comp = ent->add_component(type, cc.var);
+		[[maybe_unused]] auto comp = ent->add_component(type, cc.var);
 #endif
 	}
 }
@@ -342,7 +343,7 @@ bool World::load(const LevelData &ld) {
 
 		add_components(cam_main->owner, c.components);
 	}
-	auto cameras = ComponentManager::get_listx<Camera>();
+	auto cameras = ComponentManager::get_list_family<Camera>();
 	if (cameras->num == 0) {
 		msg_error("no camera defined... creating one");
 		cam_main = add_camera(v_0, quaternion::ID, rect::ID);
@@ -409,7 +410,7 @@ Terrain *World::create_terrain_no_reg(const Path &filename, const vec3 &pos) {
 	auto t = (Terrain*)o->add_component(Terrain::_class, "");
 	t->load(filename);
 
-	auto col = (TerrainCollider*)o->add_component(TerrainCollider::_class, "");
+	[[maybe_unused]] auto col = (TerrainCollider*)o->add_component(TerrainCollider::_class, "");
 
 	auto sb = (SolidBody*)o->add_component(SolidBody::_class, "");
 	sb->mass = 10000.0f;
@@ -437,7 +438,7 @@ Entity *World::create_entity(const vec3 &pos, const quaternion &ang) {
 }
 
 void World::register_entity(Entity *e) {
-	if (auto m = e->get_component<Model>())
+	if ([[maybe_unused]] auto m = e->get_component<Model>())
 		register_object(e);
 
 #ifdef _X_ALLOW_X_
@@ -478,65 +479,67 @@ Entity *World::create_object_no_reg_x(const Path &filename, const string &name, 
 	if (filename.is_empty())
 		throw Exception("create_object: empty filename");
 
-	auto o = create_entity(pos, ang);
+	auto e = create_entity(pos, ang);
 
 	//msg_write(on);
 	auto *m = ModelManager::load(filename);
 	m->script_data.name = name;
 
-	o->_add_component_external_(m);
+	e->_add_component_external_(m);
 	m->update_matrix();
 
 
 	// automatic components
 	if (m->_template->solid_body) {
-		auto col = (MeshCollider*)o->add_component(MeshCollider::_class, "");
-		auto sb = (SolidBody*)o->add_component(SolidBody::_class, "");
+		[[maybe_unused]] auto col = (MeshCollider*)e->add_component(MeshCollider::_class, "");
+		[[maybe_unused]] auto sb = (SolidBody*)e->add_component(SolidBody::_class, "");
 	}
 
 	if (m->_template->skeleton)
-		o->add_component(Skeleton::_class, "");
+		e->add_component(Skeleton::_class, "");
 
 	if (m->_template->animator)
-		o->add_component(Animator::_class, "");
+		e->add_component(Animator::_class, "");
 
-	return o;
+	return e;
 }
 
-Object* World::create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang) {
+Entity* World::create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang) {
 
+	auto e = create_entity(vec3::ZERO, quaternion::ID);
+	auto mi = (MultiInstance*)e->add_component(MultiInstance::_class, "");
 
-	//msg_write(on);
-	auto *o = static_cast<Object*>(ModelManager::load(filename));
+	auto *m = ModelManager::load(filename);
+	e->_add_component_external_(m);
+	mi->model = m;
 
-	Array<mat4> matrices;
-	for (int i=0; i<pos.num; i++) {
-		matrices.add(mat4::translation(pos[i]) * mat4::rotation(ang[i]));
-	}
-	register_model_multi(o, matrices);
+	for (int i=0; i<pos.num; i++)
+		mi->matrices.add(mat4::translation(pos[i]) * mat4::rotation(ang[i]));
 
-	return o;
+	register_model_multi(mi);
+
+	return e;
 }
 
-void World::register_model_multi(Model *m, const Array<mat4> &matrices) {
+void World::register_model_multi(MultiInstance *mi) {
 
-	if (m->registered)
+	if (mi->model->registered)
 		return;
 
-	for (int i=0;i<m->material.num;i++){
-		Material *mat = m->material[i];
+	for (int i=0; i<mi->model->material.num; i++){
+		Material *mat = mi->model->material[i];
 
 		PartialModelMulti p;
-		p.model = m;
+		p.instance = mi;
+		p.model = mi->model;
 		p.material = mat;
-		p.matrices = matrices;
 		p.mat_index = i;
 		p.transparent = false;
 		p.shadow = false;
 		sorted_multi.add(p);
 	}
 
-	m->registered = true;
+	mi->model->registered = true;
 }
 
 void World::request_next_object_index(int i) {
@@ -650,6 +653,30 @@ void World::unregister_entity(Entity *e) {
 		}
 }
 
+void World::delete_entity(Entity *e) {
+	unregister_entity(e);
+	e->on_delete_rec();
+	delete e;
+}
+
+void World::delete_particle(Particle *p) {
+#ifdef _X_ALLOW_X_
+	particle_manager->_delete(p);
+#endif
+}
+
+void World::delete_sound(audio::Sound *s) {
+#ifdef _X_ALLOW_X_
+	if (unregister(s))
+		delete s;
+#endif
+}
+
+void World::delete_link(Link *l) {
+	if (unregister(l))
+		delete l;
+}
+
 bool World::unregister(BaseClass* x) {
 	//msg_error("World.unregister  " + i2s((int)x->type));
 	if (x->type == BaseClass::Type::ENTITY) {
@@ -702,19 +729,14 @@ void World::register_model(Model *m) {
 
 	for (int i=0;i<m->material.num;i++) {
 		Material *mat = m->material[i];
-		bool trans = false;//!mat->alpha.z_buffer; //false;
-		if (mat->alpha.mode == TransparencyMode::FUNCTIONS)
-			trans = true;
-		if (mat->alpha.mode == TransparencyMode::FACTOR)
-			trans = true;
 
 		PartialModel p;
 		p.model = m;
 		p.material = mat;
 		p.mat_index = i;
-		p.transparent = trans;
+		p.transparent = mat->is_transparent();
 		p.shadow = false;
-		if (trans)
+		if (p.transparent)
 			sorted_trans.add(p);
 		else
 			sorted_opaque.add(p);
@@ -781,7 +803,7 @@ void World::unregister_model(Model *m) {
 }
 
 void World::iterate_physics(float dt) {
-	auto list = ComponentManager::get_listx<SolidBody>();
+	auto list = ComponentManager::get_list_family<SolidBody>();
 
 	if (physics_mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
@@ -805,16 +827,16 @@ void World::iterate_physics(float dt) {
 void World::iterate_animations(float dt) {
 #ifdef _X_ALLOW_X_
 	PerformanceMonitor::begin(ch_animation);
-	auto list = ComponentManager::get_listx<Animator>();
+	auto list = ComponentManager::get_list_family<Animator>();
 	for (auto *o: *list)
 		o->do_animation(dt);
 
 
 	// TODO
-	auto list2 = ComponentManager::get_listx<Skeleton>();
+	auto list2 = ComponentManager::get_list_family<Skeleton>();
 	for (auto *o: *list2) {
 		for (auto &b: o->bones) {
-			if (auto *mm = b.get_component<Model>()) {
+			if ([[maybe_unused]] auto *mm = b.get_component<Model>()) {
 //				b.dmatrix = matrix::translation(b.cur_pos) * matrix::rotation(b.cur_ang);
 //				mm->_matrix = o->get_owner<Entity3D>()->get_matrix() * b.dmatrix;
 			}
@@ -892,10 +914,11 @@ Light *World::add_light_cone(const vec3 &pos, const quaternion &ang, const color
 #endif
 }
 
-void World::add_particle(Particle *p) {
+Particle* World::add_particle(xfer<Particle> p) {
 #ifdef _X_ALLOW_X_
 	particle_manager->add(p);
 #endif
+	return p;
 }
 
 void World::add_sound(audio::Sound *s) {
@@ -909,7 +932,7 @@ void World::shift_all(const vec3 &dpos) {
 		//if (auto m = e->get_component<Model>())
 		//	m->update_matrix();
 	}
-	auto list = ComponentManager::get_listx<Model>();
+	auto list = ComponentManager::get_list_family<Model>();
 	for (auto *m: *list)
 		m->update_matrix();
 #ifdef _X_ALLOW_X_

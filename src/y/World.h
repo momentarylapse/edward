@@ -11,6 +11,7 @@
 
 
 #include "../lib/base/base.h"
+#include "../lib/base/pointer.h"
 #include "../lib/base/callable.h"
 #include "../lib/os/path.h"
 #include "../lib/image/color.h"
@@ -22,6 +23,7 @@ class Object;
 class Material;
 class Terrain;
 class SolidBody;
+class MultiInstance;
 class Entity;
 class TemplateDataScriptVariable;
 class Light;
@@ -62,8 +64,8 @@ struct PartialModel {
 
 struct PartialModelMulti {
 	Model *model;
+	MultiInstance *instance;
 	Material *material;
-	Array<mat4> matrices;
 	int mat_index;
 	float d;
 	bool shadow, transparent;
@@ -107,7 +109,7 @@ public:
 	Terrain *create_terrain(const Path &filename, const vec3 &pos);
 	Terrain *create_terrain_no_reg(const Path &filename, const vec3 &pos);
 
-	Object* create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang);
+	Entity* create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang);
 
 	int next_object_index = -1;
 	void request_next_object_index(int i);
@@ -117,11 +119,15 @@ public:
 	void set_active_physics(Entity *o, bool active, bool passive);//, bool test_collisions);
 
 	bool unregister(BaseClass *o);
+	void delete_entity(Entity *e);
+	void delete_particle(Particle *p);
+	void delete_sound(audio::Sound *s);
+	void delete_link(Link *l);
 
 	void register_model(Model *m);
 	void unregister_model(Model *m);
 
-	void register_model_multi(Model *m, const Array<mat4> &matrices);
+	void register_model_multi(MultiInstance *mi);
 
 	void add_link(Link *l);
 
@@ -136,7 +142,7 @@ public:
 	Light *add_light_cone(const vec3 &p, const quaternion &ang, const color &c, float r, float t);
 
 	ParticleManager *particle_manager;
-	void add_particle(Particle *p);
+	Particle *add_particle(xfer<Particle> p);
 
 	void iterate(float dt);
 	void iterate_physics(float dt);

@@ -23,14 +23,20 @@ public:
 
 	static Component *create_component(const kaba::Class *type, const string &var);
 	static void delete_component(Component *c);
-	static List *get_list(const kaba::Class *type_family);
+	static List *_get_list_family(const kaba::Class *type_family);
+	static List *_get_list(const kaba::Class *type);
 
 	template<class C>
-	static Array<C*> *get_listx() {
-		return (Array<C*>*) get_list(C::_class);
+	static Array<C*> *get_list() {
+		return (Array<C*>*) _get_list(C::_class);
 	}
 
-	static void add_to_list(Component *c, const kaba::Class *type_family);
+	template<class C>
+	static Array<C*> *get_list_family() {
+		return (Array<C*>*) _get_list_family(C::_class);
+	}
+
+	static void _register(Component *c);
 
 	static const kaba::Class *get_component_type_family(const kaba::Class *type);
 

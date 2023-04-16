@@ -395,7 +395,7 @@ bool Terrain::trace(const vec3 &p1, const vec3 &p2, const vec3 &dir, float range
 		pr2 -= o->pos;
 		pos = o->pos;
 	}
-	float dmin = range + 1;
+	[[maybe_unused]] float dmin = range + 1;
 	vec3 c;
 
 	if ((p2.x==p1.x) and (p2.z==p1.z) and (p2.y<p1.y)){
@@ -538,7 +538,7 @@ void Terrain::build_vertex_buffer() {
 
 					// right border correction
 					if (x==x0+TERRAIN_CHUNK_SIZE-e and x1<nx-1) {
-						int ll = chunk_lod[x1+1][z1];
+						[[maybe_unused]] int ll = chunk_lod[x1+1][z1];
 						int p = 1 << l;
 						if (p>0 and e<p) {
 							int a0=p*int(z/p);

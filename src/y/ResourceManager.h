@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../graphics-fwd.h"
+#include "../lib/base/pointer.h"
 
 
 class string;
@@ -8,7 +9,7 @@ class Path;
 
 class ResourceManager {
 public:
-	static Texture *load_texture(const Path& path);
+	static shared<Texture> load_texture(const Path& path);
 	static Shader *load_shader(const Path& path);
 	static Shader *create_shader(const string &source);
 	static Shader *load_surface_shader(const Path& path, const string &render_path, const string &variant, const string &geo);
@@ -20,4 +21,12 @@ public:
 	static Path default_shader;
 	static void clear();
 };
+
+
+class UserMesh;
+class Material;
+enum class RenderPathType;
+
+Shader *user_mesh_shader(UserMesh *m, RenderPathType type);
+Shader *user_mesh_shadow_shader(UserMesh *m, Material *mat, RenderPathType type);
 

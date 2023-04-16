@@ -41,7 +41,8 @@ public:
 	}
 };
 
-base::map<const kaba::Class*, ComponentListX> component_lists;
+base::map<const kaba::Class*, ComponentListX> component_lists_by_type;
+base::map<const kaba::Class*, ComponentListX> component_lists_by_family;
 
 bool class_func_did_override(const kaba::Class *type, const string &fname) {
 #ifdef _X_ALLOW_X_
@@ -52,9 +53,25 @@ bool class_func_did_override(const kaba::Class *type, const string &fname) {
 	return false;
 }
 
-ComponentListX *get_list_x(const kaba::Class *type_family) {
-	if (component_lists.find(type_family) >= 0) {
-		return &component_lists[type_family];
+ComponentListX *_get_list_x(const kaba::Class *type) {
+	if (component_lists_by_type.find(type) >= 0) {
+		return &component_lists_by_type[type];
+	} else {
+		ComponentListX list;
+		list.type_family = type;
+		list.needs_update = class_func_did_override(type, "on_iterate");
+#ifdef _X_ALLOW_X_
+		if (list.needs_update)
+			list.ch_iterate = PerformanceMonitor::create_channel(type->long_name(), ch_component);
+#endif
+		component_lists_by_type.set(type, list);
+		return &component_lists_by_type[type];
+	}
+}
+
+ComponentListX *_get_list_x_family(const kaba::Class *type_family) {
+	if (component_lists_by_family.find(type_family) >= 0) {
+		return &component_lists_by_family[type_family];
 	} else {
 		ComponentListX list;
 		list.type_family = type_family;
@@ -63,8 +80,8 @@ ComponentListX *get_list_x(const kaba::Class *type_family) {
 		if (list.needs_update)
 			list.ch_iterate = PerformanceMonitor::create_channel(type_family->long_name(), ch_component);
 #endif
-		component_lists.set(type_family, list);
-		return &component_lists[type_family];
+		component_lists_by_family.set(type_family, list);
+		return &component_lists_by_family[type_family];
 	}
 }
 
@@ -75,8 +92,12 @@ void ComponentManager::init() {
 }
 
 
-void ComponentManager::add_to_list(Component *c, const kaba::Class *type_family) {
-	auto l = get_list_x(type_family);
+void ComponentManager::_register(Component *c) {
+	auto l = _get_list(c->component_type);
+	l->add(c);
+
+	auto family = get_component_type_family(c->component_type);
+	l = _get_list_family(family);
 	l->add(c);
 }
 
@@ -100,8 +121,7 @@ Component *ComponentManager::create_component(const kaba::Class *type, const str
 	//Component *c = nullptr;
 	auto c = (Component*)PluginManager::create_instance(type, var);
 	c->component_type = type;
-	auto type_family = get_component_type_family(type);
-	add_to_list(c, type_family);
+	_register(c);
 	return c;
 #else
 	return nullptr;
@@ -109,22 +129,28 @@ Component *ComponentManager::create_component(const kaba::Class *type, const str
 }
 
 void ComponentManager::delete_component(Component *c) {
+	auto list = _get_list_x(c->component_type);
+	list->remove(c);
 	auto type_family = get_component_type_family(c->component_type);
-	auto list = get_list_x(type_family);
+	list = _get_list_x_family(type_family);
 	list->remove(c);
 	delete c;
 }
 
 
-ComponentManager::List *ComponentManager::get_list(const kaba::Class *type_family) {
-	return &get_list_x(type_family)->list;
+ComponentManager::List *ComponentManager::_get_list(const kaba::Class *type) {
+	return &_get_list_x(type)->list;
+}
+
+ComponentManager::List *ComponentManager::_get_list_family(const kaba::Class *type_family) {
+	return &_get_list_x_family(type_family)->list;
 }
 
 void ComponentManager::iterate(float dt) {
 #ifdef _X_ALLOW_X_
 	PerformanceMonitor::begin(ch_component);
 #endif
-	for (auto &l: component_lists)
+	for (auto &l: component_lists_by_type)
 		if (l.value.needs_update) {
 #ifdef _X_ALLOW_X_
 			PerformanceMonitor::begin(l.value.ch_iterate);
