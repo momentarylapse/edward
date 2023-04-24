@@ -34,8 +34,7 @@ const bool LIST_SHOW_SCRIPTS = false;
 const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
 
 
-
-shared<const kaba::Class> get_class(shared<kaba::Module> s, const string &parent);
+void update_script_data(ScriptInstanceData &s, const string &class_base_name);
 
 
 WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
@@ -119,10 +118,13 @@ void WorldObjectListPanel::on_component_edit_variables() {
 	if (row < 0 or row >= o.components.num)
 		return;
 
-	WorldObject oo = o;
-	auto &com = oo.components[row];
-	auto dlg = new ScriptVarsDialog(win, &com);
-	hui::fly(dlg, [] {});
+	auto com = &o.components[row];
+	update_script_data(*com, "Component");
+	auto dlg = new ScriptVarsDialog(win, com);
+	hui::fly(dlg, [com] {
+		for (auto v: com->variables)
+			msg_write(v.name + " " + v.value);
+	});
 
 	//auto a = new ActionWorldEditObject(ii.index, oo);
 	//data->execute(a);

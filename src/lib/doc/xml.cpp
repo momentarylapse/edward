@@ -97,6 +97,8 @@ Element::Element(const string &_tag, const string &_text) {
 }
 
 void Element::add_attribute(const string &key, const string &value) {
+	if (value == "")
+		return;
 	Attribute a;
 	a.key = key;
 	a.value = value;

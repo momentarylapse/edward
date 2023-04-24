@@ -173,18 +173,24 @@ void WorldPropertiesDialog::on_script_remove() {
 
 shared<const kaba::Class> get_class(shared<kaba::Module> s, const string &parent);
 
-void update_script_data(WorldScript &s) {
+void update_script_data(ScriptInstanceData &s, const string &class_base_name) {
 	s.class_name = "";
 	try {
 		auto context = ownify(kaba::Context::create());
 		auto ss = context->load_module(s.filename, true);
 
-		auto t = get_class(ss, "*.Controller");
+		auto t = get_class(ss, "*." + class_base_name);
 
 		Array<string> wanted;
-		for (auto c: t->constants)
-			if (c->name == "PARAMETERS" and c->type == kaba::TypeString)
-				wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
+		auto tt = t;
+		while (tt) {
+			for (auto c: tt->constants)
+				if (c->name == "PARAMETERS" and c->type == kaba::TypeString) {
+					wanted = c->as_string().lower().replace("_", "").replace("\n", "").explode(",");
+					break;
+				}
+			tt = tt->parent;
+		}
 
 		s.class_name = t->cname(t->owner->base_class);
 		for (auto &e: t->elements) {
@@ -215,7 +221,7 @@ void update_script_data(WorldScript &s) {
 void WorldPropertiesDialog::on_edit_script_vars() {
 	int n = get_int("script_list");
 	if (n >= 0) {
-		update_script_data(temp.scripts[n]);
+		update_script_data(temp.scripts[n], "Controller");
 		hui::fly(new ScriptVarsDialog(this, &temp.scripts[n]));
 	}
 }
@@ -235,7 +241,7 @@ void WorldPropertiesDialog::on_create_script() {
 use y.ui
 
 class X extends Controller
-	const PARAMETERS = ""
+	let PARAMETERS = ""
 
 	func override on_init()
 		pass

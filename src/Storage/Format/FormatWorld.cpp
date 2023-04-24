@@ -53,6 +53,33 @@ static color s2c(const string &s) {
 	return White;
 }
 
+// script vars
+string vars2str(const Array<WorldScriptVariable>& vars) {
+	string s;
+	for (auto &v: vars) {
+		if (v.value == "")
+			continue;
+		if (s != "")
+			s += ", ";
+		s += v.name + ":" + v.value;
+	}
+	return s;
+}
+
+Array<WorldScriptVariable> str2vars(const string& s) {
+	Array<WorldScriptVariable> vars;
+	for (auto &x: s.explode(",")) {
+		auto xx = x.explode(":");
+		if (xx.num != 2)
+			continue;
+		WorldScriptVariable v;
+		v.name = xx[0].trim();
+		v.value = xx[1].trim();
+		vars.add(v);
+	}
+	return vars;
+}
+
 void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	data->reset();
 
@@ -187,6 +214,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 						ScriptInstanceData sd;
 						sd.filename = ee.value("script", "");
 						sd.class_name = ee.value("class", "");
+						sd.variables = str2vars(ee.value("var", ""));
 						t.components.add(sd);
 					}
 				data->terrains.add(t);
@@ -203,6 +231,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 						ScriptInstanceData sd;
 						sd.filename = ee.value("script", "");
 						sd.class_name = ee.value("class", "");
+						sd.variables = str2vars(ee.value("var", ""));
 						o.components.add(sd);
 					}
 				if (e.value("role") == "ego")
@@ -471,7 +500,8 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		for (auto &c: o.components)
 			e.add(xml::Element("component")
 				.witha("script", c.filename.str())
-				.witha("class", c.class_name));
+				.witha("class", c.class_name)
+				.witha("var", vars2str(c.variables)));
 		//if (!o.script.is_empty() and o.script != o.object->_template->script_filename)
 		//	e.add_attribute("script", o.script.str());
 		if (i == data->EgoIndex)
@@ -491,7 +521,8 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		for (auto &c: l.components)
 			e.add(xml::Element("component")
 				.witha("script", c.filename.str())
-				.witha("class", c.class_name));
+				.witha("class", c.class_name)
+				.witha("var", vars2str(c.variables)));
 		cont.add(e);
 	}
 	w.add(cont);
