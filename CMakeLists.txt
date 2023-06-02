@@ -572,7 +572,7 @@ install(FILES "static/icon.svg" DESTINATION share/edward)
 install(FILES "static/keys.txt" DESTINATION share/edward)
 install(FILES "static/license.txt" DESTINATION share/edward)
 install(FILES "static/license_small.txt" DESTINATION share/edward)
-install(DIRECTORY "Plugins" DESTINATION share/edward)
+install(DIRECTORY "plugins" DESTINATION share/edward)
 
 set(INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 configure_file("static/michisoft-edward.desktop" /tmp/michisoft-edward.desktop NO_SOURCE_PERMISSIONS)

@@ -291,7 +291,7 @@ void PluginManager::link_plugins() {
 }
 
 void PluginManager::find_plugins() {
-	Path dir0 = (PluginManager::directory | "Shader Graph").absolute();
+	Path dir0 = (PluginManager::directory | "shader graph").absolute();
 	auto list = os::fs::search(dir0, "*", "fd");
 	for (auto &e: list) {
 		Path dir = dir0 | e;

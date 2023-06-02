@@ -212,9 +212,9 @@ Edward::Edward() :
 
 	// depends on some mode data
 	if (app->installed)
-		plugins = new PluginManager(app->directory_static | "Plugins");
+		plugins = new PluginManager(app->directory_static | "plugins");
 	else
-		plugins = new PluginManager(app->directory_static | ".." | "Plugins");
+		plugins = new PluginManager(app->directory_static | ".." | "plugins");
 
 	mode_material = new ModeMaterial(multi_view_3d);
 
