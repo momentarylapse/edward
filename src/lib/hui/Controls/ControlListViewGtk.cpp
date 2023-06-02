@@ -339,7 +339,7 @@ ControlListView::ControlListView(const string &title, const string &id, Panel *p
 			columns.add(col);
 			gtk_column_view_append_column(GTK_COLUMN_VIEW(view), GTK_COLUMN_VIEW_COLUMN(col));
 		}
-		if (columns.num >= 2 and fmt.back() == 'B')
+		if (columns.num >= 2 and effective_format.back() == 'B')
 			gtk_column_view_column_set_expand(GTK_COLUMN_VIEW_COLUMN(columns[columns.num - 2]), true);
 		else
 			gtk_column_view_column_set_expand(GTK_COLUMN_VIEW_COLUMN(columns.back()), true);
@@ -405,7 +405,7 @@ ControlListView::ControlListView(const string &title, const string &id, Panel *p
 
 	// frame
 	frame = sw;
-	if (panel->border_width > 0) {
+	if (panel->border_width > 0 and !option_has(options, "nobar")) {
 		frame = gtk_frame_new(nullptr);
 #if GTK_CHECK_VERSION(4,0,0)
 		gtk_frame_set_child(GTK_FRAME(frame), sw);

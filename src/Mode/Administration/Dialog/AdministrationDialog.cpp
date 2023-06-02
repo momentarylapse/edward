@@ -81,8 +81,8 @@ static string FD2Str(int k)
 void AdministrationDialog::FillAdminList(int view, const string &lid)
 {
 	reset(lid);
-	string sep = hui::ComboBoxSeparator;
-	hui::ComboBoxSeparator = "::";
+	string sep = hui::separator;
+	hui::separator = "::";
 
 	// currently viewed list
 	AdminFileList *l = get_list(lid);
@@ -125,7 +125,7 @@ void AdministrationDialog::FillAdminList(int view, const string &lid)
 #ifdef NIX_OS_WINDOWS
 	AddString(lid, ""); // windows ... -> doesn't rescale the list's columns automatically  m(-_-)m
 #endif
-	hui::ComboBoxSeparator = sep;
+	hui::separator = sep;
 }
 
 void AdministrationDialog::ShowDetail(int n, const string &lid)

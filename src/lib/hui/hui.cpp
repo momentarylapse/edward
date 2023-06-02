@@ -34,11 +34,15 @@
 #endif
 #endif
 
+#if HAS_LIB_ADWAITA && GTK_CHECK_VERSION(4,0,0)
+#include <adwaita.h>
+#endif
+
 namespace hui
 {
 
 
-string Version = "0.7.1.0";
+string Version = "0.7.1.1";
 
 
 #ifdef OS_WINDOWS
@@ -60,7 +64,7 @@ string Version = "0.7.1.0";
 bool _screen_opened_ = false;
 
 // HUI configuration
-string ComboBoxSeparator;
+string separator;
 
 
 
@@ -179,25 +183,42 @@ int main(int num_args, char *args[]) {
 namespace hui
 {
 
+void _init_global_css_classes_();
+
 void _MakeUsable_() {
 	if (_screen_opened_)
 		return;
-#ifdef HUI_API_GTK
+
+	if ((Application::flags & Flags::LAZY_GUI_INITIALIZATION) == 0) {
 #if GTK_CHECK_VERSION(4,0,0)
-	if (Application::application)
-		return;
-	Application::application = gtk_application_new(nullptr, G_APPLICATION_NON_UNIQUE);
-	gtk_init();
-#else
-	gtk_init(nullptr, nullptr);
+#if HAS_LIB_ADWAITA
+		adw_init();
+		Application::adwaita_started = true;
 #endif
-	#ifdef OS_LINUX
+		Application::application = gtk_application_new(nullptr, G_APPLICATION_NON_UNIQUE);
+		//gtk_init();
+#else
+		gtk_init(nullptr, nullptr);
+		_init_global_css_classes_();
+#endif
+	} else {
+		// direct init
+#if GTK_CHECK_VERSION(4,0,0)
+		gtk_init();
+#else
+		gtk_init(nullptr, nullptr);
+#endif
+		_init_global_css_classes_();
+	}
+
+
+#ifdef OS_LINUX
 #if !GTK_CHECK_VERSION(4,0,0)
 #if HAS_LIB_XLIB
 		x_display = XOpenDisplay(0);
 #endif
 #endif
-	#endif
+#endif
 
 #if !GTK_CHECK_VERSION(4,0,0)
 #if GTK_CHECK_VERSION(3,16,0)
@@ -207,7 +228,6 @@ void _MakeUsable_() {
 #endif
 #endif
 
-#endif
 	_screen_opened_ = true;
 }
 
@@ -216,11 +236,11 @@ void _MakeUsable_() {
 
 static int _current_image_no_ = 0;
 
-string SetImage(const Image *image, const string &user_name) {
+string set_image(const Image *image, const string &user_name) {
 	HuiImage *img = nullptr;
 	if (user_name != "") {
 		if (user_name.head(6) != "image:") {
-			msg_error("hui.SetImage(): name must begin with 'image:'");
+			msg_error("hui.set_image(): name must begin with 'image:'");
 			return "";
 		}
 		for (int i=0;i<_all_images_.num;i++)
@@ -245,7 +265,7 @@ string SetImage(const Image *image, const string &user_name) {
 	return img->filename;
 }
 
-void DeleteImage(const string &name) {
+void delete_image(const string &name) {
 	for (int i=0;i<_all_images_.num;i++)
 		if (_all_images_[i].filename == name) {
 			if (_all_images_[i].pix_buf)

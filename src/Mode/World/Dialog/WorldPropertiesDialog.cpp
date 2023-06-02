@@ -231,7 +231,7 @@ void WorldPropertiesDialog::on_edit_script() {
 	if (n >= 0) {
 		auto filename = kaba::config.directory | temp.scripts[n].filename;
 		//int r = system(format("sgribthmaker '%s'", filename).c_str());
-		hui::OpenDocument(filename);
+		hui::open_document(filename);
 	}
 }
 
@@ -296,11 +296,11 @@ void WorldPropertiesDialog::on_fog_mode_exp() {
 
 
 void WorldPropertiesDialog::fill_skybox_list() {
-	hui::ComboBoxSeparator = ":";
+	hui::separator = ":";
 	reset("skybox");
 	foreachi(auto &sb, temp.skybox_files, i)
 		add_string("skybox", format("%d:%s", i, sb));
-	hui::ComboBoxSeparator = "\\";
+	hui::separator = "\\";
 }
 
 
@@ -308,13 +308,13 @@ void WorldPropertiesDialog::fill_skybox_list() {
 
 
 void WorldPropertiesDialog::fill_script_list() {
-	hui::ComboBoxSeparator = ":";
+	hui::separator = ":";
 	reset("script_list");
 	for (auto &s: temp.scripts)
 		add_string("script_list", s.filename.str());
 	enable("remove_script", false);
 	enable("edit_script_vars", false);
-	hui::ComboBoxSeparator = "\\";
+	hui::separator = "\\";
 }
 
 

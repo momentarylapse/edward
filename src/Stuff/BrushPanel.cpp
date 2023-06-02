@@ -36,7 +36,7 @@ struct WBrushConfig {
 				im.set_pixel(i, j, a * fg + (1-a) * bg);
 
 			}
-		return hui::SetImage(&im, "image:paint-brush-" + name);
+		return hui::set_image(&im, "image:paint-brush-" + name);
 	}
 };
 

@@ -259,7 +259,7 @@ void ModelMaterialDialog::fill_texture_list() {
 		string id = format("image:material[%d]-texture[%d]", mode_model_mesh->current_material, i);
 		auto *img = mat->texture_levels[i]->image;
 		auto *icon = mat->texture_levels[i]->image->scale(48, 48);
-		hui::SetImage(icon, id);
+		hui::set_image(icon, id);
 		string ext = format(" (%dx%d)", img->width, img->height);
 		if (mat->texture_levels[i]->edited)
 			ext += " *";

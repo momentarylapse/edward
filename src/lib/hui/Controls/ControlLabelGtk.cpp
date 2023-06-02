@@ -86,6 +86,8 @@ void ControlLabel::__set_option(const string &op, const string &value) {
 		flag_underline = true;
 	} else if (op == "strikeout") {
 		flag_strikeout = true;
+	} else if (op == "style") {
+		this->add_css_class(value);
 	}
 }
 

@@ -609,7 +609,7 @@ void Edward::universal_edit(int type, const Path &_filename, bool relative_path)
 		switch (type){
 			case -1:
 				if (filename.basename() == "config.txt")
-					hui::OpenDocument(filename);
+					hui::open_document(filename);
 				else if (filename.basename() == "game.ini")
 					mode_admin->basic_settings();
 				break;
@@ -655,7 +655,7 @@ void Edward::universal_edit(int type, const Path &_filename, bool relative_path)
 			case FD_SHADERFILE:
 			case FD_SCRIPT:
 			case FD_FILE:
-				hui::OpenDocument(filename);
+				hui::open_document(filename);
 				break;
 		}
 		//return true;
@@ -734,12 +734,12 @@ string Edward::get_tex_image(nix::Texture *tex) {
 		Image im;
 		tex->read(im);
 		auto *small = im.scale(48, 48);
-		img = hui::SetImage(small);
+		img = hui::set_image(small);
 		delete small;
 	} else {
 		Image empty;
 		empty.create(48, 48, White);
-		img = hui::SetImage(&empty);
+		img = hui::set_image(&empty);
 	}
 	icon_image.set(tex, img);
 	return img;

@@ -446,6 +446,12 @@ void SIAddPackageHui(Context *c) {
 		class_add_func("set_position", TypeVoid, hui_p(&hui::Window::set_position));
 			func_add_param("x", TypeInt);
 			func_add_param("y", TypeInt);
+		class_add_func("set_size", TypeVoid, hui_p(&hui::Window::set_size));
+			func_add_param("x", TypeInt);
+			func_add_param("y", TypeInt);
+		class_add_func("get_size", TypeVoid, hui_p(&hui::Window::get_size));
+			func_add_param("x", TypeInt, Flags::OUT);
+			func_add_param("y", TypeInt, Flags::OUT);
 	//add_func("setOuterior", TypeVoid, 2, TypePointer,"win",
 	//																										TypeIRect,"r");
 	//add_func("getOuterior", TypeIRect, 1, TypePointer,"win");
@@ -578,12 +584,12 @@ void SIAddPackageHui(Context *c) {
 //		func_add_param("id", TypeInt);
 
 	// clipboard
-	add_func("copy_to_clipboard", TypeVoid, hui_p(&hui::Clipboard::copy), Flags::STATIC);
+	add_func("copy_to_clipboard", TypeVoid, hui_p(&hui::clipboard::copy), Flags::STATIC);
 		func_add_param("buffer", TypeString);
-	add_func("paste_from_clipboard", TypeString, hui_p(&hui::Clipboard::paste), Flags::STATIC);
-	add_func("open_document", TypeVoid, hui_p(&hui::OpenDocument), Flags::STATIC);
+	add_func("paste_from_clipboard", TypeString, hui_p(&hui::clipboard::paste), Flags::STATIC);
+	add_func("open_document", TypeVoid, hui_p(&hui::open_document), Flags::STATIC);
 		func_add_param("filename", TypePath);
-	add_func("make_gui_image", TypeString, hui_p(&hui::SetImage), Flags::STATIC);
+	add_func("make_gui_image", TypeString, hui_p(&hui::set_image), Flags::STATIC);
 		func_add_param("image", TypeImage);
 
 	add_class(TypeHuiEvent);

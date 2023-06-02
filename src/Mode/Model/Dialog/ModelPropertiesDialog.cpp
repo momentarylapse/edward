@@ -209,7 +209,7 @@ string render_material(ModelMaterial *m) {
 			c.a = 1;
 			img.set_pixel(x, y, c);
 		}
-	return hui::SetImage(&img, format("image:material-%s", p2s(m)));
+	return hui::set_image(&img, format("image:material-%s", p2s(m)));
 }
 
 string file_secure(const Path &filename) {

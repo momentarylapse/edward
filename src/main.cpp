@@ -20,7 +20,7 @@ string AppName = "Edward";
 
 
 EdwardApp::EdwardApp() :
-	hui::Application("edward", "English", 0)
+	hui::Application("edward", "English", hui::Flags::NONE)
 {
 	app = this;
 	set_property("name", AppName);
