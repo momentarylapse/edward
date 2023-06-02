@@ -1,9 +1,9 @@
 use edward
 
-const R = 20.0
+let R = 20.0
 
 func add5(nv: int, v0: int, v1: int, v2: int, v3: int, v4: int)
-	int[] v
+	var v: int[]
 	v.add(nv + v0)
 	v.add(nv + v1)
 	v.add(nv + v2)
@@ -12,11 +12,11 @@ func add5(nv: int, v0: int, v1: int, v2: int, v3: int, v4: int)
 	model.add_polygon(v, 0)
 
 func main()
-	int nv = model.mesh.vertex.num
+	let nv = len(model.mesh.vertex)
 	
 	model.begin_action("CreateDodecahedron")
 	
-	float phi = (1 + sqrt(5))/2
+	let phi = (1 + sqrt(5))/2
 	model.add_vertex(vec3( 1, 1, 1)*R, 0, -1)
 	model.add_vertex(vec3( 1, 1,-1)*R, 0, -1)
 	model.add_vertex(vec3( 1,-1, 1)*R, 0, -1)

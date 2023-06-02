@@ -7,13 +7,13 @@ func open(filename: Path)
 	f << "solid test"
 	for p in model.mesh.polygon
 		for k in 0:p.side.num - 2
-			int a = p.side[k].triangulation[0]
-			int b = p.side[k].triangulation[1]
-			int c = p.side[k].triangulation[2]
-			var va = model.mesh.vertex[p.side[a].vertex].pos
-			var vb = model.mesh.vertex[p.side[b].vertex].pos
-			var vc = model.mesh.vertex[p.side[c].vertex].pos
-			var n = p.temp_normal
+			let a = int(p.side[k].triangulation[0])
+			let b = int(p.side[k].triangulation[1])
+			let c = int(p.side[k].triangulation[2])
+			let va = model.mesh.vertex[p.side[a].vertex].pos
+			let vb = model.mesh.vertex[p.side[b].vertex].pos
+			let vc = model.mesh.vertex[p.side[c].vertex].pos
+			let n = p.temp_normal
 			f << "facet normal {{n.x}} {{n.y}} {{n.z}}"
 			f << "    outer loop"
 			f << "        vertex {{va.x}} {{va.y}} {{va.z}}"
@@ -22,7 +22,6 @@ func open(filename: Path)
 			f << "    endloop"
 			f << "endfacet"
 	f << "end solid"
-	del f
 
 
 func main()

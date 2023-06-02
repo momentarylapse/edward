@@ -3,14 +3,13 @@ use edward
 
 func CreateTorusKnot(nx: int, ny: int, rings: int, edges: int, r1: float, r2: float, r3: float)
 	var g = new Geometry.TorusKnot(vec3.0, vec3.EZ, r1, r2, r3, nx, ny, rings, edges)
-	model.paste_geometry(*g, 0)
-	del g
+	model.paste_geometry(g, 0)
 
 func gcd(_a: int, _b: int) -> int
-	int a = _a
-	int b = _b
+	var a = _a
+	var b = _b
 	while b != 0
-		int t = b
+		var t = b
 		b = a % b
 		a = t
 	return a
@@ -18,7 +17,7 @@ func gcd(_a: int, _b: int) -> int
 
 class TorusDialog extends Dialog
 	func __init__(parent: Window)
-		super.__init__("Torus Knot", 300, 300, parent, false)
+		super.__init__("Torus Knot", 300, 300, &parent, false)
 		#set_options("", "resizable,headerbar")
 		add_grid("", 0, 0, "table")
 		set_target("table")
@@ -41,10 +40,10 @@ class TorusDialog extends Dialog
 		event("ok", on_ok)
 
 	func mut on_ok()
-		int nx = get_int("nx")
-		int ny = get_int("ny")
+		let nx = get_int("nx")
+		let ny = get_int("ny")
 		if gcd(nx, ny) != 1
-			hui.error_box(self, "Error", "GreatestCommonDivisor(Loops, Twists) = 1 violated")
+			hui.error_box(&self, "Error", "GreatestCommonDivisor(Loops, Twists) = 1 violated")
 		else
 			CreateTorusKnot(nx, ny, get_int("rings"), get_int("edges"), get_float("radius1"), get_float("radius2"), get_float("radius3"))
 		destroy()

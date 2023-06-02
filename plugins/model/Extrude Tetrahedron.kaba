@@ -5,19 +5,19 @@ use edward
 func main()
 	model.begin_action("ExtrudeTetrahedron")
 	
-	int[] poly
-	int nv = len(model.mesh.vertex)
-	int[][] vv
+	var poly: int[]
+	let nv = len(model.mesh.vertex)
+	var vv: int[][]
 	
-	for p,ip in model.mesh.polygon
+	for ip=>p in model.mesh.polygon
 		if p.is_selected and len(p.side) == 3
 			poly.add(ip)
 			
-			var v = [for side in p.side side.vertex]
+			let v = [for side in p.side side.vertex]
 			vv.add(v)
-			var q = [for vi in v model.mesh.vertex[vi].pos]
-			float R = ((q[1]-q[0]).length() + (q[2]-q[1]).length() + (q[0]-q[2]).length()) / 3
-			float h = sqrt(2.0/3) * R
+			let q = [for vi in v model.mesh.vertex[vi].pos]
+			let R = (len(q[1]-q[0]) + len(q[2]-q[1]) + len(q[0]-q[2])) / 3
+			let h = sqrt(2.0/3) * R
 			
 			model.add_vertex((q[0]+q[1]+q[2])/3 + p.temp_normal * h, 0, 1)
 	
@@ -26,7 +26,7 @@ func main()
 		model.delete_polygon(poly[len(poly)-i-1])
 	#model.DeleteSelection(false)
 	
-	for v,i in vv
+	for i=>v in vv
 		model.add_triangle(v[0], v[1], nv+i, 0)
 		model.add_triangle(v[1], v[2], nv+i, 0)
 		model.add_triangle(v[2], v[0], nv+i, 0)

@@ -10,7 +10,7 @@ func open(filename: Path)
 		var vb = model.mesh.vertex[p.side[1].vertex].pos
 		var vc = model.mesh.vertex[p.side[2].vertex].pos
 		var n = p.temp_normal
-		string s
+		var s: string
 		if p.material == 1
 			s = "portal"
 		else
@@ -21,7 +21,6 @@ func open(filename: Path)
 		if p.material == 1
 			s += " 0"
 		f << s
-	del f
 
 func main()
 	hui.file_dialog_save(edward, "Topology", "", ["filter=*.top", "showfilter=*.top"], open)

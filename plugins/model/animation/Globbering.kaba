@@ -4,15 +4,15 @@ func main()
 	var m = &model.move[0]
 
 	#HuiInfoBox(MainWin,i2s(Skin[1].NumVertices),i2s(move->NumFrames))
-	for f,fi in m.frame
+	for fi=>f in m.frame
 		
 		# Phase = Position im Frame (auf 2 pi)
-		float t = (2.0 * pi * fi) / m.frame.num
+		let t = (2.0 * pi * fi) / m.frame.num
 		
-		for v,vi in model.mesh.vertex
+		for vi=>v in model.mesh.vertex
 		
 			# ortsabhaengige Phase
-			float tt = t + (v.pos.x + v.pos.y + v.pos.z) * 0.02
+			let tt = t + (v.pos.x + v.pos.y + v.pos.z) * 0.02
 			
 			# Animation
 			f.vertex_dpos[vi] = vec3(sin(tt), sin(tt + 1.2), sin(tt + 2.7)) * 4.0

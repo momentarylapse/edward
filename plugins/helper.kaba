@@ -4,7 +4,7 @@ func rot_onto(a: vec3, b: vec3) -> quaternion
 	n /= len(n)
 	var e1 = a / len(a)
 	var e2 = vec3.cross(e1, n)
-	float ang = atan2(vec3.dot(b, e2), vec3.dot(b, e1))
+	let ang = atan2(vec3.dot(b, e2), vec3.dot(b, e1))
 	return quaternion(n, ang).bar()
 
 func __main()

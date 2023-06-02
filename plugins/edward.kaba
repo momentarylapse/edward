@@ -44,7 +44,7 @@ class MultiView
 		YZ
 
 	class ActionController
-		func extern start_action(win: MultiView.Window*, m: vec3, constraints: ActionConstraints)
+		func extern start_action(win: MultiView.Window, m: vec3, constraints: ActionConstraints)
 		func extern update_action()
 		func extern update_param(param: vec3)
 		func extern end_action(set: bool)
@@ -66,9 +66,9 @@ class MultiView
 		
 	#extern void on_mouse_move()
 	#extern void set_mouse_action(string name, int type, bool locked) #"ActionModelAnimationTransformBones", mouse_action, false);
-	var action_con: ActionController*
-	var mouse_win: MultiView.Window*
-	var active_win: MultiView.Window*
+	var action_con: ActionController&
+	var mouse_win: MultiView.Window&
+	var active_win: MultiView.Window&
 	var cam: MultiView.Camera
 	func extern cam_move(dpos: vec3)
 	func extern cam_rotate(dq: quaternion, cam_center: bool)
@@ -187,9 +187,9 @@ class Model extends Data
 
 	struct Material
 		var filename: Path
-		var material: y.Material*
+		var material: y.Material&
 		var num_textures: int
-		var texture: Texture*[MAX_TEXTURES]
+		var texture: Texture&[MAX_TEXTURES]
 		var texture_file: string[MAX_TEXTURES]
 
 		var user_transparency: bool
@@ -366,8 +366,8 @@ class Model extends Data
 #	float TimeScale,TimeParam,SimFrame
 
 	# geometry
-	var mesh: Mesh*
-	var phys_mesh: Mesh*
+	var mesh: Mesh&
+	var phys_mesh: Mesh&
 #	MultiViewSingleData SkinVertex[] # only temporary...
 #	int SkinVertMat, SkinVertTL
 
@@ -391,8 +391,8 @@ class Model extends Data
 	#extern void SelectOnlySurface(ModelSurface s)
 	
 	func extern add_vertex(pos: vec3, bone_index: int, normal_mode: int)
-	func extern add_triangle(a: int, b: int, c: int, material: int) -> Geometry.Polygon*
-	func extern add_polygon(v: int[], material: int) -> Geometry.Polygon*
+	func extern add_triangle(a: int, b: int, c: int, material: int) -> Geometry.Polygon&
+	func extern add_polygon(v: int[], material: int) -> Geometry.Polygon&
 	func extern delete_polygon(index: int)
 	
 	func extern delete_selection(s: Selection, greedy: bool)
@@ -453,17 +453,17 @@ class World extends Data
 	var ego_index: int
 
 	# actions
-	func extern add_object(filename: Path, pos: vec3) -> Object*
-	func extern add_terrain(filename: Path, pos: vec3) -> Terrain*
-	func extern add_new_terrain(pos: vec3, size: vec3, num_x: int, num_z: int) -> Terrain*
+	func extern add_object(filename: Path, pos: vec3) -> Object&
+	func extern add_terrain(filename: Path, pos: vec3) -> Terrain&
+	func extern add_new_terrain(pos: vec3, size: vec3, num_x: int, num_z: int) -> Terrain&
 
 
 class Mode
 	var name: string
-	var multi_view: MultiView*
+	var multi_view: MultiView&
 
 class Edward
-	var cur_mode: Mode*
+	var cur_mode: Mode&
 
 class shader
 	enum Type
@@ -510,9 +510,9 @@ class shader
 		func extern virtual code_pixel_pre(out ctx: BuilderContext) -> string
 		func extern virtual code_pixel(out ctx: BuilderContext) -> string
 
-var extern model: Model*
-var extern world: World*
-var extern edward: Window*
+var extern model: Model&
+var extern world: World&
+var extern edward: Window&
 
-var extern ed: Edward*
+var extern ed: Edward&
 

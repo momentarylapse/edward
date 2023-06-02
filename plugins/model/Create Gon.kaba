@@ -5,18 +5,18 @@ const R = 50.0
 const height = 20.0
 
 func main()
-	int nv = len(model.mesh.vertex)
+	let nv = len(model.mesh.vertex)
 	
 	model.begin_action("CreateGon")
 	
 	model.add_vertex(vec3.0, 0, -1)
 	model.add_vertex(vec3.EZ * height, 0, -1)
 	for i in 0:N
-		float w = float(i) * 2 * pi / N
+		let w = float(i) * 2 * pi / N
 		model.add_vertex(vec3(cos(w), sin(w), 0) * R, 0, -1)
 		model.add_vertex(vec3(cos(w), sin(w), 0) * R + vec3.EZ * height, 0, -1)
 	
-	int[] v
+	var v: int[]
 	for i in 0:N
 		v.add(nv + 2 + ((i + 1) % N) * 2)
 		v.add(nv + 2 + i * 2)

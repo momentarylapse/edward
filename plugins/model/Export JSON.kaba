@@ -12,7 +12,7 @@ func qToJson(q: quaternion) -> string
 	return "{{q.x}}, {{q.y}}, {{q.z}}, {{q.w}}"
 
 func materialToJson(m: Model.Material) -> string
-	string s
+	var s: string
 	s += "	{\n"
 	s += "		'DbgColor' : 15658734,\n"
 	s += "		'DbgIndex' : 0,\n"
@@ -32,27 +32,27 @@ func materialToJson(m: Model.Material) -> string
 	return s
 
 func bone_anim_pos(f: Model.Move.Frame, i: int) -> vec3
-	int parent = model.bone[i].parent
+	let parent = model.bone[i].parent
 	if parent >= 0
-		vec3 dpos = model.bone[i].pos - model.bone[parent].pos
-		var q = quaternion(f.skel_ang[parent])
+		let dpos = model.bone[i].pos - model.bone[parent].pos
+		let q = quaternion(f.skel_ang[parent])
 		return bone_anim_pos(f, parent) + q * dpos
 	return f.skel_dpos[i] + model.bone[i].pos
 
 func moveToJson(m: Model.Move) -> string
-	string s
+	var s: string
 	s += "	{\n"
 	s += "		'name': '{{m.name}}',\n"
 	s += "		'fps': {{m.frames_per_sec_const}},\n"
 	s += "		'length': {{(m.frame.num / m.frames_per_sec_const)}},\n"
 	s += "		'hierarchy': [\n"
-	for b,i in model.bone
+	for i=>b in model.bone
 		s += "			{\n"
 		s += "				'parent': -1,\n" #b.parent
 		s += "				'keys': [\n"
-		for f,j in m.frame
-			var q = quaternion(f.skel_ang[i])
-			var dpos = bone_anim_pos(f, i) # - b.pos
+		for j=>f in m.frame
+			let q = quaternion(f.skel_ang[i])
+			let dpos = bone_anim_pos(f, i) # - b.pos
 #			if b.parent >= 0
 #				var dq = QuaternionRotationV(f.skel_ang[b.parent])
 #				#dpos -= dq * bone_anim_pos(f, b.parent)
@@ -65,7 +65,7 @@ func moveToJson(m: Model.Move) -> string
 			s += "						'scl': [1,1,1]\n"
 			s += "					},\n"
 		# looping...
-		var q = quaternion(m.frame[0].skel_ang[i])
+		let q = quaternion(m.frame[0].skel_ang[i])
 		s += "					{\n"
 		s += "						'time': {{(m.frame.num / m.frames_per_sec_const)}},\n"
 		s += "						'pos': [0,0,0],\n"
@@ -73,7 +73,7 @@ func moveToJson(m: Model.Move) -> string
 		s += "						'scl': [1,1,1]\n"
 		s += "					}\n"
 		s += "				]\n"
-		if i < model.bone.num - 1
+		if i < len(model.bone) - 1
 			s += "			},\n"
 		else
 			s += "			}\n"
@@ -82,10 +82,10 @@ func moveToJson(m: Model.Move) -> string
 	return s
 
 func boneToJson(b: Model.Bone) -> string
-	string s
+	var s: string
 	s += "	{\n"
 	s += "		'parent': -1,\n" #b.parent
-	vec3 pos = b.pos
+	var pos = b.pos
 	#if b.parent >= 0
 #		pos -= model.bone[b.parent].pos
 	s += "		'name': 'xxx',\n"
@@ -99,11 +99,11 @@ func boneToJson(b: Model.Bone) -> string
 func save_file(filename: Path)
 	var f = new TextLinesFormatter(os.fs.open(filename, "wt"))
 	
-	int n_tria = 0
+	var n_tria = 0
 	for p in model.mesh.polygon
 		n_tria += p.side.num - 2
 
-	string s = "{'metadata':{\n"
+	var s = "{'metadata':{\n"
 	s += "	'formatVersion': 3,\n"
 	s += "	'generatedBy': 'Edward',\n"
 	s += "	'vertices': {{model.mesh.vertex.num}},\n"
@@ -134,46 +134,46 @@ func save_file(filename: Path)
 #	s += "		'vertexColors' : false\n"
 #	s += "	}],\n"
 	s += "'materials': [\n"
-	for m,i in model.material
+	for i=>m in model.material
 		s += materialToJson(m)
-		if i < model.material.num - 1
+		if i < len(model.material) - 1
 			s += ",\n"
 	s += "],\n"
 	s += "'colors': [],\n"
 	s += "'vertices': [\n"
-	for v,i in model.mesh.vertex
+	for i=>v in model.mesh.vertex
 		s += "	" + vecToJson(v.pos)
-		if i < model.mesh.vertex.num - 1
+		if i < len(model.mesh.vertex) - 1
 			s += ",\n"
 	s += "],\n"
 	s += "'uvs': [[0,0]],\n"
 	s += "'normals': [\n"
-	for p,ip in model.mesh.polygon
-		for side,k in p.side
+	for ip=>p in model.mesh.polygon
+		for k=>side in p.side
 			s += "	" + vecToJson(side.normal)
-			if (ip < model.mesh.polygon.num - 1) or (k < p.side.num - 1)
+			if (ip < len(model.mesh.polygon) - 1) or (k < len(p.side) - 1)
 				s += ",\n"
 	s += "],\n"
 	s += "'faces': [\n"
-	int n_normals = 0
-	for p,ip in model.mesh.polygon
-		for side,k in p.side
-			int _a = side.triangulation[0]
-			int _b = side.triangulation[1]
-			int _c = side.triangulation[2]
-			int va = p.side[_a].vertex
-			int vb = p.side[_b].vertex
-			int vc = p.side[_c].vertex
-			int na = n_normals + _a
-			int nb = n_normals + _b
-			int nc = n_normals + _c
-			vec3 n = p.temp_normal
+	var n_normals = 0
+	for ip=>p in model.mesh.polygon
+		for k=>side in p.side
+			let _a = int(side.triangulation[0])
+			let _b = int(side.triangulation[1])
+			let _c = int(side.triangulation[2])
+			let va = p.side[_a].vertex
+			let vb = p.side[_b].vertex
+			let vc = p.side[_c].vertex
+			let na = n_normals + _a
+			let nb = n_normals + _b
+			let nc = n_normals + _c
+			let n = p.temp_normal
 			s += "	42, {{va}}, {{vb}}, {{vc}}, {{p.material}}, "
 			s += "0, 0, 0, "
 			s += "{{na}}, {{nb}}, {{nc}}"
-			if (ip < model.mesh.polygon.num - 1) or (k < p.side.num - 1)
+			if (ip < len(model.mesh.polygon) - 1) or (k < len(p.side) - 1)
 				s += ",\n"
-		n_normals += p.side.num
+		n_normals += len(p.side)
 	s += "],\n"
 #	s += "'morphTargets': [\n"
 #	for int i, 0, model.Move.num
@@ -182,26 +182,26 @@ func save_file(filename: Path)
 #			str += ",\n"
 #	s += "],\n"
 	s += "'bones': [\n"
-	for b,i in model.bone
+	for i=>b in model.bone
 		s += boneToJson(b)
-		if i < model.bone.num - 1
+		if i < len(model.bone) - 1
 			s += ",\n"
 	s += "],\n"
 	s += "'skinIndices': ["
-	for v,i in model.mesh.vertex
+	for i=>v in model.mesh.vertex
 		s += str(v.bone_index)
-		if i < model.mesh.vertex.num - 1
+		if i < len(model.mesh.vertex) - 1
 			s += ", "
 	s += "],\n"
 	s += "'skinWeights': ["
-	for v,i in model.mesh.vertex
+	for i=>v in model.mesh.vertex
 		s += "1"
-		if i < model.mesh.vertex.num - 1
+		if i < len(model.mesh.vertex) - 1
 			s += ", "
 	s += "],\n"
 	s += "'animations': [\n"
-	bool first_anim = true
-	for m,i in model.move
+	var first_anim = true
+	for i=>m in model.move
 		if len(m.frame) == 0
 			continue
 		if !first_anim
@@ -212,7 +212,6 @@ func save_file(filename: Path)
 	s += "}"
 	s = s.replace("'", "\"")
 	f << s
-	del f
 
 
 func main()
