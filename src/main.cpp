@@ -9,11 +9,11 @@
 #include "lib/os/CommandLineParser.h"
 #include "lib/hui/hui.h"
 #include "lib/kaba/kaba.h"
-#include "Data/Model/DataModel.h"
-#include "Data/Material/DataMaterial.h"
-#include "Data/World/DataWorld.h"
-#include "Storage/Storage.h"
-#include "Mode/Administration/ModeAdministration.h"
+#include "data/model/DataModel.h"
+#include "data/material/DataMaterial.h"
+#include "data/world/DataWorld.h"
+#include "storage/Storage.h"
+#include "mode/administration/ModeAdministration.h"
 
 string AppVersion = "0.4.-1.6";
 string AppName = "Edward";

@@ -1,458 +1,458 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\Action\Font\ActionFontEditGlobal.cpp">
-      <Filter>src\Action\Font</Filter>
+    <ClCompile Include="src\action\font\ActionFontEditGlobal.cpp">
+      <Filter>src\action\font</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Font\ActionFontEditGlyph.cpp">
-      <Filter>src\Action\Font</Filter>
+    <ClCompile Include="src\action\font\ActionFontEditGlyph.cpp">
+      <Filter>src\action\font</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Material\ActionMaterialEditAppearance.cpp">
-      <Filter>src\Action\Material</Filter>
+    <ClCompile Include="src\action\material\ActionMaterialEditAppearance.cpp">
+      <Filter>src\action\material</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Material\ActionMaterialEditPhysics.cpp">
-      <Filter>src\Action\Material</Filter>
+    <ClCompile Include="src\action\material\ActionMaterialEditPhysics.cpp">
+      <Filter>src\action\material</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Animation\ActionModelAddAnimation.cpp">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClCompile Include="src\action\model\animation\ActionModelAddAnimation.cpp">
+      <Filter>src\action\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationAddFrame.cpp">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClCompile Include="src\action\model\animation\ActionModelAnimationAddFrame.cpp">
+      <Filter>src\action\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationDeleteFrame.cpp">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClCompile Include="src\action\model\animation\ActionModelAnimationDeleteFrame.cpp">
+      <Filter>src\action\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationSetBone.cpp">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClCompile Include="src\action\model\animation\ActionModelAnimationSetBone.cpp">
+      <Filter>src\action\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationSetData.cpp">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClCompile Include="src\action\model\animation\ActionModelAnimationSetData.cpp">
+      <Filter>src\action\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationSetFrameDuration.cpp">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClCompile Include="src\action\model\animation\ActionModelAnimationSetFrameDuration.cpp">
+      <Filter>src\action\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationTransformBones.cpp">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClCompile Include="src\action\model\animation\ActionModelAnimationTransformBones.cpp">
+      <Filter>src\action\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Animation\ActionModelAnimationTransformVertices.cpp">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClCompile Include="src\action\model\animation\ActionModelAnimationTransformVertices.cpp">
+      <Filter>src\action\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Animation\ActionModelDeleteAnimation.cpp">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClCompile Include="src\action\model\animation\ActionModelDeleteAnimation.cpp">
+      <Filter>src\action\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Animation\ActionModelDuplicateAnimation.cpp">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClCompile Include="src\action\model\animation\ActionModelDuplicateAnimation.cpp">
+      <Filter>src\action\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Data\ActionModelAddMaterial.cpp">
-      <Filter>src\Action\Model\Data</Filter>
+    <ClCompile Include="src\action\model\data\ActionModelAddMaterial.cpp">
+      <Filter>src\action\model\data</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Data\ActionModelDeleteMaterial.cpp">
-      <Filter>src\Action\Model\Data</Filter>
+    <ClCompile Include="src\action\model\data\ActionModelDeleteMaterial.cpp">
+      <Filter>src\action\model\data</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Data\ActionModelEditData.cpp">
-      <Filter>src\Action\Model\Data</Filter>
+    <ClCompile Include="src\action\model\data\ActionModelEditData.cpp">
+      <Filter>src\action\model\data</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Data\ActionModelEditMaterial.cpp">
-      <Filter>src\Action\Model\Data</Filter>
+    <ClCompile Include="src\action\model\data\ActionModelEditMaterial.cpp">
+      <Filter>src\action\model\data</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Brush\ActionModelBrushComplexify.cpp">
-      <Filter>src\Action\Model\Mesh\Brush</Filter>
+    <ClCompile Include="src\action\model\mesh\brush\ActionModelBrushComplexify.cpp">
+      <Filter>src\action\model\mesh\brush</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Brush\ActionModelBrushExtrude.cpp">
-      <Filter>src\Action\Model\Mesh\Brush</Filter>
+    <ClCompile Include="src\action\model\mesh\brush\ActionModelBrushExtrude.cpp">
+      <Filter>src\action\model\mesh\brush</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Brush\ActionModelBrushSmooth.cpp">
-      <Filter>src\Action\Model\Mesh\Brush</Filter>
+    <ClCompile Include="src\action\model\mesh\brush\ActionModelBrushSmooth.cpp">
+      <Filter>src\action\model\mesh\brush</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Edge\ActionModelBevelEdges.cpp">
-      <Filter>src\Action\Model\Mesh\Edge</Filter>
+    <ClCompile Include="src\action\model\mesh\edge\ActionModelBevelEdges.cpp">
+      <Filter>src\action\model\mesh\edge</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Edge\ActionModelCollapseEdge.cpp">
-      <Filter>src\Action\Model\Mesh\Edge</Filter>
+    <ClCompile Include="src\action\model\mesh\edge\ActionModelCollapseEdge.cpp">
+      <Filter>src\action\model\mesh\edge</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Edge\ActionModelSplitEdge.cpp">
-      <Filter>src\Action\Model\Mesh\Edge</Filter>
+    <ClCompile Include="src\action\model\mesh\edge\ActionModelSplitEdge.cpp">
+      <Filter>src\action\model\mesh\edge</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Effects\ActionModelAddEffects.cpp">
-      <Filter>src\Action\Model\Mesh\Effects</Filter>
+    <ClCompile Include="src\action\model\mesh\effect\ActionModelAddEffects.cpp">
+      <Filter>src\action\model\mesh\effect</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Effects\ActionModelClearEffects.cpp">
-      <Filter>src\Action\Model\Mesh\Effects</Filter>
+    <ClCompile Include="src\action\model\mesh\effect\ActionModelClearEffects.cpp">
+      <Filter>src\action\model\mesh\effect</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Effects\ActionModelEditEffect.cpp">
-      <Filter>src\Action\Model\Mesh\Effects</Filter>
+    <ClCompile Include="src\action\model\mesh\effect\ActionModelEditEffect.cpp">
+      <Filter>src\action\model\mesh\effect</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Look\ActionModelSetMaterial.cpp">
-      <Filter>src\Action\Model\Mesh\Look</Filter>
+    <ClCompile Include="src\action\model\mesh\look\ActionModelSetMaterial.cpp">
+      <Filter>src\action\model\mesh\look</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Look\ActionModelSetNormalModeSelection.cpp">
-      <Filter>src\Action\Model\Mesh\Look</Filter>
+    <ClCompile Include="src\action\model\mesh\look\ActionModelSetNormalModeSelection.cpp">
+      <Filter>src\action\model\mesh\look</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Physical\ActionModelAddBall.cpp">
-      <Filter>src\Action\Model\Mesh\Physical</Filter>
+    <ClCompile Include="src\action\model\mesh\physical\ActionModelAddBall.cpp">
+      <Filter>src\action\model\mesh\physical</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Physical\ActionModelAddCylinder.cpp">
-      <Filter>src\Action\Model\Mesh\Physical</Filter>
+    <ClCompile Include="src\action\model\mesh\physical\ActionModelAddCylinder.cpp">
+      <Filter>src\action\model\mesh\physical</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Physical\ActionModelDeleteBall.cpp">
-      <Filter>src\Action\Model\Mesh\Physical</Filter>
+    <ClCompile Include="src\action\model\mesh\physical\ActionModelDeleteBall.cpp">
+      <Filter>src\action\model\mesh\physical</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Physical\ActionModelDeleteCylinder.cpp">
-      <Filter>src\Action\Model\Mesh\Physical</Filter>
+    <ClCompile Include="src\action\model\mesh\physical\ActionModelDeleteCylinder.cpp">
+      <Filter>src\action\model\mesh\physical</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Polygon\Helper\ActionModelPolygonAddVertex.cpp">
-      <Filter>src\Action\Model\Mesh\Polygon\Helper</Filter>
+    <ClCompile Include="src\action\model\mesh\polygon\helper\ActionModelPolygonAddVertex.cpp">
+      <Filter>src\action\model\mesh\polygon\helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Polygon\Helper\ActionModelPolygonRemoveVertex.cpp">
-      <Filter>src\Action\Model\Mesh\Polygon\Helper</Filter>
+    <ClCompile Include="src\action\model\mesh\polygon\helper\ActionModelPolygonRemoveVertex.cpp">
+      <Filter>src\action\model\mesh\polygon\helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygon.cpp">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClCompile Include="src\action\model\mesh\polygon\ActionModelAddPolygon.cpp">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygonAutoSkin.cpp">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClCompile Include="src\action\model\mesh\polygon\ActionModelAddPolygonAutoSkin.cpp">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygonSingleTexture.cpp">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClCompile Include="src\action\model\mesh\polygon\ActionModelAddPolygonSingleTexture.cpp">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygonWithSkinGenerator.cpp">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClCompile Include="src\action\model\mesh\polygon\ActionModelAddPolygonWithSkinGenerator.cpp">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelCutOutPolygons.cpp">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClCompile Include="src\action\model\mesh\polygon\ActionModelCutOutPolygons.cpp">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelExtrudePolygons.cpp">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClCompile Include="src\action\model\mesh\polygon\ActionModelExtrudePolygons.cpp">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelMergePolygonsSelection.cpp">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClCompile Include="src\action\model\mesh\polygon\ActionModelMergePolygonsSelection.cpp">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelSplitPolygon.cpp">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClCompile Include="src\action\model\mesh\polygon\ActionModelSplitPolygon.cpp">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Polygon\ActionModelTriangulateSelection.cpp">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClCompile Include="src\action\model\mesh\polygon\ActionModelTriangulateSelection.cpp">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Skin\ActionModelAutomap.cpp">
-      <Filter>src\Action\Model\Mesh\Skin</Filter>
+    <ClCompile Include="src\action\model\mesh\skin\ActionModelAutomap.cpp">
+      <Filter>src\action\model\mesh\skin</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Skin\ActionModelSkinVerticesFromProjection.cpp">
-      <Filter>src\Action\Model\Mesh\Skin</Filter>
+    <ClCompile Include="src\action\model\mesh\skin\ActionModelSkinVerticesFromProjection.cpp">
+      <Filter>src\action\model\mesh\skin</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Skin\ActionModelTransformSkinVertices.cpp">
-      <Filter>src\Action\Model\Mesh\Skin</Filter>
+    <ClCompile Include="src\action\model\mesh\skin\ActionModelTransformSkinVertices.cpp">
+      <Filter>src\action\model\mesh\skin</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\Helper\ActionModelAddEmptySurface.cpp">
-      <Filter>src\Action\Model\Mesh\Surface\Helper</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\helper\ActionModelAddEmptySurface.cpp">
+      <Filter>src\action\model\mesh\surface\helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\Helper\ActionModelDeleteEmptySurface.cpp">
-      <Filter>src\Action\Model\Mesh\Surface\Helper</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\helper\ActionModelDeleteEmptySurface.cpp">
+      <Filter>src\action\model\mesh\surface\helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\Helper\ActionModelJoinSurfaces.cpp">
-      <Filter>src\Action\Model\Mesh\Surface\Helper</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\helper\ActionModelJoinSurfaces.cpp">
+      <Filter>src\action\model\mesh\surface\helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\Helper\ActionModelSurfaceAddPolygon.cpp">
-      <Filter>src\Action\Model\Mesh\Surface\Helper</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\helper\ActionModelSurfaceAddPolygon.cpp">
+      <Filter>src\action\model\mesh\surface\helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\Helper\ActionModelSurfaceDeletePolygon.cpp">
-      <Filter>src\Action\Model\Mesh\Surface\Helper</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\helper\ActionModelSurfaceDeletePolygon.cpp">
+      <Filter>src\action\model\mesh\surface\helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\Helper\ActionModelSurfaceRelinkPolygon.cpp">
-      <Filter>src\Action\Model\Mesh\Surface\Helper</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\helper\ActionModelSurfaceRelinkPolygon.cpp">
+      <Filter>src\action\model\mesh\surface\helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelAutoWeldSelection.cpp">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\ActionModelAutoWeldSelection.cpp">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelDeleteSurface.cpp">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\ActionModelDeleteSurface.cpp">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceAutoWeld.cpp">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\ActionModelSurfaceAutoWeld.cpp">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceCopy.cpp">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\ActionModelSurfaceCopy.cpp">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceInvert.cpp">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\ActionModelSurfaceInvert.cpp">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfacesSubdivide.cpp">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\ActionModelSurfacesSubdivide.cpp">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeAnd.cpp">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\ActionModelSurfaceVolumeAnd.cpp">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeSubtract.cpp">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClCompile Include="src\action\model\mesh\surface\ActionModelSurfaceVolumeSubtract.cpp">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Vertex\Helper\ActionModelDeleteUnusedVertex.cpp">
-      <Filter>src\Action\Model\Mesh\Vertex\Helper</Filter>
+    <ClCompile Include="src\action\model\mesh\vertex\helper\ActionModelDeleteUnusedVertex.cpp">
+      <Filter>src\action\model\mesh\vertex\helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Vertex\Helper\ActionModelMoveVertex.cpp">
-      <Filter>src\Action\Model\Mesh\Vertex\Helper</Filter>
+    <ClCompile Include="src\action\model\mesh\vertex\helper\ActionModelMoveVertex.cpp">
+      <Filter>src\action\model\mesh\vertex\helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelAddVertex.cpp">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClCompile Include="src\action\model\mesh\vertex\ActionModelAddVertex.cpp">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelAlignToGrid.cpp">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClCompile Include="src\action\model\mesh\vertex\ActionModelAlignToGrid.cpp">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelBevelVertices.cpp">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClCompile Include="src\action\model\mesh\vertex\ActionModelBevelVertices.cpp">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelCollapseVertices.cpp">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClCompile Include="src\action\model\mesh\vertex\ActionModelCollapseVertices.cpp">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelDeleteVertex.cpp">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClCompile Include="src\action\model\mesh\vertex\ActionModelDeleteVertex.cpp">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelFlattenVertices.cpp">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClCompile Include="src\action\model\mesh\vertex\ActionModelFlattenVertices.cpp">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelNearifyVertices.cpp">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClCompile Include="src\action\model\mesh\vertex\ActionModelNearifyVertices.cpp">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelTransformVertices.cpp">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClCompile Include="src\action\model\mesh\vertex\ActionModelTransformVertices.cpp">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\Vertex\ActionModelTriangulateVertices.cpp">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClCompile Include="src\action\model\mesh\vertex\ActionModelTriangulateVertices.cpp">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\ActionModelDeleteSelection.cpp">
-      <Filter>src\Action\Model\Mesh</Filter>
+    <ClCompile Include="src\action\model\mesh\ActionModelDeleteSelection.cpp">
+      <Filter>src\action\model\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\ActionModelEasify.cpp">
-      <Filter>src\Action\Model\Mesh</Filter>
+    <ClCompile Include="src\action\model\mesh\ActionModelEasify.cpp">
+      <Filter>src\action\model\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Mesh\ActionModelPasteGeometry.cpp">
-      <Filter>src\Action\Model\Mesh</Filter>
+    <ClCompile Include="src\action\model\mesh\ActionModelPasteGeometry.cpp">
+      <Filter>src\action\model\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Skeleton\ActionModelAddBone.cpp">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClCompile Include="src\action\model\skeleton\ActionModelAddBone.cpp">
+      <Filter>src\action\model\skeleton</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Skeleton\ActionModelAttachVerticesToBone.cpp">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClCompile Include="src\action\model\skeleton\ActionModelAttachVerticesToBone.cpp">
+      <Filter>src\action\model\skeleton</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Skeleton\ActionModelDeleteBone.cpp">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClCompile Include="src\action\model\skeleton\ActionModelDeleteBone.cpp">
+      <Filter>src\action\model\skeleton</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Skeleton\ActionModelDeleteBoneSelection.cpp">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClCompile Include="src\action\model\skeleton\ActionModelDeleteBoneSelection.cpp">
+      <Filter>src\action\model\skeleton</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Skeleton\ActionModelReconnectBone.cpp">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClCompile Include="src\action\model\skeleton\ActionModelReconnectBone.cpp">
+      <Filter>src\action\model\skeleton</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Skeleton\ActionModelSetSubModel.cpp">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClCompile Include="src\action\model\skeleton\ActionModelSetSubModel.cpp">
+      <Filter>src\action\model\skeleton</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Model\Skeleton\ActionModelTransformBones.cpp">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClCompile Include="src\action\model\skeleton\ActionModelTransformBones.cpp">
+      <Filter>src\action\model\skeleton</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Camera\ActionCameraAddPoint.cpp">
-      <Filter>src\Action\World\Camera</Filter>
+    <ClCompile Include="src\action\world\camera\ActionCameraAddPoint.cpp">
+      <Filter>src\action\world\camera</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Camera\ActionCameraMoveSelection.cpp">
-      <Filter>src\Action\World\Camera</Filter>
+    <ClCompile Include="src\action\world\camera\ActionCameraMoveSelection.cpp">
+      <Filter>src\action\world\camera</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Camera\ActionCameraMoveTimeSelection.cpp">
-      <Filter>src\Action\World\Camera</Filter>
+    <ClCompile Include="src\action\world\camera\ActionCameraMoveTimeSelection.cpp">
+      <Filter>src\action\world\camera</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Helper\ActionWorldTerrainEditHeight.cpp">
-      <Filter>src\Action\World\Helper</Filter>
+    <ClCompile Include="src\action\world\helper\ActionWorldTerrainEditHeight.cpp">
+      <Filter>src\action\world\helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Light\ActionWorldAddLight.cpp">
-      <Filter>src\Action\World\Light</Filter>
+    <ClCompile Include="src\action\world\light\ActionWorldAddLight.cpp">
+      <Filter>src\action\world\light</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Light\ActionWorldDeleteLight.cpp">
-      <Filter>src\Action\World\Light</Filter>
+    <ClCompile Include="src\action\world\light\ActionWorldDeleteLight.cpp">
+      <Filter>src\action\world\light</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Link\ActionWorldAddLink.cpp">
-      <Filter>src\Action\World\Link</Filter>
+    <ClCompile Include="src\action\world\link\ActionWorldAddLink.cpp">
+      <Filter>src\action\world\link</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Link\ActionWorldDeleteLink.cpp">
-      <Filter>src\Action\World\Link</Filter>
+    <ClCompile Include="src\action\world\link\ActionWorldDeleteLink.cpp">
+      <Filter>src\action\world\link</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Object\ActionWorldAddObject.cpp">
-      <Filter>src\Action\World\Object</Filter>
+    <ClCompile Include="src\action\world\object\ActionWorldAddObject.cpp">
+      <Filter>src\action\world\object</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Object\ActionWorldDeleteObject.cpp">
-      <Filter>src\Action\World\Object</Filter>
+    <ClCompile Include="src\action\world\object\ActionWorldDeleteObject.cpp">
+      <Filter>src\action\world\object</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Object\ActionWorldEditObject.cpp">
-      <Filter>src\Action\World\Object</Filter>
+    <ClCompile Include="src\action\world\object\ActionWorldEditObject.cpp">
+      <Filter>src\action\world\object</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Object\ActionWorldRotateObjects.cpp">
-      <Filter>src\Action\World\Object</Filter>
+    <ClCompile Include="src\action\world\object\ActionWorldRotateObjects.cpp">
+      <Filter>src\action\world\object</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Terrain\ActionWorldAddTerrain.cpp">
-      <Filter>src\Action\World\Terrain</Filter>
+    <ClCompile Include="src\action\world\terrain\ActionWorldAddTerrain.cpp">
+      <Filter>src\action\world\terrain</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Terrain\ActionWorldDeleteTerrain.cpp">
-      <Filter>src\Action\World\Terrain</Filter>
+    <ClCompile Include="src\action\world\terrain\ActionWorldDeleteTerrain.cpp">
+      <Filter>src\action\world\terrain</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Terrain\ActionWorldEditTerrain.cpp">
-      <Filter>src\Action\World\Terrain</Filter>
+    <ClCompile Include="src\action\world\terrain\ActionWorldEditTerrain.cpp">
+      <Filter>src\action\world\terrain</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Terrain\ActionWorldTerrainApplyHeightmap.cpp">
-      <Filter>src\Action\World\Terrain</Filter>
+    <ClCompile Include="src\action\world\terrain\ActionWorldTerrainApplyHeightmap.cpp">
+      <Filter>src\action\world\terrain</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\Terrain\ActionWorldTerrainBrushExtrude.cpp">
-      <Filter>src\Action\World\Terrain</Filter>
+    <ClCompile Include="src\action\world\terrain\ActionWorldTerrainBrushExtrude.cpp">
+      <Filter>src\action\world\terrain</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\ActionWorldDeleteSelection.cpp">
-      <Filter>src\Action\World</Filter>
+    <ClCompile Include="src\action\world\ActionWorldDeleteSelection.cpp">
+      <Filter>src\action\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\ActionWorldEditData.cpp">
-      <Filter>src\Action\World</Filter>
+    <ClCompile Include="src\action\world\ActionWorldEditData.cpp">
+      <Filter>src\action\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\ActionWorldMoveSelection.cpp">
-      <Filter>src\Action\World</Filter>
+    <ClCompile Include="src\action\world\ActionWorldMoveSelection.cpp">
+      <Filter>src\action\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\ActionWorldPaste.cpp">
-      <Filter>src\Action\World</Filter>
+    <ClCompile Include="src\action\world\ActionWorldPaste.cpp">
+      <Filter>src\action\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\ActionWorldSelectionAddComponent.cpp">
-      <Filter>src\Action\World</Filter>
+    <ClCompile Include="src\action\world\ActionWorldSelectionAddComponent.cpp">
+      <Filter>src\action\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\World\ActionWorldSetEgo.cpp">
-      <Filter>src\Action\World</Filter>
+    <ClCompile Include="src\action\world\ActionWorldSetEgo.cpp">
+      <Filter>src\action\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\Action.cpp">
-      <Filter>src\Action</Filter>
+    <ClCompile Include="src\action\Action.cpp">
+      <Filter>src\action</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\ActionGroup.cpp">
-      <Filter>src\Action</Filter>
+    <ClCompile Include="src\action\ActionGroup.cpp">
+      <Filter>src\action</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\ActionManager.cpp">
-      <Filter>src\Action</Filter>
+    <ClCompile Include="src\action\ActionManager.cpp">
+      <Filter>src\action</Filter>
     </ClCompile>
-    <ClCompile Include="src\Action\ActionMultiView.cpp">
-      <Filter>src\Action</Filter>
+    <ClCompile Include="src\action\ActionMultiView.cpp">
+      <Filter>src\action</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Administration\AdminFile.cpp">
-      <Filter>src\Data\Administration</Filter>
+    <ClCompile Include="src\data\administration\AdminFile.cpp">
+      <Filter>src\data\administration</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Administration\AdminFileList.cpp">
-      <Filter>src\Data\Administration</Filter>
+    <ClCompile Include="src\data\administration\AdminFileList.cpp">
+      <Filter>src\data\administration</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Administration\DataAdministration.cpp">
-      <Filter>src\Data\Administration</Filter>
+    <ClCompile Include="src\data\administration\DataAdministration.cpp">
+      <Filter>src\data\administration</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Administration\GameIniData.cpp">
-      <Filter>src\Data\Administration</Filter>
+    <ClCompile Include="src\data\administration\GameIniData.cpp">
+      <Filter>src\data\administration</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Font\Import\ImporterCairo.cpp">
-      <Filter>src\Data\Font\Import</Filter>
+    <ClCompile Include="src\data\font\import\ImporterCairo.cpp">
+      <Filter>src\data\font\import</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Font\DataFont.cpp">
-      <Filter>src\Data\Font</Filter>
+    <ClCompile Include="src\data\font\DataFont.cpp">
+      <Filter>src\data\font</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Material\DataMaterial.cpp">
-      <Filter>src\Data\Material</Filter>
+    <ClCompile Include="src\data\material\DataMaterial.cpp">
+      <Filter>src\data\material</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Material\ShaderBuilderContext.cpp">
-      <Filter>src\Data\Material</Filter>
+    <ClCompile Include="src\data\material\ShaderBuilderContext.cpp">
+      <Filter>src\data\material</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Material\ShaderGraph.cpp">
-      <Filter>src\Data\Material</Filter>
+    <ClCompile Include="src\data\material\ShaderGraph.cpp">
+      <Filter>src\data\material</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Material\ShaderNode.cpp">
-      <Filter>src\Data\Material</Filter>
+    <ClCompile Include="src\data\material\ShaderNode.cpp">
+      <Filter>src\data\material</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\Geometry\Geometry.cpp">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClCompile Include="src\data\model\geometry\Geometry.cpp">
+      <Filter>src\data\model\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\Geometry\GeometryBall.cpp">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClCompile Include="src\data\model\geometry\GeometryBall.cpp">
+      <Filter>src\data\model\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\Geometry\GeometryCube.cpp">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClCompile Include="src\data\model\geometry\GeometryCube.cpp">
+      <Filter>src\data\model\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\Geometry\GeometryCylinder.cpp">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClCompile Include="src\data\model\geometry\GeometryCylinder.cpp">
+      <Filter>src\data\model\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\Geometry\GeometryPlane.cpp">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClCompile Include="src\data\model\geometry\GeometryPlane.cpp">
+      <Filter>src\data\model\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\Geometry\GeometryPlatonic.cpp">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClCompile Include="src\data\model\geometry\GeometryPlatonic.cpp">
+      <Filter>src\data\model\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\Geometry\GeometrySphere.cpp">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClCompile Include="src\data\model\geometry\GeometrySphere.cpp">
+      <Filter>src\data\model\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\Geometry\GeometrySubtract.cpp">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClCompile Include="src\data\model\geometry\GeometrySubtract.cpp">
+      <Filter>src\data\model\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\Geometry\GeometryTeapot.cpp">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClCompile Include="src\data\model\geometry\GeometryTeapot.cpp">
+      <Filter>src\data\model\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\Geometry\GeometryTorus.cpp">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClCompile Include="src\data\model\geometry\GeometryTorus.cpp">
+      <Filter>src\data\model\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\Geometry\GeometryTorusKnot.cpp">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClCompile Include="src\data\model\geometry\GeometryTorusKnot.cpp">
+      <Filter>src\data\model\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\BspTree.cpp">
-      <Filter>src\Data\Model</Filter>
+    <ClCompile Include="src\data\model\BspTree.cpp">
+      <Filter>src\data\model</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\DataModel.cpp">
-      <Filter>src\Data\Model</Filter>
+    <ClCompile Include="src\data\model\DataModel.cpp">
+      <Filter>src\data\model</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\ModelMaterial.cpp">
-      <Filter>src\Data\Model</Filter>
+    <ClCompile Include="src\data\model\ModelMaterial.cpp">
+      <Filter>src\data\model</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\ModelMesh.cpp">
-      <Filter>src\Data\Model</Filter>
+    <ClCompile Include="src\data\model\ModelMesh.cpp">
+      <Filter>src\data\model</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\ModelPolygon.cpp">
-      <Filter>src\Data\Model</Filter>
+    <ClCompile Include="src\data\model\ModelPolygon.cpp">
+      <Filter>src\data\model</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\ModelSelection.cpp">
-      <Filter>src\Data\Model</Filter>
+    <ClCompile Include="src\data\model\ModelSelection.cpp">
+      <Filter>src\data\model</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Model\SkinGenerator.cpp">
-      <Filter>src\Data\Model</Filter>
+    <ClCompile Include="src\data\model\SkinGenerator.cpp">
+      <Filter>src\data\model</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\Lightmap\Lightmap.cpp">
-      <Filter>src\Data\World\Lightmap</Filter>
+    <ClCompile Include="src\data\world\lightmap\Lightmap.cpp">
+      <Filter>src\data\world\lightmap</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\Lightmap\LightmapData.cpp">
-      <Filter>src\Data\World\Lightmap</Filter>
+    <ClCompile Include="src\data\world\lightmap\LightmapData.cpp">
+      <Filter>src\data\world\lightmap</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\Lightmap\LightmapPhotonMap.cpp">
-      <Filter>src\Data\World\Lightmap</Filter>
+    <ClCompile Include="src\data\world\lightmap\LightmapPhotonMap.cpp">
+      <Filter>src\data\world\lightmap</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\Lightmap\LightmapPhotonMapImageSpace.cpp">
-      <Filter>src\Data\World\Lightmap</Filter>
+    <ClCompile Include="src\data\world\lightmap\LightmapPhotonMapImageSpace.cpp">
+      <Filter>src\data\world\lightmap</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\Lightmap\LightmapRadiosity.cpp">
-      <Filter>src\Data\World\Lightmap</Filter>
+    <ClCompile Include="src\data\world\lightmap\LightmapRadiosity.cpp">
+      <Filter>src\data\world\lightmap</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\Lightmap\LightmapRayTracing.cpp">
-      <Filter>src\Data\World\Lightmap</Filter>
+    <ClCompile Include="src\data\world\lightmap\LightmapRayTracing.cpp">
+      <Filter>src\data\world\lightmap</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\DataCamera.cpp">
-      <Filter>src\Data\World</Filter>
+    <ClCompile Include="src\data\world\DataCamera.cpp">
+      <Filter>src\data\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\DataWorld.cpp">
-      <Filter>src\Data\World</Filter>
+    <ClCompile Include="src\data\world\DataWorld.cpp">
+      <Filter>src\data\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\WorldCamera.cpp">
-      <Filter>src\Data\World</Filter>
+    <ClCompile Include="src\data\world\WorldCamera.cpp">
+      <Filter>src\data\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\WorldLight.cpp">
-      <Filter>src\Data\World</Filter>
+    <ClCompile Include="src\data\world\WorldLight.cpp">
+      <Filter>src\data\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\WorldLink.cpp">
-      <Filter>src\Data\World</Filter>
+    <ClCompile Include="src\data\world\WorldLink.cpp">
+      <Filter>src\data\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\WorldObject.cpp">
-      <Filter>src\Data\World</Filter>
+    <ClCompile Include="src\data\world\WorldObject.cpp">
+      <Filter>src\data\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\World\WorldTerrain.cpp">
-      <Filter>src\Data\World</Filter>
+    <ClCompile Include="src\data\world\WorldTerrain.cpp">
+      <Filter>src\data\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Data\Data.cpp">
-      <Filter>src\Data</Filter>
+    <ClCompile Include="src\data\Data.cpp">
+      <Filter>src\data</Filter>
     </ClCompile>
     <ClCompile Include="src\lib\any\any.cpp">
       <Filter>src\lib\any</Filter>
@@ -1027,302 +1027,302 @@
     <ClCompile Include="src\lib\threads\ThreadedWork.cpp">
       <Filter>src\lib\threads</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Administration\Dialog\AdministrationDialog.cpp">
-      <Filter>src\Mode\Administration\Dialog</Filter>
+    <ClCompile Include="src\mode\administration\dialog\AdministrationDialog.cpp">
+      <Filter>src\mode\administration\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Administration\Dialog\ConfigurationDialog.cpp">
-      <Filter>src\Mode\Administration\Dialog</Filter>
+    <ClCompile Include="src\mode\administration\dialog\ConfigurationDialog.cpp">
+      <Filter>src\mode\administration\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Administration\Dialog\NewProjectDialog.cpp">
-      <Filter>src\Mode\Administration\Dialog</Filter>
+    <ClCompile Include="src\mode\administration\dialog\NewProjectDialog.cpp">
+      <Filter>src\mode\administration\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Administration\ModeAdministration.cpp">
-      <Filter>src\Mode\Administration</Filter>
+    <ClCompile Include="src\mode\administration\ModeAdministration.cpp">
+      <Filter>src\mode\administration</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Font\Dialog\FontDialog.cpp">
-      <Filter>src\Mode\Font\Dialog</Filter>
+    <ClCompile Include="src\mode\font\dialog\FontDialog.cpp">
+      <Filter>src\mode\font\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Font\ModeFont.cpp">
-      <Filter>src\Mode\Font</Filter>
+    <ClCompile Include="src\mode\font\ModeFont.cpp">
+      <Filter>src\mode\font</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Material\Dialog\MaterialPropertiesDialog.cpp">
-      <Filter>src\Mode\Material\Dialog</Filter>
+    <ClCompile Include="src\mode\material\dialog\MaterialPropertiesDialog.cpp">
+      <Filter>src\mode\material\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Material\Dialog\ShaderGraphDialog.cpp">
-      <Filter>src\Mode\Material\Dialog</Filter>
+    <ClCompile Include="src\mode\material\dialog\ShaderGraphDialog.cpp">
+      <Filter>src\mode\material\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Material\ModeMaterial.cpp">
-      <Filter>src\Mode\Material</Filter>
+    <ClCompile Include="src\mode\material\ModeMaterial.cpp">
+      <Filter>src\mode\material</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Animation\Creation\ModeModelAnimationInterpolateFrames.cpp">
-      <Filter>src\Mode\Model\Animation\Creation</Filter>
+    <ClCompile Include="src\mode\model\animation\creation\ModeModelAnimationInterpolateFrames.cpp">
+      <Filter>src\mode\model\animation\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Animation\ModeModelAnimation.cpp">
-      <Filter>src\Mode\Model\Animation</Filter>
+    <ClCompile Include="src\mode\model\animation\ModeModelAnimation.cpp">
+      <Filter>src\mode\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Animation\ModeModelAnimationNone.cpp">
-      <Filter>src\Mode\Model\Animation</Filter>
+    <ClCompile Include="src\mode\model\animation\ModeModelAnimationNone.cpp">
+      <Filter>src\mode\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Animation\ModeModelAnimationSkeleton.cpp">
-      <Filter>src\Mode\Model\Animation</Filter>
+    <ClCompile Include="src\mode\model\animation\ModeModelAnimationSkeleton.cpp">
+      <Filter>src\mode\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Animation\ModeModelAnimationVertex.cpp">
-      <Filter>src\Mode\Model\Animation</Filter>
+    <ClCompile Include="src\mode\model\animation\ModeModelAnimationVertex.cpp">
+      <Filter>src\mode\model\animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Dialog\ModelAnimationDialog.cpp">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClCompile Include="src\mode\model\dialog\ModelAnimationDialog.cpp">
+      <Filter>src\mode\model\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Dialog\ModelAnimationTimelinePanel.cpp">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClCompile Include="src\mode\model\dialog\ModelAnimationTimelinePanel.cpp">
+      <Filter>src\mode\model\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Dialog\ModelDuplicateAnimationDialog.cpp">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClCompile Include="src\mode\model\dialog\ModelDuplicateAnimationDialog.cpp">
+      <Filter>src\mode\model\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Dialog\ModelEasifyDialog.cpp">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClCompile Include="src\mode\model\dialog\ModelEasifyDialog.cpp">
+      <Filter>src\mode\model\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Dialog\ModelFXDialog.cpp">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClCompile Include="src\mode\model\dialog\ModelFXDialog.cpp">
+      <Filter>src\mode\model\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Dialog\ModelMaterialDialog.cpp">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClCompile Include="src\mode\model\dialog\ModelMaterialDialog.cpp">
+      <Filter>src\mode\model\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Dialog\ModelMaterialSelectionDialog.cpp">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClCompile Include="src\mode\model\dialog\ModelMaterialSelectionDialog.cpp">
+      <Filter>src\mode\model\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Dialog\ModelNewAnimationDialog.cpp">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClCompile Include="src\mode\model\dialog\ModelNewAnimationDialog.cpp">
+      <Filter>src\mode\model\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Dialog\ModelPropertiesDialog.cpp">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClCompile Include="src\mode\model\dialog\ModelPropertiesDialog.cpp">
+      <Filter>src\mode\model\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshAutoweld.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshAutoweld.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshBevelEdges.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshBevelEdges.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateBall.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshCreateBall.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateCube.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshCreateCube.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateCylinder.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshCreateCylinder.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateCylinderSnake.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshCreateCylinderSnake.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreatePlane.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshCreatePlane.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreatePlatonic.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshCreatePlatonic.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreatePolygon.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshCreatePolygon.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateTorus.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshCreateTorus.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateVertex.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshCreateVertex.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCutLoop.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshCutLoop.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshDeformCylinder.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshDeformCylinder.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshDeformFunction.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshDeformFunction.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshExtrudePolygons.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshExtrudePolygons.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshPaste.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshPaste.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Creation\ModeModelMeshSplitPolygon.cpp">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClCompile Include="src\mode\model\mesh\creation\ModeModelMeshSplitPolygon.cpp">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Selection\MeshSelectionMode.cpp">
-      <Filter>src\Mode\Model\Mesh\Selection</Filter>
+    <ClCompile Include="src\mode\model\mesh\selection\MeshSelectionMode.cpp">
+      <Filter>src\mode\model\mesh\selection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Selection\MeshSelectionModeEdge.cpp">
-      <Filter>src\Mode\Model\Mesh\Selection</Filter>
+    <ClCompile Include="src\mode\model\mesh\selection\MeshSelectionModeEdge.cpp">
+      <Filter>src\mode\model\mesh\selection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Selection\MeshSelectionModePolygon.cpp">
-      <Filter>src\Mode\Model\Mesh\Selection</Filter>
+    <ClCompile Include="src\mode\model\mesh\selection\MeshSelectionModePolygon.cpp">
+      <Filter>src\mode\model\mesh\selection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Selection\MeshSelectionModeSurface.cpp">
-      <Filter>src\Mode\Model\Mesh\Selection</Filter>
+    <ClCompile Include="src\mode\model\mesh\selection\MeshSelectionModeSurface.cpp">
+      <Filter>src\mode\model\mesh\selection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\Selection\MeshSelectionModeVertex.cpp">
-      <Filter>src\Mode\Model\Mesh\Selection</Filter>
+    <ClCompile Include="src\mode\model\mesh\selection\MeshSelectionModeVertex.cpp">
+      <Filter>src\mode\model\mesh\selection</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\ModeModelMesh.cpp">
-      <Filter>src\Mode\Model\Mesh</Filter>
+    <ClCompile Include="src\mode\model\mesh\ModeModelMesh.cpp">
+      <Filter>src\mode\model\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\ModeModelMeshDeform.cpp">
-      <Filter>src\Mode\Model\Mesh</Filter>
+    <ClCompile Include="src\mode\model\mesh\ModeModelMeshDeform.cpp">
+      <Filter>src\mode\model\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\ModeModelMeshMaterial.cpp">
-      <Filter>src\Mode\Model\Mesh</Filter>
+    <ClCompile Include="src\mode\model\mesh\ModeModelMeshMaterial.cpp">
+      <Filter>src\mode\model\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\ModeModelMeshPaint.cpp">
-      <Filter>src\Mode\Model\Mesh</Filter>
+    <ClCompile Include="src\mode\model\mesh\ModeModelMeshPaint.cpp">
+      <Filter>src\mode\model\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Mesh\ModeModelMeshTexture.cpp">
-      <Filter>src\Mode\Model\Mesh</Filter>
+    <ClCompile Include="src\mode\model\mesh\ModeModelMeshTexture.cpp">
+      <Filter>src\mode\model\mesh</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Skeleton\Creation\ModeModelSkeletonAttachVertices.cpp">
-      <Filter>src\Mode\Model\Skeleton\Creation</Filter>
+    <ClCompile Include="src\mode\model\skeleton\creation\ModeModelSkeletonAttachVertices.cpp">
+      <Filter>src\mode\model\skeleton\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Skeleton\Creation\ModeModelSkeletonCreateBone.cpp">
-      <Filter>src\Mode\Model\Skeleton\Creation</Filter>
+    <ClCompile Include="src\mode\model\skeleton\creation\ModeModelSkeletonCreateBone.cpp">
+      <Filter>src\mode\model\skeleton\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\Skeleton\ModeModelSkeleton.cpp">
-      <Filter>src\Mode\Model\Skeleton</Filter>
+    <ClCompile Include="src\mode\model\skeleton\ModeModelSkeleton.cpp">
+      <Filter>src\mode\model\skeleton</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Model\ModeModel.cpp">
-      <Filter>src\Mode\Model</Filter>
+    <ClCompile Include="src\mode\model\ModeModel.cpp">
+      <Filter>src\mode\model</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Camera\Creation\ModeWorldCameraCreatePoint.cpp">
-      <Filter>src\Mode\World\Camera\Creation</Filter>
+    <ClCompile Include="src\mode\world\camera\creation\ModeWorldCameraCreatePoint.cpp">
+      <Filter>src\mode\world\camera\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Camera\ModeWorldCamera.cpp">
-      <Filter>src\Mode\World\Camera</Filter>
+    <ClCompile Include="src\mode\world\camera\ModeWorldCamera.cpp">
+      <Filter>src\mode\world\camera</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Creation\ModeWorldCreateLight.cpp">
-      <Filter>src\Mode\World\Creation</Filter>
+    <ClCompile Include="src\mode\world\creation\ModeWorldCreateLight.cpp">
+      <Filter>src\mode\world\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Creation\ModeWorldCreateLink.cpp">
-      <Filter>src\Mode\World\Creation</Filter>
+    <ClCompile Include="src\mode\world\creation\ModeWorldCreateLink.cpp">
+      <Filter>src\mode\world\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Creation\ModeWorldCreateObject.cpp">
-      <Filter>src\Mode\World\Creation</Filter>
+    <ClCompile Include="src\mode\world\creation\ModeWorldCreateObject.cpp">
+      <Filter>src\mode\world\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Creation\ModeWorldCreateTerrain.cpp">
-      <Filter>src\Mode\World\Creation</Filter>
+    <ClCompile Include="src\mode\world\creation\ModeWorldCreateTerrain.cpp">
+      <Filter>src\mode\world\creation</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Dialog\CameraDialog.cpp">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClCompile Include="src\mode\world\dialog\CameraDialog.cpp">
+      <Filter>src\mode\world\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Dialog\ComponentSelectionDialog.cpp">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClCompile Include="src\mode\world\dialog\ComponentSelectionDialog.cpp">
+      <Filter>src\mode\world\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Dialog\LightmapDialog.cpp">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClCompile Include="src\mode\world\dialog\LightmapDialog.cpp">
+      <Filter>src\mode\world\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Dialog\ObjectPropertiesDialog.cpp">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClCompile Include="src\mode\world\dialog\ObjectPropertiesDialog.cpp">
+      <Filter>src\mode\world\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Dialog\ScriptVarsDialog.cpp">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClCompile Include="src\mode\world\dialog\ScriptVarsDialog.cpp">
+      <Filter>src\mode\world\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Dialog\SelectionPropertiesDialog.cpp">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClCompile Include="src\mode\world\dialog\SelectionPropertiesDialog.cpp">
+      <Filter>src\mode\world\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Dialog\TerrainCreationDialog.cpp">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClCompile Include="src\mode\world\dialog\TerrainCreationDialog.cpp">
+      <Filter>src\mode\world\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Dialog\TerrainHeightmapDialog.cpp">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClCompile Include="src\mode\world\dialog\TerrainHeightmapDialog.cpp">
+      <Filter>src\mode\world\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Dialog\TerrainPropertiesDialog.cpp">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClCompile Include="src\mode\world\dialog\TerrainPropertiesDialog.cpp">
+      <Filter>src\mode\world\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Dialog\WorldObjectListPanel.cpp">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClCompile Include="src\mode\world\dialog\WorldObjectListPanel.cpp">
+      <Filter>src\mode\world\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Dialog\WorldPropertiesDialog.cpp">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClCompile Include="src\mode\world\dialog\WorldPropertiesDialog.cpp">
+      <Filter>src\mode\world\dialog</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\Terrain\ModeWorldTerrain.cpp">
-      <Filter>src\Mode\World\Terrain</Filter>
+    <ClCompile Include="src\mode\world\terrain\ModeWorldTerrain.cpp">
+      <Filter>src\mode\world\terrain</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\World\ModeWorld.cpp">
-      <Filter>src\Mode\World</Filter>
+    <ClCompile Include="src\mode\world\ModeWorld.cpp">
+      <Filter>src\mode\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\Mode.cpp">
-      <Filter>src\Mode</Filter>
+    <ClCompile Include="src\mode\Mode.cpp">
+      <Filter>src\mode</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\ModeCreation.cpp">
-      <Filter>src\Mode</Filter>
+    <ClCompile Include="src\mode\ModeCreation.cpp">
+      <Filter>src\mode</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mode\ModeNone.cpp">
-      <Filter>src\Mode</Filter>
+    <ClCompile Include="src\mode\ModeNone.cpp">
+      <Filter>src\mode</Filter>
     </ClCompile>
-    <ClCompile Include="src\MultiView\ActionController.cpp">
-      <Filter>src\MultiView</Filter>
+    <ClCompile Include="src\multiview\ActionController.cpp">
+      <Filter>src\multiview</Filter>
     </ClCompile>
-    <ClCompile Include="src\MultiView\CameraController.cpp">
-      <Filter>src\MultiView</Filter>
+    <ClCompile Include="src\multiview\CameraController.cpp">
+      <Filter>src\multiview</Filter>
     </ClCompile>
-    <ClCompile Include="src\MultiView\ColorScheme.cpp">
-      <Filter>src\MultiView</Filter>
+    <ClCompile Include="src\multiview\ColorScheme.cpp">
+      <Filter>src\multiview</Filter>
     </ClCompile>
-    <ClCompile Include="src\MultiView\DrawingHelper.cpp">
-      <Filter>src\MultiView</Filter>
+    <ClCompile Include="src\multiview\DrawingHelper.cpp">
+      <Filter>src\multiview</Filter>
     </ClCompile>
-    <ClCompile Include="src\MultiView\MouseWrapper.cpp">
-      <Filter>src\MultiView</Filter>
+    <ClCompile Include="src\multiview\MouseWrapper.cpp">
+      <Filter>src\multiview</Filter>
     </ClCompile>
-    <ClCompile Include="src\MultiView\MultiView.cpp">
-      <Filter>src\MultiView</Filter>
+    <ClCompile Include="src\multiview\MultiView.cpp">
+      <Filter>src\multiview</Filter>
     </ClCompile>
-    <ClCompile Include="src\MultiView\SingleData.cpp">
-      <Filter>src\MultiView</Filter>
+    <ClCompile Include="src\multiview\SingleData.cpp">
+      <Filter>src\multiview</Filter>
     </ClCompile>
-    <ClCompile Include="src\MultiView\Window.cpp">
-      <Filter>src\MultiView</Filter>
+    <ClCompile Include="src\multiview\Window.cpp">
+      <Filter>src\multiview</Filter>
     </ClCompile>
-    <ClCompile Include="src\Storage\Format\old\LoadModelV11.cpp">
-      <Filter>src\Storage\Format\old</Filter>
+    <ClCompile Include="src\storage\format\old\LoadModelV11.cpp">
+      <Filter>src\storage\format\old</Filter>
     </ClCompile>
-    <ClCompile Include="src\Storage\Format\Format.cpp">
-      <Filter>src\Storage\Format</Filter>
+    <ClCompile Include="src\storage\format\Format.cpp">
+      <Filter>src\storage\format</Filter>
     </ClCompile>
-    <ClCompile Include="src\Storage\Format\FormatFontX.cpp">
-      <Filter>src\Storage\Format</Filter>
+    <ClCompile Include="src\storage\format\FormatFontX.cpp">
+      <Filter>src\storage\format</Filter>
     </ClCompile>
-    <ClCompile Include="src\Storage\Format\FormatMaterial.cpp">
-      <Filter>src\Storage\Format</Filter>
+    <ClCompile Include="src\storage\format\FormatMaterial.cpp">
+      <Filter>src\storage\format</Filter>
     </ClCompile>
-    <ClCompile Include="src\Storage\Format\FormatModel.cpp">
-      <Filter>src\Storage\Format</Filter>
+    <ClCompile Include="src\storage\format\FormatModel.cpp">
+      <Filter>src\storage\format</Filter>
     </ClCompile>
-    <ClCompile Include="src\Storage\Format\FormatModel3ds.cpp">
-      <Filter>src\Storage\Format</Filter>
+    <ClCompile Include="src\storage\format\FormatModel3ds.cpp">
+      <Filter>src\storage\format</Filter>
     </ClCompile>
-    <ClCompile Include="src\Storage\Format\FormatModelJson.cpp">
-      <Filter>src\Storage\Format</Filter>
+    <ClCompile Include="src\storage\format\FormatModelJson.cpp">
+      <Filter>src\storage\format</Filter>
     </ClCompile>
-    <ClCompile Include="src\Storage\Format\FormatModelPly.cpp">
-      <Filter>src\Storage\Format</Filter>
+    <ClCompile Include="src\storage\format\FormatModelPly.cpp">
+      <Filter>src\storage\format</Filter>
     </ClCompile>
-    <ClCompile Include="src\Storage\Format\FormatTerrain.cpp">
-      <Filter>src\Storage\Format</Filter>
+    <ClCompile Include="src\storage\format\FormatTerrain.cpp">
+      <Filter>src\storage\format</Filter>
     </ClCompile>
-    <ClCompile Include="src\Storage\Format\FormatWorld.cpp">
-      <Filter>src\Storage\Format</Filter>
+    <ClCompile Include="src\storage\format\FormatWorld.cpp">
+      <Filter>src\storage\format</Filter>
     </ClCompile>
-    <ClCompile Include="src\Storage\Storage.cpp">
-      <Filter>src\Storage</Filter>
+    <ClCompile Include="src\storage\Storage.cpp">
+      <Filter>src\storage</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stuff\BrushPanel.cpp">
-      <Filter>src\Stuff</Filter>
+    <ClCompile Include="src\stuff\BrushPanel.cpp">
+      <Filter>src\stuff</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stuff\Observable.cpp">
-      <Filter>src\Stuff</Filter>
+    <ClCompile Include="src\stuff\Observable.cpp">
+      <Filter>src\stuff</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stuff\PluginManager.cpp">
-      <Filter>src\Stuff</Filter>
+    <ClCompile Include="src\stuff\PluginManager.cpp">
+      <Filter>src\stuff</Filter>
     </ClCompile>
-    <ClCompile Include="src\Stuff\Progress.cpp">
-      <Filter>src\Stuff</Filter>
+    <ClCompile Include="src\stuff\Progress.cpp">
+      <Filter>src\stuff</Filter>
     </ClCompile>
     <ClCompile Include="src\y\components\Animator.cpp">
       <Filter>src\y\components</Filter>
@@ -1401,455 +1401,455 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Action\Font\ActionFontEditGlobal.h">
-      <Filter>src\Action\Font</Filter>
+    <ClInclude Include="src\action\font\ActionFontEditGlobal.h">
+      <Filter>src\action\font</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Font\ActionFontEditGlyph.h">
-      <Filter>src\Action\Font</Filter>
+    <ClInclude Include="src\action\font\ActionFontEditGlyph.h">
+      <Filter>src\action\font</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Material\ActionMaterialEditAppearance.h">
-      <Filter>src\Action\Material</Filter>
+    <ClInclude Include="src\action\material\ActionMaterialEditAppearance.h">
+      <Filter>src\action\material</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Material\ActionMaterialEditPhysics.h">
-      <Filter>src\Action\Material</Filter>
+    <ClInclude Include="src\action\material\ActionMaterialEditPhysics.h">
+      <Filter>src\action\material</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Animation\ActionModelAddAnimation.h">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClInclude Include="src\action\model\animation\ActionModelAddAnimation.h">
+      <Filter>src\action\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationAddFrame.h">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClInclude Include="src\action\model\animation\ActionModelAnimationAddFrame.h">
+      <Filter>src\action\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationDeleteFrame.h">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClInclude Include="src\action\model\animation\ActionModelAnimationDeleteFrame.h">
+      <Filter>src\action\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationSetBone.h">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClInclude Include="src\action\model\animation\ActionModelAnimationSetBone.h">
+      <Filter>src\action\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationSetData.h">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClInclude Include="src\action\model\animation\ActionModelAnimationSetData.h">
+      <Filter>src\action\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationSetFrameDuration.h">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClInclude Include="src\action\model\animation\ActionModelAnimationSetFrameDuration.h">
+      <Filter>src\action\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationTransformBones.h">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClInclude Include="src\action\model\animation\ActionModelAnimationTransformBones.h">
+      <Filter>src\action\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Animation\ActionModelAnimationTransformVertices.h">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClInclude Include="src\action\model\animation\ActionModelAnimationTransformVertices.h">
+      <Filter>src\action\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Animation\ActionModelDeleteAnimation.h">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClInclude Include="src\action\model\animation\ActionModelDeleteAnimation.h">
+      <Filter>src\action\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Animation\ActionModelDuplicateAnimation.h">
-      <Filter>src\Action\Model\Animation</Filter>
+    <ClInclude Include="src\action\model\animation\ActionModelDuplicateAnimation.h">
+      <Filter>src\action\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Data\ActionModelAddMaterial.h">
-      <Filter>src\Action\Model\Data</Filter>
+    <ClInclude Include="src\action\model\data\ActionModelAddMaterial.h">
+      <Filter>src\action\model\data</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Data\ActionModelDeleteMaterial.h">
-      <Filter>src\Action\Model\Data</Filter>
+    <ClInclude Include="src\action\model\data\ActionModelDeleteMaterial.h">
+      <Filter>src\action\model\data</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Data\ActionModelEditData.h">
-      <Filter>src\Action\Model\Data</Filter>
+    <ClInclude Include="src\action\model\data\ActionModelEditData.h">
+      <Filter>src\action\model\data</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Data\ActionModelEditMaterial.h">
-      <Filter>src\Action\Model\Data</Filter>
+    <ClInclude Include="src\action\model\data\ActionModelEditMaterial.h">
+      <Filter>src\action\model\data</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Brush\ActionModelBrushComplexify.h">
-      <Filter>src\Action\Model\Mesh\Brush</Filter>
+    <ClInclude Include="src\action\model\mesh\brush\ActionModelBrushComplexify.h">
+      <Filter>src\action\model\mesh\brush</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Brush\ActionModelBrushExtrude.h">
-      <Filter>src\Action\Model\Mesh\Brush</Filter>
+    <ClInclude Include="src\action\model\mesh\brush\ActionModelBrushExtrude.h">
+      <Filter>src\action\model\mesh\brush</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Brush\ActionModelBrushSmooth.h">
-      <Filter>src\Action\Model\Mesh\Brush</Filter>
+    <ClInclude Include="src\action\model\mesh\brush\ActionModelBrushSmooth.h">
+      <Filter>src\action\model\mesh\brush</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Edge\ActionModelBevelEdges.h">
-      <Filter>src\Action\Model\Mesh\Edge</Filter>
+    <ClInclude Include="src\action\model\mesh\edge\ActionModelBevelEdges.h">
+      <Filter>src\action\model\mesh\edge</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Edge\ActionModelCollapseEdge.h">
-      <Filter>src\Action\Model\Mesh\Edge</Filter>
+    <ClInclude Include="src\action\model\mesh\edge\ActionModelCollapseEdge.h">
+      <Filter>src\action\model\mesh\edge</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Edge\ActionModelSplitEdge.h">
-      <Filter>src\Action\Model\Mesh\Edge</Filter>
+    <ClInclude Include="src\action\model\mesh\edge\ActionModelSplitEdge.h">
+      <Filter>src\action\model\mesh\edge</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Effects\ActionModelAddEffects.h">
-      <Filter>src\Action\Model\Mesh\Effects</Filter>
+    <ClInclude Include="src\action\model\mesh\effect\ActionModelAddEffects.h">
+      <Filter>src\action\model\mesh\effect</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Effects\ActionModelClearEffects.h">
-      <Filter>src\Action\Model\Mesh\Effects</Filter>
+    <ClInclude Include="src\action\model\mesh\effect\ActionModelClearEffects.h">
+      <Filter>src\action\model\mesh\effect</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Effects\ActionModelEditEffect.h">
-      <Filter>src\Action\Model\Mesh\Effects</Filter>
+    <ClInclude Include="src\action\model\mesh\effect\ActionModelEditEffect.h">
+      <Filter>src\action\model\mesh\effect</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Look\ActionModelSetMaterial.h">
-      <Filter>src\Action\Model\Mesh\Look</Filter>
+    <ClInclude Include="src\action\model\mesh\look\ActionModelSetMaterial.h">
+      <Filter>src\action\model\mesh\look</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Look\ActionModelSetNormalModeSelection.h">
-      <Filter>src\Action\Model\Mesh\Look</Filter>
+    <ClInclude Include="src\action\model\mesh\look\ActionModelSetNormalModeSelection.h">
+      <Filter>src\action\model\mesh\look</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Physical\ActionModelAddBall.h">
-      <Filter>src\Action\Model\Mesh\Physical</Filter>
+    <ClInclude Include="src\action\model\mesh\physical\ActionModelAddBall.h">
+      <Filter>src\action\model\mesh\physical</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Physical\ActionModelAddCylinder.h">
-      <Filter>src\Action\Model\Mesh\Physical</Filter>
+    <ClInclude Include="src\action\model\mesh\physical\ActionModelAddCylinder.h">
+      <Filter>src\action\model\mesh\physical</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Physical\ActionModelDeleteBall.h">
-      <Filter>src\Action\Model\Mesh\Physical</Filter>
+    <ClInclude Include="src\action\model\mesh\physical\ActionModelDeleteBall.h">
+      <Filter>src\action\model\mesh\physical</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Physical\ActionModelDeleteCylinder.h">
-      <Filter>src\Action\Model\Mesh\Physical</Filter>
+    <ClInclude Include="src\action\model\mesh\physical\ActionModelDeleteCylinder.h">
+      <Filter>src\action\model\mesh\physical</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Polygon\Helper\ActionModelPolygonAddVertex.h">
-      <Filter>src\Action\Model\Mesh\Polygon\Helper</Filter>
+    <ClInclude Include="src\action\model\mesh\polygon\helper\ActionModelPolygonAddVertex.h">
+      <Filter>src\action\model\mesh\polygon\helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Polygon\Helper\ActionModelPolygonRemoveVertex.h">
-      <Filter>src\Action\Model\Mesh\Polygon\Helper</Filter>
+    <ClInclude Include="src\action\model\mesh\polygon\helper\ActionModelPolygonRemoveVertex.h">
+      <Filter>src\action\model\mesh\polygon\helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygon.h">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClInclude Include="src\action\model\mesh\polygon\ActionModelAddPolygon.h">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygonAutoSkin.h">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClInclude Include="src\action\model\mesh\polygon\ActionModelAddPolygonAutoSkin.h">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygonSingleTexture.h">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClInclude Include="src\action\model\mesh\polygon\ActionModelAddPolygonSingleTexture.h">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelAddPolygonWithSkinGenerator.h">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClInclude Include="src\action\model\mesh\polygon\ActionModelAddPolygonWithSkinGenerator.h">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelCutOutPolygons.h">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClInclude Include="src\action\model\mesh\polygon\ActionModelCutOutPolygons.h">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelExtrudePolygons.h">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClInclude Include="src\action\model\mesh\polygon\ActionModelExtrudePolygons.h">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelMergePolygonsSelection.h">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClInclude Include="src\action\model\mesh\polygon\ActionModelMergePolygonsSelection.h">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelSplitPolygon.h">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClInclude Include="src\action\model\mesh\polygon\ActionModelSplitPolygon.h">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Polygon\ActionModelTriangulateSelection.h">
-      <Filter>src\Action\Model\Mesh\Polygon</Filter>
+    <ClInclude Include="src\action\model\mesh\polygon\ActionModelTriangulateSelection.h">
+      <Filter>src\action\model\mesh\polygon</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Skin\ActionModelAutomap.h">
-      <Filter>src\Action\Model\Mesh\Skin</Filter>
+    <ClInclude Include="src\action\model\mesh\skin\ActionModelAutomap.h">
+      <Filter>src\action\model\mesh\skin</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Skin\ActionModelSkinVerticesFromProjection.h">
-      <Filter>src\Action\Model\Mesh\Skin</Filter>
+    <ClInclude Include="src\action\model\mesh\skin\ActionModelSkinVerticesFromProjection.h">
+      <Filter>src\action\model\mesh\skin</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Skin\ActionModelTransformSkinVertices.h">
-      <Filter>src\Action\Model\Mesh\Skin</Filter>
+    <ClInclude Include="src\action\model\mesh\skin\ActionModelTransformSkinVertices.h">
+      <Filter>src\action\model\mesh\skin</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\Helper\ActionModelAddEmptySurface.h">
-      <Filter>src\Action\Model\Mesh\Surface\Helper</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\helper\ActionModelAddEmptySurface.h">
+      <Filter>src\action\model\mesh\surface\helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\Helper\ActionModelDeleteEmptySurface.h">
-      <Filter>src\Action\Model\Mesh\Surface\Helper</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\helper\ActionModelDeleteEmptySurface.h">
+      <Filter>src\action\model\mesh\surface\helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\Helper\ActionModelJoinSurfaces.h">
-      <Filter>src\Action\Model\Mesh\Surface\Helper</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\helper\ActionModelJoinSurfaces.h">
+      <Filter>src\action\model\mesh\surface\helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\Helper\ActionModelSurfaceAddPolygon.h">
-      <Filter>src\Action\Model\Mesh\Surface\Helper</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\helper\ActionModelSurfaceAddPolygon.h">
+      <Filter>src\action\model\mesh\surface\helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\Helper\ActionModelSurfaceDeletePolygon.h">
-      <Filter>src\Action\Model\Mesh\Surface\Helper</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\helper\ActionModelSurfaceDeletePolygon.h">
+      <Filter>src\action\model\mesh\surface\helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\Helper\ActionModelSurfaceRelinkPolygon.h">
-      <Filter>src\Action\Model\Mesh\Surface\Helper</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\helper\ActionModelSurfaceRelinkPolygon.h">
+      <Filter>src\action\model\mesh\surface\helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelAutoWeldSelection.h">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\ActionModelAutoWeldSelection.h">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelDeleteSurface.h">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\ActionModelDeleteSurface.h">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceAutoWeld.h">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\ActionModelSurfaceAutoWeld.h">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceCopy.h">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\ActionModelSurfaceCopy.h">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceInvert.h">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\ActionModelSurfaceInvert.h">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfacesSubdivide.h">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\ActionModelSurfacesSubdivide.h">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeAnd.h">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\ActionModelSurfaceVolumeAnd.h">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Surface\ActionModelSurfaceVolumeSubtract.h">
-      <Filter>src\Action\Model\Mesh\Surface</Filter>
+    <ClInclude Include="src\action\model\mesh\surface\ActionModelSurfaceVolumeSubtract.h">
+      <Filter>src\action\model\mesh\surface</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Vertex\Helper\ActionModelDeleteUnusedVertex.h">
-      <Filter>src\Action\Model\Mesh\Vertex\Helper</Filter>
+    <ClInclude Include="src\action\model\mesh\vertex\helper\ActionModelDeleteUnusedVertex.h">
+      <Filter>src\action\model\mesh\vertex\helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Vertex\Helper\ActionModelMoveVertex.h">
-      <Filter>src\Action\Model\Mesh\Vertex\Helper</Filter>
+    <ClInclude Include="src\action\model\mesh\vertex\helper\ActionModelMoveVertex.h">
+      <Filter>src\action\model\mesh\vertex\helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelAddVertex.h">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClInclude Include="src\action\model\mesh\vertex\ActionModelAddVertex.h">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelAlignToGrid.h">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClInclude Include="src\action\model\mesh\vertex\ActionModelAlignToGrid.h">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelBevelVertices.h">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClInclude Include="src\action\model\mesh\vertex\ActionModelBevelVertices.h">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelCollapseVertices.h">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClInclude Include="src\action\model\mesh\vertex\ActionModelCollapseVertices.h">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelDeleteVertex.h">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClInclude Include="src\action\model\mesh\vertex\ActionModelDeleteVertex.h">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelFlattenVertices.h">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClInclude Include="src\action\model\mesh\vertex\ActionModelFlattenVertices.h">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelNearifyVertices.h">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClInclude Include="src\action\model\mesh\vertex\ActionModelNearifyVertices.h">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelTransformVertices.h">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClInclude Include="src\action\model\mesh\vertex\ActionModelTransformVertices.h">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\Vertex\ActionModelTriangulateVertices.h">
-      <Filter>src\Action\Model\Mesh\Vertex</Filter>
+    <ClInclude Include="src\action\model\mesh\vertex\ActionModelTriangulateVertices.h">
+      <Filter>src\action\model\mesh\vertex</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\ActionModelDeleteSelection.h">
-      <Filter>src\Action\Model\Mesh</Filter>
+    <ClInclude Include="src\action\model\mesh\ActionModelDeleteSelection.h">
+      <Filter>src\action\model\mesh</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\ActionModelEasify.h">
-      <Filter>src\Action\Model\Mesh</Filter>
+    <ClInclude Include="src\action\model\mesh\ActionModelEasify.h">
+      <Filter>src\action\model\mesh</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Mesh\ActionModelPasteGeometry.h">
-      <Filter>src\Action\Model\Mesh</Filter>
+    <ClInclude Include="src\action\model\mesh\ActionModelPasteGeometry.h">
+      <Filter>src\action\model\mesh</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Skeleton\ActionModelAddBone.h">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClInclude Include="src\action\model\skeleton\ActionModelAddBone.h">
+      <Filter>src\action\model\skeleton</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Skeleton\ActionModelAttachVerticesToBone.h">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClInclude Include="src\action\model\skeleton\ActionModelAttachVerticesToBone.h">
+      <Filter>src\action\model\skeleton</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Skeleton\ActionModelDeleteBone.h">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClInclude Include="src\action\model\skeleton\ActionModelDeleteBone.h">
+      <Filter>src\action\model\skeleton</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Skeleton\ActionModelDeleteBoneSelection.h">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClInclude Include="src\action\model\skeleton\ActionModelDeleteBoneSelection.h">
+      <Filter>src\action\model\skeleton</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Skeleton\ActionModelReconnectBone.h">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClInclude Include="src\action\model\skeleton\ActionModelReconnectBone.h">
+      <Filter>src\action\model\skeleton</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Skeleton\ActionModelSetSubModel.h">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClInclude Include="src\action\model\skeleton\ActionModelSetSubModel.h">
+      <Filter>src\action\model\skeleton</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Model\Skeleton\ActionModelTransformBones.h">
-      <Filter>src\Action\Model\Skeleton</Filter>
+    <ClInclude Include="src\action\model\skeleton\ActionModelTransformBones.h">
+      <Filter>src\action\model\skeleton</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Camera\ActionCameraAddPoint.h">
-      <Filter>src\Action\World\Camera</Filter>
+    <ClInclude Include="src\action\world\camera\ActionCameraAddPoint.h">
+      <Filter>src\action\world\camera</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Camera\ActionCameraMoveSelection.h">
-      <Filter>src\Action\World\Camera</Filter>
+    <ClInclude Include="src\action\world\camera\ActionCameraMoveSelection.h">
+      <Filter>src\action\world\camera</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Camera\ActionCameraMoveTimeSelection.h">
-      <Filter>src\Action\World\Camera</Filter>
+    <ClInclude Include="src\action\world\camera\ActionCameraMoveTimeSelection.h">
+      <Filter>src\action\world\camera</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Helper\ActionWorldTerrainEditHeight.h">
-      <Filter>src\Action\World\Helper</Filter>
+    <ClInclude Include="src\action\world\helper\ActionWorldTerrainEditHeight.h">
+      <Filter>src\action\world\helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Light\ActionWorldAddLight.h">
-      <Filter>src\Action\World\Light</Filter>
+    <ClInclude Include="src\action\world\light\ActionWorldAddLight.h">
+      <Filter>src\action\world\light</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Light\ActionWorldDeleteLight.h">
-      <Filter>src\Action\World\Light</Filter>
+    <ClInclude Include="src\action\world\light\ActionWorldDeleteLight.h">
+      <Filter>src\action\world\light</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Link\ActionWorldAddLink.h">
-      <Filter>src\Action\World\Link</Filter>
+    <ClInclude Include="src\action\world\link\ActionWorldAddLink.h">
+      <Filter>src\action\world\link</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Link\ActionWorldDeleteLink.h">
-      <Filter>src\Action\World\Link</Filter>
+    <ClInclude Include="src\action\world\link\ActionWorldDeleteLink.h">
+      <Filter>src\action\world\link</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Object\ActionWorldAddObject.h">
-      <Filter>src\Action\World\Object</Filter>
+    <ClInclude Include="src\action\world\object\ActionWorldAddObject.h">
+      <Filter>src\action\world\object</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Object\ActionWorldDeleteObject.h">
-      <Filter>src\Action\World\Object</Filter>
+    <ClInclude Include="src\action\world\object\ActionWorldDeleteObject.h">
+      <Filter>src\action\world\object</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Object\ActionWorldEditObject.h">
-      <Filter>src\Action\World\Object</Filter>
+    <ClInclude Include="src\action\world\object\ActionWorldEditObject.h">
+      <Filter>src\action\world\object</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Object\ActionWorldRotateObjects.h">
-      <Filter>src\Action\World\Object</Filter>
+    <ClInclude Include="src\action\world\object\ActionWorldRotateObjects.h">
+      <Filter>src\action\world\object</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Terrain\ActionWorldAddTerrain.h">
-      <Filter>src\Action\World\Terrain</Filter>
+    <ClInclude Include="src\action\world\terrain\ActionWorldAddTerrain.h">
+      <Filter>src\action\world\terrain</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Terrain\ActionWorldDeleteTerrain.h">
-      <Filter>src\Action\World\Terrain</Filter>
+    <ClInclude Include="src\action\world\terrain\ActionWorldDeleteTerrain.h">
+      <Filter>src\action\world\terrain</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Terrain\ActionWorldEditTerrain.h">
-      <Filter>src\Action\World\Terrain</Filter>
+    <ClInclude Include="src\action\world\terrain\ActionWorldEditTerrain.h">
+      <Filter>src\action\world\terrain</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Terrain\ActionWorldTerrainApplyHeightmap.h">
-      <Filter>src\Action\World\Terrain</Filter>
+    <ClInclude Include="src\action\world\terrain\ActionWorldTerrainApplyHeightmap.h">
+      <Filter>src\action\world\terrain</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\Terrain\ActionWorldTerrainBrushExtrude.h">
-      <Filter>src\Action\World\Terrain</Filter>
+    <ClInclude Include="src\action\world\terrain\ActionWorldTerrainBrushExtrude.h">
+      <Filter>src\action\world\terrain</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\ActionWorldDeleteSelection.h">
-      <Filter>src\Action\World</Filter>
+    <ClInclude Include="src\action\world\ActionWorldDeleteSelection.h">
+      <Filter>src\action\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\ActionWorldEditData.h">
-      <Filter>src\Action\World</Filter>
+    <ClInclude Include="src\action\world\ActionWorldEditData.h">
+      <Filter>src\action\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\ActionWorldMoveSelection.h">
-      <Filter>src\Action\World</Filter>
+    <ClInclude Include="src\action\world\ActionWorldMoveSelection.h">
+      <Filter>src\action\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\ActionWorldPaste.h">
-      <Filter>src\Action\World</Filter>
+    <ClInclude Include="src\action\world\ActionWorldPaste.h">
+      <Filter>src\action\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\ActionWorldSelectionAddComponent.h">
-      <Filter>src\Action\World</Filter>
+    <ClInclude Include="src\action\world\ActionWorldSelectionAddComponent.h">
+      <Filter>src\action\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\World\ActionWorldSetEgo.h">
-      <Filter>src\Action\World</Filter>
+    <ClInclude Include="src\action\world\ActionWorldSetEgo.h">
+      <Filter>src\action\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\Action.h">
-      <Filter>src\Action</Filter>
+    <ClInclude Include="src\action\Action.h">
+      <Filter>src\action</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\ActionGroup.h">
-      <Filter>src\Action</Filter>
+    <ClInclude Include="src\action\ActionGroup.h">
+      <Filter>src\action</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\ActionManager.h">
-      <Filter>src\Action</Filter>
+    <ClInclude Include="src\action\ActionManager.h">
+      <Filter>src\action</Filter>
     </ClInclude>
-    <ClInclude Include="src\Action\ActionMultiView.h">
-      <Filter>src\Action</Filter>
+    <ClInclude Include="src\action\ActionMultiView.h">
+      <Filter>src\action</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Administration\AdminFile.h">
-      <Filter>src\Data\Administration</Filter>
+    <ClInclude Include="src\data\administration\AdminFile.h">
+      <Filter>src\data\administration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Administration\AdminFileList.h">
-      <Filter>src\Data\Administration</Filter>
+    <ClInclude Include="src\data\administration\AdminFileList.h">
+      <Filter>src\data\administration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Administration\DataAdministration.h">
-      <Filter>src\Data\Administration</Filter>
+    <ClInclude Include="src\data\administration\DataAdministration.h">
+      <Filter>src\data\administration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Administration\GameIniData.h">
-      <Filter>src\Data\Administration</Filter>
+    <ClInclude Include="src\data\administration\GameIniData.h">
+      <Filter>src\data\administration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Font\Import\ImporterCairo.h">
-      <Filter>src\Data\Font\Import</Filter>
+    <ClInclude Include="src\data\font\import\ImporterCairo.h">
+      <Filter>src\data\font\import</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Font\DataFont.h">
-      <Filter>src\Data\Font</Filter>
+    <ClInclude Include="src\data\font\DataFont.h">
+      <Filter>src\data\font</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Material\DataMaterial.h">
-      <Filter>src\Data\Material</Filter>
+    <ClInclude Include="src\data\material\DataMaterial.h">
+      <Filter>src\data\material</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Material\ShaderBuilderContext.h">
-      <Filter>src\Data\Material</Filter>
+    <ClInclude Include="src\data\material\ShaderBuilderContext.h">
+      <Filter>src\data\material</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Material\ShaderGraph.h">
-      <Filter>src\Data\Material</Filter>
+    <ClInclude Include="src\data\material\ShaderGraph.h">
+      <Filter>src\data\material</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Material\ShaderNode.h">
-      <Filter>src\Data\Material</Filter>
+    <ClInclude Include="src\data\material\ShaderNode.h">
+      <Filter>src\data\material</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\Geometry\Geometry.h">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClInclude Include="src\data\model\geometry\Geometry.h">
+      <Filter>src\data\model\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\Geometry\GeometryBall.h">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClInclude Include="src\data\model\geometry\GeometryBall.h">
+      <Filter>src\data\model\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\Geometry\GeometryCube.h">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClInclude Include="src\data\model\geometry\GeometryCube.h">
+      <Filter>src\data\model\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\Geometry\GeometryCylinder.h">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClInclude Include="src\data\model\geometry\GeometryCylinder.h">
+      <Filter>src\data\model\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\Geometry\GeometryPlane.h">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClInclude Include="src\data\model\geometry\GeometryPlane.h">
+      <Filter>src\data\model\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\Geometry\GeometryPlatonic.h">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClInclude Include="src\data\model\geometry\GeometryPlatonic.h">
+      <Filter>src\data\model\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\Geometry\GeometrySphere.h">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClInclude Include="src\data\model\geometry\GeometrySphere.h">
+      <Filter>src\data\model\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\Geometry\GeometryTeapot.h">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClInclude Include="src\data\model\geometry\GeometryTeapot.h">
+      <Filter>src\data\model\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\Geometry\GeometryTorus.h">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClInclude Include="src\data\model\geometry\GeometryTorus.h">
+      <Filter>src\data\model\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\Geometry\GeometryTorusKnot.h">
-      <Filter>src\Data\Model\Geometry</Filter>
+    <ClInclude Include="src\data\model\geometry\GeometryTorusKnot.h">
+      <Filter>src\data\model\geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\BspTree.h">
-      <Filter>src\Data\Model</Filter>
+    <ClInclude Include="src\data\model\BspTree.h">
+      <Filter>src\data\model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\DataModel.h">
-      <Filter>src\Data\Model</Filter>
+    <ClInclude Include="src\data\model\DataModel.h">
+      <Filter>src\data\model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\ModelMaterial.h">
-      <Filter>src\Data\Model</Filter>
+    <ClInclude Include="src\data\model\ModelMaterial.h">
+      <Filter>src\data\model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\ModelMesh.h">
-      <Filter>src\Data\Model</Filter>
+    <ClInclude Include="src\data\model\ModelMesh.h">
+      <Filter>src\data\model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\ModelPolygon.h">
-      <Filter>src\Data\Model</Filter>
+    <ClInclude Include="src\data\model\ModelPolygon.h">
+      <Filter>src\data\model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\ModelSelection.h">
-      <Filter>src\Data\Model</Filter>
+    <ClInclude Include="src\data\model\ModelSelection.h">
+      <Filter>src\data\model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Model\SkinGenerator.h">
-      <Filter>src\Data\Model</Filter>
+    <ClInclude Include="src\data\model\SkinGenerator.h">
+      <Filter>src\data\model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\Lightmap\Lightmap.h">
-      <Filter>src\Data\World\Lightmap</Filter>
+    <ClInclude Include="src\data\world\lightmap\Lightmap.h">
+      <Filter>src\data\world\lightmap</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\Lightmap\LightmapData.h">
-      <Filter>src\Data\World\Lightmap</Filter>
+    <ClInclude Include="src\data\world\lightmap\LightmapData.h">
+      <Filter>src\data\world\lightmap</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\Lightmap\LightmapPhotonMap.h">
-      <Filter>src\Data\World\Lightmap</Filter>
+    <ClInclude Include="src\data\world\lightmap\LightmapPhotonMap.h">
+      <Filter>src\data\world\lightmap</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\Lightmap\LightmapPhotonMapImageSpace.h">
-      <Filter>src\Data\World\Lightmap</Filter>
+    <ClInclude Include="src\data\world\lightmap\LightmapPhotonMapImageSpace.h">
+      <Filter>src\data\world\lightmap</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\Lightmap\LightmapRadiosity.h">
-      <Filter>src\Data\World\Lightmap</Filter>
+    <ClInclude Include="src\data\world\lightmap\LightmapRadiosity.h">
+      <Filter>src\data\world\lightmap</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\Lightmap\LightmapRayTracing.h">
-      <Filter>src\Data\World\Lightmap</Filter>
+    <ClInclude Include="src\data\world\lightmap\LightmapRayTracing.h">
+      <Filter>src\data\world\lightmap</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\DataCamera.h">
-      <Filter>src\Data\World</Filter>
+    <ClInclude Include="src\data\world\DataCamera.h">
+      <Filter>src\data\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\DataWorld.h">
-      <Filter>src\Data\World</Filter>
+    <ClInclude Include="src\data\world\DataWorld.h">
+      <Filter>src\data\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\WorldCamera.h">
-      <Filter>src\Data\World</Filter>
+    <ClInclude Include="src\data\world\WorldCamera.h">
+      <Filter>src\data\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\WorldLight.h">
-      <Filter>src\Data\World</Filter>
+    <ClInclude Include="src\data\world\WorldLight.h">
+      <Filter>src\data\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\WorldLink.h">
-      <Filter>src\Data\World</Filter>
+    <ClInclude Include="src\data\world\WorldLink.h">
+      <Filter>src\data\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\WorldObject.h">
-      <Filter>src\Data\World</Filter>
+    <ClInclude Include="src\data\world\WorldObject.h">
+      <Filter>src\data\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\World\WorldTerrain.h">
-      <Filter>src\Data\World</Filter>
+    <ClInclude Include="src\data\world\WorldTerrain.h">
+      <Filter>src\data\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Data\Data.h">
-      <Filter>src\Data</Filter>
+    <ClInclude Include="src\data\Data.h">
+      <Filter>src\data</Filter>
     </ClInclude>
     <ClInclude Include="src\lib\any\any.h">
       <Filter>src\lib\any</Filter>
@@ -2346,299 +2346,299 @@
     <ClInclude Include="src\lib\config.h">
       <Filter>src\lib</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Administration\Dialog\AdministrationDialog.h">
-      <Filter>src\Mode\Administration\Dialog</Filter>
+    <ClInclude Include="src\mode\administration\dialog\AdministrationDialog.h">
+      <Filter>src\mode\administration\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Administration\Dialog\ConfigurationDialog.h">
-      <Filter>src\Mode\Administration\Dialog</Filter>
+    <ClInclude Include="src\mode\administration\dialog\ConfigurationDialog.h">
+      <Filter>src\mode\administration\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Administration\Dialog\NewProjectDialog.h">
-      <Filter>src\Mode\Administration\Dialog</Filter>
+    <ClInclude Include="src\mode\administration\dialog\NewProjectDialog.h">
+      <Filter>src\mode\administration\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Administration\ModeAdministration.h">
-      <Filter>src\Mode\Administration</Filter>
+    <ClInclude Include="src\mode\administration\ModeAdministration.h">
+      <Filter>src\mode\administration</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Font\Dialog\FontDialog.h">
-      <Filter>src\Mode\Font\Dialog</Filter>
+    <ClInclude Include="src\mode\font\dialog\FontDialog.h">
+      <Filter>src\mode\font\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Font\ModeFont.h">
-      <Filter>src\Mode\Font</Filter>
+    <ClInclude Include="src\mode\font\ModeFont.h">
+      <Filter>src\mode\font</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Material\Dialog\MaterialPropertiesDialog.h">
-      <Filter>src\Mode\Material\Dialog</Filter>
+    <ClInclude Include="src\mode\material\dialog\MaterialPropertiesDialog.h">
+      <Filter>src\mode\material\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Material\Dialog\ShaderGraphDialog.h">
-      <Filter>src\Mode\Material\Dialog</Filter>
+    <ClInclude Include="src\mode\material\dialog\ShaderGraphDialog.h">
+      <Filter>src\mode\material\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Material\ModeMaterial.h">
-      <Filter>src\Mode\Material</Filter>
+    <ClInclude Include="src\mode\material\ModeMaterial.h">
+      <Filter>src\mode\material</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Animation\Creation\ModeModelAnimationInterpolateFrames.h">
-      <Filter>src\Mode\Model\Animation\Creation</Filter>
+    <ClInclude Include="src\mode\model\animation\creation\ModeModelAnimationInterpolateFrames.h">
+      <Filter>src\mode\model\animation\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Animation\ModeModelAnimation.h">
-      <Filter>src\Mode\Model\Animation</Filter>
+    <ClInclude Include="src\mode\model\animation\ModeModelAnimation.h">
+      <Filter>src\mode\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Animation\ModeModelAnimationNone.h">
-      <Filter>src\Mode\Model\Animation</Filter>
+    <ClInclude Include="src\mode\model\animation\ModeModelAnimationNone.h">
+      <Filter>src\mode\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Animation\ModeModelAnimationSkeleton.h">
-      <Filter>src\Mode\Model\Animation</Filter>
+    <ClInclude Include="src\mode\model\animation\ModeModelAnimationSkeleton.h">
+      <Filter>src\mode\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Animation\ModeModelAnimationVertex.h">
-      <Filter>src\Mode\Model\Animation</Filter>
+    <ClInclude Include="src\mode\model\animation\ModeModelAnimationVertex.h">
+      <Filter>src\mode\model\animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Dialog\ModelAnimationDialog.h">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClInclude Include="src\mode\model\dialog\ModelAnimationDialog.h">
+      <Filter>src\mode\model\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Dialog\ModelAnimationTimelinePanel.h">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClInclude Include="src\mode\model\dialog\ModelAnimationTimelinePanel.h">
+      <Filter>src\mode\model\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Dialog\ModelDuplicateAnimationDialog.h">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClInclude Include="src\mode\model\dialog\ModelDuplicateAnimationDialog.h">
+      <Filter>src\mode\model\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Dialog\ModelEasifyDialog.h">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClInclude Include="src\mode\model\dialog\ModelEasifyDialog.h">
+      <Filter>src\mode\model\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Dialog\ModelFXDialog.h">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClInclude Include="src\mode\model\dialog\ModelFXDialog.h">
+      <Filter>src\mode\model\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Dialog\ModelMaterialDialog.h">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClInclude Include="src\mode\model\dialog\ModelMaterialDialog.h">
+      <Filter>src\mode\model\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Dialog\ModelMaterialSelectionDialog.h">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClInclude Include="src\mode\model\dialog\ModelMaterialSelectionDialog.h">
+      <Filter>src\mode\model\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Dialog\ModelNewAnimationDialog.h">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClInclude Include="src\mode\model\dialog\ModelNewAnimationDialog.h">
+      <Filter>src\mode\model\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Dialog\ModelPropertiesDialog.h">
-      <Filter>src\Mode\Model\Dialog</Filter>
+    <ClInclude Include="src\mode\model\dialog\ModelPropertiesDialog.h">
+      <Filter>src\mode\model\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshAutoweld.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshAutoweld.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshBevelEdges.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshBevelEdges.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateBall.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshCreateBall.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateCube.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshCreateCube.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateCylinder.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshCreateCylinder.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateCylinderSnake.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshCreateCylinderSnake.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreatePlane.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshCreatePlane.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreatePlatonic.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshCreatePlatonic.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreatePolygon.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshCreatePolygon.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateTorus.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshCreateTorus.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCreateVertex.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshCreateVertex.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshCutLoop.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshCutLoop.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshDeformCylinder.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshDeformCylinder.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshDeformFunction.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshDeformFunction.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshExtrudePolygons.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshExtrudePolygons.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshPaste.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshPaste.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Creation\ModeModelMeshSplitPolygon.h">
-      <Filter>src\Mode\Model\Mesh\Creation</Filter>
+    <ClInclude Include="src\mode\model\mesh\creation\ModeModelMeshSplitPolygon.h">
+      <Filter>src\mode\model\mesh\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Selection\MeshSelectionMode.h">
-      <Filter>src\Mode\Model\Mesh\Selection</Filter>
+    <ClInclude Include="src\mode\model\mesh\selection\MeshSelectionMode.h">
+      <Filter>src\mode\model\mesh\selection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Selection\MeshSelectionModeEdge.h">
-      <Filter>src\Mode\Model\Mesh\Selection</Filter>
+    <ClInclude Include="src\mode\model\mesh\selection\MeshSelectionModeEdge.h">
+      <Filter>src\mode\model\mesh\selection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Selection\MeshSelectionModePolygon.h">
-      <Filter>src\Mode\Model\Mesh\Selection</Filter>
+    <ClInclude Include="src\mode\model\mesh\selection\MeshSelectionModePolygon.h">
+      <Filter>src\mode\model\mesh\selection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Selection\MeshSelectionModeSurface.h">
-      <Filter>src\Mode\Model\Mesh\Selection</Filter>
+    <ClInclude Include="src\mode\model\mesh\selection\MeshSelectionModeSurface.h">
+      <Filter>src\mode\model\mesh\selection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\Selection\MeshSelectionModeVertex.h">
-      <Filter>src\Mode\Model\Mesh\Selection</Filter>
+    <ClInclude Include="src\mode\model\mesh\selection\MeshSelectionModeVertex.h">
+      <Filter>src\mode\model\mesh\selection</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\ModeModelMesh.h">
-      <Filter>src\Mode\Model\Mesh</Filter>
+    <ClInclude Include="src\mode\model\mesh\ModeModelMesh.h">
+      <Filter>src\mode\model\mesh</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\ModeModelMeshDeform.h">
-      <Filter>src\Mode\Model\Mesh</Filter>
+    <ClInclude Include="src\mode\model\mesh\ModeModelMeshDeform.h">
+      <Filter>src\mode\model\mesh</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\ModeModelMeshMaterial.h">
-      <Filter>src\Mode\Model\Mesh</Filter>
+    <ClInclude Include="src\mode\model\mesh\ModeModelMeshMaterial.h">
+      <Filter>src\mode\model\mesh</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\ModeModelMeshPaint.h">
-      <Filter>src\Mode\Model\Mesh</Filter>
+    <ClInclude Include="src\mode\model\mesh\ModeModelMeshPaint.h">
+      <Filter>src\mode\model\mesh</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Mesh\ModeModelMeshTexture.h">
-      <Filter>src\Mode\Model\Mesh</Filter>
+    <ClInclude Include="src\mode\model\mesh\ModeModelMeshTexture.h">
+      <Filter>src\mode\model\mesh</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Skeleton\Creation\ModeModelSkeletonAttachVertices.h">
-      <Filter>src\Mode\Model\Skeleton\Creation</Filter>
+    <ClInclude Include="src\mode\model\skeleton\creation\ModeModelSkeletonAttachVertices.h">
+      <Filter>src\mode\model\skeleton\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Skeleton\Creation\ModeModelSkeletonCreateBone.h">
-      <Filter>src\Mode\Model\Skeleton\Creation</Filter>
+    <ClInclude Include="src\mode\model\skeleton\creation\ModeModelSkeletonCreateBone.h">
+      <Filter>src\mode\model\skeleton\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\Skeleton\ModeModelSkeleton.h">
-      <Filter>src\Mode\Model\Skeleton</Filter>
+    <ClInclude Include="src\mode\model\skeleton\ModeModelSkeleton.h">
+      <Filter>src\mode\model\skeleton</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Model\ModeModel.h">
-      <Filter>src\Mode\Model</Filter>
+    <ClInclude Include="src\mode\model\ModeModel.h">
+      <Filter>src\mode\model</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Camera\Creation\ModeWorldCameraCreatePoint.h">
-      <Filter>src\Mode\World\Camera\Creation</Filter>
+    <ClInclude Include="src\mode\world\camera\creation\ModeWorldCameraCreatePoint.h">
+      <Filter>src\mode\world\camera\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Camera\ModeWorldCamera.h">
-      <Filter>src\Mode\World\Camera</Filter>
+    <ClInclude Include="src\mode\world\camera\ModeWorldCamera.h">
+      <Filter>src\mode\world\camera</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Creation\ModeWorldCreateLight.h">
-      <Filter>src\Mode\World\Creation</Filter>
+    <ClInclude Include="src\mode\world\creation\ModeWorldCreateLight.h">
+      <Filter>src\mode\world\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Creation\ModeWorldCreateLink.h">
-      <Filter>src\Mode\World\Creation</Filter>
+    <ClInclude Include="src\mode\world\creation\ModeWorldCreateLink.h">
+      <Filter>src\mode\world\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Creation\ModeWorldCreateObject.h">
-      <Filter>src\Mode\World\Creation</Filter>
+    <ClInclude Include="src\mode\world\creation\ModeWorldCreateObject.h">
+      <Filter>src\mode\world\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Creation\ModeWorldCreateTerrain.h">
-      <Filter>src\Mode\World\Creation</Filter>
+    <ClInclude Include="src\mode\world\creation\ModeWorldCreateTerrain.h">
+      <Filter>src\mode\world\creation</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Dialog\CameraDialog.h">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClInclude Include="src\mode\world\dialog\CameraDialog.h">
+      <Filter>src\mode\world\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Dialog\ComponentSelectionDialog.h">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClInclude Include="src\mode\world\dialog\ComponentSelectionDialog.h">
+      <Filter>src\mode\world\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Dialog\LightmapDialog.h">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClInclude Include="src\mode\world\dialog\LightmapDialog.h">
+      <Filter>src\mode\world\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Dialog\ObjectPropertiesDialog.h">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClInclude Include="src\mode\world\dialog\ObjectPropertiesDialog.h">
+      <Filter>src\mode\world\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Dialog\ScriptVarsDialog.h">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClInclude Include="src\mode\world\dialog\ScriptVarsDialog.h">
+      <Filter>src\mode\world\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Dialog\SelectionPropertiesDialog.h">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClInclude Include="src\mode\world\dialog\SelectionPropertiesDialog.h">
+      <Filter>src\mode\world\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Dialog\TerrainCreationDialog.h">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClInclude Include="src\mode\world\dialog\TerrainCreationDialog.h">
+      <Filter>src\mode\world\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Dialog\TerrainHeightmapDialog.h">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClInclude Include="src\mode\world\dialog\TerrainHeightmapDialog.h">
+      <Filter>src\mode\world\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Dialog\TerrainPropertiesDialog.h">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClInclude Include="src\mode\world\dialog\TerrainPropertiesDialog.h">
+      <Filter>src\mode\world\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Dialog\WorldObjectListPanel.h">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClInclude Include="src\mode\world\dialog\WorldObjectListPanel.h">
+      <Filter>src\mode\world\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Dialog\WorldPropertiesDialog.h">
-      <Filter>src\Mode\World\Dialog</Filter>
+    <ClInclude Include="src\mode\world\dialog\WorldPropertiesDialog.h">
+      <Filter>src\mode\world\dialog</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\Terrain\ModeWorldTerrain.h">
-      <Filter>src\Mode\World\Terrain</Filter>
+    <ClInclude Include="src\mode\world\terrain\ModeWorldTerrain.h">
+      <Filter>src\mode\world\terrain</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\World\ModeWorld.h">
-      <Filter>src\Mode\World</Filter>
+    <ClInclude Include="src\mode\world\ModeWorld.h">
+      <Filter>src\mode\world</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\Mode.h">
-      <Filter>src\Mode</Filter>
+    <ClInclude Include="src\mode\Mode.h">
+      <Filter>src\mode</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\ModeCreation.h">
-      <Filter>src\Mode</Filter>
+    <ClInclude Include="src\mode\ModeCreation.h">
+      <Filter>src\mode</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mode\ModeNone.h">
-      <Filter>src\Mode</Filter>
+    <ClInclude Include="src\mode\ModeNone.h">
+      <Filter>src\mode</Filter>
     </ClInclude>
-    <ClInclude Include="src\MultiView\ActionController.h">
-      <Filter>src\MultiView</Filter>
+    <ClInclude Include="src\multiview\ActionController.h">
+      <Filter>src\multiview</Filter>
     </ClInclude>
-    <ClInclude Include="src\MultiView\CameraController.h">
-      <Filter>src\MultiView</Filter>
+    <ClInclude Include="src\multiview\CameraController.h">
+      <Filter>src\multiview</Filter>
     </ClInclude>
-    <ClInclude Include="src\MultiView\ColorScheme.h">
-      <Filter>src\MultiView</Filter>
+    <ClInclude Include="src\multiview\ColorScheme.h">
+      <Filter>src\multiview</Filter>
     </ClInclude>
-    <ClInclude Include="src\MultiView\DrawingHelper.h">
-      <Filter>src\MultiView</Filter>
+    <ClInclude Include="src\multiview\DrawingHelper.h">
+      <Filter>src\multiview</Filter>
     </ClInclude>
-    <ClInclude Include="src\MultiView\MouseWrapper.h">
-      <Filter>src\MultiView</Filter>
+    <ClInclude Include="src\multiview\MouseWrapper.h">
+      <Filter>src\multiview</Filter>
     </ClInclude>
-    <ClInclude Include="src\MultiView\MultiView.h">
-      <Filter>src\MultiView</Filter>
+    <ClInclude Include="src\multiview\MultiView.h">
+      <Filter>src\multiview</Filter>
     </ClInclude>
-    <ClInclude Include="src\MultiView\SingleData.h">
-      <Filter>src\MultiView</Filter>
+    <ClInclude Include="src\multiview\SingleData.h">
+      <Filter>src\multiview</Filter>
     </ClInclude>
-    <ClInclude Include="src\MultiView\Window.h">
-      <Filter>src\MultiView</Filter>
+    <ClInclude Include="src\multiview\Window.h">
+      <Filter>src\multiview</Filter>
     </ClInclude>
-    <ClInclude Include="src\Storage\Format\Format.h">
-      <Filter>src\Storage\Format</Filter>
+    <ClInclude Include="src\storage\format\Format.h">
+      <Filter>src\storage\format</Filter>
     </ClInclude>
-    <ClInclude Include="src\Storage\Format\FormatFontX.h">
-      <Filter>src\Storage\Format</Filter>
+    <ClInclude Include="src\storage\format\FormatFontX.h">
+      <Filter>src\storage\format</Filter>
     </ClInclude>
-    <ClInclude Include="src\Storage\Format\FormatMaterial.h">
-      <Filter>src\Storage\Format</Filter>
+    <ClInclude Include="src\storage\format\FormatMaterial.h">
+      <Filter>src\storage\format</Filter>
     </ClInclude>
-    <ClInclude Include="src\Storage\Format\FormatModel.h">
-      <Filter>src\Storage\Format</Filter>
+    <ClInclude Include="src\storage\format\FormatModel.h">
+      <Filter>src\storage\format</Filter>
     </ClInclude>
-    <ClInclude Include="src\Storage\Format\FormatModel3ds.h">
-      <Filter>src\Storage\Format</Filter>
+    <ClInclude Include="src\storage\format\FormatModel3ds.h">
+      <Filter>src\storage\format</Filter>
     </ClInclude>
-    <ClInclude Include="src\Storage\Format\FormatModelJson.h">
-      <Filter>src\Storage\Format</Filter>
+    <ClInclude Include="src\storage\format\FormatModelJson.h">
+      <Filter>src\storage\format</Filter>
     </ClInclude>
-    <ClInclude Include="src\Storage\Format\FormatModelPly.h">
-      <Filter>src\Storage\Format</Filter>
+    <ClInclude Include="src\storage\format\FormatModelPly.h">
+      <Filter>src\storage\format</Filter>
     </ClInclude>
-    <ClInclude Include="src\Storage\Format\FormatTerrain.h">
-      <Filter>src\Storage\Format</Filter>
+    <ClInclude Include="src\storage\format\FormatTerrain.h">
+      <Filter>src\storage\format</Filter>
     </ClInclude>
-    <ClInclude Include="src\Storage\Format\FormatWorld.h">
-      <Filter>src\Storage\Format</Filter>
+    <ClInclude Include="src\storage\format\FormatWorld.h">
+      <Filter>src\storage\format</Filter>
     </ClInclude>
-    <ClInclude Include="src\Storage\Storage.h">
-      <Filter>src\Storage</Filter>
+    <ClInclude Include="src\storage\Storage.h">
+      <Filter>src\storage</Filter>
     </ClInclude>
-    <ClInclude Include="src\Stuff\BrushPanel.h">
-      <Filter>src\Stuff</Filter>
+    <ClInclude Include="src\stuff\BrushPanel.h">
+      <Filter>src\stuff</Filter>
     </ClInclude>
-    <ClInclude Include="src\Stuff\Observable.h">
-      <Filter>src\Stuff</Filter>
+    <ClInclude Include="src\stuff\Observable.h">
+      <Filter>src\stuff</Filter>
     </ClInclude>
-    <ClInclude Include="src\Stuff\PluginManager.h">
-      <Filter>src\Stuff</Filter>
+    <ClInclude Include="src\stuff\PluginManager.h">
+      <Filter>src\stuff</Filter>
     </ClInclude>
-    <ClInclude Include="src\Stuff\Progress.h">
-      <Filter>src\Stuff</Filter>
+    <ClInclude Include="src\stuff\Progress.h">
+      <Filter>src\stuff</Filter>
     </ClInclude>
     <ClInclude Include="src\y\components\Animator.h">
       <Filter>src\y\components</Filter>
@@ -2723,113 +2723,113 @@
     <Filter Include="src">
       <UniqueIdentifier>{F12EA729-9762-4175-D211-F4CA3BE60BD0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action">
-      <UniqueIdentifier>{52E5CC8B-8C76-2931-DC9C-3CF877C9682C}</UniqueIdentifier>
+    <Filter Include="src\action">
+      <UniqueIdentifier>{50AB12F0-533B-6940-243D-305757426D6C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Font">
-      <UniqueIdentifier>{3BBADD15-5BE8-39C2-4163-66EE242F3036}</UniqueIdentifier>
+    <Filter Include="src\action\font">
+      <UniqueIdentifier>{FCE5C8EC-D0B7-4D78-47DE-DEC75D645955}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Material">
-      <UniqueIdentifier>{CEC923B3-B3AE-DEAA-ACE8-CA67B7A1E39B}</UniqueIdentifier>
+    <Filter Include="src\action\material">
+      <UniqueIdentifier>{E34A4187-8611-34C8-9C90-14DE646806FE}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model">
-      <UniqueIdentifier>{BD7440AC-7929-BE46-DE5D-908A299D2EDE}</UniqueIdentifier>
+    <Filter Include="src\action\model">
+      <UniqueIdentifier>{8874D447-C814-238F-1440-5BFB80EAC425}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Animation">
-      <UniqueIdentifier>{294A8DFE-ACBC-79BE-4F83-230FEF57EF01}</UniqueIdentifier>
+    <Filter Include="src\action\model\animation">
+      <UniqueIdentifier>{B292C86C-9ED3-E967-B78E-C013A5989825}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Data">
-      <UniqueIdentifier>{177F1210-6FED-08B6-E505-71002E4896FB}</UniqueIdentifier>
+    <Filter Include="src\action\model\data">
+      <UniqueIdentifier>{D3A6F45A-05A8-DB04-1AF8-FBB5781DFBFD}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh">
-      <UniqueIdentifier>{F09A0907-77DD-BF89-B791-E69115322B52}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh">
+      <UniqueIdentifier>{C851B840-0F8B-937B-2BD9-C8942589F1EC}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh\Brush">
-      <UniqueIdentifier>{EC88CDAA-66EF-CB5D-DEE0-AB583F867A05}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh\brush">
+      <UniqueIdentifier>{D502B448-F6DB-08F3-4B0E-2BE7C4A6ABE8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh\Edge">
-      <UniqueIdentifier>{8B128DF9-5BF1-B13E-5ACF-85150702576D}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh\edge">
+      <UniqueIdentifier>{A1960174-4625-5292-5523-6564BB61BB95}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh\Effects">
-      <UniqueIdentifier>{9BC42376-45FB-FDE7-0AFD-A313714C59BF}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh\effect">
+      <UniqueIdentifier>{83079240-CCA7-1A08-F585-510E932E8970}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh\Look">
-      <UniqueIdentifier>{7046C436-00B1-AFD1-B2B5-9DF93BF6D894}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh\look">
+      <UniqueIdentifier>{C94FC15E-B724-4C68-1589-681FEB9A0E8D}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh\Physical">
-      <UniqueIdentifier>{9DA7CA6E-AA93-006C-2D68-1723137CB535}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh\physical">
+      <UniqueIdentifier>{E17AB836-9348-7829-5CD1-3249CD6DB68A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh\Polygon">
-      <UniqueIdentifier>{2EFF69E8-2673-6784-F698-98957951D19F}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh\polygon">
+      <UniqueIdentifier>{97DBDFA3-B014-5BD3-7EB5-937D616CF178}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh\Polygon\Helper">
-      <UniqueIdentifier>{7F93FD09-C850-91E1-9439-3E31E5072D3A}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh\polygon\helper">
+      <UniqueIdentifier>{51915EDA-AB93-E3A9-18D6-DCDE0A94596A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh\Skin">
-      <UniqueIdentifier>{3F946B28-D608-F3D9-D9D5-DD3A5AB801C3}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh\skin">
+      <UniqueIdentifier>{1C9F25D5-ED29-CDB6-1825-AEB01526DC9F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh\Surface">
-      <UniqueIdentifier>{8E4AE72E-0F99-27CA-8669-8C5AA5910249}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh\surface">
+      <UniqueIdentifier>{65CB3815-29D4-E3B3-57D8-19FA63270867}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh\Surface\Helper">
-      <UniqueIdentifier>{1FAE2597-E30D-B5FC-A23B-997C22737719}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh\surface\helper">
+      <UniqueIdentifier>{24EA55EE-371F-9A02-9FE1-FA945B7D5298}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh\Vertex">
-      <UniqueIdentifier>{B898782D-4954-6428-71C7-6DC5F481F0CA}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh\vertex">
+      <UniqueIdentifier>{ACCA2BA2-26E1-40F4-C555-0E70B9FECC86}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Mesh\Vertex\Helper">
-      <UniqueIdentifier>{21F451FB-06A2-9AF9-20F7-419EDCE1FCC2}</UniqueIdentifier>
+    <Filter Include="src\action\model\mesh\vertex\helper">
+      <UniqueIdentifier>{6A7C9036-BD2C-E47C-D2C0-3743BB853CCA}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\Model\Skeleton">
-      <UniqueIdentifier>{C9935144-811C-A7F4-1DDA-894715555822}</UniqueIdentifier>
+    <Filter Include="src\action\model\skeleton">
+      <UniqueIdentifier>{0B60717E-45DA-D16B-0AB2-95E3BA1AB79B}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\World">
-      <UniqueIdentifier>{9164EE61-FE50-23B7-08C8-4688CA18AF54}</UniqueIdentifier>
+    <Filter Include="src\action\world">
+      <UniqueIdentifier>{85609C64-5B32-0B9C-9ABE-92FC3AF03DBB}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\World\Camera">
-      <UniqueIdentifier>{74EBC7D7-656D-633B-D813-2E9357FA66CD}</UniqueIdentifier>
+    <Filter Include="src\action\world\camera">
+      <UniqueIdentifier>{AC0F8237-9EF3-9C1B-B389-4672BD362A0D}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\World\Helper">
-      <UniqueIdentifier>{BD2007BE-6DF8-73B1-9D28-D31F07D37C13}</UniqueIdentifier>
+    <Filter Include="src\action\world\helper">
+      <UniqueIdentifier>{47DD41DD-F80E-2D3F-31F7-7B5B445DE072}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\World\Light">
-      <UniqueIdentifier>{D1B20DF8-4D3E-75E4-0B2C-5380B9E33911}</UniqueIdentifier>
+    <Filter Include="src\action\world\light">
+      <UniqueIdentifier>{453A8E87-0CD0-02CA-5A0D-133FCF9D4D79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\World\Link">
-      <UniqueIdentifier>{87EF63CC-9AEB-3FF5-428D-1C6925BAFD88}</UniqueIdentifier>
+    <Filter Include="src\action\world\link">
+      <UniqueIdentifier>{AFDF48ED-C688-D729-707A-03875561E618}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\World\Object">
-      <UniqueIdentifier>{BE5657BE-138B-44CA-6CCA-D72233174350}</UniqueIdentifier>
+    <Filter Include="src\action\world\object">
+      <UniqueIdentifier>{1777CA76-7172-C5A0-1AE8-9366A3B67558}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Action\World\Terrain">
-      <UniqueIdentifier>{FAC0466C-2A72-FFC1-1BAF-B388BE898DC8}</UniqueIdentifier>
+    <Filter Include="src\action\world\terrain">
+      <UniqueIdentifier>{9FBEB9BD-F1B2-CDD7-1FB4-5FED693F9A53}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Data">
-      <UniqueIdentifier>{37999E5F-7DDA-9ABF-1768-8C3D70B5820C}</UniqueIdentifier>
+    <Filter Include="src\data">
+      <UniqueIdentifier>{2630DC8F-BD02-9230-C38E-3F90A09795EC}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Data\Administration">
-      <UniqueIdentifier>{BCBD4AAF-EA71-BD6D-01BC-060590A47D13}</UniqueIdentifier>
+    <Filter Include="src\data\administration">
+      <UniqueIdentifier>{F96ACB1F-0AE7-92A2-2E55-52D272F667B6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Data\Font">
-      <UniqueIdentifier>{3F47C0B5-B3C6-9909-FCE1-9456D283687A}</UniqueIdentifier>
+    <Filter Include="src\data\font">
+      <UniqueIdentifier>{70EE7AD0-7F76-4937-9D1A-0B36D07CB682}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Data\Font\Import">
-      <UniqueIdentifier>{626FBD0E-DA7A-92AF-8263-23D15D449C3F}</UniqueIdentifier>
+    <Filter Include="src\data\font\import">
+      <UniqueIdentifier>{F882FFF5-47D8-2DA6-1118-A6EAF7D47C97}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Data\Material">
-      <UniqueIdentifier>{6933A317-3C02-AB42-0F7B-9E00D8F4BC52}</UniqueIdentifier>
+    <Filter Include="src\data\material">
+      <UniqueIdentifier>{260F27D6-D573-16D4-D857-AA7B841399DC}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Data\Model">
-      <UniqueIdentifier>{4414AEE2-82F9-19BE-BFFF-14E880BCD722}</UniqueIdentifier>
+    <Filter Include="src\data\model">
+      <UniqueIdentifier>{FD1D1874-7BEF-0C2E-15F6-536A8DE09928}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Data\Model\Geometry">
-      <UniqueIdentifier>{1A6BB606-73E3-EBCC-FB97-5DF8BBEBDA2F}</UniqueIdentifier>
+    <Filter Include="src\data\model\geometry">
+      <UniqueIdentifier>{BE098E4E-D164-CBEE-F5BB-3B935D1C83F4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Data\World">
-      <UniqueIdentifier>{D55260FE-584A-CFC6-AEC7-DA052EA0C429}</UniqueIdentifier>
+    <Filter Include="src\data\world">
+      <UniqueIdentifier>{FF540D38-BDDD-B079-3F45-66376C92F1CF}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Data\World\Lightmap">
-      <UniqueIdentifier>{FF149397-47D4-6836-DD53-29729842E6FD}</UniqueIdentifier>
+    <Filter Include="src\data\world\lightmap">
+      <UniqueIdentifier>{DC19124B-4C42-EA43-1A4F-77CA69B9EC7C}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\lib">
       <UniqueIdentifier>{78C09F83-C1B9-0A6A-D375-DF41AB8FB723}</UniqueIdentifier>
@@ -2891,86 +2891,86 @@
     <Filter Include="src\lib\threads">
       <UniqueIdentifier>{00B3DEB1-3DBC-9488-47E6-BB73557F0D00}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode">
-      <UniqueIdentifier>{033B1084-006B-8586-E637-20D70829C77D}</UniqueIdentifier>
+    <Filter Include="src\mode">
+      <UniqueIdentifier>{97CFBFCA-8429-1796-6EAD-D28DB27F0569}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Administration">
-      <UniqueIdentifier>{974B2EB3-8860-D9AC-89AE-3353AC20440E}</UniqueIdentifier>
+    <Filter Include="src\mode\administration">
+      <UniqueIdentifier>{46C4F24C-32C5-E34F-64FC-0A435F847E6B}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Administration\Dialog">
-      <UniqueIdentifier>{D9DD417E-9FB3-901C-FC29-D03849F97E14}</UniqueIdentifier>
+    <Filter Include="src\mode\administration\dialog">
+      <UniqueIdentifier>{BAD280AC-5F9D-0AE7-3F0B-219780043A9F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Font">
-      <UniqueIdentifier>{51760B94-DCF1-BEEF-6A68-3671907FBB50}</UniqueIdentifier>
+    <Filter Include="src\mode\font">
+      <UniqueIdentifier>{1A862A14-BED1-8FEC-E45C-F5E0B204ECB0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Font\Dialog">
-      <UniqueIdentifier>{88874C83-955A-5333-D457-8A12E75C1FC9}</UniqueIdentifier>
+    <Filter Include="src\mode\font\dialog">
+      <UniqueIdentifier>{2D81E65A-495C-058B-BC12-13C981EBB66D}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Material">
-      <UniqueIdentifier>{60C717DF-B62B-5FDA-41A3-B69439B89F3F}</UniqueIdentifier>
+    <Filter Include="src\mode\material">
+      <UniqueIdentifier>{0FEB6874-9386-3F44-AAC9-D19D365CEBBE}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Material\Dialog">
-      <UniqueIdentifier>{F9CA78BD-3248-7977-F992-E0DB9ED05A64}</UniqueIdentifier>
+    <Filter Include="src\mode\material\dialog">
+      <UniqueIdentifier>{54231940-B753-A094-2583-8B9AE71EC8A2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Model">
-      <UniqueIdentifier>{DA987812-1165-B70A-8A04-F19F3CFFE10C}</UniqueIdentifier>
+    <Filter Include="src\mode\model">
+      <UniqueIdentifier>{5B5FB0A7-2BE3-DA7E-787D-7AC32D48AADF}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Model\Animation">
-      <UniqueIdentifier>{6CF71757-CD7E-B13D-5BDB-3A3CCE9009E6}</UniqueIdentifier>
+    <Filter Include="src\mode\model\animation">
+      <UniqueIdentifier>{EA9FD30B-F3C0-0B22-D921-3F2226F11A10}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Model\Animation\Creation">
-      <UniqueIdentifier>{0EFEFA99-138A-7921-B657-1848D9776B46}</UniqueIdentifier>
+    <Filter Include="src\mode\model\animation\creation">
+      <UniqueIdentifier>{20914D88-691A-0C63-2143-C4D2A7818BEB}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Model\Dialog">
-      <UniqueIdentifier>{10BBF50B-A707-CFEA-0642-DFF18DA28CB9}</UniqueIdentifier>
+    <Filter Include="src\mode\model\dialog">
+      <UniqueIdentifier>{F5E7AEE7-2F39-1F6B-8913-1512CA7C07A0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Model\Mesh">
-      <UniqueIdentifier>{ED76B513-6296-4419-100D-EA357510EB0D}</UniqueIdentifier>
+    <Filter Include="src\mode\model\mesh">
+      <UniqueIdentifier>{4C1D799D-49B3-48A1-4E7A-A7D8DC4955BA}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Model\Mesh\Creation">
-      <UniqueIdentifier>{8BEAF9F0-1B73-1988-2D40-A6A25C133E7B}</UniqueIdentifier>
+    <Filter Include="src\mode\model\mesh\creation">
+      <UniqueIdentifier>{45A128C5-3B2D-B2BA-8E58-5A291C81619B}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Model\Mesh\Selection">
-      <UniqueIdentifier>{593FB0AA-7EBC-2288-EDEE-FEEC11E15F7B}</UniqueIdentifier>
+    <Filter Include="src\mode\model\mesh\selection">
+      <UniqueIdentifier>{3D798B99-6C91-34F5-C899-47B56E854C28}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Model\Skeleton">
-      <UniqueIdentifier>{05B14AFC-0199-0896-68C7-398DB9305F06}</UniqueIdentifier>
+    <Filter Include="src\mode\model\skeleton">
+      <UniqueIdentifier>{1C394106-8E4E-2C12-BBE2-CFB7687C3B34}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\Model\Skeleton\Creation">
-      <UniqueIdentifier>{CE0A3253-8B2F-CC72-7F98-1AE5D477280F}</UniqueIdentifier>
+    <Filter Include="src\mode\model\skeleton\creation">
+      <UniqueIdentifier>{087FFE3B-C567-E752-013E-0DA496767587}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\World">
-      <UniqueIdentifier>{C4BCC7CD-7EF9-F832-B564-01549DE37A04}</UniqueIdentifier>
+    <Filter Include="src\mode\world">
+      <UniqueIdentifier>{666D645F-3B54-697A-5DD1-A31E388670ED}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\World\Camera">
-      <UniqueIdentifier>{A6CFF1AC-EA7B-C8B5-B979-4AF21E2964D1}</UniqueIdentifier>
+    <Filter Include="src\mode\world\camera">
+      <UniqueIdentifier>{B2DAF239-6764-00FA-5BD5-9C54E6C6E65A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\World\Camera\Creation">
-      <UniqueIdentifier>{2043B41C-EB85-AD14-EBF0-D6631C347DCA}</UniqueIdentifier>
+    <Filter Include="src\mode\world\camera\creation">
+      <UniqueIdentifier>{EA3AD006-9332-D217-A97E-8B7BD0ED90D8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\World\Creation">
-      <UniqueIdentifier>{1EE84A12-B297-AEFE-D801-FA15717AC7DE}</UniqueIdentifier>
+    <Filter Include="src\mode\world\creation">
+      <UniqueIdentifier>{215CEE96-E1B5-86ED-1FD6-A06E698C7D9A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\World\Dialog">
-      <UniqueIdentifier>{7D371447-4D1D-08AC-514D-AA8275781C78}</UniqueIdentifier>
+    <Filter Include="src\mode\world\dialog">
+      <UniqueIdentifier>{C527E532-F21E-E2BE-46C0-917619DA84E4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Mode\World\Terrain">
-      <UniqueIdentifier>{CB289738-69DF-9BA6-3ADE-14966F43333F}</UniqueIdentifier>
+    <Filter Include="src\mode\world\terrain">
+      <UniqueIdentifier>{9E26EE00-59C0-382B-1E72-AD19CB9D0449}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\MultiView">
-      <UniqueIdentifier>{480937C9-18B1-35B6-6CA2-7D9F406F831C}</UniqueIdentifier>
+    <Filter Include="src\multiview">
+      <UniqueIdentifier>{EB68D8FE-30B3-B944-0207-CEB60C0575D5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Storage">
-      <UniqueIdentifier>{9EF6E9A9-60AB-D050-6006-5EB937A99823}</UniqueIdentifier>
+    <Filter Include="src\storage">
+      <UniqueIdentifier>{EA912F70-7E99-A65B-3D90-26DEB723C92A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Storage\Format">
+    <Filter Include="src\storage\format">
       <UniqueIdentifier>{099ED05C-69A7-FF58-AF67-D51C2C698E38}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Storage\Format\old">
+    <Filter Include="src\storage\format\old">
       <UniqueIdentifier>{3ABBE72A-9634-371F-E7CF-63B7C30DCAA0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Stuff">
-      <UniqueIdentifier>{2504A039-A78F-EFEE-3C53-E8989AD0BDFD}</UniqueIdentifier>
+    <Filter Include="src\stuff">
+      <UniqueIdentifier>{A8C689AD-D3A0-DE0F-0B98-DE214DC1299C}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\y">
       <UniqueIdentifier>{B4C155E0-F4CA-9BCF-C13C-B164BBA71B0C}</UniqueIdentifier>

@@ -11,9 +11,9 @@
 #include "lib/hui/hui.h"
 #include "lib/base/map.h"
 #include "lib/os/time.h"
-#include "Mode/Mode.h"
-#include "Stuff/Progress.h"
-#include "Stuff/PluginManager.h"
+#include "mode/Mode.h"
+#include "stuff/Progress.h"
+#include "stuff/PluginManager.h"
 
 namespace nix{
 	class Texture;
