@@ -32,6 +32,7 @@ void *ActionModelTransformSkinVertices::execute(Data *d) {
 		vec3 &v = t.side[k].skin_vertex[texture_level];
 		v = mat * v;
 	}
+	m->out_skin_changed.notify();
 	return NULL;
 }
 
@@ -44,8 +45,5 @@ void ActionModelTransformSkinVertices::undo(Data *d) {
 		vec3 &v = t.side[k].skin_vertex[texture_level];
 		v = old_data[i];
 	}
-}
-
-const string& ActionModelTransformSkinVertices::message() {
-	return DataModel::MESSAGE_SKIN_CHANGE;
+	m->out_skin_changed.notify();
 }

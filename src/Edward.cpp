@@ -120,7 +120,24 @@ void Edward::idle_function()
 }
 
 Edward::Edward() :
-	hui::Window(AppName, 800, 600)
+	obs::Node<hui::Window>(AppName, 800, 600),
+	in_data_selection_changed(this, [this] {
+			cur_mode->multi_view->force_redraw();
+			update_menu();
+	}),
+	in_data_changed(this, [this] {
+			cur_mode->on_set_multi_view();
+			cur_mode->multi_view->force_redraw();
+			update_menu();
+	}),
+	in_action_failed(this, [this] {
+			auto am = cur_mode->get_data()->action_manager;
+			error_box(format(_("Action failed: %s\nReason: %s"), am->error_location.c_str(), am->error_message.c_str()));
+	}),
+	in_saved(this, [this] {
+			set_message(_("Saved!"));
+			update_menu();
+	})
 {
 	set_border_width(0);
 	add_grid("", 0, 0, "vgrid");
@@ -222,30 +239,42 @@ Edward::Edward() :
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
 	mworld->FFVBinaryMap = true;*/
 
-	multi_view_3d->subscribe(this, [=]{ update_menu(); }, multi_view_3d->MESSAGE_SETTINGS_CHANGE);
-	multi_view_3d->subscribe(this, [=]{ cur_mode->on_selection_change(); update_menu(); }, multi_view_3d->MESSAGE_SELECTION_CHANGE);
-	multi_view_3d->subscribe(this, [=]{ cur_mode->on_view_stage_change(); update_menu(); }, multi_view_3d->MESSAGE_VIEWSTAGE_CHANGE);
-	multi_view_3d->subscribe(this, [=]{ cur_mode->multi_view->force_redraw(); });
+	multi_view_3d->out_settings_changed >> create_sink([this] { update_menu(); });
+	multi_view_3d->out_selection_changed >> create_sink([this] {
+		cur_mode->on_selection_change();
+		update_menu();
+	});
+	multi_view_3d->out_viewstage_changed >> create_sink([this] {
+		cur_mode->on_view_stage_change();
+		update_menu();
+	});
+	multi_view_3d->out_redraw >> create_sink([this] { redraw("nix-area"); });
 
-	multi_view_2d->subscribe(this, [=]{ update_menu(); }, multi_view_2d->MESSAGE_SETTINGS_CHANGE);
-	multi_view_2d->subscribe(this, [=]{ cur_mode->on_selection_change(); update_menu(); }, multi_view_2d->MESSAGE_SELECTION_CHANGE);
-	multi_view_2d->subscribe(this, [=]{ cur_mode->on_view_stage_change(); update_menu(); }, multi_view_2d->MESSAGE_VIEWSTAGE_CHANGE);
-	multi_view_2d->subscribe(this, [=]{ cur_mode->multi_view->force_redraw(); });
+	multi_view_2d->out_settings_changed >> create_sink([this]{ update_menu(); });
+	multi_view_2d->out_selection_changed >> create_sink([this] {
+		cur_mode->on_selection_change();
+		update_menu();
+	});
+	multi_view_2d->out_viewstage_changed >> create_sink([this] {
+		cur_mode->on_view_stage_change();
+		update_menu();
+	});
+	multi_view_2d->out_redraw >> create_sink([this] { redraw("nix-area"); });
 
 
-	event("hui:close", [=]{ on_close(); });
-	event("exit", [=]{ on_close(); });
-	event("*", [=]{ on_event(); });
-	event("what_the_fuck", [=]{ on_about(); });
-	event("send_bug_report", [=]{ on_send_bug_report(); });
-	event("execute_plugin", [=]{ on_execute_plugin(); });
-	event("abort_creation_mode", [=]{ on_abort_creation_mode(); });
-	event_x("nix-area", "hui:draw-gl", [=]{ on_draw_gl(); });
+	event("hui:close", [this] { on_close(); });
+	event("exit", [this] { on_close(); });
+	event("*", [this] { on_event(); });
+	event("what_the_fuck", [this] { on_about(); });
+	event("send_bug_report", [this] { on_send_bug_report(); });
+	event("execute_plugin", [this] { on_execute_plugin(); });
+	event("abort_creation_mode", [this] { on_abort_creation_mode(); });
+	event_x("nix-area", "hui:draw-gl", [this] { on_draw_gl(); });
 	set_key_code("abort_creation_mode", hui::KEY_ESCAPE, "hui:cancel");
 
 
-	hui::run_later(0.010f, [=]{ cur_mode->multi_view->force_redraw(); });
-	hui::run_later(0.100f, [=]{ optimize_current_view(); });
+	hui::run_later(0.010f, [this] { cur_mode->multi_view->force_redraw(); });
+	hui::run_later(0.100f, [this] { optimize_current_view(); });
 }
 
 Edward::~Edward() {
@@ -410,23 +439,11 @@ void Edward::set_mode(ModeBase *_m) {
 		update_menu();
 		cur_mode->on_enter(); // ????
 		if (cur_mode->get_data()) {
-			cur_mode->get_data()->subscribe(this, [=]{
-				cur_mode->multi_view->force_redraw();
-				update_menu();
-			}, Data::MESSAGE_SELECTION);
-			cur_mode->get_data()->subscribe(this, [=]{
-				cur_mode->on_set_multi_view();
-				cur_mode->multi_view->force_redraw();
-				update_menu();
-			}, Data::MESSAGE_CHANGE);
+			cur_mode->get_data()->out_selection >> in_data_selection_changed;
+			cur_mode->get_data()->out_changed >> in_data_changed;
 			auto *am = cur_mode->get_data()->action_manager;
-			am->subscribe(this, [=]{
-				error_box(format(_("Action failed: %s\nReason: %s"), am->error_location.c_str(), am->error_message.c_str()));
-			}, am->MESSAGE_FAILED);
-			am->subscribe(this, [=]{
-				set_message(_("Saved!"));
-				update_menu();
-			}, am->MESSAGE_SAVED);
+			am->out_failed >> in_action_failed;
+			am->out_saved >> in_saved;
 		}
 
 		cur_mode->multi_view->force_redraw();

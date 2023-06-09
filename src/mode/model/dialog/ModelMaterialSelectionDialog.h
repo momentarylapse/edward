@@ -9,9 +9,10 @@
 #define MODELMATERIALSELECTIONDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../lib/pattern/Observable.h"
 class DataModel;
 
-class ModelMaterialSelectionDialog: public hui::Dialog {
+class ModelMaterialSelectionDialog: public obs::Node<hui::Dialog> {
 public:
 	ModelMaterialSelectionDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data);
 	virtual ~ModelMaterialSelectionDialog();

@@ -23,10 +23,10 @@ public:
 	ModeModelMesh(ModeBase *parent, MultiView::MultiView *mv3, MultiView::MultiView *mv2);
 	virtual ~ModeModelMesh();
 
-	class State : public Observable<VirtualBase> {
+	class State : public obs::Node<VirtualBase> {
 	public:
-		static const string MESSAGE_CURRENT_MATERIAL_CHANGE;
-		static const string MESSAGE_CURRENT_SKIN_CHANGE;
+		obs::source out_current_material_changed{this, "current-material-changed"};
+		obs::source out_current_skin_changed{this, "current-skin-changed"};
 		~State(){}
 	} state;
 

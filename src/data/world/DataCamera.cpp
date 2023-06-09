@@ -25,7 +25,7 @@ void DataCamera::reset() {
 	Point.clear();
 	Vel.clear();
 	reset_history();
-	notify();
+	out_changed();
 }
 
 bool DataCamera::load(const Path &_filename, bool deep) {
@@ -85,7 +85,7 @@ bool DataCamera::load(const Path &_filename, bool deep) {
 	delete f;
 	UpdateVel();
 	reset_history();
-	notify();
+	out_changed();
 
 	}catch(Exception &e){
 		ed->set_message(e.message());

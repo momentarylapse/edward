@@ -23,6 +23,8 @@ public:
 	ModeMaterial(MultiView::MultiView *mv);
 	virtual ~ModeMaterial();
 
+	obs::sink in_data_changed;
+
 	void on_start() override;
 	void on_end() override;
 

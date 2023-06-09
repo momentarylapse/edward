@@ -42,8 +42,9 @@ CameraDialog::CameraDialog(ModeWorldCamera *_mode) {
 
 	mt_action = NULL;
 
-	data->subscribe(this, [=]{ LoadData(); });
-	mode->multi_view->subscribe(this, [=]{ LoadData(); });
+	data->out_changed >> create_sink([=]{ LoadData(); });
+	mode->multi_view->out_changed >> create_sink([=]{ LoadData(); });
+	// ???
 	//mode->subscribe(this, [=]{ LoadData(); });
 
 	LoadData();
@@ -236,7 +237,7 @@ void CameraDialog::OnAreaMouseMove()
 			}
 			mt_action = new ActionCameraMoveTimeSelection(data, screen2sample(mx), mt_time0);
 			mt_action->execute(data);
-			data->notify();
+			data->out_changed();
 		}
 	}else{
 		int new_hover = -1;

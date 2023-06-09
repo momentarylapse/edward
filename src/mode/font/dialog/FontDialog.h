@@ -11,8 +11,7 @@
 #include "../../../lib/hui/hui.h"
 #include "../../../data/font/DataFont.h"
 
-class FontDialog: public hui::Panel
-{
+class FontDialog: public obs::Node<hui::Panel> {
 public:
 	FontDialog(DataFont *_data);
 	virtual ~FontDialog();

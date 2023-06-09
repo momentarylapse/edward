@@ -9,9 +9,10 @@
 #define MODELANIMATIONDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../lib/pattern/Observable.h"
 class DataModel;
 
-class ModelAnimationDialog: public hui::Panel {
+class ModelAnimationDialog: public obs::Node<hui::Panel> {
 public:
 	ModelAnimationDialog(DataModel *_data);
 	virtual ~ModelAnimationDialog();

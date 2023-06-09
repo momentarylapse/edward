@@ -21,9 +21,12 @@ public:
 	ModeModelAnimation(ModeBase *parent, MultiView::MultiView *mv);
 	virtual ~ModeModelAnimation();
 
-	class State : public Observable<VirtualBase> {
+	obs::sink in_update;
+
+	class State : public obs::Node<VirtualBase> {
 	public:
 		static const string MESSAGE_SET_FRAME;
+		obs::source out_set_frame{this, "set-frame"};
 		~State() {}
 	} state;
 

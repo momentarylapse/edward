@@ -9,10 +9,11 @@
 #define MODELMATERIALDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../lib/pattern/Observable.h"
 #include "../../../data/model/ModelMaterial.h"
 class DataModel;
 
-class ModelMaterialDialog: public hui::Panel {
+class ModelMaterialDialog: public obs::Node<hui::Panel> {
 public:
 	ModelMaterialDialog(DataModel *_data, bool full=true);
 	virtual ~ModelMaterialDialog();

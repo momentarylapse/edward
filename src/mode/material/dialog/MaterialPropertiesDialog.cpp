@@ -76,7 +76,7 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 
 	set_options("shader_file", "placeholder=- engine default shader -");
 	load_data();
-	data->subscribe(this, [this]{ on_data_update(); });
+	data->out_changed >> create_sink([this]{ on_data_update(); });
 }
 
 void MaterialPropertiesDialog::load_data() {

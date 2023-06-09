@@ -9,6 +9,7 @@
 #include "ActionModelEditMaterial.h"
 #include "../../../data/model/ModelMesh.h"
 #include "../../../data/model/ModelPolygon.h"
+#include "../../../lib/image/image.h"
 
 #include <assert.h>
 
@@ -33,7 +34,7 @@ void *ActionModelEditMaterial::execute(Data *d) {
 	} else if (mode == 1) {
 		std::swap(alpha, m->material[index]->alpha);
 	}
-	m->notify(m->MESSAGE_MATERIAL_CHANGE);
+	m->out_material_changed.notify();
 
 	return NULL;
 }
@@ -72,7 +73,7 @@ void *ActionModelMaterialAddTexture::execute(Data *d) {
 	}
 
 
-	m->notify(m->MESSAGE_TEXTURE_CHANGE);
+	m->out_texture_changed.notify();
 	return NULL;
 }
 
@@ -83,7 +84,7 @@ void ActionModelMaterialAddTexture::undo(Data *d) {
 	auto tl = m->material[index]->texture_levels.pop();
 	delete tl;
 
-	m->notify(m->MESSAGE_TEXTURE_CHANGE);
+	m->out_texture_changed.notify();
 }
 
 
@@ -114,7 +115,7 @@ void *ActionModelMaterialDeleteTexture::execute(Data *d) {
 
 
 
-	m->notify(m->MESSAGE_TEXTURE_CHANGE);
+	m->out_texture_changed.notify();
 	return NULL;
 }
 
@@ -125,7 +126,7 @@ void ActionModelMaterialDeleteTexture::undo(Data *d) {
 	m->material[index]->texture_levels.insert(tl, level);
 	tl = nullptr;
 
-	m->notify(m->MESSAGE_TEXTURE_CHANGE);
+	m->out_texture_changed.notify();
 }
 
 
@@ -151,7 +152,7 @@ void *ActionModelMaterialLoadTexture::execute(Data *d) {
 
 
 
-	m->notify(m->MESSAGE_TEXTURE_CHANGE);
+	m->out_texture_changed.notify();
 	return NULL;
 }
 
@@ -192,7 +193,7 @@ void *ActionModelMaterialScaleTexture::execute(Data *d) {
 
 
 
-	m->notify(m->MESSAGE_TEXTURE_CHANGE);
+	m->out_texture_changed.notify();
 	return NULL;
 }
 

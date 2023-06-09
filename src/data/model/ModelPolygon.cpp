@@ -11,6 +11,7 @@
 #include "ModelPolygon.h"
 #include "ModelMesh.h" // for Vertex
 #include "../../lib/nix/nix.h"
+#include "../../lib/math/vec2.h"
 
 
 void VertexStagingBuffer::build(nix::VertexBuffer *vb, int num_textures) {

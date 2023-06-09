@@ -36,8 +36,13 @@ ModelAnimationDialog::ModelAnimationDialog(DataModel *_data) {
 	event("sim_start", [=]{ on_simulation_play(); });
 	event("sim_stop", [=]{ on_simulation_stop(); });
 
-	data->subscribe(this, [=]{ load_data(); });
-	mode_model_animation->state.subscribe(this, [=]{ load_data(); });
+	data->out_changed >> create_sink([=]{ load_data(); });
+	data->out_material_changed >> create_sink([=]{ load_data(); });
+	data->out_selection >> create_sink([=]{ load_data(); });
+	data->out_skin_changed >> create_sink([=]{ load_data(); });
+	data->out_texture_changed >> create_sink([=]{ load_data(); });
+	mode_model_animation->state.out_changed >> create_sink([=]{ load_data(); });
+	mode_model_animation->state.out_set_frame >> create_sink([=]{ load_data(); });
 	//fillAnimation();
 
 	popup = hui::create_resource_menu("model-animation-list-popup", this);

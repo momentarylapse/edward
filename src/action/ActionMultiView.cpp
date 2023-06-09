@@ -33,14 +33,14 @@ void ActionMultiView::abort(Data *d) {
 
 void ActionMultiView::abort_and_notify(Data *d) {
 	abort(d);
-	d->notify(message());
+	d->out_changed.notify();
 }
 
 void ActionMultiView::update_and_notify(Data *d, const mat4 &m) {
 	abort(d);
 	mat = m;
 	execute(d);
-	d->notify(message());
+	d->out_changed.notify();
 }
 
 ActionMultiView *ActionMultiViewFactory(const string &name, Data *d) {
@@ -62,7 +62,7 @@ ActionMultiView *ActionMultiViewFactory(const string &name, Data *d) {
 		return new ActionCameraMoveSelection((DataCamera*)d, _param, _pos0);*/
 	msg_error("ActionMultiViewFactory: unknown action: " + name);
 	assert(0);
-	return NULL;
+	return nullptr;
 }
 
 

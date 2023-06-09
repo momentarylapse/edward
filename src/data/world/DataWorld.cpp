@@ -93,7 +93,7 @@ void DataWorld::reset() {
 	meta_data.reset();
 
 	reset_history();
-	notify();
+	out_changed();
 }
 
 

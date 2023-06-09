@@ -40,11 +40,8 @@ void *ActionModelSkinVerticesFromProjection::execute(Data *d) {
 		}
 	}
 
+	m->out_skin_changed.notify();
 	return NULL;
-}
-
-const string& ActionModelSkinVerticesFromProjection::message() {
-	return DataModel::MESSAGE_SKIN_CHANGE;
 }
 
 void ActionModelSkinVerticesFromProjection::undo(Data *d) {
@@ -55,6 +52,7 @@ void ActionModelSkinVerticesFromProjection::undo(Data *d) {
 		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 			t.side[k].skin_vertex[l] = old_pos[l][i];
 	}
+	m->out_skin_changed.notify();
 }
 
 

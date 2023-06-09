@@ -16,7 +16,6 @@ class ActionModelTransformSkinVertices: public ActionMultiView {
 public:
 	ActionModelTransformSkinVertices(DataModel *d, int texture_level);
 	string name() override { return "ModelTransformSkinVertices"; }
-	const string &message() override;
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;

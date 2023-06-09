@@ -70,10 +70,10 @@ void ModeWorldCamera::on_start() {
 
 	multi_view->reset_mouse_action();
 
-	data->subscribe(this, [=]{
+	data->out_changed >> create_sink([=]{
 		data->UpdateVel();
 		loadData();
-	}, data->MESSAGE_CHANGE);
+	});
 	loadData();
 }
 

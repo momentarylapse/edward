@@ -140,7 +140,7 @@ void ModeModelMeshDeformFunction::on_preview() {
 
 	for (int vi: index)
 		data->mesh->vertex[vi].pos = transform(data->mesh->vertex[vi].pos);
-	data->notify();
+	data->out_changed();
 	has_preview = true;
 	multi_view->force_redraw();
 }
@@ -170,7 +170,7 @@ void ModeModelMeshDeformFunction::restore() {
 
 	foreachi(int vi, index, ii)
 		data->mesh->vertex[vi].pos = old_pos[ii];
-	data->notify();
+	data->out_changed();
 
 	has_preview = false;
 }

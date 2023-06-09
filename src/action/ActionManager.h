@@ -10,13 +10,13 @@
 
 #include "Action.h"
 #include "../data/Data.h"
-#include "../stuff/Observable.h"
+#include "../lib/pattern/Observable.h"
 
 class Data;
 class Action;
 class ActionGroup;
 
-class ActionManager : public Observable<VirtualBase> {
+class ActionManager : public obs::Node<VirtualBase> {
 	friend class Action;
 public:
 	ActionManager(Data *_data);
@@ -24,6 +24,8 @@ public:
 
 	static const string MESSAGE_FAILED;
 	static const string MESSAGE_SAVED;
+	obs::source out_failed{this, "failed"};
+	obs::source out_saved{this, "saved"};
 
 	void reset();
 	void enable(bool _enabled);

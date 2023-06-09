@@ -9,11 +9,12 @@
 #define MULTIVIEW_H_
 
 #include "../lib/base/base.h"
+#include "../lib/base/pointer.h"
 #include "../lib/math/vec3.h"
 #include "../lib/math/vec2.h"
 #include "../lib/math/quaternion.h"
 #include "../lib/math/rect.h"
-#include "../stuff/Observable.h"
+#include "../lib/pattern/Observable.h"
 
 class Data;
 
@@ -21,6 +22,10 @@ namespace nix {
 	class Shader;
 	class UniformBuffer;
 	class FrameBuffer;
+}
+
+namespace hui {
+	class Menu;
 }
 
 namespace MultiView {
@@ -88,20 +93,20 @@ static const int FLAG_MOVE = 8;
 
 
 
-class MultiView : public Observable<VirtualBase> {
+class MultiView : public obs::Node<VirtualBase> {
 public:
 	MultiView(bool _mode3d);
 	virtual ~MultiView();
 
-	static const string MESSAGE_UPDATE;
-	static const string MESSAGE_SELECTION_CHANGE;
-	static const string MESSAGE_SETTINGS_CHANGE;
-	static const string MESSAGE_CAMERA_CHANGE;
-	static const string MESSAGE_VIEWSTAGE_CHANGE;
-	static const string MESSAGE_ACTION_START;
-	static const string MESSAGE_ACTION_UPDATE;
-	static const string MESSAGE_ACTION_ABORT;
-	static const string MESSAGE_ACTION_EXECUTE;
+	obs::source out_redraw{this, "redraw"};
+	obs::source out_selection_changed{this, "selection-changed"};
+	obs::source out_settings_changed{this, "settings-changed"};
+	obs::source out_camera_changed{this, "camera-changed"};
+	obs::source out_viewstage_changed{this, "viewstage-changed"};
+	obs::source out_action_start{this, "action-start"};
+	obs::source out_action_update{this, "action-update"};
+	obs::source out_action_abort{this, "action-abort"};
+	obs::source out_action_execute{this, "action-execute"};
 
 
 	void on_mouse_move();

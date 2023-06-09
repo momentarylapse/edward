@@ -17,8 +17,6 @@
 #include "../../../data/model/ModelSelection.h"
 #include "../../../data/model/ModelMesh.h"
 
-const string ModeModelMeshTexture::State::MESSAGE_TEXTURE_LEVEL_CHANGE = "TextureLevelChange";
-
 ModeModelMeshTexture *mode_model_mesh_texture = NULL;
 
 ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent, MultiView::MultiView *mv) :
@@ -71,13 +69,13 @@ void ModeModelMeshTexture::on_start() {
 
 	fetchData();
 
-	data->subscribe(this, [=]{ on_data_skin_change(); }, data->MESSAGE_SKIN_CHANGE);
-	data->subscribe(this, [=]{ on_data_change(); }, data->MESSAGE_CHANGE);
-	multi_view->subscribe(this, [=]{
+	data->out_skin_changed >> create_sink([=]{ on_data_skin_change(); });
+	data->out_changed >> create_sink([=]{ on_data_change(); });
+	multi_view->out_selection_changed >> create_sink([=]{
 		//data->SelectionTrianglesFromVertices();
 		//data->SelectionSurfacesFromTriangles();
 		//mode_model_mesh_triangle->FillSelectionBuffers();
-	}, multi_view->MESSAGE_SELECTION_CHANGE);
+	});
 
 	/*ed->SetTarget("root_table", 0);
 	ed->AddControlTable("", 1, 0, 1, 5, "side_table");
@@ -207,7 +205,7 @@ void ModeModelMeshTexture::set_current_texture_level(int level) {
 	//	return;
 	current_texture_level = level;
 	fetchData();
-	state.notify(state.MESSAGE_TEXTURE_LEVEL_CHANGE);
+	state.out_texture_level_changed();
 	multi_view->force_redraw();
 }
 

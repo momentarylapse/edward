@@ -87,7 +87,7 @@ void ActionController::start_action(Window *_win, const vec3 &_m, Constraint _co
 		pos0 = m0;
 	cur_action = ActionMultiViewFactory(action.name, data);
 	cur_action->execute_logged(data);
-	multi_view->notify(multi_view->MESSAGE_ACTION_START);
+	multi_view->out_action_start();
 
 	MouseWrapper::start(ed->win);
 }
@@ -204,7 +204,7 @@ void ActionController::update_param(const vec3 &_param) {
 
 	update();
 
-	multi_view->notify(multi_view->MESSAGE_ACTION_UPDATE);
+	multi_view->out_action_update();
 }
 
 
@@ -215,11 +215,11 @@ void ActionController::end_action(bool set) {
 	if (set) {
 		cur_action->undo(data);
 		data->execute(cur_action);
-		multi_view->notify(multi_view->MESSAGE_ACTION_EXECUTE);
+		multi_view->out_action_execute();
 	} else {
 		cur_action->abort_and_notify(data);
 		delete(cur_action);
-		multi_view->notify(multi_view->MESSAGE_ACTION_ABORT);
+		multi_view->out_action_abort();
 	}
 	cur_action = nullptr;
 	mat = mat4::ID;

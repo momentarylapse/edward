@@ -16,7 +16,6 @@ class ActionModelAutomap : public Action {
 public:
 	ActionModelAutomap(int material, int texture_level);
 	string name() override { return "ModelAutoMap"; }
-	const string &message() override;
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;

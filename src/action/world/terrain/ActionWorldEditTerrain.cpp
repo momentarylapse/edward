@@ -10,6 +10,7 @@
 #include "../../../y/Terrain.h"
 #include "../../../y/ResourceManager.h"
 #include "../../../lib/nix/nix.h"
+#include "../../../lib/os/msg.h"
 #include <assert.h>
 
 ActionWorldEditTerrain::ActionWorldEditTerrain(int _index, const WorldEditingTerrain &_data) {

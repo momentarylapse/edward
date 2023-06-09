@@ -9,19 +9,21 @@
 #define DATA_H_
 
 #include "../lib/base/base.h"
+#include "../lib/os/path.h"
+#include "../lib/pattern/Observable.h"
 #include "../action/Action.h"
 #include "../action/ActionManager.h"
-#include "../stuff/Observable.h"
 
 class ActionManager;
 class Action;
 
-class Data : public Observable<VirtualBase> {
+class Data : public obs::Node<VirtualBase> {
 public:
 	Data(int _type);
 	virtual ~Data();
 
 	static const string MESSAGE_SELECTION;
+	obs::source out_selection{this, "selection"};
 
 	virtual void reset() = 0;
 

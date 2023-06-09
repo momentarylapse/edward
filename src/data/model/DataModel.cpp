@@ -61,10 +61,6 @@
 #include "../../y/ModelManager.h"
 #include "../../y/components/Animator.h"
 
-const string DataModel::MESSAGE_SKIN_CHANGE = "SkinChange";
-const string DataModel::MESSAGE_MATERIAL_CHANGE = "MaterialChange";
-const string DataModel::MESSAGE_TEXTURE_CHANGE = "TextureChange";
-
 
 string ModelEffect::get_type()
 {
@@ -186,7 +182,7 @@ void DataModel::reset() {
 	meta_data.reset();
 
 	reset_history();
-	notify();
+	out_changed();
 }
 
 void DataModel::debug_show() {

@@ -57,7 +57,7 @@
 
 ModeWorld::ModeWorld(MultiView::MultiView *mv) :
 	Mode<DataWorld>("World", NULL, new DataWorld, mv, "menu_world") {
-	data->subscribe(this, [=]{ data->update_data(); });
+	data->out_changed >> create_sink([=]{ data->update_data(); });
 
 	world_dialog = nullptr;
 	dialog = nullptr;

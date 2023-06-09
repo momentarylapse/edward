@@ -18,6 +18,8 @@
 #include "../../../y/EngineData.h"
 #include "../../../storage/Storage.h"
 #include "../../../y/ModelManager.h"
+#include "../../../lib/os/msg.h"
+#include "../../../lib/math/vec2.h"
 
 bool LightmapData::Triangle::intersect(const Ray &r, vec3 &cp) const
 {

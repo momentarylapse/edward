@@ -19,9 +19,9 @@ class ModeModelMeshTexture: public Mode<DataModel> {
 public:
 	ModeModelMeshTexture(ModeBase *parent, MultiView::MultiView *mv);
 
-	class State : public Observable<VirtualBase> {
+	class State : public obs::Node<VirtualBase> {
 	public:
-		static const string MESSAGE_TEXTURE_LEVEL_CHANGE;
+		obs::source out_texture_level_changed{this, "texture-level-changed"};
 		~State(){}
 	} state;
 

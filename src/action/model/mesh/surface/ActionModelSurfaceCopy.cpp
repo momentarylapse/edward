@@ -10,6 +10,7 @@
 #include "helper/ActionModelSurfaceAddPolygon.h"
 #include "../vertex/ActionModelAddVertex.h"
 #include "../../../../data/model/DataModel.h"
+#include "../../../../lib/os/msg.h"
 
 ActionModelSurfaceCopy::ActionModelSurfaceCopy(int _surface)
 {

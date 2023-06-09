@@ -9,6 +9,7 @@
 #include "../DataFont.h"
 #include "../../../lib/image/image.h"
 //#include "../../../lib/nix/nix.h"
+#include "../../../lib/os/msg.h"
 #include "../../../y/ResourceManager.h"
 #include <pango/pangocairo.h>
 
@@ -44,7 +45,7 @@ bool ImporterCairo::Import(DataFont *f, const string &font_name)
 		if (ok){
 			f->global.TextureFile = Path("Font") | (font_name + ".tga");
 			im.save(ResourceManager::texture_dir | f->global.TextureFile);
-			f->notify();
+			f->out_changed();
 			return true;
 		}
 		n ++;

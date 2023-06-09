@@ -83,7 +83,7 @@ void DataMaterial::reset() {
 
 
 	reset_history();
-	notify();
+	out_changed();
 }
 
 void DataMaterial::apply_for_rendering() {

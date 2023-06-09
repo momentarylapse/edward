@@ -9,6 +9,7 @@
 #define SRC_MODE_MODEL_DIALOG_MODELANIMATIONTIMELINEPANEL_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../lib/pattern/Observable.h"
 
 class TimeLineParasite {
 public:
@@ -19,7 +20,7 @@ public:
 	virtual void on_timeline_draw(Painter *p){}
 };
 
-class ModelAnimationTimelinePanel : public hui::Panel {
+class ModelAnimationTimelinePanel : public obs::Node<hui::Panel> {
 public:
 	ModelAnimationTimelinePanel();
 	virtual ~ModelAnimationTimelinePanel();

@@ -9,11 +9,13 @@
 #define ADMINISTRATIONDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../lib/pattern/Observable.h"
+
 class DataAdministration;
 class AdminFile;
 class AdminFileList;
 
-class AdministrationDialog: public hui::Dialog {
+class AdministrationDialog: public obs::Node<hui::Dialog> {
 public:
 	AdministrationDialog(hui::Window *_parent, bool _allow_parent, DataAdministration *_data);
 	virtual ~AdministrationDialog();

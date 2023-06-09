@@ -36,7 +36,8 @@ ModeMaterial *mode_material = NULL;
 #define __MATERIAL_MAX_TEXTURES		4
 
 ModeMaterial::ModeMaterial(MultiView::MultiView *mv) :
-	Mode("Material", nullptr, new DataMaterial, mv, "menu_material")
+	Mode("Material", nullptr, new DataMaterial, mv, "menu_material"),
+	in_data_changed(this, [this] { on_data_update(); })
 {
 	geo = nullptr;
 
@@ -243,7 +244,7 @@ void ModeMaterial::on_start() {
 		msg_error(e.message());
 	}
 
-	data->subscribe(this, [=]{ on_data_update(); });
+	data->out_changed >> in_data_changed;
 	on_data_update();
 
 	shader_edit_mode = ShaderEditMode::NONE;

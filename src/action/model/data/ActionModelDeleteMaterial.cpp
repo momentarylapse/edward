@@ -31,7 +31,7 @@ void *ActionModelDeleteMaterial::execute(Data *d) {
 			p.material --;
 	}
 
-	m->notify(m->MESSAGE_MATERIAL_CHANGE);
+	m->out_material_changed.notify();
 	return nullptr;
 }
 
@@ -48,6 +48,6 @@ void ActionModelDeleteMaterial::undo(Data *d) {
 			p.material ++;
 	}
 
-	m->notify(m->MESSAGE_MATERIAL_CHANGE);
+	m->out_material_changed.notify();
 }
 

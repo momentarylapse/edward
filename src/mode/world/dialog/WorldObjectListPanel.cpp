@@ -70,11 +70,11 @@ WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
 
 	fill_list();
 
-	data->subscribe(this, [this] { fill_list(); }, data->MESSAGE_CHANGE);
-	w->multi_view->subscribe(this, [=] {
+	data->out_changed >> create_sink([this] { fill_list(); });
+	w->multi_view->out_selection_changed >> create_sink([=] {
 		if (allow_sel_change_signal)
 			selection_from_world();
-	}, w->multi_view->MESSAGE_SELECTION_CHANGE);
+	});
 }
 
 WorldObjectListPanel::~WorldObjectListPanel() {

@@ -9,11 +9,9 @@
 #define ACTIONMODELTRIANGULATEVERTICES_H_
 
 #include "../../../ActionGroup.h"
+#include "../../../../lib/base/set.h"
 
-template<class T> class Set;
-
-class ActionModelTriangulateVertices: public ActionGroup
-{
+class ActionModelTriangulateVertices: public ActionGroup {
 public:
 	ActionModelTriangulateVertices();
 	virtual ~ActionModelTriangulateVertices(){}

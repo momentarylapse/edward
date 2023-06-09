@@ -30,17 +30,17 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) {
 	data = _data;
 
 
-	data->subscribe(this, [=]{
+	data->out_material_changed >> create_sink([=]{
 		if (apply_queue_depth == 0)
 			load_data();
-	}, data->MESSAGE_MATERIAL_CHANGE);
-	data->subscribe(this, [=]{
+	});
+	data->out_texture_changed >> create_sink([=]{
 		if (apply_queue_depth == 0)
 			load_data();
-	}, data->MESSAGE_TEXTURE_CHANGE);
+	});
 
-	mode_model_mesh->state.subscribe(this, [=]{ load_data(); }, mode_model_mesh->state.MESSAGE_CURRENT_MATERIAL_CHANGE);
-	mode_model_mesh_texture->state.subscribe(this, [=]{ load_data(); }, mode_model_mesh_texture->state.MESSAGE_TEXTURE_LEVEL_CHANGE);
+	mode_model_mesh->state.out_current_material_changed >> create_sink([=]{ load_data(); });
+	mode_model_mesh_texture->state.out_texture_level_changed >> create_sink([=]{ load_data(); });
 
 	popup_materials = hui::create_resource_menu("model-material-list-popup", this);
 	popup_textures = hui::create_resource_menu("model-texture-list-popup", this);

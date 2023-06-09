@@ -20,7 +20,7 @@ void *ActionModelAddMaterial::execute(Data *d) {
 	mat->texture_levels[0]->reload_image();
 
 	m->material.add(mat);
-	m->notify(m->MESSAGE_MATERIAL_CHANGE);
+	m->out_material_changed.notify();
 	return &m->material.back();
 }
 
@@ -30,7 +30,7 @@ void ActionModelAddMaterial::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	delete m->material.pop();
-	m->notify(m->MESSAGE_MATERIAL_CHANGE);
+	m->out_material_changed.notify();
 }
 
 

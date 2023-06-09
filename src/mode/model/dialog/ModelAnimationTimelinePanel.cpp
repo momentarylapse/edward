@@ -30,8 +30,13 @@ ModelAnimationTimelinePanel::ModelAnimationTimelinePanel() {
 	event_x("area", "hui:mouse-move", std::bind(&ModelAnimationTimelinePanel::on_mouse_move, this));
 	event_x("area", "hui:mouse-wheel", std::bind(&ModelAnimationTimelinePanel::on_mouse_wheel, this));
 
-	mode_model_animation->data->subscribe(this, [=]{ redraw("area"); });
-	mode_model_animation->state.subscribe(this, [=]{ redraw("area"); });
+	mode_model_animation->data->out_changed >> create_sink([=]{ redraw("area"); });
+	mode_model_animation->data->out_material_changed >> create_sink([=]{ redraw("area"); });
+	mode_model_animation->data->out_selection >> create_sink([=]{ redraw("area"); });
+	mode_model_animation->data->out_skin_changed >> create_sink([=]{ redraw("area"); });
+	mode_model_animation->data->out_texture_changed >> create_sink([=]{ redraw("area"); });
+	mode_model_animation->state.out_changed >> create_sink([=]{ redraw("area"); });
+	mode_model_animation->state.out_set_frame >> create_sink([=]{ redraw("area"); });
 
 	default_parasite = new TimeLineParasite;
 	set_parasite(NULL);

@@ -106,13 +106,13 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 			data->shader.is_default = false;
 			data->reset_history(); // TODO: actions
 			request_optimal_view();
-			data->notify(data->MESSAGE_CHANGE);
+			data->out_changed();
 		});
 	});
 	event("shader-default", [this] {
 		data->shader.set_engine_default();
 		data->reset_history(); // TODO: actions
-		data->notify(data->MESSAGE_CHANGE);
+		data->out_changed();
 	});
 	event("shader-load", [this] {
 		storage->file_dialog(FD_SHADERFILE,false,true, [this] {
@@ -120,7 +120,7 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 				data->shader.file = storage->dialog_file;
 				data->shader.load_from_file();
 				request_optimal_view();
-				data->notify(data->MESSAGE_CHANGE);
+				data->out_changed();
 			} else {
 				ed->error_box(_("Error in shader file:\n") + nix::shader_error);
 			}
@@ -603,7 +603,7 @@ void ShaderGraphDialog::on_update() {
 	data->shader.from_graph = true;
 	data->shader.is_default = false;
 	data->reset_history(); // TODO: actions
-	data->notify(data->MESSAGE_CHANGE);
+	data->out_changed();
 }
 
 void ShaderGraphDialog::on_reset() {

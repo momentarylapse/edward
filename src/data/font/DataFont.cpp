@@ -35,8 +35,7 @@ string PreGlyphName[256]={
 };
 
 
-void DataFont::reset()
-{
+void DataFont::reset() {
 	filename = "";
 	global.Reset();
 
@@ -47,7 +46,7 @@ void DataFont::reset()
 	Marked = 0;
 
 	glyph.clear();
-	for (int i=0;i<256;i++){
+	for (int i=0;i<256;i++) {
 		DataFont::Glyph g;
 		g.Name = PreGlyphName[i];
 		g.Width = 20;
@@ -61,16 +60,15 @@ void DataFont::reset()
 	};
 
 	reset_history();
-	notify();
+	out_changed();
 //	SetFont();
 }
 
 
 
-void DataFont::UpdateTexture()
-{
+void DataFont::UpdateTexture() {
 	Texture = nix::Texture::load(global.TextureFile);
-	if (Texture){
+	if (Texture) {
 		TextureWidth = Texture->width;
 		TextureHeight = Texture->height;
 	}
@@ -78,8 +76,7 @@ void DataFont::UpdateTexture()
 
 
 
-int str_utf8_first_char(const string &str)
-{
+int str_utf8_first_char(const string &str) {
 	if (str.num == 0)
 		return 0;
 	if (((unsigned int)str[0] & 0x80) > 0)
@@ -87,8 +84,7 @@ int str_utf8_first_char(const string &str)
 	return str[0];
 }
 
-void DataFont::ApplyFont(Gui::Font *f)
-{
+void DataFont::ApplyFont(Gui::Font *f) {
 	f->texture = Texture;
 	f->x_factor = (float)global.XFactor*0.01f;
 	f->y_factor = (float)global.YFactor*0.01f;
@@ -96,7 +92,7 @@ void DataFont::ApplyFont(Gui::Font *f)
 	f->y_offset = (float)global.GlyphY1/dy;
 	f->height = (float)global.GlyphHeight/dy;
 	int x = 0, y = 0;
-	foreachi(Glyph &g, glyph, i){
+	foreachi(Glyph &g, glyph, i) {
 		if (x + g.Width > TextureWidth){
 			x = 0;
 			y += global.GlyphHeight;
@@ -114,15 +110,16 @@ void DataFont::ApplyFont(Gui::Font *f)
 	}
 }
 
-void DataFont::EditGlobal(const GlobalData &new_data)
-{	execute(new ActionFontEditGlobal(new_data));	}
+void DataFont::EditGlobal(const GlobalData &new_data) {
+	execute(new ActionFontEditGlobal(new_data));
+}
 
-void DataFont::EditGlyph(int index, const Glyph &new_glyph)
-{	execute(new ActionFontEditGlyph(index, new_glyph));	}
+void DataFont::EditGlyph(int index, const Glyph &new_glyph) {
+	execute(new ActionFontEditGlyph(index, new_glyph));
+}
 
 
-void DataFont::GlobalData::Reset()
-{
+void DataFont::GlobalData::Reset() {
 	TextureFile = "";
 	GlyphHeight=25;
 	GlyphY1=5;

@@ -20,10 +20,11 @@
 
 ModeModelAnimation *mode_model_animation = NULL;
 
-const string ModeModelAnimation::State::MESSAGE_SET_FRAME = "SetFrame";
+const string ModeModelAnimation::State::MESSAGE_SET_FRAME = "set-frame";
 
 ModeModelAnimation::ModeModelAnimation(ModeBase *_parent, MultiView::MultiView *mv) :
-	Mode<DataModel>("ModelAnimation", _parent, mv, "menu_move")
+	Mode<DataModel>("ModelAnimation", _parent, mv, "menu_move"),
+	in_update(this, [this] { on_update(); })
 {
 	mode_model_animation_none = new ModeModelAnimationNone(this, mv);
 	mode_model_animation_skeleton = new ModeModelAnimationSkeleton(this, mv);
@@ -89,11 +90,12 @@ void ModeModelAnimation::on_start() {
 	ed->set_bottom_panel(timeline);
 
 
-	data->subscribe(this, [=]{ on_update(); });
+	data->out_changed >> in_update;
+	data->out_selection >> in_update;
 	ed->mode_model->allow_selection_modes(false);
 
 	timer.reset();
-	runner = hui::run_repeated(0.020f, [=]{ idle_function(); });
+	runner = hui::run_repeated(0.020f, [this] { idle_function(); });
 	set_current_move(getFirstMove());
 
 	//ed->set_mode(mode_model_animation_none);
@@ -140,7 +142,7 @@ void ModeModelAnimation::set_current_move(int move_no) {
 void ModeModelAnimation::set_current_frame(int frame_no) {
 	current_frame = loop(frame_no, 0, cur_move()->frame.num);
 	//updateAnimation();
-	state.notify(state.MESSAGE_SET_FRAME);
+	state.out_set_frame.notify();
 	on_update();
 }
 
@@ -185,7 +187,7 @@ void ModeModelAnimation::update_animation() {
 	mode_model_mesh->update_vertex_buffers(vertex);
 	mode_model_mesh->fill_selection_buffer(vertex);
 
-	state.notify();
+	state.out_changed.notify();
 	multi_view->force_redraw();
 }
 

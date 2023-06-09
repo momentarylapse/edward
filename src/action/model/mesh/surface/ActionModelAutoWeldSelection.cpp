@@ -8,6 +8,7 @@
 #include "ActionModelAutoWeldSelection.h"
 #include "ActionModelSurfaceAutoWeld.h"
 #include "../../../../data/model/DataModel.h"
+#include "../../../../lib/os/msg.h"
 
 ActionModelAutoWeldSelection::ActionModelAutoWeldSelection(float _epsilon)
 {

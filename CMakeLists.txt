@@ -345,6 +345,7 @@ set(SOURCE
 	src/lib/os/stream.cpp
 	src/lib/os/terminal.cpp
 	src/lib/os/time.cpp
+	src/lib/pattern/Observable.cpp
 	src/lib/threads/Mutex.cpp
 	src/lib/threads/Thread.cpp
 	src/lib/threads/ThreadedWork.cpp
@@ -444,7 +445,6 @@ set(SOURCE
 	src/storage/format/FormatWorld.cpp
 	src/storage/Storage.cpp
 	src/stuff/BrushPanel.cpp
-	src/stuff/Observable.cpp
 	src/stuff/PluginManager.cpp
 	src/stuff/Progress.cpp
 	src/y/components/Animator.cpp

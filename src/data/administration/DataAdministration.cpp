@@ -151,7 +151,7 @@ bool DataAdministration::load(const Path &_filename, bool deep) {
 		delete(f);
 	} catch(...) {
 	}
-	notify();
+	out_changed();
 	return true;
 }
 
@@ -256,7 +256,7 @@ void DataAdministration::UpdateDatabase()
 
 	ed->progress->end();
 	SaveDatabase();
-	notify();
+	out_changed();
 }
 
 Path kind_subdir(int kind) {

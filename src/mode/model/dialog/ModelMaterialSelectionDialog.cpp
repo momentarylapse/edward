@@ -18,7 +18,7 @@ string file_secure(const Path &filename);
 string render_material(ModelMaterial *m);
 
 ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data):
-	hui::Dialog("model_material_selection_dialog", 400, 300, _parent, _allow_parent)
+	obs::Node<hui::Dialog>("model_material_selection_dialog", 400, 300, _parent, _allow_parent)
 {
 	from_resource("model_material_selection_dialog");
 	data = _data;
@@ -38,7 +38,11 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(hui::Window *_parent,
 
 	answer = -1;
 
-	data->subscribe(this, [=]{ fill_material_list(); });
+	data->out_changed >> create_sink([=]{ fill_material_list(); });
+	data->out_material_changed >> create_sink([=]{ fill_material_list(); });
+	data->out_selection >> create_sink([=]{ fill_material_list(); });
+	data->out_skin_changed >> create_sink([=]{ fill_material_list(); });
+	data->out_texture_changed >> create_sink([=]{ fill_material_list(); });
 }
 
 ModelMaterialSelectionDialog::~ModelMaterialSelectionDialog() {

@@ -21,19 +21,19 @@ FontDialog::FontDialog(DataFont *_data) {
 
 	set_string("text", _("Example text 0123456789"));
 
-	event("height", std::bind(&FontDialog::OnHeight, this));
-	event("y1", std::bind(&FontDialog::OnY1, this));
-	event("y2", std::bind(&FontDialog::OnY2, this));
-	event("factorx", std::bind(&FontDialog::OnFactorX, this));
-	event("factory", std::bind(&FontDialog::OnFactorY, this));
-	event("unknown", std::bind(&FontDialog::OnUnknown, this));
-	event("name", std::bind(&FontDialog::OnName, this));
-	event("x1", std::bind(&FontDialog::OnX1, this));
-	event("x2", std::bind(&FontDialog::OnX2, this));
-	event("width", std::bind(&FontDialog::OnWidth, this));
-	event("text", std::bind(&FontDialog::OnText, this));
+	event("height", [this] { OnHeight(); });
+	event("y1", [this] { OnY1(); });
+	event("y2", [this] { OnY2(); });
+	event("factorx", [this] { OnFactorX(); });
+	event("factory", [this] { OnFactorY(); });
+	event("unknown", [this] { OnUnknown(); });
+	event("name", [this] { OnName(); });
+	event("x1", [this] { OnX1(); });
+	event("x2", [this] { OnX2(); });
+	event("width", [this] { OnWidth(); });
+	event("text", [this] { OnText(); });
 
-	data->subscribe(this, [=]{ LoadData(); });
+	data->out_changed >> create_sink([this]{ LoadData(); });
 
 	LoadData();
 }

@@ -20,7 +20,7 @@
 string file_secure(const Path &filename); // -> ModelPropertiesDialog
 
 TerrainPropertiesDialog::TerrainPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int _index) :
-	hui::Dialog("terrain_dialog", 400, 300, _parent, _allow_parent)
+	obs::Node<hui::Dialog>("terrain_dialog", 400, 300, _parent, _allow_parent)
 {
 	from_resource("terrain_dialog");
 	data = _data;
@@ -44,7 +44,7 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(hui::Window *_parent, bool _all
 	event("default_material", [=]{ on_default_material(); });
 	event("terrain_save_as", [=]{ on_save_as(); });
 
-	data->subscribe(this, [=]{ update_data(); });
+	data->out_changed >> create_sink([=]{ update_data(); });
 
 	update_data();
 }

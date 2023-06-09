@@ -18,7 +18,8 @@
 #include "../../y/Font.h"
 
 ModeFont::ModeFont(MultiView::MultiView *mv) :
-	Mode("Font", NULL, new DataFont, mv, "menu_font")
+	Mode("Font", NULL, new DataFont, mv, "menu_font"),
+	in_data_changed(this, [this] { on_data_update(); })
 {
 	font = new Gui::Font;
 
@@ -142,7 +143,7 @@ void ModeFont::on_start() {
 	ed->set_side_panel(dialog);
 
 
-	data->subscribe(this, [this] { on_data_update(); });
+	data->out_changed >> in_data_changed;
 	on_data_update();
 }
 

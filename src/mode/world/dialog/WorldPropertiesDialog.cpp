@@ -22,7 +22,7 @@
 #define WorldFogDec				6
 
 WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
-	hui::Dialog("world_dialog", 400, 300, _parent, _allow_parent)
+	obs::Node<hui::Dialog>("world_dialog", 400, 300, _parent, _allow_parent)
 {
 	from_resource("world_dialog");
 	data = _data;
@@ -55,7 +55,7 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event("edit_script_vars", [this] { on_edit_script_vars(); });
 	event("edit_script", [this] { on_edit_script(); });
 
-	data->subscribe(this, [this] {
+	data->out_changed >> create_sink([this] {
 		temp = data->meta_data;
 		load_data();
 	});
@@ -352,7 +352,7 @@ void WorldPropertiesDialog::on_ok() {
 }
 
 void WorldPropertiesDialog::restart() {
-	data->subscribe(this, [=] {
+	data->out_changed >> create_sink([=] {
 		temp = data->meta_data;
 		load_data();
 	});

@@ -247,12 +247,9 @@ void *ActionModelAutomap::execute(Data *d)
 	for (Island &i: islands)
 		i.apply(m, texture_level);
 
-	return NULL;
-}
+	m->out_skin_changed.notify();
 
-const string &ActionModelAutomap::message()
-{
-	return DataModel::MESSAGE_SKIN_CHANGE;
+	return NULL;
 }
 
 void ActionModelAutomap::undo(Data *d)
@@ -263,5 +260,7 @@ void ActionModelAutomap::undo(Data *d)
 	for (ModelPolygon &p: m->mesh->polygon)
 		for (int k=0;k<p.side.num;k++)
 			p.side[k].skin_vertex[texture_level] = old_pos[n ++];
+
+	m->out_skin_changed.notify();
 }
 

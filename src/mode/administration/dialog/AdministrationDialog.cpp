@@ -23,29 +23,29 @@
 #include "../../../y/ModelManager.h"
 
 AdministrationDialog::AdministrationDialog(hui::Window* _parent, bool _allow_parent, DataAdministration *_data):
-	hui::Dialog("ad_dialog", 400, 300, _parent, _allow_parent)
+	obs::Node<hui::Dialog>("ad_dialog", 400, 300, _parent, _allow_parent)
 {
 	from_resource("ad_dialog");
 	data = _data;
 	file_list.resize(6);
 
 	// dialog
-	event("hui:close", std::bind(&AdministrationDialog::OnClose, this));
-	event("exit", std::bind(&AdministrationDialog::OnExit, this));
-	event("ad_edit", std::bind(&AdministrationDialog::OnEdit, this));
-	event("rename", std::bind(&AdministrationDialog::OnRename, this));
-	event("delete", std::bind(&AdministrationDialog::OnDelete, this));
-	event("file_list_cur", std::bind(&AdministrationDialog::OnFileList, this));
-	event("file_list_all", std::bind(&AdministrationDialog::OnFileList, this));
-	event("file_list_detail_source", std::bind(&AdministrationDialog::OnFileList, this));
-	event("file_list_detail_dest", std::bind(&AdministrationDialog::OnFileList, this));
-	event("file_list_super", std::bind(&AdministrationDialog::OnFileList, this));
-	event("file_list_missing", std::bind(&AdministrationDialog::OnFileList, this));
-	event("ad_rudimentary_configuration", std::bind(&AdministrationDialog::OnRudimentaryConfiguration, this));
-	event("ad_export_game", std::bind(&AdministrationDialog::OnExportGame, this));
+	event("hui:close", [this] { OnClose(); });
+	event("exit", [this] { OnExit(); });
+	event("ad_edit", [this] { OnEdit(); });
+	event("rename", [this] { OnRename(); });
+	event("delete", [this] { OnDelete(); });
+	event("file_list_cur", [this] { OnFileList(); });
+	event("file_list_all", [this] { OnFileList(); });
+	event("file_list_detail_source", [this] { OnFileList(); });
+	event("file_list_detail_dest", [this] { OnFileList(); });
+	event("file_list_super", [this] { OnFileList(); });
+	event("file_list_missing", [this] { OnFileList(); });
+	event("ad_rudimentary_configuration", [this] { OnRudimentaryConfiguration(); });
+	event("ad_export_game", [this] { OnExportGame(); });
 
 	LoadData();
-	data->subscribe(this, [=]{ LoadData(); });
+	data->out_changed >> create_sink([this] { LoadData(); });
 }
 
 AdministrationDialog::~AdministrationDialog() {

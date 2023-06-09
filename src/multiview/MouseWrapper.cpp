@@ -8,6 +8,7 @@
 
 #include "MouseWrapper.h"
 #include "../lib/math/math.h"
+#include "../lib/hui/hui.h"
 #include "MultiView.h"
 
 #ifdef OS_LINUX

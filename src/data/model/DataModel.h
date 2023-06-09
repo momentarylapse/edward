@@ -126,9 +126,9 @@ public:
 	DataModel();
 	virtual ~DataModel();
 
-	static const string MESSAGE_SKIN_CHANGE;
-	static const string MESSAGE_MATERIAL_CHANGE;
-	static const string MESSAGE_TEXTURE_CHANGE;
+	obs::source out_skin_changed{this, "skin-changed"};
+	obs::source out_material_changed{this, "material-changed"};
+	obs::source out_texture_changed{this, "texture-changed"};
 
 	void reset() override;
 

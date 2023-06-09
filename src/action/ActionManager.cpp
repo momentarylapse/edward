@@ -9,10 +9,11 @@
 #include "Action.h"
 #include "ActionGroup.h"
 #include "../data/Data.h"
+#include "../lib/os/msg.h"
 #include <assert.h>
 
-const string ActionManager::MESSAGE_FAILED = "Failed";
-const string ActionManager::MESSAGE_SAVED = "Saved";
+const string ActionManager::MESSAGE_FAILED = "failed";
+const string ActionManager::MESSAGE_SAVED = "saved";
 
 ActionManager::ActionManager(Data *_data) {
 	data = _data;
@@ -69,54 +70,44 @@ void *ActionManager::execute(Action *a)
 		return cur_group->addSubAction(a, data);
 
 	try{
-		data->notify_begin();
 		void *p = a->execute_logged(data);
 		if (!a->was_trivial())
 			add(a);
 		if (!cur_group){
 			data->on_post_action_update();
 		}
-		data->notify_end();
 		return p;
 	}catch(ActionException &e){
-		data->notify_end();
 		e.add_parent(a->name());
 		error_message = e.message;
 		error_location = e.where();
 		msg_error(error_message);
 		msg_write("at " + error_location);
 		a->abort(data);
-		notify(MESSAGE_FAILED);
+		out_failed.notify();
 		return NULL;
 	}
 }
 
-void ActionManager::undo()
-{
+void ActionManager::undo() {
 	clear_preview();
-	if (undoable()){
-		data->notify_begin();
+	if (undoable()) {
 		action[-- cur_pos]->undo_logged(data);
 		data->on_post_action_update();
-		data->notify_end();
 	}
 }
 
 
 
-void ActionManager::redo()
-{
+void ActionManager::redo() {
 	clear_preview();
-	if (redoable()){
-		data->notify_begin();
+	if (redoable()) {
 		action[cur_pos ++]->redo_logged(data);
 		data->on_post_action_update();
-		data->notify_end();
 	}
 }
 
-bool ActionManager::undoable()
-{
+bool ActionManager::undoable() {
 	return (cur_pos > 0);
 }
 
@@ -151,16 +142,14 @@ void ActionManager::end_group()
 	}
 }
 
-void ActionManager::mark_current_as_save()
-{
+void ActionManager::mark_current_as_save() {
 	save_pos = cur_pos;
-	notify(MESSAGE_SAVED);
+	out_saved.notify();
 }
 
 
 
-bool ActionManager::is_save()
-{
+bool ActionManager::is_save() {
 	return (cur_pos == save_pos);
 }
 
@@ -169,32 +158,26 @@ bool ActionManager::preview(Action *a)
 {
 	clear_preview();
 	try{
-		data->notify_begin();
 		a->execute_logged(data);
 		data->on_post_action_update();
-		data->notify_end();
 		_preview = a;
 	}catch(ActionException &e){
-		data->notify_end();
 		e.add_parent(a->name());
 		error_message = e.message;
 		error_location = e.where();
 		a->abort(data);
 		delete(a);
-		notify(MESSAGE_FAILED);
+		out_failed.notify();
 		return false;
 	}
 	return true;
 }
 
 
-void ActionManager::clear_preview()
-{
-	if (_preview){
-		data->notify_begin();
+void ActionManager::clear_preview() {
+	if (_preview) {
 		_preview->undo_logged(data);
 		data->on_post_action_update();
-		data->notify_end();
 		delete(_preview);
 		_preview = NULL;
 	}

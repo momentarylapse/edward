@@ -11,7 +11,7 @@
 #include "../../../lib/hui/hui.h"
 #include "../../../data/material/DataMaterial.h"
 
-class MaterialPropertiesDialog: public hui::Panel {
+class MaterialPropertiesDialog: public obs::Node<hui::Panel> {
 public:
 	MaterialPropertiesDialog(hui::Window *_parent, DataMaterial *_data);
 	virtual ~MaterialPropertiesDialog();

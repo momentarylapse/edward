@@ -30,17 +30,6 @@ namespace MultiView{
 
 
 
-const string MultiView::MESSAGE_UPDATE = "Update";
-const string MultiView::MESSAGE_SELECTION_CHANGE = "SelectionChange";
-const string MultiView::MESSAGE_SETTINGS_CHANGE = "SettingsChange";
-const string MultiView::MESSAGE_CAMERA_CHANGE = "CameraChange";
-const string MultiView::MESSAGE_VIEWSTAGE_CHANGE = "ViewStageChange";
-const string MultiView::MESSAGE_ACTION_START = "ActionStart";
-const string MultiView::MESSAGE_ACTION_UPDATE = "ActionUpdate";
-const string MultiView::MESSAGE_ACTION_ABORT = "ActionAbort";
-const string MultiView::MESSAGE_ACTION_EXECUTE = "ActionExecute";
-
-
 void MultiView::Selection::reset() {
 	meta = HOVER_NONE;
 	index = set = type = -1;
@@ -55,7 +44,6 @@ vec3 Camera::get_pos(bool allow_radius) const {
 }
 
 MultiView::MultiView(bool mode3d) {
-
 	view_stage = 0;
 	grid_enabled = true;
 	wire_mode = false;
@@ -172,15 +160,17 @@ void MultiView::reset_view() {
 	view_stage = 0;
 
 	hover.reset();
-	notify(MESSAGE_CAMERA_CHANGE);
-	notify(MESSAGE_VIEWSTAGE_CHANGE);
-	notify(MESSAGE_SETTINGS_CHANGE);
+	out_camera_changed.notify();
+	out_viewstage_changed.notify();
+	out_settings_changed.notify();
+	out_redraw.notify();
 }
 
 void MultiView::reset_mouse_action() {
 	action_con->cur_action = nullptr;
 	action_con->action.reset();
-	notify(MESSAGE_SETTINGS_CHANGE);
+	out_settings_changed.notify();
+	out_redraw.notify();
 }
 
 void MultiView::clear_data(Data *_data) {
@@ -219,7 +209,7 @@ void MultiView::cam_zoom(float factor, bool mouse_rel) {
 	if (mouse_rel)
 		cam.pos += (1 - 1/factor) * (mup - cam.pos);
 	action_con->update();
-	notify(MESSAGE_UPDATE);
+	out_redraw.notify();
 }
 
 // dir: screen pixels
@@ -230,7 +220,7 @@ void MultiView::cam_move_pixel(Window *win, const vec3 &dir) {
 
 void MultiView::cam_move(const vec3 &dpos) {
 	cam.pos += dpos;
-	notify(MESSAGE_CAMERA_CHANGE);
+	out_camera_changed.notify();
 }
 
 // dir: screen pixels...yap
@@ -247,7 +237,7 @@ void MultiView::cam_rotate(const quaternion &dq, bool cam_center) {
 	if (cam_center)
 		cam.pos += cam.radius * (cam.ang * vec3::EZ);
 	action_con->update();
-	notify(MESSAGE_CAMERA_CHANGE);
+	out_camera_changed.notify();
 }
 
 void MultiView::set_view_box(const vec3 &min, const vec3 &max) {
@@ -255,37 +245,36 @@ void MultiView::set_view_box(const vec3 &min, const vec3 &max) {
 	float r = (max - min).length_fuzzy() * 1.8f;// * ((float)NixScreenWidth / (float)nix::target_width);
 	if (r > 0)
 		cam.radius = r;
-	notify(MESSAGE_CAMERA_CHANGE);
+	out_camera_changed.notify();
 }
 
 void MultiView::toggle_whole_window() {
 	whole_window = !whole_window;
 	action_con->update();
-	notify(MESSAGE_CAMERA_CHANGE);
+	out_camera_changed.notify();
 }
 
 void MultiView::toggle_grid() {
 	grid_enabled = !grid_enabled;
-	notify(MESSAGE_SETTINGS_CHANGE);
+	out_settings_changed.notify();
 }
 
 void MultiView::toggle_light() {
 	light_enabled = !light_enabled;
-	notify(MESSAGE_SETTINGS_CHANGE);
+	out_settings_changed.notify();
 }
 
 void MultiView::toggle_wire() {
 	wire_mode = !wire_mode;
-	notify(MESSAGE_SETTINGS_CHANGE);
+	out_settings_changed.notify();
 }
 
 void MultiView::toggle_snap_to_grid() {
 	snap_to_grid = !snap_to_grid;
-	notify(MESSAGE_SETTINGS_CHANGE);
+	out_settings_changed.notify();
 }
 
 void MultiView::on_command(const string & id) {
-	notify_begin();
 
 	if (id == "select_all")
 		select_all();
@@ -325,18 +314,14 @@ void MultiView::on_command(const string & id) {
 		view_stage_push();
 	if (id == "view_pop")
 		view_stage_pop();
-	notify_end();
 }
 
 void MultiView::on_mouse_wheel() {
-	notify_begin();
-
 	cam_con->on_mouse_wheel();
-	notify_end();
 }
 
 void MultiView::on_mouse_enter() {
-	notify(MESSAGE_UPDATE);
+	out_redraw.notify();
 }
 
 void MultiView::on_mouse_leave() {
@@ -350,7 +335,7 @@ void activate_next_window(MultiView *mv) {
 	for (int i=0; i<mv->all_windows.num; i++)
 		if (mv->all_windows[i] == mv->active_win) {
 			mv->active_win = mv->all_windows[(i+1)%mv->all_windows.num];
-			mv->notify(mv->MESSAGE_SETTINGS_CHANGE);
+			mv->out_settings_changed.notify();
 			break;
 		}
 
@@ -358,8 +343,6 @@ void activate_next_window(MultiView *mv) {
 
 
 void MultiView::on_key_down(int k) {
-	notify_begin();
-
 	if ((k == hui::KEY_PLUS) or (k == hui::KEY_NUM_ADD))
 		cam_zoom(SPEED_ZOOM_KEY, mouse_win->type != VIEW_PERSPECTIVE);
 	if ((k == hui::KEY_MINUS) or (k == hui::KEY_NUM_SUBTRACT))
@@ -380,7 +363,6 @@ void MultiView::on_key_down(int k) {
 		action_con->end_action(false);
 	if (k == hui::KEY_TAB)
 		activate_next_window(this);
-	notify_end();
 }
 
 
@@ -393,7 +375,6 @@ int get_select_mode() {
 }
 
 void MultiView::on_left_button_down() {
-	notify_begin();
 	update_mouse();
 
 	get_hover();
@@ -435,13 +416,11 @@ void MultiView::on_left_button_down() {
 			}
 		}
 	}
-	notify_end();
 }
 
 
 
 void MultiView::on_middle_button_down() {
-	notify_begin();
 	active_win = mouse_win;
 
 // move camera?
@@ -449,15 +428,12 @@ void MultiView::on_middle_button_down() {
 		hold_cursor(true);
 	view_moving = true;
 
-	notify(MESSAGE_UPDATE);
-	notify_end();
+	out_redraw.notify();
 }
 
 
 
 void MultiView::on_right_button_down() {
-	notify_begin();
-
 	if (hover.meta == hover.HOVER_WINDOW_LABEL) {
 		active_win = mouse_win;
 		menu->open_popup(ed);
@@ -470,30 +446,25 @@ void MultiView::on_right_button_down() {
 		view_moving = true;
 	}
 
-	notify(MESSAGE_UPDATE);
-	notify_end();
+	out_redraw.notify();
 }
 
 
 
 void MultiView::on_middle_button_up() {
-	notify_begin();
 	if (view_moving) {
 		view_moving = false;
 		hold_cursor(false);
 	}
-	notify_end();
 }
 
 
 
 void MultiView::on_right_button_up() {
-	notify_begin();
 	if (view_moving) {
 		view_moving = false;
 		hold_cursor(false);
 	}
-	notify_end();
 }
 
 
@@ -504,14 +475,12 @@ void MultiView::on_key_up(int key_code) {
 
 
 void MultiView::on_left_button_up() {
-	notify_begin();
 	end_selection_rect();
 	moving_cross_x = false;
 	moving_cross_y = false;
 
 	action_con->on_left_button_up();
 	cam_con->on_left_button_up();
-	notify_end();
 }
 
 
@@ -539,7 +508,6 @@ void MultiView::update_mouse() {
 
 
 void MultiView::on_mouse_move() {
-	notify_begin();
 	update_mouse();
 
 	if (action_con->in_use()) {
@@ -580,8 +548,7 @@ void MultiView::on_mouse_move() {
 			ed->set_cursor_pos(holding_x, holding_y);
 	}
 
-	notify(MESSAGE_UPDATE);
-	notify_end();
+	out_redraw.notify();
 }
 
 
@@ -599,17 +566,17 @@ void MultiView::start_selection_rect() {
 				sd->m_old = sd->is_selected;
 			}
 
-	notify(MESSAGE_UPDATE);
+	out_redraw.notify();
 }
 
 void MultiView::end_selection_rect() {
 	sel_rect.end();
-	notify(MESSAGE_UPDATE);
+	out_redraw.notify();
 }
 
 
 void MultiView::force_redraw() {
-	ed->redraw("nix-area");
+	out_redraw.notify();
 }
 
 
@@ -796,7 +763,7 @@ void MultiView::set_mouse_action(const string & name, int mode, bool locked) {
 	action_con->action.mode = mode;
 	action_con->action.locked = locked;
 	action_con->show(need_action_controller());
-	notify(MESSAGE_SETTINGS_CHANGE);
+	out_settings_changed.notify();
 }
 
 bool MultiView::need_action_controller() {
@@ -823,7 +790,7 @@ void MultiView::select_all() {
 				sd->is_selected = true;
 		}
 	action_con->show(need_action_controller());
-	notify(MESSAGE_SELECTION_CHANGE);
+	out_settings_changed.notify();
 }
 
 void MultiView::select_none() {
@@ -839,7 +806,7 @@ void MultiView::select_none() {
 			sd->is_selected = false;
 		}
 	action_con->show(need_action_controller());
-	notify(MESSAGE_SELECTION_CHANGE);
+	out_selection_changed.notify();
 }
 
 void MultiView::invert_selection() {
@@ -856,7 +823,7 @@ void MultiView::invert_selection() {
 				sd->is_selected = !sd->is_selected;
 		}
 	action_con->show(need_action_controller());
-	notify(MESSAGE_SELECTION_CHANGE);
+	out_selection_changed.notify();
 }
 
 bool MultiView::has_selection() {
@@ -925,7 +892,7 @@ float MultiView::maybe_snap_f(float f) {
 
 void MultiView::set_edit_coordinate_mode(CoordinateMode mode) {
 	edit_coordinate_mode = mode;
-	notify(MESSAGE_SETTINGS_CHANGE);
+	out_settings_changed.notify();
 }
 
 vec3 MultiView::get_cursor() {
@@ -1037,7 +1004,6 @@ bool MultiView::has_selectable_data() {
 }
 
 void MultiView::get_selected(int mode) {
-	notify_begin();
 	if ((hover.index < 0) or (hover.type < 0)) {
 		if (mode == SELECT_SET)
 			select_none();
@@ -1057,12 +1023,10 @@ void MultiView::get_selected(int mode) {
 		}
 	}
 	action_con->show(need_action_controller());
-	notify(MESSAGE_SELECTION_CHANGE);
-	notify_end();
+	out_selection_changed.notify();
 }
 
 void MultiView::select_all_in_rectangle(int mode) {
-	notify_begin();
 	// reset data
 	select_none();
 
@@ -1089,8 +1053,7 @@ void MultiView::select_all_in_rectangle(int mode) {
 			}
 
 	action_con->show(need_action_controller());
-	notify(MESSAGE_SELECTION_CHANGE);
-	notify_end();
+	out_selection_changed.notify();
 }
 
 void MultiView::hold_cursor(bool holding) {
@@ -1112,12 +1075,12 @@ void MultiView::add_message_3d(const string &str, const vec3 &pos) {
 void MultiView::set_allow_action(bool allow) {
 	allow_mouse_actions = allow;
 	action_con->show(need_action_controller());
-	notify(MESSAGE_SETTINGS_CHANGE);
+	out_settings_changed.notify();
 }
 
 void MultiView::set_allow_select(bool allow) {
 	allow_select = allow;
-	notify(MESSAGE_SETTINGS_CHANGE);
+	out_settings_changed.notify();
 }
 
 void MultiView::push_settings() {
@@ -1138,7 +1101,7 @@ void MultiView::pop_settings() {
 	action_con->action.mode = s.action_mode;
 	action_con->action.locked = s.action_locked;
 	action_con->show(need_action_controller());
-	notify(MESSAGE_SETTINGS_CHANGE);
+	out_settings_changed.notify();
 }
 
 void MultiView::view_stage_push() {
@@ -1151,7 +1114,7 @@ void MultiView::view_stage_push() {
 				if (sd->is_selected)
 					sd->view_stage = view_stage;
 			}
-	notify(MESSAGE_VIEWSTAGE_CHANGE);
+	out_viewstage_changed.notify();
 }
 
 void MultiView::view_stage_pop() {
@@ -1165,7 +1128,7 @@ void MultiView::view_stage_pop() {
 				if (sd->view_stage > view_stage)
 					sd->view_stage = view_stage;
 			}
-	notify(MESSAGE_VIEWSTAGE_CHANGE);
+	out_viewstage_changed.notify();
 }
 
 void MultiView::reset_message_3d() {

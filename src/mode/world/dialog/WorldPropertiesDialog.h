@@ -9,9 +9,10 @@
 #define WORLDPROPERTIESDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../lib/pattern/Observable.h"
 #include "../../../data/world/DataWorld.h"
 
-class WorldPropertiesDialog: public hui::Dialog {
+class WorldPropertiesDialog: public obs::Node<hui::Dialog> {
 public:
 	WorldPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data);
 	virtual ~WorldPropertiesDialog();

@@ -127,7 +127,7 @@ public:
 
 		tl->edited = true;
 		tl->update_texture();
-		m->notify(m->MESSAGE_TEXTURE_CHANGE);
+		m->out_texture_changed();
 
 		return NULL;
 	}

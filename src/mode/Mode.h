@@ -10,6 +10,7 @@
 
 #include "../lib/hui/hui.h"
 #include "../lib/math/math.h"
+#include "../lib/pattern/Observable.h"
 #include "../data/Data.h"
 
 namespace MultiView {
@@ -17,7 +18,7 @@ namespace MultiView {
 	class Window;
 };
 
-class ModeBase : public hui::EventHandler {
+class ModeBase : public obs::Node<hui::EventHandler> {
 public:
 	ModeBase(const string &name, ModeBase *parent, MultiView::MultiView *multi_view, const string &menu_id);
 	virtual ~ModeBase();

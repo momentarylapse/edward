@@ -21,7 +21,6 @@ class ActionModelSkinVerticesFromProjection : public Action {
 public:
 	ActionModelSkinVerticesFromProjection(DataModel *m, MultiView::MultiView *mv);
 	string name() override { return "ModelSkinVerticesFromProjection"; }
-	const string &message() override;
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;

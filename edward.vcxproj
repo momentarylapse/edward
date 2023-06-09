@@ -455,6 +455,7 @@
     <ClCompile Include="src\lib\os\stream.cpp" />
     <ClCompile Include="src\lib\os\terminal.cpp" />
     <ClCompile Include="src\lib\os\time.cpp" />
+    <ClCompile Include="src\lib\pattern\Observable.cpp" />
     <ClCompile Include="src\lib\threads\Mutex.cpp" />
     <ClCompile Include="src\lib\threads\Thread.cpp" />
     <ClCompile Include="src\lib\threads\ThreadedWork.cpp" />
@@ -554,7 +555,6 @@
     <ClCompile Include="src\storage\format\FormatWorld.cpp" />
     <ClCompile Include="src\storage\Storage.cpp" />
     <ClCompile Include="src\stuff\BrushPanel.cpp" />
-    <ClCompile Include="src\stuff\Observable.cpp" />
     <ClCompile Include="src\stuff\PluginManager.cpp" />
     <ClCompile Include="src\stuff\Progress.cpp" />
     <ClCompile Include="src\y\components\Animator.cpp" />
@@ -895,6 +895,7 @@
     <ClInclude Include="src\lib\os\stream.h" />
     <ClInclude Include="src\lib\os\terminal.h" />
     <ClInclude Include="src\lib\os\time.h" />
+    <ClInclude Include="src\lib\pattern\Observable.h" />
     <ClInclude Include="src\lib\threads\Mutex.h" />
     <ClInclude Include="src\lib\threads\Thread.h" />
     <ClInclude Include="src\lib\threads\ThreadedWork.h" />
@@ -994,7 +995,6 @@
     <ClInclude Include="src\storage\format\FormatWorld.h" />
     <ClInclude Include="src\storage\Storage.h" />
     <ClInclude Include="src\stuff\BrushPanel.h" />
-    <ClInclude Include="src\stuff\Observable.h" />
     <ClInclude Include="src\stuff\PluginManager.h" />
     <ClInclude Include="src\stuff\Progress.h" />
     <ClInclude Include="src\y\components\Animator.h" />

@@ -9,11 +9,12 @@
 #define TERRAINPROPERTIESDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../lib/pattern/Observable.h"
 #include "../../../data/world/WorldTerrain.h"
 
 class DataWorld;
 
-class TerrainPropertiesDialog: public hui::Dialog {
+class TerrainPropertiesDialog: public obs::Node<hui::Dialog> {
 public:
 	TerrainPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int _index);
 	virtual ~TerrainPropertiesDialog();

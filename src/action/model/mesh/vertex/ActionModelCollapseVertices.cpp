@@ -11,6 +11,7 @@
 #include "../surface/helper/ActionModelSurfaceDeletePolygon.h"
 #include "../surface/helper/ActionModelSurfaceRelinkPolygon.h"
 #include "../../../../data/model/DataModel.h"
+#include "../../../../lib/os/msg.h"
 #include <assert.h>
 
 void ActionModelCollapseVertices::CollapseVertices(DataModel *m)

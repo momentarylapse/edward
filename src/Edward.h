@@ -53,10 +53,15 @@ enum {
 };
 
 
-class Edward : public hui::Window {
+class Edward : public obs::Node<hui::Window> {
 public:
 	Edward();
 	~Edward() override;
+
+	obs::sink in_data_selection_changed;
+	obs::sink in_data_changed;
+	obs::sink in_action_failed;
+	obs::sink in_saved;
 
 	void load_key_codes();
 

@@ -84,7 +84,7 @@ bool Storage::load(const Path &_filename, Data *data, bool deep) {
 			f->load(filename, data, deep);
 			data->filename = filename;
 			data->reset_history();
-			data->notify();
+			data->out_changed();
 
 			return true;
 		}

@@ -7,10 +7,15 @@
 
 #include "DrawingHelper.h"
 #include "../lib/nix/nix.h"
+#include "../lib/image/image.h"
+#include "../lib/os/msg.h"
 #include "../y/ResourceManager.h"
 #include "MultiView.h"
 #include "Window.h"
 #include "ColorScheme.h"
+#include <cairo/cairo.h>
+#include <pango/pango.h>
+#include <pango/pangocairo.h>
 
 
 shared<nix::Shader> shader_selection;

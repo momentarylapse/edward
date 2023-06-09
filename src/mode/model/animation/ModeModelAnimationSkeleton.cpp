@@ -37,7 +37,7 @@ void ModeModelAnimationSkeleton::on_start() {
 
 	chooseMouseFunction(MultiView::ACTION_ROTATE);
 
-	multi_view->subscribe(this, [=]{ updateSelection(); }, multi_view->MESSAGE_SELECTION_CHANGE);
+	multi_view->out_selection_changed >> create_sink([=]{ updateSelection(); });
 }
 
 void ModeModelAnimationSkeleton::on_end() {

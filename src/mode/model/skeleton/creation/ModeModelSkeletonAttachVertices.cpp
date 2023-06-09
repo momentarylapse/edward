@@ -82,7 +82,11 @@ void ModeModelSkeletonAttachVertices::on_start() {
 		}
 	}
 
-	data->subscribe(this, [this]{ on_data_change(); });
+	data->out_changed >> create_sink([this]{ on_data_change(); });
+	data->out_material_changed >> create_sink([this]{ on_data_change(); });
+	data->out_selection >> create_sink([this]{ on_data_change(); });
+	data->out_skin_changed >> create_sink([this]{ on_data_change(); });
+	data->out_texture_changed >> create_sink([this]{ on_data_change(); });
 
 	on_data_change();
 }

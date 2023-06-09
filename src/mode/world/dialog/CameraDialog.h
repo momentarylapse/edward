@@ -9,12 +9,13 @@
 #define CAMERADIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../lib/pattern/Observable.h"
 
 class DataCamera;
 class ModeWorldCamera;
 class ActionCameraMoveTimeSelection;
 
-class CameraDialog: public hui::Panel {
+class CameraDialog: public obs::Node<hui::Panel> {
 public:
 	CameraDialog(ModeWorldCamera *mode);
 	virtual ~CameraDialog();

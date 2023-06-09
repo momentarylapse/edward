@@ -258,7 +258,7 @@ void ModeModelMeshDeformCylinder::preview() {
 	for (int vi: index)
 		data->mesh->vertex[vi].pos = transform(data->mesh->vertex[vi].pos);
 
-	data->notify();
+	data->out_changed();
 	//mode_model_mesh->updateVertexBuffers(data->vertex);
 
 	has_preview = true;

@@ -641,7 +641,7 @@ void ModelMesh::clear_selection()
 		t.is_selected = false;
 	for (ModelEdge &e: edge)
 		e.is_selected = false;
-	model->notify(model->MESSAGE_SELECTION);
+	model->out_selection();
 }
 
 void ModelMesh::selection_from_polygons() {
@@ -655,7 +655,7 @@ void ModelMesh::selection_from_polygons() {
 				vertex[t.side[k].vertex].is_selected = true;
 				edge[t.side[k].edge].is_selected = true;
 			}
-	model->notify(model->MESSAGE_SELECTION);
+	model->out_selection();
 }
 
 void ModelMesh::selection_from_edges() {
@@ -670,7 +670,7 @@ void ModelMesh::selection_from_edges() {
 		for (int k=0;k<p.side.num;k++)
 			p.is_selected &= edge[p.side[k].edge].is_selected;
 	}
-	model->notify(model->MESSAGE_SELECTION);
+	model->out_selection();
 }
 
 void ModelMesh::selection_from_vertices() {
@@ -686,7 +686,7 @@ void ModelMesh::selection_from_vertices() {
 			t.view_stage = min(t.view_stage, vertex[t.side[k].vertex].view_stage);
 		}
 	}
-	model->notify(model->MESSAGE_SELECTION);
+	model->out_selection();
 }
 
 
@@ -768,7 +768,7 @@ void ModelMesh::set_selection(const ModelSelection &s) {
 		polygon[p].is_selected = true;
 	for (auto &e: edge)
 		e.is_selected = s.has(e);
-	model->notify(model->MESSAGE_SELECTION);
+	model->out_selection();
 }
 
 

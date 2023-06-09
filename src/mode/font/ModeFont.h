@@ -21,6 +21,8 @@ public:
 	ModeFont(MultiView::MultiView *mv);
 	virtual ~ModeFont();
 
+	obs::sink in_data_changed;
+
 	void on_start() override;
 	void on_end() override;
 

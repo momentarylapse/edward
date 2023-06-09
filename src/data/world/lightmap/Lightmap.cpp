@@ -17,6 +17,7 @@
 #include "../../../y/Terrain.h"
 #include "../../../y/EngineData.h"
 #include "../../../lib/os/filesystem.h"
+#include "../../../lib/os/msg.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../storage/Storage.h"
 #include "../../../y/ModelManager.h"

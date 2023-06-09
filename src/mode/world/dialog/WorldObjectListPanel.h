@@ -10,12 +10,13 @@
 
 
 #include "../../../lib/hui/hui.h"
+#include "../../../lib/pattern/Observable.h"
 
 class ModeWorld;
 class DataWorld;
 
 
-class WorldObjectListPanel : public hui::Panel {
+class WorldObjectListPanel : public obs::Node<hui::Panel> {
 public:
 	ModeWorld *world;
 	DataWorld *data;
