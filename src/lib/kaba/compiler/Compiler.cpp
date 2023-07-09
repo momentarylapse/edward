@@ -373,6 +373,24 @@ void Compiler::map_constants_to_opcode() {
     //remap_virtual_tables(this, opcode, opcode_size, (char*)(int_p)syntax->asm_meta_info->code_origin, syntax->base_class);
 
 	map_constants_to_memory(module->opcode, module->opcode_size, (char*)(int_p)tree->asm_meta_info->code_origin);
+	//align_opcode();
+}
+
+
+
+void Compiler::map_address_constants_to_opcode() {
+	for (auto f: module->functions()) {
+		tree->transform_block(f->block.get(), [this] (shared<Node> n) {
+			if (n->kind == NodeKind::ADDRESS) {
+				//msg_write(format("ADDRESS   %x", n->link_no));
+				memcpy(&module->opcode[module->opcode_size], &n->link_no, config.target.pointer_size);
+				n->link_no = config.code_origin + module->opcode_size;
+				module->opcode_size += config.target.pointer_size;
+				//msg_write(format("  %x", n->link_no));
+			}
+			return n;
+		});
+	}
 	align_opcode();
 }
 
@@ -655,6 +673,9 @@ void Compiler::_compile() {
 
 	tree->pre_processor_addresses();
 
+	if (config.compile_os)
+		map_address_constants_to_opcode();
+
 	if (config.verbose)
 		tree->show("compile:eval-addr");
 
@@ -692,7 +713,7 @@ void Compiler::_compile() {
 
 
 #ifdef OS_WINDOWS
-	register_functions(this);
+	register_functions(module);
 #endif
 }
 
