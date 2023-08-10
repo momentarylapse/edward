@@ -114,7 +114,7 @@ const Class *Parser::get_constant_type(const string &str) {
 	}
 	if (type == TypeInt) {
 		if (hex) {
-			if ((s2i2(str) >= 0x100000000) or (-s2i2(str) > 0x00000000))
+			if (str.num > 10)
 				type = TypeInt64;
 		} else {
 			if ((s2i2(str) >= 0x80000000) or (-s2i2(str) > 0x80000000))
@@ -153,6 +153,9 @@ void Parser::do_error(const string &str, int token_id) {
 }
 
 void Parser::do_error_exp(const string &str, int override_token_id) {
+	if (Exp.lines.num == 0)
+		throw Exception(str, "", 0, 0, tree->module);
+
 	// what data do we have?
 	int token_id = Exp.cur_token();
 
@@ -603,13 +606,9 @@ shared<Node> Parser::parse_abstract_operand(Block *block, bool prefer_class) {
 	if (try_consume("(")) {
 		operand = parse_abstract_operand_greedy(block, true);
 		expect_identifier(")", "')' expected");
-	/*} else if (try_consume("&!")) { // &! -> new address operator
+	} else if (try_consume("&")) { // & -> address operator
 		int token = Exp.cur_token();
-		operand = parse_abstract_operand(block)->ref_new(TypeUnknown);
-		operand->token_id = token;*/
-	} else if (try_consume("&")) { // & -> legacy address operator
-		int token = Exp.cur_token();
-		operand = parse_abstract_operand(block)->ref_raw(TypeUnknown);
+		operand = parse_abstract_operand(block)->ref(TypeUnknown);
 		operand->token_id = token;
 	} else if (try_consume("*")) { // * -> dereference
 		int token = Exp.cur_token();
@@ -1328,6 +1327,23 @@ shared<Node> Parser::parse_abstract_statement_raw_function_pointer(Block *block)
 	return node;
 }
 
+shared<Node> Parser::parse_abstract_statement_trust_me(Block *block) {
+	[[maybe_unused]] int token0 = Exp.consume_token(); // "trust_me"
+	/*auto node = add_node_statement(StatementID::TRUST_ME, token0, TypeUnknown);
+	// ...block
+	expect_new_line_with_indent();
+	Exp.next_line();
+	node->set_param(0, parse_abstract_block(block));
+	flags_set(node->flags, Flags::TRUST_ME);
+	return node;*/
+
+	expect_new_line_with_indent();
+	Exp.next_line();
+	auto b = parse_abstract_block(block);
+	flags_set(b->flags, Flags::TRUST_ME);
+	return b;
+}
+
 shared<Node> Parser::parse_abstract_statement(Block *block) {
 	if (Exp.cur == Identifier::FOR) {
 		return parse_abstract_statement_for(block);
@@ -1360,6 +1376,8 @@ shared<Node> Parser::parse_abstract_statement(Block *block) {
 		return parse_abstract_statement_lambda(block);
 	} else if (Exp.cur == Identifier::RAW_FUNCTION_POINTER) {
 		return parse_abstract_statement_raw_function_pointer(block);
+	} else if (Exp.cur == Identifier::TRUST_ME) {
+		return parse_abstract_statement_trust_me(block);
 	}
 	do_error_exp("unhandled statement: " + Exp.cur);
 	return nullptr;

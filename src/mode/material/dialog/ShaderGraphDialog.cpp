@@ -509,7 +509,7 @@ void ShaderGraphDialog::on_left_button_down() {
 			}
 		} else if (pp.type == ShaderValueType::COLOR) {
 			color col = pp.get_color();
-			hui::select_color(win, "", col, [this, &pp] (const color &c) {
+			hui::select_color(win, "", col).on([this, &pp] (const color &c) {
 				pp.set_color(c);
 				on_update();
 			});

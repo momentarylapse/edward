@@ -6,7 +6,7 @@
  */
 
 #include "BackendX86.h"
-#include "serializer.h"
+#include "Serializer.h"
 #include "CommandList.h"
 #include "SerialNode.h"
 #include "../../os/msg.h"
@@ -124,13 +124,13 @@ void BackendX86::correct_parameters_variables_to_memory(CommandList &cmd) {
 				p.kind = NodeKind::MEMORY;
 			} else if (p.kind == NodeKind::CONSTANT) {
 				auto cc = (Constant*)p.p;
-				if (module->tree->flag_function_pointer_as_code and (p.type == TypeFunctionP)) {
+				if (module->tree->flag_function_pointer_as_code and (p.type == TypeFunctionRef)) {
 					auto *fp = (Function*)(int_p)cc->as_int64();
 					p.kind = NodeKind::LABEL;
 					p.p = fp->_label;
 				} else {
 					p.p = (int_p)cc->address_runtime; // FIXME ....need a cleaner approach for compiling os...
-					if (config.compile_os or (p.type == TypeFunctionCodeP)) // from raw_function_pointer
+					if (config.compile_os or (p.type == TypeFunctionCodeRef)) // from raw_function_pointer
 						p.kind = NodeKind::MEMORY;
 					else
 						p.kind = NodeKind::CONSTANT_BY_ADDRESS;
@@ -430,7 +430,7 @@ void BackendX86::correct_implement_commands() {
 			func_params.add(c.p[0]);
 		} else if ((c.inst == Asm::InstID::CALL) or (c.inst == Asm::InstID::CALL_MEMBER)) {
 
-			if (c.p[1].type == TypeFunctionCodeP) {
+			if (c.p[1].type == TypeFunctionCodeRef) {
 				//do_error("indirect call...");
 				auto fp = c.p[1];
 				auto ret = c.p[0];

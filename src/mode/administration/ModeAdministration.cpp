@@ -141,9 +141,7 @@ void ModeAdministration::_new() {
 }
 
 bool ModeAdministration::open() {
-	hui::file_dialog_dir(hui::CurWindow, _("Open project directory"), "", {}, [this] (const Path &path) {
-		if (!path)
-			return;
+	hui::file_dialog_dir(hui::CurWindow, _("Open project directory"), "", {}).on([this] (const Path &path) {
 		if (!os::fs::exists(path | "game.ini")) {
 			ed->error_box(_("game.ini not found"));
 			//return false;

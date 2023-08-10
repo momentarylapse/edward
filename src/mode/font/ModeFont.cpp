@@ -262,11 +262,9 @@ bool ModeFont::optimize_view()
 }
 
 void ModeFont::Import() {
-	hui::select_font(ed, _("Import font"), {}, [this] (const string &font) {
-		if (font != "") {
-			ImporterCairo imp;
-			imp.Import(data, font);
-		}
+	hui::select_font(ed, _("Import font"), {}).on([this] (const string &font) {
+		ImporterCairo imp;
+		imp.Import(data, font);
 	});
 }
 

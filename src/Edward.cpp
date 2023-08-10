@@ -729,17 +729,15 @@ void Edward::allow_termination(hui::Callback on_success, hui::Callback on_fail) 
 		on_success();
 		return;
 	}
-	hui::question_box(this,_("Quite a polite question"),_("You increased entropy. Do you wish to save your work?"), [on_success, on_fail] (const string &answer) {
-		if (answer == "hui:cancel") {
-			on_fail();
-		} else if (answer == "hui:no") {
+	hui::question_box(this,_("Quite a polite question"),_("You increased entropy. Do you wish to save your work?"), true).on([on_success, on_fail] (bool answer) {
+		if (!answer) {
 			on_success();
 		} else {
 			//bool saved = cur_mode->save();
 			//return saved;
 			on_fail();
 		}
-	}, true);
+	}).on_fail(on_fail);
 }
 
 string Edward::get_tex_image(nix::Texture *tex) {

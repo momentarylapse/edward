@@ -65,9 +65,8 @@ void ConfigurationDialog::load_data() {
 
 
 void ConfigurationDialog::on_find_root_dir() {
-	hui::file_dialog_dir(this, _("Working directory"), storage->root_dir, {}, [this] (const Path &path) {
-		if (path)
-			set_string("root-directory", path.str());
+	hui::file_dialog_dir(this, _("Working directory"), storage->root_dir, {}).on([this] (const Path &path) {
+		set_string("root-directory", path.str());
 	});
 }
 

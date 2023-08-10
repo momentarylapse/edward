@@ -76,11 +76,9 @@ void test_save_extras(DataMaterial *data, hui::Callback cb_success) {
 	if (data->shader.file) {
 		f(dir);
 	} else {
-		hui::file_dialog_save(ed, "Shader...", dir, {"filter=*.shader", "showfilter=*.shader"}, [data, dir, f] (const Path &path) {
-			if (path) {
-				data->shader.file = path.relative_to(dir);
-				f(dir);
-			}
+		hui::file_dialog_save(ed, "Shader...", dir, {"filter=*.shader", "showfilter=*.shader"}).on([data, dir, f] (const Path &path) {
+			data->shader.file = path.relative_to(dir);
+			f(dir);
 		});
 	}
 }

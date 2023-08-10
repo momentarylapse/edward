@@ -323,9 +323,9 @@ void Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bo
 
 
 	if (save)
-		hui::file_dialog_save(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter}, on_select_base);
+		hui::file_dialog_save(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter}).on(on_select_base);
 	else
-		hui::file_dialog_open(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter}, on_select_base);
+		hui::file_dialog_open(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter}).on(on_select_base);
 
 }
 
