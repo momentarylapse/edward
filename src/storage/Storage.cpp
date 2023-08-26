@@ -125,44 +125,59 @@ bool Storage::save(const Path &_filename, Data *data) {
 }
 
 // canonical
-void Storage::open(Data *data, Callback on_success) {
-	ed->allow_termination([this, data, on_success] {
+hui::future<void> Storage::open(Data *data) {
+	static hui::promise<void> promise;
+
+	ed->allow_termination([this, data] {
 		int type = data_type(data);
-		file_dialog(type, false, false, [this, data, on_success] {
+		file_dialog(type, false, false).on([this, data] (const Path& p) {
 			guess_root_directory(dialog_file_complete);
 
 			try {
 				if (storage->load(dialog_file_complete, data))
-					if (on_success)
-						on_success();
+					promise();
 			} catch(...) {
+				promise.fail();
 			}
+		}).on_fail([] {
+			promise.fail();
 		});
 	});
+
+	return promise.get_future();
 }
 
 // canonical
-void Storage::save_as(Data *data, Callback on_success) {
+hui::future<void> Storage::save_as(Data *data) {
+	static hui::promise<void> promise;
 	int type = data_type(data);
-	file_dialog(type, true, false, [this, data, on_success] {
+	file_dialog(type, true, false).on([this, data] (const Path&) {
 		guess_root_directory(dialog_file_complete);
 
 		try {
 			if (save(dialog_file_complete, data))
-				if (on_success)
-					on_success();
+				promise();
+			else
+				promise.fail();
 		} catch (...) {
+			promise.fail();
 		}
+	}).on_fail([] {
+		promise.fail();
 	});
+	return promise.get_future();
 }
 
-void Storage::auto_save(Data *data, Callback on_success) {
+hui::future<void> Storage::auto_save(Data *data) {
 	if (data->filename) {
+		static hui::promise<void> promise;
 		if (save(data->filename, data))
-			if (on_success)
-				on_success();
+			promise();
+		else
+			promise.fail();
+		return promise.get_future();
 	} else {
-		save_as(data, on_success);
+		return save_as(data);
 	}
 }
 
@@ -265,8 +280,9 @@ string fd_name(int kind) {
 	return "?";
 }
 
-void Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir, Callback on_select) {
+hui::future<Path> Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir) {
 	int done;
+	static hui::promise<Path> promise;
 
 	string title, show_filter, filter;
 	auto add_kind = [&] (const string &t, const string &sf, const string &f) {
@@ -292,9 +308,7 @@ void Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bo
 	}
 
 
-	auto on_select_base = [on_select, this, kind, force_in_root_dir] (const Path &path) {
-		if (!path)
-			return;
+	auto on_select_base = [this, kind, force_in_root_dir] (const Path &path) {
 		dialog_file_kind = FD_FILE;
 		for (auto k: kind) {
 			for (auto &ext: fd_ext(k).explode(","))
@@ -318,17 +332,22 @@ void Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bo
 		dialog_file_complete = path;
 		dialog_file = dialog_file_complete.relative_to(root_dir_kind[dialog_file_kind]);
 		dialog_file_no_ending = dialog_file.no_ext();
-		on_select();
+		promise(path);
 	};
 
 
 	if (save)
-		hui::file_dialog_save(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter}).on(on_select_base);
+		hui::file_dialog_save(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
+			.on(on_select_base)
+			.on_fail([] { promise.fail(); });
 	else
-		hui::file_dialog_open(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter}).on(on_select_base);
+		hui::file_dialog_open(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
+			.on(on_select_base)
+			.on_fail([] { promise.fail(); });
 
+	return promise.get_future();
 }
 
-void Storage::file_dialog(int kind, bool save, bool force_in_root_dir, Callback on_select) {
-	file_dialog_x({kind}, kind, save, force_in_root_dir, on_select);
+hui::future<Path> Storage::file_dialog(int kind, bool save, bool force_in_root_dir) {
+	return file_dialog_x({kind}, kind, save, force_in_root_dir);
 }

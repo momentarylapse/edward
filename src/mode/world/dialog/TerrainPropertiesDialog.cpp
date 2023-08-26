@@ -28,23 +28,23 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(hui::Window *_parent, bool _all
 	assert(index >= 0);
 	assert(index < data->terrains.num);
 
-	event("cancel", [=]{ on_close(); });
-	event("hui:close", [=]{ on_close(); });
-	event("apply", [=]{ apply_data(); });
-	event("ok", [=]{ on_ok(); });
+	event("cancel", [this]{ on_close(); });
+	event("hui:close", [this]{ on_close(); });
+	event("apply", [this]{ apply_data(); });
+	event("ok", [this]{ on_ok(); });
 
-	event("add_texture_level", [=]{ on_add_texture_level(); });
-	event("delete_texture_level", [=]{ on_delete_texture_level(); });
-	event("clear_texture_level", [=]{ on_clear_texture_level(); });
-	event("texture_map_complete", [=]{ on_texture_map_complete(); });
-	event("textures", [=]{ on_textures(); });
-	event_x("textures", "hui:change", [=]{ on_textures_edit(); });
-	event_x("textures", "hui:select", [=]{ on_textures_select(); });
-	event("material_find", [=]{ on_material_find(); });
-	event("default_material", [=]{ on_default_material(); });
-	event("terrain_save_as", [=]{ on_save_as(); });
+	event("add_texture_level", [this]{ on_add_texture_level(); });
+	event("delete_texture_level", [this]{ on_delete_texture_level(); });
+	event("clear_texture_level", [this]{ on_clear_texture_level(); });
+	event("texture_map_complete", [this]{ on_texture_map_complete(); });
+	event("textures", [this]{ on_textures(); });
+	event_x("textures", "hui:change", [this]{ on_textures_edit(); });
+	event_x("textures", "hui:select", [this]{ on_textures_select(); });
+	event("material_find", [this]{ on_material_find(); });
+	event("default_material", [this]{ on_default_material(); });
+	event("terrain_save_as", [this]{ on_save_as(); });
 
-	data->out_changed >> create_sink([=]{ update_data(); });
+	data->out_changed >> create_sink([this]{ update_data(); });
 
 	update_data();
 }
@@ -62,7 +62,7 @@ void TerrainPropertiesDialog::apply_data() {
 
 void TerrainPropertiesDialog::on_textures() {
 	int n = get_int("textures");
-	storage->file_dialog(FD_TEXTURE, false, true, [this, n] {
+	storage->file_dialog(FD_TEXTURE, false, true).on([this, n] (const Path&) {
 		temp.texture_file[n] = storage->dialog_file;
 		fill_texture_list();
 	});
@@ -121,7 +121,7 @@ void TerrainPropertiesDialog::on_textures_edit() {
 
 
 void TerrainPropertiesDialog::on_save_as() {
-	storage->file_dialog(FD_TERRAIN, true, true, [this] {
+	storage->file_dialog(FD_TERRAIN, true, true).on([this] (const Path&) {
 		data->terrains[index].save(storage->dialog_file_complete);
 		set_string("filename", storage->dialog_file_no_ending.str());
 	});
@@ -153,8 +153,9 @@ void TerrainPropertiesDialog::on_default_material() {
 
 
 void TerrainPropertiesDialog::on_material_find() {
-	storage->file_dialog(FD_MATERIAL, false, true, [this] {
+	storage->file_dialog(FD_MATERIAL, false, true).on([this] (const Path&) {
 		set_string("material", storage->dialog_file_no_ending.str());
+		check("default_material", false);
 	});
 }
 

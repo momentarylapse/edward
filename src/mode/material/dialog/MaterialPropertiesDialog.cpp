@@ -155,7 +155,7 @@ void MaterialPropertiesDialog::on_add_texture_level() {
 void MaterialPropertiesDialog::on_textures() {
 	int sel = get_int("");
 	if ((sel >= 0) and (sel < temp.texture_files.num))
-		storage->file_dialog(FD_TEXTURE, false, true, [this, sel] {
+		storage->file_dialog(FD_TEXTURE, false, true).on([this, sel] (const Path&) {
 			temp.texture_files[sel] = storage->dialog_file;
 			apply_data();
 			//mmaterial->Texture[sel] = MetaLoadTexture(mmaterial->TextureFile[sel]);

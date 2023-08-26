@@ -68,15 +68,14 @@ void TerrainCreationDialog::OnClose()
 
 
 void TerrainCreationDialog::OnFindHeightmap() {
-	storage->file_dialog(FD_TEXTURE, false, false, [this] {
+	storage->file_dialog(FD_TEXTURE, false, false).on([this] (const Path&) {
 		set_string("height_image", storage->dialog_file_complete.str());
 	});
 }
 
 
 
-void TerrainCreationDialog::OnSizeChange()
-{
+void TerrainCreationDialog::OnSizeChange() {
 	set_float("pattern_x", get_float("terrain_x") / (float)get_int("num_x"));
 	set_float("pattern_y", get_float("terrain_y") / (float)get_int("num_y"));
 }

@@ -87,7 +87,7 @@ void ModelFXDialog::ApplyData()
 }
 
 void ModelFXDialog::OnFindScriptFile() {
-	storage->file_dialog(FD_SCRIPT,false,true, [this] {
+	storage->file_dialog(FD_SCRIPT,false,true).on([this] (const Path&) {
 		Path filename = storage->dialog_file;
 		set_string("script_file", storage->dialog_file.str());
 
@@ -105,7 +105,7 @@ void ModelFXDialog::OnFindScriptFile() {
 }
 
 void ModelFXDialog::OnFindSoundFile() {
-	storage->file_dialog(FD_SOUND,false,true, [this] {
+	storage->file_dialog(FD_SOUND,false,true).on([this] (const Path&) {
 		set_string("filename", storage->dialog_file.str());
 	});
 }

@@ -71,31 +71,31 @@ void ConfigurationDialog::on_find_root_dir() {
 }
 
 void ConfigurationDialog::on_find_world() {
-	storage->file_dialog(FD_WORLD, false, true, [this] {
+	storage->file_dialog(FD_WORLD, false, true).on([this] (const Path&) {
 		set_string("world", storage->dialog_file_no_ending.str());
 	});
 }
 
 void ConfigurationDialog::on_find_second_world() {
-	storage->file_dialog(FD_WORLD, false, true, [this] {
+	storage->file_dialog(FD_WORLD, false, true).on([this] (const Path&) {
 		set_string("second-world", storage->dialog_file_no_ending.str());
 	});
 }
 
 void ConfigurationDialog::on_find_script() {
-	storage->file_dialog(FD_SCRIPT, false, true, [this] {
+	storage->file_dialog(FD_SCRIPT, false, true).on([this] (const Path&) {
 		set_string("script", storage->dialog_file.str());
 	});
 }
 
 void ConfigurationDialog::on_find_material() {
-	storage->file_dialog(FD_MATERIAL, false, true, [this] {
+	storage->file_dialog(FD_MATERIAL, false, true).on([this] (const Path&) {
 		set_string("material", storage->dialog_file_no_ending.str());
 	});
 }
 
 void ConfigurationDialog::on_find_font() {
-	storage->file_dialog(FD_FONT, false, true, [this] {
+	storage->file_dialog(FD_FONT, false, true).on([this] (const Path&) {
 		set_string("font", storage->dialog_file_no_ending.str());
 	});
 }

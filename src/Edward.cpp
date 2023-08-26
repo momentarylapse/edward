@@ -461,8 +461,8 @@ void Edward::on_execute_plugin() {
 	auto temp = storage->last_dir[FD_SCRIPT];
 	storage->last_dir[FD_SCRIPT] = PluginManager::directory;
 
-	storage->file_dialog(FD_SCRIPT, false, false, [this, temp] {
-		plugins->execute(storage->dialog_file_complete);
+	storage->file_dialog(FD_SCRIPT, false, false).on([this, temp] (const Path& path) {
+		plugins->execute(path);
 		storage->last_dir[FD_SCRIPT] = temp;
 	});
 }
@@ -587,17 +587,17 @@ void Edward::universal_new(int preferred_type) {
 }
 
 void Edward::universal_open(int preferred_type) {
-	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false, [this] {
+	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false).on([this] (const Path& path) {
 		if (storage->dialog_file_kind == FD_MODEL) {
-			storage->load(storage->dialog_file_complete, mode_model->data);
+			storage->load(path, mode_model->data);
 			set_mode(mode_model);
 			mode_model_mesh->optimize_view();
 		} else if (storage->dialog_file_kind == FD_WORLD) {
-			storage->load(storage->dialog_file_complete, mode_world->data);
+			storage->load(path, mode_world->data);
 			set_mode(mode_world);
 			mode_world->optimize_view();
 		} else if (storage->dialog_file_kind == FD_MATERIAL) {
-			storage->load(storage->dialog_file_complete, mode_material->data);
+			storage->load(path, mode_material->data);
 			set_mode(mode_material);
 			mode_material->optimize_view();
 		}

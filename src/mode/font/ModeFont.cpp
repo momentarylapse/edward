@@ -115,7 +115,7 @@ void ModeFont::on_command(const string & id)
 
 
 void ModeFont::open() {
-	storage->open(data, [this] {
+	storage->open(data).on([this] {
 		optimize_view();
 	});
 }
