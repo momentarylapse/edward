@@ -54,7 +54,6 @@ TerrainPropertiesDialog::~TerrainPropertiesDialog() {
 }
 
 void TerrainPropertiesDialog::apply_data() {
-	temp.material_file = get_string("material");
 	data->execute(new ActionWorldEditTerrain(index, temp));
 }
 
@@ -147,6 +146,7 @@ void TerrainPropertiesDialog::on_delete_texture_level() {
 
 
 void TerrainPropertiesDialog::on_default_material() {
+	temp.material_file = "";
 	set_string("material", "");
 }
 
@@ -154,6 +154,7 @@ void TerrainPropertiesDialog::on_default_material() {
 
 void TerrainPropertiesDialog::on_material_find() {
 	storage->file_dialog(FD_MATERIAL, false, true).on([this] (const Path&) {
+		temp.material_file = storage->dialog_file_no_ending;
 		set_string("material", storage->dialog_file_no_ending.str());
 		check("default_material", false);
 	});
