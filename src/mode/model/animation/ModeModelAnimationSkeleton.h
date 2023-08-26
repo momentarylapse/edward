@@ -29,7 +29,7 @@ public:
 	void chooseMouseFunction(int f);
 	int mouse_action;
 
-	void updateSelection();
+	void on_selection_change() override;
 	bool select_recursive;
 
 	int &current_move;

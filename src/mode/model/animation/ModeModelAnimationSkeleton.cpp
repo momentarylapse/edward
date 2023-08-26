@@ -37,7 +37,7 @@ void ModeModelAnimationSkeleton::on_start() {
 
 	chooseMouseFunction(MultiView::ACTION_ROTATE);
 
-	multi_view->out_selection_changed >> create_sink([=]{ updateSelection(); });
+	//multi_view->out_selection_changed >> create_sink([=]{ updateSelection(); });
 }
 
 void ModeModelAnimationSkeleton::on_end() {
@@ -53,7 +53,7 @@ void ModeModelAnimationSkeleton::on_command(const string& id) {
 		chooseMouseFunction(MultiView::ACTION_ROTATE);
 	if (id == "select-recursive") {
 		select_recursive = !select_recursive;
-		updateSelection();
+		on_selection_change();
 		ed->update_menu();
 	}
 	if (id == "copy")
@@ -69,11 +69,22 @@ void ModeModelAnimationSkeleton::chooseMouseFunction(int f) {
 	multi_view->set_mouse_action("ActionModelAnimationTransformBones", mouse_action, false);
 }
 
+int dominant_bone(const ModelVertex& v) {
+	if (v.bone_weight[0] > 0.5)
+		return v.bone_index[0];
+	if (v.bone_weight[1] > 0.5)
+		return v.bone_index[1];
+	if (v.bone_weight[2] > 0.5)
+		return v.bone_index[2];
+	return v.bone_index[3];
+}
 
 float bone_hover(const MultiView::SingleData *pp, MultiView::Window *win, const vec2 &m, vec3 &tp, float &z, ModeModelAnimationSkeleton *me) {
 	float dmin = 100;
+	int index = -1;
 	for (auto &p: me->data->mesh->polygon) {
-		if (pp == &mode_model_animation->bone[me->data->mesh->vertex[p.side[0].vertex].bone_index.i]) {
+		if (pp == &mode_model_animation->bone[dominant_bone(me->data->mesh->vertex[p.side[0].vertex])]) {
+			index = dominant_bone(me->data->mesh->vertex[p.side[0].vertex]);
 			float d = poly_hover(&p, win, m, tp, z, mode_model_animation->vertex);
 			if (d >= 0 and d < dmin)
 				dmin = d;
@@ -95,7 +106,7 @@ void ModeModelAnimationSkeleton::on_set_multi_view() {
 }
 
 void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
-	mode_model_mesh->draw_mesh(win, data->mesh, mode_model_animation->vertex, false);
+	mode_model_mesh->draw_mesh(win, data->mesh, mode_model_animation->vertex, true);
 	mode_model_skeleton->draw_skeleton(win, mode_model_animation->bone, true);
 
 
@@ -104,7 +115,7 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
 
 	VertexStagingBuffer vbs;
 	for (ModelPolygon &p: data->mesh->polygon)
-		if (data->mesh->vertex[p.side[0].vertex].bone_index.i == multi_view->hover.index)
+		if (dominant_bone(data->mesh->vertex[p.side[0].vertex]) == multi_view->hover.index)
 			p.add_to_vertex_buffer(mode_model_animation->vertex, vbs, 1);
 	vbs.build(mode_model_mesh->vb_hover, 1);
 
@@ -127,7 +138,7 @@ void ModeModelAnimationSkeleton::on_update_menu() {
 	ed->check("select-recursive", select_recursive);
 }
 
-void ModeModelAnimationSkeleton::updateSelection() {
+void ModeModelAnimationSkeleton::on_selection_change() {
 	foreachi(auto &b, data->bone, i)
 		b.is_selected = mode_model_animation->bone[i].is_selected;
 
@@ -144,8 +155,11 @@ void ModeModelAnimationSkeleton::updateSelection() {
 
 
 	// select geometry
-	for (auto &v: data->mesh->vertex)
-		v.is_selected = data->bone[v.bone_index.i].is_selected;
+	for (auto &v: data->mesh->vertex) {
+		int b = dominant_bone(v);
+		if (b >= 0)
+			v.is_selected = data->bone[b].is_selected;
+	}
 	data->selectionFromVertices();
 
 	mode_model_mesh->fill_selection_buffer(mode_model_animation->vertex);
