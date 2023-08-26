@@ -28,7 +28,7 @@ class Entity;
 class TemplateDataScriptVariable;
 class Light;
 class ParticleManager;
-class Particle;
+class LegacyParticle;
 class Link;
 class LevelData;
 enum class LinkType;
@@ -120,7 +120,7 @@ public:
 
 	bool unregister(BaseClass *o);
 	void delete_entity(Entity *e);
-	void delete_particle(Particle *p);
+	void delete_legacy_particle(LegacyParticle *p);
 	void delete_sound(audio::Sound *s);
 	void delete_link(Link *l);
 
@@ -142,7 +142,7 @@ public:
 	Light *add_light_cone(const vec3 &p, const quaternion &ang, const color &c, float r, float t);
 
 	ParticleManager *particle_manager;
-	Particle *add_particle(xfer<Particle> p);
+	LegacyParticle *add_legacy_particle(xfer<LegacyParticle> p);
 
 	void iterate(float dt);
 	void iterate_physics(float dt);

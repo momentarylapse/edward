@@ -150,15 +150,15 @@ void ComponentManager::iterate(float dt) {
 #ifdef _X_ALLOW_X_
 	PerformanceMonitor::begin(ch_component);
 #endif
-	for (auto &l: component_lists_by_type)
-		if (l.value.needs_update) {
+	for (auto&& [type, list]: component_lists_by_type)
+		if (list.needs_update) {
 #ifdef _X_ALLOW_X_
-			PerformanceMonitor::begin(l.value.ch_iterate);
+			PerformanceMonitor::begin(list.ch_iterate);
 #endif
-			for (auto *c: l.value.list)
+			for (auto *c: list.list)
 				c->on_iterate(dt);
 #ifdef _X_ALLOW_X_
-			PerformanceMonitor::end(l.value.ch_iterate);
+			PerformanceMonitor::end(list.ch_iterate);
 #endif
 		}
 #ifdef _X_ALLOW_X_

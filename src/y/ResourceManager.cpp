@@ -60,12 +60,12 @@ Shader* ResourceManager::load_shader(const Path& filename) {
 		//fn = shader_dir | filename;
 	}
 
-	for (auto s: shader_map)
-		if (s.key == fn) {
+	for (auto&& [key, s]: shader_map)
+		if (key == fn) {
 #ifdef USING_VULKAN
-			return s.value;
+			return s;
 #else
-			return (s.value->program >= 0) ? s.value : nullptr;
+			return (s->program >= 0) ? s : nullptr;
 #endif
 		}
 
@@ -129,12 +129,12 @@ Shader* ResourceManager::load_surface_shader(const Path& _filename, const string
 	}
 
 	Path fnx = fn.with(":" + variant + ":" + render_path +  ":" + geo);
-	for (auto s: shader_map)
-		if (s.key == fnx) {
+	for (auto&& [key, s]: shader_map)
+		if (key == fnx) {
 #ifdef USING_VULKAN
-			return s.value;
+			return s;
 #else
-			return (s.value->program >= 0) ? s.value : nullptr;
+			return (s->program >= 0) ? s : nullptr;
 #endif
 		}
 
@@ -184,12 +184,12 @@ shared<Texture> ResourceManager::load_texture(const Path& filename) {
 		throw Exception("missing texture: " + filename.str());
 	}
 
-	for (auto t: texture_map)
-		if (fn == t.key) {
+	for (auto&& [key, t]: texture_map)
+		if (fn == key) {
 #ifdef USING_VULKAN
-			return t.value;
+			return t;
 #else
-			return t.value->valid ? t.value : nullptr;
+			return t->valid ? t : nullptr;
 #endif
 		}
 

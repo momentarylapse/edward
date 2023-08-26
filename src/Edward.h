@@ -139,7 +139,7 @@ extern Edward *ed;
 class EdwardApp : public hui::Application {
 public:
 	EdwardApp();
-	virtual bool on_startup(const Array<string> &arg) override;
+	hui::AppStatus on_startup(const Array<string> &arg) override;
 
 };
 

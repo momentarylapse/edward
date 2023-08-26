@@ -66,7 +66,7 @@ void update_file(const Path &filename, bool allow_write) {
 	}
 }
 
-bool EdwardApp::on_startup(const Array<string> &arg) {
+hui::AppStatus EdwardApp::on_startup(const Array<string> &arg) {
 	CommandLineParser p;
 	p.info(AppName, "");
 	p.option("--execute", "FILENAME", "(NOT WORKING) execute a script", [] (const string &a) {
@@ -127,7 +127,7 @@ bool EdwardApp::on_startup(const Array<string> &arg) {
 		if (handle_special_args(arg))
 			return false;*/
 
-	return ed;
+	return ed ? hui::AppStatus::RUN : hui::AppStatus::END;
 }
 
 HUI_EXECUTE(EdwardApp)
