@@ -1,4 +1,4 @@
-const KABA_LINK = "/usr/lib/libpsmoveapi.so
+let KABA_LINK = "/usr/lib/libpsmoveapi.so
 	_psmove_init:psmove_init
 	_psmove_count_connected:psmove_count_connected
 	_psmove_reinit:psmove_reinit
@@ -35,9 +35,9 @@ const KABA_LINK = "/usr/lib/libpsmoveapi.so
 	_psmove_fusion_get_modelview_matrix:psmove_fusion_get_modelview_matrix"
 
 
-class PSMoveTracker
-class PSMoveFusion
-class PSMove
+struct PSMoveTracker
+struct PSMoveFusion
+struct PSMove
 
 func extern _psmove_count_connected() -> int
 func extern _psmove_init(version: int) -> int
@@ -74,45 +74,45 @@ func extern _psmove_tracker_update_image(tracker: PSMoveTracker*)
 func extern _psmove_fusion_new(tracker: PSMoveTracker*, a: float, b: float) -> PSMoveFusion*
 func extern _psmove_fusion_free(fusion: PSMoveFusion*)
 func extern _psmove_fusion_get_position(fusion: PSMoveFusion*, psmove: PSMove*, x: float*, y: float*, z: float*)
-func extern _psmove_fusion_get_modelview_matrix(fusion: PSMoveFusion*, move: PSMove*) -> mat4*
+func extern _psmove_fusion_get_modelview_matrix(fusion: PSMoveFusion*, move: PSMove*) -> mat4&
 
 
-enum
-	Btn_TRIANGLE = 16 # Green triangle
-	Btn_CIRCLE = 32 # Red circle
-	Btn_CROSS = 64 # Blue cross
-	Btn_SQUARE = 128 # Pink square
-	Btn_SELECT = 256 # Select button, left side
-	Btn_START = 2048 # Start button, right side
+const Btn_TRIANGLE = 16 # Green triangle
+const Btn_CIRCLE = 32 # Red circle
+const Btn_CROSS = 64 # Blue cross
+const Btn_SQUARE = 128 # Pink square
+const Btn_SELECT = 256 # Select button, left side
+const Btn_START = 2048 # Start button, right side
 
-	Btn_PS = 65536 # PS button, front center
-	Btn_MOVE = 524288 # Move button, big front button
-	Btn_T = 1048576 # Trigger, on the back
+const Btn_PS = 65536 # PS button, front center
+const Btn_MOVE = 524288 # Move button, big front button
+const Btn_T = 1048576 # Trigger, on the back
 
 class MyPSMoveController
 	var psmove: PSMove*
-	var pos, dpos, pos_last: vector
-	var acc, rot, mag: vector
+	var pos, dpos, pos_last: vec3
+	var acc, rot, mag: vec3
 	var col: color
 	var ang, dang: quaternion
 	var trigger, rumble: float
 	var button: bool[8]
-	var manager: PsMoveManager*
-	func __init__(m: PSMove*, man: PsMoveManager*)
-		manager = man
+	var manager: PsMoveManager&
+	func __init__(m: PSMove*, man: PsMoveManager&)
+		manager := man
 		psmove = m
 		_psmove_enable_orientation(m, 1)
 		if _psmove_has_orientation(m) == 0
 			print(" ERROR: no orientation")
-		while _psmove_tracker_enable(manager.tracker, m) != 2 # Tracker_CALIBRATED
-			pass
+		for t in manager.tracker
+			while _psmove_tracker_enable(&t, m) != 2 # Tracker_CALIBRATED
+				pass
 		col = color.BLACK
 		rumble = 0
 		trigger = 0
 		ang = quaternion.ID
 		dang = quaternion.ID
 
-	func update()
+	func mut update()
 		if !psmove
 			return
 
@@ -125,9 +125,9 @@ class MyPSMoveController
 		dpos = pos - pos_last
 		pos_last = pos
 
-		matrix *mat = _psmove_fusion_get_modelview_matrix(manager.fusion, psmove)
-		var s = matrix.scale(1,  1,  -1)
-		var q = quaternion(s * *mat * s)
+		var mat = _psmove_fusion_get_modelview_matrix(manager.fusion, psmove)
+		var s = mat4.scale(1,  1,  -1)
+		var q = quaternion(s * (*mat) * s)
 		dang = ang * q
 		ang = q.bar()
 		#ang = quaternion::rotation_m( *mat)
@@ -140,7 +140,7 @@ class MyPSMoveController
 		_psmove_get_gyroscope_frame(psmove, 1, &rot.x, &rot.y, &rot.z)
 		rot.y = - rot.y
 
-		int _buttons = _psmove_get_buttons(psmove)
+		var _buttons = _psmove_get_buttons(psmove)
 		button[0] = ((_buttons & Btn_TRIANGLE) != 0)
 		button[1] = ((_buttons & Btn_CIRCLE) != 0)
 		button[2] = ((_buttons & Btn_CROSS) != 0)
@@ -150,26 +150,25 @@ class MyPSMoveController
 		button[6] = ((_buttons & Btn_PS) != 0)
 		button[7] = ((_buttons & Btn_MOVE) != 0)
 
-	func reset_orientation()
+	func mut reset_orientation()
 		_psmove_reset_orientation(psmove)
 		ang = quaternion.ID
 
 class PsMoveManager
 	var tracker: PSMoveTracker* = nil
 	var fusion: PSMoveFusion* = nil
-	var psmoves: MyPSMoveController*[]
+	var psmoves: owned![MyPSMoveController][]
 	func __init__()
-		int vv = 262152 #4<<16 + 0<<8 + 8
+		var vv = 262152 #4<<16 + 0<<8 + 8
 		if _psmove_init(vv) != 1
 			print("VERSION MISMATCH!")
-	func __delete()
-		psmoves.clear()
+	func mut __delete()
 		if fusion
 			_psmove_fusion_free(fusion)
 		if tracker
 			_psmove_tracker_free(tracker)
-	func connect()
-		int n = _psmove_count_connected()
+	func mut connect()
+		var n = _psmove_count_connected()
 		print("{{n}} found")
 		tracker = _psmove_tracker_new()
 		fusion = _psmove_fusion_new(tracker, 1., 1000.)
@@ -181,7 +180,7 @@ class PsMoveManager
 			var p = _psmove_connect_by_id(i)
 			psmoves.add(new MyPSMoveController(p, &self))
 
-	func update()
+	func mut update()
 		if !tracker
 			return
 		for m in psmoves
@@ -192,7 +191,7 @@ class PsMoveManager
 
 
 func main()
-	PsMoveManager m
+	var m: PsMoveManager
 	m.connect()
 	
 	while true

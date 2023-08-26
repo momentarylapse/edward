@@ -17,7 +17,7 @@ class NodeBasicLighting extends shader.Node
 		var ro = c.value(self, 1)
 		var me = c.value(self, 2)
 		var em = c.value(self, 4)
-		string t = c.create_out(self, 0)
+		let t = c.create_out(self, 0)
 		return "
 	vec4 {{t}} = vec4(0,0,0,0);
 	for (int i=0; i<num_lights; i++)

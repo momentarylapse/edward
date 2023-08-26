@@ -2,7 +2,7 @@ use edward
 
 func main()
 	model.begin_action("test")
-	int n = model.mesh.vertex.num
+	let n = model.mesh.vertex.num
 	model.add_vertex(vec3(10,10,0), 0, -1)
 	model.add_vertex(vec3(10,0,0), 0, -1)
 	model.add_vertex(vec3(0,0,0), 0, -1)
