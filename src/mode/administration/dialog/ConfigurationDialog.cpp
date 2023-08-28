@@ -32,8 +32,9 @@ ConfigurationDialog::ConfigurationDialog(hui::Window* _parent, DataAdministratio
 	load_data();
 }
 
-const Array<string> WINDOW_MODES = {"windowed", "windowed-fullscreen", "fullscreen"};
-const Array<string> RENDER_PATHS = {"direct", "forward", "deferred"};
+static const Array<string> WINDOW_MODES = {"windowed", "windowed-fullscreen", "fullscreen"};
+static const Array<string> RENDER_PATHS = {"direct", "forward", "deferred", "raytracing"};
+static const Array<int> SHADOW_RESOLUTIONS = {512, 1024, 2048, 4096};
 
 void ConfigurationDialog::load_data() {
 	if (exporting){
@@ -43,9 +44,6 @@ void ConfigurationDialog::load_data() {
 		set_int("export_type",0);
 	}
 
-	//GameIniDialog=GameIni;
-//	data->LoadGameIni(ed->RootDir, &GameIniDialog);
-	//GameIniData game = *data->GameIni;
 	GameIniData &game = *data->GameIni;
 	game.load(storage->root_dir);
 	set_string("world", game.default_world().str());
@@ -59,6 +57,7 @@ void ConfigurationDialog::load_data() {
 	check("hdr", true);
 	set_int("fps-target", game.get_int(game.ID_RENDERER_FRAMERATE, 60));
 	set_float("scale-min", game.get_float(game.ID_RESOLUTION_SCALE_MIN, 1.0f));
+	set_int("shadow-resolution", max(0, SHADOW_RESOLUTIONS.find(game.get_int(game.ID_SHADOW_RESOLUTION, 2048))));
 
 	set_string("root-directory", storage->root_dir.str());
 }
@@ -111,6 +110,7 @@ void ConfigurationDialog::into_game_init(GameIniData &g) {
 	g.set_str(g.ID_RENDER_PATH, RENDER_PATHS[get_int("render-path")]);
 	g.set_int(g.ID_RENDERER_FRAMERATE, get_int("fps-target"));
 	g.set_float(g.ID_RESOLUTION_SCALE_MIN, get_float("scale-min"));
+	g.set_int(g.ID_SHADOW_RESOLUTION, SHADOW_RESOLUTIONS[get_int("shadow-resolution")]);
 }
 
 void ConfigurationDialog::on_ok() {

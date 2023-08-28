@@ -15,9 +15,16 @@ const string GameIniData::ID_WORLD2 = "default.second-world";
 const string GameIniData::ID_MATERIAL = "default.material";
 const string GameIniData::ID_FONT = "default.font";
 const string GameIniData::ID_SCREEN_MODE = "screen.mode";
+const string GameIniData::ID_SCREEN_WIDTH = "screen.width";
+const string GameIniData::ID_SCREEN_HEIGHT = "screen.height";
 const string GameIniData::ID_RENDER_PATH = "renderer.path";
 const string GameIniData::ID_RENDERER_FRAMERATE = "renderer.target-framerate";
 const string GameIniData::ID_RESOLUTION_SCALE_MIN = "renderer.resolution-scale-min";
+const string GameIniData::ID_SHADOW_BOXSIZE = "shadow.boxsize";
+const string GameIniData::ID_SHADOW_RESOLUTION = "shadow.resolution";
+const string GameIniData::ID_DEBUG_LEVEL = "debug.level";
+const string GameIniData::ID_DEBUG_SCRIPTS1 = "debug.scripts1";
+const string GameIniData::ID_DEBUG_SCRIPTS2 = "debug.scripts2";
 
 void GameIniData::load(const Path &dir) {
 	Configuration::load(dir | "game.ini");
@@ -57,15 +64,17 @@ void GameIniData::reset_default() {
 	set_str_array("default.additional-scripts", {});
 
 	set_str(ID_SCREEN_MODE, "windowed");
-	set_str("screen.width", "1920");
-	set_str("screen.height", "1080");
+	set_int(ID_SCREEN_WIDTH, 1920);
+	set_int(ID_SCREEN_HEIGHT, 1080);
 
 	set_str(ID_RENDER_PATH, "forward");
-	set_str(ID_RENDERER_FRAMERATE, "60");
-	set_str(ID_RESOLUTION_SCALE_MIN, "0.5");
+	set_int(ID_RENDERER_FRAMERATE, 60);
+	set_float(ID_RESOLUTION_SCALE_MIN, 0.5f);
 
-	set_str("debug.level", "1");
+	set_int(ID_DEBUG_LEVEL, 1);
+	set_str_array(ID_DEBUG_SCRIPTS1, {"debug/gui-stats.kaba", "debug/wireframe.kaba"});
+	set_str_array(ID_DEBUG_SCRIPTS2, {"debug/hdr.kaba", "debug/gbuffer.kaba", "debug/shadows.kaba"});
 
-	set_str("shadow.boxsize", "2000");
-	set_str("shadow.resolution", "1024");
+	set_float(ID_SHADOW_BOXSIZE, 2000);
+	set_int(ID_SHADOW_RESOLUTION, 2048);
 }

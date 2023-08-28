@@ -31,7 +31,7 @@ Dialog game-config-dialog "Game configuration" width=365 height=250 headerbar cl
 				ComboBox resolution "1920 x 1080\\1024 x 768" disabled
 				---|
 				Label t-render-path "Render path" right disabled
-				ComboBox render-path "direct\\forward\\deferred shading" "tooltip=Strategy for rendering:\n * direct: fast but no post processing\n * forward: fast\n * deferred: heavier, allows more light sources"
+				ComboBox render-path "direct\\forward\\deferred shading\\raytracing" "tooltip=Strategy for rendering:\n * direct: fast but no post processing\n * forward: fast\n * deferred: heavier, allows more light sources\n * raytracing: fully pathtraced (extremely heavy, requires vulkan!), uses RTX if available"
 				---|
 				Label t-quality "Quality" right disabled
 				ComboBox quality "physics based rendering" disabled
@@ -44,6 +44,9 @@ Dialog game-config-dialog "Game configuration" width=365 height=250 headerbar cl
 				---|
 				Label t-scale-min "Scale min" right disabled
 				SpinButton scale-min "" range=0:1:0.01 "tooltip=Allow dynamic resolution scaling down to this fraction of the target resolution"
+				---|
+				Label t-shadow-resolution "Shadowmap size" right disabled
+				ComboBox shadow-resolution "512\\1024\\2048\\4096"
 		Grid ? "" buttonbar
 			Button /cancel "Cancel"
 			---|
