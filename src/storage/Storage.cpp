@@ -41,8 +41,6 @@ Storage::Storage() {
 	CANONICAL_SUB_DIR[FD_SOUND] = "Sounds";
 	CANONICAL_SUB_DIR[FD_TEXTURE] = "Textures";
 	CANONICAL_SUB_DIR[FD_SCRIPT] = "Scripts";
-
-	dialog_file_kind = -1;
 }
 
 Storage::~Storage() {
@@ -130,11 +128,11 @@ hui::future<void> Storage::open(Data *data) {
 
 	ed->allow_termination([this, data] {
 		int type = data_type(data);
-		file_dialog(type, false, false).on([this, data] (const Path& p) {
-			guess_root_directory(dialog_file_complete);
+		file_dialog(type, false, false).on([this, data] (const auto& p) {
+			guess_root_directory(p.complete);
 
 			try {
-				if (storage->load(dialog_file_complete, data))
+				if (storage->load(p.complete, data))
 					promise();
 			} catch(...) {
 				promise.fail();
@@ -151,11 +149,11 @@ hui::future<void> Storage::open(Data *data) {
 hui::future<void> Storage::save_as(Data *data) {
 	static hui::promise<void> promise;
 	int type = data_type(data);
-	file_dialog(type, true, false).on([this, data] (const Path&) {
-		guess_root_directory(dialog_file_complete);
+	file_dialog(type, true, false).on([this, data] (const auto& p) {
+		guess_root_directory(p.complete);
 
 		try {
-			if (save(dialog_file_complete, data))
+			if (save(p.complete, data))
 				promise();
 			else
 				promise.fail();
@@ -280,9 +278,9 @@ string fd_name(int kind) {
 	return "?";
 }
 
-hui::future<Path> Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir) {
+hui::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir) {
 	int done;
-	static hui::promise<Path> promise;
+	static hui::promise<ComplexPath> promise;
 
 	string title, show_filter, filter;
 	auto add_kind = [&] (const string &t, const string &sf, const string &f) {
@@ -309,30 +307,31 @@ hui::future<Path> Storage::file_dialog_x(const Array<int> &kind, int preferred, 
 
 
 	auto on_select_base = [this, kind, force_in_root_dir] (const Path &path) {
-		dialog_file_kind = FD_FILE;
+		ComplexPath cp;
+		cp.kind = FD_FILE;
 		for (auto k: kind) {
 			for (auto &ext: fd_ext(k).explode(","))
 				if (path.extension() == ext) {
-					dialog_file_kind = k;
+					cp.kind = k;
 				}
 		}
 
 
-		bool in_root_dir = (path.is_in(root_dir_kind[dialog_file_kind]));
+		bool in_root_dir = (path.is_in(root_dir_kind[cp.kind]));
 
 		if (force_in_root_dir and !in_root_dir) {
 			ed->error_box(path.str());
-			ed->error_box(format(_("The file is not in the appropriate directory: \"%s\"\nor in a subdirectory."), root_dir_kind[dialog_file_kind]));
+			ed->error_box(format(_("The file is not in the appropriate directory: \"%s\"\nor in a subdirectory."), root_dir_kind[cp.kind]));
 			return;
 		}//else
 			//MakeDirs(HuiFileDialogPath);
 
 		if (in_root_dir)
-			last_dir[dialog_file_kind] = path.dirname();
-		dialog_file_complete = path;
-		dialog_file = dialog_file_complete.relative_to(root_dir_kind[dialog_file_kind]);
-		dialog_file_no_ending = dialog_file.no_ext();
-		promise(path);
+			last_dir[cp.kind] = path.dirname();
+		cp.complete = path;
+		cp.relative = path.relative_to(root_dir_kind[cp.kind]);
+		cp.simple = cp.relative.no_ext();
+		promise(cp);
 	};
 
 
@@ -348,6 +347,6 @@ hui::future<Path> Storage::file_dialog_x(const Array<int> &kind, int preferred, 
 	return promise.get_future();
 }
 
-hui::future<Path> Storage::file_dialog(int kind, bool save, bool force_in_root_dir) {
+hui::future<ComplexPath> Storage::file_dialog(int kind, bool save, bool force_in_root_dir) {
 	return file_dialog_x({kind}, kind, save, force_in_root_dir);
 }

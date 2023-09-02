@@ -256,22 +256,25 @@ void MultiView::toggle_whole_window() {
 
 void MultiView::toggle_grid() {
 	grid_enabled = !grid_enabled;
-	out_settings_changed.notify();
+	out_settings_changed();
+	out_redraw();
 }
 
 void MultiView::toggle_light() {
 	light_enabled = !light_enabled;
-	out_settings_changed.notify();
+	out_settings_changed();
+	out_redraw();
 }
 
 void MultiView::toggle_wire() {
 	wire_mode = !wire_mode;
-	out_settings_changed.notify();
+	out_settings_changed();
+	out_redraw();
 }
 
 void MultiView::toggle_snap_to_grid() {
 	snap_to_grid = !snap_to_grid;
-	out_settings_changed.notify();
+	out_settings_changed();
 }
 
 void MultiView::on_command(const string & id) {

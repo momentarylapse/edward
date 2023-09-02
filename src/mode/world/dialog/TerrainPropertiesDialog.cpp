@@ -61,8 +61,8 @@ void TerrainPropertiesDialog::apply_data() {
 
 void TerrainPropertiesDialog::on_textures() {
 	int n = get_int("textures");
-	storage->file_dialog(FD_TEXTURE, false, true).on([this, n] (const Path&) {
-		temp.texture_file[n] = storage->dialog_file;
+	storage->file_dialog(FD_TEXTURE, false, true).on([this, n] (const auto& p) {
+		temp.texture_file[n] = p.relative;
 		fill_texture_list();
 	});
 }
@@ -120,9 +120,9 @@ void TerrainPropertiesDialog::on_textures_edit() {
 
 
 void TerrainPropertiesDialog::on_save_as() {
-	storage->file_dialog(FD_TERRAIN, true, true).on([this] (const Path&) {
-		data->terrains[index].save(storage->dialog_file_complete);
-		set_string("filename", storage->dialog_file_no_ending.str());
+	storage->file_dialog(FD_TERRAIN, true, true).on([this] (const auto& p) {
+		data->terrains[index].save(p.complete);
+		set_string("filename", p.simple.str());
 	});
 }
 
@@ -153,9 +153,9 @@ void TerrainPropertiesDialog::on_default_material() {
 
 
 void TerrainPropertiesDialog::on_material_find() {
-	storage->file_dialog(FD_MATERIAL, false, true).on([this] (const Path&) {
-		temp.material_file = storage->dialog_file_no_ending;
-		set_string("material", storage->dialog_file_no_ending.str());
+	storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p) {
+		temp.material_file = p.simple;
+		set_string("material", p.simple.str());
 		check("default_material", false);
 	});
 }

@@ -115,9 +115,9 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 		data->out_changed();
 	});
 	event("shader-load", [this] {
-		storage->file_dialog(FD_SHADERFILE,false,true).on([this] (const Path&) {
-			if (test_shader_file(storage->dialog_file)) {
-				data->shader.file = storage->dialog_file;
+		storage->file_dialog(FD_SHADERFILE,false,true).on([this] (const auto& p){
+			if (test_shader_file(p.relative)) {
+				data->shader.file = p.relative;
 				data->shader.load_from_file();
 				request_optimal_view();
 				data->out_changed();
@@ -127,8 +127,8 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 		});
 	});
 	event("shader-save", [this]{
-		storage->file_dialog(FD_SHADERFILE,true,true).on([this] (const Path&) {
-			data->shader.file = storage->dialog_file;
+		storage->file_dialog(FD_SHADERFILE,true,true).on([this] (const auto& p) {
+			data->shader.file = p.relative;
 			data->shader.save_to_file();
 		});
 	});

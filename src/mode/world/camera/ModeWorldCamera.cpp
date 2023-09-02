@@ -248,8 +248,8 @@ void ModeWorldCamera::_new() {
 
 void ModeWorldCamera::open() {
 	ed->allow_termination([this] {
-		storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const Path&) {
-			data->load(storage->dialog_file_complete);
+		storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const auto& p) {
+			data->load(p.complete);
 		});
 	});
 }
@@ -262,8 +262,8 @@ void ModeWorldCamera::save() {
 }
 
 void ModeWorldCamera::save_as() {
-	storage->file_dialog(FD_CAMERAFLIGHT, true, true).on([this] (const Path&) {
-		return data->save(storage->dialog_file_complete);
+	storage->file_dialog(FD_CAMERAFLIGHT, true, true).on([this] (const auto& p) {
+		return data->save(p.complete);
 	});
 }
 

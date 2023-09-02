@@ -70,32 +70,32 @@ void ConfigurationDialog::on_find_root_dir() {
 }
 
 void ConfigurationDialog::on_find_world() {
-	storage->file_dialog(FD_WORLD, false, true).on([this] (const Path&) {
-		set_string("world", storage->dialog_file_no_ending.str());
+	storage->file_dialog(FD_WORLD, false, true).on([this] (const auto& p) {
+		set_string("world", p.simple.str());
 	});
 }
 
 void ConfigurationDialog::on_find_second_world() {
-	storage->file_dialog(FD_WORLD, false, true).on([this] (const Path&) {
-		set_string("second-world", storage->dialog_file_no_ending.str());
+	storage->file_dialog(FD_WORLD, false, true).on([this] (const auto& p) {
+		set_string("second-world", p.simple.str());
 	});
 }
 
 void ConfigurationDialog::on_find_script() {
-	storage->file_dialog(FD_SCRIPT, false, true).on([this] (const Path&) {
-		set_string("script", storage->dialog_file.str());
+	storage->file_dialog(FD_SCRIPT, false, true).on([this] (const auto& p) {
+		set_string("script", p.relative.str());
 	});
 }
 
 void ConfigurationDialog::on_find_material() {
-	storage->file_dialog(FD_MATERIAL, false, true).on([this] (const Path&) {
-		set_string("material", storage->dialog_file_no_ending.str());
+	storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p) {
+		set_string("material", p.simple.str());
 	});
 }
 
 void ConfigurationDialog::on_find_font() {
-	storage->file_dialog(FD_FONT, false, true).on([this] (const Path&) {
-		set_string("font", storage->dialog_file_no_ending.str());
+	storage->file_dialog(FD_FONT, false, true).on([this] (const auto& p) {
+		set_string("font", p.simple.str());
 	});
 }
 

@@ -43,8 +43,8 @@ void ModeWorldCreateObject::on_end() {
 }
 
 void ModeWorldCreateObject::on_find_object() {
-	storage->file_dialog(FD_MODEL, false, true).on([this] (const Path&) {
-		filename = storage->dialog_file_no_ending;
+	storage->file_dialog(FD_MODEL, false, true).on([this] (const auto& p) {
+		filename = p.simple;
 		LastObjectFilename = filename;
 		message = _("place new object");
 	});

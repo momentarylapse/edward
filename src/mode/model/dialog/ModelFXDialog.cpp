@@ -87,9 +87,9 @@ void ModelFXDialog::ApplyData()
 }
 
 void ModelFXDialog::OnFindScriptFile() {
-	storage->file_dialog(FD_SCRIPT,false,true).on([this] (const Path&) {
-		Path filename = storage->dialog_file;
-		set_string("script_file", storage->dialog_file.str());
+	storage->file_dialog(FD_SCRIPT,false,true).on([this] (const auto& p) {
+		Path filename = p.relative;
+		set_string("script_file", filename.str());
 
 		try {
 			auto c = ownify(kaba::Context::create());
@@ -105,8 +105,8 @@ void ModelFXDialog::OnFindScriptFile() {
 }
 
 void ModelFXDialog::OnFindSoundFile() {
-	storage->file_dialog(FD_SOUND,false,true).on([this] (const Path&) {
-		set_string("filename", storage->dialog_file.str());
+	storage->file_dialog(FD_SOUND,false,true).on([this] (const auto& p) {
+		set_string("filename", p.relative.str());
 	});
 }
 

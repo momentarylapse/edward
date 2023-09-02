@@ -230,8 +230,8 @@ void ModelMaterialDialog::on_material_add() {
 }
 
 void ModelMaterialDialog::on_material_load() {
-	storage->file_dialog(FD_MATERIAL, false, true).on([this] (const Path&) {
-		data->execute(new ActionModelAddMaterial(storage->dialog_file_no_ending));
+	storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p){
+		data->execute(new ActionModelAddMaterial(p.simple));
 	});
 }
 
@@ -289,18 +289,18 @@ void ModelMaterialDialog::on_textures() {
 void ModelMaterialDialog::on_texture_level_load() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0)
-		storage->file_dialog(FD_TEXTURE, false, true).on([this, sel] (const Path&) {
-			data->execute(new ActionModelMaterialLoadTexture(mode_model_mesh->current_material, sel, storage->dialog_file));
+		storage->file_dialog(FD_TEXTURE, false, true).on([this, sel] (const auto& p) {
+			data->execute(new ActionModelMaterialLoadTexture(mode_model_mesh->current_material, sel, p.relative));
 		});
 }
 
 void ModelMaterialDialog::on_texture_level_save() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0)
-		storage->file_dialog(FD_TEXTURE, true, true).on([this, sel] (const Path&) {
+		storage->file_dialog(FD_TEXTURE, true, true).on([this, sel] (const auto& p) {
 			auto tl = data->material[mode_model_mesh->current_material]->texture_levels[sel];
-			tl->image->save(engine.texture_dir | storage->dialog_file);
-			tl->filename = storage->dialog_file; // ...
+			tl->image->save(p.complete);
+			tl->filename = p.relative; // ...
 			tl->edited = false;
 		});
 }

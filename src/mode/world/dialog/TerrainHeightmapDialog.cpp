@@ -50,9 +50,9 @@ void TerrainHeightmapDialog::on_size_change() {
 
 
 void TerrainHeightmapDialog::on_find_filter() {
-	storage->file_dialog(FD_TEXTURE, false, false).on([this] (const Path&) {
-		filter_file = storage->dialog_file_complete;
-		set_string("filter_image", storage->dialog_file.str());
+	storage->file_dialog(FD_TEXTURE, false, false).on([this] (const auto& p) {
+		filter_file = p.complete;
+		set_string("filter_image", p.relative.str());
 		filter.load(filter_file);
 		redraw("preview");
 	});
@@ -63,9 +63,9 @@ void TerrainHeightmapDialog::on_find_filter() {
 
 
 void TerrainHeightmapDialog::on_find_heightmap() {
-	storage->file_dialog(FD_TEXTURE, false, false).on([this] (const Path&) {
-		heightmap_file = storage->dialog_file_complete;
-		set_string("height_image", storage->dialog_file.str());
+	storage->file_dialog(FD_TEXTURE, false, false).on([this] (const auto& p) {
+		heightmap_file = p.complete;
+		set_string("height_image", p.relative.str());
 		heightmap.load(heightmap_file);
 		redraw("preview");
 		enable("ok", true);

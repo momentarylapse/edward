@@ -77,8 +77,8 @@ ModeWorld::~ModeWorld() {
 void ModeWorld::save_as() {
 	for (auto &t: data->terrains)
 		if (t.filename == "") {
-			storage->file_dialog(FD_TERRAIN, true, true).on([this, &t] (const Path& p) {
-				t.save(p);
+			storage->file_dialog(FD_TERRAIN, true, true).on([this, &t] (const auto& p) {
+				t.save(p.complete);
 				save_as();
 			});
 			return;
@@ -138,8 +138,8 @@ void ModeWorld::on_command(const string & id) {
 	if (id == "camscript_create")
 		ed->set_mode(mode_world_camera);
 	if (id == "camscript_load")
-		storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const Path&) {
-			if (mode_world_camera->data->load(storage->dialog_file_complete))
+		storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const auto& p) {
+			if (mode_world_camera->data->load(p.complete))
 				ed->set_mode(mode_world_camera);
 			else
 				mode_world_camera->data->reset();
@@ -153,6 +153,8 @@ void ModeWorld::on_command(const string & id) {
 		set_ego();
 	if (id == "terrain_heightmap")
 		apply_heightmap();
+	if (id == "terrain_rescale")
+	{}
 
 	if (id == "selection_properties")
 		ExecutePropertiesDialog();
@@ -285,8 +287,8 @@ bool WorldTerrain::overlap_rect(MultiView::Window *win, const rect &r) {
 void ModeWorld::save() {
 	for (auto &t: data->terrains) {
 		if (t.filename.is_empty()) {
-			storage->file_dialog(FD_TERRAIN, true, true).on([this, &t] (const Path& p) {
-			if (t.save(p))
+			storage->file_dialog(FD_TERRAIN, true, true).on([this, &t] (const auto& p) {
+			if (t.save(p.complete))
 				save();
 			});
 			return;
@@ -756,8 +758,8 @@ bool ModeWorld::optimize_view() {
 }
 
 void ModeWorld::load_terrain() {
-	storage->file_dialog(FD_TERRAIN, false, true).on([this] (const Path&) {
-		data->add_terrain(storage->dialog_file_no_ending, multi_view->cam.pos);
+	storage->file_dialog(FD_TERRAIN, false, true).on([this] (const auto& p) {
+		data->add_terrain(p.simple, multi_view->cam.pos);
 	});
 }
 
@@ -779,9 +781,9 @@ void ModeWorld::toggle_show_effects() {
 
 
 void ModeWorld::import_world_properties() {
-	storage->file_dialog(FD_WORLD, false, false).on([this] (const Path& p) {
+	storage->file_dialog(FD_WORLD, false, false).on([this] (const auto& p) {
 		DataWorld w;
-		if (storage->load(p, &w, false))
+		if (storage->load(p.complete, &w, false))
 			data->execute(new ActionWorldEditData(w.meta_data));
 		else
 			ed->error_box(_("World could not be loaded correctly!"));
