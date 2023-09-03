@@ -30,8 +30,10 @@ public:
 	virtual void on_enter() {};
 	virtual void on_leave() {};
 
+	// gets called when multiview changes
 	virtual void on_selection_change() {};
 	virtual void on_view_stage_change() {};
+	// gets called when entering
 	virtual void on_set_multi_view() {};
 
 	// events to be handled by derived modes

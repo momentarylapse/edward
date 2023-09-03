@@ -220,15 +220,16 @@ public:
 	void update_mouse();
 
 	void get_hover();
-	enum {
-		SELECT_SET,
-		SELECT_ADD,
-		SELECT_INVERT
+	enum class SelectionMode {
+		SET,
+		ADD,
+		INVERT
 	};
-	void get_selected(int mode = SELECT_SET);
-	void select_all_in_rectangle(int mode = SELECT_SET);
+	void get_selected(SelectionMode mode = SelectionMode::SET);
+	void select_all_in_rectangle(SelectionMode mode = SelectionMode::SET);
 	bool hover_selected();
 	bool has_selectable_data();
+	void selection_changed_manually();
 
 	string get_unit_by_zoom(vec3 &v);
 	string format_length(float l);

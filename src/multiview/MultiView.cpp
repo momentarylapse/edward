@@ -369,12 +369,12 @@ void MultiView::on_key_down(int k) {
 }
 
 
-int get_select_mode() {
+MultiView::SelectionMode get_select_mode() {
 	if (ed->get_key(hui::KEY_CONTROL))
-		return MultiView::SELECT_ADD;
+		return MultiView::SelectionMode::ADD;
 	if (ed->get_key(hui::KEY_SHIFT))
-		return MultiView::SELECT_INVERT;
-	return MultiView::SELECT_SET;
+		return MultiView::SelectionMode::INVERT;
+	return MultiView::SelectionMode::SET;
 }
 
 void MultiView::on_left_button_down() {
@@ -410,7 +410,7 @@ void MultiView::on_left_button_down() {
 			}
 		} else {
 			if (allow_select) {
-				if (hover_selected() and (get_select_mode() == MultiView::SELECT_SET)) {
+				if (hover_selected() and (get_select_mode() == MultiView::SelectionMode::SET)) {
 					action_con->start_action(active_win, hover.point, ActionController::Constraint::FREE);
 				} else {
 					get_selected(get_select_mode());
@@ -1006,18 +1006,18 @@ bool MultiView::has_selectable_data() {
 	return false;
 }
 
-void MultiView::get_selected(int mode) {
+void MultiView::get_selected(SelectionMode mode) {
 	if ((hover.index < 0) or (hover.type < 0)) {
-		if (mode == SELECT_SET)
+		if (mode == SelectionMode::SET)
 			select_none();
 	} else {
 		SingleData* sd = MVGetSingleData(data[hover.set], hover.index);
 		if (sd->is_selected) {
-			if (mode == SELECT_INVERT) {
+			if (mode == SelectionMode::INVERT) {
 				sd->is_selected=false;
 			}
 		} else {
-			if (mode == SELECT_SET) {
+			if (mode == SelectionMode::SET) {
 				select_none();
 				sd->is_selected=true;
 			} else {
@@ -1026,10 +1026,15 @@ void MultiView::get_selected(int mode) {
 		}
 	}
 	action_con->show(need_action_controller());
-	out_selection_changed.notify();
+	out_selection_changed();
 }
 
-void MultiView::select_all_in_rectangle(int mode) {
+void MultiView::selection_changed_manually() {
+	action_con->show(need_action_controller());
+	out_selection_changed();
+}
+
+void MultiView::select_all_in_rectangle(SelectionMode mode) {
 	// reset data
 	select_none();
 
@@ -1047,9 +1052,9 @@ void MultiView::select_all_in_rectangle(int mode) {
 				sd->m_delta = sd->in_rect(active_win, r);
 
 				// add the selection layers
-				if (mode == SELECT_INVERT)
+				if (mode == SelectionMode::INVERT)
 					sd->is_selected = (sd->m_old and !sd->m_delta) or (!sd->m_old and sd->m_delta);
-				else if (mode == SELECT_ADD)
+				else if (mode == SelectionMode::ADD)
 					sd->is_selected = (sd->m_old or sd->m_delta);
 				else
 					sd->is_selected = sd->m_delta;

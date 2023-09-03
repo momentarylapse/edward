@@ -259,6 +259,7 @@ void WorldObjectListPanel::selection_to_world(const Array<int> &sel) {
 		}
 	}
 	allow_sel_change_signal = true;
+	world->multi_view->selection_changed_manually();
 }
 void WorldObjectListPanel::set_editing(int s) {
 	editing = s;

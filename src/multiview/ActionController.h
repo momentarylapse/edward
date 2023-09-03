@@ -12,6 +12,7 @@
 #include "../lib/image/color.h"
 #include "../lib/math/mat4.h"
 #include "../lib/math/vec3.h"
+#include "../lib/pattern/Observable.h"
 
 class ActionMultiView;
 class Geometry;
@@ -42,7 +43,7 @@ struct MouseAction {
 };
 
 
-class ActionController {
+class ActionController : public obs::Node<VirtualBase> {
 public:
 	ActionController(MultiView *multi_view);
 	~ActionController();

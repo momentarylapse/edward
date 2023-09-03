@@ -98,18 +98,24 @@ void ModeWorld::on_command(const string & id) {
 	if (id == "save_as")
 		save_as();
 
-	if (id == "undo")
+	if (id == "undo") {
 		data->undo();
-	if (id == "redo")
+		multi_view->selection_changed_manually();
+	}
+	if (id == "redo") {
 		data->redo();
+		multi_view->selection_changed_manually();
+	}
 
 
 	if (id == "copy")
 		copy();
 	if (id == "paste")
 		paste();
-	if (id == "delete")
+	if (id == "delete") {
 		data->delete_selection();
+		multi_view->selection_changed_manually();
+	}
 
 	if (id == "import_world_properties")
 		import_world_properties();

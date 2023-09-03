@@ -430,7 +430,7 @@ void Edward::set_mode(ModeBase *_m) {
 
 			// nested set calls?
 			mode_queue.erase(0);
-			m = NULL;
+			m = nullptr;
 			if (mode_queue.num > 0)
 				m = mode_queue[0];
 		}
