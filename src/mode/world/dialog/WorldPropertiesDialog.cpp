@@ -238,7 +238,6 @@ void WorldPropertiesDialog::on_edit_script() {
 void WorldPropertiesDialog::on_create_script() {
 	storage->file_dialog(FD_SCRIPT, true, true).on([this] (const auto& p) {
 		string source = R""""(use y
-use y.ui
 
 class X extends Controller
 	let PARAMETERS = ""

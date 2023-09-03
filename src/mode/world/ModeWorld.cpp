@@ -292,6 +292,9 @@ void ModeWorld::save() {
 				save();
 			});
 			return;
+		} else if (t.Changed) {
+			if (!t.save(storage->root_dir_kind[FD_TERRAIN] | t.filename.with(".map")))
+				return;
 		}
 	}
 	storage->auto_save(data);

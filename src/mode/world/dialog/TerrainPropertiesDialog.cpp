@@ -54,6 +54,8 @@ TerrainPropertiesDialog::~TerrainPropertiesDialog() {
 }
 
 void TerrainPropertiesDialog::apply_data() {
+	temp.pattern.x = get_float("pattern_x");
+	temp.pattern.z = get_float("pattern_z");
 	data->execute(new ActionWorldEditTerrain(index, temp));
 }
 
