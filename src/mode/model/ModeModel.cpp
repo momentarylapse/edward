@@ -26,7 +26,7 @@
 #include "../../multiview/DrawingHelper.h"
 
 ModeModel::ModeModel(MultiView::MultiView *mv3, MultiView::MultiView *mv2) :
-	Mode<DataModel>("Model", NULL, new DataModel, NULL, "")
+	Mode<DataModel>("Model", nullptr, new DataModel, mv3, "")
 {
 	mode_model_mesh = new ModeModelMesh(this, mv3, mv2);
 	mode_model_skeleton = new ModeModelSkeleton(this, mv3);
@@ -80,10 +80,14 @@ void ModeModel::on_command(const string & id) {
 	if (id == "export_to_json")
 		export_save_json();
 
-	if (id == "undo")
+	if (id == "undo") {
 		data->undo();
-	if (id == "redo")
+		multi_view->selection_changed_manually();
+	}
+	if (id == "redo") {
 		data->redo();
+		multi_view->selection_changed_manually();
+	}
 
 	if (id == "mode_model_mesh")
 		ed->set_mode(mode_model_mesh);

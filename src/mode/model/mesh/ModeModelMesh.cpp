@@ -133,8 +133,10 @@ void selection_grow_smooth_group(DataModel *data) {
 }
 
 void ModeModelMesh::on_command(const string &id) {
-	if (id == "delete")
+	if (id == "delete") {
 		data->delete_selection(data->edit_mesh->get_selection(), selection_mode == selection_mode_vertex);
+		multi_view->selection_changed_manually();
+	}
 	if (id == "copy")
 		copy();
 	if (id == "paste")
