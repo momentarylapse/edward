@@ -66,7 +66,7 @@ template<class T>
 struct promise : public Sharable<base::Empty> {
 	typename xcallback<T>::t cb_success;
 	Callback cb_fail;
-	PromiseState state;
+	PromiseState state = PromiseState::UNFINISHED;
 	mutable T result;
 
 	promise() {};
@@ -81,6 +81,11 @@ struct promise : public Sharable<base::Empty> {
 		state = PromiseState::FAILED;
 		if (cb_fail)
 			cb_fail();
+	}
+	void reset() {
+		state = PromiseState::UNFINISHED;
+		cb_success = nullptr;
+		cb_fail = nullptr;
 	}
 	future<T> get_future() {
 		return future<T>(*this);
@@ -124,7 +129,7 @@ template<>
 struct promise<void> : public Sharable<base::Empty> {
 	Callback cb_success;
 	Callback cb_fail;
-	PromiseState state;
+	PromiseState state = PromiseState::UNFINISHED;
 
 	void operator() () {
 		state = PromiseState::SUCCEEDED;
@@ -135,6 +140,11 @@ struct promise<void> : public Sharable<base::Empty> {
 		state = PromiseState::FAILED;
 		if (cb_fail)
 			cb_fail();
+	}
+	void reset() {
+		state = PromiseState::UNFINISHED;
+		cb_success = nullptr;
+		cb_fail = nullptr;
 	}
 	future<void> get_future() {
 		return future<void>(*this);

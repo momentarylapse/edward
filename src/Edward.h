@@ -15,10 +15,10 @@
 #include "stuff/Progress.h"
 #include "stuff/PluginManager.h"
 
-namespace nix{
+namespace nix {
 	class Texture;
 };
-namespace MultiView{
+namespace MultiView {
 	class MultiView;
 };
 
@@ -102,7 +102,7 @@ public:
 
 	void on_execute_plugin();
 
-	void allow_termination(hui::Callback on_success, hui::Callback on_fail = nullptr);
+	hui::future<void> allow_termination();
 
 	void update_menu();
 	void optimize_current_view();

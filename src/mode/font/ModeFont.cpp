@@ -123,7 +123,7 @@ void ModeFont::open() {
 
 
 void ModeFont::_new() {
-	ed->allow_termination([this] {
+	ed->allow_termination().on([this] {
 		data->reset();
 		optimize_view();
 	});

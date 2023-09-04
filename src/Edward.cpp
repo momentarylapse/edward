@@ -47,7 +47,7 @@ namespace hui {
 
 
 void Edward::on_close() {
-	allow_termination([this] {
+	allow_termination().on([this] {
 		//request_destroy();
 		hui::run_later(0.01f, [this] {
 			delete this;
@@ -375,18 +375,20 @@ void Edward::optimize_current_view() {
 
 // do we change roots?
 //  -> data loss?
-void mode_switch_allowed(ModeBase *m, hui::Callback on_success) {
+hui::future<void> mode_switch_allowed(ModeBase *m) {
 	if (m->equal_roots(ed->cur_mode)) {
-		on_success();
+		static hui::promise<void> promise;
+		promise();
+		return promise.get_future();
 	} else {
-		ed->allow_termination(on_success);
+		return ed->allow_termination();
 	}
 }
 
 void Edward::set_mode(ModeBase *_m) {
 	if (cur_mode == _m)
 		return;
-	mode_switch_allowed(_m, [this, _m] {
+	mode_switch_allowed(_m).on([this, _m] {
 		auto m = _m;
 
 		// recursive use...
@@ -561,7 +563,7 @@ ModeBase *Edward::get_mode(int preferred_type) {
 }
 
 void Edward::universal_new(int preferred_type) {
-	allow_termination([this, preferred_type] {
+	allow_termination().on([this, preferred_type] {
 		/*auto m = get_mode(preferred_type);
 		m->_new();
 		set_mode(m);
@@ -618,7 +620,7 @@ Path make_absolute_path(int type, const Path &filename, bool relative_path) {
 }
 
 void Edward::universal_edit(int type, const Path &_filename, bool relative_path) {
-	allow_termination([this, type, _filename, relative_path] {
+	allow_termination().on([this, type, _filename, relative_path] {
 		msg_write("EDIT");
 		msg_write(_filename.str());
 		Path filename = make_absolute_path(type, add_extension_if_needed(type, _filename), relative_path);
@@ -715,29 +717,35 @@ void Edward::update_menu() {
 	}
 }
 
-void Edward::allow_termination(hui::Callback on_success, hui::Callback on_fail) {
+hui::future<void> Edward::allow_termination() {
+	static hui::promise<void> promise;
+	promise.reset();
+
 	if (!cur_mode) {
-		on_success();
-		return;
+		promise();
+		return promise.get_future();
 	}
 	Data *d = cur_mode->get_data();
 	if (!d) {
-		on_success();
-		return;
+		promise();
+		return promise.get_future();
 	}
 	if (d->action_manager->is_save()) {
-		on_success();
-		return;
+		promise();
+		return promise.get_future();
 	}
-	hui::question_box(this,_("Quite a polite question"),_("You increased entropy. Do you wish to save your work?"), true).on([on_success, on_fail] (bool answer) {
+	hui::question_box(this,_("Quite a polite question"),_("You increased entropy. Do you wish to save your work?"), true).on([] (bool answer) {
 		if (!answer) {
-			on_success();
+			promise();
 		} else {
 			//bool saved = cur_mode->save();
 			//return saved;
-			on_fail();
+			promise.fail();
 		}
-	}).on_fail(on_fail);
+	}).on_fail([] {
+		promise.fail();
+	});
+	return promise.get_future();
 }
 
 string Edward::get_tex_image(nix::Texture *tex) {

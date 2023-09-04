@@ -241,13 +241,13 @@ void ModeWorldCamera::on_draw_win(MultiView::Window *win)
 }
 
 void ModeWorldCamera::_new() {
-	ed->allow_termination([this] {
+	ed->allow_termination().on([this] {
 		data->reset();
 	});
 }
 
 void ModeWorldCamera::open() {
-	ed->allow_termination([this] {
+	ed->allow_termination().on([this] {
 		storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const auto& p) {
 			data->load(p.complete);
 		});

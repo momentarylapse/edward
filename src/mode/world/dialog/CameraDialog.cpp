@@ -58,7 +58,7 @@ CameraDialog::~CameraDialog() {
 
 
 void CameraDialog::OnCloseDialog() {
-	ed->allow_termination([this] {
+	ed->allow_termination().on([this] {
 		mode->_new();
 		ed->set_mode(mode->parent);
 	});

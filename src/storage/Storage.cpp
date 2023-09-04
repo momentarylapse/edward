@@ -125,8 +125,9 @@ bool Storage::save(const Path &_filename, Data *data) {
 // canonical
 hui::future<void> Storage::open(Data *data) {
 	static hui::promise<void> promise;
+	promise.reset();
 
-	ed->allow_termination([this, data] {
+	ed->allow_termination().on([this, data] {
 		int type = data_type(data);
 		file_dialog(type, false, false).on([this, data] (const auto& p) {
 			guess_root_directory(p.complete);
@@ -140,6 +141,8 @@ hui::future<void> Storage::open(Data *data) {
 		}).on_fail([] {
 			promise.fail();
 		});
+	}).on_fail([] {
+		promise.fail();
 	});
 
 	return promise.get_future();
@@ -148,6 +151,8 @@ hui::future<void> Storage::open(Data *data) {
 // canonical
 hui::future<void> Storage::save_as(Data *data) {
 	static hui::promise<void> promise;
+	promise.reset();
+
 	int type = data_type(data);
 	file_dialog(type, true, false).on([this, data] (const auto& p) {
 		guess_root_directory(p.complete);
@@ -169,6 +174,7 @@ hui::future<void> Storage::save_as(Data *data) {
 hui::future<void> Storage::auto_save(Data *data) {
 	if (data->filename) {
 		static hui::promise<void> promise;
+		promise.reset();
 		if (save(data->filename, data))
 			promise();
 		else
@@ -281,6 +287,7 @@ string fd_name(int kind) {
 hui::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir) {
 	int done;
 	static hui::promise<ComplexPath> promise;
+	promise.reset();
 
 	string title, show_filter, filter;
 	auto add_kind = [&] (const string &t, const string &sf, const string &f) {
