@@ -26,7 +26,7 @@
 #include "../../multiview/DrawingHelper.h"
 
 ModeModel::ModeModel(MultiView::MultiView *mv3, MultiView::MultiView *mv2) :
-	Mode<DataModel>("Model", nullptr, new DataModel, mv3, "")
+	Mode<DataModel>("Model", nullptr, new DataModel, nullptr, "")
 {
 	mode_model_mesh = new ModeModelMesh(this, mv3, mv2);
 	mode_model_skeleton = new ModeModelSkeleton(this, mv3);
@@ -82,11 +82,11 @@ void ModeModel::on_command(const string & id) {
 
 	if (id == "undo") {
 		data->undo();
-		multi_view->selection_changed_manually();
+		mode_model_mesh->multi_view->selection_changed_manually();
 	}
 	if (id == "redo") {
 		data->redo();
-		multi_view->selection_changed_manually();
+		mode_model_mesh->multi_view->selection_changed_manually();
 	}
 
 	if (id == "mode_model_mesh")

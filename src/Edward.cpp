@@ -259,7 +259,9 @@ Edward::Edward() :
 		cur_mode->on_view_stage_change();
 		update_menu();
 	});
-	multi_view_2d->out_redraw >> create_sink([this] { redraw("nix-area"); });
+	multi_view_2d->out_redraw >> create_sink([this] {
+		redraw("nix-area");
+	});
 
 
 	event("hui:close", [this] { on_close(); });
@@ -273,8 +275,13 @@ Edward::Edward() :
 	set_key_code("abort_creation_mode", hui::KEY_ESCAPE, "hui:cancel");
 
 
-	hui::run_later(0.010f, [this] { cur_mode->multi_view->force_redraw(); });
-	hui::run_later(0.100f, [this] { optimize_current_view(); });
+	hui::run_later(0.010f, [this] {
+		if (cur_mode->multi_view)
+			cur_mode->multi_view->force_redraw();
+	});
+	hui::run_later(0.100f, [this] {
+		optimize_current_view();
+	});
 }
 
 Edward::~Edward() {
@@ -378,6 +385,7 @@ void Edward::optimize_current_view() {
 base::future<void> mode_switch_allowed(ModeBase *m) {
 	if (m->equal_roots(ed->cur_mode)) {
 		base::promise<void> promise;
+		promise();
 		return promise.get_future();
 	} else {
 		return ed->allow_termination();
@@ -447,7 +455,8 @@ void Edward::set_mode(ModeBase *_m) {
 			am->out_saved >> in_saved;
 		}
 
-		cur_mode->multi_view->force_redraw();
+		if (cur_mode->multi_view)
+			cur_mode->multi_view->force_redraw();
 	});
 }
 
