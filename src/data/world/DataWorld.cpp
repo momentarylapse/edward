@@ -100,29 +100,26 @@ void DataWorld::reset() {
 void DataWorld::get_bounding_box(vec3 &min, vec3 &max) {
 	bool found_any = false;
 
+	auto merge = [&] (const vec3& _min, const vec3& _max) {
+		if (!found_any) {
+			min = _min;
+			max = _max;
+		}
+		min._min(_min);
+		max._max(_max);
+		found_any = true; //|=(_min!=_max);
+	};
+
 	for (WorldObject &o: objects)
 		if (o.object) {
 			vec3 min2 = o.pos - vec3(1,1,1) * o.object->prop.radius;
 			vec3 max2 = o.pos + vec3(1,1,1) * o.object->prop.radius;
-			if (!found_any) {
-				min = min2;
-				max = max2;
-			}
-			min._min(min2);
-			max._max(max2);
-			found_any = true; //|=(min2!=max2);
+			merge(min2, max2);
 		}
 	for (WorldTerrain &t: terrains)
 		if (t.terrain) {
-			vec3 min2 = t.terrain->min;
-			vec3 max2 = t.terrain->max;
-			if (!found_any) {
-				min = min2;
-				max = max2;
-			}
-			min._min(min2);
-			max._max(max2);
-			found_any = true;
+			auto box = t.bounding_box();
+			merge(box.min, box.max);
 		}
 	if (!found_any) {
 		min = vec3(-100,-100,-100);

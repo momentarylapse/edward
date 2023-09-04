@@ -69,9 +69,9 @@ void *ActionWorldAddTerrain::execute(Data *d) {
 				t.terrain->chunk_lod[x][z] = -1;
 		t.terrain->vertex_buffer = new nix::VertexBuffer("3f,3f,2f");
 		t.terrain->update(-1, -1, -1, -1, TerrainUpdateAll);
-		// bounding box
-		t.terrain->min = pos;
-		t.terrain->max = pos + size;
+		// (relative) bounding box
+		t.terrain->min = vec3(0,0,0);
+		t.terrain->max = size;
 		t.terrain->force_redraw = true;
 	} else {
 		t.terrain = new Terrain(filename);

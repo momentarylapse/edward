@@ -58,7 +58,7 @@ void *ActionWorldMoveSelection::execute(Data *d) {
 			w->objects[i].pos = mat * old_data[ii];
 		} else if (type[ii] == MVD_WORLD_TERRAIN) {
 			w->terrains[i].pos = mat * old_data[ii];
-			w->terrains[i].terrain->update(-1, -1, -1, -1, TerrainUpdateVertices);
+			//w->terrains[i].terrain->update(-1, -1, -1, -1, TerrainUpdateVertices);
 		} else if (type[ii] == MVD_WORLD_LIGHT) {
 			w->lights[i].pos = mat * old_data[ii];
 		} else if (type[ii] == MVD_WORLD_CAMERA) {

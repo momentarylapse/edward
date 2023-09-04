@@ -256,6 +256,13 @@ bool WorldObject::overlap_rect(MultiView::Window *win, const rect &r) {
 	return in_rect(win, r);
 }
 
+Box WorldTerrain::bounding_box() const {
+	Box b;
+	b.min = pos + terrain->min;
+	b.max = pos + terrain->max;
+	return b;
+}
+
 float WorldTerrain::hover_distance(MultiView::Window *win, const vec2 &mv, vec3 &tp, float &z) {
 	//msg_db_f(format("IMOT index= %d",index).c_str(),3);
 	Terrain *t = terrain;
@@ -271,11 +278,18 @@ float WorldTerrain::hover_distance(MultiView::Window *win, const vec2 &mv, vec3 
 	return hit ? 0 : -1;
 }
 
+vec3 box_corner(const Box& box, int i) {
+	return vec3((i%2)==0 ? box.min.x:box.max.x,
+			((i/2)%2)==0 ? box.min.y:box.max.y,
+					((i/4)%2)==0 ? box.min.z:box.max.z);
+}
+
 bool WorldTerrain::in_rect(MultiView::Window *win, const rect &r) {
 	Terrain *t = terrain;
 	vec3 min,max;
+	auto box = bounding_box();
 	for (int i=0;i<8;i++) {
-		vec3 v = pos+vec3((i%2)==0?t->min.x:t->max.x,((i/2)%2)==0?t->min.y:t->max.y,((i/4)%2)==0?t->min.z:t->max.z);
+		vec3 v = box_corner(box, i);
 		vec3 p = win->project(v);
 		if (i==0)
 			min=max=p;

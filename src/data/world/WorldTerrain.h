@@ -21,6 +21,10 @@ public:
 	vector Normal;
 };*/
 
+struct Box {
+	vec3 min, max;
+};
+
 class WorldTerrain: public MultiView::SingleData {
 public:
 	Path filename;
@@ -38,6 +42,8 @@ public:
 	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
+
+	Box bounding_box() const;
 
 	void update_data();
 };
