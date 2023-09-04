@@ -102,7 +102,7 @@ public:
 
 	void on_execute_plugin();
 
-	hui::future<void> allow_termination();
+	base::future<void> allow_termination();
 
 	void update_menu();
 	void optimize_current_view();

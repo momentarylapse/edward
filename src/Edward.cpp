@@ -375,9 +375,9 @@ void Edward::optimize_current_view() {
 
 // do we change roots?
 //  -> data loss?
-hui::future<void> mode_switch_allowed(ModeBase *m) {
+base::future<void> mode_switch_allowed(ModeBase *m) {
 	if (m->equal_roots(ed->cur_mode)) {
-		hui::promise<void> promise;
+		base::promise<void> promise;
 		return promise.get_future();
 	} else {
 		return ed->allow_termination();
@@ -716,8 +716,8 @@ void Edward::update_menu() {
 	}
 }
 
-hui::future<void> Edward::allow_termination() {
-	hui::promise<void> promise;
+base::future<void> Edward::allow_termination() {
+	base::promise<void> promise;
 
 	if (!cur_mode) {
 		promise();

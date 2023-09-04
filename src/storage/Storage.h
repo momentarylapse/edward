@@ -10,7 +10,7 @@
 
 #include "format/Format.h"
 #include "../lib/os/path.h"
-#include "../lib/hui/Callback.h"
+#include "../lib/base/future.h"
 
 struct ComplexPath {
 	Path complete;
@@ -29,9 +29,9 @@ public:
 	bool load(const Path &filename, Data *data, bool deep = true);
 	bool save(const Path &filename, Data *data);
 
-	hui::future<void> auto_save(Data *data);
-	hui::future<void> open(Data *data);
-	hui::future<void> save_as(Data *data);
+	base::future<void> auto_save(Data *data);
+	base::future<void> open(Data *data);
+	base::future<void> save_as(Data *data);
 
 	Array<Format*> formats;
 
@@ -45,8 +45,8 @@ public:
 	Path get_root_dir(int kind);
 	string fd_ext(int kind);
 
-	hui::future<ComplexPath> file_dialog(int kind, bool save, bool force_in_root_dir);
-	hui::future<ComplexPath> file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir);
+	base::future<ComplexPath> file_dialog(int kind, bool save, bool force_in_root_dir);
+	base::future<ComplexPath> file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir);
 
 	Path root_dir;
 
