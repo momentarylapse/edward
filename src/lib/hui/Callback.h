@@ -61,17 +61,17 @@ enum class PromiseState {
 	FAILED
 };
 
-// internal
+// internal/shared data structure
 template<class T>
-struct promise : public Sharable<base::Empty> {
+struct _promise_core_ : public Sharable<base::Empty> {
 	typename xcallback<T>::t cb_success;
 	Callback cb_fail;
 	PromiseState state = PromiseState::UNFINISHED;
 	mutable T result;
 
-	promise() {};
+	_promise_core_() {};
 
-	void operator() (typename xparam<T>::t t) {
+	void success(typename xparam<T>::t t) {
 		state = PromiseState::SUCCEEDED;
 		result = t;
 		if (cb_success)
@@ -87,8 +87,30 @@ struct promise : public Sharable<base::Empty> {
 		cb_success = nullptr;
 		cb_fail = nullptr;
 	}
+};
+
+// used inside async function
+// capture in lambdas as copy!
+template<class T>
+struct promise {
+	using CoreType = _promise_core_<T>;
+	shared<CoreType> core;
+
+	promise() {
+		core = new CoreType;
+	};
+
+	void operator() (typename xparam<T>::t t) {
+		core->success(t);
+	}
+	void fail() {
+		core->fail();
+	}
+	void reset() {
+		core->reset();
+	}
 	future<T> get_future() {
-		return future<T>(*this);
+		return future<T>(core);
 	}
 };
 
@@ -98,27 +120,27 @@ template<class T>
 struct future {
 	using P = promise<T>;
 
-	P& _promise;
+	shared<typename P::CoreType> core;
 
-	future(P& p) : _promise(p) {
+	future(shared<typename P::CoreType> c) : core(c) {
 	}
-	future(future<T>& f) : _promise(f._promise) {
+	future(const future<T>& f) : core(f.core) {
 	}
 
 	future<T>& on(typename xcallback<T>::t cb) {
-		_promise.cb_success = cb;
-		if (_promise.state == PromiseState::SUCCEEDED) {
+		core->cb_success = cb;
+		if (core->state == PromiseState::SUCCEEDED) {
 			if constexpr (std::is_same<T, void>::value)
 				cb();
 			else
-				cb(_promise.result);
+				cb(core->result);
 		}
 		return *this;
 	}
 
 	future<T>& on_fail(Callback cb) {
-		_promise.cb_fail = cb;
-		if (_promise.state == PromiseState::FAILED)
+		core->cb_fail = cb;
+		if (core->state == PromiseState::FAILED)
 			cb();
 		return *this;
 	}
@@ -126,12 +148,12 @@ struct future {
 
 
 template<>
-struct promise<void> : public Sharable<base::Empty> {
+struct _promise_core_<void> : public Sharable<base::Empty> {
 	Callback cb_success;
 	Callback cb_fail;
 	PromiseState state = PromiseState::UNFINISHED;
 
-	void operator() () {
+	void success() {
 		state = PromiseState::SUCCEEDED;
 		if (cb_success)
 			cb_success();
@@ -146,8 +168,29 @@ struct promise<void> : public Sharable<base::Empty> {
 		cb_success = nullptr;
 		cb_fail = nullptr;
 	}
+};
+
+
+template<>
+struct promise<void> {
+	using CoreType = _promise_core_<void>;
+	shared<CoreType> core;
+
+	promise() {
+		core = new CoreType;
+	};
+
+	void operator() () {
+		core->success();
+	}
+	void fail() {
+		core->fail();
+	}
+	void reset() {
+		core->reset();
+	}
 	future<void> get_future() {
-		return future<void>(*this);
+		return future<void>(core);
 	}
 };
 

@@ -286,8 +286,9 @@ string fd_name(int kind) {
 
 hui::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir) {
 	int done;
-	static hui::promise<ComplexPath> promise;
-	promise.reset();
+	//static hui::promise<ComplexPath> promise;
+	//promise.reset();
+	hui::promise<ComplexPath> promise;
 
 	string title, show_filter, filter;
 	auto add_kind = [&] (const string &t, const string &sf, const string &f) {
@@ -313,7 +314,7 @@ hui::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int pref
 	}
 
 
-	auto on_select_base = [this, kind, force_in_root_dir] (const Path &path) {
+	auto on_select_base = [this, kind, force_in_root_dir, promise] (const Path &path) mutable {
 		ComplexPath cp;
 		cp.kind = FD_FILE;
 		for (auto k: kind) {
@@ -341,15 +342,14 @@ hui::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int pref
 		promise(cp);
 	};
 
-
 	if (save)
 		hui::file_dialog_save(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
 			.on(on_select_base)
-			.on_fail([] { promise.fail(); });
+			.on_fail([promise] () mutable { promise.fail(); });
 	else
 		hui::file_dialog_open(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
 			.on(on_select_base)
-			.on_fail([] { promise.fail(); });
+			.on_fail([promise] () mutable { promise.fail(); });
 
 	return promise.get_future();
 }

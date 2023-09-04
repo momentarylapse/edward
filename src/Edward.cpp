@@ -377,8 +377,7 @@ void Edward::optimize_current_view() {
 //  -> data loss?
 hui::future<void> mode_switch_allowed(ModeBase *m) {
 	if (m->equal_roots(ed->cur_mode)) {
-		static hui::promise<void> promise;
-		promise();
+		hui::promise<void> promise;
 		return promise.get_future();
 	} else {
 		return ed->allow_termination();
@@ -718,8 +717,7 @@ void Edward::update_menu() {
 }
 
 hui::future<void> Edward::allow_termination() {
-	static hui::promise<void> promise;
-	promise.reset();
+	hui::promise<void> promise;
 
 	if (!cur_mode) {
 		promise();
@@ -734,17 +732,18 @@ hui::future<void> Edward::allow_termination() {
 		promise();
 		return promise.get_future();
 	}
-	hui::question_box(this,_("Quite a polite question"),_("You increased entropy. Do you wish to save your work?"), true).on([] (bool answer) {
-		if (!answer) {
-			promise();
-		} else {
-			//bool saved = cur_mode->save();
-			//return saved;
+	hui::question_box(this,_("Quite a polite question"),_("You increased entropy. Do you wish to save your work?"), true)
+		.on([promise] (bool answer) mutable {
+			if (!answer) {
+				promise();
+			} else {
+				//bool saved = cur_mode->save();
+				//return saved;
+				promise.fail();
+			}
+		}).on_fail([promise] () mutable {
 			promise.fail();
-		}
-	}).on_fail([] {
-		promise.fail();
-	});
+		});
 	return promise.get_future();
 }
 
