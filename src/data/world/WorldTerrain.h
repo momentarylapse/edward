@@ -51,7 +51,7 @@ public:
 class WorldEditingTerrain {
 public:
 	Path filename;
-	int num_x, num_z;
+	//int num_x, num_z; // FIXME
 	vec3 pattern;
 	Path material_file;
 	int num_textures;

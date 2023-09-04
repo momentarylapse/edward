@@ -49,7 +49,7 @@ ModelPropertiesDialog::ModelPropertiesDialog(hui::Window *_parent, DataModel *_d
 ModelPropertiesDialog::~ModelPropertiesDialog() {
 }
 
-shared<const kaba::Class> get_class(shared<kaba::Module> s, const string &parent) {
+shared<const kaba::Class> get_class_by_base(shared<kaba::Module> s, const string &parent) {
 	for (auto t: s->tree->base_class->classes)
 		if (t->is_derived_from_s(parent))
 			return t;
@@ -75,7 +75,7 @@ void update_model_script_data(DataModel::MetaData &m) {
 		auto c = ownify(kaba::Context::create());
 		auto ss = c->load_module(storage->root_dir_kind[FD_SCRIPT] | m.script_file, true);
 
-		auto t = get_class(ss, "*.Model");
+		auto t = get_class_by_base(ss, "*.Model");
 		m._script_class = t->cname(t->owner->base_class);
 
 		Array<string> wanted;

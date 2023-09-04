@@ -34,7 +34,7 @@ const bool LIST_SHOW_SCRIPTS = false;
 const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
 
 
-void update_script_data(ScriptInstanceData &s, const string &class_base_name);
+void update_script_data(ScriptInstanceData &s, const string &class_base_name, bool guess_class);
 
 
 WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
@@ -119,7 +119,7 @@ void WorldObjectListPanel::on_component_edit_variables() {
 		return;
 
 	auto com = &o.components[row];
-	update_script_data(*com, "Component");
+	update_script_data(*com, "Component", false);
 	auto dlg = new ScriptVarsDialog(win, com);
 	hui::fly(dlg, [com] {
 		for (auto v: com->variables)

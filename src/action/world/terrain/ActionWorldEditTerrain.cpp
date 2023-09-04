@@ -32,10 +32,6 @@ void *ActionWorldEditTerrain::execute(Data *d) {
 	Terrain *t = w->terrains[index].terrain;
 
 	// swap
-	if (false) {
-		std::swap(data.num_x, t->num_x);
-		std::swap(data.num_z, t->num_z);
-	}
 	std::swap(data.pattern, t->pattern);
 	std::swap(data.material_file, t->material_file);
 	int num_tex_prev = t->material->textures.num;
@@ -50,6 +46,8 @@ void *ActionWorldEditTerrain::execute(Data *d) {
 			msg_error(e.message());
 		}
 	}
+	t->max.x = t->pattern.x * t->num_x; // FIXME resize...
+	t->max.z = t->pattern.z * t->num_z;
 
 	// update
 	/*if (old_data.NumTextures != data.NumTextures){

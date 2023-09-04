@@ -171,15 +171,31 @@ void WorldPropertiesDialog::on_script_remove() {
 	}
 }
 
-shared<const kaba::Class> get_class(shared<kaba::Module> s, const string &parent);
+shared<const kaba::Class> get_class_by_base(shared<kaba::Module> s, const string &parent);
 
-void update_script_data(ScriptInstanceData &s, const string &class_base_name) {
-	s.class_name = "";
+
+
+shared<const kaba::Class> get_class(shared<kaba::Module> s, const string &name) {
+	for (auto t: s->tree->base_class->classes)
+		if (t->name == name)
+			return t;
+	throw Exception(format(_("script does not contain a class named'%s'"), name));
+	return nullptr;
+}
+
+void update_script_data(ScriptInstanceData &s, const string &class_base_name, bool guess_class) {
 	try {
 		auto context = ownify(kaba::Context::create());
 		auto ss = context->load_module(s.filename, true);
 
-		auto t = get_class(ss, "*." + class_base_name);
+		shared<const kaba::Class> t;
+		if (guess_class) {
+			s.class_name = "";
+			t = get_class_by_base(ss, "*." + class_base_name);
+			s.class_name = t->cname(t->owner->base_class);
+		} else {
+			t = get_class(ss, s.class_name);
+		}
 
 		Array<string> wanted;
 		auto tt = t;
@@ -192,7 +208,6 @@ void update_script_data(ScriptInstanceData &s, const string &class_base_name) {
 			tt = tt->parent;
 		}
 
-		s.class_name = t->cname(t->owner->base_class);
 		for (auto &e: t->elements) {
 			string nn = e.name.replace("_", "").lower();
 			if (!sa_contains(wanted, nn))
@@ -221,7 +236,7 @@ void update_script_data(ScriptInstanceData &s, const string &class_base_name) {
 void WorldPropertiesDialog::on_edit_script_vars() {
 	int n = get_int("script_list");
 	if (n >= 0) {
-		update_script_data(temp.scripts[n], "Controller");
+		update_script_data(temp.scripts[n], "Controller", true);
 		hui::fly(new ScriptVarsDialog(this, &temp.scripts[n]));
 	}
 }

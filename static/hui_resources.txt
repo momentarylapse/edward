@@ -7580,7 +7580,7 @@ image=hui:ok
 # Resource
 Dialog
 terrain_dialog
-width=435,height=275,resizable,headerbar,closebutton=no
+width=500,height=450,resizable,headerbar,closebutton=no
 0
 0
 1

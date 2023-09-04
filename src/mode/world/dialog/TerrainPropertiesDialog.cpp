@@ -101,9 +101,13 @@ void TerrainPropertiesDialog::load_data() {
 	enable("material", false);//(temp.MaterialFile != ""));
 	fill_texture_list();
 
+	Terrain *t = data->terrains[index].terrain;
+
 	set_string("filename", temp.filename.str());
-	set_int("num_x", temp.num_x);
-	set_int("num_z", temp.num_z);
+	set_int("num_x",  t->num_x);
+	set_int("num_z", t->num_z);
+	enable("num_x", false);
+	enable("num_z", false);
 	set_float("pattern_x", temp.pattern.x);
 	set_float("pattern_z", temp.pattern.z);
 }
@@ -217,8 +221,6 @@ void TerrainPropertiesDialog::update_data() {
 	Terrain *t = data->terrains[index].terrain;
 	assert(t);
 	temp.filename = data->terrains[index].filename;
-	temp.num_x = t->num_x;
-	temp.num_z = t->num_z;
 	temp.pattern = t->pattern;
 	temp.num_textures = t->material->textures.num;
 	for (int i=0; i<temp.num_textures; i++) {

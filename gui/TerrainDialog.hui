@@ -1,4 +1,4 @@
-Dialog terrain_dialog "Terrain properties" width=435 height=275 resizable headerbar closebutton=no
+Dialog terrain_dialog "Terrain properties" width=500 height=450 resizable headerbar closebutton=no
 	Grid ? ""
 		TabControl terrain_dialog_tab_control "properties\\textures\\material\\import"
 			Grid ? ""

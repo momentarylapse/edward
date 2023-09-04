@@ -286,6 +286,14 @@ Edward::Edward() :
 
 Edward::~Edward() {
 	// auto unsubscribe()...
+	set_mode(mode_none);
+
+	delete mode_world;
+	/*delete mode_material;
+	delete mode_model;
+	delete mode_font;
+	delete mode_admin;*/
+
 	delete plugins;
 	delete multi_view_2d;
 	delete multi_view_3d;
