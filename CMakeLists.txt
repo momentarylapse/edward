@@ -5,7 +5,7 @@ project(edward)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_BUILD_TYPE Debug)
-set(SOURCE 
+set(SOURCE
 	src/action/font/ActionFontEditGlobal.cpp
 	src/action/font/ActionFontEditGlyph.cpp
 	src/action/material/ActionMaterialEditAppearance.cpp
@@ -473,9 +473,12 @@ set(SOURCE
 	src/meta.cpp
 )
 
+add_executable(edward ${SOURCE})
+
 find_package(PkgConfig REQUIRED)
 
-# gtk3 or gtk4 mandatory
+
+# lib: gtk3 or gtk4 (mandatory)
 set(GTK3_OR_GTK4 "gtk3" CACHE STRING "Use gtk3 or gtk4?")
 pkg_check_modules(GTK3 gtk+-3.0)
 if(GTK3_FOUND)
@@ -510,7 +513,7 @@ if(GTK3_OR_GTK4 STREQUAL "gtk4")
 	add_compile_definitions(HAS_LIB_GTK4=1)
 endif()
 
-# zlib mandatory
+# lib: zlib mandatory
 pkg_check_modules(ZLIB REQUIRED zlib)
 include_directories(${ZLIB_INCLUDE_DIRS})
 link_directories(${ZLIB_LIBRARY_DIRS})
@@ -518,7 +521,7 @@ list(APPEND DEPS ${ZLIB_LIBRARIES})
 add_definitions(${ZLIB_CFLAGS_OTHER})
 add_compile_definitions(HAS_LIB_ZLIB=1)
 
-# gl mandatory
+# lib: gl mandatory
 pkg_check_modules(GL REQUIRED gl)
 include_directories(${GL_INCLUDE_DIRS})
 link_directories(${GL_LIBRARY_DIRS})
@@ -526,7 +529,7 @@ list(APPEND DEPS ${GL_LIBRARIES})
 add_definitions(${GL_CFLAGS_OTHER})
 add_compile_definitions(HAS_LIB_GL=1)
 
-# unwind (optional)
+# lib: unwind (optional)
 pkg_check_modules(LIBUNWIND libunwind)
 if(LIBUNWIND_FOUND)
 	include_directories(${LIBUNWIND_INCLUDE_DIRS})
@@ -538,11 +541,11 @@ else()
 	add_compile_definitions(HAS_LIB_UNWIND=0)
 endif()
 
-# dl...
+# lib: dl...
 list(APPEND DEPS ${CMAKE_DL_LIBS})
 add_compile_definitions(HAS_LIB_DL=1)
 
-# xlib (optional)
+# lib: xlib (optional)
 pkg_check_modules(X11 x11)
 if(X11_FOUND)
 	include_directories(${X11_INCLUDE_DIRS})
@@ -553,8 +556,6 @@ if(X11_FOUND)
 else()
 	add_compile_definitions(HAS_LIB_XLIB=0)
 endif()
-
-add_executable(edward ${SOURCE})
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -573,15 +574,12 @@ install(FILES "static/license.txt" DESTINATION share/edward)
 install(FILES "static/license_small.txt" DESTINATION share/edward)
 install(DIRECTORY "plugins" DESTINATION share/edward)
 
+# install .desktop file
 set(INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 configure_file("static/michisoft-edward.desktop" /tmp/michisoft-edward.desktop NO_SOURCE_PERMISSIONS)
+install(FILES /tmp/michisoft-edward.desktop DESTINATION share/applications)
 
-find_program(XDG_DESKTOP_MENU_EXECUTABLE xdg-desktop-menu)
-if(NOT XDG_DESKTOP_MENU_EXECUTABLE STREQUAL "XDG_DESKTOP_MENU_EXECUTABLE_NOTFOUND")
-	install(CODE "message(STATUS \"installing desktop file\")")
-	install(CODE "execute_process(COMMAND ${XDG_DESKTOP_MENU_EXECUTABLE} install /tmp/michisoft-edward.desktop)")
-endif()
-
+# install mime
 find_program(XDG_MIME_EXECUTABLE xdg-mime)
 if(NOT XDG_MIME_EXECUTABLE STREQUAL "XDG_MIME_EXECUTABLE_NOTFOUND")
 	install(CODE "message(STATUS \"installing mime file\")")
