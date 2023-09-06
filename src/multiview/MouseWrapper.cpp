@@ -78,7 +78,17 @@ void x11_get_cursor(int &x, int &y) {
 #endif
 
 void start(hui::Window *w) {
+	static auto display = gdk_display_get_default();
+
 #if HAS_LIB_X11
+	if (!GDK_IS_X11_DISPLAY(display)) {
+		static bool complained = false;
+		if (!complained) {
+			msg_error("sorry, endless mouse wrapping only for X11 (on wayland etc) :(");
+			complained = true;
+		}
+		return;
+	}
 
 	if (!x11_display)
 		x11_display = XOpenDisplay(nullptr);
