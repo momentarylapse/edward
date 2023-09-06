@@ -166,19 +166,20 @@ void CameraController::draw() {
 	draw_icon(r_show, nullptr, false);
 
 	if (show) {
-
 		for (auto &c: controllers) {
-		// elongated background
-		set_color(ColorBackground);
-		nix::set_texture(tex_bg);
-		draw_2d(rect(0, 0.5f, 0, 1), rect(c.r.x1, c.r.x1 + CC_RADIUS/2 + CC_BORDER, c.r.y1, c.r.y2), 0);
-		draw_2d(rect(0.5f, 0.5f, 0, 1), rect(c.r.x1 + CC_RADIUS/2 + CC_BORDER, c.r.x2 - CC_RADIUS/2 - CC_BORDER, c.r.y1, c.r.y2), 0);
-		draw_2d(rect(0.5f, 1, 0, 1), rect(c.r.x2 - CC_RADIUS/2 - CC_BORDER, c.r.x2, c.r.y1, c.r.y2), 0);
+			if (c.win != view->mouse_win)
+				continue;
+			// elongated background
+			set_color(ColorBackground);
+			nix::set_texture(tex_bg);
+			draw_2d(rect(0, 0.5f, 0, 1), rect(c.r.x1, c.r.x1 + CC_RADIUS/2 + CC_BORDER, c.r.y1, c.r.y2), 0);
+			draw_2d(rect(0.5f, 0.5f, 0, 1), rect(c.r.x1 + CC_RADIUS/2 + CC_BORDER, c.r.x2 - CC_RADIUS/2 - CC_BORDER, c.r.y1, c.r.y2), 0);
+			draw_2d(rect(0.5f, 1, 0, 1), rect(c.r.x2 - CC_RADIUS/2 - CC_BORDER, c.r.x2, c.r.y1, c.r.y2), 0);
 
-		// icons
-		draw_icon(c.r_move, tex_move, c.moving);
-		draw_icon(c.r_rotate, tex_rotate, c.rotating);
-		draw_icon(c.r_zoom, tex_zoom, c.zooming);
+			// icons
+			draw_icon(c.r_move, tex_move, c.moving);
+			draw_icon(c.r_rotate, tex_rotate, c.rotating);
+			draw_icon(c.r_zoom, tex_zoom, c.zooming);
 		}
 	}
 	nix::set_texture(nullptr);

@@ -140,6 +140,7 @@ Edward::Edward() :
 	})
 {
 	set_border_width(0);
+	add_basic_layout("menubar|toolbar-top|toolbar-left");
 	add_grid("", 0, 0, "vgrid");
 	set_target("vgrid");
 	add_grid("", 0, 0, "root-table");
