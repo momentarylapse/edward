@@ -1,7 +1,7 @@
 Toolbar font-toolbar ""
-	Item /new "New" image=icons/toolbar/new.png
-	Item /open "Open..." image=icons/toolbar/open.png
-	Item /save "Save..." image=icons/toolbar/save.png
+	Item /new "New" image=new
+	Item /open "Open..." image=open
+	Item /save "Save..." image=save
 	Separator
-	Item /undo "Undo" image=icons/toolbar/undo.png
-	Item /redo "Redo" image=icons/toolbar/redo.png
+	Item /undo "Undo" image=undo
+	Item /redo "Redo" image=redo

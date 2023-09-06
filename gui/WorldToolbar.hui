@@ -1,16 +1,16 @@
 Toolbar world-toolbar ""
-	Item /new "New" image=icons/toolbar/new.png
-	Item /open "Open..." image=icons/toolbar/open.png
-	Item /save "Save..." image=icons/toolbar/save.png
+	Item /new "New" image=new
+	Item /open "Open..." image=open
+	Item /save "Save..." image=save
 	Separator
-	Item /undo "Undo" image=icons/toolbar/undo.png
-	Item /redo "Redo" image=icons/toolbar/redo.png
+	Item /undo "Undo" image=undo
+	Item /redo "Redo" image=redo
 	Separator
-	Item view_push "Push" image=icons/toolbar/view_push.png "tooltip=Viewstage Push"
-	Item view_pop "Pop" image=icons/toolbar/view_pop.png "tooltip=Viewstage Pop"
+	Item view_push "Push" image=view-push "tooltip=Viewstage Push"
+	Item view_pop "Pop" image=view-pop "tooltip=Viewstage Pop"
 	Separator
-	Item mode_world "Objects and terrains" checkable image=icons/toolbar/model-surface.png
-	Item mode_world_terrain "Height map" checkable image=icons/toolbar/terrain.png
-	Item mode_world_camera "Camera flight" checkable image=icons/toolbar/world-cam.png
+	Item mode_world "Objects and terrains" checkable image=model-surface
+	Item mode_world_terrain "Height map" checkable image=terrain
+	Item mode_world_camera "Camera flight" checkable image=world-cam
 	Separator
-	Item selection_properties "Properties" image=icons/toolbar/configure.png
+	Item selection_properties "Properties" image=configure

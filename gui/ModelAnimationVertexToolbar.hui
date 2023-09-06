@@ -1,6 +1,6 @@
 Toolbar model-animation-vertex-toolbar ""
-	Item /select "Select" checkable image=icons/toolbar/rf-select.png
-	Item /translate "Move" checkable image=icons/toolbar/rf-translate.png
-	Item /rotate "Rotate" checkable image=icons/toolbar/rf-rotate.png
-	Item /scale "Scale" checkable image=icons/toolbar/rf-scale.png
-	Item /mirror "Reflect" checkable image=icons/toolbar/rf-mirror.png
+	Item /select "Select" checkable image=rf-select
+	Item /translate "Move" checkable image=rf-translate
+	Item /rotate "Rotate" checkable image=rf-rotate
+	Item /scale "Scale" checkable image=rf-scale
+	Item /mirror "Reflect" checkable image=rf-mirror

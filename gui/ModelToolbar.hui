@@ -1,25 +1,25 @@
 Toolbar model-toolbar ""
-	Item /new "New" image=icons/toolbar/new.png
-	Item /open "Open..." image=icons/toolbar/open.png
-	Item /save "Save..." image=icons/toolbar/save.png
+	Item /new "New" image=new
+	Item /open "Open..." image=open
+	Item /save "Save..." image=save
 	Separator
-	Item /undo "Undo" image=icons/toolbar/undo.png
-	Item /redo "Redo" image=icons/toolbar/redo.png
+	Item /undo "Undo" image=undo
+	Item /redo "Redo" image=redo
 	Separator
-	Item view_push "Push" image=icons/toolbar/view_push.png "tooltip=Viewstage Push"
-	Item view_pop "Pop" image=icons/toolbar/view_pop.png "tooltip=Viewstage Pop"
+	Item view_push "Push" image=view-push "tooltip=Viewstage Push"
+	Item view_pop "Pop" image=view-pop "tooltip=Viewstage Pop"
 	Separator
-	Item mode_model_mesh "Mesh" checkable image=icons/toolbar/model-surface.png
-	Item mode_model_deform "Deformation mode" checkable image=icons/toolbar/model-deform.png
-	Item mode_model_materials "Materials" checkable image=icons/toolbar/model-textures.png
-	Item mode_model_texture_coord "Texture coordinates" checkable image=icons/toolbar/model-uv.png
-	Item mode_model_paint "Paint on mesh (into texture)" checkable image=icons/toolbar/model-paint.png
-	Item mode_model_skeleton "Skeleton" checkable image=icons/toolbar/model-skeleton.png
-	Item mode_model_animation "Animations" checkable image=icons/toolbar/model-move.png
+	Item mode_model_mesh "Mesh" checkable image=model-surface
+	Item mode_model_deform "Deformation mode" checkable image=model-deform
+	Item mode_model_materials "Materials" checkable image=model-textures
+	Item mode_model_texture_coord "Texture coordinates" checkable image=model-uv
+	Item mode_model_paint "Paint on mesh (into texture)" checkable image=model-paint
+	Item mode_model_skeleton "Skeleton" checkable image=model-skeleton
+	Item mode_model_animation "Animations" checkable image=model-move
 	Separator
-	Item mode_properties "Properties" image=icons/toolbar/configure.png
+	Item mode_properties "Properties" image=configure
 	Separator
-	Item mode_model_vertex "Vertex points" checkable image=icons/toolbar/model-vertex.png
-	Item mode_model_edge "Edges" checkable image=icons/toolbar/model-edge.png
-	Item mode_model_polygon "Polygons" checkable image=icons/toolbar/model-polygon.png
-	Item mode_model_surface "Surfaces" checkable image=icons/toolbar/model-surface.png
+	Item mode_model_vertex "Vertex points" checkable image=model-vertex
+	Item mode_model_edge "Edges" checkable image=model-edge
+	Item mode_model_polygon "Polygons" checkable image=model-polygon
+	Item mode_model_surface "Surfaces" checkable image=model-surface
