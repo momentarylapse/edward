@@ -207,6 +207,7 @@ void DataModel::import_from_triangle_mesh(int index) {
 	mesh->vertex.clear();
 	mesh->polygon.clear();
 	mesh->edge.clear();
+	action_manager->enable(false);
 
 	ModelTriangleMesh &s = triangle_mesh[index];
 	begin_action_group("ImportFromTriangleSkin");
@@ -240,6 +241,7 @@ void DataModel::import_from_triangle_mesh(int index) {
 			}
 		}
 	}
+	action_manager->enable(true);
 
 #if 0
 	ModelTriangleMesh &ps = triangle_mesh[0];
