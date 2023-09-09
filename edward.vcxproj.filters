@@ -1288,6 +1288,9 @@
     <ClCompile Include="src\storage\format\old\LoadModelV11.cpp">
       <Filter>src\storage\format\old</Filter>
     </ClCompile>
+    <ClCompile Include="src\storage\format\old\LoadWorldV9V10.cpp">
+      <Filter>src\storage\format\old</Filter>
+    </ClCompile>
     <ClCompile Include="src\storage\format\Format.cpp">
       <Filter>src\storage\format</Filter>
     </ClCompile>

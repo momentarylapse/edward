@@ -43,11 +43,6 @@
 #include "../../lib/kaba/kaba.h"
 
 
-#define RotationMouseSpeed			0.002f
-#define TerrainHeightMapFactorDec	4
-#define TerrainTextureScaleDec		5
-#define TerrainSizeDec				3
-#define TerrainPatternDec			4
 #define OSelectionAlpha				0.25f
 #define OMouseOverAlpha				0.25f
 #define TSelectionAlpha				0.20f
@@ -57,7 +52,7 @@
 
 ModeWorld::ModeWorld(MultiView::MultiView *mv) :
 	Mode<DataWorld>("World", NULL, new DataWorld, mv, "menu_world") {
-	data->out_changed >> create_sink([=]{ data->update_data(); });
+	data->out_changed >> create_sink([this]{ data->update_data(); });
 
 	world_dialog = nullptr;
 	dialog = nullptr;
@@ -180,8 +175,8 @@ void ModeWorld::on_command(const string & id) {
 vec3 tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
-float WorldObject::hover_distance(MultiView::Window *win, const vec2 &mv, vec3 &tp, float &z) {
-	Object *o = object;
+
+float model_hover_distance(Model *o, const vector &pos, const vector &ang, MultiView::Window *win, const vec2 &mv, vec3 &tp, float &z) {
 	if (!o)
 		return -1;
 	int d = 0;//o->_detail_;
@@ -192,7 +187,7 @@ float WorldObject::hover_distance(MultiView::Window *win, const vec2 &mv, vec3 &
 		tmv[i] = o->_matrix * o->mesh[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
 	}
-	float z_min=1;
+	float z_min = 1;
 	for (int mm=0;mm<o->material.num;mm++)
 	for (int i=0;i<o->mesh[d]->sub[mm].num_triangles;i++) {
 		vec3 a=pmv[o->mesh[d]->sub[mm].triangle_index[i*3  ]];
@@ -213,8 +208,15 @@ float WorldObject::hover_distance(MultiView::Window *win, const vec2 &mv, vec3 &
 			}
 		}
 	}
-	z = z_min;
-	return (z_min<1) ? 0 : -1;
+	return z_min;
+}
+
+float WorldObject::hover_distance(MultiView::Window *win, const vec2 &mv, vec3 &tp, float &z) {
+	Model *o = object;
+	if (!o)
+		return -1;
+	float z_min = model_hover_distance(o, pos, ang, win, mv, tp, z);
+	return (z_min < 1) ? 0 : -1;
 }
 
 bool WorldObject::in_rect(MultiView::Window *win, const rect &r) {
@@ -715,12 +717,6 @@ void ModeWorld::on_update_menu() {
 
 void ModeWorld::open() {
 	ed->universal_open(FD_WORLD);
-	/*if (!storage->open(data))
-		return false;
-
-	ed->set_mode(mode_world);
-	optimize_view();
-	return true;*/
 }
 
 void ModeWorld::ExecuteWorldPropertiesDialog() {
@@ -832,7 +828,7 @@ void ModeWorld::on_set_multi_view() {
 
 	multi_view->add_data(MVD_WORLD_OBJECT,
 			data->objects,
-			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);
+			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE | MultiView::FLAG_DRAW);
 	multi_view->add_data(MVD_WORLD_TERRAIN,
 			data->terrains,
 			MultiView::FLAG_INDEX | MultiView::FLAG_SELECT | MultiView::FLAG_MOVE);

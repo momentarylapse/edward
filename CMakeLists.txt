@@ -435,6 +435,7 @@ set(SOURCE
 	src/multiview/SingleData.cpp
 	src/multiview/Window.cpp
 	src/storage/format/old/LoadModelV11.cpp
+	src/storage/format/old/LoadWorldV9V10.cpp
 	src/storage/format/Format.cpp
 	src/storage/format/FormatFontX.cpp
 	src/storage/format/FormatMaterial.cpp

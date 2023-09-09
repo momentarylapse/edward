@@ -545,6 +545,7 @@
     <ClCompile Include="src\multiview\SingleData.cpp" />
     <ClCompile Include="src\multiview\Window.cpp" />
     <ClCompile Include="src\storage\format\old\LoadModelV11.cpp" />
+    <ClCompile Include="src\storage\format\old\LoadWorldV9V10.cpp" />
     <ClCompile Include="src\storage\format\Format.cpp" />
     <ClCompile Include="src\storage\format\FormatFontX.cpp" />
     <ClCompile Include="src\storage\format\FormatMaterial.cpp" />
