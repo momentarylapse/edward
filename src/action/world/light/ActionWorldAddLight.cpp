@@ -10,7 +10,7 @@
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/world/WorldLight.h"
 
-ActionWorldAddLight::ActionWorldAddLight(WorldLight &l) {
+ActionWorldAddLight::ActionWorldAddLight(const WorldLight &l) {
 	light = l;
 }
 

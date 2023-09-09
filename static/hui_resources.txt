@@ -7493,89 +7493,83 @@ Grid
 0
 0
 2
+Group
+g-file
+
+0
+0
+1
 Grid
 ?
 
 0
 0
-3
-Text
-t_filename
-
-0
-0
-0
+2
 Edit
 filename
 expandx,disabled
-1
+0
 0
 0
 Button
 terrain_save_as
-image=hui:save-as
-2
+noexpandx,image=hui:save-as
+1
 0
 0
+Group
+g-dimensions
+
+0
+1
+1
 Grid
 ?
 
 0
-1
-9
-Text
-x
-center
-1
+0
+7
+Label
+l-stripes
+disabled
 0
 0
-Text
-z
-center
-2
 0
-0
-Text
-t_stripes
-
-0
-1
-0
-SpinButton
+Label
 num_x
-range=1:,expandx,disabled
-1
-1
-0
-SpinButton
-num_z
-range=1:,expandx,disabled
-2
-1
-0
-Text
-t_raster
 
+1
 0
+0
+Label
+num_z
+
 2
 0
-Edit
+0
+Label
+l-grid-size
+disabled
+0
+1
+0
+Label
 pattern_x
 
 1
-2
+1
 0
-Edit
+Label
 pattern_z
 
 2
-2
+1
 0
-Text
+Label
 lu
 
 3
-2
+1
 0
 Grid
 ?
@@ -9558,7 +9552,7 @@ Grid
 vertical
 1
 0
-9
+8
 Group
 g-list
 
@@ -9722,71 +9716,17 @@ range=0:100000000:0.1
 3
 0
 Group
-g-script
+g-object
 
 3
 0
 1
 Grid
 ?
-vertical
-0
-0
-2
-Grid
-?
 
 0
 0
-5
-Label
-t-script-file
-right,disabled
-0
-0
-0
-Edit
-script-file
-expandx
-1
-0
-0
-Button
-script-edit
-image=hui:edit
-2
-0
-0
-Label
-t-script-class
-right,disabled
-0
-1
-0
-Label
-script-class
-bold
-1
-1
-0
-ListView
-script-variables
-height=200,noexpandy
-1
-0
-0
-Group
-g-object
-
 4
-0
-1
-Grid
-?
-
-0
-0
-6
 Label
 t-ob-name
 right,disabled
@@ -9829,130 +9769,40 @@ image=hui:edit
 2
 0
 0
-Label
-t-ob-script
-right,disabled
-0
-2
-0
-Grid
-?
-
-1
-2
-3
-Edit
-ob-script
-expandx,disabled
-0
-0
-0
-Button
-find-script
-image=hui:open
-1
-0
-0
-Button
-edit-script
-image=hui:edit
-2
-0
-0
 Group
 g-terrain
 
-5
+4
 0
 1
-Grid
-?
-vertical
-0
-0
-2
 Grid
 ?
 
 0
 0
-2
-Label
-t-terrain-file
-right,disabled,hgroup=a
-0
-0
-0
-Edit
-terrain-file
-expandx
-1
-0
-0
-Grid
-?
-
-1
-0
-9
-Label
-x
-center,right,disabled
-1
-0
-0
-Label
-z
-center,right,disabled
-2
-0
-0
-Label
-t-terrain-stripes
-right,disabled,hgroup=a
-0
-1
-0
-SpinButton
-terrain-num-x
-range=1:,disabled
-1
-1
-0
-SpinButton
-terrain-num-z
-range=1:,disabled
-2
-1
-0
-Label
-t-terrain-raster
-right,disabled
-0
-2
-0
-Edit
-terrain-pattern-x
-disabled
-1
-2
-0
-Edit
-terrain-pattern-z
-disabled
-2
-2
-0
-Label
-lu
-
 3
+Button
+terrain-properties
+image=hui:properties
+0
+0
+0
+Button
+terrain-edit-heights
+image=hui:edit
+1
+0
+0
+Button
+terrain-heightmap
+
 2
+0
 0
 Group
 g-light
 expandx
-6
+5
 0
 1
 Grid
@@ -10036,7 +9886,7 @@ range=0:1:0.01
 Group
 g-link
 expandx
-7
+6
 0
 1
 Grid
@@ -10078,7 +9928,7 @@ range=0:1:0.01
 Group
 g-components
 
-8
+7
 0
 1
 Grid
@@ -10355,7 +10205,7 @@ image=configure
 # Language
 English
 # Number Of IDs
-1032
+1025
 # Text
 /ambient
 Ambient
@@ -12953,41 +12803,41 @@ scriptvar_dialog/t_value
 Value:
 
 terrain_dialog/add_texture_level
-New
 
+Add new (empty) texture level
 terrain_dialog/clear_texture_level
-Clear
 
+Clear selected texture level - remove texture but keep empty level
 terrain_dialog/default_material
 use default material
 
 terrain_dialog/delete_texture_level
-Delete texture level
 
-terrain_dialog/t_filename
-Terrain file
+Delete selected texture level
+terrain_dialog/g-dimensions
+Dimensions
+
+terrain_dialog/g-file
+File
+
+terrain_dialog/l-grid-size
+Grid size
+
+terrain_dialog/l-stripes
+Stripes
 
 terrain_dialog/t_material
 Material
-
-terrain_dialog/t_raster
-Grid size
-
-terrain_dialog/t_stripes
-Stripes
 
 terrain_dialog/terrain_dialog
 Terrain properties
 
 terrain_dialog/terrain_dialog_tab_control
-properties\\textures\\material\\import
-
-terrain_dialog/terrain_save_as
-Save...
+General\\Textures\\Material
 
 terrain_dialog/texture_map_complete
-1:1 mapping
 
+1:1 mapping - texture spans the whole terrain once
 terrain_dialog/textures
 Level\\Size X\\Size Z\\\\File
 
@@ -13138,9 +12988,6 @@ Entity
 world-object-list-dialog/g-object
 Object
 
-world-object-list-dialog/g-script
-Script
-
 world-object-list-dialog/g-terrain
 Terrain
 
@@ -13164,9 +13011,6 @@ Socket\\Hinge\\Spring\\Universal
 
 world-object-list-dialog/list
 Type\\Name
-
-world-object-list-dialog/script-variables
-Name\\Type\\Value
 
 world-object-list-dialog/t-ang
 Orientation
@@ -13210,29 +13054,14 @@ Type
 world-object-list-dialog/t-ob-name
 Name
 
-world-object-list-dialog/t-ob-script
-Script
-
 world-object-list-dialog/t-ob-type
-Type
+File
 
 world-object-list-dialog/t-pos
 Position
 
-world-object-list-dialog/t-script-class
-Class
-
-world-object-list-dialog/t-script-file
-File
-
-world-object-list-dialog/t-terrain-file
-File
-
-world-object-list-dialog/t-terrain-raster
-Grid size
-
-world-object-list-dialog/t-terrain-stripes
-Stripes
+world-object-list-dialog/terrain-heightmap
+Heightmap...
 
 world-object-list-popup/create-light
 Add light...

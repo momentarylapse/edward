@@ -10,6 +10,7 @@
 #include "ComponentSelectionDialog.h"
 #include "ScriptVarsDialog.h"
 #include "../ModeWorld.h"
+#include "../terrain/ModeWorldTerrain.h"
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/world/DataCamera.h"
 #include "../../../data/world/WorldLink.h"
@@ -40,6 +41,11 @@ void update_script_data(ScriptInstanceData &s, const string &class_base_name, bo
 WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
 	from_resource("world-object-list-dialog");
 
+	// maybe later...
+	/*auto tpanel = new hui::Panel("", this);
+	tpanel->from_resource("terrain_dialog");
+	embed(tpanel, "g-terrain", 0, 0);*/
+
 	popup = hui::create_resource_menu("world-object-list-popup", this);
 	popup_component = hui::create_resource_menu("world-object-list-component-popup", this);
 
@@ -67,6 +73,18 @@ WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
 	event("component-delete", [this] { on_component_delete(); });
 	event("component-variables", [this] { on_component_edit_variables(); });
 	event("edit_object", [this] { on_object_edit(); });
+	event("terrain-properties", [this] {
+		auto &ii = list_indices[editing];
+		if (ii.type != MVD_WORLD_TERRAIN)
+			return;
+		world->ExecuteTerrainPropertiesDialog(ii.index);
+	});
+	event("terrain-edit-heights", [this] {
+		ed->set_mode(mode_world_terrain);
+	});
+	event("terrain-heightmap", [this] {
+		world->apply_heightmap();
+	});
 
 	fill_list();
 
@@ -326,6 +344,8 @@ void WorldObjectListPanel::set_editing(int s) {
 	} else if (ii.type == MVD_WORLD_LIGHT) {
 		auto &l = data->lights[ii.index];
 		check("light-enabled", l.enabled);
+		enable("light-radius", l.type == LightType::POINT or l.type == LightType::CONE);
+		enable("light-theta", l.type == LightType::CONE);
 		set_color("light-col", l.col);
 		set_int("light-type", (int)l.type);
 		set_float("light-radius", l.radius * LIGHT_RADIUS_FACTOR_LO);
@@ -373,21 +393,23 @@ void WorldObjectListPanel::on_change() {
 		return;
 	auto &ii = list_indices[editing];
 	if (ii.type == MVD_WORLD_LIGHT) {
-		auto &l = data->lights[ii.index];
+		auto l = data->lights[ii.index];
 		l.type = (LightType)get_int("light-type");
 		l.enabled = is_checked("light-enabled");
 		l.harshness = get_float("light-harshness");
 		l.radius = get_float("light-radius") / LIGHT_RADIUS_FACTOR_LO;
 		l.theta = get_float("light-theta") * pi / 360.0f;
 		l.col = get_color("light-col");
-		world->multi_view->force_redraw();
+		world->data->edit_light(ii.index, l);
+		//world->multi_view->force_redraw();
 	} else if (ii.type == MVD_WORLD_CAMERA) {
-		auto &c = data->cameras[ii.index];
+		auto c = data->cameras[ii.index];
 		c.fov = get_float("cam-fov") * pi / 180.0f;
 		c.min_depth = get_float("cam-min-depth");
 		c.max_depth = get_float("cam-max-depth");
 		c.exposure = get_float("cam-exposure");
-		world->multi_view->force_redraw();
+		world->data->edit_camera(ii.index, c);
+		//world->multi_view->force_redraw();
 	} else if (ii.type == MVD_WORLD_LINK) {
 		auto &l = data->links[ii.index];
 		l.type = (LinkType)get_int("link-type");

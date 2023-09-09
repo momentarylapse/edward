@@ -18,6 +18,10 @@
 #include "../../y/Terrain.h"
 #include "../../y/World.h"
 #include "../../meta.h"
+#include "../../action/world/camera/ActionWorldEditCamera.h"
+#include "../../action/world/light/ActionWorldAddLight.h"
+#include "../../action/world/light/ActionWorldEditLight.h"
+#include "../../action/world/light/ActionWorldDeleteLight.h"
 #include "../../action/world/object/ActionWorldAddObject.h"
 #include "../../action/world/terrain/ActionWorldAddTerrain.h"
 #include "../../action/world/ActionWorldPaste.h"
@@ -161,11 +165,29 @@ WorldObject* DataWorld::add_object(const Path &filename, const vec3& pos) {
 	return (WorldObject*)execute(new ActionWorldAddObject(o));
 }
 
-WorldTerrain* DataWorld::add_terrain(const Path &filename, const vec3& pos)
-{	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, filename));	}
+WorldTerrain* DataWorld::add_terrain(const Path &filename, const vec3& pos) {
+	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, filename));
+}
 
-WorldTerrain* DataWorld::add_new_terrain(const vec3& pos, const vec3& size, int num_x, int num_z)
-{	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));	}
+WorldTerrain* DataWorld::add_new_terrain(const vec3& pos, const vec3& size, int num_x, int num_z) {
+	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));
+}
+
+WorldLight* DataWorld::add_light(const WorldLight &l) {
+	return (WorldLight*)execute(new ActionWorldAddLight(l));
+}
+
+void DataWorld::edit_light(int index, const WorldLight& l) {
+	execute(new ActionWorldEditLight(index, l));
+}
+
+/*WorldCamera* DataWorld::add_camera(const WorldCamera &c) {
+	return (WorldCamera*)execute(new ActionWorldAddCamera(c));
+}*/
+
+void DataWorld::edit_camera(int index, const WorldCamera& c) {
+	execute(new ActionWorldEditCamera(index, c));
+}
 
 
 void DataWorld::clear_selection() {

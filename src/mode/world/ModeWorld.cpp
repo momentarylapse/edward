@@ -163,7 +163,7 @@ void ModeWorld::on_command(const string & id) {
 	{}
 
 	if (id == "selection_properties")
-		ExecutePropertiesDialog();
+		ExecuteWorldPropertiesDialog();
 
 	if (id == "show_fx")
 		toggle_show_effects();
@@ -735,26 +735,6 @@ void ModeWorld::ExecuteWorldPropertiesDialog() {
 	world_dialog = new WorldPropertiesDialog(ed, true, data);
 	world_dialog->show();
 }
-
-
-
-void ModeWorld::ExecutePropertiesDialog() {
-	int num_o = data->get_selected_objects();
-	int num_t = data->get_selected_terrains();
-
-	if (num_o + num_t == 0) {
-		// nothing selected -> world
-		ExecuteWorldPropertiesDialog();
-	} else if ((num_o == 0) and (num_t == 1)) {
-		// single terrain -> terrain
-		foreachi(WorldTerrain &t, data->terrains, i)
-			if (t.is_selected)
-				ExecuteTerrainPropertiesDialog(i);
-	} else {
-		ExecuteWorldPropertiesDialog();
-	}
-}
-
 
 
 

@@ -13,7 +13,7 @@
 
 class ActionWorldAddLight : public Action {
 public:
-	ActionWorldAddLight(WorldLight &l);
+	ActionWorldAddLight(const WorldLight &l);
 	string name() { return "WorldAddLight"; }
 
 	void *execute(Data *d) override;

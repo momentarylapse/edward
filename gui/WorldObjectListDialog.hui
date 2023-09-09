@@ -35,50 +35,22 @@ Dialog world-object-list-dialog "" width=400 height=300
 					---|
 					Label t-cam-max-depth "Max depth" right disabled
 					SpinButton cam-max-depth "" range=0:100000000:0.1 "tooltip=far clipping plane"
-			Group g-script "Script"
-				Grid ? "" vertical
-					Grid ? ""
-						Label t-script-file "File" right disabled
-						Edit script-file "" expandx
-						Button script-edit "" image=hui:edit
-						---|
-						Label t-script-class "Class" right disabled
-						Label script-class "" bold
-					ListView script-variables "Name\\Type\\Value" height=200 noexpandy
 			Group g-object "Object"
 				Grid ? ""
 					Label t-ob-name "Name" right disabled
 					Edit ob-name "" expandx
 					---|
-					Label t-ob-type "Type" right disabled
+					Label t-ob-type "File" right disabled
 					Grid ? ""
 						Edit ob-kind "" expandx disabled
 						Button find_object "" disabled image=hui:open
 						Button edit_object "" image=hui:edit
 					---|
-					Label t-ob-script "Script" right disabled
-					Grid ? ""
-						Edit ob-script "" expandx disabled
-						Button find-script "" image=hui:open
-						Button edit-script "" image=hui:edit
 			Group g-terrain "Terrain"
-				Grid ? "" vertical
-					Grid ? ""
-						Label t-terrain-file "File" right disabled hgroup=a
-						Edit terrain-file "" expandx
-					Grid ? ""
-						.
-						Label /x "X" center right disabled
-						Label /z "Z" center right disabled
-						---|
-						Label t-terrain-stripes "Stripes" right disabled hgroup=a
-						SpinButton terrain-num-x "" range=1: disabled
-						SpinButton terrain-num-z "" range=1: disabled
-						---|
-						Label t-terrain-raster "Grid size" right disabled
-						Edit terrain-pattern-x "" disabled
-						Edit terrain-pattern-z "" disabled
-						Label /lu "lu"
+				Grid ? ""
+					Button terrain-properties "" image=hui:properties
+					Button terrain-edit-heights "" image=hui:edit
+					Button terrain-heightmap "Heightmap..."
 			Group g-light "Light" expandx
 				Grid ? "" vertical expandx
 					CheckBox light-enabled "Enabled" expandx

@@ -256,6 +256,9 @@
     <ClCompile Include="src\action\world\camera\ActionCameraMoveTimeSelection.cpp">
       <Filter>src\action\world\camera</Filter>
     </ClCompile>
+    <ClCompile Include="src\action\world\camera\ActionWorldEditCamera.cpp">
+      <Filter>src\action\world\camera</Filter>
+    </ClCompile>
     <ClCompile Include="src\action\world\helper\ActionWorldTerrainEditHeight.cpp">
       <Filter>src\action\world\helper</Filter>
     </ClCompile>
@@ -263,6 +266,9 @@
       <Filter>src\action\world\light</Filter>
     </ClCompile>
     <ClCompile Include="src\action\world\light\ActionWorldDeleteLight.cpp">
+      <Filter>src\action\world\light</Filter>
+    </ClCompile>
+    <ClCompile Include="src\action\world\light\ActionWorldEditLight.cpp">
       <Filter>src\action\world\light</Filter>
     </ClCompile>
     <ClCompile Include="src\action\world\link\ActionWorldAddLink.cpp">
@@ -1653,6 +1659,9 @@
     <ClInclude Include="src\action\world\camera\ActionCameraMoveTimeSelection.h">
       <Filter>src\action\world\camera</Filter>
     </ClInclude>
+    <ClInclude Include="src\action\world\camera\ActionWorldEditCamera.h">
+      <Filter>src\action\world\camera</Filter>
+    </ClInclude>
     <ClInclude Include="src\action\world\helper\ActionWorldTerrainEditHeight.h">
       <Filter>src\action\world\helper</Filter>
     </ClInclude>
@@ -1660,6 +1669,9 @@
       <Filter>src\action\world\light</Filter>
     </ClInclude>
     <ClInclude Include="src\action\world\light\ActionWorldDeleteLight.h">
+      <Filter>src\action\world\light</Filter>
+    </ClInclude>
+    <ClInclude Include="src\action\world\light\ActionWorldEditLight.h">
       <Filter>src\action\world\light</Filter>
     </ClInclude>
     <ClInclude Include="src\action\world\link\ActionWorldAddLink.h">

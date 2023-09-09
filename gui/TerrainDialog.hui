@@ -1,33 +1,30 @@
 Dialog terrain_dialog "Terrain properties" width=500 height=450 resizable headerbar closebutton=no
 	Grid ? ""
-		TabControl terrain_dialog_tab_control "properties\\textures\\material\\import"
+		TabControl terrain_dialog_tab_control "General\\Textures\\Material"
 			Grid ? ""
-				Grid ? ""
-					Text t_filename "Terrain file"
-					Edit filename "" expandx disabled
-					Button terrain_save_as "Save..." image=hui:save-as
+				Group g-file "File"
+					Grid ? ""
+						Edit filename "" expandx disabled
+						Button terrain_save_as "" noexpandx image=hui:save-as
 				---|
-				Grid ? ""
-					.
-					Text /x "X" center
-					Text /z "Z" center
-					---|
-					Text t_stripes "Stripes"
-					SpinButton num_x "" range=1: expandx disabled
-					SpinButton num_z "" range=1: expandx disabled
-					---|
-					Text t_raster "Grid size"
-					Edit pattern_x ""
-					Edit pattern_z ""
-					Text /lu "lu"
+				Group g-dimensions "Dimensions"
+					Grid ? ""
+						Label l-stripes "Stripes" disabled
+						Label num_x ""
+						Label num_z ""
+						---|
+						Label l-grid-size "Grid size" disabled
+						Label pattern_x ""
+						Label pattern_z ""
+						Label /lu "lu"
 			Grid ? ""
 				ListView textures "Level\\Size X\\Size Z\\\\File" format=tTTit expandy
 				---|
 				Grid ? ""
-					Button add_texture_level "New" image=hui:new
-					Button delete_texture_level "Delete texture level" image=hui:delete
-					Button clear_texture_level "Clear" image=hui:clear
-					Button texture_map_complete "1:1 mapping" image=hui:zoom-fit
+					Button add_texture_level "" image=hui:new "tooltip=Add new (empty) texture level"
+					Button delete_texture_level "" image=hui:delete "tooltip=Delete selected texture level"
+					Button clear_texture_level "" image=hui:clear "tooltip=Clear selected texture level - remove texture but keep empty level"
+					Button texture_map_complete "" image=hui:zoom-fit "tooltip=1:1 mapping - texture spans the whole terrain once"
 			Grid ? ""
 				CheckBox default_material "use default material"
 				---|

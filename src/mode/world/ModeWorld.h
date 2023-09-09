@@ -53,7 +53,6 @@ public:
 
 	void apply_lighting(MultiView::Window *win);
 
-	void ExecutePropertiesDialog();
 	void ExecuteWorldPropertiesDialog();
 	void ExecuteTerrainPropertiesDialog(int index);
 	void ExecuteLightmapDialog();

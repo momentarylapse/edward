@@ -110,6 +110,11 @@ public:
 	WorldObject *add_object(const Path &filename, const vec3 &pos);
 	WorldTerrain *add_terrain(const Path &filename, const vec3 &pos);
 	WorldTerrain *add_new_terrain(const vec3 &pos, const vec3 &size, int num_x, int num_z);
+	WorldCamera *add_camera(const WorldCamera& c);
+	void edit_camera(int index, const WorldCamera& c);
+	WorldLight *add_light(const WorldLight& l);
+	void edit_light(int index, const WorldLight& l);
+
 	void copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights); // actually not an action
 	void paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights);
 	void delete_selection();

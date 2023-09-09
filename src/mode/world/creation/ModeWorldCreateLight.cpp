@@ -48,7 +48,7 @@ void ModeWorldCreateLight::on_left_button_down() {
 	l.radius = multi_view->cam.radius;
 	l.theta = (l.type == LightType::CONE) ? 0.7f : 0;
 
-	data->execute(new ActionWorldAddLight(l));
+	data->add_light(l);
 }
 
 void ModeWorldCreateLight::on_draw_win(MultiView::Window *win) {

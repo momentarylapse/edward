@@ -91,9 +91,11 @@ set(SOURCE
 	src/action/world/camera/ActionCameraAddPoint.cpp
 	src/action/world/camera/ActionCameraMoveSelection.cpp
 	src/action/world/camera/ActionCameraMoveTimeSelection.cpp
+	src/action/world/camera/ActionWorldEditCamera.cpp
 	src/action/world/helper/ActionWorldTerrainEditHeight.cpp
 	src/action/world/light/ActionWorldAddLight.cpp
 	src/action/world/light/ActionWorldDeleteLight.cpp
+	src/action/world/light/ActionWorldEditLight.cpp
 	src/action/world/link/ActionWorldAddLink.cpp
 	src/action/world/link/ActionWorldDeleteLink.cpp
 	src/action/world/object/ActionWorldAddObject.cpp

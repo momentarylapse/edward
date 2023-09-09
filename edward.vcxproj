@@ -201,9 +201,11 @@
     <ClCompile Include="src\action\world\camera\ActionCameraAddPoint.cpp" />
     <ClCompile Include="src\action\world\camera\ActionCameraMoveSelection.cpp" />
     <ClCompile Include="src\action\world\camera\ActionCameraMoveTimeSelection.cpp" />
+    <ClCompile Include="src\action\world\camera\ActionWorldEditCamera.cpp" />
     <ClCompile Include="src\action\world\helper\ActionWorldTerrainEditHeight.cpp" />
     <ClCompile Include="src\action\world\light\ActionWorldAddLight.cpp" />
     <ClCompile Include="src\action\world\light\ActionWorldDeleteLight.cpp" />
+    <ClCompile Include="src\action\world\light\ActionWorldEditLight.cpp" />
     <ClCompile Include="src\action\world\link\ActionWorldAddLink.cpp" />
     <ClCompile Include="src\action\world\link\ActionWorldDeleteLink.cpp" />
     <ClCompile Include="src\action\world\object\ActionWorldAddObject.cpp" />
@@ -668,9 +670,11 @@
     <ClInclude Include="src\action\world\camera\ActionCameraAddPoint.h" />
     <ClInclude Include="src\action\world\camera\ActionCameraMoveSelection.h" />
     <ClInclude Include="src\action\world\camera\ActionCameraMoveTimeSelection.h" />
+    <ClInclude Include="src\action\world\camera\ActionWorldEditCamera.h" />
     <ClInclude Include="src\action\world\helper\ActionWorldTerrainEditHeight.h" />
     <ClInclude Include="src\action\world\light\ActionWorldAddLight.h" />
     <ClInclude Include="src\action\world\light\ActionWorldDeleteLight.h" />
+    <ClInclude Include="src\action\world\light\ActionWorldEditLight.h" />
     <ClInclude Include="src\action\world\link\ActionWorldAddLink.h" />
     <ClInclude Include="src\action\world\link\ActionWorldDeleteLink.h" />
     <ClInclude Include="src\action\world\object\ActionWorldAddObject.h" />
