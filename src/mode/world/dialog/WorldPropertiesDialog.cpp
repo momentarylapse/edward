@@ -28,9 +28,6 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	data = _data;
 	active = true;
 
-	popup_skybox = hui::create_resource_menu("world-skybox-popup", this);
-	popup_script = hui::create_resource_menu("world-script-popup", this);
-
 	event("cancel", [this] { on_close(); });
 	event("hui:close", [this] { on_close(); });
 	event("apply", [this] { apply_data(); });
@@ -55,6 +52,8 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 	event("edit_script_vars", [this] { on_edit_script_vars(); });
 	event("edit_script", [this] { on_edit_script(); });
 
+	popup_skybox = hui::create_resource_menu("world-skybox-popup", this);
+
 	data->out_changed >> create_sink([this] {
 		temp = data->meta_data;
 		load_data();
@@ -66,8 +65,6 @@ WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_p
 
 WorldPropertiesDialog::~WorldPropertiesDialog() {
 	data->unsubscribe(this);
-	delete popup_skybox;
-	delete popup_script;
 }
 
 void WorldPropertiesDialog::on_skybox_move() {
@@ -99,6 +96,7 @@ void WorldPropertiesDialog::on_skybox_select() {
 
 
 void WorldPropertiesDialog::on_script_right_click() {
+	popup_script = hui::create_resource_menu("world-script-popup", this);
 	int n = hui::get_event()->row;
 	popup_script->enable("remove_script", n >= 0);
 	popup_script->enable("edit_script_vars", n >= 0);

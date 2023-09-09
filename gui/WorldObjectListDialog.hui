@@ -4,41 +4,59 @@ Dialog world-object-list-dialog "" width=400 height=300
 		Grid ? "" vertical
 			Group g-list "List"
 				ListView list "Type\\Name" expandx
+			Group g-location "Entity"
+				Grid ? ""
+					.
+					Label /x "X" center right disabled
+					Label /y "Y" center right disabled
+					Label /z "Z" center right disabled
+					---|
+					Label t-pos "Position" right disabled
+					Label pos-x "" right expandx
+					Label pos-y "" right expandx
+					Label pos-z "" right expandx
+					Label /lu "lu"
+					---|
+					Label t-ang "Orientation" right disabled
+					Label ang-x "" right
+					Label ang-y "" right
+					Label ang-z "" right
+					Label /degree "°"
 			Group g-camera "Camera"
 				Grid ? ""
-					Text t-cam-fov "Field of view" right disabled
+					Label t-cam-fov "Field of view" right disabled
 					SpinButton cam-fov "" range=0:180:0.1 "tooltip=vertical viewing angle" expandx
 					---|
-					Text t-cam-exposure "Exposure" right disabled
+					Label t-cam-exposure "Exposure" right disabled
 					SpinButton cam-exposure "" range=0:10:0.01 "tooltip=brightness scale"
 					---|
-					Text t-cam-min-depth "Min depth" right disabled
+					Label t-cam-min-depth "Min depth" right disabled
 					SpinButton cam-min-depth "" range=0:100000000:0.1 "tooltip=near clipping plane"
 					---|
-					Text t-cam-max-depth "Max depth" right disabled
+					Label t-cam-max-depth "Max depth" right disabled
 					SpinButton cam-max-depth "" range=0:100000000:0.1 "tooltip=far clipping plane"
 			Group g-script "Script"
 				Grid ? "" vertical
 					Grid ? ""
-						Text t-script-file "File" right disabled
+						Label t-script-file "File" right disabled
 						Edit script-file "" expandx
 						Button script-edit "" image=hui:edit
 						---|
-						Text t-script-class "Class" right disabled
-						Text script-class "" bold
+						Label t-script-class "Class" right disabled
+						Label script-class "" bold
 					ListView script-variables "Name\\Type\\Value" height=200 noexpandy
 			Group g-object "Object"
 				Grid ? ""
-					Text t-ob-name "Name" right disabled
+					Label t-ob-name "Name" right disabled
 					Edit ob-name "" expandx
 					---|
-					Text t-ob-type "Type" right disabled
+					Label t-ob-type "Type" right disabled
 					Grid ? ""
 						Edit ob-kind "" expandx disabled
 						Button find_object "" disabled image=hui:open
 						Button edit_object "" image=hui:edit
 					---|
-					Text t-ob-script "Script" right disabled
+					Label t-ob-script "Script" right disabled
 					Grid ? ""
 						Edit ob-script "" expandx disabled
 						Button find-script "" image=hui:open
@@ -46,66 +64,48 @@ Dialog world-object-list-dialog "" width=400 height=300
 			Group g-terrain "Terrain"
 				Grid ? "" vertical
 					Grid ? ""
-						Text t-terrain-file "File" right disabled hgroup=a
+						Label t-terrain-file "File" right disabled hgroup=a
 						Edit terrain-file "" expandx
 					Grid ? ""
 						.
-						Text /x "X" center right disabled
-						Text /z "Z" center right disabled
+						Label /x "X" center right disabled
+						Label /z "Z" center right disabled
 						---|
-						Text t-terrain-stripes "Stripes" right disabled hgroup=a
+						Label t-terrain-stripes "Stripes" right disabled hgroup=a
 						SpinButton terrain-num-x "" range=1: disabled
 						SpinButton terrain-num-z "" range=1: disabled
 						---|
-						Text t-terrain-raster "Grid size" right disabled
+						Label t-terrain-raster "Grid size" right disabled
 						Edit terrain-pattern-x "" disabled
 						Edit terrain-pattern-z "" disabled
-						Text /lu "lu"
+						Label /lu "lu"
 			Group g-light "Light" expandx
 				Grid ? "" vertical expandx
 					CheckBox light-enabled "Enabled" expandx
 					Grid ? ""
-						Text t-light-type "Type" right disabled
+						Label t-light-type "Type" right disabled
 						ComboBox light-type "Directional\\Point\\Cone" expandx
 						---|
-						Text t-light-color "Color" right disabled
+						Label t-light-color "Color" right disabled
 						ColorButton light-col ""
 						---|
-						Text t-light-radius "Radius" right disabled
+						Label t-light-radius "Radius" right disabled
 						SpinButton light-radius "" range=0::0.1
 						---|
-						Text t-light-theta "Theta" right disabled
+						Label t-light-theta "Theta" right disabled
 						SpinButton light-theta "" range=0:180:0.1 "tooltip=cone opening angle"
 						---|
-						Text t-light-harshness "Harshness" right disabled
+						Label t-light-harshness "Harshness" right disabled
 						SpinButton light-harshness "" range=0:1:0.01 "tooltip=mixing diffuse and ambient parts"
 			Group g-link "Link" expandx
 				Grid ? "" expandx
-					Text t-link-type "Type" right disabled
+					Label t-link-type "Type" right disabled
 					ComboBox link-type "Socket\\Hinge\\Spring\\Universal" expandx
 					---|
-					Text t-link-param "Param" right disabled
+					Label t-link-param "Param" right disabled
 					---|
-					Text t-link-friction "Friction" right disabled
+					Label t-link-friction "Friction" right disabled
 					SpinButton link-friction "" range=0:1:0.01
-			Group g-location "Location"
-				Grid ? ""
-					.
-					Text /x "X" center right disabled
-					Text /y "Y" center right disabled
-					Text /z "Z" center right disabled
-					---|
-					Text t-pos "Position" right disabled
-					Edit pos-x "" expandx
-					Edit pos-y "" expandx
-					Edit pos-z "" expandx
-					Text /lu "lu"
-					---|
-					Text t-ang "Orientation" right disabled
-					Edit ang-x ""
-					Edit ang-y ""
-					Edit ang-z ""
-					Text /degree "°"
 			Group g-components "Components"
 				Grid ? ""
-					ListView component-list "file\\class" nobar height=80 noexpandy
+					ListView component-list "file\\class" nobar height=160 noexpandy

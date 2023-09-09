@@ -1,0 +1,20 @@
+Dialog world-new-terrain-dialog "New terrain" width=300 height=120
+	Grid ? ""
+		Label l-title "New terrain" bold big center
+		---|
+		Grid ? "" vertical
+			Group nterrain_dialog_t_stripes "Number of stripes"
+				Grid ? ""
+					Label x "X" disabled
+					SpinButton stripes-x "" range=1:99999 expandx
+					---|
+					Label z "Z" disabled
+					SpinButton stripes-z "" range=1:99999 expandx
+			Group nterrain_dialog_t_raster "Raster size"
+				Grid ? ""
+					Label grid-size-x "" expandx
+					Label grid-size-z "" expandx
+			Group nterrain_dialog_t_terrainsize "Terrain size"
+				Grid ? ""
+					Label total-size-x "" expandx
+					Label total-size-z "" expandx

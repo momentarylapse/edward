@@ -20,9 +20,11 @@ ModeWorldCreateLink::ModeWorldCreateLink(ModeBase *_parent) :
 }
 
 void ModeWorldCreateLink::on_start() {
-
 	dialog = new hui::Panel();
-	dialog->add_list_view("Type", 0, 0, "type");
+	dialog->add_grid("", 0, 0, "main");
+	dialog->set_target("main");
+	dialog->add_label(_("!big,bold,center\\New link"), 0, 0, "");
+	dialog->add_list_view("!style=navigation-sidebar\\Type", 0, 1, "type");
 	for (int i=0; i<4; i++)
 		dialog->add_string("type", link_type_canonical((LinkType)i));
 	dialog->set_int("type", 0);

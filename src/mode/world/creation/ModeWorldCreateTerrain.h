@@ -9,6 +9,8 @@
 #define MODEWORLDCREATETERRAIN_H_
 
 #include "../../ModeCreation.h"
+#include "../../../lib/math/vec3.h"
+
 class DataWorld;
 
 class ModeWorldCreateTerrain: public ModeCreation<DataWorld> {
@@ -18,11 +20,13 @@ public:
 	void on_start() override;
 	void on_end() override;
 
+	void on_left_button_up() override;
+	void on_mouse_move() override;
 	void on_draw_win(MultiView::Window *win) override;
 
-	void on_ok();
-	void on_close();
-	void on_size_change();
+	vec3 pos;
+	vec3 size;
+	bool pos_chosen;
 };
 
 #endif /* MODEWORLDCREATETERRAIN_H_ */

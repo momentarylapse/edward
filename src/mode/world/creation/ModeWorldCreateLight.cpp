@@ -20,7 +20,10 @@ ModeWorldCreateLight::ModeWorldCreateLight(ModeBase *_parent) :
 
 void ModeWorldCreateLight::on_start() {
 	dialog = new hui::Panel();
-	dialog->add_list_view("Type", 0, 0, "type");
+	dialog->add_grid("", 0, 0, "main");
+	dialog->set_target("main");
+	dialog->add_label(_("!big,bold,center\\New light source"), 0, 0, "");
+	dialog->add_list_view("!style=navigation-sidebar\\Type", 0, 1, "type");
 	dialog->add_string("type", "Directional");
 	dialog->add_string("type", "Point source");
 	dialog->add_string("type", "Cone");

@@ -46,8 +46,8 @@ public:
 	bool active;
 
 private:
-	hui::Menu *popup_skybox;
-	hui::Menu *popup_script;
+	owned<hui::Menu> popup_skybox;
+	owned<hui::Menu> popup_script;
 	DataWorld *data;
 
 	DataWorld::MetaData temp;
