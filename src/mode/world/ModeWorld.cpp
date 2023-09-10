@@ -678,7 +678,7 @@ void ModeWorld::on_enter() {
 	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("world-edit-toolbar");
 
 	dialog = new WorldObjectListPanel(this);
-	ed->set_side_panel(dialog);
+	ed->set_side_panel(dialog.to<hui::Panel>());
 }
 
 void ModeWorld::set_mouse_action(int mode) {

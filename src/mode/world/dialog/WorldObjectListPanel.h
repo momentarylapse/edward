@@ -27,8 +27,8 @@ public:
 	Array<Index> list_indices;
 	int editing;
 	bool allow_sel_change_signal;
-	hui::Menu *popup;
-	hui::Menu *popup_component;
+	owned<hui::Menu> popup;
+	owned<hui::Menu> popup_component;
 
 	WorldObjectListPanel(ModeWorld *w);
 	~WorldObjectListPanel();

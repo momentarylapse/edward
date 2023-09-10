@@ -151,6 +151,14 @@ EdwardWindow::EdwardWindow() :
 	set_border_width(5);
 	show();
 
+
+	add_action_checkable("light");
+	add_action_checkable("wire");
+	add_action_checkable("grid");
+	add_action_checkable("whole_window");
+	add_action_checkable("show_fx");
+	add_action_checkable("snap_to_grid");
+
 	hui::color_button_linear = true;
 
 	mode_none = new ModeNone(this);
@@ -278,7 +286,7 @@ EdwardWindow::EdwardWindow() :
 
 EdwardWindow::~EdwardWindow() {
 	// auto unsubscribe()...
-	set_mode(mode_none);
+	set_mode_now(mode_none);
 
 	delete mode_world;
 	/*delete mode_material;
@@ -391,72 +399,77 @@ base::future<void> mode_switch_allowed(ModeBase *m) {
 	}
 }
 
-void EdwardWindow::set_mode(ModeBase *_m) {
-	if (cur_mode == _m)
+void EdwardWindow::set_mode(ModeBase *m) {
+	if (cur_mode == m)
 		return;
-	mode_switch_allowed(_m).on([this, _m] {
-		auto m = _m;
-
-		// recursive use...
-		mode_queue.add(m);
-		if (mode_queue.num > 1)
-			return;
-
-		cur_mode->on_leave();
-		if (cur_mode->get_data()) {
-			cur_mode->get_data()->unsubscribe(this);
-			cur_mode->get_data()->action_manager->unsubscribe(this);
-		}
-
-		m = mode_queue[0];
-		while (m) {
-
-			// close current modes
-			while (cur_mode) {
-				if (cur_mode->is_ancestor_of(m))
-					break;
-				msg_write("end " + cur_mode->name);
-				cur_mode->on_end();
-				if (cur_mode->multi_view)
-					cur_mode->multi_view->pop_settings();
-				cur_mode = cur_mode->parent_untyped;
-			}
-
-			//multi_view_3d->ResetMouseAction();
-			//multi_view_2d->ResetMouseAction();
-
-			// start new modes
-			while (cur_mode != m) {
-				cur_mode = cur_mode->get_next_child_to(m);
-				msg_write("start " + cur_mode->name);
-				if (cur_mode->multi_view)
-					cur_mode->multi_view->push_settings();
-				cur_mode->on_start();
-			}
-			cur_mode->on_enter();
-			cur_mode->on_set_multi_view();
-
-			// nested set calls?
-			mode_queue.erase(0);
-			m = nullptr;
-			if (mode_queue.num > 0)
-				m = mode_queue[0];
-		}
-
-		set_menu(hui::create_resource_menu(cur_mode->menu_id, this));
-		update_menu();
-		cur_mode->on_enter(); // ????
-		if (cur_mode->get_data()) {
-			cur_mode->get_data()->out_selection >> in_data_selection_changed;
-			cur_mode->get_data()->out_changed >> in_data_changed;
-			auto *am = cur_mode->get_data()->action_manager;
-			am->out_failed >> in_action_failed;
-			am->out_saved >> in_saved;
-		}
-
-		if (cur_mode->multi_view)
-			cur_mode->multi_view->force_redraw();
+	mode_switch_allowed(m).on([this, m] {
+		set_mode_now(m);
 	});
+}
+
+void EdwardWindow::set_mode_now(ModeBase *m) {
+	if (cur_mode == m)
+		return;
+
+	// recursive use...
+	mode_queue.add(m);
+	if (mode_queue.num > 1)
+		return;
+
+	cur_mode->on_leave();
+	if (cur_mode->get_data()) {
+		cur_mode->get_data()->unsubscribe(this);
+		cur_mode->get_data()->action_manager->unsubscribe(this);
+	}
+
+	m = mode_queue[0];
+	while (m) {
+
+		// close current modes
+		while (cur_mode) {
+			if (cur_mode->is_ancestor_of(m))
+				break;
+			msg_write("end " + cur_mode->name);
+			cur_mode->on_end();
+			if (cur_mode->multi_view)
+				cur_mode->multi_view->pop_settings();
+			cur_mode = cur_mode->parent_untyped;
+		}
+
+		//multi_view_3d->ResetMouseAction();
+		//multi_view_2d->ResetMouseAction();
+
+		// start new modes
+		while (cur_mode != m) {
+			cur_mode = cur_mode->get_next_child_to(m);
+			msg_write("start " + cur_mode->name);
+			if (cur_mode->multi_view)
+				cur_mode->multi_view->push_settings();
+			cur_mode->on_start();
+		}
+		cur_mode->on_enter();
+		cur_mode->on_set_multi_view();
+
+		// nested set calls?
+		mode_queue.erase(0);
+		m = nullptr;
+		if (mode_queue.num > 0)
+			m = mode_queue[0];
+	}
+
+	set_menu(hui::create_resource_menu(cur_mode->menu_id, this));
+	update_menu();
+	//cur_mode->on_enter(); // ????
+	if (cur_mode->get_data()) {
+		cur_mode->get_data()->out_selection >> in_data_selection_changed;
+		cur_mode->get_data()->out_changed >> in_data_changed;
+		auto *am = cur_mode->get_data()->action_manager;
+		am->out_failed >> in_action_failed;
+		am->out_saved >> in_saved;
+	}
+
+	if (cur_mode->multi_view)
+		cur_mode->multi_view->force_redraw();
 }
 
 void EdwardWindow::on_about() {
@@ -812,7 +825,7 @@ void EdwardWindow::set_side_panel(shared<hui::Panel> panel) {
 	if (panel) {
 		// open
 		side_panel = panel;
-		embed(panel.get(), "side-bar-grid", 0, 0);
+		embed(panel, "side-bar-grid", 0, 0);
 		expand("side-bar-revealer", true);
 	}
 }

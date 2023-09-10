@@ -71,6 +71,7 @@ public:
 	void on_about();
 	void on_send_bug_report();
 	void set_mode(ModeBase *m);
+	void set_mode_now(ModeBase *m);
 
 	void on_command(const string &id);
 	void on_close();

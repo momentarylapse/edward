@@ -57,7 +57,7 @@ public:
 	void ExecuteTerrainPropertiesDialog(int index);
 	void ExecuteLightmapDialog();
 	WorldPropertiesDialog *world_dialog;
-	WorldObjectListPanel *dialog;
+	shared<WorldObjectListPanel> dialog;
 
 	bool show_effects;
 	int TerrainShowTextureLevel;

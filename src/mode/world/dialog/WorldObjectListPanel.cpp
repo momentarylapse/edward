@@ -98,8 +98,6 @@ WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
 WorldObjectListPanel::~WorldObjectListPanel() {
 	world->multi_view->unsubscribe(this);
 	data->unsubscribe(this);
-	delete popup;
-	delete popup_component;
 }
 
 void WorldObjectListPanel::on_component_add() {
