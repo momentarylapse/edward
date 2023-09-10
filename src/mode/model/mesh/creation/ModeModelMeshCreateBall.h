@@ -12,11 +12,11 @@
 #include "../../../../data/model/DataModel.h"
 
 class Geometry;
+class ModeModelMesh;
 
-class ModeModelMeshCreateBall: public ModeCreation<DataModel>
-{
+class ModeModelMeshCreateBall: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshCreateBall(ModeBase *_parent);
+	ModeModelMeshCreateBall(ModeModelMesh *_parent);
 	virtual ~ModeModelMeshCreateBall();
 
 	void on_start() override;

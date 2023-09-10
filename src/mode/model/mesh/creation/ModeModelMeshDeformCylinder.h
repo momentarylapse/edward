@@ -14,10 +14,11 @@
 #include "../../../../lib/math/vec3.h"
 
 class Geometry;
+class ModeModelMesh;
 
-class ModeModelMeshDeformCylinder: public ModeCreation<DataModel> {
+class ModeModelMeshDeformCylinder: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshDeformCylinder(ModeBase *parent);
+	ModeModelMeshDeformCylinder(ModeModelMesh *parent);
 	virtual ~ModeModelMeshDeformCylinder();
 
 	void on_start() override;

@@ -510,9 +510,9 @@ class shader
 		func extern virtual code_pixel_pre(out ctx: BuilderContext) -> string
 		func extern virtual code_pixel(out ctx: BuilderContext) -> string
 
-var extern model: Model&
-var extern world: World&
-var extern edward: Window&
+#var extern model: Model&
+#var extern world: World&
+#var extern edward: Window&
 
-var extern ed: Edward&
+#var extern ed: Edward&
 

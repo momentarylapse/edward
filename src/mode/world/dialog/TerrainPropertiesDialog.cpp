@@ -9,7 +9,7 @@
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/world/WorldTerrain.h"
 #include "../../../action/world/terrain/ActionWorldEditTerrain.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../storage/Storage.h"
 #include "../../../y/Terrain.h"
 #include "../../../y/Material.h"
@@ -19,8 +19,8 @@
 
 string file_secure(const Path &filename); // -> ModelPropertiesDialog
 
-TerrainPropertiesDialog::TerrainPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int _index) :
-	obs::Node<hui::Dialog>("terrain_dialog", 400, 300, _parent, _allow_parent)
+TerrainPropertiesDialog::TerrainPropertiesDialog(DataWorld *_data, int _index) :
+	obs::Node<hui::Dialog>("terrain_dialog", 400, 300, _data->ed, false)
 {
 	from_resource("terrain_dialog");
 	data = _data;
@@ -63,7 +63,7 @@ void TerrainPropertiesDialog::apply_data() {
 
 void TerrainPropertiesDialog::on_textures() {
 	int n = get_int("textures");
-	storage->file_dialog(FD_TEXTURE, false, true).on([this, n] (const auto& p) {
+	data->ed->storage->file_dialog(FD_TEXTURE, false, true).on([this, n] (const auto& p) {
 		temp.texture_file[n] = p.relative;
 		fill_texture_list();
 	});
@@ -85,7 +85,7 @@ void TerrainPropertiesDialog::fill_texture_list() {
 		if (!tex)
 			if (i < m->textures.num)
 				tex = m->textures[i];
-		string img = ed->get_tex_image(tex.get());
+		string img = data->ed->get_tex_image(tex.get());
 		add_string("textures", format("%d\\%.5f\\%.5f\\%s\\%s", i, temp.texture_scale[i].x, temp.texture_scale[i].z, img, file_secure(temp.texture_file[i])));
 	}
 	enable("delete_texture_level", false);
@@ -126,7 +126,7 @@ void TerrainPropertiesDialog::on_textures_edit() {
 
 
 void TerrainPropertiesDialog::on_save_as() {
-	storage->file_dialog(FD_TERRAIN, true, true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_TERRAIN, true, true).on([this] (const auto& p) {
 		data->terrains[index].save(p.complete);
 		set_string("filename", p.simple.str());
 	});
@@ -137,7 +137,7 @@ void TerrainPropertiesDialog::on_save_as() {
 void TerrainPropertiesDialog::on_delete_texture_level() {
 	int n = get_int("textures");
 	if (temp.num_textures <= 1) {
-		ed->error_box(_("There has to be at least one texture level!"));
+		data->ed->error_box(_("There has to be at least one texture level!"));
 		return;
 	}
 	for (int i=n;i<temp.num_textures-1;i++) {
@@ -159,7 +159,7 @@ void TerrainPropertiesDialog::on_default_material() {
 
 
 void TerrainPropertiesDialog::on_material_find() {
-	storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p) {
 		temp.material_file = p.simple;
 		set_string("material", p.simple.str());
 		check("default_material", false);
@@ -186,7 +186,7 @@ void TerrainPropertiesDialog::on_close() {
 
 void TerrainPropertiesDialog::on_add_texture_level() {
 	if (temp.num_textures >= MATERIAL_MAX_TEXTURES) {
-		ed->error_box(format(_("No more than %d textures per terrain allowed!"), MATERIAL_MAX_TEXTURES));
+		data->ed->error_box(format(_("No more than %d textures per terrain allowed!"), MATERIAL_MAX_TEXTURES));
 		return;
 	}
 	int l = temp.num_textures;

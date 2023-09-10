@@ -8,7 +8,7 @@
 #include "ModeModelMeshCutLoop.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../data/model/ModelMesh.h"
 #include "../../../../data/model/ModelSelection.h"
 //#include "../../../../action/model/mesh/polygon/ActionModelSplitPolygon.h"
@@ -20,15 +20,15 @@
 #include "../../../../lib/nix/nix.h"
 
 
-ModeModelMeshCutLoop::ModeModelMeshCutLoop(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshCutLoop", _parent) {}
+ModeModelMeshCutLoop::ModeModelMeshCutLoop(ModeModelMesh *_parent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshCutLoop", _parent) {}
 
 void ModeModelMeshCutLoop::on_start() {
 	valid_loop = false;
 
 	message = _("click on an edge to cut");
 
-	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_edge);
+	parent->set_selection_mode(parent->selection_mode_edge);
 	ed->mode_model->allow_selection_modes(false);
 
 	multi_view->set_allow_action(false);

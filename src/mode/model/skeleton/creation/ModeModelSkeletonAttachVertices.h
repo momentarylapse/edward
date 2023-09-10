@@ -13,10 +13,11 @@
 
 class BrushPanel;
 class VertexStagingBuffer;
+class ModeModelSkeleton;
 
-class ModeModelSkeletonAttachVertices: public ModeCreation<DataModel> {
+class ModeModelSkeletonAttachVertices: public ModeCreation<ModeModelSkeleton, DataModel> {
 public:
-	ModeModelSkeletonAttachVertices(ModeBase *_parent, int _bone_index);
+	ModeModelSkeletonAttachVertices(ModeModelSkeleton *_parent, int _bone_index);
 
 	void on_start() override;
 	void on_end() override;

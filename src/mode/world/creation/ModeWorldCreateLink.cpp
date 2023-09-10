@@ -9,12 +9,12 @@
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/world/WorldLink.h"
 #include "../../../data/world/WorldObject.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../action/world/link/ActionWorldAddLink.h"
 
-ModeWorldCreateLink::ModeWorldCreateLink(ModeBase *_parent) :
-	ModeCreation<DataWorld>("WorldCreateObject", _parent)
+ModeWorldCreateLink::ModeWorldCreateLink(ModeWorld *_parent) :
+	ModeCreation<ModeWorld, DataWorld>("WorldCreateLink", _parent)
 {
 	message = _("select first object to link");
 }
@@ -68,7 +68,7 @@ void ModeWorldCreateLink::on_left_button_down() {
 }
 
 void ModeWorldCreateLink::on_draw_win(MultiView::Window *win) {
-	parent->on_draw_win(win);
+	parent_untyped->on_draw_win(win);
 }
 
 

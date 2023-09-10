@@ -13,7 +13,7 @@
 #include "../../../data/world/WorldLink.h"
 #include "../../../data/world/WorldObject.h"
 #include "../../../data/world/WorldTerrain.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../y/Model.h"
 #include "../../../y/Object.h"
 #include "../../../y/World.h"

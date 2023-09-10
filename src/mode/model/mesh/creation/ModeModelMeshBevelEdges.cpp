@@ -9,12 +9,12 @@
 #include "../ModeModelMesh.h"
 #include "../../../../action/model/mesh/edge/ActionModelBevelEdges.h"
 #include "../../ModeModel.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 
-ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshBevelEdges", _parent) {}
+ModeModelMeshBevelEdges::ModeModelMeshBevelEdges(ModeModelMesh *_parent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshBevelEdges", _parent) {}
 
 void ModeModelMeshBevelEdges::on_start() {
 	message = _("Scale radius [left click = done]");
@@ -35,7 +35,7 @@ void ModeModelMeshBevelEdges::on_start() {
 
 	radius = rad_max / 4;
 
-	if (!data->action_manager->preview(new ActionModelBevelEdges(radius)))
+	if (!data->action_manager->preview(new ActionModelBevelEdges(radius, parent->current_material)))
 		abort();
 
 	multi_view->set_allow_action(false);
@@ -53,7 +53,7 @@ void ModeModelMeshBevelEdges::on_mouse_move() {
 	radius = clamp(radius, rad_max * 0.001f, rad_max);
 
 	data->set_selection(selection);
-	if (!data->action_manager->preview(new ActionModelBevelEdges(radius)))
+	if (!data->action_manager->preview(new ActionModelBevelEdges(radius, parent->current_material)))
 		abort();
 
 	message = _("Scale radius [left click = done]   ") + multi_view->format_length(radius);

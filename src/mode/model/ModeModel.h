@@ -11,11 +11,13 @@
 #include "../Mode.h"
 #include "../../data/model/DataModel.h"
 
+class ModeModelMesh;
+class ModeModelSkeleton;
+class ModeModelAnimation;
 
-class ModeModel: public Mode<DataModel> {
+class ModeModel: public Mode<ModeModel, DataModel> {
 public:
-	ModeModel(MultiView::MultiView *mv3, MultiView::MultiView *mv2);
-	virtual ~ModeModel();
+	ModeModel(EdwardWindow *ed, MultiView::MultiView *mv3, MultiView::MultiView *mv2);
 
 	void on_start() override;
 	void on_end() override;
@@ -45,6 +47,10 @@ public:
 	void run_properties_dialog();
 
 	void allow_selection_modes(bool allow);
+
+	ModeModelMesh *mode_model_mesh;
+	ModeModelSkeleton *mode_model_skeleton;
+	ModeModelAnimation *mode_model_animation;
 };
 
 #endif /* MODEMODEL_H_ */

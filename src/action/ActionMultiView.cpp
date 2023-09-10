@@ -10,14 +10,14 @@
 #include "model/mesh/skin/ActionModelTransformSkinVertices.h"
 #include "model/animation/ActionModelAnimationTransformVertices.h"
 #include "model/animation/ActionModelAnimationTransformBones.h"
+#include "model/skeleton/ActionModelTransformBones.h"
 #include "world/ActionWorldMoveSelection.h"
 #include "world/object/ActionWorldRotateObjects.h"
 #include "world/camera/ActionCameraMoveSelection.h"
 #include "../mode/model/animation/ModeModelAnimation.h"
-#include <assert.h>
-
 #include "../mode/model/mesh/ModeModelMeshTexture.h"
-#include "model/skeleton/ActionModelTransformBones.h"
+#include "../EdwardWindow.h"
+#include <assert.h>
 
 ActionMultiView::ActionMultiView() {
 	mat = mat4::ID;
@@ -46,8 +46,12 @@ void ActionMultiView::update_and_notify(Data *d, const mat4 &m) {
 ActionMultiView *ActionMultiViewFactory(const string &name, Data *d) {
 	if (name == "ActionModelTransformVertices")
 		return new ActionModelTransformVertices((DataModel*)d);
-	if (name == "ActionModelTransformSkinVertices")
-		return new ActionModelTransformSkinVertices((DataModel*)d, mode_model_mesh_texture->current_texture_level);
+	if (name == "ActionModelTransformSkinVertices") {
+		Array<int> tria;
+		Array<int> index;
+		d->ed->find_mode<ModeModelMeshTexture>("model-mesh-texture")->getSelectedSkinVertices(tria, index);
+		return new ActionModelTransformSkinVertices((DataModel*)d, tria, index, d->ed->find_mode<ModeModelMeshTexture>("model-mesh-texture")->current_texture_level);
+	}
 	if (name == "ActionModelTransformBones")
 		return new ActionModelTransformBones((DataModel*)d);
 	if (name == "ActionModelAnimationTransformBones")

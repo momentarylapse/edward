@@ -8,7 +8,7 @@
 #include "ModeModelMeshCreatePlatonic.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../data/model/geometry/GeometryPlatonic.h"
 #include "../../../../data/model/geometry/GeometryTeapot.h"
 #include "../../../../multiview/MultiView.h"
@@ -19,8 +19,8 @@
 
 void draw_helper_line(MultiView::Window *win, const vec3 &a, const vec3 &b);
 
-ModeModelMeshCreatePlatonic::ModeModelMeshCreatePlatonic(ModeBase *_parent, int _type) :
-	ModeCreation<DataModel>("ModelMeshCreatePlatonic", _parent)
+ModeModelMeshCreatePlatonic::ModeModelMeshCreatePlatonic(ModeModelMesh *_parent, int _type) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshCreatePlatonic", _parent)
 {
 	type = _type;
 
@@ -73,7 +73,7 @@ void ModeModelMeshCreatePlatonic::updateGeometry() {
 
 void ModeModelMeshCreatePlatonic::on_left_button_up() {
 	if (pos_chosen) {
-		data->pasteGeometry(*geo, mode_model_mesh->current_material);
+		data->pasteGeometry(*geo, parent->current_material);
 
 		abort();
 	} else {

@@ -10,13 +10,13 @@
 #include "../ModeModel.h"
 #include "../skeleton/ModeModelSkeleton.h"
 #include "../mesh/selection/MeshSelectionModePolygon.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 
 ModeModelAnimationVertex *mode_model_animation_vertex = NULL;
 
-ModeModelAnimationVertex::ModeModelAnimationVertex(ModeBase* _parent, MultiView::MultiView *mv) :
-	Mode<DataModel>("ModelAnimationVertex", _parent, mv, "menu_move")
+ModeModelAnimationVertex::ModeModelAnimationVertex(ModeModelAnimation* _parent, MultiView::MultiView *mv) :
+	Mode<ModeModelAnimation, DataModel>(_parent->ed, "ModelAnimationVertex", _parent, mv, "menu_move")
 {
 	mouse_action = -1;
 }
@@ -29,7 +29,7 @@ void ModeModelAnimationVertex::on_start() {
 	chooseMouseFunction(MultiView::ACTION_SELECT);
 
 	data->out_changed >> create_sink([this] { on_data_change(); });
-	multi_view->out_selection_changed >> create_sink([this]{ mode_model_mesh->selection_mode->on_update_selection(); });
+	multi_view->out_selection_changed >> create_sink([this]{ ed->mode_model->mode_model_mesh->selection_mode->on_update_selection(); });
 	on_data_change();
 }
 
@@ -37,7 +37,7 @@ void ModeModelAnimationVertex::on_end() {
 	data->unsubscribe(this);
 	multi_view->unsubscribe(this);
 	data->mesh->set_show_vertices(data->mesh->vertex);
-	mode_model_mesh->fill_selection_buffer(data->mesh->vertex);
+	ed->mode_model->mode_model_mesh->fill_selection_buffer(data->mesh->vertex);
 }
 
 void ModeModelAnimationVertex::on_command(const string& id) {
@@ -62,7 +62,7 @@ void ModeModelAnimationVertex::chooseMouseFunction(int f) {
 
 void ModeModelAnimationVertex::on_data_change() {
 	data->mesh->set_show_vertices(mode_model_animation->vertex);
-	mode_model_mesh->selection_mode->update_multi_view();
+	ed->mode_model->mode_model_mesh->selection_mode->update_multi_view();
 }
 
 void ModeModelAnimationVertex::on_update_menu() {
@@ -74,16 +74,16 @@ void ModeModelAnimationVertex::on_update_menu() {
 }
 
 void ModeModelAnimationVertex::on_draw_win(MultiView::Window *win) {
-	mode_model_mesh->draw_polygons(win, data->mesh, mode_model_animation->vertex);
+	ed->mode_model->mode_model_mesh->draw_polygons(win, data->mesh, mode_model_animation->vertex);
 
-	mode_model_skeleton->draw_skeleton(win, data->bone, true);
+	ed->mode_model->mode_model_skeleton->draw_skeleton(win, data->bone, true);
 
-	mode_model_mesh->draw_selection(win);
+	ed->mode_model->mode_model_mesh->draw_selection(win);
 
 //	draw_edges(win, data->edit_mesh, data->edit_mesh->vertex, !selection_mode_edge->is_active());
 
-	if (mode_model_mesh->allow_draw_hover)
-		mode_model_mesh->selection_mode->on_draw_win(win);
+	if (ed->mode_model->mode_model_mesh->allow_draw_hover)
+		ed->mode_model->mode_model_mesh->selection_mode->on_draw_win(win);
 
 }
 

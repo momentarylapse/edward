@@ -7,7 +7,7 @@
 
 #include "ShaderGraphDialog.h"
 #include "../ModeMaterial.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/ColorScheme.h"
 #include "../../../data/material/DataMaterial.h"
@@ -115,19 +115,19 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 		data->out_changed();
 	});
 	event("shader-load", [this] {
-		storage->file_dialog(FD_SHADERFILE,false,true).on([this] (const auto& p){
+		data->ed->storage->file_dialog(FD_SHADERFILE,false,true).on([this] (const auto& p){
 			if (test_shader_file(p.relative)) {
 				data->shader.file = p.relative;
 				data->shader.load_from_file();
 				request_optimal_view();
 				data->out_changed();
 			} else {
-				ed->error_box(_("Error in shader file:\n") + nix::shader_error);
+				data->ed->error_box(_("Error in shader file:\n") + nix::shader_error);
 			}
 		});
 	});
 	event("shader-save", [this]{
-		storage->file_dialog(FD_SHADERFILE,true,true).on([this] (const auto& p) {
+		data->ed->storage->file_dialog(FD_SHADERFILE,true,true).on([this] (const auto& p) {
 			data->shader.file = p.relative;
 			data->shader.save_to_file();
 		});
@@ -556,7 +556,7 @@ void ShaderGraphDialog::on_left_button_up() {
 		selection = HoverData();
 		redraw("area");
 	} catch (Exception &e) {
-		ed->error_box(e.message());
+		data->ed->error_box(e.message());
 	}
 }
 

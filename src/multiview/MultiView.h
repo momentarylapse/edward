@@ -17,6 +17,7 @@
 #include "../lib/pattern/Observable.h"
 
 class Data;
+class EdwardWindow;
 
 namespace nix {
 	class Shader;
@@ -95,7 +96,7 @@ static const int FLAG_MOVE = 8;
 
 class MultiView : public obs::Node<VirtualBase> {
 public:
-	MultiView(bool _mode3d);
+	MultiView(EdwardWindow *ed, bool _mode3d);
 	virtual ~MultiView();
 
 	obs::source out_redraw{this, "redraw"};
@@ -125,6 +126,7 @@ public:
 
 	void on_update_menu();
 
+	EdwardWindow *ed;
 	bool mode3d;
 	bool whole_window;
 	rect area;

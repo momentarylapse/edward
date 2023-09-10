@@ -11,16 +11,17 @@
 #include "../../../ModeCreation.h"
 #include "../../../../data/model/DataModel.h"
 
-class ModeModelMeshAutoweld: public ModeCreation<DataModel>
-{
+class ModeModelMesh;
+
+class ModeModelMeshAutoweld: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshAutoweld(ModeBase *_parent);
+	ModeModelMeshAutoweld(ModeModelMesh *_parent);
 	virtual ~ModeModelMeshAutoweld();
 
-	virtual void on_start();
-	virtual void on_end();
+	void on_start() override;
+	void on_end() override;
 
-	virtual void on_draw_win(MultiView::Window *win);
+	void on_draw_win(MultiView::Window *win) override;
 
 	void onSlider();
 	void onCancel();

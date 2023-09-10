@@ -9,7 +9,8 @@
 
 const string Data::MESSAGE_SELECTION = "Selection";
 
-Data::Data(int _type) {
+Data::Data(EdwardWindow *_ed, int _type) {
+	ed = _ed;
 	type = _type;
 	action_manager = new ActionManager(this);
 	file_time = 0;

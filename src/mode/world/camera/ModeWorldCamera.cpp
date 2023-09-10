@@ -7,9 +7,10 @@
 
 #include "ModeWorldCamera.h"
 #include "creation/ModeWorldCameraCreatePoint.h"
+#include "../ModeWorld.h"
 #include "../dialog/CameraDialog.h"
 #include "../../../data/world/DataCamera.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../storage/Storage.h"
 #include "../../../lib/math/interpolation.h"
 #include "../../../lib/nix/nix.h"
@@ -35,8 +36,8 @@ ModeWorldCamera *mode_world_camera = NULL;
 	return "???";
 }*/
 
-ModeWorldCamera::ModeWorldCamera(ModeBase *_parent, Data *_data) :
-	Mode<DataCamera>("WorldCamera", _parent, _data, _parent->multi_view, "menu_world")
+ModeWorldCamera::ModeWorldCamera(ModeWorld *_parent, Data *_data) :
+	Mode<ModeWorld, DataCamera>(_parent->ed, "WorldCamera", _parent, _data, _parent->multi_view, "menu_world")
 {
 	edit_vel = false;
 	edit_ang = false;
@@ -86,7 +87,7 @@ void ModeWorldCamera::on_end() {
 }
 
 void ModeWorldCamera::addPoint() {
-	ed->set_mode(new ModeWorldCameraCreatePoint(ed->cur_mode));
+	ed->set_mode(new ModeWorldCameraCreatePoint(this));
 }
 
 void ModeWorldCamera::deletePoint()
@@ -248,7 +249,7 @@ void ModeWorldCamera::_new() {
 
 void ModeWorldCamera::open() {
 	ed->allow_termination().on([this] {
-		storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const auto& p) {
+		ed->storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const auto& p) {
 			data->load(p.complete);
 		});
 	});
@@ -262,7 +263,7 @@ void ModeWorldCamera::save() {
 }
 
 void ModeWorldCamera::save_as() {
-	storage->file_dialog(FD_CAMERAFLIGHT, true, true).on([this] (const auto& p) {
+	ed->storage->file_dialog(FD_CAMERAFLIGHT, true, true).on([this] (const auto& p) {
 		return data->save(p.complete);
 	});
 }

@@ -8,7 +8,7 @@
 #include "ModelFXDialog.h"
 #include "../../../data/model/DataModel.h"
 #include "../../../lib/kaba/kaba.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../storage/Storage.h"
 
 ModelFXDialog::ModelFXDialog(hui::Window* _parent, bool _allow_parent, DataModel* _data, int _type, int _index) :
@@ -87,7 +87,7 @@ void ModelFXDialog::ApplyData()
 }
 
 void ModelFXDialog::OnFindScriptFile() {
-	storage->file_dialog(FD_SCRIPT,false,true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_SCRIPT,false,true).on([this] (const auto& p) {
 		Path filename = p.relative;
 		set_string("script_file", filename.str());
 
@@ -95,17 +95,17 @@ void ModelFXDialog::OnFindScriptFile() {
 			auto c = ownify(kaba::Context::create());
 			auto s = c->load_module(filename, true); // just analyse
 			if (!s->match_function("OnEffectCreate", "void", {"effect"}))
-				ed->error_box(_("Script file does not contain a function \"void OnEffectCreate( effect )\""));
+				data->ed->error_box(_("Script file does not contain a function \"void OnEffectCreate( effect )\""));
 			else if (!s->match_function("OnEffectIterate", "void", {"effect"}))
-				ed->error_box(_("Script file does not contain a function \"void OnEffectIterate( effect )\""));
+				data->ed->error_box(_("Script file does not contain a function \"void OnEffectIterate( effect )\""));
 		} catch(kaba::Exception &e) {
-			ed->error_box(_("Error in script file:") + e.message());
+			data->ed->error_box(_("Error in script file:") + e.message());
 		}
 	});
 }
 
 void ModelFXDialog::OnFindSoundFile() {
-	storage->file_dialog(FD_SOUND,false,true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_SOUND,false,true).on([this] (const auto& p) {
 		set_string("filename", p.relative.str());
 	});
 }

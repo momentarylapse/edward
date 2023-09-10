@@ -10,11 +10,13 @@
 #include "../../../storage/Storage.h"
 #include "../../../lib/math/rect.h"
 #include "../../../lib/math/vec2.h"
+#include "../../../EdwardWindow.h"
 
-TerrainHeightmapDialog::TerrainHeightmapDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
-	hui::Dialog("terrain_heightmap_dialog", 400, 300, _parent, _allow_parent)
+TerrainHeightmapDialog::TerrainHeightmapDialog(EdwardWindow *_ed, bool _allow_parent, DataWorld *_data) :
+	hui::Dialog("terrain_heightmap_dialog", 400, 300, _ed, _allow_parent)
 {
 	from_resource("terrain_heightmap_dialog");
+	ed = _ed;
 	data = _data;
 
 	event("cancel", [=]{ on_close(); });
@@ -50,7 +52,7 @@ void TerrainHeightmapDialog::on_size_change() {
 
 
 void TerrainHeightmapDialog::on_find_filter() {
-	storage->file_dialog(FD_TEXTURE, false, false).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_TEXTURE, false, false).on([this] (const auto& p) {
 		filter_file = p.complete;
 		set_string("filter_image", p.relative.str());
 		filter.load(filter_file);
@@ -63,7 +65,7 @@ void TerrainHeightmapDialog::on_find_filter() {
 
 
 void TerrainHeightmapDialog::on_find_heightmap() {
-	storage->file_dialog(FD_TEXTURE, false, false).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_TEXTURE, false, false).on([this] (const auto& p) {
 		heightmap_file = p.complete;
 		set_string("height_image", p.relative.str());
 		heightmap.load(heightmap_file);

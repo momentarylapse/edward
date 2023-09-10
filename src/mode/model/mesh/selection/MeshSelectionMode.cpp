@@ -6,7 +6,7 @@
  */
 
 #include "MeshSelectionMode.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 
 MeshSelectionMode::MeshSelectionMode(ModeModelMesh *_parent)
 {
@@ -17,5 +17,5 @@ MeshSelectionMode::MeshSelectionMode(ModeModelMesh *_parent)
 
 bool MeshSelectionMode::is_active()
 {
-	return mode_model_mesh->selection_mode == this;
+	return parent->selection_mode == this;
 }

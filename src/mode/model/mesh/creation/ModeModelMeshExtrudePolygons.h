@@ -8,13 +8,14 @@
 #ifndef MODEMODELMESHEXTRUDEPOLYGONS_H_
 #define MODEMODELMESHEXTRUDEPOLYGONS_H_
 
+#include "../ModeModelMesh.h"
 #include "../../../ModeCreation.h"
 #include "../../../../data/model/DataModel.h"
 #include "../../../../data/model/ModelSelection.h"
 
-class ModeModelMeshExtrudePolygons: public ModeCreation<DataModel> {
+class ModeModelMeshExtrudePolygons: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshExtrudePolygons(ModeBase *parent, bool independent);
+	ModeModelMeshExtrudePolygons(ModeModelMesh *parent, bool independent);
 
 	void on_start() override;
 	void on_end() override;

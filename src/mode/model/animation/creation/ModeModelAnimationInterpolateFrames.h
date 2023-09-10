@@ -13,9 +13,13 @@
 #include "../../../../data/model/DataModel.h"
 #include "../../dialog/ModelAnimationTimelinePanel.h"
 
-class ModeModelAnimationInterpolateFrames: public ModeCreation<DataModel>, public TimeLineParasite {
+class ModeModelAnimation;
+
+// FIXME .... this now has the wrong parent :(
+
+class ModeModelAnimationInterpolateFrames: public ModeCreation<ModeModelAnimation, DataModel>, public TimeLineParasite {
 public:
-	ModeModelAnimationInterpolateFrames(ModeBase *_parent);
+	ModeModelAnimationInterpolateFrames(ModeModelAnimation *_parent);
 
 	virtual void on_start();
 	virtual void on_end();

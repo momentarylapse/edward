@@ -10,11 +10,12 @@
 
 #include "ModeModelMesh.h"
 
+class ModeModelMesh;
 class DeformBrushPanel;
 
-class ModeModelMeshDeform: public Mode<DataModel> {
+class ModeModelMeshDeform: public Mode<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshDeform(ModeBase *parent, MultiView::MultiView *mv);
+	ModeModelMeshDeform(ModeModelMesh *parent, MultiView::MultiView *mv);
 	void on_start() override;
 	void on_end() override;
 
@@ -38,7 +39,5 @@ private:
 	float distance;
 	vec3 last_pos;
 };
-
-extern ModeModelMeshDeform *mode_model_mesh_deform;
 
 #endif /* SRC_MODE_MODEL_MESH_MODEMODELMESHDEFORM_H_ */

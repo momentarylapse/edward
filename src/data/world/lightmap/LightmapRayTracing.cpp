@@ -6,8 +6,9 @@
  */
 
 #include "LightmapRayTracing.h"
+#include "../DataWorld.h"
 #include "../../../stuff/Progress.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 
 static float d_max = 20.0f;
 static float r_min = d_max * 0.5f;
@@ -53,8 +54,8 @@ void LightmapRayTracing::Compute()
 				b.rad += a.em * f * a.area * data->emissive_brightness;
 			}
 		}
-		ed->progress->set(format(_("%d of %d"), ii, vem.num), (float)ii / (float)vem.num);
-		if (ed->progress->is_cancelled())
+		data->source_world->ed->progress->set(format(_("%d of %d"), ii, vem.num), (float)ii / (float)vem.num);
+		if (data->source_world->ed->progress->is_cancelled())
 			throw AbortException();
 	}
 
@@ -65,8 +66,8 @@ void LightmapRayTracing::Compute()
 		vec3 p = l.Pos;
 		foreachi(LightmapData::Vertex &v, data->Vertices, vi){
 			if ((vi & 255) == 0){
-				ed->progress->set(format(_("%d of %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
-				if (ed->progress->is_cancelled())
+				data->source_world->ed->progress->set(format(_("%d of %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
+				if (data->source_world->ed->progress->is_cancelled())
 					throw AbortException();
 			}
 			if (l.Directional){

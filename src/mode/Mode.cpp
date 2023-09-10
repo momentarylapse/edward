@@ -7,9 +7,11 @@
 
 #include "Mode.h"
 #include "../multiview/MultiView.h"
+#include "../EdwardWindow.h"
 
-ModeBase::ModeBase(const string &_name, ModeBase *_parent, MultiView::MultiView *_multi_view, const string &_menu) {
-	parent = _parent;
+ModeBase::ModeBase(EdwardWindow *_ed, const string &_name, ModeBase *_parent, MultiView::MultiView *_multi_view, const string &_menu) {
+	ed = _ed;
+	parent_untyped = _parent;
 	name = _name;
 	multi_view = _multi_view;
 	menu_id = _menu;
@@ -21,48 +23,48 @@ ModeBase::~ModeBase() {
 }
 
 void ModeBase::on_update_menu_recursive() {
-	if (parent)
-		parent->on_update_menu_recursive();
+	if (parent_untyped)
+		parent_untyped->on_update_menu_recursive();
 	on_update_menu();
 }
 
 void ModeBase::on_command_recursive(const string &id) {
-	if (parent)
-		parent->on_command_recursive(id);
+	if (parent_untyped)
+		parent_untyped->on_command_recursive(id);
 	on_command(id);
 }
 
 void ModeBase::optimize_view_recursice() {
 	if (optimize_view())
 		return;
-	if (parent)
-		parent->optimize_view_recursice();
+	if (parent_untyped)
+		parent_untyped->optimize_view_recursice();
 }
 
 
 
 ModeBase *ModeBase::get_root() {
-	if (parent)
-		return parent->get_root();
+	if (parent_untyped)
+		return parent_untyped->get_root();
 	return this;
 }
 
 bool ModeBase::is_ancestor_of(ModeBase *m) {
 	if (m == this)
 		return true;
-	if (m->parent)
-		return is_ancestor_of(m->parent);
+	if (m->parent_untyped)
+		return is_ancestor_of(m->parent_untyped);
 	return false;
 }
 
 
 ModeBase *ModeBase::get_next_child_to(ModeBase *target) {
 	while(target) {
-		if (this == target->parent)
+		if (this == target->parent_untyped)
 			return target;
-		target = target->parent;
+		target = target->parent_untyped;
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -70,6 +72,10 @@ bool ModeBase::equal_roots(ModeBase *m) {
 	if (!m)
 		return false;
 	return get_root() == m->get_root();
+}
+
+ModeBase *ModeBase::find_mode_base(const string &name) {
+	return ed->find_mode_base(name);
 }
 
 

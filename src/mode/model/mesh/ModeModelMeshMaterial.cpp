@@ -10,12 +10,10 @@
 #include "../ModeModel.h"
 #include "../dialog/ModelMaterialDialog.h"
 #include "../../../multiview/MultiView.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 
-ModeModelMeshMaterial *mode_model_mesh_material = NULL;
-
-ModeModelMeshMaterial::ModeModelMeshMaterial(ModeBase *_parent, MultiView::MultiView *mv) :
-			Mode<DataModel>("ModelMeshMaterial", _parent, mv, "menu_model") {
+ModeModelMeshMaterial::ModeModelMeshMaterial(ModeModelMesh *_parent, MultiView::MultiView *mv) :
+			Mode<ModeModelMesh, DataModel>(_parent->ed, "ModelMeshMaterial", _parent, mv, "menu_model") {
 	dialog = nullptr;
 }
 
@@ -30,7 +28,7 @@ void ModeModelMeshMaterial::on_start() {
 	multi_view->set_allow_action(false);
 
 	// enter
-	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_polygon);
+	parent->set_selection_mode(parent->selection_mode_polygon);
 	ed->mode_model->allow_selection_modes(false);
 }
 

@@ -1399,7 +1399,7 @@
     <ClCompile Include="src\Edward.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\main.cpp">
+    <ClCompile Include="src\EdwardWindow.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\meta.cpp">
@@ -2722,6 +2722,9 @@
       <Filter>src\y</Filter>
     </ClInclude>
     <ClInclude Include="src\Edward.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EdwardWindow.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics-fwd.h">

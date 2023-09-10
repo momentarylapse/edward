@@ -12,9 +12,9 @@
 
 class ModelMaterialDialog;
 
-class ModeModelMeshMaterial: public Mode<DataModel> {
+class ModeModelMeshMaterial: public Mode<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshMaterial(ModeBase *parent, MultiView::MultiView *mv);
+	ModeModelMeshMaterial(ModeModelMesh *parent, MultiView::MultiView *mv);
 	void on_start() override;
 	void on_end() override;
 
@@ -25,7 +25,5 @@ public:
 	void on_draw() override;
 	void on_draw_win(MultiView::Window *win) override;
 };
-
-extern ModeModelMeshMaterial *mode_model_mesh_material;
 
 #endif /* SRC_MODE_MODEL_MESH_MODEMODELMESHMATERIAL_H_ */

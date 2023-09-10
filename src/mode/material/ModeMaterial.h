@@ -18,9 +18,9 @@ namespace nix {
 	class VertexBuffer;
 };
 
-class ModeMaterial: public Mode<DataMaterial> {
+class ModeMaterial: public Mode<ModeMaterial, DataMaterial> {
 public:
-	ModeMaterial(MultiView::MultiView *mv);
+	ModeMaterial(EdwardWindow *ed, MultiView::MultiView *mv);
 	virtual ~ModeMaterial();
 
 	obs::sink in_data_changed;

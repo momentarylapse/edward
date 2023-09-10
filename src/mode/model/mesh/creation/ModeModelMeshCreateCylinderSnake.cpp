@@ -9,7 +9,7 @@
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../data/model/geometry/GeometryCylinder.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -20,8 +20,8 @@
 const float CYLINDER_CLOSING_DISTANCE = 20;
 
 
-ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshCreateCylinderSnake", _parent)
+ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeModelMesh *_parent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshCreateCylinderSnake", _parent)
 {
 	message = _("Cylinder snake... points + [Ctrl + Return]");
 
@@ -42,7 +42,7 @@ void ModeModelMeshCreateCylinderSnake::on_start() {
 	dialog->hide_control("type:physical", true);
 	ed->set_side_panel(dialog);
 
-	bool physical = (mode_model_mesh->current_skin == MESH_PHYSICAL);
+	bool physical = (parent->current_skin == MESH_PHYSICAL);
 	if (physical)
 		dialog->enable("*", false);
 
@@ -93,7 +93,7 @@ void ModeModelMeshCreateCylinderSnake::on_mouse_move() {
 void ModeModelMeshCreateCylinderSnake::on_left_button_up() {
 	if (ready_for_scaling) {
 
-		data->pasteGeometry(*geo, mode_model_mesh->current_material);
+		data->pasteGeometry(*geo, parent->current_material);
 
 		abort();
 	} else {

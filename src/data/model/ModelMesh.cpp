@@ -12,7 +12,7 @@
 #include "BspTree.h"
 #include "../../lib/os/msg.h"
 #include "../../lib/base/set.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../multiview/MultiView.h"
 
 ModelMesh::ModelMesh(DataModel *m) {
@@ -292,12 +292,12 @@ void ModelMesh::set_show_vertices(Array<ModelVertex> &vert) {
 
 
 
-void report_error(const string &msg)
+/*void report_error(const string &msg)
 {
 	msg_error(msg);
 	if (ed)
 		ed->set_message(msg);
-}
+}*/
 
 
 

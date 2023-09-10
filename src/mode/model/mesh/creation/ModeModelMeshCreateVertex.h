@@ -11,9 +11,11 @@
 #include "../../../ModeCreation.h"
 #include "../../../../data/model/DataModel.h"
 
-class ModeModelMeshCreateVertex: public ModeCreation<DataModel> {
+class ModeModelMesh;
+
+class ModeModelMeshCreateVertex: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshCreateVertex(ModeBase *parent);
+	ModeModelMeshCreateVertex(ModeModelMesh *parent);
 
 	void on_start() override;
 	void on_left_button_down() override;

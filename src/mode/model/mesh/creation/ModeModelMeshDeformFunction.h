@@ -13,6 +13,7 @@
 #include "../../../../lib/base/pointer.h"
 
 class Geometry;
+class ModeModelMesh;
 namespace kaba {
 	class Context;
 	class Module;
@@ -21,9 +22,9 @@ namespace nix {
 	class NixTexture;
 };
 
-class ModeModelMeshDeformFunction: public ModeCreation<DataModel> {
+class ModeModelMeshDeformFunction: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshDeformFunction(ModeBase *parent);
+	ModeModelMeshDeformFunction(ModeModelMesh *parent);
 	virtual ~ModeModelMeshDeformFunction();
 
 	void on_start() override;

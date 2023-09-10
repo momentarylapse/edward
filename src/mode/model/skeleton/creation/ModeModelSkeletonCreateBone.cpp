@@ -7,11 +7,11 @@
 
 #include "ModeModelSkeletonCreateBone.h"
 #include "../../ModeModel.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 
-ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelSkeletonCreateBone", _parent)
+ModeModelSkeletonCreateBone::ModeModelSkeletonCreateBone(ModeModelSkeleton *_parent) :
+	ModeCreation<ModeModelSkeleton, DataModel>("ModelSkeletonCreateBone", _parent)
 {
 	message = _("Place bone or choose parent bone");
 	pos_chosen = false;

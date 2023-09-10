@@ -8,7 +8,7 @@
 #include "ModelAnimationTimelinePanel.h"
 #include "../animation/ModeModelAnimation.h"
 #include "../../../data/model/DataModel.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../lib/math/vec2.h"
 

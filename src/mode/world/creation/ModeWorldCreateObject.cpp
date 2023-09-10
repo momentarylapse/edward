@@ -7,14 +7,14 @@
 
 #include "ModeWorldCreateObject.h"
 #include "../../../data/world/DataWorld.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../storage/Storage.h"
 #include "../../../multiview/MultiView.h"
 
 static Path LastObjectFilename;
 
-ModeWorldCreateObject::ModeWorldCreateObject(ModeBase *_parent) :
-	ModeCreation<DataWorld>("WorldCreateObject", _parent)
+ModeWorldCreateObject::ModeWorldCreateObject(ModeWorld *_parent) :
+	ModeCreation<ModeWorld, DataWorld>("WorldCreateObject", _parent)
 {
 	message = _("select new object");
 }
@@ -43,7 +43,7 @@ void ModeWorldCreateObject::on_end() {
 }
 
 void ModeWorldCreateObject::on_find_object() {
-	storage->file_dialog(FD_MODEL, false, true).on([this] (const auto& p) {
+	ed->storage->file_dialog(FD_MODEL, false, true).on([this] (const auto& p) {
 		filename = p.simple;
 		LastObjectFilename = filename;
 		message = _("place new object");

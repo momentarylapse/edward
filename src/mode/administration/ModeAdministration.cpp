@@ -15,11 +15,11 @@
 #include "../../data/administration/DataAdministration.h"
 #include "../../data/administration/GameIniData.h"
 #include "../../data/world/DataWorld.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../storage/Storage.h"
 
-ModeAdministration::ModeAdministration():
-	Mode<DataAdministration>("Administration", nullptr, new DataAdministration, nullptr, "menu_administration")
+ModeAdministration::ModeAdministration(EdwardWindow *ed):
+	Mode<ModeAdministration, DataAdministration>(ed, "Administration", nullptr, new DataAdministration(ed), nullptr, "menu_administration")
 {
 	dialog = nullptr;
 }
@@ -65,8 +65,8 @@ void ModeAdministration::create_project(const Path &dir, const string &first_wor
 
 	Path world_file = dir | "Maps" | (first_world + ".world");
 	msg_write(format("%sCREATE%s  %s", os::terminal::YELLOW, os::terminal::END, world_file));
-	DataWorld w;
-	Storage s;
+	DataWorld w(data->ed);
+	Storage s(data->ed);
 	s.save(world_file, &w);
 }
 
@@ -97,7 +97,7 @@ static void sync_files(const Path &source, const Path &dest, bool required) {
 }
 
 void ModeAdministration::upgrade_project(const Path &dir) {
-	Storage s; // create CANONICAL_SUB_DIR[]
+	Storage s(data->ed); // create CANONICAL_SUB_DIR[]
 
 	for (int k=0; k<NUM_FDS; k++)
 		create_directory_recursive(dir | Storage::CANONICAL_SUB_DIR[k]);
@@ -131,7 +131,7 @@ void ModeAdministration::_new() {
 		if (dlg->ok) {
 			try {
 				create_project(dlg->directory, dlg->first_world);
-				storage->set_root_directory(dlg->directory);
+				data->ed->storage->set_root_directory(dlg->directory);
 				data->reset();
 			} catch (Exception &e) {
 				ed->error_box(e.message());
@@ -147,7 +147,7 @@ bool ModeAdministration::open() {
 			//return false;
 		}
 
-		storage->set_root_directory(path);
+		data->ed->storage->set_root_directory(path);
 		data->reset();
 	});
 	// TODO callback...

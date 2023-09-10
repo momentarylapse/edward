@@ -15,7 +15,7 @@ class vec3;
 
 class ActionModelExtrudePolygons: public ActionGroup {
 public:
-	ActionModelExtrudePolygons(float offset, bool independent);
+	ActionModelExtrudePolygons(float offset, bool independent, int material);
 	string name() { return "ModelExtrudePolygons"; }
 
 	void *compose(Data *d);
@@ -25,6 +25,7 @@ private:
 	void extrude_surface_indep(DataModel *m);
 	float offset;
 	bool independent;
+	int material;
 };
 
 #endif /* ACTIONMODELEXTRUDEPOLYGONS_H_ */

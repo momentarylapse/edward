@@ -19,7 +19,7 @@ namespace Gui{
 
 class DataFont: public Data {
 public:
-	DataFont();
+	DataFont(EdwardWindow *ed);
 
 	void reset();
 

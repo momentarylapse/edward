@@ -26,7 +26,7 @@ public:
 class DataAdministration : public Data
 {
 public:
-	DataAdministration();
+	DataAdministration(EdwardWindow *ed);
 	virtual ~DataAdministration();
 
 	void reset();

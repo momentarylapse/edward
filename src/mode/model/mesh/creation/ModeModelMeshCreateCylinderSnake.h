@@ -12,10 +12,11 @@
 #include "../../../../data/model/DataModel.h"
 
 class Geometry;
+class ModeModelMesh;
 
-class ModeModelMeshCreateCylinderSnake: public ModeCreation<DataModel> {
+class ModeModelMeshCreateCylinderSnake: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshCreateCylinderSnake(ModeBase *parent);
+	ModeModelMeshCreateCylinderSnake(ModeModelMesh *parent);
 
 	void on_start() override;
 	void on_end() override;

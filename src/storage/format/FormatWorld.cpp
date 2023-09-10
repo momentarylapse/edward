@@ -12,7 +12,8 @@
 #include "../../data/world/WorldLink.h"
 #include "../../data/world/WorldObject.h"
 #include "../../data/world/WorldTerrain.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
+#include "../../stuff/Progress.h"
 #include "../../y/Model.h"
 #include "../../y/Object.h"
 #include "../../y/World.h"
@@ -25,7 +26,7 @@
 #include "../../lib/os/formatter.h"
 #include "../../lib/doc/xml.h"
 
-FormatWorld::FormatWorld() : TypedFormat<DataWorld>(FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
+FormatWorld::FormatWorld(EdwardWindow *ed) : TypedFormat<DataWorld>(ed, FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
 }
 
 

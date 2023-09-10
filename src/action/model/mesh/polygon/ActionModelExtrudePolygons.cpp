@@ -16,9 +16,10 @@
 #include "../../../../mode/model/mesh/ModeModelMesh.h"
 #include <assert.h>
 
-ActionModelExtrudePolygons::ActionModelExtrudePolygons(float _offset, bool _independent) {
+ActionModelExtrudePolygons::ActionModelExtrudePolygons(float _offset, bool _independent, int _material) {
 	offset = _offset;
 	independent = _independent;
+	material = _material;
 }
 
 void *ActionModelExtrudePolygons::compose(Data *d) {
@@ -118,7 +119,7 @@ void ActionModelExtrudePolygons::extrude_surface(DataModel *m) {
 		sv.add(vec3(0,0,0));
 		sv.add(vec3(0,1,0));
 		sv.add(vec3(1,1,0));
-		addSubAction(new ActionModelAddPolygonSingleTexture(sewing.sub_ref(i, i+4), mode_model_mesh->current_material, sv), m);
+		addSubAction(new ActionModelAddPolygonSingleTexture(sewing.sub_ref(i, i+4), material, sv), m);
 	}
 }
 
@@ -165,7 +166,7 @@ void ActionModelExtrudePolygons::extrude_surface_indep(DataModel *m) {
 		sv.add(vec3(0,0,0));
 		sv.add(vec3(0,1,0));
 		sv.add(vec3(1,1,0));
-		addSubAction(new ActionModelAddPolygonSingleTexture(sewing.sub_ref(i, i+4), mode_model_mesh->current_material, sv), m);
+		addSubAction(new ActionModelAddPolygonSingleTexture(sewing.sub_ref(i, i+4), material, sv), m);
 	}
 
 }

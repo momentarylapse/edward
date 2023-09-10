@@ -7,7 +7,7 @@
 
 #include "Geometry.h"
 #include "../SkinGenerator.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 
 
@@ -356,10 +356,10 @@ void find_contours(const Geometry &m, ModelPolygon &t, const Geometry &s, Array<
 		foreachi(Col &c, cc, i)
 			msg_write(i2s(i) + " " + c.str());
 		if (cc.num < 3) {
-			for (int i=0;i<t.side.num;i++)
+			/*for (int i=0;i<t.side.num;i++)
 				ed->multi_view_3d->add_message_3d("p"+i2s(i), m.vertex[t.side[i].vertex].pos);
 			foreachi(Col &c, cc, i)
-				ed->multi_view_3d->add_message_3d("x"+i2s(i), c.p);
+				ed->multi_view_3d->add_message_3d("x"+i2s(i), c.p);*/
 			throw ActionException("contour with num<3");
 		}
 	}

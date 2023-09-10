@@ -6,7 +6,7 @@
  */
 
 #include "FormatMaterial.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../data/material/ShaderGraph.h"
 #include "../../lib/nix/nix.h"
 #include "../../lib/os/config.h"
@@ -22,7 +22,7 @@ Any color2any(const color &c) {
 	return r;
 }
 
-FormatMaterial::FormatMaterial() : TypedFormat<DataMaterial>(FD_MATERIAL, "material", _("Material"), Flag::CANONICAL_READ_WRITE) {
+FormatMaterial::FormatMaterial(EdwardWindow *ed) : TypedFormat<DataMaterial>(ed, FD_MATERIAL, "material", _("Material"), Flag::CANONICAL_READ_WRITE) {
 }
 
 Array<string> paths_to_str_arr(const Array<Path> &files) {

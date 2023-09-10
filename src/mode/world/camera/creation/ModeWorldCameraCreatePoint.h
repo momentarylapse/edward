@@ -9,14 +9,15 @@
 #define MODEWORLDCAMERACREATEPOINT_H_
 
 #include "../../../ModeCreation.h"
+
 class DataCamera;
+class ModeWorldCamera;
 
-class ModeWorldCameraCreatePoint: public ModeCreation<DataCamera>
-{
+class ModeWorldCameraCreatePoint: public ModeCreation<ModeWorldCamera, DataCamera> {
 public:
-	ModeWorldCameraCreatePoint(ModeBase *_parent);
+	ModeWorldCameraCreatePoint(ModeWorldCamera *_parent);
 
-	virtual void on_left_button_down();
+	void on_left_button_down() override;
 
 	string filename;
 };

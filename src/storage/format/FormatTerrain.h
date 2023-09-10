@@ -13,7 +13,7 @@
 
 class FormatTerrain : public TypedFormat<WorldTerrain> {
 public:
-	FormatTerrain();
+	FormatTerrain(EdwardWindow *ed);
 
 	void _load(const Path &filename, WorldTerrain *data, bool deep) override;
 	void _save(const Path &filename, WorldTerrain *data) override;

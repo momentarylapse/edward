@@ -13,12 +13,13 @@
 #include "../../../lib/os/time.h"
 
 class DataModel;
+class ModeModel;
 class ModelAnimationDialog;
 class ModelAnimationTimelinePanel;
 
-class ModeModelAnimation: public Mode<DataModel> {
+class ModeModelAnimation: public Mode<ModeModel, DataModel> {
 public:
-	ModeModelAnimation(ModeBase *parent, MultiView::MultiView *mv);
+	ModeModelAnimation(ModeModel *parent, MultiView::MultiView *mv);
 	virtual ~ModeModelAnimation();
 
 	obs::sink in_update;

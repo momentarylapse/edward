@@ -14,7 +14,7 @@
 #include "../model/DataModel.h"
 #include "../material/DataMaterial.h"
 #include "../font/DataFont.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../storage/Storage.h"
 #include "../../y/EngineData.h"
 #include "../../y/Terrain.h"
@@ -158,14 +158,14 @@ void add_possible_link(Array<s_admin_link> &l, int type, const Path &filename)
 	l.add(link);
 }
 
-void AdminFile::check(AdminFileList &list)
+void AdminFile::check(EdwardWindow *ed, AdminFileList &list)
 {
 	bool really_scan = true;
 
 	// test file existence
 	try {
 		// file ok
-		int _time = os::fs::mtime(storage->get_root_dir(Kind) | Name).time;
+		int _time = os::fs::mtime(ed->storage->get_root_dir(Kind) | Name).time;
 		Missing = false;
 
 		// different time stamp -> rescan file
@@ -190,8 +190,8 @@ void AdminFile::check(AdminFileList &list)
 	// find links
 	Array<s_admin_link> l;
 	if (Kind==FD_WORLD){
-		DataWorld w;
-		if (storage->load(engine.map_dir | Name, &w, false)){
+		DataWorld w(ed);
+		if (ed->storage->load(engine.map_dir | Name, &w, false)){
 			Time = w.file_time;
 			for (int i=0;i<w.terrains.num;i++)
 				add_possible_link(l, FD_TERRAIN, w.terrains[i].filename);
@@ -213,8 +213,8 @@ void AdminFile::check(AdminFileList &list)
 		}else
 			Missing=true;
 	}else if (Kind==FD_MODEL){
-		DataModel m;
-		if (storage->load(engine.object_dir | Name, &m, false)){
+		DataModel m(ed);
+		if (ed->storage->load(engine.object_dir | Name, &m, false)){
 			Time = m.file_time;
 			for (int i=0;i<m.bone.num;i++)
 				add_possible_link(l, FD_MODEL, m.bone[i].model_file);
@@ -235,8 +235,8 @@ void AdminFile::check(AdminFileList &list)
 		}else
 			Missing=true;
 	}else if (Kind==FD_MATERIAL){
-		DataMaterial m;
-		if (storage->load(engine.material_dir | Name, &m, false)){
+		DataMaterial m(ed);
+		if (ed->storage->load(engine.material_dir | Name, &m, false)){
 			Time = m.file_time;
 			add_possible_link(l, FD_SHADERFILE, m.shader.file);
 			if (m.appearance.reflection_mode == ReflectionMode::CUBE_MAP_STATIC)
@@ -247,8 +247,8 @@ void AdminFile::check(AdminFileList &list)
 		}else
 			Missing=true;
 	}else if (Kind==FD_FONT){
-		DataFont f;
-		if (storage->load(engine.font_dir | Name, &f, false)){
+		DataFont f(ed);
+		if (ed->storage->load(engine.font_dir | Name, &f, false)){
 			Time = f.file_time;
 			add_possible_link(l, FD_TEXTURE, f.global.TextureFile);
 		}else
@@ -272,7 +272,7 @@ void AdminFile::check(AdminFileList &list)
 		}
 	} else {
 		try {
-			Time = os::fs::mtime(storage->get_root_dir(Kind) | Name).time;
+			Time = os::fs::mtime(ed->storage->get_root_dir(Kind) | Name).time;
 		} catch(...) {
 			Missing=true;
 		}

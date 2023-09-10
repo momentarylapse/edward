@@ -10,10 +10,11 @@
 
 #include "../../ModeCreation.h"
 class DataWorld;
+class ModeWorld;
 
-class ModeWorldCreateObject: public ModeCreation<DataWorld> {
+class ModeWorldCreateObject: public ModeCreation<ModeWorld, DataWorld> {
 public:
-	ModeWorldCreateObject(ModeBase *_parent);
+	ModeWorldCreateObject(ModeWorld *_parent);
 
 	void on_start() override;
 	void on_end() override;

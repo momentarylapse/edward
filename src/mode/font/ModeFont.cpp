@@ -7,7 +7,7 @@
 
 #include "ModeFont.h"
 #include "dialog/FontDialog.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../storage/Storage.h"
 #include "../../multiview/MultiView.h"
 #include "../../multiview/Window.h"
@@ -17,8 +17,8 @@
 #include "../../data/font/import/ImporterCairo.h"
 #include "../../y/Font.h"
 
-ModeFont::ModeFont(MultiView::MultiView *mv) :
-	Mode("Font", NULL, new DataFont, mv, "menu_font"),
+ModeFont::ModeFont(EdwardWindow *ed, MultiView::MultiView *mv) :
+	Mode<ModeFont, DataFont>(ed, "Font", nullptr, new DataFont(ed), mv, "menu_font"),
 	in_data_changed(this, [this] { on_data_update(); })
 {
 	font = new Gui::Font;
@@ -77,7 +77,7 @@ void ModeFont::on_draw() {
 
 
 void ModeFont::save_as() {
-	storage->save_as(data);
+	ed->storage->save_as(data);
 }
 
 
@@ -85,7 +85,7 @@ void ModeFont::save_as() {
 
 void ModeFont::save() {
 	if (data->filename)
-		storage->save(data->filename, data);
+		ed->storage->save(data->filename, data);
 	else
 		save_as();
 }
@@ -115,7 +115,7 @@ void ModeFont::on_command(const string & id)
 
 
 void ModeFont::open() {
-	storage->open(data).on([this] {
+	ed->storage->open(data).on([this] {
 		optimize_view();
 	});
 }

@@ -16,9 +16,9 @@ namespace Gui{
 	class Font;
 }
 
-class ModeFont: public Mode<DataFont> {
+class ModeFont: public Mode<ModeFont, DataFont> {
 public:
-	ModeFont(MultiView::MultiView *mv);
+	ModeFont(EdwardWindow *ed, MultiView::MultiView *mv);
 	virtual ~ModeFont();
 
 	obs::sink in_data_changed;

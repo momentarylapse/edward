@@ -12,10 +12,11 @@
 #include "../../../data/model/DataModel.h"
 
 class DataModel;
+class ModeModelAnimation;
 
-class ModeModelAnimationSkeleton: public Mode<DataModel> {
+class ModeModelAnimationSkeleton: public Mode<ModeModelAnimation, DataModel> {
 public:
-	ModeModelAnimationSkeleton(ModeBase *parent, MultiView::MultiView *mv);
+	ModeModelAnimationSkeleton(ModeModelAnimation *parent, MultiView::MultiView *mv);
 
 	void on_start() override;
 	void on_end() override;

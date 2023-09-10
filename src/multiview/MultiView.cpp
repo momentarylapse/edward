@@ -5,7 +5,7 @@
  *      Author: michi
  */
 
-#include "../Edward.h"
+#include "../EdwardWindow.h"
 #include "MultiView.h"
 #include "Window.h"
 #include "ColorScheme.h"
@@ -43,7 +43,8 @@ vec3 Camera::get_pos(bool allow_radius) const {
 	return p;
 }
 
-MultiView::MultiView(bool mode3d) {
+MultiView::MultiView(EdwardWindow *_ed, bool mode3d) {
+	ed = _ed;
 	view_stage = 0;
 	grid_enabled = true;
 	wire_mode = false;
@@ -369,7 +370,7 @@ void MultiView::on_key_down(int k) {
 }
 
 
-MultiView::SelectionMode get_select_mode() {
+MultiView::SelectionMode get_select_mode(EdwardWindow *ed) {
 	if (ed->get_key(hui::KEY_CONTROL))
 		return MultiView::SelectionMode::ADD;
 	if (ed->get_key(hui::KEY_SHIFT))
@@ -402,7 +403,7 @@ void MultiView::on_left_button_down() {
 		if (action_con->action.locked) {
 			if (action_con->action.mode == ACTION_SELECT) {
 				if (allow_select) {
-					get_selected(get_select_mode());
+					get_selected(get_select_mode(ed));
 					sel_rect.start_later(m);
 				}
 			} else if (allow_mouse_actions and hover_selected()) {
@@ -410,10 +411,10 @@ void MultiView::on_left_button_down() {
 			}
 		} else {
 			if (allow_select) {
-				if (hover_selected() and (get_select_mode() == MultiView::SelectionMode::SET)) {
+				if (hover_selected() and (get_select_mode(ed) == MultiView::SelectionMode::SET)) {
 					action_con->start_action(active_win, hover.point, ActionController::Constraint::FREE);
 				} else {
-					get_selected(get_select_mode());
+					get_selected(get_select_mode(ed));
 					sel_rect.start_later(m);
 				}
 			}
@@ -518,7 +519,7 @@ void MultiView::on_mouse_move() {
 	} else if (cam_con->in_use()) {
 		cam_con->on_mouse_move();
 	} else if (sel_rect.active and allow_select) {
-		select_all_in_rectangle(get_select_mode());
+		select_all_in_rectangle(get_select_mode(ed));
 	} else if (view_moving) {
 		int t = active_win->type;
 		if ((t == VIEW_PERSPECTIVE) or (t == VIEW_ISOMETRIC)) {

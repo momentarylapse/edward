@@ -12,7 +12,7 @@
 #include "../../../data/world/lightmap/LightmapRayTracing.h"
 #include "../../../data/world/lightmap/LightmapRadiosity.h"
 #include "../../../data/world/DataWorld.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../storage/Storage.h"
 #include "../../../y/ModelManager.h"
 #include "../../../lib/math/vec2.h"
@@ -166,9 +166,9 @@ void LightmapDialog::OnResolution()
 }
 
 void LightmapDialog::OnFindNewWorld() {
-	storage->file_dialog(FD_WORLD, true, true).on([this] (const auto& p) {
+	/*storage->file_dialog(FD_WORLD, true, true).on([this] (const auto& p) {
 		set_string("new_world_name", p.simple.str());
-	});
+	});*/
 }
 
 void LightmapDialog::OnOk()

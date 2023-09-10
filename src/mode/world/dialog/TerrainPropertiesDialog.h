@@ -16,7 +16,7 @@ class DataWorld;
 
 class TerrainPropertiesDialog: public obs::Node<hui::Dialog> {
 public:
-	TerrainPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data, int _index);
+	TerrainPropertiesDialog(DataWorld *_data, int _index);
 	virtual ~TerrainPropertiesDialog();
 
 	void load_data();

@@ -12,9 +12,10 @@
 #include "ModelSelection.h"
 #include "geometry/Geometry.h"
 #include "../../mode/model/ModeModel.h"
+#include "../../mode/model/mesh/ModeModelMesh.h"
 #include "../../action/Action.h"
 #include "../../action/ActionManager.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../storage/Storage.h"
 #include "../../multiview/MultiView.h"
 #include "../../action/model/mesh/vertex/ActionModelAddVertex.h"
@@ -98,8 +99,8 @@ ModelVertex::ModelVertex(const vec3 &_pos) {
 
 ModelVertex::ModelVertex() : ModelVertex(v_0) {}
 
-DataModel::DataModel() :
-	Data(FD_MODEL)
+DataModel::DataModel(EdwardWindow *ed) :
+	Data(ed, FD_MODEL)
 {
 	mesh = new ModelMesh(this);
 	phys_mesh = new ModelMesh(this);
@@ -552,7 +553,7 @@ void DataModel::subdivideSelectedSurfaces(const ModelSelection &s) {
 }
 
 void DataModel::bevelSelectedEdges(float radius)
-{	execute(new ActionModelBevelEdges(radius));	}
+{	execute(new ActionModelBevelEdges(radius, ed->mode_model->mode_model_mesh->current_material));	}
 
 void DataModel::flattenSelectedVertices()
 {	execute(new ActionModelFlattenVertices(this));	}
@@ -561,7 +562,7 @@ void DataModel::triangulateSelectedVertices()
 {	execute(new ActionModelTriangulateVertices());	}
 
 void DataModel::extrudeSelectedPolygons(float offset, bool independent)
-{	execute(new ActionModelExtrudePolygons(offset, independent));	}
+{	execute(new ActionModelExtrudePolygons(offset, independent, ed->mode_model->mode_model_mesh->current_material));	}
 
 void DataModel::autoWeldSurfaces(const base::set<int> &surfaces, float epsilon)
 {	execute(new ActionModelAutoWeldSelection(epsilon));	}

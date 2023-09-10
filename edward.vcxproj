@@ -582,7 +582,7 @@
     <ClCompile Include="src\y\Terrain.cpp" />
     <ClCompile Include="src\y\World.cpp" />
     <ClCompile Include="src\Edward.cpp" />
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\EdwardWindow.cpp" />
     <ClCompile Include="src\meta.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -1025,6 +1025,7 @@
     <ClInclude Include="src\y\Terrain.h" />
     <ClInclude Include="src\y\World.h" />
     <ClInclude Include="src\Edward.h" />
+    <ClInclude Include="src\EdwardWindow.h" />
     <ClInclude Include="src\graphics-fwd.h" />
     <ClInclude Include="src\graphics-impl.h" />
     <ClInclude Include="src\meta.h" />

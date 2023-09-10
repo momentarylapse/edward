@@ -14,6 +14,7 @@
 #include "LightmapData.h"
 
 class LightmapData;
+class Progress;
 
 class Lightmap {
 public:
@@ -27,6 +28,7 @@ public:
 	virtual color RenderVertex(LightmapData::Vertex &v);
 	void CreateNewWorld();
 
+	Progress *progress;
 	LightmapData *data;
 
 	struct Histogram {

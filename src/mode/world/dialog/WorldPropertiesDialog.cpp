@@ -8,7 +8,7 @@
 #include "WorldPropertiesDialog.h"
 #include "ScriptVarsDialog.h"
 #include "../ModeWorld.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../storage/Storage.h"
 #include "../../../action/world/ActionWorldEditData.h"
 #include "../../../multiview/MultiView.h"
@@ -21,8 +21,8 @@
 #define WorldLightDec			1
 #define WorldFogDec				6
 
-WorldPropertiesDialog::WorldPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data) :
-	obs::Node<hui::Dialog>("world_dialog", 400, 300, _parent, _allow_parent)
+WorldPropertiesDialog::WorldPropertiesDialog(DataWorld *_data) :
+	obs::Node<hui::Dialog>("world_dialog", 400, 300, _data->ed, true)
 {
 	from_resource("world_dialog");
 	data = _data;
@@ -80,7 +80,7 @@ void WorldPropertiesDialog::on_skybox_right_click() {
 }
 
 void WorldPropertiesDialog::on_skybox_add() {
-	storage->file_dialog(FD_MODEL,false,true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_MODEL,false,true).on([this] (const auto& p) {
 		temp.skybox_files.add(p.simple);
 		fill_skybox_list();
 	});
@@ -88,7 +88,7 @@ void WorldPropertiesDialog::on_skybox_add() {
 
 void WorldPropertiesDialog::on_skybox_select() {
 	int n = get_int("skybox");
-	storage->file_dialog(FD_MODEL,false,true).on([this, n] (const auto& p) {
+	data->ed->storage->file_dialog(FD_MODEL,false,true).on([this, n] (const auto& p) {
 		temp.skybox_files[n] = p.simple;
 		fill_skybox_list();
 	});
@@ -133,7 +133,7 @@ void WorldPropertiesDialog::on_skybox_remove() {
 
 
 void WorldPropertiesDialog::on_script_add() {
-	storage->file_dialog(FD_SCRIPT, false, true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_SCRIPT, false, true).on([this] (const auto& p) {
 		WorldScript s;
 		s.filename = p.complete.relative_to(kaba::config.directory);
 		temp.scripts.add(s);
@@ -181,7 +181,7 @@ shared<const kaba::Class> get_class(shared<kaba::Module> s, const string &name) 
 	return nullptr;
 }
 
-void update_script_data(ScriptInstanceData &s, const string &class_base_name, bool guess_class) {
+void update_script_data(EdwardWindow *ed, ScriptInstanceData &s, const string &class_base_name, bool guess_class) {
 	try {
 		auto context = ownify(kaba::Context::create());
 		auto ss = context->load_module(s.filename, true);
@@ -234,7 +234,7 @@ void update_script_data(ScriptInstanceData &s, const string &class_base_name, bo
 void WorldPropertiesDialog::on_edit_script_vars() {
 	int n = get_int("script_list");
 	if (n >= 0) {
-		update_script_data(temp.scripts[n], "Controller", true);
+		update_script_data(data->ed, temp.scripts[n], "Controller", true);
 		hui::fly(new ScriptVarsDialog(this, &temp.scripts[n]));
 	}
 }
@@ -249,7 +249,7 @@ void WorldPropertiesDialog::on_edit_script() {
 }
 
 void WorldPropertiesDialog::on_create_script() {
-	storage->file_dialog(FD_SCRIPT, true, true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_SCRIPT, true, true).on([this] (const auto& p) {
 		string source = R""""(use y
 
 class X extends Controller

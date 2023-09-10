@@ -13,9 +13,11 @@
 #include "../../../ModeCreation.h"
 #include "../../../../data/model/DataModel.h"
 
-class ModeModelMeshCutLoop: public ModeCreation<DataModel> {
+class ModeModelMesh;
+
+class ModeModelMeshCutLoop: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshCutLoop(ModeBase *parent);
+	ModeModelMeshCutLoop(ModeModelMesh *parent);
 
 	void on_start() override;
 

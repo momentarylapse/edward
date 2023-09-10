@@ -6,9 +6,9 @@
  */
 
 #include "ModeWorldTerrain.h"
-
+#include "../ModeWorld.h"
 #include "../../../action/world/terrain/ActionWorldTerrainBrushExtrude.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/ColorScheme.h"
 #include "../../../multiview/DrawingHelper.h"
@@ -55,17 +55,14 @@ public:
 	float base_diameter, base_depth;
 };
 
-ModeWorldTerrain::ModeWorldTerrain(ModeBase* _parent) :
-	ModeCreation("WorldEditTerrain", _parent)
+ModeWorldTerrain::ModeWorldTerrain(ModeWorld* _parent) :
+	ModeCreation<ModeWorld, DataWorld>("WorldEditTerrain", _parent)
 {
 	brushing = false;
 	message = _("paint onto terrain");
 	base_depth = 1;
 	base_diameter = 1;
 	dialog = nullptr;
-}
-
-ModeWorldTerrain::~ModeWorldTerrain() {
 }
 
 

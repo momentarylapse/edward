@@ -12,10 +12,11 @@
 #include "../../../data/model/DataModel.h"
 
 class DataModel;
+class ModeModelAnimation;
 
-class ModeModelAnimationVertex: public Mode<DataModel> {
+class ModeModelAnimationVertex: public Mode<ModeModelAnimation, DataModel> {
 public:
-	ModeModelAnimationVertex(ModeBase *parent, MultiView::MultiView *mv);
+	ModeModelAnimationVertex(ModeModelAnimation *parent, MultiView::MultiView *mv);
 
 	void on_start() override;
 	void on_end() override;

@@ -9,6 +9,7 @@
 #include "ShaderBuilderContext.h"
 #include "../../lib/image/color.h"
 #include "../../stuff/PluginManager.h"
+#include "../../EdwardWindow.h"
 #include "../../Edward.h"
 
 string shader_value_type_to_str(ShaderValueType t) {
@@ -68,7 +69,7 @@ void ShaderNode::__delete__() {
 
 ShaderNode *create_node(const string &type, int x, int y) {
 	try {
-		for (auto &p: ed->plugins->plugins)
+		for (auto &p: app->plugins->plugins)
 			if (p.type == PluginManager::PluginType::SHADER_NODE)
 				if (p.name == type) {
 					auto n = (ShaderNode*)p.create_instance("*.shader.Node");

@@ -12,7 +12,7 @@
 #include "WorldCamera.h"
 #include "WorldLink.h"
 #include "../../mode/world/ModeWorld.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../storage/Storage.h"
 #include "../../y/Object.h"
 #include "../../y/Terrain.h"
@@ -32,8 +32,8 @@
 
 
 
-DataWorld::DataWorld() :
-	Data(FD_WORLD)
+DataWorld::DataWorld(EdwardWindow *ed) :
+	Data(ed, FD_WORLD)
 {
 	reset();
 }

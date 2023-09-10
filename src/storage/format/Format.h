@@ -14,6 +14,7 @@
 class Data;
 class color;
 class Path;
+class EdwardWindow;
 
 class FormatError : public Exception {
 public:
@@ -103,7 +104,7 @@ public:
 	};
 
 
-	Format(int cat, const string &ext, const string &desc, Flag flags);
+	Format(EdwardWindow *ed, int cat, const string &ext, const string &desc, Flag flags);
 	virtual ~Format();
 
 	void warning(const string &message);
@@ -111,6 +112,7 @@ public:
 	virtual void load(const Path &filename, Data *data, bool deep) {}
 	virtual void save(const Path &filename, Data *data) {}
 
+	EdwardWindow *ed;
 	string extension;
 	string description;
 	int category;
@@ -122,7 +124,7 @@ public:
 template<class T>
 class TypedFormat : public Format {
 public:
-	TypedFormat(int cat, const string &ext, const string &desc, Flag flags) : Format(cat, ext, desc, flags) {}
+	TypedFormat(EdwardWindow *ed, int cat, const string &ext, const string &desc, Flag flags) : Format(ed, cat, ext, desc, flags) {}
 	virtual void _load(const Path &filename, T *data, bool deep) {}
 	virtual void _save(const Path &filename, T *data) {}
 

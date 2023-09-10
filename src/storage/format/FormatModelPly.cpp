@@ -6,14 +6,14 @@
  */
 
 #include "FormatModelPly.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../data/model/DataModel.h"
 #include "../../data/model/ModelMesh.h"
 #include "../../data/model/ModelPolygon.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
 
-FormatModelPly::FormatModelPly() : TypedFormat<DataModel>(FD_MODEL, "ply", _("Model ply"), Flag::READ) {
+FormatModelPly::FormatModelPly(EdwardWindow *ed) : TypedFormat<DataModel>(ed, FD_MODEL, "ply", _("Model ply"), Flag::READ) {
 }
 
 void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {

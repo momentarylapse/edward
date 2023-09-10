@@ -8,7 +8,7 @@
 #include <algorithm>
 #include "Lightmap.h"
 #include "LightmapData.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../stuff/Progress.h"
 #include "../../../data/model/DataModel.h"
 #include "../../../data/world/DataWorld.h"
@@ -51,6 +51,7 @@ void Lightmap::Histogram::normalize()
 Lightmap::Lightmap(LightmapData *_data)
 {
 	data = _data;
+	progress = data->source_world->ed->progress;
 }
 
 Lightmap::~Lightmap()
@@ -59,15 +60,15 @@ Lightmap::~Lightmap()
 
 bool Lightmap::Create()
 {
-	ed->progress->start_cancelable(_("calculating light"), 0);
+	progress->start_cancelable(_("calculating light"), 0);
 	data->AddTextureLevels();
 	data->CreateVertices();
 	try{
 		Compute();
-		ed->progress->end();
+		progress->end();
 
 	}catch(AbortException &e){
-		ed->progress->end();
+		progress->end();
 		return false;
 	}
 	return RenderTextures();
@@ -84,16 +85,16 @@ Lightmap::Histogram Lightmap::GetHistogram()
 
 bool Lightmap::Preview()
 {
-	ed->progress->start_cancelable(_("calculating light"), 0);
+	progress->start_cancelable(_("calculating light"), 0);
 	data->AddTextureLevels(false);
 	data->CreateVertices();
 	try{
 		Compute();
 	}catch(AbortException &e){
-		ed->progress->end();
+		progress->end();
 		return false;
 	}
-	ed->progress->end();
+	progress->end();
 	return true;
 }
 
@@ -137,7 +138,7 @@ void fuzzy_image(Image &im)
 
 bool Lightmap::RenderTextures()
 {
-	ed->progress->start_cancelable(_("calculating texture"), 0);
+	progress->start_cancelable(_("calculating texture"), 0);
 	os::fs::create_directory(engine.texture_dir | data->texture_out_dir);
 	os::fs::create_directory(engine.object_dir | data->model_out_dir);
 	os::fs::create_directory(engine.map_dir | data->model_out_dir);
@@ -157,8 +158,8 @@ bool Lightmap::RenderTextures()
 			im.set_pixel(v.x, v.y, RenderVertex(v));
 
 			if ((vi & 127) == 0){
-				ed->progress->set(format(_("%d of %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
-				if (ed->progress->is_cancelled())
+				progress->set(format(_("%d of %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
+				if (progress->is_cancelled())
 					throw Lightmap::AbortException();
 			}
 		}
@@ -178,7 +179,7 @@ bool Lightmap::RenderTextures()
 			mat->col.user = true;
 		}
 		m.new_name = data->model_out_dir | i2s(mid);
-		storage->save(engine.object_dir | m.new_name.with(".model"), m.orig);
+		data->source_world->ed->storage->save(engine.object_dir | m.new_name.with(".model"), m.orig);
 	}
 
 	foreachi(LightmapData::Terrain &t, data->Terrains, tid){
@@ -193,8 +194,8 @@ bool Lightmap::RenderTextures()
 			im.set_pixel(v.x, v.y, RenderVertex(v));
 
 			if ((vi & 127) == 0){
-				ed->progress->set(format(_("%d of %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
-				if (ed->progress->is_cancelled())
+				progress->set(format(_("%d of %d"), vi, data->Vertices.num), (float)vi / (float)data->Vertices.num);
+				if (progress->is_cancelled())
 					throw Lightmap::AbortException();
 			}
 		}
@@ -213,16 +214,16 @@ bool Lightmap::RenderTextures()
 
 	CreateNewWorld();
 	}catch(AbortException &e){
-		ed->progress->end();
+		progress->end();
 		return false;
 	}
-	ed->progress->end();
+	progress->end();
 	return true;
 }
 
 void Lightmap::CreateNewWorld()
 {
-	DataWorld w;
+	DataWorld w(data->source_world->ed);
 	w.meta_data = data->source_world->meta_data;
 	w.EgoIndex = data->source_world->EgoIndex;
 	w.objects = data->source_world->objects;
@@ -230,6 +231,6 @@ void Lightmap::CreateNewWorld()
 	for (LightmapData::Model &m: data->Models)
 		w.objects[m.object_index].filename = m.new_name;
 
-	storage->save(engine.map_dir | data->new_world_name.with(".world"), &w);
+	data->source_world->ed->storage->save(engine.map_dir | data->new_world_name.with(".world"), &w);
 }
 

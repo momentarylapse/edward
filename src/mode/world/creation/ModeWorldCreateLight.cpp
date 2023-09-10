@@ -8,12 +8,12 @@
 #include "ModeWorldCreateLight.h"
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/world/WorldLight.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../action/world/light/ActionWorldAddLight.h"
 
-ModeWorldCreateLight::ModeWorldCreateLight(ModeBase *_parent) :
-	ModeCreation<DataWorld>("WorldCreateObject", _parent)
+ModeWorldCreateLight::ModeWorldCreateLight(ModeWorld *_parent) :
+	ModeCreation<ModeWorld, DataWorld>("WorldCreateLight", _parent)
 {
 	message = _("put new light");
 }
@@ -52,5 +52,5 @@ void ModeWorldCreateLight::on_left_button_down() {
 }
 
 void ModeWorldCreateLight::on_draw_win(MultiView::Window *win) {
-	parent->on_draw_win(win);
+	parent_untyped->on_draw_win(win);
 }

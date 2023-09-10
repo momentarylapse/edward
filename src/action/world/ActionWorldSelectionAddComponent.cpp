@@ -13,7 +13,7 @@
 #include "../../data/world/WorldObject.h"
 #include "../../data/world/WorldTerrain.h"
 #include "../../y/Terrain.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 
 ActionWorldSelectionAddComponent::ActionWorldSelectionAddComponent(DataWorld *d, const ScriptInstanceData &com) {
 	component = com;

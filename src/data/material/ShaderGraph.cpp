@@ -14,18 +14,19 @@
 #include "../../lib/doc/xml.h"
 #include "../../lib/hui/hui.h"
 #include "../../stuff/PluginManager.h"
+#include "../../EdwardWindow.h"
 #include "../../Edward.h"
 
 
 Array<string> ShaderGraph::enumerate() const {
 	Array<string> r;
 	base::set<string> cats;
-	for (auto &p: ed->plugins->plugins)
+	for (auto &p: app->plugins->plugins)
 		if (p.type == PluginManager::PluginType::SHADER_NODE)
 			cats.add(p.category);
 	for (auto &c: cats) {
 		r.add("--" + c);
-		for (auto &p: ed->plugins->plugins)
+		for (auto &p: app->plugins->plugins)
 			if (p.type == PluginManager::PluginType::SHADER_NODE)
 				if (p.category == c)
 					r.add(p.name);
@@ -36,7 +37,8 @@ Array<string> ShaderGraph::enumerate() const {
 
 
 
-ShaderGraph::ShaderGraph() {
+ShaderGraph::ShaderGraph(EdwardWindow *_ed) {
+	ed = _ed;
 }
 
 ShaderGraph::~ShaderGraph() {

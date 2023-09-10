@@ -11,18 +11,17 @@
 #include "../../../ActionGroup.h"
 class DataModel;
 
-class ActionModelBevelVertices: public ActionGroup
-{
+class ActionModelBevelVertices: public ActionGroup {
 public:
-	ActionModelBevelVertices(float _length);
-	virtual ~ActionModelBevelVertices(){}
-	string name(){	return "ModelBevelVertices";	}
+	ActionModelBevelVertices(float _length, int material);
+	string name() override { return "ModelBevelVertices"; }
 
 	void *compose(Data *d);
 
 	void BevelVertex(DataModel *m, float length, int vi);
 private:
 	float length;
+	int material;
 };
 
 #endif /* ACTIONMODELBEVELVERTICES_H_ */

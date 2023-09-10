@@ -79,16 +79,17 @@ void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)
 	if (closed){
 		Array<int> loop = m->edit_mesh->get_boundary_loop(m->edit_mesh->vertex.num - 1);
 		loop.reverse();
-		addSubAction(new ActionModelAddPolygonAutoSkin(loop, mode_model_mesh->current_material), m);
+		addSubAction(new ActionModelAddPolygonAutoSkin(loop, material), m);
 	}
 
 	// delete vertex
 	addSubAction(new ActionModelDeleteUnusedVertex(vi), m);
 }
 
-ActionModelBevelVertices::ActionModelBevelVertices(float _length)
+ActionModelBevelVertices::ActionModelBevelVertices(float _length, int _material)
 {
 	length = _length;
+	material = _material;
 }
 
 void *ActionModelBevelVertices::compose(Data *d)

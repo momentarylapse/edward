@@ -13,13 +13,11 @@
 
 class ComponentSelectionDialog: public hui::Dialog {
 public:
-	using Callback = std::function<void(const ScriptInstanceData &component)>;
+	ComponentSelectionDialog(EdwardWindow *ed, hui::Window *parent);
 
-	ComponentSelectionDialog(hui::Window *parent, Callback on_select);
-
-	Callback on_select;
+	base::promise<ScriptInstanceData> promise;
 	Array<ScriptInstanceData> available;
 
 
-	static void choose(hui::Window *parent, Callback on_select);
+	static base::future<ScriptInstanceData> choose(EdwardWindow *ed, hui::Window *parent);
 };

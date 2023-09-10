@@ -9,11 +9,13 @@
 #define SRC_MODE_WORLD_CREATION_MODEWORLDCREATELIGHT_H_
 
 #include "../../ModeCreation.h"
-class DataWorld;
 
-class ModeWorldCreateLight: public ModeCreation<DataWorld> {
+class DataWorld;
+class ModeWorld;
+
+class ModeWorldCreateLight: public ModeCreation<ModeWorld, DataWorld> {
 public:
-	ModeWorldCreateLight(ModeBase *_parent);
+	ModeWorldCreateLight(ModeWorld *_parent);
 
 	void on_start() override;
 	void on_end() override;

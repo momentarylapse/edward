@@ -18,22 +18,19 @@
 #include "mesh/selection/MeshSelectionModeVertex.h"
 #include "mesh/ModeModelMeshTexture.h"
 #include "skeleton/ModeModelSkeleton.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../storage/Storage.h"
 #include "../../data/model/DataModel.h"
 #include "../../lib/nix/nix.h"
 #include "../../multiview/MultiView.h"
 #include "../../multiview/DrawingHelper.h"
 
-ModeModel::ModeModel(MultiView::MultiView *mv3, MultiView::MultiView *mv2) :
-	Mode<DataModel>("Model", nullptr, new DataModel, nullptr, "")
+ModeModel::ModeModel(EdwardWindow *ed, MultiView::MultiView *mv3, MultiView::MultiView *mv2) :
+	Mode<ModeModel, DataModel>(ed, "Model", nullptr, new DataModel(ed), nullptr, "")
 {
 	mode_model_mesh = new ModeModelMesh(this, mv3, mv2);
 	mode_model_skeleton = new ModeModelSkeleton(this, mv3);
 	mode_model_animation = new ModeModelAnimation(this, mv3);
-}
-
-ModeModel::~ModeModel() {
 }
 
 
@@ -62,7 +59,7 @@ void ModeModel::on_end() {
 
 void ModeModel::on_command(const string & id) {
 	if (id == "new")
-		_new();
+		ed->universal_new(FD_MODEL);
 	if (id == "open")
 		open();
 	if (id == "save")
@@ -100,13 +97,13 @@ void ModeModel::on_command(const string & id) {
 	if (id == "mode_model_surface")
 		mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_surface);
 	if (id == "mode_model_deform")
-		ed->set_mode(mode_model_mesh_deform);
+		ed->set_mode(mode_model_mesh->mode_model_mesh_deform);
 	if (id == "mode_model_paint")
 		ed->set_mode(mode_model_mesh_paint);
 	if (id == "mode_model_materials")
-		ed->set_mode(mode_model_mesh_material);
+		ed->set_mode(mode_model_mesh->mode_model_mesh_material);
 	if (id == "mode_model_texture_coord")
-		ed->set_mode(mode_model_mesh_texture);
+		ed->set_mode(mode_model_mesh->mode_model_mesh_texture);
 	if (id == "mode_model_animation")
 		ed->set_mode(mode_model_animation);
 	if (id == "mode_model_skeleton")
@@ -131,11 +128,11 @@ void ModeModel::on_update_menu() {
 	ed->check("mode_model_edge", mode_model_mesh->selection_mode_edge->is_active());
 	ed->check("mode_model_polygon", mode_model_mesh->selection_mode_polygon->is_active());
 	ed->check("mode_model_surface", mode_model_mesh->selection_mode_surface->is_active());
-	ed->check("mode_model_texture_coord", mode_model_mesh_texture->is_ancestor_of(ed->cur_mode));
-	ed->check("mode_model_materials", mode_model_mesh_material->is_ancestor_of(ed->cur_mode));
-	ed->check("mode_model_deform", mode_model_mesh_deform->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_texture_coord", mode_model_mesh->mode_model_mesh_texture->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_materials", mode_model_mesh->mode_model_mesh_material->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_deform", mode_model_mesh->mode_model_mesh_deform->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_model_paint", mode_model_mesh_paint->is_ancestor_of(ed->cur_mode));
-	ed->check("mode_model_mesh", mode_model_mesh->is_ancestor_of(ed->cur_mode) and !mode_model_mesh_texture->is_ancestor_of(ed->cur_mode) and !mode_model_mesh_material->is_ancestor_of(ed->cur_mode) and !mode_model_mesh_deform->is_ancestor_of(ed->cur_mode) and !mode_model_mesh_paint->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_mesh", mode_model_mesh->is_ancestor_of(ed->cur_mode) and !mode_model_mesh->mode_model_mesh_texture->is_ancestor_of(ed->cur_mode) and !mode_model_mesh->mode_model_mesh_material->is_ancestor_of(ed->cur_mode) and !mode_model_mesh->mode_model_mesh_deform->is_ancestor_of(ed->cur_mode) and !mode_model_mesh_paint->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_model_skeleton", mode_model_skeleton->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_model_animation", mode_model_animation->is_ancestor_of(ed->cur_mode));
 }
@@ -157,16 +154,16 @@ void ModeModel::open() {
 }
 
 void ModeModel::save() {
-	storage->auto_save(data);
+	ed->storage->auto_save(data);
 }
 
 void ModeModel::save_as() {
-	storage->save_as(data);
+	ed->storage->save_as(data);
 }
 
 void ModeModel::import_open_3ds() {
 	ed->allow_termination().on([this] {
-		storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
+		ed->storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
 			import_load_3ds(p.complete);
 		});
 	});
@@ -174,7 +171,7 @@ void ModeModel::import_open_3ds() {
 
 bool ModeModel::import_load_3ds(const Path &filename) {
 	try {
-		storage->load(filename, data);
+		ed->storage->load(filename, data);
 
 		ed->set_mode(this);
 		mode_model_mesh->optimize_view();
@@ -186,7 +183,7 @@ bool ModeModel::import_load_3ds(const Path &filename) {
 
 void ModeModel::import_open_json() {
 	ed->allow_termination().on([this] {
-		storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
+		ed->storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
 			import_load_json(p.complete);
 		});
 	});
@@ -194,7 +191,7 @@ void ModeModel::import_open_json() {
 
 bool ModeModel::import_load_ply(const Path &filename) {
 	try {
-		storage->load(filename, data);
+		ed->storage->load(filename, data);
 
 		ed->set_mode(this);
 		mode_model_mesh->optimize_view();
@@ -206,7 +203,7 @@ bool ModeModel::import_load_ply(const Path &filename) {
 
 void ModeModel::import_open_ply() {
 	ed->allow_termination().on([this] {
-		storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
+		ed->storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
 			import_load_ply(p.complete);
 		});
 	});
@@ -214,7 +211,7 @@ void ModeModel::import_open_ply() {
 
 bool ModeModel::import_load_json(const Path &filename) {
 	try {
-		storage->load(filename, data);
+		ed->storage->load(filename, data);
 
 		ed->set_mode(this);
 		mode_model_mesh->optimize_view();
@@ -225,13 +222,13 @@ bool ModeModel::import_load_json(const Path &filename) {
 }
 
 void ModeModel::export_save_json() {
-	storage->file_dialog(FD_FILE, true, false).on([this] (const auto& p) {
+	ed->storage->file_dialog(FD_FILE, true, false).on([this] (const auto& p) {
 		export_write_json(p.complete);
 	});
 }
 
 bool ModeModel::export_write_json(const Path &filename) {
-	return storage->save(filename, data);
+	return ed->storage->save(filename, data);
 }
 
 void ModeModel::run_properties_dialog() {

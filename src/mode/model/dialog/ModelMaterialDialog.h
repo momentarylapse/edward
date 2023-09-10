@@ -13,6 +13,9 @@
 #include "../../../data/model/ModelMaterial.h"
 class DataModel;
 
+class ModeModelMesh;
+class ModeModelMeshTexture;
+
 class ModelMaterialDialog: public obs::Node<hui::Panel> {
 public:
 	ModelMaterialDialog(DataModel *_data, bool full=true);
@@ -47,6 +50,8 @@ public:
 
 private:
 	DataModel *data;
+	ModeModelMesh *mode_model_mesh();
+	ModeModelMeshTexture *mode_model_mesh_texture();
 	//ModelMaterial temp;
 	int apply_queue_depth;
 	hui::Menu *popup_materials;

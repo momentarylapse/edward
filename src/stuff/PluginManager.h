@@ -11,6 +11,8 @@
 #include "../lib/base/base.h"
 #include "../lib/os/path.h"
 
+class EdwardWindow;
+
 class PluginManager {
 public:
 	PluginManager(const Path &dir);
@@ -36,7 +38,7 @@ public:
 	};
 	Array<Plugin> plugins;
 
-	void execute(const Path &filename);
+	void execute(EdwardWindow *ed, const Path &filename);
 
 	static Path directory;
 	static void* create_instance(const Path &filename, const string &parent);

@@ -6,14 +6,14 @@
  */
 
 #include "DataCamera.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../storage/Storage.h"
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
 
-DataCamera::DataCamera() :
-	Data(FD_CAMERAFLIGHT)
+DataCamera::DataCamera(EdwardWindow *ed) :
+	Data(ed, FD_CAMERAFLIGHT)
 {
 }
 

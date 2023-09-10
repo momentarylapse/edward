@@ -8,7 +8,7 @@
 #include "ModeModelSkeletonAttachVertices.h"
 #include "../../mesh/selection/MeshSelectionModePolygon.h"
 #include "../../ModeModel.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -47,8 +47,8 @@ static void add_weight(ivec4 &bones, vec4 &weights, int bone, float dweight) {
 
 
 
-ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeBase* _parent, int _bone_index) :
-	ModeCreation<DataModel>("ModelSkeletonAttachVertices", _parent)
+ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeModelSkeleton* _parent, int _bone_index) :
+	ModeCreation<ModeModelSkeleton, DataModel>("ModelSkeletonAttachVertices", _parent)
 {
 	message = _("Select vertices, [Ctrl + Return] = done");
 	bone_index = _bone_index;
@@ -61,7 +61,7 @@ void ModeModelSkeletonAttachVertices::on_start() {
 	dialog = new BrushPanel(multi_view, "model-texture-paint-brush-dialog");
 	ed->set_side_panel(dialog);
 
-	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_polygon);
+	ed->mode_model->mode_model_mesh->set_selection_mode(ed->mode_model->mode_model_mesh->selection_mode_polygon);
 	ed->mode_model->allow_selection_modes(false);
 
 	multi_view->set_allow_action(false);
@@ -103,7 +103,7 @@ void ModeModelSkeletonAttachVertices::on_end() {
 }
 
 void ModeModelSkeletonAttachVertices::on_data_change() {
-	mode_model_mesh->selection_mode->update_multi_view();
+	ed->mode_model->mode_model_mesh->selection_mode->update_multi_view();
 
 	int n = 0;
 	for (ModelPolygon &t: data->mesh->polygon) {
@@ -132,7 +132,7 @@ BrushPanel *ModeModelSkeletonAttachVertices::brush_panel() {
 }
 
 void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win) {
-	mode_model_mesh->on_draw_win(win);
+	ed->mode_model->mode_model_mesh->on_draw_win(win);
 
 	// weights
 	set_material_selected();
@@ -186,7 +186,7 @@ void ModeModelSkeletonAttachVertices::on_left_button_up() {
 }
 
 void ModeModelSkeletonAttachVertices::on_set_multi_view() {
-	mode_model_mesh->on_set_multi_view();
+	ed->mode_model->mode_model_mesh->on_set_multi_view();
 }
 
 void ModeModelSkeletonAttachVertices::apply() {

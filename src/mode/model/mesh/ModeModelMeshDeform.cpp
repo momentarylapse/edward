@@ -12,13 +12,11 @@
 #include "../../../multiview/DrawingHelper.h"
 #include "../../../multiview/ColorScheme.h"
 //#include "../../../stuff/BrushPanel.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../action/model/mesh/brush/ActionModelBrushExtrude.h"
 #include "../../../action/model/mesh/brush/ActionModelBrushSmooth.h"
 #include "../../../action/model/mesh/brush/ActionModelBrushComplexify.h"
-
-ModeModelMeshDeform *mode_model_mesh_deform = NULL;
 
 
 class DeformBrushPanel : public hui::Panel {
@@ -56,8 +54,8 @@ public:
 	float base_diameter, base_depth;
 };
 
-ModeModelMeshDeform::ModeModelMeshDeform(ModeBase *_parent, MultiView::MultiView *mv) :
-		Mode<DataModel>("ModelMeshDeform", _parent, mv, "menu_model") {
+ModeModelMeshDeform::ModeModelMeshDeform(ModeModelMesh *_parent, MultiView::MultiView *mv) :
+		Mode<ModeModelMesh, DataModel>(_parent->ed, "ModelMeshDeform", _parent, mv, "menu_model") {
 	dialog = nullptr;
 	brushing = false;
 	distance = 1;
@@ -74,9 +72,9 @@ void ModeModelMeshDeform::on_start() {
 	multi_view->set_allow_action(false);
 
 	// enter
-	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_polygon);
+	parent->set_selection_mode(parent->selection_mode_polygon);
 	ed->mode_model->allow_selection_modes(false);
-	mode_model_mesh->set_allow_draw_hover(false);
+	parent->set_allow_draw_hover(false);
 
 
 
@@ -91,7 +89,7 @@ void ModeModelMeshDeform::on_end() {
 
 	multi_view->set_allow_action(true);
 	ed->mode_model->allow_selection_modes(true);
-	mode_model_mesh->set_allow_draw_hover(true);
+	parent->set_allow_draw_hover(true);
 	ed->set_side_panel(nullptr);
 }
 

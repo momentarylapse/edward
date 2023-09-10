@@ -123,7 +123,7 @@ public:
 
 class DataModel: public Data {
 public:
-	DataModel();
+	DataModel(EdwardWindow *ed);
 	virtual ~DataModel();
 
 	obs::source out_skin_changed{this, "skin-changed"};

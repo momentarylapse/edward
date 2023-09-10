@@ -472,7 +472,7 @@ set(SOURCE
 	src/y/Terrain.cpp
 	src/y/World.cpp
 	src/Edward.cpp
-	src/main.cpp
+	src/EdwardWindow.cpp
 	src/meta.cpp
 )
 

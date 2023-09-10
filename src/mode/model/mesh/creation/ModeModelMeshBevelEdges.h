@@ -12,9 +12,11 @@
 #include "../../../../data/model/DataModel.h"
 #include "../../../../data/model/ModelSelection.h"
 
-class ModeModelMeshBevelEdges: public ModeCreation<DataModel> {
+class ModeModelMesh;
+
+class ModeModelMeshBevelEdges: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshBevelEdges(ModeBase *_parent);
+	ModeModelMeshBevelEdges(ModeModelMesh *_parent);
 
 	void on_start() override;
 	void on_end() override;

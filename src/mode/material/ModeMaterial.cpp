@@ -8,7 +8,7 @@
 #include "ModeMaterial.h"
 #include "dialog/MaterialPropertiesDialog.h"
 #include "dialog/ShaderGraphDialog.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../storage/Storage.h"
 #include "../../data/material/DataMaterial.h"
 #include "../../data/material/ShaderGraph.h"
@@ -35,8 +35,8 @@ ModeMaterial *mode_material = NULL;
 
 #define __MATERIAL_MAX_TEXTURES		4
 
-ModeMaterial::ModeMaterial(MultiView::MultiView *mv) :
-	Mode("Material", nullptr, new DataMaterial, mv, "menu_material"),
+ModeMaterial::ModeMaterial(EdwardWindow *_ed, MultiView::MultiView *mv) :
+	Mode(_ed, "Material", nullptr, new DataMaterial(_ed), mv, "menu_material"),
 	in_data_changed(this, [this] { on_data_update(); })
 {
 	geo = nullptr;
@@ -72,11 +72,11 @@ void test_save_extras(DataMaterial *data, hui::Callback cb_success) {
 		cb_success();
 	};
 
-	Path dir = storage->last_dir[FD_SHADERFILE];
+	Path dir = data->ed->storage->last_dir[FD_SHADERFILE];
 	if (data->shader.file) {
 		f(dir);
 	} else {
-		hui::file_dialog_save(ed, "Shader...", dir, {"filter=*.shader", "showfilter=*.shader"}).on([data, dir, f] (const Path &path) {
+		hui::file_dialog_save(data->ed, "Shader...", dir, {"filter=*.shader", "showfilter=*.shader"}).on([data, dir, f] (const Path &path) {
 			data->shader.file = path.relative_to(dir);
 			f(dir);
 		});
@@ -87,7 +87,7 @@ void test_save_extras(DataMaterial *data, hui::Callback cb_success) {
 
 void ModeMaterial::save() {
 	test_save_extras(data, [this] {
-		storage->auto_save(data);
+		ed->storage->auto_save(data);
 	});
 }
 
@@ -223,7 +223,7 @@ void ModeMaterial::on_end() {
 
 void ModeMaterial::save_as() {
 	test_save_extras(data, [this] {
-		storage->save_as(data);
+		ed->storage->save_as(data);
 	});
 }
 

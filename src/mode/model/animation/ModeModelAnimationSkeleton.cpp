@@ -10,7 +10,7 @@
 #include "../animation/ModeModelAnimation.h"
 #include "../mesh/ModeModelMesh.h"
 #include "../ModeModel.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/DrawingHelper.h"
 #include "../../../lib/nix/nix.h"
@@ -20,10 +20,10 @@ ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
 float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vec2 &M, vec3 &tp, float &z, const Array<ModelVertex> &vertex);
 
-ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeBase* _parent, MultiView::MultiView *mv) :
-	Mode<DataModel>("ModelAnimationSkeleton", _parent, mv, "menu_move"),
-	current_move(((ModeModelAnimation*)parent)->current_move),
-	current_frame(((ModeModelAnimation*)parent)->current_frame)
+ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeModelAnimation* _parent, MultiView::MultiView *mv) :
+	Mode<ModeModelAnimation, DataModel>(_parent->ed, "ModelAnimationSkeleton", _parent, mv, "menu_move"),
+	current_move(parent->current_move),
+	current_frame(parent->current_frame)
 {
 	select_recursive = true;
 	mouse_action = -1;
@@ -106,8 +106,8 @@ void ModeModelAnimationSkeleton::on_set_multi_view() {
 }
 
 void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
-	mode_model_mesh->draw_mesh(win, data->mesh, mode_model_animation->vertex, true);
-	mode_model_skeleton->draw_skeleton(win, mode_model_animation->bone, true);
+	ed->mode_model->mode_model_mesh->draw_mesh(win, data->mesh, mode_model_animation->vertex, true);
+	ed->mode_model->mode_model_skeleton->draw_skeleton(win, mode_model_animation->bone, true);
 
 
 	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_SKELETON_BONE))
@@ -117,12 +117,12 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
 	for (ModelPolygon &p: data->mesh->polygon)
 		if (dominant_bone(data->mesh->vertex[p.side[0].vertex]) == multi_view->hover.index)
 			p.add_to_vertex_buffer(mode_model_animation->vertex, vbs, 1);
-	vbs.build(mode_model_mesh->vb_hover, 1);
+	vbs.build(ed->mode_model->mode_model_mesh->vb_hover, 1);
 
 
 	nix::set_offset(-1.0f);
 	set_material_hover();
-	nix::draw_triangles(mode_model_mesh->vb_hover);
+	nix::draw_triangles(ed->mode_model->mode_model_mesh->vb_hover);
 	nix::set_material(White, 0.5f, 0, Black);
 	nix::disable_alpha();
 	nix::set_offset(0);
@@ -162,7 +162,7 @@ void ModeModelAnimationSkeleton::on_selection_change() {
 	}
 	data->selectionFromVertices();
 
-	mode_model_mesh->fill_selection_buffer(mode_model_animation->vertex);
+	ed->mode_model->mode_model_mesh->fill_selection_buffer(mode_model_animation->vertex);
 }
 
 void ModeModelAnimationSkeleton::copy() {

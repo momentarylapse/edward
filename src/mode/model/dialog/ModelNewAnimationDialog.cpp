@@ -8,7 +8,7 @@
 #include "ModelNewAnimationDialog.h"
 #include "../../../data/model/DataModel.h"
 #include "../../../y/components/Animator.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 
 ModelNewAnimationDialog::ModelNewAnimationDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data, int index, AnimationType type):
 	hui::Dialog("new_animation_dialog", 400, 300, _parent, _allow_parent)
@@ -33,7 +33,7 @@ void ModelNewAnimationDialog::on_ok() {
 	auto type = (AnimationType)(get_int("new_animation_type") + (int)AnimationType::VERTEX);
 	if (index < data->move.num)
 		if (data->move[index].frame.num > 0) {
-			ed->error_box(_("This index is already taken by another animation."));
+			data->ed->error_box(_("This index is already taken by another animation."));
 			return;
 		}
 	data->addAnimation(index, type);

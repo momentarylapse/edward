@@ -7,12 +7,13 @@
 
 #include "LightmapPhotonMap.h"
 #include "LightmapData.h"
+#include "../DataWorld.h"
+#include "../../model/DataModel.h"
 #include "../../../lib/os/file.h"
 #include "../../../lib/os/time.h"
 #include "../../../lib/image/image.h"
-#include "../../model/DataModel.h"
 #include "../../../stuff/Progress.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 
 static float d_max = 20.0f;
 
@@ -78,8 +79,8 @@ bool LightmapPhotonMap::OnStatus()
 {
 	os::sleep(0.050f);
 	int cur = done + get_done();
-	ed->progress->set(format(_("%d of %d"), cur, num_photons), (float)cur / (float)num_photons);
-	return !ed->progress->is_cancelled();
+	data->source_world->ed->progress->set(format(_("%d of %d"), cur, num_photons), (float)cur / (float)num_photons);
+	return !data->source_world->ed->progress->is_cancelled();
 }
 
 void LightmapPhotonMap::Compute()

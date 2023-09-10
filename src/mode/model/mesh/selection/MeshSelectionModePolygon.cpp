@@ -11,7 +11,7 @@
 #include "../../ModeModel.h"
 #include "../../animation/ModeModelAnimation.h"
 #include "../../skeleton/ModeModelSkeleton.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -92,17 +92,17 @@ float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vec2 &M, vec3 
 }
 
 float ModelPolygon::hover_distance(MultiView::Window *win, const vec2 &M, vec3 &tp, float &z) {
-	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
+	auto *m = win->multi_view->ed->mode_model->mode_model_mesh->data->edit_mesh; // surf->model;
 	return poly_hover(this, win, M, tp, z, m->show_vertices);
 }
 
 bool ModelPolygon::in_rect(MultiView::Window *win, const rect &r) {
 	// care for the sense of rotation?
-	if (mode_model_mesh->select_cw)
+	if (win->multi_view->ed->mode_model->mode_model_mesh->select_cw)
 		if (vec3::dot(temp_normal, win->get_direction()) > 0)
 			return false;
 
-	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
+	auto *m = win->multi_view->ed->mode_model->mode_model_mesh->data->edit_mesh; // surf->model;
 
 	// all vertices within rectangle?
 	for (int k=0; k<side.num; k++) {

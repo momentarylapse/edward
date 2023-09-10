@@ -16,21 +16,21 @@
 #include "format/FormatWorld.h"
 #include "../lib/os/filesystem.h"
 #include "../y/EngineData.h"
-#include "../Edward.h"
+#include "../EdwardWindow.h"
 
-Storage *storage = nullptr;
 
 Path Storage::CANONICAL_SUB_DIR[NUM_FDS];
 
-Storage::Storage() {
-	formats.add(new FormatFontX());
-	formats.add(new FormatMaterial());
-	formats.add(new FormatModel());
-	formats.add(new FormatModelJson());
-	formats.add(new FormatModel3ds());
-	formats.add(new FormatModelPly());
-	formats.add(new FormatTerrain());
-	formats.add(new FormatWorld());
+Storage::Storage(EdwardWindow *_ed) {
+	ed = _ed;
+	formats.add(new FormatFontX(ed));
+	formats.add(new FormatMaterial(ed));
+	formats.add(new FormatModel(ed));
+	formats.add(new FormatModelJson(ed));
+	formats.add(new FormatModel3ds(ed));
+	formats.add(new FormatModelPly(ed));
+	formats.add(new FormatTerrain(ed));
+	formats.add(new FormatWorld(ed));
 
 	CANONICAL_SUB_DIR[FD_FONT] = "Fonts";
 	CANONICAL_SUB_DIR[FD_TERRAIN] = "Maps";
@@ -132,7 +132,7 @@ base::future<void> Storage::open(Data *data) {
 			guess_root_directory(p.complete);
 
 			try {
-				if (storage->load(p.complete, data))
+				if (this->load(p.complete, data))
 					promise();
 			} catch(...) {
 				promise.fail();

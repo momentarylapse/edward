@@ -11,7 +11,7 @@
 #include "../ModeModel.h"
 #include "../../../data/model/DataModel.h"
 #include "../../../action/model/data/ActionModelAddMaterial.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../storage/Storage.h"
 
 string file_secure(const Path &filename);
@@ -60,7 +60,7 @@ void ModelMaterialSelectionDialog::fill_material_list() {
 		string im = render_material(data->material[i]);
 		add_string(list_id, format("%d\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}
-	set_int(list_id, mode_model_mesh->current_material);
+	set_int(list_id, data->ed->find_mode<ModeModelMesh>("model-mesh")->current_material);
 }
 
 
@@ -76,7 +76,7 @@ void ModelMaterialSelectionDialog::on_apply() {
 void ModelMaterialSelectionDialog::on_material_list_right_click() {
 	int n = hui::get_event()->row;
 	if (n >= 0)
-		mode_model_mesh->set_current_material(n);
+		data->ed->find_mode<ModeModelMesh>("model-mesh")->set_current_material(n);
 	popup_materials->enable("apply_material", n >= 0);
 	popup_materials->enable("delete_material", n >= 0);
 	popup_materials->open_popup(this);
@@ -87,7 +87,7 @@ void ModelMaterialSelectionDialog::on_material_add() {
 }
 
 void ModelMaterialSelectionDialog::on_material_load() {
-	storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p) {
 		data->execute(new ActionModelAddMaterial(p.simple));
 	});
 }

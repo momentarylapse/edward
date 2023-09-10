@@ -7,10 +7,11 @@
 
 #include "CameraDialog.h"
 #include "../camera/ModeWorldCamera.h"
+#include "../ModeWorld.h"
 #include "../../../data/world/DataCamera.h"
 #include "../../../action/world/camera/ActionCameraMoveTimeSelection.h"
 #include "../../../lib/math/vec2.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 
 CameraDialog::CameraDialog(ModeWorldCamera *_mode) {
@@ -58,9 +59,9 @@ CameraDialog::~CameraDialog() {
 
 
 void CameraDialog::OnCloseDialog() {
-	ed->allow_termination().on([this] {
+	mode->ed->allow_termination().on([this] {
 		mode->_new();
-		ed->set_mode(mode->parent);
+		mode->ed->set_mode(mode->parent);
 	});
 }
 

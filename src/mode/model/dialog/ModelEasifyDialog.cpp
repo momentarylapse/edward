@@ -8,7 +8,7 @@
 #include "ModelEasifyDialog.h"
 #include "../../../data/model/DataModel.h"
 #include "../../../data/model/ModelMesh.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 
 ModelEasifyDialog::ModelEasifyDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data):
 	hui::Dialog("easify_dialog", 400, 300, _parent, _allow_parent)

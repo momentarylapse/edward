@@ -16,11 +16,16 @@ class DataModel;
 namespace nix {
 	class VertexBuffer;
 };
+class ModeModel;
 class MeshSelectionMode;
+class ModeModelMeshTexture;
+class ModeModelMeshMaterial;
+class ModeModelMeshDeform;
+class ModeModelMeshPaint;
 
-class ModeModelMesh: public Mode<DataModel> {
+class ModeModelMesh: public Mode<ModeModel, DataModel> {
 public:
-	ModeModelMesh(ModeBase *parent, MultiView::MultiView *mv3, MultiView::MultiView *mv2);
+	ModeModelMesh(ModeModel *parent, MultiView::MultiView *mv3, MultiView::MultiView *mv2);
 	virtual ~ModeModelMesh();
 
 	class State : public obs::Node<VirtualBase> {
@@ -75,6 +80,11 @@ public:
 	bool pasteable();
 	Geometry temp_geo;
 
+	ModeModelMeshTexture *mode_model_mesh_texture;
+	ModeModelMeshMaterial *mode_model_mesh_material;
+	ModeModelMeshDeform *mode_model_mesh_deform;
+	ModeModelMeshPaint *mode_model_mesh_paint;
+
 	MeshSelectionMode *selection_mode;
 	void set_selection_mode(MeshSelectionMode *mode);
 	MeshSelectionMode *selection_mode_vertex;
@@ -100,7 +110,5 @@ public:
 
 	nix::VertexBuffer *vb_marked, *vb_hover, *vb_creation, *vb_phys;
 };
-
-extern ModeModelMesh *mode_model_mesh;
 
 #endif /* MODEMODELMESH_H_ */

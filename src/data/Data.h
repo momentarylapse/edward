@@ -16,10 +16,11 @@
 
 class ActionManager;
 class Action;
+class EdwardWindow;
 
 class Data : public obs::Node<VirtualBase> {
 public:
-	Data(int _type);
+	Data(EdwardWindow *ed, int _type);
 	virtual ~Data();
 
 	static const string MESSAGE_SELECTION;
@@ -42,6 +43,7 @@ public:
 	bool binary_file_format;
 	int type;
 
+	EdwardWindow *ed;
 	ActionManager *action_manager;
 };
 

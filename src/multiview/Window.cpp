@@ -11,7 +11,8 @@
 #include "SingleData.h"
 #include "ColorScheme.h"
 #include "DrawingHelper.h"
-#include "../Edward.h"
+#include "../EdwardWindow.h"
+#include "../mode/Mode.h"
 #include "../lib/nix/nix.h"
 
 
@@ -330,7 +331,7 @@ void Window::update_matrices() {
 }
 
 void Window::draw_data_points() {
-	bool index_key = ed->get_key(hui::KEY_I);
+	bool index_key = multi_view->ed->get_key(hui::KEY_I);
 
 	// draw multiview data
 	set_projection_matrix_pixel();
@@ -404,7 +405,7 @@ void Window::draw_header() {
 	nix::set_shader(nix::Shader::default_2d.get());
 	set_color(scheme.WINDOW_TITLE);
 	bg = scheme.WINDOW_TITLE_BG;
-	if (ed->is_active("nix-area") and (this == multi_view->active_win)) {}
+	if (multi_view->ed->is_active("nix-area") and (this == multi_view->active_win)) {}
 		// active?!?
 	if ((this == multi_view->mouse_win) and (multi_view->hover.meta == multi_view->hover.HOVER_WINDOW_LABEL))
 		bg = scheme.hoverify(bg);
@@ -452,8 +453,8 @@ void Window::draw() {
 
 	// draw the actual data
 	set_projection_matrix();
-	if (ed->cur_mode)
-		ed->cur_mode->on_draw_win(this);
+	if (multi_view->ed->cur_mode)
+		multi_view->ed->cur_mode->on_draw_win(this);
 
 	nix::set_shader(nix::Shader::default_2d.get());
 	nix::disable_alpha();

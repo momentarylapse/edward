@@ -9,7 +9,7 @@
 #include "../../ModeModel.h"
 #include "../ModeModelMesh.h"
 #include "../../../../data/model/geometry/GeometryCube.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../lib/nix/nix.h"
 #include "../../../../lib/kaba/kaba.h"
 #include "../../../../multiview/MultiView.h"
@@ -22,8 +22,8 @@
 
 const int CUBE_SIZE = 20;
 
- ModeModelMeshDeformFunction::ModeModelMeshDeformFunction(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshDeformFunction", _parent)
+ ModeModelMeshDeformFunction::ModeModelMeshDeformFunction(ModeModelMesh *_parent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshDeformFunction", _parent)
 {
 	geo = nullptr;
 	f = nullptr;

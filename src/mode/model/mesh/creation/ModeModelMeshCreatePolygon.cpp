@@ -8,7 +8,7 @@
 #include "ModeModelMeshCreatePolygon.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../action/model/mesh/polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../lib/nix/nix.h"
 #include "../../../../multiview/MultiView.h"
@@ -17,12 +17,12 @@
 #include "../../../../multiview/ColorScheme.h"
 
 
-ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshCreatePolygon", _parent)
+ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeModelMesh *_parent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshCreatePolygon", _parent)
 {
 	message = format(_("Select polygon: %d -> [Ctrl + Return]"), 0);
 
-	mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_vertex);
+	parent->set_selection_mode(parent->selection_mode_vertex);
 	ed->mode_model->allow_selection_modes(false);
 }
 
@@ -65,7 +65,7 @@ void ModeModelMeshCreatePolygon::on_draw_win(MultiView::Window *win) {
 
 void ModeModelMeshCreatePolygon::on_command(const string &id) {
 	if (id == "finish-action") {
-		data->execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->current_material));
+		data->execute(new ActionModelAddPolygonAutoSkin(selection, parent->current_material));
 		abort();
 	}
 }
@@ -76,7 +76,7 @@ void ModeModelMeshCreatePolygon::on_left_button_down() {
 		// closed loop -> done
 		if (selection.num > 0)
 			if (multi_view->hover.index == selection[0]) {
-				data->execute(new ActionModelAddPolygonAutoSkin(selection, mode_model_mesh->current_material));
+				data->execute(new ActionModelAddPolygonAutoSkin(selection, parent->current_material));
 				abort();
 				return;
 			}

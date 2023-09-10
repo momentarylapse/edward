@@ -12,11 +12,12 @@
 #include "../../../../data/model/DataModel.h"
 
 class Geometry;
+class ModeModelMesh;
 
-class ModeModelMeshPaste: public ModeCreation<DataModel>
+class ModeModelMeshPaste: public ModeCreation<ModeModelMesh, DataModel>
 {
 public:
-	ModeModelMeshPaste(ModeBase *_parent);
+	ModeModelMeshPaste(ModeModelMesh *_parent);
 
 	void on_start() override;
 	void on_end() override;

@@ -15,7 +15,7 @@
 #include "../../../lib/os/file.h"
 #include "../../../lib/os/filesystem.h"
 #include "../../../lib/os/formatter.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 
 vec3 get_normal_by_index(int index);
 

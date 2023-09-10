@@ -9,7 +9,7 @@
 #include "MeshSelectionModePolygon.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/DrawingHelper.h"
 #include "../../../../lib/nix/nix.h"

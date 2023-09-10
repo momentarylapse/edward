@@ -41,15 +41,12 @@
 #include "../../../data/model/geometry/GeometrySphere.h"
 #include "../../../data/model/geometry/GeometryCylinder.h"
 #include "../../../action/model/mesh/skin/ActionModelSkinVerticesFromProjection.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/Window.h"
 #include "../../../multiview/DrawingHelper.h"
 #include "../../../multiview/ColorScheme.h"
 #include "../../../lib/nix/nix.h"
-
-ModeModelMesh *mode_model_mesh = NULL;
-
 
 
 string vb_format(int num_tex) {
@@ -59,8 +56,8 @@ string vb_format(int num_tex) {
 	return f;
 }
 
-ModeModelMesh::ModeModelMesh(ModeBase *_parent, MultiView::MultiView *mv3, MultiView::MultiView *mv2) :
-	Mode<DataModel>("ModelMesh", _parent, mv3, "menu_model") {
+ModeModelMesh::ModeModelMesh(ModeModel *_parent, MultiView::MultiView *mv3, MultiView::MultiView *mv2) :
+	Mode<ModeModel, DataModel>(_parent->ed, "ModelMesh", _parent, mv3, "menu_model") {
 
 	selection_mode = NULL;
 	current_material = 0;
@@ -283,7 +280,7 @@ void ModeModelMesh::on_draw_win(MultiView::Window *win) {
 	// visible skin
 	draw_mesh(win, data->mesh, data->mesh->vertex, true);
 
-	mode_model_skeleton->draw_skeleton(win, data->bone, true);
+	parent->mode_model_skeleton->draw_skeleton(win, data->bone, true);
 
 	if (current_skin == MESH_PHYSICAL)
 		draw_physical(win);

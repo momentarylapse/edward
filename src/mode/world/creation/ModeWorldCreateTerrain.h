@@ -12,10 +12,11 @@
 #include "../../../lib/math/vec3.h"
 
 class DataWorld;
+class ModeWorld;
 
-class ModeWorldCreateTerrain: public ModeCreation<DataWorld> {
+class ModeWorldCreateTerrain: public ModeCreation<ModeWorld, DataWorld> {
 public:
-	ModeWorldCreateTerrain(ModeBase *_parent);
+	ModeWorldCreateTerrain(ModeWorld *_parent);
 
 	void on_start() override;
 	void on_end() override;

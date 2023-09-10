@@ -22,7 +22,7 @@ class ShaderGraph;
 
 class DataMaterial: public Data {
 public:
-	DataMaterial(bool with_graph = true);
+	DataMaterial(EdwardWindow *ed, bool with_graph = true);
 	virtual ~DataMaterial();
 
 	void reset() override;

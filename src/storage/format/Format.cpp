@@ -6,7 +6,7 @@
  */
 
 #include "Format.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 
 FormatError::FormatError(const string &message) : Exception(message) {}
 
@@ -14,7 +14,8 @@ FormatError::FormatError(const string &message) : Exception(message) {}
 
 
 
-Format::Format(int cat, const string &ext, const string &desc, Flag _flags) {
+Format::Format(EdwardWindow *_ed, int cat, const string &ext, const string &desc, Flag _flags) {
+	ed = _ed;
 	category = cat;
 	extension = ext;
 	description = desc;

@@ -14,10 +14,11 @@
 class DataModel;
 class ModelMaterialDialog;
 class ModelSkinVertexDummy;
+class ModeModelMesh;
 
-class ModeModelMeshTexture: public Mode<DataModel> {
+class ModeModelMeshTexture: public Mode<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshTexture(ModeBase *parent, MultiView::MultiView *mv);
+	ModeModelMeshTexture(ModeModelMesh *parent, MultiView::MultiView *mv);
 
 	class State : public obs::Node<VirtualBase> {
 	public:
@@ -49,7 +50,5 @@ public:
 	int current_texture_level;
 	void set_current_texture_level(int level);
 };
-
-extern ModeModelMeshTexture *mode_model_mesh_texture;
 
 #endif /* MODEMODELMESHTEXTURE_H_ */

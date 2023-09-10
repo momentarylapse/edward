@@ -6,20 +6,20 @@
  */
 
 #include "ModeCreation.h"
-#include "../Edward.h"
+#include "../EdwardWindow.h"
 #include "../multiview/DrawingHelper.h"
 #include "../lib/nix/nix.h"
 #include <assert.h>
 
 ModeCreationBase::ModeCreationBase(const string &_name, ModeBase *_parent) :
-	ModeBase(_name, _parent, _parent->multi_view, "")
+	ModeBase(_parent->ed, _name, _parent, _parent->multi_view, "")
 {
 	// don't nest creation modes!
-	if (dynamic_cast<ModeCreationBase*>(parent))
-		parent = parent->parent;
+	if (dynamic_cast<ModeCreationBase*>(parent_untyped))
+		parent_untyped = parent_untyped->parent_untyped;
 
-	assert(parent);
-	menu_id = parent->menu_id;
+	assert(parent_untyped);
+	menu_id = parent_untyped->menu_id;
 	dialog = NULL;
 }
 
@@ -32,15 +32,15 @@ void ModeCreationBase::on_draw() {
 }
 
 void ModeCreationBase::on_draw_win(MultiView::Window *win) {
-	parent->on_draw_win(win);
+	parent_untyped->on_draw_win(win);
 }
 
 void ModeCreationBase::on_set_multi_view() {
-	parent->on_set_multi_view();
+	parent_untyped->on_set_multi_view();
 }
 
 void ModeCreationBase::abort() {
-	assert(parent);
-	hui::run_later(0.01f, [this]{ ed->set_mode(parent); });
+	assert(parent_untyped);
+	hui::run_later(0.01f, [this]{ ed->set_mode(parent_untyped); });
 }
 

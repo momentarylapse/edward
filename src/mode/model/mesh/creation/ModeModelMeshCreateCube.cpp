@@ -5,11 +5,11 @@
  *      Author: michi
  */
 
-#include "../../ModeModel.h"
-#include "../ModeModelMesh.h"
 #include "ModeModelMeshCreateCube.h"
+#include "../ModeModelMesh.h"
+#include "../../ModeModel.h"
 #include "../../../../data/model/geometry/GeometryCube.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -17,8 +17,8 @@
 
 
 
-ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshCreateCube", _parent)
+ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeModelMesh *_parent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshCreateCube", _parent)
 {
 	message = _("Cube: place first corner point");
 	pos_chosen = false;
@@ -44,7 +44,7 @@ void ModeModelMeshCreateCube::update_geometry() {
 		hui::config.set_int("NewCubeNumY", num_2);
 		hui::config.set_int("NewCubeNumZ", num_3);
 
-		if (mode_model_mesh->current_skin == MESH_PHYSICAL)
+		if (parent->current_skin == MESH_PHYSICAL)
 			num_1 = num_2 = num_3 = 1;
 
 		geo = new GeometryCube(pos-length[2]/2, length[0], length[1], length[2], num_1, num_2, num_3);
@@ -83,7 +83,7 @@ void ModeModelMeshCreateCube::on_left_button_up() {
 	if (pos_chosen) {
 		if (pos2_chosen) {
 
-			data->pasteGeometry(*geo, mode_model_mesh->current_material);
+			data->pasteGeometry(*geo, parent->current_material);
 
 			abort();
 		} else {
@@ -130,7 +130,7 @@ void ModeModelMeshCreateCube::on_start() {
 	dialog->set_int("nc_z", hui::config.get_int("NewCubeNumZ", 1));
 	ed->set_side_panel(dialog);
 
-	bool physical = (mode_model_mesh->current_skin == MESH_PHYSICAL);
+	bool physical = (parent->current_skin == MESH_PHYSICAL);
 	if (physical)
 		dialog->enable("*", false);
 

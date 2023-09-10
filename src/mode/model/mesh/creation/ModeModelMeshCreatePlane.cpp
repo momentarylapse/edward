@@ -9,14 +9,14 @@
 #include "../ModeModelMesh.h"
 #include "ModeModelMeshCreatePlane.h"
 #include "../../../../data/model/geometry/GeometryPlane.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../lib/nix/nix.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
 
-ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshCreatePlane", _parent)
+ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(ModeModelMesh *_parent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshCreatePlane", _parent)
 {
 	message = _("Plane: first point");
 	pos_chosen = false;
@@ -57,7 +57,7 @@ void ModeModelMeshCreatePlane::on_left_button_up() {
 		}
 
 		GeometryPlane pl = GeometryPlane(pos, length[0], length[1], nx, ny);
-		data->pasteGeometry(pl, mode_model_mesh->current_material);
+		data->pasteGeometry(pl, parent->current_material);
 
 		abort();
 	} else {

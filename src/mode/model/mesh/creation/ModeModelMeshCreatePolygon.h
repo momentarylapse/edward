@@ -11,9 +11,11 @@
 #include "../../../ModeCreation.h"
 #include "../../../../data/model/DataModel.h"
 
-class ModeModelMeshCreatePolygon: public ModeCreation<DataModel> {
+class ModeModelMesh;
+
+class ModeModelMeshCreatePolygon: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshCreatePolygon(ModeBase *parent);
+	ModeModelMeshCreatePolygon(ModeModelMesh *parent);
 
 	void on_start() override;
 	void on_end() override;

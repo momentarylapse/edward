@@ -14,9 +14,9 @@
 class WorldPropertiesDialog;
 class WorldObjectListPanel;
 
-class ModeWorld: public Mode<DataWorld> {
+class ModeWorld: public Mode<ModeWorld, DataWorld> {
 public:
-	ModeWorld(MultiView::MultiView *mv);
+	ModeWorld(EdwardWindow *ed, MultiView::MultiView *mv);
 	virtual ~ModeWorld();
 
 	void on_start() override;

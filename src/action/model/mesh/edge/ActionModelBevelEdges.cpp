@@ -18,9 +18,10 @@
 #include "../../../../mode/model/mesh/ModeModelMesh.h"
 #include <assert.h>
 
-ActionModelBevelEdges::ActionModelBevelEdges(float _length)
+ActionModelBevelEdges::ActionModelBevelEdges(float _length, int _material)
 {
 	length = _length;
+	material = _material;
 }
 
 void *ActionModelBevelEdges::compose(Data *d)
@@ -334,7 +335,7 @@ void ActionModelBevelEdges::bevelSurface(ModelMesh *m)
 		for (int k=0;k<p.v.num;k++)
 			v.add(p.v[k]->v);
 		//msg_write(ia2s(v));
-		addSubAction(new ActionModelAddPolygonAutoSkin(v, mode_model_mesh->current_material), m->model);
+		addSubAction(new ActionModelAddPolygonAutoSkin(v, material), m->model);
 	}
 
 	// remove obsolete vertices

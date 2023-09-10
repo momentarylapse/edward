@@ -11,7 +11,7 @@
 #include "../../ModeModel.h"
 #include "../ModeModelMesh.h"
 #include "../../../../data/model/geometry/GeometryCylinder.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../lib/nix/nix.h"
 #include "../../../../lib/kaba/kaba.h"
 #include "../../../../lib/math/random.h"
@@ -28,10 +28,10 @@ const int CYLINDER_EDGES = 24;
 const int CYLINDER_RINGS = 24;
 
 
- ModeModelMeshDeformCylinder::ModeModelMeshDeformCylinder(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshDeformCylinder", _parent)
+ ModeModelMeshDeformCylinder::ModeModelMeshDeformCylinder(ModeModelMesh *_parent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshDeformCylinder", _parent)
 {
-	geo = NULL;
+	geo = nullptr;
 	has_preview = false;
 
 	param.add(vec3(0,0,1));

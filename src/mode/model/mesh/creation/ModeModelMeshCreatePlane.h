@@ -11,9 +11,11 @@
 #include "../../../ModeCreation.h"
 #include "../../../../data/model/DataModel.h"
 
-class ModeModelMeshCreatePlane: public ModeCreation<DataModel> {
+class ModeModelMesh;
+
+class ModeModelMeshCreatePlane: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshCreatePlane(ModeBase *parent);
+	ModeModelMeshCreatePlane(ModeModelMesh *parent);
 
 	void on_start() override;
 	void on_end() override;

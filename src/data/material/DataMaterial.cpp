@@ -15,12 +15,12 @@
 
 
 
-DataMaterial::DataMaterial(bool with_graph) :
-	Data(FD_MATERIAL)
+DataMaterial::DataMaterial(EdwardWindow *ed, bool with_graph) :
+	Data(ed, FD_MATERIAL)
 {
 	shader.graph = nullptr;
 	if (with_graph)
-		shader.graph = new ShaderGraph();
+		shader.graph = new ShaderGraph(ed);
 	reset();
 }
 

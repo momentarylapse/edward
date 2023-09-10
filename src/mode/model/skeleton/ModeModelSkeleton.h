@@ -12,10 +12,12 @@
 #include "../../../data/model/DataModel.h"
 
 class DataModel;
+class ModeModel;
+class ModeModelMesh;
 
-class ModeModelSkeleton: public Mode<DataModel> {
+class ModeModelSkeleton: public Mode<ModeModel, DataModel> {
 public:
-	ModeModelSkeleton(ModeBase *_parent, MultiView::MultiView *mv);
+	ModeModelSkeleton(ModeModel *_parent, MultiView::MultiView *mv);
 
 	void on_start() override;
 	void on_end() override;
@@ -36,8 +38,8 @@ public:
 
 	void choose_mouse_function(int f);
 	int mouse_action;
-};
 
-extern ModeModelSkeleton *mode_model_skeleton;
+	ModeModelMesh *mode_model_mesh;
+};
 
 #endif /* MODEMODELSKELETON_H_ */

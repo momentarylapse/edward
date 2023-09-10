@@ -10,12 +10,14 @@
 
 #include "../../../ModeCreation.h"
 #include "../../../../data/model/DataModel.h"
-class Geometry;
 
-class ModeModelMeshCreatePlatonic: public ModeCreation<DataModel>
+class Geometry;
+class ModeModelMesh;
+
+class ModeModelMeshCreatePlatonic: public ModeCreation<ModeModelMesh, DataModel>
 {
 public:
-	ModeModelMeshCreatePlatonic(ModeBase *parent, int type);
+	ModeModelMeshCreatePlatonic(ModeModelMesh *parent, int type);
 	virtual ~ModeModelMeshCreatePlatonic();
 
 	void on_start() override;

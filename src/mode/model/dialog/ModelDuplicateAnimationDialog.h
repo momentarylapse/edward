@@ -13,7 +13,7 @@ class DataModel;
 
 class ModelDuplicateAnimationDialog: public hui::Dialog {
 public:
-	ModelDuplicateAnimationDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data, int index, int source);
+	ModelDuplicateAnimationDialog(hui::Window *parent, bool _allow_parent, DataModel *_data, int index, int source);
 
 	void on_close();
 	void on_ok();

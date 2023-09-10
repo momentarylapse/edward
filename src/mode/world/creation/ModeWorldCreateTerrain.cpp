@@ -6,15 +6,16 @@
  */
 
 #include "ModeWorldCreateTerrain.h"
+#include "../ModeWorld.h"
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/model/geometry/GeometryPlane.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/DrawingHelper.h"
 #include "../../../lib/nix/nix.h"
 
-ModeWorldCreateTerrain::ModeWorldCreateTerrain(ModeBase *_parent) :
-	ModeCreation<DataWorld>("WorldCreateTerrain", _parent)
+ModeWorldCreateTerrain::ModeWorldCreateTerrain(ModeWorld *_parent) :
+	ModeCreation<ModeWorld, DataWorld>("WorldCreateTerrain", _parent)
 {
 	message = _("Terrain: [click] set first corner");
 	pos = v_0;

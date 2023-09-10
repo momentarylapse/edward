@@ -16,7 +16,7 @@ class TextLinesFormatter;
 
 class FormatModelJson : public TypedFormat<DataModel> {
 public:
-	FormatModelJson();
+	FormatModelJson(EdwardWindow *ed);
 
 	void _load(const Path &filename, DataModel *data, bool deep) override;
 	void _save(const Path &filename, DataModel *data) override;

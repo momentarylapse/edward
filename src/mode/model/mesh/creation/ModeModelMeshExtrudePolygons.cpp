@@ -6,14 +6,14 @@
  */
 
 #include "ModeModelMeshExtrudePolygons.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../lib/nix/nix.h"
 #include "../../../../action/model/mesh/polygon/ActionModelExtrudePolygons.h"
 
-ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(ModeBase *_parent, bool _independent) :
-	ModeCreation<DataModel>("ModelMeshExtrudePolygons", _parent)
+ModeModelMeshExtrudePolygons::ModeModelMeshExtrudePolygons(ModeModelMesh *_parent, bool _independent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshExtrudePolygons", _parent)
 {
 	selection = data->get_selection();
 
@@ -31,7 +31,7 @@ void ModeModelMeshExtrudePolygons::on_left_button_down() {
 	cleanUp();
 
 	data->set_selection(selection);
-	data->execute(new ActionModelExtrudePolygons(offset, independent));
+	data->execute(new ActionModelExtrudePolygons(offset, independent, parent->current_material));
 
 	abort();
 }
@@ -51,7 +51,7 @@ void ModeModelMeshExtrudePolygons::on_draw_win(MultiView::Window *win) {
 
 void ModeModelMeshExtrudePolygons::preview() {
 	data->set_selection(selection);
-	if (!data->action_manager->preview(new ActionModelExtrudePolygons(offset, independent)))
+	if (!data->action_manager->preview(new ActionModelExtrudePolygons(offset, independent, parent->current_material)))
 		abort();
 }
 

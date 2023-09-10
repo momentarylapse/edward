@@ -14,11 +14,11 @@
 #include "../../../lib/hui/hui.h"
 
 class TerrainDeformBrushPanel;
+class ModeWorld;
 
-class ModeWorldTerrain: public ModeCreation<DataWorld> {
+class ModeWorldTerrain: public ModeCreation<ModeWorld, DataWorld> {
 public:
-	ModeWorldTerrain(ModeBase *_parent);
-	virtual ~ModeWorldTerrain();
+	ModeWorldTerrain(ModeWorld *_parent);
 
 	void on_start() override;
 	void on_end() override;

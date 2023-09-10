@@ -11,12 +11,13 @@
 #include "../../../ModeCreation.h"
 #include "../../../../data/model/DataModel.h"
 
-class ModeModelSkeletonCreateBone: public ModeCreation<DataModel>
-{
-public:
-	ModeModelSkeletonCreateBone(ModeBase *_parent);
+class ModeModelSkeleton;
 
-	virtual void on_left_button_down();
+class ModeModelSkeletonCreateBone: public ModeCreation<ModeModelSkeleton, DataModel> {
+public:
+	ModeModelSkeletonCreateBone(ModeModelSkeleton *_parent);
+
+	void on_left_button_down() override;
 
 private:
 	vec3 pos;

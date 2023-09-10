@@ -12,9 +12,9 @@
 class DataAdministration;
 class AdministrationDialog;
 
-class ModeAdministration: public Mode<DataAdministration> {
+class ModeAdministration: public Mode<ModeAdministration, DataAdministration> {
 public:
-	ModeAdministration();
+	ModeAdministration(EdwardWindow *ed);
 	virtual ~ModeAdministration();
 
 	void _new();

@@ -12,13 +12,14 @@
 #include "../../../../lib/math/math.h"
 #include "../../../../mode/model/mesh/ModeModelMeshTexture.h"
 
-ActionModelTransformSkinVertices::ActionModelTransformSkinVertices(DataModel *d, int _texture_level) :
+ActionModelTransformSkinVertices::ActionModelTransformSkinVertices(DataModel *d, const Array<int> &_tria, const Array<int> &_index, int _texture_level) :
 	ActionMultiView()
 {
+	tria = _tria;
+	index = _index;
 	texture_level = _texture_level;
 
 	// list of selected skin vertices and save old pos
-	mode_model_mesh_texture->getSelectedSkinVertices(tria, index);
 	foreachi(int k, index, i) {
 		ModelPolygon &t = d->mesh->polygon[tria[i]];
 		old_data.add(t.side[k].skin_vertex[texture_level]);

@@ -17,7 +17,7 @@
 #include "creation/ModeWorldCreateLight.h"
 #include "camera/ModeWorldCamera.h"
 #include "terrain/ModeWorldTerrain.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../storage/Storage.h"
 #include "../../multiview/MultiView.h"
 #include "../../multiview/Window.h"
@@ -50,8 +50,8 @@
 
 
 
-ModeWorld::ModeWorld(MultiView::MultiView *mv) :
-	Mode<DataWorld>("World", NULL, new DataWorld, mv, "menu_world") {
+ModeWorld::ModeWorld(EdwardWindow *ed, MultiView::MultiView *mv) :
+	Mode<ModeWorld, DataWorld>(ed, "World", nullptr, new DataWorld(ed), mv, "menu_world") {
 	data->out_changed >> create_sink([this]{ data->update_data(); });
 
 	world_dialog = nullptr;
@@ -61,7 +61,7 @@ ModeWorld::ModeWorld(MultiView::MultiView *mv) :
 	show_effects = true;
 	TerrainShowTextureLevel = -1;
 
-	mode_world_camera = new ModeWorldCamera(this, new DataCamera);
+	mode_world_camera = new ModeWorldCamera(this, new DataCamera(ed));
 	mode_world_terrain = new ModeWorldTerrain(this);
 }
 
@@ -72,13 +72,13 @@ ModeWorld::~ModeWorld() {
 void ModeWorld::save_as() {
 	for (auto &t: data->terrains)
 		if (t.filename == "") {
-			storage->file_dialog(FD_TERRAIN, true, true).on([this, &t] (const auto& p) {
+			ed->storage->file_dialog(FD_TERRAIN, true, true).on([this, &t] (const auto& p) {
 				t.save(p.complete);
 				save_as();
 			});
 			return;
 		}
-	storage->save_as(data);
+	ed->storage->save_as(data);
 }
 
 
@@ -116,13 +116,13 @@ void ModeWorld::on_command(const string & id) {
 		import_world_properties();
 
 	if (id == "create_objects")
-		ed->set_mode(new ModeWorldCreateObject(ed->cur_mode));
+		ed->set_mode(new ModeWorldCreateObject(this));
 	if (id == "terrain_create")
-		ed->set_mode(new ModeWorldCreateTerrain(ed->cur_mode));
+		ed->set_mode(new ModeWorldCreateTerrain(this));
 	if (id == "create-link")
-		ed->set_mode(new ModeWorldCreateLink(ed->cur_mode));
+		ed->set_mode(new ModeWorldCreateLink(this));
 	if (id == "create-light")
-		ed->set_mode(new ModeWorldCreateLight(ed->cur_mode));
+		ed->set_mode(new ModeWorldCreateLight(this));
 	if (id == "terrain_load")
 		load_terrain();
 
@@ -139,7 +139,7 @@ void ModeWorld::on_command(const string & id) {
 	if (id == "camscript_create")
 		ed->set_mode(mode_world_camera);
 	if (id == "camscript_load")
-		storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const auto& p) {
+		ed->storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const auto& p) {
 			if (mode_world_camera->data->load(p.complete))
 				ed->set_mode(mode_world_camera);
 			else
@@ -309,17 +309,17 @@ bool WorldTerrain::overlap_rect(MultiView::Window *win, const rect &r) {
 void ModeWorld::save() {
 	for (auto &t: data->terrains) {
 		if (t.filename.is_empty()) {
-			storage->file_dialog(FD_TERRAIN, true, true).on([this, &t] (const auto& p) {
+			ed->storage->file_dialog(FD_TERRAIN, true, true).on([this, &t] (const auto& p) {
 			if (t.save(p.complete))
 				save();
 			});
 			return;
 		} else if (t.Changed) {
-			if (!t.save(storage->root_dir_kind[FD_TERRAIN] | t.filename.with(".map")))
+			if (!t.save(ed->storage->root_dir_kind[FD_TERRAIN] | t.filename.with(".map")))
 				return;
 		}
 	}
-	storage->auto_save(data);
+	ed->storage->auto_save(data);
 }
 
 
@@ -728,7 +728,7 @@ void ModeWorld::ExecuteWorldPropertiesDialog() {
 		return;
 	}
 
-	world_dialog = new WorldPropertiesDialog(ed, true, data);
+	world_dialog = new WorldPropertiesDialog(data);
 	world_dialog->show();
 }
 
@@ -736,7 +736,7 @@ void ModeWorld::ExecuteWorldPropertiesDialog() {
 
 
 void ModeWorld::ExecuteTerrainPropertiesDialog(int index) {
-	hui::fly(new TerrainPropertiesDialog(ed, false, data, index));
+	hui::fly(new TerrainPropertiesDialog(data, index));
 }
 
 void ModeWorld::ExecuteLightmapDialog() {
@@ -757,7 +757,7 @@ bool ModeWorld::optimize_view() {
 }
 
 void ModeWorld::load_terrain() {
-	storage->file_dialog(FD_TERRAIN, false, true).on([this] (const auto& p) {
+	ed->storage->file_dialog(FD_TERRAIN, false, true).on([this] (const auto& p) {
 		data->add_terrain(p.simple, multi_view->cam.pos);
 	});
 }
@@ -780,9 +780,9 @@ void ModeWorld::toggle_show_effects() {
 
 
 void ModeWorld::import_world_properties() {
-	storage->file_dialog(FD_WORLD, false, false).on([this] (const auto& p) {
-		DataWorld w;
-		if (storage->load(p.complete, &w, false))
+	ed->storage->file_dialog(FD_WORLD, false, false).on([this] (const auto& p) {
+		DataWorld w(ed);
+		if (ed->storage->load(p.complete, &w, false))
 			data->execute(new ActionWorldEditData(w.meta_data));
 		else
 			ed->error_box(_("World could not be loaded correctly!"));

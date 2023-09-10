@@ -6,14 +6,14 @@
  */
 
 #include "ModeModelMeshAutoweld.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/ColorScheme.h"
 #include "../../../../lib/nix/nix.h"
 
-ModeModelMeshAutoweld::ModeModelMeshAutoweld(ModeBase* _parent) :
-	ModeCreation<DataModel>("ModelMeshAutoweld", _parent)
+ModeModelMeshAutoweld::ModeModelMeshAutoweld(ModeModelMesh* _parent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshAutoweld", _parent)
 {
 	radius_default = 1;
 	radius = 1;
@@ -77,7 +77,7 @@ void ModeModelMeshAutoweld::onOk()
 
 void ModeModelMeshAutoweld::on_draw_win(MultiView::Window* win)
 {
-	parent->on_draw_win(win);
+	parent_untyped->on_draw_win(win);
 
 	nix::set_texture(NULL);
 	float r = 5;

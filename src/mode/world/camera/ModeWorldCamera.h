@@ -14,13 +14,14 @@ namespace hui{
 }
 class DataCamera;
 class CameraDialog;
+class ModeWorld;
 
 template<class T>
 class Interpolator;
 
-class ModeWorldCamera: public Mode<DataCamera> {
+class ModeWorldCamera: public Mode<ModeWorld, DataCamera> {
 public:
-	ModeWorldCamera(ModeBase *_parent, Data *_data);
+	ModeWorldCamera(ModeWorld *_parent, Data *_data);
 	virtual ~ModeWorldCamera();
 
 	void on_start() override;

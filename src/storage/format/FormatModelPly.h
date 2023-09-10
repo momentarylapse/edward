@@ -15,7 +15,7 @@ class DataModel;
 
 class FormatModelPly : public TypedFormat<DataModel> {
 public:
-	FormatModelPly();
+	FormatModelPly(EdwardWindow *ed);
 
 	void _load(const Path &filename, DataModel *data, bool deep) override;
 	void _save(const Path &filename, DataModel *data) override;

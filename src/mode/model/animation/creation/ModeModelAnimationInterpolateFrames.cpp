@@ -10,8 +10,8 @@
 #include "../../dialog/ModelAnimationTimelinePanel.h"
 #include "../../../../lib/math/vec2.h"
 
-ModeModelAnimationInterpolateFrames::ModeModelAnimationInterpolateFrames(ModeBase* _parent) :
-	ModeCreation<DataModel>("ModelMeshAnimationInterpolateFrames", _parent)
+ModeModelAnimationInterpolateFrames::ModeModelAnimationInterpolateFrames(ModeModelAnimation* _parent) :
+	ModeCreation<ModeModelAnimation, DataModel>("ModelMeshAnimationInterpolateFrames", _parent)
 {
 	message = _("click on timeline");
 }

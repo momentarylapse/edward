@@ -13,10 +13,11 @@
 
 class Path;
 class ShaderNode;
+class EdwardWindow;
 
 class ShaderGraph : public Sharable<base::Empty> {
 public:
-	ShaderGraph();
+	ShaderGraph(EdwardWindow *ed);
 	~ShaderGraph();
 
 	void clear();
@@ -29,6 +30,8 @@ public:
 
 	string build_fragment_source() const;
 	string build_source() const;
+
+	EdwardWindow *ed;
 
 	shared_array<ShaderNode> nodes;
 

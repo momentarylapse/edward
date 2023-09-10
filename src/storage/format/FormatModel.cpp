@@ -10,7 +10,7 @@
 #include "../../data/model/ModelMesh.h"
 #include "../../data/model/ModelPolygon.h"
 #include "../../mode/model/ModeModel.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../y/ModelManager.h"
 #include "../../y/components/Animator.h"
 #include "../../lib/doc/chunked.h"
@@ -19,13 +19,13 @@
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/formatter.h"
 
-FormatModel::FormatModel() : TypedFormat<DataModel>(FD_MODEL, "model", _("Model"), Flag::CANONICAL_READ_WRITE) {
+FormatModel::FormatModel(EdwardWindow *ed) : TypedFormat<DataModel>(ed, FD_MODEL, "model", _("Model"), Flag::CANONICAL_READ_WRITE) {
 }
 
 const bool write_external_edit_file = false;
 
 
-void update_model_script_data(DataModel::MetaData &m);
+void update_model_script_data(EdwardWindow *ed, DataModel::MetaData &m);
 
 bool DataModelAllowUpdating = true;
 
@@ -938,7 +938,8 @@ public:
 
 class ModelParser : public ChunkedFileParser {
 public:
-	ModelParser() : ChunkedFileParser(8) {
+	ModelParser(EdwardWindow *_ed) : ChunkedFileParser(8) {
+		ed = _ed;
 		_model_parser_tria_mesh_count = 0;
 		set_base(new ChunkModel);
 	}
@@ -951,6 +952,7 @@ public:
 	}
 	void on_warn(const string &message) override {}
 	void on_info(const string &message) override {}
+	EdwardWindow *ed;
 };
 
 void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
@@ -961,7 +963,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 	if (c == 'b' or c == 't') {
 		_load_old(filename, data, deep);
 	} else {
-		ModelParser p;
+		ModelParser p(ed);
 		data->material.clear();
 		p.read(filename, data);
 	}
@@ -1014,7 +1016,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
 	// FIXME
 	if (data->meta_data.script_file and (data->meta_data.variables.num == 0)) {
-		update_model_script_data(data->meta_data);
+		update_model_script_data(ed, data->meta_data);
 		msg_write(data->meta_data.variables.num);
 		for (int i=0; i<min(data->meta_data.script_var.num, data->meta_data.variables.num); i++) {
 			if (data->meta_data.variables[i].type == "float")
@@ -1073,7 +1075,7 @@ void FormatModel::_save(const Path &filename, DataModel *data) {
 	// so the materials don't get mixed up
 //	RemoveUnusedData();
 
-	ModelParser p;
+	ModelParser p(ed);
 	p.write(filename, data);
 
 //	_save_v11(filename, data);

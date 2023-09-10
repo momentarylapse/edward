@@ -14,7 +14,7 @@
 class TerrainCreationDialog: public hui::Dialog
 {
 public:
-	TerrainCreationDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data);
+	TerrainCreationDialog(EdwardWindow *ed, bool _allow_parent, DataWorld *_data);
 	virtual ~TerrainCreationDialog();
 
 	void LoadData();
@@ -26,6 +26,7 @@ public:
 	void OnClose();
 
 private:
+	EdwardWindow *ed;
 	DataWorld *data;
 };
 

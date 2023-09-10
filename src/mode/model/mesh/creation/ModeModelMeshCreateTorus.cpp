@@ -9,7 +9,7 @@
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../data/model/geometry/GeometryTorus.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -19,8 +19,8 @@
 
 
 
-ModeModelMeshCreateTorus::ModeModelMeshCreateTorus(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshCreateTorus", _parent)
+ModeModelMeshCreateTorus::ModeModelMeshCreateTorus(ModeModelMesh *_parent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshCreateTorus", _parent)
 {
 	message = _("Select torus center");
 
@@ -77,7 +77,7 @@ void ModeModelMeshCreateTorus::on_left_button_up()
 	if (pos_chosen){
 		if (rad_chosen){
 
-			data->pasteGeometry(*geo, mode_model_mesh->current_material);
+			data->pasteGeometry(*geo, parent->current_material);
 
 			abort();
 		}else{

@@ -9,7 +9,8 @@
 #include "MeshSelectionModePolygon.h"
 #include "../ModeModelMesh.h"
 #include "../../skeleton/ModeModelSkeleton.h"
-#include "../../../../Edward.h"
+#include "../../ModeModel.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -30,7 +31,7 @@ void MeshSelectionModeEdge::on_start() {
 
 float ModelEdge::hover_distance(MultiView::Window *win, const vec2 &M, vec3 &tp, float &z) {
 
-	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
+	auto *m = win->multi_view->ed->mode_model->mode_model_mesh->data->edit_mesh; // surf->model;
 
 	// project all points
 	vec3 pp0 = win->project(m->show_vertices[vertex[0]].pos);
@@ -66,7 +67,7 @@ float ModelEdge::hover_distance(MultiView::Window *win, const vec2 &M, vec3 &tp,
 }
 
 bool ModelEdge::in_rect(MultiView::Window *win, const rect &r) {
-	auto *m = mode_model_mesh->data->edit_mesh; // surf->model;
+	auto *m = win->multi_view->ed->mode_model->mode_model_mesh->data->edit_mesh; // surf->model;
 
 	// all vertices within rectangle?
 	for (int k=0; k<2; k++) {

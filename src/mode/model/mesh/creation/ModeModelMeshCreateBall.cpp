@@ -11,15 +11,15 @@
 #include "../../../../data/model/geometry/GeometryBall.h"
 #include "../../../../data/model/geometry/GeometrySphere.h"
 #include "../../../../action/model/mesh/physical/ActionModelAddBall.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/DrawingHelper.h"
 #include "../../../../lib/nix/nix.h"
 
 
 
-ModeModelMeshCreateBall::ModeModelMeshCreateBall(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshCreateBall", _parent)
+ModeModelMeshCreateBall::ModeModelMeshCreateBall(ModeModelMesh *_parent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshCreateBall", _parent)
 {
 	message = _("Select center of sphere");
 
@@ -62,7 +62,7 @@ void ModeModelMeshCreateBall::on_start() {
 	dialog->event("type:sphere", [=]{ onTypeSphere(); });
 	ed->set_side_panel(dialog);
 
-	bool physical = (mode_model_mesh->current_skin == MESH_PHYSICAL);
+	bool physical = (parent->current_skin == MESH_PHYSICAL);
 	if (physical)
 		dialog->enable("*", false);
 
@@ -101,7 +101,7 @@ void ModeModelMeshCreateBall::updateGeometry() {
 
 void ModeModelMeshCreateBall::on_left_button_up() {
 	if (pos_chosen) {
-		if (mode_model_mesh->current_skin == MESH_PHYSICAL) {
+		if (parent->current_skin == MESH_PHYSICAL) {
 			ModelVertex v;
 			v.pos = pos;
 			ModelBall b;
@@ -111,7 +111,7 @@ void ModeModelMeshCreateBall::on_left_button_up() {
 			data->execute(new ActionModelAddBall(b));
 
 		} else {
-			data->pasteGeometry(*geo, mode_model_mesh->current_material);
+			data->pasteGeometry(*geo, ((ModeModelMesh*)parent)->current_material);
 		}
 
 		abort();

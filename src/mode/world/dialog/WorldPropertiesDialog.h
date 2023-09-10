@@ -14,7 +14,7 @@
 
 class WorldPropertiesDialog: public obs::Node<hui::Dialog> {
 public:
-	WorldPropertiesDialog(hui::Window *_parent, bool _allow_parent, DataWorld *_data);
+	WorldPropertiesDialog(DataWorld *_data);
 	virtual ~WorldPropertiesDialog();
 
 	void load_data();

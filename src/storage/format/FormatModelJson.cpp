@@ -6,7 +6,7 @@
  */
 
 #include "FormatModelJson.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../data/model/DataModel.h"
 #include "../../data/model/ModelMesh.h"
 #include "../../data/model/ModelPolygon.h"
@@ -15,7 +15,7 @@
 #include "../../lib/os/formatter.h"
 #include "../../lib/math/quaternion.h"
 
-FormatModelJson::FormatModelJson() : TypedFormat<DataModel>(FD_MODEL, "json", _("Model json"), Flag::READ_WRITE) {
+FormatModelJson::FormatModelJson(EdwardWindow *ed) : TypedFormat<DataModel>(ed, FD_MODEL, "json", _("Model json"), Flag::READ_WRITE) {
 	f = nullptr;
 	cur_token = -1;
 }

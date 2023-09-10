@@ -9,7 +9,7 @@
 #include "../../../data/administration/DataAdministration.h"
 #include "../../../data/administration/AdminFile.h"
 #include "../../../data/administration/AdminFileList.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../storage/Storage.h"
 #include "../../../y/EngineData.h"
 #include "../../../y/Font.h"
@@ -143,7 +143,7 @@ void AdministrationDialog::ShowDetail(int n, const string &lid)
 
 
 void AdministrationDialog::OnExportGame() {
-	ed->mode_admin->export_game();
+	data->ed->mode_admin->export_game();
 }
 
 AdminFileList *AdministrationDialog::get_list(const string &lid) {
@@ -202,17 +202,17 @@ AdminFile* AdministrationDialog::GetSingleSelectedFile()
 	Array<AdminFile*> l = GetSelectedFiles();
 	if (l.num == 1)
 		return l[0];
-	ed->error_box(_("Please select exactly one file!"));
-	return NULL;
+	data->ed->error_box(_("Please select exactly one file!"));
+	return nullptr;
 }
 
 void AdministrationDialog::OnClose()
 {
-	ed->set_mode(ed->mode_model);
+	data->ed->set_mode(data->ed->mode_model);
 }
 
 void AdministrationDialog::OnExit()
-{	ed->set_mode(ed->mode_model);	}
+{	data->ed->set_mode(data->ed->mode_model);	}
 
 void AdministrationDialog::OnRename()
 {}//{	data->Rename();	}
@@ -224,7 +224,7 @@ void AdministrationDialog::OnEdit() {
 	AdminFile *a = GetSingleSelectedFile();
 	if (!a)
 		return;
-	ed->universal_edit(a->Kind, a->Name, true);
+	data->ed->universal_edit(a->Kind, a->Name, true);
 }
 
 void AdministrationDialog::OnFileList() {
@@ -234,6 +234,6 @@ void AdministrationDialog::OnFileList() {
 }
 
 void AdministrationDialog::OnRudimentaryConfiguration() {
-	ed->mode_admin->basic_settings();
+	data->ed->mode_admin->basic_settings();
 }
 

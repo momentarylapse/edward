@@ -15,10 +15,9 @@ class ModelPolygon;
 class VertexToCome;
 class PolygonRelink;
 
-class ActionModelBevelEdges: public ActionGroup
-{
+class ActionModelBevelEdges: public ActionGroup {
 public:
-	ActionModelBevelEdges(float _length);
+	ActionModelBevelEdges(float _length, int material);
 	string name(){	return "ModelBevelEdges";	}
 
 	void *compose(Data *d);
@@ -28,6 +27,7 @@ public:
 	void do_poly_relink(ModelPolygon &p, PolygonRelink &r, int i, DataModel *m);
 private:
 	float length;
+	int material;
 };
 
 #endif /* ACTIONMODELBEVELEDGES_H_ */

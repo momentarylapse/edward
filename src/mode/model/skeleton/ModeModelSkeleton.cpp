@@ -12,7 +12,7 @@
 #include "../animation/ModeModelAnimation.h"
 #include "../mesh/selection/MeshSelectionModePolygon.h"
 #include "../../../data/model/ModelSelection.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../storage/Storage.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/Window.h"
@@ -24,12 +24,11 @@
 
 void draw_model(MultiView::Window *win, Model *m, int num_lights); // ModeWorld.cpp
 
-ModeModelSkeleton *mode_model_skeleton = NULL;
 
-
-ModeModelSkeleton::ModeModelSkeleton(ModeBase *_parent, MultiView::MultiView *mv) :
-	Mode<DataModel>("ModelSkeleton", _parent, mv, "menu_skeleton")
+ModeModelSkeleton::ModeModelSkeleton(ModeModel *_parent, MultiView::MultiView *mv) :
+	Mode<ModeModel, DataModel>(_parent->ed, "ModelSkeleton", _parent, mv, "menu_skeleton")
 {
+	mode_model_mesh = _parent->mode_model_mesh;
 	mouse_action = -1;
 }
 
@@ -37,12 +36,12 @@ ModeModelSkeleton::ModeModelSkeleton(ModeBase *_parent, MultiView::MultiView *mv
 
 void ModeModelSkeleton::on_command(const string & id) {
 	if (id == "skeleton_new_point")
-		ed->set_mode(new ModeModelSkeletonCreateBone(ed->cur_mode));
+		ed->set_mode(new ModeModelSkeletonCreateBone(this));
 	if (id == "skeleton_edit_bone") {
 		if (data->get_selection().bone.num == 1) {
 			foreachi(ModelBone &b, data->bone, i)
 				if (b.is_selected) {
-					ed->set_mode(new ModeModelSkeletonAttachVertices(ed->cur_mode, i));
+					ed->set_mode(new ModeModelSkeletonAttachVertices(this, i));
 					break;
 				}
 		} else {
@@ -75,7 +74,7 @@ void ModeModelSkeleton::on_command(const string & id) {
 }
 
 void ModeModelSkeleton::add_sub_model() {
-	storage->file_dialog(FD_MODEL, false, true).on([this] (const auto& p) {
+	ed->storage->file_dialog(FD_MODEL, false, true).on([this] (const auto& p) {
 		data->begin_action_group("remove-sub-model");
 		foreachi(ModelBone &b, data->bone, i)
 			if (b.is_selected)
@@ -137,7 +136,7 @@ void ModeModelSkeleton::on_start() {
 
 
 	choose_mouse_function(MultiView::ACTION_MOVE);
-	ed->mode_model->allow_selection_modes(false);
+	parent->allow_selection_modes(false);
 	mode_model_mesh->update_vertex_buffers(data->mesh->vertex);
 }
 
@@ -166,15 +165,15 @@ void draw_bone(const vec3 &r, const vec3 &d, const color &c, MultiView::Window *
 	draw_lines_colored({r,d}, col, false);
 }
 
-mat4 get_bone_frame(const ModelBone &b) {
-	if (mode_model_animation->is_ancestor_of(ed->cur_mode))
+mat4 get_bone_frame(ModeBase *cur_mode, const ModelBone &b) {
+	if (mode_model_animation->is_ancestor_of(cur_mode))
 		return b._matrix;
 	return mat4::translation(b.pos);
 }
 
 void draw_coord_basis(MultiView::Window *win, const ModelBone &b) {
 	vec3 o = b.pos;
-	mat4 m = get_bone_frame(b);
+	mat4 m = get_bone_frame(win->multi_view->ed->cur_mode, b);
 	vec3 e[3] = {vec3::EX, vec3::EY, vec3::EZ};
 	for (int i=0;i<3;i++)
 		e[i] = m.transform_normal(e[i]);
@@ -196,7 +195,7 @@ void ModeModelSkeleton::draw_skeleton(MultiView::Window *win, Array<ModelBone> &
 			continue;
 		if (!b.model)
 			continue;
-		nix::set_model_matrix(get_bone_frame(b));
+		nix::set_model_matrix(get_bone_frame(win->multi_view->ed->cur_mode, b));
 		draw_model(win, b.model, 1);
 	}
 	nix::set_model_matrix(mat4::ID);

@@ -5,7 +5,7 @@
  *      Author: michi
  */
 
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 #include "ModeModelAnimation.h"
 #include "ModeModelAnimationNone.h"
@@ -22,8 +22,8 @@ ModeModelAnimation *mode_model_animation = NULL;
 
 const string ModeModelAnimation::State::MESSAGE_SET_FRAME = "set-frame";
 
-ModeModelAnimation::ModeModelAnimation(ModeBase *_parent, MultiView::MultiView *mv) :
-	Mode<DataModel>("ModelAnimation", _parent, mv, "menu_move"),
+ModeModelAnimation::ModeModelAnimation(ModeModel *_parent, MultiView::MultiView *mv) :
+	Mode<ModeModel, DataModel>(_parent->ed, "ModelAnimation", _parent, mv, "menu_move"),
 	in_update(this, [this] { on_update(); })
 {
 	mode_model_animation_none = new ModeModelAnimationNone(this, mv);
@@ -70,7 +70,7 @@ void ModeModelAnimation::on_command(const string & id) {
 	if (id == "move_frame_insert")
 		duplicate_current_frame();
 	if (id == "move_frame_interpolate")
-		ed->set_mode(new ModeModelAnimationInterpolateFrames(ed->cur_mode));
+		ed->set_mode(new ModeModelAnimationInterpolateFrames(this));
 }
 
 
@@ -184,8 +184,8 @@ void ModeModelAnimation::update_animation() {
 	}
 
 
-	mode_model_mesh->update_vertex_buffers(vertex);
-	mode_model_mesh->fill_selection_buffer(vertex);
+	ed->mode_model->mode_model_mesh->update_vertex_buffers(vertex);
+	ed->mode_model->mode_model_mesh->fill_selection_buffer(vertex);
 
 	state.out_changed.notify();
 	multi_view->force_redraw();

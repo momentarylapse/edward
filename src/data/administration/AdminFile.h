@@ -27,7 +27,7 @@ public:
 	void add_child(AdminFile *a);
 	void remove_child(AdminFile *a);
 	void remove_all_children();
-	void check(AdminFileList &list);
+	void check(EdwardWindow *ed, AdminFileList &list);
 };
 
 

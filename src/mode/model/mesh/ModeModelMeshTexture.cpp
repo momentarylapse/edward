@@ -8,7 +8,7 @@
 #include "ModeModelMesh.h"
 #include "ModeModelMeshTexture.h"
 #include "../dialog/ModelMaterialDialog.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/Window.h"
 #include "../../../multiview/DrawingHelper.h"
@@ -17,10 +17,8 @@
 #include "../../../data/model/ModelSelection.h"
 #include "../../../data/model/ModelMesh.h"
 
-ModeModelMeshTexture *mode_model_mesh_texture = NULL;
-
-ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent, MultiView::MultiView *mv) :
-	Mode<DataModel>("ModelMeshTexture", _parent, mv, "menu_model")
+ModeModelMeshTexture::ModeModelMeshTexture(ModeModelMesh *_parent, MultiView::MultiView *mv) :
+	Mode<ModeModelMesh, DataModel>(_parent->ed, "ModelMeshTexture", _parent, mv, "menu_model")
 {
 	current_texture_level = 0;
 	dialog = nullptr;
@@ -30,7 +28,7 @@ ModeModelMeshTexture::ModeModelMeshTexture(ModeBase *_parent, MultiView::MultiVi
 void ModeModelMeshTexture::fetchData() {
 	skin_vertex.clear();
 	for (ModelPolygon &t: data->mesh->polygon) {
-		if (t.material != mode_model_mesh->current_material)
+		if (t.material != parent->current_material)
 			continue;
 		ModelSkinVertexDummy v;
 		v.m_delta = v.m_old = false;
@@ -65,7 +63,7 @@ void ModeModelMeshTexture::on_start() {
 	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-texture-toolbar");
 
 	multi_view->view_stage = parent->multi_view->view_stage;
-	mode_model_mesh->apply_mouse_function(multi_view);
+	parent->apply_mouse_function(multi_view);
 
 	fetchData();
 
@@ -96,7 +94,7 @@ void ModeModelMeshTexture::on_end() {
 	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar"); // -> mesh
 }
 
-#define cur_tex			data->material[mode_model_mesh->current_material]->texture_levels[current_texture_level]->texture.get()
+#define cur_tex			data->material[parent->current_material]->texture_levels[current_texture_level]->texture.get()
 
 
 void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
@@ -150,7 +148,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	// draw triangles (outlines) of current material
 	set_color(White);
 	for (ModelPolygon &t: data->mesh->polygon) {
-		if (t.material != mode_model_mesh->current_material)
+		if (t.material != parent->current_material)
 			continue;
 		if (t.view_stage < multi_view->view_stage)
 			continue;
@@ -185,7 +183,7 @@ void ModeModelMeshTexture::on_selection_change()
 
 	int nn = 0;
 	for (ModelPolygon &t: data->mesh->polygon) {
-		if (t.material != mode_model_mesh->current_material)
+		if (t.material != parent->current_material)
 			continue;
 		t.is_selected = true;
 		for (int k=0;k<t.side.num;k++){
@@ -212,7 +210,7 @@ void ModeModelMeshTexture::set_current_texture_level(int level) {
 void ModeModelMeshTexture::on_data_skin_change() {
 	int svi = 0;
 	for (ModelPolygon &t: data->mesh->polygon) {
-		if (t.material != mode_model_mesh->current_material)
+		if (t.material != parent->current_material)
 			continue;
 		for (int k=0;k<t.side.num;k++)
 			skin_vertex[svi ++].pos = t.side[k].skin_vertex[current_texture_level];
@@ -221,8 +219,8 @@ void ModeModelMeshTexture::on_data_skin_change() {
 
 void ModeModelMeshTexture::on_data_change() {
 	// consistency checks
-	if (current_texture_level >= data->material[mode_model_mesh->current_material]->texture_levels.num)
-		set_current_texture_level(data->material[mode_model_mesh->current_material]->texture_levels.num - 1);
+	if (current_texture_level >= data->material[parent->current_material]->texture_levels.num)
+		set_current_texture_level(data->material[parent->current_material]->texture_levels.num - 1);
 }
 
 
@@ -231,7 +229,7 @@ void ModeModelMeshTexture::getSelectedSkinVertices(Array<int> &tria, Array<int> 
 {
 	int i = 0;
 	foreachi(ModelPolygon &t, data->mesh->polygon, ti)
-		if (t.material == mode_model_mesh->current_material){
+		if (t.material == parent->current_material){
 			for (int k=0;k<t.side.num;k++){
 				if (skin_vertex[i].is_selected){
 					index.add(k);

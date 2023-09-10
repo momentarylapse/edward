@@ -10,7 +10,7 @@
 #include "../../multiview/Window.h"
 #include "../../multiview/DrawingHelper.h"
 #include "../../y/ResourceManager.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 
 float col_frac(const color &a, const color &b);
 

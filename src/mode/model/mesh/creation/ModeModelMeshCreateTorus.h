@@ -11,10 +11,11 @@
 #include "../../../ModeCreation.h"
 #include "../../../../data/model/DataModel.h"
 
-class ModeModelMeshCreateTorus: public ModeCreation<DataModel>
-{
+class ModeModelMesh;
+
+class ModeModelMeshCreateTorus: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshCreateTorus(ModeBase *parent);
+	ModeModelMeshCreateTorus(ModeModelMesh *parent);
 	virtual ~ModeModelMeshCreateTorus();
 
 	void on_start() override;

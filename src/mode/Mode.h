@@ -18,9 +18,11 @@ namespace MultiView {
 	class Window;
 };
 
+class EdwardWindow;
+
 class ModeBase : public obs::Node<hui::EventHandler> {
 public:
-	ModeBase(const string &name, ModeBase *parent, MultiView::MultiView *multi_view, const string &menu_id);
+	ModeBase(EdwardWindow *ed, const string &name, ModeBase *parent, MultiView::MultiView *multi_view, const string &menu_id);
 	virtual ~ModeBase();
 
 	// Start/End: (once) entering this mode or a sub mode
@@ -67,27 +69,37 @@ public:
 	bool equal_roots(ModeBase *m);
 	virtual Data *get_data() = 0;
 
+	ModeBase *find_mode_base(const string &name);
+	template<class M>
+	M *find_mode(const string &name) {
+		return static_cast<M*>(find_mode_base(name));
+	}
+
 	string name;
 
-	ModeBase *parent;
+	EdwardWindow *ed;
+	ModeBase *parent_untyped;
 	MultiView::MultiView *multi_view;
 
 	string menu_id;
 };
 
-template<class T>
+template<class M, class T>
 class Mode : public ModeBase {
 public:
-	Mode(const string &name, ModeBase *parent, Data *_data, MultiView::MultiView *multi_view, const string &menu) :
-		ModeBase(name, parent, multi_view, menu)
+	Mode(EdwardWindow *ed, const string &name, M *_parent, Data *_data, MultiView::MultiView *multi_view, const string &menu) :
+		ModeBase(ed, name, _parent, multi_view, menu)
 	{
+		parent = _parent;
 		data = (T*)_data;
 	}
-	Mode(const string &name, ModeBase *parent, MultiView::MultiView *multi_view, const string &menu) :
-		ModeBase(name, parent, multi_view, menu)
+	Mode(EdwardWindow *ed, const string &name, M *_parent, MultiView::MultiView *multi_view, const string &menu) :
+		ModeBase(ed, name, _parent, multi_view, menu)
 	{
+		parent = _parent;
 		data = (T*)parent->get_data();
 	}
+	M *parent;
 	T *data;
 	Data *get_data() override {
 		return (Data*)data;

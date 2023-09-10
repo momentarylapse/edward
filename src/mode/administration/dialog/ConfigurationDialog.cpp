@@ -8,7 +8,7 @@
 #include "ConfigurationDialog.h"
 #include "../../../data/administration/DataAdministration.h"
 #include "../../../data/administration/GameIniData.h"
-#include "../../../Edward.h"
+#include "../../../EdwardWindow.h"
 #include "../../../storage/Storage.h"
 
 ConfigurationDialog::ConfigurationDialog(hui::Window* _parent, DataAdministration *_data, bool _exporting):
@@ -45,7 +45,7 @@ void ConfigurationDialog::load_data() {
 	}
 
 	GameIniData &game = *data->GameIni;
-	game.load(storage->root_dir);
+	game.load(data->ed->storage->root_dir);
 	set_string("world", game.default_world().str());
 	set_string("second-world", game.second_world().str());
 	set_string("script", game.default_script().str());
@@ -59,42 +59,42 @@ void ConfigurationDialog::load_data() {
 	set_float("scale-min", game.get_float(game.ID_RESOLUTION_SCALE_MIN, 1.0f));
 	set_int("shadow-resolution", max(0, SHADOW_RESOLUTIONS.find(game.get_int(game.ID_SHADOW_RESOLUTION, 2048))));
 
-	set_string("root-directory", storage->root_dir.str());
+	set_string("root-directory", data->ed->storage->root_dir.str());
 }
 
 
 void ConfigurationDialog::on_find_root_dir() {
-	hui::file_dialog_dir(this, _("Working directory"), storage->root_dir, {}).on([this] (const Path &path) {
+	hui::file_dialog_dir(this, _("Working directory"), data->ed->storage->root_dir, {}).on([this] (const Path &path) {
 		set_string("root-directory", path.str());
 	});
 }
 
 void ConfigurationDialog::on_find_world() {
-	storage->file_dialog(FD_WORLD, false, true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_WORLD, false, true).on([this] (const auto& p) {
 		set_string("world", p.simple.str());
 	});
 }
 
 void ConfigurationDialog::on_find_second_world() {
-	storage->file_dialog(FD_WORLD, false, true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_WORLD, false, true).on([this] (const auto& p) {
 		set_string("second-world", p.simple.str());
 	});
 }
 
 void ConfigurationDialog::on_find_script() {
-	storage->file_dialog(FD_SCRIPT, false, true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_SCRIPT, false, true).on([this] (const auto& p) {
 		set_string("script", p.relative.str());
 	});
 }
 
 void ConfigurationDialog::on_find_material() {
-	storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p) {
 		set_string("material", p.simple.str());
 	});
 }
 
 void ConfigurationDialog::on_find_font() {
-	storage->file_dialog(FD_FONT, false, true).on([this] (const auto& p) {
+	data->ed->storage->file_dialog(FD_FONT, false, true).on([this] (const auto& p) {
 		set_string("font", p.simple.str());
 	});
 }
@@ -124,18 +124,18 @@ void ConfigurationDialog::on_ok() {
 		try {
 			data->ExportGame(dir, GameIniExport);
 		} catch(AdminGameExportException &e) {
-			ed->error_box(_("Error while exporting:") + e.message);
+			data->ed->error_box(_("Error while exporting:") + e.message);
 			return;
 		}
 	} else {
 		// new RootDir?
-		bool rdc = (storage->root_dir != get_string("root-directory"));
+		bool rdc = (data->ed->storage->root_dir != get_string("root-directory"));
 		if (rdc)
-			storage->set_root_directory(get_string("root-directory"));
+			data->ed->storage->set_root_directory(get_string("root-directory"));
 //		data->UnlinkGameIni();
 		into_game_init(*data->GameIni);
 //		data->LinkGameIni(data->GameIni);
-		data->GameIni->save(storage->root_dir);
+		data->GameIni->save(data->ed->storage->root_dir);
 		if (rdc)
 			data->UpdateDatabase();
 	}

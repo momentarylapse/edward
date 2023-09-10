@@ -22,14 +22,16 @@ public:
 	hui::Panel *dialog;
 };
 
-template<class T>
+template<class M, class T>
 class ModeCreation: public ModeCreationBase {
 public:
-	ModeCreation(const string &_name, ModeBase *_parent) :
-		ModeCreationBase(_name, _parent)
+	ModeCreation(const string &_name, M *_parent) :
+		ModeCreationBase(_name, (ModeBase*)_parent)
 	{
-		data = (T*)_parent->get_data();
+		data = (T*)parent_untyped->get_data();
+		parent = _parent;
 	}
+	M *parent;
 	T *data;
 	virtual Data *get_data() { return data; }
 };

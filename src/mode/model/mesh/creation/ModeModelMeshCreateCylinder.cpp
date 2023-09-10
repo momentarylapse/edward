@@ -10,7 +10,7 @@
 #include "../../ModeModel.h"
 #include "../../../../data/model/geometry/GeometryCylinder.h"
 #include "../../../../action/model/mesh/physical/ActionModelAddCylinder.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -19,8 +19,8 @@
 
 
 
-ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(ModeBase *_parent) :
-	ModeCreation<DataModel>("ModelMeshCreateCylinder", _parent)
+ModeModelMeshCreateCylinder::ModeModelMeshCreateCylinder(ModeModelMesh *_parent) :
+	ModeCreation<ModeModelMesh, DataModel>("ModelMeshCreateCylinder", _parent)
 {
 	message = _("Cylinder: starting point");
 
@@ -43,7 +43,7 @@ void ModeModelMeshCreateCylinder::on_start() {
 
 	ed->set_side_panel(dialog);
 
-	bool physical = (mode_model_mesh->current_skin == MESH_PHYSICAL);
+	bool physical = (parent->current_skin == MESH_PHYSICAL);
 	if (physical) {
 		dialog->enable("rings", false);
 		dialog->enable("edges", false);
@@ -97,7 +97,7 @@ void ModeModelMeshCreateCylinder::on_mouse_move() {
 
 void ModeModelMeshCreateCylinder::on_left_button_up() {
 	if (pos.num == 2) {
-		bool physical = (mode_model_mesh->current_skin == MESH_PHYSICAL);
+		bool physical = (parent->current_skin == MESH_PHYSICAL);
 
 		if (physical) {
 			ModelCylinder c;
@@ -111,7 +111,7 @@ void ModeModelMeshCreateCylinder::on_left_button_up() {
 			data->phys_mesh->vertex.add(ModelVertex(pos[1]));
 
 		} else {
-			data->pasteGeometry(*geo, mode_model_mesh->current_material);
+			data->pasteGeometry(*geo, parent->current_material);
 		}
 
 		abort();

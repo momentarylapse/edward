@@ -12,7 +12,7 @@
 #include "../../../../data/model/DataModel.h"
 #include "../../../../data/model/geometry/Geometry.h"
 #include "../../../../data/model/ModelSelection.h"
-#include "../../../../Edward.h"
+#include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 
 

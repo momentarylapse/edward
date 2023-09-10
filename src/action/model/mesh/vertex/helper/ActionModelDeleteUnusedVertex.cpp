@@ -8,7 +8,7 @@
 #include "ActionModelDeleteUnusedVertex.h"
 #include "../../../../../data/model/DataModel.h"
 #include "../../../../../data/model/ModelMesh.h"
-#include "../../../../../Edward.h"
+#include "../../../../../EdwardWindow.h"
 #include "../../../../../multiview/MultiView.h"
 #include "../../../../../y/components/Animator.h"
 #include <assert.h>

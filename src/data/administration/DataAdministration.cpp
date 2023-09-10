@@ -13,14 +13,16 @@
 #include "../model/DataModel.h"
 #include "../material/DataMaterial.h"
 #include "../font/DataFont.h"
+#include "../../EdwardWindow.h"
 #include "../../Edward.h"
+#include "../../stuff/Progress.h"
 #include "../../storage/Storage.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/formatter.h"
 
-DataAdministration::DataAdministration() :
-	Data(-1)
+DataAdministration::DataAdministration(EdwardWindow *ed) :
+	Data(ed, -1)
 {
 	GameIni = new GameIniData;
 	file_list = new AdminFileList;
@@ -46,7 +48,7 @@ void DataAdministration::MetaFraesDir(int kind) {
 	string extension ="x";
 	cft.clear();
 
-	auto dir = storage->get_root_dir(kind);
+	auto dir = ed->storage->get_root_dir(kind);
 	if (kind==FD_WORLD)		extension = ".world";
 	if (kind==FD_TERRAIN)	extension = ".map";
 	if (kind==FD_MODEL)		extension = ".model";
@@ -224,7 +226,7 @@ void DataAdministration::UpdateDatabase()
 	// make sure the "Engine"-files are the first 3 ones
 	AdminFile *f_game_ini = file_list->add_engine_files();
 
-	GameIni->load(storage->root_dir);
+	GameIni->load(ed->storage->root_dir);
 
 	// find all files
 	// iterate file types
@@ -245,7 +247,7 @@ void DataAdministration::UpdateDatabase()
 
 	// check all files
 	for (int i=0;i<file_list->num;i++){
-		(*file_list)[i]->check(*file_list);
+		(*file_list)[i]->check(ed, *file_list);
 
 		ed->progress->set(_("Checking files"), (float)i / (float)file_list->num);
 	}
@@ -277,7 +279,7 @@ Path kind_subdir(int kind) {
 
 void DataAdministration::ExportGame(const Path &dir, GameIniData &game_ini)
 {
-	if (dir == storage->root_dir)
+	if (dir == ed->storage->root_dir)
 		throw AdminGameExportException("export dir = root dir");
 	AdminFileList list;
 	list.add((*file_list)[0]);
@@ -294,7 +296,7 @@ void DataAdministration::ExportGame(const Path &dir, GameIniData &game_ini)
 		if (a->Missing)
 			continue;
 
-		Path source = storage->root_dir | kind_subdir(a->Kind) | a->Name;
+		Path source = ed->storage->root_dir | kind_subdir(a->Kind) | a->Name;
 		Path target = dir | kind_subdir(a->Kind) | a->Name;
 		if (FILE_OP_OK(os::fs::copy(source, target)))
 			num_ok ++;

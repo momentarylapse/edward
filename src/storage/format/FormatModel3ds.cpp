@@ -6,14 +6,14 @@
  */
 
 #include "FormatModel3ds.h"
-#include "../../Edward.h"
+#include "../../EdwardWindow.h"
 #include "../../data/model/DataModel.h"
 #include "../../data/model/ModelMesh.h"
 #include "../../data/model/ModelPolygon.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
 
-FormatModel3ds::FormatModel3ds() : TypedFormat<DataModel>(FD_MODEL, "3ds", _("Model 3ds"), Flag::READ) {
+FormatModel3ds::FormatModel3ds(EdwardWindow *ed) : TypedFormat<DataModel>(ed, FD_MODEL, "3ds", _("Model 3ds"), Flag::READ) {
 }
 
 void FormatModel3ds::_load(const Path &filename, DataModel *m, bool deep) {
