@@ -9,9 +9,9 @@
 #include "ModeModelMesh.h"
 #include "../ModeModel.h"
 #include "../../../multiview/MultiView.h"
+#include "../../../multiview/Window.h"
 #include "../../../multiview/DrawingHelper.h"
 #include "../../../multiview/ColorScheme.h"
-//#include "../../../stuff/BrushPanel.h"
 #include "../../../EdwardWindow.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../action/model/mesh/brush/ActionModelBrushExtrude.h"
@@ -110,9 +110,9 @@ void ModeModelMeshDeform::on_draw_win(MultiView::Window *win) {
 	vec3 n = data->mesh->polygon[multi_view->hover.index].temp_normal;
 	float radius = dialog->get_float("diameter") / 2;
 
-	set_color(scheme.CREATION_LINE);
-	set_line_width(scheme.LINE_WIDTH_MEDIUM);
-	draw_circle(pos, n, radius);
+	win->drawing_helper->set_color(scheme.CREATION_LINE);
+	win->drawing_helper->set_line_width(scheme.LINE_WIDTH_MEDIUM);
+	win->drawing_helper->draw_circle(pos, n, radius);
 }
 
 void ModeModelMeshDeform::on_selection_change() {

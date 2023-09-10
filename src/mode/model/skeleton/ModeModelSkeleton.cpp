@@ -162,7 +162,7 @@ void draw_bone(const vec3 &r, const vec3 &d, const color &c, MultiView::Window *
 	Array<color> col;
 	col.add(color::interpolate(c, scheme.BACKGROUND, 0.5f)); // root
 	col.add(color::interpolate(c, scheme.BACKGROUND, 0.8f));
-	draw_lines_colored({r,d}, col, false);
+	win->drawing_helper->draw_lines_colored({r,d}, col, false);
 }
 
 mat4 get_bone_frame(ModeBase *cur_mode, const ModelBone &b) {
@@ -179,7 +179,7 @@ void draw_coord_basis(MultiView::Window *win, const ModelBone &b) {
 		e[i] = m.transform_normal(e[i]);
 	for (int i=0; i<3; i++) {
 		color cc = scheme.AXIS[i];
-		draw_lines_colored({o, o + e[i] * 40 / win->zoom()}, {cc,cc}, false);
+		win->drawing_helper->draw_lines_colored({o, o + e[i] * 40 / win->zoom()}, {cc,cc}, false);
 	}
 }
 
@@ -201,7 +201,7 @@ void ModeModelSkeleton::draw_skeleton(MultiView::Window *win, Array<ModelBone> &
 	nix::set_model_matrix(mat4::ID);
 
 	nix::set_z(false, false);
-	set_line_width(thin ? scheme.LINE_WIDTH_THIN : scheme.LINE_WIDTH_BONE);
+	win->drawing_helper->set_line_width(thin ? scheme.LINE_WIDTH_THIN : scheme.LINE_WIDTH_BONE);
 
 	for (ModelBone &b: bone) {
 		if (b.view_stage < multi_view->view_stage)

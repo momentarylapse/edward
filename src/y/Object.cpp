@@ -17,8 +17,8 @@
 
 
 // neutral object (for terrains,...)
-Object::Object() {
-	material.add(new Material);
+Object::Object(ResourceManager *resource_manager) {
+	material.add(new Material(resource_manager));
 	script_data.name = "-terrain-";
 	visible = false;
 	prop.radius = 30000000;

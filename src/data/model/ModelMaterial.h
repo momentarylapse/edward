@@ -23,12 +23,14 @@ namespace MultiView {
 };
 
 class Image;
+class EdwardWindow;
 
 class ModelMaterial {
 public:
-	ModelMaterial();
-	ModelMaterial(const Path &filename);
+	ModelMaterial(EdwardWindow *ed, const Path &filename);
+	ModelMaterial(EdwardWindow *ed);
 	virtual ~ModelMaterial();
+	EdwardWindow *ed;
 
 	void reset();
 	void make_consistent();
@@ -47,7 +49,7 @@ public:
 		shared<nix::Texture> texture;
 		Image *image;
 		bool edited;
-		void reload_image();
+		void reload_image(EdwardWindow *ed);
 		void update_texture();
 	};
 	Array<TextureLevel*> texture_levels;

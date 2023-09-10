@@ -9,6 +9,7 @@
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../multiview/MultiView.h"
+#include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
 #include "../../../../EdwardWindow.h"
 #include "../../../../lib/nix/nix.h"
@@ -17,7 +18,6 @@ ModeModelMeshPaste::ModeModelMeshPaste(ModeModelMesh* _parent) :
 	ModeCreation<ModeModelMesh, DataModel>("ModelMeshPaste", _parent)
 {
 	message = _("move, [left click] to insert");
-	geo = nullptr;
 
 	vec3 min, max;
 	parent->temp_geo.get_bounding_box(min, max);
@@ -38,8 +38,7 @@ void ModeModelMeshPaste::on_start() {
 }
 
 void ModeModelMeshPaste::on_end() {
-	if (geo)
-		delete geo;
+	geo = nullptr;
 }
 
 void ModeModelMeshPaste::on_mouse_move() {
@@ -56,16 +55,14 @@ void ModeModelMeshPaste::on_draw_win(MultiView::Window* win) {
 	parent->on_draw_win(win);
 
 	if (geo) {
-		set_material_creation();
-		geo->build(nix::vb_temp);
-		nix::draw_triangles(nix::vb_temp);
+		win->drawing_helper->set_material_creation();
+		geo->build(win->gl->vb_temp);
+		nix::draw_triangles(win->gl->vb_temp);
 	}
 }
 
 void ModeModelMeshPaste::update_geometry() {
 	msg_write("update");
-	if (geo)
-		delete geo;
 	mat4 m;
 	m = mat4::translation( multi_view->get_cursor() - dpos0);
 	geo = new Geometry;

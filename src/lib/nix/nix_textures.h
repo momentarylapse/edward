@@ -16,7 +16,9 @@
 
 namespace nix{
 
-void init_textures();
+class Context;
+
+void init_textures(Context* ctx);
 
 
 class Texture : public Sharable<base::Empty> {

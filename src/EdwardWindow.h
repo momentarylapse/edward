@@ -15,6 +15,7 @@
 
 namespace nix {
 	class Texture;
+	class Context;
 };
 namespace MultiView {
 	class MultiView;
@@ -28,6 +29,10 @@ class ModeFont;
 class ModeAdministration;
 class Storage;
 class Progress;
+class ResourceManager;
+class MaterialManager;
+class ModelManager;
+class DrawingHelper;
 
 
 
@@ -81,7 +86,8 @@ public:
 	void universal_open(int preferred_type);
 	void universal_edit(int type, const Path &filename, bool relative_path);
 
-	virtual void _cdecl on_draw_gl();
+	void on_draw_gl();
+	void on_realize_gl();
 	virtual void _cdecl on_key_down() override;
 	virtual void _cdecl on_key_up() override;
 	virtual void _cdecl on_mouse_move() override;
@@ -123,6 +129,12 @@ public:
 		return static_cast<M*>(find_mode_base(name));
 	}
 
+	nix::Context *gl;
+	ResourceManager *resource_manager;
+	DrawingHelper *drawing_helper;
+	MaterialManager *material_manager;
+	ModelManager *model_manager;
+
 	Storage *storage;
 	MultiView::MultiView *multi_view_2d;
 	MultiView::MultiView *multi_view_3d;
@@ -138,6 +150,8 @@ public:
 	string get_tex_image(nix::Texture *tex);
 
 	os::Timer timer;
+
+	base::promise<void> promise_started;
 };
 
 #endif /* SRC_EDWARDWINDOW_H_ */

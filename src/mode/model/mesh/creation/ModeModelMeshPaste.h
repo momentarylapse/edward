@@ -31,7 +31,7 @@ public:
 
 private:
 	vec3 dpos0;
-	Geometry *geo;
+	owned<Geometry> geo;
 };
 
 #endif /* SRC_MODE_MODEL_MESH_CREATION_MODEMODELMESHPASTE_H_ */

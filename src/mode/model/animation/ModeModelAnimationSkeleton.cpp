@@ -12,11 +12,10 @@
 #include "../ModeModel.h"
 #include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
+#include "../../../multiview/Window.h"
 #include "../../../multiview/DrawingHelper.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../data/model/ModelSelection.h"
-
-ModeModelAnimationSkeleton *mode_model_animation_skeleton = NULL;
 
 float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vec2 &M, vec3 &tp, float &z, const Array<ModelVertex> &vertex);
 
@@ -121,7 +120,7 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
 
 
 	nix::set_offset(-1.0f);
-	set_material_hover();
+	win->drawing_helper->set_material_hover();
 	nix::draw_triangles(ed->mode_model->mode_model_mesh->vb_hover);
 	nix::set_material(White, 0.5f, 0, Black);
 	nix::disable_alpha();

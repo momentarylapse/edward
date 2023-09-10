@@ -20,7 +20,6 @@
 namespace nix {
 	extern mat4 projection_matrix;
 }
-void _draw_str(float x, float y, const string &d);
 
 
 namespace MultiView {
@@ -30,9 +29,10 @@ namespace MultiView {
 
 
 
-Window::Window(MultiView *_view, int _type)
-{
+Window::Window(MultiView *_view, int _type) {
 	multi_view = _view;
+	gl = multi_view->gl;
+	drawing_helper = multi_view->drawing_helper;
 	cam = &multi_view->cam;
 	type = _type;
 }
@@ -162,11 +162,11 @@ void draw_grid_3d(const color &bg, Window *w, int plane, float alpha) {
 	add_grid(move_rect(r, -1, 1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);*/
 
 
-	set_line_width(scheme.LINE_WIDTH_THIN);
+	w->drawing_helper->set_line_width(scheme.LINE_WIDTH_THIN);
 	for (int l=3; l>=1; l--)
-		draw_lines_colored(p[l], col[l], false);
-	set_line_width(scheme.LINE_WIDTH_MEDIUM);
-	draw_lines_colored(p[0], col[0], false);
+		w->drawing_helper->draw_lines_colored(p[l], col[l], false);
+	w->drawing_helper->set_line_width(scheme.LINE_WIDTH_MEDIUM);
+	w->drawing_helper->draw_lines_colored(p[0], col[0], false);
 }
 
 
@@ -335,7 +335,7 @@ void Window::draw_data_points() {
 
 	// draw multiview data
 	set_projection_matrix_pixel();
-	nix::set_shader(nix::Shader::default_2d.get());
+	nix::set_shader(gl->default_2d.get());
 	nix::disable_alpha();
 	nix::set_texture(nullptr);
 	nix::set_offset(-2.0f);
@@ -366,8 +366,8 @@ void Window::draw_data_points() {
 					z = 0.0f;
 					radius = scheme.POINT_RADIUS_HOVER;
 				}
-				set_color(c);
-				draw_rect(	p.x-radius,
+				drawing_helper->set_color(c);
+				drawing_helper->draw_rect(	p.x-radius,
 								p.x+radius,
 								p.y-radius,
 								p.y+radius,
@@ -375,7 +375,7 @@ void Window::draw_data_points() {
 			}
 		}
 		if (d.indexable and index_key){
-			set_color(scheme.TEXT);
+			drawing_helper->set_color(scheme.TEXT);
 			nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 			for (int i=0;i<d.data->num;i++){
 
@@ -386,7 +386,7 @@ void Window::draw_data_points() {
 					vec3 p = project(sd->pos);
 					if ((p.x<dest.x1)or(p.y<dest.y1)or(p.x>dest.x2)or(p.y>dest.y2)or(p.z<=0)or(p.z>=1))
 						continue;
-					_draw_str(p.x+3, p.y, i2s(i));
+					drawing_helper->_draw_str(p.x+3, p.y, i2s(i));
 				}
 			}
 			nix::disable_alpha();
@@ -400,17 +400,17 @@ void Window::draw_header() {
 	color bg = get_background_color();
 	string view_kind = view_name(type);
 
-	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + get_str_width(view_kind), dest.y1, dest.y1 + 20);
+	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + drawing_helper->get_str_width(view_kind), dest.y1, dest.y1 + 20);
 
-	nix::set_shader(nix::Shader::default_2d.get());
-	set_color(scheme.WINDOW_TITLE);
+	nix::set_shader(gl->default_2d.get());
+	drawing_helper->set_color(scheme.WINDOW_TITLE);
 	bg = scheme.WINDOW_TITLE_BG;
 	if (multi_view->ed->is_active("nix-area") and (this == multi_view->active_win)) {}
 		// active?!?
 	if ((this == multi_view->mouse_win) and (multi_view->hover.meta == multi_view->hover.HOVER_WINDOW_LABEL))
 		bg = scheme.hoverify(bg);
-	draw_str_bg(dest.x1 + 3, dest.y1 + 3, view_kind.upper(), scheme.WINDOW_TITLE, bg, TextAlign::LEFT);
-	set_color(scheme.TEXT);
+	drawing_helper->draw_str_bg(dest.x1 + 3, dest.y1 + 3, view_kind.upper(), scheme.WINDOW_TITLE, bg, TextAlign::LEFT);
+	drawing_helper->set_color(scheme.TEXT);
 }
 
 void Window::set_shader(nix::Shader *s, int num_lights) {
@@ -429,7 +429,7 @@ void Window::draw() {
 
 	// background color
 	nix::clear(bg);
-	nix::set_shader(nix::Shader::default_2d.get());
+	nix::set_shader(gl->default_2d.get());
 
 	set_projection_matrix();
 	update_matrices();
@@ -448,15 +448,15 @@ void Window::draw() {
 	// light
 	multi_view->set_light(this, cam->ang * vec3::EZ, White, 1.0f);
 	nix::set_material(White, 0, 0, White);//Black);
-	set_color(White);
-	set_shader(nix::Shader::default_3d.get());
+	drawing_helper->set_color(White);
+	set_shader(gl->default_3d.get());
 
 	// draw the actual data
 	set_projection_matrix();
 	if (multi_view->ed->cur_mode)
 		multi_view->ed->cur_mode->on_draw_win(this);
 
-	nix::set_shader(nix::Shader::default_2d.get());
+	nix::set_shader(gl->default_2d.get());
 	nix::disable_alpha();
 	nix::set_texture(nullptr);
 	set_projection_matrix_pixel();
@@ -468,9 +468,9 @@ void Window::draw() {
 	// cursor
 	if (this != multi_view->mouse_win) {
 		vec3 pp = project(multi_view->get_cursor());
-		nix::set_shader(nix::Shader::default_2d.get());
-		set_color(scheme.CREATION_LINE);
-		draw_rect(pp.x-2, pp.x+2, pp.y-2, pp.y+2, 0);
+		nix::set_shader(gl->default_2d.get());
+		drawing_helper->set_color(scheme.CREATION_LINE);
+		drawing_helper->draw_rect(pp.x-2, pp.x+2, pp.y-2, pp.y+2, 0);
 	}
 
 
@@ -484,7 +484,7 @@ void Window::draw() {
 	for (auto &m: multi_view->message3d){
 		vec3 p = project(m.pos);
 		if (p.z > 0)
-			draw_str(p.x, p.y, m.str);
+			drawing_helper->draw_str(p.x, p.y, m.str);
 	}
 }
 

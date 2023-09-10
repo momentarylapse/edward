@@ -46,18 +46,18 @@ void ModeModelMeshCreatePolygon::on_end() {
 void ModeModelMeshCreatePolygon::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
-	set_color(scheme.CREATION_LINE);
-	set_line_width(scheme.LINE_WIDTH_MEDIUM);
+	win->drawing_helper->set_color(scheme.CREATION_LINE);
+	win->drawing_helper->set_line_width(scheme.LINE_WIDTH_MEDIUM);
 	for (int i=1;i<selection.num;i++) {
 		vec3 pa = data->edit_mesh->vertex[selection[i - 1]].pos;
 		vec3 pb = data->edit_mesh->vertex[selection[i    ]].pos;
-		draw_line(pa, pb);
+		win->drawing_helper->draw_line(pa, pb);
 	}
 	if (selection.num > 0) {
 		if (multi_view->hover.index >= 0)
-			draw_line(data->edit_mesh->vertex[selection.back()].pos, data->edit_mesh->vertex[multi_view->hover.index].pos);
+			win->drawing_helper->draw_line(data->edit_mesh->vertex[selection.back()].pos, data->edit_mesh->vertex[multi_view->hover.index].pos);
 		else
-			draw_line(data->edit_mesh->vertex[selection.back()].pos, multi_view->get_cursor());
+			win->drawing_helper->draw_line(data->edit_mesh->vertex[selection.back()].pos, multi_view->get_cursor());
 	}
 }
 

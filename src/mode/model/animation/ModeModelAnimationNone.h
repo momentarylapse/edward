@@ -24,6 +24,4 @@ public:
 	void on_draw_win(MultiView::Window *win) override;
 };
 
-extern ModeModelAnimationNone *mode_model_animation_none;
-
 #endif /* MODEMODELANIMATIONNONE_H_ */

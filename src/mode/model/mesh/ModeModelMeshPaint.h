@@ -40,6 +40,4 @@ private:
 	vec3 last_pos;
 };
 
-extern ModeModelMeshPaint *mode_model_mesh_paint;
-
 #endif /* SRC_MODE_MODEL_MESH_MODEMODELMESHPAINT_H_ */

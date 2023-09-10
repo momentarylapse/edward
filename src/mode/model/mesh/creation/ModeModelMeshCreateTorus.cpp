@@ -97,12 +97,12 @@ void ModeModelMeshCreateTorus::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
 	if (pos_chosen) {
-		set_material_creation();
-		geo->build(nix::vb_temp);
-		nix::draw_triangles(nix::vb_temp);
+		win->drawing_helper->set_material_creation();
+		geo->build(win->gl->vb_temp);
+		nix::draw_triangles(win->gl->vb_temp);
 
 		if (win == multi_view->mouse_win) {
-			draw_helper_line(win, pos, multi_view->get_cursor());
+			win->drawing_helper->draw_helper_line(win, pos, multi_view->get_cursor());
 		}
 	}
 }

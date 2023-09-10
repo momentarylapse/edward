@@ -20,14 +20,10 @@
 	#include "Material.h"
 #endif
 
+ResourceManager::ResourceManager(Context *_ctx) {
+	ctx = _ctx;
+}
 
-Path ResourceManager::shader_dir;
-Path ResourceManager::texture_dir;
-Path ResourceManager::default_shader;
-static shared_array<Shader> shaders;
-static shared_array<Texture> textures;
-static base::map<Path,Shader*> shader_map;
-static base::map<Path,Texture*> texture_map;
 
 Path guess_absolute_path(const Path &filename, const Array<Path> dirs) {
 	if (filename.is_absolute())
@@ -48,13 +44,13 @@ Path guess_absolute_path(const Path &filename, const Array<Path> dirs) {
 
 Shader* ResourceManager::load_shader(const Path& filename) {
 	if (!filename)
-		return Shader::load("");
+		return ctx->load_shader("");
 
 	Path fn = guess_absolute_path(filename, {shader_dir, hui::Application::directory_static | "shader"});
 	if (!fn) {
 		if (engine.ignore_missing_files) {
 			msg_error("missing shader: " + filename.str());
-			return Shader::load("");
+			return ctx->load_shader("");
 		}
 		throw Exception("missing shader: " + filename.str());
 		//fn = shader_dir | filename;
@@ -72,7 +68,7 @@ Shader* ResourceManager::load_shader(const Path& filename) {
 #ifdef USING_VULKAN
 	msg_write("loading shader: " + fn.str());
 #endif
-	auto s = Shader::load(fn);
+	auto s = ctx->load_shader(fn);
 	if (!s)
 		return nullptr;
 #ifdef USING_VULKAN
@@ -116,13 +112,13 @@ Shader* ResourceManager::load_surface_shader(const Path& _filename, const string
 
 
 	if (!filename)
-		return Shader::load("");
+		return ctx->load_shader("");
 
 	Path fn = guess_absolute_path(filename, {shader_dir, hui::Application::directory_static | "shader"});
 	if (fn.is_empty()) {
 		if (engine.ignore_missing_files) {
 			msg_error("missing shader: " + filename.str());
-			return Shader::load("");
+			return ctx->load_shader("");
 		}
 		throw Exception("missing shader: " + filename.str());
 		//fn = shader_dir | filename;
@@ -146,7 +142,7 @@ Shader* ResourceManager::load_surface_shader(const Path& _filename, const string
 		source = expand_geometry_shader_source(source, geo);
 	source = expand_fragment_shader_source(source, render_path);
 
-	auto shader = Shader::create(source);
+	auto shader = ctx->create_shader(source);
 
 	//auto s = Shader::load(fn);
 #ifdef USING_VULKAN
@@ -168,7 +164,7 @@ Shader* ResourceManager::load_surface_shader(const Path& _filename, const string
 }
 
 Shader* ResourceManager::create_shader(const string &source) {
-	return Shader::create(source);
+	return ctx->create_shader(source);
 }
 
 shared<Texture> ResourceManager::load_texture(const Path& filename) {
@@ -218,20 +214,20 @@ void ResourceManager::clear() {
 
 
 
-Shader *user_mesh_shader(UserMesh *m, RenderPathType type) {
+Shader *user_mesh_shader(ResourceManager *rm, UserMesh *m, RenderPathType type) {
 	if (!m->shader_cache[(int)type - 1]) {
 		static const string RENDER_PATH_NAME[3] = {"", "forward", "deferred"};
 		const string &rpt = RENDER_PATH_NAME[(int)type];
-		m->shader_cache[(int)type - 1] = ResourceManager::load_surface_shader(m->material->shader_path, rpt, m->vertex_shader_module, m->geometry_shader_module);
+		m->shader_cache[(int)type - 1] = rm->load_surface_shader(m->material->shader_path, rpt, m->vertex_shader_module, m->geometry_shader_module);
 	}
 	return m->shader_cache[(int)type - 1];
 }
 
-Shader *user_mesh_shadow_shader(UserMesh *m, Material *mat, RenderPathType type) {
+Shader *user_mesh_shadow_shader(ResourceManager *rm, UserMesh *m, Material *mat, RenderPathType type) {
 	if (!m->shader_cache_shadow[(int)type - 1]) {
 		static const string RENDER_PATH_NAME[3] = {"", "forward", "deferred"};
 		const string &rpt = RENDER_PATH_NAME[(int)type];
-		m->shader_cache_shadow[(int)type - 1] = ResourceManager::load_surface_shader(mat->shader_path, rpt, m->vertex_shader_module, m->geometry_shader_module);
+		m->shader_cache_shadow[(int)type - 1] = rm->load_surface_shader(mat->shader_path, rpt, m->vertex_shader_module, m->geometry_shader_module);
 	}
 	return m->shader_cache_shadow[(int)type - 1];
 }

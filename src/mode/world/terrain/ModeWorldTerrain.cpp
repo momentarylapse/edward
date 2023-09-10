@@ -10,6 +10,7 @@
 #include "../../../action/world/terrain/ActionWorldTerrainBrushExtrude.h"
 #include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
+#include "../../../multiview/Window.h"
 #include "../../../multiview/ColorScheme.h"
 #include "../../../multiview/DrawingHelper.h"
 #include "../../../lib/nix/nix.h"
@@ -148,7 +149,7 @@ void ModeWorldTerrain::on_draw_win(MultiView::Window* win) {
 	vec3 pos = multi_view->hover.point;
 	float radius = dialog->get_float("diameter") / 2;
 
-	set_color(scheme.CREATION_LINE);
-	set_line_width(scheme.LINE_WIDTH_HELPER);
-	draw_circle(pos, vec3::EY, radius);
+	win->drawing_helper->set_color(scheme.CREATION_LINE);
+	win->drawing_helper->set_line_width(scheme.LINE_WIDTH_HELPER);
+	win->drawing_helper->draw_circle(pos, vec3::EY, radius);
 }

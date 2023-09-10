@@ -257,7 +257,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 	}
 
 	if (deep) {
-		data->shader.load_from_file();
+		data->shader.load_from_file(ed);
 	}
 
 	delete(f);

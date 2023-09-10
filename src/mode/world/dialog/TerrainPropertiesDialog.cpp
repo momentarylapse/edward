@@ -71,14 +71,14 @@ void TerrainPropertiesDialog::on_textures() {
 
 
 void TerrainPropertiesDialog::fill_texture_list() {
-	Material *m = LoadMaterial(get_string("material"));
+	Material *m = data->ed->material_manager->load(get_string("material"));
 
 	reset("textures");
 	for (int i=0;i<temp.num_textures;i++) {
 		shared<nix::Texture> tex;
 		if (!temp.texture_file[i].is_empty()) {
 			try {
-				tex = ResourceManager::load_texture(temp.texture_file[i]);
+				tex = data->ed->resource_manager->load_texture(temp.texture_file[i]);
 			} catch (Exception &e) {
 			}
 		}

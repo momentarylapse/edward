@@ -16,6 +16,9 @@ class DataModel;
 class ModeModel;
 class ModelAnimationDialog;
 class ModelAnimationTimelinePanel;
+class ModeModelAnimationNone;
+class ModeModelAnimationSkeleton;
+class ModeModelAnimationVertex;
 
 class ModeModelAnimation: public Mode<ModeModel, DataModel> {
 public:
@@ -40,6 +43,10 @@ public:
 
 	ModelAnimationDialog *dialog;
 	ModelAnimationTimelinePanel *timeline;
+
+	ModeModelAnimationNone *mode_model_animation_none;
+	ModeModelAnimationSkeleton *mode_model_animation_skeleton;
+	ModeModelAnimationVertex *mode_model_animation_vertex;
 
 	ModelMove *empty_move;
 

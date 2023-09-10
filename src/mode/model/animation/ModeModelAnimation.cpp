@@ -39,8 +39,8 @@ ModeModelAnimation::ModeModelAnimation(ModeModel *_parent, MultiView::MultiView 
 	empty_move->interpolated_quadratic = 0;
 	empty_move->interpolated_loop = false;
 
-	dialog = NULL;
-	timeline = NULL;
+	dialog = nullptr;
+	timeline = nullptr;
 	runner = -1;
 	sim_frame_time = 0;
 	play_loop = false;

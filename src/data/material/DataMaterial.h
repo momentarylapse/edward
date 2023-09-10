@@ -27,7 +27,7 @@ public:
 
 	void reset() override;
 
-	void apply_for_rendering();
+	void apply_for_rendering() const;
 
 
 	struct AppearanceData {
@@ -62,11 +62,11 @@ public:
 		ShaderGraph *graph;
 		bool from_graph;
 		bool is_default;
-		void load_from_file();
-		void set_engine_default();
-		void save_to_file();
+		void load_from_file(EdwardWindow *ed);
+		void set_engine_default(EdwardWindow *ed);
+		void save_to_file(EdwardWindow *ed);
 
-		void reset();
+		void reset(EdwardWindow *ed);
 	};
 	ShaderData shader;
 

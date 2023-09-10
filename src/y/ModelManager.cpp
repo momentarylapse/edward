@@ -34,8 +34,6 @@
 Alpha parse_alpha(int a); // Material.h
 
 
-Array<Model*> ModelManager::originals;
-
 ModelTemplate::ModelTemplate(Model *m) {
 	model = m;
 	solid_body = nullptr;
@@ -44,6 +42,8 @@ ModelTemplate::ModelTemplate(Model *m) {
 	skeleton = nullptr;
 }
 
+MaterialManager *chunked_file_parser_get_material_manager(ChunkedFileParser *p);
+ResourceManager *chunked_file_parser_get_resource_manager(ChunkedFileParser *p);
 
 
 BinaryFormatter *load_file_x(const Path &filename, int &version) {
@@ -215,11 +215,11 @@ class ChunkMaterial : public FileChunk<Model, Material> {
 public:
 	ChunkMaterial() : FileChunk("material") {}
 	void create() override {
-		me = new Material;
+		me = new Material(chunked_file_parser_get_resource_manager(root));
 		parent->material.add(me);
 	}
 	void read(BinaryFormatter *f) override {
-		Material *m = LoadMaterial(f->read_str());
+		Material *m = chunked_file_parser_get_material_manager(root)->load(f->read_str());
 		*me = *m;
 		bool user_colors = f->read_bool();
 		if (user_colors) {
@@ -253,7 +253,7 @@ public:
 			me->textures.resize(nt);
 		for (int t=0;t<nt;t++) {
 			Path fn = f->read_str();
-			me->textures[t] = ResourceManager::load_texture(fn);
+			me->textures[t] = chunked_file_parser_get_resource_manager(root)->load_texture(fn);
 		}
 	}
 	void write(BinaryFormatter *f) override {}
@@ -603,7 +603,8 @@ public:
 
 class ModelParser : public ChunkedFileParser {
 public:
-	ModelParser() : ChunkedFileParser(8) {
+	ModelParser(ModelManager *_model_manager) : ChunkedFileParser(8) {
+		model_manager = _model_manager;
 		_model_parser_tria_mesh_count = 0;
 		set_base(new ChunkModel);
 	}
@@ -616,6 +617,8 @@ public:
 	}
 	void on_warn(const string &message) override {}
 	void on_info(const string &message) override {}
+
+	ModelManager *model_manager;
 };
 
 }
@@ -624,6 +627,12 @@ Model* fancy_copy(Model *orig) {
 	Model *clone = new Model();
 	//clone->owner = new Entity3D(Entity::Type::ENTITY3D);
 	return orig->copy(clone);
+}
+
+
+ModelManager::ModelManager(ResourceManager *_resource_manager, MaterialManager *_material_manager) {
+	resource_manager = _resource_manager;
+	material_manager = _material_manager;
 }
 
 Model* ModelManager::load(const Path &_filename) {
@@ -636,7 +645,7 @@ Model* ModelManager::load(const Path &_filename) {
 		}
 
 	msg_write("loading " + filename.str());
-	Model *m = new Model();
+	auto m = new Model();
 	m->_template = new ModelTemplate(m);
 	m->_template->filename = filename;
 	m->_template->solid_body = new SolidBody;
@@ -644,7 +653,7 @@ Model* ModelManager::load(const Path &_filename) {
 	m->_template->animator = new Animator;
 	m->_template->skeleton = new Skeleton;
 
-	modelmanager::ModelParser p;
+	modelmanager::ModelParser p(this);
 	p.read(filename, m);
 
 
@@ -687,4 +696,12 @@ Model* ModelManager::load(const Path &_filename) {
 	//m->load(filename);
 	originals.add(m);
 	return fancy_copy(m);
+}
+
+
+MaterialManager *chunked_file_parser_get_material_manager(ChunkedFileParser *p) {
+	return static_cast<modelmanager::ModelParser*>(p)->model_manager->material_manager;
+}
+ResourceManager *chunked_file_parser_get_resource_manager(ChunkedFileParser *p) {
+	return static_cast<modelmanager::ModelParser*>(p)->model_manager->resource_manager;
 }

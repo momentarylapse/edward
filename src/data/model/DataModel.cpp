@@ -162,9 +162,9 @@ void DataModel::reset() {
 
 	material.clear();
 	material.resize(1);
-	material[0] = new ModelMaterial();
+	material[0] = new ModelMaterial(ed);
 	material[0]->texture_levels.add(new ModelMaterial::TextureLevel());
-	material[0]->texture_levels[0]->reload_image();
+	material[0]->texture_levels[0]->reload_image(ed);
 	material[0]->col.user = true;
 	material[0]->col.albedo = White;
 	material[0]->col.roughness = 0.4f;
@@ -473,7 +473,7 @@ void DataModel::reconnectBone(int index, int parent)
 {	execute(new ActionModelReconnectBone(index, parent));	}
 
 void DataModel::setBoneModel(int index, const Path &filename)
-{	execute(new ActionModelSetSubModel(index, filename));	}
+{	execute(new ActionModelSetSubModel(index, filename, ed->model_manager->load(filename)));	}
 
 void DataModel::addBone(const vec3 &pos, int parent)
 {	execute(new ActionModelAddBone(pos, parent));	}

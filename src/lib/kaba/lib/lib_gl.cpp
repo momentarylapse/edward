@@ -27,21 +27,21 @@ xfer<nix::Texture> __LoadTexture(const Path &filename) {
 }
 
 xfer<nix::Shader> __LoadShader(const Path &filename) {
-	KABA_EXCEPTION_WRAPPER(return nix::Shader::load(filename));
+	KABA_EXCEPTION_WRAPPER(return nix::Context::CURRENT->load_shader(filename));
 	return nullptr;
 }
 
 xfer<nix::Shader> __CreateShader(const string &source) {
-	KABA_EXCEPTION_WRAPPER(return nix::Shader::create(source));
+	KABA_EXCEPTION_WRAPPER(return nix::Context::CURRENT->create_shader(source));
 	return nullptr;
 }
 
 nix::Shader* __LoadShaderDefault3d() {
-	return nix::Shader::default_3d.get();
+	return nix::Context::CURRENT->default_3d.get();
 }
 
 nix::Shader* __LoadShaderDefault2d() {
-	return nix::Shader::default_2d.get();
+	return nix::Context::CURRENT->default_2d.get();
 }
 
 #pragma GCC pop_options
@@ -94,7 +94,10 @@ public:
 		int width, height;
 		int color_attachments, depth_buffer;
 	};
+	struct FakeContext {
+	};
 	namespace nix{
+		typedef FakeContext Context;
 		typedef int VertexBuffer;
 		typedef FakeTexture Texture;
 		typedef FakeTexture FrameBuffer;
@@ -116,7 +119,11 @@ extern const Class *TypePath;
 
 void SIAddPackageGl(Context *c) {
 	add_package(c, "gl");
-	
+
+	auto TypeContext = add_type("Context", sizeof(nix::Context));
+	auto TypeContextRef = add_type_ref(TypeContext);
+	auto TypeContextP = add_type_p_raw(TypeContext);
+	auto TypeContextXfer = add_type_p_xfer(TypeContext);
 	auto TypeVertexBuffer = add_type("VertexBuffer", sizeof(nix::VertexBuffer));
 	auto TypeVertexBufferP = add_type_p_raw(TypeVertexBuffer);
 	auto TypeVertexBufferRef = add_type_ref(TypeVertexBuffer);
@@ -238,7 +245,7 @@ void SIAddPackageGl(Context *c) {
 			func_add_param("face", TypeInt);
 		class_add_func("read", TypeVoid, gl_p(&nix::FrameBuffer::read));
 			func_add_param("image", TypeImage, Flags::OUT);
-		class_add_const("DEFAULT", TypeFrameBufferP, gl_p(&nix::FrameBuffer::DEFAULT));
+		//class_add_const("DEFAULT", TypeFrameBufferP, gl_p(&nix::FrameBuffer::DEFAULT));
 		class_add_element("width", TypeInt, gl_p(&nix::FrameBuffer::width));
 		class_add_element("height", TypeInt, gl_p(&nix::FrameBuffer::height));
 		class_add_element("color_attachments", TypeTextureSharedNNList, gl_p(&nix::FrameBuffer::color_attachments));
@@ -448,7 +455,7 @@ void SIAddPackageGl(Context *c) {
 	lib_create_list<shared<nix::Texture>>(TypeTextureSharedNNList);
 
 
-	add_ext_var("vb_temp", TypeVertexBufferRef, gl_p(&nix::vb_temp));
+//	add_ext_var("vb_temp", TypeVertexBufferRef, gl_p(&nix::vb_temp));
 }
 
 };

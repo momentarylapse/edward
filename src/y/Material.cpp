@@ -14,45 +14,43 @@
 #endif
 
 
-// materials
-static Material *default_material;
-static Material *trivial_material;
-static Array<Material*> materials; // "originals"
 
-void MaterialInit() {
+MaterialManager::MaterialManager(ResourceManager *_resource_manager) {
+	resource_manager = _resource_manager;
 	// create the default material
-	trivial_material = new Material;
+	trivial_material = new Material(resource_manager);
 	trivial_material->name = "-default-";
 	//trivial_material->shader_path = Shader::default_3d;
 
-	SetDefaultMaterial(trivial_material);
+	set_default(trivial_material);
 }
 
-void MaterialEnd() {
+MaterialManager::~MaterialManager() {
 	delete trivial_material;
 }
 
-void MaterialReset() {
+void MaterialManager::reset() {
 	for (auto *m: materials)
 		delete m;
 	materials.clear();
 
-	SetDefaultMaterial(trivial_material);
+	set_default(trivial_material);
 }
 
 
-void SetDefaultMaterial(Material *m) {
+void MaterialManager::set_default(Material *m) {
 	default_material = m;
 }
 
-/*void MaterialSetDefaultShader(Shader *s) {
+/*void MaterialManager::set_default_shader(Shader *s) {
 	default_material->shader[0] = s;
 	Shader::default_load = s;
 }*/
 
 
 
-Material::Material() {
+Material::Material(ResourceManager *rm) {
+	resource_manager = rm;
 	// default values
 	reflection.cube_map = nullptr;
 
@@ -87,7 +85,7 @@ void Material::add_uniform(const string &name, float *p, int size) {
 }
 
 Material* Material::copy() {
-	Material *m = new Material;
+	auto m = new Material(resource_manager);
 	m->name = name;
 	m->albedo = albedo;
 	m->roughness = roughness;
@@ -137,7 +135,7 @@ color any2color(const Any &a) {
 }
 
 
-Material *LoadMaterial(const Path &filename) {
+Material *MaterialManager::load(const Path &filename) {
 	// an empty name loads the default material
 	if (filename.is_empty())
 		return default_material->copy();
@@ -158,7 +156,7 @@ Material *LoadMaterial(const Path &filename) {
 			throw Exception("material file missing: " + filename.str());
 		}*/
 	}
-	Material *m = new Material;
+	Material *m = new Material(resource_manager);
 	m->name = filename;
 
 	m->albedo = any2color(c.get("color.albedo"));
@@ -168,7 +166,7 @@ Material *LoadMaterial(const Path &filename) {
 
 	auto texture_files = c.get_str_array("textures");
 	for (auto &f: texture_files)
-		m->textures.add(ResourceManager::load_texture(f));
+		m->textures.add(resource_manager->load_texture(f));
 	m->shader_path = c.get_str("shader", "");
 	m->cast_shadow = c.get_bool("shadow.cast", true);
 
@@ -202,7 +200,7 @@ Material *LoadMaterial(const Path &filename) {
 		texture_files = c.get_str_array("reflection.cubemap");
 		shared_array<Texture> cmt;
 		for (auto &f: texture_files)
-			cmt.add(ResourceManager::load_texture(f));
+			cmt.add(resource_manager->load_texture(f));
 		m->reflection.density = c.get_float("reflection.density", 1);
 #if 0
 			m->reflection.cube_map = new CubeMap(m->reflection.cube_map_size);
@@ -239,7 +237,7 @@ void Material::_prepare_shader(RenderPathType render_path_type, ShaderVariant v)
 	const string &gg = GEOMETRY_NAME[(int)v];
 	static const string RENDER_PATH_NAME[3] = {"", "forward", "deferred"};
 	const string &rpt = RENDER_PATH_NAME[(int)render_path_type];
-	shader[i] = ResourceManager::load_surface_shader(shader_path, rpt, vv, gg);
+	shader[i] = resource_manager->load_surface_shader(shader_path, rpt, vv, gg);
 }
 
 Shader *Material::get_shader(RenderPathType render_path_type, ShaderVariant v) {

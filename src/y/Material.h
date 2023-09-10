@@ -10,7 +10,7 @@
 
 class Path;
 class Model;
-
+class ResourceManager;
 
 
 // types of transparency
@@ -48,6 +48,7 @@ class Material {
 public:
 	// name of the material
 	Path name;
+	ResourceManager *resource_manager;
 
 	shared_array<Texture> textures;
 	shared<Shader> shader[(int)ShaderVariant::_NUM * 2]; // * #(render paths)
@@ -88,7 +89,7 @@ public:
 		float jump, _static, sliding, rolling;
 	} friction;
 
-	Material();
+	Material(ResourceManager *resource_manager);
 	~Material();
 	Material *copy();
 
@@ -96,13 +97,22 @@ public:
 };
 
 
+class MaterialManager {
+public:
+	MaterialManager(ResourceManager *resource_manager);
+	~MaterialManager();
 
+	void reset();
 
-// management
-void MaterialInit();
-void MaterialEnd();
-void MaterialReset();
-void SetDefaultMaterial(Material *m);
-//void MaterialSetDefaultShader(Shader *s);
-Material *LoadMaterial(const Path &filename);
+	void set_default(Material *m);
+	void set_default_shader(Shader *s);
+	Material *load(const Path &filename);
+
+private:
+	ResourceManager *resource_manager;
+	Material *default_material;
+	Material *trivial_material;
+	Array<Material*> materials; // "originals"
+};
+
 

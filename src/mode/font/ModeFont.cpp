@@ -66,10 +66,10 @@ void ModeFont::on_end() {
 
 void ModeFont::on_draw() {
 	nix::set_z(false, false);
-	set_color(White);
-	nix::set_shader(nix::Shader::default_2d.get());
-	draw_rect(0, (float)nix::target_width, nix::target_height * 0.9f, (float)nix::target_height, 0);
-	set_color(Black);
+	ed->drawing_helper->set_color(White);
+	nix::set_shader(ed->gl->default_2d.get());
+	ed->drawing_helper->draw_rect(0, (float)nix::target_width, nix::target_height * 0.9f, (float)nix::target_height, 0);
+	ed->drawing_helper->set_color(Black);
 	if (dialog)
 		font->drawStr(0, (float)nix::target_height * 0.9f, 0, (float)nix::target_height * 0.1f, dialog->GetSampleText());
 }
@@ -172,9 +172,9 @@ void Draw2D(MultiView::Window *win, const rect &source, const rect *dest) {
 				nix::target_width/2-(mv->cam.pos.x-dest->x2)*mv->active_win->zoom(),
 				nix::target_height/2-(mv->cam.pos.y-dest->y1)*mv->active_win->zoom(),
 				nix::target_height/2-(mv->cam.pos.y-dest->y2)*mv->active_win->zoom());
-		draw_2d(source, d, 0);
+		win->drawing_helper->draw_2d(source, d, 0);
 	} else {
-		draw_2d(source, nix::target_rect, 0);
+		win->drawing_helper->draw_2d(source, nix::target_rect, 0);
 	}
 }
 
@@ -183,7 +183,7 @@ void DrawLineH(MultiView::Window *win, float x1, float x2, float y) {
 	x1 = nix::target_width/2-(mv->cam.pos.x - x1)*mv->active_win->zoom();
 	x2 = nix::target_width/2-(mv->cam.pos.x - x2)*mv->active_win->zoom();
 	y  = nix::target_height/2-(mv->cam.pos.y - y )*mv->active_win->zoom();
-	draw_line_2d(x1, y, x2, y, 0);
+	win->drawing_helper->draw_line_2d(x1, y, x2, y, 0);
 }
 
 void DrawLineV(MultiView::Window *win, float x, float y1, float y2) {
@@ -191,7 +191,7 @@ void DrawLineV(MultiView::Window *win, float x, float y1, float y2) {
 	x  = nix::target_width/2-(mv->cam.pos.x - x )*mv->active_win->zoom();
 	y1 = nix::target_height/2-(mv->cam.pos.y - y1)*mv->active_win->zoom();
 	y2 = nix::target_height/2-(mv->cam.pos.y - y2)*mv->active_win->zoom();
-	draw_line_2d(x, y1, x, y2, 0);
+	win->drawing_helper->draw_line_2d(x, y1, x, y2, 0);
 }
 
 
@@ -204,21 +204,21 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 	nix::set_z(false, false);
 	rect d = rect(0, (float)data->TextureWidth, 0, (float)data->TextureHeight);
 	nix::set_texture(NULL);
-	set_color(White);
+	win->drawing_helper->set_color(White);
 	Draw2D(win, rect::ID, &d);
 	nix::set_texture(data->Texture.get());
-	set_color(Black);
+	win->drawing_helper->set_color(Black);
 	Draw2D(win, rect::ID, &d);
 	nix::set_texture(NULL);
 
 	// grid (horizontal lines)
-	set_line_width(1.0f);
+	win->drawing_helper->set_line_width(1.0f);
 	for (int i=0;i<NumY;i++){
-		set_color(color(0.3f,0.0f,0.8f,0.0f));
+		win->drawing_helper->set_color(color(0.3f,0.0f,0.8f,0.0f));
 		DrawLineH(win, 0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY1);
-		set_color(color(0.3f,0.0f,1.0f,0.0f));
+		win->drawing_helper->set_color(color(0.3f,0.0f,1.0f,0.0f));
 		DrawLineH(win, 0, data->TextureWidth,i*data->global.GlyphHeight+data->global.GlyphY2);
-		set_color(color(0.5f,0.5f,0.5f,0.5f));
+		win->drawing_helper->set_color(color(0.5f,0.5f,0.5f,0.5f));
 		DrawLineH(win, 0, data->TextureWidth,(i+1)*data->global.GlyphHeight);
 	}
 
@@ -233,15 +233,15 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 		}
 		if (i == data->Marked){
 			d = rect(x, x2, y, y + data->global.GlyphHeight);
-			set_color(color(0.2f,1,0,0));
+			win->drawing_helper->set_color(color(0.2f,1,0,0));
 			Draw2D(win, rect::ID, &d);
 		}
-		set_line_width(1.0f);
-		set_color(color(0.3f,0.8f,0.0f,0.0f));
+		win->drawing_helper->set_line_width(1.0f);
+		win->drawing_helper->set_color(color(0.3f,0.8f,0.0f,0.0f));
 		DrawLineV(win, x + g.X1, y + data->global.GlyphY1, y + data->global.GlyphY2);
-		set_color(color(0.3f,0.8f,0.0f,0.0f));
+		win->drawing_helper->set_color(color(0.3f,0.8f,0.0f,0.0f));
 		DrawLineV(win, x + g.X2, y + data->global.GlyphY1, y + data->global.GlyphY2);
-		set_color(color(0.3f,0.5f,0.5f,0.5f));
+		win->drawing_helper->set_color(color(0.3f,0.5f,0.5f,0.5f));
 		DrawLineV(win, x2, y, y + data->global.GlyphHeight);
 		x = x2;
 	}

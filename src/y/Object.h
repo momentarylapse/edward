@@ -11,10 +11,11 @@
 
 #include "Model.h"
 
+class ResourceManager;
 
 class Object : public Model {
 public:
-	Object();
+	Object(ResourceManager *resource_manager);
 //	~Object();
 
 	void make_visible(bool _visible_);

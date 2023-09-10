@@ -147,18 +147,18 @@ void ModeModelMeshCreateCube::on_end() {
 void ModeModelMeshCreateCube::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
 
-	set_material_creation();
+	win->drawing_helper->set_material_creation();
 	if (pos_chosen) {
-		geo->build(nix::vb_temp);
-		nix::draw_triangles(nix::vb_temp);
+		geo->build(win->gl->vb_temp);
+		nix::draw_triangles(win->gl->vb_temp);
 	}
 	if (pos2_chosen and win == multi_view->mouse_win) {
 		vec3 m = multi_view->get_cursor();
 		if (set_dpos3()) {
-			draw_helper_line(win, pos2, m);
+			win->drawing_helper->draw_helper_line(win, pos2, m);
 		} else {
 			vec3 n = vec3::cross(length[0], length[1]).normalized();
-			draw_helper_line(win, m + n * vec3::dot(n, pos2-m), m);
+			win->drawing_helper->draw_helper_line(win, m + n * vec3::dot(n, pos2-m), m);
 		}
 	}
 }

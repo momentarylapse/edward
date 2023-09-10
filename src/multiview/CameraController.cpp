@@ -144,14 +144,14 @@ void CameraController::on_mouse_wheel() {
 void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active) {
 	nix::set_texture(tex_bg);
 	if (active or rr.inside(view->m))
-		set_color(ColorIconHover);
+		view->drawing_helper->set_color(ColorIconHover);
 	else
-		set_color(ColorIcon);
-	draw_2d(rect::ID, rr, 0);
+		view->drawing_helper->set_color(ColorIcon);
+	view->drawing_helper->draw_2d(rect::ID, rr, 0);
 	if (tex) {
 		nix::set_texture(tex);
-		set_color(White);
-		draw_2d(rect::ID, rr, 0);
+		view->drawing_helper->set_color(White);
+		view->drawing_helper->draw_2d(rect::ID, rr, 0);
 	}
 }
 
@@ -160,10 +160,10 @@ void CameraController::draw() {
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 
 	// show/hide button
-	set_color(ColorBackground);
+	view->drawing_helper->set_color(ColorBackground);
 	nix::set_texture(tex_bg);
-	nix::set_shader(nix::Shader::default_2d.get());
-	draw_2d(rect::ID, r2, 0);
+	nix::set_shader(view->gl->default_2d.get());
+	view->drawing_helper->draw_2d(rect::ID, r2, 0);
 	draw_icon(r_show, nullptr, false);
 
 	if (show) {
@@ -171,11 +171,11 @@ void CameraController::draw() {
 			if (c.win != view->mouse_win)
 				continue;
 			// elongated background
-			set_color(ColorBackground);
+			view->drawing_helper->set_color(ColorBackground);
 			nix::set_texture(tex_bg);
-			draw_2d(rect(0, 0.5f, 0, 1), rect(c.r.x1, c.r.x1 + CC_RADIUS/2 + CC_BORDER, c.r.y1, c.r.y2), 0);
-			draw_2d(rect(0.5f, 0.5f, 0, 1), rect(c.r.x1 + CC_RADIUS/2 + CC_BORDER, c.r.x2 - CC_RADIUS/2 - CC_BORDER, c.r.y1, c.r.y2), 0);
-			draw_2d(rect(0.5f, 1, 0, 1), rect(c.r.x2 - CC_RADIUS/2 - CC_BORDER, c.r.x2, c.r.y1, c.r.y2), 0);
+			view->drawing_helper->draw_2d(rect(0, 0.5f, 0, 1), rect(c.r.x1, c.r.x1 + CC_RADIUS/2 + CC_BORDER, c.r.y1, c.r.y2), 0);
+			view->drawing_helper->draw_2d(rect(0.5f, 0.5f, 0, 1), rect(c.r.x1 + CC_RADIUS/2 + CC_BORDER, c.r.x2 - CC_RADIUS/2 - CC_BORDER, c.r.y1, c.r.y2), 0);
+			view->drawing_helper->draw_2d(rect(0.5f, 1, 0, 1), rect(c.r.x2 - CC_RADIUS/2 - CC_BORDER, c.r.x2, c.r.y1, c.r.y2), 0);
 
 			// icons
 			draw_icon(c.r_move, tex_move, c.moving);

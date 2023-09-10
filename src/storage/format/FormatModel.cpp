@@ -196,7 +196,7 @@ class ChunkMaterial : public FileChunk<DataModel, ModelMaterial> {
 public:
 	ChunkMaterial() : FileChunk("material") {}
 	void create() override {
-		me = new ModelMaterial;
+		me = new ModelMaterial(parent->ed);
 		//msg_write(p2s(parent));
 		parent->material.add(me);
 	}
@@ -999,7 +999,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 		for (auto &b: data->bone) {
 			try {
 				if (!b.model)
-					b.model = ModelManager::load(b.model_file);
+					b.model = data->ed->model_manager->load(b.model_file);
 			} catch(Exception &e) {
 				msg_error(e.message());
 			}
@@ -1027,7 +1027,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
 
 	if (data->material.num == 0) {
-		data->material.add(new ModelMaterial);
+		data->material.add(new ModelMaterial(data->ed));
 	}
 
 

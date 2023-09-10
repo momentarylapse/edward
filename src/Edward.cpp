@@ -59,7 +59,7 @@ void update_file(const Path &filename, bool allow_write) {
 	string ext = filename.extension();
 	if (ext == "model") {
 		//MaterialInit();
-		SetDefaultMaterial(new Material);
+		ed.material_manager->set_default(new Material(ed.resource_manager));
 		data = new DataModel(&ed);
 		DataModelAllowUpdating = false;
 	} else if (ext == "material") {
@@ -77,6 +77,8 @@ void update_file(const Path &filename, bool allow_write) {
 		delete data;
 	}
 }
+
+void test_gl();
 
 hui::AppStatus EdwardApp::on_startup(const Array<string> &arg) {
 	CommandLineParser p;
@@ -114,6 +116,9 @@ hui::AppStatus EdwardApp::on_startup(const Array<string> &arg) {
 		EdwardWindow ed;
 		ModeAdministration mode_admin(&ed);
 		mode_admin.upgrade_project(arg[0]);
+	});
+	p.cmd("gl", "", "", [] (const Array<string> &arg) {
+			test_gl();
 	});
 	p.cmd("", "[FILENAME]", "open editor and load a file", [] (const Array<string> &arg) {
 		msg_write(AppName + " " + AppVersion);

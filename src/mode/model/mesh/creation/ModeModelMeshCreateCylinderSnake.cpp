@@ -138,21 +138,21 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 	if (pos.num > 0) {
 
 		// control points
-		set_color(scheme.CREATION_LINE);
-		nix::set_shader(nix::Shader::default_2d.get());
+		win->drawing_helper->set_color(scheme.CREATION_LINE);
+		nix::set_shader(win->gl->default_2d.get());
 		for (int i=0;i<pos.num;i++) {
 			vec3 pp = win->project(pos[i]);
-			draw_rect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
+			win->drawing_helper->draw_rect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
 
 
 		// control polygon
-		set_color(color::interpolate(scheme.CREATION_LINE, scheme.BACKGROUND, 0.3f));
-		set_line_width(scheme.LINE_WIDTH_HELPER);
-		draw_lines(pos, true);
+		win->drawing_helper->set_color(color::interpolate(scheme.CREATION_LINE, scheme.BACKGROUND, 0.3f));
+		win->drawing_helper->set_line_width(scheme.LINE_WIDTH_HELPER);
+		win->drawing_helper->draw_lines(pos, true);
 
 		if ((!ready_for_scaling) and (pos.num > 0))
-			draw_line(pos.back(), multi_view->get_cursor());
+			win->drawing_helper->draw_line(pos.back(), multi_view->get_cursor());
 
 
 		// spline curve
@@ -162,24 +162,24 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 		if (!ready_for_scaling)
 			inter.add(multi_view->get_cursor());
 		inter.normalize();
-		set_color(scheme.CREATION_LINE);
-		set_line_width(scheme.LINE_WIDTH_HELPER);
+		win->drawing_helper->set_color(scheme.CREATION_LINE);
+		win->drawing_helper->set_line_width(scheme.LINE_WIDTH_HELPER);
 		for (int i=0; i<100; i++)
-			draw_line(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));
+			win->drawing_helper->draw_line(inter.get((float)i * 0.01f), inter.get((float)i * 0.01f + 0.01f));
 	}
 
 	if (ready_for_scaling) {
-		geo->build(nix::vb_temp);
-		set_material_creation();
-		nix::draw_triangles(nix::vb_temp);
+		geo->build(win->gl->vb_temp);
+		win->drawing_helper->set_material_creation();
+		nix::draw_triangles(win->gl->vb_temp);
 
 		if (win == multi_view->mouse_win)
-			draw_helper_line(win, pos.back(), multi_view->get_cursor());
+			win->drawing_helper->draw_helper_line(win, pos.back(), multi_view->get_cursor());
 	} else if (pos.num > 2) {
 		vec2 pp = multi_view->mouse_win->project(pos[0]).xy();
 		if ((pp - multi_view->m).length() < CYLINDER_CLOSING_DISTANCE) {
-			nix::set_shader(nix::Shader::default_2d.get());
-			draw_str(pp.x, pp.y, _("Close path"));
+			nix::set_shader(win->gl->default_2d.get());
+			win->drawing_helper->draw_str(pp.x, pp.y, _("Close path"));
 		}
 	}
 }

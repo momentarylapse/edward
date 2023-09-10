@@ -15,6 +15,7 @@
 #include "../../../lib/math/interpolation.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../multiview/MultiView.h"
+#include "../../../multiview/Window.h"
 #include "../../../multiview/DrawingHelper.h"
 
 ModeWorldCamera *mode_world_camera = NULL;
@@ -213,7 +214,7 @@ void ModeWorldCamera::on_draw_win(MultiView::Window *win)
 	parent->on_draw_win(win);
 
 	nix::set_model_matrix(mat4::ID);
-	set_line_width(1.0f);
+	win->drawing_helper->set_line_width(1.0f);
 
 	vec3 last_pos = v_0;
 	vec3 last_vel = v_0;
@@ -223,17 +224,17 @@ void ModeWorldCamera::on_draw_win(MultiView::Window *win)
 			inter.add2(last_pos, last_vel, 0);
 			inter.add2(c.pos, c.Vel, c.Duration);
 			inter.normalize();
-			set_color(White);
+			win->drawing_helper->set_color(White);
 			int N = 50;
 			for (int n=0;n<N;n++)
-				draw_line(inter.get((float)n / N), inter.get((float)(n+1) / N));
+				win->drawing_helper->draw_line(inter.get((float)n / N), inter.get((float)(n+1) / N));
 			if (edit_vel){
-				set_color(Green);
-				draw_line(c.pos, c.pos + c.Vel);
+				win->drawing_helper->set_color(Green);
+				win->drawing_helper->draw_line(c.pos, c.pos + c.Vel);
 			}
 		}else{
-			set_color(Grey);
-			draw_line(last_pos, c.pos);
+			win->drawing_helper->set_color(Grey);
+			win->drawing_helper->draw_line(last_pos, c.pos);
 		}
 		last_pos = c.pos;
 		last_vel = c.Vel;

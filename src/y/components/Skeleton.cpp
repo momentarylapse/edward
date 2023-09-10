@@ -8,8 +8,9 @@
 #include "Skeleton.h"
 #include "Animator.h"
 #include "../Model.h"
-#include "../../y/Entity.h"
 #include "../ModelManager.h"
+#include "../EngineData.h"
+#include "../../y/Entity.h"
 
 const kaba::Class *Skeleton::_class = nullptr;
 
@@ -41,7 +42,7 @@ void Skeleton::on_init() {
 		pos0[i] = _calc_bone_rest_pos(i);
 		bones[i].pos = pos0[i];
 		bones[i].ang = quaternion::ID;
-		auto mm = ModelManager::load(m->_template->skeleton->filename[i]);
+		auto mm = engine.model_manager->load(m->_template->skeleton->filename[i]);
 		if (mm) {
 			bones[i]._add_component_external_(mm);
 

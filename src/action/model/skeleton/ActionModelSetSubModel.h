@@ -16,7 +16,7 @@ class Model;
 class ActionModelSetSubModel: public Action
 {
 public:
-	ActionModelSetSubModel(int index, const Path &filename);
+	ActionModelSetSubModel(int index, const Path &filename, Model *m);
 	virtual ~ActionModelSetSubModel();
 	string name(){	return "ModelSetSubModel";	}
 

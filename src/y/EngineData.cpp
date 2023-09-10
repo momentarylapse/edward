@@ -23,6 +23,11 @@
 EngineData engine;
 
 EngineData::EngineData() {
+	context = nullptr;
+	resource_manager = nullptr;
+	material_manager = nullptr;
+	model_manager = nullptr;
+
 	default_font = nullptr;
 
 	ZBufferEnabled = true;
@@ -67,18 +72,29 @@ EngineData::EngineData() {
 	game_running = false;
 }
 
+void EngineData::set_context(Context *ctx, ResourceManager *rm, MaterialManager *mm, ModelManager *_model_manager) {
+	context = ctx;
+	resource_manager = rm;
+	resource_manager->texture_dir = texture_dir;
+	resource_manager->shader_dir = material_dir;
+	material_manager = mm;
+	model_manager = _model_manager;
+}
+
 void EngineData::set_dirs(const Path &_texture_dir, const Path &_map_dir, const Path &_object_dir, const Path &_sound_dir, const Path &_script_dir, const Path &_material_dir, const Path &_font_dir) {
-	ResourceManager::texture_dir = _texture_dir;
-	ResourceManager::shader_dir = _material_dir;
 	texture_dir = _texture_dir;
 	shader_dir = _material_dir;
-
 	map_dir = _map_dir;
 	object_dir = _object_dir;
 	sound_dir = _sound_dir;
 	script_dir = _script_dir;
 	material_dir = _material_dir;
 	font_dir = _font_dir;
+
+	if (resource_manager) {
+		resource_manager->texture_dir = _texture_dir;
+		resource_manager->shader_dir = _material_dir;
+	}
 	kaba::config.directory = _script_dir;
 }
 

@@ -42,6 +42,4 @@ public:
 	Array<ModelFrame> temp;
 };
 
-extern ModeModelAnimationSkeleton *mode_model_animation_skeleton;
-
 #endif /* MODEMODELANIMATIONSKELETON_H_ */

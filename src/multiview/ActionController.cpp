@@ -346,7 +346,7 @@ void ActionController::draw(Window *win) {
 	mat4 m = mat * geo_mat;
 	nix::set_model_matrix(m);
 	nix::set_texture(nullptr);
-	nix::set_shader(nix::Shader::default_3d.get());
+	nix::set_shader(win->gl->default_3d.get());
 	win->set_projection_matrix();
 	foreachi(Geometry *g, geo_show, i) {
 		if (!geo_allow(i, win, m))
@@ -363,25 +363,25 @@ void ActionController::draw(Window *win) {
 	win->set_projection_matrix_pixel();
 
 	if (in_use()) {
-		set_color(color(1, 0.2f, 0.7f, 0.2f));
-		set_line_width(2.0f);
+		win->drawing_helper->set_color(color(1, 0.2f, 0.7f, 0.2f));
+		win->drawing_helper->set_line_width(2.0f);
 		float r = multi_view->cam.radius * 10;
 		if (constraints == Constraint::X or constraints == Constraint::NEG_X)
-			draw_line(pos - vec3::EX * r, pos + vec3::EX * r);
+			win->drawing_helper->draw_line(pos - vec3::EX * r, pos + vec3::EX * r);
 		if (constraints == Constraint::Y or constraints == Constraint::NEG_Y)
-			draw_line(pos - vec3::EY * r, pos + vec3::EY * r);
+			win->drawing_helper->draw_line(pos - vec3::EY * r, pos + vec3::EY * r);
 		if (constraints == Constraint::Z or constraints == Constraint::NEG_Z)
-			draw_line(pos - vec3::EZ * r, pos + vec3::EZ * r);
+			win->drawing_helper->draw_line(pos - vec3::EZ * r, pos + vec3::EZ * r);
 	}
 
-	nix::set_shader(nix::Shader::default_2d.get());
+	nix::set_shader(win->gl->default_2d.get());
 
 	if (win == multi_view->mouse_win) {
 		vec3 pp = win->project(pos);
 
 		if ((hover_constraint != Constraint::UNDEFINED) and !in_use()) {
-			set_color(scheme.TEXT);
-			draw_str(pp.x + 80, pp.y + 40, action_name(action.mode) + ": " + constraint_name(hover_constraint));
+			win->drawing_helper->set_color(scheme.TEXT);
+			win->drawing_helper->draw_str(pp.x + 80, pp.y + 40, action_name(action.mode) + ": " + constraint_name(hover_constraint));
 		}
 	}
 
@@ -407,8 +407,8 @@ void ActionController::draw(Window *win) {
 			else
 				s = format("%.1f%%\n%.1f%%", param.x*100, param.y*100);
 		}
-		set_color(scheme.TEXT);
-		draw_str(x0, y0, s, TextAlign::RIGHT);
+		win->drawing_helper->set_color(scheme.TEXT);
+		win->drawing_helper->draw_str(x0, y0, s, TextAlign::RIGHT);
 	}
 }
 

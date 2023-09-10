@@ -328,7 +328,7 @@ bool World::load(const LevelData &ld) {
 	// skybox
 	skybox.resize(ld.skybox_filename.num);
 	for (int i=0; i<skybox.num; i++) {
-		skybox[i] = ModelManager::load(ld.skybox_filename[i]);
+		skybox[i] = engine.model_manager->load(ld.skybox_filename[i]);
 		if (skybox[i])
 			skybox[i]->owner = new Entity(v_0, quaternion::rotation_v(ld.skybox_ang[i]));
 	}
@@ -409,7 +409,7 @@ Terrain *World::create_terrain_no_reg(const Path &filename, const vec3 &pos) {
 	auto o = create_entity(pos, quaternion::ID);
 
 	auto t = (Terrain*)o->add_component(Terrain::_class, "");
-	t->load(filename);
+	t->load(engine.resource_manager, engine.material_manager, filename);
 
 	[[maybe_unused]] auto col = (TerrainCollider*)o->add_component(TerrainCollider::_class, "");
 
@@ -483,7 +483,7 @@ Entity *World::create_object_no_reg_x(const Path &filename, const string &name, 
 	auto e = create_entity(pos, ang);
 
 	//msg_write(on);
-	auto *m = ModelManager::load(filename);
+	auto *m = engine.model_manager->load(filename);
 	m->script_data.name = name;
 
 	e->_add_component_external_(m);
@@ -510,7 +510,7 @@ Entity* World::create_object_multi(const Path &filename, const Array<vec3> &pos,
 	auto e = create_entity(vec3::ZERO, quaternion::ID);
 	auto mi = (MultiInstance*)e->add_component(MultiInstance::_class, "");
 
-	auto *m = ModelManager::load(filename);
+	auto *m = engine.model_manager->load(filename);
 	e->_add_component_external_(m);
 	mi->model = m;
 

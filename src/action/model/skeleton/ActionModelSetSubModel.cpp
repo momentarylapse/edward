@@ -11,10 +11,10 @@
 
 #include "../../../y/ModelManager.h"
 
-ActionModelSetSubModel::ActionModelSetSubModel(int _index, const Path &_filename) {
+ActionModelSetSubModel::ActionModelSetSubModel(int _index, const Path &_filename, Model *m) {
 	index = _index;
 	filename = _filename;
-	model = ModelManager::load(filename);
+	model = m;
 }
 
 ActionModelSetSubModel::~ActionModelSetSubModel() {
@@ -29,13 +29,8 @@ void* ActionModelSetSubModel::execute(Data* d) {
 
 	ModelBone &b = m->bone[index];
 
-	Model *tm = b.model;
-	b.model = model;
-	model = tm;
-
-	auto tf = b.model_file;
-	b.model_file = filename;
-	filename = tf;
+	std::swap(b.model, model);
+	std::swap(b.model_file, filename);
 
 	return b.model;
 }

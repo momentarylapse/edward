@@ -117,6 +117,82 @@ void EdwardWindow::idle_function()
 		hui::Sleep(0.010f);*/
 }
 
+class XWindow : public hui::Window {
+public:
+	nix::Context *gl = nullptr;
+	ResourceManager *resource_manager;
+	DrawingHelper *drawing_helper;
+
+	XWindow() : hui::Window("a", 800, 600) {
+		event_x("area", hui::EventID::REALIZE, [this] { msg_write("x"); on_realize(); });
+		event_x("area", hui::EventID::DRAW_GL, [this] { on_draw_gl(); });
+
+		add_drawing_area("!opengl=4.5", 0, 0, "area");
+		show();
+	}
+
+	void on_realize() {
+		msg_write("realize");
+		gl = nix::init();
+		resource_manager = new ResourceManager(gl);
+		drawing_helper = new DrawingHelper(gl, resource_manager, app->directory_static);
+	}
+
+	void on_draw_gl() {
+		msg_write("draw");
+		if (!gl)
+			return;
+		auto e = hui::get_event();
+		nix::start_frame_hui(gl);
+		nix::set_viewport(rect(0, e->column, 0, e->row));
+
+		nix::clear(Red);
+		nix::set_z(false, false);
+		nix::set_cull(nix::CullMode::NONE);
+
+		msg_write(format("%s  %d  %d", p2s(this), gl->default_framebuffer->frame_buffer, gl->default_3d->program));
+		nix::set_projection_perspective();
+		nix::set_view_matrix(mat4::ID);
+		nix::set_model_matrix(mat4::translation(vec3(0,0,5)));
+		nix::set_shader(gl->default_3d.get());
+		nix::set_material(White, 0, 0, White);
+		nix::bind_texture(0, drawing_helper->tex_white.get());
+
+		gl->vb_temp->create_cube(vec3(-1, -1, -1), vec3(1, 1, 1));
+		nix::draw_triangles(gl->vb_temp);
+
+		nix::set_projection_ortho_pixel();
+		nix::set_shader(gl->default_2d.get());
+		drawing_helper->set_color(Black);
+		drawing_helper->set_font_size(20);
+		drawing_helper->draw_str(100, 100, "Test", TextAlign::CENTER);
+
+		nix::end_frame_hui();
+	}
+
+};
+
+base::future<EdwardWindow*> emit_session() {
+	base::promise<EdwardWindow*> promise;
+	auto ed = new EdwardWindow;
+	ed->promise_started.get_future().on([promise, ed] () mutable {
+		promise(ed);
+	});
+	return promise.get_future();
+}
+
+void test_gl() {
+	//auto ww = new XWindow();
+	auto ww = new EdwardWindow;
+	hui::fly(ww);
+
+
+	hui::run_later(2, [] {
+		auto ww = new XWindow();
+		hui::fly(ww);
+	});
+}
+
 EdwardWindow::EdwardWindow() :
 	obs::Node<hui::Window>(AppName, 800, 600),
 	in_data_selection_changed(this, [this] {
@@ -137,6 +213,16 @@ EdwardWindow::EdwardWindow() :
 			update_menu();
 	})
 {
+	gl = nullptr;
+	mode_none = new ModeNone(this);
+	cur_mode = mode_none;
+	side_panel = nullptr;
+	bottom_panel = nullptr;
+	progress = new Progress;
+
+	event_x("nix-area", hui::EventID::DRAW_GL, [this] { on_draw_gl(); });
+	event_x("nix-area", hui::EventID::REALIZE, [this] { on_realize_gl(); });
+
 	set_border_width(0);
 	add_basic_layout("menubar|toolbar-top|toolbar-left");
 	add_grid("", 0, 0, "vgrid");
@@ -160,13 +246,6 @@ EdwardWindow::EdwardWindow() :
 	add_action_checkable("snap_to_grid");
 
 	hui::color_button_linear = true;
-
-	mode_none = new ModeNone(this);
-	cur_mode = mode_none;
-	side_panel = nullptr;
-	bottom_panel = nullptr;
-
-	progress = new Progress;
 
 	load_key_codes();
 
@@ -196,72 +275,8 @@ EdwardWindow::EdwardWindow() :
 	// create the main window
 	set_maximized(maximized);
 
-	// initialize engine
-	nix::init();
-	drawing_helper_init(app->directory_static);
-
-	engine.ignore_missing_files = true;
-	ResourceManager::load_shader("module-vertex-default.shader");
-	//ResourceManager::default_shader
-
-	MaterialInit();
-	CameraInit();
-	GodInit(0);
-
-	/*RegisterFileTypes();
-
-	for (int i=0;i<NumFDs;i++)
-		DialogDir[i] = "";
-	for (int i=0;i<4;i++){
-		BgTextureFile[i] = "";
-		BgTexture[i] = -1;
-	}
-
-	msg_db_r("init modes", 1);*/
-
-
 	get_toolbar(hui::TOOLBAR_TOP)->configure(false, true);
 	get_toolbar(hui::TOOLBAR_LEFT)->configure(false, true);
-
-	multi_view_3d = new MultiView::MultiView(this, true);
-	multi_view_2d = new MultiView::MultiView(this, false);
-	mode_model = new ModeModel(this, multi_view_3d, multi_view_2d);
-	mode_world = new ModeWorld(this, multi_view_3d);
-	mode_font = new ModeFont(this, multi_view_2d);
-	mode_admin = new ModeAdministration(this);
-
-	storage = new Storage(this);
-	storage->set_root_directory(hui::config.get_str("RootDir", ""));
-
-	mode_material = new ModeMaterial(this, multi_view_3d);
-
-
-	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
-	mworld->FFVBinaryMap = true;*/
-
-	multi_view_3d->out_settings_changed >> create_sink([this] { update_menu(); });
-	multi_view_3d->out_selection_changed >> create_sink([this] {
-		cur_mode->on_selection_change();
-		update_menu();
-	});
-	multi_view_3d->out_viewstage_changed >> create_sink([this] {
-		cur_mode->on_view_stage_change();
-		update_menu();
-	});
-	multi_view_3d->out_redraw >> create_sink([this] { redraw("nix-area"); });
-
-	multi_view_2d->out_settings_changed >> create_sink([this]{ update_menu(); });
-	multi_view_2d->out_selection_changed >> create_sink([this] {
-		cur_mode->on_selection_change();
-		update_menu();
-	});
-	multi_view_2d->out_viewstage_changed >> create_sink([this] {
-		cur_mode->on_view_stage_change();
-		update_menu();
-	});
-	multi_view_2d->out_redraw >> create_sink([this] {
-		redraw("nix-area");
-	});
 
 
 	event("hui:close", [this] { on_close(); });
@@ -271,7 +286,6 @@ EdwardWindow::EdwardWindow() :
 	event("send_bug_report", [this] { on_send_bug_report(); });
 	event("execute_plugin", [this] { on_execute_plugin(); });
 	event("abort_creation_mode", [this] { on_abort_creation_mode(); });
-	event_x("nix-area", "hui:draw-gl", [this] { on_draw_gl(); });
 	set_key_code("abort_creation_mode", hui::KEY_ESCAPE, "hui:cancel");
 
 
@@ -390,7 +404,7 @@ void EdwardWindow::optimize_current_view() {
 // do we change roots?
 //  -> data loss?
 base::future<void> mode_switch_allowed(ModeBase *m) {
-	if (m->equal_roots(m->ed->cur_mode)) {
+	if (!m->ed->cur_mode or m->equal_roots(m->ed->cur_mode)) {
 		base::promise<void> promise;
 		promise();
 		return promise.get_future();
@@ -490,10 +504,95 @@ void EdwardWindow::on_execute_plugin() {
 }
 
 
+void EdwardWindow::on_realize_gl() {
+
+	msg_error("REALIZE");
+
+	// initialize engine
+	gl = nix::init();
+	resource_manager = new ResourceManager(gl);
+	drawing_helper = new DrawingHelper(gl, resource_manager, app->directory_static);
+
+	engine.ignore_missing_files = true;
+	resource_manager->load_shader("module-vertex-default.shader");
+	//ResourceManager::default_shader
+
+	material_manager = new MaterialManager(resource_manager);
+	model_manager = new ModelManager(resource_manager, material_manager);
+	CameraInit();
+	GodInit(0);
+
+
+
+	multi_view_3d = new MultiView::MultiView(this, true);
+	multi_view_2d = new MultiView::MultiView(this, false);
+	mode_model = new ModeModel(this, multi_view_3d, multi_view_2d);
+	mode_world = new ModeWorld(this, multi_view_3d);
+	mode_font = new ModeFont(this, multi_view_2d);
+	mode_admin = new ModeAdministration(this);
+
+	storage = new Storage(this);
+	storage->set_root_directory(hui::config.get_str("RootDir", ""));
+
+	mode_material = new ModeMaterial(this, multi_view_3d);
+
+
+	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
+	mworld->FFVBinaryMap = true;*/
+
+	multi_view_3d->out_settings_changed >> create_sink([this] { update_menu(); });
+	multi_view_3d->out_selection_changed >> create_sink([this] {
+		cur_mode->on_selection_change();
+		update_menu();
+	});
+	multi_view_3d->out_viewstage_changed >> create_sink([this] {
+		cur_mode->on_view_stage_change();
+		update_menu();
+	});
+	multi_view_3d->out_redraw >> create_sink([this] { redraw("nix-area"); });
+
+	multi_view_2d->out_settings_changed >> create_sink([this]{ update_menu(); });
+	multi_view_2d->out_selection_changed >> create_sink([this] {
+		cur_mode->on_selection_change();
+		update_menu();
+	});
+	multi_view_2d->out_viewstage_changed >> create_sink([this] {
+		cur_mode->on_view_stage_change();
+		update_menu();
+	});
+	multi_view_2d->out_redraw >> create_sink([this] {
+		redraw("nix-area");
+	});
+
+	promise_started();
+}
+
 void EdwardWindow::on_draw_gl() {
 	auto e = hui::get_event();
-	nix::start_frame_hui();
+	nix::start_frame_hui(gl);
 	nix::set_viewport(rect(0, e->column, 0, e->row));
+
+#if 0
+
+	nix::clear(Green);
+	nix::set_z(false, false);
+	nix::set_cull(nix::CullMode::NONE);
+
+	nix::set_projection_perspective();
+	nix::set_view_matrix(mat4::ID);
+	nix::set_model_matrix(mat4::translation(vec3(0,0,5)));
+	nix::set_shader(gl->default_3d.get());
+	nix::set_material(White, 0, 0, White);
+	nix::bind_texture(0, drawing_helper->tex_white.get());
+
+	gl->vb_temp->create_cube(vec3(-1, -1, -1), vec3(1, 1, 1));
+	nix::draw_triangles(gl->vb_temp);
+
+	nix::set_projection_ortho_pixel();
+	nix::set_shader(gl->default_2d.get());
+	drawing_helper->set_color(Black);
+	drawing_helper->draw_str(100, 100, "Test", TextAlign::CENTER);
+#endif
 
 	//nix::set_srgb(true);
 	if (cur_mode->multi_view)
@@ -501,9 +600,10 @@ void EdwardWindow::on_draw_gl() {
 	cur_mode->on_draw();
 
 	// messages
-	nix::set_shader(nix::Shader::default_2d.get());
+	nix::set_shader(gl->default_2d.get());
 	foreachi(string &m, message_str, i)
-		draw_str(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, TextAlign::CENTER);
+		drawing_helper->draw_str(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, TextAlign::CENTER);
+
 	nix::end_frame_hui();
 }
 

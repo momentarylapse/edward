@@ -27,8 +27,8 @@ void ModeCreationBase::on_draw() {
 	//ModeBase::onDraw();
 	on_draw_post();
 
-	nix::set_shader(nix::Shader::default_2d.get());
-	draw_str(nix::target_width / 2, nix::target_height - 20, message);
+	nix::set_shader(ed->gl->default_2d.get());
+	ed->drawing_helper->draw_str(nix::target_width / 2, nix::target_height - 20, message);
 }
 
 void ModeCreationBase::on_draw_win(MultiView::Window *win) {

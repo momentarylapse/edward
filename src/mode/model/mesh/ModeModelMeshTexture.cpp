@@ -111,7 +111,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	s.y1=a.y;
 	s.y2=b.y;
 
-	nix::set_shader(nix::Shader::default_2d.get());
+	nix::set_shader(win->gl->default_2d.get());
 
 	if (true){//mul->FXEnabled){
 		// background pattern to show transparency
@@ -123,30 +123,30 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 						(float)(i+1)/16.0f,
 						(float)j/16.0f,
 						(float)(j+1)/16.0f);
-				set_color(((i+j)%2==0) ? c1 : c2);
-				draw_2d(rect::ID, r, 0.999f );
+				win->drawing_helper->set_color(((i+j)%2==0) ? c1 : c2);
+				win->drawing_helper->draw_2d(rect::ID, r, 0.999f );
 			}
 		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	}
-	set_color(color(1,0.8f,0.8f,0.8f));
+	win->drawing_helper->set_color(color(1,0.8f,0.8f,0.8f));
 	nix::set_texture(cur_tex);
-	draw_2d(s, s, 0.99f);
+	win->drawing_helper->draw_2d(s, s, 0.99f);
 	nix::set_texture(nullptr);
 	nix::disable_alpha();
 
 	// rectangle of unity
 	a = v_0;
 	b = vec3(1, 1, 0);
-	set_color(Red);
-	set_line_width(scheme.LINE_WIDTH_THIN);
-	draw_line_2d(a.x, a.y, b.x, a.y, 0.98f);
-	draw_line_2d(b.x, a.y, b.x, b.y, 0.98f);
-	draw_line_2d(a.x, a.y, a.x, b.y, 0.98f);
-	draw_line_2d(a.x, b.y, b.x, b.y, 0.98f);
+	win->drawing_helper->set_color(Red);
+	win->drawing_helper->set_line_width(scheme.LINE_WIDTH_THIN);
+	win->drawing_helper->draw_line_2d(a.x, a.y, b.x, a.y, 0.98f);
+	win->drawing_helper->draw_line_2d(b.x, a.y, b.x, b.y, 0.98f);
+	win->drawing_helper->draw_line_2d(a.x, a.y, a.x, b.y, 0.98f);
+	win->drawing_helper->draw_line_2d(a.x, b.y, b.x, b.y, 0.98f);
 
 
 	// draw triangles (outlines) of current material
-	set_color(White);
+	win->drawing_helper->set_color(White);
 	for (ModelPolygon &t: data->mesh->polygon) {
 		if (t.material != parent->current_material)
 			continue;
@@ -157,7 +157,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 			v.add(t.side[k].skin_vertex[current_texture_level]);
 		v.add(v[0]);
 		for (int k=0;k<t.side.num;k++)
-			draw_line_2d(	v[k].x,v[k].y,
+			win->drawing_helper->draw_line_2d(	v[k].x,v[k].y,
 							v[k+1].x,v[k+1].y,
 							0.9f);
 	}
@@ -166,13 +166,13 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 
 
 void ModeModelMeshTexture::on_draw() {
-	nix::set_shader(nix::Shader::default_2d.get());
+	nix::set_shader(ed->gl->default_2d.get());
 	auto s = data->get_selection();
 	/*if (data->getNumSelectedVertices() > 0){
 		draw_str(20, 160, format(_("skin: %d"), getNumSelected()));
 	}*/
 	if (s.vertex.num > 0){
-		draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num));
+		ed->drawing_helper->draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num));
 	}
 }
 

@@ -10,6 +10,7 @@
 
 #include "../lib/base/base.h"
 #include "../lib/os/path.h"
+#include "../graphics-fwd.h"
 
 
 namespace Gui {
@@ -21,10 +22,14 @@ class TargetRenderer;
 class Renderer;
 class WorldRenderer;
 class PostProcessor;
+class ResourceManager;
+class MaterialManager;
+class ModelManager;
 
 class EngineData {
 public:
 	EngineData();
+	void set_context(Context *ctx, ResourceManager *rm, MaterialManager *material_manager, ModelManager *model_manager);
 
 	string app_name, version;
 	bool debug, show_timings, console_enabled, wire_mode;
@@ -68,6 +73,11 @@ public:
 	void set_dirs(const Path &texture_dir, const Path &map_dir, const Path &object_dir, const Path &sound_dir, const Path &script_dir, const Path &material_dir, const Path &font_dir);
 
 	Path map_dir, sound_dir, script_dir, object_dir, texture_dir, shader_dir, material_dir, font_dir;
+
+	Context *context;
+	ResourceManager *resource_manager;
+	MaterialManager *material_manager;
+	ModelManager *model_manager;
 
 	TargetRenderer *window_renderer;
 	Renderer *gui_renderer;

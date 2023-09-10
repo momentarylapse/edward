@@ -223,6 +223,7 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
 	
 ///	float reflectivity = 1-((1-xxx.x) * (1-exp(-pow(dot(d, n),2) * 100)));
 
+#if 0
 	if (roughness < 0.2) {
 		if (textureSize(tex_cube, 0).x > 10) {
 			vec3 L = reflect(view_dir, n);
@@ -274,6 +275,7 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
 			
 		}
 	}
+#endif
 	
 
 	for (int i=0; i<num_lights; i++)

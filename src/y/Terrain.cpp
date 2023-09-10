@@ -46,11 +46,11 @@ Terrain::Terrain() {
 	reset();
 }
 
-Terrain::Terrain(const Path &_filename_) : Terrain() {
-	load(_filename_);
+Terrain::Terrain(ResourceManager *resource_manager, MaterialManager *material_manager, const Path &_filename_) : Terrain() {
+	load(resource_manager, material_manager, _filename_);
 }
 
-bool Terrain::load(const Path &_filename_, bool deep) {
+bool Terrain::load(ResourceManager *resource_manager, MaterialManager *material_manager, const Path &_filename_, bool deep) {
 	msg_write(format("loading terrain: %s", _filename_));
 	msg_right();
 
@@ -88,14 +88,14 @@ bool Terrain::load(const Path &_filename_, bool deep) {
 			// Material
 			material_file = f->read_str();
 			if (deep) {
-				material = LoadMaterial(material_file);
+				material = material_manager->load(material_file);
 
 				// load textures
 				if (num_textures > material->textures.num)
 					material->textures.resize(num_textures);
 				for (int i=0;i<num_textures;i++)
 					if (texture_file[i])
-						material->textures[i] = ResourceManager::load_texture(texture_file[i]);
+						material->textures[i] = resource_manager->load_texture(texture_file[i]);
 
 				// height
 				for (int x=0;x<num_x+1;x++)

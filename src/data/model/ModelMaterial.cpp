@@ -15,10 +15,11 @@
 float col_frac(const color &a, const color &b);
 
 
-ModelMaterial::ModelMaterial() {
+ModelMaterial::ModelMaterial(EdwardWindow *_ed) {
+	ed = _ed;
 	// file
 	filename = "";
-	material = LoadMaterial("");
+	material = ed->material_manager->load("");
 
 	// color
 	col.user = false;
@@ -37,7 +38,7 @@ ModelMaterial::ModelMaterial() {
 
 
 // ONLY ActionModelAddMaterial
-ModelMaterial::ModelMaterial(const Path &_filename) : ModelMaterial() {
+ModelMaterial::ModelMaterial(EdwardWindow *_ed, const Path &_filename) : ModelMaterial(_ed) {
 	filename = _filename;
 	make_consistent();
 }
@@ -57,13 +58,13 @@ ModelMaterial::TextureLevel::~TextureLevel() {
 		delete image;
 }
 
-void ModelMaterial::TextureLevel::reload_image() {
+void ModelMaterial::TextureLevel::reload_image(EdwardWindow *ed) {
 	if (image)
 		delete image;
 	if (filename == "")
 		image = new Image(512, 512, White);
 	else
-		image = Image::load(ResourceManager::texture_dir | filename);
+		image = Image::load(ed->resource_manager->texture_dir | filename);
 	edited = false;
 	update_texture();
 }
@@ -99,7 +100,7 @@ void ModelMaterial::Color::import(const color &am, const color &di, const color 
 }
 
 void ModelMaterial::make_consistent() {
-	material = LoadMaterial(filename);
+	material = ed->material_manager->load(filename);
 
 	if (material->reflection.mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
 	//	if (!material->cube_map)
@@ -155,7 +156,7 @@ void ModelMaterial::check_textures() {
 			else
 				t->image = Image::load(t->filename);
 		}*/
-		t->reload_image();
+		t->reload_image(ed);
 	}
 }
 
@@ -170,7 +171,7 @@ void ModelMaterial::check_colors() {
 
 void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 	nix::disable_alpha();
-	w->set_shader(nix::Shader::default_3d.get());
+	w->set_shader(w->gl->default_3d.get());
 	color em = color::interpolate(col.emission, White, 0.1f);
 	nix::set_material(col.albedo, col.roughness, col.metal, em);
 	nix::set_z(true, true);

@@ -13,7 +13,7 @@ FormatTerrain::FormatTerrain(EdwardWindow *ed) : TypedFormat<WorldTerrain>(ed, F
 }
 
 void FormatTerrain::_load(const Path &filename, WorldTerrain *data, bool deep) {
-	data->load(filename, deep);
+	data->load(ed, filename, deep);
 }
 
 void FormatTerrain::_save(const Path &filename, WorldTerrain *data) {

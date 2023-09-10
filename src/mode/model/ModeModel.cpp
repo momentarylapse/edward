@@ -99,7 +99,7 @@ void ModeModel::on_command(const string & id) {
 	if (id == "mode_model_deform")
 		ed->set_mode(mode_model_mesh->mode_model_mesh_deform);
 	if (id == "mode_model_paint")
-		ed->set_mode(mode_model_mesh_paint);
+		ed->set_mode(mode_model_mesh->mode_model_mesh_paint);
 	if (id == "mode_model_materials")
 		ed->set_mode(mode_model_mesh->mode_model_mesh_material);
 	if (id == "mode_model_texture_coord")
@@ -131,8 +131,12 @@ void ModeModel::on_update_menu() {
 	ed->check("mode_model_texture_coord", mode_model_mesh->mode_model_mesh_texture->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_model_materials", mode_model_mesh->mode_model_mesh_material->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_model_deform", mode_model_mesh->mode_model_mesh_deform->is_ancestor_of(ed->cur_mode));
-	ed->check("mode_model_paint", mode_model_mesh_paint->is_ancestor_of(ed->cur_mode));
-	ed->check("mode_model_mesh", mode_model_mesh->is_ancestor_of(ed->cur_mode) and !mode_model_mesh->mode_model_mesh_texture->is_ancestor_of(ed->cur_mode) and !mode_model_mesh->mode_model_mesh_material->is_ancestor_of(ed->cur_mode) and !mode_model_mesh->mode_model_mesh_deform->is_ancestor_of(ed->cur_mode) and !mode_model_mesh_paint->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_paint", mode_model_mesh->mode_model_mesh_paint->is_ancestor_of(ed->cur_mode));
+	ed->check("mode_model_mesh", mode_model_mesh->is_ancestor_of(ed->cur_mode)
+			and !mode_model_mesh->mode_model_mesh_texture->is_ancestor_of(ed->cur_mode)
+			and !mode_model_mesh->mode_model_mesh_material->is_ancestor_of(ed->cur_mode)
+			and !mode_model_mesh->mode_model_mesh_deform->is_ancestor_of(ed->cur_mode)
+			and !mode_model_mesh->mode_model_mesh_paint->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_model_skeleton", mode_model_skeleton->is_ancestor_of(ed->cur_mode));
 	ed->check("mode_model_animation", mode_model_animation->is_ancestor_of(ed->cur_mode));
 }

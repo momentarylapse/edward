@@ -73,6 +73,7 @@
 // OpenGL
 
 	namespace nix {
+		class Context;
 		class Texture;
 		class Shader;
 		class VertexBuffer;
@@ -86,6 +87,7 @@
 		enum class AlphaMode;
 	}
 
+	using Context = nix::Context;
 	using Texture = nix::Texture;
 	using Shader = nix::Shader;
 	using VertexBuffer = nix::VertexBuffer;

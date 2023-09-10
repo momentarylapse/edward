@@ -7,6 +7,7 @@
 
 
 #include "WorldTerrain.h"
+#include "../../EdwardWindow.h"
 #include "../../y/EngineData.h"
 #include "../../y/Terrain.h"
 #include "../../lib/os/file.h"
@@ -14,12 +15,12 @@
 #include "../../lib/os/formatter.h"
 
 
-bool WorldTerrain::load(const Path &_filename, bool deep) {
+bool WorldTerrain::load(EdwardWindow *ed, const Path &_filename, bool deep) {
 
 	filename = _filename.relative_to(engine.map_dir).no_ext();
 
 	terrain = new Terrain();
-	bool Error = !terrain->load(filename, deep);
+	bool Error = !terrain->load(ed->resource_manager, ed->material_manager, this->filename, deep);
 
 	if (Error) {
 		delete(terrain);

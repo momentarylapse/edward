@@ -51,7 +51,9 @@
 
 
 ModeWorld::ModeWorld(EdwardWindow *ed, MultiView::MultiView *mv) :
-	Mode<ModeWorld, DataWorld>(ed, "World", nullptr, new DataWorld(ed), mv, "menu_world") {
+	Mode<ModeWorld, DataWorld>(ed, "World", nullptr, new DataWorld(ed), mv, "menu_world")
+{
+	temp_material = new Material(ed->resource_manager);
 	data->out_changed >> create_sink([this]{ data->update_data(); });
 
 	world_dialog = nullptr;
@@ -350,8 +352,8 @@ void ModeWorld::on_draw() {
 			ss.add(format(_("%d cameras"), num_cam));
 		if (num_li > 0)
 			ss.add(format(_("%d lights"), num_li));
-		nix::set_shader(nix::Shader::default_2d.get());
-		draw_str(10, 100, _("selected: ") + implode(ss, ", "));
+		nix::set_shader(ed->gl->default_2d.get());
+		ed->drawing_helper->draw_str(10, 100, _("selected: ") + implode(ss, ", "));
 	}
 }
 
@@ -444,10 +446,10 @@ void ModeWorld::draw_background(MultiView::Window *win) {
 	nix::clear_color(data->meta_data.background_color);
 }
 
-void _set_textures(const Array<nix::Texture*> &_tex) {
+void _set_textures(DrawingHelper *drawing_helper, const Array<nix::Texture*> &_tex) {
 	Array<nix::Texture*> tex = _tex;
 	while (tex.num < 5)
-		tex.add(tex_white.get());
+		tex.add(drawing_helper->tex_white.get());
 	tex.add(MultiView::cube_map.get());
 
 	nix::set_textures(tex);
@@ -464,7 +466,7 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 		// prepare...
 		t.terrain->prepare_draw(multi_view->cam.pos - t.pos);
 		auto mat = t.terrain->material;
-		auto s = nix::Shader::default_3d.get();
+		auto s = win->gl->default_3d.get();
 		try {
 			mat->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
 			s = mat->shader[0].get();
@@ -478,7 +480,7 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 
 		nix::set_model_matrix(mat4::translation(t.pos));
 		nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
-		_set_textures(weak(mat->textures));
+		_set_textures(win->drawing_helper, weak(mat->textures));
 		nix::draw_triangles(t.terrain->vertex_buffer);
 
 		nix::set_wire(false);
@@ -494,7 +496,7 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 void draw_model(MultiView::Window *win, Model *m, int num_lights) {
 	for (int i=0;i<m->material.num;i++) {
 		auto mat = m->material[i];
-		auto s = nix::Shader::default_3d.get();
+		auto s = win->gl->default_3d.get();
 		try {
 			mat->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
 			s = mat->shader[0].get();
@@ -505,7 +507,7 @@ void draw_model(MultiView::Window *win, Model *m, int num_lights) {
 		win->set_shader(s, num_lights);
 
 		nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
-		_set_textures(weak(mat->textures));
+		_set_textures(win->drawing_helper, weak(mat->textures));
 		nix::draw_triangles(m->mesh[0]->sub[i].vertex_buffer);
 
 	}
@@ -516,7 +518,7 @@ void draw_model(MultiView::Window *win, Model *m, int num_lights) {
 void ModeWorld::draw_objects(MultiView::Window *win) {
 	//GodDraw();
 	//MetaDrawSorted();
-	nix::set_shader(nix::Shader::default_3d.get());
+	nix::set_shader(win->gl->default_3d.get());
 	nix::set_wire(multi_view->wire_mode);
 
 	for (WorldObject &o: data->objects) {
@@ -546,11 +548,11 @@ void ModeWorld::draw_cameras(MultiView::Window *win) {
 		if (c.view_stage < multi_view->view_stage)
 			continue;
 
-		set_color(color(1, 0.9f, 0.6f, 0.3f));
-		set_line_width(scheme.LINE_WIDTH_THIN);
+		win->drawing_helper->set_color(color(1, 0.9f, 0.6f, 0.3f));
+		win->drawing_helper->set_line_width(scheme.LINE_WIDTH_THIN);
 		if (c.is_selected) {
 			//set_color(Red);
-			set_line_width(scheme.LINE_WIDTH_MEDIUM);
+			win->drawing_helper->set_line_width(scheme.LINE_WIDTH_MEDIUM);
 		}
 		auto q = quaternion::rotation_v(c.ang);
 		float r = win->cam->radius * 0.1f;
@@ -558,14 +560,14 @@ void ModeWorld::draw_cameras(MultiView::Window *win) {
 		vec3 ex = q * vec3::EX * rr * 1.333f;
 		vec3 ey = q * vec3::EY * rr;
 		vec3 ez = q * vec3::EZ * r;
-		draw_line(c.pos, c.pos + ez + ex + ey);
-		draw_line(c.pos, c.pos + ez - ex + ey);
-		draw_line(c.pos, c.pos + ez + ex - ey);
-		draw_line(c.pos, c.pos + ez - ex - ey);
-		draw_line(c.pos + ez + ex + ey, c.pos + ez - ex + ey);
-		draw_line(c.pos + ez - ex + ey, c.pos + ez - ex - ey);
-		draw_line(c.pos + ez - ex - ey, c.pos + ez + ex - ey);
-		draw_line(c.pos + ez + ex - ey, c.pos + ez + ex + ey);
+		win->drawing_helper->draw_line(c.pos, c.pos + ez + ex + ey);
+		win->drawing_helper->draw_line(c.pos, c.pos + ez - ex + ey);
+		win->drawing_helper->draw_line(c.pos, c.pos + ez + ex - ey);
+		win->drawing_helper->draw_line(c.pos, c.pos + ez - ex - ey);
+		win->drawing_helper->draw_line(c.pos + ez + ex + ey, c.pos + ez - ex + ey);
+		win->drawing_helper->draw_line(c.pos + ez - ex + ey, c.pos + ez - ex - ey);
+		win->drawing_helper->draw_line(c.pos + ez - ex - ey, c.pos + ez + ex - ey);
+		win->drawing_helper->draw_line(c.pos + ez + ex - ey, c.pos + ez + ex + ey);
 	}
 }
 
@@ -588,8 +590,8 @@ void draw_tangent_circle(MultiView::Window *win, const vec3 &p, const vec3 &c, c
 		}
 	}
 	float w = i_max * 2 * pi / N;
-	draw_line(p, c + sin(w) * e1 + cos(w) * e2);
-	draw_line(p, c - sin(w) * e1 - cos(w) * e2);
+	win->drawing_helper->draw_line(p, c + sin(w) * e1 + cos(w) * e2);
+	win->drawing_helper->draw_line(p, c - sin(w) * e1 - cos(w) * e2);
 }
 
 const float LIGHT_RADIUS_FACTOR_HI = 0.03f;
@@ -600,23 +602,23 @@ void ModeWorld::draw_lights(MultiView::Window *win) {
 		if (l.view_stage < multi_view->view_stage)
 			continue;
 
-		set_color(color(1, 0.9f, 0.6f, 0.3f));
-		set_line_width(scheme.LINE_WIDTH_MEDIUM);
+		win->drawing_helper->set_color(color(1, 0.9f, 0.6f, 0.3f));
+		win->drawing_helper->set_line_width(scheme.LINE_WIDTH_MEDIUM);
 		if (l.is_selected) {
 			//set_color(Red);
-			set_line_width(scheme.LINE_WIDTH_THICK);
+			win->drawing_helper->set_line_width(scheme.LINE_WIDTH_THICK);
 		}
 
 		if (l.type == LightType::DIRECTIONAL) {
-			draw_line(l.pos, l.pos + l.ang.ang2dir() * win->cam->radius * 0.1f);
+			win->drawing_helper->draw_line(l.pos, l.pos + l.ang.ang2dir() * win->cam->radius * 0.1f);
 		} else if (l.type == LightType::POINT) {
 			//draw_circle(l.pos, win->get_direction(), l.radius);
-			draw_circle(l.pos, win->get_direction(), l.radius * LIGHT_RADIUS_FACTOR_LO);
-			draw_circle(l.pos, win->get_direction(), l.radius * LIGHT_RADIUS_FACTOR_HI);
+			win->drawing_helper->draw_circle(l.pos, win->get_direction(), l.radius * LIGHT_RADIUS_FACTOR_LO);
+			win->drawing_helper->draw_circle(l.pos, win->get_direction(), l.radius * LIGHT_RADIUS_FACTOR_HI);
 		} else if (l.type == LightType::CONE) {
-			draw_line(l.pos, l.pos + l.ang.ang2dir() * l.radius * LIGHT_RADIUS_FACTOR_LO);
-			draw_circle(l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_LO, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
-			draw_circle(l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_HI, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_HI);
+			win->drawing_helper->draw_line(l.pos, l.pos + l.ang.ang2dir() * l.radius * LIGHT_RADIUS_FACTOR_LO);
+			win->drawing_helper->draw_circle(l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_LO, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
+			win->drawing_helper->draw_circle(l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_HI, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_HI);
 			draw_tangent_circle(win, l.pos, l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_LO, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
 		}
 	}
@@ -627,19 +629,19 @@ void ModeWorld::draw_links(MultiView::Window *win) {
 		if (l.view_stage < multi_view->view_stage)
 			continue;
 
-		set_color(color(1, 0.9f, 0.6f, 0.3f));
-		set_line_width(scheme.LINE_WIDTH_THIN);
+		win->drawing_helper->set_color(color(1, 0.9f, 0.6f, 0.3f));
+		win->drawing_helper->set_line_width(scheme.LINE_WIDTH_THIN);
 		if (l.is_selected) {
 			//set_color(Red);
-			set_line_width(scheme.LINE_WIDTH_THICK);
+			win->drawing_helper->set_line_width(scheme.LINE_WIDTH_THICK);
 		}
-		draw_line(l.pos, data->objects[l.object[0]].pos);
+		win->drawing_helper->draw_line(l.pos, data->objects[l.object[0]].pos);
 		if (l.object[1] >= 0)
-			draw_line(l.pos, data->objects[l.object[1]].pos);
+			win->drawing_helper->draw_line(l.pos, data->objects[l.object[1]].pos);
 		if (l.is_selected) {
-			set_line_width(scheme.LINE_WIDTH_THICK);
+			win->drawing_helper->set_line_width(scheme.LINE_WIDTH_THICK);
 			vec3 d = quaternion::rotation(l.ang) * vec3::EZ * multi_view->cam.radius * 0.1;
-			draw_line(l.pos - d, l.pos + d);
+			win->drawing_helper->draw_line(l.pos - d, l.pos + d);
 		}
 	}
 }

@@ -18,24 +18,10 @@
 #include <pango/pangocairo.h>
 
 
-shared<nix::Shader> shader_selection;
-shared<nix::Shader> shader_lines_3d;
-shared<nix::Shader> shader_lines_3d_colored;
-shared<nix::Shader> shader_lines_3d_colored_wide;
-
 namespace MultiView {
 	shared<nix::CubeMap> cube_map;
 }
 
-static nix::Texture *tex_round;
-static nix::Texture *tex_text;
-static string font_name = "Sans";
-static float font_size = 12;
-static color _cur_color_ = White;
-shared<nix::Texture> tex_white;
-
-static nix::VertexBuffer *vb_lines = nullptr;
-static nix::VertexBuffer *vb_2d = nullptr;
 
 
 nix::Texture *create_round_texture(int n) {
@@ -69,7 +55,9 @@ void create_fake_dynamic_cube_map(nix::CubeMap *cube_map) {
 		cube_map->write_side(i, im);
 }
 
-void drawing_helper_init(const Path &dir) {
+DrawingHelper::DrawingHelper(nix::Context *_gl, ResourceManager *rm, const Path &dir) {
+	gl = _gl;
+	resource_manager = rm;
 	vb_lines = new nix::VertexBuffer("3f,4f");
 	vb_2d = new nix::VertexBuffer("3f,4f,2f");
 	tex_round = create_round_texture(32);
@@ -81,19 +69,19 @@ void drawing_helper_init(const Path &dir) {
 
 	try {
 
-		ResourceManager::default_shader = "default.shader";
+		resource_manager->default_shader = "default.shader";
 
-		ResourceManager::load_shader(dir | "shader/module-surface.shader");
-		//ResourceManager::load_shader(dir | "shader/module-surface-simple.shader");
+		resource_manager->load_shader(dir | "shader/module-surface.shader");
+		//resource_manager->load_shader(dir | "shader/module-surface-simple.shader");
 
 
-		ResourceManager::load_shader(dir | "shader/module-vertex-default.shader");
-		ResourceManager::load_shader(dir | "shader/module-vertex-animated.shader");
+		resource_manager->load_shader(dir | "shader/module-vertex-default.shader");
+		resource_manager->load_shader(dir | "shader/module-vertex-animated.shader");
 
-		shader_lines_3d = nix::Shader::load(dir | "shader/lines-3d.shader");
-		shader_lines_3d_colored = nix::Shader::load(dir | "shader/lines-3d-colored.shader");
-		shader_lines_3d_colored_wide = nix::Shader::load(dir | "shader/lines-3d-colored-wide.shader");
-		shader_selection = ResourceManager::load_shader(dir | "shader/selection.shader");
+		shader_lines_3d = gl->load_shader(dir | "shader/lines-3d.shader");
+		shader_lines_3d_colored = gl->load_shader(dir | "shader/lines-3d-colored.shader");
+		shader_lines_3d_colored_wide = gl->load_shader(dir | "shader/lines-3d-colored-wide.shader");
+		shader_selection = resource_manager->load_shader(dir | "shader/selection.shader");
 		shader_selection->set_int("num_lights", 1);
 	} catch (Exception &e) {
 		msg_error(e.message());
@@ -104,29 +92,29 @@ void drawing_helper_init(const Path &dir) {
 	create_fake_dynamic_cube_map(MultiView::cube_map.get());
 }
 
-void set_line_width(float width) {
+void DrawingHelper::set_line_width(float width) {
 	if (width == 1.0f) {
 		nix::set_shader(shader_lines_3d_colored.get());
 	} else {
 		auto s = shader_lines_3d_colored_wide.get();
 		nix::set_shader(s);
-		s->set_float("target_width", nix::target_width);
-		s->set_float("target_height", nix::target_height);
+		s->set_float("target_width", (float)nix::target_width);
+		s->set_float("target_height", (float)nix::target_height);
 		s->set_float("line_width", width);
 	}
 }
 
-void set_color(const color &c) {
+void DrawingHelper::set_color(const color &c) {
 	_cur_color_ = c;
 }
 
 
 
-void draw_line_2d(float x1, float y1, float x2, float y2, float depth) {
+void DrawingHelper::draw_line_2d(float x1, float y1, float x2, float y2, float depth) {
 	draw_line(vec3(x1, y1, depth), vec3(x2, y2, depth));
 }
 
-void draw_lines(const Array<vec3> &p, bool contiguous) {
+void DrawingHelper::draw_lines(const Array<vec3> &p, bool contiguous) {
 	Array<color> c;
 	c.resize(p.num);
 	for (int i=0; i<c.num; i++)
@@ -139,7 +127,7 @@ struct LineVertex {
 	color c;
 };
 
-void draw_lines_colored(const Array<vec3> &p, const Array<color> &c, bool contiguous) {
+void DrawingHelper::draw_lines_colored(const Array<vec3> &p, const Array<color> &c, bool contiguous) {
 	//set_line_width(2);
 	Array<LineVertex> v;
 	for (int i=0; i<p.num; i++)
@@ -148,12 +136,12 @@ void draw_lines_colored(const Array<vec3> &p, const Array<color> &c, bool contig
 	nix::draw_lines(vb_lines, contiguous);
 }
 
-void draw_line(const vec3 &l1, const vec3 &l2) {
+void DrawingHelper::draw_line(const vec3 &l1, const vec3 &l2) {
 	draw_lines_colored({l1, l2}, {_cur_color_, _cur_color_}, false);
 }
 
 
-void draw_circle(const vec3 &pos, const vec3 &n, float radius) {
+void DrawingHelper::draw_circle(const vec3 &pos, const vec3 &n, float radius) {
 
 	vec3 e1 = n.ortho();
 	vec3 e2 = n ^ e1;
@@ -169,7 +157,7 @@ void draw_circle(const vec3 &pos, const vec3 &n, float radius) {
 }
 
 
-void draw_helper_line(MultiView::Window *win, const vec3 &a, const vec3 &b) {
+void DrawingHelper::draw_helper_line(MultiView::Window *win, const vec3 &a, const vec3 &b) {
 	nix::set_z(false, false);
 	set_color(scheme.TEXT);
 	set_line_width(scheme.LINE_WIDTH_HELPER);
@@ -180,13 +168,13 @@ void draw_helper_line(MultiView::Window *win, const vec3 &a, const vec3 &b) {
 	//vector d = (pb - pa).normalized();
 	//vector e = d ^ vector::EZ;
 	float r = 3;
-	nix::set_shader(nix::Shader::default_2d.get());
+	nix::set_shader(win->gl->default_2d.get());
 	draw_rect(pa.x-r, pa.x+r, pa.y-r, pa.y+r, 0);
 	draw_rect(pb.x-r, pb.x+r, pb.y-r, pb.y+r, 0);
 }
 
 
-void draw_rect(float x1, float x2, float y1, float y2, float depth) {
+void DrawingHelper::draw_rect(float x1, float x2, float y1, float y2, float depth) {
 	draw_2d(rect::ID, rect(x1, x2, y1, y2), depth);
 }
 
@@ -196,7 +184,7 @@ struct Vertex2d {
 	vec2 uv;
 };
 
-void draw_2d(const rect &src, const rect &dest, float depth) {
+void DrawingHelper::draw_2d(const rect &src, const rect &dest, float depth) {
 	vec3 a = vec3(dest.x1, dest.y1, depth);
 	vec3 b = vec3(dest.x2, dest.y1, depth);
 	vec3 c = vec3(dest.x1, dest.y2, depth);
@@ -210,7 +198,7 @@ void draw_2d(const rect &src, const rect &dest, float depth) {
 
 
 
-void draw_round_rect(const rect &r) {
+void DrawingHelper::draw_round_rect(const rect &r) {
 
 	float R = scheme.BOX_ROUNDNESS;
 	float x[4] = {r.x1, r.x1 + R, r.x2 - R, r.x2};
@@ -231,13 +219,13 @@ void draw_round_rect(const rect &r) {
 }
 
 
-int get_str_width(const string &str) {
+int DrawingHelper::get_str_width(const string &str) {
 	Image im;
 	render_text(str, im);
 	return im.width;
 }
 
-void _draw_str(float x, float y, const string &str) {
+void DrawingHelper::_draw_str(float x, float y, const string &str) {
 	Image im;
 	render_text(str, im);
 	if (im.width > 0) {
@@ -247,7 +235,7 @@ void _draw_str(float x, float y, const string &str) {
 	}
 }
 
-void draw_str_bg(int x, int y, const string &str, const color &fg, const color &bg, TextAlign align) {
+void DrawingHelper::draw_str_bg(int x, int y, const string &str, const color &fg, const color &bg, TextAlign align) {
 	color c0 = _cur_color_;
 	auto xx = str.explode("\n");
 	float line_h = scheme.TEXT_LINE_HEIGHT;
@@ -283,7 +271,7 @@ void draw_str_bg(int x, int y, const string &str, const color &fg, const color &
 	set_color(c0);
 }
 
-void draw_str(int x, int y, const string &str, TextAlign a) {
+void DrawingHelper::draw_str(int x, int y, const string &str, TextAlign a) {
 	color c0 = _cur_color_;
 	draw_str_bg(x, y, str, c0, scheme.TEXT_BG, a);
 }
@@ -294,17 +282,17 @@ void draw_str(int x, int y, const string &str, TextAlign a) {
 
 
 
-void set_font_size(float size) {
+void DrawingHelper::set_font_size(float size) {
 	font_size = size;
 }
 
-void set_font(const string &name, float size) {
+void DrawingHelper::set_font(const string &name, float size) {
 	font_name = name;
 	font_size = size;
 }
 
 
-void render_text(const string &text, Image &im) {
+void DrawingHelper::render_text(const string &text, Image &im) {
 	if (text.num == 0) {
 		im.clear();
 		return;
@@ -359,7 +347,7 @@ void render_text(const string &text, Image &im) {
 }
 
 
-void set_material_selected() {
+void DrawingHelper::set_material_selected() {
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::set_shader(shader_selection.get());
 	nix::set_material(color(0.3f,0,0,0), 0, 0, color(1, 0.8f,0,0));
@@ -367,14 +355,14 @@ void set_material_selected() {
 	nix::set_texture(nullptr);
 }
 
-void set_material_hover() {
+void DrawingHelper::set_material_hover() {
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::set_shader(shader_selection.get());
 	nix::set_material(color(0.5f,0,0,0), 0, 0, White);
 	nix::set_texture(nullptr);
 }
 
-void set_material_creation(float intensity) {
+void DrawingHelper::set_material_creation(float intensity) {
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::set_shader(shader_selection.get());
 	nix::set_material(color(0.3f*intensity,0.3f,1,0.3f), 0, 1, color(1,0.1f,0.4f,0.1f));

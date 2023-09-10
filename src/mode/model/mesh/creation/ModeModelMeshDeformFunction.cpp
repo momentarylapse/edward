@@ -102,11 +102,11 @@ void ModeModelMeshDeformFunction::on_end() {
 void ModeModelMeshDeformFunction::on_draw_win(MultiView::Window* win) {
 	parent->on_draw_win(win);
 
-	set_material_creation();
-	geo->build(nix::vb_temp);
+	win->drawing_helper->set_material_creation();
+	geo->build(win->gl->vb_temp);
 
 	nix::set_texture(tex);
-	nix::draw_triangles(nix::vb_temp);
+	nix::draw_triangles(win->gl->vb_temp);
 }
 
 vec3 ModeModelMeshDeformFunction::transform(const vec3 &v) {

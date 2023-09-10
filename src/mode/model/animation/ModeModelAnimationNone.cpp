@@ -12,7 +12,6 @@
 #include "../mesh/ModeModelMesh.h"
 #include "../ModeModel.h"
 
-ModeModelAnimationNone *mode_model_animation_none = NULL;
 
 ModeModelAnimationNone::ModeModelAnimationNone(ModeModelAnimation* _parent, MultiView::MultiView *mv) :
 	Mode<ModeModelAnimation, DataModel>(_parent->ed, "ModelAnimationNone", _parent, mv, "menu_move")

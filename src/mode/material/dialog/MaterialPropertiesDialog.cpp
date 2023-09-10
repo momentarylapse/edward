@@ -294,7 +294,7 @@ void MaterialPropertiesDialog::refill_refl_tex_view() {
 void MaterialPropertiesDialog::fill_texture_list() {
 	reset("mat_textures");
 	for (int i=0;i<temp.texture_files.num;i++) {
-		auto tex = ResourceManager::load_texture(temp.texture_files[i]);
+		auto tex = data->ed->resource_manager->load_texture(temp.texture_files[i]);
 		string img = data->ed->get_tex_image(tex.get());
 		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, img, file_secure(temp.texture_files[i])));
 	}

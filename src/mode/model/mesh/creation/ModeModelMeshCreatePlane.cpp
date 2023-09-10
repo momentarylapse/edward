@@ -10,7 +10,6 @@
 #include "ModeModelMeshCreatePlane.h"
 #include "../../../../data/model/geometry/GeometryPlane.h"
 #include "../../../../EdwardWindow.h"
-#include "../../../../lib/nix/nix.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -75,9 +74,9 @@ void ModeModelMeshCreatePlane::on_draw_win(MultiView::Window *win) {
 	if (pos_chosen) {
 		auto geo = GeometryPlane(pos, length[0], length[1], 1,1);
 		geo.add(GeometryPlane(pos, length[1], length[0], 1,1));
-		geo.build(nix::vb_temp);
-		set_material_creation();
-		nix::draw_triangles(nix::vb_temp);
+		geo.build(win->gl->vb_temp);
+		win->drawing_helper->set_material_creation();
+		nix::draw_triangles(win->gl->vb_temp);
 	}
 }
 

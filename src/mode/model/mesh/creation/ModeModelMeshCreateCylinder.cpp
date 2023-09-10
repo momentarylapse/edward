@@ -135,29 +135,29 @@ void ModeModelMeshCreateCylinder::on_draw_win(MultiView::Window *win) {
 	if (pos.num > 0) {
 
 		// control points
-		set_color(scheme.CREATION_LINE);
-		nix::set_shader(nix::Shader::default_2d.get());
+		win->drawing_helper->set_color(scheme.CREATION_LINE);
+		nix::set_shader(win->gl->default_2d.get());
 		for (int i=0;i<pos.num;i++) {
 			vec3 pp = win->project(pos[i]);
-			draw_rect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
+			win->drawing_helper->draw_rect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
 		}
 
 		//mode_model->setMaterialCreation(2);
 
 		// control polygon
-		set_line_width(scheme.LINE_WIDTH_MEDIUM);
-		set_color(scheme.CREATION_LINE);
+		win->drawing_helper->set_line_width(scheme.LINE_WIDTH_MEDIUM);
+		win->drawing_helper->set_color(scheme.CREATION_LINE);
 		if (pos.num == 2)
-			draw_line(pos[0], pos[1]);
+			win->drawing_helper->draw_line(pos[0], pos[1]);
 		else
-			draw_line(pos[0], multi_view->get_cursor());
+			win->drawing_helper->draw_line(pos[0], multi_view->get_cursor());
 	}
 	if (pos.num == 2) {
-		set_material_creation();
-		geo->build(nix::vb_temp);
-		nix::draw_triangles(nix::vb_temp);
+		win->drawing_helper->set_material_creation();
+		geo->build(win->gl->vb_temp);
+		nix::draw_triangles(win->gl->vb_temp);
 
 		if (win == multi_view->mouse_win)
-			draw_helper_line(win, pos[1], multi_view->get_cursor());
+			win->drawing_helper->draw_helper_line(win, pos[1], multi_view->get_cursor());
 	}
 }

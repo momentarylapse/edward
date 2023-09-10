@@ -76,7 +76,7 @@ void ModeModelSkeletonAttachVertices::on_start() {
 	vbs->build(vb_weight, 1);
 	if (!shader) {
 		try {
-			shader = ResourceManager::load_shader("vertex-weight.shader");
+			shader = ed->resource_manager->load_shader("vertex-weight.shader");
 		} catch(Exception &e) {
 			msg_error(e.message());
 		}
@@ -135,7 +135,7 @@ void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win) {
 	ed->mode_model->mode_model_mesh->on_draw_win(win);
 
 	// weights
-	set_material_selected();
+	win->drawing_helper->set_material_selected();
 	nix::set_shader(shader);
 	nix::draw_triangles(vb_weight);
 	nix::set_offset(2);
@@ -146,10 +146,10 @@ void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win) {
 		vec3 pos = multi_view->hover.point;
 		vec3 n = data->mesh->polygon[multi_view->hover.index].temp_normal;
 
-		set_color(scheme.CREATION_LINE);
-		set_line_width(scheme.LINE_WIDTH_MEDIUM);
+		win->drawing_helper->set_color(scheme.CREATION_LINE);
+		win->drawing_helper->set_line_width(scheme.LINE_WIDTH_MEDIUM);
 		float radius = brush_panel()->radius0();
-		draw_circle(pos, n, radius);
+		win->drawing_helper->draw_circle(pos, n, radius);
 	}
 }
 

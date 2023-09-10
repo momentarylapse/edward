@@ -161,7 +161,7 @@ WorldObject* DataWorld::add_object(const Path &filename, const vec3& pos) {
 	o.ang = v_0;//quaternion::ID;
 	o.is_selected = true;
 	o.filename = filename;
-	o.object = (Object*)ModelManager::load(filename);
+	o.object = (Object*)ed->model_manager->load(filename);
 	return (WorldObject*)execute(new ActionWorldAddObject(o));
 }
 

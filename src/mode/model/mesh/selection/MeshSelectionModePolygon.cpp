@@ -37,7 +37,7 @@ void MeshSelectionModePolygon::on_draw_win(MultiView::Window *win) {
 	vbs.build(parent->vb_hover, 1);
 
 	nix::set_offset(-2.0f);
-	set_material_hover();
+	win->drawing_helper->set_material_hover();
 	nix::draw_triangles(parent->vb_hover);
 	nix::set_material(White, 0.5f, 0, Black);
 	nix::disable_alpha();

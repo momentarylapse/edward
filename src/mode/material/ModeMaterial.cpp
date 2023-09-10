@@ -107,7 +107,7 @@ void ModeMaterial::update_textures() {
 	textures.clear();
 
 	for (auto &tf: data->appearance.texture_files)
-		textures.add(ResourceManager::load_texture(tf));
+		textures.add(ed->resource_manager->load_texture(tf));
 	/*if (appearance.reflection_mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
 		create_fake_dynamic_cube_map(cube_map);
 		textures.add(cube_map);
@@ -121,8 +121,8 @@ void ModeMaterial::update_textures() {
 void ModeMaterial::update_shader() {
 	msg_write("update shader");
 	try {
-		auto code = ResourceManager::expand_vertex_shader_source(data->shader.code, "default");
-		code = ResourceManager::expand_fragment_shader_source(code, "forward");
+		auto code = ed->resource_manager->expand_vertex_shader_source(data->shader.code, "default");
+		code = ed->resource_manager->expand_fragment_shader_source(code, "forward");
 		shader->update(code);
 	} catch(Exception &e) {
 		msg_error(e.message());
@@ -237,7 +237,7 @@ void ModeMaterial::on_start() {
 	t->enable(false);
 
 	try {
-		shader = nix::Shader::create("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
+		shader = ed->gl->create_shader("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
 	} catch (Exception &e) {
 		msg_error(e.message());
 	}

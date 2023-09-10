@@ -7,10 +7,10 @@
 
 #include "ModeWorldCreateTerrain.h"
 #include "../ModeWorld.h"
-#include "../../../data/world/DataWorld.h"
 #include "../../../data/model/geometry/GeometryPlane.h"
 #include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
+#include "../../../multiview/Window.h"
 #include "../../../multiview/DrawingHelper.h"
 #include "../../../lib/nix/nix.h"
 
@@ -85,9 +85,9 @@ void ModeWorldCreateTerrain::on_draw_win(MultiView::Window *win) {
 	if (pos_chosen) {
 		auto geo = GeometryPlane(pos, size.x * vec3::EX, size.z * vec3::EZ, 1,1);
 		geo.add(GeometryPlane(pos, size.z * vec3::EZ, size.x * vec3::EX, 1,1));
-		geo.build(nix::vb_temp);
-		set_material_creation();
-		nix::draw_triangles(nix::vb_temp);
+		geo.build(win->gl->vb_temp);
+		win->drawing_helper->set_material_creation();
+		nix::draw_triangles(win->gl->vb_temp);
 	}
 }
 

@@ -14,8 +14,10 @@
 #include "../lib/math/quaternion.h"
 
 class color;
+class DrawingHelper;
 
 namespace nix {
+	class Context;
 	class Shader;
 }
 
@@ -36,6 +38,8 @@ public:
 	mat4 ipv_matrix;
 	rect dest;
 	rect name_dest;
+	nix::Context *gl;
+	DrawingHelper *drawing_helper;
 	MultiView *multi_view;
 	quaternion local_ang;
 	Camera *cam;

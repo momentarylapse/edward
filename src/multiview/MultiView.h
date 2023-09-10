@@ -18,8 +18,10 @@
 
 class Data;
 class EdwardWindow;
+class DrawingHelper;
 
 namespace nix {
+	class Context;
 	class Shader;
 	class UniformBuffer;
 	class FrameBuffer;
@@ -127,6 +129,8 @@ public:
 	void on_update_menu();
 
 	EdwardWindow *ed;
+	nix::Context *gl;
+	DrawingHelper *drawing_helper;
 	bool mode3d;
 	bool whole_window;
 	rect area;
@@ -278,7 +282,7 @@ public:
 		void start_later(const vec2 &m);
 		void end();
 		rect get(const vec2 &m);
-		void draw(const vec2 &m);
+		void draw(DrawingHelper *drawing_helper, const vec2 &m);
 	};
 	SelectionRect sel_rect;
 	bool allow_select;

@@ -45,6 +45,8 @@ vec3 Camera::get_pos(bool allow_radius) const {
 
 MultiView::MultiView(EdwardWindow *_ed, bool mode3d) {
 	ed = _ed;
+	gl = ed->gl;
+	drawing_helper = ed->drawing_helper;
 	view_stage = 0;
 	grid_enabled = true;
 	wire_mode = false;
@@ -106,7 +108,7 @@ MultiView::MultiView(EdwardWindow *_ed, bool mode3d) {
 	allow_select = true;
 	edit_coordinate_mode = CoordinateMode::GLOBAL;
 
-	shader_out = ResourceManager::load_shader("multiview-out.shader");
+	shader_out = ed->resource_manager->load_shader("multiview-out.shader");
 
 
 	reset();
@@ -609,9 +611,9 @@ void MultiView::draw_mouse_pos() {
 	string sz = f2s(m.z,2) + " " + unit;
 
 	if (mouse_win->type == VIEW_2D) {
-		draw_str(nix::target_width, nix::target_height - 60, sx + "\n" + sy, TextAlign::RIGHT);
+		drawing_helper->draw_str(nix::target_width, nix::target_height - 60, sx + "\n" + sy, TextAlign::RIGHT);
 	} else {
-		draw_str(nix::target_width, nix::target_height - 80, sx + "\n" + sy +  + "\n" + sz, TextAlign::RIGHT);
+		drawing_helper->draw_str(nix::target_width, nix::target_height - 80, sx + "\n" + sy +  + "\n" + sz, TextAlign::RIGHT);
 	}
 }
 
@@ -652,8 +654,8 @@ void MultiView::on_draw() {
 	nix::clear_z();
 	nix::set_projection_ortho_pixel();
 	nix::set_z(true,true);
-	set_color(scheme.TEXT);
-	set_font(scheme.FONT_NAME, scheme.FONT_SIZE);
+	drawing_helper->set_color(scheme.TEXT);
+	drawing_helper->set_font(scheme.FONT_NAME, scheme.FONT_SIZE);
 
 
 	if (!mode3d) {
@@ -691,38 +693,38 @@ void MultiView::on_draw() {
 
 		nix::set_scissor(nix::target_rect);
 
-		nix::set_shader(nix::Shader::default_2d.get());
+		nix::set_shader(gl->default_2d.get());
 		nix::set_texture(nullptr);
 
 		color c2 = scheme.hoverify(scheme.WINDOW_DIVIDER);
-		set_color((hover.meta == hover.HOVER_WINDOW_DIVIDER_Y or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
-		draw_rect(area.x1, area.x2, ym-d, ym+d, 0);
-		set_color((hover.meta == hover.HOVER_WINDOW_DIVIDER_X or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
-		draw_rect(xm-d, xm+d, area.y1, area.y2, 0);
+		drawing_helper->set_color((hover.meta == hover.HOVER_WINDOW_DIVIDER_Y or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
+		drawing_helper->draw_rect(area.x1, area.x2, ym-d, ym+d, 0);
+		drawing_helper->set_color((hover.meta == hover.HOVER_WINDOW_DIVIDER_X or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
+		drawing_helper->draw_rect(xm-d, xm+d, area.y1, area.y2, 0);
 	}
 
 	nix::set_projection_ortho_pixel();
 	if (sel_rect.active)
-		sel_rect.draw(m);
+		sel_rect.draw(drawing_helper, m);
 
 	cam_con->draw();
 
-	set_color(scheme.TEXT);
-	nix::set_shader(nix::Shader::default_2d.get());
+	drawing_helper->set_color(scheme.TEXT);
+	nix::set_shader(gl->default_2d.get());
 
 	if (ed->input.inside_smart)
 		draw_mouse_pos();
 
 	action_con->draw_post();
 
-	nix::bind_frame_buffer(nix::FrameBuffer::DEFAULT);
+	nix::bind_frame_buffer(gl->default_framebuffer);
 	nix::set_shader(shader_out.get());
 	//nix::vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
-	nix::vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
+	ed->gl->vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
 	nix::set_texture(weak(frame_buffer->color_attachments)[0]);
 	nix::set_z(false, false);
 	nix::set_cull(nix::CullMode::NONE);
-	nix::draw_triangles(nix::vb_temp);
+	nix::draw_triangles(ed->gl->vb_temp);
 
 	//printf("%f\n", timer.get()*1000.0f);
 }
@@ -737,21 +739,21 @@ void MultiView::SelectionRect::end() {
 	dist = -1;
 }
 
-void MultiView::SelectionRect::draw(const vec2 &m) {
+void MultiView::SelectionRect::draw(DrawingHelper *drawing_helper, const vec2 &m) {
 	nix::set_z(false, false);
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::set_texture(nullptr);
-	set_color(scheme.SELECTION_RECT);
+	drawing_helper->set_color(scheme.SELECTION_RECT);
 	nix::set_cull(nix::CullMode::NONE);
-	nix::set_shader(nix::Shader::default_2d.get());
-	draw_rect(m.x, pos0.x, m.y, pos0.y, 0);
+	nix::set_shader(drawing_helper->gl->default_2d.get());
+	drawing_helper->draw_rect(m.x, pos0.x, m.y, pos0.y, 0);
 	nix::set_cull(nix::CullMode::DEFAULT);
-	set_color(scheme.SELECTION_RECT_BOUNDARY);
-	set_line_width(scheme.LINE_WIDTH_THIN);
-	draw_line_2d(pos0.x, pos0.y, pos0.x, m.y, 0);
-	draw_line_2d(m.x, pos0.y, m.x, m.y, 0);
-	draw_line_2d(pos0.x, pos0.y, m.x, pos0.y, 0);
-	draw_line_2d(pos0.x, m.y, m.x, m.y, 0);
+	drawing_helper->set_color(scheme.SELECTION_RECT_BOUNDARY);
+	drawing_helper->set_line_width(scheme.LINE_WIDTH_THIN);
+	drawing_helper->draw_line_2d(pos0.x, pos0.y, pos0.x, m.y, 0);
+	drawing_helper->draw_line_2d(m.x, pos0.y, m.x, m.y, 0);
+	drawing_helper->draw_line_2d(pos0.x, pos0.y, m.x, pos0.y, 0);
+	drawing_helper->draw_line_2d(pos0.x, m.y, m.x, m.y, 0);
 	nix::disable_alpha();
 	nix::set_z(true, true);
 }

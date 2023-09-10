@@ -13,6 +13,7 @@
 
 class Terrain;
 class ScriptInstanceData;
+class EdwardWindow;
 
 /*class WorldTerrainVertex: public MultiView::SingleData
 {
@@ -36,7 +37,7 @@ public:
 
 	Array<ScriptInstanceData> components;
 
-	bool load(const Path &filename, bool deep = true);
+	bool load(EdwardWindow *ed, const Path &filename, bool deep = true);
 	bool save(const Path &filename);
 
 	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;

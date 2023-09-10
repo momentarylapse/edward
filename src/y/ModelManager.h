@@ -17,6 +17,8 @@ class SolidBody;
 class MeshCollider;
 class Animator;
 class Skeleton;
+class ResourceManager;
+class MaterialManager;
 
 
 class ModelTemplate : public Sharable<base::Empty> {
@@ -35,7 +37,10 @@ public:
 
 class ModelManager {
 public:
-	static Model *load(const Path &filename);
+	ModelManager(ResourceManager *resource_manager, MaterialManager *material_manager);
+	Model *load(const Path &filename);
 
-	static Array<Model*> originals;
+	ResourceManager *resource_manager;
+	MaterialManager *material_manager;
+	Array<Model*> originals;
 };

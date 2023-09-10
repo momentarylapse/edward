@@ -67,7 +67,7 @@ public:
 	void set_mouse_action(int mode);
 	int mouse_action;
 
-	Material temp_material;
+	owned<Material> temp_material;
 
 	// clip board
 	void copy();
