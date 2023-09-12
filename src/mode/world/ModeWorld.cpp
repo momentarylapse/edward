@@ -88,7 +88,7 @@ void ModeWorld::save_as() {
 
 void ModeWorld::on_command(const string & id) {
 	if (id == "new")
-		_new();
+		session->universal_new(FD_WORLD);//_new();
 	if (id == "open")
 		open();
 	if (id == "save")
