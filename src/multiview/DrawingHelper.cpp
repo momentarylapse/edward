@@ -230,7 +230,7 @@ void DrawingHelper::_draw_str(float x, float y, const string &str) {
 	render_text(str, im);
 	if (im.width > 0) {
 		tex_text->write(im);
-		set_texture(tex_text);
+		nix::bind_texture(0, tex_text);
 		draw_2d(rect::ID, rect(x, x + im.width, y, y + im.height), 0);
 	}
 }
@@ -251,13 +251,13 @@ void DrawingHelper::draw_str_bg(int x, int y, const string &str, const color &fg
 		x -= wmax;
 	else if (align == TextAlign::CENTER)
 		x -= wmax / 2;
-	nix::set_texture(tex_round);
+	nix::bind_texture(0, tex_round);
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	float r = scheme.BOX_PADDING;
 	set_color(bg);
 	draw_round_rect(rect(float(x-r), float(x+wmax+r), float(y-r), float(y+h+r)));
 	set_color(fg);
-	nix::set_texture(nullptr);
+	nix::bind_texture(0, nullptr);
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	foreachi (string &s, xx, i) {
 		if (align == TextAlign::RIGHT)
@@ -352,21 +352,21 @@ void DrawingHelper::set_material_selected() {
 	nix::set_shader(shader_selection.get());
 	nix::set_material(color(0.3f,0,0,0), 0, 0, color(1, 0.8f,0,0));
 	//nix::set_material(Black,color(0.3f,0,0,0),Black,0,color(1, 0.5f, 0, 1));
-	nix::set_texture(nullptr);
+	nix::bind_texture(0, nullptr);
 }
 
 void DrawingHelper::set_material_hover() {
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::set_shader(shader_selection.get());
 	nix::set_material(color(0.5f,0,0,0), 0, 0, White);
-	nix::set_texture(nullptr);
+	nix::bind_texture(0, nullptr);
 }
 
 void DrawingHelper::set_material_creation(float intensity) {
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::set_shader(shader_selection.get());
 	nix::set_material(color(0.3f*intensity,0.3f,1,0.3f), 0, 1, color(1,0.1f,0.4f,0.1f));
-	nix::set_texture(nullptr);
+	nix::bind_texture(0, nullptr);
 }
 
 

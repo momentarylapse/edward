@@ -345,7 +345,7 @@ void ActionController::draw(Window *win) {
 	nix::set_z(false, false);
 	mat4 m = mat * geo_mat;
 	nix::set_model_matrix(m);
-	nix::set_texture(nullptr);
+	nix::bind_texture(0, nullptr);
 	nix::set_shader(win->gl->default_3d.get());
 	win->set_projection_matrix();
 	foreachi(Geometry *g, geo_show, i) {

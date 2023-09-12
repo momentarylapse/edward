@@ -291,7 +291,7 @@ void bind_image(int binding, Texture *t, int level, int layer, bool writable) {
 void bind_texture(int binding, Texture *t) {
 	//refresh_texture(t);
 	if (!t)
-		return;
+		t = Context::CURRENT->tex_white.get();
 
 //	tex_cube_level = -1;
 	/*glActiveTexture(GL_TEXTURE0 + binding);

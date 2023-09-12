@@ -59,8 +59,8 @@ void ModeModelMeshDeformFunction::on_start() {
 	//dialog->setTabSize("source", 4);
 	dialog->set_string("source", "vector f(vector v)\n\treturn vector(v.x, v.y+(v.x*v.x-v.x), v.z)\n");
 	dialog->set_int("coord", (int)coord_system);
-	dialog->event("preview", [=]{ on_preview(); });
-	dialog->event("ok", [=]{ on_ok(); });
+	dialog->event("preview", [this] { on_preview(); });
+	dialog->event("ok", [this] { on_ok(); });
 	ed->set_side_panel(dialog);
 
 	//ed->activate("");
@@ -105,7 +105,7 @@ void ModeModelMeshDeformFunction::on_draw_win(MultiView::Window* win) {
 	win->drawing_helper->set_material_creation();
 	geo->build(win->gl->vb_temp);
 
-	nix::set_texture(tex);
+	nix::bind_texture(0, tex);
 	nix::draw_triangles(win->gl->vb_temp);
 }
 

@@ -203,13 +203,13 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::set_z(false, false);
 	rect d = rect(0, (float)data->TextureWidth, 0, (float)data->TextureHeight);
-	nix::set_texture(NULL);
+	nix::bind_texture(0, nullptr);
 	win->drawing_helper->set_color(White);
 	Draw2D(win, rect::ID, &d);
-	nix::set_texture(data->Texture.get());
+	nix::bind_texture(0, data->Texture.get());
 	win->drawing_helper->set_color(Black);
 	Draw2D(win, rect::ID, &d);
-	nix::set_texture(NULL);
+	nix::bind_texture(0, nullptr);
 
 	// grid (horizontal lines)
 	win->drawing_helper->set_line_width(1.0f);

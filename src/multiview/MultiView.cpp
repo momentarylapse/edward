@@ -694,7 +694,7 @@ void MultiView::on_draw() {
 		nix::set_scissor(nix::target_rect);
 
 		nix::set_shader(gl->default_2d.get());
-		nix::set_texture(nullptr);
+		nix::bind_texture(0, nullptr);
 
 		color c2 = scheme.hoverify(scheme.WINDOW_DIVIDER);
 		drawing_helper->set_color((hover.meta == hover.HOVER_WINDOW_DIVIDER_Y or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
@@ -721,7 +721,7 @@ void MultiView::on_draw() {
 	nix::set_shader(shader_out.get());
 	//nix::vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
 	ed->gl->vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
-	nix::set_texture(weak(frame_buffer->color_attachments)[0]);
+	nix::bind_texture(0, weak(frame_buffer->color_attachments)[0]);
 	nix::set_z(false, false);
 	nix::set_cull(nix::CullMode::NONE);
 	nix::draw_triangles(ed->gl->vb_temp);
@@ -742,7 +742,7 @@ void MultiView::SelectionRect::end() {
 void MultiView::SelectionRect::draw(DrawingHelper *drawing_helper, const vec2 &m) {
 	nix::set_z(false, false);
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
-	nix::set_texture(nullptr);
+	nix::bind_texture(0, nullptr);
 	drawing_helper->set_color(scheme.SELECTION_RECT);
 	nix::set_cull(nix::CullMode::NONE);
 	nix::set_shader(drawing_helper->gl->default_2d.get());

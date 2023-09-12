@@ -392,8 +392,6 @@ void SIAddPackageGl(Context *c) {
 		func_add_param("roughness", TypeFloat32);
 		func_add_param("metal", TypeFloat32);
 		func_add_param("emission", TypeColor);
-	add_func("set_texture", TypeVoid, gl_p(&nix::set_texture), Flags::STATIC);
-		func_add_param("t", TypeTextureP); // -> ref
 	add_func("set_textures", TypeVoid, gl_p(&nix::set_textures), Flags::STATIC);
 		func_add_param("t", TypeTexturePList); // -> ref[]
 	add_func("bind_texture", TypeVoid, gl_p(&nix::bind_texture), Flags::STATIC);

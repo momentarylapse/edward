@@ -175,7 +175,7 @@ void Window::draw_grid()
 	if (type == VIEW_2D)
 		return;
 
-	nix::set_texture(nullptr);
+	nix::bind_texture(0, nullptr);
 	nix::set_z(false, false);
 	set_projection_matrix();
 
@@ -337,7 +337,7 @@ void Window::draw_data_points() {
 	set_projection_matrix_pixel();
 	nix::set_shader(gl->default_2d.get());
 	nix::disable_alpha();
-	nix::set_texture(nullptr);
+	nix::bind_texture(0, nullptr);
 	nix::set_offset(-2.0f);
 	foreachi(DataSet &d, multi_view->data, di){
 		if (d.drawable){
@@ -423,7 +423,7 @@ void Window::set_shader(nix::Shader *s, int num_lights) {
 
 void Window::draw() {
 	nix::set_scissor(rect(dest.x1, dest.x2+1, dest.y1, dest.y2));
-	nix::set_texture(nullptr);
+	nix::bind_texture(0, nullptr);
 
 	color bg = get_background_color();
 
@@ -458,7 +458,7 @@ void Window::draw() {
 
 	nix::set_shader(gl->default_2d.get());
 	nix::disable_alpha();
-	nix::set_texture(nullptr);
+	nix::bind_texture(0, nullptr);
 	set_projection_matrix_pixel();
 
 	draw_data_points();
