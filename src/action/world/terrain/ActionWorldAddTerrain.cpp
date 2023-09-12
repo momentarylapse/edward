@@ -75,7 +75,7 @@ void *ActionWorldAddTerrain::execute(Data *d) {
 		t.terrain->max = size;
 		t.terrain->force_redraw = true;
 	} else {
-		t.terrain = new Terrain(d->ed->resource_manager, d->ed->material_manager, filename);
+		t.terrain = new Terrain(d->ed->resource_manager, filename);
 		t.filename = filename;
 	}
 

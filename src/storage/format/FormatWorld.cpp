@@ -19,6 +19,7 @@
 #include "../../y/World.h"
 #include "../../y/EngineData.h"
 #include "../../y/ModelManager.h"
+#include "../../y/ResourceManager.h"
 #include "../../y/components/Skeleton.h"
 #include "../../lib/os/date.h"
 #include "../../lib/os/file.h"
@@ -102,7 +103,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 		}
 		for (int i=0;i<data->objects.num;i++) {
 			//ed->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);
-			data->objects[i].object = (Object*)data->ed->model_manager->load(data->objects[i].filename);
+			data->objects[i].object = (Object*)data->ed->resource_manager->load_model(data->objects[i].filename);
 			if (auto sk = data->objects[i].object->_template->skeleton) {
 				for (int i=0; i<sk->bones.num; i++)
 					if (sk->filename[i]){}

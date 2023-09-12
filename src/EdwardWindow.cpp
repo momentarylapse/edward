@@ -31,7 +31,6 @@
 #include "lib/os/config.h"
 #include "lib/kaba/kaba.h"
 #include "lib/nix/nix.h"
-#include "y/ModelManager.h"
 
 extern string AppName;
 
@@ -515,12 +514,10 @@ void EdwardWindow::on_realize_gl() {
 	// initialize engine
 	gl = nix::init();
 	resource_manager = new ResourceManager(gl);
-	material_manager = new MaterialManager(resource_manager);
-	model_manager = new ModelManager(resource_manager, material_manager);
 	drawing_helper = new DrawingHelper(gl, resource_manager, app->directory_static);
 
 	engine.ignore_missing_files = true;
-	engine.set_context(gl, resource_manager, material_manager, model_manager);
+	engine.set_context(gl, resource_manager);
 	resource_manager->load_shader("module-vertex-default.shader");
 	//ResourceManager::default_shader
 

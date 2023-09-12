@@ -59,7 +59,7 @@
 #include "../../action/model/skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../action/model/skeleton/ActionModelReconnectBone.h"
 #include "../../action/model/skeleton/ActionModelSetSubModel.h"
-#include "../../y/ModelManager.h"
+#include "../../y/ResourceManager.h"
 #include "../../y/components/Animator.h"
 
 
@@ -473,7 +473,7 @@ void DataModel::reconnectBone(int index, int parent)
 {	execute(new ActionModelReconnectBone(index, parent));	}
 
 void DataModel::setBoneModel(int index, const Path &filename)
-{	execute(new ActionModelSetSubModel(index, filename, ed->model_manager->load(filename)));	}
+{	execute(new ActionModelSetSubModel(index, filename, ed->resource_manager->load_model(filename)));	}
 
 void DataModel::addBone(const vec3 &pos, int parent)
 {	execute(new ActionModelAddBone(pos, parent));	}

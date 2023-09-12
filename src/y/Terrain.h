@@ -55,8 +55,8 @@ public:
 class Terrain : public Component {
 public:
 	Terrain();
-	Terrain(ResourceManager *resource_manager, MaterialManager *material_manager, const Path &filename);
-	bool load(ResourceManager *resource_manager, MaterialManager *material_manager, const Path &filename, bool deep = true);
+	Terrain(ResourceManager *resource_manager, const Path &filename);
+	bool load(ResourceManager *resource_manager, const Path &filename, bool deep = true);
 	~Terrain();
 	void reset();
 	void _cdecl update(int x1,int x2,int z1,int z2,int mode);

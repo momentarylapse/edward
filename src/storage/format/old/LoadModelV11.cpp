@@ -10,7 +10,7 @@
 #include "../../../data/model/ModelMesh.h"
 #include "../../../data/model/ModelPolygon.h"
 #include "../../../mode/model/ModeModel.h"
-#include "../../../y/ModelManager.h"
+#include "../../../y/ResourceManager.h"
 #include "../../../y/components/Animator.h"
 #include "../../../lib/os/file.h"
 #include "../../../lib/os/filesystem.h"
@@ -261,7 +261,7 @@ void FormatModel::_load_v10(F *f, DataModel *data, bool deep) {
 			b.pos += data->bone[b.parent].pos;
 		b.model_file = f->read_str();
 		if (deep)
-			b.model = data->ed->model_manager->load(b.model_file);
+			b.model = data->ed->resource_manager->load_model(b.model_file);
 		b.const_pos = false;
 		b.is_selected = b.m_old = false;
 	}
@@ -607,7 +607,7 @@ void FormatModel::_load_v11(F *f, DataModel *data, bool deep) {
 		b.model_file = f->read_str();
 		try{
 			if (deep)
-			b.model = data->ed->model_manager->load(b.model_file);
+			b.model = data->ed->resource_manager->load_model(b.model_file);
 		} catch(Exception &e) {
 			msg_error(e.message());
 		}

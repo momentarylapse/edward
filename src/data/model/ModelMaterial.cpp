@@ -19,7 +19,7 @@ ModelMaterial::ModelMaterial(EdwardWindow *_ed) {
 	ed = _ed;
 	// file
 	filename = "";
-	material = ed->material_manager->load("");
+	material = ed->resource_manager->load_material("");
 
 	// color
 	col.user = false;
@@ -100,7 +100,7 @@ void ModelMaterial::Color::import(const color &am, const color &di, const color 
 }
 
 void ModelMaterial::make_consistent() {
-	material = ed->material_manager->load(filename);
+	material = ed->resource_manager->load_material(filename);
 
 	if (material->reflection.mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
 	//	if (!material->cube_map)

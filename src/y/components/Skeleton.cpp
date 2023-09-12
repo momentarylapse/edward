@@ -9,6 +9,7 @@
 #include "Animator.h"
 #include "../Model.h"
 #include "../ModelManager.h"
+#include "../ResourceManager.h"
 #include "../EngineData.h"
 #include "../../y/Entity.h"
 
@@ -42,7 +43,7 @@ void Skeleton::on_init() {
 		pos0[i] = _calc_bone_rest_pos(i);
 		bones[i].pos = pos0[i];
 		bones[i].ang = quaternion::ID;
-		auto mm = engine.model_manager->load(m->_template->skeleton->filename[i]);
+		auto mm = engine.resource_manager->load_model(m->_template->skeleton->filename[i]);
 		if (mm) {
 			bones[i]._add_component_external_(mm);
 

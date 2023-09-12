@@ -30,8 +30,6 @@ class ModeAdministration;
 class Storage;
 class Progress;
 class ResourceManager;
-class MaterialManager;
-class ModelManager;
 class DrawingHelper;
 
 
@@ -132,8 +130,6 @@ public:
 	nix::Context *gl;
 	ResourceManager *resource_manager;
 	DrawingHelper *drawing_helper;
-	MaterialManager *material_manager;
-	ModelManager *model_manager;
 
 	Storage *storage;
 	MultiView::MultiView *multi_view_2d;

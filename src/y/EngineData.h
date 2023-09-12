@@ -29,7 +29,7 @@ class ModelManager;
 class EngineData {
 public:
 	EngineData();
-	void set_context(Context *ctx, ResourceManager *rm, MaterialManager *material_manager, ModelManager *model_manager);
+	void set_context(Context *ctx, ResourceManager *rm);
 
 	string app_name, version;
 	bool debug, show_timings, console_enabled, wire_mode;
@@ -76,8 +76,6 @@ public:
 
 	Context *context;
 	ResourceManager *resource_manager;
-	MaterialManager *material_manager;
-	ModelManager *model_manager;
 
 	TargetRenderer *window_renderer;
 	Renderer *gui_renderer;

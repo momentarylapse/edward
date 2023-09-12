@@ -15,15 +15,26 @@
 #if __has_include("../world/Material.h")
 	#include "../world/components/UserMesh.h"
 	#include "../world/Material.h"
+	#include "../world/ModelManager.h"
 #else
 	#include "components/UserMesh.h"
 	#include "Material.h"
+	#include "ModelManager.h"
 #endif
 
 ResourceManager::ResourceManager(Context *_ctx) {
 	ctx = _ctx;
+	material_manager = new MaterialManager(this);
+	model_manager = new ModelManager(this, material_manager);
 }
 
+Material *ResourceManager::load_material(const Path &filename) {
+	return material_manager->load(filename);
+}
+
+Model *ResourceManager::load_model(const Path &filename) {
+	return model_manager->load(filename);
+}
 
 Path guess_absolute_path(const Path &filename, const Array<Path> dirs) {
 	if (filename.is_absolute())
@@ -210,6 +221,7 @@ void ResourceManager::clear() {
 	shader_map.clear();
 	textures.clear();
 	texture_map.clear();
+	material_manager->reset();
 }
 
 

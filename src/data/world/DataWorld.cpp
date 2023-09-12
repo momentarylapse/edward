@@ -28,7 +28,7 @@
 #include "../../action/world/ActionWorldDeleteSelection.h"
 #include "../../lib/nix/nix.h"
 #include "../../multiview/MultiView.h"
-#include "../../y/ModelManager.h"
+#include "../../y/ResourceManager.h"
 
 
 
@@ -161,7 +161,7 @@ WorldObject* DataWorld::add_object(const Path &filename, const vec3& pos) {
 	o.ang = v_0;//quaternion::ID;
 	o.is_selected = true;
 	o.filename = filename;
-	o.object = (Object*)ed->model_manager->load(filename);
+	o.object = (Object*)ed->resource_manager->load_model(filename);
 	return (WorldObject*)execute(new ActionWorldAddObject(o));
 }
 

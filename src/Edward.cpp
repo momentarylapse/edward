@@ -10,6 +10,7 @@
 #include "lib/os/CommandLineParser.h"
 #include "lib/hui/hui.h"
 #include "lib/kaba/kaba.h"
+#include "y/ResourceManager.h"
 #include "data/model/DataModel.h"
 #include "data/material/DataMaterial.h"
 #include "data/world/DataWorld.h"
@@ -59,7 +60,7 @@ void update_file(const Path &filename, bool allow_write) {
 	string ext = filename.extension();
 	if (ext == "model") {
 		//MaterialInit();
-		ed.material_manager->set_default(new Material(ed.resource_manager));
+		ed.resource_manager->material_manager->set_default(new Material(ed.resource_manager));
 		data = new DataModel(&ed);
 		DataModelAllowUpdating = false;
 	} else if (ext == "material") {

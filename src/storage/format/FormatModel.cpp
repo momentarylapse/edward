@@ -11,7 +11,7 @@
 #include "../../data/model/ModelPolygon.h"
 #include "../../mode/model/ModeModel.h"
 #include "../../EdwardWindow.h"
-#include "../../y/ModelManager.h"
+#include "../../y/ResourceManager.h"
 #include "../../y/components/Animator.h"
 #include "../../lib/doc/chunked.h"
 #include "../../lib/os/date.h"
@@ -999,7 +999,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 		for (auto &b: data->bone) {
 			try {
 				if (!b.model)
-					b.model = data->ed->model_manager->load(b.model_file);
+					b.model = data->ed->resource_manager->load_model(b.model_file);
 			} catch(Exception &e) {
 				msg_error(e.message());
 			}
