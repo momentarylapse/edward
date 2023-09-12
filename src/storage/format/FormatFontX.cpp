@@ -16,7 +16,7 @@ string str_m_to_utf8(const string &s) {
 	return s.replace("&a", "ä").replace("&o", "ö").replace("&u", "ü").replace("&A", "Ä").replace("&O", "Ö").replace("&U", "Ü").replace("&s", "ß");
 }
 
-FormatFontX::FormatFontX(EdwardWindow *ed) : TypedFormat<DataFont>(ed, FD_FONT, "xfont", _("Font"), Flag::CANONICAL_READ_WRITE) {
+FormatFontX::FormatFontX(Session *s) : TypedFormat<DataFont>(s, FD_FONT, "xfont", _("Font"), Flag::CANONICAL_READ_WRITE) {
 }
 
 void FormatFontX::_load(const Path &filename, DataFont *data, bool deep) {

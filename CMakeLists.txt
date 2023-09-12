@@ -474,6 +474,7 @@ set(SOURCE
 	src/Edward.cpp
 	src/EdwardWindow.cpp
 	src/meta.cpp
+	src/Session.cpp
 )
 
 add_executable(edward ${SOURCE})

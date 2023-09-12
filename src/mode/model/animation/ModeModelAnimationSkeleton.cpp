@@ -10,6 +10,7 @@
 #include "../animation/ModeModelAnimation.h"
 #include "../mesh/ModeModelMesh.h"
 #include "../ModeModel.h"
+#include "../../../Session.h"
 #include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/Window.h"
@@ -20,7 +21,7 @@
 float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vec2 &M, vec3 &tp, float &z, const Array<ModelVertex> &vertex);
 
 ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeModelAnimation* _parent, MultiView::MultiView *mv) :
-	Mode<ModeModelAnimation, DataModel>(_parent->ed, "ModelAnimationSkeleton", _parent, mv, "menu_move"),
+	Mode<ModeModelAnimation, DataModel>(_parent->session, "ModelAnimationSkeleton", _parent, mv, "menu_move"),
 	current_move(parent->current_move),
 	current_frame(parent->current_frame)
 {
@@ -29,10 +30,10 @@ ModeModelAnimationSkeleton::ModeModelAnimationSkeleton(ModeModelAnimation* _pare
 }
 
 void ModeModelAnimationSkeleton::on_start() {
-	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-animation-skeleton-toolbar");
+	session->win->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-animation-skeleton-toolbar");
 
 	foreachi(ModelBone &b, data->bone, i)
-		mode_model_animation->bone[i].is_selected = b.is_selected;
+		parent->bone[i].is_selected = b.is_selected;
 
 	chooseMouseFunction(MultiView::ACTION_ROTATE);
 
@@ -53,7 +54,7 @@ void ModeModelAnimationSkeleton::on_command(const string& id) {
 	if (id == "select-recursive") {
 		select_recursive = !select_recursive;
 		on_selection_change();
-		ed->update_menu();
+		session->win->update_menu();
 	}
 	if (id == "copy")
 		copy();
@@ -82,9 +83,9 @@ float bone_hover(const MultiView::SingleData *pp, MultiView::Window *win, const 
 	float dmin = 100;
 	int index = -1;
 	for (auto &p: me->data->mesh->polygon) {
-		if (pp == &mode_model_animation->bone[dominant_bone(me->data->mesh->vertex[p.side[0].vertex])]) {
+		if (pp == &me->parent->bone[dominant_bone(me->data->mesh->vertex[p.side[0].vertex])]) {
 			index = dominant_bone(me->data->mesh->vertex[p.side[0].vertex]);
-			float d = poly_hover(&p, win, m, tp, z, mode_model_animation->vertex);
+			float d = poly_hover(&p, win, m, tp, z, me->parent->vertex);
 			if (d >= 0 and d < dmin)
 				dmin = d;
 		}
@@ -99,14 +100,14 @@ void ModeModelAnimationSkeleton::on_set_multi_view() {
 	//CModeAll::SetMultiViewViewStage(&ViewStage, false);
 
 	multi_view->add_data(MVD_SKELETON_BONE,
-			mode_model_animation->bone,
+			parent->bone,
 			MultiView::FLAG_DRAW | MultiView::FLAG_INDEX | MultiView::FLAG_SELECT);
 	multi_view->set_hover_func(MVD_SKELETON_BONE, [=](const MultiView::SingleData *pp, MultiView::Window *win, const vec2 &m, vec3 &tp, float &z){ return bone_hover(pp, win, m, tp, z, this); });
 }
 
 void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
-	ed->mode_model->mode_model_mesh->draw_mesh(win, data->mesh, mode_model_animation->vertex, true);
-	ed->mode_model->mode_model_skeleton->draw_skeleton(win, mode_model_animation->bone, true);
+	session->mode_model->mode_model_mesh->draw_mesh(win, data->mesh, parent->vertex, true);
+	session->mode_model->mode_model_skeleton->draw_skeleton(win, parent->bone, true);
 
 
 	if ((multi_view->hover.index < 0) or (multi_view->hover.type != MVD_SKELETON_BONE))
@@ -115,13 +116,13 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
 	VertexStagingBuffer vbs;
 	for (ModelPolygon &p: data->mesh->polygon)
 		if (dominant_bone(data->mesh->vertex[p.side[0].vertex]) == multi_view->hover.index)
-			p.add_to_vertex_buffer(mode_model_animation->vertex, vbs, 1);
-	vbs.build(ed->mode_model->mode_model_mesh->vb_hover, 1);
+			p.add_to_vertex_buffer(parent->vertex, vbs, 1);
+	vbs.build(session->mode_model->mode_model_mesh->vb_hover, 1);
 
 
 	nix::set_offset(-1.0f);
 	win->drawing_helper->set_material_hover();
-	nix::draw_triangles(ed->mode_model->mode_model_mesh->vb_hover);
+	nix::draw_triangles(session->mode_model->mode_model_mesh->vb_hover);
 	nix::set_material(White, 0.5f, 0, Black);
 	nix::disable_alpha();
 	nix::set_offset(0);
@@ -130,16 +131,16 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
 
 
 void ModeModelAnimationSkeleton::on_update_menu() {
-	ed->check("select", mouse_action == MultiView::ACTION_SELECT);
-	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
-	ed->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
+	session->win->check("select", mouse_action == MultiView::ACTION_SELECT);
+	session->win->check("translate", mouse_action == MultiView::ACTION_MOVE);
+	session->win->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
 
-	ed->check("select-recursive", select_recursive);
+	session->win->check("select-recursive", select_recursive);
 }
 
 void ModeModelAnimationSkeleton::on_selection_change() {
 	foreachi(auto &b, data->bone, i)
-		b.is_selected = mode_model_animation->bone[i].is_selected;
+		b.is_selected = parent->bone[i].is_selected;
 
 	// also select children?
 	if (select_recursive) {
@@ -161,34 +162,34 @@ void ModeModelAnimationSkeleton::on_selection_change() {
 	}
 	data->selectionFromVertices();
 
-	ed->mode_model->mode_model_mesh->fill_selection_buffer(mode_model_animation->vertex);
+	session->mode_model->mode_model_mesh->fill_selection_buffer(parent->vertex);
 }
 
 void ModeModelAnimationSkeleton::copy() {
 	int n = data->get_selection().bone.num;
 	if (n == 0) {
-		ed->set_message(_("nothing selected"));
+		session->set_message(_("nothing selected"));
 		return;
 	} else if (n == 1) {
 		temp.clear();
 		ModelFrame f;
 		foreachi(auto &b, data->bone, i)
 			if (b.is_selected) {
-				f.skel_ang.add(mode_model_animation->cur_move()->frame[current_frame].skel_ang[i]);
-				f.skel_dpos.add(mode_model_animation->cur_move()->frame[current_frame].skel_dpos[i]);
+				f.skel_ang.add(parent->cur_move()->frame[current_frame].skel_ang[i]);
+				f.skel_dpos.add(parent->cur_move()->frame[current_frame].skel_dpos[i]);
 			}
 		temp.add(f);
-		ed->set_message(format(_("Animation copied from single bone"), n));
+		session->set_message(format(_("Animation copied from single bone"), n));
 	} else {
 		temp.clear();
-		temp.add(mode_model_animation->cur_move()->frame[current_frame]);
-		ed->set_message(format(_("copied animation of %d bones"), data->bone.num));
+		temp.add(parent->cur_move()->frame[current_frame]);
+		session->set_message(format(_("copied animation of %d bones"), data->bone.num));
 	}
 }
 
 void ModeModelAnimationSkeleton::paste() {
 	if (temp.num == 0) {
-		ed->set_message(_("Clipboard is empty"));
+		session->set_message(_("Clipboard is empty"));
 		return;
 	}
 	data->begin_action_group("paste-animation");
@@ -199,14 +200,14 @@ void ModeModelAnimationSkeleton::paste() {
 			if (b.is_selected)
 				data->animationSetBone(current_move, current_frame, i, temp[0].skel_dpos[0], temp[0].skel_ang[0]);
 		if (n == 1)
-			ed->set_message(_("Animation pasted - single bone"));
+			session->set_message(_("Animation pasted - single bone"));
 		else
-			ed->set_message(_("Animation pasted - single bone onto multiple"));
+			session->set_message(_("Animation pasted - single bone onto multiple"));
 	} else {
 		foreachi(auto &b, data->bone, i)
 			if (b.is_selected)
 				data->animationSetBone(current_move, current_frame, i, temp[0].skel_dpos[i], temp[0].skel_ang[i]);
-		ed->set_message(format(_("Animation inserted - on %d bones"), n));
+		session->set_message(format(_("Animation inserted - on %d bones"), n));
 	}
 	data->end_action_group();
 }

@@ -14,9 +14,10 @@
 #include "world/ActionWorldMoveSelection.h"
 #include "world/object/ActionWorldRotateObjects.h"
 #include "world/camera/ActionCameraMoveSelection.h"
+#include "../mode/model/ModeModel.h"
 #include "../mode/model/animation/ModeModelAnimation.h"
 #include "../mode/model/mesh/ModeModelMeshTexture.h"
-#include "../EdwardWindow.h"
+#include "../Session.h"
 #include <assert.h>
 
 ActionMultiView::ActionMultiView() {
@@ -49,15 +50,15 @@ ActionMultiView *ActionMultiViewFactory(const string &name, Data *d) {
 	if (name == "ActionModelTransformSkinVertices") {
 		Array<int> tria;
 		Array<int> index;
-		d->ed->find_mode<ModeModelMeshTexture>("model-mesh-texture")->getSelectedSkinVertices(tria, index);
-		return new ActionModelTransformSkinVertices((DataModel*)d, tria, index, d->ed->find_mode<ModeModelMeshTexture>("model-mesh-texture")->current_texture_level);
+		d->session->find_mode<ModeModelMeshTexture>("model-mesh-texture")->getSelectedSkinVertices(tria, index);
+		return new ActionModelTransformSkinVertices((DataModel*)d, tria, index, d->session->find_mode<ModeModelMeshTexture>("model-mesh-texture")->current_texture_level);
 	}
 	if (name == "ActionModelTransformBones")
 		return new ActionModelTransformBones((DataModel*)d);
 	if (name == "ActionModelAnimationTransformBones")
-		return new ActionModelAnimationTransformBones((DataModel*)d, mode_model_animation->current_move, mode_model_animation->current_frame);
+		return new ActionModelAnimationTransformBones((DataModel*)d, d->session->mode_model->mode_model_animation->current_move, d->session->mode_model->mode_model_animation->current_frame);
 	if (name == "ActionModelAnimationTransformVertices")
-		return new ActionModelAnimationTransformVertices((DataModel*)d, mode_model_animation->current_move, mode_model_animation->current_frame);
+		return new ActionModelAnimationTransformVertices((DataModel*)d, d->session->mode_model->mode_model_animation->current_move, d->session->mode_model->mode_model_animation->current_frame);
 	if (name == "ActionWorldMoveSelection")
 		return new ActionWorldMoveSelection((DataWorld*)d);
 	if (name == "ActionWorldRotateObjects")

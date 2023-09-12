@@ -9,6 +9,7 @@
 #include "../animation/ModeModelAnimation.h"
 #include "../../../data/model/DataModel.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../lib/math/vec2.h"
 
@@ -17,8 +18,10 @@ namespace hui {
 }
 
 
-ModelAnimationTimelinePanel::ModelAnimationTimelinePanel() {
+ModelAnimationTimelinePanel::ModelAnimationTimelinePanel(DataModel *_data) {
 	add_drawing_area("!height=80,noexpandy", 0, 0, "area");
+	data = _data;
+	mode_model_animation = data->session->find_mode<ModeModelAnimation>("model-animation");
 	time_scale = 100;
 	time_offset = -5;
 
@@ -30,20 +33,20 @@ ModelAnimationTimelinePanel::ModelAnimationTimelinePanel() {
 	event_x("area", "hui:mouse-move", std::bind(&ModelAnimationTimelinePanel::on_mouse_move, this));
 	event_x("area", "hui:mouse-wheel", std::bind(&ModelAnimationTimelinePanel::on_mouse_wheel, this));
 
-	mode_model_animation->data->out_changed >> create_sink([=]{ redraw("area"); });
-	mode_model_animation->data->out_material_changed >> create_sink([=]{ redraw("area"); });
-	mode_model_animation->data->out_selection >> create_sink([=]{ redraw("area"); });
-	mode_model_animation->data->out_skin_changed >> create_sink([=]{ redraw("area"); });
-	mode_model_animation->data->out_texture_changed >> create_sink([=]{ redraw("area"); });
+	data->out_changed >> create_sink([=]{ redraw("area"); });
+	data->out_material_changed >> create_sink([=]{ redraw("area"); });
+	data->out_selection >> create_sink([=]{ redraw("area"); });
+	data->out_skin_changed >> create_sink([=]{ redraw("area"); });
+	data->out_texture_changed >> create_sink([=]{ redraw("area"); });
 	mode_model_animation->state.out_changed >> create_sink([=]{ redraw("area"); });
 	mode_model_animation->state.out_set_frame >> create_sink([=]{ redraw("area"); });
 
 	default_parasite = new TimeLineParasite;
-	set_parasite(NULL);
+	set_parasite(nullptr);
 }
 
 ModelAnimationTimelinePanel::~ModelAnimationTimelinePanel() {
-	mode_model_animation->data->unsubscribe(this);
+	data->unsubscribe(this);
 	mode_model_animation->state.unsubscribe(this);
 	delete default_parasite;
 }
@@ -171,7 +174,7 @@ void ModelAnimationTimelinePanel::on_mouse_move() {
 			}
 			float dur = max(screen2sample(mx) - t, 0.0f);
 
-			mode_model_animation->data->animationSetFrameDuration(mode_model_animation->current_move, hover - 1, dur);
+			data->animationSetFrameDuration(mode_model_animation->current_move, hover - 1, dur);
 		}
 	} else {
 		hover = get_hover();

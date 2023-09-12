@@ -12,6 +12,7 @@
 #include "../ModeModelMesh.h"
 #include "../../../../data/model/geometry/GeometryCylinder.h"
 #include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../lib/nix/nix.h"
 #include "../../../../lib/kaba/kaba.h"
 #include "../../../../lib/math/random.h"
@@ -157,9 +158,9 @@ void ModeModelMeshDeformCylinder::update_params() {
 
 void ModeModelMeshDeformCylinder::on_draw_post() {
 	if (hover >= 0) {
-		nix::set_shader(ed->gl->default_2d.get());
-		ed->drawing_helper->set_color(scheme.TEXT);
-		ed->drawing_helper->draw_str(multi_view->m.x + 40, multi_view->m.y + 40, format("radius: %s  (%.1f%%)", multi_view->format_length(param[hover].z * radius), param[hover].z * 100));
+		nix::set_shader(session->gl->default_2d.get());
+		session->drawing_helper->set_color(scheme.TEXT);
+		session->drawing_helper->draw_str(multi_view->m.x + 40, multi_view->m.y + 40, format("radius: %s  (%.1f%%)", multi_view->format_length(param[hover].z * radius), param[hover].z * 100));
 	}
 }
 
@@ -167,23 +168,23 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win) {
 	parent->on_draw_win(win);
 
 	if (geo) {
-		ed->drawing_helper->set_material_creation(0.3f);
+		session->drawing_helper->set_material_creation(0.3f);
 		geo->build(win->gl->vb_temp);
 		nix::draw_triangles(win->gl->vb_temp);
 	}
 
-	ed->drawing_helper->set_line_width(scheme.LINE_WIDTH_MEDIUM);
-	ed->drawing_helper->set_color(scheme.CREATION_LINE);
+	session->drawing_helper->set_line_width(scheme.LINE_WIDTH_MEDIUM);
+	session->drawing_helper->set_color(scheme.CREATION_LINE);
 	nix::disable_alpha();
 	nix::set_z(false, false);
-	ed->drawing_helper->draw_line(axis[0], axis[1]);
+	session->drawing_helper->draw_line(axis[0], axis[1]);
 
 	vec3 e1 = dir.ortho();
 	vec3 e2 = vec3::cross(dir, e1);
 	foreachi(vec3 &p, param, ip) {
-		ed->drawing_helper->set_color((ip == hover) ? scheme.SELECTION : scheme.CREATION_LINE);
+		session->drawing_helper->set_color((ip == hover) ? scheme.SELECTION : scheme.CREATION_LINE);
 		vec3 m = axis[0] + (axis[1] - axis[0]) * p.y;
-		ed->drawing_helper->draw_circle(m, dir, radius * p.z);
+		session->drawing_helper->draw_circle(m, dir, radius * p.z);
 	}
 
 	nix::set_z(true, true);
@@ -299,7 +300,7 @@ void ModeModelMeshDeformCylinder::on_mouse_move() {
 
 void ModeModelMeshDeformCylinder::on_left_button_down() {
 	if (hover >= 0) {
-		if (ed->get_key(hui::KEY_CONTROL)) {
+		if (session->win->get_key(hui::KEY_CONTROL)) {
 			int n = hover;
 			if (n == 0)
 				n = 1;

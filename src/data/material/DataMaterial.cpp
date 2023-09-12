@@ -7,7 +7,7 @@
 
 #include "DataMaterial.h"
 #include "ShaderGraph.h"
-#include "../../EdwardWindow.h"
+#include "../../Session.h"
 #include "../../storage/Storage.h"
 #include "../../lib/nix/nix.h"
 #include "../../lib/os/filesystem.h"
@@ -16,12 +16,12 @@
 
 
 
-DataMaterial::DataMaterial(EdwardWindow *ed, bool with_graph) :
-	Data(ed, FD_MATERIAL)
+DataMaterial::DataMaterial(Session *s, bool with_graph) :
+	Data(s, FD_MATERIAL)
 {
 	shader.graph = nullptr;
 	if (with_graph)
-		shader.graph = new ShaderGraph(ed);
+		shader.graph = new ShaderGraph(s);
 	reset();
 }
 
@@ -52,8 +52,8 @@ void DataMaterial::AppearanceData::reset() {
 	reflection_texture_file.resize(6);
 }
 
-void DataMaterial::ShaderData::reset(EdwardWindow *ed) {
-	set_engine_default(ed);
+void DataMaterial::ShaderData::reset(Session *s) {
+	set_engine_default(s);
 }
 
 
@@ -78,7 +78,7 @@ void DataMaterial::reset() {
 	filename = "";
 
 	appearance.reset();
-	shader.reset(ed);
+	shader.reset(session);
 	physics.reset();
 	Sound.reset();
 
@@ -105,16 +105,16 @@ void DataMaterial::apply_for_rendering() const {
 	}
 }
 
-void DataMaterial::ShaderData::load_from_file(EdwardWindow *ed) {
+void DataMaterial::ShaderData::load_from_file(Session *s) {
 	if (file.is_empty()) {
-		set_engine_default(ed);
+		set_engine_default(s);
 		return;
 	}
-	if (os::fs::exists(ed->resource_manager->shader_dir | file)) {
-		code = os::fs::read_text(ed->resource_manager->shader_dir | file);
+	if (os::fs::exists(s->resource_manager->shader_dir | file)) {
+		code = os::fs::read_text(s->resource_manager->shader_dir | file);
 	}
-	if (os::fs::exists(ed->resource_manager->shader_dir | file.with(".graph"))) {
-		graph->load(ed->resource_manager->shader_dir | file.with(".graph"));
+	if (os::fs::exists(s->resource_manager->shader_dir | file.with(".graph"))) {
+		graph->load(s->resource_manager->shader_dir | file.with(".graph"));
 		code = graph->build_source();
 		from_graph = true;
 	} else {
@@ -123,7 +123,7 @@ void DataMaterial::ShaderData::load_from_file(EdwardWindow *ed) {
 	is_default = false;
 }
 
-void DataMaterial::ShaderData::set_engine_default(EdwardWindow *ed) {
+void DataMaterial::ShaderData::set_engine_default(Session *s) {
 	file = "";
 	code = "";
 	if (graph) {
@@ -138,11 +138,11 @@ void DataMaterial::ShaderData::set_engine_default(EdwardWindow *ed) {
 	is_default = true;
 }
 
-void DataMaterial::ShaderData::save_to_file(EdwardWindow *ed) {
+void DataMaterial::ShaderData::save_to_file(Session *s) {
 	if (file) {
 		code = graph->build_source();
-		os::fs::write_text(ed->resource_manager->shader_dir | file, code);
-		graph->save(ed->resource_manager->shader_dir | file.with(".graph"));
+		os::fs::write_text(s->resource_manager->shader_dir | file, code);
+		graph->save(s->resource_manager->shader_dir | file.with(".graph"));
 		from_graph = true;
 		is_default = false;
 	}

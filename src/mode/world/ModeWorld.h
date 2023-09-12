@@ -16,7 +16,7 @@ class WorldObjectListPanel;
 
 class ModeWorld: public Mode<ModeWorld, DataWorld> {
 public:
-	ModeWorld(EdwardWindow *ed, MultiView::MultiView *mv);
+	ModeWorld(Session *s, MultiView::MultiView *mv);
 	virtual ~ModeWorld();
 
 	void on_start() override;

@@ -7,10 +7,10 @@
 
 #include "Mode.h"
 #include "../multiview/MultiView.h"
-#include "../EdwardWindow.h"
+#include "../Session.h"
 
-ModeBase::ModeBase(EdwardWindow *_ed, const string &_name, ModeBase *_parent, MultiView::MultiView *_multi_view, const string &_menu) {
-	ed = _ed;
+ModeBase::ModeBase(Session *_session, const string &_name, ModeBase *_parent, MultiView::MultiView *_multi_view, const string &_menu) {
+	session = _session;
 	parent_untyped = _parent;
 	name = _name;
 	multi_view = _multi_view;
@@ -75,7 +75,7 @@ bool ModeBase::equal_roots(ModeBase *m) {
 }
 
 ModeBase *ModeBase::find_mode_base(const string &name) {
-	return ed->find_mode_base(name);
+	return session->find_mode_base(name);
 }
 
 

@@ -296,7 +296,7 @@ void ModelMesh::set_show_vertices(Array<ModelVertex> &vert) {
 {
 	msg_error(msg);
 	if (ed)
-		ed->set_message(msg);
+		session->set_message(msg);
 }*/
 
 

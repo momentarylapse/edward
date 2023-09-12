@@ -9,6 +9,7 @@
 #include "ModeModelMeshTexture.h"
 #include "../dialog/ModelMaterialDialog.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/Window.h"
 #include "../../../multiview/DrawingHelper.h"
@@ -18,7 +19,7 @@
 #include "../../../data/model/ModelMesh.h"
 
 ModeModelMeshTexture::ModeModelMeshTexture(ModeModelMesh *_parent, MultiView::MultiView *mv) :
-	Mode<ModeModelMesh, DataModel>(_parent->ed, "ModelMeshTexture", _parent, mv, "menu_model")
+	Mode<ModeModelMesh, DataModel>(_parent->session, "ModelMeshTexture", _parent, mv, "menu_model")
 {
 	current_texture_level = 0;
 	dialog = nullptr;
@@ -60,7 +61,7 @@ int ModeModelMeshTexture::getNumSelected()
 
 
 void ModeModelMeshTexture::on_start() {
-	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-texture-toolbar");
+	session->win->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-texture-toolbar");
 
 	multi_view->view_stage = parent->multi_view->view_stage;
 	parent->apply_mouse_function(multi_view);
@@ -81,7 +82,7 @@ void ModeModelMeshTexture::on_start() {
 	ed->EmbedDialog()*/
 
 	dialog = new ModelMaterialDialog(data, false);
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 }
 
 
@@ -90,8 +91,8 @@ void ModeModelMeshTexture::on_end() {
 	data->unsubscribe(this);
 	multi_view->unsubscribe(this);
 	skin_vertex.clear();
-	ed->set_side_panel(nullptr);
-	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar"); // -> mesh
+	session->win->set_side_panel(nullptr);
+	session->win->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar"); // -> mesh
 }
 
 #define cur_tex			data->material[parent->current_material]->texture_levels[current_texture_level]->texture.get()
@@ -166,13 +167,13 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 
 
 void ModeModelMeshTexture::on_draw() {
-	nix::set_shader(ed->gl->default_2d.get());
+	nix::set_shader(session->gl->default_2d.get());
 	auto s = data->get_selection();
 	/*if (data->getNumSelectedVertices() > 0){
 		draw_str(20, 160, format(_("skin: %d"), getNumSelected()));
 	}*/
 	if (s.vertex.num > 0){
-		ed->drawing_helper->draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num));
+		session->drawing_helper->draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num));
 	}
 }
 

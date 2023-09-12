@@ -11,7 +11,7 @@
 #include "../../../data/world/WorldObject.h"
 #include "../../../data/world/WorldLight.h"
 #include "../../../data/world/WorldLink.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../lib/math/quaternion.h"
 
 ActionWorldRotateObjects::ActionWorldRotateObjects(DataWorld *d) :

@@ -10,6 +10,7 @@
 #include "../../../data/world/WorldLink.h"
 #include "../../../data/world/WorldObject.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../action/world/link/ActionWorldAddLink.h"
 
@@ -28,12 +29,12 @@ void ModeWorldCreateLink::on_start() {
 	for (int i=0; i<4; i++)
 		dialog->add_string("type", link_type_canonical((LinkType)i));
 	dialog->set_int("type", 0);
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 }
 
 
 void ModeWorldCreateLink::on_end() {
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 }
 
 void ModeWorldCreateLink::on_left_button_down() {

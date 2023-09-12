@@ -11,6 +11,7 @@
 #include "../../../../data/model/geometry/GeometryBall.h"
 #include "../../../../data/model/geometry/GeometrySphere.h"
 #include "../../../../action/model/mesh/physical/ActionModelAddBall.h"
+#include "../../../../Session.h"
 #include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
@@ -61,7 +62,7 @@ void ModeModelMeshCreateBall::on_start() {
 	dialog->enable("complexity", sphere);
 	dialog->event("type:ball", [=]{ onTypeBall(); });
 	dialog->event("type:sphere", [=]{ onTypeSphere(); });
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
 	bool physical = (parent->current_skin == MESH_PHYSICAL);
 	if (physical)
@@ -73,7 +74,7 @@ void ModeModelMeshCreateBall::on_start() {
 
 
 void ModeModelMeshCreateBall::on_end() {
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 }
 
 void ModeModelMeshCreateBall::updateGeometry() {

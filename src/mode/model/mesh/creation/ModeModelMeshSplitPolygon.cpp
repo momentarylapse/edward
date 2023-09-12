@@ -8,7 +8,7 @@
 #include "ModeModelMeshSplitPolygon.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
-#include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../action/model/mesh/polygon/ActionModelSplitPolygon.h"
 #include "../../../../action/model/mesh/edge/ActionModelSplitEdge.h"
 #include "../../../../multiview/MultiView.h"
@@ -29,7 +29,7 @@ void ModeModelMeshSplitPolygon::on_start() {
 	message = _("place new vertex into polygon");
 
 	parent->set_selection_mode(parent->selection_mode_polygon);
-	ed->mode_model->allow_selection_modes(false);
+	session->mode_model->allow_selection_modes(false);
 
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);

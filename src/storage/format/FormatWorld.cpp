@@ -13,6 +13,7 @@
 #include "../../data/world/WorldObject.h"
 #include "../../data/world/WorldTerrain.h"
 #include "../../EdwardWindow.h"
+#include "../../Session.h"
 #include "../../stuff/Progress.h"
 #include "../../y/Model.h"
 #include "../../y/Object.h"
@@ -27,7 +28,7 @@
 #include "../../lib/os/formatter.h"
 #include "../../lib/doc/xml.h"
 
-FormatWorld::FormatWorld(EdwardWindow *ed) : TypedFormat<DataWorld>(ed, FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
+FormatWorld::FormatWorld(Session *s) : TypedFormat<DataWorld>(s, FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
 }
 
 
@@ -98,12 +99,12 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	if (deep) {
 		try {
 		for (int i=0;i<data->terrains.num;i++) {
-			ed->progress->set(_("Terrains"), (float)i / (float)data->terrains.num / 2.0f);
-			data->terrains[i].load(ed, engine.map_dir | data->terrains[i].filename.with(".map"), true);
+			session->progress->set(_("Terrains"), (float)i / (float)data->terrains.num / 2.0f);
+			data->terrains[i].load(session, engine.map_dir | data->terrains[i].filename.with(".map"), true);
 		}
 		for (int i=0;i<data->objects.num;i++) {
-			//ed->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);
-			data->objects[i].object = (Object*)data->ed->resource_manager->load_model(data->objects[i].filename);
+			//session->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);
+			data->objects[i].object = (Object*)data->session->resource_manager->load_model(data->objects[i].filename);
 			if (auto sk = data->objects[i].object->_template->skeleton) {
 				for (int i=0; i<sk->bones.num; i++)
 					if (sk->filename[i]){}

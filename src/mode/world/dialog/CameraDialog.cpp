@@ -12,6 +12,7 @@
 #include "../../../action/world/camera/ActionCameraMoveTimeSelection.h"
 #include "../../../lib/math/vec2.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../multiview/MultiView.h"
 
 CameraDialog::CameraDialog(ModeWorldCamera *_mode) {
@@ -59,9 +60,9 @@ CameraDialog::~CameraDialog() {
 
 
 void CameraDialog::OnCloseDialog() {
-	mode->ed->allow_termination().on([this] {
+	mode->session->allow_termination().on([this] {
 		mode->_new();
-		mode->ed->set_mode(mode->parent);
+		mode->session->set_mode(mode->parent);
 	});
 }
 

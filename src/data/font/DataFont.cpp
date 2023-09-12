@@ -12,8 +12,8 @@
 #include "../../y/Font.h"
 #include "../../lib/nix/nix.h"
 
-DataFont::DataFont(EdwardWindow *ed) :
-	Data(ed, FD_FONT)
+DataFont::DataFont(Session *s) :
+	Data(s, FD_FONT)
 {
 	reset();
 }

@@ -10,6 +10,7 @@
 #include "ModeModelMeshCreatePlane.h"
 #include "../../../../data/model/geometry/GeometryPlane.h"
 #include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -29,17 +30,15 @@ void ModeModelMeshCreatePlane::on_start() {
 	dialog->from_resource("new_plane_dialog");
 	dialog->set_int("np_num_x", hui::config.get_int("NewPlaneNumX", 4));
 	dialog->set_int("np_num_y",hui::config.get_int("NewPlaneNumY", 4));
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
-
-	ed->activate("");
 }
 
 
 void ModeModelMeshCreatePlane::on_end() {
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 }
 
 

@@ -9,6 +9,7 @@
 #include "../../mesh/selection/MeshSelectionModePolygon.h"
 #include "../../ModeModel.h"
 #include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -59,10 +60,10 @@ ModeModelSkeletonAttachVertices::ModeModelSkeletonAttachVertices(ModeModelSkelet
 void ModeModelSkeletonAttachVertices::on_start() {
 
 	dialog = new BrushPanel(multi_view, "model-texture-paint-brush-dialog");
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
-	ed->mode_model->mode_model_mesh->set_selection_mode(ed->mode_model->mode_model_mesh->selection_mode_polygon);
-	ed->mode_model->allow_selection_modes(false);
+	session->mode_model->mode_model_mesh->set_selection_mode(session->mode_model->mode_model_mesh->selection_mode_polygon);
+	session->mode_model->allow_selection_modes(false);
 
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);
@@ -76,7 +77,7 @@ void ModeModelSkeletonAttachVertices::on_start() {
 	vbs->build(vb_weight, 1);
 	if (!shader) {
 		try {
-			shader = ed->resource_manager->load_shader("vertex-weight.shader");
+			shader = session->resource_manager->load_shader("vertex-weight.shader");
 		} catch(Exception &e) {
 			msg_error(e.message());
 		}
@@ -95,15 +96,15 @@ void ModeModelSkeletonAttachVertices::on_end() {
 	data->unsubscribe(this);
 	multi_view->unsubscribe(this);
 
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 
-	ed->mode_model->allow_selection_modes(false);
+	session->mode_model->allow_selection_modes(false);
 
 	//parent->on_update(data, "");
 }
 
 void ModeModelSkeletonAttachVertices::on_data_change() {
-	ed->mode_model->mode_model_mesh->selection_mode->update_multi_view();
+	session->mode_model->mode_model_mesh->selection_mode->update_multi_view();
 
 	int n = 0;
 	for (ModelPolygon &t: data->mesh->polygon) {
@@ -132,7 +133,7 @@ BrushPanel *ModeModelSkeletonAttachVertices::brush_panel() {
 }
 
 void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win) {
-	ed->mode_model->mode_model_mesh->on_draw_win(win);
+	session->mode_model->mode_model_mesh->on_draw_win(win);
 
 	// weights
 	win->drawing_helper->set_material_selected();
@@ -186,7 +187,7 @@ void ModeModelSkeletonAttachVertices::on_left_button_up() {
 }
 
 void ModeModelSkeletonAttachVertices::on_set_multi_view() {
-	ed->mode_model->mode_model_mesh->on_set_multi_view();
+	session->mode_model->mode_model_mesh->on_set_multi_view();
 }
 
 void ModeModelSkeletonAttachVertices::apply() {

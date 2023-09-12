@@ -9,6 +9,7 @@
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../action/model/mesh/polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../lib/nix/nix.h"
 #include "../../../../multiview/MultiView.h"
@@ -23,7 +24,7 @@ ModeModelMeshCreatePolygon::ModeModelMeshCreatePolygon(ModeModelMesh *_parent) :
 	message = format(_("Select polygon: %d -> [Ctrl + Return]"), 0);
 
 	parent->set_selection_mode(parent->selection_mode_vertex);
-	ed->mode_model->allow_selection_modes(false);
+	session->mode_model->allow_selection_modes(false);
 }
 
 
@@ -85,7 +86,7 @@ void ModeModelMeshCreatePolygon::on_left_button_down() {
 		foreachi(int s, selection, i)
 			if (s == multi_view->hover.index)
 				if (i > 0) {
-					ed->set_message(_("No double points allowed!"));
+					session->set_message(_("No double points allowed!"));
 					return;
 				}
 

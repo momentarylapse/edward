@@ -13,6 +13,7 @@
 #include "../../../multiview/DrawingHelper.h"
 #include "../../../multiview/ColorScheme.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../action/model/mesh/brush/ActionModelBrushExtrude.h"
 #include "../../../action/model/mesh/brush/ActionModelBrushSmooth.h"
@@ -55,7 +56,7 @@ public:
 };
 
 ModeModelMeshDeform::ModeModelMeshDeform(ModeModelMesh *_parent, MultiView::MultiView *mv) :
-		Mode<ModeModelMesh, DataModel>(_parent->ed, "ModelMeshDeform", _parent, mv, "menu_model") {
+		Mode<ModeModelMesh, DataModel>(_parent->session, "ModelMeshDeform", _parent, mv, "menu_model") {
 	dialog = nullptr;
 	brushing = false;
 	distance = 1;
@@ -64,16 +65,16 @@ ModeModelMeshDeform::ModeModelMeshDeform(ModeModelMesh *_parent, MultiView::Mult
 void ModeModelMeshDeform::on_start() {
 
 	dialog = new DeformBrushPanel(multi_view);//, "model-deformation-brush-dialog");
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
-	hui::Toolbar *t = ed->get_toolbar(hui::TOOLBAR_LEFT);
+	hui::Toolbar *t = session->win->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 	multi_view->set_allow_action(false);
 
 	// enter
 	parent->set_selection_mode(parent->selection_mode_polygon);
-	ed->mode_model->allow_selection_modes(false);
+	session->mode_model->allow_selection_modes(false);
 	parent->set_allow_draw_hover(false);
 
 
@@ -85,12 +86,12 @@ void ModeModelMeshDeform::on_end() {
 	if (brushing)
 		data->end_action_group();
 
-	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar"); // back to mesh....ARGH
+	session->win->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar"); // back to mesh....ARGH
 
 	multi_view->set_allow_action(true);
-	ed->mode_model->allow_selection_modes(true);
+	session->mode_model->allow_selection_modes(true);
 	parent->set_allow_draw_hover(true);
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 }
 
 void ModeModelMeshDeform::on_set_multi_view() {
@@ -126,7 +127,7 @@ Action *ModeModelMeshDeform::get_action() {
 	float radius = dialog->get_float("diameter") / 2;
 	float depth = dialog->get_float("depth");
 	int type = dialog->get_int("brush-type");
-	if (ed->get_key(hui::KEY_CONTROL))
+	if (session->win->get_key(hui::KEY_CONTROL))
 		depth = - depth;
 
 	Action *a = NULL;

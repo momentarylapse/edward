@@ -14,7 +14,7 @@
 
 class FormatFontX: public TypedFormat<DataFont> {
 public:
-	FormatFontX(EdwardWindow *ed);
+	FormatFontX(Session *s);
 
 	void _load(const Path &filename, DataFont *data, bool deep) override;
 	void _save(const Path &filename, DataFont *data) override;

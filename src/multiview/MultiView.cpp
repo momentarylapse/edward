@@ -5,7 +5,6 @@
  *      Author: michi
  */
 
-#include "../EdwardWindow.h"
 #include "MultiView.h"
 #include "Window.h"
 #include "ColorScheme.h"
@@ -13,6 +12,8 @@
 #include "ActionController.h"
 #include "CameraController.h"
 #include "SingleData.h"
+#include "../EdwardWindow.h"
+#include "../Session.h"
 #include "../lib/os/time.h"
 #include "../lib/nix/nix.h"
 #include "../lib/math/plane.h"
@@ -43,10 +44,10 @@ vec3 Camera::get_pos(bool allow_radius) const {
 	return p;
 }
 
-MultiView::MultiView(EdwardWindow *_ed, bool mode3d) {
-	ed = _ed;
-	gl = ed->gl;
-	drawing_helper = ed->drawing_helper;
+MultiView::MultiView(Session *_s, bool mode3d) {
+	session = _s;
+	gl = session->gl;
+	drawing_helper = session->drawing_helper;
 	view_stage = 0;
 	grid_enabled = true;
 	wire_mode = false;
@@ -83,7 +84,7 @@ MultiView::MultiView(EdwardWindow *_ed, bool mode3d) {
 		all_windows.add(new Window(this, VIEW_PERSPECTIVE));
 
 		// Menu
-		menu = new hui::Menu(ed);
+		menu = new hui::Menu(session->win);
 		menu->add(_("View"), "view_menu_sign");
 		//menu->enableItem("view_menu_sign", false);
 		menu->add_separator();
@@ -108,7 +109,7 @@ MultiView::MultiView(EdwardWindow *_ed, bool mode3d) {
 	allow_select = true;
 	edit_coordinate_mode = CoordinateMode::GLOBAL;
 
-	shader_out = ed->resource_manager->load_shader("multiview-out.shader");
+	shader_out = session->resource_manager->load_shader("multiview-out.shader");
 
 
 	reset();
@@ -372,10 +373,10 @@ void MultiView::on_key_down(int k) {
 }
 
 
-MultiView::SelectionMode get_select_mode(EdwardWindow *ed) {
-	if (ed->get_key(hui::KEY_CONTROL))
+MultiView::SelectionMode get_select_mode(Session *session) {
+	if (session->win->get_key(hui::KEY_CONTROL))
 		return MultiView::SelectionMode::ADD;
-	if (ed->get_key(hui::KEY_SHIFT))
+	if (session->win->get_key(hui::KEY_SHIFT))
 		return MultiView::SelectionMode::INVERT;
 	return MultiView::SelectionMode::SET;
 }
@@ -405,7 +406,7 @@ void MultiView::on_left_button_down() {
 		if (action_con->action.locked) {
 			if (action_con->action.mode == ACTION_SELECT) {
 				if (allow_select) {
-					get_selected(get_select_mode(ed));
+					get_selected(get_select_mode(session));
 					sel_rect.start_later(m);
 				}
 			} else if (allow_mouse_actions and hover_selected()) {
@@ -413,10 +414,10 @@ void MultiView::on_left_button_down() {
 			}
 		} else {
 			if (allow_select) {
-				if (hover_selected() and (get_select_mode(ed) == MultiView::SelectionMode::SET)) {
+				if (hover_selected() and (get_select_mode(session) == MultiView::SelectionMode::SET)) {
 					action_con->start_action(active_win, hover.point, ActionController::Constraint::FREE);
 				} else {
-					get_selected(get_select_mode(ed));
+					get_selected(get_select_mode(session));
 					sel_rect.start_later(m);
 				}
 			}
@@ -442,7 +443,7 @@ void MultiView::on_middle_button_down() {
 void MultiView::on_right_button_down() {
 	if (hover.meta == hover.HOVER_WINDOW_LABEL) {
 		active_win = mouse_win;
-		menu->open_popup(ed);
+		menu->open_popup(session->win);
 	} else {
 		active_win = mouse_win;
 
@@ -521,12 +522,12 @@ void MultiView::on_mouse_move() {
 	} else if (cam_con->in_use()) {
 		cam_con->on_mouse_move();
 	} else if (sel_rect.active and allow_select) {
-		select_all_in_rectangle(get_select_mode(ed));
+		select_all_in_rectangle(get_select_mode(session));
 	} else if (view_moving) {
 		int t = active_win->type;
 		if ((t == VIEW_PERSPECTIVE) or (t == VIEW_ISOMETRIC)) {
 	// camera rotation
-			cam_rotate_pixel({v,0}, mbut or ed->get_key(hui::KEY_CONTROL));
+			cam_rotate_pixel({v,0}, mbut or session->win->get_key(hui::KEY_CONTROL));
 		} else {
 	// camera translation
 			cam_move_pixel(active_win, {v,0});
@@ -551,7 +552,7 @@ void MultiView::on_mouse_move() {
 	// ignore mouse, while "holding"
 	if (holding_cursor) {
 		if (fabs(m.x - holding_x) + fabs(m.y - holding_y) > 100)
-			ed->set_cursor_pos(holding_x, holding_y);
+			session->win->set_cursor_pos(holding_x, holding_y);
 	}
 
 	out_redraw.notify();
@@ -712,7 +713,7 @@ void MultiView::on_draw() {
 	drawing_helper->set_color(scheme.TEXT);
 	nix::set_shader(gl->default_2d.get());
 
-	if (ed->input.inside_smart)
+	if (session->win->input.inside_smart)
 		draw_mouse_pos();
 
 	action_con->draw_post();
@@ -720,11 +721,11 @@ void MultiView::on_draw() {
 	nix::bind_frame_buffer(gl->default_framebuffer);
 	nix::set_shader(shader_out.get());
 	//nix::vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
-	ed->gl->vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
+	session->gl->vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
 	nix::bind_texture(0, weak(frame_buffer->color_attachments)[0]);
 	nix::set_z(false, false);
 	nix::set_cull(nix::CullMode::NONE);
-	nix::draw_triangles(ed->gl->vb_temp);
+	nix::draw_triangles(session->gl->vb_temp);
 
 	//printf("%f\n", timer.get()*1000.0f);
 }
@@ -921,7 +922,7 @@ vec3 MultiView::get_cursor(const vec3 &depth_reference) {
 void MultiView::get_hover() {
 	hover.reset();
 
-	//if (!ed->input.inside_smart)
+	//if (!session->win->input.inside_smart)
 	//	return;
 
 
@@ -1071,7 +1072,7 @@ void MultiView::hold_cursor(bool holding) {
 	holding_x = m.x;
 	holding_y = m.y;
 	holding_cursor = holding;
-	ed->show_cursor(!holding);
+	session->win->show_cursor(!holding);
 }
 
 

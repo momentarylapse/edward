@@ -16,7 +16,7 @@ class BinaryFormatter;
 
 class FormatModel3ds : public TypedFormat<DataModel> {
 public:
-	FormatModel3ds(EdwardWindow *ed);
+	FormatModel3ds(Session *s);
 
 	void _load(const Path &filename, DataModel *data, bool deep) override;
 	void _save(const Path &filename, DataModel *data) override;

@@ -21,7 +21,7 @@ struct ComplexPath {
 
 class Storage {
 public:
-	Storage(EdwardWindow *ed);
+	Storage(Session *ed);
 	~Storage();
 
 	int guess_type(const Path &filename);
@@ -33,7 +33,7 @@ public:
 	base::future<void> open(Data *data);
 	base::future<void> save_as(Data *data);
 
-	EdwardWindow *ed;
+	Session *session;
 	Array<Format*> formats;
 
 

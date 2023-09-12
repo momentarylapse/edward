@@ -7,7 +7,7 @@
 
 #include "ShaderGraphDialog.h"
 #include "../ModeMaterial.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/ColorScheme.h"
 #include "../../../data/material/DataMaterial.h"
@@ -35,8 +35,8 @@ string file_secure(const Path &filename); // -> ModelPropertiesDialog
 
 rect node_area(ShaderNode *n);
 
-bool test_shader_file(EdwardWindow *ed, const Path &filename) {
-	auto *shader = ed->resource_manager->load_surface_shader(filename, "", "default", "");
+bool test_shader_file(Session *session, const Path &filename) {
+	auto *shader = session->resource_manager->load_surface_shader(filename, "", "default", "");
 	msg_todo("TESTME  test_shader_file");
 	return shader;
 }
@@ -107,26 +107,26 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 		});
 	});
 	event("shader-default", [this] {
-		data->shader.set_engine_default(data->ed);
+		data->shader.set_engine_default(data->session);
 		data->reset_history(); // TODO: actions
 		data->out_changed();
 	});
 	event("shader-load", [this] {
-		data->ed->storage->file_dialog(FD_SHADERFILE,false,true).on([this] (const auto& p){
-			if (test_shader_file(data->ed, p.relative)) {
+		data->session->storage->file_dialog(FD_SHADERFILE,false,true).on([this] (const auto& p){
+			if (test_shader_file(data->session, p.relative)) {
 				data->shader.file = p.relative;
-				data->shader.load_from_file(data->ed);
+				data->shader.load_from_file(data->session);
 				request_optimal_view();
 				data->out_changed();
 			} else {
-				data->ed->error_box(_("Error in shader file:\n") + data->ed->gl->shader_error);
+				data->session->error(_("Error in shader file:\n") + data->session->gl->shader_error);
 			}
 		});
 	});
 	event("shader-save", [this]{
-		data->ed->storage->file_dialog(FD_SHADERFILE,true,true).on([this] (const auto& p) {
+		data->session->storage->file_dialog(FD_SHADERFILE,true,true).on([this] (const auto& p) {
 			data->shader.file = p.relative;
-			data->shader.save_to_file(data->ed);
+			data->shader.save_to_file(data->session);
 		});
 	});
 
@@ -553,7 +553,7 @@ void ShaderGraphDialog::on_left_button_up() {
 		selection = HoverData();
 		redraw("area");
 	} catch (Exception &e) {
-		data->ed->error_box(e.message());
+		data->session->error(e.message());
 	}
 }
 

@@ -15,22 +15,25 @@
 #include "format/FormatTerrain.h"
 #include "format/FormatWorld.h"
 #include "../lib/os/filesystem.h"
+#include "../lib/os/msg.h"
+#include "../lib/hui/hui.h"
 #include "../y/EngineData.h"
+#include "../Session.h"
 #include "../EdwardWindow.h"
 
 
 Path Storage::CANONICAL_SUB_DIR[NUM_FDS];
 
-Storage::Storage(EdwardWindow *_ed) {
-	ed = _ed;
-	formats.add(new FormatFontX(ed));
-	formats.add(new FormatMaterial(ed));
-	formats.add(new FormatModel(ed));
-	formats.add(new FormatModelJson(ed));
-	formats.add(new FormatModel3ds(ed));
-	formats.add(new FormatModelPly(ed));
-	formats.add(new FormatTerrain(ed));
-	formats.add(new FormatWorld(ed));
+Storage::Storage(Session *_s) {
+	session = _s;
+	formats.add(new FormatFontX(session));
+	formats.add(new FormatMaterial(session));
+	formats.add(new FormatModel(session));
+	formats.add(new FormatModelJson(session));
+	formats.add(new FormatModel3ds(session));
+	formats.add(new FormatModelPly(session));
+	formats.add(new FormatTerrain(session));
+	formats.add(new FormatWorld(session));
 
 	CANONICAL_SUB_DIR[FD_FONT] = "Fonts";
 	CANONICAL_SUB_DIR[FD_TERRAIN] = "Maps";
@@ -88,8 +91,8 @@ bool Storage::load(const Path &_filename, Data *data, bool deep) {
 		}
 		throw FormatUnhandledError();
 	} catch (Exception &e) {
-		if (ed)
-			ed->error_box(e.message());
+		if (session)
+			session->error(e.message());
 		else
 			msg_error(e.message());
 	}
@@ -117,7 +120,7 @@ bool Storage::save(const Path &_filename, Data *data) {
 		}
 		throw FormatUnhandledError();
 	} catch (Exception &e) {
-		ed->error_box(e.message());
+		session->error(e.message());
 	}
 	return false;
 }
@@ -126,7 +129,7 @@ bool Storage::save(const Path &_filename, Data *data) {
 base::future<void> Storage::open(Data *data) {
 	base::promise<void> promise;
 
-	ed->allow_termination().on([this, data, promise] {
+	session->allow_termination().on([this, data, promise] {
 		int type = data_type(data);
 		file_dialog(type, false, false).on([this, data, promise] (const auto& p) mutable {
 			guess_root_directory(p.complete);
@@ -325,8 +328,8 @@ base::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int pre
 		bool in_root_dir = (path.is_in(root_dir_kind[cp.kind]));
 
 		if (force_in_root_dir and !in_root_dir) {
-			ed->error_box(path.str());
-			ed->error_box(format(_("The file is not in the appropriate directory: \"%s\"\nor in a subdirectory."), root_dir_kind[cp.kind]));
+			session->error(path.str());
+			session->error(format(_("The file is not in the appropriate directory: \"%s\"\nor in a subdirectory."), root_dir_kind[cp.kind]));
 			return;
 		}//else
 			//MakeDirs(HuiFileDialogPath);
@@ -340,11 +343,11 @@ base::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int pre
 	};
 
 	if (save)
-		hui::file_dialog_save(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
+		hui::file_dialog_save(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
 			.on(on_select_base)
 			.on_fail([promise] () mutable { promise.fail(); });
 	else
-		hui::file_dialog_open(ed, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
+		hui::file_dialog_open(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
 			.on(on_select_base)
 			.on_fail([promise] () mutable { promise.fail(); });
 

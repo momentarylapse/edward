@@ -58,7 +58,7 @@ void *ActionModelMaterialAddTexture::execute(Data *d) {
 	assert((index >= 0) and (index < m->material.num));
 
 	auto *tl = new ModelMaterial::TextureLevel();
-	tl->reload_image(d->ed);
+	tl->reload_image(d->session);
 	m->material[index]->texture_levels.add(tl);
 
 
@@ -148,7 +148,7 @@ void *ActionModelMaterialLoadTexture::execute(Data *d) {
 
 	auto *tl = m->material[index]->texture_levels[level];
 	std::swap(tl->filename, filename);
-	tl->reload_image(d->ed);
+	tl->reload_image(d->session);
 
 
 

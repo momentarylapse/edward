@@ -20,9 +20,12 @@ public:
 	virtual void on_timeline_draw(Painter *p){}
 };
 
+class DataModel;
+class ModeModelAnimation;
+
 class ModelAnimationTimelinePanel : public obs::Node<hui::Panel> {
 public:
-	ModelAnimationTimelinePanel();
+	ModelAnimationTimelinePanel(DataModel *data);
 	virtual ~ModelAnimationTimelinePanel();
 
 	void on_draw(Painter *c);
@@ -41,6 +44,8 @@ public:
 	int hover;
 	float time_scale, time_offset;
 
+	DataModel *data;
+	ModeModelAnimation *mode_model_animation;
 	TimeLineParasite *default_parasite;
 	TimeLineParasite *parasite;
 	void set_parasite(TimeLineParasite *p);

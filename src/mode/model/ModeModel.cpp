@@ -19,14 +19,15 @@
 #include "mesh/ModeModelMeshTexture.h"
 #include "skeleton/ModeModelSkeleton.h"
 #include "../../EdwardWindow.h"
+#include "../../Session.h"
 #include "../../storage/Storage.h"
 #include "../../data/model/DataModel.h"
 #include "../../lib/nix/nix.h"
 #include "../../multiview/MultiView.h"
 #include "../../multiview/DrawingHelper.h"
 
-ModeModel::ModeModel(EdwardWindow *ed, MultiView::MultiView *mv3, MultiView::MultiView *mv2) :
-	Mode<ModeModel, DataModel>(ed, "Model", nullptr, new DataModel(ed), nullptr, "")
+ModeModel::ModeModel(Session *s, MultiView::MultiView *mv3, MultiView::MultiView *mv2) :
+	Mode<ModeModel, DataModel>(s, "Model", nullptr, new DataModel(s), nullptr, "")
 {
 	mode_model_mesh = new ModeModelMesh(this, mv3, mv2);
 	mode_model_skeleton = new ModeModelSkeleton(this, mv3);
@@ -36,8 +37,8 @@ ModeModel::ModeModel(EdwardWindow *ed, MultiView::MultiView *mv3, MultiView::Mul
 
 
 void ModeModel::on_start() {
-	ed->get_toolbar(hui::TOOLBAR_TOP)->set_by_id("model-toolbar");
-	auto t = ed->get_toolbar(hui::TOOLBAR_LEFT);
+	session->win->get_toolbar(hui::TOOLBAR_TOP)->set_by_id("model-toolbar");
+	auto t = session->win->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 }
@@ -45,12 +46,12 @@ void ModeModel::on_start() {
 
 
 void ModeModel::on_enter() {
-	ed->set_mode(mode_model_mesh);
+	session->set_mode(mode_model_mesh);
 }
 
 
 void ModeModel::on_end() {
-	hui::Toolbar *t = ed->get_toolbar(hui::TOOLBAR_TOP);
+	hui::Toolbar *t = session->win->get_toolbar(hui::TOOLBAR_TOP);
 	t->reset();
 	t->enable(false);
 }
@@ -59,7 +60,7 @@ void ModeModel::on_end() {
 
 void ModeModel::on_command(const string & id) {
 	if (id == "new")
-		ed->universal_new(FD_MODEL);
+		session->universal_new(FD_MODEL);
 	if (id == "open")
 		open();
 	if (id == "save")
@@ -87,7 +88,7 @@ void ModeModel::on_command(const string & id) {
 	}
 
 	if (id == "mode_model_mesh")
-		ed->set_mode(mode_model_mesh);
+		session->set_mode(mode_model_mesh);
 	if (id == "mode_model_vertex")
 		mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_vertex);
 	if (id == "mode_model_edge")
@@ -97,17 +98,17 @@ void ModeModel::on_command(const string & id) {
 	if (id == "mode_model_surface")
 		mode_model_mesh->set_selection_mode(mode_model_mesh->selection_mode_surface);
 	if (id == "mode_model_deform")
-		ed->set_mode(mode_model_mesh->mode_model_mesh_deform);
+		session->set_mode(mode_model_mesh->mode_model_mesh_deform);
 	if (id == "mode_model_paint")
-		ed->set_mode(mode_model_mesh->mode_model_mesh_paint);
+		session->set_mode(mode_model_mesh->mode_model_mesh_paint);
 	if (id == "mode_model_materials")
-		ed->set_mode(mode_model_mesh->mode_model_mesh_material);
+		session->set_mode(mode_model_mesh->mode_model_mesh_material);
 	if (id == "mode_model_texture_coord")
-		ed->set_mode(mode_model_mesh->mode_model_mesh_texture);
+		session->set_mode(mode_model_mesh->mode_model_mesh_texture);
 	if (id == "mode_model_animation")
-		ed->set_mode(mode_model_animation);
+		session->set_mode(mode_model_animation);
 	if (id == "mode_model_skeleton")
-		ed->set_mode(mode_model_skeleton);
+		session->set_mode(mode_model_skeleton);
 		//SetSubMode(SubModeTextures);
 	if (id == "mode_properties")
 		run_properties_dialog();
@@ -124,21 +125,21 @@ void ModeModel::on_command(const string & id) {
 
 
 void ModeModel::on_update_menu() {
-	ed->check("mode_model_vertex", mode_model_mesh->selection_mode_vertex->is_active());
-	ed->check("mode_model_edge", mode_model_mesh->selection_mode_edge->is_active());
-	ed->check("mode_model_polygon", mode_model_mesh->selection_mode_polygon->is_active());
-	ed->check("mode_model_surface", mode_model_mesh->selection_mode_surface->is_active());
-	ed->check("mode_model_texture_coord", mode_model_mesh->mode_model_mesh_texture->is_ancestor_of(ed->cur_mode));
-	ed->check("mode_model_materials", mode_model_mesh->mode_model_mesh_material->is_ancestor_of(ed->cur_mode));
-	ed->check("mode_model_deform", mode_model_mesh->mode_model_mesh_deform->is_ancestor_of(ed->cur_mode));
-	ed->check("mode_model_paint", mode_model_mesh->mode_model_mesh_paint->is_ancestor_of(ed->cur_mode));
-	ed->check("mode_model_mesh", mode_model_mesh->is_ancestor_of(ed->cur_mode)
-			and !mode_model_mesh->mode_model_mesh_texture->is_ancestor_of(ed->cur_mode)
-			and !mode_model_mesh->mode_model_mesh_material->is_ancestor_of(ed->cur_mode)
-			and !mode_model_mesh->mode_model_mesh_deform->is_ancestor_of(ed->cur_mode)
-			and !mode_model_mesh->mode_model_mesh_paint->is_ancestor_of(ed->cur_mode));
-	ed->check("mode_model_skeleton", mode_model_skeleton->is_ancestor_of(ed->cur_mode));
-	ed->check("mode_model_animation", mode_model_animation->is_ancestor_of(ed->cur_mode));
+	session->win->check("mode_model_vertex", mode_model_mesh->selection_mode_vertex->is_active());
+	session->win->check("mode_model_edge", mode_model_mesh->selection_mode_edge->is_active());
+	session->win->check("mode_model_polygon", mode_model_mesh->selection_mode_polygon->is_active());
+	session->win->check("mode_model_surface", mode_model_mesh->selection_mode_surface->is_active());
+	session->win->check("mode_model_texture_coord", mode_model_mesh->mode_model_mesh_texture->is_ancestor_of(session->cur_mode));
+	session->win->check("mode_model_materials", mode_model_mesh->mode_model_mesh_material->is_ancestor_of(session->cur_mode));
+	session->win->check("mode_model_deform", mode_model_mesh->mode_model_mesh_deform->is_ancestor_of(session->cur_mode));
+	session->win->check("mode_model_paint", mode_model_mesh->mode_model_mesh_paint->is_ancestor_of(session->cur_mode));
+	session->win->check("mode_model_mesh", mode_model_mesh->is_ancestor_of(session->cur_mode)
+			and !mode_model_mesh->mode_model_mesh_texture->is_ancestor_of(session->cur_mode)
+			and !mode_model_mesh->mode_model_mesh_material->is_ancestor_of(session->cur_mode)
+			and !mode_model_mesh->mode_model_mesh_deform->is_ancestor_of(session->cur_mode)
+			and !mode_model_mesh->mode_model_mesh_paint->is_ancestor_of(session->cur_mode));
+	session->win->check("mode_model_skeleton", mode_model_skeleton->is_ancestor_of(session->cur_mode));
+	session->win->check("mode_model_animation", mode_model_animation->is_ancestor_of(session->cur_mode));
 }
 
 
@@ -149,25 +150,25 @@ void ModeModel::_new() {
 }
 
 void ModeModel::open() {
-	ed->universal_open(FD_MODEL);
+	session->universal_open(FD_MODEL);
 	/*if (!storage->open(data))
 		return false;
 
-	ed->set_mode(this);
+	session->set_mode(this);
 	mode_model_mesh->optimize_view();*/
 }
 
 void ModeModel::save() {
-	ed->storage->auto_save(data);
+	session->storage->auto_save(data);
 }
 
 void ModeModel::save_as() {
-	ed->storage->save_as(data);
+	session->storage->save_as(data);
 }
 
 void ModeModel::import_open_3ds() {
-	ed->allow_termination().on([this] {
-		ed->storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
+	session->allow_termination().on([this] {
+		session->storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
 			import_load_3ds(p.complete);
 		});
 	});
@@ -175,9 +176,9 @@ void ModeModel::import_open_3ds() {
 
 bool ModeModel::import_load_3ds(const Path &filename) {
 	try {
-		ed->storage->load(filename, data);
+		session->storage->load(filename, data);
 
-		ed->set_mode(this);
+		session->set_mode(this);
 		mode_model_mesh->optimize_view();
 		return true;
 	} catch(...) {
@@ -186,8 +187,8 @@ bool ModeModel::import_load_3ds(const Path &filename) {
 }
 
 void ModeModel::import_open_json() {
-	ed->allow_termination().on([this] {
-		ed->storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
+	session->allow_termination().on([this] {
+		session->storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
 			import_load_json(p.complete);
 		});
 	});
@@ -195,9 +196,9 @@ void ModeModel::import_open_json() {
 
 bool ModeModel::import_load_ply(const Path &filename) {
 	try {
-		ed->storage->load(filename, data);
+		session->storage->load(filename, data);
 
-		ed->set_mode(this);
+		session->set_mode(this);
 		mode_model_mesh->optimize_view();
 		return true;
 	} catch(...) {
@@ -206,8 +207,8 @@ bool ModeModel::import_load_ply(const Path &filename) {
 }
 
 void ModeModel::import_open_ply() {
-	ed->allow_termination().on([this] {
-		ed->storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
+	session->allow_termination().on([this] {
+		session->storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
 			import_load_ply(p.complete);
 		});
 	});
@@ -215,9 +216,9 @@ void ModeModel::import_open_ply() {
 
 bool ModeModel::import_load_json(const Path &filename) {
 	try {
-		ed->storage->load(filename, data);
+		session->storage->load(filename, data);
 
-		ed->set_mode(this);
+		session->set_mode(this);
 		mode_model_mesh->optimize_view();
 		return true;
 	} catch(...) {
@@ -226,22 +227,22 @@ bool ModeModel::import_load_json(const Path &filename) {
 }
 
 void ModeModel::export_save_json() {
-	ed->storage->file_dialog(FD_FILE, true, false).on([this] (const auto& p) {
+	session->storage->file_dialog(FD_FILE, true, false).on([this] (const auto& p) {
 		export_write_json(p.complete);
 	});
 }
 
 bool ModeModel::export_write_json(const Path &filename) {
-	return ed->storage->save(filename, data);
+	return session->storage->save(filename, data);
 }
 
 void ModeModel::run_properties_dialog() {
-	hui::fly(new ModelPropertiesDialog(ed, data));
+	hui::fly(new ModelPropertiesDialog(session->win, data));
 }
 
 void ModeModel::allow_selection_modes(bool allow) {
-	ed->enable("mode_model_vertex", allow);
-	ed->enable("mode_model_edge", allow);
-	ed->enable("mode_model_polygon", allow);
-	ed->enable("mode_model_surface", allow);
+	session->win->enable("mode_model_vertex", allow);
+	session->win->enable("mode_model_edge", allow);
+	session->win->enable("mode_model_polygon", allow);
+	session->win->enable("mode_model_surface", allow);
 }

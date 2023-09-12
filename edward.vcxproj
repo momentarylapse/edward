@@ -584,6 +584,7 @@
     <ClCompile Include="src\Edward.cpp" />
     <ClCompile Include="src\EdwardWindow.cpp" />
     <ClCompile Include="src\meta.cpp" />
+    <ClCompile Include="src\Session.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\action\font\ActionFontEditGlobal.h" />
@@ -1029,6 +1030,7 @@
     <ClInclude Include="src\graphics-fwd.h" />
     <ClInclude Include="src\graphics-impl.h" />
     <ClInclude Include="src\meta.h" />
+    <ClInclude Include="src\Session.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

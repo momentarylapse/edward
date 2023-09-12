@@ -15,11 +15,12 @@
 #include "../../data/administration/DataAdministration.h"
 #include "../../data/administration/GameIniData.h"
 #include "../../data/world/DataWorld.h"
+#include "../../Session.h"
 #include "../../EdwardWindow.h"
 #include "../../storage/Storage.h"
 
-ModeAdministration::ModeAdministration(EdwardWindow *ed):
-	Mode<ModeAdministration, DataAdministration>(ed, "Administration", nullptr, new DataAdministration(ed), nullptr, "menu_administration")
+ModeAdministration::ModeAdministration(Session *s):
+	Mode<ModeAdministration, DataAdministration>(s, "Administration", nullptr, new DataAdministration(s), nullptr, "menu_administration")
 {
 	dialog = nullptr;
 }
@@ -30,7 +31,7 @@ ModeAdministration::~ModeAdministration() {
 void ModeAdministration::on_start() {
 	data->LoadDatabase();
 	data->UpdateDatabase();
-	dialog = new AdministrationDialog(ed, true, data);
+	dialog = new AdministrationDialog(session->win, true, data);
 	dialog->show();
 }
 
@@ -65,8 +66,8 @@ void ModeAdministration::create_project(const Path &dir, const string &first_wor
 
 	Path world_file = dir | "Maps" | (first_world + ".world");
 	msg_write(format("%sCREATE%s  %s", os::terminal::YELLOW, os::terminal::END, world_file));
-	DataWorld w(data->ed);
-	Storage s(data->ed);
+	DataWorld w(data->session);
+	Storage s(data->session);
 	s.save(world_file, &w);
 }
 
@@ -97,7 +98,7 @@ static void sync_files(const Path &source, const Path &dest, bool required) {
 }
 
 void ModeAdministration::upgrade_project(const Path &dir) {
-	Storage s(data->ed); // create CANONICAL_SUB_DIR[]
+	Storage s(data->session); // create CANONICAL_SUB_DIR[]
 
 	for (int k=0; k<NUM_FDS; k++)
 		create_directory_recursive(dir | Storage::CANONICAL_SUB_DIR[k]);
@@ -126,15 +127,15 @@ void ModeAdministration::upgrade_project(const Path &dir) {
 }
 
 void ModeAdministration::_new() {
-	auto dlg = new NewProjectDialog(ed);
+	auto dlg = new NewProjectDialog(session->win);
 	hui::fly(dlg, [this, dlg] {
 		if (dlg->ok) {
 			try {
 				create_project(dlg->directory, dlg->first_world);
-				data->ed->storage->set_root_directory(dlg->directory);
+				data->session->storage->set_root_directory(dlg->directory);
 				data->reset();
 			} catch (Exception &e) {
-				ed->error_box(e.message());
+				session->error(e.message());
 			}
 		}
 	});
@@ -143,11 +144,11 @@ void ModeAdministration::_new() {
 bool ModeAdministration::open() {
 	hui::file_dialog_dir(hui::CurWindow, _("Open project directory"), "", {}).on([this] (const Path &path) {
 		if (!os::fs::exists(path | "game.ini")) {
-			ed->error_box(_("game.ini not found"));
+			session->error(_("game.ini not found"));
 			//return false;
 		}
 
-		data->ed->storage->set_root_directory(path);
+		data->session->storage->set_root_directory(path);
 		data->reset();
 	});
 	// TODO callback...

@@ -10,6 +10,7 @@
 #include "../ModeModelMesh.h"
 #include "../../../../data/model/geometry/GeometryCube.h"
 #include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../lib/nix/nix.h"
 #include "../../../../lib/kaba/kaba.h"
 #include "../../../../multiview/MultiView.h"
@@ -61,7 +62,7 @@ void ModeModelMeshDeformFunction::on_start() {
 	dialog->set_int("coord", (int)coord_system);
 	dialog->event("preview", [this] { on_preview(); });
 	dialog->event("ok", [this] { on_ok(); });
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
 	//ed->activate("");
 
@@ -93,7 +94,7 @@ void ModeModelMeshDeformFunction::on_start() {
 void ModeModelMeshDeformFunction::on_end() {
 	if (has_preview)
 		restore();
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 	delete geo;
 	script = nullptr;
 	context = nullptr;
@@ -154,10 +155,10 @@ void ModeModelMeshDeformFunction::update_function() {
 		f = (vec_func*)script->match_function("*", "math.vector", {"math.vector"});
 
 		if (!f)
-			hui::error_box(ed, "error", _("no function of type 'vector f(vector)' found"));
+			session->error(_("no function of type 'vector f(vector)' found"));
 
 	} catch (kaba::Exception &e) {
-		hui::error_box(ed, "error", e.message());
+		session->error(e.message());
 		f = nullptr;
 	}
 }

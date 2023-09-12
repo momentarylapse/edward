@@ -9,6 +9,7 @@
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/world/WorldLight.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../action/world/light/ActionWorldAddLight.h"
 
@@ -28,12 +29,12 @@ void ModeWorldCreateLight::on_start() {
 	dialog->add_string("type", "Point source");
 	dialog->add_string("type", "Cone");
 	dialog->set_int("type", 1);
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 }
 
 
 void ModeWorldCreateLight::on_end() {
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 }
 
 void ModeWorldCreateLight::on_left_button_down() {

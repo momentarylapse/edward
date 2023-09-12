@@ -6,16 +6,19 @@
  */
 
 #include "ModelAnimationDialog.h"
-#include "../../../data/model/DataModel.h"
 #include "ModelNewAnimationDialog.h"
 #include "ModelDuplicateAnimationDialog.h"
 #include "../animation/ModeModelAnimation.h"
+#include "../ModeModel.h"
+#include "../../../Session.h"
+#include "../../../data/model/DataModel.h"
 #include "../../../y/components/Animator.h"
 
 
 ModelAnimationDialog::ModelAnimationDialog(DataModel *_data) {
 	from_resource("animation_dialog");
 	data = _data;
+	mode_model_animation = data->session->mode_model->mode_model_animation;
 
 	// dialog
 

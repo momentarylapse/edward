@@ -5,8 +5,6 @@
  *      Author: michi
  */
 
-#include "../../../EdwardWindow.h"
-#include "../../../multiview/MultiView.h"
 #include "ModeModelAnimation.h"
 #include "ModeModelAnimationNone.h"
 #include "ModeModelAnimationSkeleton.h"
@@ -16,14 +14,15 @@
 #include "../dialog/ModelAnimationDialog.h"
 #include "../dialog/ModelAnimationTimelinePanel.h"
 #include "../mesh/selection/MeshSelectionModePolygon.h"
+#include "../../../Session.h"
+#include "../../../EdwardWindow.h"
+#include "../../../multiview/MultiView.h"
 #include "../../../y/components/Animator.h"
-
-ModeModelAnimation *mode_model_animation = NULL;
 
 const string ModeModelAnimation::State::MESSAGE_SET_FRAME = "set-frame";
 
 ModeModelAnimation::ModeModelAnimation(ModeModel *_parent, MultiView::MultiView *mv) :
-	Mode<ModeModel, DataModel>(_parent->ed, "ModelAnimation", _parent, mv, "menu_move"),
+	Mode<ModeModel, DataModel>(_parent->session, "ModelAnimation", _parent, mv, "menu_move"),
 	in_update(this, [this] { on_update(); })
 {
 	mode_model_animation_none = new ModeModelAnimationNone(this, mv);
@@ -70,7 +69,7 @@ void ModeModelAnimation::on_command(const string & id) {
 	if (id == "move_frame_insert")
 		duplicate_current_frame();
 	if (id == "move_frame_interpolate")
-		ed->set_mode(new ModeModelAnimationInterpolateFrames(this));
+		session->set_mode(new ModeModelAnimationInterpolateFrames(this));
 }
 
 
@@ -84,21 +83,21 @@ void ModeModelAnimation::on_start() {
 	current_frame = 0;
 
 	dialog = new ModelAnimationDialog(data);
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
-	timeline = new ModelAnimationTimelinePanel;
-	ed->set_bottom_panel(timeline);
+	timeline = new ModelAnimationTimelinePanel(data);
+	session->win->set_bottom_panel(timeline);
 
 
 	data->out_changed >> in_update;
 	data->out_selection >> in_update;
-	ed->mode_model->allow_selection_modes(false);
+	session->mode_model->allow_selection_modes(false);
 
 	timer.reset();
 	runner = hui::run_repeated(0.020f, [this] { idle_function(); });
 	set_current_move(getFirstMove());
 
-	//ed->set_mode(mode_model_animation_none);
+	//session->set_mode(mode_model_animation_none);
 }
 
 int ModeModelAnimation::getFirstMove() {
@@ -117,8 +116,8 @@ void ModeModelAnimation::on_update_menu() {
 void ModeModelAnimation::on_end() {
 	hui::cancel_runner(runner);
 	data->unsubscribe(this);
-	ed->set_side_panel(nullptr);
-	ed->set_bottom_panel(nullptr);
+	session->win->set_side_panel(nullptr);
+	session->win->set_bottom_panel(nullptr);
 }
 
 
@@ -132,11 +131,11 @@ void ModeModelAnimation::set_current_move(int move_no) {
 	set_current_frame(0);
 
 	if (cur_move()->type == AnimationType::SKELETAL)
-		ed->set_mode(mode_model_animation_skeleton);
+		session->set_mode(mode_model_animation_skeleton);
 	else if (cur_move()->type == AnimationType::VERTEX)
-		ed->set_mode(mode_model_animation_vertex);
+		session->set_mode(mode_model_animation_vertex);
 	else
-		ed->set_mode(mode_model_animation_none);
+		session->set_mode(mode_model_animation_none);
 }
 
 void ModeModelAnimation::set_current_frame(int frame_no) {
@@ -184,8 +183,8 @@ void ModeModelAnimation::update_animation() {
 	}
 
 
-	ed->mode_model->mode_model_mesh->update_vertex_buffers(vertex);
-	ed->mode_model->mode_model_mesh->fill_selection_buffer(vertex);
+	session->mode_model->mode_model_mesh->update_vertex_buffers(vertex);
+	session->mode_model->mode_model_mesh->fill_selection_buffer(vertex);
 
 	state.out_changed.notify();
 	multi_view->force_redraw();
@@ -223,7 +222,7 @@ void ModeModelAnimation::delete_current_frame() {
 	if (cur_move()->frame.num > 1)
 		data->animationDeleteFrame(current_move, current_frame);
 	else
-		ed->set_message(_("can not delete the only frame"));
+		session->set_message(_("can not delete the only frame"));
 }
 
 void ModeModelAnimation::duplicate_current_frame() {
@@ -265,7 +264,7 @@ void ModeModelAnimation::on_update() {
 
 
 void ModeModelAnimation::idle_function() {
-	if (!is_ancestor_of(ed->cur_mode))
+	if (!is_ancestor_of(session->cur_mode))
 		return;
 
 	// update slow, when not playing

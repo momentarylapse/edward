@@ -11,33 +11,34 @@
 #include "../dialog/ModelMaterialDialog.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 
 ModeModelMeshMaterial::ModeModelMeshMaterial(ModeModelMesh *_parent, MultiView::MultiView *mv) :
-			Mode<ModeModelMesh, DataModel>(_parent->ed, "ModelMeshMaterial", _parent, mv, "menu_model") {
+			Mode<ModeModelMesh, DataModel>(_parent->session, "ModelMeshMaterial", _parent, mv, "menu_model") {
 	dialog = nullptr;
 }
 
 void ModeModelMeshMaterial::on_start() {
 
 	dialog = new ModelMaterialDialog(data);
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
-	auto *t = ed->get_toolbar(hui::TOOLBAR_LEFT);
+	auto *t = session->win->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 	multi_view->set_allow_action(false);
 
 	// enter
 	parent->set_selection_mode(parent->selection_mode_polygon);
-	ed->mode_model->allow_selection_modes(false);
+	session->mode_model->allow_selection_modes(false);
 }
 
 void ModeModelMeshMaterial::on_end() {
-	ed->set_side_panel(nullptr);
-	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar"); // back to mesh....ARGH
+	session->win->set_side_panel(nullptr);
+	session->win->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar"); // back to mesh....ARGH
 
 	multi_view->set_allow_action(true);
-	ed->mode_model->allow_selection_modes(true);
+	session->mode_model->allow_selection_modes(true);
 }
 
 void ModeModelMeshMaterial::on_set_multi_view() {

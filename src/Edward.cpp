@@ -7,6 +7,7 @@
 
 #include "Edward.h"
 #include "EdwardWindow.h"
+#include "Session.h"
 #include "lib/os/CommandLineParser.h"
 #include "lib/hui/hui.h"
 #include "lib/kaba/kaba.h"
@@ -18,7 +19,7 @@
 #include "stuff/PluginManager.h"
 #include "mode/administration/ModeAdministration.h"
 
-string AppVersion = "0.4.-1.7";
+string AppVersion = "0.4.-1.8";
 string AppName = "Edward";
 
 EdwardApp *app = nullptr;
@@ -47,7 +48,7 @@ extern bool DataModelAllowUpdating;
 void update_file(const Path &filename, bool allow_write) {
 
 	kaba::init();
-	EdwardWindow ed;
+	Session session;
 
 	int pp = filename.str().find("/Objects/", 0);
 	if (pp > 0) {
@@ -60,17 +61,17 @@ void update_file(const Path &filename, bool allow_write) {
 	string ext = filename.extension();
 	if (ext == "model") {
 		//MaterialInit();
-		ed.resource_manager->material_manager->set_default(new Material(ed.resource_manager));
-		data = new DataModel(&ed);
+		session.resource_manager->material_manager->set_default(new Material(session.resource_manager));
+		data = new DataModel(&session);
 		DataModelAllowUpdating = false;
 	} else if (ext == "material") {
-		data = new DataMaterial(&ed, false);
+		data = new DataMaterial(&session, false);
 	} else if (ext == "world") {
-		data = new DataWorld(&ed);
+		data = new DataWorld(&session);
 	}
 
 	if (data) {
-		auto storage = new Storage(&ed);
+		auto storage = new Storage(&session);
 		msg_write("loading " + filename.str());
 		storage->load(filename, data, false);
 		if (allow_write)
@@ -97,25 +98,25 @@ hui::AppStatus EdwardApp::on_startup(const Array<string> &arg) {
 		update_file(arg[0], false);;
 	});
 	p.cmd("new material", "", "open editor in material mode", [] (const Array<string> &arg) {
-		auto ed = new EdwardWindow();
-		ed->universal_new(FD_MATERIAL);
+		auto session = create_session();
+		session->universal_new(FD_MATERIAL);
 	});
 	p.cmd("new font", "", "open editor in font mode", [] (const Array<string> &arg) {
-		auto ed = new EdwardWindow();
-		ed->universal_new(FD_FONT);
+		auto session = create_session();
+		session->universal_new(FD_FONT);
 	});
 	p.cmd("new world", "", "open editor in world mode", [] (const Array<string> &arg) {
-		auto ed = new EdwardWindow();
-		ed->universal_new(FD_WORLD);
+		auto session = create_session();
+		session->universal_new(FD_WORLD);
 	});
 	p.cmd("project create", "DIR FIRST_WORLD", "create a new project", [] (const Array<string> &arg) {
-		EdwardWindow ed;
-		ModeAdministration mode_admin(&ed);
+		Session session;
+		ModeAdministration mode_admin(&session);
 		mode_admin.create_project(arg[0], arg[1]);
 	});
 	p.cmd("project upgrade", "DIR", "upgrade scripts of a project", [] (const Array<string> &arg) {
-		EdwardWindow ed;
-		ModeAdministration mode_admin(&ed);
+		Session session;
+		ModeAdministration mode_admin(&session);
 		mode_admin.upgrade_project(arg[0]);
 	});
 	p.cmd("gl", "", "", [] (const Array<string> &arg) {
@@ -125,19 +126,19 @@ hui::AppStatus EdwardApp::on_startup(const Array<string> &arg) {
 		msg_write(AppName + " " + AppVersion);
 		msg_write("");
 
-		auto ed = new EdwardWindow();
+		auto session = create_session();
 
 		if (arg.num > 0) {
-			int type = ed->storage->guess_type(arg[0]);
+			int type = session->storage->guess_type(arg[0]);
 
 			if (type >= 0) {
-				ed->universal_edit(type, arg[0], false);
+				session->universal_edit(type, arg[0], false);
 			} else {
-				ed->error_box(_("Unknown file extension: ") + arg[0]);
+				session->error(_("Unknown file extension: ") + arg[0]);
 				app->end();
 			}
 		} else {
-			ed->universal_new(FD_MODEL);
+			session->universal_new(FD_MODEL);
 		}
 	});
 	p.parse(arg);

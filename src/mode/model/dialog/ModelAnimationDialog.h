@@ -10,7 +10,9 @@
 
 #include "../../../lib/hui/hui.h"
 #include "../../../lib/pattern/Observable.h"
+
 class DataModel;
+class ModeModelAnimation;
 
 class ModelAnimationDialog: public obs::Node<hui::Panel> {
 public:
@@ -42,6 +44,7 @@ public:
 	int get_first_free_index();
 
 private:
+	ModeModelAnimation *mode_model_animation;
 	DataModel *data;
 	hui::Menu *popup;
 };

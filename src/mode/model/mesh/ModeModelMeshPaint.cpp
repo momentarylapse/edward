@@ -14,6 +14,7 @@
 #include "../../../multiview/ColorScheme.h"
 #include "../../../stuff/BrushPanel.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../lib/math/complex.h"
 #include "../../../action/model/mesh/brush/ActionModelBrushExtrude.h"
@@ -142,7 +143,7 @@ private:
 
 
 ModeModelMeshPaint::ModeModelMeshPaint(ModeModelMesh *_parent, MultiView::MultiView *mv) :
-		Mode<ModeModelMesh, DataModel>(_parent->ed, "ModelMeshPaint", _parent, mv, "menu_model") {
+		Mode<ModeModelMesh, DataModel>(_parent->session, "ModelMeshPaint", _parent, mv, "menu_model") {
 	dialog = nullptr;
 	brushing = false;
 	distance = 1;
@@ -151,16 +152,16 @@ ModeModelMeshPaint::ModeModelMeshPaint(ModeModelMesh *_parent, MultiView::MultiV
 void ModeModelMeshPaint::on_start() {
 
 	dialog = new BrushPanel(multi_view, "model-texture-paint-brush-dialog");
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
-	auto *t = ed->get_toolbar(hui::TOOLBAR_LEFT);
+	auto *t = session->win->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 	multi_view->set_allow_action(false);
 
 	// enter
 	parent->set_selection_mode(parent->selection_mode_polygon);
-	ed->mode_model->allow_selection_modes(false);
+	session->mode_model->allow_selection_modes(false);
 	parent->set_allow_draw_hover(false);
 
 
@@ -172,12 +173,12 @@ void ModeModelMeshPaint::on_end() {
 	if (brushing)
 		data->end_action_group();
 
-	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar"); // back to mesh....ARGH
+	session->win->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar"); // back to mesh....ARGH
 
 	multi_view->set_allow_action(true);
-	ed->mode_model->allow_selection_modes(true);
+	session->mode_model->allow_selection_modes(true);
 	parent->set_allow_draw_hover(true);
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 }
 
 void ModeModelMeshPaint::on_set_multi_view() {

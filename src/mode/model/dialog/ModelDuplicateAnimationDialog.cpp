@@ -7,7 +7,7 @@
 
 #include "ModelDuplicateAnimationDialog.h"
 #include "../../../data/model/DataModel.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 
 ModelDuplicateAnimationDialog::ModelDuplicateAnimationDialog(hui::Window *_parent, bool _allow_parent, DataModel *_data, int index, int _source):
 	hui::Dialog("new_animation_dialog", 400, 300, _parent, _allow_parent)
@@ -33,7 +33,7 @@ void ModelDuplicateAnimationDialog::on_ok() {
 	int index = get_int("new_animation_index");
 	if (index < data->move.num)
 		if (data->move[index].frame.num > 0) {
-			data->ed->error_box(_("This index is already taken by another animation."));
+			data->session->error(_("This index is already taken by another animation."));
 			return;
 		}
 	data->duplicateAnimation(source, index);

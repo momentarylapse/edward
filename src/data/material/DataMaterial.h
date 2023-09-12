@@ -22,7 +22,7 @@ class ShaderGraph;
 
 class DataMaterial: public Data {
 public:
-	DataMaterial(EdwardWindow *ed, bool with_graph = true);
+	DataMaterial(Session *s, bool with_graph = true);
 	virtual ~DataMaterial();
 
 	void reset() override;
@@ -62,11 +62,11 @@ public:
 		ShaderGraph *graph;
 		bool from_graph;
 		bool is_default;
-		void load_from_file(EdwardWindow *ed);
-		void set_engine_default(EdwardWindow *ed);
-		void save_to_file(EdwardWindow *ed);
+		void load_from_file(Session *s);
+		void set_engine_default(Session *s);
+		void save_to_file(Session *s);
 
-		void reset(EdwardWindow *ed);
+		void reset(Session *s);
 	};
 	ShaderData shader;
 

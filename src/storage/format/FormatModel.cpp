@@ -10,7 +10,7 @@
 #include "../../data/model/ModelMesh.h"
 #include "../../data/model/ModelPolygon.h"
 #include "../../mode/model/ModeModel.h"
-#include "../../EdwardWindow.h"
+#include "../../Session.h"
 #include "../../y/ResourceManager.h"
 #include "../../y/components/Animator.h"
 #include "../../lib/doc/chunked.h"
@@ -19,13 +19,13 @@
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/formatter.h"
 
-FormatModel::FormatModel(EdwardWindow *ed) : TypedFormat<DataModel>(ed, FD_MODEL, "model", _("Model"), Flag::CANONICAL_READ_WRITE) {
+FormatModel::FormatModel(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "model", _("Model"), Flag::CANONICAL_READ_WRITE) {
 }
 
 const bool write_external_edit_file = false;
 
 
-void update_model_script_data(EdwardWindow *ed, DataModel::MetaData &m);
+void update_model_script_data(Session *session, DataModel::MetaData &m);
 
 bool DataModelAllowUpdating = true;
 
@@ -196,7 +196,7 @@ class ChunkMaterial : public FileChunk<DataModel, ModelMaterial> {
 public:
 	ChunkMaterial() : FileChunk("material") {}
 	void create() override {
-		me = new ModelMaterial(parent->ed);
+		me = new ModelMaterial(parent->session);
 		//msg_write(p2s(parent));
 		parent->material.add(me);
 	}
@@ -938,21 +938,21 @@ public:
 
 class ModelParser : public ChunkedFileParser {
 public:
-	ModelParser(EdwardWindow *_ed) : ChunkedFileParser(8) {
-		ed = _ed;
+	ModelParser(Session *s) : ChunkedFileParser(8) {
+		session = s;
 		_model_parser_tria_mesh_count = 0;
 		set_base(new ChunkModel);
 	}
 	void on_notify() override {}
 	void on_unhandled() override {
-		ed->set_message("unhandled chunk " + context.str());
+		session->set_message("unhandled chunk " + context.str());
 	}
 	void on_error(const string &message) override {
-		ed->error_box(message);
+		session->error(message);
 	}
 	void on_warn(const string &message) override {}
 	void on_info(const string &message) override {}
-	EdwardWindow *ed;
+	Session *session;
 };
 
 void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
@@ -963,7 +963,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 	if (c == 'b' or c == 't') {
 		_load_old(filename, data, deep);
 	} else {
-		ModelParser p(ed);
+		ModelParser p(session);
 		data->material.clear();
 		p.read(filename, data);
 	}
@@ -999,7 +999,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 		for (auto &b: data->bone) {
 			try {
 				if (!b.model)
-					b.model = data->ed->resource_manager->load_model(b.model_file);
+					b.model = data->session->resource_manager->load_model(b.model_file);
 			} catch(Exception &e) {
 				msg_error(e.message());
 			}
@@ -1016,7 +1016,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
 	// FIXME
 	if (data->meta_data.script_file and (data->meta_data.variables.num == 0)) {
-		update_model_script_data(ed, data->meta_data);
+		update_model_script_data(session, data->meta_data);
 		msg_write(data->meta_data.variables.num);
 		for (int i=0; i<min(data->meta_data.script_var.num, data->meta_data.variables.num); i++) {
 			if (data->meta_data.variables[i].type == "float")
@@ -1027,7 +1027,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
 
 	if (data->material.num == 0) {
-		data->material.add(new ModelMaterial(data->ed));
+		data->material.add(new ModelMaterial(data->session));
 	}
 
 
@@ -1075,7 +1075,7 @@ void FormatModel::_save(const Path &filename, DataModel *data) {
 	// so the materials don't get mixed up
 //	RemoveUnusedData();
 
-	ModelParser p(ed);
+	ModelParser p(session);
 	p.write(filename, data);
 
 //	_save_v11(filename, data);

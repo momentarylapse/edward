@@ -13,7 +13,7 @@
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
 
-FormatModel3ds::FormatModel3ds(EdwardWindow *ed) : TypedFormat<DataModel>(ed, FD_MODEL, "3ds", _("Model 3ds"), Flag::READ) {
+FormatModel3ds::FormatModel3ds(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "3ds", _("Model 3ds"), Flag::READ) {
 }
 
 void FormatModel3ds::_load(const Path &filename, DataModel *m, bool deep) {

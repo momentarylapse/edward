@@ -14,7 +14,7 @@
 
 class FormatMaterial: public TypedFormat<DataMaterial> {
 public:
-	FormatMaterial(EdwardWindow *ed);
+	FormatMaterial(Session *s);
 
 	void _load(const Path &filename, DataMaterial *data, bool deep) override;
 	void _save(const Path &filename, DataMaterial *data) override;

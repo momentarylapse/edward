@@ -13,6 +13,7 @@
 #include "../lib/nix/nix.h"
 #include "../Edward.h"
 #include "../EdwardWindow.h"
+#include "../Session.h"
 
 
 namespace MultiView{
@@ -109,7 +110,7 @@ void CameraController::on_left_button_down() {
 		c.zooming = c.r_zoom.inside(view->m);
 
 		if (c.moving or c.rotating or c.zooming) {
-			MouseWrapper::start(view->ed->win);
+			MouseWrapper::start(view->session->win);
 		}
 	}
 }
@@ -117,7 +118,7 @@ void CameraController::on_left_button_down() {
 void CameraController::on_left_button_up() {
 	for (auto &c: controllers) {
 		if (c.moving or c.rotating or c.zooming)
-			MouseWrapper::stop(view->ed->win);
+			MouseWrapper::stop(view->session->win);
 		c.moving = c.rotating = c.zooming = false;
 	}
 }

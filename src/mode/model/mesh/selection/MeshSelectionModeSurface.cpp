@@ -8,6 +8,7 @@
 #include "MeshSelectionModeSurface.h"
 #include "../../ModeModel.h"
 #include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"

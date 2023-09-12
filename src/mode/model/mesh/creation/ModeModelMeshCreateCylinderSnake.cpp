@@ -10,6 +10,7 @@
 #include "../../ModeModel.h"
 #include "../../../../data/model/geometry/GeometryCylinder.h"
 #include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -28,7 +29,7 @@ ModeModelMeshCreateCylinderSnake::ModeModelMeshCreateCylinderSnake(ModeModelMesh
 	radius = 0;
 	closed = false;
 	ready_for_scaling = false;
-	geo = NULL;
+	geo = nullptr;
 }
 
 void ModeModelMeshCreateCylinderSnake::on_start() {
@@ -40,7 +41,7 @@ void ModeModelMeshCreateCylinderSnake::on_start() {
 	dialog->check("round", hui::config.get_bool("NewCylinderRound", false));
 	dialog->hide_control("type:visible", true);
 	dialog->hide_control("type:physical", true);
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
 	bool physical = (parent->current_skin == MESH_PHYSICAL);
 	if (physical)
@@ -48,13 +49,11 @@ void ModeModelMeshCreateCylinderSnake::on_start() {
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
-
-	ed->activate("");
 }
 
 
 void ModeModelMeshCreateCylinderSnake::on_end() {
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 	if (geo)
 		delete geo;
 }

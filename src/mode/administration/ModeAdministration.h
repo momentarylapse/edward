@@ -14,7 +14,7 @@ class AdministrationDialog;
 
 class ModeAdministration: public Mode<ModeAdministration, DataAdministration> {
 public:
-	ModeAdministration(EdwardWindow *ed);
+	ModeAdministration(Session *s);
 	virtual ~ModeAdministration();
 
 	void _new();

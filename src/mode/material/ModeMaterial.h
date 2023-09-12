@@ -20,7 +20,7 @@ namespace nix {
 
 class ModeMaterial: public Mode<ModeMaterial, DataMaterial> {
 public:
-	ModeMaterial(EdwardWindow *ed, MultiView::MultiView *mv);
+	ModeMaterial(Session *s, MultiView::MultiView *mv);
 	virtual ~ModeMaterial();
 
 	obs::sink in_data_changed;

@@ -81,6 +81,4 @@ public:
 	ModelFrame get_interpolation();
 };
 
-extern ModeModelAnimation *mode_model_animation;
-
 #endif /* MODEMODELANIMATION_H_ */

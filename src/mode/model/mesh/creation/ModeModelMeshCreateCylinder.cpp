@@ -11,6 +11,7 @@
 #include "../../../../data/model/geometry/GeometryCylinder.h"
 #include "../../../../action/model/mesh/physical/ActionModelAddCylinder.h"
 #include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -41,7 +42,7 @@ void ModeModelMeshCreateCylinder::on_start() {
 	dialog->set_int("edges", hui::config.get_int("NewCylinderEdges", 8));
 	dialog->check("round", hui::config.get_bool("NewCylinderRound", false));
 
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
 	bool physical = (parent->current_skin == MESH_PHYSICAL);
 	if (physical) {
@@ -52,12 +53,12 @@ void ModeModelMeshCreateCylinder::on_start() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 
-	ed->activate("");
+	session->win->activate("");
 }
 
 
 void ModeModelMeshCreateCylinder::on_end() {
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 }
 
 void ModeModelMeshCreateCylinder::update_geometry() {

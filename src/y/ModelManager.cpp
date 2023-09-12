@@ -610,10 +610,10 @@ public:
 	}
 	void on_notify() override {}
 	void on_unhandled() override {
-		//ed->set_message("unhandled chunk " + context.str());
+		//session->set_message("unhandled chunk " + context.str());
 	}
 	void on_error(const string &message) override {
-		//ed->error_box(message);
+		//session->error(message);
 	}
 	void on_warn(const string &message) override {}
 	void on_info(const string &message) override {}

@@ -8,6 +8,7 @@
 #include "ModeWorldCreateObject.h"
 #include "../../../data/world/DataWorld.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../storage/Storage.h"
 #include "../../../multiview/MultiView.h"
 
@@ -29,21 +30,19 @@ void ModeWorldCreateObject::on_start() {
 	dialog->set_string("kind", filename.str());
 	dialog->enable("name", false);
 	dialog->event("find_object", std::bind(&ModeWorldCreateObject::on_find_object, this));
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
 	if (!filename.is_empty())
 		message = _("place new object");
-
-	ed->activate("");
 }
 
 
 void ModeWorldCreateObject::on_end() {
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 }
 
 void ModeWorldCreateObject::on_find_object() {
-	ed->storage->file_dialog(FD_MODEL, false, true).on([this] (const auto& p) {
+	session->storage->file_dialog(FD_MODEL, false, true).on([this] (const auto& p) {
 		filename = p.simple;
 		LastObjectFilename = filename;
 		message = _("place new object");

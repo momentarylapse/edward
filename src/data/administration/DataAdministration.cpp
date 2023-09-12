@@ -13,7 +13,7 @@
 #include "../model/DataModel.h"
 #include "../material/DataMaterial.h"
 #include "../font/DataFont.h"
-#include "../../EdwardWindow.h"
+#include "../../Session.h"
 #include "../../Edward.h"
 #include "../../stuff/Progress.h"
 #include "../../storage/Storage.h"
@@ -21,8 +21,8 @@
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/formatter.h"
 
-DataAdministration::DataAdministration(EdwardWindow *ed) :
-	Data(ed, -1)
+DataAdministration::DataAdministration(Session *s) :
+	Data(s, -1)
 {
 	GameIni = new GameIniData;
 	file_list = new AdminFileList;
@@ -48,7 +48,7 @@ void DataAdministration::MetaFraesDir(int kind) {
 	string extension ="x";
 	cft.clear();
 
-	auto dir = ed->storage->get_root_dir(kind);
+	auto dir = session->storage->get_root_dir(kind);
 	if (kind==FD_WORLD)		extension = ".world";
 	if (kind==FD_TERRAIN)	extension = ".map";
 	if (kind==FD_MODEL)		extension = ".model";
@@ -220,13 +220,13 @@ void AdminFileList::add_from_game_ini_export(AdminFileList *source, GameIniData 
 
 void DataAdministration::UpdateDatabase()
 {
-	ed->progress->start(_("Creating database"), 0);
-	ed->progress->set(_("Initializing"), 0);
+	session->progress->start(_("Creating database"), 0);
+	session->progress->set(_("Initializing"), 0);
 
 	// make sure the "Engine"-files are the first 3 ones
 	AdminFile *f_game_ini = file_list->add_engine_files();
 
-	GameIni->load(ed->storage->root_dir);
+	GameIni->load(session->storage->root_dir);
 
 	// find all files
 	// iterate file types
@@ -247,16 +247,16 @@ void DataAdministration::UpdateDatabase()
 
 	// check all files
 	for (int i=0;i<file_list->num;i++){
-		(*file_list)[i]->check(ed, *file_list);
+		(*file_list)[i]->check(session, *file_list);
 
-		ed->progress->set(_("Checking files"), (float)i / (float)file_list->num);
+		session->progress->set(_("Checking files"), (float)i / (float)file_list->num);
 	}
 
 
 	file_list->remove_obsolete();
 
 
-	ed->progress->end();
+	session->progress->end();
 	SaveDatabase();
 	out_changed();
 }
@@ -279,29 +279,29 @@ Path kind_subdir(int kind) {
 
 void DataAdministration::ExportGame(const Path &dir, GameIniData &game_ini)
 {
-	if (dir == ed->storage->root_dir)
+	if (dir == session->storage->root_dir)
 		throw AdminGameExportException("export dir = root dir");
 	AdminFileList list;
 	list.add((*file_list)[0]);
 	list.add((*file_list)[1]);
 	list.add_from_game_ini_export(file_list, game_ini);
 
-	ed->progress->start(_("Export game"), 0);
+	session->progress->start(_("Export game"), 0);
 	int num_ok = 0;
 
 	game_ini.save(dir);
 
 	foreachi(AdminFile *a, list, i){
-		ed->progress->set((float)i / (float)list.num);
+		session->progress->set((float)i / (float)list.num);
 		if (a->Missing)
 			continue;
 
-		Path source = ed->storage->root_dir | kind_subdir(a->Kind) | a->Name;
+		Path source = session->storage->root_dir | kind_subdir(a->Kind) | a->Name;
 		Path target = dir | kind_subdir(a->Kind) | a->Name;
 		if (FILE_OP_OK(os::fs::copy(source, target)))
 			num_ok ++;
 	}
 	hui::info_box(hui::CurWindow, "info", format("%d von %d Dateien exportiern", num_ok, list.num));
 
-	ed->progress->end();
+	session->progress->end();
 }

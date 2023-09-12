@@ -13,7 +13,7 @@
 #include "../../../lib/os/time.h"
 #include "../../../lib/image/image.h"
 #include "../../../stuff/Progress.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 
 static float d_max = 20.0f;
 
@@ -79,8 +79,8 @@ bool LightmapPhotonMap::OnStatus()
 {
 	os::sleep(0.050f);
 	int cur = done + get_done();
-	data->source_world->ed->progress->set(format(_("%d of %d"), cur, num_photons), (float)cur / (float)num_photons);
-	return !data->source_world->ed->progress->is_cancelled();
+	data->source_world->session->progress->set(format(_("%d of %d"), cur, num_photons), (float)cur / (float)num_photons);
+	return !data->source_world->session->progress->is_cancelled();
 }
 
 void LightmapPhotonMap::Compute()

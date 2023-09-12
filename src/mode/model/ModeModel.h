@@ -17,7 +17,7 @@ class ModeModelAnimation;
 
 class ModeModel: public Mode<ModeModel, DataModel> {
 public:
-	ModeModel(EdwardWindow *ed, MultiView::MultiView *mv3, MultiView::MultiView *mv2);
+	ModeModel(Session *s, MultiView::MultiView *mv3, MultiView::MultiView *mv2);
 
 	void on_start() override;
 	void on_end() override;

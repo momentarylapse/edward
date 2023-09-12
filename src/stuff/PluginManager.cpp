@@ -10,7 +10,7 @@
 #include "../lib/kaba/kaba.h"
 #include "../lib/os/filesystem.h"
 #include "../EdwardWindow.h"
-#include "../EdwardWindow.h"
+#include "../Session.h"
 #include "../multiview/MultiView.h"
 #include "../multiview/ActionController.h"
 #include "../multiview/Window.h"
@@ -47,7 +47,7 @@ PluginManager::PluginManager(const Path &dir) {
 PluginManager::~PluginManager() {
 }
 
-void PluginManager::execute(EdwardWindow *ed, const Path &filename) {
+void PluginManager::execute(Session *session, const Path &filename) {
 	//kaba::config.directory = "";
 	try {
 		auto s = kaba::default_context->load_module(filename);
@@ -56,7 +56,7 @@ void PluginManager::execute(EdwardWindow *ed, const Path &filename) {
 		if (f)
 			f();
 	} catch(kaba::Exception &e) {
-		ed->error_box(e.message());
+		session->error(e.message());
 	}
 
 	//kaba::DeleteAllScripts(true, true);
@@ -79,10 +79,10 @@ void PluginManager::link_plugins() {
 
 	/*ext->link("edward", &GlobalMainWin);
 	ext->link("ed", &ed);
-	ext->link("model", &ed->mode_model->data);
+	ext->link("model", &session->mode_model->data);
 	ext->link("world", &ed->mode_world->data);*/
 
-	ext->declare_class_element("Edward.cur_mode", &EdwardWindow::cur_mode);
+	ext->declare_class_element("Edward.cur_mode", &Session::cur_mode);
 
 	ext->declare_class_element("Mode.name", &ModeBase::name);
 	ext->declare_class_element("Mode.multi_view", &ModeBase::multi_view);

@@ -9,6 +9,7 @@
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../data/model/geometry/GeometryPlatonic.h"
 #include "../../../../data/model/geometry/GeometryTeapot.h"
 #include "../../../../multiview/MultiView.h"
@@ -44,14 +45,14 @@ void ModeModelMeshCreatePlatonic::on_start()
 		dialog = new hui::Panel();
 		dialog->from_resource("new_teapot_dialog");
 		dialog->set_int("ntp_samples", hui::config.get_int("NewTeapotSamples", 4));
-		ed->set_side_panel(dialog);
+		session->win->set_side_panel(dialog);
 	}
 }
 
 
 void ModeModelMeshCreatePlatonic::on_end() {
 	if (dialog)
-		ed->set_side_panel(nullptr);
+		session->win->set_side_panel(nullptr);
 }
 
 void ModeModelMeshCreatePlatonic::updateGeometry() {

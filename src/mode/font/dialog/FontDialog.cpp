@@ -7,7 +7,7 @@
 
 #include "FontDialog.h"
 //#include "../../../action/world/ActionWorldEditObject.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../multiview/MultiView.h"
 
 
@@ -130,7 +130,7 @@ string FontDialog::GetSampleText()
 
 void FontDialog::OnText()
 {
-	data->ed->multi_view_2d->force_redraw();
+	data->session->multi_view_2d->force_redraw();
 }
 
 void FontDialog::ApplyGlobalData()

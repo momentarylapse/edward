@@ -6,9 +6,9 @@
  */
 
 #include "MaterialPropertiesDialog.h"
-#include "../../../EdwardWindow.h"
-#include "../../../storage/Storage.h"
 #include "../ModeMaterial.h"
+#include "../../../Session.h"
+#include "../../../storage/Storage.h"
 #include "../../../action/material/ActionMaterialEditAppearance.h"
 #include "../../../action/material/ActionMaterialEditPhysics.h"
 #include "../../../lib/nix/nix.h"
@@ -145,7 +145,7 @@ void MaterialPropertiesDialog::on_data_update() {
 
 void MaterialPropertiesDialog::on_add_texture_level() {
 	if (temp.texture_files.num >= MATERIAL_MAX_TEXTURES){
-		data->ed->error_box(format(_("Only %d texture levels allowed!"), MATERIAL_MAX_TEXTURES));
+		data->session->error(format(_("Only %d texture levels allowed!"), MATERIAL_MAX_TEXTURES));
 		return;
 	}
 	temp.texture_files.add("");
@@ -155,7 +155,7 @@ void MaterialPropertiesDialog::on_add_texture_level() {
 void MaterialPropertiesDialog::on_textures() {
 	int sel = get_int("");
 	if ((sel >= 0) and (sel < temp.texture_files.num))
-		data->ed->storage->file_dialog(FD_TEXTURE, false, true).on([this, sel] (const auto& p) {
+		data->session->storage->file_dialog(FD_TEXTURE, false, true).on([this, sel] (const auto& p) {
 			temp.texture_files[sel] = p.relative;
 			apply_data();
 			//mmaterial->Texture[sel] = MetaLoadTexture(mmaterial->TextureFile[sel]);
@@ -294,8 +294,8 @@ void MaterialPropertiesDialog::refill_refl_tex_view() {
 void MaterialPropertiesDialog::fill_texture_list() {
 	reset("mat_textures");
 	for (int i=0;i<temp.texture_files.num;i++) {
-		auto tex = data->ed->resource_manager->load_texture(temp.texture_files[i]);
-		string img = data->ed->get_tex_image(tex.get());
+		auto tex = data->session->resource_manager->load_texture(temp.texture_files[i]);
+		string img = data->session->get_tex_image(tex.get());
 		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, img, file_secure(temp.texture_files[i])));
 	}
 	if (temp.texture_files.num == 0)

@@ -9,6 +9,7 @@
 #include "../ModeWorld.h"
 #include "../../../action/world/terrain/ActionWorldTerrainBrushExtrude.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/Window.h"
 #include "../../../multiview/ColorScheme.h"
@@ -71,7 +72,7 @@ Action *ModeWorldTerrain::get_action(const vec3 &pos) {
 	float radius = dialog->get_float("diameter") / 2;
 	float depth = dialog->get_float("depth") * BRUSH_PARTITION;
 	int type = dialog->get_int("brush_type");
-	if (ed->get_key(hui::KEY_CONTROL))
+	if (session->win->get_key(hui::KEY_CONTROL))
 		depth = - depth;
 
 	Action *a = NULL;
@@ -90,22 +91,22 @@ void ModeWorldTerrain::on_start() {
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);
 
-	ed->get_toolbar(hui::TOOLBAR_LEFT)->reset();
-	ed->get_toolbar(hui::TOOLBAR_LEFT)->enable(false);
+	session->win->get_toolbar(hui::TOOLBAR_LEFT)->reset();
+	session->win->get_toolbar(hui::TOOLBAR_LEFT)->enable(false);
 
 
 	dialog = new TerrainDeformBrushPanel(multi_view);
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
 }
 
 void ModeWorldTerrain::on_end() {
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 	multi_view->set_allow_action(true);
 	multi_view->set_allow_select(true);
 	if (brushing)
 		data->end_action_group();
-	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("world-edit-toolbar"); // -> world
+	session->win->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("world-edit-toolbar"); // -> world
 }
 
 void ModeWorldTerrain::on_mouse_move() {

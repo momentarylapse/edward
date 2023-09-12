@@ -11,7 +11,7 @@
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
-#include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../lib/nix/nix.h"
 
 ModeModelMeshPaste::ModeModelMeshPaste(ModeModelMesh* _parent) :
@@ -27,7 +27,7 @@ ModeModelMeshPaste::ModeModelMeshPaste(ModeModelMesh* _parent) :
 void ModeModelMeshPaste::on_start() {
 	msg_write("on start");
 	if (parent->temp_geo.vertex.num == 0) {
-		ed->set_message(_("nothing to paste"));
+		session->set_message(_("nothing to paste"));
 		abort();
 		return;
 	}
@@ -47,7 +47,7 @@ void ModeModelMeshPaste::on_mouse_move() {
 
 void ModeModelMeshPaste::on_left_button_up() {
 	data->pasteGeometry(*geo, parent->current_material);
-	ed->set_message(format(_("%d vertices, %d triangles pasted"), geo->vertex.num, geo->polygon.num));
+	session->set_message(format(_("%d vertices, %d triangles pasted"), geo->vertex.num, geo->polygon.num));
 	abort();
 }
 

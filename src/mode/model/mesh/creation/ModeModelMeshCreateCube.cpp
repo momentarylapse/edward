@@ -10,6 +10,7 @@
 #include "../../ModeModel.h"
 #include "../../../../data/model/geometry/GeometryCube.h"
 #include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -25,7 +26,7 @@ ModeModelMeshCreateCube::ModeModelMeshCreateCube(ModeModelMesh *_parent) :
 	pos2_chosen = false;
 	for (int i=0;i<3;i++)
 		length[i] = v_0;
-	geo = NULL;
+	geo = nullptr;
 }
 
 ModeModelMeshCreateCube::~ModeModelMeshCreateCube(){
@@ -128,7 +129,7 @@ void ModeModelMeshCreateCube::on_start() {
 	dialog->set_int("nc_x", hui::config.get_int("NewCubeNumX", 1));
 	dialog->set_int("nc_y", hui::config.get_int("NewCubeNumY", 1));
 	dialog->set_int("nc_z", hui::config.get_int("NewCubeNumZ", 1));
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
 	bool physical = (parent->current_skin == MESH_PHYSICAL);
 	if (physical)
@@ -137,11 +138,11 @@ void ModeModelMeshCreateCube::on_start() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 
-	ed->activate("");
+	session->win->activate("");
 }
 
 void ModeModelMeshCreateCube::on_end() {
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 }
 
 void ModeModelMeshCreateCube::on_draw_win(MultiView::Window *win) {

@@ -7,8 +7,8 @@
 
 #include "ModeNone.h"
 
-ModeNone::ModeNone(EdwardWindow *ed) :
-	ModeBase(ed, "ModeNone", nullptr, nullptr, "")
+ModeNone::ModeNone(Session *s) :
+	ModeBase(s, "ModeNone", nullptr, nullptr, "")
 {
 }
 

@@ -9,6 +9,7 @@
 #include "../ModeWorld.h"
 #include "../../../data/model/geometry/GeometryPlane.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/Window.h"
 #include "../../../multiview/DrawingHelper.h"
@@ -27,7 +28,7 @@ void ModeWorldCreateTerrain::on_start() {
 	// Dialog
 	dialog = new hui::Panel();
 	dialog->from_resource("world-new-terrain-dialog");
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
 	dialog->set_int("stripes-x", 64);
 	dialog->set_int("stripes-z", 64);
@@ -35,7 +36,7 @@ void ModeWorldCreateTerrain::on_start() {
 }
 
 void ModeWorldCreateTerrain::on_end() {
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 	/*delete(dialog);
 	dialog = nullptr;*/
 }

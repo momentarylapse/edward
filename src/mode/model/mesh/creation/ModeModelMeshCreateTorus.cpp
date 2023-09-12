@@ -10,6 +10,7 @@
 #include "../../ModeModel.h"
 #include "../../../../data/model/geometry/GeometryTorus.h"
 #include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -45,17 +46,15 @@ void ModeModelMeshCreateTorus::on_start() {
 
 	dialog->set_int("nt_rings", hui::config.get_int("NewTorusNumX", 32));
 	dialog->set_int("nt_edges", hui::config.get_int("NewTorusNumY", 16));
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
-
-	ed->activate("");
 }
 
 
 void ModeModelMeshCreateTorus::on_end() {
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 }
 
 void ModeModelMeshCreateTorus::update_geometry()

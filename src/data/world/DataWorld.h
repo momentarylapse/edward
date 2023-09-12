@@ -45,7 +45,7 @@ class WorldScript : public ScriptInstanceData {};
 
 class DataWorld: public Data {
 public:
-	DataWorld(EdwardWindow *ed);
+	DataWorld(Session *ed);
 	virtual ~DataWorld();
 
 	void reset() override;

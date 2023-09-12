@@ -12,6 +12,7 @@
 #include "Window.h"
 #include "MouseWrapper.h"
 #include "../EdwardWindow.h"
+#include "../Session.h"
 #include "../action/ActionMultiView.h"
 #include "../lib/nix/nix.h"
 #include "../data/model/geometry/Geometry.h"
@@ -89,7 +90,7 @@ void ActionController::start_action(Window *_win, const vec3 &_m, Constraint _co
 	cur_action->execute_logged(data);
 	multi_view->out_action_start();
 
-	MouseWrapper::start(multi_view->ed->win);
+	MouseWrapper::start(multi_view->session->win);
 }
 
 
@@ -223,7 +224,7 @@ void ActionController::end_action(bool set) {
 	}
 	cur_action = nullptr;
 	mat = mat4::ID;
-	MouseWrapper::stop(multi_view->ed->win);
+	MouseWrapper::stop(multi_view->session->win);
 }
 
 bool ActionController::is_selecting() {

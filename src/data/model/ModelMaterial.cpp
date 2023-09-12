@@ -7,19 +7,20 @@
 
 #include "ModelMaterial.h"
 #include "../../lib/nix/nix.h"
+#include "../../lib/image/image.h"
 #include "../../multiview/Window.h"
 #include "../../multiview/DrawingHelper.h"
 #include "../../y/ResourceManager.h"
-#include "../../EdwardWindow.h"
+#include "../../Session.h"
 
 float col_frac(const color &a, const color &b);
 
 
-ModelMaterial::ModelMaterial(EdwardWindow *_ed) {
-	ed = _ed;
+ModelMaterial::ModelMaterial(Session *_s) {
+	session = _s;
 	// file
 	filename = "";
-	material = ed->resource_manager->load_material("");
+	material = session->resource_manager->load_material("");
 
 	// color
 	col.user = false;
@@ -38,7 +39,7 @@ ModelMaterial::ModelMaterial(EdwardWindow *_ed) {
 
 
 // ONLY ActionModelAddMaterial
-ModelMaterial::ModelMaterial(EdwardWindow *_ed, const Path &_filename) : ModelMaterial(_ed) {
+ModelMaterial::ModelMaterial(Session *_s, const Path &_filename) : ModelMaterial(_s) {
 	filename = _filename;
 	make_consistent();
 }
@@ -58,13 +59,13 @@ ModelMaterial::TextureLevel::~TextureLevel() {
 		delete image;
 }
 
-void ModelMaterial::TextureLevel::reload_image(EdwardWindow *ed) {
+void ModelMaterial::TextureLevel::reload_image(Session *session) {
 	if (image)
 		delete image;
 	if (filename == "")
 		image = new Image(512, 512, White);
 	else
-		image = Image::load(ed->resource_manager->texture_dir | filename);
+		image = Image::load(session->resource_manager->texture_dir | filename);
 	edited = false;
 	update_texture();
 }
@@ -100,7 +101,7 @@ void ModelMaterial::Color::import(const color &am, const color &di, const color 
 }
 
 void ModelMaterial::make_consistent() {
-	material = ed->resource_manager->load_material(filename);
+	material = session->resource_manager->load_material(filename);
 
 	if (material->reflection.mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
 	//	if (!material->cube_map)
@@ -136,7 +137,7 @@ void ModelMaterial::check_textures() {
 //	if (material->textures.num > texture_levels.num) {
 //		while (material->textures.num > texture_levels.num)
 //			texture_levels.add(new ModelMaterial::TextureLevel);
-//		ed->set_message(_("Number of textures changed to comply with the material!"));
+//		session->set_message(_("Number of textures changed to comply with the material!"));
 //	}
 
 	// load all textures
@@ -156,7 +157,7 @@ void ModelMaterial::check_textures() {
 			else
 				t->image = Image::load(t->filename);
 		}*/
-		t->reload_image(ed);
+		t->reload_image(session);
 	}
 }
 

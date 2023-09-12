@@ -1405,6 +1405,9 @@
     <ClCompile Include="src\meta.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Session.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\action\font\ActionFontEditGlobal.h">
@@ -2734,6 +2737,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\meta.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Session.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

@@ -13,7 +13,7 @@
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
 
-FormatModelPly::FormatModelPly(EdwardWindow *ed) : TypedFormat<DataModel>(ed, FD_MODEL, "ply", _("Model ply"), Flag::READ) {
+FormatModelPly::FormatModelPly(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "ply", _("Model ply"), Flag::READ) {
 }
 
 void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {

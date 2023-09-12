@@ -8,6 +8,7 @@
 #include "ModeFont.h"
 #include "dialog/FontDialog.h"
 #include "../../EdwardWindow.h"
+#include "../../Session.h"
 #include "../../storage/Storage.h"
 #include "../../multiview/MultiView.h"
 #include "../../multiview/Window.h"
@@ -17,8 +18,8 @@
 #include "../../data/font/import/ImporterCairo.h"
 #include "../../y/Font.h"
 
-ModeFont::ModeFont(EdwardWindow *ed, MultiView::MultiView *mv) :
-	Mode<ModeFont, DataFont>(ed, "Font", nullptr, new DataFont(ed), mv, "menu_font"),
+ModeFont::ModeFont(Session *s, MultiView::MultiView *mv) :
+	Mode<ModeFont, DataFont>(s, "Font", nullptr, new DataFont(s), mv, "menu_font"),
 	in_data_changed(this, [this] { on_data_update(); })
 {
 	font = new Gui::Font;
@@ -55,9 +56,9 @@ void ModeFont::on_left_button_down()
 
 void ModeFont::on_end() {
 	data->unsubscribe(this);
-	ed->set_side_panel(nullptr);
+	session->win->set_side_panel(nullptr);
 
-	auto *t = ed->get_toolbar(hui::TOOLBAR_TOP);
+	auto *t = session->win->get_toolbar(hui::TOOLBAR_TOP);
 	t->reset();
 	t->enable(false);
 }
@@ -66,10 +67,10 @@ void ModeFont::on_end() {
 
 void ModeFont::on_draw() {
 	nix::set_z(false, false);
-	ed->drawing_helper->set_color(White);
-	nix::set_shader(ed->gl->default_2d.get());
-	ed->drawing_helper->draw_rect(0, (float)nix::target_width, nix::target_height * 0.9f, (float)nix::target_height, 0);
-	ed->drawing_helper->set_color(Black);
+	session->drawing_helper->set_color(White);
+	nix::set_shader(session->gl->default_2d.get());
+	session->drawing_helper->draw_rect(0, (float)nix::target_width, nix::target_height * 0.9f, (float)nix::target_height, 0);
+	session->drawing_helper->set_color(Black);
 	if (dialog)
 		font->drawStr(0, (float)nix::target_height * 0.9f, 0, (float)nix::target_height * 0.1f, dialog->GetSampleText());
 }
@@ -77,7 +78,7 @@ void ModeFont::on_draw() {
 
 
 void ModeFont::save_as() {
-	ed->storage->save_as(data);
+	session->storage->save_as(data);
 }
 
 
@@ -85,7 +86,7 @@ void ModeFont::save_as() {
 
 void ModeFont::save() {
 	if (data->filename)
-		ed->storage->save(data->filename, data);
+		session->storage->save(data->filename, data);
 	else
 		save_as();
 }
@@ -115,7 +116,7 @@ void ModeFont::on_command(const string & id)
 
 
 void ModeFont::open() {
-	ed->storage->open(data).on([this] {
+	session->storage->open(data).on([this] {
 		optimize_view();
 	});
 }
@@ -123,7 +124,7 @@ void ModeFont::open() {
 
 
 void ModeFont::_new() {
-	ed->allow_termination().on([this] {
+	session->allow_termination().on([this] {
 		data->reset();
 		optimize_view();
 	});
@@ -132,15 +133,15 @@ void ModeFont::_new() {
 
 
 void ModeFont::on_start() {
-	ed->get_toolbar(hui::TOOLBAR_TOP)->set_by_id("font-toolbar");
-	auto t = ed->get_toolbar(hui::TOOLBAR_LEFT);
+	session->win->get_toolbar(hui::TOOLBAR_TOP)->set_by_id("font-toolbar");
+	auto t = session->win->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 
 	multi_view->set_allow_select(false);
 
 	dialog = new FontDialog(data);
-	ed->set_side_panel(dialog);
+	session->win->set_side_panel(dialog);
 
 
 	data->out_changed >> in_data_changed;
@@ -262,7 +263,7 @@ bool ModeFont::optimize_view()
 }
 
 void ModeFont::Import() {
-	hui::select_font(ed, _("Import font"), {}).on([this] (const string &font) {
+	hui::select_font(session->win, _("Import font"), {}).on([this] (const string &font) {
 		ImporterCairo imp;
 		imp.Import(data, font);
 	});

@@ -18,11 +18,11 @@ namespace MultiView {
 	class Window;
 };
 
-class EdwardWindow;
+class Session;
 
 class ModeBase : public obs::Node<hui::EventHandler> {
 public:
-	ModeBase(EdwardWindow *ed, const string &name, ModeBase *parent, MultiView::MultiView *multi_view, const string &menu_id);
+	ModeBase(Session *s, const string &name, ModeBase *parent, MultiView::MultiView *multi_view, const string &menu_id);
 	virtual ~ModeBase();
 
 	// Start/End: (once) entering this mode or a sub mode
@@ -77,7 +77,7 @@ public:
 
 	string name;
 
-	EdwardWindow *ed;
+	Session *session;
 	ModeBase *parent_untyped;
 	MultiView::MultiView *multi_view;
 
@@ -87,14 +87,14 @@ public:
 template<class M, class T>
 class Mode : public ModeBase {
 public:
-	Mode(EdwardWindow *ed, const string &name, M *_parent, Data *_data, MultiView::MultiView *multi_view, const string &menu) :
-		ModeBase(ed, name, _parent, multi_view, menu)
+	Mode(Session *s, const string &name, M *_parent, Data *_data, MultiView::MultiView *multi_view, const string &menu) :
+		ModeBase(s, name, _parent, multi_view, menu)
 	{
 		parent = _parent;
 		data = (T*)_data;
 	}
-	Mode(EdwardWindow *ed, const string &name, M *_parent, MultiView::MultiView *multi_view, const string &menu) :
-		ModeBase(ed, name, _parent, multi_view, menu)
+	Mode(Session *s, const string &name, M *_parent, MultiView::MultiView *multi_view, const string &menu) :
+		ModeBase(s, name, _parent, multi_view, menu)
 	{
 		parent = _parent;
 		data = (T*)parent->get_data();

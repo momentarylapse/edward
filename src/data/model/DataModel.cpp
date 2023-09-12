@@ -15,7 +15,7 @@
 #include "../../mode/model/mesh/ModeModelMesh.h"
 #include "../../action/Action.h"
 #include "../../action/ActionManager.h"
-#include "../../EdwardWindow.h"
+#include "../../Session.h"
 #include "../../storage/Storage.h"
 #include "../../multiview/MultiView.h"
 #include "../../action/model/mesh/vertex/ActionModelAddVertex.h"
@@ -99,8 +99,8 @@ ModelVertex::ModelVertex(const vec3 &_pos) {
 
 ModelVertex::ModelVertex() : ModelVertex(v_0) {}
 
-DataModel::DataModel(EdwardWindow *ed) :
-	Data(ed, FD_MODEL)
+DataModel::DataModel(Session *s) :
+	Data(s, FD_MODEL)
 {
 	mesh = new ModelMesh(this);
 	phys_mesh = new ModelMesh(this);
@@ -162,9 +162,9 @@ void DataModel::reset() {
 
 	material.clear();
 	material.resize(1);
-	material[0] = new ModelMaterial(ed);
+	material[0] = new ModelMaterial(session);
 	material[0]->texture_levels.add(new ModelMaterial::TextureLevel());
-	material[0]->texture_levels[0]->reload_image(ed);
+	material[0]->texture_levels[0]->reload_image(session);
 	material[0]->col.user = true;
 	material[0]->col.albedo = White;
 	material[0]->col.roughness = 0.4f;
@@ -473,7 +473,7 @@ void DataModel::reconnectBone(int index, int parent)
 {	execute(new ActionModelReconnectBone(index, parent));	}
 
 void DataModel::setBoneModel(int index, const Path &filename)
-{	execute(new ActionModelSetSubModel(index, filename, ed->resource_manager->load_model(filename)));	}
+{	execute(new ActionModelSetSubModel(index, filename, session->resource_manager->load_model(filename)));	}
 
 void DataModel::addBone(const vec3 &pos, int parent)
 {	execute(new ActionModelAddBone(pos, parent));	}
@@ -553,7 +553,7 @@ void DataModel::subdivideSelectedSurfaces(const ModelSelection &s) {
 }
 
 void DataModel::bevelSelectedEdges(float radius)
-{	execute(new ActionModelBevelEdges(radius, ed->mode_model->mode_model_mesh->current_material));	}
+{	execute(new ActionModelBevelEdges(radius, session->mode_model->mode_model_mesh->current_material));	}
 
 void DataModel::flattenSelectedVertices()
 {	execute(new ActionModelFlattenVertices(this));	}
@@ -562,7 +562,7 @@ void DataModel::triangulateSelectedVertices()
 {	execute(new ActionModelTriangulateVertices());	}
 
 void DataModel::extrudeSelectedPolygons(float offset, bool independent)
-{	execute(new ActionModelExtrudePolygons(offset, independent, ed->mode_model->mode_model_mesh->current_material));	}
+{	execute(new ActionModelExtrudePolygons(offset, independent, session->mode_model->mode_model_mesh->current_material));	}
 
 void DataModel::autoWeldSurfaces(const base::set<int> &surfaces, float epsilon)
 {	execute(new ActionModelAutoWeldSelection(epsilon));	}

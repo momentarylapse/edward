@@ -9,6 +9,7 @@
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
 #include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../data/model/ModelMesh.h"
 #include "../../../../data/model/ModelSelection.h"
 //#include "../../../../action/model/mesh/polygon/ActionModelSplitPolygon.h"
@@ -29,7 +30,7 @@ void ModeModelMeshCutLoop::on_start() {
 	message = _("click on an edge to cut");
 
 	parent->set_selection_mode(parent->selection_mode_edge);
-	ed->mode_model->allow_selection_modes(false);
+	session->mode_model->allow_selection_modes(false);
 
 	multi_view->set_allow_action(false);
 	multi_view->set_allow_select(false);

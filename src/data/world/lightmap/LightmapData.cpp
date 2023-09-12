@@ -17,10 +17,9 @@
 #include "../../../y/Terrain.h"
 #include "../../../y/EngineData.h"
 #include "../../../storage/Storage.h"
-#include "../../../y/ModelManager.h"
 #include "../../../lib/os/msg.h"
 #include "../../../lib/math/vec2.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 
 bool LightmapData::Triangle::intersect(const Ray &r, vec3 &cp) const
 {
@@ -168,9 +167,9 @@ void LightmapData::AddModel(const Path &filename, mat4 &mat, int object_index)
 	mod.object_index = object_index;
 	mod.area = 0;
 
-	DataModel *m = new DataModel(source_world->ed);
+	DataModel *m = new DataModel(source_world->session);
 	mod.orig = m;
-	source_world->ed->storage->load(engine.object_dir | filename.with(".model"), m);
+	source_world->session->storage->load(engine.object_dir | filename.with(".model"), m);
 
 
 	mod.new_name = format("Lightmap/%s/%s_%d", world_name_small, mod.orig_name, mod.id);

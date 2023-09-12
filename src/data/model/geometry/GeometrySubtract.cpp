@@ -357,9 +357,9 @@ void find_contours(const Geometry &m, ModelPolygon &t, const Geometry &s, Array<
 			msg_write(i2s(i) + " " + c.str());
 		if (cc.num < 3) {
 			/*for (int i=0;i<t.side.num;i++)
-				ed->multi_view_3d->add_message_3d("p"+i2s(i), m.vertex[t.side[i].vertex].pos);
+				session->multi_view_3d->add_message_3d("p"+i2s(i), m.vertex[t.side[i].vertex].pos);
 			foreachi(Col &c, cc, i)
-				ed->multi_view_3d->add_message_3d("x"+i2s(i), c.p);*/
+				session->multi_view_3d->add_message_3d("x"+i2s(i), c.p);*/
 			throw ActionException("contour with num<3");
 		}
 	}
@@ -446,7 +446,7 @@ void sort_and_join_contours(const Geometry &m, ModelPolygon &t, const Geometry &
 
 		// done?
 		/*foreachi(sCol &ccc, cc, i)
-			ed->multi_view_3d->AddMessage3d(i2s(i + 1), ccc.p);*/
+			session->multi_view_3d->AddMessage3d(i2s(i + 1), ccc.p);*/
 		c_out.add(cc);
 	}
 
@@ -587,7 +587,7 @@ void triangulate_contours(const Geometry &m, ModelPolygon &t, Array<Array<Col>> 
 		if (i_max < 0) {
 			/*for (int i=0;i<contours.num;i++)
 				for (int j=0;j<contours[i].num;j++) {
-					ed->multi_view_3d->AddMessage3d(format("%d:%d", i, j), contours[i][j].p);
+					session->multi_view_3d->AddMessage3d(format("%d:%d", i, j), contours[i][j].p);
 				}*/
 			throw ActionException("could not fill contours");
 		}

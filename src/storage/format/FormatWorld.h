@@ -13,7 +13,7 @@
 
 class FormatWorld: public TypedFormat<DataWorld> {
 public:
-	FormatWorld(EdwardWindow *ed);
+	FormatWorld(Session *s);
 
 	void _load(const Path &filename, DataWorld *data, bool deep) override;
 	void _save(const Path &filename, DataWorld *data) override;

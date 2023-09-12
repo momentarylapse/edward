@@ -15,7 +15,7 @@
 #include "../../lib/os/formatter.h"
 #include "../../lib/math/quaternion.h"
 
-FormatModelJson::FormatModelJson(EdwardWindow *ed) : TypedFormat<DataModel>(ed, FD_MODEL, "json", _("Model json"), Flag::READ_WRITE) {
+FormatModelJson::FormatModelJson(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "json", _("Model json"), Flag::READ_WRITE) {
 	f = nullptr;
 	cur_token = -1;
 }

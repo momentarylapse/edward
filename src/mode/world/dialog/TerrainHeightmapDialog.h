@@ -13,7 +13,7 @@
 
 class TerrainHeightmapDialog: public hui::Dialog {
 public:
-	TerrainHeightmapDialog(EdwardWindow *ed, bool _allow_parent, DataWorld *_data);
+	TerrainHeightmapDialog(bool _allow_parent, DataWorld *_data);
 
 	void load_data();
 	void apply_data();
@@ -26,7 +26,6 @@ public:
 	void on_close();
 
 private:
-	EdwardWindow *ed;
 	DataWorld *data;
 	Path heightmap_file;
 	Path filter_file;

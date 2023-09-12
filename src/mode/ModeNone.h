@@ -13,7 +13,7 @@
 class ModeNone : public ModeBase
 {
 public:
-	ModeNone(EdwardWindow *ed);
+	ModeNone(Session *s);
 	virtual ~ModeNone();
 
 	virtual Data *get_data(){ return NULL; };

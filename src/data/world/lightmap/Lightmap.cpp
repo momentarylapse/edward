@@ -8,7 +8,7 @@
 #include <algorithm>
 #include "Lightmap.h"
 #include "LightmapData.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../stuff/Progress.h"
 #include "../../../data/model/DataModel.h"
 #include "../../../data/world/DataWorld.h"
@@ -51,7 +51,7 @@ void Lightmap::Histogram::normalize()
 Lightmap::Lightmap(LightmapData *_data)
 {
 	data = _data;
-	progress = data->source_world->ed->progress;
+	progress = data->source_world->session->progress;
 }
 
 Lightmap::~Lightmap()
@@ -179,7 +179,7 @@ bool Lightmap::RenderTextures()
 			mat->col.user = true;
 		}
 		m.new_name = data->model_out_dir | i2s(mid);
-		data->source_world->ed->storage->save(engine.object_dir | m.new_name.with(".model"), m.orig);
+		data->source_world->session->storage->save(engine.object_dir | m.new_name.with(".model"), m.orig);
 	}
 
 	foreachi(LightmapData::Terrain &t, data->Terrains, tid){
@@ -223,7 +223,7 @@ bool Lightmap::RenderTextures()
 
 void Lightmap::CreateNewWorld()
 {
-	DataWorld w(data->source_world->ed);
+	DataWorld w(data->source_world->session);
 	w.meta_data = data->source_world->meta_data;
 	w.EgoIndex = data->source_world->EgoIndex;
 	w.objects = data->source_world->objects;
@@ -231,6 +231,6 @@ void Lightmap::CreateNewWorld()
 	for (LightmapData::Model &m: data->Models)
 		w.objects[m.object_index].filename = m.new_name;
 
-	data->source_world->ed->storage->save(engine.map_dir | data->new_world_name.with(".world"), &w);
+	data->source_world->session->storage->save(engine.map_dir | data->new_world_name.with(".world"), &w);
 }
 

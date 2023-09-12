@@ -72,7 +72,7 @@ static float get_weight(ModelMesh *m, ModelEdge &e, Array<Array<PolyRef> > &ref)
 }
 
 void ActionModelEasify::CalculateWeights(ModelMesh *m) {
-	//ed->multi_view_3d->reset_message_3d();
+	//session->multi_view_3d->reset_message_3d();
 
 	// find all polygon sides for each vertex
 	Array<Array<PolyRef> > ref;
@@ -120,7 +120,7 @@ void ActionModelEasify::CalculateWeights(ModelMesh *m) {
 
 
 //		foreachi(s.Edge, e, i)
-//			ed->multi_view_3d->AddMessage3d(f2s(we[i], 1), (m->Vertex[e.Vertex[0]].pos + m->Vertex[e.Vertex[1]].pos) / 2);
+//			session->multi_view_3d->AddMessage3d(f2s(we[i], 1), (m->Vertex[e.Vertex[0]].pos + m->Vertex[e.Vertex[1]].pos) / 2);
 }
 
 bool ActionModelEasify::EasifyStep(ModelMesh *m) {

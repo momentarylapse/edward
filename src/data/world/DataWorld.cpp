@@ -12,7 +12,7 @@
 #include "WorldCamera.h"
 #include "WorldLink.h"
 #include "../../mode/world/ModeWorld.h"
-#include "../../EdwardWindow.h"
+#include "../../Session.h"
 #include "../../storage/Storage.h"
 #include "../../y/Object.h"
 #include "../../y/Terrain.h"
@@ -32,8 +32,8 @@
 
 
 
-DataWorld::DataWorld(EdwardWindow *ed) :
-	Data(ed, FD_WORLD)
+DataWorld::DataWorld(Session *s) :
+	Data(s, FD_WORLD)
 {
 	reset();
 }
@@ -161,7 +161,7 @@ WorldObject* DataWorld::add_object(const Path &filename, const vec3& pos) {
 	o.ang = v_0;//quaternion::ID;
 	o.is_selected = true;
 	o.filename = filename;
-	o.object = (Object*)ed->resource_manager->load_model(filename);
+	o.object = (Object*)session->resource_manager->load_model(filename);
 	return (WorldObject*)execute(new ActionWorldAddObject(o));
 }
 

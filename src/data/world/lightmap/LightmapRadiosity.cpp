@@ -8,7 +8,7 @@
 #include "LightmapRadiosity.h"
 #include "../DataWorld.h"
 #include "../../../stuff/Progress.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 
 
 static float d_max = 20.0f;
@@ -51,8 +51,8 @@ void LightmapRadiosity::Compute()
 				a.coeff.add(f);
 			}
 		}
-		data->source_world->ed->progress->set(format(_("%d of %d"), i_a, data->Vertices.num), sqrt((float)i_a / (float)data->Vertices.num));
-		if (data->source_world->ed->progress->is_cancelled())
+		data->source_world->session->progress->set(format(_("%d of %d"), i_a, data->Vertices.num), sqrt((float)i_a / (float)data->Vertices.num));
+		if (data->source_world->session->progress->is_cancelled())
 			throw AbortException();
 	}
 

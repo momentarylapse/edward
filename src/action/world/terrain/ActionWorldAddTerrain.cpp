@@ -6,7 +6,7 @@
  */
 
 #include "ActionWorldAddTerrain.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/world/WorldTerrain.h"
 #include "../../../y/Terrain.h"
@@ -58,7 +58,7 @@ void *ActionWorldAddTerrain::execute(Data *d) {
 		t.terrain->pattern.x = size.x / num_x;
 		t.terrain->pattern.y = 0;
 		t.terrain->pattern.z = size.z / num_z;
-		t.terrain->material = new Material(d->ed->resource_manager);
+		t.terrain->material = new Material(d->session->resource_manager);
 		t.terrain->material->textures.clear();
 		t.terrain->material->textures.add(NULL);
 		t.terrain->texture_scale[0].x = 1.0f;
@@ -75,7 +75,7 @@ void *ActionWorldAddTerrain::execute(Data *d) {
 		t.terrain->max = size;
 		t.terrain->force_redraw = true;
 	} else {
-		t.terrain = new Terrain(d->ed->resource_manager, filename);
+		t.terrain = new Terrain(d->session->resource_manager, filename);
 		t.filename = filename;
 	}
 

@@ -26,6 +26,7 @@
 #include "../../../y/Terrain.h"
 #include "../../../lib/kaba/kaba.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 
 
 
@@ -35,7 +36,7 @@ const bool LIST_SHOW_SCRIPTS = false;
 const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
 
 
-void update_script_data(EdwardWindow *ed, ScriptInstanceData &s, const string &class_base_name, bool guess_class);
+void update_script_data(Session *session, ScriptInstanceData &s, const string &class_base_name, bool guess_class);
 
 
 WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
@@ -80,7 +81,7 @@ WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
 		world->ExecuteTerrainPropertiesDialog(ii.index);
 	});
 	event("terrain-edit-heights", [this] {
-		world->ed->set_mode(mode_world_terrain);
+		world->session->set_mode(mode_world_terrain);
 	});
 	event("terrain-heightmap", [this] {
 		world->apply_heightmap();
@@ -101,7 +102,7 @@ WorldObjectListPanel::~WorldObjectListPanel() {
 }
 
 void WorldObjectListPanel::on_component_add() {
-	ComponentSelectionDialog::choose(world->ed, win).on([this] (const ScriptInstanceData &component) {
+	ComponentSelectionDialog::choose(world->session, win).on([this] (const ScriptInstanceData &component) {
 		data->execute(new ActionWorldSelectionAddComponent(data, component));
 	});
 }
@@ -135,7 +136,7 @@ void WorldObjectListPanel::on_component_edit_variables() {
 		return;
 
 	auto com = &o.components[row];
-	update_script_data(data->ed, *com, "Component", false);
+	update_script_data(data->session, *com, "Component", false);
 	auto dlg = new ScriptVarsDialog(win, com);
 	hui::fly(dlg, [com] {
 		for (auto v: com->variables)
@@ -152,7 +153,7 @@ void WorldObjectListPanel::on_object_edit() {
 		return;
 	auto &o = data->objects[ii.index];
 
-	world->ed->universal_edit(FD_MODEL, o.filename, true);
+	world->session->universal_edit(FD_MODEL, o.filename, true);
 }
 
 void WorldObjectListPanel::fill_list() {

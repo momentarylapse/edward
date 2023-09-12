@@ -14,7 +14,7 @@
 #include "../../lib/doc/xml.h"
 #include "../../lib/hui/hui.h"
 #include "../../stuff/PluginManager.h"
-#include "../../EdwardWindow.h"
+#include "../../Session.h"
 #include "../../Edward.h"
 
 
@@ -37,8 +37,8 @@ Array<string> ShaderGraph::enumerate() const {
 
 
 
-ShaderGraph::ShaderGraph(EdwardWindow *_ed) {
-	ed = _ed;
+ShaderGraph::ShaderGraph(Session *_s) {
+	session = _s;
 }
 
 ShaderGraph::~ShaderGraph() {
@@ -68,7 +68,7 @@ void ShaderGraph::make_default_for_engine() {
 		connect(mat, 3, surf, 3); // emission
 		connect(mesh, 1, surf, 4); // n
 	} catch (Exception &e) {
-		ed->error_box(e.message());
+		session->error(e.message());
 	}
 }
 
@@ -78,7 +78,7 @@ void ShaderGraph::make_default_basic() {
 	try {
 		add("Output", 0, 0);
 	} catch (Exception &e) {
-		ed->error_box(e.message());
+		session->error(e.message());
 	}
 }
 
@@ -101,7 +101,7 @@ void ShaderGraph::make_default_cube_map() {
 		connect(mat, 4, surf, 4);
 		connect(mesh, 1, surf, 5);
 	} catch (Exception &e) {
-		ed->error_box(e.message());
+		session->error(e.message());
 	}
 }
 

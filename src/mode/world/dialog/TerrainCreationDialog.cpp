@@ -7,13 +7,13 @@
 
 #include "TerrainCreationDialog.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../storage/Storage.h"
 
-TerrainCreationDialog::TerrainCreationDialog(EdwardWindow *_ed, bool _allow_parent, DataWorld *_data) :
-	hui::Dialog("new_terrain_dialog", 400, 300, _ed, _allow_parent)
+TerrainCreationDialog::TerrainCreationDialog(bool _allow_parent, DataWorld *_data) :
+	hui::Dialog("new_terrain_dialog", 400, 300, _data->session->win, _allow_parent)
 {
 	from_resource("new_terrain_dialog");
-	ed = _ed;
 	data = _data;
 
 	event("cancel", [=]{ OnClose(); });
@@ -69,7 +69,7 @@ void TerrainCreationDialog::OnClose()
 
 
 void TerrainCreationDialog::OnFindHeightmap() {
-	ed->storage->file_dialog(FD_TEXTURE, false, false).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_TEXTURE, false, false).on([this] (const auto& p) {
 		set_string("height_image", p.complete.str());
 	});
 }

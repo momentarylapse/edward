@@ -7,7 +7,7 @@
 
 #include "ImporterCairo.h"
 #include "../DataFont.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../lib/image/image.h"
 //#include "../../../lib/nix/nix.h"
 #include "../../../lib/os/msg.h"
@@ -45,7 +45,7 @@ bool ImporterCairo::Import(DataFont *f, const string &font_name)
 		bool ok = TryImport(f, font_name, ImportCairoTrySize[n][0], ImportCairoTrySize[n][1], im);
 		if (ok){
 			f->global.TextureFile = Path("Font") | (font_name + ".tga");
-			im.save(f->ed->resource_manager->texture_dir | f->global.TextureFile);
+			im.save(f->session->resource_manager->texture_dir | f->global.TextureFile);
 			f->out_changed();
 			return true;
 		}

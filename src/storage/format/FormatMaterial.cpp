@@ -6,11 +6,13 @@
  */
 
 #include "FormatMaterial.h"
-#include "../../EdwardWindow.h"
+#include "../../Session.h"
 #include "../../data/material/ShaderGraph.h"
+#include "../../lib/hui/language.h"
 #include "../../lib/nix/nix.h"
 #include "../../lib/os/config.h"
 #include "../../lib/os/formatter.h"
+#include "../../lib/os/msg.h"
 
 color any2color(const Any &a);
 Any color2any(const color &c) {
@@ -22,7 +24,7 @@ Any color2any(const color &c) {
 	return r;
 }
 
-FormatMaterial::FormatMaterial(EdwardWindow *ed) : TypedFormat<DataMaterial>(ed, FD_MATERIAL, "material", _("Material"), Flag::CANONICAL_READ_WRITE) {
+FormatMaterial::FormatMaterial(Session *s) : TypedFormat<DataMaterial>(s, FD_MATERIAL, "material", _("Material"), Flag::CANONICAL_READ_WRITE) {
 }
 
 Array<string> paths_to_str_arr(const Array<Path> &files) {
@@ -257,7 +259,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 	}
 
 	if (deep) {
-		data->shader.load_from_file(ed);
+		data->shader.load_from_file(session);
 	}
 
 	delete(f);

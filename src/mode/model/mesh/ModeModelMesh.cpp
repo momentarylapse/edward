@@ -42,6 +42,7 @@
 #include "../../../data/model/geometry/GeometryCylinder.h"
 #include "../../../action/model/mesh/skin/ActionModelSkinVerticesFromProjection.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/Window.h"
 #include "../../../multiview/DrawingHelper.h"
@@ -57,7 +58,7 @@ string vb_format(int num_tex) {
 }
 
 ModeModelMesh::ModeModelMesh(ModeModel *_parent, MultiView::MultiView *mv3, MultiView::MultiView *mv2) :
-	Mode<ModeModel, DataModel>(_parent->ed, "ModelMesh", _parent, mv3, "menu_model") {
+	Mode<ModeModel, DataModel>(_parent->session, "ModelMesh", _parent, mv3, "menu_model") {
 
 	selection_mode = NULL;
 	current_material = 0;
@@ -89,7 +90,7 @@ ModeModelMesh::~ModeModelMesh() {
 }
 
 void ModeModelMesh::on_start() {
-	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar");
+	session->win->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar");
 
 	data->out_changed >> create_sink([=]{ on_data_update(); });
 	data->out_selection >> create_sink([=]{ on_data_update(); });
@@ -97,13 +98,13 @@ void ModeModelMesh::on_start() {
 	update_vertex_buffers(data->mesh->vertex);
 
 	set_selection_mode(selection_mode);
-	ed->mode_model->allow_selection_modes(true);
+	session->mode_model->allow_selection_modes(true);
 	on_data_update();
 }
 
 void ModeModelMesh::on_enter() {
 	current_material = 0;
-	ed->mode_model->allow_selection_modes(true);
+	session->mode_model->allow_selection_modes(true);
 	multi_view->set_allow_action(true);
 	multi_view->set_allow_select(true);
 }
@@ -111,7 +112,7 @@ void ModeModelMesh::on_enter() {
 void ModeModelMesh::on_end() {
 	data->unsubscribe(this);
 
-	auto *t = ed->get_toolbar(hui::TOOLBAR_LEFT);
+	auto *t = session->win->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 }
@@ -137,7 +138,7 @@ void ModeModelMesh::on_command(const string &id) {
 	if (id == "copy")
 		copy();
 	if (id == "paste")
-		ed->set_mode(new ModeModelMeshPaste(this));
+		session->set_mode(new ModeModelMeshPaste(this));
 		//paste();
 
 	if (id == "select_cw")
@@ -152,11 +153,11 @@ void ModeModelMesh::on_command(const string &id) {
 	if (id == "invert_trias")
 		data->invert_polygons(data->get_selection());
 	if (id == "extrude_triangles")
-		ed->set_mode(new ModeModelMeshExtrudePolygons(this, false));
+		session->set_mode(new ModeModelMeshExtrudePolygons(this, false));
 	if (id == "extrude_triangles_independent")
-		ed->set_mode(new ModeModelMeshExtrudePolygons(this, true));
+		session->set_mode(new ModeModelMeshExtrudePolygons(this, true));
 	if (id == "autoweld_surfaces")
-		ed->set_mode(new ModeModelMeshAutoweld(this));
+		session->set_mode(new ModeModelMeshAutoweld(this));
 	if (id == "convert_to_triangles")
 		data->convertSelectionToTriangles();
 	if (id == "untriangulate_selection")
@@ -175,41 +176,41 @@ void ModeModelMesh::on_command(const string &id) {
 		data->subdivideSelectedSurfaces(data->get_selection());
 
 	if (id == "new_point")
-		ed->set_mode(new ModeModelMeshCreateVertex(this));
+		session->set_mode(new ModeModelMeshCreateVertex(this));
 	if (id == "new_tria")
-		ed->set_mode(new ModeModelMeshCreatePolygon(this));
+		session->set_mode(new ModeModelMeshCreatePolygon(this));
 	if (id == "new_ball")
-		ed->set_mode(new ModeModelMeshCreateBall(this));
+		session->set_mode(new ModeModelMeshCreateBall(this));
 	if (id == "new_cube")
-		ed->set_mode(new ModeModelMeshCreateCube(this));
+		session->set_mode(new ModeModelMeshCreateCube(this));
 	if (id == "new_cylinder")
-		ed->set_mode(new ModeModelMeshCreateCylinder(this));
+		session->set_mode(new ModeModelMeshCreateCylinder(this));
 	if (id == "new_cylindersnake")
-		ed->set_mode(new ModeModelMeshCreateCylinderSnake(this));
+		session->set_mode(new ModeModelMeshCreateCylinderSnake(this));
 	if (id == "new_plane")
-		ed->set_mode(new ModeModelMeshCreatePlane(this));
+		session->set_mode(new ModeModelMeshCreatePlane(this));
 	if (id == "new_torus")
-		ed->set_mode(new ModeModelMeshCreateTorus(this));
+		session->set_mode(new ModeModelMeshCreateTorus(this));
 	if (id == "new_tetrahedron")
-		ed->set_mode(new ModeModelMeshCreatePlatonic(this, 4));
+		session->set_mode(new ModeModelMeshCreatePlatonic(this, 4));
 	if (id == "new_octahedron")
-		ed->set_mode(new ModeModelMeshCreatePlatonic(this, 8));
+		session->set_mode(new ModeModelMeshCreatePlatonic(this, 8));
 	if (id == "new_dodecahedron")
-		ed->set_mode(new ModeModelMeshCreatePlatonic(this, 12));
+		session->set_mode(new ModeModelMeshCreatePlatonic(this, 12));
 	if (id == "new_icosahedron")
-		ed->set_mode(new ModeModelMeshCreatePlatonic(this, 20));
+		session->set_mode(new ModeModelMeshCreatePlatonic(this, 20));
 	if (id == "new_teapot")
-		ed->set_mode(new ModeModelMeshCreatePlatonic(this, 306));
+		session->set_mode(new ModeModelMeshCreatePlatonic(this, 306));
 	if (id == "split_polygon")
-		ed->set_mode(new ModeModelMeshSplitPolygon(this));
+		session->set_mode(new ModeModelMeshSplitPolygon(this));
 	if (id == "bevel_edges")
-		ed->set_mode(new ModeModelMeshBevelEdges(this));
+		session->set_mode(new ModeModelMeshBevelEdges(this));
 	if (id == "cut_loop")
-		ed->set_mode(new ModeModelMeshCutLoop(this));
+		session->set_mode(new ModeModelMeshCutLoop(this));
 	if (id == "deformation_function")
-		ed->set_mode(new ModeModelMeshDeformFunction(this));
+		session->set_mode(new ModeModelMeshDeformFunction(this));
 	if (id == "deformation_cylinder")
-		ed->set_mode(new ModeModelMeshDeformCylinder(this));
+		session->set_mode(new ModeModelMeshDeformCylinder(this));
 	if (id == "flatten_vertices")
 		data->flattenSelectedVertices();
 
@@ -265,12 +266,12 @@ void ModeModelMesh::on_command(const string &id) {
 void ModeModelMesh::on_draw() {
 	auto s = data->edit_mesh->get_selection();
 	if (s.vertex.num > 0) {
-		nix::set_shader(ed->gl->default_2d.get());
+		nix::set_shader(session->gl->default_2d.get());
 		string t = format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num);
 		if (current_skin == MESH_PHYSICAL)
 			t += format(", %d balls, %d cylinders", s.ball.num, s.cylinder.num);
 				//    %d  %d
-		ed->drawing_helper->draw_str(10, nix::target_height - 25, t);
+		session->drawing_helper->draw_str(10, nix::target_height - 25, t);
 	}
 }
 
@@ -338,38 +339,38 @@ void ModeModelMesh::on_set_multi_view() {
 
 
 void ModeModelMesh::on_update_menu() {
-	ed->enable("copy", copyable());
-	ed->enable("paste", pasteable());
-	ed->enable("delete", copyable());
-	string cm_name = ed->cur_mode->name;
-	ed->check("new_point", cm_name == "ModelMeshCreateVertex");
-	ed->check("new_tria", cm_name == "ModelMeshCreatePolygon");
-	ed->check("new_plane", cm_name == "ModelMeshCreatePlane");
-	ed->check("new_cube", cm_name == "ModelMeshCreateCube");
-	ed->check("new_ball", cm_name == "ModelMeshCreateBall");
-	ed->check("new_cylinder", cm_name == "ModelMeshCreateCylinder");
-	ed->check("new_torus", cm_name == "ModelMeshCreateTorus");
+	session->win->enable("copy", copyable());
+	session->win->enable("paste", pasteable());
+	session->win->enable("delete", copyable());
+	string cm_name = session->cur_mode->name;
+	session->win->check("new_point", cm_name == "ModelMeshCreateVertex");
+	session->win->check("new_tria", cm_name == "ModelMeshCreatePolygon");
+	session->win->check("new_plane", cm_name == "ModelMeshCreatePlane");
+	session->win->check("new_cube", cm_name == "ModelMeshCreateCube");
+	session->win->check("new_ball", cm_name == "ModelMeshCreateBall");
+	session->win->check("new_cylinder", cm_name == "ModelMeshCreateCylinder");
+	session->win->check("new_torus", cm_name == "ModelMeshCreateTorus");
 
-	ed->check("select_cw", select_cw);
-	ed->check("snap_to_grid", multi_view->snap_to_grid);
+	session->win->check("select_cw", select_cw);
+	session->win->check("snap_to_grid", multi_view->snap_to_grid);
 
-	ed->enable("select", multi_view->allow_mouse_actions);
-	ed->enable("translate", multi_view->allow_mouse_actions);
-	ed->enable("rotate", multi_view->allow_mouse_actions);
-	ed->enable("scale", multi_view->allow_mouse_actions);
-	ed->enable("mirror", multi_view->allow_mouse_actions);
-	ed->enable("lock_action", multi_view->allow_mouse_actions);
-	ed->check("select", mouse_action == MultiView::ACTION_SELECT);
-	ed->check("translate", mouse_action == MultiView::ACTION_MOVE);
-	ed->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
-	ed->check("scale", mouse_action == MultiView::ACTION_SCALE);
-	ed->check("mirror", mouse_action == MultiView::ACTION_MIRROR);
-	ed->check("lock_action", lock_action);
+	session->win->enable("select", multi_view->allow_mouse_actions);
+	session->win->enable("translate", multi_view->allow_mouse_actions);
+	session->win->enable("rotate", multi_view->allow_mouse_actions);
+	session->win->enable("scale", multi_view->allow_mouse_actions);
+	session->win->enable("mirror", multi_view->allow_mouse_actions);
+	session->win->enable("lock_action", multi_view->allow_mouse_actions);
+	session->win->check("select", mouse_action == MultiView::ACTION_SELECT);
+	session->win->check("translate", mouse_action == MultiView::ACTION_MOVE);
+	session->win->check("rotate", mouse_action == MultiView::ACTION_ROTATE);
+	session->win->check("scale", mouse_action == MultiView::ACTION_SCALE);
+	session->win->check("mirror", mouse_action == MultiView::ACTION_MIRROR);
+	session->win->check("lock_action", lock_action);
 
-	ed->check("detail_physical", current_skin == MESH_PHYSICAL);
-	ed->check("detail_high", current_skin == MESH_HIGH);
-	ed->check("detail_2", current_skin == MESH_MEDIUM);
-	ed->check("detail_3", current_skin == MESH_LOW);
+	session->win->check("detail_physical", current_skin == MESH_PHYSICAL);
+	session->win->check("detail_high", current_skin == MESH_HIGH);
+	session->win->check("detail_2", current_skin == MESH_MEDIUM);
+	session->win->check("detail_3", current_skin == MESH_LOW);
 }
 
 bool ModeModelMesh::optimize_view() {
@@ -382,8 +383,8 @@ bool ModeModelMesh::optimize_view() {
 	if (min != max)
 		mv->set_view_box(min, max);
 
-	ed->multi_view_2d->reset_view();
-	ed->multi_view_2d->cam.pos = vec3(0.5f, 0.5f, 0);
+	session->multi_view_2d->reset_view();
+	session->multi_view_2d->cam.pos = vec3(0.5f, 0.5f, 0);
 	/*if ((Bone.num > 0) and (Vertex.num <= 0))
 		SetSubMode(SubModeSkeleton);
 	if (SubMode == SubModeSkeleton)
@@ -397,7 +398,7 @@ void ModeModelMesh::create_new_material_for_selection() {
 #if 0
 	msg_db_f("CreateNewMaterialForSelection", 2);
 	if (0 == data->getNumSelectedPolygons()) {
-		ed->set_message(_("no triangle selected"));
+		session->set_message(_("no triangle selected"));
 		return;
 	}
 
@@ -435,11 +436,11 @@ void ModeModelMesh::create_new_material_for_selection() {
 
 void ModeModelMesh::choose_material_for_selection() {
 	if (data->get_selection().polygon.num == 0) {
-		ed->set_message(_("no polygon selected"));
+		session->set_message(_("no polygon selected"));
 		return;
 	}
 
-	auto dlg = new ModelMaterialSelectionDialog(ed, false, data);
+	auto dlg = new ModelMaterialSelectionDialog(session->win, false, data);
 	hui::run(dlg, [this, dlg] {
 		if (dlg->answer >= 0)
 			data->setMaterialSelection(dlg->answer);
@@ -449,8 +450,8 @@ void ModeModelMesh::choose_material_for_selection() {
 void ModeModelMesh::choose_mouse_function(int f, bool _lock_action) {
 	mouse_action = f;
 	lock_action = _lock_action;
-	apply_mouse_function(ed->multi_view_3d);
-	apply_mouse_function(ed->multi_view_2d);
+	apply_mouse_function(session->multi_view_3d);
+	apply_mouse_function(session->multi_view_2d);
 }
 
 void ModeModelMesh::apply_mouse_function(MultiView::MultiView *mv) {
@@ -468,12 +469,12 @@ void ModeModelMesh::copy() {
 	data->edit_mesh->copy_geometry(temp_geo);
 
 	on_update_menu();
-	ed->set_message(format(_("%d vertices, %d triangles copied"), temp_geo.vertex.num, temp_geo.polygon.num));
+	session->set_message(format(_("%d vertices, %d triangles copied"), temp_geo.vertex.num, temp_geo.polygon.num));
 }
 
 void ModeModelMesh::paste() {
 	data->pasteGeometry(temp_geo, current_material);
-	ed->set_message(format(_("%d vertices, %d triangles pasted"), temp_geo.vertex.num, temp_geo.polygon.num));
+	session->set_message(format(_("%d vertices, %d triangles pasted"), temp_geo.vertex.num, temp_geo.polygon.num));
 }
 
 bool ModeModelMesh::copyable() {
@@ -483,10 +484,10 @@ bool ModeModelMesh::copyable() {
 
 void ModeModelMesh::add_effects(int type) {
 	if (data->get_selection().vertex.num == 0) {
-		ed->set_message(_("No vertex point selected"));
+		session->set_message(_("No vertex point selected"));
 		return;
 	}
-	hui::fly(new ModelFXDialog(ed, false, data, type, -1));
+	hui::fly(new ModelFXDialog(session->win, false, data, type, -1));
 }
 
 void ModeModelMesh::edit_effects() {
@@ -498,10 +499,10 @@ void ModeModelMesh::edit_effects() {
 			n ++;
 		}
 	if (n != 1) {
-		ed->set_message(_("One vertex point with effects has to be selected!"));
+		session->set_message(_("One vertex point with effects has to be selected!"));
 		return;
 	}
-	hui::fly(new ModelFXDialog(ed, false, data, -1, index));
+	hui::fly(new ModelFXDialog(session->win, false, data, -1, index));
 }
 
 void ModeModelMesh::clear_effects() {
@@ -510,7 +511,7 @@ void ModeModelMesh::clear_effects() {
 		if (data->mesh->vertex[fx.vertex].is_selected)
 			n ++;
 	if (n == 0) {
-		ed->set_message(_("No vertex with effects selected!"));
+		session->set_message(_("No vertex with effects selected!"));
 		return;
 	}
 	data->selectionClearEffects();
@@ -521,7 +522,7 @@ bool ModeModelMesh::pasteable() {
 }
 
 void ModeModelMesh::easify() {
-	hui::fly(new ModelEasifyDialog(ed, false, data));
+	hui::fly(new ModelEasifyDialog(session->win, false, data));
 }
 
 void ModeModelMesh::set_current_material(int index) {
@@ -543,7 +544,7 @@ void ModeModelMesh::set_current_skin(int index) {
 		msg_write("PHYSICAL");
 	}
 	data->reset_history();
-	ed->set_message(_("changing mesh... cleared history"));
+	session->set_message(_("changing mesh... cleared history"));
 
 	current_skin = index;
 
@@ -752,13 +753,13 @@ void ModeModelMesh::set_selection_mode(MeshSelectionMode *mode) {
 	mode->update_multi_view();
 	state.out_changed.notify();
 	multi_view->force_redraw();
-	ed->update_menu(); // TODO
+	session->win->update_menu(); // TODO
 }
 
 void ModeModelMesh::toggle_select_cw() {
 	select_cw = !select_cw;
 	state.out_changed.notify();
-	ed->update_menu();
+	session->win->update_menu();
 }
 
 void ModeModelMesh::set_allow_draw_hover(bool allow) {

@@ -11,6 +11,7 @@
 #include "../dialog/CameraDialog.h"
 #include "../../../data/world/DataCamera.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../storage/Storage.h"
 #include "../../../lib/math/interpolation.h"
 #include "../../../lib/nix/nix.h"
@@ -38,7 +39,7 @@ ModeWorldCamera *mode_world_camera = NULL;
 }*/
 
 ModeWorldCamera::ModeWorldCamera(ModeWorld *_parent, Data *_data) :
-	Mode<ModeWorld, DataCamera>(_parent->ed, "WorldCamera", _parent, _data, _parent->multi_view, "menu_world")
+	Mode<ModeWorld, DataCamera>(_parent->session, "WorldCamera", _parent, _data, _parent->multi_view, "menu_world")
 {
 	edit_vel = false;
 	edit_ang = false;
@@ -59,11 +60,11 @@ ModeWorldCamera::~ModeWorldCamera() {
 void ModeWorldCamera::on_start() {
 	// timeline....
 	dialog = new CameraDialog(this);
-	ed->set_bottom_panel(dialog);
+	session->win->set_bottom_panel(dialog);
 
-	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("world-camera-toolbar");
+	session->win->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("world-camera-toolbar");
 
-	auto t = ed->get_toolbar(hui::TOOLBAR_LEFT);
+	auto t = session->win->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 
@@ -81,14 +82,14 @@ void ModeWorldCamera::on_start() {
 
 void ModeWorldCamera::on_end() {
 	data->unsubscribe(this);
-	ed->set_bottom_panel(nullptr);
+	session->win->set_bottom_panel(nullptr);
 
 	multi_view->clear_data(data);
-	ed->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("world-edit-toolbar"); // ...
+	session->win->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("world-edit-toolbar"); // ...
 }
 
 void ModeWorldCamera::addPoint() {
-	ed->set_mode(new ModeWorldCameraCreatePoint(this));
+	session->set_mode(new ModeWorldCameraCreatePoint(this));
 }
 
 void ModeWorldCamera::deletePoint()
@@ -180,8 +181,8 @@ void ModeWorldCamera::on_command(const string &id)
 
 void ModeWorldCamera::on_update_menu()
 {
-	ed->enable("cam_undo", data->action_manager->undoable());
-	ed->enable("cam_redo", data->action_manager->redoable());
+	session->win->enable("cam_undo", data->action_manager->undoable());
+	session->win->enable("cam_redo", data->action_manager->redoable());
 }
 
 void ModeWorldCamera::loadData()
@@ -243,14 +244,14 @@ void ModeWorldCamera::on_draw_win(MultiView::Window *win)
 }
 
 void ModeWorldCamera::_new() {
-	ed->allow_termination().on([this] {
+	session->allow_termination().on([this] {
 		data->reset();
 	});
 }
 
 void ModeWorldCamera::open() {
-	ed->allow_termination().on([this] {
-		ed->storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const auto& p) {
+	session->allow_termination().on([this] {
+		session->storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const auto& p) {
 			data->load(p.complete);
 		});
 	});
@@ -264,7 +265,7 @@ void ModeWorldCamera::save() {
 }
 
 void ModeWorldCamera::save_as() {
-	ed->storage->file_dialog(FD_CAMERAFLIGHT, true, true).on([this] (const auto& p) {
+	session->storage->file_dialog(FD_CAMERAFLIGHT, true, true).on([this] (const auto& p) {
 		return data->save(p.complete);
 	});
 }

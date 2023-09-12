@@ -6,6 +6,7 @@
  */
 
 #include "ModeModelMeshAutoweld.h"
+#include "../../../../Session.h"
 #include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
@@ -28,7 +29,7 @@ void ModeModelMeshAutoweld::on_start()
 	radius_default = multi_view->cam.radius * 0.01f;
 	radius = radius_default;
 
-	dialog = new hui::Dialog("Autoweld", 240, 60, ed, true);
+	dialog = new hui::Dialog("Autoweld", 240, 60, session->win, true);
 	dialog->add_grid("", 0, 0, "table0");
 	dialog->set_target("table0");
 	dialog->add_grid("", 0, 0, "table1");

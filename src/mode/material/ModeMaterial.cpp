@@ -9,6 +9,7 @@
 #include "dialog/MaterialPropertiesDialog.h"
 #include "dialog/ShaderGraphDialog.h"
 #include "../../EdwardWindow.h"
+#include "../../Session.h"
 #include "../../storage/Storage.h"
 #include "../../data/material/DataMaterial.h"
 #include "../../data/material/ShaderGraph.h"
@@ -35,8 +36,8 @@ ModeMaterial *mode_material = NULL;
 
 #define __MATERIAL_MAX_TEXTURES		4
 
-ModeMaterial::ModeMaterial(EdwardWindow *_ed, MultiView::MultiView *mv) :
-	Mode(_ed, "Material", nullptr, new DataMaterial(_ed), mv, "menu_material"),
+ModeMaterial::ModeMaterial(Session *_s, MultiView::MultiView *mv) :
+	Mode(_s, "Material", nullptr, new DataMaterial(_s), mv, "menu_material"),
 	in_data_changed(this, [this] { on_data_update(); })
 {
 	geo = nullptr;
@@ -72,11 +73,11 @@ void test_save_extras(DataMaterial *data, hui::Callback cb_success) {
 		cb_success();
 	};
 
-	Path dir = data->ed->storage->last_dir[FD_SHADERFILE];
+	Path dir = data->session->storage->last_dir[FD_SHADERFILE];
 	if (data->shader.file) {
 		f(dir);
 	} else {
-		hui::file_dialog_save(data->ed, "Shader...", dir, {"filter=*.shader", "showfilter=*.shader"}).on([data, dir, f] (const Path &path) {
+		hui::file_dialog_save(data->session->win, "Shader...", dir, {"filter=*.shader", "showfilter=*.shader"}).on([data, dir, f] (const Path &path) {
 			data->shader.file = path.relative_to(dir);
 			f(dir);
 		});
@@ -87,7 +88,7 @@ void test_save_extras(DataMaterial *data, hui::Callback cb_success) {
 
 void ModeMaterial::save() {
 	test_save_extras(data, [this] {
-		ed->storage->auto_save(data);
+		session->storage->auto_save(data);
 	});
 }
 
@@ -107,7 +108,7 @@ void ModeMaterial::update_textures() {
 	textures.clear();
 
 	for (auto &tf: data->appearance.texture_files)
-		textures.add(ed->resource_manager->load_texture(tf));
+		textures.add(session->resource_manager->load_texture(tf));
 	/*if (appearance.reflection_mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
 		create_fake_dynamic_cube_map(cube_map);
 		textures.add(cube_map);
@@ -121,8 +122,8 @@ void ModeMaterial::update_textures() {
 void ModeMaterial::update_shader() {
 	msg_write("update shader");
 	try {
-		auto code = ed->resource_manager->expand_vertex_shader_source(data->shader.code, "default");
-		code = ed->resource_manager->expand_fragment_shader_source(code, "forward");
+		auto code = session->resource_manager->expand_vertex_shader_source(data->shader.code, "default");
+		code = session->resource_manager->expand_fragment_shader_source(code, "forward");
 		shader->update(code);
 	} catch(Exception &e) {
 		msg_error(e.message());
@@ -190,12 +191,12 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 
 
 void ModeMaterial::open() {
-	ed->universal_open(FD_MATERIAL);
+	session->universal_open(FD_MATERIAL);
 	/*if (!storage->open(data))
 		return false;
 
 	optimize_view();
-	ed->set_mode(mode_material);
+	session->set_mode(mode_material);
 	return true;*/
 }
 
@@ -203,10 +204,10 @@ void ModeMaterial::open() {
 
 void ModeMaterial::on_end() {
 
-	ed->set_side_panel(nullptr);
-	ed->set_bottom_panel(nullptr);
+	session->win->set_side_panel(nullptr);
+	session->win->set_bottom_panel(nullptr);
 
-	auto *t = ed->get_toolbar(hui::TOOLBAR_TOP);
+	auto *t = session->win->get_toolbar(hui::TOOLBAR_TOP);
 	t->reset();
 	t->enable(false);
 
@@ -223,7 +224,7 @@ void ModeMaterial::on_end() {
 
 void ModeMaterial::save_as() {
 	test_save_extras(data, [this] {
-		ed->storage->save_as(data);
+		session->storage->save_as(data);
 	});
 }
 
@@ -231,13 +232,13 @@ void ModeMaterial::save_as() {
 void ModeMaterial::on_start() {
 	msg_write("Material.on start");
 
-	ed->get_toolbar(hui::TOOLBAR_TOP)->set_by_id("material-toolbar");
-	auto t = ed->get_toolbar(hui::TOOLBAR_LEFT);
+	session->win->get_toolbar(hui::TOOLBAR_TOP)->set_by_id("material-toolbar");
+	auto t = session->win->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
 
 	try {
-		shader = ed->gl->create_shader("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
+		shader = session->gl->create_shader("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
 	} catch (Exception &e) {
 		msg_error(e.message());
 	}
@@ -260,8 +261,8 @@ void ModeMaterial::on_start() {
 
 	multi_view->set_allow_select(false);
 
-	appearance_dialog = new MaterialPropertiesDialog(ed, data);
-	ed->set_side_panel(appearance_dialog);
+	appearance_dialog = new MaterialPropertiesDialog(session->win, data);
+	session->win->set_side_panel(appearance_dialog);
 
 	update_shape();
 }
@@ -321,28 +322,28 @@ void ModeMaterial::set_shader_edit_mode(ShaderEditMode mode) {
 		return;
 
 	if (shader_edit_mode == ShaderEditMode::GRAPH) {
-		ed->set_bottom_panel(nullptr);
+		session->win->set_bottom_panel(nullptr);
 	}
 	shader_edit_mode = mode;
 	if (shader_edit_mode == ShaderEditMode::GRAPH) {
 		shader_graph_dialog = new ShaderGraphDialog(data);
-		ed->set_bottom_panel(shader_graph_dialog);
+		session->win->set_bottom_panel(shader_graph_dialog);
 	}
 	on_update_menu();
 }
 
 void ModeMaterial::on_update_menu() {
-	ed->check("material_shape_smooth", shape_smooth);
-	ed->check("material_shape_cube", shape_type == "cube");
-	ed->check("material_shape_ball", shape_type == "ball");
-	ed->check("material_shape_torus", shape_type == "torus");
-	ed->check("material_shape_torusknot", shape_type == "torusknot");
-	ed->check("material_shape_teapot", shape_type == "teapot");
-	ed->check("material_shape_icosahedron", shape_type == "icosahedron");
+	session->win->check("material_shape_smooth", shape_smooth);
+	session->win->check("material_shape_cube", shape_type == "cube");
+	session->win->check("material_shape_ball", shape_type == "ball");
+	session->win->check("material_shape_torus", shape_type == "torus");
+	session->win->check("material_shape_torusknot", shape_type == "torusknot");
+	session->win->check("material_shape_teapot", shape_type == "teapot");
+	session->win->check("material_shape_icosahedron", shape_type == "icosahedron");
 
-	ed->check("shader-mode-none", shader_edit_mode == ShaderEditMode::NONE);
-	ed->check("shader-mode-graph", shader_edit_mode == ShaderEditMode::GRAPH);
-	ed->check("shader-mode-code", shader_edit_mode == ShaderEditMode::CODE);
+	session->win->check("shader-mode-none", shader_edit_mode == ShaderEditMode::NONE);
+	session->win->check("shader-mode-graph", shader_edit_mode == ShaderEditMode::GRAPH);
+	session->win->check("shader-mode-code", shader_edit_mode == ShaderEditMode::CODE);
 }
 
 

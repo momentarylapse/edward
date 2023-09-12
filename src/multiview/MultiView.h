@@ -17,7 +17,7 @@
 #include "../lib/pattern/Observable.h"
 
 class Data;
-class EdwardWindow;
+class Session;
 class DrawingHelper;
 
 namespace nix {
@@ -98,7 +98,7 @@ static const int FLAG_MOVE = 8;
 
 class MultiView : public obs::Node<VirtualBase> {
 public:
-	MultiView(EdwardWindow *ed, bool _mode3d);
+	MultiView(Session *s, bool _mode3d);
 	virtual ~MultiView();
 
 	obs::source out_redraw{this, "redraw"};
@@ -128,7 +128,7 @@ public:
 
 	void on_update_menu();
 
-	EdwardWindow *ed;
+	Session *session;
 	nix::Context *gl;
 	DrawingHelper *drawing_helper;
 	bool mode3d;

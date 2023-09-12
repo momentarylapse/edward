@@ -7,19 +7,20 @@
 
 #include "ComponentSelectionDialog.h"
 #include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../storage/Storage.h"
 #include "../../../lib/kaba/kaba.h"
 #include "../../../lib/os/filesystem.h"
 
 
 // seems quick enough
-Array<ScriptInstanceData> enumerate_components(EdwardWindow *ed) {
+Array<ScriptInstanceData> enumerate_components(Session *session) {
 	Array<ScriptInstanceData> r;
-	auto files = os::fs::search(ed->storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
+	auto files = os::fs::search(session->storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
 	for (auto &f: files) {
 		try {
 			auto context = ownify(kaba::Context::create());
-			auto s = context->load_module(ed->storage->root_dir_kind[FD_SCRIPT] | f, true);
+			auto s = context->load_module(session->storage->root_dir_kind[FD_SCRIPT] | f, true);
 			for (auto c: s->classes()) {
 				if (c->is_derived_from_s("ecs.Component") and c->name != "Component")
 					r.add({f, c->name});
@@ -32,10 +33,10 @@ Array<ScriptInstanceData> enumerate_components(EdwardWindow *ed) {
 }
 
 
-ComponentSelectionDialog::ComponentSelectionDialog(EdwardWindow *ed, hui::Window *parent) :
+ComponentSelectionDialog::ComponentSelectionDialog(Session *session, hui::Window *parent) :
 		hui::Dialog("component-selection-dialog", parent)
 {
-	available = enumerate_components(ed);
+	available = enumerate_components(session);
 	for (auto &c: available)
 		add_string("list", format("%s\\%s", c.class_name, c.filename));
 
@@ -63,8 +64,8 @@ ComponentSelectionDialog::ComponentSelectionDialog(EdwardWindow *ed, hui::Window
 }
 
 
-base::future<ScriptInstanceData> ComponentSelectionDialog::choose(EdwardWindow *ed, hui::Window *parent) {
-	auto dlg = new ComponentSelectionDialog(ed, parent);
+base::future<ScriptInstanceData> ComponentSelectionDialog::choose(Session *session, hui::Window *parent) {
+	auto dlg = new ComponentSelectionDialog(session, parent);
 	hui::fly(dlg);
 	return dlg->promise.get_future();
 }

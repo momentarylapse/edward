@@ -6,14 +6,16 @@
  */
 
 #include "DataCamera.h"
-#include "../../EdwardWindow.h"
+#include "../../Session.h"
 #include "../../storage/Storage.h"
+#include "../../lib/hui/language.h"
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
+#include "../../lib/os/msg.h"
 
-DataCamera::DataCamera(EdwardWindow *ed) :
-	Data(ed, FD_CAMERAFLIGHT)
+DataCamera::DataCamera(Session *s) :
+	Data(s, FD_CAMERAFLIGHT)
 {
 }
 
@@ -79,7 +81,7 @@ bool DataCamera::load(const Path &_filename, bool deep) {
 		}
 
 	}else{
-		ed->error_box(format(_("Invalid file format of the file %s: %d (%d expected)!"), filename, ffv, 2));
+		session->error(format(_("Invalid file format of the file %s: %d (%d expected)!"), filename, ffv, 2));
 		Error=true;
 	}
 	delete f;
@@ -88,7 +90,7 @@ bool DataCamera::load(const Path &_filename, bool deep) {
 	out_changed();
 
 	}catch(Exception &e){
-		ed->set_message(e.message());
+		session->set_message(e.message());
 	}
 
 	return !Error;
@@ -134,7 +136,7 @@ bool DataCamera::save(const Path &_filename)
 	f->write_comment("#");
 
 	delete f;
-	ed->set_message(_("Camera script saved!"));
+	session->set_message(_("Camera script saved!"));
 	action_manager->mark_current_as_save();
 
 	} catch(Exception &e) {

@@ -14,7 +14,7 @@
 #include "../../../action/model/data/ActionModelDeleteMaterial.h"
 #include "../../../action/model/data/ActionModelEditMaterial.h"
 #include "../../../action/model/data/ActionModelEditData.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../storage/Storage.h"
 #include "../../../y/EngineData.h"
 
@@ -102,7 +102,7 @@ ModelMaterialDialog::~ModelMaterialDialog() {
 
 
 ModeModelMesh *ModelMaterialDialog::mode_model_mesh() {
-	return data->ed->mode_model->mode_model_mesh;
+	return data->session->mode_model->mode_model_mesh;
 }
 ModeModelMeshTexture *ModelMaterialDialog::mode_model_mesh_texture() {
 	return mode_model_mesh()->mode_model_mesh_texture;
@@ -239,14 +239,14 @@ void ModelMaterialDialog::on_material_add() {
 }
 
 void ModelMaterialDialog::on_material_load() {
-	data->ed->storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p){
+	data->session->storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p){
 		data->execute(new ActionModelAddMaterial(p.simple));
 	});
 }
 
 void ModelMaterialDialog::on_material_delete() {
 	if (count_material_polygons(data, mode_model_mesh()->current_material) > 0) {
-		data->ed->error_box(_("can only delete materials that are not applied to any polygons"));
+		data->session->error(_("can only delete materials that are not applied to any polygons"));
 		return;
 	}
 	data->execute(new ActionModelDeleteMaterial(mode_model_mesh()->current_material));
@@ -282,7 +282,7 @@ void ModelMaterialDialog::fill_texture_list() {
 void ModelMaterialDialog::on_texture_level_add() {
 	auto temp = data->material[mode_model_mesh()->current_material];
 	if (temp->texture_levels.num >= MATERIAL_MAX_TEXTURES) {
-		data->ed->error_box(format(_("Only %d texture levels allowed!"), MATERIAL_MAX_TEXTURES));
+		data->session->error(format(_("Only %d texture levels allowed!"), MATERIAL_MAX_TEXTURES));
 		return;
 	}
 
@@ -298,7 +298,7 @@ void ModelMaterialDialog::on_textures() {
 void ModelMaterialDialog::on_texture_level_load() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0)
-		data->ed->storage->file_dialog(FD_TEXTURE, false, true).on([this, sel] (const auto& p) {
+		data->session->storage->file_dialog(FD_TEXTURE, false, true).on([this, sel] (const auto& p) {
 			data->execute(new ActionModelMaterialLoadTexture(mode_model_mesh()->current_material, sel, p.relative));
 		});
 }
@@ -306,7 +306,7 @@ void ModelMaterialDialog::on_texture_level_load() {
 void ModelMaterialDialog::on_texture_level_save() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0)
-		data->ed->storage->file_dialog(FD_TEXTURE, true, true).on([this, sel] (const auto& p) {
+		data->session->storage->file_dialog(FD_TEXTURE, true, true).on([this, sel] (const auto& p) {
 			auto tl = data->material[mode_model_mesh()->current_material]->texture_levels[sel];
 			tl->image->save(p.complete);
 			tl->filename = p.relative; // ...
@@ -363,7 +363,7 @@ void ModelMaterialDialog::on_texture_level_delete() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0) {
 		if (data->material[mode_model_mesh()->current_material]->texture_levels.num <= 1) {
-			data->ed->error_box(_("At least one texture level has to exist!"));
+			data->session->error(_("At least one texture level has to exist!"));
 			return;
 		}
 		data->execute(new ActionModelMaterialDeleteTexture(mode_model_mesh()->current_material, sel));

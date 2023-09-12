@@ -6,7 +6,7 @@
  */
 
 #include "ActionWorldEditTerrain.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../data/world/DataWorld.h"
 #include "../../../y/Terrain.h"
 #include "../../../y/ResourceManager.h"
@@ -42,7 +42,7 @@ void *ActionWorldEditTerrain::execute(Data *d) {
 		std::swap(data.texture_file[i], t->texture_file[i]);
 		std::swap(data.texture_scale[i], t->texture_scale[i]);
 		try {
-			t->material->textures[i] = d->ed->resource_manager->load_texture(t->texture_file[i]);
+			t->material->textures[i] = d->session->resource_manager->load_texture(t->texture_file[i]);
 		} catch(Exception &e) {
 			msg_error(e.message());
 		}

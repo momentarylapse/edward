@@ -11,10 +11,9 @@
 #include "../../../lib/hui/hui.h"
 #include "../../../data/world/DataWorld.h"
 
-class TerrainCreationDialog: public hui::Dialog
-{
+class TerrainCreationDialog: public hui::Dialog {
 public:
-	TerrainCreationDialog(EdwardWindow *ed, bool _allow_parent, DataWorld *_data);
+	TerrainCreationDialog(bool _allow_parent, DataWorld *_data);
 	virtual ~TerrainCreationDialog();
 
 	void LoadData();
@@ -26,7 +25,6 @@ public:
 	void OnClose();
 
 private:
-	EdwardWindow *ed;
 	DataWorld *data;
 };
 

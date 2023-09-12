@@ -13,11 +13,11 @@
 
 class ComponentSelectionDialog: public hui::Dialog {
 public:
-	ComponentSelectionDialog(EdwardWindow *ed, hui::Window *parent);
+	ComponentSelectionDialog(Session *session, hui::Window *parent);
 
 	base::promise<ScriptInstanceData> promise;
 	Array<ScriptInstanceData> available;
 
 
-	static base::future<ScriptInstanceData> choose(EdwardWindow *ed, hui::Window *parent);
+	static base::future<ScriptInstanceData> choose(Session *session, hui::Window *parent);
 };

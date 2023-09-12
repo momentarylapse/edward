@@ -33,7 +33,7 @@ void *ActionModelSurfaceVolumeAnd::compose(Data *d)
 		if (m->surface[bi].is_selected){
 			for (int ai=m->surface.num-1; ai>=0; ai--){
 				ModelSurface *a = &m->surface[ai];
-				if ((a->view_stage >= ed->multi_view_3d->view_stage) && (!a->is_selected))
+				if ((a->view_stage >= session->multi_view_3d->view_stage) && (!a->is_selected))
 					SurfaceAnd(m, a, ai, &m->surface[bi], geos);
 			}
 		}
@@ -41,7 +41,7 @@ void *ActionModelSurfaceVolumeAnd::compose(Data *d)
 	for (Geometry &g: geos)
 		addSubAction(new ActionModelPasteGeometry(g, 0), m);
 
-	ed->set_message(format(_("%d closed surfaces subtracted"), n));
+	session->set_message(format(_("%d closed surfaces subtracted"), n));
 #endif
 	msg_todo("ActionModelSurfaceVolumeAnd");
 	return NULL;

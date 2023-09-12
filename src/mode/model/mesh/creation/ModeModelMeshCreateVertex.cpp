@@ -8,7 +8,7 @@
 #include "ModeModelMeshCreateVertex.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
-#include "../../../../EdwardWindow.h"
+#include "../../../../Session.h"
 #include "../../../../multiview/MultiView.h"
 
 ModeModelMeshCreateVertex::ModeModelMeshCreateVertex(ModeModelMesh *_parent) :
@@ -19,7 +19,7 @@ void ModeModelMeshCreateVertex::on_start() {
 	message = _("place new vertex");
 
 	parent->set_selection_mode(parent->selection_mode_vertex);
-	ed->mode_model->allow_selection_modes(false);
+	session->mode_model->allow_selection_modes(false);
 }
 
 

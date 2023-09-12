@@ -9,7 +9,7 @@
 #include "../mesh/ModeModelMesh.h"
 #include "../mesh/ModeModelMeshTexture.h"
 #include "../ModeModel.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 #include "../../../storage/Storage.h"
 #include "../../../action/model/data/ActionModelAddMaterial.h"
 #include "../../../action/model/data/ActionModelEditData.h"
@@ -57,7 +57,7 @@ shared<const kaba::Class> get_class_by_base(shared<kaba::Module> s, const string
 	return nullptr;
 }
 
-void update_model_script_data(EdwardWindow *ed, DataModel::MetaData &m) {
+void update_model_script_data(Session *session, DataModel::MetaData &m) {
 
 	// remove undefined
 	for (int i=m.variables.num-1; i>=0; i--)
@@ -71,9 +71,9 @@ void update_model_script_data(EdwardWindow *ed, DataModel::MetaData &m) {
 
 	//m.class_name = "";
 	try {
-		msg_write((ed->storage->root_dir_kind[FD_SCRIPT] | m.script_file).str());
+		msg_write((session->storage->root_dir_kind[FD_SCRIPT] | m.script_file).str());
 		auto c = ownify(kaba::Context::create());
-		auto ss = c->load_module(ed->storage->root_dir_kind[FD_SCRIPT] | m.script_file, true);
+		auto ss = c->load_module(session->storage->root_dir_kind[FD_SCRIPT] | m.script_file, true);
 
 		auto t = get_class_by_base(ss, "*.Model");
 		m._script_class = t->cname(t->owner->base_class);
@@ -105,13 +105,13 @@ void update_model_script_data(EdwardWindow *ed, DataModel::MetaData &m) {
 		}
 	} catch (Exception &e) {
 
-		ed->error_box(e.message());
+		session->error(e.message());
 	}
 
 }
 
 void ModelPropertiesDialog::load_data() {
-	update_model_script_data(data->ed, temp);
+	update_model_script_data(data->session, temp);
 
 // viewing properties (LOD)
 	if (temp.auto_generate_dists)
@@ -281,7 +281,7 @@ void ModelPropertiesDialog::on_num_items() {
 }
 
 void ModelPropertiesDialog::on_model_inventary() {
-	data->ed->storage->file_dialog(FD_MODEL, false, true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_MODEL, false, true).on([this] (const auto& p) {
 		int n = get_int("");
 		temp.inventary[n] = p.simple;
 		change_string("model_inventary", n, format("%d\\%s", n, p.simple));
@@ -303,10 +303,10 @@ void ModelPropertiesDialog::on_script_var_edit() {
 }
 
 void ModelPropertiesDialog::on_script_find() {
-	data->ed->storage->file_dialog(FD_SCRIPT, false, true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_SCRIPT, false, true).on([this] (const auto& p) {
 		set_string("script", p.relative.str());
 		temp.script_file = p.relative;
-		update_model_script_data(data->ed, temp);
+		update_model_script_data(data->session, temp);
 		refill_script_var_list();
 	});
 }

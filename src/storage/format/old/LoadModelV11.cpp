@@ -15,7 +15,7 @@
 #include "../../../lib/os/file.h"
 #include "../../../lib/os/filesystem.h"
 #include "../../../lib/os/formatter.h"
-#include "../../../EdwardWindow.h"
+#include "../../../Session.h"
 
 vec3 get_normal_by_index(int index);
 
@@ -129,7 +129,7 @@ void FormatModel::_load_v10(F *f, DataModel *data, bool deep) {
 	f->read_comment();
 	data->material.resize(f->read_int());
 	for (auto &m: data->material) {
-		m = new ModelMaterial(data->ed);
+		m = new ModelMaterial(data->session);
 		m->filename = f->read_str();
 		m->col.user = f->read_bool();
 		if (m->col.user){
@@ -261,7 +261,7 @@ void FormatModel::_load_v10(F *f, DataModel *data, bool deep) {
 			b.pos += data->bone[b.parent].pos;
 		b.model_file = f->read_str();
 		if (deep)
-			b.model = data->ed->resource_manager->load_model(b.model_file);
+			b.model = data->session->resource_manager->load_model(b.model_file);
 		b.const_pos = false;
 		b.is_selected = b.m_old = false;
 	}
@@ -420,7 +420,7 @@ void FormatModel::_load_v11(F *f, DataModel *data, bool deep) {
 	f->read_comment();
 	data->material.resize(f->read_int());
 	for (auto &m: data->material){
-		m = new ModelMaterial(data->ed);
+		m = new ModelMaterial(data->session);
 		m->filename = f->read_str();
 		m->col.user = f->read_bool();
 		color am, di, sp, em;
@@ -607,7 +607,7 @@ void FormatModel::_load_v11(F *f, DataModel *data, bool deep) {
 		b.model_file = f->read_str();
 		try{
 			if (deep)
-			b.model = data->ed->resource_manager->load_model(b.model_file);
+			b.model = data->session->resource_manager->load_model(b.model_file);
 		} catch(Exception &e) {
 			msg_error(e.message());
 		}
