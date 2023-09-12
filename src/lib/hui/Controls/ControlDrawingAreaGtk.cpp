@@ -137,18 +137,12 @@ extern int allow_signal_level; // -> hui_window_control.cpp
 
 void on_gtk_gl_area_realize(GtkGLArea *area, gpointer user_data) {
 	auto *da = reinterpret_cast<ControlDrawingArea*>(user_data);
-	msg_write("AAAAAA");
-	msg_write(allow_signal_level);
-	msg_write(p2s(da->panel));
 
 	gtk_gl_area_make_current(area);
 	if (gtk_gl_area_get_error(area) != nullptr){
-		msg_write("EEEE");
-		printf("realize: gl area make current error...\n");
+		msg_error("hui: gtk_gl_area error");
 		return;
 	}
-
-	msg_write("BBB");
 
 	da->notify(EventID::REALIZE);
 }

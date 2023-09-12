@@ -222,6 +222,21 @@ EdwardWindow::EdwardWindow(Session *_session) :
 	add_action_checkable("show_fx");
 	add_action_checkable("snap_to_grid");
 
+	add_action_checkable("mode_model_vertex");
+	add_action_checkable("mode_model_polygon");
+	add_action_checkable("mode_model_texture_coord");
+	add_action_checkable("mode_model_deform");
+	add_action_checkable("mode_model_skeleton");
+	add_action_checkable("mode_model_animation");
+	add_action_checkable("select_cw");
+	add_action_checkable("rotate");
+	add_action_checkable("scale");
+	add_action_checkable("mirror");
+	add_action_checkable("detail_physical");
+	add_action_checkable("detail_high");
+	add_action_checkable("detail_2");
+	add_action_checkable("detail_3");
+
 	hui::color_button_linear = true;
 
 	load_key_codes();
@@ -374,8 +389,6 @@ void EdwardWindow::on_send_bug_report()
 
 
 void EdwardWindow::on_realize_gl() {
-	msg_error("REALIZE");
-
 	auto gl = nix::init();
 	session->create_initial_resources(gl);
 }

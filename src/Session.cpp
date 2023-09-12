@@ -76,8 +76,6 @@ Session::~Session() {
 
 void Session::create_initial_resources(nix::Context *_gl) {
 
-	msg_error("REALIZE");
-
 	gl = _gl;
 
 	// initialize engine
