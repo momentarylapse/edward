@@ -129,24 +129,32 @@ void message_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GL
 	msg_error(format("%s, %s, %s, %d: %s", src_str, type_str, severity_str, id, message));
 }
 
-xfer<Context> init() {
-	//if (Usable)
-	//	return;
+xfer<Context> init(const Array<string>& flags) {
 	auto ctx = new Context;
 
 	Context::CURRENT = ctx;
 
-	msg_write("nix");
-	msg_right();
-	msg_write("[" + version + "]");
+	if (!sa_contains(flags, "silent"))
+		ctx->verbosity = 1;
+	if (sa_contains(flags, "verbose"))
+		ctx->verbosity = 2;
 
+	if (ctx->verbosity >= 1) {
+		msg_write("nix");
+		msg_right();
+		msg_write("[" + version + "]");
+	}
+
+	ctx->version = version;
 	ctx->gl_version = (char*)glGetString(GL_VERSION);
 	ctx->gl_renderer = (char*)glGetString(GL_RENDERER);
 	ctx->glsl_version = (char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
 
-	msg_write("OpenGL: " + ctx->gl_version);
-	msg_write("Renderer: " + ctx->gl_renderer);
-	msg_write("GLSL: " + ctx->glsl_version);
+	if (ctx->verbosity >= 1) {
+		msg_write("OpenGL: " + ctx->gl_version);
+		msg_write("Renderer: " + ctx->gl_renderer);
+		msg_write("GLSL: " + ctx->glsl_version);
+	}
 
 #ifdef OS_WINDOWS
 	GLenum err = glewInit();
@@ -195,8 +203,10 @@ xfer<Context> init() {
 	glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
 
 
-	msg_ok();
-	msg_left();
+	if (ctx->verbosity >= 1) {
+		msg_ok();
+		msg_left();
+	}
 	return ctx;
 }
 

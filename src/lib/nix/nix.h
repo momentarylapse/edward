@@ -44,6 +44,7 @@ class Context {
 public:
 	~Context();
 	Array<string> extensions;
+	string version;
 	string gl_version;
 	string gl_renderer;
 	string glsl_version;
@@ -51,6 +52,7 @@ public:
 	string vertex_module_default;
 	Array<ShaderModule> shader_modules;
 
+	int verbosity = 1;
 	int current_program = 0;
 
 	string shader_error;
@@ -74,7 +76,7 @@ public:
 	static Context *CURRENT;
 };
 
-xfer<Context> init();
+xfer<Context> init(const Array<string>& = {});
 void kill(Context *ctx);
 void flush();
 

@@ -120,14 +120,12 @@ public:
 	}
 
 	void on_realize() {
-		msg_write("realize");
-		gl = nix::init();
+		gl = nix::init({"verbose"});
 		resource_manager = new ResourceManager(gl);
 		drawing_helper = new DrawingHelper(gl, resource_manager, app->directory_static);
 	}
 
 	void on_draw_gl() {
-		msg_write("draw");
 		if (!gl)
 			return;
 		auto e = hui::get_event();
