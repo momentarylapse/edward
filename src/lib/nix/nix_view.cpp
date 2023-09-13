@@ -155,22 +155,25 @@ void end_frame_hui() {
 
 
 #if HAS_LIB_GLFW
-void start_frame_glfw(void *win) {
+
+static GLFWwindow* nix_glfw_window = nullptr;
+
+void start_frame_glfw(Context *gl, void *win) {
 	GLFWwindow* window = (GLFWwindow*)win;
+	nix_glfw_window = window;
 	glfwMakeContextCurrent(window);
 	int w, h;
 	glfwGetFramebufferSize(window, &w, &h);
-	FrameBuffer::DEFAULT->width = w;
-	FrameBuffer::DEFAULT->height = h;
-	cur_framebuffer = FrameBuffer::DEFAULT;
+	gl->default_framebuffer->width = w;
+	gl->default_framebuffer->height = h;
+	cur_framebuffer = gl->default_framebuffer;
 
-	set_viewport(FrameBuffer::DEFAULT->area());
+	set_viewport(gl->default_framebuffer->area());
 }
 
-void end_frame_glfw(void *win) {
+void end_frame_glfw() {
 	glFlush();
-	GLFWwindow* window = (GLFWwindow*)win;
-	glfwSwapBuffers(window);
+	glfwSwapBuffers(nix_glfw_window);
 }
 #endif
 
