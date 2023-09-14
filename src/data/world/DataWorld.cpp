@@ -14,10 +14,10 @@
 #include "../../mode/world/ModeWorld.h"
 #include "../../Session.h"
 #include "../../storage/Storage.h"
-#include "../../y/Object.h"
-#include "../../y/Terrain.h"
-#include "../../y/World.h"
-#include "../../meta.h"
+#include <y/world/Object.h>
+#include <y/world/Terrain.h>
+#include <y/world/World.h>
+#include <y/meta.h>
 #include "../../action/world/camera/ActionWorldEditCamera.h"
 #include "../../action/world/light/ActionWorldAddLight.h"
 #include "../../action/world/light/ActionWorldEditLight.h"
@@ -28,7 +28,7 @@
 #include "../../action/world/ActionWorldDeleteSelection.h"
 #include "../../lib/nix/nix.h"
 #include "../../multiview/MultiView.h"
-#include "../../y/ResourceManager.h"
+#include <y/helper/ResourceManager.h>
 
 
 

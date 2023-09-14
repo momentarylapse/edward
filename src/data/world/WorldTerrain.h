@@ -9,7 +9,7 @@
 #define SRC_DATA_WORLD_WORLDTERRAIN_H_
 
 #include "../../multiview/SingleData.h"
-#include "../../y/Material.h"
+#include <y/world/Material.h>
 
 class Terrain;
 class ScriptInstanceData;

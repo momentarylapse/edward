@@ -11,8 +11,8 @@
 #include "../../data/model/ModelPolygon.h"
 #include "../../mode/model/ModeModel.h"
 #include "../../Session.h"
-#include "../../y/ResourceManager.h"
-#include "../../y/components/Animator.h"
+#include <y/helper/ResourceManager.h>
+#include <y/world/components/Animator.h>
 #include "../../lib/doc/chunked.h"
 #include "../../lib/os/date.h"
 #include "../../lib/os/file.h"

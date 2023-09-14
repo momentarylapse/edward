@@ -12,7 +12,7 @@
 #include "../../lib/base/pointer.h"
 #include "../../lib/nix/nix.h"
 
-namespace Gui{
+namespace gui{
 	class Font;
 }
 
@@ -24,7 +24,7 @@ public:
 	void reset();
 
 	void UpdateTexture();
-	void ApplyFont(Gui::Font *f);
+	void ApplyFont(gui::Font *f);
 
 	// properties
 	struct GlobalData {

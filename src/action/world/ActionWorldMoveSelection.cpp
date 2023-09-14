@@ -12,7 +12,7 @@
 #include "../../data/world/WorldLink.h"
 #include "../../data/world/WorldObject.h"
 #include "../../data/world/WorldTerrain.h"
-#include "../../y/Terrain.h"
+#include <y/world/Terrain.h>
 #include "../../Session.h"
 
 ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d) :

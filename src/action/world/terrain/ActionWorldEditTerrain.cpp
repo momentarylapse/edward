@@ -8,8 +8,8 @@
 #include "ActionWorldEditTerrain.h"
 #include "../../../Session.h"
 #include "../../../data/world/DataWorld.h"
-#include "../../../y/Terrain.h"
-#include "../../../y/ResourceManager.h"
+#include <y/world/Terrain.h>
+#include <y/helper/ResourceManager.h>
 #include "../../../lib/nix/nix.h"
 #include "../../../lib/os/msg.h"
 #include <assert.h>

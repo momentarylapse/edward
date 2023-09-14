@@ -11,8 +11,8 @@
 #include "../Data.h"
 #include "../../multiview/SingleData.h"
 #include "../../lib/base/set.h"
-#include "../../y/Model.h"
-#include "../../y/Material.h"
+#include <y/world/Model.h>
+#include <y/world/Material.h>
 #include "ModelMaterial.h"
 
 class DataModel;

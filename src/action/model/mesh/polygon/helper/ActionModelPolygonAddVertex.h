@@ -10,7 +10,7 @@
 
 #include "../../../../../lib/math/vec3.h"
 #include "../../../../ActionGroup.h"
-#include "../../../../../y/Material.h"
+#include <y/world/Material.h>
 
 class ActionModelPolygonAddVertex: public ActionGroup {
 public:

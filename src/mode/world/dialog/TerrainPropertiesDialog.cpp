@@ -12,9 +12,9 @@
 #include "../../../EdwardWindow.h"
 #include "../../../Session.h"
 #include "../../../storage/Storage.h"
-#include "../../../y/Terrain.h"
-#include "../../../y/Material.h"
-#include "../../../y/ResourceManager.h"
+#include <y/world/Terrain.h>
+#include <y/world/Material.h>
+#include <y/helper/ResourceManager.h>
 #include "../../../lib/nix/nix.h"
 #include <assert.h>
 

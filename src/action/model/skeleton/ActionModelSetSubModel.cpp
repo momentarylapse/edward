@@ -9,8 +9,6 @@
 #include "../../../data/model/DataModel.h"
 #include <assert.h>
 
-#include "../../../y/ModelManager.h"
-
 ActionModelSetSubModel::ActionModelSetSubModel(int _index, const Path &_filename, Model *m) {
 	index = _index;
 	filename = _filename;

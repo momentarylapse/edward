@@ -11,8 +11,8 @@
 #include "../../../data/administration/AdminFileList.h"
 #include "../../../Session.h"
 #include "../../../storage/Storage.h"
-#include "../../../y/EngineData.h"
-#include "../../../y/Font.h"
+#include <y/EngineData.h>
+#include <y/gui/Font.h>
 #include "../../../mode/model/ModeModel.h"
 #include "../../../mode/material/ModeMaterial.h"
 #include "../../../mode/world/ModeWorld.h"
@@ -20,7 +20,7 @@
 #include "../ModeAdministration.h"
 #include <assert.h>
 
-#include "../../../y/ModelManager.h"
+#include <y/world/ModelManager.h>
 
 AdministrationDialog::AdministrationDialog(hui::Window* _parent, bool _allow_parent, DataAdministration *_data):
 	obs::Node<hui::Dialog>("ad_dialog", 400, 300, _parent, _allow_parent)

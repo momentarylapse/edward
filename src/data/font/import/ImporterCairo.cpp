@@ -11,7 +11,7 @@
 #include "../../../lib/image/image.h"
 //#include "../../../lib/nix/nix.h"
 #include "../../../lib/os/msg.h"
-#include "../../../y/ResourceManager.h"
+#include <y/helper/ResourceManager.h>
 #include <pango/pangocairo.h>
 
 static const int ImportCairoTrySize[][2] =

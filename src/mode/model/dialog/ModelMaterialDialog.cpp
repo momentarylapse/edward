@@ -16,7 +16,7 @@
 #include "../../../action/model/data/ActionModelEditData.h"
 #include "../../../Session.h"
 #include "../../../storage/Storage.h"
-#include "../../../y/EngineData.h"
+#include <y/EngineData.h>
 
 string file_secure(const Path &filename);
 string render_material(ModelMaterial *m);

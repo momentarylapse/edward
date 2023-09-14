@@ -18,7 +18,7 @@
 #include "../../../lib/math/interpolation.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../storage/Storage.h"
-#include "../../../y/ResourceManager.h"
+#include <y/helper/ResourceManager.h>
 
 
 const float NODE_WIDTH = 170;

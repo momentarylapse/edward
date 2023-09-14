@@ -17,7 +17,7 @@
 #include "../lib/os/time.h"
 #include "../lib/nix/nix.h"
 #include "../lib/math/plane.h"
-#include "../y/ResourceManager.h"
+#include <y/helper/ResourceManager.h>
 
 
 os::Timer timer;

@@ -59,8 +59,8 @@
 #include "../../action/model/skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../action/model/skeleton/ActionModelReconnectBone.h"
 #include "../../action/model/skeleton/ActionModelSetSubModel.h"
-#include "../../y/ResourceManager.h"
-#include "../../y/components/Animator.h"
+#include <y/helper/ResourceManager.h>
+#include <y/world/components/Animator.h>
 
 
 string ModelEffect::get_type()

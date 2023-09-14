@@ -26,7 +26,7 @@
 #include "../../multiview/DrawingHelper.h"
 #include "../../lib/os/file.h"
 #include "../../lib/nix/nix.h"
-#include "../../y/ResourceManager.h"
+#include <y/helper/ResourceManager.h>
 
 const int MATERIAL_DETAIL = 32;
 const float MATERIAL_RADIUS1 = 80;

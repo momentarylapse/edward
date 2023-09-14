@@ -17,7 +17,7 @@
 #include "../lib/os/filesystem.h"
 #include "../lib/os/msg.h"
 #include "../lib/hui/hui.h"
-#include "../y/EngineData.h"
+#include <y/EngineData.h>
 #include "../Session.h"
 #include "../EdwardWindow.h"
 

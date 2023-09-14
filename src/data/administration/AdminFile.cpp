@@ -16,8 +16,8 @@
 #include "../font/DataFont.h"
 #include "../../Session.h"
 #include "../../storage/Storage.h"
-#include "../../y/EngineData.h"
-#include "../../y/Terrain.h"
+#include <y/y/EngineData.h>
+#include <y/world/Terrain.h>
 #include "../../lib/kaba/kaba.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/filesystem.h"

@@ -16,13 +16,13 @@
 #include "../../lib/nix/nix.h"
 #include "../../data/font/DataFont.h"
 #include "../../data/font/import/ImporterCairo.h"
-#include "../../y/Font.h"
+#include <y/gui/Font.h>
 
 ModeFont::ModeFont(Session *s, MultiView::MultiView *mv) :
 	Mode<ModeFont, DataFont>(s, "Font", nullptr, new DataFont(s), mv, "menu_font"),
 	in_data_changed(this, [this] { on_data_update(); })
 {
-	font = new Gui::Font;
+	font = new gui::Font;
 
 	dialog = NULL;
 }
@@ -71,8 +71,8 @@ void ModeFont::on_draw() {
 	nix::set_shader(session->gl->default_2d.get());
 	session->drawing_helper->draw_rect(0, (float)nix::target_width, nix::target_height * 0.9f, (float)nix::target_height, 0);
 	session->drawing_helper->set_color(Black);
-	if (dialog)
-		font->drawStr(0, (float)nix::target_height * 0.9f, 0, (float)nix::target_height * 0.1f, dialog->GetSampleText());
+//	if (dialog)
+//		font->drawStr(0, (float)nix::target_height * 0.9f, 0, (float)nix::target_height * 0.1f, dialog->GetSampleText());
 }
 
 

@@ -14,7 +14,7 @@ namespace nix {
 	class VertexBuffer;
 };
 
-#include "../../y/Material.h"
+#include <y/world/Material.h>
 #include "../../multiview/SingleData.h"
 
 class VertexStagingBuffer {

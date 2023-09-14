@@ -1330,79 +1330,94 @@
     <ClCompile Include="src\stuff\Progress.cpp">
       <Filter>src\stuff</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\components\Animator.cpp">
-      <Filter>src\y\components</Filter>
+    <ClCompile Include="src\y\gui\Font.cpp">
+      <Filter>src\y\gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\components\Collider.cpp">
-      <Filter>src\y\components</Filter>
+    <ClCompile Include="src\y\gui\gui.cpp">
+      <Filter>src\y\gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\components\MultiInstance.cpp">
-      <Filter>src\y\components</Filter>
+    <ClCompile Include="src\y\gui\Node.cpp">
+      <Filter>src\y\gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\components\Skeleton.cpp">
-      <Filter>src\y\components</Filter>
+    <ClCompile Include="src\y\gui\Picture.cpp">
+      <Filter>src\y\gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\components\SolidBody.cpp">
-      <Filter>src\y\components</Filter>
+    <ClCompile Include="src\y\gui\Text.cpp">
+      <Filter>src\y\gui</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\components\UserMesh.cpp">
-      <Filter>src\y\components</Filter>
+    <ClCompile Include="src\y\helper\ResourceManager.cpp">
+      <Filter>src\y\helper</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\BaseClass.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\components\Animator.cpp">
+      <Filter>src\y\world\components</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\Camera.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\components\Collider.cpp">
+      <Filter>src\y\world\components</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\Component.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\components\MultiInstance.cpp">
+      <Filter>src\y\world\components</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\ComponentManager.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\components\Skeleton.cpp">
+      <Filter>src\y\world\components</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\EngineData.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\components\SolidBody.cpp">
+      <Filter>src\y\world\components</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\Entity.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\components\UserMesh.cpp">
+      <Filter>src\y\world\components</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\Font.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\Camera.cpp">
+      <Filter>src\y\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\LevelData.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\LevelData.cpp">
+      <Filter>src\y\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\Link.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\Light.cpp">
+      <Filter>src\y\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\Material.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\Link.cpp">
+      <Filter>src\y\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\Model.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\Material.cpp">
+      <Filter>src\y\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\ModelManager.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\Model.cpp">
+      <Filter>src\y\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\Object.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\ModelManager.cpp">
+      <Filter>src\y\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\ResourceManager.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\Object.cpp">
+      <Filter>src\y\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\Terrain.cpp">
-      <Filter>src\y</Filter>
+    <ClCompile Include="src\y\world\Terrain.cpp">
+      <Filter>src\y\world</Filter>
     </ClCompile>
-    <ClCompile Include="src\y\World.cpp">
+    <ClCompile Include="src\y\world\World.cpp">
+      <Filter>src\y\world</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\y\BaseClass.cpp">
+      <Filter>src\y\y</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\y\Component.cpp">
+      <Filter>src\y\y</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\y\ComponentManager.cpp">
+      <Filter>src\y\y</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\y\EngineData.cpp">
+      <Filter>src\y\y</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\y\Entity.cpp">
+      <Filter>src\y\y</Filter>
+    </ClCompile>
+    <ClCompile Include="src\y\Config.cpp">
       <Filter>src\y</Filter>
     </ClCompile>
     <ClCompile Include="src\Edward.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\EdwardWindow.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\meta.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Session.cpp">
@@ -2658,85 +2673,103 @@
     <ClInclude Include="src\stuff\Progress.h">
       <Filter>src\stuff</Filter>
     </ClInclude>
-    <ClInclude Include="src\y\components\Animator.h">
-      <Filter>src\y\components</Filter>
+    <ClInclude Include="src\y\gui\Font.h">
+      <Filter>src\y\gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\y\components\Collider.h">
-      <Filter>src\y\components</Filter>
+    <ClInclude Include="src\y\gui\gui.h">
+      <Filter>src\y\gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\y\components\MultiInstance.h">
-      <Filter>src\y\components</Filter>
+    <ClInclude Include="src\y\gui\Node.h">
+      <Filter>src\y\gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\y\components\Skeleton.h">
-      <Filter>src\y\components</Filter>
+    <ClInclude Include="src\y\gui\Picture.h">
+      <Filter>src\y\gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\y\components\SolidBody.h">
-      <Filter>src\y\components</Filter>
+    <ClInclude Include="src\y\gui\Text.h">
+      <Filter>src\y\gui</Filter>
     </ClInclude>
-    <ClInclude Include="src\y\components\UserMesh.h">
-      <Filter>src\y\components</Filter>
+    <ClInclude Include="src\y\helper\ResourceManager.h">
+      <Filter>src\y\helper</Filter>
     </ClInclude>
-    <ClInclude Include="src\y\BaseClass.h">
+    <ClInclude Include="src\y\world\components\Animator.h">
+      <Filter>src\y\world\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\components\Collider.h">
+      <Filter>src\y\world\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\components\MultiInstance.h">
+      <Filter>src\y\world\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\components\Skeleton.h">
+      <Filter>src\y\world\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\components\SolidBody.h">
+      <Filter>src\y\world\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\components\UserMesh.h">
+      <Filter>src\y\world\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\Camera.h">
+      <Filter>src\y\world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\LevelData.h">
+      <Filter>src\y\world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\Light.h">
+      <Filter>src\y\world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\Link.h">
+      <Filter>src\y\world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\Material.h">
+      <Filter>src\y\world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\Model.h">
+      <Filter>src\y\world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\ModelManager.h">
+      <Filter>src\y\world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\Object.h">
+      <Filter>src\y\world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\Terrain.h">
+      <Filter>src\y\world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\world\World.h">
+      <Filter>src\y\world</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\y\BaseClass.h">
+      <Filter>src\y\y</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\y\Component.h">
+      <Filter>src\y\y</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\y\ComponentManager.h">
+      <Filter>src\y\y</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\y\EngineData.h">
+      <Filter>src\y\y</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\y\Entity.h">
+      <Filter>src\y\y</Filter>
+    </ClInclude>
+    <ClInclude Include="src\y\Config.h">
       <Filter>src\y</Filter>
     </ClInclude>
-    <ClInclude Include="src\y\Camera.h">
+    <ClInclude Include="src\y\graphics-fwd.h">
       <Filter>src\y</Filter>
     </ClInclude>
-    <ClInclude Include="src\y\Component.h">
+    <ClInclude Include="src\y\graphics-impl.h">
       <Filter>src\y</Filter>
     </ClInclude>
-    <ClInclude Include="src\y\ComponentManager.h">
-      <Filter>src\y</Filter>
-    </ClInclude>
-    <ClInclude Include="src\y\EngineData.h">
-      <Filter>src\y</Filter>
-    </ClInclude>
-    <ClInclude Include="src\y\Entity.h">
-      <Filter>src\y</Filter>
-    </ClInclude>
-    <ClInclude Include="src\y\Font.h">
-      <Filter>src\y</Filter>
-    </ClInclude>
-    <ClInclude Include="src\y\LevelData.h">
-      <Filter>src\y</Filter>
-    </ClInclude>
-    <ClInclude Include="src\y\Link.h">
-      <Filter>src\y</Filter>
-    </ClInclude>
-    <ClInclude Include="src\y\Material.h">
-      <Filter>src\y</Filter>
-    </ClInclude>
-    <ClInclude Include="src\y\Model.h">
-      <Filter>src\y</Filter>
-    </ClInclude>
-    <ClInclude Include="src\y\ModelManager.h">
-      <Filter>src\y</Filter>
-    </ClInclude>
-    <ClInclude Include="src\y\Object.h">
-      <Filter>src\y</Filter>
-    </ClInclude>
-    <ClInclude Include="src\y\ResourceManager.h">
-      <Filter>src\y</Filter>
-    </ClInclude>
-    <ClInclude Include="src\y\Terrain.h">
-      <Filter>src\y</Filter>
-    </ClInclude>
-    <ClInclude Include="src\y\World.h">
+    <ClInclude Include="src\y\meta.h">
       <Filter>src\y</Filter>
     </ClInclude>
     <ClInclude Include="src\Edward.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\EdwardWindow.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics-fwd.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics-impl.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\meta.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Session.h">
@@ -3002,8 +3035,20 @@
     <Filter Include="src\y">
       <UniqueIdentifier>{B4C155E0-F4CA-9BCF-C13C-B164BBA71B0C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\y\components">
-      <UniqueIdentifier>{7A426122-E275-6026-D24D-6F0229161478}</UniqueIdentifier>
+    <Filter Include="src\y\gui">
+      <UniqueIdentifier>{3A1ED0AC-C4DE-9D89-2332-CDD1809ED2D0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\y\helper">
+      <UniqueIdentifier>{DEF70E15-F00F-82F9-392A-3B5FAEBD17CE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\y\world">
+      <UniqueIdentifier>{FFA00753-758E-B0C3-EAC3-A0918612FC0F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\y\world\components">
+      <UniqueIdentifier>{4A01B1B6-6A6C-3BC2-CCB5-33DA8D1E595A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\y\y">
+      <UniqueIdentifier>{FCB74D37-D14B-F6F8-F368-1F8B87563563}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

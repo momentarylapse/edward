@@ -23,9 +23,9 @@
 #include "storage/format/Format.h"
 #include "storage/Storage.h"
 #include "y/EngineData.h"
-#include "y/ResourceManager.h"
-#include "y/Camera.h"
-#include "y/World.h"
+#include <y/helper/ResourceManager.h>
+#include <y/world/Camera.h>
+#include <y/world/World.h>
 
 Session *create_session() {
 	auto s = new Session;

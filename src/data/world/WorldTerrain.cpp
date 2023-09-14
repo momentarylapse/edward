@@ -8,8 +8,8 @@
 
 #include "WorldTerrain.h"
 #include "../../Session.h"
-#include "../../y/EngineData.h"
-#include "../../y/Terrain.h"
+#include <y/y/EngineData.h>
+#include <y/world/Terrain.h>
 #include "../../lib/os/file.h"
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/formatter.h"

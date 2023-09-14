@@ -8,7 +8,7 @@
 #include "ActionModelAddAnimation.h"
 #include "../../../data/model/DataModel.h"
 #include "../../../data/model/ModelMesh.h"
-#include "../../../y/components/Animator.h"
+#include <y/world/components/Animator.h>
 #include <assert.h>
 
 ActionModelAddAnimation::ActionModelAddAnimation(int _index, AnimationType _type) {

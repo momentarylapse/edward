@@ -8,7 +8,7 @@
 #include "ActionWorldTerrainEditHeight.h"
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/world/WorldTerrain.h"
-#include "../../../y/Terrain.h"
+#include <y/world/Terrain.h>
 #include <assert.h>
 
 #define Index(x,z)		((x)*(t->num_z+1)+(z))

@@ -12,7 +12,7 @@
 #include "../ModeModel.h"
 #include "../../../Session.h"
 #include "../../../data/model/DataModel.h"
-#include "../../../y/components/Animator.h"
+#include <y/world/components/Animator.h>
 
 
 ModelAnimationDialog::ModelAnimationDialog(DataModel *_data) {

@@ -12,7 +12,7 @@
 #include "../../lib/nix/nix.h"
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/file.h"
-#include "../../y/ResourceManager.h"
+#include <y/helper/ResourceManager.h>
 
 
 

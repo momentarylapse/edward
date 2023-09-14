@@ -14,7 +14,7 @@
 #include "../../../data/world/DataWorld.h"
 #include "../../../EdwardWindow.h"
 #include "../../../storage/Storage.h"
-#include "../../../y/ModelManager.h"
+#include <y/world/ModelManager.h>
 #include "../../../lib/math/vec2.h"
 #include "../../../lib/math/rect.h"
 

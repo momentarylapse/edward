@@ -17,7 +17,7 @@
 #include "../../../Session.h"
 #include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
-#include "../../../y/components/Animator.h"
+#include <y/world/components/Animator.h>
 
 const string ModeModelAnimation::State::MESSAGE_SET_FRAME = "set-frame";
 

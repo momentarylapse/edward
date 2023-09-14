@@ -16,7 +16,7 @@
 #include "../../../lib/os/file.h"
 #include "../../../lib/kaba/kaba.h"
 #include "../../../lib/nix/nix.h"
-#include "../../../y/World.h"
+#include <y/world/World.h>
 
 #define WorldPhysicsDec			3
 #define WorldLightDec			1

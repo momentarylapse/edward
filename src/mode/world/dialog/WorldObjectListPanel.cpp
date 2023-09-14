@@ -22,8 +22,8 @@
 #include "../../../action/world/object/ActionWorldEditObject.h"
 #include "../../../action/world/ActionWorldSelectionAddComponent.h"
 #include "../../../multiview/MultiView.h"
-#include "../../../y/Object.h"
-#include "../../../y/Terrain.h"
+#include <y/world/Object.h>
+#include <y/world/Terrain.h>
 #include "../../../lib/kaba/kaba.h"
 #include "../../../EdwardWindow.h"
 #include "../../../Session.h"

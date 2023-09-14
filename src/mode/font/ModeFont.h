@@ -12,7 +12,7 @@
 #include "../../data/font/DataFont.h"
 
 class FontDialog;
-namespace Gui{
+namespace gui{
 	class Font;
 }
 
@@ -46,7 +46,7 @@ public:
 	bool optimize_view();
 
 	FontDialog *dialog;
-	Gui::Font *font;
+	gui::Font *font;
 };
 
 #endif /* MODEFONT_H_ */

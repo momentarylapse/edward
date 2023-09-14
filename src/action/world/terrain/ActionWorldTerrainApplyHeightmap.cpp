@@ -10,7 +10,7 @@
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/world/WorldTerrain.h"
 #include "../../../lib/image/image.h"
-#include "../../../y/Terrain.h"
+#include <y/world/Terrain.h>
 
 static float c2f(const color &c) {
 	return (c.r + c.g + c.b) / 3.0f;

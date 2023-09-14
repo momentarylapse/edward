@@ -9,7 +9,7 @@
 #include "../../storage/Storage.h"
 #include "../../action/font/ActionFontEditGlobal.h"
 #include "../../action/font/ActionFontEditGlyph.h"
-#include "../../y/Font.h"
+#include <y/gui/Font.h>
 #include "../../lib/nix/nix.h"
 
 DataFont::DataFont(Session *s) :
@@ -84,8 +84,8 @@ int str_utf8_first_char(const string &str) {
 	return str[0];
 }
 
-void DataFont::ApplyFont(Gui::Font *f) {
-	f->texture = Texture;
+void DataFont::ApplyFont(gui::Font *f) {
+	/*f->texture = Texture;
 	f->x_factor = (float)global.XFactor*0.01f;
 	f->y_factor = (float)global.YFactor*0.01f;
 	float dy = (float)(global.GlyphY2-global.GlyphY1);
@@ -107,7 +107,7 @@ void DataFont::ApplyFont(Gui::Font *f) {
 								(float)y / (float)TextureHeight,
 								(float)(y + global.GlyphHeight) / (float)TextureHeight);
 		x += g.Width;
-	}
+	}*/
 }
 
 void DataFont::EditGlobal(const GlobalData &new_data) {

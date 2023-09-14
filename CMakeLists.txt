@@ -449,35 +449,41 @@ set(SOURCE
 	src/stuff/BrushPanel.cpp
 	src/stuff/PluginManager.cpp
 	src/stuff/Progress.cpp
-	src/y/components/Animator.cpp
-	src/y/components/Collider.cpp
-	src/y/components/MultiInstance.cpp
-	src/y/components/Skeleton.cpp
-	src/y/components/SolidBody.cpp
-	src/y/components/UserMesh.cpp
-	src/y/BaseClass.cpp
-	src/y/Camera.cpp
-	src/y/Component.cpp
-	src/y/ComponentManager.cpp
-	src/y/EngineData.cpp
-	src/y/Entity.cpp
-	src/y/Font.cpp
-	src/y/LevelData.cpp
-	src/y/Link.cpp
-	src/y/Material.cpp
-	src/y/Model.cpp
-	src/y/ModelManager.cpp
-	src/y/Object.cpp
-	src/y/ResourceManager.cpp
-	src/y/Terrain.cpp
-	src/y/World.cpp
+	src/y/gui/Font.cpp
+	src/y/gui/gui.cpp
+	src/y/gui/Node.cpp
+	src/y/gui/Picture.cpp
+	src/y/gui/Text.cpp
+	src/y/helper/ResourceManager.cpp
+	src/y/world/components/Animator.cpp
+	src/y/world/components/Collider.cpp
+	src/y/world/components/MultiInstance.cpp
+	src/y/world/components/Skeleton.cpp
+	src/y/world/components/SolidBody.cpp
+	src/y/world/components/UserMesh.cpp
+	src/y/world/Camera.cpp
+	src/y/world/LevelData.cpp
+	src/y/world/Light.cpp
+	src/y/world/Link.cpp
+	src/y/world/Material.cpp
+	src/y/world/Model.cpp
+	src/y/world/ModelManager.cpp
+	src/y/world/Object.cpp
+	src/y/world/Terrain.cpp
+	src/y/world/World.cpp
+	src/y/y/BaseClass.cpp
+	src/y/y/Component.cpp
+	src/y/y/ComponentManager.cpp
+	src/y/y/EngineData.cpp
+	src/y/y/Entity.cpp
+	src/y/Config.cpp
 	src/Edward.cpp
 	src/EdwardWindow.cpp
-	src/meta.cpp
 	src/Session.cpp
 )
 
 add_executable(edward ${SOURCE})
+target_include_directories(edward PRIVATE src src/y)
 
 find_package(PkgConfig REQUIRED)
 

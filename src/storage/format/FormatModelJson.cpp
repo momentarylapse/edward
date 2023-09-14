@@ -10,7 +10,7 @@
 #include "../../data/model/DataModel.h"
 #include "../../data/model/ModelMesh.h"
 #include "../../data/model/ModelPolygon.h"
-#include "../../y/components/Animator.h"
+#include <y/world/components/Animator.h>
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
 #include "../../lib/math/quaternion.h"

@@ -10,7 +10,7 @@
 
 #include "../Data.h"
 #include "../../multiview/SingleData.h"
-#include "../../y/Material.h"
+#include <y/world/Material.h>
 
 class DataWorld;
 class Terrain;

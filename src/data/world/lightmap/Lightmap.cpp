@@ -14,13 +14,13 @@
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/world/WorldObject.h"
 #include "../../../data/world/WorldTerrain.h"
-#include "../../../y/Terrain.h"
-#include "../../../y/EngineData.h"
+#include <y/world/Terrain.h>
+#include <y/EngineData.h>
 #include "../../../lib/os/filesystem.h"
 #include "../../../lib/os/msg.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../storage/Storage.h"
-#include "../../../y/ModelManager.h"
+#include <y/world/ModelManager.h>
 
 
 Lightmap::Histogram::Histogram(Array<float> &e)

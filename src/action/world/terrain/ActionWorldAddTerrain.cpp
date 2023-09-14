@@ -9,8 +9,8 @@
 #include "../../../Session.h"
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/world/WorldTerrain.h"
-#include "../../../y/Terrain.h"
-#include "../../../lib/nix/nix.h"
+#include <y/world/Terrain.h>
+#include <lib/nix/nix.h>
 #include <assert.h>
 
 ActionWorldAddTerrain::ActionWorldAddTerrain(const vec3 &_pos, const Path &_filename) {

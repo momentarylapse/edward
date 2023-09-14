@@ -16,7 +16,7 @@
 #include "../../../../multiview/ColorScheme.h"
 #include "../../../../data/model/ModelMesh.h"
 #include "../../../../stuff/BrushPanel.h"
-#include "../../../../y/ResourceManager.h"
+#include <y/helper/ResourceManager.h>
 
 
 static void set_weight(ivec4 &bones, vec4 &weights, int bone, float weight) {

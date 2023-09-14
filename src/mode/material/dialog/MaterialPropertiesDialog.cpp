@@ -12,7 +12,7 @@
 #include "../../../action/material/ActionMaterialEditAppearance.h"
 #include "../../../action/material/ActionMaterialEditPhysics.h"
 #include "../../../lib/nix/nix.h"
-#include "../../../y/ResourceManager.h"
+#include <y/helper/ResourceManager.h>
 
 
 string file_secure(const Path &filename); // -> ModelPropertiesDialog

@@ -9,7 +9,7 @@
 #include "../lib/nix/nix.h"
 #include "../lib/image/image.h"
 #include "../lib/os/msg.h"
-#include "../y/ResourceManager.h"
+#include <y/helper/ResourceManager.h>
 #include "MultiView.h"
 #include "Window.h"
 #include "ColorScheme.h"

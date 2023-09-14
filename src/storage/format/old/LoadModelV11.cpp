@@ -10,8 +10,8 @@
 #include "../../../data/model/ModelMesh.h"
 #include "../../../data/model/ModelPolygon.h"
 #include "../../../mode/model/ModeModel.h"
-#include "../../../y/ResourceManager.h"
-#include "../../../y/components/Animator.h"
+#include <y/helper/ResourceManager.h>
+#include <y/world/components/Animator.h>
 #include "../../../lib/os/file.h"
 #include "../../../lib/os/filesystem.h"
 #include "../../../lib/os/formatter.h"

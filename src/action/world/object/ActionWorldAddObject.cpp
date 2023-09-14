@@ -10,8 +10,6 @@
 #include "../../../data/world/WorldObject.h"
 #include <assert.h>
 
-#include "../../../y/ModelManager.h"
-
 ActionWorldAddObject::ActionWorldAddObject(const WorldObject &o) {
 	object = o;
 }
