@@ -119,8 +119,9 @@ hui::AppStatus EdwardApp::on_startup(const Array<string> &arg) {
 		ModeAdministration mode_admin(&session);
 		mode_admin.upgrade_project(arg[0]);
 	});
-	p.cmd("gl", "", "", [] (const Array<string> &arg) {
-			test_gl();
+	p.cmd("xxx", "", "", [] (const Array<string> &arg) {
+		Session session;
+		ModeAdministration mode_admin(&session);
 	});
 	p.cmd("", "[FILENAME]", "open editor and load a file", [] (const Array<string> &arg) {
 		msg_write(AppName + " " + AppVersion);

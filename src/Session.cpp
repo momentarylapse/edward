@@ -63,27 +63,45 @@ Session::Session() {
 	mode_none = new ModeNone(this);
 	cur_mode = mode_none;
 	progress = new Progress;
+
+	multi_view_2d = nullptr;
+	multi_view_3d = nullptr;
+	mode_model = nullptr;
+	mode_admin = nullptr;
+	mode_font = nullptr;
+	mode_material = nullptr;
+	mode_world = nullptr;
+
+	storage = nullptr;
+	resource_manager = nullptr;
+	win = nullptr;
+	drawing_helper = nullptr;
 }
 
 Session::~Session() {
-	delete mode_world;
+	if (mode_world)
+		delete mode_world;
 	/*delete mode_material;
 	delete mode_model;
 	delete mode_font;
 	delete mode_admin;*/
 
-	delete multi_view_2d;
-	delete multi_view_3d;
+	if (multi_view_2d)
+		delete multi_view_2d;
+	if (multi_view_3d)
+		delete multi_view_3d;
 	// saving the configuration data...
-	hui::config.set_str("RootDir", storage->root_dir.str());
-	hui::config.set_str("Language", hui::get_cur_language());
-	/*HuiConfig.set_bool("LocalDocumentation", LocalDocumentation);
-	HuiConfig.set_str("WorldScriptVarFile", WorldScriptVarFile);
-	HuiConfig.set_str("ObjectScriptVarFile", ObjectScriptVarFile);
-	HuiConfig.set_str("ItemScriptVarFile", ItemScriptVarFile);*/
-	//HuiConfig.set_int("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
-	hui::config.save(app->directory | "config.txt");
-	delete storage;
+	if (storage) {
+		hui::config.set_str("RootDir", storage->root_dir.str());
+		hui::config.set_str("Language", hui::get_cur_language());
+		/*HuiConfig.set_bool("LocalDocumentation", LocalDocumentation);
+		HuiConfig.set_str("WorldScriptVarFile", WorldScriptVarFile);
+		HuiConfig.set_str("ObjectScriptVarFile", ObjectScriptVarFile);
+		HuiConfig.set_str("ItemScriptVarFile", ItemScriptVarFile);*/
+		//HuiConfig.set_int("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
+		hui::config.save(app->directory | "config.txt");
+		delete storage;
+	}
 
 
 	app->end();
