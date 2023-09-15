@@ -8,6 +8,8 @@
 #include "ModeModelMeshSplitPolygon.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
+#include "../../../../data/model/ModelMesh.h"
+#include "../../../../data/model/ModelPolygon.h"
 #include "../../../../Session.h"
 #include "../../../../action/model/mesh/polygon/ActionModelSplitPolygon.h"
 #include "../../../../action/model/mesh/edge/ActionModelSplitEdge.h"

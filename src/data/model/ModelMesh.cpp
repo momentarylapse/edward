@@ -865,8 +865,8 @@ bool ModelCylinder::overlap_rect(MultiView::Window *win, const rect &r) {
 }
 
 
-void ModelMesh::copy_geometry(Geometry &geo) {
-	geo.clear();
+Geometry ModelMesh::copy_geometry() {
+	Geometry geo;
 
 	// copy vertices
 	Array<int> vert;
@@ -886,4 +886,5 @@ void ModelMesh::copy_geometry(Geometry &geo) {
 						tt.side[k].vertex = vi;
 			geo.polygon.add(tt);
 		}
+	return geo;
 }

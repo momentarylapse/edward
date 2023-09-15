@@ -447,6 +447,7 @@ set(SOURCE
 	src/storage/format/FormatWorld.cpp
 	src/storage/Storage.cpp
 	src/stuff/BrushPanel.cpp
+	src/stuff/Clipboard.cpp
 	src/stuff/PluginManager.cpp
 	src/stuff/Progress.cpp
 	src/y/gui/Font.cpp

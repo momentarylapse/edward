@@ -1324,6 +1324,9 @@
     <ClCompile Include="src\stuff\BrushPanel.cpp">
       <Filter>src\stuff</Filter>
     </ClCompile>
+    <ClCompile Include="src\stuff\Clipboard.cpp">
+      <Filter>src\stuff</Filter>
+    </ClCompile>
     <ClCompile Include="src\stuff\PluginManager.cpp">
       <Filter>src\stuff</Filter>
     </ClCompile>
@@ -2665,6 +2668,9 @@
       <Filter>src\storage</Filter>
     </ClInclude>
     <ClInclude Include="src\stuff\BrushPanel.h">
+      <Filter>src\stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stuff\Clipboard.h">
       <Filter>src\stuff</Filter>
     </ClInclude>
     <ClInclude Include="src\stuff\PluginManager.h">

@@ -8,6 +8,7 @@
 #include "ModeModelMeshPaste.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
+#include "../../../../stuff/Clipboard.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
@@ -20,13 +21,13 @@ ModeModelMeshPaste::ModeModelMeshPaste(ModeModelMesh* _parent) :
 	message = _("move, [left click] to insert");
 
 	vec3 min, max;
-	parent->temp_geo.get_bounding_box(min, max);
+	clipboard.temp_geo.get_bounding_box(min, max);
 	dpos0 = (max + min) / 2;
 }
 
 void ModeModelMeshPaste::on_start() {
 	msg_write("on start");
-	if (parent->temp_geo.vertex.num == 0) {
+	if (!clipboard.has_mesh_data()) {
 		session->set_message(_("nothing to paste"));
 		abort();
 		return;
@@ -66,6 +67,6 @@ void ModeModelMeshPaste::update_geometry() {
 	mat4 m;
 	m = mat4::translation( multi_view->get_cursor() - dpos0);
 	geo = new Geometry;
-	geo->add(parent->temp_geo);
+	geo->add(clipboard.temp_geo);
 	geo->transform(m);
 }

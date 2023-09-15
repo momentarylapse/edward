@@ -11,7 +11,8 @@
 #include "../polygon/helper/ActionModelPolygonRemoveVertex.h"
 #include "../polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../data/model/DataModel.h"
-#include "../../../../mode/model/mesh/ModeModelMesh.h"
+#include "../../../../data/model/ModelMesh.h"
+#include "../../../../data/model/ModelPolygon.h"
 #include <assert.h>
 
 void ActionModelBevelVertices::BevelVertex(DataModel *m, float length, int vi)

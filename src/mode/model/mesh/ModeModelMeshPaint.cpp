@@ -8,6 +8,8 @@
 #include "ModeModelMeshPaint.h"
 #include "ModeModelMesh.h"
 #include "../ModeModel.h"
+#include "../../../data/model/ModelMesh.h"
+#include "../../../data/model/ModelPolygon.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/Window.h"
 #include "../../../multiview/DrawingHelper.h"

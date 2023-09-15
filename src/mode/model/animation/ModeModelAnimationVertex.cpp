@@ -13,6 +13,8 @@
 #include "../../../EdwardWindow.h"
 #include "../../../Session.h"
 #include "../../../multiview/MultiView.h"
+#include "../../../data/model/DataModel.h"
+#include "../../../data/model/ModelMesh.h"
 
 ModeModelAnimationVertex *mode_model_animation_vertex = NULL;
 

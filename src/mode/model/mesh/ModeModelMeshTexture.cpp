@@ -17,6 +17,7 @@
 #include "../../../lib/nix/nix.h"
 #include "../../../data/model/ModelSelection.h"
 #include "../../../data/model/ModelMesh.h"
+#include "../../../data/model/ModelPolygon.h"
 
 ModeModelMeshTexture::ModeModelMeshTexture(ModeModelMesh *_parent, MultiView::MultiView *mv) :
 	Mode<ModeModelMesh, DataModel>(_parent->session, "ModelMeshTexture", _parent, mv, "menu_model")

@@ -12,7 +12,7 @@
 #include "../../../data/model/ModelMesh.h"
 #include "../../../data/model/geometry/Geometry.h"
 
-ActionModelPasteGeometry::ActionModelPasteGeometry(Geometry &_geo, int _default_material) :
+ActionModelPasteGeometry::ActionModelPasteGeometry(const Geometry &_geo, int _default_material) :
 	geo(_geo)
 {
 	default_material = _default_material;

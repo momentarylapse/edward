@@ -8,6 +8,7 @@
 #include "ModeModelMeshCreatePolygon.h"
 #include "../ModeModelMesh.h"
 #include "../../ModeModel.h"
+#include "../../../../data/model/ModelMesh.h"
 #include "../../../../EdwardWindow.h"
 #include "../../../../Session.h"
 #include "../../../../action/model/mesh/polygon/ActionModelAddPolygonAutoSkin.h"

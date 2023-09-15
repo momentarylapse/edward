@@ -10,6 +10,8 @@
 #include "../mesh/ModeModelMeshTexture.h"
 #include "../ModeModel.h"
 #include "../../../data/model/DataModel.h"
+#include "../../../data/model/ModelMesh.h"
+#include "../../../data/model/ModelPolygon.h"
 #include "../../../action/model/data/ActionModelAddMaterial.h"
 #include "../../../Session.h"
 #include "../../../storage/Storage.h"

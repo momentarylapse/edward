@@ -557,6 +557,7 @@
     <ClCompile Include="src\storage\format\FormatWorld.cpp" />
     <ClCompile Include="src\storage\Storage.cpp" />
     <ClCompile Include="src\stuff\BrushPanel.cpp" />
+    <ClCompile Include="src\stuff\Clipboard.cpp" />
     <ClCompile Include="src\stuff\PluginManager.cpp" />
     <ClCompile Include="src\stuff\Progress.cpp" />
     <ClCompile Include="src\y\gui\Font.cpp" />
@@ -1006,6 +1007,7 @@
     <ClInclude Include="src\storage\format\FormatWorld.h" />
     <ClInclude Include="src\storage\Storage.h" />
     <ClInclude Include="src\stuff\BrushPanel.h" />
+    <ClInclude Include="src\stuff\Clipboard.h" />
     <ClInclude Include="src\stuff\PluginManager.h" />
     <ClInclude Include="src\stuff\Progress.h" />
     <ClInclude Include="src\y\gui\Font.h" />

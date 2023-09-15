@@ -8,6 +8,8 @@
 #include "ModeModelSkeletonAttachVertices.h"
 #include "../../mesh/selection/MeshSelectionModePolygon.h"
 #include "../../ModeModel.h"
+#include "../../../../data/model/ModelMesh.h"
+#include "../../../../data/model/ModelPolygon.h"
 #include "../../../../EdwardWindow.h"
 #include "../../../../Session.h"
 #include "../../../../multiview/MultiView.h"

@@ -17,6 +17,9 @@
 #include "../../../multiview/DrawingHelper.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../data/model/ModelSelection.h"
+#include "../../../data/model/DataModel.h"
+#include "../../../data/model/ModelMesh.h"
+#include "../../../data/model/ModelPolygon.h"
 
 float poly_hover(ModelPolygon *pol, MultiView::Window *win, const vec2 &M, vec3 &tp, float &z, const Array<ModelVertex> &vertex);
 

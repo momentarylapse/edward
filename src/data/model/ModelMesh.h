@@ -143,7 +143,7 @@ public:
 	Array<ModelVertex> show_vertices;
 
 
-	void copy_geometry(Geometry &geo);
+	Geometry copy_geometry();
 };
 
 #endif /* SRC_DATA_MODEL_MODELMESH_H_ */

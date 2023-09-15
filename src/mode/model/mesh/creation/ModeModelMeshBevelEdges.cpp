@@ -9,6 +9,7 @@
 #include "../ModeModelMesh.h"
 #include "../../../../action/model/mesh/edge/ActionModelBevelEdges.h"
 #include "../../ModeModel.h"
+#include "../../../../data/model/ModelMesh.h"
 #include "../../../../EdwardWindow.h"
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"

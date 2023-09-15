@@ -12,6 +12,7 @@
 #include "../animation/ModeModelAnimation.h"
 #include "../mesh/selection/MeshSelectionModePolygon.h"
 #include "../../../data/model/ModelSelection.h"
+#include "../../../data/model/ModelMesh.h"
 #include "../../../EdwardWindow.h"
 #include "../../../Session.h"
 #include "../../../storage/Storage.h"

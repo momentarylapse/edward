@@ -11,6 +11,7 @@
 #include "../../../../EdwardWindow.h"
 #include "../../../../Session.h"
 #include "../../../../data/model/ModelMesh.h"
+#include "../../../../data/model/ModelPolygon.h"
 #include "../../../../data/model/ModelSelection.h"
 //#include "../../../../action/model/mesh/polygon/ActionModelSplitPolygon.h"
 //#include "../../../../action/model/mesh/edge/ActionModelSplitEdge.h"

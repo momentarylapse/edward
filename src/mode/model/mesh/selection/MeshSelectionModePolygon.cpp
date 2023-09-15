@@ -11,6 +11,8 @@
 #include "../../ModeModel.h"
 #include "../../animation/ModeModelAnimation.h"
 #include "../../skeleton/ModeModelSkeleton.h"
+#include "../../../../data/model/ModelMesh.h"
+#include "../../../../data/model/ModelPolygon.h"
 #include "../../../../EdwardWindow.h"
 #include "../../../../Session.h"
 #include "../../../../multiview/MultiView.h"

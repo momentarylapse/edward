@@ -10,7 +10,6 @@
 
 #include "../../Mode.h"
 #include "../../../data/model/DataModel.h"
-#include "../../../data/model/geometry/Geometry.h"
 
 class DataModel;
 namespace nix {
@@ -78,7 +77,6 @@ public:
 	void paste();
 	bool copyable();
 	bool pasteable();
-	Geometry temp_geo;
 
 	ModeModelMeshTexture *mode_model_mesh_texture;
 	ModeModelMeshMaterial *mode_model_mesh_material;

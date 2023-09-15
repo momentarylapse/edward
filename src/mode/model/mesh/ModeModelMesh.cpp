@@ -38,11 +38,13 @@
 #include "../ModeModel.h"
 #include "../skeleton/ModeModelSkeleton.h"
 #include "../../ModeCreation.h"
+#include "../../../data/model/ModelMesh.h"
 #include "../../../data/model/geometry/GeometrySphere.h"
 #include "../../../data/model/geometry/GeometryCylinder.h"
 #include "../../../action/model/mesh/skin/ActionModelSkinVerticesFromProjection.h"
 #include "../../../EdwardWindow.h"
 #include "../../../Session.h"
+#include "../../../stuff/Clipboard.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/Window.h"
 #include "../../../multiview/DrawingHelper.h"
@@ -466,15 +468,17 @@ void ModeModelMesh::apply_mouse_function(MultiView::MultiView *mv) {
 }
 
 void ModeModelMesh::copy() {
-	data->edit_mesh->copy_geometry(temp_geo);
+	clipboard.set_mesh_data(data->edit_mesh->copy_geometry());
+	const auto& geo = clipboard.temp_geo;
 
-	on_update_menu();
-	session->set_message(format(_("%d vertices, %d triangles copied"), temp_geo.vertex.num, temp_geo.polygon.num));
+	//on_update_menu();
+	session->set_message(format(_("%d vertices, %d triangles copied"), geo.vertex.num, geo.polygon.num));
 }
 
 void ModeModelMesh::paste() {
-	data->pasteGeometry(temp_geo, current_material);
-	session->set_message(format(_("%d vertices, %d triangles pasted"), temp_geo.vertex.num, temp_geo.polygon.num));
+	const auto& geo = clipboard.temp_geo;
+	data->pasteGeometry(geo, current_material);
+	session->set_message(format(_("%d vertices, %d triangles pasted"), geo.vertex.num, geo.polygon.num));
 }
 
 bool ModeModelMesh::copyable() {
@@ -518,7 +522,7 @@ void ModeModelMesh::clear_effects() {
 }
 
 bool ModeModelMesh::pasteable() {
-	return temp_geo.vertex.num > 0;
+	return clipboard.has_mesh_data();
 }
 
 void ModeModelMesh::easify() {

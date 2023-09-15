@@ -12,10 +12,10 @@
 #include "../surface/helper/ActionModelSurfaceAddPolygon.h"
 #include "../polygon/ActionModelAddPolygonAutoSkin.h"
 #include "../../../../data/model/DataModel.h"
+#include "../../../../data/model/ModelPolygon.h"
 #include "../../../../data/model/ModelMesh.h"
 #include "../../../../data/model/SkinGenerator.h"
 #include "../../../../lib/base/map.h"
-#include "../../../../mode/model/mesh/ModeModelMesh.h"
 #include <assert.h>
 
 ActionModelBevelEdges::ActionModelBevelEdges(float _length, int _material)
