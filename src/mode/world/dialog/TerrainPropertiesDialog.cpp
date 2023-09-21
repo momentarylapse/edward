@@ -26,6 +26,7 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(DataWorld *_data, int _index) :
 	from_resource("terrain_dialog");
 	data = _data;
 	index = _index;
+	applying = false;
 	assert(index >= 0);
 	assert(index < data->terrains.num);
 
@@ -45,7 +46,10 @@ TerrainPropertiesDialog::TerrainPropertiesDialog(DataWorld *_data, int _index) :
 	event("default_material", [this]{ on_default_material(); });
 	event("terrain_save_as", [this]{ on_save_as(); });
 
-	data->out_changed >> create_sink([this]{ update_data(); });
+	data->out_changed >> create_sink([this] {
+		if (!applying)
+			update_data();
+	});
 
 	update_data();
 }
@@ -55,9 +59,11 @@ TerrainPropertiesDialog::~TerrainPropertiesDialog() {
 }
 
 void TerrainPropertiesDialog::apply_data() {
-	temp.pattern.x = get_float("pattern_x");
-	temp.pattern.z = get_float("pattern_z");
+	applying = true;
+	//temp.pattern.x = get_float("pattern_x");
+	//temp.pattern.z = get_float("pattern_z");
 	data->execute(new ActionWorldEditTerrain(index, temp));
+	applying = false;
 }
 
 

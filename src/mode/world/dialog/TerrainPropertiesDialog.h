@@ -42,6 +42,7 @@ public:
 private:
 	DataWorld *data;
 	int index;
+	bool applying;
 
 	WorldEditingTerrain temp;
 };
