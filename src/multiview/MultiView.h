@@ -112,16 +112,16 @@ public:
 	obs::source out_action_execute{this, "action-execute"};
 
 
-	void on_mouse_move();
-	void on_mouse_wheel();
-	void on_mouse_enter();
+	void on_mouse_move(const vec2& m);
+	void on_mouse_wheel(const vec2& scroll);
+	void on_mouse_enter(const vec2& m);
 	void on_mouse_leave();
-	void on_left_button_down();
-	void on_left_button_up();
-	void on_middle_button_down();
-	void on_middle_button_up();
-	void on_right_button_down();
-	void on_right_button_up();
+	void on_left_button_down(const vec2& m);
+	void on_left_button_up(const vec2& m);
+	void on_middle_button_down(const vec2& m);
+	void on_middle_button_up(const vec2& m);
+	void on_right_button_down(const vec2& m);
+	void on_right_button_up(const vec2& m);
 	void on_key_down(int key_code);
 	void on_key_up(int key_code);
 	void on_command(const string &id);

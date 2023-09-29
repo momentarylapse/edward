@@ -48,6 +48,13 @@ void EdwardWindow::on_close() {
 	});
 }
 
+#define IMPLEMENT_EVENT_V2(EVENT) \
+void EdwardWindow::EVENT(const vec2& v) { \
+	if (session->cur_mode->multi_view) \
+		session->cur_mode->multi_view->EVENT(v); \
+	session->cur_mode->EVENT(); \
+}
+
 #define IMPLEMENT_EVENT(EVENT) \
 void EdwardWindow::EVENT() { \
 	if (session->cur_mode->multi_view) \
@@ -55,35 +62,30 @@ void EdwardWindow::EVENT() { \
 	session->cur_mode->EVENT(); \
 }
 
-IMPLEMENT_EVENT(on_mouse_move)
-IMPLEMENT_EVENT(on_mouse_wheel)
-IMPLEMENT_EVENT(on_mouse_enter)
+IMPLEMENT_EVENT_V2(on_mouse_move)
+IMPLEMENT_EVENT_V2(on_mouse_wheel)
+IMPLEMENT_EVENT_V2(on_mouse_enter)
 IMPLEMENT_EVENT(on_mouse_leave)
-IMPLEMENT_EVENT(on_left_button_down)
-IMPLEMENT_EVENT(on_left_button_up)
-IMPLEMENT_EVENT(on_middle_button_down)
-IMPLEMENT_EVENT(on_middle_button_up)
-IMPLEMENT_EVENT(on_right_button_down)
-IMPLEMENT_EVENT(on_right_button_up)
+IMPLEMENT_EVENT_V2(on_left_button_down)
+IMPLEMENT_EVENT_V2(on_left_button_up)
+IMPLEMENT_EVENT_V2(on_middle_button_down)
+IMPLEMENT_EVENT_V2(on_middle_button_up)
+IMPLEMENT_EVENT_V2(on_right_button_down)
+IMPLEMENT_EVENT_V2(on_right_button_up)
 
-void EdwardWindow::on_key_down()
-{
-	int key_code = hui::get_event()->key_code;
+void EdwardWindow::on_key_down(int key_code) {
 	if (session->cur_mode->multi_view)
 		session->cur_mode->multi_view->on_key_down(key_code);
 	session->cur_mode->on_key_down(key_code);
 }
 
-void EdwardWindow::on_key_up()
-{
-	int key_code = hui::get_event()->key_code;
+void EdwardWindow::on_key_up(int key_code) {
 	if (session->cur_mode->multi_view)
 		session->cur_mode->multi_view->on_key_up(key_code);
 	session->cur_mode->on_key_up(key_code);
 }
 
-void EdwardWindow::on_event()
-{
+void EdwardWindow::on_event() {
 	string id = hui::get_event()->id;
 	if (id.num == 0)
 		id = hui::get_event()->message;

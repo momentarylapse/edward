@@ -323,17 +323,17 @@ void MultiView::on_command(const string & id) {
 		view_stage_pop();
 }
 
-void MultiView::on_mouse_wheel() {
+void MultiView::on_mouse_wheel(const vec2& scroll) {
 	cam_con->on_mouse_wheel();
 }
 
-void MultiView::on_mouse_enter() {
+void MultiView::on_mouse_enter(const vec2& m) {
 	out_redraw.notify();
 }
 
 void MultiView::on_mouse_leave() {
 	//notify(MESSAGE_UPDATE);
-	on_mouse_move();
+	on_mouse_move(vec2::ZERO);
 }
 
 void activate_next_window(MultiView *mv) {
@@ -381,7 +381,7 @@ MultiView::SelectionMode get_select_mode(Session *session) {
 	return MultiView::SelectionMode::SET;
 }
 
-void MultiView::on_left_button_down() {
+void MultiView::on_left_button_down(const vec2& m) {
 	update_mouse();
 
 	get_hover();
@@ -427,7 +427,7 @@ void MultiView::on_left_button_down() {
 
 
 
-void MultiView::on_middle_button_down() {
+void MultiView::on_middle_button_down(const vec2& m) {
 	active_win = mouse_win;
 
 // move camera?
@@ -440,7 +440,7 @@ void MultiView::on_middle_button_down() {
 
 
 
-void MultiView::on_right_button_down() {
+void MultiView::on_right_button_down(const vec2& m) {
 	if (hover.meta == hover.HOVER_WINDOW_LABEL) {
 		active_win = mouse_win;
 		menu->open_popup(session->win);
@@ -458,7 +458,7 @@ void MultiView::on_right_button_down() {
 
 
 
-void MultiView::on_middle_button_up() {
+void MultiView::on_middle_button_up(const vec2& m) {
 	if (view_moving) {
 		view_moving = false;
 		hold_cursor(false);
@@ -467,7 +467,7 @@ void MultiView::on_middle_button_up() {
 
 
 
-void MultiView::on_right_button_up() {
+void MultiView::on_right_button_up(const vec2& m) {
 	if (view_moving) {
 		view_moving = false;
 		hold_cursor(false);
@@ -481,7 +481,7 @@ void MultiView::on_key_up(int key_code) {
 
 
 
-void MultiView::on_left_button_up() {
+void MultiView::on_left_button_up(const vec2& m) {
 	end_selection_rect();
 	moving_cross_x = false;
 	moving_cross_y = false;
@@ -514,7 +514,7 @@ void MultiView::update_mouse() {
 }
 
 
-void MultiView::on_mouse_move() {
+void MultiView::on_mouse_move(const vec2& m) {
 	update_mouse();
 
 	if (action_con->in_use()) {
