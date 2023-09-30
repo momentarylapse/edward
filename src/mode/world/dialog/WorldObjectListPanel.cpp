@@ -138,7 +138,7 @@ void WorldObjectListPanel::on_component_edit_variables() {
 	auto com = &o.components[row];
 	update_script_data(data->session, *com, "Component", false);
 	auto dlg = new ScriptVarsDialog(win, com);
-	hui::fly(dlg, [com] {
+	hui::fly(dlg).on([com] {
 		for (auto v: com->variables)
 			msg_write(v.name + " " + v.value);
 	});

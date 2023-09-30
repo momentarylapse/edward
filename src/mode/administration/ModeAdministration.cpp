@@ -128,7 +128,7 @@ void ModeAdministration::upgrade_project(const Path &dir) {
 
 void ModeAdministration::_new() {
 	auto dlg = new NewProjectDialog(session->win);
-	hui::fly(dlg, [this, dlg] {
+	hui::fly(dlg).on([this, dlg] {
 		if (dlg->ok) {
 			try {
 				create_project(dlg->directory, dlg->first_world);

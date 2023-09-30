@@ -339,7 +339,7 @@ public:
 
 	static void ask(hui::Window *parent, int &w, int &h, std::function<void(int,int)> cb_success) {
 		auto *dlg = new TextureScaleDialog(parent, w, h);
-		hui::run(dlg, [dlg, cb_success] {
+		hui::fly(dlg).on([dlg, cb_success] {
 			if (dlg->width > 0)
 				cb_success(dlg->width, dlg->height);
 		});

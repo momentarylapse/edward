@@ -88,7 +88,7 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	event("show-source", [this] { hide_control("source", !is_checked("")); });
 	event("shader-new", [this] {
 		auto dlg = new MultiChoice({"default", "pure color out", "cube map"}, win);
-		hui::fly(dlg, [this, dlg] {
+		hui::fly(dlg).on([this, dlg] {
 			int sel = dlg->selected;
 			if (sel == 0) {
 				graph->make_default_for_engine();
@@ -470,14 +470,14 @@ public:
 
 void small_text_input_dialog(hui::Window *parent, const string &orig, std::function<void(const string &)> cb) {
 	auto dlg = new TextInputDialog(parent, orig);
-	hui::fly(dlg, [dlg, cb] {
+	hui::fly(dlg).on([dlg, cb] {
 		cb(dlg->reply);
 	});
 }
 
 void large_text_input_dialog(hui::Window *parent, const string &orig, std::function<void(const string &)> cb) {
 	auto dlg = new MultiLineTextInputDialog(parent, orig);
-	hui::fly(dlg, [dlg, cb] {
+	hui::fly(dlg).on([dlg, cb] {
 		cb(dlg->reply);
 	});
 }

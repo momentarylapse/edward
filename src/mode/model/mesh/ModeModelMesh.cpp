@@ -443,7 +443,7 @@ void ModeModelMesh::choose_material_for_selection() {
 	}
 
 	auto dlg = new ModelMaterialSelectionDialog(session->win, false, data);
-	hui::run(dlg, [this, dlg] {
+	hui::fly(dlg).on([this, dlg] {
 		if (dlg->answer >= 0)
 			data->setMaterialSelection(dlg->answer);
 	});
