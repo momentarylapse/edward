@@ -587,7 +587,7 @@ install(DIRECTORY "plugins" DESTINATION share/edward)
 
 # install .desktop file
 set(INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-configure_file("static/michisoft-edward.desktop" /tmp/michisoft-edward.desktop NO_SOURCE_PERMISSIONS)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-edward.desktop" /tmp/michisoft-edward.desktop NO_SOURCE_PERMISSIONS)
 install(FILES /tmp/michisoft-edward.desktop DESTINATION share/applications)
 
 # install mime
