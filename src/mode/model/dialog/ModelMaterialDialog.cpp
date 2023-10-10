@@ -34,56 +34,56 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) {
 	data = _data;
 
 
-	data->out_material_changed >> create_sink([=]{
+	data->out_material_changed >> create_sink([this] {
 		if (apply_queue_depth == 0)
 			load_data();
 	});
-	data->out_texture_changed >> create_sink([=]{
+	data->out_texture_changed >> create_sink([this] {
 		if (apply_queue_depth == 0)
 			load_data();
 	});
 
-	mode_model_mesh()->state.out_current_material_changed >> create_sink([=]{ load_data(); });
-	mode_model_mesh_texture()->state.out_texture_level_changed >> create_sink([=]{ load_data(); });
+	mode_model_mesh()->state.out_current_material_changed >> create_sink([this] { load_data(); });
+	mode_model_mesh_texture()->state.out_texture_level_changed >> create_sink([this] { load_data(); });
 
 	popup_materials = hui::create_resource_menu("model-material-list-popup", this);
 	popup_textures = hui::create_resource_menu("model-texture-list-popup", this);
 
-	event_x("material_list", "hui:select", [=]{ on_material_list_select(); });
-	event_x("material_list", "hui:right-button-down", [=]{ on_material_list_right_click(); });
-	event("add_new_material", [=]{ on_material_add(); });
-	event("add_material", [=]{ on_material_load(); });
-	event("delete_material", [=]{ on_material_delete(); });
-	event("apply_material", [=]{ on_material_apply(); });
+	event_x("material_list", "hui:select", [this] { on_material_list_select(); });
+	event_x("material_list", "hui:right-button-down", [this] { on_material_list_right_click(); });
+	event("add_new_material", [this] { on_material_add(); });
+	event("add_material", [this] { on_material_load(); });
+	event("delete_material", [this] { on_material_delete(); });
+	event("apply_material", [this] { on_material_apply(); });
 
 
-	event("texture-level-add", [=]{ on_texture_level_add(); });
-	event("mat_textures", [=]{ on_textures(); });
-	event_x("mat_textures", "hui:select", [=]{ on_textures_select(); });
-	event_x("mat_textures", "hui:right-button-down", [=]{ on_textures_right_click(); });
-	event("texture-level-delete", [=]{ on_texture_level_delete(); });
-	event("texture-level-clear", [=]{ on_texture_level_clear(); });
-	event("texture-level-load", [=]{ on_texture_level_load(); });
-	event("texture-level-save", [=]{ on_texture_level_save(); });
-	event("texture-level-scale", [=]{ on_texture_level_scale(); });
-	event("transparency_mode:material", [=]{ on_transparency_mode(); });
-	event("transparency_mode:none", [=]{ on_transparency_mode(); });
-	event("transparency_mode:function", [=]{ on_transparency_mode(); });
-	event("transparency_mode:color_key", [=]{ on_transparency_mode(); });
-	event("transparency_mode:factor", [=]{ on_transparency_mode(); });
+	event("texture-level-add", [this] { on_texture_level_add(); });
+	event("mat_textures", [this] { on_textures(); });
+	event_x("mat_textures", "hui:select", [this] { on_textures_select(); });
+	event_x("mat_textures", "hui:right-button-down", [this] { on_textures_right_click(); });
+	event("texture-level-delete", [this] { on_texture_level_delete(); });
+	event("texture-level-clear", [this] { on_texture_level_clear(); });
+	event("texture-level-load", [this] { on_texture_level_load(); });
+	event("texture-level-save", [this] { on_texture_level_save(); });
+	event("texture-level-scale", [this] { on_texture_level_scale(); });
+	event("transparency_mode:material", [this] { on_transparency_mode(); });
+	event("transparency_mode:none", [this] { on_transparency_mode(); });
+	event("transparency_mode:function", [this] { on_transparency_mode(); });
+	event("transparency_mode:color_key", [this] { on_transparency_mode(); });
+	event("transparency_mode:factor", [this] { on_transparency_mode(); });
 
-	event("override-colors", [=]{ on_override_colors(); });
-	event("albedo", [=]{ apply_data_color(); });
-	event("roughness", [=]{ apply_data_color(); });
-	event("slider-roughness", [=]{ apply_data_color(); });
-	event("metal", [=]{ apply_data_color(); });
-	event("slider-metal", [=]{ apply_data_color(); });
-	event("emission", [=]{ apply_data_color(); });
+	event("override-colors", [this] { on_override_colors(); });
+	event("albedo", [this] { apply_data_color(); });
+	event("roughness", [this] { apply_data_color(); });
+	event("slider-roughness", [this] { apply_data_color(); });
+	event("metal", [this] { apply_data_color(); });
+	event("slider-metal", [this] { apply_data_color(); });
+	event("emission", [this] { apply_data_color(); });
 
-	event("alpha_factor", [=]{ apply_data_alpha(); });
-	event("alpha_source", [=]{ apply_data_alpha(); });
-	event("alpha_dest", [=]{ apply_data_alpha(); });
-	event("alpha_z_buffer", [=]{ apply_data_alpha(); });
+	event("alpha_factor", [this] { apply_data_alpha(); });
+	event("alpha_source", [this] { apply_data_alpha(); });
+	event("alpha_dest", [this] { apply_data_alpha(); });
+	event("alpha_z_buffer", [this] { apply_data_alpha(); });
 
 	hide_control("model_material_dialog_grp_color", !full);
 	hide_control("model_material_dialog_grp_transparency", !full);
@@ -174,6 +174,8 @@ void ModelMaterialDialog::apply_data_color() {
 		col.metal = parent->metal;
 		col.emission = parent->emission;
 	}
+	set_float("metal", col.metal);
+	set_float("roughness", col.roughness);
 	enable("albedo", col.user);
 	enable("roughness", col.user);
 	enable("slider-roughness", col.user);
@@ -324,8 +326,8 @@ public:
 		from_resource("texture-scale-dialog");
 		set_int("width", w);
 		set_int("height", h);
-		event("ok", [=]{ on_ok(); });
-		event("cancel", [=]{ on_cancel(); });
+		event("ok", [this] { on_ok(); });
+		event("cancel", [this] { on_cancel(); });
 	}
 	void on_ok() {
 		width = get_int("width");
