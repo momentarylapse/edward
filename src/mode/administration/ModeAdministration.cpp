@@ -128,7 +128,7 @@ void ModeAdministration::upgrade_project(const Path &dir) {
 
 void ModeAdministration::_new() {
 	auto dlg = new NewProjectDialog(session->win);
-	hui::fly(dlg).on([this, dlg] {
+	hui::fly(dlg).then([this, dlg] {
 		if (dlg->ok) {
 			try {
 				create_project(dlg->directory, dlg->first_world);
@@ -142,7 +142,7 @@ void ModeAdministration::_new() {
 }
 
 bool ModeAdministration::open() {
-	hui::file_dialog_dir(hui::CurWindow, _("Open project directory"), "", {}).on([this] (const Path &path) {
+	hui::file_dialog_dir(hui::CurWindow, _("Open project directory"), "", {}).then([this] (const Path &path) {
 		if (!os::fs::exists(path | "game.ini")) {
 			session->error(_("game.ini not found"));
 			//return false;

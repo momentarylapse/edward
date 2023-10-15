@@ -166,7 +166,7 @@ void LightmapDialog::OnResolution()
 }
 
 void LightmapDialog::OnFindNewWorld() {
-	/*storage->file_dialog(FD_WORLD, true, true).on([this] (const auto& p) {
+	/*storage->file_dialog(FD_WORLD, true, true).then([this] (const auto& p) {
 		set_string("new_world_name", p.simple.str());
 	});*/
 }

@@ -129,9 +129,9 @@ bool Storage::save(const Path &_filename, Data *data) {
 base::future<void> Storage::open(Data *data) {
 	base::promise<void> promise;
 
-	session->allow_termination().on([this, data, promise] {
+	session->allow_termination().then([this, data, promise] {
 		int type = data_type(data);
-		file_dialog(type, false, false).on([this, data, promise] (const auto& p) mutable {
+		file_dialog(type, false, false).then([this, data, promise] (const auto& p) mutable {
 			guess_root_directory(p.complete);
 
 			try {
@@ -155,7 +155,7 @@ base::future<void> Storage::save_as(Data *data) {
 	base::promise<void> promise;
 
 	int type = data_type(data);
-	file_dialog(type, true, false).on([this, data, promise] (const auto& p) mutable {
+	file_dialog(type, true, false).then([this, data, promise] (const auto& p) mutable {
 		guess_root_directory(p.complete);
 
 		try {
@@ -344,11 +344,11 @@ base::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int pre
 
 	if (save)
 		hui::file_dialog_save(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
-			.on(on_select_base)
+			.then(on_select_base)
 			.on_fail([promise] () mutable { promise.fail(); });
 	else
 		hui::file_dialog_open(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
-			.on(on_select_base)
+			.then(on_select_base)
 			.on_fail([promise] () mutable { promise.fail(); });
 
 	return promise.get_future();

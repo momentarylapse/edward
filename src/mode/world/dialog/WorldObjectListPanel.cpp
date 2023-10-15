@@ -102,7 +102,7 @@ WorldObjectListPanel::~WorldObjectListPanel() {
 }
 
 void WorldObjectListPanel::on_component_add() {
-	ComponentSelectionDialog::choose(world->session, win).on([this] (const ScriptInstanceData &component) {
+	ComponentSelectionDialog::choose(world->session, win).then([this] (const ScriptInstanceData &component) {
 		data->execute(new ActionWorldSelectionAddComponent(data, component));
 	});
 }
@@ -138,7 +138,7 @@ void WorldObjectListPanel::on_component_edit_variables() {
 	auto com = &o.components[row];
 	update_script_data(data->session, *com, "Component", false);
 	auto dlg = new ScriptVarsDialog(win, com);
-	hui::fly(dlg).on([com] {
+	hui::fly(dlg).then([com] {
 		for (auto v: com->variables)
 			msg_write(v.name + " " + v.value);
 	});

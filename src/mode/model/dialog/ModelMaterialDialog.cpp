@@ -244,7 +244,7 @@ void ModelMaterialDialog::on_material_add() {
 }
 
 void ModelMaterialDialog::on_material_load() {
-	data->session->storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p){
+	data->session->storage->file_dialog(FD_MATERIAL, false, true).then([this] (const auto& p){
 		data->execute(new ActionModelAddMaterial(p.simple));
 	});
 }
@@ -303,7 +303,7 @@ void ModelMaterialDialog::on_textures() {
 void ModelMaterialDialog::on_texture_level_load() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0)
-		data->session->storage->file_dialog(FD_TEXTURE, false, true).on([this, sel] (const auto& p) {
+		data->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, sel] (const auto& p) {
 			data->execute(new ActionModelMaterialLoadTexture(mode_model_mesh()->current_material, sel, p.relative));
 		});
 }
@@ -311,7 +311,7 @@ void ModelMaterialDialog::on_texture_level_load() {
 void ModelMaterialDialog::on_texture_level_save() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0)
-		data->session->storage->file_dialog(FD_TEXTURE, true, true).on([this, sel] (const auto& p) {
+		data->session->storage->file_dialog(FD_TEXTURE, true, true).then([this, sel] (const auto& p) {
 			auto tl = data->material[mode_model_mesh()->current_material]->texture_levels[sel];
 			tl->image->save(p.complete);
 			tl->filename = p.relative; // ...
@@ -341,7 +341,7 @@ public:
 
 	static void ask(hui::Window *parent, int &w, int &h, std::function<void(int,int)> cb_success) {
 		auto *dlg = new TextureScaleDialog(parent, w, h);
-		hui::fly(dlg).on([dlg, cb_success] {
+		hui::fly(dlg).then([dlg, cb_success] {
 			if (dlg->width > 0)
 				cb_success(dlg->width, dlg->height);
 		});

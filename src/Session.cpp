@@ -36,7 +36,7 @@ Session *create_session() {
 base::future<Session*> emit_new_session() {
 	base::promise<Session*> promise;
 	auto s = create_session();
-	s->promise_started.get_future().on([promise, s] () mutable {
+	s->promise_started.get_future().then([promise, s] () mutable {
 		promise(s);
 	});
 	return promise.get_future();
@@ -190,7 +190,7 @@ base::future<void> mode_switch_allowed(ModeBase *m) {
 void Session::set_mode(ModeBase *m) {
 	if (cur_mode == m)
 		return;
-	mode_switch_allowed(m).on([this, m] {
+	mode_switch_allowed(m).then([this, m] {
 		set_mode_now(m);
 	});
 }
@@ -315,16 +315,16 @@ void Session::universal_new(int preferred_type) {
 
 	if (false) {
 		// replace
-		allow_termination().on([this, call_new] { call_new(this); });
+		allow_termination().then([this, call_new] { call_new(this); });
 
 	} else {
 		// new window
-		emit_empty_session(this).on(call_new);
+		emit_empty_session(this).then(call_new);
 	}
 }
 
 void Session::universal_open(int preferred_type) {
-	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false).on([this] (const auto& p) {
+	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false).then([this] (const auto& p) {
 
 		auto call_open = [kind=p.kind, path=p.complete] (Session* session) {
 			if (kind == FD_MODEL) {
@@ -342,7 +342,7 @@ void Session::universal_open(int preferred_type) {
 			}
 		};
 
-		emit_empty_session(this).on(call_open);
+		emit_empty_session(this).then(call_open);
 	});
 }
 
@@ -379,7 +379,7 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 			case FD_WORLD:
 			case FD_TERRAIN:
 			case FD_CAMERAFLIGHT:
-				emit_empty_session(this).on([type, filename] (Session* session) {
+				emit_empty_session(this).then([type, filename] (Session* session) {
 					if (type == FD_MODEL) {
 						session->storage->load(filename, session->mode_model->data, true);
 						session->set_mode(session->mode_model);
@@ -437,7 +437,7 @@ base::future<void> Session::allow_termination() {
 		return promise.get_future();
 	}
 	hui::question_box(win,_("Quite a polite question"),_("You increased entropy. Do you wish to save your work?"), true)
-		.on([promise] (bool answer) mutable {
+		.then([promise] (bool answer) mutable {
 			if (!answer) {
 				promise();
 			} else {

@@ -40,7 +40,7 @@ namespace hui {
 
 
 void EdwardWindow::on_close() {
-	session->allow_termination().on([this] {
+	session->allow_termination().then([this] {
 		//request_destroy();
 		hui::run_later(0.01f, [this] {
 			delete this;
@@ -481,7 +481,7 @@ void EdwardWindow::on_execute_plugin() {
 	auto temp = session->storage->last_dir[FD_SCRIPT];
 	session->storage->last_dir[FD_SCRIPT] = PluginManager::directory;
 
-	session->storage->file_dialog(FD_SCRIPT, false, false).on([this, temp] (const auto& p) {
+	session->storage->file_dialog(FD_SCRIPT, false, false).then([this, temp] (const auto& p) {
 		app->plugins->execute(session, p.complete);
 		session->storage->last_dir[FD_SCRIPT] = temp;
 	}).on_fail([this, temp] {

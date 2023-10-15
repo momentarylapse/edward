@@ -18,7 +18,7 @@ NewProjectDialog::NewProjectDialog(hui::Window *parent) : hui::Dialog("new-proje
 	enable("create", false);
 
 	event("find-directory", [this] {
-		hui::file_dialog_dir(hui::CurWindow, _("Choose a directory for the new project"), "", {}).on([this] (const Path &path) {
+		hui::file_dialog_dir(hui::CurWindow, _("Choose a directory for the new project"), "", {}).then([this] (const Path &path) {
 			directory = path;
 			set_string("directory", directory.str());
 			update();

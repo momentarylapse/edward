@@ -88,7 +88,7 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	event("show-source", [this] { hide_control("source", !is_checked("")); });
 	event("shader-new", [this] {
 		auto dlg = new MultiChoice({"default", "pure color out", "cube map"}, win);
-		hui::fly(dlg).on([this, dlg] {
+		hui::fly(dlg).then([this, dlg] {
 			int sel = dlg->selected;
 			if (sel == 0) {
 				graph->make_default_for_engine();
@@ -112,7 +112,7 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 		data->out_changed();
 	});
 	event("shader-load", [this] {
-		data->session->storage->file_dialog(FD_SHADERFILE,false,true).on([this] (const auto& p){
+		data->session->storage->file_dialog(FD_SHADERFILE,false,true).then([this] (const auto& p){
 			if (test_shader_file(data->session, p.relative)) {
 				data->shader.file = p.relative;
 				data->shader.load_from_file(data->session);
@@ -124,7 +124,7 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 		});
 	});
 	event("shader-save", [this]{
-		data->session->storage->file_dialog(FD_SHADERFILE,true,true).on([this] (const auto& p) {
+		data->session->storage->file_dialog(FD_SHADERFILE,true,true).then([this] (const auto& p) {
 			data->shader.file = p.relative;
 			data->shader.save_to_file(data->session);
 		});
@@ -470,14 +470,14 @@ public:
 
 void small_text_input_dialog(hui::Window *parent, const string &orig, std::function<void(const string &)> cb) {
 	auto dlg = new TextInputDialog(parent, orig);
-	hui::fly(dlg).on([dlg, cb] {
+	hui::fly(dlg).then([dlg, cb] {
 		cb(dlg->reply);
 	});
 }
 
 void large_text_input_dialog(hui::Window *parent, const string &orig, std::function<void(const string &)> cb) {
 	auto dlg = new MultiLineTextInputDialog(parent, orig);
-	hui::fly(dlg).on([dlg, cb] {
+	hui::fly(dlg).then([dlg, cb] {
 		cb(dlg->reply);
 	});
 }
@@ -506,7 +506,7 @@ void ShaderGraphDialog::on_left_button_down() {
 			}
 		} else if (pp.type == ShaderValueType::COLOR) {
 			color col = pp.get_color();
-			hui::select_color(win, "", col).on([this, &pp] (const color &c) {
+			hui::select_color(win, "", col).then([this, &pp] (const color &c) {
 				pp.set_color(c);
 				on_update();
 			});

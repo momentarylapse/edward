@@ -89,7 +89,7 @@ void ModelMaterialSelectionDialog::on_material_add() {
 }
 
 void ModelMaterialSelectionDialog::on_material_load() {
-	data->session->storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_MATERIAL, false, true).then([this] (const auto& p) {
 		data->execute(new ActionModelAddMaterial(p.simple));
 	});
 }

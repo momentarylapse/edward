@@ -75,7 +75,7 @@ ModeWorld::~ModeWorld() {
 void ModeWorld::save_as() {
 	for (auto &t: data->terrains)
 		if (t.filename == "") {
-			session->storage->file_dialog(FD_TERRAIN, true, true).on([this, &t] (const auto& p) {
+			session->storage->file_dialog(FD_TERRAIN, true, true).then([this, &t] (const auto& p) {
 				t.save(p.complete);
 				save_as();
 			});
@@ -142,7 +142,7 @@ void ModeWorld::on_command(const string & id) {
 	if (id == "camscript_create")
 		session->set_mode(mode_world_camera);
 	if (id == "camscript_load")
-		session->storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const auto& p) {
+		session->storage->file_dialog(FD_CAMERAFLIGHT, false, true).then([this] (const auto& p) {
 			if (mode_world_camera->data->load(p.complete))
 				session->set_mode(mode_world_camera);
 			else
@@ -312,7 +312,7 @@ bool WorldTerrain::overlap_rect(MultiView::Window *win, const rect &r) {
 void ModeWorld::save() {
 	for (auto &t: data->terrains) {
 		if (t.filename.is_empty()) {
-			session->storage->file_dialog(FD_TERRAIN, true, true).on([this, &t] (const auto& p) {
+			session->storage->file_dialog(FD_TERRAIN, true, true).then([this, &t] (const auto& p) {
 			if (t.save(p.complete))
 				save();
 			});
@@ -328,7 +328,7 @@ void ModeWorld::save() {
 
 
 void ModeWorld::_new() {
-	session->allow_termination().on([this] {
+	session->allow_termination().then([this] {
 		data->reset();
 		optimize_view();
 	});
@@ -760,7 +760,7 @@ bool ModeWorld::optimize_view() {
 }
 
 void ModeWorld::load_terrain() {
-	session->storage->file_dialog(FD_TERRAIN, false, true).on([this] (const auto& p) {
+	session->storage->file_dialog(FD_TERRAIN, false, true).then([this] (const auto& p) {
 		data->add_terrain(p.simple, multi_view->cam.pos);
 	});
 }
@@ -783,7 +783,7 @@ void ModeWorld::toggle_show_effects() {
 
 
 void ModeWorld::import_world_properties() {
-	session->storage->file_dialog(FD_WORLD, false, false).on([this] (const auto& p) {
+	session->storage->file_dialog(FD_WORLD, false, false).then([this] (const auto& p) {
 		DataWorld w(session);
 		if (session->storage->load(p.complete, &w, false))
 			data->execute(new ActionWorldEditData(w.meta_data));

@@ -69,7 +69,7 @@ void TerrainCreationDialog::OnClose()
 
 
 void TerrainCreationDialog::OnFindHeightmap() {
-	data->session->storage->file_dialog(FD_TEXTURE, false, false).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_TEXTURE, false, false).then([this] (const auto& p) {
 		set_string("height_image", p.complete.str());
 	});
 }

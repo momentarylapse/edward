@@ -64,37 +64,37 @@ void ConfigurationDialog::load_data() {
 
 
 void ConfigurationDialog::on_find_root_dir() {
-	hui::file_dialog_dir(this, _("Working directory"), data->session->storage->root_dir, {}).on([this] (const Path &path) {
+	hui::file_dialog_dir(this, _("Working directory"), data->session->storage->root_dir, {}).then([this] (const Path &path) {
 		set_string("root-directory", path.str());
 	});
 }
 
 void ConfigurationDialog::on_find_world() {
-	data->session->storage->file_dialog(FD_WORLD, false, true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_WORLD, false, true).then([this] (const auto& p) {
 		set_string("world", p.simple.str());
 	});
 }
 
 void ConfigurationDialog::on_find_second_world() {
-	data->session->storage->file_dialog(FD_WORLD, false, true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_WORLD, false, true).then([this] (const auto& p) {
 		set_string("second-world", p.simple.str());
 	});
 }
 
 void ConfigurationDialog::on_find_script() {
-	data->session->storage->file_dialog(FD_SCRIPT, false, true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_SCRIPT, false, true).then([this] (const auto& p) {
 		set_string("script", p.relative.str());
 	});
 }
 
 void ConfigurationDialog::on_find_material() {
-	data->session->storage->file_dialog(FD_MATERIAL, false, true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_MATERIAL, false, true).then([this] (const auto& p) {
 		set_string("material", p.simple.str());
 	});
 }
 
 void ConfigurationDialog::on_find_font() {
-	data->session->storage->file_dialog(FD_FONT, false, true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_FONT, false, true).then([this] (const auto& p) {
 		set_string("font", p.simple.str());
 	});
 }

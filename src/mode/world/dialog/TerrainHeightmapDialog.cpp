@@ -52,7 +52,7 @@ void TerrainHeightmapDialog::on_size_change() {
 
 
 void TerrainHeightmapDialog::on_find_filter() {
-	data->session->storage->file_dialog(FD_TEXTURE, false, false).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_TEXTURE, false, false).then([this] (const auto& p) {
 		filter_file = p.complete;
 		set_string("filter_image", p.relative.str());
 		filter.load(filter_file);
@@ -65,7 +65,7 @@ void TerrainHeightmapDialog::on_find_filter() {
 
 
 void TerrainHeightmapDialog::on_find_heightmap() {
-	data->session->storage->file_dialog(FD_TEXTURE, false, false).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_TEXTURE, false, false).then([this] (const auto& p) {
 		heightmap_file = p.complete;
 		set_string("height_image", p.relative.str());
 		heightmap.load(heightmap_file);

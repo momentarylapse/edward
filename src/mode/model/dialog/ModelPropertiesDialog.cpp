@@ -281,7 +281,7 @@ void ModelPropertiesDialog::on_num_items() {
 }
 
 void ModelPropertiesDialog::on_model_inventary() {
-	data->session->storage->file_dialog(FD_MODEL, false, true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_MODEL, false, true).then([this] (const auto& p) {
 		int n = get_int("");
 		temp.inventary[n] = p.simple;
 		change_string("model_inventary", n, format("%d\\%s", n, p.simple));
@@ -303,7 +303,7 @@ void ModelPropertiesDialog::on_script_var_edit() {
 }
 
 void ModelPropertiesDialog::on_script_find() {
-	data->session->storage->file_dialog(FD_SCRIPT, false, true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_SCRIPT, false, true).then([this] (const auto& p) {
 		set_string("script", p.relative.str());
 		temp.script_file = p.relative;
 		update_model_script_data(data->session, temp);

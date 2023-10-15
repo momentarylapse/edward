@@ -167,8 +167,8 @@ void ModeModel::save_as() {
 }
 
 void ModeModel::import_open_3ds() {
-	session->allow_termination().on([this] {
-		session->storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
+	session->allow_termination().then([this] {
+		session->storage->file_dialog(FD_FILE, false, false).then([this] (const auto& p) {
 			import_load_3ds(p.complete);
 		});
 	});
@@ -187,8 +187,8 @@ bool ModeModel::import_load_3ds(const Path &filename) {
 }
 
 void ModeModel::import_open_json() {
-	session->allow_termination().on([this] {
-		session->storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
+	session->allow_termination().then([this] {
+		session->storage->file_dialog(FD_FILE, false, false).then([this] (const auto& p) {
 			import_load_json(p.complete);
 		});
 	});
@@ -207,8 +207,8 @@ bool ModeModel::import_load_ply(const Path &filename) {
 }
 
 void ModeModel::import_open_ply() {
-	session->allow_termination().on([this] {
-		session->storage->file_dialog(FD_FILE, false, false).on([this] (const auto& p) {
+	session->allow_termination().then([this] {
+		session->storage->file_dialog(FD_FILE, false, false).then([this] (const auto& p) {
 			import_load_ply(p.complete);
 		});
 	});
@@ -227,7 +227,7 @@ bool ModeModel::import_load_json(const Path &filename) {
 }
 
 void ModeModel::export_save_json() {
-	session->storage->file_dialog(FD_FILE, true, false).on([this] (const auto& p) {
+	session->storage->file_dialog(FD_FILE, true, false).then([this] (const auto& p) {
 		export_write_json(p.complete);
 	});
 }

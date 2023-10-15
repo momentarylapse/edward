@@ -81,7 +81,7 @@ void WorldPropertiesDialog::on_skybox_right_click() {
 }
 
 void WorldPropertiesDialog::on_skybox_add() {
-	data->session->storage->file_dialog(FD_MODEL,false,true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_MODEL,false,true).then([this] (const auto& p) {
 		temp.skybox_files.add(p.simple);
 		fill_skybox_list();
 	});
@@ -89,7 +89,7 @@ void WorldPropertiesDialog::on_skybox_add() {
 
 void WorldPropertiesDialog::on_skybox_select() {
 	int n = get_int("skybox");
-	data->session->storage->file_dialog(FD_MODEL,false,true).on([this, n] (const auto& p) {
+	data->session->storage->file_dialog(FD_MODEL,false,true).then([this, n] (const auto& p) {
 		temp.skybox_files[n] = p.simple;
 		fill_skybox_list();
 	});
@@ -134,7 +134,7 @@ void WorldPropertiesDialog::on_skybox_remove() {
 
 
 void WorldPropertiesDialog::on_script_add() {
-	data->session->storage->file_dialog(FD_SCRIPT, false, true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_SCRIPT, false, true).then([this] (const auto& p) {
 		WorldScript s;
 		s.filename = p.complete.relative_to(kaba::config.directory);
 		temp.scripts.add(s);
@@ -250,7 +250,7 @@ void WorldPropertiesDialog::on_edit_script() {
 }
 
 void WorldPropertiesDialog::on_create_script() {
-	data->session->storage->file_dialog(FD_SCRIPT, true, true).on([this] (const auto& p) {
+	data->session->storage->file_dialog(FD_SCRIPT, true, true).then([this] (const auto& p) {
 		string source = R""""(use y
 
 class X extends Controller

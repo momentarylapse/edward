@@ -244,14 +244,14 @@ void ModeWorldCamera::on_draw_win(MultiView::Window *win)
 }
 
 void ModeWorldCamera::_new() {
-	session->allow_termination().on([this] {
+	session->allow_termination().then([this] {
 		data->reset();
 	});
 }
 
 void ModeWorldCamera::open() {
-	session->allow_termination().on([this] {
-		session->storage->file_dialog(FD_CAMERAFLIGHT, false, true).on([this] (const auto& p) {
+	session->allow_termination().then([this] {
+		session->storage->file_dialog(FD_CAMERAFLIGHT, false, true).then([this] (const auto& p) {
 			data->load(p.complete);
 		});
 	});
@@ -265,7 +265,7 @@ void ModeWorldCamera::save() {
 }
 
 void ModeWorldCamera::save_as() {
-	session->storage->file_dialog(FD_CAMERAFLIGHT, true, true).on([this] (const auto& p) {
+	session->storage->file_dialog(FD_CAMERAFLIGHT, true, true).then([this] (const auto& p) {
 		return data->save(p.complete);
 	});
 }

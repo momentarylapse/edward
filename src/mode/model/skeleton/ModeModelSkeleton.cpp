@@ -76,7 +76,7 @@ void ModeModelSkeleton::on_command(const string & id) {
 }
 
 void ModeModelSkeleton::add_sub_model() {
-	session->storage->file_dialog(FD_MODEL, false, true).on([this] (const auto& p) {
+	session->storage->file_dialog(FD_MODEL, false, true).then([this] (const auto& p) {
 		data->begin_action_group("remove-sub-model");
 		foreachi(ModelBone &b, data->bone, i)
 			if (b.is_selected)

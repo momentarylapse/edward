@@ -60,7 +60,7 @@ CameraDialog::~CameraDialog() {
 
 
 void CameraDialog::OnCloseDialog() {
-	mode->session->allow_termination().on([this] {
+	mode->session->allow_termination().then([this] {
 		mode->_new();
 		mode->session->set_mode(mode->parent);
 	});

@@ -116,7 +116,7 @@ void ModeFont::on_command(const string & id)
 
 
 void ModeFont::open() {
-	session->storage->open(data).on([this] {
+	session->storage->open(data).then([this] {
 		optimize_view();
 	});
 }
@@ -124,7 +124,7 @@ void ModeFont::open() {
 
 
 void ModeFont::_new() {
-	session->allow_termination().on([this] {
+	session->allow_termination().then([this] {
 		data->reset();
 		optimize_view();
 	});
@@ -263,7 +263,7 @@ bool ModeFont::optimize_view()
 }
 
 void ModeFont::Import() {
-	hui::select_font(session->win, _("Import font"), {}).on([this] (const string &font) {
+	hui::select_font(session->win, _("Import font"), {}).then([this] (const string &font) {
 		ImporterCairo imp;
 		imp.Import(data, font);
 	});
