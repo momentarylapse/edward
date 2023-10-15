@@ -40,6 +40,7 @@ EngineData::EngineData() {
 	height = 0;
 	window_renderer = nullptr;
 	gui_renderer = nullptr;
+	region_renderer = nullptr;
 	post_processor = nullptr;
 	hdr_renderer = nullptr;
 	world_renderer = nullptr;
@@ -86,6 +87,10 @@ void EngineData::set_dirs(const Path &_texture_dir, const Path &_map_dir, const 
 		resource_manager->shader_dir = _material_dir;
 	}
 	kaba::config.directory = _script_dir;
+}
+
+void EngineData::exit() {
+	end_requested = true;
 }
 
 

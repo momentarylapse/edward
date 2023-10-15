@@ -31,10 +31,10 @@ const kaba::Class *Camera::_class = nullptr;
 
 Camera *cam_main = nullptr; // "camera"
 
-Camera *add_camera(const vec3 &pos, const quaternion &ang, const rect &dest) {
+Camera *add_camera(const vec3 &pos, const quaternion &ang) {
 	auto o = world.create_entity(pos, ang);
 
-	auto c = new Camera(dest);
+	auto c = new Camera();
 	o->_add_component_external_(c);
 	world.register_entity(o);
 	return c;
@@ -49,7 +49,7 @@ void CameraReset() {
 	cam_main = nullptr;
 }
 
-Camera::Camera(const rect &_dest) {
+Camera::Camera() {
 	component_type = _class;
 
 	fov = pi / 4;
@@ -73,8 +73,6 @@ Camera::Camera(const rect &_dest) {
 
 	enabled = true;
 	show = true;
-
-	dest = _dest;
 }
 
 

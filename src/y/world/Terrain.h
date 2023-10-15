@@ -79,11 +79,14 @@ public:
 	Array<float> height;
 	Array<vec3> vertex, normal;
 	Array<plane> pl; // for collision detection
-	VertexBuffer *vertex_buffer;
+	owned<VertexBuffer> vertex_buffer;
 	int chunk_lod[TERRAIN_MAX_CHUNKS][TERRAIN_MAX_CHUNKS];
 	int chunk_lod_old[TERRAIN_MAX_CHUNKS][TERRAIN_MAX_CHUNKS];
 	vec3 pattern, min, max;
-	Material *material;
+	string vertex_shader_module;
+	owned<Material> material;
+	ShaderCache shader_cache;
+	ShaderCache shader_cache_shadow;
 	Path material_file;
 
 	Path texture_file[MATERIAL_MAX_TEXTURES];

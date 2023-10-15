@@ -314,7 +314,7 @@ int Animator::get_frames(int move_no) {
 vec3 Animator::get_vertex(int index) {
 	auto m = owner->get_component<Model>();
 	auto sk = owner->get_component<Skeleton>();
-	auto s = m->mesh[MESH_HIGH];
+	auto s = m->mesh[MESH_HIGH].get();
 	int b = s->bone_index[index].i;
 	return m->owner->get_matrix() * dmatrix[b] * s->vertex[index] - sk->pos0[b];
 }

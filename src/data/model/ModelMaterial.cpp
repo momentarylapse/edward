@@ -197,8 +197,8 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 			//nix::set_alpha(alpha.factor);
 			nix::set_z(false, true);
 		}
-		material->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
-		w->set_shader(material->shader[0].get());
+		shader_cache._prepare_shader((RenderPathType)1, material, "default", "");
+		w->set_shader(shader_cache.shader[0].get());
 	}
 	Array<nix::Texture*> tex;
 	for (auto *t: texture_levels)

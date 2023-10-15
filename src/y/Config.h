@@ -34,7 +34,9 @@ public:
 
 	float resolution_scale_min = 0;
 	float resolution_scale_max = 0;
+	string resolution_scale_filter;
 	float target_framerate = 0;
+	float min_framerate = 0;
 	float ambient_occlusion_radius = 0;
 
 	Config();

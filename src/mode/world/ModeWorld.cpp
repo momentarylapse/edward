@@ -404,7 +404,7 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha, const vec3 &cam
 
 	//nix::set_model_matrix(matrix::ID);
 	//t->prepare_draw(cam_pos);
-	nix::draw_triangles(t->vertex_buffer);
+	nix::draw_triangles(t->vertex_buffer.get());
 
 
 	nix::disable_alpha();
@@ -466,11 +466,11 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 
 		// prepare...
 		t.terrain->prepare_draw(multi_view->cam.pos - t.pos);
-		auto mat = t.terrain->material;
+		auto mat = t.terrain->material.get();
 		auto s = win->gl->default_3d.get();
 		try {
-			mat->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
-			s = mat->shader[0].get();
+			t.terrain->shader_cache._prepare_shader((RenderPathType)1, mat, "default", "");
+			s = t.terrain->shader_cache.shader[0].get();
 		} catch (Exception &e) {
 			msg_error(e.message());
 		}
@@ -482,7 +482,7 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 		nix::set_model_matrix(mat4::translation(t.pos));
 		nix::set_material(mat->albedo, mat->roughness, mat->metal, mat->emission);
 		_set_textures(win->drawing_helper, weak(mat->textures));
-		nix::draw_triangles(t.terrain->vertex_buffer);
+		nix::draw_triangles(t.terrain->vertex_buffer.get());
 
 		nix::set_wire(false);
 
@@ -499,8 +499,8 @@ void draw_model(MultiView::Window *win, Model *m, int num_lights) {
 		auto mat = m->material[i];
 		auto s = win->gl->default_3d.get();
 		try {
-			mat->_prepare_shader((RenderPathType)1, ShaderVariant::DEFAULT);
-			s = mat->shader[0].get();
+			m->shader_cache[i]._prepare_shader((RenderPathType)1, mat, "default", "");
+			s = m->shader_cache[i].shader[0].get();
 		} catch (Exception &e) {
 			msg_error(e.message());
 		}

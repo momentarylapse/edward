@@ -30,6 +30,7 @@ public:
 	MeshCollider *mesh_collider;
 	Animator *animator;
 	Skeleton *skeleton;
+	string vertex_shader_module;
 
 
 	ModelTemplate(Model *m);
@@ -38,7 +39,7 @@ public:
 class ModelManager {
 public:
 	ModelManager(ResourceManager *resource_manager, MaterialManager *material_manager);
-	Model *load(const Path &filename);
+	xfer<Model> load(const Path &filename);
 
 	ResourceManager *resource_manager;
 	MaterialManager *material_manager;

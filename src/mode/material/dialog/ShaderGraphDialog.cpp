@@ -36,9 +36,9 @@ string file_secure(const Path &filename); // -> ModelPropertiesDialog
 rect node_area(ShaderNode *n);
 
 bool test_shader_file(Session *session, const Path &filename) {
-	auto *shader = session->resource_manager->load_surface_shader(filename, "", "default", "");
+	auto shader = session->resource_manager->load_surface_shader(filename, "", "default", "");
 	msg_todo("TESTME  test_shader_file");
-	return shader;
+	return shader.get();
 }
 
 class MultiChoice : public hui::Dialog {

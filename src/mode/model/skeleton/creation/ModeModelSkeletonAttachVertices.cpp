@@ -77,7 +77,7 @@ void ModeModelSkeletonAttachVertices::on_start() {
 	for (ModelPolygon &t: data->mesh->polygon)
 		t.add_to_vertex_buffer(data->mesh->vertex, *vbs, 1);
 	vbs->build(vb_weight, 1);
-	if (!shader) {
+	if (!shader.get()) {
 		try {
 			shader = session->resource_manager->load_shader("vertex-weight.shader");
 		} catch(Exception &e) {
@@ -139,7 +139,7 @@ void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win) {
 
 	// weights
 	win->drawing_helper->set_material_selected();
-	nix::set_shader(shader);
+	nix::set_shader(shader.get());
 	nix::draw_triangles(vb_weight);
 	nix::set_offset(2);
 	nix::disable_alpha();

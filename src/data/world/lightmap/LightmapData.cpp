@@ -252,7 +252,7 @@ void LightmapData::AddTerrain(WorldTerrain &wt, int terrain_index)
 			t.n[1] = tt->normal[b];
 			t.n[2] = tt->normal[d];
 			update_tria(t);
-			tria_set_mat(t, tt->material);
+			tria_set_mat(t, tt->material.get());
 			ter.area += t.area;
 			Trias.add(t);
 			t.poly = a * 2 + 1;
@@ -263,7 +263,7 @@ void LightmapData::AddTerrain(WorldTerrain &wt, int terrain_index)
 			t.n[1] = tt->normal[d];
 			t.n[2] = tt->normal[c];
 			update_tria(t);
-			tria_set_mat(t, tt->material);
+			tria_set_mat(t, tt->material.get());
 			ter.area += t.area;
 			Trias.add(t);
 		}

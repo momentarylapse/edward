@@ -20,17 +20,18 @@ public:
 	ModelManager *model_manager;
 
 	shared<Texture> load_texture(const Path& path);
-	Shader *load_shader(const Path& path);
-	Shader *create_shader(const string &source);
-	Shader *load_surface_shader(const Path& path, const string &render_path, const string &variant, const string &geo);
+	shared<Shader> load_shader(const Path& path);
+	xfer<Shader> create_shader(const string &source);
+	shared<Shader> load_surface_shader(const Path& path, const string &render_path, const string &vertex_module, const string &geometry_module);
 	string expand_vertex_shader_source(const string &source, const string &variant);
 	string expand_fragment_shader_source(const string &source, const string &render_path);
 	string expand_geometry_shader_source(const string &source, const string &variant);
-	Material *load_material(const Path &filename);
-	Model *load_model(const Path &filename);
+	void load_shader_module(const Path& path);
+	xfer<Material> load_material(const Path &filename);
+	xfer<Model> load_model(const Path &filename);
 
-	Shader *__load_shader(const Path& path);
-	Shader *__create_shader(const string& source);
+	xfer<Shader> __load_shader(const Path& path);
+	xfer<Shader> __create_shader(const string& source);
 
 	Path texture_dir;
 	Path shader_dir;
@@ -39,6 +40,7 @@ public:
 
 
 	shared_array<Shader> shaders;
+	Array<Path> shader_modules;
 	shared_array<Texture> textures;
 	base::map<Path,Shader*> shader_map;
 	base::map<Path,Texture*> texture_map;

@@ -26,6 +26,7 @@
 
 #include "../graphics-fwd.h"
 #include "../y/Component.h"
+#include "Material.h"
 #include <lib/base/base.h>
 #include <lib/base/pointer.h>
 #include <lib/os/path.h>
@@ -74,7 +75,7 @@ public:
 };
 
 // visual skin
-class Mesh {
+class Mesh : public Sharable<base::Empty> {
 public:
 	void create_vb(bool animated);
 	void update_vb(bool animated);
@@ -91,7 +92,7 @@ public:
 
 	Model *owner;
 
-	Mesh *copy(Model *new_owner);
+	xfer<Mesh> copy(Model *new_owner);
 };
 
 enum {
@@ -111,7 +112,7 @@ public:
 	void _cdecl __init__();
 	void _cdecl __delete__() override;
 
-	Model *copy(Model *pre_allocated = NULL);
+	Model *copy(Model *pre_allocated = nullptr);
 	void reset_data();
 	void _cdecl make_editable();
 	//void Update();
@@ -133,12 +134,14 @@ public:
 	// drawing
 	//void update_vertex_buffer(int mat_no, int detail);
 
-	// visible skins (shared)
-	Mesh *mesh[MODEL_NUM_MESHES];
+	// visible skins
+	shared<Mesh> mesh[MODEL_NUM_MESHES];
 
-	// material (own)
-	Array<Material*> material;
+	// material
+	owned_array<Material> material;
 	Array<int> num_uvs;
+	Array<ShaderCache> shader_cache;
+	Array<ShaderCache> shader_cache_shadow;
 
 	// properties
 	struct Properties {

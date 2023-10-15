@@ -227,13 +227,6 @@ void World::reset() {
 
 	_objects.clear();
 	num_reserved_objects = 0;
-	
-	for (auto &s: sorted_trans)
-		s.clear();
-	sorted_trans.clear();
-	for (auto &s: sorted_opaque)
-		s.clear();
-	sorted_opaque.clear();
 
 #ifdef _X_ALLOW_X_
 	//for (auto *l: lights)
@@ -336,7 +329,7 @@ bool World::load(const LevelData &ld) {
 	background = ld.background_color;
 
 	for (auto &c: ld.cameras) {
-		auto cc = add_camera(c.pos, quaternion::rotation(c.ang), rect::ID);
+		auto cc = add_camera(c.pos, quaternion::rotation(c.ang));
 		cam_main = cc;
 		cc->min_depth = c.min_depth;
 		cc->max_depth = c.max_depth;
@@ -348,7 +341,7 @@ bool World::load(const LevelData &ld) {
 	auto cameras = ComponentManager::get_list_family<Camera>();
 	if (cameras->num == 0) {
 		msg_error("no camera defined... creating one");
-		cam_main = add_camera(v_0, quaternion::ID, rect::ID);
+		cam_main = add_camera(v_0, quaternion::ID);
 	}
 
 	// objects
@@ -511,9 +504,7 @@ Entity* World::create_object_multi(const Path &filename, const Array<vec3> &pos,
 	auto e = create_entity(vec3::ZERO, quaternion::ID);
 	auto mi = (MultiInstance*)e->add_component(MultiInstance::_class, "");
 
-	auto *m = engine.resource_manager->load_model(filename);
-	e->_add_component_external_(m);
-	mi->model = m;
+	mi->model = engine.resource_manager->load_model(filename);
 
 	for (int i=0; i<pos.num; i++)
 		mi->matrices.add(mat4::translation(pos[i]) * mat4::rotation(ang[i]));
@@ -527,19 +518,6 @@ void World::register_model_multi(MultiInstance *mi) {
 
 	if (mi->model->registered)
 		return;
-
-	for (int i=0; i<mi->model->material.num; i++){
-		Material *mat = mi->model->material[i];
-
-		PartialModelMulti p;
-		p.instance = mi;
-		p.model = mi->model;
-		p.material = mat;
-		p.mat_index = i;
-		p.transparent = false;
-		p.shadow = false;
-		sorted_multi.add(p);
-	}
 
 	mi->model->registered = true;
 }
@@ -716,31 +694,11 @@ bool World::unregister(BaseClass* x) {
 	return false;
 }
 
-void PartialModel::clear() {
-//	delete ubo;
-//	delete dset;
-}
-
 // add a model to the (possible) rendering list
 void World::register_model(Model *m) {
 	if (m->registered)
 		return;
 	msg_write("reg model " + m->filename().str());
-
-	for (int i=0;i<m->material.num;i++) {
-		Material *mat = m->material[i];
-
-		PartialModel p;
-		p.model = m;
-		p.material = mat;
-		p.mat_index = i;
-		p.transparent = mat->is_transparent();
-		p.shadow = false;
-		if (p.transparent)
-			sorted_trans.add(p);
-		else
-			sorted_opaque.add(p);
-	}
 
 #ifdef _X_ALLOW_FX_
 	for (int i=0;i<m->fx.num;i++)
@@ -769,18 +727,6 @@ void World::unregister_model(Model *m) {
 		return;
 	//printf("%p   %s\n", m, MetaGetModelFilename(m));
 	msg_write("unreg model " + m->filename().str());
-
-	foreachib (auto &s, sorted_trans, i)
-		if (s.model == m) {
-			s.clear();
-			sorted_trans.erase(i);
-		}
-	foreachib (auto &s, sorted_opaque, i)
-		if (s.model == m) {
-			//msg_write("R");
-			s.clear();
-			sorted_opaque.erase(i);
-		}
 
 #ifdef _X_ALLOW_FX_
 	if (!engine.resetting_game)

@@ -68,6 +68,9 @@ public:
 	bool first_frame;
 	bool game_running;
 
+	bool end_requested = false;
+	void exit();
+
 	bool file_errors_are_critical;
 
 	void set_dirs(const Path &texture_dir, const Path &map_dir, const Path &object_dir, const Path &sound_dir, const Path &script_dir, const Path &material_dir, const Path &font_dir);
@@ -79,6 +82,7 @@ public:
 
 	TargetRenderer *window_renderer;
 	Renderer *gui_renderer;
+	Renderer *region_renderer;
 	Renderer *hdr_renderer;
 	PostProcessor *post_processor;
 	WorldRenderer *world_renderer;

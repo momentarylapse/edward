@@ -7,10 +7,18 @@
 
 #include "Config.h"
 #include <lib/os/msg.h>
+#include <lib/os/CommandLineParser.h>
 
 Config config;
 
 Config::Config() {
+}
+
+Array<float> parse_range(const string& a) {
+	auto xx = a.explode(":");
+	if (xx.num >= 2)
+		return {xx[0]._float(), xx[1]._float()};
+	return {xx[0]._float(), xx[0]._float()};
 }
 
 void Config::load(const Array<string> &arg) {
@@ -24,42 +32,70 @@ void Config::load(const Array<string> &arg) {
 		set(k, v);
 
 	// cli arguments override
-	for (auto &a: arg.sub_ref(1)) {
-		if (a.head(2).lower() == "-c") {
-			auto xx = a.sub_ref(2).explode("=");
-			set_str(xx[0].trim(), xx[1].trim());
-		} else if (a == "--uncapped" or a == "-u") {
-			set_bool("renderer.uncapped-framerate", true);
-		} else if (a == "--debug" or a == "-D") {
-			set_int("debug.level", 2);
-		} else if (a.head(11) == "--game-dir=") {
-			game_dir = a.sub_ref(11);
-		} else if (a == "--forward" or a == "--fw") {
-			set_str("renderer.path", "forward");
-		} else if (a == "--deferred" or a == "--def") {
-			set_str("renderer.path", "deferred");
-		} else if (a == "--direct") {
-			set_str("renderer.path", "direct");
-		} else if (a == "--rt" or a == "--raytracing") {
-			set_str("renderer.path", "raytracing");
-		} else if (a == "--nortx") {
-			allow_rtx = false;
-		} else if (a == "--msaa") {
-			set_str("renderer.antialiasing", "MSAA");
-		} else if (a.head(8) == "--scale=") {
-			set_str("renderer.resolution-scale-min", a.sub_ref(8));
-			set_str("renderer.resolution-scale-max", a.sub_ref(8));
-		} else if (a.head(7) == "--size=") {
-			auto xx = a.sub_ref(7).explode("x");
-			set_int("screen.width", xx[0]._int());
-			set_int("screen.height", xx[1]._int());
-			set_str("screen.mode", "windowed");
-		} else if (a.head(9) == "--script=") {
-			additional_scripts.add(a.sub_ref(9));
-		} else if (a.head(1) != "-") {
-			set_str("default.world", a);
-		}
-	}
+	CommandLineParser p;
+	p.info("y", "game engine");
+	p.option("-c", "CONFIG", "set config A=B", [this] (const string& a) {
+		auto xx = a.explode("=");
+		set_str(xx[0].trim(), xx[1].trim());
+	});
+	p.option("-u/--uncapped", "uncapped framerate", [this] {
+		set_bool("renderer.uncapped-framerate", true);
+	});
+	p.option("-D/--debug", "enable debug mode (level 2)", [this] {
+		set_int("debug.level", 2);
+	});
+	p.option("-D0/--no-debug", "disable debug mode (level 0)", [this] {
+		set_int("debug.level", 0);
+	});
+	p.option("--game-dir", "DIR", "set game directory", [this] (const string& a) {
+		game_dir = a;
+	});
+	p.option("--fw/--forward", "use forward rendering path", [this] {
+		set_str("renderer.path", "forward");
+	});
+	p.option("--def/--deferred", "use deferred rendering path", [this] {
+		set_str("renderer.path", "deferred");
+	});
+	p.option("--direct", "use direct rendering path", [this] {
+		set_str("renderer.path", "direct");
+	});
+	p.option("--rt/--raytracing", "use ray tracing rendering path", [this] {
+		set_str("renderer.path", "raytracing");
+	});
+	p.option("--nortx", "don't use rtx even if available", [this] {
+		allow_rtx = false;
+	});
+	p.option("--msaa", "use multi sampling anti aliasing", [this] {
+		set_str("renderer.antialiasing", "MSAA");
+	});
+	p.option("--scale", "RANGE", "use resolutions scale MIN[:MAX]", [this] (const string& a) {
+		auto r = parse_range(a);
+		set_float("renderer.resolution-scale-min", r[0]);
+		set_float("renderer.resolution-scale-max", r[1]);
+	});
+	p.option("--size", "SIZE", "set resolution WxH", [this] (const string& a) {
+		auto xx = a.explode("x");
+		set_int("screen.width", xx[0]._int());
+		set_int("screen.height", xx[1]._int());
+		set_str("screen.mode", "windowed");
+	});
+	p.option("--fps", "RANGE", "limit framerate in MIN[:MAX]", [this] (const string& a) {
+		auto r = parse_range(a);
+		set_float("renderer.min-framerate", r[0]);
+		set_float("renderer.target-framerate", r[1]);
+	});
+	p.option("--script", "SCRIPT", "execute additional script", [this] (const string& a) {
+		additional_scripts.add(a);
+	});
+	p.cmd("--help", "", "show help", [&p] (const Array<string>& a) {
+		p.show();
+		exit(0);
+	});
+	p.cmd("", "[WORLD]", "run game (optionally select first world)", [this, &p] (const Array<string>& a) {
+		if (a.num > 0)
+			set_str("default.world", a[0]);
+	});
+	p.parse(arg);
 
 	// deprecated
 	if (has("default-world") and !has("default.world"))
@@ -92,7 +128,9 @@ void Config::load(const Array<string> &arg) {
 
 	resolution_scale_min = get_float("renderer.resolution-scale-min", 0.5f);
 	resolution_scale_max = get_float("renderer.resolution-scale-max", 1.0f);
+	resolution_scale_filter = get_str("renderer.resolution-scale-filter", "linear");
 	target_framerate = get_float("renderer.target-framerate", 60.0f);
+	min_framerate = get_float("renderer.min-framerate", 10.0f);
 
 	ambient_occlusion_radius = get_float("renderer.ssao.radius", 10);
 	if (!get_bool("renderer.ssao.enabled", true))

@@ -43,7 +43,7 @@ private:
 	vec3 last_pos;
 
 	nix::VertexBuffer *vb_weight = nullptr;
-	nix::Shader *shader = nullptr;
+	shared<nix::Shader> shader;
 
 	VertexStagingBuffer *vbs = nullptr;
 

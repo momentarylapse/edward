@@ -41,6 +41,7 @@ public:
 
 	Path filename;
 	Material *material;
+	ShaderCache shader_cache;
 
 	struct TextureLevel {
 		TextureLevel();

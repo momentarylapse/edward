@@ -53,25 +53,6 @@ enum class PhysicsMode {
 };
 
 
-struct PartialModel {
-	Model *model;
-	Material *material;
-	int mat_index;
-	float d;
-	bool shadow, transparent;
-	void clear();
-};
-
-struct PartialModelMulti {
-	Model *model;
-	MultiInstance *instance;
-	Material *material;
-	int mat_index;
-	float d;
-	bool shadow, transparent;
-	void clear();
-};
-
 // network messages
 struct GodNetMessage {
 	int msg, arg_i[4];
@@ -166,9 +147,6 @@ public:
 	Array<Entity*> _objects;
 	Entity *ego;
 	int num_reserved_objects;
-
-	Array<PartialModel> sorted_opaque, sorted_trans;
-	Array<PartialModelMulti> sorted_multi;
 
 
 	Array<LevelData::ScriptData> scripts;
