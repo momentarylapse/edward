@@ -68,6 +68,7 @@ WorldObjectListPanel::WorldObjectListPanel(ModeWorld *w) {
 	event("cam-min-depth", [this] { on_change(); });
 	event("cam-max-depth", [this] { on_change(); });
 	event("cam-exposure", [this] { on_change(); });
+	event("cam-bloom-factor", [this] { on_change(); });
 	event("script-edit", [this] { on_script_edit(); });
 	event_x("component-list", "hui:right-button-down", [this] { on_component_list_right_click(); });
 	event("component-add", [this] { on_component_add(); });
@@ -364,6 +365,7 @@ void WorldObjectListPanel::set_editing(int s) {
 		set_float("cam-min-depth", c.min_depth);
 		set_float("cam-max-depth", c.max_depth);
 		set_float("cam-exposure", c.exposure);
+		set_float("cam-bloom-factor", c.bloom_factor);
 		for (auto &com: c.components)
 			add_string("component-list", format("%s\\%s", com.class_name, com.filename));
 		set_float("pos-x", c.pos.x);
@@ -407,6 +409,7 @@ void WorldObjectListPanel::on_change() {
 		c.min_depth = get_float("cam-min-depth");
 		c.max_depth = get_float("cam-max-depth");
 		c.exposure = get_float("cam-exposure");
+		c.bloom_factor = get_float("cam-bloom-factor");
 		world->data->edit_camera(ii.index, c);
 		//world->multi_view->force_redraw();
 	} else if (ii.type == MVD_WORLD_LINK) {

@@ -184,6 +184,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				c.min_depth = e.value("minDepth", "1")._float();
 				c.max_depth = e.value("maxDepth", "10000")._float();
 				c.exposure = e.value("exposure", "1")._float();
+				c.bloom_factor = e.value("bloomFactor", "0.15")._float();
 				for (auto &ee: e.elements)
 					if (ee.tag == "component") {
 						ScriptInstanceData sd;
@@ -355,7 +356,8 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		.witha("fov", f2s(c.fov, 3))
 		.witha("minDepth", f2s(c.min_depth, 3))
 		.witha("maxDepth", f2s(c.max_depth, 3))
-		.witha("exposure", f2s(c.exposure, 3));
+		.witha("exposure", f2s(c.exposure, 3))
+		.witha("bloomFactor", f2s(c.bloom_factor, 3));
 		add_components(e, c.components);
 		cont.add(e);
 	}

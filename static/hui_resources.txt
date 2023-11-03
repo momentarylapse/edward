@@ -9666,7 +9666,7 @@ Grid
 
 0
 0
-8
+10
 Label
 t-cam-fov
 right,disabled
@@ -9680,40 +9680,52 @@ range=0:180:0.1,expandx
 0
 0
 Label
-t-cam-exposure
-right,disabled
-0
-1
-0
-SpinButton
-cam-exposure
-range=0:10:0.01
-1
-1
-0
-Label
 t-cam-min-depth
 right,disabled
 0
-2
+1
 0
 SpinButton
 cam-min-depth
 range=0:100000000:0.1
 1
-2
+1
 0
 Label
 t-cam-max-depth
 right,disabled
 0
-3
+2
 0
 SpinButton
 cam-max-depth
 range=0:100000000:0.1
 1
+2
+0
+Label
+t-cam-exposure
+right,disabled
+0
 3
+0
+SpinButton
+cam-exposure
+range=0:10:0.01
+1
+3
+0
+Label
+t-cam-bloom-factor
+right,disabled
+0
+4
+0
+SpinButton
+cam-bloom-factor
+range=0:10:0.01
+1
+4
 0
 Group
 g-object
@@ -10205,7 +10217,7 @@ image=configure
 # Language
 English
 # Number Of IDs
-1025
+1027
 # Text
 /ambient
 Ambient
@@ -12952,6 +12964,9 @@ Delete
 world-object-list-component-popup/component-variables
 Variables...
 
+world-object-list-dialog/cam-bloom-factor
+
+bloom intensity
 world-object-list-dialog/cam-exposure
 
 brightness scale
@@ -13014,6 +13029,9 @@ Type\\Name
 
 world-object-list-dialog/t-ang
 Orientation
+
+world-object-list-dialog/t-cam-bloom-factor
+Bloom factor
 
 world-object-list-dialog/t-cam-exposure
 Exposure

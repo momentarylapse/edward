@@ -27,14 +27,17 @@ Dialog world-object-list-dialog "" width=400 height=300
 					Label t-cam-fov "Field of view" right disabled
 					SpinButton cam-fov "" range=0:180:0.1 "tooltip=vertical viewing angle" expandx
 					---|
-					Label t-cam-exposure "Exposure" right disabled
-					SpinButton cam-exposure "" range=0:10:0.01 "tooltip=brightness scale"
-					---|
 					Label t-cam-min-depth "Min depth" right disabled
 					SpinButton cam-min-depth "" range=0:100000000:0.1 "tooltip=near clipping plane"
 					---|
 					Label t-cam-max-depth "Max depth" right disabled
 					SpinButton cam-max-depth "" range=0:100000000:0.1 "tooltip=far clipping plane"
+					---|
+					Label t-cam-exposure "Exposure" right disabled
+					SpinButton cam-exposure "" range=0:10:0.01 "tooltip=brightness scale"
+					---|
+					Label t-cam-bloom-factor "Bloom factor" right disabled
+					SpinButton cam-bloom-factor "" range=0:10:0.01 "tooltip=bloom intensity"
 			Group g-object "Object"
 				Grid ? ""
 					Label t-ob-name "Name" right disabled
