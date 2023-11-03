@@ -53,9 +53,9 @@ bool class_func_did_override(const kaba::Class *type, const string &fname) {
 	return false;
 }
 
-ComponentListX *_get_list_x(const kaba::Class *type) {
+ComponentListX &_get_list_x(const kaba::Class *type) {
 	if (component_lists_by_type.find(type) >= 0) {
-		return &component_lists_by_type[type];
+		return component_lists_by_type[type];
 	} else {
 		ComponentListX list;
 		list.type_family = type;
@@ -65,13 +65,13 @@ ComponentListX *_get_list_x(const kaba::Class *type) {
 			list.ch_iterate = PerformanceMonitor::create_channel(type->long_name(), ch_component);
 #endif
 		component_lists_by_type.set(type, list);
-		return &component_lists_by_type[type];
+		return component_lists_by_type[type];
 	}
 }
 
-ComponentListX *_get_list_x_family(const kaba::Class *type_family) {
+ComponentListX &_get_list_x_family(const kaba::Class *type_family) {
 	if (component_lists_by_family.find(type_family) >= 0) {
-		return &component_lists_by_family[type_family];
+		return component_lists_by_family[type_family];
 	} else {
 		ComponentListX list;
 		list.type_family = type_family;
@@ -81,7 +81,7 @@ ComponentListX *_get_list_x_family(const kaba::Class *type_family) {
 			list.ch_iterate = PerformanceMonitor::create_channel(type_family->long_name(), ch_component);
 #endif
 		component_lists_by_family.set(type_family, list);
-		return &component_lists_by_family[type_family];
+		return component_lists_by_family[type_family];
 	}
 }
 
@@ -93,12 +93,12 @@ void ComponentManager::init() {
 
 
 void ComponentManager::_register(Component *c) {
-	auto l = _get_list(c->component_type);
-	l->add(c);
+	auto& l = _get_list(c->component_type);
+	l.add(c);
 
 	auto family = get_component_type_family(c->component_type);
-	l = _get_list_family(family);
-	l->add(c);
+	auto& lf = _get_list_family(family);
+	lf.add(c);
 }
 
 
@@ -128,22 +128,23 @@ Component *ComponentManager::create_component(const kaba::Class *type, const str
 #endif
 }
 
+// should already be unlinked from entity!
 void ComponentManager::delete_component(Component *c) {
-	auto list = _get_list_x(c->component_type);
-	list->remove(c);
+	auto& list = _get_list_x(c->component_type);
+	list.remove(c);
 	auto type_family = get_component_type_family(c->component_type);
-	list = _get_list_x_family(type_family);
-	list->remove(c);
+	auto& flist = _get_list_x_family(type_family);
+	flist.remove(c);
 	delete c;
 }
 
 
-ComponentManager::List *ComponentManager::_get_list(const kaba::Class *type) {
-	return &_get_list_x(type)->list;
+ComponentManager::List &ComponentManager::_get_list(const kaba::Class *type) {
+	return _get_list_x(type).list;
 }
 
-ComponentManager::List *ComponentManager::_get_list_family(const kaba::Class *type_family) {
-	return &_get_list_x_family(type_family)->list;
+ComponentManager::List &ComponentManager::_get_list_family(const kaba::Class *type_family) {
+	return _get_list_x_family(type_family).list;
 }
 
 void ComponentManager::iterate(float dt) {

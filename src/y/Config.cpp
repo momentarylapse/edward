@@ -96,6 +96,8 @@ void Config::load(const Array<string> &arg) {
 			set_str("default.world", a[0]);
 	});
 	p.parse(arg);
+	if (p.error)
+		exit(1);
 
 	// deprecated
 	if (has("default-world") and !has("default.world"))

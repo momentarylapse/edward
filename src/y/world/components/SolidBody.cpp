@@ -388,3 +388,18 @@ void SolidBody::get_state_from_bullet() {
 	}
 #endif
 }
+
+void SolidBody::state_to_bullet() {
+#if HAS_LIB_BULLET
+	if (active) {
+		btTransform trans;
+		trans.setOrigin(bt_set_v(owner->pos));
+		trans.setRotation(bt_set_q(owner->ang));
+		body->getMotionState()->setWorldTransform(trans);
+		body->setLinearVelocity(bt_set_v(vel));
+		body->setAngularVelocity(bt_set_v(rot));
+	} else {
+
+	}
+#endif
+}

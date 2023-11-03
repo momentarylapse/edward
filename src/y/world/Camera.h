@@ -58,7 +58,6 @@ void CameraInit();
 void CameraReset();
 void CameraCalcMove(float dt);
 void CameraShiftAll(const vec3 &dpos);
-Camera *add_camera(const vec3 &pos, const quaternion &ang);
 
 extern Camera *cam_main; // "camera"
 

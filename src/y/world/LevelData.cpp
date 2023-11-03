@@ -109,6 +109,7 @@ bool LevelData::load(const Path &filename) {
 				c.min_depth = e.value("minDepth", "1")._float();
 				c.max_depth = e.value("maxDepth", "10000")._float();
 				c.exposure = e.value("exposure", "1")._float();
+				c.bloom_factor = e.value("bloomFactor", "0.15")._float();
 				for (auto &ee: e.elements)
 					if (ee.tag == "component") {
 						ScriptData sd;

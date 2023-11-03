@@ -45,13 +45,13 @@ void Skeleton::on_init() {
 		bones[i].ang = quaternion::ID;
 		auto mm = engine.resource_manager->load_model(m->_template->skeleton->filename[i]);
 		if (mm) {
-			bones[i]._add_component_external_(mm);
+			bones[i]._add_component_external_no_init_(mm);
 
 			if (mm->_template->skeleton)
-				bones[i].add_component(Skeleton::_class, "");
+				bones[i].add_component_no_init(Skeleton::_class, "");
 
 			if (mm->_template->animator)
-				bones[i].add_component(Animator::_class, "");
+				bones[i].add_component_no_init(Animator::_class, "");
 		}
 		bones[i].on_init_rec();
 	}

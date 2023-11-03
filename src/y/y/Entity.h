@@ -28,13 +28,14 @@ public:
 	Component *_get_component_untyped_(const kaba::Class *type) const;
 	Component *add_component(const kaba::Class *type, const string &var);
 	Component *add_component_no_init(const kaba::Class *type, const string &var);
+	void delete_component(Component *c);
 
 	template<class C>
 	C *get_component() const {
 		return (C*)_get_component_untyped_(C::_class);
 	}
 
-	void _add_component_external_(Component *c);
+	void _add_component_external_no_init_(Component *c);
 
 
 	vec3 pos;

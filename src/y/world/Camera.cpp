@@ -31,15 +31,6 @@ const kaba::Class *Camera::_class = nullptr;
 
 Camera *cam_main = nullptr; // "camera"
 
-Camera *add_camera(const vec3 &pos, const quaternion &ang) {
-	auto o = world.create_entity(pos, ang);
-
-	auto c = new Camera();
-	o->_add_component_external_(c);
-	world.register_entity(o);
-	return c;
-}
-
 
 void CameraInit() {
 	CameraReset();
@@ -55,7 +46,7 @@ Camera::Camera() {
 	fov = pi / 4;
 	exposure = 1.0f;
 	bloom_radius = 10;
-	bloom_factor = 0.2f;
+	bloom_factor = 0.15f;
 
 	focus_enabled = false;
 	focal_length = 2000;
@@ -86,8 +77,8 @@ void Camera::__delete__() {
 
 
 void CameraCalcMove(float dt) {
-	auto cameras = ComponentManager::get_list_family<Camera>();
-	for (auto c: *cameras){
+	auto& cameras = ComponentManager::get_list_family<Camera>();
+	for (auto c: cameras){
 		if (!c->enabled)
 			continue;
 		c->on_iterate(dt);
@@ -137,8 +128,8 @@ vec3 Camera::unproject(const vec3 &v) {
 }
 
 void CameraShiftAll(const vec3 &dpos) {
-	auto cameras = ComponentManager::get_list_family<Camera>();
-	for (auto c: *cameras)
+	auto& cameras = ComponentManager::get_list_family<Camera>();
+	for (auto c: cameras)
 		c->owner->pos += dpos;
 }
 

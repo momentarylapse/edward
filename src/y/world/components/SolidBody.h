@@ -59,6 +59,7 @@ public:
 	void update_mass();
 
 	void get_state_from_bullet();
+	void state_to_bullet();
 
 	static const kaba::Class *_class;
 };

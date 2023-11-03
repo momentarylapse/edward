@@ -56,8 +56,7 @@ void Entity::on_delete_rec() {
 Component *Entity::add_component(const kaba::Class *type, const string &var) {
 	auto c = add_component_no_init(type, var);
 
-//	c->on_init();
-	// don't init now, wait until the on_init_rec() later (via World.register_entity())!
+	c->on_init();
 	return c;
 }
 
@@ -68,11 +67,20 @@ Component *Entity::add_component_no_init(const kaba::Class *type, const string &
 	return c;
 }
 
-void Entity::_add_component_external_(Component *c) {
+void Entity::_add_component_external_no_init_(Component *c) {
 	ComponentManager::_register(c);
 	components.add(c);
 	c->owner = this;
-	//c->on_init();
+}
+
+void Entity::delete_component(Component *c) {
+	int i = components.find(c);
+	if (i >= 0) {
+		c->on_delete();
+		c->owner = nullptr;
+		components.erase(i);
+		ComponentManager::delete_component(c);
+	}
 }
 
 Component *Entity::_get_component_untyped_(const kaba::Class *type) const {

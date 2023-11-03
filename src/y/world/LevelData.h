@@ -82,7 +82,7 @@ public:
 	class Camera {
 	public:
 		vec3 pos, ang;
-		float fov, min_depth, max_depth, exposure;
+		float fov, min_depth, max_depth, exposure, bloom_factor;
 		Array<ScriptData> components;
 	};
 

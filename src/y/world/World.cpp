@@ -225,14 +225,7 @@ void World::reset() {
 		delete o;
 	entities.clear();
 
-	_objects.clear();
-	num_reserved_objects = 0;
-
 #ifdef _X_ALLOW_X_
-	//for (auto *l: lights)
-	//	delete l->owner;
-	lights.clear();
-
 	particle_manager->clear();
 #endif
 
@@ -283,12 +276,12 @@ void World::load_soon(const Path &filename) {
 	next_filename = filename;
 }
 
-void add_components(Entity *ent, const Array<LevelData::ScriptData> &components) {
+void add_components_no_init(Entity *ent, const Array<LevelData::ScriptData> &components) {
 	for (auto &cc: components) {
 		msg_write("add component " + cc.class_name);
 #ifdef _X_ALLOW_X_
 		auto type = PluginManager::find_class(cc.filename, cc.class_name);
-		[[maybe_unused]] auto comp = ent->add_component(type, cc.var);
+		[[maybe_unused]] auto comp = ent->add_component_no_init(type, cc.var);
 #endif
 	}
 }
@@ -313,8 +306,8 @@ bool World::load(const LevelData &ld) {
 		ll->enabled = l.enabled;
 		if (ll->light.radius < 0)
 			ll->allow_shadow = true;
-		o->_add_component_external_(ll);
-		add_components(o, l.components);
+		o->_add_component_external_no_init_(ll);
+		add_components_no_init(o, l.components);
 		register_entity(o);
 	}
 #endif
@@ -329,33 +322,30 @@ bool World::load(const LevelData &ld) {
 	background = ld.background_color;
 
 	for (auto &c: ld.cameras) {
-		auto cc = add_camera(c.pos, quaternion::rotation(c.ang));
+		auto cc = create_camera(c.pos, quaternion::rotation(c.ang));
 		cam_main = cc;
 		cc->min_depth = c.min_depth;
 		cc->max_depth = c.max_depth;
 		cc->exposure = c.exposure;
+		cc->bloom_factor = c.bloom_factor;
 		cc->fov = c.fov;
 
-		add_components(cam_main->owner, c.components);
+		add_components_no_init(cam_main->owner, c.components);
 	}
-	auto cameras = ComponentManager::get_list_family<Camera>();
-	if (cameras->num == 0) {
+	auto& cameras = ComponentManager::get_list_family<Camera>();
+	if (cameras.num == 0) {
 		msg_error("no camera defined... creating one");
-		cam_main = add_camera(v_0, quaternion::ID);
+		cam_main = create_camera(v_0, quaternion::ID);
 	}
 
 	// objects
 	ego = nullptr;
-	_objects.clear(); // make sure the "missing" objects are NULL
-	_objects.resize(ld.objects.num);
-	num_reserved_objects = ld.objects.num;
 	foreachi(auto &o, ld.objects, i)
 		if (!o.filename.is_empty()) {
 			//try {
 				auto q = quaternion::rotation(o.ang);
 				auto *oo = create_object_no_reg_x(o.filename, o.name, o.pos, q);
-				add_components(oo, o.components);
-				request_next_object_index(i);
+				add_components_no_init(oo, o.components);
 				register_entity(oo);
 				if (ld.ego_index == i)
 					ego = oo;
@@ -373,15 +363,17 @@ bool World::load(const LevelData &ld) {
 		auto tt = create_terrain_no_reg(t.filename, t.pos);
 		register_entity(tt->owner);
 
-		add_components(tt->owner, t.components);
+		add_components_no_init(tt->owner, t.components);
 		ok &= !tt->error;
 	}
 
+	auto& model_list = ComponentManager::get_list_family<Model>();
 	for (auto &l: ld.links) {
+		Entity *a = model_list[l.object[0]]->owner;
 		Entity *b = nullptr;
 		if (l.object[1] >= 0)
-			b = _objects[l.object[1]];
-		add_link(Link::create(l.type, _objects[l.object[0]], b, l.pos, quaternion::rotation(l.ang)));
+			b = model_list[l.object[1]]->owner;
+		add_link(Link::create(l.type, a, b, l.pos, quaternion::rotation(l.ang)));
 	}
 
 	scripts = ld.scripts;
@@ -429,21 +421,13 @@ bool GodLoadWorld(const Path &filename) {
 }
 
 Entity *World::create_entity(const vec3 &pos, const quaternion &ang) {
-	return new Entity(pos, ang);
+	auto e = new Entity(pos, ang);
+	entities.add(e);
+	return e;
 }
 
 void World::register_entity(Entity *e) {
-	if ([[maybe_unused]] auto m = e->get_component<Model>())
-		register_object(e);
-
-#ifdef _X_ALLOW_X_
-	if (auto l = e->get_component<Light>())
-		lights.add(l);
-#endif
-
-	entities.add(e);
 	e->on_init_rec();
-
 
 	if (auto m = e->get_component<Model>())
 		register_model(m);
@@ -468,41 +452,70 @@ Entity *World::create_object_no_reg(const Path &filename, const vec3 &pos, const
 }
 
 Entity *World::create_object_no_reg_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang) {
+	auto e = create_entity(pos, ang);
+	auto& m = attach_model_no_reg(*e, filename);
+	m.script_data.name = name;
+	return e;
+}
+
+
+Model& World::attach_model_no_reg(Entity &e, const Path &filename) {
 	if (engine.resetting_game)
 		throw Exception("create_object during game reset");
 
 	if (filename.is_empty())
 		throw Exception("create_object: empty filename");
 
-	auto e = create_entity(pos, ang);
-
 	//msg_write(on);
 	auto *m = engine.resource_manager->load_model(filename);
-	m->script_data.name = name;
 
-	e->_add_component_external_(m);
+	e._add_component_external_no_init_(m);
 	m->update_matrix();
 
 
 	// automatic components
 	if (m->_template->solid_body) {
-		[[maybe_unused]] auto col = (MeshCollider*)e->add_component(MeshCollider::_class, "");
-		[[maybe_unused]] auto sb = (SolidBody*)e->add_component(SolidBody::_class, "");
+		[[maybe_unused]] auto col = (MeshCollider*)e.add_component_no_init(MeshCollider::_class, "");
+		[[maybe_unused]] auto sb = (SolidBody*)e.add_component_no_init(SolidBody::_class, "");
 	}
 
 	if (m->_template->skeleton)
-		e->add_component(Skeleton::_class, "");
+		e.add_component_no_init(Skeleton::_class, "");
 
 	if (m->_template->animator)
-		e->add_component(Animator::_class, "");
+		e.add_component_no_init(Animator::_class, "");
 
-	return e;
+	return *m;
+}
+
+Model& World::attach_model(Entity &e, const Path &filename) {
+	auto& m = attach_model_no_reg(e, filename);
+	//m.on_init();
+	e.on_init_rec(); // FIXME might re-initialize too much...
+	register_model(&m);
+
+#if HAS_LIB_BULLET
+	if (auto sb = e.get_component<SolidBody>())
+		dynamicsWorld->addRigidBody(sb->body);
+#endif
+
+	return m;
+}
+
+void World::unattach_model(Model& m) {
+	unregister_model(&m);
+
+#if HAS_LIB_BULLET
+	if (auto sb = m.owner->get_component<SolidBody>())
+		dynamicsWorld->removeRigidBody(sb->body);
+#endif
+
+	m.owner->delete_component(&m);
 }
 
 Entity* World::create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang) {
-
 	auto e = create_entity(vec3::ZERO, quaternion::ID);
-	auto mi = (MultiInstance*)e->add_component(MultiInstance::_class, "");
+	auto mi = (MultiInstance*)e->add_component_no_init(MultiInstance::_class, "");
 
 	mi->model = engine.resource_manager->load_model(filename);
 
@@ -515,42 +528,10 @@ Entity* World::create_object_multi(const Path &filename, const Array<vec3> &pos,
 }
 
 void World::register_model_multi(MultiInstance *mi) {
-
 	if (mi->model->registered)
 		return;
 
 	mi->model->registered = true;
-}
-
-void World::request_next_object_index(int i) {
-	next_object_index = i;
-}
-
-void World::register_object(Entity *o) {
-	int on = next_object_index;
-	next_object_index = -1;
-	if (on < 0) {
-		// ..... better use a list of "empty" objects???
-		for (int i=num_reserved_objects; i<_objects.num; i++)
-			if (!_objects[i])
-				on = i;
-	} else {
-		if (on >= _objects.num)
-			_objects.resize(on+1);
-		if (_objects[on]) {
-			msg_error("register_object:  object index already in use " + i2s(on));
-			return;
-		}
-	}
-	if (on < 0) {
-		on = _objects.num;
-		_objects.add(nullptr);
-	}
-	_objects[on] = o;
-
-	o->object_id = on;
-
-	//AddNetMsg(NET_MSG_CREATE_OBJECT, o->object_id, filename.str());
 }
 
 
@@ -585,22 +566,6 @@ void World::set_active_physics(Entity *o, bool active, bool passive) { //, bool 
 	//b->test_collisions = test_collisions;
 }
 
-// un-object a model
-void World::unregister_object(Entity *m) {
-	if (m->object_id < 0)
-		return;
-
-	// ego...
-	if (m == ego)
-		ego = nullptr;
-
-	AddNetMsg(NET_MSG_DELETE_OBJECT, m->object_id, "");
-
-	// remove from list
-	_objects[m->object_id] = nullptr;
-	m->object_id = -1;
-}
-
 void World::subscribe(const string &msg, const Callback &f) {
 	observers.add({msg, &f});
 }
@@ -613,8 +578,13 @@ void World::notify(const string &msg) {
 }
 
 void World::unregister_entity(Entity *e) {
-	if (e->object_id >= 0)
-		unregister_object(e);
+	if (false)
+		AddNetMsg(NET_MSG_DELETE_OBJECT, e->object_id, "");
+
+	// ego...
+	if (e == ego)
+		ego = nullptr;
+
 
 #if HAS_LIB_BULLET
 	if (auto sb = e->get_component<SolidBody>())
@@ -623,19 +593,20 @@ void World::unregister_entity(Entity *e) {
 
 	if (auto m = e->get_component<Model>())
 		unregister_model(m);
-
-	foreachi(auto *o, entities, i)
-		if (o == e) {
-			msg_data.e = o;
-			notify("entity-delete");
-			entities.erase(i);
-			return;
-		}
 }
 
 void World::delete_entity(Entity *e) {
+	int index = entities.find(e);
+	if (index < 0)
+		return;
+
 	unregister_entity(e);
 	e->on_delete_rec();
+
+	msg_data.e = e;
+	notify("entity-delete");
+	entities.erase(index);
+
 	delete e;
 }
 
@@ -662,15 +633,6 @@ bool World::unregister(BaseClass* x) {
 	if (x->type == BaseClass::Type::ENTITY) {
 		auto e = (Entity*)x;
 		unregister_entity(e);
-/*	} else if (x->type == Entity::Type::LIGHT) {
-#ifdef _X_ALLOW_X_
-		foreachi(auto *l, lights, i)
-			if (l == x) {
-				//msg_write(" -> LIGHT");
-				lights.erase(i);
-				return true;
-			}
-#endif*/
 	} else if (x->type == BaseClass::Type::LINK) {
 		foreachi(auto *l, links, i)
 			if (l == x) {
@@ -705,7 +667,7 @@ void World::register_model(Model *m) {
 		if (m->fx[i])
 			m->fx[i]->enable(true);
 #endif
-	
+
 	m->registered = true;
 	
 	// sub models
@@ -749,22 +711,22 @@ void World::unregister_model(Model *m) {
 }
 
 void World::iterate_physics(float dt) {
-	auto list = ComponentManager::get_list_family<SolidBody>();
+	auto& list = ComponentManager::get_list_family<SolidBody>();
 
 	if (physics_mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
 		dynamicsWorld->setGravity(bt_set_v(gravity));
 		dynamicsWorld->stepSimulation(dt, 10);
 
-		for (auto *o: *list)
+		for (auto *o: list)
 			o->get_state_from_bullet();
 #endif
 	} else if (physics_mode == PhysicsMode::SIMPLE) {
-		for (auto *o: *list)
+		for (auto *o: list)
 			o->do_simple_physics(dt);
 	}
 
-	for (auto *sb: *list) {
+	for (auto *sb: list) {
 		if (auto m = sb->owner->get_component<Model>())
 			m->update_matrix();
 	}
@@ -773,14 +735,14 @@ void World::iterate_physics(float dt) {
 void World::iterate_animations(float dt) {
 #ifdef _X_ALLOW_X_
 	PerformanceMonitor::begin(ch_animation);
-	auto list = ComponentManager::get_list_family<Animator>();
-	for (auto *o: *list)
+	auto& list = ComponentManager::get_list_family<Animator>();
+	for (auto *o: list)
 		o->do_animation(dt);
 
 
 	// TODO
-	auto list2 = ComponentManager::get_list_family<Skeleton>();
-	for (auto *o: *list2) {
+	auto& list2 = ComponentManager::get_list_family<Skeleton>();
+	for (auto *o: list2) {
 		for (auto &b: o->bones) {
 			if ([[maybe_unused]] auto *mm = b.get_component<Model>()) {
 //				b.dmatrix = matrix::translation(b.cur_pos) * matrix::rotation(b.cur_ang);
@@ -821,12 +783,12 @@ void World::iterate(float dt) {
 #endif
 }
 
-Light *World::add_light_parallel(const quaternion &ang, const color &c) {
+Light *World::create_light_parallel(const quaternion &ang, const color &c) {
 #ifdef _X_ALLOW_X_
 	auto o = create_entity(v_0, ang);
 
 	auto l = new Light(c, -1, -1);
-	o->_add_component_external_(l);
+	o->_add_component_external_no_init_(l);
 	register_entity(o);
 	return l;
 #else
@@ -834,12 +796,12 @@ Light *World::add_light_parallel(const quaternion &ang, const color &c) {
 #endif
 }
 
-Light *World::add_light_point(const vec3 &pos, const color &c, float r) {
+Light *World::create_light_point(const vec3 &pos, const color &c, float r) {
 #ifdef _X_ALLOW_X_
 	auto o = create_entity(pos, quaternion::ID);
 
 	auto l = new Light(c, r, -1);
-	o->_add_component_external_(l);
+	o->_add_component_external_no_init_(l);
 	register_entity(o);
 	return l;
 #else
@@ -847,17 +809,26 @@ Light *World::add_light_point(const vec3 &pos, const color &c, float r) {
 #endif
 }
 
-Light *World::add_light_cone(const vec3 &pos, const quaternion &ang, const color &c, float r, float t) {
+Light *World::create_light_cone(const vec3 &pos, const quaternion &ang, const color &c, float r, float t) {
 #ifdef _X_ALLOW_X_
 	auto o = create_entity(pos, ang);
 
 	auto l = new Light(c, r, t);
-	o->_add_component_external_(l);
+	o->_add_component_external_no_init_(l);
 	register_entity(o);
 	return l;
 #else
 	return nullptr;
 #endif
+}
+
+Camera *World::create_camera(const vec3 &pos, const quaternion &ang) {
+	auto o = create_entity(pos, ang);
+
+	auto c = new Camera();
+	o->_add_component_external_no_init_(c);
+	register_entity(o);
+	return c;
 }
 
 LegacyParticle* World::add_legacy_particle(xfer<LegacyParticle> p) {
@@ -878,8 +849,11 @@ void World::shift_all(const vec3 &dpos) {
 		//if (auto m = e->get_component<Model>())
 		//	m->update_matrix();
 	}
-	auto list = ComponentManager::get_list_family<Model>();
-	for (auto *m: *list)
+
+	for (auto &sb: ComponentManager::get_list_family<SolidBody>())
+		sb->state_to_bullet();
+
+	for (auto *m: ComponentManager::get_list_family<Model>())
 		m->update_matrix();
 #ifdef _X_ALLOW_X_
 	for (auto *s: sounds)
