@@ -14,3 +14,4 @@ Toolbar world-toolbar ""
 	Item mode_world_camera "Camera flight" checkable image=world-cam
 	Separator
 	Item selection_properties "Properties" image=configure
+	Item run-game "Run game" image=hui:media-play

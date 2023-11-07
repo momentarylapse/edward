@@ -33,6 +33,7 @@
 #include "../../data/world/WorldCamera.h"
 #include "../../lib/nix/nix.h"
 #include "../../lib/math/vec2.h"
+#include "../../lib/os/terminal.h"
 #include <y/world/Camera.h>
 #include <y/world/World.h>
 #include <y/world/Material.h>
@@ -172,6 +173,20 @@ void ModeWorld::on_command(const string & id) {
 		set_mouse_action(MultiView::ACTION_MOVE);
 	if (id == "rotate")
 		set_mouse_action(MultiView::ACTION_ROTATE);
+
+	if (id == "run-game") {
+		Path engine_dir = hui::config.get_str("EngineDir", "");
+		if (engine_dir.is_empty()) {
+			session->error("cn not run egine. Config 'EngineDir' is not set");
+			return;
+		}
+		auto cmd = format("cd \"%s\"; \"%s\" \"%s\"", session->storage->root_dir, engine_dir | "y-gl", data->filename.basename_no_ext());
+		try {
+			os::terminal::shell_execute(cmd);
+		} catch (Exception &e) {
+			session->error(format("failed to run '%s'", cmd));
+		}
+	}
 }
 
 #define MODEL_MAX_VERTICES	65536

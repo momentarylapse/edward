@@ -10121,7 +10121,7 @@ world-toolbar
 
 0
 0
-15
+16
 Item
 new
 image=new
@@ -10212,12 +10212,18 @@ image=configure
 14
 0
 0
+Item
+run-game
+image=hui:media-play
+15
+0
+0
 # Number Of Languages
 3
 # Language
 English
 # Number Of IDs
-1027
+1028
 # Text
 /ambient
 Ambient
@@ -13149,6 +13155,9 @@ Camera flight
 
 world-toolbar/mode_world_terrain
 Height map
+
+world-toolbar/run-game
+Run game
 
 world-toolbar/selection_properties
 Properties
