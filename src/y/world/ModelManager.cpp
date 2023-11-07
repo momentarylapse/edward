@@ -29,7 +29,7 @@
 #include "Material.h"
 
 
-Alpha parse_alpha(int a); // Material.h
+Alpha parse_alpha_i(int a); // Material.h
 
 
 ModelTemplate::ModelTemplate(Model *m) {
@@ -213,12 +213,12 @@ class ChunkMaterial : public FileChunk<Model, Material> {
 public:
 	ChunkMaterial() : FileChunk("material") {}
 	void create() override {
-		me = new Material(chunked_file_parser_get_resource_manager(root));
-		parent->material.add(me);
+		//me = new Material(chunked_file_parser_get_resource_manager(root));
+		//parent->material.add(me);
 	}
 	void read(BinaryFormatter *f) override {
-		Material *m = chunked_file_parser_get_material_manager(root)->load(f->read_str());
-		*me = *m;
+		me = chunked_file_parser_get_material_manager(root)->load(f->read_str());
+		parent->material.add(me);
 		bool user_colors = f->read_bool();
 		if (user_colors) {
 			me->albedo = file_read_color4i(f);
@@ -234,11 +234,11 @@ public:
 
 		auto alpha_mode = (TransparencyMode)f->read_int();
 		if (alpha_mode != TransparencyMode::DEFAULT) {
-			me->alpha.mode = alpha_mode;
-			me->alpha.source = parse_alpha(f->read_int());
-			me->alpha.destination = parse_alpha(f->read_int());
-			me->alpha.factor = f->read_float();
-			me->alpha.z_buffer = f->read_bool();
+			me->pass0.mode = alpha_mode;
+			me->pass0.source = parse_alpha_i(f->read_int());
+			me->pass0.destination = parse_alpha_i(f->read_int());
+			me->pass0.factor = f->read_float();
+			me->pass0.z_buffer = f->read_bool();
 		} else {
 			f->read_int();
 			f->read_int();

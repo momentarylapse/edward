@@ -1,6 +1,7 @@
 #pragma once
 
 #include <lib/base/base.h>
+#include <lib/base/map.h>
 #include <lib/base/pointer.h>
 #include <lib/os/path.h>
 #include <lib/image/color.h>
@@ -20,6 +21,7 @@ enum class TransparencyMode {
 	COLOR_KEY_HARD = 2,
 	COLOR_KEY_SMOOTH = 3,
 	FACTOR = 4,
+	MIX = 5,
 	DEFAULT = -1,
 };
 
@@ -46,12 +48,9 @@ enum class RenderPathType;
 // visual and physical properties
 class Material {
 public:
-	// name of the material
-	Path name;
 	ResourceManager *resource_manager;
 
 	shared_array<Texture> textures;
-	Path shader_path;
 
 	struct ShaderUniform {
 		string name;
@@ -67,12 +66,21 @@ public:
 
 	bool cast_shadow;
 
-	struct Transparency {
+	struct RenderPassData {
 		TransparencyMode mode;
 		Alpha source, destination;
 		float factor;
 		bool z_buffer;
-	} alpha;
+		int cull_mode;
+		Path shader_path;
+	};
+	int num_passes = 1;
+	RenderPassData pass0;
+
+	struct ExtendedData {
+		RenderPassData pass[4];
+	};
+	owned<ExtendedData> extended;
 
 	struct Reflection {
 		ReflectionMode mode;
@@ -87,15 +95,16 @@ public:
 	} friction;
 
 	Material(ResourceManager *resource_manager);
-	~Material();
 	xfer<Material> copy();
 
 	bool is_transparent() const;
+	RenderPassData& pass(int k);
 };
 
 struct ShaderCache {
 	shared<Shader> shader[2]; // * #(render paths)
 	void _prepare_shader(RenderPathType render_path_type, Material *material, const string& vertex_module, const string& geometry_module);
+	void _prepare_shader_multi_pass(RenderPathType render_path_type, Material *material, const string& vertex_module, const string& geometry_module, int k);
 	Shader *get_shader(RenderPathType render_path_type);
 };
 
@@ -115,7 +124,7 @@ private:
 	ResourceManager *resource_manager;
 	Material *default_material;
 	Material *trivial_material;
-	owned_array<Material> materials; // "originals"
+	base::map<Path, Material*> materials; // "originals" owned!
 };
 
 

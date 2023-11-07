@@ -25,6 +25,21 @@ class PostProcessor;
 class ResourceManager;
 class MaterialManager;
 class ModelManager;
+#ifdef USING_VULKAN
+class WindowRendererVulkan;
+using WindowRenderer = WindowRendererVulkan;
+class HDRRendererVulkan;
+using HDRRenderer = HDRRendererVulkan;
+class RegionRendererVulkan;
+using RegionRenderer = RegionRendererVulkan;
+#else
+class WindowRendererGL;
+using WindowRenderer = WindowRendererGL;
+class HDRRendererGL;
+using HDRRenderer = HDRRendererGL;
+class RegionRendererGL;
+using RegionRenderer = RegionRendererGL;
+#endif
 
 class EngineData {
 public:
@@ -80,10 +95,10 @@ public:
 	Context *context;
 	ResourceManager *resource_manager;
 
-	TargetRenderer *window_renderer;
+	WindowRenderer *window_renderer;
 	Renderer *gui_renderer;
-	Renderer *region_renderer;
-	Renderer *hdr_renderer;
+	RegionRenderer *region_renderer;
+	HDRRenderer *hdr_renderer;
 	PostProcessor *post_processor;
 	WorldRenderer *world_renderer;
 };

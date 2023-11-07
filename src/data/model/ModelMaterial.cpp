@@ -121,10 +121,10 @@ bool ModelMaterial::Alpha::user_defined() const {
 void ModelMaterial::check_transparency() {
 	if (!alpha.user_defined()) {
 		//alpha.mode = material->alpha.mode;
-		alpha.source = material->alpha.source;
-		alpha.destination = material->alpha.destination;
-		alpha.factor	= material->alpha.factor;
-		alpha.zbuffer = material->alpha.z_buffer;
+		alpha.source = material->pass0.source;
+		alpha.destination = material->pass0.destination;
+		alpha.factor	= material->pass0.factor;
+		alpha.zbuffer = material->pass0.z_buffer;
 	}
 }
 
@@ -182,9 +182,9 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 		auto source = alpha.source;
 		auto dest = alpha.destination;
 		if (alpha.mode == TransparencyMode::DEFAULT) {
-			mode = material->alpha.mode;
-			source = material->alpha.source;
-			dest = material->alpha.destination;
+			mode = material->pass0.mode;
+			source = material->pass0.source;
+			dest = material->pass0.destination;
 		}
 		if (mode == TransparencyMode::COLOR_KEY_HARD) {
 			nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);

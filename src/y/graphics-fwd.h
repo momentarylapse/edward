@@ -101,6 +101,7 @@
 
 	using Alpha = nix::Alpha;
 	using AlphaMode = nix::AlphaMode;
+	class RenderPass{};
 
 #endif
 
