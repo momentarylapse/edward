@@ -21,7 +21,7 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 					ColorButton emission "" "tooltip=Color in absolute darkness"
 			Expander grp-textures "Textures"
 				Grid ? ""
-					ListView mat_textures "Level\\\\Texture" format=tit select-single nobar
+					ListView textures "Level\\\\Texture" format=tit select-single nobar
 					---|
 					Grid ? ""
 						Button mat_add_texture_level "new level" image=hui:add

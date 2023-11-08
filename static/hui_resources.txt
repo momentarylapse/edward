@@ -1864,7 +1864,7 @@ Grid
 0
 2
 ListView
-mat_textures
+textures
 format=tit,select-single,nobar
 0
 0
@@ -10642,9 +10642,6 @@ delete level
 material_dialog/mat_empty_texture_level
 Empty
 
-material_dialog/mat_textures
-Level\\\\Texture
-
 material_dialog/material_dialog
 Material appearance
 
@@ -10668,6 +10665,9 @@ Sliding
 
 material_dialog/t-rcstatic
 Static
+
+material_dialog/textures
+Level\\\\Texture
 
 material_dialog/transparency_mode:color_key
 Color key

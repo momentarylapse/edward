@@ -29,8 +29,8 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 
 	// dialog
 	event("mat_add_texture_level", [this]{ on_add_texture_level(); });
-	event("mat_textures", [this]{ on_textures(); });
-	event_x("mat_textures", "hui:select", [this]{ on_textures_select(); });
+	event("textures", [this]{ on_textures(); });
+	event_x("textures", "hui:select", [this]{ on_textures_select(); });
 	event("mat_delete_texture_level", [this]{ on_delete_texture_level(); });
 	event("mat_empty_texture_level", [this]{ on_clear_texture_level(); });
 	event("transparency_mode:none", [this]{ on_transparency_mode(); });
@@ -147,7 +147,7 @@ void MaterialPropertiesDialog::on_textures_select() {
 }
 
 void MaterialPropertiesDialog::on_delete_texture_level() {
-	int sel = get_int("mat_textures");
+	int sel = get_int("textures");
 	if (sel >= 0) {
 		temp.texture_files.erase(sel);
 		apply_data();
@@ -156,7 +156,7 @@ void MaterialPropertiesDialog::on_delete_texture_level() {
 }
 
 void MaterialPropertiesDialog::on_clear_texture_level() {
-	int sel = get_int("mat_textures");
+	int sel = get_int("textures");
 	if (sel >= 0) {
 		temp.texture_files[sel] = "";
 		apply_data();
@@ -220,14 +220,14 @@ void MaterialPropertiesDialog::apply_phys_data_delayed() {
 }
 
 void MaterialPropertiesDialog::fill_texture_list() {
-	reset("mat_textures");
+	reset("textures");
 	for (int i=0;i<temp.texture_files.num;i++) {
 		auto tex = data->session->resource_manager->load_texture(temp.texture_files[i]);
 		string img = data->session->get_tex_image(tex.get());
-		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, img, file_secure(temp.texture_files[i])));
+		add_string("textures", format("Tex[%d]\\%s\\%s", i, img, file_secure(temp.texture_files[i])));
 	}
 	if (temp.texture_files.num == 0)
-		add_string("mat_textures", _("\\\\   - no textures -"));
+		add_string("textures", _("\\\\   - no textures -"));
 	enable("mat_delete_texture_level", false);
 	enable("mat_empty_texture_level", false);
 }
