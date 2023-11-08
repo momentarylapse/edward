@@ -30,6 +30,7 @@ public:
 	void on_transparency_mode();
 
 	void fill_texture_list();
+	void fill_passes_list();
 
 	void on_data_update();
 

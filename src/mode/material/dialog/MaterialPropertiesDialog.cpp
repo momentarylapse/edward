@@ -11,7 +11,8 @@
 #include "../../../storage/Storage.h"
 #include "../../../action/material/ActionMaterialEditAppearance.h"
 #include "../../../action/material/ActionMaterialEditPhysics.h"
-#include "../../../lib/nix/nix.h"
+#include <lib/base/iter.h>
+#include <lib/nix/nix.h>
 #include <y/helper/ResourceManager.h>
 
 
@@ -70,6 +71,7 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 
 	expand_row("grp-color", 0, true);
 	expand_row("grp-textures", 0, true);
+	expand_row("grp-passes", 0, true);
 
 	set_options("shader_file", "placeholder=- engine default shader -");
 	load_data();
@@ -78,6 +80,7 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 
 void MaterialPropertiesDialog::load_data() {
 	fill_texture_list();
+	fill_passes_list();
 	set_color("albedo", temp.albedo);
 	set_float("roughness", temp.roughness);
 	set_float("slider-roughness", temp.roughness);
@@ -230,4 +233,26 @@ void MaterialPropertiesDialog::fill_texture_list() {
 		add_string("textures", _("\\\\   - no textures -"));
 	enable("mat_delete_texture_level", false);
 	enable("mat_empty_texture_level", false);
+}
+
+string transparency_to_str(TransparencyMode m) {
+	if (m == TransparencyMode::NONE)
+		return "solid";
+	if (m == TransparencyMode::FUNCTIONS)
+		return "transparent";
+	if (m == TransparencyMode::MIX)
+		return "transparent";
+	if (m == TransparencyMode::COLOR_KEY_HARD)
+		return "color keyed";
+	return "???";
+}
+
+void MaterialPropertiesDialog::fill_passes_list() {
+	reset("passes");
+	for (auto&& [i,p]: enumerate(temp.passes)) {
+		string desc = transparency_to_str(p.mode) + " - " + str(p.shader.file);
+		if (p.shader.file.is_empty())
+			desc += "(default shader)";
+		add_string("passes", format("Pass[%d]\\%s", i, desc));
+	}
 }

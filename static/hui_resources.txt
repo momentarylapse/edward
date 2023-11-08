@@ -1766,8 +1766,8 @@ Grid
 vertical
 1
 0
-4
-Expander
+5
+Group
 grp-color
 
 0
@@ -1792,16 +1792,28 @@ alpha
 0
 0
 Label
-t-roughness
+t-emission
 right,disabled
 0
 1
+0
+ColorButton
+emission
+
+1
+1
+0
+Label
+t-roughness
+right,disabled
+0
+2
 0
 Grid
 ?
 
 1
-1
+2
 2
 Slider
 slider-roughness
@@ -1819,13 +1831,13 @@ Label
 t-metal
 right,disabled
 0
-2
+3
 0
 Grid
 ?
 
 1
-2
+3
 2
 Slider
 slider-metal
@@ -1838,18 +1850,6 @@ metal
 range=0:1:0.01
 1
 0
-0
-Label
-t-emission
-right,disabled
-0
-3
-0
-ColorButton
-emission
-
-1
-3
 0
 Expander
 grp-textures
@@ -1865,7 +1865,7 @@ Grid
 2
 ListView
 textures
-format=tit,select-single,nobar
+format=tit,select-single,nobar,height=200,noexpandy
 0
 0
 0
@@ -1894,9 +1894,21 @@ image=hui:clear
 0
 0
 Expander
-material_dialog_grp_transparency
+grp-passes
 
 2
+0
+1
+ListView
+passes
+select-single,nobar,height=200,noexpandy
+0
+0
+0
+Expander
+material_dialog_grp_transparency
+
+3
 0
 1
 Grid
@@ -1986,7 +1998,7 @@ alpha_z_buffer
 Expander
 grp-friction
 
-3
+4
 0
 1
 Grid
@@ -10067,7 +10079,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1011
+1013
 # Text
 /ambient
 Ambient
@@ -10627,6 +10639,9 @@ Colors
 material_dialog/grp-friction
 Friction
 
+material_dialog/grp-passes
+Render passes
+
 material_dialog/grp-textures
 Textures
 
@@ -10653,6 +10668,9 @@ Dest
 
 material_dialog/material_dialog_t_trans_source
 Source
+
+material_dialog/passes
+Level\\Description
 
 material_dialog/t-rcjump
 Jumping

@@ -258,11 +258,6 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 	if (deep) {
 		for (auto &p: data->appearance.passes)
 			p.shader.load_from_file(session);
-
-		for (auto &p: data->appearance.passes) {
-			msg_write((int)p.mode);
-			msg_write(str(p.shader.file));
-		}
 	}
 
 	delete f;
