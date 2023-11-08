@@ -94,23 +94,6 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		} else if (m != "") {
 			msg_error("unknown transparency mode: " + m);
 		}
-
-		m = c.get_str("reflection.mode", "");
-
-		if (m == "static") {
-			data->appearance.reflection_mode = ReflectionMode::CUBE_MAP_STATIC;
-			data->appearance.reflection_texture_file = str_arr_to_paths(c.get_str_array("reflection.cubemap"));
-			data->appearance.reflection_texture_file.resize(6);
-			data->appearance.reflection_density = c.get_float("reflection.density", 1);
-		} else if (m == "dynamic") {
-			data->appearance.reflection_mode = ReflectionMode::CUBE_MAP_DYNAMIC;
-			data->appearance.reflection_density = c.get_float("reflection.density", 1);
-			data->appearance.reflection_size = c.get_float("reflection.size", 128);
-		} else if (m == "mirror") {
-			data->appearance.reflection_mode = ReflectionMode::MIRROR;
-		} else if (m != "") {
-			msg_error("unknown reflection mode: " + m);
-		}
 	//}
 
 	/*if (ffv<0){
@@ -149,11 +132,11 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_bool();
 		// Reflection
 		f->read_comment();
-		data->appearance.reflection_mode = (ReflectionMode)f->read_int();
-		data->appearance.reflection_density = (float)f->read_int();
-		data->appearance.reflection_size = f->read_int();
+		f->read_int();
+		f->read_int();
+		f->read_int();
 		for (int i=0;i<6;i++)
-			data->appearance.reflection_texture_file[i] = f->read_str();
+			f->read_str();
 		// ShaderFile
 		f->read_comment();
 		data->shader.file = f->read_str();
@@ -192,15 +175,11 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		// Appearance
 		f->read_comment();
 		int MetalDensity = f->read_int();
-		if (MetalDensity > 0){
-			data->appearance.reflection_mode = ReflectionMode::METAL;
-			data->appearance.reflection_density = (float)MetalDensity;
-		}
+		if (MetalDensity > 0)
+			data->appearance.metal = (float)MetalDensity * 0.01f;
 		f->read_int();
 		f->read_int();
 		bool Mirror = f->read_bool();
-		if (Mirror)
-			data->appearance.reflection_mode = ReflectionMode::MIRROR;
 		f->read_bool();
 		// ShaderFile
 		f->read_comment();
@@ -237,16 +216,12 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		// Appearance
 		f->read_comment();
 		int MetalDensity = f->read_int();
-		if (MetalDensity > 0){
-			data->appearance.reflection_mode = ReflectionMode::METAL;
-			data->appearance.reflection_density = (float)MetalDensity;
-		}
+		if (MetalDensity > 0)
+			data->appearance.metal = (float)MetalDensity * 0.01f;
 		f->read_int();
 		f->read_int();
-		data->appearance.reflection_mode = (f->read_bool() ? ReflectionMode::MIRROR : ReflectionMode::NONE);
-		bool Mirror = f->read_bool();
-		if (Mirror)
-			data->appearance.reflection_mode = ReflectionMode::MIRROR;
+		f->read_bool();
+		f->read_bool();
 		// ShaderFile
 		f->read_comment();
 		Path sf = f->read_str();
@@ -292,18 +267,6 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 	/*if (data->appearance.transparency_mode != TransparencyMode::NONE) {
 		c.set_bool("transparency.zbuffer", data->appearance.alpha_z_buffer);
 	}*/
-
-	if (data->appearance.reflection_mode == ReflectionMode::CUBE_MAP_STATIC) {
-		c.set_str("reflection.mode", "static");
-		c.set_str_array("reflection.cubemap", paths_to_str_arr(data->appearance.reflection_texture_file));
-		c.set_float("reflection.density", data->appearance.reflection_density);
-	} else if (data->appearance.reflection_mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
-		c.set_str("reflection.mode", "dynamic");
-		c.set_float("reflection.density", data->appearance.reflection_density);
-		c.set_int("reflection.size", data->appearance.reflection_size);
-	} else if (data->appearance.reflection_mode == ReflectionMode::MIRROR) {
-		c.set_str("reflection.mode", "mirror");
-	}
 
 	c.set_float("friction.static", data->physics.friction_static);
 	c.set_float("friction.slide", data->physics.friction_sliding);

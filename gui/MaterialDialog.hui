@@ -2,26 +2,26 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 	Grid ? "" vertical
 		Label header "Material" expandx center big bold
 		Grid ? "" vertical
-			Expander material_dialog_grp_color "Colors"
+			Expander grp-color "Colors"
 				Grid ? ""
-					Text /t-albedo "Albedo" right disabled
+					Label /t-albedo "Albedo" right disabled
 					ColorButton albedo "" alpha
 					---|
-					Text /t-roughness "Roughness" right disabled
+					Label /t-roughness "Roughness" right disabled
 					Grid ? ""
 						Slider slider-roughness "" range=0:1:0.01 expandx
 						SpinButton roughness "" range=0:1:0.01
 					---|
-					Text /t-reflectivity "Metal" right disabled
+					Label /t-metal "Metal" right disabled
 					Grid ? ""
 						Slider slider-metal "" range=0:1:0.01 expandx
 						SpinButton metal "" range=0:1:0.01
 					---|
-					Text /t-emission "Emission" right disabled
+					Label /t-emission "Emission" right disabled
 					ColorButton emission "" "tooltip=Color in absolute darkness"
-			Expander material_dialog_grp_textures "Textures"
+			Expander grp-textures "Textures"
 				Grid ? ""
-					ListView mat_textures "Level\\\\Texture" format=tit select-single
+					ListView mat_textures "Level\\\\Texture" format=tit select-single nobar
 					---|
 					Grid ? ""
 						Button mat_add_texture_level "new level" image=hui:add
@@ -33,37 +33,27 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 					RadioButton transparency_mode:color_key "Color key"
 					RadioButton transparency_mode:function "Function"
 					Grid mat_transp_function_grid "" indent
-						Text material_dialog_t_trans_source "Source" right disabled
+						Label material_dialog_t_trans_source "Source" right disabled
 						ComboBox alpha_source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
 						---|
-						Text material_dialog_t_trans_dest "Dest" right disabled
+						Label material_dialog_t_trans_dest "Dest" right disabled
 						ComboBox alpha_dest "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
 					RadioButton transparency_mode:factor "Factor:"
 					Grid mat_transp_alpha_grid "" indent
 						SpinButton alpha_factor "" range=0:100:1
 						Text /percent "%"
 					CheckBox alpha_z_buffer "Z-buffer enabled"
-			Expander material_dialog_grp_reflection "Reflexions"
-				Grid ? "" vertical
-					RadioButton reflection_mode:none "No reflection"
-					RadioButton reflection_mode:cube_static "Cube-map static"
-					ListView reflection_textures "face\\texture" indent
-					RadioButton reflection_mode:cube_dynamic "Cube-map dynamic"
-					ComboBox reflection_size "64 x 64\\128 x 128\\256 x 256\\512 x 512" indent
-					Grid ? ""
-						Text material_dialog_t_refl_density "Density:"
-						SpinButton reflection_density "" range=0:100:1
-						Text /percent "%"
-			Expander material_dialog_grp_friction "Friction"
+			Expander grp-friction "Friction"
 				Grid ? ""
-					Text material_physics_dialog_t_rcstatic "Static" right disabled
+					Label t-rcstatic "Static" right disabled
 					SpinButton rcstatic "" range=0:100:0.01
 					---|
-					Text material_physics_dialog_t_rcsliding "Sliding" right disabled
+					Label t-rcsliding "Sliding" right disabled
 					SpinButton rcsliding "" range=0:100:0.01
 					---|
-					Text material_physics_dialog_t_rcjump "Jumping" right disabled
+					Label t-rcjump "Jumping" right disabled
 					SpinButton rcjump "" range=0:100:0.01
 					---|
-					Text material_physics_dialog_t_rcroll "Rolling resistance" right disabled
+					Label t-rcroll "Rolling resistance" right disabled
 					SpinButton rcroll "" range=0:100:0.01
+		Label ? "" expandy

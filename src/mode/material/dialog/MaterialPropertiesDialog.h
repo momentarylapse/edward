@@ -28,10 +28,7 @@ public:
 	void on_delete_texture_level();
 	void on_clear_texture_level();
 	void on_transparency_mode();
-	void on_reflection_mode();
-	void on_reflection_textures();
 
-	void refill_refl_tex_view();
 	void fill_texture_list();
 
 	void on_data_update();

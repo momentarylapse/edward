@@ -44,12 +44,6 @@ void DataMaterial::AppearanceData::reset() {
 	alpha_source = alpha_destination = nix::Alpha::ZERO;
 	alpha_factor = 0.5f;
 	alpha_z_buffer = true;
-
-	reflection_mode = ReflectionMode::NONE;
-	reflection_density = 0;
-	reflection_size = 128;
-	reflection_texture_file.clear();
-	reflection_texture_file.resize(6);
 }
 
 void DataMaterial::ShaderData::reset(Session *s) {

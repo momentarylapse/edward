@@ -44,12 +44,6 @@ public:
 		float alpha_factor;
 		bool alpha_z_buffer;
 
-		// reflection
-		ReflectionMode reflection_mode;
-		int reflection_size;
-		float reflection_density;
-		Array<Path> reflection_texture_file;
-
 		void reset();
 	};
 	AppearanceData appearance;

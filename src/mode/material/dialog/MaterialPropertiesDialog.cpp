@@ -37,10 +37,6 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	event("transparency_mode:function", [this]{ on_transparency_mode(); });
 	event("transparency_mode:color_key", [this]{ on_transparency_mode(); });
 	event("transparency_mode:factor", [this]{ on_transparency_mode(); });
-	event("reflection_mode:none", [this]{ on_reflection_mode(); });
-	event("reflection_mode:cube_static", [this]{ on_reflection_mode(); });
-	event("reflection_mode:cube_dynamic", [this]{ on_reflection_mode(); });
-	event("reflection_textures", [this]{ on_reflection_textures(); });
 
 
 	event("albedo", [this]{ apply_data(); });
@@ -72,7 +68,8 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	event("rcsliding", [this]{ apply_phys_data_delayed(); });
 	event("rcroll", [this]{ apply_phys_data_delayed(); });
 
-	expand_row("material_dialog_grp_color", 0, true);
+	expand_row("grp-color", 0, true);
+	expand_row("grp-textures", 0, true);
 
 	set_options("shader_file", "placeholder=- engine default shader -");
 	load_data();
@@ -105,26 +102,6 @@ void MaterialPropertiesDialog::load_data() {
 	check("alpha_z_buffer", temp.alpha_z_buffer);
 	set_int("alpha_source", (int)temp.alpha_source);
 	set_int("alpha_dest", (int)temp.alpha_destination);
-
-	if (temp.reflection_mode == ReflectionMode::CUBE_MAP_STATIC)
-		check("reflection_mode:cube_static", true);
-	else if (temp.reflection_mode == ReflectionMode::CUBE_MAP_DYNAMIC)
-		check("reflection_mode:cube_dynamic", true);
-	else
-		check("reflection_mode:none", true);
-	if (temp.reflection_size >= 512)
-		set_int("reflection_size", 3);
-	else if (temp.reflection_size >= 256)
-		set_int("reflection_size", 2);
-	else if (temp.reflection_size >= 128)
-		set_int("reflection_size", 1);
-	else
-		set_int("reflection_size", 0);
-	set_int("reflection_density", temp.reflection_density);
-	refill_refl_tex_view();
-	enable("reflection_size", ((temp.reflection_mode == ReflectionMode::CUBE_MAP_STATIC) or (temp.reflection_mode == ReflectionMode::CUBE_MAP_DYNAMIC)));
-	enable("reflection_textures", (temp.reflection_mode == ReflectionMode::CUBE_MAP_STATIC));
-	enable("reflection_density", (temp.reflection_mode != ReflectionMode::NONE));
 
 
 	set_float("rcjump", temp_phys.friction_jump);
@@ -202,42 +179,6 @@ void MaterialPropertiesDialog::on_transparency_mode() {
 	apply_data();
 }
 
-void MaterialPropertiesDialog::on_reflection_mode() {
-	if (is_checked("reflection_mode:cube_static"))
-		temp.reflection_mode = ReflectionMode::CUBE_MAP_STATIC;
-	else if (is_checked("reflection_mode:cube_dynamic"))
-		temp.reflection_mode = ReflectionMode::CUBE_MAP_DYNAMIC;
-	else
-		temp.reflection_mode = ReflectionMode::NONE;
-	enable("reflection_size", ((temp.reflection_mode == ReflectionMode::CUBE_MAP_STATIC) or (temp.reflection_mode == ReflectionMode::CUBE_MAP_DYNAMIC)));
-	enable("reflection_textures", (temp.reflection_mode == ReflectionMode::CUBE_MAP_STATIC));
-	enable("reflection_density", (temp.reflection_mode != ReflectionMode::NONE));
-	apply_data();
-}
-
-void MaterialPropertiesDialog::on_reflection_textures() {
-#if 0
-	int sel=get_int("");
-	if (storage->file_dialog(FD_TEXTURE,false,true)) {
-		temp.reflection_texture_file[sel] = storage->dialog_file;
-		if ((sel==0) and (temp.reflection_texture_file[0].find(".") >= 0)) {
-			int p=temp.reflection_texture_file[0].find(".");
-			for (int i=1;i<6;i++) {
-				string tf;
-				tf = temp.reflection_texture_file[0];
-				tf[p-1]=temp.reflection_texture_file[0][p-1]+i;
-				if (file_exists(nix::texture_dir + tf)) {
-					temp.reflection_texture_file[i] = tf;
-				}
-			}
-
-		}
-		apply_data();
-		refill_refl_tex_view();
-	}
-#endif
-}
-
 void MaterialPropertiesDialog::apply_data() {
 	if (apply_queue_depth > 0)
 		apply_queue_depth --;
@@ -251,9 +192,6 @@ void MaterialPropertiesDialog::apply_data() {
 	temp.alpha_factor = get_float("alpha_factor") * 0.01f;
 	temp.alpha_source = (nix::Alpha)get_int("alpha_source");
 	temp.alpha_destination = (nix::Alpha)get_int("alpha_dest");
-
-	temp.reflection_density = get_int("reflection_density");
-	temp.reflection_size = 64 << get_int("reflection_size");
 
 	data->execute(new ActionMaterialEditAppearance(temp));
 }
@@ -279,16 +217,6 @@ void MaterialPropertiesDialog::apply_phys_data() {
 void MaterialPropertiesDialog::apply_phys_data_delayed() {
 	apply_phys_queue_depth ++;
 	hui::run_later(0.2f, [this]{ apply_phys_data(); });
-}
-
-void MaterialPropertiesDialog::refill_refl_tex_view() {
-	reset("reflection_textures");
-	add_string("reflection_textures", " + X\\" + temp.reflection_texture_file[0].str());
-	add_string("reflection_textures", " - X\\" + temp.reflection_texture_file[1].str());
-	add_string("reflection_textures", " + Y\\" + temp.reflection_texture_file[2].str());
-	add_string("reflection_textures", " - Y\\" + temp.reflection_texture_file[3].str());
-	add_string("reflection_textures", " + Z\\" + temp.reflection_texture_file[4].str());
-	add_string("reflection_textures", " - Z\\" + temp.reflection_texture_file[5].str());
 }
 
 void MaterialPropertiesDialog::fill_texture_list() {

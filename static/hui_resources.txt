@@ -1754,7 +1754,7 @@ Grid
 vertical
 0
 0
-2
+3
 Label
 header
 expandx,center,big,bold
@@ -1766,9 +1766,9 @@ Grid
 vertical
 1
 0
-5
+4
 Expander
-material_dialog_grp_color
+grp-color
 
 0
 0
@@ -1779,7 +1779,7 @@ Grid
 0
 0
 8
-Text
+Label
 t-albedo
 right,disabled
 0
@@ -1791,7 +1791,7 @@ alpha
 1
 0
 0
-Text
+Label
 t-roughness
 right,disabled
 0
@@ -1815,8 +1815,8 @@ range=0:1:0.01
 1
 0
 0
-Text
-t-reflectivity
+Label
+t-metal
 right,disabled
 0
 2
@@ -1839,7 +1839,7 @@ range=0:1:0.01
 1
 0
 0
-Text
+Label
 t-emission
 right,disabled
 0
@@ -1852,7 +1852,7 @@ emission
 3
 0
 Expander
-material_dialog_grp_textures
+grp-textures
 
 1
 0
@@ -1865,7 +1865,7 @@ Grid
 2
 ListView
 mat_textures
-format=tit,select-single
+format=tit,select-single,nobar
 0
 0
 0
@@ -1929,7 +1929,7 @@ indent
 3
 0
 4
-Text
+Label
 material_dialog_t_trans_source
 right,disabled
 0
@@ -1941,7 +1941,7 @@ alpha_source
 1
 0
 0
-Text
+Label
 material_dialog_t_trans_dest
 right,disabled
 0
@@ -1984,75 +1984,9 @@ alpha_z_buffer
 0
 0
 Expander
-material_dialog_grp_reflection
+grp-friction
 
 3
-0
-1
-Grid
-?
-vertical
-0
-0
-6
-RadioButton
-reflection_mode:none
-
-0
-0
-0
-RadioButton
-reflection_mode:cube_static
-
-1
-0
-0
-ListView
-reflection_textures
-indent
-2
-0
-0
-RadioButton
-reflection_mode:cube_dynamic
-
-3
-0
-0
-ComboBox
-reflection_size
-indent
-4
-0
-0
-Grid
-?
-
-5
-0
-3
-Text
-material_dialog_t_refl_density
-
-0
-0
-0
-SpinButton
-reflection_density
-range=0:100:1
-1
-0
-0
-Text
-percent
-
-2
-0
-0
-Expander
-material_dialog_grp_friction
-
-4
 0
 1
 Grid
@@ -2061,8 +1995,8 @@ Grid
 0
 0
 8
-Text
-material_physics_dialog_t_rcstatic
+Label
+t-rcstatic
 right,disabled
 0
 0
@@ -2073,8 +2007,8 @@ range=0:100:0.01
 1
 0
 0
-Text
-material_physics_dialog_t_rcsliding
+Label
+t-rcsliding
 right,disabled
 0
 1
@@ -2085,8 +2019,8 @@ range=0:100:0.01
 1
 1
 0
-Text
-material_physics_dialog_t_rcjump
+Label
+t-rcjump
 right,disabled
 0
 2
@@ -2097,8 +2031,8 @@ range=0:100:0.01
 1
 2
 0
-Text
-material_physics_dialog_t_rcroll
+Label
+t-rcroll
 right,disabled
 0
 3
@@ -2108,6 +2042,12 @@ rcroll
 range=0:100:0.01
 1
 3
+0
+Label
+?
+expandy
+2
+0
 0
 # Resource
 Menu
@@ -10127,7 +10067,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1017
+1011
 # Text
 /ambient
 Ambient
@@ -10200,6 +10140,9 @@ Albedo
 
 /t-emission
 Emission
+
+/t-metal
+Metal
 
 /t-reflectivity
 Metal
@@ -10678,6 +10621,15 @@ Z-buffer enabled
 material_dialog/emission
 
 Color in absolute darkness
+material_dialog/grp-color
+Colors
+
+material_dialog/grp-friction
+Friction
+
+material_dialog/grp-textures
+Textures
+
 material_dialog/header
 Material
 
@@ -10696,23 +10648,8 @@ Level\\\\Texture
 material_dialog/material_dialog
 Material appearance
 
-material_dialog/material_dialog_grp_color
-Colors
-
-material_dialog/material_dialog_grp_friction
-Friction
-
-material_dialog/material_dialog_grp_reflection
-Reflexions
-
-material_dialog/material_dialog_grp_textures
-Textures
-
 material_dialog/material_dialog_grp_transparency
 Transparency
-
-material_dialog/material_dialog_t_refl_density
-Density:
 
 material_dialog/material_dialog_t_trans_dest
 Dest
@@ -10720,32 +10657,17 @@ Dest
 material_dialog/material_dialog_t_trans_source
 Source
 
-material_dialog/material_physics_dialog_t_rcjump
+material_dialog/t-rcjump
 Jumping
 
-material_dialog/material_physics_dialog_t_rcroll
+material_dialog/t-rcroll
 Rolling resistance
 
-material_dialog/material_physics_dialog_t_rcsliding
+material_dialog/t-rcsliding
 Sliding
 
-material_dialog/material_physics_dialog_t_rcstatic
+material_dialog/t-rcstatic
 Static
-
-material_dialog/reflection_mode:cube_dynamic
-Cube-map dynamic
-
-material_dialog/reflection_mode:cube_static
-Cube-map static
-
-material_dialog/reflection_mode:none
-No reflection
-
-material_dialog/reflection_size
-64 x 64\\128 x 128\\256 x 256\\512 x 512
-
-material_dialog/reflection_textures
-face\\texture
 
 material_dialog/transparency_mode:color_key
 Color key
