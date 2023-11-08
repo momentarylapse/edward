@@ -60,25 +60,25 @@ void ModeMaterial::_new() {
 
 
 void test_save_extras(DataMaterial *data, hui::Callback cb_success) {
-	if (data->shader.is_default) {
+	if (data->appearance.passes[0].shader.is_default) {
 		cb_success();
 		return;
 	}
 
 	auto f = [data, cb_success] (const Path &dir) {
-		os::fs::write_text(dir | data->shader.file, data->shader.code);
+		os::fs::write_text(dir | data->appearance.passes[0].shader.file, data->appearance.passes[0].shader.code);
 
-		if (data->shader.from_graph)
-			data->shader.graph->save(dir | data->shader.file.with(".graph"));
+		if (data->appearance.passes[0].shader.from_graph)
+			data->appearance.passes[0].shader.graph->save(dir | data->appearance.passes[0].shader.file.with(".graph"));
 		cb_success();
 	};
 
 	Path dir = data->session->storage->last_dir[FD_SHADERFILE];
-	if (data->shader.file) {
+	if (data->appearance.passes[0].shader.file) {
 		f(dir);
 	} else {
 		hui::file_dialog_save(data->session->win, "Shader...", dir, {"filter=*.shader", "showfilter=*.shader"}).then([data, dir, f] (const Path &path) {
-			data->shader.file = path.relative_to(dir);
+			data->appearance.passes[0].shader.file = path.relative_to(dir);
 			f(dir);
 		});
 	}
@@ -122,7 +122,7 @@ void ModeMaterial::update_textures() {
 void ModeMaterial::update_shader() {
 	msg_write("update shader");
 	try {
-		auto code = session->resource_manager->expand_vertex_shader_source(data->shader.code, "default");
+		auto code = session->resource_manager->expand_vertex_shader_source(data->appearance.passes[0].shader.code, "default");
 		code = session->resource_manager->expand_fragment_shader_source(code, "forward");
 		shader->update(code);
 	} catch(Exception &e) {

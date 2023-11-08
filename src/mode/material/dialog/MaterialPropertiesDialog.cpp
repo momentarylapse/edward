@@ -85,23 +85,23 @@ void MaterialPropertiesDialog::load_data() {
 	set_float("slider-metal", temp.metal);
 	set_color("emission", temp.emissive);
 
-	if (temp.transparency_mode == TransparencyMode::COLOR_KEY_SMOOTH)
+	if (temp.passes[0].mode == TransparencyMode::COLOR_KEY_SMOOTH)
 		check("transparency_mode:color_key", true);
-	else if (temp.transparency_mode == TransparencyMode::COLOR_KEY_HARD)
+	else if (temp.passes[0].mode == TransparencyMode::COLOR_KEY_HARD)
 		check("transparency_mode:color_key", true);
-	else if (temp.transparency_mode == TransparencyMode::FACTOR)
+	else if (temp.passes[0].mode == TransparencyMode::FACTOR)
 		check("transparency_mode:factor", true);
-	else if (temp.transparency_mode == TransparencyMode::FUNCTIONS)
+	else if (temp.passes[0].mode == TransparencyMode::FUNCTIONS)
 		check("transparency_mode:function", true);
 	else
 		check("transparency_mode:none", true);
-	enable("alpha_factor", temp.transparency_mode == TransparencyMode::FACTOR);
-	enable("alpha_source", temp.transparency_mode == TransparencyMode::FUNCTIONS);
-	enable("alpha_dest", temp.transparency_mode == TransparencyMode::FUNCTIONS);
-	set_float("alpha_factor", temp.alpha_factor * 100.0f);
-	check("alpha_z_buffer", temp.alpha_z_buffer);
-	set_int("alpha_source", (int)temp.alpha_source);
-	set_int("alpha_dest", (int)temp.alpha_destination);
+	enable("alpha_factor", temp.passes[0].mode == TransparencyMode::FACTOR);
+	enable("alpha_source", temp.passes[0].mode == TransparencyMode::FUNCTIONS);
+	enable("alpha_dest", temp.passes[0].mode == TransparencyMode::FUNCTIONS);
+	set_float("alpha_factor", temp.passes[0].factor * 100.0f);
+	check("alpha_z_buffer", temp.passes[0].z_buffer);
+	set_int("alpha_source", (int)temp.passes[0].source);
+	set_int("alpha_dest", (int)temp.passes[0].destination);
 
 
 	set_float("rcjump", temp_phys.friction_jump);
@@ -166,16 +166,16 @@ void MaterialPropertiesDialog::on_clear_texture_level() {
 
 void MaterialPropertiesDialog::on_transparency_mode() {
 	if (is_checked("transparency_mode:function"))
-		temp.transparency_mode = TransparencyMode::FUNCTIONS;
+		temp.passes[0].mode = TransparencyMode::FUNCTIONS;
 	else if (is_checked("transparency_mode:color_key"))
-		temp.transparency_mode = TransparencyMode::COLOR_KEY_HARD;
+		temp.passes[0].mode = TransparencyMode::COLOR_KEY_HARD;
 	else if (is_checked("transparency_mode:factor"))
-		temp.transparency_mode = TransparencyMode::FACTOR;
+		temp.passes[0].mode = TransparencyMode::FACTOR;
 	else
-		temp.transparency_mode = TransparencyMode::NONE;
-	enable("alpha_factor", temp.transparency_mode == TransparencyMode::FACTOR);
-	enable("alpha_source", temp.transparency_mode == TransparencyMode::FUNCTIONS);
-	enable("alpha_dest", temp.transparency_mode == TransparencyMode::FUNCTIONS);
+		temp.passes[0].mode = TransparencyMode::NONE;
+	enable("alpha_factor", temp.passes[0].mode == TransparencyMode::FACTOR);
+	enable("alpha_source", temp.passes[0].mode == TransparencyMode::FUNCTIONS);
+	enable("alpha_dest", temp.passes[0].mode == TransparencyMode::FUNCTIONS);
 	apply_data();
 }
 
@@ -188,10 +188,10 @@ void MaterialPropertiesDialog::apply_data() {
 	temp.roughness = get_float("roughness");
 	temp.metal = get_float("metal");
 	temp.emissive = get_color("emission");
-	temp.alpha_z_buffer = is_checked("alpha_z_buffer");
-	temp.alpha_factor = get_float("alpha_factor") * 0.01f;
-	temp.alpha_source = (nix::Alpha)get_int("alpha_source");
-	temp.alpha_destination = (nix::Alpha)get_int("alpha_dest");
+	temp.passes[0].z_buffer = is_checked("alpha_z_buffer");
+	temp.passes[0].factor = get_float("alpha_factor") * 0.01f;
+	temp.passes[0].source = (nix::Alpha)get_int("alpha_source");
+	temp.passes[0].destination = (nix::Alpha)get_int("alpha_dest");
 
 	data->execute(new ActionMaterialEditAppearance(temp));
 }

@@ -64,7 +64,7 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	move_d = {-1,-1};
 	view_scale = 1;
 	view_offset = {0,0};
-	graph = data->shader.graph;
+	graph = data->appearance.passes[0].shader.graph;
 
 	from_source("Grid grid '' vertical\n"\
 			"\tGrid ? ''\n"
@@ -99,23 +99,23 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 			} else {
 				return;
 			}
-			data->shader.file = "";
-			data->shader.is_default = false;
+			data->appearance.passes[0].shader.file = "";
+			data->appearance.passes[0].shader.is_default = false;
 			data->reset_history(); // TODO: actions
 			request_optimal_view();
 			data->out_changed();
 		});
 	});
 	event("shader-default", [this] {
-		data->shader.set_engine_default(data->session);
+		data->appearance.passes[0].shader.set_engine_default(data->session);
 		data->reset_history(); // TODO: actions
 		data->out_changed();
 	});
 	event("shader-load", [this] {
 		data->session->storage->file_dialog(FD_SHADERFILE,false,true).then([this] (const auto& p){
 			if (test_shader_file(data->session, p.relative)) {
-				data->shader.file = p.relative;
-				data->shader.load_from_file(data->session);
+				data->appearance.passes[0].shader.file = p.relative;
+				data->appearance.passes[0].shader.load_from_file(data->session);
 				request_optimal_view();
 				data->out_changed();
 			} else {
@@ -125,8 +125,8 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 	});
 	event("shader-save", [this]{
 		data->session->storage->file_dialog(FD_SHADERFILE,true,true).then([this] (const auto& p) {
-			data->shader.file = p.relative;
-			data->shader.save_to_file(data->session);
+			data->appearance.passes[0].shader.file = p.relative;
+			data->appearance.passes[0].shader.save_to_file(data->session);
 		});
 	});
 
@@ -384,7 +384,7 @@ void ShaderGraphDialog::on_draw(Painter *p) {
 	float trafo[4] = {view_scale, 0, 0, view_scale};
 	p->set_transform(trafo, -view_offset*view_scale);
 
-	if (data->shader.from_graph and !data->shader.is_default) {
+	if (data->appearance.passes[0].shader.from_graph and !data->appearance.passes[0].shader.is_default) {
 		for (auto *n: weak(graph->nodes))
 			draw_node(p, n);
 
@@ -407,11 +407,11 @@ void ShaderGraphDialog::on_draw(Painter *p) {
 	p->set_transform(m_id, {0, 0});
 	p->set_font_size(9);
 	p->set_color(Black);
-	if (data->shader.is_default) {
+	if (data->appearance.passes[0].shader.is_default) {
 		p->draw_str({10, 10}, "- engine default -");
 	} else {
-		p->draw_str({10, 10}, file_secure(data->shader.file.str()));
-		if (!data->shader.from_graph) {
+		p->draw_str({10, 10}, file_secure(data->appearance.passes[0].shader.file.str()));
+		if (!data->appearance.passes[0].shader.from_graph) {
 			p->set_color(Red);
 			p->draw_str({10, 20}, "not from graph!");
 		}
@@ -594,11 +594,11 @@ void ShaderGraphDialog::on_mouse_wheel() {
 
 void ShaderGraphDialog::on_update() {
 	string source = graph->build_source();
-	data->shader.code = source;
+	data->appearance.passes[0].shader.code = source;
 	set_string("source", source);
 
-	data->shader.from_graph = true;
-	data->shader.is_default = false;
+	data->appearance.passes[0].shader.from_graph = true;
+	data->appearance.passes[0].shader.is_default = false;
 	data->reset_history(); // TODO: actions
 	data->out_changed();
 }

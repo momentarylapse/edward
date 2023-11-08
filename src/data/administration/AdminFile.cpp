@@ -235,13 +235,15 @@ void AdminFile::check(Session *session, AdminFileList &list)
 			Missing=true;
 	}else if (Kind==FD_MATERIAL){
 		DataMaterial m(session);
-		if (session->storage->load(engine.material_dir | Name, &m, false)){
+		if (session->storage->load(engine.material_dir | Name, &m, false)) {
 			Time = m.file_time;
-			add_possible_link(l, FD_SHADERFILE, m.shader.file);
+			for (auto &p: m.appearance.passes)
+				add_possible_link(l, FD_SHADERFILE, p.shader.file);
 			for (Path &tf: m.appearance.texture_files)
 				add_possible_link(l, FD_TEXTURE, tf);
-		}else
-			Missing=true;
+		} else {
+			Missing = true;
+		}
 	}else if (Kind==FD_FONT){
 		DataFont f(session);
 		if (session->storage->load(engine.font_dir | Name, &f, false)){

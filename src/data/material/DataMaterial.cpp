@@ -19,20 +19,20 @@
 DataMaterial::DataMaterial(Session *s, bool with_graph) :
 	Data(s, FD_MATERIAL)
 {
-	shader.graph = nullptr;
-	if (with_graph)
-		shader.graph = new ShaderGraph(s);
 	reset();
+	if (with_graph)
+		appearance.passes[0].shader.graph = new ShaderGraph(s);
 }
 
 DataMaterial::~DataMaterial() {
 	reset();
-	if (shader.graph)
-		delete shader.graph;
+	for (auto &p: appearance.passes)
+		if (p.shader.graph)
+			delete p.shader.graph;
 }
 
 
-void DataMaterial::AppearanceData::reset() {
+void DataMaterial::AppearanceData::reset(Session *session) {
 	texture_files.clear();
 
 	albedo = White;
@@ -40,10 +40,14 @@ void DataMaterial::AppearanceData::reset() {
 	metal = 0;
 	emissive = Black;
 
-	transparency_mode = TransparencyMode::NONE;
-	alpha_source = alpha_destination = nix::Alpha::ZERO;
-	alpha_factor = 0.5f;
-	alpha_z_buffer = true;
+	passes.clear();
+	passes.resize(1);
+	passes[0].mode = TransparencyMode::NONE;
+	passes[0].source = passes[0].destination = nix::Alpha::ZERO;
+	passes[0].factor = 0.5f;
+	passes[0].z_buffer = true;
+	passes[0].shader.graph = nullptr;
+	passes[0].shader.reset(session);
 }
 
 void DataMaterial::ShaderData::reset(Session *s) {
@@ -71,8 +75,7 @@ void DataMaterial::SoundData::reset() {
 void DataMaterial::reset() {
 	filename = "";
 
-	appearance.reset();
-	shader.reset(session);
+	appearance.reset(session);
 	physics.reset();
 	Sound.reset();
 
@@ -86,20 +89,26 @@ void DataMaterial::apply_for_rendering() const {
 
 	nix::disable_alpha();
 	nix::set_z(true, true);
-	if (appearance.transparency_mode == TransparencyMode::COLOR_KEY_HARD) {
+	auto &p = appearance.passes[0];
+	if (p.mode == TransparencyMode::COLOR_KEY_HARD) {
 		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
-	} else if (appearance.transparency_mode == TransparencyMode::COLOR_KEY_SMOOTH) {
+	} else if (p.mode == TransparencyMode::COLOR_KEY_SMOOTH) {
 		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
-	} else if (appearance.transparency_mode == TransparencyMode::FUNCTIONS) {
-		nix::set_alpha(appearance.alpha_source, appearance.alpha_destination);
-		nix::set_z(false, false);
-	} else if (appearance.transparency_mode == TransparencyMode::FACTOR) {
+	} else if (p.mode == TransparencyMode::MIX) {
+		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
+		nix::set_z(false, true);
+	} else if (p.mode == TransparencyMode::FUNCTIONS) {
+		nix::set_alpha(p.source, p.destination);
+		nix::set_z(false, true);
+	} else if (p.mode == TransparencyMode::FACTOR) {
 		//nix::set_alpha(appearance.alpha_factor);
-		nix::set_z(false, false);
+		nix::set_z(false, true);
 	}
 }
 
 void DataMaterial::ShaderData::load_from_file(Session *s) {
+	if (!graph)
+		graph = new ShaderGraph(s);
 	if (file.is_empty()) {
 		set_engine_default(s);
 		return;

@@ -70,30 +70,52 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		}
 
 		data->appearance.texture_files = str_arr_to_paths(c.get_str_array("textures"));
-		data->shader.file = c.get_str("shader", "");
+
+		auto try_read_pass = [this, &c, data] (int index, const string &key) {
+			if (!c.has(key + ".mode"))
+				return;
+			if (index >= data->appearance.passes.num)
+				data->appearance.passes.resize(index + 1);
+			auto &p = data->appearance.passes[index];
+			string m = c.get_str(key + ".mode", "");
+			if (m == "factor") {
+				p.mode = TransparencyMode::FACTOR;
+				p.factor = c.get_float("transparency.factor");
+				p.z_buffer = false;
+			} else if (m == "function") {
+				p.mode = TransparencyMode::FUNCTIONS;
+				p.source = (nix::Alpha)c.get_int("transparency.source", 0);
+				p.destination = (nix::Alpha)c.get_int("transparency.dest", 0);
+				p.z_buffer = false;
+			} else if (m == "key-hard") {
+				p.mode = TransparencyMode::COLOR_KEY_HARD;
+			} else if (m == "key-smooth") {
+				p.mode = TransparencyMode::COLOR_KEY_SMOOTH;
+			} else if (m == "mix") {
+				p.mode = TransparencyMode::MIX;
+			} else if (m != "") {
+				msg_error("unknown transparency mode: " + m);
+			}
+			p.shader.file = c.get_str(key + ".shader", "");
+			m = c.get_str(key + ".culling", "");
+			if (m == "none")
+				p.culling = 0;
+			else if (m == "front" or m == "cw")
+				p.culling = 2;
+		};
+
+		// deprecated
+		if (c.has("shader"))
+			data->appearance.passes[0].shader.file = c.get_str("shader", "");
+		try_read_pass(0, "transparency");
+
+		for (int i=0; i<8; i++)
+			try_read_pass(i, format("pass%d", i));
 
 		data->physics.friction_static = c.get_float("friction.static", 0.5f);
 		data->physics.friction_sliding = c.get_float("friction.slide", 0.5f);
 		data->physics.friction_rolling = c.get_float("friction.roll", 0.5f);
 		data->physics.friction_jump = c.get_float("friction.jump", 0.5f);
-
-		string m = c.get_str("transparency.mode", "");
-		if (m == "factor") {
-			data->appearance.transparency_mode = TransparencyMode::FACTOR;
-			data->appearance.alpha_factor = c.get_float("transparency.factor");
-			data->appearance.alpha_z_buffer = false;
-		} else if (m == "function") {
-			data->appearance.transparency_mode = TransparencyMode::FUNCTIONS;
-			data->appearance.alpha_source = (nix::Alpha)c.get_int("transparency.source", 0);
-			data->appearance.alpha_destination = (nix::Alpha)c.get_int("transparency.dest", 0);
-			data->appearance.alpha_z_buffer = false;
-		} else if (m == "key-hard") {
-			data->appearance.transparency_mode = TransparencyMode::COLOR_KEY_HARD;
-		} else if (m == "key-smooth") {
-			data->appearance.transparency_mode = TransparencyMode::COLOR_KEY_SMOOTH;
-		} else if (m != "") {
-			msg_error("unknown transparency mode: " + m);
-		}
 	//}
 
 	/*if (ffv<0){
@@ -120,11 +142,11 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
-		data->appearance.transparency_mode = (TransparencyMode)f->read_int();
-		data->appearance.alpha_factor = (float)f->read_int() * 0.01f;
-		data->appearance.alpha_source = (nix::Alpha)f->read_int();
-		data->appearance.alpha_destination = (nix::Alpha)f->read_int();
-		data->appearance.alpha_z_buffer = f->read_bool();
+		data->appearance.passes[0].mode = (TransparencyMode)f->read_int();
+		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
+		data->appearance.passes[0].source = (nix::Alpha)f->read_int();
+		data->appearance.passes[0].destination = (nix::Alpha)f->read_int();
+		data->appearance.passes[0].z_buffer = f->read_bool();
 		// Appearance
 		f->read_comment();
 		f->read_int();
@@ -139,7 +161,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 			f->read_str();
 		// ShaderFile
 		f->read_comment();
-		data->shader.file = f->read_str();
+		data->appearance.passes[0].shader.file = f->read_str();
 		// Physics
 		f->read_comment();
 		data->physics.friction_jump = (float)f->read_int() * 0.001f;
@@ -168,10 +190,10 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
-		data->appearance.transparency_mode = (TransparencyMode)f->read_int();
-		data->appearance.alpha_factor = (float)f->read_int() * 0.01f;
-		data->appearance.alpha_source = (nix::Alpha)f->read_int();
-		data->appearance.alpha_destination = (nix::Alpha)f->read_int();
+		data->appearance.passes[0].mode = (TransparencyMode)f->read_int();
+		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
+		data->appearance.passes[0].source = (nix::Alpha)f->read_int();
+		data->appearance.passes[0].destination = (nix::Alpha)f->read_int();
 		// Appearance
 		f->read_comment();
 		int MetalDensity = f->read_int();
@@ -185,7 +207,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_comment();
 		string sf = f->read_str();
 		if (sf.num > 0)
-			data->shader.file = sf + ".fx.glsl";
+			data->appearance.passes[0].shader.file = sf + ".fx.glsl";
 		// Physics
 		f->read_comment();
 		data->physics.friction_jump = (float)f->read_int() * 0.001f;
@@ -195,7 +217,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		data->physics.vmin_jump = (float)f->read_int() * 0.001f;
 		data->physics.vmin_sliding = (float)f->read_int() * 0.001f;
 
-		data->appearance.alpha_z_buffer=(data->appearance.transparency_mode != TransparencyMode::FUNCTIONS) and (data->appearance.transparency_mode != TransparencyMode::FACTOR);
+		data->appearance.passes[0].z_buffer=(data->appearance.passes[0].mode != TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != TransparencyMode::FACTOR);
 	}else if (ffv==1){
 		// Colors
 		f->read_comment();
@@ -209,10 +231,10 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
-		data->appearance.transparency_mode = (TransparencyMode)f->read_int();
-		data->appearance.alpha_factor = (float)f->read_int() * 0.01f;
-		data->appearance.alpha_source = (nix::Alpha)f->read_int();
-		data->appearance.alpha_destination = (nix::Alpha)f->read_int();
+		data->appearance.passes[0].mode = (TransparencyMode)f->read_int();
+		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
+		data->appearance.passes[0].source = (nix::Alpha)f->read_int();
+		data->appearance.passes[0].destination = (nix::Alpha)f->read_int();
 		// Appearance
 		f->read_comment();
 		int MetalDensity = f->read_int();
@@ -226,25 +248,30 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_comment();
 		Path sf = f->read_str();
 		if (!sf.is_empty())
-			data->shader.file = sf.with(".fx.glsl");
+			data->appearance.passes[0].shader.file = sf.with(".fx.glsl");
 
-		data->appearance.alpha_z_buffer = (data->appearance.transparency_mode != TransparencyMode::FUNCTIONS) and (data->appearance.transparency_mode != TransparencyMode::FACTOR);
+		data->appearance.passes[0].z_buffer = (data->appearance.passes[0].mode != TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != TransparencyMode::FACTOR);
 	}else{
 		//throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename, ffv, 1, 4));
 	}
 
 	if (deep) {
-		data->shader.load_from_file(session);
+		for (auto &p: data->appearance.passes)
+			p.shader.load_from_file(session);
+
+		for (auto &p: data->appearance.passes) {
+			msg_write((int)p.mode);
+			msg_write(str(p.shader.file));
+		}
 	}
 
-	delete(f);
+	delete f;
 }
 
 void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 	Configuration c;
 
 	c.set_str_array("textures", paths_to_str_arr(data->appearance.texture_files));
-	c.set_str("shader", data->shader.file.str());
 
 	c.set("color.albedo", color2any(data->appearance.albedo));
 	if (data->appearance.emissive != Black)
@@ -252,21 +279,35 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 	c.set_float("color.roughness", data->appearance.roughness);
 	c.set_float("color.metal", data->appearance.metal);
 
-	if (data->appearance.transparency_mode == TransparencyMode::FACTOR) {
-		c.set_str("transparency.mode", "factor");
-		c.set_float("transparency.factor", data->appearance.alpha_factor);
-	} else if (data->appearance.transparency_mode == TransparencyMode::FUNCTIONS) {
-		c.set_str("transparency.mode", "function");
-		c.set_int("transparency.source", (int)data->appearance.alpha_source);
-		c.set_int("transparency.dest", (int)data->appearance.alpha_destination);
-	} else if (data->appearance.transparency_mode == TransparencyMode::COLOR_KEY_HARD) {
-		c.set_str("transparency.mode", "key-hard");
-	} else if (data->appearance.transparency_mode == TransparencyMode::COLOR_KEY_SMOOTH) {
-		c.set_str("transparency.mode", "key-smooth");
+	for (int i=0; i<data->appearance.passes.num; i++) {
+		auto &p = data->appearance.passes[i];
+		string key = format("pass%d", i);
+		c.set_str(key + ".shader", p.shader.file.str());
+
+		if (p.mode == TransparencyMode::FACTOR) {
+			c.set_str(key + ".mode", "factor");
+			c.set_float(key + ".factor", p.factor);
+		} else if (p.mode == TransparencyMode::FUNCTIONS) {
+			c.set_str(key + ".mode", "function");
+			c.set_int(key + ".source", (int)p.source);
+			c.set_int(key + ".dest", (int)p.destination);
+		} else if (p.mode == TransparencyMode::MIX) {
+			c.set_str(key + ".mode", "mix");
+		} else if (p.mode == TransparencyMode::COLOR_KEY_HARD) {
+			c.set_str(key + ".mode", "key-hard");
+		} else if (p.mode == TransparencyMode::COLOR_KEY_SMOOTH) {
+			c.set_str(key + ".mode", "key-smooth");
+		} else {
+			c.set_str(key + ".mode", "solid");
+		}
+		if (p.culling == 0)
+			c.set_str(key + ".culling", "none");
+		else if (p.culling == 2)
+			c.set_str(key + ".culling", "front");
+		/*if (data->appearance.transparency_mode != TransparencyMode::NONE) {
+			c.set_bool("transparency.zbuffer", data->appearance.alpha_z_buffer);
+		}*/
 	}
-	/*if (data->appearance.transparency_mode != TransparencyMode::NONE) {
-		c.set_bool("transparency.zbuffer", data->appearance.alpha_z_buffer);
-	}*/
 
 	c.set_float("friction.static", data->physics.friction_static);
 	c.set_float("friction.slide", data->physics.friction_sliding);

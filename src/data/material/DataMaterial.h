@@ -10,6 +10,7 @@
 
 #include "../Data.h"
 #include <y/world/Material.h>
+#include <graphics-impl.h>
 
 namespace nix {
 	class Texture;
@@ -29,31 +30,10 @@ public:
 
 	void apply_for_rendering() const;
 
-
-	struct AppearanceData {
-		// properties
-		Array<Path> texture_files;
-
-		// color
-		color albedo, emissive;
-		float roughness, metal;
-
-		// transparency
-		TransparencyMode transparency_mode;
-		nix::Alpha alpha_source, alpha_destination;
-		float alpha_factor;
-		bool alpha_z_buffer;
-
-		void reset();
-	};
-	AppearanceData appearance;
-
-
-
 	struct ShaderData {
 		Path file;
 		string code;
-		ShaderGraph *graph;
+		ShaderGraph *graph = nullptr;
 		bool from_graph;
 		bool is_default;
 		void load_from_file(Session *s);
@@ -62,7 +42,30 @@ public:
 
 		void reset(Session *s);
 	};
-	ShaderData shader;
+
+	struct RenderPassData {
+		ShaderData shader;
+
+		TransparencyMode mode = TransparencyMode::NONE;
+		nix::Alpha source = nix::Alpha::ONE, destination = nix::Alpha::ONE;
+		float factor = 1.0f;
+		bool z_buffer = true;
+		int culling = 1;
+	};
+
+
+	struct AppearanceData {
+		Array<Path> texture_files;
+
+		// color
+		color albedo, emissive;
+		float roughness, metal;
+
+		Array<RenderPassData> passes;
+
+		void reset(Session *session);
+	};
+	AppearanceData appearance;
 
 	struct PhysicsData {
 		float friction_jump, friction_static, friction_sliding, friction_rolling;
