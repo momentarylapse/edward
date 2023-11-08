@@ -96,7 +96,7 @@ void ModeModelMeshTexture::on_end() {
 	session->win->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar"); // -> mesh
 }
 
-#define cur_tex			data->material[parent->current_material]->texture_levels[current_texture_level]->texture.get()
+#define cur_tex			data->material[parent->current_material]->texture_levels[current_texture_level].texture.get()
 
 
 void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)

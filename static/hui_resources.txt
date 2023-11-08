@@ -3352,7 +3352,7 @@ vertical
 0
 0
 2
-Text
+Label
 header
 big,bold,center,expandx
 0
@@ -3363,9 +3363,9 @@ Grid
 vertical
 1
 0
-5
+4
 Group
-model_material_dialog_grp_list
+grp-list
 
 0
 0
@@ -3383,7 +3383,7 @@ Separator
 0
 0
 Expander
-model_material_dialog_grp_color
+grp-color
 
 2
 0
@@ -3406,7 +3406,7 @@ Grid
 0
 1
 8
-Text
+Label
 t-albedo
 right,disabled
 0
@@ -3418,7 +3418,7 @@ alpha
 1
 0
 0
-Text
+Label
 t-roughness
 right,disabled
 0
@@ -3442,7 +3442,7 @@ range=0:1:0.01
 1
 0
 0
-Text
+Label
 t-reflectivity
 right,disabled
 0
@@ -3466,7 +3466,7 @@ range=0:1:0.01
 1
 0
 0
-Text
+Label
 t-emission
 right,disabled
 0
@@ -3479,7 +3479,7 @@ emission
 3
 0
 Expander
-model_material_dialog_grp_textures
+grp-textures
 
 3
 0
@@ -3488,102 +3488,6 @@ ListView
 mat_textures
 format=tit,select-single
 0
-0
-0
-Expander
-model_material_dialog_grp_transparency
-
-4
-0
-1
-Grid
-?
-vertical
-0
-0
-8
-RadioButton
-transparency_mode:material
-
-0
-0
-0
-RadioButton
-transparency_mode:none
-
-1
-0
-0
-RadioButton
-transparency_mode:color_key
-
-2
-0
-0
-RadioButton
-transparency_mode:function
-
-3
-0
-0
-Grid
-mmat_transp_function_grid
-indent
-4
-0
-4
-Text
-material_dialog_t_trans_source
-right,disabled
-0
-0
-0
-ComboBox
-alpha_source
-
-1
-0
-0
-Text
-material_dialog_t_trans_dest
-right,disabled
-0
-1
-0
-ComboBox
-alpha_dest
-
-1
-1
-0
-RadioButton
-transparency_mode:factor
-
-5
-0
-0
-Grid
-mmat_transp_alpha_grid
-indent
-6
-0
-2
-SpinButton
-alpha_factor
-range=0:100:1
-0
-0
-0
-Text
-percent
-
-1
-0
-0
-CheckBox
-alpha_z_buffer
-
-7
 0
 0
 # Resource
@@ -10223,7 +10127,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1028
+1017
 # Text
 /ambient
 Ambient
@@ -12610,65 +12514,32 @@ model_dialog/tensor
 model_dialog/variables
 Name\\Type\\Value
 
-model_material_dialog/alpha_dest
-AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
-
-model_material_dialog/alpha_source
-AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha
-
-model_material_dialog/alpha_z_buffer
-Z-buffer enabled
-
 model_material_dialog/emission
 
 Color in absolute darkness
+model_material_dialog/grp-color
+Colors
+
+model_material_dialog/grp-list
+Overview
+
+model_material_dialog/grp-textures
+Textures
+
 model_material_dialog/header
 Materials
 
 model_material_dialog/mat_textures
 Level\\\\Texture
 Mixing texture levels (multitexturing)\n- Actions via right click
-model_material_dialog/material_dialog_t_trans_dest
-Dest
-
-model_material_dialog/material_dialog_t_trans_source
-Source
-
 model_material_dialog/material_list
 #\\Polygons\\\\File
 Materials\n - Actions via right click
 model_material_dialog/model_material_dialog
 Material
 
-model_material_dialog/model_material_dialog_grp_color
-Colors
-
-model_material_dialog/model_material_dialog_grp_list
-Overview
-
-model_material_dialog/model_material_dialog_grp_textures
-Textures
-
-model_material_dialog/model_material_dialog_grp_transparency
-Transparency
-
 model_material_dialog/override-colors
 Override material
-
-model_material_dialog/transparency_mode:color_key
-Color key
-Pure green turns transparent
-model_material_dialog/transparency_mode:factor
-Factor
-
-model_material_dialog/transparency_mode:function
-Function
-
-model_material_dialog/transparency_mode:material
-From material
-
-model_material_dialog/transparency_mode:none
-No transparency
 
 model_material_selection_dialog/material_list
 #\\Polygons\\\\File

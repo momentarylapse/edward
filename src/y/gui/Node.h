@@ -66,7 +66,9 @@ public:
 
 	Node *parent;
 	shared_array<Node> children;
-	void add(shared<Node> );
+	void add(shared<Node> n);
+	void remove(Node &n);
+	void remove_all_children();
 	void update_geometry(const rect &target);
 	void set_area(const rect &r);
 

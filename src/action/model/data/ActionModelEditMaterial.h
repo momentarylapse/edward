@@ -14,7 +14,6 @@
 class ActionModelEditMaterial : public Action {
 public:
 	ActionModelEditMaterial(int index, const ModelMaterial::Color &_col);
-	ActionModelEditMaterial(int index, const ModelMaterial::Alpha &_a);
 	string name(){ return "ModelEditMaterial"; }
 
 	void *execute(Data *d);
@@ -22,9 +21,7 @@ public:
 
 private:
 	int index;
-	int mode;
 	ModelMaterial::Color col;
-	ModelMaterial::Alpha alpha;
 };
 
 class ActionModelMaterialAddTexture : public Action {
@@ -42,7 +39,6 @@ private:
 class ActionModelMaterialDeleteTexture : public Action {
 public:
 	ActionModelMaterialDeleteTexture(int index, int level);
-	~ActionModelMaterialDeleteTexture();
 	string name(){ return "ModelMaterialDeleteTexture"; }
 
 	void *execute(Data *d);
@@ -50,7 +46,7 @@ public:
 
 private:
 	int index, level;
-	ModelMaterial::TextureLevel *tl;
+	ModelMaterial::TextureLevel tl;
 };
 
 

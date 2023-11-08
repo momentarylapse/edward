@@ -46,6 +46,18 @@ void Node::add(shared<Node> n) {
 	update_tree();
 }
 
+void Node::remove(Node &n) {
+	for (int i=0; i<children.num; i++)
+		if (children[i] == &n)
+			children.erase(i);
+	update_tree();
+}
+
+void Node::remove_all_children() {
+	children.clear();
+	update_tree();
+}
+
 rect rect_move_x(const rect &r, float dx) {
 	return rect(r.x1 + dx, r.x2 + dx, r.y1, r.y2);
 }

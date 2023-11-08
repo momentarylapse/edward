@@ -1,46 +1,29 @@
 Dialog model_material_dialog "Material" width=350 height=371
 	Grid ? "" vertical
-		Text header "Materials" big bold center expandx
+		Label header "Materials" big bold center expandx
 		Grid ? "" vertical
-			Group model_material_dialog_grp_list "Overview"
+			Group grp-list "Overview"
 				ListView material_list "#\\Polygons\\\\File" format=ttit select-single "tooltip=Materials\n - Actions via right click"
 			Separator
-			Expander model_material_dialog_grp_color "Colors"
+			Expander grp-color "Colors"
 				Grid ? ""
 					CheckBox override-colors "Override material"
 					---|
 					Grid ? ""
-						Text /t-albedo "Albedo" right disabled
+						Label /t-albedo "Albedo" right disabled
 						ColorButton albedo "" alpha
 						---|
-						Text /t-roughness "Roughness" right disabled
+						Label /t-roughness "Roughness" right disabled
 						Grid ? ""
 							Slider slider-roughness "" range=0:1:0.01 expandx
 							SpinButton roughness "" range=0:1:0.01
 						---|
-						Text /t-reflectivity "Metal" right disabled
+						Label /t-reflectivity "Metal" right disabled
 						Grid ? ""
 							Slider slider-metal "" range=0:1:0.01 expandx
 							SpinButton metal "" range=0:1:0.01
 						---|
-						Text /t-emission "Emission" right disabled
+						Label /t-emission "Emission" right disabled
 						ColorButton emission "" "tooltip=Color in absolute darkness"
-			Expander model_material_dialog_grp_textures "Textures"
+			Expander grp-textures "Textures"
 				ListView mat_textures "Level\\\\Texture" format=tit select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
-			Expander model_material_dialog_grp_transparency "Transparency"
-				Grid ? "" vertical
-					RadioButton transparency_mode:material "From material"
-					RadioButton transparency_mode:none "No transparency"
-					RadioButton transparency_mode:color_key "Color key" "tooltip=Pure green turns transparent"
-					RadioButton transparency_mode:function "Function"
-					Grid mmat_transp_function_grid "" indent
-						Text material_dialog_t_trans_source "Source" right disabled
-						ComboBox alpha_source "AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha"
-						---|
-						Text material_dialog_t_trans_dest "Dest" right disabled
-						ComboBox alpha_dest "AlphaZero\\AlphaOne\\AlphaSourceColor\\AlphaSourceInvColor\\AlphaSourceAlpha\\AlphaSourceInvAlpha\\AlphaDestColor\\AlphaDestInvColor\\AlphaDestAlpha\\AlphaDestInvAlpha"
-					RadioButton transparency_mode:factor "Factor"
-					Grid mmat_transp_alpha_grid "" indent
-						SpinButton alpha_factor "" range=0:100:1
-						Text /percent "%"
-					CheckBox alpha_z_buffer "Z-buffer enabled"

@@ -227,8 +227,8 @@ void AdminFile::check(Session *session, AdminFileList &list)
 				add_possible_link(l, FD_MODEL, s);
 			for (auto mat: m.material){
 				add_possible_link(l, FD_MATERIAL, mat->filename);
-				for (auto tl: mat->texture_levels)
-					add_possible_link(l, FD_TEXTURE, tl->filename);
+				for (auto &tl: mat->texture_levels)
+					add_possible_link(l, FD_TEXTURE, tl.filename);
 			}
 			add_possible_link(l, FD_SCRIPT, m.meta_data.script_file);
 		}else

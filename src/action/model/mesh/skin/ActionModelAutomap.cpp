@@ -7,6 +7,7 @@
 
 #include "ActionModelAutomap.h"
 #include "../../../../lib/base/set.h"
+#include "../../../../lib/math/rect.h"
 #include "../../../../data/model/DataModel.h"
 #include "../../../../data/model/ModelMesh.h"
 #include "../../../../data/model/ModelPolygon.h"
@@ -189,7 +190,7 @@ void optimize_islands(Array<Island> &islands, float distance)
 		w_max = max(w_max, i.r.width());
 		sum_area += i.r.area();
 	}
-	float w = max(w_max, sqrt(sum_area * 1.5f));
+	float w = max<float>(w_max, sqrt(sum_area * 1.5f));
 	distance *= w;
 
 	// sort by height

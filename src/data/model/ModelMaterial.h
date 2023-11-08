@@ -9,14 +9,8 @@
 #define MODELMATERIAL_H_
 
 #include <y/world/Material.h>
-#include "../../lib/base/pointer.h"
-#include "../../lib/nix/nix.h"
-
-namespace nix {
-	class Texture;
-	class VertexBuffer;
-	enum class Alpha;
-};
+#include <lib/base/pointer.h>
+#include <graphics-fwd.h>
 
 namespace MultiView {
 	class Window;
@@ -36,7 +30,6 @@ public:
 	void make_consistent();
 	void check_textures();
 	void check_colors();
-	void check_transparency();
 	void apply_for_rendering(MultiView::Window *win);
 
 	Path filename;
@@ -53,15 +46,7 @@ public:
 		void reload_image(Session *s);
 		void update_texture();
 	};
-	Array<TextureLevel*> texture_levels;
-
-	struct Alpha {
-		bool user_defined() const;
-		TransparencyMode mode;
-		nix::Alpha source, destination;
-		float factor;
-		bool zbuffer;
-	} alpha;
+	Array<TextureLevel> texture_levels;
 
 	struct Color {
 		bool user;

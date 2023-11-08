@@ -19,7 +19,9 @@
 #include "../../../storage/Storage.h"
 #include "../../../lib/os/msg.h"
 #include "../../../lib/math/vec2.h"
+#include "../../../lib/math/rect.h"
 #include "../../../Session.h"
+#include <graphics-impl.h>
 
 bool LightmapData::Triangle::intersect(const Ray &r, vec3 &cp) const
 {
@@ -279,8 +281,7 @@ void LightmapData::AddTextureLevels(bool modify)
 	for (Model &m: Models){
 		if (modify){
 			for (ModelMaterial *mat: m.orig->material) {
-				auto tl = new ModelMaterial::TextureLevel();
-				mat->texture_levels.add(tl);
+				mat->texture_levels.add({});
 			}
 		}
 		m.orig->automap(-1, 1); // TODO...

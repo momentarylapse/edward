@@ -61,6 +61,7 @@
 #include "../../action/model/skeleton/ActionModelSetSubModel.h"
 #include <y/helper/ResourceManager.h>
 #include <y/world/components/Animator.h>
+#include <graphics-impl.h>
 
 
 string ModelEffect::get_type()
@@ -163,8 +164,8 @@ void DataModel::reset() {
 	material.clear();
 	material.resize(1);
 	material[0] = new ModelMaterial(session);
-	material[0]->texture_levels.add(new ModelMaterial::TextureLevel());
-	material[0]->texture_levels[0]->reload_image(session);
+	material[0]->texture_levels.add({});
+	material[0]->texture_levels[0].reload_image(session);
 	material[0]->col.user = true;
 	material[0]->col.albedo = White;
 	material[0]->col.roughness = 0.4f;

@@ -16,6 +16,7 @@
 #include "../../../lib/os/filesystem.h"
 #include "../../../lib/os/formatter.h"
 #include "../../../Session.h"
+#include <graphics-impl.h>
 
 vec3 get_normal_by_index(int index);
 
@@ -141,16 +142,16 @@ void FormatModel::_load_v10(F *f, DataModel *data, bool deep) {
 			float shininess = (float)f->read_int();
 			m->col.import(am, di, sp, shininess, em);
 		}
-		m->alpha.mode = (TransparencyMode)f->read_int();
-		m->alpha.source = (nix::Alpha)f->read_int();
-		m->alpha.destination = (nix::Alpha)f->read_int();
-		m->alpha.factor = (float)f->read_int() * 0.01f;
-		m->alpha.zbuffer = f->read_bool();
+		f->read_int();
+		f->read_int();
+		f->read_int();
+		f->read_int();
+		f->read_bool();
 		int n = f->read_int();
 		m->texture_levels.clear();
 		for (int t=0;t<n;t++) {
-			auto *tl = new ModelMaterial::TextureLevel();
-			tl->filename = f->read_str();
+			ModelMaterial::TextureLevel tl;
+			tl.filename = f->read_str();
 			m->texture_levels.add(tl);
 		}
 	}
@@ -430,16 +431,16 @@ void FormatModel::_load_v11(F *f, DataModel *data, bool deep) {
 		read_color_argb(f, em);
 		float shininess = (float)f->read_int();
 		m->col.import(em, di, sp, shininess, em);
-		m->alpha.mode = (TransparencyMode)f->read_int();
-		m->alpha.source = (nix::Alpha)f->read_int();
-		m->alpha.destination = (nix::Alpha)f->read_int();
-		m->alpha.factor = (float)f->read_int() * 0.01f;
-		m->alpha.zbuffer = f->read_bool();
+		f->read_int();
+		f->read_int();
+		f->read_int();
+		f->read_int();
+		f->read_bool();
 		int n = f->read_int();
 		m->texture_levels.clear();
 		for (int t=0;t<n;t++) {
-			auto tl = new ModelMaterial::TextureLevel();
-			tl->filename = f->read_str();
+			ModelMaterial::TextureLevel tl;
+			tl.filename = f->read_str();
 			m->texture_levels.add(tl);
 		}
 	}

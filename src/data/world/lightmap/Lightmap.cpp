@@ -171,8 +171,7 @@ bool Lightmap::RenderTextures()
 		// edit model
 		for (ModelMaterial *mat: m.orig->material){
 			mat->texture_levels.resize(2);
-			mat->texture_levels[1] = new ModelMaterial::TextureLevel();
-			mat->texture_levels[1]->filename = m.tex_name;
+			mat->texture_levels[1].filename = m.tex_name;
 			mat->col.albedo = Black;
 			mat->col.roughness = 0.5f;
 			mat->col.emission = Black;

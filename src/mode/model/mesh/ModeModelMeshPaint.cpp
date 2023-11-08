@@ -81,7 +81,7 @@ public:
 	void *execute(Data *d) {
 		DataModel *m = dynamic_cast<DataModel*>(d);
 
-		auto *tl = m->material[m->mesh->polygon[poly].material]->texture_levels[0];
+		auto &tl = m->material[m->mesh->polygon[poly].material]->texture_levels[0];
 
 		vec3 e1 = n.ortho();
 		vec3 e2 = n ^ e1;
@@ -103,10 +103,10 @@ public:
 			rmax *= 5;
 
 		// pixel
-		int i0 = clamp(int(v.x * tl->image->width), 0, tl->image->width);
-		int j0 = clamp(int(v.y * tl->image->height), 0, tl->image->height);
-		int di = rmax * tl->image->width;
-		int dj = rmax * tl->image->height;
+		int i0 = clamp(int(v.x * tl.image->width), 0, tl.image->width);
+		int j0 = clamp(int(v.y * tl.image->height), 0, tl.image->height);
+		int di = rmax * tl.image->width;
+		int dj = rmax * tl.image->height;
 
 
 		float rr = brush.R * brush.R;
@@ -114,19 +114,19 @@ public:
 		// draw a fuzzy ellipsis UV-space
 		for (int ii=i0-di; ii<i0+di; ii++)
 			for (int jj=j0-dj; jj<j0+dj; jj++) {
-				int i = loop(ii, 0, tl->image->width);
-				int j = loop(jj, 0, tl->image->height);
-				vec3 vv = vec3((float)ii / (float)tl->image->width, (float)jj / (float)tl->image->height, 0);
+				int i = loop(ii, 0, tl.image->width);
+				int j = loop(jj, 0, tl.image->height);
+				vec3 vv = vec3((float)ii / (float)tl.image->width, (float)jj / (float)tl.image->height, 0);
 				float dd = quad_2d(iDD, vv-v);
 				float a = exp(-pow(dd / rr, brush.exponent)*2) * brush.opacity;
 				if (a > threshold) {
-					color c = tl->image->get_pixel(i, j);
-					tl->image->set_pixel(i, j, (1-a) * c + a * brush.col);
+					color c = tl.image->get_pixel(i, j);
+					tl.image->set_pixel(i, j, (1-a) * c + a * brush.col);
 				}
 			}
 
-		tl->edited = true;
-		tl->update_texture();
+		tl.edited = true;
+		tl.update_texture();
 		m->out_texture_changed();
 
 		return NULL;

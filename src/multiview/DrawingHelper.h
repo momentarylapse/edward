@@ -10,6 +10,7 @@
 #include "../lib/base/base.h"
 #include "../lib/base/pointer.h"
 #include "../lib/image/color.h"
+#include <graphics-impl.h>
 
 namespace nix {
 	class Context;

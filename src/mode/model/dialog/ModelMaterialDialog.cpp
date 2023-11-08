@@ -66,11 +66,6 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) {
 	event("texture-level-load", [this] { on_texture_level_load(); });
 	event("texture-level-save", [this] { on_texture_level_save(); });
 	event("texture-level-scale", [this] { on_texture_level_scale(); });
-	event("transparency_mode:material", [this] { on_transparency_mode(); });
-	event("transparency_mode:none", [this] { on_transparency_mode(); });
-	event("transparency_mode:function", [this] { on_transparency_mode(); });
-	event("transparency_mode:color_key", [this] { on_transparency_mode(); });
-	event("transparency_mode:factor", [this] { on_transparency_mode(); });
 
 	event("override-colors", [this] { on_override_colors(); });
 	event("albedo", [this] { apply_data_color(); });
@@ -80,15 +75,11 @@ ModelMaterialDialog::ModelMaterialDialog(DataModel *_data, bool full) {
 	event("slider-metal", [this] { apply_data_color(); });
 	event("emission", [this] { apply_data_color(); });
 
-	event("alpha_factor", [this] { apply_data_alpha(); });
-	event("alpha_source", [this] { apply_data_alpha(); });
-	event("alpha_dest", [this] { apply_data_alpha(); });
-	event("alpha_z_buffer", [this] { apply_data_alpha(); });
-
 	hide_control("model_material_dialog_grp_color", !full);
 	hide_control("model_material_dialog_grp_transparency", !full);
 
-	expand("model_material_dialog_grp_textures", true);
+	expand("grp-color", true);
+	expand("grp-textures", true);
 
 	load_data();
 	apply_queue_depth = 0;
@@ -114,7 +105,6 @@ ModeModelMeshTexture *ModelMaterialDialog::mode_model_mesh_texture() {
 // data -> GUI
 void ModelMaterialDialog::load_data() {
 	auto col = data->material[mode_model_mesh()->current_material]->col;
-	auto alpha = data->material[mode_model_mesh()->current_material]->alpha;
 	fill_material_list();
 
 	fill_texture_list();
@@ -131,26 +121,6 @@ void ModelMaterialDialog::load_data() {
 	set_float("metal", col.metal);
 	set_float("slider-metal", col.metal);
 	set_color("emission", col.emission);
-
-	if (alpha.mode == TransparencyMode::COLOR_KEY_SMOOTH)
-		check("transparency_mode:color_key", true);
-	else if (alpha.mode == TransparencyMode::COLOR_KEY_HARD)
-		check("transparency_mode:color_key", true);
-	else if (alpha.mode == TransparencyMode::FACTOR)
-		check("transparency_mode:factor", true);
-	else if (alpha.mode == TransparencyMode::FUNCTIONS)
-		check("transparency_mode:function", true);
-	else if (alpha.mode == TransparencyMode::NONE)
-		check("transparency_mode:none", true);
-	else
-		check("transparency_mode:material", true);
-	enable("alpha_factor", alpha.mode == TransparencyMode::FACTOR);
-	enable("alpha_source", alpha.mode == TransparencyMode::FUNCTIONS);
-	enable("alpha_dest", alpha.mode == TransparencyMode::FUNCTIONS);
-	set_float("alpha_factor", alpha.factor * 100.0f);
-	check("alpha_z_buffer", alpha.zbuffer);
-	set_int("alpha_source", (int)alpha.source);
-	set_int("alpha_dest", (int)alpha.destination);
 }
 
 
@@ -184,34 +154,6 @@ void ModelMaterialDialog::apply_data_color() {
 	enable("emission", col.user);
 
 	data->execute(new ActionModelEditMaterial(mode_model_mesh()->current_material, col));
-	apply_queue_depth --;
-}
-
-void ModelMaterialDialog::apply_data_alpha() {
-	apply_queue_depth ++;
-	auto alpha = data->material[mode_model_mesh()->current_material]->alpha;
-
-	if (is_checked("transparency_mode:function"))
-		alpha.mode = TransparencyMode::FUNCTIONS;
-	else if (is_checked("transparency_mode:color_key"))
-		alpha.mode = TransparencyMode::COLOR_KEY_HARD;
-	else if (is_checked("transparency_mode:factor"))
-		alpha.mode = TransparencyMode::FACTOR;
-	else if (is_checked("transparency_mode:none"))
-		alpha.mode = TransparencyMode::NONE;
-	else
-		alpha.mode = TransparencyMode::DEFAULT;
-
-	enable("alpha_factor", alpha.mode == TransparencyMode::FACTOR);
-	enable("alpha_source", alpha.mode == TransparencyMode::FUNCTIONS);
-	enable("alpha_dest", alpha.mode == TransparencyMode::FUNCTIONS);
-
-	alpha.zbuffer = is_checked("alpha_z_buffer");
-	alpha.factor = get_float("alpha_factor") * 0.01f;
-	alpha.source = (nix::Alpha)get_int("alpha_source");
-	alpha.destination = (nix::Alpha)get_int("alpha_dest");
-
-	data->execute(new ActionModelEditMaterial(mode_model_mesh()->current_material, alpha));
 	apply_queue_depth --;
 }
 
@@ -271,13 +213,13 @@ void ModelMaterialDialog::fill_texture_list() {
 	reset("mat_textures");
 	for (int i=0;i<mat->texture_levels.num;i++) {
 		string id = format("image:material[%d]-texture[%d]", mode_model_mesh()->current_material, i);
-		auto *img = mat->texture_levels[i]->image;
-		auto *icon = mat->texture_levels[i]->image->scale(48, 48);
+		auto *img = mat->texture_levels[i].image;
+		auto *icon = mat->texture_levels[i].image->scale(48, 48);
 		hui::set_image(icon, id);
 		string ext = format(" (%dx%d)", img->width, img->height);
-		if (mat->texture_levels[i]->edited)
+		if (mat->texture_levels[i].edited)
 			ext += " *";
-		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(mat->texture_levels[i]->filename) + ext)));
+		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(mat->texture_levels[i].filename) + ext)));
 		delete icon;
 	}
 	set_int("mat_textures", mode_model_mesh_texture()->current_texture_level);
@@ -312,10 +254,10 @@ void ModelMaterialDialog::on_texture_level_save() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0)
 		data->session->storage->file_dialog(FD_TEXTURE, true, true).then([this, sel] (const auto& p) {
-			auto tl = data->material[mode_model_mesh()->current_material]->texture_levels[sel];
-			tl->image->save(p.complete);
-			tl->filename = p.relative; // ...
-			tl->edited = false;
+			auto& tl = data->material[mode_model_mesh()->current_material]->texture_levels[sel];
+			tl.image->save(p.complete);
+			tl.filename = p.relative; // ...
+			tl.edited = false;
 		});
 }
 
@@ -351,8 +293,9 @@ public:
 void ModelMaterialDialog::on_texture_level_scale() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0) {
-		auto tl = data->material[mode_model_mesh()->current_material]->texture_levels[sel];
-		int w = tl->image->width, h = tl->image->height;
+		auto& tl = data->material[mode_model_mesh()->current_material]->texture_levels[sel];
+		int w = tl.image->width;
+		int h = tl.image->height;
 		TextureScaleDialog::ask(win, w, h, [this, sel] (int _w, int _h) {
 			data->execute(new ActionModelMaterialScaleTexture(mode_model_mesh()->current_material, sel, _w, _h));
 		});
@@ -379,10 +322,6 @@ void ModelMaterialDialog::on_texture_level_clear() {
 	int sel = get_int("mat_textures");
 	if (sel >= 0)
 		data->execute(new ActionModelMaterialLoadTexture(mode_model_mesh()->current_material, sel, ""));
-}
-
-void ModelMaterialDialog::on_transparency_mode() {
-	apply_data_alpha();
 }
 
 void ModelMaterialDialog::on_material_list_right_click() {

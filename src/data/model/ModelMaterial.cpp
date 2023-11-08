@@ -26,14 +26,6 @@ ModelMaterial::ModelMaterial(Session *_s) {
 	col.user = false;
 	check_colors();
 
-	// transparency
-	alpha.mode = TransparencyMode::DEFAULT;
-	alpha.destination = nix::Alpha::ZERO;
-	alpha.source = nix::Alpha::ZERO;
-	alpha.factor = 50;
-	alpha.zbuffer = true;
-	check_transparency();
-
 	vb = nullptr;
 }
 
@@ -110,22 +102,7 @@ void ModelMaterial::make_consistent() {
 	}
 
 	check_textures();
-	check_transparency();
 	check_colors();
-}
-
-bool ModelMaterial::Alpha::user_defined() const {
-	return mode != TransparencyMode::DEFAULT;
-}
-
-void ModelMaterial::check_transparency() {
-	if (!alpha.user_defined()) {
-		//alpha.mode = material->alpha.mode;
-		alpha.source = material->pass0.source;
-		alpha.destination = material->pass0.destination;
-		alpha.factor	= material->pass0.factor;
-		alpha.zbuffer = material->pass0.z_buffer;
-	}
 }
 
 
@@ -141,7 +118,7 @@ void ModelMaterial::check_textures() {
 //	}
 
 	// load all textures
-	foreachi (auto *t, texture_levels, i) {
+	foreachi (auto &t, texture_levels, i) {
 		/*auto *prev = t->texture;
 		t->texture = nix::LoadTexture(t->filename);
 
@@ -157,7 +134,7 @@ void ModelMaterial::check_textures() {
 			else
 				t->image = Image::load(t->filename);
 		}*/
-		t->reload_image(session);
+		t.reload_image(session);
 	}
 }
 
@@ -178,10 +155,11 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 	nix::set_z(true, true);
 	if (true) {//MVFXEnabled){
 		//nix::set_z(alpha.zbuffer, alpha.zbuffer);
-		auto mode = alpha.mode;
-		auto source = alpha.source;
-		auto dest = alpha.destination;
-		if (alpha.mode == TransparencyMode::DEFAULT) {
+		auto &p = material->pass0;
+		auto mode = p.mode;
+		auto source = p.source;
+		auto dest = p.destination;
+		if (p.mode == TransparencyMode::DEFAULT) {
 			mode = material->pass0.mode;
 			source = material->pass0.source;
 			dest = material->pass0.destination;
@@ -201,8 +179,8 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 		w->set_shader(shader_cache.shader[0].get());
 	}
 	Array<nix::Texture*> tex;
-	for (auto *t: texture_levels)
-		tex.add(t->texture.get());
+	for (auto &t: texture_levels)
+		tex.add(t.texture.get());
 	tex.resize(5);
 	tex.add(MultiView::cube_map.get());
 //	if (material->cube_map)

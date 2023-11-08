@@ -23,7 +23,6 @@ public:
 
 	void load_data();
 	void apply_data_color();
-	void apply_data_alpha();
 	void fill_material_list();
 
 	void on_material_list_select();
@@ -44,7 +43,6 @@ public:
 	void on_texture_level_load();
 	void on_texture_level_save();
 	void on_texture_level_scale();
-	void on_transparency_mode();
 
 	void fill_texture_list();
 

@@ -55,6 +55,13 @@ Material::Material(ResourceManager *rm) {
 
 	cast_shadow = true;
 
+	pass0.mode = TransparencyMode::NONE;
+	pass0.source = Alpha::ONE;
+	pass0.destination = Alpha::ONE;
+	pass0.factor = 1;
+	pass0.z_buffer = true;
+	pass0.cull_mode = 1;
+
 	reflection.mode = ReflectionMode::NONE;
 	reflection.density = 0;
 	reflection.cube_map_size = 0;
@@ -209,7 +216,7 @@ xfer<Material> MaterialManager::load(const Path &filename) {
 		p.cull_mode = 1;
 		if (mode == "none")
 			p.cull_mode = 0;
-		else if (mode == "cw")
+		else if (mode == "cw" or mode == "front")
 			p.cull_mode = 2;
 
 		mode = c.get_str(key + ".mode", "");

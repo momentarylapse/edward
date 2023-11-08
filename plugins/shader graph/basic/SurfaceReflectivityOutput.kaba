@@ -1,0 +1,25 @@
+use edward
+
+class NodeSurfaceReflectivityOutput extends shader.Node
+	func __init__()
+		super.__init__("SurfaceReflectivityOutput")
+		params.add([shader.Type.COLOR, "albedo", "#ffffffff", ""])
+		params.add([shader.Type.FLOAT, "roughness", "0.3", "range=0:1"])
+		params.add([shader.Type.FLOAT, "metal", "0.1", "range=0:1"])
+		params.add([shader.Type.COLOR, "emission", "#000000ff", ""])
+		params.add([shader.Type.COLOR, "transmissivity", "#000000ff", ""])
+		params.add([shader.Type.VEC3, "normal", "vec3(0,0,1)", ""])
+	func override const dependencies() -> string[]
+		return ["import:surface"]
+#		return ["basic_lighting", "in:light", "in:matrix", "in:material", "in:pos", "in:normal"]
+	func override const code_pixel(out c: shader.BuilderContext) -> string
+		var al = c.value(self, 0)
+		var ro = c.value(self, 1)
+		var me = c.value(self, 2)
+		var em = c.value(self, 3)
+		var tr = c.value(self, 4)
+		var n = c.value(self, 5)
+		return "
+	surface_reflectivity_out({{n}}, {{al}}, {{em}}, {{me}}, {{ro}}, {{tr}});"
+
+# 4,5 -> 3,4

@@ -18,6 +18,7 @@
 #include "../../lib/os/file.h"
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/formatter.h"
+#include <graphics-impl.h>
 
 FormatModel::FormatModel(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "model", _("Model"), Flag::CANONICAL_READ_WRITE) {
 }
@@ -208,16 +209,16 @@ public:
 		me->col.metal = f->read_float();
 		me->col.roughness = f->read_float();
 
-		me->alpha.mode = (TransparencyMode)f->read_int();
-		me->alpha.source = (nix::Alpha)f->read_int();
-		me->alpha.destination = (nix::Alpha)f->read_int();
-		me->alpha.factor = f->read_float();
-		me->alpha.zbuffer = f->read_bool();
+		f->read_int();
+		f->read_int();
+		f->read_int();
+		f->read_float();
+		f->read_bool();
 		int n = f->read_int();
 		me->texture_levels.clear();
 		for (int t=0;t<n;t++) {
-			auto tl = new ModelMaterial::TextureLevel();
-			tl->filename = f->read_str();
+			ModelMaterial::TextureLevel tl;
+			tl.filename = f->read_str();
 			me->texture_levels.add(tl);
 		}
 	}
@@ -228,14 +229,14 @@ public:
 		write_color_argb(f, me->col.emission);
 		f->write_float(me->col.metal);
 		f->write_float(me->col.roughness);
-		f->write_int((int)me->alpha.mode);
-		f->write_int((int)me->alpha.source);
-		f->write_int((int)me->alpha.destination);
-		f->write_float(me->alpha.factor);
-		f->write_bool(me->alpha.zbuffer);
+		f->write_int((int)TransparencyMode::DEFAULT);
+		f->write_int(0);
+		f->write_int(0);
+		f->write_float(0);
+		f->write_bool(false);
 		f->write_int(me->texture_levels.num);
 		for (int t=0;t<me->texture_levels.num;t++)
-			f->write_str(me->texture_levels[t]->filename.str());
+			f->write_str(me->texture_levels[t].filename.str());
 	}
 };
 
@@ -992,8 +993,8 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
 			// test textures
 			for (auto &t: m->texture_levels) {
-				if (!t->texture and t->filename)
-					warning(format(_("Texture file not loadable: %s"), t->filename));
+				if (!t.texture and t.filename)
+					warning(format(_("Texture file not loadable: %s"), t.filename));
 			}
 		}
 		for (auto &b: data->bone) {

@@ -244,8 +244,10 @@ void WorldPropertiesDialog::on_edit_script() {
 	int n = get_int("script_list");
 	if (n >= 0) {
 		auto filename = kaba::config.directory | temp.scripts[n].filename;
-		//int r = system(format("sgribthmaker '%s'", filename).c_str());
-		hui::open_document(filename);
+		msg_write(str(filename));
+		int r = system(format("sgribthmaker '%s'", filename).c_str());
+		if (!r)
+			hui::open_document(filename);
 	}
 }
 

@@ -178,7 +178,7 @@ string render_material(ModelMaterial *m) {
 		default_image.create(16, 16, White);
 	auto tim = &default_image;
 	if (m->texture_levels.num > 0)
-		tim = m->texture_levels[0]->image;
+		tim = m->texture_levels[0].image;
 
 	const int N = 48;
 
