@@ -41,6 +41,7 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	event("texture-level-delete", [this] { on_texture_level_delete(); });
 	event("texture-level-clear", [this] { on_texture_level_clear(); });
 
+	event("passes", [this] { on_pass_edit(); });
 	event_x("passes", hui::EventID::RIGHT_BUTTON_DOWN, [this] { on_passes_right_click(); });
 	event("render-pass-edit", [this] { on_pass_edit(); });
 	event("render-pass-add", [this] { on_pass_add(); });

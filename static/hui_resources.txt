@@ -2239,10 +2239,10 @@ width=400,height=400,headerbar,closebutton=no
 1
 Grid
 ?
-
+vertical
 0
 0
-2
+3
 Group
 t-transparency
 
@@ -2254,7 +2254,7 @@ Grid
 vertical
 0
 0
-7
+8
 RadioButton
 transparency_mode:none
 
@@ -2262,21 +2262,27 @@ transparency_mode:none
 0
 0
 RadioButton
-transparency_mode:color_key
+transparency_mode:mix
 
 1
 0
 0
 RadioButton
-transparency_mode:function
+transparency_mode:color_key
 
 2
+0
+0
+RadioButton
+transparency_mode:function
+
+3
 0
 0
 Grid
 mat_transp_function_grid
 indent
-3
+4
 0
 4
 Label
@@ -2306,13 +2312,13 @@ alpha_dest
 RadioButton
 transparency_mode:factor
 
-4
+5
 0
 0
 Grid
 mat_transp_alpha_grid
 indent
-5
+6
 0
 2
 SpinButton
@@ -2321,7 +2327,7 @@ range=0:100:1
 0
 0
 0
-Text
+Label
 percent
 
 1
@@ -2330,13 +2336,43 @@ percent
 CheckBox
 alpha_z_buffer
 
-6
+7
+0
+0
+Group
+t-culling
+
+1
+0
+1
+Grid
+?
+expandx
+0
+0
+3
+RadioButton
+cull:back
+expandx
+0
+0
+0
+RadioButton
+cull:front
+expandx
+1
+0
+0
+RadioButton
+cull:none
+expandx
+2
 0
 0
 Grid
 ?
 buttonbar
-1
+2
 0
 2
 Button
@@ -10172,7 +10208,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1021
+1026
 # Text
 /ambient
 Ambient
@@ -10717,6 +10753,15 @@ Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\
 material-render-pass-dialog/alpha_z_buffer
 Z-buffer enabled
 
+material-render-pass-dialog/cull:back
+Front
+Only front side of triangles visible
+material-render-pass-dialog/cull:front
+Back
+Only back side of triangles visible
+material-render-pass-dialog/cull:none
+Both
+Front and back side of triangles visible
 material-render-pass-dialog/material-render-pass-dialog
 Render pass
 
@@ -10726,6 +10771,9 @@ Dest
 material-render-pass-dialog/material_dialog_t_trans_source
 Source
 
+material-render-pass-dialog/t-culling
+Sides visible
+
 material-render-pass-dialog/t-transparency
 Transparency
 
@@ -10733,13 +10781,16 @@ material-render-pass-dialog/transparency_mode:color_key
 Color key
 
 material-render-pass-dialog/transparency_mode:factor
-Factor:
+Factor
 
 material-render-pass-dialog/transparency_mode:function
-Function
+Complex
+
+material-render-pass-dialog/transparency_mode:mix
+Mix using alpha channel
 
 material-render-pass-dialog/transparency_mode:none
-Solid
+None (solid)
 
 material-render-pass-list-popup/render-pass-add
 Add new

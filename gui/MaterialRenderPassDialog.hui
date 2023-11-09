@@ -1,21 +1,27 @@
 Dialog material-render-pass-dialog "Render pass" width=400 height=400 headerbar closebutton=no
-	Grid ? ""
+	Grid ? "" vertical
 		Group t-transparency "Transparency"
 			Grid ? "" vertical
-				RadioButton transparency_mode:none "Solid"
+				RadioButton transparency_mode:none "None (solid)"
+				RadioButton transparency_mode:mix "Mix using alpha channel"
 				RadioButton transparency_mode:color_key "Color key"
-				RadioButton transparency_mode:function "Function"
+				RadioButton transparency_mode:function "Complex"
 				Grid mat_transp_function_grid "" indent
 					Label material_dialog_t_trans_source "Source" right disabled
 					ComboBox alpha_source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
 					---|
 					Label material_dialog_t_trans_dest "Dest" right disabled
 					ComboBox alpha_dest "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
-				RadioButton transparency_mode:factor "Factor:"
+				RadioButton transparency_mode:factor "Factor"
 				Grid mat_transp_alpha_grid "" indent
 					SpinButton alpha_factor "" range=0:100:1
-					Text /percent "%"
+					Label /percent "%"
 				CheckBox alpha_z_buffer "Z-buffer enabled"
+		Group t-culling "Sides visible"
+			Grid ? "" expandx
+				RadioButton cull:back "Front" "tooltip=Only front side of triangles visible" expandx
+				RadioButton cull:front "Back" "tooltip=Only back side of triangles visible" expandx
+				RadioButton cull:none "Both" "tooltip=Front and back side of triangles visible" expandx
 		Grid ? "" buttonbar
 			Button /cancel "Cancel" image=hui:cancel
 			---|

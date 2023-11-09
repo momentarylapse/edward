@@ -17,6 +17,7 @@ MaterialRenderPassDialog::MaterialRenderPassDialog(hui::Window *parent, const Da
 	event("transparency_mode:function", [this]{ on_transparency_mode(); });
 	event("transparency_mode:color_key", [this]{ on_transparency_mode(); });
 	event("transparency_mode:factor", [this]{ on_transparency_mode(); });
+	event("transparency_mode:mix", [this]{ on_transparency_mode(); });
 	event("ok", [this] { on_ok(); });
 	event("cancel", [this] { request_destroy(); });
 	event("hui:close", [this] { request_destroy(); });
@@ -31,6 +32,8 @@ void MaterialRenderPassDialog::load_data() {
 		check("transparency_mode:factor", true);
 	else if (result.mode == TransparencyMode::FUNCTIONS)
 		check("transparency_mode:function", true);
+	else if (result.mode == TransparencyMode::MIX)
+		check("transparency_mode:mix", true);
 	else
 		check("transparency_mode:none", true);
 	enable("alpha_factor", result.mode == TransparencyMode::FACTOR);
@@ -40,6 +43,12 @@ void MaterialRenderPassDialog::load_data() {
 	check("alpha_z_buffer", result.z_buffer);
 	set_int("alpha_source", (int)result.source);
 	set_int("alpha_dest", (int)result.destination);
+	if (result.culling == 0)
+		check("cull:none", true);
+	else if (result.culling == 2)
+		check("cull:front", true);
+	else
+		check("cull:back", true);
 }
 
 void MaterialRenderPassDialog::on_transparency_mode() {
@@ -49,6 +58,8 @@ void MaterialRenderPassDialog::on_transparency_mode() {
 		result.mode = TransparencyMode::COLOR_KEY_HARD;
 	else if (is_checked("transparency_mode:factor"))
 		result.mode = TransparencyMode::FACTOR;
+	else if (is_checked("transparency_mode:mix"))
+		result.mode = TransparencyMode::MIX;
 	else
 		result.mode = TransparencyMode::NONE;
 	load_data();
@@ -59,6 +70,12 @@ void MaterialRenderPassDialog::on_ok() {
 	result.destination = (nix::Alpha)get_int("alpha_dest");
 	result.factor = get_float("alpha_factor") * 0.01f;
 	result.z_buffer = is_checked("alpha_z_buffer");
+	if (is_checked("cull:none"))
+		result.culling = 0;
+	else if (is_checked("cull:front"))
+		result.culling = 2;
+	else
+		result.culling = 1;
 	success = true;
 	request_destroy();
 }
