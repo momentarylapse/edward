@@ -12,13 +12,6 @@
 #include <y/world/Material.h>
 #include <graphics-impl.h>
 
-namespace nix {
-	class Texture;
-	class CubeMap;
-	class Shader;
-	enum class Alpha;
-};
-
 class ShaderGraph;
 
 class DataMaterial: public Data {
@@ -50,7 +43,7 @@ public:
 		nix::Alpha source = nix::Alpha::ONE, destination = nix::Alpha::ONE;
 		float factor = 1.0f;
 		bool z_buffer = true;
-		int culling = 1;
+		nix::CullMode culling = nix::CullMode::BACK;
 	};
 
 

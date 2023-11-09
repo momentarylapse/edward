@@ -101,9 +101,9 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 			p.shader.file = c.get_str(key + ".shader", "");
 			m = c.get_str(key + ".cull", "");
 			if (m == "none")
-				p.culling = 0;
+				p.culling = nix::CullMode::NONE;
 			else if (m == "front" or m == "cw")
-				p.culling = 2;
+				p.culling = nix::CullMode::FRONT;
 		};
 
 		// deprecated
@@ -297,10 +297,10 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 		} else {
 			c.set_str(key + ".mode", "solid");
 		}
-		if (p.culling == 0)
-			c.set_str(key + ".culling", "none");
-		else if (p.culling == 2)
-			c.set_str(key + ".culling", "front");
+		if (p.culling == nix::CullMode::NONE)
+			c.set_str(key + ".cull", "none");
+		else if (p.culling == nix::CullMode::FRONT)
+			c.set_str(key + ".cull", "front");
 		/*if (data->appearance.transparency_mode != TransparencyMode::NONE) {
 			c.set_bool("transparency.zbuffer", data->appearance.alpha_z_buffer);
 		}*/

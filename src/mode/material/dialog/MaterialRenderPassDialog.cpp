@@ -43,9 +43,9 @@ void MaterialRenderPassDialog::load_data() {
 	check("alpha_z_buffer", result.z_buffer);
 	set_int("alpha_source", (int)result.source);
 	set_int("alpha_dest", (int)result.destination);
-	if (result.culling == 0)
+	if (result.culling == nix::CullMode::NONE)
 		check("cull:none", true);
-	else if (result.culling == 2)
+	else if (result.culling == nix::CullMode::FRONT)
 		check("cull:front", true);
 	else
 		check("cull:back", true);
@@ -71,11 +71,11 @@ void MaterialRenderPassDialog::on_ok() {
 	result.factor = get_float("alpha_factor") * 0.01f;
 	result.z_buffer = is_checked("alpha_z_buffer");
 	if (is_checked("cull:none"))
-		result.culling = 0;
+		result.culling = nix::CullMode::NONE;
 	else if (is_checked("cull:front"))
-		result.culling = 2;
+		result.culling = nix::CullMode::FRONT;
 	else
-		result.culling = 1;
+		result.culling = nix::CullMode::BACK;
 	success = true;
 	request_destroy();
 }
