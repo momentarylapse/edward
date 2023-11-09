@@ -50,9 +50,9 @@ public:
 
 
 	shared_array<nix::Texture> textures;
-	shared<nix::Shader> shader;
+	shared_array<nix::Shader> shaders;
 	void update_textures();
-	void update_shader();
+	void update_shader(int pass_no);
 
 	string shape_type;
 	bool shape_smooth;

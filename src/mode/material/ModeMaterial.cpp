@@ -101,7 +101,18 @@ void ModeMaterial::on_draw() {
 
 void ModeMaterial::on_data_update() {
 	update_textures();
-	update_shader();
+
+	shaders.resize(data->appearance.passes.num);
+	for (int i=0; i<data->appearance.passes.num; i++) {
+		try {
+			shaders[i] = session->gl->create_shader("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
+		} catch (Exception &e) {
+			msg_error(e.message());
+		}
+	}
+
+	for (int i=0; i<data->appearance.passes.num; i++)
+		update_shader(i);
 }
 
 void ModeMaterial::update_textures() {
@@ -109,22 +120,14 @@ void ModeMaterial::update_textures() {
 
 	for (auto &tf: data->appearance.texture_files)
 		textures.add(session->resource_manager->load_texture(tf));
-	/*if (appearance.reflection_mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
-		create_fake_dynamic_cube_map(cube_map);
-		textures.add(cube_map);
-	} else if (appearance.reflection_mode == ReflectionMode::CUBE_MAP_STATIC) {
-		for (int i=0;i<6;i++)
-			temp.cube_map->fill_side(i, nix::LoadTexture(appearance.reflection_texture_file[i]));
-		temp.textures.add(temp.cube_map);
-	}*/
 }
 
-void ModeMaterial::update_shader() {
-	msg_write("update shader");
+void ModeMaterial::update_shader(int pass_no) {
+	msg_write("update shader pass #" + str(pass_no));
 	try {
-		auto code = session->resource_manager->expand_vertex_shader_source(data->appearance.passes[0].shader.code, "default");
+		auto code = session->resource_manager->expand_vertex_shader_source(data->appearance.passes[pass_no].shader.code, "default");
 		code = session->resource_manager->expand_fragment_shader_source(code, "forward");
-		shader->update(code);
+		shaders[pass_no]->update(code);
 	} catch(Exception &e) {
 		msg_error(e.message());
 	}
@@ -172,17 +175,22 @@ void ModeMaterial::on_command(const string & id) {
 
 
 void ModeMaterial::on_draw_win(MultiView::Window *win) {
-	data->apply_for_rendering();
-	win->set_shader(shader.get());
 	auto tex = weak(textures);
 	tex.resize(5);
 	tex.add(MultiView::cube_map.get());
 	nix::set_textures(tex);
 	nix::set_fog(nix::FogMode::EXP, 0,10000,0.001f, Blue);
 
-	nix::draw_triangles(MaterialVB[max(data->appearance.texture_files.num, 1)]);
+	for (int i=0; i<data->appearance.passes.num; i++) {
+		data->apply_for_rendering(i);
+		win->set_shader(shaders[i].get());
+
+		nix::draw_triangles(MaterialVB[max(data->appearance.texture_files.num, 1)]);
+		//break;
+	}
 
 
+	nix::set_cull(nix::CullMode::DEFAULT);
 	nix::enable_fog(false);
 	nix::disable_alpha();
 	nix::set_z(true,true);
@@ -218,7 +226,7 @@ void ModeMaterial::on_end() {
 		delete MaterialVB[i];
 
 	//shader->unref();
-	shader = nullptr;
+	shaders.clear();
 }
 
 
@@ -236,12 +244,6 @@ void ModeMaterial::on_start() {
 	auto t = session->win->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();
 	t->enable(false);
-
-	try {
-		shader = session->gl->create_shader("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
-	} catch (Exception &e) {
-		msg_error(e.message());
-	}
 
 	data->out_changed >> in_data_changed;
 	on_data_update();

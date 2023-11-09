@@ -84,12 +84,14 @@ void DataMaterial::reset() {
 	out_changed();
 }
 
-void DataMaterial::apply_for_rendering() const {
+#include <lib/os/msg.h>
+
+void DataMaterial::apply_for_rendering(int pass_no) const {
 	nix::set_material(appearance.albedo, appearance.roughness, appearance.metal, appearance.emissive);
 
 	nix::disable_alpha();
 	nix::set_z(true, true);
-	auto &p = appearance.passes[0];
+	auto &p = appearance.passes[pass_no];
 	if (p.mode == TransparencyMode::COLOR_KEY_HARD) {
 		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	} else if (p.mode == TransparencyMode::COLOR_KEY_SMOOTH) {
@@ -104,6 +106,12 @@ void DataMaterial::apply_for_rendering() const {
 		//nix::set_alpha(appearance.alpha_factor);
 		nix::set_z(false, true);
 	}
+	if (p.culling == 0)
+		nix::set_cull(nix::CullMode::NONE);
+	else if (p.culling == 2)
+		nix::set_cull(nix::CullMode::CW);
+	else
+		nix::set_cull(nix::CullMode::DEFAULT);
 }
 
 void DataMaterial::ShaderData::load_from_file(Session *s) {

@@ -28,7 +28,7 @@ public:
 
 	void reset() override;
 
-	void apply_for_rendering() const;
+	void apply_for_rendering(int pass_no) const;
 
 	struct ShaderData {
 		Path file;

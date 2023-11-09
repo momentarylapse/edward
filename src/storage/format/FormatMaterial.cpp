@@ -24,6 +24,8 @@ Any color2any(const color &c) {
 	return r;
 }
 
+Alpha parse_alpha(const string& s);
+
 FormatMaterial::FormatMaterial(Session *s) : TypedFormat<DataMaterial>(s, FD_MATERIAL, "material", _("Material"), Flag::CANONICAL_READ_WRITE) {
 }
 
@@ -80,12 +82,12 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 			string m = c.get_str(key + ".mode", "");
 			if (m == "factor") {
 				p.mode = TransparencyMode::FACTOR;
-				p.factor = c.get_float("transparency.factor");
+				p.factor = c.get_float(key + ".factor");
 				p.z_buffer = false;
 			} else if (m == "function") {
 				p.mode = TransparencyMode::FUNCTIONS;
-				p.source = (nix::Alpha)c.get_int("transparency.source", 0);
-				p.destination = (nix::Alpha)c.get_int("transparency.dest", 0);
+				p.source = parse_alpha(c.get_str(key + ".source", 0));
+				p.destination = parse_alpha(c.get_str(key + ".dest", 0));
 				p.z_buffer = false;
 			} else if (m == "key-hard") {
 				p.mode = TransparencyMode::COLOR_KEY_HARD;
@@ -97,7 +99,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 				msg_error("unknown transparency mode: " + m);
 			}
 			p.shader.file = c.get_str(key + ".shader", "");
-			m = c.get_str(key + ".culling", "");
+			m = c.get_str(key + ".cull", "");
 			if (m == "none")
 				p.culling = 0;
 			else if (m == "front" or m == "cw")

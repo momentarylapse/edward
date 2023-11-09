@@ -301,13 +301,13 @@ void surface_reflectivity_out(vec3 n, vec4 albedo, vec4 emission, float metal, f
 	if (!gl_FrontFacing)
 		n = - n;
 	surface_out(n, albedo, emission, metal, roughness);
-	
+
 #ifndef vulkan
 	vec3 p = in_pos.xyz / in_pos.w;
 	mat3 R = transpose(mat3(matrix.view));
 	vec3 L = reflect(p, n);
-	vec4 cube = texture(tex_cube, R*L);
-	out_color += cube * 0.05;
+//	vec4 cube = texture(tex_cube, R*L);
+//	out_color += cube * 0.05;
 #endif
 
 	out_color *= 1 - transmissivity * pow(abs(n.z), 2);
