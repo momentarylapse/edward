@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-77
+80
 # Resource
 Menu
 
@@ -1766,7 +1766,7 @@ Grid
 vertical
 1
 0
-5
+4
 Group
 grp-color
 
@@ -1901,104 +1901,14 @@ grp-passes
 1
 ListView
 passes
-select-single,nobar,height=200,noexpandy
+format=tm,select-single,nobar,height=200,noexpandy
 0
-0
-0
-Expander
-material_dialog_grp_transparency
-
-3
-0
-1
-Grid
-?
-vertical
-0
-0
-7
-RadioButton
-transparency_mode:none
-
-0
-0
-0
-RadioButton
-transparency_mode:color_key
-
-1
-0
-0
-RadioButton
-transparency_mode:function
-
-2
-0
-0
-Grid
-mat_transp_function_grid
-indent
-3
-0
-4
-Label
-material_dialog_t_trans_source
-right,disabled
-0
-0
-0
-ComboBox
-alpha_source
-
-1
-0
-0
-Label
-material_dialog_t_trans_dest
-right,disabled
-0
-1
-0
-ComboBox
-alpha_dest
-
-1
-1
-0
-RadioButton
-transparency_mode:factor
-
-4
-0
-0
-Grid
-mat_transp_alpha_grid
-indent
-5
-0
-2
-SpinButton
-alpha_factor
-range=0:100:1
-0
-0
-0
-Text
-percent
-
-1
-0
-0
-CheckBox
-alpha_z_buffer
-
-6
 0
 0
 Expander
 grp-friction
 
-4
+3
 0
 1
 Grid
@@ -2346,6 +2256,170 @@ image=hui:about
 0
 # Resource
 Dialog
+material-render-pass-dialog
+width=400,height=400,headerbar,closebutton=no
+0
+0
+1
+Grid
+?
+
+0
+0
+2
+Group
+t-transparency
+
+0
+0
+1
+Grid
+?
+vertical
+0
+0
+7
+RadioButton
+transparency_mode:none
+
+0
+0
+0
+RadioButton
+transparency_mode:color_key
+
+1
+0
+0
+RadioButton
+transparency_mode:function
+
+2
+0
+0
+Grid
+mat_transp_function_grid
+indent
+3
+0
+4
+Label
+material_dialog_t_trans_source
+right,disabled
+0
+0
+0
+ComboBox
+alpha_source
+
+1
+0
+0
+Label
+material_dialog_t_trans_dest
+right,disabled
+0
+1
+0
+ComboBox
+alpha_dest
+
+1
+1
+0
+RadioButton
+transparency_mode:factor
+
+4
+0
+0
+Grid
+mat_transp_alpha_grid
+indent
+5
+0
+2
+SpinButton
+alpha_factor
+range=0:100:1
+0
+0
+0
+Text
+percent
+
+1
+0
+0
+CheckBox
+alpha_z_buffer
+
+6
+0
+0
+Grid
+?
+buttonbar
+1
+0
+2
+Button
+cancel
+image=hui:cancel
+0
+0
+0
+Button
+ok
+image=hui:ok,default
+0
+1
+0
+# Resource
+Menu
+material-render-pass-list-popup
+
+0
+0
+6
+Item
+title
+disabled
+0
+0
+0
+Separator
+
+
+1
+0
+0
+Item
+render-pass-edit
+
+2
+0
+0
+Item
+render-pass-add
+
+3
+0
+0
+Item
+render-pass-copy
+
+4
+0
+0
+Item
+render-pass-delete
+
+5
+0
+0
+# Resource
+Dialog
 material_sound_dialog
 width=595,height=345
 0
@@ -2379,6 +2453,49 @@ DefButton
 ok
 image=hui:ok
 1
+0
+0
+# Resource
+Menu
+material-texture-list-popup
+
+0
+0
+6
+Item
+title
+disabled
+0
+0
+0
+Separator
+
+
+1
+0
+0
+Item
+texture-select
+
+2
+0
+0
+Item
+texture-add
+
+3
+0
+0
+Item
+texture-clear
+
+4
+0
+0
+Item
+texture-delete
+
+5
 0
 0
 # Resource
@@ -10079,7 +10196,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1013
+1024
 # Text
 /ambient
 Ambient
@@ -10615,20 +10732,74 @@ Number of photons
 lightmap_dialog/lmt_spacial_resolution
 Spacial resolution
 
+material-render-pass-dialog/alpha_dest
+Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha
+
+material-render-pass-dialog/alpha_source
+Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha
+
+material-render-pass-dialog/alpha_z_buffer
+Z-buffer enabled
+
+material-render-pass-dialog/material-render-pass-dialog
+Render pass
+
+material-render-pass-dialog/material_dialog_t_trans_dest
+Dest
+
+material-render-pass-dialog/material_dialog_t_trans_source
+Source
+
+material-render-pass-dialog/t-transparency
+Transparency
+
+material-render-pass-dialog/transparency_mode:color_key
+Color key
+
+material-render-pass-dialog/transparency_mode:factor
+Factor:
+
+material-render-pass-dialog/transparency_mode:function
+Function
+
+material-render-pass-dialog/transparency_mode:none
+Solid
+
+material-render-pass-list-popup/render-pass-add
+Add new
+
+material-render-pass-list-popup/render-pass-copy
+Duplicate
+
+material-render-pass-list-popup/render-pass-delete
+Delete
+
+material-render-pass-list-popup/render-pass-edit
+Edit...
+
+material-render-pass-list-popup/title
+Render pass
+
+material-texture-list-popup/texture-add
+Add empty texture level
+
+material-texture-list-popup/texture-clear
+Clear
+
+material-texture-list-popup/texture-delete
+Delete
+
+material-texture-list-popup/texture-select
+Select file...
+
+material-texture-list-popup/title
+Texture level
+
 material-toolbar/shader-mode-graph
 Shader graph
 
 material-toolbar/shader-mode-none
 Material
-
-material_dialog/alpha_dest
-Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha
-
-material_dialog/alpha_source
-Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha
-
-material_dialog/alpha_z_buffer
-Z-buffer enabled
 
 material_dialog/emission
 
@@ -10646,7 +10817,7 @@ material_dialog/grp-textures
 Textures
 
 material_dialog/header
-Material
+Material properties
 
 material_dialog/mat_add_texture_level
 new level
@@ -10660,17 +10831,8 @@ Empty
 material_dialog/material_dialog
 Material appearance
 
-material_dialog/material_dialog_grp_transparency
-Transparency
-
-material_dialog/material_dialog_t_trans_dest
-Dest
-
-material_dialog/material_dialog_t_trans_source
-Source
-
 material_dialog/passes
-Level\\Description
+no\\description
 
 material_dialog/t-rcjump
 Jumping
@@ -10686,18 +10848,6 @@ Static
 
 material_dialog/textures
 Level\\\\Texture
-
-material_dialog/transparency_mode:color_key
-Color key
-
-material_dialog/transparency_mode:factor
-Factor:
-
-material_dialog/transparency_mode:function
-Function
-
-material_dialog/transparency_mode:none
-No transparency
 
 material_sound_dialog/material_sound_dialog
 Sounds

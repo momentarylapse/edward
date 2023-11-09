@@ -468,6 +468,7 @@
     <ClCompile Include="src\mode\font\dialog\FontDialog.cpp" />
     <ClCompile Include="src\mode\font\ModeFont.cpp" />
     <ClCompile Include="src\mode\material\dialog\MaterialPropertiesDialog.cpp" />
+    <ClCompile Include="src\mode\material\dialog\MaterialRenderPassDialog.cpp" />
     <ClCompile Include="src\mode\material\dialog\ShaderGraphDialog.cpp" />
     <ClCompile Include="src\mode\material\ModeMaterial.cpp" />
     <ClCompile Include="src\mode\model\animation\creation\ModeModelAnimationInterpolateFrames.cpp" />
@@ -833,7 +834,6 @@
     <ClInclude Include="src\lib\kaba\compiler\CommandList.h" />
     <ClInclude Include="src\lib\kaba\compiler\Compiler.h" />
     <ClInclude Include="src\lib\kaba\compiler\Serializer.h" />
-    <ClInclude Include="src\lib\kaba\compiler\serializer.h" />
     <ClInclude Include="src\lib\kaba\compiler\SerialNode.h" />
     <ClInclude Include="src\lib\kaba\dynamic\call.h" />
     <ClInclude Include="src\lib\kaba\dynamic\dynamic.h" />
@@ -922,6 +922,7 @@
     <ClInclude Include="src\mode\font\dialog\FontDialog.h" />
     <ClInclude Include="src\mode\font\ModeFont.h" />
     <ClInclude Include="src\mode\material\dialog\MaterialPropertiesDialog.h" />
+    <ClInclude Include="src\mode\material\dialog\MaterialRenderPassDialog.h" />
     <ClInclude Include="src\mode\material\dialog\ShaderGraphDialog.h" />
     <ClInclude Include="src\mode\material\ModeMaterial.h" />
     <ClInclude Include="src\mode\model\animation\creation\ModeModelAnimationInterpolateFrames.h" />

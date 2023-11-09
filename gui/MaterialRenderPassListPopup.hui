@@ -1,0 +1,7 @@
+Menu material-render-pass-list-popup ""
+	Item title "Render pass" disabled
+	Separator
+	Item render-pass-edit "Edit..."
+	Item render-pass-add "Add new"
+	Item render-pass-copy "Duplicate"
+	Item render-pass-delete "Delete"

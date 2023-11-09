@@ -6,6 +6,7 @@
  */
 
 #include "MaterialPropertiesDialog.h"
+#include "MaterialRenderPassDialog.h"
 #include "../ModeMaterial.h"
 #include "../../../Session.h"
 #include "../../../storage/Storage.h"
@@ -28,16 +29,22 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	apply_queue_depth = 0;
 	apply_phys_queue_depth = 0;
 
+	textures_popup = hui::create_resource_menu("material-texture-list-popup", this);
+	passes_popup = hui::create_resource_menu("material-render-pass-list-popup", this);
+
 	// dialog
 	event("mat_add_texture_level", [this]{ on_add_texture_level(); });
 	event("textures", [this]{ on_textures(); });
-	event_x("textures", "hui:select", [this]{ on_textures_select(); });
+	event_x("textures", hui::EventID::SELECT, [this]{ on_textures_select(); });
+	event_x("textures", hui::EventID::RIGHT_BUTTON_DOWN, [this]{ on_textures_right_click(); });
 	event("mat_delete_texture_level", [this]{ on_delete_texture_level(); });
 	event("mat_empty_texture_level", [this]{ on_clear_texture_level(); });
-	event("transparency_mode:none", [this]{ on_transparency_mode(); });
-	event("transparency_mode:function", [this]{ on_transparency_mode(); });
-	event("transparency_mode:color_key", [this]{ on_transparency_mode(); });
-	event("transparency_mode:factor", [this]{ on_transparency_mode(); });
+
+	event_x("passes", hui::EventID::RIGHT_BUTTON_DOWN, [this]{ on_passes_right_click(); });
+	event("render-pass-edit", [this]{ on_pass_edit(); });
+	event("render-pass-add", [this]{ on_pass_add(); });
+	event("render-pass-copy", [this]{ on_pass_copy(); });
+	event("render-pass-delete", [this]{ on_pass_delete(); });
 
 
 	event("albedo", [this]{ apply_data(); });
@@ -58,11 +65,6 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 		apply_data_delayed();
 	});
 	event("emission", [this]{ apply_data(); });
-
-	event("alpha_factor", [this]{ apply_data_delayed(); });
-	event("alpha_source", [this]{ apply_data_delayed(); });
-	event("alpha_dest", [this]{ apply_data_delayed(); });
-	event("alpha_z_buffer", [this]{ apply_data(); });
 
 	event("rcjump", [this]{ apply_phys_data_delayed(); });
 	event("rcstatic", [this]{ apply_phys_data_delayed(); });
@@ -87,25 +89,6 @@ void MaterialPropertiesDialog::load_data() {
 	set_float("metal", temp.metal);
 	set_float("slider-metal", temp.metal);
 	set_color("emission", temp.emissive);
-
-	if (temp.passes[0].mode == TransparencyMode::COLOR_KEY_SMOOTH)
-		check("transparency_mode:color_key", true);
-	else if (temp.passes[0].mode == TransparencyMode::COLOR_KEY_HARD)
-		check("transparency_mode:color_key", true);
-	else if (temp.passes[0].mode == TransparencyMode::FACTOR)
-		check("transparency_mode:factor", true);
-	else if (temp.passes[0].mode == TransparencyMode::FUNCTIONS)
-		check("transparency_mode:function", true);
-	else
-		check("transparency_mode:none", true);
-	enable("alpha_factor", temp.passes[0].mode == TransparencyMode::FACTOR);
-	enable("alpha_source", temp.passes[0].mode == TransparencyMode::FUNCTIONS);
-	enable("alpha_dest", temp.passes[0].mode == TransparencyMode::FUNCTIONS);
-	set_float("alpha_factor", temp.passes[0].factor * 100.0f);
-	check("alpha_z_buffer", temp.passes[0].z_buffer);
-	set_int("alpha_source", (int)temp.passes[0].source);
-	set_int("alpha_dest", (int)temp.passes[0].destination);
-
 
 	set_float("rcjump", temp_phys.friction_jump);
 	set_float("rcstatic", temp_phys.friction_static);
@@ -149,6 +132,13 @@ void MaterialPropertiesDialog::on_textures_select() {
 	enable("mat_empty_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
 }
 
+void MaterialPropertiesDialog::on_textures_right_click() {
+	int sel = get_int("");
+	textures_popup->open_popup(this);
+	//enable("mat_delete_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
+	//enable("mat_empty_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
+}
+
 void MaterialPropertiesDialog::on_delete_texture_level() {
 	int sel = get_int("textures");
 	if (sel >= 0) {
@@ -167,19 +157,51 @@ void MaterialPropertiesDialog::on_clear_texture_level() {
 	}
 }
 
-void MaterialPropertiesDialog::on_transparency_mode() {
-	if (is_checked("transparency_mode:function"))
-		temp.passes[0].mode = TransparencyMode::FUNCTIONS;
-	else if (is_checked("transparency_mode:color_key"))
-		temp.passes[0].mode = TransparencyMode::COLOR_KEY_HARD;
-	else if (is_checked("transparency_mode:factor"))
-		temp.passes[0].mode = TransparencyMode::FACTOR;
-	else
-		temp.passes[0].mode = TransparencyMode::NONE;
-	enable("alpha_factor", temp.passes[0].mode == TransparencyMode::FACTOR);
-	enable("alpha_source", temp.passes[0].mode == TransparencyMode::FUNCTIONS);
-	enable("alpha_dest", temp.passes[0].mode == TransparencyMode::FUNCTIONS);
-	apply_data();
+
+
+void MaterialPropertiesDialog::on_passes_right_click() {
+	int sel = get_int("");
+	passes_popup->open_popup(this);
+	//enable("mat_delete_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
+	//enable("mat_empty_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
+}
+
+void MaterialPropertiesDialog::on_pass_edit() {
+	int sel = get_int("passes");
+	if (sel < 0)
+		return;
+	auto dlg = new MaterialRenderPassDialog(win, data->appearance.passes[sel]);
+	hui::fly(dlg).then([this, dlg, sel] {
+		if (dlg->success) {
+			temp.passes[sel] = dlg->result;
+			data->execute(new ActionMaterialEditAppearance(temp));
+		}
+	});
+}
+
+void MaterialPropertiesDialog::on_pass_add() {
+	temp.passes.add({});
+	data->execute(new ActionMaterialEditAppearance(temp));
+}
+
+void MaterialPropertiesDialog::on_pass_copy() {
+	int sel = get_int("passes");
+	if (sel < 0)
+		return;
+	temp.passes.add(temp.passes[sel]);
+	data->execute(new ActionMaterialEditAppearance(temp));
+}
+
+void MaterialPropertiesDialog::on_pass_delete() {
+	int sel = get_int("passes");
+	if (sel < 0)
+		return;
+	if (data->appearance.passes.num <= 1) {
+		data->session->error(_("At least 1 render pass is required"));
+		return;
+	}
+	temp.passes.erase(sel);
+	data->execute(new ActionMaterialEditAppearance(temp));
 }
 
 void MaterialPropertiesDialog::apply_data() {
@@ -191,10 +213,6 @@ void MaterialPropertiesDialog::apply_data() {
 	temp.roughness = get_float("roughness");
 	temp.metal = get_float("metal");
 	temp.emissive = get_color("emission");
-	temp.passes[0].z_buffer = is_checked("alpha_z_buffer");
-	temp.passes[0].factor = get_float("alpha_factor") * 0.01f;
-	temp.passes[0].source = (nix::Alpha)get_int("alpha_source");
-	temp.passes[0].destination = (nix::Alpha)get_int("alpha_dest");
 
 	data->execute(new ActionMaterialEditAppearance(temp));
 }
@@ -250,9 +268,16 @@ string transparency_to_str(TransparencyMode m) {
 void MaterialPropertiesDialog::fill_passes_list() {
 	reset("passes");
 	for (auto&& [i,p]: enumerate(temp.passes)) {
-		string desc = transparency_to_str(p.mode) + " - " + str(p.shader.file);
+		string desc;
 		if (p.shader.file.is_empty())
 			desc += "(default shader)";
-		add_string("passes", format("Pass[%d]\\%s", i, desc));
+		else
+			desc += format("<b>%s</b>", p.shader.file);
+		string sub = transparency_to_str(p.mode);
+		if (p.culling == 2)
+			sub += " back";
+
+		desc += "\n<small>  " + sub + "</small>";
+		add_string("passes", format("%d.\\%s", i+1, desc));
 	}
 }

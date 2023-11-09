@@ -1,6 +1,6 @@
 Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 	Grid ? "" vertical
-		Label header "Material" expandx center big bold
+		Label header "Material properties" expandx center big bold
 		Grid ? "" vertical
 			Group grp-color "Colors"
 				Grid ? ""
@@ -28,23 +28,7 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 						Button mat_delete_texture_level "delete level" image=hui:delete
 						Button mat_empty_texture_level "Empty" image=hui:clear
 			Expander grp-passes "Render passes"
-				ListView passes "Level\\Description" select-single nobar height=200 noexpandy
-			Expander material_dialog_grp_transparency "Transparency"
-				Grid ? "" vertical
-					RadioButton transparency_mode:none "No transparency"
-					RadioButton transparency_mode:color_key "Color key"
-					RadioButton transparency_mode:function "Function"
-					Grid mat_transp_function_grid "" indent
-						Label material_dialog_t_trans_source "Source" right disabled
-						ComboBox alpha_source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
-						---|
-						Label material_dialog_t_trans_dest "Dest" right disabled
-						ComboBox alpha_dest "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
-					RadioButton transparency_mode:factor "Factor:"
-					Grid mat_transp_alpha_grid "" indent
-						SpinButton alpha_factor "" range=0:100:1
-						Text /percent "%"
-					CheckBox alpha_z_buffer "Z-buffer enabled"
+				ListView passes "no\\description" format=tm select-single nobar height=200 noexpandy
 			Expander grp-friction "Friction"
 				Grid ? ""
 					Label t-rcstatic "Static" right disabled

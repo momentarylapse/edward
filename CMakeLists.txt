@@ -358,6 +358,7 @@ set(SOURCE
 	src/mode/font/dialog/FontDialog.cpp
 	src/mode/font/ModeFont.cpp
 	src/mode/material/dialog/MaterialPropertiesDialog.cpp
+	src/mode/material/dialog/MaterialRenderPassDialog.cpp
 	src/mode/material/dialog/ShaderGraphDialog.cpp
 	src/mode/material/ModeMaterial.cpp
 	src/mode/model/animation/creation/ModeModelAnimationInterpolateFrames.cpp

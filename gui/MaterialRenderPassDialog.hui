@@ -1,0 +1,22 @@
+Dialog material-render-pass-dialog "Render pass" width=400 height=400 headerbar closebutton=no
+	Grid ? ""
+		Group t-transparency "Transparency"
+			Grid ? "" vertical
+				RadioButton transparency_mode:none "Solid"
+				RadioButton transparency_mode:color_key "Color key"
+				RadioButton transparency_mode:function "Function"
+				Grid mat_transp_function_grid "" indent
+					Label material_dialog_t_trans_source "Source" right disabled
+					ComboBox alpha_source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
+					---|
+					Label material_dialog_t_trans_dest "Dest" right disabled
+					ComboBox alpha_dest "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha"
+				RadioButton transparency_mode:factor "Factor:"
+				Grid mat_transp_alpha_grid "" indent
+					SpinButton alpha_factor "" range=0:100:1
+					Text /percent "%"
+				CheckBox alpha_z_buffer "Z-buffer enabled"
+		Grid ? "" buttonbar
+			Button /cancel "Cancel" image=hui:cancel
+			---|
+			Button /ok "Ok" image=hui:ok default
