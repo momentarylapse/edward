@@ -22,11 +22,6 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 			Expander grp-textures "Textures"
 				Grid ? ""
 					ListView textures "Level\\\\Texture" format=tit select-single nobar height=200 noexpandy
-					---|
-					Grid ? ""
-						Button mat_add_texture_level "new level" image=hui:add
-						Button mat_delete_texture_level "delete level" image=hui:delete
-						Button mat_empty_texture_level "Empty" image=hui:clear
 			Expander grp-passes "Render passes"
 				ListView passes "no\\description" format=tm select-single nobar height=200 noexpandy
 			Expander grp-friction "Friction"

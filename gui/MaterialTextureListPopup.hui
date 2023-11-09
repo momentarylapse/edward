@@ -1,7 +1,7 @@
 Menu material-texture-list-popup ""
 	Item title "Texture level" disabled
 	Separator
-	Item texture-select "Select file..."
-	Item texture-add "Add empty texture level"
-	Item texture-clear "Clear"
-	Item texture-delete "Delete"
+	Item texture-level-select-file "Select file..."
+	Item texture-level-add "Add empty texture level"
+	Item texture-level-clear "Clear"
+	Item texture-level-delete "Delete"

@@ -1862,35 +1862,11 @@ Grid
 
 0
 0
-2
+1
 ListView
 textures
 format=tit,select-single,nobar,height=200,noexpandy
 0
-0
-0
-Grid
-?
-
-0
-1
-3
-Button
-mat_add_texture_level
-image=hui:add
-0
-0
-0
-Button
-mat_delete_texture_level
-image=hui:delete
-1
-0
-0
-Button
-mat_empty_texture_level
-image=hui:clear
-2
 0
 0
 Expander
@@ -2475,25 +2451,25 @@ Separator
 0
 0
 Item
-texture-select
+texture-level-select-file
 
 2
 0
 0
 Item
-texture-add
+texture-level-add
 
 3
 0
 0
 Item
-texture-clear
+texture-level-clear
 
 4
 0
 0
 Item
-texture-delete
+texture-level-delete
 
 5
 0
@@ -10196,7 +10172,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1024
+1021
 # Text
 /ambient
 Ambient
@@ -10780,16 +10756,16 @@ Edit...
 material-render-pass-list-popup/title
 Render pass
 
-material-texture-list-popup/texture-add
+material-texture-list-popup/texture-level-add
 Add empty texture level
 
-material-texture-list-popup/texture-clear
+material-texture-list-popup/texture-level-clear
 Clear
 
-material-texture-list-popup/texture-delete
+material-texture-list-popup/texture-level-delete
 Delete
 
-material-texture-list-popup/texture-select
+material-texture-list-popup/texture-level-select-file
 Select file...
 
 material-texture-list-popup/title
@@ -10818,15 +10794,6 @@ Textures
 
 material_dialog/header
 Material properties
-
-material_dialog/mat_add_texture_level
-new level
-
-material_dialog/mat_delete_texture_level
-delete level
-
-material_dialog/mat_empty_texture_level
-Empty
 
 material_dialog/material_dialog
 Material appearance

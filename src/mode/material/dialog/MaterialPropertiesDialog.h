@@ -22,12 +22,12 @@ public:
 	void apply_phys_data();
 	void apply_phys_data_delayed();
 
-	void on_textures();
-	void on_textures_select();
 	void on_textures_right_click();
-	void on_add_texture_level();
-	void on_delete_texture_level();
-	void on_clear_texture_level();
+	void on_textures_select();
+	void on_texture_level_select_file();
+	void on_texture_level_add();
+	void on_texture_level_delete();
+	void on_texture_level_clear();
 
 	void on_passes_right_click();
 	void on_pass_edit();

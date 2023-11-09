@@ -33,43 +33,44 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	passes_popup = hui::create_resource_menu("material-render-pass-list-popup", this);
 
 	// dialog
-	event("mat_add_texture_level", [this]{ on_add_texture_level(); });
-	event("textures", [this]{ on_textures(); });
-	event_x("textures", hui::EventID::SELECT, [this]{ on_textures_select(); });
-	event_x("textures", hui::EventID::RIGHT_BUTTON_DOWN, [this]{ on_textures_right_click(); });
-	event("mat_delete_texture_level", [this]{ on_delete_texture_level(); });
-	event("mat_empty_texture_level", [this]{ on_clear_texture_level(); });
+	event("textures", [this] { on_texture_level_select_file(); });
+	event_x("textures", hui::EventID::SELECT, [this] { on_textures_select(); });
+	event_x("textures", hui::EventID::RIGHT_BUTTON_DOWN, [this] { on_textures_right_click(); });
+	event("texture-level-select-file", [this] { on_texture_level_select_file(); });
+	event("texture-level-add", [this] { on_texture_level_add(); });
+	event("texture-level-delete", [this] { on_texture_level_delete(); });
+	event("texture-level-clear", [this] { on_texture_level_clear(); });
 
-	event_x("passes", hui::EventID::RIGHT_BUTTON_DOWN, [this]{ on_passes_right_click(); });
-	event("render-pass-edit", [this]{ on_pass_edit(); });
-	event("render-pass-add", [this]{ on_pass_add(); });
-	event("render-pass-copy", [this]{ on_pass_copy(); });
-	event("render-pass-delete", [this]{ on_pass_delete(); });
+	event_x("passes", hui::EventID::RIGHT_BUTTON_DOWN, [this] { on_passes_right_click(); });
+	event("render-pass-edit", [this] { on_pass_edit(); });
+	event("render-pass-add", [this] { on_pass_add(); });
+	event("render-pass-copy", [this] { on_pass_copy(); });
+	event("render-pass-delete", [this] { on_pass_delete(); });
 
 
-	event("albedo", [this]{ apply_data(); });
-	event("roughness", [this]{
+	event("albedo", [this] { apply_data(); });
+	event("roughness", [this] {
 		set_float("slider-roughness", get_float(""));
 		apply_data_delayed();
 	});
-	event("slider-roughness", [this]{
+	event("slider-roughness", [this] {
 		set_float("roughness", get_float(""));
 		apply_data_delayed();
 	});
-	event("metal", [this]{
+	event("metal", [this] {
 		set_float("slider-metal", get_float(""));
 		apply_data_delayed();
 	});
-	event("slider-metal", [this]{
+	event("slider-metal", [this] {
 		set_float("metal", get_float(""));
 		apply_data_delayed();
 	});
-	event("emission", [this]{ apply_data(); });
+	event("emission", [this] { apply_data(); });
 
-	event("rcjump", [this]{ apply_phys_data_delayed(); });
-	event("rcstatic", [this]{ apply_phys_data_delayed(); });
-	event("rcsliding", [this]{ apply_phys_data_delayed(); });
-	event("rcroll", [this]{ apply_phys_data_delayed(); });
+	event("rcjump", [this] { apply_phys_data_delayed(); });
+	event("rcstatic", [this] { apply_phys_data_delayed(); });
+	event("rcsliding", [this] { apply_phys_data_delayed(); });
+	event("rcroll", [this] { apply_phys_data_delayed(); });
 
 	expand_row("grp-color", 0, true);
 	expand_row("grp-textures", 0, true);
@@ -77,7 +78,7 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 
 	set_options("shader_file", "placeholder=- engine default shader -");
 	load_data();
-	data->out_changed >> create_sink([this]{ on_data_update(); });
+	data->out_changed >> create_sink([this] { on_data_update(); });
 }
 
 void MaterialPropertiesDialog::load_data() {
@@ -106,7 +107,7 @@ void MaterialPropertiesDialog::on_data_update() {
 	load_data();
 }
 
-void MaterialPropertiesDialog::on_add_texture_level() {
+void MaterialPropertiesDialog::on_texture_level_add() {
 	if (temp.texture_files.num >= MATERIAL_MAX_TEXTURES){
 		data->session->error(format(_("Only %d texture levels allowed!"), MATERIAL_MAX_TEXTURES));
 		return;
@@ -115,8 +116,8 @@ void MaterialPropertiesDialog::on_add_texture_level() {
 	apply_data();
 }
 
-void MaterialPropertiesDialog::on_textures() {
-	int sel = get_int("");
+void MaterialPropertiesDialog::on_texture_level_select_file() {
+	int sel = get_int("textures");
 	if ((sel >= 0) and (sel < temp.texture_files.num))
 		data->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, sel] (const auto& p) {
 			temp.texture_files[sel] = p.relative;
@@ -127,19 +128,20 @@ void MaterialPropertiesDialog::on_textures() {
 }
 
 void MaterialPropertiesDialog::on_textures_select() {
-	int sel = get_int("");
+	int sel = get_int("textures");
 	enable("mat_delete_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
 	enable("mat_empty_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
 }
 
 void MaterialPropertiesDialog::on_textures_right_click() {
-	int sel = get_int("");
+	int sel = get_int("textures");
+	textures_popup->enable("texture-level-select-file", sel >= 0);
+	textures_popup->enable("texture-level-clear", sel >= 0);
+	textures_popup->enable("texture-level-delete", sel >= 0);
 	textures_popup->open_popup(this);
-	//enable("mat_delete_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
-	//enable("mat_empty_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
 }
 
-void MaterialPropertiesDialog::on_delete_texture_level() {
+void MaterialPropertiesDialog::on_texture_level_delete() {
 	int sel = get_int("textures");
 	if (sel >= 0) {
 		temp.texture_files.erase(sel);
@@ -148,7 +150,7 @@ void MaterialPropertiesDialog::on_delete_texture_level() {
 	}
 }
 
-void MaterialPropertiesDialog::on_clear_texture_level() {
+void MaterialPropertiesDialog::on_texture_level_clear() {
 	int sel = get_int("textures");
 	if (sel >= 0) {
 		temp.texture_files[sel] = "";
@@ -161,9 +163,10 @@ void MaterialPropertiesDialog::on_clear_texture_level() {
 
 void MaterialPropertiesDialog::on_passes_right_click() {
 	int sel = get_int("");
+	textures_popup->enable("render-pass-edit", sel >= 0);
+	textures_popup->enable("render-pass-copy", sel >= 0);
+	textures_popup->enable("render-pass-delete", sel >= 0);
 	passes_popup->open_popup(this);
-	//enable("mat_delete_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
-	//enable("mat_empty_texture_level", (sel >= 0) and (sel < temp.texture_files.num));
 }
 
 void MaterialPropertiesDialog::on_pass_edit() {
@@ -219,7 +222,7 @@ void MaterialPropertiesDialog::apply_data() {
 
 void MaterialPropertiesDialog::apply_data_delayed() {
 	apply_queue_depth ++;
-	hui::run_later(0.2f, [this]{ apply_data(); });
+	hui::run_later(0.2f, [this] { apply_data(); });
 }
 
 void MaterialPropertiesDialog::apply_phys_data() {
@@ -237,7 +240,7 @@ void MaterialPropertiesDialog::apply_phys_data() {
 
 void MaterialPropertiesDialog::apply_phys_data_delayed() {
 	apply_phys_queue_depth ++;
-	hui::run_later(0.2f, [this]{ apply_phys_data(); });
+	hui::run_later(0.2f, [this] { apply_phys_data(); });
 }
 
 void MaterialPropertiesDialog::fill_texture_list() {
