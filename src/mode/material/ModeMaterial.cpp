@@ -105,6 +105,7 @@ void ModeMaterial::on_data_update() {
 	shaders.resize(data->appearance.passes.num);
 	for (int i=0; i<data->appearance.passes.num; i++) {
 		try {
+			// dummy
 			shaders[i] = session->gl->create_shader("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
 		} catch (Exception &e) {
 			msg_error(e.message());
@@ -186,7 +187,6 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 		win->set_shader(shaders[i].get());
 
 		nix::draw_triangles(MaterialVB[max(data->appearance.texture_files.num, 1)]);
-		//break;
 	}
 
 
@@ -238,8 +238,6 @@ void ModeMaterial::save_as() {
 
 
 void ModeMaterial::on_start() {
-	msg_write("Material.on start");
-
 	session->win->get_toolbar(hui::TOOLBAR_TOP)->set_by_id("material-toolbar");
 	auto t = session->win->get_toolbar(hui::TOOLBAR_LEFT);
 	t->reset();

@@ -31,6 +31,8 @@ public:
 	string build_fragment_source() const;
 	string build_source() const;
 
+	static string build_default_source();
+
 	Session *session;
 
 	shared_array<ShaderNode> nodes;

@@ -252,17 +252,32 @@ string ShaderGraph::build_fragment_source() const {
 	return source;
 }
 
-string ShaderGraph::build_source() const {
-	string pre =
+
+static const string SHADER_HEADER =
 R"foodelim(<Layout>
 	version = 420
 	bindings = [[buffer,buffer,sampler,sampler,sampler,sampler,sampler]]
 </Layout>
-<FragmentShader>
 )foodelim";
-	string post = "</FragmentShader>\n";
+static const string SHADER_PRE = "<FragmentShader>\n";
+static const string SHADER_POST = "</FragmentShader>\n";
+static const string SHADER_DEFAULT =
+R"foodelim(
+#import surface
+layout(binding = 4) uniform sampler2D tex0;
+void main() {
+	vec3 n = normalize(in_normal);
+	vec4 albedo = texture(tex0, in_uv) * material.albedo;
+	surface_out(n, albedo, material.emission, material.metal, material.roughness);
+}
+)foodelim";
 
-	return pre + build_fragment_source() + post;
+string ShaderGraph::build_source() const {
+	return SHADER_HEADER + SHADER_PRE + build_fragment_source() + SHADER_POST;
+}
+
+string ShaderGraph::build_default_source() {
+	return SHADER_HEADER + SHADER_PRE + SHADER_DEFAULT + SHADER_POST;
 }
 
 void ShaderGraph::remove(ShaderNode *n) {

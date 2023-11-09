@@ -12,6 +12,7 @@
 #include "../../lib/nix/nix.h"
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/file.h"
+#include "../../lib/os/msg.h"
 #include <y/helper/ResourceManager.h>
 
 
@@ -84,8 +85,6 @@ void DataMaterial::reset() {
 	out_changed();
 }
 
-#include <lib/os/msg.h>
-
 void DataMaterial::apply_for_rendering(int pass_no) const {
 	nix::set_material(appearance.albedo, appearance.roughness, appearance.metal, appearance.emissive);
 
@@ -136,7 +135,7 @@ void DataMaterial::ShaderData::load_from_file(Session *s) {
 
 void DataMaterial::ShaderData::set_engine_default(Session *s) {
 	file = "";
-	code = "";
+	code = ShaderGraph::build_default_source();
 	if (graph) {
 #ifdef OS_WINDOWS
 		msg_error("TODO  DataMaterial::ShaderData::set_engine_default()");
