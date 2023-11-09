@@ -45,10 +45,10 @@ void create_fake_dynamic_cube_map(nix::CubeMap *cube_map) {
 	for (int i=0; i<size; i++)
 		for (int j=0; j<size; j++) {
 			float f = 0;
-			if ((i % 16) == 0 or (j % 16) == 0)
-				f = 0.5;
-			if ((i % 64) == 0 or (j % 64) == 0)
-				f = 1;
+			if ((i % 32) == 0 or (j % 32) == 0)
+				f = 0.125;
+			if ((i % 128) == 0 or (j % 128) == 0)
+				f = 0.25;
 			im.set_pixel(i, j, color::interpolate(scheme.BACKGROUND, scheme.GRID, f));
 		}
 	for (int i=0;i<6;i++)
@@ -88,7 +88,7 @@ DrawingHelper::DrawingHelper(nix::Context *_gl, ResourceManager *rm, const Path 
 		throw;
 	}
 
-	MultiView::cube_map = new nix::CubeMap(128, "rgba:i8");
+	MultiView::cube_map = new nix::CubeMap(256, "rgba:i8");
 	create_fake_dynamic_cube_map(MultiView::cube_map.get());
 }
 

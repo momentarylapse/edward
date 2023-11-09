@@ -181,7 +181,8 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 	Array<nix::Texture*> tex;
 	for (auto &t: texture_levels)
 		tex.add(t.texture.get());
-	tex.resize(5);
+	while(tex.num < 5)
+		tex.add(session->drawing_helper->tex_white.get());
 	tex.add(MultiView::cube_map.get());
 //	if (material->cube_map)
 //		tex.add(material->cube_map);

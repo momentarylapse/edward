@@ -47,6 +47,8 @@ layout(binding=2) uniform sampler2D tex3;//sampler_shadow;
 layout(binding=3) uniform sampler2D tex4;//sampler_shadow2;
 #define tex_shadow0 tex3
 #define tex_shadow1 tex4
+/*layout(binding=6)*/ //uniform samplerCube tex6;
+//#define tex_cube tex6
 uniform samplerCube tex_cube;
 
 
@@ -214,12 +216,12 @@ vec3 _surf_light_add(Light l, vec3 p, vec3 n, vec3 albedo, float metal, float ro
         return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
-void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughness) {
+void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughness0) {
 	out_color = emission;
 	vec3 p = in_pos.xyz / in_pos.w;
 	vec3 view_dir = normalize(p - eye_pos.xyz);
 	
-	roughness = max(roughness, 0.03);
+	float roughness = max(roughness0, 0.03);
 	
 ///	float reflectivity = 1-((1-xxx.x) * (1-exp(-pow(dot(d, n),2) * 100)));
 
@@ -287,6 +289,19 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
 	
 	*/
 	
+
+#ifndef vulkan
+	if (roughness0 < 0.2 && metal > 0.8) {
+		if (textureSize(tex_cube, 0).x > 10) {
+			vec3 p = in_pos.xyz / in_pos.w;
+			mat3 R = transpose(mat3(matrix.view));
+			vec3 L = reflect(p, n);
+			vec4 cube = texture(tex_cube, R*L);
+			out_color += cube * ((metal-0.8) / 0.2) * ((0.2 - roughness0) / 0.2);
+		}
+	}
+#endif
+	
 	out_color.a = albedo.a;
 }
 
@@ -301,14 +316,6 @@ void surface_reflectivity_out(vec3 n, vec4 albedo, vec4 emission, float metal, f
 	if (!gl_FrontFacing)
 		n = - n;
 	surface_out(n, albedo, emission, metal, roughness);
-
-#ifndef vulkan
-	vec3 p = in_pos.xyz / in_pos.w;
-	mat3 R = transpose(mat3(matrix.view));
-	vec3 L = reflect(p, n);
-//	vec4 cube = texture(tex_cube, R*L);
-//	out_color += cube * 0.05;
-#endif
 
 	out_color *= 1 - transmissivity * pow(abs(n.z), 2);
 }
