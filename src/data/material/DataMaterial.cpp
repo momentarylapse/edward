@@ -109,9 +109,9 @@ void DataMaterial::apply_for_rendering(int pass_no) const {
 	if (p.culling == 0)
 		nix::set_cull(nix::CullMode::NONE);
 	else if (p.culling == 2)
-		nix::set_cull(nix::CullMode::CW);
+		nix::set_cull(nix::CullMode::FRONT);
 	else
-		nix::set_cull(nix::CullMode::DEFAULT);
+		nix::set_cull(nix::CullMode::BACK);
 }
 
 void DataMaterial::ShaderData::load_from_file(Session *s) {

@@ -749,7 +749,7 @@ void MultiView::SelectionRect::draw(DrawingHelper *drawing_helper, const vec2 &m
 	nix::set_cull(nix::CullMode::NONE);
 	nix::set_shader(drawing_helper->gl->default_2d.get());
 	drawing_helper->draw_rect(m.x, pos0.x, m.y, pos0.y, 0);
-	nix::set_cull(nix::CullMode::DEFAULT);
+	nix::set_cull(nix::CullMode::BACK);
 	drawing_helper->set_color(scheme.SELECTION_RECT_BOUNDARY);
 	drawing_helper->set_line_width(scheme.LINE_WIDTH_THIN);
 	drawing_helper->draw_line_2d(pos0.x, pos0.y, pos0.x, m.y, 0);

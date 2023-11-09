@@ -190,7 +190,7 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	}
 
 
-	nix::set_cull(nix::CullMode::DEFAULT);
+	nix::set_cull(nix::CullMode::BACK);
 	nix::enable_fog(false);
 	nix::disable_alpha();
 	nix::set_z(true,true);
