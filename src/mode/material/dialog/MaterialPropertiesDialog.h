@@ -11,9 +11,11 @@
 #include "../../../lib/hui/hui.h"
 #include "../../../data/material/DataMaterial.h"
 
+class ModeMaterial;
+
 class MaterialPropertiesDialog: public obs::Node<hui::Panel> {
 public:
-	MaterialPropertiesDialog(hui::Window *_parent, DataMaterial *_data);
+	MaterialPropertiesDialog(hui::Window *_parent, ModeMaterial *m);
 	virtual ~MaterialPropertiesDialog();
 
 	void load_data();
@@ -21,6 +23,8 @@ public:
 	void apply_data_delayed();
 	void apply_phys_data();
 	void apply_phys_data_delayed();
+
+	void set_size(int size);
 
 	void on_textures_right_click();
 	void on_textures_select();
@@ -30,6 +34,7 @@ public:
 	void on_texture_level_clear();
 
 	void on_passes_right_click();
+	void on_passes_select();
 	void on_pass_edit();
 	void on_pass_add();
 	void on_pass_copy();
@@ -42,6 +47,7 @@ public:
 
 
 private:
+	ModeMaterial *mode_material;
 	DataMaterial *data;
 	DataMaterial::AppearanceData temp;
 	DataMaterial::PhysicsData temp_phys;

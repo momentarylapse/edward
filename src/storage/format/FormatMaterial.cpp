@@ -172,11 +172,6 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		data->physics.friction_rolling = (float)f->read_int() * 0.001f;
 		data->physics.vmin_jump = (float)f->read_int() * 0.001f;
 		data->physics.vmin_sliding = (float)f->read_int() * 0.001f;
-		if (ffv >= 4){
-			// Sound
-			//NumSoundRules=f->read_intC();
-			data->Sound.NumRules=0;
-		}
 
 		//AlphaZBuffer=(TransparencyMode!=TransparencyMode::FUNCTIONS)and(TransparencyMode!=TransparencyMode::FACTOR);
 	}else if (ffv==2){

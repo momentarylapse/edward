@@ -27,8 +27,8 @@ public:
 		Path file;
 		string code;
 		ShaderGraph *graph = nullptr;
-		bool from_graph;
-		bool is_default;
+		bool from_graph = false;
+		bool is_default = false;
 		void load_from_file(Session *s);
 		void set_engine_default(Session *s);
 		void save_to_file(Session *s);
@@ -63,20 +63,10 @@ public:
 	struct PhysicsData {
 		float friction_jump, friction_static, friction_sliding, friction_rolling;
 		float vmin_jump, vmin_sliding;
-		// ...
-		bool Burnable;
-		float BurningTemperature, BurningIntensity;
 
 		void reset();
 	};
 	PhysicsData physics;
-
-	struct SoundData {
-		int NumRules;
-
-		void reset();
-	};
-	SoundData Sound;
 };
 
 #endif /* DATAMATERIAL_H_ */

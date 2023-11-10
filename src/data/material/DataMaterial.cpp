@@ -43,11 +43,6 @@ void DataMaterial::AppearanceData::reset(Session *session) {
 
 	passes.clear();
 	passes.resize(1);
-	passes[0].mode = TransparencyMode::NONE;
-	passes[0].source = passes[0].destination = nix::Alpha::ZERO;
-	passes[0].factor = 0.5f;
-	passes[0].z_buffer = true;
-	passes[0].shader.graph = nullptr;
 	passes[0].shader.reset(session);
 }
 
@@ -63,14 +58,6 @@ void DataMaterial::PhysicsData::reset() {
 	friction_rolling = 0.2f;
 	vmin_jump = 10;
 	vmin_sliding = 10;
-	Burnable = false;
-	BurningTemperature = 500;
-	BurningIntensity = 40;
-}
-
-
-void DataMaterial::SoundData::reset() {
-	NumRules = 0;
 }
 
 void DataMaterial::reset() {
@@ -78,7 +65,6 @@ void DataMaterial::reset() {
 
 	appearance.reset(session);
 	physics.reset();
-	Sound.reset();
 
 
 	reset_history();
@@ -109,6 +95,7 @@ void DataMaterial::apply_for_rendering(int pass_no) const {
 }
 
 void DataMaterial::ShaderData::load_from_file(Session *s) {
+	msg_write("LOAD");
 	if (!graph)
 		graph = new ShaderGraph(s);
 	if (file.is_empty()) {
@@ -116,9 +103,11 @@ void DataMaterial::ShaderData::load_from_file(Session *s) {
 		return;
 	}
 	if (os::fs::exists(s->resource_manager->shader_dir | file)) {
+		msg_write("...shader");
 		code = os::fs::read_text(s->resource_manager->shader_dir | file);
 	}
 	if (os::fs::exists(s->resource_manager->shader_dir | file.with(".graph"))) {
+		msg_write("...graph");
 		graph->load(s->resource_manager->shader_dir | file.with(".graph"));
 		code = graph->build_source();
 		from_graph = true;

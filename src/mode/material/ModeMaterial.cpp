@@ -246,10 +246,7 @@ void ModeMaterial::on_start() {
 	shader_edit_mode = ShaderEditMode::NONE;
 
 	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++) {
-		string f = "3f,3fn";
-		for (int j=0; j<i; j++)
-			f += ",2f";
-		vertex_buffer[i] = new nix::VertexBuffer(f);
+		vertex_buffer[i] = new nix::VertexBuffer("3f,3fn" + string(",2f").repeat(i));
 	}
 
 	shape_type = hui::config.get_str("MaterialShapeType", "teapot");
@@ -258,7 +255,7 @@ void ModeMaterial::on_start() {
 
 	multi_view->set_allow_select(false);
 
-	appearance_dialog = new MaterialPropertiesDialog(session->win, data);
+	appearance_dialog = new MaterialPropertiesDialog(session->win, this);
 	session->win->set_side_panel(appearance_dialog);
 
 	update_shape();
@@ -321,10 +318,20 @@ void ModeMaterial::set_shader_edit_mode(ShaderEditMode mode) {
 	}
 	shader_edit_mode = mode;
 	if (shader_edit_mode == ShaderEditMode::GRAPH) {
+		appearance_dialog->set_size(0);
 		shader_graph_dialog = new ShaderGraphDialog(data);
 		session->win->set_bottom_panel(shader_graph_dialog);
+	} else if (shader_edit_mode == ShaderEditMode::NONE) {
+		appearance_dialog->set_size(1);
 	}
+	out_shader_edit_mode_changed();
 	on_update_menu();
+}
+
+void ModeMaterial::select_render_pass(int p) {
+	current_render_pass = p;
+	shader_graph_dialog->set_current_render_pass(p);
+	out_current_render_pass_changed();
 }
 
 void ModeMaterial::on_update_menu() {

@@ -24,6 +24,8 @@ public:
 	virtual ~ModeMaterial();
 
 	obs::sink in_data_changed;
+	obs::source out_shader_edit_mode_changed{this, "shader-edit-mode-changed"};
+	obs::source out_current_render_pass_changed{this, "current-render-pass-changed"};
 
 	void on_start() override;
 	void on_end() override;
@@ -64,6 +66,9 @@ public:
 		CODE
 	} shader_edit_mode;
 	void set_shader_edit_mode(ShaderEditMode mode);
+
+	void select_render_pass(int p);
+	int current_render_pass = 0;
 
 
 	void set_shape_type(const string &type);

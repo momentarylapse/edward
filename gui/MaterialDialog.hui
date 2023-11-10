@@ -37,4 +37,3 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 					---|
 					Label t-rcroll "Rolling resistance" right disabled
 					SpinButton rcroll "" range=0:100:0.01
-		Label ? "" expandy

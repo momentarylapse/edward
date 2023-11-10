@@ -11,6 +11,7 @@
 #include "../../../lib/hui/hui.h"
 #include "../../../lib/math/rect.h"
 #include "../../../lib/math/vec2.h"
+#include <data/material/DataMaterial.h>
 
 class DataMaterial;
 class ShaderGraph;
@@ -61,6 +62,10 @@ public:
 
 	DataMaterial *data;
 	ShaderGraph *graph;
+
+	int current_render_pass = 0;
+	void set_current_render_pass(int p);
+	DataMaterial::RenderPassData &pass();
 
 	void update_mouse();
 	vec2 m;

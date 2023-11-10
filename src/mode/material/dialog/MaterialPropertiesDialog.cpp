@@ -20,9 +20,10 @@
 string file_secure(const Path &filename); // -> ModelPropertiesDialog
 
 
-MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMaterial *_data) {
+MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, ModeMaterial *_m) {
 	from_resource("material_dialog");
-	data = _data;
+	mode_material = _m;
+	data = _m->data;
 
 	temp = data->appearance;
 	temp_phys = data->physics;
@@ -42,6 +43,7 @@ MaterialPropertiesDialog::MaterialPropertiesDialog(hui::Window *_parent, DataMat
 	event("texture-level-clear", [this] { on_texture_level_clear(); });
 
 	event("passes", [this] { on_pass_edit(); });
+	event_x("passes", hui::EventID::SELECT, [this] { on_passes_select(); });
 	event_x("passes", hui::EventID::RIGHT_BUTTON_DOWN, [this] { on_passes_right_click(); });
 	event("render-pass-edit", [this] { on_pass_edit(); });
 	event("render-pass-add", [this] { on_pass_add(); });
@@ -100,6 +102,16 @@ void MaterialPropertiesDialog::load_data() {
 
 MaterialPropertiesDialog::~MaterialPropertiesDialog() {
 	data->unsubscribe(this);
+}
+
+void MaterialPropertiesDialog::set_size(int size) {
+	expand_row("grp-textures", 0, size >= 1);
+	//expand_row("grp-passes", 0, size >= 1);
+	hide_control("textures", size < 1); // FIXME hui expander
+	//hide_control("passes", size < 1);
+	hide_control("grp-textures", size < 1);
+	//hide_control("grp-passes", size < 1);
+	hide_control("grp-friction", size < 1);
 }
 
 void MaterialPropertiesDialog::on_data_update() {
@@ -162,8 +174,13 @@ void MaterialPropertiesDialog::on_texture_level_clear() {
 
 
 
+void MaterialPropertiesDialog::on_passes_select() {
+	int sel = get_int("passes");
+	mode_material->select_render_pass(sel);
+}
+
 void MaterialPropertiesDialog::on_passes_right_click() {
-	int sel = get_int("");
+	int sel = get_int("passes");
 	textures_popup->enable("render-pass-edit", sel >= 0);
 	textures_popup->enable("render-pass-copy", sel >= 0);
 	textures_popup->enable("render-pass-delete", sel >= 0);
