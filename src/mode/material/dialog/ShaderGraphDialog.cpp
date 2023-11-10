@@ -106,10 +106,8 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) :
 				return;
 			}
 			pass().shader.file = "";
-			pass().shader.is_default = false;
-			data->reset_history(); // TODO: actions
+			changed();
 			request_optimal_view();
-			data->out_changed();
 		});
 	});
 	event("shader-default", [this] {
