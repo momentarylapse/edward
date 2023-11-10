@@ -262,6 +262,32 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 	delete f;
 }
 
+
+
+string alpha_to_str(Alpha a) {
+	if (a == Alpha::ZERO)
+		return "zero";
+	if (a == Alpha::ONE)
+		return "one";
+	if (a == Alpha::SOURCE_COLOR)
+		return "source-color";
+	if (a == Alpha::SOURCE_INV_COLOR)
+		return "source-inv-color";
+	if (a == Alpha::SOURCE_ALPHA)
+		return "source-alpha";
+	if (a == Alpha::SOURCE_INV_ALPHA)
+		return "source-inv-alpha";
+	if (a == Alpha::DEST_COLOR)
+		return "dest-color";
+	if (a == Alpha::DEST_INV_COLOR)
+		return "dest-inv-color";
+	if (a == Alpha::DEST_ALPHA)
+		return "dest-alpha";
+	if (a == Alpha::DEST_INV_ALPHA)
+		return "dest-inv-alpha";
+	return "???";
+}
+
 void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 	Configuration c;
 
@@ -283,8 +309,8 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 			c.set_float(key + ".factor", p.factor);
 		} else if (p.mode == TransparencyMode::FUNCTIONS) {
 			c.set_str(key + ".mode", "function");
-			c.set_int(key + ".source", (int)p.source);
-			c.set_int(key + ".dest", (int)p.destination);
+			c.set_str(key + ".source", alpha_to_str(p.source));
+			c.set_str(key + ".dest", alpha_to_str(p.destination));
 		} else if (p.mode == TransparencyMode::MIX) {
 			c.set_str(key + ".mode", "mix");
 		} else if (p.mode == TransparencyMode::COLOR_KEY_HARD) {
