@@ -140,7 +140,7 @@ EdwardWindow::EdwardWindow(Session *_session) :
 	set_target("vgrid");
 	add_grid("", 0, 0, "root-table");
 	set_target("root-table");
-	add_drawing_area("!grabfocus,opengl=4.5", 0, 0, "nix-area");
+	add_drawing_area("!mainwindowcontrol,opengl=4.5", 0, 0, "nix-area");
 	add_expander("!slide=left", 1, 0, "side-bar-revealer");
 	set_target("side-bar-revealer");
 	add_grid("!noexpandx,width=360", 0, 0, "side-bar-grid");
