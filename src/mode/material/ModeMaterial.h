@@ -44,7 +44,7 @@ public:
 
 	bool optimize_view() override;
 
-	nix::VertexBuffer *MaterialVB[MATERIAL_MAX_TEXTURES + 1];
+	owned<nix::VertexBuffer> vertex_buffer[MATERIAL_MAX_TEXTURES + 1];
 	MaterialPropertiesDialog *appearance_dialog = nullptr;
 	ShaderGraphDialog *shader_graph_dialog = nullptr;
 
@@ -56,7 +56,7 @@ public:
 
 	string shape_type;
 	bool shape_smooth;
-	Geometry *geo = nullptr;
+	owned<Geometry> geo;
 
 	enum class ShaderEditMode {
 		NONE,

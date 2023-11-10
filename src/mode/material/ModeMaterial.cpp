@@ -32,16 +32,12 @@ const int MATERIAL_DETAIL = 32;
 const float MATERIAL_RADIUS1 = 80;
 const float MATERIAL_RADIUS2 = 50;
 
-ModeMaterial *mode_material = NULL;
-
 #define __MATERIAL_MAX_TEXTURES		4
 
 ModeMaterial::ModeMaterial(Session *_s, MultiView::MultiView *mv) :
 	Mode(_s, "Material", nullptr, new DataMaterial(_s), mv, "menu_material"),
 	in_data_changed(this, [this] { on_data_update(); })
 {
-	geo = nullptr;
-
 	appearance_dialog = nullptr;
 	shader_graph_dialog = nullptr;
 	shader_edit_mode = ShaderEditMode::NONE;
@@ -187,7 +183,8 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 		data->apply_for_rendering(i);
 		win->set_shader(shaders[i].get());
 
-		nix::draw_triangles(MaterialVB[max(data->appearance.texture_files.num, 1)]);
+		//nix::draw_triangles(vertex_buffer[max(data->appearance.texture_files.num, 1)]);
+		nix::draw_triangles(vertex_buffer[1].get());
 	}
 
 
@@ -220,11 +217,10 @@ void ModeMaterial::on_end() {
 	t->reset();
 	t->enable(false);
 
-	if (geo)
-		delete geo;
+	geo = nullptr;
 
 	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++)
-		delete MaterialVB[i];
+		vertex_buffer[i] = nullptr;
 
 	//shader->unref();
 	shaders.clear();
@@ -253,7 +249,7 @@ void ModeMaterial::on_start() {
 		string f = "3f,3fn";
 		for (int j=0; j<i; j++)
 			f += ",2f";
-		MaterialVB[i] = new nix::VertexBuffer(f);
+		vertex_buffer[i] = new nix::VertexBuffer(f);
 	}
 
 	shape_type = hui::config.get_str("MaterialShapeType", "teapot");
@@ -282,8 +278,6 @@ void ModeMaterial::set_shape_smooth(bool smooth) {
 
 void ModeMaterial::update_shape() {
 	bool needs_opt_view = !geo;
-	if (geo)
-		delete(geo);
 	if (shape_type == "torus")
 		geo = new GeometryTorus(v_0, vec3::EZ, MATERIAL_RADIUS1, MATERIAL_RADIUS2, MATERIAL_DETAIL*2, MATERIAL_DETAIL);
 	else if (shape_type == "torusknot")
@@ -301,7 +295,7 @@ void ModeMaterial::update_shape() {
 		geo->smoothen();
 
 	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++) {
-		geo->build(MaterialVB[i]);
+		geo->build(vertex_buffer[i].get());
 	}
 	on_update_menu();
 	if (needs_opt_view)
