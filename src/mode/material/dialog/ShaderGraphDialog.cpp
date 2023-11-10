@@ -30,6 +30,10 @@ const float NODE_ROUNDNESS = 8;
 const float MIN_VIEW_SCALE = 0.2f;
 const float MAX_VIEW_SCALE = 2.0f;
 
+namespace hui {
+	extern bool color_painter_linear;
+}
+
 
 string file_secure(const Path &filename); // -> ModelPropertiesDialog
 
@@ -68,7 +72,7 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
 
 	from_source("Grid grid '' vertical\n"\
 			"\tGrid ? ''\n"
-			"\t\tDrawingArea area '' grabfocus expandx expandy\n"\
+			"\t\tDrawingArea area '' grabfocus expandx expandy height=350\n"\
 			"\t\tMultilineEdit source '' disabled\n"\
 			"\tGrid bb '' buttonbar\n"\
 			"\t\tCheckBox show-source 'Show source'\n"
@@ -256,7 +260,7 @@ void draw_node_param(Painter *p, ShaderGraphDialog *dlg, ShaderNode *n, ShaderNo
 
 	color bg = color::interpolate(scheme.BACKGROUND, scheme.GRID, 0.5f);
 	if (pp.type == ShaderValueType::COLOR) {
-		bg = pp.get_color().lin_to_srgb();
+		bg = pp.get_color();
 	}
 	p->set_color(bg);
 	p->set_roundness(3);
@@ -384,6 +388,7 @@ void ShaderGraphDialog::draw_cable(Painter *p, ShaderNode *source, int source_po
 }
 
 void ShaderGraphDialog::on_draw(Painter *p) {
+	hui::color_painter_linear = true;
 	//int w = p->width;
 	//int h = p->height;
 	if (_optimal_view_requested)
@@ -426,6 +431,7 @@ void ShaderGraphDialog::on_draw(Painter *p) {
 			p->draw_str({10, 28}, "not from graph!");
 		}
 	}
+	hui::color_painter_linear = false;
 }
 
 void ShaderGraphDialog::on_key_down() {
@@ -595,7 +601,7 @@ void ShaderGraphDialog::on_mouse_move() {
 
 void ShaderGraphDialog::on_mouse_wheel() {
 	auto e = hui::get_event();
-	view_scale = clamp(view_scale * exp(e->scroll.y * 0.05f), MIN_VIEW_SCALE, MAX_VIEW_SCALE);
+	view_scale = clamp(view_scale * exp(-e->scroll.y * 0.05f), MIN_VIEW_SCALE, MAX_VIEW_SCALE);
 
 	view_offset = m -  e->m / view_scale;
 
