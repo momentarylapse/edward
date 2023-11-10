@@ -17,10 +17,12 @@ class DataMaterial;
 class ShaderGraph;
 class ShaderNode;
 
-class ShaderGraphDialog : public hui::Panel {
+class ShaderGraphDialog : public obs::Node<hui::Panel> {
 public:
 	ShaderGraphDialog(DataMaterial *data);
 	virtual ~ShaderGraphDialog();
+
+	obs::sink in_data_changed;
 
 	void draw_node(Painter *p, ShaderNode *n);
 	void draw_cable(Painter *p, ShaderNode *source, int source_port, ShaderNode *dest, int dest_port);
@@ -36,6 +38,9 @@ public:
 
 	void on_update();
 	void on_reset();
+	void on_data_changed();
+
+	void changed();
 
 	void request_optimal_view();
 	bool _optimal_view_requested;

@@ -17,16 +17,13 @@
 
 
 
-DataMaterial::DataMaterial(Session *s, bool with_graph) :
+DataMaterial::DataMaterial(Session *s) :
 	Data(s, FD_MATERIAL)
 {
 	reset();
-	if (with_graph)
-		appearance.passes[0].shader.graph = new ShaderGraph(s);
 }
 
 DataMaterial::~DataMaterial() {
-	reset();
 	for (auto &p: appearance.passes)
 		if (p.shader.graph)
 			delete p.shader.graph;
@@ -41,12 +38,21 @@ void DataMaterial::AppearanceData::reset(Session *session) {
 	metal = 0;
 	emissive = Black;
 
+
+	for (auto &p: passes) {
+		if (p.shader.graph)
+			delete p.shader.graph;
+		p.shader.graph = nullptr;
+	}
 	passes.clear();
+
 	passes.resize(1);
 	passes[0].shader.reset(session);
 }
 
 void DataMaterial::ShaderData::reset(Session *s) {
+	if (!graph)
+		graph = new ShaderGraph(s);
 	set_engine_default(s);
 }
 
@@ -96,8 +102,6 @@ void DataMaterial::apply_for_rendering(int pass_no) const {
 
 void DataMaterial::ShaderData::load_from_file(Session *s) {
 	msg_write("LOAD");
-	if (!graph)
-		graph = new ShaderGraph(s);
 	if (file.is_empty()) {
 		set_engine_default(s);
 		return;
@@ -119,15 +123,13 @@ void DataMaterial::ShaderData::load_from_file(Session *s) {
 
 void DataMaterial::ShaderData::set_engine_default(Session *s) {
 	file = "";
-	code = ShaderGraph::build_default_source();
-	if (graph) {
 #ifdef OS_WINDOWS
-		msg_error("TODO  DataMaterial::ShaderData::set_engine_default()");
+	msg_error("TODO  DataMaterial::ShaderData::set_engine_default()");
+	code = ShaderGraph::build_default_source();
 #else
-		graph->make_default_for_engine();
-		code = graph->build_source();
+	graph->make_default_for_engine();
+	code = graph->build_source();
 #endif
-	}
 	from_graph = true;
 	is_default = true;
 }

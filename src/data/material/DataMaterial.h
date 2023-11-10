@@ -9,6 +9,7 @@
 #define DATAMATERIAL_H_
 
 #include "../Data.h"
+#include "ShaderGraph.h"
 #include <y/world/Material.h>
 #include <graphics-impl.h>
 
@@ -16,7 +17,7 @@ class ShaderGraph;
 
 class DataMaterial: public Data {
 public:
-	DataMaterial(Session *s, bool with_graph = true);
+	DataMaterial(Session *s);
 	virtual ~DataMaterial();
 
 	void reset() override;

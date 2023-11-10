@@ -61,7 +61,9 @@ public:
 	}
 };
 
-ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) {
+ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) :
+		in_data_changed(this, &ShaderGraphDialog::on_data_changed)
+{
 	data = _data;
 
 	m = {-1,-1};
@@ -366,8 +368,6 @@ void draw_arrow(Painter *p, const vec2 &m, const vec2 &_d, float length) {
 }
 
 void ShaderGraphDialog::draw_cable(Painter *p, ShaderNode *source, int source_port, ShaderNode *dest, int dest_port) {
-	p->set_color(Blue);
-	p->set_line_width(2);
 
 	vec2 p0 = vec2(source->pos.x + NODE_WIDTH + 5, node_get_out_y(source, source_port));
 	vec2 p1 = vec2(dest->pos.x - 5, node_get_in_y(dest, dest_port));
@@ -377,11 +377,21 @@ void ShaderGraphDialog::draw_cable(Painter *p, ShaderNode *source, int source_po
 	inter.add2(p0, {length,0});
 	inter.add2(p1, {length,0});
 
-	p->set_line_dash({5, 2}, 0);
 	Array<vec2> cc;
 	for (float t=0; t<=1.0f; t+=0.025f)
 		cc.add(inter.get(t));
+
+	// outer glow
+	p->set_color(Blue.with_alpha(0.3));
+	p->set_line_width(5);
 	p->draw_lines(cc);
+
+	// inner dashed
+	p->set_line_dash({5, 2}, 0);
+	p->set_color(Blue);
+	p->set_line_width(2);
+	p->draw_lines(cc);
+
 	p->set_line_dash({}, 0);
 
 	draw_arrow(p, inter.get(0.5f), inter.getTang(0.5f), min(length / 7, 14.0f));
@@ -399,7 +409,7 @@ void ShaderGraphDialog::on_draw(Painter *p) {
 	float trafo[4] = {view_scale, 0, 0, view_scale};
 	p->set_transform(trafo, -view_offset*view_scale);
 
-	if (pass().shader.from_graph and !pass().shader.is_default) {
+	if (pass().shader.from_graph) {
 		for (auto *n: weak(graph->nodes))
 			draw_node(p, n);
 
@@ -505,10 +515,10 @@ void ShaderGraphDialog::on_left_button_down() {
 	selection = hover;
 	if (selection.type == HoverData::Type::PORT_IN) {
 		graph->unconnect(nullptr, -1, selection.node, selection.port);
-		on_update();
+		changed();
 	} else if (selection.type == HoverData::Type::PORT_OUT) {
 		graph->unconnect(selection.node, selection.port, nullptr, -1);
-		on_update();
+		changed();
 	} else if (selection.type == HoverData::Type::PARAMETER) {
 		auto &pp = selection.node->params[selection.param];
 		if (pp.type == ShaderValueType::FLOAT) {
@@ -524,23 +534,23 @@ void ShaderGraphDialog::on_left_button_down() {
 			color col = pp.get_color();
 			hui::select_color(win, "", col).then([this, &pp] (const color &c) {
 				pp.set_color(c);
-				on_update();
+				changed();
 			});
 		} else if (pp.type == ShaderValueType::INT) {
 			if (pp.options.head(7) == "choice=") {
 				auto xx = pp.options.sub(7).explode("|");
 				pp.value = i2s(loop(pp.value._int() + 1, 0, xx.num));
-				on_update();
+				changed();
 			}
 		} else if (pp.type == ShaderValueType::LITERAL) {
 			small_text_input_dialog(win, pp.value, [this, &pp] (const string &s) {
 				pp.value = s;
-				on_update();
+				changed();
 			});
 		} else if (pp.type == ShaderValueType::TEXT) {
 			large_text_input_dialog(win, pp.value, [this, &pp] (const string &s) {
 				pp.value = s;
-				on_update();
+				changed();
 			});
 		}
 	} else if (selection.type == HoverData::Type::NODE) {
@@ -617,6 +627,16 @@ void ShaderGraphDialog::on_update() {
 	pass().shader.is_default = false;
 	data->reset_history(); // TODO: actions
 	data->out_changed();
+
+	redraw("area");
+}
+
+void ShaderGraphDialog::on_data_changed() {
+	redraw("area");
+}
+
+void ShaderGraphDialog::changed() {
+	on_update();
 }
 
 void ShaderGraphDialog::on_reset() {

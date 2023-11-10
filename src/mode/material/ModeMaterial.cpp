@@ -134,7 +134,7 @@ void ModeMaterial::update_shader(int pass_no) {
 
 void ModeMaterial::on_command(const string & id) {
 	if (id == "new")
-		_new();
+		session->universal_new(FD_MATERIAL);
 	if (id == "open")
 		open();
 	if (id == "save")
@@ -198,12 +198,6 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 
 void ModeMaterial::open() {
 	session->universal_open(FD_MATERIAL);
-	/*if (!storage->open(data))
-		return false;
-
-	optimize_view();
-	session->set_mode(mode_material);
-	return true;*/
 }
 
 
@@ -330,7 +324,8 @@ void ModeMaterial::set_shader_edit_mode(ShaderEditMode mode) {
 
 void ModeMaterial::select_render_pass(int p) {
 	current_render_pass = p;
-	shader_graph_dialog->set_current_render_pass(p);
+	if (shader_graph_dialog)
+		shader_graph_dialog->set_current_render_pass(p);
 	out_current_render_pass_changed();
 }
 

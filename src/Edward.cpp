@@ -65,7 +65,7 @@ void update_file(const Path &filename, bool allow_write) {
 		data = new DataModel(&session);
 		DataModelAllowUpdating = false;
 	} else if (ext == "material") {
-		data = new DataMaterial(&session, false);
+		data = new DataMaterial(&session);
 	} else if (ext == "world") {
 		data = new DataWorld(&session);
 	}
