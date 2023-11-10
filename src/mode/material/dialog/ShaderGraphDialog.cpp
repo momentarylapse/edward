@@ -40,9 +40,12 @@ string file_secure(const Path &filename); // -> ModelPropertiesDialog
 rect node_area(ShaderNode *n);
 
 bool test_shader_file(Session *session, const Path &filename) {
-	auto shader = session->resource_manager->load_surface_shader(filename, "", "default", "");
-	msg_todo("TESTME  test_shader_file");
-	return shader.get();
+	try {
+		auto shader = session->resource_manager->load_surface_shader(filename, "forward", "default", "");
+		return shader.get();
+	} catch (...) {
+		return false;
+	}
 }
 
 class MultiChoice : public hui::Dialog {
@@ -81,8 +84,7 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) :
 			"\t\tButton update 'Update'\n"
 			"\t\tButton shader-new 'New'\n"
 			"\t\tButton shader-load 'Load'\n"
-			"\t\tButton shader-save 'Save'\n"
-			"\t\tButton shader-default 'Default'\n");
+			"\t\tButton shader-save 'Save'\n");
 	event_xp("area", "hui:draw", [this] (Painter *p){ on_draw(p); });
 	event_x("area", "hui:mouse-move", [this] { on_mouse_move(); });
 	event_x("area", "hui:mouse-wheel", [this] { on_mouse_wheel(); });
@@ -110,18 +112,13 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) :
 			request_optimal_view();
 		});
 	});
-	event("shader-default", [this] {
-		pass().shader.set_engine_default(data->session);
-		data->reset_history(); // TODO: actions
-		data->out_changed();
-	});
 	event("shader-load", [this] {
 		data->session->storage->file_dialog(FD_SHADERFILE,false,true).then([this] (const auto& p){
 			if (test_shader_file(data->session, p.relative)) {
 				pass().shader.file = p.relative;
 				pass().shader.load_from_file(data->session);
+				changed();
 				request_optimal_view();
-				data->out_changed();
 			} else {
 				data->session->error(_("Error in shader file:\n") + data->session->gl->shader_error);
 			}
