@@ -140,6 +140,7 @@ void ShaderGraph::load(const Path &filename) {
 }
 
 void ShaderGraph::save(const Path &filename) {
+	msg_write("saving " + str(filename));
 	xml::Parser p;
 	xml::Element root = {"ShaderGraph"};
 	xml::Element enodes = {"Nodes"};

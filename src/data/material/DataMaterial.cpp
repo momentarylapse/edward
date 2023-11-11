@@ -134,6 +134,7 @@ void DataMaterial::ShaderData::set_engine_default(Session *s) {
 void DataMaterial::ShaderData::save_to_file(Session *s) {
 	if (file) {
 		code = graph->build_source();
+		msg_write("saving " + str(s->resource_manager->shader_dir | file));
 		os::fs::write_text(s->resource_manager->shader_dir | file, code);
 		graph->save(s->resource_manager->shader_dir | file.with(".graph"));
 		from_graph = true;

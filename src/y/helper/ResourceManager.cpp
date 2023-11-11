@@ -29,7 +29,8 @@ ResourceManager::ResourceManager(Context *_ctx) {
 	tex_white = new Texture();
 	tex_white->write(im);
 #else
-	tex_white = ctx->tex_white;
+	if (ctx)
+		tex_white = ctx->tex_white;
 #endif
 }
 

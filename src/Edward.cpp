@@ -46,38 +46,64 @@ EdwardApp::EdwardApp() :
 
 extern bool DataModelAllowUpdating;
 void update_file(const Path &filename, bool allow_write) {
+	//Session session;
 
-	kaba::init();
-	Session session;
+	auto session = new Session;
+	session->resource_manager = new ResourceManager(nullptr);
+	auto storage = new Storage(session);
 
-	int pp = filename.str().find("/Objects/", 0);
+
+	auto _filename = filename.absolute().canonical();
+
+	storage->guess_root_directory(_filename);
+	session->resource_manager->shader_dir = storage->root_dir_kind[FD_MATERIAL];
+	//msg_write(storage->root_dir.str());
+
+	/*int pp = filename.str().find("/Objects/", 0);
 	if (pp > 0) {
 		kaba::config.directory = Path(filename.str().sub(0, pp)) | "Scripts";
 		//msg_write(kaba::config.directory.str());
-	}
+	}*/
 
 
 	Data *data = nullptr;
 	string ext = filename.extension();
+
+	if (ext == "shader") {
+		auto mat = new DataMaterial(session);
+		msg_write("loading " + filename.str());
+		auto &s = mat->appearance.passes[0].shader;
+		s.file = _filename.relative_to(storage->root_dir_kind[FD_MATERIAL]);
+		s.load_from_file(session);
+		if (s.from_graph)
+			s.save_to_file(session);
+		delete mat;
+		delete storage;
+		delete session;
+		return;
+	}
+
+
 	if (ext == "model") {
 		//MaterialInit();
-		session.resource_manager->material_manager->set_default(new Material(session.resource_manager));
-		data = new DataModel(&session);
+		session->resource_manager->material_manager->set_default(new Material(session->resource_manager));
+		data = new DataModel(session);
 		DataModelAllowUpdating = false;
 	} else if (ext == "material") {
-		data = new DataMaterial(&session);
+		data = new DataMaterial(session);
 	} else if (ext == "world") {
-		data = new DataWorld(&session);
+		data = new DataWorld(session);
 	}
 
 	if (data) {
-		auto storage = new Storage(&session);
 		msg_write("loading " + filename.str());
 		storage->load(filename, data, false);
 		if (allow_write)
 			storage->save(filename, data);
 		delete data;
 	}
+	delete storage;
+	delete session;
 }
 
 void test_gl();
