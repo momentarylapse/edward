@@ -212,9 +212,11 @@ xfer<Material> MaterialManager::load(const Path &filename) {
 		else if (mode == "cw" or mode == "front")
 			p.cull_mode = 2;
 
-		mode = c.get_str(key + ".mode", "");
-		if (mode == "factor") {
-			p.mode = TransparencyMode::FACTOR;
+		mode = c.get_str(key + ".mode", "solid");
+		if (mode == "solid" or mode == "none") {
+			p.mode = TransparencyMode::NONE;
+		} else if (mode == "factor") {
+				p.mode = TransparencyMode::FACTOR;
 			p.factor = c.get_float(key + ".factor");
 			p.z_buffer = false;
 		} else if (mode == "function") {

@@ -101,17 +101,14 @@ void DataMaterial::apply_for_rendering(int pass_no) const {
 }
 
 void DataMaterial::ShaderData::load_from_file(Session *s) {
-	msg_write("LOAD");
 	if (file.is_empty()) {
 		set_engine_default(s);
 		return;
 	}
 	if (os::fs::exists(s->resource_manager->shader_dir | file)) {
-		msg_write("...shader");
 		code = os::fs::read_text(s->resource_manager->shader_dir | file);
 	}
 	if (os::fs::exists(s->resource_manager->shader_dir | file.with(".graph"))) {
-		msg_write("...graph");
 		graph->load(s->resource_manager->shader_dir | file.with(".graph"));
 		code = graph->build_source();
 		from_graph = true;

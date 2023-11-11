@@ -81,8 +81,10 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 			auto &p = data->appearance.passes[index];
 			if (!p.shader.graph)
 				p.shader.graph = new ShaderGraph(session);
-			string m = c.get_str(key + ".mode", "");
-			if (m == "factor") {
+			string m = c.get_str(key + ".mode", "mode");
+			if (m == "solid" or m == "none") {
+				p.mode = TransparencyMode::NONE;
+			} else if (m == "factor") {
 				p.mode = TransparencyMode::FACTOR;
 				p.factor = c.get_float(key + ".factor");
 				p.z_buffer = false;
