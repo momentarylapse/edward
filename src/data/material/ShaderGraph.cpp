@@ -224,7 +224,7 @@ string ShaderGraph::build_fragment_source() const {
 	string source;
 	if (ctx.dependencies.contains("import:surface")) {
 		source = "#import surface\n";
-		ctx.dependencies.erase("out:color");
+		/*ctx.dependencies.erase("out:color");
 		ctx.dependencies.erase("in:light");
 		ctx.dependencies.erase("in:fog");
 		ctx.dependencies.erase("in:normal");
@@ -233,7 +233,9 @@ string ShaderGraph::build_fragment_source() const {
 		ctx.dependencies.erase("in:eye");
 		ctx.dependencies.erase("in:matrix");
 		ctx.dependencies.erase("in:material");
-		ctx.dependencies.erase("cubemap");
+		ctx.dependencies.erase("cubemap");*/
+	} else {
+		source = "#import basic-data\n";
 	}
 
 	source += ctx.build_uniform_vars();

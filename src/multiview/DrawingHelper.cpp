@@ -71,6 +71,7 @@ DrawingHelper::DrawingHelper(nix::Context *_gl, ResourceManager *rm, const Path 
 
 		resource_manager->default_shader = "default.shader";
 
+		resource_manager->load_shader(dir | "shader/module-basic-data.shader");
 		resource_manager->load_shader(dir | "shader/module-surface.shader");
 		//resource_manager->load_shader(dir | "shader/module-surface-simple.shader");
 

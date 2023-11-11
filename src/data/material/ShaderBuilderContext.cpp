@@ -74,6 +74,7 @@ string ShaderBuilderContext::build_uniform_vars() {
 string ShaderBuilderContext::build_helper_vars() {
 	string source;
 	auto vars = dependencies;
+#if 0
 	if (vars.contains("in:light")) {
 		source +=
 R"foodelim(struct Light {
@@ -121,6 +122,7 @@ uniform Material material;
 	if (vars.contains("in:eye")) {
 		source += "uniform vec3 eye_pos;\n";
 	}
+#endif
 	if (vars.contains("texture0")) {
 		source += "layout(binding=4) uniform sampler2D tex0;\n";
 	}
@@ -133,6 +135,7 @@ uniform Material material;
 	if (vars.contains("texture3")) {
 		source += "layout(binding=7) uniform sampler2D tex3;\n";
 	}
+#if 0
 	if (vars.contains("cubemap")) {
 		source += "uniform samplerCube tex_cube;\n";
 	}
@@ -151,6 +154,7 @@ layout(binding=0) uniform Matrix matrix;
 	if (vars.contains("out:color")) {
 		source += "layout(location=0) out vec4 out_color;\n";
 	}
+#endif
 
 
 	return source;
