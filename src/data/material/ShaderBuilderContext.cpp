@@ -122,7 +122,6 @@ uniform Material material;
 	if (vars.contains("in:eye")) {
 		source += "uniform vec3 eye_pos;\n";
 	}
-#endif
 	if (vars.contains("texture0")) {
 		source += "layout(binding=4) uniform sampler2D tex0;\n";
 	}
@@ -135,7 +134,6 @@ uniform Material material;
 	if (vars.contains("texture3")) {
 		source += "layout(binding=7) uniform sampler2D tex3;\n";
 	}
-#if 0
 	if (vars.contains("cubemap")) {
 		source += "uniform samplerCube tex_cube;\n";
 	}

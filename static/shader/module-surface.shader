@@ -4,61 +4,9 @@
 </Layout>
 <Module>
 
-#ifdef vulkan
-#else
-
-struct Material {
-	vec4 albedo, emission;
-	float roughness, metal;
-};
-uniform Material material;
-struct Matrix {
-	mat4 model, view, project;
-};
-/*layout(binding = 0)*/ uniform Matrix matrix;
-
-#endif
+#import basic-data
 
 
-uniform vec3 eye_pos;
-
-
-struct Light {
-	mat4 proj;
-	vec4 pos;
-	vec4 dir;
-	vec4 color;
-	float radius, theta, harshness;
-};
-uniform int num_lights = 0;
-uniform int shadow_index = -1;
-
-/*layout(binding=1)*/ uniform LightData {
-	Light light[32];
-};
-
-struct Fog {
-	vec4 color;
-	float distance;
-};
-/*layout(binding = 3)*/ uniform Fog fog;
-
-layout(binding=2) uniform sampler2D tex3;//sampler_shadow;
-layout(binding=3) uniform sampler2D tex4;//sampler_shadow2;
-#define tex_shadow0 tex3
-#define tex_shadow1 tex4
-/*layout(binding=6)*/ //uniform samplerCube tex6;
-//#define tex_cube tex6
-uniform samplerCube tex_cube;
-
-
-layout(location=0) in vec4 in_pos; // view space
-layout(location=1) in vec3 in_normal;
-layout(location=2) in vec2 in_uv;
-
-layout(location=0) out vec4 out_color;
-
-const float PI = 3.141592654;
 
 // https://learnopengl.com/PBR/Theory
 // https://learnopengl.com/PBR/Lighting
