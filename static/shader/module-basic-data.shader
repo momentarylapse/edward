@@ -24,10 +24,6 @@ struct Light {
 	float radius, theta, harshness;
 };
 
-struct Fog {
-	vec4 color;
-	float distance;
-};
 
 
 #ifdef vulkan
@@ -36,22 +32,23 @@ struct Fog {
   Vulkan
 \*---------------------------------------*/
 
-layout(binding = 0) uniform ParameterData {
+layout(binding = 8) uniform ParameterData {
 	Matrices matrix;
 	Material material;
 	int num_lights;
 	int shadow_index;
 };
-layout(binding = 1) uniform LightData {
+layout(binding = 9) uniform LightData {
 	Light light[32];
 };
 
-layout(binding = 4) uniform sampler2D tex0;
-layout(binding = 5) uniform sampler2D tex1;
-layout(binding = 6) uniform sampler2D tex2;
-layout(binding = 2) uniform sampler2D tex_shadow0;
-layout(binding = 3) uniform sampler2D tex_shadow1;
-layout(binding = 8) uniform samplerCube tex_cube;
+layout(binding = 0) uniform sampler2D tex0;
+layout(binding = 1) uniform sampler2D tex1;
+layout(binding = 2) uniform sampler2D tex2;
+layout(binding = 3) uniform sampler2D tex3;
+layout(binding = 5) uniform sampler2D tex_shadow0;
+layout(binding = 6) uniform sampler2D tex_shadow1;
+layout(binding = 7) uniform samplerCube tex_cube;
 
 #else
 
@@ -71,16 +68,17 @@ layout(binding = 5) uniform samplerCube tex_cube;//sampler_shadow2;
 
 
 uniform Material material;
-//struct Matrix { mat4 model, view, project; };
-///*layout(binding = 0)*/ uniform Matrix matrix;
+uniform Matrices matrix;
+
+uniform int num_lights;
+uniform int shadow_index = -1;
+layout(std140) uniform LightData {
+	Light light[32];
+};
+//uniform Fog fog;
 
 //uniform vec3 eye_pos;
 const vec3 eye_pos = vec3(0,0,0);
-
-struct Matrix { mat4 model, view, project; };
-/*layout(binding = 0)*/ uniform Matrix matrix;
-
-/*layout(binding = 3)*/ uniform Fog fog;
 
 #endif
 
@@ -88,11 +86,12 @@ struct Matrix { mat4 model, view, project; };
 layout(location = 0) in vec4 in_pos; // view space
 layout(location = 1) in vec3 in_normal;
 layout(location = 2) in vec2 in_uv;
+layout(location = 3) in vec4 in_color;
 layout(location = 0) out vec4 out_color;
 
 
-
 const float PI = 3.141592654;
+
 
 
 </Module>

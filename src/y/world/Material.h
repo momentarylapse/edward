@@ -67,11 +67,11 @@ public:
 	bool cast_shadow;
 
 	struct RenderPassData {
-		TransparencyMode mode;
+		TransparencyMode mode = TransparencyMode::NONE;
 		Alpha source, destination;
-		float factor;
-		bool z_buffer;
-		int cull_mode;
+		float factor = 1;
+		bool z_buffer = true;
+		int cull_mode = 1;
 		Path shader_path;
 	};
 	int num_passes = 1;

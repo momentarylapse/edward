@@ -5,8 +5,6 @@
 <FragmentShader>
 #import surface
 
-layout(binding=4) uniform sampler2D tex0;
-
 void main() {
 	// Mesh
 	vec3 tmp1 = in_pos.xyz / in_pos.w;

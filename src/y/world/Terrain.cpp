@@ -90,8 +90,7 @@ bool Terrain::load(ResourceManager *resource_manager, const Path &_filename_, bo
 				if (num_textures > material->textures.num)
 					material->textures.resize(num_textures);
 				for (int i=0;i<num_textures;i++)
-					if (texture_file[i])
-						material->textures[i] = resource_manager->load_texture(texture_file[i]);
+					material->textures[i] = resource_manager->load_texture(texture_file[i]);
 
 				// height
 				for (int x=0;x<num_x+1;x++)

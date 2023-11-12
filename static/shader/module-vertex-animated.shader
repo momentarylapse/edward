@@ -3,10 +3,10 @@
 </Layout>
 <Module>
 
-struct Matrix {
+struct Matrices {
 	mat4 model, view, project;
 };
-/*layout(binding=0)*/ uniform Matrix matrix;
+/*layout(binding=0)*/ uniform Matrices matrix;
 
 struct BoneData {
 	mat4 matrix[128];

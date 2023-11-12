@@ -30,8 +30,8 @@ public:
 	xfer<Material> load_material(const Path &filename);
 	xfer<Model> load_model(const Path &filename);
 
-	xfer<Shader> __load_shader(const Path& path);
-	xfer<Shader> __create_shader(const string& source);
+	xfer<Shader> __load_shader(const Path& path, const string &overwrite_bindings);
+	xfer<Shader> __create_shader(const string& source, const string &overwrite_bindings);
 
 	Path texture_dir;
 	Path shader_dir;
