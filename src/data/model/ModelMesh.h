@@ -95,6 +95,8 @@ public:
 	void _shift_vertex_links(int offset, int delta);
 	void _add_polygon(const Array<int> &v, int material, const Array<vec3> &sv, int index = -1);
 	void _remove_polygon(int index);
+	void _add_vertices(const Array<ModelVertex> &vertices);
+	void _post_vertex_number_change_update();
 
 	bool test_sanity(const string &loc);
 

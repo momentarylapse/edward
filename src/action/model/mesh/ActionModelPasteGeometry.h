@@ -13,15 +13,17 @@
 class DataModel;
 class Geometry;
 
-class ActionModelPasteGeometry : public ActionGroup {
+class ActionModelPasteGeometry : public Action {
 public:
 	ActionModelPasteGeometry(const Geometry &geo, int material);
 	string name() override { return "ModelPasteGeometry"; }
 
-	void *compose(Data *d) override;
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 private:
 	Geometry geo;
 	int default_material;
+	int num_edges_before;
 };
 
 #endif /* ACTIONMODELPASTEGEOMETRY_H_ */

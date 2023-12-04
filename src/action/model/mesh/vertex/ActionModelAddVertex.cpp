@@ -27,14 +27,8 @@ void *ActionModelAddVertex::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	m->edit_mesh->add_vertex(pos, bone_index, bone_weight, normal_mode);
+	m->edit_mesh->_post_vertex_number_change_update();
 
-	// correct animations
-	for (ModelMove &move: m->move) {
-		if (move.type == AnimationType::VERTEX) {
-			for (ModelFrame &f: move.frame)
-				f.vertex_dpos.resize(m->edit_mesh->vertex.num);
-		}
-	}
 	return &m->edit_mesh->vertex.back();
 }
 
@@ -44,14 +38,7 @@ void ActionModelAddVertex::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	assert(m->edit_mesh->vertex.back().ref_count == 0);
 
-	// delete
 	m->edit_mesh->vertex.pop();
-
-	// correct animations
-	for (ModelMove &move: m->move)
-		if (move.type == AnimationType::VERTEX) {
-			for (ModelFrame &f: move.frame)
-				f.vertex_dpos.resize(m->edit_mesh->vertex.num);
-		}
+	m->edit_mesh->_post_vertex_number_change_update();
 }
 

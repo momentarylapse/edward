@@ -14,6 +14,7 @@
 #include "../../lib/base/set.h"
 #include "../../EdwardWindow.h"
 #include "../../multiview/MultiView.h"
+#include "../../y/world/components/Animator.h"
 
 ModelMesh::ModelMesh(DataModel *m) {
 	model = m;
@@ -811,6 +812,21 @@ void ModelMesh::add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &bone_
 		vertex.add(vv);
 	}
 
+}
+
+void ModelMesh::_add_vertices(const Array<ModelVertex> &v) {
+	vertex.append(v);
+	_post_vertex_number_change_update();
+}
+
+void ModelMesh::_post_vertex_number_change_update() {
+	// resize animations
+	for (ModelMove &move: model->move) {
+		if (move.type == AnimationType::VERTEX) {
+			for (ModelFrame &f: move.frame)
+				f.vertex_dpos.resize(vertex.num);
+		}
+	}
 }
 
 void ModelMesh::remove_lonely_vertex(int index) {
