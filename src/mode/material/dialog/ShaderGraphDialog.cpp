@@ -22,7 +22,7 @@
 
 
 const float NODE_WIDTH = 170;
-const float NODE_HEADER_HEIGHT = 22;
+const float NODE_HEADER_HEIGHT = 20;
 const float NODE_PORT_HEIGHT = 20;
 const float NODE_ROUNDNESS = 8;
 
@@ -295,22 +295,22 @@ void draw_node_param(Painter *p, ShaderGraphDialog *dlg, ShaderNode *n, ShaderNo
 }
 
 void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
-	color bg = scheme.GRID;
+	color bg = scheme.WINDOW_TITLE_BG;//GRID;
 	p->set_color(bg);
 	p->set_roundness(NODE_ROUNDNESS);
 	p->draw_rect(node_area(n));
 
 	// header
 	int h = n->type.hash();
-	bg = color::interpolate(scheme.GRID, color::hsb(loop(h/7.0f, 0.0f, 1.0f), 0.8f, 0.3f, 1), 0.3f);
+	auto header_bg = color::interpolate(bg, color::hsb(loop((h % 6)/6.0f, 0.0f, 1.0f), 0.8f, 0.3f, 1), 0.7f);
 	if (n == hover.node)
-		bg = scheme.hoverify(bg);
-	p->set_color(bg);
+		header_bg = scheme.hoverify(header_bg);
+	p->set_color(header_bg);
 	p->draw_rect(node_header_area(n));
 	p->set_roundness(0);
 
 	p->set_color(scheme.TEXT);
-	p->set_font_size(12);
+	p->set_font_size(11);
 	p->draw_str({n->pos.x + NODE_WIDTH / 2 - p->get_str_width(n->type) / 2, n->pos.y+3}, n->type);
 
 	p->set_font_size(10);
@@ -398,7 +398,7 @@ void ShaderGraphDialog::on_draw(Painter *p) {
 	//int h = p->height;
 	if (_optimal_view_requested)
 		_optimize_view(p->area());
-	p->set_color(scheme.BACKGROUND);
+	p->set_color(scheme.BACKGROUND_SELECTED);
 	p->draw_rect(p->area());
 
 	float trafo[4] = {view_scale, 0, 0, view_scale};
