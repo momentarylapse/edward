@@ -42,7 +42,7 @@
 	#include <gtk/gtk.h>
 	#include <gdk/gdkkeysyms.h>
 #endif
-#ifdef OS_LINUX
+#if defined(OS_LINUX) || defined(OS_MAC)
 	#define _cdecl
 #endif
 
@@ -105,6 +105,10 @@ enum {
 	MENU_ITEM_SUBMENU,
 	MENU_ITEM_SEPARATOR,
 };
+
+#ifdef HUGE
+#undef HUGE
+#endif
 
 enum IconSize {
 	SMALL,

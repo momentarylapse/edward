@@ -71,10 +71,14 @@ int icomparex(const string &a, const string &b) {
 }
 
 // * compare literally!
-// * NOPE: ignore / at the end
+// * ignore / at the end
 // * NOPE: ignore recursion
 int Path::compare(const Path &p) const {
 	//return icomparex(canonical().as_dir().s, p.canonical().as_dir().s);
+	if (has_dir_ending() and !p.has_dir_ending())
+		return icomparex(s.sub_ref(0, -1), p.s);
+	if (!has_dir_ending() and p.has_dir_ending())
+		return icomparex(s, p.s.sub_ref(0, -1));
 	return icomparex(s, p.s);
 }
 
@@ -290,3 +294,7 @@ template<> string _xf_str_(const string &f, const Path &value) {
 }
 
 template<> string _xf_str_(const string &f, Path value) { return _xf_str_<const Path&>(f, value); }
+
+template<> string repr(const Path& p) {
+	return p.repr();
+}

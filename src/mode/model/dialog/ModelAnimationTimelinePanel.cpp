@@ -14,7 +14,7 @@
 #include "../../../lib/math/vec2.h"
 
 namespace hui {
-	void get_style_colors(Panel *p, const string &id, base::map<string,color> &colors);
+	base::map<string,color> get_style_colors(Panel *p, const string &id);
 }
 
 
@@ -27,19 +27,19 @@ ModelAnimationTimelinePanel::ModelAnimationTimelinePanel(DataModel *_data) {
 
 	hover = -1;
 
-	event_xp("area", "hui:draw", std::bind(&ModelAnimationTimelinePanel::on_draw, this, std::placeholders::_1));
-	event_x("area", "hui:left-button-down", std::bind(&ModelAnimationTimelinePanel::on_left_button_down, this));
-	event_x("area", "hui:left-button-up", std::bind(&ModelAnimationTimelinePanel::on_left_button_up, this));
-	event_x("area", "hui:mouse-move", std::bind(&ModelAnimationTimelinePanel::on_mouse_move, this));
-	event_x("area", "hui:mouse-wheel", std::bind(&ModelAnimationTimelinePanel::on_mouse_wheel, this));
+	event_xp("area", "hui:draw", [this] (Painter *p) { on_draw(p); });
+	event_x("area", "hui:left-button-down", [this] { on_left_button_down(); });
+	event_x("area", "hui:left-button-up", [this] { on_left_button_up(); });
+	event_x("area", "hui:mouse-move", [this] { on_mouse_move(); });
+	event_x("area", "hui:mouse-wheel", [this] { on_mouse_wheel(); });
 
-	data->out_changed >> create_sink([=]{ redraw("area"); });
-	data->out_material_changed >> create_sink([=]{ redraw("area"); });
-	data->out_selection >> create_sink([=]{ redraw("area"); });
-	data->out_skin_changed >> create_sink([=]{ redraw("area"); });
-	data->out_texture_changed >> create_sink([=]{ redraw("area"); });
-	mode_model_animation->state.out_changed >> create_sink([=]{ redraw("area"); });
-	mode_model_animation->state.out_set_frame >> create_sink([=]{ redraw("area"); });
+	data->out_changed >> create_sink([this]{ redraw("area"); });
+	data->out_material_changed >> create_sink([this]{ redraw("area"); });
+	data->out_selection >> create_sink([this]{ redraw("area"); });
+	data->out_skin_changed >> create_sink([this]{ redraw("area"); });
+	data->out_texture_changed >> create_sink([this]{ redraw("area"); });
+	mode_model_animation->state.out_changed >> create_sink([this]{ redraw("area"); });
+	mode_model_animation->state.out_set_frame >> create_sink([this]{ redraw("area"); });
 
 	default_parasite = new TimeLineParasite;
 	set_parasite(nullptr);
@@ -51,11 +51,13 @@ ModelAnimationTimelinePanel::~ModelAnimationTimelinePanel() {
 	delete default_parasite;
 }
 
-float ModelAnimationTimelinePanel::screen2sample(float x)
-{	return (x / time_scale + time_offset);	}
+float ModelAnimationTimelinePanel::screen2sample(float x) {
+	return (x / time_scale + time_offset);
+}
 
-float ModelAnimationTimelinePanel::sample2screen(float x)
-{	return (x - time_offset) * time_scale;	}
+float ModelAnimationTimelinePanel::sample2screen(float x) {
+	return (x - time_offset) * time_scale;
+}
 
 string ModelAnimationTimelinePanel::get_time_str_fuzzy(double t, double dt) {
 	bool sign = (t < 0);
@@ -73,8 +75,7 @@ string ModelAnimationTimelinePanel::get_time_str_fuzzy(double t, double dt) {
 void ModelAnimationTimelinePanel::on_draw(Painter *c) {
 	double MIN_GRID_DIST = 10.0;
 
-	base::map<string,color> colors;
-	hui::get_style_colors(this, "area", colors);
+	auto colors = hui::get_style_colors(this, "area");
 
 	color bg = colors["insensitive_bg_color"];
 	color fg = colors["fg_color"];

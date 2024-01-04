@@ -11,7 +11,7 @@
 #include <math.h>
 
 namespace hui {
-	void get_style_colors(Panel *p, const string &id, base::map<string,color> &colors);
+	base::map<string,color> get_style_colors(Panel *p, const string &id);
 }
 
 
@@ -20,8 +20,7 @@ struct WBrushConfig {
 	string name;
 
 	string get_icon(hui::Panel *p) const {
-		base::map<string,color> colors;
-		hui::get_style_colors(p, "brush-type", colors);
+		auto colors = hui::get_style_colors(p, "brush-type");
 
 		Image im;
 		int n = 48;
@@ -58,9 +57,9 @@ BrushPanel::BrushPanel(MultiView::MultiView *mv, const string &res_id) {
 
 	from_resource(res_id);
 
-	event("diameter-slider", [=]{ on_diameter_slider(); });
-	event("opacity-slider", [=]{ on_opacity_slider(); });
-	event("alpha-slider", [=]{ on_alpha_slider(); });
+	event("diameter-slider", [this]{ on_diameter_slider(); });
+	event("opacity-slider", [this]{ on_opacity_slider(); });
+	event("alpha-slider", [this]{ on_alpha_slider(); });
 
 	float _alpha = 1.0f;
 	float _opacity = 1.0f;

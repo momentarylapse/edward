@@ -23,7 +23,7 @@
 #endif
 
 
-#if defined(OS_LINUX)// || defined(OS_MINGW)
+#if defined(OS_LINUX) || defined(OS_MAC) // || defined(OS_MINGW)
 	#include <sys/mman.h>
 	#if (!defined(__x86_64__)) && (!defined(__amd64__))
 		#define MAP_32BIT		0
@@ -109,10 +109,10 @@ void init_all_global_objects(SyntaxTree *ps, const Class *c) {
 		init_all_global_objects(ps, cc);
 }
 
-static int64 _opcode_rand_state_ = 10000;
-
 // randomly pick a page address +/- 1gb around &kaba::init
 void* get_nice_random_addr() {
+	static int64 _opcode_rand_state_ = 10000;
+
 	int64 p = ((int_p)&init) & 0xfffffffffffff000;
 	_opcode_rand_state_ = (_opcode_rand_state_ * 1664525 + 1013904223);
 	//printf("%p      %04x\n", p, (int)_opcode_rand_state_ & 0x3ffff);
@@ -121,7 +121,6 @@ void* get_nice_random_addr() {
 	else
 		p -= (int64)(_opcode_rand_state_ & 0x3ffff) * 4096;
 	return (void*)p;
-
 }
 
 void* get_nice_memory(int64 size, bool executable, Module *module) {
@@ -137,9 +136,15 @@ void* get_nice_memory(int64 size, bool executable, Module *module) {
 	if (executable) {
 		prot = PAGE_EXECUTE_READWRITE;
 	}
-#else
+#elif defined(OS_MAC)
+	msg_error("FIXME: kaba compiler - mmap() parameters for MacOS");
+	int prot = 0;//PROT_READ | PROT_WRITE;
+	int flags = 0;//MAP_PRIVATE | MAP_ANON | MAP_FIXED_NOREPLACE;
+	//if (executable) {
+	//	prot |= PROT_EXEC;
+#else // OS_LINUX
 	int prot = PROT_READ | PROT_WRITE;
-	int flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE;
+	int flags = MAP_PRIVATE | MAP_ANON | MAP_FIXED_NOREPLACE;
 	if (executable) {
 		prot |= PROT_EXEC;
 		flags |= MAP_EXECUTABLE;
@@ -169,6 +174,10 @@ void* get_nice_memory(int64 size, bool executable, Module *module) {
 		}
 		if (i > 5000) {
 #if defined(OS_WINDOWS) || defined(OS_MINGW)
+#elif defined(OS_MAC)
+			// FIXME
+			//prot |= PROT_EXEC;
+			//flags |= MAP_FIXED;
 #else
 			prot |= PROT_EXEC;
 			flags |= MAP_EXECUTABLE | MAP_FIXED;
