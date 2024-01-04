@@ -72,7 +72,7 @@ void GameIniData::reset_default() {
 	set_float(ID_RESOLUTION_SCALE_MIN, 0.5f);
 
 	set_int(ID_DEBUG_LEVEL, 1);
-	set_str_array(ID_DEBUG_SCRIPTS1, {"debug/gui-stats.kaba", "debug/wireframe.kaba"});
+	set_str_array(ID_DEBUG_SCRIPTS1, {"debug/stats.kaba", "debug/wireframe.kaba"});
 	set_str_array(ID_DEBUG_SCRIPTS2, {"debug/hdr.kaba", "debug/gbuffer.kaba", "debug/shadows.kaba"});
 
 	set_float(ID_SHADOW_BOXSIZE, 2000);
