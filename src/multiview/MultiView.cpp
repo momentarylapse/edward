@@ -714,7 +714,8 @@ void MultiView::on_draw() {
 	drawing_helper->set_color(scheme.TEXT);
 	nix::set_shader(gl->default_2d.get());
 
-	if (session->win->input.inside_smart)
+	//if (session->win->input.inside_smart)
+	// FIXME hui/gtk4 events!
 		draw_mouse_pos();
 
 	action_con->draw_post();
