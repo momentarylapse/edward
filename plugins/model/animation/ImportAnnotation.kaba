@@ -1,6 +1,6 @@
 use hui
 use os
-use edward
+use edward.*
 use helper
 
 var anim_index: int

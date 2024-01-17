@@ -1,6 +1,6 @@
 use os
 use hui
-use edward
+use edward.*
 
 
 func open(filename: Path)

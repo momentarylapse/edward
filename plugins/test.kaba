@@ -1,4 +1,4 @@
-use edward
+use edward.*
 
 func main()
 	model.begin_action("test")

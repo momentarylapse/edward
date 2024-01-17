@@ -14,7 +14,7 @@
 #include "../multiview/MultiView.h"
 #include "../multiview/ActionController.h"
 #include "../multiview/Window.h"
-#include "../mode/model/ModeModel.h"
+#include "../mode/material/ModeMaterial.h"
 #include "../mode/model/ModeModel.h"
 #include "../mode/world/ModeWorld.h"
 #include "../data/model/DataModel.h"
@@ -71,16 +71,15 @@ void PluginManager::init() {
 	find_plugins();
 }
 
+Session *cur_session = nullptr;
+
 void PluginManager::link_plugins() {
 
 	//GlobalMainWin = ed;
 
 	auto ext = kaba::default_context->external.get();
 
-	/*ext->link("edward", &GlobalMainWin);
-	ext->link("ed", &ed);
-	ext->link("model", &session->mode_model->data);
-	ext->link("world", &ed->mode_world->data);*/
+	ext->link("cur_session", &cur_session);
 
 	ext->declare_class_element("Edward.cur_mode", &Session::cur_mode);
 
@@ -261,6 +260,20 @@ void PluginManager::link_plugins() {
 	ext->link_class_func("World.add_terrain", &DataWorld::add_terrain);
 	ext->link_class_func("World.add_new_terrain", &DataWorld::add_new_terrain);
 
+	ext->declare_class_size("ModeModel", sizeof(ModeModel));
+	ext->declare_class_element("ModeModel.data", &ModeModel::data);
+
+	ext->declare_class_size("ModeWorld", sizeof(ModeWorld));
+	ext->declare_class_element("ModeWorld.data", &ModeWorld::data);
+
+	ext->declare_class_size("ModeMaterial", sizeof(ModeMaterial));
+	ext->declare_class_element("ModeMaterial.data", &ModeMaterial::data);
+
+	ext->declare_class_size("Session", sizeof(Session));
+	ext->declare_class_element("Session.mode_model", &Session::mode_model);
+	ext->declare_class_element("Session.mode_world", &Session::mode_world);
+	ext->declare_class_element("Session.mode_material", &Session::mode_material);
+	ext->declare_class_element("Session.win", &Session::win);
 
 	ShaderNode node("");
 	ext->declare_class_size("shader.Node", sizeof(ShaderNode));

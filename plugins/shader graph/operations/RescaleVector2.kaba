@@ -1,4 +1,4 @@
-use edward
+use edward.*
 
 class NodeRescaleVector2 extends shader.Node
 	func __init__()

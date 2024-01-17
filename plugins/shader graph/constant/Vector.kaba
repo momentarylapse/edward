@@ -1,4 +1,4 @@
-use edward
+use edward.*
 
 class NodeVector extends shader.Node
 	func __init__()

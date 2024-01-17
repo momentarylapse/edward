@@ -6,6 +6,11 @@ use os
 
 let MAX_TEXTURES = 8
 
+struct ivec4
+	var x, y, z, w: int
+struct vec4
+	var x, y, z, w: float
+
 class Observable
 	var dummy: int
 	
@@ -390,7 +395,7 @@ class Model extends Data
 	func extern selection_from_polygons()
 	#extern void SelectOnlySurface(ModelSurface s)
 	
-	func extern add_vertex(pos: vec3, bone_index: int, normal_mode: int)
+	func extern add_vertex(pos: vec3, bone_index: ivec4, bone_weight: vec4, normal_mode: int)
 	func extern add_triangle(a: int, b: int, c: int, material: int) -> Geometry.Polygon&
 	func extern add_polygon(v: int[], material: int) -> Geometry.Polygon&
 	func extern delete_polygon(index: int)
@@ -510,9 +515,21 @@ class shader
 		func extern virtual code_pixel_pre(out ctx: BuilderContext) -> string
 		func extern virtual code_pixel(out ctx: BuilderContext) -> string
 
-#var extern model: Model&
-#var extern world: World&
-#var extern edward: Window&
+class ModeModel extends Mode
+	var data: Model&
 
-#var extern ed: Edward&
+#class ModeMaterial extends Mode
+#	var data: Material&
 
+class ModeWorld extends Mode
+	var data: World&
+
+class Session
+	var mode_model: ModeModel&
+#	var mode_material: ModeMaterial&
+	var mode_world: ModeWorld&
+#	var storage: Storage&
+	var win: hui.Window&
+
+
+var extern cur_session: Session&

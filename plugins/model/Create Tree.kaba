@@ -1,4 +1,4 @@
-use edward
+use edward.*
 
 const MAX_LENGTH = 12
 const BRANCH_PROB = 2.8

@@ -31,15 +31,15 @@ func materialToJson(m: Model.Material) -> string
 	s += "	}"
 	return s
 
-func bone_anim_pos(f: Model.Move.Frame, i: int) -> vec3
+func bone_anim_pos(model: Model, f: Model.Move.Frame, i: int) -> vec3
 	let parent = model.bone[i].parent
 	if parent >= 0
 		let dpos = model.bone[i].pos - model.bone[parent].pos
 		let q = quaternion(f.skel_ang[parent])
-		return bone_anim_pos(f, parent) + q * dpos
+		return bone_anim_pos(model, f, parent) + q * dpos
 	return f.skel_dpos[i] + model.bone[i].pos
 
-func moveToJson(m: Model.Move) -> string
+func moveToJson(model: Model, m: Model.Move) -> string
 	var s: string
 	s += "	{\n"
 	s += "		'name': '{{m.name}}',\n"
@@ -52,7 +52,7 @@ func moveToJson(m: Model.Move) -> string
 		s += "				'keys': [\n"
 		for j=>f in m.frame
 			let q = quaternion(f.skel_ang[i])
-			let dpos = bone_anim_pos(f, i) # - b.pos
+			let dpos = bone_anim_pos(model, f, i) # - b.pos
 #			if b.parent >= 0
 #				var dq = QuaternionRotationV(f.skel_ang[b.parent])
 #				#dpos -= dq * bone_anim_pos(f, b.parent)
@@ -81,6 +81,8 @@ func moveToJson(m: Model.Move) -> string
 	s += "	}"
 	return s
 
+var model: Model&
+
 func boneToJson(b: Model.Bone) -> string
 	var s: string
 	s += "	{\n"
@@ -97,7 +99,7 @@ func boneToJson(b: Model.Bone) -> string
 	return s
 
 func save_file(filename: os.Path)
-	var f = new TextLinesFormatter(os.fs.open(filename, "wt"))
+	var f = new os.TextLinesFormatter(os.fs.open(filename, "wt"))
 	
 	var n_tria = 0
 	for p in model.mesh.polygon
@@ -206,7 +208,7 @@ func save_file(filename: os.Path)
 			continue
 		if !first_anim
 			s += ",\n"
-		s += moveToJson(m)
+		s += moveToJson(model, m)
 		first_anim = false
 	s += "]\n"
 	s += "}"
@@ -215,5 +217,9 @@ func save_file(filename: os.Path)
 
 
 func main()
-	hui.file_dialog_save(edward, "Save JSON", "", ["filter=*.js"], save_file)
+	print(p2s(cur_session))
+	print(p2s(cur_session.win))
+	print(p2s(cur_session.mode_model))
+	model := cur_session.mode_model.data
+	hui.file_dialog_save(cur_session.win, "Save JSON", "", ["filter=*.js"]).then(save_file)
 	

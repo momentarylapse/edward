@@ -1,4 +1,4 @@
-use edward
+use edward.*
 
 let D = 30.0
 let RMAX = 200.0

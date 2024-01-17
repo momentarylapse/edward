@@ -1,13 +1,15 @@
-use edward
+use edward.*
 
 let N = 256
 
 func main()
 	let a = sqrt(N) * 2 * pi
 	
+	var model = cur_session.mode_model.data
+	
 	model.begin_action("Normals")
 	for i in 0:N
 		var t = float(i) / float(N - 1)
 		t = (sqrt(t) - sqrt(1.0 - t) + 1) / 2
-		model.add_vertex(vec3(sin(t * pi) * sin(t * a), cos(t * pi), sin(t * pi) * cos(t * a)), 0, -1)
+		model.add_vertex(vec3(sin(t * pi) * sin(t * a), cos(t * pi), sin(t * pi) * cos(t * a)), [0,0,0,0], [1,0,0,0], -1)
 	model.end_action()

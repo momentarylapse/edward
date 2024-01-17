@@ -477,9 +477,14 @@ void EdwardWindow::set_bottom_panel(shared<hui::Panel> panel) {
 	}
 }
 
+
+extern Session *cur_session;
+
 void EdwardWindow::on_execute_plugin() {
 	auto temp = session->storage->last_dir[FD_SCRIPT];
 	session->storage->last_dir[FD_SCRIPT] = PluginManager::directory;
+
+	cur_session = session;
 
 	session->storage->file_dialog(FD_SCRIPT, false, false).then([this, temp] (const auto& p) {
 		app->plugins->execute(session, p.complete);

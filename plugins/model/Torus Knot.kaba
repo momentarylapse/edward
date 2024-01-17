@@ -1,7 +1,7 @@
 use hui
-use edward
+use edward.*
 
-func CreateTorusKnot(nx: int, ny: int, rings: int, edges: int, r1: float, r2: float, r3: float)
+func CreateTorusKnot(model: Model, nx: int, ny: int, rings: int, edges: int, r1: float, r2: float, r3: float)
 	var g = new Geometry.TorusKnot(vec3.0, vec3.EZ, r1, r2, r3, nx, ny, rings, edges)
 	model.paste_geometry(g, 0)
 
@@ -15,8 +15,8 @@ func gcd(_a: int, _b: int) -> int
 	return a
 
 
-class TorusDialog extends Dialog
-	func __init__(parent: Window)
+class TorusDialog extends hui.Dialog
+	func __init__(parent: hui.Window)
 		super.__init__("Torus Knot", 300, 300, &parent, false)
 		#set_options("", "resizable,headerbar")
 		add_grid("", 0, 0, "table")
@@ -45,8 +45,8 @@ class TorusDialog extends Dialog
 		if gcd(nx, ny) != 1
 			hui.error_box(&self, "Error", "GreatestCommonDivisor(Loops, Twists) = 1 violated")
 		else
-			CreateTorusKnot(nx, ny, get_int("rings"), get_int("edges"), get_float("radius1"), get_float("radius2"), get_float("radius3"))
+			CreateTorusKnot(cur_session.mode_model.data, nx, ny, get_int("rings"), get_int("edges"), get_float("radius1"), get_float("radius2"), get_float("radius3"))
 		destroy()
 
 func main()
-	hui.fly(new TorusDialog(edward))
+	hui.fly(new TorusDialog(cur_session.win))
