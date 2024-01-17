@@ -5,6 +5,7 @@
 #include "../../base/algo.h"
 #include "../../base/iter.h"
 #include "Parser.h"
+#include "import.h"
 #include "../template/template.h"
 
 
@@ -12,7 +13,7 @@ namespace kaba {
 
 void test_node_recursion(shared<Node> root, const Class *ns, const string &message);
 
-shared<Module> get_import(Parser *parser, const string &name, int token);
+shared<Module> get_import_module(Parser *parser, const string &name, int token);
 
 void add_enum_label(const Class *type, int value, const string &label);
 
@@ -1435,41 +1436,46 @@ void Parser::parse_abstract_complete_command(Block *block) {
 }
 
 void Parser::parse_import() {
-	string command = Exp.cur; // 'use' / 'import'
-	bool indirect = (command == Identifier::IMPORT);
-	Exp.next();
+	Exp.next(); // 'use'
 
 	[[maybe_unused]] bool also_export = false;
 	if (try_consume("@export") or try_consume("out"))
 		also_export = true;
 
-	// parse import name
-	string name = Exp.cur;
+	// parse source name (a.b.c)
+	Array<string> name = {Exp.cur};
 	int token = Exp.consume_token();
-
-	string as_name;
+	bool recursively = false;
 	while (!Exp.end_of_line()) {
-		if (try_consume(Identifier::AS)) {
-			expect_no_new_line("name expected after 'as'");
-			as_name = Exp.cur;
+		if (!try_consume("."))
+			break;
+		expect_no_new_line();
+		if (try_consume("*")) {
+			recursively = true;
 			break;
 		} else {
-			expect_identifier(".", "'.' expected in import name");
+			name.add(Exp.consume());
 		}
-		name += ".";
-		expect_no_new_line();
-		name += Exp.consume();
 	}
-	
-	// "old/style.kaba" -> old.style
-	if (name.match("\"*\""))
-		name = name.sub(1, -1).replace(".kaba", "").replace("/", ".");
-		
-	auto import = get_import(this, name, token);
+
+	// alias
+	string as_name;
+	if (try_consume(Identifier::AS)) {
+		expect_no_new_line("name expected after 'as'");
+		if (recursively)
+			do_error_exp("'as' not allowed after 'use module.*'");
+		as_name = Exp.cur;
+	}
+
+	// resolve
+	auto source = resolve_import_source(this, name, token);
 
 	if (as_name == "")
-		as_name = name;
-	tree->import_data(import, indirect, as_name);
+		as_name = name.back();
+	if (recursively)
+		tree->import_data_all(source._class, token);
+	else
+		tree->import_data_selective(source._class, source.func, source.var, source._const, as_name, token);
 }
 
 
@@ -2191,7 +2197,7 @@ void Parser::parse_top_level() {
 	// global definitions (enum, class, variables and functions)
 	while (!Exp.end_of_file()) {
 
-		if ((Exp.cur == Identifier::IMPORT) or (Exp.cur == Identifier::USE)) {
+		if (Exp.cur == Identifier::USE) {
 			parse_import();
 
 		// enum

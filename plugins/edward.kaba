@@ -13,7 +13,7 @@ class Observer
 	#virtual void OnUpdate(Observable o)
 
 class Data extends Observable
-	var filename: Path
+	var filename: os.Path
 	var file_time: int
 	var binary_file_format: bool
 	var type: int
@@ -186,10 +186,10 @@ class Model extends Data
 
 
 	struct Material
-		var filename: Path
+		var filename: os.Path
 		var material: y.Material&
 		var num_textures: int
-		var texture: Texture&[MAX_TEXTURES]
+		var texture: gl.Texture&[MAX_TEXTURES]
 		var texture_file: string[MAX_TEXTURES]
 
 		var user_transparency: bool
@@ -335,10 +335,10 @@ class Model extends Data
 
 		# object-properties
 		var name, description: string
-		var inventary: Path[]
+		var inventary: os.Path[]
 
 		# script
-		var script_file: Path
+		var script_file: os.Path
 		var script_var: float[]
 		func __assign__(other: MetaData)
 
@@ -431,7 +431,7 @@ class World extends Data
 
 
 	struct Terrain extends MultiView.SingleData
-		var filename: Path
+		var filename: os.Path
 		#WorldTerrainVertex Vertex[]
 		var vertex_buffer_single: int
 		var show_texture: int
@@ -453,8 +453,8 @@ class World extends Data
 	var ego_index: int
 
 	# actions
-	func extern add_object(filename: Path, pos: vec3) -> Object&
-	func extern add_terrain(filename: Path, pos: vec3) -> Terrain&
+	func extern add_object(filename: os.Path, pos: vec3) -> Object&
+	func extern add_terrain(filename: os.Path, pos: vec3) -> Terrain&
 	func extern add_new_terrain(pos: vec3, size: vec3, num_x: int, num_z: int) -> Terrain&
 
 

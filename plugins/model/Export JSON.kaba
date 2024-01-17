@@ -1,6 +1,6 @@
 use hui
 use os
-use edward
+use edward.*
 
 func vecToJson(v: vec3) -> string
 	return "{{v.x}}, {{v.y}}, {{v.z}}"
@@ -96,7 +96,7 @@ func boneToJson(b: Model.Bone) -> string
 	s += "	}"
 	return s
 
-func save_file(filename: Path)
+func save_file(filename: os.Path)
 	var f = new TextLinesFormatter(os.fs.open(filename, "wt"))
 	
 	var n_tria = 0
