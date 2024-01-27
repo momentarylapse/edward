@@ -22,7 +22,6 @@
 #endif
 #include <lib/os/file.h>
 #include <lib/os/msg.h>
-#include <lib/os/formatter.h>
 #include <lib/doc/chunked.h>
 #include "../graphics-impl.h"
 #include "../meta.h"
@@ -44,16 +43,16 @@ MaterialManager *chunked_file_parser_get_material_manager(ChunkedFileParser *p);
 ResourceManager *chunked_file_parser_get_resource_manager(ChunkedFileParser *p);
 
 
-BinaryFormatter *load_file_x(const Path &filename, int &version) {
+Stream *load_file_x(const Path &filename, int &version) {
 
-	auto f = new BinaryFormatter(os::fs::open(filename, "rb"));
+	auto f = os::fs::open(filename, "rb");
 	char c = f->read_char();
 	if (c == 'b') {
 		version = f->read_word();
 		return f;
 	} else if (c == 't') {
 		/*delete f;
-		f = new TextLinesFormatter(os::fs::open(filename, "rt"));
+		f = os::fs::open(filename, "rt");
 		f->read_char();
 		version = f->read_word();
 		return f;*/
@@ -65,7 +64,7 @@ BinaryFormatter *load_file_x(const Path &filename, int &version) {
 }
 
 
-color file_read_color4i(BinaryFormatter *f) {
+color file_read_color4i(Stream *f) {
 	int a = f->read_int();
 	int r = f->read_int();
 	int g = f->read_int();
@@ -73,7 +72,7 @@ color file_read_color4i(BinaryFormatter *f) {
 	return color((float)a/255.0f, (float)r/255.0f, (float)g/255.0f, (float)b/255.0f);
 }
 
-ivec4 read_ivec4(BinaryFormatter *f) {
+ivec4 read_ivec4(Stream *f) {
 	ivec4 v;
 	v.i = f->read_int();
 	v.j = f->read_int();
@@ -82,7 +81,7 @@ ivec4 read_ivec4(BinaryFormatter *f) {
 	return v;
 }
 
-vec4 read_vec4(BinaryFormatter *f) {
+vec4 read_vec4(Stream *f) {
 	vec4 v;
 	v.x = f->read_float();
 	v.y = f->read_float();
@@ -91,14 +90,14 @@ vec4 read_vec4(BinaryFormatter *f) {
 	return v;
 }
 
-void write_ivec4(BinaryFormatter *f, const ivec4 &v) {
+void write_ivec4(Stream *f, const ivec4 &v) {
 	f->write_int(v.i);
 	f->write_int(v.j);
 	f->write_int(v.k);
 	f->write_int(v.l);
 }
 
-void write_vec4(BinaryFormatter *f, const vec4 &v) {
+void write_vec4(Stream *f, const vec4 &v) {
 	f->write_float(v.x);
 	f->write_float(v.y);
 	f->write_float(v.z);
@@ -172,7 +171,7 @@ public:
 	void create() override {
 		me = parent;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		[[maybe_unused]] int version = f->read_int();
 		auto sb = me->_template->solid_body;
 
@@ -187,7 +186,7 @@ public:
 		sb->active = f->read_bool();
 		sb->passive = f->read_bool();
 	}
-	void write(BinaryFormatter *f) override {}
+	void write(Stream *f) override {}
 };
 
 class ChunkOldMeta : public FileChunk<Model, Model> {
@@ -196,7 +195,7 @@ public:
 	void create() override {
 		me = parent;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		// Object Data
 		me->script_data.name = f->read_str();
 		/*me->script_data.description =*/ f->read_str();
@@ -206,7 +205,7 @@ public:
 		for (int i=0;i<n;i++)
 			f->read_str();
 	}
-	void write(BinaryFormatter *f) override {}
+	void write(Stream *f) override {}
 };
 
 class ChunkMaterial : public FileChunk<Model, Material> {
@@ -216,7 +215,7 @@ public:
 		//me = new Material(chunked_file_parser_get_resource_manager(root));
 		//parent->material.add(me);
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		me = chunked_file_parser_get_material_manager(root)->load(f->read_str());
 		parent->material.add(me);
 		bool user_colors = f->read_bool();
@@ -254,7 +253,7 @@ public:
 			me->textures[t] = chunked_file_parser_get_resource_manager(root)->load_texture(fn);
 		}
 	}
-	void write(BinaryFormatter *f) override {}
+	void write(Stream *f) override {}
 };
 
 static int _model_parser_tria_mesh_count;
@@ -267,7 +266,7 @@ public:
 		me->owner = parent;
 		parent->mesh[_model_parser_tria_mesh_count ++] = me;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		[[maybe_unused]] int version = f->read_int();
 		int flags = f->read_int();
 
@@ -321,7 +320,7 @@ public:
 			sub->vertex_buffer = nullptr;
 		}
 	}
-	void write(BinaryFormatter *f) override {}
+	void write(Stream *f) override {}
 };
 
 class ChunkPhysicalMesh : public FileChunk<Model, PhysicalMesh> {
@@ -333,7 +332,7 @@ public:
 		me = new PhysicalMesh;
 		parent->_template->mesh_collider->phys = me;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		[[maybe_unused]] int version = f->read_int();
 
 		// vertices
@@ -380,7 +379,7 @@ public:
 			me->cylinders.add(c);
 		}
 	}
-	void write(BinaryFormatter *f) override {}
+	void write(Stream *f) override {}
 };
 
 
@@ -390,7 +389,7 @@ public:
 	void create() override {
 		me = parent;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		[[maybe_unused]] int version = f->read_int();
 		auto sk = me->_template->skeleton;
 		int n = f->read_int();
@@ -407,7 +406,7 @@ public:
 		}
 		f->read_str();
 	}
-	void write(BinaryFormatter *f) override {}
+	void write(Stream *f) override {}
 };
 
 #if 0
@@ -435,7 +434,7 @@ public:
 	void create() override {
 		me = parent;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 #if 1
 		[[maybe_unused]] int version = f->read_int();
 
@@ -512,7 +511,7 @@ public:
 		}
 #endif
 	}
-	void write(BinaryFormatter *f) override {}
+	void write(Stream *f) override {}
 };
 
 /*class ModelEffectData;
@@ -524,7 +523,7 @@ public:
 		parent->_template->fx.add(ModelEffectData());
 		me = &parent->_template->fx.back();
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		string fxkind = f->read_str();
 		me->type = -1;
 		if (fxkind == "script") {
@@ -555,7 +554,7 @@ public:
 			//throw FormatError("unknown effect: " + fxkind);
 		}
 	}
-	void write(BinaryFormatter *f) override {}
+	void write(Stream *f) override {}
 };*/
 
 class ChunkScript : public FileChunk<Model, Model> {
@@ -564,7 +563,7 @@ public:
 	void create() override {
 		me = parent;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		f->read_str(); // filename
 		int n = f->read_int();
 		for (int i=0;i<n;i++)
@@ -577,7 +576,7 @@ public:
 			v.value = f->read_str();
 		}
 	}
-	void write(BinaryFormatter *f) override {}
+	void write(Stream *f) override {}
 };
 
 class ChunkModel : public FileChunk<Model, Model> {
@@ -594,8 +593,8 @@ public:
 //		add_child(new ChunkEffect);
 		add_child(new ChunkOldMeta);
 	}
-	void read(BinaryFormatter *f) override {}
-	void write(BinaryFormatter *f) override {}
+	void read(Stream *f) override {}
+	void write(Stream *f) override {}
 };
 
 

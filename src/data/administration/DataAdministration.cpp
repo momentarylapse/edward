@@ -80,9 +80,9 @@ void DataAdministration::TestRootDirectory()
 
 bool DataAdministration::save(const Path &_filename) {
 	filename = _filename;
-	TextLinesFormatter* f = nullptr;
+	os::fs::FileStream* f = nullptr;
 	try {
-		f = new TextLinesFormatter(os::fs::open(filename, "wt"));
+		f = os::fs::open(filename, "wt");
 		f->write_comment("// Number Of Files");
 		f->write_int(file_list->num);
 		f->write_comment("// Files (type, filename, date, missing)");
@@ -125,7 +125,7 @@ bool DataAdministration::load(const Path &_filename, bool deep) {
 
 	try {
 
-		auto f = new TextLinesFormatter(os::fs::open(filename, "rt"));
+		auto f = os::fs::open(filename, "rt");
 		f->read_comment();
 		int num = f->read_int();
 		for (int i=0;i<num;i++) {

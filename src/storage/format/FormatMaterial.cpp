@@ -48,7 +48,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 	int ffv;
 	data->reset();
 
-	TextLinesFormatter *f = nullptr;
+	Stream *f = nullptr;
 
 	/*File *f = FileOpenText(filename);
 	data->file_time = f->mtime().time;

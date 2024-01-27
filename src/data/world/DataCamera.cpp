@@ -35,11 +35,11 @@ bool DataCamera::load(const Path &_filename, bool deep) {
 	reset();
 
 	filename = _filename;
-	TextLinesFormatter *f = nullptr;
+	os::fs::FileStream *f = nullptr;
 
 	try{
 
-	f = new TextLinesFormatter(os::fs::open(filename, "rt"));
+	f = os::fs::open(filename, "rt");
 	f->read(1);
 	int ffv=f->read_word();
 	if (ffv == 2) {
@@ -99,11 +99,11 @@ bool DataCamera::load(const Path &_filename, bool deep) {
 bool DataCamera::save(const Path &_filename)
 {
 	filename = _filename;
-	TextLinesFormatter *f = nullptr;
+	os::fs::FileStream *f = nullptr;
 
 	try{
 
-	f = new TextLinesFormatter(os::fs::open(filename, "wt"));
+	f = os::fs::open(filename, "wt");
 	//f->float_decimals = 4;
 	f->write("t");
 	f->write_word(2);

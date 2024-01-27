@@ -94,7 +94,7 @@ void guess_smooth_groups(DataModel *m) {
 	msg_write(format(" %d smooth groups found", groups.num));
 }
 
-BinaryFormatter *load_file_x(const Path &filename, int &version);
+Stream *load_file_x(const Path &filename, int &version);
 
 void FormatModel::_load_old(const Path &filename, DataModel *data, bool deep) {
 	// old format
@@ -838,7 +838,7 @@ void FormatModel::_load_v11_edit(F *f, DataModel *data, bool deep) {
 
 void FormatModel::_save_v11(const Path &filename, DataModel *data) {
 
-	auto f = new BinaryFormatter(os::fs::open(filename, "wb"));
+	auto f = os::fs::open(filename, "wb");
 	//f->WriteFileFormatVersion(true, 11);//FFVBinary, 11);
 	f->write("b");
 	f->write_word(11);

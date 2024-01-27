@@ -30,10 +30,10 @@ void update_model_script_data(Session *session, DataModel::MetaData &m);
 
 bool DataModelAllowUpdating = true;
 
-ivec4 read_ivec4(BinaryFormatter *f);
-vec4 read_vec4(BinaryFormatter *f);
-void write_ivec4(BinaryFormatter *f, const ivec4 &v);
-void write_vec4(BinaryFormatter *f, const vec4 &v);
+ivec4 read_ivec4(Stream *f);
+vec4 read_vec4(Stream *f);
+void write_ivec4(Stream *f, const ivec4 &v);
+void write_vec4(Stream *f, const vec4 &v);
 
 
 int get_normal_index(vec3 &n) {
@@ -131,7 +131,7 @@ public:
 	void create() override {
 		me = parent;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		int version = f->read_int();
 
 		vec3 temp;
@@ -146,7 +146,7 @@ public:
 		me->meta_data.active_physics = f->read_bool();
 		me->meta_data.passive_physics = f->read_bool();
 	}
-	void write(BinaryFormatter *f) override {
+	void write(Stream *f) override {
 		// version
 		f->write_int(0);
 
@@ -171,7 +171,7 @@ public:
 	void create() override {
 		me = parent;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		// Object Data
 		me->meta_data.name = f->read_str();
 		me->meta_data.description = f->read_str();
@@ -181,7 +181,7 @@ public:
 		for (int i=0;i<me->meta_data.inventary.num;i++)
 			me->meta_data.inventary[i] = f->read_str();
 	}
-	void write(BinaryFormatter *f) override {
+	void write(Stream *f) override {
 		// object data
 		f->write_str(me->meta_data.name);
 		f->write_str(me->meta_data.description);
@@ -201,7 +201,7 @@ public:
 		//msg_write(p2s(parent));
 		parent->material.add(me);
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		me->filename = f->read_str();
 		me->col.user = f->read_bool();
 		read_color_argb(f, me->col.albedo);
@@ -222,7 +222,7 @@ public:
 			me->texture_levels.add(tl);
 		}
 	}
-	void write(BinaryFormatter *f) override {
+	void write(Stream *f) override {
 		f->write_str(me->filename.str());
 		f->write_bool(me->col.user);
 		write_color_argb(f, me->col.albedo);
@@ -248,7 +248,7 @@ public:
 	void create() override {
 		me = &parent->triangle_mesh[1 + _model_parser_tria_mesh_count ++];
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		// vertices
 		int nv = f->read_int();
 		me->vertex.resize(nv);
@@ -298,7 +298,7 @@ public:
 			}
 		}
 	}
-	void write(BinaryFormatter *f) override {
+	void write(Stream *f) override {
 	}
 };
 
@@ -308,7 +308,7 @@ public:
 	void create() override {
 		me = &parent->triangle_mesh[1 + _model_parser_tria_mesh_count ++];
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		int version = f->read_int();
 		int flags = f->read_int();
 		// vertices
@@ -361,7 +361,7 @@ public:
 			}
 		}
 	}
-	void write(BinaryFormatter *f) override {
+	void write(Stream *f) override {
 		f->write_int(0); // version
 		int flags = 0;
 		if (parent->move.num > 0)
@@ -428,7 +428,7 @@ public:
 	void create() override {
 		me = parent->mesh;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 
 		foreachi(ModelVertex &v, parent->triangle_mesh[1].vertex, i)
 			parent->addVertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
@@ -458,7 +458,7 @@ public:
 
 		me->build_topology();
 	}
-	void write(BinaryFormatter *f) override {
+	void write(Stream *f) override {
 
 		// polygons
 		f->write_int(me->polygon.num);
@@ -485,7 +485,7 @@ public:
 	void create() override {
 		me = parent->phys_mesh;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		int version = f->read_int();
 
 		// vertices
@@ -551,7 +551,7 @@ public:
 			me->cylinder.add(c);
 		}
 	}
-	void write(BinaryFormatter *f) override {
+	void write(Stream *f) override {
 		// version
 		f->write_int(0);
 
@@ -606,7 +606,7 @@ public:
 	void create() override {
 		me = parent;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		int version = f->read_int();
 		me->bone.resize(f->read_int());
 		for (auto &b: me->bone) {
@@ -622,7 +622,7 @@ public:
 		}
 		f->read_str();
 	}
-	void write(BinaryFormatter *f) override {
+	void write(Stream *f) override {
 		f->write_int(0);
 		f->write_int(me->bone.num);
 		for (auto &b: me->bone) {
@@ -662,7 +662,7 @@ public:
 	void create() override {
 		me = parent;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		int version = f->read_int();
 
 		// headers
@@ -720,7 +720,7 @@ public:
 
 		import_animations(parent, frames_vert, frames_skel, frame_offset);
 	}
-	void write(BinaryFormatter *f) override {
+	void write(Stream *f) override {
 		f->write_int(0);
 
 		// headers
@@ -802,7 +802,7 @@ public:
 		parent->fx.add(ModelEffect());
 		me = &parent->fx.back();
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		string fxkind = f->read_str();
 		me->type = -1;
 		if (fxkind == "script") {
@@ -832,7 +832,7 @@ public:
 			throw FormatError("unknown effect: " + fxkind);
 		}
 	}
-	void write(BinaryFormatter *f) override {
+	void write(Stream *f) override {
 		if (me->type == FX_TYPE_SCRIPT) {
 			f->write_str("script");
 			f->write_int(me->vertex);
@@ -868,7 +868,7 @@ public:
 	void create() override {
 		me = parent;
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 		me->meta_data.script_file = f->read_str();
 		me->meta_data.script_var.resize(f->read_int());
 		for (int i=0;i<me->meta_data.script_var.num;i++)
@@ -882,7 +882,7 @@ public:
 			me->meta_data.variables.add(v);
 		}
 	}
-	void write(BinaryFormatter *f) override {
+	void write(Stream *f) override {
 		f->write_str(me->meta_data.script_file.str());
 		f->write_int(me->meta_data.script_var.num);
 		for (int i=0;i<me->meta_data.script_var.num;i++)
@@ -913,9 +913,9 @@ public:
 		add_child(new ChunkOldMeta);
 		add_child(new ChunkTriangleMeshOld);
 	}
-	void read(BinaryFormatter *f) override {
+	void read(Stream *f) override {
 	}
-	void write(BinaryFormatter *f) override {
+	void write(Stream *f) override {
 	}
 	void write_subs() override {
 		write_sub("meta", me);

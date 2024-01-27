@@ -134,7 +134,7 @@ string boneToJson(ModelBone &b)
 
 void FormatModelJson::_save(const Path &filename, DataModel *m) {
 
-	auto *f = new TextLinesFormatter(os::fs::open(filename, "rt"));
+	auto *f = os::fs::open(filename, "rt");
 
 	int n_tria = 0;
 	for (int ip=0; ip<m->mesh->polygon.num; ip++){
@@ -604,18 +604,15 @@ void FormatModelJson::importBoneIndices(DataModel *m, Value *v, int num_influenc
 	}
 }
 
-vec3 FormatModelJson::val2vec(Value* v, int offset)
-{
+vec3 FormatModelJson::val2vec(Value* v, int offset) {
 	return vec3(v->get(offset)->f(), v->get(offset+1)->f(), v->get(offset+2)->f());
 }
 
-quaternion FormatModelJson::val2quat(Value* v, int offset)
-{
+quaternion FormatModelJson::val2quat(Value* v, int offset) {
 	return quaternion(v->get(offset+3)->f(), val2vec(v, offset));
 }
 
-color FormatModelJson::val2col3(Value* v, int offset)
-{
+color FormatModelJson::val2col3(Value* v, int offset) {
 	return color(1, v->get(offset)->f(), v->get(offset+1)->f(), v->get(offset+2)->f());
 }
 
@@ -625,14 +622,14 @@ void FormatModelJson::_load(const Path &filename, DataModel *m, bool deep) {
 	m->action_manager->enable(false);
 
 	try{
-	f = new TextLinesFormatter(os::fs::open(filename, "rt"));
+	f = os::fs::open(filename, "rt");
 
 	msg_write("lexical");
 	while (!f->is_end())
 		tokens.add(rnext());
 	cur_token = 0;
 
-	delete(f);
+	delete f;
 
 
 	msg_write("parse");
@@ -656,7 +653,7 @@ void FormatModelJson::_load(const Path &filename, DataModel *m, bool deep) {
 	importMoves(m, tree->get("animations"));
 
 
-	delete(tree);
+	delete tree;
 
 	}catch(...){}
 

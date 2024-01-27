@@ -34,10 +34,10 @@ bool WorldTerrain::save(const Path &_filename) {
 	filename = _filename.relative_to(engine.map_dir).no_ext();
 
 
-	BinaryFormatter *f = nullptr;
+	os::fs::FileStream *f = nullptr;
 
 	try{
-		f = new BinaryFormatter(os::fs::open(_filename, "wb"));
+		f = os::fs::open(_filename, "wb");
 
 		//f->WriteFileFormatVersion(true, 4);
 	f->write_byte('b');

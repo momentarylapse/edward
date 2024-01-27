@@ -17,13 +17,13 @@ FormatModelPly::FormatModelPly(Session *s) : TypedFormat<DataModel>(s, FD_MODEL,
 }
 
 void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
-	TextLinesFormatter *f = nullptr;
+	os::fs::FileStream *f = nullptr;
 
 	//m->material.add(new ModelMaterial());
 
 	try {
 
-	f = new TextLinesFormatter(os::fs::open(filename, "rt"));
+	f = os::fs::open(filename, "rt");
 
 	struct Element {
 		string name;
@@ -113,7 +113,7 @@ void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
 	}
 
 	if (f)
-		delete(f);
+		delete f;
 }
 
 void FormatModelPly::_save(const Path &filename, DataModel *data) {

@@ -20,7 +20,7 @@ void FormatModel3ds::_load(const Path &filename, DataModel *m, bool deep) {
 
 	m->reset();
 
-	auto f = new BinaryFormatter(os::fs::open(filename, "rb"));
+	auto f = os::fs::open(filename, "rb");
 
 	while(true){
 		int id = f->read_word();
@@ -58,7 +58,7 @@ void FormatModel3ds::_load(const Path &filename, DataModel *m, bool deep) {
 				f->seek(length - 6);
 				break;
 		}
-		if (f->get_pos() >= f->get_size())
+		if (f->pos() >= f->size())
 			break;
 	}
 
@@ -70,13 +70,13 @@ void FormatModel3ds::_load(const Path &filename, DataModel *m, bool deep) {
 
 
 
-void FormatModel3ds::load_mesh(DataModel *m, BinaryFormatter *f, int _length)
+void FormatModel3ds::load_mesh(DataModel *m, Stream *f, int _length)
 {
 	msg_right();
 	int NumVerticesOld = m->triangle_mesh[1].vertex.num;
-	int end_pos = f->get_pos() + _length - 6;
+	int end_pos = f->pos() + _length - 6;
 	Array<vec3> skin_vert;
-	while(f->get_pos() < end_pos){
+	while(f->pos() < end_pos){
 		int id = f->read_word();
 		int length = f->read_int();
 		switch (id){

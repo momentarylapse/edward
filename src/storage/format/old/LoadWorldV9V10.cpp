@@ -29,12 +29,12 @@
 
 void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 
-	TextLinesFormatter *f = nullptr;
+	os::fs::FileStream *f = nullptr;
 	int ffv;
 
 	try{
 
-		f = new TextLinesFormatter(os::fs::open(filename, "rt"));
+		f = os::fs::open(filename, "rt");
 		data->file_time = os::fs::mtime(filename).time;
 
 	//ffv = f->ReadFileFormatVersion();

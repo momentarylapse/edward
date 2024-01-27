@@ -18,7 +18,6 @@
 #include "../helper/ResourceManager.h"
 #include "../graphics-impl.h"
 #include <lib/os/file.h>
-#include <lib/os/formatter.h>
 #include <lib/os/msg.h>
 
 const kaba::Class *Terrain::_class = nullptr;
@@ -53,7 +52,7 @@ bool Terrain::load(ResourceManager *resource_manager, const Path &_filename_, bo
 	reset();
 
 	filename = _filename_;
-	auto f = new BinaryFormatter(os::fs::open(engine.map_dir | filename.with(".map"), "rb"));
+	auto f = os::fs::open(engine.map_dir | filename.with(".map"), "rb");
 	if (f) {
 		//int ffv = f->read_ReadFileFormatVersion();
 

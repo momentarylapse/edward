@@ -24,7 +24,7 @@ void FormatFontX::_load(const Path &filename, DataFont *data, bool deep) {
 	int ffv;
 	data->reset();
 
-	auto f = new TextLinesFormatter(os::fs::open(filename, "rt"));
+	auto f = os::fs::open(filename, "rt");
 	data->file_time = os::fs::mtime(filename).time;
 
 	//ffv = f->ReadFileFormatVersion();
@@ -109,7 +109,7 @@ void FormatFontX::_load(const Path &filename, DataFont *data, bool deep) {
 
 void FormatFontX::_save(const Path &filename, DataFont *data) {
 
-	auto f = new TextLinesFormatter(os::fs::open(filename, "wt"));
+	auto f = os::fs::open(filename, "wt");
 	//f->WriteFileFormatVersion(false, 2);
 	f->write("t");
 	f->write_word(2);
