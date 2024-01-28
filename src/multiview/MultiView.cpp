@@ -69,6 +69,7 @@ MultiView::MultiView(Session *_s, bool mode3d) {
 	SPEED_MOVE = hui::config.get_float("MultiView.MoveSpeed", 20);
 	SPEED_ZOOM_KEY = hui::config.get_float("MultiView.ZoomSpeedKey", 1.15f);
 	SPEED_ZOOM_WHEEL = hui::config.get_float("MultiView.ZoomSpeedWheel", 0.10f);
+	HOVER_RADIUS = hui::config.get_float("MultiView.HoverRadius", 8.0f);
 
 	MIN_MOUSE_MOVE_TO_INTERACT = 5;
 	MOUSE_ROTATION_SPEED = 0.0033f;
@@ -388,18 +389,18 @@ void MultiView::on_left_button_down(const vec2& m) {
 	get_hover();
 
 	// menu for selection of view type
-	if (hover.meta == hover.HOVER_WINDOW_LABEL) {
+	if (hover.meta == Selection::HOVER_WINDOW_LABEL) {
 		active_win = mouse_win;
-	} else if (hover.meta == hover.HOVER_WINDOW_DIVIDER_X) {
+	} else if (hover.meta == Selection::HOVER_WINDOW_DIVIDER_X) {
 		moving_cross_x = true;
-	} else if (hover.meta == hover.HOVER_WINDOW_DIVIDER_Y) {
+	} else if (hover.meta == Selection::HOVER_WINDOW_DIVIDER_Y) {
 		moving_cross_y = true;
-	} else if (hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) {
+	} else if (hover.meta == Selection::HOVER_WINDOW_DIVIDER_CENTER) {
 		moving_cross_x = true;
 		moving_cross_y = true;
-	} else if (hover.meta == hover.HOVER_CAMERA_CONTROLLER) {
+	} else if (hover.meta == Selection::HOVER_CAMERA_CONTROLLER) {
 		cam_con->on_left_button_down();
-	} else if (hover.meta == hover.HOVER_ACTION_CONTROLLER) {
+	} else if (hover.meta == Selection::HOVER_ACTION_CONTROLLER) {
 		active_win = mouse_win;
 		action_con->on_left_button_down();
 	} else {
@@ -699,9 +700,9 @@ void MultiView::on_draw() {
 		nix::bind_texture(0, nullptr);
 
 		color c2 = scheme.hoverify(scheme.WINDOW_DIVIDER);
-		drawing_helper->set_color((hover.meta == hover.HOVER_WINDOW_DIVIDER_Y or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
+		drawing_helper->set_color((hover.meta == Selection::HOVER_WINDOW_DIVIDER_Y or hover.meta == Selection::HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
 		drawing_helper->draw_rect(area.x1, area.x2, ym-d, ym+d, 0);
-		drawing_helper->set_color((hover.meta == hover.HOVER_WINDOW_DIVIDER_X or hover.meta == hover.HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
+		drawing_helper->set_color((hover.meta == Selection::HOVER_WINDOW_DIVIDER_X or hover.meta == Selection::HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
 		drawing_helper->draw_rect(xm-d, xm+d, area.y1, area.y2, 0);
 	}
 
@@ -929,33 +930,33 @@ void MultiView::get_hover() {
 
 
 	if (menu and (mouse_win->name_dest.inside(m))) {
-		hover.meta = hover.HOVER_WINDOW_LABEL;
+		hover.meta = Selection::HOVER_WINDOW_LABEL;
 		return;
 	}
 	if (cam_con->is_mouse_over()) {
-		hover.meta = hover.HOVER_CAMERA_CONTROLLER;
+		hover.meta = Selection::HOVER_CAMERA_CONTROLLER;
 		return;
 	}
 	if (!whole_window) {
 		float xm = all_windows[0]->dest.x2;
 		float ym = all_windows[0]->dest.y2;
 		if ((m.x >= xm - 5) and (m.x <= xm + 5) and (m.y >= ym - 5) and (m.y <= ym + 5)) {
-			hover.meta = hover.HOVER_WINDOW_DIVIDER_CENTER;
+			hover.meta = Selection::HOVER_WINDOW_DIVIDER_CENTER;
 			return;
 		} else if ((m.x >= xm - 5) and (m.x <= xm + 5)) {
-			hover.meta = hover.HOVER_WINDOW_DIVIDER_X;
+			hover.meta = Selection::HOVER_WINDOW_DIVIDER_X;
 			return;
 		} else if ((m.y >= ym - 5) and (m.y <= ym + 5)) {
-			hover.meta = hover.HOVER_WINDOW_DIVIDER_Y;
+			hover.meta = Selection::HOVER_WINDOW_DIVIDER_Y;
 			return;
 		}
 	}
 	if (allow_mouse_actions and (action_con->get_hover(hover.point) != ActionController::Constraint::UNDEFINED)) {
-		hover.meta = hover.HOVER_ACTION_CONTROLLER;
+		hover.meta = Selection::HOVER_ACTION_CONTROLLER;
 		return;
 	}
 	float z_min = 1;
-	float dist_min = 30;
+	float dist_min = HOVER_RADIUS;
 	foreachi(DataSet &d, data, di)
 		if (d.selectable)
 			for (int i=0; i<d.data->num; i++) {
@@ -992,7 +993,7 @@ void MultiView::get_hover() {
 				hover.set = di;
 				hover.type = d.type;
 				hover.point = mop;
-				hover.meta = hover.HOVER_DATA;
+				hover.meta = Selection::HOVER_DATA;
 				hover.data = sd;
 				if (sd->is_selected)
 					return;

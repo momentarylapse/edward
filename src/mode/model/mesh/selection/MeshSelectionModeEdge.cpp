@@ -43,7 +43,7 @@ float ModelEdge::hover_distance(MultiView::Window *win, const vec2 &M, vec3 &tp,
 	vec3 pp1 = win->project(m->show_vertices[vertex[1]].pos);
 	if ((pp1.z <= 0) or (pp1.z >= 1))
 		return -1;
-	const float rr = 50;
+	const float rr = win->multi_view->HOVER_RADIUS;
 	rect r = rect(min(pp0.x, pp1.x) - rr, max(pp0.x, pp1.x) + rr, min(pp0.y, pp1.y) - rr, max(pp0.y, pp1.y) + rr);
 	if (!r.inside(M))
 		return -1;
