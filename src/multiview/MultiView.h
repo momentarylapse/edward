@@ -122,6 +122,8 @@ public:
 	void on_middle_button_up(const vec2& m);
 	void on_right_button_down(const vec2& m);
 	void on_right_button_up(const vec2& m);
+	void on_gesture_zoom_begin();
+	void on_gesture_zoom(float factor);
 	void on_key_down(int key_code);
 	void on_key_up(int key_code);
 	void on_command(const string &id);

@@ -50,6 +50,8 @@ public:
 	void on_middle_button_up(const vec2& m) override;
 	void on_right_button_down(const vec2& m) override;
 	void on_right_button_up(const vec2& m) override;
+	void on_gesture_zoom_begin();
+	void on_gesture_zoom();
 	void on_event();
 	void on_abort_creation_mode();
 	void on_execute_plugin();

@@ -29,7 +29,9 @@ public:
 	bool is_mouse_over();
 	void on_left_button_down();
 	void on_left_button_up();
-	void on_mouse_wheel();
+	void on_mouse_wheel(const vec2& scroll);
+	void on_gesture_zoom_begin();
+	void on_gesture_zoom(float d);
 	void on_mouse_move();
 	void update_rects();
 
@@ -54,6 +56,7 @@ public:
 	MultiView *view;
 	nix::Texture *tex_bg;
 	nix::Texture *tex_move, *tex_rotate, *tex_zoom;
+	float cam_radius_before_zoom = 1;
 };
 
 };

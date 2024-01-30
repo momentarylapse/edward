@@ -135,11 +135,21 @@ void CameraController::on_mouse_move() {
 	}
 }
 
-void CameraController::on_mouse_wheel() {
-	hui::Event *e = hui::get_event();
-
+void CameraController::on_mouse_wheel(const vec2& scroll) {
 	// mouse wheel -> zoom
-	view->cam_zoom(exp( - view->SPEED_ZOOM_WHEEL * e->scroll.y), view->mouse_win->type != VIEW_PERSPECTIVE);
+	view->cam_zoom(exp( - view->SPEED_ZOOM_WHEEL * scroll.y), view->mouse_win->type != VIEW_PERSPECTIVE);
+}
+
+void CameraController::on_gesture_zoom_begin() {
+	cam_radius_before_zoom = view->cam.radius;
+}
+
+void CameraController::on_gesture_zoom(float factor) {
+	// mouse wheel -> zoom
+//	view->cam.radius /= view->cam.radius / (cam_radius_before_zoom * factor);
+
+	float f = view->cam.radius * factor / cam_radius_before_zoom;
+	view->cam_zoom(f, view->mouse_win->type != VIEW_PERSPECTIVE);
 }
 
 void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active) {

@@ -73,6 +73,19 @@ IMPLEMENT_EVENT_V2(on_middle_button_up)
 IMPLEMENT_EVENT_V2(on_right_button_down)
 IMPLEMENT_EVENT_V2(on_right_button_up)
 
+
+void EdwardWindow::on_gesture_zoom_begin() {
+	if (session->cur_mode->multi_view)
+		session->cur_mode->multi_view->on_gesture_zoom_begin();
+	//session->cur_mode->on_gesture_zoom_begin();
+}
+
+void EdwardWindow::on_gesture_zoom() {
+	if (session->cur_mode->multi_view)
+		session->cur_mode->multi_view->on_gesture_zoom(hui::get_event()->scroll.y);
+	//session->cur_mode->on_gesture_zoom();
+}
+
 void EdwardWindow::on_key_down(int key_code) {
 	if (session->cur_mode->multi_view)
 		session->cur_mode->multi_view->on_key_down(key_code);
@@ -133,6 +146,8 @@ EdwardWindow::EdwardWindow(Session *_session) :
 
 	event_x("nix-area", hui::EventID::DRAW_GL, [this] { on_draw_gl(); });
 	event_x("nix-area", hui::EventID::REALIZE, [this] { on_realize_gl(); });
+	event_x("nix-area", hui::EventID::GESTURE_ZOOM_BEGIN, [this] { on_gesture_zoom_begin(); });
+	event_x("nix-area", hui::EventID::GESTURE_ZOOM, [this] { on_gesture_zoom(); });
 
 	set_border_width(0);
 	add_basic_layout("menubar|toolbar-top|toolbar-left");
@@ -140,7 +155,7 @@ EdwardWindow::EdwardWindow(Session *_session) :
 	set_target("vgrid");
 	add_grid("", 0, 0, "root-table");
 	set_target("root-table");
-	add_drawing_area("!mainwindowcontrol,opengl=4.5", 0, 0, "nix-area");
+	add_drawing_area("!mainwindowcontrol,gesture=zoom,opengl=4.5", 0, 0, "nix-area");
 	add_expander("!slide=left", 1, 0, "side-bar-revealer");
 	set_target("side-bar-revealer");
 	add_grid("!noexpandx,width=360", 0, 0, "side-bar-grid");

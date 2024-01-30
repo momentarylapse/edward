@@ -326,7 +326,15 @@ void MultiView::on_command(const string & id) {
 }
 
 void MultiView::on_mouse_wheel(const vec2& scroll) {
-	cam_con->on_mouse_wheel();
+	cam_con->on_mouse_wheel(scroll);
+}
+
+void MultiView::on_gesture_zoom_begin() {
+	cam_con->on_gesture_zoom_begin();
+}
+
+void MultiView::on_gesture_zoom(float factor) {
+	cam_con->on_gesture_zoom(factor);
 }
 
 void MultiView::on_mouse_enter(const vec2& m) {
