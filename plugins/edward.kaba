@@ -133,7 +133,7 @@ class Geometry
 			var skin_vertex: vec3[MAX_TEXTURES]
 			var normal_index: int
 			var normal: vec3
-			var triangulation: char[3]
+			var triangulation: i8[3]
 		var side: Side[]
 		var temp_normal: vec3
 		var normal_dirty, triangulation_dirty: bool
