@@ -5,9 +5,9 @@ class NodeCubeMap extends shader.Node
 		super.__init__("CubeMap")
 		params.add([shader.Type.VEC3, "n", "vec3(0,0,1)", ""])
 		output.add([shader.Type.COLOR, "color"])
-	func override const dependencies() -> string[]
+	func override dependencies() -> string[]
 		return ["cubemap"]
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	vec3 {{t}} = texture(tex_cube, {{c.value(self, 0)}});"

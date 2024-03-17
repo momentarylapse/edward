@@ -5,10 +5,10 @@ class NodeSurfaceTransmissivityOutput extends shader.Node
 		super.__init__("SurfaceTransmissivityOutput")
 		params.add([shader.Type.COLOR, "transmissivity", "#ffffffff", ""])
 		params.add([shader.Type.VEC3, "normal", "vec3(0,0,1)", ""])
-	func override const dependencies() -> string[]
+	func override dependencies() -> string[]
 		return ["import:surface"]
 #		return ["basic_lighting", "in:light", "in:matrix", "in:material", "in:pos", "in:normal"]
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var re = c.value(self, 0)
 		var n = c.value(self, 1)
 		return "

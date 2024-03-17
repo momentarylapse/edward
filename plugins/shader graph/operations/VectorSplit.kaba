@@ -7,7 +7,7 @@ class NodeVectorSplit extends shader.Node
 		output.add([shader.Type.FLOAT, "x"])
 		output.add([shader.Type.FLOAT, "y"])
 		output.add([shader.Type.FLOAT, "z"])
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var tx = c.create_out(self, 0)
 		var ty = c.create_out(self, 1)
 		var tz = c.create_out(self, 2)

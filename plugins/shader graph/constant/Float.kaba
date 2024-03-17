@@ -5,7 +5,7 @@ class NodeFloat extends shader.Node
 		super.__init__("Float")
 		params.add([shader.Type.FLOAT, "x", "0.0", "range=-1:1"])
 		output.add([shader.Type.FLOAT, "value"])
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	float {{t}} = {{c.value(self, 0)}};"

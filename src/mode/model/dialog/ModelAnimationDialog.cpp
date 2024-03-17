@@ -103,7 +103,7 @@ void ModelAnimationDialog::fill_animation() {
 void ModelAnimationDialog::on_copy_animation() {
 	int index = get_first_free_index();
 
-	hui::run(new ModelDuplicateAnimationDialog(win, false, data, index, mode_model_animation->current_move));
+	hui::fly_and_wait(new ModelDuplicateAnimationDialog(win, false, data, index, mode_model_animation->current_move));
 }
 
 int ModelAnimationDialog::get_selected_animation() {
@@ -141,7 +141,7 @@ void ModelAnimationDialog::on_add_animation() {
 	int index = get_first_free_index();
 	auto type = (data->bone.num > 0) ? AnimationType::SKELETAL : AnimationType::VERTEX;
 
-	hui::run(new ModelNewAnimationDialog(win, false, data, index, type));
+	hui::fly_and_wait(new ModelNewAnimationDialog(win, false, data, index, type));
 }
 
 void ModelAnimationDialog::on_delete_animation() {

@@ -5,9 +5,9 @@ class NodeTexture extends shader.Node
 		super.__init__("Texture")
 		params.add([shader.Type.VEC2, "uv", "-mesh-", ""])
 		output.add([shader.Type.COLOR, "color"])
-	func override const dependencies() -> string[]
+	func override dependencies() -> string[]
 		return ["texture0", "in:uv"]
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var uv = c.build_value(self, 0, "in_uv")
 		var t = c.create_out(self, 0)
 		return "

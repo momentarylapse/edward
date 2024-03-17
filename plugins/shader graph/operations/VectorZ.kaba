@@ -5,7 +5,7 @@ class NodeVectorZ extends shader.Node
 		super.__init__("VectorZ")
 		params.add([shader.Type.VEC3, "vector", "vec3(0,0,0)", ""])
 		output.add([shader.Type.FLOAT, "z"])
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	float {{t}} = {{c.value(self, 0)}}.z;"

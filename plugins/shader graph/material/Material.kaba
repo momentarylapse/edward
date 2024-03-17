@@ -7,9 +7,9 @@ class NodeMaterial extends shader.Node
 		output.add([shader.Type.FLOAT, "roughness"])
 		output.add([shader.Type.FLOAT, "metal"])
 		output.add([shader.Type.COLOR, "emission"])
-	func override const dependencies() -> string[]
+	func override dependencies() -> string[]
 		return ["in:material"]
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var al = c.create_out(self, 0)
 		var ro = c.create_out(self, 1)
 		var me = c.create_out(self, 2)

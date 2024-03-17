@@ -7,7 +7,7 @@ class NodeVector extends shader.Node
 		params.add([shader.Type.FLOAT, "y", "0.0", "range=-1:1"])
 		params.add([shader.Type.FLOAT, "z", "0.0", "range=-1:1"])
 		output.add([shader.Type.VEC3, "value"])
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	vec3 {{t}} = vec3({{c.value(self, 0)}}, {{c.value(self, 1)}}, {{c.value(self, 2)}});"

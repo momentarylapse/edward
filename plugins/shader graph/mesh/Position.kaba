@@ -5,9 +5,9 @@ class NodePosition extends shader.Node
 		super.__init__("Position")
 		params.add([shader.Type.INT, "space", "1", "choice=model|world|camera|window"])
 		output.add([shader.Type.VEC3, "pos"])
-	func override const dependencies() -> string[]
+	func override dependencies() -> string[]
 		return ["in:pos", "in:matrix"]
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		if params[0].value == "1" # world
 			return "

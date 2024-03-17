@@ -5,7 +5,7 @@ class NodeVectorNormalize extends shader.Node
 		super.__init__("VectorNormalize")
 		params.add([shader.Type.VEC3, "vector", "vec3(0,0,0)", ""])
 		output.add([shader.Type.VEC3, "out"])
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	vec3 {{t}} = normalize({{c.value(self, 0)}});"

@@ -4,9 +4,9 @@ class NodeRoughness extends shader.Node
 	func __init__()
 		super.__init__("Roughness")
 		output.add([shader.Type.FLOAT, "roughness"])
-	func override const dependencies() -> string[]
+	func override dependencies() -> string[]
 		return ["in:material"]
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	float {{t}} = material.roughness;"

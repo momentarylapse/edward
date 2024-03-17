@@ -9,7 +9,7 @@ class NodeTransformVector2 extends shader.Node
 		params.add([shader.Type.FLOAT, "dx", "0.0", "range=-2:2"])
 		params.add([shader.Type.FLOAT, "dy", "0.0", "range=-2:2"])
 		output.add([shader.Type.VEC2, "out"])
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	vec2 {{t}} = mat2(cos({{c.value(self, 1)}}),sin({{c.value(self, 1)}}),-sin({{c.value(self, 1)}}),cos({{c.value(self, 1)}})) * {{c.value(self, 0)}} * {{c.value(self, 2)}} + vec2({{c.value(self, 3)}},{{c.value(self, 4)}});"

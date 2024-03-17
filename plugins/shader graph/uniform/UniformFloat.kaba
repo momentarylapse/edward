@@ -5,9 +5,9 @@ class NodeUniformFloat extends shader.Node
 		super.__init__("UniformFloat")
 		params.add([shader.Type.LITERAL, "name", "xxx", ""])
 		output.add([shader.Type.FLOAT, "value"])
-	func override const uniform_dependencies() -> string[]
+	func override uniform_dependencies() -> string[]
 		return ["float {{params[0].value}}"]
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	float {{t}} = {{c.value(self, 0)}};"

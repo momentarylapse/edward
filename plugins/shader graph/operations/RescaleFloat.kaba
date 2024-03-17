@@ -7,7 +7,7 @@ class NodeRescaleFloat extends shader.Node
 		params.add([shader.Type.FLOAT, "scale", "1.0", "range=-2:2"])
 		params.add([shader.Type.FLOAT, "offset", "0.0", "range=-2:2"])
 		output.add([shader.Type.FLOAT, "out"])
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	float {{t}} = {{c.value(self, 0)}} * {{c.value(self, 1)}} + {{c.value(self, 2)}};"

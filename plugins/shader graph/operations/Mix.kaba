@@ -7,7 +7,7 @@ class NodeMix extends shader.Node
 		params.add([shader.Type.COLOR, "b", "#ffffffff", ""])
 		params.add([shader.Type.FLOAT, "factor", "0.5", "range=0:1"])
 		output.add([shader.Type.COLOR, "out"])
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		var tt = c.create_temp(self, -1, shader.Type.FLOAT)
 		return "

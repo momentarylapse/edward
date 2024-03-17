@@ -6,7 +6,7 @@ class NodePower extends shader.Node
 		params.add([shader.Type.FLOAT, "base", "2.0", "range=0:8"])
 		params.add([shader.Type.FLOAT, "exponent", "2.0", "range=0:8"])
 		output.add([shader.Type.FLOAT, "out"])
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	float {{t}} = pow({{c.value(self, 0)}}, {{c.value(self, 1)}});"

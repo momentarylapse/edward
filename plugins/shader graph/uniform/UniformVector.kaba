@@ -5,9 +5,9 @@ class NodeUniformVector extends shader.Node
 		super.__init__("UniformVector")
 		params.add([shader.Type.LITERAL, "name", "xxx", ""])
 		output.add([shader.Type.VEC3, "value"])
-	func override const uniform_dependencies() -> string[]
+	func override uniform_dependencies() -> string[]
 		return ["vec3 {{params[0].value}}"]
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var t = c.create_out(self, 0)
 		return "
 	vec3 {{t}} = {{c.value(self, 0)}};"

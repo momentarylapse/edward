@@ -5,9 +5,9 @@ class NodeFog extends shader.Node
 		super.__init__("Fog")
 		params.add([shader.Type.COLOR, "diffuse", "#ffffffff", ""])
 		output.add([shader.Type.COLOR, "out"])
-	func override const dependencies() -> string[]
+	func override dependencies() -> string[]
 		return ["in:fog", "in:pos", "in:matrix"]
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var tt = c.create_temp(self, -1, shader.Type.FLOAT)
 		var t = c.create_out(self, 0)
 		return "

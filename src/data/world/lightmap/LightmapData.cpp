@@ -25,15 +25,18 @@
 
 bool LightmapData::Triangle::intersect(const Ray &r, vec3 &cp) const
 {
-	bool r0 = (r.dot(ray[0]) > 0);
-	bool r1 = (r.dot(ray[1]) > 0);
+	bool r0 = (Ray::dot(r, ray[0]) > 0);
+	bool r1 = (Ray::dot(r, ray[1]) > 0);
 	if (r1 != r0)
 		return false;
-	bool r2 = (r.dot(ray[2]) > 0);
+	bool r2 = (Ray::dot(r, ray[2]) > 0);
 	if (r2 != r0)
 		return false;
 
-	return r.intersect_plane(pl, cp);
+	auto rcp = r.intersect_plane(pl);
+	if (rcp.has_value())
+		cp = *rcp;
+	return rcp.has_value();
 }
 
 LightmapData::LightmapData(DataWorld *w)

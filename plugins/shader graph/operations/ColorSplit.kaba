@@ -8,7 +8,7 @@ class NodeColorSplit extends shader.Node
 		output.add([shader.Type.FLOAT, "g"])
 		output.add([shader.Type.FLOAT, "b"])
 		output.add([shader.Type.FLOAT, "a"])
-	func override const code_pixel(out c: shader.BuilderContext) -> string
+	func override code_pixel(out c: shader.BuilderContext) -> string
 		var tr = c.create_out(self, 0)
 		var tg = c.create_out(self, 1)
 		var tb = c.create_out(self, 2)
