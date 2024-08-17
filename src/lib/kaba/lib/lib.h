@@ -71,6 +71,7 @@ int element_offset(M C::* p) {
 
 void add_package(Context *c, const string &name, Flags = Flags::NONE);
 const Class *add_type(const string &name, int size, Flags = Flags::NONE, const Class *_namespace = nullptr);
+const Class *add_type_simple(const string &name, int size, int alignment, Flags flags = Flags::NONE, const Class *name_space = nullptr);
 const Class *add_type_p_raw(const Class *sub_type);
 const Class *add_type_p_owned(const Class *sub_type);
 const Class *add_type_p_shared(const Class *sub_type);
@@ -87,7 +88,7 @@ const Class *add_type_future(const Class *sub_type);
 void capture_implicit_type(const Class *t, const string &name);
 
 
-const Class *add_class_template(const string &name, const Array<string>& params, TemplateManager::ClassCreateF f);
+const Class *add_class_template(const string &name, const Array<string>& params, TemplateClassInstantiator* instantiator);
 
 
 Function *add_func_x(const string &name, const Class *return_type, void *func, Flags flag = Flags::NONE);

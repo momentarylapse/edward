@@ -42,12 +42,13 @@ bool type_match_up(const Class *given, const Class *wanted);
 
 
 
-Class::Class(Type _type, const string &_name, int64 _size, SyntaxTree *_owner, const Class *_parent, const Array<const Class*> &_param) {
+Class::Class(const Class* _from_template, const string &_name, int64 _size, int _alignment, SyntaxTree *_owner, const Class *_parent, const Array<const Class*> &_param) {
 	flags = Flags::FULLY_PARSED;
 	name = _name;
 	owner = _owner;
 	size = _size;
-	type = _type;
+	alignment = _alignment;
+	from_template = _from_template;
 	array_length = 0;
 	parent = _parent;
 	param = _param;
@@ -76,8 +77,8 @@ bool Class::fully_parsed() const {
 	return flags_has(flags, Flags::FULLY_PARSED);
 }
 
-bool Class::_amd64_allow_pass_in_xmm() const {
-	return flags_has(flags, Flags::AMD64_ALLOW_PASS_IN_XMM);
+bool Class::_return_in_float_registers() const {
+	return flags_has(flags, Flags::RETURN_IN_FLOAT_REGISTERS);
 }
 
 bool reachable_from(const Class *ns, const Class *observer_ns) {
@@ -116,93 +117,93 @@ string Class::cname(const Class *ns) const {
 }
 
 bool Class::is_regular() const {
-	return type == Type::REGULAR;
+	return from_template == nullptr;
 }
 
 bool Class::is_struct() const {
-	return type == Type::STRUCT;
+	return from_template == TypeStructT;
 }
 
 bool Class::is_array() const {
-	return type == Type::ARRAY;
+	return from_template == TypeArrayT;
 }
 
 bool Class::is_list() const {
-	return type == Type::LIST;
+	return from_template == TypeListT;
 }
 
 bool Class::is_some_pointer() const {
-	return type == Type::POINTER_RAW
-			or type == Type::POINTER_SHARED
-			or type == Type::POINTER_SHARED_NOT_NULL
-			or type == Type::POINTER_OWNED
-			or type == Type::POINTER_OWNED_NOT_NULL
-			or type == Type::REFERENCE
-			or type == Type::POINTER_XFER_NOT_NULL
-			or type == Type::POINTER_ALIAS;
+	return is_pointer_raw()
+			or is_reference()
+			or is_pointer_shared()
+			or is_pointer_shared_not_null()
+			or is_pointer_owned()
+			or is_pointer_owned_not_null()
+			or is_pointer_xfer_not_null()
+			or is_pointer_alias();
 }
 
 bool Class::is_some_pointer_not_null() const {
-	return type == Type::POINTER_SHARED_NOT_NULL
-			or type == Type::POINTER_OWNED_NOT_NULL
-			or type == Type::REFERENCE
-			or type == Type::POINTER_ALIAS;
+	return is_pointer_shared_not_null()
+			or is_pointer_owned_not_null()
+			or is_reference()
+			or is_pointer_alias();
 }
 
 bool Class::is_pointer_raw() const {
-	return type == Type::POINTER_RAW;
+	return from_template == TypeRawT;
 }
 
 bool Class::is_pointer_shared() const {
-	return type == Type::POINTER_SHARED;
+	return from_template == TypeSharedT;
 }
 
 bool Class::is_pointer_shared_not_null() const {
-	return type == Type::POINTER_SHARED_NOT_NULL;
+	return from_template == TypeSharedNotNullT;
 }
 
 bool Class::is_pointer_owned() const {
-	return type == Type::POINTER_OWNED;
+	return from_template == TypeOwnedT;
 }
 
 bool Class::is_pointer_owned_not_null() const {
-	return type == Type::POINTER_OWNED_NOT_NULL;
+	return from_template == TypeOwnedNotNullT;
 }
 
 bool Class::is_pointer_xfer_not_null() const {
-	return type == Type::POINTER_XFER_NOT_NULL;
+	return from_template == TypeXferT;
 }
 
 bool Class::is_pointer_alias() const {
-	return type == Type::POINTER_ALIAS;
+	return from_template == TypeAliasT;
 }
 
 bool Class::is_reference() const {
-	return type == Type::REFERENCE;
+	return from_template == TypeReferenceT;
 }
 
 bool Class::is_enum() const {
-	return type == Type::ENUM;
+	return from_template == TypeEnumT;
 }
 
 bool Class::is_namespace() const {
-	return type == Type::NAMESPACE;
+	return from_template == TypeNamespaceT;
 }
 
 bool Class::is_interface() const {
-	return type == Type::INTERFACE;
+	return from_template == TypeInterfaceT;
 }
 
 bool Class::is_dict() const {
-	return type == Type::DICT;
+	return from_template == TypeDictT;
 }
 
 bool Class::is_product() const {
-	return type == Type::PRODUCT;
+	return from_template == TypeProductT;
 }
 
 bool Class::is_optional() const {
-	return type == Type::OPTIONAL;
+	return from_template == TypeOptionalT;
 }
 
 bool Class::is_callable() const {
@@ -212,11 +213,11 @@ bool Class::is_callable() const {
 }
 
 bool Class::is_callable_fp() const {
-	return type == Type::CALLABLE_FUNCTION_POINTER;
+	return from_template == TypeCallableFPT;
 }
 
 bool Class::is_callable_bind() const {
-	return type == Type::CALLABLE_BIND;
+	return from_template == TypeCallableBindT;
 }
 
 bool Class::uses_call_by_reference() const {
@@ -224,7 +225,7 @@ bool Class::uses_call_by_reference() const {
 }
 
 bool Class::uses_return_by_memory() const {
-	if (_amd64_allow_pass_in_xmm())
+	if (_return_in_float_registers())
 		return false;
 	return (!force_call_by_value() and !is_pointer_raw() and !is_reference() and !is_pointer_alias()) or is_array() or is_optional();
 }

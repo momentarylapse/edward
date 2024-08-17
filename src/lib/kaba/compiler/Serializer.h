@@ -52,10 +52,6 @@ public:
 	void do_error(const string &msg);
 	void do_error_link(const string &msg);
 
-	void assemble_cmd(SerialNode &c);
-	void assemble_cmd_arm(SerialNode &c);
-	Asm::InstructionParam get_param(Asm::InstID inst, SerialNodeParam &p);
-
 	void serialize_function(Function *f);
 	SerialNodeParam serialize_block(Block *block);
 	SerialNodeParam serialize_node(Node *com, Block *block, int index);
@@ -69,7 +65,12 @@ public:
 
 
 
-	Array<SerialNodeParam> inserted_temp;
+	int cur_block_level = 0;
+	struct SerialNodeParamWithLevel {
+		SerialNodeParam param;
+		int block_level;
+	};
+	Array<SerialNodeParamWithLevel> inserted_temp;
 	void add_cmd_constructor(const SerialNodeParam &param, NodeKind modus);
 	void add_cmd_destructor(const SerialNodeParam &param, bool needs_ref = true);
 
@@ -92,13 +93,6 @@ public:
 	void insert_destructors_block(Block *b, bool recursive = false);
 	void insert_destructors_temp();
 	void insert_constructors_block(Block *b);
-
-
-
-	SerialNodeParam p_eax, p_eax_int, p_deref_eax;
-	SerialNodeParam p_rax;
-	SerialNodeParam p_ax, p_al, p_al_bool, p_al_char;
-	SerialNodeParam p_xmm0, p_xmm1;
 
 
 	void add_function_call(Function *f, const Array<SerialNodeParam> &params, const SerialNodeParam &ret);

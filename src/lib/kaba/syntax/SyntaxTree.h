@@ -27,6 +27,7 @@ namespace kaba {
 class Module;
 class SyntaxTree;
 class Parser;
+class KabaException;
 
 
 
@@ -55,7 +56,7 @@ struct Scope {
 // data structures (uncompiled)
 class SyntaxTree {
 public:
-	SyntaxTree(Module *module);
+	explicit SyntaxTree(Module *module);
 	~SyntaxTree();
 
 	void default_import();
@@ -68,9 +69,10 @@ public:
 	const Class *which_owned_class(const string &name);
 
 	// syntax analysis
-	Class *create_new_class(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, Class *ns, int token_id);
-	Class *create_new_class_no_check(const string &name, Class::Type type, int size, int array_size, const Class *parent, const Array<const Class*> &params, Class *ns, int token_id);
+	Class *create_new_class(const string &name, const Class* from_template, int size, int array_size, const Class *parent, const Array<const Class*> &params, Class *ns, int token_id);
+	Class *create_new_class_no_check(const string &name, const Class* from_template, int size, int array_size, const Class *parent, const Array<const Class*> &params, Class *ns, int token_id);
 	const Class *get_pointer(const Class *base, int token_id = -1);
+	const Class *type_ref(const Class *base, int token_id = -1);
 	const Class *request_implicit_class_pointer(const Class *parent, int token_id);
 	const Class *request_implicit_class_shared(const Class *parent, int token_id);
 	const Class *request_implicit_class_shared_not_null(const Class *parent, int token_id);
@@ -137,7 +139,6 @@ public:
 	void simplify_shift_deref();
 	void simplify_ref_deref();
 
-	void add_missing_function_headers_for_class(Class *t);
 	const Class *find_root_type_by_name(const string &name, const Class *_namespace, bool allow_recursion);
 
 	void show(const string &stage);
@@ -161,6 +162,7 @@ public:
 	owned<Asm::MetaInfo> asm_meta_info;
 	Array<AsmBlock> asm_blocks;
 	Array<Function*> functions;
+	owned_array<KabaException> raised_exceptions;
 
 	shared<Function> root_of_all_evil;
 

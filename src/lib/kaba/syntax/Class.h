@@ -3,6 +3,7 @@
 #define CLASS_H_
 
 #include "../../base/pointer.h"
+#include "../../base/map.h"
 
 namespace kaba {
 
@@ -47,40 +48,17 @@ DeriveFlags operator|(DeriveFlags a, DeriveFlags b);
 
 class Class : public Sharable<base::Empty> {
 public:
-
-	enum class Type {
-		REGULAR, // COMMON/BASIC
-		STRUCT,
-		ARRAY, // fixed [N]
-		LIST, // dynamic []
-		POINTER_RAW,
-		POINTER_SHARED,
-		POINTER_SHARED_NOT_NULL,
-		POINTER_OWNED,
-		POINTER_OWNED_NOT_NULL,
-		POINTER_XFER_NOT_NULL,
-		POINTER_ALIAS,
-		REFERENCE,
-		ENUM,
-		NAMESPACE,
-		FUNCTION,
-		DICT,
-		PRODUCT, // (a,b) in (A x B)
-		OPTIONAL,
-		INTERFACE,
-		CALLABLE_FUNCTION_POINTER,
-		CALLABLE_BIND,
-	};
 	
 	//Class();
-	Class(Type type, const string &name, int64 size, SyntaxTree *owner, const Class *parent = nullptr, const Array<const Class*> &param = {});
+	Class(const Class* from_template, const string &name, int64 size, int alignment, SyntaxTree *owner, const Class *parent = nullptr, const Array<const Class*> &param = {});
 	~Class();
 	string name;
 	string long_name() const;
 	string cname(const Class *ns = nullptr) const;
 	int64 size; // complete size of type
+	int alignment;
 	int array_length;
-	Type type;
+	const Class* from_template;
 	Flags flags;
 
 	bool is_regular() const;
@@ -107,18 +85,21 @@ public:
 	bool is_callable_fp() const;
 	bool is_callable_bind() const;
 	bool fully_parsed() const;
+
 	Array<ClassElement> elements;
 	Array<ClassInitializers> initializers;
 	shared_array<Function> functions;
 	shared_array<Variable> static_variables;
 	shared_array<Constant> constants;
 	shared_array<const Class> classes;
+	base::map<string, const Class*> type_aliases;
+
 	const Class *parent; // derived from
 	Array<const Class*> param; // for pointers/arrays etc
 	const Class *name_space;
 	SyntaxTree *owner; // to share and be able to delete...
 	int token_id;
-	bool _amd64_allow_pass_in_xmm() const;
+	bool _return_in_float_registers() const;
 	Array<void*> vtable;
 	void *_vtable_location_compiler_; // may point to const/opcode
 	void *_vtable_location_target_; // (opcode offset adjusted)
@@ -166,13 +147,12 @@ extern const Class *TypePointer;
 extern const Class *TypeReference;
 extern const Class *TypeBool;
 extern const Class *TypeInt8;
+extern const Class *TypeUInt8;
 extern const Class *TypeInt16;
 extern const Class *TypeInt32;
 extern const Class *TypeInt64;
-extern const Class *TypeInt;
 extern const Class *TypeFloat32;
 extern const Class *TypeFloat64;
-extern const Class *TypeFloat;
 extern const Class *TypeCString;
 extern const Class *TypeString;
 extern const Class *TypeBytes;
@@ -193,6 +173,28 @@ extern const Class *TypeFunction;
 extern const Class *TypeFunctionRef;
 extern const Class *TypeFunctionCode;
 extern const Class *TypeFunctionCodeRef;
+
+extern const Class *TypeRawT;
+extern const Class *TypeXferT;
+extern const Class *TypeSharedT;
+extern const Class *TypeSharedNotNullT;
+extern const Class *TypeOwnedT;
+extern const Class *TypeOwnedNotNullT;
+extern const Class *TypeAliasT;
+extern const Class *TypeReferenceT;
+extern const Class *TypeArrayT;
+extern const Class *TypeListT;
+extern const Class *TypeDictT;
+extern const Class *TypeCallableFPT;
+extern const Class *TypeCallableBindT;
+extern const Class *TypeOptionalT;
+extern const Class *TypeProductT;
+extern const Class *TypeFutureT;
+extern const Class *TypeFutureCoreT;
+extern const Class *TypeEnumT;
+extern const Class *TypeStructT;
+extern const Class *TypeInterfaceT;
+extern const Class *TypeNamespaceT;
 
 };
 

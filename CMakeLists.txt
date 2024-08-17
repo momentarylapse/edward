@@ -249,6 +249,7 @@ set(SOURCE
 	src/lib/kaba/compiler/Backend.cpp
 	src/lib/kaba/compiler/BackendAmd64.cpp
 	src/lib/kaba/compiler/BackendARM.cpp
+	src/lib/kaba/compiler/BackendArm64.cpp
 	src/lib/kaba/compiler/BackendX86.cpp
 	src/lib/kaba/compiler/CommandList.cpp
 	src/lib/kaba/compiler/Compiler.cpp
@@ -559,13 +560,14 @@ else()
 	target_compile_definitions(edward PUBLIC HAS_LIB_UNWIND=0)
 endif()
 
-# lib: dl...
+# lib: dl (optional)
 if(WIN32)
 	target_compile_definitions(edward PUBLIC HAS_LIB_DL=0)
 else()
 	list(APPEND DEPS ${CMAKE_DL_LIBS})
 	target_compile_definitions(edward PUBLIC HAS_LIB_DL=1)
 endif()
+
 
 # lib: xlib (optional)
 set(LIB_XLIB_ENABLED true CACHE BOOL "Use xlib library?")

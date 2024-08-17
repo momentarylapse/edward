@@ -10,6 +10,7 @@
 #include "BackendAmd64.h"
 #include "BackendX86.h"
 #include "BackendARM.h"
+#include "BackendArm64.h"
 #include "Serializer.h"
 #include "../Interpreter.h"
 #include "../asm/asm.h"
@@ -23,11 +24,18 @@
 #include <dlfcn.h>
 #endif
 
+#if defined(OS_MAC)
+#include <pthread.h>
+#include <AvailabilityMacros.h>
+#endif
+
 
 #if defined(OS_LINUX) || defined(OS_MAC) // || defined(OS_MINGW)
 	#include <sys/mman.h>
-	#if (!defined(__x86_64__)) && (!defined(__amd64__))
+	#if (!defined(__x86_64__) && !defined(__amd64__) && !defined(__ppc64__))
+		#ifndef MAP_32BIT
 		#define MAP_32BIT		0
+		#endif
 	#endif
 #endif
 #if defined(OS_WINDOWS) || defined(OS_MINGW)
@@ -98,8 +106,19 @@ void try_init_global_var(const Class *type, char* g_var, SyntaxTree *ps) {
 	typedef void init_func(void *);
 	//msg_write("global init: " + v.type->name);
 	auto ff = (init_func*)(int_p)cf->address;
-	if (ff)
+	if (ff) {
+#ifdef OS_MAC
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 110000
+		pthread_jit_write_protect_np(1);
+#endif
+#endif
 		ff(g_var);
+#ifdef OS_MAC
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 110000
+		pthread_jit_write_protect_np(0);
+#endif
+#endif
+	}
 }
 
 void init_all_global_objects(SyntaxTree *ps, const Class *c) {
@@ -138,11 +157,15 @@ void* get_nice_memory(int64 size, bool executable, Module *module) {
 		prot = PAGE_EXECUTE_READWRITE;
 	}
 #elif defined(OS_MAC)
-	msg_error("FIXME: kaba compiler - mmap() parameters for MacOS");
-	int prot = 0;//PROT_READ | PROT_WRITE;
-	int flags = 0;//MAP_PRIVATE | MAP_ANON | MAP_FIXED_NOREPLACE;
-	//if (executable) {
-	//	prot |= PROT_EXEC;
+	//msg_error("FIXME: kaba compiler - mmap() parameters for MacOS");
+	int prot = PROT_READ | PROT_WRITE;
+	int flags = MAP_PRIVATE | MAP_ANON;
+	if (executable) {
+		prot |= PROT_EXEC;
+	#if MAC_OS_X_VERSION_MIN_REQUIRED >= 1070
+		flags |= MAP_JIT;
+	#endif
+	}
 #else // OS_LINUX
 	int prot = PROT_READ | PROT_WRITE;
 	int flags = MAP_PRIVATE | MAP_ANON | MAP_FIXED_NOREPLACE;
@@ -561,7 +584,7 @@ DynamicLibraryImport *get_dynamic_lib(const string &libname, Module *s) {
 	auto *d = new DynamicLibraryImport;
 	d->libname = libname;
 
-	Array<Path> dirs = {"/usr/lib64", "/lib64", "/usr/lib", "/lib"};
+	Array<Path> dirs = {"/usr/lib/x86_64-linux-gnu/", "/usr/lib64", "/lib64", "/usr/lib", "/lib"};
 	Path filename;
 	for (auto &dir: dirs)
 		if (filename.is_empty())
@@ -689,6 +712,11 @@ void Compiler::_compile() {
 
 	allocate_opcode();
 
+#ifdef OS_MAC
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 110000
+	pthread_jit_write_protect_np(0);
+#endif
+#endif
 
 
 // compiling an operating system?
@@ -747,6 +775,11 @@ void Compiler::_compile() {
 	if (config.allow_output_stage("dasm"))
 		msg_write(Asm::disassemble(module->opcode, module->opcode_size));
 
+#ifdef OS_MAC
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 110000
+	pthread_jit_write_protect_np(1);
+#endif
+#endif
 
 #ifdef OS_WINDOWS
 	register_functions(module);
@@ -781,6 +814,8 @@ Backend *create_backend(Serializer *s) {
 		return new BackendAmd64(s);
 	if (config.target.instruction_set == Asm::InstructionSet::X86)
 		return new BackendX86(s);
+	if (config.target.instruction_set == Asm::InstructionSet::ARM64)
+		return new BackendArm64(s);
 	if (config.target.is_arm())
 		return new BackendARM(s);
 	s->module->do_error("unable to create a backend for the architecture");
@@ -802,34 +837,34 @@ void Compiler::assemble_function(int index, Function *f, Asm::InstructionWithPar
 		f->block->show(TypeVoid);
 
 	if (config.target.interpreted) {
-		auto x = new Serializer(module, list);
-		x->cur_func_index = index;
-		x->serialize_function(f);
-		x->fix_return_by_ref();
+		auto serializer = new Serializer(module, list);
+		serializer->cur_func_index = index;
+		serializer->serialize_function(f);
+		serializer->fix_return_by_ref();
 		if (!module->interpreter)
 			module->interpreter = new Interpreter(module);
-		module->interpreter->add_function(f, x);
+		module->interpreter->add_function(f, serializer);
 		return;
 	}
 
 
-	auto x = new Serializer(module, list);
-	x->cur_func_index = index;
-	x->serialize_function(f);
-	x->fix_return_by_ref();
-	auto be = create_backend(x);
+	auto serializer = new Serializer(module, list);
+	serializer->cur_func_index = index;
+	serializer->serialize_function(f);
+	serializer->fix_return_by_ref();
+	auto backend = create_backend(serializer);
 
 	try {
-		be->process(f, index);
-		be->assemble();
+		backend->process(f, index);
+		backend->assemble();
 	} catch (Exception &e) {
 		throw e;
 	} catch (Asm::Exception &e) {
 		throw Exception(e, module, f);
 	}
-	module->functions_to_link.append(be->list->wanted_label);
-	delete be;
-	delete x;
+	module->functions_to_link.append(backend->list->wanted_label);
+	delete backend;
+	delete serializer;
 
 }
 
@@ -882,7 +917,7 @@ void Compiler::compile_functions(char *oc, int &ocs) {
 
 	// assemble into opcode
 	try {
-		list->optimize(oc, ocs);
+//		list->optimize(oc, ocs);
 		list->compile(oc, ocs);
 	} catch(Asm::Exception &e) {
 		list->show();

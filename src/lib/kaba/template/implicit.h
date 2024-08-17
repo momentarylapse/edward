@@ -26,18 +26,6 @@ public:
 	void do_error_implicit(Function *f, const string &msg);
 
 	void _add_missing_function_headers_for_regular(Class *t);
-	void _add_missing_function_headers_for_array(Class *t);
-	void _add_missing_function_headers_for_list(Class *t);
-	void _add_missing_function_headers_for_dict(Class *t);
-	void _add_missing_function_headers_for_optional(Class *t);
-	void _add_missing_function_headers_for_enum(Class *t);
-	void _add_missing_function_headers_for_product(Class *t);
-	void _add_missing_function_headers_for_shared(Class *t);
-	void _add_missing_function_headers_for_owned(Class *t);
-	void _add_missing_function_headers_for_xfer(Class *t);
-	void _add_missing_function_headers_for_alias(Class *t);
-	void _add_missing_function_headers_for_callable_fp(Class *t);
-	void _add_missing_function_headers_for_callable_bind(Class *t);
 
 	Function *add_func_header(Class *t, const string &name, const Class *return_type, const Array<const Class*> &param_types, const Array<string> &param_names, Function *cf = nullptr, Flags flags = Flags::NONE, const shared_array<Node> &def_params = {});
 
@@ -85,7 +73,6 @@ public:
 	void implement_optional_assign_raw(Function *f, const Class *t);
 	void implement_optional_assign_null(Function *f, const Class *t);
 	void implement_optional_has_value(Function *f, const Class *t);
-	void implement_optional_value(Function *f, const Class *t);
 	void implement_optional_equal(Function *f, const Class *t);
 	void implement_optional_equal_raw(Function *f, const Class *t);
 	void implement_product_equal(Function *f, const Class *t);
@@ -112,7 +99,6 @@ public:
 
 	static shared<Node> node_not(shared<Node> n);
 	static shared<Node> node_return(shared<Node> n);
-	static shared<Node> node_block_return(shared<Node> n);
 	static shared<Node> node_if(shared<Node> n_test, shared<Node> n_true);
 	static shared<Node> node_if_else(shared<Node> n_test, shared<Node> n_true, shared<Node> n_false);
 	shared<Node> node_raise_no_value();
@@ -133,17 +119,9 @@ public:
 	static shared<Node> optional_data(shared<Node> node);
 
 	static bool needs_new(Function *f);
-	static Array<string> class_func_param_names(Function *cf);
-	static bool has_user_constructors(const Class *t);
 	void remove_inherited_constructors(Class *t);
 	void redefine_inherited_constructors(Class *t);
 	void add_full_constructor(Class *t);
-	static bool class_can_fully_construct(const Class *t);
-	static bool class_can_default_construct(const Class *t);
-	static bool class_can_destruct(const Class *t);
-	static bool class_can_assign(const Class *t);
-	static bool class_can_elements_assign(const Class *t);
-	static bool class_can_equal(const Class *t);
 
 	static Function* prepare_auto_impl(const Class *t, Function *f);
 
@@ -153,13 +131,22 @@ public:
 	Context *context;
 };
 
+
+Array<string> class_func_param_names(Function *cf);
+bool has_user_constructors(const Class *t);
+bool class_can_fully_construct(const Class *t);
+bool class_can_default_construct(const Class *t);
+bool class_can_destruct(const Class *t);
+bool class_can_assign(const Class *t);
+bool class_can_elements_assign(const Class *t);
+bool class_can_equal(const Class *t);
+
 // TODO split
 class AutoImplementerInternal : public AutoImplementer {
 public:
 	AutoImplementerInternal(Parser *p, SyntaxTree *tree) : AutoImplementer(p, tree) {}
 	void implement_functions(const Class *t);
 	void add_missing_function_headers_for_class(Class *t);
-	void complete_type(Class *t, int array_size, int token_id);
 };
 
 }

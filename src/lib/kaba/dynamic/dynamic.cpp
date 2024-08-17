@@ -25,10 +25,10 @@ extern const Class *TypeSpecialFunction;
 
 
 void var_assign(void *pa, const void *pb, const Class *type) {
-	if ((type == TypeInt) or (type == TypeFloat32)) {
+	if ((type == TypeInt32) or (type == TypeFloat32)) {
 		*(int*)pa = *(int*)pb;
-	} else if ((type == TypeBool) or (type == TypeInt8)) {
-		*(char*)pa = *(char*)pb;
+	} else if ((type == TypeBool) or (type == TypeInt8) or (type == TypeUInt8)) {
+		*(int8*)pa = *(int8*)pb;
 	} else if (type->is_pointer_raw()) {
 		*(void**)pa = *(void**)pb;
 	} else {
@@ -63,7 +63,7 @@ void array_clear(void *p, const Class *type) {
 }
 
 void array_resize(void *p, const Class *type, int num) {
-	auto *f = type->get_member_func("resize", TypeVoid, {TypeInt});
+	auto *f = type->get_member_func("resize", TypeVoid, {TypeInt32});
 	if (!f)
 		kaba_raise_exception(new KabaException("can not resize an array of type " + type->long_name()));
 	typedef void func_t(void*, int);
@@ -168,9 +168,11 @@ string _cdecl var_repr_str(const void *p, const Class *type, bool as_repr) {
 //	msg_write(type->name);
 	// fixed
 	if (type == TypeInt32) {
-		return str(*reinterpret_cast<const int *>(p));
-	} if (type == TypeInt8) {
-		return format("0x%02x", (int)*reinterpret_cast<const char *>(p));
+		return str(*reinterpret_cast<const int32*>(p));
+	} else if (type == TypeInt8) {
+		return str((int)*reinterpret_cast<const int8*>(p));
+	} if (type == TypeUInt8) {
+		return format("0x%02x", (int)*reinterpret_cast<const uint8*>(p));
 	} if (type == TypeInt64) {
 		return str(*reinterpret_cast<const int64*>(p));
 	} else if (type == TypeFloat32) {
@@ -183,9 +185,6 @@ string _cdecl var_repr_str(const void *p, const Class *type, bool as_repr) {
 	//	return class_repr(reinterpret_cast<const Class*>(p));
 	} else if (type->is_callable_fp() or type->is_callable_bind()) {
 		return callable_repr(p, type);
-	} else if (type == TypeFunction or type->type == Class::Type::FUNCTION) {
-		// probably not...
-		return func_repr(reinterpret_cast<const Function*>(p));
 	} else if (type == TypeSpecialFunction) {
 		return format("<special function %s>", reinterpret_cast<const SpecialFunction*>(p)->name);
 	} else if (type == TypeAny) {
@@ -235,7 +234,7 @@ string _cdecl var_repr_str(const void *p, const Class *type, bool as_repr) {
 	} else if (type->is_enum()) {
 		return find_enum_label(type, *reinterpret_cast<const int*>(p));
 	} else if (type->is_optional()) {
-		if (*reinterpret_cast<const bool*>((int_p)p + type->size - 1))
+		if (*reinterpret_cast<const bool*>((int_p)p + type->param[0]->size))
 			return var_repr_str(p, type->param[0], as_repr);
 		return "nil";
 	} else if (type->is_list()) {
@@ -308,7 +307,7 @@ string _cdecl var2str(const void *p, const Class *type) {
 }
 
 Any _cdecl dynify(const void *var, const Class *type) {
-	if (type == TypeInt or type->is_enum())
+	if (type == TypeInt32 or type->is_enum())
 		return Any(*(int*)var);
 	if (type == TypeFloat32)
 		return Any(*(float*)var);

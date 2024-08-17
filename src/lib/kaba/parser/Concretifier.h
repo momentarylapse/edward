@@ -23,11 +23,18 @@ class Parser;
 class AutoImplementer;
 class Context;
 
-struct CastingData {
+struct CastingDataSingle {
 	int cast;
 	int penalty;
-	Function *f;
+	Function *f; // casting runction
 	unsigned char pre_deref_count;
+};
+
+struct CastingDataCall {
+	Array<CastingDataSingle> params;
+	Function *func_override = nullptr; // for template instantiation
+	Array<const Class*> wanted;
+	int penalty = 0;
 };
 
 class Concretifier {
@@ -64,6 +71,7 @@ public:
 	shared<Node> concretify_array_builder_for_inner(shared<Node> n_for, shared<Node> n_exp, shared<Node> n_cmp, const Class *type_el, Block *block, const Class *ns, int token_id);
 	shared<Node> concretify_operator(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_block(shared<Node> node, Block *block, const Class *ns);
+	shared<Node> concretify_definitely(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_call(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_statement(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_statement_return(shared<Node> node, Block *block, const Class *ns);
@@ -80,6 +88,7 @@ public:
 	shared<Node> concretify_statement_delete(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_statement_raw_function_pointer(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_statement_try(shared<Node> node, Block *block, const Class *ns);
+	shared<Node> concretify_statement_raise(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_statement_lambda(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_special_function_call(shared<Node> node, SpecialFunction *s, Block *block, const Class *ns);
 	shared<Node> concretify_special_function_str(shared<Node> node, Block *block, const Class *ns);
@@ -101,7 +110,7 @@ public:
 
 	shared_array<Node> turn_class_into_constructor(const Class *t, const shared_array<Node> &params, int token_id);
 	shared<Node> make_func_node_callable(const shared<Node> l);
-	shared<Node> match_template_params(const shared<Node> l, const shared_array<Node> &params, Block *block, const Class *ns);
+	shared<Node> match_template_params(const shared<Node> l, const shared_array<Node> &params, bool allow_fail);
 	shared<Node> make_func_pointer_node_callable(const shared<Node> l);
 	shared<Node> link_unary_operator(AbstractOperator *op, shared<Node> operand, Block *block, int token_id);
 	//void FindFunctionSingleParameter(int p, Array<Type*> &wanted_type, Block *block, shared<Node> cmd);
@@ -110,14 +119,14 @@ public:
 	shared<Node> wrap_function_into_callable(Function *f, int token_id);
 	shared<Node> wrap_node_into_callable(shared<Node> node);
 
-	bool type_match_with_cast(shared<Node> node, bool is_modifiable, const Class *wanted, CastingData &cd);
+	bool type_match_with_cast(shared<Node> node, bool is_modifiable, const Class *wanted, CastingDataSingle &cd);
 	bool type_match_tuple_as_contructor(shared<Node> node, Function *f_constructor, int &penalty);
 
-	shared<Node> apply_type_cast_basic(const CastingData &cast, shared<Node> param, const Class *wanted);
-	shared<Node> apply_type_cast(const CastingData &cast, shared<Node> param, const Class *wanted);
-	shared<Node> apply_params_with_cast(shared<Node> operand, const shared_array<Node> &params, const Array<CastingData> &casts, const Array<const Class*> &wanted, int offset = 0);
+	shared<Node> apply_type_cast_basic(const CastingDataSingle &cast, shared<Node> param, const Class *wanted);
+	shared<Node> apply_type_cast(const CastingDataSingle &cast, shared<Node> param, const Class *wanted);
+	shared<Node> apply_params_with_cast(shared<Node> operand, const shared_array<Node> &params, const CastingDataCall &casts, int offset = 0);
 	bool direct_param_match(const shared<Node> operand, const shared_array<Node> &params);
-	bool param_match_with_cast(const shared<Node> operand, const shared_array<Node> &params, Array<CastingData> &casts, Array<const Class*> &wanted, int *max_penalty);
+	bool param_match_with_cast(const shared<Node> operand, const shared_array<Node> &params, CastingDataCall &casts);
 	string param_match_with_cast_error(const shared_array<Node> &params, const Array<const Class*> &wanted);
 	shared<Node> apply_params_direct(shared<Node> operand, const shared_array<Node> &params, int offset = 0);
 	shared<Node> explicit_cast(shared<Node> node, const Class *wanted);
@@ -149,8 +158,8 @@ public:
 	shared<Node> build_pipe_len(const shared<Node> &input, const shared<Node> &rhs, Block *block, const Class *ns, int token_id);
 	shared<Node> build_pipe_map(const shared<Node> &input, const shared<Node> &rhs, Block *block, const Class *ns, int token_id);
 	shared<Node> build_lambda_new(const shared<Node> &param, const shared<Node> &expression, Block *block, const Class *ns, int token_id);
-	shared<Node> try_build_pipe_map_array(const shared<Node> &input, Node *f, const Class *rt, const Class *pt, Block *block, const Class *ns, int token_id);
-	shared<Node> try_build_pipe_map_optional(const shared<Node> &input, Node *f, const Class *rt, const Class *pt, Block *block, const Class *ns, int token_id);
+	shared<Node> try_build_pipe_map_array_unwrap(const shared<Node> &input, Node *f, const Class *rt, const Class *pt, Block *block, const Class *ns, int token_id);
+	shared<Node> try_build_pipe_map_optional_unwrap(const shared<Node> &input, Node *f, const Class *rt, const Class *pt, Block *block, const Class *ns, int token_id);
 	shared<Node> try_build_pipe_map_direct(const shared<Node> &input, Node *f, const Class *rt, const Class *pt, Block *block, const Class *ns, int token_id);
 
 

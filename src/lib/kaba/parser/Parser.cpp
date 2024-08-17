@@ -73,7 +73,7 @@ Parser::Parser(SyntaxTree *t) :
 void Parser::parse_buffer(const string &buffer, bool just_analyse) {
 	Exp.analyse(tree, buffer);
 
-	parse_macros(just_analyse);
+	parse_legacy_macros(just_analyse);
 
 	parse();
 
@@ -87,14 +87,14 @@ void Parser::parse_buffer(const string &buffer, bool just_analyse) {
 const Class *Parser::get_constant_type(const string &str) {
 	// character '...'
 	if ((str[0] == '\'') and (str.back() == '\''))
-		return TypeInt8;
+		return TypeUInt8;
 
 	// string "..."
 	if ((str[0] == '"') and (str.back() == '"'))
 		return tree->flag_string_const_as_cstring ? TypeCString : TypeString;
 
 	// numerical (int/float)
-	const Class *type = TypeInt;
+	const Class *type = TypeInt32;
 	bool hex = (str.num > 1) and (str[0] == '0') and (str[1] == 'x');
 	char last = 0;
 	for (int ic=0;ic<str.num;ic++) {
@@ -115,10 +115,10 @@ const Class *Parser::get_constant_type(const string &str) {
 		}
 		last = c;
 	}
-	if (type == TypeInt) {
+	if (type == TypeInt32) {
 		if (hex) {
 			if (str.num == 4)
-				type = TypeInt8;
+				type = TypeUInt8;
 			if (str.num > 10)
 				type = TypeInt64;
 		} else {
@@ -132,7 +132,7 @@ const Class *Parser::get_constant_type(const string &str) {
 void Parser::get_constant_value(const string &str, Value &value) {
 	value.init(get_constant_type(str));
 // literal
-	if (value.type == TypeInt8) {
+	if (value.type == TypeUInt8) {
 		if (str[0] == '\'') // 'bla'
 			value.as_int() = str.unescape()[1];
 		else // 0x12
@@ -141,7 +141,7 @@ void Parser::get_constant_value(const string &str, Value &value) {
 		value.as_string() = str.sub(1, -1).unescape();
 	} else if (value.type == TypeCString) {
 		strcpy((char*)value.p(), str.sub(1, -1).unescape().c_str());
-	} else if (value.type == TypeInt) {
+	} else if (value.type == TypeInt32) {
 		value.as_int() = (int)s2i2(str);
 	} else if (value.type == TypeInt64) {
 		value.as_int64() = s2i2(str);
@@ -1013,6 +1013,7 @@ shared<Node> Parser::parse_abstract_statement_try(Block *block) {
 	token0 = Exp.cur_token();
 	Exp.next_line();
 
+	flags_set(cmd_try->params[0]->flags, Flags::TRY);
 
 	int num_excepts = 0;
 
@@ -1511,13 +1512,13 @@ void Parser::parse_enum(Class *_namespace) {
 
 	// class name
 	int token0 = Exp.cur_token();
-	auto _class = tree->create_new_class(Exp.consume(), Class::Type::ENUM, sizeof(int), -1, nullptr, {}, _namespace, token0);
+	auto _class = tree->create_new_class(Exp.consume(), TypeEnumT, sizeof(int), -1, nullptr, {}, _namespace, token0);
 
 	// as shared|@noauto
 	if (try_consume(Identifier::AS))
 		_class->flags = parse_flags(_class->flags);
 
-	auto_implementer.add_missing_function_headers_for_class(_class);
+	context->template_manager->request_class_instance(tree, TypeEnumT, {_class}, token0);
 
 	expect_new_line_with_indent();
 	Exp.next_line();
@@ -1534,7 +1535,7 @@ void Parser::parse_enum(Class *_namespace) {
 			if (try_consume("=")) {
 				expect_no_new_line();
 
-				auto cv = parse_and_eval_const(tree->root_of_all_evil->block.get(), TypeInt);
+				auto cv = parse_and_eval_const(tree->root_of_all_evil->block.get(), TypeInt32);
 				next_value = cv->as_const()->as_int();
 			}
 			c->as_int() = (next_value ++);
@@ -1558,12 +1559,6 @@ void Parser::parse_enum(Class *_namespace) {
 	}
 
 	flags_set(_class->flags, Flags::FULLY_PARSED);
-}
-
-bool type_needs_alignment(const Class *t) {
-	if (t->is_array())
-		return type_needs_alignment(t->get_array_element());
-	return (t->size >= 4);
 }
 
 bool is_same_kind_of_pointer(const Class *a, const Class *b);
@@ -1597,23 +1592,22 @@ void parser_class_add_element(Parser *p, Class *_class, const string &name, cons
 		flags_set(v->flags, flags);
 		_class->static_variables.add(v);
 	} else {
-		if (type_needs_alignment(type))
-			_offset = mem_align(_offset, 4);
+		_offset = mem_align(_offset, type->alignment);
 		_offset = p->context->external->process_class_offset(_class->cname(p->tree->base_class), name, _offset);
 		auto el = ClassElement(name, type, _offset);
-		_offset += type->size;
 		_class->elements.add(el);
+		_offset += (int)type->size;
 	}
 }
 
-Class::Type parse_class_type(const string& e) {
+const Class* parse_class_type(const string& e) {
 	if (e == Identifier::INTERFACE)
-		return Class::Type::INTERFACE;
+		return TypeInterfaceT;
 	if (e == Identifier::NAMESPACE)
-		return Class::Type::NAMESPACE;
+		return TypeNamespaceT;
 	if (e == Identifier::STRUCT)
-		return Class::Type::STRUCT;
-	return Class::Type::REGULAR;
+		return TypeStructT;
+	return nullptr;
 }
 
 Class *Parser::parse_class_header(Class *_namespace, int &offset0) {
@@ -1637,7 +1631,7 @@ Class *Parser::parse_class_header(Class *_namespace, int &offset0) {
 		if (!_class)
 			tree->module->do_error_internal("class declaration ...not found " + name);
 		_class->token_id = token_id;
-		_class->type = class_type;
+		_class->from_template = class_type;
 	}
 
 	// parent class
@@ -1669,7 +1663,7 @@ Class *Parser::parse_class_header(Class *_namespace, int &offset0) {
 	expect_new_line();
 
 	if (flags_has(explicit_flags, Flags::SHARED)) {
-		parser_class_add_element(this, _class, Identifier::SHARED_COUNT, TypeInt, Flags::NONE, offset0, _class->token_id);
+		parser_class_add_element(this, _class, Identifier::SHARED_COUNT, TypeInt32, Flags::NONE, offset0, _class->token_id);
 	}
 
 	return _class;
@@ -1765,10 +1759,14 @@ void Parser::post_process_newly_parsed_class(Class *_class, int size) {
 		}
 	}
 
+	int align = 1;
+	if (_class->parent)
+		align = _class->parent->alignment;
 	for (auto &e: _class->elements)
-		if (type_needs_alignment(e.type))
-			size = mem_align(size, 4);
+		align = max(align, e.type->alignment);
+	size = mem_align(size, align);
 	_class->size = external->process_class_size(_class->cname(tree->base_class), size);
+	_class->alignment = align;
 
 
 	auto_implementer.add_missing_function_headers_for_class(_class);
@@ -1828,7 +1826,7 @@ shared<Node> Parser::parse_and_eval_const(Block *block, const Class *type) {
 	auto cv = parse_operand_greedy(block, true);
 
 	if (type) {
-		CastingData cast;
+		CastingDataSingle cast;
 		if (con.type_match_with_cast(cv, false, type, cast)) {
 			cv = con.apply_type_cast(cast, cv, type);
 		} else {
@@ -2085,8 +2083,10 @@ Function *Parser::parse_function_header(const Class *default_type, Class *name_s
 
 void Parser::post_process_function_header(Function *f, const Array<string> &template_param_names, Class *name_space, Flags flags) {
 	if (f->is_template()) {
-		context->template_manager->add_function_template(f, template_param_names);
+		context->template_manager->add_function_template(f, template_param_names, nullptr);
 		name_space->add_template_function(tree, f, flags_has(flags, Flags::VIRTUAL), flags_has(flags, Flags::OVERRIDE));
+	} else if (f->is_macro()) {
+		name_space->add_function(tree, f, false, flags_has(flags, Flags::OVERRIDE));
 	} else {
 		con.concretify_function_header(f);
 
@@ -2147,7 +2147,7 @@ void Parser::parse_all_class_names_in_block(Class *ns, int indent0) {
 				Exp.next();
 				if (Exp.cur == Identifier::OVERRIDE)
 					continue;
-				Class *t = tree->create_new_class(Exp.cur, Class::Type::REGULAR, 0, 0, nullptr, {}, ns, Exp.cur_token());
+				Class *t = tree->create_new_class(Exp.cur, nullptr, 0, 0, nullptr, {}, ns, Exp.cur_token());
 				flags_clear(t->flags, Flags::FULLY_PARSED);
 
 				Exp.next_line();
@@ -2169,7 +2169,7 @@ void Parser::parse_all_function_bodies() {
 		auto f = function_needs_parsing[i];
 		if (!f->is_extern() and (f->token_id >= 0)) {
 			parse_abstract_function_body(f);
-			if (!f->is_template())
+			if (!f->is_template() and !f->is_macro())
 				con.concretify_function_body(f);
 		}
 	}

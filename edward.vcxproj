@@ -359,6 +359,7 @@
     <ClCompile Include="src\lib\kaba\compiler\Backend.cpp" />
     <ClCompile Include="src\lib\kaba\compiler\BackendAmd64.cpp" />
     <ClCompile Include="src\lib\kaba\compiler\BackendARM.cpp" />
+    <ClCompile Include="src\lib\kaba\compiler\BackendArm64.cpp" />
     <ClCompile Include="src\lib\kaba\compiler\BackendX86.cpp" />
     <ClCompile Include="src\lib\kaba\compiler\CommandList.cpp" />
     <ClCompile Include="src\lib\kaba\compiler\Compiler.cpp" />
@@ -830,6 +831,7 @@
     <ClInclude Include="src\lib\kaba\compiler\Backend.h" />
     <ClInclude Include="src\lib\kaba\compiler\BackendAmd64.h" />
     <ClInclude Include="src\lib\kaba\compiler\BackendARM.h" />
+    <ClInclude Include="src\lib\kaba\compiler\BackendArm64.h" />
     <ClInclude Include="src\lib\kaba\compiler\BackendX86.h" />
     <ClInclude Include="src\lib\kaba\compiler\CommandList.h" />
     <ClInclude Include="src\lib\kaba\compiler\Compiler.h" />
