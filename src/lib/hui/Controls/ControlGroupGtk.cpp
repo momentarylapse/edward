@@ -6,9 +6,10 @@
  */
 
 #include "ControlGroup.h"
+#include "../language.h"
 #include "../Window.h"
-
-#ifdef HUI_API_GTK
+#include "../../os/msg.h"
+#include <gtk/gtk.h>
 
 namespace hui {
 
@@ -64,5 +65,3 @@ void ControlGroup::remove_child(Control *child) {
 }
 
 };
-
-#endif

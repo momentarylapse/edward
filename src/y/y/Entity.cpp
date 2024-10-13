@@ -10,6 +10,7 @@
 #include "ComponentManager.h"
 #include <lib/math/mat4.h>
 #include <lib/kaba/syntax/Class.h>
+#include <lib/os/msg.h>
 
 
 Entity::Entity() : Entity(vec3::ZERO, quaternion::ID) {}
@@ -25,15 +26,10 @@ Entity::Entity(const vec3 &_pos, const quaternion &_ang) : BaseClass(BaseClass::
 //   one might expect to call on_delete() here, but that's not possible,
 //   since all outer destructors have been called at this point already
 Entity::~Entity() {
-	//msg_write("~Entity " + i2s((int)type));
-	for (auto *c: components)
+	for (auto *c: components) {
+		c->owner = nullptr;
 		ComponentManager::delete_component(c);
-/*	//msg_write("~Entity " + i2s((int)type));
-	if (EntityManager::enabled) {
-		//msg_write("auto unreg...");
-		world.unregister(this);
 	}
-	msg_write("/~Entity " + i2s((int)type));*/
 }
 
 void Entity::on_init_rec() {
@@ -53,7 +49,7 @@ void Entity::on_delete_rec() {
 
 
 // TODO (later) optimize...
-Component *Entity::add_component(const kaba::Class *type, const string &var) {
+Component *Entity::_add_component_untyped_(const kaba::Class *type, const string &var) {
 	auto c = add_component_no_init(type, var);
 
 	c->on_init();

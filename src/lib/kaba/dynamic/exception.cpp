@@ -158,7 +158,7 @@ ExceptionBlockData get_blocks(shared<Module> s, Function *f, void* rip, const Cl
 
 		// are we in a try block?
 		for (auto n: weak(b->parent->params)) {
-			if ((n->kind == NodeKind::STATEMENT) and (n->as_statement()->id == StatementID::TRY)) {
+			if ((n->kind == NodeKind::Statement) and (n->as_statement()->id == StatementID::Try)) {
 				if (n->params[0]->as_block() == b) {
 					dbo("found try block");
 					for (int i=1; i<n->params.num; i+=2) {
@@ -306,10 +306,7 @@ Array<StackFrameInfo> get_stack_trace(const StackFrameInfo& frame) {
 
 
 // stack unwinding does not work if gcc does not use a stack frame...
-#pragma GCC push_options
-#pragma GCC optimize("no-omit-frame-pointer")
-#pragma GCC optimize("no-inline")
-#pragma GCC optimize("0")
+KABA_LINK_GROUP_BEGIN
 
 StackFrameInfo get_current_stack_frame() {
 	void *rbp = nullptr;
@@ -387,7 +384,8 @@ void _cdecl kaba_raise_exception(KabaException *kaba_exception) {
 	just_die(kaba_exception, {});
 #endif
 }
-#pragma GCC pop_options
+
+KABA_LINK_GROUP_END
 
 
 #elif defined(CPU_ARM64)

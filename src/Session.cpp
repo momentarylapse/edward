@@ -22,7 +22,10 @@
 #include "multiview/DrawingHelper.h"
 #include "storage/format/Format.h"
 #include "storage/Storage.h"
-#include "y/EngineData.h"
+#include "lib/hui/config.h"
+#include "lib/image/image.h"
+#include "lib/os/msg.h"
+#include <y/EngineData.h>
 #include <y/helper/ResourceManager.h>
 #include <y/world/Camera.h>
 #include <y/world/World.h>

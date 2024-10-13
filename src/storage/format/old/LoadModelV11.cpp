@@ -15,6 +15,7 @@
 #include "../../../lib/os/file.h"
 #include "../../../lib/os/filesystem.h"
 #include "../../../lib/os/formatter.h"
+#include "../../../lib/os/msg.h"
 #include "../../../Session.h"
 #include <graphics-impl.h>
 

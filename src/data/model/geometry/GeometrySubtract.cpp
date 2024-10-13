@@ -9,6 +9,7 @@
 #include "../SkinGenerator.h"
 #include "../../../EdwardWindow.h"
 #include "../../../multiview/MultiView.h"
+#include "../../../lib/os/msg.h"
 
 
 

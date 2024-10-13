@@ -6,8 +6,9 @@
  */
 
 #include "ControlPaned.h"
+#include "../../os/msg.h"
+#include <gtk/gtk.h>
 
-#ifdef HUI_API_GTK
 
 namespace hui {
 
@@ -57,7 +58,4 @@ void ControlPaned::__set_int(int i) {
 	gtk_paned_set_position(GTK_PANED(widget), i);
 }
 
-}
-;
-
-#endif
+};

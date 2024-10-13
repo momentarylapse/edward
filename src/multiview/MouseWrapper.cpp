@@ -9,6 +9,7 @@
 #include "MouseWrapper.h"
 #include "../lib/math/math.h"
 #include "../lib/hui/hui.h"
+#include "../lib/os/msg.h"
 #include "MultiView.h"
 
 #ifdef OS_LINUX
@@ -22,6 +23,7 @@
 #include <X11/Xmd.h>
 
 
+#include <gtk/gtk.h>
 #if HAS_LIB_GTK4
 #include <gdk/x11/gdkx.h>
 #else

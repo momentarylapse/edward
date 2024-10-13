@@ -25,6 +25,7 @@
 #include <y/world/Object.h>
 #include <y/world/Terrain.h>
 #include "../../../lib/kaba/kaba.h"
+#include "../../../lib/os/msg.h"
 #include "../../../EdwardWindow.h"
 #include "../../../Session.h"
 

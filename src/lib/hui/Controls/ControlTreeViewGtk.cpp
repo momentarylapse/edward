@@ -9,8 +9,11 @@
 #include "ControlTreeView.h"
 #include "ControlListView.h"
 #include "../../base/iter.h"
+#include "../../os/msg.h"
 
 #ifdef HUI_API_GTK
+
+#include <gtk/gtk.h>
 
 namespace hui
 {

@@ -15,6 +15,8 @@
 #include "../../../action/model/data/ActionModelEditData.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../lib/kaba/kaba.h"
+#include "../../../lib/os/msg.h"
+#include "../../../lib/image/image.h"
 
 
 

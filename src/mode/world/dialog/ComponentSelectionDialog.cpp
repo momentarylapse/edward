@@ -11,6 +11,7 @@
 #include "../../../storage/Storage.h"
 #include "../../../lib/kaba/kaba.h"
 #include "../../../lib/os/filesystem.h"
+#include "../../../lib/os/msg.h"
 
 
 // seems quick enough

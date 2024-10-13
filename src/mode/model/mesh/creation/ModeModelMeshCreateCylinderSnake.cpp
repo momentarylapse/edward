@@ -17,6 +17,7 @@
 #include "../../../../multiview/ColorScheme.h"
 #include "../../../../lib/nix/nix.h"
 #include "../../../../lib/math/interpolation.h"
+#include "../../../../lib/hui/config.h"
 
 const float CYLINDER_CLOSING_DISTANCE = 20;
 

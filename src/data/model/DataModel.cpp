@@ -59,6 +59,7 @@
 #include "../../action/model/skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../action/model/skeleton/ActionModelReconnectBone.h"
 #include "../../action/model/skeleton/ActionModelSetSubModel.h"
+#include "../../lib/os/msg.h"
 #include <y/helper/ResourceManager.h>
 #include <y/world/components/Animator.h>
 #include <graphics-impl.h>

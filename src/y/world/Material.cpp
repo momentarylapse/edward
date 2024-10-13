@@ -142,7 +142,7 @@ Alpha parse_alpha(const string& s) {
 color any2color(const Any &a) {
 	if (a.is_string())
 		return color::parse(a.str());
-	if (a.is_array() and (a.length() >= 3)) {
+	if (a.is_list() and (a.length() >= 3)) {
 		color c = White;
 		c.r = a[0]._float();
 		c.g = a[1]._float();
@@ -169,10 +169,10 @@ xfer<Material> MaterialManager::load(const Path &filename) {
 
 	Configuration c;
 	if (!c.load(engine.material_dir | filename.with(".material"))) {
-		/*if (engine.ignore_missing_files) {
+		//if (engine.ignore_missing_files) {
 			msg_error("material file missing: " + filename.str());
 			return default_material->copy();
-		} else {
+		/*} else {
 			throw Exception("material file missing: " + filename.str());
 		}*/
 	}

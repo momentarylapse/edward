@@ -6,8 +6,10 @@
 #include "../base/pointer.h"
 #include "../base/iter.h"
 #include "../os/time.h"
+#include "../os/msg.h"
 #ifdef HUI_API_GTK
 
+#include <gtk/gtk.h>
 
 #ifdef OS_WINDOWS
 	#include <gdk/win32/gdkwin32.h>
@@ -208,10 +210,11 @@ void Window::_init_(const string &title, int width, int height, Window *_parent,
 	// icon
 #if GTK_CHECK_VERSION(4,0,0)
 
-	auto icon_theme = gtk_icon_theme_get_for_display(gtk_widget_get_display(window));
-	gtk_icon_theme_add_search_path(icon_theme, str(Application::directory_static | "icons").c_str());
+	//[[maybe_unused]] auto icon_theme = gtk_icon_theme_get_for_display(gdk_display_get_default());
 
 	string icon = Application::get_property("icon");
+	//msg_write(gtk_icon_theme_has_icon(icon_theme, icon.c_str()));
+	gtk_window_set_default_icon_name("tsunami");
 	gtk_window_set_icon_name(GTK_WINDOW(window), icon.c_str());
 #else
 	string logo = Application::get_property("logo");
@@ -588,7 +591,11 @@ int key_to_gtk(int key_code, GdkModifierType* mod) {
 
 	int _mod = (((key_code & KEY_SHIFT)>0) ? GDK_SHIFT_MASK : 0) |
 				(((key_code & KEY_CONTROL)>0) ? GDK_CONTROL_MASK : 0) |
+#if GTK_CHECK_VERSION(4,0,0)
 				(((key_code & KEY_ALT)>0) ? GDK_ALT_MASK : 0) |
+#else
+				(((key_code & KEY_ALT)>0) ? GDK_MOD1_MASK : 0) |
+#endif
 				(((key_code & KEY_META)>0) ? GDK_META_MASK : 0) |
 				(((key_code & KEY_SUPER)>0) ? GDK_SUPER_MASK : 0) |
 				(((key_code & KEY_HYPER)>0) ? GDK_HYPER_MASK : 0);

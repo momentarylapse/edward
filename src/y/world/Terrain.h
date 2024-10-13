@@ -57,7 +57,7 @@ public:
 	Terrain();
 	Terrain(ResourceManager *resource_manager, const Path &filename);
 	bool load(ResourceManager *resource_manager, const Path &filename, bool deep = true);
-	~Terrain();
+	~Terrain() override;
 	void reset();
 	void _cdecl update(int x1,int x2,int z1,int z2,int mode);
 	float _cdecl gimme_height(const vec3 &p);

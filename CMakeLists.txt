@@ -5,7 +5,119 @@ project(edward)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_BUILD_TYPE Debug)
-set(SOURCE
+
+
+#=======================================================================================
+#    libraries
+#=======================================================================================
+
+find_package(PkgConfig REQUIRED)
+
+
+
+# lib: gtk4 or gtk3 (mandatory)
+set(GTK4_OR_GTK3 "gtk4" CACHE STRING "Use gtk4 or gtk3?")
+pkg_check_modules(GTK4 gtk4)
+if(GTK4_FOUND)
+	list(APPEND GTK4_OR_GTK3_FOUND "gtk4")
+endif()
+pkg_check_modules(GTK+30 gtk+-3.0)
+if(GTK3_FOUND)
+	list(APPEND GTK4_OR_GTK3_FOUND "gtk3")
+endif()
+if(GTK4_OR_GTK3_FOUND)
+	if(NOT ${GTK4_OR_GTK3} IN_LIST GTK4_OR_GTK3_FOUND)
+		list(GET GTK4_OR_GTK3_FOUND 0 X)
+		set(GTK4_OR_GTK3 ${X} CACHE STRING "choose" FORCE)
+		message(WARNING "Choice for GTK4_OR_GTK3 invalid, using ${GTK4_OR_GTK3} instead")
+	endif()
+else()
+	message(SEND_ERROR "Neither gtk4 or gtk3 found") #  or/nor..
+	set(GTK4_OR_GTK3 "")
+endif()
+if(GTK4_OR_GTK3 STREQUAL "gtk4")
+	list(APPEND INCLUDE_DIRECTORIES ${GTK4_INCLUDE_DIRS})
+	list(APPEND LINK_DIRECTORIES ${GTK4_LIBRARY_DIRS})
+	list(APPEND DEPS ${GTK4_LIBRARIES})
+	list(APPEND COMPILE_OPTIONS ${GTK4_CFLAGS_OTHER})
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_GTK4=1)
+endif()
+if(GTK4_OR_GTK3 STREQUAL "gtk3")
+	list(APPEND INCLUDE_DIRECTORIES ${GTK+30_INCLUDE_DIRS})
+	list(APPEND LINK_DIRECTORIES ${GTK+30_LIBRARY_DIRS})
+	list(APPEND DEPS ${GTK+30_LIBRARIES})
+	list(APPEND COMPILE_OPTIONS ${GTK+30_CFLAGS_OTHER})
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_GTK3=1)
+endif()
+
+
+# lib: zlib (mandatory)
+find_package(ZLIB REQUIRED)
+list(APPEND DEPS ZLIB::ZLIB)
+list(APPEND COMPILE_DEFINITIONS HAS_LIB_ZLIB=1)
+
+
+# lib: gl (mandatory)
+find_package(OpenGL REQUIRED)
+list(APPEND DEPS OpenGL::OpenGL)
+list(APPEND COMPILE_DEFINITIONS HAS_LIB_GL=1)
+
+
+# lib: unwind (optional)
+set(LIB_UNWIND_ENABLED true CACHE BOOL "Use unwind library?")
+pkg_check_modules(LIBUNWIND libunwind)
+if(LIBUNWIND_FOUND)
+else()
+	set(LIB_UNWIND_ENABLED false CACHE BOOL "unwind library not found" FORCE)
+endif()
+if(${LIB_UNWIND_ENABLED})
+	list(APPEND INCLUDE_DIRECTORIES ${LIBUNWIND_INCLUDE_DIRS})
+	list(APPEND LINK_DIRECTORIES ${LIBUNWIND_LIBRARY_DIRS})
+	list(APPEND DEPS ${LIBUNWIND_LIBRARIES})
+	list(APPEND COMPILE_OPTIONS ${LIBUNWIND_CFLAGS_OTHER})
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_UNWIND=1)
+else()
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_UNWIND=0)
+endif()
+
+
+# lib: dl (optional)
+if(WIN32)
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_DL=0)
+else()
+	list(APPEND DEPS ${CMAKE_DL_LIBS})
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_DL=1)
+endif()
+
+
+
+# lib: xlib (optional)
+set(LIB_XLIB_ENABLED true CACHE BOOL "Use xlib library?")
+pkg_check_modules(X11 x11)
+if(X11_FOUND)
+else()
+	set(LIB_XLIB_ENABLED false CACHE BOOL "xlib library not found" FORCE)
+endif()
+if(${LIB_XLIB_ENABLED})
+	list(APPEND INCLUDE_DIRECTORIES ${X11_INCLUDE_DIRS})
+	list(APPEND LINK_DIRECTORIES ${X11_LIBRARY_DIRS})
+	list(APPEND DEPS ${X11_LIBRARIES})
+	list(APPEND COMPILE_OPTIONS ${X11_CFLAGS_OTHER})
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_XLIB=1)
+else()
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_XLIB=0)
+endif()
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+list(APPEND DEPS Threads::Threads)
+
+
+#=======================================================================================
+#    target edward
+#=======================================================================================
+
+add_executable(edward
 	src/action/font/ActionFontEditGlobal.cpp
 	src/action/font/ActionFontEditGlyph.cpp
 	src/action/material/ActionMaterialEditAppearance.cpp
@@ -263,6 +375,7 @@ set(SOURCE
 	src/lib/kaba/lib/dict.cpp
 	src/lib/kaba/lib/extern.cpp
 	src/lib/kaba/lib/lib.cpp
+	src/lib/kaba/lib/lib_async.cpp
 	src/lib/kaba/lib/lib_base.cpp
 	src/lib/kaba/lib/lib_doc.cpp
 	src/lib/kaba/lib/lib_gl.cpp
@@ -483,144 +596,57 @@ set(SOURCE
 	src/y/Config.cpp
 	src/Edward.cpp
 	src/EdwardWindow.cpp
-	src/Session.cpp
-)
+	src/Session.cpp)
+target_include_directories(edward PUBLIC ${INCLUDE_DIRECTORIES})
+target_link_directories(edward PUBLIC ${LINK_DIRECTORIES})
+target_compile_options(edward PUBLIC ${COMPILE_OPTIONS})
+target_compile_definitions(edward PUBLIC ${COMPILE_DEFINITIONS} INSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
+target_link_libraries(edward PUBLIC ${DEPS})
+target_include_directories(edward PUBLIC src)
+target_include_directories(edward PUBLIC src/y)
 
-add_executable(edward ${SOURCE})
-target_include_directories(edward PRIVATE src src/y)
 
-find_package(PkgConfig REQUIRED)
+#=======================================================================================
+#    install
+#=======================================================================================
+
+set(RESOURCE_DESTINATION share/edward)
+
+# binaries
+install(TARGETS edward DESTINATION bin)	
+
+# resources
+install(DIRECTORY "static/icons" DESTINATION ${RESOURCE_DESTINATION})
+install(DIRECTORY "static/shader" DESTINATION ${RESOURCE_DESTINATION})
+install(FILES "static/edward.jpg" DESTINATION ${RESOURCE_DESTINATION})
+install(FILES "static/hui_resources.txt" DESTINATION ${RESOURCE_DESTINATION})
+install(FILES "static/icon.svg" DESTINATION ${RESOURCE_DESTINATION})
+install(FILES "static/keys.txt" DESTINATION ${RESOURCE_DESTINATION})
+install(FILES "static/license.txt" DESTINATION ${RESOURCE_DESTINATION})
+install(FILES "static/license_small.txt" DESTINATION ${RESOURCE_DESTINATION})
+install(DIRECTORY "plugins" DESTINATION ${RESOURCE_DESTINATION})
 
 
-# lib: gtk4 or gtk3 (mandatory)
-set(GTK4_OR_GTK3 "gtk4" CACHE STRING "Use gtk4 or gtk3?")
-pkg_check_modules(GTK4 gtk4)
-if(GTK4_FOUND)
-	list(APPEND GTK4_OR_GTK3_FOUND "gtk4")
-endif()
-pkg_check_modules(GTK3 gtk+-3.0)
-if(GTK3_FOUND)
-	list(APPEND GTK4_OR_GTK3_FOUND "gtk3")
-endif()
-if(GTK4_OR_GTK3_FOUND)
-	if(NOT ${GTK3_OR_GTK4} IN_LIST GTK4_OR_GTK3_FOUND)
-		list(GET GTK4_OR_GTK3_FOUND 0 X)
-		set(GTK4_OR_GTK3 ${X} CACHE STRING "choose" FORCE)
-		message(WARNING "Choice for GTK4_OR_GTK3 invalid, using ${GTK4_OR_GTK3} instead")
+if (UNIX AND NOT APPLE)
+	# install .desktop file
+	set(INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+	configure_file("${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-edward.desktop" /tmp/michisoft-edward.desktop NO_SOURCE_PERMISSIONS)
+	install(FILES /tmp/michisoft-edward.desktop DESTINATION share/applications)
+endif ()
+
+if (UNIX AND NOT APPLE)
+	# install mime
+	find_program(XDG_MIME_EXECUTABLE xdg-mime)
+	if(NOT XDG_MIME_EXECUTABLE STREQUAL "XDG_MIME_EXECUTABLE_NOTFOUND")
+		install(CODE "message(STATUS \"installing mime file\")")
+		install(CODE "execute_process(COMMAND ${XDG_MIME_EXECUTABLE} install --novendor ${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-x-model.xml)")
+		install(CODE "message(STATUS \"installing mime file\")")
+		install(CODE "execute_process(COMMAND ${XDG_MIME_EXECUTABLE} install --novendor ${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-x-font.xml)")
+		install(CODE "message(STATUS \"installing mime file\")")
+		install(CODE "execute_process(COMMAND ${XDG_MIME_EXECUTABLE} install --novendor ${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-x-material.xml)")
+		install(CODE "message(STATUS \"installing mime file\")")
+		install(CODE "execute_process(COMMAND ${XDG_MIME_EXECUTABLE} install --novendor ${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-x-world.xml)")
+		install(CODE "message(STATUS \"installing mime file\")")
+		install(CODE "execute_process(COMMAND ${XDG_MIME_EXECUTABLE} install --novendor ${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-x-terrain.xml)")
 	endif()
-else()
-	message(SEND_ERROR "Neither gtk4 or gtk3 found") #  or/nor..
-	set(GTK4_OR_GTK3 "")
-endif()
-if(GTK4_OR_GTK3 STREQUAL "gtk4")
-	target_include_directories(edward PUBLIC ${GTK4_INCLUDE_DIRS})
-	target_link_directories(edward PUBLIC ${GTK4_LIBRARY_DIRS})
-	list(APPEND DEPS ${GTK4_LIBRARIES})
-	target_compile_options(edward PUBLIC ${GTK4_CFLAGS_OTHER})
-	target_compile_definitions(edward PUBLIC HAS_LIB_GTK4=1)
-endif()
-if(GTK4_OR_GTK3 STREQUAL "gtk3")
-	target_include_directories(edward PUBLIC ${GTK3_INCLUDE_DIRS})
-	target_link_directories(edward PUBLIC ${GTK3_LIBRARY_DIRS})
-	list(APPEND DEPS ${GTK3_LIBRARIES})
-	target_compile_options(edward PUBLIC ${GTK3_CFLAGS_OTHER})
-	target_compile_definitions(edward PUBLIC HAS_LIB_GTK3=1)
-endif()
-
-# lib: zlib mandatory
-pkg_check_modules(ZLIB REQUIRED zlib)
-target_include_directories(edward PUBLIC ${ZLIB_INCLUDE_DIRS})
-target_link_directories(edward PUBLIC ${ZLIB_LIBRARY_DIRS})
-list(APPEND DEPS ${ZLIB_LIBRARIES})
-target_compile_options(edward PUBLIC ${ZLIB_CFLAGS_OTHER})
-target_compile_definitions(edward PUBLIC HAS_LIB_ZLIB=1)
-
-# lib: gl mandatory
-pkg_check_modules(GL REQUIRED gl)
-target_include_directories(edward PUBLIC ${GL_INCLUDE_DIRS})
-target_link_directories(edward PUBLIC ${GL_LIBRARY_DIRS})
-list(APPEND DEPS ${GL_LIBRARIES})
-target_compile_options(edward PUBLIC ${GL_CFLAGS_OTHER})
-target_compile_definitions(edward PUBLIC HAS_LIB_GL=1)
-
-# lib: unwind (optional)
-set(LIB_UNWIND_ENABLED true CACHE BOOL "Use unwind library?")
-pkg_check_modules(LIBUNWIND libunwind)
-if(LIBUNWIND_FOUND)
-	target_include_directories(edward PUBLIC ${LIBUNWIND_INCLUDE_DIRS})
-	target_link_directories(edward PUBLIC ${LIBUNWIND_LIBRARY_DIRS})
-	list(APPEND DEPS ${LIBUNWIND_LIBRARIES})
-	target_compile_options(edward PUBLIC ${LIBUNWIND_CFLAGS_OTHER})
-else()
-	set(LIB_UNWIND_ENABLED false CACHE BOOL "unwind library not found" FORCE)
-endif()
-if(${LIB_UNWIND_ENABLED})
-	target_compile_definitions(edward PUBLIC HAS_LIB_UNWIND=1)
-else()
-	target_compile_definitions(edward PUBLIC HAS_LIB_UNWIND=0)
-endif()
-
-# lib: dl (optional)
-if(WIN32)
-	target_compile_definitions(edward PUBLIC HAS_LIB_DL=0)
-else()
-	list(APPEND DEPS ${CMAKE_DL_LIBS})
-	target_compile_definitions(edward PUBLIC HAS_LIB_DL=1)
-endif()
-
-
-# lib: xlib (optional)
-set(LIB_XLIB_ENABLED true CACHE BOOL "Use xlib library?")
-pkg_check_modules(X11 x11)
-if(X11_FOUND)
-	target_include_directories(edward PUBLIC ${X11_INCLUDE_DIRS})
-	target_link_directories(edward PUBLIC ${X11_LIBRARY_DIRS})
-	list(APPEND DEPS ${X11_LIBRARIES})
-	target_compile_options(edward PUBLIC ${X11_CFLAGS_OTHER})
-else()
-	set(LIB_XLIB_ENABLED false CACHE BOOL "xlib library not found" FORCE)
-endif()
-if(${LIB_XLIB_ENABLED})
-	target_compile_definitions(edward PUBLIC HAS_LIB_XLIB=1)
-else()
-	target_compile_definitions(edward PUBLIC HAS_LIB_XLIB=0)
-endif()
-
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-list(APPEND DEPS Threads::Threads)
-
-target_link_libraries(edward PRIVATE ${DEPS})
-
-target_compile_definitions(edward PUBLIC INSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
-
-install(TARGETS edward DESTINATION bin)
-install(DIRECTORY "static/icons" DESTINATION share/edward)
-install(DIRECTORY "static/shader" DESTINATION share/edward)
-install(FILES "static/edward.jpg" DESTINATION share/edward)
-install(FILES "static/hui_resources.txt" DESTINATION share/edward)
-install(FILES "static/icon.svg" DESTINATION share/edward)
-install(FILES "static/keys.txt" DESTINATION share/edward)
-install(FILES "static/license.txt" DESTINATION share/edward)
-install(FILES "static/license_small.txt" DESTINATION share/edward)
-install(DIRECTORY "plugins" DESTINATION share/edward)
-
-# install .desktop file
-set(INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-edward.desktop" /tmp/michisoft-edward.desktop NO_SOURCE_PERMISSIONS)
-install(FILES /tmp/michisoft-edward.desktop DESTINATION share/applications)
-
-# install mime
-find_program(XDG_MIME_EXECUTABLE xdg-mime)
-if(NOT XDG_MIME_EXECUTABLE STREQUAL "XDG_MIME_EXECUTABLE_NOTFOUND")
-	install(CODE "message(STATUS \"installing mime file\")")
-	install(CODE "execute_process(COMMAND ${XDG_MIME_EXECUTABLE} install --novendor ${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-x-model.xml)")
-	install(CODE "message(STATUS \"installing mime file\")")
-	install(CODE "execute_process(COMMAND ${XDG_MIME_EXECUTABLE} install --novendor ${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-x-font.xml)")
-	install(CODE "message(STATUS \"installing mime file\")")
-	install(CODE "execute_process(COMMAND ${XDG_MIME_EXECUTABLE} install --novendor ${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-x-material.xml)")
-	install(CODE "message(STATUS \"installing mime file\")")
-	install(CODE "execute_process(COMMAND ${XDG_MIME_EXECUTABLE} install --novendor ${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-x-world.xml)")
-	install(CODE "message(STATUS \"installing mime file\")")
-	install(CODE "execute_process(COMMAND ${XDG_MIME_EXECUTABLE} install --novendor ${CMAKE_CURRENT_SOURCE_DIR}/static/michisoft-x-terrain.xml)")
 endif()

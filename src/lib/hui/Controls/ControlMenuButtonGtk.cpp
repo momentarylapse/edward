@@ -9,12 +9,12 @@
 #include "ControlMenuButton.h"
 #include "../Menu.h"
 #include "../Resource.h"
+#include "../../os/msg.h"
 
+#include <gtk/gtk.h>
 
 namespace hui
 {
-
-#ifdef HUI_API_GTK
 
 void *get_gtk_image(const string &image, IconSize size); // -> hui_menu_gtk.cpp
 
@@ -106,8 +106,6 @@ void ControlMenuButton::set_menu(Menu *m) {
 #endif
 	}
 }
-
-#endif
 
 };
 

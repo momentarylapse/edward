@@ -13,6 +13,7 @@
 #include <y/world/components/Animator.h>
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
+#include "../../lib/os/msg.h"
 #include "../../lib/math/quaternion.h"
 
 FormatModelJson::FormatModelJson(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "json", _("Model json"), Flag::READ_WRITE) {

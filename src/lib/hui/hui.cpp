@@ -11,9 +11,13 @@
 
 
 #include "hui.h"
+#include "../image/image.h"
+#include "../os/config.h"
 #include "../os/file.h"
 #include "../os/time.h"
+#include "../os/msg.h"
 
+#include <gtk/gtk.h>
 
 #include <stdio.h>
 #include <signal.h>

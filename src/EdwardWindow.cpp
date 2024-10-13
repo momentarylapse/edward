@@ -27,6 +27,7 @@
 #include "lib/os/config.h"
 #include "lib/kaba/kaba.h"
 #include "lib/nix/nix.h"
+#include "lib/hui/config.h"
 
 extern string AppName;
 

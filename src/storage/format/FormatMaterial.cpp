@@ -16,7 +16,7 @@
 
 color any2color(const Any &a);
 Any color2any(const color &c) {
-	Any r = Any::EmptyArray;
+	Any r = Any::EmptyList;
 	r.add(c.r);
 	r.add(c.g);
 	r.add(c.b);

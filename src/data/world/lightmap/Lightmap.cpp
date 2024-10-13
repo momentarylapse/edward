@@ -18,6 +18,7 @@
 #include <y/EngineData.h>
 #include "../../../lib/os/filesystem.h"
 #include "../../../lib/os/msg.h"
+#include "../../../lib/image/image.h"
 #include "../../../lib/nix/nix.h"
 #include "../../../storage/Storage.h"
 #include <y/world/ModelManager.h>

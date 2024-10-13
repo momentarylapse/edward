@@ -50,6 +50,7 @@
 #include "../../../multiview/DrawingHelper.h"
 #include "../../../multiview/ColorScheme.h"
 #include "../../../lib/nix/nix.h"
+#include "../../../lib/os/msg.h"
 
 
 string vb_format(int num_tex) {

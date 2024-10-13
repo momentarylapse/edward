@@ -4,7 +4,11 @@
 #include "Controls/MenuItemToggle.h"
 #include "hui.h"
 #include "internal.h"
+#include "../image/image.h"
+#include "../os/msg.h"
 #ifdef HUI_API_GTK
+
+#include <gtk/gtk.h>
 
 #ifdef HUGE
 #undef HUGE
@@ -68,7 +72,7 @@ void Menu::open_popup(Panel *panel) {
 #if GTK_CHECK_VERSION(4,0,0)
 	// transform into panel coordinates
 	int dx = 0, dy = 0;
-	panel->apply_foreach(panel->_get_cur_id_(), [this, panel, &dx, &dy] (Control *c) {
+	panel->apply_foreach(panel->_get_cur_id_(), [panel, &dx, &dy] (Control *c) {
 		graphene_point_t A{0,0}, B;
 		if (gtk_widget_compute_point (c->widget, panel->root_control->widget, &A, &B)) {
 			dx = (int)B.x;

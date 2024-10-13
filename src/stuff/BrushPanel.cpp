@@ -7,6 +7,7 @@
 
 #include "BrushPanel.h"
 #include "../multiview/MultiView.h"
+#include "../lib/image/image.h"
 //#include "../multiview/
 #include <math.h>
 

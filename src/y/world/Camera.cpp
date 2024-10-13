@@ -85,9 +85,6 @@ void CameraCalcMove(float dt) {
 	}
 }
 
-void Camera::on_iterate(float dt) {
-}
-
 // view space -> relative screen space (API independent)
 // (-1,-1) = top left
 // (+1,+1) = bottom right

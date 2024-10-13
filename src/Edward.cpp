@@ -9,6 +9,7 @@
 #include "EdwardWindow.h"
 #include "Session.h"
 #include <lib/os/CommandLineParser.h>
+#include "lib/os/msg.h"
 #include <lib/hui/hui.h>
 #include <lib/kaba/kaba.h>
 #include <y/helper/ResourceManager.h>

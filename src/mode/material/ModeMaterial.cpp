@@ -25,7 +25,9 @@
 #include "../../multiview/ColorScheme.h"
 #include "../../multiview/DrawingHelper.h"
 #include "../../lib/os/file.h"
+#include "../../lib/os/msg.h"
 #include "../../lib/nix/nix.h"
+#include "../../lib/hui/config.h"
 #include <y/helper/ResourceManager.h>
 
 const int MATERIAL_DETAIL = 32;

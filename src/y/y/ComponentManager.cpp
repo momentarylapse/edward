@@ -7,6 +7,7 @@
 
 #include "ComponentManager.h"
 #include "Component.h"
+#include "Entity.h"
 #include <lib/base/map.h>
 #include <lib/config.h>
 #ifdef _X_ALLOW_X_
@@ -101,11 +102,20 @@ void ComponentManager::_register(Component *c) {
 	lf.add(c);
 }
 
+void ComponentManager::_unregister(Component *c) {
+	auto& list = _get_list_x(c->component_type);
+	list.remove(c);
+
+	auto type_family = get_component_type_family(c->component_type);
+	auto& flist = _get_list_x_family(type_family);
+	flist.remove(c);
+}
+
 
 const kaba::Class *ComponentManager::get_component_type_family(const kaba::Class *type) {
 #ifdef _X_ALLOW_X_
 	while (type->parent) {
-		if ((type->parent->name == "Component") or (type->parent->name == "Component3D"))
+		if (type->parent->name == "Component")
 			return type;
 		type = type->parent;
 	}
@@ -130,11 +140,11 @@ Component *ComponentManager::create_component(const kaba::Class *type, const str
 
 // should already be unlinked from entity!
 void ComponentManager::delete_component(Component *c) {
-	auto& list = _get_list_x(c->component_type);
-	list.remove(c);
-	auto type_family = get_component_type_family(c->component_type);
-	auto& flist = _get_list_x_family(type_family);
-	flist.remove(c);
+	if (c->owner) {
+		msg_error("trying to delete a component that is still attached to an entity");
+		return;
+	}
+	_unregister(c);
 	delete c;
 }
 
@@ -165,5 +175,19 @@ void ComponentManager::iterate(float dt) {
 #ifdef _X_ALLOW_X_
 	PerformanceMonitor::end(ch_component);
 #endif
+}
+
+
+ComponentManager::PairList& ComponentManager::_get_list2(const kaba::Class *type_a, const kaba::Class *type_b) {
+	static PairList _list;
+
+	// TODO cache
+	_list.clear();
+	for (auto c1: _get_list(type_a)) {
+		if (auto c2 = c1->owner->_get_component_untyped_(type_b))
+			_list.add({c1->owner, c1, c2});
+	}
+
+	return _list;
 }
 

@@ -11,6 +11,7 @@
 
 
 #include <lib/base/base.h>
+#include <lib/base/optional.h>
 #include <lib/base/pointer.h>
 #include <lib/base/callable.h>
 #include <lib/os/path.h>
@@ -33,9 +34,6 @@ class LegacyParticle;
 class Link;
 class LevelData;
 enum class LinkType;
-namespace audio {
-	class Sound;
-}
 
 
 class btDefaultCollisionConfiguration;
@@ -85,9 +83,9 @@ public:
 	void register_entity(Entity *e);
 	void unregister_entity(Entity *e);
 
-	Entity *create_object(const Path &filename, const vec3 &pos, const quaternion &ang);
-	Entity *create_object_no_reg(const Path &filename, const vec3 &pos, const quaternion &ang);
-	Entity *create_object_no_reg_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang);
+	Model *create_object(const Path &filename, const vec3 &pos, const quaternion &ang);
+	Model *create_object_no_reg(const Path &filename, const vec3 &pos, const quaternion &ang);
+	Model *create_object_no_reg_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang);
 	Terrain *create_terrain(const Path &filename, const vec3 &pos);
 	Terrain *create_terrain_no_reg(const Path &filename, const vec3 &pos);
 
@@ -95,14 +93,12 @@ public:
 	Model& attach_model(Entity &e, const Path &filename);
 	void unattach_model(Model& m);
 
-	Entity* create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang);
+	MultiInstance* create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang);
 
 	void set_active_physics(Entity *o, bool active, bool passive);//, bool test_collisions);
 
 	bool unregister(BaseClass *o);
 	void delete_entity(Entity *e);
-	void delete_legacy_particle(LegacyParticle *p);
-	void delete_sound(audio::Sound *s);
 	void delete_link(Link *l);
 
 	void register_model(Model *m);
@@ -124,7 +120,6 @@ public:
 	Camera *create_camera(const vec3 &pos, const quaternion &ang);
 
 	ParticleManager *particle_manager;
-	LegacyParticle *add_legacy_particle(xfer<LegacyParticle> p);
 
 	void iterate(float dt);
 	void iterate_physics(float dt);
@@ -161,10 +156,7 @@ public:
 	PhysicsMode physics_mode;
 
 
-	bool _cdecl trace(const vec3 &p1, const vec3 &p2, CollisionData &d, bool simple_test, Entity *o_ignore = nullptr);
-
-	Array<audio::Sound*> sounds;
-	void add_sound(audio::Sound *s);
+	base::optional<CollisionData> trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore = nullptr);
 
 	typedef void callback();
 	using Callback = Callable<void()>;

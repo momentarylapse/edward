@@ -258,9 +258,8 @@ void SolidBody::do_simple_physics(float dt) {
 		// rotation
 		if ((rot != v_0) or (torque_int != v_0)) {
 
-			quaternion q_dot, q_w;
-			q_w = quaternion( 0, rot );
-			q_dot = 0.5f * q_w * o->ang;
+			const auto q_w = quaternion( 0, rot );
+			const auto q_dot = 0.5f * q_w * o->ang;
 			o->ang += q_dot * dt;
 			o->ang.normalize();
 
@@ -290,10 +289,11 @@ void SolidBody::do_simple_physics(float dt) {
 
 	// did anything change?
 	moved = false;
+	float rr = m ? m->prop.radius : 1.0f;
 	//if ((Pos!=Pos_old)or(ang!=ang_old))
 	//if ( (vel_surf!=v_0) or (VecLengthFuzzy(Pos-Pos_old)>2.0f*Elapsed) )//or(VecAng!=ang_old))
 	if (active) {
-		if ( (vel_surf != v_0) or (_vec_length_fuzzy_(vel) > VelThreshold) or (_vec_length_fuzzy_(rot) * m->prop.radius > VelThreshold))
+		if ( (vel_surf != v_0) or (_vec_length_fuzzy_(vel) > VelThreshold) or (_vec_length_fuzzy_(rot) * rr > VelThreshold))
 			moved = true;
 	} else {
 		frozen = true;

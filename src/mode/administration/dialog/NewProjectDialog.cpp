@@ -6,6 +6,7 @@
  */
 
 #include "NewProjectDialog.h"
+#include "../../../lib/os/msg.h"
 
 NewProjectDialog::NewProjectDialog(hui::Window *parent) : hui::Dialog("new-project-dialog", parent) {
 	_template = 0;

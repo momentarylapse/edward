@@ -18,6 +18,7 @@
 #include "../mode/model/animation/ModeModelAnimation.h"
 #include "../mode/model/mesh/ModeModelMeshTexture.h"
 #include "../Session.h"
+#include "../lib/os/msg.h"
 #include <assert.h>
 
 ActionMultiView::ActionMultiView() {

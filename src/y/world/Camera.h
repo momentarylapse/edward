@@ -46,8 +46,6 @@ public:
 	vec3 _cdecl project(const vec3 &v);
 	vec3 _cdecl unproject(const vec3 &v);
 
-	void _cdecl on_iterate(float dt) override;
-
 	void _cdecl __init__(const vec3 &pos, const quaternion &ang, const rect &dest);
 	void _cdecl __delete__() override;
 

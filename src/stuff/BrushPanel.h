@@ -8,6 +8,7 @@
 #pragma once
 
 #include "../lib/hui/hui.h"
+#include "../lib/image/color.h"
 #include "../lib/math/vec3.h"
 
 namespace MultiView {

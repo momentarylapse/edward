@@ -10,6 +10,8 @@
 
 #include "Control.h"
 
+#include <gtk/gtk.h>
+
 namespace hui
 {
 
@@ -46,6 +48,8 @@ public:
 	Array<GtkColumnViewColumn*> columns;
 	Array<GtkListItemFactory*> factories;
 	GtkWidget *overlay_drawing_area = nullptr;
+
+	void __update_cell(int row, int column, const string& str, bool update_view);
 
 	int potential_drop_row = -1;
 

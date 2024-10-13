@@ -14,6 +14,7 @@
 #include "../../../action/world/ActionWorldEditData.h"
 #include "../../../multiview/MultiView.h"
 #include "../../../lib/os/file.h"
+#include "../../../lib/os/msg.h"
 #include "../../../lib/kaba/kaba.h"
 #include "../../../lib/nix/nix.h"
 #include <y/world/World.h>

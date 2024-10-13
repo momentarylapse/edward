@@ -14,6 +14,7 @@
 #include "../../../../multiview/DrawingHelper.h"
 #include "../../../../Session.h"
 #include "../../../../lib/nix/nix.h"
+#include "../../../../lib/os/msg.h"
 
 ModeModelMeshPaste::ModeModelMeshPaste(ModeModelMesh* _parent) :
 	ModeCreation<ModeModelMesh, DataModel>("ModelMeshPaste", _parent)

@@ -111,7 +111,7 @@ struct ShaderCache {
 
 class MaterialManager {
 public:
-	MaterialManager(ResourceManager *resource_manager);
+	explicit MaterialManager(ResourceManager *resource_manager);
 	~MaterialManager();
 
 	void reset();

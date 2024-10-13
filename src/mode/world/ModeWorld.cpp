@@ -34,6 +34,8 @@
 #include "../../lib/nix/nix.h"
 #include "../../lib/math/vec2.h"
 #include "../../lib/os/terminal.h"
+#include "../../lib/os/msg.h"
+#include "../../lib/hui/config.h"
 #include <y/world/Camera.h>
 #include <y/world/World.h>
 #include <y/world/Material.h>

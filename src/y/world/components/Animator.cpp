@@ -167,37 +167,37 @@ void Animator::do_animation(float elapsed) {
 		// execute the operations
 
 			// overwrite
-			if (op->command == op->Command::SET){
+			if (op->command == MoveOperation::Command::SET){
 				b->ang = w;
 				b->pos = p;
 
 			// overwrite, if current doesn't equal 0
-			}else if (op->command == op->Command::SET_NEW_KEYED){
+			}else if (op->command == MoveOperation::Command::SET_NEW_KEYED){
 				if (w.w != 1)
 					b->ang = w;
 				if (p != v_0)
 					b->pos = p;
 
 			// overwrite, if last equals 0
-			}else if (op->command == op->Command::SET_OLD_KEYED){
+			}else if (op->command == MoveOperation::Command::SET_OLD_KEYED){
 				if (b->ang.w==1)
 					b->ang=w;
 				if (b->pos==v_0)
 					b->pos=p;
 
 			// w = w_old         + w_new * f
-			}else if (op->command == op->Command::ADD_1_FACTOR){
+			}else if (op->command == MoveOperation::Command::ADD_1_FACTOR){
 				w = w.scale_angle(op->param1);
 				b->ang = w * b->ang;
 				b->pos += op->param1 * p;
 
 			// w = w_old * (1-f) + w_new * f
-			}else if (op->command == op->Command::MIX_1_FACTOR){
+			}else if (op->command == MoveOperation::Command::MIX_1_FACTOR){
 				b->ang = quaternion::interpolate(b->ang, w, op->param1);
 				b->pos = (1 - op->param1) * b->pos + op->param1 * p;
 
 			// w = w_old * a     + w_new * b
-			}else if (op->command == op->Command::MIX_2_FACTOR){
+			}else if (op->command == MoveOperation::Command::MIX_2_FACTOR){
 				b->ang = b->ang.scale_angle(op->param1);
 				w = w.scale_angle(op->param2);
 				b->ang = quaternion::interpolate(b->ang, w, 0.5f);

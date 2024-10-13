@@ -76,6 +76,7 @@ public:
 	shared<Node> concretify_statement(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_statement_return(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_statement_if(shared<Node> node, Block *block, const Class *ns);
+	shared<Node> concretify_statement_if_compiletime(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_statement_while(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_statement_for_range(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_statement_for_container(shared<Node> node, Block *block, const Class *ns);
@@ -90,6 +91,7 @@ public:
 	shared<Node> concretify_statement_try(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_statement_raise(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_statement_lambda(shared<Node> node, Block *block, const Class *ns);
+	shared<Node> concretify_statement_match(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_special_function_call(shared<Node> node, SpecialFunction *s, Block *block, const Class *ns);
 	shared<Node> concretify_special_function_str(shared<Node> node, Block *block, const Class *ns);
 	shared<Node> concretify_special_function_repr(shared<Node> node, Block *block, const Class *ns);

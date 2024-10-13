@@ -18,6 +18,7 @@
 #include "../../../../multiview/ColorScheme.h"
 #include "../../../../data/model/ModelMesh.h"
 #include "../../../../stuff/BrushPanel.h"
+#include "../../../../lib/os/msg.h"
 #include <y/helper/ResourceManager.h>
 
 

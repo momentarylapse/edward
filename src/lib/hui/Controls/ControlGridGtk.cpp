@@ -6,13 +6,14 @@
  */
 
 #include "ControlGrid.h"
-#include "../hui.h"
+#include "../Panel.h"
+#include <gtk/gtk.h>
 
 #ifdef HUI_API_GTK
 
 namespace hui {
 
-const int FRAME_MARGIN = 8;
+//const int FRAME_MARGIN = 8;
 
 
 void DBDEL_X(const string &m);

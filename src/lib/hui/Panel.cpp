@@ -10,6 +10,10 @@
 #include "Controls/MenuItemToggle.h"
 #include "hui.h"
 #include "internal.h"
+#include "../image/color.h"
+#include "../os/msg.h"
+
+#include <gtk/gtk.h>
 
 namespace hui
 {

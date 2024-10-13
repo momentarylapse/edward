@@ -18,6 +18,7 @@
 #include "../../lib/os/file.h"
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/formatter.h"
+#include "../../lib/os/msg.h"
 #include <graphics-impl.h>
 
 FormatModel::FormatModel(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "model", _("Model"), Flag::CANONICAL_READ_WRITE) {

@@ -34,7 +34,7 @@ public:
 
 	// helpers
 	static Class* create_raw_class(SyntaxTree* tree, const string& name, const Class* from_template, int size, int alignment, int array_size, const Class* parent, const Array<const Class*>& params, int token_id);
-	static Function* add_func_header(Class* t, const string& name, const Class* return_type, const Array<const Class*>& param_types, const Array<string>& param_names, Function* cf = nullptr, Flags flags = Flags::NONE, const shared_array<Node>& def_params = {});
+	static Function* add_func_header(Class* t, const string& name, const Class* return_type, const Array<const Class*>& param_types, const Array<string>& param_names, Function* cf = nullptr, Flags flags = Flags::None, const shared_array<Node>& def_params = {});
 };
 
 class TemplateClassInstanceManager {
@@ -99,6 +99,7 @@ public:
 	const Class *request_callable_bind(SyntaxTree *tree, const Array<const Class*> &params, const Class *ret, const Array<const Class*> &captures, const Array<bool> &capture_via_ref, int token_id);
 	const Class *request_product(SyntaxTree *tree, const Array<const Class*> &classes, int token_id);
 	const Class *request_future(SyntaxTree *tree, const Class *base, int token_id);
+	const Class *request_promise(SyntaxTree *tree, const Class *base, int token_id);
 	const Class *request_futurecore(SyntaxTree *tree, const Class *base, int token_id);
 
 private:
@@ -211,6 +212,11 @@ class TemplateClassInstantiatorCallableBind : public TemplateClassInstantiator {
 };
 
 class TemplateClassInstantiatorFuture : public TemplateClassInstantiator {
+	Class* declare_new_instance(SyntaxTree *tree, const Array<const Class*> &params, int array_size, int token_id) override;
+	void add_function_headers(Class* c) override;
+};
+
+class TemplateClassInstantiatorPromise : public TemplateClassInstantiator {
 	Class* declare_new_instance(SyntaxTree *tree, const Array<const Class*> &params, int array_size, int token_id) override;
 	void add_function_headers(Class* c) override;
 };

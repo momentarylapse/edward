@@ -30,13 +30,14 @@ extern const Class *TypeCallableBase;
 #define CALL_DEBUG_X		0
 
 // call-by-reference dummy
-class CBR {
+struct
+CBR {
 	int _dummy_[1024];
 };
 
-class vec2 { float a; float b; };
-class vec3 { float a; float b; float c; };
-class vec4 { float a; float b; float c; float d; };
+struct vec2 { float a; float b; };
+struct vec3 { float a; float b; float c; };
+struct vec4 { float a; float b; float c; float d; };
 
 void call0_void(void *ff, void *ret, const Array<void*> &param) {
 	((void(*)())ff)();
@@ -385,6 +386,27 @@ bool call_function_pointer(void *ff, void *ret, const Array<void*> &param, const
 				call2<int,CBR,CBR>(ff, ret, param);
 				return true;
 			}
+		} else if (return_type == TypeBool) {
+			if ((ptype[0] == TypeInt32) and (ptype[1] == TypeInt32)) {
+				call2<bool,int,int>(ff, ret, param);
+				return true;
+			}
+			if (ptype[0]->is_some_pointer() and ptype[1]->is_some_pointer()) {
+				call2<bool,void*,void*>(ff, ret, param);
+				return true;
+			}
+			/*if ((ptype[0]->uses_call_by_reference()) and (ptype[1] == TypeInt32)) {
+				call2<bool,CBR,int>(ff, ret, param);
+				return true;
+			}
+			if ((ptype[0]->uses_call_by_reference()) and (ptype[1] == TypeFloat32)) {
+				call2<bool,CBR,float>(ff, ret, param);
+				return true;
+			}
+			if ((ptype[0]->uses_call_by_reference()) and (ptype[1]->uses_call_by_reference())) {
+				call2<bool,CBR,CBR>(ff, ret, param);
+				return true;
+			}*/
 		} else if (return_type == TypeFloat32) {
 			if ((ptype[0] == TypeFloat32) and (ptype[1] == TypeFloat32)) {
 				call2<float,float,float>(ff, ret, param);

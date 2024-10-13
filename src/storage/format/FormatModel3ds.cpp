@@ -12,6 +12,7 @@
 #include "../../data/model/ModelPolygon.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
+#include "../../lib/os/msg.h"
 
 FormatModel3ds::FormatModel3ds(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "3ds", _("Model 3ds"), Flag::READ) {
 }

@@ -17,6 +17,7 @@
 #include "../../../../multiview/DrawingHelper.h"
 #include "../../../../multiview/ColorScheme.h"
 #include "../../../../lib/nix/nix.h"
+#include "../../../../lib/hui/config.h"
 
 
 

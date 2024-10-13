@@ -14,6 +14,7 @@
 #include "../../../../multiview/MultiView.h"
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
+#include "../../../../lib/hui/config.h"
 
 ModeModelMeshCreatePlane::ModeModelMeshCreatePlane(ModeModelMesh *_parent) :
 	ModeCreation<ModeModelMesh, DataModel>("ModelMeshCreatePlane", _parent)

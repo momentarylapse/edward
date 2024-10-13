@@ -73,11 +73,17 @@ void Config::load(const Array<string> &arg) {
 		set_float("renderer.resolution-scale-min", r[0]);
 		set_float("renderer.resolution-scale-max", r[1]);
 	});
-	p.option("--size", "SIZE", "set resolution WxH", [this] (const string& a) {
+	p.option("--size", "SIZE", "set resolution WxH (-> windowed mode)", [this] (const string& a) {
 		auto xx = a.explode("x");
 		set_int("screen.width", xx[0]._int());
 		set_int("screen.height", xx[1]._int());
 		set_str("screen.mode", "windowed");
+	});
+	p.option("--fs/--fullscreen", "fullscreen mode", [this] {
+		set_str("screen.mode", "fullscreen");
+	});
+	p.option("--wfs/--windowed-fullscreen", "windowed fullscreen mode", [this] {
+		set_str("screen.mode", "windowed-fullscreen");
 	});
 	p.option("--fps", "RANGE", "limit framerate in MIN[:MAX]", [this] (const string& a) {
 		auto r = parse_range(a);

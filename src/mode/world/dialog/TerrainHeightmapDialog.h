@@ -9,6 +9,7 @@
 #define TERRAINHEIGHTMAPDIALOG_H_
 
 #include "../../../lib/hui/hui.h"
+#include "../../../lib/image/image.h"
 #include "../../../data/world/DataWorld.h"
 
 class TerrainHeightmapDialog: public hui::Dialog {

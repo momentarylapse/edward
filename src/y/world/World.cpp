@@ -35,21 +35,14 @@
 
 #ifdef _X_ALLOW_X_
 #include "Light.h"
-#include "../fx/Particle.h"
 #include "../fx/ParticleManager.h"
-#include "../fx/ParticleEmitter.h"
 #include "../plugins/PluginManager.h"
 #include "../helper/PerformanceMonitor.h"
-#endif
-
-#ifdef _X_ALLOW_X_
-#include "../audio/Sound.h"
 #endif
 
 #if HAS_LIB_BULLET
 #include <btBulletDynamicsCommon.h>
 //#include <BulletCollision/CollisionShapes/btConvexPointCloudShape.h>
-#include <BulletCollision/CollisionShapes/btConvexHullShape.h>
 #endif
 
 #include "Camera.h"
@@ -230,15 +223,6 @@ void World::reset() {
 #endif
 
 
-#ifdef _X_ALLOW_X_
-	// music
-	for (auto *s: sounds)
-		delete s;
-	sounds.clear();
-	/*if (meta->MusicEnabled){
-		NixSoundStop(MusicCurrent);
-	}*/
-#endif
 
 	// skybox
 	//   (models deleted by meta)
@@ -345,10 +329,10 @@ bool World::load(const LevelData &ld) {
 			//try {
 				auto q = quaternion::rotation(o.ang);
 				auto *oo = create_object_no_reg_x(o.filename, o.name, o.pos, q);
-				add_components_no_init(oo, o.components);
-				register_entity(oo);
+				add_components_no_init(oo->owner, o.components);
+				register_entity(oo->owner);
 				if (ld.ego_index == i)
-					ego = oo;
+					ego = oo->owner;
 				if (i % 5 == 0)
 					DrawSplashScreen("Objects", (float)i / (float)ld.objects.num / 5 * 3);
 
@@ -394,12 +378,12 @@ Terrain *World::create_terrain_no_reg(const Path &filename, const vec3 &pos) {
 
 	auto o = create_entity(pos, quaternion::ID);
 
-	auto t = (Terrain*)o->add_component(Terrain::_class, "");
+	auto t = o->add_component<Terrain>();
 	t->load(engine.resource_manager, filename);
 
-	[[maybe_unused]] auto col = (TerrainCollider*)o->add_component(TerrainCollider::_class, "");
+	[[maybe_unused]] auto col = o->add_component<TerrainCollider>();
 
-	auto sb = (SolidBody*)o->add_component(SolidBody::_class, "");
+	auto sb = o->add_component<SolidBody>();
 	sb->mass = 10000.0f;
 	sb->theta_0 = mat3::ZERO;
 	sb->passive = true;
@@ -441,21 +425,21 @@ void World::register_entity(Entity *e) {
 	notify("entity-add");
 }
 
-Entity *World::create_object(const Path &filename, const vec3 &pos, const quaternion &ang) {
+Model *World::create_object(const Path &filename, const vec3 &pos, const quaternion &ang) {
 	auto o = create_object_no_reg_x(filename, "", pos, ang);
-	register_entity(o);
+	register_entity(o->owner);
 	return o;
 }
 
-Entity *World::create_object_no_reg(const Path &filename, const vec3 &pos, const quaternion &ang) {
+Model *World::create_object_no_reg(const Path &filename, const vec3 &pos, const quaternion &ang) {
 	return create_object_no_reg_x(filename, "", pos, ang);
 }
 
-Entity *World::create_object_no_reg_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang) {
+Model *World::create_object_no_reg_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang) {
 	auto e = create_entity(pos, ang);
 	auto& m = attach_model_no_reg(*e, filename);
 	m.script_data.name = name;
-	return e;
+	return &m;
 }
 
 
@@ -513,7 +497,7 @@ void World::unattach_model(Model& m) {
 	m.owner->delete_component(&m);
 }
 
-Entity* World::create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang) {
+MultiInstance* World::create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang) {
 	auto e = create_entity(vec3::ZERO, quaternion::ID);
 	auto mi = (MultiInstance*)e->add_component_no_init(MultiInstance::_class, "");
 
@@ -524,7 +508,7 @@ Entity* World::create_object_multi(const Path &filename, const Array<vec3> &pos,
 
 	register_model_multi(mi);
 
-	return e;
+	return mi;
 }
 
 void World::register_model_multi(MultiInstance *mi) {
@@ -610,19 +594,6 @@ void World::delete_entity(Entity *e) {
 	delete e;
 }
 
-void World::delete_legacy_particle(LegacyParticle *p) {
-#ifdef _X_ALLOW_X_
-	particle_manager->_delete_legacy(p);
-#endif
-}
-
-void World::delete_sound(audio::Sound *s) {
-#ifdef _X_ALLOW_X_
-	if (unregister(s))
-		delete s;
-#endif
-}
-
 void World::delete_link(Link *l) {
 	if (unregister(l))
 		delete l;
@@ -640,18 +611,6 @@ bool World::unregister(BaseClass* x) {
 				links.erase(i);
 				return true;
 			}
-#ifdef _X_ALLOW_X_
-	} else if (x->type == BaseClass::Type::SOUND) {
-		foreachi(auto *s, sounds, i)
-			if (s == x) {
-				//msg_write(" -> SOUND");
-				sounds.erase(i);
-				return true;
-			}
-	} else if (x->type == BaseClass::Type::LEGACY_PARTICLE or x->type == BaseClass::Type::LEGACY_BEAM) {
-		if (particle_manager->unregister_legacy((LegacyParticle*)x))
-			return true;
-#endif
 	}
 	return false;
 }
@@ -769,16 +728,6 @@ void World::iterate(float dt) {
 					m->update_matrix();*/
 	}
 
-#ifdef _X_ALLOW_X_
-	foreachi (auto *s, sounds, i) {
-		if (s->suicidal and s->has_ended()) {
-			sounds.erase(i);
-			delete s;
-		}
-	}
-	audio::set_listener(cam_main->owner->pos, cam_main->owner->ang, v_0, 100000);
-#endif
-
 	PerformanceMonitor::end(ch_iterate);
 #endif
 }
@@ -831,17 +780,6 @@ Camera *World::create_camera(const vec3 &pos, const quaternion &ang) {
 	return c;
 }
 
-LegacyParticle* World::add_legacy_particle(xfer<LegacyParticle> p) {
-#ifdef _X_ALLOW_X_
-	particle_manager->add_legacy(p);
-#endif
-	return p;
-}
-
-void World::add_sound(audio::Sound *s) {
-	sounds.add(s);
-}
-
 
 void World::shift_all(const vec3 &dpos) {
 	for (auto *e: entities) {
@@ -855,11 +793,7 @@ void World::shift_all(const vec3 &dpos) {
 
 	for (auto *m: ComponentManager::get_list_family<Model>())
 		m->update_matrix();
-#ifdef _X_ALLOW_X_
-	for (auto *s: sounds)
-		s->pos += dpos;
-	particle_manager->shift_all(dpos);
-#endif
+
 	msg_data.v = dpos;
 	notify("shift");
 }
@@ -868,28 +802,39 @@ vec3 World::get_g(const vec3 &pos) const {
 	return gravity;
 }
 
-bool World::trace(const vec3 &p1, const vec3 &p2, CollisionData &d, bool simple_test, Entity *o_ignore) {
+enum TraceMode {
+	PHYSICAL = 1,
+	VISIBLE = 2,
+	SIMPLE = 4
+};
+
+base::optional<CollisionData> World::trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore) {
+	if (mode & TraceMode::PHYSICAL) {
 #if HAS_LIB_BULLET
-	btCollisionWorld::ClosestRayResultCallback ray_callback(bt_set_v(p1), bt_set_v(p2));
-	//ray_callback.m_collisionFilterMask = FILTER_CAMERA;
+		btCollisionWorld::ClosestRayResultCallback ray_callback(bt_set_v(p1), bt_set_v(p2));
+		//ray_callback.m_collisionFilterMask = FILTER_CAMERA;
 
-// Perform raycast
-	this->dynamicsWorld->getCollisionWorld()->rayTest(bt_set_v(p1), bt_set_v(p2), ray_callback);
-	if (ray_callback.hasHit()) {
-		auto sb = static_cast<SolidBody*>(ray_callback.m_collisionObject->getUserPointer());
-		d.pos = bt_get_v(ray_callback.m_hitPointWorld);
-		d.n = bt_get_v(ray_callback.m_hitNormalWorld);
-		d.entity = sb->owner;
-		d.body = sb;
+		// Perform raycast
+		this->dynamicsWorld->getCollisionWorld()->rayTest(bt_set_v(p1), bt_set_v(p2), ray_callback);
+		if (ray_callback.hasHit()) {
+			CollisionData d;
+			auto sb = static_cast<SolidBody *>(ray_callback.m_collisionObject->getUserPointer());
+			d.pos = bt_get_v(ray_callback.m_hitPointWorld);
+			d.n = bt_get_v(ray_callback.m_hitNormalWorld);
+			d.entity = sb->owner;
+			d.body = sb;
 
-		// ignore...
-		if (sb and sb->owner == o_ignore) {
-			vec3 dir = (p2 - p1).normalized();
-			return trace(d.pos + dir * 2, p2, d, simple_test, o_ignore);
+			// ignore...
+			if (sb and sb->owner == o_ignore) {
+				vec3 dir = (p2 - p1).normalized();
+				return trace(d.pos + dir * 2, p2, mode, o_ignore);
+			}
+			return d;
 		}
-		return true;
-	}
 #endif
-	return false;
+	} else if (mode & TraceMode::VISIBLE) {
+
+	}
+	return base::None;
 }
 

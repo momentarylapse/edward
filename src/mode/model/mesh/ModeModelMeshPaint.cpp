@@ -18,6 +18,7 @@
 #include "../../../EdwardWindow.h"
 #include "../../../Session.h"
 #include "../../../lib/nix/nix.h"
+#include "../../../lib/image/image.h"
 #include "../../../lib/math/complex.h"
 #include "../../../action/model/mesh/brush/ActionModelBrushExtrude.h"
 #include "../../../action/model/mesh/brush/ActionModelBrushSmooth.h"

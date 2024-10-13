@@ -6,9 +6,13 @@
  */
 
 #include "Control.h"
+#include "../language.h"
+#include "../Window.h"
+#include "../Painter.h"
+#include "../../os/msg.h"
+#include "../../image/color.h"
 
-#include "../hui.h"
-#include "ControlMultilineEdit.h"
+#include <gtk/gtk.h>
 
 namespace hui
 {

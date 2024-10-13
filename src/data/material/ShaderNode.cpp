@@ -8,6 +8,7 @@
 #include "ShaderNode.h"
 #include "ShaderBuilderContext.h"
 #include "../../lib/image/color.h"
+#include "../../lib/os/msg.h"
 #include "../../stuff/PluginManager.h"
 #include "../../EdwardWindow.h"
 #include "../../Edward.h"

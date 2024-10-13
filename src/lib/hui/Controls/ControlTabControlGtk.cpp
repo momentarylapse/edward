@@ -7,8 +7,11 @@
 
 #include "../hui.h"
 #include "ControlTabControl.h"
+#include "../../os/msg.h"
 
 #ifdef HUI_API_GTK
+
+#include <gtk/gtk.h>
 
 namespace hui {
 

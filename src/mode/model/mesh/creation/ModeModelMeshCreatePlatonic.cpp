@@ -16,6 +16,7 @@
 #include "../../../../multiview/Window.h"
 #include "../../../../multiview/DrawingHelper.h"
 #include "../../../../lib/nix/nix.h"
+#include "../../../../lib/hui/config.h"
 
 
 ModeModelMeshCreatePlatonic::ModeModelMeshCreatePlatonic(ModeModelMesh *_parent, int _type) :
