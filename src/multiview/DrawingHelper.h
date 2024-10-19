@@ -12,18 +12,11 @@
 #include "../lib/image/color.h"
 #include <graphics-impl.h>
 
-namespace nix {
-	class Context;
-	class Shader;
-	class Texture;
-	class CubeMap;
-	class VertexBuffer;
-}
 
 class vec3;
 namespace MultiView {
 	class Window;
-	extern shared<nix::CubeMap> cube_map;
+	extern shared<CubeMap> cube_map;
 }
 class string;
 class color;
@@ -40,25 +33,25 @@ enum class TextAlign {
 
 class DrawingHelper {
 public:
-	shared<nix::Shader> shader_selection;
-	shared<nix::Shader> shader_lines_3d;
-	shared<nix::Shader> shader_lines_3d_colored;
-	shared<nix::Shader> shader_lines_3d_colored_wide;
-	shared<nix::Texture> tex_white;
+	shared<Shader> shader_selection;
+	shared<Shader> shader_lines_3d;
+	shared<Shader> shader_lines_3d_colored;
+	shared<Shader> shader_lines_3d_colored_wide;
+	shared<Texture> tex_white;
 
-	nix::Texture *tex_round;
-	nix::Texture *tex_text;
+	Texture *tex_round;
+	Texture *tex_text;
 	string font_name = "Sans";
 	float font_size = 12;
 	color _cur_color_ = White;
 
-	nix::VertexBuffer *vb_lines = nullptr;
-	nix::VertexBuffer *vb_2d = nullptr;
+	VertexBuffer *vb_lines = nullptr;
+	VertexBuffer *vb_2d = nullptr;
 
-	nix::Context *gl;
+	Context *ctx;
 	ResourceManager *resource_manager;
 
-	DrawingHelper(nix::Context *gl, ResourceManager *rm, const Path &dir);
+	DrawingHelper(Context *ctx, ResourceManager *rm, const Path &dir);
 
 	void set_color(const color &c);
 

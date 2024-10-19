@@ -8,9 +8,12 @@
 #include "ModelMaterial.h"
 #include "../../lib/nix/nix.h"
 #include "../../lib/image/image.h"
+#if HAS_LIB_GL
 #include "../../multiview/Window.h"
 #include "../../multiview/DrawingHelper.h"
+#endif
 #include <y/helper/ResourceManager.h>
+#include <y/graphics-impl.h>
 #include "../../Session.h"
 
 float col_frac(const color &a, const color &b);
@@ -64,7 +67,7 @@ void ModelMaterial::TextureLevel::reload_image(Session *session) {
 
 void ModelMaterial::TextureLevel::update_texture() {
 	if (!texture)
-		texture = new nix::Texture();
+		texture = new Texture();
 	texture->write(*image);
 }
 
@@ -148,6 +151,7 @@ void ModelMaterial::check_colors() {
 }
 
 void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
+#if HAS_LIB_GL
 	nix::disable_alpha();
 	w->set_shader(w->gl->default_3d.get());
 	color em = color::interpolate(col.emission, White, 0.1f);
@@ -187,5 +191,6 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 //	if (material->cube_map)
 //		tex.add(material->cube_map);
 	nix::set_textures(tex);
+#endif
 }
 

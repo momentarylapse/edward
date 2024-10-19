@@ -16,7 +16,6 @@ class ActionCameraMoveSelection: public ActionMultiView
 {
 public:
 	ActionCameraMoveSelection(DataCamera *d, const vec3 &_param, const vec3 &_pos0);
-	virtual ~ActionCameraMoveSelection(){}
 	string name(){	return "CameraMoveSelection";	}
 
 	void *execute(Data *d);

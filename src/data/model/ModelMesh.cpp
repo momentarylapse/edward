@@ -13,16 +13,14 @@
 #include "../../lib/os/msg.h"
 #include "../../lib/base/set.h"
 #include "../../EdwardWindow.h"
-#include "../../multiview/MultiView.h"
 #include "../../y/world/components/Animator.h"
 
 ModelMesh::ModelMesh(DataModel *m) {
 	model = m;
-	inside_data = NULL;
+	inside_data = nullptr;
 }
 
-ModelMesh::~ModelMesh() {
-}
+ModelMesh::~ModelMesh() = default;
 
 void ModelMesh::clear() {
 	polygon.clear();

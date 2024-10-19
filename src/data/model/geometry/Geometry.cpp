@@ -9,9 +9,11 @@
 #include "../DataModel.h"
 #include "../ModelPolygon.h"
 #include "../SkinGenerator.h"
-#include "../../../lib/nix/nix.h"
+#include <y/graphics-impl.h>
+#if HAS_LIB_GL
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/Window.h"
+#endif
 
 
 static float Bernstein3(int i, float t)
@@ -240,7 +242,8 @@ void Geometry::get_bounding_box(vec3 &min, vec3 &max)
 	}
 }
 
-void Geometry::build(nix::VertexBuffer *vb) const {
+void Geometry::build(VertexBuffer *vb) const {
+#if HAS_LIB_GL
 	VertexStagingBuffer vbs;
 	int num_textures = vb->num_attributes - 2;
 	for (auto &p: const_cast<Array<ModelPolygon>&>(polygon)){
@@ -248,6 +251,7 @@ void Geometry::build(nix::VertexBuffer *vb) const {
 		p.add_to_vertex_buffer(vertex, vbs, num_textures);
 	}
 	vbs.build(vb, num_textures);
+#endif
 }
 
 
@@ -383,6 +387,7 @@ void Geometry::remove_unused_vertices() {
 
 bool Geometry::is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp)
 {
+#if HAS_LIB_GL
 	for (ModelPolygon &p: polygon){
 		// care for the sense of rotation?
 		if (vec3::dot(p.temp_normal, win->get_direction()) > 0)
@@ -420,6 +425,7 @@ bool Geometry::is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp)
 			}
 		}
 	}
+#endif
 	return false;
 }
 

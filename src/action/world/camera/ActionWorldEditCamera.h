@@ -14,7 +14,7 @@
 class ActionWorldEditCamera : public Action {
 public:
 	ActionWorldEditCamera(int index, const WorldCamera &c);
-	string name() { return "WorldEditCamera"; }
+	string name() override { return "WorldEditCamera"; }
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;

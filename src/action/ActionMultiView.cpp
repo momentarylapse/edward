@@ -14,9 +14,11 @@
 #include "world/ActionWorldMoveSelection.h"
 #include "world/object/ActionWorldRotateObjects.h"
 #include "world/camera/ActionCameraMoveSelection.h"
+#if HAS_LIB_GL
 #include "../mode/model/ModeModel.h"
 #include "../mode/model/animation/ModeModelAnimation.h"
 #include "../mode/model/mesh/ModeModelMeshTexture.h"
+#endif
 #include "../Session.h"
 #include "../lib/os/msg.h"
 #include <assert.h>
@@ -48,6 +50,7 @@ void ActionMultiView::update_and_notify(Data *d, const mat4 &m) {
 ActionMultiView *ActionMultiViewFactory(const string &name, Data *d) {
 	if (name == "ActionModelTransformVertices")
 		return new ActionModelTransformVertices((DataModel*)d);
+#if HAS_LIB_GL
 	if (name == "ActionModelTransformSkinVertices") {
 		Array<int> tria;
 		Array<int> index;
@@ -68,6 +71,7 @@ ActionMultiView *ActionMultiViewFactory(const string &name, Data *d) {
 		return new ActionCameraMoveSelection((DataCamera*)d, _param, _pos0);*/
 	msg_error("ActionMultiViewFactory: unknown action: " + name);
 	assert(0);
+#endif
 	return nullptr;
 }
 

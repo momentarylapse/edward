@@ -47,7 +47,7 @@ vec3 Camera::get_pos(bool allow_radius) const {
 
 MultiView::MultiView(Session *_s, bool mode3d) {
 	session = _s;
-	gl = session->gl;
+	gl = session->ctx;
 	drawing_helper = session->drawing_helper;
 	view_stage = 0;
 	grid_enabled = true;
@@ -733,11 +733,11 @@ void MultiView::on_draw() {
 	nix::bind_frame_buffer(gl->default_framebuffer);
 	nix::set_shader(shader_out.get());
 	//nix::vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
-	session->gl->vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
+	session->ctx->vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
 	nix::bind_texture(0, weak(frame_buffer->color_attachments)[0]);
 	nix::set_z(false, false);
 	nix::set_cull(nix::CullMode::NONE);
-	nix::draw_triangles(session->gl->vb_temp);
+	nix::draw_triangles(session->ctx->vb_temp);
 
 	//printf("%f\n", timer.get()*1000.0f);
 }
@@ -758,7 +758,7 @@ void MultiView::SelectionRect::draw(DrawingHelper *drawing_helper, const vec2 &m
 	nix::bind_texture(0, nullptr);
 	drawing_helper->set_color(scheme.SELECTION_RECT);
 	nix::set_cull(nix::CullMode::NONE);
-	nix::set_shader(drawing_helper->gl->default_2d.get());
+	nix::set_shader(drawing_helper->ctx->default_2d.get());
 	drawing_helper->draw_rect(m.x, pos0.x, m.y, pos0.y, 0);
 	nix::set_cull(nix::CullMode::BACK);
 	drawing_helper->set_color(scheme.SELECTION_RECT_BOUNDARY);

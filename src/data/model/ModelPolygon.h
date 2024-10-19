@@ -10,18 +10,16 @@
 
 class DataModel;
 class ModelVertex;
-namespace nix {
-	class VertexBuffer;
-};
 
 #include <y/world/Material.h>
+#include <y/graphics-fwd.h>
 #include "../../multiview/SingleData.h"
 
 class VertexStagingBuffer {
 public:
 	Array<vec3> p, n;
 	Array<float> uv[MATERIAL_MAX_TEXTURES];
-	void build(nix::VertexBuffer *vb, int num_textures);
+	void build(VertexBuffer *vb, int num_textures);
 };
 
 class ModelPolygonSide {
@@ -37,6 +35,7 @@ public:
 
 class ModelPolygon: public MultiView::SingleData {
 public:
+	~ModelPolygon() override;
 	Array<ModelPolygonSide> side;
 	vec3 temp_normal;
 	bool normal_dirty = true;
@@ -44,9 +43,12 @@ public:
 	int material = 0;
 	int smooth_group = -1;
 
+#if HAS_LIB_GL
+	// -> MeshSelectionModePolygin.cpp
 	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
+#endif
 
 	Array<int> triangulate(const Array<ModelVertex> &vertex) const;
 	void update_triangulation(const Array<ModelVertex> &vertex);

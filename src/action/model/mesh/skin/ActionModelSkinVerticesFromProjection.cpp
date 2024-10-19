@@ -7,15 +7,18 @@
 
 #include "ActionModelSkinVerticesFromProjection.h"
 #include "../../../../lib/math/vec3.h"
+#if HAS_LIB_GL
 #include "../../../../multiview/MultiView.h"
+#endif
+#include "../../../../data/model/DataModel.h"
 #include "../../../../data/model/ModelMesh.h"
 #include "../../../../data/model/ModelPolygon.h"
 #include <assert.h>
 
-#include "../../../../mode/model/mesh/ModeModelMeshTexture.h"
-
 ActionModelSkinVerticesFromProjection::ActionModelSkinVerticesFromProjection(DataModel *m, MultiView::MultiView *mv) {
+#if HAS_LIB_GL
 	sg.init_projective(mv->mouse_win);
+#endif
 
 	// list of selected skin vertices and save old pos
 	foreachi(ModelPolygon &t, m->mesh->polygon, ti)

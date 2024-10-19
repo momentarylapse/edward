@@ -11,7 +11,9 @@
 #include "WorldTerrain.h"
 #include "WorldCamera.h"
 #include "WorldLink.h"
+#if HAS_LIB_GL
 #include "../../mode/world/ModeWorld.h"
+#endif
 #include "../../Session.h"
 #include "../../storage/Storage.h"
 #include <y/world/Object.h>
@@ -26,8 +28,7 @@
 #include "../../action/world/terrain/ActionWorldAddTerrain.h"
 #include "../../action/world/ActionWorldPaste.h"
 #include "../../action/world/ActionWorldDeleteSelection.h"
-#include "../../lib/nix/nix.h"
-#include "../../multiview/MultiView.h"
+#include <y/graphics-impl.h>
 #include <y/helper/ResourceManager.h>
 
 
@@ -44,7 +45,9 @@ DataWorld::~DataWorld() {
 
 void DataWorld::MetaData::reset() {
 	fog.enabled = false;
+#if HAS_LIB_GL
 	fog.mode = nix::FogMode::EXP;
+#endif
 	fog.start = 1;
 	fog.end = 1000;
 	fog.density = 0.0001f;

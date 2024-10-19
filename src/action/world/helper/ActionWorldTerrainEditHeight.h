@@ -14,7 +14,7 @@
 class ActionWorldTerrainEditHeight : public Action {
 public:
 	ActionWorldTerrainEditHeight(int _index, const Array<float> &_height, rect _dest);
-	string name(){	return "WorldTerrainEditHeight";	}
+	string name() override {	return "WorldTerrainEditHeight";	}
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;

@@ -16,7 +16,7 @@ public:
 	ActionModelBevelVertices(float _length, int material);
 	string name() override { return "ModelBevelVertices"; }
 
-	void *compose(Data *d);
+	void *compose(Data *d) override;
 
 	void BevelVertex(DataModel *m, float length, int vi);
 private:

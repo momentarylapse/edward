@@ -123,8 +123,8 @@ public:
 
 class DataModel: public Data {
 public:
-	DataModel(Session *s);
-	virtual ~DataModel();
+	explicit DataModel(Session *s);
+	~DataModel() override;
 
 	obs::source out_skin_changed{this, "skin-changed"};
 	obs::source out_material_changed{this, "material-changed"};

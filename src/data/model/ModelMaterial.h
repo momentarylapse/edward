@@ -10,7 +10,7 @@
 
 #include <y/world/Material.h>
 #include <lib/base/pointer.h>
-#include <graphics-fwd.h>
+#include <graphics-impl.h>
 
 namespace MultiView {
 	class Window;
@@ -22,7 +22,7 @@ class Session;
 class ModelMaterial {
 public:
 	ModelMaterial(Session *s, const Path &filename);
-	ModelMaterial(Session *s);
+	explicit ModelMaterial(Session *s);
 	virtual ~ModelMaterial();
 	Session *session;
 
@@ -40,7 +40,7 @@ public:
 		TextureLevel();
 		~TextureLevel();
 		Path filename;
-		shared<nix::Texture> texture;
+		shared<Texture> texture;
 		Image *image;
 		bool edited;
 		void reload_image(Session *s);
@@ -61,7 +61,7 @@ public:
 		void import(const color &am, const color &di, const color &sp, float shininess, const color &em);
 	} col;
 
-	nix::VertexBuffer *vb;
+	VertexBuffer *vb;
 };
 
 #endif /* MODELMATERIAL_H_ */

@@ -66,6 +66,14 @@ base::map<string,color> get_style_colors(Panel *p, const string &id) {
  * drawing                                                                         */
 
 
+int get_screen_scale(GtkWidget *w) {
+#if GTK_CHECK_VERSION(4,0,0)
+	return gtk_widget_get_scale_factor(w);
+#else
+	return gdk_monitor_get_scale_factor(gdk_display_get_monitor_at_window(gdk_display_get_default(), gtk_widget_get_parent_window(w)));
+#endif
+}
+
 
 #if GTK_CHECK_VERSION(4,0,0)
 
@@ -77,6 +85,8 @@ void on_gtk_area_draw(GtkDrawingArea* drawing_area, cairo_t* cr, int width, int 
 #if STUPID_HACK
 	da->redraw_area.clear();
 #endif
+	int scale = get_screen_scale(GTK_WIDGET(da->widget));
+	da->panel->win->input.row_target = scale;
 	da->notify(EventID::DRAW);
 	//msg_write("/draw " + da->id);
 }
@@ -100,15 +110,6 @@ gboolean on_gtk_area_draw(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
 
 #endif
 
-
-
-int get_screen_scale(GtkWidget *w) {
-#if GTK_CHECK_VERSION(4,0,0)
-	return 1;
-#else
-	return gdk_monitor_get_scale_factor(gdk_display_get_monitor_at_window(gdk_display_get_default(), gtk_widget_get_parent_window(w)));
-#endif
-}
 
 
 /*---------------------------------------------------------------------------------*

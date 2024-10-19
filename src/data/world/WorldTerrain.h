@@ -28,6 +28,8 @@ struct Box {
 
 class WorldTerrain: public MultiView::SingleData {
 public:
+	~WorldTerrain() override;
+
 	Path filename;
 	//Array<WorldTerrainVertex> Vertex;
 	int VertexBufferSingle;
@@ -40,9 +42,11 @@ public:
 	bool load(Session *s, const Path &filename, bool deep = true);
 	bool save(const Path &filename);
 
+#if HAS_LIB_GL
 	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
+#endif
 
 	Box bounding_box() const;
 

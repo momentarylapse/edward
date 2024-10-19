@@ -78,6 +78,7 @@ void DataMaterial::reset() {
 }
 
 void DataMaterial::apply_for_rendering(int pass_no) const {
+#if HAS_LIB_GL
 	nix::set_material(appearance.albedo, appearance.roughness, appearance.metal, appearance.emissive);
 
 	nix::disable_alpha();
@@ -116,6 +117,7 @@ void DataMaterial::ShaderData::load_from_file(Session *s) {
 		from_graph = false;
 	}
 	is_default = false;
+#endif
 }
 
 void DataMaterial::ShaderData::set_engine_default(Session *s) {

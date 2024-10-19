@@ -10,7 +10,7 @@
 #include "../../action/font/ActionFontEditGlobal.h"
 #include "../../action/font/ActionFontEditGlyph.h"
 #include <y/gui/Font.h>
-#include "../../lib/nix/nix.h"
+#include <y/graphics-impl.h>
 
 DataFont::DataFont(Session *s) :
 	Data(s, FD_FONT)
@@ -39,7 +39,7 @@ void DataFont::reset() {
 	filename = "";
 	global.Reset();
 
-	Texture = nullptr;
+	texture = nullptr;
 	TextureWidth = 512;
 	TextureHeight = 256;
 
@@ -67,10 +67,12 @@ void DataFont::reset() {
 
 
 void DataFont::UpdateTexture() {
-	Texture = nix::Texture::load(global.TextureFile);
-	if (Texture) {
-		TextureWidth = Texture->width;
-		TextureHeight = Texture->height;
+#if HAS_LIB_GL
+	texture = nix::Texture::load(global.TextureFile);
+#endif
+	if (texture) {
+		TextureWidth = texture->width;
+		TextureHeight = texture->height;
 	}
 }
 
@@ -85,7 +87,7 @@ int str_utf8_first_char(const string &str) {
 }
 
 void DataFont::ApplyFont(gui::Font *f) {
-	/*f->texture = Texture;
+	/*f->texture = texture;
 	f->x_factor = (float)global.XFactor*0.01f;
 	f->y_factor = (float)global.YFactor*0.01f;
 	float dy = (float)(global.GlyphY2-global.GlyphY1);

@@ -11,13 +11,17 @@
 #include "ModelMaterial.h"
 #include "ModelSelection.h"
 #include "geometry/Geometry.h"
+#if HAS_LIB_GL
 #include "../../mode/model/ModeModel.h"
 #include "../../mode/model/mesh/ModeModelMesh.h"
+#endif
 #include "../../action/Action.h"
 #include "../../action/ActionManager.h"
 #include "../../Session.h"
 #include "../../storage/Storage.h"
+#if HAS_LIB_GL
 #include "../../multiview/MultiView.h"
+#endif
 #include "../../action/model/mesh/vertex/ActionModelAddVertex.h"
 #include "../../action/model/mesh/vertex/ActionModelNearifyVertices.h"
 #include "../../action/model/mesh/vertex/ActionModelCollapseVertices.h"
@@ -60,6 +64,8 @@
 #include "../../action/model/skeleton/ActionModelReconnectBone.h"
 #include "../../action/model/skeleton/ActionModelSetSubModel.h"
 #include "../../lib/os/msg.h"
+#include "../../lib/math/quaternion.h"
+#include "../../lib/hui/language.h"
 #include <y/helper/ResourceManager.h>
 #include <y/world/components/Animator.h>
 #include <graphics-impl.h>
@@ -100,6 +106,9 @@ ModelVertex::ModelVertex(const vec3 &_pos) {
 }
 
 ModelVertex::ModelVertex() : ModelVertex(v_0) {}
+
+ModelEdge::~ModelEdge() = default;
+
 
 DataModel::DataModel(Session *s) :
 	Data(s, FD_MODEL)
@@ -554,8 +563,11 @@ void DataModel::subdivideSelectedSurfaces(const ModelSelection &s) {
 	execute(new ActionModelSurfacesSubdivide(s));
 }
 
-void DataModel::bevelSelectedEdges(float radius)
-{	execute(new ActionModelBevelEdges(radius, session->mode_model->mode_model_mesh->current_material));	}
+void DataModel::bevelSelectedEdges(float radius) {
+#if HAS_LIB_GL
+	execute(new ActionModelBevelEdges(radius, session->mode_model->mode_model_mesh->current_material));
+#endif
+}
 
 void DataModel::flattenSelectedVertices()
 {	execute(new ActionModelFlattenVertices(this));	}
@@ -563,8 +575,11 @@ void DataModel::flattenSelectedVertices()
 void DataModel::triangulateSelectedVertices()
 {	execute(new ActionModelTriangulateVertices());	}
 
-void DataModel::extrudeSelectedPolygons(float offset, bool independent)
-{	execute(new ActionModelExtrudePolygons(offset, independent, session->mode_model->mode_model_mesh->current_material));	}
+void DataModel::extrudeSelectedPolygons(float offset, bool independent) {
+#if HAS_LIB_GL
+	execute(new ActionModelExtrudePolygons(offset, independent, session->mode_model->mode_model_mesh->current_material));
+#endif
+}
 
 void DataModel::autoWeldSurfaces(const base::set<int> &surfaces, float epsilon)
 {	execute(new ActionModelAutoWeldSelection(epsilon));	}

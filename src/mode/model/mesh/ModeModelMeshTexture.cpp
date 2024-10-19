@@ -168,7 +168,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 
 
 void ModeModelMeshTexture::on_draw() {
-	nix::set_shader(session->gl->default_2d.get());
+	nix::set_shader(session->ctx->default_2d.get());
 	auto s = data->get_selection();
 	/*if (data->getNumSelectedVertices() > 0){
 		draw_str(20, 160, format(_("skin: %d"), getNumSelected()));

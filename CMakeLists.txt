@@ -15,40 +15,13 @@ find_package(PkgConfig REQUIRED)
 
 
 
-# lib: gtk4 or gtk3 (mandatory)
-set(GTK4_OR_GTK3 "gtk4" CACHE STRING "Use gtk4 or gtk3?")
-pkg_check_modules(GTK4 gtk4)
-if(GTK4_FOUND)
-	list(APPEND GTK4_OR_GTK3_FOUND "gtk4")
-endif()
-pkg_check_modules(GTK+30 gtk+-3.0)
-if(GTK3_FOUND)
-	list(APPEND GTK4_OR_GTK3_FOUND "gtk3")
-endif()
-if(GTK4_OR_GTK3_FOUND)
-	if(NOT ${GTK4_OR_GTK3} IN_LIST GTK4_OR_GTK3_FOUND)
-		list(GET GTK4_OR_GTK3_FOUND 0 X)
-		set(GTK4_OR_GTK3 ${X} CACHE STRING "choose" FORCE)
-		message(WARNING "Choice for GTK4_OR_GTK3 invalid, using ${GTK4_OR_GTK3} instead")
-	endif()
-else()
-	message(SEND_ERROR "Neither gtk4 or gtk3 found") #  or/nor..
-	set(GTK4_OR_GTK3 "")
-endif()
-if(GTK4_OR_GTK3 STREQUAL "gtk4")
-	list(APPEND INCLUDE_DIRECTORIES ${GTK4_INCLUDE_DIRS})
-	list(APPEND LINK_DIRECTORIES ${GTK4_LIBRARY_DIRS})
-	list(APPEND DEPS ${GTK4_LIBRARIES})
-	list(APPEND COMPILE_OPTIONS ${GTK4_CFLAGS_OTHER})
-	list(APPEND COMPILE_DEFINITIONS HAS_LIB_GTK4=1)
-endif()
-if(GTK4_OR_GTK3 STREQUAL "gtk3")
-	list(APPEND INCLUDE_DIRECTORIES ${GTK+30_INCLUDE_DIRS})
-	list(APPEND LINK_DIRECTORIES ${GTK+30_LIBRARY_DIRS})
-	list(APPEND DEPS ${GTK+30_LIBRARIES})
-	list(APPEND COMPILE_OPTIONS ${GTK+30_CFLAGS_OTHER})
-	list(APPEND COMPILE_DEFINITIONS HAS_LIB_GTK3=1)
-endif()
+# lib: gtk4 (mandatory)
+pkg_check_modules(GTK4 REQUIRED gtk4)
+list(APPEND INCLUDE_DIRECTORIES ${GTK4_INCLUDE_DIRS})
+list(APPEND LINK_DIRECTORIES ${GTK4_LIBRARY_DIRS})
+list(APPEND DEPS ${GTK4_LIBRARIES})
+list(APPEND COMPILE_OPTIONS ${GTK4_CFLAGS_OTHER})
+list(APPEND COMPILE_DEFINITIONS HAS_LIB_GTK4=1)
 
 
 # lib: zlib (mandatory)
@@ -465,6 +438,23 @@ add_executable(edward
 	src/lib/threads/Mutex.cpp
 	src/lib/threads/Thread.cpp
 	src/lib/threads/ThreadedWork.cpp
+	src/lib/vulkan/AccelerationStructure.cpp
+	src/lib/vulkan/Buffer.cpp
+	src/lib/vulkan/CommandBuffer.cpp
+	src/lib/vulkan/DescriptorSet.cpp
+	src/lib/vulkan/Device.cpp
+	src/lib/vulkan/FrameBuffer.cpp
+	src/lib/vulkan/helper.cpp
+	src/lib/vulkan/Instance.cpp
+	src/lib/vulkan/Pipeline.cpp
+	src/lib/vulkan/Queue.cpp
+	src/lib/vulkan/RenderPass.cpp
+	src/lib/vulkan/Semaphore.cpp
+	src/lib/vulkan/Shader.cpp
+	src/lib/vulkan/SwapChain.cpp
+	src/lib/vulkan/Texture.cpp
+	src/lib/vulkan/VertexBuffer.cpp
+	src/lib/vulkan/vulkan.cpp
 	src/mode/administration/dialog/AdministrationDialog.cpp
 	src/mode/administration/dialog/ConfigurationDialog.cpp
 	src/mode/administration/dialog/NewProjectDialog.cpp
@@ -566,12 +556,63 @@ add_executable(edward
 	src/stuff/Clipboard.cpp
 	src/stuff/PluginManager.cpp
 	src/stuff/Progress.cpp
+	src/y/audio/audio.cpp
+	src/y/audio/Listener.cpp
+	src/y/audio/Loading.cpp
+	src/y/audio/Music.cpp
+	src/y/audio/SoundSource.cpp
+	src/y/fx/Beam.cpp
+	src/y/fx/Particle.cpp
+	src/y/fx/ParticleEmitter.cpp
+	src/y/fx/ParticleManager.cpp
 	src/y/gui/Font.cpp
 	src/y/gui/gui.cpp
 	src/y/gui/Node.cpp
 	src/y/gui/Picture.cpp
 	src/y/gui/Text.cpp
+	src/y/helper/DeletionQueue.cpp
+	src/y/helper/ErrorHandler.cpp
+	src/y/helper/PerformanceMonitor.cpp
 	src/y/helper/ResourceManager.cpp
+	src/y/helper/Scheduler.cpp
+	src/y/net/NetworkManager.cpp
+	src/y/plugins/Controller.cpp
+	src/y/plugins/ControllerManager.cpp
+	src/y/plugins/PluginManager.cpp
+	src/y/renderer/gui/GuiRendererGL.cpp
+	src/y/renderer/gui/GuiRendererVulkan.cpp
+	src/y/renderer/helper/jitter.cpp
+	src/y/renderer/helper/Pipeline.cpp
+	src/y/renderer/helper/PipelineManager.cpp
+	src/y/renderer/helper/RendererFactory.cpp
+	src/y/renderer/post/blur.cpp
+	src/y/renderer/post/HDRRendererGL.cpp
+	src/y/renderer/post/HDRRendererVulkan.cpp
+	src/y/renderer/post/PostProcessor.cpp
+	src/y/renderer/post/PostProcessorGL.cpp
+	src/y/renderer/post/PostProcessorVulkan.cpp
+	src/y/renderer/regions/RegionRendererCommon.cpp
+	src/y/renderer/regions/RegionRendererGL.cpp
+	src/y/renderer/regions/RegionRendererVulkan.cpp
+	src/y/renderer/target/TargetRenderer.cpp
+	src/y/renderer/target/TextureRendererGL.cpp
+	src/y/renderer/target/WindowRendererGL.cpp
+	src/y/renderer/target/WindowRendererVulkan.cpp
+	src/y/renderer/world/geometry/GeometryRenderer.cpp
+	src/y/renderer/world/geometry/GeometryRendererGL.cpp
+	src/y/renderer/world/geometry/GeometryRendererVulkan.cpp
+	src/y/renderer/world/geometry/SceneView.cpp
+	src/y/renderer/world/pass/ShadowRendererGL.cpp
+	src/y/renderer/world/pass/ShadowRendererVulkan.cpp
+	src/y/renderer/world/WorldRenderer.cpp
+	src/y/renderer/world/WorldRendererGL.cpp
+	src/y/renderer/world/WorldRendererGLDeferred.cpp
+	src/y/renderer/world/WorldRendererGLForward.cpp
+	src/y/renderer/world/WorldRendererVulkan.cpp
+	src/y/renderer/world/WorldRendererVulkanForward.cpp
+	src/y/renderer/world/WorldRendererVulkanRayTracing.cpp
+	src/y/renderer/base.cpp
+	src/y/renderer/Renderer.cpp
 	src/y/world/components/Animator.cpp
 	src/y/world/components/Collider.cpp
 	src/y/world/components/MultiInstance.cpp

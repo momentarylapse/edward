@@ -370,7 +370,7 @@ void ModeWorld::on_draw() {
 			ss.add(format(_("%d cameras"), num_cam));
 		if (num_li > 0)
 			ss.add(format(_("%d lights"), num_li));
-		nix::set_shader(session->gl->default_2d.get());
+		nix::set_shader(session->ctx->default_2d.get());
 		session->drawing_helper->draw_str(10, 100, _("selected: ") + implode(ss, ", "));
 	}
 }

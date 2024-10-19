@@ -269,7 +269,7 @@ void ModeModelMesh::on_command(const string &id) {
 void ModeModelMesh::on_draw() {
 	auto s = data->edit_mesh->get_selection();
 	if (s.vertex.num > 0) {
-		nix::set_shader(session->gl->default_2d.get());
+		nix::set_shader(session->ctx->default_2d.get());
 		string t = format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num);
 		if (current_skin == MESH_PHYSICAL)
 			t += format(", %d balls, %d cylinders", s.ball.num, s.cylinder.num);

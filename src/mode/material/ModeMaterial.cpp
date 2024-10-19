@@ -104,7 +104,7 @@ void ModeMaterial::on_data_update() {
 	for (int i=0; i<data->appearance.passes.num; i++) {
 		try {
 			// dummy
-			shaders[i] = session->gl->create_shader("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
+			shaders[i] = session->ctx->create_shader("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
 		} catch (Exception &e) {
 			msg_error(e.message());
 		}

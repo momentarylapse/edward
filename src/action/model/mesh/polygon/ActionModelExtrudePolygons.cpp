@@ -13,7 +13,6 @@
 #include "../../../../data/model/DataModel.h"
 #include "../../../../data/model/ModelMesh.h"
 #include "../../../../data/model/ModelPolygon.h"
-#include "../../../../mode/model/mesh/ModeModelMesh.h"
 #include <assert.h>
 
 ActionModelExtrudePolygons::ActionModelExtrudePolygons(float _offset, bool _independent, int _material) {

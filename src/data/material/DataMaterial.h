@@ -41,10 +41,10 @@ public:
 		ShaderData shader;
 
 		TransparencyMode mode = TransparencyMode::NONE;
-		nix::Alpha source = nix::Alpha::ONE, destination = nix::Alpha::ONE;
+		Alpha source = Alpha::ONE, destination = Alpha::ONE;
 		float factor = 1.0f;
 		bool z_buffer = true;
-		nix::CullMode culling = nix::CullMode::BACK;
+		CullMode culling = CullMode::BACK;
 	};
 
 

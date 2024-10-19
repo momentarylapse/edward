@@ -86,6 +86,7 @@
 		class UniformBuffer;
 		enum class Alpha;
 		enum class AlphaMode;
+		enum class CullMode;
 	}
 
 	using Context = nix::Context;
@@ -101,6 +102,7 @@
 
 	using Alpha = nix::Alpha;
 	using AlphaMode = nix::AlphaMode;
+	using CullMode = nix::CullMode;
 	class RenderPass{};
 
 #endif

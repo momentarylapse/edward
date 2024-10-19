@@ -7,12 +7,15 @@
 
 
 #include "WorldTerrain.h"
+#include "DataWorld.h"
 #include "../../Session.h"
 #include <y/y/EngineData.h>
 #include <y/world/Terrain.h>
 #include "../../lib/os/file.h"
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/formatter.h"
+
+WorldTerrain::~WorldTerrain() = default;
 
 
 bool WorldTerrain::load(Session *session, const Path &_filename, bool deep) {
@@ -78,4 +81,11 @@ void WorldTerrain::update_data() {
 		return;
 	//terrain->pos = pos;
 }
+
+#ifndef HAS_LIB_GL
+Box WorldTerrain::bounding_box() const {
+	return {};
+}
+#endif
+
 

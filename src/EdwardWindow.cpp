@@ -39,6 +39,8 @@ namespace hui {
 	extern bool color_button_linear;
 }
 
+rect dynamicly_scaled_source() { return {}; }
+rect dynamicly_scaled_area(FrameBuffer*) { return {}; }
 
 void EdwardWindow::on_close() {
 	session->allow_termination().then([this] {
@@ -345,7 +347,7 @@ void EdwardWindow::on_realize_gl() {
 
 void EdwardWindow::on_draw_gl() {
 	auto e = hui::get_event();
-	nix::start_frame_hui(session->gl);
+	nix::start_frame_hui(session->ctx);
 	nix::set_viewport(rect(0, e->column, 0, e->row));
 
 #if 0
@@ -376,7 +378,7 @@ void EdwardWindow::on_draw_gl() {
 	session->cur_mode->on_draw();
 
 	// messages
-	nix::set_shader(session->gl->default_2d.get());
+	nix::set_shader(session->ctx->default_2d.get());
 	foreachi(string &m, session->message_str, i)
 	session->drawing_helper->draw_str(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, TextAlign::CENTER);
 

@@ -15,10 +15,10 @@ class Session;
 
 class PluginManager {
 public:
-	PluginManager(const Path &dir);
+	explicit PluginManager(const Path &dir);
 	~PluginManager();
 
-	void init();
+	void init_edward();
 	void link_plugins();
 	void link_plugins_later();
 	void find_plugins();

@@ -13,8 +13,8 @@
 
 class ActionWorldAddObject : public Action {
 public:
-	ActionWorldAddObject(const WorldObject &o);
-	string name() { return "WorldAddObject"; }
+	explicit ActionWorldAddObject(const WorldObject &o);
+	string name() override { return "WorldAddObject"; }
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;

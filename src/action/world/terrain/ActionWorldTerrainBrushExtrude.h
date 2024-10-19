@@ -14,7 +14,7 @@
 class ActionWorldTerrainBrushExtrude : public Action {
 public:
 	ActionWorldTerrainBrushExtrude(int _index, const vec3 &pos, float radius, float depth);
-	string name(){	return "WorldTerrainBrushExtrude";	}
+	string name() override {	return "WorldTerrainBrushExtrude";	}
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;

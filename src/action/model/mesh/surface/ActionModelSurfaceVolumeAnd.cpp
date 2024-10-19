@@ -11,7 +11,6 @@
 #include "../../../../data/model/DataModel.h"
 #include "../../../../data/model/geometry/Geometry.h"
 #include "../../../../EdwardWindow.h"
-#include "../../../../multiview/MultiView.h"
 #include "../../../../lib/os/msg.h"
 
 

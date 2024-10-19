@@ -7,7 +7,6 @@
 
 #include "../../../data/model/DataModel.h"
 #include "../../../data/model/ModelMesh.h"
-#include "../../../mode/model/animation/ModeModelAnimation.h"
 #include <assert.h>
 #include "ActionModelAnimationTransformVertices.h"
 

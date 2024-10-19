@@ -9,23 +9,28 @@
 #include "../lib/nix/nix.h"
 #include "../lib/image/image.h"
 #include "../lib/os/msg.h"
+#include "../lib/math/vec2.h"
 #include <y/helper/ResourceManager.h>
+#if HAS_LIB_GL
 #include "MultiView.h"
 #include "Window.h"
+#endif
 #include "ColorScheme.h"
+#if HAS_LIB_GL
 #include <cairo/cairo.h>
+#endif
 #include <pango/pango.h>
 #include <pango/pangocairo.h>
 
 
 namespace MultiView {
-	shared<nix::CubeMap> cube_map;
+	shared<CubeMap> cube_map;
 }
 
 
 
-nix::Texture *create_round_texture(int n) {
-	auto t = new nix::Texture();
+Texture *create_round_texture(int n) {
+	auto t = new Texture();
 	Image im;
 	im.create(n, n, color(0,0,0,0));
 	for (int i=0; i<n; i++)
@@ -38,7 +43,7 @@ nix::Texture *create_round_texture(int n) {
 	return t;
 }
 
-void create_fake_dynamic_cube_map(nix::CubeMap *cube_map) {
+void create_fake_dynamic_cube_map(CubeMap *cube_map) {
 	Image im;
 	int size = cube_map->width;
 	im.create(size, size, White);
@@ -55,14 +60,14 @@ void create_fake_dynamic_cube_map(nix::CubeMap *cube_map) {
 		cube_map->write_side(i, im);
 }
 
-DrawingHelper::DrawingHelper(nix::Context *_gl, ResourceManager *rm, const Path &dir) {
-	gl = _gl;
+DrawingHelper::DrawingHelper(Context *_ctx, ResourceManager *rm, const Path &dir) {
+	ctx = _ctx;
 	resource_manager = rm;
-	vb_lines = new nix::VertexBuffer("3f,4f");
-	vb_2d = new nix::VertexBuffer("3f,4f,2f");
+	vb_lines = new VertexBuffer("3f,4f");
+	vb_2d = new VertexBuffer("3f,4f,2f");
 	tex_round = create_round_texture(32);
-	tex_text = new nix::Texture();
-	tex_white = new nix::Texture();
+	tex_text = new Texture();
+	tex_white = new Texture();
 	Image im;
 	im.create(32, 32, White);
 	tex_white->write(im);
@@ -79,21 +84,24 @@ DrawingHelper::DrawingHelper(nix::Context *_gl, ResourceManager *rm, const Path 
 		resource_manager->load_shader(dir | "shader/module-vertex-default.shader");
 		resource_manager->load_shader(dir | "shader/module-vertex-animated.shader");
 
-		shader_lines_3d = gl->load_shader(dir | "shader/lines-3d.shader");
-		shader_lines_3d_colored = gl->load_shader(dir | "shader/lines-3d-colored.shader");
-		shader_lines_3d_colored_wide = gl->load_shader(dir | "shader/lines-3d-colored-wide.shader");
+#if HAS_LIB_GL
+		shader_lines_3d = ctx->load_shader(dir | "shader/lines-3d.shader");
+		shader_lines_3d_colored = ctx->load_shader(dir | "shader/lines-3d-colored.shader");
+		shader_lines_3d_colored_wide = ctx->load_shader(dir | "shader/lines-3d-colored-wide.shader");
 		shader_selection = resource_manager->load_shader(dir | "shader/selection.shader");
 		shader_selection->set_int("num_lights", 1);
+#endif
 	} catch (Exception &e) {
 		msg_error(e.message());
 		throw;
 	}
 
-	MultiView::cube_map = new nix::CubeMap(256, "rgba:i8");
+	MultiView::cube_map = new CubeMap(256, "rgba:i8");
 	create_fake_dynamic_cube_map(MultiView::cube_map.get());
 }
 
 void DrawingHelper::set_line_width(float width) {
+#if HAS_LIB_GL
 	if (width == 1.0f) {
 		nix::set_shader(shader_lines_3d_colored.get());
 	} else {
@@ -103,6 +111,7 @@ void DrawingHelper::set_line_width(float width) {
 		s->set_float("target_height", (float)nix::target_height);
 		s->set_float("line_width", width);
 	}
+#endif
 }
 
 void DrawingHelper::set_color(const color &c) {
@@ -134,7 +143,9 @@ void DrawingHelper::draw_lines_colored(const Array<vec3> &p, const Array<color> 
 	for (int i=0; i<p.num; i++)
 		v.add({p[i], c[i]});
 	vb_lines->update(v);
+#if HAS_LIB_GL
 	nix::draw_lines(vb_lines, contiguous);
+#endif
 }
 
 void DrawingHelper::draw_line(const vec3 &l1, const vec3 &l2) {
@@ -159,6 +170,7 @@ void DrawingHelper::draw_circle(const vec3 &pos, const vec3 &n, float radius) {
 
 
 void DrawingHelper::draw_helper_line(MultiView::Window *win, const vec3 &a, const vec3 &b) {
+#if HAS_LIB_GL
 	nix::set_z(false, false);
 	set_color(scheme.TEXT);
 	set_line_width(scheme.LINE_WIDTH_HELPER);
@@ -172,6 +184,7 @@ void DrawingHelper::draw_helper_line(MultiView::Window *win, const vec3 &a, cons
 	nix::set_shader(win->gl->default_2d.get());
 	draw_rect(pa.x-r, pa.x+r, pa.y-r, pa.y+r, 0);
 	draw_rect(pb.x-r, pb.x+r, pb.y-r, pb.y+r, 0);
+#endif
 }
 
 
@@ -186,6 +199,7 @@ struct Vertex2d {
 };
 
 void DrawingHelper::draw_2d(const rect &src, const rect &dest, float depth) {
+#if HAS_LIB_GL
 	vec3 a = vec3(dest.x1, dest.y1, depth);
 	vec3 b = vec3(dest.x2, dest.y1, depth);
 	vec3 c = vec3(dest.x1, dest.y2, depth);
@@ -195,6 +209,7 @@ void DrawingHelper::draw_2d(const rect &src, const rect &dest, float depth) {
 	vb_2d->update(Array<Vertex2d>{{a, col, {src.x1,src.y1}},{b, col, {src.x2,src.y1}},{c, col, {src.x1,src.y2}},
 	                              {c, col, {src.x1,src.y2}},{b, col, {src.x2,src.y1}},{d, col, {src.x2,src.y2}}});
 	nix::draw_triangles(vb_2d);
+#endif
 }
 
 
@@ -229,14 +244,17 @@ int DrawingHelper::get_str_width(const string &str) {
 void DrawingHelper::_draw_str(float x, float y, const string &str) {
 	Image im;
 	render_text(str, im);
+#if HAS_LIB_GL
 	if (im.width > 0) {
 		tex_text->write(im);
 		nix::bind_texture(0, tex_text);
 		draw_2d(rect::ID, rect(x, x + im.width, y, y + im.height), 0);
 	}
+#endif
 }
 
 void DrawingHelper::draw_str_bg(int x, int y, const string &str, const color &fg, const color &bg, TextAlign align) {
+#if HAS_LIB_GL
 	color c0 = _cur_color_;
 	auto xx = str.explode("\n");
 	float line_h = scheme.TEXT_LINE_HEIGHT;
@@ -270,6 +288,7 @@ void DrawingHelper::draw_str_bg(int x, int y, const string &str, const color &fg
 	}
 	nix::disable_alpha();
 	set_color(c0);
+#endif
 }
 
 void DrawingHelper::draw_str(int x, int y, const string &str, TextAlign a) {
@@ -349,25 +368,31 @@ void DrawingHelper::render_text(const string &text, Image &im) {
 
 
 void DrawingHelper::set_material_selected() {
+#if HAS_LIB_GL
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::set_shader(shader_selection.get());
 	nix::set_material(color(0.3f,0,0,0), 0, 0, color(1, 0.8f,0,0));
 	//nix::set_material(Black,color(0.3f,0,0,0),Black,0,color(1, 0.5f, 0, 1));
 	nix::bind_texture(0, nullptr);
+#endif
 }
 
 void DrawingHelper::set_material_hover() {
+#if HAS_LIB_GL
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::set_shader(shader_selection.get());
 	nix::set_material(color(0.5f,0,0,0), 0, 0, White);
 	nix::bind_texture(0, nullptr);
+#endif
 }
 
 void DrawingHelper::set_material_creation(float intensity) {
+#if HAS_LIB_GL
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::set_shader(shader_selection.get());
 	nix::set_material(color(0.3f*intensity,0.3f,1,0.3f), 0, 1, color(1,0.1f,0.4f,0.1f));
 	nix::bind_texture(0, nullptr);
+#endif
 }
 
 

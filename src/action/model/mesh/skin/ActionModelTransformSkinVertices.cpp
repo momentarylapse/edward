@@ -10,7 +10,6 @@
 #include "../../../../data/model/ModelMesh.h"
 #include "../../../../data/model/ModelPolygon.h"
 #include "../../../../lib/math/math.h"
-#include "../../../../mode/model/mesh/ModeModelMeshTexture.h"
 
 ActionModelTransformSkinVertices::ActionModelTransformSkinVertices(DataModel *d, const Array<int> &_tria, const Array<int> &_index, int _texture_level) :
 	ActionMultiView()

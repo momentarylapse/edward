@@ -6,6 +6,7 @@
  */
 
 #include "Storage.h"
+#if HAS_LIB_GL
 #include "format/FormatFontX.h"
 #include "format/FormatMaterial.h"
 #include "format/FormatModel.h"
@@ -14,6 +15,8 @@
 #include "format/FormatModelPly.h"
 #include "format/FormatTerrain.h"
 #include "format/FormatWorld.h"
+#endif
+#include "../data/Data.h"
 #include "../lib/os/filesystem.h"
 #include "../lib/os/msg.h"
 #include "../lib/hui/hui.h"
@@ -26,6 +29,7 @@ Path Storage::CANONICAL_SUB_DIR[NUM_FDS];
 
 Storage::Storage(Session *_s) {
 	session = _s;
+#if HAS_LIB_GL
 	formats.add(new FormatFontX(session));
 	formats.add(new FormatMaterial(session));
 	formats.add(new FormatModel(session));
@@ -34,6 +38,7 @@ Storage::Storage(Session *_s) {
 	formats.add(new FormatModelPly(session));
 	formats.add(new FormatTerrain(session));
 	formats.add(new FormatWorld(session));
+#endif
 
 	CANONICAL_SUB_DIR[FD_FONT] = "Fonts";
 	CANONICAL_SUB_DIR[FD_TERRAIN] = "Maps";

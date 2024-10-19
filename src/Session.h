@@ -14,11 +14,8 @@
 #include "lib/os/time.h"
 #include "lib/os/path.h"
 #include "lib/pattern/Observable.h"
+#include "y/graphics-fwd.h"
 
-namespace nix {
-	class Texture;
-	class Context;
-};
 namespace MultiView {
 	class MultiView;
 };
@@ -65,7 +62,7 @@ public:
 	Session();
 	~Session() override;
 
-	void create_initial_resources(nix::Context *gl);
+	void create_initial_resources(Context *ctx);
 
 	void set_mode(ModeBase *m);
 	void set_mode_now(ModeBase *m);
@@ -101,7 +98,7 @@ public:
 		return static_cast<M*>(find_mode_base(name));
 	}
 
-	nix::Context *gl;
+	Context *ctx;
 	ResourceManager *resource_manager;
 	DrawingHelper *drawing_helper;
 
@@ -111,8 +108,8 @@ public:
 
 	Progress *progress;
 
-	base::map<nix::Texture*, string> icon_image;
-	string get_tex_image(nix::Texture *tex);
+	base::map<Texture*, string> icon_image;
+	string get_tex_image(Texture *tex);
 
 	os::Timer timer;
 

@@ -26,8 +26,8 @@ class ResourceManager;
 class MaterialManager;
 class ModelManager;
 #ifdef USING_VULKAN
-class WindowRendererVulkan;
-using WindowRenderer = WindowRendererVulkan;
+class SurfaceRendererVulkan;
+using WindowRenderer = SurfaceRendererVulkan;
 class HDRRendererVulkan;
 using HDRRenderer = HDRRendererVulkan;
 class RegionRendererVulkan;

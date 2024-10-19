@@ -10,11 +10,12 @@
 #include "DataModel.h"
 #include "ModelPolygon.h"
 #include "ModelMesh.h" // for Vertex
-#include "../../lib/nix/nix.h"
+#include <y/graphics-impl.h>
 #include "../../lib/math/vec2.h"
 
 
-void VertexStagingBuffer::build(nix::VertexBuffer *vb, int num_textures) {
+void VertexStagingBuffer::build(VertexBuffer *vb, int num_textures) {
+#if HAS_LIB_GL
 	Array<float> temp;
 	int d = 3 + 3 + 2*num_textures;
 	temp.resize(p.num * d);
@@ -29,8 +30,11 @@ void VertexStagingBuffer::build(nix::VertexBuffer *vb, int num_textures) {
 	vb->update(1, n);
 	for (int l=0; l<num_textures; l++)
 		vb->update(l+2, uv[l]);*/
-
+#endif
 }
+
+ModelPolygon::~ModelPolygon() = default;
+
 
 vec3 ModelPolygon::get_area_vector(const Array<ModelVertex> &vertex) const {
 	// Newell's method

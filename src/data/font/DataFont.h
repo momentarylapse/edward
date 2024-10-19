@@ -10,7 +10,7 @@
 
 #include "../Data.h"
 #include "../../lib/base/pointer.h"
-#include "../../lib/nix/nix.h"
+#include <y/graphics-fwd.h>
 
 namespace gui{
 	class Font;
@@ -45,7 +45,7 @@ public:
 	Array<Glyph> glyph;
 
 	// for editing
-	shared<nix::Texture> Texture;
+	shared<Texture> texture;
 	int TextureWidth, TextureHeight;
 	int Marked;
 

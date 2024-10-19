@@ -14,7 +14,7 @@
 class ActionWorldEditObject : public Action {
 public:
 	ActionWorldEditObject(int _index, const WorldObject &_data);
-	string name(){	return "WorldEditObject";	}
+	string name() override {	return "WorldEditObject";	}
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;

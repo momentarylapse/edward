@@ -11,14 +11,12 @@
 #include "../DataModel.h"
 #include "../ModelPolygon.h"
 #include "../ModelMesh.h"
+#include <y/graphics-fwd.h>
 
 class ModelVertex;
 class ModelPolygon;
 class vec3;
 class mat4;
-namespace nix {
-	class VertexBuffer;
-};
 namespace MultiView {
 	class Window;
 };
@@ -51,7 +49,7 @@ public:
 	void get_bounding_box(vec3 &min, vec3 &max);
 	bool is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp);
 
-	void build(nix::VertexBuffer *vb) const;
+	void build(VertexBuffer *vb) const;
 
 	Array<ModelVertex> vertex;
 	Array<ModelPolygon> polygon;

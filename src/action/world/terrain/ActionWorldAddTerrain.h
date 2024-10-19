@@ -16,7 +16,7 @@ class ActionWorldAddTerrain : public Action {
 public:
 	ActionWorldAddTerrain(const vec3 &_pos, const Path &_filename);
 	ActionWorldAddTerrain(const vec3 &_pos, const vec3 &_size, int _num_x, int _num_z);
-	string name(){	return "WorldAddTerrain";	}
+	string name() override {	return "WorldAddTerrain";	}
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;

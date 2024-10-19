@@ -27,7 +27,7 @@ void ModeCreationBase::on_draw() {
 	//ModeBase::onDraw();
 	on_draw_post();
 
-	nix::set_shader(session->gl->default_2d.get());
+	nix::set_shader(session->ctx->default_2d.get());
 	session->drawing_helper->draw_str(nix::target_width / 2, nix::target_height - 20, message);
 }
 

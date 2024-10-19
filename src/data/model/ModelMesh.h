@@ -34,6 +34,7 @@ public:
 
 class ModelEdge: public MultiView::SingleData {
 public:
+	~ModelEdge() override;
 	//int NormalMode;
 	int vertex[2];
 	int ref_count, polygon[2], side[2];
@@ -45,9 +46,12 @@ public:
 	//  Vertex[1] = surf.Polygon[Triangle[0]].Vertex[(Side[0] + 1) % 3]
 	//  same for Polygon/Side[1] but Vertex[0 <-> 1]
 
+#if HAS_LIB_GL
+	// -> MeshSelectionModeEdge.cpp
 	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
+#endif
 };
 
 // only for use in MultiView...

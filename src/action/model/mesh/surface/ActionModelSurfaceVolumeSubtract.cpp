@@ -12,8 +12,6 @@
 #include "../../../../data/model/DataModel.h"
 #include "../../../../data/model/geometry/Geometry.h"
 #include "../../../../data/model/ModelSelection.h"
-#include "../../../../EdwardWindow.h"
-#include "../../../../multiview/MultiView.h"
 
 
 ActionModelSurfaceVolumeSubtract::ActionModelSurfaceVolumeSubtract(int _view_stage) {

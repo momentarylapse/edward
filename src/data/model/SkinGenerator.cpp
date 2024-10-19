@@ -7,8 +7,10 @@
 
 #include "../../lib/math/math.h"
 #include "SkinGenerator.h"
+#if HAS_LIB_GL
 #include "../../multiview/MultiView.h"
 #include "../../multiview/Window.h"
+#endif
 #include "../../lib/nix/nix.h"
 #include "../../data/model/ModelMesh.h"
 #include "../../data/model/ModelPolygon.h"
@@ -42,12 +44,14 @@ void SkinGenerator::init_projective(const mat4 &_m)
 
 void SkinGenerator::init_projective(MultiView::Window *win)
 {
+	#if HAS_LIB_GL
 	rect d = win->dest;
 	mat4 s, t1, t2;
 	s = mat4::scale( nix::target_width / (d.x2 - d.x1) / 2, - nix::target_height / (d.y2 - d.y1) / 2, 1);
 	t2 = mat4::translation( vec3(- d.x1 / nix::target_width * 2, - d.y1 / nix::target_height * 2, 0));
 	t1 = mat4::translation( vec3(1, -1, 0));
 	init_projective(t2 * s * t1 * win->pv_matrix);
+#endif
 }
 
 void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, int level)

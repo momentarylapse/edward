@@ -10,7 +10,7 @@
 #include "../../../data/world/DataWorld.h"
 #include "../../../data/world/WorldTerrain.h"
 #include <y/world/Terrain.h>
-#include <lib/nix/nix.h>
+#include <y/graphics-impl.h>
 #include <assert.h>
 
 ActionWorldAddTerrain::ActionWorldAddTerrain(const vec3 &_pos, const Path &_filename) {
@@ -68,7 +68,7 @@ void *ActionWorldAddTerrain::execute(Data *d) {
 		for (int x=0;x<num_x/32+1;x++)
 			for (int z=0;z<num_z/32+1;z++)
 				t.terrain->chunk_lod[x][z] = -1;
-		t.terrain->vertex_buffer = new nix::VertexBuffer("3f,3f,2f");
+		t.terrain->vertex_buffer = new VertexBuffer("3f,3f,2f");
 		t.terrain->update(-1, -1, -1, -1, TerrainUpdateAll);
 		// (relative) bounding box
 		t.terrain->min = vec3(0,0,0);

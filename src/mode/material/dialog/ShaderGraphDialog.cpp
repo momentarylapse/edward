@@ -120,7 +120,7 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) :
 				changed();
 				request_optimal_view();
 			} else {
-				data->session->error(_("Error in shader file:\n") + data->session->gl->shader_error);
+				data->session->error(_("Error in shader file:\n") + data->session->ctx->shader_error);
 			}
 		});
 	});

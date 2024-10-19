@@ -13,8 +13,8 @@
 
 class ActionWorldDeleteTerrain : public Action {
 public:
-	ActionWorldDeleteTerrain(int index);
-	string name(){	return "WorldDeleteTerrain";	}
+	explicit ActionWorldDeleteTerrain(int index);
+	string name() override {	return "WorldDeleteTerrain";	}
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;
