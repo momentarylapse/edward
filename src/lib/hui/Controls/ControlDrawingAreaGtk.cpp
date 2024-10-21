@@ -774,7 +774,9 @@ ControlDrawingArea::ControlDrawingArea(const string &title, const string &id) :
 		auto vv = option_value(get_option_from_title(title), "opengl").explode(".");
 		if (vv.num == 2)
 			gtk_gl_area_set_required_version(GTK_GL_AREA(da), vv[0]._int(), vv[1]._int());
+#if GTK_CHECK_VERSION(4,12,0)
 		gtk_gl_area_set_allowed_apis(GTK_GL_AREA(da), GDK_GL_API_GL);
+#endif
 		gtk_gl_area_set_has_stencil_buffer(GTK_GL_AREA(da), true);
 		gtk_gl_area_set_has_depth_buffer(GTK_GL_AREA(da), true);
 		gtk_gl_area_attach_buffers(GTK_GL_AREA(da));

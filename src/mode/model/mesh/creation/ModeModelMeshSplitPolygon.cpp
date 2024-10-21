@@ -83,11 +83,13 @@ void ModeModelMeshSplitPolygon::on_draw_win(MultiView::Window *win) {
 		}
 
 
+#if HAS_LIB_GL
 		nix::set_z(false, false);
 		win->drawing_helper->set_color(scheme.CREATION_LINE);
 		win->drawing_helper->set_line_width(scheme.LINE_WIDTH_MEDIUM);
 		for (int k=0;k<v.num;k++)
 			win->drawing_helper->draw_line(v[k], pos);
 		nix::set_z(true, true);
+#endif
 	}
 }

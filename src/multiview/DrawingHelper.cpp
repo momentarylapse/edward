@@ -181,7 +181,7 @@ void DrawingHelper::draw_helper_line(MultiView::Window *win, const vec3 &a, cons
 	//vector d = (pb - pa).normalized();
 	//vector e = d ^ vector::EZ;
 	float r = 3;
-	nix::set_shader(win->gl->default_2d.get());
+	nix::set_shader(win->ctx->default_2d.get());
 	draw_rect(pa.x-r, pa.x+r, pa.y-r, pa.y+r, 0);
 	draw_rect(pb.x-r, pb.x+r, pb.y-r, pb.y+r, 0);
 #endif

@@ -27,8 +27,10 @@ void ModeCreationBase::on_draw() {
 	//ModeBase::onDraw();
 	on_draw_post();
 
+#if HAS_LIB_GL
 	nix::set_shader(session->ctx->default_2d.get());
 	session->drawing_helper->draw_str(nix::target_width / 2, nix::target_height - 20, message);
+#endif
 }
 
 void ModeCreationBase::on_draw_win(MultiView::Window *win) {

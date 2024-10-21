@@ -10,11 +10,9 @@
 
 #include "../../Mode.h"
 #include "../../../data/model/DataModel.h"
+#include <y/graphics-fwd.h>
 
 class DataModel;
-namespace nix {
-	class VertexBuffer;
-};
 class ModeModel;
 class MeshSelectionMode;
 class ModeModelMeshTexture;
@@ -106,7 +104,7 @@ public:
 	bool allow_draw_hover;
 	void set_allow_draw_hover(bool allow);
 
-	nix::VertexBuffer *vb_marked, *vb_hover, *vb_creation, *vb_phys;
+	VertexBuffer *vb_marked, *vb_hover, *vb_creation, *vb_phys;
 };
 
 #endif /* MODEMODELMESH_H_ */

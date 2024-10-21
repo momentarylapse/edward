@@ -120,7 +120,11 @@ ShaderGraphDialog::ShaderGraphDialog(DataMaterial *_data) :
 				changed();
 				request_optimal_view();
 			} else {
+#if HAS_LIB_GL
 				data->session->error(_("Error in shader file:\n") + data->session->ctx->shader_error);
+#else
+				data->session->error("Error in shader file");
+#endif
 			}
 		});
 	});
@@ -606,7 +610,7 @@ void ShaderGraphDialog::on_mouse_move() {
 
 void ShaderGraphDialog::on_mouse_wheel() {
 	auto e = hui::get_event();
-	view_scale = clamp(view_scale * exp(-e->scroll.y * 0.05f), MIN_VIEW_SCALE, MAX_VIEW_SCALE);
+	view_scale = clamp(view_scale * (float)exp(-e->scroll.y * 0.05f), MIN_VIEW_SCALE, MAX_VIEW_SCALE);
 
 	view_offset = m -  e->m / view_scale;
 
@@ -655,24 +659,24 @@ ShaderGraphDialog::HoverData ShaderGraphDialog::get_hover() {
 
 	for (auto *n: weak(graph->nodes)) {
 		if (node_area(n).inside(m)) {
-			h.type = h.Type::NODE;
+			h.type = HoverData::Type::NODE;
 			h.node = n;
 		}
 		for (int i=0; i<n->params.num; i++) {
 			if (node_get_in_rect(n, i).inside(m) and node_in_pluggable(n, i)) {
-				h.type = h.Type::PORT_IN;
+				h.type = HoverData::Type::PORT_IN;
 				h.node = n;
 				h.port = i;
 			}
 			if (node_get_param_rect(n, i).inside(m) and !graph->find_source(n, i)) {
-				h.type = h.Type::PARAMETER;
+				h.type = HoverData::Type::PARAMETER;
 				h.node = n;
 				h.param = i;
 			}
 		}
 		for (int i=0; i<n->output.num; i++)
 			if (node_get_out_rect(n, i).inside(m)) {
-				h.type = h.Type::PORT_OUT;
+				h.type = HoverData::Type::PORT_OUT;
 				h.node = n;
 				h.port = i;
 			}

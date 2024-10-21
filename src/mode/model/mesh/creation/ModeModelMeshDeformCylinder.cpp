@@ -158,7 +158,9 @@ void ModeModelMeshDeformCylinder::update_params() {
 
 void ModeModelMeshDeformCylinder::on_draw_post() {
 	if (hover >= 0) {
+#if HAS_LIB_GL
 		nix::set_shader(session->ctx->default_2d.get());
+#endif
 		session->drawing_helper->set_color(scheme.TEXT);
 		session->drawing_helper->draw_str(multi_view->m.x + 40, multi_view->m.y + 40, format("radius: %s  (%.1f%%)", multi_view->format_length(param[hover].z * radius), param[hover].z * 100));
 	}
@@ -166,11 +168,11 @@ void ModeModelMeshDeformCylinder::on_draw_post() {
 
 void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win) {
 	parent->on_draw_win(win);
-
+#if HAS_LIB_GL
 	if (geo) {
 		session->drawing_helper->set_material_creation(0.3f);
-		geo->build(win->gl->vb_temp);
-		nix::draw_triangles(win->gl->vb_temp);
+		geo->build(win->ctx->vb_temp);
+		nix::draw_triangles(win->ctx->vb_temp);
 	}
 
 	session->drawing_helper->set_line_width(scheme.LINE_WIDTH_MEDIUM);
@@ -188,6 +190,7 @@ void ModeModelMeshDeformCylinder::on_draw_win(MultiView::Window* win) {
 	}
 
 	nix::set_z(true, true);
+#endif
 }
 
 inline bool hover_line(const vec3 &a, const vec3 &b, const vec3 &m, vec3 &tp) {

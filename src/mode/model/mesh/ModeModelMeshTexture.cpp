@@ -101,6 +101,7 @@ void ModeModelMeshTexture::on_end() {
 
 void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 {
+#if HAS_LIB_GL
 	rect s,r;
 	color c;
 
@@ -113,7 +114,7 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 	s.y1=a.y;
 	s.y2=b.y;
 
-	nix::set_shader(win->gl->default_2d.get());
+	nix::set_shader(win->ctx->default_2d.get());
 
 	if (true){//mul->FXEnabled){
 		// background pattern to show transparency
@@ -163,11 +164,13 @@ void ModeModelMeshTexture::on_draw_win(MultiView::Window *win)
 							v[k+1].x,v[k+1].y,
 							0.9f);
 	}
+#endif
 }
 
 
 
 void ModeModelMeshTexture::on_draw() {
+#if HAS_LIB_GL
 	nix::set_shader(session->ctx->default_2d.get());
 	auto s = data->get_selection();
 	/*if (data->getNumSelectedVertices() > 0){
@@ -176,6 +179,7 @@ void ModeModelMeshTexture::on_draw() {
 	if (s.vertex.num > 0){
 		session->drawing_helper->draw_str(10, nix::target_height - 25, format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num));
 	}
+#endif
 }
 
 void ModeModelMeshTexture::on_selection_change()

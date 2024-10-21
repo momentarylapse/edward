@@ -44,7 +44,7 @@ const int CUBE_SIZE = 20;
 		}
 	}
 
-	tex = new nix::Texture;
+	tex = new Texture;
 	tex->write(im);
 
 	//mode_model_mesh->setSelectionMode(mode_model_mesh->selection_mode_vertex);
@@ -106,11 +106,13 @@ void ModeModelMeshDeformFunction::on_end() {
 void ModeModelMeshDeformFunction::on_draw_win(MultiView::Window* win) {
 	parent->on_draw_win(win);
 
+#if HAS_LIB_GL
 	win->drawing_helper->set_material_creation();
-	geo->build(win->gl->vb_temp);
+	geo->build(win->ctx->vb_temp);
 
 	nix::bind_texture(0, tex);
-	nix::draw_triangles(win->gl->vb_temp);
+	nix::draw_triangles(win->ctx->vb_temp);
+#endif
 }
 
 vec3 ModeModelMeshDeformFunction::transform(const vec3 &v) {

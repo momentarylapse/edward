@@ -104,7 +104,7 @@ void ModeMaterial::on_data_update() {
 	for (int i=0; i<data->appearance.passes.num; i++) {
 		try {
 			// dummy
-			shaders[i] = session->ctx->create_shader("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
+			shaders[i] = session->resource_manager->create_shader("<VertexShader>void main(){gl_Position = vec4(0);}</VertexShader><FragmentShader>void main(){}</FragmentShader>");
 		} catch (Exception &e) {
 			msg_error(e.message());
 		}
@@ -126,7 +126,9 @@ void ModeMaterial::update_shader(int pass_no) {
 	try {
 		auto code = session->resource_manager->expand_vertex_shader_source(data->appearance.passes[pass_no].shader.code, "default");
 		code = session->resource_manager->expand_fragment_shader_source(code, "forward");
+#if HAS_LIB_GL
 		shaders[pass_no]->update(code);
+#endif
 	} catch(Exception &e) {
 		msg_error(e.message());
 	}
@@ -174,6 +176,7 @@ void ModeMaterial::on_command(const string & id) {
 
 
 void ModeMaterial::on_draw_win(MultiView::Window *win) {
+#if HAS_LIB_GL
 	auto tex = weak(textures);
 	while(tex.num < 5)
 		tex.add(session->drawing_helper->tex_white.get());
@@ -194,6 +197,7 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	nix::enable_fog(false);
 	nix::disable_alpha();
 	nix::set_z(true,true);
+#endif
 }
 
 
@@ -242,7 +246,7 @@ void ModeMaterial::on_start() {
 	shader_edit_mode = ShaderEditMode::NONE;
 
 	for (int i=1; i<=__MATERIAL_MAX_TEXTURES; i++) {
-		vertex_buffer[i] = new nix::VertexBuffer("3f,3fn" + string(",2f").repeat(i));
+		vertex_buffer[i] = new VertexBuffer("3f,3fn" + string(",2f").repeat(i));
 	}
 
 	shape_type = hui::config.get_str("MaterialShapeType", "teapot");

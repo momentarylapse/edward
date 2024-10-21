@@ -11,6 +11,7 @@
 #include "../Data.h"
 #include "../../multiview/SingleData.h"
 #include <y/world/Material.h>
+#include <y/graphics-fwd.h>
 
 class DataWorld;
 class Terrain;
@@ -21,10 +22,6 @@ class WorldObject;
 class WorldTerrain;
 class WorldCamera;
 enum class PhysicsMode;
-
-namespace nix {
-	enum class FogMode;
-}
 
 
 class WorldScriptVariable {
@@ -87,7 +84,7 @@ public:
 		// fog
 		struct Fog {
 			bool enabled;
-			nix::FogMode mode;
+			FogMode mode;
 			float start;
 			float end;
 			float density;

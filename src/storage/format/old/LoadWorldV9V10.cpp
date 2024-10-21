@@ -76,7 +76,7 @@ void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 		// Fog
 		f->read_comment();
 		data->meta_data.fog.enabled = f->read_bool();
-		data->meta_data.fog.mode = (nix::FogMode)f->read_word();
+		data->meta_data.fog.mode = (FogMode)f->read_word();
 		data->meta_data.fog.start = f->read_float();
 		data->meta_data.fog.end = f->read_float();
 		data->meta_data.fog.density = f->read_float();

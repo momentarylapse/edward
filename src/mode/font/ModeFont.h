@@ -43,7 +43,7 @@ public:
 	void save_as();
 
 	void Import();
-	bool optimize_view();
+	bool optimize_view() override;
 
 	FontDialog *dialog;
 	gui::Font *font;

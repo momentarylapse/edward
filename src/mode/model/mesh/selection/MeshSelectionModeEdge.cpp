@@ -118,6 +118,7 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win) {
 	if (multi_view->hover.index < 0)
 		return;
 
+#if HAS_LIB_GL
 	nix::set_z(false, false);
 	win->drawing_helper->set_line_width(scheme.LINE_WIDTH_MEDIUM);
 	auto m = data->edit_mesh;
@@ -128,6 +129,7 @@ void MeshSelectionModeEdge::on_draw_win(MultiView::Window *win) {
 	Array<color> c = {scheme.HOVER, scheme.HOVER};
 	win->drawing_helper->draw_lines_colored(p, c, false);
 	nix::set_z(true, true);
+#endif
 }
 
 

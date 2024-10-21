@@ -295,7 +295,7 @@ void MaterialPropertiesDialog::fill_passes_list() {
 		else
 			desc += format("<b>%s</b>", p.shader.file);
 		string sub = transparency_to_str(p.mode);
-		if (p.culling == nix::CullMode::FRONT)
+		if (p.culling == CullMode::FRONT)
 			sub += " back";
 
 		desc += "\n<small>  " + sub + "</small>";

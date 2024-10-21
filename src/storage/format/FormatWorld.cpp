@@ -154,7 +154,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				data->meta_data.gravity = s2v(e.value("gravity", "0 0 0"));
 			} else if (e.tag == "fog") {
 				data->meta_data.fog.enabled = e.value("enabled", "false")._bool();
-				data->meta_data.fog.mode = (nix::FogMode)e.value("mode", "0")._int();
+				data->meta_data.fog.mode = (FogMode)e.value("mode", "0")._int();
 				data->meta_data.fog.start = e.value("start", "0")._float();
 				data->meta_data.fog.end = e.value("end", "10000")._float();
 				data->meta_data.fog.density = e.value("density", "0")._float();

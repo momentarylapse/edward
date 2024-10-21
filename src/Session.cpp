@@ -8,7 +8,6 @@
 #include "Session.h"
 #include "EdwardWindow.h"
 #include "Edward.h"
-#if HAS_LIB_GL
 #include "mode/ModeNone.h"
 #include "mode/ModeCreation.h"
 #include "mode/administration/ModeAdministration.h"
@@ -18,12 +17,9 @@
 #include "mode/material/ModeMaterial.h"
 #include "mode/world/ModeWorld.h"
 #include "mode/font/ModeFont.h"
-#endif
 #include "stuff/Progress.h"
-#if HAS_LIB_GL
 #include "multiview/MultiView.h"
 #include "multiview/DrawingHelper.h"
-#endif
 #include "storage/format/Format.h"
 #include "storage/Storage.h"
 #include "lib/hui/config.h"
@@ -33,6 +29,7 @@
 #include <y/helper/ResourceManager.h>
 #include <y/world/Camera.h>
 #include <y/world/World.h>
+#include <y/graphics-impl.h>
 
 Session *create_session() {
 	auto s = new Session;

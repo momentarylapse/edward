@@ -47,7 +47,7 @@ vec3 Camera::get_pos(bool allow_radius) const {
 
 MultiView::MultiView(Session *_s, bool mode3d) {
 	session = _s;
-	gl = session->ctx;
+	ctx = session->ctx;
 	drawing_helper = session->drawing_helper;
 	view_stage = 0;
 	grid_enabled = true;
@@ -76,8 +76,11 @@ MultiView::MultiView(Session *_s, bool mode3d) {
 	MOUSE_ROTATION_SPEED = 0.0033f;
 
 	allow_infinite_scrolling = hui::config.get_bool("MultiView.InfiniteScrolling", false);
-
-	ubo_light = new nix::UniformBuffer();
+#if HAS_LIB_GL
+	ubo_light = new UniformBuffer();
+#else
+	//ubo_light = new UniformBuffer(sizeof(Li));
+#endif
 
 	if (mode3d) {
 		all_windows.add(new Window(this, VIEW_BACK));
@@ -622,11 +625,13 @@ void MultiView::draw_mouse_pos() {
 	string sy = f2s(m.y,2) + " " + unit;
 	string sz = f2s(m.z,2) + " " + unit;
 
+#if HAS_LIB_GL
 	if (mouse_win->type == VIEW_2D) {
 		drawing_helper->draw_str(nix::target_width, nix::target_height - 60, sx + "\n" + sy, TextAlign::RIGHT);
 	} else {
 		drawing_helper->draw_str(nix::target_width, nix::target_height - 80, sx + "\n" + sy +  + "\n" + sz, TextAlign::RIGHT);
 	}
+#endif
 }
 
 // FIXME only update on signal
@@ -647,9 +652,11 @@ void ensure_fb_size(MultiView *mv, const rect &r) {
 	if (mv->frame_buffer)
 		if (mv->frame_buffer->width == r.width() and mv->frame_buffer->height == r.height())
 			return;
-	auto zbuffer = new nix::DepthBuffer(r.width(), r.height(), "d24s8");
-	auto tex = new nix::Texture(r.width(), r.height(), "rgba:f32");
-	mv->frame_buffer = new nix::FrameBuffer({tex, zbuffer});
+#if HAS_LIB_GL
+	auto zbuffer = new DepthBuffer(r.width(), r.height(), "d24s8");
+	auto tex = new Texture(r.width(), r.height(), "rgba:f32");
+	mv->frame_buffer = new FrameBuffer({tex, zbuffer});
+#endif
 }
 
 void MultiView::on_draw() {
@@ -658,6 +665,7 @@ void MultiView::on_draw() {
 
 	check_undef_view_stages(this);
 
+#if HAS_LIB_GL
 	area = nix::target_rect;
 	ensure_fb_size(this, area);
 
@@ -705,7 +713,7 @@ void MultiView::on_draw() {
 
 		nix::set_scissor(nix::target_rect);
 
-		nix::set_shader(gl->default_2d.get());
+		nix::set_shader(ctx->default_2d.get());
 		nix::bind_texture(0, nullptr);
 
 		color c2 = scheme.hoverify(scheme.WINDOW_DIVIDER);
@@ -722,7 +730,7 @@ void MultiView::on_draw() {
 	cam_con->draw();
 
 	drawing_helper->set_color(scheme.TEXT);
-	nix::set_shader(gl->default_2d.get());
+	nix::set_shader(ctx->default_2d.get());
 
 	//if (session->win->input.inside_smart)
 	// FIXME hui/gtk4 events!
@@ -730,7 +738,7 @@ void MultiView::on_draw() {
 
 	action_con->draw_post();
 
-	nix::bind_frame_buffer(gl->default_framebuffer);
+	nix::bind_frame_buffer(ctx->default_framebuffer);
 	nix::set_shader(shader_out.get());
 	//nix::vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
 	session->ctx->vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
@@ -740,6 +748,7 @@ void MultiView::on_draw() {
 	nix::draw_triangles(session->ctx->vb_temp);
 
 	//printf("%f\n", timer.get()*1000.0f);
+#endif
 }
 
 void MultiView::SelectionRect::start_later(const vec2 &m) {
@@ -753,6 +762,7 @@ void MultiView::SelectionRect::end() {
 }
 
 void MultiView::SelectionRect::draw(DrawingHelper *drawing_helper, const vec2 &m) {
+#if HAS_LIB_GL
 	nix::set_z(false, false);
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	nix::bind_texture(0, nullptr);
@@ -769,6 +779,7 @@ void MultiView::SelectionRect::draw(DrawingHelper *drawing_helper, const vec2 &m
 	drawing_helper->draw_line_2d(pos0.x, m.y, m.x, m.y, 0);
 	nix::disable_alpha();
 	nix::set_z(true, true);
+#endif
 }
 
 rect MultiView::SelectionRect::get(const vec2 &m) {
@@ -1160,6 +1171,7 @@ void MultiView::reset_message_3d() {
 }
 
 void MultiView::set_light(Window *win, const vec3 &dir, const color &col, float harshness) {
+#if HAS_LIB_GL
 	nix::BasicLight l;
 	l.proj = mat4::ID;
 	l.dir = win->local_ang.bar() * dir;
@@ -1169,6 +1181,7 @@ void MultiView::set_light(Window *win, const vec3 &dir, const color &col, float 
 	l.harshness = harshness;
 	ubo_light->update(&l, sizeof(l));
 	nix::bind_buffer(1, ubo_light);
+#endif
 }
 
 }

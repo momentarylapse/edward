@@ -13,14 +13,12 @@
 #include "../lib/math/mat4.h"
 #include "../lib/math/vec3.h"
 #include "../lib/pattern/Observable.h"
+#include <y/graphics-fwd.h>
 
 class ActionMultiView;
 class Geometry;
 class Data;
 
-namespace nix {
-	class VertexBuffer;
-}
 
 namespace MultiView {
 
@@ -45,8 +43,8 @@ struct MouseAction {
 
 class ActionController : public obs::Node<VirtualBase> {
 public:
-	ActionController(MultiView *multi_view);
-	~ActionController();
+	explicit ActionController(MultiView *multi_view);
+	~ActionController() override;
 
 	enum class Constraint {
 		UNDEFINED = -1,
@@ -70,7 +68,7 @@ public:
 	Constraint constraints;
 	Array<Geometry*> geo_show;
 	Array<Geometry*> geo;
-	Array<nix::VertexBuffer*> buf;
+	Array<VertexBuffer*> buf;
 	mat4 geo_mat;
 	Constraint hover_constraint;
 	MultiView *multi_view;

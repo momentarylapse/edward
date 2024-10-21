@@ -58,7 +58,7 @@ ActionController::ActionController(MultiView *view) {
 	geo_show.add(new GeometryCylinder( vec3::EZ*r0,  vec3::EZ*r1, r, 1, 8));
 
 	for (auto g: geo_show){
-		auto *vb = new nix::VertexBuffer("3f,3fn,2f");
+		auto *vb = new VertexBuffer("3f,3fn,2f");
 		g->build(vb);
 		buf.add(vb);
 	}
@@ -343,11 +343,12 @@ void ActionController::draw(Window *win) {
 		return;
 	if (!visible)
 		return;
+#if HAS_LIB_GL
 	nix::set_z(false, false);
 	mat4 m = mat * geo_mat;
 	nix::set_model_matrix(m);
 	nix::bind_texture(0, nullptr);
-	nix::set_shader(win->gl->default_3d.get());
+	nix::set_shader(win->ctx->default_3d.get());
 	win->set_projection_matrix();
 	foreachi(Geometry *g, geo_show, i) {
 		if (!geo_allow(i, win, m))
@@ -375,7 +376,7 @@ void ActionController::draw(Window *win) {
 			win->drawing_helper->draw_line(pos - vec3::EZ * r, pos + vec3::EZ * r);
 	}
 
-	nix::set_shader(win->gl->default_2d.get());
+	nix::set_shader(win->ctx->default_2d.get());
 
 	if (win == multi_view->mouse_win) {
 		vec3 pp = win->project(pos);
@@ -411,6 +412,7 @@ void ActionController::draw(Window *win) {
 		win->drawing_helper->set_color(scheme.TEXT);
 		win->drawing_helper->draw_str(x0, y0, s, TextAlign::RIGHT);
 	}
+#endif
 }
 
 void ActionController::draw_post() {

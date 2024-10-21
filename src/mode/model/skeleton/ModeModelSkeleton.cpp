@@ -191,6 +191,7 @@ void ModeModelSkeleton::on_draw_win(MultiView::Window *win) {
 }
 
 void ModeModelSkeleton::draw_skeleton(MultiView::Window *win, Array<ModelBone> &bone, bool thin) {
+#if HAS_LIB_GL
 	// sub models
 	foreachi(ModelBone &b, data->bone, i) {
 		if (b.view_stage < multi_view->view_stage)
@@ -220,6 +221,7 @@ void ModeModelSkeleton::draw_skeleton(MultiView::Window *win, Array<ModelBone> &
 		draw_bone(bone[r].pos, b.pos, c, win);
 	}
 	nix::set_z(true, true);
+#endif
 }
 
 

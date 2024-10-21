@@ -68,9 +68,9 @@ ModeModelMesh::ModeModelMesh(ModeModel *_parent, MultiView::MultiView *mv3, Mult
 	current_skin = MESH_HIGH;
 
 	// vertex buffers
-	vb_marked = new nix::VertexBuffer(vb_format(1));
-	vb_hover = new nix::VertexBuffer(vb_format(1));
-	vb_creation = new nix::VertexBuffer(vb_format(1));
+	vb_marked = new VertexBuffer(vb_format(1));
+	vb_hover = new VertexBuffer(vb_format(1));
+	vb_creation = new VertexBuffer(vb_format(1));
 
 	select_cw = false;
 	allow_draw_hover = true;
@@ -89,8 +89,7 @@ ModeModelMesh::ModeModelMesh(ModeModel *_parent, MultiView::MultiView *mv3, Mult
 	selection_mode = selection_mode_polygon;
 }
 
-ModeModelMesh::~ModeModelMesh() {
-}
+ModeModelMesh::~ModeModelMesh() = default;
 
 void ModeModelMesh::on_start() {
 	session->win->get_toolbar(hui::TOOLBAR_LEFT)->set_by_id("model-mesh-toolbar");
@@ -269,12 +268,14 @@ void ModeModelMesh::on_command(const string &id) {
 void ModeModelMesh::on_draw() {
 	auto s = data->edit_mesh->get_selection();
 	if (s.vertex.num > 0) {
+#if HAS_LIB_GL
 		nix::set_shader(session->ctx->default_2d.get());
 		string t = format("selected: %d vertices, %d edges, %d polygons", s.vertex.num, s.edge.num, s.polygon.num);
 		if (current_skin == MESH_PHYSICAL)
 			t += format(", %d balls, %d cylinders", s.ball.num, s.cylinder.num);
 				//    %d  %d
 		session->drawing_helper->draw_str(10, nix::target_height - 25, t);
+#endif
 	}
 }
 
@@ -559,12 +560,14 @@ void ModeModelMesh::set_current_skin(int index) {
 }
 
 void ModeModelMesh::draw_effects(MultiView::Window *win) {
-	nix::set_shader(win->gl->default_2d.get());
+#if HAS_LIB_GL
+	nix::set_shader(win->ctx->default_2d.get());
 	for (ModelEffect &fx: data->fx) {
 		vec3 p = win->project(data->mesh->vertex[fx.vertex].pos);
 		if ((p.z > 0) and (p.z < 1))
 			win->drawing_helper->draw_str(p.x, p.y, fx.get_type());
 	}
+#endif
 }
 
 void _draw_edges(DataModel *data, MultiView::Window *win, ModelMesh *m, const Array<ModelVertex> &vertex, bool selection_filter) {
@@ -575,6 +578,7 @@ void ModeModelMesh::draw_edges(MultiView::Window *win, ModelMesh *m, const Array
 	color bg = win->get_background_color();
 	auto *multi_view = win->multi_view;
 
+#if HAS_LIB_GL
 	nix::set_offset(-2);
 	win->drawing_helper->set_line_width(as_selected ? scheme.LINE_WIDTH_MEDIUM : scheme.LINE_WIDTH_THIN);
 	Array<vec3> line_pos;
@@ -608,6 +612,7 @@ void ModeModelMesh::draw_edges(MultiView::Window *win, ModelMesh *m, const Array
 	}
 	win->drawing_helper->draw_lines_colored(line_pos, line_color, false);
 	nix::set_offset(0);
+#endif
 }
 
 
@@ -634,7 +639,7 @@ void ModeModelMesh::draw_mesh(MultiView::Window *win, ModelMesh *mesh, const Arr
 
 // always visible mesh!
 void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, const Array<ModelVertex> &vertex) {
-
+#if HAS_LIB_GL
 	// draw all materials separately
 	for (auto *m: data->material) {
 		if (!m->vb)
@@ -647,31 +652,33 @@ void ModeModelMesh::draw_polygons(MultiView::Window *win, ModelMesh *mesh, const
 	}
 	nix::disable_alpha();
 	nix::set_z(true, true);
+#endif
 }
 
 
 void ModeModelMesh::draw_physical(MultiView::Window *win) {
+#if HAS_LIB_GL
 
 	for (auto &b: data->phys_mesh->ball) {
 		auto geo = GeometrySphere(data->phys_mesh->vertex[b.index].pos, b.radius, 6);
-		geo.build(win->gl->vb_temp);
+		geo.build(win->ctx->vb_temp);
 		win->drawing_helper->set_material_creation(1.5f);
 		if (b.is_selected)
 			win->drawing_helper->set_material_selected();
 		if (multi_view->hover.data == &b)
 			win->drawing_helper->set_material_hover();
-		nix::draw_triangles(win->gl->vb_temp);
+		nix::draw_triangles(win->ctx->vb_temp);
 	}
 
 	for (auto &c: data->phys_mesh->cylinder) {
 		auto geo = GeometryCylinder(data->phys_mesh->vertex[c.index[0]].pos, data->phys_mesh->vertex[c.index[1]].pos, c.radius, 1, 24, c.round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT);
-		geo.build(win->gl->vb_temp);
+		geo.build(win->ctx->vb_temp);
 		win->drawing_helper->set_material_creation(1.5f);
 		if (c.is_selected)
 			win->drawing_helper->set_material_selected();
 		if (multi_view->hover.data == &c)
 			win->drawing_helper->set_material_hover();
-		nix::draw_triangles(win->gl->vb_temp);
+		nix::draw_triangles(win->ctx->vb_temp);
 	}
 
 
@@ -680,11 +687,12 @@ void ModeModelMesh::draw_physical(MultiView::Window *win) {
 	for (auto &t: data->phys_mesh->polygon)
 		if (t.view_stage >= multi_view->view_stage)
 			t.add_to_vertex_buffer(data->phys_mesh->vertex, vbs, 1);
-	vbs.build(win->gl->vb_temp, 1);
+	vbs.build(win->ctx->vb_temp, 1);
 	nix::set_offset(-0.5f);
-	nix::draw_triangles(win->gl->vb_temp);
+	nix::draw_triangles(win->ctx->vb_temp);
 	nix::set_offset(0);
 	draw_edges(win, data->phys_mesh, data->phys_mesh->vertex, false, true, false);
+#endif
 }
 
 
@@ -695,11 +703,13 @@ void ModeModelMesh::update_vertex_buffers(const Array<ModelVertex> &vertex) {
 	foreachi(ModelMaterial *m, data->material, mi) {
 		int num_tex = m->texture_levels.num;
 		if (!m->vb)
-			m->vb = new nix::VertexBuffer(vb_format(num_tex));
+			m->vb = new VertexBuffer(vb_format(num_tex));
+#if HAS_LIB_GL
 		if (m->vb->num_attributes-2 != num_tex) {
 			delete m->vb;
-			m->vb = new nix::VertexBuffer(vb_format(num_tex));
+			m->vb = new VertexBuffer(vb_format(num_tex));
 		}
+#endif
 
 		VertexStagingBuffer vbs;
 
@@ -727,6 +737,7 @@ void ModeModelMesh::fill_selection_buffer(const Array<ModelVertex> &vertex) {
 }
 
 void ModeModelMesh::draw_selection(MultiView::Window *win) {
+#if HAS_LIB_GL
 	nix::set_z(true, true);
 	nix::set_offset(-1.0f);
 
@@ -736,9 +747,11 @@ void ModeModelMesh::draw_selection(MultiView::Window *win) {
 	nix::set_material(White, 0.5f, 0, Black);
 	nix::disable_alpha();
 	nix::set_offset(0);
+#endif
 }
 
 void ModeModelMesh::draw_creation_preview(MultiView::Window *win) {
+#if HAS_LIB_GL
 	nix::set_z(true, true);
 	nix::set_offset(-1.0f);
 
@@ -748,6 +761,7 @@ void ModeModelMesh::draw_creation_preview(MultiView::Window *win) {
 	nix::set_material(White, 0.5f, 0, Black);
 	nix::disable_alpha();
 	nix::set_offset(0);
+#endif
 }
 
 void ModeModelMesh::set_selection_mode(MeshSelectionMode *mode) {

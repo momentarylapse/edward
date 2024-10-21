@@ -10,18 +10,16 @@
 
 #include "../Mode.h"
 #include "../../data/material/DataMaterial.h"
+#include <y/graphics-fwd.h>
 
 class MaterialPropertiesDialog;
 class ShaderGraphDialog;
 class Geometry;
-namespace nix {
-	class VertexBuffer;
-};
 
 class ModeMaterial: public Mode<ModeMaterial, DataMaterial> {
 public:
 	ModeMaterial(Session *s, MultiView::MultiView *mv);
-	virtual ~ModeMaterial();
+	~ModeMaterial() override;
 
 	obs::sink in_data_changed;
 	obs::source out_shader_edit_mode_changed{this, "shader-edit-mode-changed"};
@@ -46,13 +44,13 @@ public:
 
 	bool optimize_view() override;
 
-	owned<nix::VertexBuffer> vertex_buffer[MATERIAL_MAX_TEXTURES + 1];
+	owned<VertexBuffer> vertex_buffer[MATERIAL_MAX_TEXTURES + 1];
 	MaterialPropertiesDialog *appearance_dialog = nullptr;
 	ShaderGraphDialog *shader_graph_dialog = nullptr;
 
 
-	shared_array<nix::Texture> textures;
-	shared_array<nix::Shader> shaders;
+	shared_array<Texture> textures;
+	shared_array<Shader> shaders;
 	void update_textures();
 	void update_shader(int pass_no);
 

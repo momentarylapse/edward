@@ -79,8 +79,9 @@ void ModeModelMeshAutoweld::onOk()
 void ModeModelMeshAutoweld::on_draw_win(MultiView::Window* win)
 {
 	parent_untyped->on_draw_win(win);
-
+#if HAS_LIB_GL
 	nix::bind_texture(0, nullptr);
+#endif
 	float r = 5;
 	int n = 0;
 #if 0

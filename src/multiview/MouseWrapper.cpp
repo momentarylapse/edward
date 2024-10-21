@@ -80,9 +80,9 @@ void x11_get_cursor(int &x, int &y) {
 #endif
 
 void start(hui::Window *w) {
+#if HAS_LIB_X11
 	static auto display = gdk_display_get_default();
 
-#if HAS_LIB_X11
 	if (!GDK_IS_X11_DISPLAY(display)) {
 		static bool complained = false;
 		if (!complained) {

@@ -134,12 +134,13 @@ void ModeModelMeshCreateCylinderSnake::on_command(const string& id) {
 
 void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
+#if HAS_LIB_GL
 
 	if (pos.num > 0) {
 
 		// control points
 		win->drawing_helper->set_color(scheme.CREATION_LINE);
-		nix::set_shader(win->gl->default_2d.get());
+		nix::set_shader(win->ctx->default_2d.get());
 		for (int i=0;i<pos.num;i++) {
 			vec3 pp = win->project(pos[i]);
 			win->drawing_helper->draw_rect(pp.x - 3, pp.x + 3, pp.y - 3, pp.y + 3, 0);
@@ -169,17 +170,18 @@ void ModeModelMeshCreateCylinderSnake::on_draw_win(MultiView::Window *win) {
 	}
 
 	if (ready_for_scaling) {
-		geo->build(win->gl->vb_temp);
+		geo->build(win->ctx->vb_temp);
 		win->drawing_helper->set_material_creation();
-		nix::draw_triangles(win->gl->vb_temp);
+		nix::draw_triangles(win->ctx->vb_temp);
 
 		if (win == multi_view->mouse_win)
 			win->drawing_helper->draw_helper_line(win, pos.back(), multi_view->get_cursor());
 	} else if (pos.num > 2) {
 		vec2 pp = multi_view->mouse_win->project(pos[0]).xy();
 		if ((pp - multi_view->m).length() < CYLINDER_CLOSING_DISTANCE) {
-			nix::set_shader(win->gl->default_2d.get());
+			nix::set_shader(win->ctx->default_2d.get());
 			win->drawing_helper->draw_str(pp.x, pp.y, _("Close path"));
 		}
 	}
+#endif
 }

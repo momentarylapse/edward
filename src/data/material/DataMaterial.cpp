@@ -99,9 +99,11 @@ void DataMaterial::apply_for_rendering(int pass_no) const {
 		nix::set_z(false, true);
 	}
 	nix::set_cull(p.culling);
+#endif
 }
 
 void DataMaterial::ShaderData::load_from_file(Session *s) {
+#if HAS_LIB_GL
 	if (file.is_empty()) {
 		set_engine_default(s);
 		return;

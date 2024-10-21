@@ -13,8 +13,8 @@
 
 class ActionWorldAddLink : public Action {
 public:
-	ActionWorldAddLink(WorldLink &l);
-	string name() { return "WorldAddLink"; }
+	explicit ActionWorldAddLink(WorldLink &l);
+	string name() override { return "WorldAddLink"; }
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;

@@ -15,17 +15,12 @@
 #include "../lib/math/quaternion.h"
 #include "../lib/math/rect.h"
 #include "../lib/pattern/Observable.h"
+#include <y/graphics-fwd.h>
 
 class Data;
 class Session;
 class DrawingHelper;
 
-namespace nix {
-	class Context;
-	class Shader;
-	class UniformBuffer;
-	class FrameBuffer;
-}
 
 namespace hui {
 	class Menu;
@@ -99,7 +94,7 @@ static const int FLAG_MOVE = 8;
 class MultiView : public obs::Node<VirtualBase> {
 public:
 	MultiView(Session *s, bool _mode3d);
-	virtual ~MultiView();
+	~MultiView() override;
 
 	obs::source out_redraw{this, "redraw"};
 	obs::source out_selection_changed{this, "selection-changed"};
@@ -131,7 +126,7 @@ public:
 	void on_update_menu();
 
 	Session *session;
-	nix::Context *gl;
+	Context *ctx;
 	DrawingHelper *drawing_helper;
 	bool mode3d;
 	bool whole_window;
@@ -141,11 +136,11 @@ public:
 	bool grid_enabled;
 	bool light_enabled;
 
-	nix::UniformBuffer *ubo_light;
+	UniformBuffer *ubo_light;
 	void set_light(Window *win, const vec3 &dir, const color &col, float harshness);
 
-	shared<nix::FrameBuffer> frame_buffer;
-	shared<nix::Shader> shader_out;
+	shared<FrameBuffer> frame_buffer;
+	shared<Shader> shader_out;
 
 	bool snap_to_grid;
 

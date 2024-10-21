@@ -341,11 +341,14 @@ void EdwardWindow::on_send_bug_report()
 
 
 void EdwardWindow::on_realize_gl() {
+#if HAS_LIB_GL
 	auto gl = nix::init();
 	session->create_initial_resources(gl);
+#endif
 }
 
 void EdwardWindow::on_draw_gl() {
+#if HAS_LIB_GL
 	auto e = hui::get_event();
 	nix::start_frame_hui(session->ctx);
 	nix::set_viewport(rect(0, e->column, 0, e->row));
@@ -383,6 +386,7 @@ void EdwardWindow::on_draw_gl() {
 	session->drawing_helper->draw_str(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, TextAlign::CENTER);
 
 	nix::end_frame_hui();
+#endif
 }
 
 void EdwardWindow::load_key_codes() {

@@ -123,12 +123,14 @@ void ModeModelAnimationSkeleton::on_draw_win(MultiView::Window *win) {
 	vbs.build(session->mode_model->mode_model_mesh->vb_hover, 1);
 
 
+#if HAS_LIB_GL
 	nix::set_offset(-1.0f);
 	win->drawing_helper->set_material_hover();
 	nix::draw_triangles(session->mode_model->mode_model_mesh->vb_hover);
 	nix::set_material(White, 0.5f, 0, Black);
 	nix::disable_alpha();
 	nix::set_offset(0);
+#endif
 }
 
 

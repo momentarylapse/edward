@@ -17,8 +17,8 @@ class ShaderGraph;
 
 class DataMaterial: public Data {
 public:
-	DataMaterial(Session *s);
-	virtual ~DataMaterial();
+	explicit DataMaterial(Session *s);
+	~DataMaterial() override;
 
 	void reset() override;
 

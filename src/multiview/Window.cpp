@@ -32,7 +32,7 @@ namespace MultiView {
 
 Window::Window(MultiView *_view, int _type) {
 	multi_view = _view;
-	gl = multi_view->gl;
+	ctx = multi_view->ctx;
 	drawing_helper = multi_view->drawing_helper;
 	cam = &multi_view->cam;
 	type = _type;
@@ -64,7 +64,7 @@ float grid_density(int level, float d_err) {
 		return 1;
 	if (level == 1)
 		d_err += 1;
-	return min(pow(10.0f, d_err-1.0f) * LOW_MAX, MID_MAX);
+	return min((float)pow(10.0f, d_err-1.0f) * LOW_MAX, MID_MAX);
 }
 
 rect win_get_bounds(Window *w, const vec3 &ax1, const vec3 &ax2) {
@@ -175,7 +175,7 @@ void Window::draw_grid()
 {
 	if (type == VIEW_2D)
 		return;
-
+#if HAS_LIB_GL
 	nix::bind_texture(0, nullptr);
 	nix::set_z(false, false);
 	set_projection_matrix();
@@ -213,6 +213,7 @@ void Window::draw_grid()
 	if (d.x > DMIN)
 		draw_grid_3d(bg, this, 0, (d.x - DMIN) / (1-DMIN));
 	nix::disable_alpha();
+#endif
 }
 
 int Window::active_grid() {
@@ -296,6 +297,7 @@ string view_name(int type)
 }
 
 void Window::set_projection_matrix() {
+#if HAS_LIB_GL
 	nix::set_view_matrix(view_matrix);
 	float r = cam->radius;
 	float cx = (dest.x1 + dest.x2) / 2;
@@ -314,14 +316,18 @@ void Window::set_projection_matrix() {
 		reflection_matrix = mat4::scale( 1, -1, 1);
 	}
 	projection_matrix = nix::projection_matrix;
+#endif
 }
 
 void Window::set_projection_matrix_pixel() {
+#if HAS_LIB_GL
 	nix::set_view_matrix(mat4::ID);
 	nix::set_projection_ortho_pixel();
+#endif
 }
 
 void Window::update_matrices() {
+#if HAS_LIB_GL
 	// camera matrix
 	vec3 pos = cam->get_pos(type == VIEW_PERSPECTIVE);
 	local_ang = view_ang(type, cam);
@@ -329,14 +335,16 @@ void Window::update_matrices() {
 	nix::set_view_matrix(view_matrix);
 	pv_matrix = projection_matrix * view_matrix;
 	ipv_matrix = pv_matrix.inverse();
+#endif
 }
 
 void Window::draw_data_points() {
+#if HAS_LIB_GL
 	bool index_key = multi_view->session->win->get_key(hui::KEY_I);
 
 	// draw multiview data
 	set_projection_matrix_pixel();
-	nix::set_shader(gl->default_2d.get());
+	nix::set_shader(ctx->default_2d.get());
 	nix::disable_alpha();
 	nix::bind_texture(0, nullptr);
 	nix::set_offset(-2.0f);
@@ -394,16 +402,17 @@ void Window::draw_data_points() {
 		}
 	}
 	nix::set_offset(0);
-
+#endif
 }
 
 void Window::draw_header() {
+#if HAS_LIB_GL
 	color bg = get_background_color();
 	string view_kind = view_name(type);
 
 	name_dest = rect(dest.x1 + 3, dest.x1 + 3 + drawing_helper->get_str_width(view_kind), dest.y1, dest.y1 + 20);
 
-	nix::set_shader(gl->default_2d.get());
+	nix::set_shader(ctx->default_2d.get());
 	drawing_helper->set_color(scheme.WINDOW_TITLE);
 	bg = scheme.WINDOW_TITLE_BG;
 	if (multi_view->session->win->is_active("nix-area") and (this == multi_view->active_win)) {}
@@ -412,17 +421,21 @@ void Window::draw_header() {
 		bg = scheme.hoverify(bg);
 	drawing_helper->draw_str_bg(dest.x1 + 3, dest.y1 + 3, view_kind.upper(), scheme.WINDOW_TITLE, bg, TextAlign::LEFT);
 	drawing_helper->set_color(scheme.TEXT);
+#endif
 }
 
-void Window::set_shader(nix::Shader *s, int num_lights) {
+void Window::set_shader(Shader *s, int num_lights) {
+#if HAS_LIB_GL
 	nix::set_shader(s);
 	s->set_int("num_lights", num_lights);
 	vec3 pos = get_lighting_eye_pos();
 	//s->set_floats("eye_pos", &pos.x, 3);
 	s->set_floats("eye_pos", &v_0.x, 3);
+#endif
 }
 
 void Window::draw() {
+#if HAS_LIB_GL
 	nix::set_scissor(rect(dest.x1, dest.x2+1, dest.y1, dest.y2));
 	nix::bind_texture(0, nullptr);
 
@@ -430,7 +443,7 @@ void Window::draw() {
 
 	// background color
 	nix::clear(bg);
-	nix::set_shader(gl->default_2d.get());
+	nix::set_shader(ctx->default_2d.get());
 
 	set_projection_matrix();
 	update_matrices();
@@ -450,14 +463,14 @@ void Window::draw() {
 	multi_view->set_light(this, cam->ang * vec3::EZ, White, 1.0f);
 	nix::set_material(White, 0, 0, White);//Black);
 	drawing_helper->set_color(White);
-	set_shader(gl->default_3d.get());
+	set_shader(ctx->default_3d.get());
 
 	// draw the actual data
 	set_projection_matrix();
 	if (multi_view->session->cur_mode)
 		multi_view->session->cur_mode->on_draw_win(this);
 
-	nix::set_shader(gl->default_2d.get());
+	nix::set_shader(ctx->default_2d.get());
 	nix::disable_alpha();
 	nix::bind_texture(0, nullptr);
 	set_projection_matrix_pixel();
@@ -469,7 +482,7 @@ void Window::draw() {
 	// cursor
 	if (this != multi_view->mouse_win) {
 		vec3 pp = project(multi_view->get_cursor());
-		nix::set_shader(gl->default_2d.get());
+		nix::set_shader(ctx->default_2d.get());
 		drawing_helper->set_color(scheme.CREATION_LINE);
 		drawing_helper->draw_rect(pp.x-2, pp.x+2, pp.y-2, pp.y+2, 0);
 	}
@@ -487,30 +500,37 @@ void Window::draw() {
 		if (p.z > 0)
 			drawing_helper->draw_str(p.x, p.y, m.str);
 	}
+#endif
 }
 
 
 vec3 Window::project(const vec3 &p) {
 	vec3 r = pv_matrix.project(p);
+#if HAS_LIB_GL
 	r.x = nix::target_width * (r.x + 1) / 2;
 	r.y = nix::target_height * (-r.y + 1) / 2;
+#endif
 	return r;
 }
 
 vec3 Window::unproject(const vec3 &p) {
 	vec3 r;
+#if HAS_LIB_GL
 	r.x = p.x*2/nix::target_width - 1;
 	r.y = - p.y*2/nix::target_height + 1;
 	r.z = p.z;
+#endif
 	return ipv_matrix.project(r);
 }
 
 vec3 Window::unproject(const vec3 &p, const vec3 &o) {
 	vec3 op = project(o);
 	vec3 r;
+#if HAS_LIB_GL
 	r.x = p.x*2/nix::target_width - 1;
 	r.y = - p.y*2/nix::target_height + 1;
 	r.z = op.z;
+#endif
 	return ipv_matrix.project(r);
 }
 

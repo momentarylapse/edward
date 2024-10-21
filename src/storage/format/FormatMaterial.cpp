@@ -105,9 +105,9 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 			p.shader.file = c.get_str(key + ".shader", "");
 			m = c.get_str(key + ".cull", "");
 			if (m == "none")
-				p.culling = nix::CullMode::NONE;
+				p.culling = CullMode::NONE;
 			else if (m == "front" or m == "cw")
-				p.culling = nix::CullMode::FRONT;
+				p.culling = CullMode::FRONT;
 		};
 
 		// deprecated
@@ -150,8 +150,8 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_comment();
 		data->appearance.passes[0].mode = (TransparencyMode)f->read_int();
 		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
-		data->appearance.passes[0].source = (nix::Alpha)f->read_int();
-		data->appearance.passes[0].destination = (nix::Alpha)f->read_int();
+		data->appearance.passes[0].source = (Alpha)f->read_int();
+		data->appearance.passes[0].destination = (Alpha)f->read_int();
 		data->appearance.passes[0].z_buffer = f->read_bool();
 		// Appearance
 		f->read_comment();
@@ -193,8 +193,8 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_comment();
 		data->appearance.passes[0].mode = (TransparencyMode)f->read_int();
 		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
-		data->appearance.passes[0].source = (nix::Alpha)f->read_int();
-		data->appearance.passes[0].destination = (nix::Alpha)f->read_int();
+		data->appearance.passes[0].source = (Alpha)f->read_int();
+		data->appearance.passes[0].destination = (Alpha)f->read_int();
 		// Appearance
 		f->read_comment();
 		int MetalDensity = f->read_int();
@@ -234,8 +234,8 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_comment();
 		data->appearance.passes[0].mode = (TransparencyMode)f->read_int();
 		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
-		data->appearance.passes[0].source = (nix::Alpha)f->read_int();
-		data->appearance.passes[0].destination = (nix::Alpha)f->read_int();
+		data->appearance.passes[0].source = (Alpha)f->read_int();
+		data->appearance.passes[0].destination = (Alpha)f->read_int();
 		// Appearance
 		f->read_comment();
 		int MetalDensity = f->read_int();
@@ -322,9 +322,9 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 		} else {
 			c.set_str(key + ".mode", "solid");
 		}
-		if (p.culling == nix::CullMode::NONE)
+		if (p.culling == CullMode::NONE)
 			c.set_str(key + ".cull", "none");
-		else if (p.culling == nix::CullMode::FRONT)
+		else if (p.culling == CullMode::FRONT)
 			c.set_str(key + ".cull", "front");
 		/*if (data->appearance.transparency_mode != TransparencyMode::NONE) {
 			c.set_bool("transparency.zbuffer", data->appearance.alpha_z_buffer);

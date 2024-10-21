@@ -70,14 +70,15 @@ void ModeModelMeshCreatePlane::on_left_button_up() {
 
 void ModeModelMeshCreatePlane::on_draw_win(MultiView::Window *win) {
 	parent->on_draw_win(win);
-
+#if HAS_LIB_GL
 	if (pos_chosen) {
 		auto geo = GeometryPlane(pos, length[0], length[1], 1,1);
 		geo.add(GeometryPlane(pos, length[1], length[0], 1,1));
-		geo.build(win->gl->vb_temp);
+		geo.build(win->ctx->vb_temp);
 		win->drawing_helper->set_material_creation();
-		nix::draw_triangles(win->gl->vb_temp);
+		nix::draw_triangles(win->ctx->vb_temp);
 	}
+#endif
 }
 
 

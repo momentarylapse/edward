@@ -11,6 +11,7 @@
 #include "../../../ModeCreation.h"
 #include "../../../../data/model/DataModel.h"
 #include "../../../../lib/base/pointer.h"
+#include <y/graphics-fwd.h>
 
 class Geometry;
 class ModeModelMesh;
@@ -18,14 +19,11 @@ namespace kaba {
 	class Context;
 	class Module;
 }
-namespace nix {
-	class NixTexture;
-};
 
 class ModeModelMeshDeformFunction: public ModeCreation<ModeModelMesh, DataModel> {
 public:
-	ModeModelMeshDeformFunction(ModeModelMesh *parent);
-	virtual ~ModeModelMeshDeformFunction();
+	explicit ModeModelMeshDeformFunction(ModeModelMesh *parent);
+	~ModeModelMeshDeformFunction() override;
 
 	void on_start() override;
 	void on_end() override;
@@ -38,7 +36,7 @@ public:
 private:
 	vec3 min, max;
 	Geometry *geo;
-	nix::Texture *tex;
+	Texture *tex;
 	owned<kaba::Context> context;
 	shared<kaba::Module> script;
 	typedef _cdecl vec3 vec_func(const vec3 &);

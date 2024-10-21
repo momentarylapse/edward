@@ -15,6 +15,7 @@
 #include <y/world/Terrain.h>
 #include <y/world/Material.h>
 #include <y/helper/ResourceManager.h>
+#include <y/graphics-impl.h>
 #include "../../../lib/nix/nix.h"
 #include <assert.h>
 
@@ -82,7 +83,7 @@ void TerrainPropertiesDialog::fill_texture_list() {
 
 	reset("textures");
 	for (int i=0;i<temp.num_textures;i++) {
-		shared<nix::Texture> tex;
+		shared<Texture> tex;
 		if (!temp.texture_file[i].is_empty()) {
 			try {
 				tex = data->session->resource_manager->load_texture(temp.texture_file[i]);

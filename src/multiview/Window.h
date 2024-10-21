@@ -12,14 +12,10 @@
 #include "../lib/math/vec3.h"
 #include "../lib/math/rect.h"
 #include "../lib/math/quaternion.h"
+#include <y/graphics-fwd.h>
 
 class color;
 class DrawingHelper;
-
-namespace nix {
-	class Context;
-	class Shader;
-}
 
 namespace MultiView{
 
@@ -38,7 +34,7 @@ public:
 	mat4 ipv_matrix;
 	rect dest;
 	rect name_dest;
-	nix::Context *gl;
+	Context *ctx;
 	DrawingHelper *drawing_helper;
 	MultiView *multi_view;
 	quaternion local_ang;
@@ -51,7 +47,7 @@ public:
 	void draw_data_points();
 	void draw_header();
 
-	void set_shader(nix::Shader *s, int num_lights = 1);
+	void set_shader(Shader *s, int num_lights = 1);
 
 	int active_grid();
 	vec3 active_grid_direction();

@@ -66,6 +66,7 @@ void ModeFont::on_end() {
 
 
 void ModeFont::on_draw() {
+#if HAS_LIB_GL
 	nix::set_z(false, false);
 	session->drawing_helper->set_color(White);
 	nix::set_shader(session->ctx->default_2d.get());
@@ -73,6 +74,7 @@ void ModeFont::on_draw() {
 	session->drawing_helper->set_color(Black);
 //	if (dialog)
 //		font->drawStr(0, (float)nix::target_height * 0.9f, 0, (float)nix::target_height * 0.1f, dialog->GetSampleText());
+#endif
 }
 
 
@@ -166,6 +168,7 @@ void ModeFont::on_data_update() {
 // FIXME argh.... should be unnecessary thanks to better projection system now!!!!
 
 void Draw2D(MultiView::Window *win, const rect &source, const rect *dest) {
+#if HAS_LIB_GL
 	MultiView::MultiView *mv = win->multi_view;
 	rect d;
 	if (dest) {
@@ -177,27 +180,33 @@ void Draw2D(MultiView::Window *win, const rect &source, const rect *dest) {
 	} else {
 		win->drawing_helper->draw_2d(source, nix::target_rect, 0);
 	}
+#endif
 }
 
 void DrawLineH(MultiView::Window *win, float x1, float x2, float y) {
+#if HAS_LIB_GL
 	MultiView::MultiView *mv = win->multi_view;
 	x1 = nix::target_width/2-(mv->cam.pos.x - x1)*mv->active_win->zoom();
 	x2 = nix::target_width/2-(mv->cam.pos.x - x2)*mv->active_win->zoom();
 	y  = nix::target_height/2-(mv->cam.pos.y - y )*mv->active_win->zoom();
 	win->drawing_helper->draw_line_2d(x1, y, x2, y, 0);
+#endif
 }
 
 void DrawLineV(MultiView::Window *win, float x, float y1, float y2) {
+#if HAS_LIB_GL
 	MultiView::MultiView *mv = win->multi_view;
 	x  = nix::target_width/2-(mv->cam.pos.x - x )*mv->active_win->zoom();
 	y1 = nix::target_height/2-(mv->cam.pos.y - y1)*mv->active_win->zoom();
 	y2 = nix::target_height/2-(mv->cam.pos.y - y2)*mv->active_win->zoom();
 	win->drawing_helper->draw_line_2d(x, y1, x, y2, 0);
+#endif
 }
 
 
 void ModeFont::on_draw_win(MultiView::Window *win)
 {
+#if HAS_LIB_GL
 	int NumY = data->TextureHeight / data->global.GlyphHeight;
 
 	// background
@@ -248,6 +257,7 @@ void ModeFont::on_draw_win(MultiView::Window *win)
 	}
 
 	nix::disable_alpha();
+#endif
 }
 
 

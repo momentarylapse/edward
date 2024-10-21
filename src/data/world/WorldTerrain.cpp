@@ -82,10 +82,4 @@ void WorldTerrain::update_data() {
 	//terrain->pos = pos;
 }
 
-#ifndef HAS_LIB_GL
-Box WorldTerrain::bounding_box() const {
-	return {};
-}
-#endif
-
 

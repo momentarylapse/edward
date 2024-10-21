@@ -214,7 +214,9 @@ void ModeWorldCamera::on_draw_win(MultiView::Window *win)
 {
 	parent->on_draw_win(win);
 
+#if HAS_LIB_GL
 	nix::set_model_matrix(mat4::ID);
+#endif
 	win->drawing_helper->set_line_width(1.0f);
 
 	vec3 last_pos = v_0;

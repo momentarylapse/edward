@@ -43,12 +43,10 @@ public:
 	int material = 0;
 	int smooth_group = -1;
 
-#if HAS_LIB_GL
 	// -> MeshSelectionModePolygin.cpp
 	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
-#endif
 
 	Array<int> triangulate(const Array<ModelVertex> &vertex) const;
 	void update_triangulation(const Array<ModelVertex> &vertex);

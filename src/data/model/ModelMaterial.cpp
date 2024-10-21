@@ -153,7 +153,7 @@ void ModelMaterial::check_colors() {
 void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 #if HAS_LIB_GL
 	nix::disable_alpha();
-	w->set_shader(w->gl->default_3d.get());
+	w->set_shader(w->ctx->default_3d.get());
 	color em = color::interpolate(col.emission, White, 0.1f);
 	nix::set_material(col.albedo, col.roughness, col.metal, em);
 	nix::set_z(true, true);

@@ -72,7 +72,7 @@ void ModeModelSkeletonAttachVertices::on_start() {
 	multi_view->set_allow_select(false);
 
 	if (!vb_weight)
-		vb_weight = new nix::VertexBuffer("3f,3fn,2f");
+		vb_weight = new VertexBuffer("3f,3fn,2f");
 	if (!vbs)
 		vbs = new VertexStagingBuffer;
 	for (ModelPolygon &t: data->mesh->polygon)
@@ -137,13 +137,14 @@ BrushPanel *ModeModelSkeletonAttachVertices::brush_panel() {
 
 void ModeModelSkeletonAttachVertices::on_draw_win(MultiView::Window *win) {
 	session->mode_model->mode_model_mesh->on_draw_win(win);
-
+#if HAS_LIB_GL
 	// weights
 	win->drawing_helper->set_material_selected();
 	nix::set_shader(shader.get());
 	nix::draw_triangles(vb_weight);
 	nix::set_offset(2);
 	nix::disable_alpha();
+#endif
 
 
 	if (multi_view->hover.index >= 0) {

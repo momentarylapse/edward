@@ -68,6 +68,12 @@
 	using AlphaMode = vulkan::AlphaMode;
 	using CullMode = vulkan::CullMode;
 
+	enum class FogMode {
+		LINEAR,
+		EXP,
+		EXP2
+	};
+
 #endif
 #ifdef USING_OPENGL
 
@@ -87,6 +93,7 @@
 		enum class Alpha;
 		enum class AlphaMode;
 		enum class CullMode;
+		enum class FogMode;
 	}
 
 	using Context = nix::Context;
@@ -103,6 +110,7 @@
 	using Alpha = nix::Alpha;
 	using AlphaMode = nix::AlphaMode;
 	using CullMode = nix::CullMode;
+	using FogMode = nix::FogMode;
 	class RenderPass{};
 
 #endif

@@ -370,7 +370,9 @@ void ModeWorld::on_draw() {
 			ss.add(format(_("%d cameras"), num_cam));
 		if (num_li > 0)
 			ss.add(format(_("%d lights"), num_li));
+#if HAS_LIB_GL
 		nix::set_shader(session->ctx->default_2d.get());
+#endif
 		session->drawing_helper->draw_str(10, 100, _("selected: ") + implode(ss, ", "));
 	}
 }
@@ -400,6 +402,7 @@ void DrawSelectionObject(const WorldObject &oo, float alpha, const color &c) {
 	int d = 0;//o->_detail_;
 	if ((d<0) or (d>3))
 		return;
+#if HAS_LIB_GL
 	nix::set_model_matrix(mat4::translation(oo.pos) * mat4::rotation(oo.ang));
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	for (int i=0;i<o->material.num;i++) {
@@ -412,9 +415,11 @@ void DrawSelectionObject(const WorldObject &oo, float alpha, const color &c) {
 		nix::draw_triangles(o->mesh[0]->sub[i].vertex_buffer);
 	}
 	nix::disable_alpha();
+#endif
 }
 
 void DrawTerrainColored(Terrain *t, const color &c, float alpha, const vec3 &cam_pos) {
+#if HAS_LIB_GL
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 
 	nix::set_material(color(alpha, 0, 0, 0), 0, 0, c);
@@ -425,11 +430,13 @@ void DrawTerrainColored(Terrain *t, const color &c, float alpha, const vec3 &cam
 
 
 	nix::disable_alpha();
+#endif
 }
 
 
 
 void ModeWorld::apply_lighting(MultiView::Window *win) {
+#if HAS_LIB_GL
 	auto &m = data->meta_data;
 	nix::set_fog(m.fog.mode, m.fog.start, m.fog.end, m.fog.density, m.fog.col);
 	nix::enable_fog(m.fog.enabled);
@@ -458,22 +465,28 @@ void ModeWorld::apply_lighting(MultiView::Window *win) {
 	multi_view->ubo_light->update_array(lights);
 	nix::bind_buffer(1, multi_view->ubo_light);
 	//win->set_shader(nix::Shader::default_3d, w->lights.num);
+#endif
 }
 
 void ModeWorld::draw_background(MultiView::Window *win) {
+#if HAS_LIB_GL
 	nix::clear_color(data->meta_data.background_color);
+#endif
 }
 
-void _set_textures(DrawingHelper *drawing_helper, const Array<nix::Texture*> &_tex) {
-	Array<nix::Texture*> tex = _tex;
+void _set_textures(DrawingHelper *drawing_helper, const Array<Texture*> &_tex) {
+#if HAS_LIB_GL
+	Array<Texture*> tex = _tex;
 	while (tex.num < 5)
 		tex.add(drawing_helper->tex_white.get());
 	tex.add(MultiView::cube_map.get());
 
 	nix::set_textures(tex);
+#endif
 }
 
 void ModeWorld::draw_terrains(MultiView::Window *win) {
+#if HAS_LIB_GL
 	foreachi(WorldTerrain &t, data->terrains, i) {
 		if (!t.terrain)
 			continue;
@@ -484,7 +497,7 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 		// prepare...
 		t.terrain->prepare_draw(multi_view->cam.pos - t.pos);
 		auto mat = t.terrain->material.get();
-		auto s = win->gl->default_3d.get();
+		auto s = win->ctx->default_3d.get();
 		try {
 			t.terrain->shader_cache._prepare_shader((RenderPathType)1, mat, "default", "");
 			s = t.terrain->shader_cache.shader[0].get();
@@ -509,12 +522,14 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 		if ((multi_view->hover.type == MVD_WORLD_TERRAIN) and (multi_view->hover.index == i))
 			DrawTerrainColored(t.terrain, White, TMouseOverAlpha, multi_view->cam.pos);
 	}
+#endif
 }
 
 void draw_model(MultiView::Window *win, Model *m, int num_lights) {
+#if HAS_LIB_GL
 	for (int i=0;i<m->material.num;i++) {
 		auto mat = m->material[i];
-		auto s = win->gl->default_3d.get();
+		auto s = win->ctx->default_3d.get();
 		try {
 			m->shader_cache[i]._prepare_shader((RenderPathType)1, mat, "default", "");
 			s = m->shader_cache[i].shader[0].get();
@@ -531,12 +546,14 @@ void draw_model(MultiView::Window *win, Model *m, int num_lights) {
 	}
 	//o.object->draw(0, false, false);
 	//o.object->_detail_ = 0;
+#endif
 }
 
 void ModeWorld::draw_objects(MultiView::Window *win) {
+#if HAS_LIB_GL
 	//GodDraw();
 	//MetaDrawSorted();
-	nix::set_shader(win->gl->default_3d.get());
+	nix::set_shader(win->ctx->default_3d.get());
 	nix::set_wire(multi_view->wire_mode);
 
 	for (WorldObject &o: data->objects) {
@@ -559,6 +576,7 @@ void ModeWorld::draw_objects(MultiView::Window *win) {
 		DrawSelectionObject(data->objects[multi_view->hover.index], OSelectionAlpha, White);
 	nix::disable_alpha();
 	nix::set_model_matrix(mat4::ID);
+#endif
 }
 
 void ModeWorld::draw_cameras(MultiView::Window *win) {
@@ -677,9 +695,10 @@ void ModeWorld::on_draw_win(MultiView::Window *win) {
 	draw_lights(win);
 	draw_links(win);
 
-
+#if HAS_LIB_GL
 	nix::set_z(true,true);
 	nix::enable_fog(false);
+#endif
 }
 
 

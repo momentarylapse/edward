@@ -151,8 +151,10 @@ void ModeModelMeshCreateCube::on_draw_win(MultiView::Window *win) {
 
 	win->drawing_helper->set_material_creation();
 	if (pos_chosen) {
-		geo->build(win->gl->vb_temp);
-		nix::draw_triangles(win->gl->vb_temp);
+#if HAS_LIB_GL
+		geo->build(win->ctx->vb_temp);
+		nix::draw_triangles(win->ctx->vb_temp);
+#endif
 	}
 	if (pos2_chosen and win == multi_view->mouse_win) {
 		vec3 m = multi_view->get_cursor();

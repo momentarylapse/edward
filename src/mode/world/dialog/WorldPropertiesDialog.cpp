@@ -347,11 +347,11 @@ void WorldPropertiesDialog::apply_data() {
 	temp.background_color = get_color("bgc");
 	temp.fog.enabled = !is_checked("fog_mode:none");
 	if (is_checked("fog_mode:linear"))
-		temp.fog.mode = nix::FogMode::LINEAR;
+		temp.fog.mode = FogMode::LINEAR;
 	else if (is_checked("fog_mode:exp"))
-		temp.fog.mode = nix::FogMode::EXP;
+		temp.fog.mode = FogMode::EXP;
 	else if (is_checked("fog_mode:exp2"))
-		temp.fog.mode = nix::FogMode::EXP2;
+		temp.fog.mode = FogMode::EXP2;
 	temp.fog.start = get_float("fog_start");
 	temp.fog.end = get_float("fog_end");
 	temp.fog.density = 1.0f / get_float("fog_distance");
@@ -384,11 +384,11 @@ void WorldPropertiesDialog::load_data() {
 	set_decimals(WorldFogDec);
 	set_color("bgc", temp.background_color);
 	if (temp.fog.enabled) {
-		if (temp.fog.mode == nix::FogMode::LINEAR)
+		if (temp.fog.mode == FogMode::LINEAR)
 			check("fog_mode:linear", true);
-		else if (temp.fog.mode == nix::FogMode::EXP)
+		else if (temp.fog.mode == FogMode::EXP)
 			check("fog_mode:exp", true);
-		else if (temp.fog.mode == nix::FogMode::EXP2)
+		else if (temp.fog.mode == FogMode::EXP2)
 			check("fog_mode:exp2", true);
 	} else {
 		check("fog_mode:none", true);
@@ -397,9 +397,9 @@ void WorldPropertiesDialog::load_data() {
 	set_float("fog_end", temp.fog.end);
 	set_float("fog_distance", 1.0f / temp.fog.density);
 	set_color("fog_color", temp.fog.col);
-	enable("fog_start", temp.fog.enabled and (temp.fog.mode == nix::FogMode::LINEAR));
-	enable("fog_end", temp.fog.enabled and (temp.fog.mode == nix::FogMode::LINEAR));
-	enable("fog_distance", temp.fog.enabled and ((temp.fog.mode == nix::FogMode::EXP) or (temp.fog.mode == nix::FogMode::EXP2)));
+	enable("fog_start", temp.fog.enabled and (temp.fog.mode == FogMode::LINEAR));
+	enable("fog_end", temp.fog.enabled and (temp.fog.mode == FogMode::LINEAR));
+	enable("fog_distance", temp.fog.enabled and ((temp.fog.mode == FogMode::EXP) or (temp.fog.mode == FogMode::EXP2)));
 	enable("fog_color", temp.fog.enabled);
 
 	set_decimals(WorldPhysicsDec);

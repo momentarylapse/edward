@@ -42,8 +42,8 @@ private:
 	float distance;
 	vec3 last_pos;
 
-	nix::VertexBuffer *vb_weight = nullptr;
-	shared<nix::Shader> shader;
+	VertexBuffer *vb_weight = nullptr;
+	shared<Shader> shader;
 
 	VertexStagingBuffer *vbs = nullptr;
 

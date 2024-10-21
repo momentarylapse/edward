@@ -132,8 +132,10 @@ void ModeModelMeshCreateBall::on_draw_win(MultiView::Window *win) {
 
 	if (pos_chosen) {
 		win->drawing_helper->set_material_creation();
-		geo->build(win->gl->vb_temp);
-		nix::draw_triangles(win->gl->vb_temp);
+#if HAS_LIB_GL
+		geo->build(win->ctx->vb_temp);
+		nix::draw_triangles(win->ctx->vb_temp);
+#endif
 
 		if (win == multi_view->mouse_win)
 			win->drawing_helper->draw_helper_line(win, pos, multi_view->get_cursor());

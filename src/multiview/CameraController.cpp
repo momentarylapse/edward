@@ -31,10 +31,12 @@ const color ColorIconHover = color(0.7f, 0.4f, 0.4f, 1);
 CameraController::CameraController(MultiView *_view) {
 	view = _view;
 	show = true;
+#if HAS_LIB_GL
 	tex_bg = nix::Texture::load(app->directory_static | "icons/toolbar/multiview/bg.png");
 	tex_move = nix::Texture::load(app->directory_static | "icons/toolbar/multiview/move.png");
 	tex_rotate= nix::Texture::load(app->directory_static | "icons/toolbar/multiview/rotate.png");
 	tex_zoom = nix::Texture::load(app->directory_static | "icons/toolbar/multiview/zoom.png");
+#endif
 	//controllers.resize(4);
 }
 
@@ -79,6 +81,7 @@ void CameraController::update_rects() {
 	foreachi (auto *w, view->visible_windows, i)
 		controllers[i].set(w);
 
+#if HAS_LIB_GL
 	r2 = rect(nix::target_width - CC_RADIUS / 2 - CC_BORDER,
 	          nix::target_width + CC_RADIUS / 2 + CC_BORDER,
 	          nix::target_height / 2 - CC_RADIUS / 2 - CC_BORDER,
@@ -87,6 +90,7 @@ void CameraController::update_rects() {
 	              nix::target_width + CC_RADIUS / 2,
 	              nix::target_height / 2 - CC_RADIUS / 2,
 	              nix::target_height / 2 + CC_RADIUS / 2);
+#endif
 }
 
 bool CameraController::is_mouse_over() {
@@ -153,6 +157,7 @@ void CameraController::on_gesture_zoom(float factor) {
 }
 
 void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active) {
+#if HAS_LIB_GL
 	nix::bind_texture(0, tex_bg);
 	if (active or rr.inside(view->m))
 		view->drawing_helper->set_color(ColorIconHover);
@@ -164,16 +169,18 @@ void CameraController::draw_icon(const rect &rr, nix::Texture *tex, bool active)
 		view->drawing_helper->set_color(White);
 		view->drawing_helper->draw_2d(rect::ID, rr, 0);
 	}
+#endif
 }
 
 void CameraController::draw() {
+#if HAS_LIB_GL
 	update_rects();
 	nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 
 	// show/hide button
 	view->drawing_helper->set_color(ColorBackground);
 	nix::bind_texture(0, tex_bg);
-	nix::set_shader(view->gl->default_2d.get());
+	nix::set_shader(view->ctx->default_2d.get());
 	view->drawing_helper->draw_2d(rect::ID, r2, 0);
 	draw_icon(r_show, nullptr, false);
 
@@ -196,6 +203,7 @@ void CameraController::draw() {
 	}
 	nix::bind_texture(0, nullptr);
 	nix::disable_alpha();
+#endif
 }
 
 bool CameraController::in_use() {
