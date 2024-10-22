@@ -53,3 +53,8 @@ void Renderer::prepare(const RenderParams& params) {
 		c->prepare(params);
 }
 
+void Renderer::draw(const RenderParams& params) {
+	for (auto c: children)
+		c->draw(params);
+}
+

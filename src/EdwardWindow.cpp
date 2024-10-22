@@ -6,6 +6,9 @@
  */
 
 #include "EdwardWindow.h"
+
+#include <renderer/Renderer.h>
+
 #include "Edward.h"
 #include "Session.h"
 #include "mode/administration/ModeAdministration.h"
@@ -21,6 +24,7 @@
 #include <y/world/World.h>
 #include <y/world/Camera.h>
 #include <y/helper/ResourceManager.h>
+#include <y/renderer/target/WindowRendererVulkan.h>
 #include <y/EngineData.h>
 #include <y/meta.h>
 #include <y/gui/Font.h>
@@ -28,6 +32,11 @@
 #include "lib/kaba/kaba.h"
 #include "lib/nix/nix.h"
 #include "lib/hui/config.h"
+#include "lib/image/image.h"
+
+#if HAS_LIB_GL
+#include <y/renderer/Renderer.h>
+#endif
 
 extern string AppName;
 
@@ -41,6 +50,165 @@ namespace hui {
 
 rect dynamicly_scaled_source() { return {}; }
 rect dynamicly_scaled_area(FrameBuffer*) { return {}; }
+
+#if HAS_LIB_GL
+class HuiWindowRenderer : public Renderer {
+	int width, height;
+	Context* ctx;
+
+public:
+	explicit HuiWindowRenderer(Context* _ctx) : Renderer("hui") {
+		ctx = _ctx;
+	}
+
+	void render_frame() {
+		auto e = hui::get_event();
+		width = e->column;
+		height = e->row;
+
+		const auto params = RenderParams::into_window(ctx->default_framebuffer, (float)width/(float)height);
+
+		prepare(params);
+
+		nix::start_frame_hui(ctx);
+		nix::set_viewport(rect(0, width, 0, height));
+
+		draw(params);
+
+		nix::end_frame_hui();
+	}
+};
+#endif
+
+#if HAS_LIB_VULKAN
+vulkan::Instance* __instance;
+
+
+class HuiWindowRenderer : public Renderer {
+public:
+	static constexpr int MAX_WIDTH = 1024*3;
+	static constexpr int MAX_HEIGHT = 2048;
+	explicit HuiWindowRenderer(vulkan::Instance* instance) : Renderer("hui") {
+		auto surface = instance->create_headless_surface();
+		device = vulkan::Device::create_simple(instance, surface, {"graphics", "swapchain", "present", "anisotropy"});
+
+		image.create(MAX_WIDTH, MAX_HEIGHT, Red);
+		headless_renderer = HeadlessSurfaceRendererVulkan::create(device, MAX_WIDTH, MAX_HEIGHT);
+	}
+	bool start_frame(Painter* painter) {
+		if (!headless_renderer->start_frame())
+			return false;
+
+		int scale = hui::get_event()->row_target;
+		int w = painter->width * scale;
+		int h = painter->height * scale;
+
+		auto params = headless_renderer->create_params(1.0f);
+
+		cb = params.command_buffer;
+		cb->begin();
+
+	//	for (auto c: children)
+	//		c->prepare(params);
+
+		cb->begin_render_pass(params.render_pass, params.frame_buffer);
+		cb->set_viewport(rect(0, w, 0, h));
+		cb->clear({Blue}, 1);
+
+		return true;
+	}
+	void end_frame(Painter* p) {
+		cb->end_render_pass();
+
+		headless_renderer->end_frame();
+
+		headless_renderer->swap_images[headless_renderer->image_index]->read(&image.data[0]);
+		//	image.mode = Image::Mode::BGRA;
+		//	image.set_mode(Image::Mode::RGBA);
+
+
+		float scale = (float)hui::get_event()->row_target;
+		float t[4] = {1 / scale, 0, 0, 1 / scale};
+		p->set_transform(t, {0,0});
+		p->draw_image({0, 0}, &image);
+	}
+
+	/*void render(Painter* p) {
+		int w = p->width;
+		int h = p->height;
+		//msg_write(format("%d  %d    %d", p->width, p->height, ));
+		if (start_frame(p)) {
+			cb->bind_pipeline(pipeline);
+			cb->bind_descriptor_set(0, dset);
+			PushConstants pc;
+			pc.matrix = mat4::perspective(1.4f, (float)w / (float)h, 0.1f, 100, false) * mat4::translation({0,0,2}) * mat4::rotation(ang);
+			pc.col = White;
+			cb->push_constant(0, sizeof(pc), &pc);
+			cb->draw(vb);
+			end_frame(p);
+		}
+	}*/
+
+	void prepare(const RenderParams& params) override {}
+	void draw(const RenderParams& params) override {}
+
+	RenderParams create_params(float aspect_ratio) {
+		return headless_renderer->create_params(aspect_ratio);
+	}
+
+	vulkan::Device* device;
+	HeadlessSurfaceRendererVulkan* headless_renderer = nullptr;
+	CommandBuffer* cb = nullptr;
+	Image image;
+};
+#endif
+
+class EdwardRenderer : public Renderer {
+public:
+	EdwardWindow* window;
+	explicit EdwardRenderer(EdwardWindow* _window) : Renderer("edward") {
+		window = _window;
+	}
+	void draw(const RenderParams& params) override {
+#if HAS_LIB_GL
+		auto session = window->session;
+		auto gl = session->ctx;
+
+#if 0
+
+		nix::clear(Green);
+		nix::set_z(false, false);
+		nix::set_cull(nix::CullMode::NONE);
+
+		nix::set_projection_perspective();
+		nix::set_view_matrix(mat4::ID);
+		nix::set_model_matrix(mat4::translation(vec3(0,0,5)));
+		nix::set_shader(gl->default_3d.get());
+		nix::set_material(White, 0, 0, White);
+		nix::bind_texture(0, drawing_helper->tex_white.get());
+
+		gl->vb_temp->create_cube(vec3(-1, -1, -1), vec3(1, 1, 1));
+		nix::draw_triangles(gl->vb_temp);
+
+		nix::set_projection_ortho_pixel();
+		nix::set_shader(gl->default_2d.get());
+		drawing_helper->set_color(Black);
+		drawing_helper->draw_str(100, 100, "Test", TextAlign::CENTER);
+#endif
+
+		//nix::set_srgb(true);
+		if (session->cur_mode->multi_view)
+			session->cur_mode->multi_view->on_draw();
+		session->cur_mode->on_draw();
+
+		// messages
+		nix::set_shader(session->ctx->default_2d.get());
+		foreachi(string &m, session->message_str, i)
+		session->drawing_helper->draw_str(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, TextAlign::CENTER);
+
+#endif
+	}
+};
 
 void EdwardWindow::on_close() {
 	session->allow_termination().then([this] {
@@ -147,6 +315,16 @@ EdwardWindow::EdwardWindow(Session *_session) :
 	side_panel = nullptr;
 	bottom_panel = nullptr;
 
+
+#if HAS_LIB_VULKAN
+	__instance = vulkan::init({"api=1.3", "headless", "verbosity=1", "validation"});
+
+	renderer = new HuiWindowRenderer(__instance);
+	renderer->add_child(new EdwardRenderer(this));
+	auto ctx = new Context;
+	session->create_initial_resources(ctx);
+#endif
+
 	event_x("nix-area", hui::EventID::DRAW_GL, [this] { on_draw_gl(); });
 	event_x("nix-area", hui::EventID::REALIZE, [this] { on_realize_gl(); });
 	event_x("nix-area", hui::EventID::GESTURE_ZOOM_BEGIN, [this] { on_gesture_zoom_begin(); });
@@ -158,7 +336,11 @@ EdwardWindow::EdwardWindow(Session *_session) :
 	set_target("vgrid");
 	add_grid("", 0, 0, "root-table");
 	set_target("root-table");
+#if HAS_LIB_VULKAN
+	add_drawing_area("!mainwindowcontrol,gesture=zoom", 0, 0, "nix-area");
+#else
 	add_drawing_area("!mainwindowcontrol,gesture=zoom,opengl=4.5", 0, 0, "nix-area");
+#endif
 	add_expander("!slide=left", 1, 0, "side-bar-revealer");
 	set_target("side-bar-revealer");
 	add_grid("!noexpandx,width=360", 0, 0, "side-bar-grid");
@@ -322,8 +504,7 @@ bool EdwardWindow::handle_arguments(Array<string> arg)
 
 
 void EdwardWindow::on_abort_creation_mode() {
-	ModeCreationBase *m = dynamic_cast<ModeCreationBase*>(session->cur_mode);
-	if (m)
+	if (auto m = dynamic_cast<ModeCreationBase*>(session->cur_mode))
 		m->abort();
 }
 
@@ -342,50 +523,17 @@ void EdwardWindow::on_send_bug_report()
 
 void EdwardWindow::on_realize_gl() {
 #if HAS_LIB_GL
-	auto gl = nix::init();
-	session->create_initial_resources(gl);
+	auto ctx = nix::init();
+	renderer = new HuiWindowRenderer(ctx);
+	renderer->add_child(new EdwardRenderer(this));
+	session->create_initial_resources(ctx);
 #endif
 }
 
 void EdwardWindow::on_draw_gl() {
 #if HAS_LIB_GL
-	auto e = hui::get_event();
-	nix::start_frame_hui(session->ctx);
-	nix::set_viewport(rect(0, e->column, 0, e->row));
-
-#if 0
-
-	nix::clear(Green);
-	nix::set_z(false, false);
-	nix::set_cull(nix::CullMode::NONE);
-
-	nix::set_projection_perspective();
-	nix::set_view_matrix(mat4::ID);
-	nix::set_model_matrix(mat4::translation(vec3(0,0,5)));
-	nix::set_shader(gl->default_3d.get());
-	nix::set_material(White, 0, 0, White);
-	nix::bind_texture(0, drawing_helper->tex_white.get());
-
-	gl->vb_temp->create_cube(vec3(-1, -1, -1), vec3(1, 1, 1));
-	nix::draw_triangles(gl->vb_temp);
-
-	nix::set_projection_ortho_pixel();
-	nix::set_shader(gl->default_2d.get());
-	drawing_helper->set_color(Black);
-	drawing_helper->draw_str(100, 100, "Test", TextAlign::CENTER);
-#endif
-
-	//nix::set_srgb(true);
-	if (session->cur_mode->multi_view)
-		session->cur_mode->multi_view->on_draw();
-	session->cur_mode->on_draw();
-
-	// messages
-	nix::set_shader(session->ctx->default_2d.get());
-	foreachi(string &m, session->message_str, i)
-	session->drawing_helper->draw_str(nix::target_width / 2, nix::target_height / 2 - 20 - i * 20, m, TextAlign::CENTER);
-
-	nix::end_frame_hui();
+	if (renderer)
+		renderer->render_frame();
 #endif
 }
 

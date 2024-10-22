@@ -33,9 +33,7 @@
 
 Session *create_session() {
 	auto s = new Session;
-#if HAS_LIB_GL
 	s->win = new EdwardWindow(s);
-#endif
 	return s;
 }
 
@@ -66,9 +64,7 @@ base::future<Session*> emit_empty_session(Session* parent) {
 
 Session::Session() {
 	ctx = nullptr;
-#if HAS_LIB_GL
 	mode_none = new ModeNone(this);
-#endif
 	cur_mode = mode_none;
 	progress = new Progress;
 
@@ -87,7 +83,6 @@ Session::Session() {
 }
 
 Session::~Session() {
-#if HAS_LIB_GL
 	if (mode_world)
 		delete mode_world;
 	/*delete mode_material;
@@ -99,7 +94,6 @@ Session::~Session() {
 		delete multi_view_2d;
 	if (multi_view_3d)
 		delete multi_view_3d;
-#endif
 	// saving the configuration data...
 	if (storage) {
 		hui::config.set_str("RootDir", storage->root_dir.str());
@@ -124,9 +118,7 @@ void Session::create_initial_resources(Context *_ctx) {
 
 	// initialize engine
 	resource_manager = new ResourceManager(ctx);
-#if HAS_LIB_GL
 	drawing_helper = new DrawingHelper(ctx, resource_manager, app->directory_static);
-#endif
 
 	engine.ignore_missing_files = true;
 	engine.set_context(ctx, resource_manager);
@@ -135,8 +127,6 @@ void Session::create_initial_resources(Context *_ctx) {
 
 	CameraInit();
 	GodInit(0);
-
-#if HAS_LIB_GL
 
 	multi_view_3d = new MultiView::MultiView(this, true);
 	multi_view_2d = new MultiView::MultiView(this, false);
@@ -183,7 +173,6 @@ void Session::create_initial_resources(Context *_ctx) {
 	multi_view_2d->out_redraw >> create_sink([this] {
 		win->redraw("nix-area");
 	});
-#endif
 
 	promise_started();
 }
@@ -191,7 +180,6 @@ void Session::create_initial_resources(Context *_ctx) {
 // do we change roots?
 //  -> data loss?
 base::future<void> mode_switch_allowed(ModeBase *m) {
-#if HAS_LIB_GL
 	if (!m->session->cur_mode or m->equal_roots(m->session->cur_mode)) {
 		base::promise<void> promise;
 		promise();
@@ -199,9 +187,6 @@ base::future<void> mode_switch_allowed(ModeBase *m) {
 	} else {
 		return m->session->allow_termination();
 	}
-#else
-	return base::success();
-#endif
 }
 
 void Session::set_mode(ModeBase *m) {
@@ -213,7 +198,6 @@ void Session::set_mode(ModeBase *m) {
 }
 
 void Session::set_mode_now(ModeBase *m) {
-#if HAS_LIB_GL
 	if (cur_mode == m)
 		return;
 
@@ -276,23 +260,18 @@ void Session::set_mode_now(ModeBase *m) {
 
 	if (cur_mode->multi_view)
 		cur_mode->multi_view->force_redraw();
-#endif
 }
 
 
 void Session::remove_message() {
 	message_str.erase(0);
-#if HAS_LIB_GL
 	cur_mode->multi_view->force_redraw();
-#endif
 }
 
 void Session::set_message(const string &message) {
 	msg_write(message);
 	message_str.add(message);
-#if HAS_LIB_GL
 	cur_mode->multi_view->force_redraw();
-#endif
 	hui::run_later(2.0f, [this]{ remove_message(); });
 }
 
@@ -303,7 +282,6 @@ void Session::error(const string &message) {
 }
 
 ModeBase *Session::get_mode(int preferred_type) {
-#if HAS_LIB_GL
 	if (preferred_type == FD_MODEL)
 		return mode_model;
 	if (preferred_type == FD_WORLD)
@@ -312,12 +290,10 @@ ModeBase *Session::get_mode(int preferred_type) {
 		return mode_material;
 	if (preferred_type == FD_FONT)
 		return mode_font;
-#endif
 	return mode_none;
 }
 
 void Session::universal_new(int preferred_type) {
-#if HAS_LIB_GL
 	auto call_new = [preferred_type] (Session* session) {
 		if (preferred_type == FD_MODEL) {
 			session->mode_model->_new();
@@ -346,11 +322,9 @@ void Session::universal_new(int preferred_type) {
 		// new window
 		emit_empty_session(this).then(call_new);
 	}
-#endif
 }
 
 void Session::universal_open(int preferred_type) {
-#if HAS_LIB_GL
 	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false).then([this] (const auto& p) {
 
 		auto call_open = [kind=p.kind, path=p.complete] (Session* session) {
@@ -371,7 +345,6 @@ void Session::universal_open(int preferred_type) {
 
 		emit_empty_session(this).then(call_open);
 	});
-#endif
 }
 
 Path add_extension_if_needed(Session *session, int type, const Path &filename) {
@@ -388,7 +361,6 @@ Path make_absolute_path(Session *session, int type, const Path &filename, bool r
 }
 
 void Session::universal_edit(int type, const Path &_filename, bool relative_path) {
-#if HAS_LIB_GL
 	Path filename = make_absolute_path(this, type, add_extension_if_needed(this, type, _filename), relative_path);
 	msg_write("EDIT");
 	msg_write(_filename.str());
@@ -446,12 +418,10 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 				break;
 		}
 		//return true;
-#endif
 }
 
 base::future<void> Session::allow_termination() {
 	base::promise<void> promise;
-#if HAS_LIB_GL
 
 	if (!cur_mode) {
 		promise();
@@ -478,7 +448,6 @@ base::future<void> Session::allow_termination() {
 		}).on_fail([promise] () mutable {
 			promise.fail();
 		});
-#endif
 	return promise.get_future();
 }
 
@@ -505,7 +474,6 @@ string Session::get_tex_image(Texture *tex) {
 }
 
 ModeBase *Session::find_mode_base(const string &name) {
-#if HAS_LIB_GL
 	if (name == "model")
 		return mode_model;
 	if (name == "model-mesh")
@@ -528,7 +496,6 @@ ModeBase *Session::find_mode_base(const string &name) {
 		return mode_font;
 	if (name == "world")
 		return mode_world;
-#endif
 	return mode_none;
 }
 

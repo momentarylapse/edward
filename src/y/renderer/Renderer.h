@@ -37,7 +37,7 @@ struct RenderParams {
 
 class Renderer {
 public:
-	Renderer(const string &name);
+	explicit Renderer(const string &name);
 	virtual ~Renderer();
 
 	Array<Renderer*> children;
@@ -50,7 +50,7 @@ public:
 	// assume, parent has already bound the frame buffer
 	// (vulkan: INSIDE an already started render pass)
 	// just draw into that
-	virtual void draw(const RenderParams& params) = 0;
+	virtual void draw(const RenderParams& params);
 
 
 	int channel;

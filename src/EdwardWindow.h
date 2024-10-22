@@ -14,11 +14,12 @@
 
 
 class Session;
+class HuiWindowRenderer;
 
 
 class EdwardWindow : public obs::Node<hui::Window> {
 public:
-	EdwardWindow(Session *s);
+	explicit EdwardWindow(Session *s);
 	~EdwardWindow() override;
 
 	obs::sink in_data_selection_changed;
@@ -59,13 +60,14 @@ public:
 	void update_menu();
 	void optimize_current_view();
 
-	Session *session;
+	Session* session;
 
 	shared<hui::Panel> side_panel, bottom_panel;
 	void set_side_panel(shared<hui::Panel> panel);
 	void set_bottom_panel(shared<hui::Panel> panel);
 
 	os::Timer timer;
+	HuiWindowRenderer* renderer = nullptr;
 };
 
 #endif /* SRC_EDWARDWINDOW_H_ */
