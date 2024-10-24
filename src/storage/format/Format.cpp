@@ -46,7 +46,8 @@ base::optional<LegacyFile> file_get_legacy_header(const Path& filename) {
 		lf.f = os::fs::open(filename, "rb");
 		lf.f->seek(1);
 		lf.ffv = (int)lf.f->read_word();
-	} else {
+	}
+	if (lf.ffv == 0 or lf.ffv >= 20) {
 		delete lf.f;
 		return base::None;
 	}
