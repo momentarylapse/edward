@@ -27,21 +27,15 @@
 
 
 
-void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
+void FormatWorld::_load_old(LegacyFile& lf, DataWorld *data, bool deep) {
 
-	os::fs::FileStream *f = nullptr;
-	int ffv;
+	os::fs::FileStream *f = lf.f;
 
 	try{
 
-		f = os::fs::open(filename, "rt");
-		data->file_time = os::fs::mtime(filename).time;
+		data->file_time = os::fs::mtime(lf.filename).time;
 
-	//ffv = f->ReadFileFormatVersion();
-		f->read(1);
-		ffv = f->read_word();
-
-	if ((ffv==10) or (ffv==9)){ // new format
+	if ((lf.ffv == 10) or (lf.ffv == 9)){ // new format
 		// Terrains
 		f->read_comment();
 		int n = f->read_int();
@@ -61,10 +55,10 @@ void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 		data->EgoIndex = f->read_int();
 		// Background
 		f->read_comment();
-		if (ffv == 9)
+		if (lf.ffv == 9)
 			f->read_bool(); // BackGroundColorEnabled
 		read_color_argb(f, data->meta_data.background_color);
-		if (ffv==9){
+		if (lf.ffv==9){
 			data->meta_data.skybox_files[0] = f->read_str();
 		}else{
 			int ns=f->read_int();
@@ -145,7 +139,7 @@ void FormatWorld::_load_old(const Path &filename, DataWorld *data, bool deep) {
 		}
 
 	}else{
-		throw Exception(format(_("File '%s' has an unhandled legacy file format: %d (expected: %d - %d)!"), filename.c_str(), ffv, 8, 10));
+		throw Exception(format(_("File '%s' has an unhandled legacy file format: %d (expected: %d - %d)!"), lf.filename.c_str(), lf.ffv, 8, 10));
 	}
 	delete f;
 

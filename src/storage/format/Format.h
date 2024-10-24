@@ -9,7 +9,9 @@
 #define SRC_STORAGE_FORMAT_FORMAT_H_
 
 #include "../../lib/base/base.h"
+#include "../../lib/base/optional.h"
 #include "../../lib/image/color.h"
+#include "../../lib/os/file.h"
 
 class Data;
 class color;
@@ -18,7 +20,7 @@ class Session;
 
 class FormatError : public Exception {
 public:
-	FormatError(const string &message);
+	explicit FormatError(const string &message);
 };
 
 class FormatUnhandledError : public FormatError {
@@ -135,5 +137,14 @@ public:
 		_save(filename, reinterpret_cast<T*>(data));
 	}
 };
+
+struct LegacyFile {
+	int ffv;
+	bool binary;
+	Path filename;
+	os::fs::FileStream* f;
+};
+
+base::optional<LegacyFile> file_get_legacy_header(const Path& filename);
 
 #endif /* SRC_STORAGE_FORMAT_FORMAT_H_ */

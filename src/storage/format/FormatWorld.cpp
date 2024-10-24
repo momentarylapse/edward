@@ -88,10 +88,8 @@ Array<WorldScriptVariable> str2vars(const string& s) {
 void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	data->reset();
 
-	string x = os::fs::read_text(filename);
-	msg_write(x.head(10));
-	if (x[0] == 't')
-		_load_old(filename, data, deep);
+	if (auto lf = file_get_legacy_header(filename))
+		_load_old(*lf, data, deep);
 	else
 		_load_xml(filename, data, deep);
 

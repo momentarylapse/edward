@@ -13,12 +13,12 @@
 
 class FormatWorld: public TypedFormat<DataWorld> {
 public:
-	FormatWorld(Session *s);
+	explicit FormatWorld(Session *s);
 
 	void _load(const Path &filename, DataWorld *data, bool deep) override;
 	void _save(const Path &filename, DataWorld *data) override;
 
-	void _load_old(const Path &filename, DataWorld *data, bool deep);
+	void _load_old(LegacyFile& lf, DataWorld *data, bool deep);
 	void _load_xml(const Path &filename, DataWorld *data, bool deep);
 };
 

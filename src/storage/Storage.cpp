@@ -82,7 +82,7 @@ bool Storage::load(const Path &_filename, Data *data, bool deep) {
 				continue;
 			if (f->extension != ext)
 				continue;
-			if ((int)f->flags & (int)Format::Flag::READ == 0)
+			if (((int)f->flags & (int)Format::Flag::READ) == 0)
 				continue;
 
 			guess_root_directory(filename);
@@ -114,7 +114,7 @@ bool Storage::save(const Path &_filename, Data *data) {
 				continue;
 			if (f->extension != ext)
 				continue;
-			if ((int)f->flags & (int)Format::Flag::READ == 0)
+			if (((int)f->flags & (int)Format::Flag::READ) == 0)
 				continue;
 
 			f->save(filename, data);

@@ -53,12 +53,6 @@ vec3 get_normal_by_index(int index);
 
 
 
-char read_first_char(const Path &filename) {
-	auto f = os::fs::open(filename, "rb");
-	return f->read(1)[0];
-}
-
-
 base::set<int> get_all_poly_vert(DataModel *m) {
 	base::set<int> all_vert;
 	for (auto &p: m->phys_mesh->polygon)
@@ -959,11 +953,14 @@ public:
 
 void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
-	char c = read_first_char(filename);
+	msg_error("LOAD MODEL " + str(filename));
+
+	auto lf = file_get_legacy_header(filename);
+
 	data->file_time = os::fs::mtime(filename).time;
 
-	if (c == 'b' or c == 't') {
-		_load_old(filename, data, deep);
+	if (lf) {
+		_load_old(*lf, data, deep);
 	} else {
 		ModelParser p(session);
 		data->material.clear();

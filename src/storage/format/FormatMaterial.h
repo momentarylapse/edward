@@ -12,8 +12,6 @@
 #include "Format.h"
 #include "../../data/material/DataMaterial.h"
 
-struct LegacyFile;
-
 class FormatMaterial: public TypedFormat<DataMaterial> {
 public:
 	explicit FormatMaterial(Session *s);

@@ -44,31 +44,6 @@ Array<Path> str_arr_to_paths(const Array<string> &s) {
 	return r;
 }
 
-struct LegacyFile {
-	int ffv;
-	bool binary;
-	os::fs::FileStream* f;
-};
-
-base::optional<LegacyFile> file_get_legacy_header(const Path& filename) {
-	LegacyFile lf{};
-	lf.f = os::fs::open(filename, "rt");
-	auto c = lf.f->read_char();
-	if (c == 't') {
-		lf.binary = false;
-		lf.ffv = lf.f->read_int();
-	} else if (c != 'b') {
-		lf.binary = true;
-		delete lf.f;
-		lf.f = os::fs::open(filename, "rb");
-		lf.f->seek(1);
-		lf.ffv = lf.f->read_int();
-	} else {
-		delete lf.f;
-		return base::None;
-	}
-	return lf;
-}
 void FormatMaterial::load_current(const Path &filename, DataMaterial *data) {
 
 	Configuration c;

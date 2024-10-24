@@ -97,33 +97,28 @@ void guess_smooth_groups(DataModel *m) {
 
 Stream *load_file_x(const Path &filename, int &version);
 
-void FormatModel::_load_old(const Path &filename, DataModel *data, bool deep) {
+void FormatModel::_load_old(LegacyFile& lf, DataModel *data, bool deep) {
 	// old format
 
-	int ffv;
-	auto f = load_file_x(filename, ffv);
+	if (lf.ffv == 10) {
+		_load_v10(lf, data, deep);
+	} else if (lf.ffv == 11) {
+		_load_v11(lf, data, deep);
 
-	if (ffv == 10) {
-		_load_v10(f, data, deep);
-	} else if (ffv == 11) {
-		_load_v11(f, data, deep);
-
-		if (os::fs::exists(filename.with(".edit"))) {
-			int ffv2;
-			auto ff = load_file_x(filename.with(".edit"), ffv2);
-			_load_v11_edit(ff, data, deep);
-			delete ff;
+		if (os::fs::exists(lf.filename.with(".edit"))) {
+			if (auto lfe = file_get_legacy_header(lf.filename.with(".edit")))
+				_load_v11_edit(*lfe, data, deep);
 		}
 	} else {
-		throw FormatError(format(_("File %s has a wrong (old) file format: %d (expected: %d - %d)!"), filename, ffv, 10, 11));
+		throw FormatError(format(_("File %s has a wrong (old) file format: %d (expected: %d - %d)!"), lf.filename, lf.ffv, 10, 11));
 	}
 
-	delete f;
+	delete lf.f;
 }
 
 
-template<class F>
-void FormatModel::_load_v10(F *f, DataModel *data, bool deep) {
+void FormatModel::_load_v10(LegacyFile& lf, DataModel *data, bool deep) {
+	auto f = lf.f;
 
 	Array<vec3> skin_vert;
 
@@ -398,8 +393,8 @@ void FormatModel::_load_v10(F *f, DataModel *data, bool deep) {
 }
 
 
-template<class F>
-void FormatModel::_load_v11(F *f, DataModel *data, bool deep) {
+void FormatModel::_load_v11(LegacyFile& lf, DataModel *data, bool deep) {
+	auto f = lf.f;
 
 
 	Array<vec3> skin_vert;
@@ -746,13 +741,13 @@ void FormatModel::_load_v11(F *f, DataModel *data, bool deep) {
 	for (int i=0;i<data->meta_data.script_var.num;i++)
 		data->meta_data.script_var[i] = f->read_float();
 
-	_load_v11_edit(f, data, deep);
+	_load_v11_edit(lf, data, deep);
 
 	guess_smooth_groups(data);
 }
 
-template<class F>
-void FormatModel::_load_v11_edit(F *f, DataModel *data, bool deep) {
+void FormatModel::_load_v11_edit(LegacyFile& lf, DataModel *data, bool deep) {
+	auto f = lf.f;
 
 // optional data / additional data for editing
 	while (true) {
