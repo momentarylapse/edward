@@ -940,7 +940,7 @@ public:
 
 class ModelParser : public ChunkedFileParser {
 public:
-	ModelParser(Session *s) : ChunkedFileParser(8) {
+	explicit ModelParser(Session *s) : ChunkedFileParser(8) {
 		session = s;
 		_model_parser_tria_mesh_count = 0;
 		set_base(new ChunkModel);

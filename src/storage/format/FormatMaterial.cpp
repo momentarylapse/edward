@@ -11,6 +11,7 @@
 #include "../../lib/hui/language.h"
 #include "../../lib/nix/nix.h"
 #include "../../lib/os/config.h"
+#include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
 
@@ -43,91 +44,104 @@ Array<Path> str_arr_to_paths(const Array<string> &s) {
 	return r;
 }
 
-void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) {
-
+struct LegacyFile {
 	int ffv;
-	data->reset();
+	bool binary;
+	os::fs::FileStream* f;
+};
 
-	Stream *f = nullptr;
+base::optional<LegacyFile> file_get_legacy_header(const Path& filename) {
+	LegacyFile lf{};
+	lf.f = os::fs::open(filename, "rt");
+	auto c = lf.f->read_char();
+	if (c == 't') {
+		lf.binary = false;
+		lf.ffv = lf.f->read_int();
+	} else if (c != 'b') {
+		lf.binary = true;
+		delete lf.f;
+		lf.f = os::fs::open(filename, "rb");
+		lf.f->seek(1);
+		lf.ffv = lf.f->read_int();
+	} else {
+		delete lf.f;
+		return base::None;
+	}
+	return lf;
+}
+void FormatMaterial::load_current(const Path &filename, DataMaterial *data) {
 
-	/*File *f = FileOpenText(filename);
-	data->file_time = f->mtime().time;
+	Configuration c;
+	c.load(filename);
+	data->appearance.albedo = any2color(c.get("color.albedo", Any()));
+	data->appearance.roughness = c.get_float("color.roughness", 0.5f);
+	data->appearance.metal = c.get_float("color.metal", 0.1f);
+	data->appearance.emissive = any2color(c.get("color.emission", Any()));
 
-	try {
-		ffv=f->ReadFileFormatVersion();
-	} catch (...) {*/
-		ffv = -1;
-		Configuration c;
-		c.load(filename);
-		data->appearance.albedo = any2color(c.get("color.albedo", Any()));
-		data->appearance.roughness = c.get_float("color.roughness", 0.5f);
-		data->appearance.metal = c.get_float("color.metal", 0.1f);
-		data->appearance.emissive = any2color(c.get("color.emission", Any()));
+	if (c.has("color.ambient")) {
+		data->appearance.roughness = c.get_float("color.ambient", 0.5f);
+		data->appearance.metal = c.get_float("color.specular", 0.5f);
+	} else if (c.has("color.reflectivity")) {
+		data->appearance.metal = c.get_float("color.reflectivity", 0.1f);
+	}
 
-		if (c.has("color.ambient")) {
-			data->appearance.roughness = c.get_float("color.ambient", 0.5f);
-			data->appearance.metal = c.get_float("color.specular", 0.5f);
-		} else if (c.has("color.reflectivity")) {
-			data->appearance.metal = c.get_float("color.reflectivity", 0.1f);
+	data->appearance.texture_files = str_arr_to_paths(c.get_str_array("textures"));
+
+	auto try_read_pass = [this, &c, data] (int index, const string &key) {
+		if (!c.has(key + ".mode"))
+			return;
+		if (index >= data->appearance.passes.num)
+			data->appearance.passes.resize(index + 1);
+		auto &p = data->appearance.passes[index];
+		if (!p.shader.graph)
+			p.shader.graph = new ShaderGraph(session);
+		string m = c.get_str(key + ".mode", "mode");
+		if (m == "solid" or m == "none") {
+			p.mode = TransparencyMode::NONE;
+		} else if (m == "factor") {
+			p.mode = TransparencyMode::FACTOR;
+			p.factor = c.get_float(key + ".factor");
+			p.z_buffer = false;
+		} else if (m == "function") {
+			p.mode = TransparencyMode::FUNCTIONS;
+			p.source = parse_alpha(c.get_str(key + ".source", 0));
+			p.destination = parse_alpha(c.get_str(key + ".dest", 0));
+			p.z_buffer = false;
+		} else if (m == "key-hard") {
+			p.mode = TransparencyMode::COLOR_KEY_HARD;
+		} else if (m == "key-smooth") {
+			p.mode = TransparencyMode::COLOR_KEY_SMOOTH;
+		} else if (m == "mix") {
+			p.mode = TransparencyMode::MIX;
+		} else if (m != "") {
+			msg_error("unknown transparency mode: " + m);
 		}
+		p.shader.file = c.get_str(key + ".shader", "");
+		m = c.get_str(key + ".cull", "");
+		if (m == "none")
+			p.culling = CullMode::NONE;
+		else if (m == "front" or m == "cw")
+			p.culling = CullMode::FRONT;
+	};
 
-		data->appearance.texture_files = str_arr_to_paths(c.get_str_array("textures"));
+	// deprecated
+	if (c.has("shader"))
+		data->appearance.passes[0].shader.file = c.get_str("shader", "");
+	try_read_pass(0, "transparency");
 
-		auto try_read_pass = [this, &c, data] (int index, const string &key) {
-			if (!c.has(key + ".mode"))
-				return;
-			if (index >= data->appearance.passes.num)
-				data->appearance.passes.resize(index + 1);
-			auto &p = data->appearance.passes[index];
-			if (!p.shader.graph)
-				p.shader.graph = new ShaderGraph(session);
-			string m = c.get_str(key + ".mode", "mode");
-			if (m == "solid" or m == "none") {
-				p.mode = TransparencyMode::NONE;
-			} else if (m == "factor") {
-				p.mode = TransparencyMode::FACTOR;
-				p.factor = c.get_float(key + ".factor");
-				p.z_buffer = false;
-			} else if (m == "function") {
-				p.mode = TransparencyMode::FUNCTIONS;
-				p.source = parse_alpha(c.get_str(key + ".source", 0));
-				p.destination = parse_alpha(c.get_str(key + ".dest", 0));
-				p.z_buffer = false;
-			} else if (m == "key-hard") {
-				p.mode = TransparencyMode::COLOR_KEY_HARD;
-			} else if (m == "key-smooth") {
-				p.mode = TransparencyMode::COLOR_KEY_SMOOTH;
-			} else if (m == "mix") {
-				p.mode = TransparencyMode::MIX;
-			} else if (m != "") {
-				msg_error("unknown transparency mode: " + m);
-			}
-			p.shader.file = c.get_str(key + ".shader", "");
-			m = c.get_str(key + ".cull", "");
-			if (m == "none")
-				p.culling = CullMode::NONE;
-			else if (m == "front" or m == "cw")
-				p.culling = CullMode::FRONT;
-		};
+	for (int i=0; i<8; i++)
+		try_read_pass(i, format("pass%d", i));
 
-		// deprecated
-		if (c.has("shader"))
-			data->appearance.passes[0].shader.file = c.get_str("shader", "");
-		try_read_pass(0, "transparency");
+	data->physics.friction_static = c.get_float("friction.static", 0.5f);
+	data->physics.friction_sliding = c.get_float("friction.slide", 0.5f);
+	data->physics.friction_rolling = c.get_float("friction.roll", 0.5f);
+	data->physics.friction_jump = c.get_float("friction.jump", 0.5f);
+}
 
-		for (int i=0; i<8; i++)
-			try_read_pass(i, format("pass%d", i));
-
-		data->physics.friction_static = c.get_float("friction.static", 0.5f);
-		data->physics.friction_sliding = c.get_float("friction.slide", 0.5f);
-		data->physics.friction_rolling = c.get_float("friction.roll", 0.5f);
-		data->physics.friction_jump = c.get_float("friction.jump", 0.5f);
-	//}
-
-	/*if (ffv<0){
-		throw FormatError(_("File format unreadable!"));
-	}else*/ if ((ffv == 3) or (ffv == 4)){
-		if (ffv >= 4){
+void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
+	auto f = lf.f;
+	if ((lf.ffv == 3) or (lf.ffv == 4)) {
+		if (lf.ffv >= 4) {
 			f->read_comment();
 			int n = f->read_int();
 			for (int i=0;i<n;i++)
@@ -178,7 +192,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		data->physics.vmin_sliding = (float)f->read_int() * 0.001f;
 
 		//AlphaZBuffer=(TransparencyMode!=TransparencyMode::FUNCTIONS)and(TransparencyMode!=TransparencyMode::FACTOR);
-	}else if (ffv==2){
+	}else if (lf.ffv==2){
 		// Colors
 		f->read_comment();
 		color cc;
@@ -219,7 +233,7 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		data->physics.vmin_sliding = (float)f->read_int() * 0.001f;
 
 		data->appearance.passes[0].z_buffer=(data->appearance.passes[0].mode != TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != TransparencyMode::FACTOR);
-	}else if (ffv==1){
+	}else if (lf.ffv==1){
 		// Colors
 		f->read_comment();
 		color cc;
@@ -249,12 +263,32 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 		f->read_comment();
 		Path sf = f->read_str();
 		if (!sf.is_empty())
-			data->appearance.passes[0].shader.file = sf.with(".fx.glsl");
+		data->appearance.passes[0].shader.file = sf.with(".fx.glsl");
 
 		data->appearance.passes[0].z_buffer = (data->appearance.passes[0].mode != TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != TransparencyMode::FACTOR);
 	}else{
 		//throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename, ffv, 1, 4));
 	}
+}
+
+void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) {
+
+	int ffv;
+	data->reset();
+
+	Stream *f = nullptr;
+
+
+	auto lf = file_get_legacy_header(filename);
+	//data->file_time = f->mtime().time;
+
+	if (lf)
+		load_legacy(*lf, data);
+	else
+		load_current(filename, data);
+
+	/*if (ffv<0){
+		throw FormatError(_("File format unreadable!"));*/
 
 	if (deep) {
 		for (auto &p: data->appearance.passes)

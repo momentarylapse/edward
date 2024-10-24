@@ -12,9 +12,14 @@
 #include "Format.h"
 #include "../../data/material/DataMaterial.h"
 
+struct LegacyFile;
+
 class FormatMaterial: public TypedFormat<DataMaterial> {
 public:
-	FormatMaterial(Session *s);
+	explicit FormatMaterial(Session *s);
+
+	void load_current(const Path &filename, DataMaterial *data);
+	void load_legacy(LegacyFile& lf, DataMaterial *data);
 
 	void _load(const Path &filename, DataMaterial *data, bool deep) override;
 	void _save(const Path &filename, DataMaterial *data) override;
