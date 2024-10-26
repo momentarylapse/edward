@@ -6,12 +6,13 @@
  */
 
 #include "Renderer.h"
+
+#include <lib/vulkan/FrameBuffer.h>
+
 #include "../y/EngineData.h"
 #include "../lib/math/rect.h"
 #include "../helper/PerformanceMonitor.h"
-#include "world/WorldRenderer.h"
-
-#include "../lib/os/msg.h"
+#include "../graphics-impl.h"
 
 
 const RenderParams RenderParams::WHATEVER = {};
@@ -19,16 +20,17 @@ const RenderParams RenderParams::WHATEVER = {};
 RenderParams RenderParams::with_target(FrameBuffer *fb) const {
 	RenderParams r = *this;
 	r.frame_buffer = fb;
+	r.area = fb->area();
 	r.target_is_window = false;
 	return r;
 }
 
 RenderParams RenderParams::into_window(FrameBuffer *frame_buffer, float aspect_ratio) {
-	return {aspect_ratio, true, frame_buffer};
+	return {aspect_ratio, true, frame_buffer, frame_buffer->area()};
 
 }
 RenderParams RenderParams::into_texture(FrameBuffer *frame_buffer, float aspect_ratio) {
-	return {aspect_ratio, false, frame_buffer};
+	return {aspect_ratio, false, frame_buffer, frame_buffer->area()};
 }
 
 

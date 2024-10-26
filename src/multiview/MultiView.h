@@ -20,6 +20,7 @@
 class Data;
 class Session;
 class DrawingHelper;
+class Renderer;
 
 
 namespace hui {
@@ -175,8 +176,8 @@ public:
 	Selection hover;
 
 	void force_redraw();
+	Renderer* renderer;
 
-	void on_draw();
 	void draw_mouse_pos();
 	void toggle_whole_window();
 	void toggle_grid();

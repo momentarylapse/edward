@@ -54,7 +54,7 @@
 
 
 string vb_format(int num_tex) {
-	string f = "3f,3fn";
+	string f = "3f,3f";
 	for (int i=0; i<num_tex; i++)
 		f += ",2f";
 	return f;

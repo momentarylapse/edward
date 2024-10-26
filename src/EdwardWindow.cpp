@@ -7,6 +7,7 @@
 
 #include "EdwardWindow.h"
 
+#include <renderer/base.h>
 #include <renderer/Renderer.h>
 
 #include "Edward.h"
@@ -33,6 +34,7 @@
 #include "lib/nix/nix.h"
 #include "lib/hui/config.h"
 #include "lib/image/image.h"
+#include "lib/os/msg.h"
 
 #if HAS_LIB_GL
 #include <y/renderer/Renderer.h>
@@ -53,7 +55,6 @@ rect dynamicly_scaled_area(FrameBuffer*) { return {}; }
 
 #if HAS_LIB_GL
 class HuiWindowRenderer : public Renderer {
-	int width, height;
 	Context* ctx;
 
 public:
@@ -63,14 +64,20 @@ public:
 
 	void render_frame() {
 		auto e = hui::get_event();
-		width = e->column;
-		height = e->row;
+		int width = e->column;
+		int height = e->row;
 
-		const auto params = RenderParams::into_window(ctx->default_framebuffer, (float)width/(float)height);
+		auto params = RenderParams::into_window(ctx->default_framebuffer, (float)width/(float)height);
+		params.area = {0,(float)width, 0, (float)height};
 
+		// save the default frame buffer etc!
+		nix::start_frame_hui(ctx);
 		prepare(params);
 
-		nix::start_frame_hui(ctx);
+		//nix::start_frame_hui(ctx);
+		nix::bind_frame_buffer(params.frame_buffer);
+		nix::set_viewport(params.area);
+
 		nix::set_viewport(rect(0, width, 0, height));
 
 		draw(params);
@@ -83,81 +90,95 @@ public:
 #if HAS_LIB_VULKAN
 vulkan::Instance* __instance;
 
+class TextureRendererVulkan : public Renderer {
+public:
+	Device* device;
+	RenderPass* render_pass;
+	FrameBuffer* frame_buffer;
+	shared<Texture> texture;
+	shared<Texture> depth_buffer;
+	CommandBuffer* command_buffer;
+	Fence* fence;
+	TextureRendererVulkan(Device* d, int width, int height) : Renderer("xheadless") {
+		device = d;
+		texture = new Texture(width, height, "bgra:i8");
+		depth_buffer = new DepthBuffer(width, height, "d:f32", false);
+		render_pass = new RenderPass({texture.get(), depth_buffer.get()});
+		frame_buffer = new FrameBuffer(render_pass, {texture, depth_buffer});
+		command_buffer = new CommandBuffer(device->command_pool);
+		fence = new Fence(device);
+	}
+	RenderParams create_params(const rect& area) const {
+		auto p = RenderParams::into_texture(frame_buffer, area.width() / area.height());
+		p.area = area;
+		p.command_buffer = command_buffer;
+		p.render_pass = render_pass;
+		return p;
+	}
+	bool start_frame(const rect& area) {
+		command_buffer->begin();
+		command_buffer->begin_render_pass(render_pass, frame_buffer);
+		command_buffer->set_viewport(area);
+		return true;
+	}
+	void end_frame() {
+		command_buffer->end_render_pass();
+		command_buffer->end();
+		device->graphics_queue.submit(command_buffer, {}, {}, fence);
+		fence->wait();
+		device->wait_idle();
+	}
+	void render_frame(const rect& area, float aspect_ratio) {
+		const auto p = create_params(area);
+		prepare(p);
+		if (start_frame(area)) {
+			command_buffer->clear(area, {Blue}, 1);
+			command_buffer->clear({100,400,100,400}, {Red}, 1);
+			draw(p);
+			end_frame();
+		}
+	}
+};
+
 
 class HuiWindowRenderer : public Renderer {
 public:
 	static constexpr int MAX_WIDTH = 1024*3;
 	static constexpr int MAX_HEIGHT = 2048;
 	explicit HuiWindowRenderer(vulkan::Instance* instance) : Renderer("hui") {
-		auto surface = instance->create_headless_surface();
-		device = vulkan::Device::create_simple(instance, surface, {"graphics", "swapchain", "present", "anisotropy"});
+		device = vulkan::Device::create_simple(instance, nullptr, {"graphics", "anisotropy"});
 
 		image.create(MAX_WIDTH, MAX_HEIGHT, Red);
-		headless_renderer = HeadlessSurfaceRendererVulkan::create(device, MAX_WIDTH, MAX_HEIGHT);
+		texture_renderer = new TextureRendererVulkan(device, MAX_WIDTH, MAX_HEIGHT);
 	}
-	bool start_frame(Painter* painter) {
-		if (!headless_renderer->start_frame())
-			return false;
+	void prepare(const RenderParams& p) override {
+		texture_renderer->render_frame(p.area, p.desired_aspect_ratio);
+	}
 
+	void render_frame(Painter* p) {
 		int scale = hui::get_event()->row_target;
-		int w = painter->width * scale;
-		int h = painter->height * scale;
+		int w = p->width * scale;
+		int h = p->height * scale;
 
-		auto params = headless_renderer->create_params(1.0f);
+		const auto params = create_params(w, h);
+		prepare(params);
 
-		cb = params.command_buffer;
-		cb->begin();
+		//headless_renderer->swap_images[headless_renderer->image_index]->read(&image.data[0]);
+		texture_renderer->texture->read(&image.data[0]);
+		//image.mode = Image::Mode::BGRA;
+		//image.set_mode(Image::Mode::RGBA);
 
-	//	for (auto c: children)
-	//		c->prepare(params);
-
-		cb->begin_render_pass(params.render_pass, params.frame_buffer);
-		cb->set_viewport(rect(0, w, 0, h));
-		cb->clear({Blue}, 1);
-
-		return true;
-	}
-	void end_frame(Painter* p) {
-		cb->end_render_pass();
-
-		headless_renderer->end_frame();
-
-		headless_renderer->swap_images[headless_renderer->image_index]->read(&image.data[0]);
-		//	image.mode = Image::Mode::BGRA;
-		//	image.set_mode(Image::Mode::RGBA);
-
-
-		float scale = (float)hui::get_event()->row_target;
-		float t[4] = {1 / scale, 0, 0, 1 / scale};
+		float t[4] = {1 / (float)scale, 0, 0, 1 / (float)scale};
 		p->set_transform(t, {0,0});
 		p->draw_image({0, 0}, &image);
 	}
 
-	/*void render(Painter* p) {
-		int w = p->width;
-		int h = p->height;
-		//msg_write(format("%d  %d    %d", p->width, p->height, ));
-		if (start_frame(p)) {
-			cb->bind_pipeline(pipeline);
-			cb->bind_descriptor_set(0, dset);
-			PushConstants pc;
-			pc.matrix = mat4::perspective(1.4f, (float)w / (float)h, 0.1f, 100, false) * mat4::translation({0,0,2}) * mat4::rotation(ang);
-			pc.col = White;
-			cb->push_constant(0, sizeof(pc), &pc);
-			cb->draw(vb);
-			end_frame(p);
-		}
-	}*/
-
-	void prepare(const RenderParams& params) override {}
-	void draw(const RenderParams& params) override {}
-
-	RenderParams create_params(float aspect_ratio) {
-		return headless_renderer->create_params(aspect_ratio);
+	RenderParams create_params(int w, int h) {
+		return texture_renderer->create_params({0, (float)w, 0, (float)h});
 	}
 
 	vulkan::Device* device;
-	HeadlessSurfaceRendererVulkan* headless_renderer = nullptr;
+	TextureRendererVulkan* texture_renderer = nullptr;
 	CommandBuffer* cb = nullptr;
 	Image image;
 };
@@ -169,10 +190,14 @@ public:
 	explicit EdwardRenderer(EdwardWindow* _window) : Renderer("edward") {
 		window = _window;
 	}
-	void draw(const RenderParams& params) override {
-#if HAS_LIB_GL
+	void prepare(const RenderParams& params) override {
 		auto session = window->session;
-		auto gl = session->ctx;
+		if (session->cur_mode->multi_view)
+			session->cur_mode->multi_view->renderer->prepare(params);
+	}
+	void draw(const RenderParams& params) override {
+		auto session = window->session;
+		auto ctx = session->ctx;
 
 #if 0
 
@@ -198,9 +223,10 @@ public:
 
 		//nix::set_srgb(true);
 		if (session->cur_mode->multi_view)
-			session->cur_mode->multi_view->on_draw();
+			session->cur_mode->multi_view->renderer->draw(params);
 		session->cur_mode->on_draw();
 
+#if HAS_LIB_GL
 		// messages
 		nix::set_shader(session->ctx->default_2d.get());
 		foreachi(string &m, session->message_str, i)
@@ -317,7 +343,7 @@ EdwardWindow::EdwardWindow(Session *_session) :
 
 
 #if HAS_LIB_VULKAN
-	__instance = vulkan::init({"api=1.3", "headless", "verbosity=1", "validation"});
+	__instance = vulkan::init({"api=1.3", "verbosity=1", "validation"});
 
 	renderer = new HuiWindowRenderer(__instance);
 	renderer->add_child(new EdwardRenderer(this));
@@ -325,8 +351,13 @@ EdwardWindow::EdwardWindow(Session *_session) :
 	session->create_initial_resources(ctx);
 #endif
 
+
+#if HAS_LIB_VULKAN
+	event_xp("nix-area", hui::EventID::DRAW, [this] (Painter* p) { on_draw(p); });
+#else
 	event_x("nix-area", hui::EventID::DRAW_GL, [this] { on_draw_gl(); });
 	event_x("nix-area", hui::EventID::REALIZE, [this] { on_realize_gl(); });
+#endif
 	event_x("nix-area", hui::EventID::GESTURE_ZOOM_BEGIN, [this] { on_gesture_zoom_begin(); });
 	event_x("nix-area", hui::EventID::GESTURE_ZOOM, [this] { on_gesture_zoom(); });
 
@@ -534,6 +565,13 @@ void EdwardWindow::on_draw_gl() {
 #if HAS_LIB_GL
 	if (renderer)
 		renderer->render_frame();
+#endif
+}
+
+void EdwardWindow::on_draw(Painter* painter) {
+#if HAS_LIB_VULKAN
+	if (renderer)
+		renderer->render_frame(painter);
 #endif
 }
 

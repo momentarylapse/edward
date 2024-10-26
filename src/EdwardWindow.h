@@ -39,6 +39,7 @@ public:
 
 	void on_draw_gl();
 	void on_realize_gl();
+	void on_draw(Painter* p) override;
 	void on_key_down(int k) override;
 	void on_key_up(int k) override;
 	void on_mouse_move(const vec2& m) override;

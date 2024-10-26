@@ -58,7 +58,7 @@ ActionController::ActionController(MultiView *view) {
 	geo_show.add(new GeometryCylinder( vec3::EZ*r0,  vec3::EZ*r1, r, 1, 8));
 
 	for (auto g: geo_show){
-		auto *vb = new VertexBuffer("3f,3fn,2f");
+		auto *vb = new VertexBuffer("3f,3f,2f");
 		g->build(vb);
 		buf.add(vb);
 	}

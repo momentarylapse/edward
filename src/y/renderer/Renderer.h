@@ -12,8 +12,8 @@ class rect;
 
 #include "../graphics-fwd.h"
 #include "../lib/base/pointer.h"
+#include "../lib/math/rect.h"
 
-class rect;
 class color;
 class ResourceManager;
 
@@ -24,6 +24,7 @@ struct RenderParams {
 	float desired_aspect_ratio;
 	bool target_is_window;
 	FrameBuffer *frame_buffer;
+	rect area;
 #ifdef USING_VULKAN
 	RenderPass *render_pass;
 	CommandBuffer *command_buffer;

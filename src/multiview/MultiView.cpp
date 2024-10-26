@@ -19,7 +19,9 @@
 #include "../lib/math/plane.h"
 #include "../lib/hui/config.h"
 #include <y/helper/ResourceManager.h>
+#include <y/renderer/Renderer.h>
 
+#include "../lib/os/msg.h"
 
 os::Timer timer;
 
@@ -44,6 +46,154 @@ vec3 Camera::get_pos(bool allow_radius) const {
 		p -= radius * (ang * vec3::EZ);
 	return p;
 }
+
+// FIXME only update on signal
+void check_undef_view_stages(MultiView *mv) {
+	for (auto data: mv->data) {
+		char *p = (char*)data.data->data;
+		for (int i=0; i<data.data->num; i++) {
+			if (((SingleData*)p)->view_stage < 0)
+				((SingleData*)p)->view_stage = mv->view_stage;
+			p += data.data->element_size;
+		}
+	}
+}
+
+void ensure_fb_size(MultiView *mv, const rect &r) {
+	// we should not re-create when shrinking... but then we would need to
+	// think harder about some transformations etc...
+	if (mv->frame_buffer)
+		if (mv->frame_buffer->width == r.width() and mv->frame_buffer->height == r.height())
+			return;
+#if HAS_LIB_GL
+	auto zbuffer = new DepthBuffer(r.width(), r.height(), "d24s8");
+	auto tex = new Texture(r.width(), r.height(), "rgba:f32");
+	mv->frame_buffer = new FrameBuffer({tex, zbuffer});
+#endif
+}
+
+class Renderer : public ::Renderer {
+public:
+	MultiView* mv;
+	explicit Renderer(MultiView* _mv) : ::Renderer("multiview") {
+		mv = _mv;
+	}
+	void prepare(const RenderParams& p) override {
+		mv->screen_scale = hui::get_event()->row_target; // EVIL!
+		timer.reset();
+
+		auto ctx = mv->ctx;
+		auto drawing_helper = mv->drawing_helper;
+		auto& area = mv->area;
+
+		check_undef_view_stages(mv);
+
+		using Selection = MultiView::Selection;
+		area = p.area;
+		ensure_fb_size(mv, area);
+
+#if HAS_LIB_GL
+
+		nix::bind_frame_buffer(mv->frame_buffer.get());
+
+		nix::clear_z();
+		nix::set_projection_ortho_pixel();
+		nix::set_z(true,true);
+		mv->drawing_helper->set_color(scheme.TEXT);
+		mv->drawing_helper->set_font(scheme.FONT_NAME, scheme.FONT_SIZE);
+
+
+		if (!mv->mode3d) {
+			mv->visible_windows = {mv->all_windows[0]};
+			mv->all_windows[0]->dest = mv->area;
+			mv->all_windows[0]->draw();
+		} else if (mv->whole_window) {
+			for (auto w: mv->all_windows)
+				w->dest = rect(0,0,0,0);
+			mv->visible_windows = {mv->active_win};
+			mv->active_win->dest = mv->area;
+			mv->active_win->draw();
+		} else {
+			float xm = area.x1 + area.width() * mv->window_partition_x;
+			float ym = area.y1 + area.height() * mv->window_partition_y;
+			float d = scheme.WINDOW_DIVIDER_THICKNESS / 2;
+			mv->visible_windows = {mv->all_windows[0], mv->all_windows[1], mv->all_windows[2], mv->all_windows[3]};
+
+
+			// top left
+			mv->all_windows[0]->dest = rect(area.x1, xm-d+1, area.y1, ym-d+1);
+			mv->all_windows[0]->draw();
+
+			// top right
+			mv->all_windows[1]->dest = rect(xm+d-1, area.x2, area.y1, ym-d+1);
+			mv->all_windows[1]->draw();
+
+			// bottom left
+			mv->all_windows[2]->dest = rect(area.x1, xm-d+1, ym+d-1, area.y2);
+			mv->all_windows[2]->draw();
+
+			// bottom right
+			mv->all_windows[3]->dest = rect(xm+d-1, area.x2, ym+d-1, area.y2);
+			mv->all_windows[3]->draw();
+
+			nix::set_scissor(nix::target_rect);
+
+			nix::set_shader(ctx->default_2d.get());
+			nix::bind_texture(0, nullptr);
+
+			color c2 = scheme.hoverify(scheme.WINDOW_DIVIDER);
+			drawing_helper->set_color((mv->hover.meta == Selection::HOVER_WINDOW_DIVIDER_Y or mv->hover.meta == Selection::HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
+			drawing_helper->draw_rect(area.x1, area.x2, ym-d, ym+d, 0);
+			drawing_helper->set_color((mv->hover.meta == Selection::HOVER_WINDOW_DIVIDER_X or mv->hover.meta == Selection::HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
+			drawing_helper->draw_rect(xm-d, xm+d, area.y1, area.y2, 0);
+		}
+
+		nix::set_projection_ortho_pixel();
+		if (mv->sel_rect.active)
+			mv->sel_rect.draw(drawing_helper, mv->m);
+
+		mv->cam_con->draw();
+
+		drawing_helper->set_color(scheme.TEXT);
+		nix::set_shader(ctx->default_2d.get());
+
+		//if (session->win->input.inside_smart)
+		// FIXME hui/gtk4 events!
+			mv->draw_mouse_pos();
+
+		mv->action_con->draw_post();
+
+		mv->draw_mouse_pos();
+#endif
+	}
+	void draw(const RenderParams& p) override {
+
+		mv->screen_scale = hui::get_event()->row_target; // EVIL!
+		timer.reset();
+
+		auto ctx = mv->ctx;
+		auto drawing_helper = mv->drawing_helper;
+		auto& area = mv->area;
+
+		check_undef_view_stages(mv);
+
+		using Selection = MultiView::Selection;
+
+		area = p.area;
+
+#if HAS_LIB_GL
+		nix::set_shader(mv->shader_out.get());
+		//nix::vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
+		ctx->vb_temp->create_quad(rect::ID_SYM, rect(0, mv->area.width() / mv->frame_buffer->width, 1 - mv->area.height() / mv->frame_buffer->height, 1));
+		nix::bind_texture(0, weak(mv->frame_buffer->color_attachments)[0]);
+		nix::set_z(false, false);
+		nix::set_cull(nix::CullMode::NONE);
+		nix::draw_triangles(mv->session->ctx->vb_temp);
+
+		//printf("%f\n", timer.get()*1000.0f);
+#endif
+	}
+};
 
 MultiView::MultiView(Session *_s, bool mode3d) {
 	session = _s;
@@ -114,7 +264,11 @@ MultiView::MultiView(Session *_s, bool mode3d) {
 	allow_select = true;
 	edit_coordinate_mode = CoordinateMode::GLOBAL;
 
+#if HAS_LIB_GL
 	shader_out = session->resource_manager->load_shader("multiview-out.shader");
+#endif
+
+	renderer = new Renderer(this);
 
 	out_camera_changed >> create_sink([this] { out_redraw(); });
 
@@ -634,122 +788,6 @@ void MultiView::draw_mouse_pos() {
 #endif
 }
 
-// FIXME only update on signal
-void check_undef_view_stages(MultiView *mv) {
-	for (auto data: mv->data) {
-		char *p = (char*)data.data->data;
-		for (int i=0; i<data.data->num; i++) {
-			if (((SingleData*)p)->view_stage < 0)
-				((SingleData*)p)->view_stage = mv->view_stage;
-			p += data.data->element_size;
-		}
-	}
-}
-
-void ensure_fb_size(MultiView *mv, const rect &r) {
-	// we should not re-create when shrinking... but then we would need to
-	// think harder about some transformations etc...
-	if (mv->frame_buffer)
-		if (mv->frame_buffer->width == r.width() and mv->frame_buffer->height == r.height())
-			return;
-#if HAS_LIB_GL
-	auto zbuffer = new DepthBuffer(r.width(), r.height(), "d24s8");
-	auto tex = new Texture(r.width(), r.height(), "rgba:f32");
-	mv->frame_buffer = new FrameBuffer({tex, zbuffer});
-#endif
-}
-
-void MultiView::on_draw() {
-	screen_scale = hui::get_event()->row_target; // EVIL!
-	timer.reset();
-
-	check_undef_view_stages(this);
-
-#if HAS_LIB_GL
-	area = nix::target_rect;
-	ensure_fb_size(this, area);
-
-	nix::bind_frame_buffer(frame_buffer.get());
-
-	nix::clear_z();
-	nix::set_projection_ortho_pixel();
-	nix::set_z(true,true);
-	drawing_helper->set_color(scheme.TEXT);
-	drawing_helper->set_font(scheme.FONT_NAME, scheme.FONT_SIZE);
-
-
-	if (!mode3d) {
-		visible_windows = {all_windows[0]};
-		all_windows[0]->dest = area;
-		all_windows[0]->draw();
-	} else if (whole_window) {
-		for (auto w: all_windows)
-			w->dest = rect(0,0,0,0);
-		visible_windows = {active_win};
-		active_win->dest = area;
-		active_win->draw();
-	} else {
-		float xm = area.x1 + area.width() * window_partition_x;
-		float ym = area.y1 + area.height() * window_partition_y;
-		float d = scheme.WINDOW_DIVIDER_THICKNESS / 2;
-		visible_windows = {all_windows[0], all_windows[1], all_windows[2], all_windows[3]};
-
-
-		// top left
-		all_windows[0]->dest = rect(area.x1, xm-d+1, area.y1, ym-d+1);
-		all_windows[0]->draw();
-
-		// top right
-		all_windows[1]->dest = rect(xm+d-1, area.x2, area.y1, ym-d+1);
-		all_windows[1]->draw();
-
-		// bottom left
-		all_windows[2]->dest = rect(area.x1, xm-d+1, ym+d-1, area.y2);
-		all_windows[2]->draw();
-
-		// bottom right
-		all_windows[3]->dest = rect(xm+d-1, area.x2, ym+d-1, area.y2);
-		all_windows[3]->draw();
-
-		nix::set_scissor(nix::target_rect);
-
-		nix::set_shader(ctx->default_2d.get());
-		nix::bind_texture(0, nullptr);
-
-		color c2 = scheme.hoverify(scheme.WINDOW_DIVIDER);
-		drawing_helper->set_color((hover.meta == Selection::HOVER_WINDOW_DIVIDER_Y or hover.meta == Selection::HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
-		drawing_helper->draw_rect(area.x1, area.x2, ym-d, ym+d, 0);
-		drawing_helper->set_color((hover.meta == Selection::HOVER_WINDOW_DIVIDER_X or hover.meta == Selection::HOVER_WINDOW_DIVIDER_CENTER) ? c2 : scheme.WINDOW_DIVIDER);
-		drawing_helper->draw_rect(xm-d, xm+d, area.y1, area.y2, 0);
-	}
-
-	nix::set_projection_ortho_pixel();
-	if (sel_rect.active)
-		sel_rect.draw(drawing_helper, m);
-
-	cam_con->draw();
-
-	drawing_helper->set_color(scheme.TEXT);
-	nix::set_shader(ctx->default_2d.get());
-
-	//if (session->win->input.inside_smart)
-	// FIXME hui/gtk4 events!
-		draw_mouse_pos();
-
-	action_con->draw_post();
-
-	nix::bind_frame_buffer(ctx->default_framebuffer);
-	nix::set_shader(shader_out.get());
-	//nix::vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
-	session->ctx->vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
-	nix::bind_texture(0, weak(frame_buffer->color_attachments)[0]);
-	nix::set_z(false, false);
-	nix::set_cull(nix::CullMode::NONE);
-	nix::draw_triangles(session->ctx->vb_temp);
-
-	//printf("%f\n", timer.get()*1000.0f);
-#endif
-}
 
 void MultiView::SelectionRect::start_later(const vec2 &m) {
 	pos0 = m;

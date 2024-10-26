@@ -48,8 +48,7 @@ ModeMaterial::ModeMaterial(Session *_s, MultiView::MultiView *mv) :
 	shape_smooth = hui::config.get_bool("MaterialShapeSmooth", true);
 }
 
-ModeMaterial::~ModeMaterial() {
-}
+ModeMaterial::~ModeMaterial() = default;
 
 void ModeMaterial::_new() {
 	data->reset();

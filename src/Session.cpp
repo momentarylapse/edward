@@ -140,7 +140,6 @@ void Session::create_initial_resources(Context *_ctx) {
 
 	mode_material = new ModeMaterial(this, multi_view_3d);
 
-
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
 	mworld->FFVBinaryMap = true;*/
 

@@ -196,7 +196,7 @@ void CommandBuffer::clear(const rect& area, const Array<color> &col, base::optio
 		return;
 	Array<VkClearAttachment> clear_attachments;
 	//Array<VkClearRect> clear_rects;
-	for (auto&& [i,c]: enumerate(col)) {
+	for (const auto& [i,c]: enumerate(col)) {
 		VkClearAttachment ca = {};
 		ca.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		ca.colorAttachment = i;

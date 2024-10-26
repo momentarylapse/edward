@@ -11,14 +11,12 @@
 #include "../lib/os/filesystem.h"
 #include "../EdwardWindow.h"
 #include "../Session.h"
-#if HAS_LIB_GL
 #include "../multiview/MultiView.h"
 #include "../multiview/ActionController.h"
 #include "../multiview/Window.h"
 #include "../mode/material/ModeMaterial.h"
 #include "../mode/model/ModeModel.h"
 #include "../mode/world/ModeWorld.h"
-#endif
 #include "../data/model/DataModel.h"
 #include "../data/model/ModelMesh.h"
 #include "../data/model/ModelPolygon.h"
@@ -46,8 +44,7 @@ PluginManager::PluginManager(const Path &dir) {
 	init_edward();
 }
 
-PluginManager::~PluginManager() {
-}
+PluginManager::~PluginManager() = default;
 
 void PluginManager::execute(Session *session, const Path &filename) {
 	//kaba::config.directory = "";
@@ -85,10 +82,8 @@ void PluginManager::link_plugins() {
 
 	ext->declare_class_element("Edward.cur_mode", &Session::cur_mode);
 
-#if HAS_LIB_GL
 	ext->declare_class_element("Mode.name", &ModeBase::name);
 	ext->declare_class_element("Mode.multi_view", &ModeBase::multi_view);
-#endif
 
 	ext->declare_class_size("Data", sizeof(Data));
 	ext->declare_class_element("Data.filename", &Data::filename);
@@ -106,7 +101,6 @@ void PluginManager::link_plugins() {
 	ext->declare_class_element("MultiView.SingleData.m_old", &MultiView::SingleData::m_old);
 	ext->declare_class_element("MultiView.SingleData.is_special", &MultiView::SingleData::is_special);
 
-#if HAS_LIB_GL
 	ext->declare_class_element("MultiView.action_con", &MultiView::MultiView::action_con);
 	ext->declare_class_element("MultiView.active_win", &MultiView::MultiView::active_win);
 	ext->declare_class_element("MultiView.mouse_win", &MultiView::MultiView::mouse_win);
@@ -122,7 +116,6 @@ void PluginManager::link_plugins() {
 	ext->link_class_func("MultiView.ActionController.update_param", &MultiView::ActionController::update_param);
 	ext->link_class_func("MultiView.ActionController.end_action", &MultiView::ActionController::end_action);
 	ext->declare_class_element("MultiView.ActionController.pos", &MultiView::ActionController::pos);
-#endif
 
 	// model
 
@@ -256,8 +249,6 @@ void PluginManager::link_plugins() {
 	ext->link("Geometry.and", (void*)&GeometryAnd);
 
 	// world
-
-#if HAS_LIB_GL
 	ext->declare_class_size("World", sizeof(DataWorld));
 	ext->declare_class_element("World.terrains", &DataWorld::terrains);
 	ext->declare_class_element("World.objects", &DataWorld::objects);
@@ -274,7 +265,6 @@ void PluginManager::link_plugins() {
 
 	ext->declare_class_size("ModeMaterial", sizeof(ModeMaterial));
 	ext->declare_class_element("ModeMaterial.data", &ModeMaterial::data);
-#endif
 
 	ext->declare_class_size("Session", sizeof(Session));
 	ext->declare_class_element("Session.mode_model", &Session::mode_model);
