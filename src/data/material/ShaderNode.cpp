@@ -36,21 +36,13 @@ string shader_value_type_to_str(ShaderValueType t) {
 color ShaderNode::Parameter::get_color() const {
 	if (type != ShaderValueType::COLOR)
 		return Black;
-	string s = value.replace("#", "").unhex();
-	float r = (float)s[0] / 255.0f;
-	float g = (float)s[1] / 255.0f;
-	float b = (float)s[2] / 255.0f;
-	float a = (float)s[3] / 255.0f;
-	return color(a, r, g, b);
+	return color::parse(value);
 }
 
 void ShaderNode::Parameter::set_color(const color &c) {
 	if (type != ShaderValueType::COLOR)
 		return;
-	int i[4];
-	c.get_int_argb(i);
-	int ii = (i[1] << 24) + (i[2] << 16) + (i[3] << 8) + i[0];
-	value = "#" + i2h(ii, 4);
+	value = c.hex();
 }
 
 
