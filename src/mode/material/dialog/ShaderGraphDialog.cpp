@@ -206,8 +206,8 @@ float node_get_out_y(ShaderNode *n, int i) {
 
 rect node_get_param_rect(ShaderNode *n, int i, float fraction=1) {
 	int y = node_get_in_y(n, i);
-	float x0 = n->pos.x + 30;
-	float x1 = n->pos.x + NODE_WIDTH - 30;
+	float x0 = n->pos.x + 5;
+	float x1 = n->pos.x + NODE_WIDTH - 25;
 	return rect(x0, x0 + (x1 - x0) * fraction, y-8, y+8);
 }
 
@@ -248,20 +248,19 @@ string short_port_name(const string &n) {
 		return "b";
 	if (n == "alpha")
 		return "a";
-	if (n == "pos")
-		return "p";
-	if (n == "normal" or n == "normals")
-		return "n";
 	if (n == "out" or n == "value" or n == "vector" or n == "color")
 		return "";
-	return n.head(2);
+	return n;
 }
 
 void draw_node_param(Painter *p, ShaderGraphDialog *dlg, ShaderNode *n, ShaderNode::Parameter &pp, int i, float yt) {
 
 	color bg = color::interpolate(scheme.BACKGROUND, scheme.GRID, 0.5f);
+	color fg = scheme.TEXT;
 	if (pp.type == ShaderValueType::COLOR) {
 		bg = pp.get_color();
+		if (bg.r + bg.g + bg.b < 1.2f)
+			fg = White;
 	}
 	p->set_color(bg);
 	p->set_roundness(3);
@@ -277,13 +276,13 @@ void draw_node_param(Painter *p, ShaderGraphDialog *dlg, ShaderNode *n, ShaderNo
 			p->set_roundness(3);
 			p->draw_rect(node_get_param_rect(n, i, scale));
 			p->set_roundness(0);
+			fg = White;
 		}
 	}
-	p->set_color(scheme.TEXT);
 	if (dlg->graph->find_source(n, i))
-		p->set_color(color::interpolate(scheme.TEXT, scheme.GRID, 0.5f));
+		fg = color::interpolate(fg, scheme.GRID, 0.5f);
 	if (n == dlg->hover.node and i == dlg->hover.param)
-		p->set_color(scheme.hoverify(scheme.TEXT));
+		fg = scheme.hoverify(fg);
 
 	string value = pp.value;
 	if (pp.type == ShaderValueType::INT) {
@@ -295,7 +294,10 @@ void draw_node_param(Painter *p, ShaderGraphDialog *dlg, ShaderNode *n, ShaderNo
 	} else if (pp.type == ShaderValueType::TEXT) {
 		value = "...";
 	}
-	p->draw_str({n->pos.x + NODE_WIDTH / 2 - p->get_str_width(value)/2, yt}, value);
+	p->set_color(fg);
+	p->draw_str({n->pos.x + 10, yt}, short_port_name(pp.name) + ":");
+	float xv = n->pos.x + max(NODE_WIDTH / 2 - p->get_str_width(value)/2, 10 + p->get_str_width(short_port_name(pp.name) + ":  "));
+	p->draw_str({xv, yt}, value);
 }
 
 void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
@@ -324,9 +326,10 @@ void ShaderGraphDialog::draw_node(Painter *p, ShaderNode *n) {
 		p->set_color(scheme.TEXT);
 		float y = node_get_in_y(n, i);
 		float yt = y - 4;
-		p->draw_str({n->pos.x + 10, yt}, short_port_name(pp.name));
 
-		if (!graph->find_source(n, i))
+		if (graph->find_source(n, i))
+			p->draw_str({n->pos.x + 10, yt}, short_port_name(pp.name));
+		else
 			draw_node_param(p, this, n, pp, i, yt);
 
 		p->set_color(scheme.TEXT);
