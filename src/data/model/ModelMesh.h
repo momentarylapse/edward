@@ -84,7 +84,7 @@ public:
 
 class ModelMesh {
 public:
-	ModelMesh(DataModel *model);
+	explicit ModelMesh(DataModel *model);
 	~ModelMesh();
 
 	DataModel *model;

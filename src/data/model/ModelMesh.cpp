@@ -685,6 +685,10 @@ void ModelMesh::selection_from_vertices() {
 			t.view_stage = min(t.view_stage, vertex[t.side[k].vertex].view_stage);
 		}
 	}
+	for (auto& b: ball) {
+		b.view_stage = vertex[b.index].view_stage;
+		b.is_selected = vertex[b.index].is_selected;
+	}
 	model->out_selection();
 }
 
@@ -850,6 +854,9 @@ void ModelMesh::_shift_vertex_links(int offset, int delta) {
 		for (int k=0;k<2;k++)
 			if (e.vertex[k] >= offset)
 				e.vertex[k] += delta;
+	for (ModelBall& b: ball)
+		if (b.index >= offset)
+			b.index += delta;
 }
 
 

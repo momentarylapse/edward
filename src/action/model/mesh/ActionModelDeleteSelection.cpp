@@ -28,7 +28,6 @@ void *ActionModelDeleteSelection::compose(Data *d) {
 
 	if (greedy) {
 		foreachib(ModelPolygon &t, m->edit_mesh->polygon, ti) {
-			bool del = false;
 			for (int k=0; k<t.side.num; k++)
 				if (sel.vertex.contains(t.side[k].vertex))
 					polys.add(ti);
@@ -37,7 +36,8 @@ void *ActionModelDeleteSelection::compose(Data *d) {
 		polys = sel.polygon;
 	}
 
-	msg_write(str(polys));
+	//msg_write("del polys: " + str(polys));
+	//msg_write("del balls: " + str(sel.ball));
 	foreachb (int i, polys)
 		addSubAction(new ActionModelSurfaceDeletePolygon(i), m);
 

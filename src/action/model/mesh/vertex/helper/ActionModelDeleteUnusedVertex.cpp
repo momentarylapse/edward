@@ -79,7 +79,7 @@ void *ActionModelDeleteUnusedVertex::execute(Data *d) {
 
 	// erase
 	m->edit_mesh->remove_lonely_vertex(vertex);
-	return NULL;
+	return nullptr;
 }
 
 
