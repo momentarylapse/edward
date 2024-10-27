@@ -10,6 +10,8 @@
 #include "ControllerManager.h"
 #include "../lib/kaba/kaba.h"
 #include "../audio/SoundSource.h"
+#include "../audio/AudioBuffer.h"
+#include "../audio/AudioStream.h"
 #include "../audio/Listener.h"
 #include "../fx/Particle.h"
 #include "../fx/Beam.h"
@@ -266,6 +268,10 @@ Array<FrameBuffer*> hdr_renderer_get_fb_bloom(HDRRenderer &r) {
 	return {r.bloom_levels[0].fb_out.get(), r.bloom_levels[1].fb_out.get(), r.bloom_levels[2].fb_out.get(), r.bloom_levels[3].fb_out.get()};
 }
 
+audio::AudioStream* __create_audio_stream(Callable<Array<float>(int)>& f, float sample_rate) {
+	return audio::create_stream([&f] (int n) { return f(n); }, sample_rate);
+}
+
 template<class T>
 void generic_init(T* t) {
 	new(t) T;
@@ -423,6 +429,7 @@ void PluginManager::export_kaba() {
 	ext->declare_class_element("Terrain.num_x", &Terrain::num_x);
 	ext->declare_class_element("Terrain.num_z", &Terrain::num_z);
 	ext->declare_class_element("Terrain.vertex_shader_module", &Terrain::vertex_shader_module);
+	ext->declare_class_element("Terrain.texture_scale", &Terrain::texture_scale);
 	ext->link_class_func("Terrain.update", &Terrain::update);
 	ext->link_class_func("Terrain.get_height", &Terrain::gimme_height);
 
@@ -621,6 +628,7 @@ void PluginManager::export_kaba() {
 	ext->link_class_func("SoundSource.has_ended", &audio::SoundSource::has_ended);
 	ext->link_class_func("SoundSource.update", &audio::SoundSource::_apply_data);
 	ext->link_class_func("SoundSource.set_buffer", &audio::SoundSource::set_buffer);
+	ext->link_class_func("SoundSource.set_stream", &audio::SoundSource::set_stream);
 	ext->link_class_func("SoundSource.__del_override__", &DeletionQueue::add);
 
 
@@ -913,8 +921,11 @@ void PluginManager::export_kaba() {
 
 	ext->link("load_buffer", (void*)&audio::load_buffer);
 	ext->link("create_buffer", (void*)&audio::create_buffer);
+	ext->link("load_audio_stream", (void*)&audio::load_stream);
+	ext->link("create_audio_stream", (void*)&__create_audio_stream);
 	ext->link("emit_sound", (void*)&audio::emit_sound);
 	ext->link("emit_sound_file", (void*)&audio::emit_sound_file);
+	ext->link("emit_sound_stream", (void*)&audio::emit_sound_stream);
 }
 
 template<class C>

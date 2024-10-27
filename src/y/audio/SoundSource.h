@@ -15,7 +15,8 @@ public:
 	float volume, speed;
 	float min_distance, max_distance;
 
-	AudioBuffer* buffer;
+	AudioBuffer* buffer = nullptr;
+	AudioStream* stream = nullptr;
 
 	unsigned int al_source;
 
@@ -23,6 +24,7 @@ public:
 	~SoundSource() override;
 
 	void set_buffer(AudioBuffer* buffer);
+	void set_stream(AudioStream* stream);
 
 	void play(bool loop);
 	void stop();

@@ -6,9 +6,6 @@
  */
 
 #include "Renderer.h"
-
-#include <lib/vulkan/FrameBuffer.h>
-
 #include "../y/EngineData.h"
 #include "../lib/math/rect.h"
 #include "../helper/PerformanceMonitor.h"
@@ -25,12 +22,16 @@ RenderParams RenderParams::with_target(FrameBuffer *fb) const {
 	return r;
 }
 
-RenderParams RenderParams::into_window(FrameBuffer *frame_buffer, float aspect_ratio) {
-	return {aspect_ratio, true, frame_buffer, frame_buffer->area()};
+float fb_ratio(FrameBuffer* fb) {
+	return (float)fb->width / (float)fb->height;
+}
+
+RenderParams RenderParams::into_window(FrameBuffer *frame_buffer, const base::optional<float>& aspect_ratio) {
+	return {aspect_ratio.value_or(fb_ratio(frame_buffer)), true, frame_buffer, frame_buffer->area()};
 
 }
-RenderParams RenderParams::into_texture(FrameBuffer *frame_buffer, float aspect_ratio) {
-	return {aspect_ratio, false, frame_buffer, frame_buffer->area()};
+RenderParams RenderParams::into_texture(FrameBuffer *frame_buffer, const base::optional<float>& aspect_ratio) {
+	return {aspect_ratio.value_or(fb_ratio(frame_buffer)), false, frame_buffer, frame_buffer->area()};
 }
 
 

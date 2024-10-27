@@ -54,7 +54,7 @@ bool is_device_suitable(VkPhysicalDevice device, VkSurfaceKHR surface, Requireme
 	if (!check_device_extension_support(device, req))
 		return false;
 
-	if (req & Requirements::SWAP_CHAIN or req & Requirements::PRESENT) {
+	if ((req & Requirements::SWAP_CHAIN) or (req & Requirements::PRESENT)) {
 		if (!surface)
 			return false;
 		SwapChainSupportDetails swapChainSupport = query_swap_chain_support(device, surface);

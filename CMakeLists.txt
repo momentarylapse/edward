@@ -638,9 +638,10 @@ add_executable(edward
 	src/stuff/PluginManager.cpp
 	src/stuff/Progress.cpp
 	src/y/audio/audio.cpp
+	src/y/audio/AudioBuffer.cpp
+	src/y/audio/AudioStream.cpp
 	src/y/audio/Listener.cpp
 	src/y/audio/Loading.cpp
-	src/y/audio/Music.cpp
 	src/y/audio/SoundSource.cpp
 	src/y/fx/Beam.cpp
 	src/y/fx/Particle.cpp

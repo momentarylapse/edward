@@ -1,5 +1,6 @@
 #include "audio.h"
-
+#include "AudioBuffer.h"
+#include "AudioStream.h"
 #include "Listener.h"
 #include "Loading.h"
 #include "SoundSource.h"
@@ -7,11 +8,9 @@
 #include "../world/World.h" // FIXME
 #include "../y/ComponentManager.h"
 #include "../y/Entity.h"
+#include "../y/EngineData.h"
 #include "../lib/base/base.h"
-#include "../lib/base/map.h"
 #include "../lib/base/algo.h"
-#include "../lib/math/vec3.h"
-#include "../lib/os/path.h"
 
 #if HAS_LIB_OPENAL
 
@@ -30,8 +29,6 @@ ALCdevice *al_dev = nullptr;
 ALCcontext *al_context = nullptr;
 #endif
 
-base::map<Path, AudioBuffer*> loaded_audio_buffers;
-Array<AudioBuffer*> created_audio_buffers;
 
 void init() {
 #if HAS_LIB_OPENAL
@@ -82,67 +79,29 @@ void iterate(float dt) {
 	for (auto s: sources) {
 		// TODO owner->get_component<SolidBody>()->vel
 		s->_apply_data();
-		if (s->suicidal and s->has_ended())
+		if (s->suicidal and s->has_ended()) {
 			DeletionQueue::add(s->owner);
+
+		} else if (s->stream) {
+#if HAS_LIB_OPENAL
+			int processed;
+			alGetSourcei(s->al_source, AL_BUFFERS_PROCESSED, &processed);
+			while (processed --) {
+				ALuint buf;
+				alSourceUnqueueBuffers(s->al_source, 1, &buf);
+				if (s->stream->stream(buf))
+					alSourceQueueBuffers(s->al_source, 1, &buf);
+			}
+#endif
+		}
 	}
 	DeletionQueue::delete_all();
 	auto& listeners = ComponentManager::get_list<Listener>();
 	if (listeners.num >= 1)
 		listeners[0]->apply_data();
-#if 0
-	for (int i=Sounds.num-1;i>=0;i--)
-		if (Sounds[i]->Suicidal)
-			if (Sounds[i]->Ended())
-				delete(Sounds[i]);
-	for (int i=0;i<Musics.num;i++)
-		Musics[i]->Iterate();
-#endif
 }
 
 void reset() {
-	/*for (int i=Sounds.num-1;i>=0;i--)
-		delete(Sounds[i]);
-	Sounds.clear();
-	for (int i=Musics.num-1;i>=0;i--)
-		delete(Musics[i]);
-	Musics.clear();*/
-}
-
-
-AudioBuffer* load_buffer(const Path& filename) {
-	int i = loaded_audio_buffers.find(filename);
-	if (i >= 0)
-		return loaded_audio_buffers.by_index(i);
-
-	auto af = load_raw_buffer(filename);
-	auto buffer = new AudioBuffer;
-
-#if HAS_LIB_OPENAL
-	alGenBuffers(1, &buffer->al_buffer);
-	if (af.bits == 8)
-		alBufferData(buffer->al_buffer, AL_FORMAT_MONO8, &af.buffer[0], af.samples, af.freq);
-	else if (af.bits == 16)
-		alBufferData(buffer->al_buffer, AL_FORMAT_MONO16, &af.buffer[0], af.samples * 2, af.freq);
-#endif
-
-	loaded_audio_buffers.set(filename, buffer);
-	return buffer;
-}
-
-AudioBuffer* create_buffer(const Array<float>& samples, float sample_rate) {
-	auto buffer = new AudioBuffer;
-
-#if HAS_LIB_OPENAL
-	alGenBuffers(1, &buffer->al_buffer);
-	Array<short> buf16;
-	buf16.resize(samples.num);
-	for (int i=0; i<samples.num; i++)
-		buf16[i] = (int)(samples[i] * 32768.0f);
-	alBufferData(buffer->al_buffer, AL_FORMAT_MONO16, &buf16[0], samples.num * 2, (int)sample_rate);
-#endif
-
-	created_audio_buffers.add(buffer);
-	return buffer;
 }
 
 
@@ -159,6 +118,17 @@ SoundSource& emit_sound(AudioBuffer* buffer, const vec3 &pos, float radius1) {
 
 SoundSource& emit_sound_file(const Path &filename, const vec3 &pos, float radius1) {
 	return emit_sound(load_buffer(filename), pos, radius1);
+}
+
+SoundSource& emit_sound_stream(AudioStream* stream, const vec3 &pos, float radius1) {
+	auto e = world.create_entity(pos, quaternion::ID);
+	auto s = e->add_component<SoundSource>();
+	s->set_stream(stream);
+	s->min_distance = radius1;
+	s->max_distance = radius1 * 100;
+	s->suicidal = true;
+	s->play(false);
+	return *s;
 }
 }
 

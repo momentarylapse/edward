@@ -67,18 +67,18 @@ public:
 		int width = e->column;
 		int height = e->row;
 
-		auto params = RenderParams::into_window(ctx->default_framebuffer, (float)width/(float)height);
-		params.area = {0,(float)width, 0, (float)height};
-
 		// save the default frame buffer etc!
 		nix::start_frame_hui(ctx);
+
+		auto params = RenderParams::into_window(ctx->default_framebuffer);
+
 		prepare(params);
 
 		//nix::start_frame_hui(ctx);
 		nix::bind_frame_buffer(params.frame_buffer);
 		nix::set_viewport(params.area);
 
-		nix::set_viewport(rect(0, width, 0, height));
+		nix::set_viewport(params.area);
 
 		draw(params);
 

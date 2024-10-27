@@ -12,6 +12,7 @@ class rect;
 
 #include "../graphics-fwd.h"
 #include "../lib/base/pointer.h"
+#include "../lib/base/optional.h"
 #include "../lib/math/rect.h"
 
 class color;
@@ -32,8 +33,8 @@ struct RenderParams {
 
 	RenderParams with_target(FrameBuffer *fb) const;
 	static const RenderParams WHATEVER;
-	static RenderParams into_window(FrameBuffer *frame_buffer, float aspect_ratio);
-	static RenderParams into_texture(FrameBuffer *frame_buffer, float aspect_ratio);
+	static RenderParams into_window(FrameBuffer *frame_buffer, const base::optional<float>& aspect_ratio = base::None);
+	static RenderParams into_texture(FrameBuffer *frame_buffer, const base::optional<float>& aspect_ratio = base::None);
 };
 
 class Renderer {
