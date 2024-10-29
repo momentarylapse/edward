@@ -10,8 +10,10 @@
 #include "../../data/model/DataModel.h"
 #include "../../data/model/ModelMesh.h"
 #include "../../data/model/ModelPolygon.h"
+#include "../../data/model/geometry/Geometry.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
+#include "../../lib/os/msg.h"
 
 FormatModelPly::FormatModelPly(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "ply", _("Model ply"), Flag::READ) {
 }
@@ -31,6 +33,9 @@ void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
 		int properties;
 	};
 	Array<Element> elements;
+	bool binary = false;
+
+	Geometry g;
 
 	// header
 	while (true) {
@@ -41,6 +46,8 @@ void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
 			continue; // ignore
 		} else if (s == "format ascii 1.0") {
 			continue; // ignore
+		} else if (s == "format binary_little_endian 1.0") {
+			binary = true;
 		} else if (s.head(8) == "obj_info") {
 			continue; // ignore
 		} else if (s.head(7) == "element") {
@@ -62,50 +69,74 @@ void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
 		}
 	}
 
-	for (auto &e: elements) {
-		if (e.name == "vertex") {
-			m->mesh->vertex.resize(e.num);
-			for (int i=0; i<e.num; i++) {
-				string t = f->read_str();
-				auto tt = t.explode(" ");
-				if (tt.num < 3)
-					continue;
-				m->mesh->vertex[i].pos.x = tt[0]._float();
-				m->mesh->vertex[i].pos.y = tt[1]._float();
-				m->mesh->vertex[i].pos.z = tt[2]._float();
+	if (binary) {
+		int offset = f->pos();
+		f = os::fs::open(filename, "rb");
+		f->set_pos(offset);
+
+		for (auto &e: elements) {
+			if (e.name == "vertex") {
+				g.vertex.resize(e.num);
+				for (int i=0; i<e.num; i++)
+					f->read_vector(&g.vertex[i].pos);
+			} else if (e.name == "face") {
+				for (int i=0; i<e.num; i++) {
+					int n = f->read_byte();
+					int a = f->read_int();
+					int b = f->read_int();
+					int c = f->read_int();
+					g.add_polygon({a, b, c}, {{0,0,0}, {0,0,0}, {0,0,0}});
+				}
+			} else {
+				msg_error(e.name);
 			}
-		} else if (e.name == "face") {
+		}
+
+	} else {
+
+		for (auto &e: elements) {
+			if (e.name == "vertex") {
+				g.vertex.resize(e.num);
+				for (int i=0; i<e.num; i++) {
+					string t = f->read_str();
+					auto tt = t.explode(" ");
+					if (tt.num < 3)
+						continue;
+					g.vertex[i].pos.x = tt[0]._float();
+					g.vertex[i].pos.y = tt[1]._float();
+					g.vertex[i].pos.z = tt[2]._float();
+				}
+			} else if (e.name == "face") {
 
 
-			for (int i=0; i<e.num; i++) {
-				string t = f->read_str();
-				auto tt = t.explode(" ");
-				if (tt.num < 3)
-					continue;
-				int n = tt[0]._int();
-				if (n < 3)
-					continue;
-				/*ModelPolygon p;
-				p.is_selected = false;
-				p.triangulation_dirty = true;
-				p.material = 0;
-				p.side.resize(n);
-				for (int k=0;k<n;k++) {
-					p.side[k].vertex = tt[1+k]._int();
+				for (int i=0; i<e.num; i++) {
+					string t = f->read_str();
+					auto tt = t.explode(" ");
+					if (tt.num < 3)
+						continue;
+					int n = tt[0]._int();
+					if (n < 3)
+						continue;
+					/*ModelPolygon p;
+					p.is_selected = false;
+					p.triangulation_dirty = true;
+					p.material = 0;
+					p.side.resize(n);
+					for (int k=0;k<n;k++) {
+						p.side[k].vertex = tt[1+k]._int();
+					}
+					p.normal_dirty = true;
+					s.polygon.add(p);*/
+					g.add_polygon({tt[1]._int(), tt[2]._int(), tt[3]._int()}, {{0,0,0}, {0,0,0}, {0,0,0}});
 				}
-				p.normal_dirty = true;
-				s.polygon.add(p);*/
-				try{
-					m->addPolygon({tt[1]._int(), tt[2]._int(), tt[3]._int()}, 0);
-				}catch(...){
-				}
+			} else {
+				// ignore
+				for (int i=0; i<e.num; i++)
+					f->read_str();
 			}
-		} else {
-			// ignore
-			for (int i=0; i<e.num; i++)
-				f->read_str();
 		}
 	}
+		m->pasteGeometry(g, 0);
 
 	} catch (Exception &e) {
 		delete f;
