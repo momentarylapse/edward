@@ -192,6 +192,13 @@ public:
 
 		//printf("%f\n", timer.get()*1000.0f);
 #endif
+#if HAS_LIB_VULKAN
+		auto cb = p.command_buffer;
+		cb->clear(area, {scheme.BACKGROUND}, 1);
+		static int count = 0;
+		count = loop(count + 10, 0, 1000);
+		cb->clear({(float)count + 100,(float)count + 400,100,400}, {Red}, 1);
+#endif
 	}
 };
 

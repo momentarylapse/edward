@@ -126,14 +126,12 @@ public:
 		command_buffer->end();
 		device->graphics_queue.submit(command_buffer, {}, {}, fence);
 		fence->wait();
-		device->wait_idle();
+		//device->wait_idle();
 	}
 	void render_frame(const rect& area, float aspect_ratio) {
 		const auto p = create_params(area);
 		prepare(p);
 		if (start_frame(area)) {
-			command_buffer->clear(area, {Blue}, 1);
-			command_buffer->clear({100,400,100,400}, {Red}, 1);
 			draw(p);
 			end_frame();
 		}
@@ -152,6 +150,7 @@ public:
 		texture_renderer = new TextureRendererVulkan(device, MAX_WIDTH, MAX_HEIGHT);
 	}
 	void prepare(const RenderParams& p) override {
+		texture_renderer->children = children;
 		texture_renderer->render_frame(p.area, p.desired_aspect_ratio);
 	}
 
@@ -163,7 +162,6 @@ public:
 		const auto params = create_params(w, h);
 		prepare(params);
 
-		//headless_renderer->swap_images[headless_renderer->image_index]->read(&image.data[0]);
 		texture_renderer->texture->read(&image.data[0]);
 		//image.mode = Image::Mode::BGRA;
 		//image.set_mode(Image::Mode::RGBA);
