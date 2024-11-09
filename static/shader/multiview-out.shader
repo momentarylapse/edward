@@ -1,5 +1,6 @@
 <Layout>
 	version = 420
+	bindings = [[sampler]]
 </Layout>
 <VertexShader>
 
@@ -22,7 +23,7 @@ layout(location=2) in vec2 in_uv;
 
 layout(binding=0) uniform sampler2D tex0;
 
-out vec4 out_color;
+layout(location=0) out vec4 out_color;
 
 void main() {
 	out_color = texture(tex0, in_uv);

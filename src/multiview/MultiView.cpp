@@ -59,25 +59,13 @@ void check_undef_view_stages(MultiView *mv) {
 	}
 }
 
-void ensure_fb_size(MultiView *mv, const rect &r) {
-	// we should not re-create when shrinking... but then we would need to
-	// think harder about some transformations etc...
-	if (mv->frame_buffer)
-		if (mv->frame_buffer->width == r.width() and mv->frame_buffer->height == r.height())
-			return;
-#if HAS_LIB_GL
-	auto zbuffer = new DepthBuffer(r.width(), r.height(), "d24s8");
-	auto tex = new Texture(r.width(), r.height(), "rgba:f32");
-	mv->frame_buffer = new FrameBuffer({tex, zbuffer});
-#endif
-}
-
 class Renderer : public ::Renderer {
 public:
 	MultiView* mv;
 	explicit Renderer(MultiView* _mv) : ::Renderer("multiview") {
 		mv = _mv;
 	}
+
 	void prepare(const RenderParams& p) override {
 		mv->screen_scale = hui::get_event()->row_target; // EVIL!
 		timer.reset();
@@ -90,9 +78,9 @@ public:
 
 		using Selection = MultiView::Selection;
 		area = p.area;
+#if HAS_LIB_GL
 		ensure_fb_size(mv, area);
 
-#if HAS_LIB_GL
 
 		nix::bind_frame_buffer(mv->frame_buffer.get());
 
@@ -165,6 +153,8 @@ public:
 
 		mv->draw_mouse_pos();
 #endif
+#if HAS_LIB_VULKAN
+#endif
 	}
 	void draw(const RenderParams& p) override {
 
@@ -200,6 +190,100 @@ public:
 		cb->clear({(float)count + 100,(float)count + 400,100,400}, {Red}, 1);
 #endif
 	}
+};
+
+class LinearToSrgbRenderer : public ::Renderer {
+public:
+	explicit LinearToSrgbRenderer(Session* session) : ::Renderer("lin2srgb") {
+		shader_out = session->resource_manager->load_shader("multiview-out.shader");
+		vb_2d = new VertexBuffer("3f,3f,2f");
+		auto pool = new vulkan::DescriptorPool("sampler:1", 1);
+		dset_out = pool->create_set("sampler");
+	}
+	void ensure_fb_size(const rect& r) {
+		// we should not re-create when shrinking... but then we would need to
+		// think harder about some transformations etc...
+		if (frame_buffer)
+			if (frame_buffer->width == r.width() and frame_buffer->height == r.height())
+				return;
+#if HAS_LIB_GL
+		auto depth_buffer = new DepthBuffer(r.width(), r.height(), "d24s8");
+		auto tex = new Texture(r.width(), r.height(), "rgba:f32");
+		frame_buffer = new FrameBuffer({tex, depth_buffer});
+#endif
+#if HAS_LIB_VULKAN
+		auto depth_buffer = new DepthBuffer(r.width(), r.height(), "ds:f32i8", false);
+		auto tex = new Texture(r.width(), r.height(), "rgba:f32");
+		render_pass = new vulkan::RenderPass({tex, depth_buffer});
+		frame_buffer = new FrameBuffer(render_pass, {tex, depth_buffer});
+		dset_out->set_texture(0, tex);
+		dset_out->update();
+#endif
+	}
+	void prepare(const RenderParams& p) override {
+		const auto area = p.area;
+		ensure_fb_size(area);
+
+		auto pp = p.with_target(frame_buffer.get());
+#if HAS_LIB_VULKAN
+		pp.render_pass = render_pass;
+#endif
+
+		for (auto c: children)
+			c->prepare(pp);
+
+#if HAS_LIB_GL
+		nix::bind_frame_buffer(frame_buffer.get());
+		nix::clear_z();
+		nix::set_projection_ortho_pixel();
+		nix::set_z(true,true);
+
+		for (auto c: children)
+			c->draw(pp);
+#endif
+#if HAS_LIB_VULKAN
+
+		auto cb = p.command_buffer;
+		cb->begin_render_pass(render_pass, frame_buffer.get());
+		cb->set_viewport(area);
+
+		for (auto c: children)
+			c->draw(pp);
+
+		cb->end_render_pass();
+#endif
+	}
+	void draw(const RenderParams& p) override {
+		auto cb = p.command_buffer;
+		auto source = rect::ID;//p.area;
+		if (source != vb_2d_current_source) {
+			vb_2d->create_quad(rect::ID_SYM, source);
+			vb_2d_current_source = source;
+		}
+
+#if HAS_LIB_VULKAN
+		if (!pipeline_out) {
+			pipeline_out = new vulkan::GraphicsPipeline(shader_out.get(), p.render_pass, 0, "triangles", "3f,3f,2f");
+			pipeline_out->set_culling(CullMode::NONE);
+			pipeline_out->set_z(false, false);
+			pipeline_out->rebuild();
+		}
+
+		cb->bind_pipeline(pipeline_out);
+		cb->bind_descriptor_set(0, dset_out);
+		cb->draw(vb_2d);
+#endif
+	}
+
+	shared<FrameBuffer> frame_buffer;
+	shared<Shader> shader_out;
+#if HAS_LIB_VULKAN
+	GraphicsPipeline* pipeline_out = nullptr;
+	DescriptorSet *dset_out = nullptr;
+	RenderPass* render_pass = nullptr;
+#endif
+	VertexBuffer *vb_2d = nullptr;
+	rect vb_2d_current_source = rect::EMPTY;
 };
 
 MultiView::MultiView(Session *_s, bool mode3d) {
@@ -271,11 +355,8 @@ MultiView::MultiView(Session *_s, bool mode3d) {
 	allow_select = true;
 	edit_coordinate_mode = CoordinateMode::GLOBAL;
 
-#if HAS_LIB_GL
-	shader_out = session->resource_manager->load_shader("multiview-out.shader");
-#endif
-
-	renderer = new Renderer(this);
+	renderer = new LinearToSrgbRenderer(session);
+	renderer->add_child(new Renderer(this));
 
 	out_camera_changed >> create_sink([this] { out_redraw(); });
 

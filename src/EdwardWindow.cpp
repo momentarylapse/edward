@@ -115,26 +115,19 @@ public:
 		p.render_pass = render_pass;
 		return p;
 	}
-	bool start_frame(const rect& area) {
+	void render_frame(const rect& area, float aspect_ratio) {
+		const auto p = create_params(area);
 		command_buffer->begin();
+		prepare(p);
 		command_buffer->begin_render_pass(render_pass, frame_buffer);
 		command_buffer->set_viewport(area);
-		return true;
-	}
-	void end_frame() {
+		command_buffer->set_bind_point(vulkan::PipelineBindPoint::GRAPHICS);
+		draw(p);
 		command_buffer->end_render_pass();
 		command_buffer->end();
 		device->graphics_queue.submit(command_buffer, {}, {}, fence);
 		fence->wait();
 		//device->wait_idle();
-	}
-	void render_frame(const rect& area, float aspect_ratio) {
-		const auto p = create_params(area);
-		prepare(p);
-		if (start_frame(area)) {
-			draw(p);
-			end_frame();
-		}
 	}
 };
 

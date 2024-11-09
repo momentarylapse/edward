@@ -140,9 +140,6 @@ public:
 	UniformBuffer *ubo_light;
 	void set_light(Window *win, const vec3 &dir, const color &col, float harshness);
 
-	shared<FrameBuffer> frame_buffer;
-	shared<Shader> shader_out;
-
 	bool snap_to_grid;
 
 	int view_stage;
