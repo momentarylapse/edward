@@ -23,8 +23,7 @@
 #include <y/helper/ResourceManager.h>
 #include <y/renderer/base.h>
 #include <y/renderer/Renderer.h>
-#include <y/renderer/target/WindowRendererVulkan.h>
-#include <y/renderer/target/TextureRendererVulkan.h>
+#include <y/renderer/target/HuiWindowRenderer.h>
 #include <y/EngineData.h>
 #include <y/meta.h>
 #include <y/gui/Font.h>
@@ -49,88 +48,6 @@ namespace hui {
 rect dynamicly_scaled_source() { return {}; }
 rect dynamicly_scaled_area(FrameBuffer*) { return {}; }
 
-#if HAS_LIB_GL
-class HuiWindowRenderer : public Renderer {
-	Context* ctx;
-
-public:
-	explicit HuiWindowRenderer(Context* _ctx) : Renderer("hui") {
-		ctx = _ctx;
-	}
-
-	void render_frame() {
-		auto e = hui::get_event();
-		int width = e->column;
-		int height = e->row;
-
-		// save the default frame buffer etc!
-		nix::start_frame_hui(ctx);
-
-		auto params = RenderParams::into_window(ctx->default_framebuffer);
-
-		prepare(params);
-
-		//nix::start_frame_hui(ctx);
-		nix::bind_frame_buffer(params.frame_buffer);
-		nix::set_viewport(params.area);
-
-		nix::set_viewport(params.area);
-
-		draw(params);
-
-		nix::end_frame_hui();
-	}
-};
-#endif
-
-#if HAS_LIB_VULKAN
-vulkan::Instance* __instance;
-
-
-class HuiWindowRenderer : public Renderer {
-public:
-	static constexpr int MAX_WIDTH = 1024*3;
-	static constexpr int MAX_HEIGHT = 2048;
-	shared<Texture> texture;
-	explicit HuiWindowRenderer(vulkan::Instance* instance) : Renderer("hui") {
-		device = vulkan::Device::create_simple(instance, nullptr, {"graphics", "anisotropy"});
-
-		image.create(MAX_WIDTH, MAX_HEIGHT, Red);
-		texture = new Texture(MAX_WIDTH, MAX_HEIGHT, "bgra:i8");
-		texture_renderer = new TextureRendererVulkan(device, texture);
-	}
-	void prepare(const RenderParams& p) override {
-		texture_renderer->children = children;
-		texture_renderer->render_frame(p.area, p.desired_aspect_ratio);
-	}
-
-	void render_frame(Painter* p) {
-		int scale = hui::get_event()->row_target;
-		int w = p->width * scale;
-		int h = p->height * scale;
-
-		const auto params = create_params(w, h);
-		prepare(params);
-
-		texture->read(&image.data[0]);
-		//image.mode = Image::Mode::BGRA;
-		//image.set_mode(Image::Mode::RGBA);
-
-		float t[4] = {1 / (float)scale, 0, 0, 1 / (float)scale};
-		p->set_transform(t, {0,0});
-		p->draw_image({0, 0}, &image);
-	}
-
-	RenderParams create_params(int w, int h) {
-		return texture_renderer->create_params({0, (float)w, 0, (float)h});
-	}
-
-	vulkan::Device* device;
-	TextureRendererVulkan* texture_renderer = nullptr;
-	CommandBuffer* cb = nullptr;
-	Image image;
-};
-#endif
 
 class EdwardRenderer : public Renderer {
 public:
@@ -291,9 +208,8 @@ EdwardWindow::EdwardWindow(Session *_session) :
 
 
 #if HAS_LIB_VULKAN
-	__instance = vulkan::init({"api=1.3", "verbosity=1", "validation"});
-
-	renderer = new HuiWindowRenderer(__instance);
+	auto instance = vulkan::init({"api=1.3", "verbosity=1", "validation"});
+	renderer = new HuiWindowRenderer(instance);
 	renderer->add_child(new EdwardRenderer(this));
 	auto ctx = new Context;
 	session->create_initial_resources(ctx);

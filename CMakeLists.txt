@@ -676,6 +676,8 @@ add_executable(edward
 	src/y/renderer/regions/RegionRendererCommon.cpp
 	src/y/renderer/regions/RegionRendererGL.cpp
 	src/y/renderer/regions/RegionRendererVulkan.cpp
+	src/y/renderer/target/HuiWindowRendererGL.cpp
+	src/y/renderer/target/HuiWindowRendererVulkan.cpp
 	src/y/renderer/target/TargetRenderer.cpp
 	src/y/renderer/target/TextureRendererGL.cpp
 	src/y/renderer/target/TextureRendererVulkan.cpp

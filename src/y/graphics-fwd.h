@@ -20,6 +20,7 @@
 // Vulkan
 
 	namespace vulkan {
+		class Instance;
 		class Texture;
 		class VolumeTexture;
 		class StorageTexture;
