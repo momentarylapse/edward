@@ -76,13 +76,26 @@ public:
 
 		check_undef_view_stages(mv);
 
+	}
+	void draw(const RenderParams& p) override {
+
+		mv->screen_scale = hui::get_event()->row_target; // EVIL!
+		timer.reset();
+
+		auto ctx = mv->ctx;
+		auto drawing_helper = mv->drawing_helper;
+		auto& area = mv->area;
+
+		check_undef_view_stages(mv);
+
+		using Selection = MultiView::Selection;
+
+		area = p.area;
+
 		using Selection = MultiView::Selection;
 		area = p.area;
 #if HAS_LIB_GL
-		ensure_fb_size(mv, area);
 
-
-		nix::bind_frame_buffer(mv->frame_buffer.get());
 
 		nix::clear_z();
 		nix::set_projection_ortho_pixel();
@@ -154,35 +167,6 @@ public:
 		mv->draw_mouse_pos();
 #endif
 #if HAS_LIB_VULKAN
-#endif
-	}
-	void draw(const RenderParams& p) override {
-
-		mv->screen_scale = hui::get_event()->row_target; // EVIL!
-		timer.reset();
-
-		auto ctx = mv->ctx;
-		auto drawing_helper = mv->drawing_helper;
-		auto& area = mv->area;
-
-		check_undef_view_stages(mv);
-
-		using Selection = MultiView::Selection;
-
-		area = p.area;
-
-#if HAS_LIB_GL
-		nix::set_shader(mv->shader_out.get());
-		//nix::vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
-		ctx->vb_temp->create_quad(rect::ID_SYM, rect(0, mv->area.width() / mv->frame_buffer->width, 1 - mv->area.height() / mv->frame_buffer->height, 1));
-		nix::bind_texture(0, weak(mv->frame_buffer->color_attachments)[0]);
-		nix::set_z(false, false);
-		nix::set_cull(nix::CullMode::NONE);
-		nix::draw_triangles(mv->session->ctx->vb_temp);
-
-		//printf("%f\n", timer.get()*1000.0f);
-#endif
-#if HAS_LIB_VULKAN
 		auto cb = p.command_buffer;
 		cb->clear(area, {scheme.BACKGROUND}, 1);
 		static int count = 0;
@@ -194,11 +178,15 @@ public:
 
 class LinearToSrgbRenderer : public ::Renderer {
 public:
-	explicit LinearToSrgbRenderer(Session* session) : ::Renderer("lin2srgb") {
+	Session* session;
+	explicit LinearToSrgbRenderer(Session* _session) : ::Renderer("lin2srgb") {
+		session = _session;
 		shader_out = session->resource_manager->load_shader("multiview-out.shader");
 		vb_2d = new VertexBuffer("3f,3f,2f");
+#if HAS_LIB_VULKAN
 		auto pool = new vulkan::DescriptorPool("sampler:1", 1);
 		dset_out = pool->create_set("sampler");
+#endif
 	}
 	void ensure_fb_size(const rect& r) {
 		// we should not re-create when shrinking... but then we would need to
@@ -234,6 +222,7 @@ public:
 
 #if HAS_LIB_GL
 		nix::bind_frame_buffer(frame_buffer.get());
+		nix::set_viewport(area);
 		nix::clear_z();
 		nix::set_projection_ortho_pixel();
 		nix::set_z(true,true);
@@ -242,7 +231,6 @@ public:
 			c->draw(pp);
 #endif
 #if HAS_LIB_VULKAN
-
 		auto cb = p.command_buffer;
 		cb->begin_render_pass(render_pass, frame_buffer.get());
 		cb->set_viewport(area);
@@ -254,14 +242,26 @@ public:
 #endif
 	}
 	void draw(const RenderParams& p) override {
-		auto cb = p.command_buffer;
 		auto source = rect::ID;//p.area;
 		if (source != vb_2d_current_source) {
 			vb_2d->create_quad(rect::ID_SYM, source);
 			vb_2d_current_source = source;
 		}
 
+#if HAS_LIB_GL
+		auto ctx = session->ctx;
+		const auto area = p.area;
+		nix::set_shader(shader_out.get());
+		//nix::vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
+		ctx->vb_temp->create_quad(rect::ID_SYM, rect(0, area.width() / frame_buffer->width, 1 - area.height() / frame_buffer->height, 1));
+		nix::bind_texture(0, weak(frame_buffer->color_attachments)[0]);
+		nix::set_z(false, false);
+		nix::set_cull(nix::CullMode::NONE);
+		nix::draw_triangles(session->ctx->vb_temp);
+
+#endif
 #if HAS_LIB_VULKAN
+		auto cb = p.command_buffer;
 		if (!pipeline_out) {
 			pipeline_out = new vulkan::GraphicsPipeline(shader_out.get(), p.render_pass, 0, "triangles", "3f,3f,2f");
 			pipeline_out->set_culling(CullMode::NONE);
