@@ -33,7 +33,7 @@ list(APPEND COMPILE_DEFINITIONS HAS_LIB_ZLIB=1)
 # lib: gl or vulkan (mandatory)
 set(GL_OR_VULKAN "gl" CACHE STRING "Use gl or vulkan?")
 find_package(OpenGL)
-if(OPENGL_FOUND AND NOT APPLE)
+if(OPENGL_FOUND AND NOT APPLE AND NOT WIN32)
 	list(APPEND GL_OR_VULKAN_FOUND "gl")
 endif()
 pkg_check_modules(VULKAN vulkan)
@@ -678,6 +678,7 @@ add_executable(edward
 	src/y/renderer/regions/RegionRendererVulkan.cpp
 	src/y/renderer/target/TargetRenderer.cpp
 	src/y/renderer/target/TextureRendererGL.cpp
+	src/y/renderer/target/TextureRendererVulkan.cpp
 	src/y/renderer/target/WindowRendererGL.cpp
 	src/y/renderer/target/WindowRendererVulkan.cpp
 	src/y/renderer/world/geometry/GeometryRenderer.cpp

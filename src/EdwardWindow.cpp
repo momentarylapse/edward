@@ -6,10 +6,6 @@
  */
 
 #include "EdwardWindow.h"
-
-#include <renderer/base.h>
-#include <renderer/Renderer.h>
-
 #include "Edward.h"
 #include "Session.h"
 #include "mode/administration/ModeAdministration.h"
@@ -25,7 +21,10 @@
 #include <y/world/World.h>
 #include <y/world/Camera.h>
 #include <y/helper/ResourceManager.h>
+#include <y/renderer/base.h>
+#include <y/renderer/Renderer.h>
 #include <y/renderer/target/WindowRendererVulkan.h>
+#include <y/renderer/target/TextureRendererVulkan.h>
 #include <y/EngineData.h>
 #include <y/meta.h>
 #include <y/gui/Font.h>
@@ -36,9 +35,6 @@
 #include "lib/image/image.h"
 #include "lib/os/msg.h"
 
-#if HAS_LIB_GL
-#include <y/renderer/Renderer.h>
-#endif
 
 extern string AppName;
 
@@ -90,57 +86,18 @@ public:
 #if HAS_LIB_VULKAN
 vulkan::Instance* __instance;
 
-class TextureRendererVulkan : public Renderer {
-public:
-	Device* device;
-	RenderPass* render_pass;
-	FrameBuffer* frame_buffer;
-	shared<Texture> texture;
-	shared<Texture> depth_buffer;
-	CommandBuffer* command_buffer;
-	Fence* fence;
-	TextureRendererVulkan(Device* d, int width, int height) : Renderer("xheadless") {
-		device = d;
-		texture = new Texture(width, height, "bgra:i8");
-		depth_buffer = new DepthBuffer(width, height, "d:f32", false);
-		render_pass = new RenderPass({texture.get(), depth_buffer.get()});
-		frame_buffer = new FrameBuffer(render_pass, {texture, depth_buffer});
-		command_buffer = new CommandBuffer(device->command_pool);
-		fence = new Fence(device);
-	}
-	RenderParams create_params(const rect& area) const {
-		auto p = RenderParams::into_texture(frame_buffer, area.width() / area.height());
-		p.area = area;
-		p.command_buffer = command_buffer;
-		p.render_pass = render_pass;
-		return p;
-	}
-	void render_frame(const rect& area, float aspect_ratio) {
-		const auto p = create_params(area);
-		command_buffer->begin();
-		prepare(p);
-		command_buffer->begin_render_pass(render_pass, frame_buffer);
-		command_buffer->set_viewport(area);
-		command_buffer->set_bind_point(vulkan::PipelineBindPoint::GRAPHICS);
-		draw(p);
-		command_buffer->end_render_pass();
-		command_buffer->end();
-		device->graphics_queue.submit(command_buffer, {}, {}, fence);
-		fence->wait();
-		//device->wait_idle();
-	}
-};
-
 
 class HuiWindowRenderer : public Renderer {
 public:
 	static constexpr int MAX_WIDTH = 1024*3;
 	static constexpr int MAX_HEIGHT = 2048;
+	shared<Texture> texture;
 	explicit HuiWindowRenderer(vulkan::Instance* instance) : Renderer("hui") {
 		device = vulkan::Device::create_simple(instance, nullptr, {"graphics", "anisotropy"});
 
 		image.create(MAX_WIDTH, MAX_HEIGHT, Red);
-		texture_renderer = new TextureRendererVulkan(device, MAX_WIDTH, MAX_HEIGHT);
+		texture = new Texture(MAX_WIDTH, MAX_HEIGHT, "bgra:i8");
+		texture_renderer = new TextureRendererVulkan(device, texture);
 	}
 	void prepare(const RenderParams& p) override {
 		texture_renderer->children = children;
@@ -155,7 +112,7 @@ public:
 		const auto params = create_params(w, h);
 		prepare(params);
 
-		texture_renderer->texture->read(&image.data[0]);
+		texture->read(&image.data[0]);
 		//image.mode = Image::Mode::BGRA;
 		//image.set_mode(Image::Mode::RGBA);
 
