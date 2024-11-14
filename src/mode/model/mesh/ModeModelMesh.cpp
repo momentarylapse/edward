@@ -532,6 +532,8 @@ void ModeModelMesh::easify() {
 }
 
 void ModeModelMesh::set_current_material(int index) {
+	if (index < 0)
+		return;
 	if (current_material == index)
 		return;
 	current_material = index;
@@ -540,6 +542,8 @@ void ModeModelMesh::set_current_material(int index) {
 }
 
 void ModeModelMesh::set_current_skin(int index) {
+	if (index < 0)
+		return;
 	if (current_skin == index)
 		return;
 
