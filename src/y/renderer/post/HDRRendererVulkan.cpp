@@ -8,6 +8,7 @@
 #include "HDRRendererVulkan.h"
 #ifdef USING_VULKAN
 #include "../base.h"
+#include "../helper/ComputeTask.h"
 #include <graphics-impl.h>
 #include <Config.h>
 #include <helper/PerformanceMonitor.h>
@@ -15,6 +16,7 @@
 #include <lib/base/iter.h>
 #include <lib/math/rect.h>
 #include <lib/math/vec2.h>
+#include <lib/os/msg.h>
 #include <world/Camera.h>
 #include <world/World.h>
 
@@ -36,6 +38,7 @@ static float resolution_scale_x = 1.0f;
 static float resolution_scale_y = 1.0f;
 
 static int BLUR_SCALE = 4;
+static int BLOOM_HEIGHT0 = 256;
 
 HDRRendererVulkan::RenderOutData::RenderOutData(Shader *s, const Array<Texture*> &tex) {
 	shader_out = s;
@@ -114,17 +117,24 @@ HDRRendererVulkan::HDRRendererVulkan(Camera *_cam, int width, int height) : Post
 
 	Array<vulkan::Texture*> blur_tex;
 	Array<DepthBuffer*> blur_depth;
-	int bloomw = width, bloomh = height;
+	int bloom_input_w = width/2;
+	int bloom_input_h = height;
 	for (int i=0; i<MAX_BLOOM_LEVELS; i++) {
-		bloomw /= BLUR_SCALE;
-		bloomh /= BLUR_SCALE;
-		blur_tex.add(new vulkan::Texture(bloomw, bloomh, "rgba:f16"));
-		blur_tex.add(new vulkan::Texture(bloomw, bloomh, "rgba:f16"));
-		blur_depth.add(new DepthBuffer(bloomw, bloomh, "d:f32", true));
+		int bloom_w = (i == 0) ? (BLOOM_HEIGHT0 * width) / height : bloom_input_w / BLUR_SCALE;
+		int bloom_h = (i == 0) ? BLOOM_HEIGHT0 : bloom_input_h / BLUR_SCALE;
 
-		blur_render_pass[i*2] = new vulkan::RenderPass({blur_tex[i*2], blur_depth[i]});
-		blur_render_pass[i*2+1] = new vulkan::RenderPass({blur_tex[i*2+1], blur_depth[i]});
+		// 1. horizontal
+		blur_tex.add(new vulkan::Texture(bloom_w, bloom_input_h, "rgba:f16"));
+		blur_depth.add(new DepthBuffer(bloom_w, bloom_input_h, "d:f32", true));
+		// 2. vertical
+		blur_tex.add(new vulkan::Texture(bloom_w, bloom_h, "rgba:f16"));
+		blur_depth.add(new DepthBuffer(bloom_w, bloom_h, "d:f32", true));
+
+		blur_render_pass[i*2] = new vulkan::RenderPass({blur_tex[i*2], blur_depth[i*2]});
+		blur_render_pass[i*2+1] = new vulkan::RenderPass({blur_tex[i*2+1], blur_depth[i*2+1]});
 		// without clear, we get artifacts from dynamic resolution scaling
+		bloom_input_w = bloom_w;
+		bloom_input_h = bloom_h;
 	}
 	for (auto t: blur_tex)
 		t->set_options("wrap=clamp");
@@ -154,6 +164,7 @@ HDRRendererVulkan::HDRRendererVulkan(Camera *_cam, int width, int height) : Post
 	vb_2d = new VertexBuffer("3f,3f,2f");
 	vb_2d->create_quad(rect::ID_SYM);
 
+	light_meter.init(resource_manager, fb_main, channel);
 }
 
 HDRRendererVulkan::~HDRRendererVulkan() = default;
@@ -193,6 +204,11 @@ void HDRRendererVulkan::prepare(const RenderParams& params) {
 	}
 	gpu_timestamp_end(cb, ch_post_blur);
 	PerformanceMonitor::end(ch_post_blur);
+
+	light_meter.measure(cb, fb_main);
+	if (cam->auto_exposure)
+		light_meter.adjust_camera(cam);
+
 	gpu_timestamp_end(cb, ch_prepare);
 	PerformanceMonitor::end(ch_prepare);
 
@@ -210,10 +226,10 @@ void HDRRendererVulkan::draw(const RenderParams& params) {
 }
 
 void HDRRendererVulkan::process_blur(CommandBuffer *cb, FrameBuffer *source, FrameBuffer *target, float threshold, int iaxis) {
-	const vec2 AXIS[2] = {{(float)BLUR_SCALE,0}, {0,1}};
+	const vec2 AXIS[2] = {{1,0}, {0,1}};
 	//const float SCALE[2] = {(float)BLUR_SCALE, 1};
 	UBOBlur u;
-	u.radius = 3;//cam->bloom_radius * resolution_scale_x * 4 / (float)BLUR_SCALE;
+	u.radius = (iaxis <= 1) ? 5 : 11;//cam->bloom_radius * resolution_scale_x * 4 / (float)BLUR_SCALE;
 	u.threshold = threshold / cam->exposure;
 	u.axis = AXIS[iaxis % 2];
 	blur_ubo[iaxis]->update(&u);
@@ -234,6 +250,61 @@ void HDRRendererVulkan::process_blur(CommandBuffer *cb, FrameBuffer *source, Fra
 	cb->end_render_pass();
 
 	//process(cb, {source->attachments[0].get()}, target, shader_blur.get());
+}
+
+void HDRRendererVulkan::LightMeter::init(ResourceManager* resource_manager, FrameBuffer* frame_buffer, int channel) {
+	ch_post_brightness = PerformanceMonitor::create_channel("expo", channel);
+	compute = new ComputeTask(resource_manager->load_shader("compute/brightness.shader"));
+	params = new UniformBuffer(8);
+	buf = new ShaderStorageBuffer(256*4);
+	compute->bind_texture(0, frame_buffer->attachments[0].get());
+	compute->bind_storage_buffer(1, buf);
+	compute->bind_uniform_buffer(2, params);
+}
+
+void HDRRendererVulkan::LightMeter::measure(CommandBuffer* cb, FrameBuffer* frame_buffer) {
+	PerformanceMonitor::begin(ch_post_brightness);
+	gpu_timestamp_begin(cb, ch_post_brightness);
+
+	int pp[2] = {frame_buffer->width, frame_buffer->height};
+	params->update(&pp);
+
+	int NBINS = 256;
+	const int NSAMPLES = 256;
+	if (histogram.num == NBINS) {
+		void* p = buf->map();
+		memcpy(&histogram[0], p, NBINS*sizeof(int));
+		buf->unmap();
+		//msg_write(str(histogram));
+
+		int thresh = (NSAMPLES * 16 * 16) / 200 * 199;
+		int n = 0;
+		int ii = 0;
+		for (int i=0; i<NBINS; i++) {
+			n += histogram[i];
+			if (n > thresh) {
+				ii = i;
+				break;
+			}
+		}
+		brightness = pow(2.0f, ((float)ii / (float)NBINS) * 20.0f - 10.0f);
+	}
+
+	histogram.resize(NBINS);
+	memset(&histogram[0], 0, NBINS * sizeof(int));
+	buf->update(&histogram[0]);
+	compute->dispatch(cb, NSAMPLES, 1, 1);
+
+	gpu_timestamp_end(cb, ch_post_brightness);
+	PerformanceMonitor::end(ch_post_brightness);
+}
+
+void HDRRendererVulkan::LightMeter::adjust_camera(Camera *cam) {
+	float exposure = clamp((float)pow(1.0f / brightness, 0.8f), cam->auto_exposure_min, cam->auto_exposure_max);
+	if (exposure > cam->exposure)
+		cam->exposure *= 1.05f;
+	if (exposure < cam->exposure)
+		cam->exposure /= 1.05f;
 }
 
 #endif

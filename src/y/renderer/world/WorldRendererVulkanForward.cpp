@@ -9,9 +9,11 @@
 #ifdef USING_VULKAN
 #include "pass/ShadowRendererVulkan.h"
 #include "../../graphics-impl.h"
+#include "../helper/CubeMapSource.h"
 #include "../base.h"
 #include <lib/os/msg.h>
 
+#include <y/ComponentManager.h>
 #include "../../helper/PerformanceMonitor.h"
 #include "../../helper/ResourceManager.h"
 #include "../../gui/gui.h"
@@ -35,14 +37,27 @@ void WorldRendererVulkanForward::prepare(const RenderParams& params) {
 
 
 #ifndef OS_MAC
-	static int _frame = 0;
+	suggest_cube_map_pos();
+	auto cube_map_sources = ComponentManager::get_list<CubeMapSource>();
+	cube_map_sources.add(cube_map_source);
+	for (auto& source: cube_map_sources) {
+		if (source->update_rate <= 0)
+			continue;
+		source->counter ++;
+		if (source->counter >= source->update_rate) {
+			render_into_cubemap(*source, params);
+			source->counter = 0;
+		}
+	}
+	/*static int _frame = 0;
 	_frame ++;
 	if (_frame >= cube_update_rate) {
 		render_into_cubemap(params, scene_view.cube_map.get(), suggest_cube_map_pos());
 		_frame = 0;
-	}
+	}*/
 #endif
 
+	scene_view.check_terrains(cam_main->owner->pos);
 	scene_view.cam->update_matrices(params.desired_aspect_ratio);
 
 	prepare_lights(scene_view.cam, geo_renderer->rvd_def);
@@ -86,6 +101,10 @@ void WorldRendererVulkanForward::draw(const RenderParams& params) {
 	PerformanceMonitor::end(ch_draw);
 }
 
+// FIXME
+// rvd is unused   ...i.e. ::draw() will always draw from a fixed camera...
+// TODO what state should be inside GeometryRenderer?!? who keeps rvd's?!?
+// for now, cubemaps are broken
 void WorldRendererVulkanForward::render_into_texture(FrameBuffer *fb, Camera *cam, RenderViewDataVK &rvd, const RenderParams& params) {
 	auto cb = params.command_buffer;
 	auto rp = params.render_pass;

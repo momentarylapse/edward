@@ -9,6 +9,7 @@
 #ifdef USING_VULKAN
 #include "pass/ShadowRendererVulkan.h"
 #include "../../graphics-impl.h"
+#include "../helper/CubeMapSource.h"
 #include <lib/image/image.h>
 #include <lib/math/vec3.h>
 #include <lib/math/complex.h>
@@ -28,23 +29,23 @@ WorldRendererVulkan::WorldRendererVulkan(const string &name, Camera *cam, Render
 
 	vb_2d = nullptr;
 
-	scene_view.cube_map = new CubeMap(cube_resolution, "rgba:i8");
+	// not sure this is a good idea...
+	auto e = new Entity;
+	cube_map_source = new CubeMapSource;
+	cube_map_source->owner = e;
+	cube_map_source->cube_map = new CubeMap(cube_map_source->resolution, "rgba:i8");
+
+	scene_view.cube_map = cube_map_source->cube_map;
+
 	if (false) {
 		Image im;
-		im.create(cube_resolution, cube_resolution, Red);
+		im.create(cube_map_source->resolution, cube_map_source->resolution, Red);
 		scene_view.cube_map->write_side(0, im);
-		im.create(cube_resolution, cube_resolution, color(1, 1,0.5f,0));
+		im.create(cube_map_source->resolution, cube_map_source->resolution, color(1, 1,0.5f,0));
 		scene_view.cube_map->write_side(1, im);
-		im.create(cube_resolution, cube_resolution, color(1, 1,0,1));
+		im.create(cube_map_source->resolution, cube_map_source->resolution, color(1, 1,0,1));
 		scene_view.cube_map->write_side(2, im);
 	}
-
-	depth_cube = new DepthBuffer(cube_resolution, cube_resolution, "d:f32", true);
-
-	render_pass_cube = new vulkan::RenderPass({scene_view.cube_map.get(), depth_cube.get()}, {"autoclear"});
-	fb_cube = new vulkan::FrameBuffer(render_pass_cube, {scene_view.cube_map.get(), depth_cube.get()});
-
-
 
 	vb_2d = new VertexBuffer("3f,3f,2f");
 	vb_2d->create_quad(rect::ID_SYM);
@@ -65,21 +66,27 @@ void WorldRendererVulkan::create_more() {
 
 }
 
-WorldRendererVulkan::~WorldRendererVulkan() {
-}
+WorldRendererVulkan::~WorldRendererVulkan() = default;
 
 
-void WorldRendererVulkan::render_into_cubemap(const RenderParams& params, CubeMap *cube, const CubeMapParams &cube_params) {
-	if (!fb_cube)
-		fb_cube = new FrameBuffer(render_pass_cube, {depth_cube.get()});
-	Entity o(cube_params.pos, quaternion::ID);
+void WorldRendererVulkan::render_into_cubemap(CubeMapSource& source, const RenderParams& params) {
+	if (!source.depth_buffer)
+		source.depth_buffer = new DepthBuffer(source.resolution, source.resolution, "d:f32", true);
+	if (!source.cube_map)
+		source.cube_map = new CubeMap(source.resolution, "rgba:i8");
+	if (!source.render_pass)
+		source.render_pass = new vulkan::RenderPass({source.cube_map.get(), source.depth_buffer.get()}, {"autoclear"});
+	if (!source.frame_buffer)
+		source.frame_buffer = new FrameBuffer(source.render_pass.get(), {source.depth_buffer.get()});
+	Entity o(source.owner->pos, quaternion::ID);
 	Camera cube_cam;
 	cube_cam.owner = &o;
 	cube_cam.fov = pi/2;
-	cube_cam.min_depth = cube_params.min_depth;
+	cube_cam.min_depth = source.min_depth;
+	cube_cam.max_depth = source.max_depth;
 	for (int i=0; i<6; i++) {
 		try {
-			fb_cube->update_x(render_pass_cube, {cube, depth_cube.get()}, i);
+			source.frame_buffer->update_x(source.render_pass.get(), {source.cube_map.get(), source.depth_buffer.get()}, i);
 		} catch(Exception &e) {
 			msg_error(e.message());
 			return;
@@ -96,9 +103,9 @@ void WorldRendererVulkan::render_into_cubemap(const RenderParams& params, CubeMa
 			o.ang = quaternion::rotation(vec3(0,0,0));
 		if (i == 5)
 			o.ang = quaternion::rotation(vec3(0,pi,0));
-		auto sub_params = params.with_target(fb_cube.get());
-		sub_params.render_pass = render_pass_cube;
-		render_into_texture(fb_cube.get(), &cube_cam, rvd_cube[i], sub_params);
+		auto sub_params = params.with_target(source.frame_buffer.get());
+		sub_params.render_pass = source.render_pass.get();
+		render_into_texture(source.frame_buffer.get(), &cube_cam, rvd_cube[i], sub_params);
 	}
 	cube_cam.owner = nullptr;
 }

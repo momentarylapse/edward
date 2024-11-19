@@ -68,7 +68,6 @@ public:
 	bool _cdecl trace(const vec3 &p1, const vec3 &p2, const vec3 &dir, float range, CollisionData &data, bool simple_test);
 
 	void calc_detail(const vec3 &cam_pos);
-	void build_vertex_buffer();
 	void prepare_draw(const vec3 &cam_pos);
 
 	Path filename;
@@ -96,11 +95,30 @@ public:
 
 
 	bool changed;
-	bool redraw, force_redraw;
-	vec3 pos_old;
+	bool force_redraw;
 
 
 	static const kaba::Class *_class;
+};
+
+struct XTerrainVBUpdater {
+	struct Vertex {
+		vec3 pos, n;
+		float u, v;
+	};
+	Array<vec3> p,n;
+	Array<float> uv;
+	Array<Vertex> vertices;
+	int mode = 0;
+	int counter = 0;
+	Terrain* terrain = nullptr;
+	VertexBuffer* vb = nullptr;
+
+	bool build_chunk(int chunk_no);
+	void condense();
+	void upload();
+
+	int iterate(const vec3 &cam_pos);
 };
 
 

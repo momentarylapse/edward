@@ -75,6 +75,7 @@ void WorldRendererGLDeferred::prepare(const RenderParams& params) {
 
 	auto sub_params = params.with_target(gbuffer.get());
 
+	scene_view.check_terrains(cam_main->owner->pos);
 	prepare_lights();
 
 	geo_renderer->prepare(sub_params);

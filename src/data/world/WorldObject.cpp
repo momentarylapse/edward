@@ -7,7 +7,6 @@
 
 #include "WorldObject.h"
 #include "DataWorld.h"
-#include <y/world/Object.h>
 
 WorldObject::~WorldObject() = default;
 

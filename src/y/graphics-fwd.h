@@ -31,6 +31,7 @@
 		class DepthBuffer;
 		class Buffer;
 		class UniformBuffer;
+		class StorageBuffer;
 		enum class Alpha;
 		enum class AlphaMode;
 		enum class CullMode;
@@ -56,8 +57,10 @@
 	using DepthBuffer = vulkan::DepthBuffer;
 	using CubeMap = vulkan::CubeMap;
 	using VolumeTexture = vulkan::VolumeTexture;
+	using ImageTexture = vulkan::StorageTexture;
 	using Buffer = vulkan::Buffer;
 	using UniformBuffer = vulkan::UniformBuffer;
+	using ShaderStorageBuffer = vulkan::StorageBuffer;
 	using GraphicsPipeline = vulkan::GraphicsPipeline;
 	using ComputePipeline = vulkan::ComputePipeline;
 	using RayPipeline = vulkan::RayPipeline;
@@ -89,8 +92,10 @@
 		class DepthBuffer;
 		class CubeMap;
 		class VolumeTexture;
+		class ImageTexture;
 		class Buffer;
 		class UniformBuffer;
+		class ShaderStorageBuffer;
 		enum class Alpha;
 		enum class AlphaMode;
 		enum class CullMode;
@@ -105,8 +110,10 @@
 	using DepthBuffer = nix::DepthBuffer;
 	using CubeMap = nix::CubeMap;
 	using VolumeTexture = nix::VolumeTexture;
+	using ImageTexture = nix::ImageTexture;
 	using Buffer = nix::Buffer;
 	using UniformBuffer = nix::UniformBuffer;
+	using ShaderStorageBuffer = nix::ShaderStorageBuffer;
 
 	using Alpha = nix::Alpha;
 	using AlphaMode = nix::AlphaMode;

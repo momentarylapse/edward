@@ -11,7 +11,7 @@
 #include "../../multiview/SingleData.h"
 #include "../../lib/os/path.h"
 
-class Object;
+class Model;
 class ScriptInstanceData;
 
 class WorldObject: public MultiView::SingleData {
@@ -20,7 +20,7 @@ public:
 	Path filename;
 	Array<ScriptInstanceData> components;
 	string name;
-	Object *object;
+	Model *object;
 	vec3 ang;
 
 	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;

@@ -15,7 +15,6 @@
 #include "../../../data/world/WorldTerrain.h"
 #include "../../../EdwardWindow.h"
 #include <y/world/Model.h>
-#include <y/world/Object.h>
 #include <y/world/World.h>
 #include <y/EngineData.h>
 #include <y/world/ModelManager.h>

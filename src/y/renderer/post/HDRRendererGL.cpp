@@ -6,8 +6,11 @@
  */
 
 #include "HDRRendererGL.h"
+
+#include <lib/image/image.h>
 #ifdef USING_OPENGL
 #include "../base.h"
+#include "../helper/ComputeTask.h"
 #include <lib/nix/nix.h>
 #include <lib/math/vec2.h>
 #include <lib/math/rect.h>
@@ -75,10 +78,11 @@ HDRRendererGL::HDRRendererGL(Camera *_cam, int width, int height) : PostProcesso
 
 	vb_2d = new nix::VertexBuffer("3f,3f,2f");
 	vb_2d->create_quad(rect::ID_SYM);
+
+	light_meter.init(resource_manager, fb_main.get(), channel);
 }
 
 HDRRendererGL::~HDRRendererGL() = default;
-
 
 void render_source_into_framebuffer(Renderer *r, FrameBuffer *fb, VertexBuffer *vb_2d, const RenderParams& params) {
 	vb_2d->create_quad(rect::ID_SYM, dynamicly_scaled_source());
@@ -162,6 +166,11 @@ void HDRRendererGL::prepare(const RenderParams& params) {
 	//glGenerateTextureMipmap(fb_small2->color_attachments[0]->texture);
 	gpu_timestamp_end(ch_post_blur);
 	PerformanceMonitor::end(ch_post_blur);
+
+	light_meter.measure(fb_main.get());
+	if (cam->auto_exposure)
+		light_meter.adjust_camera(cam);
+
 	PerformanceMonitor::end(ch_prepare);
 }
 
@@ -227,5 +236,65 @@ void HDRRendererGL::render_out(FrameBuffer *source, Texture *bloom, const Render
 	gpu_timestamp_end(ch_out);
 	PerformanceMonitor::end(ch_out);
 }
+
+
+
+void HDRRendererGL::LightMeter::init(ResourceManager* resource_manager, FrameBuffer* frame_buffer, int channel) {
+	ch_post_brightness = PerformanceMonitor::create_channel("expo", channel);
+	compute = new ComputeTask(resource_manager->load_shader("compute/brightness.shader"));
+	params = new UniformBuffer();
+	buf = new ShaderStorageBuffer();
+	compute->bind_texture(0, frame_buffer->color_attachments[0].get());
+	compute->bind_storage_buffer(1, buf);
+	compute->bind_uniform_buffer(2, params);
+}
+
+void HDRRendererGL::LightMeter::measure(FrameBuffer* frame_buffer) {
+	PerformanceMonitor::begin(ch_post_brightness);
+	gpu_timestamp_begin(ch_post_brightness);
+
+	int NBINS = 256;
+	histogram.resize(NBINS);
+	memset(&histogram[0], 0, NBINS * sizeof(int));
+	buf->update(&histogram[0], NBINS * sizeof(int));
+
+	int pp[2] = {frame_buffer->width, frame_buffer->height};
+	params->update(&pp, sizeof(pp));
+	const int NSAMPLES = 256;
+	compute->dispatch(NSAMPLES, 1, 1);
+
+	buf->read(&histogram[0], NBINS*sizeof(int));
+	//msg_write(str(histogram));
+
+	gpu_timestamp_end(ch_post_brightness);
+
+	/*int s = 0;
+	for (int i=0; i<NBINS; i++)
+		s += histogram[i];
+	msg_write(format("%d  %d", s, NSAMPLES*256));*/
+
+	int thresh = (NSAMPLES * 16 * 16) / 200 * 199;
+	int n = 0;
+	int ii = 0;
+	for (int i=0; i<NBINS; i++) {
+		n += histogram[i];
+		if (n > thresh) {
+			ii = i;
+			break;
+		}
+	}
+	brightness = pow(2.0f, ((float)ii / (float)NBINS) * 20.0f - 10.0f);
+	PerformanceMonitor::end(ch_post_brightness);
+}
+
+void HDRRendererGL::LightMeter::adjust_camera(Camera *cam) {
+	float exposure = clamp(pow(1.0f / brightness, 0.8f), cam->auto_exposure_min, cam->auto_exposure_max);
+	if (exposure > cam->exposure)
+		cam->exposure *= 1.05f;
+	if (exposure < cam->exposure)
+		cam->exposure /= 1.05f;
+}
+
+
 
 #endif

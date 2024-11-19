@@ -7,6 +7,8 @@
 
 #include "WorldRendererGL.h"
 
+#include <renderer/helper/CubeMapSource.h>
+
 #ifdef USING_OPENGL
 #include "geometry/GeometryRendererGL.h"
 #include "pass/ShadowRendererGL.h"
@@ -30,9 +32,14 @@ WorldRendererGL::WorldRendererGL(const string &name, Camera *cam, RenderPathType
 		WorldRenderer(name, cam) {
 	type = _type;
 
-	depth_cube = new nix::DepthBuffer(cube_resolution, cube_resolution, "d24s8");
-	fb_cube = nullptr;
-	scene_view.cube_map = new nix::CubeMap(cube_resolution, "rgba:i8");
+	// not sure this is a good idea...
+	auto e = new Entity;
+	cube_map_source = new CubeMapSource;
+	cube_map_source->owner = e;
+	cube_map_source->cube_map = new CubeMap(cube_map_source->resolution, "rgba:i8");
+
+	scene_view.cube_map = cube_map_source->cube_map;
+
 	scene_view.ubo_light = new nix::UniformBuffer();
 }
 
@@ -52,17 +59,21 @@ void WorldRendererGL::prepare_lights() {
 	PerformanceMonitor::end(ch_prepare_lights);
 }
 
-void WorldRendererGL::render_into_cubemap(DepthBuffer *depth, CubeMap *cube, const CubeMapParams &params) {
-	if (!fb_cube)
-		fb_cube = new nix::FrameBuffer({depth});
-	Entity o(params.pos, quaternion::ID);
+void WorldRendererGL::render_into_cubemap(CubeMapSource& source) {
+	if (!source.depth_buffer)
+		source.depth_buffer = new nix::DepthBuffer(source.resolution, source.resolution, "d24s8");
+	if (!source.cube_map)
+		source.cube_map = new CubeMap(source.resolution, "rgba:i8");
+	if (!source.frame_buffer)
+		source.frame_buffer = new nix::FrameBuffer({source.depth_buffer.get()});
+	Entity o(source.owner->pos, quaternion::ID);
 	Camera cam;
-	cam.min_depth = params.min_depth;
+	cam.min_depth = source.min_depth;
 	cam.owner = &o;
 	cam.fov = pi/2;
 	for (int i=0; i<6; i++) {
 		try {
-			fb_cube->update_x({cube, depth}, i);
+			source.frame_buffer->update_x({source.cube_map.get(), source.depth_buffer.get()}, i);
 		} catch(Exception &e) {
 			msg_error(e.message());
 			return;
@@ -80,7 +91,7 @@ void WorldRendererGL::render_into_cubemap(DepthBuffer *depth, CubeMap *cube, con
 		if (i == 5)
 			o.ang = quaternion::rotation(vec3(0,pi,0));
 		//prepare_lights(&cam);
-		render_into_texture(fb_cube.get(), &cam);
+		render_into_texture(source.frame_buffer.get(), &cam);
 	}
 	cam.owner = nullptr;
 }

@@ -10,15 +10,14 @@
 #include "Terrain.h"
 #include "Material.h"
 #include "World.h"
-#include "../y/Entity.h"
 #include "../y/EngineData.h"
-#include <lib/config.h>
-#include <lib/math/vec3.h>
-#include <lib/math/plane.h>
 #include "../helper/ResourceManager.h"
 #include "../graphics-impl.h"
+#include <lib/math/vec3.h>
+#include <lib/math/plane.h>
 #include <lib/os/file.h>
 #include <lib/os/msg.h>
+#include <lib/os/time.h>
 
 const kaba::Class *Terrain::_class = nullptr;
 
@@ -467,10 +466,12 @@ bool Terrain::trace(const vec3 &p1, const vec3 &p2, const vec3 &dir, float range
 	return false;
 }
 
-void Terrain::build_vertex_buffer() {
-	//Array<vulkan::Vertex1> vertices;
-	Array<vec3> p,n;
-	Array<float> uv;
+bool XTerrainVBUpdater::build_chunk(int chunk_no) {
+	int num_x = terrain->num_x;
+	int num_z = terrain->num_z;
+	auto& chunk_lod = terrain->chunk_lod;
+	auto& vertex = terrain->vertex;
+	auto& normal = terrain->normal;
 
 	// number of blocks (including the partially filled ones)
 	int nx = (num_x - 1) / TERRAIN_CHUNK_SIZE + 1;
@@ -478,9 +479,13 @@ void Terrain::build_vertex_buffer() {
 	/*nx=num_x/32;
 	nz=num_z/32;*/
 
+	int x1 = chunk_no / nz;
+	int z1 = chunk_no % nz;
+
 	// loop through the blocks
-	for (int x1=0; x1<nx; x1++)
-		for (int z1=0; z1<nz; z1++) {
+	/*for (int x1=0; x1<nx; x1++)
+		for (int z1=0; z1<nz; z1++) {*/
+	for (int _i=0; _i<1; _i++) {
 
 			// block size?    (32 or cut off...)
 			int lx = (x1 * TERRAIN_CHUNK_SIZE > num_x - TERRAIN_CHUNK_SIZE) ? (num_x % TERRAIN_CHUNK_SIZE) : TERRAIN_CHUNK_SIZE;
@@ -606,39 +611,69 @@ void Terrain::build_vertex_buffer() {
 
 				}
 		}
-	Array<Vertex1> vertex;
+	return chunk_no >= nx*nz-1;
+}
+
+void XTerrainVBUpdater::condense() {
 	for (int i=0; i<p.num; i++) {
-		vertex.add({p[i], n[i], uv[i*2], uv[i*2+1]});
+		vertices.add({p[i], n[i], uv[i*2], uv[i*2+1]});
 	}
-	vertex_buffer->update(vertex);
+	p.clear();
+	n.clear();
+	uv.clear();
+}
+
+void XTerrainVBUpdater::upload() {
+	vb->update(vertices);
+	vertices.clear();
+}
+
+int XTerrainVBUpdater::iterate(const vec3 &cam_pos) {
+	if (mode == 0) {
+		terrain->calc_detail(cam_pos);
+
+		// do we have to recreate the terrain?
+		bool redraw = false;
+		if (terrain->force_redraw) {
+			redraw = true;
+		} else {
+			for (int x=0; x<terrain->num_x/TERRAIN_CHUNK_SIZE; x++)
+				for (int z=0; z<terrain->num_z/TERRAIN_CHUNK_SIZE; z++)
+					if (terrain->chunk_lod_old[x][z] != terrain->chunk_lod[x][z])
+						redraw = true;
+		}
+		if (!redraw)
+			return 0; // no update needed
+
+		terrain->force_redraw = false;
+		for (int x=0; x<terrain->num_x/TERRAIN_CHUNK_SIZE; x++)
+			for (int z=0; z<terrain->num_z/TERRAIN_CHUNK_SIZE; z++)
+				terrain->chunk_lod_old[x][z] = terrain->chunk_lod[x][z];
+		mode = 10;
+	} else if (mode == 10) {
+		if (build_chunk(counter ++)) {
+			mode = 11;
+			counter = 0;
+		}
+	} else if (mode == 11) {
+		condense();
+		mode = 12;
+	} else if (mode == 12) {
+		upload();
+		mode = 0;
+		return 2; // swap vb and restart!
+	}
+	return 1; // keep iterating!
 }
 
 void Terrain::prepare_draw(const vec3 &cam_pos) {
-	redraw = false;
 	// c d
 	// a b
 	// (acd),(adb)
-	calc_detail(cam_pos); // how detailed shall it be?
 
-
-	// do we have to recreate the terrain?
-	if (force_redraw) {
-		redraw = true;
-	} else {
-		for (int x=0; x<num_x/TERRAIN_CHUNK_SIZE; x++)
-			for (int z=0; z<num_z/TERRAIN_CHUNK_SIZE; z++)
-				if (chunk_lod_old[x][z] != chunk_lod[x][z])
-					redraw = true;
-	}
-
-	// recreate (in vertex buffer)
-	if (redraw)
-		build_vertex_buffer();
-
-	pos_old = cam_pos;
-	force_redraw = false;
-	for (int x=0; x<num_x/TERRAIN_CHUNK_SIZE; x++)
-		for (int z=0; z<num_z/TERRAIN_CHUNK_SIZE; z++)
-			chunk_lod_old[x][z] = chunk_lod[x][z];
+	XTerrainVBUpdater u;
+	u.terrain = this;
+	u.vb = vertex_buffer.get();
+	while (int r = u.iterate(cam_pos) == 1) {}
 }
 

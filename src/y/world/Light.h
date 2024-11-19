@@ -51,7 +51,8 @@ public:
 	mat4 shadow_projection; // world -> texture
 	float shadow_dist_min, shadow_dist_max;
 
-	LightType type;
+	LightType type() const;
+
 	static const kaba::Class *_class;
 };
 

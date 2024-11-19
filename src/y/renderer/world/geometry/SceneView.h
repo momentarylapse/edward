@@ -12,6 +12,9 @@
 
 class Camera;
 struct UBOLight;
+struct XTerrainVBUpdater;
+
+class TerrainUpdateThread;
 
 struct SceneView {
 	Camera *cam;
@@ -26,6 +29,12 @@ struct SceneView {
 	mat4 shadow_proj;
 
 	void prepare_lights(float shadow_box_size);
+
+
+	void check_terrains(const vec3& cam_pos);
+
+	//TerrainUpdateThread* terrain_update_thread = nullptr;
+	Array<XTerrainVBUpdater*> updater;
 };
 
 

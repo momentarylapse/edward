@@ -16,7 +16,7 @@
 #endif
 #include "../../Session.h"
 #include "../../storage/Storage.h"
-#include <y/world/Object.h>
+#include <y/world/Model.h>
 #include <y/world/Terrain.h>
 #include <y/world/World.h>
 #include <y/meta.h>
@@ -164,7 +164,7 @@ WorldObject* DataWorld::add_object(const Path &filename, const vec3& pos) {
 	o.ang = v_0;//quaternion::ID;
 	o.is_selected = true;
 	o.filename = filename;
-	o.object = (Object*)session->resource_manager->load_model(filename);
+	o.object = session->resource_manager->load_model(filename);
 	return (WorldObject*)execute(new ActionWorldAddObject(o));
 }
 

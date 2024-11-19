@@ -12,11 +12,12 @@
 
 class vec2;
 class Camera;
+class ComputeTask;
 
 class HDRRendererGL : public PostProcessorStage {
 public:
 	HDRRendererGL(Camera *cam, int width, int height);
-	virtual ~HDRRendererGL();
+	~HDRRendererGL() override;
 
 	void prepare(const RenderParams& params) override;
 	void draw(const RenderParams& params) override;
@@ -45,6 +46,18 @@ public:
 	owned<VertexBuffer> vb_2d;
 
 	int ch_post_blur = -1, ch_out = -1;
+
+	struct LightMeter {
+		void init(ResourceManager* resource_manager, FrameBuffer* frame_buffer, int channel);
+		ComputeTask* compute;
+		UniformBuffer* params;
+		ShaderStorageBuffer* buf;
+		Array<int> histogram;
+		float brightness;
+		int ch_post_brightness = -1;
+		void measure(FrameBuffer* frame_buffer);
+		void adjust_camera(Camera* cam);
+	} light_meter;
 };
 
 #endif

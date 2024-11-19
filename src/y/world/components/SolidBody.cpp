@@ -8,7 +8,6 @@
 #include "SolidBody.h"
 #include "Collider.h"
 #include "../World.h"
-#include "../Object.h"
 #include "../Model.h"
 #include "../ModelManager.h"
 #include "../../y/Entity.h"

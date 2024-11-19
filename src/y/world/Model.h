@@ -168,7 +168,6 @@ public:
 	Path filename();
 
 	// engine data
-	bool registered;
 	bool _detail_needed_[MODEL_NUM_MESHES]; // per frame
 
 

@@ -28,14 +28,16 @@ Light::Light(const color &c, float r, float t) {
 	user_shadow_theta = -1;
 	shadow_dist_min = -1;
 	shadow_dist_max = -1;
-	type = LightType::DIRECTIONAL;
-	if (light.radius > 0) {
-		if (light.theta > 0)
-			type = LightType::CONE;
-		else
-			type = LightType::POINT;
-	}
 }
+
+LightType Light::type() const {
+	if (light.radius <= 0)
+		return LightType::DIRECTIONAL;
+	if (light.theta > 0)
+		return LightType::CONE;
+	return LightType::POINT;
+}
+
 
 void Light::on_init() {
 	auto o = owner;
@@ -70,7 +72,7 @@ void Light::update(Camera *cam, float shadow_box_size, bool using_view_space) {
 	}
 
 	if (allow_shadow) {
-		if (type == LightType::DIRECTIONAL) {
+		if (type() == LightType::DIRECTIONAL) {
 			//msg_write(format("shadow dir: %s  %s", light.pos.str(), light.dir.str()));
 			vec3 center = cam->owner->pos + cam->owner->ang*vec3::EZ * (shadow_box_size / 3.0f);
 			float grid = shadow_box_size / 16;
@@ -90,11 +92,11 @@ void Light::update(Camera *cam, float shadow_box_size, bool using_view_space) {
 		} else {
 			auto t = mat4::translation(- o->pos);
 			auto ang = cam->owner->ang;
-			if (type == LightType::CONE or user_shadow_control)
+			if (type() == LightType::CONE or user_shadow_control)
 				ang = o->ang;
 			auto r = mat4::rotation(ang).transpose();
 			float theta = 1.35f;
-			if (type == LightType::CONE)
+			if (type() == LightType::CONE)
 				theta = light.theta;
 			if (user_shadow_theta > 0)
 				theta = user_shadow_theta;

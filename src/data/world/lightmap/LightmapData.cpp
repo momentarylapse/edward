@@ -13,7 +13,6 @@
 #include "../../../data/model/DataModel.h"
 #include "../../../data/model/ModelMesh.h"
 #include "../../../data/model/ModelPolygon.h"
-#include <y/world/Object.h>
 #include <y/world/Terrain.h>
 #include <y/EngineData.h>
 #include "../../../storage/Storage.h"

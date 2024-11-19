@@ -17,7 +17,7 @@ class Path;
 class Skeleton : public Component {
 public:
 	Skeleton();
-	virtual ~Skeleton();
+	~Skeleton() override;
 
 	void on_init() override;
 	void on_delete() override;

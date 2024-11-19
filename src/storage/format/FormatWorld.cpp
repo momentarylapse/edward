@@ -16,7 +16,6 @@
 #include "../../Session.h"
 #include "../../stuff/Progress.h"
 #include <y/world/Model.h>
-#include <y/world/Object.h>
 #include <y/world/World.h>
 #include <y/y/EngineData.h>
 #include <y/world/ModelManager.h>
@@ -103,7 +102,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 		}
 		for (int i=0;i<data->objects.num;i++) {
 			//session->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);
-			data->objects[i].object = (Object*)data->session->resource_manager->load_model(data->objects[i].filename);
+			data->objects[i].object = data->session->resource_manager->load_model(data->objects[i].filename);
 			if (auto sk = data->objects[i].object->_template->skeleton) {
 				for (int i=0; i<sk->bones.num; i++)
 					if (sk->filename[i]){}

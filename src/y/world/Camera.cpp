@@ -47,6 +47,10 @@ Camera::Camera() {
 	exposure = 1.0f;
 	bloom_radius = 10;
 	bloom_factor = 0.15f;
+	auto_exposure = false;
+	auto_exposure_min = 0.3f;
+	auto_exposure_max = 4.0f;
+	auto_exposure_speed = 1.0f;
 
 	focus_enabled = false;
 	focal_length = 2000;

@@ -40,7 +40,6 @@
 #include <y/world/World.h>
 #include <y/world/Material.h>
 #include <y/world/Model.h>
-#include <y/world/Object.h>
 #include <y/world/Terrain.h>
 #include "../../action/world/ActionWorldEditData.h"
 #include "../../action/world/ActionWorldSetEgo.h"
@@ -240,7 +239,7 @@ float WorldObject::hover_distance(MultiView::Window *win, const vec2 &mv, vec3 &
 }
 
 bool WorldObject::in_rect(MultiView::Window *win, const rect &r) {
-	Object *m = object;
+	Model *m = object;
 	if (!m)
 		return false;
 	int d = 0;//m->_detail_;

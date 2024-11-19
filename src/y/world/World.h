@@ -101,11 +101,6 @@ public:
 	void delete_entity(Entity *e);
 	void delete_link(Link *l);
 
-	void register_model(Model *m);
-	void unregister_model(Model *m);
-
-	void register_model_multi(MultiInstance *mi);
-
 	void add_link(Link *l);
 
 	Path filename;
@@ -182,6 +177,10 @@ void GodInit(int ch_iter);
 void GodEnd();
 bool GodLoadWorld(const Path &filename);
 
+
+Light* attach_light_parallel(Entity* e, const color& c);
+Light* attach_light_point(Entity* e, const color& c, float r);
+Light* attach_light_cone(Entity* e, const color& c, float r, float theta);
 
 enum {
 	NET_MSG_CREATE_OBJECT = 1000,

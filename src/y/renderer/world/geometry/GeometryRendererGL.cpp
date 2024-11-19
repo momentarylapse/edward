@@ -25,7 +25,6 @@
 #include "../../../world/Camera.h"
 #include "../../../world/Material.h"
 #include "../../../world/Model.h"
-#include "../../../world/Object.h" // meh
 #include "../../../world/Terrain.h"
 #include "../../../world/World.h"
 #include "../../../world/Light.h"
@@ -98,6 +97,7 @@ void GeometryRendererGL::set_material_x(Material *m, Shader *s) {
 	nix::set_material(m->albedo, m->roughness, m->metal, m->emission);
 }
 
+
 #if 0
 void GeometryRendererGL::set_textures(const Array<Texture*> &tex) {
 	auto tt = tex;
@@ -136,22 +136,63 @@ void GeometryRendererGL::draw_particles() {
 
 	auto cam = scene_view.cam;
 
-	// particles
 	auto r = mat4::rotation(cam->owner->ang);
-	for (auto& g: world.particle_manager->legacy_groups) {
-		nix::bind_texture(0, g.texture);
+
+	auto add_beam_vertices = [&cam] (Array<VertexFx>& v, const vec3& pos, const vec3& length, float radius, const color& col, const rect& source) {
+		// TODO geometry shader!
+		auto pa = cam->project(pos);
+		auto pb = cam->project(pos + length);
+		auto pe = vec3::cross(pb - pa, vec3::EZ).normalized();
+		auto uae = cam->unproject(pa + pe * 0.1f);
+		auto ube = cam->unproject(pb + pe * 0.1f);
+		auto _e1 = (pos - uae).normalized() * radius;
+		auto _e2 = (pos + length - ube).normalized() * radius;
+		//vec3 e1 = -vec3::cross(cam->ang * vec3::EZ, p.length).normalized() * p.radius/2;
+
+		vec3 p00 = pos - _e1;
+		vec3 p01 = pos - _e2 + length;
+		vec3 p10 = pos + _e1;
+		vec3 p11 = pos + _e2 + length;
+
+		v.add({p00, col, source.x1, source.y1});
+		v.add({p01, col, source.x2, source.y1});
+		v.add({p11, col, source.x2, source.y2});
+		v.add({p00, col, source.x1, source.y1});
+		v.add({p11, col, source.x2, source.y2});
+		v.add({p10, col, source.x1, source.y2});
+	};
+
+	// legacy particles
+	base::map<Texture*, Array<LegacyParticle*>> legacy_groups;
+	auto& legacy_particles = ComponentManager::get_list_family<LegacyParticle>();
+	for (auto p: legacy_particles) {
+		int i = legacy_groups.find(p->texture.get());
+		if (i >= 0) {
+			legacy_groups.by_index(i).add(p);
+		} else {
+			legacy_groups.add({p->texture.get(), {p}});
+		}
+	}
+
+	for (const auto& [texture, particles]: legacy_groups) {
+		nix::bind_texture(0, texture);
 
 		Array<VertexFx> v;
-		for (auto p: g.particles)
+		for (auto p: particles)
 			if (p->enabled) {
-				auto m = mat4::translation(p->owner->pos) * r * mat4::scale(p->radius, p->radius, p->radius);
+				if (p->is_beam) {
+					auto b = reinterpret_cast<LegacyBeam*>(p);
+					add_beam_vertices(v, p->owner->pos, b->length, p->radius, p->col, p->source);
+				} else {
+					auto m = mat4::translation(p->owner->pos) * r * mat4::scale(p->radius, p->radius, p->radius);
 
-				v.add({m * vec3(-1, 1,0), p->col, p->source.x1, p->source.y1});
-				v.add({m * vec3( 1, 1,0), p->col, p->source.x2, p->source.y1});
-				v.add({m * vec3( 1,-1,0), p->col, p->source.x2, p->source.y2});
-				v.add({m * vec3(-1, 1,0), p->col, p->source.x1, p->source.y1});
-				v.add({m * vec3( 1,-1,0), p->col, p->source.x2, p->source.y2});
-				v.add({m * vec3(-1,-1,0), p->col, p->source.x1, p->source.y2});
+					v.add({m * vec3(-1, 1, 0), p->col, p->source.x1, p->source.y1});
+					v.add({m * vec3(1, 1, 0), p->col, p->source.x2, p->source.y1});
+					v.add({m * vec3(1, -1, 0), p->col, p->source.x2, p->source.y2});
+					v.add({m * vec3(-1, 1, 0), p->col, p->source.x1, p->source.y1});
+					v.add({m * vec3(1, -1, 0), p->col, p->source.x2, p->source.y2});
+					v.add({m * vec3(-1, -1, 0), p->col, p->source.x1, p->source.y2});
+				}
 			}
 		vb_fx->update(v);
 		nix::set_model_matrix(mat4::ID);
@@ -188,31 +229,9 @@ void GeometryRendererGL::draw_particles() {
 
 		Array<VertexFx> v;
 
-		for (auto& p: g->beams) {
-			if (!p.enabled)
-				continue;
-			// TODO geometry shader!
-			auto pa = cam->project(p.pos);
-			auto pb = cam->project(p.pos + p.length);
-			auto pe = vec3::cross(pb - pa, vec3::EZ).normalized();
-			auto uae = cam->unproject(pa + pe * 0.1f);
-			auto ube = cam->unproject(pb + pe * 0.1f);
-			auto _e1 = (p.pos - uae).normalized() * p.radius;
-			auto _e2 = (p.pos + p.length - ube).normalized() * p.radius;
-			//vec3 e1 = -vec3::cross(cam->ang * vec3::EZ, p.length).normalized() * p.radius/2;
-
-			vec3 p00 = p.pos - _e1;
-			vec3 p01 = p.pos - _e2 + p.length;
-			vec3 p10 = p.pos + _e1;
-			vec3 p11 = p.pos + _e2 + p.length;
-
-			v.add({p00, p.col, source.x1, source.y1});
-			v.add({p01, p.col, source.x2, source.y1});
-			v.add({p11, p.col, source.x2, source.y2});
-			v.add({p00, p.col, source.x1, source.y1});
-			v.add({p11, p.col, source.x2, source.y2});
-			v.add({p10, p.col, source.x1, source.y2});
-		}
+		for (auto& b: g->beams)
+			if (b.enabled)
+				add_beam_vertices(v, b.pos, b.length, b.radius, b.col, source);
 
 		vb_fx->update(v);
 		nix::draw_triangles(vb_fx.get());
@@ -262,7 +281,6 @@ void GeometryRendererGL::draw_terrains() {
 			s->set_floats("pattern0", &t->texture_scale[0].x, 3);
 			s->set_floats("pattern1", &t->texture_scale[1].x, 3);
 		}
-		t->prepare_draw(cam_main->owner->pos);
 		nix::draw_triangles(t->vertex_buffer.get());
 	}
 	gpu_timestamp_end(ch_terrains);

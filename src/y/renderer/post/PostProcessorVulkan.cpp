@@ -186,7 +186,7 @@ void PostProcessorVulkan::process(const Array<Texture*> &source, FrameBuffer *ta
 	shader->set_floats("resolution_scale", &resolution_scale_x, 2);
 	nix::set_shader(shader);
 
-	nix::bind_textures(source);
+	nix::set_textures(source);
 	nix::draw_triangles(vb_2d);
 	nix::set_scissor(rect::EMPTY);*/
 }

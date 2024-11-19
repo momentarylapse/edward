@@ -663,6 +663,8 @@ add_executable(edward
 	src/y/plugins/PluginManager.cpp
 	src/y/renderer/gui/GuiRendererGL.cpp
 	src/y/renderer/gui/GuiRendererVulkan.cpp
+	src/y/renderer/helper/ComputeTask.cpp
+	src/y/renderer/helper/CubeMapSource.cpp
 	src/y/renderer/helper/jitter.cpp
 	src/y/renderer/helper/Pipeline.cpp
 	src/y/renderer/helper/PipelineManager.cpp
@@ -711,7 +713,6 @@ add_executable(edward
 	src/y/world/Material.cpp
 	src/y/world/Model.cpp
 	src/y/world/ModelManager.cpp
-	src/y/world/Object.cpp
 	src/y/world/Terrain.cpp
 	src/y/world/World.cpp
 	src/y/y/BaseClass.cpp

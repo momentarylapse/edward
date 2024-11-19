@@ -35,6 +35,7 @@
 #include "../renderer/base.h"
 #include "../renderer/Renderer.h"
 #include "../renderer/helper/RendererFactory.h"
+#include "../renderer/helper/CubeMapSource.h"
 #ifdef USING_OPENGL
 #include "../renderer/world/WorldRendererGL.h"
 #include "../renderer/world/WorldRendererGLForward.h"
@@ -63,7 +64,6 @@
 #include "../world/Link.h"
 #include "../world/Model.h"
 #include "../world/ModelManager.h"
-#include "../world/Object.h"
 #include "../world/Terrain.h"
 #include "../world/World.h"
 #include "../world/Light.h"
@@ -272,16 +272,6 @@ audio::AudioStream* __create_audio_stream(Callable<Array<float>(int)>& f, float 
 	return audio::create_stream([&f] (int n) { return f(n); }, sample_rate);
 }
 
-template<class T>
-void generic_init(T* t) {
-	new(t) T;
-}
-
-template<class T>
-void generic_delete(T* t) {
-	t->~T();
-}
-
 void PluginManager::init() {
 	export_kaba();
 	import_kaba();
@@ -305,13 +295,14 @@ void PluginManager::export_kaba() {
 	ext->link_class_func("Entity.get_matrix", &Entity::get_matrix);
 	ext->link_class_func("Entity.__get_component", &Entity::_get_component_untyped_);
 	ext->link_class_func("Entity.__add_component", &Entity::_add_component_untyped_);
+	ext->link_class_func("Entity.__add_component_no_init", &Entity::add_component_no_init);
 	ext->link_class_func("Entity.delete_component", &Entity::delete_component);
 	ext->link_class_func("Entity.__del_override__", &DeletionQueue::add);
 
 	Component component;
 	ext->declare_class_size("Component", sizeof(Component));
 	ext->declare_class_element("Component.owner", &Component::owner);
-	ext->link_class_func("Component.__init__", &generic_init<Component>);
+	ext->link_class_func("Component.__init__", &kaba::generic_init<Component>);
 	ext->link_virtual("Component.__delete__", &Component::__delete__, &component);
 	ext->link_virtual("Component.on_init", &Component::on_init, &component);
 	ext->link_virtual("Component.on_delete", &Component::on_delete, &component);
@@ -323,6 +314,10 @@ void PluginManager::export_kaba() {
 	ext->declare_class_size("Camera", sizeof(Camera));
 	ext->declare_class_element("Camera.fov", &Camera::fov);
 	ext->declare_class_element("Camera.exposure", &Camera::exposure);
+	ext->declare_class_element("Camera.auto_exposure", &Camera::auto_exposure);
+	ext->declare_class_element("Camera.auto_exposure_min", &Camera::auto_exposure_min);
+	ext->declare_class_element("Camera.auto_exposure_max", &Camera::auto_exposure_max);
+	ext->declare_class_element("Camera.auto_exposure_speed", &Camera::auto_exposure_speed);
 	ext->declare_class_element("Camera.bloom_radius", &Camera::bloom_radius);
 	ext->declare_class_element("Camera.bloom_factor", &Camera::bloom_factor);
 	ext->declare_class_element("Camera.focus_enabled", &Camera::focus_enabled);
@@ -336,6 +331,14 @@ void PluginManager::export_kaba() {
 	ext->link_class_func("Camera.update_matrices", &Camera::update_matrices);
 	ext->link_class_func("Camera.project", &Camera::project);
 	ext->link_class_func("Camera.unproject", &Camera::unproject);
+
+
+	ext->declare_class_size("CubeMapSource", sizeof(CubeMapSource));
+	ext->declare_class_element("CubeMapSource.min_depth", &CubeMapSource::min_depth);
+	ext->declare_class_element("CubeMapSource.max_depth", &CubeMapSource::max_depth);
+	ext->declare_class_element("CubeMapSource.cube_map", &CubeMapSource::cube_map);
+	ext->declare_class_element("CubeMapSource.resolution", &CubeMapSource::resolution);
+	ext->declare_class_element("CubeMapSource.update_rate", &CubeMapSource::update_rate);
 
 
 	ext->declare_class_size("Model.Mesh", sizeof(Mesh));
@@ -863,7 +866,12 @@ void PluginManager::export_kaba() {
 
 	ext->declare_class_size("HDRRenderer", sizeof(HDRRenderer));
 	ext->declare_class_element("HDRRenderer.fb_main", &HDRRenderer::fb_main);
+	ext->declare_class_element("HDRRenderer.light_meter", &HDRRenderer::light_meter);
 	ext->link_class_func("HDRRenderer.fb_bloom", &hdr_renderer_get_fb_bloom);
+
+	ext->declare_class_size("HDRRenderer.LightMeter", sizeof(HDRRenderer::LightMeter));
+	ext->declare_class_element("HDRRenderer.LightMeter.histogram", &HDRRenderer::LightMeter::histogram);
+	ext->declare_class_element("HDRRenderer.LightMeter.brightness", &HDRRenderer::LightMeter::brightness);
 
 
 	ext->declare_class_size("FrameBuffer", sizeof(FrameBuffer));
@@ -897,8 +905,8 @@ void PluginManager::export_kaba() {
 
 
 	ext->declare_class_size("Scheduler", sizeof(Scheduler));
-	ext->link_class_func("Scheduler.__init__", &generic_init<Scheduler>);
-	ext->link_class_func("Scheduler.__delete__", &generic_delete<Scheduler>);
+	ext->link_class_func("Scheduler.__init__", &kaba::generic_init<Scheduler>);
+	ext->link_class_func("Scheduler.__delete__", &kaba::generic_delete<Scheduler>);
 	ext->link_class_func("Scheduler.later", &Scheduler::later);
 	ext->link_class_func("Scheduler.repeat", &Scheduler::repeat);
 	ext->link_class_func("Scheduler.clear", &Scheduler::clear);
@@ -917,6 +925,10 @@ void PluginManager::export_kaba() {
 	ext->link("load_material", (void*)&__load_material);
 	ext->link("screenshot", (void*)&screenshot);
 	ext->link("create_render_path", (void*)&create_render_path);
+
+	ext->link("attach_light_parallel", (void*)&attach_light_parallel);
+	ext->link("attach_light_point", (void*)&attach_light_point);
+	ext->link("attach_light_cone", (void*)&attach_light_cone);
 
 
 	ext->link("load_buffer", (void*)&audio::load_buffer);
@@ -957,6 +969,7 @@ void PluginManager::import_kaba() {
 	import_component_class<Terrain>(m_world, "Terrain");
 	import_component_class<Light>(m_world, "Light");
 	import_component_class<Camera>(m_world, "Camera");
+	import_component_class<CubeMapSource>(m_world, "CubeMapSource");
 
 	auto m_fx = kaba::default_context->load_module("y/fx.kaba");
 	import_component_class<ParticleGroup>(m_fx, "ParticleGroup");
@@ -1076,6 +1089,8 @@ void *PluginManager::create_instance(const kaba::Class *c, const Array<TemplateD
 		return new LegacyParticle;
 	if (c == LegacyBeam::_class)
 		return new LegacyBeam;
+	if (c == CubeMapSource::_class)
+		return new CubeMapSource;
 	void *p = c->create_instance();
 	assign_variables(p, c, variables);
 	return p;

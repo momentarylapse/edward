@@ -23,7 +23,6 @@
 #include "../../../world/Camera.h"
 #include "../../../world/Material.h"
 #include "../../../world/Model.h"
-#include "../../../world/Object.h" // meh
 #include "../../../world/Terrain.h"
 #include "../../../world/World.h"
 #include "../../../world/Light.h"
@@ -178,30 +177,66 @@ void GeometryRendererVulkan::draw_particles(CommandBuffer *cb, RenderPass *rp, R
 	// particles
 	auto r = mat4::rotation(cam->owner->ang);
 	int index = 0;
-	for (auto& g: world.particle_manager->legacy_groups) {
 
+	base::map<Texture*, Array<LegacyParticle*>> legacy_groups;
+
+	auto& legacy_particles = ComponentManager::get_list_family<LegacyParticle>();
+	for (auto p: legacy_particles) {
+		int i = legacy_groups.find(p->texture.get());
+		if (i >= 0) {
+			legacy_groups.by_index(i).add(p);
+		} else {
+			legacy_groups.add({p->texture.get(), {p}});
+		}
+	}
+
+	for (const auto& [texture, particles]: legacy_groups) {
 		if (index >= rda.num) {
 			rda.add({new UniformBuffer(sizeof(UBOFx)),
 				pool->create_set(shader_fx.get()),
 				new VertexBuffer("3f,4f,2f")});
 			//rda[index].dset->set_buffer(LOCATION_LIGHT, ubo_light);
 			rda[index].dset->set_buffer(LOCATION_PARAMS, rda[index].ubo);
-			rda[index].dset->set_texture(LOCATION_FX_TEX0, g.texture);
+			rda[index].dset->set_texture(LOCATION_FX_TEX0, texture);
 			rda[index].dset->update();
 		}
 
 		Array<VertexFx> v;
-		v.__reserve(g.particles.num * 6);
-		for (auto p: g.particles)
+		v.__reserve(particles.num * 6);
+		for (auto p: particles)
 			if (p->enabled) {
-				auto m = mat4::translation(p->owner->pos) * r * mat4::scale(p->radius, p->radius, p->radius);
+				if (p->is_beam) {
+					auto b = reinterpret_cast<LegacyBeam*>(p);
+					auto pa = cam->project(p->owner->pos);
+					auto pb = cam->project(p->owner->pos + b->length);
+					auto pe = vec3::cross(pb - pa, vec3::EZ).normalized();
+					auto uae = cam->unproject(pa + pe * 0.1f);
+					auto ube = cam->unproject(pb + pe * 0.1f);
+					auto _e1 = (p->owner->pos - uae).normalized() * p->radius;
+					auto _e2 = (p->owner->pos + b->length - ube).normalized() * p->radius;
+					//vec3 e1 = -vec3::cross(cam->ang * vec3::EZ, p.length).normalized() * p.radius/2;
 
-				v.add({m * vec3(-1, 1,0), p->col, p->source.x1, p->source.y1});
-				v.add({m * vec3( 1, 1,0), p->col, p->source.x2, p->source.y1});
-				v.add({m * vec3( 1,-1,0), p->col, p->source.x2, p->source.y2});
-				v.add({m * vec3(-1, 1,0), p->col, p->source.x1, p->source.y1});
-				v.add({m * vec3( 1,-1,0), p->col, p->source.x2, p->source.y2});
-				v.add({m * vec3(-1,-1,0), p->col, p->source.x1, p->source.y2});
+					vec3 p00 = p->owner->pos - _e1;
+					vec3 p01 = p->owner->pos - _e2 + b->length;
+					vec3 p10 = p->owner->pos + _e1;
+					vec3 p11 = p->owner->pos + _e2 + b->length;
+
+					v.add({p00, p->col, p->source.x1, p->source.y1});
+					v.add({p01, p->col, p->source.x2, p->source.y1});
+					v.add({p11, p->col, p->source.x2, p->source.y2});
+					v.add({p00, p->col, p->source.x1, p->source.y1});
+					v.add({p11, p->col, p->source.x2, p->source.y2});
+					v.add({p10, p->col, p->source.x1, p->source.y2});
+				} else {
+					auto m = mat4::translation(p->owner->pos) * r * mat4::scale(p->radius, p->radius, p->radius);
+
+					v.add({m * vec3(-1, 1,0), p->col, p->source.x1, p->source.y1});
+					v.add({m * vec3( 1, 1,0), p->col, p->source.x2, p->source.y1});
+					v.add({m * vec3( 1,-1,0), p->col, p->source.x2, p->source.y2});
+					v.add({m * vec3(-1, 1,0), p->col, p->source.x1, p->source.y1});
+					v.add({m * vec3( 1,-1,0), p->col, p->source.x2, p->source.y2});
+					v.add({m * vec3(-1,-1,0), p->col, p->source.x1, p->source.y2});
+				}
 			}
 		rda[index].vb->update(v);
 
@@ -395,7 +430,6 @@ void GeometryRendererVulkan::draw_terrains(CommandBuffer *cb, RenderPass *rp, UB
 			cb->push_constant(0, 4, &t->texture_scale[0].x);
 			cb->push_constant(4, 4, &t->texture_scale[1].x);
 		}
-		t->prepare_draw(cam_main->owner->pos);
 		cb->draw(t->vertex_buffer.get());
 		index ++;
 	}

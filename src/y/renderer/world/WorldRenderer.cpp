@@ -17,6 +17,8 @@
 #include "../../world/Terrain.h"
 #include "../../world/World.h"
 #include <lib/base/callable.h>
+#include <renderer/helper/CubeMapSource.h>
+
 #include "../../Config.h"
 #include <y/ComponentManager.h>
 
@@ -46,8 +48,6 @@ WorldRenderer::WorldRenderer(const string &name, Camera *_cam) : Renderer(name) 
 
 	shadow_box_size = config.get_float("shadow.boxsize", 2000);
 	shadow_resolution = config.get_int("shadow.resolution", 1024);
-	cube_resolution = config.get_int("cubemap.resolution", 64);
-	cube_update_rate = config.get_int("cubemap.update_rate", 9);
 
 	scene_view.cam = _cam;
 
@@ -73,21 +73,27 @@ WorldRenderer::WorldRenderer(const string &name, Camera *_cam) : Renderer(name) 
 	render_into_cubemap(depth_cube.get(), scene_view.cube_map.get(), suggest_cube_map_pos());
 }*/
 
-WorldRenderer::CubeMapParams WorldRenderer::suggest_cube_map_pos() const {
-	if (world.ego)
-		return {world.ego->pos, 200};
+void WorldRenderer::suggest_cube_map_pos() {
+	if (!cube_map_source)
+		return;
+	if (world.ego) {
+		cube_map_source->owner->pos = world.ego->pos;
+		cube_map_source->min_depth = 200;
+		return;
+	}
 	auto& list = ComponentManager::get_list_family<Model>();
 	float max_score = 0;
-	CubeMapParams best = {scene_view.cam->m_view * vec3(0,0,1000), 1000};
+	cube_map_source->owner->pos = scene_view.cam->m_view * vec3(0,0,1000);
+	cube_map_source->min_depth = 1000;
 	for (auto m: list)
 		for (auto mat: m->material) {
 			float score = mat->metal;
 			if (score > max_score) {
 				max_score = score;
-				best = {m->owner->pos, m->prop.radius};
+				cube_map_source->owner->pos = m->owner->pos;
+				cube_map_source->min_depth = m->prop.radius;
 			}
 		}
-	return best;
 }
 
 

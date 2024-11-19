@@ -39,14 +39,13 @@ class Any;
 
 enum class ShaderVariant;
 class ShadowRendererVulkan;
+class CubeMapSource;
 
 
 
 
 class WorldRendererVulkan : public WorldRenderer {
 public:
-	RenderPass *render_pass_cube = nullptr;
-
 	owned<ShadowRendererVulkan> shadow_renderer;
 	owned<GeometryRendererVulkan> geo_renderer;
 
@@ -59,10 +58,10 @@ public:
 
 
 	WorldRendererVulkan(const string &name, Camera *cam, RenderPathType type);
-	virtual ~WorldRendererVulkan();
+	~WorldRendererVulkan() override;
 
 	virtual void render_into_texture(FrameBuffer *fb, Camera *cam, RenderViewDataVK &rvd, const RenderParams& params) = 0;
-	void render_into_cubemap(const RenderParams& params, CubeMap *cube, const CubeMapParams &cube_params);
+	void render_into_cubemap(CubeMapSource& source, const RenderParams& params);
 
 	void prepare_lights(Camera *cam, RenderViewDataVK &rvd);
 };

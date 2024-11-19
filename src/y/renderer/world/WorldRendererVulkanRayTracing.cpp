@@ -74,7 +74,7 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(vulkan::Device *_de
 
 		compute.pool = new vulkan::DescriptorPool("image:1,storage-buffer:1,buffer:8,sampler:1", 1);
 
-		auto shader = resource_manager->load_shader("vulkan/compute.shader");
+		auto shader = resource_manager->load_shader("compute/pathtracing.shader");
 		compute.pipeline = new vulkan::ComputePipeline(shader.get());
 		compute.dset = compute.pool->create_set("image,buffer,buffer");
 		compute.dset->set_storage_image(0, offscreen_image);
@@ -106,7 +106,8 @@ static int cur_query_offset;
 void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 	if (!scene_view.cam)
 		scene_view.cam = cam_main;
-	
+
+	scene_view.check_terrains(cam_main->owner->pos);
 	prepare_lights(dummy_cam, geo_renderer->rvd_def);
 
 	int w = width * engine.resolution_scale_x;
@@ -150,7 +151,6 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 		md.matrix = mat4::translation(o->pos);
 		md.albedo = t->material->albedo.with_alpha(t->material->roughness);
 		md.emission = t->material->emission.with_alpha(t->material->metal);
-		t->prepare_draw(scene_view.cam->owner->pos);
 		md.num_triangles = t->vertex_buffer->output_count / 3;
 		md.address_vertices = t->vertex_buffer->vertex_buffer.get_device_address();
 		meshes.add(md);

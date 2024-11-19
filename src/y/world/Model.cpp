@@ -213,8 +213,6 @@ void Mesh::post_process(bool animated) {
 
 
 void Model::reset_data() {
-	registered = false;
-	
 	for (int i=0; i<MODEL_NUM_MESHES; i++) {
 		_detail_needed_[i] = false;
 	}
@@ -227,7 +225,6 @@ void Model::reset_data() {
 Model::Model() {
 	component_type = Model::_class;
 
-	registered = false;
 	visible = true;
 
 	is_copy = false;
@@ -277,7 +274,6 @@ Model *Model::copy(Model *pre_allocated) {
 		m->mesh[i] = mesh[i];
 		m->_detail_needed_[i] = false;
 	}
-	m->registered = false;
 	m->visible = true;
 
 	// effects

@@ -22,7 +22,7 @@
 #include "../../../action/world/object/ActionWorldEditObject.h"
 #include "../../../action/world/ActionWorldSelectionAddComponent.h"
 #include "../../../multiview/MultiView.h"
-#include <y/world/Object.h>
+#include <y/world/Model.h>
 #include <y/world/Terrain.h>
 #include "../../../lib/kaba/kaba.h"
 #include "../../../lib/os/msg.h"

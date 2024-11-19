@@ -26,6 +26,7 @@ class mat4;
 class vec3;
 class quaternion;
 class Material;
+class CubeMapSource;
 
 
 enum class RenderPathType {
@@ -45,8 +46,6 @@ public:
 
 	float shadow_box_size;
 	int shadow_resolution;
-	int cube_resolution;
-	int cube_update_rate;
 
 	bool wireframe = false;
 
@@ -54,14 +53,8 @@ public:
 
 	shared<Shader> shader_fx;
 
-	shared<DepthBuffer> depth_cube;
-	shared<FrameBuffer> fb_cube;
-
-	struct CubeMapParams {
-		vec3 pos;
-		float min_depth;
-	};
-	CubeMapParams suggest_cube_map_pos() const;
+	CubeMapSource* cube_map_source = nullptr;
+	void suggest_cube_map_pos();
 
 	void reset();
 };

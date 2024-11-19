@@ -27,7 +27,7 @@ public:
 	void create_more();
 
 	virtual void render_into_texture(FrameBuffer *fb, Camera *cam) {};
-	void render_into_cubemap(DepthBuffer *fb, CubeMap *cube, const CubeMapParams &params);
+	void render_into_cubemap(CubeMapSource& source);
 
 	owned<GeometryRendererGL> geo_renderer;
 	owned<ShadowRendererGL> shadow_renderer;
