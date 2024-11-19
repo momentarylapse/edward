@@ -190,7 +190,7 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 	tex.add(MultiView::cube_map.get());
 //	if (material->cube_map)
 //		tex.add(material->cube_map);
-	nix::set_textures(tex);
+	nix::bind_textures(tex);
 #endif
 }
 

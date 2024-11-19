@@ -91,7 +91,7 @@ void GeometryRendererGL::set_material_x(Material *m, Shader *s) {
 	else
 		nix::disable_alpha();
 
-	nix::set_textures(weak(m->textures));
+	nix::bind_textures(weak(m->textures));
 	nix::bind_texture(7, scene_view.cube_map.get());
 
 
@@ -110,7 +110,7 @@ void GeometryRendererGL::set_textures(const Array<Texture*> &tex) {
 	/*tt.add(fb_shadow1->depth_buffer.get());
 	tt.add(fb_shadow2->depth_buffer.get());
 	tt.add(cube_map.get());*/
-	nix::set_textures(tt);
+	nix::bind_textures(tt);
 }
 #endif
 
@@ -284,7 +284,7 @@ void GeometryRendererGL::draw_objects_instanced() {
 			} else {
 				set_material(m->shader_cache[i], m->material[i], type, "instanced", "");
 			}
-			nix::bind_buffer(5, mi->ubo_matrices);
+			nix::bind_uniform_buffer(5, mi->ubo_matrices);
 			//msg_write(s.matrices.num);
 			nix::draw_instanced_triangles(m->mesh[0]->sub[i].vertex_buffer, mi->matrices.num);
 		}
@@ -303,7 +303,7 @@ void GeometryRendererGL::draw_objects_opaque() {
 
 		if (auto ani = m->owner->get_component<Animator>()) {
 			ani->buf->update_array(ani->dmatrix);
-			nix::bind_buffer(7, ani->buf);
+			nix::bind_uniform_buffer(7, ani->buf);
 		}
 
 		for (int i=0; i<m->material.num; i++) {
@@ -347,7 +347,7 @@ void GeometryRendererGL::draw_objects_transparent(const RenderParams& params) {
 
 		/*if (auto ani = m->owner->get_component<Animator>()) {
 			ani->buf->update_array(ani->dmatrix);
-			nix::bind_buffer(7, ani->buf);
+			nix::bind_uniform_buffer(7, ani->buf);
 		}*/
 
 		for (int i=0; i<m->material.num; i++) {
@@ -457,7 +457,7 @@ void GeometryRendererGL::draw_opaque() {
 	if (!is_shadow_pass()) {
 		nix::set_z(true, true);
 		nix::set_view_matrix(scene_view.cam->view_matrix());
-		nix::bind_buffer(1, scene_view.ubo_light.get());
+		nix::bind_uniform_buffer(1, scene_view.ubo_light.get());
 		nix::bind_texture(3, scene_view.fb_shadow1->depth_buffer.get());
 		nix::bind_texture(4, scene_view.fb_shadow2->depth_buffer.get());
 		nix::bind_texture(5, scene_view.cube_map.get());
@@ -474,7 +474,7 @@ void GeometryRendererGL::draw_transparent(const RenderParams& params) {
 	nix::set_view_matrix(scene_view.cam->view_matrix());
 	//nix::set_z(true, true);
 
-	nix::bind_buffer(1, scene_view.ubo_light.get());
+	nix::bind_uniform_buffer(1, scene_view.ubo_light.get());
 	nix::bind_texture(3, scene_view.fb_shadow1->depth_buffer.get());
 	nix::bind_texture(4, scene_view.fb_shadow2->depth_buffer.get());
 	nix::bind_texture(5, scene_view.cube_map.get());

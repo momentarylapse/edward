@@ -192,7 +192,7 @@ void PostProcessorGL::process(const Array<Texture*> &source, FrameBuffer *target
 	shader->set_floats("resolution_scale", &resolution_scale_x, 2);
 	nix::set_shader(shader);
 
-	nix::set_textures(source);
+	nix::bind_textures(source);
 	nix::draw_triangles(vb_2d);
 	nix::set_scissor(rect::EMPTY);
 }

@@ -409,7 +409,7 @@ void DrawSelectionObject(const WorldObject &oo, float alpha, const color &c) {
 		Array<nix::Texture*> tex;
 		for (int j=0; j<o->material[i]->textures.num; j++)
 			tex.add(NULL);
-		nix::set_textures(tex);
+		nix::bind_textures(tex);
 		nix::set_material(color(alpha, 0, 0, 0), 0, 0, c);
 		//o->just_draw(i, d);
 		nix::draw_triangles(o->mesh[0]->sub[i].vertex_buffer);
@@ -463,7 +463,7 @@ void ModeWorld::apply_lighting(MultiView::Window *win) {
 		lights.add(l);
 	}
 	multi_view->ubo_light->update_array(lights);
-	nix::bind_buffer(1, multi_view->ubo_light);
+	nix::bind_uniform_buffer(1, multi_view->ubo_light);
 	//win->set_shader(nix::Shader::default_3d, w->lights.num);
 #endif
 }
@@ -481,7 +481,7 @@ void _set_textures(DrawingHelper *drawing_helper, const Array<Texture*> &_tex) {
 		tex.add(drawing_helper->tex_white.get());
 	tex.add(MultiView::cube_map.get());
 
-	nix::set_textures(tex);
+	nix::bind_textures(tex);
 #endif
 }
 

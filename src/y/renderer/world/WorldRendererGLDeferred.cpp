@@ -106,7 +106,7 @@ void WorldRendererGLDeferred::draw(const RenderParams& params) {
 	auto cam = scene_view.cam;
 	cam->update_matrices(params.desired_aspect_ratio);
 	nix::set_projection_matrix(m * cam->m_projection);
-	nix::bind_buffer(1, scene_view.ubo_light.get());
+	nix::bind_uniform_buffer(1, scene_view.ubo_light.get());
 	nix::set_view_matrix(cam->view_matrix());
 	nix::set_z(true, true);
 	nix::set_front(flip_y ? nix::Orientation::CW : nix::Orientation::CCW);
@@ -153,14 +153,14 @@ void WorldRendererGLDeferred::render_out_from_gbuffer(nix::FrameBuffer *source, 
 	s->set_int("num_lights", scene_view.lights.num);
 	s->set_int("shadow_index", scene_view.shadow_index);
 	s->set_float("ambient_occlusion_radius", config.ambient_occlusion_radius);
-	nix::bind_buffer(13, ssao_sample_buffer);
+	nix::bind_uniform_buffer(13, ssao_sample_buffer);
 
-	nix::bind_buffer(1, scene_view.ubo_light.get());
+	nix::bind_uniform_buffer(1, scene_view.ubo_light.get());
 	auto tex = weak(source->color_attachments);
 	tex.add(source->depth_buffer.get());
 	tex.add(scene_view.fb_shadow1->depth_buffer.get());
 	tex.add(scene_view.fb_shadow2->depth_buffer.get());
-	nix::set_textures(tex);
+	nix::bind_textures(tex);
 
 
 	nix::set_z(false, false);

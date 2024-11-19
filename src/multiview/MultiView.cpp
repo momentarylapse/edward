@@ -1306,7 +1306,7 @@ void MultiView::set_light(Window *win, const vec3 &dir, const color &col, float 
 	l.theta = pi;
 	l.harshness = harshness;
 	ubo_light->update(&l, sizeof(l));
-	nix::bind_buffer(1, ubo_light);
+	nix::bind_uniform_buffer(1, ubo_light);
 #endif
 }
 

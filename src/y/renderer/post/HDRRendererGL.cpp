@@ -97,7 +97,7 @@ void render_out_through_shader(Renderer *r, const Array<Texture*> &source, Shade
 	PerformanceMonitor::begin(r->ch_draw);
 	gpu_timestamp_begin(r->ch_draw);
 
-	nix::set_textures(source);
+	nix::bind_textures(source);
 	nix::set_shader(shader);
 	apply_shader_data(shader, data);
 	/*shader->set_float("exposure", cam->exposure);
@@ -196,7 +196,7 @@ void HDRRendererGL::process(const Array<Texture*> &source, FrameBuffer *target, 
 	shader->set_floats("resolution_scale", &resolution_scale_x, 2);
 	nix::set_shader(shader);
 
-	nix::set_textures(source);
+	nix::bind_textures(source);
 	nix::draw_triangles(vb_2d.get());
 	//nix::set_scissor(rect::EMPTY);
 }
@@ -208,7 +208,7 @@ void HDRRendererGL::render_out(FrameBuffer *source, Texture *bloom, const Render
 	PerformanceMonitor::begin(ch_out);
 	gpu_timestamp_begin(ch_out);
 
-	nix::set_textures({source->color_attachments[0].get(), bloom});
+	nix::bind_textures({source->color_attachments[0].get(), bloom});
 	nix::set_shader(shader_out.get());
 	shader_out->set_float("exposure", cam->exposure);
 	shader_out->set_float("bloom_factor", cam->bloom_factor);

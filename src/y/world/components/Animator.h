@@ -87,7 +87,7 @@ public:
 class Animator : public Component {
 public:
 	Animator();
-	~Animator();
+	~Animator() override;
 
 	void on_init() override;
 
@@ -101,7 +101,7 @@ public:
 	//Mesh *mesh[MODEL_NUM_MESHES]; // here the animated vertices are stored before rendering
 
 	Array<mat4> dmatrix;
-	Buffer *buf;
+	UniformBuffer* buf;
 
 	// animation
 	void _cdecl reset();

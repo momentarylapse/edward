@@ -180,7 +180,7 @@ void ModeMaterial::on_draw_win(MultiView::Window *win) {
 	while(tex.num < 5)
 		tex.add(session->drawing_helper->tex_white.get());
 	tex.add(MultiView::cube_map.get());
-	nix::set_textures(tex);
+	nix::bind_textures(tex);
 	nix::set_fog(nix::FogMode::EXP, 0,10000,0.001f, Blue);
 
 	for (int i=0; i<data->appearance.passes.num; i++) {

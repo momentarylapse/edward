@@ -77,7 +77,7 @@ void GuiRendererGL::draw_gui(FrameBuffer *source) {
 			nix::set_shader(s);
 			s->set_float("blur", p->bg_blur);
 			s->set_color("color", p->eff_col);
-			nix::set_textures({p->texture.get()});// , source->color_attachments[0].get()});
+			nix::bind_textures({p->texture.get()});// , source->color_attachments[0].get()});
 			if (p->angle == 0) {
 				nix::set_model_matrix(mat4::translation(vec3(p->eff_area.x1, p->eff_area.y1, /*0.999f - p->eff_z/1000*/ 0.5f)) * mat4::scale(p->eff_area.width(), p->eff_area.height(), 0));
 			} else {
