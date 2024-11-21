@@ -30,7 +30,7 @@ vulkan::Surface surface;
 
 #if HAS_LIB_GLFW
 Context* api_init(GLFWwindow* window) {
-	instance = vulkan::init({"glfw", "validation", "api=1.3", "rtx?", "verbosity=2"});
+	instance = vulkan::init({"glfw", "validation", "api=1.3", "rtx?", "verbosity=3"});
 	surface = instance->create_glfw_surface(window);
 	try {
 		device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation", "rtx", "compute"});

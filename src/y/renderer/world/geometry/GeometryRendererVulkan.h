@@ -34,27 +34,23 @@ struct UBO {
 struct RenderDataVK {
 	UniformBuffer* ubo;
 	DescriptorSet* dset;
-};
-
-struct UBOFx {
-	mat4 m,v,p;
-};
-
-struct RenderDataFxVK {
-	UniformBuffer *ubo;
-	DescriptorSet *dset;
-	VertexBuffer *vb;
+	void set_textures(const SceneView& scene_view, const Array<Texture*>& tex);
+	void apply(const RenderParams& params);
 };
 
 struct RenderViewDataVK {
-	UniformBuffer *ubo_light = nullptr;
-	Array<RenderDataVK> rda_tr;
-	Array<RenderDataVK> rda_ob;
-	Array<RenderDataVK> rda_ob_trans;
-	Array<RenderDataVK> rda_ob_multi;
-	Array<RenderDataVK> rda_user;
-	Array<RenderDataVK> rda_sky;
-	Array<RenderDataFxVK> rda_fx;
+	RenderViewDataVK();
+
+	owned<UniformBuffer> ubo_light;
+	Array<RenderDataVK> rda;
+
+	int index = 0;
+	UBO ubo;
+	SceneView* scene_view = nullptr;
+	RenderDataVK& start(const RenderParams& params, RenderPathType type, const mat4& matrix,
+			ShaderCache& shader_cache, const Material& material, int pass_no,
+			const string& vertex_shader_module, const string& geometry_shader_module,
+			PrimitiveTopology top, VertexBuffer *vb);
 };
 
 class GeometryRendererVulkan : public GeometryRenderer {
@@ -64,22 +60,16 @@ public:
 	void prepare(const RenderParams& params) override;
 	void draw(const RenderParams& params) override {}
 
-	GraphicsPipeline *pipeline_fx = nullptr;
-	RenderViewDataVK rvd_def;
+	static GraphicsPipeline *get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb);
 
+	void draw_particles(const RenderParams& params, RenderViewDataVK &rvd);
+	void draw_skyboxes(const RenderParams& params, RenderViewDataVK &rvd);
+	void draw_terrains(const RenderParams& params, RenderViewDataVK &rvd);
+	void draw_objects_opaque(const RenderParams& params, RenderViewDataVK &rvd);
+	void draw_objects_transparent(const RenderParams& params, RenderViewDataVK &rvd);
+	void draw_objects_instanced(const RenderParams& params, RenderViewDataVK &rvd);
+	void draw_user_meshes(const RenderParams& params, bool transparent, RenderViewDataVK &rvd);
 
-	GraphicsPipeline *get_pipeline(Shader *s, RenderPass *rp, Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb);
-	void set_material(CommandBuffer *cb, RenderPass *rp, DescriptorSet *dset, ShaderCache &cache, Material *m, RenderPathType type, const string &vertex_module, const string &geometry_module, PrimitiveTopology top, VertexBuffer *vb);
-	void set_material_x(CommandBuffer *cb, RenderPass *rp, DescriptorSet *dset, Material *m, GraphicsPipeline *p);
-	void set_textures(DescriptorSet *dset, const Array<Texture*> &tex);
-
-	void draw_particles(CommandBuffer *cb, RenderPass *rp, RenderViewDataVK &rvd);
-	void draw_skyboxes(CommandBuffer *cb, RenderPass *rp, float aspect, RenderViewDataVK &rvd);
-	void draw_terrains(CommandBuffer *cb, RenderPass *rp, UBO &ubo, RenderViewDataVK &rvd);
-	void draw_objects_opaque(CommandBuffer *cb, RenderPass *rp, UBO &ubo, RenderViewDataVK &rvd);
-	void draw_objects_transparent(CommandBuffer *cb, RenderPass *rp, UBO &ubo, RenderViewDataVK &rvd);
-	void draw_objects_instanced(CommandBuffer *cb, RenderPass *rp, UBO &ubo, RenderViewDataVK &rvd);
-	void draw_user_meshes(CommandBuffer *cb, RenderPass *rp, UBO &ubo, bool transparent, RenderViewDataVK &rvd);
 	void prepare_instanced_matrices();
 	void prepare_lights(Camera *cam, RenderViewDataVK &rvd);
 };

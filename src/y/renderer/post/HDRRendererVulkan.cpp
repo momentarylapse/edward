@@ -86,9 +86,7 @@ HDRRendererVulkan::RenderIntoData::RenderIntoData(int width, int height) {
 	_depth_buffer = new DepthBuffer(width, height, "d:f32", true);
 	_render_pass = new vulkan::RenderPass({tex, _depth_buffer});
 
-	fb = new vulkan::FrameBuffer(_render_pass, {
-		tex,
-		_depth_buffer});
+	fb = new vulkan::FrameBuffer(_render_pass, {tex, _depth_buffer});
 }
 
 void HDRRendererVulkan::RenderIntoData::render_into(Renderer *r, const RenderParams& params) {
@@ -233,7 +231,7 @@ void HDRRendererVulkan::process_blur(CommandBuffer *cb, FrameBuffer *source, Fra
 	u.threshold = threshold / cam->exposure;
 	u.axis = AXIS[iaxis % 2];
 	blur_ubo[iaxis]->update(&u);
-	blur_dset[iaxis]->set_buffer(0, blur_ubo[iaxis]);
+	blur_dset[iaxis]->set_uniform_buffer(0, blur_ubo[iaxis]);
 	blur_dset[iaxis]->set_texture(1, source->attachments[0].get());
 	blur_dset[iaxis]->update();
 

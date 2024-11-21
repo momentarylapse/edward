@@ -78,7 +78,7 @@ void GuiRendererVulkan::prepare_gui(FrameBuffer *source, const RenderParams& par
 			u.source = p->source;
 			ubo[index]->update(&u);
 
-			dset[index]->set_buffer(0, ubo[index]);
+			dset[index]->set_uniform_buffer(0, ubo[index]);
 			dset[index]->set_texture(1, p->texture.get());
 //			dset[index]->set_texture(2, source->...);
 			dset[index]->update();

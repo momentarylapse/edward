@@ -60,7 +60,7 @@ public:
 	WorldRendererVulkan(const string &name, Camera *cam, RenderPathType type);
 	~WorldRendererVulkan() override;
 
-	virtual void render_into_texture(FrameBuffer *fb, Camera *cam, RenderViewDataVK &rvd, const RenderParams& params) = 0;
+	virtual void render_into_texture(Camera *cam, RenderViewDataVK &rvd, const RenderParams& params) = 0;
 	void render_into_cubemap(CubeMapSource& source, const RenderParams& params);
 
 	void prepare_lights(Camera *cam, RenderViewDataVK &rvd);

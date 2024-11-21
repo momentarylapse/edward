@@ -66,7 +66,7 @@ void ComputeTask::bind_uniform_buffer(int index, Buffer *buffer) {
     bindings.add({index, Binding::Type::UniformBuffer, buffer});
 #endif
 #ifdef USING_VULKAN
-    dset->set_buffer(index, buffer);
+    dset->set_uniform_buffer(index, buffer);
     dset->update();
 #endif
 }

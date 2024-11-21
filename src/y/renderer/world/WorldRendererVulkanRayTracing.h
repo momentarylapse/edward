@@ -19,7 +19,7 @@ public:
 	void prepare(const RenderParams& params) override;
 	void draw(const RenderParams& params) override;
 
-	void render_into_texture(FrameBuffer *fb, Camera *cam, RenderViewDataVK &rvd, const RenderParams& params) override;
+	void render_into_texture(Camera *cam, RenderViewDataVK &rvd, const RenderParams& params) override;
 
 	enum class Mode {
 		NONE,
@@ -28,6 +28,7 @@ public:
 	} mode = Mode::NONE;
 
 	vulkan::Device *device;
+	RenderViewDataVK rvd;
 
 	vulkan::StorageTexture *offscreen_image;
 	vulkan::Texture *offscreen_image2;

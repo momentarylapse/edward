@@ -13,7 +13,7 @@ public:
 	float min_depth, max_depth;
 	shared<CubeMap> cube_map;
 	shared<DepthBuffer> depth_buffer;
-	shared<FrameBuffer> frame_buffer;
+	shared<FrameBuffer> frame_buffer[6];
 #ifdef USING_VULKAN
 	owned<vulkan::RenderPass> render_pass;
 #endif

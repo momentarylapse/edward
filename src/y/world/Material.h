@@ -94,17 +94,18 @@ public:
 		float jump, _static, sliding, rolling;
 	} friction;
 
-	Material(ResourceManager *resource_manager);
+	explicit Material(ResourceManager *resource_manager);
 	xfer<Material> copy();
 
 	bool is_transparent() const;
+	const RenderPassData& pass(int k) const;
 	RenderPassData& pass(int k);
 };
 
 struct ShaderCache {
 	shared<Shader> shader[2]; // * #(render paths)
-	void _prepare_shader(RenderPathType render_path_type, Material *material, const string& vertex_module, const string& geometry_module);
-	void _prepare_shader_multi_pass(RenderPathType render_path_type, Material *material, const string& vertex_module, const string& geometry_module, int k);
+	void _prepare_shader(RenderPathType render_path_type, const Material& material, const string& vertex_module, const string& geometry_module);
+	void _prepare_shader_multi_pass(RenderPathType render_path_type, const Material& material, const string& vertex_module, const string& geometry_module, int k);
 	Shader *get_shader(RenderPathType render_path_type);
 };
 

@@ -25,6 +25,7 @@
 WorldRendererVulkanForward::WorldRendererVulkanForward(vulkan::Device *_device, Camera *cam) : WorldRendererVulkan("fw", cam, RenderPathType::FORWARD) {
 	device = _device;
 
+	resource_manager->load_shader_module("forward/module-surface.shader");
 	create_more();
 }
 
@@ -35,8 +36,6 @@ void WorldRendererVulkanForward::prepare(const RenderParams& params) {
 
 	auto cb = params.command_buffer;
 
-
-#ifndef OS_MAC
 	suggest_cube_map_pos();
 	auto cube_map_sources = ComponentManager::get_list<CubeMapSource>();
 	cube_map_sources.add(cube_map_source);
@@ -55,12 +54,11 @@ void WorldRendererVulkanForward::prepare(const RenderParams& params) {
 		render_into_cubemap(params, scene_view.cube_map.get(), suggest_cube_map_pos());
 		_frame = 0;
 	}*/
-#endif
 
 	scene_view.check_terrains(cam_main->owner->pos);
 	scene_view.cam->update_matrices(params.desired_aspect_ratio);
 
-	prepare_lights(scene_view.cam, geo_renderer->rvd_def);
+	prepare_lights(scene_view.cam, main_rvd);
 	
 	geo_renderer->prepare(params);
 
@@ -71,53 +69,53 @@ void WorldRendererVulkanForward::prepare(const RenderParams& params) {
 }
 
 void WorldRendererVulkanForward::draw(const RenderParams& params) {
+	draw_with(params, main_rvd);
+}
+
+void WorldRendererVulkanForward::draw_with(const RenderParams& params, RenderViewDataVK& rvd) {
 	auto cb = params.command_buffer;
-	auto rp = params.render_pass;
 
 	PerformanceMonitor::begin(ch_draw);
 	gpu_timestamp_begin(cb, ch_draw);
 
-	auto &rvd = geo_renderer->rvd_def;
+	rvd.index = 0;
+	rvd.scene_view = &scene_view;
 
 	cb->clear(params.frame_buffer->area(), {world.background}, 1.0f);
-	geo_renderer->draw_skyboxes(cb, rp, params.desired_aspect_ratio, rvd);
+	geo_renderer->draw_skyboxes(params, rvd);
 
-	UBO ubo;
-	ubo.p = scene_view.cam->m_projection;
-	ubo.v = scene_view.cam->m_view;
-	ubo.num_lights = scene_view.lights.num;
-	ubo.shadow_index = scene_view.shadow_index;
+	rvd.ubo.p = scene_view.cam->m_projection;
+	rvd.ubo.v = scene_view.cam->m_view;
+	rvd.ubo.num_lights = scene_view.lights.num;
+	rvd.ubo.shadow_index = scene_view.shadow_index;
 
-	geo_renderer->draw_terrains(cb, rp, ubo, rvd);
-	geo_renderer->draw_objects_opaque(cb, rp, ubo, rvd);
-	geo_renderer->draw_objects_instanced(cb, rp, ubo, rvd);
-	geo_renderer->draw_user_meshes(cb, rp, ubo, false, rvd);
-	geo_renderer->draw_objects_transparent(cb, rp, ubo, rvd);
+	geo_renderer->draw_terrains(params, rvd);
+	geo_renderer->draw_objects_opaque(params, rvd);
+	geo_renderer->draw_objects_instanced(params, rvd);
+	geo_renderer->draw_user_meshes(params, false, rvd);
 
-	geo_renderer->draw_particles(cb, rp, rvd);
-	geo_renderer->draw_user_meshes(cb, rp, ubo, true, rvd);
+	geo_renderer->draw_objects_transparent(params, rvd);
+	geo_renderer->draw_particles(params, rvd);
+	geo_renderer->draw_user_meshes(params, true, rvd);
 
 	gpu_timestamp_end(cb, ch_draw);
 	PerformanceMonitor::end(ch_draw);
 }
 
-// FIXME
-// rvd is unused   ...i.e. ::draw() will always draw from a fixed camera...
-// TODO what state should be inside GeometryRenderer?!? who keeps rvd's?!?
-// for now, cubemaps are broken
-void WorldRendererVulkanForward::render_into_texture(FrameBuffer *fb, Camera *cam, RenderViewDataVK &rvd, const RenderParams& params) {
+void WorldRendererVulkanForward::render_into_texture(Camera *cam, RenderViewDataVK &rvd, const RenderParams& params) {
 	auto cb = params.command_buffer;
 	auto rp = params.render_pass;
+	auto fb = params.frame_buffer;
 	rp->clear_color[0] = world.background;
 
 	cb->begin_render_pass(rp, fb);
-	cb->set_viewport(rect(0, fb->width, 0, fb->height));
+	cb->set_viewport(fb->area());
 
 	std::swap(scene_view.cam, cam);
 	scene_view.cam->update_matrices(params.desired_aspect_ratio); // argh, need more UBOs
-	//prepare_lights(scene_view.cam, );
+	prepare_lights(scene_view.cam, rvd);
 	auto sub_params = params.with_target(fb);
-	draw(sub_params);
+	draw_with(sub_params, rvd);
 	std::swap(scene_view.cam, cam);
 
 	cb->end_render_pass();

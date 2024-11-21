@@ -32,9 +32,6 @@ ShadowRendererVulkan::ShadowRendererVulkan() : Renderer("shdw") {
 	fb[1] = new vulkan::FrameBuffer(render_pass, {tex2, depth2});
 
 
-	rvd[0].ubo_light = new UniformBuffer(3 * sizeof(UBOLight)); // just to fill the dset
-	rvd[1].ubo_light = new UniformBuffer(3 * sizeof(UBOLight));
-
 	material = new Material(resource_manager);
 	material->pass0.shader_path = "shadow.shader";
 
@@ -70,14 +67,21 @@ void ShadowRendererVulkan::prepare(const RenderParams& params) {
 void ShadowRendererVulkan::render_shadow_map(CommandBuffer *cb, FrameBuffer *sfb, float scale, RenderViewDataVK &rvd) {
 	geo_renderer->prepare(RenderParams::into_texture(sfb, 1.0f));
 
+	auto m = mat4::scale(scale, -scale, 1);
+	//m = m * jitter(sfb->width*8, sfb->height*8, 1);
+
+	rvd.index = 0;
+	rvd.scene_view = &scene_view;
+	rvd.ubo.p = m * proj;
+	rvd.ubo.v = mat4::ID;
+	rvd.ubo.num_lights = 0;
+	rvd.ubo.shadow_index = -1;
+
 	cb->begin_render_pass(render_pass, sfb);
 	cb->set_viewport(rect(0, sfb->width, 0, sfb->height));
 
 	//shadow_pass->set(shadow_proj, scale, &rvd);
 	//shadow_pass->draw();
-
-	auto m = mat4::scale(scale, -scale, 1);
-	//m = m * jitter(sfb->width*8, sfb->height*8, 1);
 
 	UBO ubo;
 	ubo.p = m * proj;
@@ -85,10 +89,14 @@ void ShadowRendererVulkan::render_shadow_map(CommandBuffer *cb, FrameBuffer *sfb
 	ubo.num_lights = 0;
 	ubo.shadow_index = -1;
 
-	geo_renderer->draw_terrains(cb, render_pass, ubo, rvd);
-	geo_renderer->draw_objects_opaque(cb, render_pass, ubo, rvd);
-	geo_renderer->draw_objects_instanced(cb, render_pass, ubo, rvd);
-	geo_renderer->draw_user_meshes(cb, render_pass, ubo, false, rvd);
+	RenderParams params;
+	params.command_buffer = cb;
+	params.render_pass = render_pass;
+
+	geo_renderer->draw_terrains(params, rvd);
+	geo_renderer->draw_objects_opaque(params, rvd);
+	geo_renderer->draw_objects_instanced(params, rvd);
+	geo_renderer->draw_user_meshes(params, false, rvd);
 
 
 	cb->end_render_pass();

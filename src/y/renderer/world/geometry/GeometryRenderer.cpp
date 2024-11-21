@@ -14,7 +14,8 @@ bool GeometryRenderer::using_view_space = true;
 
 GeometryRenderer::GeometryRenderer(RenderPathType _type, SceneView &_scene_view) :
 		Renderer("geo"),
-		scene_view(_scene_view)
+		scene_view(_scene_view),
+		fx_material(resource_manager)
 {
 	type = _type;
 	flags = Flags::ALLOW_OPAQUE | Flags::ALLOW_TRANSPARENT;
@@ -28,6 +29,14 @@ GeometryRenderer::GeometryRenderer(RenderPathType _type, SceneView &_scene_view)
 	ch_prepare_lights = PerformanceMonitor::create_channel("lights", channel);
 
 	using_view_space = true;
+
+	fx_material.pass0.cull_mode = 0;
+	fx_material.pass0.mode = TransparencyMode::FUNCTIONS;
+	fx_material.pass0.source = Alpha::SOURCE_ALPHA;
+	fx_material.pass0.destination = Alpha::SOURCE_INV_ALPHA;
+	fx_material.pass0.shader_path = "fx.shader";
+
+	fx_vertex_buffers.add(new VertexBuffer("3f,4f,2f"));
 }
 
 bool GeometryRenderer::is_shadow_pass() const {

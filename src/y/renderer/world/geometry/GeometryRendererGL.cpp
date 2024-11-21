@@ -66,7 +66,7 @@ void GeometryRendererGL::prepare(const RenderParams& params) {
 }
 
 void GeometryRendererGL::set_material(ShaderCache &cache, Material *m, RenderPathType t, const string &vertex_module, const string &geometry_module) {
-	cache._prepare_shader(t, m, vertex_module, geometry_module);
+	cache._prepare_shader(t, *m, vertex_module, geometry_module);
 	set_material_x(m, cache.get_shader(t));
 }
 
@@ -380,7 +380,7 @@ void GeometryRendererGL::draw_objects_transparent(const RenderParams& params) {
 					multi_pass_shader_cache[k].set(material, {});
 				auto &shader_cache = multi_pass_shader_cache[k][material];
 
-				shader_cache._prepare_shader_multi_pass(type, material, m->_template->vertex_shader_module, "", k);
+				shader_cache._prepare_shader_multi_pass(type, *material, m->_template->vertex_shader_module, "", k);
 				shaders.add(shader_cache.get_shader(type));
 			}
 
@@ -437,13 +437,15 @@ void GeometryRendererGL::draw_user_meshes(bool transparent) {
 			continue;
 		auto o = m->owner;
 		nix::set_model_matrix(o->get_matrix());
+
+
 		if (is_shadow_pass()) {
-			auto shader = user_mesh_shadow_shader(resource_manager, m, material_shadow, type);
-			set_material_x(material_shadow, shader);
+			set_material(m->shader_cache_shadow, material_shadow, type, m->vertex_shader_module, "");
 		} else {
-			auto shader = user_mesh_shader(resource_manager, m, type);
-			set_material_x(m->material.get(), shader);
+			set_material(m->shader_cache, m->material.get(), type, m->vertex_shader_module, "");
 		}
+
+		
 		if (m->topology == PrimitiveTopology::TRIANGLES)
 			nix::draw_triangles(m->vertex_buffer.get());
 		else if (m->topology == PrimitiveTopology::POINTS)

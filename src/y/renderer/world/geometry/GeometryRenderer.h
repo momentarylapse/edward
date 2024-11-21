@@ -77,6 +77,10 @@ public:
 	owned<VertexBuffer> vb_fx_points;
 
 	base::map<Material*, ShaderCache> multi_pass_shader_cache[4];
+	ShaderCache fx_shader_cache;
+	Material fx_material;
+
+	owned_array<VertexBuffer> fx_vertex_buffers;
 };
 
 inline GeometryRenderer::Flags operator|(GeometryRenderer::Flags a, GeometryRenderer::Flags b) {

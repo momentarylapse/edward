@@ -64,20 +64,22 @@ void WorldRendererGL::render_into_cubemap(CubeMapSource& source) {
 		source.depth_buffer = new nix::DepthBuffer(source.resolution, source.resolution, "d24s8");
 	if (!source.cube_map)
 		source.cube_map = new CubeMap(source.resolution, "rgba:i8");
-	if (!source.frame_buffer)
-		source.frame_buffer = new nix::FrameBuffer({source.depth_buffer.get()});
+	if (!source.frame_buffer[0])
+		for (int i=0; i<6; i++) {
+			source.frame_buffer[i] = new nix::FrameBuffer({source.cube_map.get(), source.depth_buffer.get()});
+			try {
+				source.frame_buffer[i]->update_x({source.cube_map.get(), source.depth_buffer.get()}, i);
+			} catch(Exception &e) {
+				msg_error(e.message());
+				return;
+			}
+		}
 	Entity o(source.owner->pos, quaternion::ID);
 	Camera cam;
 	cam.min_depth = source.min_depth;
 	cam.owner = &o;
 	cam.fov = pi/2;
 	for (int i=0; i<6; i++) {
-		try {
-			source.frame_buffer->update_x({source.cube_map.get(), source.depth_buffer.get()}, i);
-		} catch(Exception &e) {
-			msg_error(e.message());
-			return;
-		}
 		if (i == 0)
 			o.ang = quaternion::rotation(vec3(0,pi/2,0));
 		if (i == 1)
@@ -91,7 +93,7 @@ void WorldRendererGL::render_into_cubemap(CubeMapSource& source) {
 		if (i == 5)
 			o.ang = quaternion::rotation(vec3(0,pi,0));
 		//prepare_lights(&cam);
-		render_into_texture(source.frame_buffer.get(), &cam);
+		render_into_texture(source.frame_buffer[i].get(), &cam);
 	}
 	cam.owner = nullptr;
 }
