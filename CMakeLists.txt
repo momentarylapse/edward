@@ -617,6 +617,7 @@ add_executable(edward
 	src/multiview/CameraController.cpp
 	src/multiview/ColorScheme.cpp
 	src/multiview/DrawingHelper.cpp
+	src/multiview/LinearToSrgbRenderer.cpp
 	src/multiview/MouseWrapper.cpp
 	src/multiview/MultiView.cpp
 	src/multiview/SingleData.cpp
