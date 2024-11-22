@@ -76,9 +76,10 @@ DrawingHelper::DrawingHelper(Context *_ctx, ResourceManager *rm, const Path &dir
 
 		resource_manager->default_shader = "default.shader";
 
+		resource_manager->load_shader(dir | "shader/module-basic-interface.shader");
 		resource_manager->load_shader(dir | "shader/module-basic-data.shader");
-		resource_manager->load_shader(dir | "shader/module-surface.shader");
-		//resource_manager->load_shader(dir | "shader/module-surface-simple.shader");
+		resource_manager->load_shader(dir | "shader/module-lighting-pbr.shader");
+		resource_manager->load_shader(dir | "shader/forward/module-surface.shader");
 
 
 		resource_manager->load_shader(dir | "shader/module-vertex-default.shader");

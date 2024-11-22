@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ShaderGraph>
+	<Nodes>
+		<Node type="Texture0" x="-180" y="50" uv="-mesh-" />
+		<Node type="Mesh" x="-180" y="320" space="1" />
+		<Node type="Material" x="-180" y="150" />
+		<Node type="Multiply" x="50" y="50" a="#ffffffff" b="#ffffffff" />
+		<Node type="SurfaceOutput" x="250" y="100" albedo="#ffffffff" roughness="0.3" metal="0.1" emission="#000000ff" normal="vec3(0,0,1)" />
+	</Nodes>
+	<Links>
+		<Link source="1" sourceport="2" dest="0" destport="0" />
+		<Link source="0" sourceport="0" dest="3" destport="0" />
+		<Link source="2" sourceport="0" dest="3" destport="1" />
+		<Link source="3" sourceport="0" dest="4" destport="0" />
+		<Link source="2" sourceport="1" dest="4" destport="1" />
+		<Link source="2" sourceport="2" dest="4" destport="2" />
+		<Link source="2" sourceport="3" dest="4" destport="3" />
+		<Link source="1" sourceport="1" dest="4" destport="4" />
+	</Links>
+</ShaderGraph>
