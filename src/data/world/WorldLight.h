@@ -10,15 +10,11 @@
 
 #include "../../multiview/SingleData.h"
 #include "../../lib/image/color.h"
+#include <y/world/Light.h>
 
 
 class ScriptInstanceData;
 
-enum class LightType {
-	DIRECTIONAL,
-	POINT,
-	CONE
-};
 
 string light_type(LightType t);
 string light_type_canonical(LightType t);

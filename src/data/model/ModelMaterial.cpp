@@ -12,6 +12,7 @@
 #include "../../multiview/Window.h"
 #include "../../multiview/DrawingHelper.h"
 #endif
+#include <renderer/world/WorldRenderer.h>
 #include <y/helper/ResourceManager.h>
 #include <y/graphics-impl.h>
 #include "../../Session.h"
@@ -179,7 +180,7 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 			//nix::set_alpha(alpha.factor);
 			nix::set_z(false, true);
 		}
-		shader_cache._prepare_shader((RenderPathType)1, material, "default", "");
+		shader_cache._prepare_shader(RenderPathType::FORWARD, *material, "default", "");
 		w->set_shader(shader_cache.shader[0].get());
 	}
 	Array<nix::Texture*> tex;

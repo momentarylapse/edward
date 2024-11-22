@@ -6,6 +6,9 @@
  */
 
 #include "ModeWorld.h"
+
+#include <renderer/world/WorldRenderer.h>
+
 #include "dialog/TerrainPropertiesDialog.h"
 #include "dialog/TerrainHeightmapDialog.h"
 #include "dialog/LightmapDialog.h"
@@ -498,7 +501,7 @@ void ModeWorld::draw_terrains(MultiView::Window *win) {
 		auto mat = t.terrain->material.get();
 		auto s = win->ctx->default_3d.get();
 		try {
-			t.terrain->shader_cache._prepare_shader((RenderPathType)1, mat, "default", "");
+			t.terrain->shader_cache._prepare_shader(RenderPathType::FORWARD, *mat, "default", "");
 			s = t.terrain->shader_cache.shader[0].get();
 		} catch (Exception &e) {
 			msg_error(e.message());
@@ -530,7 +533,7 @@ void draw_model(MultiView::Window *win, Model *m, int num_lights) {
 		auto mat = m->material[i];
 		auto s = win->ctx->default_3d.get();
 		try {
-			m->shader_cache[i]._prepare_shader((RenderPathType)1, mat, "default", "");
+			m->shader_cache[i]._prepare_shader(RenderPathType::FORWARD, *mat, "default", "");
 			s = m->shader_cache[i].shader[0].get();
 		} catch (Exception &e) {
 			msg_error(e.message());
