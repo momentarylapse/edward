@@ -20,6 +20,34 @@ struct ShaderCache;
 enum class RenderPathType;
 enum class ShaderVariant;
 
+
+struct RenderData {
+	//UniformBuffer* ubo;
+	void set_textures(const SceneView& scene_view, const Array<Texture*>& tex);
+	void apply(const RenderParams& params);
+};
+
+struct RenderViewData {
+	RenderViewData();
+	void reset() {}
+
+	struct UBO {
+		int num_lights, shadow_index;
+	} ubo;
+
+	void set_projection_matrix(const mat4& projection);
+	void set_view_matrix(const mat4& view);
+
+	owned<UniformBuffer> ubo_light;
+
+	SceneView* scene_view = nullptr;
+	RenderData rd;
+	RenderData& start(const RenderParams& params, RenderPathType type, const mat4& matrix,
+			ShaderCache& shader_cache, const Material& material, int pass_no,
+			const string& vertex_shader_module, const string& geometry_shader_module,
+			PrimitiveTopology top, VertexBuffer *vb);
+};
+
 class GeometryRendererGL : public GeometryRenderer {
 public:
 	GeometryRendererGL(RenderPathType type, SceneView &scene_view);
@@ -27,8 +55,8 @@ public:
 	void prepare(const RenderParams& params) override;
 	void draw(const RenderParams& params) override {}
 
-	void set_material(ShaderCache &cache, Material *m, RenderPathType type, const string &vertex_module, const string &geometry_module);
-	void set_material_x(Material *m, Shader *shader);
+	static void set_material(const SceneView& scene_view, ShaderCache& cache, const Material& m, RenderPathType type, const string& vertex_module, const string& geometry_module);
+	static void set_material_x(const SceneView& scene_view, const Material& m, Shader* shader);
 
 	void draw_skyboxes();
 	void draw_particles();

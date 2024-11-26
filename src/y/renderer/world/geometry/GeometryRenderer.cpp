@@ -10,8 +10,6 @@
 #include "../../../graphics-impl.h"
 #include "../../../helper/PerformanceMonitor.h"
 
-bool GeometryRenderer::using_view_space = true;
-
 GeometryRenderer::GeometryRenderer(RenderPathType _type, SceneView &_scene_view) :
 		Renderer("geo"),
 		scene_view(_scene_view),
@@ -27,8 +25,6 @@ GeometryRenderer::GeometryRenderer(RenderPathType _type, SceneView &_scene_view)
 	ch_models = PerformanceMonitor::create_channel("mod", channel);
 	ch_user = PerformanceMonitor::create_channel("usr", channel);
 	ch_prepare_lights = PerformanceMonitor::create_channel("lights", channel);
-
-	using_view_space = true;
 
 	fx_material.pass0.cull_mode = 0;
 	fx_material.pass0.mode = TransparencyMode::FUNCTIONS;

@@ -40,6 +40,10 @@ struct RenderDataVK {
 
 struct RenderViewDataVK {
 	RenderViewDataVK();
+	void reset();
+
+	void set_projection_matrix(const mat4& projection);
+	void set_view_matrix(const mat4& view);
 
 	owned<UniformBuffer> ubo_light;
 	Array<RenderDataVK> rda;
@@ -52,6 +56,8 @@ struct RenderViewDataVK {
 			const string& vertex_shader_module, const string& geometry_shader_module,
 			PrimitiveTopology top, VertexBuffer *vb);
 };
+
+using RenderViewData = RenderViewDataVK;
 
 class GeometryRendererVulkan : public GeometryRenderer {
 public:

@@ -43,6 +43,28 @@
 #include <lib/math/rect.h>
 #include <lib/os/msg.h>
 
+void RenderData::apply(const RenderParams &params) {
+}
+
+RenderViewData::RenderViewData() {
+
+}
+
+void RenderViewData::set_projection_matrix(const mat4& projection) {
+	nix::set_projection_matrix(projection);
+}
+void RenderViewData::set_view_matrix(const mat4& view) {
+	nix::set_view_matrix(view);
+}
+
+RenderData& RenderViewData::start(const RenderParams& params, RenderPathType type, const mat4& matrix,
+		ShaderCache& shader_cache, const Material& material, int pass_no,
+		const string& vertex_shader_module, const string& geometry_shader_module,
+		PrimitiveTopology top, VertexBuffer *vb) {
+	nix::set_model_matrix(matrix);
+	GeometryRendererGL::set_material(*scene_view, shader_cache, material, type, vertex_shader_module, geometry_shader_module);
+	return rd;
+}
 
 GeometryRendererGL::GeometryRendererGL(RenderPathType type, SceneView &scene_view) : GeometryRenderer(type, scene_view) {
 
@@ -65,12 +87,12 @@ void GeometryRendererGL::prepare(const RenderParams& params) {
 	PerformanceMonitor::end(ch_prepare);
 }
 
-void GeometryRendererGL::set_material(ShaderCache &cache, Material *m, RenderPathType t, const string &vertex_module, const string &geometry_module) {
-	cache._prepare_shader(t, *m, vertex_module, geometry_module);
-	set_material_x(m, cache.get_shader(t));
+void GeometryRendererGL::set_material(const SceneView& scene_view, ShaderCache& cache, const Material& m, RenderPathType t, const string& vertex_module, const string& geometry_module) {
+	cache._prepare_shader(t, m, vertex_module, geometry_module);
+	set_material_x(scene_view, m, cache.get_shader(t));
 }
 
-void GeometryRendererGL::set_material_x(Material *m, Shader *s) {
+void GeometryRendererGL::set_material_x(const SceneView& scene_view, const Material& m, Shader* s) {
 	nix::set_shader(s);
 	if (using_view_space)
 		s->set_floats("eye_pos", &scene_view.cam->owner->pos.x, 3); // NAH....
@@ -78,23 +100,23 @@ void GeometryRendererGL::set_material_x(Material *m, Shader *s) {
 		s->set_floats("eye_pos", &vec3::ZERO.x, 3);
 	s->set_int("num_lights", scene_view.lights.num);
 	s->set_int("shadow_index", scene_view.shadow_index);
-	for (auto &u: m->uniforms)
+	for (auto &u: m.uniforms)
 		s->set_floats(u.name, u.p, u.size/4);
 
-	if (m->pass0.mode == TransparencyMode::FUNCTIONS)
-		nix::set_alpha(m->pass0.source, m->pass0.destination);
-	else if (m->pass0.mode == TransparencyMode::COLOR_KEY_HARD)
+	if (m.pass0.mode == TransparencyMode::FUNCTIONS)
+		nix::set_alpha(m.pass0.source, m.pass0.destination);
+	else if (m.pass0.mode == TransparencyMode::COLOR_KEY_HARD)
 		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
-	else if (m->pass0.mode == TransparencyMode::MIX)
+	else if (m.pass0.mode == TransparencyMode::MIX)
 		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	else
 		nix::disable_alpha();
 
-	nix::bind_textures(weak(m->textures));
+	nix::bind_textures(weak(m.textures));
 	nix::bind_texture(7, scene_view.cube_map.get());
 
 
-	nix::set_material(m->albedo, m->roughness, m->metal, m->emission);
+	nix::set_material(m.albedo, m.roughness, m.metal, m.emission);
 }
 
 
@@ -254,7 +276,7 @@ void GeometryRendererGL::draw_skyboxes() {
 		sb->_matrix = mat4::rotation(sb->owner->ang);
 		nix::set_model_matrix(sb->_matrix * mat4::scale(10,10,10));
 		for (int i=0; i<sb->material.num; i++) {
-			set_material(sb->shader_cache[i], sb->material[i], type, "default", "");
+			set_material(scene_view, sb->shader_cache[i], *sb->material[i], type, "default", "");
 			nix::draw_triangles(sb->mesh[0]->sub[i].vertex_buffer);
 		}
 	}
@@ -274,9 +296,9 @@ void GeometryRendererGL::draw_terrains() {
 		auto o = t->owner;
 		nix::set_model_matrix(mat4::translation(o->pos));
 		if (is_shadow_pass()) {
-			set_material(t->shader_cache_shadow, material_shadow, type, t->vertex_shader_module, "");
+			set_material(scene_view, t->shader_cache_shadow, *material_shadow, type, t->vertex_shader_module, "");
 		} else {
-			set_material(t->shader_cache, t->material.get(), type, t->vertex_shader_module, "");
+			set_material(scene_view, t->shader_cache, *t->material.get(), type, t->vertex_shader_module, "");
 			auto s = t->shader_cache.get_shader(type);
 			s->set_floats("pattern0", &t->texture_scale[0].x, 3);
 			s->set_floats("pattern1", &t->texture_scale[1].x, 3);
@@ -298,9 +320,9 @@ void GeometryRendererGL::draw_objects_instanced() {
 				continue;
 			nix::set_model_matrix(mi->matrices[0]);//m->_matrix);
 			if (is_shadow_pass()) {
-				set_material(m->shader_cache_shadow[i], material_shadow, type, "instanced", "");
+				set_material(scene_view, m->shader_cache_shadow[i], *material_shadow, type, "instanced", "");
 			} else {
-				set_material(m->shader_cache[i], m->material[i], type, "instanced", "");
+				set_material(scene_view, m->shader_cache[i], *m->material[i], type, "instanced", "");
 			}
 			nix::bind_uniform_buffer(5, mi->ubo_matrices);
 			//msg_write(s.matrices.num);
@@ -331,9 +353,9 @@ void GeometryRendererGL::draw_objects_opaque() {
 				continue;
 
 			if (is_shadow_pass()) {
-				set_material(m->shader_cache_shadow[i], material_shadow, type, m->_template->vertex_shader_module, "");
+				set_material(scene_view, m->shader_cache_shadow[i], *material_shadow, type, m->_template->vertex_shader_module, "");
 			} else {
-				set_material(m->shader_cache[i], weak(m->material)[i], type, m->_template->vertex_shader_module, "");
+				set_material(scene_view, m->shader_cache[i], *weak(m->material)[i], type, m->_template->vertex_shader_module, "");
 			}
 			nix::draw_triangles(m->mesh[0]->sub[i].vertex_buffer);
 		}
@@ -397,7 +419,7 @@ void GeometryRendererGL::draw_objects_transparent(const RenderParams& params) {
 		for (int k=0; k<dc.material->num_passes; k++) {
 			auto& p = dc.material->pass(k);
 
-			set_material_x(dc.material, dc.shaders[k]);
+			set_material_x(scene_view, *dc.material, dc.shaders[k]);
 
 			if (p.mode == TransparencyMode::FUNCTIONS)
 				nix::set_alpha(p.source, p.destination);
@@ -440,9 +462,9 @@ void GeometryRendererGL::draw_user_meshes(bool transparent) {
 
 
 		if (is_shadow_pass()) {
-			set_material(m->shader_cache_shadow, material_shadow, type, m->vertex_shader_module, "");
+			set_material(scene_view, m->shader_cache_shadow, *material_shadow, type, m->vertex_shader_module, "");
 		} else {
-			set_material(m->shader_cache, m->material.get(), type, m->vertex_shader_module, "");
+			set_material(scene_view, m->shader_cache, *m->material.get(), type, m->vertex_shader_module, "");
 		}
 
 		

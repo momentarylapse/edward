@@ -58,6 +58,16 @@ RenderViewDataVK::RenderViewDataVK() {
 	ubo_light = new UniformBuffer(MAX_LIGHTS * sizeof(UBOLight));
 }
 
+void RenderViewDataVK::reset() {
+	index = 0;
+}
+void RenderViewDataVK::set_projection_matrix(const mat4& projection) {
+	ubo.p = projection;
+}
+void RenderViewDataVK::set_view_matrix(const mat4& view) {
+	ubo.v = view;
+}
+
 RenderDataVK& RenderViewDataVK::start(
 		const RenderParams& params, RenderPathType type, const mat4& matrix,
 		ShaderCache& shader_cache, const Material& material, int pass_no,

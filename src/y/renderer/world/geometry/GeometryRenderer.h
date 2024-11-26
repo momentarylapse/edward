@@ -64,7 +64,7 @@ public:
 
 	int ch_pre, ch_bg, ch_fx, ch_terrains, ch_models, ch_user, ch_prepare_lights;
 
-	static bool using_view_space;
+	static constexpr bool using_view_space = true;
 	RenderPathType type;
 
 	Material *material_shadow = nullptr; // ref to ShadowRenderer
