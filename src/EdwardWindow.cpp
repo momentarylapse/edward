@@ -112,8 +112,8 @@ void EdwardWindow::on_close() {
 
 #define IMPLEMENT_EVENT_V2(EVENT) \
 void EdwardWindow::EVENT(const vec2& v) { \
-	if (session->cur_mode->multi_view) \
-		session->cur_mode->multi_view->EVENT(v); \
+	if (auto mv = session->cur_mode->multi_view) \
+		mv->EVENT(v * mv->screen_scale); \
 	session->cur_mode->EVENT(); \
 }
 
