@@ -9,6 +9,7 @@
 
 #include "WorldRendererGL.h"
 #ifdef USING_OPENGL
+#include "geometry/RenderViewData.h"
 
 class Camera;
 class PerformanceMonitor;
@@ -20,7 +21,11 @@ public:
 	void prepare(const RenderParams& params) override;
 	void draw(const RenderParams& params) override;
 
-	void render_into_texture(FrameBuffer *fb, Camera *cam) override;
+	void draw_with(const RenderParams& params, RenderViewData& rvd);
+
+	void render_into_texture(FrameBuffer *fb, Camera *cam, RenderViewData &rvd) override;
+
+	RenderViewData main_rvd;
 };
 
 #endif

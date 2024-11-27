@@ -10,6 +10,7 @@
 #include "WorldRenderer.h"
 #ifdef USING_VULKAN
 #include "geometry/GeometryRendererVulkan.h"
+#include "geometry/RenderViewData.h"
 #include <lib/base/pointer.h>
 #include <lib/base/callable.h>
 #include <lib/math/vec3.h>
@@ -52,7 +53,7 @@ public:
 
 	VertexBuffer *vb_2d;
 
-	RenderViewDataVK rvd_cube[6];
+	RenderViewData rvd_cube[6];
 
 	void create_more();
 
@@ -60,10 +61,10 @@ public:
 	WorldRendererVulkan(const string &name, Camera *cam, RenderPathType type);
 	~WorldRendererVulkan() override;
 
-	virtual void render_into_texture(Camera *cam, RenderViewDataVK &rvd, const RenderParams& params) = 0;
+	virtual void render_into_texture(Camera *cam, RenderViewData &rvd, const RenderParams& params) = 0;
 	void render_into_cubemap(CubeMapSource& source, const RenderParams& params);
 
-	void prepare_lights(Camera *cam, RenderViewDataVK &rvd);
+	void prepare_lights(Camera *cam, RenderViewData &rvd);
 };
 
 #endif

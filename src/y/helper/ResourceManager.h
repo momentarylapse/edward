@@ -48,11 +48,3 @@ public:
 	shared<Texture> tex_white;
 };
 
-
-class UserMesh;
-class Material;
-enum class RenderPathType;
-
-Shader *user_mesh_shader(ResourceManager *rm, UserMesh *m, RenderPathType type);
-Shader *user_mesh_shadow_shader(ResourceManager *rm, UserMesh *m, Material *mat, RenderPathType type);
-

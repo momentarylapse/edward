@@ -76,7 +76,7 @@ void WorldRendererGLDeferred::prepare(const RenderParams& params) {
 	auto sub_params = params.with_target(gbuffer.get());
 
 	scene_view.check_terrains(cam_main->owner->pos);
-	prepare_lights();
+	prepare_lights(cam_main, main_rvd);
 
 	geo_renderer->prepare(sub_params);
 	geo_renderer_trans->prepare(params); // keep drawing into direct target
@@ -107,12 +107,12 @@ void WorldRendererGLDeferred::draw(const RenderParams& params) {
 	auto cam = scene_view.cam;
 	cam->update_matrices(params.desired_aspect_ratio);
 	nix::set_projection_matrix(m * cam->m_projection);
-	nix::bind_uniform_buffer(1, scene_view.ubo_light.get());
+	nix::bind_uniform_buffer(1, main_rvd.ubo_light.get());
 	nix::set_view_matrix(cam->view_matrix());
 	nix::set_z(true, true);
 	nix::set_front(flip_y ? nix::Orientation::CW : nix::Orientation::CCW);
 
-	geo_renderer_trans->draw_transparent(params);
+	geo_renderer_trans->draw_transparent(params, main_rvd);
 	nix::set_cull(nix::CullMode::BACK);
 	nix::set_front(nix::Orientation::CW);
 
@@ -139,7 +139,7 @@ void WorldRendererGLDeferred::draw_background(nix::FrameBuffer *fb, const Render
 	//nix::clear_color(Green);
 	nix::clear_color(world.background);
 
-	geo_renderer->draw_skyboxes();
+	geo_renderer->draw_skyboxes(params, main_rvd);
 	PerformanceMonitor::end(ch_bg);
 
 }
@@ -156,7 +156,7 @@ void WorldRendererGLDeferred::render_out_from_gbuffer(nix::FrameBuffer *source, 
 	s->set_float("ambient_occlusion_radius", config.ambient_occlusion_radius);
 	nix::bind_uniform_buffer(13, ssao_sample_buffer);
 
-	nix::bind_uniform_buffer(1, scene_view.ubo_light.get());
+	nix::bind_uniform_buffer(1, main_rvd.ubo_light.get());
 	auto tex = weak(source->color_attachments);
 	tex.add(source->depth_buffer.get());
 	tex.add(scene_view.fb_shadow1->depth_buffer.get());
@@ -201,12 +201,12 @@ void WorldRendererGLDeferred::render_into_gbuffer(nix::FrameBuffer *fb, const Re
 	nix::set_cull(nix::CullMode::BACK);
 	nix::set_front(nix::Orientation::CCW);
 
-	geo_renderer->draw_opaque();
+	geo_renderer->draw_opaque(params, main_rvd);
 	ControllerManager::handle_render_inject();
 
 	nix::set_cull(nix::CullMode::BACK);
 	nix::set_front(nix::Orientation::CCW);
-	geo_renderer->draw_particles();
+	geo_renderer->draw_particles(params, main_rvd);
 	gpu_timestamp_end(ch_world);
 	PerformanceMonitor::end(ch_world);
 }

@@ -16,7 +16,6 @@
 class Camera;
 class Material;
 class PerformanceMonitor;
-struct RenderViewDataVK;
 class GeometryRendererVulkan;
 
 class ShadowRendererVulkan : public Renderer {
@@ -28,7 +27,7 @@ public:
 
     void render(vulkan::CommandBuffer *cb, SceneView &parent_scene_view);
 
-    void render_shadow_map(CommandBuffer *cb, FrameBuffer *sfb, float scale, RenderViewDataVK &rvd);
+    void render_shadow_map(CommandBuffer *cb, FrameBuffer *sfb, float scale, RenderViewData &rvd);
 
 	SceneView scene_view;
 
@@ -37,7 +36,7 @@ public:
 	shared<FrameBuffer> fb[2];
     mat4 proj;
     owned<Material> material;
-	RenderViewDataVK rvd[2];
+	RenderViewData rvd[2];
 
 	owned<GeometryRendererVulkan> geo_renderer;
 };

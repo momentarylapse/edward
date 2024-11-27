@@ -43,28 +43,6 @@
 #include <lib/math/rect.h>
 #include <lib/os/msg.h>
 
-void RenderData::apply(const RenderParams &params) {
-}
-
-RenderViewData::RenderViewData() {
-
-}
-
-void RenderViewData::set_projection_matrix(const mat4& projection) {
-	nix::set_projection_matrix(projection);
-}
-void RenderViewData::set_view_matrix(const mat4& view) {
-	nix::set_view_matrix(view);
-}
-
-RenderData& RenderViewData::start(const RenderParams& params, RenderPathType type, const mat4& matrix,
-		ShaderCache& shader_cache, const Material& material, int pass_no,
-		const string& vertex_shader_module, const string& geometry_shader_module,
-		PrimitiveTopology top, VertexBuffer *vb) {
-	nix::set_model_matrix(matrix);
-	GeometryRendererGL::set_material(*scene_view, shader_cache, material, type, vertex_shader_module, geometry_shader_module);
-	return rd;
-}
 
 GeometryRendererGL::GeometryRendererGL(RenderPathType type, SceneView &scene_view) : GeometryRenderer(type, scene_view) {
 
@@ -147,7 +125,7 @@ void create_color_quad(VertexBuffer *vb, const rect &d, const rect &s, const col
 }
 
 
-void GeometryRendererGL::draw_particles() {
+void GeometryRendererGL::draw_particles(const RenderParams& params, RenderViewData &rvd) {
 	PerformanceMonitor::begin(ch_fx);
 	gpu_timestamp_begin(ch_fx);
 
@@ -266,7 +244,7 @@ void GeometryRendererGL::draw_particles() {
 	PerformanceMonitor::end(ch_fx);
 }
 
-void GeometryRendererGL::draw_skyboxes() {
+void GeometryRendererGL::draw_skyboxes(const RenderParams& params, RenderViewData &rvd) {
 	PerformanceMonitor::begin(ch_bg);
 	gpu_timestamp_begin(ch_bg);
 	nix::set_z(false, false);
@@ -286,7 +264,7 @@ void GeometryRendererGL::draw_skyboxes() {
 	PerformanceMonitor::end(ch_bg);
 }
 
-void GeometryRendererGL::draw_terrains() {
+void GeometryRendererGL::draw_terrains(const RenderParams& params, RenderViewData &rvd) {
 	PerformanceMonitor::begin(ch_terrains);
 	gpu_timestamp_begin(ch_terrains);
 	auto& terrains = ComponentManager::get_list_family<Terrain>();
@@ -309,7 +287,7 @@ void GeometryRendererGL::draw_terrains() {
 	PerformanceMonitor::end(ch_terrains);
 }
 
-void GeometryRendererGL::draw_objects_instanced() {
+void GeometryRendererGL::draw_objects_instanced(const RenderParams& params, RenderViewData &rvd) {
 	PerformanceMonitor::begin(ch_models);
 	gpu_timestamp_begin(ch_models);
 	auto& list = ComponentManager::get_list_family<MultiInstance>();
@@ -333,7 +311,7 @@ void GeometryRendererGL::draw_objects_instanced() {
 	PerformanceMonitor::end(ch_models);
 }
 
-void GeometryRendererGL::draw_objects_opaque() {
+void GeometryRendererGL::draw_objects_opaque(const RenderParams& params, RenderViewData &rvd) {
 	PerformanceMonitor::begin(ch_models);
 	gpu_timestamp_begin(ch_models);
 	auto& list = ComponentManager::get_list_family<Model>();
@@ -372,7 +350,7 @@ struct DrawCallDataMultiPass {
 	float z;
 };
 
-void GeometryRendererGL::draw_objects_transparent(const RenderParams& params) {
+void GeometryRendererGL::draw_objects_transparent(const RenderParams& params, RenderViewData &rvd) {
 	if (is_shadow_pass())
 		return;
 	PerformanceMonitor::begin(ch_models);
@@ -448,7 +426,7 @@ void GeometryRendererGL::draw_objects_transparent(const RenderParams& params) {
 	PerformanceMonitor::end(ch_models);
 }
 
-void GeometryRendererGL::draw_user_meshes(bool transparent) {
+void GeometryRendererGL::draw_user_meshes(const RenderParams& params, RenderViewData &rvd, bool transparent) {
 	PerformanceMonitor::begin(ch_user);
 	gpu_timestamp_begin(ch_user);
 	auto& meshes = ComponentManager::get_list_family<UserMesh>();
@@ -495,35 +473,35 @@ void GeometryRendererGL::prepare_instanced_matrices() {
 
 
 
-void GeometryRendererGL::draw_opaque() {
+void GeometryRendererGL::draw_opaque(const RenderParams& params, RenderViewData &rvd) {
 	if (!is_shadow_pass()) {
 		nix::set_z(true, true);
 		nix::set_view_matrix(scene_view.cam->view_matrix());
-		nix::bind_uniform_buffer(1, scene_view.ubo_light.get());
+		nix::bind_uniform_buffer(1, rvd.ubo_light.get());
 		nix::bind_texture(3, scene_view.fb_shadow1->depth_buffer.get());
 		nix::bind_texture(4, scene_view.fb_shadow2->depth_buffer.get());
 		nix::bind_texture(5, scene_view.cube_map.get());
 	}
 
 	// opaque
-	draw_terrains();
-	draw_objects_instanced();
-	draw_objects_opaque();
-	draw_user_meshes(false);
+	draw_terrains(params, rvd);
+	draw_objects_instanced(params, rvd);
+	draw_objects_opaque(params, rvd);
+	draw_user_meshes(params, rvd, false);
 }
 
-void GeometryRendererGL::draw_transparent(const RenderParams& params) {
+void GeometryRendererGL::draw_transparent(const RenderParams& params, RenderViewData &rvd) {
 	nix::set_view_matrix(scene_view.cam->view_matrix());
 	//nix::set_z(true, true);
 
-	nix::bind_uniform_buffer(1, scene_view.ubo_light.get());
+	nix::bind_uniform_buffer(1, rvd.ubo_light.get());
 	nix::bind_texture(3, scene_view.fb_shadow1->depth_buffer.get());
 	nix::bind_texture(4, scene_view.fb_shadow2->depth_buffer.get());
 	nix::bind_texture(5, scene_view.cube_map.get());
 
-	draw_objects_transparent(params);
-	draw_user_meshes(true);
-	draw_particles();
+	draw_objects_transparent(params, rvd);
+	draw_user_meshes(params, rvd, true);
+	draw_particles(params, rvd);
 }
 
 

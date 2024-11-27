@@ -112,10 +112,10 @@ void WorldRendererVulkan::render_into_cubemap(CubeMapSource& source, const Rende
 }
 
 
-void WorldRendererVulkan::prepare_lights(Camera *cam, RenderViewDataVK &rvd) {
+void WorldRendererVulkan::prepare_lights(Camera *cam, RenderViewData &rvd) {
 	PerformanceMonitor::begin(ch_prepare_lights);
 
-	scene_view.prepare_lights(shadow_box_size);
+	scene_view.prepare_lights(shadow_box_size, rvd.ubo_light.get());
 	rvd.ubo_light->update_part(&scene_view.lights[0], 0, scene_view.lights.num * sizeof(scene_view.lights[0]));
 	PerformanceMonitor::end(ch_prepare_lights);
 }

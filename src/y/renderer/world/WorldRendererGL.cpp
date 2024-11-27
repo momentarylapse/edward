@@ -39,8 +39,6 @@ WorldRendererGL::WorldRendererGL(const string &name, Camera *cam, RenderPathType
 	cube_map_source->cube_map = new CubeMap(cube_map_source->resolution, "rgba:i8");
 
 	scene_view.cube_map = cube_map_source->cube_map;
-
-	scene_view.ubo_light = new nix::UniformBuffer();
 }
 
 void WorldRendererGL::create_more() {
@@ -53,9 +51,9 @@ void WorldRendererGL::create_more() {
 	add_child(geo_renderer.get());
 }
 
-void WorldRendererGL::prepare_lights() {
+void WorldRendererGL::prepare_lights(Camera *cam, RenderViewData &rvd) {
 	PerformanceMonitor::begin(ch_prepare_lights);
-	scene_view.prepare_lights(shadow_box_size);
+	scene_view.prepare_lights(shadow_box_size, rvd.ubo_light.get());
 	PerformanceMonitor::end(ch_prepare_lights);
 }
 
@@ -93,7 +91,7 @@ void WorldRendererGL::render_into_cubemap(CubeMapSource& source) {
 		if (i == 5)
 			o.ang = quaternion::rotation(vec3(0,pi,0));
 		//prepare_lights(&cam);
-		render_into_texture(source.frame_buffer[i].get(), &cam);
+		render_into_texture(source.frame_buffer[i].get(), &cam, rvd_cube[i]);
 	}
 	cam.owner = nullptr;
 }

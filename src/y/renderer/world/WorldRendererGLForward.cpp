@@ -46,11 +46,7 @@ void WorldRendererGLForward::prepare(const RenderParams& params) {
 		scene_view.cam = cam_main;
 
 	scene_view.check_terrains(cam_main->owner->pos);
-	prepare_lights();
 	geo_renderer->prepare(params);
-
-	if (scene_view.shadow_index >= 0)
-		shadow_renderer->render(scene_view);
 
 	suggest_cube_map_pos();
 	auto cube_map_sources = ComponentManager::get_list<CubeMapSource>();
@@ -62,14 +58,21 @@ void WorldRendererGLForward::prepare(const RenderParams& params) {
 		if (source->counter >= source->update_rate) {
 			render_into_cubemap(*source);
 			source->counter = 0;
-			prepare_lights();
 		}
 	}
+	prepare_lights(cam_main, main_rvd);
+
+	if (scene_view.shadow_index >= 0)
+		shadow_renderer->render(scene_view);
 
 	PerformanceMonitor::end(ch_prepare);
 }
 
 void WorldRendererGLForward::draw(const RenderParams& params) {
+	draw_with(params, main_rvd);
+}
+void WorldRendererGLForward::draw_with(const RenderParams& params, RenderViewData& rvd) {
+
 	PerformanceMonitor::begin(ch_draw);
 	gpu_timestamp_begin(ch_draw);
 
@@ -81,6 +84,8 @@ void WorldRendererGLForward::draw(const RenderParams& params) {
 	auto m = flip_y ? mat4::scale(1,-1,1) : mat4::ID;
 	if (config.antialiasing_method == AntialiasingMethod::TAA)
 		 m *= jitter(fb->width, fb->height, 0);
+
+	rvd.begin_scene(&scene_view);
 
 	// skyboxes
 	auto cam = scene_view.cam;
@@ -96,7 +101,7 @@ void WorldRendererGLForward::draw(const RenderParams& params) {
 	nix::set_front(flip_y ? nix::Orientation::CW : nix::Orientation::CCW);
 	nix::set_wire(wireframe);
 
-	geo_renderer->draw_skyboxes();
+	geo_renderer->draw_skyboxes(params, rvd);
 	PerformanceMonitor::end(ch_bg);
 
 
@@ -107,13 +112,13 @@ void WorldRendererGLForward::draw(const RenderParams& params) {
 	cam->update_matrices(params.desired_aspect_ratio);
 	nix::set_projection_matrix(m * cam->m_projection);
 
-	nix::bind_uniform_buffer(1, scene_view.ubo_light.get());
+	nix::bind_uniform_buffer(1, rvd.ubo_light.get());
 	nix::set_view_matrix(cam->view_matrix());
 	nix::set_z(true, true);
 	nix::set_front(flip_y ? nix::Orientation::CW : nix::Orientation::CCW);
 
-	geo_renderer->draw_opaque();
-	geo_renderer->draw_transparent(params);
+	geo_renderer->draw_opaque(params, rvd);
+	geo_renderer->draw_transparent(params, rvd);
 	PerformanceMonitor::end(ch_world);
 
 	//nix::set_scissor(rect::EMPTY);
@@ -126,11 +131,11 @@ void WorldRendererGLForward::draw(const RenderParams& params) {
 	PerformanceMonitor::end(ch_draw);
 }
 
-void WorldRendererGLForward::render_into_texture(FrameBuffer *fb, Camera *cam) {
+void WorldRendererGLForward::render_into_texture(FrameBuffer *fb, Camera *cam, RenderViewData &rvd) {
 	nix::bind_frame_buffer(fb);
 
 	std::swap(scene_view.cam, cam);
-	prepare_lights();
+	prepare_lights(cam, rvd);
 	draw(RenderParams::into_texture(fb, 1.0f));
 	std::swap(scene_view.cam, cam);
 }

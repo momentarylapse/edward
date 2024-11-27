@@ -25,6 +25,7 @@ enum class RenderPathType;
 
 mat4 mtr(const vec3 &t, const quaternion &a);
 
+static constexpr int MAX_LIGHTS = 1024;
 
 
 struct UBOMatrices {

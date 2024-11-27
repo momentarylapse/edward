@@ -40,8 +40,9 @@ ShadowRendererGL::ShadowRendererGL() :
 	add_child(geo_renderer.get());
 }
 
-void ShadowRendererGL::render_shadow_map(FrameBuffer *sfb, float scale) {
-	geo_renderer->prepare(RenderParams::into_texture(sfb, 1.0f));
+void ShadowRendererGL::render_shadow_map(FrameBuffer *sfb, float scale, RenderViewData& rvd) {
+	const auto params = RenderParams::into_texture(sfb, 1.0f);
+	geo_renderer->prepare(params);
 
 	nix::bind_frame_buffer(sfb);
 
@@ -56,7 +57,7 @@ void ShadowRendererGL::render_shadow_map(FrameBuffer *sfb, float scale) {
 	nix::set_z(true, true);
 
     // all opaque meshes
-	geo_renderer->draw_opaque();
+	geo_renderer->draw_opaque(params, rvd);
 
 }
 
@@ -64,8 +65,8 @@ void ShadowRendererGL::prepare(const RenderParams& params) {
 	PerformanceMonitor::begin(ch_prepare);
 	gpu_timestamp_begin(ch_prepare);
 
-	render_shadow_map(fb[1].get(), 1);
-	render_shadow_map(fb[0].get(), 4);
+	render_shadow_map(fb[1].get(), 1, rvd[0]);
+	render_shadow_map(fb[0].get(), 4, rvd[1]);
 
 	gpu_timestamp_end(ch_prepare);
 	PerformanceMonitor::end(ch_prepare);

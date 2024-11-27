@@ -185,7 +185,7 @@ shared<Shader> ResourceManager::load_surface_shader(const Path& _filename, const
 		source = expand_geometry_shader_source(source, geometry_module);
 	source = expand_fragment_shader_source(source, render_path);
 
-	auto shader = __create_shader(source, "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,buffer,buffer,buffer]]");
+	auto shader = __create_shader(source, "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,buffer,buffer,buffer,buffer]]");
 
 	//auto s = Shader::load(fn);
 #ifdef USING_VULKAN
@@ -266,23 +266,4 @@ void ResourceManager::clear() {
 	material_manager->reset();
 }
 
-
-
-Shader *user_mesh_shader(ResourceManager *rm, UserMesh *m, RenderPathType type) {
-	if (!m->shader_cache.shader[(int)type - 1]) {
-		static const string RENDER_PATH_NAME[3] = {"", "forward", "deferred"};
-		const string &rpt = RENDER_PATH_NAME[(int)type];
-		m->shader_cache.shader[(int)type - 1] = rm->load_surface_shader(m->material->pass0.shader_path, rpt, m->vertex_shader_module, m->geometry_shader_module);
-	}
-	return m->shader_cache.shader[(int)type - 1].get();
-}
-
-Shader *user_mesh_shadow_shader(ResourceManager *rm, UserMesh *m, Material *mat, RenderPathType type) {
-	if (!m->shader_cache_shadow.shader[(int)type - 1]) {
-		static const string RENDER_PATH_NAME[3] = {"", "forward", "deferred"};
-		const string &rpt = RENDER_PATH_NAME[(int)type];
-		m->shader_cache_shadow.shader[(int)type - 1] = rm->load_surface_shader(mat->pass0.shader_path, rpt, m->vertex_shader_module, m->geometry_shader_module);
-	}
-	return m->shader_cache_shadow.shader[(int)type - 1].get();
-}
 

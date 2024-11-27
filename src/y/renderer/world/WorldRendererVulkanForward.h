@@ -22,12 +22,12 @@ public:
 	void prepare(const RenderParams& params) override;
 	void draw(const RenderParams& params) override;
 
-	void draw_with(const RenderParams& params, RenderViewDataVK& rvd);
+	void draw_with(const RenderParams& params, RenderViewData& rvd);
 
-	void render_into_texture(Camera *cam, RenderViewDataVK &rvd, const RenderParams& params) override;
+	void render_into_texture(Camera *cam, RenderViewData &rvd, const RenderParams& params) override;
 
 	vulkan::Device *device;
-	RenderViewDataVK main_rvd;
+	RenderViewData main_rvd;
 };
 
 #endif

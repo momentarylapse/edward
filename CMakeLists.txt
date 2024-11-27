@@ -689,6 +689,7 @@ add_executable(edward
 	src/y/renderer/world/geometry/GeometryRenderer.cpp
 	src/y/renderer/world/geometry/GeometryRendererGL.cpp
 	src/y/renderer/world/geometry/GeometryRendererVulkan.cpp
+	src/y/renderer/world/geometry/RenderViewData.cpp
 	src/y/renderer/world/geometry/SceneView.cpp
 	src/y/renderer/world/pass/ShadowRendererGL.cpp
 	src/y/renderer/world/pass/ShadowRendererVulkan.cpp

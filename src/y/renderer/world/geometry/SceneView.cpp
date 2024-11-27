@@ -14,7 +14,7 @@
 //#include <atomic>
 
 
-void SceneView::prepare_lights(float shadow_box_size) {
+void SceneView::prepare_lights(float shadow_box_size, UniformBuffer* ubo_light) {
 	lights.clear();
 	shadow_index = -1;
 	auto& all_lights = ComponentManager::get_list_family<Light>();
@@ -30,9 +30,7 @@ void SceneView::prepare_lights(float shadow_box_size) {
 		}
 		lights.add(l->light);
 	}
-#ifdef USING_OPENGL
 	ubo_light->update_array(lights);
-#endif
 	//rvd.ubo_light->update_part(&lights[0], 0, lights.num * sizeof(lights[0]));
 }
 

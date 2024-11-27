@@ -9,6 +9,7 @@
 
 #include "WorldRendererGL.h"
 #ifdef USING_OPENGL
+#include "geometry/RenderViewData.h"
 
 class WorldRendererGLDeferred : public WorldRendererGL {
 public:
@@ -18,6 +19,8 @@ public:
 	UniformBuffer *ssao_sample_buffer;
 	int ch_gbuf_out = -1;
 	int ch_trans = -1;
+
+	RenderViewData main_rvd;
 
 	owned<GeometryRendererGL> geo_renderer_trans;
 

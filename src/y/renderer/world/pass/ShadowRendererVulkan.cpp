@@ -64,7 +64,7 @@ void ShadowRendererVulkan::prepare(const RenderParams& params) {
 	PerformanceMonitor::end(ch_prepare);
 }
 
-void ShadowRendererVulkan::render_shadow_map(CommandBuffer *cb, FrameBuffer *sfb, float scale, RenderViewDataVK &rvd) {
+void ShadowRendererVulkan::render_shadow_map(CommandBuffer *cb, FrameBuffer *sfb, float scale, RenderViewData &rvd) {
 	geo_renderer->prepare(RenderParams::into_texture(sfb, 1.0f));
 
 	auto m = mat4::scale(scale, -scale, 1);
@@ -82,12 +82,6 @@ void ShadowRendererVulkan::render_shadow_map(CommandBuffer *cb, FrameBuffer *sfb
 
 	//shadow_pass->set(shadow_proj, scale, &rvd);
 	//shadow_pass->draw();
-
-	UBO ubo;
-	ubo.p = m * proj;
-	ubo.v = mat4::ID;
-	ubo.num_lights = 0;
-	ubo.shadow_index = -1;
 
 	RenderParams params;
 	params.command_buffer = cb;

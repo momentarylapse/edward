@@ -18,46 +18,7 @@ struct ShaderCache;
 
 enum class RenderPathType;
 enum class ShaderVariant;
-
-struct UBO {
-	// matrix
-	mat4 m,v,p;
-	// material
-	color albedo, emission;
-	float roughness, metal;
-	int dummy[2];
-	int num_lights;
-	int shadow_index;
-	int dummy2[2];
-};
-
-struct RenderDataVK {
-	UniformBuffer* ubo;
-	DescriptorSet* dset;
-	void set_textures(const SceneView& scene_view, const Array<Texture*>& tex);
-	void apply(const RenderParams& params);
-};
-
-struct RenderViewDataVK {
-	RenderViewDataVK();
-	void reset();
-
-	void set_projection_matrix(const mat4& projection);
-	void set_view_matrix(const mat4& view);
-
-	owned<UniformBuffer> ubo_light;
-	Array<RenderDataVK> rda;
-
-	int index = 0;
-	UBO ubo;
-	SceneView* scene_view = nullptr;
-	RenderDataVK& start(const RenderParams& params, RenderPathType type, const mat4& matrix,
-			ShaderCache& shader_cache, const Material& material, int pass_no,
-			const string& vertex_shader_module, const string& geometry_shader_module,
-			PrimitiveTopology top, VertexBuffer *vb);
-};
-
-using RenderViewData = RenderViewDataVK;
+class RenderViewData;
 
 class GeometryRendererVulkan : public GeometryRenderer {
 public:
@@ -68,16 +29,16 @@ public:
 
 	static GraphicsPipeline *get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb);
 
-	void draw_particles(const RenderParams& params, RenderViewDataVK &rvd);
-	void draw_skyboxes(const RenderParams& params, RenderViewDataVK &rvd);
-	void draw_terrains(const RenderParams& params, RenderViewDataVK &rvd);
-	void draw_objects_opaque(const RenderParams& params, RenderViewDataVK &rvd);
-	void draw_objects_transparent(const RenderParams& params, RenderViewDataVK &rvd);
-	void draw_objects_instanced(const RenderParams& params, RenderViewDataVK &rvd);
-	void draw_user_meshes(const RenderParams& params, bool transparent, RenderViewDataVK &rvd);
+	void draw_particles(const RenderParams& params, RenderViewData &rvd);
+	void draw_skyboxes(const RenderParams& params, RenderViewData &rvd);
+	void draw_terrains(const RenderParams& params, RenderViewData &rvd);
+	void draw_objects_opaque(const RenderParams& params, RenderViewData &rvd);
+	void draw_objects_transparent(const RenderParams& params, RenderViewData &rvd);
+	void draw_objects_instanced(const RenderParams& params, RenderViewData &rvd);
+	void draw_user_meshes(const RenderParams& params, bool transparent, RenderViewData &rvd);
 
 	void prepare_instanced_matrices();
-	void prepare_lights(Camera *cam, RenderViewDataVK &rvd);
+	void prepare_lights(Camera *cam, RenderViewData &rvd);
 };
 
 #endif

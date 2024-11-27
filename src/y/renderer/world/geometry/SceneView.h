@@ -19,16 +19,13 @@ class TerrainUpdateThread;
 struct SceneView {
 	Camera *cam;
 	Array<UBOLight> lights;
-#ifdef USING_OPENGL
-	owned<UniformBuffer> ubo_light;
-#endif
 	shared<FrameBuffer> fb_shadow1;
 	shared<FrameBuffer> fb_shadow2;
 	shared<CubeMap> cube_map;
 	int shadow_index = -1;
 	mat4 shadow_proj;
 
-	void prepare_lights(float shadow_box_size);
+	void prepare_lights(float shadow_box_size, UniformBuffer* ubo_light);
 
 
 	void check_terrains(const vec3& cam_pos);

@@ -48,12 +48,6 @@ void WorldRendererVulkanForward::prepare(const RenderParams& params) {
 			source->counter = 0;
 		}
 	}
-	/*static int _frame = 0;
-	_frame ++;
-	if (_frame >= cube_update_rate) {
-		render_into_cubemap(params, scene_view.cube_map.get(), suggest_cube_map_pos());
-		_frame = 0;
-	}*/
 
 	scene_view.check_terrains(cam_main->owner->pos);
 	scene_view.cam->update_matrices(params.desired_aspect_ratio);
@@ -72,7 +66,7 @@ void WorldRendererVulkanForward::draw(const RenderParams& params) {
 	draw_with(params, main_rvd);
 }
 
-void WorldRendererVulkanForward::draw_with(const RenderParams& params, RenderViewDataVK& rvd) {
+void WorldRendererVulkanForward::draw_with(const RenderParams& params, RenderViewData& rvd) {
 	auto cb = params.command_buffer;
 
 	PerformanceMonitor::begin(ch_draw);
@@ -102,7 +96,7 @@ void WorldRendererVulkanForward::draw_with(const RenderParams& params, RenderVie
 	PerformanceMonitor::end(ch_draw);
 }
 
-void WorldRendererVulkanForward::render_into_texture(Camera *cam, RenderViewDataVK &rvd, const RenderParams& params) {
+void WorldRendererVulkanForward::render_into_texture(Camera *cam, RenderViewData &rvd, const RenderParams& params) {
 	auto cb = params.command_buffer;
 	auto rp = params.render_pass;
 	auto fb = params.frame_buffer;

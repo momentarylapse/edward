@@ -278,7 +278,7 @@ void WorldRendererVulkanRayTracing::draw(const RenderParams& params) {
 	cb->draw(vb_2d.get());
 }
 
-void WorldRendererVulkanRayTracing::render_into_texture(Camera *cam, RenderViewDataVK &rvd, const RenderParams& params) {
+void WorldRendererVulkanRayTracing::render_into_texture(Camera *cam, RenderViewData &rvd, const RenderParams& params) {
 }
 
 #endif

@@ -10,6 +10,7 @@
 #include "../../Renderer.h"
 #include "../../../graphics-fwd.h"
 #ifdef USING_OPENGL
+#include "../geometry/RenderViewData.h"
 #include <lib/math/mat4.h>
 #include "../geometry/SceneView.h"
 
@@ -25,7 +26,7 @@ public:
 
 	shared<FrameBuffer> fb[2];
 
-    void render_shadow_map(FrameBuffer *sfb, float scale);
+    void render_shadow_map(FrameBuffer *sfb, float scale, RenderViewData& rvd);
 
 	void prepare(const RenderParams& params) override;
 	void draw(const RenderParams& params) override {}
@@ -35,6 +36,7 @@ public:
     owned<Material> material;
 	mat4 proj;
 	SceneView scene_view;
+	RenderViewData rvd[2];
 
     owned<GeometryRendererGL> geo_renderer;
 };
