@@ -396,7 +396,7 @@ void ShaderGraphDialog::draw_cable(Painter *p, ShaderNode *source, int source_po
 
 	p->set_line_dash({}, 0);
 
-	draw_arrow(p, inter.get(0.5f), inter.getTang(0.5f), min(length / 7, 14.0f));
+	draw_arrow(p, inter.get(0.5f), inter.get_derivative(0.5f), min(length / 7, 14.0f));
 }
 
 void ShaderGraphDialog::on_draw(Painter *p) {

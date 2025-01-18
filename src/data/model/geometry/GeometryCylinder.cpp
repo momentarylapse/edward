@@ -107,7 +107,7 @@ void GeometryCylinder::buildFromPath(Interpolator<vec3> &inter, Interpolator<flo
 		// interpolated point on path
 		float t = (float)i / (float)rings;
 		vec3 p0 = inter.get(t);
-		vec3 dir = inter.getTang(t).normalized();
+		vec3 dir = inter.get_derivative(t).normalized();
 
 		// moving frame
 		vec3 u = vec3::cross(r_last, dir);
@@ -150,7 +150,7 @@ void GeometryCylinder::buildFromPath(Interpolator<vec3> &inter, Interpolator<flo
 
 	if (end_mode == END_LOOP){
 		// how much did the 3-bein rotate?
-		vec3 dir0 = inter.getTang(0);
+		vec3 dir0 = inter.get_derivative(0);
 		vec3 u0 = dir0.ortho();
 		u0.normalize();
 		vec3 r0 = vec3::cross(dir0, u0);

@@ -181,7 +181,7 @@ void CameraDialog::OnAreaDraw(Painter *c)
 	v.resize(N+1);
 	float v_max = 0;
 	for (int i=0; i<=N; i++){
-		float vv = mode->inter_pos->getTang((float)i / (float)N).length();
+		float vv = mode->inter_pos->get_derivative((float)i / (float)N).length();
 		if (vv > v_max)
 			v_max = vv;
 		v[i] = vv;

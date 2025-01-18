@@ -171,7 +171,6 @@ static shaderc_compiler_t shaderc = nullptr;
 					//msg_error("FOUND " + imp);
 					r = r.head(p) + "\n// <<\n" + m.source + "\n// >>\n" + r.sub(p2);
 					found = true;
-					break;
 				}
 			if (!found)
 				throw Exception(format("shader import '%s' not found", imp));
