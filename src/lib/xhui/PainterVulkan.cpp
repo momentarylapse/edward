@@ -18,7 +18,6 @@ namespace xhui {
 
 
 
-CommandBuffer* cb;
 
 struct TextCache {
 	string text;
@@ -58,8 +57,8 @@ Painter::Painter(Window *w) {
 	Painter::set_color(Theme::_default.text);
 	Painter::set_font(Theme::_default.font_name /*"CAC Champagne"*/, Theme::_default.font_size, false, false);
 	
-	cb = context->command_buffers[context->image_index];
-	auto fb = context->frame_buffers[context->image_index];
+	cb = context->current_command_buffer();
+	auto fb = context->current_frame_buffer();
 	
 	
 	cb->begin();
@@ -68,10 +67,11 @@ Painter::Painter(Window *w) {
 	height = (float)context->swap_chain->height / ui_scale;
 	mat_pixel_to_rel = mat4::translation({- 1,- 1, 0}) *  mat4::scale(2.0f / (float)width, 2.0f / (float)height, 1);
 
-	rect area0 = {0, (float)context->swap_chain->width, 0, (float)context->swap_chain->height};
-	cb->set_viewport(area0);
+	_area = {0, (float)width, 0, (float)height};
+	native_area = {0, (float)context->swap_chain->width, 0, (float)context->swap_chain->height};
+	cb->set_viewport(native_area);
 	cb->begin_render_pass(context->render_pass, fb);
-	cb->clear(area0, {Black}, 1);
+	cb->clear(native_area, {Black}, 1);
 }
 
 void Painter::end() {
@@ -91,8 +91,7 @@ void Painter::end() {
 }
 
 void Painter::clear(const color &c) {
-	rect area0 = {0, (float)context->swap_chain->width, 0, (float)context->swap_chain->height};
-	cb->clear(area0, {c}, 1);
+	cb->clear(native_area, {c}, 1);
 }
 
 void Painter::set_font(const string &font, float size, bool bold, bool italic) {
@@ -156,6 +155,7 @@ void fill_rect(ContextVulkan* context, const rect& r, const color& _color) {
 	params.matrix = mat_pixel_to_rel * mat4::translation({r.x1, r.y1, 0}) *  mat4::scale(r.width(), r.height(), 1);
 	params.col = _color;
 
+	auto cb = context->current_command_buffer();
 	cb->bind_pipeline(context->pipeline);
 	cb->push_constant(0, sizeof(params), &params);
 	cb->bind_descriptor_set(0, context->dset);
@@ -194,6 +194,7 @@ void Painter::set_transform(float rot[], const vec2 &offset) {
 
 void Painter::set_clip(const rect &r) {
 }
+
 
 }
 

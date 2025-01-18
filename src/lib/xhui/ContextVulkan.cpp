@@ -155,6 +155,15 @@ void ContextVulkan::resize(int w, int h) {
 	rebuild_default_stuff();
 }
 
+vulkan::CommandBuffer* ContextVulkan::current_command_buffer() const {
+	return command_buffers[image_index];
+}
+
+vulkan::FrameBuffer* ContextVulkan::current_frame_buffer() const {
+	return frame_buffers[image_index];
+}
+
+
 }
 
 #endif

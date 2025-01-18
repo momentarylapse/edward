@@ -12,7 +12,7 @@ using CallbackP = std::function<void(::Painter*)>;
 
 class Panel : public Control {
 public:
-	Panel(const string &id);
+	explicit Panel(const string &id);
 
 	void _draw(Painter *p) override;
 	void negotiate_area(const rect &available) override;

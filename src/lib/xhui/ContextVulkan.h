@@ -40,6 +40,8 @@ public:
 	vulkan::Semaphore *image_available_semaphore, *render_finished_semaphore;
 
 	Array<vulkan::CommandBuffer*> command_buffers;
+	vulkan::CommandBuffer* current_command_buffer() const;
+	vulkan::FrameBuffer* current_frame_buffer() const;
 
 	vulkan::SwapChain *swap_chain;
 	vulkan::RenderPass* render_pass;

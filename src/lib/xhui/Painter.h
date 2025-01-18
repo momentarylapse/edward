@@ -4,6 +4,13 @@
 #include "../image/ImagePainter.h"
 #include "../math/vec2.h"
 
+
+#if HAS_LIB_VULKAN
+namespace vulkan {
+	class CommandBuffer;
+}
+#endif
+
 namespace xhui {
 
 class Window;
@@ -44,7 +51,15 @@ public:
 	void clear(const color &c);
 	void set_transform(float rot[], const vec2 &offset) override;
 
-	rect clip() const override { return rect::ID; };
+	rect clip() const override {
+		return rect::ID;
+	}
+	rect area() const override {
+		return _area;
+	}
+
+	rect _area;
+	rect native_area;
 
 	color _color = White;;
 	string font_name;
@@ -63,7 +78,8 @@ public:
 	Window *window;
 
 #if HAS_LIB_VULKAN
-	ContextVulkan* context = nullptr;;
+	ContextVulkan* context = nullptr;
+	vulkan::CommandBuffer* cb;
 #endif
 };
 
