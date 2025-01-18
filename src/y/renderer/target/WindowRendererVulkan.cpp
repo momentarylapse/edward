@@ -55,6 +55,7 @@ void SurfaceRendererVulkan::rebuild_default_stuff() {
 
 	device->wait_idle();
 
+	delete swap_chain;
 	//_delete_swap_chain_and_stuff();
 	_create_swap_chain_and_stuff();
 }
@@ -71,11 +72,14 @@ bool SurfaceRendererVulkan::start_frame() {
 	f->wait();
 	f->reset();
 
+	command_buffers[image_index]->begin();
+
 	return true;
 }
 
-void SurfaceRendererVulkan::end_frame() {
+void SurfaceRendererVulkan::end_frame(const RenderParams& params) {
 	PerformanceMonitor::begin(ch_end);
+	params.command_buffer->end();
 	auto f = wait_for_frame_fences[image_index];
 	device->present_queue.submit(command_buffers[image_index], {image_available_semaphore}, {render_finished_semaphore}, f);
 
@@ -97,12 +101,12 @@ void SurfaceRendererVulkan::prepare(const RenderParams& params) {
 }
 
 void SurfaceRendererVulkan::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(ch_draw);
+	PerformanceMonitor::begin(channel);
 	auto cb = params.command_buffer;
 	auto rp = params.render_pass;
 	auto fb = params.frame_buffer;
 
-	cb->begin();
+	//cb->begin();
 	for (auto c: children)
 		c->prepare(params);
 
@@ -113,8 +117,8 @@ void SurfaceRendererVulkan::draw(const RenderParams& params) {
 		c->draw(params);
 
 	cb->end_render_pass();
-	cb->end();
-	PerformanceMonitor::end(ch_draw);
+	//cb->end();
+	PerformanceMonitor::end(channel);
 }
 
 

@@ -20,26 +20,19 @@ namespace gui {
 
 class TargetRenderer;
 class Renderer;
-class WorldRenderer;
-class PostProcessor;
 class ResourceManager;
 class MaterialManager;
 class ModelManager;
 #ifdef USING_VULKAN
 class SurfaceRendererVulkan;
 using WindowRenderer = SurfaceRendererVulkan;
-class HDRRendererVulkan;
-using HDRRenderer = HDRRendererVulkan;
-class RegionRendererVulkan;
-using RegionRenderer = RegionRendererVulkan;
 #else
 class WindowRendererGL;
 using WindowRenderer = WindowRendererGL;
-class HDRRendererGL;
-using HDRRenderer = HDRRendererGL;
-class RegionRendererGL;
-using RegionRenderer = RegionRendererGL;
 #endif
+class RegionRenderer;
+class RenderTask;
+struct RenderPath;
 
 class EngineData {
 public:
@@ -98,9 +91,10 @@ public:
 	WindowRenderer *window_renderer;
 	Renderer *gui_renderer;
 	RegionRenderer *region_renderer;
-	HDRRenderer *hdr_renderer;
-	PostProcessor *post_processor;
-	WorldRenderer *world_renderer;
+	Array<RenderPath*> render_paths;
+
+	Array<RenderTask*> render_tasks;
+	void add_render_task(RenderTask* task, int priority);
 };
 extern EngineData engine;
 

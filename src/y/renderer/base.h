@@ -22,15 +22,9 @@ extern Texture *tex_black;
 void gpu_flush();
 
 void reset_gpu_timestamp_queries();
-#ifdef USING_VULKAN
-void gpu_timestamp(CommandBuffer *cb, int channel);
-void gpu_timestamp_begin(CommandBuffer *cb, int channel);
-void gpu_timestamp_end(CommandBuffer *cb, int channel);
-#else
-void gpu_timestamp(int channel);
-void gpu_timestamp_begin(int channel);
-void gpu_timestamp_end(int channel);
-#endif
+void gpu_timestamp(const RenderParams& params, int channel);
+void gpu_timestamp_begin(const RenderParams& params, int channel);
+void gpu_timestamp_end(const RenderParams& params, int channel);
 Array<float> gpu_read_timestamps();
 extern Array<int> gpu_timestamp_queries;
 

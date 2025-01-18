@@ -18,6 +18,7 @@
 #include "geometry/GeometryRenderer.h"
 #include "geometry/SceneView.h"
 
+class GeometryRenderer;
 class ShadowMapRenderer;
 class PerformanceMonitor;
 class World;
@@ -29,32 +30,21 @@ class Material;
 class CubeMapSource;
 
 
-enum class RenderPathType {
-	NONE,
-	FORWARD,
-	DEFERRED
-};
 
 class WorldRenderer : public Renderer {
 public:
-	WorldRenderer(const string &name, Camera *cam);
+	WorldRenderer(const string &name, SceneView& scene_view);
 
 	int ch_post = -1, ch_post_focus = -1;
 	int ch_pre = -1, ch_bg = -1, ch_fx = -1, ch_world = -1, ch_prepare_lights = -1;
 
-	RenderPathType type = RenderPathType::NONE;
-
-	float shadow_box_size;
-	int shadow_resolution;
-
 	bool wireframe = false;
 
-	SceneView scene_view;
+	SceneView& scene_view;
 
 	shared<Shader> shader_fx;
-
-	CubeMapSource* cube_map_source = nullptr;
-	void suggest_cube_map_pos();
+	owned<GeometryRenderer> geo_renderer;
+//	virtual void render_into_texture(Camera *cam, RenderViewData &rvd, const RenderParams& params) = 0;
 
 	void reset();
 };

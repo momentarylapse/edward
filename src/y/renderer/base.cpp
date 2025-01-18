@@ -91,19 +91,19 @@ void reset_gpu_timestamp_queries() {
 	device->reset_query_pool(0, MAX_TIMESTAMP_QUERIES);
 }
 
-void gpu_timestamp(CommandBuffer *cb, int channel) {
+void gpu_timestamp(const RenderParams& params, int channel) {
 	if (gpu_timestamp_queries.num >= MAX_TIMESTAMP_QUERIES)
 		return;
-	cb->timestamp(gpu_timestamp_queries.num);
+	params.command_buffer->timestamp(gpu_timestamp_queries.num);
 	gpu_timestamp_queries.add(channel);
 }
 
-void gpu_timestamp_begin(CommandBuffer *cb, int channel) {
-	gpu_timestamp(cb, channel);
+void gpu_timestamp_begin(const RenderParams& params, int channel) {
+	gpu_timestamp(params, channel);
 }
 
-void gpu_timestamp_end(CommandBuffer *cb, int channel) {
-	gpu_timestamp(cb, channel | (int)0x80000000);
+void gpu_timestamp_end(const RenderParams& params, int channel) {
+	gpu_timestamp(params, channel | (int)0x80000000);
 }
 
 Array<float> gpu_read_timestamps() {
@@ -152,19 +152,19 @@ void reset_gpu_timestamp_queries() {
 	gpu_timestamp_queries.simple_reserve(256);
 }
 
-void gpu_timestamp(int channel) {
+void gpu_timestamp(const RenderParams&, int channel) {
 	if (gpu_timestamp_queries.num >= MAX_TIMESTAMP_QUERIES)
 		return;
 	nix::query_timestamp(gpu_timestamp_queries.num);
 	gpu_timestamp_queries.add(channel);
 }
 
-void gpu_timestamp_begin(int channel) {
-	gpu_timestamp(channel);
+void gpu_timestamp_begin(const RenderParams& params, int channel) {
+	gpu_timestamp(params, channel);
 }
 
-void gpu_timestamp_end(int channel) {
-	gpu_timestamp(channel | (int)0x80000000);
+void gpu_timestamp_end(const RenderParams& params, int channel) {
+	gpu_timestamp(params, channel | (int)0x80000000);
 }
 
 Array<float> gpu_read_timestamps() {

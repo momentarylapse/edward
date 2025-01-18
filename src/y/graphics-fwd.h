@@ -25,6 +25,7 @@
 		class VolumeTexture;
 		class StorageTexture;
 		class CubeMap;
+		class TextureMultiSample;
 		class Shader;
 		class VertexBuffer;
 		class FrameBuffer;
@@ -58,6 +59,7 @@
 	using CubeMap = vulkan::CubeMap;
 	using VolumeTexture = vulkan::VolumeTexture;
 	using ImageTexture = vulkan::StorageTexture;
+	using TextureMultiSample = vulkan::TextureMultiSample;
 	using Buffer = vulkan::Buffer;
 	using UniformBuffer = vulkan::UniformBuffer;
 	using ShaderStorageBuffer = vulkan::StorageBuffer;
@@ -93,6 +95,7 @@
 		class CubeMap;
 		class VolumeTexture;
 		class ImageTexture;
+		class TextureMultiSample;
 		class Buffer;
 		class UniformBuffer;
 		class ShaderStorageBuffer;
@@ -111,6 +114,7 @@
 	using CubeMap = nix::CubeMap;
 	using VolumeTexture = nix::VolumeTexture;
 	using ImageTexture = nix::ImageTexture;
+	using TextureMultiSample = nix::TextureMultiSample;
 	using Buffer = nix::Buffer;
 	using UniformBuffer = nix::UniformBuffer;
 	using ShaderStorageBuffer = nix::ShaderStorageBuffer;

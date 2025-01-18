@@ -36,12 +36,12 @@ GuiRendererVulkan::GuiRendererVulkan() : Renderer("ui") {
 }
 
 void GuiRendererVulkan::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(ch_draw);
-	gpu_timestamp_begin(params.command_buffer, ch_draw);
+	PerformanceMonitor::begin(channel);
+	gpu_timestamp_begin(params, channel);
 	prepare_gui(params.frame_buffer, params);
 	draw_gui(params.command_buffer, params.render_pass);
-	gpu_timestamp_end(params.command_buffer, ch_draw);
-	PerformanceMonitor::end(ch_draw);
+	gpu_timestamp_end(params, channel);
+	PerformanceMonitor::end(channel);
 }
 
 void GuiRendererVulkan::prepare_gui(FrameBuffer *source, const RenderParams& params) {

@@ -16,6 +16,9 @@
 #include "../../helper/ResourceManager.h"
 #include <y/EngineData.h>
 
+
+void apply_shader_data(Shader *s, const Any &shader_data);
+
 GuiRendererGL::GuiRendererGL() : Renderer("gui") {
 	shader = resource_manager->load_shader("forward/2d.shader");
 
@@ -24,38 +27,12 @@ GuiRendererGL::GuiRendererGL() : Renderer("gui") {
 }
 
 void GuiRendererGL::draw(const RenderParams& params) {
-	draw_gui(nullptr);
+	draw_gui(params, nullptr);
 }
 
-void apply_shader_data(Shader *s, const Any &shader_data) {
-	if (shader_data.is_empty()) {
-		return;
-	} else if (shader_data.is_dict()) {
-		for (auto &key: shader_data.keys()) {
-			auto &val = shader_data[key];
-			if (val.is_float()) {
-				s->set_float(key, val.as_float());
-			} else if (val.is_int()) {
-				s->set_float(key, val.as_int());
-			} else if (val.is_bool()) {
-				s->set_int(key, (int)val.as_bool());
-			} else if (val.is_list()) {
-				float ff[4];
-				for (int i=0; i<val.as_list().num; i++)
-					ff[i] = val.as_list()[i].as_float();
-				s->set_floats(key, ff, val.as_list().num);
-			} else {
-				msg_write("invalid shader data item: " + val.str());
-			}
-		}
-	} else {
-		msg_write("invalid shader data: " + shader_data.str());
-	}
-}
-
-void GuiRendererGL::draw_gui(FrameBuffer *source) {
-	PerformanceMonitor::begin(ch_draw);
-	gpu_timestamp_begin(ch_draw);
+void GuiRendererGL::draw_gui(const RenderParams& params, FrameBuffer *source) {
+	PerformanceMonitor::begin(channel);
+	gpu_timestamp_begin(params, channel);
 	gui::update();
 
 	nix::set_projection_ortho_relative();
@@ -93,8 +70,8 @@ void GuiRendererGL::draw_gui(FrameBuffer *source) {
 
 	nix::disable_alpha();
 
-	gpu_timestamp_end(ch_draw);
-	PerformanceMonitor::end(ch_draw);
+	gpu_timestamp_end(params, channel);
+	PerformanceMonitor::end(channel);
 }
 
 

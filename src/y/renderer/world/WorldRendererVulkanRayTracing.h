@@ -7,19 +7,21 @@
 
 #pragma once
 
-#include "WorldRendererVulkan.h"
+#include "WorldRenderer.h"
 #ifdef USING_VULKAN
+#include "../post/ThroughShaderRenderer.h"
+#include "geometry/RenderViewData.h"
 
 class Camera;
 
-class WorldRendererVulkanRayTracing : public WorldRendererVulkan {
+class WorldRendererVulkanRayTracing : public WorldRenderer {
 public:
-	WorldRendererVulkanRayTracing(vulkan::Device *device, Camera *cam, int width, int height);
+	WorldRendererVulkanRayTracing(vulkan::Device *device, SceneView& scene_view, int width, int height);
 
 	void prepare(const RenderParams& params) override;
 	void draw(const RenderParams& params) override;
 
-	void render_into_texture(Camera *cam, RenderViewData &rvd, const RenderParams& params) override;
+	//void render_into_texture(Camera *cam, RenderViewData &rvd, const RenderParams& params) override;
 
 	enum class Mode {
 		NONE,
@@ -31,7 +33,7 @@ public:
 	RenderViewData rvd;
 
 	vulkan::StorageTexture *offscreen_image;
-	vulkan::Texture *offscreen_image2;
+	//vulkan::Texture *offscreen_image2;
 	int width, height;
 
 	struct MeshDescription {
@@ -56,8 +58,6 @@ public:
 		int _b;
 	} pc;
 
-	vulkan::UniformBuffer *buffer_meshes;
-
 	struct ComputeModeData {
 		vulkan::DescriptorPool *pool;
 		vulkan::DescriptorSet *dset;
@@ -73,14 +73,7 @@ public:
 		vulkan::UniformBuffer *buffer_cam;
 	} rtx;
 
-
-	shared<Shader> shader_out;
-	GraphicsPipeline* pipeline_out = nullptr;
-	DescriptorSet *dset_out;
-	owned<VertexBuffer> vb_2d;
-
-	Entity *dummy_cam_entity;
-	Camera *dummy_cam;
+	owned<ThroughShaderRenderer> out_renderer;
 };
 
 #endif

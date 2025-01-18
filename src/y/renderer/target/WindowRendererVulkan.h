@@ -27,8 +27,8 @@ public:
 	~SurfaceRendererVulkan() override;
 
 
-	bool start_frame() override;
-	void end_frame() override;
+	bool start_frame();
+	void end_frame(const RenderParams& params);
 
 	void prepare(const RenderParams& params) override;
 	void draw(const RenderParams& params) override;

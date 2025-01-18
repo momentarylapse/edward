@@ -8,7 +8,6 @@
 #include "WorldRenderer.h"
 #include "../../graphics-impl.h"
 #include "../../helper/PerformanceMonitor.h"
-#include "../../helper/ResourceManager.h"
 #include "../../fx/Particle.h"
 #include "../../gui/Picture.h"
 #include "../../world/Camera.h"
@@ -37,7 +36,10 @@ mat4 mtr(const vec3 &t, const quaternion &a) {
 	return mt * mr;
 }
 
-WorldRenderer::WorldRenderer(const string &name, Camera *_cam) : Renderer(name) {
+WorldRenderer::WorldRenderer(const string &name, SceneView& _scene_view) :
+		Renderer(name),
+		scene_view(_scene_view)
+{
 	ch_pre = PerformanceMonitor::create_channel("pre", channel);
 	ch_post = PerformanceMonitor::create_channel("post", channel);
 	ch_post_focus = PerformanceMonitor::create_channel("focus", ch_post);
@@ -46,55 +48,11 @@ WorldRenderer::WorldRenderer(const string &name, Camera *_cam) : Renderer(name) 
 	ch_fx = PerformanceMonitor::create_channel("fx", channel);
 	ch_prepare_lights = PerformanceMonitor::create_channel("lights", channel);
 
-	shadow_box_size = config.get_float("shadow.boxsize", 2000);
-	shadow_resolution = config.get_int("shadow.resolution", 1024);
-
-	scene_view.cam = _cam;
-
-	resource_manager->default_shader = "default.shader";
-	resource_manager->load_shader_module("module-basic-interface.shader");
-	resource_manager->load_shader_module("module-basic-data.shader");
-	if (config.get_str("renderer.shader-quality", "pbr") == "pbr") {
-		resource_manager->load_shader_module("module-lighting-pbr.shader");
-	} else {
-		resource_manager->load_shader_module("module-lighting-simple.shader");
-	}
-	resource_manager->load_shader_module("module-vertex-default.shader");
-	resource_manager->load_shader_module("module-vertex-animated.shader");
-	resource_manager->load_shader_module("module-vertex-instanced.shader");
-	resource_manager->load_shader_module("module-vertex-lines.shader");
-	resource_manager->load_shader_module("module-vertex-points.shader");
-	resource_manager->load_shader_module("module-vertex-fx.shader");
-	resource_manager->load_shader_module("module-geometry-lines.shader");
-	resource_manager->load_shader_module("module-geometry-points.shader");
 }
 
 /*void WorldRenderer::update_cube_maps(const RenderParams& params) {
 	render_into_cubemap(depth_cube.get(), scene_view.cube_map.get(), suggest_cube_map_pos());
 }*/
-
-void WorldRenderer::suggest_cube_map_pos() {
-	if (!cube_map_source)
-		return;
-	if (world.ego) {
-		cube_map_source->owner->pos = world.ego->pos;
-		cube_map_source->min_depth = 200;
-		return;
-	}
-	auto& list = ComponentManager::get_list_family<Model>();
-	float max_score = 0;
-	cube_map_source->owner->pos = scene_view.cam->m_view * vec3(0,0,1000);
-	cube_map_source->min_depth = 1000;
-	for (auto m: list)
-		for (auto mat: m->material) {
-			float score = mat->metal;
-			if (score > max_score) {
-				max_score = score;
-				cube_map_source->owner->pos = m->owner->pos;
-				cube_map_source->min_depth = m->prop.radius;
-			}
-		}
-}
 
 
 void WorldRenderer::reset() {

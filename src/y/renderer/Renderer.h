@@ -32,6 +32,7 @@ struct RenderParams {
 #endif
 
 	RenderParams with_target(FrameBuffer *fb) const;
+	RenderParams with_area(const rect& area) const;
 	static const RenderParams WHATEVER;
 	static RenderParams into_window(FrameBuffer *frame_buffer, const base::optional<float>& aspect_ratio = base::None);
 	static RenderParams into_texture(FrameBuffer *frame_buffer, const base::optional<float>& aspect_ratio = base::None);
@@ -56,8 +57,17 @@ public:
 
 
 	int channel;
-	int ch_draw;
 	int ch_prepare;
 	Context *context;
 	ResourceManager *resource_manager;
+};
+
+class RenderTask : public  Renderer {
+public:
+	explicit RenderTask(const string &name);
+
+	virtual void render(const RenderParams& params) = 0;
+
+	bool active = true;
+	int _priority = 0;
 };

@@ -5,10 +5,11 @@
  *      Author: michi
  */
 
-#include "GeometryRendererVulkan.h"
+#include "GeometryRenderer.h"
 
 #ifdef USING_VULKAN
-#include "../WorldRendererVulkan.h"
+#include "RenderViewData.h"
+#include "SceneView.h"
 #include "../../helper/PipelineManager.h"
 #include "../../base.h"
 #include "../../../helper/PerformanceMonitor.h"
@@ -38,18 +39,6 @@
 
 
 
-GeometryRendererVulkan::GeometryRendererVulkan(RenderPathType type, SceneView &scene_view) : GeometryRenderer(type, scene_view) {
-}
-
-void GeometryRendererVulkan::prepare(const RenderParams& params) {
-	PerformanceMonitor::begin(channel);
-
-	prepare_instanced_matrices();
-
-	PerformanceMonitor::end(channel);
-}
-
-
 vulkan::CullMode vk_cull(int culling) {
 	if (culling == 0)
 		return vulkan::CullMode::NONE;
@@ -60,7 +49,7 @@ vulkan::CullMode vk_cull(int culling) {
 	return vulkan::CullMode::NONE;
 }
 
-GraphicsPipeline* GeometryRendererVulkan::get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb) {
+GraphicsPipeline* GeometryRenderer::get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb) {
 	if (pass.mode == TransparencyMode::FUNCTIONS) {
 		return PipelineManager::get_alpha(s, rp, top, vb, pass.source, pass.destination, false, vk_cull(pass.cull_mode));
 	} else if (pass.mode == TransparencyMode::COLOR_KEY_HARD) {
@@ -72,13 +61,15 @@ GraphicsPipeline* GeometryRendererVulkan::get_pipeline(Shader *s, RenderPass *rp
 
 
 
-void GeometryRendererVulkan::draw_particles(const RenderParams& params, RenderViewData &rvd) {
+void GeometryRenderer::draw_particles(const RenderParams& params, RenderViewData &rvd) {
 	auto cb = params.command_buffer;
 	PerformanceMonitor::begin(ch_fx);
-	gpu_timestamp_begin(cb, ch_fx);
+	gpu_timestamp_begin(params, ch_fx);
 	auto cam = scene_view.cam;
 
-	auto& rd = rvd.start(params, type, mat4::ID, fx_shader_cache, fx_material, 0, "fx", "", PrimitiveTopology::TRIANGLES, fx_vertex_buffers[0]);
+	auto shader = get_shader(&fx_material, 0, "fx", "");
+
+	auto& rd = rvd.start(params, mat4::ID, shader, fx_material, 0, PrimitiveTopology::TRIANGLES, fx_vertex_buffers[0]);
 
 	// particles
 	auto r = mat4::rotation(cam->owner->ang);
@@ -213,14 +204,19 @@ void GeometryRendererVulkan::draw_particles(const RenderParams& params, RenderVi
 		cb->draw(vb);
 	}
 
-	gpu_timestamp_end(cb, ch_fx);
+	gpu_timestamp_end(params, ch_fx);
 	PerformanceMonitor::end(ch_fx);
 }
 
-void GeometryRendererVulkan::draw_skyboxes(const RenderParams& params, RenderViewData &rvd) {
+void GeometryRenderer::clear(const RenderParams& params, RenderViewData &rvd) {
+	auto cb = params.command_buffer;
+	cb->clear(params.frame_buffer->area(), {world.background}, 1.0f);
+}
+
+void GeometryRenderer::draw_skyboxes(const RenderParams& params, RenderViewData &rvd) {
 	auto cb = params.command_buffer;
 	PerformanceMonitor::begin(ch_bg);
-	gpu_timestamp_begin(cb, ch_bg);
+	gpu_timestamp_begin(params, ch_bg);
 	auto cam = scene_view.cam;
 
 	float max_depth = cam->max_depth;
@@ -241,7 +237,8 @@ void GeometryRendererVulkan::draw_skyboxes(const RenderParams& params, RenderVie
 		for (int i=0; i<sb->material.num; i++) {
 
 			auto vb = sb->mesh[0]->sub[i].vertex_buffer;
-			auto& rd = rvd.start(params, type, sb->_matrix * mat4::scale(10,10,10), sb->shader_cache[i], *sb->material[i], 0, "default", "", PrimitiveTopology::TRIANGLES, vb);
+			auto shader = get_shader(sb->material[i], 0, "default", "");
+			auto& rd = rvd.start(params, sb->_matrix * mat4::scale(10,10,10), shader, *sb->material[i], 0, PrimitiveTopology::TRIANGLES, vb);
 
 			rd.apply(params);
 			cb->draw(vb);
@@ -254,27 +251,27 @@ void GeometryRendererVulkan::draw_skyboxes(const RenderParams& params, RenderVie
 	rvd.ubo.num_lights = nlights;
 	cam->max_depth = max_depth;
 	cam->update_matrices(params.desired_aspect_ratio);
-	gpu_timestamp_end(cb, ch_bg);
+	gpu_timestamp_end(params, ch_bg);
 	PerformanceMonitor::end(ch_bg);
 }
 
-void GeometryRendererVulkan::draw_terrains(const RenderParams& params, RenderViewData &rvd) {
+void GeometryRenderer::draw_terrains(const RenderParams& params, RenderViewData &rvd) {
 	auto cb = params.command_buffer;
 	PerformanceMonitor::begin(ch_terrains);
-	gpu_timestamp_begin(cb, ch_terrains);
+	gpu_timestamp_begin(params, ch_terrains);
 
 	auto& terrains = ComponentManager::get_list_family<Terrain>();
 	for (auto *t: terrains) {
 		auto o = t->owner;
 
 		auto material = t->material.get();
-		auto shader_cache = &t->shader_cache;
-		if (is_shadow_pass()) {
+		if (is_shadow_pass() and !material->cast_shadow)
+			return;
+		auto shader = get_shader(material, 0, t->vertex_shader_module, "");
+		if (is_shadow_pass())
 			material = material_shadow;
-			shader_cache = &t->shader_cache_shadow;
-		}
 
-		auto& rd = rvd.start(params, type, mat4::translation(o->pos), *shader_cache, *material, 0, t->vertex_shader_module, "", PrimitiveTopology::TRIANGLES, t->vertex_buffer.get());
+		auto& rd = rvd.start(params, mat4::translation(o->pos), shader, *material, 0, PrimitiveTopology::TRIANGLES, t->vertex_buffer.get());
 
 		if (!is_shadow_pass()) {
 			cb->push_constant(0, 4, &t->texture_scale[0].x);
@@ -283,14 +280,14 @@ void GeometryRendererVulkan::draw_terrains(const RenderParams& params, RenderVie
 		rd.apply(params);
 		cb->draw(t->vertex_buffer.get());
 	}
-	gpu_timestamp_end(cb, ch_terrains);
+	gpu_timestamp_end(params, ch_terrains);
 	PerformanceMonitor::end(ch_terrains);
 }
 
-void GeometryRendererVulkan::draw_objects_instanced(const RenderParams& params, RenderViewData &rvd) {
+void GeometryRenderer::draw_objects_instanced(const RenderParams& params, RenderViewData &rvd) {
 	auto cb = params.command_buffer;
 	PerformanceMonitor::begin(ch_models);
-	gpu_timestamp_begin(cb, ch_models);
+	gpu_timestamp_begin(params, ch_models);
 
 	auto& list = ComponentManager::get_list_family<MultiInstance>();
 
@@ -303,15 +300,11 @@ void GeometryRendererVulkan::draw_objects_instanced(const RenderParams& params, 
 			if (!material->cast_shadow and is_shadow_pass())
 				continue;
 
-			auto shader_cache = &m->shader_cache[i];
-			if (is_shadow_pass()) {
-				material = material_shadow;
-				shader_cache = &m->shader_cache_shadow[i];
-			}
+			auto shader = get_shader(material, 0, "instanced", "");
 
 			m->update_matrix();
 			auto vb = m->mesh[0]->sub[i].vertex_buffer;
-			auto& rd = rvd.start(params, type, mat4::ID, *shader_cache, *material, 0, "instanced", "", PrimitiveTopology::TRIANGLES, vb);
+			auto& rd = rvd.start(params, mat4::ID, shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
 
 			rd.dset->set_uniform_buffer(BINDING_INSTANCE_MATRICES, mi->ubo_matrices);
 
@@ -319,16 +312,16 @@ void GeometryRendererVulkan::draw_objects_instanced(const RenderParams& params, 
 			cb->draw_instanced(vb, min(mi->matrices.num, MAX_INSTANCES));
 		}
 	}
-	gpu_timestamp_end(cb, ch_models);
+	gpu_timestamp_end(params, ch_models);
 	PerformanceMonitor::end(ch_models);
 }
 
 
 
-void GeometryRendererVulkan::draw_objects_opaque(const RenderParams& params, RenderViewData &rvd) {
+void GeometryRenderer::draw_objects_opaque(const RenderParams& params, RenderViewData &rvd) {
 	auto cb = params.command_buffer;
 	PerformanceMonitor::begin(ch_models);
-	gpu_timestamp_begin(cb, ch_models);
+	gpu_timestamp_begin(params, ch_models);
 
 	auto& list = ComponentManager::get_list_family<Model>();
 
@@ -341,15 +334,13 @@ void GeometryRendererVulkan::draw_objects_opaque(const RenderParams& params, Ren
 			if (!material->cast_shadow and is_shadow_pass())
 				continue;
 
-			auto shader_cache = &m->shader_cache[i];
-			if (is_shadow_pass()) {
+			auto shader = get_shader(material, 0, m->_template->vertex_shader_module, "");
+			if (is_shadow_pass())
 				material = material_shadow;
-				shader_cache = &m->shader_cache_shadow[i];
-			}
 
 			m->update_matrix();
 			auto vb = m->mesh[0]->sub[i].vertex_buffer;
-			auto& rd = rvd.start(params, type, m->_matrix, *shader_cache, *material, 0, m->_template->vertex_shader_module, "", PrimitiveTopology::TRIANGLES, vb);
+			auto& rd = rvd.start(params, m->_matrix, shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
 
 			if (ani) {
 				ani->buf->update_array(ani->dmatrix);
@@ -360,15 +351,15 @@ void GeometryRendererVulkan::draw_objects_opaque(const RenderParams& params, Ren
 			cb->draw(vb);
 		}
 	}
-	gpu_timestamp_end(cb, ch_models);
+	gpu_timestamp_end(params, ch_models);
 	PerformanceMonitor::end(ch_models);
 }
 
 
-void GeometryRendererVulkan::draw_objects_transparent(const RenderParams& params, RenderViewData &rvd) {
+void GeometryRenderer::draw_objects_transparent(const RenderParams& params, RenderViewData &rvd) {
 	auto cb = params.command_buffer;
 	PerformanceMonitor::begin(ch_models);
-	gpu_timestamp_begin(cb, ch_models);
+	gpu_timestamp_begin(params, ch_models);
 	auto cam = scene_view.cam;
 
 	struct DrawCallData {
@@ -405,11 +396,9 @@ void GeometryRendererVulkan::draw_objects_transparent(const RenderParams& params
 		auto vb = m->mesh[0]->sub[i].vertex_buffer;
 
 		for (int k=0; k<material->num_passes; k++) {
-			if (!multi_pass_shader_cache[k].contains(material))
-				multi_pass_shader_cache[k].set(material, {});
-			auto &shader_cache = multi_pass_shader_cache[k][material];
+			auto shader = get_shader(material, k, m->_template->vertex_shader_module, "");
 
-			auto& rd = rvd.start(params, type, m->_matrix, shader_cache, *material, k, m->_template->vertex_shader_module, "", PrimitiveTopology::TRIANGLES, vb);
+			auto& rd = rvd.start(params, m->_matrix, shader, *material, k, PrimitiveTopology::TRIANGLES, vb);
 
 			if (ani) {
 				ani->buf->update_array(ani->dmatrix);
@@ -420,14 +409,14 @@ void GeometryRendererVulkan::draw_objects_transparent(const RenderParams& params
 			cb->draw(vb);
 		}
 	}
-	gpu_timestamp_end(cb, ch_models);
+	gpu_timestamp_end(params, ch_models);
 	PerformanceMonitor::end(ch_models);
 }
 
-void GeometryRendererVulkan::draw_user_meshes(const RenderParams& params, bool transparent, RenderViewData &rvd) {
+void GeometryRenderer::draw_user_meshes(const RenderParams& params, RenderViewData &rvd, bool transparent) {
 	auto cb = params.command_buffer;
 	PerformanceMonitor::begin(ch_user);
-	gpu_timestamp_begin(cb, ch_user);
+	gpu_timestamp_begin(params, ch_user);
 
 	auto& meshes = ComponentManager::get_list_family<UserMesh>();
 
@@ -438,24 +427,22 @@ void GeometryRendererVulkan::draw_user_meshes(const RenderParams& params, bool t
 			continue;
 
 		auto material = m->material.get();
-		auto shader_cache = &m->shader_cache;
-		if (is_shadow_pass()) {
+		if (is_shadow_pass())
 			material = material_shadow;
-			shader_cache = &m->shader_cache_shadow;
-		}
 
 		auto vb = m->vertex_buffer.get();
-		auto& rd = rvd.start(params, type, m->owner->get_matrix(), *shader_cache, *material, 0, m->vertex_shader_module, m->geometry_shader_module, m->topology, vb);
+		auto shader = get_shader(material, 0, m->vertex_shader_module, m->geometry_shader_module);
+		auto& rd = rvd.start(params, m->owner->get_matrix(), shader, *material, 0, m->topology, vb);
 
 		rd.apply(params);
 		cb->draw(m->vertex_buffer.get());
 	}
-	gpu_timestamp_end(cb, ch_user);
+	gpu_timestamp_end(params, ch_user);
 	PerformanceMonitor::end(ch_user);
 }
 
 // keep this outside the drawing function, making sure it only gets called once per frame!
-void GeometryRendererVulkan::prepare_instanced_matrices() {
+void GeometryRenderer::prepare_instanced_matrices() {
 	PerformanceMonitor::begin(ch_pre);
 	auto& list = ComponentManager::get_list_family<MultiInstance>();
 	for (auto *mi: list) {
@@ -465,6 +452,7 @@ void GeometryRendererVulkan::prepare_instanced_matrices() {
 	}
 	PerformanceMonitor::end(ch_pre);
 }
+
 
 
 

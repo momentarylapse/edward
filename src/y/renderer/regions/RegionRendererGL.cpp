@@ -5,7 +5,7 @@
  *      Author: michi
  */
 
-#include "../regions/RegionRendererGL.h"
+#include "../regions/RegionRenderer.h"
 
 #ifdef USING_OPENGL
 #include "../base.h"
@@ -13,8 +13,8 @@
 #include <helper/PerformanceMonitor.h>
 
 
-void RegionRendererGL::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(ch_draw);
+void RegionRenderer::draw(const RenderParams& params) {
+	PerformanceMonitor::begin(channel);
 
 	const rect area = params.frame_buffer->area();
 
@@ -30,7 +30,7 @@ void RegionRendererGL::draw(const RenderParams& params) {
 	}
 	nix::set_scissor(rect::EMPTY);
 	nix::set_viewport(area);
-	PerformanceMonitor::end(ch_draw);
+	PerformanceMonitor::end(channel);
 }
 
 #endif

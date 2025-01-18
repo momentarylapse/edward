@@ -18,6 +18,7 @@ class ShaderCache;
 class Material;
 enum class RenderPathType;
 
+static constexpr int MAX_INSTANCES = 1<<11;
 
 #ifdef USING_VULKAN
 
@@ -30,7 +31,7 @@ static constexpr int BINDING_LIGHT = 9;
 static constexpr int BINDING_INSTANCE_MATRICES = 10;
 static constexpr int BINDING_BONE_MATRICES = 11;
 
-static constexpr int MAX_INSTANCES = 1<<11;
+#endif
 
 struct UBO {
 	// matrix
@@ -41,9 +42,9 @@ struct UBO {
 	int dummy[2];
 	int num_lights;
 	int shadow_index;
+	int num_surfels;
 	int dummy2[2];
 };
-#endif
 
 struct RenderData {
 #ifdef USING_VULKAN
@@ -56,29 +57,32 @@ struct RenderData {
 
 struct RenderViewData {
 	RenderViewData();
-	void begin_scene(SceneView* scene_view);
+	void prepare_scene(SceneView* scene_view);
+	void begin_draw();
 
-#ifdef USING_OPENGL
-	struct UBO {
-		int num_lights, shadow_index;
-	} ubo;
-#endif
+	UBO ubo;
 #ifdef USING_VULKAN
 	Array<RenderData> rda;
 	int index = 0;
-	UBO ubo;
 #endif
 
 	void set_projection_matrix(const mat4& projection);
 	void set_view_matrix(const mat4& view);
+	void set_z(bool write, bool test);
+	void set_wire(bool enabled);
+	void set_cull(CullMode mode);
 
 	owned<UniformBuffer> ubo_light;
+	mat4 shadow_proj;
+	void update_lights();
+
+	//Array<UBOLight> lights;
+	//mat4 shadow_proj;
 
 	SceneView* scene_view = nullptr;
 	RenderData rd;
-	RenderData& start(const RenderParams& params, RenderPathType type, const mat4& matrix,
-	                  ShaderCache& shader_cache, const Material& material, int pass_no,
-	                  const string& vertex_shader_module, const string& geometry_shader_module,
+	RenderData& start(const RenderParams& params, const mat4& matrix,
+	                  Shader* shader, const Material& material, int pass_no,
 	                  PrimitiveTopology top, VertexBuffer *vb);
 };
 

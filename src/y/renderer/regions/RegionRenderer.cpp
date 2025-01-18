@@ -1,17 +1,17 @@
 /*
- * RegionRendererCommon.cpp
+ * RegionRenderer.cpp
  *
  *  Created on: 06 Nov 2023
  *      Author: michi
  */
 
-#include "RegionRendererCommon.h"
+#include "RegionRenderer.h"
 #include <helper/PerformanceMonitor.h>
 
-RegionRendererCommon::RegionRendererCommon() : Renderer("rgn") {
+RegionRenderer::RegionRenderer() : Renderer("rgn") {
 }
 
-void RegionRendererCommon::prepare(const RenderParams& params) {
+void RegionRenderer::prepare(const RenderParams& params) {
 	PerformanceMonitor::begin(ch_prepare);
 	for (auto r: sorted_regions) {
 		if (r->renderer) {
@@ -23,7 +23,7 @@ void RegionRendererCommon::prepare(const RenderParams& params) {
 	PerformanceMonitor::end(ch_prepare);
 }
 
-void RegionRendererCommon::add_region(Renderer *renderer, const rect &dest, int z) {
+void RegionRenderer::add_region(Renderer *renderer, const rect &dest, int z) {
 	add_child(renderer);
 
 	regions.add({dest, z, renderer});

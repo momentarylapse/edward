@@ -16,7 +16,7 @@ public:
 #ifdef USING_VULKAN
 #include <lib/image/image.h>
 
-class TextureRendererVulkan;
+class TextureRenderer;
 
 class HuiWindowRenderer : public Renderer {
 public:
@@ -24,13 +24,14 @@ public:
 	static constexpr int MAX_HEIGHT = 2048;
 	shared<Texture> texture;
 	explicit HuiWindowRenderer(vulkan::Instance* instance);
-	void prepare(const RenderParams& p);
+	void prepare(const RenderParams& p) override;
 	void render_frame(Painter* p);
 	RenderParams create_params(int w, int h);
 
 	vulkan::Device* device;
-	TextureRendererVulkan* texture_renderer = nullptr;
-	CommandBuffer* cb = nullptr;
+	TextureRenderer* texture_renderer = nullptr;
+	CommandBuffer* command_buffer = nullptr;
+	vulkan::Fence* fence = nullptr;
 	Image image;
 };
 #endif

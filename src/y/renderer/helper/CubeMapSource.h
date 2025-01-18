@@ -4,6 +4,7 @@
 #include <y/Component.h>
 #include <graphics-fwd.h>
 #include <lib/base/pointer.h>
+#include "../world/geometry/RenderViewData.h"
 
 class CubeMapSource : public Component {
 public:
@@ -17,6 +18,7 @@ public:
 #ifdef USING_VULKAN
 	owned<vulkan::RenderPass> render_pass;
 #endif
+	RenderViewData rvd[6];
 	int resolution;
 	int update_rate;
 	int counter;

@@ -7,31 +7,20 @@
 
 #include "RendererFactory.h"
 #include "../base.h"
-#include <graphics-impl.h>
+#include "../path/RenderPath.h"
 #include "../world/WorldRenderer.h"
+#include "../post/ThroughShaderRenderer.h"
+#include "../regions/RegionRenderer.h"
 #ifdef USING_VULKAN
-	#include "../world/WorldRendererVulkan.h"
-	#include "../world/WorldRendererVulkanForward.h"
-	#include "../world/WorldRendererVulkanRayTracing.h"
 	#include "../gui/GuiRendererVulkan.h"
-	#include "../post/HDRRendererVulkan.h"
 	#include "../post/PostProcessorVulkan.h"
-	#include "../regions/RegionRendererVulkan.h"
 	#include "../target/WindowRendererVulkan.h"
-	using RegionRenderer = RegionRendererVulkan;
 #else
-	#include "../world/WorldRendererGL.h"
-	#include "../world/WorldRendererGLForward.h"
-	#include "../world/WorldRendererGLDeferred.h"
 	#include "../gui/GuiRendererGL.h"
-	#include "../post/HDRRendererGL.h"
 	#include "../post/PostProcessorGL.h"
-	#include "../regions/RegionRendererGL.h"
 	#include "../target/WindowRendererGL.h"
-	using RegionRenderer = RegionRendererGL;
 #endif
 #include <y/EngineData.h>
-#include <world/Camera.h>
 #include <lib/os/msg.h>
 #if __has_include(<lib/hui_minimal/hui.h>)
 #include <lib/hui_minimal/hui.h>
@@ -40,7 +29,12 @@
 #endif
 #include <helper/PerformanceMonitor.h>
 #include <Config.h>
+#include <helper/ResourceManager.h>
 
+// for debugging
+#include <graphics-impl.h>
+#include <lib/image/image.h>
+#include <renderer/target/TextureRenderer.h>
 
 
 string render_graph_str(Renderer *r) {
@@ -84,19 +78,7 @@ Renderer *create_gui_renderer() {
 }
 
 RegionRenderer *create_region_renderer() {
-#ifdef USING_VULKAN
-	return new RegionRendererVulkan();
-#else
-	return new RegionRendererGL();
-#endif
-}
-
-HDRRenderer *create_hdr_renderer(Camera *cam) {
-#ifdef USING_VULKAN
-	return new HDRRendererVulkan(cam, engine.width, engine.height);
-#else
-	return new HDRRendererGL(cam, engine.width, engine.height);
-#endif
+	return new RegionRenderer();
 }
 
 PostProcessor *create_post_processor() {
@@ -107,44 +89,83 @@ PostProcessor *create_post_processor() {
 #endif
 }
 
-WorldRenderer *create_world_renderer(Camera *cam) {
-#ifdef USING_VULKAN
-	if (config.get_str("renderer.path", "forward") == "raytracing")
-		return new WorldRendererVulkanRayTracing(device, cam, engine.width, engine.height);
-	else
-		return new WorldRendererVulkanForward(device, cam);
-#else
-	if (config.get_str("renderer.path", "forward") == "deferred")
-		return new WorldRendererGLDeferred(cam, engine.width, engine.height);
-	else
-		return new WorldRendererGLForward(cam);
-#endif
-}
-
-Renderer *create_render_path(Camera *cam) {
-	if (config.get_str("renderer.path", "forward") == "direct") {
-		engine.world_renderer = create_world_renderer(cam);
-		return engine.world_renderer;
-	} else {
-	//	engine.post_processor = create_post_processor(parent);
-	//	engine.hdr_renderer = create_hdr_renderer(engine.post_processor, cam);
-		engine.hdr_renderer = create_hdr_renderer(cam);
-		engine.world_renderer = create_world_renderer(cam);
-		engine.hdr_renderer->add_child(engine.world_renderer);
-		//post_processor->set_hdr(hdr_renderer);
-		return engine.hdr_renderer;
+/*class TextureWriter : public Renderer {
+public:
+	shared<Texture> texture;
+	TextureWriter(shared<Texture> t) : Renderer("www") {
+		texture = t;
 	}
+	void prepare(const RenderParams& params) override {
+		Renderer::prepare(params);
+
+		Image i;
+		texture->read(i);
+		i.save("o.bmp");
+	}
+};*/
+
+void create_and_attach_render_path(Camera *cam) {
+	auto rp = create_render_path(cam);
+	engine.render_paths.add(rp);
+	engine.region_renderer->add_region(rp, rect::ID, 0);
 }
 
-void create_full_renderer(GLFWwindow* window, Camera *cam) {
+
+void create_base_renderer(GLFWwindow* window) {
 	try {
 		engine.window_renderer = create_window_renderer(window);
 		engine.region_renderer = create_region_renderer();
-		auto p = create_render_path(cam);
 		engine.gui_renderer = create_gui_renderer();
 		engine.window_renderer->add_child(engine.region_renderer);
-		engine.region_renderer->add_region(p, rect::ID, 0);
 		engine.region_renderer->add_region(engine.gui_renderer, rect::ID, 999);
+
+		if (false) {
+			int N = 256;
+			Image im;
+			im.create(N, N, Black);
+			for (int i = 0; i < N; i++)
+				for (int j = 0; j < N; j++)
+					im.set_pixel(i, j, ((i/16+j/16)%2 == 0) ? Black : White);
+			shared tex = new Texture();
+			tex->write(im);
+			auto shader = engine.resource_manager->load_shader("forward/blur.shader");
+			auto tsr = new ThroughShaderRenderer("blur", shader);
+			tsr->bind_texture(0, tex.get());
+			Any axis_x, axis_y;
+			axis_x.list_set(0, 1.0f);
+			axis_x.list_set(1, 0.0f);
+			axis_y.list_set(0, 0.0f);
+			axis_y.list_set(1, 1.0f);
+			Any data;
+			data.dict_set("radius:8", 5.0f);
+			data.dict_set("threshold:12", 0.0f);
+			data.dict_set("axis:0", axis_x);
+			tsr->bindings.shader_data = data;
+			// tsr:  tex -> shader -> ...
+
+			shared tex2 = new Texture(N, N, "rgba:i8");
+#ifdef USING_VULKAN
+			shared<Texture> depth2 = new DepthBuffer(N, N, "d:f32", true);
+#else
+			shared<Texture> depth2 = new DepthBuffer(N, N, "d24s8");
+#endif
+			auto tr = new TextureRenderer("tex", {tex2, depth2});
+			//tr->use_params_area = false;
+			tr->add_child(tsr);
+			// tr:  ... -> tex2
+
+			auto tsr2 = new ThroughShaderRenderer("text", shader);
+			tsr2->bind_texture(0, tex2.get());
+			data.dict_set("radius:8", 5.0f);
+			data.dict_set("threshold:12", 0.0f);
+			data.dict_set("axis:0", axis_y);
+			tsr2->bindings.shader_data = data;
+			tsr2->add_child(tr);
+			// tsr2:  tex2 -> shader -> ...
+
+			engine.window_renderer->add_child(tsr2);
+		}
+
 	} catch(Exception &e) {
 #if __has_include(<lib/hui_minimal/hui.h>)
 		hui::ShowError(e.message());

@@ -14,9 +14,9 @@ TargetRenderer::TargetRenderer(const string &name) : Renderer(name) {
 }
 
 void TargetRenderer::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(ch_draw);
+	PerformanceMonitor::begin(channel);
 	for (auto c: children) {
 		c->draw(params);
 	}
-	PerformanceMonitor::end(ch_draw);
+	PerformanceMonitor::end(channel);
 }

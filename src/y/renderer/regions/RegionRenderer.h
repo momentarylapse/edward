@@ -12,11 +12,12 @@
 
 #include <lib/math/rect.h>
 
-class RegionRendererCommon : public Renderer {
+class RegionRenderer : public Renderer {
 public:
-	RegionRendererCommon();
+	RegionRenderer();
 
 	void prepare(const RenderParams& params) override;
+	void draw(const RenderParams& params) override;
 
 	void add_region(Renderer *renderer, const rect &dest, int z);
 

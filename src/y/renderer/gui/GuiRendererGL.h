@@ -16,7 +16,7 @@ public:
 
 	void draw(const RenderParams& params) override;
 
-	void draw_gui(FrameBuffer *source);
+	void draw_gui(const RenderParams& params, FrameBuffer *source);
 
 	shared<Shader> shader;
 	owned<VertexBuffer> vb;

@@ -1,38 +1,48 @@
-#include "TextureRendererVulkan.h"
+#include "TextureRenderer.h"
+
 #ifdef USING_VULKAN
+#include <helper/PerformanceMonitor.h>
+#include <renderer/base.h>
 #include "../../graphics-impl.h"
 
-TextureRendererVulkan::TextureRendererVulkan(vulkan::Device* d, shared<Texture> tex) : Renderer("xheadless") {
-	device = d;
-	texture = tex; //new Texture(width, height, "bgra:i8");
-	depth_buffer = new DepthBuffer(texture->width, texture->height, "d:f32", false);
-	render_pass = new RenderPass({texture.get(), depth_buffer.get()});
-	frame_buffer = new FrameBuffer(render_pass, {texture, depth_buffer});
-	command_buffer = new CommandBuffer(device->command_pool);
-	fence = new vulkan::Fence(device);
+TextureRenderer::TextureRenderer(const string& name, const shared_array<Texture>& tex, const Array<string>& options) : RenderTask(name) {
+	textures = tex;
+	render_pass = new RenderPass(weak(textures), options);
+	frame_buffer = new FrameBuffer(render_pass.get(), textures);
 }
 
-RenderParams TextureRendererVulkan::create_params(const rect& area) const {
-	auto p = RenderParams::into_texture(frame_buffer, area.width() / area.height());
-	p.area = area;
-	p.command_buffer = command_buffer;
-	p.render_pass = render_pass;
-	return p;
+TextureRenderer::~TextureRenderer() = default;
+
+void TextureRenderer::set_area(const rect& _area) {
+	user_area = _area;
+	override_area = true;
 }
 
-void TextureRendererVulkan::render_frame(const rect& area, float aspect_ratio) {
-	const auto p = create_params(area);
-	command_buffer->begin();
-	prepare(p);
-	command_buffer->begin_render_pass(render_pass, frame_buffer);
-	command_buffer->set_viewport(area);
-	command_buffer->set_bind_point(vulkan::PipelineBindPoint::GRAPHICS);
+
+void TextureRenderer::prepare(const RenderParams &params) {
+	Renderer::prepare(params);
+}
+
+
+void TextureRenderer::render(const RenderParams& params) {
+	PerformanceMonitor::begin(channel);
+	gpu_timestamp_begin(params, channel);
+	auto area = frame_buffer->area();
+	if (override_area)
+		area = user_area;
+
+	auto p = params.with_target(frame_buffer.get()).with_area(area);
+	p.render_pass = render_pass.get();
+
+	auto cb = params.command_buffer;
+
+	cb->begin_render_pass(render_pass.get(), frame_buffer.get());
+	cb->set_viewport(area);
+	cb->set_bind_point(vulkan::PipelineBindPoint::GRAPHICS);
 	draw(p);
-	command_buffer->end_render_pass();
-	command_buffer->end();
-	device->graphics_queue.submit(command_buffer, {}, {}, fence);
-	fence->wait();
-	//device->wait_idle();
+	cb->end_render_pass();
+	gpu_timestamp_end(params, channel);
+	PerformanceMonitor::end(channel);
 }
 
 #endif

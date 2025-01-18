@@ -22,6 +22,12 @@ RenderParams RenderParams::with_target(FrameBuffer *fb) const {
 	return r;
 }
 
+RenderParams RenderParams::with_area(const rect& _area) const {
+	RenderParams r = *this;
+	r.area = _area;
+	return r;
+}
+
 float fb_ratio(FrameBuffer* fb) {
 	return (float)fb->width / (float)fb->height;
 }
@@ -37,7 +43,6 @@ RenderParams RenderParams::into_texture(FrameBuffer *frame_buffer, const base::o
 
 Renderer::Renderer(const string &name) {
 	channel = PerformanceMonitor::create_channel(name, -1);
-	ch_draw = PerformanceMonitor::create_channel(name + ".d", channel);
 	ch_prepare = PerformanceMonitor::create_channel(name + ".p", channel);
 
 	context = engine.context;
@@ -59,5 +64,9 @@ void Renderer::prepare(const RenderParams& params) {
 void Renderer::draw(const RenderParams& params) {
 	for (auto c: children)
 		c->draw(params);
+}
+
+RenderTask::RenderTask(const string& name) : Renderer(name) {
+
 }
 

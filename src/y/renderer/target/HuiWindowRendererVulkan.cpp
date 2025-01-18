@@ -1,21 +1,24 @@
 #if __has_include(<lib/hui/hui.h>)
 #include "HuiWindowRenderer.h"
 #ifdef USING_VULKAN
-#include "TextureRendererVulkan.h"
+#include "TextureRenderer.h"
 #include "../../graphics-impl.h"
 #include <lib/hui/hui.h>
 
 HuiWindowRenderer::HuiWindowRenderer(vulkan::Instance* instance) : Renderer("hui") {
 	device = vulkan::Device::create_simple(instance, nullptr, {"graphics", "anisotropy"});
 
+	command_buffer = new CommandBuffer(device->command_pool);
+	fence = new vulkan::Fence(device);
+
 	image.create(MAX_WIDTH, MAX_HEIGHT, Red);
 	texture = new Texture(MAX_WIDTH, MAX_HEIGHT, "bgra:i8");
-	texture_renderer = new TextureRendererVulkan(device, texture);
+	texture_renderer = new TextureRenderer("tex", {texture});
 }
 
 void HuiWindowRenderer::prepare(const RenderParams& p) {
 	texture_renderer->children = children;
-	texture_renderer->render_frame(p.area, p.desired_aspect_ratio);
+	texture_renderer->render(p);
 }
 
 void HuiWindowRenderer::render_frame(Painter* p) {
@@ -24,7 +27,15 @@ void HuiWindowRenderer::render_frame(Painter* p) {
 	int h = p->height * scale;
 
 	const auto params = create_params(w, h);
+
+	command_buffer->begin();
+
 	prepare(params);
+
+	command_buffer->end();
+	device->graphics_queue.submit(command_buffer, {}, {}, fence);
+	fence->wait();
+	//device->wait_idle();
 
 	texture->read(&image.data[0]);
 	//image.mode = Image::Mode::BGRA;
@@ -36,7 +47,14 @@ void HuiWindowRenderer::render_frame(Painter* p) {
 }
 
 RenderParams HuiWindowRenderer::create_params(int w, int h) {
-	return texture_renderer->create_params({0, (float)w, 0, (float)h});
+	RenderParams params;
+	params.command_buffer = command_buffer;
+	params.area = {0, (float)w, 0, (float)h};
+	params.render_pass = texture_renderer->render_pass.get();
+	params.desired_aspect_ratio = (float)w / (float)h;
+	params.frame_buffer = texture_renderer->frame_buffer.get();
+	return params;
+	//return texture_renderer->create_params({0, (float)w, 0, (float)h});
 }
 
 #endif

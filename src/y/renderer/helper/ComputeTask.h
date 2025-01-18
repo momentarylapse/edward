@@ -2,44 +2,27 @@
 #define COMPUTETASK_H
 
 
+#include "../Renderer.h"
+#include "Bindable.h"
 #include <lib/base/base.h>
 #include <lib/base/pointer.h>
-#include <lib/image/image.h>
-
+#include <lib/any/any.h>
 #include "../../graphics-fwd.h"
 
-class ComputeTask {
+class ComputeTask : public RenderTask {
 public:
-    explicit ComputeTask(const shared<Shader>& shader);
-    shared<Shader> shader = nullptr;
+    explicit ComputeTask(const string& name, const shared<Shader>& shader, int nx, int ny, int nz);
+    shared<Shader> shader;
 
-    struct Binding {
-        enum class Type {
-            Texture,
-            Image,
-            UniformBuffer,
-            StorageBuffer
-        };
-        int index;
-        Type type;
-        void* p;
-    };
-    Array<Binding> bindings;
+    IMPLEMENT_BINDABLE_INTERFACE
 
-    void bind_texture(int index, Texture* texture);
-    void bind_image(int index, ImageTexture* image);
-    void bind_uniform_buffer(int index, Buffer* buffer);
-    void bind_storage_buffer(int index, Buffer* buffer);
+    int nx, ny, nz;
 
 #ifdef USING_VULKAN
     owned<vulkan::ComputePipeline> pipeline;
-    owned<vulkan::DescriptorPool> pool;
-    owned<vulkan::DescriptorSet> dset;
-    void dispatch(CommandBuffer* cb, int nx, int ny, int nz);
 #endif
-#ifdef USING_OPENGL
-    void dispatch(int nx, int ny, int nz);
-#endif
+
+    void render(const RenderParams &params) override;
 };
 
 

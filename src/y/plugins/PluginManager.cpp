@@ -36,26 +36,26 @@
 #include "../renderer/Renderer.h"
 #include "../renderer/helper/RendererFactory.h"
 #include "../renderer/helper/CubeMapSource.h"
+#include "../renderer/helper/ComputeTask.h"
+#include "../renderer/helper/LightMeter.h"
+#include "../renderer/path/RenderPath.h"
+#include "../renderer/post/HDRResolver.h"
+#include "../renderer/world/WorldRendererForward.h"
+#include "../renderer/world/WorldRendererDeferred.h"
 #ifdef USING_OPENGL
-#include "../renderer/world/WorldRendererGL.h"
-#include "../renderer/world/WorldRendererGLForward.h"
-#include "../renderer/world/WorldRendererGLDeferred.h"
 #include "../renderer/gui/GuiRendererGL.h"
-#include "../renderer/regions/RegionRendererGL.h"
-#include "../renderer/post/HDRRendererGL.h"
 #include "../renderer/post/PostProcessorGL.h"
 #include "../renderer/target/WindowRendererGL.h"
 #endif
 #ifdef USING_VULKAN
-#include "../renderer/world/WorldRendererVulkan.h"
-#include "../renderer/world/WorldRendererVulkanForward.h"
 #include "../renderer/gui/GuiRendererVulkan.h"
-#include "../renderer/regions/RegionRendererVulkan.h"
-#include "../renderer/post/HDRRendererVulkan.h"
 #include "../renderer/post/PostProcessorVulkan.h"
 #include "../renderer/target/WindowRendererVulkan.h"
 #endif
+#include <renderer/helper/Raytracing.h>
+#include <renderer/world/pass/ShadowRenderer.h>
 
+#include "../renderer/regions/RegionRenderer.h"
 #include "../renderer/world/geometry/SceneView.h"
 #include "../y/EngineData.h"
 #include "../y/Component.h"
@@ -77,6 +77,7 @@
 #include "../graphics-impl.h"
 #include "../lib/kaba/dynamic/exception.h"
 #include "../lib/os/msg.h"
+#include "../lib/image/image.h"
 
 
 /*void global_delete(BaseClass *e) {
@@ -151,13 +152,63 @@ shared_array<Texture> framebuffer_color_attachments(FrameBuffer *fb) {
 #endif
 }
 
+void buffer_update_array(Buffer *buf, const DynamicArray &data) {
+	buf->update_array(data);
+}
+
+void buffer_update_chunk(Buffer *buf, const void* data, int size) {
+#ifdef USING_VULKAN
+	buf->update_part(data, 0, size);
+#else
+	buf->update(data, size);
+#endif
+}
+
+void buffer_read_chunk(Buffer *buf, void* data, int size) {
+#ifdef USING_VULKAN
+	auto p = buf->map();
+	memcpy(data, p, size);
+	buf->unmap();
+#else
+	buf->read(data, size);
+#endif
+}
+
+void buffer_read_array(Buffer *buf, DynamicArray &data) {
+#ifdef USING_VULKAN
+	buffer_read_chunk(buf, data.data, data.num * data.element_size);
+#else
+	buf->read_array(data);
+#endif
+}
 
 void vertexbuffer_init(VertexBuffer *vb, const string &format) {
 	new(vb) VertexBuffer(format);
 }
 
-void vertexbuffer_update(VertexBuffer *vb, const DynamicArray &vertices) {
-	vb->update(vertices);
+void vertexbuffer_update_array(VertexBuffer *buf, const DynamicArray &data) {
+	buf->update(data);
+}
+
+void uniformbuffer_init(UniformBuffer* buf, int size) {
+	new(buf) UniformBuffer(size);
+}
+
+void storagebuffer_init(ShaderStorageBuffer* buf, int size) {
+	new(buf) ShaderStorageBuffer(size);
+}
+
+void computetask_init(ComputeTask* task, const string& name, const shared<Shader>& shader, const Array<int>& n) {
+	int nx = 1;
+	int ny = 1;
+	int nz = 1;
+	if (n.num >= 1)
+		nx = n[0];
+	if (n.num >= 2)
+		ny = n[1];
+	if (n.num >= 3)
+		nz = n[2];
+	new(task) ComputeTask(name, shader, nx, ny, nz);
 }
 
 void texture_init(Texture *t, int w, int h, const string &format) {
@@ -180,6 +231,14 @@ void texture_write_float(Texture *t, const DynamicArray& data) {
 #endif
 }
 
+void texture_read(Texture* t, Image& im) {
+#ifdef USING_VULKAN
+	t->read(im.data.data);
+#else
+	t->read(im);
+#endif
+}
+
 void cubemap_init(CubeMap *t, int size, const string &format) {
 	new(t) CubeMap(size, format);
 }
@@ -189,6 +248,14 @@ void depthbuffer_init(DepthBuffer *t, int w, int h, const string &format) {
 	new(t) DepthBuffer(w, h, format, true);
 #else
 	new(t) DepthBuffer(w, h, format);
+#endif
+}
+
+void imagetexture_init(DepthBuffer *t, int w, int h, const string &format) {
+#ifdef USING_VULKAN
+	new(t) ImageTexture(w, h, 1, format);
+#else
+	new(t) ImageTexture(w, h, format);
 #endif
 }
 
@@ -248,24 +315,28 @@ xfer<Material> __load_material(const Path& filename) {
 }
 
 
-CubeMap* world_renderer_get_cubemap(WorldRenderer &r) {
+CubeMap* render_path_get_cubemap(RenderPath &r) {
 	return r.scene_view.cube_map.get();
 }
 
-Array<FrameBuffer*> world_renderer_get_fb_shadow(WorldRenderer &r) {
-	return {r.scene_view.fb_shadow1.get(), r.scene_view.fb_shadow2.get()};
+Array<Texture*> render_path_get_shadow_map(RenderPath &r) {
+	if (r.shadow_renderer)
+		return {r.shadow_renderer->cascades[0].depth_buffer, r.shadow_renderer->cascades[1].depth_buffer};
+	return {};
 }
 
-FrameBuffer* world_renderer_get_gbuffer(WorldRenderer &r) {
-#ifdef USING_OPENGL
-	if (r.type == RenderPathType::DEFERRED)
-		return reinterpret_cast<WorldRendererGLDeferred&>(r).gbuffer.get();
-#endif
-	return nullptr;
+//shared_array<Texture> render_path_get_gbuffer(RenderPath &r) {
+Array<Texture*> render_path_get_gbuffer(RenderPath &r) {
+	if (r.type == RenderPathType::Deferred)
+		return weak(reinterpret_cast<WorldRendererDeferred*>(r.world_renderer)->gbuffer_textures);
+	return {};
 }
 
-Array<FrameBuffer*> hdr_renderer_get_fb_bloom(HDRRenderer &r) {
-	return {r.bloom_levels[0].fb_out.get(), r.bloom_levels[1].fb_out.get(), r.bloom_levels[2].fb_out.get(), r.bloom_levels[3].fb_out.get()};
+shared_array<Texture> hdr_resolver_get_tex_bloom(HDRResolver &r) {
+//Array<Texture*> hdr_resolver_get_tex_bloom(HDRResolver &r) {
+	msg_write("get bloom...");
+	return {r.bloom_levels[0].tex_out.get(), r.bloom_levels[1].tex_out.get(), r.bloom_levels[2].tex_out.get(), r.bloom_levels[3].tex_out.get()};
+	//return {r.bloom_levels[0].tex_out.get(), r.bloom_levels[1].tex_out.get(), r.bloom_levels[2].tex_out.get(), r.bloom_levels[3].tex_out.get()};
 }
 
 audio::AudioStream* __create_audio_stream(Callable<Array<float>(int)>& f, float sample_rate) {
@@ -811,38 +882,50 @@ void PluginManager::export_kaba() {
 	ext->declare_class_element("EngineData.window_renderer", &EngineData::window_renderer);
 	ext->declare_class_element("EngineData.gui_renderer", &EngineData::gui_renderer);
 	ext->declare_class_element("EngineData.region_renderer", &EngineData::region_renderer);
-	ext->declare_class_element("EngineData.hdr_renderer", &EngineData::hdr_renderer);
-	ext->declare_class_element("EngineData.post_processor", &EngineData::post_processor);
-	ext->declare_class_element("EngineData.render_path", &EngineData::world_renderer);
+	ext->declare_class_element("EngineData.render_paths", &EngineData::render_paths);
 	ext->link_class_func("EngineData.exit", &EngineData::exit);
+	ext->link_class_func("EngineData.add_render_task", &EngineData::add_render_task);
 
 
 	ext->declare_class_size("Renderer", sizeof(Renderer));
 
+	{
+		ComputeTask ct("", nullptr, 0, 0, 0);
+		ext->declare_class_size("RenderTask", sizeof(RenderTask));
+		ext->declare_class_element("RenderTask.active", &RenderTask::active);
+		ext->link_virtual("RenderTask.prepare", &RenderTask::prepare, &ct);
+		ext->link_virtual("RenderTask.draw", &RenderTask::draw, &ct);
+		ext->link_virtual("RenderTask.render", &RenderTask::render, &ct);
+
+		ext->declare_class_size("ComputeTask", sizeof(ComputeTask));
+		ext->declare_class_element("ComputeTask.nx", &ComputeTask::nx);
+		ext->declare_class_element("ComputeTask.ny", &ComputeTask::ny);
+		ext->declare_class_element("ComputeTask.nz", &ComputeTask::nz);
+		ext->declare_class_element("ComputeTask.shader_data", &ComputeTask::bindings); // eh, close enough
+		ext->link_class_func("ComputeTask.__init__", &computetask_init);
+		ext->link_class_func("ComputeTask.bind_texture", &ComputeTask::bind_texture);
+		ext->link_class_func("ComputeTask.bind_image", &ComputeTask::bind_image);
+		ext->link_class_func("ComputeTask.bind_uniform_buffer", &ComputeTask::bind_uniform_buffer);
+		ext->link_class_func("ComputeTask.bind_storage_buffer", &ComputeTask::bind_storage_buffer);
+		ext->link_virtual("ComputeTask.render", &ComputeTask::render, &ct);
+	}
+
+	using WoR = WorldRenderer;
+	using WoRF = WorldRendererForward;
+	using WoRD = WorldRendererDeferred;
 #ifdef USING_VULKAN
 //	using WR = WindowRendererVulkan;
 //	using GR = GuiRendererVulkan;
-	using RP = WorldRendererVulkan;
-	using RPF = WorldRendererVulkanForward;
 	using PP = PostProcessorVulkan;
 #endif
 #ifdef USING_OPENGL
 //	using WR = WindowRendererGL;
 //	using GR = GuiRendererGL;
-	using RP = WorldRendererGL;
-	using RPF = WorldRendererGLForward;
-	using RPD = WorldRendererGLDeferred;
 	using PP = PostProcessorGL;
 #endif
-	ext->declare_class_size("RenderPath", sizeof(RP));
-	ext->declare_class_element("RenderPath.type", &WorldRenderer::type);
-	ext->declare_class_element("RenderPath.shader_fx", &WorldRenderer::shader_fx);
-	ext->declare_class_element("RenderPath.wireframe", &WorldRenderer::wireframe);
-//	ext->link_virtual("RenderPath.render_into_texture", &RPF::render_into_texture, engine.world_renderer);
-	ext->link_class_func("RenderPath.render_into_cubemap", &RPF::render_into_cubemap);
-	ext->link_class_func("RenderPath.get_cubemap", &world_renderer_get_cubemap);
-	ext->link_class_func("RenderPath.get_fb_shadow", &world_renderer_get_fb_shadow);
-	ext->link_class_func("RenderPath.get_gbuffer", &world_renderer_get_gbuffer);
+	ext->declare_class_size("WorldRenderer", sizeof(WoR));
+	ext->declare_class_element("WorldRenderer.shader_fx", &WorldRenderer::shader_fx);
+	ext->declare_class_element("WorldRenderer.wireframe", &WorldRenderer::wireframe);
 
 
 	ext->declare_class_size("RegionsRenderer", sizeof(RegionRenderer));
@@ -861,17 +944,36 @@ void PluginManager::export_kaba() {
 	ext->link_class_func("PostProcessor.process", &PP::process);
 	ext->link_class_func("PostProcessor.add_stage", &PP::add_stage);
 
-	ext->declare_class_size("WindowRenderer", sizeof(RP));
-	ext->declare_class_element("RenderPath.type", &RP::type);
+	ext->declare_class_size("SceneView", sizeof(SceneView));
+	ext->declare_class_element("SceneView.surfel_buffer", &SceneView::surfel_buffer);
+	ext->declare_class_element("SceneView.num_surfels", &SceneView::num_surfels);
 
-	ext->declare_class_size("HDRRenderer", sizeof(HDRRenderer));
-	ext->declare_class_element("HDRRenderer.fb_main", &HDRRenderer::fb_main);
-	ext->declare_class_element("HDRRenderer.light_meter", &HDRRenderer::light_meter);
-	ext->link_class_func("HDRRenderer.fb_bloom", &hdr_renderer_get_fb_bloom);
+	ext->declare_class_size("RenderPath", sizeof(RenderPath));
+	ext->declare_class_element("RenderPath.hdr_resolver", &RenderPath::hdr_resolver);
+	ext->declare_class_element("RenderPath.world_renderer", &RenderPath::world_renderer);
+	ext->declare_class_element("RenderPath.post_processor", &RenderPath::post_processor);
+	ext->declare_class_element("RenderPath.light_meter", &RenderPath::light_meter);
+	ext->declare_class_element("RenderPath.type", &RenderPath::type);
+	ext->declare_class_element("RenderPath.scene_view", &RenderPath::scene_view);
+	ext->link_class_func("RenderPath.render_into_cubemap", &RenderPath::render_into_cubemap);
+	ext->link_class_func("RenderPath.get_shadow_map", &render_path_get_shadow_map);
+	ext->link_class_func("RenderPath.get_gbuffer", &render_path_get_gbuffer);
+	//	ext->link_virtual("RenderPath.render_into_texture", &RPF::render_into_texture, engine.world_renderer);
+	ext->link_class_func("RenderPath.get_cubemap", &render_path_get_cubemap);
 
-	ext->declare_class_size("HDRRenderer.LightMeter", sizeof(HDRRenderer::LightMeter));
-	ext->declare_class_element("HDRRenderer.LightMeter.histogram", &HDRRenderer::LightMeter::histogram);
-	ext->declare_class_element("HDRRenderer.LightMeter.brightness", &HDRRenderer::LightMeter::brightness);
+
+	ext->declare_class_size("HDRResolver.BloomLevel", sizeof(HDRResolver::BloomLevel));
+	ext->declare_class_element("HDRResolver.BloomLevel.tex_out", &HDRResolver::BloomLevel::tex_out);
+
+	ext->declare_class_size("HDRResolver", sizeof(HDRResolver));
+	ext->declare_class_element("HDRResolver.texture", &HDRResolver::tex_main);
+	ext->declare_class_element("HDRResolver.depth_buffer", &HDRResolver::_depth_buffer);
+	ext->declare_class_element("HDRResolver.bloom_levels", &HDRResolver::bloom_levels);
+	//ext->link_class_func("HDRResolver.tex_bloom", &hdr_resolver_get_tex_bloom);
+
+	ext->declare_class_size("LightMeter", sizeof(LightMeter));
+	ext->declare_class_element("LightMeter.histogram", &LightMeter::histogram);
+	ext->declare_class_element("LightMeter.brightness", &LightMeter::brightness);
 
 
 	ext->declare_class_size("FrameBuffer", sizeof(FrameBuffer));
@@ -881,9 +983,20 @@ void PluginManager::export_kaba() {
 	ext->link_class_func("FrameBuffer.depth_buffer", &framebuffer_depthbuffer);
 	ext->link_class_func("FrameBuffer.color_attachments", &framebuffer_color_attachments);
 
+	ext->link_class_func("Buffer.update", &buffer_update_array);
+	ext->link_class_func("Buffer.update_chunk", &buffer_update_chunk);
+	ext->link_class_func("Buffer.read", &buffer_read_array);
+	ext->link_class_func("Buffer.read_chunk", &buffer_read_chunk);
+
 	ext->declare_class_size("VertexBuffer", sizeof(VertexBuffer));
 	ext->link_class_func("VertexBuffer.__init__", &vertexbuffer_init);
-	ext->link_class_func("VertexBuffer.update", &vertexbuffer_update);
+	ext->link_class_func("VertexBuffer.update", &vertexbuffer_update_array);
+
+	ext->declare_class_size("UniformBuffer", sizeof(UniformBuffer));
+	ext->link_class_func("UniformBuffer.__init__", &uniformbuffer_init);
+
+	ext->declare_class_size("ShaderStorageBuffer", sizeof(ShaderStorageBuffer));
+	ext->link_class_func("ShaderStorageBuffer.__init__", &storagebuffer_init);
 
 	ext->declare_class_size("Texture", sizeof(Texture));
 	ext->declare_class_element("Texture.width", &Texture::width);
@@ -892,11 +1005,14 @@ void PluginManager::export_kaba() {
 	ext->link_class_func("Texture.__delete__", &texture_delete);
 	ext->link_class_func("Texture.write", &texture_write);
 	ext->link_class_func("Texture.write_float", &texture_write_float);
+	ext->link_class_func("Texture.read", &texture_read);
 	ext->link_class_func("Texture.set_options", &Texture::set_options);
 
 	ext->link_class_func("CubeMap.__init__", &cubemap_init);
 
 	ext->link_class_func("DepthBuffer.__init__", &depthbuffer_init);
+
+	ext->link_class_func("ImageTexture.__init__", &imagetexture_init);
 
 	ext->link_class_func("VolumeTexture.__init__", &volumetexture_init);
 
@@ -912,6 +1028,19 @@ void PluginManager::export_kaba() {
 	ext->link_class_func("Scheduler.clear", &Scheduler::clear);
 
 
+	ext->declare_class_size("RayRequest", sizeof(RayRequest));
+	ext->declare_class_element("RayRequest.p0", &RayRequest::p0);
+	ext->declare_class_element("RayRequest.p1", &RayRequest::p1);
+
+	ext->declare_class_size("RayReply", sizeof(RayReply));
+	ext->declare_class_element("RayReply.p", &RayReply::p);
+	ext->declare_class_element("RayReply.n", &RayReply::n);
+	ext->declare_class_element("RayReply.f", &RayReply::f);
+	ext->declare_class_element("RayReply.g", &RayReply::g);
+	ext->declare_class_element("RayReply.t", &RayReply::t);
+	ext->declare_class_element("RayReply.index", &RayReply::index);
+	ext->declare_class_element("RayReply.mesh", &RayReply::mesh);
+
 	ext->link("tex_white", &tex_white);
 	ext->link("world", &world);
 	ext->link("cam", &cam_main);
@@ -925,6 +1054,9 @@ void PluginManager::export_kaba() {
 	ext->link("load_material", (void*)&__load_material);
 	ext->link("screenshot", (void*)&screenshot);
 	ext->link("create_render_path", (void*)&create_render_path);
+	ext->link("rt_setup", (void*)&rt_setup);
+	ext->link("rt_update_frame", (void*)&rt_update_frame);
+	ext->link("rt_vtrace", (void*)&vtrace);
 
 	ext->link("attach_light_parallel", (void*)&attach_light_parallel);
 	ext->link("attach_light_point", (void*)&attach_light_point);

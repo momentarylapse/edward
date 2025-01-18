@@ -664,21 +664,27 @@ add_executable(edward
 	src/y/plugins/PluginManager.cpp
 	src/y/renderer/gui/GuiRendererGL.cpp
 	src/y/renderer/gui/GuiRendererVulkan.cpp
+	src/y/renderer/helper/Bindable.cpp
 	src/y/renderer/helper/ComputeTask.cpp
 	src/y/renderer/helper/CubeMapSource.cpp
 	src/y/renderer/helper/jitter.cpp
+	src/y/renderer/helper/LightMeter.cpp
 	src/y/renderer/helper/Pipeline.cpp
 	src/y/renderer/helper/PipelineManager.cpp
+	src/y/renderer/helper/Raytracing.cpp
 	src/y/renderer/helper/RendererFactory.cpp
-	src/y/renderer/post/blur.cpp
-	src/y/renderer/post/HDRRendererGL.cpp
-	src/y/renderer/post/HDRRendererVulkan.cpp
+	src/y/renderer/path/RenderPath.cpp
+	src/y/renderer/path/RenderPathDirect.cpp
+	src/y/renderer/post/HDRResolver.cpp
+	src/y/renderer/post/MultisampleResolver.cpp
 	src/y/renderer/post/PostProcessor.cpp
 	src/y/renderer/post/PostProcessorGL.cpp
 	src/y/renderer/post/PostProcessorVulkan.cpp
-	src/y/renderer/regions/RegionRendererCommon.cpp
+	src/y/renderer/post/ThroughShaderRenderer.cpp
+	src/y/renderer/regions/RegionRenderer.cpp
 	src/y/renderer/regions/RegionRendererGL.cpp
 	src/y/renderer/regions/RegionRendererVulkan.cpp
+	src/y/renderer/target/HeadlessRendererVulkan.cpp
 	src/y/renderer/target/HuiWindowRendererGL.cpp
 	src/y/renderer/target/HuiWindowRendererVulkan.cpp
 	src/y/renderer/target/TargetRenderer.cpp
@@ -691,14 +697,10 @@ add_executable(edward
 	src/y/renderer/world/geometry/GeometryRendererVulkan.cpp
 	src/y/renderer/world/geometry/RenderViewData.cpp
 	src/y/renderer/world/geometry/SceneView.cpp
-	src/y/renderer/world/pass/ShadowRendererGL.cpp
-	src/y/renderer/world/pass/ShadowRendererVulkan.cpp
+	src/y/renderer/world/pass/ShadowRenderer.cpp
 	src/y/renderer/world/WorldRenderer.cpp
-	src/y/renderer/world/WorldRendererGL.cpp
-	src/y/renderer/world/WorldRendererGLDeferred.cpp
-	src/y/renderer/world/WorldRendererGLForward.cpp
-	src/y/renderer/world/WorldRendererVulkan.cpp
-	src/y/renderer/world/WorldRendererVulkanForward.cpp
+	src/y/renderer/world/WorldRendererDeferred.cpp
+	src/y/renderer/world/WorldRendererForward.cpp
 	src/y/renderer/world/WorldRendererVulkanRayTracing.cpp
 	src/y/renderer/base.cpp
 	src/y/renderer/Renderer.cpp

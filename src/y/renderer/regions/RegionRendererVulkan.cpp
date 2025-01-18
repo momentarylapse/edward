@@ -5,15 +5,15 @@
  *      Author: michi
  */
 
-#include "RegionRendererVulkan.h"
+#include "RegionRenderer.h"
 
 #ifdef USING_VULKAN
 #include "../base.h"
 #include <graphics-impl.h>
 #include <helper/PerformanceMonitor.h>
 
-void RegionRendererVulkan::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(ch_draw);
+void RegionRenderer::draw(const RenderParams& params) {
+	PerformanceMonitor::begin(channel);
 	auto cb = params.command_buffer;
 	auto fb = params.frame_buffer;
 	const rect area = rect(0, fb->width, 0, fb->height);
@@ -28,7 +28,7 @@ void RegionRendererVulkan::draw(const RenderParams& params) {
 		}
 	}
 	cb->set_viewport(area);
-	PerformanceMonitor::end(ch_draw);
+	PerformanceMonitor::end(channel);
 }
 
 #endif
