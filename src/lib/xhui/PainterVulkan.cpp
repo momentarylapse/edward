@@ -69,6 +69,7 @@ Painter::Painter(Window *w) {
 
 	_area = {0, (float)width, 0, (float)height};
 	native_area = {0, (float)context->swap_chain->width, 0, (float)context->swap_chain->height};
+	native_area_window = native_area;
 	cb->set_viewport(native_area);
 	cb->begin_render_pass(context->render_pass, fb);
 	cb->clear(native_area, {Black}, 1);

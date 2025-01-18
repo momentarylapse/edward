@@ -1,5 +1,3 @@
-#include <lib/xhui/ContextVulkan.h>
-
 #include "lib/xhui/xhui.h"
 #include "lib/xhui/controls/Button.h"
 #include "lib/xhui/controls/Label.h"
@@ -7,10 +5,12 @@
 #include "lib/xhui/controls/Grid.h"
 #include "lib/xhui/controls/DrawingArea.h"
 #include "lib/xhui/Painter.h"
+#include <lib/xhui/ContextVulkan.h>
 #include "lib/os/msg.h"
-
 #include "lib/xhui/Theme.h"
 #include "lib/xhui/draw/font.h"
+#include "y/renderer/Renderer.h"
+#include "y/helper/ResourceManager.h"
 
 string AppVersion = "0.5.-1.0";
 string AppName = "Edward";
@@ -18,10 +18,57 @@ string AppName = "Edward";
 //EdwardApp *app = nullptr;
 void* app = nullptr;
 
+ResourceManager* _resource_manager;
+
+class TestRenderer : public Renderer {
+public:
+	vulkan::VertexBuffer* vb;
+	TestRenderer() : Renderer("test") {
+		resource_manager = _resource_manager;
+		vb = new VertexBuffer("3f,3f,2f");
+		vb->create_quad(rect::ID_SYM);
+		try {
+			resource_manager->load_shader_module("module-basic-data.shader");
+			resource_manager->load_shader_module("module-basic-interface.shader");
+		} catch(Exception& e) {
+			msg_error(e.message());
+		}
+	}
+	void draw(const RenderParams& params) override {
+		auto cb = params.command_buffer;
+		cb->clear(params.area, {Green}, 1.0);
+	}
+};
+class XhuiRenderer : public RenderTask {
+public:
+	rect native_area_window = rect::ID;
+	XhuiRenderer() : RenderTask("xhui") {
+	}
+	void render(const RenderParams& params) override {
+		params.command_buffer->set_viewport(params.area);
+		for (auto c: children)
+			c->prepare(params);
+		for (auto c: children)
+			c->draw(params);
+		params.command_buffer->set_viewport(native_area_window);
+	}
+	void render(Painter* p) {
+		auto pp = (xhui::Painter*)p;
+		RenderParams params;
+		params.command_buffer = pp->cb;
+		params.area = pp->native_area;
+		params.render_pass = pp->context->render_pass;
+		params.frame_buffer = pp->context->current_frame_buffer();
+		params.desired_aspect_ratio = pp->native_area.width() / pp->native_area.height();
+		native_area_window = pp->native_area_window;
+		render(params);
+	}
+};
+
 int hui_main(const Array<string>& args) {
 
 	try {
-		xhui::init();
+		xhui::init(args, "edward");
 	} catch (Exception &e) {
 		msg_error(e.message());
 		return 1;
@@ -36,15 +83,26 @@ int hui_main(const Array<string>& args) {
 	g2->add(new xhui::Button("button1", "a small test g"), 1, 0);
 	g2->add(new xhui::Button("button2", "a small test g"), 2, 0);
 	g->add(new xhui::DrawingArea("area"), 0, 1);
+	auto g3 = new xhui::Grid("grid3");
+	g->add(g3, 0, 2);
+	g3->add(new xhui::Button("button3", "a"), 0, 0);
+	g3->add(new xhui::Button("button4", "b"), 1, 0);
 
 	w->event("button1", [] {
 		msg_write("event button1 click");
 	});
-	w->event_xp("area", "hui:draw", [] (Painter* p) {
+
+	auto renderer = new XhuiRenderer();
+
+	w->event_xp("area", "hui:initialize", [renderer] (Painter* p) {
+		auto pp = (xhui::Painter*)p;
+		vulkan::default_device = pp->context->device;
+		_resource_manager = new ResourceManager({});
+		renderer->add_child(new TestRenderer());
+	});
+	w->event_xp("area", "hui:draw", [renderer] (Painter* p) {
 		if (true) {
-			auto pp = (xhui::Painter*)p;
-			auto cb = pp->cb;
-			cb->clear(pp->native_area, {Red}, 0);
+			renderer->render(p);
 		} else {
 			p->set_color(xhui::Theme::_default.background_low);
 			p->set_roundness(8);

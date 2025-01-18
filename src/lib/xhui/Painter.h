@@ -60,6 +60,7 @@ public:
 
 	rect _area;
 	rect native_area;
+	rect native_area_window;
 
 	color _color = White;;
 	string font_name;

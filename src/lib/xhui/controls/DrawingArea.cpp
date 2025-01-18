@@ -24,8 +24,12 @@ void DrawingArea::_draw(Painter *p) {
 
 	//p->set_clip(_area);
 	p->set_transform({}, vec2(_area.x1, _area.y1));
-	if (owner)
+	if (owner) {
+		if (first_draw)
+			owner->handle_event_p(id, "hui:initialize", p);
+		first_draw = false;
 		owner->handle_event_p(id, "hui:draw", p);
+	}
 	p->set_transform({}, vec2(0, 0));
 
 	// restore
