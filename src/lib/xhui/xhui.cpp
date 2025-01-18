@@ -103,7 +103,64 @@ void Application::guess_directories(const Array<string> &arg, const string &app_
 #endif
 }
 
+struct Runner {
+	bool used, repeat;
+	float dt;
+	float t = 0;
+	Callback f;
+	int id;
+};
+static Array<Runner*> runners;
+
+Runner* create_runner() {
+	for (auto r: runners)
+		if (!r->used) {
+			r->used = true;
+			return r;
+		}
+	auto r = new Runner;
+	r->used = true;
+	r->id = runners.num;
+	runners.add(r);
+	return r;
+}
+
+int run_repeated(float dt, Callback f) {
+	auto r = create_runner();
+	r->f = f;
+	r->dt = dt;
+	r->repeat = true;
+	return r->id;
+}
+int run_later(float dt, Callback f) {
+	auto r = create_runner();
+	r->f = f;
+	r->dt = dt;
+	r->repeat = false;
+	return r->id;
+
+}
+void cancel_runner(int id) {
+	if (id >= 0 and id < runners.num)
+		runners[id]->used = false;
+}
+
+void iterate_runners(float dt) {
+	for (auto r: runners)
+		if (r->used) {
+			r->t += dt;
+			if (r->t >= r->dt) {
+				r->f();
+				if (r->repeat)
+					r->t = 0;
+				else
+					r->used = false;
+			}
+		}
+}
+
 void run() {
+	os::Timer timer;
 	while (true) {
 		glfwPollEvents();
 
@@ -116,6 +173,9 @@ void run() {
 				if (_windows_.num == 0)
 					return;
 			}
+
+		iterate_runners(timer.get());
+
 		//usleep(8000);
 		os::sleep(0.008f);
 	};

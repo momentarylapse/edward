@@ -7,6 +7,7 @@ namespace xhui {
 
 Panel::Panel(const string &_id) : Control(_id) {
 	ignore_hover = true;
+	owner = this;
 
 	expand_x = true;
 	expand_y = true;

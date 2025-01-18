@@ -165,6 +165,10 @@ int hui_main(const Array<string>& args) {
 		}
 	});
 
+	xhui::run_repeated(0.02f, [w] {
+		w->request_redraw();
+	});
+
 	xhui::run();
 
 	return 0;

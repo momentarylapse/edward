@@ -16,7 +16,7 @@ class Control : public VirtualBase {
 	friend class Window;
 	friend class Panel;
 public:
-	Control(const string& id);
+	explicit Control(const string& id);
 
 	virtual void set_string(const string& s) {}
 	virtual void add_string(const string& s) { set_string(s); }

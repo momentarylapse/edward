@@ -21,6 +21,10 @@ public:
 	static void guess_directories(const Array<string> &arg, const string &app_name);
 };
 
+int run_repeated(float dt, Callback f);
+int run_later(float dt, Callback f);
+void cancel_runner(int id);
+
 enum class Align {
 	RIGHT = 1,
 	CENTER_H = 2,
