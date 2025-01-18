@@ -8,6 +8,7 @@ namespace xhui {
 void init();
 void run();
 
+extern float ui_scale;
 
 enum class Align {
 	RIGHT = 1,

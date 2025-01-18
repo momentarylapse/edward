@@ -3,6 +3,7 @@
 #include "../Theme.h"
 #include "../draw/font.h"
 #include "../../base/iter.h"
+#include "../../os/msg.h"
 
 namespace xhui {
 
@@ -19,6 +20,8 @@ Edit::Edit(const string &_id, const string &t) : Control(_id) {
 void Edit::Cache::rebuild(const string& text) {
 	*this = {};
 	lines = text.explode("\n");
+	if (lines.num == 0)
+		lines.add("");
 	int index = 0;
 	for (const string& l: lines) {
 		line_num_characters.add(l.num);
@@ -95,6 +98,8 @@ void Edit::on_key_down(int key) {
 }
 
 void Edit::_draw(Painter *p) {
+	p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
+
 	// background
 	color bg = Theme::_default.background_button;
 	p->set_color(bg);
@@ -117,18 +122,18 @@ void Edit::_draw(Painter *p) {
 	// update text dims
 	float inner_height = 0;
 	{
-		const auto lines = text.explode("\n");
+		auto& lines = cache.lines;
 		cache.line_y0.clear();
 		cache.line_height.clear();
 		cache.line_width.clear();
 		float y0 = _area.y1 + 8;
 		for (const string &l: lines) {
 			auto dim = font::get_text_dimensions(l);
-			inner_height = dim.inner_height();
-			cache.line_height.add(dim.line_dy);
+			inner_height = dim.inner_height() / ui_scale;
+			cache.line_height.add(dim.line_dy / ui_scale);
 			cache.line_y0.add(y0);
-			cache.line_width.add(dim.dx);
-			y0 += dim.line_dy;
+			cache.line_width.add(dim.dx / ui_scale);
+			y0 += dim.line_dy / ui_scale;
 		}
 		if (!multiline)
 			cache.line_y0[0] = _area.center().y - inner_height / 2;
@@ -144,12 +149,12 @@ void Edit::_draw(Painter *p) {
 
 	// cursor
 	if (has_focus()) {
-		font::set_font(Theme::_default.font_name, Theme::_default.font_size);
+		p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
 		auto lp = index_to_line_pos(cursor_pos);
 		int first = cache.line_first_index[lp.line];
 		auto dim = font::get_text_dimensions(text.sub_ref(first, cursor_pos));
 		p->set_color(Theme::_default.text_label);
-		float x = x0 + dim.bounding_width;
+		float x = x0 + dim.bounding_width / ui_scale;
 		float y0 = cache.line_y0[lp.line];
 		p->draw_line({x, y0 - 3}, {x, y0 + Theme::_default.font_size + 3});
 	}

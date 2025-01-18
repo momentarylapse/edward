@@ -8,6 +8,8 @@ namespace xhui {
 
 extern Array<Window*> _windows_;
 
+float ui_scale = 1;
+
 void init() {
 	//msg_init();
 	glfwInit();
@@ -20,6 +22,9 @@ void init() {
 #endif
 
 	//glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
+
+	ui_scale = 1.0f;
+	glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &ui_scale, nullptr);
 
 	Theme::load_default();
 

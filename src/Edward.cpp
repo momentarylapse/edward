@@ -29,32 +29,16 @@ int hui_main(const Array<string>& args) {
 
 	auto w = new xhui::Window("test", 600,400);//1024, 768);
 	auto g = new xhui::Grid("grid");
-	auto g2 = new xhui::Grid("grid2");
-	auto ll = new xhui::Label("label", "test");
-	auto ed = new xhui::Edit("edit", "bla");
-	auto list = new xhui::ListView("list", "a\\b\\c");
 	w->add(g);
-	g->add(ll, 0, 0);
+	auto g2 = new xhui::Grid("grid2");
+	g->add(new xhui::Label("label1", "label"), 0, 0);
 	g->add(new xhui::Button("button1", "a small test g"), 1, 0);
-	g->add(new xhui::Button("button2", "more test"), 1, 1);
-	g->add(ed, 2, 0);
-	g->add(new xhui::Button("button3", "x"), 2, 1);
-	g->add(new xhui::DrawingArea("area"), 2, 2);
-	g->add(g2, 1, 2);
-	g2->add(new xhui::CheckBox("checkbox", "bb"), 0, 0);
-	g2->add(list, 0, 1);
-	g2->add(new xhui::MultilineEdit("multilineedit", "just a small\ntest"), 0, 2);
-
-	list->add_string("1\\2\\3");
-	list->add_string("hallo\\test\\3");
-	list->add_string("1\\2\\3");
+	g->add(new xhui::Button("button2", "a small test g"), 2, 0);
+	g->add(g2, 0, 0);
+	g->add(new xhui::DrawingArea("area"), 0, 1);
 
 	w->event("button1", [] {
 		msg_write("event button1 click");
-	});
-	w->event("button2", [ll] {
-		msg_write("event button2 click");
-		ll->set_string("x");
 	});
 	w->event_xp("area", "hui:draw", [] (Painter *p) {
 		return;
@@ -83,9 +67,6 @@ int hui_main(const Array<string>& args) {
 		((xhui::Painter*)p)->softness = 10;
 		p->draw_rect({50, 300, 300, 400});
 		((xhui::Painter*)p)->softness = 0;
-	});
-	w->event("edit", [ed] {
-		msg_write("edit: " + ed->text);
 	});
 
 	xhui::run();

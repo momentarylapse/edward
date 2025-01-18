@@ -70,7 +70,7 @@ void Button::_draw(Painter *p) {
 	//p->set_color(Red);
 	//p->draw_rect({_area.center().x - dim.bounding_width/2, _area.center().x + dim.bounding_width/2 , _area.center().y - dim.bounding_height/2, _area.center().y + dim.bounding_height/2});
 	p->set_color(Theme::_default.text);
-	p->draw_str({_area.center().x - dim.bounding_width/2, _area.center().y - dim.inner_height()/2}, title);
+	p->draw_str({_area.center().x - dim.bounding_width / ui_scale / 2, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
 }
 
 }

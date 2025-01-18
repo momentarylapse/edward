@@ -34,10 +34,10 @@ namespace xhui {
 
 	void CheckBox::get_content_min_size(int &w, int &h) {
 		if (text_w < 0) {
-			font::set_font(Theme::_default.font_name, Theme::_default.font_size);
+			font::set_font(Theme::_default.font_name, Theme::_default.font_size * ui_scale);
 			auto dim = font::get_text_dimensions(title);
-			text_w = int(dim.bounding_width);
-			text_h = int(dim.inner_height());
+			text_w = int(dim.bounding_width / ui_scale);
+			text_h = int(dim.inner_height() / ui_scale);
 		}
 		w = text_w + Theme::_default.button_margin_x * 2;
 		h = text_h + Theme::_default.button_margin_y * 2;
@@ -78,7 +78,7 @@ namespace xhui {
 		auto dim = font::get_text_dimensions(title);
 
 		p->set_color(Theme::_default.text);
-		p->draw_str({_area.x1 + 32, _area.center().y - dim.inner_height()/2}, title);
+		p->draw_str({_area.x1 + 32, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
 		p->set_fill(true);
 	}
 

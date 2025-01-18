@@ -18,11 +18,8 @@ Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":windo
 	title = _title;
 	flags = _flags;
 	Panel::window = this;
-	ui_scale = 1.0f;
 
-	glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &ui_scale, nullptr);
-
-	window = glfwCreateWindow(w * ui_scale, h * ui_scale, title.c_str(), nullptr, nullptr);
+	window = glfwCreateWindow(w, h, title.c_str(), nullptr, nullptr);
 
 	if (flags & Flags::OWN_DECORATION) {
 		glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
@@ -35,8 +32,6 @@ Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":windo
 	}
 
 	glfwSetWindowUserPointer(window, this);
-	//float _ui_scale_y;
-	//glfwGetWindowContentScale(window, &ui_scale, &_ui_scale_y);
 
 	padding = Theme::_default.window_margin;
 
