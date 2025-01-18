@@ -37,7 +37,7 @@ public:
 	};
 	Array<EventHandler> event_handlers;
 
-	void handle_event(const string &id, const string &msg);
+	void handle_event(const string &id, const string &msg, bool is_default);
 	void handle_event_p(const string &id, const string &msg, Painter *p);
 
 };

@@ -14,7 +14,9 @@ HeaderBar::HeaderBar(Window *w, const string &_id) : Control(_id) {
 	owner = w;
 
 	grid_left = new Grid(":header-grid-left:");
+	grid_left->owner = w;
 	grid_right = new Grid(":header-grid-right:");
+	grid_right->owner = w;
 	button_close = new Button(":header-button-close:", "Close");
 	button_close->expand_x = false;
 	button_close->expand_y = true;

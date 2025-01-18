@@ -19,11 +19,14 @@ Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":windo
 	flags = _flags;
 	Panel::window = this;
 
+	if (flags & Flags::OWN_DECORATION) {
+		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+	}
+
 	window = glfwCreateWindow(w, h, title.c_str(), nullptr, nullptr);
 
 	if (flags & Flags::OWN_DECORATION) {
-		glfwSetWindowAttrib(window, GLFW_DECORATED, GLFW_FALSE);
-		glfwSetWindowAttrib(window, GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 		if (glfwGetWindowAttrib(window, GLFW_TRANSPARENT_FRAMEBUFFER))
 			msg_write("TRANSPARENT");
 		else

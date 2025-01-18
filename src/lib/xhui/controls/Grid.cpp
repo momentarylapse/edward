@@ -1,6 +1,7 @@
 #include "Grid.h"
 #include "../Painter.h"
 #include "../Theme.h"
+#include "../../os/msg.h"
 
 namespace xhui {
 
@@ -30,7 +31,7 @@ Grid::Grid(const string &_id) : Control(_id) {
 
 void Grid::add(Control *c, int x, int y) {
 	if (!owner) {
-		throw Exception("adding to Grid without owner");
+		msg_error("adding to Grid without owner");
 		return;
 	}
 	children.add({c, x, y});
