@@ -1,3 +1,5 @@
+#include <lib/math/quaternion.h>
+
 #include "lib/xhui/xhui.h"
 #include "lib/xhui/controls/Button.h"
 #include "lib/xhui/controls/Label.h"
@@ -32,6 +34,7 @@ public:
 	RenderViewData rvd;
 	shared<Shader> shader;
 	Material* material;
+	quaternion ang = quaternion::ID;
 	TestRenderer() : Renderer("test") {
 		resource_manager = _resource_manager;
 		vb = new VertexBuffer("3f,3f,2f");
@@ -43,12 +46,20 @@ public:
 			msg_error(e.message());
 		}
 	}
+	void prepare(const RenderParams& params) override {
+		ang = quaternion::rotation({0,0,1}, 0.01f) * ang;
+	}
 	void draw(const RenderParams& params) override {
 		auto cb = params.command_buffer;
 		cb->clear(params.area, {Green}, 1.0);
 
+		rvd.set_projection_matrix(mat4::perspective(0.7, params.desired_aspect_ratio, 0.1f, 1000.0f, false));
+		rvd.set_view_matrix(mat4::translation({0,0,10}));
+
 		rvd.begin_draw();
-		rvd.start(params, mat4::ID, shader.get(), *material, 0, PrimitiveTopology::TRIANGLES, vb);
+		auto rd = rvd.start(params, mat4::rotation(ang), shader.get(), *material, 0, PrimitiveTopology::TRIANGLES, vb);
+		rd.apply(params);
+		cb->draw(vb);
 	}
 };
 class XhuiRenderer : public RenderTask {

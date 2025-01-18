@@ -1,6 +1,5 @@
 #include "DrawingArea.h"
 #include "../Painter.h"
-#include "../../math/complex.h"
 
 namespace xhui {
 

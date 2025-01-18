@@ -82,14 +82,14 @@ void Panel::event_xp(const string &id, const string &msg, CallbackP f) {
 
 void Panel::handle_event(const string &id, const string &msg) {
 	for (auto &e: event_handlers)
-		if (e.id == id and e.f) {
+		if (e.id == id and e.msg == msg and e.f) {
 			e.f();
 		}
 }
 
 void Panel::handle_event_p(const string &id, const string &msg, Painter *p) {
 	for (auto &e: event_handlers)
-		if (e.id == id and e.fp) {
+		if (e.id == id and e.msg == msg and e.fp) {
 			e.fp(p);
 		}
 }
