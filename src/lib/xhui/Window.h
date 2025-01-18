@@ -1,0 +1,105 @@
+#pragma once
+
+#include "../base/base.h"
+#include "../math/vec2.h"
+#include <GLFW/glfw3.h>
+#include <functional>
+#include "Panel.h"
+
+namespace xhui {
+
+class Control;
+class HeaderBar;
+class Painter;
+#if HAS_LIB_VULKAN
+class ContextVulkan;
+#endif
+
+enum Flags {
+	NONE = 0,
+	OWN_DECORATION = 64
+};
+
+class Window : public Panel {
+	friend class Painter;
+	friend class Control;
+	friend class ContextVulkan;
+public:
+
+	Window(const string &title, int width, int height);
+	Window(const string &title, int width, int height, Flags flags);
+	~Window() override;
+
+	void _poll_events();
+
+	void redraw(const string &id);
+
+	string get_title() const { return title; }
+	void set_title(const string& t);
+
+	void get_position(int &x, int &y);
+	void set_position(int x, int y);
+
+	void request_destroy();
+
+private:
+	GLFWwindow *window;
+	float ui_scale;
+
+	struct InputState {
+		vec2 m;;
+		vec2 scroll;
+		bool lbut, mbut, rbut;
+		bool key[256];
+	} state, state_prev;
+
+	static void _key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+	static void _cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
+	static void _cursor_enter_callback(GLFWwindow *window, int enter);
+	static void _mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
+	static void _scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
+	static void _refresh_callback(GLFWwindow *window);
+	static void _resize_callback(GLFWwindow* window, int width, int height);
+
+
+	void _on_left_button_down(const vec2& m);
+	void _on_left_button_up(const vec2& m);
+	void _on_middle_button_down(const vec2& m);
+	void _on_middle_button_up(const vec2& m);
+	void _on_right_button_down(const vec2& m);
+	void _on_right_button_up(const vec2& m);
+	void _on_mouse_move(const vec2 &m, const vec2& d);
+	void _on_mouse_enter(const vec2& m);
+	void _on_mouse_leave(const vec2& m);
+	void _on_mouse_wheel(const vec2 &d);
+	void _on_key_down(int key);
+	void _on_key_up(int key);
+
+	bool _refresh_requested = true;
+	void _on_draw();
+
+	Control *get_hover_control(const vec2 &p);
+
+	Control *hover_control = nullptr;
+	Control *focus_control = nullptr;
+	float padding;
+	Flags flags;
+	string title;
+
+	HeaderBar *header_bar = nullptr;
+
+#if HAS_LIB_VULKAN
+	ContextVulkan* context = nullptr;
+#endif
+
+public:
+
+	bool _destroy_requested = false;
+};
+
+class WindowX : public Window {
+public:
+	WindowX(const string &title, int width, int height);
+};
+
+}

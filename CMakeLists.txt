@@ -81,6 +81,21 @@ else()
 endif()
 
 
+# lib: glfw (optional)
+set(LIB_GLFW_ENABLED true CACHE BOOL "Use glfw library?")
+find_package(glfw3)
+if(glfw3_FOUND)
+else()
+	set(LIB_GLFW_ENABLED false CACHE BOOL "glfw library not found" FORCE)
+endif()
+if(${LIB_GLFW_ENABLED})
+	list(APPEND DEPS glfw)
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_GLFW=1)
+else()
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_GLFW=0)
+endif()
+
+
 # lib: shaderc (optional)
 set(LIB_SHADERC_ENABLED true CACHE BOOL "Use shaderc library?")
 pkg_check_modules(SHADERC shaderc)
@@ -161,6 +176,12 @@ if(${LIB_XLIB_ENABLED})
 else()
 	list(APPEND COMPILE_DEFINITIONS HAS_LIB_XLIB=0)
 endif()
+
+
+# lib: freetype2 (mandatory)
+find_package(Freetype REQUIRED)
+list(APPEND DEPS Freetype::Freetype)
+list(APPEND COMPILE_DEFINITIONS HAS_LIB_FREETYPE2=1)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -536,6 +557,24 @@ add_executable(edward
 	src/lib/vulkan/Texture.cpp
 	src/lib/vulkan/VertexBuffer.cpp
 	src/lib/vulkan/vulkan.cpp
+	src/lib/xhui/controls/Button.cpp
+	src/lib/xhui/controls/CheckBox.cpp
+	src/lib/xhui/controls/Control.cpp
+	src/lib/xhui/controls/DrawingArea.cpp
+	src/lib/xhui/controls/Edit.cpp
+	src/lib/xhui/controls/Grid.cpp
+	src/lib/xhui/controls/HeaderBar.cpp
+	src/lib/xhui/controls/Label.cpp
+	src/lib/xhui/controls/ListView.cpp
+	src/lib/xhui/controls/MultilineEdit.cpp
+	src/lib/xhui/draw/font.cpp
+	src/lib/xhui/ContextVulkan.cpp
+	src/lib/xhui/PainterGL.cpp
+	src/lib/xhui/PainterVulkan.cpp
+	src/lib/xhui/Panel.cpp
+	src/lib/xhui/Theme.cpp
+	src/lib/xhui/Window.cpp
+	src/lib/xhui/xhui.cpp
 	src/mode/administration/dialog/AdministrationDialog.cpp
 	src/mode/administration/dialog/ConfigurationDialog.cpp
 	src/mode/administration/dialog/NewProjectDialog.cpp

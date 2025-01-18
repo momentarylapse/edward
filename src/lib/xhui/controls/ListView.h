@@ -1,0 +1,38 @@
+#pragma once
+
+#include "Label.h"
+
+namespace xhui {
+
+	class ListView : public Control {
+	public:
+		ListView(const string &id, const string &title);
+
+		void add_string(const string& s) override;
+		void set_cell(int row, int col, const string& s) override;
+		void reset() override;
+		void set_int(int i) override;
+		string get_cell(int row, int col) override;
+		int get_int() override;
+		Array<int> get_selection() override;
+		void set_option(const string& key, const string& value) override;
+
+		void get_content_min_size(int &w, int &h) override;
+
+		void on_mouse_enter(const vec2& m) override;
+		void on_mouse_leave(const vec2& m) override;
+		void on_left_button_down(const vec2& m) override;
+		void on_left_button_up(const vec2& m) override;
+
+		void _draw(Painter *p) override;
+
+		Array<string> headers;
+		Array<int> column_widths;
+		Array<int> column_offsets;
+		Array<Array<string>> cells;
+		Array<int> selected;
+		int view_y = 0;
+		bool show_headers = true;
+	};
+
+}
