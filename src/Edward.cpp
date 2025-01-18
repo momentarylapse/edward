@@ -28,8 +28,7 @@ public:
 		vb = new VertexBuffer("3f,3f,2f");
 		vb->create_quad(rect::ID_SYM);
 		try {
-			resource_manager->load_shader_module("module-basic-data.shader");
-			resource_manager->load_shader_module("module-basic-interface.shader");
+			_resource_manager->load_surface_shader("default.shader", "forward", "default", "");
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
@@ -98,6 +97,15 @@ int hui_main(const Array<string>& args) {
 		auto pp = (xhui::Painter*)p;
 		vulkan::default_device = pp->context->device;
 		_resource_manager = new ResourceManager({});
+		try {
+			_resource_manager->load_shader_module("module-basic-data.shader");
+			_resource_manager->load_shader_module("module-basic-interface.shader");
+			_resource_manager->load_shader_module("module-vertex-default.shader");
+			_resource_manager->load_shader_module("module-lighting-pbr.shader");
+			_resource_manager->load_shader_module("forward/module-surface.shader");
+		} catch(Exception& e) {
+			msg_error(e.message());
+		}
 		renderer->add_child(new TestRenderer());
 	});
 	w->event_xp("area", "hui:draw", [renderer] (Painter* p) {

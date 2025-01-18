@@ -24,6 +24,12 @@ struct Light {
 	float radius, theta, harshness;
 };
 
+struct Surfel {
+	vec4 pos; // w=r
+	vec4 n;   // w=rz
+	vec4 color;
+};
+
 
 
 #ifdef vulkan
@@ -37,6 +43,7 @@ layout(binding = 8) uniform ParameterData {
 	Material material;
 	int num_lights;
 	int shadow_index;
+	int num_surfels;
 };
 layout(binding = 9) uniform LightData {
 	Light light[32];
@@ -46,6 +53,9 @@ layout(binding = 10) uniform Multi {
 };
 layout(binding = 11) uniform BoneData {
 	mat4 bone_matrix[1024];
+};
+layout(binding = 12) uniform SurfelData {
+	Surfel surfels[1024];
 };
 
 layout(binding = 0) uniform sampler2D tex0;
@@ -78,6 +88,7 @@ uniform Matrices matrix;
 
 uniform int num_lights;
 uniform int shadow_index = -1;
+uniform int num_surfels = 0;
 layout(std140) uniform LightData {
 	Light light[32];
 };
@@ -86,6 +97,10 @@ uniform Multi {
 };
 
 uniform BoneData { mat4 bone_matrix[128]; };
+
+layout(binding = 12) uniform SurfelData {
+	Surfel surfels[1024];
+};
 
 //uniform Fog fog;
 
