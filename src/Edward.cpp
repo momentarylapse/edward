@@ -6,11 +6,16 @@
 #include "lib/xhui/controls/DrawingArea.h"
 #include "lib/xhui/Painter.h"
 #include <lib/xhui/ContextVulkan.h>
+#include <renderer/world/geometry/RenderViewData.h>
+#include <renderer/world/geometry/SceneView.h>
+#include <renderer/base.h>
+
 #include "lib/os/msg.h"
 #include "lib/xhui/Theme.h"
 #include "lib/xhui/draw/font.h"
 #include "y/renderer/Renderer.h"
 #include "y/helper/ResourceManager.h"
+#include "y/world/Material.h"
 
 string AppVersion = "0.5.-1.0";
 string AppName = "Edward";
@@ -23,12 +28,17 @@ ResourceManager* _resource_manager;
 class TestRenderer : public Renderer {
 public:
 	vulkan::VertexBuffer* vb;
+	SceneView scene_view;
+	RenderViewData rvd;
+	shared<Shader> shader;
+	Material* material;
 	TestRenderer() : Renderer("test") {
 		resource_manager = _resource_manager;
 		vb = new VertexBuffer("3f,3f,2f");
 		vb->create_quad(rect::ID_SYM);
 		try {
-			_resource_manager->load_surface_shader("default.shader", "forward", "default", "");
+			shader = resource_manager->load_surface_shader("default.shader", "forward", "default", "");
+			material = resource_manager->load_material("");
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
@@ -36,6 +46,9 @@ public:
 	void draw(const RenderParams& params) override {
 		auto cb = params.command_buffer;
 		cb->clear(params.area, {Green}, 1.0);
+
+		rvd.begin_draw();
+		rvd.start(params, mat4::ID, shader.get(), *material, 0, PrimitiveTopology::TRIANGLES, vb);
 	}
 };
 class XhuiRenderer : public RenderTask {
@@ -96,6 +109,7 @@ int hui_main(const Array<string>& args) {
 	w->event_xp("area", "hui:initialize", [renderer] (Painter* p) {
 		auto pp = (xhui::Painter*)p;
 		vulkan::default_device = pp->context->device;
+		api_init_external(pp->context->instance, pp->context->device);
 		_resource_manager = new ResourceManager({});
 		try {
 			_resource_manager->load_shader_module("module-basic-data.shader");

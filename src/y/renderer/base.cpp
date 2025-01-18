@@ -28,6 +28,18 @@ vulkan::DescriptorPool *pool = nullptr;
 vulkan::Device *device = nullptr;
 vulkan::Surface surface;
 
+Context* _create_context() {
+	device->create_query_pool(MAX_TIMESTAMP_QUERIES);
+	pool = new vulkan::DescriptorPool("buffer:65536,sampler:65536", 65536);
+
+	tex_white = new Texture();
+	tex_black = new Texture();
+	tex_white->write(Image(16, 16, White));
+	tex_black->write(Image(16, 16, Black));
+
+	return new Context;
+}
+
 #if HAS_LIB_GLFW
 Context* api_init(GLFWwindow* window) {
 	instance = vulkan::init({"glfw", "validation", "api=1.3", "rtx?", "verbosity=3"});
@@ -63,17 +75,16 @@ Context* api_init(GLFWwindow* window) {
 		msg_write("WARNING:  device found: neither RTX nor COMPUTE");
 	}
 
-	device->create_query_pool(MAX_TIMESTAMP_QUERIES);
-	pool = new vulkan::DescriptorPool("buffer:65536,sampler:65536", 65536);
-
-	tex_white = new Texture();
-	tex_black = new Texture();
-	tex_white->write(Image(16, 16, White));
-	tex_black->write(Image(16, 16, Black));
-
-	return new Context;
+	return _create_context();
 }
 #endif
+
+
+Context* api_init_external(vulkan::Instance* _instance, vulkan::Device* _device) {
+	instance = _instance;
+	device = _device;
+	return _create_context();
+}
 
 void api_end() {
 	gpu_flush();
