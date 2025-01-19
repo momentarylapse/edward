@@ -11,7 +11,7 @@
 #include "Window.h"
 #endif
 
-namespace MultiView {
+namespace multiview {
 
 SingleData::SingleData() {
 	view_stage = -1;

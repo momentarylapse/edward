@@ -6,12 +6,12 @@
  */
 
 #include "FormatWorld.h"
-#include "../../data/world/DataWorld.h"
-#include "../../data/world/WorldCamera.h"
-#include "../../data/world/WorldLight.h"
-#include "../../data/world/WorldLink.h"
-#include "../../data/world/WorldObject.h"
-#include "../../data/world/WorldTerrain.h"
+#include "../../mode_world/data/DataWorld.h"
+#include "../../mode_world/data/WorldCamera.h"
+#include "../../mode_world/data/WorldLight.h"
+#include "../../mode_world/data/WorldLink.h"
+#include "../../mode_world/data/WorldObject.h"
+#include "../../mode_world/data/WorldTerrain.h"
 //#include "../../EdwardWindow.h"
 #include "../../Session.h"
 //#include "../../stuff/Progress.h"

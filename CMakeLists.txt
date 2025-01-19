@@ -196,13 +196,6 @@ add_executable(edward
 	src/action/Action.cpp
 	src/action/ActionGroup.cpp
 	src/action/ActionManager.cpp
-	src/data/world/DataCamera.cpp
-	src/data/world/DataWorld.cpp
-	src/data/world/WorldCamera.cpp
-	src/data/world/WorldLight.cpp
-	src/data/world/WorldLink.cpp
-	src/data/world/WorldObject.cpp
-	src/data/world/WorldTerrain.cpp
 	src/data/Data.cpp
 	src/lib/any/any.cpp
 	src/lib/base/array.cpp
@@ -364,12 +357,23 @@ add_executable(edward
 	src/lib/xhui/Theme.cpp
 	src/lib/xhui/Window.cpp
 	src/lib/xhui/xhui.cpp
+	src/mode_world/data/DataCamera.cpp
+	src/mode_world/data/DataWorld.cpp
+	src/mode_world/data/WorldCamera.cpp
+	src/mode_world/data/WorldLight.cpp
+	src/mode_world/data/WorldLink.cpp
+	src/mode_world/data/WorldObject.cpp
+	src/mode_world/data/WorldTerrain.cpp
+	src/mode_world/ModeWorld.cpp
 	src/multiview/SingleData.cpp
 	src/storage/format/old/LoadWorldV9V10.cpp
 	src/storage/format/Format.cpp
 	src/storage/format/FormatTerrain.cpp
 	src/storage/format/FormatWorld.cpp
 	src/storage/Storage.cpp
+	src/view/EdwardWindow.cpp
+	src/view/Mode.cpp
+	src/view/MultiView.cpp
 	src/y/audio/audio.cpp
 	src/y/audio/AudioBuffer.cpp
 	src/y/audio/AudioStream.cpp
@@ -458,7 +462,6 @@ add_executable(edward
 	src/y/y/Entity.cpp
 	src/y/Config.cpp
 	src/Edward.cpp
-	src/EdwardWindow.cpp
 	src/Session.cpp)
 target_include_directories(edward PUBLIC ${INCLUDE_DIRECTORIES})
 target_link_directories(edward PUBLIC ${LINK_DIRECTORIES})

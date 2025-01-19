@@ -6,7 +6,7 @@
  */
 
 #include "FormatTerrain.h"
-#include "../../data/world/WorldTerrain.h"
+#include "../../mode_world/data/WorldTerrain.h"
 
 FormatTerrain::FormatTerrain(Session *s) : TypedFormat<WorldTerrain>(s, FD_TERRAIN, "map", "Terrain", Flag::CANONICAL_READ_WRITE) {
 }

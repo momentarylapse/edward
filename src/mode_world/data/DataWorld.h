@@ -8,7 +8,7 @@
 #ifndef DATAWORLD_H_
 #define DATAWORLD_H_
 
-#include "../Data.h"
+#include "../../data/Data.h"
 #include "../../multiview/SingleData.h"
 #include <y/world/Material.h>
 #include <y/graphics-fwd.h>

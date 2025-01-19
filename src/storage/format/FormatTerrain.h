@@ -9,11 +9,11 @@
 #define SRC_STORAGE_FORMAT_FORMATTERRAIN_H_
 
 #include "Format.h"
-#include "../../data/world/DataWorld.h"
+#include "../../mode_world/data/DataWorld.h"
 
 class FormatTerrain : public TypedFormat<WorldTerrain> {
 public:
-	FormatTerrain(Session *s);
+	explicit FormatTerrain(Session *s);
 
 	void _load(const Path &filename, WorldTerrain *data, bool deep) override;
 	void _save(const Path &filename, WorldTerrain *data) override;

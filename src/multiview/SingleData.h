@@ -14,7 +14,7 @@
 class rect;
 class vec2;
 
-namespace MultiView{
+namespace multiview{
 
 class Window;
 

@@ -16,11 +16,9 @@
 #include "lib/pattern/Observable.h"
 #include "y/graphics-fwd.h"
 
-namespace MultiView {
-	class MultiView;
-};
 
-class ModeBase;
+class MultiView;
+class Mode;
 class ModeModel;
 class ModeMaterial;
 class ModeWorld;
@@ -64,13 +62,13 @@ public:
 
 	void create_initial_resources(Context *ctx);
 
-	void set_mode(ModeBase *m);
-	void set_mode_now(ModeBase *m);
+	void set_mode(Mode *m);
+	void set_mode_now(Mode *m);
 
 	void on_command(const string &id);
 	void on_close();
 
-	ModeBase *get_mode(int type);
+	Mode *get_mode(int type);
 	void universal_new(int type);
 	void universal_open(int preferred_type);
 	void universal_edit(int type, const Path &filename, bool relative_path);
@@ -84,15 +82,15 @@ public:
 
 	EdwardWindow *win;
 
-	ModeBase *mode_none;
+	Mode *mode_none;
 	ModeModel* mode_model;
 	ModeMaterial* mode_material;
 	ModeWorld* mode_world;
 	ModeFont* mode_font;
 	ModeAdministration* mode_admin;
-	ModeBase *cur_mode;
-	Array<ModeBase*> mode_queue;
-	ModeBase *find_mode_base(const string &name);
+	Mode *cur_mode;
+	Array<Mode*> mode_queue;
+	Mode *find_mode_base(const string &name);
 	template<class M>
 	M *find_mode(const string &name) {
 		return static_cast<M*>(find_mode_base(name));
@@ -103,8 +101,8 @@ public:
 	DrawingHelper *drawing_helper;
 
 	Storage *storage;
-	MultiView::MultiView *multi_view_2d;
-	MultiView::MultiView *multi_view_3d;
+	MultiView *multi_view_2d;
+	MultiView *multi_view_3d;
 
 	Progress *progress;
 

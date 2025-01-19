@@ -14,7 +14,7 @@
 class Model;
 class ScriptInstanceData;
 
-class WorldObject: public MultiView::SingleData {
+class WorldObject: public multiview::SingleData {
 public:
 	~WorldObject() override;
 	Path filename;
@@ -23,9 +23,9 @@ public:
 	Model *object;
 	vec3 ang;
 
-	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
-	bool in_rect(MultiView::Window *win, const rect &r) override;
-	bool overlap_rect(MultiView::Window *win, const rect &r) override;
+	float hover_distance(multiview::Window *win, const vec2 &m, vec3 &tp, float &z) override;
+	bool in_rect(multiview::Window *win, const rect &r) override;
+	bool overlap_rect(multiview::Window *win, const rect &r) override;
 
 	void update_data();
 };

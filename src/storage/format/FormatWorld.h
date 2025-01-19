@@ -9,7 +9,7 @@
 #define SRC_STORAGE_FORMAT_FORMATWORLD_H_
 
 #include "Format.h"
-#include "../../data/world/DataWorld.h"
+#include "../../mode_world/data/DataWorld.h"
 
 class FormatWorld: public TypedFormat<DataWorld> {
 public:

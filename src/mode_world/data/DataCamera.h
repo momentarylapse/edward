@@ -8,7 +8,7 @@
 #ifndef DATACAMERA_H_
 #define DATACAMERA_H_
 
-#include "../Data.h"
+#include "../../data/Data.h"
 #include "../../multiview/SingleData.h"
 #include "../../lib/math/vec3.h"
 #include "../../lib/math/interpolation.h"
@@ -21,14 +21,14 @@
 #define CPKCamFlight	10
 #define CPKCamFlightRel	11
 
-class WorldCamPoint: public MultiView::SingleData {
+class WorldCamPoint: public multiview::SingleData {
 public:
 	int Type;
 	vec3 Vel, Ang;
 	float Duration;
 };
 
-class WorldCamPointVel: public MultiView::SingleData {
+class WorldCamPointVel: public multiview::SingleData {
 };
 
 class DataCamera : public Data {

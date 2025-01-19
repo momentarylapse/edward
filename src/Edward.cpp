@@ -1,6 +1,6 @@
 
-#include "EdwardWindow.h"
 #include "Session.h"
+#include "view/EdwardWindow.h"
 #include "lib/os/msg.h"
 
 string AppVersion = "0.5.-1.0";

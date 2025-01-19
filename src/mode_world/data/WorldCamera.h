@@ -13,7 +13,7 @@
 class ScriptInstanceData;
 
 
-class WorldCamera: public MultiView::SingleData {
+class WorldCamera: public multiview::SingleData {
 public:
 	string name;
 	vec3 ang = vec3::ZERO;

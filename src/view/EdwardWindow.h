@@ -8,19 +8,18 @@
 #include "lib/xhui/xhui.h"
 
 class XhuiRenderer;
-class DataWorldRenderer;
+class MultiViewRenderer;
 class Session;
 
 class EdwardWindow : public xhui::Window {
 public:
 	Session* session;
 	XhuiRenderer* renderer = nullptr;
-	DataWorldRenderer* world_renderer = nullptr;
+	MultiViewRenderer* multi_view_renderer = nullptr;
 	Array<string> args;
 
 	explicit EdwardWindow(Session* session);
 
-	void move_cam(const vec3& drel);
 	void on_mouse_move(const vec2& m, const vec2& d) override;
 	void on_mouse_wheel(const vec2& d) override;
 	void on_key_down(int key) override;

@@ -85,9 +85,9 @@ void WorldTerrain::update_data() {
 
 
 
-float WorldTerrain::hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) { return 0; }
-bool WorldTerrain::in_rect(MultiView::Window *win, const rect &r) { return false; }
-bool WorldTerrain::overlap_rect(MultiView::Window *win, const rect &r) { return false; }
+float WorldTerrain::hover_distance(multiview::Window *win, const vec2 &m, vec3 &tp, float &z) { return 0; }
+bool WorldTerrain::in_rect(multiview::Window *win, const rect &r) { return false; }
+bool WorldTerrain::overlap_rect(multiview::Window *win, const rect &r) { return false; }
 
 
 Box WorldTerrain::bounding_box() const {

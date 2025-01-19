@@ -6,7 +6,7 @@
  */
 
 #include "Session.h"
-#include "EdwardWindow.h"
+#include "view/EdwardWindow.h"
 #include "Edward.h"
 /*#include "mode/ModeNone.h"
 #include "mode/ModeCreation.h"
@@ -186,7 +186,7 @@ void Session::create_initial_resources(Context *_ctx) {
 
 // do we change roots?
 //  -> data loss?
-base::future<void> mode_switch_allowed(ModeBase *m) {
+base::future<void> mode_switch_allowed(Mode *m) {
 //	if (!m->session->cur_mode or m->equal_roots(m->session->cur_mode)) {
 		base::promise<void> promise;
 		promise();
@@ -196,7 +196,7 @@ base::future<void> mode_switch_allowed(ModeBase *m) {
 //	}
 }
 
-void Session::set_mode(ModeBase *m) {
+void Session::set_mode(Mode *m) {
 	if (cur_mode == m)
 		return;
 	mode_switch_allowed(m).then([this, m] {
@@ -204,7 +204,7 @@ void Session::set_mode(ModeBase *m) {
 	});
 }
 
-void Session::set_mode_now(ModeBase *m) {
+void Session::set_mode_now(Mode *m) {
 #if 0
 	if (cur_mode == m)
 		return;
@@ -268,6 +268,8 @@ void Session::set_mode_now(ModeBase *m) {
 
 	if (cur_mode->multi_view)
 		cur_mode->multi_view->force_redraw();
+#else
+	cur_mode = m;
 #endif
 }
 
@@ -296,7 +298,7 @@ void Session::error(const string &message) {
 #endif
 }
 
-ModeBase *Session::get_mode(int preferred_type) {
+Mode *Session::get_mode(int preferred_type) {
 #if 0
 	if (preferred_type == FD_MODEL)
 		return mode_model;
@@ -503,7 +505,7 @@ string Session::get_tex_image(Texture *tex) {
 	return "";
 }
 
-ModeBase *Session::find_mode_base(const string &name) {
+Mode *Session::find_mode_base(const string &name) {
 #if 0
 	if (name == "model")
 		return mode_model;

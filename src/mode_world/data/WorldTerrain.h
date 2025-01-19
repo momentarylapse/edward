@@ -26,7 +26,7 @@ struct Box {
 	vec3 min, max;
 };
 
-class WorldTerrain: public MultiView::SingleData {
+class WorldTerrain: public multiview::SingleData {
 public:
 	~WorldTerrain() override;
 
@@ -42,9 +42,9 @@ public:
 	bool load(Session *s, const Path &filename, bool deep = true);
 	bool save(const Path &filename);
 
-	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
-	bool in_rect(MultiView::Window *win, const rect &r) override;
-	bool overlap_rect(MultiView::Window *win, const rect &r) override;
+	float hover_distance(multiview::Window *win, const vec2 &m, vec3 &tp, float &z) override;
+	bool in_rect(multiview::Window *win, const rect &r) override;
+	bool overlap_rect(multiview::Window *win, const rect &r) override;
 
 
 	Box bounding_box() const;
