@@ -55,7 +55,7 @@ GraphicsPipeline* GeometryRenderer::get_pipeline(Shader *s, RenderPass *rp, cons
 	} else if (pass.mode == TransparencyMode::COLOR_KEY_HARD) {
 		return PipelineManager::get_alpha(s, rp, top, vb, Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, true, vk_cull(pass.cull_mode));
 	} else {
-		return PipelineManager::get(s, rp, top, vb);
+		return PipelineManager::get(s, rp, top, vb, vk_cull(pass.cull_mode));
 	}
 }
 

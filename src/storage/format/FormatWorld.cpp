@@ -111,7 +111,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 //				GodRegisterModel(Objects[i].object);
 		}
 		} catch (Exception &e) {
-			msg_error(e.message());
+			msg_error("ABORT: " + e.message());
 		}
 	}
 
@@ -227,7 +227,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				data->terrains.add(t);
 			} else if (e.tag == "object") {
 				WorldObject o;
-				o.object = NULL;
+				o.object = nullptr;
 				o.filename = e.value("file");
 				o.name = e.value("name");
 				//o.script = e.value("script");

@@ -205,6 +205,7 @@ void Storage::set_root_directory(const Path &_directory, bool compact_mode) {
 		return;
 
 	root_dir = directory;
+	msg_error("ROOT: " + str(root_dir));
 
 	compact_mode = !os::fs::exists(root_dir | "game.ini");
 

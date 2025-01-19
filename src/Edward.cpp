@@ -1,3 +1,4 @@
+#include <data/world/WorldObject.h>
 #include <lib/math/quaternion.h>
 
 #include "lib/xhui/xhui.h"
@@ -11,6 +12,10 @@
 #include <renderer/world/geometry/RenderViewData.h>
 #include <renderer/world/geometry/SceneView.h>
 #include <renderer/base.h>
+#include <renderer/path/RenderPath.h>
+#include <world/Model.h>
+#include <world/ModelManager.h>
+#include <y/EngineData.h>
 
 #include "lib/os/msg.h"
 #include "lib/xhui/Theme.h"
@@ -21,6 +26,9 @@
 #include "y/world/Camera.h"
 #include "y/world/Light.h"
 #include "y/y/Entity.h"
+#include "data/world/DataWorld.h"
+#include "storage/Storage.h"
+#include "Session.h"
 
 string AppVersion = "0.5.-1.0";
 string AppName = "Edward";
@@ -29,10 +37,12 @@ string AppName = "Edward";
 void* app = nullptr;
 
 ResourceManager* _resource_manager;
+DataWorld* data_world;
+Session* session;
 
 class TestRenderer : public Renderer {
 public:
-	vulkan::VertexBuffer* vb;
+	vulkan::VertexBuffer* vbx;
 	SceneView scene_view;
 	RenderViewData rvd;
 	shared<Shader> shader;
@@ -40,18 +50,22 @@ public:
 	quaternion ang = quaternion::ID;
 	Camera* cam;
 	Light* light;
+	base::map<Material*, ShaderCache> multi_pass_shader_cache[4];
+	// material as id!
+
 	TestRenderer() : Renderer("test") {
 		resource_manager = _resource_manager;
-		vb = new VertexBuffer("3f,3f,2f");
-		vb->create_quad(rect::ID_SYM);
+		vbx = new VertexBuffer("3f,3f,2f");
+		vbx->create_quad(rect::ID_SYM);
 		try {
 			shader = resource_manager->load_surface_shader("default.shader", "forward", "default", "");
 			material = resource_manager->load_material("");
 			material->albedo = White;
-		//	material->metal = 0.5f;
-			material->roughness = 0.5f;
+			material->metal = 0.0f;
+			material->roughness = 0.9f;
 			material->emission = color(1, 0.1f, 0.1f, 0.1f);
 			material->textures = {tex_white};
+			material->pass0.cull_mode = 0;
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
@@ -59,12 +73,14 @@ public:
 		cam = new Camera();
 		cam->owner = new Entity;
 		scene_view.cam = cam;
-		cam->owner->pos = {0,0,-10};
+		cam->owner->pos = {0, 0,-10};
+		cam->min_depth = 1;
+		cam->max_depth = 100;
 		rvd.scene_view = &scene_view;
 
-		light = new Light(color(1,4,4,4), -1, -1);
+		light = new Light(White, -1, -1);
 		light->owner = new Entity;
-		light->owner->ang = quaternion::rotation({0,1,0}, pi);
+		//light->owner->ang = quaternion::rotation({0,1,0}, pi);
 		//light->light.harshness = 0.5f;
 	}
 	void prepare(const RenderParams& params) override {
@@ -72,7 +88,7 @@ public:
 	}
 	void draw(const RenderParams& params) override {
 		auto cb = params.command_buffer;
-		cb->clear(params.area, {xhui::Theme::_default.background_button}, 1.0);
+		cb->clear(params.area, {data_world->meta_data.background_color}, 1.0);
 
 	//	scene_view.choose_lights();
 		{
@@ -84,7 +100,7 @@ public:
 		}
 
 		scene_view.cam->update_matrices(params.desired_aspect_ratio);
-		rvd.set_projection_matrix(scene_view.cam->m_projection * mat4::scale(1,-1,1));
+		rvd.set_projection_matrix(scene_view.cam->m_projection);
 		rvd.set_view_matrix(scene_view.cam->m_view);
 		rvd.update_lights();
 		rvd.ubo.num_lights = scene_view.lights.num;
@@ -92,11 +108,87 @@ public:
 
 		rvd.begin_draw();
 
-		auto rd = rvd.start(params, mat4::rotation(ang), shader.get(), *material, 0, PrimitiveTopology::TRIANGLES, vb);
+
+		auto& rd = rvd.start(params,  mat4::rotation(ang), shader.get(), *material, 0, PrimitiveTopology::TRIANGLES, vbx);
 		rd.apply(params);
-		cb->draw(vb);
+		cb->draw(vbx);
 	}
 };
+
+class DataWorldRenderer : public Renderer {
+public:
+	SceneView scene_view;
+	RenderViewData rvd;
+	Camera* cam;
+	Light* light;
+	base::map<Material*, ShaderCache> multi_pass_shader_cache[4];
+	// material as id!
+	Shader* get_shader(Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module) {
+		if (!multi_pass_shader_cache[pass_no].contains(material))
+			multi_pass_shader_cache[pass_no].set(material, {});
+		auto& cache = multi_pass_shader_cache[pass_no][material];
+		RenderPathType type = RenderPathType::Forward;
+	//	if (is_shadow_pass())
+	//		cache._prepare_shader_multi_pass(type, *material_shadow, vertex_shader_module, geometry_shader_module, pass_no);
+	//	else
+			cache._prepare_shader_multi_pass(type, *material, vertex_shader_module, geometry_shader_module, pass_no);
+		return cache.get_shader(type);
+	}
+
+	DataWorldRenderer() : Renderer("world") {
+		resource_manager = _resource_manager;
+
+		cam = new Camera();
+		cam->owner = new Entity;
+		scene_view.cam = cam;
+		cam->owner->pos = {2500,1000,-1000};
+		cam->min_depth = 1;
+		cam->max_depth = 10000;
+		rvd.scene_view = &scene_view;
+
+		light = new Light(White, -1, -1);
+		light->owner = new Entity;
+		//light->owner->ang = quaternion::rotation({0,1,0}, pi);
+		light->light.harshness = 0.5f;
+	}
+	void draw(const RenderParams& params) override {
+		auto cb = params.command_buffer;
+		cb->clear(params.area, {data_world->meta_data.background_color}, 1.0);
+
+	//	scene_view.choose_lights();
+		{
+			scene_view.lights.clear();
+			scene_view.shadow_index = -1;
+			//	if (l->allow_shadow)
+			//		scene_view.shadow_index = scene_view.lights.num;
+			scene_view.lights.add(light);
+		}
+
+		scene_view.cam->update_matrices(params.desired_aspect_ratio);
+		rvd.set_projection_matrix(scene_view.cam->m_projection);
+		rvd.set_view_matrix(scene_view.cam->m_view);
+		rvd.update_lights();
+		rvd.ubo.num_lights = scene_view.lights.num;
+		rvd.ubo.shadow_index = scene_view.shadow_index;
+
+		rvd.begin_draw();
+
+
+		for (auto& o: data_world->objects) {
+			for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
+				auto m = o.object;
+				auto material = m->material[k];
+				auto vb = m->mesh[0]->sub[k].vertex_buffer;
+
+				auto shader = get_shader(material, 0, m->_template->vertex_shader_module, "");
+				auto& rd = rvd.start(params,  mat4::translation(o.pos) * mat4::rotation(o.ang), shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+				rd.apply(params);
+				cb->draw(vb);
+			}
+		}
+	}
+};
+
 class XhuiRenderer : public RenderTask {
 public:
 	rect native_area_window = rect::ID;
@@ -152,11 +244,12 @@ int hui_main(const Array<string>& args) {
 
 	auto renderer = new XhuiRenderer();
 
-	w->event_xp("area", "hui:initialize", [renderer] (Painter* p) {
+	w->event_xp("area", "hui:initialize", [renderer, args] (Painter* p) {
 		auto pp = (xhui::Painter*)p;
 		vulkan::default_device = pp->context->device;
 		api_init_external(pp->context->instance, pp->context->device);
 		_resource_manager = new ResourceManager({});
+		_resource_manager->default_shader = "default.shader";
 		try {
 			_resource_manager->load_shader_module("module-basic-data.shader");
 			_resource_manager->load_shader_module("module-basic-interface.shader");
@@ -166,43 +259,30 @@ int hui_main(const Array<string>& args) {
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
-		renderer->add_child(new TestRenderer());
+		//renderer->add_child(new TestRenderer());
+		renderer->add_child(new DataWorldRenderer());
+
+
+
+		engine.file_errors_are_critical = false;
+		engine.ignore_missing_files = true;
+		engine.resource_manager = _resource_manager;
+		session = new Session;
+		session->resource_manager = _resource_manager;
+		session->storage = new Storage(session);
+		data_world = new DataWorld(session);
+
+		if (args.num >= 2)
+			session->storage->load(args[1], data_world);
 	});
 	w->event_xp("area", "hui:draw", [renderer] (Painter* p) {
-		if (true) {
-			renderer->render(p);
-		} else {
-			p->set_color(xhui::Theme::_default.background_low);
-			p->set_roundness(8);
-			p->draw_rect(p->area());
-			p->set_roundness(0);
-			float font_size = 50;
-			p->set_font_size(font_size);
-			vec2 p0 = p->area().p00() + vec2(20, 20);
-			string text = "Test  g";
-			auto dims = font::get_text_dimensions(text);
-			p->set_color(xhui::Theme::_default.border);
-			p->draw_line({p0.x, p0.y + dims.bounding_top_to_line}, {p0.x + dims.bounding_width, p0.y + dims.bounding_top_to_line});
-			p->set_fill(false);
-			p->draw_rect(dims.bounding_box(p0));
-			p->set_fill(true);
-
-			p->set_color(xhui::Theme::_default.text);
-			p->draw_str(p0, text);
-
-			//p->draw_str({50, 200}, "Test g\nbla gg");
-
-			p->set_roundness(20);
-			p->draw_rect({50, 300, 150, 250});
-			((xhui::Painter*)p)->softness = 10;
-			p->draw_rect({50, 300, 300, 400});
-			((xhui::Painter*)p)->softness = 0;
-		}
+		renderer->render(p);
 	});
 
 	xhui::run_repeated(0.02f, [w] {
 		w->request_redraw();
 	});
+
 
 	xhui::run();
 

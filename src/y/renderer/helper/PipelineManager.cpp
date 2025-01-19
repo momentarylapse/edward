@@ -52,11 +52,13 @@ string topology2vk(PrimitiveTopology top) {
 	return "triangles";
 }
 
-GraphicsPipeline *get(Shader *s, RenderPass *rp, PrimitiveTopology top, VertexBuffer *vb) {
+GraphicsPipeline *get(Shader *s, RenderPass *rp, PrimitiveTopology top, VertexBuffer *vb, vulkan::CullMode culling) {
 	if (ob_pipelines.contains(s))
 		return ob_pipelines[s];
 	msg_write("NEW PIPELINE");
 	auto p = new GraphicsPipeline(s, rp, 0, topology2vk(top), vb);
+	p->set_culling(culling);
+	p->rebuild();
 	ob_pipelines.add({s, p});
 	return p;
 }

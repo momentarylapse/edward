@@ -600,7 +600,7 @@ public:
 
 class ModelParser : public ChunkedFileParser {
 public:
-	ModelParser(ModelManager *_model_manager) : ChunkedFileParser(8) {
+	explicit ModelParser(ModelManager *_model_manager) : ChunkedFileParser(8) {
 		model_manager = _model_manager;
 		_model_parser_tria_mesh_count = 0;
 		set_base(new ChunkModel);
