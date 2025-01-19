@@ -18,6 +18,9 @@
 #include "y/renderer/Renderer.h"
 #include "y/helper/ResourceManager.h"
 #include "y/world/Material.h"
+#include "y/world/Camera.h"
+#include "y/world/Light.h"
+#include "y/y/Entity.h"
 
 string AppVersion = "0.5.-1.0";
 string AppName = "Edward";
@@ -35,6 +38,8 @@ public:
 	shared<Shader> shader;
 	Material* material;
 	quaternion ang = quaternion::ID;
+	Camera* cam;
+	Light* light;
 	TestRenderer() : Renderer("test") {
 		resource_manager = _resource_manager;
 		vb = new VertexBuffer("3f,3f,2f");
@@ -42,21 +47,51 @@ public:
 		try {
 			shader = resource_manager->load_surface_shader("default.shader", "forward", "default", "");
 			material = resource_manager->load_material("");
+			material->albedo = White;
+		//	material->metal = 0.5f;
+			material->roughness = 0.5f;
+			material->emission = color(1, 0.1f, 0.1f, 0.1f);
+			material->textures = {tex_white};
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
+
+		cam = new Camera();
+		cam->owner = new Entity;
+		scene_view.cam = cam;
+		cam->owner->pos = {0,0,-10};
+		rvd.scene_view = &scene_view;
+
+		light = new Light(color(1,4,4,4), -1, -1);
+		light->owner = new Entity;
+		light->owner->ang = quaternion::rotation({0,1,0}, pi);
+		//light->light.harshness = 0.5f;
 	}
 	void prepare(const RenderParams& params) override {
-		ang = quaternion::rotation({0,0,1}, 0.01f) * ang;
+		ang = quaternion::rotation({0,1,0}, 0.02f) * ang;
 	}
 	void draw(const RenderParams& params) override {
 		auto cb = params.command_buffer;
-		cb->clear(params.area, {Green}, 1.0);
+		cb->clear(params.area, {xhui::Theme::_default.background_button}, 1.0);
 
-		rvd.set_projection_matrix(mat4::perspective(0.7, params.desired_aspect_ratio, 0.1f, 1000.0f, false));
-		rvd.set_view_matrix(mat4::translation({0,0,10}));
+	//	scene_view.choose_lights();
+		{
+			scene_view.lights.clear();
+			scene_view.shadow_index = -1;
+			//	if (l->allow_shadow)
+			//		scene_view.shadow_index = scene_view.lights.num;
+			scene_view.lights.add(light);
+		}
+
+		scene_view.cam->update_matrices(params.desired_aspect_ratio);
+		rvd.set_projection_matrix(scene_view.cam->m_projection * mat4::scale(1,-1,1));
+		rvd.set_view_matrix(scene_view.cam->m_view);
+		rvd.update_lights();
+		rvd.ubo.num_lights = scene_view.lights.num;
+		rvd.ubo.shadow_index = scene_view.shadow_index;
 
 		rvd.begin_draw();
+
 		auto rd = rvd.start(params, mat4::rotation(ang), shader.get(), *material, 0, PrimitiveTopology::TRIANGLES, vb);
 		rd.apply(params);
 		cb->draw(vb);
