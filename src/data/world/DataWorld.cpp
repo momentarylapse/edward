@@ -20,6 +20,7 @@
 #include <y/world/Terrain.h>
 #include <y/world/World.h>
 #include <y/meta.h>
+#if 0
 #include "../../action/world/camera/ActionWorldEditCamera.h"
 #include "../../action/world/light/ActionWorldAddLight.h"
 #include "../../action/world/light/ActionWorldEditLight.h"
@@ -28,6 +29,7 @@
 #include "../../action/world/terrain/ActionWorldAddTerrain.h"
 #include "../../action/world/ActionWorldPaste.h"
 #include "../../action/world/ActionWorldDeleteSelection.h"
+#endif
 #include <y/graphics-impl.h>
 #include <y/helper/ResourceManager.h>
 
@@ -158,6 +160,7 @@ void DataWorld::update_data() {
 		t.update_data();
 }
 
+#if 0
 WorldObject* DataWorld::add_object(const Path &filename, const vec3& pos) {
 	WorldObject o;
 	o.pos = pos;
@@ -191,6 +194,7 @@ void DataWorld::edit_light(int index, const WorldLight& l) {
 void DataWorld::edit_camera(int index, const WorldCamera& c) {
 	execute(new ActionWorldEditCamera(index, c));
 }
+#endif
 
 
 void DataWorld::clear_selection() {
@@ -221,8 +225,10 @@ void DataWorld::copy(Array<WorldObject> &_objects, Array<WorldTerrain> &_terrain
 			_lights.add(l);
 }
 
-void DataWorld::paste(Array<WorldObject> &o, Array<WorldTerrain> &t, Array<WorldCamera> &c, Array<WorldLight> &l)
-{	execute(new ActionWorldPaste(o, t, c, l));	}
+void DataWorld::paste(Array<WorldObject> &o, Array<WorldTerrain> &t, Array<WorldCamera> &c, Array<WorldLight> &l) {
+	//execute(new ActionWorldPaste(o, t, c, l));
+}
 
-void DataWorld::delete_selection()
-{	execute(new ActionWorldDeleteSelection());	}
+void DataWorld::delete_selection() {
+	//execute(new ActionWorldDeleteSelection());
+}

@@ -10,7 +10,6 @@
 #include "../../../../data/model/DataModel.h"
 #include "../../../../data/model/ModelMesh.h"
 #include "../../../../data/model/ModelPolygon.h"
-#include "../../../../EdwardWindow.h"
 
 ActionModelTriangulateVertices::ActionModelTriangulateVertices()
 {

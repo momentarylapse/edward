@@ -10,7 +10,6 @@
 #include "../ActionModelPasteGeometry.h"
 #include "../../../../data/model/DataModel.h"
 #include "../../../../data/model/geometry/Geometry.h"
-#include "../../../../EdwardWindow.h"
 #include "../../../../lib/os/msg.h"
 
 

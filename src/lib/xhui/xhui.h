@@ -19,6 +19,9 @@ public:
 	static Path filename;
 	static bool installed;
 	static void guess_directories(const Array<string> &arg, const string &app_name);
+	static void end();
+
+	static bool _end_requested;
 };
 
 int run_repeated(float dt, Callback f);

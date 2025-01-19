@@ -13,7 +13,7 @@
 #include "../../../data/world/WorldLink.h"
 #include "../../../data/world/WorldObject.h"
 #include "../../../data/world/WorldTerrain.h"
-#include "../../../EdwardWindow.h"
+//#include "../../../EdwardWindow.h"
 #include <y/world/Model.h>
 #include <y/world/World.h>
 #include <y/EngineData.h>
@@ -138,7 +138,7 @@ void FormatWorld::_load_old(LegacyFile& lf, DataWorld *data, bool deep) {
 		}
 
 	}else{
-		throw Exception(format(_("File '%s' has an unhandled legacy file format: %d (expected: %d - %d)!"), lf.filename.c_str(), lf.ffv, 8, 10));
+		throw Exception(format("File '%s' has an unhandled legacy file format: %d (expected: %d - %d)!", lf.filename.c_str(), lf.ffv, 8, 10));
 	}
 	delete f;
 

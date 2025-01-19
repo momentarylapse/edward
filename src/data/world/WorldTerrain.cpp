@@ -83,3 +83,15 @@ void WorldTerrain::update_data() {
 }
 
 
+
+
+float WorldTerrain::hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) { return 0; }
+bool WorldTerrain::in_rect(MultiView::Window *win, const rect &r) { return false; }
+bool WorldTerrain::overlap_rect(MultiView::Window *win, const rect &r) { return false; }
+
+
+Box WorldTerrain::bounding_box() const {
+	return {pos, pos};
+}
+
+

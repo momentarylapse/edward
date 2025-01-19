@@ -8,7 +8,8 @@
 #define X_CONFIG_H__INCLUDED_
 
 
-#define _X_USE_HUI_
+//#define _X_USE_HUI_
+#define _X_USE_XHUI_
 #define _X_USE_ANY_
 #define _X_USE_NET_
 #define _X_USE_NIX_

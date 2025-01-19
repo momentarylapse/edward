@@ -8,15 +8,15 @@
 #ifndef EDWARD_H_
 #define EDWARD_H_
 
-#include "lib/hui/hui.h"
+#include "lib/xhui/xhui.h"
 
 class PluginManager;
 
 
-class EdwardApp : public hui::Application {
+class EdwardApp : public xhui::Application {
 public:
 	EdwardApp();
-	hui::AppStatus on_startup(const Array<string> &arg) override;
+	//hui::AppStatus on_startup(const Array<string> &arg) override;
 
 
 	PluginManager *plugins;

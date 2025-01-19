@@ -46,6 +46,7 @@ public:
 	bool in_rect(MultiView::Window *win, const rect &r) override;
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;
 
+
 	Box bounding_box() const;
 
 	void update_data();

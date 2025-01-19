@@ -6,33 +6,37 @@
  */
 
 #include "Storage.h"
+#if 0
 #include "format/FormatFontX.h"
 #include "format/FormatMaterial.h"
 #include "format/FormatModel.h"
 #include "format/FormatModelJson.h"
 #include "format/FormatModel3ds.h"
 #include "format/FormatModelPly.h"
+#endif
 #include "format/FormatTerrain.h"
 #include "format/FormatWorld.h"
 #include "../data/Data.h"
 #include "../lib/os/filesystem.h"
 #include "../lib/os/msg.h"
-#include "../lib/hui/hui.h"
+#include "../lib/xhui/xhui.h"
 #include <y/EngineData.h>
 #include "../Session.h"
-#include "../EdwardWindow.h"
+//#include "../EdwardWindow.h"
 
 
 Path Storage::CANONICAL_SUB_DIR[NUM_FDS];
 
 Storage::Storage(Session *_s) {
 	session = _s;
+#if 0
 	formats.add(new FormatFontX(session));
 	formats.add(new FormatMaterial(session));
 	formats.add(new FormatModel(session));
 	formats.add(new FormatModelJson(session));
 	formats.add(new FormatModel3ds(session));
 	formats.add(new FormatModelPly(session));
+#endif
 	formats.add(new FormatTerrain(session));
 	formats.add(new FormatWorld(session));
 
@@ -260,6 +264,10 @@ string Storage::fd_ext(int kind) {
 	return "?";
 }
 
+static string _(const string& s) {
+	return s;
+}
+
 string fd_name(int kind) {
 	if (kind == FD_MODEL)
 		return _("Model");
@@ -344,6 +352,7 @@ base::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int pre
 		promise(cp);
 	};
 
+#if 0
 	if (save)
 		hui::file_dialog_save(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
 			.then(on_select_base)
@@ -352,6 +361,7 @@ base::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int pre
 		hui::file_dialog_open(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
 			.then(on_select_base)
 			.on_fail([promise] () mutable { promise.fail(); });
+#endif
 
 	return promise.get_future();
 }

@@ -193,151 +193,9 @@ list(APPEND DEPS Threads::Threads)
 #=======================================================================================
 
 add_executable(edward
-	src/action/font/ActionFontEditGlobal.cpp
-	src/action/font/ActionFontEditGlyph.cpp
-	src/action/material/ActionMaterialEditAppearance.cpp
-	src/action/material/ActionMaterialEditPhysics.cpp
-	src/action/model/animation/ActionModelAddAnimation.cpp
-	src/action/model/animation/ActionModelAnimationAddFrame.cpp
-	src/action/model/animation/ActionModelAnimationDeleteFrame.cpp
-	src/action/model/animation/ActionModelAnimationSetBone.cpp
-	src/action/model/animation/ActionModelAnimationSetData.cpp
-	src/action/model/animation/ActionModelAnimationSetFrameDuration.cpp
-	src/action/model/animation/ActionModelAnimationTransformBones.cpp
-	src/action/model/animation/ActionModelAnimationTransformVertices.cpp
-	src/action/model/animation/ActionModelDeleteAnimation.cpp
-	src/action/model/animation/ActionModelDuplicateAnimation.cpp
-	src/action/model/data/ActionModelAddMaterial.cpp
-	src/action/model/data/ActionModelDeleteMaterial.cpp
-	src/action/model/data/ActionModelEditData.cpp
-	src/action/model/data/ActionModelEditMaterial.cpp
-	src/action/model/mesh/brush/ActionModelBrushComplexify.cpp
-	src/action/model/mesh/brush/ActionModelBrushExtrude.cpp
-	src/action/model/mesh/brush/ActionModelBrushSmooth.cpp
-	src/action/model/mesh/edge/ActionModelBevelEdges.cpp
-	src/action/model/mesh/edge/ActionModelCollapseEdge.cpp
-	src/action/model/mesh/edge/ActionModelSplitEdge.cpp
-	src/action/model/mesh/effect/ActionModelAddEffects.cpp
-	src/action/model/mesh/effect/ActionModelClearEffects.cpp
-	src/action/model/mesh/effect/ActionModelEditEffect.cpp
-	src/action/model/mesh/look/ActionModelSetMaterial.cpp
-	src/action/model/mesh/look/ActionModelSetNormalModeSelection.cpp
-	src/action/model/mesh/physical/ActionModelAddBall.cpp
-	src/action/model/mesh/physical/ActionModelAddCylinder.cpp
-	src/action/model/mesh/physical/ActionModelDeleteBall.cpp
-	src/action/model/mesh/physical/ActionModelDeleteCylinder.cpp
-	src/action/model/mesh/polygon/helper/ActionModelPolygonAddVertex.cpp
-	src/action/model/mesh/polygon/helper/ActionModelPolygonRemoveVertex.cpp
-	src/action/model/mesh/polygon/ActionModelAddPolygon.cpp
-	src/action/model/mesh/polygon/ActionModelAddPolygonAutoSkin.cpp
-	src/action/model/mesh/polygon/ActionModelAddPolygonSingleTexture.cpp
-	src/action/model/mesh/polygon/ActionModelAddPolygonWithSkinGenerator.cpp
-	src/action/model/mesh/polygon/ActionModelCutOutPolygons.cpp
-	src/action/model/mesh/polygon/ActionModelExtrudePolygons.cpp
-	src/action/model/mesh/polygon/ActionModelMergePolygonsSelection.cpp
-	src/action/model/mesh/polygon/ActionModelSplitPolygon.cpp
-	src/action/model/mesh/polygon/ActionModelTriangulateSelection.cpp
-	src/action/model/mesh/skin/ActionModelAutomap.cpp
-	src/action/model/mesh/skin/ActionModelSkinVerticesFromProjection.cpp
-	src/action/model/mesh/skin/ActionModelTransformSkinVertices.cpp
-	src/action/model/mesh/surface/helper/ActionModelAddEmptySurface.cpp
-	src/action/model/mesh/surface/helper/ActionModelDeleteEmptySurface.cpp
-	src/action/model/mesh/surface/helper/ActionModelJoinSurfaces.cpp
-	src/action/model/mesh/surface/helper/ActionModelSurfaceAddPolygon.cpp
-	src/action/model/mesh/surface/helper/ActionModelSurfaceDeletePolygon.cpp
-	src/action/model/mesh/surface/helper/ActionModelSurfaceRelinkPolygon.cpp
-	src/action/model/mesh/surface/ActionModelAutoWeldSelection.cpp
-	src/action/model/mesh/surface/ActionModelDeleteSurface.cpp
-	src/action/model/mesh/surface/ActionModelSurfaceAutoWeld.cpp
-	src/action/model/mesh/surface/ActionModelSurfaceCopy.cpp
-	src/action/model/mesh/surface/ActionModelSurfaceInvert.cpp
-	src/action/model/mesh/surface/ActionModelSurfacesSubdivide.cpp
-	src/action/model/mesh/surface/ActionModelSurfaceVolumeAnd.cpp
-	src/action/model/mesh/surface/ActionModelSurfaceVolumeSubtract.cpp
-	src/action/model/mesh/vertex/helper/ActionModelDeleteUnusedVertex.cpp
-	src/action/model/mesh/vertex/helper/ActionModelMoveVertex.cpp
-	src/action/model/mesh/vertex/ActionModelAddVertex.cpp
-	src/action/model/mesh/vertex/ActionModelAlignToGrid.cpp
-	src/action/model/mesh/vertex/ActionModelBevelVertices.cpp
-	src/action/model/mesh/vertex/ActionModelCollapseVertices.cpp
-	src/action/model/mesh/vertex/ActionModelDeleteVertex.cpp
-	src/action/model/mesh/vertex/ActionModelFlattenVertices.cpp
-	src/action/model/mesh/vertex/ActionModelNearifyVertices.cpp
-	src/action/model/mesh/vertex/ActionModelTransformVertices.cpp
-	src/action/model/mesh/vertex/ActionModelTriangulateVertices.cpp
-	src/action/model/mesh/ActionModelDeleteSelection.cpp
-	src/action/model/mesh/ActionModelEasify.cpp
-	src/action/model/mesh/ActionModelPasteGeometry.cpp
-	src/action/model/skeleton/ActionModelAddBone.cpp
-	src/action/model/skeleton/ActionModelAttachVerticesToBone.cpp
-	src/action/model/skeleton/ActionModelDeleteBone.cpp
-	src/action/model/skeleton/ActionModelDeleteBoneSelection.cpp
-	src/action/model/skeleton/ActionModelReconnectBone.cpp
-	src/action/model/skeleton/ActionModelSetSubModel.cpp
-	src/action/model/skeleton/ActionModelTransformBones.cpp
-	src/action/world/camera/ActionCameraAddPoint.cpp
-	src/action/world/camera/ActionCameraMoveSelection.cpp
-	src/action/world/camera/ActionCameraMoveTimeSelection.cpp
-	src/action/world/camera/ActionWorldEditCamera.cpp
-	src/action/world/helper/ActionWorldTerrainEditHeight.cpp
-	src/action/world/light/ActionWorldAddLight.cpp
-	src/action/world/light/ActionWorldDeleteLight.cpp
-	src/action/world/light/ActionWorldEditLight.cpp
-	src/action/world/link/ActionWorldAddLink.cpp
-	src/action/world/link/ActionWorldDeleteLink.cpp
-	src/action/world/object/ActionWorldAddObject.cpp
-	src/action/world/object/ActionWorldDeleteObject.cpp
-	src/action/world/object/ActionWorldEditObject.cpp
-	src/action/world/object/ActionWorldRotateObjects.cpp
-	src/action/world/terrain/ActionWorldAddTerrain.cpp
-	src/action/world/terrain/ActionWorldDeleteTerrain.cpp
-	src/action/world/terrain/ActionWorldEditTerrain.cpp
-	src/action/world/terrain/ActionWorldTerrainApplyHeightmap.cpp
-	src/action/world/terrain/ActionWorldTerrainBrushExtrude.cpp
-	src/action/world/ActionWorldDeleteSelection.cpp
-	src/action/world/ActionWorldEditData.cpp
-	src/action/world/ActionWorldMoveSelection.cpp
-	src/action/world/ActionWorldPaste.cpp
-	src/action/world/ActionWorldSelectionAddComponent.cpp
-	src/action/world/ActionWorldSetEgo.cpp
 	src/action/Action.cpp
 	src/action/ActionGroup.cpp
 	src/action/ActionManager.cpp
-	src/action/ActionMultiView.cpp
-	src/data/administration/AdminFile.cpp
-	src/data/administration/AdminFileList.cpp
-	src/data/administration/DataAdministration.cpp
-	src/data/administration/GameIniData.cpp
-	src/data/font/import/ImporterCairo.cpp
-	src/data/font/DataFont.cpp
-	src/data/material/DataMaterial.cpp
-	src/data/material/ShaderBuilderContext.cpp
-	src/data/material/ShaderGraph.cpp
-	src/data/material/ShaderNode.cpp
-	src/data/model/geometry/Geometry.cpp
-	src/data/model/geometry/GeometryBall.cpp
-	src/data/model/geometry/GeometryCube.cpp
-	src/data/model/geometry/GeometryCylinder.cpp
-	src/data/model/geometry/GeometryPlane.cpp
-	src/data/model/geometry/GeometryPlatonic.cpp
-	src/data/model/geometry/GeometrySphere.cpp
-	src/data/model/geometry/GeometrySubtract.cpp
-	src/data/model/geometry/GeometryTeapot.cpp
-	src/data/model/geometry/GeometryTorus.cpp
-	src/data/model/geometry/GeometryTorusKnot.cpp
-	src/data/model/BspTree.cpp
-	src/data/model/DataModel.cpp
-	src/data/model/ModelMaterial.cpp
-	src/data/model/ModelMesh.cpp
-	src/data/model/ModelPolygon.cpp
-	src/data/model/ModelSelection.cpp
-	src/data/model/SkinGenerator.cpp
-	src/data/world/lightmap/Lightmap.cpp
-	src/data/world/lightmap/LightmapData.cpp
-	src/data/world/lightmap/LightmapPhotonMap.cpp
-	src/data/world/lightmap/LightmapPhotonMapImageSpace.cpp
-	src/data/world/lightmap/LightmapRadiosity.cpp
-	src/data/world/lightmap/LightmapRayTracing.cpp
 	src/data/world/DataCamera.cpp
 	src/data/world/DataWorld.cpp
 	src/data/world/WorldCamera.cpp
@@ -354,75 +212,6 @@ add_executable(edward
 	src/lib/doc/pdf.cpp
 	src/lib/doc/ttf.cpp
 	src/lib/doc/xml.cpp
-	src/lib/hui/Controls/Control.cpp
-	src/lib/hui/Controls/ControlButtonGtk.cpp
-	src/lib/hui/Controls/ControlCheckBoxGtk.cpp
-	src/lib/hui/Controls/ControlColorButtonGtk.cpp
-	src/lib/hui/Controls/ControlComboBoxGtk.cpp
-	src/lib/hui/Controls/ControlDrawingAreaGtk.cpp
-	src/lib/hui/Controls/ControlEditGtk.cpp
-	src/lib/hui/Controls/ControlExpanderGtk.cpp
-	src/lib/hui/Controls/ControlGridGtk.cpp
-	src/lib/hui/Controls/ControlGroupGtk.cpp
-	src/lib/hui/Controls/ControlHeaderBar.cpp
-	src/lib/hui/Controls/ControlLabelGtk.cpp
-	src/lib/hui/Controls/ControlListViewGtk.cpp
-	src/lib/hui/Controls/ControlMenuButtonGtk.cpp
-	src/lib/hui/Controls/ControlMultilineEditGtk.cpp
-	src/lib/hui/Controls/ControlPanedGtk.cpp
-	src/lib/hui/Controls/ControlProgressBarGtk.cpp
-	src/lib/hui/Controls/ControlRadioButtonGtk.cpp
-	src/lib/hui/Controls/ControlScrollerGtk.cpp
-	src/lib/hui/Controls/ControlSeparatorGtk.cpp
-	src/lib/hui/Controls/ControlSliderGtk.cpp
-	src/lib/hui/Controls/ControlSpinButtonGtk.cpp
-	src/lib/hui/Controls/ControlTabControlGtk.cpp
-	src/lib/hui/Controls/ControlToggleButtonGtk.cpp
-	src/lib/hui/Controls/ControlTreeViewGtk.cpp
-	src/lib/hui/Controls/MenuItemGtk.cpp
-	src/lib/hui/Controls/MenuItemSeparatorGtk.cpp
-	src/lib/hui/Controls/MenuItemSeparatorWin.cpp
-	src/lib/hui/Controls/MenuItemSubmenuGtk.cpp
-	src/lib/hui/Controls/MenuItemSubmenuWin.cpp
-	src/lib/hui/Controls/MenuItemToggleGtk.cpp
-	src/lib/hui/Controls/MenuItemToggleWin.cpp
-	src/lib/hui/Controls/MenuItemWin.cpp
-	src/lib/hui/Controls/ToolItemButtonGtk.cpp
-	src/lib/hui/Controls/ToolItemButtonWin.cpp
-	src/lib/hui/Controls/ToolItemMenuButtonGtk.cpp
-	src/lib/hui/Controls/ToolItemMenuButtonWin.cpp
-	src/lib/hui/Controls/ToolItemSeparatorGtk.cpp
-	src/lib/hui/Controls/ToolItemSeparatorWin.cpp
-	src/lib/hui/Controls/ToolItemToggleButtonGtk.cpp
-	src/lib/hui/Controls/ToolItemToggleButtonWin.cpp
-	src/lib/hui/Application.cpp
-	src/lib/hui/Callback.cpp
-	src/lib/hui/Clipboard.cpp
-	src/lib/hui/common_dlg.cpp
-	src/lib/hui/common_dlg_gtk.cpp
-	src/lib/hui/common_dlg_win.cpp
-	src/lib/hui/error.cpp
-	src/lib/hui/Event.cpp
-	src/lib/hui/hui.cpp
-	src/lib/hui/language.cpp
-	src/lib/hui/main_gtk.cpp
-	src/lib/hui/main_win.cpp
-	src/lib/hui/Menu.cpp
-	src/lib/hui/MenuGtk.cpp
-	src/lib/hui/MenuWin.cpp
-	src/lib/hui/PainterGtk.cpp
-	src/lib/hui/Panel.cpp
-	src/lib/hui/Resource.cpp
-	src/lib/hui/Toolbar.cpp
-	src/lib/hui/ToolbarGtk.cpp
-	src/lib/hui/ToolbarWin.cpp
-	src/lib/hui/utility.cpp
-	src/lib/hui/Window.cpp
-	src/lib/hui/window_control.cpp
-	src/lib/hui/window_control_gtk.cpp
-	src/lib/hui/window_control_win.cpp
-	src/lib/hui/WindowGtk.cpp
-	src/lib/hui/WindowWin.cpp
 	src/lib/image/color.cpp
 	src/lib/image/image.cpp
 	src/lib/image/image_bmp.cpp
@@ -575,108 +364,12 @@ add_executable(edward
 	src/lib/xhui/Theme.cpp
 	src/lib/xhui/Window.cpp
 	src/lib/xhui/xhui.cpp
-	src/mode/administration/dialog/AdministrationDialog.cpp
-	src/mode/administration/dialog/ConfigurationDialog.cpp
-	src/mode/administration/dialog/NewProjectDialog.cpp
-	src/mode/administration/ModeAdministration.cpp
-	src/mode/font/dialog/FontDialog.cpp
-	src/mode/font/ModeFont.cpp
-	src/mode/material/dialog/MaterialPropertiesDialog.cpp
-	src/mode/material/dialog/MaterialRenderPassDialog.cpp
-	src/mode/material/dialog/ShaderGraphDialog.cpp
-	src/mode/material/ModeMaterial.cpp
-	src/mode/model/animation/creation/ModeModelAnimationInterpolateFrames.cpp
-	src/mode/model/animation/ModeModelAnimation.cpp
-	src/mode/model/animation/ModeModelAnimationNone.cpp
-	src/mode/model/animation/ModeModelAnimationSkeleton.cpp
-	src/mode/model/animation/ModeModelAnimationVertex.cpp
-	src/mode/model/dialog/ModelAnimationDialog.cpp
-	src/mode/model/dialog/ModelAnimationTimelinePanel.cpp
-	src/mode/model/dialog/ModelDuplicateAnimationDialog.cpp
-	src/mode/model/dialog/ModelEasifyDialog.cpp
-	src/mode/model/dialog/ModelFXDialog.cpp
-	src/mode/model/dialog/ModelMaterialDialog.cpp
-	src/mode/model/dialog/ModelMaterialSelectionDialog.cpp
-	src/mode/model/dialog/ModelNewAnimationDialog.cpp
-	src/mode/model/dialog/ModelPropertiesDialog.cpp
-	src/mode/model/mesh/creation/ModeModelMeshAutoweld.cpp
-	src/mode/model/mesh/creation/ModeModelMeshBevelEdges.cpp
-	src/mode/model/mesh/creation/ModeModelMeshCreateBall.cpp
-	src/mode/model/mesh/creation/ModeModelMeshCreateCube.cpp
-	src/mode/model/mesh/creation/ModeModelMeshCreateCylinder.cpp
-	src/mode/model/mesh/creation/ModeModelMeshCreateCylinderSnake.cpp
-	src/mode/model/mesh/creation/ModeModelMeshCreatePlane.cpp
-	src/mode/model/mesh/creation/ModeModelMeshCreatePlatonic.cpp
-	src/mode/model/mesh/creation/ModeModelMeshCreatePolygon.cpp
-	src/mode/model/mesh/creation/ModeModelMeshCreateTorus.cpp
-	src/mode/model/mesh/creation/ModeModelMeshCreateVertex.cpp
-	src/mode/model/mesh/creation/ModeModelMeshCutLoop.cpp
-	src/mode/model/mesh/creation/ModeModelMeshDeformCylinder.cpp
-	src/mode/model/mesh/creation/ModeModelMeshDeformFunction.cpp
-	src/mode/model/mesh/creation/ModeModelMeshExtrudePolygons.cpp
-	src/mode/model/mesh/creation/ModeModelMeshPaste.cpp
-	src/mode/model/mesh/creation/ModeModelMeshSplitPolygon.cpp
-	src/mode/model/mesh/selection/MeshSelectionMode.cpp
-	src/mode/model/mesh/selection/MeshSelectionModeEdge.cpp
-	src/mode/model/mesh/selection/MeshSelectionModePolygon.cpp
-	src/mode/model/mesh/selection/MeshSelectionModeSurface.cpp
-	src/mode/model/mesh/selection/MeshSelectionModeVertex.cpp
-	src/mode/model/mesh/ModeModelMesh.cpp
-	src/mode/model/mesh/ModeModelMeshDeform.cpp
-	src/mode/model/mesh/ModeModelMeshMaterial.cpp
-	src/mode/model/mesh/ModeModelMeshPaint.cpp
-	src/mode/model/mesh/ModeModelMeshTexture.cpp
-	src/mode/model/skeleton/creation/ModeModelSkeletonAttachVertices.cpp
-	src/mode/model/skeleton/creation/ModeModelSkeletonCreateBone.cpp
-	src/mode/model/skeleton/ModeModelSkeleton.cpp
-	src/mode/model/ModeModel.cpp
-	src/mode/world/camera/creation/ModeWorldCameraCreatePoint.cpp
-	src/mode/world/camera/ModeWorldCamera.cpp
-	src/mode/world/creation/ModeWorldCreateLight.cpp
-	src/mode/world/creation/ModeWorldCreateLink.cpp
-	src/mode/world/creation/ModeWorldCreateObject.cpp
-	src/mode/world/creation/ModeWorldCreateTerrain.cpp
-	src/mode/world/dialog/CameraDialog.cpp
-	src/mode/world/dialog/ComponentSelectionDialog.cpp
-	src/mode/world/dialog/LightmapDialog.cpp
-	src/mode/world/dialog/ObjectPropertiesDialog.cpp
-	src/mode/world/dialog/ScriptVarsDialog.cpp
-	src/mode/world/dialog/SelectionPropertiesDialog.cpp
-	src/mode/world/dialog/TerrainCreationDialog.cpp
-	src/mode/world/dialog/TerrainHeightmapDialog.cpp
-	src/mode/world/dialog/TerrainPropertiesDialog.cpp
-	src/mode/world/dialog/WorldObjectListPanel.cpp
-	src/mode/world/dialog/WorldPropertiesDialog.cpp
-	src/mode/world/terrain/ModeWorldTerrain.cpp
-	src/mode/world/ModeWorld.cpp
-	src/mode/Mode.cpp
-	src/mode/ModeCreation.cpp
-	src/mode/ModeNone.cpp
-	src/multiview/ActionController.cpp
-	src/multiview/CameraController.cpp
-	src/multiview/ColorScheme.cpp
-	src/multiview/DrawingHelper.cpp
-	src/multiview/LinearToSrgbRenderer.cpp
-	src/multiview/MouseWrapper.cpp
-	src/multiview/MultiView.cpp
 	src/multiview/SingleData.cpp
-	src/multiview/Window.cpp
-	src/storage/format/old/LoadModelV11.cpp
 	src/storage/format/old/LoadWorldV9V10.cpp
 	src/storage/format/Format.cpp
-	src/storage/format/FormatFontX.cpp
-	src/storage/format/FormatMaterial.cpp
-	src/storage/format/FormatModel.cpp
-	src/storage/format/FormatModel3ds.cpp
-	src/storage/format/FormatModelJson.cpp
-	src/storage/format/FormatModelPly.cpp
 	src/storage/format/FormatTerrain.cpp
 	src/storage/format/FormatWorld.cpp
 	src/storage/Storage.cpp
-	src/stuff/BrushPanel.cpp
-	src/stuff/Clipboard.cpp
-	src/stuff/PluginManager.cpp
-	src/stuff/Progress.cpp
 	src/y/audio/audio.cpp
 	src/y/audio/AudioBuffer.cpp
 	src/y/audio/AudioStream.cpp
@@ -794,6 +487,7 @@ install(FILES "static/icon.svg" DESTINATION ${RESOURCE_DESTINATION})
 install(FILES "static/keys.txt" DESTINATION ${RESOURCE_DESTINATION})
 install(FILES "static/license.txt" DESTINATION ${RESOURCE_DESTINATION})
 install(FILES "static/license_small.txt" DESTINATION ${RESOURCE_DESTINATION})
+install(FILES "static/OpenSans-Regular.ttf" DESTINATION ${RESOURCE_DESTINATION})
 install(DIRECTORY "plugins" DESTINATION ${RESOURCE_DESTINATION})
 
 

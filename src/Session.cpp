@@ -8,7 +8,7 @@
 #include "Session.h"
 #include "EdwardWindow.h"
 #include "Edward.h"
-#include "mode/ModeNone.h"
+/*#include "mode/ModeNone.h"
 #include "mode/ModeCreation.h"
 #include "mode/administration/ModeAdministration.h"
 #include "mode/administration/dialog/ConfigurationDialog.h"
@@ -19,10 +19,10 @@
 #include "mode/font/ModeFont.h"
 #include "stuff/Progress.h"
 #include "multiview/MultiView.h"
-#include "multiview/DrawingHelper.h"
+#include "multiview/DrawingHelper.h"*/
 #include "storage/format/Format.h"
 #include "storage/Storage.h"
-#include "lib/hui/config.h"
+#include "lib/xhui/config.h"
 #include "lib/image/image.h"
 #include "lib/os/msg.h"
 #include <y/EngineData.h>
@@ -64,9 +64,11 @@ base::future<Session*> emit_empty_session(Session* parent) {
 
 Session::Session() {
 	ctx = nullptr;
+#if 0
 	mode_none = new ModeNone(this);
 	cur_mode = mode_none;
 	progress = new Progress;
+#endif
 
 	multi_view_2d = nullptr;
 	multi_view_3d = nullptr;
@@ -83,6 +85,7 @@ Session::Session() {
 }
 
 Session::~Session() {
+#if 0
 	if (mode_world)
 		delete mode_world;
 	/*delete mode_material;
@@ -106,6 +109,7 @@ Session::~Session() {
 		hui::config.save(app->directory | "config.txt");
 		delete storage;
 	}
+#endif
 
 
 	app->end();
@@ -118,7 +122,7 @@ void Session::create_initial_resources(Context *_ctx) {
 
 	// initialize engine
 	resource_manager = new ResourceManager(ctx);
-	drawing_helper = new DrawingHelper(ctx, resource_manager, app->directory_static);
+///	drawing_helper = new DrawingHelper(ctx, resource_manager, app->directory_static);
 
 	engine.ignore_missing_files = true;
 	engine.set_context(ctx, resource_manager);
@@ -128,16 +132,19 @@ void Session::create_initial_resources(Context *_ctx) {
 	CameraInit();
 	GodInit(0);
 
+#if 0
 	multi_view_3d = new MultiView::MultiView(this, true);
 	multi_view_2d = new MultiView::MultiView(this, false);
 	mode_model = new ModeModel(this, multi_view_3d, multi_view_2d);
 	mode_world = new ModeWorld(this, multi_view_3d);
 	mode_font = new ModeFont(this, multi_view_2d);
 	mode_admin = new ModeAdministration(this);
+#endif
 
 	storage = new Storage(this);
-	storage->set_root_directory(hui::config.get_str("RootDir", ""));
+	storage->set_root_directory(xhui::config.get_str("RootDir", ""));
 
+#if 0
 	mode_material = new ModeMaterial(this, multi_view_3d);
 
 	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
@@ -172,6 +179,7 @@ void Session::create_initial_resources(Context *_ctx) {
 	multi_view_2d->out_redraw >> create_sink([this] {
 		win->redraw("nix-area");
 	});
+#endif
 
 	promise_started();
 }
@@ -179,13 +187,13 @@ void Session::create_initial_resources(Context *_ctx) {
 // do we change roots?
 //  -> data loss?
 base::future<void> mode_switch_allowed(ModeBase *m) {
-	if (!m->session->cur_mode or m->equal_roots(m->session->cur_mode)) {
+//	if (!m->session->cur_mode or m->equal_roots(m->session->cur_mode)) {
 		base::promise<void> promise;
 		promise();
 		return promise.get_future();
-	} else {
-		return m->session->allow_termination();
-	}
+//	} else {
+//		return m->session->allow_termination();
+//	}
 }
 
 void Session::set_mode(ModeBase *m) {
@@ -197,6 +205,7 @@ void Session::set_mode(ModeBase *m) {
 }
 
 void Session::set_mode_now(ModeBase *m) {
+#if 0
 	if (cur_mode == m)
 		return;
 
@@ -259,28 +268,36 @@ void Session::set_mode_now(ModeBase *m) {
 
 	if (cur_mode->multi_view)
 		cur_mode->multi_view->force_redraw();
+#endif
 }
 
 
 void Session::remove_message() {
+#if 0
 	message_str.erase(0);
 	cur_mode->multi_view->force_redraw();
+#endif
 }
 
 void Session::set_message(const string &message) {
+#if 0
 	msg_write(message);
 	message_str.add(message);
 	cur_mode->multi_view->force_redraw();
 	hui::run_later(2.0f, [this]{ remove_message(); });
+#endif
 }
 
 
 void Session::error(const string &message) {
+#if 0
 	//set_info_text(message, {"error", "allow-close"});
 	hui::error_box(win, _("Error"), message);
+#endif
 }
 
 ModeBase *Session::get_mode(int preferred_type) {
+#if 0
 	if (preferred_type == FD_MODEL)
 		return mode_model;
 	if (preferred_type == FD_WORLD)
@@ -289,10 +306,12 @@ ModeBase *Session::get_mode(int preferred_type) {
 		return mode_material;
 	if (preferred_type == FD_FONT)
 		return mode_font;
+#endif
 	return mode_none;
 }
 
 void Session::universal_new(int preferred_type) {
+#if 0
 	auto call_new = [preferred_type] (Session* session) {
 		if (preferred_type == FD_MODEL) {
 			session->mode_model->_new();
@@ -321,9 +340,11 @@ void Session::universal_new(int preferred_type) {
 		// new window
 		emit_empty_session(this).then(call_new);
 	}
+#endif
 }
 
 void Session::universal_open(int preferred_type) {
+#if 0
 	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false).then([this] (const auto& p) {
 
 		auto call_open = [kind=p.kind, path=p.complete] (Session* session) {
@@ -344,6 +365,7 @@ void Session::universal_open(int preferred_type) {
 
 		emit_empty_session(this).then(call_open);
 	});
+#endif
 }
 
 Path add_extension_if_needed(Session *session, int type, const Path &filename) {
@@ -360,6 +382,7 @@ Path make_absolute_path(Session *session, int type, const Path &filename, bool r
 }
 
 void Session::universal_edit(int type, const Path &_filename, bool relative_path) {
+#if 0
 	Path filename = make_absolute_path(this, type, add_extension_if_needed(this, type, _filename), relative_path);
 	msg_write("EDIT");
 	msg_write(_filename.str());
@@ -417,10 +440,12 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 				break;
 		}
 		//return true;
+#endif
 }
 
 base::future<void> Session::allow_termination() {
 	base::promise<void> promise;
+#if 0
 
 	if (!cur_mode) {
 		promise();
@@ -447,10 +472,14 @@ base::future<void> Session::allow_termination() {
 		}).on_fail([promise] () mutable {
 			promise.fail();
 		});
+#else
+	promise();
+#endif
 	return promise.get_future();
 }
 
 string Session::get_tex_image(Texture *tex) {
+#if 0
 	if (icon_image.contains(tex))
 		return icon_image[tex];
 
@@ -470,9 +499,12 @@ string Session::get_tex_image(Texture *tex) {
 	}
 	icon_image.set(tex, img);
 	return img;
+#endif
+	return "";
 }
 
 ModeBase *Session::find_mode_base(const string &name) {
+#if 0
 	if (name == "model")
 		return mode_model;
 	if (name == "model-mesh")
@@ -495,6 +527,7 @@ ModeBase *Session::find_mode_base(const string &name) {
 		return mode_font;
 	if (name == "world")
 		return mode_world;
+#endif
 	return mode_none;
 }
 

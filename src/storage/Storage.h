@@ -21,7 +21,7 @@ struct ComplexPath {
 
 class Storage {
 public:
-	Storage(Session *ed);
+	explicit Storage(Session *ed);
 	~Storage();
 
 	int guess_type(const Path &filename);

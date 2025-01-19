@@ -19,7 +19,7 @@ void WorldObject::update_data() {
 	object->update_matrix();*/
 }
 
-/*float WorldObject::hover_distance(MultiView::Window* win, const vec2& m, vec3& tp, float& z) {
+float WorldObject::hover_distance(MultiView::Window* win, const vec2& m, vec3& tp, float& z) {
 	return 0;
 }
 
@@ -29,7 +29,7 @@ bool WorldObject::overlap_rect(MultiView::Window* win, const rect& r) {
 
 bool WorldObject::in_rect(MultiView::Window* win, const rect& r) {
 	return false;
-}*/
+}
 
 
 

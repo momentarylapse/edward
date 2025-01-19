@@ -12,9 +12,9 @@
 #include "../../data/world/WorldLink.h"
 #include "../../data/world/WorldObject.h"
 #include "../../data/world/WorldTerrain.h"
-#include "../../EdwardWindow.h"
+//#include "../../EdwardWindow.h"
 #include "../../Session.h"
-#include "../../stuff/Progress.h"
+//#include "../../stuff/Progress.h"
 #include <y/world/Model.h>
 #include <y/world/World.h>
 #include <y/y/EngineData.h>
@@ -27,6 +27,8 @@
 #include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
 #include "../../lib/doc/xml.h"
+
+static string _(const string &s) { return s; }
 
 FormatWorld::FormatWorld(Session *s) : TypedFormat<DataWorld>(s, FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
 }
@@ -97,7 +99,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	if (deep) {
 		try {
 		for (int i=0;i<data->terrains.num;i++) {
-			session->progress->set(_("Terrains"), (float)i / (float)data->terrains.num / 2.0f);
+//			session->progress->set(_("Terrains"), (float)i / (float)data->terrains.num / 2.0f);
 			data->terrains[i].load(session, engine.map_dir | data->terrains[i].filename.with(".map"), true);
 		}
 		for (int i=0;i<data->objects.num;i++) {
