@@ -154,9 +154,10 @@ void Window::_key_callback(GLFWwindow *window, int key, int scancode, int action
 void Window::_cursor_position_callback(GLFWwindow *window, double xpos, double ypos) {
 	//msg_write(format("mouse %f  %f", xpos, ypos));
 	auto w = (Window*)glfwGetWindowUserPointer(window);
+	w->state_prev.m = w->state.m;
 	w->state.m.x = (float)xpos; // / w->ui_scale;
 	w->state.m.y = (float)ypos; // / w->ui_scale;
-	w->_on_mouse_move(w->state.m, {0,0});
+	w->_on_mouse_move(w->state.m, w->state.m - w->state_prev.m);
 }
 
 void Window::_cursor_enter_callback(GLFWwindow *window, int enter) {
@@ -240,15 +241,19 @@ void Window::_on_left_button_up(const vec2& m) {
 	on_left_button_up(m);
 }
 void Window::_on_middle_button_down(const vec2& m) {
+	state.mbut = true;
 	on_middle_button_down(m);
 }
 void Window::_on_middle_button_up(const vec2& m) {
+	state.mbut = false;
 	on_middle_button_up(m);
 }
 void Window::_on_right_button_down(const vec2& m) {
+	state.rbut = true;
 	on_right_button_down(m);
 }
 void Window::_on_right_button_up(const vec2& m) {
+	state.rbut = false;
 	on_right_button_up(m);
 }
 void Window::_on_mouse_move(const vec2 &m, const vec2& d) {

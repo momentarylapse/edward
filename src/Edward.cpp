@@ -122,6 +122,8 @@ public:
 	SceneView scene_view;
 	RenderViewData rvd;
 	Camera* cam;
+	vec3 cam_pos = v_0;
+	float cam_radius = -1;
 	Light* light;
 	base::map<Material*, ShaderCache> multi_pass_shader_cache[4];
 	// material as id!
@@ -143,10 +145,10 @@ public:
 		cam = new Camera();
 		cam->owner = new Entity;
 		scene_view.cam = cam;
-		cam->owner->pos = {2700,2000,-800};
 		cam->owner->ang = quaternion::rotation({1, 0, 0}, 0.33f);
+		//cam->owner->pos = {1000,1000,-800};
 		cam->min_depth = 1;
-		cam->max_depth = 10000;
+		cam->max_depth = 50000;
 		rvd.scene_view = &scene_view;
 
 		light = new Light(White, -1, -1);
@@ -157,6 +159,14 @@ public:
 	void draw(const RenderParams& params) override {
 		auto cb = params.command_buffer;
 		cb->clear(params.area, {data_world->meta_data.background_color}, 1.0);
+
+		if (cam_radius < 0) {
+			vec3 vmin, vmax;
+			data_world->get_bounding_box(vmin, vmax);
+			cam_pos = (vmin + vmax) / 2;
+			cam_radius = (vmax - vmin).length() * 0.7f;
+		}
+		cam->owner->pos = cam_pos - cam->owner->ang * vec3::EZ * cam_radius;
 
 	//	scene_view.choose_lights();
 		{
@@ -230,6 +240,99 @@ public:
 	}
 };
 
+class EdwardWindowX : public xhui::Window {
+public:
+	XhuiRenderer* renderer = nullptr;
+	DataWorldRenderer* world_renderer = nullptr;
+	Array<string> args;
+
+	EdwardWindowX() : xhui::Window(AppName, 1024, 768) {
+
+		auto g = new xhui::Grid("grid");
+		add(g);
+		auto g2 = new xhui::Grid("grid2");
+		g->add(g2, 0, 0);
+		g2->add(new xhui::Label("label1", "label"), 0, 0);
+		g2->add(new xhui::Button("button1", "a small test g"), 1, 0);
+		g2->add(new xhui::Button("button2", "a small test g"), 2, 0);
+		g->add(new xhui::DrawingArea("area"), 0, 1);
+		auto g3 = new xhui::Grid("grid3");
+		g->add(g3, 0, 2);
+		g3->add(new xhui::Button("button3", "a"), 0, 0);
+		g3->add(new xhui::Button("button4", "b"), 1, 0);
+
+		event("button1", [] {
+			msg_write("event button1 click");
+		});
+
+		renderer = new XhuiRenderer();
+
+		event_xp("area", "hui:initialize", [this] (Painter* p) {
+			auto pp = (xhui::Painter*)p;
+			vulkan::default_device = pp->context->device;
+			api_init_external(pp->context->instance, pp->context->device);
+			_resource_manager = new ResourceManager({});
+			_resource_manager->default_shader = "default.shader";
+			try {
+				_resource_manager->load_shader_module("module-basic-data.shader");
+				_resource_manager->load_shader_module("module-basic-interface.shader");
+				_resource_manager->load_shader_module("module-vertex-default.shader");
+				_resource_manager->load_shader_module("module-vertex-animated.shader");
+				_resource_manager->load_shader_module("module-lighting-pbr.shader");
+				_resource_manager->load_shader_module("forward/module-surface.shader");
+			} catch(Exception& e) {
+				msg_error(e.message());
+			}
+			//renderer->add_child(new TestRenderer());
+			world_renderer = new DataWorldRenderer();
+			renderer->add_child(world_renderer);
+
+
+			engine.file_errors_are_critical = false;
+			engine.ignore_missing_files = true;
+			engine.resource_manager = _resource_manager;
+			session = new Session;
+			session->resource_manager = _resource_manager;
+			session->storage = new Storage(session);
+			data_world = new DataWorld(session);
+
+			if (args.num >= 2)
+				session->storage->load(args[1], data_world);
+		});
+		event_xp("area", "hui:draw", [this] (Painter* p) {
+			renderer->render(p);
+		});
+
+		xhui::run_repeated(0.02f, [this] {
+			request_redraw();
+		});
+	}
+
+	void move_cam(const vec3& drel) {
+		world_renderer->cam_pos = world_renderer->cam_pos + world_renderer->cam->owner->ang * drel * world_renderer->cam_radius;
+	}
+	void on_mouse_move(const vec2& m, const vec2& d) override {
+		if (state.lbut)
+			world_renderer->cam->owner->ang = world_renderer->cam->owner->ang * quaternion::rotation({d.y*0.003f, d.x*0.003f, 0});
+		if (state.rbut)
+			move_cam(vec3(-d.x, d.y, 0) / 800.0f); // / window size?
+	}
+	void on_mouse_wheel(const vec2& d) override {
+		world_renderer->cam_radius *= exp(- d.y * 0.1f);
+	}
+	void on_key_down(int key) override {
+		float d = 0.05f;
+		if (key == xhui::KEY_UP)
+			move_cam({0, d, 0});
+		if (key == xhui::KEY_DOWN)
+			move_cam({0, -d, 0});
+		if (key == xhui::KEY_LEFT)
+			move_cam({-d, 0, 0});
+		if (key == xhui::KEY_RIGHT)
+			move_cam({d, 0, 0});
+	}
+};
+
 int hui_main(const Array<string>& args) {
 
 	try {
@@ -239,69 +342,10 @@ int hui_main(const Array<string>& args) {
 		return 1;
 	}
 
-	auto w = new xhui::Window("test", 1024, 768);
-	auto g = new xhui::Grid("grid");
-	w->add(g);
-	auto g2 = new xhui::Grid("grid2");
-	g->add(g2, 0, 0);
-	g2->add(new xhui::Label("label1", "label"), 0, 0);
-	g2->add(new xhui::Button("button1", "a small test g"), 1, 0);
-	g2->add(new xhui::Button("button2", "a small test g"), 2, 0);
-	g->add(new xhui::DrawingArea("area"), 0, 1);
-	auto g3 = new xhui::Grid("grid3");
-	g->add(g3, 0, 2);
-	g3->add(new xhui::Button("button3", "a"), 0, 0);
-	g3->add(new xhui::Button("button4", "b"), 1, 0);
-
-	w->event("button1", [] {
-		msg_write("event button1 click");
-	});
-
-	auto renderer = new XhuiRenderer();
-
-	w->event_xp("area", "hui:initialize", [renderer, args] (Painter* p) {
-		auto pp = (xhui::Painter*)p;
-		vulkan::default_device = pp->context->device;
-		api_init_external(pp->context->instance, pp->context->device);
-		_resource_manager = new ResourceManager({});
-		_resource_manager->default_shader = "default.shader";
-		try {
-			_resource_manager->load_shader_module("module-basic-data.shader");
-			_resource_manager->load_shader_module("module-basic-interface.shader");
-			_resource_manager->load_shader_module("module-vertex-default.shader");
-			_resource_manager->load_shader_module("module-vertex-animated.shader");
-			_resource_manager->load_shader_module("module-lighting-pbr.shader");
-			_resource_manager->load_shader_module("forward/module-surface.shader");
-		} catch(Exception& e) {
-			msg_error(e.message());
-		}
-		//renderer->add_child(new TestRenderer());
-		renderer->add_child(new DataWorldRenderer());
-
-
-
-		engine.file_errors_are_critical = false;
-		engine.ignore_missing_files = true;
-		engine.resource_manager = _resource_manager;
-		session = new Session;
-		session->resource_manager = _resource_manager;
-		session->storage = new Storage(session);
-		data_world = new DataWorld(session);
-
-		if (args.num >= 2)
-			session->storage->load(args[1], data_world);
-	});
-	w->event_xp("area", "hui:draw", [renderer] (Painter* p) {
-		renderer->render(p);
-	});
-
-	xhui::run_repeated(0.02f, [w] {
-		w->request_redraw();
-	});
-
+	auto w = new EdwardWindowX();
+	w->args = args;
 
 	xhui::run();
-
 	return 0;
 }
 

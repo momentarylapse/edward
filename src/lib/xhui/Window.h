@@ -42,7 +42,7 @@ public:
 
 	void request_destroy();
 
-private:
+protected:
 	GLFWwindow *window;
 
 	struct InputState {
