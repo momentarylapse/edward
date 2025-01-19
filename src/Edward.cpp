@@ -1,4 +1,5 @@
 #include <data/world/WorldObject.h>
+#include <data/world/WorldTerrain.h>
 #include <lib/math/quaternion.h>
 
 #include "lib/xhui/xhui.h"
@@ -15,6 +16,7 @@
 #include <renderer/path/RenderPath.h>
 #include <world/Model.h>
 #include <world/ModelManager.h>
+#include <world/Terrain.h>
 #include <y/EngineData.h>
 
 #include "lib/os/msg.h"
@@ -141,14 +143,15 @@ public:
 		cam = new Camera();
 		cam->owner = new Entity;
 		scene_view.cam = cam;
-		cam->owner->pos = {2500,1000,-1000};
+		cam->owner->pos = {2700,2000,-800};
+		cam->owner->ang = quaternion::rotation({1, 0, 0}, 0.33f);
 		cam->min_depth = 1;
 		cam->max_depth = 10000;
 		rvd.scene_view = &scene_view;
 
 		light = new Light(White, -1, -1);
 		light->owner = new Entity;
-		//light->owner->ang = quaternion::rotation({0,1,0}, pi);
+		light->owner->ang = quaternion::rotation({1,0,0}, 0.5f);
 		light->light.harshness = 0.5f;
 	}
 	void draw(const RenderParams& params) override {
@@ -173,6 +176,18 @@ public:
 
 		rvd.begin_draw();
 
+		for (auto& t: data_world->terrains) {
+			t.terrain->prepare_draw(cam->owner->pos);
+			auto material = t.terrain->material.get();
+			auto vb = t.terrain->vertex_buffer.get();
+
+			auto shader = get_shader(material, 0, t.terrain->vertex_shader_module, "");
+			auto& rd = rvd.start(params,  mat4::translation(t.pos), shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+			cb->push_constant(0, 4, &t.terrain->texture_scale[0].x);
+			cb->push_constant(4, 4, &t.terrain->texture_scale[1].x);
+			rd.apply(params);
+			cb->draw(vb);
+		}
 
 		for (auto& o: data_world->objects) {
 			for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
@@ -254,6 +269,7 @@ int hui_main(const Array<string>& args) {
 			_resource_manager->load_shader_module("module-basic-data.shader");
 			_resource_manager->load_shader_module("module-basic-interface.shader");
 			_resource_manager->load_shader_module("module-vertex-default.shader");
+			_resource_manager->load_shader_module("module-vertex-animated.shader");
 			_resource_manager->load_shader_module("module-lighting-pbr.shader");
 			_resource_manager->load_shader_module("forward/module-surface.shader");
 		} catch(Exception& e) {
