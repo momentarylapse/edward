@@ -7,7 +7,7 @@ namespace xhui {
 
 class Grid : public Control {
 public:
-	Grid(const string &id);
+	explicit Grid(const string &id);
 
 	void _draw(Painter *p) override;
 
