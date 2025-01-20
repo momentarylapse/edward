@@ -3,12 +3,16 @@
 //
 
 #include "MultiView.h"
+
+#include <Session.h>
+#include "EdwardWindow.h"
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
 #include <y/y/Entity.h>
 #include <y/graphics-impl.h>
 
-MultiView::MultiView() : Renderer("multiview") {
+MultiView::MultiView(Session* s) : Renderer("multiview") {
+	session = s;
 	view_port.pos = v_0;
 	view_port.ang = quaternion::ID;
 	view_port.radius = 100;
@@ -37,6 +41,35 @@ void MultiView::prepare(const RenderParams& params) {
 
 	Renderer::prepare(params);
 }
+
+void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
+	if (session->win->button(0))
+		view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
+	if (session->win->button(2))
+		view_port.move(vec3(-d.x, d.y, 0) / 800.0f); // / window size?
+}
+
+void MultiView::on_mouse_wheel(const vec2& m, const vec2& d) {
+	view_port.radius *= exp(- d.y * 0.1f);
+}
+
+void MultiView::on_key_down(int key) {
+	float d = 0.05f;
+	if (key == xhui::KEY_UP)
+		view_port.move({0, d, 0});
+	if (key == xhui::KEY_DOWN)
+		view_port.move({0, -d, 0});
+	if (key == xhui::KEY_LEFT)
+		view_port.move({-d, 0, 0});
+	if (key == xhui::KEY_RIGHT)
+		view_port.move({d, 0, 0});
+}
+
+void MultiView::on_draw(Painter* p) {
+
+}
+
+
 
 
 void MultiView::ViewPort::move(const vec3& drel) {

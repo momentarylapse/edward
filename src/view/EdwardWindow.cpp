@@ -227,6 +227,7 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 	event_xp("area", "hui:draw", [this] (Painter* p) {
 		session->cur_mode->multi_view->area = p->area();
 		renderer->render(p);
+		session->cur_mode->multi_view->on_draw(p);
 		session->cur_mode->on_draw_post(p);
 	});
 
@@ -236,26 +237,14 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 }
 
 void EdwardWindow::on_mouse_move(const vec2& m, const vec2& d) {
-	if (state.lbut)
-		session->cur_mode->multi_view->view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
-	if (state.rbut)
-		session->cur_mode->multi_view->view_port.move(vec3(-d.x, d.y, 0) / 800.0f); // / window size?
+	session->cur_mode->multi_view->on_mouse_move(m, d);
 	session->cur_mode->on_mouse_move(m);
 }
 void EdwardWindow::on_mouse_wheel(const vec2& d) {
-	if (session->cur_mode)
-		session->cur_mode->multi_view->view_port.radius *= exp(- d.y * 0.1f);
+	session->cur_mode->multi_view->on_mouse_wheel(state.m, d);
 }
 void EdwardWindow::on_key_down(int key) {
-	float d = 0.05f;
-	if (key == xhui::KEY_UP)
-		session->cur_mode->multi_view->view_port.move({0, d, 0});
-	if (key == xhui::KEY_DOWN)
-		session->cur_mode->multi_view->view_port.move({0, -d, 0});
-	if (key == xhui::KEY_LEFT)
-		session->cur_mode->multi_view->view_port.move({-d, 0, 0});
-	if (key == xhui::KEY_RIGHT)
-		session->cur_mode->multi_view->view_port.move({d, 0, 0});
+	session->cur_mode->multi_view->on_key_down(key);
 }
 
 

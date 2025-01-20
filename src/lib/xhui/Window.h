@@ -42,11 +42,14 @@ public:
 
 	void request_destroy();
 
+	bool button(int index) const;
+	bool button_down(int index) const;
+
 protected:
 	GLFWwindow *window;
 
 	struct InputState {
-		vec2 m;;
+		vec2 m;
 		vec2 scroll;
 		bool lbut, mbut, rbut;
 		bool key[256];

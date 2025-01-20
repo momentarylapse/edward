@@ -386,6 +386,27 @@ Control *Window::get_hover_control(const vec2 &p) {
 	return nullptr;
 }
 
+
+bool Window::button(int index) const {
+	if (index == 2)
+		return state.rbut;
+	if (index == 1)
+		return state.mbut;
+	if (index == 0)
+		return state.lbut;
+	return false;
+}
+
+bool Window::button_down(int index) const {
+	if (index == 2)
+		return state.rbut and !state_prev.rbut;
+	if (index == 1)
+		return state.mbut and !state_prev.mbut;
+	if (index == 0)
+		return state.lbut and !state_prev.lbut;
+	return false;
+}
+
 void Window::request_destroy() {
 	_destroy_requested = true;
 }

@@ -11,13 +11,20 @@
 #include <lib/math/quaternion.h>
 
 class Camera;
+class Painter;
+class Session;
 
 class MultiView : public Renderer {
 public:
-	MultiView();
+	explicit MultiView(Session* session);
 	~MultiView() override;
 
 	void prepare(const RenderParams& params) override;
+
+	void on_draw(Painter* p);
+	void on_mouse_move(const vec2& m, const vec2& d);
+	void on_mouse_wheel(const vec2& m, const vec2& d);
+	void on_key_down(int key);
 
 	struct ViewPort {
 		vec3 pos;
@@ -32,6 +39,7 @@ public:
 
 	rect area;
 	mat4 projection;
+	Session* session;
 };
 
 

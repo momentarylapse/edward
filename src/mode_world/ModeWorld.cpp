@@ -142,7 +142,7 @@ public:
 };
 
 ModeWorld::ModeWorld(Session* session) : Mode(session) {
-	multi_view = new MultiView;
+	multi_view = new MultiView(session);
 	data = new DataWorld(session);
 }
 
