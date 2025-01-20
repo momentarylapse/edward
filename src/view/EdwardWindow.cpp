@@ -11,6 +11,7 @@
 #include "lib/xhui/controls/Edit.h"
 #include "lib/xhui/controls/Grid.h"
 #include "lib/xhui/controls/DrawingArea.h"
+#include "lib/xhui/controls/Overlay.h"
 #include "lib/xhui/Painter.h"
 #include <lib/xhui/ContextVulkan.h>
 #include <mode_world/ModeWorld.h>
@@ -162,11 +163,25 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 	g2->add(new xhui::Label("label1", "label"), 0, 0);
 	g2->add(new xhui::Button("button1", "a small test g"), 1, 0);
 	g2->add(new xhui::Button("button2", "a small test g"), 2, 0);
-	g->add(new xhui::DrawingArea("area"), 0, 1);
+	auto o = new xhui::Overlay("overlay");
+	g->add(o, 0, 1);
+	o->add(new xhui::DrawingArea("area"));
 	auto g3 = new xhui::Grid("grid3");
 	g->add(g3, 0, 2);
 	g3->add(new xhui::Button("button3", "a"), 0, 0);
 	g3->add(new xhui::Button("button4", "b"), 1, 0);
+
+
+	auto g4 = new xhui::Grid("grid4");
+	o->add(g4);
+	g4->margin = 25;
+	g4->add(new xhui::Button("button5", "a"), 0, 0);
+	g4->add(new xhui::Button("button6", "b"), 0, 1);
+	for (auto c: g4->children) {
+		c.control->min_width_user = 50;
+		c.control->min_height_user = 50;
+		c.control->expand_x = false;
+	}
 
 	event("button1", [] {
 		msg_write("event button1 click");

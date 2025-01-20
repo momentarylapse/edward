@@ -61,8 +61,8 @@ void Grid::get_grid_min_sizes(Array<int> &w, Array<int> &h) {
 void Grid::get_content_min_size(int &_w, int &_h) {
 	Array<int> w, h;
 	get_grid_min_sizes(w, h);
-	_w = sum(w) + spacing * (w.num - 1);
-	_h = sum(h) + spacing * (h.num - 1);
+	_w = sum(w) + spacing * (w.num - 1) + margin * 2;
+	_h = sum(h) + spacing * (h.num - 1) + margin * 2;
 }
 
 void Grid::get_greed_factor(float &_x, float &_y) {
@@ -94,8 +94,8 @@ void Grid::negotiate_area(const rect &available) {
 	get_grid_min_sizes(w, h);
 	int total_min_w, total_min_h;
 	get_content_min_size(total_min_w, total_min_h);
-	float diff_x = max(available.width() - total_min_w, 0.0f);
-	float diff_y = max(available.height() - total_min_h, 0.0f);
+	float diff_x = max(available.width() - total_min_w - margin * 2, 0.0f);
+	float diff_y = max(available.height() - total_min_h - margin * 2, 0.0f);
 
 	Array<float> gx, gy;
 	get_grid_greed_factors(gx, gy);
@@ -111,8 +111,8 @@ void Grid::negotiate_area(const rect &available) {
 		h[i] += greed_to_y * gy[i];
 
 	for (auto &c: children) {
-		int x0 = _area.x1;
-		int y0 = _area.y1;
+		int x0 = _area.x1 + margin;
+		int y0 = _area.y1 + margin;
 		for (int i=0; i<c.x; i++)
 			x0 += w[i] + spacing;
 		for (int i=0; i<c.y; i++)

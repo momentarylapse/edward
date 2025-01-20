@@ -349,6 +349,7 @@ add_executable(edward
 	src/lib/xhui/controls/Label.cpp
 	src/lib/xhui/controls/ListView.cpp
 	src/lib/xhui/controls/MultilineEdit.cpp
+	src/lib/xhui/controls/Overlay.cpp
 	src/lib/xhui/draw/font.cpp
 	src/lib/xhui/ContextVulkan.cpp
 	src/lib/xhui/PainterGL.cpp
