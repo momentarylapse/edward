@@ -141,6 +141,7 @@ public:
 	}
 	void render(Painter* p) {
 		auto pp = (xhui::Painter*)p;
+		engine.physical_aspect_ratio = pp->native_area.width() / pp->native_area.height();
 		RenderParams params;
 		params.command_buffer = pp->cb;
 		params.area = pp->native_area;
@@ -207,7 +208,7 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 		}
 		auto mode = new ModeWorld(session);
 		renderer->add_child(mode->multi_view);
-		mode->multi_view->add_child(mode->create_renderer(mode->multi_view->cam.scene_view.get()));
+		mode->multi_view->add_child(mode->create_renderer(mode->multi_view->view_port.scene_view.get()));
 		session->storage = new Storage(session);
 		session->set_mode(mode);
 
@@ -216,11 +217,17 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 		engine.ignore_missing_files = true;
 		engine.resource_manager = session->resource_manager;
 
-		if (args.num >= 2)
+		if (args.num >= 2) {
 			session->storage->load(args[1], mode->data);
+			xhui::run_later(0.2f, [mode] {
+				mode->optimize_view();
+			});
+		}
 	});
 	event_xp("area", "hui:draw", [this] (Painter* p) {
+		session->cur_mode->multi_view->area = p->area();
 		renderer->render(p);
+		session->cur_mode->on_draw_post(p);
 	});
 
 	xhui::run_repeated(0.02f, [this] {
@@ -230,24 +237,25 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 
 void EdwardWindow::on_mouse_move(const vec2& m, const vec2& d) {
 	if (state.lbut)
-		session->cur_mode->multi_view->cam.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
+		session->cur_mode->multi_view->view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
 	if (state.rbut)
-		session->cur_mode->multi_view->cam.move(vec3(-d.x, d.y, 0) / 800.0f); // / window size?
+		session->cur_mode->multi_view->view_port.move(vec3(-d.x, d.y, 0) / 800.0f); // / window size?
+	session->cur_mode->on_mouse_move(m);
 }
 void EdwardWindow::on_mouse_wheel(const vec2& d) {
 	if (session->cur_mode)
-		session->cur_mode->multi_view->cam.radius *= exp(- d.y * 0.1f);
+		session->cur_mode->multi_view->view_port.radius *= exp(- d.y * 0.1f);
 }
 void EdwardWindow::on_key_down(int key) {
 	float d = 0.05f;
 	if (key == xhui::KEY_UP)
-		session->cur_mode->multi_view->cam.move({0, d, 0});
+		session->cur_mode->multi_view->view_port.move({0, d, 0});
 	if (key == xhui::KEY_DOWN)
-		session->cur_mode->multi_view->cam.move({0, -d, 0});
+		session->cur_mode->multi_view->view_port.move({0, -d, 0});
 	if (key == xhui::KEY_LEFT)
-		session->cur_mode->multi_view->cam.move({-d, 0, 0});
+		session->cur_mode->multi_view->view_port.move({-d, 0, 0});
 	if (key == xhui::KEY_RIGHT)
-		session->cur_mode->multi_view->cam.move({d, 0, 0});
+		session->cur_mode->multi_view->view_port.move({d, 0, 0});
 }
 
 

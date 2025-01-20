@@ -5,13 +5,15 @@
 #ifndef MODE_H
 #define MODE_H
 
-#include "../lib/base/base.h"
-#include "../lib/pattern/Observable.h"
+#include <lib/base/base.h>
+#include <lib/math/vec2.h>
+#include <lib/pattern/Observable.h>
 
 struct SceneView;
 class Renderer;
 class MultiView;
 class Session;
+class Painter;
 
 class Mode : obs::Node<VirtualBase> {
 public:
@@ -24,6 +26,11 @@ public:
 	// this exactly
 	virtual void enter() {}
 	virtual void leave() {}
+
+	virtual void on_mouse_move(const vec2&) {}
+	virtual void on_left_button_down(const vec2&) {}
+	virtual void on_left_button_up(const vec2&) {}
+	virtual void on_draw_post(Painter*) {}
 
 	virtual Renderer* create_renderer(SceneView* scene_view) { return nullptr; }
 

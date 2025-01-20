@@ -304,6 +304,7 @@ void Window::_on_draw() {
 #endif
 	auto p = new Painter(this);
 	auto a = p->area();
+	_area = p->area();
 
 	if (flags & Flags::OWN_DECORATION) {
 		p->clear(color(0,0,0,0));

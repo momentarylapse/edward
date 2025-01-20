@@ -28,7 +28,10 @@ public:
 
 		void move(const vec3& drel);
 		void rotate(const quaternion& qrel);
-	} cam;
+	} view_port;
+
+	rect area;
+	mat4 projection;
 };
 
 
