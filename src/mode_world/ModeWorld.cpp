@@ -223,6 +223,10 @@ void ModeWorld::on_mouse_move(const vec2& m) {
 	}
 }
 
+void ModeWorld::on_mouse_leave(const vec2& m) {
+	hover = base::None;
+}
+
 void ModeWorld::on_draw_post(Painter* p) {
 
 

@@ -3,8 +3,6 @@
 //
 
 #include "EdwardWindow.h"
-#include <lib/math/quaternion.h>
-
 #include "lib/xhui/xhui.h"
 #include "lib/xhui/controls/Button.h"
 #include "lib/xhui/controls/Label.h"
@@ -14,27 +12,16 @@
 #include "lib/xhui/controls/Overlay.h"
 #include "lib/xhui/Painter.h"
 #include <lib/xhui/ContextVulkan.h>
-#include <mode_world/ModeWorld.h>
-#include <renderer/world/geometry/RenderViewData.h>
-#include <renderer/world/geometry/SceneView.h>
 #include <renderer/base.h>
 #include <renderer/path/RenderPath.h>
-#include <world/Model.h>
-#include <world/ModelManager.h>
-#include <world/Terrain.h>
 #include <y/EngineData.h>
-
 #include "MultiView.h"
 #include "lib/os/msg.h"
 #include "lib/xhui/Theme.h"
 #include "lib/xhui/draw/font.h"
 #include "y/renderer/Renderer.h"
 #include "y/helper/ResourceManager.h"
-#include "y/world/Material.h"
-#include "y/world/Camera.h"
-#include "y/world/Light.h"
-#include "y/y/Entity.h"
-#include "mode_world/data/DataWorld.h"
+#include "mode_world/ModeWorld.h"
 #include "storage/Storage.h"
 #include "Session.h"
 
@@ -153,6 +140,32 @@ public:
 	}
 };
 
+class TouchButton : public xhui::Button {
+public:
+	explicit TouchButton(const string& id) : Button(id, "") {
+		min_height_user = 50;
+		min_width_user = 50;
+		expand_x = false;
+		expand_y = false;
+	}
+	void _draw(xhui::Painter* p) override {
+		p->set_color(state == State::HOVER ? xhui::Theme::_default.background_hover : xhui::Theme::_default.background_button);
+		p->draw_rect(_area);
+	}
+};
+
+class CamMoveButton : public TouchButton {
+public:
+	explicit CamMoveButton(const string& id) : TouchButton(id) {
+	}
+	void _draw(xhui::Painter* p) override {
+		p->set_color(Red);
+		p->draw_rect(_area);
+	}
+	void on_left_button_down(const vec2& m) override {
+
+	}
+};
 
 EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768) {
 	session = _session;
@@ -176,13 +189,9 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 	auto g4 = new xhui::Grid("grid4");
 	o->add(g4);
 	g4->margin = 25;
-	g4->add(new xhui::Button("button5", "a"), 0, 0);
-	g4->add(new xhui::Button("button6", "b"), 0, 1);
-	for (auto c: g4->children) {
-		c.control->min_width_user = 50;
-		c.control->min_height_user = 50;
-		c.control->expand_x = false;
-	}
+	g4->add(new TouchButton("button5"), 0, 0);
+	g4->add(new TouchButton("button6"), 0, 1);
+	g4->add(new CamMoveButton("cam-move"), 0, 2);
 
 	event("button1", [] {
 		msg_write("event button1 click");
@@ -190,7 +199,7 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 
 	renderer = new XhuiRenderer();
 
-	event_xp("area", "hui:initialize", [this] (Painter* p) {
+	event_xp("area", xhui::event_id::Initialize, [this] (Painter* p) {
 		auto pp = (xhui::Painter*)p;
 		vulkan::default_device = pp->context->device;
 		api_init_external(pp->context->instance, pp->context->device);
@@ -224,11 +233,22 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 			});
 		}
 	});
-	event_xp("area", "hui:draw", [this] (Painter* p) {
+	event_xp("area", xhui::event_id::Draw, [this] (Painter* p) {
 		session->cur_mode->multi_view->area = p->area();
 		renderer->render(p);
 		session->cur_mode->multi_view->on_draw(p);
 		session->cur_mode->on_draw_post(p);
+	});
+	event_x("area", xhui::event_id::MouseMove, [this] {
+		session->cur_mode->multi_view->on_mouse_move(state.m, state.m - state_prev.m);
+		session->cur_mode->on_mouse_move(state.m);
+	});
+	event_x("area", xhui::event_id::MouseWheel, [this] {
+		session->cur_mode->multi_view->on_mouse_wheel(state.m, state.scroll);
+	});
+	event_x("area", xhui::event_id::MouseLeave, [this] {
+		session->cur_mode->multi_view->on_mouse_leave();
+		session->cur_mode->on_mouse_leave(state.m);
 	});
 
 	xhui::run_repeated(0.02f, [this] {
@@ -236,15 +256,8 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 	});
 }
 
-void EdwardWindow::on_mouse_move(const vec2& m, const vec2& d) {
-	session->cur_mode->multi_view->on_mouse_move(m, d);
-	session->cur_mode->on_mouse_move(m);
-}
-void EdwardWindow::on_mouse_wheel(const vec2& d) {
-	session->cur_mode->multi_view->on_mouse_wheel(state.m, d);
-}
 void EdwardWindow::on_key_down(int key) {
-	session->cur_mode->multi_view->on_key_down(key);
+	//session->cur_mode->multi_view->on_key_down(key);
 }
 
 

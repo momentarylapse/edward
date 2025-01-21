@@ -20,8 +20,6 @@ public:
 
 	explicit EdwardWindow(Session* session);
 
-	void on_mouse_move(const vec2& m, const vec2& d) override;
-	void on_mouse_wheel(const vec2& d) override;
 	void on_key_down(int key) override;
 };
 

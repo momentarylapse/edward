@@ -143,5 +143,24 @@ enum {
 	KEY_ALT = 1024
 };
 
+namespace event_id {
+	extern const string Click;
+	extern const string Changed;
+	extern const string MouseMove;
+	extern const string MouseEnter;
+	extern const string MouseLeave;
+	extern const string MouseWheel;
+	extern const string Draw;
+	extern const string Initialize;
+	extern const string LeftButtonDown;
+	extern const string LeftButtonUp;
+	extern const string MiddleButtonDown;
+	extern const string MiddleButtonUp;
+	extern const string RightButtonDown;
+	extern const string RightButtonUp;
+	extern const string KeyDown;
+	extern const string KeyUp;
+};
+
 
 }

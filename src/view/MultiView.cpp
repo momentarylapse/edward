@@ -5,6 +5,8 @@
 #include "MultiView.h"
 
 #include <Session.h>
+#include <lib/xhui/Theme.h>
+
 #include "EdwardWindow.h"
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
@@ -49,6 +51,9 @@ void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
 		view_port.move(vec3(-d.x, d.y, 0) / 800.0f); // / window size?
 }
 
+void MultiView::on_mouse_leave() {
+}
+
 void MultiView::on_mouse_wheel(const vec2& m, const vec2& d) {
 	view_port.radius *= exp(- d.y * 0.1f);
 }
@@ -66,7 +71,7 @@ void MultiView::on_key_down(int key) {
 }
 
 void MultiView::on_draw(Painter* p) {
-
+	//p->set_color(xhui::Theme::_default.background_button);
 }
 
 

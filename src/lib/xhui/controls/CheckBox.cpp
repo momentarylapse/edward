@@ -21,7 +21,7 @@ namespace xhui {
 		request_redraw();
 
 		if (owner)
-			owner->handle_event(id, "hui:click", true);
+			owner->handle_event(id, event_id::Click, true);
 	}
 	void CheckBox::on_mouse_enter(const vec2&) {
 		state = State::HOVER;

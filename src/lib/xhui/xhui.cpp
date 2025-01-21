@@ -277,4 +277,23 @@ void run() {
 	};
 }
 
+namespace event_id {
+	const string Click = "hui:click";
+	const string Changed = "hui:changed";
+	const string MouseMove = "hui:mouse-move";
+	const string MouseEnter = "hui:mouse-enter";
+	const string MouseLeave = "hui:mouse-leave";
+	const string MouseWheel = "hui:mouse-wheel";
+	const string Draw = "hui:draw";
+	const string Initialize = "hui:initialize";
+	const string LeftButtonDown = "hui:left-button-down";
+	const string LeftButtonUp = "hui:left-button-up";
+	const string MiddleButtonDown = "hui:middle-button-down";
+	const string MiddleButtonUp = "hui:middle-button-up";
+	const string RightButtonDown = "hui:right-button-down";
+	const string RightButtonUp = "hui:right-button-up";
+	const string KeyDown = "hui:key-down";
+	const string KeyUp = "hui:key-up";
+};
+
 }

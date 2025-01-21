@@ -15,6 +15,7 @@ public:
 
 	Renderer* create_renderer(SceneView* scene_view) override;
 	void on_mouse_move(const vec2&) override;
+	void on_mouse_leave(const vec2&) override;
 	void on_draw_post(Painter*) override;
 	void optimize_view();
 

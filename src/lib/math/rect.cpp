@@ -34,6 +34,14 @@ vec2 rect::p00() const {
 	return {x1, y1};
 }
 
+vec2 rect::p01() const {
+	return {x1, y2};
+}
+
+vec2 rect::p10() const {
+	return {x2, y1};
+}
+
 vec2 rect::p11() const {
 	return {x2, y2};
 }
