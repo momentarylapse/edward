@@ -203,10 +203,10 @@ void Window::_refresh_callback(GLFWwindow *window) {
 
 void Window::_resize_callback(GLFWwindow* window, int width, int height) {
 	auto w = (Window*)glfwGetWindowUserPointer(window);
-/*#if HAS_LIB_VULKAN
+#if HAS_LIB_VULKAN
 	if (w->context)
 		w->context->resize(width, height);
-#endif*/
+#endif
 	w->_refresh_requested = true;
 }
 

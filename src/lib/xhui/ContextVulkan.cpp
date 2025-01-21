@@ -29,7 +29,13 @@ bool ContextVulkan::start() {
 
 
 void ContextVulkan::_create_swap_chain_and_stuff() {
-	swap_chain = vulkan::SwapChain::create_for_glfw(device, window->window);
+	if (swap_chain) {
+		int w, h;
+		glfwGetFramebufferSize(window->window, &w, &h);
+		swap_chain->rebuild(w, h);
+	} else {
+		swap_chain = vulkan::SwapChain::create_for_glfw(device, window->window);
+	}
 	auto swap_images = swap_chain->create_textures();
 	for (auto t: swap_images)
 		wait_for_frame_fences.add(new vulkan::Fence(device));
@@ -40,13 +46,25 @@ void ContextVulkan::_create_swap_chain_and_stuff() {
 	depth_buffer = swap_chain->create_depth_buffer();
 	render_pass = swap_chain->create_render_pass(depth_buffer);
 	frame_buffers = swap_chain->create_frame_buffers(render_pass, depth_buffer);
+
+
+	pipeline = new vulkan::GraphicsPipeline(shader, render_pass, 0, "triangles", vb);
+	pipeline->set_z(false, false);
+	pipeline->set_culling(vulkan::CullMode::NONE);
+	pipeline->rebuild();
+
+	pipeline_alpha = new vulkan::GraphicsPipeline(shader, render_pass, 0, "triangles", vb);
+	pipeline_alpha->set_z(false, false);
+	pipeline_alpha->set_culling(vulkan::CullMode::NONE);
+	pipeline_alpha->set_blend(vulkan::Alpha::SOURCE_ALPHA, vulkan::Alpha::SOURCE_INV_ALPHA);
+	pipeline_alpha->rebuild();
 }
 
 void ContextVulkan::api_init() {
-	instance = vulkan::init({"glfw", "validation", "api=1.2", "verbosity=2"});
+	instance = vulkan::init({"glfw", "validation", "api=1.2", "verbosity=1"});
 	auto surface = instance->create_glfw_surface(window->window);
 	device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation"});
-	msg_write("device found");
+	//msg_write("device found");
 
 	//device->create_query_pool(MAX_TIMESTAMP_QUERIES);
 	pool = new vulkan::DescriptorPool("buffer:4096,sampler:4096", 65536);
@@ -58,7 +76,6 @@ void ContextVulkan::api_init() {
 
 	framebuffer_resized = false;
 
-	_create_swap_chain_and_stuff();
 
 	tex_white = new vulkan::Texture();
 	tex_black = new vulkan::Texture();
@@ -139,16 +156,6 @@ void main() {
 )foodelim");
 		dset = pool->create_set(shader);
 
-		pipeline = new vulkan::GraphicsPipeline(shader, render_pass, 0, "triangles", vb);
-		pipeline->set_z(false, false);
-		pipeline->set_culling(vulkan::CullMode::NONE);
-		pipeline->rebuild();
-
-		pipeline_alpha = new vulkan::GraphicsPipeline(shader, render_pass, 0, "triangles", vb);
-		pipeline_alpha->set_z(false, false);
-		pipeline_alpha->set_culling(vulkan::CullMode::NONE);
-		pipeline_alpha->set_blend(vulkan::Alpha::SOURCE_ALPHA, vulkan::Alpha::SOURCE_INV_ALPHA);
-		pipeline_alpha->rebuild();
 	} catch (Exception& e) {
 		msg_error(e.message());
 		throw;
@@ -157,11 +164,14 @@ void main() {
 
 	dset->set_texture(0, tex_white);
 	dset->update();
+
+
+	_create_swap_chain_and_stuff();
 }
 
 
 void ContextVulkan::rebuild_default_stuff() {
-	msg_write("recreate swap chain");
+	//msg_write("recreate swap chain");
 
 	device->wait_idle();
 

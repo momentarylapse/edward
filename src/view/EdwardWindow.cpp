@@ -150,7 +150,12 @@ public:
 		expand_y = false;
 	}
 	void _draw(xhui::Painter* p) override {
-		p->set_color(state == State::HOVER ? xhui::Theme::_default.background_hover : xhui::Theme::_default.background_button);
+		if (state == State::HOVER)
+			p->set_color(xhui::Theme::_default.background_hover);
+		else if (state == State::PRESSED)
+			p->set_color(xhui::Theme::_default.background_active);
+		else
+			p->set_color(xhui::Theme::_default.background_button);
 		p->corner_radius = xhui::Theme::_default.button_radius;
 		p->draw_rect(_area);
 		p->corner_radius = 0;
