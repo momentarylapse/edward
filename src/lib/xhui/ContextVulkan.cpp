@@ -76,15 +76,18 @@ void ContextVulkan::api_init() {
 <Layout>
 	version = 430
 	bindings = [[sampler]]
-	pushsize = 80
+	pushsize = 96
 </Layout>
 <VertexShader>
 
 //#extension GL_ARB_separate_shader_objects : enable
 
-layout(push_constant, std140) uniform Parameters {
+layout(push_constant, std430) uniform Parameters {
 	mat4 matrix;
 	vec4 color;
+	vec2 size;
+	float radius;
+	float softness;
 } params;
 
 layout(location = 0) in vec3 in_position;
@@ -105,6 +108,9 @@ void main() {
 layout(push_constant, std140) uniform Parameters {
 	mat4 matrix;
 	vec4 color;
+	vec2 size;
+	float radius;
+	float softness;
 } params;
 
 layout(location = 0) in vec4 in_pos;
@@ -114,8 +120,20 @@ layout(location = 0) out vec4 out_color;
 layout(binding = 0) uniform sampler2D tex0;
 
 void main() {
+	/*out_color = texture(tex0, in_uv);
+	out_color *= params.color;*/
+
 	out_color = texture(tex0, in_uv);
 	out_color *= params.color;
+	if (params.softness >= 0.5) {
+		vec2 pp = (abs(in_uv - 0.5) * params.size - (0.5*params.size-params.softness-params.radius));
+		pp = clamp(pp, 0, 1000);
+		out_color.a *= 1 - clamp((length(pp) - params.radius) / params.softness, 0, 1);
+	} else {
+		vec2 pp = (abs(in_uv - 0.5) * params.size - (0.5*params.size-params.radius));
+		pp = clamp(pp, 0, 1000);
+		out_color.a *= 1 - clamp((length(pp) - params.radius), 0, 1);
+	}
 }
 </FragmentShader>
 )foodelim");

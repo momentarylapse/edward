@@ -151,7 +151,9 @@ public:
 	}
 	void _draw(xhui::Painter* p) override {
 		p->set_color(state == State::HOVER ? xhui::Theme::_default.background_hover : xhui::Theme::_default.background_button);
+		p->corner_radius = xhui::Theme::_default.button_radius;
 		p->draw_rect(_area);
+		p->corner_radius = 0;
 	}
 };
 
@@ -267,7 +269,7 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 }
 
 void EdwardWindow::on_key_down(int key) {
-	//session->cur_mode->multi_view->on_key_down(key);
+	session->cur_mode->multi_view->on_key_down(key);
 }
 
 

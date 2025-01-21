@@ -46,6 +46,8 @@ TextCache& get_text_cache(ContextVulkan* context) {
 struct Parameters {
 	mat4 matrix;
 	color col;
+	vec2 size;
+	float radius, softness;
 };
 
 Painter::Painter(Window *w) {
@@ -123,6 +125,9 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 	Parameters params;
 	params.matrix = mat_pixel_to_rel * mat4::translation(vec3(offset_x + p.x, offset_y + p.y, 0)) * mat4::scale(w, h, 1);
 	params.col = _color;
+	params.size = {w,h};
+	params.radius = 0;
+	params.softness = 0;
 
 	cb->bind_pipeline(context->pipeline_alpha);
 	cb->push_constant(0, sizeof(params), &params);
@@ -151,13 +156,19 @@ void Painter::draw_arc(const vec2& p, float r, float w0, float w1) {
 	//draw_line({p.x + r * cos(w), p.y - r * sin(w)}, {p.x + r * cos(w1), p.y - r * sin(w1)});
 }
 
-void fill_rect(ContextVulkan* context, const rect& r, const color& _color) {
+void fill_rect(ContextVulkan* context, const rect& r, const color& _color, float radius, float softness) {
 	Parameters params;
 	params.matrix = mat_pixel_to_rel * mat4::translation({r.x1, r.y1, 0}) *  mat4::scale(r.width(), r.height(), 1);
 	params.col = _color;
+	params.size = {r.width(), r.height()};
+	params.radius = radius;
+	params.softness = softness;
 
 	auto cb = context->current_command_buffer();
-	cb->bind_pipeline(context->pipeline);
+	if (radius > 0 or softness > 0 or _color.a < 1)
+		cb->bind_pipeline(context->pipeline_alpha);
+	else
+		cb->bind_pipeline(context->pipeline);
 	cb->push_constant(0, sizeof(params), &params);
 	cb->bind_descriptor_set(0, context->dset);
 	cb->draw(context->vb);
@@ -165,7 +176,7 @@ void fill_rect(ContextVulkan* context, const rect& r, const color& _color) {
 
 void Painter::draw_rect(const rect &r) {
 	if (fill) {
-		fill_rect(context, r, _color);
+		fill_rect(context, r, _color, corner_radius, softness);
 	} else {
 		draw_line({r.x1, r.y1}, {r.x2, r.y1});
 		draw_line({r.x1, r.y2}, {r.x2, r.y2});
@@ -176,9 +187,9 @@ void Painter::draw_rect(const rect &r) {
 
 void Painter::draw_line(const vec2 &a, const vec2 &b) {
 	if (a.x == b.x)
-		fill_rect(context, rect(a.x, a.x + 1, a.y, b.y), _color);
+		fill_rect(context, rect(a.x, a.x + 1, a.y, b.y), _color, 0, 0);
 	else if (a.y == b.y)
-		fill_rect(context, rect(a.x, b.x, a.y, a.y+1), _color);
+		fill_rect(context, rect(a.x, b.x, a.y, a.y+1), _color, 0, 0);
 }
 
 void Painter::draw_lines(const Array<vec2> &p) {
