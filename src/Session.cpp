@@ -20,6 +20,8 @@
 #include "stuff/Progress.h"
 #include "multiview/MultiView.h"
 #include "multiview/DrawingHelper.h"*/
+#include "view/Mode.h"
+#include "data/Data.h"
 #include "storage/format/Format.h"
 #include "storage/Storage.h"
 #include "lib/xhui/config.h"
@@ -205,10 +207,10 @@ void Session::set_mode(Mode *m) {
 }
 
 void Session::set_mode_now(Mode *m) {
-#if 0
 	if (cur_mode == m)
 		return;
 
+#if 0
 	// recursive use...
 	mode_queue.add(m);
 	if (mode_queue.num > 1)
@@ -257,6 +259,13 @@ void Session::set_mode_now(Mode *m) {
 
 	win->set_menu(hui::create_resource_menu(cur_mode->menu_id, win));
 	win->update_menu();
+#endif
+
+
+	cur_mode = m;
+
+
+
 	//cur_mode->on_enter(); // ????
 	if (cur_mode->get_data()) {
 		cur_mode->get_data()->out_selection >> win->in_data_selection_changed;
@@ -266,11 +275,7 @@ void Session::set_mode_now(Mode *m) {
 		am->out_saved >> win->in_saved;
 	}
 
-	if (cur_mode->multi_view)
-		cur_mode->multi_view->force_redraw();
-#else
-	cur_mode = m;
-#endif
+	win->request_redraw();
 }
 
 

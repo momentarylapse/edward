@@ -21,7 +21,7 @@ class Session;
 class Data : public obs::Node<VirtualBase> {
 public:
 	Data(Session *s, int _type);
-	virtual ~Data();
+	~Data() override;
 
 	static const string MESSAGE_SELECTION;
 	obs::source out_selection{this, "selection"};

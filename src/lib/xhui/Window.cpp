@@ -18,6 +18,8 @@ Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":windo
 	title = _title;
 	flags = _flags;
 	Panel::window = this;
+	memset(&state, 0, sizeof(state));
+	memset(&state_prev, 0, sizeof(state_prev));
 
 	if (flags & Flags::OWN_DECORATION) {
 		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);

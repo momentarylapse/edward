@@ -42,8 +42,8 @@ class WorldScript : public ScriptInstanceData {};
 
 class DataWorld: public Data {
 public:
-	DataWorld(Session *ed);
-	virtual ~DataWorld();
+	explicit DataWorld(Session *ed);
+	~DataWorld() override;
 
 	void reset() override;
 
@@ -116,7 +116,7 @@ public:
 
 	void copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights); // actually not an action
 	void paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights);
-	void delete_selection();
+	void delete_selection(const base::set<void*>& selection);
 };
 
 #endif /* DATAWORLD_H_ */

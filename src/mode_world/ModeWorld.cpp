@@ -171,6 +171,7 @@ public:
 ModeWorld::ModeWorld(Session* session) : Mode(session) {
 	multi_view = new MultiView(session);
 	data = new DataWorld(session);
+	generic_data = data;
 }
 
 
@@ -293,6 +294,20 @@ void ModeWorld::on_draw_post(Painter* p) {
 		p->draw_rect({p1.x,p1.x+2, p1.y,p1.y+2});
 	}
 }
+
+void ModeWorld::on_command(const string& id) {
+	if (id == "undo")
+		data->undo();
+	if (id == "redo")
+		data->redo();
+}
+
+void ModeWorld::on_key_down(int key) {
+	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE)
+		data->delete_selection(selection);
+}
+
+
 
 
 

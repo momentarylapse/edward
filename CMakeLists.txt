@@ -358,6 +358,8 @@ add_executable(edward
 	src/lib/xhui/Theme.cpp
 	src/lib/xhui/Window.cpp
 	src/lib/xhui/xhui.cpp
+	src/mode_world/action/object/ActionWorldDeleteObject.cpp
+	src/mode_world/action/ActionWorldDeleteSelection.cpp
 	src/mode_world/data/DataCamera.cpp
 	src/mode_world/data/DataWorld.cpp
 	src/mode_world/data/WorldCamera.cpp

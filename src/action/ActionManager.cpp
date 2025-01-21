@@ -61,23 +61,23 @@ void ActionManager::add(Action *a) {
 
 
 
-void *ActionManager::execute(Action *a)
-{
+void *ActionManager::execute(Action *a) {
 	clear_preview();
 	error_message = "";
 
 	if (cur_group)
 		return cur_group->addSubAction(a, data);
 
-	try{
+	try {
 		void *p = a->execute_logged(data);
 		if (!a->was_trivial())
 			add(a);
-		if (!cur_group){
+		if (enabled)
+			data->out_changed();
+		if (!cur_group)
 			data->on_post_action_update();
-		}
 		return p;
-	}catch(ActionException &e){
+	} catch(ActionException &e) {
 		e.add_parent(a->name());
 		error_message = e.message;
 		error_location = e.where();
@@ -85,7 +85,7 @@ void *ActionManager::execute(Action *a)
 		msg_write("at " + error_location);
 		a->abort(data);
 		out_failed.notify();
-		return NULL;
+		return nullptr;
 	}
 }
 

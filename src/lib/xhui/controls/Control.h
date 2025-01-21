@@ -27,6 +27,7 @@ public:
 	virtual string get_cell(int row, int col) { return ""; }
 	virtual int get_int() { return get_string()._int(); }
 	virtual Array<int> get_selection() { return {}; }
+	virtual void enable(bool enabled) {}
 	virtual void set_option(const string& key, const string& value) {}
 
 	virtual void on_left_button_down(const vec2& m) {}
@@ -55,6 +56,7 @@ public:
 	bool expand_x, expand_y;
 	bool can_grab_focus = false;
 	bool ignore_hover = false;
+	bool visible = true;
 
 	virtual void get_greed_factor(float &x, float &y);
 	virtual void get_content_min_size(int &w, int &h);

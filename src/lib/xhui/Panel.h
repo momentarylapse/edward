@@ -19,6 +19,9 @@ public:
 
 	void add(Control *c);
 
+	void set_string(const string& id, const string& text);
+	void enable(const string& id, bool enabled);
+
 
 	void event(const string &id, Callback f);
 	void event_x(const string &id, const string &msg, Callback f);

@@ -11,29 +11,42 @@ Button::Button(const string &_id, const string &t) : Label(_id, t) {
 	expand_y = false;
 }
 
+void Button::enable(bool enabled) {
+	if (enabled)
+		state = State::DEFAULT;
+	else
+		state = State::DISABLED;
+	request_redraw();
+}
+
+
 void Button::on_left_button_down(const vec2&) {
-	state = State::PRESSED;
+	if (state != State::DISABLED)
+		state = State::PRESSED;
 	request_redraw();
 	if (owner)
 		owner->handle_event(id, event_id::LeftButtonDown, false);
 }
 void Button::on_left_button_up(const vec2&) {
-	state = State::HOVER;
+	if (state != State::DISABLED)
+		state = State::HOVER;
 	request_redraw();
 
 	if (owner)
 		owner->handle_event(id, event_id::LeftButtonUp, false);
-	if (owner)
+	if (owner and (state != State::DISABLED))
 		owner->handle_event(id, event_id::Click, true);
 }
 void Button::on_mouse_enter(const vec2&) {
-	state = State::HOVER;
+	if (state != State::DISABLED)
+		state = State::HOVER;
 	request_redraw();
 	if (owner)
 		owner->handle_event(id, event_id::MouseEnter, false);
 }
 void Button::on_mouse_leave(const vec2&) {
-	state = State::DEFAULT;
+	if (state != State::DISABLED)
+		state = State::DEFAULT;
 	request_redraw();
 	if (owner)
 		owner->handle_event(id, event_id::MouseLeave, false);
@@ -46,8 +59,8 @@ void Button::get_content_min_size(int &w, int &h) {
 		text_w = int(dim.bounding_width);
 		text_h = int(dim.inner_height());
 	}
-	w = text_w + Theme::_default.button_margin_x * 2;
-	h = text_h + Theme::_default.button_margin_y * 2;
+	w = text_w + (int)Theme::_default.button_margin_x * 2;
+	h = text_h + (int)Theme::_default.button_margin_y * 2;
 }
 
 void Button::_draw(Painter *p) {
@@ -78,6 +91,8 @@ void Button::_draw(Painter *p) {
 	//p->set_color(Red);
 	//p->draw_rect({_area.center().x - dim.bounding_width/2, _area.center().x + dim.bounding_width/2 , _area.center().y - dim.bounding_height/2, _area.center().y + dim.bounding_height/2});
 	p->set_color(Theme::_default.text);
+	if (state == State::DISABLED)
+		p->set_color(Theme::_default.text_disabled);
 	p->draw_str({_area.center().x - dim.bounding_width / ui_scale / 2, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
 }
 

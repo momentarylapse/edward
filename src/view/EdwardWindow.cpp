@@ -141,6 +141,15 @@ public:
 	}
 };
 
+class ToolButton : public xhui::Button {
+public:
+	explicit ToolButton(const string& id, const string& title) : Button(id, title) {
+		min_height_user = min_width_user;
+		expand_x = false;
+		expand_y = false;
+	}
+};
+
 class TouchButton : public xhui::Button {
 public:
 	explicit TouchButton(const string& id, const string& title) : Button(id, title) {
@@ -150,19 +159,32 @@ public:
 		expand_y = false;
 	}
 	/*void _draw(xhui::Painter* p) override {
-		if (state == State::HOVER)
-			p->set_color(xhui::Theme::_default.background_hover);
-		else if (state == State::PRESSED)
-			p->set_color(xhui::Theme::_default.background_active);
-		else
-			p->set_color(xhui::Theme::_default.background_button);
-		p->corner_radius = xhui::Theme::_default.button_radius;
-		p->draw_rect(_area);
-		p->corner_radius = 0;
 	}*/
 };
 
-EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768) {
+
+EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName, 1024, 768),
+	in_data_selection_changed(this, [this] {
+		msg_write("SEL CHANGED");
+	//	request_redraw();
+	//	update_menu();
+	}),
+	in_data_changed(this, [this] {
+		//msg_write("DATA CHANGED");
+		//session->cur_mode->on_set_multi_view();
+		//session->cur_mode->multi_view->force_redraw();
+		update_menu();
+	}),
+	in_action_failed(this, [this] {
+		auto am = session->cur_mode->get_data()->action_manager;
+		session->error(format("Action failed: %s\nReason: %s", am->error_location.c_str(), am->error_message.c_str()));
+	}),
+	in_saved(this, [this] {
+		msg_write("SAVED");
+	//	session->set_message("Saved!");
+	//	update_menu();
+	})
+{
 	session = _session;
 
 	auto g = new xhui::Grid("grid");
@@ -170,8 +192,8 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 	auto g2 = new xhui::Grid("grid2");
 	g->add(g2, 0, 0);
 	g2->add(new xhui::Label("label1", "label"), 0, 0);
-	g2->add(new xhui::Button("button1", "a small test g"), 1, 0);
-	g2->add(new xhui::Button("button2", "a small test g"), 2, 0);
+	g2->add(new ToolButton("undo", "undo"), 1, 0);
+	g2->add(new ToolButton("redo", "redo"), 2, 0);
 	auto o = new xhui::Overlay("overlay");
 	g->add(o, 0, 1);
 	o->add(new xhui::DrawingArea("area"));
@@ -188,8 +210,11 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 	g4->add(new TouchButton("cam-rotate", "R"), 0, 1);
 	g4->add(new TouchButton("cam-move", "M"), 0, 2);
 
-	event("button1", [] {
-		msg_write("event button1 click");
+	event("undo", [this] {
+		session->cur_mode->on_command("undo");
+	});
+	event("redo", [this] {
+		session->cur_mode->on_command("redo");
 	});
 
 	renderer = new XhuiRenderer();
@@ -281,6 +306,15 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 
 void EdwardWindow::on_key_down(int key) {
 	session->cur_mode->multi_view->on_key_down(key);
+	session->cur_mode->on_key_down(key);
 }
+
+void EdwardWindow::update_menu() {
+	if (session->cur_mode->get_data()) {
+		enable("undo", session->cur_mode->get_data()->action_manager->undoable());
+		enable("redo", session->cur_mode->get_data()->action_manager->redoable());
+	}
+}
+
 
 

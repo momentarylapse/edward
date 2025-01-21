@@ -18,8 +18,11 @@ public:
 	void on_mouse_leave(const vec2&) override;
 	void on_left_button_down(const vec2&) override;
 	void on_left_button_up(const vec2&) override;
+	void on_key_down(int key) override;
 	void on_draw_post(Painter*) override;
 	void optimize_view();
+
+	void on_command(const string& id) override;
 
 	DataWorld* data;
 	struct Hover {

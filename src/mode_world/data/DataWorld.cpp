@@ -28,8 +28,10 @@
 #include "../../action/world/object/ActionWorldAddObject.h"
 #include "../../action/world/terrain/ActionWorldAddTerrain.h"
 #include "../../action/world/ActionWorldPaste.h"
-#include "../../action/world/ActionWorldDeleteSelection.h"
 #endif
+#include <lib/os/msg.h>
+
+#include "../action/ActionWorldDeleteSelection.h"
 #include <y/graphics-impl.h>
 #include <y/helper/ResourceManager.h>
 
@@ -229,6 +231,6 @@ void DataWorld::paste(Array<WorldObject> &o, Array<WorldTerrain> &t, Array<World
 	//execute(new ActionWorldPaste(o, t, c, l));
 }
 
-void DataWorld::delete_selection() {
-	//execute(new ActionWorldDeleteSelection());
+void DataWorld::delete_selection(const base::set<void*>& selection) {
+	execute(new ActionWorldDeleteSelection(selection));
 }

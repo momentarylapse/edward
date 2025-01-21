@@ -101,4 +101,17 @@ void Panel::handle_event_p(const string &id, const string &msg, Painter *p) {
 			e.fp(p);
 }
 
+void Panel::set_string(const string& id, const string& text) {
+	for (auto& c: controls)
+		if (c->id == id)
+			c->set_string(text);
+}
+
+void Panel::enable(const string& id, bool enabled) {
+	for (auto& c: controls)
+		if (c->id == id)
+			c->enable(enabled);
+}
+
+
 }

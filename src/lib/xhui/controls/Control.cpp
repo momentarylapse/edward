@@ -23,6 +23,7 @@ void Control::request_redraw() {
 			owner->window->redraw(id);
 }
 
+
 void Control::get_content_min_size(int &w, int &h) {
 	w = 0;
 	h = 0;
