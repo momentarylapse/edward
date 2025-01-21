@@ -48,6 +48,7 @@ public:
 	}
 
 	Material* material_hover;
+	Material* material_selection;
 
 	explicit DataWorldRenderer(ModeWorld* m, SceneView* scene_view) : Renderer("world") {
 		mode = m;
@@ -66,13 +67,25 @@ public:
 			material_hover->albedo = {0.3f, 0,0,0};
 			material_hover->metal = 0.0f;
 			material_hover->roughness = 0.9f;
-			material_hover->emission = Red;
+			material_hover->emission = White;
 			material_hover->textures = {tex_white};
 			material_hover->pass0.cull_mode = 0;
 			material_hover->pass0.mode = TransparencyMode::FUNCTIONS;
 			material_hover->pass0.source = Alpha::SOURCE_ALPHA;
 			material_hover->pass0.destination = Alpha::SOURCE_INV_ALPHA;
 			material_hover->pass0.z_buffer = false;
+
+			material_selection = resource_manager->load_material("");
+			material_selection->albedo = {0.3f, 0,0,0};
+			material_selection->metal = 0.0f;
+			material_selection->roughness = 0.9f;
+			material_selection->emission = Red;
+			material_selection->textures = {tex_white};
+			material_selection->pass0.cull_mode = 0;
+			material_selection->pass0.mode = TransparencyMode::FUNCTIONS;
+			material_selection->pass0.source = Alpha::SOURCE_ALPHA;
+			material_selection->pass0.destination = Alpha::SOURCE_INV_ALPHA;
+			material_selection->pass0.z_buffer = false;
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
@@ -125,9 +138,23 @@ public:
 			}
 		}
 
+		// selection
+		for (auto& o: data_world->objects) {
+			if (mode->selection.contains(&o))
+				for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
+					auto m = o.object;
+					auto vb = m->mesh[0]->sub[k].vertex_buffer;
+
+					auto shader = get_shader(material_selection, 0, m->_template->vertex_shader_module, "");
+					auto& rd = rvd.start(params,  mat4::translation(o.pos) * mat4::rotation(o.ang), shader, *material_selection, 0, PrimitiveTopology::TRIANGLES, vb);
+					rd.apply(params);
+					cb->draw(vb);
+				}
+		}
+
 		// hover...
-		if (mode->hover && (*mode->hover).type == MVD_WORLD_OBJECT) {
-			auto& o = data_world->objects[(*mode->hover).index];
+		if (mode->hover and mode->hover->type == MVD_WORLD_OBJECT) {
+			auto& o = data_world->objects[mode->hover->index];
 			for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
 				auto m = o.object;
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
@@ -226,6 +253,32 @@ void ModeWorld::on_mouse_move(const vec2& m) {
 void ModeWorld::on_mouse_leave(const vec2& m) {
 	hover = base::None;
 }
+
+void ModeWorld::on_left_button_down(const vec2&) {
+	if (hover) {
+		void* p = nullptr;
+		if (hover->type == MVD_WORLD_OBJECT)
+			p = &data->objects[hover->index];
+
+		if (session->win->is_key_pressed(xhui::KEY_SHIFT)) {
+			if (selection.contains(p))
+				selection.erase(p);
+			else
+				selection.add(p);
+		} else if (session->win->is_key_pressed(xhui::KEY_CONTROL)) {
+			selection.add(p);
+		} else {
+			selection = {p};
+		}
+	} else {
+		if (!session->win->is_key_pressed(xhui::KEY_SHIFT) and !session->win->is_key_pressed(xhui::KEY_CONTROL))
+			selection.clear();
+	}
+}
+
+void ModeWorld::on_left_button_up(const vec2&) {
+}
+
 
 void ModeWorld::on_draw_post(Painter* p) {
 

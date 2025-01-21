@@ -44,6 +44,7 @@ public:
 
 	bool button(int index) const;
 	bool button_down(int index) const;
+	bool is_key_pressed(int key) const;
 	void set_mouse_mode(int mode);
 
 protected:

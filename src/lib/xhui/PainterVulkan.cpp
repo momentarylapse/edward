@@ -65,8 +65,8 @@ Painter::Painter(Window *w) {
 	
 	cb->begin();
 
-	width = (float)context->swap_chain->width / ui_scale;
-	height = (float)context->swap_chain->height / ui_scale;
+	width = (int)((float)context->swap_chain->width / ui_scale);
+	height = (int)((float)context->swap_chain->height / ui_scale);
 	mat_pixel_to_rel = mat4::translation({- 1,- 1, 0}) *  mat4::scale(2.0f / (float)width, 2.0f / (float)height, 1);
 
 	_area = {0, (float)width, 0, (float)height};
@@ -152,7 +152,7 @@ void Painter::set_roundness(float radius) {
 
 void Painter::draw_arc(const vec2& p, float r, float w0, float w1) {
 	//float w = (w0 + w1) / 2;
-	draw_line({p.x + r * cos(w0), p.y - r * sin(w0)}, {p.x + r * cos(w1), p.y - r * sin(w1)});
+	draw_line({p.x + r * (float)cos(w0), p.y - r * (float)sin(w0)}, {p.x + r * (float)cos(w1), p.y - r * (float)sin(w1)});
 	//draw_line({p.x + r * cos(w), p.y - r * sin(w)}, {p.x + r * cos(w1), p.y - r * sin(w1)});
 }
 

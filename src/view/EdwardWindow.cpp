@@ -245,6 +245,12 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 		session->cur_mode->multi_view->on_mouse_leave();
 		session->cur_mode->on_mouse_leave(state.m);
 	});
+	event_x("area", xhui::event_id::LeftButtonDown, [this] {
+		session->cur_mode->on_left_button_down(state.m);
+	});
+	event_x("area", xhui::event_id::LeftButtonUp, [this] {
+		session->cur_mode->on_left_button_up(state.m);
+	});
 	event_x("cam-move", xhui::event_id::LeftButtonDown, [this] {
 		set_mouse_mode(0);
 	});

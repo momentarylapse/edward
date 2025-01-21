@@ -407,6 +407,16 @@ bool Window::button_down(int index) const {
 	return false;
 }
 
+	bool Window::is_key_pressed(int key) const {
+	if (key == KEY_CONTROL)
+		return state.key[KEY_LCONTROL] or state.key[KEY_RCONTROL];
+	if (key == KEY_SHIFT)
+		return state.key[KEY_LSHIFT] or state.key[KEY_RSHIFT];
+	if (key >= 0 and key < 256)
+		return state.key[key];
+	return false;
+}
+
 void Window::set_mouse_mode(int mode) {
 	if (mode == 0) {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
