@@ -22,8 +22,6 @@ MultiView::MultiView(Session* s) : Renderer("multiview") {
 	view_port.cam->owner = new Entity;
 	//cam->owner->ang = quaternion::rotation({1, 0, 0}, 0.33f);
 	//cam->owner->pos = {1000,1000,-800};
-	view_port.cam->min_depth = 1;
-	view_port.cam->max_depth = 50000;
 	view_port.scene_view = new SceneView;
 	view_port.scene_view->cam = view_port.cam;
 }
@@ -33,6 +31,8 @@ MultiView::~MultiView() = default;
 void MultiView::prepare(const RenderParams& params) {
 	view_port.cam->owner->ang = view_port.ang;
 	view_port.cam->owner->pos = view_port.pos - view_port.cam->owner->ang * vec3::EZ * view_port.radius;
+	view_port.cam->min_depth = view_port.radius * 0.01f;
+	view_port.cam->max_depth = view_port.radius * 300;
 	view_port.cam->update_matrices(area.width() / area.height());
 
 	// 3d -> pixel
@@ -45,9 +45,16 @@ void MultiView::prepare(const RenderParams& params) {
 }
 
 void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
+	// left -> ...
 	if (session->win->button(0) and false)
 		view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
+
+	// right -> rotate
 	if (session->win->button(2))
+		view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
+
+	// middle -> move
+	if (session->win->button(1))
 		view_port.move(vec3(-d.x, d.y, 0) / 800.0f); // / window size?
 }
 

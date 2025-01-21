@@ -143,13 +143,13 @@ public:
 
 class TouchButton : public xhui::Button {
 public:
-	explicit TouchButton(const string& id) : Button(id, "") {
+	explicit TouchButton(const string& id, const string& title) : Button(id, title) {
 		min_height_user = 50;
 		min_width_user = 50;
 		expand_x = false;
 		expand_y = false;
 	}
-	void _draw(xhui::Painter* p) override {
+	/*void _draw(xhui::Painter* p) override {
 		if (state == State::HOVER)
 			p->set_color(xhui::Theme::_default.background_hover);
 		else if (state == State::PRESSED)
@@ -159,7 +159,7 @@ public:
 		p->corner_radius = xhui::Theme::_default.button_radius;
 		p->draw_rect(_area);
 		p->corner_radius = 0;
-	}
+	}*/
 };
 
 EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768) {
@@ -184,9 +184,9 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 	auto g4 = new xhui::Grid("grid4");
 	o->add(g4);
 	g4->margin = 25;
-	g4->add(new TouchButton("button5"), 0, 0);
-	g4->add(new TouchButton("cam-rotate"), 0, 1);
-	g4->add(new TouchButton("cam-move"), 0, 2);
+	g4->add(new TouchButton("button5", ""), 0, 0);
+	g4->add(new TouchButton("cam-rotate", "R"), 0, 1);
+	g4->add(new TouchButton("cam-move", "M"), 0, 2);
 
 	event("button1", [] {
 		msg_write("event button1 click");
