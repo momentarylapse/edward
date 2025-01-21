@@ -407,6 +407,15 @@ bool Window::button_down(int index) const {
 	return false;
 }
 
+void Window::set_mouse_mode(int mode) {
+	if (mode == 0) {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	} else {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+}
+
+
 void Window::request_destroy() {
 	_destroy_requested = true;
 }

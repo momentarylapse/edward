@@ -45,7 +45,7 @@ void MultiView::prepare(const RenderParams& params) {
 }
 
 void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
-	if (session->win->button(0))
+	if (session->win->button(0) and false)
 		view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
 	if (session->win->button(2))
 		view_port.move(vec3(-d.x, d.y, 0) / 800.0f); // / window size?

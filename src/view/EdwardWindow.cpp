@@ -14,6 +14,7 @@
 #include <lib/xhui/ContextVulkan.h>
 #include <renderer/base.h>
 #include <renderer/path/RenderPath.h>
+#include <sys/stat.h>
 #include <y/EngineData.h>
 #include "MultiView.h"
 #include "lib/os/msg.h"
@@ -154,19 +155,6 @@ public:
 	}
 };
 
-class CamMoveButton : public TouchButton {
-public:
-	explicit CamMoveButton(const string& id) : TouchButton(id) {
-	}
-	void _draw(xhui::Painter* p) override {
-		p->set_color(Red);
-		p->draw_rect(_area);
-	}
-	void on_left_button_down(const vec2& m) override {
-
-	}
-};
-
 EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768) {
 	session = _session;
 
@@ -190,8 +178,8 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 	o->add(g4);
 	g4->margin = 25;
 	g4->add(new TouchButton("button5"), 0, 0);
-	g4->add(new TouchButton("button6"), 0, 1);
-	g4->add(new CamMoveButton("cam-move"), 0, 2);
+	g4->add(new TouchButton("cam-rotate"), 0, 1);
+	g4->add(new TouchButton("cam-move"), 0, 2);
 
 	event("button1", [] {
 		msg_write("event button1 click");
@@ -249,6 +237,28 @@ EdwardWindow::EdwardWindow(Session* _session) : xhui::Window(AppName, 1024, 768)
 	event_x("area", xhui::event_id::MouseLeave, [this] {
 		session->cur_mode->multi_view->on_mouse_leave();
 		session->cur_mode->on_mouse_leave(state.m);
+	});
+	event_x("cam-move", xhui::event_id::LeftButtonDown, [this] {
+		set_mouse_mode(0);
+	});
+	event_x("cam-move", xhui::event_id::LeftButtonUp, [this] {
+		set_mouse_mode(1);
+	});
+	event_x("cam-move", xhui::event_id::MouseMove, [this] {
+		vec2 d = state.m - state_prev.m;
+		if (state.lbut)
+			session->cur_mode->multi_view->view_port.move(vec3(-d.x, d.y, 0) / 800.0f);
+	});
+	event_x("cam-rotate", xhui::event_id::LeftButtonDown, [this] {
+		set_mouse_mode(0);
+	});
+	event_x("cam-rotate", xhui::event_id::LeftButtonUp, [this] {
+		set_mouse_mode(1);
+	});
+	event_x("cam-rotate", xhui::event_id::MouseMove, [this] {
+		vec2 d = state.m - state_prev.m;
+		if (state.lbut)
+			session->cur_mode->multi_view->view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
 	});
 
 	xhui::run_repeated(0.02f, [this] {

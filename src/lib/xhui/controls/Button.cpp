@@ -14,21 +14,29 @@ Button::Button(const string &_id, const string &t) : Label(_id, t) {
 void Button::on_left_button_down(const vec2&) {
 	state = State::PRESSED;
 	request_redraw();
+	if (owner)
+		owner->handle_event(id, event_id::LeftButtonDown, true);
 }
 void Button::on_left_button_up(const vec2&) {
 	state = State::HOVER;
 	request_redraw();
 
 	if (owner)
+		owner->handle_event(id, event_id::LeftButtonUp, true);
+	if (owner)
 		owner->handle_event(id, event_id::Click, true);
 }
 void Button::on_mouse_enter(const vec2&) {
 	state = State::HOVER;
 	request_redraw();
+	if (owner)
+		owner->handle_event(id, event_id::MouseEnter, true);
 }
 void Button::on_mouse_leave(const vec2&) {
 	state = State::DEFAULT;
 	request_redraw();
+	if (owner)
+		owner->handle_event(id, event_id::MouseLeave, true);
 }
 
 void Button::get_content_min_size(int &w, int &h) {

@@ -35,7 +35,7 @@ public:
 	virtual void on_middle_button_up(const vec2& m) {}
 	virtual void on_right_button_down(const vec2& m) {}
 	virtual void on_right_button_up(const vec2& m) {}
-	virtual void on_mouse_move(const vec2& m, const vec2& d) {}
+	virtual void on_mouse_move(const vec2& m, const vec2& d);
 	virtual void on_mouse_enter(const vec2& m) {}
 	virtual void on_mouse_leave(const vec2& m) {}
 	virtual void on_mouse_wheel(const vec2& d) {}

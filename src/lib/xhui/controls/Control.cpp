@@ -54,4 +54,10 @@ bool Control::has_focus() const {
 	return false;
 }
 
+void Control::on_mouse_move(const vec2& m, const vec2& d) {
+	if (owner)
+		owner->handle_event(id, event_id::MouseMove, false);
+}
+
+
 }
