@@ -164,15 +164,19 @@ public:
 
 
 EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName, 1024, 768),
+	in_redraw(this, [this] {
+		request_redraw();
+	}),
 	in_data_selection_changed(this, [this] {
-		msg_write("SEL CHANGED");
-	//	request_redraw();
-	//	update_menu();
+		//msg_write("SEL CHANGED");
+		request_redraw();
+		update_menu();
 	}),
 	in_data_changed(this, [this] {
 		//msg_write("DATA CHANGED");
 		//session->cur_mode->on_set_multi_view();
 		//session->cur_mode->multi_view->force_redraw();
+		request_redraw();
 		update_menu();
 	}),
 	in_action_failed(this, [this] {
@@ -181,8 +185,8 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 	}),
 	in_saved(this, [this] {
 		msg_write("SAVED");
-	//	session->set_message("Saved!");
-	//	update_menu();
+		session->set_message("Saved!");
+		update_menu();
 	})
 {
 	session = _session;
@@ -197,10 +201,10 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 	auto o = new xhui::Overlay("overlay");
 	g->add(o, 0, 1);
 	o->add(new xhui::DrawingArea("area"));
-	auto g3 = new xhui::Grid("grid3");
+	/*auto g3 = new xhui::Grid("grid3");
 	g->add(g3, 0, 2);
 	g3->add(new xhui::Button("button3", "a"), 0, 0);
-	g3->add(new xhui::Button("button4", "b"), 1, 0);
+	g3->add(new xhui::Button("button4", "b"), 1, 0);*/
 
 
 	auto g4 = new xhui::Grid("grid4");
@@ -300,7 +304,7 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 	});
 
 	xhui::run_repeated(0.02f, [this] {
-		request_redraw();
+		//request_redraw();
 	});
 }
 

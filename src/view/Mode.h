@@ -16,9 +16,11 @@ class Session;
 class Painter;
 class Data;
 
-class Mode : obs::Node<VirtualBase> {
+class Mode : public obs::Node<VirtualBase> {
 public:
 	explicit Mode(Session* session);
+
+	obs::source out_redraw{this, "redraw"};
 
 	// this or a child
 	virtual void enter_rec() {}

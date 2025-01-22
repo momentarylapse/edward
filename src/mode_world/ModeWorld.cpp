@@ -182,9 +182,7 @@ Renderer* ModeWorld::create_renderer(SceneView* scene_view) {
 void ModeWorld::optimize_view() {
 	vec3 vmin, vmax;
 	data->get_bounding_box(vmin, vmax);
-	multi_view->view_port.pos = (vmin + vmax) / 2;
-	multi_view->view_port.radius = (vmax - vmin).length() * 0.7f;
-	multi_view->view_port.ang = quaternion::rotation({0.35f, 0, 0});
+	multi_view->view_port.suggest_for_box(vmin, vmax);
 }
 
 #define MODEL_MAX_VERTICES	65536
@@ -236,41 +234,60 @@ float object_hover_distance(const WorldObject& me, const mat4& proj, const vec2 
 	return (z < 1) ? 0 : -1;
 }
 
+base::optional<ModeWorld::Hover> ModeWorld::get_hover(const vec2& m) const {
+	base::optional<Hover> h;
+	vec3 tp;
+	float zmin = multi_view->view_port.radius * 2;
+	for (const auto& [i, o]: enumerate(data->objects)) {
+		float z;
+		float dist = object_hover_distance(o, multi_view->projection, m, tp, z);
+		if (dist >= 0 and z < zmin) {
+			zmin = z;
+			h = {MVD_WORLD_OBJECT, i};
+		}
+	}
+	return h;
+}
+
+ModeWorld::Selection ModeWorld::get_selection(const rect& _r) const {
+	auto r = _r.canonical();
+	Selection s;
+	for (const auto& [i, o]: enumerate(data->objects)) {
+		const auto p = multi_view->projection.project(o.pos);
+		if (p.z <= 0 or p.z >= 1)
+			continue;
+		if (r.inside({p.x, p.y}))
+			s.add(&o);
+	}
+	return s;
+}
+
+
 void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
 	if (multi_view->action) {
 		multi_view->action_trafo = multi_view->action_trafo * mat4::translation({d.x, d.y, 0});
 		multi_view->action->update_and_notify(data, multi_view->action_trafo);
 	} else if (multi_view->selection_area) {
 		multi_view->selection_area = rect(multi_view->selection_area->p00(), m);
-		auto r = multi_view->selection_area->canonical();
-		selection.clear();
-		for (const auto& [i, o]: enumerate(data->objects)) {
-			const auto p = multi_view->projection.project(o.pos);
-			if (p.z <= 0 or p.z >= 1)
-				continue;
-			if (r.inside({p.x, p.y}))
-				selection.add(&o);
+		auto s = get_selection(*multi_view->selection_area);
+		// TODO shift/control
+		if (s != selection) {
+			selection = s;
+			multi_view->out_selection_changed();
 		}
 	} else if (session->win->button(0)) {
+		// start selection rect
 		multi_view->selection_area = rect(m - d, m);
+		multi_view->out_selection_changed();
 	} else {
-		hover = base::None;
-
-		vec3 tp;
-		float zmin = multi_view->view_port.radius * 2;
-		for (const auto& [i, o]: enumerate(data->objects)) {
-			float z;
-			float dist = object_hover_distance(o, multi_view->projection, m, tp, z);
-			if (dist >= 0 and z < zmin) {
-				zmin = z;
-				hover = {MVD_WORLD_OBJECT, i};
-			}
-		}
+		hover = get_hover(m);
 	}
+	out_redraw();
 }
 
 void ModeWorld::on_mouse_leave(const vec2& m) {
 	hover = base::None;
+	out_redraw();
 }
 
 void ModeWorld::on_left_button_down(const vec2&) {
@@ -284,8 +301,10 @@ void ModeWorld::on_left_button_down(const vec2&) {
 				selection.erase(p);
 			else
 				selection.add(p);
+			multi_view->out_selection_changed();
 		} else if (session->win->is_key_pressed(xhui::KEY_CONTROL)) {
 			selection.add(p);
+			multi_view->out_selection_changed();
 		} else {
 
 			if (selection.contains(p)) {
@@ -293,12 +312,16 @@ void ModeWorld::on_left_button_down(const vec2&) {
 				multi_view->action_trafo = mat4::ID;
 			} else {
 				selection = {p};
+				multi_view->out_selection_changed();
 			}
 		}
 	} else {
-		if (!session->win->is_key_pressed(xhui::KEY_SHIFT) and !session->win->is_key_pressed(xhui::KEY_CONTROL))
+		if (!session->win->is_key_pressed(xhui::KEY_SHIFT) and !session->win->is_key_pressed(xhui::KEY_CONTROL)) {
 			selection.clear();
+			multi_view->out_selection_changed();
+		}
 	}
+	out_redraw();
 }
 
 void ModeWorld::on_left_button_up(const vec2&) {
@@ -308,6 +331,7 @@ void ModeWorld::on_left_button_up(const vec2&) {
 	}
 	if (multi_view->selection_area)
 		multi_view->selection_area = base::None;
+	out_redraw();
 }
 
 
@@ -327,6 +351,7 @@ void ModeWorld::on_draw_post(Painter* p) {
 		p->draw_rect(multi_view->selection_area->canonical());
 		p->set_fill(false);
 		p->set_color(Blue);
+		p->set_line_width(2);
 		p->draw_rect(multi_view->selection_area->canonical());
 		p->set_fill(true);
 	}
@@ -343,6 +368,7 @@ void ModeWorld::on_key_down(int key) {
 	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE) {
 		data->delete_selection(selection);
 		selection.clear();
+		multi_view->out_selection_changed();
 		hover = base::None;
 	}
 }

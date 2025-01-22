@@ -187,9 +187,9 @@ void Painter::draw_rect(const rect &r) {
 
 void Painter::draw_line(const vec2 &a, const vec2 &b) {
 	if (a.x == b.x)
-		fill_rect(context, rect(a.x, a.x + 1, a.y, b.y), _color, 0, 0);
+		fill_rect(context, rect(a.x + 0.5f - line_width/2, a.x + 0.5f + line_width/2, a.y, b.y), _color, 0, 0);
 	else if (a.y == b.y)
-		fill_rect(context, rect(a.x, b.x, a.y, a.y+1), _color, 0, 0);
+		fill_rect(context, rect(a.x, b.x, a.y + 0.5f - line_width/2, a.y + 0.5f + line_width/2), _color, 0, 0);
 }
 
 void Painter::draw_lines(const Array<vec2> &p) {

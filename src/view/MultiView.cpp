@@ -6,24 +6,16 @@
 
 #include <Session.h>
 #include <lib/xhui/Theme.h>
-
 #include "EdwardWindow.h"
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
 #include <y/y/Entity.h>
 #include <y/graphics-impl.h>
 
-MultiView::MultiView(Session* s) : Renderer("multiview") {
+MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
+		view_port(this)
+{
 	session = s;
-	view_port.pos = v_0;
-	view_port.ang = quaternion::ID;
-	view_port.radius = 100;
-	view_port.cam = new Camera();
-	view_port.cam->owner = new Entity;
-	//cam->owner->ang = quaternion::rotation({1, 0, 0}, 0.33f);
-	//cam->owner->pos = {1000,1000,-800};
-	view_port.scene_view = new SceneView;
-	view_port.scene_view->cam = view_port.cam;
 }
 
 MultiView::~MultiView() = default;
@@ -62,7 +54,7 @@ void MultiView::on_mouse_leave() {
 }
 
 void MultiView::on_mouse_wheel(const vec2& m, const vec2& d) {
-	view_port.radius *= exp(- d.y * 0.1f);
+	view_port.zoom(exp(d.y * 0.1f));
 }
 
 void MultiView::on_key_down(int key) {
@@ -82,13 +74,41 @@ void MultiView::on_draw(Painter* p) {
 }
 
 
+MultiView::ViewPort::ViewPort(MultiView* _multi_view) {
+	multi_view = _multi_view;
+	pos = v_0;
+	ang = quaternion::ID;
+	radius = 100;
+	cam = new Camera();
+	cam->owner = new Entity;
+	//cam->owner->ang = quaternion::rotation({1, 0, 0}, 0.33f);
+	//cam->owner->pos = {1000,1000,-800};
+	scene_view = new SceneView;
+	scene_view->cam = cam;
+}
+
 
 
 void MultiView::ViewPort::move(const vec3& drel) {
 	pos = pos + ang * drel * radius;
+	out_changed();
 }
 
 void MultiView::ViewPort::rotate(const quaternion& qrel) {
 	ang = ang * qrel;
+	out_changed();
 }
+
+void MultiView::ViewPort::zoom(float factor) {
+	radius /= factor;
+	out_changed();
+}
+
+void MultiView::ViewPort::suggest_for_box(const vec3& vmin, const vec3& vmax) {
+	pos = (vmin + vmax) / 2;
+	radius = (vmax - vmin).length() * 0.7f;
+	ang = quaternion::rotation({0.35f, 0, 0});
+	out_changed();
+}
+
 

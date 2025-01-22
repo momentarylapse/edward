@@ -19,6 +19,7 @@ public:
 	MultiViewRenderer* multi_view_renderer = nullptr;
 	Array<string> args;
 
+	obs::sink in_redraw;
 	obs::sink in_data_selection_changed;
 	obs::sink in_data_changed;
 	obs::sink in_action_failed;

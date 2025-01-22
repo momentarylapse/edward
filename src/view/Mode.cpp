@@ -9,3 +9,4 @@ Mode::Mode(Session* _session) {
 	multi_view = nullptr;
 }
 
+

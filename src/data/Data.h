@@ -23,8 +23,7 @@ public:
 	Data(Session *s, int _type);
 	~Data() override;
 
-	static const string MESSAGE_SELECTION;
-	obs::source out_selection{this, "selection"};
+	//obs::source out_selection{this, "selection"};
 
 	virtual void reset() = 0;
 
@@ -36,7 +35,6 @@ public:
 	void redo();
 
 	virtual void on_post_action_update() {}
-	virtual bool test_sanity(const string &loc) { return true; }
 
 	Path filename;
 	int file_time;

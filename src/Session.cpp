@@ -17,9 +17,9 @@
 #include "mode/material/ModeMaterial.h"
 #include "mode/world/ModeWorld.h"
 #include "mode/font/ModeFont.h"
-#include "stuff/Progress.h"
-#include "multiview/MultiView.h"
-#include "multiview/DrawingHelper.h"*/
+#include "stuff/Progress.h"*/
+#include "view/MultiView.h"
+//#include "view/DrawingHelper.h"
 #include "view/Mode.h"
 #include "data/Data.h"
 #include "storage/format/Format.h"
@@ -267,8 +267,10 @@ void Session::set_mode_now(Mode *m) {
 
 
 	//cur_mode->on_enter(); // ????
+	cur_mode->out_redraw >> win->in_redraw;
+	cur_mode->multi_view->out_selection_changed >> win->in_redraw;
+	cur_mode->multi_view->view_port.out_changed >> win->in_data_selection_changed;
 	if (cur_mode->get_data()) {
-		cur_mode->get_data()->out_selection >> win->in_data_selection_changed;
 		cur_mode->get_data()->out_changed >> win->in_data_changed;
 		auto *am = cur_mode->get_data()->action_manager;
 		am->out_failed >> win->in_action_failed;

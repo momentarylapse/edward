@@ -7,8 +7,6 @@
 
 #include "Data.h"
 
-const string Data::MESSAGE_SELECTION = "Selection";
-
 Data::Data(Session *_session, int _type) {
 	session = _session;
 	type = _type;

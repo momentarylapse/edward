@@ -38,10 +38,10 @@ struct RenderParams {
 	static RenderParams into_texture(FrameBuffer *frame_buffer, const base::optional<float>& aspect_ratio = base::None);
 };
 
-class Renderer {
+class Renderer : public VirtualBase {
 public:
 	explicit Renderer(const string &name);
-	virtual ~Renderer();
+	~Renderer() override;
 
 	Array<Renderer*> children;
 	void add_child(Renderer *child);

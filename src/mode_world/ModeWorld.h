@@ -29,9 +29,13 @@ public:
 		int type, index;
 	};
 
-	base::optional<Hover> hover;
+	using Selection = base::set<void*>;
 
-	base::set<void*> selection;
+	base::optional<Hover> hover;
+	base::optional<Hover> get_hover(const vec2& m) const;
+
+	Selection selection;
+	Selection get_selection(const rect& r) const;
 };
 
 
