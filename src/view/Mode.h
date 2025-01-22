@@ -30,7 +30,7 @@ public:
 
 	virtual void on_command(const string& id) {}
 
-	virtual void on_mouse_move(const vec2&) {}
+	virtual void on_mouse_move(const vec2& m, const vec2& d) {}
 	virtual void on_mouse_leave(const vec2&) {}
 	virtual void on_left_button_down(const vec2&) {}
 	virtual void on_left_button_up(const vec2&) {}

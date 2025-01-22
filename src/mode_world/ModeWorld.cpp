@@ -3,7 +3,7 @@
 //
 
 #include "ModeWorld.h"
-
+#include "action/ActionWorldMoveSelection.h"
 #include <Session.h>
 #include <lib/base/iter.h>
 #include <view/MultiView.h>
@@ -236,17 +236,22 @@ float object_hover_distance(const WorldObject& me, const mat4& proj, const vec2 
 	return (z < 1) ? 0 : -1;
 }
 
-void ModeWorld::on_mouse_move(const vec2& m) {
-	hover = base::None;
+void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
+	if (multi_view->action) {
+		multi_view->action_trafo = multi_view->action_trafo * mat4::translation({d.x, d.y, 0});
+		multi_view->action->update_and_notify(data, multi_view->action_trafo);
+	} else {
+		hover = base::None;
 
-	vec3 tp;
-	float zmin = multi_view->view_port.radius * 2;
-	for (const auto& [i, o]: enumerate(data->objects)) {
-		float z;
-		float dist = object_hover_distance(o, multi_view->projection, m, tp, z);
-		if (dist >= 0 and z < zmin) {
-			zmin = z;
-			hover = {MVD_WORLD_OBJECT, i};
+		vec3 tp;
+		float zmin = multi_view->view_port.radius * 2;
+		for (const auto& [i, o]: enumerate(data->objects)) {
+			float z;
+			float dist = object_hover_distance(o, multi_view->projection, m, tp, z);
+			if (dist >= 0 and z < zmin) {
+				zmin = z;
+				hover = {MVD_WORLD_OBJECT, i};
+			}
 		}
 	}
 }
@@ -269,7 +274,13 @@ void ModeWorld::on_left_button_down(const vec2&) {
 		} else if (session->win->is_key_pressed(xhui::KEY_CONTROL)) {
 			selection.add(p);
 		} else {
-			selection = {p};
+
+			if (selection.contains(p)) {
+				multi_view->action = new ActionWorldMoveSelection(data, selection);
+				multi_view->action_trafo = mat4::ID;
+			} else {
+				selection = {p};
+			}
 		}
 	} else {
 		if (!session->win->is_key_pressed(xhui::KEY_SHIFT) and !session->win->is_key_pressed(xhui::KEY_CONTROL))
@@ -278,6 +289,10 @@ void ModeWorld::on_left_button_down(const vec2&) {
 }
 
 void ModeWorld::on_left_button_up(const vec2&) {
+	if (multi_view->action) {
+		data->execute(multi_view->action);
+		multi_view->action = nullptr;
+	}
 }
 
 
@@ -303,8 +318,11 @@ void ModeWorld::on_command(const string& id) {
 }
 
 void ModeWorld::on_key_down(int key) {
-	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE)
+	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE) {
 		data->delete_selection(selection);
+		selection.clear();
+		hover = base::None;
+	}
 }
 
 

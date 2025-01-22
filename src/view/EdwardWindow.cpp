@@ -261,7 +261,7 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 	});
 	event_x("area", xhui::event_id::MouseMove, [this] {
 		session->cur_mode->multi_view->on_mouse_move(state.m, state.m - state_prev.m);
-		session->cur_mode->on_mouse_move(state.m);
+		session->cur_mode->on_mouse_move(state.m, state.m - state_prev.m);
 	});
 	event_x("area", xhui::event_id::MouseWheel, [this] {
 		session->cur_mode->multi_view->on_mouse_wheel(state.m, state.scroll);

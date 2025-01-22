@@ -13,6 +13,7 @@
 class Camera;
 class Painter;
 class Session;
+class ActionMultiView;
 
 class MultiView : public Renderer {
 public:
@@ -41,6 +42,9 @@ public:
 	rect area;
 	mat4 projection;
 	Session* session;
+
+	ActionMultiView* action = nullptr;
+	mat4 action_trafo;
 };
 
 

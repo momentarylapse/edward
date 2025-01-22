@@ -196,6 +196,7 @@ add_executable(edward
 	src/action/Action.cpp
 	src/action/ActionGroup.cpp
 	src/action/ActionManager.cpp
+	src/action/ActionMultiView.cpp
 	src/data/Data.cpp
 	src/lib/any/any.cpp
 	src/lib/base/array.cpp
@@ -360,6 +361,7 @@ add_executable(edward
 	src/lib/xhui/xhui.cpp
 	src/mode_world/action/object/ActionWorldDeleteObject.cpp
 	src/mode_world/action/ActionWorldDeleteSelection.cpp
+	src/mode_world/action/ActionWorldMoveSelection.cpp
 	src/mode_world/data/DataCamera.cpp
 	src/mode_world/data/DataWorld.cpp
 	src/mode_world/data/WorldCamera.cpp
