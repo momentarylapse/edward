@@ -6,7 +6,7 @@
  */
 
 #include "GeometrySphere.h"
-#include "../DataModel.h"
+#include <lib/math/mat4.h>
 
 GeometrySphere::GeometrySphere(const vec3 &pos, float radius, int num)
 {

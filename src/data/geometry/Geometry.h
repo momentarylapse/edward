@@ -8,18 +8,18 @@
 #ifndef GEOMETRY_H_
 #define GEOMETRY_H_
 
-#include "../DataModel.h"
-#include "../ModelPolygon.h"
-#include "../ModelMesh.h"
+#include <mode_model/data/ModelMesh.h>
+#include <mode_model/data/ModelPolygon.h>
+#include <lib/base/base.h>
 #include <y/graphics-fwd.h>
 
 class ModelVertex;
 class ModelPolygon;
 class vec3;
 class mat4;
-namespace MultiView {
+/*namespace MultiView {
 	class Window;
-};
+};*/
 
 class Geometry {
 public:
@@ -47,7 +47,7 @@ public:
 	bool is_inside(const vec3 &v) const;
 
 	void get_bounding_box(vec3 &min, vec3 &max);
-	bool is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp);
+	//bool is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp);
 
 	void build(VertexBuffer *vb) const;
 
@@ -60,7 +60,7 @@ public:
 	Array<Geometry> split_connected() const;
 };
 
-int GeometrySubtract(const Geometry &a, const Geometry &b, Geometry &c);
-int GeometryAnd(const Geometry &a, const Geometry &b, Geometry &c);
+//int GeometrySubtract(const Geometry &a, const Geometry &b, Geometry &c);
+//int GeometryAnd(const Geometry &a, const Geometry &b, Geometry &c);
 
 #endif /* GEOMETRY_H_ */

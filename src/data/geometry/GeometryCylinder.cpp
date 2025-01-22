@@ -7,8 +7,8 @@
 
 #include "GeometryCylinder.h"
 #include "GeometryBall.h"
-#include "../DataModel.h"
-#include "../../../lib/math/interpolation.h"
+#include <lib/math/mat4.h>
+#include <lib/math/interpolation.h>
 
 #define _cyl_vert(i, j)         ( edges      * (i) +(j) % edges)
 #define _cyl_svert(i, j)        sv[(edges + 1) * (i) +(j) % (edges + 1)]

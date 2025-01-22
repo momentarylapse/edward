@@ -6,7 +6,6 @@
  */
 
 #include "GeometryTorus.h"
-#include "../DataModel.h"
 
 #define _tor_vert(i, j)         ( num_y * ((i) % num_x) + ((j) % num_y))
 

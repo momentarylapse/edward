@@ -27,6 +27,25 @@
 #include <lib/os/msg.h>
 #include <view/EdwardWindow.h>
 
+#include <data/geometry/GeometryTeapot.h>
+
+Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {
+	auto material = resource_manager->load_material("");
+	material->albedo = albedo;
+	material->roughness = roughness;
+	material->metal = metal;
+	material->emission = emission;
+	material->textures = {tex_white};
+	if (transparent) {
+		material->pass0.cull_mode = 0;
+		material->pass0.mode = TransparencyMode::FUNCTIONS;
+		material->pass0.source = Alpha::SOURCE_ALPHA;
+		material->pass0.destination = Alpha::SOURCE_INV_ALPHA;
+		material->pass0.z_buffer = false;
+	}
+	return material;
+}
+
 class DataWorldRenderer : public Renderer {
 public:
 	ModeWorld* mode;
@@ -49,6 +68,10 @@ public:
 
 	Material* material_hover;
 	Material* material_selection;
+	Material* material_geo;
+
+	VertexBuffer* vb_tea;
+	Geometry* geo;
 
 	explicit DataWorldRenderer(ModeWorld* m, SceneView* scene_view) : Renderer("world") {
 		mode = m;
@@ -63,32 +86,17 @@ public:
 		light->light.harshness = 0.5f;
 
 		try {
-			material_hover = resource_manager->load_material("");
-			material_hover->albedo = {0.3f, 0,0,0};
-			material_hover->metal = 0.0f;
-			material_hover->roughness = 0.9f;
-			material_hover->emission = White;
-			material_hover->textures = {tex_white};
-			material_hover->pass0.cull_mode = 0;
-			material_hover->pass0.mode = TransparencyMode::FUNCTIONS;
-			material_hover->pass0.source = Alpha::SOURCE_ALPHA;
-			material_hover->pass0.destination = Alpha::SOURCE_INV_ALPHA;
-			material_hover->pass0.z_buffer = false;
+			material_hover = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, White, true);
+			material_selection = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, Red, true);
 
-			material_selection = resource_manager->load_material("");
-			material_selection->albedo = {0.3f, 0,0,0};
-			material_selection->metal = 0.0f;
-			material_selection->roughness = 0.9f;
-			material_selection->emission = Red;
-			material_selection->textures = {tex_white};
-			material_selection->pass0.cull_mode = 0;
-			material_selection->pass0.mode = TransparencyMode::FUNCTIONS;
-			material_selection->pass0.source = Alpha::SOURCE_ALPHA;
-			material_selection->pass0.destination = Alpha::SOURCE_INV_ALPHA;
-			material_selection->pass0.z_buffer = false;
+			material_geo = create_material(resource_manager, Gray, 0.9f, 0, Gray);
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
+
+		vb_tea = new VertexBuffer("3f,3f,2f");
+		geo = new GeometryTeapot(v_0, 1000, 3);
+		geo->build(vb_tea);
 	}
 	void draw(const RenderParams& params) override {
 		auto cb = params.command_buffer;
@@ -164,6 +172,14 @@ public:
 				rd.apply(params);
 				cb->draw(vb);
 			}
+		}
+
+		{
+			auto vb = vb_tea;
+			auto shader = get_shader(material_geo, 0, "default", "");
+			auto& rd = rvd.start(params,  mat4::ID, shader, *material_geo, 0, PrimitiveTopology::TRIANGLES, vb);
+			rd.apply(params);
+			cb->draw(vb);
 		}
 	}
 };

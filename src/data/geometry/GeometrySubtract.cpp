@@ -5,6 +5,7 @@
  *      Author: michi
  */
 
+#if 0
 #include "Geometry.h"
 #include "../SkinGenerator.h"
 #include "../../../EdwardWindow.h"
@@ -848,5 +849,6 @@ int GeometryAnd(const Geometry &a, const Geometry &b, Geometry &out) {
 
 	return diff ? 1 : 0;
 }
+#endif
 
 

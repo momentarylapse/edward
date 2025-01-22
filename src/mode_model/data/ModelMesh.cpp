@@ -4,16 +4,33 @@
  *  Created on: 13.02.2020
  *      Author: michi
  */
-
 #include "ModelMesh.h"
 #include "ModelPolygon.h"
-#include "ModelSelection.h"
-#include "geometry/Geometry.h"
-#include "BspTree.h"
-#include "../../lib/os/msg.h"
-#include "../../lib/base/set.h"
-#include "../../EdwardWindow.h"
-#include "../../y/world/components/Animator.h"
+//#include "ModelSelection.h"
+#include <data/geometry/Geometry.h>
+//#include "BspTree.h"
+#include <lib/os/msg.h>
+#include <lib/base/set.h>
+//#include "../../EdwardWindow.h"
+#include <y/world/components/Animator.h>
+#include <y/world/Model.h>
+
+
+
+ModelVertex::ModelVertex(const vec3 &_pos) {
+	pos = _pos;
+	ref_count = 0;
+	normal_mode = NORMAL_MODE_ANGULAR;
+	bone_index = {-1,-1,-1,-1};
+	bone_weight = {1,0,0,0};
+	normal_dirty = false;
+}
+
+ModelVertex::ModelVertex() : ModelVertex(v_0) {}
+
+ModelEdge::~ModelEdge() = default;
+
+
 
 ModelMesh::ModelMesh(DataModel *m) {
 	model = m;
@@ -79,6 +96,7 @@ bool int_array_has_duplicates(const Array<int> &a) {
 }
 
 
+#if 0
 void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vec3> &sv, int index) {
 	if (int_array_has_duplicates(v))
 		throw GeometryException("AddPolygon: duplicate vertices");
@@ -909,3 +927,4 @@ Geometry ModelMesh::copy_geometry() {
 		}
 	return geo;
 }
+#endif

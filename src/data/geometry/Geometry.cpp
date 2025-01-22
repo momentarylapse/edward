@@ -6,15 +6,20 @@
  */
 
 #include "Geometry.h"
-#include "../DataModel.h"
-#include "../ModelPolygon.h"
-#include "../SkinGenerator.h"
+#include <mode_model/data/ModelPolygon.h>
+#include <mode_model/data/SkinGenerator.h>
 #include <y/graphics-impl.h>
+#include <lib/math/mat4.h>
+#include <lib/math/plane.h>
 #if HAS_LIB_GL
 #include "../../../multiview/MultiView.h"
 #include "../../../multiview/Window.h"
 #endif
 
+class GeometryException : public Exception {
+public:
+	explicit GeometryException(const string& e) : Exception(e) {}
+};
 
 static float Bernstein3(int i, float t)
 {
@@ -243,15 +248,17 @@ void Geometry::get_bounding_box(vec3 &min, vec3 &max)
 }
 
 void Geometry::build(VertexBuffer *vb) const {
-#if HAS_LIB_GL
 	VertexStagingBuffer vbs;
+#ifdef USING_VULKAN
+	int num_textures = 1;
+#else
 	int num_textures = vb->num_attributes - 2;
+#endif
 	for (auto &p: const_cast<Array<ModelPolygon>&>(polygon)){
 		p.triangulation_dirty = true;
 		p.add_to_vertex_buffer(vertex, vbs, num_textures);
 	}
 	vbs.build(vb, num_textures);
-#endif
 }
 
 
@@ -385,6 +392,7 @@ void Geometry::remove_unused_vertices() {
 		}
 }
 
+#if 0
 bool Geometry::is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp)
 {
 #if HAS_LIB_GL
@@ -428,6 +436,7 @@ bool Geometry::is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp)
 #endif
 	return false;
 }
+#endif
 
 void geo_poly_find_connected(const Geometry &g, int p0, base::set<int> &polys) {
 	base::set<int> verts;

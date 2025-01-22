@@ -197,6 +197,17 @@ add_executable(edward
 	src/action/ActionGroup.cpp
 	src/action/ActionManager.cpp
 	src/action/ActionMultiView.cpp
+	src/data/geometry/Geometry.cpp
+	src/data/geometry/GeometryBall.cpp
+	src/data/geometry/GeometryCube.cpp
+	src/data/geometry/GeometryCylinder.cpp
+	src/data/geometry/GeometryPlane.cpp
+	src/data/geometry/GeometryPlatonic.cpp
+	src/data/geometry/GeometrySphere.cpp
+	src/data/geometry/GeometrySubtract.cpp
+	src/data/geometry/GeometryTeapot.cpp
+	src/data/geometry/GeometryTorus.cpp
+	src/data/geometry/GeometryTorusKnot.cpp
 	src/data/Data.cpp
 	src/lib/any/any.cpp
 	src/lib/base/array.cpp
@@ -359,6 +370,9 @@ add_executable(edward
 	src/lib/xhui/Theme.cpp
 	src/lib/xhui/Window.cpp
 	src/lib/xhui/xhui.cpp
+	src/mode_model/data/ModelMesh.cpp
+	src/mode_model/data/ModelPolygon.cpp
+	src/mode_model/data/SkinGenerator.cpp
 	src/mode_world/action/object/ActionWorldDeleteObject.cpp
 	src/mode_world/action/ActionWorldDeleteSelection.cpp
 	src/mode_world/action/ActionWorldMoveSelection.cpp
@@ -376,6 +390,7 @@ add_executable(edward
 	src/storage/format/FormatTerrain.cpp
 	src/storage/format/FormatWorld.cpp
 	src/storage/Storage.cpp
+	src/view/ActionController.cpp
 	src/view/EdwardWindow.cpp
 	src/view/Mode.cpp
 	src/view/MultiView.cpp

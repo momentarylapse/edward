@@ -6,7 +6,6 @@
  */
 
 #include "GeometryBall.h"
-#include "../DataModel.h"
 
 #define ball_ang(x, y)	vector((float)(y)/(float)num_y,(float)(x)/(float)num_x,0)
 

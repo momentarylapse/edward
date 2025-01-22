@@ -6,7 +6,7 @@
  */
 
 #include "GeometryTeapot.h"
-#include "../DataModel.h"
+#include <lib/math/mat4.h>
 
 // Utah teapot by Martin Newell
 

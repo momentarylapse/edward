@@ -13,7 +13,7 @@ class ModelVertex;
 
 #include <y/world/Material.h>
 #include <y/graphics-fwd.h>
-#include "../../multiview/SingleData.h"
+#include <multiview/SingleData.h>
 
 class VertexStagingBuffer {
 public:
@@ -33,7 +33,7 @@ public:
 	unsigned char triangulation[3];
 };
 
-class ModelPolygon: public MultiView::SingleData {
+class ModelPolygon: public multiview::SingleData {
 public:
 	~ModelPolygon() override;
 	Array<ModelPolygonSide> side;
@@ -44,9 +44,9 @@ public:
 	int smooth_group = -1;
 
 	// -> MeshSelectionModePolygin.cpp
-	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
+	/*float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
-	bool overlap_rect(MultiView::Window *win, const rect &r) override;
+	bool overlap_rect(MultiView::Window *win, const rect &r) override;*/
 
 	Array<int> triangulate(const Array<ModelVertex> &vertex) const;
 	void update_triangulation(const Array<ModelVertex> &vertex);

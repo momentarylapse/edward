@@ -7,15 +7,14 @@
 
 
 
-#include "DataModel.h"
 #include "ModelPolygon.h"
 #include "ModelMesh.h" // for Vertex
 #include <y/graphics-impl.h>
-#include "../../lib/math/vec2.h"
+#include <lib/math/plane.h>
+#include <lib/math/vec2.h>
 
 
 void VertexStagingBuffer::build(VertexBuffer *vb, int num_textures) {
-#if HAS_LIB_GL
 	Array<float> temp;
 	int d = 3 + 3 + 2*num_textures;
 	temp.resize(p.num * d);
@@ -26,11 +25,15 @@ void VertexStagingBuffer::build(VertexBuffer *vb, int num_textures) {
 			*(vec2*)&temp[i * d + 6 + l*2] = *(vec2*)&uv[l][2*i];
 	}
 	vb->update(temp);
+#ifdef USING_VULKAN
+	vb->vertex_count = p.num;
+	vb->output_count = p.num;
+#endif
+
 	/*vb->update(0, p);
 	vb->update(1, n);
 	for (int l=0; l<num_textures; l++)
 		vb->update(l+2, uv[l]);*/
-#endif
 }
 
 ModelPolygon::~ModelPolygon() = default;

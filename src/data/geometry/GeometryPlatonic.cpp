@@ -6,10 +6,8 @@
  */
 
 #include "GeometryPlatonic.h"
-#include "../DataModel.h"
 
-GeometryPlatonic::GeometryPlatonic(const vec3 &pos, float radius, int type)
-{
+GeometryPlatonic::GeometryPlatonic(const vec3 &pos, float radius, int type) {
 	if (type == 4)
 		AddTetrahedron(pos, radius);
 	else if (type == 8)

@@ -12,20 +12,16 @@
 #include "../../multiview/Window.h"
 #endif
 #include "../../lib/nix/nix.h"
-#include "../../data/model/ModelMesh.h"
-#include "../../data/model/ModelPolygon.h"
+#include <mode_model/data/ModelMesh.h>
+#include <mode_model/data/ModelPolygon.h>
 
-SkinGenerator::SkinGenerator()
-{
+SkinGenerator::SkinGenerator() {
 	m = mat4::ID;
 }
 
-SkinGenerator::~SkinGenerator()
-{
-}
+SkinGenerator::~SkinGenerator() = default;
 
-void SkinGenerator::init_affine(const vec3 &dir_u, float f_u, const vec3 &dir_v, float f_v)
-{
+void SkinGenerator::init_affine(const vec3 &dir_u, float f_u, const vec3 &dir_v, float f_v) {
 	m = mat4::ID;
 	m._00 = dir_u.x;
 	m._01 = dir_u.y;
@@ -37,13 +33,11 @@ void SkinGenerator::init_affine(const vec3 &dir_u, float f_u, const vec3 &dir_v,
 	m._13 = f_v;
 }
 
-void SkinGenerator::init_projective(const mat4 &_m)
-{
+void SkinGenerator::init_projective(const mat4 &_m) {
 	m = _m;
 }
 
-void SkinGenerator::init_projective(MultiView::Window *win)
-{
+void SkinGenerator::init_projective(MultiView::Window *win) {
 	#if HAS_LIB_GL
 	rect d = win->dest;
 	mat4 s, t1, t2;
@@ -54,8 +48,7 @@ void SkinGenerator::init_projective(MultiView::Window *win)
 #endif
 }
 
-void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, int level)
-{
+void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, int level) {
 	vec3 n = p.temp_normal;
 	vec3 d1 = n.ortho();
 	vec3 d2 = vec3::cross(n, d1);

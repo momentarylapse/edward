@@ -8,8 +8,8 @@
 #ifndef SRC_DATA_MODEL_MODELMESH_H_
 #define SRC_DATA_MODEL_MODELMESH_H_
 
-#include "../../multiview/SingleData.h"
-#include "../../lib/math/vec4.h"
+#include <multiview/SingleData.h>
+#include <lib/math/vec4.h>
 
 class DataModel;
 class ModelTriangleMesh;
@@ -19,7 +19,7 @@ class MeshInsideTestData;
 class Geometry;
 
 
-class ModelVertex: public MultiView::SingleData {
+class ModelVertex: public multiview::SingleData {
 public:
 	int normal_mode;
 	ivec4 bone_index;
@@ -32,7 +32,7 @@ public:
 	ModelVertex(const vec3 &pos);
 };
 
-class ModelEdge: public MultiView::SingleData {
+class ModelEdge: public multiview::SingleData {
 public:
 	~ModelEdge() override;
 	//int NormalMode;
@@ -47,34 +47,34 @@ public:
 	//  same for Polygon/Side[1] but Vertex[0 <-> 1]
 
 	// -> MeshSelectionModeEdge.cpp
-	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
+	/*float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
-	bool overlap_rect(MultiView::Window *win, const rect &r) override;
+	bool overlap_rect(MultiView::Window *win, const rect &r) override;*/
 };
 
 // only for use in MultiView...
-class ModelSkinVertexDummy: public MultiView::SingleData {
+class ModelSkinVertexDummy: public multiview::SingleData {
 };
 
-class ModelBall: public MultiView::SingleData {
+class ModelBall: public multiview::SingleData {
 public:
 	int index;
 	float radius;
 
-	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
+	/*float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
-	bool overlap_rect(MultiView::Window *win, const rect &r) override;
+	bool overlap_rect(MultiView::Window *win, const rect &r) override;*/
 };
 
-class ModelCylinder: public MultiView::SingleData {
+class ModelCylinder: public multiview::SingleData {
 public:
 	int index[2];
 	float radius;
 	bool round;
 
-	float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
+	/*float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(MultiView::Window *win, const rect &r) override;
-	bool overlap_rect(MultiView::Window *win, const rect &r) override;
+	bool overlap_rect(MultiView::Window *win, const rect &r) override;*/
 };
 
 
