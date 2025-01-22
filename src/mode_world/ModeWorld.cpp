@@ -240,6 +240,19 @@ void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
 	if (multi_view->action) {
 		multi_view->action_trafo = multi_view->action_trafo * mat4::translation({d.x, d.y, 0});
 		multi_view->action->update_and_notify(data, multi_view->action_trafo);
+	} else if (multi_view->selection_area) {
+		multi_view->selection_area = rect(multi_view->selection_area->p00(), m);
+		auto r = multi_view->selection_area->canonical();
+		selection.clear();
+		for (const auto& [i, o]: enumerate(data->objects)) {
+			const auto p = multi_view->projection.project(o.pos);
+			if (p.z <= 0 or p.z >= 1)
+				continue;
+			if (r.inside({p.x, p.y}))
+				selection.add(&o);
+		}
+	} else if (session->win->button(0)) {
+		multi_view->selection_area = rect(m - d, m);
 	} else {
 		hover = base::None;
 
@@ -293,12 +306,12 @@ void ModeWorld::on_left_button_up(const vec2&) {
 		data->execute(multi_view->action);
 		multi_view->action = nullptr;
 	}
+	if (multi_view->selection_area)
+		multi_view->selection_area = base::None;
 }
 
 
 void ModeWorld::on_draw_post(Painter* p) {
-
-
 	p->set_color(Black);
 	//p->set_font_size(20);
 	//p->draw_str({100, 100}, str(r));
@@ -307,6 +320,15 @@ void ModeWorld::on_draw_post(Painter* p) {
 	for (auto& o: data->objects) {
 		auto p1 = multi_view->projection.project(o.pos);
 		p->draw_rect({p1.x,p1.x+2, p1.y,p1.y+2});
+	}
+
+	if (multi_view->selection_area) {
+		p->set_color({0.2, 0,0,1});
+		p->draw_rect(multi_view->selection_area->canonical());
+		p->set_fill(false);
+		p->set_color(Blue);
+		p->draw_rect(multi_view->selection_area->canonical());
+		p->set_fill(true);
 	}
 }
 

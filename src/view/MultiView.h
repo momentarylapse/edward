@@ -45,6 +45,8 @@ public:
 
 	ActionMultiView* action = nullptr;
 	mat4 action_trafo;
+
+	base::optional<rect> selection_area;
 };
 
 
