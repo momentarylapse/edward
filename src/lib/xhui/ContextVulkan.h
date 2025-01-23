@@ -28,11 +28,18 @@ public:
 	vulkan::Texture* tex_white = nullptr;
 	vulkan::Texture* tex_black = nullptr;
 	vulkan::Shader* shader;
+	vulkan::Shader* shader_lines;
 	vulkan::GraphicsPipeline* pipeline;
 	vulkan::GraphicsPipeline* pipeline_alpha;
+	vulkan::GraphicsPipeline* pipeline_lines;
 	vulkan::VertexBuffer* vb;
 
 	vulkan::DescriptorSet* dset;
+	vulkan::DescriptorSet* dset_lines;
+
+
+	Array<vulkan::VertexBuffer*> line_vbs;
+	int num_line_vbs_used = 0;
 
 
 	vulkan::Fence* in_flight_fence;

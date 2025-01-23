@@ -27,7 +27,11 @@ int xhui_main(const Array<string>& args) {
 	auto s = create_session();
 	s->win->args = args;
 
-	xhui::run();
+	try {
+		xhui::run();
+	} catch (Exception& e) {
+		msg_error(e.message());
+	}
 	return 0;
 }
 

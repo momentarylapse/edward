@@ -186,10 +186,49 @@ void Painter::draw_rect(const rect &r) {
 }
 
 void Painter::draw_line(const vec2 &a, const vec2 &b) {
-	if (a.x == b.x)
+	/*if (a.x == b.x) {
 		fill_rect(context, rect(a.x + 0.5f - line_width/2, a.x + 0.5f + line_width/2, a.y, b.y), _color, 0, 0);
-	else if (a.y == b.y)
+	} else if (a.y == b.y) {
 		fill_rect(context, rect(a.x, b.x, a.y + 0.5f - line_width/2, a.y + 0.5f + line_width/2), _color, 0, 0);
+	} else {*/
+		// NO geometry shaders on M1... :(
+		// CPU lines then...
+
+		VertexBuffer* vb;
+		if (context->num_line_vbs_used < context->line_vbs.num) {
+			vb = context->line_vbs[context->num_line_vbs_used ++];
+		} else {
+			vb = new VertexBuffer("3f,3f,2f");
+			context->line_vbs.add(vb);
+			context->num_line_vbs_used ++;
+		}
+		vec2 dir = (b - a).normalized();
+		vec2 r = dir.ortho();
+		vec2 a0 = a - (r + dir) * line_width/2;
+		vec2 a1 = a + (r - dir) * line_width/2;
+		vec2 b0 = b - (r - dir) * line_width/2;
+		vec2 b1 = b + (r + dir) * line_width/2;
+		Array<Vertex1> p = {
+			{{a0.x, a0.y, 0}, v_0, 0,0},
+			{{a1.x, a1.y, 0}, v_0, 0,0},
+			{{b0.x, b0.y, 0}, v_0, 0,0},
+			{{b0.x, b0.y, 0}, v_0, 0,0},
+			{{a1.x, a1.y, 0}, v_0, 0,0},
+			{{b1.x, b1.y, 0}, v_0, 0,0}};
+		vb->update(p);
+		Parameters params;
+		params.matrix = mat_pixel_to_rel;
+		params.col = _color;
+		params.size = {(float)width, (float)height};
+		params.radius = 0;//line_width;
+		params.softness = 0;//softness;
+
+		auto cb = context->current_command_buffer();
+		cb->bind_pipeline(context->pipeline);
+		cb->push_constant(0, sizeof(params), &params);
+		cb->bind_descriptor_set(0, context->dset);
+		cb->draw(vb);
+	//}
 }
 
 void Painter::draw_lines(const Array<vec2> &p) {
