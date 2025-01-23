@@ -156,6 +156,9 @@ ModeWorld::ModeWorld(Session* session) : Mode(session) {
 	multi_view = new MultiView(session);
 	data = new DataWorld(session);
 	generic_data = data;
+	data->out_changed >> create_sink([this] {
+		update_selection_box();
+	});
 }
 
 
@@ -348,16 +351,6 @@ void ModeWorld::on_draw_post(Painter* p) {
 	for (auto& o: data->objects) {
 		auto p1 = multi_view->projection.project(o.pos);
 		p->draw_rect({p1.x,p1.x+2, p1.y,p1.y+2});
-	}
-
-	if (multi_view->selection_area) {
-		p->set_color({0.2, 0,0,1});
-		p->draw_rect(multi_view->selection_area->canonical());
-		p->set_fill(false);
-		p->set_color(Blue);
-		p->set_line_width(2);
-		p->draw_rect(multi_view->selection_area->canonical());
-		p->set_fill(true);
 	}
 }
 

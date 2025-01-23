@@ -76,7 +76,22 @@ void MultiView::on_key_down(int key) {
 }
 
 void MultiView::on_draw(Painter* p) {
-	//p->set_color(xhui::Theme::_default.background_button);
+	if (selection_area) {
+		p->set_color({0.2, 0,0,1});
+		p->draw_rect(selection_area->canonical());
+		p->set_fill(false);
+		p->set_color(Blue);
+		p->set_line_width(2);
+		p->draw_rect(selection_area->canonical());
+		p->set_fill(true);
+	}
+
+	p->set_color(Green);
+	p->set_fill(false);
+	p->set_line_width(4);
+	p->draw_rect({200,400,200,400});
+	p->set_fill(true);
+	p->draw_line({300,300}, {700,700});
 }
 
 
