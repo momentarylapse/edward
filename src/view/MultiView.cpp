@@ -18,6 +18,10 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 	session = s;
 	resource_manager = session->resource_manager;
 	action_controller = new ActionController(this);
+
+	view_port.out_changed >> create_sink([this] {
+		action_controller->update();
+	});
 }
 
 MultiView::~MultiView() = default;
@@ -73,6 +77,13 @@ void MultiView::on_key_down(int key) {
 
 void MultiView::on_draw(Painter* p) {
 	//p->set_color(xhui::Theme::_default.background_button);
+}
+
+
+void MultiView::set_selection_box(const base::optional<Box>& box) {
+	selection_box = box;
+	out_selection_changed();
+	action_controller->update();
 }
 
 

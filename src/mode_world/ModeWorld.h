@@ -36,6 +36,7 @@ public:
 
 	Selection selection;
 	Selection get_selection(const rect& r) const;
+	void update_selection_box();
 };
 
 

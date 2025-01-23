@@ -286,8 +286,12 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 	});
 	event_x("cam-move", xhui::event_id::MouseMove, [this] {
 		vec2 d = state.m - state_prev.m;
-		if (state.lbut)
-			session->cur_mode->multi_view->view_port.move(vec3(-d.x, d.y, 0) / 800.0f);
+		if (state.lbut) {
+			if (is_key_pressed(xhui::KEY_SHIFT))
+				session->cur_mode->multi_view->view_port.move(vec3(0,0,d.y) / 800.0f);
+			else
+				session->cur_mode->multi_view->view_port.move(vec3(-d.x, d.y, 0) / 800.0f);
+		}
 	});
 	event_x("cam-rotate", xhui::event_id::LeftButtonDown, [this] {
 		set_mouse_mode(0);

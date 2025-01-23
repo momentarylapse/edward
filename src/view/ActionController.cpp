@@ -263,14 +263,23 @@ void ActionController::delete_geo() {
 }
 
 void ActionController::update() {
-	/*if (cur_action) {
-		pos = pos0;
-	} else {
-		pos = multi_view->get_selection_center();
-	}*/
 	float f = multi_view->view_port.radius * 0.15f;
 	//if (multi_view->whole_window)
-	//	f /= 2;
+	f /= 2;
+
+	if (cur_action) {
+		pos = pos0;
+	} else {
+		//pos = multi_view->get_selection_center();
+		if (multi_view->selection_box) {
+			visible = true;
+			pos = multi_view->selection_box->center();
+			float box_size = multi_view->selection_box->size().length();
+			f = clamp(box_size * 0.5f, f, f*3);
+		} else {
+			visible = false;
+		}
+	}
 	auto s = mat4::scale(f, f, f);
 	auto t = mat4::translation(pos);
 	geo_mat = t * s;
@@ -353,12 +362,10 @@ bool ActionController::geo_allow(int i, const mat4& proj, const mat4& geo_mat) {
 void ActionController::draw(const RenderParams& params, RenderViewData& rvd) {
 	//if (!multi_view->allow_mouse_actions)
 	//	return;
-//	if (!visible)
-//		return;
+	if (!visible)
+		return;
 
 
-
-	update();
 	for (auto vb: buf) {
 		//draw_mesh(params, geo_mat, vb, material);
 		auto shader = rvd.get_shader(material, 0, "default", "");

@@ -7,6 +7,7 @@
 
 #include <y/renderer/Renderer.h>
 #include <y/renderer/world/geometry/SceneView.h>
+#include <lib/math/Box.h>
 #include <lib/math/vec3.h>
 #include <lib/math/quaternion.h>
 #include <lib/pattern/Observable.h>
@@ -62,6 +63,9 @@ public:
 	rect area;
 	mat4 projection;
 	Session* session;
+
+	base::optional<Box> selection_box;
+	void set_selection_box(const base::optional<Box>& box);
 
 	ActionMultiView* action = nullptr;
 	mat4 action_trafo;

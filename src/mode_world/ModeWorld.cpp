@@ -64,9 +64,6 @@ public:
 	Material* material_hover;
 	Material* material_selection;
 
-	VertexBuffer* vb_tea;
-	Geometry* geo;
-
 	explicit DataWorldRenderer(ModeWorld* m, SceneView* scene_view) : Renderer("world") {
 		mode = m;
 		data_world = mode->data;
@@ -85,10 +82,6 @@ public:
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
-
-		vb_tea = new VertexBuffer("3f,3f,2f");
-		geo = new GeometryTeapot(v_0, 1000, 3);
-		geo->build(vb_tea);
 	}
 	void draw(const RenderParams& params) override {
 		auto cb = params.command_buffer;
@@ -153,8 +146,6 @@ public:
 				draw_mesh(params, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, material_hover, m->_template->vertex_shader_module);
 			}
 		}
-
-		//draw_mesh(params, mat4::ID, vb_tea, material_geo);
 
 		mode->multi_view->action_controller->draw(params, rvd);
 	}
@@ -255,6 +246,26 @@ ModeWorld::Selection ModeWorld::get_selection(const rect& _r) const {
 	return s;
 }
 
+void ModeWorld::update_selection_box() {
+	if (selection.num > 0) {
+		Box box;
+		bool first = true;
+		for (const auto& o: data->objects)
+			if (selection.contains((void*)&o)) {
+				if (first) {
+					box = {o.pos + o.object->prop.min, o.pos + o.object->prop.max};
+					first = false;
+				} else {
+					box.min._min(o.pos + o.object->prop.min);
+					box.max._max(o.pos + o.object->prop.max);
+				}
+			}
+		multi_view->set_selection_box(box);
+	} else {
+		multi_view->set_selection_box(base::None);
+	}
+}
+
 
 void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
 	if (multi_view->action) {
@@ -266,12 +277,12 @@ void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
 		// TODO shift/control
 		if (s != selection) {
 			selection = s;
-			multi_view->out_selection_changed();
+			update_selection_box();
 		}
 	} else if (session->win->button(0)) {
 		// start selection rect
 		multi_view->selection_area = rect(m - d, m);
-		multi_view->out_selection_changed();
+		//update_selection_box();
 	} else {
 		hover = get_hover(m);
 	}
@@ -294,10 +305,10 @@ void ModeWorld::on_left_button_down(const vec2&) {
 				selection.erase(p);
 			else
 				selection.add(p);
-			multi_view->out_selection_changed();
+			update_selection_box();
 		} else if (session->win->is_key_pressed(xhui::KEY_CONTROL)) {
 			selection.add(p);
-			multi_view->out_selection_changed();
+			update_selection_box();
 		} else {
 
 			if (selection.contains(p)) {
@@ -305,13 +316,13 @@ void ModeWorld::on_left_button_down(const vec2&) {
 				multi_view->action_trafo = mat4::ID;
 			} else {
 				selection = {p};
-				multi_view->out_selection_changed();
+				update_selection_box();
 			}
 		}
 	} else {
 		if (!session->win->is_key_pressed(xhui::KEY_SHIFT) and !session->win->is_key_pressed(xhui::KEY_CONTROL)) {
 			selection.clear();
-			multi_view->out_selection_changed();
+			update_selection_box();
 		}
 	}
 	out_redraw();
@@ -361,7 +372,7 @@ void ModeWorld::on_key_down(int key) {
 	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE) {
 		data->delete_selection(selection);
 		selection.clear();
-		multi_view->out_selection_changed();
+		update_selection_box();
 		hover = base::None;
 	}
 }

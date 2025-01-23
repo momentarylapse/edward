@@ -11,6 +11,8 @@
 #include "Window.h"
 #endif
 
+
+
 namespace multiview {
 
 SingleData::SingleData() {

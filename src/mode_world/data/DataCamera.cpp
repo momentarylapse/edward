@@ -29,6 +29,7 @@ void DataCamera::reset() {
 }
 
 bool DataCamera::load(const Path &_filename, bool deep) {
+#if 0
 	bool Error = false;
 	reset();
 
@@ -92,6 +93,8 @@ bool DataCamera::load(const Path &_filename, bool deep) {
 	}
 
 	return !Error;
+#endif
+	return false;
 }
 
 bool DataCamera::save(const Path &_filename)

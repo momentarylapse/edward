@@ -10,6 +10,7 @@
 
 #include "../../multiview/SingleData.h"
 #include <y/world/Material.h>
+#include <lib/math/Box.h>
 
 class Terrain;
 class ScriptInstanceData;
@@ -21,10 +22,6 @@ public:
 	float Height;
 	vector Normal;
 };*/
-
-struct Box {
-	vec3 min, max;
-};
 
 class WorldTerrain: public multiview::SingleData {
 public:
