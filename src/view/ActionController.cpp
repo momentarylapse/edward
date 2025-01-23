@@ -20,11 +20,12 @@
 #include <data/geometry/GeometryTorus.h>
 #include <data/geometry/GeometryCube.h>
 #include <y/graphics-impl.h>
+#include <y/renderer/world/geometry/RenderViewData.h>
+#include <lib/math/plane.h>
 
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
-#if 0
-
+Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
 ActionController::ActionController(MultiView *view) {
 	multi_view = view;
@@ -61,6 +62,8 @@ ActionController::ActionController(MultiView *view) {
 		g->build(vb);
 		buf.add(vb);
 	}
+
+	material = create_material(multi_view->resource_manager, Gray, 0.9f, 0, Gray);
 
 	reset();
 }
@@ -146,7 +149,8 @@ bool cons_neg(ActionController::Constraint c) {
 void ActionController::update_action() {
 	if (!cur_action)
 		return;
-	MouseWrapper::update(multi_view);
+#if 0
+	//MouseWrapper::update(multi_view);
 
 	vec3 dir = active_win->get_direction();
 	vec3 _param = v_0;
@@ -177,6 +181,7 @@ void ActionController::update_action() {
 		param = v_0;
 	}
 	update_param(_param);
+#endif
 }
 
 void ActionController::update_param(const vec3 &_param) {
@@ -206,12 +211,15 @@ void ActionController::update_param(const vec3 &_param) {
 
 	update();
 
+#if 0
 	multi_view->out_action_update();
+#endif
 }
 
 
 
 void ActionController::end_action(bool set) {
+#if 0
 	if (!cur_action)
 		return;
 	if (set) {
@@ -226,13 +234,16 @@ void ActionController::end_action(bool set) {
 	cur_action = nullptr;
 	mat = mat4::ID;
 	MouseWrapper::stop(multi_view->session->win);
+#endif
 }
 
 bool ActionController::is_selecting() {
+#if 0
 	if (action.mode == ACTION_SELECT)
 		return true;
 	if (!action.locked)
 		return !multi_view->hover_selected();
+#endif
 	return false;
 }
 
@@ -252,19 +263,19 @@ void ActionController::delete_geo() {
 }
 
 void ActionController::update() {
-	if (cur_action) {
+	/*if (cur_action) {
 		pos = pos0;
 	} else {
 		pos = multi_view->get_selection_center();
-	}
-	float f = multi_view->cam.radius * 0.15f;
-	if (multi_view->whole_window)
-		f /= 2;
+	}*/
+	float f = multi_view->view_port.radius * 0.15f;
+	//if (multi_view->whole_window)
+	//	f /= 2;
 	auto s = mat4::scale(f, f, f);
 	auto t = mat4::translation(pos);
 	geo_mat = t * s;
 
-	multi_view->force_redraw();
+	//multi_view->force_redraw();
 }
 
 void ActionController::show(bool show) {
@@ -274,29 +285,29 @@ void ActionController::show(bool show) {
 
 string ActionController::constraint_name(Constraint c) {
 	if (c == Constraint::X or c == Constraint::NEG_X)
-		return _("x-axis");
+		return "x-axis";
 	if (c == Constraint::Y or c == Constraint::NEG_Y)
-		return _("y-axis");
+		return "y-axis";
 	if (c == Constraint::Z or c == Constraint::NEG_Z)
-		return _("z-axis");
+		return "z-axis";
 	if (c == Constraint::XY)
-		return _("x-y-plane");
+		return "x-y-plane";
 	if (c == Constraint::XZ)
-		return _("x-z-plane");
+		return "x-z-plane";
 	if (c == Constraint::YZ)
-		return _("y-z-plane");
+		return "y-z-plane";
 	return "free";
 }
 
 string ActionController::action_name(int a) {
 	if (a == ACTION_MOVE)
-		return _("move");
+		return "move";
 	if ((a == ACTION_ROTATE) or (a == ACTION_ROTATE_2D))
-		return _("rotate");
+		return "rotate";
 	if ((a == ACTION_SCALE) or (a == ACTION_SCALE_2D))
-		return _("scale");
+		return "scale";
 	if (a == ACTION_MIRROR)
-		return _("reflect");
+		return "reflect";
 	return "???";
 }
 
@@ -313,14 +324,14 @@ const ActionController::ACGeoConfig ActionController::ac_geo_config[] = {
 	{color(1, 0.8f, 0.8f, 0.8f),Constraint::FREE,2}
 };
 
-bool ActionController::geo_allow(int i, Window *win, const mat4 &geo_mat) {
+bool ActionController::geo_allow(int i, const mat4& proj, const mat4& geo_mat) {
 	auto c = ac_geo_config[i].constraint;
-	vec3 pp = win->project(geo_mat * v_0);
-	vec3 ppx = win->project(geo_mat * vec3::EX);
+	vec3 pp = proj.project(geo_mat * v_0);
+	vec3 ppx = proj.project(geo_mat * vec3::EX);
 	ppx.z = pp.z;
-	vec3 ppy = win->project(geo_mat * vec3::EY);
+	vec3 ppy = proj.project(geo_mat * vec3::EY);
 	ppy.z = pp.z;
-	vec3 ppz = win->project(geo_mat * vec3::EZ);
+	vec3 ppz = proj.project(geo_mat * vec3::EZ);
 	ppz.z = pp.z;
 
 	if (c == Constraint::X or c == Constraint::NEG_X)
@@ -339,11 +350,23 @@ bool ActionController::geo_allow(int i, Window *win, const mat4 &geo_mat) {
 }
 
 // in 2d mode!
-void ActionController::draw(Window *win) {
-	if (!multi_view->allow_mouse_actions)
-		return;
-	if (!visible)
-		return;
+void ActionController::draw(const RenderParams& params, RenderViewData& rvd) {
+	//if (!multi_view->allow_mouse_actions)
+	//	return;
+//	if (!visible)
+//		return;
+
+
+
+	update();
+	for (auto vb: buf) {
+		//draw_mesh(params, geo_mat, vb, material);
+		auto shader = rvd.get_shader(material, 0, "default", "");
+		auto& rd = rvd.start(params, geo_mat, shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+		rd.apply(params);
+		params.command_buffer->draw(vb);
+	}
+
 #if HAS_LIB_GL
 	nix::set_z(false, false);
 	mat4 m = mat * geo_mat;
@@ -425,6 +448,7 @@ ActionController::Constraint ActionController::get_hover(vec3 &tp) {
 	float z_min = 1;
 	int priority = -1;
 	auto hover = Constraint::UNDEFINED;
+#if 0
 	foreachi(Geometry *g, geo, i) {
 		vec3 t;
 		if (!geo_allow(i, multi_view->mouse_win, geo_mat))
@@ -440,12 +464,14 @@ ActionController::Constraint ActionController::get_hover(vec3 &tp) {
 		}
 	}
 	hover_constraint = hover;
+#endif
 	return hover;
 }
 
 bool ActionController::on_left_button_down() {
 	if (!visible and action.locked)
 		return false;
+#if 0
 	vec3 hp = multi_view->hover.point;
 	hover_constraint = get_hover(hp);
 	if (hover_constraint != Constraint::UNDEFINED) {
@@ -456,6 +482,7 @@ bool ActionController::on_left_button_down() {
 		start_action(multi_view->active_win, hp, Constraint::FREE);
 		return true;
 	}
+#endif
 	return false;
 }
 
@@ -472,5 +499,4 @@ bool ActionController::in_use() {
 void ActionController::on_mouse_move() {
 	update_action();
 }
-#endif
 

@@ -27,8 +27,6 @@ public:
 	owned<Material> material;
 	string vertex_shader_module;
 	string geometry_shader_module;
-	ShaderCache shader_cache;
-	ShaderCache shader_cache_shadow;
 
 	owned<VertexBuffer> vertex_buffer;
 	PrimitiveTopology topology = PrimitiveTopology::TRIANGLES;

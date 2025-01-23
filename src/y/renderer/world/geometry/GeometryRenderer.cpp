@@ -21,6 +21,7 @@ GeometryRenderer::GeometryRenderer(RenderPathType _type, SceneView &_scene_view)
 	type = _type;
 	flags = Flags::ALLOW_OPAQUE | Flags::ALLOW_TRANSPARENT;
 
+	cur_rvd.type = type;
 	cur_rvd.scene_view = &scene_view;
 
 	ch_pre = PerformanceMonitor::create_channel("pre", channel);
@@ -60,17 +61,6 @@ void GeometryRenderer::prepare(const RenderParams& params) {
 	PerformanceMonitor::end(ch_prepare);
 }
 
-
-Shader* GeometryRenderer::get_shader(Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module) {
-	if (!multi_pass_shader_cache[pass_no].contains(material))
-		multi_pass_shader_cache[pass_no].set(material, {});
-	auto& cache = multi_pass_shader_cache[pass_no][material];
-	if (is_shadow_pass())
-		cache._prepare_shader_multi_pass(type, *material_shadow, vertex_shader_module, geometry_shader_module, pass_no);
-	else
-		cache._prepare_shader_multi_pass(type, *material, vertex_shader_module, geometry_shader_module, pass_no);
-	return cache.get_shader(type);
-}
 
 void GeometryRenderer::set(Flags _flags) {
 	flags = _flags;

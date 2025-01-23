@@ -14,7 +14,9 @@
 struct GLFWwindow;
 
 Context* api_init(GLFWwindow* window);
+#ifdef USING_VULKAN
 Context* api_init_external(vulkan::Instance* instance, vulkan::Device* device);
+#endif
 void api_end();
 
 extern Texture *tex_white;

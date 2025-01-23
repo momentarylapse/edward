@@ -47,8 +47,6 @@ public:
 	quaternion ang = quaternion::ID;
 	Camera* cam;
 	Light* light;
-	base::map<Material*, ShaderCache> multi_pass_shader_cache[4];
-	// material as id!
 
 	TestRenderer() : Renderer("test") {
 		resource_manager = _resource_manager;

@@ -39,7 +39,7 @@ ShadowRenderer::ShadowRenderer(Camera* cam) :
 		auto& c = cascades[i];
 		c.geo_renderer = new GeometryRenderer(RenderPathType::Forward, scene_view);
 		c.geo_renderer->flags = GeometryRenderer::Flags::SHADOW_PASS;
-		c.geo_renderer->material_shadow = material.get();
+		c.geo_renderer->cur_rvd.material_shadow = material.get();
 
 		shared tex = new Texture(shadow_resolution, shadow_resolution, "rgba:i8");
 		c.depth_buffer = new DepthBuffer(shadow_resolution, shadow_resolution, "d:f32");

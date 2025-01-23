@@ -84,8 +84,6 @@ public:
 	vec3 pattern, min, max;
 	string vertex_shader_module;
 	owned<Material> material;
-	ShaderCache shader_cache;
-	ShaderCache shader_cache_shadow;
 	Path material_file;
 
 	Path texture_file[MATERIAL_MAX_TEXTURES];

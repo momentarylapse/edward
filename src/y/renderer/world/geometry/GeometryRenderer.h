@@ -14,7 +14,6 @@
 #include <lib/image/color.h>
 #include <lib/math/mat4.h>
 #include "../../../world/Light.h"
-#include "../../../world/Material.h"
 
 class Camera;
 class PerformanceMonitor;
@@ -75,8 +74,6 @@ public:
 	static constexpr bool using_view_space = true;
 	RenderPathType type;
 
-	Material *material_shadow = nullptr; // ref to ShadowRenderer
-
 	SceneView &scene_view;
 
 	shared<Shader> shader_fx;
@@ -84,9 +81,6 @@ public:
 	owned<VertexBuffer> vb_fx;
 	owned<VertexBuffer> vb_fx_points;
 
-	base::map<Material*, ShaderCache> multi_pass_shader_cache[4];
-	// material as id!
-	Shader* get_shader(Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module);
 	Material fx_material;
 
 	owned_array<VertexBuffer> fx_vertex_buffers;

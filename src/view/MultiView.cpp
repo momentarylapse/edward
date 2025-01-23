@@ -3,7 +3,7 @@
 //
 
 #include "MultiView.h"
-
+#include "ActionController.h"
 #include <Session.h>
 #include <lib/xhui/Theme.h>
 #include "EdwardWindow.h"
@@ -16,6 +16,8 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 		view_port(this)
 {
 	session = s;
+	resource_manager = session->resource_manager;
+	action_controller = new ActionController(this);
 }
 
 MultiView::~MultiView() = default;

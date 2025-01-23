@@ -28,6 +28,7 @@
 #include <view/EdwardWindow.h>
 
 #include <data/geometry/GeometryTeapot.h>
+#include <view/ActionController.h>
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {
 	auto material = resource_manager->load_material("");
@@ -52,23 +53,16 @@ public:
 	DataWorld* data_world;
 	RenderViewData rvd;
 	Light* light;
-	base::map<Material*, ShaderCache> multi_pass_shader_cache[4];
-	// material as id!
-	Shader* get_shader(Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module) {
-		if (!multi_pass_shader_cache[pass_no].contains(material))
-			multi_pass_shader_cache[pass_no].set(material, {});
-		auto& cache = multi_pass_shader_cache[pass_no][material];
-		RenderPathType type = RenderPathType::Forward;
-	//	if (is_shadow_pass())
-	//		cache._prepare_shader_multi_pass(type, *material_shadow, vertex_shader_module, geometry_shader_module, pass_no);
-	//	else
-			cache._prepare_shader_multi_pass(type, *material, vertex_shader_module, geometry_shader_module, pass_no);
-		return cache.get_shader(type);
+
+	void draw_mesh(const RenderParams& params, const mat4& matrix, VertexBuffer* vb, Material* material, const string& vertex_module = "default") {
+		auto shader = rvd.get_shader(material, 0, vertex_module, "");
+		auto& rd = rvd.start(params, matrix, shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+		rd.apply(params);
+		params.command_buffer->draw(vb);
 	}
 
 	Material* material_hover;
 	Material* material_selection;
-	Material* material_geo;
 
 	VertexBuffer* vb_tea;
 	Geometry* geo;
@@ -88,8 +82,6 @@ public:
 		try {
 			material_hover = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, White, true);
 			material_selection = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, Red, true);
-
-			material_geo = create_material(resource_manager, Gray, 0.9f, 0, Gray);
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
@@ -125,8 +117,8 @@ public:
 			auto material = t.terrain->material.get();
 			auto vb = t.terrain->vertex_buffer.get();
 
-			auto shader = get_shader(material, 0, t.terrain->vertex_shader_module, "");
-			auto& rd = rvd.start(params,  mat4::translation(t.pos), shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+			auto shader = rvd.get_shader(material, 0, t.terrain->vertex_shader_module, "");
+			auto& rd = rvd.start(params, mat4::translation(t.pos), shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
 			cb->push_constant(0, 4, &t.terrain->texture_scale[0].x);
 			cb->push_constant(4, 4, &t.terrain->texture_scale[1].x);
 			rd.apply(params);
@@ -138,11 +130,7 @@ public:
 				auto m = o.object;
 				auto material = m->material[k];
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-
-				auto shader = get_shader(material, 0, m->_template->vertex_shader_module, "");
-				auto& rd = rvd.start(params,  mat4::translation(o.pos) * mat4::rotation(o.ang), shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
-				rd.apply(params);
-				cb->draw(vb);
+				draw_mesh(params, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, material, m->_template->vertex_shader_module);
 			}
 		}
 
@@ -152,11 +140,7 @@ public:
 				for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
 					auto m = o.object;
 					auto vb = m->mesh[0]->sub[k].vertex_buffer;
-
-					auto shader = get_shader(material_selection, 0, m->_template->vertex_shader_module, "");
-					auto& rd = rvd.start(params,  mat4::translation(o.pos) * mat4::rotation(o.ang), shader, *material_selection, 0, PrimitiveTopology::TRIANGLES, vb);
-					rd.apply(params);
-					cb->draw(vb);
+					draw_mesh(params, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, material_selection, m->_template->vertex_shader_module);
 				}
 		}
 
@@ -166,22 +150,15 @@ public:
 			for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
 				auto m = o.object;
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-
-				auto shader = get_shader(material_hover, 0, m->_template->vertex_shader_module, "");
-				auto& rd = rvd.start(params,  mat4::translation(o.pos) * mat4::rotation(o.ang), shader, *material_hover, 0, PrimitiveTopology::TRIANGLES, vb);
-				rd.apply(params);
-				cb->draw(vb);
+				draw_mesh(params, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, material_hover, m->_template->vertex_shader_module);
 			}
 		}
 
-		{
-			auto vb = vb_tea;
-			auto shader = get_shader(material_geo, 0, "default", "");
-			auto& rd = rvd.start(params,  mat4::ID, shader, *material_geo, 0, PrimitiveTopology::TRIANGLES, vb);
-			rd.apply(params);
-			cb->draw(vb);
-		}
+		//draw_mesh(params, mat4::ID, vb_tea, material_geo);
+
+		mode->multi_view->action_controller->draw(params, rvd);
 	}
+
 };
 
 ModeWorld::ModeWorld(Session* session) : Mode(session) {

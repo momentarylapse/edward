@@ -15,6 +15,19 @@ class Camera;
 class Painter;
 class Session;
 class ActionMultiView;
+class ActionController;
+
+
+enum {
+	ACTION_SELECT,
+	ACTION_MOVE,
+	ACTION_ROTATE,
+	ACTION_ROTATE_2D,
+	ACTION_SCALE,
+	ACTION_SCALE_2D,
+	ACTION_MIRROR,
+	ACTION_ONCE,
+};
 
 class MultiView : public obs::Node<Renderer> {
 public:
@@ -54,6 +67,8 @@ public:
 	mat4 action_trafo;
 
 	base::optional<rect> selection_area;
+
+	ActionController* action_controller;
 };
 
 

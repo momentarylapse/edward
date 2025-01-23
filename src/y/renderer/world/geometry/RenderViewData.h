@@ -6,10 +6,12 @@
 #define Y_RENDERVIEWDATA_H
 
 #include <lib/base/base.h>
+#include <lib/base/map.h>
 #include <lib/base/pointer.h>
 #include <lib/math/mat4.h>
 #include <lib/image/color.h>
 #include "../../../graphics-fwd.h"
+#include "../../../world/Material.h"
 
 struct SceneView;
 class RenderParams;
@@ -60,6 +62,10 @@ struct RenderViewData {
 	void prepare_scene(SceneView* scene_view);
 	void begin_draw();
 
+	RenderPathType type;
+	Material *material_shadow = nullptr; // ref to ShadowRenderer
+	bool is_shadow_pass() const;
+
 	UBO ubo;
 #ifdef USING_VULKAN
 	Array<RenderData> rda;
@@ -84,6 +90,11 @@ struct RenderViewData {
 	RenderData& start(const RenderParams& params, const mat4& matrix,
 	                  Shader* shader, const Material& material, int pass_no,
 	                  PrimitiveTopology top, VertexBuffer *vb);
+
+
+	base::map<Material*, ShaderCache> multi_pass_shader_cache[4];
+	// material as id!
+	Shader* get_shader(Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module);
 };
 
 #endif //Y_RENDERVIEWDATA_H
