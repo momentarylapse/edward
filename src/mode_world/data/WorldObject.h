@@ -14,18 +14,16 @@
 class Model;
 class ScriptInstanceData;
 
-class WorldObject: public multiview::SingleData {
-public:
-	~WorldObject() override;
+struct WorldObject: multiview::SingleData {
 	Path filename;
 	Array<ScriptInstanceData> components;
 	string name;
 	Model *object;
 	vec3 ang;
 
-	float hover_distance(multiview::Window *win, const vec2 &m, vec3 &tp, float &z) override;
+	/*float hover_distance(multiview::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(multiview::Window *win, const rect &r) override;
-	bool overlap_rect(multiview::Window *win, const rect &r) override;
+	bool overlap_rect(multiview::Window *win, const rect &r) override;*/
 
 	void update_data();
 };

@@ -24,6 +24,7 @@ SingleData::SingleData() {
 	pos = v_0;
 }
 
+#if 0
 float SingleData::hover_distance(Window *win, const vec2 &m, vec3 &tp, float &z) {
 #if HAS_LIB_GL
 	vec3 p = win->project(pos);
@@ -54,6 +55,7 @@ bool SingleData::overlap_rect(Window *win, const rect &r) {
 	return false;
 #endif
 }
+#endif
 
 };
 

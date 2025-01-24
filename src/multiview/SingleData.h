@@ -20,16 +20,14 @@ namespace multiview{
 class Window;
 
 // "des Pudels Kern", don't change!!!!!!!
-class SingleData {
-public:
+struct SingleData {
 	SingleData();
-	virtual ~SingleData() {}
 	int view_stage;
 	bool is_selected, m_delta, m_old, is_special;
 	vec3 pos;
-	virtual float hover_distance(Window *win, const vec2 &m, vec3 &tp, float &z);
+	/*virtual float hover_distance(Window *win, const vec2 &m, vec3 &tp, float &z);
 	virtual bool overlap_rect(Window *win, const rect &r);
-	virtual bool in_rect(Window *win, const rect &r);
+	virtual bool in_rect(Window *win, const rect &r);*/
 };
 
 };

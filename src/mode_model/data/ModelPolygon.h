@@ -22,8 +22,7 @@ public:
 	void build(VertexBuffer *vb, int num_textures);
 };
 
-class ModelPolygonSide {
-public:
+struct ModelPolygonSide {
 	int vertex;
 	int edge;
 	int edge_direction; // which no of triangle in edge's list are we?
@@ -33,9 +32,7 @@ public:
 	unsigned char triangulation[3];
 };
 
-class ModelPolygon: public multiview::SingleData {
-public:
-	~ModelPolygon() override;
+struct ModelPolygon: multiview::SingleData {
 	Array<ModelPolygonSide> side;
 	vec3 temp_normal;
 	bool normal_dirty = true;

@@ -21,6 +21,9 @@ class Session;
 class ActionMultiView;
 class ActionController;
 class MultiView;
+namespace multiview {
+	struct SingleData;
+}
 
 
 enum {
@@ -81,7 +84,17 @@ public:
 	MultiViewWindow* active_window;
 	MultiViewWindow* hover_window;
 
+	struct DataSet {
+		MultiViewType type;
+		DynamicArray* array;
+		int flags;
+	};
+	Array<DataSet> data_sets;
+
+	void clear_selection();
+
 	rect area;
+	void set_area(const rect& area);
 	Session* session;
 
 	base::optional<Box> selection_box;
@@ -94,6 +107,8 @@ public:
 	std::function<base::optional<Hover>(MultiViewWindow*,const vec2&)> f_hover;
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 	base::optional<Hover> hover;
+
+	multiview::SingleData* get_hover_item();
 };
 
 

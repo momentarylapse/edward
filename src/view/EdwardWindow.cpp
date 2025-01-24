@@ -256,7 +256,7 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 		}
 	});
 	event_xp("area", xhui::event_id::Draw, [this] (Painter* p) {
-		session->cur_mode->multi_view->area = p->area();
+		session->cur_mode->multi_view->set_area(p->area());
 		renderer->render(p);
 		session->cur_mode->multi_view->on_draw(p);
 		session->cur_mode->on_draw_post(p);

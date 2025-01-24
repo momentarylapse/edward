@@ -28,8 +28,6 @@ ModelVertex::ModelVertex(const vec3 &_pos) {
 
 ModelVertex::ModelVertex() : ModelVertex(v_0) {}
 
-ModelEdge::~ModelEdge() = default;
-
 
 
 ModelMesh::ModelMesh(DataModel *m) {

@@ -129,7 +129,7 @@ public:
 
 		// selection
 		for (auto& o: data_world->objects) {
-			if (mode->selection.contains(&o))
+			if (o.is_selected)
 				for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
 					auto m = o.object;
 					auto vb = m->mesh[0]->sub[k].vertex_buffer;
@@ -169,6 +169,12 @@ Renderer* ModeWorld::create_renderer(SceneView* scene_view) {
 void ModeWorld::on_enter() {
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
 		return get_hover(win, m);
+	};
+	multi_view->data_sets = {
+		{MultiViewType::WORLD_OBJECT, &data->objects},
+		{MultiViewType::WORLD_TERRAIN, &data->terrains},
+		{MultiViewType::WORLD_CAMERA, &data->cameras},
+		{MultiViewType::WORLD_LIGHT, &data->lights}
 	};
 }
 
@@ -279,7 +285,7 @@ void ModeWorld::update_selection_box() {
 
 
 void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
-	if (multi_view->action_controller->cur_action) {
+	/*if (multi_view->action_controller->cur_action) {
 		multi_view->action_controller->mat = multi_view->action_controller->mat * mat4::translation({d.x, d.y, 0});
 		multi_view->action_controller->cur_action->update_and_notify(data, multi_view->action_controller->mat);
 	} else if (multi_view->selection_area) {
@@ -296,7 +302,7 @@ void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
 		//update_selection_box();
 	} else {
 		multi_view->hover = multi_view->get_hover(multi_view->hover_window, m);
-	}
+	}*/
 	out_redraw();
 }
 
@@ -306,15 +312,13 @@ void ModeWorld::on_mouse_leave(const vec2& m) {
 }
 
 void ModeWorld::on_left_button_down(const vec2& m) {
-	multi_view->hover = get_hover(multi_view->hover_window, m);
-	if (multi_view->hover) {
-		if (multi_view->hover->type == MultiViewType::ACTION_MANAGER) {
-			return;
-		}
+	/*if (multi_view->hover) {
 
 		void* p = nullptr;
 		if (multi_view->hover->type == MultiViewType::WORLD_OBJECT)
 			p = &data->objects[multi_view->hover->index];
+		if (!p)
+			return;
 
 		if (session->win->is_key_pressed(xhui::KEY_SHIFT)) {
 			if (selection.contains(p))
@@ -340,17 +344,17 @@ void ModeWorld::on_left_button_down(const vec2& m) {
 			selection.clear();
 			update_selection_box();
 		}
-	}
+	}*/
 	out_redraw();
 }
 
 void ModeWorld::on_left_button_up(const vec2&) {
-	if (multi_view->action_controller->cur_action) {
+	/*if (multi_view->action_controller->cur_action) {
 		data->execute(multi_view->action_controller->cur_action);
 		multi_view->action_controller->cur_action = nullptr;
 	}
 	if (multi_view->selection_area)
-		multi_view->selection_area = base::None;
+		multi_view->selection_area = base::None;*/
 	out_redraw();
 }
 

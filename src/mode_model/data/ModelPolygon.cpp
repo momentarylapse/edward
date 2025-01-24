@@ -36,8 +36,6 @@ void VertexStagingBuffer::build(VertexBuffer *vb, int num_textures) {
 		vb->update(l+2, uv[l]);*/
 }
 
-ModelPolygon::~ModelPolygon() = default;
-
 
 vec3 ModelPolygon::get_area_vector(const Array<ModelVertex> &vertex) const {
 	// Newell's method

@@ -6,6 +6,8 @@
 #include "ActionController.h"
 #include <Session.h>
 #include <lib/xhui/Theme.h>
+#include <multiview/SingleData.h>
+
 #include "EdwardWindow.h"
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
@@ -45,14 +47,18 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 
 MultiView::~MultiView() = default;
 
+void MultiView::set_area(const rect& _area) {
+	area = _area;
+	window.area = area;
+}
+
+
 void MultiView::prepare(const RenderParams& params) {
 	view_port.cam->owner->ang = view_port.ang;
 	view_port.cam->owner->pos = view_port.pos - view_port.cam->owner->ang * vec3::EZ * view_port.radius;
 	view_port.cam->min_depth = view_port.radius * 0.01f;
 	view_port.cam->max_depth = view_port.radius * 300;
 	view_port.cam->update_matrices(area.width() / area.height());
-
-	window.area = area;
 
 	// 3d -> pixel
 	window.projection = mat4::translation({area.x1, area.y1, 0})
@@ -82,10 +88,53 @@ void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
 }
 
 void MultiView::on_mouse_leave() {
+	hover = base::None;
+}
+
+void MultiView::clear_selection() {
+	for (auto& d: data_sets)
+		for (int i=0; i<d.array->num; i++)
+			reinterpret_cast<multiview::SingleData*>(d.array->simple_element(i))->is_selected = false;
+	// TODO update box
+	out_selection_changed();
+}
+
+multiview::SingleData* MultiView::get_hover_item() {
+	if (!hover)
+		return nullptr;
+	for (auto& d: data_sets)
+		if (d.type == hover->type)
+			return reinterpret_cast<multiview::SingleData*>(d.array->simple_element(hover->index));
+	return nullptr;
 }
 
 void MultiView::on_left_button_down(const vec2& m) {
+	hover = get_hover(hover_window, m);
+
 	//action_controller->on_left_button_down(m);
+	if (hover and hover->type == MultiViewType::ACTION_MANAGER) {
+	} else if (auto p = get_hover_item()) {
+		if (session->win->is_key_pressed(xhui::KEY_SHIFT)) {
+			// toggle p
+			p->is_selected = !p->is_selected;
+			// TODO update box
+			out_selection_changed();
+		} else if (session->win->is_key_pressed(xhui::KEY_CONTROL)) {
+			// add p
+			p->is_selected = true;
+			// TODO update box
+			out_selection_changed();
+		} else {
+			// select p exclusively
+			clear_selection();
+			p->is_selected = true;
+			// TODO update box
+			out_selection_changed();
+		}
+	} else {
+		if (!session->win->is_key_pressed(xhui::KEY_SHIFT) and !session->win->is_key_pressed(xhui::KEY_CONTROL))
+			clear_selection();
+	}
 }
 
 void MultiView::on_left_button_up(const vec2& m) {

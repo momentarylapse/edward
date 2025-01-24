@@ -15,8 +15,6 @@
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/formatter.h"
 
-WorldTerrain::~WorldTerrain() = default;
-
 
 bool WorldTerrain::load(Session *session, const Path &_filename, bool deep) {
 
@@ -82,12 +80,6 @@ void WorldTerrain::update_data() {
 	//terrain->pos = pos;
 }
 
-
-
-
-float WorldTerrain::hover_distance(multiview::Window *win, const vec2 &m, vec3 &tp, float &z) { return 0; }
-bool WorldTerrain::in_rect(multiview::Window *win, const rect &r) { return false; }
-bool WorldTerrain::overlap_rect(multiview::Window *win, const rect &r) { return false; }
 
 
 Box WorldTerrain::bounding_box() const {

@@ -19,8 +19,7 @@ class MeshInsideTestData;
 class Geometry;
 
 
-class ModelVertex: public multiview::SingleData {
-public:
+struct ModelVertex: multiview::SingleData {
 	int normal_mode;
 	ivec4 bone_index;
 	vec4 bone_weight;
@@ -29,12 +28,10 @@ public:
 	int ref_count; // polygons
 
 	ModelVertex();
-	ModelVertex(const vec3 &pos);
+	explicit ModelVertex(const vec3 &pos);
 };
 
-class ModelEdge: public multiview::SingleData {
-public:
-	~ModelEdge() override;
+struct ModelEdge: multiview::SingleData {
 	//int NormalMode;
 	int vertex[2];
 	int ref_count, polygon[2], side[2];
@@ -53,11 +50,10 @@ public:
 };
 
 // only for use in MultiView...
-class ModelSkinVertexDummy: public multiview::SingleData {
+struct ModelSkinVertexDummy: multiview::SingleData {
 };
 
-class ModelBall: public multiview::SingleData {
-public:
+struct ModelBall: multiview::SingleData {
 	int index;
 	float radius;
 
@@ -66,8 +62,7 @@ public:
 	bool overlap_rect(MultiView::Window *win, const rect &r) override;*/
 };
 
-class ModelCylinder: public multiview::SingleData {
-public:
+struct ModelCylinder: multiview::SingleData {
 	int index[2];
 	float radius;
 	bool round;
