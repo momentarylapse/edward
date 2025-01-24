@@ -37,7 +37,7 @@ void SkinGenerator::init_projective(const mat4 &_m) {
 	m = _m;
 }
 
-void SkinGenerator::init_projective(MultiView::Window *win) {
+void SkinGenerator::init_projective(MultiViewWindow *win) {
 	#if HAS_LIB_GL
 	rect d = win->dest;
 	mat4 s, t1, t2;

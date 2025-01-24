@@ -177,7 +177,7 @@ vec3 tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
 
-float model_hover_z(Model *o, const vector &pos, const vector &ang, const mat4& proj, const vec2 &mv, vec3 &tp) {
+float model_hover_z(Model *o, const vector &pos, const vector &ang, MultiViewWindow* win, const vec2 &mv, vec3 &tp) {
 	if (!o)
 		return -1;
 	int d = 0;//o->_detail_;
@@ -186,7 +186,7 @@ float model_hover_z(Model *o, const vector &pos, const vector &ang, const mat4& 
 	o->_matrix = mat4::translation(pos) * mat4::rotation(ang);
 	for (int i=0;i<o->mesh[d]->vertex.num;i++) {
 		tmv[i] = o->_matrix * o->mesh[d]->vertex[i];
-		pmv[i] = proj.project(tmv[i]);
+		pmv[i] = win->project(tmv[i]);
 	}
 	float z_min = 1;
 	for (int mm=0;mm<o->material.num;mm++)
@@ -213,21 +213,26 @@ float model_hover_z(Model *o, const vector &pos, const vector &ang, const mat4& 
 	return z_min;
 }
 
-float object_hover_distance(const WorldObject& me, const mat4& proj, const vec2 &mv, vec3 &tp, float &z) {
+float object_hover_distance(const WorldObject& me, MultiViewWindow* win, const vec2 &mv, vec3 &tp, float &z) {
 	Model *o = me.object;
 	if (!o)
 		return -1;
-	z = model_hover_z(o, me.pos, me.ang, proj, mv, tp);
+	z = model_hover_z(o, me.pos, me.ang, win, mv, tp);
 	return (z < 1) ? 0 : -1;
 }
 
-base::optional<ModeWorld::Hover> ModeWorld::get_hover(const vec2& m) const {
+base::optional<ModeWorld::Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& m) const {
 	base::optional<Hover> h;
 	vec3 tp;
+
+	if (multi_view->action_controller->get_hover(win, m, tp) != ActionController::Constraint::UNDEFINED) {
+		return base::None;
+	}
+
 	float zmin = multi_view->view_port.radius * 2;
 	for (const auto& [i, o]: enumerate(data->objects)) {
 		float z;
-		float dist = object_hover_distance(o, multi_view->projection, m, tp, z);
+		float dist = object_hover_distance(o, win, m, tp, z);
 		if (dist >= 0 and z < zmin) {
 			zmin = z;
 			h = {MVD_WORLD_OBJECT, i};
@@ -236,11 +241,11 @@ base::optional<ModeWorld::Hover> ModeWorld::get_hover(const vec2& m) const {
 	return h;
 }
 
-ModeWorld::Selection ModeWorld::get_selection(const rect& _r) const {
+ModeWorld::Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) const {
 	auto r = _r.canonical();
 	Selection s;
 	for (const auto& [i, o]: enumerate(data->objects)) {
-		const auto p = multi_view->projection.project(o.pos);
+		const auto p = win->project(o.pos);
 		if (p.z <= 0 or p.z >= 1)
 			continue;
 		if (r.inside({p.x, p.y}))
@@ -276,7 +281,7 @@ void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
 		multi_view->action->update_and_notify(data, multi_view->action_trafo);
 	} else if (multi_view->selection_area) {
 		multi_view->selection_area = rect(multi_view->selection_area->p00(), m);
-		auto s = get_selection(*multi_view->selection_area);
+		auto s = get_selection(multi_view->hover_window, *multi_view->selection_area);
 		// TODO shift/control
 		if (s != selection) {
 			selection = s;
@@ -287,7 +292,7 @@ void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
 		multi_view->selection_area = rect(m - d, m);
 		//update_selection_box();
 	} else {
-		hover = get_hover(m);
+		hover = get_hover(multi_view->hover_window, m);
 	}
 	out_redraw();
 }
@@ -297,7 +302,8 @@ void ModeWorld::on_mouse_leave(const vec2& m) {
 	out_redraw();
 }
 
-void ModeWorld::on_left_button_down(const vec2&) {
+void ModeWorld::on_left_button_down(const vec2& m) {
+	hover = get_hover(multi_view->hover_window, m);
 	if (hover) {
 		void* p = nullptr;
 		if (hover->type == MVD_WORLD_OBJECT)
@@ -349,7 +355,7 @@ void ModeWorld::on_draw_post(Painter* p) {
 
 	p->set_color(Red);
 	for (auto& o: data->objects) {
-		auto p1 = multi_view->projection.project(o.pos);
+		auto p1 = multi_view->active_window->project(o.pos);
 		p->draw_rect({p1.x,p1.x+2, p1.y,p1.y+2});
 	}
 }

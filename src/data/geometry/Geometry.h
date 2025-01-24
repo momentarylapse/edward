@@ -13,13 +13,11 @@
 #include <lib/base/base.h>
 #include <y/graphics-fwd.h>
 
+class MultiViewWindow;
 class ModelVertex;
 class ModelPolygon;
 class vec3;
 class mat4;
-/*namespace MultiView {
-	class Window;
-};*/
 
 class Geometry {
 public:
@@ -47,7 +45,7 @@ public:
 	bool is_inside(const vec3 &v) const;
 
 	void get_bounding_box(vec3 &min, vec3 &max);
-	//bool is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp);
+	bool is_mouse_over(MultiViewWindow* win, const mat4 &matrix, const vec2& m, vec3 &tp);
 
 	void build(VertexBuffer *vb) const;
 

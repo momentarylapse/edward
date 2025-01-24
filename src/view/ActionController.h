@@ -20,7 +20,7 @@ class Geometry;
 class Data;
 class Painter;
 class MultiView;
-//class Window;
+class MultiViewWindow;
 class Material;
 struct RenderParams;
 struct RenderViewData;
@@ -69,7 +69,8 @@ public:
 	Array<Geometry*> geo_show;
 	Array<Geometry*> geo;
 	Array<VertexBuffer*> buf;
-	Material* material;
+	Array<Material*> materials;
+	Material* material_hover;
 	mat4 geo_mat;
 	Constraint hover_constraint;
 	MultiView *multi_view;
@@ -84,10 +85,10 @@ public:
 	void draw_post(Painter* p);
 	void show(bool show);
 	void update();
-	bool on_left_button_down();
-	void on_mouse_move();
-	void on_left_button_up();
-	Constraint get_hover(vec3 &tp);
+	bool on_left_button_down(const vec2& m);
+	void on_mouse_move(const vec2& m, const vec2& d);
+	void on_left_button_up(const vec2& m);
+	Constraint get_hover(MultiViewWindow* win, const vec2& m, vec3 &tp);
 	bool in_use();
 	//void start_action(Window *active_win, const vec3 &m, Constraint constraints);
 	void update_action();
@@ -113,7 +114,7 @@ public:
 		int priority;
 	};
 	static const ACGeoConfig ac_geo_config[];
-	static bool geo_allow(int i, const mat4& proj, const mat4& geo_mat);
+	static bool geo_allow(int i, MultiViewWindow* win, const mat4& geo_mat);
 };
 
 #endif /* ACTIONCONTROLLER_H_ */

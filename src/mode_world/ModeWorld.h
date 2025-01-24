@@ -9,6 +9,8 @@
 #include "../view/Mode.h"
 #include "data/DataWorld.h"
 
+class MultiViewWindow;
+
 class ModeWorld : public Mode {
 public:
 	explicit ModeWorld(Session* session);
@@ -32,10 +34,10 @@ public:
 	using Selection = base::set<void*>;
 
 	base::optional<Hover> hover;
-	base::optional<Hover> get_hover(const vec2& m) const;
+	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 
 	Selection selection;
-	Selection get_selection(const rect& r) const;
+	Selection get_selection(MultiViewWindow* win, const rect& r) const;
 	void update_selection_box();
 };
 

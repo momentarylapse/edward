@@ -8,13 +8,11 @@
 #include "Geometry.h"
 #include <mode_model/data/ModelPolygon.h>
 #include <mode_model/data/SkinGenerator.h>
+#include <view/MultiView.h>
 #include <y/graphics-impl.h>
 #include <lib/math/mat4.h>
+#include <lib/math/vec2.h>
 #include <lib/math/plane.h>
-#if HAS_LIB_GL
-#include "../../../multiview/MultiView.h"
-#include "../../../multiview/Window.h"
-#endif
 
 class GeometryException : public Exception {
 public:
@@ -392,14 +390,12 @@ void Geometry::remove_unused_vertices() {
 		}
 }
 
-#if 0
-bool Geometry::is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp)
-{
-#if HAS_LIB_GL
-	for (ModelPolygon &p: polygon){
+bool Geometry::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec2& m, vec3 &tp) {
+	vec3 M = vec3(m, 0);
+	for (ModelPolygon &p: polygon) {
 		// care for the sense of rotation?
-		if (vec3::dot(p.temp_normal, win->get_direction()) > 0)
-			continue;
+	//	if (vec3::dot(p.temp_normal, win->get_direction()) > 0)
+	//		continue;
 
 		// project all points
 		Array<vec3> v;
@@ -417,7 +413,6 @@ bool Geometry::is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp)
 
 		// test all sub-triangles
 		p.update_triangulation(vertex);
-		vec3 M = vec3(win->multi_view->m, 0);
 		for (int k=p.side.num-3; k>=0; k--){
 			int a = p.side[k].triangulation[0];
 			int b = p.side[k].triangulation[1];
@@ -433,10 +428,8 @@ bool Geometry::is_mouse_over(MultiView::Window *win, const mat4 &mat, vec3 &tp)
 			}
 		}
 	}
-#endif
 	return false;
 }
-#endif
 
 void geo_poly_find_connected(const Geometry &g, int p0, base::set<int> &polys) {
 	base::set<int> verts;

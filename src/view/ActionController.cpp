@@ -21,6 +21,7 @@
 #include <data/geometry/GeometryCube.h>
 #include <y/graphics-impl.h>
 #include <y/renderer/world/geometry/RenderViewData.h>
+#include <lib/base/iter.h>
 #include <lib/math/plane.h>
 #include <lib/os/msg.h>
 
@@ -64,9 +65,15 @@ ActionController::ActionController(MultiView *view) {
 		buf.add(vb);
 	}
 
-	material = create_material(multi_view->resource_manager, Black, 0.9f, 0, White);
-	material->pass0.z_buffer = false;
-	material->pass0.z_test = false;
+	for (int i=0; i<geo.num; i++) {
+		auto m = create_material(multi_view->resource_manager, Black, 0.9f, 0, ac_geo_config[i].col);
+		m->pass0.z_buffer = false;
+		m->pass0.z_test = false;
+		materials.add(m);
+	}
+	material_hover = create_material(multi_view->resource_manager, Black, 0.9f, 0, White);
+	material_hover->pass0.z_buffer = false;
+	material_hover->pass0.z_test = false;
 
 	reset();
 }
@@ -336,14 +343,14 @@ const ActionController::ACGeoConfig ActionController::ac_geo_config[] = {
 	{color(1, 0.8f, 0.8f, 0.8f),Constraint::FREE,2}
 };
 
-bool ActionController::geo_allow(int i, const mat4& proj, const mat4& geo_mat) {
+bool ActionController::geo_allow(int i, MultiViewWindow* win, const mat4& geo_mat) {
 	auto c = ac_geo_config[i].constraint;
-	vec3 pp = proj.project(geo_mat * v_0);
-	vec3 ppx = proj.project(geo_mat * vec3::EX);
+	vec3 pp = win->project(geo_mat * v_0);
+	vec3 ppx = win->project(geo_mat * vec3::EX);
 	ppx.z = pp.z;
-	vec3 ppy = proj.project(geo_mat * vec3::EY);
+	vec3 ppy = win->project(geo_mat * vec3::EY);
 	ppy.z = pp.z;
-	vec3 ppz = proj.project(geo_mat * vec3::EZ);
+	vec3 ppz = win->project(geo_mat * vec3::EZ);
 	ppz.z = pp.z;
 
 	if (c == Constraint::X or c == Constraint::NEG_X)
@@ -353,11 +360,11 @@ bool ActionController::geo_allow(int i, const mat4& proj, const mat4& geo_mat) {
 	if (c == Constraint::Z or c == Constraint::NEG_Z)
 		return (ppz - pp).length() > 8;
 	if (c == Constraint::YZ)
-		return ((ppy - pp) ^ (ppz - pp)).length() > 300;
+		return vec3::cross(ppy - pp, ppz - pp).length() > 300;
 	if (c == Constraint::XZ)
-		return ((ppx - pp) ^ (ppz - pp)).length() > 300;
+		return vec3::cross(ppx - pp, ppz - pp).length() > 300;
 	if (c == Constraint::XY)
-		return ((ppx - pp) ^ (ppy - pp)).length() > 300;
+		return vec3::cross(ppx - pp, ppy - pp).length() > 300;
 	return true;
 }
 
@@ -368,11 +375,15 @@ void ActionController::draw(const RenderParams& params, RenderViewData& rvd) {
 	if (!visible)
 		return;
 
-
-	for (auto vb: buf) {
+	for (const auto& [i, vb]: enumerate(buf)) {
+		if (!geo_allow(i, multi_view->active_window, geo_mat))
+			continue;
 		//draw_mesh(params, geo_mat, vb, material);
-		auto shader = rvd.get_shader(material, 0, "default", "");
-		auto& rd = rvd.start(params, geo_mat, shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+		auto m = materials[i];
+		if (hover_constraint == ac_geo_config[i].constraint)
+			m = material_hover;
+		auto shader = rvd.get_shader(m, 0, "default", "");
+		auto& rd = rvd.start(params, geo_mat, shader, *m, 0, PrimitiveTopology::TRIANGLES, vb);
 		rd.apply(params);
 		params.command_buffer->draw(vb);
 	}
@@ -455,6 +466,7 @@ void ActionController::draw_post(Painter* p) {
 		return;
 	Array<vec2> lines;
 
+#if 0
 	auto pr = [this] (const vec3& v) {
 		return multi_view->projection.project(geo_mat * v).xy();
 	};
@@ -488,21 +500,21 @@ void ActionController::draw_post(Painter* p) {
 	p->set_color(Blue);
 	p->draw_line(pr({0, 0, -r1}), pr({0, 0, -r2}));
 	p->draw_line(pr({0, 0, r1}), pr({0, 0, r2}));
+#endif
 }
 
-ActionController::Constraint ActionController::get_hover(vec3 &tp) {
+ActionController::Constraint ActionController::get_hover(MultiViewWindow* win, const vec2& m, vec3 &tp) {
 	if (!visible)
 		return Constraint::UNDEFINED;
 	float z_min = 1;
 	int priority = -1;
 	auto hover = Constraint::UNDEFINED;
-#if 0
-	foreachi(Geometry *g, geo, i) {
+	for (const auto& [i, g]: enumerate(geo)) {
 		vec3 t;
-		if (!geo_allow(i, multi_view->mouse_win, geo_mat))
+		if (!geo_allow(i, win, geo_mat))
 			continue;
-		if (g->is_mouse_over(multi_view->mouse_win, geo_mat, t)) {
-			float z = multi_view->mouse_win->project(t).z;
+		if (g->is_mouse_over(win, geo_mat, m, t)) {
+			float z = win->project(t).z;
 			if ((z < z_min) or (ac_geo_config[i].priority >= priority)) {
 				hover = ac_geo_config[i].constraint;
 				priority = ac_geo_config[i].priority;
@@ -512,29 +524,26 @@ ActionController::Constraint ActionController::get_hover(vec3 &tp) {
 		}
 	}
 	hover_constraint = hover;
-#endif
 	return hover;
 }
 
-bool ActionController::on_left_button_down() {
+bool ActionController::on_left_button_down(const vec2& m) {
 	if (!visible and action.locked)
 		return false;
-#if 0
-	vec3 hp = multi_view->hover.point;
-	hover_constraint = get_hover(hp);
+	vec3 hp; // = multi_view->hover.point;
+	hover_constraint = get_hover(multi_view->hover_window, m, hp);
 	if (hover_constraint != Constraint::UNDEFINED) {
-		start_action(multi_view->active_win, hp, hover_constraint);
+		//start_action(multi_view->active_win, hp, hover_constraint);
 		return true;
 	}
-	if (multi_view->hover.index >= 0){
+	/*if (multi_view->hover.index >= 0){
 		start_action(multi_view->active_win, hp, Constraint::FREE);
 		return true;
-	}
-#endif
+	}*/
 	return false;
 }
 
-void ActionController::on_left_button_up() {
+void ActionController::on_left_button_up(const vec2& m) {
 	end_action(true);
 
 	update();
@@ -544,7 +553,7 @@ bool ActionController::in_use() {
 	return cur_action;
 }
 
-void ActionController::on_mouse_move() {
+void ActionController::on_mouse_move(const vec2& m, const vec2& d) {
 	update_action();
 }
 

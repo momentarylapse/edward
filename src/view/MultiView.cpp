@@ -12,11 +12,30 @@
 #include <y/y/Entity.h>
 #include <y/graphics-impl.h>
 
+MultiViewWindow::MultiViewWindow(MultiView* _multi_view) {
+	multi_view = _multi_view;
+}
+
+vec3 MultiViewWindow::project(const vec3& v) const {
+	return projection.project(v);
+}
+
+vec3 MultiViewWindow::dir() const {
+	return multi_view->view_port.ang * vec3::EZ;
+}
+
+
+
+
+
 MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
-		view_port(this)
+		view_port(this),
+		window(this)
 {
 	session = s;
 	resource_manager = session->resource_manager;
+	active_window = &window;
+	hover_window = &window;
 	action_controller = new ActionController(this);
 
 	view_port.out_changed >> create_sink([this] {
@@ -33,8 +52,10 @@ void MultiView::prepare(const RenderParams& params) {
 	view_port.cam->max_depth = view_port.radius * 300;
 	view_port.cam->update_matrices(area.width() / area.height());
 
+	window.area = area;
+
 	// 3d -> pixel
-	projection = mat4::translation({area.x1, area.y1, 0})
+	window.projection = mat4::translation({area.x1, area.y1, 0})
 		* mat4::scale(area.width()/2, area.height()/2, 1)
 		* mat4::translation({1.0f, 1.0f, 0})
 		* view_port.cam->m_projection * view_port.cam->m_view;
@@ -43,6 +64,9 @@ void MultiView::prepare(const RenderParams& params) {
 }
 
 void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
+	action_controller->on_mouse_move(m, d);
+	// TODO if busy... return
+
 	// left -> ...
 	if (session->win->button(0) and false)
 		view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
@@ -58,6 +82,16 @@ void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
 
 void MultiView::on_mouse_leave() {
 }
+
+void MultiView::on_left_button_down(const vec2& m) {
+	action_controller->on_left_button_down(m);
+}
+
+void MultiView::on_left_button_up(const vec2& m) {
+	action_controller->on_left_button_up(m);
+}
+
+
 
 void MultiView::on_mouse_wheel(const vec2& m, const vec2& d) {
 	view_port.zoom(exp(d.y * 0.1f));
@@ -96,6 +130,7 @@ void MultiView::set_selection_box(const base::optional<Box>& box) {
 }
 
 
+
 MultiView::ViewPort::ViewPort(MultiView* _multi_view) {
 	multi_view = _multi_view;
 	pos = v_0;
@@ -108,8 +143,6 @@ MultiView::ViewPort::ViewPort(MultiView* _multi_view) {
 	scene_view = new SceneView;
 	scene_view->cam = cam;
 }
-
-
 
 void MultiView::ViewPort::move(const vec3& drel) {
 	pos = pos + ang * drel * radius;

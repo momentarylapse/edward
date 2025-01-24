@@ -11,12 +11,14 @@
 #include <lib/math/vec3.h>
 #include <lib/math/quaternion.h>
 #include <lib/pattern/Observable.h>
+#include <mode_model/data/SkinGenerator.h>
 
 class Camera;
 class Painter;
 class Session;
 class ActionMultiView;
 class ActionController;
+class MultiView;
 
 
 enum {
@@ -30,6 +32,17 @@ enum {
 	ACTION_ONCE,
 };
 
+class MultiViewWindow {
+public:
+	explicit MultiViewWindow(MultiView* mv);
+	vec3 project(const vec3& v) const;
+	vec3 dir() const;
+
+	MultiView* multi_view;
+	rect area;
+	mat4 projection;
+};
+
 class MultiView : public obs::Node<Renderer> {
 public:
 	explicit MultiView(Session* session);
@@ -40,6 +53,8 @@ public:
 	void prepare(const RenderParams& params) override;
 
 	void on_draw(Painter* p);
+	void on_left_button_down(const vec2& m);
+	void on_left_button_up(const vec2& m);
 	void on_mouse_move(const vec2& m, const vec2& d);
 	void on_mouse_leave();
 	void on_mouse_wheel(const vec2& m, const vec2& d);
@@ -60,8 +75,11 @@ public:
 		void suggest_for_box(const vec3& vmin, const vec3& vmax);
 	} view_port;
 
+	MultiViewWindow window;
+	MultiViewWindow* active_window;
+	MultiViewWindow* hover_window;
+
 	rect area;
-	mat4 projection;
 	Session* session;
 
 	base::optional<Box> selection_box;
