@@ -15,10 +15,6 @@ using namespace vulkan;
 
 
 namespace xhui {
-
-
-
-
 struct TextCache {
 	string text;
 	float size;
@@ -185,6 +181,22 @@ void Painter::draw_rect(const rect &r) {
 	}
 }
 
+static void add_vb_line(Array<Vertex1>& vertices, const vec2& a, const vec2& b, float line_width) {
+	vec2 dir = (b - a).normalized();
+	vec2 r = dir.ortho() * line_width / 2;
+	dir *= line_width * 0.2f;
+	vec2 a0 = a - r - dir;
+	vec2 a1 = a + r - dir;
+	vec2 b0 = b - r + dir;
+	vec2 b1 = b + r + dir;
+	vertices.add({{a0.x, a0.y, 0}, v_0, 0,0});
+	vertices.add({{a1.x, a1.y, 0}, v_0, 0,0});
+	vertices.add({{b0.x, b0.y, 0}, v_0, 0,0});
+	vertices.add({{b0.x, b0.y, 0}, v_0, 0,0});
+	vertices.add({{a1.x, a1.y, 0}, v_0, 0,0});
+	vertices.add({{b1.x, b1.y, 0}, v_0, 0,0});
+}
+
 void Painter::draw_line(const vec2 &a, const vec2 &b) {
 	/*if (a.x == b.x) {
 		fill_rect(context, rect(a.x + 0.5f - line_width/2, a.x + 0.5f + line_width/2, a.y, b.y), _color, 0, 0);
@@ -202,19 +214,8 @@ void Painter::draw_line(const vec2 &a, const vec2 &b) {
 			context->line_vbs.add(vb);
 			context->num_line_vbs_used ++;
 		}
-		vec2 dir = (b - a).normalized();
-		vec2 r = dir.ortho();
-		vec2 a0 = a - (r + dir) * line_width/2;
-		vec2 a1 = a + (r - dir) * line_width/2;
-		vec2 b0 = b - (r - dir) * line_width/2;
-		vec2 b1 = b + (r + dir) * line_width/2;
-		Array<Vertex1> p = {
-			{{a0.x, a0.y, 0}, v_0, 0,0},
-			{{a1.x, a1.y, 0}, v_0, 0,0},
-			{{b0.x, b0.y, 0}, v_0, 0,0},
-			{{b0.x, b0.y, 0}, v_0, 0,0},
-			{{a1.x, a1.y, 0}, v_0, 0,0},
-			{{b1.x, b1.y, 0}, v_0, 0,0}};
+		Array<Vertex1> p;
+		add_vb_line(p, a, b, line_width);
 		vb->update(p);
 		Parameters params;
 		params.matrix = mat_pixel_to_rel;
@@ -232,8 +233,33 @@ void Painter::draw_line(const vec2 &a, const vec2 &b) {
 }
 
 void Painter::draw_lines(const Array<vec2> &p) {
+	/*for (int i=0; i<p.num-1; i++)
+		draw_line(p[i], p[i+1]);*/
+
+	VertexBuffer* vb;
+	if (context->num_line_vbs_used < context->line_vbs.num) {
+		vb = context->line_vbs[context->num_line_vbs_used ++];
+	} else {
+		vb = new VertexBuffer("3f,3f,2f");
+		context->line_vbs.add(vb);
+		context->num_line_vbs_used ++;
+	}
+	Array<Vertex1> vertices;
 	for (int i=0; i<p.num-1; i++)
-		draw_line(p[i], p[i+1]);
+		add_vb_line(vertices, p[i], p[i+1], line_width);
+	vb->update(vertices);
+	Parameters params;
+	params.matrix = mat_pixel_to_rel;
+	params.col = _color;
+	params.size = {(float)width, (float)height};
+	params.radius = 0;//line_width;
+	params.softness = 0;//softness;
+
+	auto cb = context->current_command_buffer();
+	cb->bind_pipeline(context->pipeline);
+	cb->push_constant(0, sizeof(params), &params);
+	cb->bind_descriptor_set(0, context->dset);
+	cb->draw(vb);
 }
 
 

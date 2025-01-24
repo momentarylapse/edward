@@ -71,6 +71,7 @@ public:
 		Alpha source, destination;
 		float factor = 1;
 		bool z_buffer = true;
+		bool z_test = true;
 		int cull_mode = 1;
 		Path shader_path;
 	};

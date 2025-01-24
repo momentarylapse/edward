@@ -22,6 +22,7 @@
 #include <y/graphics-impl.h>
 #include <y/renderer/world/geometry/RenderViewData.h>
 #include <lib/math/plane.h>
+#include <lib/os/msg.h>
 
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
@@ -46,9 +47,9 @@ ActionController::ActionController(MultiView *view) {
 	geo.add(new GeometryCylinder(-vec3::EZ*r0, -vec3::EZ*r1, r, 1, 8));
 	geo.add(new GeometryCylinder( vec3::EZ*r0,  vec3::EZ*r1, r, 1, 8));
 	r = 0.015f;
-	geo_show.add(new GeometryTorus(v_0, vec3::EZ, 1.0f, r, 32, 8));
-	geo_show.add(new GeometryTorus(v_0, vec3::EY, 1.0f, r, 32, 8));
-	geo_show.add(new GeometryTorus(v_0, vec3::EX, 1.0f, r, 32, 8));
+	geo_show.add(new GeometryTorus(v_0, vec3::EZ, 1.0f, r, 128, 8));
+	geo_show.add(new GeometryTorus(v_0, vec3::EY, 1.0f, r, 128, 8));
+	geo_show.add(new GeometryTorus(v_0, vec3::EX, 1.0f, r, 128, 8));
 	r = 0.03f;
 	geo_show.add(new GeometryCylinder(-vec3::EX*r0, -vec3::EX*r1, r, 1, 8));
 	geo_show.add(new GeometryCylinder( vec3::EX*r0,  vec3::EX*r1, r, 1, 8));
@@ -63,7 +64,9 @@ ActionController::ActionController(MultiView *view) {
 		buf.add(vb);
 	}
 
-	material = create_material(multi_view->resource_manager, Gray, 0.9f, 0, Gray);
+	material = create_material(multi_view->resource_manager, Black, 0.9f, 0, White);
+	material->pass0.z_buffer = false;
+	material->pass0.z_test = false;
 
 	reset();
 }
@@ -446,7 +449,45 @@ void ActionController::draw(const RenderParams& params, RenderViewData& rvd) {
 #endif
 }
 
-void ActionController::draw_post() {
+void ActionController::draw_post(Painter* p) {
+	return;
+	if (!visible)
+		return;
+	Array<vec2> lines;
+
+	auto pr = [this] (const vec3& v) {
+		return multi_view->projection.project(geo_mat * v).xy();
+	};
+
+	p->set_line_width(10);
+	for (float phi=0; phi<2*pi; phi+=0.10f)
+		lines.add(pr({cos(phi), 0, sin(phi)}));
+	p->set_color(color(1, 1, 0, 1));
+	p->draw_lines(lines);
+
+	lines.clear();
+	for (float phi=0; phi<2*pi; phi+=0.10f)
+		lines.add(pr({cos(phi), sin(phi), 0}));
+	p->set_color(color(1, 1, 1, 0));
+	p->draw_lines(lines);
+
+	lines.clear();
+	for (float phi=0; phi<2*pi; phi+=0.10f)
+		lines.add(pr({0, cos(phi), sin(phi)}));
+	p->set_color(color(1, 0, 1, 1));
+	p->draw_lines(lines);
+
+	float r1 = 1.3f;
+	float r2 = 0.7f;
+	p->set_color(Red);
+	p->draw_line(pr({-r1, 0, 0}), pr({-r2, 0, 0}));
+	p->draw_line(pr({r1, 0, 0}), pr({r2, 0, 0}));
+	p->set_color(Green);
+	p->draw_line(pr({0, -r1, 0}), pr({0, -r2, 0}));
+	p->draw_line(pr({0, r1, 0}), pr({0, r2, 0}));
+	p->set_color(Blue);
+	p->draw_line(pr({0, 0, -r1}), pr({0, 0, -r2}));
+	p->draw_line(pr({0, 0, r1}), pr({0, 0, r2}));
 }
 
 ActionController::Constraint ActionController::get_hover(vec3 &tp) {

@@ -85,13 +85,7 @@ void MultiView::on_draw(Painter* p) {
 		p->draw_rect(selection_area->canonical());
 		p->set_fill(true);
 	}
-
-	p->set_color(Green);
-	p->set_fill(false);
-	p->set_line_width(20);
-	p->draw_rect({200,400,200,400});
-	p->set_fill(true);
-	p->draw_line({300,300}, {700,700});
+	action_controller->draw_post(p);
 }
 
 

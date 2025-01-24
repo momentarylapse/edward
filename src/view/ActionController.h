@@ -81,7 +81,7 @@ public:
 	void delete_geo();
 	//void draw(Window *win);
 	void draw(const RenderParams& params, RenderViewData& rvd);
-	void draw_post();
+	void draw_post(Painter* p);
 	void show(bool show);
 	void update();
 	bool on_left_button_down();

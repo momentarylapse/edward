@@ -50,13 +50,11 @@ vulkan::CullMode vk_cull(int culling) {
 }
 
 GraphicsPipeline* GeometryRenderer::get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb) {
-	if (pass.mode == TransparencyMode::FUNCTIONS) {
-		return PipelineManager::get_alpha(s, rp, top, vb, pass.source, pass.destination, false, vk_cull(pass.cull_mode));
-	} else if (pass.mode == TransparencyMode::COLOR_KEY_HARD) {
-		return PipelineManager::get_alpha(s, rp, top, vb, Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, true, vk_cull(pass.cull_mode));
-	} else {
-		return PipelineManager::get(s, rp, top, vb, vk_cull(pass.cull_mode));
-	}
+	if (pass.mode == TransparencyMode::FUNCTIONS)
+		return PipelineManager::get_alpha(s, rp, top, vb, pass.source, pass.destination, vk_cull(pass.cull_mode), pass.z_test, pass.z_buffer);
+	if (pass.mode == TransparencyMode::COLOR_KEY_HARD)
+		return PipelineManager::get_alpha(s, rp, top, vb, Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, vk_cull(pass.cull_mode), pass.z_test, pass.z_buffer);
+	return PipelineManager::get(s, rp, top, vb, vk_cull(pass.cull_mode), pass.z_test, pass.z_buffer);
 }
 
 
