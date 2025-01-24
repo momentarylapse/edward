@@ -13,6 +13,7 @@
 
 class DataWorld;
 class vec3;
+enum class MultiViewType;
 
 class ActionWorldMoveSelection: public ActionMultiView {
 public:
@@ -22,7 +23,7 @@ public:
 	void *execute(Data *d) override;
 	void undo(Data *d) override;
 private:
-	Array<int> type;
+	Array<MultiViewType> type;
 };
 
 #endif /* ACTIONWORLDMOVESELECTION_H_ */

@@ -7,6 +7,7 @@
 
 #include <lib/base/optional.h>
 #include "../view/Mode.h"
+#include "../view/Hover.h"
 #include "data/DataWorld.h"
 
 class MultiViewWindow;
@@ -14,6 +15,8 @@ class MultiViewWindow;
 class ModeWorld : public Mode {
 public:
 	explicit ModeWorld(Session* session);
+
+	void on_enter() override;
 
 	Renderer* create_renderer(SceneView* scene_view) override;
 	void on_mouse_move(const vec2& m, const vec2& d) override;
@@ -27,13 +30,9 @@ public:
 	void on_command(const string& id) override;
 
 	DataWorld* data;
-	struct Hover {
-		int type, index;
-	};
 
 	using Selection = base::set<void*>;
 
-	base::optional<Hover> hover;
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 
 	Selection selection;

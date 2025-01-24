@@ -15,6 +15,8 @@ class MultiView;
 class Session;
 class Painter;
 class Data;
+class MultiViewWindow;
+struct Hover;
 
 class Mode : public obs::Node<VirtualBase> {
 public:
@@ -23,12 +25,12 @@ public:
 	obs::source out_redraw{this, "redraw"};
 
 	// this or a child
-	virtual void enter_rec() {}
-	virtual void leave_rec() {}
+	virtual void on_enter_rec() {}
+	virtual void on_leave_rec() {}
 
 	// this exactly
-	virtual void enter() {}
-	virtual void leave() {}
+	virtual void on_enter() {}
+	virtual void on_leave() {}
 
 	virtual void on_command(const string& id) {}
 

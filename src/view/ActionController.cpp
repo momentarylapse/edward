@@ -75,7 +75,7 @@ ActionController::ActionController(MultiView *view) {
 	material_hover->pass0.z_buffer = false;
 	material_hover->pass0.z_test = false;
 
-	reset();
+	//reset();
 }
 
 ActionController::~ActionController() {
@@ -257,11 +257,12 @@ bool ActionController::is_selecting() {
 	return false;
 }
 
-void ActionController::reset() {
+/*void ActionController::reset() {
+	msg_write("reset");
 	visible = false;
 	constraints = Constraint::FREE;
 	hover_constraint = Constraint::UNDEFINED;
-}
+}*/
 
 void ActionController::delete_geo() {
 	for (Geometry *g: geo)
@@ -380,7 +381,7 @@ void ActionController::draw(const RenderParams& params, RenderViewData& rvd) {
 			continue;
 		//draw_mesh(params, geo_mat, vb, material);
 		auto m = materials[i];
-		if (hover_constraint == ac_geo_config[i].constraint)
+		if (multi_view->hover and multi_view->hover->type == MultiViewType::ACTION_MANAGER and multi_view->hover->index == (int)ac_geo_config[i].constraint)
 			m = material_hover;
 		auto shader = rvd.get_shader(m, 0, "default", "");
 		auto& rd = rvd.start(params, geo_mat, shader, *m, 0, PrimitiveTopology::TRIANGLES, vb);
@@ -523,10 +524,11 @@ ActionController::Constraint ActionController::get_hover(MultiViewWindow* win, c
 			}
 		}
 	}
-	hover_constraint = hover;
+	//hover_constraint = hover;
 	return hover;
 }
 
+#if 0
 bool ActionController::on_left_button_down(const vec2& m) {
 	if (!visible and action.locked)
 		return false;
@@ -548,12 +550,13 @@ void ActionController::on_left_button_up(const vec2& m) {
 
 	update();
 }
+#endif
 
 bool ActionController::in_use() {
 	return cur_action;
 }
 
-void ActionController::on_mouse_move(const vec2& m, const vec2& d) {
+/*void ActionController::on_mouse_move(const vec2& m, const vec2& d) {
 	update_action();
-}
+}*/
 

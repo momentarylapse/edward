@@ -5,6 +5,7 @@
 #ifndef MULTIVIEW_H
 #define MULTIVIEW_H
 
+#include "Hover.h"
 #include <y/renderer/Renderer.h>
 #include <y/renderer/world/geometry/SceneView.h>
 #include <lib/math/Box.h>
@@ -12,6 +13,7 @@
 #include <lib/math/quaternion.h>
 #include <lib/pattern/Observable.h>
 #include <mode_model/data/SkinGenerator.h>
+#include <functional>
 
 class Camera;
 class Painter;
@@ -85,12 +87,13 @@ public:
 	base::optional<Box> selection_box;
 	void set_selection_box(const base::optional<Box>& box);
 
-	ActionMultiView* action = nullptr;
-	mat4 action_trafo;
-
 	base::optional<rect> selection_area;
 
 	ActionController* action_controller;
+
+	std::function<base::optional<Hover>(MultiViewWindow*,const vec2&)> f_hover;
+	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
+	base::optional<Hover> hover;
 };
 
 

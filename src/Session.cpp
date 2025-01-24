@@ -245,7 +245,7 @@ void Session::set_mode_now(Mode *m) {
 			msg_write("start " + cur_mode->name);
 			if (cur_mode->multi_view)
 				cur_mode->multi_view->push_settings();
-			cur_mode->on_start();
+			cur_mode->on_enter_rec();
 		}
 		cur_mode->on_enter();
 		cur_mode->on_set_multi_view();
@@ -257,13 +257,14 @@ void Session::set_mode_now(Mode *m) {
 			m = mode_queue[0];
 	}
 
-	win->set_menu(hui::create_resource_menu(cur_mode->menu_id, win));
+	//win->set_menu(hui::create_resource_menu(cur_mode->menu_id, win));
 	win->update_menu();
 #endif
 
 
 	cur_mode = m;
 
+	cur_mode->on_enter();
 
 
 	//cur_mode->on_enter(); // ????

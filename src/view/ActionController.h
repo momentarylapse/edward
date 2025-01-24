@@ -72,22 +72,22 @@ public:
 	Array<Material*> materials;
 	Material* material_hover;
 	mat4 geo_mat;
-	Constraint hover_constraint;
 	MultiView *multi_view;
 //	Window *active_win;
 	MouseAction action;
 	ActionMultiView *cur_action;
 	Data *data;
-	void reset();
+	//void reset();
 	void delete_geo();
 	//void draw(Window *win);
 	void draw(const RenderParams& params, RenderViewData& rvd);
 	void draw_post(Painter* p);
 	void show(bool show);
+
 	void update();
-	bool on_left_button_down(const vec2& m);
+	/*bool on_left_button_down(const vec2& m);
 	void on_mouse_move(const vec2& m, const vec2& d);
-	void on_left_button_up(const vec2& m);
+	void on_left_button_up(const vec2& m);*/
 	Constraint get_hover(MultiViewWindow* win, const vec2& m, vec3 &tp);
 	bool in_use();
 	//void start_action(Window *active_win, const vec3 &m, Constraint constraints);

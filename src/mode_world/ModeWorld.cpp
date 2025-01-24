@@ -138,8 +138,8 @@ public:
 		}
 
 		// hover...
-		if (mode->hover and mode->hover->type == MVD_WORLD_OBJECT) {
-			auto& o = data_world->objects[mode->hover->index];
+		if (mode->multi_view->hover and mode->multi_view->hover->type == MultiViewType::WORLD_OBJECT) {
+			auto& o = data_world->objects[mode->multi_view->hover->index];
 			for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
 				auto m = o.object;
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
@@ -165,6 +165,13 @@ ModeWorld::ModeWorld(Session* session) : Mode(session) {
 Renderer* ModeWorld::create_renderer(SceneView* scene_view) {
 	return new DataWorldRenderer(this, scene_view);
 }
+
+void ModeWorld::on_enter() {
+	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
+		return get_hover(win, m);
+	};
+}
+
 
 void ModeWorld::optimize_view() {
 	vec3 vmin, vmax;
@@ -221,21 +228,17 @@ float object_hover_distance(const WorldObject& me, MultiViewWindow* win, const v
 	return (z < 1) ? 0 : -1;
 }
 
-base::optional<ModeWorld::Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& m) const {
+base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& m) const {
 	base::optional<Hover> h;
-	vec3 tp;
-
-	if (multi_view->action_controller->get_hover(win, m, tp) != ActionController::Constraint::UNDEFINED) {
-		return base::None;
-	}
 
 	float zmin = multi_view->view_port.radius * 2;
 	for (const auto& [i, o]: enumerate(data->objects)) {
 		float z;
+		vec3 tp;
 		float dist = object_hover_distance(o, win, m, tp, z);
 		if (dist >= 0 and z < zmin) {
 			zmin = z;
-			h = {MVD_WORLD_OBJECT, i};
+			h = {MultiViewType::WORLD_OBJECT, i, tp};
 		}
 	}
 	return h;
@@ -276,9 +279,9 @@ void ModeWorld::update_selection_box() {
 
 
 void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
-	if (multi_view->action) {
-		multi_view->action_trafo = multi_view->action_trafo * mat4::translation({d.x, d.y, 0});
-		multi_view->action->update_and_notify(data, multi_view->action_trafo);
+	if (multi_view->action_controller->cur_action) {
+		multi_view->action_controller->mat = multi_view->action_controller->mat * mat4::translation({d.x, d.y, 0});
+		multi_view->action_controller->cur_action->update_and_notify(data, multi_view->action_controller->mat);
 	} else if (multi_view->selection_area) {
 		multi_view->selection_area = rect(multi_view->selection_area->p00(), m);
 		auto s = get_selection(multi_view->hover_window, *multi_view->selection_area);
@@ -292,22 +295,26 @@ void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
 		multi_view->selection_area = rect(m - d, m);
 		//update_selection_box();
 	} else {
-		hover = get_hover(multi_view->hover_window, m);
+		multi_view->hover = multi_view->get_hover(multi_view->hover_window, m);
 	}
 	out_redraw();
 }
 
 void ModeWorld::on_mouse_leave(const vec2& m) {
-	hover = base::None;
+	multi_view->hover = base::None;
 	out_redraw();
 }
 
 void ModeWorld::on_left_button_down(const vec2& m) {
-	hover = get_hover(multi_view->hover_window, m);
-	if (hover) {
+	multi_view->hover = get_hover(multi_view->hover_window, m);
+	if (multi_view->hover) {
+		if (multi_view->hover->type == MultiViewType::ACTION_MANAGER) {
+			return;
+		}
+
 		void* p = nullptr;
-		if (hover->type == MVD_WORLD_OBJECT)
-			p = &data->objects[hover->index];
+		if (multi_view->hover->type == MultiViewType::WORLD_OBJECT)
+			p = &data->objects[multi_view->hover->index];
 
 		if (session->win->is_key_pressed(xhui::KEY_SHIFT)) {
 			if (selection.contains(p))
@@ -321,8 +328,8 @@ void ModeWorld::on_left_button_down(const vec2& m) {
 		} else {
 
 			if (selection.contains(p)) {
-				multi_view->action = new ActionWorldMoveSelection(data, selection);
-				multi_view->action_trafo = mat4::ID;
+				multi_view->action_controller->cur_action = new ActionWorldMoveSelection(data, selection);
+				multi_view->action_controller->mat = mat4::ID;
 			} else {
 				selection = {p};
 				update_selection_box();
@@ -338,9 +345,9 @@ void ModeWorld::on_left_button_down(const vec2& m) {
 }
 
 void ModeWorld::on_left_button_up(const vec2&) {
-	if (multi_view->action) {
-		data->execute(multi_view->action);
-		multi_view->action = nullptr;
+	if (multi_view->action_controller->cur_action) {
+		data->execute(multi_view->action_controller->cur_action);
+		multi_view->action_controller->cur_action = nullptr;
 	}
 	if (multi_view->selection_area)
 		multi_view->selection_area = base::None;
@@ -372,7 +379,7 @@ void ModeWorld::on_key_down(int key) {
 		data->delete_selection(selection);
 		selection.clear();
 		update_selection_box();
-		hover = base::None;
+		multi_view->hover = base::None;
 	}
 }
 

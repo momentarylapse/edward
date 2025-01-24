@@ -64,7 +64,8 @@ void MultiView::prepare(const RenderParams& params) {
 }
 
 void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
-	action_controller->on_mouse_move(m, d);
+	hover = get_hover(hover_window, m);
+	//action_controller->on_mouse_move(m, d);
 	// TODO if busy... return
 
 	// left -> ...
@@ -84,11 +85,11 @@ void MultiView::on_mouse_leave() {
 }
 
 void MultiView::on_left_button_down(const vec2& m) {
-	action_controller->on_left_button_down(m);
+	//action_controller->on_left_button_down(m);
 }
 
 void MultiView::on_left_button_up(const vec2& m) {
-	action_controller->on_left_button_up(m);
+	//action_controller->on_left_button_up(m);
 }
 
 
@@ -127,6 +128,18 @@ void MultiView::set_selection_box(const base::optional<Box>& box) {
 	selection_box = box;
 	out_selection_changed();
 	action_controller->update();
+}
+
+
+base::optional<Hover> MultiView::get_hover(MultiViewWindow* win, const vec2& m) const {
+	vec3 tp;
+	auto con = action_controller->get_hover(win, m, tp);
+	if (con != ActionController::Constraint::UNDEFINED)
+		return Hover{MultiViewType::ACTION_MANAGER, (int)con, tp};
+
+	if (f_hover)
+		return f_hover(win, m);
+	return base::None;
 }
 
 
