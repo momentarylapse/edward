@@ -8,8 +8,8 @@
 #ifndef ACTIONWORLDADDOBJECT_H_
 #define ACTIONWORLDADDOBJECT_H_
 
-#include "../../Action.h"
-#include "../../../data/world/WorldObject.h"
+#include "../../../action/Action.h"
+#include "../../data/WorldObject.h"
 
 class ActionWorldAddObject : public Action {
 public:

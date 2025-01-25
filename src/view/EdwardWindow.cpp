@@ -266,6 +266,10 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 		renderer->render(p);
 		session->cur_mode->multi_view->on_draw(p);
 		session->cur_mode->on_draw_post(p);
+		p->set_color(White);
+		p->set_font_size(xhui::Theme::_default.font_size * 1.5f);
+		for (int i=0; i<session->message_str.num; i++)
+			p->draw_str(_area.center() + vec2(0, 20*i), session->message_str[i]);
 	});
 	event_x("area", xhui::event_id::MouseMove, [this] {
 		session->cur_mode->multi_view->on_mouse_move(state.m, state.m - state_prev.m);

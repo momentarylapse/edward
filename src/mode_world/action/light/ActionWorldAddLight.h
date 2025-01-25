@@ -8,8 +8,8 @@
 #ifndef SRC_ACTION_WORLD_LINK_ACTIONWORLDADDLIGHT_H_
 #define SRC_ACTION_WORLD_LINK_ACTIONWORLDADDLIGHT_H_
 
-#include "../../Action.h"
-#include "../../../data/world/WorldLight.h"
+#include "../../../action/Action.h"
+#include "../../data/WorldLight.h"
 
 class ActionWorldAddLight : public Action {
 public:

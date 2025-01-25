@@ -46,6 +46,7 @@ public:
 	~DataWorld() override;
 
 	void reset() override;
+	bool is_empty() const;
 
 
 	void get_bounding_box(vec3 &min, vec3 &max);
@@ -115,8 +116,8 @@ public:
 	void edit_light(int index, const WorldLight& l);
 #endif
 
-	void copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights); // actually not an action
-	void paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights);
+	void copy(DataWorld& temp) const; // actually not an action
+	void paste(const DataWorld& temp);
 	void delete_selection(const Data::Selection& selection);
 };
 

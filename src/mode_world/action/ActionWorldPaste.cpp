@@ -1,0 +1,46 @@
+/*
+ * ActionWorldPaste.cpp
+ *
+ *  Created on: 25.09.2012
+ *      Author: michi
+ */
+
+#include "ActionWorldPaste.h"
+#include "object/ActionWorldAddObject.h"
+#include "terrain/ActionWorldAddTerrain.h"
+//#include "camera/
+#include "light/ActionWorldAddLight.h"
+#include "../data/DataWorld.h"
+#include "../data/WorldObject.h"
+#include "../data/WorldTerrain.h"
+#include "../data/WorldCamera.h"
+#include "../data/WorldLight.h"
+
+
+ActionWorldPaste::ActionWorldPaste(const DataWorld& temp) :
+	objects(temp.objects),
+	terrains(temp.terrains),
+	lights(temp.lights),
+	cameras(temp.cameras)
+{
+}
+
+void *ActionWorldPaste::compose(Data *d) {
+	auto *w = dynamic_cast<DataWorld*>(d);
+	w->clear_selection();
+
+	for (const auto &o: objects)
+		addSubAction(new ActionWorldAddObject(o), w);
+
+	for (const auto &t: terrains)
+		addSubAction(new ActionWorldAddTerrain(t.pos, t.filename), w);
+
+	//for (const auto &c: cameras)
+	//	addSubAction(new ActionWorldAddCamera(c), w);
+
+	for (const auto &l: lights)
+		addSubAction(new ActionWorldAddLight(l), w);
+
+	return NULL;
+}
+

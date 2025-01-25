@@ -13,7 +13,7 @@
 
 class ActionWorldDeleteObject : public Action {
 public:
-	ActionWorldDeleteObject(int index);
+	explicit ActionWorldDeleteObject(int index);
 	string name() override { return "WorldDeleteObject"; }
 
 	void *execute(Data *d) override;

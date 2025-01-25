@@ -7,8 +7,8 @@
 
 #include "ActionWorldAddTerrain.h"
 #include "../../../Session.h"
-#include "../../../data/world/DataWorld.h"
-#include "../../../data/world/WorldTerrain.h"
+#include "../../data/DataWorld.h"
+#include "../../data/WorldTerrain.h"
 #include <y/world/Terrain.h>
 #include <y/graphics-impl.h>
 #include <assert.h>

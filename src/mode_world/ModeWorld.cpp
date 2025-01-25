@@ -152,7 +152,10 @@ public:
 
 };
 
-ModeWorld::ModeWorld(Session* session) : Mode(session) {
+ModeWorld::ModeWorld(Session* session) :
+	Mode(session),
+	temp(session)
+{
 	multi_view = new MultiView(session);
 	data = new DataWorld(session);
 	generic_data = data;
@@ -281,6 +284,30 @@ void ModeWorld::on_left_button_up(const vec2&) {
 	out_redraw();
 }
 
+static base::optional<string> world_selection_description(DataWorld* data) {
+	int nob = 0, nter = 0, ncam = 0, nlights = 0;
+	auto sel = data->get_selection();
+	if (sel.contains(MultiViewType::WORLD_OBJECT))
+		nob = sel[MultiViewType::WORLD_OBJECT].num;
+	if (sel.contains(MultiViewType::WORLD_TERRAIN))
+		nter = sel[MultiViewType::WORLD_TERRAIN].num;
+	if (sel.contains(MultiViewType::WORLD_CAMERA))
+		ncam = sel[MultiViewType::WORLD_CAMERA].num;
+	if (sel.contains(MultiViewType::WORLD_LIGHT))
+		nlights = sel[MultiViewType::WORLD_LIGHT].num;
+	if (nob + nter + ncam + nlights == 0)
+		return base::None;
+	Array<string> s;
+	if (nob > 0)
+		s.add(format("%d objects", nob));
+	if (nter > 0)
+		s.add(format("%d terrains", nter));
+	if (ncam > 0)
+		s.add(format("%d cameras", ncam));
+	if (nlights > 0)
+		s.add(format("%d lights", nlights));
+	return implode(s, ", ");
+}
 
 void ModeWorld::on_draw_post(Painter* p) {
 	p->set_color(Black);
@@ -293,29 +320,9 @@ void ModeWorld::on_draw_post(Painter* p) {
 		p->draw_rect({p1.x,p1.x+2, p1.y,p1.y+2});
 	}
 
-	int nob = 0, nter = 0, ncam = 0, nlights = 0;
-	auto sel = data->get_selection();
-	if (sel.contains(MultiViewType::WORLD_OBJECT))
-		nob = sel[MultiViewType::WORLD_OBJECT].num;
-	if (sel.contains(MultiViewType::WORLD_TERRAIN))
-		nter = sel[MultiViewType::WORLD_TERRAIN].num;
-	if (sel.contains(MultiViewType::WORLD_CAMERA))
-		ncam = sel[MultiViewType::WORLD_CAMERA].num;
-	if (sel.contains(MultiViewType::WORLD_LIGHT))
-		nlights = sel[MultiViewType::WORLD_LIGHT].num;
-	if (nob + nter + ncam + nlights > 0) {
-		p->set_color(White);
-		Array<string> s;
-		if (nob > 0)
-			s.add(format("%d objects", nob));
-		if (nter > 0)
-			s.add(format("%d terrains", nter));
-		if (ncam > 0)
-			s.add(format("%d cameras", ncam));
-		if (nlights > 0)
-			s.add(format("%d lights", nlights));
-		p->draw_str(p->area().p01() + vec2(30, -40), "selected: " + implode(s, ", "));
-	}
+	p->set_color(White);
+	if (auto s = world_selection_description(data))
+		p->draw_str(p->area().p01() + vec2(30, -40), "selected: " + *s);
 }
 
 void ModeWorld::on_command(const string& id) {
@@ -326,8 +333,30 @@ void ModeWorld::on_command(const string& id) {
 }
 
 void ModeWorld::on_key_down(int key) {
-	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE)
-		data->delete_selection(data->get_selection());
+	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE) {
+		if (auto s = world_selection_description(data)) {
+			data->delete_selection(data->get_selection());
+			session->set_message("deleted: " + *s);
+		} else {
+			session->set_message("nothing selected");
+		}
+	}
+	if (key == xhui::KEY_CONTROL + xhui::KEY_C) {
+		data->copy(temp);
+		if (temp.is_empty())
+			session->set_message("nothing selected");
+		else
+			session->set_message("copied: " + *world_selection_description(data));
+	}
+	if (key == xhui::KEY_CONTROL + xhui::KEY_V) {
+		multi_view->clear_selection();
+		if (temp.is_empty()) {
+			session->set_message("nothing to paste");
+		} else {
+			data->paste(temp);
+			session->set_message("pasted: " + *world_selection_description(data));
+		}
+	}
 }
 
 

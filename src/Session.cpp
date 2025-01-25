@@ -284,19 +284,17 @@ void Session::set_mode_now(Mode *m) {
 
 
 void Session::remove_message() {
-#if 0
 	message_str.erase(0);
-	cur_mode->multi_view->force_redraw();
-#endif
+	win->request_redraw();
 }
 
 void Session::set_message(const string &message) {
-#if 0
 	msg_write(message);
 	message_str.add(message);
-	cur_mode->multi_view->force_redraw();
-	hui::run_later(2.0f, [this]{ remove_message(); });
-#endif
+	win->request_redraw();
+	xhui::run_later(2.0f, [this] {
+		remove_message();
+	});
 }
 
 
@@ -304,6 +302,8 @@ void Session::error(const string &message) {
 #if 0
 	//set_info_text(message, {"error", "allow-close"});
 	hui::error_box(win, _("Error"), message);
+#else
+	set_message("ERROR: " + message);
 #endif
 }
 

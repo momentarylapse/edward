@@ -8,7 +8,7 @@
 #ifndef ACTIONWORLDADDTERRAIN_H_
 #define ACTIONWORLDADDTERRAIN_H_
 
-#include "../../Action.h"
+#include "../../../action/Action.h"
 #include "../../../lib/math/vec3.h"
 #include "../../../lib/os/path.h"
 

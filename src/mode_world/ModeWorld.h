@@ -30,6 +30,7 @@ public:
 	void on_command(const string& id) override;
 
 	DataWorld* data;
+	DataWorld temp;
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 

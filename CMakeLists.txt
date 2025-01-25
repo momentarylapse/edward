@@ -374,9 +374,13 @@ add_executable(edward
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/data/ModelPolygon.cpp
 	src/mode_model/data/SkinGenerator.cpp
+	src/mode_world/action/light/ActionWorldAddLight.cpp
+	src/mode_world/action/object/ActionWorldAddObject.cpp
 	src/mode_world/action/object/ActionWorldDeleteObject.cpp
+	src/mode_world/action/terrain/ActionWorldAddTerrain.cpp
 	src/mode_world/action/ActionWorldDeleteSelection.cpp
 	src/mode_world/action/ActionWorldMoveSelection.cpp
+	src/mode_world/action/ActionWorldPaste.cpp
 	src/mode_world/data/DataCamera.cpp
 	src/mode_world/data/DataWorld.cpp
 	src/mode_world/data/WorldCamera.cpp

@@ -6,8 +6,8 @@
  */
 
 #include "ActionWorldAddObject.h"
-#include "../../../data/world/DataWorld.h"
-#include "../../../data/world/WorldObject.h"
+#include "../../data/DataWorld.h"
+#include "../../data/WorldObject.h"
 #include <assert.h>
 
 ActionWorldAddObject::ActionWorldAddObject(const WorldObject &o) {

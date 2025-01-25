@@ -212,6 +212,7 @@ Runner* create_runner() {
 	for (auto r: runners)
 		if (!r->used) {
 			r->used = true;
+			r->t = 0;
 			return r;
 		}
 	auto r = new Runner;

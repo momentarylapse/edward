@@ -20,15 +20,13 @@
 #include <y/world/Terrain.h>
 #include <y/world/World.h>
 #include <y/meta.h>
-#if 0
-#include "../../action/world/camera/ActionWorldEditCamera.h"
-#include "../../action/world/light/ActionWorldAddLight.h"
-#include "../../action/world/light/ActionWorldEditLight.h"
-#include "../../action/world/light/ActionWorldDeleteLight.h"
-#include "../../action/world/object/ActionWorldAddObject.h"
-#include "../../action/world/terrain/ActionWorldAddTerrain.h"
-#include "../../action/world/ActionWorldPaste.h"
-#endif
+//#include "../action/camera/ActionWorldEditCamera.h"
+#include "../action/light/ActionWorldAddLight.h"
+//#include "../action/light/ActionWorldEditLight.h"
+//#include "../action/light/ActionWorldDeleteLight.h"
+#include "../action/object/ActionWorldAddObject.h"
+#include "../action/terrain/ActionWorldAddTerrain.h"
+#include "../action/ActionWorldPaste.h"
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>
 
@@ -208,28 +206,32 @@ void DataWorld::clear_selection() {
 }
 
 
-void DataWorld::copy(Array<WorldObject> &_objects, Array<WorldTerrain> &_terrains, Array<WorldCamera> &_cameras, Array<WorldLight> &_lights) {
-	_objects.clear();
-	_terrains.clear();
-	_cameras.clear();
-	_lights.clear();
+void DataWorld::copy(DataWorld& temp) const {
+	temp.objects.clear();
+	temp.terrains.clear();
+	temp.cameras.clear();
+	temp.lights.clear();
 
 	for (auto &o: objects)
 		if (o.is_selected)
-			_objects.add(o);
+			temp.objects.add(o);
 	for (auto &t: terrains)
 		if (t.is_selected)
-			_terrains.add(t);
+			temp.terrains.add(t);
 	for (auto &c: cameras)
 		if (c.is_selected)
-			_cameras.add(c);
+			temp.cameras.add(c);
 	for (auto &l: lights)
 		if (l.is_selected)
-			_lights.add(l);
+			temp.lights.add(l);
 }
 
-void DataWorld::paste(Array<WorldObject> &o, Array<WorldTerrain> &t, Array<WorldCamera> &c, Array<WorldLight> &l) {
-	//execute(new ActionWorldPaste(o, t, c, l));
+bool DataWorld::is_empty() const {
+	return objects.num + terrains.num + cameras.num + lights.num == 0;
+}
+
+void DataWorld::paste(const DataWorld& temp) {
+	execute(new ActionWorldPaste(temp));
 }
 
 void DataWorld::delete_selection(const Selection& selection) {

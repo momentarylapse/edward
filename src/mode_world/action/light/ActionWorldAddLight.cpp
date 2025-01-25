@@ -7,8 +7,8 @@
 
 #include "ActionWorldAddLight.h"
 
-#include "../../../data/world/DataWorld.h"
-#include "../../../data/world/WorldLight.h"
+#include "../../data/DataWorld.h"
+#include "../../data/WorldLight.h"
 
 ActionWorldAddLight::ActionWorldAddLight(const WorldLight &l) {
 	light = l;
