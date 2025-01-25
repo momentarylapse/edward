@@ -26,19 +26,29 @@ class Material;
 struct RenderParams;
 struct RenderViewData;
 
+enum class MouseActionMode {
+	SELECT,
+	MOVE,
+	ROTATE,
+	ROTATE_2D,
+	SCALE,
+	SCALE_2D,
+	MIRROR,
+	ONCE,
+};
 
 struct MouseAction {
-	//string name;
-	int mode;
+	MouseActionMode mode;
 	bool active;
 	bool locked;
 
 	void reset() {
 		//name = "";
-		mode = 0;
+		mode = MouseActionMode::SELECT;
 		active = false;
 		locked = false;
 	}
+	string name() const;
 };
 
 
@@ -109,8 +119,6 @@ public:
 
 
 	static string constraint_name(Constraint c);
-
-	static string action_name(int a);
 
 
 

@@ -20,7 +20,7 @@ public:
 	ActionMultiView();
 
 	// continuous editing
-	virtual void abort(Data *d);
+	void abort(Data *d) override;
 	void abort_and_notify(Data *d);
 	void update_and_notify(Data *d, const mat4 &m);
 

@@ -24,6 +24,7 @@ public:
 	void undo(Data *d) override;
 private:
 	Array<MultiViewType> type;
+	Array<quaternion> old_ang;
 };
 
 #endif /* ACTIONWORLDMOVESELECTION_H_ */

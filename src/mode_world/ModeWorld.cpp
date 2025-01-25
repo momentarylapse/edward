@@ -256,12 +256,13 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& m) 
 Data::Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) const {
 	auto r = _r.canonical();
 	Data::Selection s;
+	s.add({MultiViewType::WORLD_OBJECT, {}});
 	for (const auto& [i, o]: enumerate(data->objects)) {
 		const auto p = win->project(o.pos);
 		if (p.z <= 0 or p.z >= 1)
 			continue;
 		if (r.inside({p.x, p.y}))
-			s.add(&o);
+			s[MultiViewType::WORLD_OBJECT].add(i);
 	}
 	return s;
 }
@@ -372,6 +373,30 @@ void ModeWorld::on_draw_post(Painter* p) {
 	for (auto& o: data->objects) {
 		auto p1 = multi_view->active_window->project(o.pos);
 		p->draw_rect({p1.x,p1.x+2, p1.y,p1.y+2});
+	}
+
+	int nob = 0, nter = 0, ncam = 0, nlights = 0;
+	auto sel = data->get_selection();
+	if (sel.contains(MultiViewType::WORLD_OBJECT))
+		nob = sel[MultiViewType::WORLD_OBJECT].num;
+	if (sel.contains(MultiViewType::WORLD_TERRAIN))
+		nter = sel[MultiViewType::WORLD_TERRAIN].num;
+	if (sel.contains(MultiViewType::WORLD_CAMERA))
+		ncam = sel[MultiViewType::WORLD_CAMERA].num;
+	if (sel.contains(MultiViewType::WORLD_LIGHT))
+		nlights = sel[MultiViewType::WORLD_LIGHT].num;
+	if (nob + nter + ncam + nlights > 0) {
+		p->set_color(White);
+		Array<string> s;
+		if (nob > 0)
+			s.add(format("%d objects", nob));
+		if (nter > 0)
+			s.add(format("%d terrains", nter));
+		if (ncam > 0)
+			s.add(format("%d cameras", ncam));
+		if (nlights > 0)
+			s.add(format("%d lights", nlights));
+		p->draw_str(p->area().p01() + vec2(30, -40), "selected: " + implode(s, ", "));
 	}
 }
 

@@ -10,11 +10,13 @@
 
 #include "../lib/base/base.h"
 #include "../lib/base/set.h"
+#include "../lib/base/map.h"
 #include "../lib/os/path.h"
 #include "../lib/pattern/Observable.h"
 #include "../action/Action.h"
 #include "../action/ActionManager.h"
 
+enum class MultiViewType;
 class ActionManager;
 class Action;
 class Session;
@@ -45,7 +47,8 @@ public:
 	Session *session;
 	ActionManager *action_manager;
 
-	using Selection = base::set<const void*>;
+	//using Selection = base::set<const void*>;
+	using Selection = base::map<MultiViewType, base::set<int>>;
 	virtual Selection get_selection() const { return {}; }
 };
 

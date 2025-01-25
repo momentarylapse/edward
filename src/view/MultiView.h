@@ -26,16 +26,6 @@ namespace multiview {
 }
 
 
-enum {
-	ACTION_SELECT,
-	ACTION_MOVE,
-	ACTION_ROTATE,
-	ACTION_ROTATE_2D,
-	ACTION_SCALE,
-	ACTION_SCALE_2D,
-	ACTION_MIRROR,
-	ACTION_ONCE,
-};
 
 class MultiViewWindow {
 public:
@@ -58,6 +48,7 @@ public:
 	~MultiView() override;
 
 	obs::source out_selection_changed{this, "selection-changed"};
+	obs::sink in_data_changed;
 
 	void prepare(const RenderParams& params) override;
 

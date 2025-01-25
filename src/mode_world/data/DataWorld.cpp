@@ -30,6 +30,7 @@
 #include "../../action/world/ActionWorldPaste.h"
 #endif
 #include <lib/os/msg.h>
+#include <lib/base/iter.h>
 
 #include "../action/ActionWorldDeleteSelection.h"
 #include <y/graphics-impl.h>
@@ -237,18 +238,26 @@ void DataWorld::delete_selection(const Selection& selection) {
 
 Data::Selection DataWorld::get_selection() const {
 	Selection s;
-	for (const auto& o: objects)
+	s.add({MultiViewType::WORLD_OBJECT, {}});
+	s.add({MultiViewType::WORLD_TERRAIN, {}});
+	s.add({MultiViewType::WORLD_CAMERA, {}});
+	s.add({MultiViewType::WORLD_LIGHT, {}});
+	s.add({MultiViewType::WORLD_LINK, {}});
+	for (const auto& [i, o]: enumerate(objects))
 		if (o.is_selected)
-			s.add(&o);
-	for (const auto& t: terrains)
+			s[MultiViewType::WORLD_OBJECT].add(i);
+	for (const auto& [i, t]: enumerate(terrains))
 		if (t.is_selected)
-			s.add(&t);
-	for (const auto& o: cameras)
+			s[MultiViewType::WORLD_TERRAIN].add(i);
+	for (const auto& [i, o]: enumerate(cameras))
 		if (o.is_selected)
-			s.add(&o);
-	for (const auto& o: lights)
+			s[MultiViewType::WORLD_CAMERA].add(i);
+	for (const auto& [i, o]: enumerate(lights))
 		if (o.is_selected)
-			s.add(&o);
+			s[MultiViewType::WORLD_LIGHT].add(i);
+	for (const auto& [i, o]: enumerate(links))
+		if (o.is_selected)
+			s[MultiViewType::WORLD_LINK].add(i);
 	return s;
 }
 

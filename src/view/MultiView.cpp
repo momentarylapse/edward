@@ -78,6 +78,10 @@ float grid_density(int level, float d_err) {
 
 
 MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
+		in_data_changed(this, [this] {
+			if (!action_controller->in_use())
+				update_selection_box();
+		}),
 		view_port(this),
 		window(this)
 {
@@ -197,10 +201,12 @@ void MultiView::update_selection_box() {
 	// TODO per-set user override
 	bool first = true;
 	Box box;
+	int n = 0;
 	for (auto& d: data_sets)
 		for (int i=0; i<d.array->num; i++) {
 			auto p = reinterpret_cast<multiview::SingleData*>(d.array->simple_element(i));
 			if (p->is_selected) {
+				n ++;
 				if (first) {
 					box = {p->pos, p->pos};
 					first = false;
@@ -223,7 +229,6 @@ void MultiView::on_left_button_down(const vec2& m) {
 	//action_controller->on_left_button_down(m);
 	if (hover and hover->type == MultiViewType::ACTION_MANAGER) {
 		action_controller->data = session->cur_mode->get_data();
-		action_controller->action.mode = ACTION_MOVE;
 		if (f_create_action)
 			action_controller->start_action(f_create_action(), hover->tp, (ActionController::Constraint)hover->index);
 

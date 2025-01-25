@@ -273,6 +273,7 @@ void Session::set_mode_now(Mode *m) {
 	cur_mode->multi_view->view_port.out_changed >> win->in_data_selection_changed;
 	if (cur_mode->get_data()) {
 		cur_mode->get_data()->out_changed >> win->in_data_changed;
+		cur_mode->get_data()->out_changed >> cur_mode->multi_view->in_data_changed;
 		auto *am = cur_mode->get_data()->action_manager;
 		am->out_failed >> win->in_action_failed;
 		am->out_saved >> win->in_saved;

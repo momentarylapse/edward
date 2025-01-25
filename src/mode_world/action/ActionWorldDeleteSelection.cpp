@@ -6,6 +6,10 @@
  */
 
 #include "ActionWorldDeleteSelection.h"
+
+#include <Session.h>
+#include <lib/os/msg.h>
+
 #include "object/ActionWorldDeleteObject.h"
 /*#include "terrain/ActionWorldDeleteTerrain.h"
 #include "link/ActionWorldDeleteLink.h"
@@ -18,9 +22,10 @@ ActionWorldDeleteSelection::ActionWorldDeleteSelection(const Data::Selection& _s
 void *ActionWorldDeleteSelection::compose(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 
-	for (int i=w->objects.num-1; i>=0; i--)
-		if (selection.contains(&w->objects[i]))
-			addSubAction(new ActionWorldDeleteObject(i), d);
+	if (selection.contains(MultiViewType::WORLD_OBJECT))
+		for (int i=w->objects.num-1; i>=0; i--)
+			if (selection[MultiViewType::WORLD_OBJECT].contains(i))
+				addSubAction(new ActionWorldDeleteObject(i), d);
 
 	/*for (int i=w->terrains.num-1; i>=0; i--)
 		if (w->terrains[i].is_selected)

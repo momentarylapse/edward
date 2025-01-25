@@ -16,6 +16,8 @@
 #include <renderer/path/RenderPath.h>
 #include <sys/stat.h>
 #include <y/EngineData.h>
+
+#include "ActionController.h"
 #include "MultiView.h"
 #include "lib/os/msg.h"
 #include "lib/xhui/Theme.h"
@@ -208,9 +210,13 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 	auto g4 = new xhui::Grid("grid4");
 	o->add(g4);
 	g4->margin = 25;
-	g4->add(new TouchButton("button5", ""), 0, 0);
-	g4->add(new TouchButton("cam-rotate", "R"), 0, 1);
-	g4->add(new TouchButton("cam-move", "M"), 0, 2);
+	g4->add(new TouchButton("mouse-action", "T"), 0, 0);
+	g4->add(new TouchButton("aaa", "x"), 0, 1);
+	auto spacer = new xhui::Label("", "");
+	spacer->expand_x = true;
+	g4->add(spacer, 1, 0);
+	g4->add(new TouchButton("cam-rotate", "R"), 2, 0);
+	g4->add(new TouchButton("cam-move", "M"), 2, 1);
 
 	event("undo", [this] {
 		session->cur_mode->on_command("undo");
@@ -305,6 +311,16 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 		vec2 d = state.m - state_prev.m;
 		if (state.lbut)
 			session->cur_mode->multi_view->view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
+	});
+	event("mouse-action", [this] {
+		auto& mode = session->cur_mode->multi_view->action_controller->action.mode;
+		if (mode == MouseActionMode::MOVE)
+			mode = MouseActionMode::ROTATE;
+		else if (mode == MouseActionMode::ROTATE)
+			mode = MouseActionMode::SCALE;
+		else if (mode == MouseActionMode::SCALE)
+			mode = MouseActionMode::MOVE;
+		set_string("mouse-action", session->cur_mode->multi_view->action_controller->action.name().sub(0, 1).upper());
 	});
 
 	xhui::run_repeated(0.02f, [this] {

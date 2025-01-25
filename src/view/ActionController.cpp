@@ -78,6 +78,7 @@ ActionController::Manipulator::Manipulator(MultiView* multi_view) {
 ActionController::ActionController(MultiView *view) : manipulator(view) {
 	multi_view = view;
 	mat = mat4::ID;
+	action.mode = MouseActionMode::MOVE;
 
 	//reset();
 }
@@ -169,22 +170,22 @@ void ActionController::update_action(const vec2& d) {
 	dvp += {d,0};
 	dv += active_win->unproject(m0 + vec3(d,0), m0) - active_win->unproject(m0, m0);
 
-	if (action.mode == ACTION_MOVE) {
+	if (action.mode == MouseActionMode::MOVE) {
 		_param = project_trans(constraints, dv);
 		_param = multi_view->maybe_snap_v(_param);
-	} else if (action.mode == ACTION_ROTATE) {
+	} else if (action.mode == MouseActionMode::ROTATE) {
 		//_param = project_trans(constraints, v2 - v1) * 0.003f * multi_view->active_win->zoom();
 		_param = project_trans(constraints, dv ^ dir) * 0.003f * active_win->zoom();
 		if (constraints == Constraint::FREE)
 			_param = transform_ang(active_win, vec3(-dvp.y, -dvp.x, 0) * 0.003f);
 		_param = multi_view->maybe_snap_v2(_param, pi / 180.0f);
-	} else if (action.mode == ACTION_SCALE) {
+	} else if (action.mode == MouseActionMode::SCALE) {
 		float sign = cons_neg(constraints) ? -1 : 1;
 		_param = vec3(1, 1, 1) + project_trans(constraints, sign * dv) * 0.01f * active_win->zoom();
 		if (constraints == Constraint::FREE)
 			_param = vec3(1, 1, 1) * (1 + dvp.x * 0.01f);
 		_param = multi_view->maybe_snap_v2(_param, 0.01f);
-	} else if (action.mode == ACTION_MIRROR) {
+	} else if (action.mode == MouseActionMode::MIRROR) {
 		_param = mirror(constraints);
 		if (constraints == Constraint::FREE)
 			_param = multi_view->view_port.ang * vec3::EX;
@@ -202,15 +203,15 @@ void ActionController::update_param(const vec3 &_param) {
 	auto m_dti = mat4::translation(-manipulator.pos0);
 
 	param = _param;
-	if (action.mode == ACTION_MOVE) {
+	if (action.mode == MouseActionMode::MOVE) {
 		mat = mat4::translation(param);
-	} else if (action.mode == ACTION_ROTATE) {
+	} else if (action.mode == MouseActionMode::ROTATE) {
 		mat = mat4::rotation(param);
 		mat = m_dt * mat * m_dti;
-	} else if (action.mode == ACTION_SCALE) {
+	} else if (action.mode == MouseActionMode::SCALE) {
 		mat = mat4::scale(param.x, param.y, param.z);
 		mat = m_dt * mat * m_dti;
-	} else if (action.mode == ACTION_MIRROR) {
+	} else if (action.mode == MouseActionMode::MIRROR) {
 		plane pl = plane::from_point_normal(v_0, param);
 		mat = mat4::reflection(pl);
 		mat = m_dt * mat * m_dti;
@@ -313,14 +314,14 @@ string ActionController::constraint_name(Constraint c) {
 	return "free";
 }
 
-string ActionController::action_name(int a) {
-	if (a == ACTION_MOVE)
+string MouseAction::name() const {
+	if (mode == MouseActionMode::MOVE)
 		return "move";
-	if ((a == ACTION_ROTATE) or (a == ACTION_ROTATE_2D))
+	if ((mode == MouseActionMode::ROTATE) or (mode == MouseActionMode::ROTATE_2D))
 		return "rotate";
-	if ((a == ACTION_SCALE) or (a == ACTION_SCALE_2D))
+	if ((mode == MouseActionMode::SCALE) or (mode == MouseActionMode::SCALE_2D))
 		return "scale";
-	if (a == ACTION_MIRROR)
+	if (mode == MouseActionMode::MIRROR)
 		return "reflect";
 	return "???";
 }
@@ -504,16 +505,16 @@ void ActionController::draw_post(Painter* p) {
 		//float y0 = pp.y + 40;//multi_view->m.y + 50;//win->dest.y1 + 100;
 
 		string s;
-		if (action.mode == ACTION_MOVE) {
+		if (action.mode == MouseActionMode::MOVE) {
 			vec3 t = param;
 			string unit = multi_view->get_unit_by_zoom(t);
 			s = f2s(t.x, 2) + " " + unit + "\n" + f2s(t.y, 2) + " " + unit;
 		//	if (multi_view->mode3d)
 				s += "\n" + f2s(t.z, 2) + " " + unit;
-		} else if ((action.mode == ACTION_ROTATE) or (action.mode == ACTION_ROTATE_2D)) {
+		} else if ((action.mode == MouseActionMode::ROTATE) or (action.mode == MouseActionMode::ROTATE_2D)) {
 			vec3 r = param * 180.0f / pi;
 			s = format("%.1f°\n%.1f°\n%.1f°", r.x, r.y, r.z);
-		} else if ((action.mode == ACTION_SCALE) or (action.mode == ACTION_SCALE_2D)) {
+		} else if ((action.mode == MouseActionMode::SCALE) or (action.mode == MouseActionMode::SCALE_2D)) {
 			if (true) //multi_view->mode3d)
 				s = format("%.1f%%\n%.1f%%\n%.1f%%", param.x*100, param.y*100, param.z*100);
 			else
