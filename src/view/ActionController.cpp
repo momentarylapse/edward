@@ -157,7 +157,7 @@ bool cons_neg(ActionController::Constraint c) {
 void ActionController::update_action(const vec2& d) {
 	if (!cur_action)
 		return;
-#if 1
+
 	//MouseWrapper::update(multi_view);
 	auto active_win = multi_view->active_window;
 
@@ -175,7 +175,7 @@ void ActionController::update_action(const vec2& d) {
 		_param = project_trans(constraints, dv ^ dir) * 0.003f * active_win->zoom();
 		if (constraints == Constraint::FREE)
 			_param = transform_ang(active_win, vec3(-dvp.y, -dvp.x, 0) * 0.003f);
-		_param = multi_view->maybe_snap_v2(_param, pi / 180.0);
+		_param = multi_view->maybe_snap_v2(_param, pi / 180.0f);
 	} else if (action.mode == ACTION_SCALE) {
 		float sign = cons_neg(constraints) ? -1 : 1;
 		_param = vec3(1, 1, 1) + project_trans(constraints, sign * dv) * 0.01f * active_win->zoom();
@@ -184,13 +184,12 @@ void ActionController::update_action(const vec2& d) {
 		_param = multi_view->maybe_snap_v2(_param, 0.01f);
 	} else if (action.mode == ACTION_MIRROR) {
 		_param = mirror(constraints);
-		//if (constraints == Constraint::FREE)
-		//	_param = active_win->cam->ang * vec3::EX;
+		if (constraints == Constraint::FREE)
+			_param = multi_view->view_port.ang * vec3::EX;
 	} else {
 		param = v_0;
 	}
 	update_param(_param);
-#endif
 }
 
 void ActionController::update_param(const vec3 &_param) {

@@ -29,11 +29,8 @@ vec3 MultiViewWindow::project(const vec3& v) const {
 vec3 MultiViewWindow::unproject(const vec3& v, const vec3& zref) const {
 	vec3 op = project(zref);
 	vec3 r = v;
-//	r.x = v.x*2 / area.width() - 1;
-//	r.y = - v.y*2 / area.height() + 1;
 	r.z = op.z;
 	return projection.inverse().project(r);
-	//return projection.inverse().unproject(v);
 }
 
 vec3 MultiViewWindow::dir() const {
@@ -128,6 +125,22 @@ void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
 		action_controller->visible = true;
 		return;
 	}
+	if (selection_area) {
+		selection_area = rect(selection_area->p00(), m);
+		select_in_rect(active_window, *selection_area);
+	/*	auto s = get_selection(hover_window, *selection_area);
+		// TODO shift/control
+		if (s != selection) {
+			selection = s;
+			update_selection_box();
+		}*/
+		return;
+	} else if (session->win->button(0)) {
+		// start selection rect
+		selection_area = rect(m - d, m);
+		//update_selection_box();
+		return;
+	}
 
 
 	hover = get_hover(hover_window, m);
@@ -156,8 +169,21 @@ void MultiView::clear_selection() {
 		for (int i=0; i<d.array->num; i++)
 			reinterpret_cast<multiview::SingleData*>(d.array->simple_element(i))->is_selected = false;
 	selection_box = base::None;
+	action_controller->visible = false;
 	out_selection_changed();
 }
+
+void MultiView::select_in_rect(MultiViewWindow* win, const rect& _r) {
+	const auto r = _r.canonical();
+	for (auto& d: data_sets)
+		for (int i=0; i<d.array->num; i++) {
+			auto p = reinterpret_cast<multiview::SingleData*>(d.array->simple_element(i));
+			p->is_selected = r.inside(win->project(p->pos).xy());
+		}
+	update_selection_box();
+	out_selection_changed();
+}
+
 
 multiview::SingleData* MultiView::get_hover_item() {
 	if (!hover)
@@ -232,6 +258,7 @@ void MultiView::on_left_button_up(const vec2& m) {
 		action_controller->end_action(true);
 		return;
 	}
+	selection_area = base::None;
 	hover = get_hover(hover_window, m);
 }
 

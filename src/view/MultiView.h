@@ -96,6 +96,7 @@ public:
 	Array<DataSet> data_sets;
 
 	void clear_selection();
+	void select_in_rect(MultiViewWindow* win, const rect& r);
 
 	rect area;
 	void set_area(const rect& area);
