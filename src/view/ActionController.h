@@ -60,7 +60,7 @@ public:
 		YZ,
 	};
 
-	bool visible;
+	bool visible = false;
 	vec3 pos, pos0, m0;
 	vec3 dv, dvp;
 	vec3 param;
@@ -75,7 +75,7 @@ public:
 	MultiView *multi_view;
 //	Window *active_win;
 	MouseAction action;
-	ActionMultiView *cur_action;
+	ActionMultiView *cur_action = nullptr;
 	Data *data;
 	//void reset();
 	void delete_geo();

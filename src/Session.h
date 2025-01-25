@@ -89,7 +89,7 @@ public:
 	ModeWorld* mode_world;
 	ModeFont* mode_font;
 	ModeAdministration* mode_admin;
-	Mode *cur_mode;
+	Mode *cur_mode = nullptr;
 	Array<Mode*> mode_queue;
 	Mode *find_mode_base(const string &name);
 	template<class M>

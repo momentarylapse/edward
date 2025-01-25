@@ -21,41 +21,41 @@ public:
 	bool start();
 	void end();
 
-	Window* window;
+	Window* window = nullptr;
 	vulkan::Instance* instance = nullptr;
 	vulkan::DescriptorPool* pool = nullptr;
 	vulkan::Device* device = nullptr;
 	vulkan::Texture* tex_white = nullptr;
 	vulkan::Texture* tex_black = nullptr;
-	vulkan::Shader* shader;
-	vulkan::Shader* shader_lines;
-	vulkan::GraphicsPipeline* pipeline;
-	vulkan::GraphicsPipeline* pipeline_alpha;
-	vulkan::GraphicsPipeline* pipeline_lines;
-	vulkan::VertexBuffer* vb;
+	vulkan::Shader* shader = nullptr;
+	vulkan::Shader* shader_lines = nullptr;
+	vulkan::GraphicsPipeline* pipeline = nullptr;
+	vulkan::GraphicsPipeline* pipeline_alpha = nullptr;
+	vulkan::GraphicsPipeline* pipeline_lines = nullptr;
+	vulkan::VertexBuffer* vb = nullptr;
 
-	vulkan::DescriptorSet* dset;
-	vulkan::DescriptorSet* dset_lines;
+	vulkan::DescriptorSet* dset = nullptr;
+	vulkan::DescriptorSet* dset_lines = nullptr;
 
 
 	Array<vulkan::VertexBuffer*> line_vbs;
 	int num_line_vbs_used = 0;
 
 
-	vulkan::Fence* in_flight_fence;
+	vulkan::Fence* in_flight_fence = nullptr;
 	Array<vulkan::Fence*> wait_for_frame_fences;
-	vulkan::Semaphore *image_available_semaphore, *render_finished_semaphore;
+	vulkan::Semaphore *image_available_semaphore = nullptr, *render_finished_semaphore = nullptr;
 
 	Array<vulkan::CommandBuffer*> command_buffers;
 	vulkan::CommandBuffer* current_command_buffer() const;
 	vulkan::FrameBuffer* current_frame_buffer() const;
 
-	vulkan::SwapChain *swap_chain;
-	vulkan::RenderPass* render_pass;
-	vulkan::DepthBuffer* depth_buffer;
+	vulkan::SwapChain *swap_chain = nullptr;
+	vulkan::RenderPass* render_pass = nullptr;
+	vulkan::DepthBuffer* depth_buffer = nullptr;
 	Array<vulkan::FrameBuffer*> frame_buffers;
-	int image_index;
-	bool framebuffer_resized;
+	int image_index = 0;
+	bool framebuffer_resized = true;
 
 };
 
