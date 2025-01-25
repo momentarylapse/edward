@@ -38,7 +38,10 @@ public:
 
 	MultiView* multi_view;
 	rect area;
+	rect area_native;
 	quaternion local_ang;
+	mat4 to_pixels;
+	mat4 view;
 	mat4 projection;
 };
 
@@ -90,6 +93,7 @@ public:
 	void select_in_rect(MultiViewWindow* win, const rect& r);
 
 	rect area;
+	rect area_native;
 	void set_area(const rect& area);
 	Session* session;
 

@@ -21,8 +21,7 @@ enum class LinkType {
 
 string link_type_canonical(LinkType t);
 
-class WorldLink: public multiview::SingleData {
-public:
+struct WorldLink: multiview::SingleData {
 	LinkType type = LinkType::SOCKET;
 	int object[2] = {-1,-1};
 	vec3 ang = vec3::ZERO;

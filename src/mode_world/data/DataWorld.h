@@ -16,29 +16,27 @@
 class DataWorld;
 class Terrain;
 class Object;
-class WorldLink;
-class WorldLight;
-class WorldObject;
-class WorldTerrain;
-class WorldCamera;
+struct WorldLink;
+struct WorldLight;
+struct WorldObject;
+struct WorldTerrain;
+struct WorldCamera;
 enum class PhysicsMode;
 
 
-class WorldScriptVariable {
-public:
+struct WorldScriptVariable {
 	string name;
 	string type;
 	string value;
 };
 
-class ScriptInstanceData {
-public:
+struct ScriptInstanceData {
 	Path filename;
 	string class_name;
 	Array<WorldScriptVariable> variables;
 };
 
-class WorldScript : public ScriptInstanceData {};
+struct WorldScript : ScriptInstanceData {};
 
 class DataWorld: public Data {
 public:

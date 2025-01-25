@@ -19,8 +19,7 @@ class ScriptInstanceData;
 string light_type(LightType t);
 string light_type_canonical(LightType t);
 
-class WorldLight: public multiview::SingleData {
-public:
+struct WorldLight: multiview::SingleData {
 	string name;
 	LightType type = LightType::POINT;
 	vec3 ang = vec3::ZERO;

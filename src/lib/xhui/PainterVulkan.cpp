@@ -206,14 +206,7 @@ void Painter::draw_line(const vec2 &a, const vec2 &b) {
 		// NO geometry shaders on M1... :(
 		// CPU lines then...
 
-		VertexBuffer* vb;
-		if (context->num_line_vbs_used < context->line_vbs.num) {
-			vb = context->line_vbs[context->num_line_vbs_used ++];
-		} else {
-			vb = new VertexBuffer("3f,3f,2f");
-			context->line_vbs.add(vb);
-			context->num_line_vbs_used ++;
-		}
+		auto vb = context->get_line_vb();
 		Array<Vertex1> p;
 		add_vb_line(p, a, b, line_width);
 		vb->update(p);
@@ -236,14 +229,7 @@ void Painter::draw_lines(const Array<vec2> &p) {
 	/*for (int i=0; i<p.num-1; i++)
 		draw_line(p[i], p[i+1]);*/
 
-	VertexBuffer* vb;
-	if (context->num_line_vbs_used < context->line_vbs.num) {
-		vb = context->line_vbs[context->num_line_vbs_used ++];
-	} else {
-		vb = new VertexBuffer("3f,3f,2f");
-		context->line_vbs.add(vb);
-		context->num_line_vbs_used ++;
-	}
+	auto vb = context->get_line_vb();
 	Array<Vertex1> vertices;
 	for (int i=0; i<p.num-1; i++)
 		add_vb_line(vertices, p[i], p[i+1], line_width);

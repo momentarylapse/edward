@@ -320,6 +320,17 @@ vulkan::FrameBuffer* ContextVulkan::current_frame_buffer() const {
 	return frame_buffers[image_index];
 }
 
+vulkan::VertexBuffer* ContextVulkan::get_line_vb() {
+	if (num_line_vbs_used < line_vbs.num)
+		return line_vbs[num_line_vbs_used ++];
+
+	auto vb = new vulkan::VertexBuffer("3f,3f,2f");
+	line_vbs.add(vb);
+	num_line_vbs_used ++;
+	return vb;
+}
+
+
 
 }
 

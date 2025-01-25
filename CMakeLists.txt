@@ -396,6 +396,7 @@ add_executable(edward
 	src/storage/format/FormatWorld.cpp
 	src/storage/Storage.cpp
 	src/view/ActionController.cpp
+	src/view/DrawingHelper.cpp
 	src/view/EdwardWindow.cpp
 	src/view/Mode.cpp
 	src/view/MultiView.cpp

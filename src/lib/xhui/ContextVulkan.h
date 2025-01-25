@@ -40,6 +40,7 @@ public:
 
 	Array<vulkan::VertexBuffer*> line_vbs;
 	int num_line_vbs_used = 0;
+	vulkan::VertexBuffer* get_line_vb();
 
 
 	vulkan::Fence* in_flight_fence = nullptr;

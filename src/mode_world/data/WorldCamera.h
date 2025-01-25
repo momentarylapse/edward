@@ -13,8 +13,7 @@
 class ScriptInstanceData;
 
 
-class WorldCamera: public multiview::SingleData {
-public:
+struct WorldCamera: multiview::SingleData {
 	string name;
 	vec3 ang = vec3::ZERO;
 	float fov = pi/4;

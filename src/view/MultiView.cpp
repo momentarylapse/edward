@@ -4,6 +4,7 @@
 
 #include "MultiView.h"
 #include "ActionController.h"
+#include "DrawingHelper.h"
 #include <Session.h>
 #include <action/ActionMultiView.h>
 #include <lib/os/msg.h>
@@ -23,14 +24,14 @@ MultiViewWindow::MultiViewWindow(MultiView* _multi_view) {
 }
 
 vec3 MultiViewWindow::project(const vec3& v) const {
-	return projection.project(v);
+	return to_pixels.project(v);
 }
 
 vec3 MultiViewWindow::unproject(const vec3& v, const vec3& zref) const {
 	vec3 op = project(zref);
 	vec3 r = v;
 	r.z = op.z;
-	return projection.inverse().project(r);
+	return to_pixels.inverse().project(r);
 }
 
 vec3 MultiViewWindow::dir() const {
@@ -102,7 +103,9 @@ MultiView::~MultiView() = default;
 
 void MultiView::set_area(const rect& _area) {
 	area = _area;
+	area_native = {_area.p00() * xhui::ui_scale, _area.p11() * xhui::ui_scale};
 	window.area = area;
+	window.area_native = area_native;
 }
 
 
@@ -114,12 +117,16 @@ void MultiView::prepare(const RenderParams& params) {
 	view_port.cam->update_matrices(area.width() / area.height());
 
 	window.local_ang = view_port.ang;
+	window.view = view_port.cam->m_view;
+	window.projection = view_port.cam->m_projection;
 
 	// 3d -> pixel
-	window.projection = mat4::translation({area.x1, area.y1, 0})
+	window.to_pixels = mat4::translation({area.x1, area.y1, 0})
 		* mat4::scale(area.width()/2, area.height()/2, 1)
 		* mat4::translation({1.0f, 1.0f, 0})
-		* view_port.cam->m_projection * view_port.cam->m_view;
+		* window.projection * window.view;
+
+	session->drawing_helper->set_window(&window);
 
 	Renderer::prepare(params);
 }

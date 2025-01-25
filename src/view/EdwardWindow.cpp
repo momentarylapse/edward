@@ -18,6 +18,7 @@
 #include <y/EngineData.h>
 
 #include "ActionController.h"
+#include "DrawingHelper.h"
 #include "MultiView.h"
 #include "lib/os/msg.h"
 #include "lib/xhui/Theme.h"
@@ -233,6 +234,7 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 		api_init_external(pp->context->instance, pp->context->device);
 		session->resource_manager = new ResourceManager({});
 		session->resource_manager->default_shader = "default.shader";
+		session->drawing_helper = new DrawingHelper(pp->context);
 		try {
 			session->resource_manager->load_shader_module("module-basic-data.shader");
 			session->resource_manager->load_shader_module("module-basic-interface.shader");

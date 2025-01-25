@@ -10,6 +10,8 @@
 #include "data/DataWorld.h"
 #include "data/WorldObject.h"
 #include "data/WorldTerrain.h"
+#include "data/WorldCamera.h"
+#include "data/WorldLight.h"
 #include <y/renderer/Renderer.h>
 #include <y/renderer/world/geometry/RenderViewData.h>
 #include <y/renderer/world/geometry/SceneView.h>
@@ -29,6 +31,7 @@
 
 #include <data/geometry/GeometryTeapot.h>
 #include <view/ActionController.h>
+#include <view/DrawingHelper.h>
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {
 	auto material = resource_manager->load_material("");
@@ -148,6 +151,9 @@ public:
 		}
 
 		mode->multi_view->action_controller->draw(params, rvd);
+
+		mode->session->drawing_helper->set_color(Red);
+		mode->session->drawing_helper->draw_lines({{0,0,0}, {0,10000,0}}, 10);
 	}
 
 };
@@ -317,7 +323,17 @@ void ModeWorld::on_draw_post(Painter* p) {
 	p->set_color(Red);
 	for (auto& o: data->objects) {
 		auto p1 = multi_view->active_window->project(o.pos);
-		p->draw_rect({p1.x,p1.x+2, p1.y,p1.y+2});
+		p->draw_rect({p1.x-2,p1.x+2, p1.y-2,p1.y+2});
+	}
+	p->set_color(Blue);
+	for (auto& o: data->lights) {
+		auto p1 = multi_view->active_window->project(o.pos);
+		p->draw_rect({p1.x-2,p1.x+2, p1.y-2,p1.y+2});
+	}
+	p->set_color(Green);
+	for (auto& o: data->cameras) {
+		auto p1 = multi_view->active_window->project(o.pos);
+		p->draw_rect({p1.x-2,p1.x+2, p1.y-2,p1.y+2});
 	}
 
 	p->set_color(White);
