@@ -11,7 +11,7 @@
 #include "link/ActionWorldDeleteLink.h"
 #include "light/ActionWorldDeleteLight.h"*/
 
-ActionWorldDeleteSelection::ActionWorldDeleteSelection(const base::set<void*>& _selection) {
+ActionWorldDeleteSelection::ActionWorldDeleteSelection(const Data::Selection& _selection) {
 	selection = _selection;
 }
 

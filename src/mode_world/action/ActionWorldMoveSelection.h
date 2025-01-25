@@ -17,7 +17,7 @@ enum class MultiViewType;
 
 class ActionWorldMoveSelection: public ActionMultiView {
 public:
-	explicit ActionWorldMoveSelection(DataWorld *d, const base::set<void*>& selection);
+	explicit ActionWorldMoveSelection(DataWorld *d, const Data::Selection& selection);
 	string name() override { return "WorldMoveSelection"; }
 
 	void *execute(Data *d) override;

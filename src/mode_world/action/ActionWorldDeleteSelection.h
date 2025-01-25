@@ -13,11 +13,11 @@
 
 class ActionWorldDeleteSelection : public ActionGroup {
 public:
-	explicit ActionWorldDeleteSelection(const base::set<void*>& selection);
+	explicit ActionWorldDeleteSelection(const Data::Selection& selection);
 	string name() override { return "WorldDeleteSelection";	}
 
 	void *compose(Data *d) override;
-	base::set<void*> selection;
+	Data::Selection selection;
 };
 
 #endif /* ACTIONWORLDDELETESELECTION_H_ */

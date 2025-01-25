@@ -102,6 +102,7 @@ public:
 	MetaData meta_data;
 
 
+	Selection get_selection() const override;
 
 #if 0
 	// actions
@@ -116,7 +117,7 @@ public:
 
 	void copy(Array<WorldObject> &objects, Array<WorldTerrain> &terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights); // actually not an action
 	void paste(Array<WorldObject> &objects, Array<WorldTerrain> &terrains, Array<WorldCamera> &cameras, Array<WorldLight> &lights);
-	void delete_selection(const base::set<void*>& selection);
+	void delete_selection(const Data::Selection& selection);
 };
 
 #endif /* DATAWORLD_H_ */

@@ -170,6 +170,9 @@ void ModeWorld::on_enter() {
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
 		return get_hover(win, m);
 	};
+	multi_view->f_create_action = [this] {
+		return new ActionWorldMoveSelection(data, data->get_selection());
+	};
 	multi_view->data_sets = {
 		{MultiViewType::WORLD_OBJECT, &data->objects},
 		{MultiViewType::WORLD_TERRAIN, &data->terrains},
@@ -250,9 +253,9 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& m) 
 	return h;
 }
 
-ModeWorld::Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) const {
+Data::Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) const {
 	auto r = _r.canonical();
-	Selection s;
+	Data::Selection s;
 	for (const auto& [i, o]: enumerate(data->objects)) {
 		const auto p = win->project(o.pos);
 		if (p.z <= 0 or p.z >= 1)
@@ -264,6 +267,7 @@ ModeWorld::Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& 
 }
 
 void ModeWorld::update_selection_box() {
+	/*
 	if (selection.num > 0) {
 		Box box;
 		bool first = true;
@@ -277,10 +281,10 @@ void ModeWorld::update_selection_box() {
 					box.max._max(o.pos + o.object->prop.max);
 				}
 			}
-		multi_view->set_selection_box(box);
+		//multi_view->set_selection_box(box);
 	} else {
-		multi_view->set_selection_box(base::None);
-	}
+		//multi_view->set_selection_box(base::None);
+	}*/
 }
 
 
@@ -380,8 +384,7 @@ void ModeWorld::on_command(const string& id) {
 
 void ModeWorld::on_key_down(int key) {
 	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE) {
-		data->delete_selection(selection);
-		selection.clear();
+		data->delete_selection(data->get_selection());
 		update_selection_box();
 		multi_view->hover = base::None;
 	}

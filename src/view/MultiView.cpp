@@ -95,7 +95,7 @@ void MultiView::clear_selection() {
 	for (auto& d: data_sets)
 		for (int i=0; i<d.array->num; i++)
 			reinterpret_cast<multiview::SingleData*>(d.array->simple_element(i))->is_selected = false;
-	// TODO update box
+	selection_box = base::None;
 	out_selection_changed();
 }
 
@@ -108,27 +108,52 @@ multiview::SingleData* MultiView::get_hover_item() {
 	return nullptr;
 }
 
+void MultiView::update_selection_box() {
+	// TODO per-set user override
+	bool first = true;
+	Box box;
+	for (auto& d: data_sets)
+		for (int i=0; i<d.array->num; i++) {
+			auto p = reinterpret_cast<multiview::SingleData*>(d.array->simple_element(i));
+			if (p->is_selected) {
+				if (first) {
+					box = {p->pos, p->pos};
+					first = false;
+				} else {
+					box.min._min(p->pos);
+					box.max._max(p->pos);
+				}
+			}
+		}
+	selection_box = base::None;
+	if (!first)
+		selection_box = box;
+	action_controller->update();
+}
+
+
 void MultiView::on_left_button_down(const vec2& m) {
 	hover = get_hover(hover_window, m);
 
 	//action_controller->on_left_button_down(m);
 	if (hover and hover->type == MultiViewType::ACTION_MANAGER) {
+
 	} else if (auto p = get_hover_item()) {
 		if (session->win->is_key_pressed(xhui::KEY_SHIFT)) {
 			// toggle p
 			p->is_selected = !p->is_selected;
-			// TODO update box
+			update_selection_box();
 			out_selection_changed();
 		} else if (session->win->is_key_pressed(xhui::KEY_CONTROL)) {
 			// add p
 			p->is_selected = true;
-			// TODO update box
+			update_selection_box();
 			out_selection_changed();
 		} else {
 			// select p exclusively
 			clear_selection();
 			p->is_selected = true;
-			// TODO update box
+			update_selection_box();
 			out_selection_changed();
 		}
 	} else {
@@ -173,11 +198,11 @@ void MultiView::on_draw(Painter* p) {
 }
 
 
-void MultiView::set_selection_box(const base::optional<Box>& box) {
+/*void MultiView::set_selection_box(const base::optional<Box>& box) {
 	selection_box = box;
 	out_selection_changed();
 	action_controller->update();
-}
+}*/
 
 
 base::optional<Hover> MultiView::get_hover(MultiViewWindow* win, const vec2& m) const {

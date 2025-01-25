@@ -231,6 +231,24 @@ void DataWorld::paste(Array<WorldObject> &o, Array<WorldTerrain> &t, Array<World
 	//execute(new ActionWorldPaste(o, t, c, l));
 }
 
-void DataWorld::delete_selection(const base::set<void*>& selection) {
+void DataWorld::delete_selection(const Selection& selection) {
 	execute(new ActionWorldDeleteSelection(selection));
 }
+
+Data::Selection DataWorld::get_selection() const {
+	Selection s;
+	for (const auto& o: objects)
+		if (o.is_selected)
+			s.add(&o);
+	for (const auto& t: terrains)
+		if (t.is_selected)
+			s.add(&t);
+	for (const auto& o: cameras)
+		if (o.is_selected)
+			s.add(&o);
+	for (const auto& o: lights)
+		if (o.is_selected)
+			s.add(&o);
+	return s;
+}
+

@@ -98,7 +98,8 @@ public:
 	Session* session;
 
 	base::optional<Box> selection_box;
-	void set_selection_box(const base::optional<Box>& box);
+	//void set_selection_box(const base::optional<Box>& box);
+	void update_selection_box();
 
 	base::optional<rect> selection_area;
 
@@ -109,6 +110,8 @@ public:
 	base::optional<Hover> hover;
 
 	multiview::SingleData* get_hover_item();
+
+	std::function<ActionMultiView*()> f_create_action;
 };
 
 

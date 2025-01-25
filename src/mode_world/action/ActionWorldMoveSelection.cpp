@@ -15,7 +15,7 @@
 #include <y/world/Terrain.h>
 #include "../../Session.h"
 
-ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const base::set<void*>& selection) :
+ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Selection& selection) :
 	ActionMultiView()
 {
 	// list of selected objects and save old pos

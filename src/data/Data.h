@@ -9,6 +9,7 @@
 #define DATA_H_
 
 #include "../lib/base/base.h"
+#include "../lib/base/set.h"
 #include "../lib/os/path.h"
 #include "../lib/pattern/Observable.h"
 #include "../action/Action.h"
@@ -43,6 +44,9 @@ public:
 
 	Session *session;
 	ActionManager *action_manager;
+
+	using Selection = base::set<const void*>;
+	virtual Selection get_selection() const { return {}; }
 };
 
 #endif /* DATA_H_ */
