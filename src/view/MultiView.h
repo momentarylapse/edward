@@ -41,10 +41,14 @@ class MultiViewWindow {
 public:
 	explicit MultiViewWindow(MultiView* mv);
 	vec3 project(const vec3& v) const;
+	vec3 unproject(const vec3& v, const vec3& zref) const;
 	vec3 dir() const;
+	float zoom() const;
+	float get_grid_d() const;
 
 	MultiView* multi_view;
 	rect area;
+	quaternion local_ang;
 	mat4 projection;
 };
 
@@ -112,6 +116,13 @@ public:
 	multiview::SingleData* get_hover_item();
 
 	std::function<ActionMultiView*()> f_create_action;
+
+	vec3 maybe_snap_v(const vec3& v) const;
+	vec3 maybe_snap_v2(const vec3& v, float d) const;
+
+	string get_unit_by_zoom(vec3 &v);
+	string format_length(float l);
+	void draw_mouse_pos(Painter* p);
 };
 
 

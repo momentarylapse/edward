@@ -27,13 +27,13 @@ struct RenderViewData;
 
 
 struct MouseAction {
-	string name;
+	//string name;
 	int mode;
 	bool active;
 	bool locked;
 
 	void reset() {
-		name = "";
+		//name = "";
 		mode = 0;
 		active = false;
 		locked = false;
@@ -90,15 +90,15 @@ public:
 	void on_left_button_up(const vec2& m);*/
 	Constraint get_hover(MultiViewWindow* win, const vec2& m, vec3 &tp);
 	bool in_use();
-	//void start_action(Window *active_win, const vec3 &m, Constraint constraints);
-	void update_action();
+	void start_action(ActionMultiView* a, const vec3& m, Constraint constraints);
+	void update_action(const vec2& m);
 	void update_param(const vec3 &p);
 	void end_action(bool set);
 	bool is_selecting();
 
 
-	//static vec3 transform_ang(Window *w, const vec3 &ang);
-	static vec3 project_trans(Constraint mode, const vec3 &v);
+	static vec3 transform_ang(MultiViewWindow* w, const vec3& ang);
+	static vec3 project_trans(Constraint mode, const vec3& v);
 	static vec3 mirror(Constraint mode);
 
 

@@ -82,38 +82,36 @@ ActionController::~ActionController() {
 	delete_geo();
 }
 
-#if 0
-void ActionController::start_action(Window *_win, const vec3 &_m, Constraint _constraints) {
+void ActionController::start_action(ActionMultiView* a, const vec3 &_m, Constraint _constraints) {
 	if (cur_action)
 		end_action(false);
-	if (!multi_view->allow_mouse_actions)
-		return;
-	if (action.name == "")
-		return;
+//	if (!multi_view->allow_mouse_actions)
+//		return;
+	//if (action.name == "")
+	//	return;
 
 	mat = mat4::ID;
-	active_win = _win;
+	//active_win = multi_view->active_window;
 	dv = dvp = vec3::ZERO;
 	m0 = _m;
 	pos0 = pos;
 	constraints = _constraints;
 	if (constraints == Constraint::FREE)
 		pos0 = m0;
-	cur_action = ActionMultiViewFactory(action.name, data);
+	cur_action = a;
 	cur_action->execute_logged(data);
-	multi_view->out_action_start();
+	//multi_view->out_action_start();
 
-	MouseWrapper::start(multi_view->session->win);
+	//MouseWrapper::start(multi_view->session->win);
 }
 
 
-vec3 ActionController::transform_ang(Window *w, const vec3 &ang) {
+vec3 ActionController::transform_ang(MultiViewWindow* w, const vec3& ang) {
 	auto qmv =  w->local_ang;
-	auto qang = quaternion::rotation_v( ang);
+	auto qang = quaternion::rotation_v(ang);
 	auto q = qmv * qang * qmv.bar();
 	return q.get_angles();
 }
-#endif
 
 vec3 ActionController::project_trans(Constraint mode, const vec3 &v) {
 	vec3 r = v;
@@ -156,37 +154,38 @@ bool cons_neg(ActionController::Constraint c) {
 	return false;
 }
 
-void ActionController::update_action() {
+void ActionController::update_action(const vec2& d) {
 	if (!cur_action)
 		return;
-#if 0
+#if 1
 	//MouseWrapper::update(multi_view);
+	auto active_win = multi_view->active_window;
 
-	vec3 dir = active_win->get_direction();
+	vec3 dir = active_win->dir();
 	vec3 _param = v_0;
 
-	dvp += {multi_view->v,0};
-	dv += active_win->unproject(m0 + vec3(multi_view->v,0), m0) - active_win->unproject(m0, m0);
+	dvp += {d,0};
+	dv += active_win->unproject(m0 + vec3(d,0), m0) - active_win->unproject(m0, m0);
 
 	if (action.mode == ACTION_MOVE) {
 		_param = project_trans(constraints, dv);
 		_param = multi_view->maybe_snap_v(_param);
 	} else if (action.mode == ACTION_ROTATE) {
 		//_param = project_trans(constraints, v2 - v1) * 0.003f * multi_view->active_win->zoom();
-		_param = project_trans(constraints, dv ^ dir) * 0.003f * multi_view->active_win->zoom();
+		_param = project_trans(constraints, dv ^ dir) * 0.003f * active_win->zoom();
 		if (constraints == Constraint::FREE)
 			_param = transform_ang(active_win, vec3(-dvp.y, -dvp.x, 0) * 0.003f);
 		_param = multi_view->maybe_snap_v2(_param, pi / 180.0);
 	} else if (action.mode == ACTION_SCALE) {
 		float sign = cons_neg(constraints) ? -1 : 1;
-		_param = vec3(1, 1, 1) + project_trans(constraints, sign * dv) * 0.01f * multi_view->active_win->zoom();
+		_param = vec3(1, 1, 1) + project_trans(constraints, sign * dv) * 0.01f * active_win->zoom();
 		if (constraints == Constraint::FREE)
 			_param = vec3(1, 1, 1) * (1 + dvp.x * 0.01f);
 		_param = multi_view->maybe_snap_v2(_param, 0.01f);
 	} else if (action.mode == ACTION_MIRROR) {
 		_param = mirror(constraints);
-		if (constraints == Constraint::FREE)
-			_param = active_win->cam->ang * vec3::EX;
+		//if (constraints == Constraint::FREE)
+		//	_param = active_win->cam->ang * vec3::EX;
 	} else {
 		param = v_0;
 	}
@@ -229,22 +228,20 @@ void ActionController::update_param(const vec3 &_param) {
 
 
 void ActionController::end_action(bool set) {
-#if 0
 	if (!cur_action)
 		return;
 	if (set) {
 		cur_action->undo(data);
 		data->execute(cur_action);
-		multi_view->out_action_execute();
+	//	multi_view->out_action_execute();
 	} else {
 		cur_action->abort_and_notify(data);
 		delete(cur_action);
-		multi_view->out_action_abort();
+	//	multi_view->out_action_abort();
 	}
 	cur_action = nullptr;
 	mat = mat4::ID;
-	MouseWrapper::stop(multi_view->session->win);
-#endif
+	//MouseWrapper::stop(multi_view->session->win);
 }
 
 bool ActionController::is_selecting() {
@@ -285,6 +282,7 @@ void ActionController::update() {
 		if (multi_view->selection_box) {
 			visible = true;
 			pos = multi_view->selection_box->center();
+			pos0 = pos;
 			float box_size = multi_view->selection_box->size().length();
 			f = clamp(box_size * 0.5f, f, f*3);
 		} else {
@@ -462,7 +460,6 @@ void ActionController::draw(const RenderParams& params, RenderViewData& rvd) {
 }
 
 void ActionController::draw_post(Painter* p) {
-	return;
 	if (!visible)
 		return;
 	Array<vec2> lines;
@@ -502,6 +499,35 @@ void ActionController::draw_post(Painter* p) {
 	p->draw_line(pr({0, 0, -r1}), pr({0, 0, -r2}));
 	p->draw_line(pr({0, 0, r1}), pr({0, 0, r2}));
 #endif
+
+
+	if (in_use()) { // and (win == multi_view->active_win)) {
+		//vec3 pp = win->project(pos);
+
+		//float x0 = pp.x + 120;//multi_view->m.x + 100;//win->dest.x1 + 120;
+		//float y0 = pp.y + 40;//multi_view->m.y + 50;//win->dest.y1 + 100;
+
+		string s;
+		if (action.mode == ACTION_MOVE) {
+			vec3 t = param;
+			string unit = multi_view->get_unit_by_zoom(t);
+			s = f2s(t.x, 2) + " " + unit + "\n" + f2s(t.y, 2) + " " + unit;
+		//	if (multi_view->mode3d)
+				s += "\n" + f2s(t.z, 2) + " " + unit;
+		} else if ((action.mode == ACTION_ROTATE) or (action.mode == ACTION_ROTATE_2D)) {
+			vec3 r = param * 180.0f / pi;
+			s = format("%.1f°\n%.1f°\n%.1f°", r.x, r.y, r.z);
+		} else if ((action.mode == ACTION_SCALE) or (action.mode == ACTION_SCALE_2D)) {
+			if (true) //multi_view->mode3d)
+				s = format("%.1f%%\n%.1f%%\n%.1f%%", param.x*100, param.y*100, param.z*100);
+			else
+				s = format("%.1f%%\n%.1f%%", param.x*100, param.y*100);
+		}
+	//	win->drawing_helper->set_color(scheme.TEXT);
+	//	win->drawing_helper->draw_str(x0, y0, s, TextAlign::RIGHT);
+		p->set_color(Black);
+		p->draw_str({100,100}, s);
+	}
 }
 
 ActionController::Constraint ActionController::get_hover(MultiViewWindow* win, const vec2& m, vec3 &tp) {

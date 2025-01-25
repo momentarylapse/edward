@@ -5,6 +5,8 @@
 #include "MultiView.h"
 #include "ActionController.h"
 #include <Session.h>
+#include <action/ActionMultiView.h>
+#include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
 #include <multiview/SingleData.h>
 
@@ -14,6 +16,8 @@
 #include <y/y/Entity.h>
 #include <y/graphics-impl.h>
 
+#include "Mode.h"
+
 MultiViewWindow::MultiViewWindow(MultiView* _multi_view) {
 	multi_view = _multi_view;
 }
@@ -22,8 +26,54 @@ vec3 MultiViewWindow::project(const vec3& v) const {
 	return projection.project(v);
 }
 
+vec3 MultiViewWindow::unproject(const vec3& v, const vec3& zref) const {
+	vec3 op = project(zref);
+	vec3 r = v;
+//	r.x = v.x*2 / area.width() - 1;
+//	r.y = - v.y*2 / area.height() + 1;
+	r.z = op.z;
+	return projection.inverse().project(r);
+	//return projection.inverse().unproject(v);
+}
+
 vec3 MultiViewWindow::dir() const {
 	return multi_view->view_port.ang * vec3::EZ;
+}
+
+float MultiViewWindow::zoom() const {
+
+	//return 1000.0f / radius;
+	//if (multi_view->mode3d)
+		return area.height() / multi_view->view_port.radius;
+	//else
+	//	return area.height() * 0.8f / multi_view->view_port.radius;
+}
+
+#define GRID_CONST	5.0f
+
+float MultiViewWindow::get_grid_d() const {
+	return pow(10.0f, ceil(log10(GRID_CONST / zoom())));
+}
+
+int grid_level(int i) {
+	if (i == 0)
+		return 0;
+	if (i % 10 == 0)
+		return 1;
+	if (i % 100 == 0)
+		return 2;
+	return 3;
+}
+
+const float LOW_MAX = 0.25f;
+const float MID_MAX = 0.5f;
+
+float grid_density(int level, float d_err) {
+	if (level == 0)
+		return 1;
+	if (level == 1)
+		d_err += 1;
+	return min((float)pow(10.0f, d_err-1.0f) * LOW_MAX, MID_MAX);
 }
 
 
@@ -60,6 +110,8 @@ void MultiView::prepare(const RenderParams& params) {
 	view_port.cam->max_depth = view_port.radius * 300;
 	view_port.cam->update_matrices(area.width() / area.height());
 
+	window.local_ang = view_port.ang;
+
 	// 3d -> pixel
 	window.projection = mat4::translation({area.x1, area.y1, 0})
 		* mat4::scale(area.width()/2, area.height()/2, 1)
@@ -70,6 +122,14 @@ void MultiView::prepare(const RenderParams& params) {
 }
 
 void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
+	if (action_controller->cur_action) {
+		//action_controller->update_param(vec3(d* 100, 0));
+		action_controller->update_action(d);
+		action_controller->visible = true;
+		return;
+	}
+
+
 	hover = get_hover(hover_window, m);
 	//action_controller->on_mouse_move(m, d);
 	// TODO if busy... return
@@ -137,6 +197,10 @@ void MultiView::on_left_button_down(const vec2& m) {
 
 	//action_controller->on_left_button_down(m);
 	if (hover and hover->type == MultiViewType::ACTION_MANAGER) {
+		action_controller->data = session->cur_mode->get_data();
+		action_controller->action.mode = ACTION_MOVE;
+		if (f_create_action)
+			action_controller->start_action(f_create_action(), hover->tp, (ActionController::Constraint)hover->index);
 
 	} else if (auto p = get_hover_item()) {
 		if (session->win->is_key_pressed(xhui::KEY_SHIFT)) {
@@ -164,6 +228,11 @@ void MultiView::on_left_button_down(const vec2& m) {
 
 void MultiView::on_left_button_up(const vec2& m) {
 	//action_controller->on_left_button_up(m);
+	if (action_controller->cur_action) {
+		action_controller->end_action(true);
+		return;
+	}
+	hover = get_hover(hover_window, m);
 }
 
 
@@ -195,6 +264,7 @@ void MultiView::on_draw(Painter* p) {
 		p->set_fill(true);
 	}
 	action_controller->draw_post(p);
+	draw_mouse_pos(p);
 }
 
 
@@ -214,6 +284,51 @@ base::optional<Hover> MultiView::get_hover(MultiViewWindow* win, const vec2& m) 
 	if (f_hover)
 		return f_hover(win, m);
 	return base::None;
+}
+
+vec3 MultiView::maybe_snap_v(const vec3& v) const {
+	return v;
+}
+vec3 MultiView::maybe_snap_v2(const vec3& v, float f) const {
+	return v;
+}
+string MultiView::get_unit_by_zoom(vec3 &v) {
+	const char *units[] = {"y", "z", "a", "f", "p", "n", "\u00b5", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"};
+	float l = active_window->get_grid_d() * 10.1f;
+
+	int n = floor(log10(l) / 3.0f);
+	v /= pow(10.0f, n * 3);
+	if ((n >= -8) and  (n <= 8))
+		return units[n + 8];
+	return format("*10^%d", n*3);
+}
+
+string MultiView::format_length(float l) {
+	vec3 v = vec3(l, 0, 0);
+	string unit = get_unit_by_zoom(v);
+	return f2s(v.x,2) + " " + unit;
+}
+
+void MultiView::draw_mouse_pos(Painter* p) {
+	if (!hover)
+		return;
+	vec3 m = hover->tp;
+	string unit = get_unit_by_zoom(m);
+	string sx = f2s(m.x,2) + " " + unit;
+	string sy = f2s(m.y,2) + " " + unit;
+	string sz = f2s(m.z,2) + " " + unit;
+
+	p->set_color(xhui::Theme::_default.text);
+	p->draw_str(area.p11() - vec2(100,40), sx + "\n" + sy +  + "\n" + sz);
+
+
+#if HAS_LIB_GL
+	if (mouse_win->type == VIEW_2D) {
+		drawing_helper->draw_str(nix::target_width, nix::target_height - 60, sx + "\n" + sy, TextAlign::RIGHT);
+	} else {
+		drawing_helper->draw_str(nix::target_width, nix::target_height - 80, sx + "\n" + sy +  + "\n" + sz, TextAlign::RIGHT);
+	}
+#endif
 }
 
 
