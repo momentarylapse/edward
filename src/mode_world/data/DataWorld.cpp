@@ -233,7 +233,7 @@ void DataWorld::paste(Array<WorldObject> &o, Array<WorldTerrain> &t, Array<World
 }
 
 void DataWorld::delete_selection(const Selection& selection) {
-	execute(new ActionWorldDeleteSelection(selection));
+	execute(new ActionWorldDeleteSelection(this, selection));
 }
 
 Data::Selection DataWorld::get_selection() const {

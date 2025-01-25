@@ -6,9 +6,8 @@
  */
 
 #include "ActionWorldMoveSelection.h"
-
+#include <lib/base/iter.h>
 #include <lib/math/quaternion.h>
-
 #include "../data/DataWorld.h"
 #include "../data/WorldCamera.h"
 #include "../data/WorldLight.h"
@@ -18,12 +17,10 @@
 #include <y/world/Terrain.h>
 #include "../../Session.h"
 
-ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Selection& selection) :
-	ActionMultiView()
-{
+ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Selection& selection) {
 	// list of selected objects and save old pos
 	if (selection.contains(MultiViewType::WORLD_OBJECT))
-		foreachi(auto &o, d->objects, i)
+		for (const auto& [i, o]: enumerate(d->objects))
 			if (selection[MultiViewType::WORLD_OBJECT].contains(i)) {
 				index.add(i);
 				old_data.add(o.pos);
@@ -31,7 +28,7 @@ ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Sel
 				type.add(MultiViewType::WORLD_OBJECT);
 			}
 	if (selection.contains(MultiViewType::WORLD_TERRAIN))
-		foreachi(auto &t, d->terrains, i)
+		for (const auto& [i, t]: enumerate(d->terrains))
 			if (selection[MultiViewType::WORLD_TERRAIN].contains(i)) {
 				index.add(i);
 				old_data.add(t.pos);
@@ -39,7 +36,7 @@ ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Sel
 				type.add(MultiViewType::WORLD_TERRAIN);
 			}
 	if (selection.contains(MultiViewType::WORLD_CAMERA))
-		foreachi(auto &c, d->cameras, i)
+		for (const auto& [i, c]: enumerate(d->cameras))
 			if (selection[MultiViewType::WORLD_CAMERA].contains(i)) {
 				index.add(i);
 				old_data.add(c.pos);
@@ -47,7 +44,7 @@ ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Sel
 				type.add(MultiViewType::WORLD_CAMERA);
 			}
 	if (selection.contains(MultiViewType::WORLD_LIGHT))
-		foreachi(auto &l, d->lights, i)
+		for (const auto& [i, l]: enumerate(d->lights))
 			if (selection[MultiViewType::WORLD_LIGHT].contains(i)) {
 				index.add(i);
 				old_data.add(l.pos);
@@ -55,7 +52,7 @@ ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Sel
 				type.add(MultiViewType::WORLD_LIGHT);
 			}
 	if (selection.contains(MultiViewType::WORLD_LINK))
-		foreachi(auto &l, d->links, i)
+		for (const auto& [i, l]: enumerate(d->links))
 			if (selection[MultiViewType::WORLD_LINK].contains(i)) {
 				index.add(i);
 				old_data.add(l.pos);
@@ -67,7 +64,7 @@ ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Sel
 void *ActionWorldMoveSelection::execute(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	auto dq = quaternion::rotation(mat);
-	foreachi(int i, index, ii) {
+	for (const auto& [ii, i]: enumerate(index)) {
 		if (type[ii] == MultiViewType::WORLD_OBJECT) {
 			w->objects[i].pos = mat * old_data[ii];
 			w->objects[i].ang = (dq * old_ang[ii]).get_angles();
@@ -84,14 +81,14 @@ void *ActionWorldMoveSelection::execute(Data *d) {
 			w->links[i].pos = mat * old_data[ii];
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 
 
 void ActionWorldMoveSelection::undo(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	foreachi(int i, index, ii) {
+	for (const auto& [ii, i]: enumerate(index)) {
 		if (type[ii] == MultiViewType::WORLD_OBJECT) {
 			w->objects[i].pos = old_data[ii];
 			w->objects[i].ang = old_ang[ii].get_angles();
