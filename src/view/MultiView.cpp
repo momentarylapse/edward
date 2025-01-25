@@ -88,7 +88,7 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 	action_controller = new ActionController(this);
 
 	view_port.out_changed >> create_sink([this] {
-		action_controller->update();
+		action_controller->update_manipulator();
 	});
 }
 
@@ -120,7 +120,6 @@ void MultiView::prepare(const RenderParams& params) {
 
 void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
 	if (action_controller->cur_action) {
-		//action_controller->update_param(vec3(d* 100, 0));
 		action_controller->update_action(d);
 		action_controller->visible = true;
 		return;
@@ -214,7 +213,7 @@ void MultiView::update_selection_box() {
 	selection_box = base::None;
 	if (!first)
 		selection_box = box;
-	action_controller->update();
+	action_controller->update_manipulator();
 }
 
 
@@ -256,6 +255,7 @@ void MultiView::on_left_button_up(const vec2& m) {
 	//action_controller->on_left_button_up(m);
 	if (action_controller->cur_action) {
 		action_controller->end_action(true);
+		update_selection_box();
 		return;
 	}
 	selection_area = base::None;

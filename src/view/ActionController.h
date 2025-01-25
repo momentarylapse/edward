@@ -9,6 +9,7 @@
 #define ACTIONCONTROLLER_H_
 
 #include "../lib/base/base.h"
+#include "../lib/base/pointer.h"
 #include "../lib/image/color.h"
 #include "../lib/math/mat4.h"
 #include "../lib/math/vec3.h"
@@ -61,30 +62,35 @@ public:
 	};
 
 	bool visible = false;
-	vec3 pos, pos0, m0;
+
+	struct Manipulator {
+		explicit Manipulator(MultiView* multi_view);
+		void update(ActionController* ac);
+		vec3 pos, pos0;
+		float scale;
+		owned_array<Geometry> geo_show;
+		owned_array<Geometry> geo;
+		owned_array<VertexBuffer> buf;
+		owned_array<Material> materials;
+		owned<Material> material_hover;
+		mat4 geo_mat;
+	} manipulator;
+	vec3 m0;
 	vec3 dv, dvp;
 	vec3 param;
 	mat4 mat;
 	Constraint constraints;
-	Array<Geometry*> geo_show;
-	Array<Geometry*> geo;
-	Array<VertexBuffer*> buf;
-	Array<Material*> materials;
-	Material* material_hover;
-	mat4 geo_mat;
-	MultiView *multi_view;
-//	Window *active_win;
+	MultiView* multi_view;
 	MouseAction action;
-	ActionMultiView *cur_action = nullptr;
-	Data *data;
+	ActionMultiView* cur_action = nullptr;
+	Data* data;
 	//void reset();
-	void delete_geo();
 	//void draw(Window *win);
 	void draw(const RenderParams& params, RenderViewData& rvd);
 	void draw_post(Painter* p);
 	void show(bool show);
 
-	void update();
+	void update_manipulator();
 	/*bool on_left_button_down(const vec2& m);
 	void on_mouse_move(const vec2& m, const vec2& d);
 	void on_left_button_up(const vec2& m);*/
@@ -108,12 +114,12 @@ public:
 
 
 
-	struct ACGeoConfig {
+	struct GeoConfig {
 		color col;
 		Constraint constraint;
 		int priority;
 	};
-	static const ACGeoConfig ac_geo_config[];
+	static const GeoConfig geo_config[];
 	static bool geo_allow(int i, MultiViewWindow* win, const mat4& geo_mat);
 };
 

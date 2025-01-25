@@ -29,11 +29,10 @@
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
-ActionController::ActionController(MultiView *view) {
-	multi_view = view;
+ActionController::Manipulator::Manipulator(MultiView* multi_view) {
 	geo_mat = mat4::ID;
-	mat = mat4::ID;
-
+	scale = 1;
+	pos = v_0;
 
 	float r0 = 1.333f;
 	float r1 = 0.666f;
@@ -66,7 +65,7 @@ ActionController::ActionController(MultiView *view) {
 	}
 
 	for (int i=0; i<geo.num; i++) {
-		auto m = create_material(multi_view->resource_manager, Black, 0.9f, 0, ac_geo_config[i].col);
+		auto m = create_material(multi_view->resource_manager, Black, 0.9f, 0, geo_config[i].col);
 		m->pass0.z_buffer = false;
 		m->pass0.z_test = false;
 		materials.add(m);
@@ -74,13 +73,16 @@ ActionController::ActionController(MultiView *view) {
 	material_hover = create_material(multi_view->resource_manager, Black, 0.9f, 0, White);
 	material_hover->pass0.z_buffer = false;
 	material_hover->pass0.z_test = false;
+}
+
+ActionController::ActionController(MultiView *view) : manipulator(view) {
+	multi_view = view;
+	mat = mat4::ID;
 
 	//reset();
 }
 
-ActionController::~ActionController() {
-	delete_geo();
-}
+ActionController::~ActionController() = default;
 
 void ActionController::start_action(ActionMultiView* a, const vec3 &_m, Constraint _constraints) {
 	if (cur_action)
@@ -94,10 +96,10 @@ void ActionController::start_action(ActionMultiView* a, const vec3 &_m, Constrai
 	//active_win = multi_view->active_window;
 	dv = dvp = vec3::ZERO;
 	m0 = _m;
-	pos0 = pos;
+	manipulator.pos0 = manipulator.pos;
 	constraints = _constraints;
 	if (constraints == Constraint::FREE)
-		pos0 = m0;
+		manipulator.pos0 = m0;
 	cur_action = a;
 	cur_action->execute_logged(data);
 	//multi_view->out_action_start();
@@ -196,8 +198,8 @@ void ActionController::update_param(const vec3 &_param) {
 	if (!cur_action)
 		return;
 
-	auto m_dt = mat4::translation(pos0);
-	auto m_dti = mat4::translation(-pos0);
+	auto m_dt = mat4::translation(manipulator.pos0);
+	auto m_dti = mat4::translation(-manipulator.pos0);
 
 	param = _param;
 	if (action.mode == ACTION_MOVE) {
@@ -217,7 +219,7 @@ void ActionController::update_param(const vec3 &_param) {
 	}
 	cur_action->update_and_notify(data, mat);
 
-	update();
+	update_manipulator();
 
 #if 0
 	multi_view->out_action_update();
@@ -260,44 +262,39 @@ bool ActionController::is_selecting() {
 	hover_constraint = Constraint::UNDEFINED;
 }*/
 
-void ActionController::delete_geo() {
-	for (Geometry *g: geo)
-		delete g;
-	geo.clear();
-	for (Geometry *g: geo_show)
-		delete g;
-	geo_show.clear();
-}
-
-void ActionController::update() {
-	float f = multi_view->view_port.radius * 0.15f;
-	//if (multi_view->whole_window)
-	f /= 2;
-
-	if (cur_action) {
+void ActionController::Manipulator::update(ActionController* ac) {
+	if (ac->cur_action) {
 		pos = pos0;
 	} else {
+		scale = ac->multi_view->view_port.radius * 0.15f;
+		//if (multi_view->whole_window)
+		scale /= 2;
 		//pos = multi_view->get_selection_center();
-		if (multi_view->selection_box) {
-			visible = true;
-			pos = multi_view->selection_box->center();
+		if (ac->multi_view->selection_box) {
+			ac->visible = true;
+			pos = ac->multi_view->selection_box->center();
 			pos0 = pos;
-			float box_size = multi_view->selection_box->size().length();
-			f = clamp(box_size * 0.5f, f, f*3);
+			float box_size = ac->multi_view->selection_box->size().length();
+			scale = clamp(box_size * 0.5f, scale, scale*3);
 		} else {
-			visible = false;
+			ac->visible = false;
 		}
 	}
-	auto s = mat4::scale(f, f, f);
+	auto s = mat4::scale(scale, scale, scale);
 	auto t = mat4::translation(pos);
-	geo_mat = t * s;
+	geo_mat = ac->mat * t * s;
 
 	//multi_view->force_redraw();
 }
 
+void ActionController::update_manipulator() {
+	manipulator.update(this);
+}
+
+
 void ActionController::show(bool show) {
 	visible = show;
-	update();
+	update_manipulator();
 }
 
 string ActionController::constraint_name(Constraint c) {
@@ -328,7 +325,7 @@ string ActionController::action_name(int a) {
 	return "???";
 }
 
-const ActionController::ACGeoConfig ActionController::ac_geo_config[] = {
+const ActionController::GeoConfig ActionController::geo_config[] = {
 	{color(1, 0.8f, 0.8f, 0.7f),Constraint::XY,0},
 	{color(1, 0.8f, 0.7f, 0.8f),Constraint::XZ,0},
 	{color(1, 0.7f, 0.8f, 0.8f),Constraint::YZ,0},
@@ -342,7 +339,7 @@ const ActionController::ACGeoConfig ActionController::ac_geo_config[] = {
 };
 
 bool ActionController::geo_allow(int i, MultiViewWindow* win, const mat4& geo_mat) {
-	auto c = ac_geo_config[i].constraint;
+	auto c = geo_config[i].constraint;
 	vec3 pp = win->project(geo_mat * v_0);
 	vec3 ppx = win->project(geo_mat * vec3::EX);
 	ppx.z = pp.z;
@@ -373,15 +370,15 @@ void ActionController::draw(const RenderParams& params, RenderViewData& rvd) {
 	if (!visible)
 		return;
 
-	for (const auto& [i, vb]: enumerate(buf)) {
-		if (!geo_allow(i, multi_view->active_window, geo_mat))
+	for (const auto& [i, vb]: enumerate(manipulator.buf)) {
+		if (!geo_allow(i, multi_view->active_window, manipulator.geo_mat))
 			continue;
 		//draw_mesh(params, geo_mat, vb, material);
-		auto m = materials[i];
-		if (multi_view->hover and multi_view->hover->type == MultiViewType::ACTION_MANAGER and multi_view->hover->index == (int)ac_geo_config[i].constraint)
-			m = material_hover;
+		auto m = manipulator.materials[i];
+		if (multi_view->hover and multi_view->hover->type == MultiViewType::ACTION_MANAGER and multi_view->hover->index == (int)geo_config[i].constraint)
+			m = manipulator.material_hover.get();
 		auto shader = rvd.get_shader(m, 0, "default", "");
-		auto& rd = rvd.start(params, geo_mat, shader, *m, 0, PrimitiveTopology::TRIANGLES, vb);
+		auto& rd = rvd.start(params, manipulator.geo_mat, shader, *m, 0, PrimitiveTopology::TRIANGLES, vb);
 		rd.apply(params);
 		params.command_buffer->draw(vb);
 	}
@@ -535,15 +532,15 @@ ActionController::Constraint ActionController::get_hover(MultiViewWindow* win, c
 	float z_min = 1;
 	int priority = -1;
 	auto hover = Constraint::UNDEFINED;
-	for (const auto& [i, g]: enumerate(geo)) {
+	for (const auto& [i, g]: enumerate(manipulator.geo)) {
 		vec3 t;
-		if (!geo_allow(i, win, geo_mat))
+		if (!geo_allow(i, win, manipulator.geo_mat))
 			continue;
-		if (g->is_mouse_over(win, geo_mat, m, t)) {
+		if (g->is_mouse_over(win, manipulator.geo_mat, m, t)) {
 			float z = win->project(t).z;
-			if ((z < z_min) or (ac_geo_config[i].priority >= priority)) {
-				hover = ac_geo_config[i].constraint;
-				priority = ac_geo_config[i].priority;
+			if ((z < z_min) or (geo_config[i].priority >= priority)) {
+				hover = geo_config[i].constraint;
+				priority = geo_config[i].priority;
 				z_min = z;
 				tp = t;
 			}
