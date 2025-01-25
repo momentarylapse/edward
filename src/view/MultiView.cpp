@@ -79,8 +79,10 @@ float grid_density(int level, float d_err) {
 
 MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 		in_data_changed(this, [this] {
-			if (!action_controller->in_use())
+			if (!action_controller->in_use()) {
 				update_selection_box();
+				hover = base::None;
+			}
 		}),
 		view_port(this),
 		window(this)

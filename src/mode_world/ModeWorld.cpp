@@ -156,9 +156,6 @@ ModeWorld::ModeWorld(Session* session) : Mode(session) {
 	multi_view = new MultiView(session);
 	data = new DataWorld(session);
 	generic_data = data;
-	data->out_changed >> create_sink([this] {
-		update_selection_box();
-	});
 }
 
 
@@ -267,47 +264,7 @@ Data::Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) c
 	return s;
 }
 
-void ModeWorld::update_selection_box() {
-	/*
-	if (selection.num > 0) {
-		Box box;
-		bool first = true;
-		for (const auto& o: data->objects)
-			if (selection.contains((void*)&o)) {
-				if (first) {
-					box = {o.pos + o.object->prop.min, o.pos + o.object->prop.max};
-					first = false;
-				} else {
-					box.min._min(o.pos + o.object->prop.min);
-					box.max._max(o.pos + o.object->prop.max);
-				}
-			}
-		//multi_view->set_selection_box(box);
-	} else {
-		//multi_view->set_selection_box(base::None);
-	}*/
-}
-
-
 void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
-	/*if (multi_view->action_controller->cur_action) {
-		multi_view->action_controller->mat = multi_view->action_controller->mat * mat4::translation({d.x, d.y, 0});
-		multi_view->action_controller->cur_action->update_and_notify(data, multi_view->action_controller->mat);
-	} else if (multi_view->selection_area) {
-		multi_view->selection_area = rect(multi_view->selection_area->p00(), m);
-		auto s = get_selection(multi_view->hover_window, *multi_view->selection_area);
-		// TODO shift/control
-		if (s != selection) {
-			selection = s;
-			update_selection_box();
-		}
-	} else if (session->win->button(0)) {
-		// start selection rect
-		multi_view->selection_area = rect(m - d, m);
-		//update_selection_box();
-	} else {
-		multi_view->hover = multi_view->get_hover(multi_view->hover_window, m);
-	}*/
 	out_redraw();
 }
 
@@ -317,49 +274,10 @@ void ModeWorld::on_mouse_leave(const vec2& m) {
 }
 
 void ModeWorld::on_left_button_down(const vec2& m) {
-	/*if (multi_view->hover) {
-
-		void* p = nullptr;
-		if (multi_view->hover->type == MultiViewType::WORLD_OBJECT)
-			p = &data->objects[multi_view->hover->index];
-		if (!p)
-			return;
-
-		if (session->win->is_key_pressed(xhui::KEY_SHIFT)) {
-			if (selection.contains(p))
-				selection.erase(p);
-			else
-				selection.add(p);
-			update_selection_box();
-		} else if (session->win->is_key_pressed(xhui::KEY_CONTROL)) {
-			selection.add(p);
-			update_selection_box();
-		} else {
-
-			if (selection.contains(p)) {
-				multi_view->action_controller->cur_action = new ActionWorldMoveSelection(data, selection);
-				multi_view->action_controller->mat = mat4::ID;
-			} else {
-				selection = {p};
-				update_selection_box();
-			}
-		}
-	} else {
-		if (!session->win->is_key_pressed(xhui::KEY_SHIFT) and !session->win->is_key_pressed(xhui::KEY_CONTROL)) {
-			selection.clear();
-			update_selection_box();
-		}
-	}*/
 	out_redraw();
 }
 
 void ModeWorld::on_left_button_up(const vec2&) {
-	/*if (multi_view->action_controller->cur_action) {
-		data->execute(multi_view->action_controller->cur_action);
-		multi_view->action_controller->cur_action = nullptr;
-	}
-	if (multi_view->selection_area)
-		multi_view->selection_area = base::None;*/
 	out_redraw();
 }
 
@@ -408,11 +326,8 @@ void ModeWorld::on_command(const string& id) {
 }
 
 void ModeWorld::on_key_down(int key) {
-	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE) {
+	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE)
 		data->delete_selection(data->get_selection());
-		update_selection_box();
-		multi_view->hover = base::None;
-	}
 }
 
 
