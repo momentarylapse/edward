@@ -85,6 +85,11 @@ void DrawingHelper::set_color(const color& color) {
 	_color = color;
 }
 
+void DrawingHelper::set_line_width(float width) {
+	_line_width = width;
+}
+
+
 
 static void add_vb_line(Array<Vertex1>& vertices, const vec3& a, const vec3& b, MultiViewWindow* win, float line_width) {
 	float w = win->area.width();
@@ -105,12 +110,17 @@ static void add_vb_line(Array<Vertex1>& vertices, const vec3& a, const vec3& b, 
 	vertices.add({b1, v_0, 0,0});
 }
 
-void DrawingHelper::draw_lines(const Array<vec3>& points, float width) {
+void DrawingHelper::draw_lines(const Array<vec3>& points, bool contiguous) {
 	auto vb = context->get_line_vb();
 	Array<Vertex1> vertices;
 	mat4 m = window->projection * window->view;
-	for (int i=0; i<points.num-1; i++)
-		add_vb_line(vertices, m.project(points[i]), m.project(points[i+1]), window, width);
+	if (contiguous) {
+		for (int i=0; i<points.num-1; i++)
+			add_vb_line(vertices, m.project(points[i]), m.project(points[i+1]), window, _line_width);
+	} else {
+		for (int i=0; i<points.num-1; i+=2)
+			add_vb_line(vertices, m.project(points[i]), m.project(points[i+1]), window, _line_width);
+	}
 	vb->update(vertices);
 
 	struct Parameters {
@@ -133,3 +143,16 @@ void DrawingHelper::draw_lines(const Array<vec3>& points, float width) {
 	cb->bind_descriptor_set(0, dset);
 	cb->draw(vb);
 }
+
+void DrawingHelper::draw_circle(const vec3& center, const vec3& axis, float r) {
+	int N = 128;
+	Array<vec3> points;
+	vec3 e1 = axis.ortho() * r;
+	vec3 e2 = vec3::cross(axis, e1);
+	for (int i=0; i<=N; i++) {
+		float w = (float)i / (float)N * 2 * pi;
+		points.add(center + e1 * cos(w) + e2 * sin(w));
+	}
+	draw_lines(points);
+}
+

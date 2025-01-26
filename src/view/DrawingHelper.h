@@ -19,8 +19,13 @@ class DrawingHelper {
 public:
 	explicit DrawingHelper(xhui::ContextVulkan* ctx);
 	void set_color(const color& color);
-	void draw_lines(const Array<vec3>& points, float width);
 	color _color;
+
+	void set_line_width(float width);
+	float _line_width;
+
+	void draw_lines(const Array<vec3>& points, bool contiguous = true);
+	void draw_circle(const vec3& center, const vec3& axis, float r);
 
 	xhui::ContextVulkan* context;
 	MultiViewWindow* window;

@@ -150,10 +150,102 @@ public:
 			}
 		}
 
-		mode->multi_view->action_controller->draw(params, rvd);
 
-		mode->session->drawing_helper->set_color(Red);
-		mode->session->drawing_helper->draw_lines({{0,0,0}, {0,10000,0}}, 10);
+		draw_cameras();
+		draw_lights(mode->multi_view->active_window);
+
+		mode->multi_view->action_controller->draw(params, rvd);
+	}
+
+	void draw_cameras() {
+		for (auto &c: data_world->cameras) {
+			//if (c.view_stage < mode->multi_view->view_stage)
+			//	continue;
+
+			auto dh = mode->session->drawing_helper;
+			auto win = dh->window;
+
+			dh->set_color(color(1, 0.9f, 0.6f, 0.3f));
+			dh->set_line_width(3);//scheme.LINE_WIDTH_THIN);
+			if (c.is_selected) {
+				dh->set_color(Red);
+				dh->set_line_width(5);//scheme.LINE_WIDTH_MEDIUM);
+			}
+			auto q = quaternion::rotation_v(c.ang);
+			float r = win->multi_view->view_port.radius * 0.1f;
+			float rr = r * tan(c.fov / 2);
+			vec3 ex = q * vec3::EX * rr * 1.333f;
+			vec3 ey = q * vec3::EY * rr;
+			vec3 ez = q * vec3::EZ * r;
+
+			Array<vec3> points = {
+				c.pos, c.pos + ez + ex + ey,
+				c.pos, c.pos + ez - ex + ey,
+				c.pos, c.pos + ez + ex - ey,
+				c.pos, c.pos + ez - ex - ey,
+				c.pos + ez + ex + ey, c.pos + ez - ex + ey,
+				c.pos + ez - ex + ey, c.pos + ez - ex - ey,
+				c.pos + ez - ex - ey, c.pos + ez + ex - ey,
+				c.pos + ez + ex - ey, c.pos + ez + ex + ey};
+			dh->draw_lines(points, false);
+		}
+	}
+
+
+
+	void draw_tangent_circle(MultiViewWindow *win, const vec3 &p, const vec3 &c, const vec3 &n, float r) {
+
+		vec3 e1 = n.ortho();
+		vec3 e2 = n ^ e1;
+		e1 *= r;
+		e2 *= r;
+		vec2 pc = win->project(c).xy();
+		int N = 64;
+		int i_max = 0;
+		float d_max = 0;
+		for (int i=0; i<=N; i++) {
+			float w = i * 2 * pi / N;
+			vec2 pp = win->project(c + sin(w) * e1 + cos(w) * e2).xy();
+			if ((pp - pc).length() > d_max) {
+				i_max = i;
+				d_max = (pp - pc).length();
+			}
+		}
+		float w = i_max * 2 * pi / N;
+		auto dh = mode->session->drawing_helper;
+		dh->draw_lines({p, c + sin(w) * e1 + cos(w) * e2,
+			p, c - sin(w) * e1 - cos(w) * e2}, false);
+	}
+
+	const float LIGHT_RADIUS_FACTOR_HI = 0.03f;
+	const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
+
+	void draw_lights(MultiViewWindow *win) {
+		auto dh = mode->session->drawing_helper;
+		for (auto &l: data_world->lights) {
+			//if (l.view_stage < multi_view->view_stage)
+			//	continue;
+
+			dh->set_color(color(1, 0.9f, 0.6f, 0.3f));
+			dh->set_line_width(5);//scheme.LINE_WIDTH_MEDIUM);
+			if (l.is_selected) {
+				dh->set_color(Red);
+				dh->set_line_width(7);//scheme.LINE_WIDTH_THICK);
+			}
+
+			if (l.type == LightType::DIRECTIONAL) {
+				dh->draw_lines({l.pos, l.pos + l.ang.ang2dir() * win->multi_view->view_port.radius * 0.1f}, false);
+			} else if (l.type == LightType::POINT) {
+				//draw_circle(l.pos, win->get_direction(), l.radius);
+				dh->draw_circle(l.pos, win->dir(), l.radius * LIGHT_RADIUS_FACTOR_LO);
+				dh->draw_circle(l.pos, win->dir(), l.radius * LIGHT_RADIUS_FACTOR_HI);
+			} else if (l.type == LightType::CONE) {
+				dh->draw_lines({l.pos, l.pos + l.ang.ang2dir() * l.radius * LIGHT_RADIUS_FACTOR_LO}, false);
+				dh->draw_circle(l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_LO, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
+				dh->draw_circle(l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_HI, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_HI);
+				draw_tangent_circle(win, l.pos, l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_LO, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
+			}
+		}
 	}
 
 };
@@ -327,11 +419,6 @@ void ModeWorld::on_draw_post(Painter* p) {
 	}
 	p->set_color(Blue);
 	for (auto& o: data->lights) {
-		auto p1 = multi_view->active_window->project(o.pos);
-		p->draw_rect({p1.x-2,p1.x+2, p1.y-2,p1.y+2});
-	}
-	p->set_color(Green);
-	for (auto& o: data->cameras) {
 		auto p1 = multi_view->active_window->project(o.pos);
 		p->draw_rect({p1.x-2,p1.x+2, p1.y-2,p1.y+2});
 	}
