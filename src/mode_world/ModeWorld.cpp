@@ -15,8 +15,6 @@
 #include <y/renderer/Renderer.h>
 #include <y/renderer/world/geometry/RenderViewData.h>
 #include <y/renderer/world/geometry/SceneView.h>
-#include <y/renderer/base.h>
-#include <y/renderer/path/RenderPath.h>
 #include <y/helper/ResourceManager.h>
 #include <y/world/Material.h>
 #include <y/world/Camera.h>
@@ -28,227 +26,10 @@
 #include <y/graphics-impl.h>
 #include <lib/os/msg.h>
 #include <view/EdwardWindow.h>
-
-#include <data/geometry/GeometryTeapot.h>
 #include <view/ActionController.h>
 #include <view/DrawingHelper.h>
 
-Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {
-	auto material = resource_manager->load_material("");
-	material->albedo = albedo;
-	material->roughness = roughness;
-	material->metal = metal;
-	material->emission = emission;
-	material->textures = {tex_white};
-	if (transparent) {
-		material->pass0.cull_mode = 0;
-		material->pass0.mode = TransparencyMode::FUNCTIONS;
-		material->pass0.source = Alpha::SOURCE_ALPHA;
-		material->pass0.destination = Alpha::SOURCE_INV_ALPHA;
-		material->pass0.z_buffer = false;
-	}
-	return material;
-}
 
-class DataWorldRenderer : public Renderer {
-public:
-	ModeWorld* mode;
-	DataWorld* data_world;
-	RenderViewData rvd;
-	Light* light;
-
-	void draw_mesh(const RenderParams& params, const mat4& matrix, VertexBuffer* vb, Material* material, const string& vertex_module = "default") {
-		auto shader = rvd.get_shader(material, 0, vertex_module, "");
-		auto& rd = rvd.start(params, matrix, shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
-		rd.apply(params);
-		params.command_buffer->draw(vb);
-	}
-
-	Material* material_hover;
-	Material* material_selection;
-
-	explicit DataWorldRenderer(ModeWorld* m, SceneView* scene_view) : Renderer("world") {
-		mode = m;
-		data_world = mode->data;
-		resource_manager = data_world->session->resource_manager;
-
-		rvd.scene_view = scene_view;
-
-		light = new Light(White, -1, -1);
-		light->owner = new Entity;
-		light->owner->ang = quaternion::rotation({1,0,0}, 0.5f);
-		light->light.harshness = 0.5f;
-
-		try {
-			material_hover = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, White, true);
-			material_selection = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, Red, true);
-		} catch(Exception& e) {
-			msg_error(e.message());
-		}
-	}
-	void draw(const RenderParams& params) override {
-		auto cb = params.command_buffer;
-		cb->clear(params.area, {data_world->meta_data.background_color}, 1.0);
-
-	//	scene_view.choose_lights();
-		{
-			rvd.scene_view->lights.clear();
-			rvd.scene_view->shadow_index = -1;
-			//	if (l->allow_shadow)
-			//		scene_view.shadow_index = scene_view.lights.num;
-			rvd.scene_view->lights.add(light);
-		}
-
-		rvd.scene_view->cam->update_matrices(params.desired_aspect_ratio);
-		rvd.set_projection_matrix(rvd.scene_view->cam->m_projection);
-		rvd.set_view_matrix(rvd.scene_view->cam->m_view);
-		rvd.update_lights();
-		rvd.ubo.num_lights = rvd.scene_view->lights.num;
-		rvd.ubo.shadow_index = rvd.scene_view->shadow_index;
-
-		rvd.begin_draw();
-
-		for (auto& t: data_world->terrains) {
-			t.terrain->prepare_draw(rvd.scene_view->cam->owner->pos);
-			auto material = t.terrain->material.get();
-			auto vb = t.terrain->vertex_buffer.get();
-
-			auto shader = rvd.get_shader(material, 0, t.terrain->vertex_shader_module, "");
-			auto& rd = rvd.start(params, mat4::translation(t.pos), shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
-			cb->push_constant(0, 4, &t.terrain->texture_scale[0].x);
-			cb->push_constant(4, 4, &t.terrain->texture_scale[1].x);
-			rd.apply(params);
-			cb->draw(vb);
-		}
-
-		for (auto& o: data_world->objects) {
-			for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
-				auto m = o.object;
-				auto material = m->material[k];
-				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				draw_mesh(params, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, material, m->_template->vertex_shader_module);
-			}
-		}
-
-		// selection
-		for (auto& o: data_world->objects) {
-			if (o.is_selected)
-				for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
-					auto m = o.object;
-					auto vb = m->mesh[0]->sub[k].vertex_buffer;
-					draw_mesh(params, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, material_selection, m->_template->vertex_shader_module);
-				}
-		}
-
-		// hover...
-		if (mode->multi_view->hover and mode->multi_view->hover->type == MultiViewType::WORLD_OBJECT) {
-			auto& o = data_world->objects[mode->multi_view->hover->index];
-			for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
-				auto m = o.object;
-				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				draw_mesh(params, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, material_hover, m->_template->vertex_shader_module);
-			}
-		}
-
-
-		draw_cameras();
-		draw_lights(mode->multi_view->active_window);
-
-		mode->multi_view->action_controller->draw(params, rvd);
-	}
-
-	void draw_cameras() {
-		for (auto &c: data_world->cameras) {
-			//if (c.view_stage < mode->multi_view->view_stage)
-			//	continue;
-
-			auto dh = mode->session->drawing_helper;
-			auto win = dh->window;
-
-			dh->set_color(color(1, 0.9f, 0.6f, 0.3f));
-			dh->set_line_width(3);//scheme.LINE_WIDTH_THIN);
-			if (c.is_selected) {
-				dh->set_color(Red);
-				dh->set_line_width(5);//scheme.LINE_WIDTH_MEDIUM);
-			}
-			auto q = quaternion::rotation_v(c.ang);
-			float r = win->multi_view->view_port.radius * 0.1f;
-			float rr = r * tan(c.fov / 2);
-			vec3 ex = q * vec3::EX * rr * 1.333f;
-			vec3 ey = q * vec3::EY * rr;
-			vec3 ez = q * vec3::EZ * r;
-
-			Array<vec3> points = {
-				c.pos, c.pos + ez + ex + ey,
-				c.pos, c.pos + ez - ex + ey,
-				c.pos, c.pos + ez + ex - ey,
-				c.pos, c.pos + ez - ex - ey,
-				c.pos + ez + ex + ey, c.pos + ez - ex + ey,
-				c.pos + ez - ex + ey, c.pos + ez - ex - ey,
-				c.pos + ez - ex - ey, c.pos + ez + ex - ey,
-				c.pos + ez + ex - ey, c.pos + ez + ex + ey};
-			dh->draw_lines(points, false);
-		}
-	}
-
-
-
-	void draw_tangent_circle(MultiViewWindow *win, const vec3 &p, const vec3 &c, const vec3 &n, float r) {
-
-		vec3 e1 = n.ortho();
-		vec3 e2 = n ^ e1;
-		e1 *= r;
-		e2 *= r;
-		vec2 pc = win->project(c).xy();
-		int N = 64;
-		int i_max = 0;
-		float d_max = 0;
-		for (int i=0; i<=N; i++) {
-			float w = i * 2 * pi / N;
-			vec2 pp = win->project(c + sin(w) * e1 + cos(w) * e2).xy();
-			if ((pp - pc).length() > d_max) {
-				i_max = i;
-				d_max = (pp - pc).length();
-			}
-		}
-		float w = i_max * 2 * pi / N;
-		auto dh = mode->session->drawing_helper;
-		dh->draw_lines({p, c + sin(w) * e1 + cos(w) * e2,
-			p, c - sin(w) * e1 - cos(w) * e2}, false);
-	}
-
-	const float LIGHT_RADIUS_FACTOR_HI = 0.03f;
-	const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
-
-	void draw_lights(MultiViewWindow *win) {
-		auto dh = mode->session->drawing_helper;
-		for (auto &l: data_world->lights) {
-			//if (l.view_stage < multi_view->view_stage)
-			//	continue;
-
-			dh->set_color(color(1, 0.9f, 0.6f, 0.3f));
-			dh->set_line_width(5);//scheme.LINE_WIDTH_MEDIUM);
-			if (l.is_selected) {
-				dh->set_color(Red);
-				dh->set_line_width(7);//scheme.LINE_WIDTH_THICK);
-			}
-
-			if (l.type == LightType::DIRECTIONAL) {
-				dh->draw_lines({l.pos, l.pos + l.ang.ang2dir() * win->multi_view->view_port.radius * 0.1f}, false);
-			} else if (l.type == LightType::POINT) {
-				//draw_circle(l.pos, win->get_direction(), l.radius);
-				dh->draw_circle(l.pos, win->dir(), l.radius * LIGHT_RADIUS_FACTOR_LO);
-				dh->draw_circle(l.pos, win->dir(), l.radius * LIGHT_RADIUS_FACTOR_HI);
-			} else if (l.type == LightType::CONE) {
-				dh->draw_lines({l.pos, l.pos + l.ang.ang2dir() * l.radius * LIGHT_RADIUS_FACTOR_LO}, false);
-				dh->draw_circle(l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_LO, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
-				dh->draw_circle(l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_HI, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_HI);
-				draw_tangent_circle(win, l.pos, l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_LO, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
-			}
-		}
-	}
-
-};
 
 ModeWorld::ModeWorld(Session* session) :
 	Mode(session),
@@ -260,9 +41,6 @@ ModeWorld::ModeWorld(Session* session) :
 }
 
 
-Renderer* ModeWorld::create_renderer(SceneView* scene_view) {
-	return new DataWorldRenderer(this, scene_view);
-}
 
 void ModeWorld::on_enter() {
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
@@ -381,6 +159,161 @@ void ModeWorld::on_left_button_down(const vec2& m) {
 void ModeWorld::on_left_button_up(const vec2&) {
 	out_redraw();
 }
+
+void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vb, Material* material, const string& vertex_module = "default") {
+	auto shader = rvd.get_shader(material, 0, vertex_module, "");
+	auto& rd = rvd.start(params, matrix, shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+	rd.apply(params);
+	params.command_buffer->draw(vb);
+}
+
+void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+
+	auto& rvd = win->rvd;
+	auto cb = params.command_buffer;
+	cb->clear(params.area, {data->meta_data.background_color}, 1.0);
+	auto dh = win->multi_view->session->drawing_helper;
+
+	for (auto& t: data->terrains) {
+		t.terrain->prepare_draw(rvd.scene_view->cam->owner->pos);
+		auto material = t.terrain->material.get();
+		auto vb = t.terrain->vertex_buffer.get();
+
+		auto shader = rvd.get_shader(material, 0, t.terrain->vertex_shader_module, "");
+		auto& rd = rvd.start(params, mat4::translation(t.pos), shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+		cb->push_constant(0, 4, &t.terrain->texture_scale[0].x);
+		cb->push_constant(4, 4, &t.terrain->texture_scale[1].x);
+		rd.apply(params);
+		cb->draw(vb);
+	}
+
+	for (auto& o: data->objects) {
+		for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
+			auto m = o.object;
+			auto material = m->material[k];
+			auto vb = m->mesh[0]->sub[k].vertex_buffer;
+			draw_mesh(params, rvd, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, material, m->_template->vertex_shader_module);
+		}
+	}
+
+	// selection
+	for (auto& o: data->objects) {
+		if (o.is_selected)
+			for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
+				auto m = o.object;
+				auto vb = m->mesh[0]->sub[k].vertex_buffer;
+				draw_mesh(params, rvd, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, dh->material_selection, m->_template->vertex_shader_module);
+			}
+	}
+
+	// hover...
+	if (multi_view->hover and multi_view->hover->type == MultiViewType::WORLD_OBJECT) {
+		auto& o = data->objects[multi_view->hover->index];
+		for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
+			auto m = o.object;
+			auto vb = m->mesh[0]->sub[k].vertex_buffer;
+			draw_mesh(params, rvd, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, dh->material_hover, m->_template->vertex_shader_module);
+		}
+	}
+
+
+	draw_cameras(win);
+	draw_lights(win);
+
+	multi_view->action_controller->draw(params, rvd);
+}
+
+void ModeWorld::draw_cameras(MultiViewWindow* win) {
+	for (auto &c: data->cameras) {
+		//if (c.view_stage < mode->multi_view->view_stage)
+		//	continue;
+
+		auto dh = session->drawing_helper;
+		auto win = dh->window;
+
+		dh->set_color(color(1, 0.9f, 0.6f, 0.3f));
+		dh->set_line_width(3);//scheme.LINE_WIDTH_THIN);
+		if (c.is_selected) {
+			dh->set_color(Red);
+			dh->set_line_width(5);//scheme.LINE_WIDTH_MEDIUM);
+		}
+		auto q = quaternion::rotation_v(c.ang);
+		float r = win->multi_view->view_port.radius * 0.1f;
+		float rr = r * tan(c.fov / 2);
+		vec3 ex = q * vec3::EX * rr * 1.333f;
+		vec3 ey = q * vec3::EY * rr;
+		vec3 ez = q * vec3::EZ * r;
+
+		Array<vec3> points = {
+			c.pos, c.pos + ez + ex + ey,
+			c.pos, c.pos + ez - ex + ey,
+			c.pos, c.pos + ez + ex - ey,
+			c.pos, c.pos + ez - ex - ey,
+			c.pos + ez + ex + ey, c.pos + ez - ex + ey,
+			c.pos + ez - ex + ey, c.pos + ez - ex - ey,
+			c.pos + ez - ex - ey, c.pos + ez + ex - ey,
+			c.pos + ez + ex - ey, c.pos + ez + ex + ey};
+		dh->draw_lines(points, false);
+	}
+}
+
+
+
+void draw_tangent_circle(MultiViewWindow *win, const vec3 &p, const vec3 &c, const vec3 &n, float r) {
+
+	vec3 e1 = n.ortho();
+	vec3 e2 = n ^ e1;
+	e1 *= r;
+	e2 *= r;
+	vec2 pc = win->project(c).xy();
+	int N = 64;
+	int i_max = 0;
+	float d_max = 0;
+	for (int i=0; i<=N; i++) {
+		float w = i * 2 * pi / N;
+		vec2 pp = win->project(c + sin(w) * e1 + cos(w) * e2).xy();
+		if ((pp - pc).length() > d_max) {
+			i_max = i;
+			d_max = (pp - pc).length();
+		}
+	}
+	float w = i_max * 2 * pi / N;
+	auto dh = win->multi_view->session->drawing_helper;
+	dh->draw_lines({p, c + sin(w) * e1 + cos(w) * e2,
+		p, c - sin(w) * e1 - cos(w) * e2}, false);
+}
+
+const float LIGHT_RADIUS_FACTOR_HI = 0.03f;
+const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
+
+void ModeWorld::draw_lights(MultiViewWindow *win) {
+	auto dh = session->drawing_helper;
+	for (auto &l: data->lights) {
+		//if (l.view_stage < multi_view->view_stage)
+		//	continue;
+
+		dh->set_color(color(1, 0.9f, 0.6f, 0.3f));
+		dh->set_line_width(5);//scheme.LINE_WIDTH_MEDIUM);
+		if (l.is_selected) {
+			dh->set_color(Red);
+			dh->set_line_width(7);//scheme.LINE_WIDTH_THICK);
+		}
+
+		if (l.type == LightType::DIRECTIONAL) {
+			dh->draw_lines({l.pos, l.pos + l.ang.ang2dir() * win->multi_view->view_port.radius * 0.1f}, false);
+		} else if (l.type == LightType::POINT) {
+			//draw_circle(l.pos, win->get_direction(), l.radius);
+			dh->draw_circle(l.pos, win->dir(), l.radius * LIGHT_RADIUS_FACTOR_LO);
+			dh->draw_circle(l.pos, win->dir(), l.radius * LIGHT_RADIUS_FACTOR_HI);
+		} else if (l.type == LightType::CONE) {
+			dh->draw_lines({l.pos, l.pos + l.ang.ang2dir() * l.radius * LIGHT_RADIUS_FACTOR_LO}, false);
+			dh->draw_circle(l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_LO, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
+			dh->draw_circle(l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_HI, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_HI);
+			draw_tangent_circle(win, l.pos, l.pos + l.ang.ang2dir() * l.radius*LIGHT_RADIUS_FACTOR_LO, l.ang.ang2dir(), l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
+		}
+	}
+}
+
 
 static base::optional<string> world_selection_description(DataWorld* data) {
 	int nob = 0, nter = 0, ncam = 0, nlights = 0;

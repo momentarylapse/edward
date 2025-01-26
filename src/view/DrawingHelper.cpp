@@ -4,14 +4,48 @@
 
 #include "DrawingHelper.h"
 #include <y/graphics-impl.h>
+#include <y/helper/ResourceManager.h>
+#include <y/renderer/base.h>
 #include <lib/math/mat4.h>
 #include <lib/math/vec2.h>
 #include <lib/os/msg.h>
 
 #include "MultiView.h"
 
-DrawingHelper::DrawingHelper(xhui::ContextVulkan* ctx) {
+
+Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {
+	auto material = resource_manager->load_material("");
+	material->albedo = albedo;
+	material->roughness = roughness;
+	material->metal = metal;
+	material->emission = emission;
+	material->textures = {tex_white};
+	if (transparent) {
+		material->pass0.cull_mode = 0;
+		material->pass0.mode = TransparencyMode::FUNCTIONS;
+		material->pass0.source = Alpha::SOURCE_ALPHA;
+		material->pass0.destination = Alpha::SOURCE_INV_ALPHA;
+		material->pass0.z_buffer = false;
+	}
+	return material;
+}
+
+DrawingHelper::DrawingHelper(xhui::ContextVulkan* ctx, ResourceManager* rm) {
 	context = ctx;
+	resource_manager = rm;
+
+	/*light = new Light(White, -1, -1);
+	light->owner = new Entity;
+	light->owner->ang = quaternion::rotation({1,0,0}, 0.5f);
+	light->light.harshness = 0.5f;*/
+
+	try {
+		material_hover = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, White, true);
+		material_selection = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, Red, true);
+	} catch(Exception& e) {
+		msg_error(e.message());
+	}
+
 	shader = vulkan::Shader::create(
 		R"foodelim(
 <Layout>

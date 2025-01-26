@@ -11,6 +11,7 @@
 
 struct SceneView;
 class Renderer;
+struct RenderParams;
 class MultiView;
 class Session;
 class Painter;
@@ -39,9 +40,8 @@ public:
 	virtual void on_left_button_down(const vec2&) {}
 	virtual void on_left_button_up(const vec2&) {}
 	virtual void on_key_down(int key) {}
+	virtual void on_draw_win(const RenderParams& params, MultiViewWindow* win) {}
 	virtual void on_draw_post(Painter*) {}
-
-	virtual Renderer* create_renderer(SceneView* scene_view) { return nullptr; }
 
 	Session* session = nullptr;
 	MultiView* multi_view = nullptr;

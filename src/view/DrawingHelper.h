@@ -6,18 +6,20 @@
 #define DRAWINGHELPER_H
 
 
-
+#include <helper/ResourceManager.h>
 #include <y/graphics-fwd.h>
 #include <lib/image/color.h>
 #include <lib/math/vec3.h>
 #include <lib/math/mat4.h>
 #include <lib/xhui/ContextVulkan.h>
 
+class ResourceManager;
 class MultiViewWindow;
+class Material;
 
 class DrawingHelper {
 public:
-	explicit DrawingHelper(xhui::ContextVulkan* ctx);
+	explicit DrawingHelper(xhui::ContextVulkan* ctx, ResourceManager* rm);
 	void set_color(const color& color);
 	color _color;
 
@@ -28,12 +30,16 @@ public:
 	void draw_circle(const vec3& center, const vec3& axis, float r);
 
 	xhui::ContextVulkan* context;
+	ResourceManager* resource_manager;
 	MultiViewWindow* window;
 	void set_window(MultiViewWindow* win);
 
 	Shader* shader = nullptr;
 	vulkan::GraphicsPipeline* pipeline = nullptr;
 	vulkan::DescriptorSet* dset = nullptr;
+
+	Material* material_hover;
+	Material* material_selection;
 };
 
 

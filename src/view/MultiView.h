@@ -8,6 +8,7 @@
 #include "Hover.h"
 #include <y/renderer/Renderer.h>
 #include <y/renderer/world/geometry/SceneView.h>
+#include <y/renderer/world/geometry/RenderViewData.h>
 #include <lib/math/Box.h>
 #include <lib/math/vec3.h>
 #include <lib/math/quaternion.h>
@@ -35,6 +36,7 @@ public:
 	vec3 dir() const;
 	float zoom() const;
 	float get_grid_d() const;
+	void draw(const RenderParams& params);
 
 	MultiView* multi_view;
 	rect area;
@@ -43,6 +45,7 @@ public:
 	mat4 to_pixels;
 	mat4 view;
 	mat4 projection;
+	RenderViewData rvd;
 };
 
 class MultiView : public obs::Node<Renderer> {
@@ -54,6 +57,7 @@ public:
 	obs::sink in_data_changed;
 
 	void prepare(const RenderParams& params) override;
+	void draw(const RenderParams& params) override;
 
 	void on_draw(Painter* p);
 	void on_left_button_down(const vec2& m);
@@ -77,6 +81,8 @@ public:
 		void zoom(float factor);
 		void suggest_for_box(const vec3& vmin, const vec3& vmax);
 	} view_port;
+
+	Array<Light*> lights;
 
 	MultiViewWindow window;
 	MultiViewWindow* active_window;

@@ -21,6 +21,7 @@
 
 MultiViewWindow::MultiViewWindow(MultiView* _multi_view) {
 	multi_view = _multi_view;
+	rvd.scene_view = multi_view->view_port.scene_view.get();
 }
 
 vec3 MultiViewWindow::project(const vec3& v) const {
@@ -74,6 +75,28 @@ float grid_density(int level, float d_err) {
 	return min((float)pow(10.0f, d_err-1.0f) * LOW_MAX, MID_MAX);
 }
 
+void MultiViewWindow::draw(const RenderParams& params) {
+
+	{
+		rvd.scene_view->lights.clear();
+		rvd.scene_view->shadow_index = -1;
+		//	if (l->allow_shadow)
+		//		scene_view.shadow_index = scene_view.lights.num;
+		rvd.scene_view->lights = multi_view->lights;
+	}
+	rvd.scene_view->cam->update_matrices(params.desired_aspect_ratio);
+	rvd.set_projection_matrix(rvd.scene_view->cam->m_projection);
+	rvd.set_view_matrix(rvd.scene_view->cam->m_view);
+	rvd.update_lights();
+	rvd.ubo.num_lights = rvd.scene_view->lights.num;
+	rvd.ubo.shadow_index = rvd.scene_view->shadow_index;
+
+	rvd.begin_draw();
+
+	multi_view->session->cur_mode->on_draw_win(params, this);
+}
+
+
 
 
 
@@ -93,6 +116,12 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 	active_window = &window;
 	hover_window = &window;
 	action_controller = new ActionController(this);
+
+
+	lights.add(new Light(White, -1, -1));
+	lights[0]->owner = new Entity;
+	lights[0]->owner->ang = quaternion::rotation({1,0,0}, 0.5f);
+	lights[0]->light.harshness = 0.5f;
 
 	view_port.out_changed >> create_sink([this] {
 		action_controller->update_manipulator();
@@ -130,6 +159,13 @@ void MultiView::prepare(const RenderParams& params) {
 
 	Renderer::prepare(params);
 }
+
+void MultiView::draw(const RenderParams& params) {
+	//	scene_view.choose_lights();
+
+	window.draw(params);
+}
+
 
 void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
 	if (action_controller->cur_action) {

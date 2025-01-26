@@ -234,7 +234,7 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 		api_init_external(pp->context->instance, pp->context->device);
 		session->resource_manager = new ResourceManager({});
 		session->resource_manager->default_shader = "default.shader";
-		session->drawing_helper = new DrawingHelper(pp->context);
+		session->drawing_helper = new DrawingHelper(pp->context, session->resource_manager);
 		try {
 			session->resource_manager->load_shader_module("module-basic-data.shader");
 			session->resource_manager->load_shader_module("module-basic-interface.shader");
@@ -247,7 +247,6 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 		}
 		auto mode = new ModeWorld(session);
 		renderer->add_child(mode->multi_view);
-		mode->multi_view->add_child(mode->create_renderer(mode->multi_view->view_port.scene_view.get()));
 		session->storage = new Storage(session);
 		session->set_mode(mode);
 

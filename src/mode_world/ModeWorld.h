@@ -18,12 +18,18 @@ public:
 
 	void on_enter() override;
 
-	Renderer* create_renderer(SceneView* scene_view) override;
 	void on_mouse_move(const vec2& m, const vec2& d) override;
 	void on_mouse_leave(const vec2&) override;
 	void on_left_button_down(const vec2&) override;
 	void on_left_button_up(const vec2&) override;
 	void on_key_down(int key) override;
+
+	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
+	void draw_objects(const RenderParams& params, MultiViewWindow* win);
+	void draw_terrains(const RenderParams& params, MultiViewWindow* win);
+	void draw_cameras(MultiViewWindow* win);
+	void draw_lights(MultiViewWindow* win);
+
 	void on_draw_post(Painter*) override;
 	void optimize_view();
 
