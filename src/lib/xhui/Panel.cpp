@@ -113,5 +113,12 @@ void Panel::enable(const string& id, bool enabled) {
 			c->enable(enabled);
 }
 
+Array<Control*> Panel::get_children() const {
+	if (top_control)
+		return {top_control};
+	return {};
+}
+
+
 
 }

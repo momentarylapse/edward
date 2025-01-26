@@ -1,5 +1,9 @@
 #include "xhui.h"
+
+#include <lib/os/msg.h>
+
 #include "Window.h"
+#include "Dialog.h"
 #include "Theme.h"
 #include "draw/font.h"
 #include "config.h"
@@ -8,6 +12,7 @@
 
 namespace xhui {
 	extern Array<Window*> _windows_;
+	extern Array<Dialog*> _dialogs_;
 
 	float ui_scale = 1;
 
@@ -263,6 +268,13 @@ void run() {
 
 		for (auto w: _windows_)
 			w->_poll_events();
+
+		for (int i=_dialogs_.num-1; i>=0; i--)
+			if (_dialogs_[i]->_destroy_requested) {
+				_dialogs_[i]->window->request_redraw();
+				_dialogs_[i]->window->dialog = nullptr;
+				delete _dialogs_[i];
+			}
 
 		for (int i=_windows_.num-1; i>=0; i--)
 			if (_windows_[i]->_destroy_requested) {

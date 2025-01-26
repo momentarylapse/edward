@@ -83,4 +83,9 @@ void HeaderBar::_draw(Painter *p) {
 	grid_right->_draw(p);
 }
 
+Array<Control*> HeaderBar::get_children() const {
+	return {grid_left, grid_right, button_close};
+}
+
+
 }

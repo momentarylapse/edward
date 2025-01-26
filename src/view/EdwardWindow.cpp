@@ -12,6 +12,7 @@
 #include "lib/xhui/controls/Overlay.h"
 #include "lib/xhui/Painter.h"
 #include <lib/xhui/ContextVulkan.h>
+#include <lib/xhui/Dialog.h>
 #include <renderer/base.h>
 #include <renderer/path/RenderPath.h>
 #include <sys/stat.h>
@@ -326,6 +327,13 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 		else if (mode == MouseActionMode::SCALE)
 			mode = MouseActionMode::MOVE;
 		set_string("mouse-action", session->cur_mode->multi_view->action_controller->action.name().sub(0, 1).upper());
+	});
+	event("aaa", [this] {
+		auto dlg = new xhui::Dialog("test", 400, 300, this);
+		dlg->add(new xhui::Button("test", "test"));
+		dlg->event("test", [dlg] {
+			dlg->request_destroy();
+		});
 	});
 
 	xhui::run_repeated(0.02f, [this] {

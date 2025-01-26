@@ -18,6 +18,7 @@ public:
 	void get_greed_factor(float &x, float &y) override;
 	void get_content_min_size(int &w, int &h) override;
 	void negotiate_area(const rect &available) override;
+	Array<Control*> get_children() const override { return children; }
 };
 
 }

@@ -29,6 +29,7 @@ public:
 	virtual Array<int> get_selection() { return {}; }
 	virtual void enable(bool enabled) {}
 	virtual void set_option(const string& key, const string& value) {}
+	virtual Array<Control*> get_children() const { return {}; }
 
 	virtual void on_left_button_down(const vec2& m) {}
 	virtual void on_left_button_up(const vec2& m) {}

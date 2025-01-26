@@ -2,6 +2,7 @@
 #include "xhui.h"
 #include "Painter.h"
 #include "ContextVulkan.h"
+#include "Dialog.h"
 #include "Theme.h"
 #include "controls/Control.h"
 #include "controls/HeaderBar.h"
@@ -347,18 +348,19 @@ void Window::_on_draw() {
 		p->clear(Theme::_default.background);
 	}
 
-#if 1
+	// contents
 	if (top_control) {
 		top_control->negotiate_area(smaller_rect(a, padding));
 		top_control->_draw(p);
 	}
-#else
-	p->set_color(Theme::_default.text);
-	p->draw_rect({100, 200, 100, 200});
-	p->set_color(Theme::_default.text);
-	p->draw_str({300, 300}, "Test");
-	p->draw_str({300, 500}, "Test 2");
-#endif
+	if (dialog) {
+		p->set_color(color(0.2f, 0, 0, 0));
+		p->draw_rect(a);
+		const vec2 m = a.center();
+		const vec2 size = vec2(dialog->width, dialog->height);
+		dialog->negotiate_area({m - size/2, m + size/2});
+		dialog->_draw(p);
+	}
 
 	p->end();
 	_refresh_requested = false;
@@ -382,9 +384,15 @@ void Window::set_title(const string& t) {
 }
 
 Control *Window::get_hover_control(const vec2 &p) {
-	foreachb (auto c, controls)
-		if (c->_area.inside(p) and !c->ignore_hover)
-			return c;
+	if (dialog) {
+		foreachb (auto c, dialog->controls)
+			if (c->_area.inside(p) and !c->ignore_hover)
+				return c;
+	} else {
+		foreachb (auto c, controls)
+			if (c->_area.inside(p) and !c->ignore_hover)
+				return c;
+	}
 	return nullptr;
 }
 

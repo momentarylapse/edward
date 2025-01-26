@@ -121,4 +121,12 @@ void Grid::negotiate_area(const rect &available) {
 	}
 }
 
+Array<Control*> Grid::get_children() const {
+	Array<Control*> r;
+	for (auto& c: children)
+		r.add(c.control);
+	return r;
+}
+
+
 }

@@ -11,6 +11,7 @@ namespace xhui {
 class Control;
 class HeaderBar;
 class Painter;
+class Dialog;
 #if HAS_LIB_VULKAN
 class ContextVulkan;
 #endif
@@ -99,6 +100,8 @@ protected:
 public:
 
 	bool _destroy_requested = false;
+
+	Dialog* dialog = nullptr;
 };
 
 class WindowX : public Window {

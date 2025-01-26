@@ -16,6 +16,7 @@ public:
 
 	void _draw(Painter *p) override;
 	void negotiate_area(const rect &available) override;
+	Array<Control*> get_children() const override;
 
 	void add(Control *c);
 
