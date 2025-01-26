@@ -6,11 +6,23 @@
 #define FILESELECTIONDIALOG_H
 
 #include "../Dialog.h"
+#include "../../base/future.h"
+#include "../../os/path.h"
 
 namespace xhui {
 
-class FileSelectionDialog : public Dialog {
+class FileSelectionControl;
 
+class FileSelectionDialog : public Dialog {
+public:
+	FileSelectionDialog(Panel* parent, const string& title, const Path &dir, const Array<string> &params);
+
+	FileSelectionControl* list;
+	base::promise<Path> promise;
+
+	bool saving;
+
+	static base::future<Path> ask(Panel* parent, const string& title, const Path &dir, const Array<string> &params);
 };
 
 } // xhui

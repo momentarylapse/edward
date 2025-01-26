@@ -56,9 +56,14 @@ bool Control::has_focus() const {
 }
 
 void Control::on_mouse_move(const vec2& m, const vec2& d) {
-	if (owner)
-		owner->handle_event(id, event_id::MouseMove, false);
+	emit_event(event_id::MouseMove, false);
 }
+
+void Control::emit_event(const string& msg, bool is_default) {
+	if (owner)
+		owner->handle_event(id, msg, is_default);
+}
+
 
 
 }

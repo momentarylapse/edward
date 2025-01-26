@@ -20,8 +20,7 @@ namespace xhui {
 		checked = !checked;
 		request_redraw();
 
-		if (owner)
-			owner->handle_event(id, event_id::Click, true);
+		emit_event(event_id::Click, true);
 	}
 	void CheckBox::on_mouse_enter(const vec2&) {
 		state = State::HOVER;

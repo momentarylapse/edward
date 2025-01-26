@@ -42,52 +42,40 @@ void DrawingArea::_draw(Painter *p) {
 	//p->set_clip(p->area());
 }
 void DrawingArea::on_left_button_down(const vec2& m) {
-	if (owner)
-		owner->handle_event(id, event_id::LeftButtonDown, false);
+	emit_event(event_id::LeftButtonDown, false);
 }
 void DrawingArea::on_left_button_up(const vec2& m) {
-	if (owner)
-		owner->handle_event(id, "hui:left-button-up", false);
+	emit_event("hui:left-button-up", false);
 }
 void DrawingArea::on_middle_button_down(const vec2& m) {
-	if (owner)
-		owner->handle_event(id, "hui:middle-button-down", false);
+	emit_event("hui:middle-button-down", false);
 }
 void DrawingArea::on_middle_button_up(const vec2& m) {
-	if (owner)
-		owner->handle_event(id, "hui:middle-button-up", false);
+	emit_event("hui:middle-button-up", false);
 }
 void DrawingArea::on_right_button_down(const vec2& m) {
-	if (owner)
-		owner->handle_event(id, "hui:right-button-down", false);
+	emit_event("hui:right-button-down", false);
 }
 void DrawingArea::on_right_button_up(const vec2& m) {
-	if (owner)
-		owner->handle_event(id, "hui:right-button-up", false);
+	emit_event("hui:right-button-up", false);
 }
 void DrawingArea::on_mouse_move(const vec2& m, const vec2& d) {
-	if (owner)
-		owner->handle_event(id, event_id::MouseMove, false);
+	emit_event(event_id::MouseMove, false);
 }
 void DrawingArea::on_mouse_enter(const vec2& m) {
-	if (owner)
-		owner->handle_event(id, "hui:mouse-enter", false);
+	emit_event("hui:mouse-enter", false);
 }
 void DrawingArea::on_mouse_leave(const vec2& m) {
-	if (owner)
-		owner->handle_event(id, "hui:mouse-leave", false);
+	emit_event("hui:mouse-leave", false);
 }
 void DrawingArea::on_mouse_wheel(const vec2& d) {
-	if (owner)
-		owner->handle_event(id, "hui:mouse-wheel", false);
+	emit_event("hui:mouse-wheel", false);
 }
 void DrawingArea::on_key_down(int key) {
-	if (owner)
-		owner->handle_event(id, "hui:key-down", false);
+	emit_event("hui:key-down", false);
 }
 void DrawingArea::on_key_up(int key) {
-	if (owner)
-		owner->handle_event(id, "hui:key-up", false);
+	emit_event("hui:key-up", false);
 }
 
 }

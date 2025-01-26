@@ -13,6 +13,7 @@
 #include "lib/xhui/Painter.h"
 #include <lib/xhui/ContextVulkan.h>
 #include <lib/xhui/Dialog.h>
+#include <lib/xhui/dialogs/FileSelectionDialog.h>
 #include <lib/xhui/dialogs/QuestionDialog.h>
 #include <renderer/base.h>
 #include <renderer/path/RenderPath.h>
@@ -330,8 +331,11 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 		set_string("mouse-action", session->cur_mode->multi_view->action_controller->action.name().sub(0, 1).upper());
 	});
 	event("aaa", [this] {
-		xhui::QuestionDialog::ask(this, "Question", "Do you want to agree to this dialog?").then([] (xhui::Answer a) {
+		/*xhui::QuestionDialog::ask(this, "Question", "Do you want to agree to this dialog?").then([] (xhui::Answer a) {
 			msg_write((int)a);
+		});*/
+		xhui::FileSelectionDialog::ask(this, "Question", xhui::Application::directory, {"filter=*.world"}).then([this] (const Path& filename) {
+			session->set_message(str(filename));
 		});
 	});
 	event_x(id, xhui::event_id::Close, [this] {

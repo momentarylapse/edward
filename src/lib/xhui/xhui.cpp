@@ -307,6 +307,7 @@ namespace event_id {
 	const string RightButtonUp = "hui:right-button-up";
 	const string KeyDown = "hui:key-down";
 	const string KeyUp = "hui:key-up";
+	const string Select = "hui:select";
 };
 
 }

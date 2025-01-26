@@ -24,32 +24,27 @@ void Button::on_left_button_down(const vec2&) {
 	if (state != State::DISABLED)
 		state = State::PRESSED;
 	request_redraw();
-	if (owner)
-		owner->handle_event(id, event_id::LeftButtonDown, false);
+	emit_event(event_id::LeftButtonDown, false);
 }
 void Button::on_left_button_up(const vec2&) {
 	if (state != State::DISABLED)
 		state = State::HOVER;
 	request_redraw();
 
-	if (owner)
-		owner->handle_event(id, event_id::LeftButtonUp, false);
-	if (owner and (state != State::DISABLED))
-		owner->handle_event(id, event_id::Click, true);
+	emit_event(event_id::LeftButtonUp, false);
+	emit_event(event_id::Click, true);
 }
 void Button::on_mouse_enter(const vec2&) {
 	if (state != State::DISABLED)
 		state = State::HOVER;
 	request_redraw();
-	if (owner)
-		owner->handle_event(id, event_id::MouseEnter, false);
+	emit_event(event_id::MouseEnter, false);
 }
 void Button::on_mouse_leave(const vec2&) {
 	if (state != State::DISABLED)
 		state = State::DEFAULT;
 	request_redraw();
-	if (owner)
-		owner->handle_event(id, event_id::MouseLeave, false);
+	emit_event(event_id::MouseLeave, false);
 }
 
 void Button::get_content_min_size(int &w, int &h) {

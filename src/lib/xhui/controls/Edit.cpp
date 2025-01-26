@@ -67,23 +67,20 @@ void Edit::on_key_down(int key) {
 			text = text.sub_ref(0, cursor_pos - 1) + text.sub_ref(cursor_pos);
 			cache.rebuild(text);
 			cursor_pos --;
-			if (owner)
-				owner->handle_event(id, event_id::Changed, true);
+			emit_event(event_id::Changed, true);
 		}
 	if (key == KEY_DELETE)
 		if (cursor_pos < text.num) {
 			text = text.sub_ref(0, cursor_pos) + text.sub_ref(cursor_pos + 1);
 			cache.rebuild(text);
-			if (owner)
-				owner->handle_event(id, event_id::Changed, true);
+			emit_event(event_id::Changed, true);
 		}
 
 	auto insert = [this] (char c) {
 		text = text.sub_ref(0, cursor_pos) + string(&c, 1) + text.sub_ref(cursor_pos);
 		cache.rebuild(text);
 		cursor_pos ++;
-		if (owner)
-			owner->handle_event(id, event_id::Changed, true);
+		emit_event(event_id::Changed, true);
 	};
 	if (key >= KEY_A and key <= KEY_Z)
 		insert('a' + (key - KEY_A));

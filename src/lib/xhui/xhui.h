@@ -161,6 +161,7 @@ namespace event_id {
 	extern const string RightButtonUp;
 	extern const string KeyDown;
 	extern const string KeyUp;
+	extern const string Select;
 };
 
 

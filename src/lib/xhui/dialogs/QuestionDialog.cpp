@@ -3,9 +3,7 @@
 //
 
 #include "QuestionDialog.h"
-
-#include <lib/xhui/controls/Button.h>
-
+#include "../controls/Button.h"
 #include "../controls/Grid.h"
 
 namespace xhui {

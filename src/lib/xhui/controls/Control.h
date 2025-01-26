@@ -66,6 +66,8 @@ public:
 	//virtual void negotiate_min_size();
 	virtual void negotiate_area(const rect &available);
 
+	void emit_event(const string& msg, bool is_default);
+
 
 	enum class State {
 		DEFAULT,
