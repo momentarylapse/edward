@@ -140,8 +140,6 @@ public:
 	// material
 	owned_array<Material> material;
 	Array<int> num_uvs;
-	Array<ShaderCache> shader_cache;
-	Array<ShaderCache> shader_cache_shadow;
 
 	// properties
 	struct Properties {

@@ -654,10 +654,6 @@ xfer<Model> ModelManager::load(const Path &_filename) {
 	modelmanager::ModelParser p(this);
 	p.read(filename, m);
 
-
-	m->shader_cache.resize(m->material.num);
-	m->shader_cache_shadow.resize(m->material.num);
-
 	// remove unneeded components
 	/*if (m->_template->mesh_collider->phys->balls.num + ... == 0) {
 		delete m->_template->mesh_collider;

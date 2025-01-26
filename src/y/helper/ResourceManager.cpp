@@ -13,6 +13,7 @@
 #else
 	#include <lib/hui_minimal/Application.h>
 	#include <lib/hui_minimal/error.h>
+	using namespace hui;
 #endif
 #include <y/EngineData.h>
 #include <graphics-impl.h>

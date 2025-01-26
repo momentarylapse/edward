@@ -62,12 +62,7 @@ void Animator::on_init() {
 		dmatrix[i] = mat4::translation(sk->pos0[i]);
 	}
 
-#ifdef USING_OPENGL
-	buf = new UniformBuffer;
-#endif
-#ifdef USING_VULKAN
 	buf = new UniformBuffer(sk->bones.num * sizeof(mat4));
-#endif
 }
 
 
