@@ -272,7 +272,6 @@ void run() {
 		for (int i=_dialogs_.num-1; i>=0; i--)
 			if (_dialogs_[i]->_destroy_requested) {
 				_dialogs_[i]->window->request_redraw();
-				_dialogs_[i]->window->dialog = nullptr;
 				delete _dialogs_[i];
 			}
 
@@ -291,6 +290,7 @@ void run() {
 }
 
 namespace event_id {
+	const string Close = "hui:close";
 	const string Click = "hui:click";
 	const string Changed = "hui:changed";
 	const string MouseMove = "hui:mouse-move";

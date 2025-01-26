@@ -24,6 +24,8 @@ enum Flags {
 class Window : public Panel {
 	friend class Painter;
 	friend class Control;
+	friend class Panel;
+	friend class Dialog;
 	friend class ContextVulkan;
 public:
 

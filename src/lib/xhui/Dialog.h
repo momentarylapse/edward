@@ -17,6 +17,7 @@ public:
 	void _draw(Painter* p) override;
 
 	void request_destroy();
+	virtual	void on_destroy() {};
 
 	string title;
 	int width, height;

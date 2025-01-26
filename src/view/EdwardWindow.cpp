@@ -13,6 +13,7 @@
 #include "lib/xhui/Painter.h"
 #include <lib/xhui/ContextVulkan.h>
 #include <lib/xhui/Dialog.h>
+#include <lib/xhui/dialogs/QuestionDialog.h>
 #include <renderer/base.h>
 #include <renderer/path/RenderPath.h>
 #include <sys/stat.h>
@@ -329,10 +330,16 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 		set_string("mouse-action", session->cur_mode->multi_view->action_controller->action.name().sub(0, 1).upper());
 	});
 	event("aaa", [this] {
-		auto dlg = new xhui::Dialog("test", 400, 300, this);
-		dlg->add(new xhui::Button("test", "test"));
-		dlg->event("test", [dlg] {
-			dlg->request_destroy();
+		xhui::QuestionDialog::ask(this, "Question", "Do you want to agree to this dialog?").then([] (xhui::Answer a) {
+			msg_write((int)a);
+		});
+	});
+	event_x(id, xhui::event_id::Close, [this] {
+		if (session->cur_mode->get_data()->action_manager->is_save())
+			request_destroy();
+		else xhui::QuestionDialog::ask(this, "Question", "You have unsaved changes. Do you want to close?").then([this] (xhui::Answer a) {
+			if (a == xhui::Answer::Yes)
+				request_destroy();
 		});
 	});
 

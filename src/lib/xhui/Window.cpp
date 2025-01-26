@@ -372,9 +372,10 @@ void Window::_poll_events() {
 		_on_draw();
 
 	if (glfwWindowShouldClose(window)) {
-//		msg_write("fake...close...");
-//		exit(0);
-		request_destroy();
+		if (!handle_event(id, event_id::Close, false))
+			request_destroy();
+		// either we will handle the event on our own, or we want to ignore...
+		glfwSetWindowShouldClose(window, GLFW_FALSE);
 	}
 }
 
