@@ -167,6 +167,33 @@ void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matr
 	params.command_buffer->draw(vb);
 }
 
+void ModeWorld::on_prepare_scene(const RenderParams& params) {
+	//return;
+	while (lights.num < data->lights.num) {
+		lights.add(new Light(Black, 0, 0));
+		lights.back()->owner = new Entity;
+	}
+	for (const auto& [i, l]: enumerate(data->lights)) {
+		lights[i]->owner->pos = l.pos;
+		lights[i]->owner->ang = quaternion::rotation(l.ang);
+		lights[i]->enabled = l.enabled;
+		lights[i]->light.col = l.col;
+		if (!l.enabled)
+			lights[i]->light.col = Black;
+		lights[i]->light.radius = l.radius;
+		lights[i]->light.theta = l.theta;
+		if (l.type == LightType::DIRECTIONAL)
+			lights[i]->light.radius = -1;
+		else
+			lights[i]->light.col = l.col * (l.radius * l.radius / 100);
+		if (l.type != LightType::CONE)
+			lights[i]->light.theta = -1;
+		lights[i]->light.harshness = l.harshness;
+	}
+	multi_view->view_port.scene_view->lights = lights;
+}
+
+
 void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 	auto& rvd = win->rvd;

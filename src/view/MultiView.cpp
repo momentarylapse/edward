@@ -76,22 +76,13 @@ float grid_density(int level, float d_err) {
 }
 
 void MultiViewWindow::draw(const RenderParams& params) {
-
-	{
-		rvd.scene_view->lights.clear();
-		rvd.scene_view->shadow_index = -1;
-		//	if (l->allow_shadow)
-		//		scene_view.shadow_index = scene_view.lights.num;
-		rvd.scene_view->lights = multi_view->lights;
-	}
 	rvd.scene_view->cam->update_matrices(params.desired_aspect_ratio);
 	rvd.set_projection_matrix(rvd.scene_view->cam->m_projection);
 	rvd.set_view_matrix(rvd.scene_view->cam->m_view);
 	rvd.update_lights();
-	rvd.ubo.num_lights = rvd.scene_view->lights.num;
-	rvd.ubo.shadow_index = rvd.scene_view->shadow_index;
 
 	rvd.begin_draw();
+	multi_view->session->drawing_helper->set_window(this);
 
 	multi_view->session->cur_mode->on_draw_win(params, this);
 }
@@ -155,9 +146,16 @@ void MultiView::prepare(const RenderParams& params) {
 		* mat4::translation({1.0f, 1.0f, 0})
 		* window.projection * window.view;
 
-	session->drawing_helper->set_window(&window);
+	{
+		view_port.scene_view->lights.clear();
+		view_port.scene_view->shadow_index = -1;
+		//	if (l->allow_shadow)
+		//		scene_view.shadow_index = scene_view.lights.num;
+		view_port.scene_view->lights = lights;
+	}
 
-	Renderer::prepare(params);
+	session->cur_mode->on_prepare_scene(params);
+	//Renderer::prepare(params);
 }
 
 void MultiView::draw(const RenderParams& params) {

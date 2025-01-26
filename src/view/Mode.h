@@ -40,6 +40,7 @@ public:
 	virtual void on_left_button_down(const vec2&) {}
 	virtual void on_left_button_up(const vec2&) {}
 	virtual void on_key_down(int key) {}
+	virtual void on_prepare_scene(const RenderParams& params) {}
 	virtual void on_draw_win(const RenderParams& params, MultiViewWindow* win) {}
 	virtual void on_draw_post(Painter*) {}
 

@@ -39,6 +39,8 @@ void RenderViewData::update_lights() {
 	}
 	ubo_light->update_array(lights);
 	//ubo_light->update_part(&lights[0], 0, lights.num * sizeof(lights[0]));
+	ubo.num_lights = scene_view->lights.num;
+	ubo.shadow_index = scene_view->shadow_index;
 }
 
 void RenderViewData::prepare_scene(SceneView *_scene_view) {

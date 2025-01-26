@@ -10,6 +10,7 @@
 #include "../view/Hover.h"
 #include "data/DataWorld.h"
 
+class Light;
 class MultiViewWindow;
 
 class ModeWorld : public Mode {
@@ -24,6 +25,7 @@ public:
 	void on_left_button_up(const vec2&) override;
 	void on_key_down(int key) override;
 
+	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void draw_objects(const RenderParams& params, MultiViewWindow* win);
 	void draw_terrains(const RenderParams& params, MultiViewWindow* win);
@@ -37,6 +39,7 @@ public:
 
 	DataWorld* data;
 	DataWorld temp;
+	Array<Light*> lights;
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 
