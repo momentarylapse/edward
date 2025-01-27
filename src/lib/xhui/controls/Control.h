@@ -18,6 +18,9 @@ class Control : public VirtualBase {
 public:
 	explicit Control(const string& id);
 
+	void _register(Panel* owner);
+	void _unregister();
+
 	virtual void set_string(const string& s) {}
 	virtual void add_string(const string& s) { set_string(s); }
 	virtual void set_cell(int row, int col, const string& s) {}
@@ -30,6 +33,7 @@ public:
 	virtual void enable(bool enabled) {}
 	virtual void set_option(const string& key, const string& value) {}
 	virtual Array<Control*> get_children() const { return {}; }
+	Array<Control*> get_children_recursive(bool include_me) const;
 
 	virtual void on_left_button_down(const vec2& m) {}
 	virtual void on_left_button_up(const vec2& m) {}

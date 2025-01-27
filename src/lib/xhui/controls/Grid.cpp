@@ -30,16 +30,11 @@ Grid::Grid(const string &_id) : Control(_id) {
 }
 
 void Grid::add(Control *c, int x, int y) {
-	if (!owner) {
-		msg_error("adding to Grid without owner");
-		return;
-	}
 	children.add({c, x, y});
 	nx = max(nx, x+1);
 	ny = max(ny, y+1);
 
-	c->owner = owner;
-	owner->controls.add(c);
+	c->_register(owner);
 }
 
 void Grid::_draw(Painter *p) {

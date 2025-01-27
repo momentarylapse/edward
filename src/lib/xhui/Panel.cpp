@@ -54,8 +54,7 @@ void Panel::negotiate_area(const rect &available) {
 
 void Panel::add(Control *c) {
 	top_control = c;
-	c->owner = this;
-	controls.add(c);
+	c->_register(this);
 }
 
 void Panel::event(const string &id, Callback f) {

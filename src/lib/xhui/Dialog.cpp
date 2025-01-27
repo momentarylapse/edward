@@ -18,8 +18,7 @@ Dialog::Dialog(const string& _title, int _width, int _height, Panel* parent) : P
 	title = _title;
 	width = _width;
 	height = _height;
-	owner = parent;
-	owner->controls.add(this);
+	_register(parent);
 	window = parent->window;
 	window->dialog = this;
 	_area = {0, (float)width, 0, (float)height};

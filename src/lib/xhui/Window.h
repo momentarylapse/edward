@@ -29,18 +29,18 @@ class Window : public Panel {
 	friend class ContextVulkan;
 public:
 
-	Window(const string &title, int width, int height);
-	Window(const string &title, int width, int height, Flags flags);
+	Window(const string& title, int width, int height);
+	Window(const string& title, int width, int height, Flags flags);
 	~Window() override;
 
 	void _poll_events();
 
-	void redraw(const string &id);
+	void redraw(const string& id);
 
 	string get_title() const { return title; }
 	void set_title(const string& t);
 
-	void get_position(int &x, int &y);
+	void get_position(int& x, int& y);
 	void set_position(int x, int y);
 
 	void request_destroy();
@@ -85,15 +85,15 @@ protected:
 	bool _refresh_requested = true;
 	void _on_draw();
 
-	Control *get_hover_control(const vec2 &p);
+	Control* get_hover_control(const vec2& p);
 
-	Control *hover_control = nullptr;
-	Control *focus_control = nullptr;
+	Control* hover_control = nullptr;
+	Control* focus_control = nullptr;
 	float padding;
 	Flags flags;
 	string title;
 
-	HeaderBar *header_bar = nullptr;
+	HeaderBar* header_bar = nullptr;
 
 #if HAS_LIB_VULKAN
 	ContextVulkan* context = nullptr;

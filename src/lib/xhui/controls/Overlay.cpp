@@ -15,14 +15,8 @@ Overlay::Overlay(const string &_id) : Control(_id) {
 }
 
 void Overlay::add(Control *c) {
-	if (!owner) {
-		msg_error("adding to Overlay without owner");
-		return;
-	}
 	children.add(c);
-
-	c->owner = owner;
-	owner->controls.add(c);
+	c->_register(owner);
 }
 
 void Overlay::_draw(Painter *p) {

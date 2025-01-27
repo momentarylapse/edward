@@ -1,5 +1,6 @@
 #include "Control.h"
 #include "../Painter.h"
+#include "../../base/algo.h"
 #include "../../os/msg.h"
 
 namespace xhui {
@@ -17,10 +18,47 @@ Control::Control(const string &_id) {
 	expand_y = true;
 }
 
+void Control::_register(Panel* _owner) {
+	// don't register sub-panels!
+	if (dynamic_cast<Panel*>(this))
+		return;
+
+	if (owner) {
+		msg_error("trying to register a control twice  " + id);
+		return;
+	}
+	owner = _owner;
+	if (owner) {
+		owner->controls.add(this);
+		for (auto cc: get_children())
+			cc->_register(owner);
+	}
+}
+
+void Control::_unregister() {
+	if (!owner)
+		return;
+	base::remove(owner->controls, this);
+	owner = nullptr;
+	for (auto cc: get_children())
+		cc->_unregister();
+}
+
+Array<Control*> Control::get_children_recursive(bool include_me) const {
+	Array<Control*> r;
+	if (include_me)
+		r.add(const_cast<Control*>(this));
+	for (auto c: get_children())
+		r.append(c->get_children_recursive(true));
+	return r;
+}
+
+
+
+
 void Control::request_redraw() {
-	if (owner)
-		if (owner->window)
-			owner->window->redraw(id);
+	if (owner and owner->window)
+		owner->window->redraw(id);
 }
 
 
@@ -50,7 +88,7 @@ void Control::negotiate_area(const rect &available) {
 }
 
 bool Control::has_focus() const {
-	if (owner && owner->window)
+	if (owner and owner->window)
 		return owner->window->focus_control == this;
 	return false;
 }

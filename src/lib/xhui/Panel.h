@@ -14,22 +14,22 @@ class Panel : public Control {
 public:
 	explicit Panel(const string &id);
 
-	void _draw(Painter *p) override;
-	void negotiate_area(const rect &available) override;
+	void _draw(Painter* p) override;
+	void negotiate_area(const rect& available) override;
 	Array<Control*> get_children() const override;
 
-	void add(Control *c);
+	void add(Control* c);
 
 	void set_string(const string& id, const string& text);
 	void enable(const string& id, bool enabled);
 
 
-	void event(const string &id, Callback f);
-	void event_x(const string &id, const string &msg, Callback f);
-	void event_xp(const string &id, const string &msg, CallbackP f);
+	void event(const string& id, Callback f);
+	void event_x(const string& id, const string& msg, Callback f);
+	void event_xp(const string& id, const string& msg, CallbackP f);
 
-	Window *window = nullptr;
-	Control *top_control = nullptr;
+	Window* window = nullptr;
+	Control* top_control = nullptr;
 	Array<Control*> controls;
 
 	class EventHandler {
