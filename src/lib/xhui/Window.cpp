@@ -354,7 +354,7 @@ void Window::_on_draw() {
 		top_control->_draw(p);
 	}
 	if (dialog) {
-		p->set_color(color(0.2f, 0, 0, 0));
+		p->set_color(color(0.4f, 0, 0, 0));
 		p->draw_rect(a);
 		const vec2 m = a.center();
 		const vec2 size = vec2(dialog->width, dialog->height);

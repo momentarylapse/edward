@@ -27,6 +27,7 @@
 #include "lib/xhui/Theme.h"
 #include "lib/xhui/draw/font.h"
 #include "y/renderer/Renderer.h"
+#include "y/renderer/target/XhuiRenderer.h"
 #include "y/helper/ResourceManager.h"
 #include "mode_world/ModeWorld.h"
 #include "storage/Storage.h"
@@ -118,32 +119,6 @@ public:
 #endif
 
 
-class XhuiRenderer : public RenderTask {
-public:
-	rect native_area_window = rect::ID;
-	XhuiRenderer() : RenderTask("xhui") {
-	}
-	void render(const RenderParams& params) override {
-		params.command_buffer->set_viewport(params.area);
-		for (auto c: children)
-			c->prepare(params);
-		for (auto c: children)
-			c->draw(params);
-		params.command_buffer->set_viewport(native_area_window);
-	}
-	void render(Painter* p) {
-		auto pp = (xhui::Painter*)p;
-		engine.physical_aspect_ratio = pp->native_area.width() / pp->native_area.height();
-		RenderParams params;
-		params.command_buffer = pp->cb;
-		params.area = pp->native_area;
-		params.render_pass = pp->context->render_pass;
-		params.frame_buffer = pp->context->current_frame_buffer();
-		params.desired_aspect_ratio = pp->native_area.width() / pp->native_area.height();
-		native_area_window = pp->native_area_window;
-		render(params);
-	}
-};
 
 class ToolButton : public xhui::Button {
 public:
@@ -200,8 +175,11 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 	auto g2 = new xhui::Grid("grid2");
 	g->add(g2, 0, 0);
 	g2->add(new xhui::Label("label1", "label"), 0, 0);
-	g2->add(new ToolButton("undo", "undo"), 1, 0);
-	g2->add(new ToolButton("redo", "redo"), 2, 0);
+	g2->add(new ToolButton("new", "new"), 1, 0);
+	g2->add(new ToolButton("open", "open"), 2, 0);
+	g2->add(new ToolButton("save", "save"), 3, 0);
+	g2->add(new ToolButton("undo", "undo"), 4, 0);
+	g2->add(new ToolButton("redo", "redo"), 5, 0);
 	auto o = new xhui::Overlay("overlay");
 	g->add(o, 0, 1);
 	o->add(new xhui::DrawingArea("area"));
@@ -222,14 +200,15 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 	g4->add(new TouchButton("cam-rotate", "R"), 2, 0);
 	g4->add(new TouchButton("cam-move", "M"), 2, 1);
 
+	event("open", [this] {
+		session->universal_open(FD_WORLD);
+	});
 	event("undo", [this] {
 		session->cur_mode->on_command("undo");
 	});
 	event("redo", [this] {
 		session->cur_mode->on_command("redo");
 	});
-
-	renderer = new XhuiRenderer();
 
 	event_xp("area", xhui::event_id::Initialize, [this] (Painter* p) {
 		auto pp = (xhui::Painter*)p;
@@ -248,24 +227,16 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
-		auto mode = new ModeWorld(session);
-		renderer->add_child(mode->multi_view);
-		session->storage = new Storage(session);
-		session->set_mode(mode);
-
 
 		engine.file_errors_are_critical = false;
 		engine.ignore_missing_files = true;
 		engine.resource_manager = session->resource_manager;
 
-		if (args.num >= 2) {
-			session->storage->load(args[1], mode->data);
-			xhui::run_later(0.2f, [mode] {
-				mode->optimize_view();
-			});
-		}
+		session->promise_started(session);
 	});
 	event_xp("area", xhui::event_id::Draw, [this] (Painter* p) {
+		if (!session->cur_mode or !session->cur_mode->multi_view)
+			return;
 		session->cur_mode->multi_view->set_area(p->area());
 		renderer->render(p);
 		session->cur_mode->multi_view->on_draw(p);
@@ -276,21 +247,31 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 			p->draw_str(_area.center() + vec2(0, 20*i), session->message_str[i]);
 	});
 	event_x("area", xhui::event_id::MouseMove, [this] {
+		if (!session->cur_mode or !session->cur_mode->multi_view)
+			return;
 		session->cur_mode->multi_view->on_mouse_move(state.m, state.m - state_prev.m);
 		session->cur_mode->on_mouse_move(state.m, state.m - state_prev.m);
 	});
 	event_x("area", xhui::event_id::MouseWheel, [this] {
+		if (!session->cur_mode or !session->cur_mode->multi_view)
+			return;
 		session->cur_mode->multi_view->on_mouse_wheel(state.m, state.scroll);
 	});
 	event_x("area", xhui::event_id::MouseLeave, [this] {
+		if (!session->cur_mode or !session->cur_mode->multi_view)
+			return;
 		session->cur_mode->multi_view->on_mouse_leave();
 		session->cur_mode->on_mouse_leave(state.m);
 	});
 	event_x("area", xhui::event_id::LeftButtonDown, [this] {
+		if (!session->cur_mode or !session->cur_mode->multi_view)
+			return;
 		session->cur_mode->multi_view->on_left_button_down(state.m);
 		session->cur_mode->on_left_button_down(state.m);
 	});
 	event_x("area", xhui::event_id::LeftButtonUp, [this] {
+		if (!session->cur_mode or !session->cur_mode->multi_view)
+			return;
 		session->cur_mode->multi_view->on_left_button_up(state.m);
 		session->cur_mode->on_left_button_up(state.m);
 	});
@@ -334,7 +315,7 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 		/*xhui::QuestionDialog::ask(this, "Question", "Do you want to agree to this dialog?").then([] (xhui::Answer a) {
 			msg_write((int)a);
 		});*/
-		xhui::FileSelectionDialog::ask(this, "Question", xhui::Application::directory, {"filter=*.world"}).then([this] (const Path& filename) {
+		xhui::FileSelectionDialog::ask(this, "Question", session->cur_mode->get_data()->filename.parent(), {"filter=*.world"}).then([this] (const Path& filename) {
 			session->set_message(str(filename));
 		});
 	});

@@ -112,7 +112,7 @@ public:
 
 	os::Timer timer;
 
-	base::promise<void> promise_started;
+	base::promise<Session*> promise_started;
 };
 
 Session *create_session();

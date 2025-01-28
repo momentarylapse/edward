@@ -14,9 +14,9 @@
 #include "mode/administration/dialog/ConfigurationDialog.h"
 #include "mode/model/ModeModel.h"
 #include "mode/model/mesh/ModeModelMesh.h"
-#include "mode/material/ModeMaterial.h"
-#include "mode/world/ModeWorld.h"
-#include "mode/font/ModeFont.h"
+#include "mode/material/ModeMaterial.h"*/
+#include "../mode_world/ModeWorld.h"
+/*#include "mode/font/ModeFont.h"
 #include "stuff/Progress.h"*/
 #include "view/MultiView.h"
 //#include "view/DrawingHelper.h"
@@ -32,20 +32,20 @@
 #include <y/world/Camera.h>
 #include <y/world/World.h>
 #include <y/graphics-impl.h>
+#include <y/renderer/target/XhuiRenderer.h>
 
 Session *create_session() {
 	auto s = new Session;
+	s->storage = new Storage(s);
+	//s->mode_world = new ModeWorld(s);
 	s->win = new EdwardWindow(s);
+	s->win->renderer = new XhuiRenderer();
 	return s;
 }
 
 base::future<Session*> emit_new_session() {
-	base::promise<Session*> promise;
 	auto s = create_session();
-	s->promise_started.get_future().then([promise, s] () mutable {
-		promise(s);
-	});
-	return promise.get_future();
+	return s->promise_started.get_future();
 }
 
 bool session_is_empty(Session *s) {
@@ -55,11 +55,8 @@ bool session_is_empty(Session *s) {
 }
 
 base::future<Session*> emit_empty_session(Session* parent) {
-	if (session_is_empty(parent)) {
-		base::promise<Session*> promise;
-		promise(parent);
-		return promise.get_future();
-	}
+	if (session_is_empty(parent))
+		return parent->promise_started.get_future();
 
 	return emit_new_session();
 }
@@ -71,6 +68,7 @@ Session::Session() {
 	cur_mode = mode_none;
 	progress = new Progress;
 #endif
+
 
 	multi_view_2d = nullptr;
 	multi_view_3d = nullptr;
@@ -183,7 +181,7 @@ void Session::create_initial_resources(Context *_ctx) {
 	});
 #endif
 
-	promise_started();
+	promise_started(this);
 }
 
 // do we change roots?
@@ -261,8 +259,8 @@ void Session::set_mode_now(Mode *m) {
 	win->update_menu();
 #endif
 
-
 	cur_mode = m;
+	win->renderer->add_child(cur_mode->multi_view);
 
 	cur_mode->on_enter();
 
@@ -355,23 +353,25 @@ void Session::universal_new(int preferred_type) {
 }
 
 void Session::universal_open(int preferred_type) {
-#if 0
+#if 1
 	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false).then([this] (const auto& p) {
 
 		auto call_open = [kind=p.kind, path=p.complete] (Session* session) {
-			if (kind == FD_MODEL) {
+			/*if (kind == FD_MODEL) {
 				session->storage->load(path, session->mode_model->data);
 				session->set_mode(session->mode_model);
 				session->mode_model->mode_model_mesh->optimize_view();
-			} else if (kind == FD_WORLD) {
+			} else*/ if (kind == FD_WORLD) {
+				if (!session->mode_world)
+					session->mode_world = new ModeWorld(session);
 				session->storage->load(path, session->mode_world->data);
 				session->set_mode(session->mode_world);
 				session->mode_world->optimize_view();
-			} else if (kind == FD_MATERIAL) {
+			} /*else if (kind == FD_MATERIAL) {
 				session->storage->load(path, session->mode_material->data);
 				session->set_mode(session->mode_material);
 				session->mode_material->optimize_view();
-			}
+			}*/
 		};
 
 		emit_empty_session(this).then(call_open);
@@ -393,19 +393,19 @@ Path make_absolute_path(Session *session, int type, const Path &filename, bool r
 }
 
 void Session::universal_edit(int type, const Path &_filename, bool relative_path) {
-#if 0
+#if 1
 	Path filename = make_absolute_path(this, type, add_extension_if_needed(this, type, _filename), relative_path);
 	msg_write("EDIT");
 	msg_write(_filename.str());
 	msg_write(filename.str());
 
 		switch (type){
-			case -1:
+			/*case -1:
 				if (filename.basename() == "config.txt")
 					hui::open_document(filename);
 				else if (filename.basename() == "game.ini")
 					mode_admin->basic_settings();
-				break;
+				break;*/
 			case FD_MODEL:
 			case FD_MATERIAL:
 			case FD_FONT:
@@ -413,6 +413,7 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 			case FD_TERRAIN:
 			case FD_CAMERAFLIGHT:
 				emit_empty_session(this).then([type, filename] (Session* session) {
+#if 0
 					if (type == FD_MODEL) {
 						session->storage->load(filename, session->mode_model->data, true);
 						session->set_mode(session->mode_model);
@@ -436,10 +437,13 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 							mworld->OptimizeView();
 						}*/
 					} else if (type == FD_WORLD) {
+#endif
+						if (!session->mode_world)
+							session->mode_world = new ModeWorld(session);
 						session->storage->load(filename, session->mode_world->data, true);
 						session->set_mode(session->mode_world);
 						session->mode_world->optimize_view();
-					}
+					//}
 				});
 				break;
 			case FD_TEXTURE:
@@ -447,7 +451,7 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 			case FD_SHADERFILE:
 			case FD_SCRIPT:
 			case FD_FILE:
-				hui::open_document(filename);
+				//hui::open_document(filename);
 				break;
 		}
 		//return true;

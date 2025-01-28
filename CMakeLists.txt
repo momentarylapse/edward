@@ -457,6 +457,7 @@ add_executable(edward
 	src/y/renderer/target/TextureRendererVulkan.cpp
 	src/y/renderer/target/WindowRendererGL.cpp
 	src/y/renderer/target/WindowRendererVulkan.cpp
+	src/y/renderer/target/XhuiRenderer.cpp
 	src/y/renderer/world/geometry/GeometryRenderer.cpp
 	src/y/renderer/world/geometry/GeometryRendererGL.cpp
 	src/y/renderer/world/geometry/GeometryRendererVulkan.cpp

@@ -14,6 +14,8 @@
 #include "format/FormatModel3ds.h"
 #include "format/FormatModelPly.h"
 #endif
+#include <lib/xhui/dialogs/FileSelectionDialog.h>
+
 #include "format/FormatTerrain.h"
 #include "format/FormatWorld.h"
 #include "../data/Data.h"
@@ -22,7 +24,7 @@
 #include "../lib/xhui/xhui.h"
 #include <y/EngineData.h>
 #include "../Session.h"
-//#include "../EdwardWindow.h"
+#include "../view/EdwardWindow.h"
 
 
 Path Storage::CANONICAL_SUB_DIR[NUM_FDS];
@@ -352,13 +354,14 @@ base::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int pre
 		promise(cp);
 	};
 
-#if 0
-	if (save)
-		hui::file_dialog_save(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
+	filter = "*.world";
+#if 1
+	/*if (save)
+		xhui::file_dialog_save(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
 			.then(on_select_base)
 			.on_fail([promise] () mutable { promise.fail(); });
-	else
-		hui::file_dialog_open(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
+	else*/
+		xhui::FileSelectionDialog::ask(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
 			.then(on_select_base)
 			.on_fail([promise] () mutable { promise.fail(); });
 #endif

@@ -1,4 +1,6 @@
 
+#include <storage/format/Format.h>
+
 #include "Session.h"
 #include "view/EdwardWindow.h"
 #include "lib/os/msg.h"
@@ -25,7 +27,8 @@ int xhui_main(const Array<string>& args) {
 	}
 
 	auto s = create_session();
-	s->win->args = args;
+	if (args.num >= 2)
+		s->universal_edit(FD_WORLD, args[1], false);
 
 	try {
 		xhui::run();

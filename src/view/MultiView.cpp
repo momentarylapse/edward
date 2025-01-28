@@ -160,6 +160,7 @@ void MultiView::prepare(const RenderParams& params) {
 
 void MultiView::draw(const RenderParams& params) {
 	//	scene_view.choose_lights();
+	//engine.physical_aspect_ratio = pp->native_area.width() / pp->native_area.height();
 
 	window.draw(params);
 }

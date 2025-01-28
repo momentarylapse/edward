@@ -23,6 +23,8 @@ public:
 		hover = -1;
 		selected = -1;
 		current_dir = dir;
+		if (dir.is_empty())
+			current_dir = Application::initial_working_directory;
 		items.clear();
 		const auto list = os::fs::search(current_dir, filter, "df");
 		for (const auto& e: list)
@@ -38,16 +40,18 @@ public:
 		const auto clip0 = p->clip();
 		p->set_clip(_area);
 		for (const auto& [i, it]: enumerate(items)) {
+			auto r = item_area(i);
 			if (i == selected) {
 				p->set_color(Theme::_default.background_low_selected);
-				p->draw_rect(item_area(i));
-			}
-			if (i == hover) {
+				p->draw_rect(r);
+			} else if (i == hover) {
 				p->set_color(Theme::_default.background_hover);
-				p->draw_rect(item_area(i));
+				p->draw_rect(r);
 			}
-			p->set_color(Theme::_default.text);
-			p->draw_str(item_area(i).p00() + vec2(5, 5), str(it.filename));
+			p->set_color(it.is_directory ? color(1, 0.8f, 0.7f, 0) : Theme::_default.text_label);
+			p->draw_rect({r.p00() + vec2(6, 6), r.p00() + vec2(20, 20)});
+			p->set_color(Theme::_default.text_label);
+			p->draw_str(r.p00() + vec2(26, 6), str(it.filename));
 		}
 		p->set_clip(clip0);
 	}
@@ -118,6 +122,13 @@ public:
  *			Button ok
  */
 FileSelectionDialog::FileSelectionDialog(Panel* parent, const string& title, const Path& dir, const Array<string>& params) : Dialog(title, 800, 600, parent) {
+
+	list = new FileSelectionControl("files");
+	for (const auto& o: params)
+		if (o.head(7) == "filter=")
+			list->filter = o.sub(7);
+	list->set_directory(dir);
+
 	auto g1 = new Grid("");
 	add(g1);
 	auto g2 = new Grid("");
@@ -125,16 +136,9 @@ FileSelectionDialog::FileSelectionDialog(Panel* parent, const string& title, con
 	auto button_up = new Button("up", "Up");
 	button_up->expand_x = false;
 	g2->add(button_up, 0, 0);
-	auto x = new Label("directory", str(dir));
+	auto x = new Label("directory", str(list->current_dir));
 	x->expand_x = true;
 	g2->add(x, 1, 0);
-
-	list = new FileSelectionControl("files");
-
-	for (const auto& o: params)
-		if (o.head(7) == "filter=")
-			list->filter = o.sub(7);
-	list->set_directory(dir);
 	g1->add(list, 0, 1);
 
 	auto g3 = new Grid("");
