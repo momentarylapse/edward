@@ -320,17 +320,17 @@ Mode *Session::get_mode(int preferred_type) {
 }
 
 void Session::universal_new(int preferred_type) {
-#if 0
+#if 1
 	auto call_new = [preferred_type] (Session* session) {
-		if (preferred_type == FD_MODEL) {
+		/*if (preferred_type == FD_MODEL) {
 			session->mode_model->_new();
 			session->set_mode(session->mode_model);
 			session->mode_model->mode_model_mesh->optimize_view();
-		} else if (preferred_type == FD_WORLD) {
-			session->mode_world->_new();
+		} else*/ if (preferred_type == FD_WORLD) {
+			session->mode_world = new ModeWorld(session);
 			session->set_mode(session->mode_world);
-			session->mode_world->optimize_view();
-		} else if (preferred_type == FD_MATERIAL) {
+			//session->mode_world->optimize_view();
+		} /*else if (preferred_type == FD_MATERIAL) {
 			session->mode_material->_new();
 			session->set_mode(session->mode_material);
 			session->mode_material->optimize_view();
@@ -338,7 +338,7 @@ void Session::universal_new(int preferred_type) {
 			session->mode_font->_new();
 			session->set_mode(session->mode_font);
 			session->mode_font->optimize_view();
-		}
+		}*/
 	};
 
 	if (false) {

@@ -12,6 +12,8 @@
 #include "../../multiview/SingleData.h"
 #include <y/world/Material.h>
 #include <y/graphics-fwd.h>
+#include <lib/any/any.h>
+#include <lib/math/quaternion.h>
 
 class DataWorld;
 class Terrain;
@@ -22,6 +24,8 @@ struct WorldObject;
 struct WorldTerrain;
 struct WorldCamera;
 enum class PhysicsMode;
+class Entity;
+class Component;
 
 
 struct WorldScriptVariable {
@@ -37,6 +41,19 @@ struct ScriptInstanceData {
 };
 
 struct WorldScript : ScriptInstanceData {};
+
+struct WorldComponent {
+	Path filename;
+	string class_name;
+	Any data;
+	Component* component = nullptr;
+};
+
+struct WorldEntity : multiview::SingleData {
+	quaternion ang;
+	Entity* entity = nullptr;;
+	Array<ScriptInstanceData> components;
+};
 
 class DataWorld: public Data {
 public:
@@ -56,6 +73,8 @@ public:
 	void update_data();
 
 	void clear_selection();
+
+	Array<WorldEntity> entities;
 
 	// terrains
 	Array<WorldTerrain> terrains;

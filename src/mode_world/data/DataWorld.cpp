@@ -199,19 +199,25 @@ void DataWorld::edit_camera(int index, const WorldCamera& c) {
 
 
 void DataWorld::clear_selection() {
-	for (WorldObject &o: objects)
+	for (auto& o: entities)
 		o.is_selected = false;
-	for (WorldTerrain &t: terrains)
+	for (auto& o: objects)
+		o.is_selected = false;
+	for (auto& t: terrains)
 		t.is_selected = false;
 }
 
 
 void DataWorld::copy(DataWorld& temp) const {
+	temp.entities.clear();
 	temp.objects.clear();
 	temp.terrains.clear();
 	temp.cameras.clear();
 	temp.lights.clear();
 
+	for (auto &o: entities)
+		if (o.is_selected)
+			temp.entities.add(o);
 	for (auto &o: objects)
 		if (o.is_selected)
 			temp.objects.add(o);
@@ -227,7 +233,7 @@ void DataWorld::copy(DataWorld& temp) const {
 }
 
 bool DataWorld::is_empty() const {
-	return objects.num + terrains.num + cameras.num + lights.num == 0;
+	return entities.num + objects.num + terrains.num + cameras.num + lights.num == 0;
 }
 
 void DataWorld::paste(const DataWorld& temp) {
@@ -240,11 +246,15 @@ void DataWorld::delete_selection(const Selection& selection) {
 
 Data::Selection DataWorld::get_selection() const {
 	Selection s;
+	s.add({MultiViewType::WORLD_ENTITY, {}});
 	s.add({MultiViewType::WORLD_OBJECT, {}});
 	s.add({MultiViewType::WORLD_TERRAIN, {}});
 	s.add({MultiViewType::WORLD_CAMERA, {}});
 	s.add({MultiViewType::WORLD_LIGHT, {}});
 	s.add({MultiViewType::WORLD_LINK, {}});
+	for (const auto& [i, o]: enumerate(entities))
+		if (o.is_selected)
+			s[MultiViewType::WORLD_ENTITY].add(i);
 	for (const auto& [i, o]: enumerate(objects))
 		if (o.is_selected)
 			s[MultiViewType::WORLD_OBJECT].add(i);

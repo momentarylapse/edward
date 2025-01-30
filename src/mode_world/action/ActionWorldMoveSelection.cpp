@@ -19,6 +19,14 @@
 
 ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Selection& selection) {
 	// list of selected objects and save old pos
+	if (selection.contains(MultiViewType::WORLD_ENTITY))
+		for (const auto& [i, o]: enumerate(d->entities))
+			if (selection[MultiViewType::WORLD_ENTITY].contains(i)) {
+				index.add(i);
+				old_data.add(o.pos);
+				old_ang.add(o.ang);
+				type.add(MultiViewType::WORLD_ENTITY);
+			}
 	if (selection.contains(MultiViewType::WORLD_OBJECT))
 		for (const auto& [i, o]: enumerate(d->objects))
 			if (selection[MultiViewType::WORLD_OBJECT].contains(i)) {
@@ -65,7 +73,10 @@ void *ActionWorldMoveSelection::execute(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	auto dq = quaternion::rotation(mat);
 	for (const auto& [ii, i]: enumerate(index)) {
-		if (type[ii] == MultiViewType::WORLD_OBJECT) {
+		if (type[ii] == MultiViewType::WORLD_ENTITY) {
+			w->entities[i].pos = mat * old_data[ii];
+			w->entities[i].ang = dq * old_ang[ii];
+		} else if (type[ii] == MultiViewType::WORLD_OBJECT) {
 			w->objects[i].pos = mat * old_data[ii];
 			w->objects[i].ang = (dq * old_ang[ii]).get_angles();
 		} else if (type[ii] == MultiViewType::WORLD_TERRAIN) {
@@ -89,7 +100,10 @@ void *ActionWorldMoveSelection::execute(Data *d) {
 void ActionWorldMoveSelection::undo(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	for (const auto& [ii, i]: enumerate(index)) {
-		if (type[ii] == MultiViewType::WORLD_OBJECT) {
+		if (type[ii] == MultiViewType::WORLD_ENTITY) {
+			w->entities[i].pos = old_data[ii];
+			w->entities[i].ang = old_ang[ii];
+		} else if (type[ii] == MultiViewType::WORLD_OBJECT) {
 			w->objects[i].pos = old_data[ii];
 			w->objects[i].ang = old_ang[ii].get_angles();
 		} else if (type[ii] == MultiViewType::WORLD_TERRAIN) {

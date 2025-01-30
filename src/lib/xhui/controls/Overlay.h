@@ -14,6 +14,7 @@ public:
 	Array<Control*> children;
 
 	void add(Control *c);
+	void add(Control *c, int, int) override { add(c); }
 	
 	void get_greed_factor(float &x, float &y) override;
 	void get_content_min_size(int &w, int &h) override;

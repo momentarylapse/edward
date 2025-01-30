@@ -368,15 +368,18 @@ add_executable(edward
 	src/lib/xhui/draw/font.cpp
 	src/lib/xhui/ContextVulkan.cpp
 	src/lib/xhui/Dialog.cpp
+	src/lib/xhui/language.cpp
 	src/lib/xhui/PainterGL.cpp
 	src/lib/xhui/PainterVulkan.cpp
 	src/lib/xhui/Panel.cpp
+	src/lib/xhui/Resource.cpp
 	src/lib/xhui/Theme.cpp
 	src/lib/xhui/Window.cpp
 	src/lib/xhui/xhui.cpp
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/data/ModelPolygon.cpp
 	src/mode_model/data/SkinGenerator.cpp
+	src/mode_world/action/entity/ActionWorldAddEntity.cpp
 	src/mode_world/action/light/ActionWorldAddLight.cpp
 	src/mode_world/action/object/ActionWorldAddObject.cpp
 	src/mode_world/action/object/ActionWorldDeleteObject.cpp

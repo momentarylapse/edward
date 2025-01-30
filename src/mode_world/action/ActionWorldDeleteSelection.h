@@ -24,6 +24,9 @@ public:
 	void *execute(Data *d) override;
 	void undo(Data *d) override;
 
+	Array<WorldEntity> entities;
+	Array<int> entity_indices;
+
 	Array<WorldObject> objects;
 	Array<int> object_indices;
 

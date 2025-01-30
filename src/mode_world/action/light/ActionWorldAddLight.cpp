@@ -6,7 +6,6 @@
  */
 
 #include "ActionWorldAddLight.h"
-
 #include "../../data/DataWorld.h"
 #include "../../data/WorldLight.h"
 

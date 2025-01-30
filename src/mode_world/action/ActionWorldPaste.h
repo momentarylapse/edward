@@ -9,7 +9,9 @@
 #define ACTIONWORLDPASTE_H_
 
 #include "../../action/ActionGroup.h"
+
 class DataWorld;
+struct WorldEntity;
 class WorldObject;
 class WorldTerrain;
 class WorldLight;
@@ -22,6 +24,7 @@ public:
 
 	void *compose(Data *d) override;
 private:
+	const Array<WorldEntity>& entities;
 	const Array<WorldObject>& objects;
 	const Array<WorldTerrain>& terrains;
 	const Array<WorldCamera>& cameras;

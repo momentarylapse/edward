@@ -200,6 +200,9 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 	g4->add(new TouchButton("cam-rotate", "R"), 2, 0);
 	g4->add(new TouchButton("cam-move", "M"), 2, 1);
 
+	event("new", [this] {
+		session->universal_new(FD_WORLD);
+	});
 	event("open", [this] {
 		session->universal_open(FD_WORLD);
 	});

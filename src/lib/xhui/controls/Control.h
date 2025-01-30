@@ -21,6 +21,7 @@ public:
 	void _register(Panel* owner);
 	void _unregister();
 
+	virtual void add(Control* c, int x, int y) {}
 	virtual void set_string(const string& s) {}
 	virtual void add_string(const string& s) { set_string(s); }
 	virtual void set_cell(int row, int col, const string& s) {}

@@ -1,5 +1,18 @@
 #include "Panel.h"
 #include "Painter.h"
+#include "language.h"
+#include "Resource.h"
+
+#include "controls/Button.h"
+#include "controls/CheckBox.h"
+#include "controls/DrawingArea.h"
+#include "controls/Edit.h"
+#include "controls/Grid.h"
+#include "controls/Label.h"
+#include "controls/ListView.h"
+#include "controls/MultilineEdit.h"
+#include "controls/Overlay.h"
+#include "../os/msg.h"
 
 namespace xhui {
 
@@ -52,9 +65,23 @@ void Panel::negotiate_area(const rect &available) {
 	}*/
 }
 
-void Panel::add(Control *c) {
-	top_control = c;
+void Panel::add(Control *c, int x, int y) {
+	if (target_control) {
+		target_control->add(c, x, y);
+	} else {
+		top_control = c;
+	}
 	c->_register(this);
+}
+
+void Panel::add(Control *c) {
+	add(c, 0, 0);
+}
+
+void Panel::set_target(const string& id) {
+	for (auto& c: controls)
+		if (c->id == id)
+			target_control = c;
 }
 
 void Panel::event(const string &id, Callback f) {
@@ -126,6 +153,92 @@ Array<Control*> Panel::get_children() const {
 	return {};
 }
 
+
+void Panel::add_control(const string &type, const string &title, int x, int y, const string &id) {
+	//printf("HuiPanelAddControl %s  %s  %d  %d  %s\n", type.c_str(), title.c_str(), x, y, id.c_str());
+	if (type == "Button")
+		add(new Button(title, id), x, y);
+/*	else if (type == "ColorButton")
+		add_color_button(title, x, y, id);
+	else if (type == "DefButton")
+		add_def_button(title, x, y, id);*/
+	else if ((type == "Label") or (type == "Text"))
+		add(new Label(title, id), x, y);
+	else if (type == "Edit")
+		add(new Edit(title, id), x, y);
+	else if (type == "MultilineEdit")
+		add(new MultilineEdit(title, id), x, y);
+//	else if (type == "Group")
+//		add_group(title, x, y, id);
+	else if (type == "CheckBox")
+		add(new CheckBox(title, id), x, y);
+//	else if (type == "ComboBox")
+//		add_combo_box(title, x, y, id);
+//	else if (type == "TabControl")
+//		add_tab_control(title, x, y, id);
+	else if (type == "ListView")
+		add(new ListView(title, id), x, y);
+//	else if (type == "TreeView")
+//		add_tree_view(title, x, y, id);
+//	else if (type == "IconView")
+//		add_icon_view(title, x, y, id);
+//	else if (type == "ProgressBar")
+//		add_progress_bar(title, x, y, id);
+//	else if (type == "Slider")
+//		add_slider(title, x, y, id);
+//	else if (type == "Image")
+//		add_image(title, x, y, id);
+	else if (type == "DrawingArea")
+		add(new DrawingArea(id), x, y);
+	else if (type == "Grid")
+		add(new Grid(id), x, y);
+	else if (type == "Overlay")
+		add(new Overlay(id), x, y);
+/*	else if (type == "SpinButton")
+		add_spin_button(title, x, y, id);
+	else if (type == "RadioButton")
+		add_radio_button(title, x, y, id);
+	else if (type == "ToggleButton")
+		add_toggle_button(title, x, y, id);
+	else if ((type == "Expander") or (type == "Revealer"))
+		add_expander(title, x, y, id);
+	else if (type == "Scroller")
+		add_scroller(title, x, y, id);
+	else if (type == "Paned")
+		add_paned(title, x, y, id);
+	else if (type == "Separator")
+		add_separator(title, x, y, id);
+	else if (type == "MenuButton")
+		add_menu_button(title, x, y, id);*/
+	else
+		msg_error("unknown hui control: " + type);
+}
+
+void Panel::_add_control(const string &ns, Resource &cmd, const string &parent_id) {
+	//msg_write(format("%d:  %d / %d",j,(cmd->type & 1023),(cmd->type >> 10)).c_str(),4);
+	set_target(parent_id);
+	add_control(cmd.type, get_language_r(ns, cmd),
+				cmd.x, cmd.y,
+				cmd.id);
+
+	/*for (string &o: cmd.options)
+		set_options(cmd.id, o);
+
+	enable(cmd.id, cmd.enabled());
+	if (cmd.has("hidden"))
+		hide_control(cmd.id, true);
+
+	if (cmd.image().num > 0)
+		set_image(cmd.id, cmd.image());
+
+
+	string tooltip = get_language_t(ns, cmd.id, cmd.tooltip);
+	if (tooltip.num > 0)
+		set_tooltip(cmd.id, tooltip);*/
+
+	for (Resource &c: cmd.children)
+		_add_control(ns, c, cmd.id);
+}
 
 
 }

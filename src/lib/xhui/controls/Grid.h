@@ -17,7 +17,7 @@ public:
 	};
 	Array<Child> children;
 
-	void add(Control *c, int x, int y);
+	void add(Control *c, int x, int y) override;
 	int nx = 0, ny = 0;
 	int spacing;
 	int margin = 0;

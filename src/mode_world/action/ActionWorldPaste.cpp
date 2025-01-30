@@ -6,6 +6,7 @@
  */
 
 #include "ActionWorldPaste.h"
+#include "entity/ActionWorldAddEntity.h"
 #include "object/ActionWorldAddObject.h"
 #include "terrain/ActionWorldAddTerrain.h"
 //#include "camera/
@@ -18,6 +19,7 @@
 
 
 ActionWorldPaste::ActionWorldPaste(const DataWorld& temp) :
+	entities(temp.entities),
 	objects(temp.objects),
 	terrains(temp.terrains),
 	lights(temp.lights),
@@ -28,6 +30,9 @@ ActionWorldPaste::ActionWorldPaste(const DataWorld& temp) :
 void *ActionWorldPaste::compose(Data *d) {
 	auto *w = dynamic_cast<DataWorld*>(d);
 	w->clear_selection();
+
+	for (const auto &o: entities)
+		addSubAction(new ActionWorldAddEntity(o), w);
 
 	for (const auto &o: objects)
 		addSubAction(new ActionWorldAddObject(o), w);
