@@ -59,17 +59,22 @@ namespace xhui {
 				bg = Theme::_default.background_active;
 			}
 		}
+		rect box = {_area.x1 + 7, _area.x1 + 28, _area.center().y - 11, _area.center().y + 11};
 		p->set_color(bg);
 		p->set_roundness(Theme::_default.button_radius);
-		p->set_fill(checked);
-		p->draw_rect({_area.x1 + 4, _area.x1 + 29, _area.center().y - 12, _area.center().y + 12});
+		p->draw_rect(box);
+		if (!checked) {
+			p->set_color(Theme::_default.background);
+			p->set_roundness(Theme::_default.button_radius-2);
+			p->draw_rect(box.grow(-2));
+		}
 		p->set_roundness(0);
 
 		if (checked) {
 			p->set_color(Theme::_default.text);
 			p->set_line_width(4);
 			float ym = _area.center().y;
-			p->draw_lines({{_area.x1 + 10, ym}, {_area.x1 + 16, ym + 6}, {_area.x1 + 22, ym - 6}});
+			p->draw_lines({{_area.x1 + 11, ym}, {_area.x1 + 17, ym + 6}, {_area.x1 + 23, ym - 6}});
 			p->set_line_width(1);
 		}
 
@@ -77,7 +82,7 @@ namespace xhui {
 		auto dim = font::get_text_dimensions(title);
 
 		p->set_color(Theme::_default.text);
-		p->draw_str({_area.x1 + 32, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
+		p->draw_str({box.x2 + 6, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
 		p->set_fill(true);
 	}
 

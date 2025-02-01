@@ -67,12 +67,14 @@ void Edit::on_key_down(int key) {
 			text = text.sub_ref(0, cursor_pos - 1) + text.sub_ref(cursor_pos);
 			cache.rebuild(text);
 			cursor_pos --;
+			on_edit();
 			emit_event(event_id::Changed, true);
 		}
 	if (key == KEY_DELETE)
 		if (cursor_pos < text.num) {
 			text = text.sub_ref(0, cursor_pos) + text.sub_ref(cursor_pos + 1);
 			cache.rebuild(text);
+			on_edit();
 			emit_event(event_id::Changed, true);
 		}
 
@@ -80,41 +82,38 @@ void Edit::on_key_down(int key) {
 		text = text.sub_ref(0, cursor_pos) + string(&c, 1) + text.sub_ref(cursor_pos);
 		cache.rebuild(text);
 		cursor_pos ++;
+		on_edit();
 		emit_event(event_id::Changed, true);
 	};
-	if (key >= KEY_A and key <= KEY_Z)
-		insert('a' + (key - KEY_A));
 	if (key >= KEY_0 and key <= KEY_9)
 		insert('0' + (key - KEY_0));
-	if (key == KEY_SPACE)
-		insert(' ');
+	if (key == KEY_DOT)
+		if (text.find(".") < 0 or !numerical)
+			insert('.');
+	if (key == KEY_MINUS)
+		insert('-');
+	if (!numerical) {
+		if (key >= KEY_A and key <= KEY_Z)
+			insert('a' + (key - KEY_A));
+		if (key == KEY_SPACE)
+			insert(' ');
+		if (key == KEY_COMMA)
+			insert(',');
+		if (key == KEY_PLUS)
+			insert('+');
+	}
 	if (key == KEY_RETURN and multiline)
 		insert('\n');
 
 	request_redraw();
 }
 
-void Edit::_draw(Painter *p) {
+void Edit::draw_active_marker(Painter* p) {
+
+}
+
+void Edit::draw_text(Painter* p) {
 	p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
-
-	// background
-	color bg = Theme::_default.background_button;
-	p->set_color(bg);
-	p->set_roundness(Theme::_default.button_radius);
-	p->draw_rect(_area);
-
-	// focus frame
-	if (has_focus()) {
-		p->set_color(Theme::_default.background_button_primary.with_alpha(0.6f));
-		p->draw_rect(_area);
-
-		float dr = Theme::_default.focus_frame_width;
-		p->set_roundness(Theme::_default.button_radius - dr);
-		p->set_color(bg);
-		p->draw_rect(smaller_rect(_area, dr));
-	}
-	p->set_line_width(1);
-	p->set_roundness(0);
 
 	// update text dims
 	float inner_height = 0;
@@ -155,6 +154,31 @@ void Edit::_draw(Painter *p) {
 		float y0 = cache.line_y0[lp.line];
 		p->draw_line({x, y0 - 3}, {x, y0 + Theme::_default.font_size + 3});
 	}
+}
+
+
+void Edit::_draw(Painter *p) {
+
+	// background
+	color bg = Theme::_default.background_button;
+	p->set_color(bg);
+	p->set_roundness(Theme::_default.button_radius);
+	p->draw_rect(_area);
+
+	// focus frame
+	if (has_focus()) {
+		p->set_color(Theme::_default.background_button_primary.with_alpha(0.6f));
+		p->draw_rect(_area);
+
+		float dr = Theme::_default.focus_frame_width;
+		p->set_roundness(Theme::_default.button_radius - dr);
+		p->set_color(bg);
+		p->draw_rect(smaller_rect(_area, dr));
+	}
+	p->set_line_width(1);
+	p->set_roundness(0);
+
+	draw_text(p);
 }
 Edit::LinePos Edit::index_to_line_pos(int index) const {
 	LinePos r = {0, 0};

@@ -6,11 +6,11 @@ namespace xhui {
 
 class Edit : public Control {
 public:
-	Edit(const string &id, const string &title);
+	Edit(const string& id, const string& title);
 
-	void get_content_min_size(int &w, int &h) override;
+	void get_content_min_size(int& w, int& h) override;
 
-	void set_string(const string &s) override;
+	void set_string(const string& s) override;
 
 	//void on_mouse_enter() override;
 	//void on_mouse_leave() override;
@@ -18,9 +18,13 @@ public:
 	//void on_left_button_up() override;
 	void on_key_down(int key) override;
 
-	void _draw(Painter *p) override;
+	void _draw(Painter* p) override;
+	void draw_background(Painter* p);
+	void draw_text(Painter* p);
+	void draw_active_marker(Painter* p);
 
 	bool multiline = false;
+	bool numerical = false;
 	string text;
 	int cursor_pos = 0;
 	struct Cache {
@@ -40,6 +44,9 @@ public:
 
 	LinePos index_to_line_pos(int index) const;
 	int line_pos_to_index(const LinePos& lp) const;
+
+	// override in SpinButton etc
+	virtual void on_edit() {}
 };
 
 }

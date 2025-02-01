@@ -27,12 +27,14 @@ public:
 	virtual void set_cell(int row, int col, const string& s) {}
 	virtual void reset() {}
 	virtual void set_int(int i) { set_string(str(i)); }
+	virtual void set_float(float f) { set_string(str(f)); }
 	virtual string get_string() { return ""; }
 	virtual string get_cell(int row, int col) { return ""; }
 	virtual int get_int() { return get_string()._int(); }
+	virtual float get_float() { return get_string()._float(); }
 	virtual Array<int> get_selection() { return {}; }
 	virtual void enable(bool enabled) {}
-	virtual void set_option(const string& key, const string& value) {}
+	virtual void set_option(const string& key, const string& value);
 	virtual Array<Control*> get_children() const { return {}; }
 	Array<Control*> get_children_recursive(bool include_me) const;
 

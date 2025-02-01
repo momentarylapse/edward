@@ -1,5 +1,5 @@
 font.name = "CAC Champagne"
-font.size = 13.0
+font.size = 10.0
 spacing = 8
 focus-frame-width = 2.0
 
@@ -41,7 +41,7 @@ focus-frame-width = 2.0
 [button]
 	margin-vertical = 10
 	margin-horizontal = 18
-	radius = 5
+	radius = 7
 
 [edit]
-	margin-horizontal = 10
+	margin-horizontal = 7

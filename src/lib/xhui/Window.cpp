@@ -77,6 +77,13 @@ int key_decode(int key) {
 	for (int i=0; i<12; i++)
 		if (key == GLFW_KEY_F1 + i)
 			return xhui::KEY_F1 + i;
+	if (key == GLFW_KEY_MINUS)
+		return xhui::KEY_MINUS;
+	if (key == GLFW_KEY_PERIOD)
+		return xhui::KEY_DOT;
+	if (key == GLFW_KEY_COMMA)
+		return xhui::KEY_COMMA;
+
 	if (key == GLFW_KEY_ENTER)
 		return xhui::KEY_RETURN;
 	if (key == GLFW_KEY_SPACE)

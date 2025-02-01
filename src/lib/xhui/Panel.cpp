@@ -12,6 +12,7 @@
 #include "controls/ListView.h"
 #include "controls/MultilineEdit.h"
 #include "controls/Overlay.h"
+#include "controls/SpinButton.h"
 #include "../os/msg.h"
 
 namespace xhui {
@@ -194,9 +195,9 @@ void Panel::add_control(const string &type, const string &title, int x, int y, c
 		add(new Grid(id), x, y);
 	else if (type == "Overlay")
 		add(new Overlay(id), x, y);
-/*	else if (type == "SpinButton")
-		add_spin_button(title, x, y, id);
-	else if (type == "RadioButton")
+	else if (type == "SpinButton")
+		add(new SpinButton(id, title._float()), x, y);
+/*	else if (type == "RadioButton")
 		add_radio_button(title, x, y, id);
 	else if (type == "ToggleButton")
 		add_toggle_button(title, x, y, id);

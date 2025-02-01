@@ -102,6 +102,23 @@ void Control::emit_event(const string& msg, bool is_default) {
 		owner->handle_event(id, msg, is_default);
 }
 
+void Control::set_option(const string& key, const string& value) {
+	if (key == "expandx") {
+		expand_x = value._bool();
+		request_redraw();
+	} else if (key == "expandy") {
+		expand_y = value._bool();
+		request_redraw();
+	} else if (key == "width") {
+		min_width_user = value._int();
+		request_redraw();
+	} else if (key == "height") {
+		min_height_user = value._int();
+		request_redraw();
+	}
+}
+
+
 
 
 }

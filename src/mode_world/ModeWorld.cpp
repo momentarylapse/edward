@@ -23,6 +23,7 @@
 #include <y/world/Model.h>
 #include <y/world/ModelManager.h>
 #include <y/world/Terrain.h>
+#include <y/world/World.h>
 #include <y/graphics-impl.h>
 #include <lib/os/msg.h>
 #include <view/EdwardWindow.h>
@@ -38,6 +39,11 @@ ModeWorld::ModeWorld(Session* session) :
 	multi_view = new MultiView(session);
 	data = new DataWorld(session);
 	generic_data = data;
+
+	data->out_changed >> create_sink([this] {
+		//data->lights
+		//	world.en
+	});
 }
 
 
