@@ -75,7 +75,7 @@ vec3 tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
 
-float model_hover_z(Model *o, const vector &pos, const vector &ang, MultiViewWindow* win, const vec2 &mv, vec3 &tp) {
+float model_hover_z(Model *o, const vec3& pos, const quaternion& ang, MultiViewWindow* win, const vec2 &mv, vec3 &tp) {
 	if (!o)
 		return -1;
 	int d = 0;//o->_detail_;
@@ -111,8 +111,8 @@ float model_hover_z(Model *o, const vector &pos, const vector &ang, MultiViewWin
 	return z_min;
 }
 
-float object_hover_distance(const WorldObject& me, MultiViewWindow* win, const vec2 &mv, vec3 &tp, float &z) {
-	Model *o = me.object;
+float object_hover_distance(const WorldEntity& me, MultiViewWindow* win, const vec2 &mv, vec3 &tp, float &z) {
+	Model *o = me.object.object;
 	if (!o)
 		return -1;
 	z = model_hover_z(o, me.pos, me.ang, win, mv, tp);
@@ -127,7 +127,7 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& m) 
 		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
 			float z;
 			vec3 tp;
-			float dist = object_hover_distance(e.object, win, m, tp, z);
+			float dist = object_hover_distance(e, win, m, tp, z);
 			if (dist >= 0 and z < zmin) {
 				zmin = z;
 				h = {MultiViewType::WORLD_OBJECT, i, tp};

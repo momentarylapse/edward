@@ -24,7 +24,12 @@ public:
 	void set_target(const string& id);
 
 	void set_string(const string& id, const string& text);
+	void set_float(const string& id, float value);
+	void set_int(const string& id, int value);
 	void enable(const string& id, bool enabled);
+	string get_string(const string& id) const;
+	float get_float(const string& id) const;
+	int get_int(const string& id) const;
 	void set_options(const string& id, const string& options);
 
 

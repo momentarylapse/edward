@@ -83,7 +83,7 @@ void WorldTerrain::update_data() {
 
 
 Box WorldTerrain::bounding_box() const {
-	return {};//pos, pos};
+	return {v_0, v_0};//pos, pos};
 }
 
 

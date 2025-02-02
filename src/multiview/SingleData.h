@@ -21,10 +21,9 @@ class Window;
 
 // "des Pudels Kern", don't change!!!!!!!
 struct SingleData {
-	SingleData();
-	int view_stage;
-	bool is_selected, m_delta, m_old, is_special;
-	vec3 pos;
+	int view_stage = -1;
+	bool is_selected = false, m_delta = false, m_old = false, is_special = false;
+	vec3 pos = vec3::ZERO;
 	/*virtual float hover_distance(Window *win, const vec2 &m, vec3 &tp, float &z);
 	virtual bool overlap_rect(Window *win, const rect &r);
 	virtual bool in_rect(Window *win, const rect &r);*/

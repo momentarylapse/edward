@@ -55,7 +55,7 @@ struct WorldComponent {
 };
 
 struct WorldEntity : multiview::SingleData {
-	quaternion ang;
+	quaternion ang = quaternion::ID;
 
 	MultiViewType basic_type = MultiViewType::WORLD_ENTITY;
 	WorldLight light;

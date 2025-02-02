@@ -16,10 +16,8 @@ class ScriptInstanceData;
 
 struct WorldObject: multiview::SingleData {
 	Path filename;
-	Array<ScriptInstanceData> components;
 	string name;
-	Model *object;
-	vec3 ang;
+	Model *object = nullptr;
 
 	/*float hover_distance(multiview::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(multiview::Window *win, const rect &r) override;

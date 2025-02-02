@@ -45,7 +45,7 @@ void SpinButton::_update_text_from_value() {
 }
 
 SpinButton::Hover SpinButton::get_hover(const vec2& m) const {
-	if (_area.inside(m)) {
+	if (_area.inside(m) and enabled) {
 		if (m.x > _area.x2 - BUTTON_DX)
 			return Hover::Plus;
 		if (m.x > _area.x2 - BUTTON_DX * 2)
@@ -98,6 +98,8 @@ void SpinButton::on_left_button_up(const vec2& m) {
 }
 
 void SpinButton::on_mouse_wheel(const vec2& d) {
+	if (!enabled)
+		return;
 	int n = (int)d.y;
 	// TODO better "small" step tweak
 	// maybe accumulate?
@@ -137,6 +139,8 @@ void SpinButton::_draw(Painter* p) {
 	p->draw_line(area_plus.p00(), area_plus.p01());
 
 	p->set_color(Theme::_default.text);
+	if (!enabled)
+		p->set_color(Theme::_default.text_disabled);
 	vec2 m = (_area.p10() + _area.p11()) / 2 - vec2(dx/2,0);
 	p->set_line_width(2);
 	float r = 5;

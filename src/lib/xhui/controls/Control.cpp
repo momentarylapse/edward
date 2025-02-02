@@ -16,6 +16,7 @@ Control::Control(const string &_id) {
 	min_height_user = -1;
 	expand_x = true;
 	expand_y = true;
+	_area = rect::EMPTY;
 }
 
 void Control::_register(Panel* _owner) {

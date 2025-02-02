@@ -146,6 +146,40 @@ void Panel::set_string(const string& id, const string& text) {
 			c->set_string(text);
 }
 
+void Panel::set_float(const string& id, float value) {
+	for (auto& c: controls)
+		if (c->id == id)
+			c->set_float(value);
+}
+
+void Panel::set_int(const string& id, int value) {
+	for (auto& c: controls)
+		if (c->id == id)
+			c->set_int(value);
+}
+
+string Panel::get_string(const string& id) const {
+	for (auto& c: controls)
+		if (c->id == id)
+			return c->get_string();
+	return "";
+}
+
+float Panel::get_float(const string& id) const {
+	for (auto& c: controls)
+		if (c->id == id)
+			return c->get_float();
+	return 0;
+}
+
+int Panel::get_int(const string& id) const {
+	for (auto& c: controls)
+		if (c->id == id)
+			return c->get_int();
+	return 0;
+}
+
+
 void Panel::enable(const string& id, bool enabled) {
 	for (auto& c: controls)
 		if (c->id == id)

@@ -11,6 +11,7 @@ public:
 	void get_content_min_size(int& w, int& h) override;
 
 	void set_string(const string& s) override;
+	void enable(bool enabled) override;
 
 	//void on_mouse_enter() override;
 	//void on_mouse_leave() override;
@@ -27,6 +28,7 @@ public:
 	bool numerical = false;
 	string text;
 	int cursor_pos = 0;
+	bool enabled = true;
 	struct Cache {
 		Array<string> lines;
 		Array<int> line_first_index;

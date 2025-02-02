@@ -37,12 +37,22 @@ void Edit::set_string(const string &s) {
 	request_redraw();
 }
 
+void Edit::enable(bool _enabled) {
+	enabled = _enabled;
+	request_redraw();
+}
+
+
 void Edit::get_content_min_size(int &w, int &h) {
 	w = 80;
 	h = 30;
 }
 
 void Edit::on_key_down(int key) {
+	if (!enabled) {
+		request_redraw();
+		return;
+	}
 	const auto cur_lp = index_to_line_pos(cursor_pos);
 
 	if (key == KEY_LEFT)
@@ -139,17 +149,19 @@ void Edit::draw_text(Painter* p) {
 	// text
 	float x0 = _area.x1 + Theme::_default.edit_margin_x;
 	p->set_color(Theme::_default.text_label);
+	if (!enabled)
+		p->set_color(Theme::_default.text_disabled);
 	for (const auto& [line, l]: enumerate(cache.lines)) {
 		p->draw_str({x0, cache.line_y0[line]}, l);
 	}
 
 	// cursor
-	if (has_focus()) {
+	if (has_focus() and enabled) {
 		p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
 		auto lp = index_to_line_pos(cursor_pos);
 		int first = cache.line_first_index[lp.line];
 		auto dim = font::get_text_dimensions(text.sub_ref(first, cursor_pos));
-		p->set_color(Theme::_default.text_label);
+		//p->set_color(Theme::_default.text_label);
 		float x = x0 + dim.bounding_width / ui_scale;
 		float y0 = cache.line_y0[lp.line];
 		p->draw_line({x, y0 - 3}, {x, y0 + Theme::_default.font_size + 3});

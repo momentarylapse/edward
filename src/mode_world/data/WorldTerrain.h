@@ -27,10 +27,10 @@ struct WorldTerrain {
 
 	Path filename;
 	//Array<WorldTerrainVertex> Vertex;
-	int VertexBufferSingle;
-	int ShowTexture;
-	bool Changed;
-	Terrain *terrain;
+	int VertexBufferSingle = -1;
+	int ShowTexture = -1;
+	bool Changed = false;
+	Terrain *terrain = nullptr;
 
 	bool load(Session *s, const Path &filename, bool deep = true);
 	bool save(const Path &filename);

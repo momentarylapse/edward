@@ -15,14 +15,6 @@
 
 namespace multiview {
 
-SingleData::SingleData() {
-	view_stage = -1;
-	is_selected = false;
-	m_delta = false;
-	m_old = false;
-	is_special = false;
-	pos = v_0;
-}
 
 #if 0
 float SingleData::hover_distance(Window *win, const vec2 &m, vec3 &tp, float &z) {
