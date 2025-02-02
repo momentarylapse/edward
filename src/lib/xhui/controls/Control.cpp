@@ -141,6 +141,8 @@ void Control::set_option(const string& key, const string& value) {
 		request_redraw();
 	} else if (key == "ignorehover") {
 		ignore_hover = true;
+	} else if (key == "visible") {
+		visible = value._bool() or value == "";
 	}
 }
 

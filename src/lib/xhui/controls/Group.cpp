@@ -27,7 +27,7 @@ void Group::_draw(Painter* p) {
 	//p->draw_str({_area.x1, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
 	p->draw_str({_area.x1, _area.y1}, title);
 
-	if (child)
+	if (child and child->visible)
 		child->_draw(p);
 }
 

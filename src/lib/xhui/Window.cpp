@@ -430,11 +430,11 @@ Control *Window::get_hover_control(const vec2 &p) {
 	while (cur_seed < seeds.num) {
 		auto c = seeds[cur_seed ++];
 		while (c) {
-			if (c->_area.inside(p) and !c->ignore_hover)
+			if (c->_area.inside(p) and !c->ignore_hover and c->visible)
 				best = c;
 			Control* next = nullptr;
 			for (auto cc: c->get_children())
-				if (cc->_area.inside(p)) {
+				if (cc->_area.inside(p) and cc->visible) {
 					if (next)
 						seeds.add(cc);
 					else

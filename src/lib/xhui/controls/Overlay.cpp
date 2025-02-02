@@ -22,7 +22,8 @@ void Overlay::add(Control *c) {
 
 void Overlay::_draw(Painter *p) {
 	for (auto c: children)
-		c->_draw(p);
+		if (c->visible)
+			c->_draw(p);
 }
 
 void Overlay::get_content_min_size(int &_w, int &_h) {

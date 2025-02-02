@@ -29,7 +29,7 @@ Panel::Panel(const string &_id) : Control(_id) {
 }
 
 void Panel::_draw(Painter *p) {
-	if (top_control)
+	if (top_control and top_control->visible)
 		top_control->_draw(p);
 }
 
@@ -195,6 +195,13 @@ void Panel::enable(const string& id, bool enabled) {
 	for (auto& c: controls)
 		if (c->id == id)
 			c->enable(enabled);
+}
+
+void Panel::set_visible(const string& id, bool visible) {
+	for (auto& c: controls)
+		if (c->id == id)
+			c->visible = visible;
+	request_redraw();
 }
 
 void Panel::set_options(const string& id, const string& options) {

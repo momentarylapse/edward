@@ -13,7 +13,7 @@ EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-pane
 	from_source(R"foodelim(
 Dialog entity-panel ''
 	Grid ? '' expandx
-		Grid ? '' class=card
+		Grid card-entity '' class=card
 			Group group-entity 'Entity'
 				Grid ? ''
 					Label ? 'Position'
@@ -34,19 +34,19 @@ Dialog entity-panel ''
 					.
 					SpinButton ang-z '' range=::0.001
 		---|
-		Grid ? '' class=card
+		Grid card-object '' class=card visible=no
 			Group group-terrain 'Object'
 				Grid ? ''
 					Label ? 'Filename'
 					Button filename '' expandx
 		---|
-		Grid ? '' class=card
+		Grid card-terrain '' class=card visible=no
 			Group group-terrain 'Terrain'
 				Grid ? ''
 					Label ? 'Filename'
 					Button filename2 ''
 		---|
-		Grid ? '' class=card
+		Grid card-camera '' class=card visible=no
 			Group group-camera 'Camera'
 				Grid ? ''
 					Label ? 'Min distance'
@@ -57,11 +57,12 @@ Dialog entity-panel ''
 					---|
 					Label ? 'Field of view'
 					SpinButton fov '' range=0:180:0.1
+					Label ? '°'
 					---|
 					Label ? 'Exposure'
 					SpinButton z-min '' range=0:100:0.001
 		---|
-		Grid ? '' class=card
+		Grid card-light '' class=card visible=no
 			Group group-light 'Light'
 				Grid ? ''
 					Label ? 'Radius'
@@ -69,12 +70,17 @@ Dialog entity-panel ''
 					---|
 					Label ? 'Theta'
 					SpinButton theta '' range=0:180:0.001
+					Label ? '°'
 					---|
 					Label ? 'Color'
 					Button color ''
 					---|
 					Label ? 'Power'
 					SpinButton power '' range=0::0.1
+					---|
+					Label ? 'Harshness'
+					SpinButton harshness '' range=0:100:1
+					Label ? '%'
 )foodelim");
 	size_mode_y = SizeMode::Shrink;
 	min_width_user = 350;
@@ -97,9 +103,34 @@ Dialog entity-panel ''
 			set_float("ang-x", e.ang.x * 180 / pi);
 			set_float("ang-y", e.ang.y * 180 / pi);
 			set_float("ang-z", e.ang.z * 180 / pi);
+			set_visible("card-object", e.basic_type == MultiViewType::WORLD_OBJECT);
+			set_visible("card-terrain", e.basic_type == MultiViewType::WORLD_TERRAIN);
+			set_visible("card-camera", e.basic_type == MultiViewType::WORLD_CAMERA);
+			set_visible("card-light", e.basic_type == MultiViewType::WORLD_LIGHT);
+			if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+				set_string("filename", str(e.object.filename));
+			} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
+				set_string("filename2", str(e.terrain.filename));
+			} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
+				set_float("z-min", e.camera.min_depth);
+				set_float("z-max", e.camera.max_depth);
+				set_float("fov", e.camera.fov * 180 / pi);
+				set_float("exposure", e.camera.exposure);
+			} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {
+				set_float("radius", e.light.radius);
+				set_float("harshness", e.light.harshness * 100);
+				set_float("theta", e.light.theta * 180 / pi);
+				set_float("radius", e.light.radius);
+				set_float("power", e.light.col.r + e.light.col.g + e.light.col.b);
+			}
+		} else {
+			set_visible("card-object", false);
+			set_visible("card-terrain", false);
+			set_visible("card-camera", false);
+			set_visible("card-light", false);
 		}
 	});
-	mode->data->out_changed >> create_sink([this] {
+	/*mode->data->out_changed >> create_sink([this] {
 		auto sel = mode->data->get_selection();
 		bool ok = (sel[MultiViewType::WORLD_ENTITY].num == 1);
 		enable("pos-x", ok);
@@ -118,7 +149,7 @@ Dialog entity-panel ''
 			set_float("ang-y", e.ang.y * 180 / pi);
 			set_float("ang-z", e.ang.z * 180 / pi);
 		}
-	});
+	});*/
 }
 
 

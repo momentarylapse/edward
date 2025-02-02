@@ -46,13 +46,16 @@ void Grid::_draw(Painter *p) {
 	}
 
 	for (auto &c: children)
-		c.control->_draw(p);
+		if (c.control->visible)
+			c.control->_draw(p);
 }
 
 void Grid::get_grid_min_sizes(Array<int> &w, Array<int> &h) {
 	w.resize(nx);
 	h.resize(ny);
 	for (auto &c: children) {
+		if (!c.control->visible)
+			continue;
 		int ww, hh;
 		c.control->get_effective_min_size(ww, hh);
 		w[c.x] = max(w[c.x], ww);
