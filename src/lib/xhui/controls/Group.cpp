@@ -11,8 +11,8 @@ namespace xhui {
 
 Group::Group(const string& id, const string& _title) : Control(id) {
 	title = _title;
-	expand_x = false;
-	expand_y = false;
+	size_mode_x = SizeMode::ForwardChild;
+	size_mode_y = SizeMode::ForwardChild;
 }
 
 void Group::set_string(const string& s) {
@@ -55,9 +55,23 @@ void Group::get_content_min_size(int& w, int& h) {
 	h = 0;
 	if (child)
 		child->get_content_min_size(w, h);
-	h += 30;
+	h += 25;
 }
 
+void Group::get_greed_factor(float& x, float& y) {
+	float sx, sy;
+	if (child)
+		child->get_greed_factor(sx, sy);
+	x = y = 0;
+	if (size_mode_x == SizeMode::Expand)
+		x = 1;
+	else if (size_mode_x == SizeMode::ForwardChild and child)
+		x = sx;
+	if (size_mode_y == SizeMode::Expand)
+		y = 1;
+	else if (size_mode_y == SizeMode::ForwardChild and child)
+		y = sy;
+}
 
 
 

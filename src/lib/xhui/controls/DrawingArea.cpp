@@ -7,8 +7,8 @@
 namespace xhui {
 
 DrawingArea::DrawingArea(const string &_id) : Control(_id) {
-	expand_x = true;
-	expand_y = true;
+	size_mode_x = SizeMode::Expand;
+	size_mode_y = SizeMode::Expand;
 }
 
 

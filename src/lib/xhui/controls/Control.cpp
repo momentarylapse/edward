@@ -14,8 +14,8 @@ Control::Control(const string &_id) {
 	id = _id;
 	min_width_user = -1;
 	min_height_user = -1;
-	expand_x = true;
-	expand_y = true;
+	size_mode_x = SizeMode::Expand;
+	size_mode_y = SizeMode::Expand;
 	_area = rect::EMPTY;
 }
 
@@ -81,9 +81,9 @@ void Control::get_content_min_size(int &w, int &h) {
 
 void Control::get_greed_factor(float &x, float &y) {
 	x = y = 0;
-	if (expand_x)
+	if (size_mode_x == SizeMode::Expand)
 		x = 1;
-	if (expand_y)
+	if (size_mode_y == SizeMode::Expand)
 		y = 1;
 }
 
@@ -118,16 +118,20 @@ void Control::emit_event(const string& msg, bool is_default) {
 
 void Control::set_option(const string& key, const string& value) {
 	if (key == "expandx") {
-		expand_x = value._bool() or value == "";
+		size_mode_x = SizeMode::Expand;
+		if (value._bool())
+			size_mode_x = SizeMode::Shrink;
 		request_redraw();
 	} else if (key == "expandy") {
-		expand_y = value._bool() or value == "";
+		size_mode_y = SizeMode::Expand;
+		if (value._bool())
+			size_mode_y = SizeMode::Shrink;
 		request_redraw();
 	} else if (key == "noexpandx") {
-		expand_x = false;
+		size_mode_x = SizeMode::Shrink;
 		request_redraw();
 	} else if (key == "noexpandy") {
-		expand_y = false;
+		size_mode_y = SizeMode::Shrink;
 		request_redraw();
 	} else if (key == "width") {
 		min_width_user = value._int();

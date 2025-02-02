@@ -24,8 +24,8 @@ Panel::Panel(const string &_id) : Control(_id) {
 	ignore_hover = true;
 
 	padding = 0;
-	expand_x = true;
-	expand_y = true;
+	size_mode_x = SizeMode::ForwardChild;
+	size_mode_y = SizeMode::ForwardChild;
 }
 
 void Panel::_draw(Painter *p) {

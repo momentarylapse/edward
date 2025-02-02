@@ -7,8 +7,8 @@ namespace xhui {
 
 Button::Button(const string &_id, const string &t) : Label(_id, t) {
 	can_grab_focus = true;
-	expand_x = true;
-	expand_y = false;
+	size_mode_x = SizeMode::Expand;
+	size_mode_y = SizeMode::Shrink;
 }
 
 void Button::enable(bool enabled) {

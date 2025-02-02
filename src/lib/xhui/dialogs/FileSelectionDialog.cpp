@@ -136,10 +136,10 @@ FileSelectionDialog::FileSelectionDialog(Panel* parent, const string& title, con
 	auto g2 = new Grid("grid2");
 	g1->add(g2, 0, 0);
 	auto button_up = new Button("up", "Up");
-	button_up->expand_x = false;
+	button_up->size_mode_x = SizeMode::Shrink;
 	g2->add(button_up, 0, 0);
 	auto x = new Label("directory", str(list->current_dir));
-	x->expand_x = true;
+	x->size_mode_x = SizeMode::Expand;
 	g2->add(x, 1, 0);
 	g1->add(list, 0, 1);
 
@@ -147,14 +147,14 @@ FileSelectionDialog::FileSelectionDialog(Panel* parent, const string& title, con
 	g1->add(g3, 0, 2);
 	auto spacer = new Label("spacer", "");
 	g3->add(spacer, 0, 0);
-	spacer->expand_x = true;
+	spacer->size_mode_x = SizeMode::Expand;
 	auto button_cancel = new Button("cancel", "Cancel");
 	button_cancel->min_width_user = 100;
-	button_cancel->expand_x = false;
+	button_cancel->size_mode_x = SizeMode::Shrink;
 	g3->add(button_cancel, 1, 0);
 	auto button_ok = new Button("ok", "Ok");
 	button_ok->min_width_user = 100;
-	button_ok->expand_x = false;
+	button_ok->size_mode_x = SizeMode::Shrink;
 	button_ok->enable(false);
 	g3->add(button_ok, 2, 0);
 

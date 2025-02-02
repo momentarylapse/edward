@@ -13,7 +13,7 @@ QuestionDialog::QuestionDialog(Panel* parent, const string& title, const string&
 	add(g1);
 	auto label = new Label("", question);
 	g1->add(label, 0, 0);
-	label->expand_y = true;
+	label->size_mode_y = SizeMode::Expand;
 	auto g2 = new Grid("");
 	g1->add(g2, 0, 1);
 	g2->add(new Button("yes", "Yes"), 0, 0);

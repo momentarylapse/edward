@@ -7,8 +7,8 @@ namespace xhui {
 
 	ListView::ListView(const string &_id, const string &t) : Control(_id) {
 		can_grab_focus = true;
-		expand_x = true;
-		expand_y = true;
+		size_mode_x = SizeMode::Expand;
+		size_mode_y = SizeMode::Expand;
 		headers = t.explode("\\");
 		column_widths.resize(headers.num);
 		column_offsets.resize(headers.num);

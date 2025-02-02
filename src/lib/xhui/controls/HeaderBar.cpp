@@ -9,8 +9,8 @@
 namespace xhui {
 
 HeaderBar::HeaderBar(Window *w, const string &_id) : Control(_id) {
-	expand_x = true;
-	expand_y = false;
+	size_mode_x = SizeMode::Expand;
+	size_mode_y = SizeMode::Shrink;
 	owner = w;
 
 	grid_left = new Grid(":header-grid-left:");
@@ -18,8 +18,8 @@ HeaderBar::HeaderBar(Window *w, const string &_id) : Control(_id) {
 	grid_right = new Grid(":header-grid-right:");
 	grid_right->owner = w;
 	button_close = new Button(":header-button-close:", "Close");
-	button_close->expand_x = false;
-	button_close->expand_y = true;
+	button_close->size_mode_x = SizeMode::Shrink;
+	button_close->size_mode_y = SizeMode::Expand;
 	button_close->primary = true;
 	grid_right->add(button_close, 0, 0);
 

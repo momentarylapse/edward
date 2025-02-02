@@ -21,6 +21,7 @@ public:
 	int nx = 0, ny = 0;
 	int spacing;
 	int margin = 0;
+	bool card = false;
 
 	void get_grid_min_sizes(Array<int> &w, Array<int> &h);
 	void get_grid_greed_factors(Array<float> &x, Array<float> &y);

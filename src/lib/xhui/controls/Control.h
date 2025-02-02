@@ -63,8 +63,14 @@ public:
 	// Panel: parent Panel
 	Panel *owner = nullptr;
 
+	enum class SizeMode {
+		Shrink,
+		Expand,
+		ForwardChild
+	};
+
 	int min_width_user, min_height_user;
-	bool expand_x, expand_y;
+	SizeMode size_mode_x, size_mode_y;
 	bool can_grab_focus = false;
 	bool ignore_hover = false;
 	bool visible = true;

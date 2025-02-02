@@ -9,8 +9,8 @@ Label::Label(const string &_id, const string &t) : Control(_id) {
 	text_w = text_h = 0;
 	state = State::DEFAULT;
 
-	expand_x = false;
-	expand_y = false;
+	size_mode_x = SizeMode::Shrink;
+	size_mode_y = SizeMode::Shrink;
 
 	Label::set_string(t);
 }

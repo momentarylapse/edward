@@ -10,8 +10,8 @@ namespace xhui {
 Overlay::Overlay(const string &_id) : Control(_id) {
 	ignore_hover = true;
 
-	expand_x = true;
-	expand_y = true;
+	size_mode_x = SizeMode::ForwardChild;
+	size_mode_y = SizeMode::ForwardChild;
 }
 
 void Overlay::add(Control *c) {
@@ -37,6 +37,7 @@ void Overlay::get_content_min_size(int &_w, int &_h) {
 }
 
 void Overlay::get_greed_factor(float &_x, float &_y) {
+	// SizeMode::Forward...
 	_x = 0;
 	_y = 0;
 	for (auto c: children) {

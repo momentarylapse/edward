@@ -25,8 +25,8 @@ Grid::Grid(const string &_id) : Control(_id) {
 	ignore_hover = true;
 	spacing = Theme::_default.spacing;
 
-	expand_x = true;
-	expand_y = true;
+	size_mode_x = SizeMode::ForwardChild;
+	size_mode_y = SizeMode::ForwardChild;
 }
 
 void Grid::add(Control *c, int x, int y) {
@@ -38,6 +38,13 @@ void Grid::add(Control *c, int x, int y) {
 }
 
 void Grid::_draw(Painter *p) {
+	if (card) {
+		p->set_roundness(Theme::_default.button_radius);
+		p->set_color(color::interpolate(Theme::_default.background, Theme::_default.background_button, 0.5f));
+		p->draw_rect(_area);
+		p->set_roundness(0);
+	}
+
 	for (auto &c: children)
 		c.control->_draw(p);
 }
@@ -65,9 +72,13 @@ void Grid::get_greed_factor(float &_x, float &_y) {
 	get_grid_greed_factors(xx, yy);
 	_x = 0;
 	_y = 0;
-	if (expand_x)
+	if (size_mode_x == SizeMode::Expand)
+		_x = 1;
+	else if (size_mode_x == SizeMode::ForwardChild)
 		_x = sum(xx);
-	if (expand_y)
+	if (size_mode_y == SizeMode::Expand)
+		_y = 1;
+	else if (size_mode_y == SizeMode::ForwardChild)
 		_y = sum(yy);
 }
 
@@ -89,8 +100,8 @@ void Grid::negotiate_area(const rect &available) {
 	get_grid_min_sizes(w, h);
 	int total_min_w, total_min_h;
 	get_content_min_size(total_min_w, total_min_h);
-	float diff_x = max(available.width() - total_min_w - margin * 2, 0.0f);
-	float diff_y = max(available.height() - total_min_h - margin * 2, 0.0f);
+	float diff_x = max(available.width() - total_min_w, 0.0f); //  - margin * 2 - spacing * (w.num + 1)
+	float diff_y = max(available.height() - total_min_h, 0.0f); //  - margin * 2 - spacing * (h.num + 1)
 
 	Array<float> gx, gy;
 	get_grid_greed_factors(gx, gy);
@@ -124,12 +135,19 @@ Array<Control*> Grid::get_children() const {
 }
 
 void Grid::set_option(const string& key, const string& value) {
-	if (key == "margin")
+	if (key == "margin") {
 		margin = value._float();
-	else if (key == "spacing")
+	} else if (key == "spacing") {
 		spacing = value._float();
-	else
+	} else if (key == "class") {
+		if (value == "card") {
+			card = true;
+			margin = 7;
+		}
+	} else {
 		Control::set_option(key, value);
+	}
+	request_redraw();
 }
 
 

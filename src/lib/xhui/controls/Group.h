@@ -14,6 +14,7 @@ public:
 	Group(const string& id, const string& title);
 	void negotiate_area(const rect& available) override;
 	void get_content_min_size(int& w, int& h) override;
+	void get_greed_factor(float& x, float& y) override;
 	void _draw(Painter* p) override;
 
 	string title;

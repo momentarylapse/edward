@@ -11,8 +11,8 @@ Edit::Edit(const string &_id, const string &t) : Control(_id) {
 	//state = State::DEFAULT;
 	can_grab_focus = true;
 
-	expand_x = true;
-	expand_y = false;
+	size_mode_x = SizeMode::Expand;
+	size_mode_y = SizeMode::Shrink;
 
 	Edit::set_string(t);
 }

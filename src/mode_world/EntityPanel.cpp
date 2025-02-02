@@ -12,26 +12,71 @@ EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-pane
 	mode = _mode;
 	from_source(R"foodelim(
 Dialog entity-panel ''
-	Grid ? ''
-		Group ? 'Position'
-			Grid ? ''
-				SpinButton pos-x '' range=::0.001
-				---|
-				SpinButton pos-y '' range=::0.001
-				---|
-				SpinButton pos-z '' range=::0.001
+	Grid ? '' expandx
+		Grid ? '' class=card
+			Group group-entity 'Entity'
+				Grid ? ''
+					Label ? 'Position'
+					SpinButton pos-x '' range=::0.001 expandx
+					---|
+					.
+					SpinButton pos-y '' range=::0.001
+					---|
+					.
+					SpinButton pos-z '' range=::0.001
+					---|
+					Label ? 'Orientation'
+					SpinButton ang-x '' range=::0.001
+					---|
+					.
+					SpinButton ang-y '' range=::0.001
+					---|
+					.
+					SpinButton ang-z '' range=::0.001
 		---|
-		Group ? 'Orientation'
-			Grid ? ''
-				SpinButton ang-x '' range=::0.001
-				---|
-				SpinButton ang-y '' range=::0.001
-				---|
-				SpinButton ang-z '' range=::0.001
+		Grid ? '' class=card
+			Group group-terrain 'Object'
+				Grid ? ''
+					Label ? 'Filename'
+					Button filename '' expandx
 		---|
-		Button a 'test'
+		Grid ? '' class=card
+			Group group-terrain 'Terrain'
+				Grid ? ''
+					Label ? 'Filename'
+					Button filename2 ''
+		---|
+		Grid ? '' class=card
+			Group group-camera 'Camera'
+				Grid ? ''
+					Label ? 'Min distance'
+					SpinButton z-min '' range=0::0.001
+					---|
+					Label ? 'Max distance'
+					SpinButton z-max '' range=0::0.001
+					---|
+					Label ? 'Field of view'
+					SpinButton fov '' range=0:180:0.1
+					---|
+					Label ? 'Exposure'
+					SpinButton z-min '' range=0:100:0.001
+		---|
+		Grid ? '' class=card
+			Group group-light 'Light'
+				Grid ? ''
+					Label ? 'Radius'
+					SpinButton radius '' range=0::0.001
+					---|
+					Label ? 'Theta'
+					SpinButton theta '' range=0:180:0.001
+					---|
+					Label ? 'Color'
+					Button color ''
+					---|
+					Label ? 'Power'
+					SpinButton power '' range=0::0.1
 )foodelim");
-	expand_x = false;
+	size_mode_y = SizeMode::Shrink;
 	min_width_user = 350;
 
 	mode->multi_view->out_selection_changed >> create_sink([this] {
