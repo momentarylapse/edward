@@ -58,6 +58,9 @@ public:
 
 	rect _area;
 	string id;
+
+	// Control: surrounding Panel (might be Window)
+	// Panel: parent Panel
 	Panel *owner = nullptr;
 
 	int min_width_user, min_height_user;

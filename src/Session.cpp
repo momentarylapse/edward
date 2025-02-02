@@ -63,6 +63,7 @@ base::future<Session*> emit_empty_session(Session* parent) {
 
 Session::Session() {
 	ctx = nullptr;
+	mode_none = nullptr;
 #if 0
 	mode_none = new ModeNone(this);
 	cur_mode = mode_none;

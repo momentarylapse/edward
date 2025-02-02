@@ -154,16 +154,17 @@ Dialog x x
 			Button undo 'undo' height=50 width=50 noexpandx
 			Button redo 'redo' height=50 width=50 noexpandx
 		---|
-		Overlay ? ''
-			DrawingArea area ''
-			Grid ? '' margin=25
-				Button mouse-action 'T' height=50 width=50 noexpandx
-				Label ? '' expandx
-				Button cam-rotate 'R' height=50 width=50 noexpandx
-				---|
-				Button aaa 'x' height=50 width=50 noexpandx
-				.
-				Button cam-move 'M' height=50 width=50 noexpandx
+		Grid main-grid ''
+			Overlay ? ''
+				DrawingArea area ''
+				Grid ? '' margin=25
+					Button mouse-action 'T' height=50 width=50 noexpandx
+					Label ? '' expandx
+					Button cam-rotate 'R' height=50 width=50 noexpandx
+					---|
+					Button aaa 'x' height=50 width=50 noexpandx
+					.
+					Button cam-move 'M' height=50 width=50 noexpandx
 )foodelim");
 
 	event("new", [this] {

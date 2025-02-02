@@ -24,7 +24,7 @@ Panel::Panel(const string &_id) : Control(_id) {
 	ignore_hover = true;
 	owner = this;
 
-	padding = Theme::_default.window_margin;
+	padding = 0;
 	expand_x = true;
 	expand_y = true;
 }
@@ -36,6 +36,8 @@ void Panel::_draw(Painter *p) {
 
 void Panel::negotiate_area(const rect &available) {
 	_area = available;
+	if (top_control)
+		top_control->negotiate_area(smaller_rect(_area, padding));
 
 	/*Array<int> w, h;
 	get_grid_min_sizes(w, h);
@@ -236,7 +238,7 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		msg_error("unknown hui control: " + type);
 }
 
-void Panel::_add_control(const string &ns, Resource &cmd, const string &parent_id) {
+void Panel::_add_control(const string &ns, const Resource &cmd, const string &parent_id) {
 	//msg_write(format("%d:  %d / %d",j,(cmd->type & 1023),(cmd->type >> 10)).c_str(),4);
 	set_target(parent_id);
 	add_control(cmd.type, get_language_r(ns, cmd),
@@ -258,9 +260,16 @@ void Panel::_add_control(const string &ns, Resource &cmd, const string &parent_i
 	if (tooltip.num > 0)
 		set_tooltip(cmd.id, tooltip);*/
 
-	for (Resource &c: cmd.children)
+	for (const Resource &c: cmd.children)
 		_add_control(ns, c, cmd.id);
 }
+
+void Panel::embed(const string& target, int x, int y, Panel* p) {
+	set_target(target);
+	p->window = window;
+	add(p, x, y);
+}
+
 
 void Panel::from_source(const string& source) {
 	from_resource(parse_resource(source));
@@ -268,7 +277,7 @@ void Panel::from_source(const string& source) {
 void Panel::from_resource(const Resource& res) {
 
 	bool res_is_window = ((res.type == "Dialog") or (res.type == "Window"));
-	bool panel_is_window = true;// TODO window and !parent;
+	bool panel_is_window = window and !owner;
 
 	// directly change window?
 	if (panel_is_window and res_is_window) {

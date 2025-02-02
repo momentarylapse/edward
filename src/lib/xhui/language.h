@@ -32,7 +32,7 @@ void _cdecl set_language(const string &language);
 extern bool _using_language_;
 
 string _cdecl get_language(const string &ns, const string &id);
-string _cdecl get_language_r(const string &ns, Resource &cmd);
+string _cdecl get_language_r(const string &ns, const Resource &cmd);
 string _cdecl get_language_t(const string &ns, const string &id, const string &tooltip);
 string _cdecl get_language_s(const string &str);
 #define L(ns, id)	xhui::get_language(ns, id)

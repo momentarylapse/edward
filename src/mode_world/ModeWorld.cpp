@@ -3,6 +3,7 @@
 //
 
 #include "ModeWorld.h"
+#include "EntityPanel.h"
 #include "action/ActionWorldMoveSelection.h"
 #include <Session.h>
 #include <lib/base/iter.h>
@@ -29,7 +30,6 @@
 #include <view/EdwardWindow.h>
 #include <view/ActionController.h>
 #include <view/DrawingHelper.h>
-
 
 
 ModeWorld::ModeWorld(Session* session) :
@@ -61,6 +61,9 @@ void ModeWorld::on_enter() {
 		{MultiViewType::WORLD_CAMERA, &data->cameras},
 		{MultiViewType::WORLD_LIGHT, &data->lights}
 	};
+
+	entity_panel = new EntityPanel();
+	session->win->embed("main-grid", 1, 0, entity_panel);
 }
 
 

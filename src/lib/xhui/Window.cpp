@@ -369,10 +369,9 @@ void Window::_on_draw() {
 	}
 
 	// contents
-	if (top_control) {
-		top_control->negotiate_area(smaller_rect(a, padding));
-		top_control->_draw(p);
-	}
+	Panel::negotiate_area(a);
+	Panel::_draw(p);
+
 	if (dialog) {
 		p->set_color(color(0.4f, 0, 0, 0));
 		p->draw_rect(a);

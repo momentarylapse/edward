@@ -12,6 +12,7 @@
 
 class Light;
 class MultiViewWindow;
+class EntityPanel;
 
 class ModeWorld : public Mode {
 public:
@@ -40,6 +41,7 @@ public:
 	DataWorld* data;
 	DataWorld temp;
 	Array<Light*> lights;
+	EntityPanel* entity_panel = nullptr;
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 

@@ -47,12 +47,13 @@ public:
 	};
 	Array<EventHandler> event_handlers;
 
-	bool handle_event(const string &id, const string &msg, bool is_default);
-	bool handle_event_p(const string &id, const string &msg, Painter *p);
+	bool handle_event(const string& id, const string& msg, bool is_default);
+	bool handle_event_p(const string& id, const string& msg, Painter* p);
 
 
-	void add_control(const string &type, const string &title, int x, int y, const string &id);
-	void _add_control(const string &ns, Resource &cmd, const string &parent_id);
+	void add_control(const string& type, const string& title, int x, int y, const string& id);
+	void _add_control(const string& ns, const Resource& cmd, const string& parent_id);
+	void embed(const string& target, int x, int y, Panel* p);
 
 	void from_source(const string& source);
 	void from_resource(const Resource& resource);
