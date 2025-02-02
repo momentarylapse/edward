@@ -25,6 +25,7 @@ public:
 
 	void set_string(const string& id, const string& text);
 	void enable(const string& id, bool enabled);
+	void set_options(const string& id, const string& options);
 
 
 	void event(const string& id, Callback f);
@@ -35,6 +36,7 @@ public:
 	Control* top_control = nullptr;
 	Control* target_control = nullptr;
 	Array<Control*> controls;
+	float padding;
 
 	class EventHandler {
 	public:
@@ -52,6 +54,8 @@ public:
 	void add_control(const string &type, const string &title, int x, int y, const string &id);
 	void _add_control(const string &ns, Resource &cmd, const string &parent_id);
 
+	void from_source(const string& source);
+	void from_resource(const Resource& resource);
 };
 
 }

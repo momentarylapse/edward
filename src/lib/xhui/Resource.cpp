@@ -20,18 +20,18 @@ Resource::Resource() {
 	x = y = 0;
 }
 
-bool Resource::has(const string &key) {
+bool Resource::has(const string &key) const {
 	for (string &o: options)
 		if (o == key)
 			return true;
 	return false;
 }
 
-bool Resource::enabled() {
+bool Resource::enabled() const {
 	return !has("disabled");
 }
 
-string Resource::value(const string &key, const string &fallback) {
+string Resource::value(const string &key, const string &fallback) const {
 	int n = key.num + 1;
 	for (string &o: options)
 		if (o.head(n) == key+"=")
@@ -39,7 +39,7 @@ string Resource::value(const string &key, const string &fallback) {
 	return fallback;
 }
 
-string Resource::image() {
+string Resource::image() const {
 	return value("image");
 }
 
@@ -370,14 +370,14 @@ bool res_load_rec(Array<string> &lines, int &cur_line, Resource &c, bool literal
 	return r;
 }
 
-void Resource::show(int indent) {
+void Resource::show(int indent) const {
 	string nn = string("    ").repeat(indent);
 	msg_write(nn + format("%s - %s - %d %d - %s", type, id, x, y, str(options)));
 	for (Resource &child: children)
 		child.show(indent + 1);
 }
 
-string Resource::to_string(int indent) {
+string Resource::to_string(int indent) const {
 	string ind;
 	for (int i=0;i<indent;i++)
 		ind += "\t";

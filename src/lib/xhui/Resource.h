@@ -38,12 +38,12 @@ struct Resource {
 	Array<Resource> children;
 	Resource();
 	Resource* get_node(const string& id) const;
-	bool enabled();
-	string image();
-	bool has(const string& key);
-	string value(const string& key, const string& fallback = "");
-	void show(int indent = 0);
-	string to_string(int indent = 0);
+	bool enabled() const;
+	string image() const;
+	bool has(const string& key) const;
+	string value(const string& key, const string& fallback = "") const;
+	void show(int indent = 0) const;
+	string to_string(int indent = 0) const;
 };
 
 Resource parse_resource(const string& buffer, bool literal = false);

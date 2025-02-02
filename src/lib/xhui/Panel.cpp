@@ -2,6 +2,7 @@
 #include "Painter.h"
 #include "language.h"
 #include "Resource.h"
+#include "Theme.h"
 
 #include "controls/Button.h"
 #include "controls/CheckBox.h"
@@ -23,6 +24,7 @@ Panel::Panel(const string &_id) : Control(_id) {
 	ignore_hover = true;
 	owner = this;
 
+	padding = Theme::_default.window_margin;
 	expand_x = true;
 	expand_y = true;
 }
@@ -148,6 +150,19 @@ void Panel::enable(const string& id, bool enabled) {
 			c->enable(enabled);
 }
 
+void Panel::set_options(const string& id, const string& options) {
+	for (auto& c: controls)
+		if (c->id == id)
+			for (const auto& o: options.explode(",")) {
+				auto xx = o.explode("=");
+				if (xx.num >= 2)
+					c->set_option(xx[0], xx[1]);
+				else
+					c->set_option(xx[0], "");
+			}
+}
+
+
 Array<Control*> Panel::get_children() const {
 	if (top_control)
 		return {top_control};
@@ -155,30 +170,36 @@ Array<Control*> Panel::get_children() const {
 }
 
 
-void Panel::add_control(const string &type, const string &title, int x, int y, const string &id) {
+void Panel::add_control(const string &type, const string &_title, int x, int y, const string &id) {
 	//printf("HuiPanelAddControl %s  %s  %d  %d  %s\n", type.c_str(), title.c_str(), x, y, id.c_str());
+	string title = _title;
+	if (title.head(1) == "!") {
+		auto x = title.explode("\\");
+		if (x.num >= 2)
+			title = x[1];
+	}
 	if (type == "Button")
-		add(new Button(title, id), x, y);
+		add(new Button(id, title), x, y);
 /*	else if (type == "ColorButton")
 		add_color_button(title, x, y, id);
 	else if (type == "DefButton")
 		add_def_button(title, x, y, id);*/
 	else if ((type == "Label") or (type == "Text"))
-		add(new Label(title, id), x, y);
+		add(new Label(id, title), x, y);
 	else if (type == "Edit")
-		add(new Edit(title, id), x, y);
+		add(new Edit(id, title), x, y);
 	else if (type == "MultilineEdit")
-		add(new MultilineEdit(title, id), x, y);
+		add(new MultilineEdit(id, title), x, y);
 //	else if (type == "Group")
 //		add_group(title, x, y, id);
 	else if (type == "CheckBox")
-		add(new CheckBox(title, id), x, y);
+		add(new CheckBox(id, title), x, y);
 //	else if (type == "ComboBox")
 //		add_combo_box(title, x, y, id);
 //	else if (type == "TabControl")
 //		add_tab_control(title, x, y, id);
 	else if (type == "ListView")
-		add(new ListView(title, id), x, y);
+		add(new ListView(id, title), x, y);
 //	else if (type == "TreeView")
 //		add_tree_view(title, x, y, id);
 //	else if (type == "IconView")
@@ -222,11 +243,11 @@ void Panel::_add_control(const string &ns, Resource &cmd, const string &parent_i
 				cmd.x, cmd.y,
 				cmd.id);
 
-	/*for (string &o: cmd.options)
+	for (const string &o: cmd.options)
 		set_options(cmd.id, o);
 
 	enable(cmd.id, cmd.enabled());
-	if (cmd.has("hidden"))
+	/*if (cmd.has("hidden"))
 		hide_control(cmd.id, true);
 
 	if (cmd.image().num > 0)
@@ -240,6 +261,61 @@ void Panel::_add_control(const string &ns, Resource &cmd, const string &parent_i
 	for (Resource &c: cmd.children)
 		_add_control(ns, c, cmd.id);
 }
+
+void Panel::from_source(const string& source) {
+	from_resource(parse_resource(source));
+}
+void Panel::from_resource(const Resource& res) {
+
+	bool res_is_window = ((res.type == "Dialog") or (res.type == "Window"));
+	bool panel_is_window = true;// TODO window and !parent;
+
+	// directly change window?
+	if (panel_is_window and res_is_window) {
+	//	for (auto &o: res.options)
+	//		window->__set_options(o);
+
+		// title
+		window->set_title(get_language(res.id, res.id));
+
+		// size
+		int width = res.value("width", "0")._int();
+		int height = res.value("height", "0")._int();
+//		if (width + height > 0)
+//			window->set_size(width, height);
+
+		// menu/toolbar?
+		string toolbar = res.value("toolbar");
+		string menu = res.value("menu");
+//		if (menu != "")
+//			window->set_menu(create_resource_menu(menu, this));
+//		if (toolbar != "")
+//			window->get_toolbar(TOOLBAR_TOP)->set_by_id(toolbar);
+
+/*		for (const auto &c: res.children)
+			if (c.type == "HeaderBar") {
+				window->_add_headerbar();
+				for (auto &cc: c.children)
+					_add_control(id, cc, ":header:");
+			}*/
+	}
+
+//	set_id(res.id);
+
+	int bw = res.value("borderwidth", "-1")._int();
+	if (bw >= 0)
+		padding = bw;
+
+
+	// controls
+	if (res_is_window) {
+		if (res.children.num > 0)
+			_add_control(id, res.children[0], "");
+	} else {
+//		embed_resource(res, "", 0, 0);
+	}
+}
+
 
 
 }

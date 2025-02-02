@@ -123,5 +123,15 @@ Array<Control*> Grid::get_children() const {
 	return r;
 }
 
+void Grid::set_option(const string& key, const string& value) {
+	if (key == "margin")
+		margin = value._float();
+	else if (key == "spacing")
+		spacing = value._float();
+	else
+		Control::set_option(key, value);
+}
+
+
 
 }

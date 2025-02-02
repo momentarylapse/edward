@@ -43,6 +43,9 @@ public:
 	void get_position(int& x, int& y);
 	void set_position(int x, int y);
 
+	void maximize(bool maximized);
+	bool is_maximized() const;
+
 	void request_destroy();
 
 	bool button(int index) const;
@@ -89,7 +92,6 @@ protected:
 
 	Control* hover_control = nullptr;
 	Control* focus_control = nullptr;
-	float padding;
 	Flags flags;
 	string title;
 

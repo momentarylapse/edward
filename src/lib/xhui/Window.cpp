@@ -232,6 +232,19 @@ void Window::set_position(int x, int y) {
 	glfwSetWindowPos(window, x, y);
 }
 
+void Window::maximize(bool maximized) {
+	if (maximized)
+		glfwMaximizeWindow(window);
+	else
+		glfwRestoreWindow(window);
+}
+
+bool Window::is_maximized() const {
+	return glfwGetWindowAttrib(window, GLFW_MAXIMIZED);
+}
+
+
+
 // TODO: widget offset?
 void Window::_on_left_button_down(const vec2& m) {
 	state.lbut = true;

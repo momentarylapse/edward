@@ -4,12 +4,6 @@
 
 #include "EdwardWindow.h"
 #include "lib/xhui/xhui.h"
-#include "lib/xhui/controls/Button.h"
-#include "lib/xhui/controls/Label.h"
-#include "lib/xhui/controls/Edit.h"
-#include "lib/xhui/controls/Grid.h"
-#include "lib/xhui/controls/DrawingArea.h"
-#include "lib/xhui/controls/Overlay.h"
 #include "lib/xhui/Painter.h"
 #include <lib/xhui/ContextVulkan.h>
 #include <lib/xhui/Dialog.h>
@@ -120,28 +114,6 @@ public:
 
 
 
-class ToolButton : public xhui::Button {
-public:
-	explicit ToolButton(const string& id, const string& title) : Button(id, title) {
-		min_height_user = min_width_user;
-		expand_x = false;
-		expand_y = false;
-	}
-};
-
-class TouchButton : public xhui::Button {
-public:
-	explicit TouchButton(const string& id, const string& title) : Button(id, title) {
-		min_height_user = 50;
-		min_width_user = 50;
-		expand_x = false;
-		expand_y = false;
-	}
-	/*void _draw(xhui::Painter* p) override {
-	}*/
-};
-
-
 EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName, 1024, 768),
 	in_redraw(this, [this] {
 		request_redraw();
@@ -168,37 +140,31 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 		update_menu();
 	})
 {
+	maximize(true);
 	session = _session;
 
-	auto g = new xhui::Grid("grid");
-	add(g);
-	auto g2 = new xhui::Grid("grid2");
-	g->add(g2, 0, 0);
-	g2->add(new xhui::Label("label1", "label"), 0, 0);
-	g2->add(new ToolButton("new", "new"), 1, 0);
-	g2->add(new ToolButton("open", "open"), 2, 0);
-	g2->add(new ToolButton("save", "save"), 3, 0);
-	g2->add(new ToolButton("undo", "undo"), 4, 0);
-	g2->add(new ToolButton("redo", "redo"), 5, 0);
-	auto o = new xhui::Overlay("overlay");
-	g->add(o, 0, 1);
-	o->add(new xhui::DrawingArea("area"));
-	/*auto g3 = new xhui::Grid("grid3");
-	g->add(g3, 0, 2);
-	g3->add(new xhui::Button("button3", "a"), 0, 0);
-	g3->add(new xhui::Button("button4", "b"), 1, 0);*/
-
-
-	auto g4 = new xhui::Grid("grid4");
-	o->add(g4);
-	g4->margin = 25;
-	g4->add(new TouchButton("mouse-action", "T"), 0, 0);
-	g4->add(new TouchButton("aaa", "x"), 0, 1);
-	auto spacer = new xhui::Label("", "");
-	spacer->expand_x = true;
-	g4->add(spacer, 1, 0);
-	g4->add(new TouchButton("cam-rotate", "R"), 2, 0);
-	g4->add(new TouchButton("cam-move", "M"), 2, 1);
+	from_source(R"foodelim(
+Dialog x x
+	Grid grid ''
+		Grid grid2 ''
+			Label ? label
+			Button new 'new' height=50 width=50 noexpandx
+			Button open 'open' height=50 width=50 noexpandx
+			Button save 'save' height=50 width=50 noexpandx
+			Button undo 'undo' height=50 width=50 noexpandx
+			Button redo 'redo' height=50 width=50 noexpandx
+		---|
+		Overlay ? ''
+			DrawingArea area ''
+			Grid ? '' margin=25
+				Button mouse-action 'T' height=50 width=50 noexpandx
+				Label ? '' expandx
+				Button cam-rotate 'R' height=50 width=50 noexpandx
+				---|
+				Button aaa 'x' height=50 width=50 noexpandx
+				.
+				Button cam-move 'M' height=50 width=50 noexpandx
+)foodelim");
 
 	event("new", [this] {
 		session->universal_new(FD_WORLD);

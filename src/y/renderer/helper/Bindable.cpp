@@ -72,7 +72,7 @@ void apply_shader_data(Shader *s, const Any &shader_data) {
 			} else if (val.is_bool()) {
 				s->set_int(name, (int)val.as_bool());
 			} else if (val.is_list()) {
-				float ff[4];
+				float ff[128];
 				for (int i=0; i<val.as_list().num; i++)
 					ff[i] = val.as_list()[i].as_float();
 				s->set_floats(name, ff, val.as_list().num);
