@@ -19,9 +19,7 @@
 
 
 ActionWorldPaste::ActionWorldPaste(const DataWorld& temp) :
-	entities(temp.entities),
-	objects(temp.objects),
-	terrains(temp.terrains)
+	entities(temp.entities)
 {
 }
 
@@ -31,12 +29,6 @@ void *ActionWorldPaste::compose(Data *d) {
 
 	for (const auto &o: entities)
 		addSubAction(new ActionWorldAddEntity(o), w);
-
-	for (const auto &o: objects)
-		addSubAction(new ActionWorldAddObject(o), w);
-
-	for (const auto &t: terrains)
-		addSubAction(new ActionWorldAddTerrain(t.pos, t.filename), w);
 
 	return nullptr;
 }

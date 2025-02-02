@@ -23,7 +23,7 @@ public:
 	vector Normal;
 };*/
 
-struct WorldTerrain: multiview::SingleData {
+struct WorldTerrain {
 
 	Path filename;
 	//Array<WorldTerrainVertex> Vertex;
@@ -31,8 +31,6 @@ struct WorldTerrain: multiview::SingleData {
 	int ShowTexture;
 	bool Changed;
 	Terrain *terrain;
-
-	Array<ScriptInstanceData> components;
 
 	bool load(Session *s, const Path &filename, bool deep = true);
 	bool save(const Path &filename);

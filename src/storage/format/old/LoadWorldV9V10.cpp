@@ -40,10 +40,11 @@ void FormatWorld::_load_old(LegacyFile& lf, DataWorld *data, bool deep) {
 		f->read_comment();
 		int n = f->read_int();
 		for (int i=0;i<n;i++){
-			WorldTerrain t;
-			t.filename = f->read_str();
+			WorldEntity t;
+			t.basic_type = MultiViewType::WORLD_TERRAIN;
+			t.terrain.filename = f->read_str();
 			f->read_vector(&t.pos);
-			data->terrains.add(t);
+			data->entities.add(t);
 		}
 		// Gravitation
 		f->read_comment();
@@ -84,20 +85,21 @@ void FormatWorld::_load_old(LegacyFile& lf, DataWorld *data, bool deep) {
 		f->read_comment();
 		n = f->read_int();
 		for (int i=0;i<n;i++){
-			WorldObject o;
-			o.filename = f->read_str();
-			o.name = f->read_str();
+			WorldEntity o;
+			o.basic_type = MultiViewType::WORLD_OBJECT;
+			o.object.filename = f->read_str();
+			o.object.name = f->read_str();
 			o.pos.x = f->read_float();
 			o.pos.y = f->read_float();
 			o.pos.z = f->read_float();
 			o.ang.x = f->read_float();
 			o.ang.y = f->read_float();
 			o.ang.z = f->read_float();
-			o.object = NULL;
+			o.object.object = nullptr;
 			o.view_stage = 0;
 			o.is_selected = false;
 			o.is_special = false;
-			data->objects.add(o);
+			data->entities.add(o);
 		}
 		// Scripts
 		f->read_comment();

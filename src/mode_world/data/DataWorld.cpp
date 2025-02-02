@@ -73,13 +73,11 @@ void DataWorld::reset() {
 	filename = "";
 
 	// delete old data...
-	for (int i=0;i<objects.num;i++)
-		if (objects[i].object)
-			delete(objects[i].object);
+	for (int i=0;i<entities.num;i++)
+		if (entities[i].object.object)
+			delete entities[i].object.object;
 
 	entities.clear();
-	objects.clear();
-	terrains.clear();
 	links.clear();
 
 	EgoIndex = -1;
@@ -125,16 +123,18 @@ void DataWorld::get_bounding_box(vec3 &min, vec3 &max) {
 		found_any = true; //|=(_min!=_max);
 	};
 
-	for (WorldObject &o: objects)
-		if (o.object) {
-			vec3 min2 = o.pos - vec3(1,1,1) * o.object->prop.radius;
-			vec3 max2 = o.pos + vec3(1,1,1) * o.object->prop.radius;
-			merge(min2, max2);
-		}
-	for (WorldTerrain &t: terrains)
-		if (t.terrain) {
-			auto box = t.bounding_box();
-			merge(box.min, box.max);
+	for (const auto &e: entities)
+		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+			if (e.object.object) {
+				vec3 min2 = e.pos - vec3(1,1,1) * e.object.object->prop.radius;
+				vec3 max2 = e.pos + vec3(1,1,1) * e.object.object->prop.radius;
+				merge(min2, max2);
+			}
+		} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
+			if (e.terrain.terrain) {
+				auto box = e.terrain.bounding_box();
+				merge(box.min, box.max);
+			}
 		}
 	if (!found_any) {
 		min = vec3(-100,-100,-100);
@@ -151,17 +151,17 @@ void DataWorld::get_bounding_box(vec3 &min, vec3 &max) {
 		return n;                             \
 	}
 
-IMPLEMENT_COUNT_SELECTED(get_selected_objects, objects)
-IMPLEMENT_COUNT_SELECTED(get_selected_terrains, terrains)
 
 
 void DataWorld::update_data() {
-	foreachi(auto &o, objects, i){
-		o.update_data();
-		o.is_special = (i == EgoIndex);
+	for (auto&& [i, e]: enumerate(entities)) {
+		e.is_special = (i == EgoIndex);
+
+		if (e.basic_type == MultiViewType::WORLD_OBJECT)
+			e.object.update_data();
+		if (e.basic_type == MultiViewType::WORLD_TERRAIN)
+			e.terrain.update_data();
 	}
-	for (auto &t: terrains)
-		t.update_data();
 }
 
 #if 0
@@ -204,31 +204,19 @@ void DataWorld::edit_camera(int index, const WorldCamera& c) {
 void DataWorld::clear_selection() {
 	for (auto& o: entities)
 		o.is_selected = false;
-	for (auto& o: objects)
-		o.is_selected = false;
-	for (auto& t: terrains)
-		t.is_selected = false;
 }
 
 
 void DataWorld::copy(DataWorld& temp) const {
 	temp.entities.clear();
-	temp.objects.clear();
-	temp.terrains.clear();
 
 	for (auto &o: entities)
 		if (o.is_selected)
 			temp.entities.add(o);
-	for (auto &o: objects)
-		if (o.is_selected)
-			temp.objects.add(o);
-	for (auto &t: terrains)
-		if (t.is_selected)
-			temp.terrains.add(t);
 }
 
 bool DataWorld::is_empty() const {
-	return entities.num + objects.num + terrains.num == 0;
+	return entities.num == 0;
 }
 
 void DataWorld::paste(const DataWorld& temp) {
@@ -250,12 +238,6 @@ Data::Selection DataWorld::get_selection() const {
 	for (const auto& [i, o]: enumerate(entities))
 		if (o.is_selected)
 			s[MultiViewType::WORLD_ENTITY].add(i);
-	for (const auto& [i, o]: enumerate(objects))
-		if (o.is_selected)
-			s[MultiViewType::WORLD_OBJECT].add(i);
-	for (const auto& [i, t]: enumerate(terrains))
-		if (t.is_selected)
-			s[MultiViewType::WORLD_TERRAIN].add(i);
 	for (const auto& [i, o]: enumerate(links))
 		if (o.is_selected)
 			s[MultiViewType::WORLD_LINK].add(i);

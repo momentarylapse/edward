@@ -15,6 +15,7 @@
 //#include "../../EdwardWindow.h"
 #include "../../Session.h"
 //#include "../../stuff/Progress.h"
+#include <lib/base/iter.h>
 #include <y/world/Model.h>
 #include <y/world/World.h>
 #include <y/y/EngineData.h>
@@ -98,19 +99,17 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 
 	if (deep) {
 		try {
-		for (int i=0;i<data->terrains.num;i++) {
-//			session->progress->set(_("Terrains"), (float)i / (float)data->terrains.num / 2.0f);
-			data->terrains[i].load(session, engine.map_dir | data->terrains[i].filename.with(".map"), true);
-		}
-		for (int i=0;i<data->objects.num;i++) {
-			//session->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);
-			data->objects[i].object = data->session->resource_manager->load_model(data->objects[i].filename);
-			if (auto sk = data->objects[i].object->_template->skeleton) {
-				for (int i=0; i<sk->bones.num; i++)
-					if (sk->filename[i]){}
+			for (auto& e: data->entities) {
+				if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
+//					session->progress->set(_("Terrains"), (float)i / (float)data->terrains.num / 2.0f);
+					e.terrain.load(session, engine.map_dir | e.terrain.filename.with(".map"), true);
+				} else if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+					//session->progress->set(format(_("Object %d / %d"), i, data->Objects.num), (float)i / (float)data->Objects.num / 2.0f + 0.5f);
+					e.object.object = data->session->resource_manager->load_model(e.object.filename);
+					if (auto sk = e.object.object->_template->skeleton)
+						for (int i=0; i<sk->bones.num; i++)
+							if (sk->filename[i]){}
 			}
-//			if (Objects[i].object)
-//				GodRegisterModel(Objects[i].object);
 		}
 		} catch (Exception &e) {
 			msg_error("ABORT: " + e.message());
@@ -216,8 +215,9 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 					}
 				data->entities.add(l);
 			} else if (e.tag == "terrain") {
-				WorldTerrain t;
-				t.filename = e.value("file");
+				WorldEntity t;
+				t.basic_type = MultiViewType::WORLD_TERRAIN;
+				t.terrain.filename = e.value("file");
 				t.pos = s2v(e.value("pos", "0 0 0"));
 				for (auto &ee: e.elements)
 					if (ee.tag == "component") {
@@ -227,15 +227,16 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 						sd.variables = str2vars(ee.value("var", ""));
 						t.components.add(sd);
 					}
-				data->terrains.add(t);
+				data->entities.add(t);
 			} else if (e.tag == "object") {
-				WorldObject o;
-				o.object = nullptr;
-				o.filename = e.value("file");
-				o.name = e.value("name");
+				WorldEntity o;
+				o.basic_type = MultiViewType::WORLD_OBJECT;
+				o.object.object = nullptr;
+				o.object.filename = e.value("file");
+				o.object.name = e.value("name");
 				//o.script = e.value("script");
 				o.pos = s2v(e.value("pos", "0 0 0"));
-				o.ang = s2v(e.value("ang", "0 0 0"));
+				o.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
 				for (auto &ee: e.elements)
 					if (ee.tag == "component") {
 						ScriptInstanceData sd;
@@ -245,8 +246,8 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 						o.components.add(sd);
 					}
 				if (e.value("role") == "ego")
-					data->EgoIndex = data->objects.num;
-				data->objects.add(o);
+					data->EgoIndex = data->entities.num;
+				data->entities.add(o);
 			} else if (e.tag == "link") {
 				WorldLink l;
 				l.type = LinkType::SOCKET;
@@ -350,42 +351,39 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 	};
 
 	auto cont = xml::Element("3d");
-	for (auto &c: data->entities)
-		if (c.basic_type == MultiViewType::WORLD_CAMERA) {
-			auto e = xml::Element("camera")
-			.witha("pos", v2s(c.pos))
-			.witha("ang", v2s(c.ang.get_angles()))
-			.witha("fov", f2s(c.camera.fov, 3))
-			.witha("minDepth", f2s(c.camera.min_depth, 3))
-			.witha("maxDepth", f2s(c.camera.max_depth, 3))
-			.witha("exposure", f2s(c.camera.exposure, 3))
-			.witha("bloomFactor", f2s(c.camera.bloom_factor, 3));
-			add_components(e, c.components);
-			cont.add(e);
+
+	for (const auto& [i,e]: enumerate(data->entities)) {
+		xml::Element el;
+		if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
+			el = xml::Element("terrain")
+			.witha("file", str(e.terrain.filename))
+			.witha("pos", v2s(e.pos));
+		} else if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+			el = xml::Element("object")
+			.witha("file", str(e.object.filename))
+			.witha("name", e.object.name)
+			.witha("pos", v2s(e.pos))
+			.witha("ang", v2s(e.ang.get_angles()));
+			if (i == data->EgoIndex)
+				el.add_attribute("role", "ego");
+		} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {
+			el = encode_light(e);
+		} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
+			el = xml::Element("camera")
+			.witha("pos", v2s(e.pos))
+			.witha("ang", v2s(e.ang.get_angles()))
+			.witha("fov", f2s(e.camera.fov, 3))
+			.witha("minDepth", f2s(e.camera.min_depth, 3))
+			.witha("maxDepth", f2s(e.camera.max_depth, 3))
+			.witha("exposure", f2s(e.camera.exposure, 3))
+			.witha("bloomFactor", f2s(e.camera.bloom_factor, 3));
+		} else {
+			el = xml::Element("entity")
+			.witha("pos", v2s(e.pos))
+			.witha("ang", v2s(e.ang.get_angles()));
 		}
-
-	for (auto &l: data->entities)
-		if (l.basic_type == MultiViewType::WORLD_LIGHT)
-			cont.add(encode_light(l));
-
-	for (auto &t: data->terrains) {
-		auto e = xml::Element("terrain")
-		.witha("file", t.filename.str())
-		.witha("pos", v2s(t.pos));
-		add_components(e, t.components);
-		cont.add(e);
-	}
-
-	foreachi (auto &o, data->objects, i) {
-		auto e = xml::Element("object")
-		.witha("file", o.filename.str())
-		.witha("name", o.name)
-		.witha("pos", v2s(o.pos))
-		.witha("ang", v2s(o.ang));
-		add_components(e, o.components);
-		if (i == data->EgoIndex)
-			e.add_attribute("role", "ego");
-		cont.add(e);
+		add_components(el, e.components);
+		cont.add(el);
 	}
 
 	for (auto &l: data->links) {

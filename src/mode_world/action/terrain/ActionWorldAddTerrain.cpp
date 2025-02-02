@@ -28,10 +28,10 @@ ActionWorldAddTerrain::ActionWorldAddTerrain(const vec3 &_pos, const vec3 &_size
 
 void ActionWorldAddTerrain::undo(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	assert(w->terrains.num > 0);
+	/*assert(w->terrains.num > 0);
 
 	delete(w->terrains.back().terrain);
-	w->terrains.pop();
+	w->terrains.pop();*/
 }
 
 
@@ -40,7 +40,7 @@ void *ActionWorldAddTerrain::execute(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	WorldTerrain t;
 
-	t.Changed = true;
+	/*t.Changed = true;
 	t.ShowTexture = -1;
 	t.is_selected = true;
 	t.is_special = false;
@@ -80,7 +80,8 @@ void *ActionWorldAddTerrain::execute(Data *d) {
 	}
 
 	w->terrains.add(t);
-	return &w->terrains.back();
+	return &w->terrains.back();*/
+	return nullptr;
 }
 
 

@@ -12,8 +12,6 @@
 
 class DataWorld;
 struct WorldEntity;
-class WorldObject;
-class WorldTerrain;
 
 class ActionWorldPaste : public ActionGroup {
 public:
@@ -23,8 +21,6 @@ public:
 	void *compose(Data *d) override;
 private:
 	const Array<WorldEntity>& entities;
-	const Array<WorldObject>& objects;
-	const Array<WorldTerrain>& terrains;
 };
 
 #endif /* ACTIONWORLDPASTE_H_ */

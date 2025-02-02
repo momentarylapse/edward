@@ -16,18 +16,19 @@ ActionWorldAddObject::ActionWorldAddObject(const WorldObject &o) {
 
 void ActionWorldAddObject::undo(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	assert(w->objects.num > 0);
+	//assert(w->objects.num > 0);
 
-	w->objects.pop();
+	//w->objects.pop();
 }
 
 
 
 void *ActionWorldAddObject::execute(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	w->objects.add(object);
+	//w->objects.add(object);
 
-	return &w->objects.back();
+	//return &w->objects.back();
+	return nullptr;
 }
 
 

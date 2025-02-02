@@ -11,6 +11,8 @@
 #include <Session.h>
 #include "WorldCamera.h"
 #include "WorldLight.h"
+#include "WorldObject.h"
+#include "WorldTerrain.h"
 #include "../../data/Data.h"
 #include "../../multiview/SingleData.h"
 #include <y/world/Material.h>
@@ -58,6 +60,8 @@ struct WorldEntity : multiview::SingleData {
 	MultiViewType basic_type = MultiViewType::WORLD_ENTITY;
 	WorldLight light;
 	WorldCamera camera;
+	WorldObject object;
+	WorldTerrain terrain;
 
 	//Entity* entity = nullptr;
 	Array<ScriptInstanceData> components;
@@ -74,22 +78,12 @@ public:
 
 
 	void get_bounding_box(vec3 &min, vec3 &max);
-	int get_selected_objects();
-	int get_selected_terrains();
-	int get_selected_cameras();
-	int get_selected_lights();
 
 	void update_data();
 
 	void clear_selection();
 
 	Array<WorldEntity> entities;
-
-	// terrains
-	Array<WorldTerrain> terrains;
-
-	// objects
-	Array<WorldObject> objects;
 	int EgoIndex;
 
 	Array<WorldLink> links;

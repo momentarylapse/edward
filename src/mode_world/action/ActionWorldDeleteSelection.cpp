@@ -17,18 +17,6 @@ ActionWorldDeleteSelection::ActionWorldDeleteSelection(DataWorld* w, const Data:
 				entities.add(o);
 				entity_indices.add(i);
 			}
-	if (selection.contains(MultiViewType::WORLD_OBJECT))
-		for (const auto& [i, o]: enumerate(w->objects))
-			if (selection[MultiViewType::WORLD_OBJECT].contains(i)) {
-				objects.add(o);
-				object_indices.add(i);
-			}
-	if (selection.contains(MultiViewType::WORLD_TERRAIN))
-		for (const auto& [i, o]: enumerate(w->terrains))
-			if (selection[MultiViewType::WORLD_TERRAIN].contains(i)) {
-				terrains.add(o);
-				terrain_indices.add(i);
-			}
 	if (selection.contains(MultiViewType::WORLD_LINK))
 		for (const auto& [i, o]: enumerate(w->links))
 			if (selection[MultiViewType::WORLD_LINK].contains(i)) {
@@ -41,10 +29,6 @@ void *ActionWorldDeleteSelection::execute(Data *d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	for (int i: base::reverse(entity_indices))
 		w->entities.erase(i);
-	for (int i: base::reverse(object_indices))
-		w->objects.erase(i);
-	for (int i: base::reverse(terrain_indices))
-		w->terrains.erase(i);
 	for (int i: base::reverse(link_indices))
 		w->links.erase(i);
 	return nullptr;
@@ -54,10 +38,6 @@ void ActionWorldDeleteSelection::undo(Data *d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	for (const auto& [ii, i]: enumerate(entity_indices))
 		w->entities.insert(entities[ii], i);
-	for (const auto& [ii, i]: enumerate(object_indices))
-		w->objects.insert(objects[ii], i);
-	for (const auto& [ii, i]: enumerate(terrain_indices))
-		w->terrains.insert(terrains[ii], i);
 	for (const auto& [ii, i]: enumerate(link_indices))
 		w->links.insert(links[ii], i);
 }

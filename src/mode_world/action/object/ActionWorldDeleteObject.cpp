@@ -15,11 +15,11 @@ ActionWorldDeleteObject::ActionWorldDeleteObject(int _index) {
 
 void* ActionWorldDeleteObject::execute(Data* d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	assert(index >= 0);
+	/*assert(index >= 0);
 	assert(index < w->objects.num);
 
 	object = w->objects[index];
-	w->objects.erase(index);
+	w->objects.erase(index);*/
 
 	return NULL;
 }
@@ -28,5 +28,5 @@ void ActionWorldDeleteObject::undo(Data* d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 
 	object.is_selected = false;
-	w->objects.insert(object, index);
+	//w->objects.insert(object, index);
 }

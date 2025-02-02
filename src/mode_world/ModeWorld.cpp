@@ -56,8 +56,6 @@ void ModeWorld::on_enter() {
 		return new ActionWorldMoveSelection(data, data->get_selection());
 	};
 	multi_view->data_sets = {
-		{MultiViewType::WORLD_OBJECT, &data->objects},
-		{MultiViewType::WORLD_TERRAIN, &data->terrains},
 		{MultiViewType::WORLD_ENTITY, &data->entities}
 	};
 
@@ -125,28 +123,29 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& m) 
 	base::optional<Hover> h;
 
 	float zmin = multi_view->view_port.radius * 2;
-	for (const auto& [i, o]: enumerate(data->objects)) {
-		float z;
-		vec3 tp;
-		float dist = object_hover_distance(o, win, m, tp, z);
-		if (dist >= 0 and z < zmin) {
-			zmin = z;
-			h = {MultiViewType::WORLD_OBJECT, i, tp};
+	for (const auto& [i, e]: enumerate(data->entities))
+		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+			float z;
+			vec3 tp;
+			float dist = object_hover_distance(e.object, win, m, tp, z);
+			if (dist >= 0 and z < zmin) {
+				zmin = z;
+				h = {MultiViewType::WORLD_OBJECT, i, tp};
+			}
 		}
-	}
 	return h;
 }
 
 Data::Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) const {
 	auto r = _r.canonical();
 	Data::Selection s;
-	s.add({MultiViewType::WORLD_OBJECT, {}});
-	for (const auto& [i, o]: enumerate(data->objects)) {
-		const auto p = win->project(o.pos);
+	s.add({MultiViewType::WORLD_ENTITY, {}});
+	for (const auto& [i, e]: enumerate(data->entities)) {
+		const auto p = win->project(e.pos);
 		if (p.z <= 0 or p.z >= 1)
 			continue;
 		if (r.inside({p.x, p.y}))
-			s[MultiViewType::WORLD_OBJECT].add(i);
+			s[MultiViewType::WORLD_ENTITY].add(i);
 	}
 	return s;
 }
@@ -214,45 +213,53 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	cb->clear(params.area, {data->meta_data.background_color}, 1.0);
 	auto dh = win->multi_view->session->drawing_helper;
 
-	for (auto& t: data->terrains) {
+	for (auto& e: data->entities) {
+		if (e.basic_type != MultiViewType::WORLD_TERRAIN)
+			continue;
+		auto& t = e.terrain;
 		t.terrain->prepare_draw(rvd.scene_view->cam->owner->pos);
 		auto material = t.terrain->material.get();
 		auto vb = t.terrain->vertex_buffer.get();
 
 		auto shader = rvd.get_shader(material, 0, t.terrain->vertex_shader_module, "");
-		auto& rd = rvd.start(params, mat4::translation(t.pos), shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+		auto& rd = rvd.start(params, mat4::translation(e.pos), shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
 		cb->push_constant(0, 4, &t.terrain->texture_scale[0].x);
 		cb->push_constant(4, 4, &t.terrain->texture_scale[1].x);
 		rd.apply(params);
 		cb->draw(vb);
 	}
 
-	for (auto& o: data->objects) {
-		for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
-			auto m = o.object;
-			auto material = m->material[k];
-			auto vb = m->mesh[0]->sub[k].vertex_buffer;
-			draw_mesh(params, rvd, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, material, m->_template->vertex_shader_module);
+	for (auto& e: data->entities)
+		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+			auto m = e.object.object;
+			for (int k=0; k<m->mesh[0]->sub.num; k++) {
+				auto material = m->material[k];
+				auto vb = m->mesh[0]->sub[k].vertex_buffer;
+				draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, material, m->_template->vertex_shader_module);
+			}
 		}
-	}
 
 	// selection
-	for (auto& o: data->objects) {
-		if (o.is_selected)
-			for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
-				auto m = o.object;
-				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				draw_mesh(params, rvd, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, dh->material_selection, m->_template->vertex_shader_module);
+	for (auto& e: data->entities)
+		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+			if (e.is_selected) {
+				auto m = e.object.object;
+				for (int k=0; k<e.object.object->mesh[0]->sub.num; k++) {
+					auto vb = m->mesh[0]->sub[k].vertex_buffer;
+					draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_selection, m->_template->vertex_shader_module);
+				}
 			}
-	}
+		}
 
 	// hover...
-	if (multi_view->hover and multi_view->hover->type == MultiViewType::WORLD_OBJECT) {
-		auto& o = data->objects[multi_view->hover->index];
-		for (int k=0; k<o.object->mesh[0]->sub.num; k++) {
-			auto m = o.object;
-			auto vb = m->mesh[0]->sub[k].vertex_buffer;
-			draw_mesh(params, rvd, mat4::translation(o.pos) * mat4::rotation(o.ang), vb, dh->material_hover, m->_template->vertex_shader_module);
+	if (multi_view->hover and multi_view->hover->type == MultiViewType::WORLD_ENTITY) {
+		auto& e = data->entities[multi_view->hover->index];
+		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+			auto m = e.object.object;
+			for (int k=0; k<m->mesh[0]->sub.num; k++) {
+				auto vb = m->mesh[0]->sub[k].vertex_buffer;
+				draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_hover, m->_template->vertex_shader_module);
+			}
 		}
 	}
 
@@ -391,11 +398,6 @@ void ModeWorld::on_draw_post(Painter* p) {
 	//p->set_font_size(20);
 	//p->draw_str({100, 100}, str(r));
 
-	p->set_color(Red);
-	for (auto& o: data->objects) {
-		auto p1 = multi_view->active_window->project(o.pos);
-		p->draw_rect({p1.x-2,p1.x+2, p1.y-2,p1.y+2});
-	}
 	p->set_color(Blue);
 	for (auto& o: data->entities) {
 		auto p1 = multi_view->active_window->project(o.pos);
