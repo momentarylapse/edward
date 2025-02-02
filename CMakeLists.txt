@@ -358,6 +358,7 @@ add_executable(edward
 	src/lib/xhui/controls/DrawingArea.cpp
 	src/lib/xhui/controls/Edit.cpp
 	src/lib/xhui/controls/Grid.cpp
+	src/lib/xhui/controls/Group.cpp
 	src/lib/xhui/controls/HeaderBar.cpp
 	src/lib/xhui/controls/Label.cpp
 	src/lib/xhui/controls/ListView.cpp

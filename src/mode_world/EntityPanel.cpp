@@ -13,20 +13,26 @@ EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-pane
 	from_source(R"foodelim(
 Dialog entity-panel ''
 	Grid ? ''
-		Grid ? ''
-			SpinButton pos-x '' range=::0.001
-			SpinButton pos-y '' range=::0.001
-			SpinButton pos-z '' range=::0.001
+		Group ? 'Position'
+			Grid ? ''
+				SpinButton pos-x '' range=::0.001
+				---|
+				SpinButton pos-y '' range=::0.001
+				---|
+				SpinButton pos-z '' range=::0.001
 		---|
-		Grid ? ''
-			SpinButton ang-x '' range=::0.001
-			SpinButton ang-y '' range=::0.001
-			SpinButton ang-z '' range=::0.001
+		Group ? 'Orientation'
+			Grid ? ''
+				SpinButton ang-x '' range=::0.001
+				---|
+				SpinButton ang-y '' range=::0.001
+				---|
+				SpinButton ang-z '' range=::0.001
 		---|
 		Button a 'test'
 )foodelim");
 	expand_x = false;
-	min_width_user = 400;
+	min_width_user = 350;
 
 	mode->multi_view->out_selection_changed >> create_sink([this] {
 		auto sel = mode->data->get_selection();

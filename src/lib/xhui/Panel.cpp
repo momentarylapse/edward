@@ -3,12 +3,12 @@
 #include "language.h"
 #include "Resource.h"
 #include "Theme.h"
-
 #include "controls/Button.h"
 #include "controls/CheckBox.h"
 #include "controls/DrawingArea.h"
 #include "controls/Edit.h"
 #include "controls/Grid.h"
+#include "controls/Group.h"
 #include "controls/Label.h"
 #include "controls/ListView.h"
 #include "controls/MultilineEdit.h"
@@ -237,8 +237,8 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add(new Edit(id, title), x, y);
 	else if (type == "MultilineEdit")
 		add(new MultilineEdit(id, title), x, y);
-//	else if (type == "Group")
-//		add_group(title, x, y, id);
+	else if (type == "Group")
+		add(new Group(id, title), x, y);
 	else if (type == "CheckBox")
 		add(new CheckBox(id, title), x, y);
 //	else if (type == "ComboBox")
