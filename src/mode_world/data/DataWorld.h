@@ -9,7 +9,7 @@
 #define DATAWORLD_H_
 
 #include <Session.h>
-
+#include "WorldCamera.h"
 #include "WorldLight.h"
 #include "../../data/Data.h"
 #include "../../multiview/SingleData.h"
@@ -57,6 +57,7 @@ struct WorldEntity : multiview::SingleData {
 
 	MultiViewType basic_type = MultiViewType::WORLD_ENTITY;
 	WorldLight light;
+	WorldCamera camera;
 
 	//Entity* entity = nullptr;
 	Array<ScriptInstanceData> components;
@@ -92,8 +93,6 @@ public:
 	int EgoIndex;
 
 	Array<WorldLink> links;
-
-	Array<WorldCamera> cameras;
 
 	struct MetaData {
 

@@ -84,8 +84,6 @@ void DataWorld::reset() {
 
 	EgoIndex = -1;
 
-	cameras.clear();
-
 	meta_data.reset();
 
 	reset_history();
@@ -93,9 +91,9 @@ void DataWorld::reset() {
 }
 
 void DataWorld::add_initial_data() {
-	WorldCamera cam;
-	cam.ang = v_0;
-	cameras.add(cam);
+	WorldEntity cam;
+	cam.basic_type = MultiViewType::WORLD_CAMERA;
+	entities.add(cam);
 
 	WorldEntity sun;
 	sun.basic_type = MultiViewType::WORLD_LIGHT;
@@ -155,7 +153,6 @@ void DataWorld::get_bounding_box(vec3 &min, vec3 &max) {
 
 IMPLEMENT_COUNT_SELECTED(get_selected_objects, objects)
 IMPLEMENT_COUNT_SELECTED(get_selected_terrains, terrains)
-IMPLEMENT_COUNT_SELECTED(get_selected_cameras, cameras)
 
 
 void DataWorld::update_data() {
@@ -218,7 +215,6 @@ void DataWorld::copy(DataWorld& temp) const {
 	temp.entities.clear();
 	temp.objects.clear();
 	temp.terrains.clear();
-	temp.cameras.clear();
 
 	for (auto &o: entities)
 		if (o.is_selected)
@@ -229,13 +225,10 @@ void DataWorld::copy(DataWorld& temp) const {
 	for (auto &t: terrains)
 		if (t.is_selected)
 			temp.terrains.add(t);
-	for (auto &c: cameras)
-		if (c.is_selected)
-			temp.cameras.add(c);
 }
 
 bool DataWorld::is_empty() const {
-	return entities.num + objects.num + terrains.num + cameras.num == 0;
+	return entities.num + objects.num + terrains.num == 0;
 }
 
 void DataWorld::paste(const DataWorld& temp) {
@@ -263,9 +256,6 @@ Data::Selection DataWorld::get_selection() const {
 	for (const auto& [i, t]: enumerate(terrains))
 		if (t.is_selected)
 			s[MultiViewType::WORLD_TERRAIN].add(i);
-	for (const auto& [i, o]: enumerate(cameras))
-		if (o.is_selected)
-			s[MultiViewType::WORLD_CAMERA].add(i);
 	for (const auto& [i, o]: enumerate(links))
 		if (o.is_selected)
 			s[MultiViewType::WORLD_LINK].add(i);

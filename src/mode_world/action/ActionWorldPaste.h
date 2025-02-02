@@ -14,7 +14,6 @@ class DataWorld;
 struct WorldEntity;
 class WorldObject;
 class WorldTerrain;
-class WorldCamera;
 
 class ActionWorldPaste : public ActionGroup {
 public:
@@ -26,7 +25,6 @@ private:
 	const Array<WorldEntity>& entities;
 	const Array<WorldObject>& objects;
 	const Array<WorldTerrain>& terrains;
-	const Array<WorldCamera>& cameras;
 };
 
 #endif /* ACTIONWORLDPASTE_H_ */

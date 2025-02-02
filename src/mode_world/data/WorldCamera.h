@@ -10,18 +10,14 @@
 
 #include "../../multiview/SingleData.h"
 
-class ScriptInstanceData;
 
-
-struct WorldCamera: multiview::SingleData {
+struct WorldCamera {
 	string name;
-	vec3 ang = vec3::ZERO;
 	float fov = pi/4;
 	float min_depth = 1;
 	float max_depth = 10000;
 	float exposure = 1;
 	float bloom_factor = 0.15f;
-	Array<ScriptInstanceData> components;
 };
 
 

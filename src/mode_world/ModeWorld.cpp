@@ -58,7 +58,6 @@ void ModeWorld::on_enter() {
 	multi_view->data_sets = {
 		{MultiViewType::WORLD_OBJECT, &data->objects},
 		{MultiViewType::WORLD_TERRAIN, &data->terrains},
-		{MultiViewType::WORLD_CAMERA, &data->cameras},
 		{MultiViewType::WORLD_ENTITY, &data->entities}
 	};
 
@@ -265,7 +264,10 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 }
 
 void ModeWorld::draw_cameras(MultiViewWindow* win) {
-	for (auto &c: data->cameras) {
+	for (auto& e: data->entities) {
+		if (e.basic_type != MultiViewType::WORLD_CAMERA)
+			continue;
+		auto& c = e.camera;
 		//if (c.view_stage < mode->multi_view->view_stage)
 		//	continue;
 
@@ -274,11 +276,11 @@ void ModeWorld::draw_cameras(MultiViewWindow* win) {
 
 		dh->set_color(color(1, 0.9f, 0.6f, 0.3f));
 		dh->set_line_width(3);//scheme.LINE_WIDTH_THIN);
-		if (c.is_selected) {
+		if (e.is_selected) {
 			dh->set_color(Red);
 			dh->set_line_width(5);//scheme.LINE_WIDTH_MEDIUM);
 		}
-		auto q = quaternion::rotation_v(c.ang);
+		auto q = e.ang;
 		float r = win->multi_view->view_port.radius * 0.1f;
 		float rr = r * tan(c.fov / 2);
 		vec3 ex = q * vec3::EX * rr * 1.333f;
@@ -286,14 +288,14 @@ void ModeWorld::draw_cameras(MultiViewWindow* win) {
 		vec3 ez = q * vec3::EZ * r;
 
 		Array<vec3> points = {
-			c.pos, c.pos + ez + ex + ey,
-			c.pos, c.pos + ez - ex + ey,
-			c.pos, c.pos + ez + ex - ey,
-			c.pos, c.pos + ez - ex - ey,
-			c.pos + ez + ex + ey, c.pos + ez - ex + ey,
-			c.pos + ez - ex + ey, c.pos + ez - ex - ey,
-			c.pos + ez - ex - ey, c.pos + ez + ex - ey,
-			c.pos + ez + ex - ey, c.pos + ez + ex + ey};
+			e.pos, e.pos + ez + ex + ey,
+			e.pos, e.pos + ez - ex + ey,
+			e.pos, e.pos + ez + ex - ey,
+			e.pos, e.pos + ez - ex - ey,
+			e.pos + ez + ex + ey, e.pos + ez - ex + ey,
+			e.pos + ez - ex + ey, e.pos + ez - ex - ey,
+			e.pos + ez - ex - ey, e.pos + ez + ex - ey,
+			e.pos + ez + ex - ey, e.pos + ez + ex + ey};
 		dh->draw_lines(points, false);
 	}
 }

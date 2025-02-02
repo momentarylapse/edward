@@ -43,14 +43,6 @@ ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Sel
 				old_ang.add(quaternion::ID);
 				type.add(MultiViewType::WORLD_TERRAIN);
 			}
-	if (selection.contains(MultiViewType::WORLD_CAMERA))
-		for (const auto& [i, c]: enumerate(d->cameras))
-			if (selection[MultiViewType::WORLD_CAMERA].contains(i)) {
-				index.add(i);
-				old_data.add(c.pos);
-				old_ang.add(quaternion::rotation(c.ang));
-				type.add(MultiViewType::WORLD_CAMERA);
-			}
 	if (selection.contains(MultiViewType::WORLD_LINK))
 		for (const auto& [i, l]: enumerate(d->links))
 			if (selection[MultiViewType::WORLD_LINK].contains(i)) {
@@ -74,9 +66,6 @@ void *ActionWorldMoveSelection::execute(Data *d) {
 		} else if (type[ii] == MultiViewType::WORLD_TERRAIN) {
 			w->terrains[i].pos = mat * old_data[ii];
 			//w->terrains[i].terrain->update(-1, -1, -1, -1, TerrainUpdateVertices);
-		} else if (type[ii] == MultiViewType::WORLD_CAMERA) {
-			w->cameras[i].pos = mat * old_data[ii];
-			w->cameras[i].ang = (dq * old_ang[ii]).get_angles();
 		} else if (type[ii] == MultiViewType::WORLD_LINK) {
 			w->links[i].pos = mat * old_data[ii];
 		}
@@ -98,9 +87,6 @@ void ActionWorldMoveSelection::undo(Data *d) {
 		} else if (type[ii] == MultiViewType::WORLD_TERRAIN) {
 			w->terrains[i].pos = old_data[ii];
 			//w->terrains[i].terrain->update(-1, -1, -1, -1, TerrainUpdateVertices);
-		} else if (type[ii] == MultiViewType::WORLD_CAMERA) {
-			w->cameras[i].pos = old_data[ii];
-			w->cameras[i].ang = old_ang[ii].get_angles();
 		} else if (type[ii] == MultiViewType::WORLD_LINK) {
 			w->links[i].pos = old_data[ii];
 		}

@@ -129,7 +129,6 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 }
 
 void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
-	data->cameras.clear();
 	data->entities.clear();
 	data->meta_data.skybox_files.clear();
 
@@ -177,14 +176,15 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	if (cont) {
 		for (auto &e: cont->elements) {
 			if (e.tag == "camera") {
-				WorldCamera c;
+				WorldEntity c;
+				c.basic_type = MultiViewType::WORLD_CAMERA;
 				c.pos = s2v(e.value("pos", "0 0 0"));
-				c.ang = s2v(e.value("ang", "0 0 0"));
-				c.fov = e.value("fov", f2s(pi/4, 3))._float();
-				c.min_depth = e.value("minDepth", "1")._float();
-				c.max_depth = e.value("maxDepth", "10000")._float();
-				c.exposure = e.value("exposure", "1")._float();
-				c.bloom_factor = e.value("bloomFactor", "0.15")._float();
+				c.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
+				c.camera.fov = e.value("fov", f2s(pi/4, 3))._float();
+				c.camera.min_depth = e.value("minDepth", "1")._float();
+				c.camera.max_depth = e.value("maxDepth", "10000")._float();
+				c.camera.exposure = e.value("exposure", "1")._float();
+				c.camera.bloom_factor = e.value("bloomFactor", "0.15")._float();
 				for (auto &ee: e.elements)
 					if (ee.tag == "component") {
 						ScriptInstanceData sd;
@@ -192,7 +192,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 						sd.class_name = ee.value("class", "");
 						c.components.add(sd);
 					}
-				data->cameras.add(c);
+				data->entities.add(c);
 			} else if (e.tag == "light") {
 				WorldEntity l;
 				l.basic_type = MultiViewType::WORLD_LIGHT;
@@ -350,18 +350,19 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 	};
 
 	auto cont = xml::Element("3d");
-	for (auto &c: data->cameras) {
-		auto e = xml::Element("camera")
-		.witha("pos", v2s(c.pos))
-		.witha("ang", v2s(c.ang))
-		.witha("fov", f2s(c.fov, 3))
-		.witha("minDepth", f2s(c.min_depth, 3))
-		.witha("maxDepth", f2s(c.max_depth, 3))
-		.witha("exposure", f2s(c.exposure, 3))
-		.witha("bloomFactor", f2s(c.bloom_factor, 3));
-		add_components(e, c.components);
-		cont.add(e);
-	}
+	for (auto &c: data->entities)
+		if (c.basic_type == MultiViewType::WORLD_CAMERA) {
+			auto e = xml::Element("camera")
+			.witha("pos", v2s(c.pos))
+			.witha("ang", v2s(c.ang.get_angles()))
+			.witha("fov", f2s(c.camera.fov, 3))
+			.witha("minDepth", f2s(c.camera.min_depth, 3))
+			.witha("maxDepth", f2s(c.camera.max_depth, 3))
+			.witha("exposure", f2s(c.camera.exposure, 3))
+			.witha("bloomFactor", f2s(c.camera.bloom_factor, 3));
+			add_components(e, c.components);
+			cont.add(e);
+		}
 
 	for (auto &l: data->entities)
 		if (l.basic_type == MultiViewType::WORLD_LIGHT)

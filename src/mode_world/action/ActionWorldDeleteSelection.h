@@ -12,8 +12,6 @@
 #include "../data/DataWorld.h"
 #include "../data/WorldObject.h"
 #include "../data/WorldTerrain.h"
-#include "../data/WorldCamera.h"
-#include "../data/WorldLight.h"
 #include "../data/WorldLink.h"
 
 class ActionWorldDeleteSelection : public Action {
@@ -32,9 +30,6 @@ public:
 
 	Array<WorldTerrain> terrains;
 	Array<int> terrain_indices;
-
-	Array<WorldCamera> cameras;
-	Array<int> camera_indices;
 
 	Array<WorldLight> lights;
 	Array<int> light_indices;

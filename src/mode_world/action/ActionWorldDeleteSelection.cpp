@@ -29,12 +29,6 @@ ActionWorldDeleteSelection::ActionWorldDeleteSelection(DataWorld* w, const Data:
 				terrains.add(o);
 				terrain_indices.add(i);
 			}
-	if (selection.contains(MultiViewType::WORLD_CAMERA))
-		for (const auto& [i, o]: enumerate(w->cameras))
-			if (selection[MultiViewType::WORLD_CAMERA].contains(i)) {
-				cameras.add(o);
-				camera_indices.add(i);
-			}
 	if (selection.contains(MultiViewType::WORLD_LINK))
 		for (const auto& [i, o]: enumerate(w->links))
 			if (selection[MultiViewType::WORLD_LINK].contains(i)) {
@@ -51,8 +45,6 @@ void *ActionWorldDeleteSelection::execute(Data *d) {
 		w->objects.erase(i);
 	for (int i: base::reverse(terrain_indices))
 		w->terrains.erase(i);
-	for (int i: base::reverse(camera_indices))
-		w->cameras.erase(i);
 	for (int i: base::reverse(link_indices))
 		w->links.erase(i);
 	return nullptr;
@@ -66,8 +58,6 @@ void ActionWorldDeleteSelection::undo(Data *d) {
 		w->objects.insert(objects[ii], i);
 	for (const auto& [ii, i]: enumerate(terrain_indices))
 		w->terrains.insert(terrains[ii], i);
-	for (const auto& [ii, i]: enumerate(camera_indices))
-		w->cameras.insert(cameras[ii], i);
 	for (const auto& [ii, i]: enumerate(link_indices))
 		w->links.insert(links[ii], i);
 }

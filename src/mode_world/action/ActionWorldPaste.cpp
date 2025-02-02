@@ -21,8 +21,7 @@
 ActionWorldPaste::ActionWorldPaste(const DataWorld& temp) :
 	entities(temp.entities),
 	objects(temp.objects),
-	terrains(temp.terrains),
-	cameras(temp.cameras)
+	terrains(temp.terrains)
 {
 }
 
@@ -39,9 +38,6 @@ void *ActionWorldPaste::compose(Data *d) {
 	for (const auto &t: terrains)
 		addSubAction(new ActionWorldAddTerrain(t.pos, t.filename), w);
 
-	//for (const auto &c: cameras)
-	//	addSubAction(new ActionWorldAddCamera(c), w);
-
-	return NULL;
+	return nullptr;
 }
 

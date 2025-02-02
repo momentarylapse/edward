@@ -190,7 +190,8 @@ void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
 	}
 
 
-	hover = get_hover(hover_window, m);
+	if (!session->win->button(0) and !session->win->button(1) and !session->win->button(2))
+		hover = get_hover(hover_window, m);
 	//action_controller->on_mouse_move(m, d);
 	// TODO if busy... return
 
