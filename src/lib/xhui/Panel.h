@@ -37,7 +37,7 @@ public:
 	void event_x(const string& id, const string& msg, Callback f);
 	void event_xp(const string& id, const string& msg, CallbackP f);
 
-	Window* window = nullptr;
+	Window* get_window();
 	Control* top_control = nullptr;
 	Control* target_control = nullptr;
 	Array<Control*> controls;

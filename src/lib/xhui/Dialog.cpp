@@ -19,13 +19,14 @@ Dialog::Dialog(const string& _title, int _width, int _height, Panel* parent) : P
 	width = _width;
 	height = _height;
 	_register(parent);
-	window = parent->window;
+	owner = parent;
+	auto window = parent->get_window();
 	window->dialog = this;
 	_area = {0, (float)width, 0, (float)height};
 	padding = Theme::_default.window_margin;
 
 	_dialogs_.add(this);
-	window->request_redraw();
+	request_redraw();
 }
 
 Dialog::~Dialog() {
@@ -33,12 +34,13 @@ Dialog::~Dialog() {
 		if (_dialogs_[i] == this)
 			_dialogs_.erase(i);
 
-	window->dialog = nullptr;
+	auto w = get_window();
+	w->dialog = nullptr;
 	for (int i=0; i<owner->controls.num; i++)
 		if (owner->controls[i] == this) {
 			owner->controls.erase(i);
 		}
-	window->hover_control = nullptr;
+	w->hover_control = nullptr;
 }
 
 

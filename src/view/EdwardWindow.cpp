@@ -159,7 +159,7 @@ Dialog x x
 				DrawingArea area ''
 				Grid ? '' margin=25
 					Button mouse-action 'T' height=50 width=50 noexpandx
-					Label ? '' expandx
+					Label ? '' ignorehover expandx
 					Button cam-rotate 'R' height=50 width=50 noexpandx
 					---|
 					Button aaa 'x' height=50 width=50 noexpandx

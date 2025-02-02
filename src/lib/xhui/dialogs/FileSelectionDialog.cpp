@@ -5,6 +5,7 @@
 #include "FileSelectionDialog.h"
 
 #include <lib/base/iter.h>
+#include <lib/os/msg.h>
 #include <lib/xhui/Painter.h>
 #include <lib/xhui/Theme.h>
 
@@ -123,15 +124,16 @@ public:
  */
 FileSelectionDialog::FileSelectionDialog(Panel* parent, const string& title, const Path& dir, const Array<string>& params) : Dialog(title, 800, 600, parent) {
 
+	saving = false;
 	list = new FileSelectionControl("files");
 	for (const auto& o: params)
 		if (o.head(7) == "filter=")
 			list->filter = o.sub(7);
 	list->set_directory(dir);
 
-	auto g1 = new Grid("");
+	auto g1 = new Grid("grid1");
 	add(g1);
-	auto g2 = new Grid("");
+	auto g2 = new Grid("grid2");
 	g1->add(g2, 0, 0);
 	auto button_up = new Button("up", "Up");
 	button_up->expand_x = false;
@@ -141,9 +143,9 @@ FileSelectionDialog::FileSelectionDialog(Panel* parent, const string& title, con
 	g2->add(x, 1, 0);
 	g1->add(list, 0, 1);
 
-	auto g3 = new Grid("");
+	auto g3 = new Grid("grid3");
 	g1->add(g3, 0, 2);
-	auto spacer = new Label("", "");
+	auto spacer = new Label("spacer", "");
 	g3->add(spacer, 0, 0);
 	spacer->expand_x = true;
 	auto button_cancel = new Button("cancel", "Cancel");

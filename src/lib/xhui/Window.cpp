@@ -18,7 +18,6 @@ Window::Window(const string &title, int w, int h) : Window(title, w, h, Flags::N
 Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":window:") {
 	title = _title;
 	flags = _flags;
-	Panel::window = this;
 	memset(&state, 0, sizeof(state));
 	memset(&state_prev, 0, sizeof(state_prev));
 
@@ -380,6 +379,20 @@ void Window::_on_draw() {
 		dialog->negotiate_area({m - size/2, m + size/2});
 		dialog->_draw(p);
 	}
+
+#if 0
+	if (hover_control) {
+		p->set_color(Red);
+		p->set_fill(false);
+		p->draw_rect(hover_control->_area);
+		p->set_fill(true);
+	}
+
+	static int frame = 0;
+	frame ++;
+	p->set_color(Red);
+	p->draw_str({20,20}, str(frame));
+#endif
 
 	p->end();
 	_refresh_requested = false;

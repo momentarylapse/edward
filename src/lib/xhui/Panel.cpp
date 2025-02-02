@@ -22,7 +22,6 @@ namespace xhui {
 
 Panel::Panel(const string &_id) : Control(_id) {
 	ignore_hover = true;
-	owner = this;
 
 	padding = 0;
 	expand_x = true;
@@ -70,13 +69,25 @@ void Panel::negotiate_area(const rect &available) {
 	}*/
 }
 
+Window* Panel::get_window() {
+	if (auto w = dynamic_cast<Window*>(this))
+		return w;
+	if (owner)
+		return owner->get_window();
+	return nullptr;
+}
+
+
 void Panel::add(Control *c, int x, int y) {
 	if (target_control) {
 		target_control->add(c, x, y);
 	} else {
 		top_control = c;
 	}
-	c->_register(this);
+	// don't register sub-panels!
+	if (dynamic_cast<Panel*>(c) == nullptr)
+		c->_register(this);
+	request_redraw();
 }
 
 void Panel::add(Control *c) {
@@ -300,8 +311,9 @@ void Panel::_add_control(const string &ns, const Resource &cmd, const string &pa
 
 void Panel::embed(const string& target, int x, int y, Panel* p) {
 	set_target(target);
-	p->window = window;
 	add(p, x, y);
+	p->owner = this;
+	request_redraw();
 }
 
 
@@ -311,6 +323,7 @@ void Panel::from_source(const string& source) {
 void Panel::from_resource(const Resource& res) {
 
 	bool res_is_window = ((res.type == "Dialog") or (res.type == "Window"));
+	auto window = get_window();
 	bool panel_is_window = window and !owner;
 
 	// directly change window?

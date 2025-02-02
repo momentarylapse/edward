@@ -271,7 +271,7 @@ void run() {
 
 		for (int i=_dialogs_.num-1; i>=0; i--)
 			if (_dialogs_[i]->_destroy_requested) {
-				_dialogs_[i]->window->request_redraw();
+				_dialogs_[i]->request_redraw();
 				delete _dialogs_[i];
 			}
 

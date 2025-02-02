@@ -16,6 +16,8 @@ Overlay::Overlay(const string &_id) : Control(_id) {
 
 void Overlay::add(Control *c) {
 	children.add(c);
+	if (owner)
+		c->_register(owner);
 }
 
 void Overlay::_draw(Painter *p) {

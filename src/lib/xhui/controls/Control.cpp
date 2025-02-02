@@ -24,10 +24,12 @@ void Control::_register(Panel* _owner) {
 	if (dynamic_cast<Panel*>(this))
 		return;
 
+	//msg_write("REG  " + id + "   ->   " + _owner->id);
+
 	if (owner) {
-		msg_error("trying to register a control twice  " + id);
+		/*msg_error("trying to register a control twice  " + id);
 		msg_write(p2s(owner));
-		msg_write(p2s(_owner));
+		msg_write(p2s(_owner));*/
 		return;
 	}
 	owner = _owner;
@@ -60,8 +62,15 @@ Array<Control*> Control::get_children_recursive(bool include_me) const {
 
 
 void Control::request_redraw() {
-	if (owner and owner->window)
-		owner->window->redraw(id);
+	if (owner) {
+		if (auto w = owner->get_window()) {
+			w->redraw(id);
+			return;
+		}
+	} else if (auto w = dynamic_cast<Window*>(this)) {
+		w->redraw(id);
+	}
+	//msg_write(id + "  can not refresh  " + p2s(owner));
 }
 
 
@@ -91,8 +100,10 @@ void Control::negotiate_area(const rect &available) {
 }
 
 bool Control::has_focus() const {
-	if (owner and owner->window)
-		return owner->window->focus_control == this;
+	if (!owner)
+		return false;
+	if (auto w = owner->get_window())
+		return w->focus_control == this;
 	return false;
 }
 
@@ -124,6 +135,8 @@ void Control::set_option(const string& key, const string& value) {
 	} else if (key == "height") {
 		min_height_user = value._int();
 		request_redraw();
+	} else if (key == "ignorehover") {
+		ignore_hover = true;
 	}
 }
 

@@ -33,6 +33,8 @@ void Grid::add(Control *c, int x, int y) {
 	children.add({c, x, y});
 	nx = max(nx, x+1);
 	ny = max(ny, y+1);
+	if (owner)
+		c->_register(owner);
 }
 
 void Grid::_draw(Painter *p) {
