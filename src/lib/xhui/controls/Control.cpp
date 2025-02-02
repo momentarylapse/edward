@@ -25,6 +25,8 @@ void Control::_register(Panel* _owner) {
 
 	if (owner) {
 		msg_error("trying to register a control twice  " + id);
+		msg_write(p2s(owner));
+		msg_write(p2s(_owner));
 		return;
 	}
 	owner = _owner;

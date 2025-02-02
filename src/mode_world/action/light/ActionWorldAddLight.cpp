@@ -15,11 +15,12 @@ ActionWorldAddLight::ActionWorldAddLight(const WorldLight &l) {
 
 void* ActionWorldAddLight::execute(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	w->lights.add(light);
-	return &w->lights.back();
+	//w->lights.add(light);
+	//return &w->lights.back();
+	return nullptr;
 }
 
 void ActionWorldAddLight::undo(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	w->lights.pop();
+	//w->lights.pop();
 }

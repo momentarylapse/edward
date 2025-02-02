@@ -14,6 +14,7 @@
 #include "../../../mode_world/data/WorldObject.h"
 #include "../../../mode_world/data/WorldTerrain.h"
 //#include "../../../EdwardWindow.h"
+#include <Session.h>
 #include <y/world/Model.h>
 #include <y/world/World.h>
 #include <y/EngineData.h>
@@ -119,19 +120,23 @@ void FormatWorld::_load_old(LegacyFile& lf, DataWorld *data, bool deep) {
 		for (int i=0;i<n;i++)
 			f->read_float();
 		if (f->read_str() != "#"){
-			data->lights[0].enabled = f->read_bool();
+
+			WorldEntity sun;
+			sun.basic_type = MultiViewType::WORLD_LIGHT;
+			sun.light.enabled = f->read_bool();
 			color am, am2, di, sp;
 			read_color_3i(f, am);
 			read_color_3i(f, di);
 			read_color_3i(f, sp);
-			data->lights[0].ang.x = f->read_float();
-			data->lights[0].ang.y = f->read_float();
+			float ang_x = f->read_float();
+			float ang_y = f->read_float();
 			// fix for old definition
-			data->lights[0].ang = (-data->lights[0].ang.ang2dir()).dir2ang();
+			sun.ang = quaternion::rotation((-vec3(ang_x, ang_y, 0).ang2dir()).dir2ang());
 			f->read_comment();
 			read_color_3i(f, am2);
-			data->lights[0].col = (am + am2) * 2 + di;
-			data->lights[0].harshness = di.r / data->lights[0].col.r;
+			sun.light.col = (am + am2) * 2 + di;
+			sun.light.harshness = di.r / sun.light.col.r;
+			data->entities.add(sun);
 			if (f->read_str() != "#"){
 				data->meta_data.physics_enabled = f->read_bool();
 			}

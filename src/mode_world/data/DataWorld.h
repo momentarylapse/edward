@@ -8,6 +8,9 @@
 #ifndef DATAWORLD_H_
 #define DATAWORLD_H_
 
+#include <Session.h>
+
+#include "WorldLight.h"
 #include "../../data/Data.h"
 #include "../../multiview/SingleData.h"
 #include <y/world/Material.h>
@@ -51,7 +54,11 @@ struct WorldComponent {
 
 struct WorldEntity : multiview::SingleData {
 	quaternion ang;
-	Entity* entity = nullptr;;
+
+	MultiViewType basic_type = MultiViewType::WORLD_ENTITY;
+	WorldLight light;
+
+	//Entity* entity = nullptr;
 	Array<ScriptInstanceData> components;
 };
 
@@ -61,6 +68,7 @@ public:
 	~DataWorld() override;
 
 	void reset() override;
+	void add_initial_data();
 	bool is_empty() const;
 
 
@@ -85,7 +93,6 @@ public:
 
 	Array<WorldLink> links;
 
-	Array<WorldLight> lights;
 	Array<WorldCamera> cameras;
 
 	struct MetaData {

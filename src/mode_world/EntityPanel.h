@@ -6,11 +6,15 @@
 #define ENTITYPANEL_H
 
 #include <lib/xhui/Panel.h>
+#include <lib/pattern/Observable.h>
 
+class ModeWorld;
 
-class EntityPanel : public xhui::Panel {
+class EntityPanel : public obs::Node<xhui::Panel> {
 public:
-	EntityPanel();
+	explicit EntityPanel(ModeWorld* mode);
+
+	ModeWorld* mode;
 };
 
 

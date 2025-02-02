@@ -130,7 +130,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 
 void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	data->cameras.clear();
-	data->lights.clear();
+	data->entities.clear();
 	data->meta_data.skybox_files.clear();
 
 	xml::Parser p;
@@ -194,17 +194,18 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 					}
 				data->cameras.add(c);
 			} else if (e.tag == "light") {
-				WorldLight l;
-				l.type = LightType::POINT;
+				WorldEntity l;
+				l.basic_type = MultiViewType::WORLD_LIGHT;
+				l.light.type = LightType::POINT;
 				if (e.value("type") == "directional")
-					l.type = LightType::DIRECTIONAL;
+					l.light.type = LightType::DIRECTIONAL;
 				else if (e.value("type") == "cone")
-					l.type = LightType::CONE;
-				l.radius = e.value("radius", "0")._float();
-				l.theta = e.value("theta", "0")._float();
-				l.harshness = e.value("harshness", "0.8")._float();
-				l.col = s2c(e.value("color", "1 1 1"));
-				l.ang = s2v(e.value("ang", "0 0 0"));
+					l.light.type = LightType::CONE;
+				l.light.radius = e.value("radius", "0")._float();
+				l.light.theta = e.value("theta", "0")._float();
+				l.light.harshness = e.value("harshness", "0.8")._float();
+				l.light.col = s2c(e.value("color", "1 1 1"));
+				l.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
 				l.pos= s2v(e.value("pos", "0 0 0"));
 				for (auto &ee: e.elements)
 					if (ee.tag == "component") {
@@ -213,7 +214,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 						sd.class_name = ee.value("class", "");
 						l.components.add(sd);
 					}
-				data->lights.add(l);
+				data->entities.add(l);
 			} else if (e.tag == "terrain") {
 				WorldTerrain t;
 				t.filename = e.value("file");
@@ -277,21 +278,21 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 
 string phys_mode_name(PhysicsMode m);
 
-xml::Element encode_light(WorldLight &l) {
+xml::Element encode_light(WorldEntity &l) {
 	auto e = xml::Element("light")
-	.witha("type", light_type_canonical(l.type))
-	.witha("color", c2s(l.col))
-	.witha("harshness", f2s(l.harshness, 4));
-	if (l.type == LightType::DIRECTIONAL) {
-		e.add_attribute("ang", v2s(l.ang));
-	} else if (l.type == LightType::POINT) {
+	.witha("type", light_type_canonical(l.light.type))
+	.witha("color", c2s(l.light.col))
+	.witha("harshness", f2s(l.light.harshness, 4));
+	if (l.light.type == LightType::DIRECTIONAL) {
+		e.add_attribute("ang", v2s(l.ang.get_angles()));
+	} else if (l.light.type == LightType::POINT) {
 		e.add_attribute("pos", v2s(l.pos));
-		e.add_attribute("radius", f2s(l.radius, 3));
-	} else if (l.type == LightType::CONE) {
+		e.add_attribute("radius", f2s(l.light.radius, 3));
+	} else if (l.light.type == LightType::CONE) {
 		e.add_attribute("pos", v2s(l.pos));
-		e.add_attribute("ang", v2s(l.ang));
-		e.add_attribute("radius", f2s(l.radius, 3));
-		e.add_attribute("theta", f2s(l.theta, 3));
+		e.add_attribute("ang", v2s(l.ang.get_angles()));
+		e.add_attribute("radius", f2s(l.light.radius, 3));
+		e.add_attribute("theta", f2s(l.light.theta, 3));
 	}
 	for (auto &c: l.components)
 		e.add(xml::Element("component")
@@ -362,8 +363,9 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		cont.add(e);
 	}
 
-	for (auto &l: data->lights)
-		cont.add(encode_light(l));
+	for (auto &l: data->entities)
+		if (l.basic_type == MultiViewType::WORLD_LIGHT)
+			cont.add(encode_light(l));
 
 	for (auto &t: data->terrains) {
 		auto e = xml::Element("terrain")

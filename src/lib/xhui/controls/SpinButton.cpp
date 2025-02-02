@@ -153,13 +153,13 @@ void SpinButton::_draw(Painter* p) {
 void SpinButton::set_option(const string& key, const string& value) {
 	if (key == "range") {
 		auto x = value.explode(":");
-		if (x.num >= 3) {
+		if (x.num >= 1 and x[0].num > 0)
+			_min = x[0]._float();
+		if (x.num >= 2 and x[1].num > 0)
+			_max = x[1]._float();
+		if (x.num >= 3 and x[2].num > 0) {
 			step = x[2]._float();
 			decimals = max((int)(-log10f(step) + 0.5f), 0);
-		}
-		if (x.num >= 2) {
-			_min = x[0]._float();
-			_max = x[1]._float();
 		}
 		request_redraw();
 	} else {
