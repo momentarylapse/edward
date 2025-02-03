@@ -28,6 +28,8 @@ public:
 
 	void set_float(float f) override;
 	float get_float() override;
+	void set_int(int i) override;
+	int get_int() override;
 	void set_option(const string& key, const string& value) override;
 	void _draw(Painter* p) override;
 	void on_mouse_move(const vec2& m, const vec2& d) override;

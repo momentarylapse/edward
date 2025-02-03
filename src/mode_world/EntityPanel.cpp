@@ -4,6 +4,7 @@
 
 #include "EntityPanel.h"
 
+#include <lib/os/msg.h>
 #include <view/MultiView.h>
 
 #include "ModeWorld.h"
@@ -65,11 +66,14 @@ Dialog entity-panel ''
 		Grid card-light '' class=card visible=no
 			Group group-light 'Light'
 				Grid ? ''
+					Label ? 'Type'
+					SpinButton type '' range=0:2:1
+					---|
 					Label ? 'Radius'
-					SpinButton radius '' range=0::0.001
+					SpinButton radius '' range=0::0.1
 					---|
 					Label ? 'Theta'
-					SpinButton theta '' range=0:180:0.001
+					SpinButton theta '' range=0:180:0.1
 					Label ? '°'
 					---|
 					Label ? 'Color'
@@ -87,6 +91,7 @@ Dialog entity-panel ''
 
 	mode->multi_view->out_selection_changed >> create_sink([this] {
 		auto sel = mode->data->get_selection();
+		cur_index = -1;
 		bool ok = (sel[MultiViewType::WORLD_ENTITY].num == 1);
 		enable("pos-x", ok);
 		enable("pos-y", ok);
@@ -95,7 +100,8 @@ Dialog entity-panel ''
 		enable("ang-y", ok);
 		enable("ang-z", ok);
 		if (sel[MultiViewType::WORLD_ENTITY].num == 1) {
-			auto& e = mode->data->entities[sel[MultiViewType::WORLD_ENTITY][0]];
+			cur_index = sel[MultiViewType::WORLD_ENTITY][0];
+			auto& e = mode->data->entities[cur_index];
 			set_float("pos-x", e.pos.x);
 			set_float("pos-y", e.pos.y);
 			set_float("pos-z", e.pos.z);
@@ -117,6 +123,7 @@ Dialog entity-panel ''
 				set_float("fov", e.camera.fov * 180 / pi);
 				set_float("exposure", e.camera.exposure);
 			} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {
+				set_int("type", (int)e.light.type);
 				set_float("radius", e.light.radius);
 				set_float("harshness", e.light.harshness * 100);
 				set_float("theta", e.light.theta * 180 / pi);
@@ -130,26 +137,25 @@ Dialog entity-panel ''
 			set_visible("card-light", false);
 		}
 	});
+	event("type", [this] { on_edit_light(); });
+	event("radius", [this] { on_edit_light(); });
+	event("theta", [this] { on_edit_light(); });
+	event("harshness", [this] { on_edit_light(); });
 	/*mode->data->out_changed >> create_sink([this] {
-		auto sel = mode->data->get_selection();
-		bool ok = (sel[MultiViewType::WORLD_ENTITY].num == 1);
-		enable("pos-x", ok);
-		enable("pos-y", ok);
-		enable("pos-z", ok);
-		enable("ang-x", ok);
-		enable("ang-y", ok);
-		enable("ang-z", ok);
-		if (sel[MultiViewType::WORLD_ENTITY].num == 1) {
-			auto& e = mode->data->entities[sel[MultiViewType::WORLD_ENTITY][0]];
-			set_float("pos-x", e.pos.x);
-			set_float("pos-y", e.pos.y);
-			set_float("pos-z", e.pos.z);
-			auto ang = e.ang.get_angles();
-			set_float("ang-x", e.ang.x * 180 / pi);
-			set_float("ang-y", e.ang.y * 180 / pi);
-			set_float("ang-z", e.ang.z * 180 / pi);
-		}
 	});*/
 }
+
+void EntityPanel::on_edit_light() {
+	if (cur_index < 0)
+		return;
+	auto& e = mode->data->entities[cur_index];
+	auto l = e.light;
+	l.type = (LightType)get_int("type");
+	l.radius = get_float("radius");
+	l.theta = get_float("theta") * pi / 180;
+	l.harshness = get_float("harshness") / 100;
+	mode->data->edit_light(cur_index, l);
+}
+
 
 

@@ -130,8 +130,8 @@ public:
 	WorldCamera *add_camera(const WorldCamera& c);
 	void edit_camera(int index, const WorldCamera& c);
 	WorldLight *add_light(const WorldLight& l);
-	void edit_light(int index, const WorldLight& l);
 #endif
+	void edit_light(int index, const WorldLight& l);
 
 	void copy(DataWorld& temp) const; // actually not an action
 	void paste(const DataWorld& temp);

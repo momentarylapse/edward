@@ -202,7 +202,7 @@ void ModeWorld::on_prepare_scene(const RenderParams& params) {
 			lights[i]->light.theta = -1;
 		lights[i]->light.harshness = l->light.harshness;
 	}
-	multi_view->view_port.scene_view->lights = lights;
+	multi_view->view_port.scene_view->lights = lights.sub_ref(0, data_lights.num);
 }
 
 

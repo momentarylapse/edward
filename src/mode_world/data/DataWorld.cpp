@@ -22,6 +22,7 @@
 #include <y/meta.h>
 //#include "../action/camera/ActionWorldEditCamera.h"
 #include "../action/light/ActionWorldAddLight.h"
+#include "../action/entity/ActionWorldEditComponent.h"
 //#include "../action/light/ActionWorldEditLight.h"
 //#include "../action/light/ActionWorldDeleteLight.h"
 #include "../action/object/ActionWorldAddObject.h"
@@ -226,6 +227,11 @@ void DataWorld::paste(const DataWorld& temp) {
 void DataWorld::delete_selection(const Selection& selection) {
 	execute(new ActionWorldDeleteSelection(this, selection));
 }
+
+void DataWorld::edit_light(int index, const WorldLight& l) {
+	execute(new ActionWorldEditLight(index, l));
+}
+
 
 Data::Selection DataWorld::get_selection() const {
 	Selection s;

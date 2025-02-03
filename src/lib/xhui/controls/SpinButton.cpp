@@ -33,8 +33,17 @@ void SpinButton::set_float(float f) {
 	request_redraw();
 }
 
+int SpinButton::get_int() {
+	return (int)value;
+}
+
+void SpinButton::set_int(int i) {
+	set_float((float)i);
+}
+
 void SpinButton::on_edit() {
 	_update_value_from_text();
+	emit_event(event_id::Changed, true);
 }
 
 void SpinButton::_update_text_from_value() {
@@ -79,10 +88,12 @@ void SpinButton::on_left_button_down(const vec2& m) {
 	case Hover::Plus:
 		value = clamp(value + step, _min, _max);
 		_update_text_from_value();
+		emit_event(event_id::Changed, true);
 		break;
 	case Hover::Minus:
 		value = clamp(value - step, _min, _max);
 		_update_text_from_value();
+		emit_event(event_id::Changed, true);
 		break;
 	case Hover::Other:
 		Edit::on_left_button_down(m);
@@ -109,6 +120,7 @@ void SpinButton::on_mouse_wheel(const vec2& d) {
 		n = -1;*/
 	value = clamp(value + (float)n * step, _min, _max);
 	_update_text_from_value();
+	emit_event(event_id::Changed, true);
 }
 
 
