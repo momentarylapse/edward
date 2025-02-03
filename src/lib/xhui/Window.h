@@ -61,6 +61,7 @@ protected:
 		vec2 scroll;
 		bool lbut, mbut, rbut;
 		bool key[256];
+		int key_code;
 	} state, state_prev;
 
 	static void _key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);

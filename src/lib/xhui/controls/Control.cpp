@@ -141,6 +141,17 @@ void Control::set_option(const string& key, const string& value) {
 		request_redraw();
 	} else if (key == "ignorehover") {
 		ignore_hover = true;
+	} else if (key == "ignorefocus") {
+		can_grab_focus = false;
+	} else if (key == "cangrabfocus") {
+		can_grab_focus = true;
+	} else if (key == "grabfocus") {
+		can_grab_focus = true;
+		run_later(0.01f, [this] {
+			if (owner)
+				if (auto w = owner->get_window())
+					w->focus_control = this;
+		});
 	} else if (key == "visible") {
 		visible = value._bool() or value == "";
 	}

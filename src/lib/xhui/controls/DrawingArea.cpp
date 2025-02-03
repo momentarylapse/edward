@@ -45,37 +45,37 @@ void DrawingArea::on_left_button_down(const vec2& m) {
 	emit_event(event_id::LeftButtonDown, false);
 }
 void DrawingArea::on_left_button_up(const vec2& m) {
-	emit_event("hui:left-button-up", false);
+	emit_event(event_id::LeftButtonUp, false);
 }
 void DrawingArea::on_middle_button_down(const vec2& m) {
-	emit_event("hui:middle-button-down", false);
+	emit_event(event_id::MiddleButtonDown, false);
 }
 void DrawingArea::on_middle_button_up(const vec2& m) {
-	emit_event("hui:middle-button-up", false);
+	emit_event(event_id::MiddleButtonUp, false);
 }
 void DrawingArea::on_right_button_down(const vec2& m) {
-	emit_event("hui:right-button-down", false);
+	emit_event(event_id::RightButtonDown, false);
 }
 void DrawingArea::on_right_button_up(const vec2& m) {
-	emit_event("hui:right-button-up", false);
+	emit_event(event_id::RightButtonUp, false);
 }
 void DrawingArea::on_mouse_move(const vec2& m, const vec2& d) {
 	emit_event(event_id::MouseMove, false);
 }
 void DrawingArea::on_mouse_enter(const vec2& m) {
-	emit_event("hui:mouse-enter", false);
+	emit_event(event_id::MouseEnter, false);
 }
 void DrawingArea::on_mouse_leave(const vec2& m) {
-	emit_event("hui:mouse-leave", false);
+	emit_event(event_id::MouseLeave, false);
 }
 void DrawingArea::on_mouse_wheel(const vec2& d) {
-	emit_event("hui:mouse-wheel", false);
+	emit_event(event_id::MouseWheel, false);
 }
 void DrawingArea::on_key_down(int key) {
-	emit_event("hui:key-down", false);
+	emit_event(event_id::KeyDown, false);
 }
 void DrawingArea::on_key_up(int key) {
-	emit_event("hui:key-up", false);
+	emit_event(event_id::KeyUp, false);
 }
 
 }

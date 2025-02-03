@@ -152,6 +152,8 @@ void Window::_key_callback(GLFWwindow *window, int key, int scancode, int action
 	k += mods_decode(mods);
 	//std::cout << "key " << k << "    " << key << " " << action << " " << mods << "\n";
 
+	w->state.key_code = k;
+
 	if (action == GLFW_PRESS) {
 		//w->state.key
 		w->_on_key_down(k);

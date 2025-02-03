@@ -147,25 +147,24 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 	from_source(R"foodelim(
 Dialog x x
 	Grid grid ''
-		Grid grid2 ''
-			Label ? label
-			Button new 'new' height=50 width=50 noexpandx
-			Button open 'open' height=50 width=50 noexpandx
-			Button save 'save' height=50 width=50 noexpandx
-			Button undo 'undo' height=50 width=50 noexpandx
-			Button redo 'redo' height=50 width=50 noexpandx
+		Grid toolbar ''
+			Button new 'new' height=50 width=50 noexpandx ignorefocus
+			Button open 'open' height=50 width=50 noexpandx ignorefocus
+			Button save 'save' height=50 width=50 noexpandx ignorefocus
+			Button undo 'undo' height=50 width=50 noexpandx ignorefocus
+			Button redo 'redo' height=50 width=50 noexpandx ignorefocus
 		---|
 		Grid main-grid ''
 			Overlay ? ''
-				DrawingArea area ''
+				DrawingArea area '' grabfocus
 				Grid ? '' margin=25
-					Button mouse-action 'T' height=50 width=50 noexpandx
+					Button mouse-action 'T' height=50 width=50 noexpandx ignorefocus
 					Label ? '' ignorehover expandx
-					Button cam-rotate 'R' height=50 width=50 noexpandx
+					Button cam-rotate 'R' height=50 width=50 noexpandx ignorefocus
 					---|
-					Button aaa 'x' height=50 width=50 noexpandx
+					Button aaa 'x' height=50 width=50 noexpandx ignorefocus
 					.
-					Button cam-move 'M' height=50 width=50 noexpandx
+					Button cam-move 'M' height=50 width=50 noexpandx ignorefocus
 )foodelim");
 
 	event("new", [this] {
@@ -246,6 +245,10 @@ Dialog x x
 		session->cur_mode->multi_view->on_left_button_up(state.m);
 		session->cur_mode->on_left_button_up(state.m);
 	});
+	event_x("area", xhui::event_id::KeyDown, [this] {
+		session->cur_mode->multi_view->on_key_down(state.key_code);
+		session->cur_mode->on_key_down(state.key_code);
+	});
 	event_x("cam-move", xhui::event_id::LeftButtonDown, [this] {
 		set_mouse_mode(0);
 	});
@@ -308,8 +311,6 @@ Dialog x x
 }
 
 void EdwardWindow::on_key_down(int key) {
-	session->cur_mode->multi_view->on_key_down(key);
-	session->cur_mode->on_key_down(key);
 }
 
 void EdwardWindow::update_menu() {

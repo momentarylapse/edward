@@ -87,7 +87,7 @@ Dialog entity-panel ''
 					Label ? '%'
 )foodelim");
 	size_mode_y = SizeMode::Shrink;
-	min_width_user = 350;
+	min_width_user = 320;
 
 	mode->multi_view->out_selection_changed >> create_sink([this] {
 		auto sel = mode->data->get_selection();
