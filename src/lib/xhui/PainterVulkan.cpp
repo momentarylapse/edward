@@ -152,6 +152,24 @@ void Painter::draw_arc(const vec2& p, float r, float w0, float w1) {
 	//draw_line({p.x + r * cos(w), p.y - r * sin(w)}, {p.x + r * cos(w1), p.y - r * sin(w1)});
 }
 
+void Painter::draw_circle(const vec2& p, float radius) {
+	if (fill) {
+		float r0 = corner_radius;
+		corner_radius = radius;
+		draw_rect({p - vec2(radius, radius), p + vec2(radius, radius)});
+		corner_radius = r0;
+	} else {
+		Array<vec2> points;
+		int N = 64;
+		for (int i = 0; i <= N; i++) {
+			float t = (float)i / (float)N;
+			points.add(p + vec2(cos(t * 2 * pi), sin(t * 2 * pi)) * radius);
+		}
+		draw_lines(points);
+	}
+}
+
+
 void fill_rect(ContextVulkan* context, const rect& r, const color& _color, float radius, float softness) {
 	Parameters params;
 	params.matrix = mat_pixel_to_rel * mat4::translation({r.x1, r.y1, 0}) *  mat4::scale(r.width(), r.height(), 1);
