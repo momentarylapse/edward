@@ -77,7 +77,7 @@ Dialog entity-panel ''
 					Label ? '°'
 					---|
 					Label ? 'Color'
-					Button color ''
+					ColorButton color ''
 					---|
 					Label ? 'Power'
 					SpinButton power '' range=0::0.1
@@ -128,6 +128,7 @@ Dialog entity-panel ''
 				set_float("harshness", e.light.harshness * 100);
 				set_float("theta", e.light.theta * 180 / pi);
 				set_float("radius", e.light.radius);
+				set_color("color", e.light.col);
 				set_float("power", e.light.col.r + e.light.col.g + e.light.col.b);
 			}
 		} else {
@@ -140,6 +141,8 @@ Dialog entity-panel ''
 	event("type", [this] { on_edit_light(); });
 	event("radius", [this] { on_edit_light(); });
 	event("theta", [this] { on_edit_light(); });
+	event("color", [this] { on_edit_light(); });
+	event("power", [this] { on_edit_light(); });
 	event("harshness", [this] { on_edit_light(); });
 	/*mode->data->out_changed >> create_sink([this] {
 	});*/
@@ -154,6 +157,7 @@ void EntityPanel::on_edit_light() {
 	l.radius = get_float("radius");
 	l.theta = get_float("theta") * pi / 180;
 	l.harshness = get_float("harshness") / 100;
+	l.col = get_color("color");
 	mode->data->edit_light(cur_index, l);
 }
 

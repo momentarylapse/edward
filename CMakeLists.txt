@@ -354,6 +354,7 @@ add_executable(edward
 	src/lib/vulkan/vulkan.cpp
 	src/lib/xhui/controls/Button.cpp
 	src/lib/xhui/controls/CheckBox.cpp
+	src/lib/xhui/controls/ColorButton.cpp
 	src/lib/xhui/controls/Control.cpp
 	src/lib/xhui/controls/DrawingArea.cpp
 	src/lib/xhui/controls/Edit.cpp

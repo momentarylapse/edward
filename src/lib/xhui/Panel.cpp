@@ -5,6 +5,7 @@
 #include "Theme.h"
 #include "controls/Button.h"
 #include "controls/CheckBox.h"
+#include "controls/ColorButton.h"
 #include "controls/DrawingArea.h"
 #include "controls/Edit.h"
 #include "controls/Grid.h"
@@ -169,6 +170,12 @@ void Panel::set_int(const string& id, int value) {
 			c->set_int(value);
 }
 
+void Panel::set_color(const string& id, const color& col) {
+	for (auto& c: controls)
+		if (c->id == id)
+			c->set_color(col);
+}
+
 string Panel::get_string(const string& id) const {
 	for (auto& c: controls)
 		if (c->id == id)
@@ -188,6 +195,13 @@ int Panel::get_int(const string& id) const {
 		if (c->id == id)
 			return c->get_int();
 	return 0;
+}
+
+color Panel::get_color(const string& id) const {
+	for (auto& c: controls)
+		if (c->id == id)
+			return c->get_color();
+	return Black;
 }
 
 
@@ -234,10 +248,8 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 	}
 	if (type == "Button")
 		add(new Button(id, title), x, y);
-/*	else if (type == "ColorButton")
-		add_color_button(title, x, y, id);
-	else if (type == "DefButton")
-		add_def_button(title, x, y, id);*/
+	else if (type == "ColorButton")
+		add(new ColorButton(id), x, y);
 	else if ((type == "Label") or (type == "Text"))
 		add(new Label(id, title), x, y);
 	else if (type == "Edit")
