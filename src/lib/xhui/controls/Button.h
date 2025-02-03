@@ -18,6 +18,8 @@ public:
 
 	void _draw(Painter *p) override;
 
+	virtual void on_click();
+
 	bool primary = false;
 };
 

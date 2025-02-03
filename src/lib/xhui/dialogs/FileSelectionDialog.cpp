@@ -3,14 +3,12 @@
 //
 
 #include "FileSelectionDialog.h"
-
-#include <lib/base/iter.h>
-#include <lib/os/msg.h>
-#include <lib/xhui/Painter.h>
-#include <lib/xhui/Theme.h>
-
+#include "../Painter.h"
+#include "../Theme.h"
 #include "../controls/Button.h"
 #include "../controls/Grid.h"
+#include "../../lib/base/iter.h"
+//#include "../../lib/os/msg.h"
 #include "../../os/filesystem.h"
 
 namespace xhui {

@@ -9,6 +9,7 @@
 #include <lib/xhui/Dialog.h>
 #include <lib/xhui/dialogs/FileSelectionDialog.h>
 #include <lib/xhui/dialogs/QuestionDialog.h>
+#include <lib/xhui/dialogs/ColorSelectionDialog.h>
 #include <renderer/base.h>
 #include <renderer/path/RenderPath.h>
 #include <sys/stat.h>
@@ -285,8 +286,11 @@ Dialog x x
 		/*xhui::QuestionDialog::ask(this, "Question", "Do you want to agree to this dialog?").then([] (xhui::Answer a) {
 			msg_write((int)a);
 		});*/
-		xhui::FileSelectionDialog::ask(this, "Question", session->cur_mode->get_data()->filename.parent(), {"filter=*.world"}).then([this] (const Path& filename) {
+		/*xhui::FileSelectionDialog::ask(this, "Question", session->cur_mode->get_data()->filename.parent(), {"filter=*.world"}).then([this] (const Path& filename) {
 			session->set_message(str(filename));
+		});*/
+		xhui::ColorSelectionDialog::ask(this, "Question", Red, {"filter=*.world"}).then([this] (const color& c) {
+			session->set_message(str(c));
 		});
 	});
 	event_x(id, xhui::event_id::Close, [this] {

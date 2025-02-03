@@ -19,6 +19,10 @@ void Button::enable(bool enabled) {
 	request_redraw();
 }
 
+void Button::on_click() {
+	emit_event(event_id::Click, true);
+}
+
 
 void Button::on_left_button_down(const vec2&) {
 	if (state != State::DISABLED)
@@ -26,13 +30,13 @@ void Button::on_left_button_down(const vec2&) {
 	request_redraw();
 	emit_event(event_id::LeftButtonDown, false);
 }
+
 void Button::on_left_button_up(const vec2&) {
 	if (state != State::DISABLED)
 		state = State::HOVER;
 	request_redraw();
-
 	emit_event(event_id::LeftButtonUp, false);
-	emit_event(event_id::Click, true);
+	on_click();
 }
 void Button::on_mouse_enter(const vec2&) {
 	if (state != State::DISABLED)

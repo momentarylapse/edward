@@ -3,6 +3,7 @@
 //
 
 #include "ColorButton.h"
+#include "../dialogs/ColorSelectionDialog.h"
 #include "../Painter.h"
 #include "../Theme.h"
 
@@ -18,6 +19,14 @@ void ColorButton::set_color(const color& c) {
 	_color = c;
 	request_redraw();
 }
+
+void ColorButton::on_click() {
+	ColorSelectionDialog::ask(owner, "Pick a color", _color, {}).then([this] (const color& c) {
+		set_color(c);
+		emit_event(event_id::Changed, true);
+	});
+}
+
 
 void ColorButton::_draw(Painter* p) {
 

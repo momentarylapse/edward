@@ -15,6 +15,8 @@ public:
 	explicit ColorButton(const string& id);
 	void _draw(Painter* p) override;
 
+	void on_click() override;
+
 	color _color;
 	void set_color(const color& c) override;
 	color get_color() override;
