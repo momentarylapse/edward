@@ -21,3 +21,20 @@ void ActionWorldEditLight::undo(Data *d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	std::swap(w->entities[index].light, light);
 }
+
+
+ActionWorldEditCamera::ActionWorldEditCamera(int _index, const WorldCamera& c) {
+	camera = c;
+	index = _index;
+}
+
+void* ActionWorldEditCamera::execute(Data *d) {
+	auto w = dynamic_cast<DataWorld*>(d);
+	std::swap(w->entities[index].camera, camera);
+	return nullptr;
+}
+
+void ActionWorldEditCamera::undo(Data *d) {
+	auto w = dynamic_cast<DataWorld*>(d);
+	std::swap(w->entities[index].camera, camera);
+}

@@ -195,10 +195,6 @@ void DataWorld::edit_light(int index, const WorldLight& l) {
 /*WorldCamera* DataWorld::add_camera(const WorldCamera &c) {
 	return (WorldCamera*)execute(new ActionWorldAddCamera(c));
 }*/
-
-void DataWorld::edit_camera(int index, const WorldCamera& c) {
-	execute(new ActionWorldEditCamera(index, c));
-}
 #endif
 
 
@@ -230,6 +226,10 @@ void DataWorld::delete_selection(const Selection& selection) {
 
 void DataWorld::edit_light(int index, const WorldLight& l) {
 	execute(new ActionWorldEditLight(index, l));
+}
+
+void DataWorld::edit_camera(int index, const WorldCamera& c) {
+	execute(new ActionWorldEditCamera(index, c));
 }
 
 

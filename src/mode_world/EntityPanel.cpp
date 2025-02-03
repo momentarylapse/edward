@@ -144,6 +144,12 @@ Dialog entity-panel ''
 	event("color", [this] { on_edit_light(); });
 	event("power", [this] { on_edit_light(); });
 	event("harshness", [this] { on_edit_light(); });
+
+	event("z-min", [this] { on_edit_camera(); });
+	event("z-max", [this] { on_edit_camera(); });
+	event("fov", [this] { on_edit_camera(); });
+	event("exposure", [this] { on_edit_camera(); });
+
 	/*mode->data->out_changed >> create_sink([this] {
 	});*/
 }
@@ -159,6 +165,18 @@ void EntityPanel::on_edit_light() {
 	l.harshness = get_float("harshness") / 100;
 	l.col = get_color("color");
 	mode->data->edit_light(cur_index, l);
+}
+
+void EntityPanel::on_edit_camera() {
+	if (cur_index < 0)
+		return;
+	auto& e = mode->data->entities[cur_index];
+	auto c = e.camera;
+	c.min_depth = get_float("z-min");
+	c.max_depth = get_float("z-max");
+	c.exposure = get_float("exposure");
+	c.fov = get_float("fov") * pi / 180;
+	mode->data->edit_camera(cur_index, c);
 }
 
 

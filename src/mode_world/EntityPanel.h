@@ -16,6 +16,7 @@ public:
 	explicit EntityPanel(ModeWorld* mode);
 
 	void on_edit_light();
+	void on_edit_camera();
 
 	ModeWorld* mode;
 	int cur_index = -1;
