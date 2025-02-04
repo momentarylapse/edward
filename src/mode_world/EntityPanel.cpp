@@ -19,7 +19,7 @@ Dialog entity-panel ''
 		Grid card-add '' class=card
 			Group group-add 'Add'
 				Grid ? ''
-					ListView add-list 'a' nobar dragsource=entity noexpandy height=200
+					ListView add-list 'a' nobar dragsource=entity cangrabfocus=no noexpandy height=200
 		---|
 		Grid card-entity '' class=card visible=no
 			Group group-entity 'Entity'
@@ -96,7 +96,7 @@ Dialog entity-panel ''
 	size_mode_y = SizeMode::Shrink;
 	min_width_user = 320;
 
-	add_string("add-list", "Empty entity");
+	add_string("add-list", "Entity - empty");
 	add_string("add-list", "Camera");
 	add_string("add-list", "Light - directional");
 	add_string("add-list", "Light - point");

@@ -79,7 +79,7 @@ namespace xhui {
 		p->draw_rect(_area);
 		p->set_roundness(0);
 
-		font::set_font(Theme::_default.font_name, Theme::_default.font_size);
+		p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
 		//auto dim = font::get_text_dimensions(title);
 
 		if (show_headers) {
@@ -91,13 +91,13 @@ namespace xhui {
 
 		if (hover_row >= 0) {
 			p->set_color(Theme::_default.background_hover);
-			p->set_roundness(Theme::_default.button_radius);
+	//		p->set_roundness(Theme::_default.button_radius);
 			p->draw_rect(row_area(hover_row));
 			p->set_roundness(0);
 		}
 		for (int row: selected) {
 			p->set_color(Theme::_default.background_low_selected);
-			p->set_roundness(Theme::_default.button_radius);
+	//		p->set_roundness(Theme::_default.button_radius);
 			p->draw_rect(row_area(row));
 			p->set_roundness(0);
 		}

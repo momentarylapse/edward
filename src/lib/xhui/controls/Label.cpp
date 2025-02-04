@@ -23,10 +23,10 @@ void Label::set_string(const string &s) {
 
 void Label::get_content_min_size(int &w, int &h) {
 	if (text_w < 0) {
-		font::set_font(Theme::_default.font_name, Theme::_default.font_size);
+		font::set_font(Theme::_default.font_name, Theme::_default.font_size * ui_scale);
 		auto dim = font::get_text_dimensions(title);
-		text_w = int(dim.bounding_width);
-		text_h = int(dim.inner_height());
+		text_w = int(dim.bounding_width / ui_scale);
+		text_h = int(dim.inner_height() / ui_scale);
 	}
 	w = text_w + Theme::_default.label_margin_x * 2;
 	h = text_h + Theme::_default.label_margin_y * 2;

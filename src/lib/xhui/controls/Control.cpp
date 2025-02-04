@@ -144,7 +144,7 @@ void Control::set_option(const string& key, const string& value) {
 	} else if (key == "ignorefocus") {
 		can_grab_focus = false;
 	} else if (key == "cangrabfocus") {
-		can_grab_focus = true;
+		can_grab_focus = value._bool() or (value == "");
 	} else if (key == "grabfocus") {
 		can_grab_focus = true;
 		run_later(0.01f, [this] {
