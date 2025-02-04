@@ -6,6 +6,7 @@
 
 #include <lib/os/msg.h>
 #include <lib/xhui/xhui.h>
+#include <storage/Storage.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
 
@@ -20,6 +21,8 @@ Dialog entity-panel ''
 			Group group-add 'Add'
 				Grid ? ''
 					ListView add-list 'a' nobar dragsource=entity cangrabfocus=no noexpandy height=200
+					---|
+					FileSelector add-files '' dragsource=entity-file __noexpandy __height=400
 		---|
 		Grid card-entity '' class=card visible=no
 			Group group-entity 'Entity'
@@ -101,6 +104,10 @@ Dialog entity-panel ''
 	add_string("add-list", "Light - directional");
 	add_string("add-list", "Light - point");
 	add_string("add-list", "Light - cone");
+
+	set_options("add-files", "linkevents");
+	set_options("add-files", "directory=" + str(mode_world->session->storage->root_dir));
+	set_options("add-files", "filter=*.model");
 
 	mode_world->multi_view->out_selection_changed >> create_sink([this] {
 		auto sel = mode_world->data->get_selection();

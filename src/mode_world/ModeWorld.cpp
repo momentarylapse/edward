@@ -28,6 +28,7 @@
 #include <y/world/World.h>
 #include <y/graphics-impl.h>
 #include <lib/os/msg.h>
+#include <storage/Storage.h>
 #include <view/EdwardWindow.h>
 #include <view/ActionController.h>
 #include <view/DrawingHelper.h>
@@ -66,9 +67,9 @@ void ModeWorld::on_enter() {
 	});
 
 	session->win->event_x("area", xhui::event_id::DragDrop, [this] {
+		const vec3 p = multi_view->cursor_pos_3d(session->win->drag.m);
 		if (session->win->drag.payload.match("add-entity-default-*")) {
 			int index = session->win->drag.payload.tail(1)._int();
-			const vec3 p = multi_view->cursor_pos_3d(session->win->drag.m);
 			WorldEntity e;
 			e.pos = p;
 			if (index == 0) {
@@ -96,6 +97,16 @@ void ModeWorld::on_enter() {
 				e.light.harshness = 1;
 				e.light.enabled = true;
 			}
+			data->add_entity(e);
+		} else if (session->win->drag.payload.match("filename:*.model")) {
+			Path filename = session->win->drag.payload.sub_ref(9);
+			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_MODEL));
+			session->set_message(str(fn_rel));
+			WorldEntity e;
+			e.pos = p;
+			e.basic_type = MultiViewType::WORLD_OBJECT;
+			e.object.filename = fn_rel.no_ext();
+			e.object.object = e.object.object = data->session->resource_manager->load_model(e.object.filename);
 			data->add_entity(e);
 		}
 	});
