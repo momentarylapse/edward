@@ -43,6 +43,7 @@ public:
 	virtual void on_prepare_scene(const RenderParams& params) {}
 	virtual void on_draw_win(const RenderParams& params, MultiViewWindow* win) {}
 	virtual void on_draw_post(Painter*) {}
+	virtual Mode* get_parent() { return nullptr; }
 
 	Session* session = nullptr;
 	MultiView* multi_view = nullptr;

@@ -3,6 +3,7 @@
 //
 
 #include "ModeWorld.h"
+#include "ModeAddEntity.h"
 #include "EntityPanel.h"
 #include "action/ActionWorldMoveSelection.h"
 #include <Session.h>
@@ -59,9 +60,22 @@ void ModeWorld::on_enter() {
 		{MultiViewType::WORLD_ENTITY, &data->entities}
 	};
 
-	entity_panel = new EntityPanel(this);
-	session->win->embed("main-grid", 1, 0, entity_panel);
+	session->win->event("add-entity", [this] {
+		//session->set_message("add entity");
+		//session->set_mode(new ModeAddEntity(this));
+	});
+
+	set_side_panel(new EntityPanel(this));
 }
+
+void ModeWorld::set_side_panel(xhui::Panel* p) {
+	if (side_panel) {
+	//	session->win->unembed(side_panel);
+	}
+	side_panel = p;
+	session->win->embed("main-grid", 1, 0, side_panel);
+}
+
 
 
 void ModeWorld::optimize_view() {

@@ -10,11 +10,11 @@
 #include "ModeWorld.h"
 
 EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-panel") {
-	mode = _mode;
+	mode_world = _mode;
 	from_source(R"foodelim(
 Dialog entity-panel ''
 	Grid ? '' expandx
-		Grid card-entity '' class=card
+		Grid card-entity '' class=card visible=no
 			Group group-entity 'Entity'
 				Grid ? ''
 					Label ? 'Position'
@@ -89,19 +89,14 @@ Dialog entity-panel ''
 	size_mode_y = SizeMode::Shrink;
 	min_width_user = 320;
 
-	mode->multi_view->out_selection_changed >> create_sink([this] {
-		auto sel = mode->data->get_selection();
+	mode_world->multi_view->out_selection_changed >> create_sink([this] {
+		auto sel = mode_world->data->get_selection();
 		cur_index = -1;
 		bool ok = (sel[MultiViewType::WORLD_ENTITY].num == 1);
-		enable("pos-x", ok);
-		enable("pos-y", ok);
-		enable("pos-z", ok);
-		enable("ang-x", ok);
-		enable("ang-y", ok);
-		enable("ang-z", ok);
+
 		if (sel[MultiViewType::WORLD_ENTITY].num == 1) {
 			cur_index = sel[MultiViewType::WORLD_ENTITY][0];
-			auto& e = mode->data->entities[cur_index];
+			auto& e = mode_world->data->entities[cur_index];
 			set_float("pos-x", e.pos.x);
 			set_float("pos-y", e.pos.y);
 			set_float("pos-z", e.pos.z);
@@ -109,6 +104,7 @@ Dialog entity-panel ''
 			set_float("ang-x", e.ang.x * 180 / pi);
 			set_float("ang-y", e.ang.y * 180 / pi);
 			set_float("ang-z", e.ang.z * 180 / pi);
+			set_visible("card-entity", true);
 			set_visible("card-object", e.basic_type == MultiViewType::WORLD_OBJECT);
 			set_visible("card-terrain", e.basic_type == MultiViewType::WORLD_TERRAIN);
 			set_visible("card-camera", e.basic_type == MultiViewType::WORLD_CAMERA);
@@ -132,6 +128,7 @@ Dialog entity-panel ''
 				set_float("power", e.light.col.r + e.light.col.g + e.light.col.b);
 			}
 		} else {
+			set_visible("card-entity", false);
 			set_visible("card-object", false);
 			set_visible("card-terrain", false);
 			set_visible("card-camera", false);
@@ -157,26 +154,26 @@ Dialog entity-panel ''
 void EntityPanel::on_edit_light() {
 	if (cur_index < 0)
 		return;
-	auto& e = mode->data->entities[cur_index];
+	auto& e = mode_world->data->entities[cur_index];
 	auto l = e.light;
 	l.type = (LightType)get_int("type");
 	l.radius = get_float("radius");
 	l.theta = get_float("theta") * pi / 180;
 	l.harshness = get_float("harshness") / 100;
 	l.col = get_color("color");
-	mode->data->edit_light(cur_index, l);
+	mode_world->data->edit_light(cur_index, l);
 }
 
 void EntityPanel::on_edit_camera() {
 	if (cur_index < 0)
 		return;
-	auto& e = mode->data->entities[cur_index];
+	auto& e = mode_world->data->entities[cur_index];
 	auto c = e.camera;
 	c.min_depth = get_float("z-min");
 	c.max_depth = get_float("z-max");
 	c.exposure = get_float("exposure");
 	c.fov = get_float("fov") * pi / 180;
-	mode->data->edit_camera(cur_index, c);
+	mode_world->data->edit_camera(cur_index, c);
 }
 
 

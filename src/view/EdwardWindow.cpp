@@ -165,6 +165,8 @@ Dialog x x
 					Button aaa 'x' height=50 width=50 noexpandx ignorefocus
 					.
 					Button cam-move 'M' height=50 width=50 noexpandx ignorefocus
+					---|
+					Button add-entity '+' height=50 width=50 noexpandx ignorefocus
 )foodelim");
 
 	event("new", [this] {

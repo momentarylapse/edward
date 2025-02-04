@@ -13,6 +13,9 @@
 class Light;
 class MultiViewWindow;
 class EntityPanel;
+namespace xhui {
+	class Panel;
+}
 
 class ModeWorld : public Mode {
 public:
@@ -41,7 +44,9 @@ public:
 	DataWorld* data;
 	DataWorld temp;
 	Array<Light*> lights;
-	EntityPanel* entity_panel = nullptr;
+
+	xhui::Panel* side_panel = nullptr;
+	void set_side_panel(xhui::Panel* p);
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 

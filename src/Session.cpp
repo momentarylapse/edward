@@ -214,13 +214,23 @@ void Session::set_mode_now(Mode *m) {
 	mode_queue.add(m);
 	if (mode_queue.num > 1)
 		return;
-
-	cur_mode->on_leave();
-	if (cur_mode->get_data()) {
-		cur_mode->get_data()->unsubscribe(win);
-		cur_mode->get_data()->action_manager->unsubscribe(win);
+#endif
+	if (cur_mode) {
+		cur_mode->on_leave();
+		if (cur_mode->get_data()) {
+			cur_mode->get_data()->unsubscribe(win);
+			if (cur_mode->multi_view)
+				cur_mode->get_data()->unsubscribe(cur_mode->multi_view);
+			cur_mode->get_data()->action_manager->unsubscribe(win);
+		}
+		if (cur_mode->multi_view) {
+			cur_mode->multi_view->unsubscribe(win);
+			win->renderer->children.pop();
+		}
+		cur_mode->unsubscribe(win);
 	}
 
+#if 0
 	m = mode_queue[0];
 	while (m) {
 
@@ -228,11 +238,11 @@ void Session::set_mode_now(Mode *m) {
 		while (cur_mode) {
 			if (cur_mode->is_ancestor_of(m))
 				break;
-			msg_write("end " + cur_mode->name);
-			cur_mode->on_end();
-			if (cur_mode->multi_view)
-				cur_mode->multi_view->pop_settings();
-			cur_mode = cur_mode->parent_untyped;
+			//msg_write("end " + cur_mode->name);
+			cur_mode->on_leave_rec();
+		//	if (cur_mode->multi_view)
+		//		cur_mode->multi_view->pop_settings();
+			cur_mode = cur_mode->get_parent();
 		}
 
 		//multi_view_3d->ResetMouseAction();
@@ -241,9 +251,9 @@ void Session::set_mode_now(Mode *m) {
 		// start new modes
 		while (cur_mode != m) {
 			cur_mode = cur_mode->get_next_child_to(m);
-			msg_write("start " + cur_mode->name);
-			if (cur_mode->multi_view)
-				cur_mode->multi_view->push_settings();
+		//	msg_write("start " + cur_mode->name);
+		//	if (cur_mode->multi_view)
+		//		cur_mode->multi_view->push_settings();
 			cur_mode->on_enter_rec();
 		}
 		cur_mode->on_enter();

@@ -18,7 +18,7 @@ public:
 	void on_edit_light();
 	void on_edit_camera();
 
-	ModeWorld* mode;
+	ModeWorld* mode_world;
 	int cur_index = -1;
 };
 
