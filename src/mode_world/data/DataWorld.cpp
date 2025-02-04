@@ -30,6 +30,7 @@
 #include "../action/ActionWorldPaste.h"
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>
+#include <mode_world/action/entity/ActionWorldAddEntity.h>
 
 #include "../action/ActionWorldDeleteSelection.h"
 #include <y/graphics-impl.h>
@@ -184,10 +185,6 @@ WorldTerrain* DataWorld::add_new_terrain(const vec3& pos, const vec3& size, int 
 	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));
 }
 
-WorldLight* DataWorld::add_light(const WorldLight &l) {
-	return (WorldLight*)execute(new ActionWorldAddLight(l));
-}
-
 void DataWorld::edit_light(int index, const WorldLight& l) {
 	execute(new ActionWorldEditLight(index, l));
 }
@@ -222,6 +219,10 @@ void DataWorld::paste(const DataWorld& temp) {
 
 void DataWorld::delete_selection(const Selection& selection) {
 	execute(new ActionWorldDeleteSelection(this, selection));
+}
+
+WorldEntity* DataWorld::add_entity(const WorldEntity& e) {
+	return (WorldEntity*)execute(new ActionWorldAddEntity(e));
 }
 
 void DataWorld::edit_light(int index, const WorldLight& l) {

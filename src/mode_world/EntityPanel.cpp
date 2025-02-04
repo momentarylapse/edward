@@ -96,6 +96,7 @@ Dialog entity-panel ''
 	size_mode_y = SizeMode::Shrink;
 	min_width_user = 320;
 
+	add_string("add-list", "Empty entity");
 	add_string("add-list", "Camera");
 	add_string("add-list", "Light - directional");
 	add_string("add-list", "Light - point");

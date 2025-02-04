@@ -410,6 +410,10 @@ void MultiView::draw_mouse_pos(Painter* p) {
 #endif
 }
 
+vec3 MultiView::cursor_pos_3d(const vec2& m) const {
+	return window.unproject(vec3(m, 0), view_port.pos);
+}
+
 
 
 MultiView::ViewPort::ViewPort(MultiView* _multi_view) {

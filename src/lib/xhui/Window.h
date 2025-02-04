@@ -109,6 +109,7 @@ public:
 		float pre_distance = -1;
 		string title;
 		string payload;
+		vec2 m;
 	} drag;
 	void start_pre_drag(Control* source);
 	void start_drag(const string& title, const string& payload);

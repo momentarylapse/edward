@@ -6,6 +6,9 @@
  */
 
 #include "ActionWorldAddLight.h"
+
+#include <view/MultiView.h>
+
 #include "../../data/DataWorld.h"
 #include "../../data/WorldLight.h"
 
@@ -15,12 +18,14 @@ ActionWorldAddLight::ActionWorldAddLight(const WorldLight &l) {
 
 void* ActionWorldAddLight::execute(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	//w->lights.add(light);
-	//return &w->lights.back();
-	return nullptr;
+	WorldEntity e;
+	e.basic_type = MultiViewType::WORLD_LIGHT;
+	e.light = light;
+	w->entities.add(e);
+	return &w->entities.back();
 }
 
 void ActionWorldAddLight::undo(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
-	//w->lights.pop();
+	w->entities.pop();
 }

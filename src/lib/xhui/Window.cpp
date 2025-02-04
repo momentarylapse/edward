@@ -290,6 +290,8 @@ void Window::_on_mouse_move(const vec2 &m, const vec2& d) {
 	auto hover = get_hover_control(m);
 	if (state.lbut and drag.source) {
 		if (drag.active) {
+			drag.m = m;
+			// update events...
 
 		} else if (drag.pre_distance < 10) {
 			drag.pre_distance += d.length();

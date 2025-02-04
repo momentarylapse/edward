@@ -66,8 +66,38 @@ void ModeWorld::on_enter() {
 	});
 
 	session->win->event_x("area", xhui::event_id::DragDrop, [this] {
-		session->set_message("add entity: "  + session->win->drag.payload);
-		//session->set_mode(new ModeAddEntity(this));
+		if (session->win->drag.payload.match("add-entity-default-*")) {
+			int index = session->win->drag.payload.tail(1)._int();
+			const vec3 p = multi_view->cursor_pos_3d(session->win->drag.m);
+			WorldEntity e;
+			e.pos = p;
+			if (index == 0) {
+				e.basic_type = MultiViewType::WORLD_ENTITY;
+			} else if (index == 1) {
+				e.basic_type = MultiViewType::WORLD_CAMERA;
+				e.camera.min_depth = 1;
+				e.camera.max_depth = 100000;
+				e.camera.fov = 0.7f;
+				e.camera.exposure = 1;
+			} else {
+				e.basic_type = MultiViewType::WORLD_LIGHT;
+				e.light.col = White;
+				e.light.type = LightType::DIRECTIONAL;
+				e.light.radius = 0;
+				e.light.theta = 0;
+				if (index == 3) {
+					e.light.type = LightType::POINT;
+					e.light.radius = multi_view->view_port.radius * 0.3f;
+				} else if (index == 4) {
+					e.light.type = LightType::CONE;
+					e.light.radius = multi_view->view_port.radius * 0.3f;
+					e.light.theta = 0.5f;
+				}
+				e.light.harshness = 1;
+				e.light.enabled = true;
+			}
+			data->add_entity(e);
+		}
 	});
 
 	set_side_panel(new EntityPanel(this));
