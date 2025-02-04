@@ -8,6 +8,7 @@
 #include "controls/ColorButton.h"
 #include "controls/DrawingArea.h"
 #include "controls/Edit.h"
+#include "controls/FileSelector.h"
 #include "controls/Grid.h"
 #include "controls/Group.h"
 #include "controls/Label.h"
@@ -254,24 +255,34 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 	}
 	if (type == "Button")
 		add(new Button(id, title), x, y);
-	else if (type == "ColorButton")
-		add(new ColorButton(id), x, y);
-	else if ((type == "Label") or (type == "Text"))
-		add(new Label(id, title), x, y);
-	else if (type == "Edit")
-		add(new Edit(id, title), x, y);
-	else if (type == "MultilineEdit")
-		add(new MultilineEdit(id, title), x, y);
-	else if (type == "Group")
-		add(new Group(id, title), x, y);
 	else if (type == "CheckBox")
 		add(new CheckBox(id, title), x, y);
+	else if (type == "ColorButton")
+		add(new ColorButton(id), x, y);
+	else if (type == "DrawingArea")
+		add(new DrawingArea(id), x, y);
+	else if (type == "Edit")
+		add(new Edit(id, title), x, y);
+	else if (type == "FileSelector")
+		add(new FileSelector(id), x, y);
+	else if (type == "Grid")
+		add(new Grid(id), x, y);
+	else if (type == "Group")
+		add(new Group(id, title), x, y);
+	else if (type == "Label")
+		add(new Label(id, title), x, y);
+	else if (type == "ListView")
+		add(new ListView(id, title), x, y);
+	else if (type == "MultilineEdit")
+		add(new MultilineEdit(id, title), x, y);
+	else if (type == "Overlay")
+		add(new Overlay(id), x, y);
+	else if (type == "SpinButton")
+		add(new SpinButton(id, title._float()), x, y);
 //	else if (type == "ComboBox")
 //		add_combo_box(title, x, y, id);
 //	else if (type == "TabControl")
 //		add_tab_control(title, x, y, id);
-	else if (type == "ListView")
-		add(new ListView(id, title), x, y);
 //	else if (type == "TreeView")
 //		add_tree_view(title, x, y, id);
 //	else if (type == "IconView")
@@ -282,14 +293,6 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 //		add_slider(title, x, y, id);
 //	else if (type == "Image")
 //		add_image(title, x, y, id);
-	else if (type == "DrawingArea")
-		add(new DrawingArea(id), x, y);
-	else if (type == "Grid")
-		add(new Grid(id), x, y);
-	else if (type == "Overlay")
-		add(new Overlay(id), x, y);
-	else if (type == "SpinButton")
-		add(new SpinButton(id, title._float()), x, y);
 /*	else if (type == "RadioButton")
 		add_radio_button(title, x, y, id);
 	else if (type == "ToggleButton")

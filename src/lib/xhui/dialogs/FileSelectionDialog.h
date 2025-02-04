@@ -11,13 +11,13 @@
 
 namespace xhui {
 
-class FileSelectionControl;
+class FileSelector;
 
 class FileSelectionDialog : public Dialog {
 public:
 	FileSelectionDialog(Panel* parent, const string& title, const Path &dir, const Array<string> &params);
 
-	FileSelectionControl* list;
+	FileSelector* selector;
 	base::promise<Path> promise;
 
 	bool saving;

@@ -36,7 +36,8 @@ void Button::on_left_button_up(const vec2&) {
 		state = State::HOVER;
 	request_redraw();
 	emit_event(event_id::LeftButtonUp, false);
-	on_click();
+	if (state != State::DISABLED)
+		on_click();
 }
 void Button::on_mouse_enter(const vec2&) {
 	if (state != State::DISABLED)
