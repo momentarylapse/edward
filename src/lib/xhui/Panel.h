@@ -24,6 +24,7 @@ public:
 	void set_target(const string& id);
 
 	void set_string(const string& id, const string& text);
+	void add_string(const string& id, const string& text);
 	void set_float(const string& id, float value);
 	void set_int(const string& id, int value);
 	void set_color(const string& id, const color& c);

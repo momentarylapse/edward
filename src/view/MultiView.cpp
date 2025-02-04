@@ -182,7 +182,7 @@ void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
 			update_selection_box();
 		}*/
 		return;
-	} else if (session->win->button(0)) {
+	} else if (session->win->button(0) and possibly_selecting) {
 		// start selection rect
 		selection_area = rect(m - d, m);
 		//update_selection_box();
@@ -270,6 +270,7 @@ void MultiView::update_selection_box() {
 
 void MultiView::on_left_button_down(const vec2& m) {
 	hover = get_hover(hover_window, m);
+	possibly_selecting = true;
 
 	//action_controller->on_left_button_down(m);
 	if (hover and hover->type == MultiViewType::ACTION_MANAGER) {
@@ -310,6 +311,7 @@ void MultiView::on_left_button_up(const vec2& m) {
 	}
 	selection_area = base::None;
 	hover = get_hover(hover_window, m);
+	possibly_selecting = false;
 }
 
 

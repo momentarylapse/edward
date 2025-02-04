@@ -108,6 +108,7 @@ public:
 	void update_selection_box();
 
 	base::optional<rect> selection_area;
+	bool possibly_selecting = false; // lbut down?
 
 	ActionController* action_controller;
 

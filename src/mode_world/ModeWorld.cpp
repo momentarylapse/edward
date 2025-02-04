@@ -65,6 +65,11 @@ void ModeWorld::on_enter() {
 		//session->set_mode(new ModeAddEntity(this));
 	});
 
+	session->win->event_x("area", xhui::event_id::DragDrop, [this] {
+		session->set_message("add entity: "  + session->win->drag.payload);
+		//session->set_mode(new ModeAddEntity(this));
+	});
+
 	set_side_panel(new EntityPanel(this));
 }
 

@@ -103,6 +103,15 @@ protected:
 #endif
 
 public:
+	struct Drag {
+		bool active = false;
+		Control* source = nullptr;
+		float pre_distance = -1;
+		string title;
+		string payload;
+	} drag;
+	void start_pre_drag(Control* source);
+	void start_drag(const string& title, const string& payload);
 
 	bool _destroy_requested = false;
 

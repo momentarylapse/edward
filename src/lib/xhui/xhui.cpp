@@ -308,6 +308,8 @@ namespace event_id {
 	const string KeyDown = "hui:key-down";
 	const string KeyUp = "hui:key-up";
 	const string Select = "hui:select";
+	const string DragStart = "hui:drag-start";
+	const string DragDrop = "hui:drag-drop";
 };
 
 }

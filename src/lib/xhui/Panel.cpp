@@ -158,6 +158,12 @@ void Panel::set_string(const string& id, const string& text) {
 			c->set_string(text);
 }
 
+void Panel::add_string(const string& id, const string& text) {
+	for (auto& c: controls)
+		if (c->id == id)
+			c->add_string(text);
+}
+
 void Panel::set_float(const string& id, float value) {
 	for (auto& c: controls)
 		if (c->id == id)

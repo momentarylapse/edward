@@ -5,6 +5,8 @@
 #include "EntityPanel.h"
 
 #include <lib/os/msg.h>
+#include <lib/xhui/xhui.h>
+#include <view/EdwardWindow.h>
 #include <view/MultiView.h>
 
 #include "ModeWorld.h"
@@ -14,6 +16,11 @@ EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-pane
 	from_source(R"foodelim(
 Dialog entity-panel ''
 	Grid ? '' expandx
+		Grid card-add '' class=card
+			Group group-add 'Add'
+				Grid ? ''
+					ListView add-list 'a' nobar dragsource=entity noexpandy height=200
+		---|
 		Grid card-entity '' class=card visible=no
 			Group group-entity 'Entity'
 				Grid ? ''
@@ -89,6 +96,11 @@ Dialog entity-panel ''
 	size_mode_y = SizeMode::Shrink;
 	min_width_user = 320;
 
+	add_string("add-list", "Camera");
+	add_string("add-list", "Light - directional");
+	add_string("add-list", "Light - point");
+	add_string("add-list", "Light - cone");
+
 	mode_world->multi_view->out_selection_changed >> create_sink([this] {
 		auto sel = mode_world->data->get_selection();
 		cur_index = -1;
@@ -104,6 +116,7 @@ Dialog entity-panel ''
 			set_float("ang-x", e.ang.x * 180 / pi);
 			set_float("ang-y", e.ang.y * 180 / pi);
 			set_float("ang-z", e.ang.z * 180 / pi);
+			set_visible("card-add", false);
 			set_visible("card-entity", true);
 			set_visible("card-object", e.basic_type == MultiViewType::WORLD_OBJECT);
 			set_visible("card-terrain", e.basic_type == MultiViewType::WORLD_TERRAIN);
@@ -128,6 +141,7 @@ Dialog entity-panel ''
 				set_float("power", e.light.col.r + e.light.col.g + e.light.col.b);
 			}
 		} else {
+			set_visible("card-add", true);
 			set_visible("card-entity", false);
 			set_visible("card-object", false);
 			set_visible("card-terrain", false);
@@ -146,6 +160,11 @@ Dialog entity-panel ''
 	event("z-max", [this] { on_edit_camera(); });
 	event("fov", [this] { on_edit_camera(); });
 	event("exposure", [this] { on_edit_camera(); });
+
+	event_x("add-list", xhui::event_id::DragStart, [this] {
+		int i = get_int("add-list");
+		mode_world->session->win->start_drag("New entity", "add-entity-default-" + str(i));
+	});
 
 	/*mode->data->out_changed >> create_sink([this] {
 	});*/

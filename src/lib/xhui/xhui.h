@@ -162,6 +162,8 @@ namespace event_id {
 	extern const string KeyDown;
 	extern const string KeyUp;
 	extern const string Select;
+	extern const string DragStart;
+	extern const string DragDrop;
 };
 
 

@@ -260,6 +260,12 @@ void Window::_on_left_button_down(const vec2& m) {
 }
 void Window::_on_left_button_up(const vec2& m) {
 	state.lbut = false;
+	if (drag.active and hover_control)
+		hover_control->emit_event(event_id::DragDrop, false);
+	drag.active = false;
+	drag.source = nullptr;
+	request_redraw();
+
 	if (hover_control)
 		hover_control->on_left_button_up(m);
 	on_left_button_up(m);
@@ -282,7 +288,18 @@ void Window::_on_right_button_up(const vec2& m) {
 }
 void Window::_on_mouse_move(const vec2 &m, const vec2& d) {
 	auto hover = get_hover_control(m);
-	if (hover != hover_control and !state.lbut) {
+	if (state.lbut and drag.source) {
+		if (drag.active) {
+
+		} else if (drag.pre_distance < 10) {
+			drag.pre_distance += d.length();
+			if (drag.pre_distance > 10) {
+				drag.source->emit_event(event_id::DragStart, false);
+			}
+		}
+	}
+
+	if (hover != hover_control and !state.lbut or drag.active) {
 		if (hover_control)
 			hover_control->on_mouse_leave(m);
 		hover_control = hover;
@@ -380,6 +397,13 @@ void Window::_on_draw() {
 		const vec2 size = vec2(dialog->width, dialog->height);
 		dialog->negotiate_area({m - size/2, m + size/2});
 		dialog->_draw(p);
+	}
+
+	if (drag.active) {
+		p->set_font_size(Theme::_default.font_size * 1.5f);
+		p->set_color(Red);
+		p->draw_str(state.m + vec2(20, 0), drag.title);
+		p->set_font_size(Theme::_default.font_size);
 	}
 
 #if 0
@@ -486,6 +510,20 @@ void Window::set_mouse_mode(int mode) {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
 }
+
+void Window::start_pre_drag(Control* source) {
+	drag.pre_distance = 0;
+	drag.source = source;
+	drag.active = false;
+}
+
+void Window::start_drag(const string& title, const string& payload) {
+	drag.title = title;
+	drag.payload = payload;
+	drag.active = true;
+	request_redraw();
+}
+
 
 
 void Window::request_destroy() {
