@@ -9,6 +9,7 @@
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
+#include <world/Terrain.h>
 
 #include "ModeWorld.h"
 
@@ -22,7 +23,7 @@ Dialog entity-panel ''
 				Grid ? ''
 					ListView add-list 'a' nobar dragsource=entity cangrabfocus=no noexpandy height=200
 					---|
-					FileSelector add-files '' dragsource=entity-file __noexpandy __height=400
+					FileSelector add-files '' dragsource=entity-file __noexpandy height=400
 		---|
 		Grid card-entity '' class=card visible=no
 			Group group-entity 'Entity'
@@ -54,8 +55,11 @@ Dialog entity-panel ''
 		Grid card-terrain '' class=card visible=no
 			Group group-terrain 'Terrain'
 				Grid ? ''
-					Label ? 'Filename'
-					Button filename2 ''
+					Grid ? ''
+						Label ? 'Filename'
+						Button filename2 ''
+					---|
+					ListView textures 'a\\filename' nobar format=it noexpandy height=200
 		---|
 		Grid card-camera '' class=card visible=no
 			Group group-camera 'Camera'
@@ -134,6 +138,9 @@ Dialog entity-panel ''
 				set_string("filename", str(e.object.filename));
 			} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
 				set_string("filename2", str(e.terrain.filename));
+				reset("textures");
+				for (const auto& tf: e.terrain.terrain->texture_file)
+					add_string("textures", format("...\\%s", tf));
 			} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
 				set_float("z-min", e.camera.min_depth);
 				set_float("z-max", e.camera.max_depth);

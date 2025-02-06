@@ -29,6 +29,7 @@ public:
 	void set_int(const string& id, int value);
 	void set_color(const string& id, const color& c);
 	void enable(const string& id, bool enabled);
+	void reset(const string& id);
 	void set_visible(const string& id, bool visible);
 	string get_string(const string& id) const;
 	float get_float(const string& id) const;

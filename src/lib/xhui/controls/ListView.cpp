@@ -121,6 +121,7 @@ namespace xhui {
 		request_redraw();
 	}
 	void ListView::reset() {
+		selected.clear();
 		cells.clear();
 		request_redraw();
 	}

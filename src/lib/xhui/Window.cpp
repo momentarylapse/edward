@@ -143,7 +143,7 @@ void Window::_key_callback(GLFWwindow *window, int key, int scancode, int action
 
 	auto w = (Window*)glfwGetWindowUserPointer(window);
 
-	if (action == GLFW_PRESS) {
+	if (action == GLFW_PRESS or action == GLFW_REPEAT) {
 		w->state.key[k] = true;
 	} if (action == GLFW_RELEASE) {
 		w->state.key[k] = false;
@@ -154,7 +154,7 @@ void Window::_key_callback(GLFWwindow *window, int key, int scancode, int action
 
 	w->state.key_code = k;
 
-	if (action == GLFW_PRESS) {
+	if (action == GLFW_PRESS or action == GLFW_REPEAT) {
 		//w->state.key
 		w->_on_key_down(k);
 	} if (action == GLFW_RELEASE) {

@@ -211,6 +211,11 @@ color Panel::get_color(const string& id) const {
 	return Black;
 }
 
+void Panel::reset(const string& id) {
+	for (auto& c: controls)
+		if (c->id == id)
+			c->reset();
+}
 
 void Panel::enable(const string& id, bool enabled) {
 	for (auto& c: controls)
