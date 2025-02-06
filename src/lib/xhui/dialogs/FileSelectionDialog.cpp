@@ -60,6 +60,10 @@ FileSelectionDialog::FileSelectionDialog(Panel* parent, const string& title, con
 	event_x(selector->id, event_id::Select, [this] {
 		enable("ok", !selector->get_selected_filename().is_empty());
 	});
+	event_x(selector->id, event_id::Activate, [this] {
+		promise(selector->get_selected_filename());
+		request_destroy();
+	});
 }
 
 base::future<Path> FileSelectionDialog::ask(Panel* parent, const string& title, const Path& dir, const Array<string>& params) {

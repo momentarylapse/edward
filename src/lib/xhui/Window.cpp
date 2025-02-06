@@ -1,4 +1,7 @@
 #include "Window.h"
+
+#include <lib/os/time.h>
+
 #include "xhui.h"
 #include "Painter.h"
 #include "ContextVulkan.h"
@@ -182,9 +185,14 @@ void Window::_cursor_enter_callback(GLFWwindow *window, int enter) {
 void Window::_mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
 	//std::cout << "button " << button << " " << action << " " << mods << "\n";
 	auto w = (Window*)glfwGetWindowUserPointer(window);
+	static os::Timer timer;
 	if (action == GLFW_PRESS) {
-		if (button == GLFW_MOUSE_BUTTON_LEFT)
+		if (button == GLFW_MOUSE_BUTTON_LEFT) {
 			w->_on_left_button_down(w->state.m);
+			float dt = timer.get();
+			if (dt > 0.05f and dt < 0.5f)
+				w->_on_left_double_click(w->state.m);
+		}
 		if (button == GLFW_MOUSE_BUTTON_MIDDLE)
 			w->_on_middle_button_down(w->state.m);
 		if (button == GLFW_MOUSE_BUTTON_RIGHT)
@@ -269,6 +277,12 @@ void Window::_on_left_button_up(const vec2& m) {
 	if (hover_control)
 		hover_control->on_left_button_up(m);
 	on_left_button_up(m);
+}
+void Window::_on_left_double_click(const vec2& m) {
+	state.lbut = true;
+	if (hover_control)
+		hover_control->on_left_double_click(m);
+	on_left_double_click(m);
 }
 void Window::_on_middle_button_down(const vec2& m) {
 	state.mbut = true;

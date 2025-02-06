@@ -6,6 +6,7 @@
 
 #include <lib/os/msg.h>
 #include <lib/xhui/xhui.h>
+#include <lib/xhui/dialogs/FileSelectionDialog.h>
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
@@ -179,6 +180,19 @@ Dialog entity-panel ''
 	event_x("add-list", xhui::event_id::DragStart, [this] {
 		int i = get_int("add-list");
 		mode_world->session->win->start_drag("New entity", "add-entity-default-" + str(i));
+	});
+
+	event("textures", [this] {
+		int i = get_int("textures");
+		if (i >= 0)
+			mode_world->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, i] (const auto& filename) {
+				auto& e = mode_world->data->entities[cur_index];
+				auto& t = e.terrain;
+				t.terrain->texture_file[i] = filename.relative;
+				reset("textures");
+				for (const auto& tf: e.terrain.terrain->texture_file)
+					add_string("textures", format("...\\%s", tf));
+			});
 	});
 
 	/*mode->data->out_changed >> create_sink([this] {

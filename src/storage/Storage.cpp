@@ -354,7 +354,6 @@ base::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int pre
 		promise(cp);
 	};
 
-	filter = "*.world";
 #if 1
 	/*if (save)
 		xhui::file_dialog_save(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})

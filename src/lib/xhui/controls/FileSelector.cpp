@@ -27,17 +27,27 @@ public:
 		update_files();
 	}
 	void set_filter(const string& _filter) {
-		filter = _filter;
+		filter = _filter.explode(";");
 		update_files();
 	}
 	void update_files() {
 		hover = -1;
 		selected = -1;
 		items.clear();
-		const auto list = os::fs::search(current_dir, filter, "df");
+		auto ff = [this] (const Path& fn) {
+			for (const auto& _f: filter)
+				if (str(fn).match(_f))
+					return true;
+			return filter.num == 0;
+		};
+		const auto list = os::fs::search(current_dir, "*", "df");
 		for (const auto& e: list)
-			if (str(e).head(1) != ".")
-				items.add({e, os::fs::is_directory(current_dir | e)});
+			if (str(e).head(1) != ".") {
+				if (os::fs::is_directory(current_dir | e))
+					items.add({e, true});
+				else if (ff(e))
+					items.add({e, false});
+			}
 		request_redraw();
 		emit_event(event_id::Select, false);
 	}
@@ -90,6 +100,15 @@ public:
 				owner->get_window()->start_pre_drag(this);
 		}
 	}
+	void on_left_double_click(const vec2& m) override {
+		if (selected < 0)
+			return;
+		const auto e = items[selected];
+		if (e.is_directory) {
+		} else {
+			emit_event(event_id::Activate, false);
+		}
+	}
 	int get_hover(const vec2& m) {
 		for (const auto& [i, it]: enumerate(items))
 			if (item_area(i).inside(m))
@@ -125,7 +144,7 @@ public:
 
 	Path current_dir;
 	Array<Item> items;
-	string filter = "*";
+	Array<string> filter;
 	int hover = -1;
 	int selected = -1;
 	string drag_source_id;
@@ -163,6 +182,9 @@ void FileSelector::link_events() {
 	});
 	owner->event_x(list->id, event_id::Select, [this] {
 		emit_event(event_id::Select, false);
+	});
+	owner->event_x(list->id, event_id::Activate, [this] {
+		emit_event(event_id::Activate, true);
 	});
 	owner->event_x(list->id, event_id::DragStart, [this] {
 		owner->get_window()->start_drag(get_selected_filename().basename(), "filename:" + str(get_selected_filename()));

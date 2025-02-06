@@ -43,6 +43,7 @@ public:
 
 	virtual void on_left_button_down(const vec2& m) {}
 	virtual void on_left_button_up(const vec2& m) {}
+	virtual void on_left_double_click(const vec2& m) {}
 	virtual void on_middle_button_down(const vec2& m) {}
 	virtual void on_middle_button_up(const vec2& m) {}
 	virtual void on_right_button_down(const vec2& m) {}

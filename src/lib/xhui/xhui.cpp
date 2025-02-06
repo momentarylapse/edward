@@ -290,6 +290,7 @@ void run() {
 }
 
 namespace event_id {
+	const string Activate = "hui:activate";
 	const string Close = "hui:close";
 	const string Click = "hui:click";
 	const string Changed = "hui:changed";

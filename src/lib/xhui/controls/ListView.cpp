@@ -26,8 +26,12 @@ namespace xhui {
 	void ListView::on_left_button_up(const vec2&) {
 		request_redraw();
 
-		emit_event(event_id::Click, true);
+		emit_event(event_id::Click, false);
 	}
+void ListView::on_left_double_click(const vec2& m) {
+	emit_event(event_id::Activate, true);
+}
+
 	void ListView::on_mouse_enter(const vec2&) {
 		//state = State::HOVER;
 		request_redraw();
