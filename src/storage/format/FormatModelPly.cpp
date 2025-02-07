@@ -6,16 +6,16 @@
  */
 
 #include "FormatModelPly.h"
-#include "../../EdwardWindow.h"
-#include "../../data/model/DataModel.h"
-#include "../../data/model/ModelMesh.h"
-#include "../../data/model/ModelPolygon.h"
-#include "../../data/model/geometry/Geometry.h"
+#include "../../view/EdwardWindow.h"
+#include "../../mode_model/data/DataModel.h"
+#include "../../mode_model/data/ModelMesh.h"
+#include "../../mode_model/data/ModelPolygon.h"
+#include "../../data/geometry/Geometry.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
 
-FormatModelPly::FormatModelPly(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "ply", _("Model ply"), Flag::READ) {
+FormatModelPly::FormatModelPly(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "ply", "Model ply", Flag::READ) {
 }
 
 void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
@@ -136,7 +136,11 @@ void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
 			}
 		}
 	}
+#if 0
 		m->pasteGeometry(g, 0);
+#else
+		throw Exception("todo");
+#endif
 
 	} catch (Exception &e) {
 		delete f;

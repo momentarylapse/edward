@@ -6,17 +6,17 @@
  */
 
 #include "FormatModelJson.h"
-#include "../../EdwardWindow.h"
-#include "../../data/model/DataModel.h"
-#include "../../data/model/ModelMesh.h"
-#include "../../data/model/ModelPolygon.h"
+#include "../../view/EdwardWindow.h"
+#include "../../mode_model/data/DataModel.h"
+#include "../../mode_model/data/ModelMesh.h"
+#include "../../mode_model/data/ModelPolygon.h"
 #include <y/world/components/Animator.h>
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
 #include "../../lib/math/quaternion.h"
 
-FormatModelJson::FormatModelJson(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "json", _("Model json"), Flag::READ_WRITE) {
+FormatModelJson::FormatModelJson(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "json", "Model json", Flag::READ_WRITE) {
 	f = nullptr;
 	cur_token = -1;
 }
@@ -485,8 +485,10 @@ void FormatModelJson::importMaterials(DataModel *m, Value *v)
 void FormatModelJson::importVertices(DataModel *m, Value *v)
 {
 	msg_write("vertices");
+#if 0
 	for (int i=0; i<v->getCount(); i+=3)
 		m->addVertex(val2vec(v, i));
+#endif
 }
 
 void FormatModelJson::importPolygons(DataModel *m, Value *v)
@@ -531,7 +533,9 @@ void FormatModelJson::importPolygons(DataModel *m, Value *v)
 			for (int j=0; j<vert.num; j++)
 				col.add(v->get(i ++)->i());
 		}
+#if 0
 		m->addPolygon(vert, mat);
+#endif
 		//msg_write(ia2s(vert));
 	}
 }

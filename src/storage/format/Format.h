@@ -25,7 +25,7 @@ public:
 
 class FormatUnhandledError : public FormatError {
 public:
-	FormatUnhandledError() : FormatError("format unhandled") {}
+	explicit FormatUnhandledError(const string& ext) : FormatError("format unhandled: " + ext) {}
 };
 
 template<class F>

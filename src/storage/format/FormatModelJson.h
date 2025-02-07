@@ -9,14 +9,14 @@
 #define SRC_STORAGE_FORMAT_FORMATMODELJSON_H_
 
 #include "Format.h"
-#include "../../data/model/DataModel.h"
+#include "../../mode_model/data/DataModel.h"
 
 class DataModel;
 class Stream;
 
 class FormatModelJson : public TypedFormat<DataModel> {
 public:
-	FormatModelJson(Session *s);
+	explicit FormatModelJson(Session *s);
 
 	void _load(const Path &filename, DataModel *data, bool deep) override;
 	void _save(const Path &filename, DataModel *data) override;

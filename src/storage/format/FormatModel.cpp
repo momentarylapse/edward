@@ -6,10 +6,9 @@
  */
 
 #include "FormatModel.h"
-#include "../../data/model/DataModel.h"
-#include "../../data/model/ModelMesh.h"
-#include "../../data/model/ModelPolygon.h"
-#include "../../mode/model/ModeModel.h"
+#include "../../mode_model/data/DataModel.h"
+#include "../../mode_model/data/ModelMesh.h"
+#include "../../mode_model/data/ModelPolygon.h"
 #include "../../Session.h"
 #include <y/helper/ResourceManager.h>
 #include <y/world/components/Animator.h>
@@ -21,13 +20,15 @@
 #include "../../lib/os/msg.h"
 #include <graphics-impl.h>
 
-FormatModel::FormatModel(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "model", _("Model"), Flag::CANONICAL_READ_WRITE) {
+FormatModel::FormatModel(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "model", "Model", Flag::CANONICAL_READ_WRITE) {
 }
 
 const bool write_external_edit_file = false;
 
 
-void update_model_script_data(Session *session, DataModel::MetaData &m);
+void update_model_script_data(Session *session, DataModel::MetaData &m) {}
+
+void FormatModel::_load_old(LegacyFile&, DataModel *data, bool deep) {}
 
 bool DataModelAllowUpdating = true;
 
@@ -425,8 +426,9 @@ public:
 	}
 	void read(Stream *f) override {
 
-		foreachi(ModelVertex &v, parent->triangle_mesh[1].vertex, i)
-			parent->addVertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
+		for (const ModelVertex &v: parent->triangle_mesh[1].vertex)
+			parent->mesh->add_vertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
+			//parent->addVertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
 
 		// polygons
 		int num_poly = f->read_int();
@@ -992,7 +994,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 			// test textures
 			for (auto &t: m->texture_levels) {
 				if (!t.texture and t.filename)
-					warning(format(_("Texture file not loadable: %s"), t.filename));
+					warning(format("Texture file not loadable: %s", t.filename));
 			}
 		}
 		for (auto &b: data->bone) {
@@ -1056,7 +1058,7 @@ void FormatModel::_save(const Path &filename, DataModel *data) {
 			for (int j=0;j<triangle_mesh[d].NumVertices;j++)
 				triangle_mesh[d].vertex[j].normal_dirty = true;
 	#endif
-		data->update_normals();
+	//	data->update_normals();
 
 		// export...
 		data->mesh->export_to_triangle_mesh(data->triangle_mesh[1]);

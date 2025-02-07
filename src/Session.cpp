@@ -278,11 +278,14 @@ void Session::set_mode_now(Mode *m) {
 
 	//cur_mode->on_enter(); // ????
 	cur_mode->out_redraw >> win->in_redraw;
-	cur_mode->multi_view->out_selection_changed >> win->in_redraw;
-	cur_mode->multi_view->view_port.out_changed >> win->in_data_selection_changed;
+	if (cur_mode->multi_view) {
+		cur_mode->multi_view->out_selection_changed >> win->in_redraw;
+		cur_mode->multi_view->view_port.out_changed >> win->in_data_selection_changed;
+	}
 	if (cur_mode->get_data()) {
 		cur_mode->get_data()->out_changed >> win->in_data_changed;
-		cur_mode->get_data()->out_changed >> cur_mode->multi_view->in_data_changed;
+		if (cur_mode->multi_view)
+			cur_mode->get_data()->out_changed >> cur_mode->multi_view->in_data_changed;
 		auto *am = cur_mode->get_data()->action_manager;
 		am->out_failed >> win->in_action_failed;
 		am->out_saved >> win->in_saved;
@@ -407,6 +410,7 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 #if 1
 	Path filename = make_absolute_path(this, type, add_extension_if_needed(this, type, _filename), relative_path);
 	msg_write("EDIT");
+	msg_write(type);
 	msg_write(_filename.str());
 	msg_write(filename.str());
 

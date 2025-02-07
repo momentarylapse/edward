@@ -9,7 +9,7 @@
 #define SRC_STORAGE_FORMAT_FORMATMODEL_H_
 
 #include "Format.h"
-#include "../../data/model/DataModel.h"
+#include "../../mode_model/data/DataModel.h"
 
 class DataModel;
 

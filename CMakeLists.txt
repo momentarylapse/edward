@@ -410,6 +410,10 @@ add_executable(edward
 	src/multiview/SingleData.cpp
 	src/storage/format/old/LoadWorldV9V10.cpp
 	src/storage/format/Format.cpp
+	src/storage/format/FormatModel.cpp
+	src/storage/format/FormatModel3ds.cpp
+	src/storage/format/FormatModelJson.cpp
+	src/storage/format/FormatModelPly.cpp
 	src/storage/format/FormatTerrain.cpp
 	src/storage/format/FormatWorld.cpp
 	src/storage/Storage.cpp

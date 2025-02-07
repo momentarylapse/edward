@@ -6,14 +6,12 @@
  */
 
 #include "Storage.h"
-#if 0
-#include "format/FormatFontX.h"
-#include "format/FormatMaterial.h"
+//#include "format/FormatFontX.h"
+//#include "format/FormatMaterial.h"
 #include "format/FormatModel.h"
-#include "format/FormatModelJson.h"
-#include "format/FormatModel3ds.h"
-#include "format/FormatModelPly.h"
-#endif
+//#include "format/FormatModelJson.h"
+//#include "format/FormatModel3ds.h"
+//#include "format/FormatModelPly.h"
 #include <lib/xhui/dialogs/FileSelectionDialog.h>
 
 #include "format/FormatTerrain.h"
@@ -31,14 +29,12 @@ Path Storage::CANONICAL_SUB_DIR[NUM_FDS];
 
 Storage::Storage(Session *_s) {
 	session = _s;
-#if 0
-	formats.add(new FormatFontX(session));
-	formats.add(new FormatMaterial(session));
+//	formats.add(new FormatFontX(session));
+//	formats.add(new FormatMaterial(session));
 	formats.add(new FormatModel(session));
-	formats.add(new FormatModelJson(session));
-	formats.add(new FormatModel3ds(session));
-	formats.add(new FormatModelPly(session));
-#endif
+//	formats.add(new FormatModelJson(session));
+//	formats.add(new FormatModel3ds(session));
+//	formats.add(new FormatModelPly(session));
 	formats.add(new FormatTerrain(session));
 	formats.add(new FormatWorld(session));
 
@@ -78,8 +74,11 @@ bool Storage::load(const Path &_filename, Data *data, bool deep) {
 	auto filename = _filename.absolute().canonical();
 	try {
 		int type = data_type(data);
+		msg_write(type);
 		string ext = filename.extension();
 		for (auto *f: formats) {
+			msg_write(f->extension);
+			msg_write(f->category);
 			if (f->category != type)
 				continue;
 			if (f->extension != ext)
@@ -96,7 +95,7 @@ bool Storage::load(const Path &_filename, Data *data, bool deep) {
 
 			return true;
 		}
-		throw FormatUnhandledError();
+		throw FormatUnhandledError(ext);
 	} catch (Exception &e) {
 		if (session)
 			session->error(e.message());
@@ -125,7 +124,7 @@ bool Storage::save(const Path &_filename, Data *data) {
 			data->action_manager->mark_current_as_save();
 			return true;
 		}
-		throw FormatUnhandledError();
+		throw FormatUnhandledError(ext);
 	} catch (Exception &e) {
 		session->error(e.message());
 	}

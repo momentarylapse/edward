@@ -7,6 +7,7 @@
 #include "ModelMesh.h"
 #include "ModelPolygon.h"
 //#include "ModelSelection.h"
+#include "DataModel.h"
 #include <data/geometry/Geometry.h>
 //#include "BspTree.h"
 #include <lib/os/msg.h>
@@ -94,7 +95,6 @@ bool int_array_has_duplicates(const Array<int> &a) {
 }
 
 
-#if 0
 void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vec3> &sv, int index) {
 	if (int_array_has_duplicates(v))
 		throw GeometryException("AddPolygon: duplicate vertices");
@@ -424,7 +424,6 @@ void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk) {
 	foreachi(auto *m, model->material, i)
 		sk.sub[i].num_textures = m->texture_levels.num;
 }
-#endif
 
 void ModelMesh::get_bounding_box(vec3 &min, vec3 &max, bool dont_reset) {
 	if (!dont_reset)
@@ -441,7 +440,6 @@ void ModelMesh::get_bounding_box(vec3 &min, vec3 &max, bool dont_reset) {
 	}
 }
 
-#if 0
 void ModelMesh::set_normals_dirty_by_vertices(const Array<int> &index)
 {
 	base::set<int> sindex;
@@ -649,6 +647,7 @@ void ModelMesh::update_normals() {
 
 
 
+#if 0
 void ModelMesh::clear_selection()
 {
 	for (ModelVertex &v: vertex)
@@ -812,6 +811,7 @@ Array<int> ModelMesh::get_boundary_loop(int v0)
 	}
 	return loop;
 }
+#endif
 
 void ModelMesh::add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &bone_weight, int normal_mode, int index) {
 
@@ -876,7 +876,7 @@ void ModelMesh::_shift_vertex_links(int offset, int delta) {
 			b.index += delta;
 }
 
-
+#if 0
 // TODO
 float ModelBall::hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) {
 	return MultiView::SingleData::hover_distance(win, m, tp, z);
