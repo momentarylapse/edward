@@ -424,7 +424,7 @@ void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk) {
 	foreachi(auto *m, model->material, i)
 		sk.sub[i].num_textures = m->texture_levels.num;
 }
-
+#endif
 
 void ModelMesh::get_bounding_box(vec3 &min, vec3 &max, bool dont_reset) {
 	if (!dont_reset)
@@ -441,6 +441,7 @@ void ModelMesh::get_bounding_box(vec3 &min, vec3 &max, bool dont_reset) {
 	}
 }
 
+#if 0
 void ModelMesh::set_normals_dirty_by_vertices(const Array<int> &index)
 {
 	base::set<int> sindex;

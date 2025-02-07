@@ -8,7 +8,7 @@
 #ifndef DATAMODEL_H_
 #define DATAMODEL_H_
 
-#include "../Data.h"
+#include "../../data/Data.h"
 #include "../../multiview/SingleData.h"
 #include "../../lib/base/set.h"
 #include <y/world/Model.h>
@@ -44,7 +44,7 @@ struct ModelEffect {
 };
 
 
-class ModelTriangle: public MultiView::SingleData {
+class ModelTriangle: public multiview::SingleData {
 public:
 	int vertex[3];
 	//int Edge[3];
@@ -75,7 +75,7 @@ struct ModelTriangleMesh {
 	Array<ModelTriangleSubMesh> sub;
 };
 
-class ModelBone: public MultiView::SingleData {
+class ModelBone: public multiview::SingleData {
 public:
 	int parent;
 	Path model_file;
@@ -135,23 +135,23 @@ public:
 	void import_from_triangle_mesh(int index);
 
 	void debug_show();
-	bool test_sanity(const string &loc) override;
-	void on_post_action_update() override;
+	//bool test_sanity(const string &loc) override;
+	//void on_post_action_update() override;
 
-	void set_normals_dirty_by_vertices(const Array<int> &index);
-	void set_all_normals_dirty();
-	void update_normals();
+	//void set_normals_dirty_by_vertices(const Array<int> &index);
+	//void set_all_normals_dirty();
+	//void update_normals();
 
 
 
 	int getNumSelectedSkinVertices();
 
-	void clearSelection();
+/*	void clearSelection();
 	void selectionFromVertices();
 	void selectionFromPolygons();
 	void selectionFromEdges();
 	ModelSelection get_selection() const;
-	void set_selection(const ModelSelection &s);
+	void set_selection(const ModelSelection &s);*/
 
 
 	float getRadius();
@@ -161,7 +161,7 @@ public:
 	void create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *dst, float quality_factor);
 
 	// high level (actions)
-	void addVertex(const vec3 &pos, const ivec4 &bone_index = {0,0,0,0}, const vec4 &bone_weight = {1,0,0,0}, int normal_mode = -1);
+/*	void addVertex(const vec3 &pos, const ivec4 &bone_index = {0,0,0,0}, const vec4 &bone_weight = {1,0,0,0}, int normal_mode = -1);
 	ModelPolygon *addTriangle(int a, int b, int c, int material);
 	ModelPolygon *addPolygon(const Array<int> &v, int material);
 	ModelPolygon *addPolygonWithSkin(const Array<int> &v, const Array<vec3> &sv, int material);
@@ -189,33 +189,33 @@ public:
 	void pasteGeometry(const Geometry &geo, int default_material);
 	void easify(float factor);
 	void subdivideSelectedSurfaces(const ModelSelection &s);
-	void automap(int material, int texture_level);
+	void automap(int material, int texture_level);*/
 
 
 	// properties
 	Array<ModelBone> bone;
 
 	// actions
-	void reconnectBone(int index, int parent);
+	/*void reconnectBone(int index, int parent);
 	void setBoneModel(int index, const Path &filename);
 	void addBone(const vec3 &pos, int parent);
 	void deleteBone(int index);
 	void deleteSelectedBones();
-	void boneAttachVertices(const Array<int> &vertices, const Array<ivec4> &bone, const Array<vec4> &weight);
+	void boneAttachVertices(const Array<int> &vertices, const Array<ivec4> &bone, const Array<vec4> &weight);*/
 
 
 	// properties
 	Array<ModelMove> move;
 
 	// actions
-	void addAnimation(int index, AnimationType type);
+	/*void addAnimation(int index, AnimationType type);
 	void duplicateAnimation(int source, int target);
 	void deleteAnimation(int index);
 	void setAnimationData(int index, const string &name, float fps_const, float fps_factor);
 	void animationAddFrame(int index, int frame, const ModelFrame &f);
 	void animationDeleteFrame(int index, int frame);
 	void animationSetFrameDuration(int index, int frame, float duration);
-	void animationSetBone(int move, int frame, int bone, const vec3 &dpos, const vec3 &ang);
+	void animationSetBone(int move, int frame, int bone, const vec3 &dpos, const vec3 &ang);*/
 
 	// geometry
 	ModelMesh *mesh;
@@ -233,9 +233,9 @@ public:
 	Array<ModelEffect> fx;
 
 	// actions
-	void selectionAddEffects(const ModelEffect &effect);
+	/*void selectionAddEffects(const ModelEffect &effect);
 	void editEffect(int index, const ModelEffect &effect);
-	void selectionClearEffects();
+	void selectionClearEffects();*/
 
 	struct MetaData {
 		// level of detail

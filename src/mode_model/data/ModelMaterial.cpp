@@ -151,6 +151,7 @@ void ModelMaterial::check_colors() {
 	}
 }
 
+#if 0
 void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 #if HAS_LIB_GL
 	nix::disable_alpha();
@@ -194,4 +195,5 @@ void ModelMaterial::apply_for_rendering(MultiView::Window *w) {
 	nix::bind_textures(tex);
 #endif
 }
+#endif
 

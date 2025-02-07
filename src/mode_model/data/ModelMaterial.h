@@ -12,9 +12,9 @@
 #include <lib/base/pointer.h>
 #include <graphics-impl.h>
 
-namespace MultiView {
+/*namespace MultiView {
 	class Window;
-};
+};*/
 
 class Image;
 class Session;
@@ -30,7 +30,7 @@ public:
 	void make_consistent();
 	void check_textures();
 	void check_colors();
-	void apply_for_rendering(MultiView::Window *win);
+//	void apply_for_rendering(MultiView::Window *win);
 
 	Path filename;
 	Material *material;

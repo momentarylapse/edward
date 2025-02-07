@@ -104,12 +104,12 @@ public:
 	void merge_edges();
 
 	MeshInsideTestData *inside_data;
-	bool is_inside(const vec3 &p);
+	/*bool is_inside(const vec3 &p);
 	void begin_inside_tests();
 	bool inside_test(const vec3 &p);
 	void end_inside_tests();
 	Array<int> get_boundary_loop(int v0);
-	Array<Array<int> > get_connected_components();
+	Array<Array<int> > get_connected_components();*/
 
 
 	Array<ModelVertex> vertex;

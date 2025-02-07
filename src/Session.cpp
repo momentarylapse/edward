@@ -11,9 +11,9 @@
 /*#include "mode/ModeNone.h"
 #include "mode/ModeCreation.h"
 #include "mode/administration/ModeAdministration.h"
-#include "mode/administration/dialog/ConfigurationDialog.h"
-#include "mode/model/ModeModel.h"
-#include "mode/model/mesh/ModeModelMesh.h"
+#include "mode/administration/dialog/ConfigurationDialog.h"*/
+#include "../mode_model/ModeModel.h"
+/*#include "mode/model/mesh/ModeModelMesh.h"
 #include "mode/material/ModeMaterial.h"*/
 #include "../mode_world/ModeWorld.h"
 /*#include "mode/font/ModeFont.h"
@@ -424,11 +424,13 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 			case FD_TERRAIN:
 			case FD_CAMERAFLIGHT:
 				emit_empty_session(this).then([type, filename] (Session* session) {
-#if 0
 					if (type == FD_MODEL) {
+						if (!session->mode_model)
+							session->mode_model = new ModeModel(session);
 						session->storage->load(filename, session->mode_model->data, true);
 						session->set_mode(session->mode_model);
-						session->mode_model->mode_model_mesh->optimize_view();
+						//session->mode_model->mode_model_mesh->optimize_view();
+#if 0
 					} else if (type == FD_MATERIAL) {
 						session->storage->load(filename, session->mode_material->data, true);
 						session->set_mode(session->mode_material);
@@ -447,14 +449,14 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 							SetMode(ModeWorld);
 							mworld->OptimizeView();
 						}*/
-					} else if (type == FD_WORLD) {
 #endif
+					} else if (type == FD_WORLD) {
 						if (!session->mode_world)
 							session->mode_world = new ModeWorld(session);
 						session->storage->load(filename, session->mode_world->data, true);
 						session->set_mode(session->mode_world);
 						session->mode_world->optimize_view();
-					//}
+					}
 				});
 				break;
 			case FD_TEXTURE:

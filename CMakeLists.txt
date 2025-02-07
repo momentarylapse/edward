@@ -381,9 +381,12 @@ add_executable(edward
 	src/lib/xhui/Theme.cpp
 	src/lib/xhui/Window.cpp
 	src/lib/xhui/xhui.cpp
+	src/mode_model/data/DataModel.cpp
+	src/mode_model/data/ModelMaterial.cpp
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/data/ModelPolygon.cpp
 	src/mode_model/data/SkinGenerator.cpp
+	src/mode_model/ModeModel.cpp
 	src/mode_world/action/entity/ActionWorldAddEntity.cpp
 	src/mode_world/action/entity/ActionWorldEditComponent.cpp
 	src/mode_world/action/light/ActionWorldAddLight.cpp

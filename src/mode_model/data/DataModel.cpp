@@ -9,8 +9,8 @@
 #include "ModelMesh.h"
 #include "ModelPolygon.h"
 #include "ModelMaterial.h"
-#include "ModelSelection.h"
-#include "geometry/Geometry.h"
+//#include "ModelSelection.h"
+#include "../../data/geometry/Geometry.h"
 #if HAS_LIB_GL
 #include "../../mode/model/ModeModel.h"
 #include "../../mode/model/mesh/ModeModelMesh.h"
@@ -22,7 +22,7 @@
 #if HAS_LIB_GL
 #include "../../multiview/MultiView.h"
 #endif
-#include "../../action/model/mesh/vertex/ActionModelAddVertex.h"
+/*#include "../../action/model/mesh/vertex/ActionModelAddVertex.h"
 #include "../../action/model/mesh/vertex/ActionModelNearifyVertices.h"
 #include "../../action/model/mesh/vertex/ActionModelCollapseVertices.h"
 #include "../../action/model/mesh/vertex/ActionModelAlignToGrid.h"
@@ -62,7 +62,7 @@
 #include "../../action/model/skeleton/ActionModelDeleteBone.h"
 #include "../../action/model/skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../action/model/skeleton/ActionModelReconnectBone.h"
-#include "../../action/model/skeleton/ActionModelSetSubModel.h"
+#include "../../action/model/skeleton/ActionModelSetSubModel.h"*/
 #include "../../lib/os/msg.h"
 #include "../../lib/math/quaternion.h"
 #include "../../lib/hui/language.h"
@@ -188,21 +188,22 @@ void DataModel::debug_show() {
 	msg_write("------------");
 	msg_write(mesh->vertex.num);
 	msg_write(mesh->polygon.num);
-	test_sanity("Model.DebugShow");
+	//test_sanity("Model.DebugShow");
 }
 
-bool DataModel::test_sanity(const string &loc) {
+/*bool DataModel::test_sanity(const string &loc) {
 	return mesh->test_sanity(loc);
-}
+}*/
 
 
-void DataModel::on_post_action_update() {
+/*void DataModel::on_post_action_update() {
 	mesh->on_post_action_update();
 	phys_mesh->on_post_action_update();
-}
+}*/
 
 
 void DataModel::import_from_triangle_mesh(int index) {
+#if 0
 	mesh->vertex.clear();
 	mesh->polygon.clear();
 	mesh->edge.clear();
@@ -282,9 +283,10 @@ void DataModel::import_from_triangle_mesh(int index) {
 	polyhedron.clear();
 #endif
 
-	clearSelection();
+	//clearSelection();
 	end_action_group();
 	action_manager->reset();
+#endif
 }
 
 
@@ -293,7 +295,7 @@ void DataModel::getBoundingBox(vec3 &min, vec3 &max) {
 	phys_mesh->get_bounding_box(min, max, true);
 }
 
-void DataModel::set_normals_dirty_by_vertices(const Array<int> &index) {
+/*void DataModel::set_normals_dirty_by_vertices(const Array<int> &index) {
 	mesh->set_normals_dirty_by_vertices(index);
 }
 
@@ -306,8 +308,9 @@ void DataModel::set_all_normals_dirty() {
 void DataModel::update_normals() {
 	mesh->update_normals();
 	phys_mesh->update_normals();
-}
+}*/
 
+#if 0
 void DataModel::clearSelection() {
 	mesh->clear_selection();
 	phys_mesh->clear_selection();
@@ -324,8 +327,9 @@ void DataModel::selectionFromEdges() {
 void DataModel::selectionFromVertices() {
 	mesh->selection_from_vertices();
 }
+#endif
 
-
+#if 0
 void DataModel::addVertex(const vec3 &pos, const ivec4 &bone_index, const vec4 &bone_weight, int normal_mode)
 {	execute(new ActionModelAddVertex(pos, bone_index, bone_weight, normal_mode));	}
 
@@ -352,6 +356,7 @@ ModelPolygon *DataModel::addPolygonWithSkin(const Array<int> &v, const Array<vec
 void DataModel::create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *dst, float quality_factor) {
 	msg_todo("DataModel.create_triangle_mesh");
 }
+#endif
 
 
 float DataModel::getRadius() {
@@ -405,10 +410,9 @@ mat3 DataModel::generateInertiaTensor(float mass)
 	//float dv=(max.x-min.x)/n_theta*(max.y-min.y)/n_theta*(max.z-min.z)/n_theta;
 	int num_ds=0;
 
-	mat3 t;
-	for (int i=0;i<9;i++)
-		t.e[i] = 0;
+	mat3 t = mat3::ZERO;
 
+#if 0
 	mesh->begin_inside_tests();
 
 	for (int i=0;i<n_theta;i++){
@@ -455,6 +459,7 @@ mat3 DataModel::generateInertiaTensor(float mass)
 		t._02 = t._20;
 	}else
 		t = mat3::ID;
+#endif
 
 	return t;
 }
@@ -467,6 +472,7 @@ int DataModel::getNumSelectedSkinVertices() {
 	return r;
 }
 
+#if 0
 void DataModel::reconnectBone(int index, int parent)
 {	execute(new ActionModelReconnectBone(index, parent));	}
 
@@ -607,6 +613,7 @@ ModelSelection DataModel::get_selection() const {
 void DataModel::set_selection(const ModelSelection &s) {
 	mesh->set_selection(s);
 }
+#endif
 
 
 float ModelMove::duration()
