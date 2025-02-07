@@ -386,6 +386,7 @@ add_executable(edward
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/data/ModelPolygon.cpp
 	src/mode_model/data/SkinGenerator.cpp
+	src/mode_model/ModeAddVertexPolygon.cpp
 	src/mode_model/ModeModel.cpp
 	src/mode_world/action/entity/ActionWorldAddEntity.cpp
 	src/mode_world/action/entity/ActionWorldEditComponent.cpp

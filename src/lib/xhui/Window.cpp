@@ -92,6 +92,8 @@ int key_decode(int key) {
 		return xhui::KEY_SPACE;
 	if (key == GLFW_KEY_BACKSPACE)
 		return xhui::KEY_BACKSPACE;
+	if (key == GLFW_KEY_ESCAPE)
+		return xhui::KEY_ESCAPE;
 	if (key == GLFW_KEY_UP)
 		return xhui::KEY_UP;
 	if (key == GLFW_KEY_DOWN)

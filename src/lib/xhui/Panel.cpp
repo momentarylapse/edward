@@ -1,4 +1,7 @@
 #include "Panel.h"
+
+#include <lib/base/algo.h>
+
 #include "Painter.h"
 #include "language.h"
 #include "Resource.h"
@@ -102,28 +105,43 @@ void Panel::set_target(const string& id) {
 			target_control = c;
 }
 
-void Panel::event(const string &id, Callback f) {
+static int event_next_uid = 0;
+
+int Panel::event(const string &id, Callback f) {
 	EventHandler e;
+	e.uid = event_next_uid ++;
 	e.id = id;
 	e.f = f;
 	event_handlers.add(e);
+	return e.uid;
 }
 
-void Panel::event_x(const string &id, const string &msg, Callback f) {
+int Panel::event_x(const string &id, const string &msg, Callback f) {
 	EventHandler e;
+	e.uid = event_next_uid ++;
 	e.id = id;
 	e.msg = msg;
 	e.f = f;
 	event_handlers.add(e);
+	return e.uid;
 }
 
-void Panel::event_xp(const string &id, const string &msg, CallbackP f) {
+int Panel::event_xp(const string &id, const string &msg, CallbackP f) {
 	EventHandler e;
+	e.uid = event_next_uid ++;
 	e.id = id;
 	e.msg = msg;
 	e.fp = f;
 	event_handlers.add(e);
+	return e.uid;
 }
+
+void Panel::remove_event_handler(int uid) {
+	base::remove_if(event_handlers, [uid] (const EventHandler& e) {
+		return e.uid == uid;
+	});
+}
+
 
 bool match_event(Panel::EventHandler& e, const string &id, const string &msg, bool is_default) {
 	if (e.id != id)

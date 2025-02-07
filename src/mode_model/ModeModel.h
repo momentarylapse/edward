@@ -25,12 +25,15 @@ public:
 	~ModeModel() override;
 
 	void on_enter() override;
+	void on_leave() override;
 	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
+	void on_draw_post(Painter*) override;
 
 	DataModel* data;
 	VertexBuffer* vertex_buffer;
 	Material* material;
+	Array<int> event_ids;
 };
 
 

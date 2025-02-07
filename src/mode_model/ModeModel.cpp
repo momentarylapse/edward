@@ -5,12 +5,17 @@
 #include "ModeModel.h"
 #include <Session.h>
 #include <helper/ResourceManager.h>
+#include <lib/image/Painter.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
 #include <view/ActionController.h>
 #include <view/MultiView.h>
 #include "data/ModelMesh.h"
 #include "data/ModelPolygon.h"
+#include <view/DrawingHelper.h>
+#include <view/EdwardWindow.h>
+
+#include "ModeAddVertexPolygon.h"
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
@@ -40,10 +45,22 @@ void ModeModel::on_enter() {
 		{MultiViewType::MODEL_VERTEX, &data->mesh->vertex}
 	};
 
+	event_ids.add(session->win->event("add-entity", [this] {
+		session->set_mode(new ModeAddVertexPolygon(this));
+	}));
+
 	data->out_changed >> create_sink(update);
 	multi_view->view_port.radius = data->getRadius() * 2;
 	update();
 }
+
+void ModeModel::on_leave() {
+	data->out_changed.unsubscribe(this);
+	for (int uid: event_ids)
+		session->win->remove_event_handler(uid);
+	event_ids.clear();
+}
+
 
 void ModeModel::on_prepare_scene(const RenderParams& params) {
 }
@@ -64,6 +81,15 @@ void ModeModel::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 	multi_view->action_controller->draw(params, rvd);
 }
+
+void ModeModel::on_draw_post(Painter* p) {
+	for (auto& v: data->mesh->vertex) {
+		p->set_color(v.is_selected ? Red : Blue);
+		auto p1 = multi_view->active_window->project(v.pos);
+		p->draw_rect({p1.x-2,p1.x+2, p1.y-2,p1.y+2});
+	}
+}
+
 
 
 

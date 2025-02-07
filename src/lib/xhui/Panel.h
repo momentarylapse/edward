@@ -38,9 +38,10 @@ public:
 	void set_options(const string& id, const string& options);
 
 
-	void event(const string& id, Callback f);
-	void event_x(const string& id, const string& msg, Callback f);
-	void event_xp(const string& id, const string& msg, CallbackP f);
+	int event(const string& id, Callback f);
+	int event_x(const string& id, const string& msg, Callback f);
+	int event_xp(const string& id, const string& msg, CallbackP f);
+	void remove_event_handler(int uid);
 
 	Window* get_window();
 	Control* top_control = nullptr;
@@ -48,12 +49,12 @@ public:
 	Array<Control*> controls;
 	float padding;
 
-	class EventHandler {
-	public:
-		EventHandler() {};
+	struct EventHandler {
+		EventHandler() = default;
 		string id, msg;
 		Callback f;
 		CallbackP fp;
+		int uid;
 	};
 	Array<EventHandler> event_handlers;
 
