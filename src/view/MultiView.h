@@ -83,6 +83,7 @@ public:
 	} view_port;
 
 	Array<Light*> lights;
+	Light* default_light;
 
 	MultiViewWindow window;
 	MultiViewWindow* active_window;

@@ -17,6 +17,7 @@ class EntityPanel;
 namespace xhui {
 class Panel;
 }
+class Material;
 
 class ModeModel : public Mode {
 public:
@@ -24,8 +25,12 @@ public:
 	~ModeModel() override;
 
 	void on_enter() override;
+	void on_prepare_scene(const RenderParams& params) override;
+	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 
 	DataModel* data;
+	VertexBuffer* vertex_buffer;
+	Material* material;
 };
 
 

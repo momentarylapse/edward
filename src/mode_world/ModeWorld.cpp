@@ -235,7 +235,6 @@ void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matr
 }
 
 void ModeWorld::on_prepare_scene(const RenderParams& params) {
-	//return;
 	Array<WorldEntity*> data_lights;
 	for (auto& e: data->entities)
 		if (e.basic_type == MultiViewType::WORLD_LIGHT)

@@ -410,7 +410,6 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 #if 1
 	Path filename = make_absolute_path(this, type, add_extension_if_needed(this, type, _filename), relative_path);
 	msg_write("EDIT");
-	msg_write(type);
 	msg_write(_filename.str());
 	msg_write(filename.str());
 

@@ -109,10 +109,12 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 	action_controller = new ActionController(this);
 
 
-	lights.add(new Light(White, -1, -1));
-	lights[0]->owner = new Entity;
-	lights[0]->owner->ang = quaternion::rotation({1,0,0}, 0.5f);
-	lights[0]->light.harshness = 0.5f;
+	default_light = new Light(White, -1, -1);
+	default_light->owner = new Entity;
+	default_light->owner->ang = quaternion::ID;
+	default_light->enabled = true;
+	default_light->light.harshness = 0.5f;
+	lights.add(default_light);
 
 	view_port.out_changed >> create_sink([this] {
 		action_controller->update_manipulator();
@@ -147,11 +149,12 @@ void MultiView::prepare(const RenderParams& params) {
 		* window.projection * window.view;
 
 	{
-		view_port.scene_view->lights.clear();
+		default_light->owner->ang = view_port.ang;
+		lights = {default_light};
+		view_port.scene_view->lights = lights;
 		view_port.scene_view->shadow_index = -1;
 		//	if (l->allow_shadow)
 		//		scene_view.shadow_index = scene_view.lights.num;
-		view_port.scene_view->lights = lights;
 	}
 
 	session->cur_mode->on_prepare_scene(params);
