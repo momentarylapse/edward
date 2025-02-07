@@ -3,7 +3,9 @@
 //
 
 #include "EntityPanel.h"
-
+#include "ModeWorld.h"
+#include <helper/ResourceManager.h>
+#include <y/graphics-impl.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/xhui.h>
 #include <lib/xhui/dialogs/FileSelectionDialog.h>
@@ -11,8 +13,6 @@
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
 #include <world/Terrain.h>
-
-#include "ModeWorld.h"
 
 EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-panel") {
 	mode_world = _mode;
@@ -189,6 +189,7 @@ Dialog entity-panel ''
 				auto& e = mode_world->data->entities[cur_index];
 				auto& t = e.terrain;
 				t.terrain->texture_file[i] = filename.relative;
+				t.terrain->material->textures[i] = mode_world->session->resource_manager->load_texture(filename.relative);
 				reset("textures");
 				for (const auto& tf: e.terrain.terrain->texture_file)
 					add_string("textures", format("...\\%s", tf));

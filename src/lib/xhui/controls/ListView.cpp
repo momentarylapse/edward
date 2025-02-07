@@ -1,4 +1,7 @@
 #include "ListView.h"
+
+#include <lib/os/msg.h>
+
 #include "../Painter.h"
 #include "../draw/font.h"
 #include "../Theme.h"

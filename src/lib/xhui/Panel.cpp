@@ -254,9 +254,9 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 	//printf("HuiPanelAddControl %s  %s  %d  %d  %s\n", type.c_str(), title.c_str(), x, y, id.c_str());
 	string title = _title;
 	if (title.head(1) == "!") {
-		auto x = title.explode("\\");
-		if (x.num >= 2)
-			title = x[1];
+		int p0 = title.find("\\");
+		if (p0 > 0)
+			title = title.sub(p0 + 1);
 	}
 	if (type == "Button")
 		add(new Button(id, title), x, y);
