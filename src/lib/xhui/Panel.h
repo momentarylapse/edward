@@ -17,10 +17,12 @@ public:
 
 	void _draw(Painter* p) override;
 	void negotiate_area(const rect& available) override;
+	void get_content_min_size(int& w, int& h) override;
+	void get_greed_factor(float& x, float& y) override;
 	Array<Control*> get_children() const override;
 
-	void add(Control* c);
-	void add(Control* c, int x, int y) override;
+	void add_child(shared<Control> c);
+	void add_child(shared<Control> c, int x, int y) override;
 	void set_target(const string& id);
 
 	void set_string(const string& id, const string& text);
@@ -64,8 +66,11 @@ public:
 
 	void add_control(const string& type, const string& title, int x, int y, const string& id);
 	void _add_control(const string& ns, const Resource& cmd, const string& parent_id);
-	void embed(const string& target, int x, int y, Panel* p);
 	void remove_control(const string& id);
+	void remove_control(Control* c);
+	Control* get_control(const string& id);
+	void embed(const string& target, int x, int y, shared<Panel> p);
+	void unembed(Panel* p);
 
 	void from_source(const string& source);
 	void from_resource(const Resource& resource);

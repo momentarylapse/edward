@@ -95,31 +95,31 @@ ColorSelectionDialog::ColorSelectionDialog(Panel* parent, const string& title, c
 	selector->set_color(col);
 
 	auto g1 = new Grid("grid1");
-	add(g1);
+	add_child(g1);
 	auto g2 = new Grid("grid2");
-	g1->add(g2, 0, 0);
-	g1->add(selector, 0, 1);
+	g1->add_child(g2, 0, 0);
+	g1->add_child(selector, 0, 1);
 
 	auto g3 = new Grid("grid3");
-	g1->add(g3, 0, 2);
+	g1->add_child(g3, 0, 2);
 	auto spacer = new Label("spacer", "");
-	g3->add(spacer, 1, 0);
+	g3->add_child(spacer, 1, 0);
 	spacer->size_mode_x = SizeMode::Expand;
 	indicator = new ColorIndicator("indicator");
 	indicator->set_color(col);
 	indicator->min_width_user = 100;
 	indicator->size_mode_x = SizeMode::Shrink;
 	indicator->size_mode_y = SizeMode::Shrink;
-	g3->add(indicator, 0, 0);
+	g3->add_child(indicator, 0, 0);
 	auto button_cancel = new Button("cancel", "Cancel");
 	button_cancel->min_width_user = 100;
 	button_cancel->size_mode_x = SizeMode::Shrink;
-	g3->add(button_cancel, 2, 0);
+	g3->add_child(button_cancel, 2, 0);
 	auto button_ok = new Button("ok", "Ok");
 	button_ok->min_width_user = 100;
 	button_ok->size_mode_x = SizeMode::Shrink;
 	//button_ok->enable(false);
-	g3->add(button_ok, 3, 0);
+	g3->add_child(button_ok, 3, 0);
 
 	event("selector", [this] {
 		indicator->set_color(selector->get_color());

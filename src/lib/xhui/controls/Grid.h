@@ -17,7 +17,7 @@ public:
 	};
 	Array<Child> children;
 
-	void add(Control *c, int x, int y) override;
+	void add_child(shared<Control> c, int x, int y) override;
 	void remove_child(Control* c) override;
 	int nx = 0, ny = 0;
 	int spacing;

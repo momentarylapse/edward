@@ -159,15 +159,15 @@ public:
  */
 FileSelector::FileSelector(const string& id) : Grid(id) {
 	auto g = new Grid(id + ":group");
-	Grid::add(g, 0, 0);
+	Grid::add_child(g, 0, 0);
 	auto button_up = new Button(id+":up", "Up");
 	button_up->size_mode_x = SizeMode::Shrink;
-	g->add(button_up, 0, 0);
+	g->add_child(button_up, 0, 0);
 	directory_label = new Label(id + ":directory", "");
 	directory_label->size_mode_x = SizeMode::Expand;
-	g->add(directory_label, 1, 0);
+	g->add_child(directory_label, 1, 0);
 	list = new FileListView(id + ":list");
-	Grid::add(list, 0, 1);
+	Grid::add_child(list, 0, 1);
 
 	directory_label->set_string(str(current_directory().basename()));
 }

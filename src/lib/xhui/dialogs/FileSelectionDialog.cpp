@@ -29,23 +29,23 @@ FileSelectionDialog::FileSelectionDialog(Panel* parent, const string& title, con
 	selector->set_directory(dir);
 
 	auto g1 = new Grid("grid1");
-	add(g1);
-	g1->add(selector, 0, 0);
+	add_child(g1);
+	g1->add_child(selector, 0, 0);
 
 	auto g3 = new Grid("grid3");
-	g1->add(g3, 0, 1);
+	g1->add_child(g3, 0, 1);
 	auto spacer = new Label("spacer", "");
-	g3->add(spacer, 0, 0);
+	g3->add_child(spacer, 0, 0);
 	spacer->size_mode_x = SizeMode::Expand;
 	auto button_cancel = new Button("cancel", "Cancel");
 	button_cancel->min_width_user = 100;
 	button_cancel->size_mode_x = SizeMode::Shrink;
-	g3->add(button_cancel, 1, 0);
+	g3->add_child(button_cancel, 1, 0);
 	auto button_ok = new Button("ok", "Ok");
 	button_ok->min_width_user = 100;
 	button_ok->size_mode_x = SizeMode::Shrink;
 	button_ok->enable(false);
-	g3->add(button_ok, 2, 0);
+	g3->add_child(button_ok, 2, 0);
 
 	selector->link_events();
 

@@ -17,7 +17,7 @@ Overlay::Overlay(const string &_id) : Control(_id) {
 	size_mode_y = SizeMode::ForwardChild;
 }
 
-void Overlay::add(Control *c) {
+void Overlay::add_child(shared<Control> c) {
 	children.add(c);
 	if (owner)
 		c->_register(owner);

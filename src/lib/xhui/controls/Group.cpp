@@ -31,7 +31,7 @@ void Group::_draw(Painter* p) {
 		child->_draw(p);
 }
 
-void Group::add(Control* c, int x, int y) {
+void Group::add_child(shared<Control> c, int x, int y) {
 	child = c;
 	if (owner)
 		c->_register(owner);

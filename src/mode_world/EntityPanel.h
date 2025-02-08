@@ -11,15 +11,17 @@
 struct WorldEntity;
 class ModeWorld;
 
+class AddEntityPanel;
+
 class EntityPanel : public obs::Node<xhui::Panel> {
 public:
 	explicit EntityPanel(ModeWorld* mode);
 
-	void on_edit_light();
-	void on_edit_camera();
-
 	ModeWorld* mode_world;
 	int cur_index = -1;
+
+	shared<xhui::Panel> add_entity_panel;
+	Array<xhui::Panel*> component_panels;
 };
 
 

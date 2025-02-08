@@ -10,16 +10,16 @@ namespace xhui {
 
 QuestionDialog::QuestionDialog(Panel* parent, const string& title, const string& question, bool allow_cancel) : Dialog(title, 450, 120, parent) {
 	auto g1 = new Grid("");
-	add(g1);
+	add_child(g1);
 	auto label = new Label("", question);
-	g1->add(label, 0, 0);
+	g1->add_child(label, 0, 0);
 	label->size_mode_y = SizeMode::Expand;
 	auto g2 = new Grid("");
-	g1->add(g2, 0, 1);
-	g2->add(new Button("yes", "Yes"), 0, 0);
-	g2->add(new Button("no", "No"), 1, 0);
+	g1->add_child(g2, 0, 1);
+	g2->add_child(new Button("yes", "Yes"), 0, 0);
+	g2->add_child(new Button("no", "No"), 1, 0);
 	if (allow_cancel)
-		g2->add(new Button("cancel", "Cancel"), 2, 0);
+		g2->add_child(new Button("cancel", "Cancel"), 2, 0);
 
 	event("yes", [this] {
 		promise(Answer::Yes);

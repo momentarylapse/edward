@@ -21,7 +21,7 @@ HeaderBar::HeaderBar(Window *w, const string &_id) : Control(_id) {
 	button_close->size_mode_x = SizeMode::Shrink;
 	button_close->size_mode_y = SizeMode::Expand;
 	button_close->primary = true;
-	grid_right->add(button_close, 0, 0);
+	grid_right->add_child(button_close, 0, 0);
 
 	owner->event(":header-button-close:", [this] {
 		if (auto w = owner->get_window())

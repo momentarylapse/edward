@@ -32,7 +32,7 @@ Grid::Grid(const string &_id) : Control(_id) {
 	size_mode_y = SizeMode::ForwardChild;
 }
 
-void Grid::add(Control *c, int x, int y) {
+void Grid::add_child(shared<Control> c, int x, int y) {
 	children.add({c, x, y});
 	nx = max(nx, x+1);
 	ny = max(ny, y+1);

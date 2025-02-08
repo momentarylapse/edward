@@ -46,6 +46,9 @@ void Control::_register(Panel* _owner) {
 void Control::_unregister() {
 	if (!owner)
 		return;
+	// don't register sub-panels!
+	if (dynamic_cast<Panel*>(this))
+		return;
 	base::remove(owner->controls, this);
 	owner = nullptr;
 	for (auto cc: get_children())

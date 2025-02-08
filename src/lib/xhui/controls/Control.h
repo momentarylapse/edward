@@ -25,7 +25,7 @@ public:
 	void _unregister();
 
 	// full registration!
-	virtual void add(Control* c, int x, int y) {}
+	virtual void add_child(shared<Control> c, int x, int y) {}
 	virtual void remove_child(Control* c) {}
 
 	virtual void set_string(const string& s) {}

@@ -13,8 +13,8 @@ public:
 
 	shared_array<Control> children;
 
-	void add(Control *c);
-	void add(Control *c, int, int) override { add(c); }
+	void add_child(shared<Control> c);
+	void add_child(shared<Control> c, int, int) override { add_child(c); }
 	void remove_child(Control* c) override;
 	
 	void get_greed_factor(float &x, float &y) override;
