@@ -44,7 +44,7 @@ public:
 	void remove_event_handler(int uid);
 
 	Window* get_window();
-	Control* top_control = nullptr;
+	shared<Control> top_control;
 	Control* target_control = nullptr;
 	Array<Control*> controls;
 	float padding;
@@ -65,6 +65,7 @@ public:
 	void add_control(const string& type, const string& title, int x, int y, const string& id);
 	void _add_control(const string& ns, const Resource& cmd, const string& parent_id);
 	void embed(const string& target, int x, int y, Panel* p);
+	void remove_control(const string& id);
 
 	void from_source(const string& source);
 	void from_resource(const Resource& resource);

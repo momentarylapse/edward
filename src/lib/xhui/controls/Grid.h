@@ -12,12 +12,13 @@ public:
 	void _draw(Painter *p) override;
 
 	struct Child {
-		Control *control;
+		shared<Control> control;
 		int x, y;
 	};
 	Array<Child> children;
 
 	void add(Control *c, int x, int y) override;
+	void remove_child(Control* c) override;
 	int nx = 0, ny = 0;
 	int spacing;
 	int margin = 0;

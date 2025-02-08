@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../../image/color.h"
 #include "../../base/base.h"
+#include "../../base/pointer.h"
 #include "../../math/rect.h"
 #include "../../math/vec2.h"
+#include "../../image/color.h"
 
 namespace xhui {
 
@@ -13,16 +14,20 @@ class Panel;
 
 rect smaller_rect(const rect& r, float d);
 
-class Control : public VirtualBase {
+class Control : public Sharable<VirtualBase> {
 	friend class Window;
 	friend class Panel;
 public:
 	explicit Control(const string& id);
+	~Control() override;
 
 	void _register(Panel* owner);
 	void _unregister();
 
+	// full registration!
 	virtual void add(Control* c, int x, int y) {}
+	virtual void remove_child(Control* c) {}
+
 	virtual void set_string(const string& s) {}
 	virtual void add_string(const string& s) { set_string(s); }
 	virtual void set_cell(int row, int col, const string& s) {}

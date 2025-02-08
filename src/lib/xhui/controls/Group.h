@@ -20,9 +20,10 @@ public:
 	string title;
 	void set_string(const string& s) override;
 
-	Control* child = nullptr;
+	shared<Control> child;
 	Array<Control*> get_children() const override;
 	void add(Control* c, int x, int y) override;
+	void remove_child(Control* c) override;
 };
 
 } // xhui

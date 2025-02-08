@@ -1,4 +1,7 @@
 #include "Overlay.h"
+
+#include <lib/base/algo.h>
+
 #include "../Panel.h"
 #include "../../os/msg.h"
 
@@ -19,6 +22,14 @@ void Overlay::add(Control *c) {
 	if (owner)
 		c->_register(owner);
 }
+
+void Overlay::remove_child(Control* c) {
+	c->_unregister();
+	base::remove_if(children, [c] (const auto& child) {
+		return child.get() == c;
+	});
+}
+
 
 void Overlay::_draw(Painter *p) {
 	for (auto c: children)

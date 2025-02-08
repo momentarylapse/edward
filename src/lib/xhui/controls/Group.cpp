@@ -37,10 +37,17 @@ void Group::add(Control* c, int x, int y) {
 		c->_register(owner);
 }
 
+void Group::remove_child(Control* c) {
+	c->_unregister();
+	if (child == c)
+		child = nullptr;
+}
+
+
 
 Array<Control*> Group::get_children() const {
 	if (child)
-		return {child};
+		return {child.get()};
 	return {};
 }
 

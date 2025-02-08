@@ -463,9 +463,9 @@ void Window::set_title(const string& t) {
 Control *Window::get_hover_control(const vec2 &p) {
 	Array<Control*> seeds;
 	if (dialog)
-		seeds.add(dialog->top_control);
+		seeds.add(dialog->top_control.get());
 	else
-		seeds.add(top_control);
+		seeds.add(top_control.get());
 	int cur_seed = 0;
 
 	// we might need multiple seeds, if we encounter Overlays!

@@ -1,4 +1,7 @@
 #include "Grid.h"
+
+#include <lib/base/algo.h>
+
 #include "../Painter.h"
 #include "../Theme.h"
 #include "../../os/msg.h"
@@ -36,6 +39,14 @@ void Grid::add(Control *c, int x, int y) {
 	if (owner)
 		c->_register(owner);
 }
+
+void Grid::remove_child(Control* c) {
+	c->_unregister();
+	base::remove_if(children, [c] (const Child& child) {
+		return child.control == c;
+	});
+}
+
 
 void Grid::_draw(Painter *p) {
 	if (card) {
@@ -133,7 +144,7 @@ void Grid::negotiate_area(const rect &available) {
 Array<Control*> Grid::get_children() const {
 	Array<Control*> r;
 	for (auto& c: children)
-		r.add(c.control);
+		r.add(c.control.get());
 	return r;
 }
 

@@ -263,7 +263,7 @@ void Panel::set_options(const string& id, const string& options) {
 
 Array<Control*> Panel::get_children() const {
 	if (top_control)
-		return {top_control};
+		return {top_control.get()};
 	return {};
 }
 
@@ -359,6 +359,18 @@ void Panel::_add_control(const string &ns, const Resource &cmd, const string &pa
 	for (const Resource &c: cmd.children)
 		_add_control(ns, c, cmd.id);
 }
+
+void Panel::remove_control(const string& id) {
+	// no need to be efficient :/
+	for (auto c: controls)
+		for (auto cc: c->get_children())
+			if (cc->id == id) {
+				c->remove_child(cc);
+				request_redraw();
+				return;
+			}
+}
+
 
 void Panel::embed(const string& target, int x, int y, Panel* p) {
 	set_target(target);

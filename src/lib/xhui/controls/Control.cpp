@@ -19,6 +19,9 @@ Control::Control(const string &_id) {
 	_area = rect::EMPTY;
 }
 
+Control::~Control() = default;
+
+
 void Control::_register(Panel* _owner) {
 	// don't register sub-panels!
 	if (dynamic_cast<Panel*>(this))
