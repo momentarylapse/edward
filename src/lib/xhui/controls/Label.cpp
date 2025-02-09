@@ -21,7 +21,7 @@ void Label::set_string(const string &s) {
 	request_redraw();
 }
 
-void Label::get_content_min_size(int &w, int &h) {
+void Label::get_content_min_size(int &w, int &h) const {
 	if (text_w < 0) {
 		font::set_font(Theme::_default.font_name, Theme::_default.font_size * ui_scale);
 		auto dim = font::get_text_dimensions(title);

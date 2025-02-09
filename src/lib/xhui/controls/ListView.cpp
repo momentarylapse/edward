@@ -59,7 +59,7 @@ void ListView::on_left_double_click(const vec2& m) {
 
 
 
-	void ListView::get_content_min_size(int &w, int &h) {
+	void ListView::get_content_min_size(int &w, int &h) const {
 		column_widths.resize(headers.num);
 		column_offsets.resize(headers.num);
 		w = 5;

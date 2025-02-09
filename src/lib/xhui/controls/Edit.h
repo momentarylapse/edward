@@ -8,7 +8,7 @@ class Edit : public Control {
 public:
 	Edit(const string& id, const string& title);
 
-	void get_content_min_size(int& w, int& h) override;
+	void get_content_min_size(int& w, int& h) const override;
 
 	void set_string(const string& s) override;
 	void enable(bool enabled) override;

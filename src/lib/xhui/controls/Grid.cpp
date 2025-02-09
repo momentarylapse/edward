@@ -61,7 +61,7 @@ void Grid::_draw(Painter *p) {
 			c.control->_draw(p);
 }
 
-void Grid::get_grid_min_sizes(Array<int> &w, Array<int> &h) {
+void Grid::get_grid_min_sizes(Array<int> &w, Array<int> &h) const {
 	w.resize(nx);
 	h.resize(ny);
 	for (auto &c: children) {
@@ -74,14 +74,14 @@ void Grid::get_grid_min_sizes(Array<int> &w, Array<int> &h) {
 	}
 }
 
-void Grid::get_content_min_size(int &_w, int &_h) {
+void Grid::get_content_min_size(int &_w, int &_h) const {
 	Array<int> w, h;
 	get_grid_min_sizes(w, h);
 	_w = sum(w) + spacing * (w.num - 1) + margin * 2;
 	_h = sum(h) + spacing * (h.num - 1) + margin * 2;
 }
 
-void Grid::get_greed_factor(float &_x, float &_y) {
+void Grid::get_greed_factor(float &_x, float &_y) const {
 	Array<float> xx, yy;
 	get_grid_greed_factors(xx, yy);
 	_x = 0;
@@ -96,7 +96,7 @@ void Grid::get_greed_factor(float &_x, float &_y) {
 		_y = sum(yy);
 }
 
-void Grid::get_grid_greed_factors(Array<float> &x, Array<float> &y) {
+void Grid::get_grid_greed_factors(Array<float> &x, Array<float> &y) const {
 	x.resize(nx);
 	y.resize(ny);
 	for (auto &c: children) {
@@ -141,7 +141,7 @@ void Grid::negotiate_area(const rect &available) {
 	}
 }
 
-Array<Control*> Grid::get_children() const {
+Array<Control*> Grid::get_children(ChildFilter) const {
 	Array<Control*> r;
 	for (auto& c: children)
 		r.add(c.control.get());

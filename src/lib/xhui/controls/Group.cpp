@@ -45,7 +45,7 @@ void Group::remove_child(Control* c) {
 
 
 
-Array<Control*> Group::get_children() const {
+Array<Control*> Group::get_children(ChildFilter) const {
 	if (child)
 		return {child.get()};
 	return {};
@@ -57,7 +57,7 @@ void Group::negotiate_area(const rect& available) {
 		child->negotiate_area({_area.p00() + vec2(0, 25), _area.p11()});
 }
 
-void Group::get_content_min_size(int& w, int& h) {
+void Group::get_content_min_size(int& w, int& h) const {
 	w = 0;
 	h = 0;
 	if (child)
@@ -65,7 +65,7 @@ void Group::get_content_min_size(int& w, int& h) {
 	h += 25;
 }
 
-void Group::get_greed_factor(float& x, float& y) {
+void Group::get_greed_factor(float& x, float& y) const {
 	float sx, sy;
 	if (child)
 		child->get_greed_factor(sx, sy);

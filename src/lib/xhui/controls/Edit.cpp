@@ -43,7 +43,7 @@ void Edit::enable(bool _enabled) {
 }
 
 
-void Edit::get_content_min_size(int &w, int &h) {
+void Edit::get_content_min_size(int &w, int &h) const {
 	w = 80;
 	h = 30;
 }

@@ -294,9 +294,25 @@ Dialog x x
 		/*xhui::FileSelectionDialog::ask(this, "Question", session->cur_mode->get_data()->filename.parent(), {"filter=*.world"}).then([this] (const Path& filename) {
 			session->set_message(str(filename));
 		});*/
-		xhui::ColorSelectionDialog::ask(this, "Question", Red, {"filter=*.world"}).then([this] (const color& c) {
+		/*xhui::ColorSelectionDialog::ask(this, "Question", Red, {"filter=*.world"}).then([this] (const color& c) {
 			session->set_message(str(c));
-		});
+		});*/
+
+		auto dlg = new xhui::Dialog("test", 500, 500, this);
+		dlg->from_source(R"foodelim(
+Dialog test ''
+	TabControl tab 'aaa\\bbb'
+		Grid g1 ''
+			CheckBox cb 'xxx'
+			---|
+			MultilineEdit edit ''
+		Grid g2 ''
+			Button b 'b'
+			---|
+			Button c 'c'
+)foodelim");
+		dlg->event("b", [this] { msg_write("bbb"); });
+		dlg->event("cb", [this] { msg_write("cb"); });
 	});
 	event_x(id, xhui::event_id::Close, [this] {
 		if (session->cur_mode->get_data()->action_manager->is_save())

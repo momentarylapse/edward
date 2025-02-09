@@ -13,12 +13,12 @@ public:
 	void set_string(const string &s) override;
 
 	void _draw(Painter *p) override;
-	void get_content_min_size(int &w, int &h) override;
+	void get_content_min_size(int &w, int &h) const override;
 
 	string title;
 	State state;
 
-	int text_w, text_h;
+	mutable int text_w, text_h;
 };
 
 }

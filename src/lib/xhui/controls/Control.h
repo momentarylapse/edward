@@ -14,6 +14,11 @@ class Panel;
 
 rect smaller_rect(const rect& r, float d);
 
+enum class ChildFilter {
+	All,
+	OnlyActive
+};
+
 class Control : public Sharable<VirtualBase> {
 	friend class Window;
 	friend class Panel;
@@ -43,8 +48,8 @@ public:
 	virtual Array<int> get_selection() { return {}; }
 	virtual void enable(bool enabled) {}
 	virtual void set_option(const string& key, const string& value);
-	virtual Array<Control*> get_children() const { return {}; }
-	Array<Control*> get_children_recursive(bool include_me) const;
+	virtual Array<Control*> get_children(ChildFilter f) const { return {}; }
+	Array<Control*> get_children_recursive(bool include_me, ChildFilter f) const;
 
 	virtual void on_left_button_down(const vec2& m) {}
 	virtual void on_left_button_up(const vec2& m) {}
@@ -84,9 +89,9 @@ public:
 	bool ignore_hover = false;
 	bool visible = true;
 
-	virtual void get_greed_factor(float &x, float &y);
-	virtual void get_content_min_size(int &w, int &h);
-	void get_effective_min_size(int &w, int &h);
+	virtual void get_greed_factor(float &x, float &y) const;
+	virtual void get_content_min_size(int &w, int &h) const;
+	void get_effective_min_size(int &w, int &h) const;
 
 	//virtual void negotiate_min_size();
 	virtual void negotiate_area(const rect &available);

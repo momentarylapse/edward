@@ -37,7 +37,7 @@ void Overlay::_draw(Painter *p) {
 			c->_draw(p);
 }
 
-void Overlay::get_content_min_size(int &_w, int &_h) {
+void Overlay::get_content_min_size(int &_w, int &_h) const {
 	_w = 0;
 	_h = 0;
 	for (auto c: children) {
@@ -48,7 +48,7 @@ void Overlay::get_content_min_size(int &_w, int &_h) {
 	}
 }
 
-void Overlay::get_greed_factor(float &_x, float &_y) {
+void Overlay::get_greed_factor(float &_x, float &_y) const {
 	// SizeMode::Forward...
 	_x = 0;
 	_y = 0;

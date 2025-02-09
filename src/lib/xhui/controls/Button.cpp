@@ -52,7 +52,7 @@ void Button::on_mouse_leave(const vec2&) {
 	emit_event(event_id::MouseLeave, false);
 }
 
-void Button::get_content_min_size(int &w, int &h) {
+void Button::get_content_min_size(int &w, int &h) const {
 	if (text_w < 0) {
 		font::set_font(Theme::_default.font_name, Theme::_default.font_size * ui_scale);
 		auto dim = font::get_text_dimensions(title);

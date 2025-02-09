@@ -367,6 +367,7 @@ add_executable(edward
 	src/lib/xhui/controls/MultilineEdit.cpp
 	src/lib/xhui/controls/Overlay.cpp
 	src/lib/xhui/controls/SpinButton.cpp
+	src/lib/xhui/controls/TabControl.cpp
 	src/lib/xhui/dialogs/ColorSelectionDialog.cpp
 	src/lib/xhui/dialogs/FileSelectionDialog.cpp
 	src/lib/xhui/dialogs/QuestionDialog.cpp

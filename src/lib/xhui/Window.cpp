@@ -477,7 +477,7 @@ Control *Window::get_hover_control(const vec2 &p) {
 			if (c->_area.inside(p) and !c->ignore_hover and c->visible)
 				best = c;
 			Control* next = nullptr;
-			for (auto cc: c->get_children())
+			for (auto cc: c->get_children(ChildFilter::OnlyActive))
 				if (cc->_area.inside(p) and cc->visible) {
 					if (next)
 						seeds.add(cc);

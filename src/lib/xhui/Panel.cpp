@@ -19,6 +19,7 @@
 #include "controls/MultilineEdit.h"
 #include "controls/Overlay.h"
 #include "controls/SpinButton.h"
+#include "controls/TabControl.h"
 #include "../os/msg.h"
 
 namespace xhui {
@@ -74,14 +75,14 @@ void Panel::negotiate_area(const rect &available) {
 	}*/
 }
 
-void Panel::get_content_min_size(int& w, int& h) {
+void Panel::get_content_min_size(int& w, int& h) const {
 	w = h = 0;
 	if (top_control) {
 		top_control->get_content_min_size(w, h);
 	}
 }
 
-void Panel::get_greed_factor(float& x, float& y) {
+void Panel::get_greed_factor(float& x, float& y) const {
 	if (top_control)
 		top_control->get_greed_factor(x, y);
 	if (size_mode_x == SizeMode::Expand)
@@ -283,7 +284,7 @@ void Panel::set_options(const string& id, const string& options) {
 }
 
 
-Array<Control*> Panel::get_children() const {
+Array<Control*> Panel::get_children(ChildFilter) const {
 	if (top_control)
 		return {top_control.get()};
 	return {};
@@ -324,10 +325,10 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add_child(new Overlay(id), x, y);
 	else if (type == "SpinButton")
 		add_child(new SpinButton(id, title._float()), x, y);
+	else if (type == "TabControl")
+		add_child(new TabControl(id, title), x, y);
 //	else if (type == "ComboBox")
 //		add_combo_box(title, x, y, id);
-//	else if (type == "TabControl")
-//		add_tab_control(title, x, y, id);
 //	else if (type == "TreeView")
 //		add_tree_view(title, x, y, id);
 //	else if (type == "IconView")
@@ -385,7 +386,7 @@ void Panel::_add_control(const string &ns, const Resource &cmd, const string &pa
 void Panel::remove_control(Control* ccc) {
 	// no need to be efficient :/
 	for (auto c: controls)
-		for (auto cc: c->get_children())
+		for (auto cc: c->get_children(ChildFilter::All))
 			if (cc == ccc) {
 				c->remove_child(cc);
 				request_redraw();

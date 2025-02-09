@@ -18,9 +18,8 @@ namespace xhui {
 	void CheckBox::on_left_button_up(const vec2&) {
 		state = State::HOVER;
 		checked = !checked;
+		emit_event(event_id::Changed, true);
 		request_redraw();
-
-		emit_event(event_id::Click, true);
 	}
 	void CheckBox::on_mouse_enter(const vec2&) {
 		state = State::HOVER;
@@ -31,7 +30,7 @@ namespace xhui {
 		request_redraw();
 	}
 
-	void CheckBox::get_content_min_size(int &w, int &h) {
+	void CheckBox::get_content_min_size(int &w, int &h) const {
 		if (text_w < 0) {
 			font::set_font(Theme::_default.font_name, Theme::_default.font_size * ui_scale);
 			auto dim = font::get_text_dimensions(title);

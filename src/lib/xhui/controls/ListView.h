@@ -17,7 +17,7 @@ namespace xhui {
 		Array<int> get_selection() override;
 		void set_option(const string& key, const string& value) override;
 
-		void get_content_min_size(int &w, int &h) override;
+		void get_content_min_size(int &w, int &h) const override;
 
 		void on_mouse_enter(const vec2& m) override;
 		void on_mouse_leave(const vec2& m) override;
@@ -31,8 +31,8 @@ namespace xhui {
 		int get_hover(const vec2& m) const;
 
 		Array<string> headers;
-		Array<int> column_widths;
-		Array<int> column_offsets;
+		mutable Array<int> column_widths;
+		mutable Array<int> column_offsets;
 		Array<Array<string>> cells;
 		Array<int> selected;
 		int view_y = 0;

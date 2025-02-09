@@ -24,13 +24,13 @@ public:
 	int margin = 0;
 	bool card = false;
 
-	void get_grid_min_sizes(Array<int> &w, Array<int> &h);
-	void get_grid_greed_factors(Array<float> &x, Array<float> &y);
+	void get_grid_min_sizes(Array<int> &w, Array<int> &h) const;
+	void get_grid_greed_factors(Array<float> &x, Array<float> &y) const;
 	
-	void get_greed_factor(float &x, float &y) override;
-	void get_content_min_size(int &w, int &h) override;
+	void get_greed_factor(float &x, float &y) const override;
+	void get_content_min_size(int &w, int &h) const override;
 	void negotiate_area(const rect &available) override;
-	Array<Control*> get_children() const override;
+	Array<Control*> get_children(ChildFilter f) const override;
 	void set_option(const string& key, const string& value) override;
 };
 

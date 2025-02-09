@@ -38,7 +38,7 @@ void Control::_register(Panel* _owner) {
 	owner = _owner;
 	if (owner) {
 		owner->controls.add(this);
-		for (auto cc: get_children())
+		for (auto cc: get_children(ChildFilter::All))
 			cc->_register(owner);
 	}
 }
@@ -51,16 +51,16 @@ void Control::_unregister() {
 		return;
 	base::remove(owner->controls, this);
 	owner = nullptr;
-	for (auto cc: get_children())
+	for (auto cc: get_children(ChildFilter::All))
 		cc->_unregister();
 }
 
-Array<Control*> Control::get_children_recursive(bool include_me) const {
+Array<Control*> Control::get_children_recursive(bool include_me, ChildFilter f) const {
 	Array<Control*> r;
 	if (include_me)
 		r.add(const_cast<Control*>(this));
-	for (auto c: get_children())
-		r.append(c->get_children_recursive(true));
+	for (auto c: get_children(f))
+		r.append(c->get_children_recursive(true, f));
 	return r;
 }
 
@@ -80,12 +80,12 @@ void Control::request_redraw() {
 }
 
 
-void Control::get_content_min_size(int &w, int &h) {
+void Control::get_content_min_size(int &w, int &h) const {
 	w = 0;
 	h = 0;
 }
 
-void Control::get_greed_factor(float &x, float &y) {
+void Control::get_greed_factor(float &x, float &y) const {
 	x = y = 0;
 	if (size_mode_x == SizeMode::Expand)
 		x = 1;
@@ -93,7 +93,7 @@ void Control::get_greed_factor(float &x, float &y) {
 		y = 1;
 }
 
-void Control::get_effective_min_size(int &w, int &h) {
+void Control::get_effective_min_size(int &w, int &h) const {
 	get_content_min_size(w, h);
 	if (min_width_user >= 0)
 		w = min_width_user;
