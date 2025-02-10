@@ -74,6 +74,7 @@ public:
 
 	void from_source(const string& source);
 	void from_resource(const Resource& resource);
+	void from_resource(const string& id);
 };
 
 }

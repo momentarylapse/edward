@@ -408,13 +408,13 @@ void Window::_on_draw() {
 	Panel::negotiate_area(a);
 	Panel::_draw(p);
 
-	if (dialog) {
-		p->set_color(color(0.4f, 0, 0, 0));
+	for (auto dlg: dialogs) {
+		p->set_color(color(0.3f, 0, 0, 0));
 		p->draw_rect(a);
 		const vec2 m = a.center();
-		const vec2 size = vec2(dialog->width, dialog->height);
-		dialog->negotiate_area({m - size/2, m + size/2});
-		dialog->_draw(p);
+		const vec2 size = vec2(dlg->width, dlg->height);
+		dlg->negotiate_area({m - size/2, m + size/2});
+		dlg->_draw(p);
 	}
 
 	if (drag.active) {
@@ -462,8 +462,8 @@ void Window::set_title(const string& t) {
 
 Control *Window::get_hover_control(const vec2 &p) {
 	Array<Control*> seeds;
-	if (dialog)
-		seeds.add(dialog->top_control.get());
+	if (dialogs.num > 0)
+		seeds.append(dialogs.back()->get_children(ChildFilter::All));
 	else
 		seeds.add(top_control.get());
 	int cur_seed = 0;

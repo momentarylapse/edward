@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Label.h"
+#include <functional>
 
 namespace xhui {
 
@@ -21,6 +22,18 @@ public:
 	virtual void on_click();
 
 	bool primary = false;
+};
+
+
+class CallbackButton : public Button {
+public:
+	CallbackButton(const string& id, const string& title, const std::function<void()>& f) : Button(id, title) {
+		callback = f;
+	}
+	void on_click() override {
+		callback();
+	}
+	std::function<void()> callback;
 };
 
 }

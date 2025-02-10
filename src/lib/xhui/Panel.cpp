@@ -2,6 +2,7 @@
 
 #include <lib/base/algo.h>
 
+#include "Dialog.h"
 #include "Painter.h"
 #include "language.h"
 #include "Resource.h"
@@ -426,42 +427,68 @@ void Panel::from_source(const string& source) {
 	from_resource(parse_resource(source));
 }
 void Panel::from_resource(const Resource& res) {
-
 	bool res_is_window = ((res.type == "Dialog") or (res.type == "Window"));
-	auto window = get_window();
-	bool panel_is_window = window and !owner;
 
+	//	set_id(res.id);
+	id = res.id;
+
+	if (res_is_window) {
+		int width = res.value("width", "0")._int();
+		int height = res.value("height", "0")._int();
+		for (auto &o: res.options)
+			set_options(id, o);
+
+		if (auto dlg = dynamic_cast<Dialog*>(this)) {
+			if (width + height > 0) {
+				dlg->width = width;
+				dlg->height = height;
+			}
+			dlg->set_title(get_language(res.id, res.id));
+		} else if (auto win = dynamic_cast<Window*>(this)) {
+			/*if (width + height > 0) {
+				win->width = width;
+				win->height = height;
+			}*/
+			win->title = get_language(res.id, res.id);
+
+			// menu/toolbar?
+			string toolbar = res.value("toolbar");
+			string menu = res.value("menu");
+			//		if (menu != "")
+			//			window->set_menu(create_resource_menu(menu, this));
+			//		if (toolbar != "")
+			//			window->get_toolbar(TOOLBAR_TOP)->set_by_id(toolbar);
+
+			/*		for (const auto &c: res.children)
+						if (c.type == "HeaderBar") {
+							window->_add_headerbar();
+							for (auto &cc: c.children)
+								_add_control(id, cc, ":header:");
+						}*/
+		}
+	}
+
+#if 0
 	// directly change window?
 	if (panel_is_window and res_is_window) {
-	//	for (auto &o: res.options)
-	//		window->__set_options(o);
 
 		// title
-		window->set_title(get_language(res.id, res.id));
+		//window->set_title(get_language(res.id, res.id));
 
 		// size
 		int width = res.value("width", "0")._int();
 		int height = res.value("height", "0")._int();
-//		if (width + height > 0)
+			msg_write("DDDDD");
+			if (width + height > 0) {
+				dlg->width = width;
+				dlg->height = height;
+			}
+			dlg->title = get_language(res.id, res.id);
+		}
 //			window->set_size(width, height);
 
-		// menu/toolbar?
-		string toolbar = res.value("toolbar");
-		string menu = res.value("menu");
-//		if (menu != "")
-//			window->set_menu(create_resource_menu(menu, this));
-//		if (toolbar != "")
-//			window->get_toolbar(TOOLBAR_TOP)->set_by_id(toolbar);
-
-/*		for (const auto &c: res.children)
-			if (c.type == "HeaderBar") {
-				window->_add_headerbar();
-				for (auto &cc: c.children)
-					_add_control(id, cc, ":header:");
-			}*/
 	}
-
-//	set_id(res.id);
+#endif
 
 	int bw = res.value("borderwidth", "-1")._int();
 	if (bw >= 0)
@@ -477,6 +504,12 @@ void Panel::from_resource(const Resource& res) {
 	}
 }
 
+void Panel::from_resource(const string& id) {
+	if (auto cmd = get_resource(id))
+		from_resource(*cmd);
+	else
+		msg_error("resource id not found: " + id);
+}
 
 
 }

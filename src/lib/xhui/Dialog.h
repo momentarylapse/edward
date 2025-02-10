@@ -9,20 +9,26 @@
 
 namespace xhui {
 
+class DialogHeader;
+
 class Dialog : public Panel {
 public:
 	Dialog(const string& title, int width, int height, Panel* parent);
+	Dialog(const string& id, Panel* parent);
 	~Dialog() override;
 	void negotiate_area(const rect& available) override;
+	Array<Control*> get_children(ChildFilter f) const override;
 	void _draw(Painter* p) override;
 
 	void request_destroy();
 	virtual	void on_destroy() {};
 
-	string title;
+	void set_title(const string& title);
+
 	int width, height;
 	float padding;
 	bool _destroy_requested = false;
+	owned<DialogHeader> header;
 };
 
 } // xhui

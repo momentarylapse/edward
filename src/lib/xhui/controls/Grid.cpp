@@ -33,6 +33,8 @@ Grid::Grid(const string &_id) : Control(_id) {
 }
 
 void Grid::add_child(shared<Control> c, int x, int y) {
+	if (vertical)
+		std::swap(x, y);
 	children.add({c, x, y});
 	nx = max(nx, x+1);
 	ny = max(ny, y+1);
@@ -158,6 +160,8 @@ void Grid::set_option(const string& key, const string& value) {
 			card = true;
 			margin = 7;
 		}
+	} else if (key == "vertical") {
+		vertical = true;
 	} else {
 		Control::set_option(key, value);
 	}

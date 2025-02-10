@@ -23,6 +23,7 @@ public:
 	int spacing;
 	int margin = 0;
 	bool card = false;
+	bool vertical = false;
 
 	void get_grid_min_sizes(Array<int> &w, Array<int> &h) const;
 	void get_grid_greed_factors(Array<float> &x, Array<float> &y) const;

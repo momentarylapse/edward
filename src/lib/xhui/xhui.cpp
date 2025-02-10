@@ -1,14 +1,15 @@
 #include "xhui.h"
-
-#include <lib/os/msg.h>
-
+#include "Resource.h"
 #include "Window.h"
 #include "Dialog.h"
 #include "Theme.h"
 #include "draw/font.h"
 #include "config.h"
+#include "language.h"
 #include "../os/time.h"
 #include "../os/filesystem.h"
+#include "../os/msg.h"
+
 
 namespace xhui {
 	extern Array<Window*> _windows_;
@@ -136,6 +137,19 @@ void init(const Array<string> &arg, const string& app_name) {
 	Theme::load_default();
 
 	font::init();
+
+
+	if (os::fs::exists(Application::directory | "config.txt"))
+		config.load(Application::directory | "config.txt");
+
+
+	//if ((flags & Flags::DONT_LOAD_RESOURCE) == 0)
+	if (os::fs::exists(Application::directory_static | "hui_resources.txt"))
+		load_resource(Application::directory_static | "hui_resources.txt");
+
+	string def_lang = "English";
+	//if (def_lang.num > 0)
+		set_language(config.get_str("Language", def_lang));
 }
 
 //   filename -> executable file
