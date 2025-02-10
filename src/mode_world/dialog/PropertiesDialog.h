@@ -6,14 +6,17 @@
 #define PROPERTIESDIALOG_H
 
 #include <lib/xhui/Dialog.h>
+#include "../data/DataWorld.h"
 
-
-class DataWorld;
 
 class PropertiesDialog : public xhui::Dialog {
 public:
 	explicit PropertiesDialog(xhui::Panel* parent, DataWorld* data);
 	DataWorld* data;
+
+	DataWorld::MetaData temp;
+
+	void apply();
 };
 
 

@@ -19,11 +19,11 @@ void ActionWorldEditData::undo(Data *d) {
 
 
 void *ActionWorldEditData::execute(Data *d) {
-	DataWorld *w = dynamic_cast<DataWorld*>(d);
+	auto w = dynamic_cast<DataWorld*>(d);
 
 	std::swap(w->meta_data, data);
 
-	return NULL;
+	return nullptr;
 }
 
 

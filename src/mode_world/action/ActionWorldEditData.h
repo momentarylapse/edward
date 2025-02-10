@@ -8,13 +8,12 @@
 #ifndef ACTIONWORLDEDITDATA_H_
 #define ACTIONWORLDEDITDATA_H_
 
-#include "../Action.h"
-#include "../../data/world/DataWorld.h"
+#include <action/Action.h>
+#include "../data/DataWorld.h"
 
-class ActionWorldEditData : public Action
-{
+class ActionWorldEditData : public Action {
 public:
-	ActionWorldEditData(const DataWorld::MetaData &_data);
+	explicit ActionWorldEditData(const DataWorld::MetaData &_data);
 	string name() override { return "WorldEditData"; }
 
 	void *execute(Data *d) override;
