@@ -405,6 +405,7 @@ add_executable(edward
 	src/mode_world/data/WorldLink.cpp
 	src/mode_world/data/WorldObject.cpp
 	src/mode_world/data/WorldTerrain.cpp
+	src/mode_world/dialog/PropertiesDialog.cpp
 	src/mode_world/AddEntityPanel.cpp
 	src/mode_world/EntityPanel.cpp
 	src/mode_world/ModeAddEntity.cpp

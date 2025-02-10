@@ -153,6 +153,7 @@ Dialog x x
 			Button save 'save' height=50 width=50 noexpandx ignorefocus
 			Button undo 'undo' height=50 width=50 noexpandx ignorefocus
 			Button redo 'redo' height=50 width=50 noexpandx ignorefocus
+			Button properties 'prop' height=50 width=50 noexpandx ignorefocus
 		---|
 		Grid main-grid ''
 			Overlay ? ''
@@ -180,6 +181,9 @@ Dialog x x
 	});
 	event("redo", [this] {
 		session->cur_mode->on_command("redo");
+	});
+	event("properties", [this] {
+		session->cur_mode->on_command("properties");
 	});
 
 	event_xp("area", xhui::event_id::Initialize, [this] (Painter* p) {

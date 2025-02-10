@@ -12,8 +12,7 @@ namespace xhui {
 
 enum class Answer {
 	Yes,
-	No,
-	Cancel
+	No
 };
 
 class QuestionDialog : public Dialog {

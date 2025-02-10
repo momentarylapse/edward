@@ -33,6 +33,8 @@
 #include <view/ActionController.h>
 #include <view/DrawingHelper.h>
 
+#include "dialog/PropertiesDialog.h"
+
 
 ModeWorld::ModeWorld(Session* session) :
 	Mode(session),
@@ -473,6 +475,8 @@ void ModeWorld::on_command(const string& id) {
 		data->undo();
 	if (id == "redo")
 		data->redo();
+	if (id == "properties")
+		new PropertiesDialog(session->win, data);
 }
 
 void ModeWorld::on_key_down(int key) {

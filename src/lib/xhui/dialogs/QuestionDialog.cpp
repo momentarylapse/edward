@@ -3,6 +3,9 @@
 //
 
 #include "QuestionDialog.h"
+
+#include <lib/xhui/xhui.h>
+
 #include "../controls/Button.h"
 #include "../controls/Grid.h"
 
@@ -30,7 +33,11 @@ QuestionDialog::QuestionDialog(Panel* parent, const string& title, const string&
 		request_destroy();
 	});
 	event("cancel", [this] {
-		promise(Answer::Cancel);
+		promise.fail();
+		request_destroy();
+	});
+	event(event_id::Close, [this] {
+		promise.fail();
 		request_destroy();
 	});
 }
