@@ -7,6 +7,7 @@
 #include "lib/xhui/Painter.h"
 #include <lib/xhui/ContextVulkan.h>
 #include <lib/xhui/Dialog.h>
+#include <lib/xhui/controls/Toolbar.h>
 #include <lib/xhui/dialogs/FileSelectionDialog.h>
 #include <lib/xhui/dialogs/QuestionDialog.h>
 #include <lib/xhui/dialogs/ColorSelectionDialog.h>
@@ -147,13 +148,7 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 	from_source(R"foodelim(
 Dialog x x
 	Grid grid ''
-		Grid toolbar ''
-			Button new 'new' height=50 width=50 noexpandx ignorefocus
-			Button open 'open' height=50 width=50 noexpandx ignorefocus
-			Button save 'save' height=50 width=50 noexpandx ignorefocus
-			Button undo 'undo' height=50 width=50 noexpandx ignorefocus
-			Button redo 'redo' height=50 width=50 noexpandx ignorefocus
-			Button properties 'prop' height=50 width=50 noexpandx ignorefocus
+		Toolbar toolbar ''
 		---|
 		Grid main-grid ''
 			Overlay ? ''
@@ -170,6 +165,8 @@ Dialog x x
 					Button add-entity '+' height=50 width=50 noexpandx ignorefocus
 )foodelim");
 
+	toolbar = (xhui::Toolbar*)get_control("toolbar");
+
 	event("new", [this] {
 		session->universal_new(FD_WORLD);
 	});
@@ -181,9 +178,6 @@ Dialog x x
 	});
 	event("redo", [this] {
 		session->cur_mode->on_command("redo");
-	});
-	event("properties", [this] {
-		session->cur_mode->on_command("properties");
 	});
 
 	event_xp("area", xhui::event_id::Initialize, [this] (Painter* p) {
@@ -328,7 +322,7 @@ Dialog test ''
 	});
 
 	xhui::run_repeated(0.02f, [this] {
-		//request_redraw();
+		request_redraw();
 	});
 }
 

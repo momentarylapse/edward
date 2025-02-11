@@ -41,6 +41,7 @@ void Control::_register(Panel* _owner) {
 		for (auto cc: get_children(ChildFilter::All))
 			cc->_register(owner);
 	}
+	request_redraw();
 }
 
 void Control::_unregister() {

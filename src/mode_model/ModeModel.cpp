@@ -8,6 +8,7 @@
 #include <lib/image/Painter.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
+#include <lib/xhui/controls/Toolbar.h>
 #include <view/ActionController.h>
 #include <view/MultiView.h>
 #include "data/ModelMesh.h"
@@ -37,6 +38,13 @@ void ModeModel::on_enter() {
 			p.add_to_vertex_buffer(data->mesh->vertex, vsb, 1);
 		vsb.build(vertex_buffer, 1);
 	};
+
+	auto tb = session->win->toolbar;
+	tb->add_item("new", "New");
+	tb->add_item("open", "Open");
+	tb->add_item("save", "Save");
+	tb->add_item("undo", "Undo");
+	tb->add_item("redo", "Redo");
 
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) -> base::optional<Hover> {
 		return base::None;

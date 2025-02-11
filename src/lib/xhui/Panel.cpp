@@ -21,6 +21,7 @@
 #include "controls/Overlay.h"
 #include "controls/SpinButton.h"
 #include "controls/TabControl.h"
+#include "controls/Toolbar.h"
 #include "../os/msg.h"
 
 namespace xhui {
@@ -328,6 +329,8 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add_child(new SpinButton(id, title._float()), x, y);
 	else if (type == "TabControl")
 		add_child(new TabControl(id, title), x, y);
+	else if (type == "Toolbar")
+		add_child(new Toolbar(id), x, y);
 //	else if (type == "ComboBox")
 //		add_combo_box(title, x, y, id);
 //	else if (type == "TreeView")

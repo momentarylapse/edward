@@ -28,11 +28,13 @@
 #include <y/world/World.h>
 #include <y/graphics-impl.h>
 #include <lib/os/msg.h>
+#include <lib/os/terminal.h>
+#include <lib/xhui/config.h>
+#include <lib/xhui/controls/Toolbar.h>
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
 #include <view/ActionController.h>
 #include <view/DrawingHelper.h>
-
 #include "dialog/PropertiesDialog.h"
 
 
@@ -62,6 +64,33 @@ void ModeWorld::on_enter() {
 	multi_view->data_sets = {
 		{MultiViewType::WORLD_ENTITY, &data->entities}
 	};
+
+	auto tb = session->win->toolbar;
+	/*tb->add_item("new", "New");
+	tb->add_item("open", "Open");
+	tb->add_item("save", "Save");
+	tb->add_item("undo", "Undo");
+	tb->add_item("redo", "Redo");
+	tb->add_item("properties", "Prop");*/
+	tb->set_by_id("world-toolbar");
+
+	session->win->event("properties", [this] {
+		session->win->open_dialog(new PropertiesDialog(session->win, data));
+	});
+	session->win->event("run-game", [this] {
+		Path engine_dir = xhui::config.get_str("EngineDir", "");
+		if (engine_dir.is_empty()) {
+			session->error("cn not run egine. Config 'EngineDir' is not set");
+			return;
+		}
+
+		auto cmd = format("cd \"%s\"; \"%s\" \"%s\"", session->storage->root_dir, engine_dir | "y", data->filename.basename_no_ext());
+		try {
+			os::terminal::shell_execute(cmd);
+		} catch (Exception &e) {
+			session->error(format("failed to run '%s'", cmd));
+		}
+	});
 
 	session->win->event("add-entity", [this] {
 		//session->set_message("add entity");
@@ -475,8 +504,6 @@ void ModeWorld::on_command(const string& id) {
 		data->undo();
 	if (id == "redo")
 		data->redo();
-	if (id == "properties")
-		session->win->open_dialog(new PropertiesDialog(session->win, data));
 }
 
 void ModeWorld::on_key_down(int key) {

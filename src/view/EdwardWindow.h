@@ -8,6 +8,9 @@
 #include "lib/xhui/xhui.h"
 #include "lib/pattern/Observable.h"
 
+namespace xhui {
+	class Toolbar;
+}
 class XhuiRenderer;
 class MultiViewRenderer;
 class Session;
@@ -24,6 +27,8 @@ public:
 	obs::sink in_data_changed;
 	obs::sink in_action_failed;
 	obs::sink in_saved;
+
+	xhui::Toolbar* toolbar;
 
 	explicit EdwardWindow(Session* session);
 

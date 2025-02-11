@@ -10186,7 +10186,7 @@ Separator
 0
 0
 Item
-selection_properties
+properties
 image=configure
 14
 0
@@ -13129,11 +13129,11 @@ Camera flight
 world-toolbar/mode_world_terrain
 Height map
 
+world-toolbar/properties
+Properties
+
 world-toolbar/run-game
 Run game
-
-world-toolbar/selection_properties
-Properties
 
 world-toolbar/view_pop
 Pop
