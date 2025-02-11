@@ -7,8 +7,8 @@
 #include "Button.h"
 #include "../Painter.h"
 #include "../Theme.h"
-#include "../../lib/base/iter.h"
-//#include "../../lib/os/msg.h"
+#include "../../base/iter.h"
+//#include "../../os/msg.h"
 #include "../../os/filesystem.h"
 
 namespace xhui {

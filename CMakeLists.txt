@@ -375,6 +375,7 @@ add_executable(edward
 	src/lib/xhui/ContextVulkan.cpp
 	src/lib/xhui/Dialog.cpp
 	src/lib/xhui/language.cpp
+	src/lib/xhui/Menu.cpp
 	src/lib/xhui/PainterGL.cpp
 	src/lib/xhui/PainterVulkan.cpp
 	src/lib/xhui/Panel.cpp

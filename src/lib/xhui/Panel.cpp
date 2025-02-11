@@ -516,6 +516,7 @@ void Panel::open_dialog(shared<Dialog> dialog) {
 	if (auto w = get_window()) {
 		w->dialogs.add(dialog.get());
 	}
+	request_redraw();
 }
 
 void Panel::close_dialog(Dialog* dialog) {

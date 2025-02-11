@@ -65,7 +65,7 @@
 #include "../../action/model/skeleton/ActionModelSetSubModel.h"*/
 #include "../../lib/os/msg.h"
 #include "../../lib/math/quaternion.h"
-#include "../../lib/hui/language.h"
+#include "../../lib/xhui/language.h"
 #include <y/helper/ResourceManager.h>
 #include <y/world/components/Animator.h>
 #include <graphics-impl.h>

@@ -17,6 +17,7 @@ public:
 	DataWorld::MetaData temp;
 
 	void apply();
+	void fill();
 };
 
 
