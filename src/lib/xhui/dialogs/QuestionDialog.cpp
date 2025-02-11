@@ -45,6 +45,7 @@ QuestionDialog::QuestionDialog(Panel* parent, const string& title, const string&
 
 base::future<Answer> QuestionDialog::ask(Panel* parent, const string& title, const string& question, bool allow_cancel) {
 	auto dlg = new QuestionDialog(parent, title, question, allow_cancel);
+	parent->open_dialog(dlg);
 	return dlg->promise.get_future();
 }
 

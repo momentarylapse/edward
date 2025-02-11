@@ -10,6 +10,7 @@ namespace xhui {
 using Callback = std::function<void()>;
 using CallbackP = std::function<void(::Painter*)>;
 struct Resource;
+class Dialog;
 
 class Panel : public Control {
 public:
@@ -71,6 +72,9 @@ public:
 	Control* get_control(const string& id);
 	void embed(const string& target, int x, int y, shared<Panel> p);
 	void unembed(Panel* p);
+
+	void open_dialog(shared<Dialog> dialog);
+	void close_dialog(Dialog* dialog);
 
 	void from_source(const string& source);
 	void from_resource(const Resource& resource);

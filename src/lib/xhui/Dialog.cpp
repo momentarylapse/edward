@@ -15,8 +15,6 @@
 
 namespace xhui {
 
-Array<Dialog*> _dialogs_;
-
 static constexpr float HEADER_HEIGHT = 30;
 
 class DialogHeader : public Grid {
@@ -43,34 +41,15 @@ Dialog::Dialog(const string& _title, int _width, int _height, Panel* parent) : P
 	});
 	width = _width;
 	height = _height;
-	_register(parent);
-	owner = parent;
-	auto window = parent->get_window();
-	window->dialogs.add(this);
 	_area = {0, (float)width, 0, (float)height};
 	padding = Theme::_default.window_margin;
-
-	_dialogs_.add(this);
-	request_redraw();
 }
 
 Dialog::Dialog(const string& id, Panel* parent) : Dialog("", 400, 300, parent) {
 	from_resource(id);
 }
 
-Dialog::~Dialog() {
-	for (int i=0; i<_dialogs_.num; i++)
-		if (_dialogs_[i] == this)
-			_dialogs_.erase(i);
-
-	auto w = get_window();
-	w->dialogs.pop();
-	for (int i=0; i<owner->controls.num; i++)
-		if (owner->controls[i] == this) {
-			owner->controls.erase(i);
-		}
-	w->hover_control = nullptr;
-}
+Dialog::~Dialog() = default;
 
 Array<Control*> Dialog::get_children(ChildFilter f) const {
 	if (top_control)

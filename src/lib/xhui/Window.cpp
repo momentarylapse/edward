@@ -288,18 +288,26 @@ void Window::_on_left_double_click(const vec2& m) {
 }
 void Window::_on_middle_button_down(const vec2& m) {
 	state.mbut = true;
+	if (hover_control)
+		hover_control->on_middle_button_down(m);
 	on_middle_button_down(m);
 }
 void Window::_on_middle_button_up(const vec2& m) {
 	state.mbut = false;
+	if (hover_control)
+		hover_control->on_middle_button_up(m);
 	on_middle_button_up(m);
 }
 void Window::_on_right_button_down(const vec2& m) {
 	state.rbut = true;
+	if (hover_control)
+		hover_control->on_right_button_down(m);
 	on_right_button_down(m);
 }
 void Window::_on_right_button_up(const vec2& m) {
 	state.rbut = false;
+	if (hover_control)
+		hover_control->on_right_button_up(m);
 	on_right_button_up(m);
 }
 void Window::_on_mouse_move(const vec2 &m, const vec2& d) {

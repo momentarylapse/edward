@@ -68,6 +68,7 @@ FileSelectionDialog::FileSelectionDialog(Panel* parent, const string& title, con
 
 base::future<Path> FileSelectionDialog::ask(Panel* parent, const string& title, const Path& dir, const Array<string>& params) {
 	auto dlg = new FileSelectionDialog(parent, title, dir, params);
+	parent->open_dialog(dlg);
 	return dlg->promise.get_future();
 }
 

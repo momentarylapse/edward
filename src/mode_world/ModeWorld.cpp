@@ -476,7 +476,7 @@ void ModeWorld::on_command(const string& id) {
 	if (id == "redo")
 		data->redo();
 	if (id == "properties")
-		new PropertiesDialog(session->win, data);
+		session->win->open_dialog(new PropertiesDialog(session->win, data));
 }
 
 void ModeWorld::on_key_down(int key) {

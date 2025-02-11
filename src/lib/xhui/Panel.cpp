@@ -511,5 +511,27 @@ void Panel::from_resource(const string& id) {
 		msg_error("resource id not found: " + id);
 }
 
+void Panel::open_dialog(shared<Dialog> dialog) {
+	dialog->owner = this;
+	if (auto w = get_window()) {
+		w->dialogs.add(dialog.get());
+	}
+}
+
+void Panel::close_dialog(Dialog* dialog) {
+	for (int i=0; i<controls.num; i++)
+		if (controls[i] == (Control*)dialog) {
+			controls.erase(i);
+		}
+	if (auto w = get_window()) {
+		w->dialogs.pop();
+		// dialog might be deleted now!
+		w->hover_control = nullptr;
+	}
+	request_redraw();
+}
+
+
+
 
 }

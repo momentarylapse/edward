@@ -13,7 +13,6 @@
 
 namespace xhui {
 	extern Array<Window*> _windows_;
-	extern Array<Dialog*> _dialogs_;
 
 	float ui_scale = 1;
 
@@ -283,11 +282,10 @@ void run() {
 		for (auto w: _windows_)
 			w->_poll_events();
 
-		for (int i=_dialogs_.num-1; i>=0; i--)
-			if (_dialogs_[i]->_destroy_requested) {
-				_dialogs_[i]->request_redraw();
-				delete _dialogs_[i];
-			}
+		for (auto w: _windows_)
+			if (w->dialogs.num > 0)
+				if (w->dialogs.back()->_destroy_requested)
+					w->close_dialog(w->dialogs.back().get());
 
 		for (int i=_windows_.num-1; i>=0; i--)
 			if (_windows_[i]->_destroy_requested) {

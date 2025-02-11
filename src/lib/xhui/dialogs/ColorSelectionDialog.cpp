@@ -136,6 +136,7 @@ ColorSelectionDialog::ColorSelectionDialog(Panel* parent, const string& title, c
 
 base::future<color> ColorSelectionDialog::ask(Panel* parent, const string& title, const color& col, const Array<string>& params) {
 	auto dlg = new ColorSelectionDialog(parent, title, col, params);
+	parent->open_dialog(dlg);
 	return dlg->promise.get_future();
 }
 
