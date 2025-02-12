@@ -6,6 +6,7 @@
 #define MENU_H
 
 #include "Panel.h"
+#include "../base/future.h"
 
 namespace xhui {
 
@@ -22,6 +23,7 @@ public:
 	void add_item(const string& id, const string& title);
 
 	void open_popup(Panel* p);
+	base::future<string> open_popup_x(Panel* p);
 };
 
 } // xhui

@@ -6,17 +6,12 @@
 namespace xhui {
 
 Button::Button(const string &_id, const string &t) : Label(_id, t) {
+	state = State::DEFAULT;
 	can_grab_focus = true;
 	size_mode_x = SizeMode::Expand;
 	size_mode_y = SizeMode::Shrink;
-}
-
-void Button::enable(bool enabled) {
-	if (enabled)
-		state = State::DEFAULT;
-	else
-		state = State::DISABLED;
-	request_redraw();
+	align = Align::Center;
+	margin_x = Theme::_default.label_margin_x;
 }
 
 void Button::on_click() {
@@ -25,28 +20,28 @@ void Button::on_click() {
 
 
 void Button::on_left_button_down(const vec2&) {
-	if (state != State::DISABLED)
+	if (enabled)
 		state = State::PRESSED;
 	request_redraw();
 	emit_event(event_id::LeftButtonDown, false);
 }
 
 void Button::on_left_button_up(const vec2&) {
-	if (state != State::DISABLED)
+	if (enabled)
 		state = State::HOVER;
 	request_redraw();
 	emit_event(event_id::LeftButtonUp, false);
-	if (state != State::DISABLED)
+	if (enabled)
 		on_click();
 }
 void Button::on_mouse_enter(const vec2&) {
-	if (state != State::DISABLED)
+	if (enabled)
 		state = State::HOVER;
 	request_redraw();
 	emit_event(event_id::MouseEnter, false);
 }
 void Button::on_mouse_leave(const vec2&) {
-	if (state != State::DISABLED)
+	if (enabled)
 		state = State::DEFAULT;
 	request_redraw();
 	emit_event(event_id::MouseLeave, false);
@@ -85,19 +80,7 @@ void Button::_draw(Painter *p) {
 	p->draw_rect(_area);
 	p->set_roundness(0);
 
-	if (image) {
-		Label::_draw(p);
-	} else {
-		p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
-		auto dim = font::get_text_dimensions(title);
-
-		//p->set_color(Red);
-		//p->draw_rect({_area.center().x - dim.bounding_width/2, _area.center().x + dim.bounding_width/2 , _area.center().y - dim.bounding_height/2, _area.center().y + dim.bounding_height/2});
-		p->set_color(Theme::_default.text);
-		if (state == State::DISABLED)
-			p->set_color(Theme::_default.text_disabled);
-		p->draw_str({_area.center().x - dim.bounding_width / ui_scale / 2, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
-	}
+	Label::_draw(p);
 }
 
 }

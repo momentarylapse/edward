@@ -21,6 +21,7 @@ class DialogHeader : public Grid {
 public:
 	DialogHeader(const string& id, const string& title, const std::function<void()>& f) : Grid(id) {
 		label = new Label(id + ":label", title);
+		label->align = Label::Align::Center;
 		label->size_mode_x = SizeMode::Expand;
 		close_button = new CallbackButton(id + ":close", "x", f);
 		close_button->size_mode_x = SizeMode::Shrink;

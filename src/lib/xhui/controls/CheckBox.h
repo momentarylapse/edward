@@ -18,6 +18,11 @@ namespace xhui {
 		void _draw(Painter *p) override;
 
 		bool checked = false;
+		enum class State {
+			DEFAULT,
+			HOVER,
+			PRESSED
+		} state;
 	};
 
 }

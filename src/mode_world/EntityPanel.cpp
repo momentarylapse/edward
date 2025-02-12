@@ -114,7 +114,7 @@ Dialog light-panel ''
 		Group group-light 'Light'
 			Grid ? ''
 				Label ? 'Type'
-				SpinButton type '' range=0:2:1
+				ComboBox type 'Directional\\Point\\Cone' range=0:2:1
 				---|
 				Label ? 'Radius'
 				SpinButton radius '' range=0::0.1

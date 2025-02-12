@@ -6,6 +6,7 @@
 namespace xhui {
 
 	CheckBox::CheckBox(const string &_id, const string &t) : Label(_id, t) {
+		state = State::DEFAULT;
 		can_grab_focus = true;
 		size_mode_x = SizeMode::Expand;
 		size_mode_y = SizeMode::Shrink;

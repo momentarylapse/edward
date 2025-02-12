@@ -46,7 +46,7 @@ public:
 	virtual float get_float() { return get_string()._float(); }
 	virtual color get_color() { return Black; }
 	virtual Array<int> get_selection() { return {}; }
-	virtual void enable(bool enabled) {}
+	virtual void enable(bool enabled);
 	virtual void set_option(const string& key, const string& value);
 	virtual Array<Control*> get_children(ChildFilter f) const { return {}; }
 	Array<Control*> get_children_recursive(bool include_me, ChildFilter f) const;
@@ -88,6 +88,7 @@ public:
 	bool can_grab_focus = false;
 	bool ignore_hover = false;
 	bool visible = true;
+	bool enabled;
 
 	virtual void get_greed_factor(float &x, float &y) const;
 	virtual void get_content_min_size(int &w, int &h) const;
@@ -97,14 +98,6 @@ public:
 	virtual void negotiate_area(const rect &available);
 
 	void emit_event(const string& msg, bool is_default);
-
-
-	enum class State {
-		DEFAULT,
-		HOVER,
-		PRESSED,
-		DISABLED
-	};
 };
 
 }

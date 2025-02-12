@@ -17,7 +17,12 @@ public:
 	void get_content_min_size(int &w, int &h) const override;
 
 	string title;
-	State state;
+	enum class Align {
+		Left,
+		Center,
+		Right
+	} align;
+	float margin_x;
 
 	XImage* image = nullptr;
 

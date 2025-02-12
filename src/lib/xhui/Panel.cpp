@@ -10,6 +10,7 @@
 #include "controls/Button.h"
 #include "controls/CheckBox.h"
 #include "controls/ColorButton.h"
+#include "controls/ComboBox.h"
 #include "controls/DrawingArea.h"
 #include "controls/Edit.h"
 #include "controls/FileSelector.h"
@@ -307,6 +308,8 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add_child(new CheckBox(id, title), x, y);
 	else if (type == "ColorButton")
 		add_child(new ColorButton(id), x, y);
+	else if (type == "ComboBox")
+		add_child(new ComboBox(id, title), x, y);
 	else if (type == "DrawingArea")
 		add_child(new DrawingArea(id), x, y);
 	else if (type == "Edit")
@@ -331,8 +334,6 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add_child(new TabControl(id, title), x, y);
 	else if (type == "Toolbar")
 		add_child(new Toolbar(id), x, y);
-//	else if (type == "ComboBox")
-//		add_combo_box(title, x, y, id);
 //	else if (type == "TreeView")
 //		add_tree_view(title, x, y, id);
 //	else if (type == "IconView")
