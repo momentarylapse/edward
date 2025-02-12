@@ -17,10 +17,10 @@ class Window;
 #if HAS_LIB_VULKAN
 class ContextVulkan;
 #endif
+struct XImage;
 
 class Painter : public ::Painter {
 public:
-
 	explicit Painter(Window *w);
 	//virtual ~Painter();
 
@@ -29,22 +29,23 @@ public:
 	void set_color(const color &c) override;
 	void set_font(const string &font, float size, bool bold, bool italic) override;
 	void set_font_size(float size) override;
-	void set_antialiasing(bool enabled) override {};
+	void set_antialiasing(bool enabled) override {}
 	void set_line_width(float w) override;
-	void set_line_dash(const Array<float> &dash, float offset) override {};
+	void set_line_dash(const Array<float> &dash, float offset) override {}
 	void set_roundness(float radius) override;
-	void set_fill(bool fill) override { this->fill = fill; };
+	void set_fill(bool fill) override { this->fill = fill; }
 	void set_clip(const rect &r) override;
-	void draw_point(const vec2 &p) override {};
+	void draw_point(const vec2 &p) override {}
 	void draw_line(const vec2 &a, const vec2 &b) override;
 	void draw_lines(const Array<vec2> &p) override;
-	void draw_polygon(const Array<vec2> &p) override {};
+	void draw_polygon(const Array<vec2> &p) override {}
 	void draw_rect(const rect &r) override;
 	void draw_circle(const vec2 &p, float radius) override;
 	void draw_str(const vec2 &p, const string &str) override;
 	vec2 get_str_size(const string &str) override;
-	void draw_image(const vec2 &p, const Image *image) override {};
-	void draw_mask_image(const vec2 &p, const Image *image) override {};
+	void draw_image(const vec2 &p, const Image *image) override {}
+	void draw_mask_image(const vec2 &p, const Image *image) override {}
+	void draw_ximage(const rect& r, const XImage *image);
 
 	void draw_arc(const vec2& p, float r, float w0, float w1);
 

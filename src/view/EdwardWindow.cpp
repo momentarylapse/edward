@@ -154,13 +154,13 @@ Dialog x x
 			Overlay ? ''
 				DrawingArea area '' grabfocus
 				Grid ? '' margin=25
-					Button mouse-action 'T' height=50 width=50 noexpandx ignorefocus
+					Button mouse-action 'T' image=rf-translate height=50 width=50 noexpandx ignorefocus
 					Label ? '' ignorehover expandx
-					Button cam-rotate 'R' height=50 width=50 noexpandx ignorefocus
+					Button cam-rotate 'R' image=rf-rotate height=50 width=50 noexpandx ignorefocus
 					---|
 					Button aaa 'x' height=50 width=50 noexpandx ignorefocus
 					.
-					Button cam-move 'M' height=50 width=50 noexpandx ignorefocus
+					Button cam-move 'M' image=rf-translate height=50 width=50 noexpandx ignorefocus
 					---|
 					Button add-entity '+' height=50 width=50 noexpandx ignorefocus
 )foodelim");
@@ -277,12 +277,16 @@ Dialog x x
 	});
 	event("mouse-action", [this] {
 		auto& mode = session->cur_mode->multi_view->action_controller->action.mode;
-		if (mode == MouseActionMode::MOVE)
+		if (mode == MouseActionMode::MOVE) {
 			mode = MouseActionMode::ROTATE;
-		else if (mode == MouseActionMode::ROTATE)
+			set_options("mouse-action", "image=rf-rotate");
+		} else if (mode == MouseActionMode::ROTATE) {
 			mode = MouseActionMode::SCALE;
-		else if (mode == MouseActionMode::SCALE)
+			set_options("mouse-action", "image=rf-scale");
+		} else if (mode == MouseActionMode::SCALE) {
 			mode = MouseActionMode::MOVE;
+			set_options("mouse-action", "image=rf-translate");
+		}
 		set_string("mouse-action", session->cur_mode->multi_view->action_controller->action.name().sub(0, 1).upper());
 	});
 	event("aaa", [this] {

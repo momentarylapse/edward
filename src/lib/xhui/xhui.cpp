@@ -1,3 +1,4 @@
+
 #include "xhui.h"
 #include "Resource.h"
 #include "Window.h"
@@ -9,6 +10,8 @@
 #include "../os/time.h"
 #include "../os/filesystem.h"
 #include "../os/msg.h"
+#include "../vulkan/Texture.h"
+#include "../vulkan/Device.h"
 
 
 namespace xhui {
@@ -324,5 +327,38 @@ namespace event_id {
 	const string DragStart = "hui:drag-start";
 	const string DragDrop = "hui:drag-drop";
 };
+
+static Array<XImage*> _images_;
+
+Path find_image(const string& name) {
+	const auto path = Application::directory_static | "icons" | "hicolor" | "24x24" | "actions" | (name + ".png");
+	if (os::fs::exists(path))
+		return path;
+	return "";
+}
+
+XImage* load_image(const string& name) {
+	for (auto* im: _images_)
+		if (im->uid == name)
+			return im;
+
+	const auto path = find_image(name);
+	if (path.is_empty())
+		return nullptr;
+
+	auto im = new XImage;
+	im->filename = path;
+	im->uid = name;
+	if (vulkan::default_device)
+		im->texture = vulkan::Texture::load(path);
+	_images_.add(im);
+	return im;
+}
+
+void prepare_image(XImage* image) {
+	if (!image->texture)
+		if (vulkan::default_device)
+			image->texture = vulkan::Texture::load(image->filename);
+}
 
 }

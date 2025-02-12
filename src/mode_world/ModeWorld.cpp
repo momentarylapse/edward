@@ -66,12 +66,6 @@ void ModeWorld::on_enter() {
 	};
 
 	auto tb = session->win->toolbar;
-	/*tb->add_item("new", "New");
-	tb->add_item("open", "Open");
-	tb->add_item("save", "Save");
-	tb->add_item("undo", "Undo");
-	tb->add_item("redo", "Redo");
-	tb->add_item("properties", "Prop");*/
 	tb->set_by_id("world-toolbar");
 
 	session->win->event("properties", [this] {

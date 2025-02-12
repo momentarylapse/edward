@@ -15,15 +15,33 @@ using namespace vulkan;
 
 
 namespace xhui {
+
+mat4 mat_pixel_to_rel;
+
+Array<DescriptorSet*> descriptor_sets;
+int descriptor_sets_used = 0;
+
+DescriptorSet* get_descriptor_set(ContextVulkan* context, Texture* texture) {
+	DescriptorSet* dset = nullptr;
+	if (descriptor_sets_used < descriptor_sets.num) {
+		dset = descriptor_sets[descriptor_sets_used ++];
+	} else {
+		dset = context->pool->create_set(context->shader);
+		descriptor_sets.add(dset);
+	}
+	dset->set_texture(0, texture);
+	dset->update();
+	return dset;
+}
+
 struct TextCache {
-	string text;
-	float size;
+	// TODO
+	//string text;
+	//float size;
 	// font...
 	Texture* texture;
 	DescriptorSet* dset;
 };
-
-mat4 mat_pixel_to_rel;
 
 Array<TextCache> text_caches;
 int text_caches_used = 0;
@@ -34,6 +52,8 @@ TextCache& get_text_cache(ContextVulkan* context) {
 	TextCache tc;
 	tc.dset = context->pool->create_set(context->shader);
 	tc.texture = new Texture();
+	tc.dset->set_texture(0, tc.texture);
+	tc.dset->update();
 	text_caches.add(tc);
 	text_caches_used ++;
 	return text_caches.back();
@@ -86,6 +106,7 @@ void Painter::end() {
 
 	context->device->wait_idle();
 
+	descriptor_sets_used = 0;
 	text_caches_used = 0;
 }
 
@@ -125,11 +146,12 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 	params.radius = 0;
 	params.softness = 0;
 
+	tc.dset->set_texture(0, tc.texture);
+	tc.dset->update();
+
 	cb->bind_pipeline(context->pipeline_alpha);
 	cb->push_constant(0, sizeof(params), &params);
 
-	tc.dset->set_texture(0, tc.texture);
-	tc.dset->update();
 	cb->bind_descriptor_set(0, tc.dset);
 	cb->draw(context->vb);
 }
@@ -274,6 +296,24 @@ void Painter::set_transform(float rot[], const vec2 &offset) {
 }
 
 void Painter::set_clip(const rect &r) {
+}
+
+
+
+void Painter::draw_ximage(const rect& r, const XImage* image) {
+	auto dset = get_descriptor_set(context, image->texture.get());
+	Parameters params;
+	params.matrix = mat_pixel_to_rel * mat4::translation(vec3(offset_x + r.x1, offset_y + r.y1, 0)) * mat4::scale(r.width(), r.height(), 1);
+	params.col = _color;
+	params.size = {r.width(),r.height()};
+	params.radius = 0;
+	params.softness = 0;
+
+	cb->bind_pipeline(context->pipeline_alpha);
+	cb->push_constant(0, sizeof(params), &params);
+
+	cb->bind_descriptor_set(0, dset);
+	cb->draw(context->vb);
 }
 
 

@@ -40,11 +40,7 @@ void ModeModel::on_enter() {
 	};
 
 	auto tb = session->win->toolbar;
-	tb->add_item("new", "New");
-	tb->add_item("open", "Open");
-	tb->add_item("save", "Save");
-	tb->add_item("undo", "Undo");
-	tb->add_item("redo", "Redo");
+	tb->set_by_id("model-toolbar");
 
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) -> base::optional<Hover> {
 		return base::None;

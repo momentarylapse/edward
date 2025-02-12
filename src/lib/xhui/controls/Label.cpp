@@ -33,10 +33,27 @@ void Label::get_content_min_size(int &w, int &h) const {
 }
 
 void Label::_draw(Painter *p) {
-	p->set_color(Theme::_default.text_label);
-	p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
-	auto dim = font::get_text_dimensions(title);
-	p->draw_str({_area.center().x - dim.bounding_width / ui_scale / 2, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
+	if (image) {
+		prepare_image(image);
+		vec2 size = _area.size() - vec2(16, 16);
+		p->set_color(White);
+		p->draw_ximage({_area.center() - size/2, _area.center() + size/2}, image);
+	} else {
+		p->set_color(Theme::_default.text_label);
+		p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
+		auto dim = font::get_text_dimensions(title);
+		p->draw_str({_area.center().x - dim.bounding_width / ui_scale / 2, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
+	}
 }
+
+void Label::set_option(const string& key, const string& value) {
+	if (key == "image") {
+		image = load_image(value);
+		request_redraw();
+	} else {
+		Control::set_option(key, value);
+	}
+}
+
 
 }

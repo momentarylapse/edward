@@ -85,15 +85,19 @@ void Button::_draw(Painter *p) {
 	p->draw_rect(_area);
 	p->set_roundness(0);
 
-	p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
-	auto dim = font::get_text_dimensions(title);
+	if (image) {
+		Label::_draw(p);
+	} else {
+		p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
+		auto dim = font::get_text_dimensions(title);
 
-	//p->set_color(Red);
-	//p->draw_rect({_area.center().x - dim.bounding_width/2, _area.center().x + dim.bounding_width/2 , _area.center().y - dim.bounding_height/2, _area.center().y + dim.bounding_height/2});
-	p->set_color(Theme::_default.text);
-	if (state == State::DISABLED)
-		p->set_color(Theme::_default.text_disabled);
-	p->draw_str({_area.center().x - dim.bounding_width / ui_scale / 2, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
+		//p->set_color(Red);
+		//p->draw_rect({_area.center().x - dim.bounding_width/2, _area.center().x + dim.bounding_width/2 , _area.center().y - dim.bounding_height/2, _area.center().y + dim.bounding_height/2});
+		p->set_color(Theme::_default.text);
+		if (state == State::DISABLED)
+			p->set_color(Theme::_default.text_disabled);
+		p->draw_str({_area.center().x - dim.bounding_width / ui_scale / 2, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
+	}
 }
 
 }
