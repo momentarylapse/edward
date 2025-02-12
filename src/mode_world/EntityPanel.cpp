@@ -15,12 +15,42 @@
 #include <view/MultiView.h>
 #include <world/Terrain.h>
 
+class EntityListPanel : public xhui::Panel {
+public:
+	explicit EntityListPanel() : Panel("entity-list-panel") {
+		from_source(R"foodelim(
+Dialog entity-base-panel ''
+	Grid card-entity-list '' class=card
+		Group group-entity-list 'Selection'
+			ListView list 'x' nobar
+)foodelim");
+	}
+	void update(ModeWorld* mode) {
+		reset("list");
+		for (const auto& e: mode->data->entities)
+			if (e.is_selected) {
+				string name = "???";
+				if (e.basic_type == MultiViewType::WORLD_OBJECT)
+					name = "Object " + str(e.object.filename);
+				else if (e.basic_type == MultiViewType::WORLD_TERRAIN)
+					name = "Terrain " + str(e.terrain.filename);
+				else if (e.basic_type == MultiViewType::WORLD_LIGHT)
+					name = "Light";
+				else if (e.basic_type == MultiViewType::WORLD_CAMERA)
+					name = "Camera";
+				else if (e.basic_type == MultiViewType::WORLD_ENTITY)
+					name = "Entity";
+				add_string("list", name);
+			}
+	}
+};
+
 class EntityBasePanel : public xhui::Panel {
 public:
 	explicit EntityBasePanel(WorldEntity& e) : Panel("entity-base-panel") {
 		from_source(R"foodelim(
 Dialog entity-base-panel ''
-	Grid card-entity '' class=card visible=no
+	Grid card-entity '' class=card
 		Group group-entity 'Entity'
 			Grid ? ''
 				Label ? 'Position'
@@ -45,15 +75,9 @@ Dialog entity-base-panel ''
 		set_float("pos-y", e.pos.y);
 		set_float("pos-z", e.pos.z);
 		auto ang = e.ang.get_angles();
-		set_float("ang-x", e.ang.x * 180 / pi);
-		set_float("ang-y", e.ang.y * 180 / pi);
-		set_float("ang-z", e.ang.z * 180 / pi);
-		set_visible("card-add", false);
-		set_visible("card-entity", true);
-		set_visible("card-object", e.basic_type == MultiViewType::WORLD_OBJECT);
-		set_visible("card-terrain", e.basic_type == MultiViewType::WORLD_TERRAIN);
-		set_visible("card-camera", e.basic_type == MultiViewType::WORLD_CAMERA);
-		set_visible("card-light", e.basic_type == MultiViewType::WORLD_LIGHT);
+		set_float("ang-x", ang.x * 180 / pi);
+		set_float("ang-y", ang.y * 180 / pi);
+		set_float("ang-z", ang.z * 180 / pi);
 	}
 };
 
@@ -240,16 +264,22 @@ Dialog entity-panel ''
 	add_entity_panel = new AddEntityPanel(mode_world);
 	embed("main-grid", 0, 0, add_entity_panel);
 
+	entity_list_panel = new EntityListPanel();
+
 	mode_world->multi_view->out_selection_changed >> create_sink([this] {
 		auto sel = mode_world->data->get_selection();
 		cur_index = -1;
 
 		unembed(add_entity_panel.get());
+		unembed(entity_list_panel.get());
 		for (auto p: component_panels)
 			unembed(p);
 		component_panels.clear();
 
-		if (sel[MultiViewType::WORLD_ENTITY].num == 1) {
+		if (sel[MultiViewType::WORLD_ENTITY].num == 0) {
+			if (!add_entity_panel->owner)
+				embed("main-grid", 0, 0, add_entity_panel);
+		} else if (sel[MultiViewType::WORLD_ENTITY].num == 1) {
 			cur_index = sel[MultiViewType::WORLD_ENTITY][0];
 			auto& e = mode_world->data->entities[cur_index];
 			auto entity_base_panel = new EntityBasePanel(e);
@@ -274,8 +304,9 @@ Dialog entity-panel ''
 				component_panels.add(light_panel);
 			}
 		} else {
-			if (!add_entity_panel->owner)
-				embed("main-grid", 0, 0, add_entity_panel);
+			if (!entity_list_panel->owner)
+				embed("main-grid", 0, 0, entity_list_panel);
+			entity_list_panel.to<EntityListPanel>()->update(mode_world);
 		}
 	});
 
