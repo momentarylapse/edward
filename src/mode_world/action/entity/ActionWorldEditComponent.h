@@ -7,6 +7,7 @@
 
 
 #include "../../../action/Action.h"
+#include "../../data/DataWorld.h"
 #include "../../data/WorldLight.h"
 #include "../../data/WorldCamera.h"
 
@@ -36,8 +37,43 @@ private:
 	WorldCamera camera;
 };
 
-class ActionWorldEditComponent {
+class ActionWorldEditComponent : public Action {
+public:
+	explicit ActionWorldEditComponent(int index, int cindex, const ScriptInstanceData& c);
+	string name() override { return "WorldEditComponent"; }
 
+	void *execute(Data* d) override;
+	void undo(Data* d) override;
+
+private:
+	int index, cindex;
+	ScriptInstanceData component;
+};
+
+class ActionWorldAddComponent : public Action {
+public:
+	explicit ActionWorldAddComponent(int index, const ScriptInstanceData& c);
+	string name() override { return "WorldAddComponent"; }
+
+	void *execute(Data* d) override;
+	void undo(Data* d) override;
+
+private:
+	int index;
+	ScriptInstanceData component;
+};
+
+class ActionWorldRemoveComponent : public Action {
+public:
+	explicit ActionWorldRemoveComponent(int index, int cindex);
+	string name() override { return "WorldRemoveComponent"; }
+
+	void *execute(Data* d) override;
+	void undo(Data* d) override;
+
+private:
+	int index, cindex;
+	ScriptInstanceData component;
 };
 
 

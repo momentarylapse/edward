@@ -252,6 +252,25 @@ Dialog object-panel ''
 	int index;
 };
 
+class UserComponentPanel : public xhui::Panel {
+public:
+	explicit UserComponentPanel(DataWorld* _data, int _index, int _cindex) : Panel("user-component-panel") {
+		from_source(R"foodelim(
+Dialog user-component-panel ''
+	Grid card-component '' class=card
+		Group group-component '...'
+			Grid grid-variables ''
+)foodelim");
+		data = _data;
+		index = _index;
+		cindex = _cindex;
+		auto& e = data->entities[index];
+		set_string("group-component", e.components[cindex].class_name);
+	}
+	DataWorld* data;
+	int index, cindex;
+};
+
 EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-panel") {
 	mode_world = _mode;
 	from_source(R"foodelim(
@@ -305,7 +324,12 @@ Dialog entity-panel ''
 				embed("main-grid", 0, 1, light_panel);
 				component_panels.add(light_panel);
 			}
-			add_control("Button", "+", 0, 2, "add-component");
+			for (int i=0; i<e.components.num; i++) {
+				auto p = new UserComponentPanel(mode_world->data, cur_index, i);
+				embed("main-grid", 0, 2 + i, p);
+				component_panels.add(p);
+			}
+			add_control("Button", "+", 0, 2 + e.components.num, "add-component");
 		} else {
 			if (!entity_list_panel->owner)
 				embed("main-grid", 0, 0, entity_list_panel);
@@ -315,7 +339,7 @@ Dialog entity-panel ''
 
 	event("add-component", [this] {
 		ComponentSelectionDialog::ask(this, mode_world->session).then([this] (const ScriptInstanceData& c) {
-			msg_write("TODO: add " + c.class_name);
+			mode_world->data->entity_add_component(cur_index, c);
 		});
 	});
 

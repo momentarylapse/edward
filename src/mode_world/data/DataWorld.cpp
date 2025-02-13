@@ -233,6 +233,15 @@ void DataWorld::edit_camera(int index, const WorldCamera& c) {
 	execute(new ActionWorldEditCamera(index, c));
 }
 
+void DataWorld::entity_add_component(int index, const ScriptInstanceData& c) {
+	execute(new ActionWorldAddComponent(index, c));
+}
+void DataWorld::entity_remove_component(int index, int cindex) {
+	execute(new ActionWorldRemoveComponent(index, cindex));
+}
+void DataWorld::entity_edit_component(int index, int cindex, const ScriptInstanceData& c) {
+	execute(new ActionWorldEditComponent(index, cindex, c));
+}
 
 Data::Selection DataWorld::get_selection() const {
 	Selection s;

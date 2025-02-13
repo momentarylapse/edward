@@ -130,6 +130,9 @@ public:
 	WorldEntity* add_entity(const WorldEntity& e);
 	void edit_camera(int index, const WorldCamera& c);
 	void edit_light(int index, const WorldLight& l);
+	void entity_add_component(int index, const ScriptInstanceData& c);
+	void entity_remove_component(int index, int cindex);
+	void entity_edit_component(int index, int cindex, const ScriptInstanceData& c);
 
 	void copy(DataWorld& temp) const; // actually not an action
 	void paste(const DataWorld& temp);
