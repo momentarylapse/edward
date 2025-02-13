@@ -364,7 +364,6 @@ void Window::_on_key_up(int k) {
 
 
 void Window::_on_draw() {
-
 #if HAS_LIB_VULKAN
 	if (!context)
 		context = new ContextVulkan(this);

@@ -1,3 +1,4 @@
+#include <graphics-fwd.h>
 #if HAS_LIB_VULKAN
 
 #include "Painter.h"
@@ -8,6 +9,7 @@
 #include "../vulkan/vulkan.h"
 #include "../image/image.h"
 #include "../math/mat4.h"
+#include <lib/base/algo.h>
 #include "../os/msg.h"
 
 
@@ -35,28 +37,45 @@ DescriptorSet* get_descriptor_set(ContextVulkan* context, Texture* texture) {
 }
 
 struct TextCache {
-	// TODO
-	//string text;
-	//float size;
+	string text;
+	float size;
+	int age;
 	// font...
 	Texture* texture;
 	DescriptorSet* dset;
 };
 
 Array<TextCache> text_caches;
-int text_caches_used = 0;
 
-TextCache& get_text_cache(ContextVulkan* context) {
-	if (text_caches_used < text_caches.num)
-		return text_caches[text_caches_used ++];
-	TextCache tc;
-	tc.dset = context->pool->create_set(context->shader);
-	tc.texture = new Texture();
-	tc.dset->set_texture(0, tc.texture);
-	tc.dset->update();
-	text_caches.add(tc);
-	text_caches_used ++;
-	return text_caches.back();
+TextCache& get_text_cache(ContextVulkan* context, const string& text, float size) {
+	for (auto& tc: text_caches)
+		if (tc.text == text and tc.size == size) {
+			tc.age = 0;
+			return tc;
+		}
+
+	TextCache* tc = nullptr;
+	for (auto& _tc: text_caches)
+		if (_tc.age > 5)
+			tc = &_tc;
+	if (!tc) {
+		text_caches.add({});
+		tc = &text_caches.back();
+		tc->dset = context->pool->create_set(context->shader);
+		tc->texture = new Texture();
+	}
+
+	tc->text = text;
+	tc->size = size;
+	tc->age = 0;
+	Image im;
+	font::render_text(text, Align::LEFT, im);
+	tc->texture->write(im);
+	tc->texture->set_options("minfilter=nearest");
+
+	tc->dset->set_texture(0, tc->texture);
+	tc->dset->update();
+	return *tc;
 }
 
 struct Parameters {
@@ -107,7 +126,9 @@ void Painter::end() {
 	context->device->wait_idle();
 
 	descriptor_sets_used = 0;
-	text_caches_used = 0;
+
+	for (auto& tc: text_caches)
+		tc.age ++;
 }
 
 void Painter::clear(const color &c) {
@@ -132,13 +153,10 @@ void Painter::set_color(const color &c) {
 void Painter::draw_str(const vec2 &p, const string &str) {
 	if (str.num == 0)
 		return;
-	Image im;
-	font::render_text(str, Align::LEFT, im);
-	auto& tc = get_text_cache(context);
-	tc.texture->write(im);
-	tc.texture->set_options("minfilter=nearest");
-	float w = im.width / ui_scale;
-	float h = im.height / ui_scale;
+	auto& tc = get_text_cache(context, str, font_size);
+
+	float w = (float)tc.texture->width / ui_scale;
+	float h = (float)tc.texture->height / ui_scale;
 	Parameters params;
 	params.matrix = mat_pixel_to_rel * mat4::translation(vec3(offset_x + p.x, offset_y + p.y, 0)) * mat4::scale(w, h, 1);
 	params.col = _color;
