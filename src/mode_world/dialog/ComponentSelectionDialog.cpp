@@ -4,6 +4,7 @@
 
 #include "ComponentSelectionDialog.h"
 #include <lib/base/sort.h>
+#include <lib/os/msg.h>
 #include <lib/xhui/xhui.h>
 
 Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full_base_class);
@@ -11,7 +12,8 @@ Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full
 ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session* session) : Dialog("component-selection-dialog", parent) {
 	width = 400;
 	height = 600;
-	add_control("ListView", "class\\file", 0, 0, "list");
+
+	//add_control("ListView", "class\\file", 0, 0, "list");
 
 	classes = enumerate_classes(session, "ecs.Component");
 	classes = base::sorted(classes, [] (const ScriptInstanceData& a, const ScriptInstanceData& b) {

@@ -50,17 +50,20 @@ void ContextVulkan::_create_swap_chain_and_stuff() {
 
 
 	pipeline = new vulkan::GraphicsPipeline(shader, render_pass, 0, "triangles", vb);
+	pipeline->set_dynamic({"scissor"});
 	pipeline->set_z(false, false);
 	pipeline->set_culling(vulkan::CullMode::NONE);
 	pipeline->rebuild();
 
 	pipeline_alpha = new vulkan::GraphicsPipeline(shader, render_pass, 0, "triangles", vb);
+	pipeline_alpha->set_dynamic({"scissor"});
 	pipeline_alpha->set_z(false, false);
 	pipeline_alpha->set_culling(vulkan::CullMode::NONE);
 	pipeline_alpha->set_blend(vulkan::Alpha::SOURCE_ALPHA, vulkan::Alpha::SOURCE_INV_ALPHA);
 	pipeline_alpha->rebuild();
 
 	pipeline_lines = new vulkan::GraphicsPipeline(shader_lines, render_pass, 0, "lines", "3f");
+	pipeline_lines->set_dynamic({"scissor"});
 	pipeline_lines->set_z(false, false);
 	pipeline_lines->set_culling(vulkan::CullMode::NONE);
 	pipeline_lines->rebuild();

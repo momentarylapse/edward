@@ -53,7 +53,7 @@ public:
 	void set_transform(float rot[], const vec2 &offset) override;
 
 	rect clip() const override {
-		return rect::ID;
+		return _clip;
 	}
 	rect area() const override {
 		return _area;
@@ -65,7 +65,7 @@ public:
 
 	color _color = White;;
 	string font_name;
-	//rect _clip;
+	rect _clip;
 	//Array<float> dash;
 	//float dash_offset;
 	float line_width = 1;

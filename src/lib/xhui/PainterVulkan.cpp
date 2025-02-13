@@ -107,8 +107,10 @@ Painter::Painter(Window *w) {
 	_area = {0, (float)width, 0, (float)height};
 	native_area = {0, (float)context->swap_chain->width, 0, (float)context->swap_chain->height};
 	native_area_window = native_area;
+	_clip = _area;
 	cb->set_viewport(native_area);
 	cb->begin_render_pass(context->render_pass, fb);
+	cb->set_scissor(native_area);
 	cb->clear(native_area, {Black}, 1);
 }
 
@@ -314,6 +316,8 @@ void Painter::set_transform(float rot[], const vec2 &offset) {
 }
 
 void Painter::set_clip(const rect &r) {
+	_clip = r;
+	cb->set_scissor({r.x1 * ui_scale, r.x2 * ui_scale, r.y1 * ui_scale, r.y2 * ui_scale});
 }
 
 

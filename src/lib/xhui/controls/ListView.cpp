@@ -1,12 +1,12 @@
 #include "ListView.h"
-
-#include <lib/os/msg.h>
-
 #include "../Painter.h"
 #include "../draw/font.h"
 #include "../Theme.h"
 
 namespace xhui {
+
+static constexpr float HEADER_DY = 30;
+static constexpr float ROW_DY = 30;
 
 ListView::ListView(const string &_id, const string &t) : Control(_id) {
 	can_grab_focus = true;
@@ -65,6 +65,13 @@ void ListView::on_mouse_move(const vec2& m, const vec2& d) {
 	request_redraw();
 }
 
+void ListView::on_mouse_wheel(const vec2& d) {
+	float content_height = (float)cells.num * ROW_DY;
+	view_y = clamp(view_y - d.y * 3, 0.0f, max(content_height - _area.height(), 0.0f));
+	request_redraw();
+}
+
+
 int ListView::get_hover(const vec2& m) const {
 	for (int i=0; i<cells.num; i++)
 		if (row_area(i).inside(m))
@@ -89,12 +96,14 @@ void ListView::get_content_min_size(int &w, int &h) const {
 rect ListView::row_area(int row) const {
 	float dy = 0;
 	if (show_headers)
-		dy = 30;
-	return {_area.p00() + vec2(0, 30 * (float)row + dy), _area.p10() + vec2(0, 30 * ((float)row + 1) + dy)};
+		dy = HEADER_DY;
+	dy -= view_y;
+	return {_area.p00() + vec2(0, ROW_DY * (float)row + dy), _area.p10() + vec2(0, ROW_DY * ((float)row + 1) + dy)};
 }
 
 
 void ListView::_draw(Painter *p) {
+	auto clip0 = p->clip();
 	color bg = Theme::_default.background_low;
 	p->set_color(bg);
 	p->set_roundness(Theme::_default.button_radius);
@@ -104,11 +113,15 @@ void ListView::_draw(Painter *p) {
 	p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
 	//auto dim = font::get_text_dimensions(title);
 
+
 	if (show_headers) {
 		p->set_color(Theme::_default.text_disabled);
 		for (int col=0; col<headers.num; col++) {
 			p->draw_str({_area.x1 + (float)column_offsets[col], _area.y1 + 9}, headers[col]);
 		}
+		p->set_clip({_area.p00() + vec2(0, HEADER_DY), _area.p11()});
+	} else {
+		p->set_clip(_area);
 	}
 
 	if (hover_row >= 0) {
@@ -126,10 +139,14 @@ void ListView::_draw(Painter *p) {
 
 	p->set_color(Theme::_default.text);
 	for (int row=0; row<cells.num; row++) {
+		const rect r = row_area(row);
+		if (!r.overlaps(_area))
+			continue;
 		for (int col=0; col<cells[row].num; col++) {
-			p->draw_str(row_area(row).p00() + vec2((float)column_offsets[col], 9), cells[row][col]);
+			p->draw_str(r.p00() + vec2((float)column_offsets[col], 9), cells[row][col]);
 		}
 	}
+	p->set_clip(clip0);
 }
 
 void ListView::add_string(const string& s) {
@@ -145,6 +162,7 @@ void ListView::set_cell(int row, int col, const string& s) {
 void ListView::reset() {
 	selected.clear();
 	cells.clear();
+	view_y = 0;
 	request_redraw();
 }
 void ListView::set_int(int i) {

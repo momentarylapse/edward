@@ -32,7 +32,7 @@ Dialog entity-base-panel ''
 			if (e.is_selected) {
 				string name = "???";
 				if (e.basic_type == MultiViewType::WORLD_OBJECT)
-					name = "Object " + str(e.object.filename);
+					name = "Model " + str(e.object.filename);
 				else if (e.basic_type == MultiViewType::WORLD_TERRAIN)
 					name = "Terrain " + str(e.terrain.filename);
 				else if (e.basic_type == MultiViewType::WORLD_LIGHT)
@@ -238,7 +238,7 @@ public:
 		from_source(R"foodelim(
 Dialog object-panel ''
 	Grid card-object '' class=card
-		Group group-terrain 'Object'
+		Group group-terrain 'Model'
 			Grid ? ''
 				Label ? 'Filename'
 				Button filename '' expandx
