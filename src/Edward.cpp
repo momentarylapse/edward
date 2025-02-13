@@ -1,4 +1,5 @@
 
+#include <lib/kaba/lib/lib.h>
 #include <storage/format/Format.h>
 
 #include "Session.h"
@@ -25,6 +26,8 @@ int xhui_main(const Array<string>& args) {
 		msg_error(e.message());
 		return 1;
 	}
+
+	kaba::init();
 
 	auto s = create_session();
 	if (args.num >= 2) {

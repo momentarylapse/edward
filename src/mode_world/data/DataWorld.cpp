@@ -66,7 +66,7 @@ void DataWorld::MetaData::reset() {
 	physics_mode = PhysicsMode::FULL_EXTERNAL;
 	gravity = vec3(0, -981, 0);
 
-	scripts.clear();
+	systems.clear();
 	music_files.clear();
 }
 

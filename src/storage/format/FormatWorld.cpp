@@ -157,7 +157,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				data->meta_data.fog.density = e.value("density", "0")._float();
 				data->meta_data.fog.col = s2c(e.value("color", "0 0 0"));
 			} else if (e.tag == "script") {
-				WorldScript s;
+				ScriptInstanceData s;
 				s.filename = e.value("file");
 				for (auto &ee: e.elements) {
 					WorldScriptVariable v;
@@ -165,7 +165,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 					v.value = ee.value("value");
 					s.variables.add(v);
 				}
-				data->meta_data.scripts.add(s);
+				data->meta_data.systems.add(s);
 			}
 		}
 	}
@@ -332,9 +332,10 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 	.witha("color", c2s(data->meta_data.fog.col));
 	meta.add(f);
 
-	for (auto &s: data->meta_data.scripts) {
-		auto e = xml::Element("script")
-		.witha("file", s.filename.str());
+	for (auto &s: data->meta_data.systems) {
+		auto e = xml::Element("system")
+		.witha("file", s.filename.str())
+		.witha("class", s.class_name);
 		for (auto &v: s.variables)
 			e.elements.add(xml::Element("var").witha("name", v.name).witha("value", v.value));
 		meta.add(e);

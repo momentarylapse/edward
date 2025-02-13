@@ -8,6 +8,8 @@
 #include "action/ActionWorldMoveSelection.h"
 #include <Session.h>
 #include <lib/base/iter.h>
+#include <lib/kaba/kaba.h>
+#include <lib/os/filesystem.h>
 #include <view/MultiView.h>
 #include "data/DataWorld.h"
 #include "data/WorldObject.h"
@@ -53,6 +55,25 @@ ModeWorld::ModeWorld(Session* session) :
 }
 
 
+// seems quick enough
+Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full_base_class) {
+	string base_class = full_base_class.explode(".").back();
+	Array<ScriptInstanceData> r;
+	auto files = os::fs::search(session->storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
+	for (auto &f: files) {
+		try {
+			auto context = ownify(kaba::Context::create());
+			auto s = context->load_module(session->storage->root_dir_kind[FD_SCRIPT] | f, true);
+			for (auto c: s->classes()) {
+				if (c->is_derived_from_s(full_base_class) and c->name != base_class)
+					r.add({f, c->name});
+			}
+		} catch (Exception &e) {
+			msg_error(e.message());
+		}
+	}
+	return r;
+}
 
 void ModeWorld::on_enter() {
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
@@ -137,6 +158,11 @@ void ModeWorld::on_enter() {
 	});
 
 	set_side_panel(new EntityPanel(this));
+
+	/*for (const auto& c: enumerate_classes(session, "ecs.Component"))
+		msg_write(c.class_name);
+	for (const auto& c: enumerate_classes(session, "ui.Controller"))
+		msg_write(c.class_name);*/
 }
 
 void ModeWorld::set_side_panel(xhui::Panel* p) {

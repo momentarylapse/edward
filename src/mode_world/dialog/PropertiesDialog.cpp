@@ -72,8 +72,8 @@ void PropertiesDialog::fill() {
 		add_string("skybox", format("%d\\%s", i, sb));
 
 	reset("script_list");
-	for (const auto& script: temp.scripts)
-		add_string("script_list", str(script.filename));
+	for (const auto& s: temp.systems)
+		add_string("script_list", format("%s - %s", s.class_name, s.filename));
 }
 
 

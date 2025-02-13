@@ -45,8 +45,6 @@ struct ScriptInstanceData {
 	Array<WorldScriptVariable> variables;
 };
 
-struct WorldScript : ScriptInstanceData {};
-
 struct WorldComponent {
 	Path filename;
 	string class_name;
@@ -110,7 +108,7 @@ public:
 		} fog;
 
 		// scripts
-		Array<WorldScript> scripts;
+		Array<ScriptInstanceData> systems;
 
 		// music
 		Array<Path> music_files;

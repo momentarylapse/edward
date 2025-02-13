@@ -5,6 +5,7 @@
 #include "EntityPanel.h"
 #include "AddEntityPanel.h"
 #include "ModeWorld.h"
+#include "dialog/ComponentSelectionDialog.h"
 #include <helper/ResourceManager.h>
 #include <y/graphics-impl.h>
 #include <lib/os/msg.h>
@@ -275,6 +276,7 @@ Dialog entity-panel ''
 		for (auto p: component_panels)
 			unembed(p);
 		component_panels.clear();
+		remove_control("add-component");
 
 		if (sel[MultiViewType::WORLD_ENTITY].num == 0) {
 			if (!add_entity_panel->owner)
@@ -303,11 +305,18 @@ Dialog entity-panel ''
 				embed("main-grid", 0, 1, light_panel);
 				component_panels.add(light_panel);
 			}
+			add_control("Button", "+", 0, 2, "add-component");
 		} else {
 			if (!entity_list_panel->owner)
 				embed("main-grid", 0, 0, entity_list_panel);
 			entity_list_panel.to<EntityListPanel>()->update(mode_world);
 		}
+	});
+
+	event("add-component", [this] {
+		ComponentSelectionDialog::ask(this, mode_world->session).then([this] (const ScriptInstanceData& c) {
+			msg_write("TODO: add " + c.class_name);
+		});
 	});
 
 	/*mode->data->out_changed >> create_sink([this] {
