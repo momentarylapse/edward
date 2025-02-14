@@ -38,6 +38,8 @@ void Label::_draw(Painter *p) {
 		prepare_image(image);
 		vec2 size = _area.size() - vec2(16, 16);
 		p->set_color(White);
+		if (!enabled)
+			p->set_color(White.with_alpha(0.35f));
 		p->draw_ximage({_area.center() - size/2, _area.center() + size/2}, image);
 	} else {
 		p->set_color(Theme::_default.text_label);
