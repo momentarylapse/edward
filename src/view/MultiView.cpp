@@ -404,7 +404,7 @@ void MultiView::draw_mouse_pos(Painter* p) {
 	p->draw_str(area.p11() - vec2(100,40), sx + "\n" + sy +  + "\n" + sz);
 
 
-#if HAS_LIB_GL
+#if 0 //HAS_LIB_GL
 	if (mouse_win->type == VIEW_2D) {
 		drawing_helper->draw_str(nix::target_width, nix::target_height - 60, sx + "\n" + sy, TextAlign::RIGHT);
 	} else {

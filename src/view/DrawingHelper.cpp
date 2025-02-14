@@ -30,8 +30,12 @@ Material* create_material(ResourceManager* resource_manager, const color& albedo
 	return material;
 }
 
+#ifdef USING_VULKAN
 DrawingHelper::DrawingHelper(xhui::ContextVulkan* ctx, ResourceManager* rm) {
 	context = ctx;
+#else
+DrawingHelper::DrawingHelper(ResourceManager* rm) {
+#endif
 	resource_manager = rm;
 
 	/*light = new Light(White, -1, -1);
@@ -46,6 +50,7 @@ DrawingHelper::DrawingHelper(xhui::ContextVulkan* ctx, ResourceManager* rm) {
 		msg_error(e.message());
 	}
 
+#ifdef USING_VULKAN
 	shader = vulkan::Shader::create(
 		R"foodelim(
 <Layout>
@@ -100,6 +105,7 @@ void main() {
 }
 </FragmentShader>
 )foodelim");
+//#ifdef USING_VULKAN
 	dset = ctx->pool->create_set(shader);
 	dset->set_texture(0, ctx->tex_white);
 	dset->update();
@@ -108,6 +114,7 @@ void main() {
 	//pipeline->set_z(false, false);
 	pipeline->set_culling(vulkan::CullMode::NONE);
 	pipeline->rebuild();
+#endif
 }
 
 void DrawingHelper::set_window(MultiViewWindow* win) {
@@ -145,6 +152,7 @@ static void add_vb_line(Array<Vertex1>& vertices, const vec3& a, const vec3& b, 
 }
 
 void DrawingHelper::draw_lines(const Array<vec3>& points, bool contiguous) {
+#ifdef USING_VULKAN
 	auto vb = context->get_line_vb();
 	Array<Vertex1> vertices;
 	mat4 m = window->projection * window->view;
@@ -176,6 +184,7 @@ void DrawingHelper::draw_lines(const Array<vec3>& points, bool contiguous) {
 	cb->push_constant(0, sizeof(params), &params);
 	cb->bind_descriptor_set(0, dset);
 	cb->draw(vb);
+#endif
 }
 
 void DrawingHelper::draw_circle(const vec3& center, const vec3& axis, float r) {

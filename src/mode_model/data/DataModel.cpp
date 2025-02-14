@@ -11,7 +11,7 @@
 #include "ModelMaterial.h"
 //#include "ModelSelection.h"
 #include "../../data/geometry/Geometry.h"
-#if HAS_LIB_GL
+#if 0 //HAS_LIB_GL
 #include "../../mode/model/ModeModel.h"
 #include "../../mode/model/mesh/ModeModelMesh.h"
 #endif
@@ -19,7 +19,7 @@
 #include "../../action/ActionManager.h"
 #include "../../Session.h"
 #include "../../storage/Storage.h"
-#if HAS_LIB_GL
+#if 0 //HAS_LIB_GL
 #include "../../multiview/MultiView.h"
 #endif
 /*#include "../../action/model/mesh/vertex/ActionModelAddVertex.h"

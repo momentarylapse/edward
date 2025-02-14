@@ -19,7 +19,11 @@ class Material;
 
 class DrawingHelper {
 public:
+#ifdef USING_VULKAN
 	explicit DrawingHelper(xhui::ContextVulkan* ctx, ResourceManager* rm);
+#else
+	explicit DrawingHelper(ResourceManager* rm);
+#endif
 	void set_color(const color& color);
 	color _color;
 
@@ -29,14 +33,18 @@ public:
 	void draw_lines(const Array<vec3>& points, bool contiguous = true);
 	void draw_circle(const vec3& center, const vec3& axis, float r);
 
+#ifdef USING_VULKAN
 	xhui::ContextVulkan* context;
+#endif
 	ResourceManager* resource_manager;
 	MultiViewWindow* window;
 	void set_window(MultiViewWindow* win);
 
 	Shader* shader = nullptr;
+#ifdef USING_VULKAN
 	vulkan::GraphicsPipeline* pipeline = nullptr;
 	vulkan::DescriptorSet* dset = nullptr;
+#endif
 
 	Material* material_hover;
 	Material* material_selection;

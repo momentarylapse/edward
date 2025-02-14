@@ -11,7 +11,7 @@
 #include "WorldTerrain.h"
 #include "WorldCamera.h"
 #include "WorldLink.h"
-#if HAS_LIB_GL
+#if 0 //HAS_LIB_GL
 #include "../../mode/world/ModeWorld.h"
 #endif
 #include "../../Session.h"

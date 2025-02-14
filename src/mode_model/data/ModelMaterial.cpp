@@ -8,7 +8,7 @@
 #include "ModelMaterial.h"
 #include "../../lib/nix/nix.h"
 #include "../../lib/image/image.h"
-#if HAS_LIB_GL
+#if 0 //HAS_LIB_GL
 #include "../../multiview/Window.h"
 #include "../../multiview/DrawingHelper.h"
 #endif

@@ -181,13 +181,13 @@ Painter::Painter(Window *w) {
 
 	int ww, hh;
 	glfwGetWindowSize(window->window, &ww, &hh);
-	width = (float)ww / window->ui_scale;
-	height = (float)hh / window->ui_scale;
+	width = (float)ww / ui_scale;
+	height = (float)hh / ui_scale;
 
 
 
 	nix::start_frame_glfw(_nix_context.get(), window->window);
-	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(window->ui_scale, ui->ui_scale, 1));
+	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(ui_scale, ui_scale, 1));
 	//nix::clear(color(1, 0.15f, 0.15f, 0.3f));
 	nix::set_cull(nix::CullMode::NONE);
 	nix::set_z(false, false);
@@ -204,12 +204,12 @@ void Painter::clear(const color &c) {
 void Painter::set_font(const string &font, float size, bool bold, bool italic) {
 	font_name = font;
 	font_size = size;
-	font::set_font(font, size * window->ui_scale);
+	font::set_font(font, size * ui_scale);
 }
 
 void Painter::set_font_size(float size) {
 	font_size = size;
-	font::set_font(font_name, font_size * window->ui_scale);
+	font::set_font(font_name, font_size * ui_scale);
 }
 
 void Painter::set_color(const color &c) {
@@ -223,8 +223,8 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 	font::render_text(str, Align::LEFT, im);
 	tex_text->write(im);
 	tex_text->set_options("minfilter=nearest");
-	float w = im.width / window->ui_scale;
-	float h = im.height / window->ui_scale;
+	float w = im.width / ui_scale;
+	float h = im.height / ui_scale;
 	nix::set_model_matrix(mat4::translation(vec3(offset_x + p.x, offset_y + p.y, 0)) * mat4::scale(w, h, 1));
 
 	nix::set_shader(shader);
@@ -322,6 +322,29 @@ void Painter::set_transform(float rot[], const vec2 &offset) {
 void Painter::set_clip(const rect &r) {
 	nix::set_scissor(r);
 }
+
+void Painter::draw_circle(const vec2 &p, float radius) {
+	if (fill) {
+		float r0 = corner_radius;
+		corner_radius = radius;
+		draw_rect({p - vec2(radius, radius), p + vec2(radius, radius)});
+		corner_radius = r0;
+	} else {
+		Array<vec2> points;
+		int N = 64;
+		for (int i = 0; i <= N; i++) {
+			float t = (float)i / (float)N;
+			points.add(p + vec2(cos(t * 2 * pi), sin(t * 2 * pi)) * radius);
+		}
+		draw_lines(points);
+	}
+}
+
+
+void Painter::draw_ximage(const rect &r, const XImage *image) {
+
+}
+
 
 }
 

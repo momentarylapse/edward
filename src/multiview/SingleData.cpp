@@ -6,7 +6,7 @@
  */
 
 #include "SingleData.h"
-#if HAS_LIB_GL
+#if 0 //HAS_LIB_GL
 #include "MultiView.h"
 #include "Window.h"
 #endif

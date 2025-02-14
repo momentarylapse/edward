@@ -73,6 +73,7 @@ void ModeModel::on_prepare_scene(const RenderParams& params) {
 void ModeModel::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 	auto& rvd = win->rvd;
+#ifdef USING_VULKAN
 	auto cb = params.command_buffer;
 	cb->clear(params.area, {xhui::Theme::_default.background_low}, 1.0);
 	auto dh = win->multi_view->session->drawing_helper;
@@ -82,6 +83,7 @@ void ModeModel::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	auto& rd = rvd.start(params, mat4::ID, shader, *material, 0, PrimitiveTopology::TRIANGLES, vertex_buffer);
 	rd.apply(params);
 	cb->draw(vertex_buffer);
+#endif
 
 	multi_view->action_controller->draw(params, rvd);
 }

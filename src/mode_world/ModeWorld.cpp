@@ -282,7 +282,9 @@ void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matr
 	auto shader = rvd.get_shader(material, 0, vertex_module, "");
 	auto& rd = rvd.start(params, matrix, shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
 	rd.apply(params);
+#ifdef USING_VULKAN
 	params.command_buffer->draw(vb);
+#endif
 }
 
 void ModeWorld::on_prepare_scene(const RenderParams& params) {
@@ -319,6 +321,7 @@ void ModeWorld::on_prepare_scene(const RenderParams& params) {
 void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 	auto& rvd = win->rvd;
+#ifdef USING_VULKAN
 	auto cb = params.command_buffer;
 	cb->clear(params.area, {data->meta_data.background_color}, 1.0);
 	auto dh = win->multi_view->session->drawing_helper;
@@ -372,7 +375,7 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 			}
 		}
 	}
-
+#endif
 
 	draw_cameras(win);
 	draw_lights(win);

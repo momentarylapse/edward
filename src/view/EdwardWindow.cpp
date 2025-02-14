@@ -182,11 +182,19 @@ Dialog x x
 
 	event_xp("area", xhui::event_id::Initialize, [this] (Painter* p) {
 		auto pp = (xhui::Painter*)p;
+#ifdef USING_VULKAN
 		vulkan::default_device = pp->context->device;
 		api_init_external(pp->context->instance, pp->context->device);
+#else
+		//api_init()
+#endif
 		session->resource_manager = new ResourceManager({});
 		session->resource_manager->default_shader = "default.shader";
+#ifdef USING_VULKAN
 		session->drawing_helper = new DrawingHelper(pp->context, session->resource_manager);
+#else
+		session->drawing_helper = new DrawingHelper(session->resource_manager);
+#endif
 		try {
 			session->resource_manager->load_shader_module("module-basic-data.shader");
 			session->resource_manager->load_shader_module("module-basic-interface.shader");

@@ -7,7 +7,7 @@
 
 #include "../../lib/math/math.h"
 #include "SkinGenerator.h"
-#if HAS_LIB_GL
+#if 0 //HAS_LIB_GL
 #include "../../multiview/MultiView.h"
 #include "../../multiview/Window.h"
 #endif
@@ -38,7 +38,7 @@ void SkinGenerator::init_projective(const mat4 &_m) {
 }
 
 void SkinGenerator::init_projective(MultiViewWindow *win) {
-	#if HAS_LIB_GL
+#if 0 //HAS_LIB_GL
 	rect d = win->dest;
 	mat4 s, t1, t2;
 	s = mat4::scale( nix::target_width / (d.x2 - d.x1) / 2, - nix::target_height / (d.y2 - d.y1) / 2, 1);

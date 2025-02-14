@@ -349,16 +349,20 @@ XImage* load_image(const string& name) {
 	auto im = new XImage;
 	im->filename = path;
 	im->uid = name;
+#if HAS_LIB_VULKAN
 	if (vulkan::default_device)
 		im->texture = vulkan::Texture::load(path);
+#endif
 	_images_.add(im);
 	return im;
 }
 
 void prepare_image(XImage* image) {
+#if HAS_LIB_VULKAN
 	if (!image->texture)
 		if (vulkan::default_device)
 			image->texture = vulkan::Texture::load(image->filename);
+#endif
 }
 
 }

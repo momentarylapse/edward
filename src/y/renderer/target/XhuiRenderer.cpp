@@ -24,12 +24,12 @@ void XhuiRenderer::render(const RenderParams& params) {
 void XhuiRenderer::render(Painter* p) {
 	auto pp = (xhui::Painter*)p;
 	RenderParams params;
-	params.command_buffer = pp->cb;
 	params.area = pp->native_area;
 #ifdef USING_VULKAN
+	params.command_buffer = pp->cb;
 	params.render_pass = pp->context->render_pass;
-#endif
 	params.frame_buffer = pp->context->current_frame_buffer();
+#endif
 	params.desired_aspect_ratio = pp->native_area.width() / pp->native_area.height();
 	native_area_window = pp->native_area_window;
 	render(params);

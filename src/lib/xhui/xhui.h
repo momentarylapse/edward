@@ -4,9 +4,11 @@
 #include "Painter.h"
 #include "../os/path.h"
 
+#if HAS_LIB_VULKAN
 namespace vulkan {
 	class Texture;
 }
+#endif
 
 namespace xhui {
 
@@ -174,7 +176,9 @@ namespace event_id {
 struct XImage {
 	string uid;
 	Path filename;
+#if HAS_LIB_VULKAN
 	shared<vulkan::Texture> texture;
+#endif
 };
 
 XImage* load_image(const string& name);
