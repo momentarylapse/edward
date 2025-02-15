@@ -9,11 +9,11 @@
 
 Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full_base_class);
 
-ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session* session) : Dialog("component-selection-dialog", parent) {
+ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session* session, const string& base_class) : Dialog("component-selection-dialog", parent) {
 	width = 400;
 	height = 600;
 
-	classes = enumerate_classes(session, "ecs.Component");
+	classes = enumerate_classes(session, base_class);
 	classes = base::sorted(classes, [] (const ScriptInstanceData& a, const ScriptInstanceData& b) {
 		return a.class_name <= b.class_name;
 	});
@@ -34,8 +34,8 @@ ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session*
 	});
 }
 
-base::future<ScriptInstanceData> ComponentSelectionDialog::ask(xhui::Panel* parent, Session* session) {
-	auto dlg = new ComponentSelectionDialog(parent, session);
+base::future<ScriptInstanceData> ComponentSelectionDialog::ask(xhui::Panel* parent, Session* session, const string& base_class) {
+	auto dlg = new ComponentSelectionDialog(parent, session, base_class);
 	parent->open_dialog(dlg);
 	return dlg->promise.get_future();
 }

@@ -171,8 +171,14 @@ void Window::_cursor_position_callback(GLFWwindow *window, double xpos, double y
 	//msg_write(format("mouse %f  %f", xpos, ypos));
 	auto w = (Window*)glfwGetWindowUserPointer(window);
 	w->state_prev.m = w->state.m;
+#ifdef OS_MAC
+	w->state.m.x = (float)xpos;
+	w->state.m.y = (float)ypos;
+#else
+	// why?!? this should be consistent...
 	w->state.m.x = (float)xpos / ui_scale;
 	w->state.m.y = (float)ypos / ui_scale;
+#endif
 	w->_on_mouse_move(w->state.m, w->state.m - w->state_prev.m);
 }
 

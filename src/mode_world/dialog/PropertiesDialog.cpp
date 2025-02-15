@@ -11,6 +11,8 @@
 #include <mode_world/action/ActionWorldEditData.h>
 #include <storage/Storage.h>
 
+#include "ComponentSelectionDialog.h"
+
 PropertiesDialog::PropertiesDialog(xhui::Panel* parent, DataWorld* _data) : Dialog("world_dialog", parent) {
 	data = _data;
 	temp = data->meta_data;
@@ -58,6 +60,27 @@ PropertiesDialog::PropertiesDialog(xhui::Panel* parent, DataWorld* _data) : Dial
 	event("gravitation_z", [this] {
 		temp.gravity.z = get_float("gravitation_z");
 		apply();
+	});
+	event_x("script_list", xhui::event_id::RightButtonDown, [this] {
+		auto m = new xhui::Menu;
+		m->add_item("system-delete", "Delete");
+		m->add_item("system-choose", "Choose file...");
+		m->add_item("system-add", "Add file...");
+		m->open_popup(this);
+	});
+	event("system-delete", [this] {
+		int n = get_int("script_list");
+		if (n >= 0)
+			temp.systems.erase(n);
+		apply();
+		fill();
+	});
+	event("system-add", [this] {
+		ComponentSelectionDialog::ask(this, data->session, "ui.Controller").then([this] (const ScriptInstanceData& c) {
+			temp.systems.add(c);
+			apply();
+			fill();
+		});
 	});
 }
 

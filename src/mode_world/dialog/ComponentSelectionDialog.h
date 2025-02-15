@@ -14,11 +14,11 @@ struct ScriptInstanceData;
 
 class ComponentSelectionDialog : public xhui::Dialog {
 public:
-	ComponentSelectionDialog(xhui::Panel* parent, Session* session);
+	ComponentSelectionDialog(xhui::Panel* parent, Session* session, const string& base_class);
 	base::promise<ScriptInstanceData> promise;
 	Array<ScriptInstanceData> classes;
 
-	static base::future<ScriptInstanceData> ask(xhui::Panel* parent, Session* session);
+	static base::future<ScriptInstanceData> ask(xhui::Panel* parent, Session* session, const string& base_class = "ecs.Component");
 };
 
 
