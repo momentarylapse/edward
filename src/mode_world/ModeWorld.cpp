@@ -158,11 +158,6 @@ void ModeWorld::on_enter() {
 	});
 
 	set_side_panel(new EntityPanel(this));
-
-	/*for (const auto& c: enumerate_classes(session, "ecs.Component"))
-		msg_write(c.class_name);
-	for (const auto& c: enumerate_classes(session, "ui.Controller"))
-		msg_write(c.class_name);*/
 }
 
 void ModeWorld::set_side_panel(xhui::Panel* p) {
@@ -321,10 +316,11 @@ void ModeWorld::on_prepare_scene(const RenderParams& params) {
 void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 	auto& rvd = win->rvd;
+	auto dh = win->multi_view->session->drawing_helper;
+	dh->clear(params, data->meta_data.background_color);
+
 #ifdef USING_VULKAN
 	auto cb = params.command_buffer;
-	cb->clear(params.area, {data->meta_data.background_color}, 1.0);
-	auto dh = win->multi_view->session->drawing_helper;
 
 	for (auto& e: data->entities) {
 		if (e.basic_type != MultiViewType::WORLD_TERRAIN)
@@ -341,6 +337,7 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 		rd.apply(params);
 		cb->draw(vb);
 	}
+#endif
 
 	for (auto& e: data->entities)
 		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
@@ -348,7 +345,7 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 			for (int k=0; k<m->mesh[0]->sub.num; k++) {
 				auto material = m->material[k];
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, material, m->_template->vertex_shader_module);
+				dh->draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, material, 0, m->_template->vertex_shader_module);
 			}
 		}
 
@@ -359,7 +356,7 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 				auto m = e.object.object;
 				for (int k=0; k<e.object.object->mesh[0]->sub.num; k++) {
 					auto vb = m->mesh[0]->sub[k].vertex_buffer;
-					draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_selection, m->_template->vertex_shader_module);
+					dh->draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_selection, 0, m->_template->vertex_shader_module);
 				}
 			}
 		}
@@ -371,11 +368,10 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 			auto m = e.object.object;
 			for (int k=0; k<m->mesh[0]->sub.num; k++) {
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_hover, m->_template->vertex_shader_module);
+				dh->draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_hover, 0, m->_template->vertex_shader_module);
 			}
 		}
 	}
-#endif
 
 	draw_cameras(win);
 	draw_lights(win);

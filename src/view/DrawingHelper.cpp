@@ -199,3 +199,21 @@ void DrawingHelper::draw_circle(const vec3& center, const vec3& axis, float r) {
 	draw_lines(points);
 }
 
+
+void DrawingHelper::clear(const RenderParams& params, const color& c) {
+#ifdef USING_VULKAN
+	auto cb = params.command_buffer;
+	cb->clear(params.area, {c}, 1.0);
+#else
+	nix::clear(c);
+#endif
+}
+
+void DrawingHelper::draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vertex_buffer, Material* material, int pass_no, const string& vertex_module) {
+	auto cb = context->current_command_buffer();
+	auto shader = rvd.get_shader(material, 0, vertex_module, "");
+	auto& rd = rvd.start(params, matrix, shader, *material, pass_no, PrimitiveTopology::TRIANGLES, vertex_buffer);
+	rd.apply(params);
+	cb->draw(vertex_buffer);
+}
+

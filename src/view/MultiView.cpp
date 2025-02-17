@@ -91,7 +91,6 @@ void MultiViewWindow::draw(const RenderParams& params) {
 
 
 
-
 MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 		in_data_changed(this, [this] {
 			if (!action_controller->in_use()) {

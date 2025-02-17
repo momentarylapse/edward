@@ -13,6 +13,8 @@
 #include <lib/math/mat4.h>
 #include <lib/xhui/ContextVulkan.h>
 
+struct RenderViewData;
+struct RenderParams;
 class ResourceManager;
 class MultiViewWindow;
 class Material;
@@ -30,8 +32,12 @@ public:
 	void set_line_width(float width);
 	float _line_width;
 
+	void clear(const RenderParams& params, const color& c);
+
 	void draw_lines(const Array<vec3>& points, bool contiguous = true);
 	void draw_circle(const vec3& center, const vec3& axis, float r);
+
+	void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vb, Material* material, int pass_no = 0, const string& vertex_module = "default");
 
 #ifdef USING_VULKAN
 	xhui::ContextVulkan* context;
