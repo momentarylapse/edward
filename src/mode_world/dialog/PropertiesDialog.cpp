@@ -10,6 +10,7 @@
 #include <lib/xhui/Menu.h>
 #include <mode_world/action/ActionWorldEditData.h>
 #include <storage/Storage.h>
+#include <world/World.h>
 
 #include "ComponentSelectionDialog.h"
 
@@ -89,6 +90,12 @@ void PropertiesDialog::fill() {
 	set_float("gravitation_x", temp.gravity.x);
 	set_float("gravitation_y", temp.gravity.y);
 	set_float("gravitation_z", temp.gravity.z);
+
+	check("physics_enabled", temp.physics_enabled);
+	if (temp.physics_mode == PhysicsMode::SIMPLE)
+		set_int("physics_mode", 0);
+	else if (temp.physics_mode == PhysicsMode::FULL_EXTERNAL)
+		set_int("physics_mode", 1);
 
 	reset("skybox");
 	for (const auto&& [i, sb]: enumerate(temp.skybox_files))

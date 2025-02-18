@@ -76,10 +76,23 @@ void ModeModel::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	auto dh = win->multi_view->session->drawing_helper;
 	dh->clear(params, xhui::Theme::_default.background_low);
 
-	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer, material, 0);
+	//dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer, material, 0);
 
 	dh->set_color(color(1, 0.9f, 0.6f, 0.3f));
 	dh->set_line_width(3);//scheme.LINE_WIDTH_THIN);
+
+
+
+	Array<vec3> points;
+	for (const auto& p: data->mesh->polygon) {
+		for (int k=0; k<p.side.num; k++) {
+			points.add(data->mesh->vertex[p.side[k].vertex].pos);
+			points.add(data->mesh->vertex[p.side[(k + 1) % p.side.num].vertex].pos);
+		}
+	}
+	dh->draw_lines(points, false);
+
+
 
 	multi_view->action_controller->draw(params, rvd);
 }

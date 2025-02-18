@@ -12,6 +12,15 @@ namespace xhui {
 		size_mode_y = SizeMode::Shrink;
 	}
 
+void CheckBox::check(bool _checked) {
+	checked = _checked;
+	request_redraw();
+}
+
+bool CheckBox::is_checked() {
+	return checked;
+}
+
 	void CheckBox::on_left_button_down(const vec2&) {
 		state = State::PRESSED;
 		request_redraw();

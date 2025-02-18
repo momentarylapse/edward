@@ -221,6 +221,12 @@ void Panel::set_int(const string& id, int value) {
 			c->set_int(value);
 }
 
+void Panel::check(const string& id, bool value) {
+	for (auto& c: controls)
+		if (c->id == id)
+			c->check(value);
+}
+
 void Panel::set_color(const string& id, const color& col) {
 	for (auto& c: controls)
 		if (c->id == id)
@@ -246,6 +252,13 @@ int Panel::get_int(const string& id) const {
 		if (c->id == id)
 			return c->get_int();
 	return 0;
+}
+
+bool Panel::is_checked(const string& id) const {
+	for (auto& c: controls)
+		if (c->id == id)
+			return c->is_checked();
+	return false;
 }
 
 color Panel::get_color(const string& id) const {

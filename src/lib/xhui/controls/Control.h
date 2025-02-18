@@ -39,11 +39,13 @@ public:
 	virtual void reset() {}
 	virtual void set_int(int i) { set_string(str(i)); }
 	virtual void set_float(float f) { set_string(str(f)); }
+	virtual void check(bool checked) {}
 	virtual void set_color(const color& c) {}
 	virtual string get_string() { return ""; }
 	virtual string get_cell(int row, int col) { return ""; }
 	virtual int get_int() { return get_string()._int(); }
 	virtual float get_float() { return get_string()._float(); }
+	virtual bool is_checked() { return false; }
 	virtual color get_color() { return Black; }
 	virtual Array<int> get_selection() { return {}; }
 	virtual void enable(bool enabled);

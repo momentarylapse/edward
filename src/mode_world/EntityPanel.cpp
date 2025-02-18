@@ -14,7 +14,10 @@
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
+#include <world/Model.h>
+#include <world/ModelManager.h>
 #include <world/Terrain.h>
+#include <world/components/SolidBody.h>
 
 class EntityListPanel : public xhui::Panel {
 public:
@@ -271,6 +274,89 @@ Dialog user-component-panel ''
 	int index, cindex;
 };
 
+class SolidBodyPanel : public xhui::Panel {
+public:
+	explicit SolidBodyPanel(DataWorld* _data, int _index, bool _in_model) : Panel("solid-body-panel") {
+		from_source(R"foodelim(
+Dialog solid-body-panel ''
+	Grid ? '' class=card
+		Group ? 'SolidBody'
+			Grid ? ''
+				Label ? 'Mass'
+				SpinButton mass '' range=0::0.001
+				---|
+				Label ? 'Active'
+				CheckBox active ''
+)foodelim");
+		data = _data;
+		index = _index;
+		auto& e = data->entities[index];
+		if (_in_model) {
+			set_float("mass", e.object.object->_template->solid_body->mass);
+			check("active", e.object.object->_template->solid_body->active);
+		}
+	}
+	DataWorld* data;
+	int index;
+};
+
+class MeshColliderPanel : public xhui::Panel {
+public:
+	explicit MeshColliderPanel(DataWorld* _data, int _index, bool _in_model) : Panel("collider-panel") {
+		from_source(R"foodelim(
+Dialog collider-panel ''
+	Grid ? '' class=card
+		Group ? 'MeshCollider'
+			Grid ? ''
+)foodelim");
+		data = _data;
+		index = _index;
+		auto& e = data->entities[index];
+		if (_in_model) {
+		}
+	}
+	DataWorld* data;
+	int index;
+};
+
+class AnimatorPanel : public xhui::Panel {
+public:
+	explicit AnimatorPanel(DataWorld* _data, int _index, bool _in_model) : Panel("collider-panel") {
+		from_source(R"foodelim(
+Dialog collider-panel ''
+	Grid ? '' class=card
+		Group ? 'Animator'
+			Grid ? ''
+)foodelim");
+		data = _data;
+		index = _index;
+		auto& e = data->entities[index];
+		if (_in_model) {
+		}
+	}
+	DataWorld* data;
+	int index;
+};
+
+class SkeletonPanel : public xhui::Panel {
+public:
+	explicit SkeletonPanel(DataWorld* _data, int _index, bool _in_model) : Panel("collider-panel") {
+		from_source(R"foodelim(
+Dialog collider-panel ''
+	Grid ? '' class=card
+		Group ? 'Skeleton'
+			Grid ? ''
+)foodelim");
+		data = _data;
+		index = _index;
+		auto& e = data->entities[index];
+		if (_in_model) {
+		}
+	}
+	DataWorld* data;
+	int index;
+};
+
 EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-panel") {
 	mode_world = _mode;
 	from_source(R"foodelim(
@@ -297,39 +383,39 @@ Dialog entity-panel ''
 		component_panels.clear();
 		remove_control("add-component");
 
+		auto add_component_panel = [this] (Panel* p) {
+			embed("main-grid", 0, component_panels.num + 1, p);
+			component_panels.add(p);
+		};
+
 		if (sel[MultiViewType::WORLD_ENTITY].num == 0) {
 			if (!add_entity_panel->owner)
 				embed("main-grid", 0, 0, add_entity_panel);
 		} else if (sel[MultiViewType::WORLD_ENTITY].num == 1) {
 			cur_index = sel[MultiViewType::WORLD_ENTITY][0];
 			auto& e = mode_world->data->entities[cur_index];
-			auto entity_base_panel = new EntityBasePanel(e);
-			embed("main-grid", 0, 0, entity_base_panel);
-			component_panels.add(entity_base_panel);
+			add_component_panel(new EntityBasePanel(e));
 
 			if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-				auto p = new ObjectPanel(mode_world->data, cur_index);
-				embed("main-grid", 0, 1, p);
-				component_panels.add(p);
+				add_component_panel(new ObjectPanel(mode_world->data, cur_index));
+				if (e.object.object->_template->solid_body)
+					add_component_panel(new SolidBodyPanel(mode_world->data, cur_index, true));
+				if (e.object.object->_template->mesh_collider)
+					add_component_panel(new MeshColliderPanel(mode_world->data, cur_index, true));
+				if (e.object.object->_template->skeleton)
+					add_component_panel(new SkeletonPanel(mode_world->data, cur_index, true));
+				if (e.object.object->_template->animator)
+					add_component_panel(new AnimatorPanel(mode_world->data, cur_index, true));
 			} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
-				auto terrain_panel = new TerrainPanel(mode_world->data, cur_index);
-				embed("main-grid", 0, 1, terrain_panel);
-				component_panels.add(terrain_panel);
+				add_component_panel(new TerrainPanel(mode_world->data, cur_index));
 			} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
-				auto camera_panel = new CameraPanel(mode_world->data, cur_index);
-				embed("main-grid", 0, 1, camera_panel);
-				component_panels.add(camera_panel);
+				add_component_panel(new CameraPanel(mode_world->data, cur_index));
 			} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {
-				auto light_panel = new LightPanel(mode_world->data, cur_index);
-				embed("main-grid", 0, 1, light_panel);
-				component_panels.add(light_panel);
+				add_component_panel(new LightPanel(mode_world->data, cur_index));
 			}
-			for (int i=0; i<e.components.num; i++) {
-				auto p = new UserComponentPanel(mode_world->data, cur_index, i);
-				embed("main-grid", 0, 2 + i, p);
-				component_panels.add(p);
-			}
-			add_control("Button", "+", 0, 2 + e.components.num, "add-component");
+			for (int i=0; i<e.components.num; i++)
+				add_component_panel(new UserComponentPanel(mode_world->data, cur_index, i));
+			add_control("Button", "+", 0, 1 + component_panels.num, "add-component");
 		} else {
 			if (!entity_list_panel->owner)
 				embed("main-grid", 0, 0, entity_list_panel);
