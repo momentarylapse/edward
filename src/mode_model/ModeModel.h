@@ -34,6 +34,17 @@ public:
 	VertexBuffer* vertex_buffer;
 	Material* material;
 	Array<int> event_ids;
+
+	enum class PresentationMode {
+		Vertices,
+		Edges,
+		Polygons,
+		Surfaces
+	} presentation_mode;
+	void set_presentation_mode(PresentationMode m);
+	void update_menu();
+
+	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 };
 
 

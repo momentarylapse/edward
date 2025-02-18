@@ -1,9 +1,9 @@
 //
-// Created by Michael Ankele on 2025-02-08.
+// Created by Michael Ankele on 2025-02-18.
 //
 
-#ifndef MODEADDVERTEXPOLYGON_H
-#define MODEADDVERTEXPOLYGON_H
+#ifndef MODEADDPOLYGON_H
+#define MODEADDPOLYGON_H
 
 
 #include "../view/Mode.h"
@@ -12,9 +12,9 @@
 class MultiViewWindow;
 class ModeModel;
 
-class ModeAddVertexPolygon : public Mode {
+class ModeAddPolygon : public Mode {
 public:
-	explicit ModeAddVertexPolygon(ModeModel* parent);
+	explicit ModeAddPolygon(ModeModel* parent);
 
 	void on_enter() override;
 	void on_prepare_scene(const RenderParams& params) override;
@@ -25,8 +25,11 @@ public:
 
 	ModeModel* mode_model;
 	Mode* get_parent() override;
+
+	Array<int> vertices;
 };
 
 
 
-#endif //MODEADDVERTEXPOLYGON_H
+
+#endif //MODEADDPOLYGON_H

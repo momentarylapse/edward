@@ -19,7 +19,6 @@ namespace hui {
 }
 
 int xhui_main(const Array<string>& args) {
-
 	try {
 		xhui::init(args, "edward");
 	} catch (Exception &e) {
@@ -36,6 +35,8 @@ int xhui_main(const Array<string>& args) {
 			s->universal_edit(FD_MODEL, args[1], false);
 		else if (ext == "world")
 			s->universal_edit(FD_WORLD, args[1], false);
+	} else {
+		s->universal_new(FD_MODEL);
 	}
 
 	try {

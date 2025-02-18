@@ -336,11 +336,11 @@ Mode *Session::get_mode(int preferred_type) {
 void Session::universal_new(int preferred_type) {
 #if 1
 	auto call_new = [preferred_type] (Session* session) {
-		/*if (preferred_type == FD_MODEL) {
-			session->mode_model->_new();
+		if (preferred_type == FD_MODEL) {
+			session->mode_model = new ModeModel(session);
 			session->set_mode(session->mode_model);
-			session->mode_model->mode_model_mesh->optimize_view();
-		} else*/ if (preferred_type == FD_WORLD) {
+			//session->mode_model->mode_model_mesh->optimize_view();
+		} else if (preferred_type == FD_WORLD) {
 			session->mode_world = new ModeWorld(session);
 			session->set_mode(session->mode_world);
 			//session->mode_world->optimize_view();

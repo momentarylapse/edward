@@ -85,6 +85,11 @@ float vec2::length_sqr() const {
 	return x*x + y*y;
 }
 
+float vec2::length_fuzzy() const {
+	return max(fabs(x), fabs(y));
+}
+
+
 // scale to length 1
 void vec2::normalize() {
 	float l = length();
