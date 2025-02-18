@@ -153,7 +153,7 @@ Dialog x x
 		Grid main-grid ''
 			Overlay ? ''
 				DrawingArea area '' grabfocus
-				Grid overlay-button-grid '' margin=25
+				Grid overlay-button-grid '' margin=25 spacing=20
 					Button mouse-action 'T' image=rf-translate height=50 width=50 noexpandx ignorefocus
 					Label ? '' ignorehover expandx
 					Button cam-rotate 'R' image=rf-rotate height=50 width=50 noexpandx ignorefocus
