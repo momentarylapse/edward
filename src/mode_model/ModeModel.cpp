@@ -4,6 +4,7 @@
 
 #include "ModeModel.h"
 #include <Session.h>
+#include <data/mesh/GeometryCube.h>
 #include <helper/ResourceManager.h>
 #include <lib/base/iter.h>
 #include <lib/image/Painter.h>
@@ -64,6 +65,8 @@ void ModeModel::on_enter() {
 	win->set_options("add-vertex", "height=50,width=50,noexpandx,ignorefocus");
 	win->add_control("Button", "P", 0, 2, "add-polygon");
 	win->set_options("add-polygon", "height=50,width=50,noexpandx,ignorefocus");
+	win->add_control("Button", "V", 0, 3, "add-cube");
+	win->set_options("add-cube", "height=50,width=50,noexpandx,ignorefocus");
 
 
 	event_ids.add(session->win->event("mode_model_vertex", [this] {
@@ -84,6 +87,11 @@ void ModeModel::on_enter() {
 	}));
 	event_ids.add(session->win->event("add-polygon", [this] {
 		session->set_mode(new ModeAddPolygon(this));
+	}));
+	event_ids.add(session->win->event("add-cube", [this] {
+		//session->set_mode(new ModeAddPolygon(this));
+		PolygonMesh m = GeometryCube({200,0,0}, {20,0,0}, {0,20,0}, {0,0,20}, 2, 2, 2);
+		data->paste_mesh(m, 0);
 	}));
 
 	data->out_changed >> create_sink(update);
@@ -236,6 +244,13 @@ base::optional<Hover> ModeModel::get_hover(MultiViewWindow* win, const vec2& m) 
 		return h;
 	}
 	return base::None;
+}
+
+void ModeModel::on_command(const string& id) {
+	if (id == "undo")
+		data->undo();
+	if (id == "redo")
+		data->redo();
 }
 
 

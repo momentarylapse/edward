@@ -65,7 +65,7 @@ void ModeAddPolygon::on_left_button_down(const vec2& m) {
 		vertices.add(multi_view->hover->index);
 	} else {
 		const vec3 p = multi_view->cursor_pos_3d(m);
-		mode_model->data->mesh->add_vertex(p, {0,0,0,0}, {0,0,0,0}, 0);
+		mode_model->data->add_vertex(p, {0,0,0,0}, {0,0,0,0}, NORMAL_MODE_HARD);
 		vertices.add(mode_model->data->mesh->vertices.num - 1);
 	}
 
@@ -73,7 +73,7 @@ void ModeAddPolygon::on_left_button_down(const vec2& m) {
 		vertices.pop();
 		Array<vec3> sv;
 		sv.resize(vertices.num);
-		mode_model->data->mesh->_add_polygon(vertices, 0, sv);
+		mode_model->data->add_polygon(vertices, 0);
 		session->set_mode(mode_model);
 	}
 

@@ -63,6 +63,8 @@
 #include "../../action/model/skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../action/model/skeleton/ActionModelReconnectBone.h"
 #include "../../action/model/skeleton/ActionModelSetSubModel.h"*/
+#include "../action/mesh/ActionModelPasteMesh.h"
+#include "../action/mesh/ActionModelAddPolygon.h"
 #include "../../lib/os/msg.h"
 #include "../../lib/math/quaternion.h"
 #include "../../lib/xhui/language.h"
@@ -332,30 +334,46 @@ void DataModel::selectionFromVertices() {
 }
 #endif
 
-#if 0
-void DataModel::addVertex(const vec3 &pos, const ivec4 &bone_index, const vec4 &bone_weight, int normal_mode)
-{	execute(new ActionModelAddVertex(pos, bone_index, bone_weight, normal_mode));	}
-
-ModelPolygon *DataModel::addTriangle(int a, int b, int c, int material) {
-	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture({a,b,c}, material, {vec3::EY, v_0, vec3::EX}));
+void DataModel::add_vertex(const vec3 &pos, const ivec4 &bone_index, const vec4 &bone_weight, int normal_mode) {
+	PolygonMesh m;
+	m.add_vertex(pos);
+	m.vertices[0].bone_index = bone_index;
+	m.vertices[0].bone_weight = bone_weight;
+	m.vertices[0].normal_mode = normal_mode;
+	paste_mesh(m, 0);
+	//execute(new ActionModelAddVertex(pos, bone_index, bone_weight, normal_mode));
 }
 
-ModelPolygon *DataModel::addPolygon(const Array<int> &v, int material)
-{
+Polygon *DataModel::add_triangle(int a, int b, int c, int material) {
+	return add_polygon({a, b, c}, material);
+}
+
+Polygon *DataModel::add_polygon(const Array<int> &v, int material) {
 	Array<vec3> sv;
 	for (int i=0;i<v.num;i++) {
 		float w = (float)i / (float)v.num * 2 * pi;
 		sv.add(vec3(0.5f + cos(w) * 0.5f, 0.5f + sin(w), 0));
 	}
-	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
+	return add_polygon_with_skin(v, sv, material);
 }
 
-ModelPolygon *DataModel::addPolygonWithSkin(const Array<int> &v, const Array<vec3> &sv, int material) {
-	return (ModelPolygon*)execute(new ActionModelAddPolygonSingleTexture(v, material, sv));
+Polygon *DataModel::add_polygon_with_skin(const Array<int> &v, const Array<vec3> &sv, int material) {
+	Polygon p;
+	for (int i=0; i<v.num; i++) {
+		PolygonSide s;
+		s.vertex = v[i];
+		for (int k=0; k<MATERIAL_MAX_TEXTURES; k++)
+			s.skin_vertex[k] = sv[k];
+		s.normal_index = -1;
+		s.smoothing_id = -1;
+		p.side.add(s);
+		p.material = material;
+	}
+	return (Polygon*)execute(new ActionModelAddPolygon(p));
 }
 
 
-
+#if 0
 void DataModel::create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *dst, float quality_factor) {
 	msg_todo("DataModel.create_triangle_mesh");
 }
@@ -547,10 +565,13 @@ void DataModel::setNormalModeSelection(int mode)
 
 void DataModel::setMaterialSelection(int material)
 {	execute(new ActionModelSetMaterial(this, material));	}
+#endif
 
-void DataModel::pasteGeometry(const Geometry& geo, int default_material)
-{	execute(new ActionModelPasteGeometry(geo, default_material));	}
+void DataModel::paste_mesh(const PolygonMesh& geo, int default_material) {
+	execute(new ActionModelPasteMesh(geo, default_material));
+}
 
+#if 0
 void DataModel::easify(float factor)
 {	execute(new ActionModelEasify(factor));	}
 

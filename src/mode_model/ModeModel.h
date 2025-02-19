@@ -29,6 +29,7 @@ public:
 	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
+	void on_command(const string& id) override;
 
 	void on_update_selection();
 

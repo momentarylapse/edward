@@ -54,7 +54,7 @@ void ModeAddVertex::on_left_button_down(const vec2& m) {
 	if (multi_view->hover and multi_view->hover->type == MultiViewType::MODEL_VERTEX)
 		return;
 	const vec3 p = multi_view->cursor_pos_3d(m);
-	mode_model->data->mesh->add_vertex(p, {0,0,0,0}, {0,0,0,0}, 0);
+	mode_model->data->add_vertex(p, {0,0,0,0}, {0,0,0,0}, NORMAL_MODE_HARD);
 	session->win->request_redraw();
 }
 

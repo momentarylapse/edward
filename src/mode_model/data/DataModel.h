@@ -159,12 +159,12 @@ public:
 	void create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *dst, float quality_factor);
 
 	// high level (actions)
-/*	void addVertex(const vec3 &pos, const ivec4 &bone_index = {0,0,0,0}, const vec4 &bone_weight = {1,0,0,0}, int normal_mode = -1);
-	ModelPolygon *addTriangle(int a, int b, int c, int material);
-	ModelPolygon *addPolygon(const Array<int> &v, int material);
-	ModelPolygon *addPolygonWithSkin(const Array<int> &v, const Array<vec3> &sv, int material);
+	void add_vertex(const vec3 &pos, const ivec4 &bone_index = {0,0,0,0}, const vec4 &bone_weight = {1,0,0,0}, int normal_mode = -1);
+	Polygon *add_triangle(int a, int b, int c, int material);
+	Polygon *add_polygon(const Array<int> &v, int material);
+	Polygon *add_polygon_with_skin(const Array<int> &v, const Array<vec3> &sv, int material);
 
-	void delete_polygon(int index);
+/*	void delete_polygon(int index);
 
 	void delete_selection(const ModelSelection &s, bool greedy = false);
 	void invert_polygons(const ModelSelection &s);
@@ -188,6 +188,8 @@ public:
 	void easify(float factor);
 	void subdivideSelectedSurfaces(const ModelSelection &s);
 	void automap(int material, int texture_level);*/
+
+	void paste_mesh(const PolygonMesh &geo, int default_material);
 
 
 	// properties

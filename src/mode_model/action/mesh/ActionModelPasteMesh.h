@@ -8,22 +8,20 @@
 #ifndef ACTIONMODELPASTEGEOMETRY_H_
 #define ACTIONMODELPASTEGEOMETRY_H_
 
-#include "../../ActionGroup.h"
-#include "../../../data/model/geometry/Geometry.h"
+#include <action/Action.h>
+#include <data/mesh/PolygonMesh.h>
 class DataModel;
-class Geometry;
 
-class ActionModelPasteGeometry : public Action {
+class ActionModelPasteMesh : public Action {
 public:
-	ActionModelPasteGeometry(const Geometry &geo, int material);
-	string name() override { return "ModelPasteGeometry"; }
+	ActionModelPasteMesh(const PolygonMesh &geo, int material);
+	string name() override { return "ModelPasteMesh"; }
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;
 private:
-	Geometry geo;
+	PolygonMesh geo;
 	int default_material;
-	int num_edges_before;
 };
 
 #endif /* ACTIONMODELPASTEGEOMETRY_H_ */

@@ -30,7 +30,7 @@ struct Polygon: multiview::SingleData {
 	Array<PolygonSide> side;
 	vec3 temp_normal;
 	bool normal_dirty = true;
-	bool triangulation_dirty;
+	bool triangulation_dirty = true;
 	int material = 0;
 	int smooth_group = -1;
 
