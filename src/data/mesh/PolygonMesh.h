@@ -1,26 +1,49 @@
 /*
- * Geometry.h
+ * PolygonMesh.h
  *
  *  Created on: 11.01.2013
  *      Author: michi
  */
 
-#ifndef GEOMETRY_H_
-#define GEOMETRY_H_
+#ifndef POLYGONMESH_H_
+#define POLYGONMESH_H_
 
-#include <mode_model/data/ModelMesh.h>
-#include <mode_model/data/ModelPolygon.h>
+#include "Polygon.h"
+#include <multiview/SingleData.h>
 #include <lib/base/base.h>
+#include <lib/math/vec3.h>
+#include <lib/math/vec4.h>
 #include <y/graphics-fwd.h>
+#include <y/world/Material.h>
 
 class MultiViewWindow;
-class ModelVertex;
-class ModelPolygon;
+class VertexStagingBuffer;
 class vec3;
 class mat4;
 
-class Geometry {
-public:
+/*enum class NormalMode {
+	Smooth,
+	Angular,
+	PerEdge
+};*/
+
+
+struct MeshVertex: multiview::SingleData {
+	int normal_mode;
+	ivec4 bone_index;
+	vec4 bone_weight;
+
+	bool normal_dirty;
+	int smoothing_id = -1;
+	int ref_count; // polygons
+
+	MeshVertex();
+	explicit MeshVertex(const vec3 &pos);
+};
+
+
+
+struct PolygonMesh {
 	void clear();
 
 	void add_vertex(const vec3 &pos);
@@ -28,11 +51,11 @@ public:
 	void add_polygon_single_texture(const Array<int> &v, const Array<vec3> &sv);
 	void add_polygon_auto_texture(const Array<int> &v);
 	void add_bezier3(const Array<vec3> &v, int num_x, int num_y, float epsilon);
-	void add(const Geometry &geo);
+	void add(const PolygonMesh &geo);
 	void add_easy(int v0, const Array<int> &delta);
 
 	void weld(float epsilon);
-	void weld(const Geometry &geo, float epsilon);
+	void weld(const PolygonMesh &geo, float epsilon);
 
 	void invert();
 
@@ -47,15 +70,15 @@ public:
 
 	void build(VertexBuffer *vb) const;
 
-	Array<ModelVertex> vertex;
-	Array<ModelPolygon> polygon;
+	Array<MeshVertex> vertices;
+	Array<Polygon> polygons;
 
 	bool is_closed() const;
 
-	Array<Geometry> split_connected() const;
+	Array<PolygonMesh> split_connected() const;
 };
 
 //int GeometrySubtract(const Geometry &a, const Geometry &b, Geometry &c);
 //int GeometryAnd(const Geometry &a, const Geometry &b, Geometry &c);
 
-#endif /* GEOMETRY_H_ */
+#endif /* POLYGONMESH_H_ */

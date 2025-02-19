@@ -8,10 +8,10 @@
 #ifndef GEOMETRYTEAPOT_H_
 #define GEOMETRYTEAPOT_H_
 
-#include "Geometry.h"
+#include "PolygonMesh.h"
 class vec3;
 
-class GeometryTeapot : public Geometry
+class GeometryTeapot : public PolygonMesh
 {
 public:
 	GeometryTeapot(const vec3 &pos, float radius, int samples);

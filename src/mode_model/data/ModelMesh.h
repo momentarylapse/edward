@@ -9,29 +9,15 @@
 #define SRC_DATA_MODEL_MODELMESH_H_
 
 #include <multiview/SingleData.h>
+#include <data/mesh/PolygonMesh.h>
 #include <lib/math/vec4.h>
 
 struct Box;
 class DataModel;
 class ModelTriangleMesh;
-class ModelPolygon;
 class ModelSelection;
 class MeshInsideTestData;
-class Geometry;
 
-
-struct ModelVertex: multiview::SingleData {
-	int normal_mode;
-	ivec4 bone_index;
-	vec4 bone_weight;
-
-	bool normal_dirty;
-	int smoothing_id = -1;
-	int ref_count; // polygons
-
-	ModelVertex();
-	explicit ModelVertex(const vec3 &pos);
-};
 
 // only for use in MultiView...
 struct ModelSkinVertexDummy: multiview::SingleData {
@@ -61,8 +47,7 @@ struct ModelCylinder: multiview::SingleData {
 
 
 
-class ModelMesh {
-public:
+struct ModelMesh : PolygonMesh {
 	explicit ModelMesh(DataModel *model);
 	~ModelMesh();
 
@@ -76,7 +61,7 @@ public:
 	void _shift_vertex_links(int offset, int delta);
 	void _add_polygon(const Array<int> &v, int material, const Array<vec3> &sv, int index = -1);
 	void _remove_polygon(int index);
-	void _add_vertices(const Array<ModelVertex> &vertices);
+	void _add_vertices(const Array<MeshVertex> &vertices);
 	void _post_vertex_number_change_update();
 
 	bool test_sanity(const string &loc);
@@ -92,9 +77,6 @@ public:
 	Array<Array<int> > get_connected_components();*/
 
 
-	Array<ModelVertex> vertex;
-
-	Array<ModelPolygon> polygon;
 	Array<ModelSkinVertexDummy> skin_vertex; // only temporary...
 
 	// purely physical
@@ -117,11 +99,11 @@ public:
 	ModelSelection get_selection() const;
 	void set_selection(const ModelSelection &s);
 
-	void set_show_vertices(Array<ModelVertex> &vert);
-	Array<ModelVertex> show_vertices;
+	void set_show_vertices(Array<MeshVertex> &vert);
+	Array<MeshVertex> show_vertices;
 
 
-	Geometry copy_geometry();
+	PolygonMesh copy_geometry();
 };
 
 #endif /* SRC_DATA_MODEL_MODELMESH_H_ */

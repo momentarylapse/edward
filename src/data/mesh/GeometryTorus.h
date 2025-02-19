@@ -8,10 +8,10 @@
 #ifndef GEOMETRYTORUS_H_
 #define GEOMETRYTORUS_H_
 
-#include "Geometry.h"
+#include "PolygonMesh.h"
 class vec3;
 
-class GeometryTorus : public Geometry
+class GeometryTorus : public PolygonMesh
 {
 public:
 	GeometryTorus(const vec3 &pos, const vec3 &axis, float radius1, float radius2, int num_x, int num_y);

@@ -77,15 +77,15 @@ mat4 make_frame(const vec3 &pos, const vec3 &dir, const vec3 &up, const vec3 rig
 	return trans * rot;
 }
 
-static Geometry half_ball(float radius, int edges, bool upper) {
+static PolygonMesh half_ball(float radius, int edges, bool upper) {
 	float scale = upper ? 1 : -1;
 	auto ball = GeometryBall(v_0, radius, edges/2, edges);
-	for (int i=ball.polygon.num-1; i>=0; i--) {
+	for (int i=ball.polygons.num-1; i>=0; i--) {
 		vec3 m = v_0;
-		for (int k=0; k<ball.polygon[i].side.num; k++)
-			m += ball.vertex[ball.polygon[i].side[k].vertex].pos;
+		for (int k=0; k<ball.polygons[i].side.num; k++)
+			m += ball.vertices[ball.polygons[i].side[k].vertex].pos;
 		if (m.y * scale > 0)
-			ball.polygon.erase(i);
+			ball.polygons.erase(i);
 	}
 	mat4 rot = mat4::rotation_x(pi/2);
 	ball.transform(rot);
@@ -194,7 +194,7 @@ void GeometryCylinder::buildFromPath(Interpolator<vec3> &inter, Interpolator<flo
 		add_polygon_single_texture(v, sv);
 		v.clear();
 		for (int j=0;j<edges;j++)
-			v.add(vertex.num - j - 1);
+			v.add(vertices.num - j - 1);
 		add_polygon_single_texture(v, sv);
 	}
 

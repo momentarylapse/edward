@@ -9,8 +9,6 @@
 #include "../../view/EdwardWindow.h"
 #include "../../mode_model/data/DataModel.h"
 #include "../../mode_model/data/ModelMesh.h"
-#include "../../mode_model/data/ModelPolygon.h"
-#include "../../data/geometry/Geometry.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
@@ -35,7 +33,7 @@ void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
 	Array<Element> elements;
 	bool binary = false;
 
-	Geometry g;
+	PolygonMesh g;
 
 	// header
 	while (true) {
@@ -76,9 +74,9 @@ void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
 
 		for (auto &e: elements) {
 			if (e.name == "vertex") {
-				g.vertex.resize(e.num);
+				g.vertices.resize(e.num);
 				for (int i=0; i<e.num; i++)
-					f->read_vector(&g.vertex[i].pos);
+					f->read_vector(&g.vertices[i].pos);
 			} else if (e.name == "face") {
 				for (int i=0; i<e.num; i++) {
 					int n = f->read_byte();
@@ -96,15 +94,15 @@ void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
 
 		for (auto &e: elements) {
 			if (e.name == "vertex") {
-				g.vertex.resize(e.num);
+				g.vertices.resize(e.num);
 				for (int i=0; i<e.num; i++) {
 					string t = f->read_str();
 					auto tt = t.explode(" ");
 					if (tt.num < 3)
 						continue;
-					g.vertex[i].pos.x = tt[0]._float();
-					g.vertex[i].pos.y = tt[1]._float();
-					g.vertex[i].pos.z = tt[2]._float();
+					g.vertices[i].pos.x = tt[0]._float();
+					g.vertices[i].pos.y = tt[1]._float();
+					g.vertices[i].pos.z = tt[2]._float();
 				}
 			} else if (e.name == "face") {
 

@@ -1,43 +1,16 @@
-/*
- * ModelPolygon.cpp
- *
- *  Created on: 28.09.2012
- *      Author: michi
- */
+//
+// Created by Michael Ankele on 2025-02-19.
+//
 
-
-
-#include "ModelPolygon.h"
-#include "ModelMesh.h" // for Vertex
-#include <y/graphics-impl.h>
-#include <lib/math/plane.h>
+#include "Polygon.h"
+#include "PolygonMesh.h"
+#include "VertexStagingBuffer.h"
 #include <lib/math/vec2.h>
+#include <lib/math/plane.h>
 
 
-void VertexStagingBuffer::build(VertexBuffer *vb, int num_textures) {
-	Array<float> temp;
-	int d = 3 + 3 + 2*num_textures;
-	temp.resize(p.num * d);
-	for (int i=0; i<p.num; i++) {
-		*(vec3*)&temp[i * d] = p[i];
-		*(vec3*)&temp[i * d + 3] = n[i];
-		for (int l=0; l<num_textures; l++)
-			*(vec2*)&temp[i * d + 6 + l*2] = *(vec2*)&uv[l][2*i];
-	}
-	vb->update(temp);
-#ifdef USING_VULKAN
-	vb->vertex_count = p.num;
-	vb->output_count = p.num;
-#endif
 
-	/*vb->update(0, p);
-	vb->update(1, n);
-	for (int l=0; l<num_textures; l++)
-		vb->update(l+2, uv[l]);*/
-}
-
-
-vec3 ModelPolygon::get_area_vector(const Array<ModelVertex> &vertex) const {
+vec3 Polygon::get_area_vector(const Array<MeshVertex> &vertex) const {
 	// Newell's method
 	vec3 n = v_0;
 	vec3 p1 = vertex[side.back().vertex].pos;
@@ -51,7 +24,7 @@ vec3 ModelPolygon::get_area_vector(const Array<ModelVertex> &vertex) const {
 	return n * 0.5f;
 }
 
-vec3 ModelPolygon::get_normal(const Array<ModelVertex> &vertex) const {
+vec3 Polygon::get_normal(const Array<MeshVertex> &vertex) const {
 	// Newell's method
 	vec3 n = v_0;
 	vec3 p1 = vertex[side.back().vertex].pos;
@@ -66,7 +39,7 @@ vec3 ModelPolygon::get_normal(const Array<ModelVertex> &vertex) const {
 	return n;
 }
 
-Array<int> ModelPolygon::get_vertices() const {
+Array<int> Polygon::get_vertices() const {
 	Array<int> v;
 	v.resize(side.num);
 	for (int i=0; i<side.num; i++)
@@ -74,7 +47,7 @@ Array<int> ModelPolygon::get_vertices() const {
 	return v;
 }
 
-Array<vec3> ModelPolygon::get_skin_vertices() const {
+Array<vec3> Polygon::get_skin_vertices() const {
 	Array<vec3> sv;
 	sv.resize(side.num * MATERIAL_MAX_TEXTURES);
 	int n = 0;
@@ -85,7 +58,7 @@ Array<vec3> ModelPolygon::get_skin_vertices() const {
 }
 
 
-static float get_ang(const Array<ModelVertex> &vertex, int a, int b, int c, const vec3 &flat_n) {
+static float get_ang(const Array<MeshVertex> &vertex, int a, int b, int c, const vec3 &flat_n) {
 	vec3 v1 = vertex[b].pos - vertex[a].pos;
 	vec3 v2 = vertex[c].pos - vertex[b].pos;
 	v1.normalize();
@@ -95,7 +68,7 @@ static float get_ang(const Array<ModelVertex> &vertex, int a, int b, int c, cons
 	return atan2(x, y);
 }
 
-static bool vertex_in_tria(const Array<ModelVertex> &vertex, int a, int b, int c, int v) {
+static bool vertex_in_tria(const Array<MeshVertex> &vertex, int a, int b, int c, int v) {
 	auto fg = bary_centric(vertex[v].pos, vertex[a].pos, vertex[b].pos, vertex[c].pos);
 	return ((fg.x > 0) and (fg.y > 0) and (fg.x + fg.y < 1));
 }
@@ -117,7 +90,7 @@ static bool vertex_in_tria(const Array<ModelVertex> &vertex, int a, int b, int c
 	return v_0;
 }*/
 
-Array<int> ModelPolygon::triangulate(const Array<ModelVertex> &vertex) const {
+Array<int> Polygon::triangulate(const Array<MeshVertex> &vertex) const {
 	Array<int> output;
 
 	Array<int> v, vi;
@@ -175,7 +148,7 @@ Array<int> ModelPolygon::triangulate(const Array<ModelVertex> &vertex) const {
 	return output;
 }
 
-void ModelPolygon::update_triangulation(const Array<ModelVertex> &vertex) {
+void Polygon::update_triangulation(const Array<MeshVertex> &vertex) {
 	auto v = triangulate(vertex);
 	for (int i=0; i<v.num; i+=3)
 		for (int k=0; k<3; k++)
@@ -183,7 +156,7 @@ void ModelPolygon::update_triangulation(const Array<ModelVertex> &vertex) {
 	triangulation_dirty = false;
 }
 
-void ModelPolygon::add_to_vertex_buffer(const Array<ModelVertex> &vertex, VertexStagingBuffer &vbs, int num_textures) {
+void Polygon::add_to_vertex_buffer(const Array<MeshVertex> &vertex, VertexStagingBuffer &vbs, int num_textures) {
 	if (triangulation_dirty)
 		update_triangulation(vertex);
 	for (int i=0; i<side.num-2; i++) {
@@ -207,8 +180,8 @@ void ModelPolygon::add_to_vertex_buffer(const Array<ModelVertex> &vertex, Vertex
 	}
 }
 
-void ModelPolygon::invert() {
-	ModelPolygon pp = *this;
+void Polygon::invert() {
+	Polygon pp = *this;
 	for (int i=0; i<side.num; i++) {
 		side[i].vertex = pp.side[side.num - i - 1].vertex;
 		memcpy(side[i].skin_vertex, pp.side[side.num - i - 1].skin_vertex, sizeof(side[i].skin_vertex));
@@ -216,3 +189,5 @@ void ModelPolygon::invert() {
 	}
 	temp_normal = - temp_normal;
 }
+
+

@@ -7,10 +7,9 @@
 
 #include "DataModel.h"
 #include "ModelMesh.h"
-#include "ModelPolygon.h"
 #include "ModelMaterial.h"
 //#include "ModelSelection.h"
-#include "../../data/geometry/Geometry.h"
+#include "../../data/mesh/PolygonMesh.h"
 #if 0 //HAS_LIB_GL
 #include "../../mode/model/ModeModel.h"
 #include "../../mode/model/mesh/ModeModelMesh.h"
@@ -148,7 +147,7 @@ void DataModel::reset() {
 
 	filename = "";
 	for (int i=0;i<4;i++) {
-		triangle_mesh[i].vertex.clear();
+		triangle_mesh[i].vertices.clear();
 		for (int j=0;j<material.num;j++)
 			triangle_mesh[i].sub[j].triangle.clear();
 		triangle_mesh[i].sub.resize(1);
@@ -187,8 +186,8 @@ void DataModel::reset() {
 
 void DataModel::debug_show() {
 	msg_write("------------");
-	msg_write(mesh->vertex.num);
-	msg_write(mesh->polygon.num);
+	msg_write(mesh->vertices.num);
+	msg_write(mesh->polygons.num);
 	//test_sanity("Model.DebugShow");
 }
 
@@ -365,7 +364,7 @@ void DataModel::create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *
 
 float DataModel::get_radius() {
 	float radius = 0;
-	for (auto &v: mesh->vertex)
+	for (auto &v: mesh->vertices)
 		radius = max(v.pos.length(), radius);
 	return radius;
 }

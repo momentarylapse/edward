@@ -8,10 +8,10 @@
 #ifndef GEOMETRYPLATONIC_H_
 #define GEOMETRYPLATONIC_H_
 
-#include "Geometry.h"
+#include "PolygonMesh.h"
 class vec3;
 
-class GeometryPlatonic : public Geometry
+class GeometryPlatonic : public PolygonMesh
 {
 public:
 	GeometryPlatonic(const vec3 &pos, float radius, int type);

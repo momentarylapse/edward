@@ -13,8 +13,8 @@
 
 class vec3;
 class MultiViewWindow;
-class ModelPolygon;
-class ModelVertex;
+struct Polygon;
+struct MeshVertex;
 
 class SkinGenerator {
 public:
@@ -23,8 +23,8 @@ public:
 	void init_affine(const vec3 &dir_u, float f_u, const vec3 &dir_v, float f_v);
 	void init_projective(const mat4 &_m);
 	void init_projective(MultiViewWindow *win);
-	void init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, int level);
-	void init_point_cloud_boundary(const Array<ModelVertex> &p, const Array<int> &v);
+	void init_polygon(const Array<MeshVertex> &v, Polygon &p, int level);
+	void init_point_cloud_boundary(const Array<MeshVertex> &p, const Array<int> &v);
 
 	vec3 get(const vec3 &v) const;
 
@@ -37,7 +37,7 @@ public:
 	SkinGeneratorMulti();
 	explicit SkinGeneratorMulti(const SkinGenerator &sg);
 	virtual ~SkinGeneratorMulti();
-	void init_polygon(const Array<ModelVertex> &v, ModelPolygon &p);
+	void init_polygon(const Array<MeshVertex> &v, Polygon &p);
 
 	vec3 get(const vec3 &v, int level) const;
 

@@ -197,17 +197,19 @@ add_executable(edward
 	src/action/ActionGroup.cpp
 	src/action/ActionManager.cpp
 	src/action/ActionMultiView.cpp
-	src/data/geometry/Geometry.cpp
-	src/data/geometry/GeometryBall.cpp
-	src/data/geometry/GeometryCube.cpp
-	src/data/geometry/GeometryCylinder.cpp
-	src/data/geometry/GeometryPlane.cpp
-	src/data/geometry/GeometryPlatonic.cpp
-	src/data/geometry/GeometrySphere.cpp
-	src/data/geometry/GeometrySubtract.cpp
-	src/data/geometry/GeometryTeapot.cpp
-	src/data/geometry/GeometryTorus.cpp
-	src/data/geometry/GeometryTorusKnot.cpp
+	src/data/mesh/GeometryBall.cpp
+	src/data/mesh/GeometryCube.cpp
+	src/data/mesh/GeometryCylinder.cpp
+	src/data/mesh/GeometryPlane.cpp
+	src/data/mesh/GeometryPlatonic.cpp
+	src/data/mesh/GeometrySphere.cpp
+	src/data/mesh/GeometrySubtract.cpp
+	src/data/mesh/GeometryTeapot.cpp
+	src/data/mesh/GeometryTorus.cpp
+	src/data/mesh/GeometryTorusKnot.cpp
+	src/data/mesh/Polygon.cpp
+	src/data/mesh/PolygonMesh.cpp
+	src/data/mesh/VertexStagingBuffer.cpp
 	src/data/Data.cpp
 	src/lib/any/any.cpp
 	src/lib/base/array.cpp
@@ -389,7 +391,6 @@ add_executable(edward
 	src/mode_model/data/DataModel.cpp
 	src/mode_model/data/ModelMaterial.cpp
 	src/mode_model/data/ModelMesh.cpp
-	src/mode_model/data/ModelPolygon.cpp
 	src/mode_model/data/SkinGenerator.cpp
 	src/mode_model/ModeAddPolygon.cpp
 	src/mode_model/ModeAddVertex.cpp

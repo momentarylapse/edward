@@ -5,10 +5,8 @@
  *      Author: michi
  */
 #include "ModelMesh.h"
-#include "ModelPolygon.h"
 //#include "ModelSelection.h"
 #include "DataModel.h"
-#include <data/geometry/Geometry.h>
 //#include "BspTree.h"
 #include <lib/os/msg.h>
 #include <lib/base/set.h>
@@ -17,18 +15,6 @@
 #include <y/world/components/Animator.h>
 #include <y/world/Model.h>
 
-
-
-ModelVertex::ModelVertex(const vec3 &_pos) {
-	pos = _pos;
-	ref_count = 0;
-	normal_mode = NORMAL_MODE_ANGULAR;
-	bone_index = {-1,-1,-1,-1};
-	bone_weight = {1,0,0,0};
-	normal_dirty = false;
-}
-
-ModelVertex::ModelVertex() : ModelVertex(v_0) {}
 
 
 
@@ -40,8 +26,7 @@ ModelMesh::ModelMesh(DataModel *m) {
 ModelMesh::~ModelMesh() = default;
 
 void ModelMesh::clear() {
-	polygon.clear();
-	vertex.clear();
+	PolygonMesh::clear();
 
 	ball.clear();
 	cylinder.clear();
@@ -49,7 +34,7 @@ void ModelMesh::clear() {
 
 bool ModelMesh::test_sanity(const string &loc) {
 
-	for (ModelPolygon &t: polygon)
+	for (auto &t: polygons)
 		for (int k=0;k<t.side.num;k++)
 			for (int kk=k+1;kk<t.side.num;kk++)
 				if (t.side[k].vertex == t.side[kk].vertex){
@@ -73,7 +58,7 @@ void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vec
 	if (int_array_has_duplicates(v))
 		throw GeometryException("AddPolygon: duplicate vertices");
 
-	ModelPolygon t;
+	Polygon t;
 	t.side.resize(v.num);
 	for (int k=0;k<v.num;k++) {
 		t.side[k].vertex = v[k];
@@ -82,7 +67,7 @@ void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vec
 	}
 
 	for (int vv: v)
-		vertex[vv].ref_count ++;
+		vertices[vv].ref_count ++;
 
 	// closed?
 //	updateClosed();
@@ -92,23 +77,23 @@ void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vec
 	t.triangulation_dirty = true;
 	t.smooth_group = -1;
 	if (index >= 0) {
-		polygon.insert(t, index);
+		polygons.insert(t, index);
 	} else {
-		polygon.add(t);
+		polygons.add(t);
 	}
 }
 
 void ModelMesh::_remove_polygon(int index)
 {
-	ModelPolygon &t = polygon[index];
+	auto &t = polygons[index];
 
 	// unref the vertices
 	for (int k=0;k<t.side.num;k++){
-		vertex[t.side[k].vertex].ref_count --;
+		vertices[t.side[k].vertex].ref_count --;
 	}
 
 
-	polygon.erase(index);
+	polygons.erase(index);
 
 	//TestSanity("rem poly 0");
 
@@ -119,32 +104,32 @@ void ModelMesh::_remove_polygon(int index)
 void ModelMesh::build_topology()
 {
 	// clear
-	for (ModelVertex &v: vertex)
+	for (auto &v: vertices)
 		v.ref_count = 0;
 
 	// add all triangles
-	foreachi(ModelPolygon &t, polygon, ti){
+	foreachi(Polygon &t, polygons, ti){
 		// vertices
 		for (int k=0;k<t.side.num;k++)
-			vertex[t.side[k].vertex].ref_count ++;
+			vertices[t.side[k].vertex].ref_count ++;
 	}
 }
 
 
 
 void ModelMesh::on_post_action_update() {
-	set_show_vertices(vertex);
+	set_show_vertices(vertices);
 
 	update_normals();
-	for (ModelPolygon &p: polygon) {
+	for (auto &p: polygons) {
 		p.pos = v_0;
 		for (int k=0;k<p.side.num;k++)
-			p.pos += vertex[p.side[k].vertex].pos;
+			p.pos += vertices[p.side[k].vertex].pos;
 		p.pos /= p.side.num;
 	}
 }
 
-void ModelMesh::set_show_vertices(Array<ModelVertex> &vert) {
+void ModelMesh::set_show_vertices(Array<MeshVertex> &vert) {
 	show_vertices.set_ref(vert);
 }
 
@@ -247,12 +232,12 @@ void ModelMesh::importFromTriangleSkin(int index) {
 #endif
 
 void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk) {
-	sk.vertex = vertex;
+	sk.vertices = vertices;
 	sk.sub.clear();
 	sk.sub.resize(model->material.num);
-	for (auto &t: polygon) {
+	for (auto &t: polygons) {
 		if (t.triangulation_dirty)
-			t.update_triangulation(vertex);
+			t.update_triangulation(vertices);
 		for (int i=0;i<t.side.num-2;i++) {
 			ModelTriangle tt;
 			for (int k=0;k<3;k++) {
@@ -271,13 +256,13 @@ void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk) {
 Box ModelMesh::get_bounding_box() {
 	Box box = {v_0, v_0};
 
-	for (const auto &v: vertex)
+	for (const auto &v: vertices)
 		box = box or Box{v.pos, v.pos};
 
 	for (const auto &b: ball)
 		box = box or Box{
-			vertex[b.index].pos - vec3(1,1,1) * b.radius,
-			vertex[b.index].pos + vec3(1,1,1) * b.radius};
+			vertices[b.index].pos - vec3(1,1,1) * b.radius,
+			vertices[b.index].pos + vec3(1,1,1) * b.radius};
 	return box;
 }
 
@@ -287,7 +272,7 @@ void ModelMesh::set_normals_dirty_by_vertices(const Array<int> &index)
 	for (int i=0; i<index.num; i++)
 		sindex.add(index[i]);
 
-	for (ModelPolygon &t: polygon)
+	for (auto &t: polygons)
 		for (int k=0;k<t.side.num;k++)
 			if (!t.normal_dirty)
 				if (sindex.contains(t.side[k].vertex)){
@@ -297,14 +282,14 @@ void ModelMesh::set_normals_dirty_by_vertices(const Array<int> &index)
 }
 
 void ModelMesh::set_all_normals_dirty() {
-	for (ModelPolygon &t: polygon)
+	for (auto &t: polygons)
 		t.normal_dirty = true;
 }
 
 
 void ModelMesh::update_normals() {
 	if (this == model->phys_mesh) {
-		for (auto &v: vertex)
+		for (auto &v: vertices)
 			v.normal_mode = NORMAL_MODE_HARD;
 	}
 
@@ -314,10 +299,10 @@ void ModelMesh::update_normals() {
 
 
 	// "flat" triangle normals
-	for (auto &t: polygon)
+	for (auto &t: polygons)
 		if (t.normal_dirty) {
 			t.normal_dirty = false;
-			t.temp_normal = t.get_normal(vertex);
+			t.temp_normal = t.get_normal(vertices);
 			for (int k=0; k<t.side.num; k++)
 				t.side[k].normal = t.temp_normal;
 		}
@@ -326,12 +311,12 @@ void ModelMesh::update_normals() {
 	Array<int> cur_faces;
 	Array<int> cur_groups;
 	base::set<int> cur_groups_done;
-	for (int v=0; v<vertex.num; v++) {
+	for (int v=0; v<vertices.num; v++) {
 		cur_polys.clear();
 		cur_faces.clear();
 		cur_groups.clear();
 		cur_groups_done.clear();
-		foreachi(auto &p, polygon, i) {
+		foreachi(auto &p, polygons, i) {
 			if (p.smooth_group < 0)
 				continue;
 			for (int k=0; k<p.side.num; k++) {
@@ -349,11 +334,11 @@ void ModelMesh::update_normals() {
 			vec3 n = v_0;
 			for (int k=i; k<cur_groups.num; k++)
 				if (cur_groups[k] == g)
-					n += polygon[cur_polys[k]].temp_normal;
+					n += polygons[cur_polys[k]].temp_normal;
 			n.normalize();
 			for (int k=i; k<cur_groups.num; k++)
 				if (cur_groups[k] == g)
-					polygon[cur_polys[k]].side[cur_faces[k]].normal = n;
+					polygons[cur_polys[k]].side[cur_faces[k]].normal = n;
 			cur_groups_done.add(g);
 		}
 	}
@@ -657,25 +642,25 @@ Array<int> ModelMesh::get_boundary_loop(int v0)
 void ModelMesh::add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &bone_weight, int normal_mode, int index) {
 
 	// new vertex
-	ModelVertex vv;
+	MeshVertex vv;
 	vv.pos = pos;
 	vv.normal_mode = normal_mode;
 	vv.bone_index = bone;
 	vv.bone_weight = bone_weight;
 	vv.ref_count = 0;
 	if (index >= 0) {
-		vertex.insert(vv, index);
+		vertices.insert(vv, index);
 		_shift_vertex_links(index, 1);
 
 		// correct animations
 	} else {
-		vertex.add(vv);
+		vertices.add(vv);
 	}
 
 }
 
-void ModelMesh::_add_vertices(const Array<ModelVertex> &v) {
-	vertex.append(v);
+void ModelMesh::_add_vertices(const Array<MeshVertex> &v) {
+	vertices.append(v);
 	_post_vertex_number_change_update();
 }
 
@@ -684,7 +669,7 @@ void ModelMesh::_post_vertex_number_change_update() {
 	for (ModelMove &move: model->move) {
 		if (move.type == AnimationType::VERTEX) {
 			for (ModelFrame &f: move.frame)
-				f.vertex_dpos.resize(vertex.num);
+				f.vertex_dpos.resize(vertices.num);
 		}
 	}
 }
@@ -698,13 +683,13 @@ void ModelMesh::remove_lonely_vertex(int index) {
 
 
 	// erase
-	vertex.erase(index);
+	vertices.erase(index);
 }
 
 void ModelMesh::_shift_vertex_links(int offset, int delta) {
 
 	// correct references
-	for (ModelPolygon &t: polygon)
+	for (auto &t: polygons)
 		for (int k=0;k<t.side.num;k++)
 			if (t.side[k].vertex >= offset)
 				t.side[k].vertex += delta;

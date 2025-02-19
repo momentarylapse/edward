@@ -9,7 +9,6 @@
 #include "../../view/EdwardWindow.h"
 #include "../../mode_model/data/DataModel.h"
 #include "../../mode_model/data/ModelMesh.h"
-#include "../../mode_model/data/ModelPolygon.h"
 #include <y/world/components/Animator.h>
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
@@ -138,15 +137,15 @@ void FormatModelJson::_save(const Path &filename, DataModel *m) {
 	auto *f = os::fs::open(filename, "rt");
 
 	int n_tria = 0;
-	for (int ip=0; ip<m->mesh->polygon.num; ip++){
-		ModelPolygon &p = m->mesh->polygon[ip];
+	for (int ip=0; ip<m->mesh->polygons.num; ip++){
+		auto &p = m->mesh->polygons[ip];
 		n_tria += p.side.num - 2;
 	}
 
 	string str = "{'metadata':{\n";
 	str += "	'formatVersion': 3,\n";
 	str += "	'generatedBy': 'Edward',\n";
-	str += "	'vertices': " + i2s(m->mesh->vertex.num) + ",\n";
+	str += "	'vertices': " + i2s(m->mesh->vertices.num) + ",\n";
 	str += "	'faces': " + i2s(n_tria) + ",\n";
 	str += "	'normals': " + i2s(n_tria*3) + ",\n";
 	str += "	'colors': 0,\n";
@@ -182,25 +181,25 @@ void FormatModelJson::_save(const Path &filename, DataModel *m) {
 	str += "],\n";
 	str += "'colors': [],\n";
 	str += "'vertices': [\n";
-	foreachi(auto &v, m->mesh->vertex, i){
+	foreachi(auto &v, m->mesh->vertices, i){
 		str += "	" + vecToJson(v.pos);
-		if (i < m->mesh->vertex.num - 1)
+		if (i < m->mesh->vertices.num - 1)
 			str += ",\n";
 	}
 	str += "],\n";
 	str += "'uvs': [[0,0]],\n";
 	str += "'normals': [\n";
-	foreachi(auto &p, m->mesh->polygon, ip){
+	foreachi(auto &p, m->mesh->polygons, ip){
 		for (int k=0; k<p.side.num; k++){
 			str += "	" + vecToJson(p.side[k].normal);
-			if ((ip < m->mesh->polygon.num - 1) or (k < p.side.num - 1))
+			if ((ip < m->mesh->polygons.num - 1) or (k < p.side.num - 1))
 				str += ",\n";
 		}
 	}
 	str += "],\n";
 	str += "'faces': [\n";
 	int n_normals = 0;
-	foreachi(auto &p, m->mesh->polygon, ip){
+	foreachi(auto &p, m->mesh->polygons, ip){
 		for (int k=0; k<p.side.num-2; k++){
 			// reflected coordinates!
 			int a = p.side[k].triangulation[0];
@@ -214,7 +213,7 @@ void FormatModelJson::_save(const Path &filename, DataModel *m) {
 			int nc = n_normals + c;
 			vec3 n = p.temp_normal;
 			str += format("	42, %d, %d, %d, %d, 0, 0, 0, %d, %d, %d", va, vc, vb, p.material, na, nc, nb);
-			if ((ip < m->mesh->polygon.num - 1) or (k < p.side.num - 3))
+			if ((ip < m->mesh->polygons.num - 1) or (k < p.side.num - 3))
 				str += ",\n";
 		}
 		n_normals += p.side.num;
@@ -234,16 +233,16 @@ void FormatModelJson::_save(const Path &filename, DataModel *m) {
 	}
 	str += "],\n";
 	str += "'skinIndices': [";
-	foreachi(auto &v, m->mesh->vertex, i){
+	foreachi(auto &v, m->mesh->vertices, i){
 		str += i2s(v.bone_index.i);
-		if (i < m->mesh->vertex.num - 1)
+		if (i < m->mesh->vertices.num - 1)
 			str += ", ";
 	}
 	str += "],\n";
 	str += "'skinWeights': [";
-	foreachi(auto &v, m->mesh->vertex, i){
+	foreachi(auto &v, m->mesh->vertices, i){
 		str += "1";
-		if (i < m->mesh->vertex.num - 1)
+		if (i < m->mesh->vertices.num - 1)
 			str += ", ";
 	}
 	str += "],\n";
@@ -603,7 +602,7 @@ void FormatModelJson::importMoves(DataModel *m, Value *v)
 void FormatModelJson::importBoneIndices(DataModel *m, Value *v, int num_influences)
 {
 	msg_write("boneIndices");
-	foreachi(auto &vert, m->mesh->vertex, i) {
+	foreachi(auto &vert, m->mesh->vertices, i) {
 		vert.bone_index = {v->get(i * num_influences)->i(), 0,0,0};
 		vert.bone_weight = {1,0,0,0};
 	}

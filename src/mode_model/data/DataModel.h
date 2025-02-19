@@ -18,11 +18,10 @@
 struct Box;
 class DataModel;
 class ModelMaterial;
-class ModelMesh;
-class ModelPolygon;
-class ModelVertex;
-class ModelEdge;
-class Geometry;
+struct ModelMesh;
+struct Polygon;
+struct MeshVertex;
+struct PolygonMesh;
 class ModelSelection;
 enum class AnimationType;
 
@@ -70,14 +69,13 @@ struct ModelTriangleSubMesh {
 // exported geometry
 struct ModelTriangleMesh {
 	// vertices
-	Array<ModelVertex> vertex;
+	Array<MeshVertex> vertices;
 
 	// sub skins
 	Array<ModelTriangleSubMesh> sub;
 };
 
-class ModelBone: public multiview::SingleData {
-public:
+struct ModelBone: multiview::SingleData {
 	int parent;
 	Path model_file;
 	Model *model;
@@ -117,8 +115,7 @@ struct ModelMove {
 
 
 
-class ModelScriptVariable {
-public:
+struct ModelScriptVariable {
 	string name, type, value;
 };
 

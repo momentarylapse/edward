@@ -8,10 +8,10 @@
 #ifndef GEOMETRYSPHERE_H_
 #define GEOMETRYSPHERE_H_
 
-#include "Geometry.h"
+#include "PolygonMesh.h"
 class vec3;
 
-class GeometrySphere : public Geometry
+class GeometrySphere : public PolygonMesh
 {
 public:
 	GeometrySphere(const vec3 &pos, float radius, int num);

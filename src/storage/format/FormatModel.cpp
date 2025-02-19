@@ -8,7 +8,6 @@
 #include "FormatModel.h"
 #include "../../mode_model/data/DataModel.h"
 #include "../../mode_model/data/ModelMesh.h"
-#include "../../mode_model/data/ModelPolygon.h"
 #include "../../Session.h"
 #include <y/helper/ResourceManager.h>
 #include <y/world/components/Animator.h>
@@ -57,7 +56,7 @@ vec3 get_normal_by_index(int index);
 
 base::set<int> get_all_poly_vert(DataModel *m) {
 	base::set<int> all_vert;
-	for (auto &p: m->phys_mesh->polygon)
+	for (auto &p: m->phys_mesh->polygons)
 		for (auto &f: p.side)
 			all_vert.add(f.vertex);
 	return all_vert;
@@ -96,9 +95,9 @@ Array<base::set<int>> split_conv_polyhedra(DataModel *m) {
 	return surf;
 }
 
-Array<ModelPolygon> conv_poly_poly(DataModel *m, const base::set<int> &v) {
-	Array<ModelPolygon> poly;
-	for (auto &p: m->phys_mesh->polygon)
+Array<Polygon> conv_poly_poly(DataModel *m, const base::set<int> &v) {
+	Array<Polygon> poly;
+	for (auto &p: m->phys_mesh->polygons)
 		if (v.contains(p.side[0].vertex))
 			poly.add(p);
 	return poly;
@@ -250,15 +249,15 @@ public:
 	void read(Stream *f) override {
 		// vertices
 		int nv = f->read_int();
-		me->vertex.resize(nv);
-		for (int j=0;j<me->vertex.num;j++)
-			f->read_vector(&me->vertex[j].pos);
-		for (int j=0;j<me->vertex.num;j++) {
-			me->vertex[j].bone_index = {f->read_int(), 0, 0, 0};
-			me->vertex[j].bone_weight = {1,0,0,0};
+		me->vertices.resize(nv);
+		for (int j=0;j<me->vertices.num;j++)
+			f->read_vector(&me->vertices[j].pos);
+		for (int j=0;j<me->vertices.num;j++) {
+			me->vertices[j].bone_index = {f->read_int(), 0, 0, 0};
+			me->vertices[j].bone_weight = {1,0,0,0};
 		}
-		for (int j=0;j<me->vertex.num;j++)
-			me->vertex[j].normal_dirty = false;//true;
+		for (int j=0;j<me->vertices.num;j++)
+			me->vertices[j].normal_dirty = false;//true;
 
 		// skin vertices
 		Array<vec3> skin_vert;
@@ -312,16 +311,16 @@ public:
 		int flags = f->read_int();
 		// vertices
 		int nv = f->read_int();
-		me->vertex.resize(nv);
-		for (int j=0;j<me->vertex.num;j++)
-			f->read_vector(&me->vertex[j].pos);
+		me->vertices.resize(nv);
+		for (int j=0;j<me->vertices.num;j++)
+			f->read_vector(&me->vertices[j].pos);
 		if (flags & 0x1)
-			for (int j=0;j<me->vertex.num;j++) {
-				me->vertex[j].bone_index = read_ivec4(f);
-				me->vertex[j].bone_weight = read_vec4(f);
+			for (int j=0;j<me->vertices.num;j++) {
+				me->vertices[j].bone_index = read_ivec4(f);
+				me->vertices[j].bone_weight = read_vec4(f);
 			}
-		for (int j=0;j<me->vertex.num;j++)
-			me->vertex[j].normal_dirty = false;//true;
+		for (int j=0;j<me->vertices.num;j++)
+			me->vertices[j].normal_dirty = false;//true;
 
 		// skin vertices
 		Array<vec3> skin_vert;
@@ -368,11 +367,11 @@ public:
 		f->write_int(flags); // flags
 
 		// vertices
-		f->write_int(me->vertex.num);
-		for (ModelVertex &v: me->vertex)
+		f->write_int(me->vertices.num);
+		for (auto &v: me->vertices)
 			f->write_vector(&v.pos);
 		if (parent->move.num > 0)
-			for (ModelVertex &v: me->vertex) {
+			for (auto &v: me->vertices) {
 				write_ivec4(f, v.bone_index);
 				write_vec4(f, v.bone_weight);
 			}
@@ -429,14 +428,14 @@ public:
 	}
 	void read(Stream *f) override {
 
-		for (const ModelVertex &v: parent->triangle_mesh[1].vertex)
+		for (const MeshVertex &v: parent->triangle_mesh[1].vertices)
 			parent->mesh->add_vertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
 			//parent->addVertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
 
 		// polygons
 		int num_poly = f->read_int();
 		for (int j=0; j<num_poly; j++) {
-			ModelPolygon t;
+			Polygon t;
 			t.is_selected = false;
 			t.triangulation_dirty = true;
 			int num_faces = f->read_word();
@@ -453,7 +452,7 @@ public:
 				}
 			}
 			t.normal_dirty = true;
-			me->polygon.add(t);
+			me->polygons.add(t);
 		}
 
 		me->build_topology();
@@ -461,8 +460,8 @@ public:
 	void write(Stream *f) override {
 
 		// polygons
-		f->write_int(me->polygon.num);
-		for (auto &t: me->polygon) {
+		f->write_int(me->polygons.num);
+		for (auto &t: me->polygons) {
 			f->write_word(t.side.num);
 			f->write_word(t.material);
 			f->write_word(t.smooth_group);
@@ -489,15 +488,15 @@ public:
 		int version = f->read_int();
 
 		// vertices
-		me->vertex.resize(f->read_int());
-		for (int j=0;j<me->vertex.num;j++)
-			f->read_vector(&me->vertex[j].pos);
-		for (int j=0;j<me->vertex.num;j++) {
-			me->vertex[j].bone_index = {f->read_int(), 0,0,0};
-			me->vertex[j].bone_weight = {1,0,0,0};
+		me->vertices.resize(f->read_int());
+		for (int j=0;j<me->vertices.num;j++)
+			f->read_vector(&me->vertices[j].pos);
+		for (int j=0;j<me->vertices.num;j++) {
+			me->vertices[j].bone_index = {f->read_int(), 0,0,0};
+			me->vertices[j].bone_weight = {1,0,0,0};
 		}
 
-		msg_write("phys vert: " + i2s(me->vertex.num));
+		msg_write("phys vert: " + i2s(me->vertices.num));
 
 		// triangles
 		f->read_int();
@@ -556,12 +555,12 @@ public:
 		f->write_int(0);
 
 		// vertices
-		f->write_int(me->vertex.num);
-		for (int j=0;j<me->vertex.num;j++)
-			f->write_vector(&me->vertex[j].pos);
+		f->write_int(me->vertices.num);
+		for (int j=0;j<me->vertices.num;j++)
+			f->write_vector(&me->vertices[j].pos);
 		// FIXME
-		for (int j=0;j<me->vertex.num;j++)
-			f->write_int(me->vertex[j].bone_index.i);
+		for (int j=0;j<me->vertices.num;j++)
+			f->write_int(me->vertices[j].bone_index.i);
 
 		// triangles
 		f->write_int(0);
@@ -689,7 +688,7 @@ public:
 		for (auto &fr: frames_vert) {
 			fr.duration = f->read_float();
 			for (int s=0; s<4; s++) {
-				fr.skin[s].dpos.resize(me->triangle_mesh[s].vertex.num);
+				fr.skin[s].dpos.resize(me->triangle_mesh[s].vertices.num);
 				int num_vertices = f->read_int();
 				for (int j=0;j<num_vertices;j++) {
 					int vertex_index = f->read_int();
@@ -765,11 +764,11 @@ public:
 					for (int s=0; s<4; s++) {
 						// compress (only write != 0)
 						int num_vertices = 0;
-						for (int j=0;j<me->triangle_mesh[s].vertex.num;j++)
+						for (int j=0;j<me->triangle_mesh[s].vertices.num;j++)
 							if (fr.skin[s].dpos[j] != v_0)
 								num_vertices ++;
 						f->write_int(num_vertices);
-						for (int j=0;j<me->triangle_mesh[s].vertex.num;j++)
+						for (int j=0;j<me->triangle_mesh[s].vertices.num;j++)
 							if (fr.skin[s].dpos[j] != v_0) {
 								f->write_int(j);
 								f->write_vector(&fr.skin[s].dpos[j]);
@@ -982,7 +981,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 	if (deep) {
 
 		// import...
-		if (data->mesh->polygon.num == 0)
+		if (data->mesh->polygons.num == 0)
 			data->import_from_triangle_mesh(1);
 
 		for (ModelMove &m: data->move)

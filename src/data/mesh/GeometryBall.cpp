@@ -60,8 +60,3 @@ GeometryBall::GeometryBall(const vec3 &pos, float radius, int num_x, int num_y)
 		}
 }
 
-void GeometryBall::__init__(const vec3 &pos, float radius, int num_x, int num_y)
-{
-	new(this) GeometryBall(pos, radius, num_x, num_y);
-}
-

@@ -13,9 +13,9 @@
 #include <view/ActionController.h>
 #include <view/MultiView.h>
 #include "data/ModelMesh.h"
-#include "data/ModelPolygon.h"
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
+#include <data/mesh/VertexStagingBuffer.h>
 #include "ModeAddVertex.h"
 #include "ModeAddPolygon.h"
 
@@ -40,8 +40,8 @@ void ModeModel::on_enter() {
 	auto update = [this] {
 		data->mesh->update_normals();
 		VertexStagingBuffer vsb;
-		for (auto& p: data->mesh->polygon)
-			p.add_to_vertex_buffer(data->mesh->vertex, vsb, 1);
+		for (auto& p: data->mesh->polygons)
+			p.add_to_vertex_buffer(data->mesh->vertices, vsb, 1);
 		vsb.build(vertex_buffer, 1);
 	};
 
@@ -53,7 +53,7 @@ void ModeModel::on_enter() {
 		return get_hover(win, m);
 	};
 	multi_view->data_sets = {
-		{MultiViewType::MODEL_VERTEX, &data->mesh->vertex}
+		{MultiViewType::MODEL_VERTEX, &data->mesh->vertices}
 	};
 	multi_view->out_selection_changed >> create_sink([this] {
 		on_update_selection();
@@ -133,11 +133,11 @@ void ModeModel::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 		dh->set_line_width(1.5f);//scheme.LINE_WIDTH_THIN);
 
 		Array<vec3> points;
-		for (const auto& p: data->mesh->polygon) {
+		for (const auto& p: data->mesh->polygons) {
 			if (vec3::dot(p.temp_normal, win->dir()) >= 0)
 				for (int k=0; k<p.side.num; k++) {
-					const auto& a = data->mesh->vertex[p.side[k].vertex];
-					const auto& b = data->mesh->vertex[p.side[(k + 1) % p.side.num].vertex];
+					const auto& a = data->mesh->vertices[p.side[k].vertex];
+					const auto& b = data->mesh->vertices[p.side[(k + 1) % p.side.num].vertex];
 					if (a.is_selected and b.is_selected)
 						continue;
 					points.add(a.pos);
@@ -151,11 +151,11 @@ void ModeModel::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 		dh->set_line_width(1.5f);//scheme.LINE_WIDTH_THIN);
 
 		points.clear();
-		for (const auto& p: data->mesh->polygon) {
+		for (const auto& p: data->mesh->polygons) {
 			if (vec3::dot(p.temp_normal, win->dir()) < 0)
 				for (int k=0; k<p.side.num; k++) {
-					const auto& a = data->mesh->vertex[p.side[k].vertex];
-					const auto& b = data->mesh->vertex[p.side[(k + 1) % p.side.num].vertex];
+					const auto& a = data->mesh->vertices[p.side[k].vertex];
+					const auto& b = data->mesh->vertices[p.side[(k + 1) % p.side.num].vertex];
 					if (a.is_selected and b.is_selected)
 						continue;
 					points.add(a.pos);
@@ -169,11 +169,11 @@ void ModeModel::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 		dh->set_line_width(2);//scheme.LINE_WIDTH_THIN);
 
 		points.clear();
-		for (const auto& p: data->mesh->polygon) {
+		for (const auto& p: data->mesh->polygons) {
 			//if (vec3::dot(p.temp_normal, win->dir()) < 0)
 				for (int k=0; k<p.side.num; k++) {
-					const auto& a = data->mesh->vertex[p.side[k].vertex];
-					const auto& b = data->mesh->vertex[p.side[(k + 1) % p.side.num].vertex];
+					const auto& a = data->mesh->vertices[p.side[k].vertex];
+					const auto& b = data->mesh->vertices[p.side[(k + 1) % p.side.num].vertex];
 					if (!a.is_selected or !b.is_selected)
 						continue;
 					points.add(a.pos);
@@ -192,7 +192,7 @@ void ModeModel::on_draw_post(Painter* p) {
 		int _hover = -1;
 		if (multi_view->hover and multi_view->hover->type == MultiViewType::MODEL_VERTEX)
 			_hover = multi_view->hover->index;
-		for (const auto& [i, v]: enumerate(data->mesh->vertex)) {
+		for (const auto& [i, v]: enumerate(data->mesh->vertices)) {
 			p->set_color(v.is_selected ? Red : Blue);
 			auto p1 = multi_view->active_window->project(v.pos);
 			float r = 2;
@@ -205,17 +205,17 @@ void ModeModel::on_draw_post(Painter* p) {
 
 void ModeModel::on_update_selection() {
 	//if (presentation_mode == PresentationMode::Vertices or presentation_mode == PresentationMode::Edges) {
-		for (auto& p: data->mesh->polygon) {
+		for (auto& p: data->mesh->polygons) {
 			p.is_selected = true;
 			for (const auto& s: p.side)
-				p.is_selected &= data->mesh->vertex[s.vertex].is_selected;
+				p.is_selected &= data->mesh->vertices[s.vertex].is_selected;
 		}
 	//}
 
 	VertexStagingBuffer vsb;
-	for (auto& p: data->mesh->polygon)
+	for (auto& p: data->mesh->polygons)
 		if (p.is_selected)
-			p.add_to_vertex_buffer(data->mesh->vertex, vsb, 1);
+			p.add_to_vertex_buffer(data->mesh->vertices, vsb, 1);
 	vsb.build(vertex_buffer_selection, 1);
 }
 
@@ -225,7 +225,7 @@ base::optional<Hover> ModeModel::get_hover(MultiViewWindow* win, const vec2& m) 
 		base::optional<Hover> h;
 
 		//float zmin = multi_view->view_port.radius * 2;
-		for (const auto& [i, v]: enumerate(data->mesh->vertex)) {
+		for (const auto& [i, v]: enumerate(data->mesh->vertices)) {
 			const auto pp = win->project(v.pos);
 			if (pp.z <= 0 or pp.z >= 1)
 				continue;

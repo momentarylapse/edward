@@ -16,8 +16,8 @@
 #include "../lib/pattern/Observable.h"
 #include <y/graphics-fwd.h>
 
+struct PolygonMesh;
 class ActionMultiView;
-class Geometry;
 class Data;
 class Painter;
 class MultiView;
@@ -78,8 +78,8 @@ public:
 		void update(ActionController* ac);
 		vec3 pos, pos0;
 		float scale;
-		owned_array<Geometry> geo_show;
-		owned_array<Geometry> geo;
+		owned_array<PolygonMesh> geo_show;
+		owned_array<PolygonMesh> geo;
 		owned_array<VertexBuffer> buf;
 		owned_array<Material> materials;
 		owned<Material> material_hover;

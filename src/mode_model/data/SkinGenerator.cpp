@@ -7,13 +7,13 @@
 
 #include "../../lib/math/math.h"
 #include "SkinGenerator.h"
+#include <data/mesh/PolygonMesh.h>
 #if 0 //HAS_LIB_GL
 #include "../../multiview/MultiView.h"
 #include "../../multiview/Window.h"
 #endif
 #include "../../lib/nix/nix.h"
 #include <mode_model/data/ModelMesh.h>
-#include <mode_model/data/ModelPolygon.h>
 
 SkinGenerator::SkinGenerator() {
 	m = mat4::ID;
@@ -48,13 +48,13 @@ void SkinGenerator::init_projective(MultiViewWindow *win) {
 #endif
 }
 
-void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, int level) {
+void SkinGenerator::init_polygon(const Array<MeshVertex> &v, Polygon &p, int level) {
 	vec3 n = p.temp_normal;
 	vec3 d1 = n.ortho();
 	vec3 d2 = vec3::cross(n, d1);
 	mat4 R = mat4(d1, d2, n);
 	float sx = 0, sy = 0, sxx = 0, syy = 0, sxy = 0, su = 0, sv = 0, sux = 0, suy = 0, svx = 0, svy = 0;
-	for (ModelPolygonSide &s: p.side){
+	for (PolygonSide &s: p.side){
 		float x = vec3::dot(d1, v[s.vertex].pos);
 		float y = vec3::dot(d2, v[s.vertex].pos);
 		float u = s.skin_vertex[level].x;
@@ -98,7 +98,7 @@ void SkinGenerator::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p, i
 }
 
 
-static vec3 get_cloud_normal(const Array<ModelVertex> &pp, const Array<int> &v)
+static vec3 get_cloud_normal(const Array<MeshVertex> &pp, const Array<int> &v)
 {
 	Array<vec3> p;
 	for (int i=1;i<v.num;i++){
@@ -115,7 +115,7 @@ static vec3 get_cloud_normal(const Array<ModelVertex> &pp, const Array<int> &v)
 	return v_0;
 }
 
-void SkinGenerator::init_point_cloud_boundary(const Array<ModelVertex> &p, const Array<int> &v)
+void SkinGenerator::init_point_cloud_boundary(const Array<MeshVertex> &p, const Array<int> &v)
 {
 	vec3 n = get_cloud_normal(p, v);
 	vec3 d[2];
@@ -161,7 +161,7 @@ SkinGeneratorMulti::~SkinGeneratorMulti()
 	delete[](gen);
 }
 
-void SkinGeneratorMulti::init_polygon(const Array<ModelVertex> &v, ModelPolygon &p)
+void SkinGeneratorMulti::init_polygon(const Array<MeshVertex> &v, Polygon &p)
 {
 	for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
 		gen[i].init_polygon(v, p, i);

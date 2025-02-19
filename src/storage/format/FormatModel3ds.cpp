@@ -9,7 +9,6 @@
 #include "../../view/EdwardWindow.h"
 #include "../../mode_model/data/DataModel.h"
 #include "../../mode_model/data/ModelMesh.h"
-#include "../../mode_model/data/ModelPolygon.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
@@ -74,7 +73,7 @@ void FormatModel3ds::_load(const Path &filename, DataModel *m, bool deep) {
 void FormatModel3ds::load_mesh(DataModel *m, Stream *f, int _length)
 {
 	msg_right();
-	int NumVerticesOld = m->triangle_mesh[1].vertex.num;
+	int NumVerticesOld = m->triangle_mesh[1].vertices.num;
 	int end_pos = f->pos() + _length - 6;
 	Array<vec3> skin_vert;
 	while(f->pos() < end_pos){
@@ -86,12 +85,12 @@ void FormatModel3ds::load_mesh(DataModel *m, Stream *f, int _length)
 				int nv=f->read_word();
 				msg_write(format("\t\t\t\tNumVertices: %d",nv));
 				for (int i=0;i<nv;i++){
-					ModelVertex v;
+					MeshVertex v;
 					v.pos.x = f->read_float();
 					v.pos.y = f->read_float();
 					v.pos.z = f->read_float();
 					v.normal_mode = NORMAL_MODE_ANGULAR;
-					m->triangle_mesh[1].vertex.add(v);
+					m->triangle_mesh[1].vertices.add(v);
 				}
 				}break;
 			case 0x4120:
