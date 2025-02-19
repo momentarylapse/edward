@@ -15,6 +15,7 @@
 #include <y/world/Material.h>
 #include "ModelMaterial.h"
 
+struct Box;
 class DataModel;
 class ModelMaterial;
 class ModelMesh;
@@ -154,8 +155,8 @@ public:
 	void set_selection(const ModelSelection &s);*/
 
 
-	float getRadius();
-	void getBoundingBox(vec3 &min, vec3 &max);
+	float get_radius();
+	Box get_bounding_box();
 	void generateDetailDists(float *dist);
 	mat3 generateInertiaTensor(float mass);
 	void create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *dst, float quality_factor);

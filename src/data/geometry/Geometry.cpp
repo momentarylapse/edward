@@ -259,63 +259,13 @@ void Geometry::build(VertexBuffer *vb) const {
 	vbs.build(vb, num_textures);
 }
 
-
-int Geometry::add_edge(int a, int b, int tria, int side) const
-{
-	foreachi(ModelEdge &e, edge, i){
-		if ((e.vertex[0] == a) and (e.vertex[1] == b)){
-			throw GeometryException("the new polygon would have neighbors of opposite orientation");
-			/*e.RefCount ++;
-			msg_error("surface error? inverse edge");
-			e.Polygon[1] = tria;
-			e.Side[1] = side;
-			return i;*/
-		}
-		if ((e.vertex[0] == b) and (e.vertex[1] == a)){
-			if (e.polygon[0] == tria)
-				throw GeometryException("the new polygon would contain the same edge twice");
-			if (e.ref_count > 1)
-				throw GeometryException("there would be more than 2 polygons sharing an egde");
-			e.ref_count ++;
-			e.polygon[1] = tria;
-			e.side[1] = side;
-			return i;
-		}
-	}
-	ModelEdge ee;
-	ee.vertex[0] = a;
-	ee.vertex[1] = b;
-	ee.is_selected = false;
-	ee.is_special = false;
-	ee.is_round = false;
-	ee.ref_count = 1;
-	ee.polygon[0] = tria;
-	ee.side[0] = side;
-	ee.polygon[1] = -1;
-	edge.add(ee);
-	return edge.num - 1;
-}
-
-void Geometry::update_topology() const {
-	// clear
-	edge.clear();
-
-	// add all triangles
-	foreachi(auto &t, polygon, ti) {
-
-		// edges
-		for (int k=0; k<t.side.num; k++) {
-			t.side[k].edge = add_edge(t.side[k].vertex, t.side[(k + 1) % t.side.num].vertex, ti, k);
-			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
-		}
-	}
-}
-
 bool Geometry::is_closed() const {
-	for (auto &e: edge)
+	// TOSO
+	return false;
+	/*for (auto &e: edge)
 		if (e.ref_count != 2)
 			return false;
-	return true;
+	return true;*/
 }
 
 bool Geometry::is_inside(const vec3 &p) const {

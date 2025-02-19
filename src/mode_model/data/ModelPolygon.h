@@ -24,10 +24,9 @@ public:
 
 struct ModelPolygonSide {
 	int vertex;
-	int edge;
-	int edge_direction; // which no of triangle in edge's list are we?
 	vec3 skin_vertex[MATERIAL_MAX_TEXTURES];
 	int normal_index;
+	int smoothing_id = -1;
 	vec3 normal;
 	unsigned char triangulation[3];
 };

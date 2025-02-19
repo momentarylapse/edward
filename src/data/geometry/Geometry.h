@@ -39,8 +39,6 @@ public:
 	void transform(const mat4 &mat);
 	void smoothen();
 
-	int add_edge(int a, int b, int tria, int side) const;
-	void update_topology() const;
 	void remove_unused_vertices();
 	bool is_inside(const vec3 &v) const;
 
@@ -51,7 +49,6 @@ public:
 
 	Array<ModelVertex> vertex;
 	Array<ModelPolygon> polygon;
-	mutable Array<ModelEdge> edge;
 
 	bool is_closed() const;
 

@@ -11,6 +11,7 @@
 #include <multiview/SingleData.h>
 #include <lib/math/vec4.h>
 
+struct Box;
 class DataModel;
 class ModelTriangleMesh;
 class ModelPolygon;
@@ -25,28 +26,11 @@ struct ModelVertex: multiview::SingleData {
 	vec4 bone_weight;
 
 	bool normal_dirty;
+	int smoothing_id = -1;
 	int ref_count; // polygons
 
 	ModelVertex();
 	explicit ModelVertex(const vec3 &pos);
-};
-
-struct ModelEdge: multiview::SingleData {
-	//int NormalMode;
-	int vertex[2];
-	int ref_count, polygon[2], side[2];
-	bool is_round; // for editing
-	float weight; // for easify'ing
-
-	// constraints:
-	//  Vertex[0] = surf.Polygon[Triangle[0]].Vertex[Side[0]]
-	//  Vertex[1] = surf.Polygon[Triangle[0]].Vertex[(Side[0] + 1) % 3]
-	//  same for Polygon/Side[1] but Vertex[0 <-> 1]
-
-	// -> MeshSelectionModeEdge.cpp
-	/*float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
-	bool in_rect(MultiView::Window *win, const rect &r) override;
-	bool overlap_rect(MultiView::Window *win, const rect &r) override;*/
 };
 
 // only for use in MultiView...
@@ -99,10 +83,6 @@ public:
 
 	void build_topology();
 
-	int add_edge_for_new_polygon(int a, int b, int tria, int side);
-	void remove_obsolete_edge(int index);
-	void merge_edges();
-
 	MeshInsideTestData *inside_data;
 	/*bool is_inside(const vec3 &p);
 	void begin_inside_tests();
@@ -113,8 +93,8 @@ public:
 
 
 	Array<ModelVertex> vertex;
+
 	Array<ModelPolygon> polygon;
-	Array<ModelEdge> edge;
 	Array<ModelSkinVertexDummy> skin_vertex; // only temporary...
 
 	// purely physical
@@ -126,13 +106,12 @@ public:
 	void on_post_action_update();
 	void import_from_triangle_skin(int index);
 	void export_to_triangle_mesh(ModelTriangleMesh &trias);
-	void get_bounding_box(vec3 &min, vec3 &max, bool dont_reset = false);
+	Box get_bounding_box();
 	void set_normals_dirty_by_vertices(const Array<int> &index);
 	void set_all_normals_dirty();
 	void update_normals();
 	void clear_selection();
 	void selection_from_polygons();
-	void selection_from_edges();
 	void selection_from_vertices();
 
 	ModelSelection get_selection() const;

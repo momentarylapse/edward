@@ -19,6 +19,7 @@
 #include "../../action/ActionManager.h"
 #include "../../Session.h"
 #include "../../storage/Storage.h"
+#include "../../lib/math/Box.h"
 #if 0 //HAS_LIB_GL
 #include "../../multiview/MultiView.h"
 #endif
@@ -290,9 +291,12 @@ void DataModel::import_from_triangle_mesh(int index) {
 }
 
 
-void DataModel::getBoundingBox(vec3 &min, vec3 &max) {
-	mesh->get_bounding_box(min, max);
-	phys_mesh->get_bounding_box(min, max, true);
+Box DataModel::get_bounding_box() {
+	auto box = mesh->get_bounding_box();
+	auto box2 = phys_mesh->get_bounding_box();
+	if (box2.min != box2.max)
+		box = box or box2;
+	return box;
 }
 
 /*void DataModel::set_normals_dirty_by_vertices(const Array<int> &index) {
@@ -359,7 +363,7 @@ void DataModel::create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *
 #endif
 
 
-float DataModel::getRadius() {
+float DataModel::get_radius() {
 	float radius = 0;
 	for (auto &v: mesh->vertex)
 		radius = max(v.pos.length(), radius);
@@ -376,7 +380,7 @@ int get_num_trias(DataModel *m, ModelTriangleMesh *s) {
 }
 
 void DataModel::generateDetailDists(float *dist) {
-	float radius = getRadius();
+	float radius = get_radius();
 	dist[0] = radius * 10;
 	dist[1] = radius * 40;
 	dist[2] = radius * 80;
@@ -394,8 +398,7 @@ mat3 DataModel::generateInertiaTensor(float mass)
 //	sModeModelSkin *p = &Skin[0];
 
 	// estimate size
-	vec3 min, max;
-	mesh->get_bounding_box(min, max);
+	auto box = mesh->get_bounding_box();
 	/*for (int i=0;i<Ball.num;i++){
 		sModeModelBall *b = &Ball[i];
 		vector b_min = p->Vertex[b->Index].Pos - vector(1,1,1) * b->Radius;

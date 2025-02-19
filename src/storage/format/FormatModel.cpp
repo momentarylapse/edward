@@ -19,6 +19,7 @@
 #include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
 #include <graphics-impl.h>
+#include <lib/math/Box.h>
 
 FormatModel::FormatModel(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "model", "Model", Flag::CANONICAL_READ_WRITE) {
 }
@@ -65,8 +66,10 @@ base::set<int> get_all_poly_vert(DataModel *m) {
 Array<base::set<int>> split_conv_polyhedra(DataModel *m) {
 	auto all_vert = get_all_poly_vert(m);
 
+	msg_error("TODO   phys polyhedra");
 	Array<base::set<int>> surf;
 
+#if 0
 	while (all_vert.num > 0) {
 		msg_write("----surf");
 		base::set<int> cur;
@@ -89,6 +92,7 @@ Array<base::set<int>> split_conv_polyhedra(DataModel *m) {
 		msg_write(str(cur));
 		surf.add(cur);
 	}
+#endif
 	return surf;
 }
 
@@ -146,11 +150,10 @@ public:
 		// version
 		f->write_int(0);
 
-		vec3 _min, _max;
-		me->getBoundingBox(_min, _max);
-		f->write_vector(&_min);
-		f->write_vector(&_max);
-		f->write_float(me->getRadius());
+		const auto box = me->get_bounding_box();
+		f->write_vector(&box.min);
+		f->write_vector(&box.max);
+		f->write_float(me->get_radius());
 
 		// physics
 		f->write_float(me->meta_data.mass);

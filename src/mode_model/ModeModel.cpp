@@ -81,7 +81,7 @@ void ModeModel::on_enter() {
 	}));
 
 	data->out_changed >> create_sink(update);
-	multi_view->view_port.radius = data->getRadius() * 2;
+	multi_view->view_port.radius = data->get_radius() * 2;
 	update();
 }
 

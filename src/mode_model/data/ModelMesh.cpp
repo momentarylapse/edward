@@ -12,6 +12,7 @@
 //#include "BspTree.h"
 #include <lib/os/msg.h>
 #include <lib/base/set.h>
+#include <lib/math/Box.h>
 //#include "../../EdwardWindow.h"
 #include <y/world/components/Animator.h>
 #include <y/world/Model.h>
@@ -40,7 +41,6 @@ ModelMesh::~ModelMesh() = default;
 
 void ModelMesh::clear() {
 	polygon.clear();
-	edge.clear();
 	vertex.clear();
 
 	ball.clear();
@@ -56,32 +56,6 @@ bool ModelMesh::test_sanity(const string &loc) {
 					msg_error(loc + ": surf broken!   identical vertices in poly");
 					return false;
 				}
-	foreachi(ModelEdge &e, edge, i){
-		if (e.vertex[0] == e.vertex[1]){
-			msg_error(loc + ": surf broken!   trivial edge");
-			return false;
-		}
-		for (int k=0;k<e.ref_count;k++){
-			ModelPolygon &t = polygon[e.polygon[k]];
-			if (t.side[e.side[k]].edge != i){
-				msg_error(loc + ": surf broken!   edge linkage");
-				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.side[k], t.side[e.side[k]].edge, t.side[e.side[k]].edge_direction));
-				return false;
-			}
-			if (t.side[e.side[k]].edge_direction != k){
-				msg_error(loc + ": surf broken!   edge linkage (dir)");
-				msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.side[k], t.side[e.side[k]].edge, t.side[e.side[k]].edge_direction));
-				return false;
-			}
-			for (int j=0;j<2;j++)
-				if (e.vertex[(j + k) % 2] != t.side[(e.side[k] + j) % t.side.num].vertex){
-					msg_error(loc + ": surf broken!   edge linkage (vert)");
-					msg_write(format("i=%d  k=%d  side=%d  t.edge=%d t.dir=%d", i, k, e.side[k], t.side[e.side[k]].edge, t.side[e.side[k]].edge_direction));
-					return false;
-				}
-		}
-
-	}
 	return true;
 }
 
@@ -106,22 +80,6 @@ void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vec
 		for (int i=0;i<model->material[_material]->texture_levels.num;i++)
 			t.side[k].skin_vertex[i] = sv[i * v.num + k];
 	}
-	for (int k=0;k<v.num;k++){
-		try {
-			t.side[k].edge = add_edge_for_new_polygon(t.side[k].vertex, t.side[(k + 1) % v.num].vertex, polygon.num, k);
-			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
-		} catch (GeometryException &e) {
-			// failed -> clean up
-			for (int i=edge.num-1;i>=0;i--)
-				for (int j=0;j<edge[i].ref_count;j++)
-					if (edge[i].polygon[j] == polygon.num) {
-						edge[i].ref_count --;
-						if (edge[i].ref_count == 0)
-							edge.resize(i);
-					}
-			throw(e);
-		}
-	}
 
 	for (int vv: v)
 		vertex[vv].ref_count ++;
@@ -135,16 +93,6 @@ void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vec
 	t.smooth_group = -1;
 	if (index >= 0) {
 		polygon.insert(t, index);
-
-		// correct edges
-		for (ModelEdge &e: edge)
-			for (int k=0;k<e.ref_count;k++)
-				if (e.polygon[k] >= index)
-					e.polygon[k] ++;
-
-		// correct own edges
-		for (int k=0;k<t.side.num;k++)
-			edge[polygon[index].side[k].edge].polygon[polygon[index].side[k].edge_direction] = index;
 	} else {
 		polygon.add(t);
 	}
@@ -159,52 +107,10 @@ void ModelMesh::_remove_polygon(int index)
 		vertex[t.side[k].vertex].ref_count --;
 	}
 
-	base::set<int> obsolete;
-
-	// remove from its edges
-	for (int k=0;k<t.side.num;k++){
-		ModelEdge &e = edge[t.side[k].edge];
-		e.ref_count --;
-		if (e.ref_count > 0){
-			// edge has other triangle...
-			if (t.side[k].edge_direction > 0){
-				e.polygon[1] = -1;
-			}else{
-				// flip ownership
-				e.polygon[0] = e.polygon[1];
-				e.side[0] = e.side[1];
-				e.polygon[1] = -1;
-
-				// swap vertices
-				int v = e.vertex[0];
-				e.vertex[0] = e.vertex[1];
-				e.vertex[1] = v;
-
-				// relink other triangle
-				polygon[e.polygon[0]].side[e.side[0]].edge_direction = 0;
-			}
-		}else{
-			e.polygon[0] = -1;
-			obsolete.add(t.side[k].edge);
-		}
-	}
-
-	// correct edge links
-	foreachi(ModelEdge &e, edge, i)
-		for (int k=0;k<e.ref_count;k++)
-			if (e.polygon[k] > index)
-				e.polygon[k] --;
-			else if (e.polygon[k] == index){
-				throw GeometryException("RemoveTriangle: tria == index");
-			}
 
 	polygon.erase(index);
 
 	//TestSanity("rem poly 0");
-
-	// remove obsolete edges
-	foreachb(int o, obsolete)
-		remove_obsolete_edge(o);
 
 /*	if (!TestSanity("rem poly"))
 		throw GeometryException("RemoveTriangle: TestSanity failed");*/
@@ -213,7 +119,6 @@ void ModelMesh::_remove_polygon(int index)
 void ModelMesh::build_topology()
 {
 	// clear
-	edge.clear();
 	for (ModelVertex &v: vertex)
 		v.ref_count = 0;
 
@@ -222,68 +127,8 @@ void ModelMesh::build_topology()
 		// vertices
 		for (int k=0;k<t.side.num;k++)
 			vertex[t.side[k].vertex].ref_count ++;
-
-		// edges
-		for (int k=0;k<t.side.num;k++){
-			t.side[k].edge = add_edge_for_new_polygon(t.side[k].vertex, t.side[(k + 1) % t.side.num].vertex, ti, k);
-			t.side[k].edge_direction = edge[t.side[k].edge].ref_count - 1;
-		}
 	}
-
-//	updateClosed();
 }
-
-
-void ModelMesh::remove_obsolete_edge(int index)
-{
-	// correct triangle references
-	for (ModelPolygon &t: polygon)
-		for (int k=0;k<t.side.num;k++)
-			if (t.side[k].edge > index)
-				t.side[k].edge --;
-			else if (t.side[k].edge == index)
-				msg_error(format("surf rm edge: edge not really obsolete  rc=%d (%d,%d) (%d,%d)", edge[index].ref_count, t.side[k].vertex, t.side[(k+1)%t.side.num].vertex, edge[index].vertex[0], edge[index].vertex[1]));
-
-	// delete
-	edge.erase(index);
-}
-
-int ModelMesh::add_edge_for_new_polygon(int a, int b, int tria, int side)
-{
-	foreachi(ModelEdge &e, edge, i){
-		if ((e.vertex[0] == a) && (e.vertex[1] == b)){
-			throw GeometryException("the new polygon would have neighbors of opposite orientation");
-			/*e.RefCount ++;
-			msg_error("surface error? inverse edge");
-			e.Polygon[1] = tria;
-			e.Side[1] = side;
-			return i;*/
-		}
-		if ((e.vertex[0] == b) && (e.vertex[1] == a)){
-			if (e.polygon[0] == tria)
-				throw GeometryException("the new polygon would contain the same edge twice");
-			if (e.ref_count > 1)
-				throw GeometryException("there would be more than 2 polygons sharing an egde");
-			e.ref_count ++;
-			e.polygon[1] = tria;
-			e.side[1] = side;
-			return i;
-		}
-	}
-	ModelEdge ee;
-	ee.vertex[0] = a;
-	ee.vertex[1] = b;
-	ee.is_round = false;
-	ee.ref_count = 1;
-	ee.polygon[0] = tria;
-	ee.side[0] = side;
-	ee.polygon[1] = -1;
-	edge.add(ee);
-	return edge.num - 1;
-}
-
-
-
 
 
 
@@ -297,8 +142,6 @@ void ModelMesh::on_post_action_update() {
 			p.pos += vertex[p.side[k].vertex].pos;
 		p.pos /= p.side.num;
 	}
-	for (ModelEdge &e: edge)
-		e.pos = (vertex[e.vertex[0]].pos + vertex[e.vertex[1]].pos) / 2;
 }
 
 void ModelMesh::set_show_vertices(Array<ModelVertex> &vert) {
@@ -425,19 +268,17 @@ void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk) {
 		sk.sub[i].num_textures = m->texture_levels.num;
 }
 
-void ModelMesh::get_bounding_box(vec3 &min, vec3 &max, bool dont_reset) {
-	if (!dont_reset)
-		min = max = v_0;
+Box ModelMesh::get_bounding_box() {
+	Box box = {v_0, v_0};
 
-	for (auto &v: vertex){
-		min._min(v.pos);
-		max._max(v.pos);
-	}
+	for (const auto &v: vertex)
+		box = box or Box{v.pos, v.pos};
 
-	for (auto &b: ball){
-		min._min(vertex[b.index].pos - vec3(1,1,1) * b.radius);
-		max._max(vertex[b.index].pos + vec3(1,1,1) * b.radius);
-	}
+	for (const auto &b: ball)
+		box = box or Box{
+			vertex[b.index].pos - vec3(1,1,1) * b.radius,
+			vertex[b.index].pos + vec3(1,1,1) * b.radius};
+	return box;
 }
 
 void ModelMesh::set_normals_dirty_by_vertices(const Array<int> &index)
@@ -867,10 +708,6 @@ void ModelMesh::_shift_vertex_links(int offset, int delta) {
 		for (int k=0;k<t.side.num;k++)
 			if (t.side[k].vertex >= offset)
 				t.side[k].vertex += delta;
-	for (ModelEdge &e: edge)
-		for (int k=0;k<2;k++)
-			if (e.vertex[k] >= offset)
-				e.vertex[k] += delta;
 	for (ModelBall& b: ball)
 		if (b.index >= offset)
 			b.index += delta;
