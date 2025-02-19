@@ -6,7 +6,6 @@
  */
 
 #include "ActionWorldDeleteSelection.h"
-#include <Session.h>
 #include <lib/base/iter.h>
 #include <lib/base/sort.h>
 

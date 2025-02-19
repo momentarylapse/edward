@@ -40,10 +40,8 @@ ModeModel::~ModeModel() = default;
 void ModeModel::on_enter() {
 	auto update = [this] {
 		data->mesh->update_normals();
-		VertexStagingBuffer vsb;
-		for (auto& p: data->mesh->polygons)
-			p.add_to_vertex_buffer(data->mesh->vertices, vsb, 1);
-		vsb.build(vertex_buffer, 1);
+		update_vb();
+		update_selection_vb();
 	};
 
 	auto win = session->win;
@@ -195,6 +193,23 @@ void ModeModel::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	multi_view->action_controller->draw(params, rvd);
 }
 
+base::optional<string> model_selection_description(DataModel* m) {
+	int nvert = 0, npoly = 0;
+	auto sel = m->get_selection();
+	if (sel.contains(MultiViewType::MODEL_VERTEX))
+		nvert = sel[MultiViewType::MODEL_VERTEX].num;
+	if (sel.contains(MultiViewType::MODEL_POLYGON))
+		npoly = sel[MultiViewType::MODEL_POLYGON].num;
+	if (nvert + npoly == 0)
+		return base::None;
+	Array<string> s;
+	if (nvert > 0)
+		s.add(format("%d vertices", nvert));
+	if (npoly > 0)
+		s.add(format("%d polygons", npoly));
+	return implode(s, ", ");
+}
+
 void ModeModel::on_draw_post(Painter* p) {
 	if (presentation_mode == PresentationMode::Vertices) {
 		int _hover = -1;
@@ -209,17 +224,32 @@ void ModeModel::on_draw_post(Painter* p) {
 			p->draw_rect({p1.x - r,p1.x + r, p1.y - r,p1.y + r});
 		}
 	}
+
+	p->set_color(White);
+	if (auto s = model_selection_description(data))
+		p->draw_str(p->area().p01() + vec2(30, -40), "selected: " + *s);
 }
 
 void ModeModel::on_update_selection() {
 	//if (presentation_mode == PresentationMode::Vertices or presentation_mode == PresentationMode::Edges) {
-		for (auto& p: data->mesh->polygons) {
-			p.is_selected = true;
-			for (const auto& s: p.side)
-				p.is_selected &= data->mesh->vertices[s.vertex].is_selected;
-		}
+	for (auto& p: data->mesh->polygons) {
+		p.is_selected = true;
+		for (const auto& s: p.side)
+			p.is_selected &= data->mesh->vertices[s.vertex].is_selected;
+	}
 	//}
+	update_selection_vb();
+}
 
+void ModeModel::update_vb() {
+	VertexStagingBuffer vsb;
+	for (auto& p: data->mesh->polygons)
+		p.add_to_vertex_buffer(data->mesh->vertices, vsb, 1);
+	vsb.build(vertex_buffer, 1);
+}
+
+
+void ModeModel::update_selection_vb() {
 	VertexStagingBuffer vsb;
 	for (auto& p: data->mesh->polygons)
 		if (p.is_selected)
@@ -251,6 +281,17 @@ void ModeModel::on_command(const string& id) {
 		data->undo();
 	if (id == "redo")
 		data->redo();
+}
+
+void ModeModel::on_key_down(int key) {
+	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE) {
+		if (auto s = model_selection_description(data)) {
+			data->delete_selection(data->get_selection(), presentation_mode == PresentationMode::Vertices);
+			session->set_message("deleted: " + *s);
+		} else {
+			session->set_message("nothing selected");
+		}
+	}
 }
 
 

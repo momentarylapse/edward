@@ -63,14 +63,16 @@
 #include "../../action/model/skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../action/model/skeleton/ActionModelReconnectBone.h"
 #include "../../action/model/skeleton/ActionModelSetSubModel.h"*/
-#include "../action/mesh/ActionModelPasteMesh.h"
 #include "../action/mesh/ActionModelAddPolygon.h"
+#include "../action/mesh/ActionModelDeleteSelection.h"
+#include "../action/mesh/ActionModelPasteMesh.h"
 #include "../../lib/os/msg.h"
 #include "../../lib/math/quaternion.h"
 #include "../../lib/xhui/language.h"
 #include <y/helper/ResourceManager.h>
 #include <y/world/components/Animator.h>
 #include <graphics-impl.h>
+#include <lib/base/iter.h>
 
 
 string ModelEffect::get_type()
@@ -379,6 +381,19 @@ void DataModel::create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *
 }
 #endif
 
+Data::Selection DataModel::get_selection() const {
+	Selection sel;
+	sel.add({MultiViewType::MODEL_VERTEX, {}});
+	sel.add({MultiViewType::MODEL_POLYGON, {}});
+	for (const auto& [i, v]: enumerate(mesh->vertices))
+		if (v.is_selected)
+			sel[MultiViewType::MODEL_VERTEX].add(i);
+	for (const auto& [i, p]: enumerate(mesh->polygons))
+		if (p.is_selected)
+			sel[MultiViewType::MODEL_POLYGON].add(i);
+	return sel;
+}
+
 
 float DataModel::get_radius() {
 	float radius = 0;
@@ -534,10 +549,13 @@ void DataModel::animationSetFrameDuration(int index, int frame, float duration)
 
 void DataModel::animationSetBone(int move, int frame, int bone, const vec3 &dpos, const vec3 &ang)
 {	execute(new ActionModelAnimationSetBone(move, frame, bone, dpos, ang));	}
+#endif
 
-void DataModel::delete_selection(const ModelSelection &s, bool greedy)
-{	execute(new ActionModelDeleteSelection(s, greedy));	}
+void DataModel::delete_selection(const Selection& s, bool greedy) {
+	execute(new ActionModelDeleteSelection(this, s, greedy));
+}
 
+#if 0
 void DataModel::delete_polygon(int index)
 {	execute(new ActionModelSurfaceDeletePolygon(index));	}
 

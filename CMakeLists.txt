@@ -389,6 +389,7 @@ add_executable(edward
 	src/lib/xhui/Window.cpp
 	src/lib/xhui/xhui.cpp
 	src/mode_model/action/mesh/ActionModelAddPolygon.cpp
+	src/mode_model/action/mesh/ActionModelDeleteSelection.cpp
 	src/mode_model/action/mesh/ActionModelPasteMesh.cpp
 	src/mode_model/data/DataModel.cpp
 	src/mode_model/data/ModelMaterial.cpp

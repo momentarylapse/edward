@@ -30,8 +30,11 @@ public:
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 	void on_command(const string& id) override;
+	void on_key_down(int key) override;
 
 	void on_update_selection();
+	void update_vb();
+	void update_selection_vb();
 
 	DataModel* data;
 	VertexBuffer* vertex_buffer;

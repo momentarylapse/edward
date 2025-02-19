@@ -11,7 +11,7 @@ class DataModel;
 
 class ActionModelAddPolygon : public Action {
 public:
-	ActionModelAddPolygon(const Polygon &p);
+	explicit ActionModelAddPolygon(const Polygon &p);
 	string name() override { return "ModelAddPolygon"; }
 
 	void *execute(Data *d) override;
