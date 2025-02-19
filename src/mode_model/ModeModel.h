@@ -30,9 +30,13 @@ public:
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 
+	void on_update_selection();
+
 	DataModel* data;
 	VertexBuffer* vertex_buffer;
+	VertexBuffer* vertex_buffer_selection;
 	Material* material;
+	Material* material_selection;
 	Array<int> event_ids;
 
 	enum class PresentationMode {

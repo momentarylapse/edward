@@ -26,7 +26,10 @@ ModeModel::ModeModel(Session* session) : Mode(session) {
 	data = new DataModel(session);
 	generic_data = data;
 	vertex_buffer = new VertexBuffer("3f,3f,2f");
+	vertex_buffer_selection = new VertexBuffer("3f,3f,2f");
 	material = create_material(session->resource_manager, White, 0.7f, 0.2f, Black);
+	material_selection = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, Red, true);
+
 
 	presentation_mode = PresentationMode::Polygons;
 }
@@ -52,6 +55,9 @@ void ModeModel::on_enter() {
 	multi_view->data_sets = {
 		{MultiViewType::MODEL_VERTEX, &data->mesh->vertex}
 	};
+	multi_view->out_selection_changed >> create_sink([this] {
+		on_update_selection();
+	});
 
 	win->set_target("overlay-button-grid");
 	win->add_control("Button", "V", 0, 1, "add-vertex");
@@ -118,6 +124,8 @@ void ModeModel::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces)
 		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer, material, 0);
 
+	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_selection, material_selection, 0);
+
 	if (presentation_mode == PresentationMode::Vertices or presentation_mode == PresentationMode::Edges or presentation_mode == PresentationMode::Polygons) {
 		// backside
 		// TODO draw_lines_with_color()
@@ -158,7 +166,7 @@ void ModeModel::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 
 		dh->set_color(Red);
-		dh->set_line_width(3);//scheme.LINE_WIDTH_THIN);
+		dh->set_line_width(2);//scheme.LINE_WIDTH_THIN);
 
 		points.clear();
 		for (const auto& p: data->mesh->polygon) {
@@ -194,6 +202,23 @@ void ModeModel::on_draw_post(Painter* p) {
 		}
 	}
 }
+
+void ModeModel::on_update_selection() {
+	//if (presentation_mode == PresentationMode::Vertices or presentation_mode == PresentationMode::Edges) {
+		for (auto& p: data->mesh->polygon) {
+			p.is_selected = true;
+			for (const auto& s: p.side)
+				p.is_selected &= data->mesh->vertex[s.vertex].is_selected;
+		}
+	//}
+
+	VertexStagingBuffer vsb;
+	for (auto& p: data->mesh->polygon)
+		if (p.is_selected)
+			p.add_to_vertex_buffer(data->mesh->vertex, vsb, 1);
+	vsb.build(vertex_buffer_selection, 1);
+}
+
 
 base::optional<Hover> ModeModel::get_hover(MultiViewWindow* win, const vec2& m) const {
 	if (presentation_mode == PresentationMode::Vertices) {
