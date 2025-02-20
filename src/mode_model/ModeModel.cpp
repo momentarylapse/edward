@@ -303,6 +303,11 @@ void ModeModel::on_mouse_move(const vec2& m, const vec2& d) {
 	out_redraw();
 }
 
+void ModeModel::optimize_view() {
+	multi_view->view_port.suggest_for_box(data->get_bounding_box());
+}
+
+
 
 
 

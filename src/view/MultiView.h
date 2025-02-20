@@ -79,7 +79,7 @@ public:
 		void move(const vec3& drel);
 		void rotate(const quaternion& qrel);
 		void zoom(float factor);
-		void suggest_for_box(const vec3& vmin, const vec3& vmax);
+		void suggest_for_box(const Box& box);
 	} view_port;
 
 	Array<Light*> lights;

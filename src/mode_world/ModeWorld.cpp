@@ -171,9 +171,7 @@ void ModeWorld::set_side_panel(xhui::Panel* p) {
 
 
 void ModeWorld::optimize_view() {
-	vec3 vmin, vmax;
-	data->get_bounding_box(vmin, vmax);
-	multi_view->view_port.suggest_for_box(vmin, vmax);
+	multi_view->view_port.suggest_for_box(data->get_bounding_box());
 }
 
 #define MODEL_MAX_VERTICES	65536

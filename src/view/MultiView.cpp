@@ -446,9 +446,12 @@ void MultiView::ViewPort::zoom(float factor) {
 	out_changed();
 }
 
-void MultiView::ViewPort::suggest_for_box(const vec3& vmin, const vec3& vmax) {
-	pos = (vmin + vmax) / 2;
-	radius = (vmax - vmin).length() * 0.7f;
+void MultiView::ViewPort::suggest_for_box(const Box& box) {
+	pos = box.center();
+	if (box.size() == v_0)
+		radius = 200;
+	else
+		radius = box.size().length() * 0.7f;
 	ang = quaternion::rotation({0.35f, 0, 0});
 	out_changed();
 }

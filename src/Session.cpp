@@ -339,11 +339,11 @@ void Session::universal_new(int preferred_type) {
 		if (preferred_type == FD_MODEL) {
 			session->mode_model = new ModeModel(session);
 			session->set_mode(session->mode_model);
-			//session->mode_model->mode_model_mesh->optimize_view();
+			session->mode_model->optimize_view();
 		} else if (preferred_type == FD_WORLD) {
 			session->mode_world = new ModeWorld(session);
 			session->set_mode(session->mode_world);
-			//session->mode_world->optimize_view();
+			session->mode_world->optimize_view();
 		} /*else if (preferred_type == FD_MATERIAL) {
 			session->mode_material->_new();
 			session->set_mode(session->mode_material);
@@ -371,11 +371,13 @@ void Session::universal_open(int preferred_type) {
 	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false).then([this] (const auto& p) {
 
 		auto call_open = [kind=p.kind, path=p.complete] (Session* session) {
-			/*if (kind == FD_MODEL) {
+			if (kind == FD_MODEL) {
+				if (!session->mode_model)
+					session->mode_model = new ModeModel(session);
 				session->storage->load(path, session->mode_model->data);
 				session->set_mode(session->mode_model);
-				session->mode_model->mode_model_mesh->optimize_view();
-			} else*/ if (kind == FD_WORLD) {
+				session->mode_model->optimize_view();
+			} else if (kind == FD_WORLD) {
 				if (!session->mode_world)
 					session->mode_world = new ModeWorld(session);
 				session->storage->load(path, session->mode_world->data);

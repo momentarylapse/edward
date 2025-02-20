@@ -75,7 +75,7 @@ public:
 	bool is_empty() const;
 
 
-	void get_bounding_box(vec3 &min, vec3 &max);
+	Box get_bounding_box() const;
 
 	void update_data();
 

@@ -37,6 +37,8 @@ public:
 	void update_vb();
 	void update_selection_vb();
 
+	void optimize_view();
+
 	DataModel* data;
 	VertexBuffer* vertex_buffer;
 	VertexBuffer* vertex_buffer_selection;

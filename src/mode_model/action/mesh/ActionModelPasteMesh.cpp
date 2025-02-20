@@ -19,9 +19,9 @@ void *ActionModelPasteMesh::execute(Data *d) {
 	auto m = dynamic_cast<DataModel*>(d);
 	//m->clearSelection();
 
-	int nv = m->edit_mesh->vertices.num;
+	int nv = m->mesh->vertices.num;
 
-	m->edit_mesh->_add_vertices(geo.vertices);
+	m->mesh->_add_vertices(geo.vertices);
 
 	for (auto &t: geo.polygons) {
 		Array<int> v;
@@ -33,7 +33,7 @@ void *ActionModelPasteMesh::execute(Data *d) {
 				sv.add(t.side[k].skin_vertex[l]);
 		int mat = (t.material >= 0) ? t.material : default_material;
 
-		m->edit_mesh->_add_polygon(v, mat, sv);
+		m->mesh->_add_polygon(v, mat, sv);
 	}
 	return nullptr;
 }
@@ -42,7 +42,7 @@ void ActionModelPasteMesh::undo(Data *d) {
 	auto m = dynamic_cast<DataModel*>(d);
 	//m->clear_selection();
 
-	m->edit_mesh->vertices.resize(m->edit_mesh->vertices.num - geo.vertices.num);
-	m->edit_mesh->_post_vertex_number_change_update();
-	m->edit_mesh->polygons.resize(m->edit_mesh->polygons.num - geo.polygons.num);
+	m->mesh->vertices.resize(m->mesh->vertices.num - geo.vertices.num);
+	m->mesh->_post_vertex_number_change_update();
+	m->mesh->polygons.resize(m->mesh->polygons.num - geo.polygons.num);
 }

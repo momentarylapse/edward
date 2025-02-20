@@ -112,8 +112,9 @@ void DataWorld::add_initial_data() {
 }
 
 
-void DataWorld::get_bounding_box(vec3 &min, vec3 &max) {
+Box DataWorld::get_bounding_box() const {
 	bool found_any = false;
+	vec3 min, max;
 
 	auto merge = [&] (const vec3& _min, const vec3& _max) {
 		if (!found_any) {
@@ -142,6 +143,7 @@ void DataWorld::get_bounding_box(vec3 &min, vec3 &max) {
 		min = vec3(-100,-100,-100);
 		max = vec3( 100, 100, 100);
 	}
+	return {min, max};
 }
 
 #define IMPLEMENT_COUNT_SELECTED(FUNC, ARRAY) \
