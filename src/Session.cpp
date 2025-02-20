@@ -13,8 +13,8 @@
 #include "mode/administration/ModeAdministration.h"
 #include "mode/administration/dialog/ConfigurationDialog.h"*/
 #include "../mode_model/ModeModel.h"
-/*#include "mode/model/mesh/ModeModelMesh.h"
-#include "mode/material/ModeMaterial.h"*/
+#include "../mode_model/mesh/ModeMesh.h"
+//#include "mode/material/ModeMaterial.h"*/
 #include "../mode_world/ModeWorld.h"
 /*#include "mode/font/ModeFont.h"
 #include "stuff/Progress.h"*/
@@ -338,8 +338,8 @@ void Session::universal_new(int preferred_type) {
 	auto call_new = [preferred_type] (Session* session) {
 		if (preferred_type == FD_MODEL) {
 			session->mode_model = new ModeModel(session);
-			session->set_mode(session->mode_model);
-			session->mode_model->optimize_view();
+			session->set_mode(session->mode_model->mode_mesh.get());
+			session->mode_model->mode_mesh->optimize_view();
 		} else if (preferred_type == FD_WORLD) {
 			session->mode_world = new ModeWorld(session);
 			session->set_mode(session->mode_world);
@@ -374,9 +374,9 @@ void Session::universal_open(int preferred_type) {
 			if (kind == FD_MODEL) {
 				if (!session->mode_model)
 					session->mode_model = new ModeModel(session);
-				session->storage->load(path, session->mode_model->data);
-				session->set_mode(session->mode_model);
-				session->mode_model->optimize_view();
+				session->storage->load(path, session->mode_model->data.get());
+				session->set_mode(session->mode_model->mode_mesh.get());
+				session->mode_model->mode_mesh->optimize_view();
 			} else if (kind == FD_WORLD) {
 				if (!session->mode_world)
 					session->mode_world = new ModeWorld(session);
@@ -432,9 +432,9 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 					if (type == FD_MODEL) {
 						if (!session->mode_model)
 							session->mode_model = new ModeModel(session);
-						session->storage->load(filename, session->mode_model->data, true);
-						session->set_mode(session->mode_model);
-						//session->mode_model->mode_model_mesh->optimize_view();
+						session->storage->load(filename, session->mode_model->data.get(), true);
+						session->set_mode(session->mode_model->mode_mesh.get());
+						session->mode_model->mode_mesh->optimize_view();
 #if 0
 					} else if (type == FD_MATERIAL) {
 						session->storage->load(filename, session->mode_material->data, true);

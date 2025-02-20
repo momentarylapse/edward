@@ -1,20 +1,20 @@
 //
-// Created by Michael Ankele on 2025-02-18.
+// Created by Michael Ankele on 2025-02-08.
 //
 
-#ifndef MODEADDPOLYGON_H
-#define MODEADDPOLYGON_H
+#ifndef MODEADDVERTEX_H
+#define MODEADDVERTEX_H
 
 
-#include "../view/Mode.h"
-#include "data/DataModel.h"
+#include "../../view/Mode.h"
+#include "../data/DataModel.h"
 
 class MultiViewWindow;
-class ModeModel;
+class ModeMesh;
 
-class ModeAddPolygon : public Mode {
+class ModeAddVertex : public Mode {
 public:
-	explicit ModeAddPolygon(ModeModel* parent);
+	explicit ModeAddVertex(ModeMesh* parent);
 
 	void on_enter() override;
 	void on_prepare_scene(const RenderParams& params) override;
@@ -23,13 +23,10 @@ public:
 	void on_key_down(int key) override;
 	void on_left_button_down(const vec2&) override;
 
-	ModeModel* mode_model;
+	ModeMesh* mode_mesh;
 	Mode* get_parent() override;
-
-	Array<int> vertices;
 };
 
 
 
-
-#endif //MODEADDPOLYGON_H
+#endif //MODEADDVERTEX_H
