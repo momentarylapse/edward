@@ -54,6 +54,7 @@ public:
 
 	Material* material_hover;
 	Material* material_selection;
+	Material* material_creation;
 };
 
 

@@ -164,7 +164,7 @@ void ActionController::update_action(const vec2& d) {
 	//MouseWrapper::update(multi_view);
 	auto active_win = multi_view->active_window;
 
-	vec3 dir = active_win->dir();
+	vec3 dir = active_win->direction();
 	vec3 _param = v_0;
 
 	dvp += {d,0};

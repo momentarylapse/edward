@@ -33,9 +33,14 @@ public:
 	explicit MultiViewWindow(MultiView* mv);
 	vec3 project(const vec3& v) const;
 	vec3 unproject(const vec3& v, const vec3& zref) const;
-	vec3 dir() const;
+	vec3 direction() const;
+
 	float zoom() const;
 	float get_grid_d() const;
+	int active_grid() const;
+	vec3 active_grid_direction() const;
+	mat3 active_grid_frame() const;
+	mat3 edit_frame() const;
 	void draw(const RenderParams& params);
 
 	MultiView* multi_view;
@@ -122,11 +127,16 @@ public:
 
 	std::function<ActionMultiView*()> f_create_action;
 
+	static vec3 snap_v2(const vec3 &v, float d);
+	vec3 snap_v(const vec3 &v) const;
+	float snap_f(float f) const;
 	vec3 maybe_snap_v(const vec3& v) const;
 	vec3 maybe_snap_v2(const vec3& v, float d) const;
+	float maybe_snap_f(float f) const;
+	bool snap_to_grid = false;
 
-	string get_unit_by_zoom(vec3 &v);
-	string format_length(float l);
+	string get_unit_by_zoom(vec3 &v) const;
+	string format_length(float l) const;
 	void draw_mouse_pos(Painter* p);
 };
 

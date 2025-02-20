@@ -39,8 +39,7 @@ void ModeAddVertex::on_draw_win(const RenderParams& params, MultiViewWindow* win
 void ModeAddVertex::on_draw_post(Painter* p) {
 	mode_mesh->on_draw_post(p);
 
-	p->set_color(xhui::Theme::_default.text_label);
-	p->draw_str(p->area().p01() + vec2(30, -40), "click to add vertices");
+	draw_info(p, "click to add vertices");
 }
 
 

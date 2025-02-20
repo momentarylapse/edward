@@ -9,8 +9,8 @@
 #include <action/ActionMultiView.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
+#include <lib/math/mat3.h>
 #include <multiview/SingleData.h>
-
 #include "EdwardWindow.h"
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
@@ -35,7 +35,7 @@ vec3 MultiViewWindow::unproject(const vec3& v, const vec3& zref) const {
 	return to_pixels.inverse().project(r);
 }
 
-vec3 MultiViewWindow::dir() const {
+vec3 MultiViewWindow::direction() const {
 	return multi_view->view_port.ang * vec3::EZ;
 }
 
@@ -73,6 +73,43 @@ float grid_density(int level, float d_err) {
 	if (level == 1)
 		d_err += 1;
 	return min((float)pow(10.0f, d_err-1.0f) * LOW_MAX, MID_MAX);
+}
+
+
+int MultiViewWindow::active_grid() const {
+	vec3 d = direction();
+	d.x = abs(d.x);
+	d.y = abs(d.y);
+	d.z = abs(d.z);
+	if (d.x > d.y and d.x > d.z)
+		return 0;
+	if (d.y > d.z)
+		return 1;
+	return 2;
+}
+
+vec3 MultiViewWindow::active_grid_direction() const {
+	vec3 dd = vec3::EZ;
+	int ag = active_grid();
+	if (ag == 0)
+		dd = vec3::EX;
+	if (ag == 1)
+		dd = vec3::EY;
+
+	if (dd * direction() < 0)
+		return -dd;
+	return dd;
+}
+
+mat3 MultiViewWindow::active_grid_frame() const {
+	const vec3 dir = active_grid_direction();
+	const vec3 up = dir.ortho();
+	const vec3 right = dir ^ up;
+	return {right, up, dir};
+}
+
+mat3 MultiViewWindow::edit_frame() const {
+	return active_grid_frame();
 }
 
 void MultiViewWindow::draw(const RenderParams& params) {
@@ -367,13 +404,43 @@ base::optional<Hover> MultiView::get_hover(MultiViewWindow* win, const vec2& m) 
 	return base::None;
 }
 
-vec3 MultiView::maybe_snap_v(const vec3& v) const {
+
+vec3 MultiView::snap_v2(const vec3 &v, float d) {
+	vec3 w;
+	w.x = d * roundf(v.x / d);
+	w.y = d * roundf(v.y / d);
+	w.z = d * roundf(v.z / d);
+	return w;
+}
+
+vec3 MultiView::snap_v(const vec3 &v) const {
+	return snap_v2(v, active_window->get_grid_d());
+}
+
+float MultiView::snap_f(float f) const {
+	float d = active_window->get_grid_d();
+	return d * roundf(f / d);
+}
+
+vec3 MultiView::maybe_snap_v2(const vec3 &v, float d) const {
+	if (snap_to_grid)
+		return snap_v2(v, d);
 	return v;
 }
-vec3 MultiView::maybe_snap_v2(const vec3& v, float f) const {
+
+vec3 MultiView::maybe_snap_v(const vec3 &v) const {
+	if (snap_to_grid)
+		return snap_v(v);
 	return v;
 }
-string MultiView::get_unit_by_zoom(vec3 &v) {
+
+float MultiView::maybe_snap_f(float f) const {
+	if (snap_to_grid)
+		return snap_f(f);
+	return f;
+}
+
+string MultiView::get_unit_by_zoom(vec3 &v) const {
 	const char *units[] = {"y", "z", "a", "f", "p", "n", "\u00b5", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y"};
 	float l = active_window->get_grid_d() * 10.1f;
 
@@ -384,7 +451,7 @@ string MultiView::get_unit_by_zoom(vec3 &v) {
 	return format("*10^%d", n*3);
 }
 
-string MultiView::format_length(float l) {
+string MultiView::format_length(float l) const {
 	vec3 v = vec3(l, 0, 0);
 	string unit = get_unit_by_zoom(v);
 	return f2s(v.x,2) + " " + unit;

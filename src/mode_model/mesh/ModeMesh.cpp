@@ -5,11 +5,11 @@
 #include "ModeMesh.h"
 #include "ModeAddVertex.h"
 #include "ModeAddPolygon.h"
+#include "ModeAddCube.h"
 #include "../ModeModel.h"
 #include "../action/mesh/ActionModelMoveSelection.h"
 #include "../data/ModelMesh.h"
 #include <Session.h>
-#include <data/mesh/GeometryCube.h>
 #include <helper/ResourceManager.h>
 #include <lib/base/iter.h>
 #include <lib/image/Painter.h>
@@ -93,9 +93,7 @@ void ModeMesh::on_enter() {
 		session->set_mode(new ModeAddPolygon(this));
 	}));
 	event_ids.add(session->win->event("add-cube", [this] {
-		//session->set_mode(new ModeAddPolygon(this));
-		PolygonMesh m = GeometryCube({200,0,0}, {20,0,0}, {0,20,0}, {0,0,20}, 2, 2, 2);
-		data->paste_mesh(m, 0);
+		session->set_mode(new ModeAddCube(this));
 	}));
 
 	data->out_changed >> create_sink(update);
@@ -145,7 +143,7 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 		Array<vec3> points;
 		for (const auto& p: data->mesh->polygons) {
-			if (vec3::dot(p.temp_normal, win->dir()) >= 0)
+			if (vec3::dot(p.temp_normal, win->direction()) >= 0)
 				for (int k=0; k<p.side.num; k++) {
 					const auto& a = data->mesh->vertices[p.side[k].vertex];
 					const auto& b = data->mesh->vertices[p.side[(k + 1) % p.side.num].vertex];
@@ -163,7 +161,7 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 		points.clear();
 		for (const auto& p: data->mesh->polygons) {
-			if (vec3::dot(p.temp_normal, win->dir()) < 0)
+			if (vec3::dot(p.temp_normal, win->direction()) < 0)
 				for (int k=0; k<p.side.num; k++) {
 					const auto& a = data->mesh->vertices[p.side[k].vertex];
 					const auto& b = data->mesh->vertices[p.side[(k + 1) % p.side.num].vertex];
@@ -230,9 +228,8 @@ void ModeMesh::on_draw_post(Painter* p) {
 		}
 	}
 
-	p->set_color(White);
 	if (auto s = model_selection_description(data))
-		p->draw_str(p->area().p01() + vec2(30, -40), "selected: " + *s);
+		draw_info(p, "selected: " + *s);
 }
 
 void ModeMesh::on_update_selection() {

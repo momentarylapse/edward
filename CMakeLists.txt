@@ -396,6 +396,7 @@ add_executable(edward
 	src/mode_model/data/ModelMaterial.cpp
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/data/SkinGenerator.cpp
+	src/mode_model/mesh/ModeAddCube.cpp
 	src/mode_model/mesh/ModeAddPolygon.cpp
 	src/mode_model/mesh/ModeAddVertex.cpp
 	src/mode_model/mesh/ModeMesh.cpp

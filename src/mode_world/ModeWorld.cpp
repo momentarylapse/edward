@@ -463,8 +463,8 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 			dh->draw_lines({e.pos, e.pos + e.ang * vec3::EZ * win->multi_view->view_port.radius * 0.1f}, false);
 		} else if (l.type == LightType::POINT) {
 			//draw_circle(l.pos, win->get_direction(), l.radius);
-			dh->draw_circle(e.pos, win->dir(), l.radius * LIGHT_RADIUS_FACTOR_LO);
-			dh->draw_circle(e.pos, win->dir(), l.radius * LIGHT_RADIUS_FACTOR_HI);
+			dh->draw_circle(e.pos, win->direction(), l.radius * LIGHT_RADIUS_FACTOR_LO);
+			dh->draw_circle(e.pos, win->direction(), l.radius * LIGHT_RADIUS_FACTOR_HI);
 		} else if (l.type == LightType::CONE) {
 			dh->draw_lines({e.pos, e.pos + e.ang * vec3::EZ * l.radius * LIGHT_RADIUS_FACTOR_LO}, false);
 			dh->draw_circle(e.pos + e.ang * vec3::EZ * l.radius*LIGHT_RADIUS_FACTOR_LO, e.ang * vec3::EZ, l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
@@ -511,9 +511,8 @@ void ModeWorld::on_draw_post(Painter* p) {
 		p->draw_rect({p1.x-2,p1.x+2, p1.y-2,p1.y+2});
 	}
 
-	p->set_color(White);
 	if (auto s = world_selection_description(data))
-		p->draw_str(p->area().p01() + vec2(30, -40), "selected: " + *s);
+		draw_info(p, "selected: " + *s);
 }
 
 void ModeWorld::on_command(const string& id) {

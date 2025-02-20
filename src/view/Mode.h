@@ -45,6 +45,8 @@ public:
 	virtual void on_draw_post(Painter*) {}
 	virtual Mode* get_parent() { return nullptr; }
 
+	void draw_info(Painter* p, const string& msg);
+
 	Session* session = nullptr;
 	MultiView* multi_view = nullptr;
 	Data* generic_data = nullptr;
