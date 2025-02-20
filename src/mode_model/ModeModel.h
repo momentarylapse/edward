@@ -31,6 +31,7 @@ public:
 	void on_draw_post(Painter*) override;
 	void on_command(const string& id) override;
 	void on_key_down(int key) override;
+	void on_mouse_move(const vec2& m, const vec2& d) override;
 
 	void on_update_selection();
 	void update_vb();

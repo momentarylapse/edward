@@ -51,8 +51,6 @@ void *ActionWorldMoveSelection::execute(Data *d) {
 	return nullptr;
 }
 
-
-
 void ActionWorldMoveSelection::undo(Data *d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	for (const auto& [ii, i]: enumerate(index)) {

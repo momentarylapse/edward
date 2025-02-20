@@ -3,6 +3,10 @@
 //
 
 #include "ModeModel.h"
+#include "ModeAddVertex.h"
+#include "ModeAddPolygon.h"
+#include "action/mesh/ActionModelMoveSelection.h"
+#include "data/ModelMesh.h"
 #include <Session.h>
 #include <data/mesh/GeometryCube.h>
 #include <helper/ResourceManager.h>
@@ -13,12 +17,9 @@
 #include <lib/xhui/controls/Toolbar.h>
 #include <view/ActionController.h>
 #include <view/MultiView.h>
-#include "data/ModelMesh.h"
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <data/mesh/VertexStagingBuffer.h>
-#include "ModeAddVertex.h"
-#include "ModeAddPolygon.h"
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
@@ -42,6 +43,7 @@ void ModeModel::on_enter() {
 		data->mesh->update_normals();
 		update_vb();
 		update_selection_vb();
+		session->win->request_redraw();
 	};
 
 	auto win = session->win;
@@ -50,6 +52,9 @@ void ModeModel::on_enter() {
 
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
 		return get_hover(win, m);
+	};
+	multi_view->f_create_action = [this] {
+		return new ActionModelMoveSelection(data, data->get_selection());
 	};
 	multi_view->data_sets = {
 		{MultiViewType::MODEL_VERTEX, &data->mesh->vertices}
@@ -293,6 +298,11 @@ void ModeModel::on_key_down(int key) {
 		}
 	}
 }
+
+void ModeModel::on_mouse_move(const vec2& m, const vec2& d) {
+	out_redraw();
+}
+
 
 
 
