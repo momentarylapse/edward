@@ -18,6 +18,7 @@ public:
 	explicit ModeAddCube(ModeMesh* parent);
 
 	void on_enter() override;
+	void on_leave() override;
 	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
@@ -33,6 +34,8 @@ public:
 	vec3 length[3];
 	PolygonMesh mesh;
 	owned<VertexBuffer> vertex_buffer;
+
+	int slices[3];
 };
 
 

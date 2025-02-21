@@ -53,6 +53,7 @@ void ModeMesh::on_enter() {
 
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);
+	session->win->set_visible("overlay-button-grid-left", true);
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
 		return get_hover(win, m);
 	};
@@ -66,7 +67,7 @@ void ModeMesh::on_enter() {
 		on_update_selection();
 	});
 
-	win->set_target("overlay-button-grid");
+	win->set_target("overlay-button-grid-left");
 	win->add_control("Button", "V", 0, 1, "add-vertex");
 	win->set_options("add-vertex", "height=50,width=50,noexpandx,ignorefocus");
 	win->add_control("Button", "P", 0, 2, "add-polygon");

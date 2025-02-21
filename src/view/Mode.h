@@ -19,6 +19,10 @@ class Data;
 class MultiViewWindow;
 struct Hover;
 
+namespace xhui {
+	class Panel;
+}
+
 class Mode : public obs::Node<VirtualBase> {
 public:
 	explicit Mode(Session* session);
@@ -51,6 +55,8 @@ public:
 	MultiView* multi_view = nullptr;
 	Data* generic_data = nullptr;
 	Data* get_data() const { return generic_data; }
+
+	xhui::Panel* dialog = nullptr;
 };
 
 

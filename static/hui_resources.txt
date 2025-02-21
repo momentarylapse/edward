@@ -5314,19 +5314,25 @@ range=1:,expandx
 # Resource
 Dialog
 new_cube_dialog
-width=100,height=50,allow-root
+allow-root,width=200,noexpandx
 0
 0
 1
 Grid
 ?
-vertical
+
 0
 0
 2
-Text
+Grid
+?
+vertical,class=card
+0
+0
+2
+Label
 header
-big,bold,center,expandx
+big,bold,center
 0
 0
 0
@@ -5342,7 +5348,7 @@ Grid
 0
 0
 6
-Text
+Label
 x
 right,disabled
 0
@@ -5354,7 +5360,7 @@ range=1:,expandx
 1
 0
 0
-Text
+Label
 y
 right,disabled
 0
@@ -5366,7 +5372,7 @@ range=1:
 1
 1
 0
-Text
+Label
 z
 right,disabled
 0
@@ -5377,6 +5383,12 @@ nc_z
 range=1:
 1
 2
+0
+Label
+?
+expandy,ignorehover
+0
+1
 0
 # Resource
 Dialog

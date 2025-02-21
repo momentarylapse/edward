@@ -6,8 +6,10 @@
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
 #include <Session.h>
+#include <valarray>
 #include <data/mesh/GeometryCube.h>
 #include <lib/os/msg.h>
+#include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
 #include <view/DrawingHelper.h>
@@ -28,7 +30,37 @@ void ModeAddCube::on_enter() {
 	//mode_mesh->set_presentation_mode(ModeMesh::PresentationMode::Vertices);
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
+
+	session->win->set_visible("overlay-button-grid-left", false);
+
+	dialog = new xhui::Panel("xxx");
+	dialog->from_resource("new_cube_dialog");
+	session->win->embed("overlay-main-grid", 1, 0, dialog);
+
+	slices[0] = xhui::config.get_int("mesh.new_cube.slices_x", 1);;
+	slices[1] = xhui::config.get_int("mesh.new_cube.slices_y", 1);;
+	slices[2] = xhui::config.get_int("mesh.new_cube.slices_z", 1);;
+	dialog->set_int("nc_x", slices[0]);
+	dialog->set_int("nc_y", slices[1]);
+	dialog->set_int("nc_z", slices[2]);
+	dialog->event("nc_x", [this] {
+		slices[0] = dialog->get_int("nc_x");
+	});
+	dialog->event("nc_y", [this] {
+		slices[1] = dialog->get_int("nc_y");
+	});
+	dialog->event("nc_z", [this] {
+		slices[2] = dialog->get_int("nc_z");
+	});
 }
+
+void ModeAddCube::on_leave() {
+	session->win->unembed(dialog);
+	xhui::config.set_int("mesh.new_cube.slices_x", slices[0]);
+	xhui::config.set_int("mesh.new_cube.slices_y", slices[1]);
+	xhui::config.set_int("mesh.new_cube.slices_z", slices[2]);
+}
+
 
 Mode* ModeAddCube::get_parent() {
 	return mode_mesh;
@@ -85,7 +117,7 @@ bool ModeAddCube::set_dpos3(const vec2& m) {
 
 void ModeAddCube::on_mouse_move(const vec2& m, const vec2& d) {
 	if (points.num == 0) {
-		mesh = GeometryCube(multi_view->cursor_pos_3d(m), {20,0,0}, {0,20,0}, {0,0,20}, 2, 2, 2);
+		mesh = GeometryCube(multi_view->cursor_pos_3d(m), {20,0,0}, {0,20,0}, {0,0,20}, slices[0], slices[1], slices[2]);
 	} else if (points.num == 1) {
 		vec3 pos2 = multi_view->cursor_pos_3d(m);
 		const mat3 frame = multi_view->hover_window->edit_frame();
@@ -96,10 +128,10 @@ void ModeAddCube::on_mouse_move(const vec2& m, const vec2& d) {
 		float min_thick = 10 / multi_view->hover_window->zoom(); // 10 px
 		vec3 n = vec3::cross(length[0], length[1]).normalized();
 		length[2] = n * min_thick;
-		mesh = GeometryCube(points[0] - length[2]/2, length[0], length[1], length[2], 2, 2, 2);
+		mesh = GeometryCube(points[0] - length[2]/2, length[0], length[1], length[2], slices[0], slices[1], slices[2]);
 	} else if (points.num == 2) {
 		set_dpos3(m);
-		mesh = GeometryCube(points[0] - length[2]/2, length[0], length[1], length[2], 2, 2, 2);
+		mesh = GeometryCube(points[0] - length[2]/2, length[0], length[1], length[2], slices[0], slices[1], slices[2]);
 	}
 
 
