@@ -288,15 +288,15 @@ void Panel::set_visible(const string& id, bool visible) {
 }
 
 void Panel::set_options(const string& id, const string& options) {
-	for (auto& c: controls)
-		if (c->id == id)
-			for (const auto& o: options.explode(",")) {
-				auto xx = o.explode("=");
-				if (xx.num >= 2)
-					c->set_option(xx[0], xx[1]);
-				else
-					c->set_option(xx[0], "");
-			}
+	for_control(id, [&options] (Control* c) {
+		for (const auto& o: options.explode(",")) {
+			auto xx = o.explode("=");
+			if (xx.num >= 2)
+				c->set_option(xx[0], xx[1]);
+			else
+				c->set_option(xx[0], "");
+		}
+	});
 }
 
 

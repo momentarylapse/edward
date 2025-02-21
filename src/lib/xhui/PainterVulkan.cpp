@@ -1,4 +1,3 @@
-#include <graphics-fwd.h>
 #if HAS_LIB_VULKAN
 
 #include "Painter.h"

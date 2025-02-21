@@ -81,6 +81,15 @@ public:
 	void from_source(const string& source);
 	void from_resource(const Resource& resource);
 	void from_resource(const string& id);
+
+	template<class F>
+	void for_control(const string& id, F f) {
+		for (auto& c: controls)
+			if (c->id == id)
+				f(c);
+		if (this->id == id)
+			f(this);
+	}
 };
 
 }
