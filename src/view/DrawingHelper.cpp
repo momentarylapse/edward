@@ -9,6 +9,7 @@
 #include <lib/math/mat4.h>
 #include <lib/math/vec2.h>
 #include <lib/os/msg.h>
+#include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
 
 #include "MultiView.h"
@@ -218,4 +219,20 @@ void DrawingHelper::draw_mesh(const RenderParams& params, RenderViewData& rvd, c
 	rd.apply(params);
 	cb->draw(vertex_buffer);
 }
+
+void DrawingHelper::draw_boxed_str(Painter* p, const vec2& _pos, const string& str, int align) {
+	vec2 size = p->get_str_size(str);
+	vec2 pos = _pos;
+	if (align == 0)
+		pos.x -= size.x / 2;
+	if (align == 1)
+		pos.x -= size.x;
+	p->set_color(xhui::Theme::_default.background_button);
+	p->set_roundness(7);
+	p->draw_rect(rect(pos, pos + size).grow(7));
+	p->set_color(xhui::Theme::_default.text_label);
+	p->set_roundness(0);
+	p->draw_str(pos, str);
+}
+
 

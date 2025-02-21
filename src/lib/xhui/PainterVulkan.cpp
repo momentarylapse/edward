@@ -177,7 +177,8 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 }
 
 vec2 Painter::get_str_size(const string &str) {
-	return {font::get_text_width(str) / ui_scale, font_size};
+	const auto dims = font::get_text_dimensions(str);
+	return {dims.bounding_width / ui_scale, dims.inner_height() / ui_scale};
 }
 
 void Painter::set_line_width(float width) {

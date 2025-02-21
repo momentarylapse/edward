@@ -220,7 +220,7 @@ Dialog x x
 		p->set_color(White);
 		p->set_font_size(xhui::Theme::_default.font_size * 1.5f);
 		for (int i=0; i<session->message_str.num; i++)
-			p->draw_str(_area.center() + vec2(0, 20*i), session->message_str[i]);
+			session->drawing_helper->draw_boxed_str(p, _area.center() + vec2(0, 20*i), session->message_str[i], 0);
 	});
 	event_x("area", xhui::event_id::MouseMove, [this] {
 		if (!session->cur_mode or !session->cur_mode->multi_view)

@@ -91,7 +91,8 @@ TextDimensions get_text_dimensions(const string &text) {
 	}
 	dim.dx = max(x, wmax);
 	dim.bounding_width = max(x, wmax);// + current_font_size*0.1f;
-	dim.line_dy = current_font_size - units_to_pixel((float)face->descender);
+	//dim.line_dy = current_font_size - units_to_pixel((float)face->descender);
+	dim.line_dy = units_to_pixel((float)face->height);
 	dim.bounding_top_to_line = current_font_size;
 	dim.bounding_height = dim.line_dy * dim.num_lines;
 	//msg_write(f2s(units_to_pixel((float)face->descender), 3));

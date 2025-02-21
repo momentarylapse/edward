@@ -469,9 +469,7 @@ void MultiView::draw_mouse_pos(Painter* p) {
 	string sy = f2s(m.y,2) + " " + unit;
 	string sz = f2s(m.z,2) + " " + unit;
 
-	p->set_color(xhui::Theme::_default.text);
-	p->draw_str(area.p11() - vec2(100,40), sx + "\n" + sy +  + "\n" + sz);
-
+	session->drawing_helper->draw_boxed_str(p, area.p11() - vec2(30,80), sx + "\n" + sy +  + "\n" + sz, 1);
 
 #if 0 //HAS_LIB_GL
 	if (mouse_win->type == VIEW_2D) {

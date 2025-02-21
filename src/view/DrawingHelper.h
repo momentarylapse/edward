@@ -18,6 +18,7 @@ struct RenderParams;
 class ResourceManager;
 class MultiViewWindow;
 class Material;
+class Painter;
 
 class DrawingHelper {
 public:
@@ -38,6 +39,8 @@ public:
 	void draw_circle(const vec3& center, const vec3& axis, float r);
 
 	void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vb, Material* material, int pass_no = 0, const string& vertex_module = "default");
+
+	void draw_boxed_str(Painter* p, const vec2& pos, const string& str, int align = -1);
 
 #ifdef USING_VULKAN
 	xhui::ContextVulkan* context;
