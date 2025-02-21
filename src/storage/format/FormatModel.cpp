@@ -149,7 +149,7 @@ public:
 		// version
 		f->write_int(0);
 
-		const auto box = me->get_bounding_box();
+		const auto box = me->bounding_box();
 		f->write_vector(&box.min);
 		f->write_vector(&box.max);
 		f->write_float(me->get_radius());

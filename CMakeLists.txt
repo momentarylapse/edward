@@ -400,6 +400,7 @@ add_executable(edward
 	src/mode_model/mesh/ModeAddPolygon.cpp
 	src/mode_model/mesh/ModeAddVertex.cpp
 	src/mode_model/mesh/ModeMesh.cpp
+	src/mode_model/mesh/ModePaste.cpp
 	src/mode_model/ModeModel.cpp
 	src/mode_world/action/entity/ActionWorldAddEntity.cpp
 	src/mode_world/action/entity/ActionWorldEditComponent.cpp

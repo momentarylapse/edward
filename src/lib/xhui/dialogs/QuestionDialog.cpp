@@ -15,6 +15,7 @@ QuestionDialog::QuestionDialog(Panel* parent, const string& title, const string&
 	auto g1 = new Grid("");
 	add_child(g1);
 	auto label = new Label("", question);
+	label->align = Label::Align::Center;
 	g1->add_child(label, 0, 0);
 	label->size_mode_y = SizeMode::Expand;
 	auto g2 = new Grid("");

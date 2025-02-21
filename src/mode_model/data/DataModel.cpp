@@ -294,9 +294,9 @@ void DataModel::import_from_triangle_mesh(int index) {
 }
 
 
-Box DataModel::get_bounding_box() {
-	auto box = mesh->get_bounding_box();
-	auto box2 = phys_mesh->get_bounding_box();
+Box DataModel::bounding_box() {
+	auto box = mesh->bounding_box();
+	auto box2 = phys_mesh->bounding_box();
 	if (box2.min != box2.max)
 		box = box or box2;
 	return box;
@@ -430,7 +430,7 @@ mat3 DataModel::generateInertiaTensor(float mass)
 //	sModeModelSkin *p = &Skin[0];
 
 	// estimate size
-	auto box = mesh->get_bounding_box();
+	auto box = mesh->bounding_box();
 	/*for (int i=0;i<Ball.num;i++){
 		sModeModelBall *b = &Ball[i];
 		vector b_min = p->Vertex[b->Index].Pos - vector(1,1,1) * b->Radius;

@@ -47,22 +47,24 @@ MeshVertex::MeshVertex() : MeshVertex(v_0) {}
 
 
 
-void PolygonMesh::clear()
-{
+void PolygonMesh::clear() {
 	polygons.clear();
 	vertices.clear();
 }
 
-void PolygonMesh::add_vertex(const vec3 &pos)
-{
+bool PolygonMesh::is_empty() const {
+	return vertices.num == 0;
+}
+
+
+void PolygonMesh::add_vertex(const vec3 &pos) {
 	vertices.add(MeshVertex(pos));
 }
 
-void PolygonMesh::add_polygon(const Array<int> &v, const Array<vec3> &sv)
-{
+void PolygonMesh::add_polygon(const Array<int> &v, const Array<vec3> &sv) {
 	Polygon p;
 	p.side.resize(v.num);
-	for (int k=0; k<v.num; k++){
+	for (int k=0; k<v.num; k++) {
 		p.side[k].vertex = v[k];
 		for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 			p.side[k].skin_vertex[l] = sv[l*v.num + k];
@@ -76,8 +78,7 @@ void PolygonMesh::add_polygon(const Array<int> &v, const Array<vec3> &sv)
 	polygons.add(p);
 }
 
-void PolygonMesh::add_polygon_auto_texture(const Array<int> &v)
-{
+void PolygonMesh::add_polygon_auto_texture(const Array<int> &v) {
 	SkinGenerator sg;
 	sg.init_point_cloud_boundary(vertices, v);
 
@@ -89,8 +90,7 @@ void PolygonMesh::add_polygon_auto_texture(const Array<int> &v)
 	add_polygon(v, sv);
 }
 
-void PolygonMesh::add_polygon_single_texture(const Array<int> &v, const Array<vec3> &sv)
-{
+void PolygonMesh::add_polygon_single_texture(const Array<int> &v, const Array<vec3> &sv) {
 	Array<vec3> sv2;
 	for (int l=0; l<MATERIAL_MAX_TEXTURES; l++)
 		for (int k=0; k<v.num; k++)
@@ -160,8 +160,7 @@ void PolygonMesh::add_easy(int nv, const Array<int> &delta) {
 	add_polygon_auto_texture(v);
 }
 
-void PolygonMesh::add(const PolygonMesh& geo)
-{
+void PolygonMesh::add(const PolygonMesh& geo) {
 	int nv = vertices.num;
 	int np = polygons.num;
 	vertices.append(geo.vertices);

@@ -12,6 +12,7 @@
 #include <lib/base/set.h>
 #include <lib/math/Box.h>
 //#include "../../EdwardWindow.h"
+#include <lib/base/iter.h>
 #include <y/world/components/Animator.h>
 #include <y/world/Model.h>
 
@@ -253,8 +254,10 @@ void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk) {
 		sk.sub[i].num_textures = m->texture_levels.num;
 }
 
-Box ModelMesh::get_bounding_box() {
+Box ModelMesh::bounding_box() {
 	Box box = {v_0, v_0};
+	if (vertices.num > 0)
+		box = {vertices[0].pos, vertices[0].pos};
 
 	for (const auto &v: vertices)
 		box = box or Box{v.pos, v.pos};
@@ -723,29 +726,27 @@ bool ModelCylinder::in_rect(MultiView::Window *win, const rect &r) {
 bool ModelCylinder::overlap_rect(MultiView::Window *win, const rect &r) {
 	return MultiView::SingleData::in_rect(win, r);
 }
+#endif
 
-
-Geometry ModelMesh::copy_geometry() {
-	Geometry geo;
+PolygonMesh ModelMesh::copy_geometry() const {
+	PolygonMesh geo;
 
 	// copy vertices
-	Array<int> vert;
-	foreachi(ModelVertex &v, vertex, vi)
+	Array<int> vert_map;
+	vert_map.resize(vertices.num);
+	for (const auto& [vi, v]: enumerate(vertices))
 		if (v.is_selected) {
-			geo.vertex.add(v);
-			vert.add(vi);
+			vert_map[vi] = geo.vertices.num;
+			geo.vertices.add(v);
 		}
 
 	// copy triangles
-	for (ModelPolygon &t: polygon)
+	for (const auto &t: polygons)
 		if (t.is_selected) {
-			ModelPolygon tt = t;
-			for (int k=0;k<t.side.num;k++)
-				foreachi(int v, vert, vi)
-					if (v == t.side[k].vertex)
-						tt.side[k].vertex = vi;
-			geo.polygon.add(tt);
+			Polygon tt = t;
+			for (int k=0; k<t.side.num; k++)
+				tt.side[k].vertex = vert_map[t.side[k].vertex];
+			geo.polygons.add(tt);
 		}
 	return geo;
 }
-#endif

@@ -39,7 +39,11 @@ public:
 
 	void optimize_view();
 
+	void copy();
+	void paste();
+
 	DataModel* data;
+	owned<ModelMesh> temp_mesh;
 	VertexBuffer* vertex_buffer;
 	VertexBuffer* vertex_buffer_selection;
 	Material* material;

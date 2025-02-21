@@ -88,7 +88,7 @@ struct ModelMesh : PolygonMesh {
 	void on_post_action_update();
 	void import_from_triangle_skin(int index);
 	void export_to_triangle_mesh(ModelTriangleMesh &trias);
-	Box get_bounding_box();
+	Box bounding_box();
 	void set_normals_dirty_by_vertices(const Array<int> &index);
 	void set_all_normals_dirty();
 	void update_normals();
@@ -103,7 +103,7 @@ struct ModelMesh : PolygonMesh {
 	Array<MeshVertex> show_vertices;
 
 
-	PolygonMesh copy_geometry();
+	PolygonMesh copy_geometry() const;
 };
 
 #endif /* SRC_DATA_MODEL_MODELMESH_H_ */

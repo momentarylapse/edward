@@ -153,7 +153,7 @@ public:
 
 
 	float get_radius();
-	Box get_bounding_box();
+	Box bounding_box();
 	void generateDetailDists(float *dist);
 	mat3 generateInertiaTensor(float mass);
 	void create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *dst, float quality_factor);
@@ -193,7 +193,7 @@ public:
 
 	// actions
 	void delete_selection(const Selection& sel, bool greedy);
-	void paste_mesh(const PolygonMesh &geo, int default_material);
+	void paste_mesh(const PolygonMesh &geo, int default_material = -1);
 
 
 	// properties

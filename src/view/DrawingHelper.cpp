@@ -48,7 +48,7 @@ DrawingHelper::DrawingHelper(ResourceManager* rm) {
 	try {
 		material_hover = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, White, true);
 		material_selection = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, Red, true);
-		material_creation = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, Green, true);
+		material_creation = create_material(resource_manager, {0.3f, 0,0.5f,0}, 0.9f, 0, color(1,0,0.5f,0), true);
 	} catch(Exception& e) {
 		msg_error(e.message());
 	}

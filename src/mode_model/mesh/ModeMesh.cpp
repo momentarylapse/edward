@@ -6,6 +6,7 @@
 #include "ModeAddVertex.h"
 #include "ModeAddPolygon.h"
 #include "ModeAddCube.h"
+#include "ModePaste.h"
 #include "../ModeModel.h"
 #include "../action/mesh/ActionModelMoveSelection.h"
 #include "../data/ModelMesh.h"
@@ -33,6 +34,7 @@ ModeMesh::ModeMesh(ModeModel* parent) : Mode(parent->session) {
 	material = create_material(session->resource_manager, White, 0.7f, 0.2f, Black);
 	material_selection = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, Red, true);
 
+	temp_mesh = new ModelMesh(data);
 
 	presentation_mode = PresentationMode::Polygons;
 }
@@ -288,6 +290,25 @@ void ModeMesh::on_command(const string& id) {
 		data->redo();
 }
 
+void ModeMesh::copy() {
+	temp_mesh->clear();
+	temp_mesh->add(data->mesh->copy_geometry());
+	if (temp_mesh->is_empty())
+		session->set_message("nothing selected");
+	else
+		session->set_message("copied: " + *model_selection_description(data));
+}
+
+void ModeMesh::paste() {
+	multi_view->clear_selection();
+	if (temp_mesh->is_empty()) {
+		session->set_message("nothing to paste");
+	} else {
+		session->set_mode(new ModePaste(this));
+	}
+}
+
+
 void ModeMesh::on_key_down(int key) {
 	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE) {
 		if (auto s = model_selection_description(data)) {
@@ -297,6 +318,10 @@ void ModeMesh::on_key_down(int key) {
 			session->set_message("nothing selected");
 		}
 	}
+	if (key == xhui::KEY_CONTROL + xhui::KEY_C)
+		copy();
+	if (key == xhui::KEY_CONTROL + xhui::KEY_V)
+		paste();
 }
 
 void ModeMesh::on_mouse_move(const vec2& m, const vec2& d) {
@@ -304,7 +329,7 @@ void ModeMesh::on_mouse_move(const vec2& m, const vec2& d) {
 }
 
 void ModeMesh::optimize_view() {
-	multi_view->view_port.suggest_for_box(data->get_bounding_box());
+	multi_view->view_port.suggest_for_box(data->bounding_box());
 }
 
 
