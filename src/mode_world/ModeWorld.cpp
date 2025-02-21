@@ -76,6 +76,8 @@ Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full
 }
 
 void ModeWorld::on_enter() {
+	multi_view->set_allow_select(true);
+	multi_view->set_allow_action(true);
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
 		return get_hover(win, m);
 	};

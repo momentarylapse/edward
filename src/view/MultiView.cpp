@@ -309,12 +309,15 @@ void MultiView::update_selection_box() {
 
 void MultiView::on_left_button_down(const vec2& m) {
 	hover = get_hover(hover_window, m);
-	possibly_selecting = true;
+	possibly_selecting = _allow_select;
+
+	if (!_allow_select)
+		return;
 
 	//action_controller->on_left_button_down(m);
 	if (hover and hover->type == MultiViewType::ACTION_MANAGER) {
 		action_controller->data = session->cur_mode->get_data();
-		if (f_create_action)
+		if (f_create_action and _allow_action)
 			action_controller->start_action(f_create_action(), hover->tp, (ActionController::Constraint)hover->index);
 
 	} else if (auto p = get_hover_item()) {
@@ -481,6 +484,14 @@ void MultiView::draw_mouse_pos(Painter* p) {
 
 vec3 MultiView::cursor_pos_3d(const vec2& m) const {
 	return window.unproject(vec3(m, 0), view_port.pos);
+}
+
+void MultiView::set_allow_action(bool allow) {
+	_allow_action = allow;
+}
+
+void MultiView::set_allow_select(bool allow) {
+	_allow_select = allow;
 }
 
 

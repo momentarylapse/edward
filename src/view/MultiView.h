@@ -109,6 +109,12 @@ public:
 	void set_area(const rect& area);
 	Session* session;
 
+
+	void set_allow_select(bool allow);
+	void set_allow_action(bool allow);
+	bool _allow_select = false;
+	bool _allow_action = false;
+
 	base::optional<Box> selection_box;
 	//void set_selection_box(const base::optional<Box>& box);
 	void update_selection_box();

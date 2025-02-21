@@ -51,6 +51,8 @@ void ModeMesh::on_enter() {
 	auto tb = win->toolbar;
 	tb->set_by_id("model-toolbar");
 
+	multi_view->set_allow_select(true);
+	multi_view->set_allow_action(true);
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
 		return get_hover(win, m);
 	};
