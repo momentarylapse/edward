@@ -29,9 +29,8 @@ HeaderBar::HeaderBar(Window *w, const string &_id) : Control(_id) {
 	});
 }
 
-void HeaderBar::get_content_min_size(int &w, int &h) const {
-	w = 0;
-	h = Theme::_default.headerbar_height;
+vec2 HeaderBar::get_content_min_size() const {
+	return {0, Theme::_default.headerbar_height};
 }
 
 void HeaderBar::on_left_button_down(const vec2& m) {
@@ -59,10 +58,9 @@ void HeaderBar::on_mouse_move(const vec2& m, const vec2& d) {
 
 void HeaderBar::negotiate_area(const rect &available) {
 	_area = available;
-	int w, h;
-	grid_right->get_content_min_size(w, h);
+	vec2 s = grid_right->get_content_min_size();
 	float R = Theme::_default.spacing;
-	grid_right->negotiate_area(rect(available.x2 - w - R, available.x2 - R, available.y1 + R, available.y2 - R));
+	grid_right->negotiate_area(rect(available.x2 - s.x - R, available.x2 - R, available.y1 + R, available.y2 - R));
 }
 
 void HeaderBar::_draw(Painter *p) {

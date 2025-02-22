@@ -18,7 +18,7 @@ public:
 	void set_int(int i) override;
 	int get_int() override;
 
-	void get_content_min_size(int& w, int& h) const override;
+	vec2 get_content_min_size() const override;
 	void on_click() override;
 	void _draw(Painter* p) override;
 

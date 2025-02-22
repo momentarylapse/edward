@@ -14,16 +14,16 @@ public:
 	void set_option(const string& key, const string& value) override;
 
 	void _draw(Painter *p) override;
-	void get_content_min_size(int &w, int &h) const override;
+	vec2 get_content_min_size() const override;
 
+	float font_size;
 	string title;
 	enum class Align {
 		Left,
 		Center,
 		Right
 	} align;
-	float margin_x;
-	float margin_y;
+	rect margin;
 
 	XImage* image = nullptr;
 

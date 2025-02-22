@@ -38,6 +38,7 @@ void Toolbar::add_item(const string& id, const string& title, const string& imag
 	b->min_height_user = 50;
 	b->size_mode_x = SizeMode::Shrink;
 	b->size_mode_y = SizeMode::Shrink;
+	b->padding = {7, 7, 7, 7};
 	//height=50 width=50 noexpandx ignorefocus
 	add_child(b, n, 0);
 }

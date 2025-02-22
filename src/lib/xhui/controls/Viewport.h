@@ -20,8 +20,8 @@ public:
 	void add_child(shared<Control> c, int x, int y) override;
 	void remove_child(Control* c) override;
 
-	void get_greed_factor(float &x, float &y) const override;
-	void get_content_min_size(int &w, int &h) const override;
+	vec2 get_greed_factor() const override;
+	vec2 get_content_min_size() const override;
 	void negotiate_area(const rect &available) override;
 	Array<Control*> get_children(ChildFilter f) const override;
 	void set_option(const string& key, const string& value) override;

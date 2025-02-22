@@ -27,9 +27,7 @@ void Viewport::remove_child(Control* c) {
 
 void Viewport::on_mouse_wheel(const vec2& d) {
 	if (child) {
-		int w, h;
-		child->get_effective_min_size(w, h);
-		content_size = {(float)w, (float)h};
+		content_size = child->get_effective_min_size();
 		offset -= d * 3;
 		offset.x = clamp(offset.x, 0.0f, content_size.x - _area.width());
 		offset.y = clamp(offset.y, 0.0f, content_size.y - _area.height());
@@ -48,34 +46,32 @@ void Viewport::_draw(Painter *p) {
 	}
 }
 
-void Viewport::get_content_min_size(int &_w, int &_h) const {
-	_w = min_width_user;
-	_h = min_height_user;
+vec2 Viewport::get_content_min_size() const {
+	vec2 s = {min_width_user, min_height_user};
 	if (child) {
-		int w, h;
-		child->get_content_min_size(w, h);
+		vec2 cs = child->get_content_min_size();
 		if (size_mode_x == SizeMode::ForwardChild)
-			_w = w;
+			s.x = cs.x;
 		if (size_mode_y == SizeMode::ForwardChild)
-			_h = h;
+			s.y = cs.y;
 	}
+	return s;
 }
 
-void Viewport::get_greed_factor(float &_x, float &_y) const {
-	_x = 0;
-	_y = 0;
+vec2 Viewport::get_greed_factor() const {
+	vec2 f = {0, 0};
 	if (child) {
-		float cx, cy;
-		child->get_greed_factor(cx, cy);
+		vec2 cf = child->get_greed_factor();
 		if (size_mode_x == SizeMode::Expand)
-			_x = 1;
+			f.x = 1;
 		else if (size_mode_x == SizeMode::ForwardChild)
-			_x = cx;
+			f.x = cf.x;
 		if (size_mode_y == SizeMode::Expand)
-			_y = 1;
+			f.y = 1;
 		else if (size_mode_y == SizeMode::ForwardChild)
-			_y = cy;
+			f.y = cf.y;
 	}
+	return f;
 }
 
 void Viewport::negotiate_area(const rect &available) {

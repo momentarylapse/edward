@@ -7,9 +7,10 @@ namespace xhui {
 
 Label::Label(const string &_id, const string &t) : Control(_id) {
 	text_w = text_h = 0;
+	font_size = Theme::_default.font_size;
 	align = Align::Left;
-	margin_x = 0;
-	margin_y = Theme::_default.label_margin_y;
+	margin.x1 = margin.x2 = 0;
+	margin.y1 = margin.y2 = Theme::_default.label_margin_y;
 	ignore_hover = true;
 
 	size_mode_x = SizeMode::Shrink;
@@ -24,21 +25,24 @@ void Label::set_string(const string &s) {
 	request_redraw();
 }
 
-void Label::get_content_min_size(int &w, int &h) const {
-	if (text_w < 0) {
-		font::set_font(Theme::_default.font_name, Theme::_default.font_size * ui_scale);
-		auto dim = font::get_text_dimensions(title);
-		text_w = int(dim.bounding_width / ui_scale);
-		text_h = int(dim.inner_height() / ui_scale);
+vec2 Label::get_content_min_size() const {
+	if (image) {
+		return {10,10};
+	} else {
+		if (text_w < 0) {
+			font::set_font(Theme::_default.font_name, font_size * ui_scale);
+			auto dim = font::get_text_dimensions(title);
+			text_w = int(dim.bounding_width / ui_scale);
+			text_h = int(dim.inner_height() / ui_scale);
+		}
+		return vec2((float)text_w, (float)text_h) + margin.p00() + margin.p11();
 	}
-	w = text_w + margin_x * 2;
-	h = text_h + margin_y * 2;
 }
 
 void Label::_draw(Painter *p) {
 	if (image) {
 		prepare_image(image);
-		vec2 size = _area.size() - vec2(16, 16);
+		vec2 size = _area.size();
 		p->set_color(White);
 		if (!enabled)
 			p->set_color(White.with_alpha(0.35f));
@@ -48,13 +52,13 @@ void Label::_draw(Painter *p) {
 		if (!enabled)
 			p->set_color(Theme::_default.text_disabled);
 
-		p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
+		p->set_font(Theme::_default.font_name, font_size, false, false);
 		auto dim = font::get_text_dimensions(title);
-		float x = _area.x1 + margin_x;
+		float x = _area.x1 + margin.x1;
 		if (align == Align::Center)
 			x = _area.center().x - dim.bounding_width / ui_scale / 2;
 		else if (align == Align::Right)
-			x = _area.x2 - dim.bounding_width / ui_scale - margin_x;
+			x = _area.x2 - dim.bounding_width / ui_scale - margin.x2;
 		p->draw_str({x, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
 	}
 }

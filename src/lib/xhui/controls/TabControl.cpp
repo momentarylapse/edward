@@ -54,47 +54,37 @@ TabControl::TabControl(const string& id, const string& title) : Control(id) {
 	current_page = 0;
 }
 
-void TabControl::get_content_min_size(int& w, int& h) const {
-	w = 0;
-	h = 0;
+vec2 TabControl::get_content_min_size() const {
+	vec2 s = {0, 0};
 
 	for (const auto& p: pages)
-		if (p.child) {
-			int _w, _h;
-			p.child->get_content_min_size(_w, _h);
-			w = max(w, _w);
-			h = max(h, _h);
-		}
+		if (p.child)
+			s = vec2::max(s, p.child->get_content_min_size());
 
 	{
-		int _w, _h;
-		header->get_content_min_size(_w, _h);
-		h += _h + Theme::_default.spacing;
+		vec2 cs = header->get_content_min_size();
+		s.y += cs.y + Theme::_default.spacing;
 	}
+	return s;
 }
 
 void TabControl::negotiate_area(const rect& available) {
 	_area = available;
 	{
-		int w, h;
-		header->get_content_min_size(w, h);
-		header->negotiate_area({available.p00(), available.p10() + vec2(0, h)});
+		vec2 s = header->get_content_min_size();
+		header->negotiate_area({available.p00(), available.p10() + vec2(0, s.y)});
 	}
 	for (auto& p: pages)
 		if (p.child)
 			p.child->negotiate_area({header->_area.p01() + vec2(0, Theme::_default.spacing), available.p11()});
 }
 
-void TabControl::get_greed_factor(float& x, float& y) const {
-	x = 0;
-	y = 0;
+vec2 TabControl::get_greed_factor() const {
+	vec2 f = {0, 0};
 	for (const auto& p: pages)
-		if (p.child) {
-			float _x, _y;
-			p.child->get_greed_factor(_x, _y);
-			x = max(x, _x);
-			y = max(y, _y);
-		}
+		if (p.child)
+			f = vec2::max(f, p.child->get_greed_factor());
+	return f;
 }
 
 Array<Control*> TabControl::get_children(ChildFilter f) const {

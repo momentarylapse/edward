@@ -86,7 +86,7 @@ float vec2::length_sqr() const {
 }
 
 float vec2::length_fuzzy() const {
-	return max(fabs(x), fabs(y));
+	return ::max(fabs(x), fabs(y));
 }
 
 
@@ -110,6 +110,16 @@ vec2 vec2::normalized() const {
 vec2 vec2::ortho() const {
 	return {y, -x};
 }
+
+vec2 vec2::min(const vec2& a, const vec2& b) {
+	return {::min(a.x, b.x), ::min(a.y, b.y)};
+}
+
+vec2 vec2::max(const vec2& a, const vec2& b) {
+	return {::max(a.x, b.x), ::max(a.y, b.y)};
+}
+
+
 
 float vec2::cross(const vec2 &a, const vec2 &b) {
 	return a.x * b.y - a.y * b.x;

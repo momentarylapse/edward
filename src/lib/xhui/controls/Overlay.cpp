@@ -37,27 +37,19 @@ void Overlay::_draw(Painter *p) {
 			c->_draw(p);
 }
 
-void Overlay::get_content_min_size(int &_w, int &_h) const {
-	_w = 0;
-	_h = 0;
-	for (auto c: children) {
-		int w, h;
-		c->get_content_min_size(w, h);
-		_w = max(_w, w);
-		_h = max(_h, h);
-	}
+vec2 Overlay::get_content_min_size() const {
+	vec2 s = {0, 0};
+	for (auto c: children)
+		s = vec2::max(s, c->get_content_min_size());
+	return s;
 }
 
-void Overlay::get_greed_factor(float &_x, float &_y) const {
+vec2 Overlay::get_greed_factor() const {
 	// SizeMode::Forward...
-	_x = 0;
-	_y = 0;
-	for (auto c: children) {
-		float x, y;
-		c->get_greed_factor(x, y);
-		_x = max(_x, x);
-		_y = max(_y, y);
-	}
+	vec2 f = {0, 0};
+	for (auto c: children)
+		f = vec2::max(f, c->get_greed_factor());
+	return f;
 }
 
 void Overlay::negotiate_area(const rect &available) {

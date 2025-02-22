@@ -12,7 +12,7 @@ public:
 	HeaderBar(Window *win, const string &id);
 
 	void _draw(Painter *p) override;
-	void get_content_min_size(int &w, int &h) const override;
+	vec2 get_content_min_size() const override;
 	void negotiate_area(const rect &available) override;
 
 	void on_left_button_down(const vec2& m) override;

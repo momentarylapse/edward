@@ -155,13 +155,13 @@ Dialog x x
 				DrawingArea area '' grabfocus
 				Grid overlay-main-grid '' margin=25
 					Grid overlay-button-grid-left '' spacing=20
-						Button mouse-action 'T' image=rf-translate height=50 width=50 noexpandx ignorefocus
+						Button mouse-action 'T' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
 					.
 					Label ? '' ignorehover expandx
 					Grid overlay-button-grid-right '' spacing=20
-						Button cam-rotate 'R' image=rf-rotate height=50 width=50 noexpandx ignorefocus
+						Button cam-rotate 'R' image=rf-rotate height=50 width=50 padding=7 noexpandx ignorefocus
 						---|
-						Button cam-move 'M' image=rf-translate height=50 width=50 noexpandx ignorefocus
+						Button cam-move 'M' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 
 	toolbar = (xhui::Toolbar*)get_control("toolbar");

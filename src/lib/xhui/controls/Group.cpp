@@ -9,23 +9,23 @@
 
 namespace xhui {
 
-Group::Group(const string& id, const string& _title) : Control(id) {
-	title = _title;
+static constexpr float SPACING = 4;
+
+Group::Group(const string& id, const string& title) :
+		Control(id),
+		header(id + ":header", title)
+{
+	header.font_size = Theme::_default.font_size * 1.3f;
 	size_mode_x = SizeMode::ForwardChild;
 	size_mode_y = SizeMode::ForwardChild;
 }
 
 void Group::set_string(const string& s) {
-	title = s;
-	request_redraw();
+	header.set_string(s);
 }
 
 void Group::_draw(Painter* p) {
-	p->set_color(Theme::_default.text_label);
-	p->set_font(Theme::_default.font_name, Theme::_default.font_size * 1.3f, true, false);
-	auto dim = font::get_text_dimensions(title);
-	//p->draw_str({_area.x1, _area.center().y - dim.inner_height() / ui_scale / 2}, title);
-	p->draw_str({_area.x1, _area.y1}, title);
+	header._draw(p);
 
 	if (child and child->visible)
 		child->_draw(p);
@@ -43,8 +43,6 @@ void Group::remove_child(Control* c) {
 		child = nullptr;
 }
 
-
-
 Array<Control*> Group::get_children(ChildFilter) const {
 	if (child)
 		return {child.get()};
@@ -53,31 +51,36 @@ Array<Control*> Group::get_children(ChildFilter) const {
 
 void Group::negotiate_area(const rect& available) {
 	_area = available;
+	float hh = header.get_content_min_size().y;
+	header.negotiate_area({available.p00(), available.p10() + vec2(0, hh)});
 	if (child)
-		child->negotiate_area({_area.p00() + vec2(0, 25), _area.p11()});
+		child->negotiate_area({_area.p00() + vec2(0, hh + SPACING), _area.p11()});
 }
 
-void Group::get_content_min_size(int& w, int& h) const {
-	w = 0;
-	h = 0;
-	if (child)
-		child->get_content_min_size(w, h);
-	h += 25;
+vec2 Group::get_content_min_size() const {
+	vec2 s = header.get_content_min_size();
+	if (child) {
+		vec2 cs = child->get_content_min_size();
+		s.x = max(s.x, cs.x);
+		s.y += SPACING + cs.y;
+	}
+	return s;
 }
 
-void Group::get_greed_factor(float& x, float& y) const {
-	float sx, sy;
+vec2 Group::get_greed_factor() const {
+	vec2 cf = {0, 0};
 	if (child)
-		child->get_greed_factor(sx, sy);
-	x = y = 0;
+		cf = child->get_greed_factor();
+	vec2 f = {0, 0};
 	if (size_mode_x == SizeMode::Expand)
-		x = 1;
+		f.x = 1;
 	else if (size_mode_x == SizeMode::ForwardChild and child)
-		x = sx;
+		f.x = cf.x;
 	if (size_mode_y == SizeMode::Expand)
-		y = 1;
+		f.y = 1;
 	else if (size_mode_y == SizeMode::ForwardChild and child)
-		y = sy;
+		f.y = cf.y;
+	return f;
 }
 
 

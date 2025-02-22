@@ -85,16 +85,16 @@ public:
 		ForwardChild
 	};
 
-	int min_width_user, min_height_user;
+	float min_width_user, min_height_user;
 	SizeMode size_mode_x, size_mode_y;
 	bool can_grab_focus = false;
 	bool ignore_hover = false;
 	bool visible = true;
 	bool enabled;
 
-	virtual void get_greed_factor(float &x, float &y) const;
-	virtual void get_content_min_size(int &w, int &h) const;
-	void get_effective_min_size(int &w, int &h) const;
+	virtual vec2 get_greed_factor() const;
+	virtual vec2 get_content_min_size() const;
+	vec2 get_effective_min_size() const;
 
 	//virtual void negotiate_min_size();
 	virtual void negotiate_area(const rect &available);

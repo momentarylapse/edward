@@ -13,8 +13,8 @@ CheckBox::CheckBox(const string &_id, const string &t) :
 	can_grab_focus = true;
 	size_mode_x = SizeMode::Expand;
 	size_mode_y = SizeMode::Shrink;
-	label.margin_x = Theme::_default.button_margin_x;
-	label.margin_y = Theme::_default.button_margin_y;
+	label.margin.x1 = label.margin.x2 = Theme::_default.button_margin_x;
+	label.margin.y1 = label.margin.y2 = Theme::_default.button_margin_y;
 }
 
 void CheckBox::check(bool _checked) {
@@ -45,9 +45,8 @@ void CheckBox::on_mouse_leave(const vec2&) {
 	request_redraw();
 }
 
-void CheckBox::get_content_min_size(int &w, int &h) const {
-	label.get_content_min_size(w, h);
-	w += 22;
+vec2 CheckBox::get_content_min_size() const {
+	return label.get_content_min_size() + vec2(22, 0);
 }
 
 void CheckBox::negotiate_area(const rect& available) {

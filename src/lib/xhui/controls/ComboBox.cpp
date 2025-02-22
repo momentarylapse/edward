@@ -41,9 +41,8 @@ void ComboBox::set_int(int i) {
 	Button::set_string(entries[current]);
 }
 
-void ComboBox::get_content_min_size(int& w, int& h) const {
-	Button::get_content_min_size(w, h);
-	w += BUTTON_DX;
+vec2 ComboBox::get_content_min_size() const {
+	return Button::get_content_min_size() + vec2(BUTTON_DX, 0);
 }
 
 

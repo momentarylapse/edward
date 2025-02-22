@@ -9,8 +9,10 @@ class Button : public Control {
 public:
 	Button(const string &id, const string &title);
 
-	void get_content_min_size(int &w, int &h) const override;
+	vec2 get_content_min_size() const override;
 	void negotiate_area(const rect& available) override;
+	void set_string(const string& s) override;
+	string get_string() override;
 	void enable(bool enabled) override;
 
 	void on_mouse_enter(const vec2& m) override;
@@ -24,6 +26,7 @@ public:
 	virtual void on_click();
 
 	bool primary = false;
+	rect padding;
 
 	enum class State {
 		DEFAULT,

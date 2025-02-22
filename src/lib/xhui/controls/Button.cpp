@@ -14,8 +14,9 @@ Button::Button(const string &_id, const string &t) :
 	size_mode_x = SizeMode::Expand;
 	size_mode_y = SizeMode::Shrink;
 	label.align = Label::Align::Center;
-	label.margin_x = Theme::_default.button_margin_x;
-	label.margin_y = Theme::_default.button_margin_y;
+	label.margin = {0,0,0,0};
+	padding.x1 = padding.x2 = Theme::_default.button_margin_x;
+	padding.y1 = padding.y2 = Theme::_default.button_margin_y;
 }
 
 void Button::on_click() {
@@ -57,15 +58,22 @@ void Button::on_mouse_leave(const vec2&) {
 	emit_event(event_id::MouseLeave, false);
 }
 
-void Button::get_content_min_size(int &w, int &h) const {
-	label.get_content_min_size(w, h);
+vec2 Button::get_content_min_size() const {
+	return label.get_content_min_size() + padding.p00() + padding.p11();
 }
 
 void Button::negotiate_area(const rect& available) {
 	Control::negotiate_area(available);
-	label.negotiate_area(available);
+	label.negotiate_area({available.p00() + padding.p00(), available.p11() - padding.p11()});
 }
 
+void Button::set_string(const string& s) {
+	label.set_string(s);
+}
+
+string Button::get_string() {
+	return label.get_string();
+}
 
 void Button::_draw(Painter *p) {
 	color bg = Theme::_default.background_button;
@@ -95,6 +103,9 @@ void Button::_draw(Painter *p) {
 void Button::set_option(const string& key, const string& value) {
 	if (key == "image" or key == "align") {
 		label.set_option(key, value);
+	} else if (key == "padding") {
+		float f = value._float();
+		padding = {f, f, f, f};
 	} else {
 		Control::set_option(key, value);
 	}

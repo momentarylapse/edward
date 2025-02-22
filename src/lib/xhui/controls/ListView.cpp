@@ -1,4 +1,5 @@
 #include "ListView.h"
+#include "Grid.h"
 #include "../Painter.h"
 #include "../draw/font.h"
 #include "../Theme.h"
@@ -8,13 +9,22 @@ namespace xhui {
 static constexpr float HEADER_DY = 30;
 static constexpr float ROW_DY = 30;
 
-ListView::ListView(const string &_id, const string &t) : Control(_id) {
+ListView::ListView(const string &_id, const string &t) :
+		Control(_id),
+		viewport(_id + ":viewport")
+{
 	can_grab_focus = true;
 	size_mode_x = SizeMode::Expand;
 	size_mode_y = SizeMode::Expand;
 	headers = t.explode("\\");
 	column_widths.resize(headers.num);
 	column_offsets.resize(headers.num);
+	cell_grid = new Grid(_id + ":grid");
+	cell_grid->margin = {7,7,4,4};
+	cell_grid->spacing = 8;
+	viewport.add_child(cell_grid, 0, 0);
+	viewport.size_mode_y = SizeMode::Shrink;
+	viewport.ignore_hover = true;
 }
 
 void ListView::on_left_button_down(const vec2& m) {
@@ -66,9 +76,10 @@ void ListView::on_mouse_move(const vec2& m, const vec2& d) {
 }
 
 void ListView::on_mouse_wheel(const vec2& d) {
-	float content_height = (float)cells.num * ROW_DY;
+	viewport.on_mouse_wheel(d);
+	/*float content_height = (float)cells.num * ROW_DY;
 	view_y = clamp(view_y - d.y * 3, 0.0f, max(content_height - _area.height(), 0.0f));
-	request_redraw();
+	request_redraw();*/
 }
 
 
@@ -81,29 +92,33 @@ int ListView::get_hover(const vec2& m) const {
 
 
 
-void ListView::get_content_min_size(int &w, int &h) const {
-	column_widths.resize(headers.num);
-	column_offsets.resize(headers.num);
-	w = 5;
-	for (int col=0; col<headers.num; col++) {
-		column_widths[col] = 120;
-		column_offsets[col] = w;
-		w += column_widths[col];
-	}
-	h = 10;
+vec2 ListView::get_content_min_size() const {
+	vec2 s = viewport.get_content_min_size();
+	if (show_headers)
+		s.y += HEADER_DY;
+	return s;
 }
 
-rect ListView::row_area(int row) const {
+void ListView::negotiate_area(const rect& available) {
+	Control::negotiate_area(available);
 	float dy = 0;
 	if (show_headers)
 		dy = HEADER_DY;
-	dy -= view_y;
-	return {_area.p00() + vec2(0, ROW_DY * (float)row + dy), _area.p10() + vec2(0, ROW_DY * ((float)row + 1) + dy)};
+	viewport.negotiate_area({available.p00() + vec2(0, dy), available.p11()});
+	if (show_headers and cells.num > 0) {
+		for (int i=0; i<min(headers.num, cells[0].num); i++)
+			column_offsets[i] = cells[0][i].control->_area.x1 - _area.x1;
+	}
+}
+
+
+rect ListView::row_area(int row) const {
+	const auto r0 = cells[row][0].control->_area;
+	return {_area.x1, _area.x2, r0.y1 - 4, r0.y2 + 4};
 }
 
 
 void ListView::_draw(Painter *p) {
-	auto clip0 = p->clip();
 	color bg = Theme::_default.background_low;
 	p->set_color(bg);
 	p->set_roundness(Theme::_default.button_radius);
@@ -119,50 +134,51 @@ void ListView::_draw(Painter *p) {
 		for (int col=0; col<headers.num; col++) {
 			p->draw_str({_area.x1 + (float)column_offsets[col], _area.y1 + 9}, headers[col]);
 		}
-		p->set_clip({_area.p00() + vec2(0, HEADER_DY), _area.p11()});
-	} else {
-		p->set_clip(_area);
 	}
 
 	if (hover_row >= 0) {
-		p->set_color(Theme::_default.background_hover);
+		p->set_color(Theme::_default.background_hover.with_alpha(0.3f));
 //		p->set_roundness(Theme::_default.button_radius);
-		p->draw_rect(row_area(hover_row));
+		p->draw_rect(row_area(hover_row) and viewport._area);
 		p->set_roundness(0);
 	}
 	for (int row: selected) {
 		p->set_color(Theme::_default.background_low_selected);
 //		p->set_roundness(Theme::_default.button_radius);
-		p->draw_rect(row_area(row));
+		p->draw_rect(row_area(row) and viewport._area);
 		p->set_roundness(0);
 	}
 
-	p->set_color(Theme::_default.text);
-	for (int row=0; row<cells.num; row++) {
-		const rect r = row_area(row);
-		if (!r.overlaps(_area))
-			continue;
-		for (int col=0; col<cells[row].num; col++) {
-			p->draw_str(r.p00() + vec2((float)column_offsets[col], 9), cells[row][col]);
-		}
-	}
-	p->set_clip(clip0);
+	viewport._draw(p);
 }
 
 void ListView::add_string(const string& s) {
-	cells.add(s.explode("\\"));
+	int row = cells.num;
+	cells.add({});
+	int col = 0;
+	for (const auto& t: s.explode("\\")) {
+		auto l = new Label(format("%s:%d:%d", id, row, col), t);
+		//l->size_mode_x = SizeMode::Expand;
+		cell_grid->add_child(l, col, row);
+		cells.back().add({t, l});
+		col ++;
+	}
 	request_redraw();
 }
 void ListView::set_cell(int row, int col, const string& s) {
 	if (row >= 0 and row < cells.num)
-		if (col >= 0 and col < cells[row].num)
-			cells[row][col] = s;
+		if (col >= 0 and col < cells[row].num) {
+			cells[row][col].text = s;
+			cells[row][col].control->set_string(s);
+		}
 	request_redraw();
 }
 void ListView::reset() {
 	selected.clear();
+	for (auto c: cell_grid->get_children(ChildFilter::All))
+		cell_grid->remove_child(c);
 	cells.clear();
-	view_y = 0;
+	viewport.offset = vec2::ZERO;
 	request_redraw();
 }
 void ListView::set_int(int i) {
@@ -172,7 +188,7 @@ void ListView::set_int(int i) {
 string ListView::get_cell(int row, int col) {
 	if (row >= 0 and row < cells.num)
 		if (col >= 0 and col < cells[row].num)
-			return cells[row][col];
+			return cells[row][col].text;
 	return "";
 }
 int ListView::get_int() {
@@ -196,5 +212,10 @@ void ListView::set_option(const string& key, const string& value) {
 
 	request_redraw();
 }
+
+Array<Control*> ListView::get_children(ChildFilter f) const {
+	return {(Control*)&viewport};
+}
+
 
 }

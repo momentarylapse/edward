@@ -79,24 +79,25 @@ void Panel::negotiate_area(const rect &available) {
 	}*/
 }
 
-void Panel::get_content_min_size(int& w, int& h) const {
-	w = h = 0;
-	if (top_control) {
-		top_control->get_content_min_size(w, h);
-	}
+vec2 Panel::get_content_min_size() const {
+	if (top_control)
+		return top_control->get_content_min_size();
+	return {0, 0};
 }
 
-void Panel::get_greed_factor(float& x, float& y) const {
+vec2 Panel::get_greed_factor() const {
+	vec2 f = {0, 0};
 	if (top_control)
-		top_control->get_greed_factor(x, y);
+		f = top_control->get_greed_factor();
 	if (size_mode_x == SizeMode::Expand)
-		x = 1;
+		f.x = 1;
 	else if (size_mode_x == SizeMode::Shrink)
-		x = 0;
+		f.x = 0;
 	if (size_mode_y == SizeMode::Expand)
-		y = 1;
+		f.y = 1;
 	else if (size_mode_y == SizeMode::Shrink)
-		y = 0;
+		f.y = 0;
+	return f;
 }
 
 

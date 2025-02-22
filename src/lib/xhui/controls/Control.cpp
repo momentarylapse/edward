@@ -82,25 +82,26 @@ void Control::request_redraw() {
 }
 
 
-void Control::get_content_min_size(int &w, int &h) const {
-	w = 0;
-	h = 0;
+vec2 Control::get_content_min_size() const {
+	return {0,0};
 }
 
-void Control::get_greed_factor(float &x, float &y) const {
-	x = y = 0;
+vec2 Control::get_greed_factor() const {
+	vec2 f = {0,0};
 	if (size_mode_x == SizeMode::Expand)
-		x = 1;
+		f.x = 1;
 	if (size_mode_y == SizeMode::Expand)
-		y = 1;
+		f.y = 1;
+	return f;
 }
 
-void Control::get_effective_min_size(int &w, int &h) const {
-	get_content_min_size(w, h);
+vec2 Control::get_effective_min_size() const {
+	vec2 s = get_content_min_size();
 	if (min_width_user >= 0)
-		w = min_width_user;
+		s.x = min_width_user;
 	if (min_height_user >= 0)
-		h = min_height_user;
+		s.y = min_height_user;
+	return s;
 }
 
 void Control::negotiate_area(const rect &available) {

@@ -47,9 +47,8 @@ string Edit::get_string() {
 }
 
 
-void Edit::get_content_min_size(int &w, int &h) const {
-	w = 80;
-	h = 30;
+vec2 Edit::get_content_min_size() const {
+	return {80, 30};
 }
 
 void Edit::on_key_down(int key) {

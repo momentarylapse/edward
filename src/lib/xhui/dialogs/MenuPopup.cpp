@@ -24,9 +24,9 @@ MenuPopup::MenuPopup(const Menu& m, Panel* parent, const std::function<void(cons
 			request_destroy();
 		}), 0, i);
 
-	Dialog::get_content_min_size(width, height);
-	width += Theme::_default.spacing * 2;
-	height += Theme::_default.spacing * 2;
+	vec2 size = Dialog::get_content_min_size();
+	width = (int)(size.x + Theme::_default.spacing * 2);
+	height = (int)(size.y + Theme::_default.spacing * 2);
 }
 
 } // xhui

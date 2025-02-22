@@ -16,8 +16,8 @@ public:
 	TabControl(const string& id, const string& title);
 
 	void negotiate_area(const rect& available) override;
-	void get_content_min_size(int& w, int& h) const override;
-	void get_greed_factor(float& x, float& y) const override;
+	vec2 get_content_min_size() const override;
+	vec2 get_greed_factor() const override;
 	void add_child(shared<Control> c, int x, int y) override;
 	Array<Control*> get_children(ChildFilter f) const override;
 	void _draw(Painter* p) override;
