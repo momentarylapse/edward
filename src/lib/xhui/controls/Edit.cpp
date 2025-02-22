@@ -42,6 +42,10 @@ void Edit::enable(bool _enabled) {
 	request_redraw();
 }
 
+string Edit::get_string() {
+	return text;
+}
+
 
 void Edit::get_content_min_size(int &w, int &h) const {
 	w = 80;

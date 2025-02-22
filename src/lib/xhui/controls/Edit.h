@@ -12,6 +12,7 @@ public:
 
 	void set_string(const string& s) override;
 	void enable(bool enabled) override;
+	string get_string() override;
 
 	//void on_mouse_enter() override;
 	//void on_mouse_leave() override;

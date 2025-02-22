@@ -1,10 +1,8 @@
 #include "Grid.h"
-
-#include <lib/base/algo.h>
-
 #include "../Painter.h"
 #include "../Theme.h"
 #include "../../os/msg.h"
+#include "../../base/algo.h"
 
 namespace xhui {
 

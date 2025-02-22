@@ -23,6 +23,7 @@ public:
 		Right
 	} align;
 	float margin_x;
+	float margin_y;
 
 	XImage* image = nullptr;
 

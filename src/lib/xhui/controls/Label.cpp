@@ -9,6 +9,8 @@ Label::Label(const string &_id, const string &t) : Control(_id) {
 	text_w = text_h = 0;
 	align = Align::Left;
 	margin_x = 0;
+	margin_y = Theme::_default.label_margin_y;
+	ignore_hover = true;
 
 	size_mode_x = SizeMode::Shrink;
 	size_mode_y = SizeMode::Shrink;
@@ -30,7 +32,7 @@ void Label::get_content_min_size(int &w, int &h) const {
 		text_h = int(dim.inner_height() / ui_scale);
 	}
 	w = text_w + margin_x * 2;
-	h = text_h + Theme::_default.label_margin_y * 2;
+	h = text_h + margin_y * 2;
 }
 
 void Label::_draw(Painter *p) {

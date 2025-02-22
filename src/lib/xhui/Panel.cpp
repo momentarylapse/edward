@@ -23,6 +23,7 @@
 #include "controls/SpinButton.h"
 #include "controls/TabControl.h"
 #include "controls/Toolbar.h"
+#include "controls/Viewport.h"
 #include "../os/msg.h"
 
 namespace xhui {
@@ -204,7 +205,8 @@ void Panel::set_string(const string& id, const string& text) {
 }
 
 void Panel::add_string(const string& id, const string& text) {
-	for (auto& c: controls)
+	auto ccc = controls; // some controls might register new children here...
+	for (auto& c: ccc)
 		if (c->id == id)
 			c->add_string(text);
 }
@@ -347,6 +349,8 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add_child(new TabControl(id, title), x, y);
 	else if (type == "Toolbar")
 		add_child(new Toolbar(id), x, y);
+	else if (type == "Viewport")
+		add_child(new Viewport(id), x, y);
 //	else if (type == "TreeView")
 //		add_tree_view(title, x, y, id);
 //	else if (type == "IconView")

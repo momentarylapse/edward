@@ -14,7 +14,7 @@ namespace xhui {
 constexpr float BUTTON_DX = 30;
 
 ComboBox::ComboBox(const string& id, const string& title) : Button(id, "") {
-	align = Align::Left;
+	label.align = Label::Align::Left;
 	entries = title.explode("\\");
 	current = 0;
 	if (entries.num >= 1)
@@ -76,11 +76,6 @@ void ComboBox::_draw(Painter* p) {
 		area_arrow.center() + vec2(-adx, -ady)});
 	p->set_line_width(1);
 }
-
-
-
-
-
 
 
 } // xhui

@@ -5,11 +5,13 @@
 
 namespace xhui {
 
-class Button : public Label {
+class Button : public Control {
 public:
 	Button(const string &id, const string &title);
 
 	void get_content_min_size(int &w, int &h) const override;
+	void negotiate_area(const rect& available) override;
+	void enable(bool enabled) override;
 
 	void on_mouse_enter(const vec2& m) override;
 	void on_mouse_leave(const vec2& m) override;
@@ -17,6 +19,7 @@ public:
 	void on_left_button_up(const vec2& m) override;
 
 	void _draw(Painter *p) override;
+	void set_option(const string& key, const string& value) override;
 
 	virtual void on_click();
 
@@ -28,6 +31,7 @@ public:
 		PRESSED
 	};
 	State state;
+	Label label;
 };
 
 
