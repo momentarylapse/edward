@@ -3,20 +3,33 @@
 //
 
 #include "FileSelector.h"
+#include "Image.h"
 #include "Label.h"
+#include "ListView.h"
 #include "Button.h"
 #include "../Painter.h"
 #include "../Theme.h"
 #include "../../base/iter.h"
-//#include "../../os/msg.h"
+#include "../../image/image.h"
 #include "../../os/filesystem.h"
 
 namespace xhui {
 
 
-class FileListView : public Control {
+class FileListView : public ListView {
 public:
-	explicit FileListView(const string& id) : Control(id) {
+	string icon_dir;
+	string icon_file;
+	explicit FileListView(const string& id) : ListView(id, "icon\\name") {
+		show_headers = false;
+		icon_dir = create_image(::Image(16, 16, color(1, 0.8f, 0.6f, 0)));
+		icon_file = create_image(::Image(16, 16, Theme::_default.text_label));
+		column_factories[0].f_create = [] (const string& _id) {
+			return new Image(_id, "");
+		};
+		column_factories[0].f_set = [this] (Control* c, const string& t) {
+			c->set_option("image", (t == "d") ? icon_dir : icon_file);
+		};
 		size_mode_x = SizeMode::Expand;
 		size_mode_y = SizeMode::Expand;
 	}
@@ -31,9 +44,8 @@ public:
 		update_files();
 	}
 	void update_files() {
-		hover = -1;
-		selected = -1;
 		items.clear();
+		reset();
 		auto ff = [this] (const Path& fn) {
 			for (const auto& _f: filter)
 				if (str(fn).match(_f))
@@ -48,83 +60,31 @@ public:
 				else if (ff(e))
 					items.add({e, false});
 			}
+		for (const auto& it: items)
+			add_string(format("%s\\%s", it.is_directory ? "d" : "f", it.filename.basename()));
 		request_redraw();
 		emit_event(event_id::Select, false);
 	}
-	void _draw(Painter* p) override {
-		p->set_color(Theme::_default.background_low);
-		p->set_roundness(Theme::_default.button_radius);
-		p->draw_rect(_area);
-		p->set_color(Theme::_default.text);
-		const auto clip0 = p->clip();
-		p->set_clip(_area);
-		for (const auto& [i, it]: enumerate(items)) {
-			auto r = item_area(i);
-			if (i == selected) {
-				p->set_color(Theme::_default.background_low_selected);
-				p->draw_rect(r);
-			} else if (i == hover) {
-				p->set_color(Theme::_default.background_hover);
-				p->draw_rect(r);
-			}
-			p->set_color(it.is_directory ? color(1, 0.8f, 0.7f, 0) : Theme::_default.text_label);
-			p->draw_rect({r.p00() + vec2(6, 6), r.p00() + vec2(20, 20)});
-			p->set_color(Theme::_default.text_label);
-			p->draw_str(r.p00() + vec2(26, 6), str(it.filename));
+	void on_click_row(int row) override {
+		const auto e = items[row];
+		if (e.is_directory) {
+			set_directory(current_dir | e.filename);
+			emit_event("hui:change-directory", false);
 		}
-		p->set_clip(clip0);
 	}
-	void on_mouse_move(const vec2& m, const vec2& d) override {
-		hover = get_hover(m);
-		request_redraw();
-	}
-	void on_mouse_leave(const vec2& m) override {
-		hover = -1;
-		request_redraw();
-	}
-	void on_left_button_down(const vec2& m) override {
-		hover = get_hover(m);
-		selected = hover;
-		request_redraw();
-		if (selected < 0) {
-			emit_event(event_id::Select, false);
-			return;
-		}
-		const auto e = items[selected];
+	void on_double_click_row(int row) override {
+		const auto e = items[row];
 		if (e.is_directory) {
 			set_directory(current_dir | e.filename);
 			emit_event("hui:change-directory", false);
 		} else {
-			emit_event(event_id::Select, false);
-			if (drag_source_id != "")
-				owner->get_window()->start_pre_drag(this);
-		}
-	}
-	void on_left_double_click(const vec2& m) override {
-		if (selected < 0)
-			return;
-		const auto e = items[selected];
-		if (e.is_directory) {
-		} else {
 			emit_event(event_id::Activate, false);
 		}
 	}
-	int get_hover(const vec2& m) {
-		for (const auto& [i, it]: enumerate(items))
-			if (item_area(i).inside(m))
-				return i;
-		return -1;
-	}
-	rect item_area(int index) const {
-		float dy = 30;
-		float margin = 8;
-		float space = 3;
-		return rect(_area.p00() + vec2(margin, margin + index * dy), _area.p10() + vec2(-margin, margin + (index+1) * dy - space));
-	}
 	Path get_selected_filename() const {
-		if (selected < 0)
+		if (selected.num == 0)
 			return "";
-		return current_dir | items[selected].filename;
+		return current_dir | items[selected[0]].filename;
 	}
 	void set_option(const string& key, const string& value) override {
 		if (key == "directory")
@@ -134,7 +94,7 @@ public:
 		else if (key == "dragsource")
 			drag_source_id = value;
 		else
-			Control::set_option(key, value);
+			ListView::set_option(key, value);
 	}
 
 	struct Item {
@@ -145,8 +105,6 @@ public:
 	Path current_dir;
 	Array<Item> items;
 	Array<string> filter;
-	int hover = -1;
-	int selected = -1;
 	string drag_source_id;
 };
 

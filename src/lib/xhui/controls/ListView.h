@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "Label.h"
 #include "Viewport.h"
 
@@ -38,9 +40,17 @@ public:
 	rect row_area(int row) const;
 	int get_hover(const vec2& m) const;
 
+	virtual void on_click_row(int row);
+	virtual void on_double_click_row(int row);
+
 	Array<string> headers;
 	mutable Array<float> column_widths;
 	mutable Array<float> column_offsets;
+	struct ColumnFactory {
+		std::function<Control*(const string& id)> f_create;
+		std::function<void(Control* c, const string& t)> f_set;
+	};
+	Array<ColumnFactory> column_factories;
 	struct Cell {
 		string text;
 		Control* control;

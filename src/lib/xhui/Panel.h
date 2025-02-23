@@ -84,7 +84,8 @@ public:
 
 	template<class F>
 	void for_control(const string& id, F f) {
-		for (auto& c: controls)
+		auto ccc = controls; // some controls might register new children here...
+		for (auto& c: ccc)
 			if (c->id == id)
 				f(c);
 		if (this->id == id)
