@@ -1,5 +1,8 @@
 
 #include "xhui.h"
+
+#include <lib/base/algo.h>
+
 #include "Resource.h"
 #include "Window.h"
 #include "Dialog.h"
@@ -7,6 +10,7 @@
 #include "draw/font.h"
 #include "config.h"
 #include "language.h"
+#include "../image/image.h"
 #include "../os/time.h"
 #include "../os/filesystem.h"
 #include "../os/msg.h"
@@ -328,7 +332,7 @@ namespace event_id {
 	const string DragDrop = "hui:drag-drop";
 };
 
-static Array<XImage*> _images_;
+static owned_array<XImage> _images_;
 
 Path find_image(const string& name) {
 	const auto path = Application::directory_static | "icons" | "hicolor" | "24x24" | "actions" | (name + ".png");
@@ -338,7 +342,7 @@ Path find_image(const string& name) {
 }
 
 XImage* load_image(const string& name) {
-	for (auto* im: _images_)
+	for (auto* im: weak(_images_))
 		if (im->uid == name)
 			return im;
 
@@ -357,12 +361,46 @@ XImage* load_image(const string& name) {
 	return im;
 }
 
+string create_image(const Image& _im) {
+	auto im = new XImage;
+	im->image = new Image(8,8,White);
+	*im->image = _im;
+	im->uid = format("image:%d", randi(100000000));
+#if HAS_LIB_VULKAN
+	if (vulkan::default_device) {
+		im->texture = new vulkan::Texture();
+		im->texture->write(*im->image);
+	}
+#endif
+	_images_.add(im);
+	return im->uid;
+}
+
+void delete_image(const string& name) {
+	base::remove_if(_images_, [name] (XImage* im) {
+		return im->uid == name;
+	});
+}
+
 void prepare_image(XImage* image) {
 #if HAS_LIB_VULKAN
 	if (!image->texture)
-		if (vulkan::default_device)
-			image->texture = vulkan::Texture::load(image->filename);
+		if (vulkan::default_device) {
+			if (image->image) {
+				image->texture = new vulkan::Texture();
+				image->texture->write(*image->image);
+			} else {
+				image->texture = vulkan::Texture::load(image->filename);
+			}
+		}
 #endif
 }
 
+vec2 XImage::size() const {
+	if (texture)
+		return {(float)texture->width, (float)texture->height};
+	return {20,20};
 }
+
+}
+

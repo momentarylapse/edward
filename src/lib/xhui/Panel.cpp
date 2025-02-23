@@ -16,6 +16,7 @@
 #include "controls/FileSelector.h"
 #include "controls/Grid.h"
 #include "controls/Group.h"
+#include "controls/Image.h"
 #include "controls/Label.h"
 #include "controls/ListView.h"
 #include "controls/MultilineEdit.h"
@@ -336,6 +337,8 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add_child(new Grid(id), x, y);
 	else if (type == "Group")
 		add_child(new Group(id, title), x, y);
+	else if (type == "Image")
+		add_child(new Image(id, title), x, y);
 	else if (type == "Label")
 		add_child(new Label(id, title), x, y);
 	else if (type == "ListView")

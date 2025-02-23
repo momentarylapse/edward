@@ -365,6 +365,7 @@ add_executable(edward
 	src/lib/xhui/controls/Grid.cpp
 	src/lib/xhui/controls/Group.cpp
 	src/lib/xhui/controls/HeaderBar.cpp
+	src/lib/xhui/controls/Image.cpp
 	src/lib/xhui/controls/Label.cpp
 	src/lib/xhui/controls/ListView.cpp
 	src/lib/xhui/controls/MultilineEdit.cpp

@@ -43,8 +43,8 @@ public:
 	void draw_circle(const vec2 &p, float radius) override;
 	void draw_str(const vec2 &p, const string &str) override;
 	vec2 get_str_size(const string &str) override;
-	void draw_image(const vec2 &p, const Image *image) override {}
-	void draw_mask_image(const vec2 &p, const Image *image) override {}
+	void draw_image(const vec2 &p, const ::Image *image) override {}
+	void draw_mask_image(const vec2 &p, const ::Image *image) override {}
 	void draw_ximage(const rect& r, const XImage *image);
 
 	void draw_arc(const vec2& p, float r, float w0, float w1);
