@@ -1,15 +1,18 @@
-Dialog new_ball_dialog "New ball" width=220 height=119 allow-root
-	Grid ? "" vertical
-		Text header "New sphere" big bold center expandx
-		Grid ? "" vertical
-			RadioButton type:ball "From disks"
-			Grid ? "" indent
-				Text t_x "Disks" right disabled hgroup=a
-				SpinButton x "" range=1: expandx
-				---|
-				Text t_y "Sections per disk" right disabled
-				SpinButton y "" range=1:
-			RadioButton type:sphere "Sphere"
-			Grid ? "" indent
-				Text t_complexity "Complexity" right disabled hgroup=a
-				SpinButton complexity "" range=1: expandx
+Dialog new_ball_dialog "New ball" width=200 noexpandx
+	Grid ? ""
+		Grid ? "" vertical class=card
+			Label header "New sphere" big bold center expandx
+			Grid ? "" vertical
+				RadioButton type:ball "From disks"
+				Grid ? "" indent
+					Label t_x "Disks" right disabled hgroup=a
+					SpinButton x "" range=1: expandx
+					---|
+					Label t_y "Sections per disk" right disabled
+					SpinButton y "" range=1:
+				RadioButton type:sphere "Sphere"
+				Grid ? "" indent
+					Label t_complexity "Complexity" right disabled hgroup=a
+					SpinButton complexity "" range=1: expandx
+		---|
+		Label ? "" expandy ignorehover

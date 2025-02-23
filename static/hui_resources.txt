@@ -5229,17 +5229,23 @@ image=hui:about
 # Resource
 Dialog
 new_ball_dialog
-width=220,height=119,allow-root
+width=200,noexpandx
 0
 0
 1
 Grid
 ?
-vertical
+
 0
 0
 2
-Text
+Grid
+?
+vertical,class=card
+0
+0
+2
+Label
 header
 big,bold,center,expandx
 0
@@ -5263,7 +5269,7 @@ indent
 1
 0
 4
-Text
+Label
 t_x
 right,disabled,hgroup=a
 0
@@ -5275,7 +5281,7 @@ range=1:,expandx
 1
 0
 0
-Text
+Label
 t_y
 right,disabled
 0
@@ -5299,7 +5305,7 @@ indent
 3
 0
 2
-Text
+Label
 t_complexity
 right,disabled,hgroup=a
 0
@@ -5310,6 +5316,12 @@ complexity
 range=1:,expandx
 1
 0
+0
+Label
+?
+expandy,ignorehover
+0
+1
 0
 # Resource
 Dialog
