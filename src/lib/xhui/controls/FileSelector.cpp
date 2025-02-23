@@ -16,14 +16,26 @@
 namespace xhui {
 
 
+string create_rounded_icon(int N, const color& c) {
+	const float r = 1.0f;
+	const float R0 = (float)N / (float)sqrt(2.0) - r;
+	::Image im(N, N, c);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++) {
+			vec2 d = vec2((float)i - (float)N/2 + 0.5f, (float)j - (float)N/2 + 0.5f);
+			im.set_pixel(i, j, c.with_alpha(clamp(R0 - d.length(), 0.0f, 1.0f)));
+		}
+	return create_image(im);
+}
+
 class FileListView : public ListView {
 public:
 	string icon_dir;
 	string icon_file;
 	explicit FileListView(const string& id) : ListView(id, "icon\\name") {
 		show_headers = false;
-		icon_dir = create_image(::Image(16, 16, color(1, 0.8f, 0.6f, 0)));
-		icon_file = create_image(::Image(16, 16, Theme::_default.text_label));
+		icon_dir = create_rounded_icon(16, color(1, 0.8f, 0.6f, 0));
+		icon_file = create_rounded_icon(16, Theme::_default.text_label);
 		column_factories[0].f_create = [] (const string& _id) {
 			return new Image(_id, "");
 		};

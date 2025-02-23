@@ -32,6 +32,8 @@ ListView::ListView(const string &_id, const string &t) :
 	viewport.add_child(cell_grid, 0, 0);
 	viewport.size_mode_y = SizeMode::Shrink;
 	viewport.ignore_hover = true;
+	padding = {5, 5, 5, 5};
+	selection_radius = Theme::_default.button_radius;
 }
 
 void ListView::on_left_button_down(const vec2& m) {
@@ -107,7 +109,7 @@ int ListView::get_hover(const vec2& m) const {
 
 
 vec2 ListView::get_content_min_size() const {
-	vec2 s = viewport.get_content_min_size();
+	vec2 s = viewport.get_content_min_size() + padding.p00() + padding.p11();
 	if (show_headers)
 		s.y += HEADER_DY;
 	return s;
@@ -118,7 +120,7 @@ void ListView::negotiate_area(const rect& available) {
 	float dy = 0;
 	if (show_headers)
 		dy = HEADER_DY;
-	viewport.negotiate_area({available.p00() + vec2(0, dy), available.p11()});
+	viewport.negotiate_area({available.p00() + vec2(0, dy) + padding.p00(), available.p11() - padding.p11()});
 	if (show_headers and cells.num > 0) {
 		for (int i=0; i<min(headers.num, cells[0].num); i++)
 			column_offsets[i] = cells[0][i].control->_area.x1 - _area.x1;
@@ -150,18 +152,16 @@ void ListView::_draw(Painter *p) {
 		}
 	}
 
+	p->set_roundness(selection_radius);
 	if (hover_row >= 0) {
-		p->set_color(Theme::_default.background_hover.with_alpha(0.3f));
-//		p->set_roundness(Theme::_default.button_radius);
+		p->set_color(Theme::_default.background_hover.with_alpha(0.5f));
 		p->draw_rect(row_area(hover_row) and viewport._area);
-		p->set_roundness(0);
 	}
 	for (int row: selected) {
 		p->set_color(Theme::_default.background_low_selected);
-//		p->set_roundness(Theme::_default.button_radius);
 		p->draw_rect(row_area(row) and viewport._area);
-		p->set_roundness(0);
 	}
+	p->set_roundness(0);
 
 	viewport._draw(p);
 }
@@ -224,6 +224,11 @@ void ListView::set_option(const string& key, const string& value) {
 		show_headers = value._bool();
 	} else if (key == "nobar") {
 		show_headers = false;
+	} else if (key == "style") {
+		if (value == "compact") {
+			padding = {0,0,0,0};
+			selection_radius = 0;
+		}
 	} else if (key == "dragsource") {
 		drag_source_id = value;
 	} else {

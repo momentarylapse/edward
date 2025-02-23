@@ -61,6 +61,8 @@ public:
 	Array<int> selected;
 	//float view_y = 0;
 	bool show_headers = true;
+	rect padding;
+	float selection_radius;
 
 	int hover_row = -1;
 
