@@ -10,6 +10,8 @@ Viewport::Viewport(const string &_id) : Control(_id) {
 
 	size_mode_x = SizeMode::ForwardChild;
 	size_mode_y = SizeMode::ForwardChild;
+	offset = {0, 0};
+	content_size = {0, 0};
 }
 
 void Viewport::add_child(shared<Control> c, int x, int y) {
@@ -28,7 +30,12 @@ void Viewport::remove_child(Control* c) {
 void Viewport::on_mouse_wheel(const vec2& d) {
 	if (child) {
 		content_size = child->get_effective_min_size();
-		offset -= d * 3;
+#ifdef OS_LINUX
+		constexpr float speed = 30;
+#else
+		constexpr float speed = 3;
+#endif
+		offset -= d * speed;
 		offset.x = clamp(offset.x, 0.0f, content_size.x - _area.width());
 		offset.y = clamp(offset.y, 0.0f, content_size.y - _area.height());
 		child->negotiate_area({_area.p00() - offset, _area.p00() + content_size - offset});

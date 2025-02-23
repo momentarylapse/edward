@@ -10,6 +10,9 @@
 #include <y/graphics-impl.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/xhui.h>
+#include <lib/base/iter.h>
+#include <lib/xhui/controls/Image.h>
+#include <lib/xhui/controls/ListView.h>
 #include <lib/xhui/dialogs/FileSelectionDialog.h>
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
@@ -209,13 +212,20 @@ Dialog terrain-panel ''
 				---|
 				ListView textures 'a\\filename' nobar format=it noexpandy height=200
 )foodelim");
+		auto list = static_cast<xhui::ListView*>(get_control("textures"));
+		list->column_factories[0].f_create = [] (const string& id) {
+			auto im = new xhui::Image(id, "");
+			im->min_width_user = 32;
+			im->min_height_user = 32;
+			im->size_mode_x = SizeMode::Shrink;
+			im->size_mode_y = SizeMode::Shrink;
+			return im;
+		};
 		data = _data;
 		index = _index;
 		auto& e = data->entities[index];
 		set_string("filename2", str(e.terrain.filename));
-		reset("textures");
-		for (const auto& tf: e.terrain.terrain->texture_file)
-			add_string("textures", format("...\\%s", tf));
+		fill_texture_list();
 
 		event("textures", [this] {
 			int i = get_int("textures");
@@ -225,11 +235,16 @@ Dialog terrain-panel ''
 					auto& t = e.terrain;
 					t.terrain->texture_file[i] = filename.relative;
 					t.terrain->material->textures[i] = data->session->resource_manager->load_texture(filename.relative);
-					reset("textures");
-					for (const auto& tf: e.terrain.terrain->texture_file)
-						add_string("textures", format("...\\%s", tf));
+					fill_texture_list();
 				});
 		});
+	}
+	void fill_texture_list() {
+		auto& e = data->entities[index];
+		auto& t = e.terrain;
+		reset("textures");
+		for (int i=0; i<min(MATERIAL_MAX_TEXTURES, t.terrain->material->textures.num); i++)
+			add_string("textures", format("%s\\%s", xhui::texture_to_image(t.terrain->material->textures[i]), e.terrain.terrain->texture_file[i]));
 	}
 	DataWorld* data;
 	int index;

@@ -376,6 +376,21 @@ string create_image(const Image& _im) {
 	return im->uid;
 }
 
+
+#if HAS_LIB_VULKAN
+string texture_to_image(const shared<vulkan::Texture>& texture) {
+	for (auto* im: weak(_images_))
+		if (im->texture == texture.get())
+			return im->uid;
+
+	auto im = new XImage;
+	im->uid = format("image:texture:%s", p2s(texture.get()));
+	im->texture = texture;
+	_images_.add(im);
+	return im->uid;
+}
+#endif
+
 void delete_image(const string& name) {
 	base::remove_if(_images_, [name] (XImage* im) {
 		return im->uid == name;

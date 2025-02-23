@@ -187,6 +187,9 @@ struct XImage {
 
 XImage* load_image(const string& name);
 string create_image(const ::Image& im);
+#if HAS_LIB_VULKAN
+string texture_to_image(const shared<vulkan::Texture>& texture);
+#endif
 void delete_image(const string& name);
 void prepare_image(XImage* image);
 
