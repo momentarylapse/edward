@@ -167,6 +167,8 @@ void Window::_key_callback(GLFWwindow *window, int key, int scancode, int action
 	}
 }
 
+static bool resync_next_mouse_move = false;
+
 void Window::_cursor_position_callback(GLFWwindow *window, double xpos, double ypos) {
 	//msg_write(format("mouse %f  %f", xpos, ypos));
 	auto w = (Window*)glfwGetWindowUserPointer(window);
@@ -179,6 +181,10 @@ void Window::_cursor_position_callback(GLFWwindow *window, double xpos, double y
 	w->state.m.x = (float)xpos / ui_scale;
 	w->state.m.y = (float)ypos / ui_scale;
 #endif
+	if (resync_next_mouse_move) {
+		w->state_prev.m = w->state.m;
+		resync_next_mouse_move = false;
+	}
 	w->_on_mouse_move(w->state.m, w->state.m - w->state_prev.m);
 }
 
@@ -540,6 +546,8 @@ void Window::set_mouse_mode(int mode) {
 	} else {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
+	state_prev.m = state.m;
+	resync_next_mouse_move = true;
 }
 
 void Window::start_pre_drag(Control* source) {
