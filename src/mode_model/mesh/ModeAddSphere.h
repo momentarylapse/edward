@@ -36,8 +36,12 @@ public:
 	PolygonMesh mesh;
 	owned<VertexBuffer> vertex_buffer;
 
-	bool sliced;
+	enum class Type {
+		Ball,
+		Sphere
+	} type;
 	int slices[2];
+	int complexity;
 };
 
 

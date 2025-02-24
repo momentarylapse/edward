@@ -39,16 +39,37 @@ void ModeAddSphere::on_enter() {
 	session->win->embed("overlay-main-grid", 1, 0, dialog);
 
 	slices[0] = xhui::config.get_int("mesh.new_sphere.slices_x", 8);
-	slices[1] = xhui::config.get_int("mesh.new_sphere.slices_y", 8);
+	slices[1] = xhui::config.get_int("mesh.new_sphere.slices_y", 16);
+	complexity = xhui::config.get_int("mesh.new_sphere.complexity", 8);
+	type = (Type)xhui::config.get_int("mesh.new_sphere.type", (int)Type::Ball);
 	dialog->set_int("x", slices[0]);
 	dialog->set_int("y", slices[1]);
-	//dialog->set_int("nc_z", slices[2]);
+	dialog->set_int("complexity", complexity);
+	dialog->check("type:ball", type == Type::Ball);
+	dialog->check("type:sphere", type == Type::Sphere);
+
 	dialog->event("x", [this] {
 		slices[0] = dialog->get_int("x");
 	});
 	dialog->event("y", [this] {
 		slices[1] = dialog->get_int("y");
 	});
+	dialog->event("complexity", [this] {
+		complexity = dialog->get_int("complexity");
+	});
+	auto on_type = [this] {
+		if (dialog->is_checked("type:ball"))
+			type = Type::Ball;
+		else
+			type = Type::Sphere;
+		dialog->enable("x", type == Type::Ball);
+		dialog->enable("y", type == Type::Ball);
+		dialog->enable("complexity", type == Type::Sphere);
+	};
+	dialog->event("type:ball", on_type);
+	dialog->event("type:sphere", on_type);
+
+	on_type();
 
 	center = {0,0,0};
 	center_selected = false;
@@ -60,6 +81,8 @@ void ModeAddSphere::on_leave() {
 	session->win->unembed(dialog);
 	xhui::config.set_int("mesh.new_sphere.slices_x", slices[0]);
 	xhui::config.set_int("mesh.new_sphere.slices_y", slices[1]);
+	xhui::config.set_int("mesh.new_sphere.complexity", complexity);
+	xhui::config.set_int("mesh.new_sphere.type", (int)type);
 }
 
 
@@ -94,10 +117,10 @@ void ModeAddSphere::on_key_down(int key) {
 }
 
 void ModeAddSphere::update_mesh() {
-	if (sliced)
+	if (type == Type::Ball)
 		mesh = GeometryBall(center, radius, slices[0], slices[1]);
 	else
-		mesh = GeometrySphere(center, radius, slices[0]);
+		mesh = GeometrySphere(center, radius, complexity);
 	mesh.build(vertex_buffer.get());
 
 	session->win->request_redraw();

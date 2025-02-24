@@ -5229,7 +5229,7 @@ image=hui:about
 # Resource
 Dialog
 new_ball_dialog
-width=200,noexpandx
+width=240,noexpandx
 0
 0
 1
