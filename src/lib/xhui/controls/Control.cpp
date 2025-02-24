@@ -48,6 +48,10 @@ void Control::_register(Panel* _owner) {
 void Control::_unregister() {
 	if (!owner)
 		return;
+	if (auto w = owner->get_window()) {
+		w->hover_control = nullptr;
+		w->focus_control = nullptr;
+	}
 	// don't register sub-panels!
 	if (dynamic_cast<Panel*>(this))
 		return;

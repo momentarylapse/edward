@@ -21,6 +21,7 @@
 #include "controls/ListView.h"
 #include "controls/MultilineEdit.h"
 #include "controls/Overlay.h"
+#include "controls/RadioButton.h"
 #include "controls/SpinButton.h"
 #include "controls/TabControl.h"
 #include "controls/Toolbar.h"
@@ -347,6 +348,8 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add_child(new MultilineEdit(id, title), x, y);
 	else if (type == "Overlay")
 		add_child(new Overlay(id), x, y);
+	else if (type == "RadioButton")
+		add_child(new RadioButton(id, title), x, y);
 	else if (type == "SpinButton")
 		add_child(new SpinButton(id, title._float()), x, y);
 	else if (type == "TabControl")
@@ -357,17 +360,13 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add_child(new Viewport(id), x, y);
 //	else if (type == "TreeView")
 //		add_tree_view(title, x, y, id);
-//	else if (type == "IconView")
-//		add_icon_view(title, x, y, id);
 //	else if (type == "ProgressBar")
 //		add_progress_bar(title, x, y, id);
 //	else if (type == "Slider")
 //		add_slider(title, x, y, id);
 //	else if (type == "Image")
 //		add_image(title, x, y, id);
-/*	else if (type == "RadioButton")
-		add_radio_button(title, x, y, id);
-	else if (type == "ToggleButton")
+/*	else if (type == "ToggleButton")
 		add_toggle_button(title, x, y, id);
 	else if ((type == "Expander") or (type == "Revealer"))
 		add_expander(title, x, y, id);

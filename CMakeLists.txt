@@ -370,6 +370,7 @@ add_executable(edward
 	src/lib/xhui/controls/ListView.cpp
 	src/lib/xhui/controls/MultilineEdit.cpp
 	src/lib/xhui/controls/Overlay.cpp
+	src/lib/xhui/controls/RadioButton.cpp
 	src/lib/xhui/controls/SpinButton.cpp
 	src/lib/xhui/controls/TabControl.cpp
 	src/lib/xhui/controls/Toolbar.cpp
