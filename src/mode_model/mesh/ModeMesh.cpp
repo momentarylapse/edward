@@ -7,6 +7,7 @@
 #include "ModeAddPolygon.h"
 #include "ModeAddCube.h"
 #include "ModeAddSphere.h"
+#include "ModeAddPlatonic.h"
 #include "ModePaste.h"
 #include "../ModeModel.h"
 #include "../action/mesh/ActionModelMoveSelection.h"
@@ -79,6 +80,8 @@ void ModeMesh::on_enter() {
 	win->set_options("add-cube", "height=50,width=50,noexpandx,ignorefocus");
 	win->add_control("Button", "S", 0, 4, "add-sphere");
 	win->set_options("add-sphere", "height=50,width=50,noexpandx,ignorefocus");
+	win->add_control("Button", "P", 0, 5, "add-platonic");
+	win->set_options("add-platonic", "height=50,width=50,noexpandx,ignorefocus");
 
 
 	event_ids.add(session->win->event("mode_model_vertex", [this] {
@@ -105,6 +108,9 @@ void ModeMesh::on_enter() {
 	}));
 	event_ids.add(session->win->event("add-sphere", [this] {
 		session->set_mode(new ModeAddSphere(this));
+	}));
+	event_ids.add(session->win->event("add-platonic", [this] {
+		session->set_mode(new ModeAddPlatonic(this));
 	}));
 
 	data->out_changed >> create_sink(update);

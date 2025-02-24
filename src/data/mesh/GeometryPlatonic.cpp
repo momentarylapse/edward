@@ -6,10 +6,13 @@
  */
 
 #include "GeometryPlatonic.h"
+#include "GeometryCube.h"
 
 GeometryPlatonic::GeometryPlatonic(const vec3 &pos, float radius, int type) {
 	if (type == 4)
 		AddTetrahedron(pos, radius);
+	else if (type == 6)
+		add(GeometryCube(pos - vec3(radius, radius, radius), {radius*2, 0, 0}, {0, radius*2, 0}, {0, 0, radius*2}, 1, 1, 1));
 	else if (type == 8)
 		AddOctahedron(pos, radius);
 	else if (type == 12)

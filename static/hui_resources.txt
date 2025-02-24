@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-80
+81
 # Resource
 Menu
 
@@ -5526,6 +5526,97 @@ range=1:
 0
 # Resource
 Dialog
+new-platonic-dialog
+width=200,noexpandx
+0
+0
+1
+Grid
+?
+
+0
+0
+2
+Grid
+?
+vertical,class=card
+0
+0
+2
+Label
+header
+big,bold,center,expandx
+0
+0
+0
+Grid
+?
+vertical
+1
+0
+7
+RadioButton
+type:tetrahedron
+
+0
+0
+0
+RadioButton
+type:cube
+
+1
+0
+0
+RadioButton
+type:octahedron
+
+2
+0
+0
+RadioButton
+type:dodecahedron
+
+3
+0
+0
+RadioButton
+type:icosahedron
+
+4
+0
+0
+RadioButton
+type:teapot
+
+5
+0
+0
+Grid
+?
+indent
+6
+0
+2
+Label
+t_complexity
+right,disabled,hgroup=a
+0
+0
+0
+SpinButton
+complexity
+range=1:,expandx
+1
+0
+0
+Label
+?
+expandy,ignorehover
+0
+1
+0
+# Resource
+Dialog
 new_teapot_dialog
 width=100,height=50,allow-root
 0
@@ -10226,7 +10317,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1026
+1035
 # Text
 /ambient
 Ambient
@@ -12672,6 +12763,33 @@ model_material_selection_dialog/material_list
 - double click to apply material\n- select and press button \"edit\" to edit\n- selection will be used for new polygons
 model_material_selection_dialog/model_material_selection_dialog
 Select a material
+
+new-platonic-dialog/header
+New platonic
+
+new-platonic-dialog/new-platonic-dialog
+New platonic
+
+new-platonic-dialog/t_complexity
+Complexity
+
+new-platonic-dialog/type:cube
+Cube
+
+new-platonic-dialog/type:dodecahedron
+Dodecahedron
+
+new-platonic-dialog/type:icosahedron
+Icosahedron
+
+new-platonic-dialog/type:octahedron
+Octahedron
+
+new-platonic-dialog/type:teapot
+Teapot
+
+new-platonic-dialog/type:tetrahedron
+Tetrahedron
 
 new-project-dialog/cancel
 Cancel
