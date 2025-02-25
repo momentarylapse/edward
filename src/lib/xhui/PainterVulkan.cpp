@@ -37,18 +37,18 @@ DescriptorSet* get_descriptor_set(ContextVulkan* context, Texture* texture) {
 
 struct TextCache {
 	string text;
+	font::Face* face;
 	float size;
 	int age;
-	// font...
 	Texture* texture;
 	DescriptorSet* dset;
 };
 
 Array<TextCache> text_caches;
 
-TextCache& get_text_cache(ContextVulkan* context, const string& text, float size) {
+TextCache& get_text_cache(ContextVulkan* context, const string& text, font::Face* face, float size) {
 	for (auto& tc: text_caches)
-		if (tc.text == text and tc.size == size) {
+		if (tc.text == text and tc.face == face and tc.size == size) {
 			tc.age = 0;
 			return tc;
 		}
@@ -66,9 +66,10 @@ TextCache& get_text_cache(ContextVulkan* context, const string& text, float size
 
 	tc->text = text;
 	tc->size = size;
+	tc->face = face;
 	tc->age = 0;
 	Image im;
-	font::render_text(text, Align::LEFT, im);
+	face->render_text(text, Align::LEFT, im);
 	tc->texture->write(im);
 	tc->texture->set_options("minfilter=nearest");
 
@@ -87,6 +88,7 @@ struct Parameters {
 Painter::Painter(Window *w) {
 	window = w;
 	context = window->context;
+	face = default_font_regular;
 
 	context->start();
 
@@ -139,12 +141,16 @@ void Painter::clear(const color &c) {
 void Painter::set_font(const string &font, float size, bool bold, bool italic) {
 	font_name = font;
 	font_size = size;
-	font::set_font(font, size * ui_scale);
+	if (bold)
+		face = default_font_bold;
+	else
+		face = default_font_regular;
+	face->set_size(size * ui_scale);
 }
 
 void Painter::set_font_size(float size) {
 	font_size = size;
-	font::set_font(font_name, font_size * ui_scale);
+	face->set_size(size * ui_scale);
 }
 
 void Painter::set_color(const color &c) {
@@ -154,7 +160,7 @@ void Painter::set_color(const color &c) {
 void Painter::draw_str(const vec2 &p, const string &str) {
 	if (str.num == 0)
 		return;
-	auto& tc = get_text_cache(context, str, font_size);
+	auto& tc = get_text_cache(context, str, face, font_size);
 
 	float w = (float)tc.texture->width / ui_scale;
 	float h = (float)tc.texture->height / ui_scale;
@@ -176,7 +182,7 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 }
 
 vec2 Painter::get_str_size(const string &str) {
-	const auto dims = font::get_text_dimensions(str);
+	const auto dims = face->get_text_dimensions(str);
 	return {dims.bounding_width / ui_scale, dims.inner_height() / ui_scale};
 }
 

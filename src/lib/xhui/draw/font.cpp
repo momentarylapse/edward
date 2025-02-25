@@ -12,14 +12,14 @@
 namespace font {
 
 static FT_Library ft2;
-static int dpi = 96;
-static FT_Face face;
-static float current_font_size = 0;
-static string current_font_name;
+static float dpi = 96;
+//static FT_Face face;
+//static float current_font_size = 0;
+//static string current_font_name;
 
-struct Face {
+/*struct Face {
 	FT_Face face;
-};
+};*/
 
 
 void init() {
@@ -27,38 +27,70 @@ void init() {
 	if (error) {
 		throw Exception("can not initialize freetype2 library");
 	}
-	auto try_load_font = [] (const Path& filename) {
+}
+
+Array<Face*> faces;
+
+Face* load_face(const string& name, bool bold, bool italic) {
+	Face* face = new Face;
+	face->name = name;
+	face->bold = bold;
+	face->italic = italic;
+
+	string type = "Regular";
+	if (bold)
+		type = "Bold";
+
+	auto try_load_font = [face, &type] (const Path& filename) {
 		if (!os::fs::exists(filename))
 			return false;
-		int error = FT_New_Face(ft2, filename.c_str(), 0, &face);
+		int error = FT_New_Face(ft2, filename.c_str(), -1, &face->face);
 		if (error == FT_Err_Unknown_File_Format) {
-			throw Exception("font unsupported: " + str(filename));
+			msg_error("font unsupported: " + str(filename));
+			return false;
 		} else if (error) {
-			throw Exception("font can not be loaded: " + str(filename));
+			msg_error("font can not be loaded: " + str(filename));
+			return false;
 		}
+		for (int i=0; i<face->face->num_faces; i++) {
+			error = FT_New_Face(ft2, filename.c_str(), i, &face->face);
+			if (error)
+				continue;
+			if (string(face->face->style_name) == type)
+				break;
+		}
+
 		return true;
 	};
-	msg_write(os::fs::current_directory().str());
-	if (!try_load_font("/usr/share/fonts/noto/NotoSans-Regular.ttf"))
-		if (!try_load_font("/usr/share/fonts/open-sans/OpenSans-Regular.ttf"))
-			if (!try_load_font("static/OpenSans-Regular.ttf"))
-				throw Exception("no font found");
+
+	//msg_write(os::fs::current_directory().str());
+	if (!try_load_font(format("/System/Library/Fonts/%s.ttc", name)))
+	if (!try_load_font(format("/usr/share/fonts/noto/%s-%s.ttf", name, type)))
+	if (!try_load_font(format("/usr/share/fonts/open-sans/%s-%s.ttf", name, type)))
+	if (!try_load_font(format("static/%s-%s.ttf", name, type))) {
+		delete face;
+		return nullptr;
+	}
+
+
+	faces.add(face);
+	return face;
 }
 
-void set_font(const string &font_name, float font_size) {
-	if (font_size == current_font_size)
+void Face::set_size(float size) {
+	if (size == current_size)
 		return;
 	// size: points<<6
-	FT_Set_Char_Size(face, 0, int(font_size*64.0f), dpi, dpi);
-	current_font_size = font_size;
+	FT_Set_Char_Size(face, 0, int(size*64.0f), (int)dpi, (int)dpi);
+	current_size = size;
 }
 
-float units_to_pixel(float units) {
+float Face::units_to_pixel(float units) const {
 	// 72 pt/inch
-	return units / (float)face->units_per_EM * current_font_size * dpi / 72.0f;
+	return units / (float)face->units_per_EM * current_size * dpi / 72.0f;
 }
 
-TextDimensions get_text_dimensions(const string &text) {
+TextDimensions Face::get_text_dimensions(const string &text) {
 	auto utf32 = text.utf8_to_utf32();
 	TextDimensions dim;
 
@@ -93,8 +125,8 @@ TextDimensions get_text_dimensions(const string &text) {
 	dim.bounding_width = max(x, wmax);// + current_font_size*0.1f;
 	//dim.line_dy = current_font_size - units_to_pixel((float)face->descender);
 	dim.line_dy = units_to_pixel((float)face->height);
-	dim.bounding_top_to_line = current_font_size;
-	dim.bounding_height = dim.line_dy * dim.num_lines;
+	dim.bounding_top_to_line = current_size;
+	dim.bounding_height = dim.line_dy * (float)dim.num_lines;
 	//msg_write(f2s(units_to_pixel((float)face->descender), 3));
 	return dim;
 }
@@ -111,12 +143,12 @@ rect TextDimensions::inner_box(const vec2& p0) const {
 }
 
 
-float get_text_width(const string &text) {
+float Face::get_text_width(const string &text) {
 	auto dim = get_text_dimensions(text);
 	return dim.bounding_width;
 }
 
-void render_text(const string &text, xhui::Align align, Image &im) {
+void Face::render_text(const string &text, xhui::Align align, Image &im) {
 	auto utf32 = text.utf8_to_utf32();
 
 	//auto glyph_index = FT_Get_Char_Index(face, 'A');

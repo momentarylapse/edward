@@ -131,6 +131,7 @@ void ModeAddPlatonic::update_mesh() {
 		mesh = GeometryPlatonic(center, radius, 20);
 	else
 		mesh = GeometryTeapot(center, radius, complexity);
+
 	mesh.build(vertex_buffer.get());
 
 	session->win->request_redraw();

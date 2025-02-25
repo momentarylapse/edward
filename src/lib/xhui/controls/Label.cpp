@@ -8,6 +8,7 @@ namespace xhui {
 Label::Label(const string &_id, const string &t) : Control(_id) {
 	text_w = text_h = 0;
 	font_size = Theme::_default.font_size;
+	bold = false;
 	align = Align::Left;
 	margin.x1 = margin.x2 = 0;
 	margin.y1 = margin.y2 = Theme::_default.label_margin_y;
@@ -30,8 +31,8 @@ vec2 Label::get_content_min_size() const {
 		return {10,10};
 	} else {
 		if (text_w < 0) {
-			font::set_font(Theme::_default.font_name, font_size * ui_scale);
-			auto dim = font::get_text_dimensions(title);
+			default_font_regular->set_size(font_size * ui_scale);
+			auto dim = default_font_regular->get_text_dimensions(title);
 			text_w = int(dim.bounding_width / ui_scale);
 			text_h = int(dim.inner_height() / ui_scale);
 		}
@@ -52,8 +53,8 @@ void Label::_draw(Painter *p) {
 		if (!enabled)
 			p->set_color(Theme::_default.text_disabled);
 
-		p->set_font(Theme::_default.font_name, font_size, false, false);
-		auto dim = font::get_text_dimensions(title);
+		p->set_font(Theme::_default.font_name, font_size, bold, false);
+		auto dim = default_font_regular->get_text_dimensions(title);
 		float x = _area.x1 + margin.x1;
 		if (align == Align::Center)
 			x = _area.center().x - dim.bounding_width / ui_scale / 2;
@@ -74,6 +75,10 @@ void Label::set_option(const string& key, const string& value) {
 			align = Align::Center;
 		if (value == "right")
 			align = Align::Right;
+	} else if (key == "right") {
+		align = Align::Right;
+	} else if (key == "bold") {
+		bold = true;
 	} else {
 		Control::set_option(key, value);
 	}

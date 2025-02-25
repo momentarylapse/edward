@@ -17,6 +17,7 @@ public:
 	vec2 get_content_min_size() const override;
 
 	float font_size;
+	bool bold;
 	string title;
 	enum class Align {
 		Left,

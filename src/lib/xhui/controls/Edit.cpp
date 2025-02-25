@@ -137,7 +137,7 @@ void Edit::draw_text(Painter* p) {
 		cache.line_width.clear();
 		float y0 = _area.y1 + 8;
 		for (const string &l: lines) {
-			auto dim = font::get_text_dimensions(l);
+			auto dim = default_font_regular->get_text_dimensions(l);
 			inner_height = dim.inner_height() / ui_scale;
 			cache.line_height.add(dim.line_dy / ui_scale);
 			cache.line_y0.add(y0);
@@ -163,7 +163,7 @@ void Edit::draw_text(Painter* p) {
 		p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
 		auto lp = index_to_line_pos(cursor_pos);
 		int first = cache.line_first_index[lp.line];
-		auto dim = font::get_text_dimensions(text.sub_ref(first, cursor_pos));
+		auto dim = default_font_regular->get_text_dimensions(text.sub_ref(first, cursor_pos));
 		//p->set_color(Theme::_default.text_label);
 		float x = x0 + dim.bounding_width / ui_scale;
 		float y0 = cache.line_y0[lp.line];

@@ -11,6 +11,11 @@ namespace vulkan {
 }
 #endif
 
+namespace font {
+	struct Face;
+}
+
+
 namespace xhui {
 
 class Window;
@@ -74,6 +79,7 @@ public:
 	float corner_radius = 0;
 	float softness = 0;
 	bool fill = true;
+	font::Face* face;
 
 	bool accumulate_alpha = false;
 

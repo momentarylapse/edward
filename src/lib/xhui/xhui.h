@@ -10,6 +10,10 @@ namespace vulkan {
 }
 #endif
 
+namespace font {
+	struct Face;
+}
+
 class Image;
 
 namespace xhui {
@@ -193,5 +197,8 @@ string texture_to_image(const shared<vulkan::Texture>& texture);
 void delete_image(const string& name);
 void prepare_image(XImage* image);
 
+
+extern font::Face* default_font_regular;
+extern font::Face* default_font_bold;
 
 }

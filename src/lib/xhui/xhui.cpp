@@ -1,8 +1,5 @@
 
 #include "xhui.h"
-
-#include <lib/base/algo.h>
-
 #include "Resource.h"
 #include "Window.h"
 #include "Dialog.h"
@@ -10,6 +7,7 @@
 #include "draw/font.h"
 #include "config.h"
 #include "language.h"
+#include "../base/algo.h"
 #include "../image/image.h"
 #include "../os/time.h"
 #include "../os/filesystem.h"
@@ -29,6 +27,10 @@ namespace xhui {
 	Path Application::filename;
 	bool Application::installed;
 	bool Application::_end_requested = false;
+
+
+	font::Face* default_font_regular = nullptr;
+	font::Face* default_font_bold = nullptr;
 
 
 	Configuration config;
@@ -143,6 +145,19 @@ void init(const Array<string> &arg, const string& app_name) {
 	Theme::load_default();
 
 	font::init();
+
+	Array<string> font_names = {"OpenSans", "Helvetica", "NotoSans"};
+
+	for (const string& name: font_names) {
+		if (!default_font_regular)
+			default_font_regular = font::load_face(name, false, false);
+		if (!default_font_bold)
+			default_font_bold = font::load_face(name, true, false);
+	}
+	if (default_font_regular and !default_font_bold)
+		default_font_bold = default_font_regular;
+	if (!default_font_regular)
+		msg_error("no font found...");
 
 
 	if (os::fs::exists(Application::directory | "config.txt"))

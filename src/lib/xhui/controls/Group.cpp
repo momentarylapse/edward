@@ -15,7 +15,8 @@ Group::Group(const string& id, const string& title) :
 		Control(id),
 		header(id + ":header", title)
 {
-	header.font_size = Theme::_default.font_size * 1.3f;
+	header.font_size = Theme::_default.font_size * 1.0f;
+	header.bold = true;
 	size_mode_x = SizeMode::ForwardChild;
 	size_mode_y = SizeMode::ForwardChild;
 }
