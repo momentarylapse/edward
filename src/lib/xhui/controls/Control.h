@@ -28,6 +28,7 @@ public:
 
 	void _register(Panel* owner);
 	void _unregister();
+	void _unregister_from_window();
 
 	// full registration!
 	virtual void add_child(shared<Control> c, int x, int y) {}

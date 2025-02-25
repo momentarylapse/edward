@@ -45,20 +45,29 @@ void Control::_register(Panel* _owner) {
 	request_redraw();
 }
 
-void Control::_unregister() {
+void Control::_unregister_from_window() {
 	if (!owner)
 		return;
 	if (auto w = owner->get_window()) {
-		w->hover_control = nullptr;
-		w->focus_control = nullptr;
+		if (w->hover_control == this)
+			w->hover_control = nullptr;
+		if (w->focus_control == this)
+			w->focus_control = nullptr;
 	}
-	// don't register sub-panels!
+	for (auto cc: get_children(ChildFilter::All))
+		cc->_unregister_from_window();
+}
+
+void Control::_unregister() {
+	if (!owner)
+		return;
+	_unregister_from_window();
 	if (dynamic_cast<Panel*>(this))
 		return;
-	base::remove(owner->controls, this);
-	owner = nullptr;
 	for (auto cc: get_children(ChildFilter::All))
 		cc->_unregister();
+	base::remove(owner->controls, this);
+	owner = nullptr;
 }
 
 Array<Control*> Control::get_children_recursive(bool include_me, ChildFilter f) const {
