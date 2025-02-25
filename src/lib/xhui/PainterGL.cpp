@@ -172,8 +172,8 @@ Painter::Painter(Window *w) {
 	glfwMakeContextCurrent(w->window);
 	if (!_nix_inited)
 		init_nix();
-	set_color(Theme::_default.text);
-	set_font(Theme::_default.font_name /*"CAC Champagne"*/, Theme::_default.font_size, false, false);
+	Painter::set_color(Theme::_default.text);
+	Painter::set_font(Theme::_default.font_name /*"CAC Champagne"*/, Theme::_default.font_size, false, false);
 
 	offset_x = 0;
 	offset_y = 0;
@@ -183,6 +183,11 @@ Painter::Painter(Window *w) {
 	glfwGetWindowSize(window->window, &ww, &hh);
 	width = (float)ww / ui_scale;
 	height = (float)hh / ui_scale;
+
+	_area = {0, (float)width, 0, (float)height};
+	native_area = {0, (float)ww, 0, (float)hh};
+	native_area_window = native_area;
+	_clip = _area;
 
 
 
@@ -201,26 +206,11 @@ void Painter::clear(const color &c) {
 	nix::clear(c);
 }
 
-void Painter::set_font(const string &font, float size, bool bold, bool italic) {
-	font_name = font;
-	font_size = size;
-	font::set_font(font, size * ui_scale);
-}
-
-void Painter::set_font_size(float size) {
-	font_size = size;
-	font::set_font(font_name, font_size * ui_scale);
-}
-
-void Painter::set_color(const color &c) {
-	_color = c;
-}
-
 void Painter::draw_str(const vec2 &p, const string &str) {
 	if (str.num == 0)
 		return;
 	Image im;
-	font::render_text(str, Align::LEFT, im);
+	face->render_text(str, Align::LEFT, im);
 	tex_text->write(im);
 	tex_text->set_options("minfilter=nearest");
 	float w = im.width / ui_scale;
@@ -233,25 +223,6 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 	nix::bind_texture(0, tex_text);
 	nix::draw_triangles(vb_rect);
 	nix::disable_alpha();
-}
-
-vec2 Painter::get_str_size(const string &str) {
-	const auto dims = font::get_text_dimensions(str);
-	return {dims.bounding_width / ui_scale, dims.inner_height() / ui_scale};
-}
-
-void Painter::set_line_width(float width) {
-	line_width = width;
-}
-
-void Painter::set_roundness(float radius) {
-	corner_radius = radius;
-}
-
-void Painter::draw_arc(const vec2& p, float r, float w0, float w1) {
-	//float w = (w0 + w1) / 2;
-	draw_line({p.x + r * cos(w0), p.y - r * sin(w0)}, {p.x + r * cos(w1), p.y - r * sin(w1)});
-	//draw_line({p.x + r * cos(w), p.y - r * sin(w)}, {p.x + r * cos(w1), p.y - r * sin(w1)});
 }
 
 void Painter::draw_rect(const rect &r) {
@@ -321,24 +292,8 @@ void Painter::set_transform(float rot[], const vec2 &offset) {
 }
 
 void Painter::set_clip(const rect &r) {
-	nix::set_scissor(r);
-}
-
-void Painter::draw_circle(const vec2 &p, float radius) {
-	if (fill) {
-		float r0 = corner_radius;
-		corner_radius = radius;
-		draw_rect({p - vec2(radius, radius), p + vec2(radius, radius)});
-		corner_radius = r0;
-	} else {
-		Array<vec2> points;
-		int N = 64;
-		for (int i = 0; i <= N; i++) {
-			float t = (float)i / (float)N;
-			points.add(p + vec2(cos(t * 2 * pi), sin(t * 2 * pi)) * radius);
-		}
-		draw_lines(points);
-	}
+	_clip = r;
+	nix::set_scissor({r.x1 * ui_scale, max(r.x2, r.x1) * ui_scale, r.y1 * ui_scale, max(r.y2, r.y1) * ui_scale});
 }
 
 

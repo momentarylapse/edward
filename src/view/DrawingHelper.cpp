@@ -213,11 +213,15 @@ void DrawingHelper::clear(const RenderParams& params, const color& c) {
 }
 
 void DrawingHelper::draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vertex_buffer, Material* material, int pass_no, const string& vertex_module) {
+#ifdef USING_VULKAN
 	auto cb = context->current_command_buffer();
 	auto shader = rvd.get_shader(material, 0, vertex_module, "");
 	auto& rd = rvd.start(params, matrix, shader, *material, pass_no, PrimitiveTopology::TRIANGLES, vertex_buffer);
 	rd.apply(params);
 	cb->draw(vertex_buffer);
+#else
+	msg_error("TODO draw mesh");
+#endif
 }
 
 void DrawingHelper::draw_boxed_str(Painter* p, const vec2& _pos, const string& str, int align) {

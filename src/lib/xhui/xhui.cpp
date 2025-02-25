@@ -14,6 +14,7 @@
 #include "../os/msg.h"
 #include "../vulkan/Texture.h"
 #include "../vulkan/Device.h"
+#include "../nix/nix_textures.h"
 
 
 namespace xhui {
@@ -386,14 +387,16 @@ string create_image(const Image& _im) {
 		im->texture = new vulkan::Texture();
 		im->texture->write(*im->image);
 	}
+#else
+	im->texture = new Texture();
+	im->texture->write(*im->image);
 #endif
 	_images_.add(im);
 	return im->uid;
 }
 
 
-#if HAS_LIB_VULKAN
-string texture_to_image(const shared<vulkan::Texture>& texture) {
+string texture_to_image(const shared<Texture>& texture) {
 	for (auto* im: weak(_images_))
 		if (im->texture == texture.get())
 			return im->uid;
@@ -404,7 +407,6 @@ string texture_to_image(const shared<vulkan::Texture>& texture) {
 	_images_.add(im);
 	return im->uid;
 }
-#endif
 
 void delete_image(const string& name) {
 	base::remove_if(_images_, [name] (XImage* im) {
@@ -417,7 +419,7 @@ void prepare_image(XImage* image) {
 	if (!image->texture)
 		if (vulkan::default_device) {
 			if (image->image) {
-				image->texture = new vulkan::Texture();
+				image->texture = new Texture();
 				image->texture->write(*image->image);
 			} else {
 				image->texture = vulkan::Texture::load(image->filename);
