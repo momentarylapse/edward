@@ -11,7 +11,7 @@
 #include <lib/image/color.h>
 #include <lib/math/vec3.h>
 #include <lib/math/mat4.h>
-#include <lib/xhui/ContextVulkan.h>
+#include <lib/xhui/Context.h>
 
 struct RenderViewData;
 struct RenderParams;
@@ -22,11 +22,7 @@ class Painter;
 
 class DrawingHelper {
 public:
-#ifdef USING_VULKAN
-	explicit DrawingHelper(xhui::ContextVulkan* ctx, ResourceManager* rm);
-#else
-	explicit DrawingHelper(ResourceManager* rm);
-#endif
+	explicit DrawingHelper(xhui::Context* ctx, ResourceManager* rm);
 	void set_color(const color& color);
 	color _color;
 
@@ -42,9 +38,7 @@ public:
 
 	void draw_boxed_str(Painter* p, const vec2& pos, const string& str, int align = -1);
 
-#ifdef USING_VULKAN
-	xhui::ContextVulkan* context;
-#endif
+	xhui::Context* context;
 	ResourceManager* resource_manager;
 	MultiViewWindow* window;
 	void set_window(MultiViewWindow* win);

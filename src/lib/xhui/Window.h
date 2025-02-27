@@ -12,9 +12,7 @@ class Control;
 class HeaderBar;
 class Painter;
 class Dialog;
-#if HAS_LIB_VULKAN
-class ContextVulkan;
-#endif
+class Context;
 
 enum Flags {
 	NONE = 0,
@@ -26,7 +24,7 @@ class Window : public Panel {
 	friend class Control;
 	friend class Panel;
 	friend class Dialog;
-	friend class ContextVulkan;
+	friend class Context;
 public:
 
 	Window(const string& title, int width, int height);
@@ -99,9 +97,7 @@ protected:
 
 	HeaderBar* header_bar = nullptr;
 
-#if HAS_LIB_VULKAN
-	ContextVulkan* context = nullptr;
-#endif
+	Context* context = nullptr;
 
 public:
 	struct Drag {

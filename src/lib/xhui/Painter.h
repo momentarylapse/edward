@@ -19,9 +19,7 @@ namespace font {
 namespace xhui {
 
 class Window;
-#if HAS_LIB_VULKAN
-class ContextVulkan;
-#endif
+class Context;
 struct XImage;
 
 class Painter : public ::Painter {
@@ -85,8 +83,8 @@ public:
 
 	Window *window;
 
+	Context* context = nullptr;
 #if HAS_LIB_VULKAN
-	ContextVulkan* context = nullptr;
 	vulkan::CommandBuffer* cb;
 #endif
 };

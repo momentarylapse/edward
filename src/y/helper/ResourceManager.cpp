@@ -29,7 +29,7 @@ namespace vulkan {
 #endif
 
 
-ResourceManager::ResourceManager(Context *_ctx) {
+ResourceManager::ResourceManager(::Context *_ctx) {
 	ctx = _ctx;
 	material_manager = new MaterialManager(this);
 	model_manager = new ModelManager(this, material_manager);

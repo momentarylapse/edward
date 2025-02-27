@@ -1,6 +1,6 @@
 #if HAS_LIB_VULKAN
 
-#include "ContextVulkan.h"
+#include "Context.h"
 #include "Window.h"
 #include "Painter.h"
 #include "../os/msg.h"
@@ -8,14 +8,14 @@
 
 namespace xhui {
 
-ContextVulkan::ContextVulkan(Window* w) {
+Context::Context(Window* w) {
 	window = w;
 
 	glfwMakeContextCurrent(w->window);
 	api_init();
 }
 
-bool ContextVulkan::start() {
+bool Context::start() {
 	if (!swap_chain->acquire_image(&image_index, image_available_semaphore)) {
 		rebuild_default_stuff();
 		return false;
@@ -29,7 +29,7 @@ bool ContextVulkan::start() {
 }
 
 
-void ContextVulkan::_create_swap_chain_and_stuff() {
+void Context::_create_swap_chain_and_stuff() {
 	if (swap_chain) {
 		int w, h;
 		glfwGetFramebufferSize(window->window, &w, &h);
@@ -69,7 +69,7 @@ void ContextVulkan::_create_swap_chain_and_stuff() {
 	pipeline_lines->rebuild();
 }
 
-void ContextVulkan::api_init() {
+void Context::api_init() {
 	instance = vulkan::init({"glfw", "validation", "api=1.2", "verbosity=1"});
 	auto surface = instance->create_glfw_surface(window->window);
 	device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation"});
@@ -302,7 +302,7 @@ void main() {
 }
 
 
-void ContextVulkan::rebuild_default_stuff() {
+void Context::rebuild_default_stuff() {
 	//msg_write("recreate swap chain");
 
 	device->wait_idle();
@@ -311,19 +311,19 @@ void ContextVulkan::rebuild_default_stuff() {
 	_create_swap_chain_and_stuff();
 }
 
-void ContextVulkan::resize(int w, int h) {
+void Context::resize(int w, int h) {
 	rebuild_default_stuff();
 }
 
-vulkan::CommandBuffer* ContextVulkan::current_command_buffer() const {
+vulkan::CommandBuffer* Context::current_command_buffer() const {
 	return command_buffers[image_index];
 }
 
-vulkan::FrameBuffer* ContextVulkan::current_frame_buffer() const {
+vulkan::FrameBuffer* Context::current_frame_buffer() const {
 	return frame_buffers[image_index];
 }
 
-vulkan::VertexBuffer* ContextVulkan::get_line_vb() {
+vulkan::VertexBuffer* Context::get_line_vb() {
 	if (num_line_vbs_used < line_vbs.num)
 		return line_vbs[num_line_vbs_used ++];
 

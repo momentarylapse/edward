@@ -1,7 +1,7 @@
 #if HAS_LIB_VULKAN
 
 #include "Painter.h"
-#include "ContextVulkan.h"
+#include "Context.h"
 #include "Theme.h"
 #include "draw/font.h"
 
@@ -22,7 +22,7 @@ mat4 mat_pixel_to_rel;
 Array<DescriptorSet*> descriptor_sets;
 int descriptor_sets_used = 0;
 
-DescriptorSet* get_descriptor_set(ContextVulkan* context, Texture* texture) {
+DescriptorSet* get_descriptor_set(Context* context, Texture* texture) {
 	DescriptorSet* dset = nullptr;
 	if (descriptor_sets_used < descriptor_sets.num) {
 		dset = descriptor_sets[descriptor_sets_used ++];
@@ -46,7 +46,7 @@ struct TextCache {
 
 Array<TextCache> text_caches;
 
-TextCache& get_text_cache(ContextVulkan* context, const string& text, font::Face* face, float size) {
+TextCache& get_text_cache(Context* context, const string& text, font::Face* face, float size) {
 	for (auto& tc: text_caches)
 		if (tc.text == text and tc.face == face and tc.size == size) {
 			tc.age = 0;
@@ -163,7 +163,7 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 }
 
 
-void fill_rect(ContextVulkan* context, const rect& r, const color& _color, float radius, float softness) {
+void fill_rect(Context* context, const rect& r, const color& _color, float radius, float softness) {
 	Parameters params;
 	params.matrix = mat_pixel_to_rel * mat4::translation({r.x1, r.y1, 0}) *  mat4::scale(r.width(), r.height(), 1);
 	params.col = _color;

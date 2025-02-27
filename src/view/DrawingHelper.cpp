@@ -32,12 +32,8 @@ Material* create_material(ResourceManager* resource_manager, const color& albedo
 	return material;
 }
 
-#ifdef USING_VULKAN
-DrawingHelper::DrawingHelper(xhui::ContextVulkan* ctx, ResourceManager* rm) {
+DrawingHelper::DrawingHelper(xhui::Context* ctx, ResourceManager* rm) {
 	context = ctx;
-#else
-DrawingHelper::DrawingHelper(ResourceManager* rm) {
-#endif
 	resource_manager = rm;
 
 	/*light = new Light(White, -1, -1);

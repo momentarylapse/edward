@@ -1,17 +1,29 @@
 #pragma once
 
 #if HAS_LIB_VULKAN
-
 #include "../vulkan/vulkan.h"
+#endif
+
 
 namespace xhui {
+
+#if HAS_LIB_VULKAN
+using Texture = vulkan::Texture;
+using Shader = vulkan::Shader;
+using VertexBuffer = vulkan::VertexBuffer;
+#else
+using Texture = nix::Texture;
+using Shader = nix::Shader;
+using VertexBuffer = nix::VertexBuffer;
+#endif
+
 
 class Painter;
 class Window;
 
-class ContextVulkan {
+class Context {
 public:
-	explicit ContextVulkan(Window* window);
+	explicit Context(Window* window);
 
 	void _create_swap_chain_and_stuff();
 	void api_init();
@@ -22,18 +34,24 @@ public:
 	void end();
 
 	Window* window = nullptr;
+#if HAS_LIB_VULKAN
 	vulkan::Instance* instance = nullptr;
 	vulkan::DescriptorPool* pool = nullptr;
 	vulkan::Device* device = nullptr;
-	vulkan::Texture* tex_white = nullptr;
-	vulkan::Texture* tex_black = nullptr;
-	vulkan::Shader* shader = nullptr;
-	vulkan::Shader* shader_lines = nullptr;
+#endif
+	Texture* tex_white = nullptr;
+	Texture* tex_black = nullptr;
+	Shader* shader = nullptr;
+	Shader* shader_lines = nullptr;
+#if HAS_LIB_VULKAN
 	vulkan::GraphicsPipeline* pipeline = nullptr;
 	vulkan::GraphicsPipeline* pipeline_alpha = nullptr;
 	vulkan::GraphicsPipeline* pipeline_lines = nullptr;
-	vulkan::VertexBuffer* vb = nullptr;
+#endif
+	VertexBuffer* vb = nullptr;
 
+
+#if HAS_LIB_VULKAN
 	vulkan::DescriptorSet* dset = nullptr;
 	vulkan::DescriptorSet* dset_lines = nullptr;
 
@@ -56,10 +74,10 @@ public:
 	vulkan::DepthBuffer* depth_buffer = nullptr;
 	Array<vulkan::FrameBuffer*> frame_buffers;
 	int image_index = 0;
+#endif
 	bool framebuffer_resized = true;
 
 };
 
 }
 
-#endif

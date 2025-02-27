@@ -1,14 +1,12 @@
 #include "Window.h"
-
-#include <lib/os/time.h>
-
 #include "xhui.h"
 #include "Painter.h"
-#include "ContextVulkan.h"
+#include "Context.h"
 #include "Dialog.h"
 #include "Theme.h"
 #include "controls/Control.h"
 #include "controls/HeaderBar.h"
+#include "../os/time.h"
 #include "../os/msg.h"
 
 
@@ -236,10 +234,8 @@ void Window::_refresh_callback(GLFWwindow *window) {
 
 void Window::_resize_callback(GLFWwindow* window, int width, int height) {
 	auto w = (Window*)glfwGetWindowUserPointer(window);
-#if HAS_LIB_VULKAN
 	if (w->context)
 		w->context->resize(width, height);
-#endif
 	w->_refresh_requested = true;
 }
 
@@ -376,10 +372,8 @@ void Window::_on_key_up(int k) {
 
 
 void Window::_on_draw() {
-#if HAS_LIB_VULKAN
 	if (!context)
-		context = new ContextVulkan(this);
-#endif
+		context = new Context(this);
 	auto p = new Painter(this);
 	auto a = p->area();
 	_area = p->area();

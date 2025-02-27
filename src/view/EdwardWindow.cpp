@@ -5,7 +5,7 @@
 #include "EdwardWindow.h"
 #include "lib/xhui/xhui.h"
 #include "lib/xhui/Painter.h"
-#include <lib/xhui/ContextVulkan.h>
+#include <lib/xhui/Context.h>
 #include <lib/xhui/Dialog.h>
 #include <lib/xhui/controls/Toolbar.h>
 #include <lib/xhui/dialogs/FileSelectionDialog.h>
@@ -38,6 +38,13 @@ Session* session;
 rect dynamicly_scaled_area(FrameBuffer*) { return {}; }
 rect dynamicly_scaled_source() { return {}; }
 void ExternalModelCleanup(Model *m) {}
+
+namespace xhui {
+#ifdef HAS_LIB_GL
+	void init_nix();
+	extern owned<nix::Context> _nix_context;
+#endif
+}
 
 #if 0
 class TestRenderer : public Renderer {
@@ -185,6 +192,7 @@ Dialog x x
 		vulkan::default_device = pp->context->device;
 		api_init_external(pp->context->instance, pp->context->device);
 #else
+		xhui::init_nix();
 		//api_init()
 #endif
 		session->resource_manager = new ResourceManager({});
@@ -192,6 +200,7 @@ Dialog x x
 #ifdef USING_VULKAN
 		session->drawing_helper = new DrawingHelper(pp->context, session->resource_manager);
 #else
+		session->resource_manager->ctx = xhui::_nix_context.get();
 		session->drawing_helper = new DrawingHelper(session->resource_manager);
 #endif
 		try {

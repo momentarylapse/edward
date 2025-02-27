@@ -27,6 +27,8 @@ bool _nix_inited = false;
 owned<nix::Context> _nix_context;
 
 void init_nix() {
+	if (_nix_inited)
+		return;
 	_nix_context = nix::init();
 	tex_text = new nix::Texture();
 	tex_white = new nix::Texture();

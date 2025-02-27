@@ -1,7 +1,4 @@
 #include "Panel.h"
-
-#include <lib/base/algo.h>
-
 #include "Dialog.h"
 #include "Painter.h"
 #include "language.h"
@@ -26,6 +23,7 @@
 #include "controls/TabControl.h"
 #include "controls/Toolbar.h"
 #include "controls/Viewport.h"
+#include "../base/algo.h"
 #include "../os/msg.h"
 
 namespace xhui {

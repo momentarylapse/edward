@@ -5,7 +5,7 @@
 #include "XhuiRenderer.h"
 #if __has_include(<lib/xhui/Painter.h>)
 #include <lib/xhui/Painter.h>
-#include <lib/xhui/ContextVulkan.h>
+#include <lib/xhui/Context.h>
 
 
 void XhuiRenderer::render(const RenderParams& params) {
