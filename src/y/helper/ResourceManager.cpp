@@ -190,7 +190,7 @@ shared<Shader> ResourceManager::load_surface_shader(const Path& _filename, const
 		source = expand_geometry_shader_source(source, geometry_module);
 	source = expand_fragment_shader_source(source, render_path);
 
-	auto shader = __create_shader(source, "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,buffer,buffer,buffer,buffer]]");
+	auto shader = __create_shader(source, "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,buffer,buffer,buffer,buffer,buffer]]");
 
 	//auto s = Shader::load(fn);
 #ifdef USING_VULKAN

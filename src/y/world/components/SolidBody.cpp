@@ -100,17 +100,15 @@ void SolidBody::on_init() {
 	auto m = owner->get_component<Model>();
 
 	// import
-	if (m)
-		if (m->_template->solid_body)
-			copy_data(m->_template->solid_body);
+	if (m and m->_template->solid_body)
+		copy_data(m->_template->solid_body);
 
 	if (!active and !passive)
 		return;
 
 #if HAS_LIB_BULLET
 	btCollisionShape *col_shape = nullptr;
-	auto col = owner->get_component<Collider>();
-	if (col)
+	if (auto col = owner->get_component<Collider>())
 		col_shape = col->col_shape;
 
 
@@ -129,6 +127,10 @@ void SolidBody::on_init() {
 	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
 	btDefaultMotionState* motion_state = new btDefaultMotionState(start_transform);
 	btRigidBody::btRigidBodyConstructionInfo rb_info(_mass, motion_state, col_shape, local_inertia);
+	if (m) {
+		rb_info.m_friction = (m->material[0]->friction.sliding + m->material[0]->friction._static) / 2;
+		rb_info.m_rollingFriction = m->material[0]->friction.rolling;
+	}
 	body = new btRigidBody(rb_info);
 
 	body->setUserPointer(this);

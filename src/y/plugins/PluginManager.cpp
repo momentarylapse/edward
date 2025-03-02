@@ -513,8 +513,14 @@ void PluginManager::export_kaba() {
 	ext->declare_class_element("CollisionData.pos", &CollisionData::pos);
 	ext->declare_class_element("CollisionData.n", &CollisionData::n);
 
-	ext->declare_class_size("MaterialPass", sizeof(Material::RenderPassData));
-	ext->declare_class_element("MaterialPass.shader_path", &Material::RenderPassData::shader_path);
+	ext->declare_class_size("Material.Pass", sizeof(Material::RenderPassData));
+	ext->declare_class_element("Material.Pass.shader_path", &Material::RenderPassData::shader_path);
+
+	ext->declare_class_size("Material.Friction", sizeof(Material::Friction));
+	ext->declare_class_element("Material.Friction.sliding", &Material::Friction::sliding);
+	ext->declare_class_element("Material.Friction.rolling", &Material::Friction::rolling);
+	ext->declare_class_element("Material.Friction._static", &Material::Friction::_static);
+	ext->declare_class_element("Material.Friction.jump", &Material::Friction::jump);
 
 	ext->declare_class_size("Material", sizeof(Material));
 	ext->declare_class_element("Material.textures", &Material::textures);
@@ -524,6 +530,7 @@ void PluginManager::export_kaba() {
 	ext->declare_class_element("Material.metal", &Material::metal);
 	ext->declare_class_element("Material.emission", &Material::emission);
 	ext->declare_class_element("Material.cast_shadow", &Material::cast_shadow);
+	ext->declare_class_element("Material.friction", &Material::friction);
 	ext->link_class_func("Material.add_uniform", &Material::add_uniform);
 
 
