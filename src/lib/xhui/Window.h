@@ -19,6 +19,20 @@ enum Flags {
 	OWN_DECORATION = 64
 };
 
+struct Event {
+	enum class Type {
+		MouseMove,
+		Scroll,
+		ButtonDown,
+		ButtonUp,
+		KeyDown,
+		KeyUp
+	} type;
+	vec2 param1 = {0, 0};
+	int param2 = 0;
+	int param3 = 0;
+};
+
 class Window : public Panel {
 	friend class Painter;
 	friend class Control;
@@ -61,6 +75,8 @@ protected:
 		bool key[256];
 		int key_code;
 	} state, state_prev;
+
+	Array<Event> event_stack;
 
 	static void _key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 	static void _cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
