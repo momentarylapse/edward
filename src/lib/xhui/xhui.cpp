@@ -303,7 +303,7 @@ void run() {
 		glfwPollEvents();
 
 		for (auto w: _windows_)
-			w->_poll_events();
+			w->_handle_events();
 
 		for (auto w: _windows_)
 			if (w->dialogs.num > 0)

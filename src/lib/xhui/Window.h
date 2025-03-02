@@ -45,7 +45,8 @@ public:
 	Window(const string& title, int width, int height, Flags flags);
 	~Window() override;
 
-	void _poll_events();
+	void _handle_events();
+	void _compress_events();
 
 	void redraw(const string& id);
 

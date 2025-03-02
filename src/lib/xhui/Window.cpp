@@ -1,4 +1,7 @@
 #include "Window.h"
+
+#include <lib/base/algo.h>
+
 #include "xhui.h"
 #include "Painter.h"
 #include "Context.h"
@@ -451,7 +454,21 @@ void Window::_on_draw() {
 	delete p;
 }
 
-void Window::_poll_events() {
+void Window::_compress_events() {
+	// find last MouseMove event
+	int n = 0;
+	for (auto& e: event_stack)
+		if (e.type == Event::Type::MouseMove)
+			e.param2 = n ++;
+
+	// remove all other MouseMove events
+	base::remove_if(event_stack, [n] (const Event& e) {
+		return e.type == Event::Type::MouseMove and e.param2 < n - 1;
+	});
+}
+
+void Window::_handle_events() {
+	_compress_events();
 	for (const auto& e: event_stack) {
 		if (e.type == Event::Type::MouseMove) {
 			state_prev.m = state.m;
