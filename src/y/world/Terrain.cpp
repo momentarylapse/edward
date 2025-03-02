@@ -74,9 +74,9 @@ bool Terrain::load(ResourceManager *resource_manager, const Path &_filename_, bo
 			f->read_comment();
 			int num_textures = f->read_int();
 			for (int i=0;i<num_textures;i++) {
-				texture_file[i] = f->read_str();
+				f->read_str(); // texture file (deprecated, using material instead)
 				texture_scale[i].x = f->read_float();
-				texture_scale[i].y = 0.107f + i * 0.231f; // rotation
+				texture_scale[i].y = 0.107f + (float)i * 0.231f; // rotation
 				texture_scale[i].z = f->read_float();
 			}
 			// Material
@@ -84,11 +84,9 @@ bool Terrain::load(ResourceManager *resource_manager, const Path &_filename_, bo
 			if (deep) {
 				material = resource_manager->load_material(material_file);
 
-				// load textures
-				if (num_textures > material->textures.num)
-					material->textures.resize(num_textures);
-				for (int i=0;i<num_textures;i++)
-					material->textures[i] = resource_manager->load_texture(texture_file[i]);
+				while (num_textures > material->textures.num)
+					material->textures.add(resource_manager->load_texture(""));
+
 
 				// height
 				for (int x=0;x<num_x+1;x++)

@@ -225,6 +225,14 @@ void ResourceManager::load_shader_module(const Path& path) {
 	load_shader(path);
 }
 
+
+Path ResourceManager::texture_file(Texture* t) const {
+	for (auto&& [key, _t]: texture_map)
+		if (_t == t)
+			return key;
+	return "";
+}
+
 shared<Texture> ResourceManager::load_texture(const Path& filename) {
 	if (filename.is_empty())
 		return tex_white;

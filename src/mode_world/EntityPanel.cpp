@@ -203,16 +203,34 @@ public:
 	explicit TerrainPanel(DataWorld* _data, int _index) : Panel("terrain-panel") {
 		from_source(R"foodelim(
 Dialog terrain-panel ''
-	Grid card-terrain '' class=card
-		Group group-light 'Terrain'
-			Grid ? ''
+	Grid ? ''
+		Grid ? '' class=card
+			Group ? 'Terrain'
 				Grid ? ''
 					Label ? 'Filename'
-					Button filename2 ''
-				---|
-				ListView textures 'a\\filename' nobar format=it noexpandy height=200
+					Button filename ''
+					---|
+					Label ? 'Size X'
+					SpinButton size-x '' range=::0.1
+					---|
+					Label ? 'Size Z'
+					SpinButton size-z '' range=::0.1
+					---|
+					Label ? 'Cells'
+					Label cells ''
+		---|
+		Grid card-terrain-material '' class=card
+			Group group-material 'Material'
+				Grid ? ''
+					Grid ? ''
+						Label ? 'Filename'
+						Button material '' disabled
+						Button load-material 'L' noexpandx
+						Button save-material 'S' noexpandx
+					---|
+					ListView textures 'a\\filename' nobar format=it noexpandy height=200
 )foodelim");
-		auto list = static_cast<xhui::ListView*>(get_control("textures"));
+		auto list = dynamic_cast<xhui::ListView*>(get_control("textures"));
 		list->column_factories[0].f_create = [] (const string& id) {
 			auto im = new xhui::Image(id, "");
 			im->min_width_user = 32;
@@ -224,8 +242,24 @@ Dialog terrain-panel ''
 		data = _data;
 		index = _index;
 		auto& e = data->entities[index];
-		set_string("filename2", str(e.terrain.filename));
+		auto& t = e.terrain;
+		set_string("filename", str(t.filename));
+		set_string("material", str(t.terrain->material_file));
+		set_float("size-x", t.terrain->pattern.x * (float)t.terrain->num_x);
+		set_float("size-z", t.terrain->pattern.z * (float)t.terrain->num_z);
+		set_string("cells", format("%d x %d", t.terrain->num_x, t.terrain->num_z));
 		fill_texture_list();
+
+		event("load-material", [this] {
+
+		});
+		event("save-material", [this] {
+			data->session->storage->file_dialog(FD_MATERIAL, true, true).then([this] (const ComplexPath& p) {
+				auto& e = data->entities[index];
+				auto& t = e.terrain;
+				t.save_material(data->session, p.complete);
+			});
+		});
 
 		event("textures", [this] {
 			int i = get_int("textures");
@@ -233,7 +267,6 @@ Dialog terrain-panel ''
 				data->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, i] (const auto& filename) {
 					auto& e = data->entities[index];
 					auto& t = e.terrain;
-					t.terrain->texture_file[i] = filename.relative;
 					t.terrain->material->textures[i] = data->session->resource_manager->load_texture(filename.relative);
 					fill_texture_list();
 				});
@@ -243,8 +276,9 @@ Dialog terrain-panel ''
 		auto& e = data->entities[index];
 		auto& t = e.terrain;
 		reset("textures");
+		const Path dir = data->session->storage->get_root_dir(FD_TEXTURE);
 		for (int i=0; i<min(MATERIAL_MAX_TEXTURES, t.terrain->material->textures.num); i++)
-			add_string("textures", format("%s\\%s", xhui::texture_to_image(t.terrain->material->textures[i]), e.terrain.terrain->texture_file[i]));
+			add_string("textures", format("%s\\%s", xhui::texture_to_image(t.terrain->material->textures[i]), data->session->resource_manager->texture_file(t.terrain->material->textures[i].get()).relative_to(dir)));
 	}
 	DataWorld* data;
 	int index;

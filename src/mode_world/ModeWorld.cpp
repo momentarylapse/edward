@@ -136,7 +136,7 @@ void ModeWorld::on_enter() {
 				e.light.theta = 0;
 				if (index == 3) {
 					e.light.type = LightType::POINT;
-					e.light.radius = multi_view->view_port.radius * 0.3f;
+					e.light.radius = multi_view->view_port.radius * 1.3f;
 				} else if (index == 4) {
 					e.light.type = LightType::CONE;
 					e.light.radius = multi_view->view_port.radius * 0.3f;

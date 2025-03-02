@@ -7,6 +7,11 @@
 
 
 #include "WorldTerrain.h"
+
+#include <helper/ResourceManager.h>
+#include <mode_material/data/DataMaterial.h>
+#include <storage/Storage.h>
+
 #include "DataWorld.h"
 #include "../../Session.h"
 #include <y/y/EngineData.h>
@@ -24,8 +29,8 @@ bool WorldTerrain::load(Session *session, const Path &_filename, bool deep) {
 	bool Error = !terrain->load(session->resource_manager, this->filename, deep);
 
 	if (Error) {
-		delete(terrain);
-		terrain = NULL;
+		delete terrain ;
+		terrain = nullptr;
 	}
 
 	return !Error;
@@ -56,7 +61,7 @@ bool WorldTerrain::save(const Path &_filename) {
 	f->write_comment("// Textures");
 	f->write_int(terrain->material->textures.num);
 	for (int i=0;i<terrain->material->textures.num;i++){
-		f->write_str(terrain->texture_file[i].str());
+		f->write_str("");
 		f->write_float(terrain->texture_scale[i].x);
 		f->write_float(terrain->texture_scale[i].z);
 	}
@@ -79,6 +84,21 @@ void WorldTerrain::update_data() {
 		return;
 	//terrain->pos = pos;
 }
+
+void WorldTerrain::save_material(Session* s, const Path& filename) {
+	DataMaterial m(s);
+	m.appearance.albedo = terrain->material->albedo;
+	m.appearance.emissive = terrain->material->emission;
+	m.appearance.metal = terrain->material->metal;
+	m.appearance.roughness = terrain->material->roughness;
+	m.appearance.texture_files.clear();
+	const Path dir = s->storage->get_root_dir(FD_TEXTURE);
+	for (int i=0;i<terrain->material->textures.num;i++)
+		m.appearance.texture_files.add(s->resource_manager->texture_file(terrain->material->textures[i].get()).relative_to(dir));
+	m.appearance.passes[0].shader.file = terrain->material->pass0.shader_path;
+	s->storage->save(filename, &m);
+}
+
 
 
 

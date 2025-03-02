@@ -41,6 +41,7 @@ struct WorldTerrain {
 
 
 	Box bounding_box() const;
+	void save_material(Session* s, const Path& filename);
 
 	void update_data();
 };

@@ -86,7 +86,6 @@ public:
 	owned<Material> material;
 	Path material_file;
 
-	Path texture_file[MATERIAL_MAX_TEXTURES];
 	vec3 texture_scale[MATERIAL_MAX_TEXTURES];
 
 	float dhx, dhz;
