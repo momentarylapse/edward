@@ -393,6 +393,7 @@ add_executable(edward
 	src/lib/xhui/Theme.cpp
 	src/lib/xhui/Window.cpp
 	src/lib/xhui/xhui.cpp
+	src/mode_material/data/DataMaterial.cpp
 	src/mode_model/action/mesh/ActionModelAddPolygon.cpp
 	src/mode_model/action/mesh/ActionModelDeleteSelection.cpp
 	src/mode_model/action/mesh/ActionModelMoveSelection.cpp
@@ -435,6 +436,7 @@ add_executable(edward
 	src/multiview/SingleData.cpp
 	src/storage/format/old/LoadWorldV9V10.cpp
 	src/storage/format/Format.cpp
+	src/storage/format/FormatMaterial.cpp
 	src/storage/format/FormatModel.cpp
 	src/storage/format/FormatModel3ds.cpp
 	src/storage/format/FormatModelJson.cpp

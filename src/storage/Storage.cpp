@@ -7,7 +7,7 @@
 
 #include "Storage.h"
 //#include "format/FormatFontX.h"
-//#include "format/FormatMaterial.h"
+#include "format/FormatMaterial.h"
 #include "format/FormatModel.h"
 //#include "format/FormatModelJson.h"
 //#include "format/FormatModel3ds.h"
@@ -30,7 +30,7 @@ Path Storage::CANONICAL_SUB_DIR[NUM_FDS];
 Storage::Storage(Session *_s) {
 	session = _s;
 //	formats.add(new FormatFontX(session));
-//	formats.add(new FormatMaterial(session));
+	formats.add(new FormatMaterial(session));
 	formats.add(new FormatModel(session));
 //	formats.add(new FormatModelJson(session));
 //	formats.add(new FormatModel3ds(session));

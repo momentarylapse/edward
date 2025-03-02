@@ -7,7 +7,7 @@
 
 #include "FormatMaterial.h"
 #include "../../Session.h"
-#include "../../data/material/ShaderGraph.h"
+//#include "../../data/material/ShaderGraph.h"
 #include "../../lib/hui/language.h"
 #include "../../lib/nix/nix.h"
 #include "../../lib/os/config.h"
@@ -68,8 +68,10 @@ void FormatMaterial::load_current(const Path &filename, DataMaterial *data) {
 		if (index >= data->appearance.passes.num)
 			data->appearance.passes.resize(index + 1);
 		auto &p = data->appearance.passes[index];
+#if ksdjfhskdjfh
 		if (!p.shader.graph)
 			p.shader.graph = new ShaderGraph(session);
+#endif
 		string m = c.get_str(key + ".mode", "mode");
 		if (m == "solid" or m == "none") {
 			p.mode = TransparencyMode::NONE;

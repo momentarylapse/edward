@@ -8,8 +8,8 @@
 #ifndef DATAMATERIAL_H_
 #define DATAMATERIAL_H_
 
-#include "../Data.h"
-#include "ShaderGraph.h"
+#include "../../data/Data.h"
+//#include "ShaderGraph.h"
 #include <y/world/Material.h>
 #include <graphics-impl.h>
 

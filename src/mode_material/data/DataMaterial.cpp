@@ -6,7 +6,7 @@
  */
 
 #include "DataMaterial.h"
-#include "ShaderGraph.h"
+//#include "ShaderGraph.h"
 #include "../../Session.h"
 #include "../../storage/Storage.h"
 #include "../../lib/nix/nix.h"
@@ -24,9 +24,11 @@ DataMaterial::DataMaterial(Session *s) :
 }
 
 DataMaterial::~DataMaterial() {
+#if ksdjfhskdjfh
 	for (auto &p: appearance.passes)
 		if (p.shader.graph)
 			delete p.shader.graph;
+#endif
 }
 
 
@@ -38,12 +40,13 @@ void DataMaterial::AppearanceData::reset(Session *session) {
 	metal = 0;
 	emissive = Black;
 
-
+#if ksdjfhskdjfh
 	for (auto &p: passes) {
 		if (p.shader.graph)
 			delete p.shader.graph;
 		p.shader.graph = nullptr;
 	}
+#endif
 	passes.clear();
 
 	passes.resize(1);
@@ -51,8 +54,10 @@ void DataMaterial::AppearanceData::reset(Session *session) {
 }
 
 void DataMaterial::ShaderData::reset(Session *s) {
+#if ksdjfhskdjfh
 	if (!graph)
 		graph = new ShaderGraph(s);
+#endif
 	set_engine_default(s);
 }
 
@@ -124,6 +129,7 @@ void DataMaterial::ShaderData::load_from_file(Session *s) {
 
 void DataMaterial::ShaderData::set_engine_default(Session *s) {
 	file = "";
+#if ksdjfhskdjfh
 #ifdef OS_WINDOWS
 	msg_error("TODO  DataMaterial::ShaderData::set_engine_default()");
 	code = ShaderGraph::build_default_source();
@@ -131,11 +137,13 @@ void DataMaterial::ShaderData::set_engine_default(Session *s) {
 	graph->make_default_for_engine();
 	code = graph->build_source();
 #endif
+#endif
 	from_graph = true;
 	is_default = true;
 }
 
 void DataMaterial::ShaderData::save_to_file(Session *s) {
+#if ksdjfhskdjfh
 	if (file) {
 		code = graph->build_source();
 		msg_write("saving " + str(s->resource_manager->shader_dir | file));
@@ -144,6 +152,7 @@ void DataMaterial::ShaderData::save_to_file(Session *s) {
 		from_graph = true;
 		is_default = false;
 	}
+#endif
 }
 
 
