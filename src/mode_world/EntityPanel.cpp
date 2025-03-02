@@ -265,25 +265,26 @@ Dialog material-panel ''
 						Button filename '' disabled
 						Button load-material 'L' noexpandx
 						Button save-material 'S' noexpandx
-					---|
-					Label ? 'Shader'
-					Grid ? ''
-						Button shader '' disabled
-						Button load-shader 'L' noexpandx
-					---|
-					Label ? 'Albedo'
-					ColorButton albedo ''
-					---|
-					Label ? 'Emission'
-					ColorButton emission ''
-					---|
-					Label ? 'Roughness'
-					SpinButton roughness '' range=0:100:1
-					---|
-					Label ? 'Metal'
-					SpinButton metal '' range=0:100:1
 				---|
-				ListView textures 'a\\filename' nobar format=it noexpandy height=200
+				TabControl ? 'Color\\Textures\\Shader'
+					Grid ? ''
+						Label ? 'Albedo'
+						ColorButton albedo ''
+						---|
+						Label ? 'Emission'
+						ColorButton emission ''
+						---|
+						Label ? 'Roughness'
+						SpinButton roughness '' range=0:100:1
+						---|
+						Label ? 'Metal'
+						SpinButton metal '' range=0:100:1
+					ListView textures 'a\\filename' nobar format=it noexpandy height=200
+					Grid ? ''
+						Label ? 'Shader'
+						Grid ? ''
+							Button shader '' disabled
+							Button load-shader 'L' noexpandx
 )foodelim");
 		auto list = dynamic_cast<xhui::ListView*>(get_control("textures"));
 		list->column_factories[0].f_create = [] (const string& id) {
@@ -457,7 +458,8 @@ EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-pane
 	mode_world = _mode;
 	from_source(R"foodelim(
 Dialog entity-panel ''
-	Grid main-grid '' expandx
+	Viewport ? '' expandy
+		Grid main-grid '' expandx
 )foodelim");
 	size_mode_x = SizeMode::Shrink;
 	size_mode_y = SizeMode::Shrink;
@@ -509,6 +511,8 @@ Dialog entity-panel ''
 				add_component_panel(new MaterialPanel(mode_world->data, e.terrain.terrain->material.get(), e.terrain.terrain->material_file, [this, &e] (const ComplexPath& p) {
 					e.terrain.save_material(mode_world->session, p.complete);
 				}));
+				add_component_panel(new SolidBodyPanel(mode_world->data, cur_index, false)); // FIXME
+				add_component_panel(new MeshColliderPanel(mode_world->data, cur_index, true));
 			} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
 				add_component_panel(new CameraPanel(mode_world->data, cur_index));
 			} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {
