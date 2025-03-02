@@ -86,16 +86,7 @@ void WorldTerrain::update_data() {
 }
 
 void WorldTerrain::save_material(Session* s, const Path& filename) {
-	DataMaterial m(s);
-	m.appearance.albedo = terrain->material->albedo;
-	m.appearance.emissive = terrain->material->emission;
-	m.appearance.metal = terrain->material->metal;
-	m.appearance.roughness = terrain->material->roughness;
-	m.appearance.texture_files.clear();
-	const Path dir = s->storage->get_root_dir(FD_TEXTURE);
-	for (int i=0;i<terrain->material->textures.num;i++)
-		m.appearance.texture_files.add(s->resource_manager->texture_file(terrain->material->textures[i].get()).relative_to(dir));
-	m.appearance.passes[0].shader.file = terrain->material->pass0.shader_path;
+	auto m = DataMaterial::from_material(s, terrain->material.get());
 	s->storage->save(filename, &m);
 }
 

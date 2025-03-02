@@ -157,5 +157,28 @@ void DataMaterial::ShaderData::save_to_file(Session *s) {
 
 
 
+DataMaterial DataMaterial::from_material(Session* s, Material *material) {
+	DataMaterial m(s);
+	m.appearance.albedo = material->albedo;
+	m.appearance.emissive = material->emission;
+	m.appearance.metal = material->metal;
+	m.appearance.roughness = material->roughness;
+	m.appearance.texture_files.clear();
+	const Path dir = s->storage->get_root_dir(FD_TEXTURE);
+	for (int i=0;i<material->textures.num;i++)
+		m.appearance.texture_files.add(s->resource_manager->texture_file(material->textures[i].get()).relative_to(dir));
+	m.appearance.passes[0].shader.file = material->pass0.shader_path;
+
+	// TODO alpha etc
+
+	m.physics.friction_jump = material->friction.jump;
+	m.physics.friction_rolling = material->friction.rolling;
+	m.physics.friction_static = material->friction._static;
+	m.physics.friction_sliding = material->friction.sliding;
+	return m;
+}
+
+
+
 
 

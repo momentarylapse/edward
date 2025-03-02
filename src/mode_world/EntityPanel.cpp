@@ -203,82 +203,29 @@ public:
 	explicit TerrainPanel(DataWorld* _data, int _index) : Panel("terrain-panel") {
 		from_source(R"foodelim(
 Dialog terrain-panel ''
-	Grid ? ''
-		Grid ? '' class=card
-			Group ? 'Terrain'
-				Grid ? ''
-					Label ? 'Filename'
-					Button filename ''
-					---|
-					Label ? 'Size X'
-					SpinButton size-x '' range=::0.1
-					---|
-					Label ? 'Size Z'
-					SpinButton size-z '' range=::0.1
-					---|
-					Label ? 'Cells'
-					Label cells ''
-		---|
-		Grid card-terrain-material '' class=card
-			Group group-material 'Material'
-				Grid ? ''
-					Grid ? ''
-						Label ? 'Filename'
-						Button material '' disabled
-						Button load-material 'L' noexpandx
-						Button save-material 'S' noexpandx
-					---|
-					ListView textures 'a\\filename' nobar format=it noexpandy height=200
+	Grid ? '' class=card
+		Group ? 'Terrain'
+			Grid ? ''
+				Label ? 'Filename'
+				Button filename ''
+				---|
+				Label ? 'Size X'
+				SpinButton size-x '' range=::0.1
+				---|
+				Label ? 'Size Z'
+				SpinButton size-z '' range=::0.1
+				---|
+				Label ? 'Cells'
+				Label cells ''
 )foodelim");
-		auto list = dynamic_cast<xhui::ListView*>(get_control("textures"));
-		list->column_factories[0].f_create = [] (const string& id) {
-			auto im = new xhui::Image(id, "");
-			im->min_width_user = 32;
-			im->min_height_user = 32;
-			im->size_mode_x = SizeMode::Shrink;
-			im->size_mode_y = SizeMode::Shrink;
-			return im;
-		};
 		data = _data;
 		index = _index;
 		auto& e = data->entities[index];
 		auto& t = e.terrain;
 		set_string("filename", str(t.filename));
-		set_string("material", str(t.terrain->material_file));
 		set_float("size-x", t.terrain->pattern.x * (float)t.terrain->num_x);
 		set_float("size-z", t.terrain->pattern.z * (float)t.terrain->num_z);
 		set_string("cells", format("%d x %d", t.terrain->num_x, t.terrain->num_z));
-		fill_texture_list();
-
-		event("load-material", [this] {
-
-		});
-		event("save-material", [this] {
-			data->session->storage->file_dialog(FD_MATERIAL, true, true).then([this] (const ComplexPath& p) {
-				auto& e = data->entities[index];
-				auto& t = e.terrain;
-				t.save_material(data->session, p.complete);
-			});
-		});
-
-		event("textures", [this] {
-			int i = get_int("textures");
-			if (i >= 0)
-				data->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, i] (const auto& filename) {
-					auto& e = data->entities[index];
-					auto& t = e.terrain;
-					t.terrain->material->textures[i] = data->session->resource_manager->load_texture(filename.relative);
-					fill_texture_list();
-				});
-		});
-	}
-	void fill_texture_list() {
-		auto& e = data->entities[index];
-		auto& t = e.terrain;
-		reset("textures");
-		const Path dir = data->session->storage->get_root_dir(FD_TEXTURE);
-		for (int i=0; i<min(MATERIAL_MAX_TEXTURES, t.terrain->material->textures.num); i++)
-			add_string("textures", format("%s\\%s", xhui::texture_to_image(t.terrain->material->textures[i]), data->session->resource_manager->texture_file(t.terrain->material->textures[i].get()).relative_to(dir)));
 	}
 	DataWorld* data;
 	int index;
@@ -302,6 +249,106 @@ Dialog object-panel ''
 	}
 	DataWorld* data;
 	int index;
+};
+
+class MaterialPanel : public xhui::Panel {
+public:
+	explicit MaterialPanel(DataWorld* _data, Material* m, const Path& filename, std::function<void(const ComplexPath&)> _f_save) : Panel("material-panel") {
+		from_source(R"foodelim(
+Dialog material-panel ''
+	Grid card-terrain-material '' class=card
+		Group group-material 'Material'
+			Grid ? ''
+				Grid ? ''
+					Label ? 'Filename'
+					Grid ? ''
+						Button filename '' disabled
+						Button load-material 'L' noexpandx
+						Button save-material 'S' noexpandx
+					---|
+					Label ? 'Shader'
+					Grid ? ''
+						Button shader '' disabled
+						Button load-shader 'L' noexpandx
+					---|
+					Label ? 'Albedo'
+					ColorButton albedo ''
+					---|
+					Label ? 'Emission'
+					ColorButton emission ''
+					---|
+					Label ? 'Roughness'
+					SpinButton roughness '' range=0:100:1
+					---|
+					Label ? 'Metal'
+					SpinButton metal '' range=0:100:1
+				---|
+				ListView textures 'a\\filename' nobar format=it noexpandy height=200
+)foodelim");
+		auto list = dynamic_cast<xhui::ListView*>(get_control("textures"));
+		list->column_factories[0].f_create = [] (const string& id) {
+			auto im = new xhui::Image(id, "");
+			im->min_width_user = 32;
+			im->min_height_user = 32;
+			im->size_mode_x = SizeMode::Shrink;
+			im->size_mode_y = SizeMode::Shrink;
+			return im;
+		};
+		data = _data;
+		material = m;
+		f_save = _f_save;
+		set_string("filename", str(filename));
+		set_string("shader", str(material->pass0.shader_path));
+		set_color("albedo", material->albedo);
+		set_color("emission", material->emission);
+		set_float("roughness", material->roughness * 100);
+		set_float("metal", material->metal * 100);
+		fill_texture_list();
+
+		event("load-material", [this] {
+
+		});
+		event("save-material", [this] {
+			data->session->storage->file_dialog(FD_MATERIAL, true, true).then(f_save);
+		});
+		event("load-shader", [this] {
+			data->session->storage->file_dialog(FD_SHADERFILE, false, true).then([this] (const auto& filename) {
+				set_string("shader", str(filename.relative));
+				material->pass0.shader_path = filename.relative;
+			});
+		});
+		event("albedo", [this] {
+			material->albedo = get_color("albedo");
+		});
+		event("emission", [this] {
+			material->emission = get_color("emission");
+		});
+		event("roughness", [this] {
+			material->roughness = get_float("roughness");
+		});
+		event("metal", [this] {
+			material->metal = get_float("metal");
+		});
+
+		event("textures", [this] {
+			int i = get_int("textures");
+			if (i >= 0)
+				data->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, i] (const auto& filename) {
+					material->textures[i] = data->session->resource_manager->load_texture(filename.relative);
+					fill_texture_list();
+					// TODO save by action
+				});
+		});
+	}
+	void fill_texture_list() {
+		reset("textures");
+		const Path dir = data->session->storage->get_root_dir(FD_TEXTURE);
+		for (int i=0; i<min(MATERIAL_MAX_TEXTURES, material->textures.num); i++)
+			add_string("textures", format("%s\\%s", xhui::texture_to_image(material->textures[i]), data->session->resource_manager->texture_file(material->textures[i].get()).relative_to(dir)));
+	}
+	Material* material;
+	DataWorld* data;
+	std::function<void(const ComplexPath&)> f_save;
 };
 
 class UserComponentPanel : public xhui::Panel {
@@ -447,6 +494,8 @@ Dialog entity-panel ''
 
 			if (e.basic_type == MultiViewType::WORLD_OBJECT) {
 				add_component_panel(new ObjectPanel(mode_world->data, cur_index));
+				add_component_panel(new MaterialPanel(mode_world->data, e.object.object->material[0], "???", [this] (const ComplexPath& p) {
+				}));
 				if (e.object.object->_template->solid_body)
 					add_component_panel(new SolidBodyPanel(mode_world->data, cur_index, true));
 				if (e.object.object->_template->mesh_collider)
@@ -457,6 +506,9 @@ Dialog entity-panel ''
 					add_component_panel(new AnimatorPanel(mode_world->data, cur_index, true));
 			} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
 				add_component_panel(new TerrainPanel(mode_world->data, cur_index));
+				add_component_panel(new MaterialPanel(mode_world->data, e.terrain.terrain->material.get(), e.terrain.terrain->material_file, [this, &e] (const ComplexPath& p) {
+					e.terrain.save_material(mode_world->session, p.complete);
+				}));
 			} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
 				add_component_panel(new CameraPanel(mode_world->data, cur_index));
 			} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {

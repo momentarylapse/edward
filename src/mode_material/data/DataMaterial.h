@@ -68,6 +68,8 @@ public:
 		void reset();
 	};
 	PhysicsData physics;
+
+	static DataMaterial from_material(Session* s, Material *material);
 };
 
 #endif /* DATAMATERIAL_H_ */
