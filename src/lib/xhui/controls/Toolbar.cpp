@@ -3,11 +3,10 @@
 //
 
 #include "Toolbar.h"
-
-#include <lib/xhui/Painter.h>
-#include <lib/xhui/Theme.h>
-
 #include "Button.h"
+#include "ToggleButton.h"
+#include "../Painter.h"
+#include "../Theme.h"
 #include "../Resource.h"
 #include "../language.h"
 #include "../../os/msg.h"
@@ -29,6 +28,7 @@ public:
 
 Toolbar::Toolbar(const string& id) : Grid(id) {
 	//size_mode_y = SizeMode::Shrink;
+	spacing = 2;
 }
 
 void Toolbar::add_item(const string& id, const string& title, const string& image) {
@@ -40,12 +40,22 @@ void Toolbar::add_item(const string& id, const string& title, const string& imag
 	b->size_mode_y = SizeMode::Shrink;
 	b->padding = {7, 7, 7, 7};
 	//height=50 width=50 noexpandx ignorefocus
+	b->set_option("flat", "");
 	add_child(b, n, 0);
 }
 
 
 void Toolbar::add_item_checkable(const string& id, const string& title, const string& image) {
-	add_item(id, title, image);
+	int n = get_children(ChildFilter::All).num;
+	auto b = new ToggleButton(id, title);
+	b->min_width_user = 50;
+	b->min_height_user = 50;
+	b->size_mode_x = SizeMode::Shrink;
+	b->size_mode_y = SizeMode::Shrink;
+	b->padding = {7, 7, 7, 7};
+	//height=50 width=50 noexpandx ignorefocus
+	b->set_option("flat", "");
+	add_child(b, n, 0);
 }
 
 void Toolbar::add_separator() {

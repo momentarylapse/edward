@@ -124,6 +124,7 @@ void ModeMesh::on_enter() {
 
 	data->out_changed >> create_sink(update);
 	update();
+	update_menu();
 }
 
 void ModeMesh::on_leave() {
@@ -140,7 +141,11 @@ void ModeMesh::set_presentation_mode(PresentationMode m) {
 }
 
 void ModeMesh::update_menu() {
-
+	auto win = session->win;
+	win->check("mode_model_vertex", presentation_mode == PresentationMode::Vertices);
+	win->check("mode_model_edge", presentation_mode == PresentationMode::Edges);
+	win->check("mode_model_polygon", presentation_mode == PresentationMode::Polygons);
+	win->check("mode_model_surface", presentation_mode == PresentationMode::Surfaces);
 }
 
 

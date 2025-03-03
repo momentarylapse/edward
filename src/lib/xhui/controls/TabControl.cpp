@@ -23,6 +23,7 @@ public:
 			});
 			b->size_mode_x = SizeMode::Shrink;
 			b->size_mode_y = SizeMode::Shrink;
+			b->flat = true;
 			Grid::add_child(b, i, 0);
 			buttons.add(b);
 		}

@@ -92,10 +92,12 @@ void Button::_draw(Painter *p) {
 			bg = Theme::_default.background_active;
 		}
 	}
-	p->set_color(bg);
-	p->set_roundness(Theme::_default.button_radius);
-	p->draw_rect(_area);
-	p->set_roundness(0);
+	if (primary or state != State::DEFAULT or !flat) {
+		p->set_color(bg);
+		p->set_roundness(Theme::_default.button_radius);
+		p->draw_rect(_area);
+		p->set_roundness(0);
+	}
 
 	label._draw(p);
 }
@@ -106,6 +108,13 @@ void Button::set_option(const string& key, const string& value) {
 	} else if (key == "padding") {
 		float f = value._float();
 		padding = {f, f, f, f};
+		request_redraw();
+	} else if (key == "primary") {
+		primary = true;
+		request_redraw();
+	} else if (key == "flat") {
+		flat = true;
+		request_redraw();
 	} else {
 		Control::set_option(key, value);
 	}

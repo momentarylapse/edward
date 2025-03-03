@@ -26,6 +26,7 @@ public:
 	virtual void on_click();
 
 	bool primary = false;
+	bool flat = false;
 	rect padding;
 
 	enum class State {
