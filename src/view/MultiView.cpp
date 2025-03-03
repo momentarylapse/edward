@@ -262,13 +262,18 @@ void MultiView::clear_selection() {
 
 void MultiView::select_in_rect(MultiViewWindow* win, const rect& _r) {
 	const auto r = _r.canonical();
-	for (auto& d: data_sets)
-		for (int i=0; i<d.array->num; i++) {
-			auto p = reinterpret_cast<multiview::SingleData*>(d.array->simple_element(i));
-			p->is_selected = r.inside(win->project(p->pos).xy());
-		}
+	if (f_select)
+		f_select(win, r);
+
 	update_selection_box();
 	out_selection_changed();
+}
+
+void MultiView::select_points_in_rect(MultiViewWindow* win, const rect& r, DynamicArray& array) {
+	for (int i=0; i<array.num; i++) {
+		auto p = reinterpret_cast<multiview::SingleData*>(array.simple_element(i));
+		p->is_selected = r.inside(win->project(p->pos).xy());
+	}
 }
 
 
@@ -282,28 +287,25 @@ multiview::SingleData* MultiView::get_hover_item() {
 }
 
 void MultiView::update_selection_box() {
-	// TODO per-set user override
-	bool first = true;
-	Box box;
-	int n = 0;
-	for (auto& d: data_sets)
-		for (int i=0; i<d.array->num; i++) {
-			auto p = reinterpret_cast<multiview::SingleData*>(d.array->simple_element(i));
-			if (p->is_selected) {
-				n ++;
-				if (first) {
-					box = {p->pos, p->pos};
-					first = false;
-				} else {
-					box.min._min(p->pos);
-					box.max._max(p->pos);
-				}
-			}
-		}
 	selection_box = base::None;
-	if (!first)
-		selection_box = box;
+	if (f_get_selection_box)
+		selection_box = f_get_selection_box();
 	action_controller->update_manipulator();
+}
+
+base::optional<Box> MultiView::points_get_selection_box(const DynamicArray& _array) {
+	base::optional<Box> box;
+	auto& array = const_cast<DynamicArray&>(_array);
+	for (int i=0; i<array.num; i++) {
+		auto p = reinterpret_cast<multiview::SingleData*>(array.simple_element(i));
+		if (p->is_selected) {
+			if (box)
+				box = *box or Box{p->pos, p->pos};
+			else
+				box = Box{p->pos, p->pos};
+		}
+	}
+	return box;
 }
 
 

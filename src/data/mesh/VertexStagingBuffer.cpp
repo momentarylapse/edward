@@ -30,3 +30,11 @@ void VertexStagingBuffer::build(VertexBuffer *vb, int num_textures) {
 		vb->update(l+2, uv[l]);*/
 }
 
+void VertexStagingBuffer::clear() {
+	p.clear();
+	n.clear();
+	for (int i=0; i<MATERIAL_MAX_TEXTURES; i++)
+		uv[i].clear();
+}
+
+

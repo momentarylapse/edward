@@ -81,6 +81,12 @@ void ModeWorld::on_enter() {
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
 		return get_hover(win, m);
 	};
+	multi_view->f_select = [this] (MultiViewWindow* win, const rect& r) {
+		MultiView::select_points_in_rect(win, r, data->entities);
+	};
+	multi_view->f_get_selection_box = [this] () -> base::optional<Box> {
+		return MultiView::points_get_selection_box(data->entities);
+	};
 	multi_view->f_create_action = [this] {
 		return new ActionWorldMoveSelection(data, data->get_selection());
 	};
@@ -236,7 +242,7 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& m) 
 			float dist = object_hover_distance(e, win, m, tp, z);
 			if (dist >= 0 and z < zmin) {
 				zmin = z;
-				h = {MultiViewType::WORLD_OBJECT, i, tp};
+				h = {MultiViewType::WORLD_ENTITY, i, tp};
 			}
 		}
 	return h;
@@ -503,15 +509,7 @@ static base::optional<string> world_selection_description(DataWorld* data) {
 }
 
 void ModeWorld::on_draw_post(Painter* p) {
-	p->set_color(Black);
-	//p->set_font_size(20);
-	//p->draw_str({100, 100}, str(r));
-
-	p->set_color(Blue);
-	for (auto& o: data->entities) {
-		auto p1 = multi_view->active_window->project(o.pos);
-		p->draw_rect({p1.x-2,p1.x+2, p1.y-2,p1.y+2});
-	}
+	session->drawing_helper->draw_data_points(p, multi_view->active_window, data->entities, MultiViewType::WORLD_ENTITY, multi_view->hover);
 
 	if (auto s = world_selection_description(data))
 		draw_info(p, "selected: " + *s);

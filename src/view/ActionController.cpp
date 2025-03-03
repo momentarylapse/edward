@@ -539,9 +539,10 @@ ActionController::Constraint ActionController::get_hover(MultiViewWindow* win, c
 	auto hover = Constraint::UNDEFINED;
 	for (const auto& [i, g]: enumerate(manipulator.geo)) {
 		vec3 t;
+		int index;
 		if (!geo_allow(i, win, manipulator.geo_mat))
 			continue;
-		if (g->is_mouse_over(win, manipulator.geo_mat, m, t)) {
+		if (g->is_mouse_over(win, manipulator.geo_mat, m, t, index, true)) {
 			float z = win->project(t).z;
 			if ((z < z_min) or (geo_config[i].priority >= priority)) {
 				hover = geo_config[i].constraint;

@@ -46,8 +46,10 @@ public:
 	owned<ModelMesh> temp_mesh;
 	VertexBuffer* vertex_buffer;
 	VertexBuffer* vertex_buffer_selection;
+	VertexBuffer* vertex_buffer_hover;
 	Material* material;
 	Material* material_selection;
+	Material* material_hover;
 	Array<int> event_ids;
 
 	enum class PresentationMode {
@@ -60,6 +62,8 @@ public:
 	void update_menu();
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
+	void select_in_rect(MultiViewWindow* win, const rect& r);
+	base::optional<Box> get_selection_box() const;
 };
 
 

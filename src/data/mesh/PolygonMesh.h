@@ -67,7 +67,7 @@ struct PolygonMesh {
 	bool is_inside(const vec3 &v) const;
 
 	void get_bounding_box(vec3 &min, vec3 &max);
-	bool is_mouse_over(MultiViewWindow* win, const mat4 &matrix, const vec2& m, vec3 &tp);
+	bool is_mouse_over(MultiViewWindow* win, const mat4 &matrix, const vec2& m, vec3 &tp, int& index, bool any_hit);
 
 	void build(VertexBuffer *vb) const;
 
@@ -77,6 +77,7 @@ struct PolygonMesh {
 	bool is_closed() const;
 
 	Array<PolygonMesh> split_connected() const;
+	//bool trace(const vec3& p0, const vec3& p1, vec3& tp, int& index);
 };
 
 //int GeometrySubtract(const Geometry &a, const Geometry &b, Geometry &c);

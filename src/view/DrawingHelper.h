@@ -13,6 +13,8 @@
 #include <lib/math/mat4.h>
 #include <lib/xhui/Context.h>
 
+#include "MultiView.h"
+
 struct RenderViewData;
 struct RenderParams;
 class ResourceManager;
@@ -37,6 +39,8 @@ public:
 	void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vb, Material* material, int pass_no = 0, const string& vertex_module = "default");
 
 	void draw_boxed_str(Painter* p, const vec2& pos, const string& str, int align = -1);
+
+	void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& a, MultiViewType kind, const base::optional<Hover>& hover);
 
 	xhui::Context* context;
 	ResourceManager* resource_manager;

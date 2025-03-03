@@ -97,12 +97,17 @@ public:
 	struct DataSet {
 		MultiViewType type;
 		DynamicArray* array;
-		int flags;
+		enum Flags {
+			None = 0,
+			Selectable = 1
+		};
+		Flags flags;
 	};
 	Array<DataSet> data_sets;
 
 	void clear_selection();
 	void select_in_rect(MultiViewWindow* win, const rect& r);
+	static void select_points_in_rect(MultiViewWindow* win, const rect& r, DynamicArray& array);
 
 	rect area;
 	rect area_native;
@@ -115,9 +120,12 @@ public:
 	bool _allow_select = false;
 	bool _allow_action = false;
 
+	std::function<void(MultiViewWindow*, const rect&)> f_select;
+	std::function<base::optional<Box>()> f_get_selection_box;
 	base::optional<Box> selection_box;
-	//void set_selection_box(const base::optional<Box>& box);
 	void update_selection_box();
+
+	static base::optional<Box> points_get_selection_box(const DynamicArray& array);
 
 	base::optional<rect> selection_area;
 	bool possibly_selecting = false; // lbut down?

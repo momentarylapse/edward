@@ -6,6 +6,9 @@
  */
 
 #include "PolygonMesh.h"
+
+#include <lib/base/iter.h>
+
 #include "Polygon.h"
 #include "VertexStagingBuffer.h"
 #include <view/MultiView.h>
@@ -20,8 +23,7 @@ public:
 	explicit GeometryException(const string& e) : Exception(e) {}
 };
 
-static float Bernstein3(int i, float t)
-{
+static float Bernstein3(int i, float t) {
 	float ti = 1 - t;
 	if (i == 0)
 		return ti*ti*ti;
@@ -353,9 +355,10 @@ void PolygonMesh::remove_unused_vertices() {
 		}
 }
 
-bool PolygonMesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec2& m, vec3 &tp) {
+bool PolygonMesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec2& m, vec3 &tp, int& index, bool any_hit) {
 	vec3 M = vec3(m, 0);
-	for (Polygon &p: polygons) {
+	float zmin = 1;
+	for (const auto& [i, p]: enumerate(polygons)) {
 		// care for the sense of rotation?
 	//	if (vec3::dot(p.temp_normal, win->get_direction()) > 0)
 	//		continue;
@@ -363,7 +366,7 @@ bool PolygonMesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec
 		// project all points
 		Array<vec3> v;
 		bool out = false;
-		for (int k=0;k<p.side.num;k++){
+		for (int k=0; k<p.side.num; k++) {
 			vec3 pp = win->project(mat * vertices[p.side[k].vertex].pos);
 			if ((pp.z <= 0) or (pp.z >= 1)){
 				out = true;
@@ -375,23 +378,31 @@ bool PolygonMesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec
 			continue;
 
 		// test all sub-triangles
-		p.update_triangulation(vertices);
-		for (int k=p.side.num-3; k>=0; k--){
+		if (p.triangulation_dirty)
+			p.update_triangulation(vertices);
+		for (int k=p.side.num-3; k>=0; k--) {
 			int a = p.side[k].triangulation[0];
 			int b = p.side[k].triangulation[1];
 			int c = p.side[k].triangulation[2];
+			// FIXME: use 2d bary centric!
 			auto fg = bary_centric(M, v[a], v[b], v[c]);
 			// cursor in triangle?
-			if ((fg.x>0) and (fg.y>0) and (fg.x+fg.y<1)){
+			if ((fg.x>0) and (fg.y>0) and (fg.x+fg.y<1)) {
 				vec3 va = vertices[p.side[a].vertex].pos;
 				vec3 vb = vertices[p.side[b].vertex].pos;
 				vec3 vc = vertices[p.side[c].vertex].pos;
-				tp = mat * (va + fg.x*(vb-va) + fg.y*(vc-va));
-				return true;
+				float zz = v[a].z + fg.x*(v[b].z-v[a].z) + fg.x*(v[c].z-v[a].z);
+				if (zz < zmin) {
+					tp = mat * (va + fg.x*(vb-va) + fg.y*(vc-va));
+					index = i;
+					zmin = zz;
+				}
+				if (any_hit)
+					return true;
 			}
 		}
 	}
-	return false;
+	return zmin < 1;
 }
 
 void geo_poly_find_connected(const PolygonMesh &g, int p0, base::set<int> &polys) {
@@ -417,7 +428,7 @@ void geo_poly_find_connected(const PolygonMesh &g, int p0, base::set<int> &polys
 
 	while (found_more) {
 		found_more = false;
-		foreachi (auto &p, g.polygons, i) {
+		for (const auto& [i, p]: enumerate(g.polygons)) {
 			if (polys.contains(i))
 				continue;
 			if (vertex_overlap(p))
@@ -430,7 +441,7 @@ Array<PolygonMesh> PolygonMesh::split_connected() const {
 	Array<PolygonMesh> r;
 	base::set<int> poly_used;
 
-	foreachi (auto &p, polygons, i) {
+	for (const auto& [i, p]: enumerate(polygons)) {
 		if (poly_used.contains(i))
 			continue;
 
@@ -451,3 +462,13 @@ Array<PolygonMesh> PolygonMesh::split_connected() const {
 
 	return r;
 }
+
+/*bool PolygonMesh::trace(const vec3& p0, const vec3& p1, vec3& tp, int& index) {
+	for (const auto& [i, p]: enumerate(polygons)) {
+		if (p.triangulation_dirty)
+			p.update_triangulation(vertices);
+
+	}
+	return false;
+}*/
+
