@@ -9,6 +9,7 @@
 #include "ModeAddSphere.h"
 #include "ModeAddPlatonic.h"
 #include "ModePaste.h"
+#include "ModeMeshSculpt.h"
 #include "../ModeModel.h"
 #include "../action/mesh/ActionModelMoveSelection.h"
 #include "../data/ModelMesh.h"
@@ -92,6 +93,9 @@ void ModeMesh::on_enter() {
 	win->add_control("Button", "P", 0, 5, "add-platonic");
 	win->set_options("add-platonic", "height=50,width=50,noexpandx,ignorefocus");
 
+	event_ids.add(session->win->event("mode_model_deform", [this] {
+		session->set_mode(new ModeMeshSculpt(this));
+	}));
 
 	event_ids.add(session->win->event("mode_model_vertex", [this] {
 		set_presentation_mode(PresentationMode::Vertices);

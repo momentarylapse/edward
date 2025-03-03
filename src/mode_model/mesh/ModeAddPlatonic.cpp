@@ -6,7 +6,6 @@
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
 #include <Session.h>
-#include <valarray>
 #include <data/mesh/GeometryPlatonic.h>
 #include <data/mesh/GeometryTeapot.h>
 #include <lib/os/msg.h>

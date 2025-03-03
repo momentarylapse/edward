@@ -6,7 +6,6 @@
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
 #include <Session.h>
-#include <valarray>
 #include <data/mesh/GeometryCube.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/config.h>

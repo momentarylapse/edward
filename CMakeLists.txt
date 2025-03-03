@@ -395,6 +395,7 @@ add_executable(edward
 	src/lib/xhui/Window.cpp
 	src/lib/xhui/xhui.cpp
 	src/mode_material/data/DataMaterial.cpp
+	src/mode_model/action/mesh/sculpt/ActionModelBrushExtrude.cpp
 	src/mode_model/action/mesh/ActionModelAddPolygon.cpp
 	src/mode_model/action/mesh/ActionModelDeleteSelection.cpp
 	src/mode_model/action/mesh/ActionModelMoveSelection.cpp
@@ -409,6 +410,7 @@ add_executable(edward
 	src/mode_model/mesh/ModeAddSphere.cpp
 	src/mode_model/mesh/ModeAddVertex.cpp
 	src/mode_model/mesh/ModeMesh.cpp
+	src/mode_model/mesh/ModeMeshSculpt.cpp
 	src/mode_model/mesh/ModePaste.cpp
 	src/mode_model/ModeModel.cpp
 	src/mode_world/action/entity/ActionWorldAddEntity.cpp

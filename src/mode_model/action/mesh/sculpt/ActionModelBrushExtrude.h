@@ -8,17 +8,19 @@
 #ifndef ACTIONMODELBRUSHEXTRUDE_H_
 #define ACTIONMODELBRUSHEXTRUDE_H_
 
-#include "../../../../lib/math/vec3.h"
-#include "../../../Action.h"
+#include <action/Action.h>
+#include <data/mesh/Polygon.h>
+#include <lib/math/vec3.h>
+
 class DataModel;
 
 class ActionModelBrushExtrude: public Action {
 public:
-	ActionModelBrushExtrude(const vec3 &pos, const vec3 &n, float radius, float depth);
-	string name(){	return "ModelBrushExtrude";	}
+	ActionModelBrushExtrude(const vec3& pos, const vec3& n, float radius, float depth);
+	string name() override { return "ModelBrushExtrude"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data* d) override;
+	void undo(Data* d) override;
 
 private:
 	vec3 pos, n;
