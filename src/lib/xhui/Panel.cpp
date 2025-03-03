@@ -21,6 +21,7 @@
 #include "controls/RadioButton.h"
 #include "controls/SpinButton.h"
 #include "controls/TabControl.h"
+#include "controls/ToggleButton.h"
 #include "controls/Toolbar.h"
 #include "controls/Viewport.h"
 #include "../base/algo.h"
@@ -352,6 +353,8 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add_child(new SpinButton(id, title._float()), x, y);
 	else if (type == "TabControl")
 		add_child(new TabControl(id, title), x, y);
+	else if (type == "ToggleButton")
+		add_child(new ToggleButton(id, title), x, y);
 	else if (type == "Toolbar")
 		add_child(new Toolbar(id), x, y);
 	else if (type == "Viewport")
@@ -364,9 +367,7 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 //		add_slider(title, x, y, id);
 //	else if (type == "Image")
 //		add_image(title, x, y, id);
-/*	else if (type == "ToggleButton")
-		add_toggle_button(title, x, y, id);
-	else if ((type == "Expander") or (type == "Revealer"))
+/*	else if ((type == "Expander") or (type == "Revealer"))
 		add_expander(title, x, y, id);
 	else if (type == "Scroller")
 		add_scroller(title, x, y, id);

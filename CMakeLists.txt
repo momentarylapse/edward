@@ -373,6 +373,7 @@ add_executable(edward
 	src/lib/xhui/controls/RadioButton.cpp
 	src/lib/xhui/controls/SpinButton.cpp
 	src/lib/xhui/controls/TabControl.cpp
+	src/lib/xhui/controls/ToggleButton.cpp
 	src/lib/xhui/controls/Toolbar.cpp
 	src/lib/xhui/controls/Viewport.cpp
 	src/lib/xhui/dialogs/ColorSelectionDialog.cpp

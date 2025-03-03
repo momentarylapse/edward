@@ -3,7 +3,7 @@
 //
 
 #include "TabControl.h"
-#include "Button.h"
+#include "ToggleButton.h"
 #include "Grid.h"
 #include "../Painter.h"
 #include "../Theme.h"
@@ -16,7 +16,7 @@ public:
 	explicit TabControlHeader(const string& id, const Array<string>& headers, const std::function<void(int)>& f) : Grid(id) {
 		callback = f;
 		for (const auto&& [i, h] : enumerate(headers)) {
-			auto b = new CallbackButton(id + i2s(i), h, [this, i=i] {
+			auto b = new CallbackToggleButton(id + i2s(i), h, [this, i=i] {
 				current_page = i;
 				update_buttons();
 				callback(i);
@@ -35,12 +35,11 @@ public:
 	}
 	void update_buttons() {
 		for (auto&& [i, b]: enumerate(buttons))
-			b->primary = (i == current_page);
-		request_redraw();
+			b->check(i == current_page);
 	}
 	int current_page;
 	std::function<void(int)> callback;
-	Array<CallbackButton*> buttons;
+	Array<CallbackToggleButton*> buttons;
 };
 
 TabControl::TabControl(const string& id, const string& title) : Control(id) {
