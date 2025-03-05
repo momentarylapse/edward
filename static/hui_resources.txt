@@ -6827,7 +6827,7 @@ model-toolbar
 
 0
 0
-24
+27
 Item
 new
 image=new
@@ -6889,87 +6889,105 @@ Separator
 0
 0
 Item
-mode_model_mesh
+mesh-visible0
 checkable,image=model-surface
 10
 0
 0
 Item
+mesh-physical
+checkable
+11
+0
+0
+Separator
+
+
+12
+0
+0
+Item
+mode_model_mesh
+checkable,image=model-surface
+13
+0
+0
+Item
 mode_model_deform
 checkable,image=model-deform
-11
+14
 0
 0
 Item
 mode_model_materials
 checkable,image=model-textures
-12
+15
 0
 0
 Item
 mode_model_texture_coord
 checkable,image=model-uv
-13
+16
 0
 0
 Item
 mode_model_paint
 checkable,image=model-paint
-14
+17
 0
 0
 Item
 mode_model_skeleton
 checkable,image=model-skeleton
-15
+18
 0
 0
 Item
 mode_model_animation
 checkable,image=model-move
-16
+19
 0
 0
 Separator
 
 
-17
+20
 0
 0
 Item
 mode_properties
 image=configure
-18
+21
 0
 0
 Separator
 
 
-19
+22
 0
 0
 Item
 mode_model_vertex
 checkable,image=model-vertex
-20
+23
 0
 0
 Item
 mode_model_edge
 checkable,image=model-edge
-21
+24
 0
 0
 Item
 mode_model_polygon
 checkable,image=model-polygon
-22
+25
 0
 0
 Item
 mode_model_surface
 checkable,image=model-surface
-23
+26
 0
 0
 # Resource
@@ -10203,7 +10221,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1026
+1028
 # Text
 /ambient
 Ambient
@@ -12509,6 +12527,12 @@ Select
 model-texture-toolbar/translate
 Move
 
+model-toolbar/mesh-physical
+Phys
+Physical mesh
+model-toolbar/mesh-visible0
+Vis
+Visible mesh
 model-toolbar/mode_model_animation
 Animations
 

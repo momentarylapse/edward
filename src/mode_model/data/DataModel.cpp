@@ -106,14 +106,11 @@ DataModel::DataModel(Session *s) :
 {
 	mesh = new ModelMesh(this);
 	phys_mesh = new ModelMesh(this);
-	edit_mesh = mesh;
+	edit_mesh = mesh.get();
 	triangle_mesh.resize(4);
 }
 
-DataModel::~DataModel() {
-	delete mesh;
-	delete phys_mesh;
-}
+DataModel::~DataModel() = default;
 
 
 void DataModel::MetaData::reset() {
@@ -371,7 +368,7 @@ Polygon *DataModel::add_polygon_with_skin(const Array<int> &v, const Array<vec3>
 		p.side.add(s);
 		p.material = material;
 	}
-	return (Polygon*)execute(new ActionModelAddPolygon(p));
+	return (Polygon*)execute(new ActionModelAddPolygon(edit_mesh, p));
 }
 
 
@@ -385,12 +382,20 @@ Data::Selection DataModel::get_selection() const {
 	Selection sel;
 	sel.add({MultiViewType::MODEL_VERTEX, {}});
 	sel.add({MultiViewType::MODEL_POLYGON, {}});
-	for (const auto& [i, v]: enumerate(mesh->vertices))
+	sel.add({MultiViewType::MODEL_BALL, {}});
+	sel.add({MultiViewType::MODEL_CYLINDER, {}});
+	for (const auto& [i, v]: enumerate(edit_mesh->vertices))
 		if (v.is_selected)
 			sel[MultiViewType::MODEL_VERTEX].add(i);
-	for (const auto& [i, p]: enumerate(mesh->polygons))
+	for (const auto& [i, p]: enumerate(edit_mesh->polygons))
 		if (p.is_selected)
 			sel[MultiViewType::MODEL_POLYGON].add(i);
+	for (const auto& [i, b]: enumerate(edit_mesh->ball))
+		if (b.is_selected)
+			sel[MultiViewType::MODEL_BALL].add(i);
+	for (const auto& [i, c]: enumerate(edit_mesh->cylinder))
+		if (c.is_selected)
+			sel[MultiViewType::MODEL_CYLINDER].add(i);
 	return sel;
 }
 
@@ -552,7 +557,7 @@ void DataModel::animationSetBone(int move, int frame, int bone, const vec3 &dpos
 #endif
 
 void DataModel::delete_selection(const Selection& s, bool greedy) {
-	execute(new ActionModelDeleteSelection(this, s, greedy));
+	execute(new ActionModelDeleteSelection(edit_mesh, s, greedy));
 }
 
 #if 0
@@ -586,7 +591,7 @@ void DataModel::setMaterialSelection(int material)
 #endif
 
 void DataModel::paste_mesh(const PolygonMesh& geo, int default_material) {
-	execute(new ActionModelPasteMesh(geo, default_material));
+	execute(new ActionModelPasteMesh(edit_mesh, geo, default_material));
 }
 
 #if 0

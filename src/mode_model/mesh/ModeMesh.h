@@ -43,11 +43,16 @@ public:
 	void paste();
 
 	DataModel* data;
+
+	void set_edit_mesh(ModelMesh* mesh);
+
 	owned<ModelMesh> temp_mesh;
 	VertexBuffer* vertex_buffer;
+	VertexBuffer* vertex_buffer_physical;
 	VertexBuffer* vertex_buffer_selection;
 	VertexBuffer* vertex_buffer_hover;
 	Material* material;
+	Material* material_physical;
 	Material* material_selection;
 	Material* material_hover;
 	Array<int> event_ids;

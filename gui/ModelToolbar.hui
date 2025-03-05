@@ -9,6 +9,9 @@ Toolbar model-toolbar ""
 	Item view_push "Push" image=view-push "tooltip=Viewstage Push"
 	Item view_pop "Pop" image=view-pop "tooltip=Viewstage Pop"
 	Separator
+	Item mesh-visible0 "Vis" checkable image=model-surface "tooltip=Visible mesh"
+	Item mesh-physical "Phys" checkable "tooltip=Physical mesh"
+	Separator
 	Item mode_model_mesh "Mesh" checkable image=model-surface
 	Item mode_model_deform "Deformation mode" checkable image=model-deform
 	Item mode_model_materials "Materials" checkable image=model-textures

@@ -44,7 +44,7 @@ void ModeAddPolygon::on_draw_win(const RenderParams& params, MultiViewWindow* wi
 	session->drawing_helper->set_line_width(3);
 	Array<vec3> points;
 	for (int v: vertices)
-		points.add(mode_mesh->data->mesh->vertices[v].pos);
+		points.add(mode_mesh->data->edit_mesh->vertices[v].pos);
 	//points.add(multi_view->cursor_pos_3d());
 	session->drawing_helper->draw_lines(points, true);
 }
@@ -68,7 +68,7 @@ void ModeAddPolygon::on_left_button_down(const vec2& m) {
 	} else {
 		const vec3 p = multi_view->cursor_pos_3d(m);
 		mode_mesh->data->add_vertex(p, {0,0,0,0}, {0,0,0,0}, NORMAL_MODE_HARD);
-		vertices.add(mode_mesh->data->mesh->vertices.num - 1);
+		vertices.add(mode_mesh->data->edit_mesh->vertices.num - 1);
 	}
 
 	if (vertices.num >= 3 and vertices.back() == vertices[0]) {

@@ -424,7 +424,7 @@ public:
 	void define_children() override {
 	}
 	void create() override {
-		me = parent->mesh;
+		me = parent->mesh.get();
 	}
 	void read(Stream *f) override {
 
@@ -482,7 +482,7 @@ public:
 	void define_children() override {
 	}
 	void create() override {
-		me = parent->phys_mesh;
+		me = parent->phys_mesh.get();
 	}
 	void read(Stream *f) override {
 		int version = f->read_int();
@@ -920,8 +920,8 @@ public:
 		write_sub("meta", me);
 		write_sub_parray("material", me->material);
 		write_sub_array("mesh", me->triangle_mesh.sub_ref(1));
-		write_sub("physmesh", me->phys_mesh);
-		write_sub("polymesh", me->mesh);
+		write_sub("physmesh", me->phys_mesh.get());
+		write_sub("polymesh", me->mesh.get());
 		if (me->bone.num > 0)
 			write_sub("skeleton", me);
 		if (me->move.num > 0)

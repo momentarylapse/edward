@@ -8,15 +8,17 @@
 #include <action/Action.h>
 #include <data/mesh/Polygon.h>
 class DataModel;
+class ModelMesh;
 
 class ActionModelAddPolygon : public Action {
 public:
-	explicit ActionModelAddPolygon(const Polygon &p);
+	explicit ActionModelAddPolygon(ModelMesh* mesh, const Polygon &p);
 	string name() override { return "ModelAddPolygon"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(Data* d) override;
+	void undo(Data* d) override;
 private:
+	ModelMesh* mesh;
 	Polygon polygon;
 };
 

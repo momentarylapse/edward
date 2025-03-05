@@ -15,6 +15,8 @@
 #include "../data/ModelMesh.h"
 #include "../dialog/ModelPropertiesDialog.h"
 #include <Session.h>
+#include <data/mesh/GeometryCylinder.h>
+#include <data/mesh/GeometrySphere.h>
 #include <helper/ResourceManager.h>
 #include <lib/base/iter.h>
 #include <lib/image/Painter.h>
@@ -34,9 +36,11 @@ ModeMesh::ModeMesh(ModeModel* parent) : Mode(parent->session) {
 	data = parent->data.get();
 	generic_data = data;
 	vertex_buffer = new VertexBuffer("3f,3f,2f");
+	vertex_buffer_physical = new VertexBuffer("3f,3f,2f");
 	vertex_buffer_selection = new VertexBuffer("3f,3f,2f");
 	vertex_buffer_hover = new VertexBuffer("3f,3f,2f");
 	material = create_material(session->resource_manager, White, 0.7f, 0.2f, Black);
+	material_physical = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, color(1,1,1,0.4f), true);
 	material_selection = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, Red, true);
 	material_hover = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, White, true);
 
@@ -46,6 +50,17 @@ ModeMesh::ModeMesh(ModeModel* parent) : Mode(parent->session) {
 }
 
 ModeMesh::~ModeMesh() = default;
+
+void ModeMesh::set_edit_mesh(ModelMesh* mesh) {
+	data->edit_mesh = mesh;
+	multi_view->data_sets = {
+		{MultiViewType::MODEL_VERTEX, &mesh->vertices},
+		{MultiViewType::MODEL_POLYGON, &mesh->polygons},
+	};
+	update_menu();
+	update_vb();
+}
+
 
 void ModeMesh::on_enter() {
 	auto update = [this] {
@@ -72,12 +87,9 @@ void ModeMesh::on_enter() {
 		return get_selection_box();
 	};
 	multi_view->f_create_action = [this] {
-		return new ActionModelMoveSelection(data, data->get_selection());
+		return new ActionModelMoveSelection(data->edit_mesh, data->get_selection());
 	};
-	multi_view->data_sets = {
-		{MultiViewType::MODEL_VERTEX, &data->mesh->vertices},
-		{MultiViewType::MODEL_POLYGON, &data->mesh->polygons},
-	};
+	set_edit_mesh(data->mesh.get());
 	multi_view->out_selection_changed >> create_sink([this] {
 		on_update_selection();
 	});
@@ -93,6 +105,14 @@ void ModeMesh::on_enter() {
 	win->set_options("add-sphere", "height=50,width=50,noexpandx,ignorefocus");
 	win->add_control("Button", "P", 0, 5, "add-platonic");
 	win->set_options("add-platonic", "height=50,width=50,noexpandx,ignorefocus");
+
+
+	event_ids.add(session->win->event("mesh-visible0", [this] {
+		set_edit_mesh(data->mesh.get());
+	}));
+	event_ids.add(session->win->event("mesh-physical", [this] {
+		set_edit_mesh(data->phys_mesh.get());
+	}));
 
 	event_ids.add(session->win->event("mode_model_deform", [this] {
 		session->set_mode(new ModeMeshSculpt(this));
@@ -150,6 +170,8 @@ void ModeMesh::set_presentation_mode(PresentationMode m) {
 
 void ModeMesh::update_menu() {
 	auto win = session->win;
+	win->check("mesh-visible0", data->edit_mesh == data->mesh.get());
+	win->check("mesh-physical", data->edit_mesh == data->phys_mesh.get());
 	win->check("mode_model_vertex", presentation_mode == PresentationMode::Vertices);
 	win->check("mode_model_edge", presentation_mode == PresentationMode::Edges);
 	win->check("mode_model_polygon", presentation_mode == PresentationMode::Polygons);
@@ -169,14 +191,17 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	dh->clear(params, xhui::Theme::_default.background_low);
 
 
-	if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces)
+	if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces or data->edit_mesh == data->phys_mesh.get())
 		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer, material, 0);
+
+	if (data->edit_mesh == data->phys_mesh.get())
+		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_physical, material_physical, 0);
 
 	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_selection, material_selection, 0);
 
 	VertexStagingBuffer vsb;
 	if (multi_view->hover and multi_view->hover->type == MultiViewType::MODEL_POLYGON)
-		data->mesh->polygons[multi_view->hover->index].add_to_vertex_buffer(data->mesh->vertices, vsb, 1);
+		data->edit_mesh->polygons[multi_view->hover->index].add_to_vertex_buffer(data->edit_mesh->vertices, vsb, 1);
 	vsb.build(vertex_buffer_hover, 1);
 	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_hover, material_hover, 0);
 
@@ -187,11 +212,11 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 		dh->set_line_width(1.5f);//scheme.LINE_WIDTH_THIN);
 
 		Array<vec3> points;
-		for (const auto& p: data->mesh->polygons) {
+		for (const auto& p: data->edit_mesh->polygons) {
 			if (vec3::dot(p.temp_normal, win->direction()) >= 0)
 				for (int k=0; k<p.side.num; k++) {
-					const auto& a = data->mesh->vertices[p.side[k].vertex];
-					const auto& b = data->mesh->vertices[p.side[(k + 1) % p.side.num].vertex];
+					const auto& a = data->edit_mesh->vertices[p.side[k].vertex];
+					const auto& b = data->edit_mesh->vertices[p.side[(k + 1) % p.side.num].vertex];
 					if (a.is_selected and b.is_selected)
 						continue;
 					points.add(a.pos);
@@ -205,11 +230,11 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 		dh->set_line_width(1.5f);//scheme.LINE_WIDTH_THIN);
 
 		points.clear();
-		for (const auto& p: data->mesh->polygons) {
+		for (const auto& p: data->edit_mesh->polygons) {
 			if (vec3::dot(p.temp_normal, win->direction()) < 0)
 				for (int k=0; k<p.side.num; k++) {
-					const auto& a = data->mesh->vertices[p.side[k].vertex];
-					const auto& b = data->mesh->vertices[p.side[(k + 1) % p.side.num].vertex];
+					const auto& a = data->edit_mesh->vertices[p.side[k].vertex];
+					const auto& b = data->edit_mesh->vertices[p.side[(k + 1) % p.side.num].vertex];
 					if (a.is_selected and b.is_selected)
 						continue;
 					points.add(a.pos);
@@ -223,11 +248,11 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 		dh->set_line_width(2);//scheme.LINE_WIDTH_THIN);
 
 		points.clear();
-		for (const auto& p: data->mesh->polygons) {
+		for (const auto& p: data->edit_mesh->polygons) {
 			//if (vec3::dot(p.temp_normal, win->dir()) < 0)
 				for (int k=0; k<p.side.num; k++) {
-					const auto& a = data->mesh->vertices[p.side[k].vertex];
-					const auto& b = data->mesh->vertices[p.side[(k + 1) % p.side.num].vertex];
+					const auto& a = data->edit_mesh->vertices[p.side[k].vertex];
+					const auto& b = data->edit_mesh->vertices[p.side[(k + 1) % p.side.num].vertex];
 					if (!a.is_selected or !b.is_selected)
 						continue;
 					points.add(a.pos);
@@ -242,12 +267,16 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 }
 
 base::optional<string> model_selection_description(DataModel* m) {
-	int nvert = 0, npoly = 0;
+	int nvert = 0, npoly = 0, nsphere = 0, ncyl = 0;
 	auto sel = m->get_selection();
 	if (sel.contains(MultiViewType::MODEL_VERTEX))
 		nvert = sel[MultiViewType::MODEL_VERTEX].num;
 	if (sel.contains(MultiViewType::MODEL_POLYGON))
 		npoly = sel[MultiViewType::MODEL_POLYGON].num;
+	if (sel.contains(MultiViewType::MODEL_BALL))
+		nsphere = sel[MultiViewType::MODEL_BALL].num;
+	if (sel.contains(MultiViewType::MODEL_CYLINDER))
+		ncyl = sel[MultiViewType::MODEL_CYLINDER].num;
 	if (nvert + npoly == 0)
 		return base::None;
 	Array<string> s;
@@ -255,12 +284,16 @@ base::optional<string> model_selection_description(DataModel* m) {
 		s.add(format("%d vertices", nvert));
 	if (npoly > 0)
 		s.add(format("%d polygons", npoly));
+	if (nsphere > 0)
+		s.add(format("%d spheres", nsphere));
+	if (ncyl > 0)
+		s.add(format("%d cylinders", ncyl));
 	return implode(s, ", ");
 }
 
 void ModeMesh::on_draw_post(Painter* p) {
 	if (presentation_mode == PresentationMode::Vertices)
-		session->drawing_helper->draw_data_points(p, multi_view->active_window, data->mesh->vertices, MultiViewType::MODEL_VERTEX, multi_view->hover);
+		session->drawing_helper->draw_data_points(p, multi_view->active_window, data->edit_mesh->vertices, MultiViewType::MODEL_VERTEX, multi_view->hover);
 
 	if (auto s = model_selection_description(data))
 		draw_info(p, "selected: " + *s);
@@ -275,14 +308,22 @@ void ModeMesh::update_vb() {
 	for (auto& p: data->mesh->polygons)
 		p.add_to_vertex_buffer(data->mesh->vertices, vsb, 1);
 	vsb.build(vertex_buffer, 1);
+
+	PolygonMesh m;
+	for (const auto& b: data->edit_mesh->ball)
+		m.add(GeometrySphere(data->edit_mesh->vertices[b.index].pos, b.radius, 8));
+	for (const auto& c: data->edit_mesh->cylinder)
+		m.add(GeometryCylinder(data->edit_mesh->vertices[c.index[0]].pos, data->edit_mesh->vertices[c.index[1]].pos, c.radius, 1, 32));
+	m.build(vertex_buffer_physical);
 }
 
 
 void ModeMesh::update_selection_vb() {
 	VertexStagingBuffer vsb;
-	for (auto& p: data->mesh->polygons)
+	for (auto& p: data->edit_mesh->polygons)
 		if (p.is_selected)
-			p.add_to_vertex_buffer(data->mesh->vertices, vsb, 1);
+			p.add_to_vertex_buffer(data->edit_mesh->vertices, vsb, 1);
+	// TODO spheres/cylinders
 	vsb.build(vertex_buffer_selection, 1);
 }
 
@@ -292,7 +333,7 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 		base::optional<Hover> h;
 
 		//float zmin = multi_view->view_port.radius * 2;
-		for (const auto& [i, v]: enumerate(data->mesh->vertices)) {
+		for (const auto& [i, v]: enumerate(data->edit_mesh->vertices)) {
 			const auto pp = win->project(v.pos);
 			if (pp.z <= 0 or pp.z >= 1)
 				continue;
@@ -305,7 +346,7 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 	if (presentation_mode == PresentationMode::Polygons) {
 		vec3 tp;
 		int index;
-		if (data->mesh->is_mouse_over(win, mat4::ID, m, tp, index, false))
+		if (data->edit_mesh->is_mouse_over(win, mat4::ID, m, tp, index, false))
 			return Hover{MultiViewType::MODEL_POLYGON, index, tp};
 	}
 	return base::None;
@@ -313,15 +354,15 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 
 void ModeMesh::select_in_rect(MultiViewWindow* win, const rect& r) {
 	if (presentation_mode == PresentationMode::Vertices) {
-		MultiView::select_points_in_rect(win, r, data->mesh->vertices);
+		MultiView::select_points_in_rect(win, r, data->edit_mesh->vertices);
 	}
 	if (presentation_mode == PresentationMode::Polygons) {
-		MultiView::select_points_in_rect(win, r, data->mesh->vertices);
+		MultiView::select_points_in_rect(win, r, data->edit_mesh->vertices);
 		// vertices -> polygons
-		for (auto& p: data->mesh->polygons) {
+		for (auto& p: data->edit_mesh->polygons) {
 			p.is_selected = true;
 			for (const auto& s: p.side)
-				p.is_selected &= data->mesh->vertices[s.vertex].is_selected;
+				p.is_selected &= data->edit_mesh->vertices[s.vertex].is_selected;
 		}
 	}
 }
@@ -330,23 +371,27 @@ void ModeMesh::select_in_rect(MultiViewWindow* win, const rect& r) {
 base::optional<Box> ModeMesh::get_selection_box() const {
 	if (presentation_mode == PresentationMode::Vertices) {
 		// vertices -> polygons
-		for (auto& p: data->mesh->polygons) {
+		for (auto& p: data->edit_mesh->polygons) {
 			p.is_selected = true;
 			for (const auto& s: p.side)
-				p.is_selected &= data->mesh->vertices[s.vertex].is_selected;
+				p.is_selected &= data->edit_mesh->vertices[s.vertex].is_selected;
 		}
+		for (auto& b: data->edit_mesh->ball)
+			b.is_selected = data->edit_mesh->vertices[b.index].is_selected;
+		for (auto& c: data->edit_mesh->cylinder)
+			c.is_selected = data->edit_mesh->vertices[c.index[0]].is_selected and data->edit_mesh->vertices[c.index[1]].is_selected;
 
-		return MultiView::points_get_selection_box(data->mesh->vertices);
+		return MultiView::points_get_selection_box(data->edit_mesh->vertices);
 	}
 	if (presentation_mode == PresentationMode::Polygons) {
 		// polygons -> vertices
-		for (auto& v: data->mesh->vertices)
+		for (auto& v: data->edit_mesh->vertices)
 			v.is_selected = false;
-		for (auto& p: data->mesh->polygons)
+		for (auto& p: data->edit_mesh->polygons)
 			for (const auto& s: p.side)
-				data->mesh->vertices[s.vertex].is_selected |= p.is_selected;
+				data->edit_mesh->vertices[s.vertex].is_selected |= p.is_selected;
 
-		return MultiView::points_get_selection_box(data->mesh->vertices);
+		return MultiView::points_get_selection_box(data->edit_mesh->vertices);
 	}
 	return base::None;
 }
@@ -362,7 +407,7 @@ void ModeMesh::on_command(const string& id) {
 
 void ModeMesh::copy() {
 	temp_mesh->clear();
-	temp_mesh->add(data->mesh->copy_geometry());
+	temp_mesh->add(data->edit_mesh->copy_geometry());
 	if (temp_mesh->is_empty())
 		session->set_message("nothing selected");
 	else

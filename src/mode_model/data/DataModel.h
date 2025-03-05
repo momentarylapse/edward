@@ -222,8 +222,8 @@ public:
 	void animationSetBone(int move, int frame, int bone, const vec3 &dpos, const vec3 &ang);*/
 
 	// geometry
-	ModelMesh *mesh;
-	ModelMesh *phys_mesh;
+	owned<ModelMesh> mesh;
+	owned<ModelMesh> phys_mesh;
 	ModelMesh *edit_mesh;
 
 

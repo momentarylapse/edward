@@ -10,16 +10,17 @@
 
 #include <action/Action.h>
 #include <data/mesh/PolygonMesh.h>
-class DataModel;
+class ModelMesh;
 
 class ActionModelPasteMesh : public Action {
 public:
-	ActionModelPasteMesh(const PolygonMesh &geo, int material);
+	ActionModelPasteMesh(ModelMesh* m, const PolygonMesh &geo, int material);
 	string name() override { return "ModelPasteMesh"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(Data* d) override;
+	void undo(Data* d) override;
 private:
+	ModelMesh* mesh;
 	PolygonMesh geo;
 	int default_material;
 };

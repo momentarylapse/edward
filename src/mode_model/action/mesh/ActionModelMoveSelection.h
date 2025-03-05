@@ -9,18 +9,19 @@
 #include <action/ActionMultiView.h>
 #include <lib/base/set.h>
 
-class DataModel;
+class ModelMesh;
 class vec3;
 enum class MultiViewType;
 
 class ActionModelMoveSelection: public ActionMultiView {
 public:
-	explicit ActionModelMoveSelection(DataModel *d, const Data::Selection& selection);
+	explicit ActionModelMoveSelection(ModelMesh* m, const Data::Selection& selection);
 	string name() override { return "ModelMoveSelection"; }
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;
 private:
+	ModelMesh* mesh;
 	Array<MultiViewType> type;
 };
 

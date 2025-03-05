@@ -6,17 +6,16 @@
 #include <mode_model/data/DataModel.h>
 #include <mode_model/data/ModelMesh.h>
 
-ActionModelAddPolygon::ActionModelAddPolygon(const Polygon& p) {
+ActionModelAddPolygon::ActionModelAddPolygon(ModelMesh* _mesh, const Polygon& p) {
+	mesh = _mesh;
 	polygon = p;
 }
 
-void *ActionModelAddPolygon::execute(Data *d) {
-	auto m = dynamic_cast<DataModel*>(d);
-	m->mesh->polygons.add(polygon);
-	return &m->mesh->polygons.back();
+void *ActionModelAddPolygon::execute(Data*) {
+	mesh->polygons.add(polygon);
+	return &mesh->polygons.back();
 }
 
-void ActionModelAddPolygon::undo(Data *d) {
-	auto m = dynamic_cast<DataModel*>(d);
-	m->mesh->polygons.pop();
+void ActionModelAddPolygon::undo(Data*) {
+	mesh->polygons.pop();
 }
