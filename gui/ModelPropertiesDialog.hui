@@ -1,9 +1,9 @@
-Dialog model_dialog "Model properties" width=550 height=580 resizable headerbar closebutton=no borderwidth=0
+Dialog model_dialog "Model properties" width=450 height=500 resizable headerbar closebutton=no borderwidth=0
 	Grid ? ""
-		TabControl model_dialog_tab_control "Level of detail\\Physics\\Inventory\\Script"
+		TabControl model_dialog_tab_control "Level of detail\\Physics"
 			Grid ? "" vertical
 				Grid ? ""
-					Text model_dialog_t_num_lod "Number" right disabled
+					Label model_dialog_t_num_lod "Number" right disabled
 					SpinButton num_lod "" range=1 expandx
 				ListView lod "#\\Visibility\\Details (%)" format=tTT
 				CheckBox generate_dists_auto "Auto calculation"
@@ -12,9 +12,9 @@ Dialog model_dialog "Model properties" width=550 height=580 resizable headerbar 
 				Group model_dialog_grp_physics "General"
 					Grid ? "" vertical
 						Grid ? ""
-							Text model_dialog_t_mass "Mass" right disabled
+							Label model_dialog_t_mass "Mass" right disabled
 							SpinButton mass "" range=0:1000000000000:0.01 expandx
-							Text /mu "mu"
+							Label /mu "mu"
 						CheckBox ph_passive "Physics passive"
 						CheckBox ph_active "Physics active"
 				---|
@@ -23,30 +23,6 @@ Dialog model_dialog "Model properties" width=550 height=580 resizable headerbar 
 						ListView tensor "\\X\\Y\\Z" format=tTTT
 						---|
 						CheckBox generate_tensor_auto "Auto"
-			Grid ? ""
-				Grid ? ""
-					Text model_dialog_t_name "Name" right disabled
-					Edit model_name "" expandx
-					---|
-					Text model_dialog_t_description "Description" right disabled
-					Edit model_description ""
-					---|
-					Text model_dialog_t_maxitems "Max items" right disabled
-					SpinButton num_items "" range=0:
-				---|
-				Grid ? ""
-					ListView model_inventary "#\\File"
-					---|
-					Button delete_item "Delete item" image=hui:delete
-			Grid ? "" vertical
-				Group model_dialog_t_scriptfile "File"
-					Grid mpd_table_scriptfile ""
-						Edit script "" expandx
-						Button script_find "" image=hui:open
-						---|
-						Label class "class..." italic
-				Group model_dialog_t_scriptvars "Script variables"
-					ListView variables "Name\\Type\\Value" format=ttT
 		---|
 		Grid ? "" buttonbar
 			Button /cancel "Cancel" image=hui:cancel

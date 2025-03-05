@@ -5692,7 +5692,7 @@ range=2:
 # Resource
 Dialog
 model_dialog
-width=550,height=580,resizable,headerbar,closebutton=no,borderwidth=0
+width=450,height=500,resizable,headerbar,closebutton=no,borderwidth=0
 0
 0
 1
@@ -5707,7 +5707,7 @@ model_dialog_tab_control
 
 0
 0
-4
+2
 Grid
 ?
 vertical
@@ -5720,7 +5720,7 @@ Grid
 0
 0
 2
-Text
+Label
 model_dialog_t_num_lod
 right,disabled
 0
@@ -5774,7 +5774,7 @@ Grid
 0
 0
 3
-Text
+Label
 model_dialog_t_mass
 right,disabled
 0
@@ -5786,7 +5786,7 @@ range=0:1000000000000:0.01,expandx
 1
 0
 0
-Text
+Label
 mu
 
 2
@@ -5827,120 +5827,6 @@ generate_tensor_auto
 
 0
 1
-0
-Grid
-?
-
-2
-0
-2
-Grid
-?
-
-0
-0
-6
-Text
-model_dialog_t_name
-right,disabled
-0
-0
-0
-Edit
-model_name
-expandx
-1
-0
-0
-Text
-model_dialog_t_description
-right,disabled
-0
-1
-0
-Edit
-model_description
-
-1
-1
-0
-Text
-model_dialog_t_maxitems
-right,disabled
-0
-2
-0
-SpinButton
-num_items
-range=0:
-1
-2
-0
-Grid
-?
-
-0
-1
-2
-ListView
-model_inventary
-
-0
-0
-0
-Button
-delete_item
-image=hui:delete
-0
-1
-0
-Grid
-?
-vertical
-3
-0
-2
-Group
-model_dialog_t_scriptfile
-
-0
-0
-1
-Grid
-mpd_table_scriptfile
-
-0
-0
-3
-Edit
-script
-expandx
-0
-0
-0
-Button
-script_find
-image=hui:open
-1
-0
-0
-Label
-class
-italic
-0
-1
-0
-Group
-model_dialog_t_scriptvars
-
-1
-0
-1
-ListView
-variables
-format=ttT
-0
-0
 0
 Grid
 ?
@@ -10317,7 +10203,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1035
+1026
 # Text
 /ambient
 Ambient
@@ -12665,12 +12551,6 @@ Viewstage Pop
 model-toolbar/view_push
 Push
 Viewstage Push
-model_dialog/class
-class...
-
-model_dialog/delete_item
-Delete item
-
 model_dialog/generate_dists_auto
 Auto calculation
 
@@ -12692,32 +12572,14 @@ General
 model_dialog/model_dialog_grp_tensor
 Moment of inertia tensor
 
-model_dialog/model_dialog_t_description
-Description
-
 model_dialog/model_dialog_t_mass
 Mass
-
-model_dialog/model_dialog_t_maxitems
-Max items
-
-model_dialog/model_dialog_t_name
-Name
 
 model_dialog/model_dialog_t_num_lod
 Number
 
-model_dialog/model_dialog_t_scriptfile
-File
-
-model_dialog/model_dialog_t_scriptvars
-Script variables
-
 model_dialog/model_dialog_tab_control
-Level of detail\\Physics\\Inventory\\Script
-
-model_dialog/model_inventary
-#\\File
+Level of detail\\Physics
 
 model_dialog/ph_active
 Physics active
@@ -12727,9 +12589,6 @@ Physics passive
 
 model_dialog/tensor
 \\X\\Y\\Z
-
-model_dialog/variables
-Name\\Type\\Value
 
 model_material_dialog/emission
 

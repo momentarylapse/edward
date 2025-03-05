@@ -13,6 +13,7 @@
 #include "../ModeModel.h"
 #include "../action/mesh/ActionModelMoveSelection.h"
 #include "../data/ModelMesh.h"
+#include "../dialog/ModelPropertiesDialog.h"
 #include <Session.h>
 #include <helper/ResourceManager.h>
 #include <lib/base/iter.h>
@@ -95,6 +96,9 @@ void ModeMesh::on_enter() {
 
 	event_ids.add(session->win->event("mode_model_deform", [this] {
 		session->set_mode(new ModeMeshSculpt(this));
+	}));
+	event_ids.add(session->win->event("mode_properties", [this] {
+		session->win->open_dialog(new ModelPropertiesDialog(session->win, data));
 	}));
 
 	event_ids.add(session->win->event("mode_model_vertex", [this] {
