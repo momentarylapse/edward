@@ -54,6 +54,19 @@ ModeWorld::ModeWorld(Session* session) :
 	});
 }
 
+Array<WorldScriptVariable> load_variables(const kaba::Class* c) {
+	Array<WorldScriptVariable> variables;
+	for (auto cc: weak(c->constants))
+		if (cc->type.get() == kaba::TypeString and cc->name == "PARAMETERS") {
+			auto params = cc->as_string().explode(",");
+			for (auto& v: c->elements)
+				if (sa_contains(params, v.name)) {
+					if (v.type == kaba::TypeString or v.type == kaba::TypeFloat32 or v.type == kaba::TypeInt32)
+						variables.add({v.name, v.type->name});
+				}
+		}
+	return variables;
+}
 
 // seems quick enough
 Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full_base_class) {
@@ -65,14 +78,38 @@ Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full
 			auto context = ownify(kaba::Context::create());
 			auto s = context->load_module(session->storage->root_dir_kind[FD_SCRIPT] | f, true);
 			for (auto c: s->classes()) {
-				if (c->is_derived_from_s(full_base_class) and c->name != base_class)
-					r.add({f, c->name});
+				if (c->is_derived_from_s(full_base_class) and c->name != base_class) {
+					auto variables = load_variables(c);
+					r.add({f, c->name, variables});
+				}
 			}
 		} catch (Exception &e) {
 			msg_error(e.message());
 		}
 	}
 	return r;
+}
+
+
+void update_class(Session* session, ScriptInstanceData& _c) {
+	try {
+		auto context = ownify(kaba::Context::create());
+		auto s = context->load_module(session->storage->root_dir_kind[FD_SCRIPT] | _c.filename, true);
+		for (auto c: s->classes())
+			if (c->name == _c.class_name) {
+				auto variables = load_variables(c);
+				for (const auto& v: variables) {
+					bool has = false;
+					for (const auto& x: _c.variables)
+						if (x.name == v.name)
+							has = true;
+					if (!has)
+						_c.variables.add(v);
+				}
+			}
+	} catch (Exception &e) {
+		msg_error(e.message());
+	}
 }
 
 void ModeWorld::on_enter() {

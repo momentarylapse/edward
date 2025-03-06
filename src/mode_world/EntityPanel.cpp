@@ -352,6 +352,8 @@ Dialog material-panel ''
 	std::function<void(const ComplexPath&)> f_save;
 };
 
+void update_class(Session* session, ScriptInstanceData& _c);
+
 class UserComponentPanel : public xhui::Panel {
 public:
 	explicit UserComponentPanel(DataWorld* _data, int _index, int _cindex) : Panel("user-component-panel") {
@@ -364,8 +366,17 @@ Dialog user-component-panel ''
 		data = _data;
 		index = _index;
 		cindex = _cindex;
+
 		auto& e = data->entities[index];
-		set_string("group-component", e.components[cindex].class_name);
+		auto& cc = e.components[cindex];
+		update_class(data->session, cc);
+		set_string("group-component", cc.class_name);
+		set_target("grid-variables");
+		for (const auto& [i, v]: enumerate(cc.variables)) {
+			add_control("Label", v.name, 0, i, "");
+			add_control("Label", v.type, 1, i, "");
+			add_control("Edit", v.value, 2, i, format("var-%d", i));
+		}
 	}
 	DataWorld* data;
 	int index, cindex;
