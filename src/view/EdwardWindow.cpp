@@ -197,12 +197,10 @@ Dialog x x
 #endif
 		session->resource_manager = new ResourceManager({});
 		session->resource_manager->default_shader = "default.shader";
-#ifdef USING_VULKAN
-		session->drawing_helper = new DrawingHelper(pp->context, session->resource_manager);
-#else
+#ifdef USING_OPENGL
 		session->resource_manager->ctx = xhui::_nix_context.get();
-		session->drawing_helper = new DrawingHelper(session->resource_manager);
 #endif
+		session->drawing_helper = new DrawingHelper(pp->context, session->resource_manager);
 		try {
 			session->resource_manager->load_shader_module("module-basic-data.shader");
 			session->resource_manager->load_shader_module("module-basic-interface.shader");

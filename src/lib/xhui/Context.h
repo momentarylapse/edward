@@ -2,6 +2,8 @@
 
 #if HAS_LIB_VULKAN
 #include "../vulkan/vulkan.h"
+#else
+#include "../nix/nix.h"
 #endif
 
 
@@ -25,7 +27,9 @@ class Context {
 public:
 	explicit Context(Window* window);
 
+#if HAS_LIB_VULKAN
 	void _create_swap_chain_and_stuff();
+#endif
 	void api_init();
 	void rebuild_default_stuff();
 	void resize(int w, int h);

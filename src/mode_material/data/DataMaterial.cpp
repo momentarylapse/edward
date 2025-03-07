@@ -108,7 +108,7 @@ void DataMaterial::apply_for_rendering(int pass_no) const {
 }
 
 void DataMaterial::ShaderData::load_from_file(Session *s) {
-#if HAS_LIB_GL
+#if ksdjfhskdjfh
 	if (file.is_empty()) {
 		set_engine_default(s);
 		return;
