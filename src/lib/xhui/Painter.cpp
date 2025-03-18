@@ -14,14 +14,22 @@ void Painter::set_color(const color &c) {
 	_color = c;
 }
 
-void Painter::set_font(const string &font, float size, bool bold, bool italic) {
-	font_name = font;
-	font_size = size;
+font::Face* pick_font(const string &font, float size, bool bold, bool italic) {
+	font::Face* face;
 	if (bold)
 		face = default_font_bold;
 	else
 		face = default_font_regular;
 	face->set_size(size * ui_scale);
+	return face;
+}
+
+void Painter::set_font(const string &font, float size, bool bold, bool italic) {
+	if (font != "")
+		font_name = font;
+	if (font_size > 0)
+		font_size = size;
+	face = pick_font(font_name, font_size, bold, italic);
 }
 
 void Painter::set_font_size(float size) {

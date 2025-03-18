@@ -351,9 +351,14 @@ namespace event_id {
 static owned_array<XImage> _images_;
 
 Path find_image(const string& name) {
-	const auto path = Application::directory_static | "icons" | "hicolor" | "24x24" | "actions" | (name + ".png");
-	if (os::fs::exists(path))
-		return path;
+	Array<Path> paths;
+	paths.add(Application::directory_static | "icons" | "hicolor" | "64x64" | "actions" | (name + ".png"));
+	paths.add(Application::directory_static | "icons" | "hicolor" | "64x64" | "actions" | (name + ".symbolic.png"));
+	paths.add(Application::directory_static | "icons" | "hicolor" | "24x24" | "actions" | (name + ".png"));
+	paths.add(Application::directory_static | "icons" | "hicolor" | "24x24" | "actions" | (name + ".symbolic.png"));
+	for (const Path& p: paths)
+	if (os::fs::exists(p))
+		return p;
 	return "";
 }
 

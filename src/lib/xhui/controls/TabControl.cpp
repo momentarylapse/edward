@@ -15,12 +15,14 @@ class TabControlHeader : public Grid {
 public:
 	explicit TabControlHeader(const string& id, const Array<string>& headers, const std::function<void(int)>& f) : Grid(id) {
 		callback = f;
+		spacing = 2;
 		for (const auto&& [i, h] : enumerate(headers)) {
 			auto b = new CallbackToggleButton(id + i2s(i), h, [this, i=i] {
 				current_page = i;
 				update_buttons();
 				callback(i);
 			});
+			b->padding.x1 = b->padding.x2 = Theme::_default.button_margin_y;
 			b->size_mode_x = SizeMode::Shrink;
 			b->size_mode_y = SizeMode::Shrink;
 			b->flat = true;

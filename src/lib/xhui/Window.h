@@ -65,9 +65,7 @@ public:
 	bool button_down(int index) const;
 	bool is_key_pressed(int key) const;
 	void set_mouse_mode(int mode);
-
-protected:
-	GLFWwindow *window;
+	vec2 mouse_position() const;
 
 	struct InputState {
 		vec2 m;
@@ -76,6 +74,9 @@ protected:
 		bool key[256];
 		int key_code;
 	} state, state_prev;
+
+protected:
+	GLFWwindow *window;
 
 	Array<Event> event_stack;
 

@@ -569,6 +569,11 @@ void Window::set_mouse_mode(int mode) {
 	resync_next_mouse_move = true;
 }
 
+vec2 Window::mouse_position() const {
+	return state.m;
+}
+
+
 void Window::start_pre_drag(Control* source) {
 	drag.pre_distance = 0;
 	drag.source = source;
