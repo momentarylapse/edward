@@ -161,6 +161,7 @@ enum {
 
 	NUM_KEYS,
 
+	KEY_KEY_CODE,
 	KEY_ANY,
 	KEY_CONTROL = 256,
 	KEY_SHIFT = 512,

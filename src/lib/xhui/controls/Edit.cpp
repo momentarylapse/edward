@@ -91,32 +91,19 @@ void Edit::on_key_down(int key) {
 			emit_event(event_id::Changed, true);
 		}
 
-	auto insert = [this] (char c) {
-		text = text.sub_ref(0, cursor_pos) + string(&c, 1) + text.sub_ref(cursor_pos);
+	auto insert = [this] (int c) {
+		text = text.sub_ref(0, cursor_pos) + utf32_to_utf8({c}) + text.sub_ref(cursor_pos);
 		cache.rebuild(text);
 		cursor_pos ++;
 		on_edit();
 		emit_event(event_id::Changed, true);
 	};
-	if (key >= KEY_0 and key <= KEY_9)
-		insert('0' + (key - KEY_0));
-	if (key == KEY_DOT)
-		if (text.find(".") < 0 or !numerical)
-			insert('.');
-	if (key == KEY_MINUS)
-		insert('-');
-	if (!numerical) {
-		if (key >= KEY_A and key <= KEY_Z)
-			insert('a' + (key - KEY_A));
-		if (key == KEY_SPACE)
-			insert(' ');
-		if (key == KEY_COMMA)
-			insert(',');
-		if (key == KEY_PLUS)
-			insert('+');
+
+	if (key == KEY_KEY_CODE) {
+		auto c = owner->get_window()->state.key_char;
+		if (c != '\n' or multiline)
+			insert(c);
 	}
-	if (key == KEY_RETURN and multiline)
-		insert('\n');
 
 	request_redraw();
 }

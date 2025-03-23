@@ -59,9 +59,9 @@ void Group::negotiate_area(const rect& available) {
 }
 
 vec2 Group::get_content_min_size() const {
-	vec2 s = header.get_content_min_size();
+	vec2 s = header.get_effective_min_size();
 	if (child) {
-		vec2 cs = child->get_content_min_size();
+		vec2 cs = child->get_effective_min_size();
 		s.x = max(s.x, cs.x);
 		s.y += SPACING + cs.y;
 	}

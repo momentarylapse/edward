@@ -40,16 +40,16 @@ void Overlay::_draw(Painter *p) {
 vec2 Overlay::get_content_min_size() const {
 	vec2 s = {0, 0};
 	for (auto c: children)
-		s = vec2::max(s, c->get_content_min_size());
+		s = vec2::max(s, c->get_effective_min_size());
 	return s;
 }
 
 vec2 Overlay::get_greed_factor() const {
-	// SizeMode::Forward...
-	vec2 f = {0, 0};
+	// assume SizeMode::Forward...
 	for (auto c: children)
-		f = vec2::max(f, c->get_greed_factor());
-	return f;
+		// first child
+		return c->get_greed_factor();
+	return {0,0};
 }
 
 void Overlay::negotiate_area(const rect &available) {

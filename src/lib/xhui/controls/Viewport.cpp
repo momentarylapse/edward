@@ -56,7 +56,7 @@ void Viewport::_draw(Painter *p) {
 vec2 Viewport::get_content_min_size() const {
 	vec2 s = {min_width_user, min_height_user};
 	if (child) {
-		vec2 cs = child->get_content_min_size();
+		vec2 cs = child->get_effective_min_size();
 		if (size_mode_x == SizeMode::ForwardChild)
 			s.x = cs.x;
 		if (size_mode_y == SizeMode::ForwardChild)

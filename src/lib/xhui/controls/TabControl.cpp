@@ -61,10 +61,10 @@ vec2 TabControl::get_content_min_size() const {
 
 	for (const auto& p: pages)
 		if (p.child)
-			s = vec2::max(s, p.child->get_content_min_size());
+			s = vec2::max(s, p.child->get_effective_min_size());
 
 	{
-		vec2 cs = header->get_content_min_size();
+		vec2 cs = header->get_effective_min_size();
 		s.y += cs.y + Theme::_default.spacing;
 	}
 	return s;
@@ -73,7 +73,7 @@ vec2 TabControl::get_content_min_size() const {
 void TabControl::negotiate_area(const rect& available) {
 	_area = available;
 	{
-		vec2 s = header->get_content_min_size();
+		vec2 s = header->get_effective_min_size();
 		header->negotiate_area({available.p00(), available.p10() + vec2(0, s.y)});
 	}
 	for (auto& p: pages)

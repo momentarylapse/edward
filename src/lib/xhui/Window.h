@@ -73,6 +73,7 @@ public:
 		bool lbut, mbut, rbut;
 		bool key[256];
 		int key_code;
+		int key_char;
 	} state, state_prev;
 
 protected:
@@ -81,6 +82,7 @@ protected:
 	Array<Event> event_stack;
 
 	static void _key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+	static void _char_callback(GLFWwindow* window, unsigned int codepoint);
 	static void _cursor_position_callback(GLFWwindow *window, double xpos, double ypos);
 	static void _cursor_enter_callback(GLFWwindow *window, int enter);
 	static void _mouse_button_callback(GLFWwindow *window, int button, int action, int mods);

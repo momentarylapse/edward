@@ -45,6 +45,7 @@ Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":windo
 	padding = Theme::_default.window_margin;
 
 	glfwSetKeyCallback(window, _key_callback);
+	glfwSetCharCallback(window, _char_callback);
 	glfwSetCursorPosCallback(window, _cursor_position_callback);
 	glfwSetCursorEnterCallback(window, _cursor_enter_callback);
 	glfwSetMouseButtonCallback(window, _mouse_button_callback);
@@ -159,6 +160,7 @@ void Window::_key_callback(GLFWwindow *window, int key, int scancode, int action
 	//std::cout << "key " << k << "    " << key << " " << action << " " << mods << "\n";
 
 	w->state.key_code = k;
+	w->state.key_char = 0;
 
 	if (action == GLFW_PRESS or action == GLFW_REPEAT) {
 		//w->state.key
@@ -167,6 +169,13 @@ void Window::_key_callback(GLFWwindow *window, int key, int scancode, int action
 		w->_on_key_up(k);
 	}
 }
+
+void Window::_char_callback(GLFWwindow* window, unsigned int codepoint) {
+	auto w = (Window*)glfwGetWindowUserPointer(window);
+	w->state.key_char = (int)codepoint;
+	w->_on_key_down(KEY_KEY_CODE);
+}
+
 
 static bool resync_next_mouse_move = false;
 
