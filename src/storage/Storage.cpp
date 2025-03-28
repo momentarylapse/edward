@@ -359,7 +359,7 @@ base::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int pre
 			.then(on_select_base)
 			.on_fail([promise] () mutable { promise.fail(); });
 	else*/
-		xhui::FileSelectionDialog::ask(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter})
+		xhui::FileSelectionDialog::ask(session->win, title, last_dir[preferred], {"showfilter="+show_filter, "filter="+filter, save ? "save" : "open"})
 			.then(on_select_base)
 			.on_fail([promise] () mutable { promise.fail(); });
 #endif

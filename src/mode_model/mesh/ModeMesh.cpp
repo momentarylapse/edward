@@ -109,7 +109,10 @@ void ModeMesh::on_enter() {
 
 
 	event_ids.add(session->win->event("save", [this] {
-		session->storage->save(data->filename, data);
+		if (data->filename.is_empty())
+			session->storage->save_as(data);
+		else
+			session->storage->save(data->filename, data);
 	}));
 	event_ids.add(session->win->event("save-as", [this] {
 		session->storage->save_as(data);

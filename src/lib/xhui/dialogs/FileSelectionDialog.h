@@ -21,6 +21,7 @@ public:
 	base::promise<Path> promise;
 
 	bool saving;
+	Path selected_path() const;
 
 	static base::future<Path> ask(Panel* parent, const string& title, const Path &dir, const Array<string> &params);
 };

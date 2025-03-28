@@ -133,8 +133,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 
 	xml::Parser p;
 	p.load(filename);
-	auto *meta = p.elements[0].find("meta");
-	if (meta) {
+	if (auto *meta = p.elements[0].find("meta")) {
 		for (auto &e: meta->elements) {
 			if (e.tag == "background") {
 				data->meta_data.background_color = s2c(e.value("color", "0 0 0"));
@@ -171,8 +170,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	}
 
 
-	auto *cont = p.elements[0].find("3d");
-	if (cont) {
+	if (auto *cont = p.elements[0].find("3d")) {
 		for (auto &e: cont->elements) {
 			if (e.tag == "camera") {
 				WorldEntity c;
