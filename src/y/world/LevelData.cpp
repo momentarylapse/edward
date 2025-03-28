@@ -81,7 +81,7 @@ bool LevelData::load(const Path &filename) {
 				fog.end = e.value("end")._float();
 				fog.distance = 1.0f / e.value("density")._float();
 				fog._color = s2c(e.value("color"));
-			} else if (e.tag == "script") {
+			} else if (e.tag == "script" or e.tag == "system") {
 				ScriptData s;
 				s.filename = e.value("file");
 				s.class_name = e.value("class");

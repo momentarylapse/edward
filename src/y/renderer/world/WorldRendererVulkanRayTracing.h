@@ -55,7 +55,7 @@ public:
 		int _a;
 		int out_width, out_height;
 		float out_ratio;
-		int _b;
+		float t_rand;
 	} pc;
 
 	struct ComputeModeData {

@@ -75,6 +75,8 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(vulkan::Device *_de
 		compute.dset->update();
 	}
 
+	pc.t_rand = 0;
+
 
 	auto shader_out = resource_manager->load_shader("vulkan/passthrough.shader");
 	out_renderer = new ThroughShaderRenderer("out", shader_out);
@@ -93,6 +95,7 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 	pc.iview = scene_view.cam->view_matrix().inverse();
 	pc.background = world.background;
 	pc.num_lights = scene_view.lights.num;
+	pc.t_rand += loop(pc.t_rand + 0.01f, 0.0f, 10.678f);
 
 	auto cb = params.command_buffer;
 

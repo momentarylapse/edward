@@ -134,6 +134,13 @@ void ModeWorld::on_enter() {
 	auto tb = session->win->toolbar;
 	tb->set_by_id("world-toolbar");
 
+	session->win->event("save", [this] {
+		session->storage->save(data->filename, data);
+	});
+	session->win->event("save-as", [this] {
+		session->storage->save_as(data);
+	});
+
 	session->win->event("properties", [this] {
 		session->win->open_dialog(new PropertiesDialog(session->win, data));
 	});

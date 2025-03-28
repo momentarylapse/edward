@@ -28,6 +28,7 @@
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <data/mesh/VertexStagingBuffer.h>
+#include <storage/Storage.h>
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
@@ -106,6 +107,13 @@ void ModeMesh::on_enter() {
 	win->add_control("Button", "P", 0, 5, "add-platonic");
 	win->set_options("add-platonic", "height=50,width=50,noexpandx,ignorefocus");
 
+
+	event_ids.add(session->win->event("save", [this] {
+		session->storage->save(data->filename, data);
+	}));
+	event_ids.add(session->win->event("save-as", [this] {
+		session->storage->save_as(data);
+	}));
 
 	event_ids.add(session->win->event("mesh-visible0", [this] {
 		set_edit_mesh(data->mesh.get());

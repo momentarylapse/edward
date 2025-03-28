@@ -156,7 +156,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				data->meta_data.fog.end = e.value("end", "10000")._float();
 				data->meta_data.fog.density = e.value("density", "0")._float();
 				data->meta_data.fog.col = s2c(e.value("color", "0 0 0"));
-			} else if (e.tag == "script") {
+			} else if (e.tag == "script" or e.tag == "system") {
 				ScriptInstanceData s;
 				s.filename = e.value("file");
 				for (auto &ee: e.elements) {
