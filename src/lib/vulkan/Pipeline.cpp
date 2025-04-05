@@ -33,6 +33,8 @@ VkPrimitiveTopology parse_topology(const string &t) {
 		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	if (t == "triangles-fan")
 		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+	if (t == "patch-list")
+		return VK_PRIMITIVE_TOPOLOGY_PATCH_LIST;
 	msg_error("invalid topology: " + t);
 	return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 }
@@ -176,6 +178,13 @@ GraphicsPipeline::GraphicsPipeline(Shader *_shader, RenderPass *_render_pass, in
 	depth_stencil.depthBoundsTestEnable = VK_FALSE;
 	depth_stencil.stencilTestEnable = VK_FALSE;
 
+	tesselation = {};
+	if (input_assembly.topology == VK_PRIMITIVE_TOPOLOGY_PATCH_LIST) {
+		// TODO expose
+		tesselation.patchControlPoints = 4;
+		rasterizer.polygonMode = VK_POLYGON_MODE_LINE; // for debugging...
+	}
+
 	dynamic_states.add(VK_DYNAMIC_STATE_VIEWPORT);
 	set_viewport(rect(0, 400, 0, 400)); // always override dynamically!
 
@@ -307,6 +316,7 @@ void GraphicsPipeline::rebuild() {
 	pipeline_info.renderPass = render_pass->render_pass;
 	pipeline_info.subpass = subpass;
 	pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
+	pipeline_info.pTessellationState = &tesselation;
 	pipeline_info.pDynamicState = &dynamic_state;
 
 	if (vkCreateGraphicsPipelines(default_device->device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline) != VK_SUCCESS)
