@@ -178,7 +178,7 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		read_color_argb(f, data->appearance.albedo);
 		read_color_argb(f, cc);
 		data->appearance.metal = 0.1f;
-		/*shininess =*/ (float)f->read_int();
+		[[maybe_unused]] auto shininess = (float)f->read_int();
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
@@ -219,7 +219,7 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		read_color_argb(f, data->appearance.albedo);
 		read_color_argb(f, cc);
 		data->appearance.metal = 0.1f;
-		/*shininess =*/ (float)f->read_int();
+		[[maybe_unused]] auto shininess = (float)f->read_int();
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();

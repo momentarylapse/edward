@@ -339,7 +339,7 @@ Dialog test ''
 		});
 	});
 
-	xhui::run_later(0.1f, [this] {
+	xhui::run_repeated(0.5f, [this] {
 		request_redraw();
 	});
 }
