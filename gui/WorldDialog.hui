@@ -1,4 +1,4 @@
-Dialog world_dialog "World properties" width=520 height=420 resizable headerbar closebutton=no borderwidth=0
+Dialog world_dialog "World properties" width=520 height=420 resizable headerbar closebutton=no __borderwidth=0
 	Grid ? "" vertical
 		TabControl world_dialog_tab_control "Background\\Fog\\Physics\\Scripts"
 			Grid ? "" vertical

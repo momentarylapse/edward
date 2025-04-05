@@ -10,10 +10,20 @@
 namespace xhui {
 
 class DialogHeader;
+class DialogOutside;
+
+enum class DialogFlags {
+	None = 0,
+	NoHeader = 1,
+	CloseByEscape = 2,
+	CloseByClickOutside = 4
+};
+DialogFlags operator|(DialogFlags a, DialogFlags b);
+bool operator&(DialogFlags a, DialogFlags b);
 
 class Dialog : public Panel {
 public:
-	Dialog(const string& title, int width, int height, Panel* parent);
+	Dialog(const string& title, int width, int height, Panel* parent, DialogFlags flags = DialogFlags::None);
 	Dialog(const string& id, Panel* parent);
 	~Dialog() override;
 	void negotiate_area(const rect& available) override;
@@ -26,9 +36,10 @@ public:
 	void set_title(const string& title);
 
 	int width, height;
-	float padding;
+	DialogFlags flags;
 	bool _destroy_requested = false;
 	owned<DialogHeader> header;
+	owned<DialogOutside> outside;
 };
 
 } // xhui

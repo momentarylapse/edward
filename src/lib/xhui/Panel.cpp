@@ -47,7 +47,7 @@ void Panel::_draw(Painter *p) {
 void Panel::negotiate_area(const rect &available) {
 	_area = available;
 	if (top_control)
-		top_control->negotiate_area(smaller_rect(_area, padding));
+		top_control->negotiate_area(_area.grow(-padding));
 
 	/*Array<int> w, h;
 	get_grid_min_sizes(w, h);
@@ -82,7 +82,8 @@ void Panel::negotiate_area(const rect &available) {
 
 vec2 Panel::get_content_min_size() const {
 	if (top_control)
-		return top_control->get_content_min_size();
+		return top_control->get_effective_min_size() + vec2(padding, padding) * 2;
+		//return top_control->get_content_min_size();
 	return {0, 0};
 }
 

@@ -175,7 +175,7 @@ void Edit::_draw(Painter *p) {
 		float dr = Theme::_default.focus_frame_width;
 		p->set_roundness(Theme::_default.button_radius - dr);
 		p->set_color(bg);
-		p->draw_rect(smaller_rect(_area, dr));
+		p->draw_rect(_area.grow(-dr));
 	}
 	p->set_line_width(1);
 	p->set_roundness(0);

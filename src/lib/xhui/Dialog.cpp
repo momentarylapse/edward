@@ -17,6 +17,14 @@ namespace xhui {
 
 static constexpr float HEADER_HEIGHT = 30;
 
+DialogFlags operator|(DialogFlags a, DialogFlags b) {
+	return (DialogFlags)((int)a | (int)b);
+}
+
+bool operator&(DialogFlags a, DialogFlags b) {
+	return (int)a & (int)b;
+}
+
 class DialogHeader : public Grid {
 public:
 	DialogHeader(const string& id, const string& title, const std::function<void()>& f) : Grid(id) {
@@ -36,11 +44,28 @@ public:
 	CallbackButton* close_button;
 };
 
-Dialog::Dialog(const string& _title, int _width, int _height, Panel* parent) : Panel("dialog") {
-	header = new DialogHeader(id + ":header", _title, [this] {
-		if (!handle_event(event_id::Close, event_id::Close, true))
+class DialogOutside : public Control {
+public:
+	explicit DialogOutside(const std::function<void()>& f) : Control(":outside:") {
+		f_click = f;
+	}
+	void on_left_button_down(const vec2& m) override {
+		f_click();
+	}
+	std::function<void()> f_click;
+};
+
+Dialog::Dialog(const string& _title, int _width, int _height, Panel* parent, DialogFlags _flags) : Panel("dialog") {
+	flags = _flags;
+	outside = new DialogOutside([this] {
+		if (flags & DialogFlags::CloseByClickOutside)
 			request_destroy();
 	});
+	if (!(flags & DialogFlags::NoHeader))
+		header = new DialogHeader(id + ":header", _title, [this] {
+			if (!handle_event(event_id::Close, event_id::Close, true))
+				request_destroy();
+		});
 	width = _width;
 	height = _height;
 	_area = {0, (float)width, 0, (float)height};
@@ -54,18 +79,27 @@ Dialog::Dialog(const string& id, Panel* parent) : Dialog("", 400, 300, parent) {
 Dialog::~Dialog() = default;
 
 Array<Control*> Dialog::get_children(ChildFilter f) const {
+	Array<Control*> r;
+	r.add(outside.get());
+	if (header)
+		r.add(header.get());
 	if (top_control)
-		return {header.get(), top_control.get()};
-	return {header.get()};
+		r.add(top_control.get());
+	return r;
 }
 
 
 
 void Dialog::negotiate_area(const rect& available) {
-	_area = {available.p00() - vec2(0, HEADER_HEIGHT), available.p11()};
-	header->negotiate_area({_area.p00(), available.p10()});
+	outside->_area = {0, 10000, 0, 10000}; // what could go wrong :P
+	if (header) {
+		_area = {available.p00() - vec2(0, HEADER_HEIGHT), available.p11()};
+		header->negotiate_area({_area.p00(), available.p10()});
+	} else {
+		_area = {available.p00(), available.p11()};
+	}
 	if (top_control)
-		top_control->negotiate_area(smaller_rect(available, padding));
+		top_control->negotiate_area(available.grow(- padding));
 }
 
 void Dialog::_draw(Painter* p) {
@@ -81,7 +115,8 @@ void Dialog::_draw(Painter* p) {
 	p->draw_rect(_area);
 	p->set_roundness(0);
 
-	header->_draw(p);
+	if (header)
+		header->_draw(p);
 	if (top_control)
 		top_control->_draw(p);
 }

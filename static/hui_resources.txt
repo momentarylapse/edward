@@ -8069,7 +8069,7 @@ image=view-pop
 # Resource
 Dialog
 world_dialog
-width=520,height=420,resizable,headerbar,closebutton=no,borderwidth=0
+width=520,height=420,resizable,headerbar,closebutton=no,__borderwidth=0
 0
 0
 1

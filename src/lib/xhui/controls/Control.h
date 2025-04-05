@@ -12,8 +12,6 @@ class Painter;
 class Window;
 class Panel;
 
-rect smaller_rect(const rect& r, float d);
-
 enum class ChildFilter {
 	All,
 	OnlyActive

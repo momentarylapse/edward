@@ -6,9 +6,6 @@
 namespace xhui {
 
 
-rect smaller_rect(const rect& r, float d) {
-	return rect(r.x1 + d, r.x2 - d, r.y1 + d, r.y2 - d);
-}
 
 Control::Control(const string &_id) {
 	id = _id;
