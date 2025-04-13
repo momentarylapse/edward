@@ -63,8 +63,8 @@ vec2 TabControl::get_content_min_size() const {
 		if (p.child)
 			s = vec2::max(s, p.child->get_effective_min_size());
 
-	{
-		vec2 cs = header->get_effective_min_size();
+	if (show_header) {
+		const vec2 cs = header->get_effective_min_size();
 		s.y += cs.y + Theme::_default.spacing;
 	}
 	return s;
@@ -72,13 +72,15 @@ vec2 TabControl::get_content_min_size() const {
 
 void TabControl::negotiate_area(const rect& available) {
 	_area = available;
-	{
-		vec2 s = header->get_effective_min_size();
+	vec2 p00 = available.p00();
+	if (show_header) {
+		const vec2 s = header->get_effective_min_size();
 		header->negotiate_area({available.p00(), available.p10() + vec2(0, s.y)});
+		p00 = header->_area.p01() + vec2(0, Theme::_default.spacing);
 	}
 	for (auto& p: pages)
 		if (p.child)
-			p.child->negotiate_area({header->_area.p01() + vec2(0, Theme::_default.spacing), available.p11()});
+			p.child->negotiate_area({p00, available.p11()});
 }
 
 vec2 TabControl::get_greed_factor() const {
@@ -91,7 +93,8 @@ vec2 TabControl::get_greed_factor() const {
 
 Array<Control*> TabControl::get_children(ChildFilter f) const {
 	Array<Control*> children;
-	children.add(header.get());
+	if (f == ChildFilter::All or show_header)
+		children.add(header.get());
 	for (auto&& [i, p]: enumerate(pages))
 		if (p.child and (f == ChildFilter::All or i == current_page))
 			children.add(p.child.get());
@@ -103,6 +106,10 @@ void TabControl::add_child(shared<Control> c, int x, int y) {
 		if (pages[x].child)
 			pages[x].child->_unregister();
 		pages[x].child = c;
+		if (owner)
+			c->_register(owner);
+	} else if (x == pages.num) {
+		pages.add({"+", c});
 		if (owner)
 			c->_register(owner);
 	}
@@ -118,11 +125,22 @@ void TabControl::set_int(int i) {
 }
 
 void TabControl::_draw(Painter* p) {
-	header->_draw(p);
+	if (show_header)
+		header->_draw(p);
 
 	if (pages[current_page].child)
 		pages[current_page].child->_draw(p);
 }
+
+void TabControl::set_option(const string& key, const string& value) {
+	if (key == "bar") {
+		show_header = value._bool();
+		request_redraw();
+	} else {
+		Control::set_option(key, value);
+	}
+}
+
 
 
 

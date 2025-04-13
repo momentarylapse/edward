@@ -304,6 +304,15 @@ void Panel::set_options(const string& id, const string& options) {
 	});
 }
 
+void Panel::set_option(const string& key, const string& value) {
+	if (key == "padding") {
+		padding = value._float();
+	} else {
+		Control::set_option(key, value);
+	}
+}
+
+
 
 Array<Control*> Panel::get_children(ChildFilter) const {
 	if (top_control)

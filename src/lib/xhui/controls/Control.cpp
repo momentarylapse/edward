@@ -160,9 +160,11 @@ void Control::set_option(const string& key, const string& value) {
 		request_redraw();
 	} else if (key == "width") {
 		min_width_user = value._int();
+		size_mode_x = SizeMode::Shrink;
 		request_redraw();
 	} else if (key == "height") {
 		min_height_user = value._int();
+		size_mode_y = SizeMode::Shrink;
 		request_redraw();
 	} else if (key == "ignorehover") {
 		ignore_hover = true;

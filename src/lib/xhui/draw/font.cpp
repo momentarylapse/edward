@@ -63,10 +63,17 @@ Face* load_face(const string& name, bool bold, bool italic) {
 		return true;
 	};
 
+	string namex = name;
+	if (bold)
+		namex = name + " Bold";
+
 	//msg_write(os::fs::current_directory().str());
 	if (!try_load_font(format("/System/Library/Fonts/%s.ttc", name)))
+	if (!try_load_font(format("/System/Library/Fonts/Supplemental/%s.ttc", name)))
+	if (!try_load_font(format("/System/Library/Fonts/Supplemental/%s.ttf", namex)))
 	if (!try_load_font(format("/usr/share/fonts/noto/%s-%s.ttf", name, type)))
 	if (!try_load_font(format("/usr/share/fonts/open-sans/%s-%s.ttf", name, type)))
+	if (!try_load_font(format("/usr/share/fonts/Adwaita/%s-%s.ttf", name, type)))
 	if (!try_load_font(format("static/%s-%s.ttf", name, type))) {
 		delete face;
 		return nullptr;
@@ -83,6 +90,9 @@ void Face::set_size(float size) {
 	// size: points<<6
 	FT_Set_Char_Size(face, 0, int(size*64.0f), (int)dpi, (int)dpi);
 	current_size = size;
+
+	FT_Load_Char(face, ' ', FT_LOAD_DEFAULT);
+	tab_dx = (int)(face->glyph->advance.x >> 6) * 4;
 }
 
 float Face::units_to_pixel(float units) const {
@@ -111,6 +121,10 @@ TextDimensions Face::get_text_dimensions(const string &text) {
 			wmax = max(wmax, x);
 			x = 0;
 			dim.num_lines ++;
+			continue;
+		}
+		if (u == '\t') {
+			x = ((x / tab_dx) + 1) * tab_dx;
 			continue;
 		}
 		int error = FT_Load_Char(face, u, FT_LOAD_DEFAULT);
@@ -160,11 +174,6 @@ void Face::render_text(const string &text, xhui::Align align, Image &im) {
 
 	//font_set_font(font_name, font_size);
 
-	/*int nn = 1;
-	for (int u: utf32)
-		if (u == '\n')
-			nn ++;*/
-
 	im.create(dim.bounding_width, dim.bounding_height, color(0,0,0,0));
 
 	int x=0, y = dim.bounding_top_to_line;
@@ -173,6 +182,10 @@ void Face::render_text(const string &text, xhui::Align align, Image &im) {
 		if (u == '\n') {
 			x = 0;
 			y += dim.line_dy;
+			continue;
+		}
+		if (u == '\t') {
+			x = ((x / tab_dx) + 1) * tab_dx;
 			continue;
 		}
 		int error = FT_Load_Char(face, u, FT_LOAD_RENDER);

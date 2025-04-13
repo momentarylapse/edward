@@ -15,15 +15,6 @@ find_package(PkgConfig REQUIRED)
 
 
 
-# lib: gtk4 (mandatory)
-pkg_check_modules(GTK4 REQUIRED gtk4)
-list(APPEND INCLUDE_DIRECTORIES ${GTK4_INCLUDE_DIRS})
-list(APPEND LINK_DIRECTORIES ${GTK4_LIBRARY_DIRS})
-list(APPEND DEPS ${GTK4_LIBRARIES})
-list(APPEND COMPILE_OPTIONS ${GTK4_CFLAGS_OTHER})
-list(APPEND COMPILE_DEFINITIONS HAS_LIB_GTK4=1)
-
-
 # lib: zlib (mandatory)
 find_package(ZLIB REQUIRED)
 list(APPEND DEPS ZLIB::ZLIB)
@@ -546,7 +537,7 @@ add_executable(edward
 target_include_directories(edward PUBLIC ${INCLUDE_DIRECTORIES})
 target_link_directories(edward PUBLIC ${LINK_DIRECTORIES})
 target_compile_options(edward PUBLIC ${COMPILE_OPTIONS})
-target_compile_definitions(edward PUBLIC ${COMPILE_DEFINITIONS} INSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
+target_compile_definitions(edward PUBLIC ${COMPILE_DEFINITIONS}  INSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
 target_link_libraries(edward PUBLIC ${DEPS})
 target_include_directories(edward PUBLIC src)
 target_include_directories(edward PUBLIC src/y)

@@ -112,6 +112,14 @@ int key_decode(int key) {
 		return xhui::KEY_LCONTROL;
 	if (key == GLFW_KEY_RIGHT_CONTROL)
 		return xhui::KEY_RCONTROL;
+	if (key == GLFW_KEY_LEFT_ALT)
+		return xhui::KEY_LALT;
+	if (key == GLFW_KEY_RIGHT_ALT)
+		return xhui::KEY_RALT;
+	/*if (key == GLFW_KEY_LEFT_SUPER)
+		return xhui::KEY_LSUPER;
+	if (key == GLFW_KEY_RIGHT_SUPER)
+		return xhui::KEY_RSUPER;*/
 	if (key == GLFW_KEY_PAGE_UP)
 		return xhui::KEY_PAGE_UP;
 	if (key == GLFW_KEY_PAGE_DOWN)
@@ -131,19 +139,20 @@ int key_decode(int key) {
 
 int mods_decode(int mods) {
 	int r = 0;
-	if (mods == GLFW_MOD_SHIFT)
-		r += xhui::KEY_SHIFT;
-	if (mods == GLFW_MOD_CONTROL)
-		r += xhui::KEY_CONTROL;
-	if (mods == GLFW_MOD_ALT)
-		r += xhui::KEY_ALT;
-	//if (mods == GLFW_MOD_SUPER)
-	//	r += xhui::KEY_SUPER;
+	if (mods & GLFW_MOD_SHIFT)
+		r += KEY_SHIFT;
+	if (mods & GLFW_MOD_CONTROL)
+		r += KEY_CONTROL;
+	if (mods & GLFW_MOD_ALT)
+		r += KEY_ALT;
+	if (mods & GLFW_MOD_SUPER)
+		r += KEY_SUPER;
 	return r;
 }
 
 
 void Window::_key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+	//msg_write(format("  glfw:  %d", key));
 	int k = key_decode(key);
 	if (k < 0)
 		return;
@@ -157,7 +166,7 @@ void Window::_key_callback(GLFWwindow *window, int key, int scancode, int action
 	}
 
 	k += mods_decode(mods);
-	//std::cout << "key " << k << "    " << key << " " << action << " " << mods << "\n";
+	//msg_write(format("key  %d  %d  %d  %d", k, key, action, mods));
 
 	w->state.key_code = k;
 	w->state.key_char = 0;
@@ -171,6 +180,7 @@ void Window::_key_callback(GLFWwindow *window, int key, int scancode, int action
 }
 
 void Window::_char_callback(GLFWwindow* window, unsigned int codepoint) {
+	//msg_write(format("  glfw  char:  %d", codepoint));
 	auto w = (Window*)glfwGetWindowUserPointer(window);
 	w->state.key_char = (int)codepoint;
 	w->_on_key_down(KEY_KEY_CODE);
@@ -367,6 +377,9 @@ void Window::_on_mouse_wheel(const vec2 &d) {
 	on_mouse_wheel(d);
 }
 void Window::_on_key_down(int k) {
+	for (const auto& e: event_key_codes)
+		if (k == e.key_code)
+			handle_event(e.id, event_id::Activate, true);
 	if (focus_control)
 		focus_control->on_key_down(k);
 	on_key_down(k);
@@ -504,6 +517,7 @@ void Window::_handle_events() {
 
 void Window::set_title(const string& t) {
 	title = t;
+	glfwSetWindowTitle(window, t.c_str());
 	redraw("");
 }
 
@@ -536,6 +550,14 @@ Control *Window::get_hover_control(const vec2 &p) {
 	}
 	return best;
 }
+
+void Window::focus(const string& id) {
+	if (auto c = get_control(id)) {
+		if (c->can_grab_focus)
+			focus_control = c;
+	}
+}
+
 
 
 bool Window::button(int index) const {
@@ -596,6 +618,16 @@ void Window::start_drag(const string& title, const string& payload) {
 	request_redraw();
 }
 
+void Window::set_key_code(const string &id, int key_code) {
+	// make sure, each id has only 1 code
+	//   (multiple ids may have the same code)
+	for (auto &e: event_key_codes)
+		if (e.id == id) {
+			e.key_code = key_code;
+			return;
+		}
+	event_key_codes.add({id, key_code});
+}
 
 
 void Window::request_destroy() {

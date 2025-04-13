@@ -36,6 +36,8 @@ struct Face {
 	FT_Face face;
 	float current_size = 0;
 
+	int tab_dx = 0;
+
 	void set_size(float size);
 	float units_to_pixel(float units) const;
 	float get_text_width(const string &text);

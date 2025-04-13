@@ -21,10 +21,12 @@ public:
 	void add_child(shared<Control> c, int x, int y) override;
 	Array<Control*> get_children(ChildFilter f) const override;
 	void _draw(Painter* p) override;
+	void set_option(const string& key, const string& value) override;
 
 	void set_int(int i) override;
 	int get_int() override;
 
+	bool show_header = true;
 	owned<TabControlHeader> header;
 	struct Page {
 		string header;

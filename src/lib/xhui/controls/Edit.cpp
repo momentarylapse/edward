@@ -1,4 +1,9 @@
 #include "Edit.h"
+
+#include <lib/base/algo.h>
+#include <lib/base/sort.h>
+#include <lib/os/time.h>
+
 #include "../Painter.h"
 #include "../Theme.h"
 #include "../draw/font.h"
@@ -7,12 +12,46 @@
 
 namespace xhui {
 
+
+//#define PERF_OUT
+
+
+FontFlags operator|(FontFlags a, FontFlags b) {
+	return (FontFlags)((int)a | (int)b);
+}
+bool operator&(FontFlags a, FontFlags b) {
+	return (int)a & (int)b;
+}
+
+int next_utf8_index(const string& text, int index) {
+	for (int i=index; i<min(index + 8, text.num); i++)
+		if ((text[i] & 0x80) == 0x00 or (text[i] & 0xc0) == 0x80)
+			return i + 1;
+	return index;
+}
+
+int prior_utf8_index(const string& text, int index) {
+	for (int i=max(index-1,0); i>=index-8; i--)
+		if ((text[i] & 0x80) == 0x00 or (text[i] & 0xc0) == 0xc0)
+			return i;
+	return index;
+}
+
 Edit::Edit(const string &_id, const string &t) : Control(_id) {
 	//state = State::DEFAULT;
 	can_grab_focus = true;
 
 	size_mode_x = SizeMode::Expand;
 	size_mode_y = SizeMode::Shrink;
+
+	font_name = Theme::_default.font_name;
+	font_size = Theme::_default.font_size;
+
+	margin_x = Theme::_default.edit_margin_x;
+	margin_y = 8;
+
+	tab_size = 4;
+	face = nullptr;
 
 	Edit::set_string(t);
 }
@@ -33,7 +72,7 @@ void Edit::Cache::rebuild(const string& text) {
 void Edit::set_string(const string &s) {
 	text = s;
 	cache.rebuild(text);
-	cursor_pos = text.num;
+	set_cursor_pos(0);
 	request_redraw();
 }
 
@@ -51,6 +90,24 @@ vec2 Edit::get_content_min_size() const {
 	return {80, 30};
 }
 
+void Edit::on_left_button_down(const vec2& m) {
+	set_cursor_pos(xy_to_index(m));
+}
+
+void Edit::on_mouse_move(const vec2& m, const vec2& d) {
+	if (owner->get_window()->button(0)) {
+		set_cursor_pos(xy_to_index(m), true);
+	}
+}
+
+void Edit::on_mouse_wheel(const vec2& d) {
+	auto mm = cache.content_size - _area.size();
+	viewport_offset = vec2::max(vec2::min(viewport_offset - d * 10, mm), vec2::ZERO);
+	request_redraw();
+	emit_event(event_id::Scroll, false);
+}
+
+
 void Edit::on_key_down(int key) {
 	if (!enabled) {
 		request_redraw();
@@ -58,52 +115,88 @@ void Edit::on_key_down(int key) {
 	}
 	const auto cur_lp = index_to_line_pos(cursor_pos);
 
-	if (key == KEY_LEFT)
-		cursor_pos = clamp(cursor_pos - 1, 0, text.num);
-	if (key == KEY_RIGHT)
-		cursor_pos = clamp(cursor_pos + 1, 0, text.num);
-	if (key == KEY_HOME)
-		cursor_pos = cache.line_first_index[cur_lp.line];
-	if (key == KEY_END)
-		cursor_pos = cache.line_first_index[cur_lp.line] + cache.line_num_characters[cur_lp.line];
+	bool shift = (key & KEY_SHIFT);
+	int key_no_shift = key & ~KEY_SHIFT;
 
-	auto jump_lines = [this, cur_lp] (int dlines) {
-		cursor_pos = line_pos_to_index({cur_lp.line + dlines, cur_lp.offset});
+	if (key_no_shift == KEY_LEFT)
+		set_cursor_pos(clamp(prior_index(cursor_pos), 0, text.num), shift);
+	if (key_no_shift == KEY_RIGHT)
+		set_cursor_pos(clamp(next_index(cursor_pos), 0, text.num), shift);
+#ifdef OS_MAC
+	if (key_no_shift == KEY_LEFT + KEY_ALT)
+#else
+	if (key_no_shift == KEY_HOME)
+#endif
+		set_cursor_pos(cache.line_first_index[cur_lp.line], shift);
+#ifdef OS_MAC
+	if (key_no_shift == KEY_RIGHT + KEY_ALT)
+#else
+	if (key_no_shift == KEY_END)
+#endif
+		set_cursor_pos(cache.line_first_index[cur_lp.line] + cache.line_num_characters[cur_lp.line], shift);
+
+	auto jump_lines = [this, cur_lp, shift] (int dlines) {
+		set_cursor_pos(line_pos_to_index({cur_lp.line + dlines, cur_lp.offset}), shift);
 	};
-	if (key == KEY_UP and multiline)
+	if (key_no_shift == KEY_UP and multiline)
 		jump_lines(-1);
-	if (key == KEY_DOWN and multiline)
+	if (key_no_shift == KEY_DOWN and multiline)
 		jump_lines(1);
 
-	if (key == KEY_BACKSPACE)
-		if (cursor_pos > 0) {
-			text = text.sub_ref(0, cursor_pos - 1) + text.sub_ref(cursor_pos);
-			cache.rebuild(text);
-			cursor_pos --;
-			on_edit();
-			emit_event(event_id::Changed, true);
-		}
-	if (key == KEY_DELETE)
-		if (cursor_pos < text.num) {
-			text = text.sub_ref(0, cursor_pos) + text.sub_ref(cursor_pos + 1);
-			cache.rebuild(text);
-			on_edit();
-			emit_event(event_id::Changed, true);
-		}
 
-	auto insert = [this] (int c) {
-		text = text.sub_ref(0, cursor_pos) + utf32_to_utf8({c}) + text.sub_ref(cursor_pos);
-		cache.rebuild(text);
-		cursor_pos ++;
-		on_edit();
-		emit_event(event_id::Changed, true);
-	};
+#ifdef OS_MAC
+	int mod = KEY_SUPER;
+#else
+	int mod = KEY_CONTROL;
+#endif
+
+	if (key == KEY_C + mod)
+		clipboard::copy(get_range(selection_start, cursor_pos));
+	if (key == KEY_V + mod)
+		auto_insert(clipboard::paste());
+	if (key == KEY_X + mod) {
+		clipboard::copy(get_range(selection_start, cursor_pos));
+		delete_selection();
+	}
+	if (key == KEY_Z + mod and current_history_index > 0) {
+		auto& op = history[-- current_history_index];
+		string old = get_range(op.i0, op.i1);
+		_replace_range(op.i0, op.i1, op.t);
+		op.i1 = op.i0 + op.t.num;
+		op.t = old;
+	}
+	if (key == KEY_Y + mod and current_history_index < history.num) {
+		auto& op = history[current_history_index ++];
+		string old = get_range(op.i0, op.i1);
+		_replace_range(op.i0, op.i1, op.t);
+		op.i1 = op.i0 + op.t.num;
+		op.t = old;
+	}
+
+	if (key == KEY_BACKSPACE) {
+		if (cursor_pos != selection_start) {
+			delete_selection();
+		} else if (cursor_pos > 0) {
+			delete_range(prior_index(cursor_pos), cursor_pos);
+		}
+	}
+	if (key == KEY_DELETE) {
+		if (cursor_pos != selection_start) {
+			delete_selection();
+		} else if (cursor_pos < text.num) {
+			delete_range(cursor_pos, next_index(cursor_pos));
+		}
+	}
 
 	if (key == KEY_KEY_CODE) {
 		auto c = owner->get_window()->state.key_char;
 		if (c != '\n' or multiline)
-			insert(c);
+			auto_insert(utf32_to_utf8({c}));
 	}
+	if (key == KEY_RETURN and multiline)
+		auto_insert("\n");
+	if (key == KEY_TAB and multiline)
+		auto_insert("\t");
 
 	request_redraw();
 }
@@ -113,7 +206,16 @@ void Edit::draw_active_marker(Painter* p) {
 }
 
 void Edit::draw_text(Painter* p) {
-	p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
+#ifdef PERF_OUT
+	os::Timer timer;
+#endif
+
+	const auto clip0 = p->clip();
+	p->set_clip(_area);
+	p->set_font(font_name, font_size, false, false);
+	face = p->face;
+
+	text_x0 = _area.x1 + margin_x - viewport_offset.x;
 
 	// update text dims
 	float inner_height = 0;
@@ -122,53 +224,218 @@ void Edit::draw_text(Painter* p) {
 		cache.line_y0.clear();
 		cache.line_height.clear();
 		cache.line_width.clear();
-		float y0 = _area.y1 + 8;
+		float y0 = _area.y1 + margin_y - viewport_offset.y;
+		cache.content_size = {0,0};
 		for (const string &l: lines) {
-			auto dim = default_font_regular->get_text_dimensions(l);
+			auto dim = face->get_text_dimensions(l);
 			inner_height = dim.inner_height() / ui_scale;
-			cache.line_height.add(dim.line_dy / ui_scale);
+			float dy = dim.line_dy / ui_scale * line_height_scale;
+			cache.line_height.add(dy);
 			cache.line_y0.add(y0);
 			cache.line_width.add(dim.dx / ui_scale);
-			y0 += dim.line_dy / ui_scale;
+			cache.content_size.x = max(cache.content_size.x, dim.dx / ui_scale);
+			y0 += dy;
+			cache.content_size.y += dy;
 		}
 		if (!multiline)
 			cache.line_y0[0] = _area.center().y - inner_height / 2;
 	}
 
+	// selection
+	if (cursor_pos != selection_start) {
+		p->set_color(color(0.4f, 0.2f, 0.2f, 1.0f));
+		auto a = cursor_pos;
+		auto b = selection_start;
+		if (a > b)
+			std::swap(a, b);
+		const auto lp0 = index_to_line_pos(a);
+		const auto lp1 = index_to_line_pos(b);
+		for (int l=lp0.line; l<=lp1.line; l++) {
+			float x0 = (l == lp0.line) ? index_to_xy(a).x : text_x0;
+			float x1 = (l == lp1.line) ? index_to_xy(b).x : text_x0 + cache.line_width[l];
+			p->draw_rect({x0, x1, cache.line_y0[l], cache.line_y0[l] + cache.line_height[0]});
+		}
+		if (lp1.line == lp0.line) {
+			const vec2 pos0 = index_to_xy(a);
+			const vec2 pos1 = index_to_xy(b);
+			p->draw_rect({pos0.x, pos1.x, pos0.y, pos0.y + cache.line_height[0]});
+		}
+	}
+
 
 	// text
-	float x0 = _area.x1 + Theme::_default.edit_margin_x;
-	p->set_color(Theme::_default.text_label);
+	color col0 = Theme::_default.text_label;
 	if (!enabled)
-		p->set_color(Theme::_default.text_disabled);
+		col0 = Theme::_default.text_disabled;
+	p->set_color(col0);
 	for (const auto& [line, l]: enumerate(cache.lines)) {
-		p->draw_str({x0, cache.line_y0[line]}, l);
+		if (cache.line_y0[line] + cache.line_height[line] < _area.y1)
+			continue;
+		if (cache.line_y0[line] > _area.y2)
+			continue;
+		if (markups.num > 0) {
+			int i0 = cache.line_first_index[line];
+			int i1 = i0 + l.num;
+			float x0 = text_x0;
+			for (const auto& m: markups) {
+				if (m.i1 >= i0 and m.i0 <= i1) {
+					if (m.i0 > i0) {
+						// before marker
+						p->set_font(font_name, font_size, false, false);
+						p->set_color(col0);
+						string t = text.sub(i0, m.i0);
+						p->draw_str({x0, cache.line_y0[line]}, t);
+						x0 += p->get_str_width(t);
+						i0 = m.i0;
+					}
+
+					{
+						// marker
+						p->set_color(m.col);
+						p->set_font(font_name, font_size, m.flags & FontFlags::Bold, m.flags & FontFlags::Italic);
+						string t = text.sub(i0, min(m.i1, i1));
+						p->draw_str({x0, cache.line_y0[line]}, t);
+						x0 += p->get_str_width(t);
+						i0 = min(m.i1, i1);
+					}
+				}
+			}
+
+			if (i0 < i1) {
+				// after markers
+				p->set_color(col0);
+				p->set_font(font_name, font_size, false, false);
+				string t = text.sub(i0, i1);
+				p->draw_str({x0, cache.line_y0[line]}, t);
+			}
+
+		} else {
+			p->draw_str({text_x0, cache.line_y0[line]}, l);
+		}
 	}
 
 	// cursor
 	if (has_focus() and enabled) {
-		p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
-		auto lp = index_to_line_pos(cursor_pos);
-		int first = cache.line_first_index[lp.line];
-		auto dim = default_font_regular->get_text_dimensions(text.sub_ref(first, cursor_pos));
-		//p->set_color(Theme::_default.text_label);
-		float x = x0 + dim.bounding_width / ui_scale;
-		float y0 = cache.line_y0[lp.line];
-		p->draw_line({x, y0 - 3}, {x, y0 + Theme::_default.font_size + 3});
+		const vec2 pos = index_to_xy(cursor_pos);
+		p->draw_line({pos.x, pos.y}, {pos.x, pos.y + cache.line_height[0]});
 	}
+	p->set_clip(clip0);
+
+#ifdef PERF_OUT
+	float t = timer.get();
+	msg_write(f2s(t * 1000, 2));
+#endif
 }
+
+string Edit::get_range(Index _i0, Index _i1) const {
+	auto i0 = min(_i0, _i1);
+	auto i1 = max(_i0, _i1);
+	return text.sub(i0, i1);
+}
+
+void Edit::delete_range(Index i0, Index i1) {
+	replace_range(i0, i1, "");
+}
+
+void Edit::delete_selection() {
+	delete_range(selection_start, cursor_pos);
+}
+
+// i0 <= i1
+void Edit::_replace_range(Index i0, Index i1, const string& t) {
+	clean_markup(i0, i1);
+	for (auto& m: markups)
+		if (m.i0 >= i1) {
+			m.i0 += (i0 - i1) + t.num;
+			m.i1 += (i0 - i1) + t.num;
+		}
+
+	text = text.sub_ref(0, i0) + t + text.sub_ref(i1);
+	cache.rebuild(text);
+	if (cursor_pos >= i1)
+		set_cursor_pos(cursor_pos - (i1 - i0) + t.num);
+	else if (cursor_pos >= i0)
+		set_cursor_pos(i0 + t.num);
+	on_edit();
+	emit_event(event_id::Changed, true);
+}
+
+void Edit::clear_history() {
+	history.clear();
+	current_history_index = 0;
+}
+
+
+void Edit::replace_range(Index _i0, Index _i1, const string& t) {
+	auto i0 = min(_i0, _i1);
+	auto i1 = max(_i0, _i1);
+	string old = get_range(i0, i1);
+	history.resize(current_history_index);
+	history.add({i0, i0 + t.num, old});
+	current_history_index ++;
+	_replace_range(i0, i1, t);
+}
+
+void Edit::auto_insert(const string& t) {
+	replace_range(selection_start, cursor_pos, t);
+}
+
+void Edit::set_cursor_pos(Index index, bool selecting) {
+	cursor_pos = index;
+	if (!selecting)
+		selection_start = index;
+	request_redraw();
+}
+
+
+vec2 Edit::index_to_xy(Index index) const {
+	auto lp = index_to_line_pos(index);
+	int first = cache.line_first_index[lp.line];
+	face->set_size(font_size * ui_scale);
+	auto dim = face->get_text_dimensions(text.sub_ref(first, index));
+	float x = text_x0 + dim.bounding_width / ui_scale;
+	float y0 = cache.line_y0[lp.line];
+	return {x, y0};
+}
+
+Edit::Index Edit::xy_to_index(const vec2& pos) const {
+	float dx = pos.x - text_x0;
+	float dy = pos.y - cache.line_y0[0];
+
+	face->set_size(font_size * ui_scale);
+	int line_no = min((int)(dy / cache.line_height[0]), cache.lines.num - 1);
+	const auto& l = cache.lines[line_no];
+
+	if (dx > cache.line_width[line_no])
+		return line_pos_to_index({line_no, cache.line_num_characters[line_no]});
+
+	int best_i = 0;
+	float best_dx = 10000000;
+	for (int i=0; i<l.num; i=next_utf8_index(l, i)) {
+		auto dim = face->get_text_dimensions(l.sub_ref(0, i));
+		float ddx = fabs(dim.bounding_width / ui_scale - dx);
+		if (ddx < best_dx) {
+			best_dx = ddx;
+			best_i = i;
+		}
+	}
+	return line_pos_to_index({line_no, best_i});
+}
+
 
 
 void Edit::_draw(Painter *p) {
 
 	// background
 	color bg = Theme::_default.background_button;
+	if (alt_background)
+		bg = Theme::_default.background;
 	p->set_color(bg);
 	p->set_roundness(Theme::_default.button_radius);
 	p->draw_rect(_area);
 
 	// focus frame
-	if (has_focus()) {
+	if (has_focus() and show_focus_frame) {
 		p->set_color(Theme::_default.background_button_primary.with_alpha(0.6f));
 		p->draw_rect(_area);
 
@@ -182,7 +449,9 @@ void Edit::_draw(Painter *p) {
 
 	draw_text(p);
 }
-Edit::LinePos Edit::index_to_line_pos(int index) const {
+
+// TODO count utf8 chars
+Edit::LinePos Edit::index_to_line_pos(Index index) const {
 	LinePos r = {0, 0};
 	for (const auto& [line, first]: enumerate(cache.line_first_index)) {
 		if (index < first)
@@ -192,12 +461,79 @@ Edit::LinePos Edit::index_to_line_pos(int index) const {
 	return r;
 }
 
-int Edit::line_pos_to_index(const LinePos& lp) const {
+// TODO count utf8 chars
+Edit::Index Edit::line_pos_to_index(const LinePos& lp) const {
 	if (lp.line < 0)
 		return 0;
 	if (lp.line >= cache.lines.num)
 		return text.num;
 	return cache.line_first_index[lp.line] + clamp(lp.offset, 0, cache.line_num_characters[lp.line]);
 }
+
+Edit::Index Edit::next_index(Index index) const {
+	return next_utf8_index(text, index);
+}
+
+Edit::Index Edit::prior_index(Index index) const {
+	return prior_utf8_index(text, index);
+}
+
+void Edit::add_markup(const Markup& m) {
+	markups.add(m);
+	base::inplace_sort(markups, [] (const Markup& a, const Markup& b) {
+		return a.i0 <= b.i0;
+	});
+	request_redraw();
+}
+
+void Edit::clean_markup(Index i0, Index i1) {
+	// markup completely covered? -> remove
+	base::remove_if(markups, [i0, i1] (const Markup& m) {
+		return i0 <= m.i0 and i1 >= m.i1;
+	});
+	// shink?
+	for (auto& m: markups) {
+		if (m.i0 >= i0 and m.i0 <= i1)
+			m.i0 = i1;
+		if (m.i1 >= i0 and m.i1 <= i1)
+			m.i1 = i0;
+	}
+	// middle of markup?
+	Array<Markup> to_add;
+	for (auto& m: markups)
+		if (i0 > m.i0 and i1 < m.i1) {
+			to_add.add({i1, m.i1, m.flags, m.col});
+			m.i1 = i0;
+		}
+	for (const auto& m: to_add)
+		add_markup(m);
+	request_redraw();
+}
+
+
+
+void Edit::set_option(const string& key, const string& value) {
+	if (key == "focusframe") {
+		show_focus_frame = value._bool();
+		request_redraw();
+	} else if (key == "font") {
+		font_name = value;
+		request_redraw();
+	} else if (key == "monospace") {
+		font_name = "monospace";
+		request_redraw();
+	} else if (key == "fontsize") {
+		font_size = value._float();
+		request_redraw();
+	} else if (key == "lineheightscale") {
+		line_height_scale = value._float();
+		request_redraw();
+	} else if (key == "altbg") {
+		alt_background = true;
+	} else {
+		Control::set_option(key, value);
+	}
+}
+
 
 }
