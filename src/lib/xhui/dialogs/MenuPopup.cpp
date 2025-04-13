@@ -22,7 +22,8 @@ MenuPopup::MenuPopup(const Menu& m, Panel* parent, const std::function<void(cons
 		g->add_child(new CallbackButton(item.id, item.title, [id=item.id, parent, f, this] {
 			if (f)
 				f(id);
-			parent->handle_event(id, event_id::Click, true);
+			else
+				parent->handle_event(id, event_id::Click, true);
 			request_destroy();
 		}), 0, i);
 		set_options(item.id, "flat");

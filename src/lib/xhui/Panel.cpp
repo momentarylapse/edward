@@ -16,6 +16,7 @@
 #include "controls/Image.h"
 #include "controls/Label.h"
 #include "controls/ListView.h"
+#include "controls/MenuBar.h"
 #include "controls/MultilineEdit.h"
 #include "controls/Overlay.h"
 #include "controls/RadioButton.h"
@@ -353,6 +354,8 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add_child(new Label(id, title), x, y);
 	else if (type == "ListView")
 		add_child(new ListView(id, title), x, y);
+	else if (type == "MenuBar")
+		add_child(new MenuBar(id), x, y);
 	else if (type == "MultilineEdit")
 		add_child(new MultilineEdit(id, title), x, y);
 	else if (type == "Overlay")

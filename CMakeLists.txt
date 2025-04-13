@@ -359,6 +359,7 @@ add_executable(edward
 	src/lib/xhui/controls/Image.cpp
 	src/lib/xhui/controls/Label.cpp
 	src/lib/xhui/controls/ListView.cpp
+	src/lib/xhui/controls/MenuBar.cpp
 	src/lib/xhui/controls/MultilineEdit.cpp
 	src/lib/xhui/controls/Overlay.cpp
 	src/lib/xhui/controls/RadioButton.cpp

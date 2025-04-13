@@ -14,6 +14,10 @@ void Menu::add_item(const string& id, const string& title) {
 	items.add({id, title});
 }
 
+void Menu::add_item_menu(const string& id, const string& title, shared<Menu> menu) {
+	items.add({id, title, menu});
+}
+
 void Menu::open_popup(Panel* p) {
 	if (!p->get_window())
 		return;

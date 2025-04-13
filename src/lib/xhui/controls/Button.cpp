@@ -15,6 +15,7 @@ Button::Button(const string &_id, const string &t) :
 	size_mode_y = SizeMode::Shrink;
 	label.align = Label::Align::Center;
 	label.margin = {0,0,0,0};
+	label.bold = true;
 	padding.x1 = padding.x2 = Theme::_default.button_margin_x;
 	padding.y1 = padding.y2 = Theme::_default.button_margin_y;
 }

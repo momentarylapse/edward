@@ -16,11 +16,13 @@ public:
 
 	struct Item {
 		string id, title;
+		shared<Menu> menu;
 		bool enabled = true;
 	};
 	Array<Item> items;
 
 	void add_item(const string& id, const string& title);
+	void add_item_menu(const string& id, const string& title, shared<Menu> menu);
 
 	void open_popup(Panel* p);
 	base::future<string> open_popup_x(Panel* p);

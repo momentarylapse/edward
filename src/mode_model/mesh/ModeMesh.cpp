@@ -28,6 +28,7 @@
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <data/mesh/VertexStagingBuffer.h>
+#include <lib/xhui/controls/MenuBar.h>
 #include <storage/Storage.h>
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
@@ -74,6 +75,15 @@ void ModeMesh::on_enter() {
 	auto win = session->win;
 	auto tb = win->toolbar;
 	tb->set_by_id("model-toolbar");
+
+	auto menu_bar = (xhui::MenuBar*)win->get_control("menu");
+	xhui::Menu* menu = new xhui::Menu;
+	xhui::Menu* menu_op = new xhui::Menu;
+	menu_op->add_item("normals-flat", "Normals flat");
+	menu_op->add_item("normals-smooth", "Normals smooth");
+	menu_op->add_item("c", "c");
+	menu->add_item_menu("op", "Operation", menu_op);
+	menu_bar->set_menu(menu);
 
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);
@@ -159,6 +169,26 @@ void ModeMesh::on_enter() {
 	}));
 	event_ids.add(session->win->event("add-platonic", [this] {
 		session->set_mode(new ModeAddPlatonic(this));
+	}));
+	event_ids.add(session->win->event("normals-flat", [this] {
+		auto sel = data->get_selection();
+		for (auto&& [i, p]: enumerate(data->mesh->polygons))
+			if (sel[MultiViewType::MODEL_POLYGON].contains(i)) {
+				p.smooth_group = -1;
+				p.normal_dirty = true;
+			}
+		data->mesh->update_normals();
+		data->out_changed();
+	}));
+	event_ids.add(session->win->event("normals-smooth", [this] {
+		auto sel = data->get_selection();
+		for (auto&& [i, p]: enumerate(data->mesh->polygons))
+			if (sel[MultiViewType::MODEL_POLYGON].contains(i)) {
+				p.smooth_group = 42;
+				p.normal_dirty = true;
+			}
+		data->mesh->update_normals();
+		data->out_changed();
 	}));
 
 	data->out_changed >> create_sink(update);

@@ -153,8 +153,10 @@ EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName,
 	session = _session;
 
 	from_source(R"foodelim(
-Dialog x x
-	Grid grid ''
+Dialog x x padding=0
+	Grid grid '' spacing=0
+		MenuBar menu ''
+		---|
 		Toolbar toolbar ''
 		---|
 		Grid main-grid ''
