@@ -216,7 +216,10 @@ void DrawingHelper::draw_mesh(const RenderParams& params, RenderViewData& rvd, c
 	rd.apply(params);
 	cb->draw(vertex_buffer);
 #else
-	msg_error("TODO draw mesh");
+	auto shader = rvd.get_shader(material, 0, vertex_module, "");
+	auto& rd = rvd.start(params, matrix, shader, *material, pass_no, PrimitiveTopology::TRIANGLES, vertex_buffer);
+	rd.apply(params);
+	nix::draw_triangles(vertex_buffer);
 #endif
 }
 
