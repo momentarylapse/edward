@@ -12,10 +12,18 @@ void XhuiRenderer::render(const RenderParams& params) {
 #ifdef USING_VULKAN
 	params.command_buffer->set_viewport(params.area);
 #endif
+#ifdef USING_OPENGL
+	nix::set_viewport(params.area);
+	nix::set_scissor(params.area);
+#endif
 	for (auto c: children)
 		c->prepare(params);
 	for (auto c: children)
 		c->draw(params);
+#ifdef USING_OPENGL
+	nix::set_scissor(rect::EMPTY);
+	nix::set_viewport(native_area_window);
+#endif
 #ifdef USING_VULKAN
 	params.command_buffer->set_viewport(native_area_window);
 #endif
@@ -30,6 +38,7 @@ void XhuiRenderer::render(Painter* p) {
 	params.render_pass = pp->context->render_pass;
 	params.frame_buffer = pp->context->current_frame_buffer();
 #endif
+	params.target_is_window = true;
 	params.desired_aspect_ratio = pp->native_area.width() / pp->native_area.height();
 	native_area_window = pp->native_area_window;
 	render(params);

@@ -452,6 +452,15 @@ void prepare_image(XImage* image) {
 				image->texture = vulkan::Texture::load(image->filename);
 			}
 		}
+#else
+	if (!image->texture) {
+		if (image->image) {
+			image->texture = new Texture();
+			image->texture->write(*image->image);
+		} else {
+			image->texture = nix::Texture::load(image->filename);
+		}
+	}
 #endif
 }
 

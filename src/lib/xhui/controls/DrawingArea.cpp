@@ -1,8 +1,16 @@
 #include "DrawingArea.h"
 
+#include <lib/nix/nix.h>
+#include <lib/nix/nix_view.h>
 #include <lib/os/msg.h>
 
 #include "../Painter.h"
+
+#if HAS_LIB_GL
+namespace nix {
+	mat4 create_pixel_projection_matrix();
+}
+#endif
 
 namespace xhui {
 
@@ -40,6 +48,16 @@ void DrawingArea::_draw(Painter *p) {
 	p->_area = old_area;
 	p->native_area = old_native_area;
 	//p->set_clip(p->area());
+
+
+#if HAS_LIB_GL
+	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(ui_scale, ui_scale, 1));
+	nix::set_view_matrix(mat4::ID);
+	nix::set_model_matrix(mat4::ID);
+	//nix::clear(color(1, 0.15f, 0.15f, 0.3f));
+	nix::set_cull(nix::CullMode::NONE);
+	nix::set_z(false, false);
+#endif
 }
 void DrawingArea::on_left_button_down(const vec2& m) {
 	emit_event(event_id::LeftButtonDown, false);

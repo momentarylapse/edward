@@ -65,7 +65,7 @@ void init_nix() {
 	shader = _nix_context->create_shader(
 			R"foodelim(
 <Layout>
-	version = 330 core
+	version = 420
 </Layout>
 <VertexShader>
 
@@ -94,7 +94,7 @@ void main() {
 layout(location = 0) in vec3 in_normal;
 layout(location = 1) in vec2 in_uv;
 layout(location = 2) in vec4 in_pos;
-uniform sampler2D tex0;
+layout(binding=0) uniform sampler2D tex0;
 uniform vec4 _color_;
 out vec4 out_color;
 
@@ -110,7 +110,7 @@ void main() {
 	shader_round  = _nix_context->create_shader(
 			R"foodelim(
 <Layout>
-	version = 330 core
+	version = 420
 </Layout>
 <VertexShader>
 
@@ -300,7 +300,14 @@ void Painter::set_clip(const rect &r) {
 
 
 void Painter::draw_ximage(const rect &r, const XImage *image) {
-
+	auto t = image->texture.get();
+	nix::set_model_matrix(mat4::translation(vec3(offset_x + r.x1, offset_y + r.y1, 0)) * mat4::scale(r.width(), r.height(), 1));
+	nix::set_shader(shader);
+	nix::set_alpha_split(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA, nix::Alpha::ZERO, nix::Alpha::ONE);
+	shader->set_color("_color_", _color);
+	nix::bind_texture(0, t);
+	nix::draw_triangles(vb_rect);
+	nix::disable_alpha();
 }
 
 
