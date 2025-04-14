@@ -442,6 +442,7 @@ xfer<Menu> create_resource_menu(const string& ns, const Resource* r) {
 			m->add_item_menu(rr.id, get_language_r(ns, rr), create_resource_menu(ns, &rr));
 		else
 			m->add_item(rr.id, get_language_r(ns, rr));
+		m->items.back().enabled = rr.enabled();
 	}
 	return m;
 }

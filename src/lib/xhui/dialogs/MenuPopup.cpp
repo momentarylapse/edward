@@ -3,6 +3,9 @@
 //
 
 #include "MenuPopup.h"
+
+#include <lib/base/set.h>
+
 #include "../controls/Button.h"
 #include "../controls/Grid.h"
 #include "../Menu.h"
@@ -13,20 +16,40 @@
 namespace xhui {
 
 
-MenuPopup::MenuPopup(const Menu& m, Panel* parent, const std::function<void(const string&)>& f) :
-		Dialog("", 100, 20, parent, DialogFlags::NoHeader | DialogFlags::CloseByEscape | DialogFlags::CloseByClickOutside) {
+MenuPopup::MenuPopup(const Menu& m, Panel* _parent, const std::function<void(const string&)>& f) :
+		Dialog("", 100, 20, _parent, DialogFlags::NoHeader | DialogFlags::CloseByEscape | DialogFlags::CloseByClickOutside) {
 	padding = Theme::_default.spacing;
-	auto g = new Grid("grid");
-	Dialog::add_child(g, 0, 0);
-	for (const auto& [i, item]: enumerate(m.items)) {
-		g->add_child(new CallbackButton(item.id, item.title, [id=item.id, parent, f, this] {
-			if (f)
-				f(id);
-			else
-				parent->handle_event(id, event_id::Click, true);
-			request_destroy();
-		}), 0, i);
+	grid = new Grid("grid");
+	Dialog::add_child(grid, 0, 0);
+	menu = &m;
+	parent = _parent;
+	callback = f;
+	set_sub_menu(menu);
+}
+
+void MenuPopup::set_sub_menu(const Menu* m) {
+	current_sub_menu = m;
+
+	auto xx= grid->get_children(ChildFilter::All);
+	for (auto c: xx)
+		grid->remove_child(c);
+
+	for (const auto& [i, item]: enumerate(m->items)) {
+		if (item.menu) {
+			grid->add_child(new CallbackButton(item.id, item.title + " >>", [mm=item.menu.get(), this] {
+				set_sub_menu(mm);
+			}), 0, i);
+		} else {
+			grid->add_child(new CallbackButton(item.id, item.title, [id=item.id, this] {
+				if (callback)
+					callback(id);
+				else
+					parent->handle_event(id, event_id::Click, true);
+				request_destroy();
+			}), 0, i);
+		}
 		set_options(item.id, "flat");
+		enable(item.id, item.enabled);
 	}
 
 	//size_mode_x = SizeMode::ForwardChild;
@@ -35,5 +58,6 @@ MenuPopup::MenuPopup(const Menu& m, Panel* parent, const std::function<void(cons
 	width = (int)size.x;
 	height = (int)size.y;
 }
+
 
 } // xhui

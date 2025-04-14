@@ -9,7 +9,7 @@
 #include <functional>
 
 namespace xhui {
-
+class Grid;
 class Menu;
 
 class MenuPopup : public Dialog {
@@ -17,6 +17,13 @@ public:
 	explicit MenuPopup(const Menu& m, Panel* parent, const std::function<void(const string&)>& f);
 
 	std::function<void(const string&)> callback;
+	Panel* parent;
+
+	Grid* grid;
+	const Menu* menu;
+	const Menu* current_sub_menu;
+
+	void set_sub_menu(const Menu* m);
 };
 
 } // xhui
