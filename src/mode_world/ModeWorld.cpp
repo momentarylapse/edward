@@ -32,6 +32,8 @@
 #include <lib/os/msg.h>
 #include <lib/os/terminal.h>
 #include <lib/xhui/config.h>
+#include <lib/xhui/Resource.h>
+#include <lib/xhui/controls/MenuBar.h>
 #include <lib/xhui/controls/Toolbar.h>
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
@@ -134,12 +136,10 @@ void ModeWorld::on_enter() {
 	auto tb = session->win->toolbar;
 	tb->set_by_id("world-toolbar");
 
-	session->win->event("save", [this] {
-		session->storage->save(data->filename, data);
-	});
-	session->win->event("save-as", [this] {
-		session->storage->save_as(data);
-	});
+
+	auto menu_bar = (xhui::MenuBar*)session->win->get_control("menu");
+	auto menu = xhui::create_resource_menu("menu_world");
+	menu_bar->set_menu(menu);
 
 	session->win->event("properties", [this] {
 		session->win->open_dialog(new PropertiesDialog(session->win, data));
@@ -560,10 +560,34 @@ void ModeWorld::on_draw_post(Painter* p) {
 }
 
 void ModeWorld::on_command(const string& id) {
+	if (id == "new")
+		session->universal_new(FD_WORLD);
+	if (id == "open")
+		session->universal_open(FD_WORLD);
+	if (id == "save")
+		session->storage->save(data->filename, data);
+	if (id == "save-as")
+		session->storage->save_as(data);
 	if (id == "undo")
 		data->undo();
 	if (id == "redo")
 		data->redo();
+	if (id == "copy"){
+		data->copy(temp);
+		if (temp.is_empty())
+			session->set_message("nothing selected");
+		else
+			session->set_message("copied: " + *world_selection_description(data));
+	}
+	if (id == "paste"){
+		multi_view->clear_selection();
+		if (temp.is_empty()) {
+			session->set_message("nothing to paste");
+		} else {
+			data->paste(temp);
+			session->set_message("pasted: " + *world_selection_description(data));
+		}
+	}
 }
 
 void ModeWorld::on_key_down(int key) {
@@ -573,22 +597,6 @@ void ModeWorld::on_key_down(int key) {
 			session->set_message("deleted: " + *s);
 		} else {
 			session->set_message("nothing selected");
-		}
-	}
-	if (key == xhui::KEY_CONTROL + xhui::KEY_C) {
-		data->copy(temp);
-		if (temp.is_empty())
-			session->set_message("nothing selected");
-		else
-			session->set_message("copied: " + *world_selection_description(data));
-	}
-	if (key == xhui::KEY_CONTROL + xhui::KEY_V) {
-		multi_view->clear_selection();
-		if (temp.is_empty()) {
-			session->set_message("nothing to paste");
-		} else {
-			data->paste(temp);
-			session->set_message("pasted: " + *world_selection_description(data));
 		}
 	}
 }

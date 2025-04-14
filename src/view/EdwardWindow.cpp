@@ -173,20 +173,29 @@ Dialog x x padding=0
 						Button cam-move 'M' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 
+#ifdef OS_MAC
+	int mod = xhui::KEY_SUPER;
+#else
+	int mod = xhui::KEY_CONTROL;
+#endif
+
+	set_key_code("new", mod + xhui::KEY_N);
+	set_key_code("open", mod + xhui::KEY_O);
+	set_key_code("save", mod + xhui::KEY_S);
+	set_key_code("save-as", mod + xhui::KEY_SHIFT + xhui::KEY_S);
+	set_key_code("quit", mod + xhui::KEY_Q);
+	set_key_code("undo", mod + xhui::KEY_Z);
+	set_key_code("redo", mod + xhui::KEY_Y);
+	set_key_code("copy", mod + xhui::KEY_C);
+	set_key_code("paste", mod + xhui::KEY_V);
+
 	toolbar = (xhui::Toolbar*)get_control("toolbar");
 
-	event("new", [this] {
-		session->universal_new(FD_WORLD);
-	});
-	event("open", [this] {
-		session->universal_open(FD_WORLD);
-	});
-	event("undo", [this] {
-		session->cur_mode->on_command("undo");
-	});
-	event("redo", [this] {
-		session->cur_mode->on_command("redo");
-	});
+	Array<string> ids = {"new", "open", "save", "save-as", "exit", "undo", "redo", "copy", "paste"};
+	for (const string& id: ids)
+		event(id, [this, id=id] {
+			session->cur_mode->on_command(id);
+		});
 
 	event_xp("area", xhui::event_id::Initialize, [this] (Painter* p) {
 		auto pp = (xhui::Painter*)p;
@@ -332,14 +341,20 @@ Dialog test ''
 		dlg->event("b", [this] { msg_write("bbb"); });
 		dlg->event("cb", [this] { msg_write("cb"); });
 	});
-	event_x(id, xhui::event_id::Close, [this] {
+	auto quit = [this] {
 		if (session->cur_mode->get_data()->action_manager->is_save())
 			request_destroy();
-		else xhui::QuestionDialog::ask(this, "Question", "You have unsaved changes. Do you want to close?").then([this] (xhui::Answer a) {
+		else xhui::QuestionDialog::ask(this, "Question", "You have unsaved changes. Do you want to save?").then([this] (xhui::Answer a) {
 			if (a == xhui::Answer::Yes)
+				session->storage->auto_save(session->cur_mode->get_data()).then([this] {
+					request_destroy();
+				});
+			else if (a == xhui::Answer::No)
 				request_destroy();
 		});
-	});
+	};
+	event_x(id, xhui::event_id::Close, quit);
+	event("exit", quit);
 
 	xhui::run_repeated(0.5f, [this] {
 		request_redraw();

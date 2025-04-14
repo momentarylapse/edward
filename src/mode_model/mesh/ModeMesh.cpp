@@ -29,6 +29,7 @@
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <data/mesh/VertexStagingBuffer.h>
+#include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
 #include <storage/Storage.h>
 
@@ -78,12 +79,7 @@ void ModeMesh::on_enter() {
 	tb->set_by_id("model-toolbar");
 
 	auto menu_bar = (xhui::MenuBar*)win->get_control("menu");
-	xhui::Menu* menu = new xhui::Menu;
-	xhui::Menu* menu_op = new xhui::Menu;
-	menu_op->add_item("normals-flat", "Normals flat");
-	menu_op->add_item("normals-smooth", "Normals smooth");
-	menu_op->add_item("c", "c");
-	menu->add_item_menu("op", "Operation", menu_op);
+	auto menu = xhui::create_resource_menu("menu_model");
 	menu_bar->set_menu(menu);
 
 	multi_view->set_allow_select(true);
@@ -176,7 +172,7 @@ void ModeMesh::on_enter() {
 	event_ids.add(session->win->event("add-from-lathe", [this] {
 		session->set_mode(new ModeAddFromLathe(this));
 	}));
-	event_ids.add(session->win->event("normals-flat", [this] {
+	event_ids.add(session->win->event("normal_this_hard", [this] {
 		auto sel = data->get_selection();
 		for (auto&& [i, p]: enumerate(data->mesh->polygons))
 			if (sel[MultiViewType::MODEL_POLYGON].contains(i)) {
@@ -186,7 +182,7 @@ void ModeMesh::on_enter() {
 		data->mesh->update_normals();
 		data->out_changed();
 	}));
-	event_ids.add(session->win->event("normals-smooth", [this] {
+	event_ids.add(session->win->event("normal_this_smooth", [this] {
 		auto sel = data->get_selection();
 		for (auto&& [i, p]: enumerate(data->mesh->polygons))
 			if (sel[MultiViewType::MODEL_POLYGON].contains(i)) {
@@ -446,10 +442,18 @@ base::optional<Box> ModeMesh::get_selection_box() const {
 
 
 void ModeMesh::on_command(const string& id) {
+	if (id == "new")
+		session->universal_new(FD_MODEL);
+	if (id == "open")
+		session->universal_open(FD_MODEL);
 	if (id == "undo")
 		data->undo();
 	if (id == "redo")
 		data->redo();
+	if (id == "copy")
+		copy();
+	if (id == "paste")
+		paste();
 }
 
 void ModeMesh::copy() {
@@ -480,10 +484,6 @@ void ModeMesh::on_key_down(int key) {
 			session->set_message("nothing selected");
 		}
 	}
-	if (key == xhui::KEY_CONTROL + xhui::KEY_C)
-		copy();
-	if (key == xhui::KEY_CONTROL + xhui::KEY_V)
-		paste();
 }
 
 void ModeMesh::on_mouse_move(const vec2& m, const vec2& d) {

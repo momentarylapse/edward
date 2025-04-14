@@ -8,7 +8,7 @@
 #include "FormatMaterial.h"
 #include "../../Session.h"
 //#include "../../data/material/ShaderGraph.h"
-#include "../../lib/hui/language.h"
+//#include "../../lib/hui/language.h"
 #include "../../lib/nix/nix.h"
 #include "../../lib/os/config.h"
 #include "../../lib/os/file.h"
@@ -27,7 +27,7 @@ Any color2any(const color &c) {
 
 Alpha parse_alpha(const string& s);
 
-FormatMaterial::FormatMaterial(Session *s) : TypedFormat<DataMaterial>(s, FD_MATERIAL, "material", _("Material"), Flag::CANONICAL_READ_WRITE) {
+FormatMaterial::FormatMaterial(Session *s) : TypedFormat<DataMaterial>(s, FD_MATERIAL, "material", "Material", Flag::CANONICAL_READ_WRITE) {
 }
 
 Array<string> paths_to_str_arr(const Array<Path> &files) {
