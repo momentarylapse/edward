@@ -10,12 +10,18 @@ namespace xhui {
 Menu::Menu() {
 }
 
+string strip_options(const string& t) {
+	if (t.head(1) == "!")
+		return t.explode("\\")[1];
+	return t;
+}
+
 void Menu::add_item(const string& id, const string& title) {
-	items.add({id, title});
+	items.add({id, strip_options(title)});
 }
 
 void Menu::add_item_menu(const string& id, const string& title, shared<Menu> menu) {
-	items.add({id, title, menu});
+	items.add({id, strip_options(title), menu});
 }
 
 void Menu::open_popup(Panel* p) {
@@ -23,6 +29,5 @@ void Menu::open_popup(Panel* p) {
 		return;
 	p->open_dialog(new MenuPopup(*this, p, nullptr));
 }
-
 
 } // xhui

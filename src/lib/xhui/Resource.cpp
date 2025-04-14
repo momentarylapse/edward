@@ -2,6 +2,7 @@
 #include "Resource.h"
 #include "Dialog.h"
 #include "language.h"
+#include "Menu.h"
 #include "../os/file.h"
 #include "../os/filesystem.h"
 #include "../os/formatter.h"
@@ -430,6 +431,25 @@ Resource parse_resource(const string &buffer, bool literally) {
 	//HuiResourceNew c;
 	res_load_rec(lines, cur_line, r, literally);
 	return r;
+}
+
+xfer<Menu> create_resource_menu(const string& ns, const Resource* r) {
+	auto m = new Menu;
+	for (const auto& rr: r->children) {
+		if (rr.type == "Separator")
+			continue;
+		if (rr.type == "Menu")
+			m->add_item_menu(rr.id, get_language_r(ns, rr), create_resource_menu(ns, &rr));
+		else
+			m->add_item(rr.id, get_language_r(ns, rr));
+	}
+	return m;
+}
+
+xfer<Menu> create_resource_menu(const string &id) {
+	if (auto r = get_resource(id))
+		return create_resource_menu(id, r);
+	return nullptr;
 }
 
 };

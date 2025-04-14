@@ -10,6 +10,7 @@
 #define _HUI_RESOURCE_EXISTS_
 
 #include "../base/base.h"
+#include "../base/pointer.h"
 
 class Path;
 
@@ -24,7 +25,7 @@ namespace xhui {
 // resource handling
 
 Dialog* create_resource_dialog(const string &id, Window *root);
-Menu* create_resource_menu(const string &id, Panel *panel);
+xfer<Menu> create_resource_menu(const string &id);
 
 
 
