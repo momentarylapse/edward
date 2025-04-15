@@ -404,6 +404,7 @@ add_executable(edward
 	src/mode_model/mesh/ModeAddSphere.cpp
 	src/mode_model/mesh/ModeAddVertex.cpp
 	src/mode_model/mesh/ModeMesh.cpp
+	src/mode_model/mesh/ModeMeshMaterial.cpp
 	src/mode_model/mesh/ModeMeshSculpt.cpp
 	src/mode_model/mesh/ModePaste.cpp
 	src/mode_model/ModeModel.cpp

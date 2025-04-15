@@ -212,14 +212,6 @@ void ModeWorld::on_enter() {
 	set_side_panel(new EntityPanel(this));
 }
 
-void ModeWorld::set_side_panel(xhui::Panel* p) {
-	if (side_panel) {
-	//	session->win->unembed(side_panel);
-	}
-	side_panel = p;
-	session->win->embed("main-grid", 1, 0, side_panel);
-}
-
 
 
 void ModeWorld::optimize_view() {

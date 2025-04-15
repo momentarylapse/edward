@@ -8,7 +8,6 @@
 #include "FormatMaterial.h"
 #include "../../Session.h"
 //#include "../../data/material/ShaderGraph.h"
-//#include "../../lib/hui/language.h"
 #include "../../lib/nix/nix.h"
 #include "../../lib/os/config.h"
 #include "../../lib/os/file.h"

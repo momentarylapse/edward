@@ -11,6 +11,7 @@
 #include "ModeAddFromLathe.h"
 #include "ModePaste.h"
 #include "ModeMeshSculpt.h"
+#include "ModeMeshMaterial.h"
 #include "../ModeModel.h"
 #include "../action/mesh/ActionModelMoveSelection.h"
 #include "../data/ModelMesh.h"
@@ -136,6 +137,9 @@ void ModeMesh::on_enter() {
 
 	event_ids.add(session->win->event("mode_model_deform", [this] {
 		session->set_mode(new ModeMeshSculpt(this));
+	}));
+	event_ids.add(session->win->event("mode_model_materials", [this] {
+		session->set_mode(new ModeMeshMaterial(this));
 	}));
 	event_ids.add(session->win->event("mode_properties", [this] {
 		session->win->open_dialog(new ModelPropertiesDialog(session->win, data));

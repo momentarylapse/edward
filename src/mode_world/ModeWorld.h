@@ -45,9 +45,6 @@ public:
 	DataWorld temp;
 	Array<Light*> lights;
 
-	xhui::Panel* side_panel = nullptr;
-	void set_side_panel(xhui::Panel* p);
-
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 
 	Data::Selection get_selection(MultiViewWindow* win, const rect& r) const;

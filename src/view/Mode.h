@@ -57,6 +57,10 @@ public:
 	Data* get_data() const { return generic_data; }
 
 	xhui::Panel* dialog = nullptr;
+
+
+	xhui::Panel* side_panel = nullptr;
+	void set_side_panel(xhui::Panel* p);
 };
 
 
