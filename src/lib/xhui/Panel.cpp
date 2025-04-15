@@ -10,6 +10,7 @@
 #include "controls/ComboBox.h"
 #include "controls/DrawingArea.h"
 #include "controls/Edit.h"
+#include "controls/Expander.h"
 #include "controls/FileSelector.h"
 #include "controls/Grid.h"
 #include "controls/Group.h"
@@ -343,6 +344,8 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add_child(new DrawingArea(id), x, y);
 	else if (type == "Edit")
 		add_child(new Edit(id, title), x, y);
+	else if (type == "Expander")
+		add_child(new Expander(id, title), x, y);
 	else if (type == "FileSelector")
 		add_child(new FileSelector(id), x, y);
 	else if (type == "Grid")

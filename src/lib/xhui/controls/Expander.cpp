@@ -1,0 +1,90 @@
+//
+// Created by Michael Ankele on 2025-04-16.
+//
+
+#include "Expander.h"
+#include "../Painter.h"
+#include "../Theme.h"
+#include "../draw/font.h"
+
+namespace xhui {
+
+static constexpr float SPACING = 4;
+
+Expander::Expander(const string& id, const string& title) :
+		Control(id),
+		header(id + ":header", title)
+{
+	header.font_size = Theme::_default.font_size * 1.0f;
+	header.bold = true;
+	size_mode_x = SizeMode::ForwardChild;
+	size_mode_y = SizeMode::ForwardChild;
+}
+
+void Expander::set_string(const string& s) {
+	header.set_string(s);
+}
+
+void Expander::_draw(Painter* p) {
+	header._draw(p);
+
+	if (child and child->visible)
+		child->_draw(p);
+}
+
+void Expander::add_child(shared<Control> c, int x, int y) {
+	child = c;
+	if (owner)
+		c->_register(owner);
+}
+
+void Expander::remove_child(Control* c) {
+	c->_unregister();
+	if (child == c)
+		child = nullptr;
+}
+
+Array<Control*> Expander::get_children(ChildFilter) const {
+	if (child)
+		return {child.get()};
+	return {};
+}
+
+void Expander::negotiate_area(const rect& available) {
+	_area = available;
+	float hh = header.get_content_min_size().y;
+	header.negotiate_area({available.p00(), available.p10() + vec2(0, hh)});
+	if (child)
+		child->negotiate_area({_area.p00() + vec2(0, hh + SPACING), _area.p11()});
+}
+
+vec2 Expander::get_content_min_size() const {
+	vec2 s = header.get_effective_min_size();
+	if (child) {
+		vec2 cs = child->get_effective_min_size();
+		s.x = max(s.x, cs.x);
+		s.y += SPACING + cs.y;
+	}
+	return s;
+}
+
+vec2 Expander::get_greed_factor() const {
+	vec2 cf = {0, 0};
+	if (child)
+		cf = child->get_greed_factor();
+	vec2 f = {0, 0};
+	if (size_mode_x == SizeMode::Expand)
+		f.x = 1;
+	else if (size_mode_x == SizeMode::ForwardChild and child)
+		f.x = cf.x;
+	if (size_mode_y == SizeMode::Expand)
+		f.y = 1;
+	else if (size_mode_y == SizeMode::ForwardChild and child)
+		f.y = cf.y;
+	return f;
+}
+
+
+
+
+} // xhui
