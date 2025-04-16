@@ -20,7 +20,7 @@ vec2 Separator::get_greed_factor() const {
 }
 
 void Separator::_draw(Painter* p) {
-	p->set_color(Theme::_default.text_disabled);
+	p->set_color(Theme::_default.background_button);
 	p->set_line_width(3);
 	float y = _area.center().y;
 	p->draw_line({_area.x1, y}, {_area.x2, y});

@@ -22,6 +22,7 @@
 #include "controls/Overlay.h"
 #include "controls/RadioButton.h"
 #include "controls/Separator.h"
+#include "controls/Slider.h"
 #include "controls/SpinButton.h"
 #include "controls/TabControl.h"
 #include "controls/ToggleButton.h"
@@ -368,6 +369,8 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		add_child(new RadioButton(id, title), x, y);
 	else if (type == "Separator")
 		add_child(new Separator(id), x, y);
+	else if (type == "Slider")
+		add_child(new Slider(id), x, y);
 	else if (type == "SpinButton")
 		add_child(new SpinButton(id, title._float()), x, y);
 	else if (type == "TabControl")

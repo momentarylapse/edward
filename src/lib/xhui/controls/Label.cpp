@@ -54,7 +54,7 @@ void Label::_draw(Painter *p) {
 			p->set_color(Theme::_default.text_disabled);
 
 		p->set_font(Theme::_default.font_name, font_size, bold, false);
-		auto dim = default_font_regular->get_text_dimensions(title);
+		auto dim = p->face->get_text_dimensions(title);
 		float x = _area.x1 + margin.x1;
 		if (align == Align::Center)
 			x = _area.center().x - dim.bounding_width / ui_scale / 2;
@@ -77,8 +77,12 @@ void Label::set_option(const string& key, const string& value) {
 			align = Align::Right;
 	} else if (key == "right") {
 		align = Align::Right;
+	} else if (key == "center") {
+		align = Align::Center;
 	} else if (key == "bold") {
 		bold = true;
+	} else if (key == "big") {
+		font_size = Theme::_default.font_size * 1.7f;
 	} else {
 		Control::set_option(key, value);
 	}

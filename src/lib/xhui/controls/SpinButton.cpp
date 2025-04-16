@@ -11,6 +11,7 @@ namespace xhui {
 constexpr float BUTTON_DX = 30;
 
 SpinButton::SpinButton(const string& id, float _value) : Edit(id, "") {
+	size_mode_x = SizeMode::Shrink;
 	numerical = true;
 	hover = Hover::Other;
 	pressed = Hover::Other;
@@ -52,6 +53,15 @@ void SpinButton::_update_text_from_value() {
 	text_needs_update = false;
 	request_redraw();
 }
+
+vec2 SpinButton::get_content_min_size() const {
+	auto s = Edit::get_content_min_size();
+	default_font_regular->set_size(font_size*ui_scale);
+	float w = default_font_regular->get_text_width(f2s(_max, decimals)) / ui_scale;
+	s.x = BUTTON_DX*2 + w + margin_x*2;
+	return s;
+}
+
 
 SpinButton::Hover SpinButton::get_hover(const vec2& m) const {
 	if (_area.inside(m) and enabled) {
