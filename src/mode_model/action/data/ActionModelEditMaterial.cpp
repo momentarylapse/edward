@@ -7,8 +7,8 @@
 
 #include <algorithm>
 #include "ActionModelEditMaterial.h"
-#include "../../../data/model/ModelMesh.h"
-#include "../../../data/model/ModelPolygon.h"
+#include "../../data/ModelMesh.h"
+#include "../../../data/mesh/Polygon.h"
 #include <lib/image/image.h>
 #include <graphics-impl.h>
 
@@ -47,17 +47,17 @@ void *ActionModelMaterialAddTexture::execute(Data *d) {
 	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->material.num));
 
-	ModelMaterial::TextureLevel tl;
-	tl.reload_image(d->session);
+	auto tl = new ModelMaterial::TextureLevel;
+	tl->reload_image(d->session);
 	m->material[index]->texture_levels.add(tl);
 
 
 	// correct skin vertices
 	// (copy highest texture level when adding more levels)
 	int ntl = m->material[index]->texture_levels.num;
-	for (ModelPolygon &p: m->edit_mesh->polygon) {
+	for (Polygon &p: m->edit_mesh->polygons) {
 		if (p.material == index) {
-			for (ModelPolygonSide &side: p.side)
+			for (auto &side: p.side)
 				side.skin_vertex[ntl] = side.skin_vertex[ntl - 1];
 		}
 	}
@@ -90,8 +90,7 @@ void *ActionModelMaterialDeleteTexture::execute(Data *d) {
 	assert((index >= 0) and (index < m->material.num));
 	assert((level >= 0) and (level < m->material[index]->texture_levels.num));
 
-	tl = m->material[index]->texture_levels[level];
-	m->material[index]->texture_levels.erase(level);
+	tl = m->material[index]->texture_levels.extract(level);
 
 
 	// TODO: correct skin vertices
@@ -129,8 +128,8 @@ void *ActionModelMaterialLoadTexture::execute(Data *d) {
 	assert((index >= 0) and (index < m->material.num));
 
 	auto &tl = m->material[index]->texture_levels[level];
-	std::swap(tl.filename, filename);
-	tl.reload_image(d->session);
+	std::swap(tl->filename, filename);
+	tl->reload_image(d->session);
 
 
 
@@ -164,14 +163,16 @@ void *ActionModelMaterialScaleTexture::execute(Data *d) {
 	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->material.num));
 
-	auto& tl = m->material[index]->texture_levels[level];
+	auto tl = m->material[index]->texture_levels[level];
 
 	if (!image) {
-		image = tl.image->scale(width, height);
+		image = tl->image->scale(width, height);
 	}
-	std::swap(tl.image, image);
-	tl.edited = true;
-	tl.update_texture();
+	auto t = tl->image.give();
+	tl->image = image;
+	image = t;
+	tl->edited = true;
+	tl->update_texture();
 
 
 

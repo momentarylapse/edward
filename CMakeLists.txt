@@ -390,6 +390,10 @@ add_executable(edward
 	src/lib/xhui/Window.cpp
 	src/lib/xhui/xhui.cpp
 	src/mode_material/data/DataMaterial.cpp
+	src/mode_model/action/data/ActionModelAddMaterial.cpp
+	src/mode_model/action/data/ActionModelDeleteMaterial.cpp
+	src/mode_model/action/data/ActionModelEditData.cpp
+	src/mode_model/action/data/ActionModelEditMaterial.cpp
 	src/mode_model/action/mesh/sculpt/ActionModelBrushExtrude.cpp
 	src/mode_model/action/mesh/ActionModelAddPolygon.cpp
 	src/mode_model/action/mesh/ActionModelDeleteSelection.cpp
@@ -399,6 +403,7 @@ add_executable(edward
 	src/mode_model/data/ModelMaterial.cpp
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/data/SkinGenerator.cpp
+	src/mode_model/dialog/ModelMaterialPanel.cpp
 	src/mode_model/dialog/ModelPropertiesDialog.cpp
 	src/mode_model/mesh/ModeAddCube.cpp
 	src/mode_model/mesh/ModeAddFromLathe.cpp

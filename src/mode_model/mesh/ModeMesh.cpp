@@ -50,11 +50,28 @@ ModeMesh::ModeMesh(ModeModel* parent) : Mode(parent->session) {
 	material_hover = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, White, true);
 
 	temp_mesh = new ModelMesh(data);
+	current_material = 0;
 
 	presentation_mode = PresentationMode::Polygons;
 }
 
 ModeMesh::~ModeMesh() = default;
+
+void ModeMesh::set_current_material(int index) {
+	if (index == current_material or index < 0)
+		return;
+	set_current_texture_level(0);
+	current_material = index;
+	out_current_material_changed();
+}
+
+void ModeMesh::set_current_texture_level(int index) {
+	if (index == current_texture_level or index < 0)
+		return;
+	current_texture_level = index;
+	out_texture_level_changed();
+}
+
 
 void ModeMesh::set_edit_mesh(ModelMesh* mesh) {
 	data->edit_mesh = mesh;

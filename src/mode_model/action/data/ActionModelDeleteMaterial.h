@@ -8,13 +8,13 @@
 #ifndef SRC_ACTION_MODEL_DATA_ACTIONMODELDELETEMATERIAL_H_
 #define SRC_ACTION_MODEL_DATA_ACTIONMODELDELETEMATERIAL_H_
 
-#include "../../Action.h"
+#include <action/Action.h>
 
 class ModelMaterial;
 
 class ActionModelDeleteMaterial : public Action {
 public:
-	ActionModelDeleteMaterial(int index);
+	explicit ActionModelDeleteMaterial(int index);
 	string name() override { return "ModelDeleteMaterial"; }
 
 	void *execute(Data *d) override;

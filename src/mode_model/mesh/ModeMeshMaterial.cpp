@@ -5,6 +5,7 @@
 #include "ModeMeshMaterial.h"
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
+#include "../dialog/ModelMaterialPanel.h"
 #include "../action/mesh/sculpt/ActionModelBrushExtrude.h"
 #include <Session.h>
 #include <data/mesh/GeometryCube.h>
@@ -32,10 +33,7 @@ void ModeMeshMaterial::on_enter() {
 
 	session->win->set_visible("overlay-button-grid-left", false);
 
-	dialog = new xhui::Panel("xxx");
-	dialog->from_resource("model_material_dialog");
-	//session->win->embed("overlay-main-grid", 1, 0, dialog);
-
+	dialog = new ModelMaterialPanel(data);
 	set_side_panel(dialog);
 
 	data->out_changed >> create_sink([this] {

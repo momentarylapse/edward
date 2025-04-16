@@ -215,8 +215,8 @@ public:
 		int n = f->read_int();
 		me->texture_levels.clear();
 		for (int t=0;t<n;t++) {
-			ModelMaterial::TextureLevel tl;
-			tl.filename = f->read_str();
+			auto tl = new ModelMaterial::TextureLevel;
+			tl->filename = f->read_str();
 			me->texture_levels.add(tl);
 		}
 	}
@@ -234,7 +234,7 @@ public:
 		f->write_bool(false);
 		f->write_int(me->texture_levels.num);
 		for (int t=0;t<me->texture_levels.num;t++)
-			f->write_str(me->texture_levels[t].filename.str());
+			f->write_str(me->texture_levels[t]->filename.str());
 	}
 };
 
@@ -994,9 +994,9 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 			m->make_consistent();
 
 			// test textures
-			for (auto &t: m->texture_levels) {
-				if (!t.texture and t.filename)
-					warning(format("Texture file not loadable: %s", t.filename));
+			for (auto t: weak(m->texture_levels)) {
+				if (!t->texture and t->filename)
+					warning(format("Texture file not loadable: %s", t->filename));
 			}
 		}
 		for (auto &b: data->bone) {

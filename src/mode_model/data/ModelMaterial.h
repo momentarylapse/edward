@@ -10,13 +10,13 @@
 
 #include <y/world/Material.h>
 #include <lib/base/pointer.h>
+#include <lib/image/image.h>
 #include <graphics-impl.h>
 
 /*namespace MultiView {
 	class Window;
 };*/
 
-class Image;
 class Session;
 
 class ModelMaterial {
@@ -37,16 +37,14 @@ public:
 	ShaderCache shader_cache;
 
 	struct TextureLevel {
-		TextureLevel();
-		~TextureLevel();
 		Path filename;
 		shared<Texture> texture;
-		Image *image;
-		bool edited;
+		owned<Image> image;
+		bool edited = false;
 		void reload_image(Session *s);
 		void update_texture();
 	};
-	Array<TextureLevel> texture_levels;
+	owned_array<TextureLevel> texture_levels;
 
 	struct Color {
 		bool user;

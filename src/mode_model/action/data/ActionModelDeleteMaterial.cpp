@@ -6,9 +6,9 @@
  */
 
 #include "ActionModelDeleteMaterial.h"
-#include "../../../data/model/DataModel.h"
-#include "../../../data/model/ModelMesh.h"
-#include "../../../data/model/ModelPolygon.h"
+#include "../../data/DataModel.h"
+#include "../../data/ModelMesh.h"
+#include "../../../data/mesh/Polygon.h"
 #include <assert.h>
 
 ActionModelDeleteMaterial::ActionModelDeleteMaterial(int _index) {
@@ -25,7 +25,7 @@ void *ActionModelDeleteMaterial::execute(Data *d) {
 	m->material.erase(index);
 
 	// correct polygons
-	for (auto &p: m->mesh->polygon) {
+	for (auto &p: m->mesh->polygons) {
 		assert(p.material != index);
 		if (p.material > index)
 			p.material --;
@@ -43,7 +43,7 @@ void ActionModelDeleteMaterial::undo(Data *d) {
 	m->material.insert(mat, index);
 
 	// correct polygons
-	for (auto &p: m->mesh->polygon) {
+	for (auto &p: m->mesh->polygons) {
 		if (p.material >= index)
 			p.material ++;
 	}

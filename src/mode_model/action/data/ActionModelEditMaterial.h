@@ -8,16 +8,16 @@
 #ifndef ACTIONMODELEDITMATERIAL_H_
 #define ACTIONMODELEDITMATERIAL_H_
 
-#include "../../Action.h"
-#include "../../../data/model/DataModel.h"
+#include <action/Action.h>
+#include "../../data/DataModel.h"
 
 class ActionModelEditMaterial : public Action {
 public:
 	ActionModelEditMaterial(int index, const ModelMaterial::Color &_col);
-	string name(){ return "ModelEditMaterial"; }
+	string name() override { return "ModelEditMaterial"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	int index;
@@ -26,11 +26,11 @@ private:
 
 class ActionModelMaterialAddTexture : public Action {
 public:
-	ActionModelMaterialAddTexture(int _index);
-	string name(){ return "ModelMaterialAddTexture"; }
+	explicit ActionModelMaterialAddTexture(int _index);
+	string name() override { return "ModelMaterialAddTexture"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	int index;
@@ -39,14 +39,14 @@ private:
 class ActionModelMaterialDeleteTexture : public Action {
 public:
 	ActionModelMaterialDeleteTexture(int index, int level);
-	string name(){ return "ModelMaterialDeleteTexture"; }
+	string name() override { return "ModelMaterialDeleteTexture"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	int index, level;
-	ModelMaterial::TextureLevel tl;
+	ModelMaterial::TextureLevel* tl;
 };
 
 
@@ -67,11 +67,11 @@ private:
 class ActionModelMaterialScaleTexture : public Action {
 public:
 	ActionModelMaterialScaleTexture(int index, int level, int width, int height);
-	~ActionModelMaterialScaleTexture();
-	string name(){ return "ModelMaterialScaleTexture"; }
+	~ActionModelMaterialScaleTexture() override;
+	string name() override { return "ModelMaterialScaleTexture"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	int index, level;

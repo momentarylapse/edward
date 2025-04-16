@@ -8,11 +8,11 @@
 #ifndef ACTIONMODELADDMATERIAL_H_
 #define ACTIONMODELADDMATERIAL_H_
 
-#include "../../Action.h"
+#include <action/Action.h>
 
 class ActionModelAddMaterial : public Action {
 public:
-	ActionModelAddMaterial(const Path &filename);
+	explicit ActionModelAddMaterial(const Path &filename);
 	string name() override { return "ModelAddMaterial"; }
 
 	void *execute(Data *d) override;

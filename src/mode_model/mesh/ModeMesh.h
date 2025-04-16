@@ -24,6 +24,9 @@ public:
 	explicit ModeMesh(ModeModel* parent);
 	~ModeMesh() override;
 
+	obs::source out_current_material_changed{this, "current-material-changed"};
+	obs::source out_texture_level_changed{this, "texture-level-changed"};
+
 	void on_enter() override;
 	void on_leave() override;
 	void on_prepare_scene(const RenderParams& params) override;
@@ -43,6 +46,11 @@ public:
 	void paste();
 
 	DataModel* data;
+
+	int current_material;
+	void set_current_material(int index);
+	int current_texture_level;
+	void set_current_texture_level(int index);
 
 	void set_edit_mesh(ModelMesh* mesh);
 

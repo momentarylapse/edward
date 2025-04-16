@@ -45,19 +45,7 @@ ModelMaterial::~ModelMaterial() {
 		delete vb;
 }
 
-ModelMaterial::TextureLevel::TextureLevel() {
-	image = nullptr;
-	edited = false;
-}
-
-ModelMaterial::TextureLevel::~TextureLevel() {
-	if (image)
-		delete image;
-}
-
 void ModelMaterial::TextureLevel::reload_image(Session *session) {
-	if (image)
-		delete image;
 	if (filename == "")
 		image = new Image(512, 512, White);
 	else
@@ -122,7 +110,7 @@ void ModelMaterial::check_textures() {
 //	}
 
 	// load all textures
-	foreachi (auto &t, texture_levels, i) {
+	foreachi (auto t, weak(texture_levels), i) {
 		/*auto *prev = t->texture;
 		t->texture = nix::LoadTexture(t->filename);
 
@@ -138,7 +126,7 @@ void ModelMaterial::check_textures() {
 			else
 				t->image = Image::load(t->filename);
 		}*/
-		t.reload_image(session);
+		t->reload_image(session);
 	}
 }
 
