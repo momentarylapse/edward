@@ -58,6 +58,13 @@ public:
 	Array<Array<Cell>> cells;
 	Viewport viewport;
 	Grid* cell_grid;
+
+	enum class SelectionMode {
+		SingleOrNone,
+		Single,
+		Multi
+	} selection_mode;
+
 	Array<int> selected;
 	//float view_y = 0;
 	bool show_headers = true;

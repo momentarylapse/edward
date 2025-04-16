@@ -1,4 +1,7 @@
 #include "ListView.h"
+
+#include <lib/os/msg.h>
+
 #include "Grid.h"
 #include "../Painter.h"
 #include "../draw/font.h"
@@ -34,12 +37,14 @@ ListView::ListView(const string &_id, const string &t) :
 	viewport.ignore_hover = true;
 	padding = {5, 5, 5, 5};
 	selection_radius = Theme::_default.button_radius;
+	selection_mode = SelectionMode::SingleOrNone;
 }
 
 void ListView::on_left_button_down(const vec2& m) {
 	owner->get_window()->start_pre_drag(this);
 	hover_row = get_hover(m);
-	selected = {};
+	if (selection_mode != SelectionMode::Single)
+		selected = {};
 	if (hover_row >= 0)
 		selected = {hover_row};
 	request_redraw();
@@ -67,7 +72,8 @@ void ListView::on_left_double_click(const vec2& m) {
 
 void ListView::on_right_button_down(const vec2& m) {
 	hover_row = get_hover(m);
-	selected = {};
+	if (selection_mode != SelectionMode::Single)
+		selected = {};
 	if (hover_row >= 0)
 		selected = {hover_row};
 	request_redraw();
@@ -180,6 +186,8 @@ void ListView::add_string(const string& s) {
 		cell_grid->add_child(c, col, row);
 		cells.back().add({t, c});
 	}
+	if (cells.num == 1 and selection_mode == SelectionMode::Single)
+		selected = {0};
 	request_redraw();
 }
 
@@ -202,7 +210,10 @@ void ListView::reset() {
 	request_redraw();
 }
 void ListView::set_int(int i) {
-	selected = {i};
+	if (selection_mode != SelectionMode::Single)
+		selected = {};
+	if (i >= 0 and i < cells.num)
+		selected = {i};
 	request_redraw();
 }
 string ListView::get_cell(int row, int col) {
@@ -231,6 +242,10 @@ void ListView::set_option(const string& key, const string& value) {
 		}
 	} else if (key == "dragsource") {
 		drag_source_id = value;
+	} else if (key == "selectsingle" or key == "select-single") {
+		selection_mode = SelectionMode::Single;
+	} else if (key == "selectmulti" or key == "select-multi") {
+		selection_mode = SelectionMode::Multi;
 	} else {
 		Control::set_option(key, value);
 	}
