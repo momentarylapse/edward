@@ -405,10 +405,26 @@ XImage* load_image(const string& name) {
 }
 
 string create_image(const Image& _im) {
-	auto im = new XImage;
-	im->image = new Image(8,8,White);
+	string uid = format("image:%d", randi(100000000));
+	set_image(uid, _im);
+	return uid;
+}
+
+void set_image(const string& uid, const Image& _im) {
+	XImage* im = nullptr;
+	if (auto p = base::find_if(weak(_images_), [uid] (XImage* i) {
+		return i->uid == uid;
+	})) {
+		im = *p;
+	}
+	if (!im) {
+		im = new XImage;
+		im->uid = uid;
+		_images_.add(im);
+	}
+	if (!im->image)
+		im->image = new Image(8,8,White);
 	*im->image = _im;
-	im->uid = format("image:%d", randi(100000000));
 #if HAS_LIB_VULKAN
 	if (vulkan::default_device) {
 		im->texture = new vulkan::Texture();
@@ -418,8 +434,6 @@ string create_image(const Image& _im) {
 	im->texture = new Texture();
 	im->texture->write(*im->image);
 #endif
-	_images_.add(im);
-	return im->uid;
 }
 
 

@@ -209,6 +209,7 @@ struct XImage {
 
 XImage* load_image(const string& name);
 string create_image(const ::Image& im);
+void set_image(const string& uid, const ::Image& im);
 string texture_to_image(const shared<Texture>& texture);
 void delete_image(const string& name);
 void prepare_image(XImage* image);
