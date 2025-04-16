@@ -39,6 +39,7 @@ public:
 	virtual void set_int(int i) { set_string(str(i)); }
 	virtual void set_float(float f) { set_string(str(f)); }
 	virtual void check(bool checked) {}
+	virtual void expand(bool expanded) {}
 	virtual void set_color(const color& c) {}
 	virtual string get_string() { return ""; }
 	virtual string get_cell(int row, int col) { return ""; }

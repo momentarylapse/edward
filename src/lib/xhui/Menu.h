@@ -24,6 +24,8 @@ public:
 	void add_item(const string& id, const string& title);
 	void add_item_menu(const string& id, const string& title, shared<Menu> menu);
 
+	void enable(const string& id, bool enabled);
+
 	void open_popup(Panel* p);
 	base::future<string> open_popup_x(Panel* p);
 };

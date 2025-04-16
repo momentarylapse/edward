@@ -2,6 +2,7 @@
 
 #include "controls/Control.h"
 #include <functional>
+#include <lib/base/future.h>
 
 class Painter;
 
@@ -33,6 +34,7 @@ public:
 	void set_color(const string& id, const color& c);
 	void check(const string& id, bool checked);
 	void enable(const string& id, bool enabled);
+	void expand(const string& id, bool expanded);
 	void reset(const string& id);
 	void set_visible(const string& id, bool visible);
 	string get_string(const string& id) const;
@@ -76,7 +78,7 @@ public:
 	void embed(const string& target, int x, int y, shared<Panel> p);
 	void unembed(Panel* p);
 
-	void open_dialog(shared<Dialog> dialog);
+	base::future<void> open_dialog(shared<Dialog> dialog);
 	void close_dialog(Dialog* dialog);
 
 	void from_source(const string& source);

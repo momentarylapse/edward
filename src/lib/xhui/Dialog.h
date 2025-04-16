@@ -5,6 +5,8 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
+#include <lib/base/future.h>
+
 #include "Panel.h"
 
 namespace xhui {
@@ -40,6 +42,7 @@ public:
 	bool _destroy_requested = false;
 	owned<DialogHeader> header;
 	owned<DialogOutside> outside;
+	base::promise<void> promise;
 };
 
 } // xhui

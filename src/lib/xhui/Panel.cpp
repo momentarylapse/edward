@@ -289,6 +289,13 @@ void Panel::enable(const string& id, bool enabled) {
 			c->enable(enabled);
 }
 
+
+void Panel::expand(const string& id, bool expanded) {
+	for (auto& c: controls)
+		if (c->id == id)
+			c->expand(expanded);
+}
+
 void Panel::set_visible(const string& id, bool visible) {
 	for (auto& c: controls)
 		if (c->id == id)
@@ -556,15 +563,17 @@ void Panel::from_resource(const string& id) {
 		msg_error("resource id not found: " + id);
 }
 
-void Panel::open_dialog(shared<Dialog> dialog) {
+base::future<void> Panel::open_dialog(shared<Dialog> dialog) {
 	dialog->owner = this;
 	if (auto w = get_window()) {
 		w->dialogs.add(dialog.get());
 	}
 	request_redraw();
+	return dialog->promise.get_future();
 }
 
 void Panel::close_dialog(Dialog* dialog) {
+	dialog->promise();
 	for (int i=0; i<controls.num; i++)
 		if (controls[i] == (Control*)dialog) {
 			controls.erase(i);

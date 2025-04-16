@@ -24,6 +24,11 @@ void Menu::add_item_menu(const string& id, const string& title, shared<Menu> men
 	items.add({id, strip_options(title), menu});
 }
 
+void Menu::enable(const string& id, bool enabled) {
+	// TODO
+}
+
+
 void Menu::open_popup(Panel* p) {
 	if (!p->get_window())
 		return;
