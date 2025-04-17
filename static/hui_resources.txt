@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-81
+82
 # Resource
 Menu
 
@@ -3416,7 +3416,146 @@ image=hui:ok
 0
 # Resource
 Dialog
-model_material_dialog
+model-material-dialog
+
+0
+0
+1
+Grid
+card
+class=card
+0
+0
+3
+Grid
+?
+
+0
+0
+2
+Image
+preview
+
+0
+0
+0
+Label
+header
+expandx
+1
+0
+0
+Expander
+grp-color
+
+0
+1
+1
+Grid
+?
+
+0
+0
+2
+CheckBox
+override-colors
+
+0
+0
+0
+Grid
+?
+
+0
+1
+8
+Label
+t-albedo
+right,disabled
+0
+0
+0
+ColorButton
+albedo
+alpha
+1
+0
+0
+Label
+t-roughness
+right,disabled
+0
+1
+0
+Grid
+?
+
+1
+1
+2
+Slider
+slider-roughness
+range=0:1:0.01,expandx
+0
+0
+0
+SpinButton
+roughness
+range=0:1:0.01
+1
+0
+0
+Label
+t-reflectivity
+right,disabled
+0
+2
+0
+Grid
+?
+
+1
+2
+2
+Slider
+slider-metal
+range=0:1:0.01,expandx
+0
+0
+0
+SpinButton
+metal
+range=0:1:0.01
+1
+0
+0
+Label
+t-emission
+right,disabled
+0
+3
+0
+ColorButton
+emission
+
+1
+3
+0
+Expander
+grp-textures
+
+0
+2
+1
+ListView
+textures
+height=130,nobar,format=tit,select-single
+0
+0
+0
+# Resource
+Dialog
+model-material-panel
 width=350,height=371
 0
 0
@@ -3426,7 +3565,7 @@ Grid
 vertical
 0
 0
-2
+3
 Label
 header
 big,bold,center,expandx
@@ -3434,8 +3573,26 @@ big,bold,center,expandx
 0
 0
 ListView
-material_list
-nobar,select-single,showselection=no
+materials
+nobar,select-single,expandy,showselection=no
+1
+0
+0
+Grid
+?
+
+2
+0
+2
+Button
+add-new-material
+
+0
+0
+0
+Button
+load-material
+image=open
 1
 0
 0
@@ -3445,7 +3602,7 @@ model-material-list-popup
 
 0
 0
-6
+5
 Item
 header
 disabled
@@ -3459,27 +3616,21 @@ Separator
 0
 0
 Item
-add_new_material
-image=hui:add
+reset-material
+
 2
 0
 0
 Item
-add_material
-image=hui:open
+apply-material
+image=hui:apply
 3
 0
 0
 Item
-apply_material
-image=hui:apply
-4
-0
-0
-Item
-delete_material
+delete-material
 image=hui:delete
-5
+4
 0
 0
 # Resource
@@ -10095,7 +10246,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1021
+1027
 # Text
 /ambient
 Ambient
@@ -10170,6 +10321,9 @@ Albedo
 Emission
 
 /t-metal
+Metal
+
+/t-reflectivity
 Metal
 
 /t-roughness
@@ -12290,19 +12444,43 @@ Depth
 model-deformation-brush-dialog/t-diameter
 Diameter
 
-model-material-list-popup/add_material
-Load...
+model-material-dialog/emission
 
-model-material-list-popup/add_new_material
-Add new
+Color in absolute darkness
+model-material-dialog/grp-color
+Colors
 
-model-material-list-popup/apply_material
+model-material-dialog/grp-textures
+Textures
+
+model-material-dialog/override-colors
+Override material
+
+model-material-dialog/textures
+Level\\\\Texture
+Mixing texture levels (multitexturing)\n- Actions via right click
+model-material-list-popup/apply-material
 Apply to selection
 
-model-material-list-popup/delete_material
+model-material-list-popup/delete-material
 Delete
 
 model-material-list-popup/header
+Material
+
+model-material-list-popup/reset-material
+Reload
+
+model-material-panel/add-new-material
++
+
+model-material-panel/header
+Materials
+
+model-material-panel/materials
+Materials
+Materials\n - Actions via right click
+model-material-panel/model-material-panel
 Material
 
 model-mesh-toolbar/new_ball
@@ -12484,15 +12662,6 @@ Physics passive
 
 model_dialog/tensor
 \\X\\Y\\Z
-
-model_material_dialog/header
-Materials
-
-model_material_dialog/material_list
-Materials
-Materials\n - Actions via right click
-model_material_dialog/model_material_dialog
-Material
 
 model_material_selection_dialog/material_list
 #\\Polygons\\\\File

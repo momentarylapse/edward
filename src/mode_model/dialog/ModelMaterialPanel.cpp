@@ -26,6 +26,8 @@
 #include <lib/xhui/controls/ListView.h>
 #include <y/EngineData.h>
 
+static constexpr int PREVIEW_SIZE = 48;
+
 string file_secure(const Path &filename) {
 	if (filename)
 		return str(filename);
@@ -34,8 +36,30 @@ string file_secure(const Path &filename) {
 
 string render_material(ModelMaterial *m) {
 	string uid = "image:" + p2s(m);
-	Image im(48, 48, White);
-	// TODO
+	Image im(PREVIEW_SIZE, PREVIEW_SIZE, White);
+	const vec3 L = vec3(-0.2f, 0.6f, 1).normalized();
+	for (int i=0; i<PREVIEW_SIZE; i++)
+		for (int j=0; j<PREVIEW_SIZE; j++) {
+			color c = m->col.albedo;
+			if (m->texture_levels.num >= 1) {
+				auto t = m->texture_levels[0]->image.get();
+				c *= t->get_pixel(i * t->width / PREVIEW_SIZE, j * t->height / PREVIEW_SIZE);
+			}
+			const vec2 p0 = vec2((float)i / PREVIEW_SIZE - 0.5f, (float)j / PREVIEW_SIZE - 0.5f) * 2;
+			float r = p0.length();
+			if (r < 1) {
+				vec3 n = vec3(p0.x, p0.y, -sqrt(1 - r*r));
+				float d = clamp(-vec3::dot(n, L), 0.0f, 1.0f);
+				c = c * (d*(1-m->col.roughness) + m->col.roughness);
+				c += m->col.emission;
+			} else {
+				c = color(0,0,0,0);
+			}
+			c.clamp();
+
+			im.set_pixel(i, j, c);
+		}
+	// TODO really render!
 	xhui::set_image(uid, im);
 	return uid;
 }
@@ -47,51 +71,21 @@ namespace nix {
 class XMaterialPanel : public xhui::Panel {
 public:
 	XMaterialPanel(ModelMaterialPanel* _parent, DataModel* _data, int _index) : xhui::Panel("") {
-		from_source(R"foodelim(
-Dialog material_panel ''
-	Grid card '' class=card
-		Grid ? ''
-			Image preview ''
-			Label header '' expandx
-		---|
-		Expander grp-color 'Colors'
-			Grid ? ''
-				CheckBox override-colors 'Override material'
-				---|
-				Grid ? ""
-					Label /t-albedo "Albedo" right disabled
-					ColorButton albedo "" alpha
-					---|
-					Label /t-roughness "Roughness" right disabled
-					Grid ? ""
-						Slider slider-roughness "" range=0:1:0.01 expandx
-						SpinButton roughness "" range=0:1:0.01
-					---|
-					Label /t-reflectivity "Metal" right disabled
-					Grid ? ""
-						Slider slider-metal "" range=0:1:0.01 expandx
-						SpinButton metal "" range=0:1:0.01
-					---|
-					Label /t-emission "Emission" right disabled
-					ColorButton emission "" "tooltip=Color in absolute darkness"
-		---|
-		Expander grp-textures "Textures"
-			ListView mat_textures "Level\\\\Texture" height=130 nobar format=tit select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
-)foodelim");
+		from_resource("model-material-dialog");
 		parent = _parent;
 		data = _data;
 		index = _index;
 		popup_textures = xhui::create_resource_menu("model-texture-list-popup");
 
-		auto tex_list = (xhui::ListView*)get_control("mat_textures");
+		auto tex_list = (xhui::ListView*)get_control("textures");
 		tex_list->column_factories[1].f_create = [](const string& id) {
 			return new xhui::Image(id, "");
 		};
 
 		event("texture-level-add", [this] { on_texture_level_add(); });
-		event("mat_textures", [this] { on_textures(); });
-		event_x("mat_textures", xhui::event_id::Select, [this] { on_textures_select(); });
-		event_x("mat_textures", xhui::event_id::RightButtonDown, [this] { on_textures_right_click(); });
+		event("textures", [this] { on_textures(); });
+		event_x("textures", xhui::event_id::Select, [this] { on_textures_select(); });
+		event_x("textures", xhui::event_id::RightButtonDown, [this] { on_textures_right_click(); });
 		event("texture-level-delete", [this] { on_texture_level_delete(); });
 		event("texture-level-clear", [this] { on_texture_level_clear(); });
 		event("texture-level-load", [this] { on_texture_level_load(); });
@@ -152,8 +146,9 @@ Dialog material_panel ''
 	void apply_data_color() {
 		parent->apply_queue_depth ++;
 
-		auto col = data->material[index]->col;
-		auto parent = data->material[index]->material;
+		auto m = data->material[index];
+		auto col = m->col;
+		auto parent = m->material;
 
 		col.user= is_checked("override-colors");
 
@@ -179,6 +174,8 @@ Dialog material_panel ''
 
 		data->execute(new ActionModelEditMaterial(index, col));
 		this->parent->apply_queue_depth --;
+
+		set_string("preview", render_material(m));
 	}
 
 
@@ -188,19 +185,19 @@ Dialog material_panel ''
 
 	void fill_texture_list() {
 		auto mat = material();
-		reset("mat_textures");
+		reset("textures");
 		for (int i=0;i<mat->texture_levels.num;i++) {
 			string id = format("image:material[%d]-texture[%d]", index, i);
 			auto *img = mat->texture_levels[i]->image.get();
-			auto *icon = mat->texture_levels[i]->image->scale(48, 48);
+			auto *icon = mat->texture_levels[i]->image->scale(PREVIEW_SIZE, PREVIEW_SIZE);
 			xhui::set_image(id, *icon);
 			string ext = format(" (%dx%d)", img->width, img->height);
 			if (mat->texture_levels[i]->edited)
 				ext += " *";
-			add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(mat->texture_levels[i]->filename) + ext)));
+			add_string("textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(mat->texture_levels[i]->filename) + ext)));
 			delete icon;
 		}
-	//	set_int("mat_textures", mode_mesh()->current_texture_level);
+	//	set_int("textures", mode_mesh()->current_texture_level);
 	}
 
 
@@ -221,7 +218,7 @@ Dialog material_panel ''
 	}
 
 	void on_texture_level_load() {
-		int sel = get_int("mat_textures");
+		int sel = get_int("textures");
 		if (sel >= 0)
 			data->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, sel] (const auto& p) {
 				data->execute(new ActionModelMaterialLoadTexture(index, sel, p.relative));
@@ -229,7 +226,7 @@ Dialog material_panel ''
 	}
 
 	void on_texture_level_save() {
-		int sel = get_int("mat_textures");
+		int sel = get_int("textures");
 		if (sel >= 0)
 			data->session->storage->file_dialog(FD_TEXTURE, true, true).then([this, sel] (const auto& p) {
 				auto tl = material()->texture_levels[sel];
@@ -241,7 +238,7 @@ Dialog material_panel ''
 
 	void on_texture_level_scale() {
 		msg_todo("texture scale");
-		/*int sel = get_int("mat_textures");
+		/*int sel = get_int("textures");
 		if (sel >= 0) {
 			auto& tl = data->material[mode_mesh()->current_material]->texture_levels[sel];
 			int w = tl.image->width;
@@ -253,12 +250,12 @@ Dialog material_panel ''
 	}
 
 	void on_textures_select() {
-		int sel = get_int("mat_textures");
+		int sel = get_int("textures");
 	//	mode_mesh()->set_current_texture_level(sel);
 	}
 
 	void on_texture_level_delete() {
-		int sel = get_int("mat_textures");
+		int sel = get_int("textures");
 		if (sel >= 0) {
 			if (data->material[index]->texture_levels.num <= 1) {
 				data->session->error("At least one texture level has to exist!");
@@ -269,13 +266,13 @@ Dialog material_panel ''
 	}
 
 	void on_texture_level_clear() {
-		int sel = get_int("mat_textures");
+		int sel = get_int("textures");
 		if (sel >= 0)
 			data->execute(new ActionModelMaterialLoadTexture(index, sel, ""));
 	}
 
 	void on_textures_right_click() {
-		int n = get_int("mat_textures");
+		int n = get_int("textures");
 		if (n >= 0) {
 			//mode_mesh()->set_current_texture_level(n);
 		}
@@ -294,10 +291,10 @@ Dialog material_panel ''
 };
 
 ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui::Panel>("") {
-	from_resource("model_material_dialog");
+	from_resource("model-material-panel");
 	data = _data;
 
-	auto mat_list = (xhui::ListView*)get_control("material_list");
+	auto mat_list = (xhui::ListView*)get_control("materials");
 	mat_list->column_factories[0].f_create = [this](const string& id) {
 		return new XMaterialPanel(this, data, 0);
 	};
@@ -323,12 +320,12 @@ ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui:
 
 	popup_materials = xhui::create_resource_menu("model-material-list-popup");
 
-	event_x("material_list", xhui::event_id::Select, [this] { on_material_list_select(); });
-	event_x("material_list", xhui::event_id::RightButtonDown, [this] { on_material_list_right_click(); });
-	event("add_new_material", [this] { on_material_add(); });
-	event("add_material", [this] { on_material_load(); });
-	event("delete_material", [this] { on_material_delete(); });
-	event("apply_material", [this] { on_material_apply(); });
+	event_x("materials", xhui::event_id::Select, [this] { on_material_list_select(); });
+	event_x("materials", xhui::event_id::RightButtonDown, [this] { on_material_list_right_click(); });
+	event("add-new-material", [this] { on_material_add(); });
+	event("load-material", [this] { on_material_load(); });
+	event("delete-material", [this] { on_material_delete(); });
+	event("apply-material", [this] { on_material_apply(); });
 
 
 
@@ -368,20 +365,20 @@ int count_material_polygons(DataModel *data, int index) {
 }
 
 void ModelMaterialPanel::fill_material_list() {
-	reset("material_list");
+	reset("materials");
 	for (int i=0;i<data->material.num;i++) {
 		int nt = count_material_polygons(data, i);
 		string im = render_material(data->material[i]);
-		add_string("material_list", str(i)); //format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
+		add_string("materials", str(i)); //format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 		//add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}
-	set_int("material_list", mode_mesh()->current_material);
+	set_int("materials", mode_mesh()->current_material);
 }
 
 
 
 void ModelMaterialPanel::on_material_list_select() {
-	mode_mesh()->set_current_material(get_int("material_list"));
+	mode_mesh()->set_current_material(get_int("materials"));
 }
 
 void ModelMaterialPanel::on_material_add() {
@@ -438,11 +435,11 @@ public:
 };
 
 void ModelMaterialPanel::on_material_list_right_click() {
-	int n = get_int("material_list");
+	int n = get_int("materials");
 	if (n >= 0) {
 		mode_mesh()->set_current_material(n);
+		popup_materials->enable("apply-material", n>=0);
+		popup_materials->enable("delete-material", n>=0);
+		popup_materials->open_popup(this);
 	}
-	popup_materials->enable("apply_material", n>=0);
-	popup_materials->enable("delete_material", n>=0);
-	popup_materials->open_popup(this);
 }
