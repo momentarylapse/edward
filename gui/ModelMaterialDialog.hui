@@ -1,8 +1,11 @@
 Dialog model-material-dialog ''
 	Grid card '' class=card
-		Grid ? ''
+		Grid ? '' spacing=16
 			Image preview ''
-			Label header '' expandx
+			Grid ? '' spacing=0
+				Label header '' bold expandx
+				---|
+				Label subheader '' italic small
 		---|
 		Expander grp-color 'Colors'
 			Grid ? ''

@@ -31,7 +31,7 @@ static constexpr int PREVIEW_SIZE = 48;
 string file_secure(const Path &filename) {
 	if (filename)
 		return str(filename);
-	return "-none-";
+	return "<no file>";
 }
 
 string render_material(ModelMaterial *m) {
@@ -116,7 +116,8 @@ public:
 		int nt = 0;
 
 		set_string("preview", render_material(m));
-		set_string("header", format("%s (%d)", file_secure(m->filename), nt));
+		set_string("header", file_secure(m->filename));
+		set_string("subheader", format("%d polygons", nt));
 
 		auto& col = m->col;
 		check("override-colors", col.user);

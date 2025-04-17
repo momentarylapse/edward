@@ -9,6 +9,7 @@ Label::Label(const string &_id, const string &t) : Control(_id) {
 	text_w = text_h = 0;
 	font_size = Theme::_default.font_size;
 	bold = false;
+	italic = false;
 	align = Align::Left;
 	margin.x1 = margin.x2 = 0;
 	margin.y1 = margin.y2 = Theme::_default.label_margin_y;
@@ -53,7 +54,7 @@ void Label::_draw(Painter *p) {
 		if (!enabled)
 			p->set_color(Theme::_default.text_disabled);
 
-		p->set_font(Theme::_default.font_name, font_size, bold, false);
+		p->set_font(Theme::_default.font_name, font_size, bold, italic);
 		auto dim = p->face->get_text_dimensions(title);
 		float x = _area.x1 + margin.x1;
 		if (align == Align::Center)
@@ -67,7 +68,6 @@ void Label::_draw(Painter *p) {
 void Label::set_option(const string& key, const string& value) {
 	if (key == "image") {
 		image = load_image(value);
-		request_redraw();
 	} else if (key == "align") {
 		if (value == "left")
 			align = Align::Left;
@@ -81,11 +81,16 @@ void Label::set_option(const string& key, const string& value) {
 		align = Align::Center;
 	} else if (key == "bold") {
 		bold = true;
+	} else if (key == "italic") {
+		italic = true;
 	} else if (key == "big") {
 		font_size = Theme::_default.font_size * 1.7f;
+	} else if (key == "small") {
+		font_size = Theme::_default.font_size * 0.7f;
 	} else {
 		Control::set_option(key, value);
 	}
+	request_redraw();
 }
 
 
