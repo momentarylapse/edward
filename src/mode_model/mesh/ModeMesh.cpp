@@ -379,6 +379,15 @@ void ModeMesh::update_vb() {
 	for (const auto& c: data->edit_mesh->cylinder)
 		m.add(GeometryCylinder(data->edit_mesh->vertices[c.index[0]].pos, data->edit_mesh->vertices[c.index[1]].pos, c.radius, 1, 32));
 	m.build(vertex_buffer_physical);
+
+	// update material
+	material->albedo = data->material[0]->col.albedo;
+	material->metal = data->material[0]->col.metal;
+	material->roughness = data->material[0]->col.roughness;
+	material->emission = data->material[0]->col.emission;
+	material->textures.resize(data->material[0]->texture_levels.num);
+	for (int i=0; i<data->material[0]->texture_levels.num; i++)
+		material->textures[i] = data->material[0]->texture_levels[i]->texture;
 }
 
 

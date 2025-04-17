@@ -1,29 +1,4 @@
 Dialog model_material_dialog "Material" width=350 height=371
 	Grid ? "" vertical
 		Label header "Materials" big bold center expandx
-		Grid ? "" vertical
-			Group grp-list "Overview"
-				ListView material_list "#\\Polygons\\\\File" format=ttit select-single "tooltip=Materials\n - Actions via right click"
-			Separator
-			Expander grp-color "Colors"
-				Grid ? ""
-					CheckBox override-colors "Override material"
-					---|
-					Grid ? ""
-						Label /t-albedo "Albedo" right disabled
-						ColorButton albedo "" alpha
-						---|
-						Label /t-roughness "Roughness" right disabled
-						Grid ? ""
-							Slider slider-roughness "" range=0:1:0.01 expandx
-							SpinButton roughness "" range=0:1:0.01
-						---|
-						Label /t-reflectivity "Metal" right disabled
-						Grid ? ""
-							Slider slider-metal "" range=0:1:0.01 expandx
-							SpinButton metal "" range=0:1:0.01
-						---|
-						Label /t-emission "Emission" right disabled
-						ColorButton emission "" "tooltip=Color in absolute darkness"
-			Expander grp-textures "Textures"
-				ListView mat_textures "Level\\\\Texture" format=tit select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
+		ListView material_list "Materials" nobar select-single showselection=no "tooltip=Materials\n - Actions via right click"

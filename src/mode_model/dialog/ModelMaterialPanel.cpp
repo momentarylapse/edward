@@ -21,6 +21,7 @@
 #include <lib/xhui/Dialog.h>
 #include <lib/xhui/Menu.h>
 #include <lib/xhui/Resource.h>
+#include <lib/xhui/controls/Grid.h>
 #include <lib/xhui/controls/Image.h>
 #include <lib/xhui/controls/ListView.h>
 #include <y/EngineData.h>
@@ -30,23 +31,283 @@ string file_secure(const Path &filename) {
 		return str(filename);
 	return "-none-";
 }
+
 string render_material(ModelMaterial *m) {
-	return "";
+	string uid = "image:" + p2s(m);
+	Image im(48, 48, White);
+	// TODO
+	xhui::set_image(uid, im);
+	return uid;
 }
 
 namespace nix {
 	enum class Alpha;
 }
 
+class XMaterialPanel : public xhui::Panel {
+public:
+	XMaterialPanel(ModelMaterialPanel* _parent, DataModel* _data, int _index) : xhui::Panel("") {
+		from_source(R"foodelim(
+Dialog material_panel ''
+	Grid card '' class=card
+		Grid ? ''
+			Image preview ''
+			Label header '' expandx
+		---|
+		Expander grp-color 'Colors'
+			Grid ? ''
+				CheckBox override-colors 'Override material'
+				---|
+				Grid ? ""
+					Label /t-albedo "Albedo" right disabled
+					ColorButton albedo "" alpha
+					---|
+					Label /t-roughness "Roughness" right disabled
+					Grid ? ""
+						Slider slider-roughness "" range=0:1:0.01 expandx
+						SpinButton roughness "" range=0:1:0.01
+					---|
+					Label /t-reflectivity "Metal" right disabled
+					Grid ? ""
+						Slider slider-metal "" range=0:1:0.01 expandx
+						SpinButton metal "" range=0:1:0.01
+					---|
+					Label /t-emission "Emission" right disabled
+					ColorButton emission "" "tooltip=Color in absolute darkness"
+		---|
+		Expander grp-textures "Textures"
+			ListView mat_textures "Level\\\\Texture" height=130 nobar format=tit select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
+)foodelim");
+		parent = _parent;
+		data = _data;
+		index = _index;
+		popup_textures = xhui::create_resource_menu("model-texture-list-popup");
+
+		auto tex_list = (xhui::ListView*)get_control("mat_textures");
+		tex_list->column_factories[1].f_create = [](const string& id) {
+			return new xhui::Image(id, "");
+		};
+
+		event("texture-level-add", [this] { on_texture_level_add(); });
+		event("mat_textures", [this] { on_textures(); });
+		event_x("mat_textures", xhui::event_id::Select, [this] { on_textures_select(); });
+		event_x("mat_textures", xhui::event_id::RightButtonDown, [this] { on_textures_right_click(); });
+		event("texture-level-delete", [this] { on_texture_level_delete(); });
+		event("texture-level-clear", [this] { on_texture_level_clear(); });
+		event("texture-level-load", [this] { on_texture_level_load(); });
+		event("texture-level-save", [this] { on_texture_level_save(); });
+		event("texture-level-scale", [this] { on_texture_level_scale(); });
+
+		event("override-colors", [this] { on_override_colors(); });
+		event("albedo", [this] { apply_data_color(); });
+		event("roughness", [this] { apply_data_color(); });
+		event("slider-roughness", [this] { apply_data_color(); });
+		event("metal", [this] { apply_data_color(); });
+		event("slider-metal", [this] { apply_data_color(); });
+		event("emission", [this] { apply_data_color(); });
+	}
+
+	~XMaterialPanel() override {
+		delete popup_textures;
+	}
+
+	ModelMaterial* material() const {
+		return data->material[index];
+	}
+
+	void update(int _index) {
+		index = _index;
+
+		auto m = material();
+		int nt = 0;
+
+		set_string("preview", render_material(m));
+		set_string("header", format("%s (%d)", file_secure(m->filename), nt));
+
+		auto& col = m->col;
+		check("override-colors", col.user);
+		enable("albedo", col.user);
+		enable("roughness", col.user);
+		enable("slider-roughness", col.user);
+		enable("metal", col.user);
+		enable("slider-metal", col.user);
+		enable("emission", col.user);
+		set_color("albedo", col.albedo);
+		set_float("roughness", col.roughness);
+		set_float("slider-roughness", col.roughness);
+		set_float("metal", col.metal);
+		set_float("slider-metal", col.metal);
+		set_color("emission", col.emission);
+
+		fill_texture_list();
+	}
+	void set_selected(bool selected) {
+		expand("grp-color", selected);
+		expand("grp-textures", selected);
+		set_visible("grp-color", selected);
+		set_visible("grp-textures", selected);
+	}
+
+	// GUI -> data
+	void apply_data_color() {
+		parent->apply_queue_depth ++;
+
+		auto col = data->material[index]->col;
+		auto parent = data->material[index]->material;
+
+		col.user= is_checked("override-colors");
+
+		if (col.user) {
+			col.albedo = get_color("albedo");
+			col.roughness = get_float("slider-roughness");
+			col.metal = get_float("slider-metal");
+			col.emission = get_color("emission");
+		} else {
+			col.albedo = parent->albedo;
+			col.roughness = parent->roughness;
+			col.metal = parent->metal;
+			col.emission = parent->emission;
+		}
+		set_float("metal", col.metal);
+		set_float("roughness", col.roughness);
+		enable("albedo", col.user);
+		enable("roughness", col.user);
+		enable("slider-roughness", col.user);
+		enable("metal", col.user);
+		enable("slider-metal", col.user);
+		enable("emission", col.user);
+
+		data->execute(new ActionModelEditMaterial(index, col));
+		this->parent->apply_queue_depth --;
+	}
+
+
+	void on_override_colors() {
+		apply_data_color();
+	}
+
+	void fill_texture_list() {
+		auto mat = material();
+		reset("mat_textures");
+		for (int i=0;i<mat->texture_levels.num;i++) {
+			string id = format("image:material[%d]-texture[%d]", index, i);
+			auto *img = mat->texture_levels[i]->image.get();
+			auto *icon = mat->texture_levels[i]->image->scale(48, 48);
+			xhui::set_image(id, *icon);
+			string ext = format(" (%dx%d)", img->width, img->height);
+			if (mat->texture_levels[i]->edited)
+				ext += " *";
+			add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(mat->texture_levels[i]->filename) + ext)));
+			delete icon;
+		}
+	//	set_int("mat_textures", mode_mesh()->current_texture_level);
+	}
+
+
+	void on_texture_level_add() {
+		auto temp = material();
+		if (temp->texture_levels.num >= MATERIAL_MAX_TEXTURES) {
+			data->session->error(format("Only %d texture levels allowed!", MATERIAL_MAX_TEXTURES));
+			return;
+		}
+
+
+		data->execute(new ActionModelMaterialAddTexture(index));
+	}
+
+	void on_textures() {
+		on_textures_select();
+		on_texture_level_load();
+	}
+
+	void on_texture_level_load() {
+		int sel = get_int("mat_textures");
+		if (sel >= 0)
+			data->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, sel] (const auto& p) {
+				data->execute(new ActionModelMaterialLoadTexture(index, sel, p.relative));
+			});
+	}
+
+	void on_texture_level_save() {
+		int sel = get_int("mat_textures");
+		if (sel >= 0)
+			data->session->storage->file_dialog(FD_TEXTURE, true, true).then([this, sel] (const auto& p) {
+				auto tl = material()->texture_levels[sel];
+				tl->image->save(p.complete);
+				tl->filename = p.relative; // ...
+				tl->edited = false;
+			});
+	}
+
+	void on_texture_level_scale() {
+		msg_todo("texture scale");
+		/*int sel = get_int("mat_textures");
+		if (sel >= 0) {
+			auto& tl = data->material[mode_mesh()->current_material]->texture_levels[sel];
+			int w = tl.image->width;
+			int h = tl.image->height;
+			TextureScaleDialog::ask(win, w, h, [this, sel] (int _w, int _h) {
+				data->execute(new ActionModelMaterialScaleTexture(mode_mesh()->current_material, sel, _w, _h));
+			});
+		}*/
+	}
+
+	void on_textures_select() {
+		int sel = get_int("mat_textures");
+	//	mode_mesh()->set_current_texture_level(sel);
+	}
+
+	void on_texture_level_delete() {
+		int sel = get_int("mat_textures");
+		if (sel >= 0) {
+			if (data->material[index]->texture_levels.num <= 1) {
+				data->session->error("At least one texture level has to exist!");
+				return;
+			}
+			data->execute(new ActionModelMaterialDeleteTexture(index, sel));
+		}
+	}
+
+	void on_texture_level_clear() {
+		int sel = get_int("mat_textures");
+		if (sel >= 0)
+			data->execute(new ActionModelMaterialLoadTexture(index, sel, ""));
+	}
+
+	void on_textures_right_click() {
+		int n = get_int("mat_textures");
+		if (n >= 0) {
+			//mode_mesh()->set_current_texture_level(n);
+		}
+		popup_textures->enable("texture-level-delete", n>=0);
+		popup_textures->enable("texture-level-clear", n>=0);
+		popup_textures->enable("texture-level-load", n>=0);
+		popup_textures->enable("texture-level-save", n>=0);
+		popup_textures->enable("texture-level-scale", n>=0);
+		popup_textures->open_popup(this);
+	}
+
+	ModelMaterialPanel* parent;
+	DataModel* data;
+	int index;
+	xhui::Menu *popup_textures;
+};
+
 ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui::Panel>("") {
 	from_resource("model_material_dialog");
-	auto tex_list = (xhui::ListView*)get_control("mat_textures");
-	tex_list->column_factories[1].f_create = [](const string& id) {
-		return new xhui::Image(id, "");
-	};
-
 	data = _data;
 
+	auto mat_list = (xhui::ListView*)get_control("material_list");
+	mat_list->column_factories[0].f_create = [this](const string& id) {
+		return new XMaterialPanel(this, data, 0);
+	};
+	mat_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
+		int i = t._int();
+		reinterpret_cast<XMaterialPanel*>(c)->update(i);
+	};
+	mat_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
+		reinterpret_cast<XMaterialPanel*>(c)->set_selected(selected);
+	};
 
 	data->out_material_changed >> create_sink([this] {
 		if (apply_queue_depth == 0)
@@ -61,7 +322,6 @@ ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui:
 	mode_mesh()->out_texture_level_changed >> create_sink([this] { load_data(); });
 
 	popup_materials = xhui::create_resource_menu("model-material-list-popup");
-	popup_textures = xhui::create_resource_menu("model-texture-list-popup");
 
 	event_x("material_list", xhui::event_id::Select, [this] { on_material_list_select(); });
 	event_x("material_list", xhui::event_id::RightButtonDown, [this] { on_material_list_right_click(); });
@@ -71,29 +331,9 @@ ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui:
 	event("apply_material", [this] { on_material_apply(); });
 
 
-	event("texture-level-add", [this] { on_texture_level_add(); });
-	event("mat_textures", [this] { on_textures(); });
-	event_x("mat_textures", xhui::event_id::Select, [this] { on_textures_select(); });
-	event_x("mat_textures", xhui::event_id::RightButtonDown, [this] { on_textures_right_click(); });
-	event("texture-level-delete", [this] { on_texture_level_delete(); });
-	event("texture-level-clear", [this] { on_texture_level_clear(); });
-	event("texture-level-load", [this] { on_texture_level_load(); });
-	event("texture-level-save", [this] { on_texture_level_save(); });
-	event("texture-level-scale", [this] { on_texture_level_scale(); });
-
-	event("override-colors", [this] { on_override_colors(); });
-	event("albedo", [this] { apply_data_color(); });
-	event("roughness", [this] { apply_data_color(); });
-	event("slider-roughness", [this] { apply_data_color(); });
-	event("metal", [this] { apply_data_color(); });
-	event("slider-metal", [this] { apply_data_color(); });
-	event("emission", [this] { apply_data_color(); });
 
 	set_visible("model_material_dialog_grp_color", full);
 	set_visible("model_material_dialog_grp_transparency", full);
-
-	expand("grp-color", true);
-	expand("grp-textures", true);
 
 	load_data();
 	apply_queue_depth = 0;
@@ -104,7 +344,6 @@ ModelMaterialPanel::~ModelMaterialPanel() {
 	data->unsubscribe(this);
 
 	delete popup_materials;
-	delete popup_textures;
 }
 
 
@@ -117,57 +356,7 @@ ModeMesh *ModelMaterialPanel::mode_mesh() {
 
 // data -> GUI
 void ModelMaterialPanel::load_data() {
-	auto col = data->material[mode_mesh()->current_material]->col;
 	fill_material_list();
-
-	fill_texture_list();
-	check("override-colors", col.user);
-	enable("albedo", col.user);
-	enable("roughness", col.user);
-	enable("slider-roughness", col.user);
-	enable("metal", col.user);
-	enable("slider-metal", col.user);
-	enable("emission", col.user);
-	set_color("albedo", col.albedo);
-	set_float("roughness", col.roughness);
-	set_float("slider-roughness", col.roughness);
-	set_float("metal", col.metal);
-	set_float("slider-metal", col.metal);
-	set_color("emission", col.emission);
-}
-
-
-// GUI -> data
-void ModelMaterialPanel::apply_data_color() {
-	apply_queue_depth ++;
-
-	auto col = data->material[mode_mesh()->current_material]->col;
-	auto parent = data->material[mode_mesh()->current_material]->material;
-
-	col.user= is_checked("override-colors");
-
-	if (col.user) {
-		col.albedo = get_color("albedo");
-		col.roughness = get_float("slider-roughness");
-		col.metal = get_float("slider-metal");
-		col.emission = get_color("emission");
-	} else {
-		col.albedo = parent->albedo;
-		col.roughness = parent->roughness;
-		col.metal = parent->metal;
-		col.emission = parent->emission;
-	}
-	set_float("metal", col.metal);
-	set_float("roughness", col.roughness);
-	enable("albedo", col.user);
-	enable("roughness", col.user);
-	enable("slider-roughness", col.user);
-	enable("metal", col.user);
-	enable("slider-metal", col.user);
-	enable("emission", col.user);
-
-	data->execute(new ActionModelEditMaterial(mode_mesh()->current_material, col));
-	apply_queue_depth --;
 }
 
 int count_material_polygons(DataModel *data, int index) {
@@ -183,7 +372,8 @@ void ModelMaterialPanel::fill_material_list() {
 	for (int i=0;i<data->material.num;i++) {
 		int nt = count_material_polygons(data, i);
 		string im = render_material(data->material[i]);
-		add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
+		add_string("material_list", str(i)); //format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
+		//add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}
 	set_int("material_list", mode_mesh()->current_material);
 }
@@ -218,63 +408,6 @@ void ModelMaterialPanel::on_material_apply() {
 }
 
 
-void ModelMaterialPanel::on_override_colors() {
-	apply_data_color();
-}
-
-void ModelMaterialPanel::fill_texture_list() {
-	auto mat = data->material[mode_mesh()->current_material];
-	reset("mat_textures");
-	for (int i=0;i<mat->texture_levels.num;i++) {
-		string id = format("image:material[%d]-texture[%d]", mode_mesh()->current_material, i);
-		auto *img = mat->texture_levels[i]->image.get();
-		auto *icon = mat->texture_levels[i]->image->scale(48, 48);
-		xhui::set_image(id, *icon);
-		string ext = format(" (%dx%d)", img->width, img->height);
-		if (mat->texture_levels[i]->edited)
-			ext += " *";
-		add_string("mat_textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(mat->texture_levels[i]->filename) + ext)));
-		delete icon;
-	}
-	set_int("mat_textures", mode_mesh()->current_texture_level);
-}
-
-
-void ModelMaterialPanel::on_texture_level_add() {
-	auto temp = data->material[mode_mesh()->current_material];
-	if (temp->texture_levels.num >= MATERIAL_MAX_TEXTURES) {
-		data->session->error(format("Only %d texture levels allowed!", MATERIAL_MAX_TEXTURES));
-		return;
-	}
-
-
-	data->execute(new ActionModelMaterialAddTexture(mode_mesh()->current_material));
-}
-
-void ModelMaterialPanel::on_textures() {
-	on_textures_select();
-	on_texture_level_load();
-}
-
-void ModelMaterialPanel::on_texture_level_load() {
-	int sel = get_int("mat_textures");
-	if (sel >= 0)
-		data->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, sel] (const auto& p) {
-			data->execute(new ActionModelMaterialLoadTexture(mode_mesh()->current_material, sel, p.relative));
-		});
-}
-
-void ModelMaterialPanel::on_texture_level_save() {
-	int sel = get_int("mat_textures");
-	if (sel >= 0)
-		data->session->storage->file_dialog(FD_TEXTURE, true, true).then([this, sel] (const auto& p) {
-			auto tl = data->material[mode_mesh()->current_material]->texture_levels[sel];
-			tl->image->save(p.complete);
-			tl->filename = p.relative; // ...
-			tl->edited = false;
-		});
-}
-
 class TextureScaleDialog : public xhui::Dialog {
 public:
 	TextureScaleDialog(xhui::Window *parent, int w, int h) : xhui::Dialog("Scale texture", 300, 100, parent, xhui::DialogFlags::None) {
@@ -304,41 +437,6 @@ public:
 	}
 };
 
-void ModelMaterialPanel::on_texture_level_scale() {
-	msg_todo("texture scale");
-	/*int sel = get_int("mat_textures");
-	if (sel >= 0) {
-		auto& tl = data->material[mode_mesh()->current_material]->texture_levels[sel];
-		int w = tl.image->width;
-		int h = tl.image->height;
-		TextureScaleDialog::ask(win, w, h, [this, sel] (int _w, int _h) {
-			data->execute(new ActionModelMaterialScaleTexture(mode_mesh()->current_material, sel, _w, _h));
-		});
-	}*/
-}
-
-void ModelMaterialPanel::on_textures_select() {
-	int sel = get_int("mat_textures");
-	mode_mesh()->set_current_texture_level(sel);
-}
-
-void ModelMaterialPanel::on_texture_level_delete() {
-	int sel = get_int("mat_textures");
-	if (sel >= 0) {
-		if (data->material[mode_mesh()->current_material]->texture_levels.num <= 1) {
-			data->session->error("At least one texture level has to exist!");
-			return;
-		}
-		data->execute(new ActionModelMaterialDeleteTexture(mode_mesh()->current_material, sel));
-	}
-}
-
-void ModelMaterialPanel::on_texture_level_clear() {
-	int sel = get_int("mat_textures");
-	if (sel >= 0)
-		data->execute(new ActionModelMaterialLoadTexture(mode_mesh()->current_material, sel, ""));
-}
-
 void ModelMaterialPanel::on_material_list_right_click() {
 	int n = get_int("material_list");
 	if (n >= 0) {
@@ -347,17 +445,4 @@ void ModelMaterialPanel::on_material_list_right_click() {
 	popup_materials->enable("apply_material", n>=0);
 	popup_materials->enable("delete_material", n>=0);
 	popup_materials->open_popup(this);
-}
-
-void ModelMaterialPanel::on_textures_right_click() {
-	int n = get_int("mat_textures");
-	if (n >= 0) {
-		mode_mesh()->set_current_texture_level(n);
-	}
-	popup_textures->enable("texture-level-delete", n>=0);
-	popup_textures->enable("texture-level-clear", n>=0);
-	popup_textures->enable("texture-level-load", n>=0);
-	popup_textures->enable("texture-level-save", n>=0);
-	popup_textures->enable("texture-level-scale", n>=0);
-	popup_textures->open_popup(this);
 }
