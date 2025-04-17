@@ -49,6 +49,7 @@ public:
 	struct ColumnFactory {
 		std::function<Control*(const string& id)> f_create;
 		std::function<void(Control* c, const string& t)> f_set;
+		std::function<void(Control* c, bool selected)> f_select;
 	};
 	Array<ColumnFactory> column_factories;
 	struct Cell {
@@ -70,6 +71,8 @@ public:
 	bool show_headers = true;
 	rect padding;
 	float selection_radius;
+
+	bool show_selection = true;
 
 	int hover_row = -1;
 

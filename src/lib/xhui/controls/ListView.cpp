@@ -47,6 +47,11 @@ void ListView::on_left_button_down(const vec2& m) {
 		selected = {};
 	if (hover_row >= 0)
 		selected = {hover_row};
+
+	if (column_factories[0].f_select)
+		for (const auto& [i,r]: enumerate(cells))
+			column_factories[0].f_select(r[0].control, selected.find(i) >= 0);
+
 	request_redraw();
 	emit_event(event_id::Select, false);
 }
@@ -158,16 +163,18 @@ void ListView::_draw(Painter *p) {
 		}
 	}
 
-	p->set_roundness(selection_radius);
-	if (hover_row >= 0) {
-		p->set_color(Theme::_default.background_hover.with_alpha(0.5f));
-		p->draw_rect(row_area(hover_row) and viewport._area);
+	if (show_selection) {
+		p->set_roundness(selection_radius);
+		if (hover_row >= 0) {
+			p->set_color(Theme::_default.background_hover.with_alpha(0.5f));
+			p->draw_rect(row_area(hover_row) and viewport._area);
+		}
+		for (int row: selected) {
+			p->set_color(Theme::_default.background_low_selected);
+			p->draw_rect(row_area(row) and viewport._area);
+		}
+		p->set_roundness(0);
 	}
-	for (int row: selected) {
-		p->set_color(Theme::_default.background_low_selected);
-		p->draw_rect(row_area(row) and viewport._area);
-	}
-	p->set_roundness(0);
 
 	viewport._draw(p);
 }
@@ -182,9 +189,12 @@ void ListView::add_string(const string& s) {
 		string cid = format("%s:%d:%d", id, row, col);
 		auto c = column_factories[col].f_create(cid);
 		//c->size_mode_x = SizeMode::Expand;
-		column_factories[col].f_set(c, t);
-		cell_grid->add_child(c, col, row);
+		if (auto p = dynamic_cast<Panel*>(c))
+			owner->embed(cell_grid->id, col, row, p);
+		else
+			cell_grid->add_child(c, col, row);
 		cells.back().add({t, c});
+		column_factories[col].f_set(c, t);
 	}
 	if (cells.num == 1 and selection_mode == SelectionMode::Single)
 		selected = {0};
@@ -214,6 +224,11 @@ void ListView::set_int(int i) {
 		selected = {};
 	if (i >= 0 and i < cells.num)
 		selected = {i};
+
+	if (column_factories[0].f_select)
+		for (const auto& [i,r]: enumerate(cells))
+			column_factories[0].f_select(r[0].control, selected.find(i) >= 0);
+
 	request_redraw();
 }
 string ListView::get_cell(int row, int col) {
@@ -235,6 +250,8 @@ void ListView::set_option(const string& key, const string& value) {
 		show_headers = value._bool();
 	} else if (key == "nobar") {
 		show_headers = false;
+	} else if (key == "showselection") {
+		show_selection = value._bool();
 	} else if (key == "style") {
 		if (value == "compact") {
 			padding = {0,0,0,0};
