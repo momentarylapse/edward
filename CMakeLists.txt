@@ -405,6 +405,7 @@ add_executable(edward
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/data/SkinGenerator.cpp
 	src/mode_model/dialog/ModelMaterialPanel.cpp
+	src/mode_model/dialog/ModelMaterialSelectionDialog.cpp
 	src/mode_model/dialog/ModelPropertiesDialog.cpp
 	src/mode_model/mesh/ModeAddCube.cpp
 	src/mode_model/mesh/ModeAddFromLathe.cpp

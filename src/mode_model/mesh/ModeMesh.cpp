@@ -32,6 +32,7 @@
 #include <data/mesh/VertexStagingBuffer.h>
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
+#include <mode_model/dialog/ModelMaterialSelectionDialog.h>
 #include <storage/Storage.h>
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
@@ -49,6 +50,7 @@ ModeMesh::ModeMesh(ModeModel* parent) : Mode(parent->session) {
 
 	temp_mesh = new ModelMesh(data);
 	current_material = 0;
+	current_texture_level = 0;
 
 	presentation_mode = PresentationMode::Polygons;
 }
@@ -211,6 +213,12 @@ void ModeMesh::on_enter() {
 		data->mesh->update_normals();
 		data->out_changed();
 	}));
+	event_ids.add(session->win->event("choose_material", [this] {
+		ModelMaterialSelectionDialog::ask(this).then([this] (int material) {
+			data->apply_material(data->get_selection(), material);
+		});
+	}));
+
 
 	data->out_changed >> create_sink(update);
 	update();

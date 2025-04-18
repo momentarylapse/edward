@@ -1,6 +1,6 @@
 Dialog model_material_selection_dialog "Select a material" width=355 height=360 headerbar closebutton=yes resizable
 	Grid ? ""
-		ListView material_list "#\\Polygons\\\\File" format=ttit select-single "tooltip=- double click to apply material\n- select and press button \"edit\" to edit\n- selection will be used for new polygons"
+		ListView material_list "\\File" nobar format=it select-single "tooltip=- double click to apply material\n- select and press button \"edit\" to edit\n- selection will be used for new polygons"
 		---|
 		Grid ? "" buttonbar
 			Button /apply "Apply" image=hui:apply default

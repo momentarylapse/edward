@@ -3660,7 +3660,7 @@ Grid
 2
 ListView
 material_list
-format=ttit,select-single
+nobar,format=it,select-single
 0
 0
 0
@@ -12676,7 +12676,7 @@ model_dialog/tensor
 \\X\\Y\\Z
 
 model_material_selection_dialog/material_list
-#\\Polygons\\\\File
+\\File
 - double click to apply material\n- select and press button \"edit\" to edit\n- selection will be used for new polygons
 model_material_selection_dialog/model_material_selection_dialog
 Select a material
