@@ -40,11 +40,9 @@ ModeMesh::ModeMesh(ModeModel* parent) : Mode(parent->session) {
 	multi_view = parent->multi_view;
 	data = parent->data.get();
 	generic_data = data;
-	vertex_buffer = new VertexBuffer("3f,3f,2f");
 	vertex_buffer_physical = new VertexBuffer("3f,3f,2f");
 	vertex_buffer_selection = new VertexBuffer("3f,3f,2f");
 	vertex_buffer_hover = new VertexBuffer("3f,3f,2f");
-	material = create_material(session->resource_manager, White, 0.7f, 0.2f, Black);
 	material_physical = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, color(1,1,1,0.4f), true);
 	material_selection = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, Red, true);
 	material_hover = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, White, true);
@@ -255,8 +253,10 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	dh->clear(params, xhui::Theme::_default.background_low);
 
 
-	if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces or data->edit_mesh == data->phys_mesh.get())
-		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer, material, 0);
+	if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces or data->edit_mesh == data->phys_mesh.get()) {
+		for (int i=0; i<vertex_buffers.num; i++)
+			dh->draw_mesh(params, rvd, mat4::ID, vertex_buffers[i], materials[i], 0);
+	}
 
 	if (data->edit_mesh == data->phys_mesh.get())
 		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_physical, material_physical, 0);
@@ -368,10 +368,17 @@ void ModeMesh::on_update_selection() {
 }
 
 void ModeMesh::update_vb() {
-	VertexStagingBuffer vsb;
-	for (auto& p: data->mesh->polygons)
-		p.add_to_vertex_buffer(data->mesh->vertices, vsb, 1);
-	vsb.build(vertex_buffer, 1);
+	vertex_buffers.resize(data->material.num);
+	for (int i=0; i<vertex_buffers.num; i++) {
+		if (!vertex_buffers[i])
+			vertex_buffers[i] = new VertexBuffer("3f,3f,2f");
+
+		VertexStagingBuffer vsb;
+		for (auto& p: data->mesh->polygons)
+			if (p.material == i)
+				p.add_to_vertex_buffer(data->mesh->vertices, vsb, 1);
+		vsb.build(vertex_buffers[i], 1);
+	}
 
 	PolygonMesh m;
 	for (const auto& b: data->edit_mesh->ball)
@@ -381,13 +388,19 @@ void ModeMesh::update_vb() {
 	m.build(vertex_buffer_physical);
 
 	// update material
-	material->albedo = data->material[0]->col.albedo;
-	material->metal = data->material[0]->col.metal;
-	material->roughness = data->material[0]->col.roughness;
-	material->emission = data->material[0]->col.emission;
-	material->textures.resize(data->material[0]->texture_levels.num);
-	for (int i=0; i<data->material[0]->texture_levels.num; i++)
-		material->textures[i] = data->material[0]->texture_levels[i]->texture;
+	materials.resize(data->material.num);
+	for (int i=0; i<materials.num; i++) {
+		if (!materials[i])
+			materials[i] = create_material(session->resource_manager, White, 0.7f, 0.2f, Black);
+
+		materials[i]->albedo = data->material[i]->col.albedo;
+		materials[i]->metal = data->material[i]->col.metal;
+		materials[i]->roughness = data->material[i]->col.roughness;
+		materials[i]->emission = data->material[i]->col.emission;
+		materials[i]->textures.resize(data->material[i]->texture_levels.num);
+		for (int k=0; k<data->material[i]->texture_levels.num; k++)
+			materials[i]->textures[k] = data->material[i]->texture_levels[k]->texture;
+	}
 }
 
 

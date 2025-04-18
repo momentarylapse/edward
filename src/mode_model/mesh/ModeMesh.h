@@ -55,11 +55,11 @@ public:
 	void set_edit_mesh(ModelMesh* mesh);
 
 	owned<ModelMesh> temp_mesh;
-	VertexBuffer* vertex_buffer;
+	owned_array<VertexBuffer> vertex_buffers;
 	VertexBuffer* vertex_buffer_physical;
 	VertexBuffer* vertex_buffer_selection;
 	VertexBuffer* vertex_buffer_hover;
-	Material* material;
+	owned_array<Material> materials;
 	Material* material_physical;
 	Material* material_selection;
 	Material* material_hover;

@@ -401,8 +401,7 @@ void ModelMaterialPanel::on_material_delete() {
 }
 
 void ModelMaterialPanel::on_material_apply() {
-	msg_todo("apply material");
-	//data->setMaterialSelection(mode_mesh()->current_material);
+	data->apply_material(data->get_selection(), mode_mesh()->current_material);
 }
 
 

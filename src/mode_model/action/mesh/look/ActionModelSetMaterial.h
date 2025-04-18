@@ -8,17 +8,16 @@
 #ifndef ACTIONMODELSETMATERIAL_H_
 #define ACTIONMODELSETMATERIAL_H_
 
-#include "../../../Action.h"
+#include <action/Action.h>
 class DataModel;
 
-class ActionModelSetMaterial: public Action
-{
+class ActionModelSetMaterial: public Action {
 public:
-	ActionModelSetMaterial(DataModel *m, int _material);
-	string name(){	return "ModelSetMaterial";	}
+	ActionModelSetMaterial(DataModel *m, const Data::Selection& sel, int _material);
+	string name() override {	return "ModelSetMaterial";	}
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	int material;

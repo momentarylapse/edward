@@ -182,10 +182,9 @@ public:
 	void extrudeSelectedPolygons(float offset, bool independent);
 	void autoWeldSurfaces(const base::set<int> &surfaces, float d);
 	void autoWeldSelectedSurfaces(float d);
-	void setNormalModeSelection(int mode);
-	void setMaterialSelection(int material);
-	void pasteGeometry(const Geometry &geo, int default_material);
-	void easify(float factor);
+	void setNormalModeSelection(int mode);*/
+	void apply_material(const Selection& sel, int material);
+	/*void easify(float factor);
 	void subdivideSelectedSurfaces(const ModelSelection &s);
 	void automap(int material, int texture_level);*/
 

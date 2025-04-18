@@ -40,9 +40,9 @@
 #include "../../action/model/mesh/surface/ActionModelSurfaceInvert.h"
 #include "../../action/model/mesh/surface/ActionModelAutoWeldSelection.h"
 #include "../../action/model/mesh/surface/ActionModelSurfacesSubdivide.h"
-#include "../../action/model/mesh/skin/ActionModelAutomap.h"
-#include "../../action/model/mesh/look/ActionModelSetMaterial.h"
-#include "../../action/model/mesh/look/ActionModelSetNormalModeSelection.h"
+#include "../../action/model/mesh/skin/ActionModelAutomap.h"*/
+#include "../action/mesh/look/ActionModelSetMaterial.h"
+/*#include "../../action/model/mesh/look/ActionModelSetNormalModeSelection.h"
 #include "../../action/model/mesh/effect/ActionModelAddEffects.h"
 #include "../../action/model/mesh/effect/ActionModelClearEffects.h"
 #include "../../action/model/mesh/effect/ActionModelEditEffect.h"
@@ -585,10 +585,11 @@ void DataModel::collapseSelectedVertices()
 
 void DataModel::setNormalModeSelection(int mode)
 {	execute(new ActionModelSetNormalModeSelection(this, mode));	}
-
-void DataModel::setMaterialSelection(int material)
-{	execute(new ActionModelSetMaterial(this, material));	}
 #endif
+
+void DataModel::apply_material(const Selection& sel, int material) {
+	execute(new ActionModelSetMaterial(this, sel, material));
+}
 
 void DataModel::paste_mesh(const PolygonMesh& geo, int default_material) {
 	execute(new ActionModelPasteMesh(edit_mesh, geo, default_material));

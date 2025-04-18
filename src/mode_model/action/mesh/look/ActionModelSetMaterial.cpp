@@ -6,16 +6,19 @@
  */
 
 #include "ActionModelSetMaterial.h"
-#include "../../../../data/model/DataModel.h"
-#include "../../../../data/model/ModelMesh.h"
-#include "../../../../data/model/ModelPolygon.h"
 
-ActionModelSetMaterial::ActionModelSetMaterial(DataModel *m, int _material) {
+#include <Session.h>
+
+#include "../../../data/DataModel.h"
+#include "../../../data/ModelMesh.h"
+#include <data/mesh/Polygon.h>
+
+ActionModelSetMaterial::ActionModelSetMaterial(DataModel *m, const Data::Selection& sel, int _material) {
 	material = _material;
 
 	// save old data
-	foreachi(ModelPolygon &t, m->mesh->polygon, ti)
-		if (t.is_selected) {
+	foreachi(Polygon &t, m->mesh->polygons, ti)
+		if (sel[MultiViewType::MODEL_POLYGON].contains(ti)) {
 			triangle.add(ti);
 			old_material.add(t.material);
 		}
@@ -27,7 +30,7 @@ void *ActionModelSetMaterial::execute(Data *d) {
 
 
 	for (int i: triangle) {
-		ModelPolygon &t = m->mesh->polygon[i];
+		Polygon &t = m->mesh->polygons[i];
 		t.material = material;
 	}
 	return NULL;
@@ -39,7 +42,7 @@ void ActionModelSetMaterial::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	foreachi (int i, triangle, k) {
-		ModelPolygon &t = m->mesh->polygon[i];
+		Polygon &t = m->mesh->polygons[i];
 		t.material = old_material[k];
 	}
 }
