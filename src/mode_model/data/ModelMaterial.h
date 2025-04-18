@@ -26,14 +26,13 @@ public:
 	virtual ~ModelMaterial();
 	Session *session;
 
-	void reset();
-	void make_consistent();
+	void make_consistent_after_shallow_loading();
 	void check_textures();
-	void check_colors();
+	void load_colors_from_file();
 //	void apply_for_rendering(MultiView::Window *win);
 
 	Path filename;
-	Material *material;
+	owned<Material> material;
 	ShaderCache shader_cache;
 
 	struct TextureLevel {
@@ -59,7 +58,7 @@ public:
 		void import(const color &am, const color &di, const color &sp, float shininess, const color &em);
 	} col;
 
-	VertexBuffer *vb;
+	owned<VertexBuffer> vb;
 };
 
 #endif /* MODELMATERIAL_H_ */

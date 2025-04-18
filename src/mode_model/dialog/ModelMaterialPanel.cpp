@@ -149,7 +149,7 @@ public:
 
 		auto m = data->material[index];
 		auto col = m->col;
-		auto parent = m->material;
+		auto parent = m->material.get();
 
 		col.user= is_checked("override-colors");
 

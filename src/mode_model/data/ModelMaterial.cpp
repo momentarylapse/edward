@@ -22,28 +22,22 @@ float col_frac(const color &a, const color &b);
 
 ModelMaterial::ModelMaterial(Session *_s) {
 	session = _s;
-	// file
-	filename = "";
+	// default file
 	material = session->resource_manager->load_material("");
 
 	// color
 	col.user = false;
-	check_colors();
-
-	vb = nullptr;
+	load_colors_from_file();
 }
 
 
 // ONLY ActionModelAddMaterial
 ModelMaterial::ModelMaterial(Session *_s, const Path &_filename) : ModelMaterial(_s) {
 	filename = _filename;
-	make_consistent();
+	make_consistent_after_shallow_loading();
 }
 
-ModelMaterial::~ModelMaterial() {
-	if (vb)
-		delete vb;
-}
+ModelMaterial::~ModelMaterial() = default;
 
 void ModelMaterial::TextureLevel::reload_image(Session *session) {
 	if (filename == "")
@@ -58,10 +52,6 @@ void ModelMaterial::TextureLevel::update_texture() {
 	if (!texture)
 		texture = new Texture();
 	texture->write(*image);
-}
-
-// DEPRECATED
-void ModelMaterial::reset() {
 }
 
 
@@ -84,7 +74,7 @@ void ModelMaterial::Color::import(const color &am, const color &di, const color 
 	metal = 0;
 }
 
-void ModelMaterial::make_consistent() {
+void ModelMaterial::make_consistent_after_shallow_loading() {
 	material = session->resource_manager->load_material(filename);
 
 	if (material->reflection.mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
@@ -94,7 +84,8 @@ void ModelMaterial::make_consistent() {
 	}
 
 	check_textures();
-	check_colors();
+	if (!col.user)
+		load_colors_from_file();
 }
 
 
@@ -130,13 +121,11 @@ void ModelMaterial::check_textures() {
 	}
 }
 
-void ModelMaterial::check_colors() {
-	if (!col.user) {
-		col.albedo = material->albedo;
-		col.roughness = material->roughness;
-		col.metal = material->metal;
-		col.emission = material->emission;
-	}
+void ModelMaterial::load_colors_from_file() {
+	col.albedo = material->albedo;
+	col.roughness = material->roughness;
+	col.metal = material->metal;
+	col.emission = material->emission;
 }
 
 #if 0

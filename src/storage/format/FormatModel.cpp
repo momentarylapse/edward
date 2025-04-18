@@ -990,8 +990,8 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 					f.vertex_dpos = f.skin[1].dpos;
 			}
 
-		for (auto *m: data->material) {
-			m->make_consistent();
+		for (auto* m: data->material) {
+			m->make_consistent_after_shallow_loading();
 
 			// test textures
 			for (auto t: weak(m->texture_levels)) {
