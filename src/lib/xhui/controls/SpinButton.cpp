@@ -55,9 +55,9 @@ void SpinButton::_update_text_from_value() {
 }
 
 vec2 SpinButton::get_content_min_size() const {
+	auto dims = get_cached_text_dimensions(f2s(_max, decimals), default_font_regular, font_size);
 	auto s = Edit::get_content_min_size();
-	default_font_regular->set_size(font_size*ui_scale);
-	float w = default_font_regular->get_text_width(f2s(_max, decimals)) / ui_scale;
+	float w = dims.bounding_width / ui_scale;
 	s.x = BUTTON_DX*2 + w + margin_x*2;
 	return s;
 }

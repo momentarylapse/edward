@@ -35,49 +35,6 @@ DescriptorSet* get_descriptor_set(Context* context, Texture* texture) {
 	return dset;
 }
 
-struct TextCache {
-	string text;
-	font::Face* face;
-	float size;
-	int age;
-	Texture* texture;
-	DescriptorSet* dset;
-};
-
-Array<TextCache> text_caches;
-
-TextCache& get_text_cache(Context* context, const string& text, font::Face* face, float size) {
-	for (auto& tc: text_caches)
-		if (tc.text == text and tc.face == face and tc.size == size) {
-			tc.age = 0;
-			return tc;
-		}
-
-	TextCache* tc = nullptr;
-	for (auto& _tc: text_caches)
-		if (_tc.age > 5)
-			tc = &_tc;
-	if (!tc) {
-		text_caches.add({});
-		tc = &text_caches.back();
-		tc->dset = context->pool->create_set(context->shader);
-		tc->texture = new Texture();
-	}
-
-	tc->text = text;
-	tc->size = size;
-	tc->face = face;
-	tc->age = 0;
-	Image im;
-	face->render_text(text, Align::LEFT, im);
-	tc->texture->write(im);
-	tc->texture->set_options("minfilter=nearest");
-
-	tc->dset->set_texture(0, tc->texture);
-	tc->dset->update();
-	return *tc;
-}
-
 struct Parameters {
 	mat4 matrix;
 	color col;
@@ -130,8 +87,7 @@ void Painter::end() {
 
 	descriptor_sets_used = 0;
 
-	for (auto& tc: text_caches)
-		tc.age ++;
+	iterate_text_caches();
 }
 
 void Painter::clear(const color &c) {

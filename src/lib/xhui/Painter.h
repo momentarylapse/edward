@@ -1,6 +1,7 @@
 #pragma once
 
 #include "xhui.h"
+#include "draw/font.h"
 #include "../image/ImagePainter.h"
 #include "../math/vec2.h"
 
@@ -8,6 +9,12 @@
 #if HAS_LIB_VULKAN
 namespace vulkan {
 	class CommandBuffer;
+	class DescriptorSet;
+	class Texture;
+}
+#else
+namespace nix {
+	class Texture;
 }
 #endif
 
@@ -88,5 +95,24 @@ public:
 	vulkan::CommandBuffer* cb;
 #endif
 };
+
+
+struct TextCache {
+	string text;
+	font::Face* face;
+	float font_size;
+	int age;
+#if HAS_LIB_VULKAN
+	vulkan::Texture* texture;
+	vulkan::DescriptorSet* dset;
+#else
+	nix::Texture* texture;
+#endif
+	font::TextDimensions dimensions;
+};
+
+TextCache& get_text_cache(Context* context, const string& text, font::Face* face, float font_size);
+void iterate_text_caches();
+font::TextDimensions& get_cached_text_dimensions(const string& text, font::Face* face, float font_size);
 
 }

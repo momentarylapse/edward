@@ -202,6 +202,7 @@ Painter::Painter(Window *w) {
 
 void Painter::end() {
 	nix::end_frame_glfw();
+	iterate_text_caches();
 }
 
 void Painter::clear(const color &c) {
