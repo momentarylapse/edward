@@ -29,6 +29,8 @@ public:
 	color text, text_label, text_disabled;
 	color border;
 
+	color background_raised() const;
+
 	static void load_default();
 	static Theme _default;
 };

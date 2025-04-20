@@ -43,5 +43,10 @@ void Theme::load_default() {
 	_default.border = color::parse(c.get_str("colors.border", "#ffffff"));
 }
 
+color Theme::background_raised() const {
+	return color::interpolate(background, background_button, 0.5f);
+}
+
+
 
 }

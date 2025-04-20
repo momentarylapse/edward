@@ -128,5 +128,25 @@ void Toolbar::from_resource(Resource *res) {
 	enable(true);
 }
 
+void Toolbar::_draw(Painter* p) {
+	if (is_main) {
+		p->set_color(Theme::_default.background_raised());
+		p->draw_rect(_area);
+	}
+	Grid::_draw(p);
+}
+
+
+void Toolbar::set_option(const string& key, const string& value) {
+	if (key == "main") {
+		is_main = true;
+	} else if (key == "menu") {
+		set_by_id(value);
+	} else {
+		Grid::set_option(key, value);
+	}
+}
+
+
 
 } // xhui

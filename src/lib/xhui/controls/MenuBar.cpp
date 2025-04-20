@@ -36,12 +36,30 @@ MenuBar::MenuBar(const string& id) : Grid(id) {
 	spacing = 3;
 }
 
+void MenuBar::_draw(Painter* p) {
+	if (is_main) {
+		p->set_color(Theme::_default.background_raised());
+		p->draw_rect(_area);
+	}
+	Grid::_draw(p);
+}
+
+
 void MenuBar::set_menu(shared<Menu> _menu) {
 	menu = _menu;
 	for (const auto [i, it]: enumerate(menu->items)) {
 		Grid::add_child(new MenuBarButton(it.id, it.title, it.menu), i, 0);
 	}
 }
+
+void MenuBar::set_option(const string& key, const string& value) {
+	if (key == "main") {
+		is_main = true;
+	} else {
+		Grid::set_option(key, value);
+	}
+}
+
 
 
 } // xhui

@@ -19,9 +19,13 @@ public:
 	void add_item_checkable(const string& id, const string& title, const string& image = "");
 	void add_separator();
 	void reset() override;
+	void set_option(const string& key, const string& value) override;
+	void _draw(Painter* p) override;
 
 	void set_by_id(const string &id);
 	void from_resource(Resource *res);
+
+	bool is_main = false;
 };
 
 } // xhui

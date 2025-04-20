@@ -15,8 +15,11 @@ public:
 	explicit MenuBar(const string &id);
 
 	void set_menu(shared<Menu> menu);
+	void _draw(Painter* p) override;
+	void set_option(const string& key, const string& value) override;
 
 	shared<Menu> menu;
+	bool is_main = false;
 };
 
 } // xhui

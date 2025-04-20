@@ -52,7 +52,7 @@ void Grid::remove_child(Control* c) {
 void Grid::_draw(Painter *p) {
 	if (card) {
 		p->set_roundness(Theme::_default.button_radius);
-		p->set_color(color::interpolate(Theme::_default.background, Theme::_default.background_button, 0.5f));
+		p->set_color(Theme::_default.background_raised());
 		p->draw_rect(_area);
 		p->set_roundness(0);
 	}
