@@ -226,6 +226,16 @@ Dialog terrain-panel ''
 		set_float("size-x", t.terrain->pattern.x * (float)t.terrain->num_x);
 		set_float("size-z", t.terrain->pattern.z * (float)t.terrain->num_z);
 		set_string("cells", format("%d x %d", t.terrain->num_x, t.terrain->num_z));
+		event("size-x", [this] {
+			auto& e = data->entities[index];
+			auto& t = e.terrain;
+			data->edit_terrain_meta_data(index, {get_float("size-x") / (float)t.terrain->num_x, 0, t.terrain->pattern.z});
+		});
+		event("size-z", [this] {
+			auto& e = data->entities[index];
+			auto& t = e.terrain;
+			data->edit_terrain_meta_data(index, {t.terrain->pattern.x, 0, get_float("size-z") / (float)t.terrain->num_z});
+		});
 	}
 	DataWorld* data;
 	int index;

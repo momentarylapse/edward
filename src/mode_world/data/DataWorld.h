@@ -130,6 +130,7 @@ public:
 	WorldEntity* add_entity(const WorldEntity& e);
 	void edit_camera(int index, const WorldCamera& c);
 	void edit_light(int index, const WorldLight& l);
+	void edit_terrain_meta_data(int index, const vec3& pattern);
 	void entity_add_component(int index, const ScriptInstanceData& c);
 	void entity_remove_component(int index, int cindex);
 	void entity_edit_component(int index, int cindex, const ScriptInstanceData& c);

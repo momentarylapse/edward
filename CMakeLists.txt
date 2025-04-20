@@ -424,6 +424,7 @@ add_executable(edward
 	src/mode_world/action/object/ActionWorldAddObject.cpp
 	src/mode_world/action/object/ActionWorldDeleteObject.cpp
 	src/mode_world/action/terrain/ActionWorldAddTerrain.cpp
+	src/mode_world/action/terrain/ActionWorldEditTerrainMetaData.cpp
 	src/mode_world/action/ActionWorldDeleteSelection.cpp
 	src/mode_world/action/ActionWorldEditData.cpp
 	src/mode_world/action/ActionWorldMoveSelection.cpp

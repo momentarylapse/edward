@@ -8,9 +8,9 @@
 #ifndef ACTIONWORLDADDTERRAIN_H_
 #define ACTIONWORLDADDTERRAIN_H_
 
-#include "../../../action/Action.h"
-#include "../../../lib/math/vec3.h"
-#include "../../../lib/os/path.h"
+#include <action/Action.h>
+#include <lib/math/vec3.h>
+#include <lib/os/path.h>
 
 class ActionWorldAddTerrain : public Action {
 public:

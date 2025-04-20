@@ -31,6 +31,7 @@
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>
 #include <mode_world/action/entity/ActionWorldAddEntity.h>
+#include <mode_world/action/terrain/ActionWorldEditTerrainMetaData.h>
 
 #include "../action/ActionWorldDeleteSelection.h"
 #include <y/graphics-impl.h>
@@ -234,6 +235,11 @@ void DataWorld::edit_light(int index, const WorldLight& l) {
 void DataWorld::edit_camera(int index, const WorldCamera& c) {
 	execute(new ActionWorldEditCamera(index, c));
 }
+
+void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
+	execute(new ActionWorldEditTerrainMetaData(index, pattern));
+}
+
 
 void DataWorld::entity_add_component(int index, const ScriptInstanceData& c) {
 	execute(new ActionWorldAddComponent(index, c));
