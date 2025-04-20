@@ -137,7 +137,7 @@ static void add_vb_line(Array<Vertex1>& vertices, const vec3& a, const vec3& b, 
 	vec2 ba_pixel = vec2((b.x - a.x) * w, (b.y - a.y) * h);
 	vec2 dir_pixel = ba_pixel.normalized();
 	vec2 o_pixel = dir_pixel.ortho();
-	vec3 r = vec3(o_pixel.x/ w, o_pixel.y/ h, 0) * (line_width / 2) * xhui::ui_scale;
+	vec3 r = vec3(o_pixel.x/ w, o_pixel.y/ h, 0) * (line_width / 2) * 2;//xhui::ui_scale; ???
 	vec3 a0 = a - r;
 	vec3 a1 = a + r;
 	vec3 b0 = b - r;
