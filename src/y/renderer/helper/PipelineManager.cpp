@@ -41,6 +41,8 @@ string topology2vk(PrimitiveTopology top) {
 		return "line-strip";
 	if (top == PrimitiveTopology::TRIANGLES)
 		return "triangles";
+	if (top == PrimitiveTopology::PATCHES)
+		return "patch-list";
 	return "triangles";
 }
 

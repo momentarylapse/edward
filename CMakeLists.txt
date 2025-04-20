@@ -522,6 +522,8 @@ add_executable(edward
 	src/y/renderer/world/WorldRendererDeferred.cpp
 	src/y/renderer/world/WorldRendererForward.cpp
 	src/y/renderer/world/WorldRendererVulkanRayTracing.cpp
+	src/y/renderer/base-gl.cpp
+	src/y/renderer/base-vulkan.cpp
 	src/y/renderer/base.cpp
 	src/y/renderer/Renderer.cpp
 	src/y/world/components/Animator.cpp

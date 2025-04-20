@@ -21,11 +21,10 @@ class Material;
 
 class UserMesh : public Component {
 public:
-	UserMesh() {
-	}
+	UserMesh() = default;
 
 	owned<Material> material;
-	string vertex_shader_module;
+	string vertex_shader_module = "default";
 	string geometry_shader_module;
 
 	owned<VertexBuffer> vertex_buffer;

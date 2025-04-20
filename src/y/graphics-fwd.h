@@ -134,5 +134,6 @@ enum class PrimitiveTopology {
 	TRIANGLES,
 	LINES,
 	LINESTRIP,
-	POINTS
+	POINTS,
+	PATCHES
 };

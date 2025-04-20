@@ -18,11 +18,14 @@ Context* api_init(GLFWwindow* window);
 Context* api_init_external(vulkan::Instance* instance, vulkan::Device* device);
 #endif
 void api_end();
+void _create_default_textures();
 
 extern Texture *tex_white;
 extern Texture *tex_black;
 
 void gpu_flush();
+
+static constexpr int MAX_TIMESTAMP_QUERIES = 4096;
 
 void reset_gpu_timestamp_queries();
 void gpu_timestamp(const RenderParams& params, int channel);

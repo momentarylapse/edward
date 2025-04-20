@@ -129,7 +129,7 @@ void SolidBody::on_init() {
 	btRigidBody::btRigidBodyConstructionInfo rb_info(_mass, motion_state, col_shape, local_inertia);
 	if (m) {
 		rb_info.m_friction = (m->material[0]->friction.sliding + m->material[0]->friction._static) / 2;
-		rb_info.m_rollingFriction = m->material[0]->friction.rolling;
+	//	rb_info.m_rollingFriction = m->material[0]->friction.rolling;
 	}
 	body = new btRigidBody(rb_info);
 

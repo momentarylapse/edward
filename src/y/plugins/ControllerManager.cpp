@@ -33,7 +33,7 @@ void ControllerManager::reset() {
 
 void ControllerManager::add_controller(const Path &name, const Array<TemplateDataScriptVariable> &variables) {
 	msg_write("add controller: " + name.str());
-	auto type = PluginManager::find_class_derived(name, "ui.Controller");;
+	auto type = PluginManager::find_class_derived(name, "ui.Controller");
 	auto *c = (Controller*)PluginManager::create_instance(type, variables);
 	c->_class = type;
 	c->ch_iterate = PerformanceMonitor::create_channel(type->long_name(), ch_controller);

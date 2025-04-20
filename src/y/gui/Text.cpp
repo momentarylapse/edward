@@ -26,8 +26,7 @@ Text::Text(const string &t, float h, const vec2 &p) : Picture(rect(p.x,p.x,p.y,p
 		set_text(t);
 }
 
-Text::~Text() {
-}
+Text::~Text() = default;
 
 void Text::__init__(const string &t, float h, const vec2 &p) {
 	new(this) Text(t, h, p);
@@ -59,8 +58,10 @@ void Text::rebuild() {
 }
 
 void Text::set_text(const string &t) {
-	text = t;
-	rebuild();
+	if (t != text or !texture) {
+		text = t;
+		rebuild();
+	}
 }
 
 }
