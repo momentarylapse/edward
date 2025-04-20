@@ -178,7 +178,7 @@ void ModeWorld::on_enter() {
 				e.camera.max_depth = 100000;
 				e.camera.fov = 0.7f;
 				e.camera.exposure = 1;
-			} else {
+			} else if (index <= 4) {
 				e.basic_type = MultiViewType::WORLD_LIGHT;
 				e.light.col = White;
 				e.light.type = LightType::DIRECTIONAL;
@@ -194,6 +194,9 @@ void ModeWorld::on_enter() {
 				}
 				e.light.harshness = 1;
 				e.light.enabled = true;
+			} else if (index == 5) {
+				e.basic_type = MultiViewType::WORLD_TERRAIN;
+				e.terrain.terrain = new Terrain(16, 16, {10, 0, 10}, session->resource_manager->load_material(""));
 			}
 			data->add_entity(e);
 		} else if (session->win->drag.payload.match("filename:*.model")) {
@@ -204,7 +207,7 @@ void ModeWorld::on_enter() {
 			e.pos = p;
 			e.basic_type = MultiViewType::WORLD_OBJECT;
 			e.object.filename = fn_rel.no_ext();
-			e.object.object = e.object.object = data->session->resource_manager->load_model(e.object.filename);
+			e.object.object = e.object.object = session->resource_manager->load_model(e.object.filename);
 			data->add_entity(e);
 		}
 	});

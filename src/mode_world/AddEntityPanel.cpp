@@ -19,7 +19,7 @@ Dialog add-entity-panel ''
 	Grid card-add '' class=card
 		Group group-add 'Add'
 			Grid ? ''
-				ListView add-list 'a' nobar dragsource=entity cangrabfocus=no noexpandy height=200
+				ListView add-list 'a' nobar dragsource=entity cangrabfocus=no noexpandy height=220
 				---|
 				FileSelector add-files '' dragsource=entity-file __noexpandy height=400
 )foodelim");
@@ -32,6 +32,7 @@ Dialog add-entity-panel ''
 	add_string("add-list", "Light - directional");
 	add_string("add-list", "Light - point");
 	add_string("add-list", "Light - cone");
+	add_string("add-list", "Terrain");
 
 	set_options("add-files", "linkevents");
 	set_options("add-files", "directory=" + str(mode_world->session->storage->root_dir));

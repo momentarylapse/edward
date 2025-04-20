@@ -55,6 +55,7 @@ public:
 class Terrain : public Component {
 public:
 	Terrain();
+	Terrain(int nx, int nz, const vec3& pattern, Material* material);
 	Terrain(ResourceManager *resource_manager, const Path &filename);
 	bool load(ResourceManager *resource_manager, const Path &filename, bool deep = true);
 	~Terrain() override;

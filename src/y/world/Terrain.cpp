@@ -32,11 +32,11 @@ void Terrain::reset() {
 	error = false;
 	num_x = num_z = 0;
 	changed = false;
+	force_redraw = true;
 	vertex_shader_module = "default";
 }
 
 Terrain::Terrain() {
-	material = nullptr;
 	reset();
 }
 
@@ -127,8 +127,17 @@ bool Terrain::load(ResourceManager *resource_manager, const Path &_filename_, bo
 	return !error;
 }
 
-Terrain::~Terrain() {
+Terrain::Terrain(int nx, int nz, const vec3& _pattern, Material* _material) : Terrain() {
+	num_x = nx;
+	num_z = nz;
+	height.resize((num_x + 1) * (num_z + 1));
+	vertex_buffer = new VertexBuffer("3f,3f,2f");
+	pattern = _pattern;
+	material = _material;
+	update(-1, -1, -1, -1, TerrainUpdateAll);
 }
+
+Terrain::~Terrain() = default;
 
 // die Normalen-Vektoren in einem bestimmten Abschnitt der Karte neu berechnen
 void Terrain::update(int x1,int x2,int z1,int z2,int mode) {
