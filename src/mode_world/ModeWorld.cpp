@@ -3,8 +3,7 @@
 //
 
 #include "ModeWorld.h"
-#include "ModeAddEntity.h"
-#include "EntityPanel.h"
+#include "dialog/EntityPanel.h"
 #include "action/ActionWorldMoveSelection.h"
 #include <Session.h>
 #include <lib/base/iter.h>

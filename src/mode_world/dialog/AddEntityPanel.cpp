@@ -10,7 +10,7 @@
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
 
-#include "ModeWorld.h"
+#include "../ModeWorld.h"
 
 AddEntityPanel::AddEntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("add-entity-panel") {
 	mode_world = _mode;

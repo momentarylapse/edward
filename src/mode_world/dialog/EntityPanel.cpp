@@ -4,8 +4,8 @@
 
 #include "EntityPanel.h"
 #include "AddEntityPanel.h"
-#include "ModeWorld.h"
-#include "dialog/ComponentSelectionDialog.h"
+#include "../ModeWorld.h"
+#include "ComponentSelectionDialog.h"
 #include <helper/ResourceManager.h>
 #include <y/graphics-impl.h>
 #include <lib/os/msg.h>
@@ -206,17 +206,21 @@ Dialog terrain-panel ''
 	Grid ? '' class=card
 		Group ? 'Terrain'
 			Grid ? ''
-				Label ? 'Filename'
-				Button filename ''
+				Grid ? ''
+					Label ? 'Filename'
+					Button filename ''
+					---|
+					Label ? 'Size X'
+					SpinButton size-x '' range=::0.1
+					---|
+					Label ? 'Size Z'
+					SpinButton size-z '' range=::0.1
+					---|
+					Label ? 'Cells'
+					Label cells ''
 				---|
-				Label ? 'Size X'
-				SpinButton size-x '' range=::0.1
-				---|
-				Label ? 'Size Z'
-				SpinButton size-z '' range=::0.1
-				---|
-				Label ? 'Cells'
-				Label cells ''
+				Grid ? ''
+					Button edit 'edit...'
 )foodelim");
 		data = _data;
 		index = _index;
@@ -235,6 +239,9 @@ Dialog terrain-panel ''
 			auto& e = data->entities[index];
 			auto& t = e.terrain;
 			data->edit_terrain_meta_data(index, {t.terrain->pattern.x, 0, get_float("size-z") / (float)t.terrain->num_z});
+		});
+		event("edit", [this] {
+
 		});
 	}
 	DataWorld* data;
