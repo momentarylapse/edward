@@ -3,6 +3,7 @@
 //
 
 #include "ModeWorld.h"
+#include "ModeEditTerrain.h"
 #include "dialog/EntityPanel.h"
 #include "action/ActionWorldMoveSelection.h"
 #include <Session.h>
@@ -158,9 +159,8 @@ void ModeWorld::on_enter() {
 		}
 	});
 
-	session->win->event("add-entity", [this] {
-		//session->set_message("add entity");
-		//session->set_mode(new ModeAddEntity(this));
+	session->win->event("mode_world_terrain", [this] {
+		session->set_mode(new ModeEditTerrain(this));
 	});
 
 	session->win->event_x("area", xhui::event_id::DragDrop, [this] {
@@ -214,6 +214,13 @@ void ModeWorld::on_enter() {
 	set_side_panel(new EntityPanel(this));
 }
 
+
+void ModeWorld::on_leave() {
+	//session->win->unembed(dialog);
+	set_side_panel(nullptr);
+
+	data->out_changed.unsubscribe(this);
+}
 
 
 void ModeWorld::optimize_view() {

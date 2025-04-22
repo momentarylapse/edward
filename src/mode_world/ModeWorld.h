@@ -22,6 +22,7 @@ public:
 	explicit ModeWorld(Session* session);
 
 	void on_enter() override;
+	void on_leave() override;
 
 	void on_mouse_move(const vec2& m, const vec2& d) override;
 	void on_mouse_leave(const vec2&) override;

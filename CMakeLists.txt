@@ -438,8 +438,10 @@ add_executable(edward
 	src/mode_world/data/WorldTerrain.cpp
 	src/mode_world/dialog/AddEntityPanel.cpp
 	src/mode_world/dialog/ComponentSelectionDialog.cpp
+	src/mode_world/dialog/EditTerrainPanel.cpp
 	src/mode_world/dialog/EntityPanel.cpp
 	src/mode_world/dialog/PropertiesDialog.cpp
+	src/mode_world/ModeEditTerrain.cpp
 	src/mode_world/ModeWorld.cpp
 	src/multiview/SingleData.cpp
 	src/storage/format/old/LoadWorldV9V10.cpp
