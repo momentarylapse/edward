@@ -5,6 +5,7 @@
 #include "EntityPanel.h"
 #include "AddEntityPanel.h"
 #include "../ModeWorld.h"
+#include "../ModeEditTerrain.h"
 #include "ComponentSelectionDialog.h"
 #include <helper/ResourceManager.h>
 #include <y/graphics-impl.h>
@@ -241,7 +242,7 @@ Dialog terrain-panel ''
 			data->edit_terrain_meta_data(index, {t.terrain->pattern.x, 0, get_float("size-z") / (float)t.terrain->num_z});
 		});
 		event("edit", [this] {
-
+			data->session->set_mode(new ModeEditTerrain(data->session->mode_world, index));
 		});
 	}
 	DataWorld* data;

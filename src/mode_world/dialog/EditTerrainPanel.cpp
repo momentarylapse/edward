@@ -3,9 +3,13 @@
 //
 
 #include "EditTerrainPanel.h"
+#include "../ModeEditTerrain.h"
+#include "../action/terrain/ActionWorldResizeTerrain.h"
+#include "../data/DataWorld.h"
 #include <lib/base/tuple.h>
 #include <lib/xhui/Dialog.h>
 #include <lib/xhui/xhui.h>
+#include <world/Terrain.h>
 
 class IntPairDialog : public xhui::Dialog {
 public:
@@ -55,19 +59,25 @@ Dialog edit-terrain-panel ''
 	Grid ? ''
 		Label ? 'Terrain' big center
 		---|
-		TabControl ? 'Brush\\Operations'
-			Grid ? ''
-				ListView add-list 'a' nobar dragsource=entity cangrabfocus=no noexpandy height=220
-			Grid ? ''
-				Button resize 'Resize'
+		Grid ? '' class=card
+			Group ? 'Brush'
+				ListView add-list 'a' nobar cangrabfocus=no noexpandy height=220
+		---|
+		Grid ? '' class=card
+			Group ? 'Operations'
+				Grid ? ''
+					Button resize 'Resize...'
+					---|
+					Button load-heightmap 'Load heightmap...'
 )foodelim");
 	size_mode_x = SizeMode::Shrink;
 	size_mode_y = SizeMode::Shrink;
 	min_width_user = 320;
 
 	event("resize", [this] {
-		IntPairDialog::ask(this, "New terrain size", 32, 32).then([this] (const base::tuple<int,int>& size) {
-
+		auto& t = mode_terrain->terrain();
+		IntPairDialog::ask(this, "New terrain size", t.terrain->num_x, t.terrain->num_z).then([this] (const base::tuple<int,int>& size) {
+			mode_terrain->data->execute(new ActionWorldResizeTerrain(mode_terrain->index, size.a, size.b));
 		});
 	});
 }

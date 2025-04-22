@@ -8,12 +8,13 @@
 
 #include "../view/Mode.h"
 
+struct WorldTerrain;
 class DataWorld;
 class ModeWorld;
 
 class ModeEditTerrain : public Mode {
 public:
-	explicit ModeEditTerrain(ModeWorld* mode_world);
+	explicit ModeEditTerrain(ModeWorld* mode_world, int index);
 
 	void on_enter() override;
 	void on_leave() override;
@@ -23,6 +24,7 @@ public:
 	void on_left_button_down(const vec2&) override;
 	void on_left_button_up(const vec2&) override;
 	void on_key_down(int key) override;
+	void on_command(const string& id) override;
 
 	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
@@ -30,6 +32,9 @@ public:
 
 	DataWorld* data;
 	ModeWorld* mode_world;
+	int index;
+
+	WorldTerrain& terrain() const;
 };
 
 

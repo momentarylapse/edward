@@ -8,11 +8,12 @@
 #include "dialog/EditTerrainPanel.h"
 #include <lib/xhui/xhui.h>
 
-ModeEditTerrain::ModeEditTerrain(ModeWorld* _mode_world) : Mode(_mode_world->session) {
+ModeEditTerrain::ModeEditTerrain(ModeWorld* _mode_world, int _index) : Mode(_mode_world->session) {
 	mode_world = _mode_world;
 	data = mode_world->data;
 	multi_view = mode_world->multi_view;
 	generic_data = data;
+	index = _index;
 }
 
 void ModeEditTerrain::on_enter() {
@@ -71,6 +72,15 @@ void ModeEditTerrain::on_draw_win(const RenderParams& params, MultiViewWindow* w
 void ModeEditTerrain::on_draw_post(Painter*) {
 
 }
+
+WorldTerrain& ModeEditTerrain::terrain() const {
+	return data->entities[index].terrain;
+}
+
+void ModeEditTerrain::on_command(const string& id) {
+	mode_world->on_command(id);
+}
+
 
 
 

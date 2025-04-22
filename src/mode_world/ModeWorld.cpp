@@ -159,9 +159,9 @@ void ModeWorld::on_enter() {
 		}
 	});
 
-	session->win->event("mode_world_terrain", [this] {
+	/*session->win->event("mode_world_terrain", [this] {
 		session->set_mode(new ModeEditTerrain(this));
-	});
+	});*/
 
 	session->win->event_x("area", xhui::event_id::DragDrop, [this] {
 		const vec3 p = multi_view->cursor_pos_3d(session->win->drag.m);
