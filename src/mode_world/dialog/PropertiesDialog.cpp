@@ -10,6 +10,7 @@
 #include <lib/xhui/Menu.h>
 #include <mode_world/action/ActionWorldEditData.h>
 #include <storage/Storage.h>
+#include <view/dialogs/CommonDialogs.h>
 #include <world/World.h>
 
 #include "ComponentSelectionDialog.h"
@@ -65,8 +66,9 @@ PropertiesDialog::PropertiesDialog(xhui::Panel* parent, DataWorld* _data) : Dial
 	event_x("script_list", xhui::event_id::RightButtonDown, [this] {
 		auto m = new xhui::Menu;
 		m->add_item("system-delete", "Delete");
-		m->add_item("system-choose", "Choose file...");
-		m->add_item("system-add", "Add file...");
+		//m->add_item("system-choose", "Choose file...");
+		m->add_item("system-add", "Add from file...");
+		m->add_item("system-create", "Create new...");
 		m->open_popup(this);
 	});
 	event("system-delete", [this] {
@@ -81,6 +83,25 @@ PropertiesDialog::PropertiesDialog(xhui::Panel* parent, DataWorld* _data) : Dial
 			temp.systems.add(c);
 			apply();
 			fill();
+		});
+	});
+	event("system-create", [this] {
+		data->session->storage->file_dialog(FD_SCRIPT, true, true).then([this] (const ComplexPath& path) {
+			TextDialog::ask(this, "System name", "Test").then([this, path] (const string& name) {
+				os::fs::write_text(path.complete, string(R"foodelim(use y.*
+
+class <NAME> extends Controller
+	var some_variable: f32
+
+	func override on_init()
+
+	func override on_iterate(dt: f32)
+)foodelim").replace("<NAME>", name));
+
+				temp.systems.add({path.relative, name});
+				apply();
+				fill();
+			});
 		});
 	});
 }

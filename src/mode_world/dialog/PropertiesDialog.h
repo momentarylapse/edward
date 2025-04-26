@@ -18,6 +18,8 @@ public:
 
 	void apply();
 	void fill();
+
+	void add_new_system();
 };
 
 
