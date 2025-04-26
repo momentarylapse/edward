@@ -125,18 +125,22 @@ ColorSelectionDialog::ColorSelectionDialog(Panel* parent, const string& title, c
 		indicator->set_color(selector->get_color());
 	});
 	event("ok", [this] {
-		promise(selector->get_color());
+		answer = selector->get_color();
 		request_destroy();
 	});
 	event("cancel", [this] {
-		promise.fail();
 		request_destroy();
 	});
 }
 
 base::future<color> ColorSelectionDialog::ask(Panel* parent, const string& title, const color& col, const Array<string>& params) {
 	auto dlg = new ColorSelectionDialog(parent, title, col, params);
-	parent->open_dialog(dlg);
+	parent->open_dialog(dlg).then([dlg] {
+		if (dlg->answer)
+			dlg->promise(*dlg->answer);
+		else
+			dlg->promise.fail();
+	});
 	return dlg->promise.get_future();
 }
 

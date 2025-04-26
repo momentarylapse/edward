@@ -61,11 +61,10 @@ Dialog xxx ''
 	selector->link_events();
 
 	event("ok", [this] {
-		promise(selected_path());
+		answer = selected_path();
 		request_destroy();
 	});
 	event("cancel", [this] {
-		promise.fail();
 		request_destroy();
 	});
 	event("filename", [this] {
@@ -79,7 +78,7 @@ Dialog xxx ''
 		enable("ok", !filename.is_empty());
 	});
 	event_x(selector->id, event_id::Activate, [this] {
-		promise(selector->get_selected_filename());
+		answer = selector->get_selected_filename();
 		request_destroy();
 	});
 }
@@ -94,7 +93,12 @@ Path FileSelectionDialog::selected_path() const {
 
 base::future<Path> FileSelectionDialog::ask(Panel* parent, const string& title, const Path& dir, const Array<string>& params) {
 	auto dlg = new FileSelectionDialog(parent, title, dir, params);
-	parent->open_dialog(dlg);
+	parent->open_dialog(dlg).then([dlg] {
+		if (dlg->answer)
+			dlg->promise(*dlg->answer);
+		else
+			dlg->promise.fail();
+	});
 	return dlg->promise.get_future();
 }
 

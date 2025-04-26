@@ -5,6 +5,8 @@
 #ifndef FILESELECTIONDIALOG_H
 #define FILESELECTIONDIALOG_H
 
+#include <lib/base/optional.h>
+
 #include "../Dialog.h"
 #include "../../base/future.h"
 #include "../../os/path.h"
@@ -18,6 +20,7 @@ public:
 	FileSelectionDialog(Panel* parent, const string& title, const Path &dir, const Array<string> &params);
 
 	FileSelector* selector;
+	base::optional<Path> answer;
 	base::promise<Path> promise;
 
 	bool saving;

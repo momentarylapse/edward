@@ -5,6 +5,8 @@
 #ifndef COLORSELECTIONDIALOG_H
 #define COLORSELECTIONDIALOG_H
 
+#include <lib/base/optional.h>
+
 #include "../Dialog.h"
 #include "../../base/future.h"
 #include "../../image/color.h"
@@ -20,6 +22,7 @@ public:
 
 	ColorHSBSelector* selector;
 	ColorIndicator* indicator;
+	base::optional<color> answer;
 	base::promise<color> promise;
 
 	static base::future<color> ask(Panel* parent, const string& title, const color& col, const Array<string>& params);

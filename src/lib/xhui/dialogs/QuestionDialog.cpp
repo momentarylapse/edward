@@ -26,19 +26,17 @@ QuestionDialog::QuestionDialog(Panel* parent, const string& title, const string&
 		g2->add_child(new Button("cancel", "Cancel"), 2, 0);
 
 	event("yes", [this] {
-		promise(Answer::Yes);
+		answer = Answer::Yes;
 		request_destroy();
 	});
 	event("no", [this] {
-		promise(Answer::No);
+		answer = Answer::No;
 		request_destroy();
 	});
 	event("cancel", [this] {
-		promise.fail();
 		request_destroy();
 	});
 	event(event_id::Close, [this] {
-		promise.fail();
 		request_destroy();
 	});
 }
@@ -46,7 +44,12 @@ QuestionDialog::QuestionDialog(Panel* parent, const string& title, const string&
 
 base::future<Answer> QuestionDialog::ask(Panel* parent, const string& title, const string& question, bool allow_cancel) {
 	auto dlg = new QuestionDialog(parent, title, question, allow_cancel);
-	parent->open_dialog(dlg);
+	parent->open_dialog(dlg).then([dlg] {
+		if (dlg->answer)
+			dlg->promise(*dlg->answer);
+		else
+			dlg->promise.fail();
+	});
 	return dlg->promise.get_future();
 }
 

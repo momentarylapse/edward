@@ -42,7 +42,7 @@ public:
 	bool _destroy_requested = false;
 	owned<DialogHeader> header;
 	owned<DialogOutside> outside;
-	base::promise<void> promise;
+	base::promise<void> basic_promise;
 };
 
 } // xhui
