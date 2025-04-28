@@ -487,8 +487,11 @@ EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-pane
 	mode_world = _mode;
 	from_source(R"foodelim(
 Dialog entity-panel ''
-	Viewport ? '' expandy
-		Grid main-grid '' expandx
+	Grid main-grid '' expandx
+		.
+		---|
+		Viewport components-viewport '' noexpandy hidden
+			Grid components-grid ''
 )foodelim");
 	size_mode_x = SizeMode::Shrink;
 	size_mode_y = SizeMode::Shrink;
@@ -509,9 +512,10 @@ Dialog entity-panel ''
 			unembed(p);
 		component_panels.clear();
 		remove_control("add-component");
+		set_options("components-viewport", "noexpandy");
 
 		auto add_component_panel = [this] (Panel* p) {
-			embed("main-grid", 0, component_panels.num + 1, p);
+			embed("components-grid", 0, component_panels.num + 1, p);
 			component_panels.add(p);
 		};
 
@@ -521,6 +525,7 @@ Dialog entity-panel ''
 		} else if (sel[MultiViewType::WORLD_ENTITY].num == 1) {
 			cur_index = sel[MultiViewType::WORLD_ENTITY][0];
 			auto& e = mode_world->data->entities[cur_index];
+			set_options("components-viewport", "expandy");
 			add_component_panel(new EntityBasePanel(e));
 
 			if (e.basic_type == MultiViewType::WORLD_OBJECT) {

@@ -57,7 +57,6 @@ bool session_is_empty(Session *s) {
 base::future<Session*> emit_empty_session(Session* parent) {
 	if (session_is_empty(parent))
 		return parent->promise_started.get_future();
-
 	return emit_new_session();
 }
 

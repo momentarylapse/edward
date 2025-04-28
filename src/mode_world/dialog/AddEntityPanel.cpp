@@ -21,7 +21,7 @@ Dialog add-entity-panel ''
 			Grid ? ''
 				ListView add-list 'a' nobar dragsource=entity cangrabfocus=no noexpandy height=220
 				---|
-				FileSelector add-files '' dragsource=entity-file __noexpandy height=400
+				FileSelector add-files '' dragsource=entity-file expandy
 )foodelim");
 	/*size_mode_y = SizeMode::Shrink;
 	min_width_user = 320;*/
