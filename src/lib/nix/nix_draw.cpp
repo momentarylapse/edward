@@ -20,8 +20,8 @@ namespace nix {
 void draw_triangles(VertexBuffer *vb) {
 	if (vb->count() == 0)
 		return;
-	// FIXME
-	Context::CURRENT->_current_->set_default_data();
+	if (default_shader_bindings)
+		Context::CURRENT->_current_->set_default_data();
 
 	bind_vertex_buffer(vb);
 
@@ -34,8 +34,8 @@ void draw_triangles(VertexBuffer *vb) {
 void draw_instanced_triangles(VertexBuffer *vb, int count) {
 	if (vb->count() == 0)
 		return;
-	// FIXME
-	Context::CURRENT->_current_->set_default_data();
+	if (default_shader_bindings)
+		Context::CURRENT->_current_->set_default_data();
 
 	bind_vertex_buffer(vb);
 
@@ -46,8 +46,8 @@ void draw_instanced_triangles(VertexBuffer *vb, int count) {
 void draw_lines(VertexBuffer *vb, bool contiguous) {
 	if (vb->count() == 0)
 		return;
-	// FIXME
-	Context::CURRENT->_current_->set_default_data();
+	if (default_shader_bindings)
+		Context::CURRENT->_current_->set_default_data();
 
 	bind_vertex_buffer(vb);
 
@@ -60,8 +60,8 @@ void draw_lines(VertexBuffer *vb, bool contiguous) {
 void draw_points(VertexBuffer *vb) {
 	if (vb->count() == 0)
 		return;
-	// FIXME
-	Context::CURRENT->_current_->set_default_data();
+	if (default_shader_bindings)
+		Context::CURRENT->_current_->set_default_data();
 
 	bind_vertex_buffer(vb);
 
