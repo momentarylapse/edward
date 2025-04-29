@@ -20,7 +20,7 @@ public:
 	~Picture() override;
 
 	void __init__(const rect &r, shared<Texture> tex, const rect &source);
-	virtual void __delete__();
+	void __delete__() override;
 
 	rect source;
 

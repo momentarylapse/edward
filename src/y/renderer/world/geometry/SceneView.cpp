@@ -16,14 +16,16 @@
 
 void SceneView::choose_lights() {
 	lights.clear();
-	shadow_index = -1;
+	shadow_indices.clear();
 	auto& all_lights = ComponentManager::get_list_family<Light>();
 	for (auto l: all_lights) {
 		if (!l->enabled)
 			continue;
 
-		if (l->allow_shadow) {
-			shadow_index = lights.num;
+		l->light.shadow_index = -1;
+		if (l->allow_shadow and shadow_indices.num == 0) {
+			l->light.shadow_index = shadow_indices.num;
+			shadow_indices.add(lights.num);
 		}
 		lights.add(l);
 	}

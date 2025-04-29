@@ -120,6 +120,7 @@ void WorldRendererDeferred::draw(const RenderParams& params) {
 
 	render_out_from_gbuffer(gbuffer_renderer->frame_buffer.get(), params);
 
+	// transparency
 #ifdef USING_OPENGL
 	auto& rvd = geo_renderer_trans->cur_rvd;
 
@@ -128,9 +129,9 @@ void WorldRendererDeferred::draw(const RenderParams& params) {
 	mat4 m = flip_y ? mat4::scale(1,-1,1) : mat4::ID;
 	auto cam = scene_view.cam;
 	cam->update_matrices(params.desired_aspect_ratio);
-	nix::set_projection_matrix(m * cam->m_projection);
-	nix::bind_uniform_buffer(1, rvd.ubo_light.get());
-	nix::set_view_matrix(cam->view_matrix());
+	nix::set_projection_matrix(m * cam->m_projection); // TODO
+	nix::bind_uniform_buffer(BINDING_LIGHT, rvd.ubo_light.get());
+	nix::set_view_matrix(cam->view_matrix()); // TODO
 	nix::set_z(true, true);
 	nix::set_front(flip_y ? nix::Orientation::CW : nix::Orientation::CCW);
 
@@ -139,8 +140,8 @@ void WorldRendererDeferred::draw(const RenderParams& params) {
 	nix::set_front(nix::Orientation::CW);
 
 	nix::set_z(false, false);
-	nix::set_projection_matrix(mat4::ID);
-	nix::set_view_matrix(mat4::ID);
+	//nix::set_projection_matrix(mat4::ID);
+	//nix::set_view_matrix(mat4::ID);
 	PerformanceMonitor::end(ch_trans);
 #endif
 
@@ -153,22 +154,21 @@ void WorldRendererDeferred::render_out_from_gbuffer(FrameBuffer *source, const R
 
 	auto& data = out_renderer->bindings.shader_data;
 
-	if (geo_renderer->using_view_space)
+#ifdef USING_OPENGL
+	if constexpr (GeometryRenderer::using_view_space)
 		data.dict_set("eye_pos", vec3_to_any(vec3::ZERO));
 	else
 		data.dict_set("eye_pos", vec3_to_any(scene_view.cam->owner->pos)); // NAH
-	data.dict_set("num_lights", scene_view.lights.num);
-	data.dict_set("shadow_index", scene_view.shadow_index);
-	data.dict_set("ambient_occlusion_radius", config.ambient_occlusion_radius);
+#endif
+	data.dict_set("ambient_occlusion_radius:8", config.ambient_occlusion_radius);
 	out_renderer->bind_uniform_buffer(13, ssao_sample_buffer);
 
 	auto& rvd = geo_renderer->cur_rvd;
-	out_renderer->bind_uniform_buffer(1, rvd.ubo_light.get());
-	auto tex = weak(gbuffer_textures);
-	tex.add(scene_view.shadow_maps[0]);
-	tex.add(scene_view.shadow_maps[1]);
-	for (int i=0; i<tex.num; i++)
-		out_renderer->bind_texture(i, tex[i]);
+	out_renderer->bind_uniform_buffer(BINDING_LIGHT, rvd.ubo_light.get());
+	for (int i=0; i<gbuffer_textures.num; i++)
+		out_renderer->bind_texture(i, gbuffer_textures[i].get());
+	out_renderer->bind_texture(BINDING_SHADOW0, scene_view.shadow_maps[0]);
+	out_renderer->bind_texture(BINDING_SHADOW1, scene_view.shadow_maps[1]);
 
 	float resolution_scale_x = 1.0f;
 	data.dict_set("resolution_scale:0", vec2_to_any(vec2(resolution_scale_x, resolution_scale_x)));

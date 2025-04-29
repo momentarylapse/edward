@@ -217,6 +217,8 @@ Dialog x x padding=0
 			session->resource_manager->load_shader_module("module-basic-interface.shader");
 			session->resource_manager->load_shader_module("module-vertex-default.shader");
 			session->resource_manager->load_shader_module("module-vertex-animated.shader");
+			session->resource_manager->load_shader_module("module-light-sources-default.shader");
+			session->resource_manager->load_shader_module("module-shadows-pcf.shader");
 			session->resource_manager->load_shader_module("module-lighting-pbr.shader");
 			session->resource_manager->load_shader_module("forward/module-surface.shader");
 		} catch(Exception& e) {

@@ -380,12 +380,7 @@ void ActionController::draw(const RenderParams& params, RenderViewData& rvd) {
 			m = manipulator.material_hover.get();
 		auto shader = rvd.get_shader(m, 0, "default", "");
 		auto& rd = rvd.start(params, manipulator.geo_mat, shader, *m, 0, PrimitiveTopology::TRIANGLES, vb);
-		rd.apply(params);
-#ifdef USING_VULKAN
-		params.command_buffer->draw(vb);
-#else
-		nix::draw_triangles(vb);
-#endif
+		rd.draw_triangles(params, vb);
 	}
 
 #if 0 //HAS_LIB_GL

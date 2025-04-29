@@ -75,6 +75,8 @@ public:
 	RenderPathType type;
 
 	SceneView &scene_view;
+	base::optional<mat4> override_view;
+	base::optional<mat4> override_projection;
 
 	shared<Shader> shader_fx;
 	shared<Shader> shader_fx_points;
@@ -88,9 +90,6 @@ public:
 
 	void prepare(const RenderParams& params) override;
 	void draw(const RenderParams& params) override;
-
-	static void set_material(const SceneView& scene_view, ShaderCache& cache, const Material& m, RenderPathType type, const string& vertex_module, const string& geometry_module);
-	static void set_material_x(const SceneView& scene_view, const Material& m, Shader* shader);
 
 #ifdef USING_VULKAN
 	static GraphicsPipeline *get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb);

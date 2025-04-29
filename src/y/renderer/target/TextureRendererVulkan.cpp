@@ -39,6 +39,10 @@ void TextureRenderer::render(const RenderParams& params) {
 	cb->begin_render_pass(render_pass.get(), frame_buffer.get());
 	cb->set_viewport(area);
 	cb->set_bind_point(vulkan::PipelineBindPoint::GRAPHICS);
+
+	if (clear_z)
+		cb->clear(area, clear_colors, clear_z);
+
 	draw(p);
 	cb->end_render_pass();
 	gpu_timestamp_end(params, channel);

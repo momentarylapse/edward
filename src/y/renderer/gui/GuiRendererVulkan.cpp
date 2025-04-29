@@ -62,7 +62,7 @@ void GuiRendererVulkan::prepare_gui(FrameBuffer *source, const RenderParams& par
 			auto *p = (gui::Picture*)n;
 
 			if (index >= ubo.num) {
-				dset.add(pool->create_set("buffer,sampler"));
+				dset.add(pool->create_set("sampler,sampler,buffer"));
 				ubo.add(new UniformBuffer(sizeof(UBOGUI)));
 			}
 
@@ -78,9 +78,9 @@ void GuiRendererVulkan::prepare_gui(FrameBuffer *source, const RenderParams& par
 			u.source = p->source;
 			ubo[index]->update(&u);
 
-			dset[index]->set_uniform_buffer(0, ubo[index]);
-			dset[index]->set_texture(1, p->texture.get());
-//			dset[index]->set_texture(2, source->...);
+			dset[index]->set_texture(0, p->texture.get());
+//			dset[index]->set_texture(1, source->...);
+			dset[index]->set_uniform_buffer(2, ubo[index]);
 			dset[index]->update();
 			index ++;
 		}

@@ -36,6 +36,7 @@
 		enum class Alpha;
 		enum class AlphaMode;
 		enum class CullMode;
+		enum class PrimitiveTopology;
 		class GraphicsPipeline;
 		class ComputePipeline;
 		class RayPipeline;
@@ -76,6 +77,7 @@
 	using Alpha = vulkan::Alpha;
 	using AlphaMode = vulkan::AlphaMode;
 	using CullMode = vulkan::CullMode;
+	using PrimitiveTopology = vulkan::PrimitiveTopology;
 
 	enum class FogMode {
 		LINEAR,
@@ -106,6 +108,7 @@
 		enum class AlphaMode;
 		enum class CullMode;
 		enum class FogMode;
+		enum class PrimitiveTopology;
 	}
 
 	using Context = nix::Context;
@@ -126,14 +129,8 @@
 	using AlphaMode = nix::AlphaMode;
 	using CullMode = nix::CullMode;
 	using FogMode = nix::FogMode;
+	using PrimitiveTopology = nix::PrimitiveTopology;
 	class RenderPass{};
 
 #endif
 
-enum class PrimitiveTopology {
-	TRIANGLES,
-	LINES,
-	LINESTRIP,
-	POINTS,
-	PATCHES
-};

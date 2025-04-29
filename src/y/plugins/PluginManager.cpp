@@ -157,11 +157,7 @@ void buffer_update_array(Buffer *buf, const DynamicArray &data) {
 }
 
 void buffer_update_chunk(Buffer *buf, const void* data, int size) {
-#ifdef USING_VULKAN
 	buf->update_part(data, 0, size);
-#else
-	buf->update(data, size);
-#endif
 }
 
 void buffer_read_chunk(Buffer *buf, void* data, int size) {
@@ -350,6 +346,20 @@ void PluginManager::init() {
 
 void PluginManager::export_kaba() {
 	auto ext = kaba::default_context->external.get();
+
+	ext->declare_enum("PrimitiveTopology.TRIANGLES", PrimitiveTopology::TRIANGLES);
+	ext->declare_enum("PrimitiveTopology.TRIANGLE_FAN", PrimitiveTopology::TRIANGLE_FAN);
+	ext->declare_enum("PrimitiveTopology.LINES", PrimitiveTopology::LINES);
+	ext->declare_enum("PrimitiveTopology.LINE_STRIP", PrimitiveTopology::LINE_STRIP);
+	ext->declare_enum("PrimitiveTopology.POINTS", PrimitiveTopology::POINTS);
+	ext->declare_enum("PrimitiveTopology.PATCHES", PrimitiveTopology::PATCHES);
+
+	ext->declare_enum("PhysicsMode.NONE", PhysicsMode::NONE);
+	ext->declare_enum("PhysicsMode.SIMPLE", PhysicsMode::SIMPLE);
+	ext->declare_enum("PhysicsMode.FULL_EXTERNAL", PhysicsMode::FULL_EXTERNAL);
+	ext->declare_enum("PhysicsMode.FULL_INTERNAL", PhysicsMode::FULL_INTERNAL);
+
+	//ext->declare_enum("TraceMode.PHYSICAL", TraceMode::PHYSICAL);
 
 	BaseClass entity(BaseClass::Type::NONE);
 	ext->declare_class_size("BaseClass", sizeof(BaseClass));

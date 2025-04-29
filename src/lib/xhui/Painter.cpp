@@ -113,8 +113,10 @@ TextCache& get_text_cache(Context* context, const string& text, font::Face* face
 
 	tc->dimensions = face->get_text_dimensions(text);
 
+#if HAS_LIB_VULKAN
 	tc->dset->set_texture(0, tc->texture);
 	tc->dset->update();
+#endif
 	return *tc;
 }
 

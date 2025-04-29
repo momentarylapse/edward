@@ -60,6 +60,10 @@ RenderPath::RenderPath(RenderPathType _type, Camera* _cam) : Renderer("path") {
 	resource_manager->default_shader = "default.shader";
 	resource_manager->load_shader_module("module-basic-interface.shader");
 	resource_manager->load_shader_module("module-basic-data.shader");
+	const string light_sources = config.get_str("renderer.light_sources", "default");
+	resource_manager->load_shader_module(format("module-light-sources-%s.shader", light_sources));
+	const string shadows_method = config.get_str("renderer.shadows", "pcf-hardening");
+	resource_manager->load_shader_module(format("module-shadows-%s.shader", shadows_method));
 	const string lighting_method = config.get_str("renderer.lighting", "pbr");
 	resource_manager->load_shader_module(format("module-lighting-%s.shader", lighting_method));
 	resource_manager->load_shader_module("module-vertex-default.shader");
@@ -252,7 +256,7 @@ public:
 		geo_renderer->cur_rvd.update_lights();
 
 		if (shadow_renderer)
-			if (int i = scene_view.shadow_index; i >= 0) {
+			for (int i: scene_view.shadow_indices) {
 				shadow_renderer->set_projection(scene_view.lights[i]->shadow_projection);
 				shadow_renderer->render(params);
 			}

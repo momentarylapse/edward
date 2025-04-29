@@ -109,7 +109,7 @@ void main() {
 	dset->set_texture(0, ctx->tex_white);
 	dset->update();
 
-	pipeline = new vulkan::GraphicsPipeline(shader, context->render_pass, 0, "triangles", context->vb);
+	pipeline = new vulkan::GraphicsPipeline(shader, context->render_pass, 0, PrimitiveTopology::TRIANGLES, context->vb);
 	//pipeline->set_z(false, false);
 	pipeline->set_culling(vulkan::CullMode::NONE);
 	pipeline->rebuild();
@@ -209,18 +209,9 @@ void DrawingHelper::clear(const RenderParams& params, const color& c) {
 }
 
 void DrawingHelper::draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vertex_buffer, Material* material, int pass_no, const string& vertex_module) {
-#ifdef USING_VULKAN
-	auto cb = context->current_command_buffer();
 	auto shader = rvd.get_shader(material, 0, vertex_module, "");
 	auto& rd = rvd.start(params, matrix, shader, *material, pass_no, PrimitiveTopology::TRIANGLES, vertex_buffer);
-	rd.apply(params);
-	cb->draw(vertex_buffer);
-#else
-	auto shader = rvd.get_shader(material, 0, vertex_module, "");
-	auto& rd = rvd.start(params, matrix, shader, *material, pass_no, PrimitiveTopology::TRIANGLES, vertex_buffer);
-	rd.apply(params);
-	nix::draw_triangles(vertex_buffer);
-#endif
+	rd.draw_triangles(params, vertex_buffer);
 }
 
 void DrawingHelper::draw_boxed_str(Painter* p, const vec2& _pos, const string& str, int align) {

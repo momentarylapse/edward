@@ -6,6 +6,9 @@
 
 // import basic-data first!
 
+#import light-sources
+#import shadows
+
 // https://learnopengl.com/PBR/Theory
 // https://learnopengl.com/PBR/Lighting
 
@@ -46,98 +49,6 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
     return ggx1 * ggx2;
 }
 
-
-
-float _surf_rand3d(vec3 p) {
-	return fract(sin(dot(p ,vec3(12.9898,78.233,4213.1234))) * 43758.5453);
-}
-
-vec3 _surf_light_dir(Light l, vec3 p) {
-	if (l.radius < 0)
-		return l.dir.xyz;
-	return normalize(p - l.pos.xyz);
-}
-
-
-float _surf_brightness(Light l, vec3 p) {
-	// parallel
-	if (l.radius < 0)
-		return 1.0f;
-	
-	
-	float d = length(p - l.pos.xyz);
-	if (d > l.radius)
-		return 0.0;
-	float b = min(pow(1.0/d, 2), 1.0);
-	
-	// spherical
-	if (l.theta < 0)
-		return b;
-	
-	// cone
-	float t = acos(dot(l.dir.xyz, normalize(p - l.pos.xyz)));
-	float tmax = l.theta;
-	return b * (1 - smoothstep(tmax*0.8, tmax, t));
-}
-
-// amount of shadow
-float _surf_shadow_pcf_step(vec3 p, vec2 dd, ivec2 ts) {
-	vec2 d = dd / ts * 0.8;
-	vec2 tp = p.xy + d;
-	float epsilon = 0.004;
-	float shadow_z = texture(tex_shadow1, p.xy + d).r + epsilon;
-	if (tp.x > 0.38 && tp.y > 0.38 && tp.x < 0.62 && tp.y < 0.62)
-		shadow_z = texture(tex_shadow0, (p.xy - vec2(0.5,0.5))*4 + vec2(0.5,0.5) + d).r + epsilon;
-	if (p.z > shadow_z)
-		return 1.0;
-	return 0.0;
-}
-
-vec2 VogelDiskSample(int sampleIndex, int samplesCount, float phi) {
-	float GoldenAngle = 2.4;
-
-	float r = sqrt(sampleIndex + 0.5) / sqrt(samplesCount);
-	float theta = sampleIndex * GoldenAngle + phi;
-	return vec2(r * cos(theta), r * sin(theta));
-}
-
-float _surf_shadow_pcf(vec3 p) {
-	ivec2 ts = textureSize(tex_shadow0, 0);
-	float value = 0;//shadow_pcf_step(p, vec2(0,0), ts);
-	const float R = 1.8;
-	const int N = 16;
-	float phi0 = _surf_rand3d(p) * 2 * 3.1415;
-	for (int i=0; i<N; i++) {
-		//float phi = _surf_rand3d(p + p*i) * 2 * 3.1415;
-		//float r = R * sqrt(fract(phi * 235.3545));
-		//vec2 dd = r * vec2(cos(phi), sin(phi));
-		vec2 dd = VogelDiskSample(i, N, phi0) * R;
-		value += _surf_shadow_pcf_step(p, dd, ts);
-	}
-	return value / N;
-}
-
-vec3 _surf_light_proj(Light l, vec3 p) {
-	vec4 proj = l.proj * vec4(p,1);
-	proj.xyz /= proj.w;
-	proj.x = (proj.x +1)/2;
-	proj.y = (proj.y +1)/2;
-#ifdef vulkan
-	proj.y = 1 - proj.y;
-#endif
-	//proj.z = (proj.z +1)/2;
-	return proj.xyz;
-}
-
-float _surf_shadow_factor(Light l, vec3 p) {
-	vec3 proj = _surf_light_proj(l, p);
-	
-	if (proj.x > 0.01 && proj.x < 0.99 && proj.y > 0.01 && proj.y < 0.99 && proj.z < 1.0)
-		return 1.0 - _surf_shadow_pcf(proj) * l.harshness;
-	
-	return 1.0;
-}
-
 vec3 _surf_specular(vec3 albedo, float metal, float roughness, vec3 V, vec3 L, vec3 n, out vec3 F) {
 
 	vec3 F0 = vec3(0.04);
@@ -162,17 +73,17 @@ vec3 _surf_specular(vec3 albedo, float metal, float roughness, vec3 V, vec3 L, v
 vec3 _surf_light_add(Light l, vec3 p, vec3 n, vec3 albedo, float metal, float roughness, float ambient_occlusion, vec3 view_dir, bool with_shadow) {
 	float shadow_factor = 1.0;
 	if (with_shadow)
-		shadow_factor = _surf_shadow_factor(l, p);
+		shadow_factor = _shadow_factor(l, p);
 		
 	// TODO only affect "diffuse"
 	shadow_factor *= (1-ambient_occlusion);
 
 	
         // calculate per-light radiance
-        vec3 radiance = l.color.rgb * _surf_brightness(l, p) * PI * shadow_factor;
+        vec3 radiance = l.color.rgb * _light_source_brightness(l, p) * PI * shadow_factor;
         
         vec3 V = -view_dir;
-        vec3 L = -_surf_light_dir(l, p);
+        vec3 L = -_light_source_dir(l, p);
         
         vec3 F;
         vec3 specular = _surf_specular(albedo, metal, roughness, V, L, n, F);
@@ -238,7 +149,8 @@ vec4 perform_lighting(vec3 p, vec3 n, vec4 albedo, vec4 emission, float metal, f
 	
 
 	for (int i=0; i<num_lights; i++)
-		color.rgb += _surf_light_add(light[i], p, n, albedo.rgb, metal, roughness, ambient_occlusion, view_dir, i == shadow_index).rgb;
+		if (_light_source_reachable(light[i], p))
+			color.rgb += _surf_light_add(light[i], p, n, albedo.rgb, metal, roughness, ambient_occlusion, view_dir, i == shadow_index).rgb;
 	
 /*	float distance = length(p - eye_pos.xyz);
 	float f = exp(-distance / fog.distance);

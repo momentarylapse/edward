@@ -20,7 +20,7 @@ public:
 
 	static void reset();
 
-	static void add_controller(const Path &name, const Array<TemplateDataScriptVariable> &variables);
+	static void add_controller(const Path& filename, const string& name, const Array<TemplateDataScriptVariable> &variables);
 	static Controller *get_controller(const kaba::Class *_class);
 
 	static void handle_iterate_pre(float dt);

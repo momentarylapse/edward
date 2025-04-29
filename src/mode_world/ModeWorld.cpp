@@ -327,10 +327,7 @@ void ModeWorld::on_left_button_up(const vec2&) {
 void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vb, Material* material, const string& vertex_module = "default") {
 	auto shader = rvd.get_shader(material, 0, vertex_module, "");
 	auto& rd = rvd.start(params, matrix, shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
-	rd.apply(params);
-#ifdef USING_VULKAN
-	params.command_buffer->draw(vb);
-#endif
+	rd.draw_triangles(params, vb);
 }
 
 void ModeWorld::on_prepare_scene(const RenderParams& params) {
@@ -385,8 +382,7 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 		auto& rd = rvd.start(params, mat4::translation(e.pos), shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
 		cb->push_constant(0, 4, &t.terrain->texture_scale[0].x);
 		cb->push_constant(4, 4, &t.terrain->texture_scale[1].x);
-		rd.apply(params);
-		cb->draw(vb);
+		rd.draw_triangles(params, vb);
 	}
 #endif
 

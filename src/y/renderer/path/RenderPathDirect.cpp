@@ -24,7 +24,7 @@ void RenderPathDirect::prepare(const RenderParams &params) {
 	geo_renderer->cur_rvd.set_view_matrix(scene_view.cam->m_view);
 	geo_renderer->cur_rvd.update_lights();
 
-	if (int i = scene_view.shadow_index; i >= 0) {
+	for (int i: scene_view.shadow_indices) {
 		shadow_renderer->set_projection(scene_view.lights[i]->shadow_projection);
 		shadow_renderer->render(params);
 	}

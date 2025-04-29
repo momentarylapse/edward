@@ -119,10 +119,6 @@ shared<Shader> ResourceManager::load_shader(const Path& filename) {
 	auto s = __load_shader(fn, "");
 	if (!s)
 		return nullptr;
-#ifdef USING_VULKAN
-#else
-	s->link_uniform_block("BoneData", 7);
-#endif
 
 	shaders.add(s);
 	shader_map.add({fn, s});
@@ -190,21 +186,9 @@ shared<Shader> ResourceManager::load_surface_shader(const Path& _filename, const
 		source = expand_geometry_shader_source(source, geometry_module);
 	source = expand_fragment_shader_source(source, render_path);
 
-	auto shader = __create_shader(source, "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,buffer,buffer,buffer,buffer,buffer]]");
+	auto shader = __create_shader(source, "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,ubo,ubo,ubo,ubo,ubo]]");
 
 	//auto s = Shader::load(fn);
-#ifdef USING_VULKAN
-#else
-	if (vertex_module == "animated")
-		if (!shader->link_uniform_block("BoneData", 7))
-			msg_error("BoneData not found...");
-
-
-	if (vertex_module == "instanced")
-		if (!shader->link_uniform_block("Multi", 5))
-			msg_error("Multi not found...");
-#endif
-
 
 	shaders.add(shader);
 	shader_map.add({fnx, shader});

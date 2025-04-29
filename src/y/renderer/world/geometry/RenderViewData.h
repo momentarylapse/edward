@@ -22,7 +22,6 @@ enum class RenderPathType;
 
 static constexpr int MAX_INSTANCES = 1<<11;
 
-#ifdef USING_VULKAN
 
 static constexpr int BINDING_TEX0 = 0;
 static constexpr int BINDING_SHADOW0 = 5;
@@ -33,8 +32,8 @@ static constexpr int BINDING_LIGHT = 9;
 static constexpr int BINDING_INSTANCE_MATRICES = 10;
 static constexpr int BINDING_BONE_MATRICES = 11;
 
-#endif
 
+// per mesh
 struct UBO {
 	// matrix
 	mat4 m,v,p;
@@ -42,21 +41,31 @@ struct UBO {
 	color albedo, emission;
 	float roughness, metal;
 	int dummy[2];
+};
+
+struct LightMetaData {
 	int num_lights;
 	int shadow_index;
 	int num_surfels;
-	int dummy2[2];
+	int dummy;
+	mat4 shadow_proj[2];
 };
 
+// single "draw call"
 struct RenderData {
 #ifdef USING_VULKAN
 	UniformBuffer* ubo;
 	DescriptorSet* dset;
+#else
+	void set_material_x(const SceneView& scene_view, const Material& m, Shader* s, int pass_no);
 #endif
 	void set_textures(const SceneView& scene_view, const Array<Texture*>& tex);
-	void apply(const RenderParams& params);
+	void draw_triangles(const RenderParams& params, VertexBuffer* vb);
+	void draw_instanced(const RenderParams& params, VertexBuffer* vb, int count);
+	void draw(const RenderParams& params, VertexBuffer* vb, PrimitiveTopology topology);
 };
 
+// "draw call" manager (single scene/pass)
 struct RenderViewData {
 	RenderViewData();
 	void prepare_scene(SceneView* scene_view);
@@ -79,7 +88,7 @@ struct RenderViewData {
 	void set_cull(CullMode mode);
 
 	owned<UniformBuffer> ubo_light;
-	mat4 shadow_proj;
+	LightMetaData light_meta_data;
 	void update_lights();
 
 	//Array<UBOLight> lights;

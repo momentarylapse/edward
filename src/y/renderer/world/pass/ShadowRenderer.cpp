@@ -33,7 +33,7 @@ ShadowRenderer::ShadowRenderer(Camera* cam) :
 	material->pass0.shader_path = "shadow.shader";
 
 	scene_view.cam = cam;
-	scene_view.shadow_index = -1;
+	scene_view.shadow_indices.clear();
 
 	for (int i=0; i<NUM_CASCADES; i++) {
 		auto& c = cascades[i];
@@ -58,7 +58,8 @@ void ShadowRenderer::set_projection(const mat4& proj) {
 #else
 		auto m = mat4::scale(c.scale, -c.scale, 1);
 #endif
-		c.geo_renderer->cur_rvd.set_projection_matrix(m * proj);
+		c.geo_renderer->override_view = mat4::ID;
+		c.geo_renderer->override_projection = m * proj;
 	}
 }
 

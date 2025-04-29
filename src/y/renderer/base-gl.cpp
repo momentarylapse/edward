@@ -14,6 +14,7 @@ extern bool allow_separate_vertex_arrays;
 
 Context* api_init(GLFWwindow* window) {
 	nix::allow_separate_vertex_arrays = true;
+	nix::default_shader_bindings = false;
 	auto gl = nix::init();
 
 	if (gl->total_mem() > 0) {

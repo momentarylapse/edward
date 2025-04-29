@@ -1,5 +1,7 @@
 #include "RenderViewData.h"
 
+#include <algorithm>
+#include <lib/base/iter.h>
 #include <renderer/path/RenderPath.h>
 
 #include "../../../graphics-impl.h"
@@ -16,7 +18,8 @@ extern float global_shadow_box_size; // :(
 
 RenderViewData::RenderViewData() {
 	type = RenderPathType::Forward;
-	ubo_light = new UniformBuffer(MAX_LIGHTS * sizeof(UBOLight));
+	ubo_light = new UniformBuffer(sizeof(LightMetaData) + MAX_LIGHTS * sizeof(UBOLight));
+	light_meta_data = {};
 	set_projection_matrix(mat4::ID);
 	set_view_matrix(mat4::ID);
 }
@@ -30,17 +33,18 @@ void RenderViewData::set_view_matrix(const mat4& view) {
 
 void RenderViewData::update_lights() {
 	Array<UBOLight> lights;
+	light_meta_data.shadow_index = -1;
 	for (auto l: scene_view->lights) {
 		l->update(scene_view->cam, global_shadow_box_size, true);
-		if (l->allow_shadow) {
-			shadow_proj = l->shadow_projection;
-		}
 		lights.add(l->light);
 	}
-	ubo_light->update_array(lights);
-	//ubo_light->update_part(&lights[0], 0, lights.num * sizeof(lights[0]));
-	ubo.num_lights = scene_view->lights.num;
-	ubo.shadow_index = scene_view->shadow_index;
+	for (const auto& [i,l]: enumerate(scene_view->shadow_indices)) {
+		light_meta_data.shadow_index = l;
+		light_meta_data.shadow_proj[i] = scene_view->lights[i]->shadow_projection;
+	}
+	light_meta_data.num_lights = scene_view->lights.num;
+	ubo_light->update_part(&light_meta_data, 0, sizeof(LightMetaData));
+	ubo_light->update_array(lights, sizeof(LightMetaData));
 }
 
 void RenderViewData::prepare_scene(SceneView *_scene_view) {
@@ -51,13 +55,57 @@ void RenderViewData::prepare_scene(SceneView *_scene_view) {
 
 #ifdef USING_OPENGL
 
-void RenderData::apply(const RenderParams &params) {
+void RenderData::set_material_x(const SceneView& scene_view, const Material& material, Shader* shader, int pass_no) {
+	nix::set_shader(shader);
+	if constexpr (GeometryRenderer::using_view_space)
+		shader->set_floats("eye_pos", &scene_view.cam->owner->pos.x, 3); // NAH....
+	else
+		shader->set_floats("eye_pos", &vec3::ZERO.x, 3);
+	for (auto &u: material.uniforms)
+		shader->set_floats(u.name, u.p, u.size/4);
+
+	auto& pass = material.pass(pass_no);
+	nix::set_z(pass.z_buffer, pass.z_test);
+	if (pass.mode == TransparencyMode::FUNCTIONS)
+		nix::set_alpha(pass.source, pass.destination);
+	else if (pass.mode == TransparencyMode::COLOR_KEY_HARD)
+		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
+	else if (pass.mode == TransparencyMode::MIX)
+		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
+	else
+		nix::disable_alpha();
+
+	nix::bind_textures(weak(material.textures));
+	nix::bind_texture(BINDING_CUBE, scene_view.cube_map.get());
+
+	shader->set_color_l(shader->location[Shader::LOCATION_MATERIAL_ALBEDO], material.albedo);
+	shader->set_float_l(shader->location[Shader::LOCATION_MATERIAL_ROUGHNESS], material.roughness);
+	shader->set_float_l(shader->location[Shader::LOCATION_MATERIAL_METAL], material.metal);
+	shader->set_color_l(shader->location[Shader::LOCATION_MATERIAL_EMISSION], material.emission);
 }
 
+void RenderData::draw_triangles(const RenderParams&, VertexBuffer* vb) {
+	nix::draw_triangles(vb);
+}
+
+void RenderData::draw_instanced(const RenderParams&, VertexBuffer* vb, int count) {
+	nix::draw_instanced_triangles(vb, count);
+}
+
+void RenderData::draw(const RenderParams& params, VertexBuffer* vb, PrimitiveTopology topology) {
+	if (topology == PrimitiveTopology::TRIANGLES)
+		nix::draw_triangles(vb);
+	else if (topology == PrimitiveTopology::POINTS)
+		nix::draw_points(vb);
+	else if (topology == PrimitiveTopology::LINES)
+		nix::draw_lines(vb, false);
+	else if (topology == PrimitiveTopology::LINE_STRIP)
+		nix::draw_lines(vb, true);
+}
+
+
 void RenderViewData::begin_draw() {
-	nix::set_projection_matrix(ubo.p);
-	nix::set_view_matrix(ubo.v);
-	nix::bind_uniform_buffer(1, ubo_light.get());
+	nix::bind_uniform_buffer(BINDING_LIGHT, ubo_light.get());
 }
 
 void RenderViewData::set_z(bool write, bool test) {
@@ -73,45 +121,26 @@ void RenderViewData::set_cull(CullMode mode) {
 RenderData& RenderViewData::start(const RenderParams& params, const mat4& matrix,
                                   Shader* shader, const Material& material, int pass_no,
                                   PrimitiveTopology top, VertexBuffer *vb) {
-	nix::set_model_matrix(matrix);
 
-	nix::set_shader(shader);
-	if (GeometryRenderer::using_view_space)
-		shader->set_floats("eye_pos", &scene_view->cam->owner->pos.x, 3); // NAH....
-	else
-		shader->set_floats("eye_pos", &vec3::ZERO.x, 3);
-	shader->set_int("num_lights", scene_view->lights.num);
-	shader->set_int("shadow_index", scene_view->shadow_index);
-	for (auto &u: material.uniforms)
-		shader->set_floats(u.name, u.p, u.size/4);
+	rd.set_material_x(*scene_view, material, shader, pass_no);
 
-	auto& pass = material.pass(pass_no);
-	if (pass.mode == TransparencyMode::FUNCTIONS)
-		nix::set_alpha(pass.source, pass.destination);
-	else if (pass.mode == TransparencyMode::COLOR_KEY_HARD)
-		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
-	else if (pass.mode == TransparencyMode::MIX)
-		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
-	else
-		nix::disable_alpha();
-
-	nix::bind_textures(weak(material.textures));
-	nix::bind_texture(7, scene_view->cube_map.get());
-
-
-	nix::set_material(material.albedo, material.roughness, material.metal, material.emission);
+	//shader->set_matrix_l(shader->location[Shader::LOCATION_MATRIX_MVP], ubo.p * ubo.v * matrix);
+	shader->set_matrix_l(shader->location[Shader::LOCATION_MATRIX_M], matrix);
+	shader->set_matrix_l(shader->location[Shader::LOCATION_MATRIX_V], ubo.v);
+	shader->set_matrix_l(shader->location[Shader::LOCATION_MATRIX_P], ubo.p);
 
 	return rd;
 }
+
 #endif
 
 #ifdef USING_VULKAN
 
 void RenderViewData::begin_draw() {
 	index = 0;
-	ubo.num_surfels = 0;
+	light_meta_data.num_surfels = 0;
 	if (scene_view)
-		ubo.num_surfels = scene_view->num_surfels;
+		light_meta_data.num_surfels = scene_view->num_surfels;
 }
 
 RenderData& RenderViewData::start(
@@ -157,9 +186,21 @@ void RenderData::set_textures(const SceneView& scene_view, const Array<Texture*>
 		dset->set_texture(BINDING_CUBE, scene_view.cube_map.get());
 }
 
-void RenderData::apply(const RenderParams& params) {
+void RenderData::draw_triangles(const RenderParams& params, VertexBuffer* vb) {
 	dset->update();
 	params.command_buffer->bind_descriptor_set(0, dset);
+	params.command_buffer->draw(vb);
+}
+
+void RenderData::draw_instanced(const RenderParams& params, VertexBuffer* vb, int count) {
+	dset->update();
+	params.command_buffer->bind_descriptor_set(0, dset);
+	params.command_buffer->draw_instanced(vb, count);
+}
+
+void RenderData::draw(const RenderParams& params, VertexBuffer* vb, PrimitiveTopology topology) {
+	// topology defined by pipeline...
+	draw_triangles(params, vb);
 }
 
 #endif

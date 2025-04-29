@@ -33,7 +33,7 @@ void ThroughShaderRenderer::draw(const RenderParams &params) {
 	gpu_timestamp_begin(params, channel);
 
 	if (!pipeline) {
-		pipeline = new vulkan::GraphicsPipeline(shader.get(), params.render_pass, 0, "triangles", "3f,3f,2f");
+		pipeline = new vulkan::GraphicsPipeline(shader.get(), params.render_pass, 0, PrimitiveTopology::TRIANGLES, "3f,3f,2f");
 		pipeline->set_culling(CullMode::NONE);
 		pipeline->set_z(false, false);
 		pipeline->rebuild();
@@ -54,9 +54,9 @@ void ThroughShaderRenderer::draw(const RenderParams &params) {
 
 	nix::set_shader(shader.get());
 	bindings.apply(shader.get(), params);
-	nix::set_projection_matrix(flip_y ? mat4::scale(1,-1,1) : mat4::ID);
-	nix::set_view_matrix(mat4::ID);
-	nix::set_model_matrix(mat4::ID);
+	shader->set_matrix_l(shader->location[Shader::LOCATION_MATRIX_P], flip_y ? mat4::scale(1,-1,1) : mat4::ID);
+	shader->set_matrix_l(shader->location[Shader::LOCATION_MATRIX_V], mat4::ID);
+	shader->set_matrix_l(shader->location[Shader::LOCATION_MATRIX_M], mat4::ID);
 	nix::set_cull(nix::CullMode::NONE);
 
 	nix::set_z(false, false);

@@ -14,7 +14,7 @@ vulkan::Surface surface;
 
 Context* _create_context() {
 	device->create_query_pool(MAX_TIMESTAMP_QUERIES);
-	pool = new vulkan::DescriptorPool("buffer:65536,sampler:65536", 65536);
+	pool = new vulkan::DescriptorPool("ubo:65536,sampler:65536", 65536);
 
 	_create_default_textures();
 

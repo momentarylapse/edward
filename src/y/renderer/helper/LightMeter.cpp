@@ -55,11 +55,7 @@ void LightMeter::read() {
 
 	histogram.resize(NBINS);
 	memset(&histogram[0], 0, NBINS * sizeof(int));
-#ifdef USING_VULKAN
-	buf->update(&histogram[0]);
-#else
-	buf->update(&histogram[0], NBINS * sizeof(int));
-#endif
+	buf->update_array(histogram);
 	PerformanceMonitor::end(ch_prepare);
 }
 

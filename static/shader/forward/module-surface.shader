@@ -25,6 +25,13 @@ void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughnes
 	out_color.a = albedo.a;
 }
 
+// fabric shine through pass (against the light)
+// transmissivity: per unit thickness
+// layers: how many absorbing layers?
+void surface_scattered_out(vec3 n, vec4 transmissivity, float layers) {
+	surface_out(-n, pow(transmissivity, vec4(layers)), vec4(0), 0, 1);
+}
+
 
 // through a layer of constant thickness, seen from an angle
 //  (ignoring off-center skewing for now...)

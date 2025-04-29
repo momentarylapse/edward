@@ -17,12 +17,16 @@ struct XTerrainVBUpdater;
 class TerrainUpdateThread;
 struct RayTracingData;
 
+// "scene" rendered by 1 camera
+//   mostly lighting situation
+//   includes shadow/cube maps from multiple perspectives
+//   (might be shared with nearby cameras)
 struct SceneView {
 	Camera *cam; // the "owning" camera - might use a different perspective for rendering (e.g. cubemap)
 	Array<DepthBuffer*> shadow_maps;
 	shared<CubeMap> cube_map;
-	int shadow_index = -1;
 	Array<Light*> lights;
+	Array<int> shadow_indices;
 	owned<UniformBuffer> surfel_buffer;
 	int num_surfels = 0;
 	RayTracingData* ray_tracing_data = nullptr;
