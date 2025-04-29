@@ -3586,7 +3586,7 @@ big,bold,center,expandx
 0
 ListView
 materials
-nobar,select-single,expandy,showselection=no
+nobar,select-single,expandy,sunkenbackground=no,showselection=no
 1
 0
 0

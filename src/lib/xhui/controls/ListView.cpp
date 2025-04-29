@@ -146,11 +146,13 @@ rect ListView::row_area(int row) const {
 
 
 void ListView::_draw(Painter *p) {
-	color bg = Theme::_default.background_low;
-	p->set_color(bg);
-	p->set_roundness(Theme::_default.button_radius);
-	p->draw_rect(_area);
-	p->set_roundness(0);
+	if (sunken_background) {
+		color bg = Theme::_default.background_low;
+		p->set_color(bg);
+		p->set_roundness(Theme::_default.button_radius);
+		p->draw_rect(_area);
+		p->set_roundness(0);
+	}
 
 	p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
 	//auto dim = font::get_text_dimensions(title);
@@ -252,6 +254,12 @@ void ListView::set_option(const string& key, const string& value) {
 		show_headers = false;
 	} else if (key == "showselection") {
 		show_selection = value._bool();
+	} else if (key == "sunkenbackground") {
+		sunken_background = value._bool();
+		if (!sunken_background) {
+			padding = {0,0,0,0};
+			cell_grid->margin = {0, 0, 0, 0};
+		}
 	} else if (key == "style") {
 		if (value == "compact") {
 			padding = {0,0,0,0};

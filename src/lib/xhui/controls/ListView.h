@@ -73,6 +73,7 @@ public:
 	float selection_radius;
 
 	bool show_selection = true;
+	bool sunken_background = true;
 
 	int hover_row = -1;
 
