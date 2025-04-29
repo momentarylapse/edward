@@ -29,11 +29,13 @@ void Label::set_string(const string &s) {
 
 vec2 Label::get_content_min_size() const {
 	if (image) {
-		return {10,10};
+		return {20,20};
 	} else {
 		if (text_w < 0) {
-			auto face = pick_font(Theme::_default.font_name, font_size, bold, italic, ui_scale);
-			auto dim = get_cached_text_dimensions(title, face, font_size);
+			if (auto win = get_window())
+				ui_scale = win->ui_scale;
+			auto face = pick_font(Theme::_default.font_name, bold, italic);
+			auto dim = get_cached_text_dimensions(title, face, font_size, ui_scale);
 			text_w = int(dim.bounding_width / ui_scale);
 			text_h = int(dim.inner_height() / ui_scale);
 		}
@@ -46,7 +48,10 @@ void Label::_draw(Painter *p) {
 
 	if (image) {
 		prepare_image(image);
-		vec2 size = _area.size();
+		vec2 s1 = _area.size();
+		vec2 s2 = image->size();
+		float scale = min(s1.x / s2.x, s1.y / s2.y);
+		vec2 size = s2 * scale;
 		p->set_color(White);
 		if (!enabled)
 			p->set_color(White.with_alpha(0.35f));
@@ -57,7 +62,7 @@ void Label::_draw(Painter *p) {
 			p->set_color(Theme::_default.text_disabled);
 
 		p->set_font(Theme::_default.font_name, font_size, bold, italic);
-		auto dim = get_cached_text_dimensions(title, p->face, font_size);
+		auto dim = get_cached_text_dimensions(title, p->face, font_size, ui_scale);
 		float x = _area.x1 + margin.x1;
 		if (align == Align::Center)
 			x = _area.center().x - dim.bounding_width / ui_scale / 2;

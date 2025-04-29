@@ -46,8 +46,8 @@ void Group::remove_child(Control* c) {
 
 Array<Control*> Group::get_children(ChildFilter) const {
 	if (child)
-		return {child.get()};
-	return {};
+		return {static_cast<Control*>(const_cast<Label*>(&header)), child.get()};
+	return {static_cast<Control*>(const_cast<Label*>(&header))};
 }
 
 void Group::negotiate_area(const rect& available) {

@@ -219,6 +219,6 @@ extern font::Face* default_font_regular;
 extern font::Face* default_font_bold;
 extern font::Face* default_font_mono_regular;
 extern font::Face* default_font_mono_bold;
-font::Face* pick_font(const string &font, float size, bool bold, bool italic, float ui_scale);
+font::Face* pick_font(const string &font, bool bold, bool italic);
 
 }

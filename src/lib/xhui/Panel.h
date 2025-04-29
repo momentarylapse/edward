@@ -51,7 +51,6 @@ public:
 	int event_xp(const string& id, const string& msg, CallbackP f);
 	void remove_event_handler(int uid);
 
-	Window* get_window();
 	shared<Control> top_control;
 	Control* target_control = nullptr;
 	Array<Control*> controls;

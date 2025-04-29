@@ -16,7 +16,7 @@ public:
 	void _draw(Painter *p) override;
 	vec2 get_content_min_size() const override;
 
-	float ui_scale = 1.0f;
+	mutable float ui_scale = 1.0f;
 	float font_size;
 	bool bold;
 	bool italic;

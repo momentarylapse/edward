@@ -227,7 +227,7 @@ void Edit::draw_text(Painter* p) {
 		float y0 = _area.y1 + margin_y - viewport_offset.y;
 		cache.content_size = {0,0};
 		for (const string &l: lines) {
-			auto dim = get_cached_text_dimensions(l, face, font_size);
+			auto dim = get_cached_text_dimensions(l, face, font_size, p->ui_scale);
 			inner_height = dim.inner_height() / ui_scale;
 			float dy = dim.line_dy / ui_scale * line_height_scale;
 			cache.line_height.add(dy);

@@ -46,7 +46,7 @@ public:
 
 	void set_cursor_pos(Index index, bool selecting = false);
 
-	float ui_scale = 1.0f;
+	mutable float ui_scale = 1.0f;
 	bool multiline = false;
 	bool numerical = false;
 	bool show_focus_frame = true;

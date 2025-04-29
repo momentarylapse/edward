@@ -78,6 +78,7 @@ public:
 	// Control: surrounding Panel (might be Window)
 	// Panel: parent Panel
 	Panel *owner = nullptr;
+	Window* get_window() const;
 
 	enum class SizeMode {
 		Shrink,

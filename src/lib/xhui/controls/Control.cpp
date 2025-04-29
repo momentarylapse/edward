@@ -80,14 +80,9 @@ Array<Control*> Control::get_children_recursive(bool include_me, ChildFilter f) 
 
 
 void Control::request_redraw() {
-	if (owner) {
-		if (auto w = owner->get_window()) {
-			w->redraw(id);
-			return;
-		}
-	} else if (auto w = dynamic_cast<Window*>(this)) {
+	if (auto w = get_window())
 		w->redraw(id);
-	}
+	//else
 	//msg_write(id + "  can not refresh  " + p2s(owner));
 }
 
@@ -119,9 +114,7 @@ void Control::negotiate_area(const rect &available) {
 }
 
 bool Control::has_focus() const {
-	if (!owner)
-		return false;
-	if (auto w = owner->get_window())
+	if (auto w = get_window())
 		return w->focus_control == this;
 	return false;
 }
@@ -131,6 +124,14 @@ void Control::enable(bool _enabled) {
 	request_redraw();
 }
 
+
+Window* Control::get_window() const {
+	if (auto w = dynamic_cast<Window*>(const_cast<Control*>(this)))
+		return w;
+	if (owner)
+		return owner->get_window();
+	return nullptr;
+}
 
 void Control::on_mouse_move(const vec2& m, const vec2& d) {
 	emit_event(event_id::MouseMove, false);
@@ -175,9 +176,8 @@ void Control::set_option(const string& key, const string& value) {
 	} else if (key == "grabfocus") {
 		can_grab_focus = true;
 		run_later(0.01f, [this] {
-			if (owner)
-				if (auto w = owner->get_window())
-					w->focus_control = this;
+			if (auto w = get_window())
+				w->focus_control = this;
 		});
 	} else if (key == "visible") {
 		visible = value._bool() or value == "";

@@ -1,4 +1,7 @@
 #include "Button.h"
+
+#include <lib/os/msg.h>
+
 #include "../Painter.h"
 #include "../draw/font.h"
 #include "../Theme.h"
@@ -67,6 +70,11 @@ void Button::negotiate_area(const rect& available) {
 	Control::negotiate_area(available);
 	label.negotiate_area({available.p00() + padding.p00(), available.p11() - padding.p11()});
 }
+
+Array<Control*> Button::get_children(ChildFilter f) const {
+	return {static_cast<Control*>(const_cast<Label*>(&label))};
+}
+
 
 void Button::set_string(const string& s) {
 	label.set_string(s);

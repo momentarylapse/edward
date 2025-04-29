@@ -17,6 +17,10 @@ CheckBox::CheckBox(const string &_id, const string &t) :
 	label.margin.y1 = label.margin.y2 = Theme::_default.button_margin_y;
 }
 
+Array<Control*> CheckBox::get_children(ChildFilter f) const {
+	return {static_cast<Control*>(const_cast<Label*>(&label))};
+}
+
 void CheckBox::check(bool _checked) {
 	checked = _checked;
 	request_redraw();

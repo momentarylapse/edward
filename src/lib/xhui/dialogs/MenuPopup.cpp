@@ -18,13 +18,17 @@ namespace xhui {
 
 MenuPopup::MenuPopup(const Menu& m, Panel* _parent, const std::function<void(const string&)>& f) :
 		Dialog("", 100, 20, _parent, DialogFlags::NoHeader | DialogFlags::CloseByEscape | DialogFlags::CloseByClickOutside) {
+	id = "menu-popup";
 	padding = Theme::_default.spacing;
 	grid = new Grid("grid");
 	Dialog::add_child(grid, 0, 0);
 	menu = &m;
 	parent = _parent;
 	callback = f;
+
+	owner = parent; // can only call get_content_min_size() with an owner...
 	set_sub_menu(menu);
+	owner = nullptr;
 }
 
 void MenuPopup::set_sub_menu(const Menu* m) {

@@ -108,15 +108,6 @@ vec2 Panel::get_greed_factor() const {
 
 
 
-Window* Panel::get_window() {
-	if (auto w = dynamic_cast<Window*>(this))
-		return w;
-	if (owner)
-		return owner->get_window();
-	return nullptr;
-}
-
-
 void Panel::add_child(shared<Control> c, int x, int y) {
 	if (target_control) {
 		target_control->add_child(c, x, y);

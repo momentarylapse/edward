@@ -98,7 +98,7 @@ void Painter::clear(const color &c) {
 void Painter::draw_str(const vec2 &p, const string &str) {
 	if (str.num == 0)
 		return;
-	auto& tc = get_text_cache(context, str, face, font_size);
+	auto& tc = get_text_cache(context, str, face, font_size, ui_scale);
 
 	float w = (float)tc.texture->width / ui_scale;
 	float h = (float)tc.texture->height / ui_scale;
