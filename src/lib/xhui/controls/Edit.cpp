@@ -425,6 +425,7 @@ Edit::Index Edit::xy_to_index(const vec2& pos) const {
 
 
 void Edit::_draw(Painter *p) {
+	ui_scale = p->ui_scale;
 
 	// background
 	color bg = Theme::_default.background_button;

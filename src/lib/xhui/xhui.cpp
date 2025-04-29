@@ -20,7 +20,7 @@
 namespace xhui {
 	extern Array<Window*> _windows_;
 
-	float ui_scale = 1;
+	float global_ui_scale = 1;
 
 	Path Application::directory;
 	Path Application::directory_static;
@@ -139,8 +139,8 @@ void init(const Array<string> &arg, const string& app_name) {
 
 	//glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
 
-	ui_scale = 1.0f;
-	glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &ui_scale, nullptr);
+	global_ui_scale = 1.0f;
+	glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &global_ui_scale, nullptr);
 
 
 	Application::guess_directories(arg, app_name);

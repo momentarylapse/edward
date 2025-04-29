@@ -22,6 +22,7 @@ Window::Window(const string &title, int w, int h) : Window(title, w, h, Flags::N
 Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":window:") {
 	title = _title;
 	flags = _flags;
+	ui_scale = global_ui_scale;
 	memset(&state, 0, sizeof(state));
 	memset(&state_prev, 0, sizeof(state_prev));
 
@@ -39,6 +40,8 @@ Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":windo
 			msg_write("NOT TRANSPARENT");
 		header_bar = new HeaderBar(this, ":headerbar:");
 	}
+
+	glfwGetWindowContentScale(window, &ui_scale, nullptr);
 
 	glfwSetWindowUserPointer(window, this);
 
@@ -194,12 +197,12 @@ void Window::_cursor_position_callback(GLFWwindow *window, double xpos, double y
 	auto w = (Window*)glfwGetWindowUserPointer(window);
 	Event e;
 	e.type = Event::Type::MouseMove;
-#ifdef OS_MAC
+//#ifdef OS_MAC
 	e.param1 = {(float)xpos, (float)ypos};
-#else
+/*#else
 	// why?!? this should be consistent...
-	e.param1 = {(float)xpos / ui_scale, (float)ypos / ui_scale};
-#endif
+	e.param1 = {(float)xpos / w->ui_scale, (float)ypos / w->ui_scale};
+#endif*/
 	w->event_stack.add(e);
 }
 
@@ -250,7 +253,9 @@ void Window::_refresh_callback(GLFWwindow *window) {
 }
 
 void Window::_resize_callback(GLFWwindow* window, int width, int height) {
+	//msg_write(format("resize %d  %d", width, height));
 	auto w = (Window*)glfwGetWindowUserPointer(window);
+
 	if (w->context)
 		w->context->resize(width, height);
 	w->_refresh_requested = true;

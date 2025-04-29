@@ -33,7 +33,7 @@ void run();
 	using Texture = nix::Texture;
 #endif
 
-extern float ui_scale;
+extern float global_ui_scale;
 
 class Application {
 public:
@@ -219,6 +219,6 @@ extern font::Face* default_font_regular;
 extern font::Face* default_font_bold;
 extern font::Face* default_font_mono_regular;
 extern font::Face* default_font_mono_bold;
-font::Face* pick_font(const string &font, float size, bool bold, bool italic);
+font::Face* pick_font(const string &font, float size, bool bold, bool italic, float ui_scale);
 
 }

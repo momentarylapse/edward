@@ -32,7 +32,7 @@ vec2 Label::get_content_min_size() const {
 		return {10,10};
 	} else {
 		if (text_w < 0) {
-			auto face = pick_font(Theme::_default.font_name, font_size, bold, italic);
+			auto face = pick_font(Theme::_default.font_name, font_size, bold, italic, ui_scale);
 			auto dim = get_cached_text_dimensions(title, face, font_size);
 			text_w = int(dim.bounding_width / ui_scale);
 			text_h = int(dim.inner_height() / ui_scale);
@@ -42,6 +42,8 @@ vec2 Label::get_content_min_size() const {
 }
 
 void Label::_draw(Painter *p) {
+	ui_scale = p->ui_scale;
+
 	if (image) {
 		prepare_image(image);
 		vec2 size = _area.size();

@@ -171,6 +171,7 @@ void main() {
 
 Painter::Painter(Window *w) {
 	window = w;
+	ui_scale = window->ui_scale;
 	glfwMakeContextCurrent(w->window);
 	if (!_nix_inited)
 		init_nix();

@@ -44,6 +44,7 @@ struct Parameters {
 
 Painter::Painter(Window *w) {
 	window = w;
+	ui_scale = window->ui_scale;
 	context = window->context;
 	face = default_font_regular;
 

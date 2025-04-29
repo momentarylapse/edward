@@ -30,7 +30,7 @@ void DrawingArea::_draw(Painter *p) {
 	p->width = _area.width();
 	p->height = _area.height();
 	p->_area = _area;
-	p->native_area = {_area.x1 * ui_scale, _area.x2 * ui_scale, _area.y1 * ui_scale, _area.y2 * ui_scale};
+	p->native_area = {_area.x1 * p->ui_scale, _area.x2 * p->ui_scale, _area.y1 * p->ui_scale, _area.y2 * p->ui_scale};
 
 	//p->set_clip(_area);
 	p->set_transform({}, vec2(_area.x1, _area.y1));
@@ -51,7 +51,7 @@ void DrawingArea::_draw(Painter *p) {
 
 
 #if HAS_LIB_GL
-	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(ui_scale, ui_scale, 1));
+	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(p->ui_scale, p->ui_scale, 1));
 	nix::set_view_matrix(mat4::ID);
 	nix::set_model_matrix(mat4::ID);
 	//nix::clear(color(1, 0.15f, 0.15f, 0.3f));

@@ -78,6 +78,8 @@ public:
 
 	void focus(const string& id);
 
+	float ui_scale;
+
 protected:
 	GLFWwindow *window;
 
