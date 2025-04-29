@@ -33,6 +33,8 @@ int xhui_main(const Array<string>& args) {
 		string ext = Path(args[1]).extension();
 		if (ext == "model")
 			s->universal_edit(FD_MODEL, args[1], false);
+		else if (ext == "material")
+			s->universal_edit(FD_MATERIAL, args[1], false);
 		else if (ext == "world")
 			s->universal_edit(FD_WORLD, args[1], false);
 	} else {

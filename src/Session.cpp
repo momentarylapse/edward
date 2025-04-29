@@ -14,7 +14,7 @@
 #include "mode/administration/dialog/ConfigurationDialog.h"*/
 #include "../mode_model/ModeModel.h"
 #include "../mode_model/mesh/ModeMesh.h"
-//#include "mode/material/ModeMaterial.h"*/
+#include "../mode_material/ModeMaterial.h"
 #include "../mode_world/ModeWorld.h"
 /*#include "mode/font/ModeFont.h"
 #include "stuff/Progress.h"*/
@@ -343,11 +343,12 @@ void Session::universal_new(int preferred_type) {
 			session->mode_world = new ModeWorld(session);
 			session->set_mode(session->mode_world);
 			session->mode_world->optimize_view();
-		} /*else if (preferred_type == FD_MATERIAL) {
-			session->mode_material->_new();
+		} else if (preferred_type == FD_MATERIAL) {
+			session->mode_material = new ModeMaterial(session);
+			//session->mode_material->_new();
 			session->set_mode(session->mode_material);
 			session->mode_material->optimize_view();
-		} else if (preferred_type == FD_FONT) {
+		} /*else if (preferred_type == FD_FONT) {
 			session->mode_font->_new();
 			session->set_mode(session->mode_font);
 			session->mode_font->optimize_view();
@@ -410,9 +411,6 @@ Path make_absolute_path(Session *session, int type, const Path &filename, bool r
 void Session::universal_edit(int type, const Path &_filename, bool relative_path) {
 #if 1
 	Path filename = make_absolute_path(this, type, add_extension_if_needed(this, type, _filename), relative_path);
-	msg_write("EDIT");
-	msg_write(_filename.str());
-	msg_write(filename.str());
 
 		switch (type){
 			/*case -1:
@@ -434,11 +432,13 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 						session->storage->load(filename, session->mode_model->data.get(), true);
 						session->set_mode(session->mode_model->mode_mesh.get());
 						session->mode_model->mode_mesh->optimize_view();
-#if 0
 					} else if (type == FD_MATERIAL) {
+						if (!session->mode_material)
+							session->mode_material = new ModeMaterial(session);
 						session->storage->load(filename, session->mode_material->data, true);
 						session->set_mode(session->mode_material);
 						session->mode_material->optimize_view();
+#if 0
 					} else if (type == FD_FONT) {
 						session->storage->load(filename, session->mode_font->data, true);
 						session->set_mode(session->mode_font);

@@ -319,6 +319,9 @@ Dialog x x padding=0
 	event("model_new", [this] {
 		session->universal_new(FD_MODEL);
 	});
+	event("material_new", [this] {
+		session->universal_new(FD_MATERIAL);
+	});
 	event("world_new", [this] {
 		session->universal_new(FD_WORLD);
 	});
