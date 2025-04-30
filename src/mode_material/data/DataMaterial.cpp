@@ -195,7 +195,7 @@ Material* DataMaterial::to_material() const {
 	m->pass0.destination = p.destination;
 	m->pass0.z_buffer = p.z_buffer;
 	m->pass0.z_test = p.z_buffer;
-	m->pass0.cull_mode = (int)p.culling;
+	m->pass0.cull_mode = p.culling;
 	m->pass0.shader_path = p.shader.file;
 
 	return m;

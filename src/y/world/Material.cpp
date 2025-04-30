@@ -53,6 +53,8 @@ Material::Material(ResourceManager *rm) {
 	metal = 0.0f;
 	emission = Black;
 
+	pass0.cull_mode = CullMode::BACK;
+
 	cast_shadow = true;
 
 	reflection.mode = ReflectionMode::NONE;
@@ -206,11 +208,11 @@ xfer<Material> MaterialManager::load(const Path &filename) {
 		auto& p = add_pass(index);
 		p.shader_path = c.get_str(key + ".shader", "");
 		string mode = c.get_str(key + ".cull", "ccw");
-		p.cull_mode = 1;
+		p.cull_mode = CullMode::BACK;
 		if (mode == "none")
-			p.cull_mode = 0;
+			p.cull_mode = CullMode::NONE;
 		else if (mode == "cw" or mode == "front")
-			p.cull_mode = 2;
+			p.cull_mode = CullMode::FRONT;
 
 		mode = c.get_str(key + ".mode", "solid");
 		if (mode == "solid" or mode == "none") {

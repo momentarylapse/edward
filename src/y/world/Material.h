@@ -72,7 +72,7 @@ public:
 		float factor = 1;
 		bool z_buffer = true;
 		bool z_test = true;
-		int cull_mode = 1;
+		CullMode cull_mode = (CullMode)0;
 		Path shader_path;
 	};
 	int num_passes = 1;

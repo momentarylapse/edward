@@ -42,7 +42,7 @@ GeometryRenderer::GeometryRenderer(RenderPathType _type, SceneView &_scene_view)
 	ch_user = PerformanceMonitor::create_channel("usr", channel);
 	ch_prepare_lights = PerformanceMonitor::create_channel("lights", channel);
 
-	fx_material.pass0.cull_mode = 0;
+	fx_material.pass0.cull_mode = CullMode::NONE;
 	fx_material.pass0.mode = TransparencyMode::FUNCTIONS;
 	fx_material.pass0.source = Alpha::SOURCE_ALPHA;
 	fx_material.pass0.destination = Alpha::SOURCE_INV_ALPHA;

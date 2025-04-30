@@ -137,7 +137,7 @@ void ModeMaterial::on_draw_win(const RenderParams& params, MultiViewWindow* win)
 	auto dh = win->multi_view->session->drawing_helper;
 
 	// ...
-	dh->draw_mesh(params, win->rvd, mat4::ID, vertex_buffer.get(), material.get());
+	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), material.get());
 }
 
 

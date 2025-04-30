@@ -354,6 +354,10 @@ void PluginManager::export_kaba() {
 	ext->declare_enum("PrimitiveTopology.POINTS", PrimitiveTopology::POINTS);
 	ext->declare_enum("PrimitiveTopology.PATCHES", PrimitiveTopology::PATCHES);
 
+	ext->declare_enum("CullMode.NONE", CullMode::NONE);
+	ext->declare_enum("CullMode.BACK", CullMode::BACK);
+	ext->declare_enum("CullMode.FRONT", CullMode::FRONT);
+
 	ext->declare_enum("PhysicsMode.NONE", PhysicsMode::NONE);
 	ext->declare_enum("PhysicsMode.SIMPLE", PhysicsMode::SIMPLE);
 	ext->declare_enum("PhysicsMode.FULL_EXTERNAL", PhysicsMode::FULL_EXTERNAL);

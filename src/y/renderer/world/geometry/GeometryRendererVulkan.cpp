@@ -37,24 +37,12 @@
 
 
 
-
-
-vulkan::CullMode vk_cull(int culling) {
-	if (culling == 0)
-		return vulkan::CullMode::NONE;
-	if (culling == 2)
-		return vulkan::CullMode::FRONT;
-	if (culling == 1)
-		return vulkan::CullMode::BACK;
-	return vulkan::CullMode::NONE;
-}
-
 GraphicsPipeline* GeometryRenderer::get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb) {
 	if (pass.mode == TransparencyMode::FUNCTIONS)
-		return PipelineManager::get_alpha(s, rp, top, vb, pass.source, pass.destination, vk_cull(pass.cull_mode), pass.z_test, pass.z_buffer);
+		return PipelineManager::get_alpha(s, rp, top, vb, pass.source, pass.destination, pass.cull_mode, pass.z_test, pass.z_buffer);
 	if (pass.mode == TransparencyMode::COLOR_KEY_HARD)
-		return PipelineManager::get_alpha(s, rp, top, vb, Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, vk_cull(pass.cull_mode), pass.z_test, pass.z_buffer);
-	return PipelineManager::get(s, rp, top, vb, vk_cull(pass.cull_mode), pass.z_test, pass.z_buffer);
+		return PipelineManager::get_alpha(s, rp, top, vb, Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, pass.cull_mode, pass.z_test, pass.z_buffer);
+	return PipelineManager::get(s, rp, top, vb, pass.cull_mode, pass.z_test, pass.z_buffer);
 }
 
 

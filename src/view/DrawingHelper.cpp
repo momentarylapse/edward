@@ -23,7 +23,7 @@ Material* create_material(ResourceManager* resource_manager, const color& albedo
 	material->emission = emission;
 	material->textures = {tex_white};
 	if (transparent) {
-		material->pass0.cull_mode = 0;
+		material->pass0.cull_mode = CullMode::NONE;
 		material->pass0.mode = TransparencyMode::FUNCTIONS;
 		material->pass0.source = Alpha::SOURCE_ALPHA;
 		material->pass0.destination = Alpha::SOURCE_INV_ALPHA;
