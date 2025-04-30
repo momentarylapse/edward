@@ -3,6 +3,7 @@
 //
 
 #include "ModeMaterial.h"
+#include "dialog/MaterialPanel.h"
 #include <Session.h>
 #include <lib/base/iter.h>
 #include <lib/kaba/kaba.h>
@@ -20,7 +21,6 @@
 #include <lib/xhui/controls/Toolbar.h>
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
-#include <view/ActionController.h>
 #include <view/DrawingHelper.h>
 #include <data/mesh/GeometryCube.h>
 #include <data/mesh/GeometrySphere.h>
@@ -80,7 +80,7 @@ void ModeMaterial::on_enter() {
 
 	set_mesh(PreviewMesh::TEAPOT);
 
-	//set_side_panel(new MaterialPanel(this));
+	set_side_panel(new MaterialPanel(this));
 }
 
 

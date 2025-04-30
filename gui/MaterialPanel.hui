@@ -1,4 +1,4 @@
-Dialog material_dialog "Material appearance" width=365 height=715 allow-root
+Dialog material-panel "Material appearance" width=365 height=715 allow-root
 	Grid ? "" vertical
 		Label header "Material properties" expandx center big bold
 		Grid ? "" vertical
@@ -27,7 +27,7 @@ Dialog material_dialog "Material appearance" width=365 height=715 allow-root
 			Expander grp-friction "Friction"
 				Grid ? ""
 					Label t-rcstatic "Static" right disabled
-					SpinButton rcstatic "" range=0:100:0.01
+					SpinButton rcstatic "" range=0:100:0.01 expandx
 					---|
 					Label t-rcsliding "Sliding" right disabled
 					SpinButton rcsliding "" range=0:100:0.01
