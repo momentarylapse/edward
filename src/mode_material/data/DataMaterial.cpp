@@ -179,6 +179,29 @@ DataMaterial DataMaterial::from_material(Session* s, Material *material) {
 }
 
 
+Material* DataMaterial::to_material() const {
+	Material* m = new Material(session->resource_manager);
+	m->albedo = appearance.albedo;
+	m->roughness = appearance.roughness;
+	m->metal = appearance.metal;
+	m->emission = appearance.emissive;
+
+	for (const auto t: appearance.texture_files)
+		m->textures.add(session->resource_manager->load_texture(t));
+
+	auto &p = appearance.passes[0];
+	m->pass0.mode = p.mode;
+	m->pass0.source = p.source;
+	m->pass0.destination = p.destination;
+	m->pass0.z_buffer = p.z_buffer;
+	m->pass0.z_test = p.z_buffer;
+	m->pass0.cull_mode = (int)p.culling;
+	m->pass0.shader_path = p.shader.file;
+
+	return m;
+}
+
+
 
 
 

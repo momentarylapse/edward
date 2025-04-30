@@ -69,6 +69,7 @@ public:
 	};
 	PhysicsData physics;
 
+	Material* to_material() const;
 	static DataMaterial from_material(Session* s, Material *material);
 };
 

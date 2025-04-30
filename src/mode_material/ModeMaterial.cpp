@@ -39,6 +39,7 @@ ModeMaterial::ModeMaterial(Session* session) :
 	data->out_changed >> create_sink([this] {
 		//data->lights
 		//	world.en
+		material = data->to_material();
 	});
 }
 
@@ -78,6 +79,7 @@ void ModeMaterial::on_enter() {
 		//session->win->open_dialog(new PropertiesDialog(session->win, data));
 	});
 
+	material = data->to_material();
 	set_mesh(PreviewMesh::TEAPOT);
 
 	set_side_panel(new MaterialPanel(this));
@@ -135,7 +137,7 @@ void ModeMaterial::on_draw_win(const RenderParams& params, MultiViewWindow* win)
 	auto dh = win->multi_view->session->drawing_helper;
 
 	// ...
-	dh->draw_mesh(params, win->rvd, mat4::ID, vertex_buffer.get(), dh->material_selection);
+	dh->draw_mesh(params, win->rvd, mat4::ID, vertex_buffer.get(), material.get());
 }
 
 

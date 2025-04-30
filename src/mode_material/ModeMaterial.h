@@ -44,6 +44,7 @@ public:
 	DataMaterial* data;
 	owned<VertexBuffer> vertex_buffer;
 	PreviewMesh preview_mesh;
+	owned<Material> material;
 
 	void set_mesh(PreviewMesh m);
 };
