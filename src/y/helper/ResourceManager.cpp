@@ -217,11 +217,16 @@ Path ResourceManager::texture_file(Texture* t) const {
 	return "";
 }
 
+
+Path ResourceManager::find_absolute_texture_path(const Path& filename) const {
+	return guess_absolute_path(filename, {texture_dir});
+}
+
 shared<Texture> ResourceManager::load_texture(const Path& filename) {
 	if (filename.is_empty())
 		return tex_white;
 
-	Path fn = guess_absolute_path(filename, {texture_dir});
+	Path fn = find_absolute_texture_path(filename);
 	if (fn.is_empty()) {
 		if (engine.ignore_missing_files) {
 			msg_error("missing texture: " + str(filename));

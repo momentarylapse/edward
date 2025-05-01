@@ -389,6 +389,7 @@ add_executable(edward
 	src/lib/xhui/Theme.cpp
 	src/lib/xhui/Window.cpp
 	src/lib/xhui/xhui.cpp
+	src/mode_material/action/ActionMaterialEditAppearance.cpp
 	src/mode_material/data/DataMaterial.cpp
 	src/mode_material/dialog/MaterialPanel.cpp
 	src/mode_material/ModeMaterial.cpp

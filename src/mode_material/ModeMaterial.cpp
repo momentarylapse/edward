@@ -170,16 +170,20 @@ void ModeMaterial::set_mesh(PreviewMesh m) {
 		break;
 	case PreviewMesh::SPHERE:
 		mesh = GeometrySphere({0,0,0}, 1, 16);
+		mesh.smoothen();
 		break;
 	case PreviewMesh::TORUS:
 		mesh = GeometryTorus({0,0,0}, vec3::EZ, 1, 0.5f, 32, 32);
+		mesh.smoothen();
 		break;
 	case PreviewMesh::TORUS_KNOT:
 		mesh = GeometryTorusKnot({0,0,0}, vec3::EZ, 1, 0.5f, 0.3f, 3, 5, 256, 16);
+		mesh.smoothen();
 		break;
 	case PreviewMesh::TEAPOT:
 	default:
 		mesh = GeometryTeapot({0,0,0}, 1, 8);
+		mesh.smoothen();
 		break;
 	}
 	if (!vertex_buffer)

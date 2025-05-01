@@ -3,7 +3,12 @@
 //
 
 #include "MaterialPanel.h"
+#include "../action/ActionMaterialEditAppearance.h"
 #include <Session.h>
+#include <helper/ResourceManager.h>
+#include <lib/image/image.h>
+#include <lib/xhui/controls/Image.h>
+#include <lib/xhui/controls/ListView.h>
 
 
 string file_secure(const Path &filename);
@@ -12,43 +17,62 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	from_resource("material-panel");
 	data = _mode->data;
 
-	/*auto mat_list = (xhui::ListView*)get_control("materials");
-	mat_list->column_factories[0].f_create = [this](const string& id) {
-		return new XMaterialPanel(this, data, 0);
-	};
-	mat_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
-		int i = t._int();
-		reinterpret_cast<XMaterialPanel*>(c)->update(i);
-	};
-	mat_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
-		reinterpret_cast<XMaterialPanel*>(c)->set_selected(selected);
+	auto tex_list = (xhui::ListView*)get_control("textures");
+	tex_list->column_factories[1].f_create = [](const string& id) {
+		return new xhui::Image(id, "");
 	};
 
-	data->out_material_changed >> create_sink([this] {
+	event("albedo", [this] {
+		apply_queue_depth ++;
+		auto a = data->appearance;
+		a.albedo = get_color("albedo");
+		data->execute(new ActionMaterialEditAppearance(a));
+		apply_queue_depth --;
+	});
+	event("emission", [this] {
+		apply_queue_depth ++;
+		auto a = data->appearance;
+		a.emissive = get_color("emission");
+		data->execute(new ActionMaterialEditAppearance(a));
+		apply_queue_depth --;
+	});
+	event("metal", [this] {
+		apply_queue_depth ++;
+		auto a = data->appearance;
+		a.metal = get_float("metal");
+		data->execute(new ActionMaterialEditAppearance(a));
+		set_float("slider-metal", a.metal);
+		apply_queue_depth --;
+	});
+	event("slider-metal", [this] {
+		apply_queue_depth ++;
+		auto a = data->appearance;
+		a.metal = get_float("slider-metal");
+		data->execute(new ActionMaterialEditAppearance(a));
+		set_float("metal", a.metal);
+		apply_queue_depth --;
+	});
+	event("roughness", [this] {
+		apply_queue_depth ++;
+		auto a = data->appearance;
+		a.roughness = get_float("roughness");
+		data->execute(new ActionMaterialEditAppearance(a));
+		set_float("slider-roughness", a.roughness);
+		apply_queue_depth --;
+	});
+	event("slider-roughness", [this] {
+		apply_queue_depth ++;
+		auto a = data->appearance;
+		a.roughness = get_float("slider-roughness");
+		data->execute(new ActionMaterialEditAppearance(a));
+		set_float("roughness", a.roughness);
+		apply_queue_depth --;
+	});
+
+	data->out_changed >> create_sink([this] {
 		if (apply_queue_depth == 0)
 			load_data();
 	});
-	data->out_texture_changed >> create_sink([this] {
-		if (apply_queue_depth == 0)
-			load_data();
-	});
-
-	mode_mesh()->out_current_material_changed >> create_sink([this] { load_data(); });
-	mode_mesh()->out_texture_level_changed >> create_sink([this] { load_data(); });
-
-	popup_materials = xhui::create_resource_menu("model-material-list-popup");
-
-	event_x("materials", xhui::event_id::Select, [this] { on_material_list_select(); });
-	event_x("materials", xhui::event_id::RightButtonDown, [this] { on_material_list_right_click(); });
-	event("add-new-material", [this] { on_material_add(); });
-	event("load-material", [this] { on_material_load(); });
-	event("delete-material", [this] { on_material_delete(); });
-	event("apply-material", [this] { on_material_apply(); });
-
-
-
-	set_visible("model_material_dialog_grp_color", full);
-	set_visible("model_material_dialog_grp_transparency", full);*/
 
 	load_data();
 	apply_queue_depth = 0;
@@ -65,22 +89,37 @@ MaterialPanel::~MaterialPanel() {
 ModeMaterial *MaterialPanel::mode_material() {
 	return data->session->mode_material;
 }
-/*ModeMeshTexture *ModelMaterialPanel::mode_mesh_texture() {
-	return mode_mesh()->mode_mesh_texture;
-}*/
+
+Image* preview_texture(Session* s, const Path& filename) {
+	static Image* dummy = nullptr;
+	static base::map<Path, Image*> previews;
+
+	if (previews.contains(filename))
+		return previews[filename];
+
+	const auto path = s->resource_manager->find_absolute_texture_path(filename);
+	if (path.is_empty()) {
+		if (!dummy)
+			dummy = new Image(40, 40, White);
+		return dummy;
+	} else {
+		auto im = Image::load(path);
+		auto preview = im->scale(40, 40);
+		previews.set(filename, preview);
+		delete im;
+		return preview;
+	}
+}
 
 void MaterialPanel::fill_texture_list() {
 	reset("textures");
 	for (int i=0;i<data->appearance.texture_files.num;i++) {
 		string id = format("image:material-texture[%d]", i);
-	//	auto *img = mat->texture_levels[i]->image.get();
-	//	auto *icon = mat->texture_levels[i]->image->scale(PREVIEW_SIZE, PREVIEW_SIZE);
-	//	xhui::set_image(id, *icon);
+		auto icon = preview_texture(data->session, data->appearance.texture_files[i]);
+		xhui::set_image(id, *icon);
 		string ext = "";//format(" (%dx%d)", img->width, img->height);
 		add_string("textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(data->appearance.texture_files[i]) + ext)));
-	//	delete icon;
 	}
-	//	set_int("textures", mode_mesh()->current_texture_level);
 }
 
 // data -> GUI

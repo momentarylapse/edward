@@ -30,6 +30,8 @@ public:
 	xfer<Material> load_material(const Path &filename);
 	xfer<Model> load_model(const Path &filename);
 
+	Path find_absolute_texture_path(const Path& path) const;
+
 	Path texture_file(Texture* t) const;
 
 	xfer<Shader> __load_shader(const Path& path, const string &overwrite_bindings);
