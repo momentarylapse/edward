@@ -101,10 +101,6 @@ public:
 		event("emission", [this] { apply_data_color(); });
 	}
 
-	~XMaterialPanel() override {
-		delete popup_textures;
-	}
-
 	ModelMaterial* material() const {
 		return data->material[index];
 	}
@@ -288,7 +284,7 @@ public:
 	ModelMaterialPanel* parent;
 	DataModel* data;
 	int index;
-	xhui::Menu *popup_textures;
+	owned<xhui::Menu> popup_textures;
 };
 
 ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui::Panel>("") {

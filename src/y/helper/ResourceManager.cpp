@@ -55,6 +55,9 @@ xfer<Model> ResourceManager::load_model(const Path &filename) {
 }
 
 Path guess_absolute_path(const Path &filename, const Array<Path> dirs) {
+	if (filename.is_empty())
+		return Path::EMPTY;
+	
 	if (filename.is_absolute())
 		return filename;
 

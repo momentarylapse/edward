@@ -17,26 +17,24 @@ class Menu;
 
 class MaterialPanel: public obs::Node<xhui::Panel> {
 public:
-	explicit MaterialPanel(ModeMaterial *_mode);
+	explicit MaterialPanel(ModeMaterial* mode);
 	~MaterialPanel() override;
 
 	void load_data();
 	void fill_texture_list();
 
-	void on_material_list_select();
-	void on_material_list_right_click();
-	void on_material_add();
-	void on_material_load();
-	void on_material_delete();
-	void on_material_apply();
+	void on_texture_level_add();
+	void on_texture_level_load();
+	void on_texture_level_delete();
+	void on_texture_level_clear();
+	void on_textures_right_click();
+
 
 private:
-	DataMaterial *data;
-	ModeMaterial *mode_material();
-	//	ModeMeshTexture *mode_mesh_texture();
-	//ModelMaterial temp;
+	DataMaterial* data;
+	ModeMaterial* mode_material();
 	int apply_queue_depth;
-	//xhui::Menu *popup_materials;
+	owned<xhui::Menu> popup_textures;
 };
 
 

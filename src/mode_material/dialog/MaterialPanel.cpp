@@ -6,9 +6,13 @@
 #include "../action/ActionMaterialEditAppearance.h"
 #include <Session.h>
 #include <helper/ResourceManager.h>
+#include <storage/Storage.h>
 #include <lib/image/image.h>
+#include <lib/xhui/Resource.h>
+#include <lib/xhui/Menu.h>
 #include <lib/xhui/controls/Image.h>
 #include <lib/xhui/controls/ListView.h>
+#include <storage/format/Format.h>
 
 
 string file_secure(const Path &filename);
@@ -16,6 +20,8 @@ string file_secure(const Path &filename);
 MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	from_resource("material-panel");
 	data = _mode->data;
+
+	popup_textures = xhui::create_resource_menu("model-texture-list-popup");
 
 	auto tex_list = (xhui::ListView*)get_control("textures");
 	tex_list->column_factories[1].f_create = [](const string& id) {
@@ -68,6 +74,11 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 		set_float("roughness", a.roughness);
 		apply_queue_depth --;
 	});
+	event("texture-level-add", [this] { on_texture_level_add(); });
+	event_x("textures", xhui::event_id::RightButtonDown, [this] { on_textures_right_click(); });
+	event("texture-level-delete", [this] { on_texture_level_delete(); });
+	event("texture-level-clear", [this] { on_texture_level_clear(); });
+	event("texture-level-load", [this] { on_texture_level_load(); });
 
 	data->out_changed >> create_sink([this] {
 		if (apply_queue_depth == 0)
@@ -81,8 +92,6 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 MaterialPanel::~MaterialPanel() {
 	mode_material()->unsubscribe(this);
 	data->unsubscribe(this);
-
-	//delete popup_materials;
 }
 
 
@@ -131,4 +140,62 @@ void MaterialPanel::load_data() {
 	set_float("metal", data->appearance.metal);
 	set_float("slider-metal", data->appearance.metal);
 	fill_texture_list();
+}
+
+
+void MaterialPanel::on_texture_level_add() {
+	if (data->appearance.texture_files.num >= MATERIAL_MAX_TEXTURES) {
+		data->session->error(format("Only %d texture levels allowed!", MATERIAL_MAX_TEXTURES));
+		return;
+	}
+
+	auto a = data->appearance;
+	a.texture_files.add("");
+	data->execute(new ActionMaterialEditAppearance(a));
+}
+
+void MaterialPanel::on_texture_level_load() {
+	int index = get_int("textures");
+	if (index >= 0)
+		data->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, index] (const auto& p) {
+			auto a = data->appearance;
+			a.texture_files[index] = p.relative;
+			data->execute(new ActionMaterialEditAppearance(a));
+		});
+}
+
+void MaterialPanel::on_texture_level_delete() {
+	int index = get_int("textures");
+	if (index >= 0) {
+		if (data->appearance.texture_files.num <= 1) {
+			data->session->error("At least one texture level has to exist!");
+			return;
+		}
+
+		auto a = data->appearance;
+		a.texture_files.erase(index);
+		data->execute(new ActionMaterialEditAppearance(a));
+	}
+}
+
+void MaterialPanel::on_texture_level_clear() {
+	int index = get_int("textures");
+	if (index >= 0) {
+		auto a = data->appearance;
+		a.texture_files[index] = "";
+		data->execute(new ActionMaterialEditAppearance(a));
+	}
+}
+
+void MaterialPanel::on_textures_right_click() {
+	int n = get_int("textures");
+	if (n >= 0) {
+		//mode_mesh()->set_current_texture_level(n);
+	}
+	popup_textures->enable("texture-level-delete", n>=0);
+	popup_textures->enable("texture-level-clear", n>=0);
+	popup_textures->enable("texture-level-load", n>=0);
+	popup_textures->enable("texture-level-save", n>=0);
+	popup_textures->enable("texture-level-scale", n>=0);
+	popup_textures->open_popup(this);
 }
