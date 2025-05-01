@@ -269,9 +269,9 @@ Dialog object-panel ''
 	int index;
 };
 
-class MaterialPanel : public xhui::Panel {
+class MaterialComponentPanel : public xhui::Panel {
 public:
-	explicit MaterialPanel(DataWorld* _data, Material* m, const Path& filename, std::function<void(const ComplexPath&)> _f_save) : Panel("material-panel") {
+	explicit MaterialComponentPanel(DataWorld* _data, Material* m, const Path& filename, std::function<void(const ComplexPath&)> _f_save) : Panel("material-panel") {
 		from_source(R"foodelim(
 Dialog material-panel ''
 	Grid card-terrain-material '' class=card
@@ -530,7 +530,7 @@ Dialog entity-panel ''
 
 			if (e.basic_type == MultiViewType::WORLD_OBJECT) {
 				add_component_panel(new ObjectPanel(mode_world->data, cur_index));
-				add_component_panel(new MaterialPanel(mode_world->data, e.object.object->material[0], "???", [this] (const ComplexPath& p) {
+				add_component_panel(new MaterialComponentPanel(mode_world->data, e.object.object->material[0], "???", [this] (const ComplexPath& p) {
 				}));
 				if (e.object.object->_template->solid_body)
 					add_component_panel(new SolidBodyPanel(mode_world->data, cur_index, true));
@@ -542,7 +542,7 @@ Dialog entity-panel ''
 					add_component_panel(new AnimatorPanel(mode_world->data, cur_index, true));
 			} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
 				add_component_panel(new TerrainPanel(mode_world->data, cur_index));
-				add_component_panel(new MaterialPanel(mode_world->data, e.terrain.terrain->material.get(), e.terrain.terrain->material_file, [this, &e] (const ComplexPath& p) {
+				add_component_panel(new MaterialComponentPanel(mode_world->data, e.terrain.terrain->material.get(), e.terrain.terrain->material_file, [this, &e] (const ComplexPath& p) {
 					e.terrain.save_material(mode_world->session, p.complete);
 				}));
 				add_component_panel(new SolidBodyPanel(mode_world->data, cur_index, false)); // FIXME
