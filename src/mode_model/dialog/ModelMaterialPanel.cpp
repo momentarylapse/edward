@@ -64,10 +64,6 @@ string render_material(ModelMaterial *m) {
 	return uid;
 }
 
-namespace nix {
-	enum class Alpha;
-}
-
 class XMaterialPanel : public xhui::Panel {
 public:
 	XMaterialPanel(ModelMaterialPanel* _parent, DataModel* _data, int _index) : xhui::Panel("") {

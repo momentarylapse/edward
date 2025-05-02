@@ -16,6 +16,7 @@ class Menu;
 }
 
 class MaterialPanel: public obs::Node<xhui::Panel> {
+	friend class MaterialPassPanel;
 public:
 	explicit MaterialPanel(ModeMaterial* mode);
 	~MaterialPanel() override;

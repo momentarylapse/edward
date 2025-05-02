@@ -23,7 +23,7 @@ Dialog material-panel "Material appearance" width=365 height=715 allow-root
 				Grid ? ""
 					ListView textures "Level\\\\Texture" format=tit select-single nobar height=200 noexpandy
 			Expander grp-passes "Render passes"
-				ListView passes "no\\description" format=tm select-single nobar height=200 noexpandy
+				ListView passes "pass" nobar select-single sunkenbackground=no showselection=no expandy
 			Expander grp-friction "Friction"
 				Grid ? ""
 					Label t-rcstatic "Static" right disabled

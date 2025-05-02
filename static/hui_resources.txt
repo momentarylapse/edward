@@ -1,6 +1,6 @@
 t7
 # Number Of Resources
-82
+83
 # Resource
 Menu
 
@@ -2160,7 +2160,7 @@ grp-passes
 1
 ListView
 passes
-format=tm,select-single,nobar,height=200,noexpandy
+nobar,select-single,sunkenbackground=no,showselection=no,expandy
 0
 0
 0
@@ -2223,6 +2223,103 @@ rcroll
 range=0:100:0.01
 1
 3
+0
+# Resource
+Dialog
+material-pass-panel
+
+0
+0
+1
+Grid
+card
+class=card
+0
+0
+2
+Grid
+?
+spacing=0
+0
+0
+2
+Label
+header
+bold,expandx
+0
+0
+0
+Label
+subheader
+italic,small
+0
+1
+0
+Grid
+g-pass
+visible=no
+0
+1
+10
+Label
+l-mode
+disabled,right
+0
+0
+0
+ComboBox
+mode
+expandx
+1
+0
+0
+Label
+l-source
+disabled,right
+0
+1
+0
+ComboBox
+source
+expandx
+1
+1
+0
+Label
+l-taret
+disabled,right
+0
+2
+0
+ComboBox
+target
+expandx
+1
+2
+0
+Label
+l-cull
+disabled,right
+0
+3
+0
+ComboBox
+cull
+expandx
+1
+3
+0
+Label
+l-shader
+disabled,right
+0
+4
+0
+Label
+shader
+expandx
+1
+4
 0
 # Resource
 Dialog
@@ -10258,7 +10355,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1027
+1037
 # Text
 /ambient
 Ambient
@@ -10816,7 +10913,7 @@ material-panel/material-panel
 Material appearance
 
 material-panel/passes
-no\\description
+pass
 
 material-panel/t-rcjump
 Jumping
@@ -10832,6 +10929,36 @@ Static
 
 material-panel/textures
 Level\\\\Texture
+
+material-pass-panel/cull
+None\\Back\\Front
+
+material-pass-panel/l-cull
+Cull
+
+material-pass-panel/l-mode
+Mode
+
+material-pass-panel/l-shader
+Shader
+
+material-pass-panel/l-source
+Source
+
+material-pass-panel/l-taret
+Target
+
+material-pass-panel/material-pass-panel
+Pass
+
+material-pass-panel/mode
+Solid\\Transparency functions\\Color keyed hard\\Color keyed soft\\Transparency factor\\Transparency mix
+
+material-pass-panel/source
+Zero\\One
+
+material-pass-panel/target
+Zero\\One
 
 material-render-pass-dialog/alpha_dest
 Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha
