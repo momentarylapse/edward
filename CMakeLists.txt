@@ -392,6 +392,7 @@ add_executable(edward
 	src/mode_material/action/ActionMaterialEditAppearance.cpp
 	src/mode_material/data/DataMaterial.cpp
 	src/mode_material/dialog/MaterialPanel.cpp
+	src/mode_material/dialog/MaterialPassPanel.cpp
 	src/mode_material/ModeMaterial.cpp
 	src/mode_model/action/data/ActionModelAddMaterial.cpp
 	src/mode_model/action/data/ActionModelDeleteMaterial.cpp

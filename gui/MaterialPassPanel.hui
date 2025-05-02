@@ -10,13 +10,16 @@ Dialog material-pass-panel "Pass"
 			ComboBox mode "Solid\\Transparency functions\\Color keyed hard\\Color keyed soft\\Transparency factor\\Transparency mix" expandx
 			---|
 			Label l-source "Source" disabled right
-			ComboBox source "Zero\\One" expandx
+			ComboBox source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha" expandx
 			---|
-			Label l-taret "Target" disabled right
-			ComboBox target "Zero\\One" expandx
+			Label l-destination "Destination" disabled right
+			ComboBox destination "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha" expandx
 			---|
-			Label l-cull "Cull" disabled right
-			ComboBox cull "None\\Back\\Front" expandx
+			Label l-cull "Visible" disabled right
+			Grid ? "" expandx
+				RadioButton cull:back "Front" "tooltip=Only front side of triangles visible" expandx
+				RadioButton cull:front "Back" "tooltip=Only back side of triangles visible" expandx
+				RadioButton cull:none "Both" "tooltip=Front and back side of triangles visible" expandx
 			---|
 			Label l-shader "Shader" disabled right
 			Label shader "" expandx

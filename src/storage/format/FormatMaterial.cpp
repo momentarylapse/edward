@@ -67,6 +67,8 @@ void FormatMaterial::load_current(const Path &filename, DataMaterial *data) {
 		if (index >= data->appearance.passes.num)
 			data->appearance.passes.resize(index + 1);
 		auto &p = data->appearance.passes[index];
+		p.source = Alpha::ONE;
+		p.destination = Alpha::ZERO;
 #if ksdjfhskdjfh
 		if (!p.shader.graph)
 			p.shader.graph = new ShaderGraph(session);

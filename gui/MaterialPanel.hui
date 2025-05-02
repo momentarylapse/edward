@@ -1,30 +1,31 @@
 Dialog material-panel "Material appearance" width=365 height=715 allow-root
 	Grid ? "" vertical
 		Label header "Material properties" expandx center big bold
-		Grid ? "" vertical
-			Group grp-color "Colors"
-				Grid ? ""
-					Label /t-albedo "Albedo" right disabled
-					ColorButton albedo "" alpha
-					---|
-					Label /t-emission "Emission" right disabled
-					ColorButton emission "" "tooltip=Color in absolute darkness"
-					---|
-					Label /t-roughness "Roughness" right disabled
+		TabControl tab "Appearance\\Physics"
+			Grid ? "" vertical
+				Group grp-color "Colors"
 					Grid ? ""
-						Slider slider-roughness "" range=0:1:0.01 expandx
-						SpinButton roughness "" range=0:1:0.01
-					---|
-					Label /t-metal "Metal" right disabled
+						Label /t-albedo "Albedo" right disabled
+						ColorButton albedo "" alpha
+						---|
+						Label /t-emission "Emission" right disabled
+						ColorButton emission "" "tooltip=Color in absolute darkness"
+						---|
+						Label /t-roughness "Roughness" right disabled
+						Grid ? ""
+							Slider slider-roughness "" range=0:1:0.01 expandx
+							SpinButton roughness "" range=0:1:0.01
+						---|
+						Label /t-metal "Metal" right disabled
+						Grid ? ""
+							Slider slider-metal "" range=0:1:0.01 expandx
+							SpinButton metal "" range=0:1:0.01
+				Group grp-textures "Textures"
 					Grid ? ""
-						Slider slider-metal "" range=0:1:0.01 expandx
-						SpinButton metal "" range=0:1:0.01
-			Expander grp-textures "Textures"
-				Grid ? ""
-					ListView textures "Level\\\\Texture" format=tit select-single nobar height=200 noexpandy
-			Expander grp-passes "Render passes"
-				ListView passes "pass" nobar select-single sunkenbackground=no showselection=no expandy
-			Expander grp-friction "Friction"
+						ListView textures "Level\\\\Texture" format=tit select-single nobar height=200 noexpandy
+				Group grp-passes "Render passes"
+					ListView passes "pass" nobar select-single sunkenbackground=no showselection=no expandy
+			Group grp-friction "Friction"
 				Grid ? ""
 					Label t-rcstatic "Static" right disabled
 					SpinButton rcstatic "" range=0:100:0.01 expandx

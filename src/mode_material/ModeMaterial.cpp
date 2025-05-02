@@ -27,6 +27,7 @@
 #include <data/mesh/GeometryTorus.h>
 #include <data/mesh/GeometryTorusKnot.h>
 #include <data/mesh/GeometryTeapot.h>
+#include <lib/xhui/Theme.h>
 
 
 ModeMaterial::ModeMaterial(Session* session) :
@@ -135,6 +136,7 @@ void ModeMaterial::on_draw_win(const RenderParams& params, MultiViewWindow* win)
 
 	auto& rvd = win->rvd;
 	auto dh = win->multi_view->session->drawing_helper;
+	dh->clear(params, xhui::Theme::_default.background_low);
 
 	// ...
 	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), material.get());

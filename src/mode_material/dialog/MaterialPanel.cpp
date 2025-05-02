@@ -3,6 +3,7 @@
 //
 
 #include "MaterialPanel.h"
+#include "MaterialPassPanel.h"
 #include "../action/ActionMaterialEditAppearance.h"
 #include <Session.h>
 #include <helper/ResourceManager.h>
@@ -16,82 +17,6 @@
 
 
 string file_secure(const Path &filename);
-
-
-
-
-class MaterialPassPanel : public xhui::Panel {
-public:
-	MaterialPassPanel(MaterialPanel* _parent, DataMaterial* _data, int _index) : xhui::Panel("") {
-		from_resource("material-pass-panel");
-		parent = _parent;
-		data = _data;
-		index = _index;
-
-		event("...", [this] {});
-	}
-
-	void update(int _index) {
-		index = _index;
-		auto& p = data->appearance.passes[index];
-
-		if (p.mode == TransparencyMode::NONE)
-			set_string("header", "Solid");
-		if (p.mode == TransparencyMode::FUNCTIONS)
-			set_string("header", "Transparent");
-		if (p.culling == CullMode::BACK)
-			set_string("subheader", "Front");
-		else if (p.culling == CullMode::FRONT)
-			set_string("subheader", "Back");
-		else if (p.culling == CullMode::NONE)
-			set_string("subheader", "Front & back");
-
-		set_string("shader", str(p.shader.file));
-		set_int("mode", (int)p.mode);
-		set_int("cull", (int)p.culling);
-	}
-	void set_selected(bool selected) {
-		set_visible("g-pass", selected);
-	}
-
-	// GUI -> data
-	void apply_data() {
-		parent->apply_queue_depth ++;
-
-		auto a = data->appearance;
-		auto& p = a.passes[index];
-
-		/*col.user= is_checked("override-colors");
-
-		if (col.user) {
-			col.albedo = get_color("albedo");
-			col.roughness = get_float("slider-roughness");
-			col.metal = get_float("slider-metal");
-			col.emission = get_color("emission");
-		} else {
-			col.albedo = parent->albedo;
-			col.roughness = parent->roughness;
-			col.metal = parent->metal;
-			col.emission = parent->emission;
-		}
-		set_float("metal", col.metal);
-		set_float("roughness", col.roughness);
-		enable("albedo", col.user);
-		enable("roughness", col.user);
-		enable("slider-roughness", col.user);
-		enable("metal", col.user);
-		enable("slider-metal", col.user);
-		enable("emission", col.user);
-
-		data->execute(new ActionModelEditMaterial(index, col));*/
-		this->parent->apply_queue_depth --;
-	}
-
-	MaterialPanel* parent;
-	DataMaterial* data;
-	int index;
-};
-
 
 MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	from_resource("material-panel");
