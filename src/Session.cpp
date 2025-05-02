@@ -383,11 +383,13 @@ void Session::universal_open(int preferred_type) {
 				session->storage->load(path, session->mode_world->data);
 				session->set_mode(session->mode_world);
 				session->mode_world->optimize_view();
-			} /*else if (kind == FD_MATERIAL) {
+			} else if (kind == FD_MATERIAL) {
+				if (!session->mode_material)
+					session->mode_material = new ModeMaterial(session);
 				session->storage->load(path, session->mode_material->data);
 				session->set_mode(session->mode_material);
 				session->mode_material->optimize_view();
-			}*/
+			}
 		};
 
 		emit_empty_session(this).then(call_open);
