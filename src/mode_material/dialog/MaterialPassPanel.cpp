@@ -23,6 +23,8 @@ MaterialPassPanel::MaterialPassPanel(MaterialPanel* _parent, DataMaterial* _data
 	event("cull:front", [this] { apply_data(); });
 	event("cull:back", [this] { apply_data(); });
 	event("cull:none", [this] { apply_data(); });
+	event("z-write", [this] { apply_data(); });
+	event("z-test", [this] { apply_data(); });
 }
 
 void MaterialPassPanel::update(int _index) {
@@ -49,6 +51,8 @@ void MaterialPassPanel::update(int _index) {
 	check("cull:front", p.culling == CullMode::FRONT);
 	check("cull:back", p.culling == CullMode::BACK);
 	check("cull:none", p.culling == CullMode::NONE);
+	check("z-write", p.z_write);
+	check("z-test", p.z_test);
 }
 void MaterialPassPanel::set_selected(bool selected) {
 	set_visible("g-pass", selected);
@@ -70,6 +74,8 @@ void MaterialPassPanel::apply_data() {
 		p.culling = CullMode::FRONT;
 	else if (is_checked("cull:none"))
 		p.culling = CullMode::NONE;
+	p.z_write = is_checked("z-write");
+	p.z_test = is_checked("z-test");
 
 	enable("source", p.mode == TransparencyMode::FUNCTIONS);
 	enable("destination", p.mode == TransparencyMode::FUNCTIONS);

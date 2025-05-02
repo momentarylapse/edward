@@ -145,6 +145,7 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 	action_controller = new ActionController(this);
 
 
+	light_mode = LightMode::FollowCamera;
 	default_light = new Light(White, -1, -1);
 	default_light->owner = new Entity;
 	default_light->owner->ang = quaternion::ID;
@@ -185,7 +186,8 @@ void MultiView::prepare(const RenderParams& params) {
 		* window.projection * window.view;
 
 	{
-		default_light->owner->ang = view_port.ang;
+		if (light_mode == LightMode::FollowCamera)
+			default_light->owner->ang = view_port.ang;
 		lights = {default_light};
 		view_port.scene_view->lights = lights;
 		view_port.scene_view->shadow_indices.clear();

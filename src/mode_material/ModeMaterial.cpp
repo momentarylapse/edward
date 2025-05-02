@@ -28,6 +28,8 @@
 #include <data/mesh/GeometryTorusKnot.h>
 #include <data/mesh/GeometryTeapot.h>
 #include <lib/xhui/Theme.h>
+#include <world/Light.h>
+#include <y/Entity.h>
 
 
 ModeMaterial::ModeMaterial(Session* session) :
@@ -48,6 +50,8 @@ void ModeMaterial::on_enter() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 	multi_view->data_sets = {};
+	multi_view->light_mode = MultiView::LightMode::Fixed;
+	multi_view->default_light->owner->ang = quaternion::rotation_a(vec3::EX, 0.5f);
 
 	auto tb = session->win->toolbar;
 	tb->set_by_id("material-toolbar");
@@ -99,36 +103,8 @@ void ModeMaterial::optimize_view() {
 	multi_view->view_port.suggest_for_box({vec3(-1,-1,-1), vec3(1,1,1)});
 }
 
-void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vb, Material* material, const string& vertex_module = "default");
-
 void ModeMaterial::on_prepare_scene(const RenderParams& params) {
-	/*Array<WorldEntity*> data_lights;
-	for (auto& e: data->entities)
-		if (e.basic_type == MultiViewType::WORLD_LIGHT)
-			data_lights.add(&e);
-
-	while (lights.num < data_lights.num) {
-		lights.add(new Light(Black, 0, 0));
-		lights.back()->owner = new Entity;
-	}
-	for (const auto& [i, l]: enumerate(data_lights)) {
-		lights[i]->owner->pos = l->pos;
-		lights[i]->owner->ang = l->ang;
-		lights[i]->enabled = l->light.enabled;
-		lights[i]->light.col = l->light.col;
-		if (!l->light.enabled)
-			lights[i]->light.col = Black;
-		lights[i]->light.radius = l->light.radius;
-		lights[i]->light.theta = l->light.theta;
-		if (l->light.type == LightType::DIRECTIONAL)
-			lights[i]->light.radius = -1;
-		else
-			lights[i]->light.col = l->light.col * (l->light.radius * l->light.radius / 100);
-		if (l->light.type != LightType::CONE)
-			lights[i]->light.theta = -1;
-		lights[i]->light.harshness = l->light.harshness;
-	}
-	multi_view->view_port.scene_view->lights = lights.sub_ref(0, data_lights.num);*/
+	// user lights?
 }
 
 
@@ -138,8 +114,8 @@ void ModeMaterial::on_draw_win(const RenderParams& params, MultiViewWindow* win)
 	auto dh = win->multi_view->session->drawing_helper;
 	dh->clear(params, xhui::Theme::_default.background_low);
 
-	// ...
-	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), material.get());
+	for (int pass_no=0; pass_no<material->num_passes; pass_no++)
+		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), material.get(), pass_no);
 }
 
 

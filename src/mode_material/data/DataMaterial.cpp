@@ -189,14 +189,20 @@ Material* DataMaterial::to_material() const {
 	for (const auto t: appearance.texture_files)
 		m->textures.add(session->resource_manager->load_texture(t));
 
-	auto &p = appearance.passes[0];
-	m->pass0.mode = p.mode;
-	m->pass0.source = p.source;
-	m->pass0.destination = p.destination;
-	m->pass0.z_buffer = p.z_buffer;
-	m->pass0.z_test = p.z_buffer;
-	m->pass0.cull_mode = p.culling;
-	m->pass0.shader_path = p.shader.file;
+	m->num_passes = appearance.passes.num;
+	if (m->num_passes >= 2)
+		m->extended = new Material::ExtendedData;
+	for (int i=0; i<appearance.passes.num; i++) {
+		auto &p = appearance.passes[i];
+		auto &pp = m->pass(i);
+		pp.mode = p.mode;
+		pp.source = p.source;
+		pp.destination = p.destination;
+		pp.z_buffer = p.z_write;
+		pp.z_test = p.z_test;
+		pp.cull_mode = p.culling;
+		pp.shader_path = p.shader.file;
+	}
 
 	return m;
 }

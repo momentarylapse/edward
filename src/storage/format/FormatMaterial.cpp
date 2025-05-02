@@ -73,18 +73,20 @@ void FormatMaterial::load_current(const Path &filename, DataMaterial *data) {
 		if (!p.shader.graph)
 			p.shader.graph = new ShaderGraph(session);
 #endif
-		string m = c.get_str(key + ".mode", "mode");
+		string m = c.get_str(key + ".mode", "none");
 		if (m == "solid" or m == "none") {
 			p.mode = TransparencyMode::NONE;
 		} else if (m == "factor") {
 			p.mode = TransparencyMode::FACTOR;
 			p.factor = c.get_float(key + ".factor");
-			p.z_buffer = false;
+			p.z_write = false;
+			p.z_test = false;
 		} else if (m == "function") {
 			p.mode = TransparencyMode::FUNCTIONS;
 			p.source = parse_alpha(c.get_str(key + ".source", 0));
 			p.destination = parse_alpha(c.get_str(key + ".dest", 0));
-			p.z_buffer = false;
+			p.z_write = false;
+			p.z_test = false;
 		} else if (m == "key-hard") {
 			p.mode = TransparencyMode::COLOR_KEY_HARD;
 		} else if (m == "key-smooth") {
@@ -100,6 +102,12 @@ void FormatMaterial::load_current(const Path &filename, DataMaterial *data) {
 			p.culling = CullMode::NONE;
 		else if (m == "front" or m == "cw")
 			p.culling = CullMode::FRONT;
+		m = c.get_str(key + ".z-write", "");
+		if (m != "")
+			p.z_write = m._bool();
+		m = c.get_str(key + ".z-test", "");
+		if (m != "")
+			p.z_test = m._bool();
 	};
 
 	// deprecated
@@ -144,7 +152,8 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
 		data->appearance.passes[0].source = (Alpha)f->read_int();
 		data->appearance.passes[0].destination = (Alpha)f->read_int();
-		data->appearance.passes[0].z_buffer = f->read_bool();
+		data->appearance.passes[0].z_write = f->read_bool();
+		data->appearance.passes[0].z_test = data->appearance.passes[0].z_write;
 		// Appearance
 		f->read_comment();
 		f->read_int();
@@ -210,7 +219,8 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		data->physics.vmin_jump = (float)f->read_int() * 0.001f;
 		data->physics.vmin_sliding = (float)f->read_int() * 0.001f;
 
-		data->appearance.passes[0].z_buffer=(data->appearance.passes[0].mode != TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != TransparencyMode::FACTOR);
+		data->appearance.passes[0].z_write = (data->appearance.passes[0].mode != TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != TransparencyMode::FACTOR);
+		data->appearance.passes[0].z_test = data->appearance.passes[0].z_write;
 	}else if (lf.ffv==1){
 		// Colors
 		f->read_comment();
@@ -243,7 +253,8 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		if (!sf.is_empty())
 		data->appearance.passes[0].shader.file = sf.with(".fx.glsl");
 
-		data->appearance.passes[0].z_buffer = (data->appearance.passes[0].mode != TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != TransparencyMode::FACTOR);
+		data->appearance.passes[0].z_write = (data->appearance.passes[0].mode != TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != TransparencyMode::FACTOR);
+		data->appearance.passes[0].z_test = data->appearance.passes[0].z_write;
 	}else{
 		//throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename, ffv, 1, 4));
 	}
@@ -338,6 +349,10 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 			c.set_str(key + ".cull", "none");
 		else if (p.culling == CullMode::FRONT)
 			c.set_str(key + ".cull", "front");
+		if (p.mode != TransparencyMode::NONE or !p.z_write or !p.z_test) {
+			c.set_bool(key + ".z-write", p.z_write);
+			c.set_bool(key + ".z-test", p.z_test);
+		}
 		/*if (data->appearance.transparency_mode != TransparencyMode::NONE) {
 			c.set_bool("transparency.zbuffer", data->appearance.alpha_z_buffer);
 		}*/

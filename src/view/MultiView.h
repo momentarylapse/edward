@@ -87,6 +87,11 @@ public:
 		void suggest_for_box(const Box& box);
 	} view_port;
 
+	enum class LightMode {
+		Fixed,
+		FollowCamera
+	} light_mode;
+
 	Array<Light*> lights;
 	Light* default_light;
 

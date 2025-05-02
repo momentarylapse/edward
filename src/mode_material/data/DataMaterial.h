@@ -43,7 +43,8 @@ public:
 		TransparencyMode mode = TransparencyMode::NONE;
 		Alpha source = Alpha::ONE, destination = Alpha::ONE;
 		float factor = 1.0f;
-		bool z_buffer = true;
+		bool z_write = true;
+		bool z_test = true;
 		CullMode culling = CullMode::BACK;
 	};
 

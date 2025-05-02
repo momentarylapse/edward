@@ -21,5 +21,10 @@ Dialog material-pass-panel "Pass"
 				RadioButton cull:front "Back" "tooltip=Only back side of triangles visible" expandx
 				RadioButton cull:none "Both" "tooltip=Front and back side of triangles visible" expandx
 			---|
+			Label l-z-buffer "Z buffer" disabled right
+			Grid ? ""
+				CheckBox z-write "Write"
+				CheckBox z-test "Test"
+			---|
 			Label l-shader "Shader" disabled right
 			Label shader "" expandx

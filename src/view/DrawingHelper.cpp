@@ -209,7 +209,7 @@ void DrawingHelper::clear(const RenderParams& params, const color& c) {
 }
 
 void DrawingHelper::draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vertex_buffer, Material* material, int pass_no, const string& vertex_module) {
-	auto shader = rvd.get_shader(material, 0, vertex_module, "");
+	auto shader = rvd.get_shader(material, pass_no, vertex_module, "");
 	auto& rd = rvd.start(params, matrix, shader, *material, pass_no, PrimitiveTopology::TRIANGLES, vertex_buffer);
 	rd.draw_triangles(params, vertex_buffer);
 }

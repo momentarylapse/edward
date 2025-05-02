@@ -2266,7 +2266,7 @@ g-pass
 visible=no
 0
 1
-10
+12
 Label
 l-mode
 disabled,right
@@ -2334,16 +2334,40 @@ expandx
 0
 0
 Label
-l-shader
+l-z-buffer
 disabled,right
 0
 4
+0
+Grid
+?
+
+1
+4
+2
+CheckBox
+z-write
+
+0
+0
+0
+CheckBox
+z-test
+
+1
+0
+0
+Label
+l-shader
+disabled,right
+0
+5
 0
 Label
 shader
 expandx
 1
-4
+5
 0
 # Resource
 Dialog
@@ -10379,7 +10403,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1040
+1043
 # Text
 /ambient
 Ambient
@@ -10984,6 +11008,9 @@ Shader
 material-pass-panel/l-source
 Source
 
+material-pass-panel/l-z-buffer
+Z buffer
+
 material-pass-panel/material-pass-panel
 Pass
 
@@ -10992,6 +11019,12 @@ Solid\\Transparency functions\\Color keyed hard\\Color keyed soft\\Transparency 
 
 material-pass-panel/source
 Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha
+
+material-pass-panel/z-test
+Test
+
+material-pass-panel/z-write
+Write
 
 material-render-pass-dialog/alpha_dest
 Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha
