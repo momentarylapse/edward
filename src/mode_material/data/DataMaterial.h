@@ -58,6 +58,8 @@ public:
 
 		Array<RenderPassData> passes;
 
+		bool cast_shadow = true;
+
 		void reset(Session *session);
 	};
 	AppearanceData appearance;

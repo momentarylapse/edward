@@ -10,6 +10,7 @@
 #include "../view/Mode.h"
 #include "data/DataMaterial.h"
 
+class Light;
 class MultiViewWindow;
 namespace xhui {
 	class Panel;
@@ -45,6 +46,11 @@ public:
 	owned<VertexBuffer> vertex_buffer;
 	PreviewMesh preview_mesh;
 	owned<Material> material;
+
+	owned<VertexBuffer> vertex_buffer_ground;
+	owned<Material> material_ground;
+
+	Light* spot_light = nullptr;
 
 	void set_mesh(PreviewMesh m);
 };

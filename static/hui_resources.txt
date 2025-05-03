@@ -2049,13 +2049,13 @@ tab
 
 1
 0
-2
+3
 Grid
 ?
 vertical
 0
 0
-3
+2
 Group
 grp-color
 
@@ -2154,14 +2154,38 @@ Grid
 1
 ListView
 textures
-format=tit,select-single,nobar,height=200,noexpandy
+format=tit,select-single,nobar
+0
+0
+0
+Grid
+?
+vertical
+1
+0
+2
+Group
+grp-detail
+
+0
+0
+1
+Grid
+?
+vertical
+0
+0
+1
+CheckBox
+cast-shadows
+
 0
 0
 0
 Group
 grp-passes
 
-2
+1
 0
 1
 ListView
@@ -2173,7 +2197,7 @@ nobar,select-single,sunkenbackground=no,showselection=no,expandy
 Group
 grp-friction
 
-1
+2
 0
 1
 Grid
@@ -10403,7 +10427,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1043
+1045
 # Text
 /ambient
 Ambient
@@ -10939,11 +10963,17 @@ Number of photons
 lightmap_dialog/lmt_spacial_resolution
 Spacial resolution
 
+material-panel/cast-shadows
+Cast shadows
+
 material-panel/emission
 
 Color in absolute darkness
 material-panel/grp-color
 Colors
+
+material-panel/grp-detail
+Details
 
 material-panel/grp-friction
 Friction
@@ -10976,7 +11006,7 @@ material-panel/t-rcstatic
 Static
 
 material-panel/tab
-Appearance\\Physics
+Parameters\\Rendering\\Physics
 
 material-panel/textures
 Level\\\\Texture

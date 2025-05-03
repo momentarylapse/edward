@@ -189,13 +189,15 @@ void MultiView::prepare(const RenderParams& params) {
 		if (light_mode == LightMode::FollowCamera)
 			default_light->owner->ang = view_port.ang;
 		lights = {default_light};
-		view_port.scene_view->lights = lights;
-		view_port.scene_view->shadow_indices.clear();
-		//	if (l->allow_shadow)
-		//		scene_view.shadow_index = scene_view.lights.num;
 	}
 
 	session->cur_mode->on_prepare_scene(params);
+
+	view_port.scene_view->lights = lights;
+	view_port.scene_view->shadow_indices.clear();
+	//	if (l->allow_shadow)
+	//		scene_view.shadow_index = scene_view.lights.num;
+
 	//Renderer::prepare(params);
 }
 

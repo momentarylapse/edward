@@ -88,6 +88,13 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 		set_float("roughness", a.roughness);
 		apply_queue_depth --;
 	});
+	event("cast-shadows", [this] {
+		apply_queue_depth ++;
+		auto a = data->appearance;
+		a.cast_shadow = is_checked("cast-shadows");
+		data->execute(new ActionMaterialEditAppearance(a));
+		apply_queue_depth --;
+	});
 	event("texture-level-add", [this] { on_texture_level_add(); });
 	event_x("textures", xhui::event_id::RightButtonDown, [this] { on_textures_right_click(); });
 	event("texture-level-delete", [this] { on_texture_level_delete(); });
@@ -153,6 +160,7 @@ void MaterialPanel::load_data() {
 	set_float("slider-roughness", data->appearance.roughness);
 	set_float("metal", data->appearance.metal);
 	set_float("slider-metal", data->appearance.metal);
+	check("cast-shadows", data->appearance.cast_shadow);
 	fill_texture_list();
 
 

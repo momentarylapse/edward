@@ -19,6 +19,8 @@
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
 #include <lib/xhui/controls/Toolbar.h>
+#include <lib/xhui/Theme.h>
+#include <lib/image/image.h>
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
 #include <view/DrawingHelper.h>
@@ -27,7 +29,6 @@
 #include <data/mesh/GeometryTorus.h>
 #include <data/mesh/GeometryTorusKnot.h>
 #include <data/mesh/GeometryTeapot.h>
-#include <lib/xhui/Theme.h>
 #include <world/Light.h>
 #include <y/Entity.h>
 
@@ -51,7 +52,6 @@ void ModeMaterial::on_enter() {
 	multi_view->set_allow_action(false);
 	multi_view->data_sets = {};
 	multi_view->light_mode = MultiView::LightMode::Fixed;
-	multi_view->default_light->owner->ang = quaternion::rotation_a(vec3::EX, 0.5f);
 
 	auto tb = session->win->toolbar;
 	tb->set_by_id("material-toolbar");
@@ -88,11 +88,28 @@ void ModeMaterial::on_enter() {
 	set_mesh(PreviewMesh::TEAPOT);
 
 	set_side_panel(new MaterialPanel(this));
+
+
+	// ground
+	vertex_buffer_ground = new VertexBuffer("3f,3f,2f");
+	GeometryCube cube({-2,-0.7f,-2}, {4,0,0}, {0,0.01f,0}, {0,0,4}, 1, 1, 1);
+	cube.build(vertex_buffer_ground.get());
+
+	Image im(16,16,White);
+	for (int i=0; i<16; i++)
+		for (int j=0; j<16; j++)
+			if (i%2 == j%2)
+				im.set_pixel(i, j, Black);
+	material_ground = session->resource_manager->load_material("");
+	material_ground->roughness = 0.4f;
+	material_ground->metal = 0;
+	material_ground->textures.add(new Texture(16, 16, "rgba:i8"));
+	material_ground->textures[0]->write(im);
+	material_ground->textures[0]->set_options("magfilter=nearest");
 }
 
 
 void ModeMaterial::on_leave() {
-	//session->win->unembed(dialog);
 	set_side_panel(nullptr);
 
 	data->out_changed.unsubscribe(this);
@@ -100,19 +117,34 @@ void ModeMaterial::on_leave() {
 
 
 void ModeMaterial::optimize_view() {
-	multi_view->view_port.suggest_for_box({vec3(-1,-1,-1), vec3(1,1,1)});
+	float r = 1.4f;
+	multi_view->view_port.suggest_for_box({vec3(-r,-r,-r), vec3(r,r,r)});
 }
 
 void ModeMaterial::on_prepare_scene(const RenderParams& params) {
-	// user lights?
-}
+	if (!spot_light) {
+		spot_light = new Light(White * 70, -1, -1);
+		spot_light->owner = new Entity;
+		spot_light->owner->pos = {2, 5, 7};
+		spot_light->owner->ang = quaternion::rotation_v((-spot_light->owner->pos).dir2ang());
+		spot_light->light.radius = 400;
+		spot_light->light.theta = 0.15f;
+		spot_light->light.harshness = 1;
+		spot_light->enabled = true;
+	}
 
+	multi_view->default_light->owner->ang = quaternion::rotation_a(vec3::EX, pi*0.20f);
+
+	multi_view->lights = {multi_view->default_light, spot_light};
+}
 
 void ModeMaterial::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 	auto& rvd = win->rvd;
 	auto dh = win->multi_view->session->drawing_helper;
 	dh->clear(params, xhui::Theme::_default.background_low);
+
+	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_ground.get(), material_ground.get());
 
 	for (int pass_no=0; pass_no<material->num_passes; pass_no++)
 		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), material.get(), pass_no);

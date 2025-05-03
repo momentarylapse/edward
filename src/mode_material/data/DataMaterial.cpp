@@ -33,12 +33,14 @@ DataMaterial::~DataMaterial() {
 
 
 void DataMaterial::AppearanceData::reset(Session *session) {
-	texture_files.clear();
+	texture_files = {""};
 
 	albedo = White;
 	roughness = 0.5f;
 	metal = 0;
 	emissive = Black;
+
+	cast_shadow = true;
 
 #if ksdjfhskdjfh
 	for (auto &p: passes) {
@@ -185,6 +187,7 @@ Material* DataMaterial::to_material() const {
 	m->roughness = appearance.roughness;
 	m->metal = appearance.metal;
 	m->emission = appearance.emissive;
+	m->cast_shadow = appearance.cast_shadow;
 
 	for (const auto t: appearance.texture_files)
 		m->textures.add(session->resource_manager->load_texture(t));

@@ -1,7 +1,7 @@
 Dialog material-panel "Material appearance" width=365 height=715 allow-root
 	Grid ? "" vertical
 		Label header "Material properties" expandx center big bold
-		TabControl tab "Appearance\\Physics"
+		TabControl tab "Parameters\\Rendering\\Physics"
 			Grid ? "" vertical
 				Group grp-color "Colors"
 					Grid ? ""
@@ -22,7 +22,11 @@ Dialog material-panel "Material appearance" width=365 height=715 allow-root
 							SpinButton metal "" range=0:1:0.01
 				Group grp-textures "Textures"
 					Grid ? ""
-						ListView textures "Level\\\\Texture" format=tit select-single nobar height=200 noexpandy
+						ListView textures "Level\\\\Texture" format=tit select-single nobar
+			Grid ? "" vertical
+				Group grp-detail "Details"
+					Grid ? "" vertical
+						CheckBox cast-shadows "Cast shadows"
 				Group grp-passes "Render passes"
 					ListView passes "pass" nobar select-single sunkenbackground=no showselection=no expandy
 			Group grp-friction "Friction"
