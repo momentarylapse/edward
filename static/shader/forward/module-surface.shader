@@ -35,10 +35,19 @@ void surface_scattered_out(vec3 n, vec4 transmissivity, float layers) {
 
 // through a layer of constant thickness, seen from an angle
 //  (ignoring off-center skewing for now...)
-// transmissivity.rgb: color filter - white=>full transmission
-// transmissivity.a:   filter "density" - 0=>full transmission
+// transmissivity.rgb: color filter
+//    - black => full transmission
+//    - white => no transmission
+// transmissivity.a:   filter "density"
+//    - 0   => no filter, full transmission
+//    - 0.5 => some filter/transmission
+//    - 1   => full filter, no transmission
 vec3 surface_transmissivity_factor(vec3 n, vec4 transmissivity) {
-	vec3 T = transmissivity.rgb * (1 - transmissivity.a);
+	// a=0 => T=white (full transmission)
+	// a=0.5 => T=transmission...
+	// a=1 => T=black (no transmission)
+	vec3 T = pow(transmissivity.rgb, vec3(1/(1-transmissivity.a)-1));
+	
 	T = pow(T, vec3(1 / abs(n.z)));
 	return T;
 }

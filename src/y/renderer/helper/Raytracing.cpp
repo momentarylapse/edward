@@ -201,6 +201,7 @@ Array<RayReply> vtrace(SceneView& scene_view, const Array<RayRequest>& requests)
 	cb->set_bind_point(vulkan::PipelineBindPoint::COMPUTE);
 	cb->bind_pipeline(scene_view.ray_tracing_data->compute.pipeline);
 	cb->bind_descriptor_set(0, scene_view.ray_tracing_data->compute.dset);
+	cb->push_constant(0, 4, &scene_view.ray_tracing_data->num_meshes);
 	int n = 1 + (requests.num - 1) / 256;
 	cb->dispatch(n,1,1);
 	cb->end();

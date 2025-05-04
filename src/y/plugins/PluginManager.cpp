@@ -29,6 +29,7 @@
 #include "../input/Gamepad.h"
 #include "../input/Keyboard.h"
 #include "../input/Mouse.h"
+#include "../input/VR.h"
 #define HAS_INPUT
 #endif
 #include "../net/NetworkManager.h"
@@ -362,6 +363,15 @@ void PluginManager::export_kaba() {
 	ext->declare_enum("PhysicsMode.SIMPLE", PhysicsMode::SIMPLE);
 	ext->declare_enum("PhysicsMode.FULL_EXTERNAL", PhysicsMode::FULL_EXTERNAL);
 	ext->declare_enum("PhysicsMode.FULL_INTERNAL", PhysicsMode::FULL_INTERNAL);
+
+#ifdef HAS_INPUT
+	ext->declare_enum("VRDeviceRole.NONE", input::VRDeviceRole::None);
+	ext->declare_enum("VRDeviceRole.CONTROLLER_RIGHT", input::VRDeviceRole::ControllerRight);
+	ext->declare_enum("VRDeviceRole.CONTROLLER_LEFT", input::VRDeviceRole::ControllerLeft);
+	ext->declare_enum("VRDeviceRole.HEADSET", input::VRDeviceRole::Headset);
+	ext->declare_enum("VRDeviceRole.LIGHTHOUSE0", input::VRDeviceRole::Lighthouse0);
+	ext->declare_enum("VRDeviceRole.LIGHTHOUSE1", input::VRDeviceRole::Lighthouse1);
+#endif
 
 	//ext->declare_enum("TraceMode.PHYSICAL", TraceMode::PHYSICAL);
 
@@ -792,8 +802,10 @@ void PluginManager::export_kaba() {
 	ext->link("mouse", &input::mouse);
 	ext->link("dmouse", &input::dmouse);
 	ext->link("scroll", &input::scroll);
+	ext->link("vr_active", &input::vr_active);
 	ext->link("link_mouse_and_keyboard_into_pad", &input::link_mouse_and_keyboard_into_pad);
 	ext->link("get_pad", (void*)&input::get_pad);
+	ext->link("get_vr_device", (void*)&input::get_vr_device);
 
 	ext->declare_class_size("Gamepad", sizeof(input::Gamepad));
 	ext->declare_class_element("Gamepad.deadzone", &input::Gamepad::deadzone);
@@ -803,6 +815,15 @@ void PluginManager::export_kaba() {
 	ext->link_class_func("Gamepad.axis", &input::Gamepad::axis);
 	ext->link_class_func("Gamepad.button", &input::Gamepad::button);
 	ext->link_class_func("Gamepad.clicked", &input::Gamepad::clicked);
+
+	ext->declare_class_size("VRDevice", sizeof(input::VRDevice));
+	ext->declare_class_element("VRDevice.role", &input::VRDevice::role);
+	ext->declare_class_element("VRDevice.name", &input::VRDevice::name);
+	ext->declare_class_element("VRDevice.pos", &input::VRDevice::pos);
+	ext->declare_class_element("VRDevice.ang", &input::VRDevice::ang);
+	ext->link_class_func("VRDevice.button", &input::VRDevice::button);
+	ext->link_class_func("VRDevice.clicked", &input::VRDevice::clicked);
+	ext->link_class_func("VRDevice.axis", &input::VRDevice::axis);
 #else
 	int dummy;
 	ext->link("key_state", &dummy);
