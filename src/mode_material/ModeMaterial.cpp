@@ -29,6 +29,7 @@
 #include <data/mesh/GeometryTorus.h>
 #include <data/mesh/GeometryTorusKnot.h>
 #include <data/mesh/GeometryTeapot.h>
+#include <lib/os/msg.h>
 #include <world/Light.h>
 #include <y/Entity.h>
 
@@ -148,6 +149,15 @@ void ModeMaterial::on_draw_win(const RenderParams& params, MultiViewWindow* win)
 
 	for (int pass_no=0; pass_no<material->num_passes; pass_no++)
 		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), material.get(), pass_no);
+}
+
+void ModeMaterial::on_draw_shadow(const RenderParams& params, RenderViewData& rvd) {
+	auto dh = multi_view->session->drawing_helper;
+
+	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_ground.get(), dh->material_shadow);
+
+	if (material->cast_shadow)
+		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), dh->material_shadow);
 }
 
 
