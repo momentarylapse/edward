@@ -23,17 +23,29 @@
 #include "y/ComponentManager.h"
 #include "y/Entity.h"
 
-GeometryRenderer::GeometryRenderer(RenderPathType _type, SceneView &_scene_view) :
+GeometryEmitter::GeometryEmitter(RenderPathType _type, SceneView &_scene_view) :
 		Renderer("geo"),
-		scene_view(_scene_view),
-		fx_material(resource_manager)
+		scene_view(_scene_view)
 {
 	type = _type;
 	flags = Flags::ALLOW_OPAQUE | Flags::ALLOW_TRANSPARENT;
 
 	cur_rvd.type = type;
 	cur_rvd.scene_view = &scene_view;
+}
 
+void GeometryEmitter::set(Flags _flags) {
+	flags = _flags;
+}
+
+bool GeometryEmitter::is_shadow_pass() const {
+	return (int)(flags & Flags::SHADOW_PASS);
+}
+
+GeometryRenderer::GeometryRenderer(RenderPathType _type, SceneView &_scene_view) :
+		GeometryEmitter(_type, _scene_view),
+		fx_material(resource_manager)
+{
 	ch_pre = PerformanceMonitor::create_channel("pre", channel);
 	ch_bg = PerformanceMonitor::create_channel("bg", channel);
 	ch_fx = PerformanceMonitor::create_channel("fx", channel);
@@ -69,15 +81,6 @@ void GeometryRenderer::prepare(const RenderParams& params) {
 	prepare_instanced_matrices();
 
 	PerformanceMonitor::end(ch_prepare);
-}
-
-
-void GeometryRenderer::set(Flags _flags) {
-	flags = _flags;
-}
-
-bool GeometryRenderer::is_shadow_pass() const {
-	return (int)(flags & Flags::SHADOW_PASS);
 }
 
 void GeometryRenderer::draw(const RenderParams& params) {

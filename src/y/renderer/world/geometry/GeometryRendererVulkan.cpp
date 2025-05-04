@@ -37,7 +37,7 @@
 
 
 
-GraphicsPipeline* GeometryRenderer::get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb) {
+GraphicsPipeline* GeometryEmitter::get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb) {
 	if (pass.mode == TransparencyMode::FUNCTIONS)
 		return PipelineManager::get_alpha(s, rp, top, vb, pass.source, pass.destination, pass.cull_mode, pass.z_test, pass.z_buffer);
 	if (pass.mode == TransparencyMode::COLOR_KEY_HARD)

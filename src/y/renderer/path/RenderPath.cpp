@@ -249,6 +249,7 @@ public:
 	void prepare(const RenderParams &params) override {
 		prepare_basics();
 		scene_view.choose_lights();
+		scene_view.choose_shadows();
 
 		scene_view.cam->update_matrices(params.desired_aspect_ratio);
 		geo_renderer->cur_rvd.set_projection_matrix(scene_view.cam->m_projection);

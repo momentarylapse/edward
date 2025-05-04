@@ -526,6 +526,7 @@ add_executable(edward
 	src/y/renderer/world/geometry/RenderViewData.cpp
 	src/y/renderer/world/geometry/SceneView.cpp
 	src/y/renderer/world/pass/ShadowRenderer.cpp
+	src/y/renderer/world/pass/ShadowRendererX.cpp
 	src/y/renderer/world/WorldRenderer.cpp
 	src/y/renderer/world/WorldRendererDeferred.cpp
 	src/y/renderer/world/WorldRendererForward.cpp

@@ -32,6 +32,7 @@ struct SceneView {
 	RayTracingData* ray_tracing_data = nullptr;
 
 	void choose_lights();
+	void choose_shadows();
 
 	//void prepare_lights(float shadow_box_size, UniformBuffer* ubo_light);
 

@@ -8,6 +8,7 @@
 #include <world/Light.h>
 #include <world/Terrain.h>
 #include <helper/PerformanceMonitor.h>
+#include <lib/base/iter.h>
 #include <y/ComponentManager.h>
 #include <lib/os/time.h>
 //#include <lib/threads/Thread.h>
@@ -16,18 +17,21 @@
 
 void SceneView::choose_lights() {
 	lights.clear();
-	shadow_indices.clear();
 	auto& all_lights = ComponentManager::get_list_family<Light>();
 	for (auto l: all_lights) {
-		if (!l->enabled)
-			continue;
+		if (l->enabled)
+			lights.add(l);
+	}
+}
 
+void SceneView::choose_shadows() {
+	shadow_indices.clear();
+	for (auto&& [i,l]: enumerate(lights)) {
 		l->light.shadow_index = -1;
 		if (l->allow_shadow and shadow_indices.num == 0) {
 			l->light.shadow_index = shadow_indices.num;
-			shadow_indices.add(lights.num);
+			shadow_indices.add(i);
 		}
-		lights.add(l);
 	}
 }
 

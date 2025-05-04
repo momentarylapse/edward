@@ -52,8 +52,11 @@ struct VertexPoint {
 	color col;
 };
 
-class GeometryRenderer : public Renderer {
+// generic
+class GeometryEmitter : public Renderer {
 public:
+	GeometryEmitter(RenderPathType type, SceneView &scene_view);
+
 	enum class Flags {
 		ALLOW_OPAQUE = 1,
 		ALLOW_TRANSPARENT = 2,
@@ -62,21 +65,30 @@ public:
 		SHADOW_PASS = 1024,
 	} flags;
 
-	GeometryRenderer(RenderPathType type, SceneView &scene_view);
-
 	void set(Flags flags);
 	bool is_shadow_pass() const;
 
 	RenderViewData cur_rvd;
-
-	int ch_pre, ch_bg, ch_fx, ch_terrains, ch_models, ch_user, ch_prepare_lights;
-
-	static constexpr bool using_view_space = true;
 	RenderPathType type;
 
 	SceneView &scene_view;
 	base::optional<mat4> override_view;
 	base::optional<mat4> override_projection;
+
+#ifdef USING_VULKAN
+	static GraphicsPipeline* get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb);
+#endif
+};
+
+// draw y game scene
+// SceneEmitter?
+class GeometryRenderer : public GeometryEmitter {
+public:
+	GeometryRenderer(RenderPathType type, SceneView &scene_view);
+
+	int ch_pre, ch_bg, ch_fx, ch_terrains, ch_models, ch_user, ch_prepare_lights;
+
+	static constexpr bool using_view_space = true;
 
 	shared<Shader> shader_fx;
 	shared<Shader> shader_fx_points;
@@ -90,10 +102,6 @@ public:
 
 	void prepare(const RenderParams& params) override;
 	void draw(const RenderParams& params) override;
-
-#ifdef USING_VULKAN
-	static GraphicsPipeline *get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb);
-#endif
 
 
 private:
@@ -112,10 +120,10 @@ private:
 	void draw_transparent(const RenderParams& params, RenderViewData &rvd);
 };
 
-inline GeometryRenderer::Flags operator|(GeometryRenderer::Flags a, GeometryRenderer::Flags b) {
-	return (GeometryRenderer::Flags)((int)a | (int)b);
+inline GeometryEmitter::Flags operator|(GeometryEmitter::Flags a, GeometryEmitter::Flags b) {
+	return (GeometryEmitter::Flags)((int)a | (int)b);
 }
 
-inline GeometryRenderer::Flags operator&(GeometryRenderer::Flags a, GeometryRenderer::Flags b) {
-	return (GeometryRenderer::Flags)((int)a & (int)b);
+inline GeometryEmitter::Flags operator&(GeometryEmitter::Flags a, GeometryEmitter::Flags b) {
+	return (GeometryEmitter::Flags)((int)a & (int)b);
 }

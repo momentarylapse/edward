@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <functional>
+
 #include "../../Renderer.h"
 #include "../../../graphics-fwd.h"
 #include <lib/math/mat4.h>
@@ -15,13 +17,13 @@
 class Camera;
 class PerformanceMonitor;
 class Material;
-class GeometryRenderer;
+class GeometryEmitter;
 class TextureRenderer;
 struct SceneView;
 
-class ShadowRenderer : public RenderTask {
+class ShadowRendererX : public RenderTask {
 public:
-	explicit ShadowRenderer(Camera* cam);
+	explicit ShadowRendererX(Camera* cam, std::function<GeometryEmitter*(SceneView&)> factory);
 
 	static constexpr int NUM_CASCADES = 2;
 
@@ -39,7 +41,7 @@ public:
 		DepthBuffer* depth_buffer = nullptr;
 		owned<TextureRenderer> texture_renderer;
 		float scale = 1.0f;
-	    owned<GeometryRenderer> geo_renderer;
+	    owned<GeometryEmitter> geo_renderer;
 	} cascades[NUM_CASCADES];
 
 
