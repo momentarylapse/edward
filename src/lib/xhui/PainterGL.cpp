@@ -175,6 +175,9 @@ Painter::Painter(Window *w) {
 	glfwMakeContextCurrent(w->window);
 	if (!_nix_inited)
 		init_nix();
+
+	window->handle_event_p(window->id, event_id::JustBeforeDraw, this);
+
 	Painter::set_color(Theme::_default.text);
 	Painter::set_font(Theme::_default.font_name /*"CAC Champagne"*/, Theme::_default.font_size, false, false);
 

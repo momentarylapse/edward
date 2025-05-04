@@ -356,6 +356,7 @@ namespace event_id {
 	const string MouseWheel = "hui:mouse-wheel";
 	const string Draw = "hui:draw";
 	const string Initialize = "hui:initialize";
+	const string JustBeforeDraw = "hui:just-before-draw";
 	const string LeftButtonDown = "hui:left-button-down";
 	const string LeftButtonUp = "hui:left-button-up";
 	const string MiddleButtonDown = "hui:middle-button-down";

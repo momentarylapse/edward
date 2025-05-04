@@ -185,6 +185,7 @@ namespace event_id {
 	extern const string MouseWheel;
 	extern const string Draw;
 	extern const string Initialize;
+	extern const string JustBeforeDraw; // for y renderer.prepare()
 	extern const string LeftButtonDown;
 	extern const string LeftButtonUp;
 	extern const string MiddleButtonDown;
