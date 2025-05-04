@@ -132,6 +132,7 @@ void ModeWorld::on_enter() {
 	multi_view->data_sets = {
 		{MultiViewType::WORLD_ENTITY, &data->entities}
 	};
+	multi_view->light_mode = MultiView::LightMode::Fixed;
 
 	auto tb = session->win->toolbar;
 	tb->set_by_id("world-toolbar");
@@ -344,6 +345,7 @@ void ModeWorld::on_prepare_scene(const RenderParams& params) {
 		lights[i]->owner->pos = l->pos;
 		lights[i]->owner->ang = l->ang;
 		lights[i]->enabled = l->light.enabled;
+		lights[i]->allow_shadow = (l->light.type == LightType::DIRECTIONAL);
 		lights[i]->light.col = l->light.col;
 		if (!l->light.enabled)
 			lights[i]->light.col = Black;
@@ -357,7 +359,7 @@ void ModeWorld::on_prepare_scene(const RenderParams& params) {
 			lights[i]->light.theta = -1;
 		lights[i]->light.harshness = l->light.harshness;
 	}
-	multi_view->view_port.scene_view->lights = lights.sub_ref(0, data_lights.num);
+	multi_view->lights = lights.sub_ref(0, data_lights.num);
 }
 
 
@@ -425,6 +427,29 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 	multi_view->action_controller->draw(params, rvd);
 }
+
+void ModeWorld::on_draw_shadow(const RenderParams& params, RenderViewData& rvd) {
+	auto dh = multi_view->session->drawing_helper;
+
+	for (auto& e: data->entities) {
+		if (e.basic_type != MultiViewType::WORLD_TERRAIN)
+			continue;
+		auto& t = e.terrain;
+		t.terrain->prepare_draw(rvd.scene_view->cam->owner->pos);
+		auto vb = t.terrain->vertex_buffer.get();
+		dh->draw_mesh(params, rvd, mat4::translation(e.pos), vb, dh->material_shadow);
+	}
+
+	for (auto& e: data->entities)
+		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+			auto m = e.object.object;
+			for (int k=0; k<m->mesh[0]->sub.num; k++) {
+				auto vb = m->mesh[0]->sub[k].vertex_buffer;
+				dh->draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_shadow, 0, m->_template->vertex_shader_module);
+			}
+		}
+}
+
 
 void ModeWorld::draw_cameras(MultiViewWindow* win) {
 	for (auto& e: data->entities) {

@@ -32,6 +32,7 @@ public:
 
 	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
+	void on_draw_shadow(const RenderParams& params, RenderViewData& rvd) override;
 	void draw_objects(const RenderParams& params, MultiViewWindow* win);
 	void draw_terrains(const RenderParams& params, MultiViewWindow* win);
 	void draw_cameras(MultiViewWindow* win);
