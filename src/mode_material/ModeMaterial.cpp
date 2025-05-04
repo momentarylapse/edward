@@ -25,6 +25,7 @@
 #include <view/EdwardWindow.h>
 #include <view/DrawingHelper.h>
 #include <data/mesh/GeometryCube.h>
+#include <data/mesh/GeometryPlatonic.h>
 #include <data/mesh/GeometrySphere.h>
 #include <data/mesh/GeometryTorus.h>
 #include <data/mesh/GeometryTorusKnot.h>
@@ -93,7 +94,7 @@ void ModeMaterial::on_enter() {
 
 	// ground
 	vertex_buffer_ground = new VertexBuffer("3f,3f,2f");
-	GeometryCube cube({-2,-0.7f,-2}, {4,0,0}, {0,0.01f,0}, {0,0,4}, 1, 1, 1);
+	GeometryCube cube({-4,-1.2f,-4}, {8,0,0}, {0,0.02f,0}, {0,0,8}, 1, 1, 1);
 	cube.build(vertex_buffer_ground.get());
 
 	Image im(16,16,White);
@@ -118,15 +119,15 @@ void ModeMaterial::on_leave() {
 
 
 void ModeMaterial::optimize_view() {
-	float r = 1.4f;
+	float r = 2.0f;
 	multi_view->view_port.suggest_for_box({vec3(-r,-r,-r), vec3(r,r,r)});
 }
 
 void ModeMaterial::on_prepare_scene(const RenderParams& params) {
 	if (!spot_light) {
-		spot_light = new Light(White * 70, -1, -1);
+		spot_light = new Light(White * 100, -1, -1);
 		spot_light->owner = new Entity;
-		spot_light->owner->pos = {2, 5, 7};
+		spot_light->owner->pos = {3, 7, 12};
 		spot_light->owner->ang = quaternion::rotation_v((-spot_light->owner->pos).dir2ang());
 		spot_light->light.radius = 400;
 		spot_light->light.theta = 0.15f;
@@ -186,7 +187,10 @@ void ModeMaterial::set_mesh(PreviewMesh m) {
 	PolygonMesh mesh;
 	switch (m) {
 	case PreviewMesh::CUBE:
-		mesh = GeometryCube({0,0,0}, vec3::EX, vec3::EY, vec3::EZ, 1, 1, 1);
+		mesh = GeometryCube({-1,-1,-1}, vec3::EX*2, vec3::EY*2, vec3::EZ*2, 1, 1, 1);
+		break;
+	case PreviewMesh::ICOSAHEDRON:
+		mesh = GeometryPlatonic({0,0,0}, 1, 20);
 		break;
 	case PreviewMesh::SPHERE:
 		mesh = GeometrySphere({0,0,0}, 1, 16);
@@ -202,7 +206,7 @@ void ModeMaterial::set_mesh(PreviewMesh m) {
 		break;
 	case PreviewMesh::TEAPOT:
 	default:
-		mesh = GeometryTeapot({0,0,0}, 1, 8);
+		mesh = GeometryTeapot({0,0,0}, 1.5f, 8);
 		mesh.smoothen();
 		break;
 	}
