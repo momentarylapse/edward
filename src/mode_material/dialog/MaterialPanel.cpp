@@ -121,16 +121,25 @@ ModeMaterial *MaterialPanel::mode_material() {
 }
 
 Image* preview_texture(Session* s, const Path& filename) {
+	static Image* empty = nullptr;
 	static Image* dummy = nullptr;
 	static base::map<Path, Image*> previews;
+
+	if (!empty)
+		empty = new Image(40, 40, White);
+	if (!dummy) {
+		dummy = new Image(40, 40, Red);
+		// TODO "X" or "?"
+	}
+
+	if (filename.is_empty())
+		return empty;
 
 	if (previews.contains(filename))
 		return previews[filename];
 
 	const auto path = s->resource_manager->find_absolute_texture_path(filename);
 	if (path.is_empty()) {
-		if (!dummy)
-			dummy = new Image(40, 40, White);
 		return dummy;
 	} else {
 		auto im = Image::load(path);
@@ -144,7 +153,7 @@ Image* preview_texture(Session* s, const Path& filename) {
 void MaterialPanel::fill_texture_list() {
 	reset("textures");
 	for (int i=0;i<data->appearance.texture_files.num;i++) {
-		string id = format("image:material-texture[%d]", i);
+		string id = format("image:texture-icon[%s]", data->appearance.texture_files[i]);
 		auto icon = preview_texture(data->session, data->appearance.texture_files[i]);
 		xhui::set_image(id, *icon);
 		string ext = "";//format(" (%dx%d)", img->width, img->height);
