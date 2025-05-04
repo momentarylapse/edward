@@ -20,6 +20,9 @@ public:
 	color _color;
 	void set_color(const color& c) override;
 	color get_color() override;
+
+	bool with_alpha = false;
+	void set_option(const string& key, const string& value) override;
 };
 
 } // xhui
