@@ -59,8 +59,6 @@ Painter::Painter(Window *w) {
 	
 	cb->begin();
 
-	window->handle_event_p(window->id, event_id::JustBeforeDraw, this);
-
 	width = (int)((float)context->swap_chain->width / ui_scale);
 	height = (int)((float)context->swap_chain->height / ui_scale);
 	mat_pixel_to_rel = mat4::translation({- 1,- 1, 0}) *  mat4::scale(2.0f / (float)width, 2.0f / (float)height, 1);
@@ -69,6 +67,8 @@ Painter::Painter(Window *w) {
 	native_area = {0, (float)context->swap_chain->width, 0, (float)context->swap_chain->height};
 	native_area_window = native_area;
 	_clip = _area;
+
+	window->handle_event_p(window->id, event_id::JustBeforeDraw, this);
 
 	cb->set_viewport(native_area);
 	cb->begin_render_pass(context->render_pass, fb);

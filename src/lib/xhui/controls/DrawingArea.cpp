@@ -21,6 +21,28 @@ DrawingArea::DrawingArea(const string &_id) : Control(_id) {
 
 
 void DrawingArea::_draw(Painter *p) {
+	if (owner) {
+		for_painter_do(p, [this] (Painter* p) {
+				if (first_draw)
+					owner->handle_event_p(id, event_id::Initialize, p);
+				first_draw = false;
+				owner->handle_event_p(id, event_id::Draw, p);
+		});
+	}
+
+
+#if HAS_LIB_GL
+	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(p->ui_scale, p->ui_scale, 1));
+	nix::set_view_matrix(mat4::ID);
+	nix::set_model_matrix(mat4::ID);
+	//nix::clear(color(1, 0.15f, 0.15f, 0.3f));
+	nix::set_cull(nix::CullMode::NONE);
+	nix::set_z(false, false);
+#endif
+}
+
+void DrawingArea::for_painter_do(Painter* p, std::function<void(Painter*)> f) {
+
 	// backup
 	int w = p->width;
 	int h = p->height;
@@ -34,12 +56,7 @@ void DrawingArea::_draw(Painter *p) {
 
 	//p->set_clip(_area);
 	p->set_transform({}, vec2(_area.x1, _area.y1));
-	if (owner) {
-		if (first_draw)
-			owner->handle_event_p(id, event_id::Initialize, p);
-		first_draw = false;
-		owner->handle_event_p(id, event_id::Draw, p);
-	}
+	f(p);
 	p->set_transform({}, vec2(0, 0));
 
 	// restore
@@ -49,15 +66,6 @@ void DrawingArea::_draw(Painter *p) {
 	p->native_area = old_native_area;
 	//p->set_clip(p->area());
 
-
-#if HAS_LIB_GL
-	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(p->ui_scale, p->ui_scale, 1));
-	nix::set_view_matrix(mat4::ID);
-	nix::set_model_matrix(mat4::ID);
-	//nix::clear(color(1, 0.15f, 0.15f, 0.3f));
-	nix::set_cull(nix::CullMode::NONE);
-	nix::set_z(false, false);
-#endif
 }
 void DrawingArea::on_left_button_down(const vec2& m) {
 	emit_event(event_id::LeftButtonDown, false);

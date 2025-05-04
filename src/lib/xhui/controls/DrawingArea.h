@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "Control.h"
 
 namespace xhui {
@@ -25,6 +27,8 @@ public:
 	void on_key_up(int key) override;
 
 	bool first_draw = true;
+
+	void for_painter_do(Painter* p, std::function<void(Painter*)>);
 };
 
 }

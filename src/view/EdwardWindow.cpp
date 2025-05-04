@@ -7,6 +7,7 @@
 #include "lib/xhui/Painter.h"
 #include <lib/xhui/Context.h>
 #include <lib/xhui/Dialog.h>
+#include <lib/xhui/controls/DrawingArea.h>
 #include <lib/xhui/controls/Toolbar.h>
 #include <lib/xhui/dialogs/FileSelectionDialog.h>
 #include <lib/xhui/dialogs/QuestionDialog.h>
@@ -234,8 +235,11 @@ Dialog x x padding=0
 	event_xp(id, xhui::event_id::JustBeforeDraw, [this] (Painter* p) {
 		if (!session->cur_mode or !session->cur_mode->multi_view)
 			return;
-		session->cur_mode->multi_view->set_area(p->area());
-		renderer->prepare(p);
+		if (auto da = static_cast<xhui::DrawingArea*>(get_control("area")))
+			da->for_painter_do(static_cast<xhui::Painter*>(p), [this] (Painter* p) {
+				session->cur_mode->multi_view->set_area(p->area());
+				renderer->prepare(p);
+			});
 	});
 	event_xp("area", xhui::event_id::Draw, [this] (Painter* p) {
 		if (!session->cur_mode or !session->cur_mode->multi_view)
