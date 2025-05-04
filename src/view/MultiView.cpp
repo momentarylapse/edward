@@ -11,6 +11,10 @@
 #include <lib/xhui/Theme.h>
 #include <lib/math/mat3.h>
 #include <multiview/SingleData.h>
+#include <renderer/path/RenderPath.h>
+#include <renderer/world/geometry/GeometryRenderer.h>
+#include <renderer/world/pass/ShadowRendererX.h>
+
 #include "EdwardWindow.h"
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
@@ -18,6 +22,8 @@
 #include <y/graphics-impl.h>
 
 #include "Mode.h"
+
+extern float global_shadow_box_size;
 
 MultiViewWindow::MultiViewWindow(MultiView* _multi_view) {
 	multi_view = _multi_view;
@@ -112,12 +118,14 @@ mat3 MultiViewWindow::edit_frame() const {
 	return active_grid_frame();
 }
 
-void MultiViewWindow::draw(const RenderParams& params) {
+void MultiViewWindow::prepare(const RenderParams& params) {
 	rvd.scene_view->cam->update_matrices(params.desired_aspect_ratio);
 	rvd.set_projection_matrix(rvd.scene_view->cam->m_projection);
 	rvd.set_view_matrix(rvd.scene_view->cam->m_view);
 	rvd.update_lights();
+}
 
+void MultiViewWindow::draw(const RenderParams& params) {
 	rvd.begin_draw();
 	multi_view->session->drawing_helper->set_window(this);
 
@@ -125,6 +133,23 @@ void MultiViewWindow::draw(const RenderParams& params) {
 }
 
 
+class MultiViewShadowGeometryEmitter : public GeometryEmitter {
+public:
+	MultiView* multi_view;
+	MultiViewShadowGeometryEmitter(MultiView* mv, SceneView& scene_view) : GeometryEmitter(RenderPathType::Forward, scene_view) {
+		multi_view = mv;
+	}
+	void draw(const RenderParams& params) override {
+		cur_rvd.begin_draw();
+		if (override_view)
+			cur_rvd.set_view_matrix(*override_view);
+		else
+			cur_rvd.set_view_matrix(scene_view.cam->view_matrix());
+		if (override_projection)
+			cur_rvd.set_projection_matrix(*override_projection);
+		multi_view->session->cur_mode->on_draw_shadow(params, cur_rvd);
+	}
+};
 
 
 
@@ -150,12 +175,20 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 	default_light->owner = new Entity;
 	default_light->owner->ang = quaternion::ID;
 	default_light->enabled = true;
+	default_light->allow_shadow = true;;
 	default_light->light.harshness = 0.5f;
 	lights.add(default_light);
 
 	view_port.out_changed >> create_sink([this] {
 		action_controller->update_manipulator();
 	});
+
+	shadow_renderer = new ShadowRendererX(view_port.scene_view->cam, [this] (SceneView& scene_view) {
+		return new MultiViewShadowGeometryEmitter(this, scene_view);
+	});
+	view_port.scene_view->shadow_maps.add(shadow_renderer->cascades[0].depth_buffer);
+	view_port.scene_view->shadow_maps.add(shadow_renderer->cascades[1].depth_buffer);
+	add_child(shadow_renderer.get());
 }
 
 MultiView::~MultiView() = default;
@@ -174,6 +207,7 @@ void MultiView::prepare(const RenderParams& params) {
 	view_port.cam->min_depth = view_port.radius * 0.01f;
 	view_port.cam->max_depth = view_port.radius * 300;
 	view_port.cam->update_matrices(area.width() / area.height());
+	global_shadow_box_size = view_port.radius * 8;
 
 	window.local_ang = view_port.ang;
 	window.view = view_port.cam->m_view;
@@ -194,17 +228,22 @@ void MultiView::prepare(const RenderParams& params) {
 	session->cur_mode->on_prepare_scene(params);
 
 	view_port.scene_view->lights = lights;
-	view_port.scene_view->shadow_indices.clear();
-	//	if (l->allow_shadow)
-	//		scene_view.shadow_index = scene_view.lights.num;
+	view_port.scene_view->choose_shadows();
+
+	window.prepare(params);
+
+	for (int i: view_port.scene_view->shadow_indices) {
+		shadow_renderer->set_projection(view_port.scene_view->lights[i]->shadow_projection);
+		shadow_renderer->render(params);
+	}
 
 	//Renderer::prepare(params);
 }
 
 void MultiView::draw(const RenderParams& params) {
-	//	scene_view.choose_lights();
 	//engine.physical_aspect_ratio = pp->native_area.width() / pp->native_area.height();
 
+	window.prepare(params); // why is this neccessary?
 	window.draw(params);
 }
 

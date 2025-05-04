@@ -45,6 +45,9 @@ DrawingHelper::DrawingHelper(xhui::Context* ctx, ResourceManager* rm) {
 		material_hover = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, White, true);
 		material_selection = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, Red, true);
 		material_creation = create_material(resource_manager, {0.3f, 0,0.5f,0}, 0.9f, 0, color(1,0,0.5f,0), true);
+
+		material_shadow = new Material(resource_manager);
+		material_shadow->pass0.shader_path = "shadow.shader";
 	} catch(Exception& e) {
 		msg_error(e.message());
 	}

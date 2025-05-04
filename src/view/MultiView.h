@@ -25,6 +25,7 @@ class MultiView;
 namespace multiview {
 	struct SingleData;
 }
+class ShadowRendererX;
 
 
 
@@ -41,6 +42,7 @@ public:
 	vec3 active_grid_direction() const;
 	mat3 active_grid_frame() const;
 	mat3 edit_frame() const;
+	void prepare(const RenderParams& params);
 	void draw(const RenderParams& params);
 
 	MultiView* multi_view;
@@ -94,6 +96,7 @@ public:
 
 	Array<Light*> lights;
 	Light* default_light;
+	owned<ShadowRendererX> shadow_renderer;
 
 	MultiViewWindow window;
 	MultiViewWindow* active_window;
