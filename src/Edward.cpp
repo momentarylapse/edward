@@ -4,7 +4,10 @@
 
 #include "Session.h"
 #include "view/EdwardWindow.h"
-#include "lib/os/msg.h"
+#include <lib/os/CommandLineParser.h>
+#include <lib/os/msg.h>
+
+#include "storage/Storage.h"
 
 string AppVersion = "0.5.-1.0";
 string AppName = "Edward";
@@ -18,6 +21,8 @@ namespace hui {
 	}
 }
 
+
+
 int xhui_main(const Array<string>& args) {
 	try {
 		xhui::init(args, "edward");
@@ -28,18 +33,73 @@ int xhui_main(const Array<string>& args) {
 
 	kaba::init();
 
-	auto s = create_session();
-	if (args.num >= 2) {
-		string ext = Path(args[1]).extension();
-		if (ext == "model")
-			s->universal_edit(FD_MODEL, args[1], false);
-		else if (ext == "material")
-			s->universal_edit(FD_MATERIAL, args[1], false);
-		else if (ext == "world")
-			s->universal_edit(FD_WORLD, args[1], false);
-	} else {
-		s->universal_new(FD_MODEL);
-	}
+
+
+	CommandLineParser p;
+	p.info(AppName, "");
+	p.option("--execute", "FILENAME", "(NOT WORKING) execute a script", [] (const string &a) {
+		//plugins->execute(a);
+	});
+	p.cmd("-h/--help", "", "show this help page", [&p] (const Array<string> &arg) {
+		p.show();
+	});
+	p.cmd("file update", "FILENAME", "load and re-write a file", [] (const Array<string> &arg) {
+		//update_file(arg[0], true);
+		msg_todo("file update");
+	});
+	p.cmd("file check", "FILENAME", "load file and check for errors", [] (const Array<string> &arg) {
+		//update_file(arg[0], false);
+		msg_todo("file check");
+	});
+	p.cmd("new material", "", "open editor in material mode", [] (const Array<string> &arg) {
+		auto session = create_session();
+		session->universal_new(FD_MATERIAL);
+	});
+	p.cmd("new font", "", "open editor in font mode", [] (const Array<string> &arg) {
+		auto session = create_session();
+		session->universal_new(FD_FONT);
+	});
+	p.cmd("new world", "", "open editor in world mode", [] (const Array<string> &arg) {
+		auto session = create_session();
+		session->universal_new(FD_WORLD);
+	});
+	p.cmd("project create", "DIR FIRST_WORLD", "create a new project", [] (const Array<string> &arg) {
+		/*Session session;
+		ModeAdministration mode_admin(&session);
+		mode_admin.create_project(arg[0], arg[1]);*/
+		msg_todo("project create");
+	});
+	p.cmd("project upgrade", "DIR", "upgrade scripts of a project", [] (const Array<string> &arg) {
+		/*Session session;
+		ModeAdministration mode_admin(&session);
+		mode_admin.upgrade_project(arg[0]);*/
+		msg_todo("project upgrade");
+	});
+	p.cmd("xxx", "", "", [] (const Array<string> &arg) {
+		/*Session session;
+		ModeAdministration mode_admin(&session);*/
+		msg_todo("mode admin");
+	});
+	p.cmd("", "[FILENAME]", "open editor and load a file", [] (const Array<string> &arg) {
+		msg_write(AppName + " " + AppVersion);
+		msg_write("");
+
+		auto session = create_session();
+
+		if (arg.num > 0) {
+			int type = session->storage->guess_type(arg[0]);
+
+			if (type >= 0) {
+				session->universal_edit(type, arg[0], false);
+			} else {
+				session->error("Unknown file extension: " + arg[0]);
+				//app->end();
+			}
+		} else {
+			session->universal_new(FD_MODEL);
+		}
+	});
+	p.parse(args);
 
 	try {
 		xhui::run();
