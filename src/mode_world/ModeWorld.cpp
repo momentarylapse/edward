@@ -373,6 +373,7 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 #ifdef USING_VULKAN
 	auto cb = params.command_buffer;
+#endif
 
 	for (auto& e: data->entities) {
 		if (e.basic_type != MultiViewType::WORLD_TERRAIN)
@@ -384,11 +385,15 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 		auto shader = rvd.get_shader(material, 0, t.terrain->vertex_shader_module, "");
 		auto& rd = rvd.start(params, mat4::translation(e.pos), shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
-		cb->push_constant(0, 4, &t.terrain->texture_scale[0].x);
-		cb->push_constant(4, 4, &t.terrain->texture_scale[1].x);
+#ifdef USING_VULKAN
+		cb->push_constant(0, 12, &t.terrain->texture_scale[0].x);
+		cb->push_constant(16, 12, &t.terrain->texture_scale[1].x);
+#else
+		shader->set_floats("pattern0", &t.terrain->texture_scale[0].x, 3);
+		shader->set_floats("pattern1", &t.terrain->texture_scale[1].x, 3);
+#endif
 		rd.draw_triangles(params, vb);
 	}
-#endif
 
 	for (auto& e: data->entities)
 		if (e.basic_type == MultiViewType::WORLD_OBJECT) {

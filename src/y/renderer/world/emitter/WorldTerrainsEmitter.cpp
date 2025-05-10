@@ -33,8 +33,8 @@ void WorldTerrainsEmitter::emit(const RenderParams& params, RenderViewData& rvd,
 
 		if (!shadow_pass) {
 #ifdef USING_VULKAN
-			params.command_buffer->push_constant(0, 4, &t->texture_scale[0].x);
-			params.command_buffer->push_constant(4, 4, &t->texture_scale[1].x);
+			params.command_buffer->push_constant(0, 12, &t->texture_scale[0].x);
+			params.command_buffer->push_constant(16, 12, &t->texture_scale[1].x);
 #else
 			shader->set_floats("pattern0", &t->texture_scale[0].x, 3);
 			shader->set_floats("pattern1", &t->texture_scale[1].x, 3);
