@@ -74,6 +74,7 @@ UBOLight Light::to_ubo(const vec3& view_pos, const quaternion& view_ang, bool us
 		l.pos = o->pos;
 		l.dir = o->ang * vec3::EZ;
 	}
+	l.shadow_index = light.shadow_index;
 	return l;
 }
 
