@@ -1,33 +1,33 @@
 /*
- * DataAdministration.h
+ * DataProject.h
  *
  *  Created on: 23.08.2012
  *      Author: michi
  */
 
-#ifndef DATAADMINISTRATION_H_
-#define DATAADMINISTRATION_H_
+#pragma once
 
-#include "../Data.h"
+
+#include "../../data/Data.h"
 
 class AdminFile;
 class AdminFileList;
 class GameIniData;
 
-class AdminGameExportException
-{
+class AdminGameExportException {
 public:
-	AdminGameExportException(const string &msg){	message = msg;	}
+	explicit AdminGameExportException(const string &msg) {
+		message = msg;
+	}
 	string message;
 };
 
 
 
-class DataAdministration : public Data
-{
+class DataProject : public Data {
 public:
-	DataAdministration(Session *s);
-	virtual ~DataAdministration();
+	explicit DataProject(Session *s);
+	~DataProject() override;
 
 	void reset();
 	bool load(const Path &_filename, bool deep = true);
@@ -48,5 +48,3 @@ public:
 
 	GameIniData *GameIni;
 };
-
-#endif /* DATAADMINISTRATION_H_ */

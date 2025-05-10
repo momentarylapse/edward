@@ -8,7 +8,7 @@
 #ifndef ADMINFILE_H_
 #define ADMINFILE_H_
 
-#include "../Data.h"
+#include "../../data/Data.h"
 
 class AdminFileList;
 

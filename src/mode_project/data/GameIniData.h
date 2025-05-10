@@ -8,7 +8,7 @@
 #ifndef GAMEINIDATA_H_
 #define GAMEINIDATA_H_
 
-#include "../Data.h"
+#include "../../data/Data.h"
 #include "../../lib/os/config.h"
 
 

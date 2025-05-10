@@ -8,14 +8,14 @@
 #include "AdminFileList.h"
 #include "AdminFile.h"
 #include "GameIniData.h"
-#include "../../EdwardWindow.h"
-#include "../../storage/Storage.h"
+#include <view/EdwardWindow.h>
+#include <storage/Storage.h>
 
 AdminFile *AdminFileList::get(int kind, const Path &name) {
 	for (AdminFile *a: *this)
 		if ((a->Kind == kind) and (a->Name == name))
 			return a;
-	return NULL;
+	return nullptr;
 }
 
 
@@ -47,7 +47,7 @@ Path add_ext(const Path &p, const string &ext) {
 // same as AddAdminFileUnchecked but used without file extensions
 AdminFile *AdminFileList::add_unchecked_ae(int kind, const Path &filename, AdminFile *source) {
 	if (filename.is_empty())
-		return NULL;
+		return nullptr;
 	string ext;
 	if (kind==FD_WORLD)		ext = ".world";
 	if (kind==FD_TERRAIN)	ext = ".map";

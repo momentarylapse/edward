@@ -1,39 +1,39 @@
 /*
- * DataAdministration.cpp
+ * DataProject.cpp
  *
  *  Created on: 23.08.2012
  *      Author: michi
  */
 
-#include "DataAdministration.h"
+#include "DataProject.h"
 #include "AdminFile.h"
 #include "AdminFileList.h"
 #include "GameIniData.h"
-#include "../world/DataWorld.h"
-#include "../model/DataModel.h"
-#include "../material/DataMaterial.h"
-#include "../font/DataFont.h"
+#include "../../mode_world/data/DataWorld.h"
+#include "../../mode_model/data/DataModel.h"
+#include "../../mode_material/data/DataMaterial.h"
+//#include "../../mode_font/data/DataFont.h"
 #include "../../Session.h"
 #include "../../Edward.h"
-#include "../../stuff/Progress.h"
+//#include "../../stuff/Progress.h"
 #include "../../storage/Storage.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/formatter.h"
 
-DataAdministration::DataAdministration(Session *s) :
+DataProject::DataProject(Session *s) :
 	Data(s, -1)
 {
 	GameIni = new GameIniData;
 	file_list = new AdminFileList;
 }
 
-DataAdministration::~DataAdministration() {
+DataProject::~DataProject() {
 	delete GameIni;
 	delete file_list;
 }
 
-void DataAdministration::FraesDir(const Path &root_dir, const Path &dir, const string &extension) {
+void DataProject::FraesDir(const Path &root_dir, const Path &dir, const string &extension) {
 	auto list = os::fs::search(root_dir | dir, "*" + extension, "fd");
 	for (auto &e: list) {
 		if (os::fs::is_directory(root_dir | dir | e)) {
@@ -44,7 +44,7 @@ void DataAdministration::FraesDir(const Path &root_dir, const Path &dir, const s
 	}
 }
 
-void DataAdministration::MetaFraesDir(int kind) {
+void DataProject::MetaFraesDir(int kind) {
 	string extension ="x";
 	cft.clear();
 
@@ -65,7 +65,7 @@ void DataAdministration::MetaFraesDir(int kind) {
 	//FraesDir(dir, "", extension);
 }
 
-void DataAdministration::TestRootDirectory()
+void DataProject::TestRootDirectory()
 {
 	/*RootDirCorrect = file_test_existence(RootDir + "game.ini");
 	if (!RootDirCorrect){
@@ -78,7 +78,7 @@ void DataAdministration::TestRootDirectory()
 	SetRootDirectory(RootDir);*/
 }
 
-bool DataAdministration::save(const Path &_filename) {
+bool DataProject::save(const Path &_filename) {
 	filename = _filename;
 	os::fs::FileStream* f = nullptr;
 	try {
@@ -111,15 +111,15 @@ bool DataAdministration::save(const Path &_filename) {
 	return true;
 }
 
-void DataAdministration::SaveDatabase() {
+void DataProject::SaveDatabase() {
 	save(app->directory | "admin_database.txt");
 }
 
-void DataAdministration::reset() {
+void DataProject::reset() {
 	file_list->clear_deep();
 }
 
-bool DataAdministration::load(const Path &_filename, bool deep) {
+bool DataProject::load(const Path &_filename, bool deep) {
 	reset();
 	filename = _filename;
 
@@ -157,7 +157,7 @@ bool DataAdministration::load(const Path &_filename, bool deep) {
 	return true;
 }
 
-void DataAdministration::LoadDatabase() {
+void DataProject::LoadDatabase() {
 	load(app->directory | "admin_database.txt");
 }
 
@@ -218,8 +218,8 @@ void AdminFileList::add_from_game_ini_export(AdminFileList *source, GameIniData 
 }
 
 
-void DataAdministration::UpdateDatabase()
-{
+void DataProject::UpdateDatabase() {
+#if 0
 	session->progress->start(_("Creating database"), 0);
 	session->progress->set(_("Initializing"), 0);
 
@@ -259,6 +259,7 @@ void DataAdministration::UpdateDatabase()
 	session->progress->end();
 	SaveDatabase();
 	out_changed();
+#endif
 }
 
 Path kind_subdir(int kind) {
@@ -277,8 +278,8 @@ Path kind_subdir(int kind) {
 	return "";
 }
 
-void DataAdministration::ExportGame(const Path &dir, GameIniData &game_ini)
-{
+void DataProject::ExportGame(const Path &dir, GameIniData &game_ini) {
+#if 0
 	if (dir == session->storage->root_dir)
 		throw AdminGameExportException("export dir = root dir");
 	AdminFileList list;
@@ -304,4 +305,5 @@ void DataAdministration::ExportGame(const Path &dir, GameIniData &game_ini)
 	hui::info_box(hui::CurWindow, "info", format("%d von %d Dateien exportiern", num_ok, list.num));
 
 	session->progress->end();
+#endif
 }

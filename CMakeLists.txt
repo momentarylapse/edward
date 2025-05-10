@@ -422,6 +422,11 @@ add_executable(edward
 	src/mode_model/mesh/ModeMeshSculpt.cpp
 	src/mode_model/mesh/ModePaste.cpp
 	src/mode_model/ModeModel.cpp
+	src/mode_project/data/AdminFile.cpp
+	src/mode_project/data/AdminFileList.cpp
+	src/mode_project/data/DataProject.cpp
+	src/mode_project/data/GameIniData.cpp
+	src/mode_project/ModeProject.cpp
 	src/mode_world/action/entity/ActionWorldAddEntity.cpp
 	src/mode_world/action/entity/ActionWorldEditComponent.cpp
 	src/mode_world/action/light/ActionWorldAddLight.cpp

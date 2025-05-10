@@ -7,13 +7,13 @@
 
 #include "AdminFile.h"
 #include "AdminFileList.h"
-#include "DataAdministration.h"
-#include "../world/DataWorld.h"
-#include "../world/WorldObject.h"
-#include "../world/WorldTerrain.h"
-#include "../model/DataModel.h"
-#include "../material/DataMaterial.h"
-#include "../font/DataFont.h"
+#include "DataProject.h"
+#include "../../mode_world/data/DataWorld.h"
+#include "../../mode_world/data/WorldObject.h"
+#include "../../mode_world/data/WorldTerrain.h"
+#include "../../mode_model/data/DataModel.h"
+#include "../../mode_material/data/DataMaterial.h"
+//#include "../../mode_font/data/DataFont.h"
 #include "../../Session.h"
 #include "../../storage/Storage.h"
 #include <y/y/EngineData.h>
@@ -157,8 +157,8 @@ void add_possible_link(Array<s_admin_link> &l, int type, const Path &filename)
 	l.add(link);
 }
 
-void AdminFile::check(Session *session, AdminFileList &list)
-{
+void AdminFile::check(Session *session, AdminFileList &list) {
+#if 0
 	bool really_scan = true;
 
 	// test file existence
@@ -279,4 +279,5 @@ void AdminFile::check(Session *session, AdminFileList &list)
 	// recursively scan linked files
 	for (int i=0;i<l.num;i++)
 		list.add_unchecked_ae(l[i].type, l[i].file, this);
+#endif
 }

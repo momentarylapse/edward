@@ -8,7 +8,7 @@
 #ifndef ADMINFILELIST_H_
 #define ADMINFILELIST_H_
 
-#include "../Data.h"
+#include "../../data/Data.h"
 
 class AdminFile;
 class GameIniData;

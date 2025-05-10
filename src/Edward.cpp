@@ -1,13 +1,13 @@
 
-#include <lib/kaba/lib/lib.h>
-#include <storage/format/Format.h>
 
-#include "Session.h"
-#include "view/EdwardWindow.h"
+#include <Session.h>
+#include <view/EdwardWindow.h>
+#include <storage/Storage.h>
+#include <storage/format/Format.h>
+#include <mode_project/ModeProject.h>
 #include <lib/os/CommandLineParser.h>
 #include <lib/os/msg.h>
-
-#include "storage/Storage.h"
+#include <lib/kaba/lib/lib.h>
 
 string AppVersion = "0.5.-1.0";
 string AppName = "Edward";
@@ -64,16 +64,14 @@ int xhui_main(const Array<string>& args) {
 		session->universal_new(FD_WORLD);
 	});
 	p.cmd("project create", "DIR FIRST_WORLD", "create a new project", [] (const Array<string> &arg) {
-		/*Session session;
-		ModeAdministration mode_admin(&session);
-		mode_admin.create_project(arg[0], arg[1]);*/
-		msg_todo("project create");
+		Session session;
+		ModeProject mode_project(&session);
+		mode_project.create_project(arg[0], arg[1]);
 	});
 	p.cmd("project upgrade", "DIR", "upgrade scripts of a project", [] (const Array<string> &arg) {
-		/*Session session;
-		ModeAdministration mode_admin(&session);
-		mode_admin.upgrade_project(arg[0]);*/
-		msg_todo("project upgrade");
+		Session session;
+		ModeProject mode_project(&session);
+		mode_project.upgrade_project(arg[0]);
 	});
 	p.cmd("xxx", "", "", [] (const Array<string> &arg) {
 		/*Session session;

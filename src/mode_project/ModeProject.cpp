@@ -1,64 +1,63 @@
 /*
- * ModeAdministration.cpp
+ * ModeProject.cpp
  *
  *  Created on: 23.08.2012
  *      Author: michi
  */
 
-#include "ModeAdministration.h"
-#include "dialog/AdministrationDialog.h"
+#include "ModeProject.h"
+/*#include "dialog/AdministrationDialog.h"
 #include "dialog/ConfigurationDialog.h"
-#include "dialog/NewProjectDialog.h"
-#include "../../lib/hui/config.h"
-#include "../../lib/os/filesystem.h"
-#include "../../lib/os/file.h"
-#include "../../lib/os/terminal.h"
-#include "../../lib/os/msg.h"
-#include "../../data/administration/DataAdministration.h"
-#include "../../data/administration/GameIniData.h"
-#include "../../data/world/DataWorld.h"
-#include "../../Session.h"
-#include "../../EdwardWindow.h"
-#include "../../storage/Storage.h"
+#include "dialog/NewProjectDialog.h"*/
+#include <lib/xhui/config.h>
+#include <lib/os/filesystem.h>
+#include <lib/os/file.h>
+#include <lib/os/terminal.h>
+#include <lib/os/msg.h>
+#include "data/DataProject.h"
+#include "data/GameIniData.h"
+#include <mode_world/data/DataWorld.h>
+#include "../Session.h"
+#include "../view/EdwardWindow.h"
+#include "../storage/Storage.h"
 
-ModeAdministration::ModeAdministration(Session *s):
-	Mode<ModeAdministration, DataAdministration>(s, "Administration", nullptr, new DataAdministration(s), nullptr, "menu_administration")
+ModeProject::ModeProject(Session *s): Mode(s)
+	//Mode<ModeProject, DataAdministration>(s, "Administration", nullptr, new DataAdministration(s), nullptr, "menu_administration")
 {
 	dialog = nullptr;
 }
 
-ModeAdministration::~ModeAdministration() {
+ModeProject::~ModeProject() = default;
+
+void ModeProject::on_enter() {
+////	data->LoadDatabase();
+////	data->UpdateDatabase();
+////	dialog = new AdministrationDialog(session->win, true, data);
+////	dialog->show();
 }
 
-void ModeAdministration::on_start() {
-	data->LoadDatabase();
-	data->UpdateDatabase();
-	dialog = new AdministrationDialog(session->win, true, data);
-	dialog->show();
-}
-
-void ModeAdministration::on_end() {
+void ModeProject::on_leave() {
 	delete dialog;
 }
 
-void ModeAdministration::on_command(const string& id) {
+void ModeProject::on_command(const string& id) {
 	if (id == "export_game")
 		export_game();
 	if (id == "rudimentary_configuration")
 		basic_settings();
 }
 
-void ModeAdministration::basic_settings() {
-	hui::fly(new ConfigurationDialog(hui::CurWindow, data, false));
+void ModeProject::basic_settings() {
+////	hui::fly(new ConfigurationDialog(hui::CurWindow, data, false));
 }
 
-void ModeAdministration::export_game() {
-	hui::fly(new ConfigurationDialog(hui::CurWindow, data, true));
+void ModeProject::export_game() {
+////	hui::fly(new ConfigurationDialog(hui::CurWindow, data, true));
 	// data->ExportGame(...);
 }
 
 
-void ModeAdministration::create_project(const Path &dir, const string &first_world) {
+void ModeProject::create_project(const Path &dir, const string &first_world) {
 	upgrade_project(dir);
 
 	GameIniData gi;
@@ -99,7 +98,7 @@ static void sync_files(const Path &source, const Path &dest, bool required) {
 	os::fs::copy(source, dest);
 }
 
-void ModeAdministration::upgrade_project(const Path &dir) {
+void ModeProject::upgrade_project(const Path &dir) {
 	Storage s(data->session); // create CANONICAL_SUB_DIR[]
 
 	for (int k=0; k<NUM_FDS; k++)
@@ -114,8 +113,8 @@ void ModeAdministration::upgrade_project(const Path &dir) {
 		gi.save(dir);
 	}
 
-	if (hui::config.has("EngineDir")) {
-		Path engine_dir = hui::config.get_str("EngineDir");
+	if (xhui::config.has("EngineDir")) {
+		Path engine_dir = xhui::config.get_str("EngineDir");
 		Path engine_api_dir = engine_dir | "api";
 		auto list = os::fs::search(engine_api_dir, "*.kaba", "rf");
 		for (auto &f: list) {
@@ -128,8 +127,8 @@ void ModeAdministration::upgrade_project(const Path &dir) {
 	}
 }
 
-void ModeAdministration::_new() {
-	auto dlg = new NewProjectDialog(session->win);
+void ModeProject::_new() {
+/*	auto dlg = new NewProjectDialog(session->win);
 	hui::fly(dlg).then([this, dlg] {
 		if (dlg->ok) {
 			try {
@@ -140,11 +139,11 @@ void ModeAdministration::_new() {
 				session->error(e.message());
 			}
 		}
-	});
+	});*/
 }
 
-bool ModeAdministration::open() {
-	hui::file_dialog_dir(hui::CurWindow, _("Open project directory"), "", {}).then([this] (const Path &path) {
+bool ModeProject::open() {
+/*	hui::file_dialog_dir(hui::CurWindow, _("Open project directory"), "", {}).then([this] (const Path &path) {
 		if (!os::fs::exists(path | "game.ini")) {
 			session->error(_("game.ini not found"));
 			//return false;
@@ -153,6 +152,6 @@ bool ModeAdministration::open() {
 		data->session->storage->set_root_directory(path);
 		data->reset();
 	});
-	// TODO callback...
+	// TODO callback...*/
 	return true;
 }
