@@ -18,7 +18,7 @@
 #include <view/MultiView.h>
 
 ModeMeshMaterial::ModeMeshMaterial(ModeMesh* parent) :
-	Mode(parent->session)
+	SubMode(parent)
 {
 	mode_mesh = parent;
 	data = mode_mesh->data;
@@ -54,14 +54,6 @@ Mode* ModeMeshMaterial::get_parent() {
 	return mode_mesh;
 }
 
-
-void ModeMeshMaterial::on_prepare_scene(const RenderParams& params) {
-	mode_mesh->on_prepare_scene(params);
-}
-
-void ModeMeshMaterial::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
-	mode_mesh->on_draw_win(params, win);
-}
 
 void ModeMeshMaterial::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {

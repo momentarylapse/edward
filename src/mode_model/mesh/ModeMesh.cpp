@@ -37,7 +37,7 @@
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
-ModeMesh::ModeMesh(ModeModel* parent) : Mode(parent->session) {
+ModeMesh::ModeMesh(ModeModel* parent) : SubMode(parent) {
 	multi_view = parent->multi_view;
 	data = parent->data.get();
 	generic_data = data;
@@ -253,13 +253,13 @@ void ModeMesh::update_menu() {
 void ModeMesh::on_prepare_scene(const RenderParams& params) {
 }
 
+void ModeMesh::on_draw_background(const RenderParams& params, RenderViewData& rvd) {
+	rvd.clear(params, {xhui::Theme::_default.background_low});
+}
 
 void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
-
 	auto& rvd = win->rvd();
 	auto dh = win->multi_view->session->drawing_helper;
-	dh->clear(params, xhui::Theme::_default.background_low);
-
 
 	if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces or data->edit_mesh == data->phys_mesh.get()) {
 		for (int i=0; i<vertex_buffers.num; i++)

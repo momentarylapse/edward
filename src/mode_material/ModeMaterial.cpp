@@ -142,13 +142,16 @@ void ModeMaterial::on_prepare_scene(const RenderParams& params) {
 	multi_view->lights = {multi_view->default_light, spot_light};
 }
 
-void ModeMaterial::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void ModeMaterial::on_draw_background(const RenderParams& params, RenderViewData& rvd) {
+	DrawingHelper::clear(params, xhui::Theme::_default.background_low);
 
+	auto dh = multi_view->session->drawing_helper;
+	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_ground.get(), material_ground.get());
+}
+
+void ModeMaterial::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	auto& rvd = win->rvd();
 	auto dh = win->multi_view->session->drawing_helper;
-	dh->clear(params, xhui::Theme::_default.background_low);
-
-	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_ground.get(), material_ground.get());
 
 	for (int pass_no=0; pass_no<material->num_passes; pass_no++)
 		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), material.get(), pass_no);

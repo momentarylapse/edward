@@ -176,9 +176,9 @@ void RenderViewData::begin_draw() {
 void RenderViewData::clear(const RenderParams& params, const Array<color>& colors, float z) {
 	auto cb = params.command_buffer;
 	if (z >= 0)
-		cb->clear(params.frame_buffer->area(), colors, z);
+		cb->clear(params.area, colors, z);
 	else
-		cb->clear(params.frame_buffer->area(), colors, base::None);
+		cb->clear(params.area, colors, base::None);
 }
 
 

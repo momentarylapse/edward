@@ -13,13 +13,12 @@
 class MultiViewWindow;
 class ModeMesh;
 
-class ModeAddCube : public Mode {
+class ModeAddCube : public SubMode {
 public:
 	explicit ModeAddCube(ModeMesh* parent);
 
 	void on_enter() override;
 	void on_leave() override;
-	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 	void on_key_down(int key) override;
@@ -28,7 +27,6 @@ public:
 	bool set_dpos3(const vec2& m);
 
 	ModeMesh* mode_mesh;
-	Mode* get_parent() override;
 
 	Array<vec3> points;
 	vec3 length[3];

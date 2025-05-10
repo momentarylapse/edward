@@ -12,7 +12,7 @@
 #include <view/MultiView.h>
 
 ModeAddVertex::ModeAddVertex(ModeMesh* parent) :
-	Mode(parent->session)
+	SubMode(parent)
 {
 	mode_mesh = parent;
 	multi_view = mode_mesh->multi_view;
@@ -24,19 +24,6 @@ void ModeAddVertex::on_enter() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 	session->win->set_visible("overlay-button-grid-left", false);
-}
-
-Mode* ModeAddVertex::get_parent() {
-	return mode_mesh;
-}
-
-
-void ModeAddVertex::on_prepare_scene(const RenderParams& params) {
-	mode_mesh->on_prepare_scene(params);
-}
-
-void ModeAddVertex::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
-	mode_mesh->on_draw_win(params, win);
 }
 
 void ModeAddVertex::on_draw_post(Painter* p) {

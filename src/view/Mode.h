@@ -46,6 +46,7 @@ public:
 	virtual void on_left_button_up(const vec2&) {}
 	virtual void on_key_down(int key) {}
 	virtual void on_prepare_scene(const RenderParams& params) {}
+	virtual void on_draw_background(const RenderParams& params, RenderViewData& rvd) {}
 	virtual void on_draw_win(const RenderParams& params, MultiViewWindow* win) {}
 	virtual void on_draw_shadow(const RenderParams& params, RenderViewData& rvd) {}
 	virtual void on_draw_post(Painter*) {}
@@ -63,6 +64,21 @@ public:
 
 	xhui::Panel* side_panel = nullptr;
 	void set_side_panel(xhui::Panel* p);
+};
+
+class SubMode : public Mode {
+public:
+	explicit SubMode(Mode* parent);
+
+	void on_command(const string& id) override;
+
+	void on_prepare_scene(const RenderParams& params) override;
+	void on_draw_background(const RenderParams& params, RenderViewData& rvd) override;
+	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
+	void on_draw_shadow(const RenderParams& params, RenderViewData& rvd) override;
+
+	Mode* _parent;
+	Mode* get_parent() override { return _parent; }
 };
 
 

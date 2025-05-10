@@ -17,7 +17,7 @@
 #include <view/MultiView.h>
 
 ModeMeshSculpt::ModeMeshSculpt(ModeMesh* parent) :
-	Mode(parent->session)
+	SubMode(parent)
 {
 	mode_mesh = parent;
 	data = mode_mesh->data;
@@ -49,16 +49,6 @@ void ModeMeshSculpt::on_leave() {
 	//session->win->unembed(dialog);
 
 	data->out_changed.unsubscribe(this);
-}
-
-
-Mode* ModeMeshSculpt::get_parent() {
-	return mode_mesh;
-}
-
-
-void ModeMeshSculpt::on_prepare_scene(const RenderParams& params) {
-	mode_mesh->on_prepare_scene(params);
 }
 
 void ModeMeshSculpt::on_draw_win(const RenderParams& params, MultiViewWindow* win) {

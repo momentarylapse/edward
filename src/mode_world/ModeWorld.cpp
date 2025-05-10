@@ -362,12 +362,14 @@ void ModeWorld::on_prepare_scene(const RenderParams& params) {
 	multi_view->lights = lights.sub_ref(0, data_lights.num);
 }
 
+void ModeWorld::on_draw_background(const RenderParams& params, RenderViewData& rvd) {
+	rvd.clear(params, {data->meta_data.background_color});
+}
 
 void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 	auto& rvd = win->rvd();
-	auto dh = win->multi_view->session->drawing_helper;
-	dh->clear(params, data->meta_data.background_color);
+	auto dh = multi_view->session->drawing_helper;
 
 #ifdef USING_VULKAN
 	auto cb = params.command_buffer;

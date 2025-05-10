@@ -16,7 +16,7 @@
 #include <view/MultiView.h>
 
 ModeAddCube::ModeAddCube(ModeMesh* parent) :
-	Mode(parent->session)
+	SubMode(parent)
 {
 	mode_mesh = parent;
 	multi_view = mode_mesh->multi_view;
@@ -60,15 +60,6 @@ void ModeAddCube::on_leave() {
 	xhui::config.set_int("mesh.new_cube.slices_z", slices[2]);
 }
 
-
-Mode* ModeAddCube::get_parent() {
-	return mode_mesh;
-}
-
-
-void ModeAddCube::on_prepare_scene(const RenderParams& params) {
-	mode_mesh->on_prepare_scene(params);
-}
 
 void ModeAddCube::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);

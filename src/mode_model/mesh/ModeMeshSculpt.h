@@ -14,13 +14,12 @@
 class MultiViewWindow;
 class ModeMesh;
 
-class ModeMeshSculpt : public Mode {
+class ModeMeshSculpt : public SubMode {
 public:
 	explicit ModeMeshSculpt(ModeMesh* parent);
 
 	void on_enter() override;
 	void on_leave() override;
-	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 	void on_key_down(int key) override;
@@ -28,7 +27,6 @@ public:
 	void on_mouse_move(const vec2& m, const vec2& d) override;
 
 	ModeMesh* mode_mesh;
-	Mode* get_parent() override;
 
 	struct Brush {
 		float radius;

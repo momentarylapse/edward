@@ -13,13 +13,12 @@
 class MultiViewWindow;
 class ModeMesh;
 
-class ModeAddPlatonic : public Mode {
+class ModeAddPlatonic : public SubMode {
 public:
 	explicit ModeAddPlatonic(ModeMesh* parent);
 
 	void on_enter() override;
 	void on_leave() override;
-	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 	void on_key_down(int key) override;
@@ -28,7 +27,6 @@ public:
 	void update_mesh();
 
 	ModeMesh* mode_mesh;
-	Mode* get_parent() override;
 
 	vec3 center;
 	bool center_selected;

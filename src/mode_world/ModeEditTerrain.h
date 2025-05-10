@@ -12,7 +12,7 @@ struct WorldTerrain;
 class DataWorld;
 class ModeWorld;
 
-class ModeEditTerrain : public Mode {
+class ModeEditTerrain : public SubMode {
 public:
 	explicit ModeEditTerrain(ModeWorld* mode_world, int index);
 
@@ -26,7 +26,6 @@ public:
 	void on_key_down(int key) override;
 	void on_command(const string& id) override;
 
-	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 

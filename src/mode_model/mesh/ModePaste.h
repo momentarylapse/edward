@@ -12,12 +12,11 @@
 class MultiViewWindow;
 class ModeMesh;
 
-class ModePaste : public Mode {
+class ModePaste : public SubMode {
 public:
 	explicit ModePaste(ModeMesh* parent);
 
 	void on_enter() override;
-	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 	void on_key_down(int key) override;
@@ -27,7 +26,6 @@ public:
 	mat4 transformation;
 	ModeMesh* mode_mesh;
 	owned<VertexBuffer> vertex_buffer;
-	Mode* get_parent() override;
 };
 
 

@@ -31,7 +31,7 @@ public:
 	void set_line_width(float width);
 	float _line_width;
 
-	void clear(const RenderParams& params, const color& c);
+	static void clear(const RenderParams& params, const color& c);
 
 	void draw_lines(const Array<vec3>& points, bool contiguous = true);
 	void draw_circle(const vec3& center, const vec3& axis, float r);

@@ -13,7 +13,7 @@
 #include <view/MultiView.h>
 
 ModePaste::ModePaste(ModeMesh* parent) :
-	Mode(parent->session)
+	SubMode(parent)
 {
 	mode_mesh = parent;
 	multi_view = mode_mesh->multi_view;
@@ -27,14 +27,6 @@ void ModePaste::on_enter() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 	session->win->set_visible("overlay-button-grid-left", false);
-}
-
-Mode* ModePaste::get_parent() {
-	return mode_mesh;
-}
-
-void ModePaste::on_prepare_scene(const RenderParams& params) {
-	mode_mesh->on_prepare_scene(params);
 }
 
 void ModePaste::on_draw_win(const RenderParams& params, MultiViewWindow* win) {

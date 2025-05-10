@@ -16,6 +16,8 @@
 #include <mode_model/data/SkinGenerator.h>
 #include <functional>
 
+class CubeMapSource;
+class CubeMapRenderer;
 class SceneRenderer;
 class Camera;
 class Painter;
@@ -99,6 +101,8 @@ public:
 	Array<Light*> lights;
 	Light* default_light;
 	owned<ShadowRenderer> shadow_renderer;
+	owned<CubeMapSource> cube_map_source;
+	owned<CubeMapRenderer> cube_map_renderer;
 
 	MultiViewWindow window;
 	MultiViewWindow* active_window;

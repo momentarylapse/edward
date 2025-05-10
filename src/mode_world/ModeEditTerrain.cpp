@@ -8,7 +8,7 @@
 #include "dialog/EditTerrainPanel.h"
 #include <lib/xhui/xhui.h>
 
-ModeEditTerrain::ModeEditTerrain(ModeWorld* _mode_world, int _index) : Mode(_mode_world->session) {
+ModeEditTerrain::ModeEditTerrain(ModeWorld* _mode_world, int _index) : SubMode(_mode_world) {
 	mode_world = _mode_world;
 	data = mode_world->data;
 	multi_view = mode_world->multi_view;
@@ -59,10 +59,6 @@ void ModeEditTerrain::on_mouse_leave(const vec2&) {
 
 void ModeEditTerrain::on_mouse_move(const vec2& m, const vec2& d) {
 
-}
-
-void ModeEditTerrain::on_prepare_scene(const RenderParams& params) {
-	mode_world->on_prepare_scene(params);
 }
 
 void ModeEditTerrain::on_draw_win(const RenderParams& params, MultiViewWindow* win) {

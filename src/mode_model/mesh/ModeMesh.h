@@ -19,7 +19,7 @@ namespace xhui {
 class Material;
 class ModeModel;
 
-class ModeMesh : public Mode {
+class ModeMesh : public SubMode {
 public:
 	explicit ModeMesh(ModeModel* parent);
 	~ModeMesh() override;
@@ -30,6 +30,7 @@ public:
 	void on_enter() override;
 	void on_leave() override;
 	void on_prepare_scene(const RenderParams& params) override;
+	void on_draw_background(const RenderParams& params, RenderViewData& rvd) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 	void on_command(const string& id) override;

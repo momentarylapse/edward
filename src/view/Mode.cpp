@@ -30,4 +30,31 @@ void Mode::set_side_panel(xhui::Panel* p) {
 }
 
 
+SubMode::SubMode(Mode* parent) : Mode(parent->session) {
+	_parent = parent;
+}
+
+void SubMode::on_command(const string& id) {
+	_parent->on_command(id);
+}
+
+void SubMode::on_draw_background(const RenderParams& params, RenderViewData& rvd) {
+	_parent->on_draw_background(params, rvd);
+}
+
+void SubMode::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+	_parent->on_draw_win(params, win);
+}
+
+void SubMode::on_draw_shadow(const RenderParams& params, RenderViewData& rvd) {
+	_parent->on_draw_shadow(params, rvd);
+}
+
+void SubMode::on_prepare_scene(const RenderParams& params) {
+	_parent->on_prepare_scene(params);
+}
+
+
+
+
 

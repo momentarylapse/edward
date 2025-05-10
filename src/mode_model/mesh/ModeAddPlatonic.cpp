@@ -17,7 +17,7 @@
 #include <view/MultiView.h>
 
 ModeAddPlatonic::ModeAddPlatonic(ModeMesh* parent) :
-	Mode(parent->session)
+	SubMode(parent)
 {
 	mode_mesh = parent;
 	multi_view = mode_mesh->multi_view;
@@ -84,16 +84,6 @@ void ModeAddPlatonic::on_leave() {
 	session->win->unembed(dialog);
 	xhui::config.set_int("mesh.new_platonic.complexity", complexity);
 	xhui::config.set_int("mesh.new_platonic.type", (int)type);
-}
-
-
-Mode* ModeAddPlatonic::get_parent() {
-	return mode_mesh;
-}
-
-
-void ModeAddPlatonic::on_prepare_scene(const RenderParams& params) {
-	mode_mesh->on_prepare_scene(params);
 }
 
 void ModeAddPlatonic::on_draw_win(const RenderParams& params, MultiViewWindow* win) {

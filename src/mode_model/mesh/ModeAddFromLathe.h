@@ -13,13 +13,12 @@
 class MultiViewWindow;
 class ModeMesh;
 
-class ModeAddFromLathe : public Mode {
+class ModeAddFromLathe : public SubMode {
 public:
 	explicit ModeAddFromLathe(ModeMesh* parent);
 
 	void on_enter() override;
 	void on_leave() override;
-	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 	void on_key_down(int key) override;
@@ -30,7 +29,6 @@ public:
 	void create_turned_mesh();
 
 	ModeMesh* mode_mesh;
-	Mode* get_parent() override;
 
 	base::optional<vec3> center;
 	base::optional<vec3> axis;

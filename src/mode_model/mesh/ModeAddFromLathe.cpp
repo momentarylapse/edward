@@ -16,7 +16,7 @@
 #include <view/MultiView.h>
 
 ModeAddFromLathe::ModeAddFromLathe(ModeMesh* parent) :
-	Mode(parent->session)
+	SubMode(parent)
 {
 	mode_mesh = parent;
 	multi_view = mode_mesh->multi_view;
@@ -58,16 +58,6 @@ Dialog new-lathe-dialog "Lathe" allow-root width=200 noexpandx
 void ModeAddFromLathe::on_leave() {
 	session->win->unembed(dialog);
 	xhui::config.set_int("mesh.new_lathe.stripes", slices);
-}
-
-
-Mode* ModeAddFromLathe::get_parent() {
-	return mode_mesh;
-}
-
-
-void ModeAddFromLathe::on_prepare_scene(const RenderParams& params) {
-	mode_mesh->on_prepare_scene(params);
 }
 
 void ModeAddFromLathe::on_draw_win(const RenderParams& params, MultiViewWindow* win) {

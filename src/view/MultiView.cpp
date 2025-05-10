@@ -11,10 +11,12 @@
 #include <lib/xhui/Theme.h>
 #include <lib/math/mat3.h>
 #include <multiview/SingleData.h>
-#include <renderer/path/RenderPath.h>
-#include <renderer/scene/SceneRenderer.h>
-#include <renderer/scene/MeshEmitter.h>
-#include <renderer/scene/pass/ShadowRenderer.h>
+#include <y/renderer/path/RenderPath.h>
+#include <y/renderer/scene/SceneRenderer.h>
+#include <y/renderer/scene/MeshEmitter.h>
+#include <y/renderer/scene/pass/ShadowRenderer.h>
+#include <y/renderer/helper/CubeMapSource.h>
+#include <y/renderer/target/TextureRenderer.h>
 
 #include "EdwardWindow.h"
 #include <y/world/Camera.h>
@@ -26,6 +28,17 @@
 
 extern float global_shadow_box_size;
 
+
+class MultiViewBackgroundEmitter : public MeshEmitter {
+public:
+	MultiView* multi_view;
+	explicit MultiViewBackgroundEmitter(MultiView* mv) : MeshEmitter("geo") {
+		multi_view = mv;
+	}
+	void emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) override {
+		multi_view->session->cur_mode->on_draw_background(params, rvd);
+	}
+};
 
 class MultiViewGeometryEmitter : public MeshEmitter {
 public:
@@ -49,27 +62,10 @@ public:
 	}
 };
 
-/*class MultiViewShadowGeometryEmitter : public MeshEmitter {
-public:
-	MultiView* multi_view;
-	MultiViewShadowGeometryEmitter(MultiView* mv, SceneView& scene_view) : MeshEmitter("shadow") {
-		multi_view = mv;
-	}
-	void draw(const RenderParams& params) override {
-		cur_rvd.begin_draw();
-		if (override_view)
-			cur_rvd.set_view_matrix(*override_view);
-		else
-			cur_rvd.set_view_matrix(scene_view.cam->view_matrix());
-		if (override_projection)
-			cur_rvd.set_projection_matrix(*override_projection);
-		multi_view->session->cur_mode->on_draw_shadow(params, cur_rvd);
-	}
-};*/
-
 MultiViewWindow::MultiViewWindow(MultiView* _multi_view) {
 	multi_view = _multi_view;
 	scene_renderer = new SceneRenderer(RenderPathType::Forward, *multi_view->view_port.scene_view.get());
+	scene_renderer->add_emitter(new MultiViewBackgroundEmitter(multi_view));
 	scene_renderer->add_emitter(new MultiViewGeometryEmitter(this));
 }
 
@@ -216,6 +212,15 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 	view_port.scene_view->shadow_maps.add(shadow_renderer->cascades[0].depth_buffer);
 	view_port.scene_view->shadow_maps.add(shadow_renderer->cascades[1].depth_buffer);
 	//add_child(shadow_renderer.get());
+
+	cam_main = view_port.cam;
+	cube_map_source = new CubeMapSource;
+	cube_map_source->resolution = 256;
+	cube_map_source->cube_map = new CubeMap(cube_map_source->resolution, "rgba:i8");
+	cube_map_source->owner = new Entity;
+	cube_map_renderer = new CubeMapRenderer(*view_port.scene_view.get(), {new MultiViewBackgroundEmitter(this)});
+	cube_map_renderer->set_source(cube_map_source.get());
+	view_port.scene_view->cube_map = cube_map_source->cube_map;
 }
 
 MultiView::~MultiView() = default;
@@ -262,6 +267,9 @@ void MultiView::prepare(const RenderParams& params) {
 
 	if (shadow_renderer)
 		shadow_renderer->render(params);
+
+	if (cube_map_renderer)
+		cube_map_renderer->render(params);
 
 	//Renderer::prepare(params);
 }

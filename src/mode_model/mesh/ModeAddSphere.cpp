@@ -17,7 +17,7 @@
 #include <view/MultiView.h>
 
 ModeAddSphere::ModeAddSphere(ModeMesh* parent) :
-	Mode(parent->session)
+	SubMode(parent)
 {
 	mode_mesh = parent;
 	multi_view = mode_mesh->multi_view;
@@ -82,16 +82,6 @@ void ModeAddSphere::on_leave() {
 	xhui::config.set_int("mesh.new_sphere.slices_y", slices[1]);
 	xhui::config.set_int("mesh.new_sphere.complexity", complexity);
 	xhui::config.set_int("mesh.new_sphere.type", (int)type);
-}
-
-
-Mode* ModeAddSphere::get_parent() {
-	return mode_mesh;
-}
-
-
-void ModeAddSphere::on_prepare_scene(const RenderParams& params) {
-	mode_mesh->on_prepare_scene(params);
 }
 
 void ModeAddSphere::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
