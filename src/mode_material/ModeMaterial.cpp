@@ -103,13 +103,14 @@ void ModeMaterial::on_enter() {
 		for (int j=0; j<16; j++)
 			if (i%2 == j%2)
 				im.set_pixel(i, j, Black);
+	auto tex = new Texture(16, 16, "rgba:i8");
+	tex->write(im);
+	tex->set_options("magfilter=nearest");
 	material_ground = session->resource_manager->load_material("");
 	material_ground->roughness = 0.4f;
 	material_ground->metal = 0;
 	material_ground->albedo = color(1, 0.3f, 0.3f, 0.3f);
-	material_ground->textures.add(tex_white);
-	material_ground->textures[0]->write(im);
-	material_ground->textures[0]->set_options("magfilter=nearest");
+	material_ground->textures.add(tex);
 }
 
 

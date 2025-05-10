@@ -204,7 +204,8 @@ Dialog x x padding=0
 		vulkan::default_device = pp->context->device;
 		api_init_external(pp->context->instance, pp->context->device);
 #else
-		xhui::init_nix();
+		//xhui::init_nix();
+		nix::create_query_pool(1024);
 		//api_init()
 #endif
 		session->resource_manager = new ResourceManager({});

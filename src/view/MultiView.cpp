@@ -69,6 +69,16 @@ MultiViewWindow::MultiViewWindow(MultiView* _multi_view) {
 	scene_renderer->add_emitter(new MultiViewGeometryEmitter(this));
 }
 
+vec3 MultiViewWindow::view_pos() const {
+	return multi_view->view_port.pos - local_ang * vec3(0, 0, multi_view->view_port.radius);
+}
+
+quaternion MultiViewWindow::view_ang() const {
+	return local_ang;
+}
+
+
+
 vec3 MultiViewWindow::project(const vec3& v) const {
 	return to_pixels.project(v);
 }
@@ -158,15 +168,21 @@ mat3 MultiViewWindow::edit_frame() const {
 }
 
 void MultiViewWindow::prepare(const RenderParams& params) {
-	scene_renderer->set_view_from_camera(params, multi_view->view_port.cam);
-	scene_renderer->rvd.update_light_ubo();
+	projection = multi_view->view_port.cam->projection_matrix(area.width() / area.height());
+
+	scene_renderer->set_view(params, view_pos(), view_ang(), projection);
+	view = scene_renderer->rvd.ubo.v;
 	scene_renderer->prepare(params);
+
+	// 3d -> pixel
+	to_pixels = mat4::translation({area.x1, area.y1, 0})
+		* mat4::scale(area.width()/2, area.height()/2, 1)
+		* mat4::translation({1.0f, 1.0f, 0})
+		* projection * view;
 }
 
 void MultiViewWindow::draw(const RenderParams& params) {
 	multi_view->session->drawing_helper->set_window(this);
-
-	//multi_view->session->cur_mode->on_draw_win(params, this);
 
 	scene_renderer->draw(params);
 }
@@ -242,15 +258,6 @@ void MultiView::prepare(const RenderParams& params) {
 	global_shadow_box_size = view_port.radius * 8;
 
 	window.local_ang = view_port.ang;
-	window.view = view_port.cam->view_matrix();
-	window.projection = view_port.cam->projection_matrix(area.width() / area.height());
-	//window.scene_renderer->set_view(params, )
-
-	// 3d -> pixel
-	window.to_pixels = mat4::translation({area.x1, area.y1, 0})
-		* mat4::scale(area.width()/2, area.height()/2, 1)
-		* mat4::translation({1.0f, 1.0f, 0})
-		* window.projection * window.view;
 
 	{
 		if (light_mode == LightMode::FollowCamera)
@@ -277,7 +284,6 @@ void MultiView::prepare(const RenderParams& params) {
 void MultiView::draw(const RenderParams& params) {
 	//engine.physical_aspect_ratio = pp->native_area.width() / pp->native_area.height();
 
-	window.prepare(params); // why is this neccessary?
 	window.draw(params);
 }
 

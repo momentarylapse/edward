@@ -9,7 +9,6 @@
 
 namespace nix {
 	mat4 create_pixel_projection_matrix();
-	extern mat4 projection_matrix,view_matrix,model_matrix;
 }
 
 
@@ -29,6 +28,7 @@ owned<nix::Context> _nix_context;
 void init_nix() {
 	if (_nix_inited)
 		return;
+	nix::default_shader_bindings = false;
 	_nix_context = nix::init();
 	tex_text = new nix::Texture();
 	tex_white = new nix::Texture();
@@ -195,6 +195,8 @@ Painter::Painter(Window *w) {
 
 	window->handle_event_p(window->id, event_id::JustBeforeDraw, this);
 
+	// in case the event_id::JustBeforeDraw triggers off-screen rendering...
+	nix::bind_frame_buffer(_nix_context->default_framebuffer);
 
 	nix::start_frame_glfw(_nix_context.get(), window->window);
 	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(ui_scale, ui_scale, 1));
@@ -226,6 +228,7 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 	nix::set_shader(shader);
 	nix::set_alpha_split(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA, nix::Alpha::ZERO, nix::Alpha::ONE);
 	shader->set_color("_color_", _color);
+	shader->set_default_data();
 	nix::bind_texture(0, tex_text);
 	nix::draw_triangles(vb_rect);
 	nix::disable_alpha();
@@ -250,6 +253,7 @@ void Painter::draw_rect(const rect &r) {
 				nix::set_alpha_split(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA, nix::Alpha::ZERO, nix::Alpha::ONE);
 		}
 		s->set_color("_color_", _color);
+		s->set_default_data();
 		nix::bind_texture(0, tex_white);
 		nix::draw_triangles(vb_rect);
 		nix::disable_alpha();
@@ -281,6 +285,7 @@ void Painter::draw_line(const vec2 &a, const vec2 &b) {
 	if (_color.a < 1)
 		nix::set_alpha_split(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA, nix::Alpha::ZERO, nix::Alpha::ONE);
 	shader->set_color("_color_", _color);
+	shader->set_default_data();
 	nix::bind_texture(0, tex_white);
 	nix::draw_triangles(vb_rect);
 	nix::disable_alpha();
@@ -309,6 +314,7 @@ void Painter::draw_ximage(const rect &r, const XImage *image) {
 	nix::set_shader(shader);
 	nix::set_alpha_split(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA, nix::Alpha::ZERO, nix::Alpha::ONE);
 	shader->set_color("_color_", _color);
+	shader->set_default_data();
 	nix::bind_texture(0, t);
 	nix::draw_triangles(vb_rect);
 	nix::disable_alpha();
