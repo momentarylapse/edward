@@ -17,7 +17,6 @@ struct Material {
 };
 
 struct Light {
-	mat4 proj;
 	vec4 pos;
 	vec4 dir;
 	vec4 color;
@@ -57,9 +56,8 @@ uniform Matrices matrix;
 
 layout(binding=9, std140) uniform LightData {
 	int num_lights;
-	int shadow_index;
 	int num_surfels;
-	int _dummy;
+	int _dummy0, _dummy1;
 	mat4 shadow_proj[2];
 	Light light[500];
 };

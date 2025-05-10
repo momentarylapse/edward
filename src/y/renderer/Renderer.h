@@ -8,6 +8,7 @@
 #pragma once
 
 
+class RenderTask;
 class rect;
 
 #include "../graphics-fwd.h"
@@ -22,9 +23,9 @@ rect dynamicly_scaled_area(FrameBuffer *fb);
 rect dynamicly_scaled_source();
 
 struct RenderParams {
-	float desired_aspect_ratio;
-	bool target_is_window;
-	FrameBuffer *frame_buffer;
+	float desired_aspect_ratio = 1;
+	bool target_is_window = false;
+	FrameBuffer* frame_buffer = nullptr;
 	rect area;
 #ifdef USING_VULKAN
 	RenderPass *render_pass;
@@ -40,11 +41,13 @@ struct RenderParams {
 
 class Renderer : public VirtualBase {
 public:
-	explicit Renderer(const string &name);
+	explicit Renderer(const string& name);
 	~Renderer() override;
 
 	Array<Renderer*> children;
 	void add_child(Renderer *child);
+	Array<RenderTask*> sub_tasks;
+	void add_sub_task(RenderTask* child);
 
 	// (vulkan: BEFORE/OUTSIDE a render pass)
 	// can render into separate targets
@@ -58,16 +61,27 @@ public:
 
 	int channel;
 	int ch_prepare;
-	Context *context;
-	ResourceManager *resource_manager;
+	Context* context;
+	ResourceManager* resource_manager;
 };
 
-class RenderTask : public  Renderer {
+class RenderTask : public  VirtualBase {
 public:
-	explicit RenderTask(const string &name);
+	explicit RenderTask(const string& name);
+	~RenderTask() override;
+
+	Array<Renderer*> children;
+	void add_child(Renderer *child);
+	Array<RenderTask*> sub_tasks;
+	void add_sub_task(RenderTask* child);
+
+	void prepare_children(const RenderParams& params);
 
 	virtual void render(const RenderParams& params) = 0;
 
+	int channel;
 	bool active = true;
 	int _priority = 0;
+	Context* context;
+	ResourceManager* resource_manager;
 };

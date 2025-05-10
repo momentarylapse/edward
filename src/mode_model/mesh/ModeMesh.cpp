@@ -256,7 +256,7 @@ void ModeMesh::on_prepare_scene(const RenderParams& params) {
 
 void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
-	auto& rvd = win->rvd;
+	auto& rvd = win->rvd();
 	auto dh = win->multi_view->session->drawing_helper;
 	dh->clear(params, xhui::Theme::_default.background_low);
 

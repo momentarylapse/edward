@@ -11,8 +11,8 @@
 #include <view/MultiView.h>
 #include "data/DataMaterial.h"
 #include <y/renderer/Renderer.h>
-#include <y/renderer/world/geometry/RenderViewData.h>
-#include <y/renderer/world/geometry/SceneView.h>
+#include <y/renderer/scene/RenderViewData.h>
+#include <y/renderer/scene/SceneView.h>
 #include <y/helper/ResourceManager.h>
 #include <y/world/Material.h>
 #include <y/world/Camera.h>
@@ -142,7 +142,7 @@ void ModeMaterial::on_prepare_scene(const RenderParams& params) {
 
 void ModeMaterial::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
-	auto& rvd = win->rvd;
+	auto& rvd = win->rvd();
 	auto dh = win->multi_view->session->drawing_helper;
 	dh->clear(params, xhui::Theme::_default.background_low);
 

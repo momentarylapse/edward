@@ -16,7 +16,6 @@
 class Camera;
 
 struct UBOLight {
-	alignas(16) mat4 proj; // view -> texture
 	alignas(16) vec3 pos;
 	float dummy;
 	alignas(16) vec3 dir;
@@ -43,7 +42,8 @@ public:
 
 	void set_direction(const vec3 &dir);
 
-	void update(Camera *cam, float shadow_box_size, bool using_view_space);
+	UBOLight to_ubo(const vec3& view_pos, const quaternion& view_ang, bool using_view_space) const;
+	mat4 suggest_shadow_projection(Camera *cam, float shadow_box_size) const;
 
 	UBOLight light;
 	bool enabled;

@@ -1,59 +1,39 @@
-/*
- * GeometryRendererVulkan.cpp
- *
- *  Created on: Dec 16, 2022
- *      Author: michi
- */
+//
+// Created by Michael Ankele on 2025-05-07.
+//
 
-#include "GeometryRenderer.h"
-
-#ifdef USING_VULKAN
-#include "RenderViewData.h"
-#include "SceneView.h"
-#include "../../helper/PipelineManager.h"
+#include "WorldParticlesEmitter.h"
+#include "../../scene/RenderViewData.h"
+#include "../../scene/SceneView.h"
 #include "../../base.h"
-#include "../../../helper/PerformanceMonitor.h"
-#include "../../../helper/ResourceManager.h"
-#include "../../../fx/Particle.h"
-#include "../../../fx/Beam.h"
-#include "../../../fx/ParticleEmitter.h"
-#include "../../../fx/ParticleManager.h"
-#include "../../../world/Camera.h"
-#include "../../../world/Material.h"
-#include "../../../world/Model.h"
-#include "../../../world/Terrain.h"
-#include "../../../world/World.h"
-#include "../../../world/ModelManager.h"
-#include "../../../world/components/Animator.h"
-#include "../../../world/components/UserMesh.h"
-#include "../../../world/components/MultiInstance.h"
-#include "../../../y/Entity.h"
-#include "../../../y/ComponentManager.h"
-#include "../../../meta.h"
-#include <lib/base/sort.h>
-#include <lib/image/image.h>
-#include <lib/math/vec3.h>
+#include <fx/Particle.h>
+#include <fx/Beam.h>
+#include <fx/ParticleEmitter.h>
+#include <helper/PerformanceMonitor.h>
+#include <world/Camera.h>
+#include <graphics-impl.h>
+#include <y/EngineData.h>
+#include <y/ComponentManager.h>
+#include <y/Entity.h>
 
+WorldParticlesEmitter::WorldParticlesEmitter() : MeshEmitter("fx"),
+                                                 fx_material(engine.resource_manager)
+{
+	fx_material.pass0.cull_mode = CullMode::NONE;
+	fx_material.pass0.mode = TransparencyMode::FUNCTIONS;
+	fx_material.pass0.source = Alpha::SOURCE_ALPHA;
+	fx_material.pass0.destination = Alpha::SOURCE_INV_ALPHA;
+	fx_material.pass0.shader_path = "fx.shader";
 
-
-
-GraphicsPipeline* GeometryEmitter::get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb) {
-	if (pass.mode == TransparencyMode::FUNCTIONS)
-		return PipelineManager::get_alpha(s, rp, top, vb, pass.source, pass.destination, pass.cull_mode, pass.z_test, pass.z_buffer);
-	if (pass.mode == TransparencyMode::COLOR_KEY_HARD)
-		return PipelineManager::get_alpha(s, rp, top, vb, Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, pass.cull_mode, pass.z_test, pass.z_buffer);
-	return PipelineManager::get(s, rp, top, vb, pass.cull_mode, pass.z_test, pass.z_buffer);
+	fx_vertex_buffers.add(new VertexBuffer("3f,4f,2f"));
 }
 
+void WorldParticlesEmitter::emit_transparent(const RenderParams& params, RenderViewData& rvd) {
+	PerformanceMonitor::begin(channel);
+	gpu_timestamp_begin(params, channel);
+	auto cam = rvd.scene_view->cam;
 
-
-void GeometryRenderer::draw_particles(const RenderParams& params, RenderViewData &rvd) {
-	auto cb = params.command_buffer;
-	PerformanceMonitor::begin(ch_fx);
-	gpu_timestamp_begin(params, ch_fx);
-	auto cam = scene_view.cam;
-
-	auto shader = cur_rvd.get_shader(&fx_material, 0, "fx", "");
+	auto shader = rvd.get_shader(&fx_material, 0, "fx", "");
 
 	auto& rd = rvd.start(params, mat4::ID, shader, fx_material, 0, PrimitiveTopology::TRIANGLES, fx_vertex_buffers[0]);
 
@@ -123,7 +103,7 @@ void GeometryRenderer::draw_particles(const RenderParams& params, RenderViewData
 		auto vb = get_vb();
 		vb->update(v);
 
-		rd.dset->set_texture(BINDING_TEX0, texture);
+		rd.set_texture(BINDING_TEX0, texture);
 		rd.draw_triangles(params, vb);
 	}
 
@@ -146,7 +126,7 @@ void GeometryRenderer::draw_particles(const RenderParams& params, RenderViewData
 		auto vb = get_vb();
 		vb->update(v);
 
-		rd.dset->set_texture(BINDING_TEX0, g->texture);
+		rd.set_texture(BINDING_TEX0, g->texture);
 		rd.draw_triangles(params, vb);
 	}
 
@@ -184,20 +164,12 @@ void GeometryRenderer::draw_particles(const RenderParams& params, RenderViewData
 		}
 		auto vb = get_vb();
 		vb->update(v);
-		rd.dset->set_texture(BINDING_TEX0, g->texture);
-		cb->draw(vb);
+		rd.set_texture(BINDING_TEX0, g->texture);
+		rd.draw_triangles(params, vb);
 	}
 
-	gpu_timestamp_end(params, ch_fx);
-	PerformanceMonitor::end(ch_fx);
-}
-
-void GeometryRenderer::clear(const RenderParams& params, RenderViewData &rvd) {
-	auto cb = params.command_buffer;
-	cb->clear(params.frame_buffer->area(), {world.background}, 1.0f);
+	gpu_timestamp_end(params, channel);
+	PerformanceMonitor::end(channel);
 }
 
 
-
-
-#endif

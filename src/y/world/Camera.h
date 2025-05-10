@@ -44,9 +44,8 @@ public:
 	mat4 view_matrix() const;
 	mat4 projection_matrix(float aspect_ratio) const;
 
-	void update_matrices(float aspect_ratio);
+	void update_matrix_cache(float aspect_ratio);
 
-	mat4 m_projection, m_view;
 	mat4 m_all, im_all;
 	vec3 _cdecl project(const vec3 &v);
 	vec3 _cdecl unproject(const vec3 &v);

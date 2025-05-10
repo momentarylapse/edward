@@ -8,10 +8,10 @@
 #include "WorldRendererVulkanRayTracing.h"
 #ifdef USING_VULKAN
 #include "../helper/Raytracing.h"
-#include "../world/geometry/SceneView.h"
+#include "../scene/SceneView.h"
 #include "../path/RenderPath.h"
-#include "../../graphics-impl.h"
 #include "../base.h"
+#include <graphics-impl.h>
 #include <lib/os/msg.h>
 #include "../../helper/PerformanceMonitor.h"
 #include "../../helper/ResourceManager.h"
@@ -27,8 +27,7 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(vulkan::Device *_de
 	width = w;
 	height = h;
 
-	geo_renderer = new GeometryRenderer(RenderPathType::Forward, scene_view);
-	add_child(geo_renderer.get());
+	rvd.set_scene_view(&scene_view);
 
 	if (device->has_rtx() and config.allow_rtx)
 		mode = Mode::RTX;
@@ -87,7 +86,8 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 	PerformanceMonitor::begin(ch_prepare);
 	gpu_timestamp_begin(params, ch_prepare);
 
-	rvd.prepare_scene(&scene_view);
+	rvd.set_view(params, scene_view.cam);
+	rvd.update_light_ubo();
 
 	int w = width * engine.resolution_scale_x;
 	int h = height * engine.resolution_scale_y;

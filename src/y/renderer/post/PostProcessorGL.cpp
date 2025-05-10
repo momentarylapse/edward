@@ -173,12 +173,12 @@ void PostProcessorGL::process_blur(FrameBuffer *source, FrameBuffer *target, flo
 }
 
 void PostProcessorGL::process_depth(FrameBuffer *source, FrameBuffer *target, const vec2 &axis) {
-	shader_depth->set_float("max_radius", 50);
+	/*shader_depth->set_float("max_radius", 50);
 	shader_depth->set_float("focal_length", cam_main->focal_length);
 	shader_depth->set_float("focal_blur", cam_main->focal_blur);
 	shader_depth->set_floats("axis", &axis.x, 2);
 	shader_depth->set_matrix("invproj", cam_main->m_projection.inverse());
-//	process({source->color_attachments[0].get(), depth_buffer()}, target, shader_depth.get());
+//	process({source->color_attachments[0].get(), depth_buffer()}, target, shader_depth.get());*/
 }
 
 void PostProcessorGL::process(const Array<Texture*> &source, FrameBuffer *target, Shader *shader, const Any &data) {

@@ -99,7 +99,7 @@ void ModeAddPlatonic::on_prepare_scene(const RenderParams& params) {
 void ModeAddPlatonic::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
 
-	session->drawing_helper->draw_mesh(params, win->rvd, mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
+	session->drawing_helper->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
 }
 
 void ModeAddPlatonic::on_draw_post(Painter* p) {

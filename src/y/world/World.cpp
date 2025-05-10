@@ -353,7 +353,7 @@ bool World::load(const LevelData &ld) {
 		add_link(Link::create(l.type, a, b, l.pos, quaternion::rotation(l.ang)));
 	}
 
-	scripts = ld.scripts;
+	systems = ld.systems;
 
 	net_msg_enabled = true;
 	return ok;

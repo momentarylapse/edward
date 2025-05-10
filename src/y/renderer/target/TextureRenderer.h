@@ -17,14 +17,15 @@ public:
 	explicit TextureRenderer(const string& name, const shared_array<Texture>& textures, const Array<string>& options = {});
 	~TextureRenderer() override;
 
-	// TODO move to explicit/dependency graph
-	void prepare(const RenderParams& params) override;
+	RenderParams make_params(const RenderParams& params) const;
 
 	void render(const RenderParams& params) override;
 
 	void set_area(const rect& area);
 	bool override_area = false;
 	rect user_area;
+
+	void set_layer(int layer);
 
 	shared<FrameBuffer> frame_buffer;
 #ifdef USING_VULKAN

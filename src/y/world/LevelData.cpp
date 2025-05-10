@@ -92,7 +92,7 @@ bool LevelData::load(const Path &filename) {
 					v.value = ee.value("value");
 					s.variables.add(v);
 				}
-				scripts.add(s);
+				systems.add(s);
 			}
 		}
 	}

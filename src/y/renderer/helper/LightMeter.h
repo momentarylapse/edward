@@ -22,6 +22,8 @@ public:
 	void read();
 	void setup();
 	void adjust_camera(Camera* cam);
+
+	int ch_prepare;
 };
 
 

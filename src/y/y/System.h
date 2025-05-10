@@ -1,19 +1,18 @@
 /*
- * Controller.h
+ * System.h
  *
  *  Created on: 02.01.2020
  *      Author: michi
  */
 
-#ifndef SRC_PLUGINS_CONTROLLER_H_
-#define SRC_PLUGINS_CONTROLLER_H_
+#pragma once
 
 #include "../y/Entity.h"
 
-class Controller : public BaseClass {
+class System : public BaseClass {
 public:
-	Controller();
-	~Controller() override {};
+	System();
+	~System() override = default;
 
 	void __init__();
 	void __delete__() override;
@@ -37,5 +36,3 @@ public:
 	const kaba::Class *_class;
 	int ch_iterate = -1;
 };
-
-#endif /* SRC_PLUGINS_CONTROLLER_H_ */

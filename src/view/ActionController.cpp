@@ -20,7 +20,7 @@
 #include <data/mesh/GeometryTorus.h>
 #include <data/mesh/GeometryCube.h>
 #include <y/graphics-impl.h>
-#include <y/renderer/world/geometry/RenderViewData.h>
+#include <y/renderer/scene/RenderViewData.h>
 #include <lib/base/iter.h>
 #include <lib/math/plane.h>
 #include <lib/os/msg.h>

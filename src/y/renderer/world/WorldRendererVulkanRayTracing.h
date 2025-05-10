@@ -10,7 +10,7 @@
 #include "WorldRenderer.h"
 #ifdef USING_VULKAN
 #include "../post/ThroughShaderRenderer.h"
-#include "geometry/RenderViewData.h"
+#include "../scene/RenderViewData.h"
 
 class Camera;
 

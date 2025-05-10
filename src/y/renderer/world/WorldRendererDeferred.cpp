@@ -6,30 +6,26 @@
  */
 
 #include "WorldRendererDeferred.h"
-
-//#ifdef USING_OPENGL
-#include "geometry/GeometryRenderer.h"
 #include "../target/TextureRenderer.h"
-#include "pass/ShadowRenderer.h"
+#include "../scene/pass/ShadowRenderer.h"
 #include "../post/ThroughShaderRenderer.h"
 #include "../base.h"
 #include "../path/RenderPath.h"
-#include <lib/nix/nix.h>
 #include <lib/os/msg.h>
 #include <lib/math/random.h>
 #include <lib/math/vec4.h>
 #include <lib/math/vec2.h>
-
+#include <renderer/world/emitter/WorldInstancedEmitter.h>
+#include <renderer/world/emitter/WorldModelsEmitter.h>
+#include <renderer/world/emitter/WorldSkyboxEmitter.h>
+#include <renderer/world/emitter/WorldTerrainsEmitter.h>
+#include <renderer/world/emitter/WorldUserMeshesEmitter.h>
+#include <renderer/world/emitter/WorldParticlesEmitter.h>
+#include <world/World.h>
 #include "../../helper/PerformanceMonitor.h"
 #include "../../helper/ResourceManager.h"
-#include "../../plugins/ControllerManager.h"
-#include "../../plugins/PluginManager.h"
 #include "../../world/Camera.h"
-#include "../../world/Light.h"
-#include "../../world/World.h"
-#include "../../y/Entity.h"
 #include "../../Config.h"
-#include "../../meta.h"
 #include "../../graphics-impl.h"
 
 
@@ -73,38 +69,41 @@ WorldRendererDeferred::WorldRendererDeferred(SceneView& scene_view, int width, i
 	ch_gbuf_out = PerformanceMonitor::create_channel("gbuf-out", channel);
 	ch_trans = PerformanceMonitor::create_channel("trans", channel);
 
-	geo_renderer_background = new GeometryRenderer(RenderPathType::Forward, scene_view);
-	geo_renderer_background->set(GeometryRenderer::Flags::ALLOW_SKYBOXES | GeometryRenderer::Flags::ALLOW_CLEAR_COLOR);
-	add_child(geo_renderer_background.get());
+	scene_renderer_background = new SceneRenderer(RenderPathType::Forward, scene_view);
+	scene_renderer_background->add_emitter(new WorldSkyboxEmitter);
+	add_child(scene_renderer_background.get());
 
-	geo_renderer = new GeometryRenderer(RenderPathType::Deferred, scene_view);
-	geo_renderer->set(GeometryRenderer::Flags::ALLOW_OPAQUE);
-	gbuffer_renderer->add_child(geo_renderer.get());
+	scene_renderer = new SceneRenderer(RenderPathType::Deferred, scene_view);
+	scene_renderer->add_emitter(new WorldModelsEmitter);
+	scene_renderer->add_emitter(new WorldTerrainsEmitter);
+	scene_renderer->add_emitter(new WorldUserMeshesEmitter);
+	scene_renderer->add_emitter(new WorldInstancedEmitter);
+	scene_renderer->allow_transparent = false;
+	gbuffer_renderer->add_child(scene_renderer.get());
 
-	geo_renderer_trans = new GeometryRenderer(RenderPathType::Forward, scene_view);
-	geo_renderer_trans->set(GeometryRenderer::Flags::ALLOW_TRANSPARENT);
-	add_child(geo_renderer_trans.get());
+	scene_renderer_trans = new SceneRenderer(RenderPathType::Forward, scene_view);
+	scene_renderer_trans->add_emitter(new WorldModelsEmitter);
+	scene_renderer_trans->add_emitter(new WorldUserMeshesEmitter);
+	scene_renderer_trans->add_emitter(new WorldParticlesEmitter);
+	scene_renderer_trans->allow_opaque = false;
+	add_child(scene_renderer_trans.get());
 }
 
 void WorldRendererDeferred::prepare(const RenderParams& params) {
 	PerformanceMonitor::begin(ch_prepare);
 
-
 	auto sub_params = params.with_target(gbuffer_renderer->frame_buffer.get());
 
 	gbuffer_renderer->set_area(dynamicly_scaled_area(gbuffer_renderer->frame_buffer.get()));
-	gbuffer_renderer->prepare(params);
 
+	scene_renderer_background->set_view_from_camera(params, scene_view.cam);
+	scene_renderer_background->prepare(params); // keep drawing into direct target
 
-	scene_view.cam->update_matrices(params.desired_aspect_ratio);
+	scene_renderer->set_view_from_camera(sub_params, scene_view.cam);
+	scene_renderer->prepare(sub_params);
 
-	//geo_renderer_background->cur_rvd.set_view_matrix()
-	geo_renderer_background->cur_rvd.set_projection_matrix(scene_view.cam->m_projection);
-	geo_renderer_background->cur_rvd.set_view_matrix(scene_view.cam->m_view);
-	geo_renderer_background->cur_rvd.prepare_scene(&scene_view);
-	geo_renderer_background->prepare(params); // keep drawing into direct target
-	geo_renderer->prepare(sub_params);
-	geo_renderer_trans->prepare(params); // keep drawing into direct target
+	scene_renderer_trans->set_view_from_camera(params, scene_view.cam);
+	scene_renderer_trans->prepare(params); // keep drawing into direct target
 
 
 	gbuffer_renderer->render(params);
@@ -116,26 +115,27 @@ void WorldRendererDeferred::draw(const RenderParams& params) {
 	PerformanceMonitor::begin(channel);
 	gpu_timestamp_begin(params, channel);
 
-	geo_renderer_background->draw(params);
+	scene_renderer_background->draw(params);
 
 	render_out_from_gbuffer(gbuffer_renderer->frame_buffer.get(), params);
 
 	// transparency
 #ifdef USING_OPENGL
-	auto& rvd = geo_renderer_trans->cur_rvd;
+	msg_todo("deferred rendering in OpenGL is broken");
+	auto& rvd = scene_renderer_trans->rvd;
 
 	PerformanceMonitor::begin(ch_trans);
 	bool flip_y = params.target_is_window;
 	mat4 m = flip_y ? mat4::scale(1,-1,1) : mat4::ID;
 	auto cam = scene_view.cam;
-	cam->update_matrices(params.desired_aspect_ratio);
-	nix::set_projection_matrix(m * cam->m_projection); // TODO
+	//cam->update_matrices(params.desired_aspect_ratio);
+	nix::set_projection_matrix(m * cam->projection_matrix(params.desired_aspect_ratio)); // TODO
 	nix::bind_uniform_buffer(BINDING_LIGHT, rvd.ubo_light.get());
 	nix::set_view_matrix(cam->view_matrix()); // TODO
 	nix::set_z(true, true);
 	nix::set_front(flip_y ? nix::Orientation::CW : nix::Orientation::CCW);
 
-	geo_renderer_trans->draw(params);
+	scene_renderer_trans->draw(params);
 	nix::set_cull(nix::CullMode::BACK);
 	nix::set_front(nix::Orientation::CW);
 
@@ -155,7 +155,7 @@ void WorldRendererDeferred::render_out_from_gbuffer(FrameBuffer *source, const R
 	auto& data = out_renderer->bindings.shader_data;
 
 #ifdef USING_OPENGL
-	if constexpr (GeometryRenderer::using_view_space)
+	if constexpr (SceneRenderer::using_view_space)
 		data.dict_set("eye_pos", vec3_to_any(vec3::ZERO));
 	else
 		data.dict_set("eye_pos", vec3_to_any(scene_view.cam->owner->pos)); // NAH
@@ -163,7 +163,7 @@ void WorldRendererDeferred::render_out_from_gbuffer(FrameBuffer *source, const R
 	data.dict_set("ambient_occlusion_radius:8", config.ambient_occlusion_radius);
 	out_renderer->bind_uniform_buffer(13, ssao_sample_buffer);
 
-	auto& rvd = geo_renderer->cur_rvd;
+	auto& rvd = scene_renderer->rvd;
 	out_renderer->bind_uniform_buffer(BINDING_LIGHT, rvd.ubo_light.get());
 	for (int i=0; i<gbuffer_textures.num; i++)
 		out_renderer->bind_texture(i, gbuffer_textures[i].get());
@@ -182,5 +182,4 @@ void WorldRendererDeferred::render_out_from_gbuffer(FrameBuffer *source, const R
 	PerformanceMonitor::end(ch_gbuf_out);
 }
 
-//void WorldRendererDeferred::render_into_texture(nix::FrameBuffer *fb, Camera *cam) {}
 

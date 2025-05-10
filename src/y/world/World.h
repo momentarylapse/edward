@@ -137,7 +137,7 @@ public:
 	Entity *ego;
 
 
-	Array<LevelData::ScriptData> scripts;
+	Array<LevelData::ScriptData> systems;
 
 
 	btDefaultCollisionConfiguration* collisionConfiguration;

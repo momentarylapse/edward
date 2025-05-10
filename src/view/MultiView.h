@@ -7,8 +7,8 @@
 
 #include "Hover.h"
 #include <y/renderer/Renderer.h>
-#include <y/renderer/world/geometry/SceneView.h>
-#include <y/renderer/world/geometry/RenderViewData.h>
+#include <y/renderer/scene/SceneView.h>
+#include <y/renderer/scene/RenderViewData.h>
 #include <lib/math/Box.h>
 #include <lib/math/vec3.h>
 #include <lib/math/quaternion.h>
@@ -16,6 +16,7 @@
 #include <mode_model/data/SkinGenerator.h>
 #include <functional>
 
+class SceneRenderer;
 class Camera;
 class Painter;
 class Session;
@@ -25,7 +26,7 @@ class MultiView;
 namespace multiview {
 	struct SingleData;
 }
-class ShadowRendererX;
+class ShadowRenderer;
 
 
 
@@ -52,7 +53,8 @@ public:
 	mat4 to_pixels;
 	mat4 view;
 	mat4 projection;
-	RenderViewData rvd;
+	owned<SceneRenderer> scene_renderer;
+	RenderViewData& rvd();
 };
 
 class MultiView : public obs::Node<Renderer> {
@@ -96,7 +98,7 @@ public:
 
 	Array<Light*> lights;
 	Light* default_light;
-	owned<ShadowRendererX> shadow_renderer;
+	owned<ShadowRenderer> shadow_renderer;
 
 	MultiViewWindow window;
 	MultiViewWindow* active_window;

@@ -1,15 +1,18 @@
 #include "RenderViewData.h"
+#include "SceneRenderer.h"
 
 #include <algorithm>
 #include <lib/base/iter.h>
+#include <lib/os/msg.h>
 #include <renderer/path/RenderPath.h>
 
-#include "../../../graphics-impl.h"
-#include "GeometryRenderer.h"
+#include <graphics-impl.h>
 #include "SceneView.h"
-#include "../../base.h"
-#ifdef USING_OPENGL
+#include "../base.h"
 #include <world/Camera.h>
+#include <world/Light.h>
+#include <y/Entity.h>
+#ifdef USING_OPENGL
 #include <y/Entity.h>
 #endif
 
@@ -20,36 +23,52 @@ RenderViewData::RenderViewData() {
 	type = RenderPathType::Forward;
 	ubo_light = new UniformBuffer(sizeof(LightMetaData) + MAX_LIGHTS * sizeof(UBOLight));
 	light_meta_data = {};
-	set_projection_matrix(mat4::ID);
-	set_view_matrix(mat4::ID);
+	set_view(RenderParams::WHATEVER, vec3::ZERO, quaternion::ID, mat4::ID);
 }
 
-void RenderViewData::set_projection_matrix(const mat4& projection) {
-	ubo.p = projection;
-}
-void RenderViewData::set_view_matrix(const mat4& view) {
-	ubo.v = view;
+void RenderViewData::set_scene_view(SceneView* _scene_view) {
+	scene_view = _scene_view;
 }
 
-void RenderViewData::update_lights() {
+void RenderViewData::set_view(const RenderParams& params, const vec3& pos, const quaternion& ang, const mat4& projection) {
+	bool flip_y = params.target_is_window;
+
+#ifdef USING_OPENGL
+	auto m = flip_y ? mat4::scale(1,-1,1) : mat4::ID;
+#else
+	auto m = mat4::ID;
+#endif
+
+	view_pos = pos;
+	view_ang = ang;
+	ubo.v = mat4::rotation(ang.bar()) * mat4::translation(-pos);
+	ubo.p = projection * m;
+}
+
+void RenderViewData::set_view(const RenderParams& params, Camera* cam) {
+	set_view(params, cam->owner->pos, cam->owner->ang, cam->projection_matrix(params.desired_aspect_ratio));
+}
+
+
+void RenderViewData::update_light_ubo() {
 	Array<UBOLight> lights;
-	light_meta_data.shadow_index = -1;
-	for (auto l: scene_view->lights) {
-		l->update(scene_view->cam, global_shadow_box_size, true);
-		lights.add(l->light);
-	}
-	for (const auto& [i,l]: enumerate(scene_view->shadow_indices)) {
-		light_meta_data.shadow_index = l;
-		light_meta_data.shadow_proj[i] = scene_view->lights[i]->shadow_projection;
+	lights.resize(scene_view->lights.num);
+	for (auto&& [i, l]: enumerate(scene_view->lights))
+		// using current view
+		lights[i] = l->to_ubo(view_pos, view_ang, true);
+
+	for (const auto [i,l]: enumerate(scene_view->shadow_indices)) {
+		auto ll = scene_view->lights[l];
+		// from reference cam
+		ll->shadow_projection = ll->suggest_shadow_projection(scene_view->cam, global_shadow_box_size);
+		if constexpr (true)
+			light_meta_data.shadow_proj[ll->light.shadow_index] = ll->shadow_projection * ubo.v.inverse();
+		else
+			light_meta_data.shadow_proj[ll->light.shadow_index] = ll->shadow_projection;
 	}
 	light_meta_data.num_lights = scene_view->lights.num;
 	ubo_light->update_part(&light_meta_data, 0, sizeof(LightMetaData));
 	ubo_light->update_array(lights, sizeof(LightMetaData));
-}
-
-void RenderViewData::prepare_scene(SceneView *_scene_view) {
-	scene_view = _scene_view;
-	update_lights();
 }
 
 
@@ -57,7 +76,7 @@ void RenderViewData::prepare_scene(SceneView *_scene_view) {
 
 void RenderData::set_material_x(const SceneView& scene_view, const Material& material, Shader* shader, int pass_no) {
 	nix::set_shader(shader);
-	if constexpr (GeometryRenderer::using_view_space)
+	if constexpr (SceneRenderer::using_view_space)
 		shader->set_floats("eye_pos", &scene_view.cam->owner->pos.x, 3); // NAH....
 	else
 		shader->set_floats("eye_pos", &vec3::ZERO.x, 3);
@@ -82,6 +101,10 @@ void RenderData::set_material_x(const SceneView& scene_view, const Material& mat
 	shader->set_float_l(shader->location[Shader::LOCATION_MATERIAL_ROUGHNESS], material.roughness);
 	shader->set_float_l(shader->location[Shader::LOCATION_MATERIAL_METAL], material.metal);
 	shader->set_color_l(shader->location[Shader::LOCATION_MATERIAL_EMISSION], material.emission);
+}
+
+void RenderData::set_texture(int binding, Texture *tex) {
+	nix::bind_texture(binding, tex);
 }
 
 void RenderData::draw_triangles(const RenderParams&, VertexBuffer* vb) {
@@ -118,6 +141,13 @@ void RenderViewData::set_cull(CullMode mode) {
 	nix::set_cull(mode);
 }
 
+void RenderViewData::clear(const RenderParams& params, const Array<color>& colors, float z) {
+	if (colors.num > 0)
+		nix::clear_color(colors[0]);
+	if (z >= 0)
+		nix::clear_z();
+}
+
 RenderData& RenderViewData::start(const RenderParams& params, const mat4& matrix,
                                   Shader* shader, const Material& material, int pass_no,
                                   PrimitiveTopology top, VertexBuffer *vb) {
@@ -143,6 +173,15 @@ void RenderViewData::begin_draw() {
 		light_meta_data.num_surfels = scene_view->num_surfels;
 }
 
+void RenderViewData::clear(const RenderParams& params, const Array<color>& colors, float z) {
+	auto cb = params.command_buffer;
+	if (z >= 0)
+		cb->clear(params.frame_buffer->area(), colors, z);
+	else
+		cb->clear(params.frame_buffer->area(), colors, base::None);
+}
+
+
 RenderData& RenderViewData::start(
 		const RenderParams& params, const mat4& matrix,
 		Shader* shader, const Material& material, int pass_no,
@@ -161,7 +200,7 @@ RenderData& RenderViewData::start(
 	ubo.roughness = material.roughness;
 	rda[index].ubo->update_part(&ubo, 0, sizeof(UBO));
 
-	auto p = GeometryRenderer::get_pipeline(shader, params.render_pass, material.pass(pass_no), top, vb);
+	auto p = SceneRenderer::get_pipeline(shader, params.render_pass, material.pass(pass_no), top, vb);
 
 	params.command_buffer->bind_pipeline(p);
 
@@ -184,6 +223,10 @@ void RenderData::set_textures(const SceneView& scene_view, const Array<Texture*>
 		dset->set_texture(BINDING_SHADOW1, scene_view.shadow_maps[1]);
 	if (scene_view.cube_map)
 		dset->set_texture(BINDING_CUBE, scene_view.cube_map.get());
+}
+
+void RenderData::set_texture(int binding, Texture *tex) {
+	dset->set_texture(binding, tex);
 }
 
 void RenderData::draw_triangles(const RenderParams& params, VertexBuffer* vb) {

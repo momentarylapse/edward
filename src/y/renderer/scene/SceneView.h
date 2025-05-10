@@ -17,6 +17,8 @@ struct XTerrainVBUpdater;
 class TerrainUpdateThread;
 struct RayTracingData;
 
+static constexpr int MAX_LIGHTS = 1024;
+
 // "scene" rendered by 1 camera
 //   mostly lighting situation
 //   includes shadow/cube maps from multiple perspectives

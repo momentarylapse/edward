@@ -46,7 +46,7 @@ float _shadow_pcf(vec3 p) {
 }
 
 vec3 _light_proj(Light l, vec3 p) {
-	vec4 proj = l.proj * vec4(p,1);
+	vec4 proj = shadow_proj[0] * vec4(p,1);
 	proj.xyz /= proj.w;
 	proj.x = (proj.x +1)/2;
 	proj.y = (proj.y +1)/2;

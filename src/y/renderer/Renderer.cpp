@@ -56,7 +56,13 @@ void Renderer::add_child(Renderer *child) {
 	children.add(child);
 }
 
+void Renderer::add_sub_task(RenderTask* child) {
+	sub_tasks.add(child);
+}
+
 void Renderer::prepare(const RenderParams& params) {
+	for (auto s: sub_tasks)
+		s->render(params);
 	for (auto c: children)
 		c->prepare(params);
 }
@@ -66,7 +72,29 @@ void Renderer::draw(const RenderParams& params) {
 		c->draw(params);
 }
 
-RenderTask::RenderTask(const string& name) : Renderer(name) {
 
+RenderTask::RenderTask(const string& name) {
+	channel = PerformanceMonitor::create_channel(name, -1);
+
+	context = engine.context;
+	resource_manager = engine.resource_manager;
 }
+
+RenderTask::~RenderTask() = default;
+
+void RenderTask::add_child(Renderer *child) {
+	children.add(child);
+}
+
+void RenderTask::add_sub_task(RenderTask* child) {
+	sub_tasks.add(child);
+}
+
+void RenderTask::prepare_children(const RenderParams& params) {
+	for (auto s: sub_tasks)
+		s->render(params);
+	for (auto c: children)
+		c->prepare(params);
+}
+
 

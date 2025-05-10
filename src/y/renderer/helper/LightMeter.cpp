@@ -16,6 +16,7 @@ constexpr int NSAMPLES = 2560;
 LightMeter::LightMeter(ResourceManager* resource_manager, Texture* tex)
 	: ComputeTask("expo", resource_manager->load_shader("compute/brightness.shader"), NSAMPLES, 1, 1)
 {
+	ch_prepare = PerformanceMonitor::create_channel("expo.p", channel);
 	params = new UniformBuffer(8);
 	buf = new ShaderStorageBuffer(NBINS*4);
 	texture = tex;

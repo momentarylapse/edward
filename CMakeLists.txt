@@ -486,8 +486,6 @@ add_executable(edward
 	src/y/helper/ResourceManager.cpp
 	src/y/helper/Scheduler.cpp
 	src/y/net/NetworkManager.cpp
-	src/y/plugins/Controller.cpp
-	src/y/plugins/ControllerManager.cpp
 	src/y/plugins/PluginManager.cpp
 	src/y/renderer/gui/GuiRendererGL.cpp
 	src/y/renderer/gui/GuiRendererVulkan.cpp
@@ -501,7 +499,6 @@ add_executable(edward
 	src/y/renderer/helper/Raytracing.cpp
 	src/y/renderer/helper/RendererFactory.cpp
 	src/y/renderer/path/RenderPath.cpp
-	src/y/renderer/path/RenderPathDirect.cpp
 	src/y/renderer/post/HDRResolver.cpp
 	src/y/renderer/post/MultisampleResolver.cpp
 	src/y/renderer/post/PostProcessor.cpp
@@ -511,6 +508,12 @@ add_executable(edward
 	src/y/renderer/regions/RegionRenderer.cpp
 	src/y/renderer/regions/RegionRendererGL.cpp
 	src/y/renderer/regions/RegionRendererVulkan.cpp
+	src/y/renderer/scene/mesh/CubeEmitter.cpp
+	src/y/renderer/scene/pass/ShadowRenderer.cpp
+	src/y/renderer/scene/MeshEmitter.cpp
+	src/y/renderer/scene/RenderViewData.cpp
+	src/y/renderer/scene/SceneRenderer.cpp
+	src/y/renderer/scene/SceneView.cpp
 	src/y/renderer/target/HeadlessRendererVulkan.cpp
 	src/y/renderer/target/HuiWindowRendererGL.cpp
 	src/y/renderer/target/HuiWindowRendererVulkan.cpp
@@ -520,13 +523,12 @@ add_executable(edward
 	src/y/renderer/target/WindowRendererGL.cpp
 	src/y/renderer/target/WindowRendererVulkan.cpp
 	src/y/renderer/target/XhuiRenderer.cpp
-	src/y/renderer/world/geometry/GeometryRenderer.cpp
-	src/y/renderer/world/geometry/GeometryRendererGL.cpp
-	src/y/renderer/world/geometry/GeometryRendererVulkan.cpp
-	src/y/renderer/world/geometry/RenderViewData.cpp
-	src/y/renderer/world/geometry/SceneView.cpp
-	src/y/renderer/world/pass/ShadowRenderer.cpp
-	src/y/renderer/world/pass/ShadowRendererX.cpp
+	src/y/renderer/world/emitter/WorldInstancedEmitter.cpp
+	src/y/renderer/world/emitter/WorldModelsEmitter.cpp
+	src/y/renderer/world/emitter/WorldParticlesEmitter.cpp
+	src/y/renderer/world/emitter/WorldSkyboxEmitter.cpp
+	src/y/renderer/world/emitter/WorldTerrainsEmitter.cpp
+	src/y/renderer/world/emitter/WorldUserMeshesEmitter.cpp
 	src/y/renderer/world/WorldRenderer.cpp
 	src/y/renderer/world/WorldRendererDeferred.cpp
 	src/y/renderer/world/WorldRendererForward.cpp
@@ -555,6 +557,8 @@ add_executable(edward
 	src/y/y/ComponentManager.cpp
 	src/y/y/EngineData.cpp
 	src/y/y/Entity.cpp
+	src/y/y/System.cpp
+	src/y/y/SystemManager.cpp
 	src/y/Config.cpp
 	src/Edward.cpp
 	src/Session.cpp)

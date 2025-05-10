@@ -101,7 +101,7 @@ public:
 	Array<Object> objects;
 	Array<Terrain> terrains;
 	int ego_index;
-	Array<ScriptData> scripts;
+	Array<ScriptData> systems;
 	Array<Light> lights;
 	Array<Link> links;
 

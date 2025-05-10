@@ -19,7 +19,7 @@ public:
 	enum class Type {
 		NONE,
 		ENTITY,
-		CONTROLLER,
+		SYSTEM,
 		LINK,
 		UI_NODE,
 		UI_TEXT,

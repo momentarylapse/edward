@@ -21,9 +21,6 @@ public:
 	HeadlessRenderer(vulkan::Device* d, const shared_array<Texture>& tex);
 	~HeadlessRenderer() override;
 
-	// TODO move to explicit/dependency graph
-	void prepare(const RenderParams& params) override;
-
 	void render(const RenderParams& params) override;
 
 	RenderParams create_params(const rect& area) const;

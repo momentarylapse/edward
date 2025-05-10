@@ -160,7 +160,7 @@ void create_base_renderer(GLFWwindow* window) {
 			data.dict_set("threshold:12", 0.0f);
 			data.dict_set("axis:0", axis_y);
 			tsr2->bindings.shader_data = data;
-			tsr2->add_child(tr);
+			tsr2->add_sub_task(tr);
 			// tsr2:  tex2 -> shader -> ...
 
 			engine.window_renderer->add_child(tsr2);

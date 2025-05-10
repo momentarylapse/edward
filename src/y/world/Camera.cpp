@@ -61,8 +61,6 @@ Camera::Camera() {
 	min_depth = 1.0f;
 	max_depth = 1000000.0f;
 
-	m_projection = mat4::ID;
-	m_view = mat4::ID;
 	m_all = mat4::ID;
 	im_all = mat4::ID;
 
@@ -102,15 +100,15 @@ mat4 Camera::view_matrix() const {
 	return mat4::rotation(o->ang).transpose() * mat4::translation(-o->pos);
 }
 
-void Camera::update_matrices(float aspect_ratio) {
-	m_projection = projection_matrix(aspect_ratio);
-	m_view = view_matrix();
+void Camera::update_matrix_cache(float aspect_ratio) {
+	const auto p = projection_matrix(aspect_ratio);
+	const auto v = view_matrix();
 
 	// TODO fix.... use own projection matrix?
 
 	auto m_rel = mat4::translation(vec3(0.5f * engine.physical_aspect_ratio, 0.5f, 0.5f)) * mat4::scale(0.5f * engine.physical_aspect_ratio, 0.5f, 0.5f);
 
-	m_all = m_rel * m_projection * m_view;
+	m_all = m_rel * p * v;
 	im_all = m_all.inverse();
 }
 

@@ -8,20 +8,20 @@
 #include "../lib/base/base.h"
 
 class Path;
-class Controller;
+class System;
 class TemplateDataScriptVariable;
 namespace kaba {
 	class Class;
 }
 
-class ControllerManager {
+class SystemManager {
 public:
 	static void init(int ch_iter);
 
 	static void reset();
 
-	static void add_controller(const Path& filename, const string& name, const Array<TemplateDataScriptVariable> &variables);
-	static Controller *get_controller(const kaba::Class *_class);
+	static void create(const Path& filename, const string& name, const Array<TemplateDataScriptVariable> &variables);
+	static System *get(const kaba::Class *_class);
 
 	static void handle_iterate_pre(float dt);
 	static void handle_iterate(float dt);
@@ -30,7 +30,7 @@ public:
 	static void handle_render_inject();
 	static void handle_render_inject2();
 
-	static Array<Controller*> controllers;
+	static Array<System*> systems;
 };
 
 

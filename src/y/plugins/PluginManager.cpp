@@ -6,8 +6,6 @@
  */
 
 #include "PluginManager.h"
-#include "Controller.h"
-#include "ControllerManager.h"
 #include "../lib/kaba/kaba.h"
 #include "../audio/SoundSource.h"
 #include "../audio/AudioBuffer.h"
@@ -54,13 +52,14 @@
 #include "../renderer/target/WindowRendererVulkan.h"
 #endif
 #include <renderer/helper/Raytracing.h>
-#include <renderer/world/pass/ShadowRenderer.h>
-
+#include <renderer/scene/pass/ShadowRenderer.h>
 #include "../renderer/regions/RegionRenderer.h"
-#include "../renderer/world/geometry/SceneView.h"
+#include "../renderer/scene/SceneView.h"
 #include "../y/EngineData.h"
 #include "../y/Component.h"
 #include "../y/ComponentManager.h"
+#include "../y/System.h"
+#include "../y/SystemManager.h"
 #include "../world/Camera.h"
 #include "../world/Link.h"
 #include "../world/Model.h"
@@ -317,9 +316,10 @@ CubeMap* render_path_get_cubemap(RenderPath &r) {
 }
 
 Array<Texture*> render_path_get_shadow_map(RenderPath &r) {
-	if (r.shadow_renderer)
-		return {r.shadow_renderer->cascades[0].depth_buffer, r.shadow_renderer->cascades[1].depth_buffer};
-	return {};
+	Array<Texture*> shadow_maps;
+	for (auto s: r.scene_view.shadow_maps)
+		shadow_maps.add(s);
+	return shadow_maps;
 }
 
 //shared_array<Texture> render_path_get_gbuffer(RenderPath &r) {
@@ -345,39 +345,10 @@ void PluginManager::init() {
 	import_kaba();
 }
 
-void PluginManager::export_kaba() {
-	auto ext = kaba::default_context->external.get();
-
-	ext->declare_enum("PrimitiveTopology.TRIANGLES", PrimitiveTopology::TRIANGLES);
-	ext->declare_enum("PrimitiveTopology.TRIANGLE_FAN", PrimitiveTopology::TRIANGLE_FAN);
-	ext->declare_enum("PrimitiveTopology.LINES", PrimitiveTopology::LINES);
-	ext->declare_enum("PrimitiveTopology.LINE_STRIP", PrimitiveTopology::LINE_STRIP);
-	ext->declare_enum("PrimitiveTopology.POINTS", PrimitiveTopology::POINTS);
-	ext->declare_enum("PrimitiveTopology.PATCHES", PrimitiveTopology::PATCHES);
-
-	ext->declare_enum("CullMode.NONE", CullMode::NONE);
-	ext->declare_enum("CullMode.BACK", CullMode::BACK);
-	ext->declare_enum("CullMode.FRONT", CullMode::FRONT);
-
-	ext->declare_enum("PhysicsMode.NONE", PhysicsMode::NONE);
-	ext->declare_enum("PhysicsMode.SIMPLE", PhysicsMode::SIMPLE);
-	ext->declare_enum("PhysicsMode.FULL_EXTERNAL", PhysicsMode::FULL_EXTERNAL);
-	ext->declare_enum("PhysicsMode.FULL_INTERNAL", PhysicsMode::FULL_INTERNAL);
-
-#ifdef HAS_INPUT
-	ext->declare_enum("VRDeviceRole.NONE", input::VRDeviceRole::None);
-	ext->declare_enum("VRDeviceRole.CONTROLLER_RIGHT", input::VRDeviceRole::ControllerRight);
-	ext->declare_enum("VRDeviceRole.CONTROLLER_LEFT", input::VRDeviceRole::ControllerLeft);
-	ext->declare_enum("VRDeviceRole.HEADSET", input::VRDeviceRole::Headset);
-	ext->declare_enum("VRDeviceRole.LIGHTHOUSE0", input::VRDeviceRole::Lighthouse0);
-	ext->declare_enum("VRDeviceRole.LIGHTHOUSE1", input::VRDeviceRole::Lighthouse1);
-#endif
-
-	//ext->declare_enum("TraceMode.PHYSICAL", TraceMode::PHYSICAL);
-
+void export_ecs(kaba::ExternalLinkData* ext) {
 	BaseClass entity(BaseClass::Type::NONE);
 	ext->declare_class_size("BaseClass", sizeof(BaseClass));
-//	ext->link_class_func("BaseClass.__init__", &Entity::__init__);
+	//	ext->link_class_func("BaseClass.__init__", &Entity::__init__);
 	ext->link_virtual("BaseClass.__delete__", &BaseClass::__delete__, &entity);
 	ext->link_virtual("BaseClass.on_init", &BaseClass::on_init, &entity);
 	ext->link_virtual("BaseClass.on_delete", &BaseClass::on_delete, &entity);
@@ -405,6 +376,43 @@ void PluginManager::export_kaba() {
 	ext->link_virtual("Component.on_collide", &Component::on_collide, &component);
 	ext->link_class_func("Component.set_variables", &Component::set_variables);
 
+	System con;
+	ext->declare_class_size("Controller", sizeof(System));
+	ext->link_class_func("Controller.__init__", &System::__init__);
+	ext->link_virtual("Controller.__delete__", &System::__delete__, &con);
+	ext->link_virtual("Controller.on_init", &System::on_init, &con);
+	ext->link_virtual("Controller.on_delete", &System::on_delete, &con);
+	ext->link_virtual("Controller.on_iterate", &System::on_iterate, &con);
+	ext->link_virtual("Controller.on_iterate_pre", &System::on_iterate_pre, &con);
+	ext->link_virtual("Controller.on_draw_pre", &System::on_draw_pre, &con);
+	ext->link_virtual("Controller.on_input", &System::on_input, &con);
+	ext->link_virtual("Controller.on_key", &System::on_key, &con);
+	ext->link_virtual("Controller.on_key_down", &System::on_key_down, &con);
+	ext->link_virtual("Controller.on_key_up", &System::on_key_up, &con);
+	ext->link_virtual("Controller.on_left_button_down", &System::on_left_button_down, &con);
+	ext->link_virtual("Controller.on_left_button_up", &System::on_left_button_up, &con);
+	ext->link_virtual("Controller.on_middle_button_down", &System::on_middle_button_down, &con);
+	ext->link_virtual("Controller.on_middle_button_up", &System::on_middle_button_up, &con);
+	ext->link_virtual("Controller.on_right_button_down", &System::on_right_button_down, &con);
+	ext->link_virtual("Controller.on_right_button_up", &System::on_right_button_up, &con);
+	ext->link_virtual("Controller.on_render_inject", &System::on_render_inject, &con);
+	ext->link_class_func("Controller.__del_override__", &DeletionQueue::add);
+
+	ext->link("__get_component_list", (void*)&ComponentManager::_get_list);
+	ext->link("__get_component_family_list", (void*)&ComponentManager::_get_list_family);
+	ext->link("__get_component_list2", (void*)&ComponentManager::_get_list2);
+
+	ext->link("__get_controller", (void*)&SystemManager::get);
+}
+
+void export_world(kaba::ExternalLinkData* ext) {
+	ext->declare_enum("PhysicsMode.NONE", PhysicsMode::NONE);
+	ext->declare_enum("PhysicsMode.SIMPLE", PhysicsMode::SIMPLE);
+	ext->declare_enum("PhysicsMode.FULL_EXTERNAL", PhysicsMode::FULL_EXTERNAL);
+	ext->declare_enum("PhysicsMode.FULL_INTERNAL", PhysicsMode::FULL_INTERNAL);
+
+	//ext->declare_enum("TraceMode.PHYSICAL", TraceMode::PHYSICAL);
+
 	Camera _cam;
 	ext->declare_class_size("Camera", sizeof(Camera));
 	ext->declare_class_element("Camera.fov", &Camera::fov);
@@ -422,8 +430,7 @@ void PluginManager::export_kaba() {
 	ext->declare_class_element("Camera.show", &Camera::show);
 	ext->declare_class_element("Camera.min_depth", &Camera::min_depth);
 	ext->declare_class_element("Camera.max_depth", &Camera::max_depth);
-	ext->declare_class_element("Camera.m_view", &Camera::m_view);
-	ext->link_class_func("Camera.update_matrices", &Camera::update_matrices);
+	ext->link_class_func("Camera.update_matrix_cache", &Camera::update_matrix_cache);
 	ext->link_class_func("Camera.project", &Camera::project);
 	ext->link_class_func("Camera.unproject", &Camera::unproject);
 
@@ -599,27 +606,6 @@ void PluginManager::export_kaba() {
 	ext->declare_class_element("Fog.distance", &Fog::distance);
 
 
-	Controller con;
-	ext->declare_class_size("Controller", sizeof(Controller));
-	ext->link_class_func("Controller.__init__", &Controller::__init__);
-	ext->link_virtual("Controller.__delete__", &Controller::__delete__, &con);
-	ext->link_virtual("Controller.on_init", &Controller::on_init, &con);
-	ext->link_virtual("Controller.on_delete", &Controller::on_delete, &con);
-	ext->link_virtual("Controller.on_iterate", &Controller::on_iterate, &con);
-	ext->link_virtual("Controller.on_iterate_pre", &Controller::on_iterate_pre, &con);
-	ext->link_virtual("Controller.on_draw_pre", &Controller::on_draw_pre, &con);
-	ext->link_virtual("Controller.on_input", &Controller::on_input, &con);
-	ext->link_virtual("Controller.on_key", &Controller::on_key, &con);
-	ext->link_virtual("Controller.on_key_down", &Controller::on_key_down, &con);
-	ext->link_virtual("Controller.on_key_up", &Controller::on_key_up, &con);
-	ext->link_virtual("Controller.on_left_button_down", &Controller::on_left_button_down, &con);
-	ext->link_virtual("Controller.on_left_button_up", &Controller::on_left_button_up, &con);
-	ext->link_virtual("Controller.on_middle_button_down", &Controller::on_middle_button_down, &con);
-	ext->link_virtual("Controller.on_middle_button_up", &Controller::on_middle_button_up, &con);
-	ext->link_virtual("Controller.on_right_button_down", &Controller::on_right_button_down, &con);
-	ext->link_virtual("Controller.on_right_button_up", &Controller::on_right_button_up, &con);
-	ext->link_virtual("Controller.on_render_inject", &Controller::on_render_inject, &con);
-	ext->link_class_func("Controller.__del_override__", &DeletionQueue::add);
 
 #define _OFFSET(VAR, MEMBER)	(char*)&VAR.MEMBER - (char*)&VAR
 
@@ -650,11 +636,79 @@ void PluginManager::export_kaba() {
 	//ext->link_class_func("Link.set_axis", &Link::set_axis);
 	ext->link_class_func("Link.__del_override__", &DeletionQueue::add);
 
+	ext->link("world", &world);
+	ext->link("cam", &cam_main);
+	ext->link("load_model", (void*)&__load_model);
+	ext->link("load_material", (void*)&__load_material);
 
-	ext->link("__get_component_list", (void*)&ComponentManager::_get_list);
-	ext->link("__get_component_family_list", (void*)&ComponentManager::_get_list_family);
-	ext->link("__get_component_list2", (void*)&ComponentManager::_get_list2);
+	ext->link("attach_light_parallel", (void*)&attach_light_parallel);
+	ext->link("attach_light_point", (void*)&attach_light_point);
+	ext->link("attach_light_cone", (void*)&attach_light_cone);
+}
 
+void export_gfx(kaba::ExternalLinkData* ext) {
+	ext->declare_enum("PrimitiveTopology.TRIANGLES", PrimitiveTopology::TRIANGLES);
+	ext->declare_enum("PrimitiveTopology.TRIANGLE_FAN", PrimitiveTopology::TRIANGLE_FAN);
+	ext->declare_enum("PrimitiveTopology.LINES", PrimitiveTopology::LINES);
+	ext->declare_enum("PrimitiveTopology.LINE_STRIP", PrimitiveTopology::LINE_STRIP);
+	ext->declare_enum("PrimitiveTopology.POINTS", PrimitiveTopology::POINTS);
+	ext->declare_enum("PrimitiveTopology.PATCHES", PrimitiveTopology::PATCHES);
+
+	ext->declare_enum("CullMode.NONE", CullMode::NONE);
+	ext->declare_enum("CullMode.BACK", CullMode::BACK);
+	ext->declare_enum("CullMode.FRONT", CullMode::FRONT);
+
+	ext->declare_class_size("FrameBuffer", sizeof(FrameBuffer));
+	ext->declare_class_element("FrameBuffer.width", &FrameBuffer::width);
+	ext->declare_class_element("FrameBuffer.height", &FrameBuffer::height);
+	ext->link_class_func("FrameBuffer.__init__", &framebuffer_init);
+	ext->link_class_func("FrameBuffer.depth_buffer", &framebuffer_depthbuffer);
+	ext->link_class_func("FrameBuffer.color_attachments", &framebuffer_color_attachments);
+
+	ext->link_class_func("Buffer.update", &buffer_update_array);
+	ext->link_class_func("Buffer.update_chunk", &buffer_update_chunk);
+	ext->link_class_func("Buffer.read", &buffer_read_array);
+	ext->link_class_func("Buffer.read_chunk", &buffer_read_chunk);
+
+	ext->declare_class_size("VertexBuffer", sizeof(VertexBuffer));
+	ext->link_class_func("VertexBuffer.__init__", &vertexbuffer_init);
+	ext->link_class_func("VertexBuffer.update", &vertexbuffer_update_array);
+
+	ext->declare_class_size("UniformBuffer", sizeof(UniformBuffer));
+	ext->link_class_func("UniformBuffer.__init__", &uniformbuffer_init);
+
+	ext->declare_class_size("ShaderStorageBuffer", sizeof(ShaderStorageBuffer));
+	ext->link_class_func("ShaderStorageBuffer.__init__", &storagebuffer_init);
+
+	ext->declare_class_size("Texture", sizeof(Texture));
+	ext->declare_class_element("Texture.width", &Texture::width);
+	ext->declare_class_element("Texture.height", &Texture::height);
+	ext->link_class_func("Texture.__init__", &texture_init);
+	ext->link_class_func("Texture.__delete__", &texture_delete);
+	ext->link_class_func("Texture.write", &texture_write);
+	ext->link_class_func("Texture.write_float", &texture_write_float);
+	ext->link_class_func("Texture.read", &texture_read);
+	ext->link_class_func("Texture.set_options", &Texture::set_options);
+
+	ext->link_class_func("CubeMap.__init__", &cubemap_init);
+
+	ext->link_class_func("DepthBuffer.__init__", &depthbuffer_init);
+
+	ext->link_class_func("ImageTexture.__init__", &imagetexture_init);
+
+	ext->link_class_func("VolumeTexture.__init__", &volumetexture_init);
+
+	ext->link_class_func("Shader.set_float", &shader_set_float);
+	ext->link_class_func("Shader.set_floats", &shader_set_floats);
+
+	ext->link("tex_white", &tex_white);
+
+	ext->link("load_shader", (void*)&__load_shader);
+	ext->link("create_shader", (void*)&__create_shader);
+	ext->link("load_texture", (void*)&__load_texture);
+}
+
+void export_fx(kaba::ExternalLinkData* ext) {
 	ext->declare_class_size("Particle", sizeof(Particle));
 	ext->declare_class_element("Particle.pos", &Particle::pos);
 	ext->declare_class_element("Particle.vel", &Particle::vel);
@@ -719,26 +773,17 @@ void PluginManager::export_kaba() {
 	ext->link_virtual("ParticleEmitter.on_init_beam", &ParticleEmitter::on_init_beam, &emitter);
 	//ext->link_class_func("ParticleEmitter.__del_override__", &DeletionQueue::add);
 	}
+}
 
-	ext->declare_class_size("SoundSource", sizeof(audio::SoundSource));
-	ext->declare_class_element("SoundSource.loop", &audio::SoundSource::loop);
-	ext->declare_class_element("SoundSource.suicidal", &audio::SoundSource::suicidal);
-	ext->declare_class_element("SoundSource.min_distance", &audio::SoundSource::min_distance);
-	ext->declare_class_element("SoundSource.max_distance", &audio::SoundSource::max_distance);
-	ext->declare_class_element("SoundSource.volume", &audio::SoundSource::volume);
-	ext->declare_class_element("SoundSource.speed", &audio::SoundSource::speed);
-	ext->link_class_func("SoundSource.play", &audio::SoundSource::play);
-	ext->link_class_func("SoundSource.stop", &audio::SoundSource::stop);
-	ext->link_class_func("SoundSource.pause", &audio::SoundSource::pause);
-	ext->link_class_func("SoundSource.has_ended", &audio::SoundSource::has_ended);
-	ext->link_class_func("SoundSource.update", &audio::SoundSource::_apply_data);
-	ext->link_class_func("SoundSource.set_buffer", &audio::SoundSource::set_buffer);
-	ext->link_class_func("SoundSource.set_stream", &audio::SoundSource::set_stream);
-	ext->link_class_func("SoundSource.__del_override__", &DeletionQueue::add);
-
-
-	ext->declare_class_size("Listener", sizeof(audio::Listener));
-
+void export_ui(kaba::ExternalLinkData* ext) {
+#ifdef HAS_INPUT
+	ext->declare_enum("VRDeviceRole.NONE", input::VRDeviceRole::None);
+	ext->declare_enum("VRDeviceRole.CONTROLLER_RIGHT", input::VRDeviceRole::ControllerRight);
+	ext->declare_enum("VRDeviceRole.CONTROLLER_LEFT", input::VRDeviceRole::ControllerLeft);
+	ext->declare_enum("VRDeviceRole.HEADSET", input::VRDeviceRole::Headset);
+	ext->declare_enum("VRDeviceRole.LIGHTHOUSE0", input::VRDeviceRole::Lighthouse0);
+	ext->declare_enum("VRDeviceRole.LIGHTHOUSE1", input::VRDeviceRole::Lighthouse1);
+#endif
 
 	gui::Node node(rect::ID);
 	ext->declare_class_size("Node", sizeof(gui::Node));
@@ -847,7 +892,37 @@ void PluginManager::export_kaba() {
 #endif
 
 	ext->link("toplevel", &gui::toplevel);
+}
 
+void export_sound(kaba::ExternalLinkData* ext) {
+	ext->declare_class_size("SoundSource", sizeof(audio::SoundSource));
+	ext->declare_class_element("SoundSource.loop", &audio::SoundSource::loop);
+	ext->declare_class_element("SoundSource.suicidal", &audio::SoundSource::suicidal);
+	ext->declare_class_element("SoundSource.min_distance", &audio::SoundSource::min_distance);
+	ext->declare_class_element("SoundSource.max_distance", &audio::SoundSource::max_distance);
+	ext->declare_class_element("SoundSource.volume", &audio::SoundSource::volume);
+	ext->declare_class_element("SoundSource.speed", &audio::SoundSource::speed);
+	ext->link_class_func("SoundSource.play", &audio::SoundSource::play);
+	ext->link_class_func("SoundSource.stop", &audio::SoundSource::stop);
+	ext->link_class_func("SoundSource.pause", &audio::SoundSource::pause);
+	ext->link_class_func("SoundSource.has_ended", &audio::SoundSource::has_ended);
+	ext->link_class_func("SoundSource.update", &audio::SoundSource::_apply_data);
+	ext->link_class_func("SoundSource.set_buffer", &audio::SoundSource::set_buffer);
+	ext->link_class_func("SoundSource.set_stream", &audio::SoundSource::set_stream);
+	ext->link_class_func("SoundSource.__del_override__", &DeletionQueue::add);
+
+	ext->declare_class_size("Listener", sizeof(audio::Listener));
+
+	ext->link("load_buffer", (void*)&audio::load_buffer);
+	ext->link("create_buffer", (void*)&audio::create_buffer);
+	ext->link("load_audio_stream", (void*)&audio::load_stream);
+	ext->link("create_audio_stream", (void*)&__create_audio_stream);
+	ext->link("emit_sound", (void*)&audio::emit_sound);
+	ext->link("emit_sound_file", (void*)&audio::emit_sound_file);
+	ext->link("emit_sound_stream", (void*)&audio::emit_sound_stream);
+}
+
+void export_net(kaba::ExternalLinkData* ext) {
 	ext->declare_class_size("NetworkManager", sizeof(NetworkManager));
 	ext->declare_class_element("NewtorkManager.cur_con", &NetworkManager::cur_con);
 	ext->link_class_func("NetworkManager.connect_to_host", &NetworkManager::connect_to_host);
@@ -862,6 +937,9 @@ void PluginManager::export_kaba() {
 	ext->link_class_func("Connection.send", &NetworkManager::Connection::send);
 
 	ext->link("network", &network_manager);
+}
+
+void export_engine(kaba::ExternalLinkData* ext) {
 
 	ext->declare_class_size("PerformanceMonitor.Channel", sizeof(PerformanceChannel));
 	ext->declare_class_element("PerformanceMonitor.Channel.name", &PerformanceChannel::name);
@@ -929,14 +1007,44 @@ void PluginManager::export_kaba() {
 	ext->link_class_func("EngineData.add_render_task", &EngineData::add_render_task);
 
 
+	ext->declare_class_size("Scheduler", sizeof(Scheduler));
+	ext->link_class_func("Scheduler.__init__", &kaba::generic_init<Scheduler>);
+	ext->link_class_func("Scheduler.__delete__", &kaba::generic_delete<Scheduler>);
+	ext->link_class_func("Scheduler.later", &Scheduler::later);
+	ext->link_class_func("Scheduler.repeat", &Scheduler::repeat);
+	ext->link_class_func("Scheduler.clear", &Scheduler::clear);
+
+
+	ext->declare_class_size("RayRequest", sizeof(RayRequest));
+	ext->declare_class_element("RayRequest.p0", &RayRequest::p0);
+	ext->declare_class_element("RayRequest.p1", &RayRequest::p1);
+
+	ext->declare_class_size("RayReply", sizeof(RayReply));
+	ext->declare_class_element("RayReply.p", &RayReply::p);
+	ext->declare_class_element("RayReply.n", &RayReply::n);
+	ext->declare_class_element("RayReply.f", &RayReply::f);
+	ext->declare_class_element("RayReply.g", &RayReply::g);
+	ext->declare_class_element("RayReply.t", &RayReply::t);
+	ext->declare_class_element("RayReply.index", &RayReply::index);
+	ext->declare_class_element("RayReply.mesh", &RayReply::mesh);
+
+	ext->link("engine", &engine);
+	ext->link("screenshot", (void*)&screenshot);
+	ext->link("create_render_path", (void*)&create_render_path);
+	ext->link("rt_setup", (void*)&rt_setup);
+	ext->link("rt_update_frame", (void*)&rt_update_frame);
+	ext->link("rt_vtrace", (void*)&vtrace);
+}
+
+void export_renderer(kaba::ExternalLinkData* ext) {
 	ext->declare_class_size("Renderer", sizeof(Renderer));
 
 	{
 		ComputeTask ct("", nullptr, 0, 0, 0);
 		ext->declare_class_size("RenderTask", sizeof(RenderTask));
 		ext->declare_class_element("RenderTask.active", &RenderTask::active);
-		ext->link_virtual("RenderTask.prepare", &RenderTask::prepare, &ct);
-		ext->link_virtual("RenderTask.draw", &RenderTask::draw, &ct);
+		//ext->link_virtual("RenderTask.prepare", &RenderTask::prepare, &ct);
+		//ext->link_virtual("RenderTask.draw", &RenderTask::draw, &ct);
 		ext->link_virtual("RenderTask.render", &RenderTask::render, &ct);
 
 		ext->declare_class_size("ComputeTask", sizeof(ComputeTask));
@@ -952,21 +1060,14 @@ void PluginManager::export_kaba() {
 		ext->link_virtual("ComputeTask.render", &ComputeTask::render, &ct);
 	}
 
-	using WoR = WorldRenderer;
-	using WoRF = WorldRendererForward;
-	using WoRD = WorldRendererDeferred;
 #ifdef USING_VULKAN
-//	using WR = WindowRendererVulkan;
-//	using GR = GuiRendererVulkan;
-	using PP = PostProcessorVulkan;
+	using PostProcessor = PostProcessorVulkan;
 #endif
 #ifdef USING_OPENGL
-//	using WR = WindowRendererGL;
-//	using GR = GuiRendererGL;
-	using PP = PostProcessorGL;
+	using PostProcessor = PostProcessorGL;
 #endif
-	ext->declare_class_size("WorldRenderer", sizeof(WoR));
-	ext->declare_class_element("WorldRenderer.shader_fx", &WorldRenderer::shader_fx);
+	ext->declare_class_size("WorldRenderer", sizeof(WorldRenderer));
+	//ext->declare_class_element("WorldRenderer.shader_fx", &WorldRenderer::shader_fx);
 	ext->declare_class_element("WorldRenderer.wireframe", &WorldRenderer::wireframe);
 
 
@@ -979,12 +1080,12 @@ void PluginManager::export_kaba() {
 	ext->declare_class_element("RegionRenderer.Region.z", &RegionRenderer::Region::z);
 	ext->declare_class_element("RegionRenderer.Region.renderer", &RegionRenderer::Region::renderer);
 
-	ext->declare_class_size("PostProcessor", sizeof(PP));
-	ext->declare_class_element("PostProcessor.fb1", &PP::fb1);
-	ext->declare_class_element("PostProcessor.fb2", &PP::fb2);
-	ext->link_class_func("PostProcessor.next_fb", &PP::next_fb);
-	ext->link_class_func("PostProcessor.process", &PP::process);
-	ext->link_class_func("PostProcessor.add_stage", &PP::add_stage);
+	ext->declare_class_size("PostProcessor", sizeof(PostProcessor));
+	ext->declare_class_element("PostProcessor.fb1", &PostProcessor::fb1);
+	ext->declare_class_element("PostProcessor.fb2", &PostProcessor::fb2);
+	ext->link_class_func("PostProcessor.next_fb", &PostProcessor::next_fb);
+	ext->link_class_func("PostProcessor.process", &PostProcessor::process);
+	ext->link_class_func("PostProcessor.add_stage", &PostProcessor::add_stage);
 
 	ext->declare_class_size("SceneView", sizeof(SceneView));
 	ext->declare_class_element("SceneView.surfel_buffer", &SceneView::surfel_buffer);
@@ -1016,102 +1117,20 @@ void PluginManager::export_kaba() {
 	ext->declare_class_size("LightMeter", sizeof(LightMeter));
 	ext->declare_class_element("LightMeter.histogram", &LightMeter::histogram);
 	ext->declare_class_element("LightMeter.brightness", &LightMeter::brightness);
+}
 
+void PluginManager::export_kaba() {
+	auto ext = kaba::default_context->external.get();
 
-	ext->declare_class_size("FrameBuffer", sizeof(FrameBuffer));
-	ext->declare_class_element("FrameBuffer.width", &FrameBuffer::width);
-	ext->declare_class_element("FrameBuffer.height", &FrameBuffer::height);
-	ext->link_class_func("FrameBuffer.__init__", &framebuffer_init);
-	ext->link_class_func("FrameBuffer.depth_buffer", &framebuffer_depthbuffer);
-	ext->link_class_func("FrameBuffer.color_attachments", &framebuffer_color_attachments);
-
-	ext->link_class_func("Buffer.update", &buffer_update_array);
-	ext->link_class_func("Buffer.update_chunk", &buffer_update_chunk);
-	ext->link_class_func("Buffer.read", &buffer_read_array);
-	ext->link_class_func("Buffer.read_chunk", &buffer_read_chunk);
-
-	ext->declare_class_size("VertexBuffer", sizeof(VertexBuffer));
-	ext->link_class_func("VertexBuffer.__init__", &vertexbuffer_init);
-	ext->link_class_func("VertexBuffer.update", &vertexbuffer_update_array);
-
-	ext->declare_class_size("UniformBuffer", sizeof(UniformBuffer));
-	ext->link_class_func("UniformBuffer.__init__", &uniformbuffer_init);
-
-	ext->declare_class_size("ShaderStorageBuffer", sizeof(ShaderStorageBuffer));
-	ext->link_class_func("ShaderStorageBuffer.__init__", &storagebuffer_init);
-
-	ext->declare_class_size("Texture", sizeof(Texture));
-	ext->declare_class_element("Texture.width", &Texture::width);
-	ext->declare_class_element("Texture.height", &Texture::height);
-	ext->link_class_func("Texture.__init__", &texture_init);
-	ext->link_class_func("Texture.__delete__", &texture_delete);
-	ext->link_class_func("Texture.write", &texture_write);
-	ext->link_class_func("Texture.write_float", &texture_write_float);
-	ext->link_class_func("Texture.read", &texture_read);
-	ext->link_class_func("Texture.set_options", &Texture::set_options);
-
-	ext->link_class_func("CubeMap.__init__", &cubemap_init);
-
-	ext->link_class_func("DepthBuffer.__init__", &depthbuffer_init);
-
-	ext->link_class_func("ImageTexture.__init__", &imagetexture_init);
-
-	ext->link_class_func("VolumeTexture.__init__", &volumetexture_init);
-
-	ext->link_class_func("Shader.set_float", &shader_set_float);
-	ext->link_class_func("Shader.set_floats", &shader_set_floats);
-
-
-	ext->declare_class_size("Scheduler", sizeof(Scheduler));
-	ext->link_class_func("Scheduler.__init__", &kaba::generic_init<Scheduler>);
-	ext->link_class_func("Scheduler.__delete__", &kaba::generic_delete<Scheduler>);
-	ext->link_class_func("Scheduler.later", &Scheduler::later);
-	ext->link_class_func("Scheduler.repeat", &Scheduler::repeat);
-	ext->link_class_func("Scheduler.clear", &Scheduler::clear);
-
-
-	ext->declare_class_size("RayRequest", sizeof(RayRequest));
-	ext->declare_class_element("RayRequest.p0", &RayRequest::p0);
-	ext->declare_class_element("RayRequest.p1", &RayRequest::p1);
-
-	ext->declare_class_size("RayReply", sizeof(RayReply));
-	ext->declare_class_element("RayReply.p", &RayReply::p);
-	ext->declare_class_element("RayReply.n", &RayReply::n);
-	ext->declare_class_element("RayReply.f", &RayReply::f);
-	ext->declare_class_element("RayReply.g", &RayReply::g);
-	ext->declare_class_element("RayReply.t", &RayReply::t);
-	ext->declare_class_element("RayReply.index", &RayReply::index);
-	ext->declare_class_element("RayReply.mesh", &RayReply::mesh);
-
-	ext->link("tex_white", &tex_white);
-	ext->link("world", &world);
-	ext->link("cam", &cam_main);
-	ext->link("engine", &engine);
-	ext->link("__get_controller", (void*)&ControllerManager::get_controller);
-
-	ext->link("load_model", (void*)&__load_model);
-	ext->link("load_shader", (void*)&__load_shader);
-	ext->link("create_shader", (void*)&__create_shader);
-	ext->link("load_texture", (void*)&__load_texture);
-	ext->link("load_material", (void*)&__load_material);
-	ext->link("screenshot", (void*)&screenshot);
-	ext->link("create_render_path", (void*)&create_render_path);
-	ext->link("rt_setup", (void*)&rt_setup);
-	ext->link("rt_update_frame", (void*)&rt_update_frame);
-	ext->link("rt_vtrace", (void*)&vtrace);
-
-	ext->link("attach_light_parallel", (void*)&attach_light_parallel);
-	ext->link("attach_light_point", (void*)&attach_light_point);
-	ext->link("attach_light_cone", (void*)&attach_light_cone);
-
-
-	ext->link("load_buffer", (void*)&audio::load_buffer);
-	ext->link("create_buffer", (void*)&audio::create_buffer);
-	ext->link("load_audio_stream", (void*)&audio::load_stream);
-	ext->link("create_audio_stream", (void*)&__create_audio_stream);
-	ext->link("emit_sound", (void*)&audio::emit_sound);
-	ext->link("emit_sound_file", (void*)&audio::emit_sound_file);
-	ext->link("emit_sound_stream", (void*)&audio::emit_sound_stream);
+	export_gfx(ext);
+	export_ecs(ext);
+	export_world(ext);
+	export_fx(ext);
+	export_ui(ext);
+	export_sound(ext);
+	export_net(ext);
+	export_engine(ext);
+	export_renderer(ext);
 }
 
 template<class C>
