@@ -7,7 +7,6 @@
 #include <world/World.h>
 #include <world/Light.h>
 #include <world/Terrain.h>
-#include <helper/PerformanceMonitor.h>
 #include <lib/base/iter.h>
 #include <y/ComponentManager.h>
 #include <lib/os/time.h>

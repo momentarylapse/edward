@@ -52,7 +52,7 @@ public:
 	owned<VertexBuffer> vertex_buffer_ground;
 	owned<Material> material_ground;
 
-	Light* spot_light = nullptr;
+	owned<Light> spot_light;
 
 	void set_mesh(PreviewMesh m);
 };

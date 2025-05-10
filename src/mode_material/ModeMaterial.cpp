@@ -44,8 +44,6 @@ ModeMaterial::ModeMaterial(Session* session) :
 	generic_data = data;
 
 	data->out_changed >> create_sink([this] {
-		//data->lights
-		//	world.en
 		material = data->to_material();
 	});
 }
@@ -140,7 +138,7 @@ void ModeMaterial::on_prepare_scene(const RenderParams& params) {
 
 	multi_view->default_light->owner->ang = quaternion::rotation_a(vec3::EX, pi*0.20f);
 
-	multi_view->lights = {multi_view->default_light, spot_light};
+	multi_view->lights = {multi_view->default_light, spot_light.get()};
 }
 
 void ModeMaterial::on_draw_background(const RenderParams& params, RenderViewData& rvd) {
