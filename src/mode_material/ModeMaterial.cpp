@@ -13,6 +13,7 @@
 #include <y/renderer/Renderer.h>
 #include <y/renderer/scene/RenderViewData.h>
 #include <y/renderer/scene/SceneView.h>
+#include <y/renderer/base.h>
 #include <y/helper/ResourceManager.h>
 #include <y/world/Material.h>
 #include <y/world/Camera.h>
@@ -105,7 +106,8 @@ void ModeMaterial::on_enter() {
 	material_ground = session->resource_manager->load_material("");
 	material_ground->roughness = 0.4f;
 	material_ground->metal = 0;
-	material_ground->textures.add(new Texture(16, 16, "rgba:i8"));
+	material_ground->albedo = color(1, 0.3f, 0.3f, 0.3f);
+	material_ground->textures.add(tex_white);
 	material_ground->textures[0]->write(im);
 	material_ground->textures[0]->set_options("magfilter=nearest");
 }
@@ -125,7 +127,7 @@ void ModeMaterial::optimize_view() {
 
 void ModeMaterial::on_prepare_scene(const RenderParams& params) {
 	if (!spot_light) {
-		spot_light = new Light(White * 100, -1, -1);
+		spot_light = new Light(White * 150, -1, -1);
 		spot_light->owner = new Entity;
 		spot_light->owner->pos = {3, 7, 12};
 		spot_light->owner->ang = quaternion::rotation_v((-spot_light->owner->pos).dir2ang());
