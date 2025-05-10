@@ -68,6 +68,8 @@ void Image::_load_flipped(const Path &filename) {
 void Image::_load(const Path &filename) {
 	_load_flipped(filename);
 	flip_v();
+
+	// the "top left" pixel (0,0) in an editor should be the first element in data now
 }
 
 inline unsigned int image_color_rgba(const color &c) {

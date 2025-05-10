@@ -115,6 +115,7 @@ Texture::Texture() {
 	width = height = 0;
 	depth = 1;
 	mip_levels = 1;
+	num_layers = 1;
 	compare_op = VK_COMPARE_OP_ALWAYS;
 	magfilter = VK_FILTER_LINEAR;
 	minfilter = VK_FILTER_LINEAR;
@@ -128,7 +129,6 @@ Texture::Texture(int w, int h, const string &format) : Texture() {
 	override(im);*/
 	width = w;
 	height = h;
-	depth = 1;
 	_create_image(nullptr, VK_IMAGE_TYPE_2D, parse_format(format), 1, VK_SAMPLE_COUNT_1_BIT, false, false, false);
 	view = image.create_view(VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D, mip_levels, 0, 1);
 	_create_sampler();
@@ -145,6 +145,16 @@ VolumeTexture::VolumeTexture(int nx, int ny, int nz, const string &format) {
 	depth = nz;
 	_create_image(nullptr, VK_IMAGE_TYPE_3D, parse_format(format), 1, VK_SAMPLE_COUNT_1_BIT, false, false, false);
 	view = image.create_view(VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_3D, mip_levels, 0, 1);
+	_create_sampler();
+}
+
+TextureArray::TextureArray(int w, int h, int layers, const string &format) {
+	type = Type::ARRAY;
+	width = w;
+	height = h;
+	num_layers = layers;
+	_create_image(nullptr, VK_IMAGE_TYPE_2D, parse_format(format), layers, VK_SAMPLE_COUNT_1_BIT, false, false, false);
+	view = image.create_view(VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_3D, mip_levels, 0, layers);
 	_create_sampler();
 }
 
