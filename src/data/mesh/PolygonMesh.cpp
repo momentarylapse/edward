@@ -6,17 +6,16 @@
  */
 
 #include "PolygonMesh.h"
-
-#include <lib/base/iter.h>
-
 #include "Polygon.h"
 #include "VertexStagingBuffer.h"
 #include <view/MultiView.h>
 #include <y/graphics-impl.h>
 #include <y/world/Model.h>
+#include <lib/base/iter.h>
 #include <lib/math/mat4.h>
 #include <lib/math/vec2.h>
 #include <lib/math/plane.h>
+#include "mode_model/data/SkinGenerator.h"
 
 class GeometryException : public Exception {
 public:

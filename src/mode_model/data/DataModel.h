@@ -8,9 +8,9 @@
 #ifndef DATAMODEL_H_
 #define DATAMODEL_H_
 
-#include "../../data/Data.h"
-#include "../../multiview/SingleData.h"
-#include "../../lib/base/set.h"
+#include <data/Data.h>
+#include <view/SingleData.h>
+#include <lib/base/set.h>
 #include <y/world/Model.h>
 #include <y/world/Material.h>
 #include "ModelMaterial.h"

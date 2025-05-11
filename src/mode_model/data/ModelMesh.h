@@ -8,7 +8,7 @@
 #ifndef SRC_DATA_MODEL_MODELMESH_H_
 #define SRC_DATA_MODEL_MODELMESH_H_
 
-#include <multiview/SingleData.h>
+#include <view/SingleData.h>
 #include <data/mesh/PolygonMesh.h>
 #include <lib/math/vec4.h>
 

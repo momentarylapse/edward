@@ -12,7 +12,7 @@
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
 #include "MultiView.h"
-#include "../multiview/SingleData.h"
+#include "SingleData.h"
 
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {

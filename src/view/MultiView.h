@@ -5,6 +5,7 @@
 #ifndef MULTIVIEW_H
 #define MULTIVIEW_H
 
+#include "MultiViewWindow.h"
 #include "Hover.h"
 #include <y/renderer/Renderer.h>
 #include <y/renderer/scene/SceneView.h>
@@ -13,7 +14,6 @@
 #include <lib/math/vec3.h>
 #include <lib/math/quaternion.h>
 #include <lib/pattern/Observable.h>
-#include <mode_model/data/SkinGenerator.h>
 #include <functional>
 
 class CubeMapSource;
@@ -31,35 +31,6 @@ namespace multiview {
 class ShadowRenderer;
 
 
-
-class MultiViewWindow {
-public:
-	explicit MultiViewWindow(MultiView* mv);
-	vec3 project(const vec3& v) const;
-	vec3 unproject(const vec3& v, const vec3& zref) const;
-	vec3 direction() const;
-	vec3 view_pos() const;
-	quaternion view_ang() const;
-
-	float zoom() const;
-	float get_grid_d() const;
-	int active_grid() const;
-	vec3 active_grid_direction() const;
-	mat3 active_grid_frame() const;
-	mat3 edit_frame() const;
-	void prepare(const RenderParams& params);
-	void draw(const RenderParams& params);
-
-	MultiView* multi_view;
-	rect area;
-	rect area_native;
-	quaternion local_ang;
-	mat4 to_pixels;
-	mat4 view;
-	mat4 projection;
-	owned<SceneRenderer> scene_renderer;
-	RenderViewData& rvd();
-};
 
 class MultiView : public obs::Node<Renderer> {
 public:

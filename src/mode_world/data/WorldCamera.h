@@ -8,7 +8,7 @@
 #ifndef SRC_DATA_WORLD_WORLDCAMERA_H_
 #define SRC_DATA_WORLD_WORLDCAMERA_H_
 
-#include "../../multiview/SingleData.h"
+#include <view/SingleData.h>
 
 
 struct WorldCamera {

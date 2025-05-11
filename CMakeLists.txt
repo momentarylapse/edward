@@ -453,7 +453,6 @@ add_executable(edward
 	src/mode_world/dialog/PropertiesDialog.cpp
 	src/mode_world/ModeEditTerrain.cpp
 	src/mode_world/ModeWorld.cpp
-	src/multiview/SingleData.cpp
 	src/storage/format/old/LoadWorldV9V10.cpp
 	src/storage/format/Format.cpp
 	src/storage/format/FormatMaterial.cpp
@@ -470,6 +469,9 @@ add_executable(edward
 	src/view/EdwardWindow.cpp
 	src/view/Mode.cpp
 	src/view/MultiView.cpp
+	src/view/MultiViewMeshEmitter.cpp
+	src/view/MultiViewWindow.cpp
+	src/view/SingleData.cpp
 	src/y/audio/audio.cpp
 	src/y/audio/AudioBuffer.cpp
 	src/y/audio/AudioStream.cpp

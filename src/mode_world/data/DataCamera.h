@@ -9,7 +9,7 @@
 #define DATACAMERA_H_
 
 #include "../../data/Data.h"
-#include "../../multiview/SingleData.h"
+#include <view/SingleData.h>
 #include "../../lib/math/vec3.h"
 #include "../../lib/math/interpolation.h"
 

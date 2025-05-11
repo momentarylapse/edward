@@ -13,8 +13,8 @@
 #include "WorldLight.h"
 #include "WorldObject.h"
 #include "WorldTerrain.h"
-#include "../../data/Data.h"
-#include "../../multiview/SingleData.h"
+#include <data/Data.h>
+#include <view/SingleData.h>
 #include <y/world/Material.h>
 #include <y/graphics-fwd.h>
 #include <lib/any/any.h>

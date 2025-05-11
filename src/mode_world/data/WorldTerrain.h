@@ -8,7 +8,7 @@
 #ifndef SRC_DATA_WORLD_WORLDTERRAIN_H_
 #define SRC_DATA_WORLD_WORLDTERRAIN_H_
 
-#include "../../multiview/SingleData.h"
+#include <view/SingleData.h>
 #include <y/world/Material.h>
 #include <lib/math/Box.h>
 

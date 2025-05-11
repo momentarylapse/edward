@@ -9,7 +9,7 @@
 #define POLYGONMESH_H_
 
 #include "Polygon.h"
-#include <multiview/SingleData.h>
+#include <view/SingleData.h>
 #include <lib/base/base.h>
 #include <lib/math/vec3.h>
 #include <lib/math/vec4.h>

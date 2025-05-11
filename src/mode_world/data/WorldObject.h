@@ -8,8 +8,8 @@
 #ifndef SRC_DATA_WORLD_WORLDOBJECT_H_
 #define SRC_DATA_WORLD_WORLDOBJECT_H_
 
-#include "../../multiview/SingleData.h"
-#include "../../lib/os/path.h"
+#include <view/SingleData.h>
+#include <lib/os/path.h>
 
 class Model;
 class ScriptInstanceData;
