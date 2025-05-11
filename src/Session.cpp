@@ -37,9 +37,9 @@
 Session *create_session() {
 	auto s = new Session;
 	s->storage = new Storage(s);
+	s->storage->set_root_directory(xhui::config.get_str("RootDir", ""));
 	//s->mode_world = new ModeWorld(s);
 	s->win = new EdwardWindow(s);
-	s->win->renderer = new XhuiRenderer();
 	return s;
 }
 
@@ -98,21 +98,20 @@ Session::~Session() {
 	if (multi_view_3d)
 		delete multi_view_3d;
 	// saving the configuration data...
+#endif
 	if (storage) {
-		hui::config.set_str("RootDir", storage->root_dir.str());
-		hui::config.set_str("Language", hui::get_cur_language());
+		xhui::config.set_str("RootDir", storage->root_dir.str());
+		//xhui::config.set_str("Language", xhui::get_cur_language());
 		/*HuiConfig.set_bool("LocalDocumentation", LocalDocumentation);
 		HuiConfig.set_str("WorldScriptVarFile", WorldScriptVarFile);
 		HuiConfig.set_str("ObjectScriptVarFile", ObjectScriptVarFile);
 		HuiConfig.set_str("ItemScriptVarFile", ItemScriptVarFile);*/
 		//HuiConfig.set_int("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
-		hui::config.save(app->directory | "config.txt");
+		xhui::config.save(xhui::Application::directory | "config.txt");
 		delete storage;
 	}
-#endif
 
-
-	app->end();
+	//app->end();
 }
 
 

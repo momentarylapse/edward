@@ -286,7 +286,7 @@ void MultiViewWindow::draw(const RenderParams& params) {
 }
 
 void MultiViewWindow::draw_post(Painter* p) {
-	if (multi_view->hover) {
+	if (multi_view->hover and multi_view->_show_grid) {
 		const auto p0 = multi_view->hover->tp;
 		const float r = 3;
 		auto px = project({p0.x, 0, 0});

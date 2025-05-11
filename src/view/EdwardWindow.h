@@ -17,7 +17,7 @@ class Session;
 
 class EdwardWindow : public obs::Node<xhui::Window> {
 public:
-	Session* session;
+	owned<Session> session;
 	XhuiRenderer* renderer = nullptr;
 	MultiViewRenderer* multi_view_renderer = nullptr;
 	Array<string> args;
@@ -30,7 +30,7 @@ public:
 
 	xhui::Toolbar* toolbar;
 
-	explicit EdwardWindow(Session* session);
+	explicit EdwardWindow(xfer<Session> session);
 
 	void on_key_down(int key) override;
 

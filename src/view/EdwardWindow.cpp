@@ -49,7 +49,7 @@ namespace xhui {
 
 
 
-EdwardWindow::EdwardWindow(Session* _session) : obs::Node<xhui::Window>(AppName, 1024, 768),
+EdwardWindow::EdwardWindow(xfer<Session> _session) : obs::Node<xhui::Window>(AppName, 1024, 768),
 	in_redraw(this, [this] {
 		request_redraw();
 	}),
@@ -156,7 +156,7 @@ Dialog x x padding=0
 		engine.ignore_missing_files = true;
 		engine.resource_manager = session->resource_manager;
 
-		session->promise_started(session);
+		session->promise_started(session.get());
 	});
 	event_xp(id, xhui::event_id::JustBeforeDraw, [this] (Painter* p) {
 		if (!session->cur_mode or !session->cur_mode->multi_view)
@@ -275,6 +275,8 @@ Dialog x x padding=0
 	};
 	event_x(id, xhui::event_id::Close, quit);
 	event("exit", quit);
+
+	renderer = new XhuiRenderer();
 
 	xhui::run_repeated(0.5f, [this] {
 		request_redraw();
