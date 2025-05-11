@@ -66,14 +66,18 @@ void ComboBox::_draw(Painter* p) {
 	p->set_color(Theme::_default.text_label);
 	if (!enabled)
 		p->set_color(Theme::_default.text_disabled);
-	float adx = 5.5f;
+	/*float adx = 5.5f;
 	float ady = 4;
 	p->set_line_width(2);
 	p->draw_lines({area_arrow.center() + vec2(-adx, -ady),
 		area_arrow.center() + vec2(adx, -ady),
 		area_arrow.center() + vec2(0, ady),
 		area_arrow.center() + vec2(-adx, -ady)});
-	p->set_line_width(1);
+	p->set_line_width(1);*/
+
+	auto im = load_image("hui:triangle-down");
+	prepare_image(im);
+	p->draw_ximage(area_arrow, im);
 }
 
 

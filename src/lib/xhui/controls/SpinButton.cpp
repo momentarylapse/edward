@@ -165,7 +165,7 @@ void SpinButton::_draw(Painter* p) {
 	p->draw_line(area_plus.p00(), area_plus.p01());
 
 	p->set_color(Theme::_default.text);
-	if (!enabled)
+	/*if (!enabled)
 		p->set_color(Theme::_default.text_disabled);
 	vec2 m = (_area.p10() + _area.p11()) / 2 - vec2(dx/2,0);
 	p->set_line_width(2);
@@ -175,7 +175,16 @@ void SpinButton::_draw(Painter* p) {
 	p->draw_line(m + vec2(0,-r), m + vec2(0,r));
 	//p->draw_str((_area.p10() + _area.p11()) / 2 - vec2(dx/2,0), "+");
 	//p->draw_str((_area.p10() + _area.p11()) / 2 - vec2(dx*3/2,0), "-");
-	p->set_line_width(1);
+	p->set_line_width(1);*/
+
+
+	// currently faster to use textures:
+	auto im_plus = load_image("hui:plus");
+	prepare_image(im_plus);
+	p->draw_ximage(area_plus, im_plus);
+	auto im_minus = load_image("hui:minus");
+	prepare_image(im_minus);
+	p->draw_ximage(area_minus, im_minus);
 }
 
 

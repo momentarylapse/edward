@@ -44,6 +44,8 @@ namespace xhui {
 			a.add(args[i]);
 		return a;
 	}
+
+	void create_default_images();
 };
 
 int xhui_main(const Array<string> &);
@@ -182,6 +184,48 @@ void init(const Array<string> &arg, const string& app_name) {
 	string def_lang = "English";
 	//if (def_lang.num > 0)
 		set_language(config.get_str("Language", def_lang));
+
+	create_default_images();
+}
+
+
+void create_default_images() {
+	int size = 32;
+	float r = 6;
+	vec2 m = vec2{(float)size/2, (float)size/2};
+	{
+		Image im(size, size, color(0,0,0,0));
+		auto p = im.start_draw();
+		p->set_color(White);
+		p->set_line_width(2);
+		p->draw_line(m - vec2(r, 0), m + vec2(r, 0));
+		p->draw_line(m - vec2(0, r), m + vec2(0, r));
+		delete p;
+		set_image("hui:plus", im);
+	}
+	{
+		Image im(size, size, color(0,0,0,0));
+		auto p = im.start_draw();
+		p->set_color(White);
+		p->set_line_width(2);
+		p->draw_line(m - vec2(r, 0), m + vec2(r, 0));
+		delete p;
+		set_image("hui:minus", im);
+	}
+	{
+		Image im(size, size, color(0,0,0,0));
+		auto p = im.start_draw();
+		p->set_color(White);
+		p->set_line_width(2);
+		p->draw_line(m - vec2(r, 0), m + vec2(r, 0));
+		p->draw_line(m - vec2(r, 0), m + vec2(0, r));
+		p->draw_line(m + vec2(0, r), m + vec2(r, 0));
+		p->draw_line(m - vec2(r/2, 0), m + vec2(r/2, 0));
+		p->draw_line(m - vec2(r/2, 0), m + vec2(0, r/2));
+		p->draw_line(m + vec2(0, r/2), m + vec2(r/2, 0));
+		delete p;
+		set_image("hui:triangle-down", im);
+	}
 }
 
 //   filename -> executable file
