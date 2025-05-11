@@ -104,7 +104,7 @@ namespace vulkan{
 		void image_barrier(const Texture *t, AccessFlags src_access, AccessFlags dst_access, ImageLayout old_layout, ImageLayout new_layout);
 		void copy_image(const Texture *source, const Texture *dest, const Array<int> &extend);
 
-		void timestamp(int id);
+		void timestamp(int id, bool after);
 	};
 
 	CommandBuffer *begin_single_time_commands();

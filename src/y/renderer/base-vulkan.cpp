@@ -93,7 +93,7 @@ void reset_gpu_timestamp_queries() {
 void gpu_timestamp(const RenderParams& params, int channel) {
 	if (gpu_timestamp_queries.num >= MAX_TIMESTAMP_QUERIES)
 		return;
-	params.command_buffer->timestamp(gpu_timestamp_queries.num);
+	params.command_buffer->timestamp(gpu_timestamp_queries.num, (channel & (int)0x80000000) != 0);
 	gpu_timestamp_queries.add(channel);
 }
 
