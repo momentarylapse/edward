@@ -573,6 +573,7 @@ void Panel::close_dialog(Dialog* dialog) {
 	if (auto w = get_window()) {
 		w->dialogs.pop();
 		w->hover_control = nullptr;
+		w->focus_control = nullptr;
 	}
 	dialog->basic_promise();
 	request_redraw();
