@@ -62,7 +62,9 @@ public:
 
 	Array<vulkan::VertexBuffer*> line_vbs;
 	int num_line_vbs_used = 0;
-	vulkan::VertexBuffer* get_line_vb();
+	Array<vulkan::VertexBuffer*> line_vbs_with_color;
+	int num_line_vbs_with_color_used = 0;
+	vulkan::VertexBuffer* get_line_vb(bool with_color = false);
 
 
 	vulkan::Fence* in_flight_fence = nullptr;
