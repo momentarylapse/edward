@@ -309,6 +309,7 @@ void MultiView::on_draw(Painter* p) {
 		p->draw_rect(selection_area->canonical());
 		p->set_fill(true);
 	}
+	window.draw_post(p);
 	action_controller->draw_post(p);
 	draw_mouse_pos(p);
 }
@@ -328,7 +329,12 @@ base::optional<Hover> MultiView::get_hover(MultiViewWindow* win, const vec2& m) 
 		return Hover{MultiViewType::ACTION_MANAGER, (int)con, tp};
 
 	if (f_hover)
-		return f_hover(win, m);
+		if (auto h = f_hover(win, m))
+			return h;
+
+	if (window.area.inside(m))
+		return Hover{MultiViewType::GRID, -1, grid_hover_point(m)};
+
 	return base::None;
 }
 
@@ -406,7 +412,13 @@ void MultiView::draw_mouse_pos(Painter* p) {
 }
 
 vec3 MultiView::cursor_pos_3d(const vec2& m) const {
-	return window.unproject(vec3(m, 0), view_port.pos);
+	if (hover)
+		return hover->tp;
+	return grid_hover_point(m);
+}
+
+vec3 MultiView::grid_hover_point(const vec2& m) const {
+	return window.grid_hover_point(m);
 }
 
 void MultiView::set_allow_action(bool allow) {

@@ -127,6 +127,7 @@ public:
 
 	multiview::SingleData* get_hover_item();
 	vec3 cursor_pos_3d(const vec2& m) const;
+	vec3 grid_hover_point(const vec2& m) const;
 
 	std::function<ActionMultiView*()> f_create_action;
 

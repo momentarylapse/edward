@@ -13,7 +13,9 @@
 #include <y/world/Camera.h>
 #include <Session.h>
 #include <lib/math/mat3.h>
+#include <lib/image/Painter.h>
 
+#include "lib/math/plane.h"
 #include "lib/xhui/Theme.h"
 
 
@@ -43,6 +45,22 @@ vec3 MultiViewWindow::unproject(const vec3& v, const vec3& zref) const {
 	vec3 r = v;
 	r.z = op.z;
 	return to_pixels.inverse().project(r);
+}
+
+vec3 MultiViewWindow::grid_hover_point(const vec2& m) const {
+	const auto d = active_grid_direction();
+	vec3 pp0 = {m.x, m.y, 0};
+	vec3 pp1 = {m.x, m.y, 1};
+	vec3 p0 = to_pixels.inverse().project(pp0);
+	vec3 p1 = to_pixels.inverse().project(pp1);
+
+	plane pl = plane::from_point_normal({0,0,0}, d);
+	vec3 p;
+	pl.intersect_line(p0, p1, p);
+	return p;
+
+	// TODO check if the camera is on the "wrong" side of the grid
+	//return unproject(vec3(m, 0), view_port.pos);
 }
 
 vec3 MultiViewWindow::direction() const {
@@ -266,6 +284,26 @@ void MultiViewWindow::draw(const RenderParams& params) {
 	if (d.x > DMIN)
 		draw_grid_3d(bg, this, 0, (d.x - DMIN) / (1-DMIN));
 }
+
+void MultiViewWindow::draw_post(Painter* p) {
+	if (multi_view->hover) {
+		const auto p0 = multi_view->hover->tp;
+		const float r = 3;
+		auto px = project({p0.x, 0, 0});
+		p->set_color(color(1, 1, 0.2f, 0.2f));
+		if (px.z > 0 and px.z < 1)
+			p->draw_circle(px.xy(), 3);
+		auto py = project({0, p0.y, 0});
+		p->set_color(color(1, 0.2f, 1, 0.2f));
+		if (py.z > 0 and py.z < 1)
+			p->draw_circle(py.xy(), 3);
+		auto pz = project({0, 0, p0.z});
+		p->set_color(color(1, 0.2f, 0.2f, 1));
+		if (px.z > 0 and pz.z < 1)
+			p->draw_circle(pz.xy(), 3);
+	}
+}
+
 
 RenderViewData& MultiViewWindow::rvd() {
 	return scene_renderer->rvd;
