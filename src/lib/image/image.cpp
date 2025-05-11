@@ -129,6 +129,9 @@ void Image::clear()
 xfer<Image> Image::scale(int _width, int _height) const {
 	Image *r = new Image(_width, _height, Black);
 
+	if (width * height == 0)
+		return r;
+
 	for (int x=0;x<_width;x++)
 		for (int y=0;y<_height;y++) {
 			int x0 = (int)( (float)x * (float)width / (float)_width );

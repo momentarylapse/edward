@@ -182,7 +182,7 @@ public:
 		for (int i=0;i<mat->texture_levels.num;i++) {
 			string id = format("image:material[%d]-texture[%d]", index, i);
 			auto *img = mat->texture_levels[i]->image.get();
-			auto *icon = mat->texture_levels[i]->image->scale(PREVIEW_SIZE, PREVIEW_SIZE);
+			auto *icon = img->scale(PREVIEW_SIZE, PREVIEW_SIZE);
 			xhui::set_image(id, *icon);
 			string ext = format(" (%dx%d)", img->width, img->height);
 			if (mat->texture_levels[i]->edited)

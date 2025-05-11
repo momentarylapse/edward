@@ -200,11 +200,11 @@ void Storage::guess_root_directory(const Path &filename) {
 			return;
 		}
 
-	set_root_directory(filename.parent(), true);
+	set_root_directory(filename.parent());
 }
 
 
-void Storage::set_root_directory(const Path &_directory, bool compact_mode) {
+void Storage::set_root_directory(const Path &_directory) {
 	Path directory = _directory.absolute().canonical();
 	if (root_dir == directory)
 		return;
@@ -212,7 +212,7 @@ void Storage::set_root_directory(const Path &_directory, bool compact_mode) {
 	root_dir = directory;
 	msg_error("ROOT: " + str(root_dir));
 
-	compact_mode = !os::fs::exists(root_dir | "game.ini");
+	bool compact_mode = !os::fs::exists(root_dir | "game.ini");
 
 
 	for (int i=0; i<NUM_FDS; i++) {

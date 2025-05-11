@@ -138,6 +138,8 @@ Dialog x x padding=0
 #ifdef USING_OPENGL
 		session->resource_manager->ctx = xhui::_nix_context.get();
 #endif
+		session->resource_manager->texture_dir = engine.texture_dir;
+		session->resource_manager->shader_dir = engine.shader_dir;
 		session->drawing_helper = new DrawingHelper(pp->context, session->resource_manager);
 		try {
 			session->resource_manager->load_shader_module("module-basic-data.shader");

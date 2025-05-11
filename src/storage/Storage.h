@@ -40,7 +40,7 @@ public:
 	static Path CANONICAL_SUB_DIR[NUM_FDS]; // relative
 
 
-	void set_root_directory(const Path &directory, bool compact_mode = false);
+	void set_root_directory(const Path &directory);
 	void guess_root_directory(const Path &filename);
 
 	Path get_root_dir(int kind);
