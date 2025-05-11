@@ -12,6 +12,7 @@ Material* create_material(ResourceManager* resource_manager, const color& albedo
 ModeModel::ModeModel(Session* session) : Mode(session) {
 	multi_view = new MultiView(session);
 	data = new DataModel(session);
+	data->reset();
 	generic_data = data.get();
 
 	mode_mesh = new ModeMesh(this);

@@ -108,18 +108,20 @@ void ModeAddPlatonic::on_key_down(int key) {
 }
 
 void ModeAddPlatonic::update_mesh() {
-	if (type == Type::Tetrahedron)
+	if (type == Type::Tetrahedron) {
 		mesh = GeometryPlatonic(center, radius, 4);
-	else if (type == Type::Cube)
+	} else if (type == Type::Cube) {
 		mesh = GeometryPlatonic(center, radius, 6); // meh
-	else if (type == Type::Octahedron)
+	} else if (type == Type::Octahedron) {
 		mesh = GeometryPlatonic(center, radius, 8);
-	else if (type == Type::Dodecahedron)
+	} else if (type == Type::Dodecahedron) {
 		mesh = GeometryPlatonic(center, radius, 12);
-	else if (type == Type::Icosahedron)
+	} else if (type == Type::Icosahedron) {
 		mesh = GeometryPlatonic(center, radius, 20);
-	else
+	} else {
 		mesh = GeometryTeapot(center, radius, complexity);
+		mesh.smoothen();
+	}
 
 	mesh.build(vertex_buffer.get());
 
