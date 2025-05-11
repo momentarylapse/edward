@@ -29,7 +29,7 @@ public:
 	explicit DataProject(Session *s);
 	~DataProject() override;
 
-	void reset();
+	void reset() override;
 	bool load(const Path &_filename, bool deep = true);
 	bool save(const Path &_filename);
 

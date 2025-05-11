@@ -1,6 +1,7 @@
 
 
 #include <Session.h>
+#include <helper/ResourceManager.h>
 #include <view/EdwardWindow.h>
 #include <storage/Storage.h>
 #include <storage/format/Format.h>
@@ -8,6 +9,9 @@
 #include <lib/os/CommandLineParser.h>
 #include <lib/os/msg.h>
 #include <lib/kaba/lib/lib.h>
+#include <mode_material/data/DataMaterial.h>
+#include <mode_model/data/DataModel.h>
+#include <mode_world/data/DataWorld.h>
 
 string AppVersion = "0.5.-1.0";
 string AppName = "Edward";
@@ -21,6 +25,70 @@ namespace hui {
 	}
 }
 
+bool any_session_running();
+
+extern bool DataModelAllowUpdating;
+
+void update_file(const Path &filename, bool allow_write) {
+	//Session session;
+
+	auto session = new Session;
+	session->resource_manager = new ResourceManager(nullptr);
+	auto storage = new Storage(session);
+
+
+	auto _filename = filename.absolute().canonical();
+
+	storage->guess_root_directory(_filename);
+	session->resource_manager->shader_dir = storage->root_dir_kind[FD_MATERIAL];
+	//msg_write(storage->root_dir.str());
+
+	/*int pp = filename.str().find("/Objects/", 0);
+	if (pp > 0) {
+		kaba::config.directory = Path(filename.str().sub(0, pp)) | "Scripts";
+		//msg_write(kaba::config.directory.str());
+	}*/
+
+
+	Data *data = nullptr;
+	string ext = filename.extension();
+
+	if (ext == "shader") {
+		auto mat = new DataMaterial(session);
+		msg_write("loading " + filename.str());
+		auto &s = mat->appearance.passes[0].shader;
+		s.file = _filename.relative_to(storage->root_dir_kind[FD_MATERIAL]);
+		s.load_from_file(session);
+		if (s.from_graph)
+			s.save_to_file(session);
+		delete mat;
+		delete storage;
+		delete session;
+		return;
+	}
+
+
+	if (ext == "model") {
+		//MaterialInit();
+		session->resource_manager->material_manager->set_default(new Material(session->resource_manager));
+		data = new DataModel(session);
+		DataModelAllowUpdating = false;
+	} else if (ext == "material") {
+		data = new DataMaterial(session);
+	} else if (ext == "world") {
+		data = new DataWorld(session);
+	}
+
+	if (data) {
+		msg_write("loading " + filename.str());
+		storage->load(filename, data, false);
+		if (allow_write)
+			storage->save(filename, data);
+		delete data;
+	}
+	delete storage;
+	delete session;
+}
 
 
 int xhui_main(const Array<string>& args) {
@@ -34,7 +102,6 @@ int xhui_main(const Array<string>& args) {
 	kaba::init();
 
 
-
 	CommandLineParser p;
 	p.info(AppName, "");
 	p.option("--execute", "FILENAME", "(NOT WORKING) execute a script", [] (const string &a) {
@@ -44,12 +111,10 @@ int xhui_main(const Array<string>& args) {
 		p.show();
 	});
 	p.cmd("file update", "FILENAME", "load and re-write a file", [] (const Array<string> &arg) {
-		//update_file(arg[0], true);
-		msg_todo("file update");
+		update_file(arg[0], true);
 	});
 	p.cmd("file check", "FILENAME", "load file and check for errors", [] (const Array<string> &arg) {
-		//update_file(arg[0], false);
-		msg_todo("file check");
+		update_file(arg[0], false);
 	});
 	p.cmd("new material", "", "open editor in material mode", [] (const Array<string> &arg) {
 		auto session = create_session();
@@ -100,7 +165,8 @@ int xhui_main(const Array<string>& args) {
 	p.parse(args);
 
 	try {
-		xhui::run();
+		if (any_session_running())
+			xhui::run();
 	} catch (Exception& e) {
 		msg_error(e.message());
 	}

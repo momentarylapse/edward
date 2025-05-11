@@ -35,15 +35,16 @@ ResourceManager::ResourceManager(::Context *_ctx) {
 	model_manager = new ModelManager(this, material_manager);
 
 
+	if (ctx) {
 #ifdef USING_VULKAN
-	Image im;
-	im.create(8, 8, White);
-	tex_white = new Texture();
-	tex_white->write(im);
+		Image im;
+		im.create(8, 8, White);
+		tex_white = new Texture();
+		tex_white->write(im);
 #else
-	if (ctx)
 		tex_white = ctx->tex_white;
 #endif
+	}
 }
 
 xfer<Material> ResourceManager::load_material(const Path &filename) {

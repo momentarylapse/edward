@@ -45,7 +45,8 @@ void ModelMaterial::TextureLevel::reload_image(Session *session) {
 	else
 		image = Image::load(session->resource_manager->texture_dir | filename);
 	edited = false;
-	update_texture();
+	if (session->resource_manager->ctx)
+		update_texture();
 }
 
 void ModelMaterial::TextureLevel::update_texture() {

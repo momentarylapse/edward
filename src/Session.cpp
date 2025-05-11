@@ -20,6 +20,8 @@
 #include "stuff/Progress.h"*/
 #include "view/MultiView.h"
 //#include "view/DrawingHelper.h"
+#include <lib/base/algo.h>
+
 #include "view/Mode.h"
 #include "data/Data.h"
 #include "storage/format/Format.h"
@@ -33,6 +35,11 @@
 #include <y/world/World.h>
 #include <y/graphics-impl.h>
 #include <y/renderer/target/XhuiRenderer.h>
+
+static Array<Session*> all_sessions;
+bool any_session_running() {
+	return all_sessions.num > 0;
+}
 
 Session *create_session() {
 	auto s = new Session;
@@ -82,6 +89,8 @@ Session::Session() {
 	resource_manager = nullptr;
 	win = nullptr;
 	drawing_helper = nullptr;
+
+	all_sessions.add(this);
 }
 
 Session::~Session() {
@@ -110,6 +119,8 @@ Session::~Session() {
 		xhui::config.save(xhui::Application::directory | "config.txt");
 		delete storage;
 	}
+
+	base::remove(all_sessions, this);
 
 	//app->end();
 }
