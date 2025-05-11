@@ -14,6 +14,8 @@
 #include <Session.h>
 #include <lib/math/mat3.h>
 
+#include "lib/xhui/Theme.h"
+
 
 MultiViewWindow::MultiViewWindow(MultiView* _multi_view) {
 	multi_view = _multi_view;
@@ -134,10 +136,135 @@ void MultiViewWindow::prepare(const RenderParams& params) {
 		* projection * view;
 }
 
+
+
+void add_grid(const rect &r, Array<vec3> p[4], Array<color> col[4], float D, float DERR, const vec3 &dir_1, const vec3 &dir_2, float alpha) {
+
+	int ix0 = int(ceil(r.x1 / D));
+	int ix1 = int(floor(r.x2 / D));
+	for (int i=ix0; i<=ix1; i++) {
+		int level = grid_level(i);
+		float dens = grid_density(level, DERR);
+		color c = xhui::Theme::_default.background_hover; //ColorInterpolate(bg, scheme.GRID, alpha * dens);
+		c.a = alpha * dens;
+		p[level].add(dir_1 * (float)(i*D) + dir_2 * r.y1);
+		p[level].add(dir_1 * (float)(i*D) + dir_2 * r.y2);
+		col[level].add(c);
+		col[level].add(c);
+	}
+
+
+	int iy0 = int(ceil(r.y1 / D));
+	int iy1 = int(floor(r.y2 / D));
+	for (int i=iy0; i<=iy1; i++) {
+		int level = grid_level(i);
+		float dens = grid_density(level, DERR);
+		color c = xhui::Theme::_default.background_hover;//scheme.GRID;//ColorInterpolate(bg, scheme.GRID, alpha * dens);
+		c.a = alpha * dens;
+		p[level].add(dir_2 * (float)(i*D) + dir_1 * r.x1);
+		p[level].add(dir_2 * (float)(i*D) + dir_1 * r.x2);
+		col[level].add(c);
+		col[level].add(c);
+	}
+}
+
+rect win_get_bounds(MultiViewWindow *w, const vec3 &ax1, const vec3 &ax2) {
+	vec3 p[4];
+	rect dest = w->area_native;
+	vec3 pos0 = w->multi_view->view_port.pos;
+	p[0] = w->unproject(vec3(dest.x1, dest.center().y, 0), pos0);
+	p[1] = w->unproject(vec3(dest.x2, dest.center().y, 0), pos0);
+	p[2] = w->unproject(vec3(dest.center().x, dest.y1, 0), pos0);
+	p[3] = w->unproject(vec3(dest.center().x, dest.y2, 0), pos0);
+	p[0] = w->unproject(vec3(dest.x1, dest.y1, 0), pos0);
+	p[1] = w->unproject(vec3(dest.x2, dest.y1, 0), pos0);
+	p[2] = w->unproject(vec3(dest.x1, dest.y2, 0), pos0);
+	p[3] = w->unproject(vec3(dest.x2, dest.y2, 0), pos0);
+
+	rect r = rect::ID;
+	for (int i=0; i<4; i++) {
+		float x = p[i] * ax1;
+		float y = p[i] * ax2;
+		if (i == 0 or x < r.x1)
+			r.x1 = x;
+		if (i == 0 or x > r.x2)
+			r.x2 = x;
+		if (i == 0 or y < r.y1)
+			r.y1 = y;
+		if (i == 0 or y > r.y2)
+			r.y2 = y;
+	}
+	return r;
+}
+
+void draw_grid_3d(const color &bg, MultiViewWindow *w, int plane, float alpha) {
+
+	//msg_write("grid " + f2s(alpha, 3));
+	//return exp10(ceil(log10(GRID_CONST / zoom())));
+	float D = w->get_grid_d();
+	float DERR = log10(D) - log10(GRID_CONST / w->zoom());
+
+	Array<vec3> p[4];
+	Array<color> col[4];
+
+	vec3 dir_1, dir_2;
+	if (plane == 2) {
+		dir_1 = vec3::EX;
+		dir_2 = vec3::EY;
+	} else if (plane == 1) {
+		dir_1 = vec3::EX;
+		dir_2 = vec3::EZ;
+	} else if (plane == 0) {
+		dir_1 = vec3::EY;
+		dir_2 = vec3::EZ;
+	}
+
+
+	rect r = win_get_bounds(w, dir_1, dir_2);
+	add_grid(r, p, col, D, DERR, dir_1, dir_2, alpha);
+	/*add_grid(move_rect(r, 1, 0), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, -1, 0), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, 1, -1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, 0, -1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, -1, -1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, 1, 1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, 0, 1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);
+	add_grid(move_rect(r, -1, 1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);*/
+
+
+	auto dh = w->multi_view->session->drawing_helper;
+	dh->set_blending(true);
+	dh->set_line_width(2);//scheme.LINE_WIDTH_THIN);
+	for (int l=3; l>=1; l--)
+		dh->draw_lines_colored(p[l], col[l], false);
+	dh->set_line_width(3);//scheme.LINE_WIDTH_MEDIUM);
+	dh->draw_lines_colored(p[0], col[0], false);
+	dh->set_blending(false);
+}
+
 void MultiViewWindow::draw(const RenderParams& params) {
 	multi_view->session->drawing_helper->set_window(this);
 
 	scene_renderer->draw(params);
+
+	if (!multi_view->_show_grid)
+		return;
+
+	color bg = xhui::Theme::_default.background;//get_background_color();
+
+	vec3 d = direction();
+	d.x = abs(d.x);
+	d.y = abs(d.y);
+	d.z = abs(d.z);
+
+	float DMIN = 0.4f;
+
+	if (d.z > DMIN)
+		draw_grid_3d(bg, this, 2, (d.z - DMIN) / (1-DMIN));
+	if (d.y > DMIN)
+		draw_grid_3d(bg, this, 1, (d.y - DMIN) / (1-DMIN));
+	if (d.x > DMIN)
+		draw_grid_3d(bg, this, 0, (d.x - DMIN) / (1-DMIN));
 }
 
 RenderViewData& MultiViewWindow::rvd() {

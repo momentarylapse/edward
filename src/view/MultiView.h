@@ -104,8 +104,10 @@ public:
 
 	void set_allow_select(bool allow);
 	void set_allow_action(bool allow);
+	void set_show_grid(bool show);
 	bool _allow_select = false;
 	bool _allow_action = false;
+	bool _show_grid = false;
 
 	std::function<void(MultiViewWindow*, const rect&)> f_select;
 	std::function<base::optional<Box>()> f_get_selection_box;

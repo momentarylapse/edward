@@ -417,6 +417,10 @@ void MultiView::set_allow_select(bool allow) {
 	_allow_select = allow;
 }
 
+void MultiView::set_show_grid(bool allow) {
+	_show_grid = allow;
+}
+
 
 
 MultiView::ViewPort::ViewPort(MultiView* _multi_view) {

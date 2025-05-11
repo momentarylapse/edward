@@ -75,21 +75,23 @@ layout(push_constant, std430) uniform Parameters {
 layout(location = 0) in vec3 in_position;
 layout(location = 1) in vec3 in_normal;
 layout(location = 2) in vec2 in_uv;
+layout(location = 3) in vec4 in_color;
 
 layout(location = 0) out vec4 out_pos; // camera space
 layout(location = 1) out vec2 out_uv;
+layout(location = 2) out vec4 out_color;
 
 void main() {
 	gl_Position = params.matrix * vec4(in_position, 1);
 	out_pos = gl_Position;
 	out_uv = in_uv;
+	out_color = in_color;
 }
 </VertexShader>
 <FragmentShader>
 
 layout(push_constant, std140) uniform Parameters {
 	mat4 matrix;
-	vec4 color;
 	vec2 size;
 	float radius;
 	float softness;
@@ -97,13 +99,14 @@ layout(push_constant, std140) uniform Parameters {
 
 layout(location = 0) in vec4 in_pos;
 layout(location = 1) in vec2 in_uv;
+layout(location = 2) in vec4 in_color;
 layout(location = 0) out vec4 out_color;
 
 layout(binding = 0) uniform sampler2D tex0;
 
 void main() {
 	out_color = texture(tex0, in_uv);
-	out_color *= params.color;
+	out_color *= in_color;
 }
 </FragmentShader>
 )foodelim");
@@ -112,10 +115,16 @@ void main() {
 	dset->set_texture(0, ctx->tex_white);
 	dset->update();
 
-	pipeline = new vulkan::GraphicsPipeline(shader, context->render_pass, 0, PrimitiveTopology::TRIANGLES, context->vb);
+	pipeline = new vulkan::GraphicsPipeline(shader, context->render_pass, 0, PrimitiveTopology::TRIANGLES, "3f,3f,2f,4f");
 	//pipeline->set_z(false, false);
 	pipeline->set_culling(vulkan::CullMode::NONE);
 	pipeline->rebuild();
+
+	pipeline_alpha = new vulkan::GraphicsPipeline(shader, context->render_pass, 0, PrimitiveTopology::TRIANGLES, "3f,3f,2f,4f");
+	pipeline_alpha->set_z(true, false);
+	pipeline_alpha->set_blend(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA);
+	pipeline_alpha->set_culling(vulkan::CullMode::NONE);
+	pipeline_alpha->rebuild();
 #endif
 }
 
@@ -132,9 +141,15 @@ void DrawingHelper::set_line_width(float width) {
 	_line_width = width;
 }
 
+struct XVertex {
+	vec3 pos;
+	vec3 normal;
+	float u,v;
+	color _color;
+};
 
 
-static void add_vb_line(Array<Vertex1>& vertices, const vec3& a, const vec3& b, MultiViewWindow* win, float line_width) {
+static void add_vb_line(Array<XVertex>& vertices, const vec3& a, const vec3& b, const color& col, MultiViewWindow* win, float line_width) {
 	float w = win->area.width();
 	float h = win->area.height();
 	vec2 ba_pixel = vec2((b.x - a.x) * w, (b.y - a.y) * h);
@@ -145,44 +160,58 @@ static void add_vb_line(Array<Vertex1>& vertices, const vec3& a, const vec3& b, 
 	vec3 a1 = a + r;
 	vec3 b0 = b - r;
 	vec3 b1 = b + r;
-	vertices.add({a0, v_0, 0,0});
-	vertices.add({a1, v_0, 0,0});
-	vertices.add({b0, v_0, 0,0});
-	vertices.add({b0, v_0, 0,0});
-	vertices.add({a1, v_0, 0,0});
-	vertices.add({b1, v_0, 0,0});
+	vertices.add({a0, v_0, 0,0, col});
+	vertices.add({a1, v_0, 0,0, col});
+	vertices.add({b0, v_0, 0,0, col});
+	vertices.add({b0, v_0, 0,0, col});
+	vertices.add({a1, v_0, 0,0, col});
+	vertices.add({b1, v_0, 0,0, col});
 }
 
+void DrawingHelper::set_blending(bool b) {
+	_blending = b;
+}
+
+
 void DrawingHelper::draw_lines(const Array<vec3>& points, bool contiguous) {
+	Array<color> colors;
+	colors.resize(points.num);
+	for (auto& c: colors)
+		c = _color;
+	draw_lines_colored(points, colors, contiguous);
+}
+
+void DrawingHelper::draw_lines_colored(const Array<vec3>& points, const Array<color>& cols, bool contiguous) {
 #ifdef USING_VULKAN
-	auto vb = context->get_line_vb();
-	Array<Vertex1> vertices;
+	auto vb = context->get_line_vb(true);
+	Array<XVertex> vertices;
 	mat4 m = window->projection * window->view;
 	if (contiguous) {
 		for (int i=0; i<points.num-1; i++)
-			add_vb_line(vertices, m.project(points[i]), m.project(points[i+1]), window, _line_width);
+			add_vb_line(vertices, m.project(points[i]), m.project(points[i+1]), cols[i], window, _line_width);
 	} else {
 		for (int i=0; i<points.num-1; i+=2)
-			add_vb_line(vertices, m.project(points[i]), m.project(points[i+1]), window, _line_width);
+			add_vb_line(vertices, m.project(points[i]), m.project(points[i+1]), cols[i], window, _line_width);
 	}
 	vb->update(vertices);
 
 	struct Parameters {
 		mat4 matrix;
-		color col;
 		vec2 size;
 		float radius, softness;
 	};
 
 	Parameters params;
 	params.matrix = mat4::ID;
-	params.col = _color;
 	params.size = {1000,1000};//(float)width, (float)height};
 	params.radius = 0;//line_width;
 	params.softness = 0;//softness;
 
 	auto cb = context->current_command_buffer();
-	cb->bind_pipeline(pipeline);
+	if (_blending)
+		cb->bind_pipeline(pipeline_alpha);
+	else
+		cb->bind_pipeline(pipeline);
 	cb->push_constant(0, sizeof(params), &params);
 	cb->bind_descriptor_set(0, dset);
 	cb->draw(vb);
@@ -198,7 +227,7 @@ void DrawingHelper::draw_circle(const vec3& center, const vec3& axis, float r) {
 		float w = (float)i / (float)N * 2 * pi;
 		points.add(center + e1 * cos(w) + e2 * sin(w));
 	}
-	draw_lines(points);
+	draw_lines(points, true);
 }
 
 

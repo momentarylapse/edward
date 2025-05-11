@@ -34,6 +34,7 @@ public:
 	static void clear(const RenderParams& params, const color& c);
 
 	void draw_lines(const Array<vec3>& points, bool contiguous = true);
+	void draw_lines_colored(const Array<vec3>& points, const Array<color>& col, bool contiguous = true);
 	void draw_circle(const vec3& center, const vec3& axis, float r);
 
 	void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vb, Material* material, int pass_no = 0, const string& vertex_module = "default");
@@ -46,10 +47,13 @@ public:
 	ResourceManager* resource_manager;
 	MultiViewWindow* window;
 	void set_window(MultiViewWindow* win);
+	void set_blending(bool b);
+	bool _blending = false;
 
 	Shader* shader = nullptr;
 #ifdef USING_VULKAN
 	vulkan::GraphicsPipeline* pipeline = nullptr;
+	vulkan::GraphicsPipeline* pipeline_alpha = nullptr;
 	vulkan::DescriptorSet* dset = nullptr;
 #endif
 
