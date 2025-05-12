@@ -391,6 +391,7 @@ namespace clipboard {
 
 namespace event_id {
 	const string Activate = "hui:activate";
+	const string ActivateDialogDefault = "hui:activate-dialog-default";
 	const string Close = "hui:close";
 	const string Click = "hui:click";
 	const string Changed = "hui:changed";

@@ -193,8 +193,12 @@ void Edit::on_key_down(int key) {
 		if (c != '\n' or multiline)
 			auto_insert(utf32_to_utf8({c}));
 	}
-	if (key == KEY_RETURN and multiline)
-		auto_insert("\n");
+	if (key == KEY_RETURN) {
+		if (multiline)
+			auto_insert("\n");
+		else
+			emit_event(event_id::ActivateDialogDefault, false);
+	}
 	if (key == KEY_TAB and multiline)
 		auto_insert("\t");
 

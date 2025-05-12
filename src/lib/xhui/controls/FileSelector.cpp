@@ -154,7 +154,8 @@ void FileSelector::link_events() {
 		emit_event(event_id::Select, false);
 	});
 	owner->event_x(list->id, event_id::Activate, [this] {
-		emit_event(event_id::Activate, true);
+		if (!emit_event(event_id::Activate, true))
+			emit_event(event_id::ActivateDialogDefault, false);
 	});
 	owner->event_x(list->id, event_id::DragStart, [this] {
 		owner->get_window()->start_drag(get_selected_filename().basename(), "filename:" + str(get_selected_filename()));

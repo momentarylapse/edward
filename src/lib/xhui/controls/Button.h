@@ -26,6 +26,7 @@ public:
 
 	virtual void on_click();
 
+	bool _default = false;
 	bool primary = false;
 	bool flat = false;
 	rect padding;

@@ -121,6 +121,10 @@ void Button::set_option(const string& key, const string& value) {
 	} else if (key == "primary") {
 		primary = true;
 		request_redraw();
+	} else if (key == "default") {
+		_default = true;
+		primary = true;
+		request_redraw();
 	} else if (key == "flat") {
 		flat = true;
 		request_redraw();

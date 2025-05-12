@@ -176,6 +176,7 @@ enum {
 
 namespace event_id {
 	extern const string Activate;
+	extern const string ActivateDialogDefault;
 	extern const string Close;
 	extern const string Click;
 	extern const string Changed;

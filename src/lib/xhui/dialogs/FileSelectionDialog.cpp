@@ -38,7 +38,7 @@ Dialog xxx ''
 		Grid ? ''
 			Label ? '' expandx
 			Button cancel 'Cancel' width=70
-			Button ok 'Ok' width=70 disabled
+			Button ok 'Save' width=70 disabled default
 )foodelim");
 	} else {
 		from_source(R"foodelim(
@@ -49,7 +49,7 @@ Dialog xxx ''
 		Grid ? ''
 			Label ? '' expandx
 			Button cancel 'Cancel' width=70
-			Button ok 'Ok' width=70 disabled
+			Button ok 'Open' width=70 disabled default
 )foodelim");
 	}
 

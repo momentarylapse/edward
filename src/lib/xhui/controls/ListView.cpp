@@ -61,7 +61,8 @@ void ListView::on_click_row(int row) {
 }
 
 void ListView::on_double_click_row(int row) {
-	emit_event(event_id::Activate, true);
+	if (!emit_event(event_id::Activate, true))
+		emit_event(event_id::ActivateDialogDefault, false);
 }
 
 void ListView::on_left_button_up(const vec2&) {
@@ -108,6 +109,16 @@ void ListView::on_mouse_move(const vec2& m, const vec2& d) {
 void ListView::on_mouse_wheel(const vec2& d) {
 	viewport.on_mouse_wheel(d);
 }
+
+void ListView::on_key_down(int key) {
+	if (key == KEY_RETURN) {
+		msg_error("LIST RETURN");
+		if (selected.num > 0)
+			if (!emit_event(event_id::Activate, true))
+				emit_event(event_id::ActivateDialogDefault, false);
+	}
+}
+
 
 
 int ListView::get_hover(const vec2& m) const {

@@ -167,9 +167,16 @@ void Panel::remove_event_handler(int uid) {
 	});
 }
 
+bool match_event_id(Panel::EventHandler& e, const string &id) {
+	if (e.id == id)
+		return true;
+	if (e.id.find("*") >= 0)
+		return id.match(e.id);
+	return false;
+}
 
 bool match_event(Panel::EventHandler& e, const string &id, const string &msg, bool is_default) {
-	if (e.id != id)
+	if (!match_event_id(e, id))
 		return false;
 	if (e.msg == "" and is_default)
 		return true;
