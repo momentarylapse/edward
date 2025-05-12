@@ -23,6 +23,8 @@ public:
 	void set_option(const string& key, const string& value) override;
 	Array<Control*> get_children(ChildFilter f) const override;
 
+	void _update_selection(const Array<int>& sel);
+
 	vec2 get_content_min_size() const override;
 	void negotiate_area(const rect& available) override;
 
