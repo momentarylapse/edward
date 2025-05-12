@@ -158,7 +158,9 @@ Dialog x x padding=0
 		engine.ignore_missing_files = true;
 		engine.resource_manager = session->resource_manager;
 
-		session->promise_started(session.get());
+		xhui::run_later(0.01f, [this] {
+			session->promise_started(session.get());
+		});
 	});
 	event_xp(id, xhui::event_id::JustBeforeDraw, [this] (Painter* p) {
 		if (!session->cur_mode or !session->cur_mode->multi_view)
