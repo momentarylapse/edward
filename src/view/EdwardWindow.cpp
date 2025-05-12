@@ -290,10 +290,22 @@ Dialog x x padding=0
 void EdwardWindow::on_key_down(int key) {
 }
 
+string nice_path(const Path& p) {
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_MINGW) //defined(__GNUC__) || defined(OS_LINUX)
+	string home = getenv("HOME");
+	if (str(p).head(home.num) == home)
+		return "~" + str(p).sub_ref(home.num);
+#endif
+	return str(p);
+}
+
 void EdwardWindow::update_menu() {
-	if (session->cur_mode->get_data()) {
-		enable("undo", session->cur_mode->get_data()->action_manager->undoable());
-		enable("redo", session->cur_mode->get_data()->action_manager->redoable());
+	if (auto d = session->cur_mode->get_data()) {
+		enable("undo", d->action_manager->undoable());
+		enable("redo", d->action_manager->redoable());
+
+		string prefix = d->action_manager->is_save() ? "" : "*";
+		set_title(format("%s%s  - [%s]", prefix, d->filename.relative_to(session->storage->root_dir), nice_path(session->storage->root_dir)));
 	}
 }
 
