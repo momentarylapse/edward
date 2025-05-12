@@ -110,6 +110,12 @@ void Dialog::negotiate_area(const rect& available) {
 		top_control->negotiate_area(available.grow(- padding));
 }
 
+void Dialog::on_key_down(int key) {
+	if (flags & DialogFlags::CloseByEscape and key == KEY_ESCAPE)
+		request_destroy();
+}
+
+
 void Dialog::_draw(Painter* p) {
 	p->set_color(Black.with_alpha(0.3f));
 	p->set_roundness(25);

@@ -32,6 +32,8 @@ public:
 	Array<Control*> get_children(ChildFilter f) const override;
 	void _draw(Painter* p) override;
 
+	void on_key_down(int key) override;
+
 	void request_destroy();
 	virtual	void on_destroy() {};
 

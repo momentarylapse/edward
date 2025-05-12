@@ -23,7 +23,7 @@ namespace xhui {
  *			Button cancel
  *			Button ok
  */
-FileSelectionDialog::FileSelectionDialog(Panel* parent, const string& title, const Path& dir, const Array<string>& params) : Dialog(title, 800, 600, parent) {
+FileSelectionDialog::FileSelectionDialog(Panel* parent, const string& title, const Path& dir, const Array<string>& params) : Dialog(title, 800, 600, parent, DialogFlags::CloseByEscape | DialogFlags::CloseByClickOutside) {
 
 	saving = sa_contains(params, "save");
 

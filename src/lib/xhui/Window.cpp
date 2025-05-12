@@ -387,6 +387,8 @@ void Window::_on_key_down(int k) {
 			handle_event(e.id, event_id::Activate, true);
 	if (focus_control)
 		focus_control->on_key_down(k);
+	if (dialogs.num > 0)
+		dialogs.back()->on_key_down(k);
 	on_key_down(k);
 }
 void Window::_on_key_up(int k) {
