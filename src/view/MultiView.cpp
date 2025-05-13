@@ -284,7 +284,7 @@ void MultiView::on_left_button_up(const vec2& m) {
 
 
 void MultiView::on_mouse_wheel(const vec2& m, const vec2& d) {
-	view_port.zoom(exp(d.y * 0.1f));
+	view_port.zoom(exp(d.y * 0.1f), cursor_pos_3d(m));
 }
 
 void MultiView::on_key_down(int key) {
@@ -458,8 +458,12 @@ void MultiView::ViewPort::rotate(const quaternion& qrel) {
 	out_changed();
 }
 
-void MultiView::ViewPort::zoom(float factor) {
+void MultiView::ViewPort::zoom(float factor, const base::optional<vec3>& fix_point) {
 	radius /= factor;
+	if (fix_point) {
+		const vec3 d = *fix_point - pos;
+		pos = *fix_point - d / factor;
+	}
 	out_changed();
 }
 

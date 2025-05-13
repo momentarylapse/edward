@@ -62,7 +62,7 @@ public:
 
 		void move(const vec3& drel);
 		void rotate(const quaternion& qrel);
-		void zoom(float factor);
+		void zoom(float factor, const base::optional<vec3>& fix_point);
 		void suggest_for_box(const Box& box);
 	} view_port;
 
