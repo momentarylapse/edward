@@ -51,6 +51,8 @@ public:
 	virtual void on_draw_shadow(const RenderParams& params, RenderViewData& rvd) {}
 	virtual void on_draw_post(Painter*) {}
 	virtual Mode* get_parent() { return nullptr; }
+	Mode* get_root();
+	bool is_ancestor_of(Mode* m);
 
 	void draw_info(Painter* p, const string& msg);
 

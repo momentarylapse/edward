@@ -29,6 +29,21 @@ void Mode::set_side_panel(xhui::Panel* p) {
 		session->win->embed("main-grid", 1, 0, side_panel);
 }
 
+Mode* Mode::get_root() {
+	if (auto p = get_parent())
+		return p->get_root();
+	return this;
+}
+
+
+bool Mode::is_ancestor_of(Mode* m) {
+	if (this == m)
+		return true;
+	if (auto p = m->get_parent())
+		return is_ancestor_of(p);
+	return false;
+}
+
 
 SubMode::SubMode(Mode* parent) : Mode(parent->session) {
 	_parent = parent;

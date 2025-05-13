@@ -18,6 +18,8 @@ namespace xhui {
 }
 class Material;
 class ModeModel;
+class ModeMeshMaterial;
+class ModeMeshSculpt;
 
 class ModeMesh : public SubMode {
 public:
@@ -27,6 +29,8 @@ public:
 	obs::source out_current_material_changed{this, "current-material-changed"};
 	obs::source out_texture_level_changed{this, "texture-level-changed"};
 
+	void on_enter_rec() override;
+	void on_leave_rec() override;
 	void on_enter() override;
 	void on_leave() override;
 	void on_prepare_scene(const RenderParams& params) override;
@@ -46,6 +50,9 @@ public:
 	void copy();
 	void paste();
 
+	owned<ModeMeshMaterial> mode_mesh_material;
+	owned<ModeMeshSculpt> mode_mesh_sculpt;
+
 	DataModel* data;
 
 	int current_material;
@@ -64,6 +71,7 @@ public:
 	Material* material_physical;
 	Material* material_selection;
 	Material* material_hover;
+	Array<int> event_ids_rec;
 	Array<int> event_ids;
 
 	enum class PresentationMode {

@@ -54,6 +54,9 @@ ModeMesh::ModeMesh(ModeModel* parent) : SubMode(parent) {
 	current_texture_level = 0;
 
 	presentation_mode = PresentationMode::Polygons;
+
+	mode_mesh_material = new ModeMeshMaterial(this);
+	mode_mesh_sculpt = new ModeMeshSculpt(this);
 }
 
 ModeMesh::~ModeMesh() = default;
@@ -84,6 +87,46 @@ void ModeMesh::set_edit_mesh(ModelMesh* mesh) {
 	update_vb();
 }
 
+void ModeMesh::on_enter_rec() {
+	session->out_changed >> create_sink([this] {
+		update_menu();
+	});
+
+	event_ids_rec.add(session->win->event("mode_model_mesh", [this] {
+		session->set_mode(this);
+	}));
+	event_ids_rec.add(session->win->event("mode_model_deform", [this] {
+		session->set_mode(mode_mesh_sculpt.get());
+	}));
+	event_ids_rec.add(session->win->event("mode_model_materials", [this] {
+		session->set_mode(mode_mesh_material.get());
+	}));
+	event_ids_rec.add(session->win->event("mode_properties", [this] {
+		session->win->open_dialog(new ModelPropertiesDialog(session->win, data));
+	}));
+
+	event_ids_rec.add(session->win->event("mode_model_vertex", [this] {
+		set_presentation_mode(PresentationMode::Vertices);
+	}));
+	event_ids_rec.add(session->win->event("mode_model_edge", [this] {
+		set_presentation_mode(PresentationMode::Edges);
+	}));
+	event_ids_rec.add(session->win->event("mode_model_polygon", [this] {
+		set_presentation_mode(PresentationMode::Polygons);
+	}));
+	event_ids_rec.add(session->win->event("mode_model_surface", [this] {
+		set_presentation_mode(PresentationMode::Surfaces);
+	}));
+}
+
+void ModeMesh::on_leave_rec() {
+	session->out_changed.unsubscribe(this);
+
+	for (int uid: event_ids_rec)
+		session->win->remove_event_handler(uid);
+	event_ids_rec.clear();
+}
+
 
 void ModeMesh::on_enter() {
 	auto update = [this] {
@@ -100,6 +143,11 @@ void ModeMesh::on_enter() {
 	auto menu_bar = (xhui::MenuBar*)win->get_control("menu");
 	auto menu = xhui::create_resource_menu("menu_model");
 	menu_bar->set_menu(menu);
+
+	win->enable("mode_model_texture_coord", false);
+	win->enable("mode_model_paint", false);
+	win->enable("mode_model_skeleton", false);
+	win->enable("mode_model_animation", false);
 
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);
@@ -156,28 +204,6 @@ void ModeMesh::on_enter() {
 		set_edit_mesh(data->phys_mesh.get());
 	}));
 
-	event_ids.add(session->win->event("mode_model_deform", [this] {
-		session->set_mode(new ModeMeshSculpt(this));
-	}));
-	event_ids.add(session->win->event("mode_model_materials", [this] {
-		session->set_mode(new ModeMeshMaterial(this));
-	}));
-	event_ids.add(session->win->event("mode_properties", [this] {
-		session->win->open_dialog(new ModelPropertiesDialog(session->win, data));
-	}));
-
-	event_ids.add(session->win->event("mode_model_vertex", [this] {
-		set_presentation_mode(PresentationMode::Vertices);
-	}));
-	event_ids.add(session->win->event("mode_model_edge", [this] {
-		set_presentation_mode(PresentationMode::Edges);
-	}));
-	event_ids.add(session->win->event("mode_model_polygon", [this] {
-		set_presentation_mode(PresentationMode::Polygons);
-	}));
-	event_ids.add(session->win->event("mode_model_surface", [this] {
-		set_presentation_mode(PresentationMode::Surfaces);
-	}));
 
 	event_ids.add(session->win->event("add-vertex", [this] {
 		session->set_mode(new ModeAddVertex(this));
@@ -249,6 +275,11 @@ void ModeMesh::update_menu() {
 	auto win = session->win;
 	win->check("mesh-visible0", data->edit_mesh == data->mesh.get());
 	win->check("mesh-physical", data->edit_mesh == data->phys_mesh.get());
+
+	win->check("mode_model_mesh", session->cur_mode == this);
+	win->check("mode_model_deform", session->cur_mode == mode_mesh_sculpt.get());
+	win->check("mode_model_material", session->cur_mode == mode_mesh_material.get());
+
 	win->check("mode_model_vertex", presentation_mode == PresentationMode::Vertices);
 	win->check("mode_model_edge", presentation_mode == PresentationMode::Edges);
 	win->check("mode_model_polygon", presentation_mode == PresentationMode::Polygons);

@@ -214,17 +214,21 @@ void Session::set_mode(Mode *m) {
 	});
 }
 
+Mode* get_next_child_to(Mode* from, Mode* to) {
+	if (!from)
+		return to->get_root();
+	if (from->is_ancestor_of(to))
+		return to;
+	return get_next_child_to(from, to->get_parent());
+}
+
 void Session::set_mode_now(Mode *m) {
 	if (cur_mode == m)
 		return;
 
-#if 0
-	// recursive use...
-	mode_queue.add(m);
-	if (mode_queue.num > 1)
-		return;
-#endif
+	// end current
 	if (cur_mode) {
+		//msg_write("LEAVE");
 		cur_mode->on_leave();
 		if (cur_mode->get_data()) {
 			cur_mode->get_data()->unsubscribe(win);
@@ -239,53 +243,32 @@ void Session::set_mode_now(Mode *m) {
 		cur_mode->unsubscribe(win);
 	}
 
-#if 0
-	m = mode_queue[0];
-	while (m) {
-
-		// close current modes
-		while (cur_mode) {
-			if (cur_mode->is_ancestor_of(m))
-				break;
-			//msg_write("end " + cur_mode->name);
-			cur_mode->on_leave_rec();
-		//	if (cur_mode->multi_view)
-		//		cur_mode->multi_view->pop_settings();
-			cur_mode = cur_mode->get_parent();
-		}
-
-		//multi_view_3d->ResetMouseAction();
-		//multi_view_2d->ResetMouseAction();
-
-		// start new modes
-		while (cur_mode != m) {
-			cur_mode = cur_mode->get_next_child_to(m);
-		//	msg_write("start " + cur_mode->name);
-		//	if (cur_mode->multi_view)
-		//		cur_mode->multi_view->push_settings();
-			cur_mode->on_enter_rec();
-		}
-		cur_mode->on_enter();
-		cur_mode->on_set_multi_view();
-
-		// nested set calls?
-		mode_queue.erase(0);
-		m = nullptr;
-		if (mode_queue.num > 0)
-			m = mode_queue[0];
+	// close current modes up
+	while (cur_mode) {
+		if (cur_mode->is_ancestor_of(m))
+			break;
+		//msg_write("UP");
+		cur_mode->on_leave_rec();
+		cur_mode = cur_mode->get_parent();
 	}
 
-	//win->set_menu(hui::create_resource_menu(cur_mode->menu_id, win));
-	win->update_menu();
-#endif
+	// start new modes down
+	while (cur_mode != m) {
+		cur_mode = get_next_child_to(cur_mode, m);
+		//msg_write("DOWN");
+		cur_mode->on_enter_rec();
+	}
 
+	//win->update_menu();
+
+
+	// start new
+	//msg_write("ENTER");
 	cur_mode = m;
+	cur_mode->on_enter();
+	win->renderer->children.clear();
 	win->renderer->add_child(cur_mode->multi_view);
 
-	cur_mode->on_enter();
-
-
-	//cur_mode->on_enter(); // ????
 	cur_mode->out_redraw >> win->in_redraw;
 	if (cur_mode->multi_view) {
 		cur_mode->multi_view->out_selection_changed >> win->in_redraw;
@@ -300,6 +283,7 @@ void Session::set_mode_now(Mode *m) {
 		am->out_saved >> win->in_saved;
 	}
 
+	out_changed();
 	win->request_redraw();
 }
 
@@ -343,7 +327,6 @@ Mode *Session::get_mode(int preferred_type) {
 }
 
 void Session::universal_new(int preferred_type) {
-#if 1
 	auto call_new = [preferred_type] (Session* session) {
 		if (preferred_type == FD_MODEL) {
 			session->mode_model = new ModeModel(session);
@@ -373,11 +356,9 @@ void Session::universal_new(int preferred_type) {
 		// new window
 		emit_empty_session(this).then(call_new);
 	}
-#endif
 }
 
 void Session::universal_open(int preferred_type) {
-#if 1
 	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false).then([this] (const auto& p) {
 
 		auto call_open = [kind=p.kind, path=p.complete] (Session* session) {
@@ -404,7 +385,6 @@ void Session::universal_open(int preferred_type) {
 
 		emit_empty_session(this).then(call_open);
 	});
-#endif
 }
 
 Path add_extension_if_needed(Session *session, int type, const Path &filename) {
@@ -421,7 +401,6 @@ Path make_absolute_path(Session *session, int type, const Path &filename, bool r
 }
 
 void Session::universal_edit(int type, const Path &_filename, bool relative_path) {
-#if 1
 	Path filename = make_absolute_path(this, type, add_extension_if_needed(this, type, _filename), relative_path);
 
 		switch (type){
@@ -484,7 +463,6 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 				break;
 		}
 		//return true;
-#endif
 }
 
 base::future<void> Session::allow_termination() {
