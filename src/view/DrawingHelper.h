@@ -61,6 +61,11 @@ public:
 	Material* material_selection;
 	Material* material_creation;
 	Material* material_shadow;
+
+	static const float LINE_MEDIUM;
+	static const float LINE_THICK;
+	static const float LINE_EXTRA_THICK;
+	static const color COLOR_X;
 };
 
 

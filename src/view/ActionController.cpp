@@ -168,7 +168,7 @@ void ActionController::update_action(const vec2& d) {
 	vec3 _param = v_0;
 
 	dvp += {d,0};
-	dv += active_win->unproject(m0 + vec3(d,0), m0) - active_win->unproject(m0, m0);
+	dv += active_win->unproject(m0.xy() + d, m0) - active_win->unproject(m0.xy(), m0);
 
 	if (action.mode == MouseActionMode::MOVE) {
 		_param = project_trans(constraints, dv);

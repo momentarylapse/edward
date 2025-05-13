@@ -412,6 +412,7 @@ add_executable(edward
 	src/mode_model/dialog/ModelMaterialSelectionDialog.cpp
 	src/mode_model/dialog/ModelPropertiesDialog.cpp
 	src/mode_model/mesh/ModeAddCube.cpp
+	src/mode_model/mesh/ModeAddCylinder.cpp
 	src/mode_model/mesh/ModeAddFromLathe.cpp
 	src/mode_model/mesh/ModeAddPlatonic.cpp
 	src/mode_model/mesh/ModeAddPolygon.cpp

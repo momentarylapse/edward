@@ -22,13 +22,14 @@ class MultiViewWindow {
 public:
 	explicit MultiViewWindow(MultiView* mv);
 	vec3 project(const vec3& v) const;
-	vec3 unproject(const vec3& v, const vec3& zref) const;
+	vec3 unproject(const vec2& v, const vec3& zref) const;
 	vec3 grid_hover_point(const vec2& m) const;
 	vec3 direction() const;
 	vec3 view_pos() const;
 	quaternion view_ang() const;
 
 	float zoom() const;
+	float pixel_to_size(float s) const;
 	float get_grid_d() const;
 	int active_grid() const;
 	vec3 active_grid_direction() const;

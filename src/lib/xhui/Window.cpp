@@ -478,6 +478,13 @@ void Window::_on_draw() {
 	p->draw_str({20,20}, str(frame));
 #endif
 
+	if (false) {
+		// hover debug
+		p->set_color(color(0.2f, 1, 0,0));
+		if (hover_control)
+			p->draw_rect(hover_control->_area);
+	}
+
 	p->end();
 	_refresh_requested = false;
 	delete p;

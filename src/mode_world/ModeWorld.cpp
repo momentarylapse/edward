@@ -470,11 +470,11 @@ void ModeWorld::draw_cameras(MultiViewWindow* win) {
 		auto dh = session->drawing_helper;
 		auto win = dh->window;
 
-		dh->set_color(color(1, 0.9f, 0.6f, 0.3f));
-		dh->set_line_width(3);//scheme.LINE_WIDTH_THIN);
+		dh->set_color(DrawingHelper::COLOR_X);
+		dh->set_line_width(DrawingHelper::LINE_MEDIUM);
 		if (e.is_selected) {
 			dh->set_color(Red);
-			dh->set_line_width(5);//scheme.LINE_WIDTH_MEDIUM);
+			dh->set_line_width(DrawingHelper::LINE_THICK);
 		}
 		auto q = e.ang;
 		float r = win->multi_view->view_port.radius * 0.1f;
@@ -534,11 +534,11 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 		//if (l.view_stage < multi_view->view_stage)
 		//	continue;
 
-		dh->set_color(color(1, 0.9f, 0.6f, 0.3f));
-		dh->set_line_width(5);//scheme.LINE_WIDTH_MEDIUM);
+		dh->set_color(DrawingHelper::COLOR_X);
+		dh->set_line_width(DrawingHelper::LINE_THICK);
 		if (e.is_selected) {
 			dh->set_color(Red);
-			dh->set_line_width(7);//scheme.LINE_WIDTH_THICK);
+			dh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
 		}
 
 		if (l.type == LightType::DIRECTIONAL) {

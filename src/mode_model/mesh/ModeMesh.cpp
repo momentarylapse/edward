@@ -9,6 +9,7 @@
 #include "ModeAddSphere.h"
 #include "ModeAddPlatonic.h"
 #include "ModeAddFromLathe.h"
+#include "ModeAddCylinder.h"
 #include "ModePaste.h"
 #include "ModeMeshSculpt.h"
 #include "ModeMeshMaterial.h"
@@ -134,6 +135,8 @@ void ModeMesh::on_enter() {
 	win->set_options("add-platonic", "height=50,width=50,noexpandx,ignorefocus");
 	win->add_control("Button", "L", 0, 6, "add-from-lathe");
 	win->set_options("add-from-lathe", "height=50,width=50,noexpandx,ignorefocus");
+	win->add_control("Button", "C", 0, 7, "add-cylinder");
+	win->set_options("add-cylinder", "height=50,width=50,noexpandx,ignorefocus");
 
 
 	event_ids.add(session->win->event("save", [this] {
@@ -193,6 +196,9 @@ void ModeMesh::on_enter() {
 	}));
 	event_ids.add(session->win->event("add-from-lathe", [this] {
 		session->set_mode(new ModeAddFromLathe(this));
+	}));
+	event_ids.add(session->win->event("add-cylinder", [this] {
+		session->set_mode(new ModeAddCylinder(this));
 	}));
 	event_ids.add(session->win->event("normal_this_hard", [this] {
 		auto sel = data->get_selection();

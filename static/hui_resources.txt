@@ -5611,19 +5611,25 @@ expandy,ignorehover
 # Resource
 Dialog
 new_cylinder_dialog
-width=100,height=50,allow-root
+allow-root,width=200,noexpandx
 0
 0
 1
 Grid
 ?
-vertical
+
 0
 0
 2
-Text
+Grid
+?
+vertical,class=card
+0
+0
+2
+Label
 header
-big,bold,center,expandx
+big,bold,center
 0
 0
 0
@@ -5645,8 +5651,8 @@ Grid
 0
 0
 4
-Text
-t_rings
+Label
+l-rings
 right,disabled
 0
 0
@@ -5657,8 +5663,8 @@ range=1:,expandx
 1
 0
 0
-Text
-t_edges
+Label
+l-edges
 right,disabled
 0
 1
@@ -5674,6 +5680,12 @@ round
 
 1
 0
+0
+Label
+?
+expandy,ignorehover
+0
+1
 0
 # Resource
 Dialog
@@ -13003,17 +13015,17 @@ Geometry
 new_cylinder_dialog/header
 New cylinder
 
+new_cylinder_dialog/l-edges
+Edges
+
+new_cylinder_dialog/l-rings
+Rings
+
 new_cylinder_dialog/new_cylinder_dialog
 New Cylinder
 
 new_cylinder_dialog/round
-Round edges
-
-new_cylinder_dialog/t_edges
-Edges
-
-new_cylinder_dialog/t_rings
-Rings
+Round tips
 
 new_plane_dialog/g-plane
 Stripes

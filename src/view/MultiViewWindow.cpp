@@ -40,17 +40,16 @@ vec3 MultiViewWindow::project(const vec3& v) const {
 	return to_pixels.project(v);
 }
 
-vec3 MultiViewWindow::unproject(const vec3& v, const vec3& zref) const {
+vec3 MultiViewWindow::unproject(const vec2& v, const vec3& zref) const {
 	vec3 op = project(zref);
-	vec3 r = v;
-	r.z = op.z;
+	vec3 r = vec3(v, op.z);
 	return to_pixels.inverse().project(r);
 }
 
 vec3 MultiViewWindow::grid_hover_point(const vec2& m) const {
 	const auto d = active_grid_direction();
-	vec3 pp0 = {m.x, m.y, 0};
-	vec3 pp1 = {m.x, m.y, 1};
+	vec3 pp0 = {m, 0};
+	vec3 pp1 = {m, 1};
 	vec3 p0 = to_pixels.inverse().project(pp0);
 	vec3 p1 = to_pixels.inverse().project(pp1);
 
@@ -75,6 +74,11 @@ float MultiViewWindow::zoom() const {
 	//else
 	//	return area.height() * 0.8f / multi_view->view_port.radius;
 }
+
+float MultiViewWindow::pixel_to_size(float s) const {
+	return s / zoom();
+}
+
 
 #define GRID_CONST	5.0f
 
@@ -190,14 +194,14 @@ rect win_get_bounds(MultiViewWindow *w, const vec3 &ax1, const vec3 &ax2) {
 	vec3 p[4];
 	rect dest = w->area_native;
 	vec3 pos0 = w->multi_view->view_port.pos;
-	p[0] = w->unproject(vec3(dest.x1, dest.center().y, 0), pos0);
-	p[1] = w->unproject(vec3(dest.x2, dest.center().y, 0), pos0);
-	p[2] = w->unproject(vec3(dest.center().x, dest.y1, 0), pos0);
-	p[3] = w->unproject(vec3(dest.center().x, dest.y2, 0), pos0);
-	p[0] = w->unproject(vec3(dest.x1, dest.y1, 0), pos0);
-	p[1] = w->unproject(vec3(dest.x2, dest.y1, 0), pos0);
-	p[2] = w->unproject(vec3(dest.x1, dest.y2, 0), pos0);
-	p[3] = w->unproject(vec3(dest.x2, dest.y2, 0), pos0);
+	p[0] = w->unproject(vec2(dest.x1, dest.center().y), pos0);
+	p[1] = w->unproject(vec2(dest.x2, dest.center().y), pos0);
+	p[2] = w->unproject(vec2(dest.center().x, dest.y1), pos0);
+	p[3] = w->unproject(vec2(dest.center().x, dest.y2), pos0);
+	p[0] = w->unproject(dest.p00(), pos0);
+	p[1] = w->unproject(dest.p10(), pos0);
+	p[2] = w->unproject(dest.p01(), pos0);
+	p[3] = w->unproject(dest.p11(), pos0);
 
 	rect r = rect::ID;
 	for (int i=0; i<4; i++) {

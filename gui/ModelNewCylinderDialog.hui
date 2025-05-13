@@ -1,12 +1,15 @@
-Dialog new_cylinder_dialog "New Cylinder" width=100 height=50 allow-root
-	Grid ? "" vertical
-		Text header "New cylinder" big bold center expandx
-		Group grp-geometry "Geometry"
-			Grid ? "" vertical
-				Grid ? ""
-					Text t_rings "Rings" right disabled
-					SpinButton rings "" range=1: expandx
-					---|
-					Text t_edges "Edges" right disabled
-					SpinButton edges "" range=2:
-				CheckBox round "Round edges"
+Dialog new_cylinder_dialog "New Cylinder" allow-root width=200 noexpandx
+	Grid ? ""
+		Grid ? "" vertical class=card
+			Label header "New cylinder" big bold center
+			Group grp-geometry "Geometry"
+				Grid ? "" vertical
+					Grid ? ""
+						Label l-rings "Rings" right disabled
+						SpinButton rings "" range=1: expandx
+						---|
+						Label l-edges "Edges" right disabled
+						SpinButton edges "" range=2:
+					CheckBox round "Round tips"
+		---|
+		Label ? "" expandy ignorehover

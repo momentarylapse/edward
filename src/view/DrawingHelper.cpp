@@ -14,6 +14,10 @@
 #include "MultiView.h"
 #include "SingleData.h"
 
+const float DrawingHelper::LINE_MEDIUM = 3;
+const float DrawingHelper::LINE_THICK = 5;
+const float DrawingHelper::LINE_EXTRA_THICK = 7;
+const color DrawingHelper::COLOR_X = color(1, 0.9f, 0.6f, 0.3f);
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {
 	auto material = resource_manager->load_material("");
@@ -140,6 +144,7 @@ void DrawingHelper::set_color(const color& color) {
 void DrawingHelper::set_line_width(float width) {
 	_line_width = width;
 }
+
 
 struct XVertex {
 	vec3 pos;
