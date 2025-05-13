@@ -21,10 +21,12 @@ public:
 	void on_draw_post(Painter*) override;
 	void on_key_down(int key) override;
 	void on_left_button_down(const vec2&) override;
+	void on_mouse_move(const vec2& m, const vec2& d) override;
 
 	ModeMesh* mode_mesh;
 
 	Array<int> vertices;
+	vec3 next_point;
 };
 
 

@@ -28,8 +28,8 @@ public:
 
 	ModeMesh* mode_mesh;
 
-	vec3 center;
-	bool center_selected;
+	base::optional<vec3> center;
+	vec3 next_point;
 	float radius;
 	PolygonMesh mesh;
 	owned<VertexBuffer> vertex_buffer;

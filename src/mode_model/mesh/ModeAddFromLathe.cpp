@@ -62,12 +62,13 @@ void ModeAddFromLathe::on_leave() {
 
 void ModeAddFromLathe::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
+	auto dh = session->drawing_helper;
 
-	session->drawing_helper->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
+	dh->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
 
-	session->drawing_helper->set_color(White);
-	session->drawing_helper->set_line_width(3);
-	float r = 200 / multi_view->hover_window->zoom(); // 200 px
+	dh->set_color(White);
+	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
+	float r = multi_view->hover_window->pixel_to_size(500);
 	if (center) {
 		vec3 a = axis.value_or(preview_axis);
 		session->drawing_helper->draw_lines({*center - a * r, *center + a * r});
@@ -75,6 +76,14 @@ void ModeAddFromLathe::on_draw_win(const RenderParams& params, MultiViewWindow* 
 
 	if (contour.num >= 2)
 		session->drawing_helper->draw_lines(contour);
+
+	dh->set_color(DrawingHelper::COLOR_X);
+	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
+	dh->set_z_test(false);
+	dh->draw_lines(contour, true);
+	if (contour.num > 0)
+		dh->draw_lines({contour.back(), next_point}, true);
+	dh->set_z_test(true);
 }
 
 void ModeAddFromLathe::on_draw_post(Painter* p) {
@@ -145,6 +154,7 @@ void ModeAddFromLathe::on_mouse_move(const vec2& m, const vec2& d) {
 		vec3 pos2 = multi_view->cursor_pos_3d(m);
 		preview_axis = suggest_axis(pos2);
 	}
+	next_point = multi_view->cursor_pos_3d(m);
 	session->win->request_redraw();
 }
 
@@ -155,7 +165,7 @@ void ModeAddFromLathe::on_left_button_down(const vec2& m) {
 	} else if (!axis) {
 		axis = suggest_axis(multi_view->cursor_pos_3d(m));
 	} else {
-		contour.add(multi_view->cursor_pos_3d(m));
+		contour.add(next_point);
 		create_turned_mesh();
 		mesh.build(vertex_buffer.get());
 	}

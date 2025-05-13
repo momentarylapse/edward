@@ -54,8 +54,8 @@ void ModeMeshSculpt::on_leave() {
 void ModeMeshSculpt::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
 	if (target) {
-		session->drawing_helper->set_color(Green);
-		session->drawing_helper->set_line_width(3);
+		session->drawing_helper->set_color(DrawingHelper::COLOR_X);
+		session->drawing_helper->set_line_width(DrawingHelper::LINE_MEDIUM);
 		session->drawing_helper->draw_circle(target->pos, target->n, brush.radius);
 	}
 }

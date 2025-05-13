@@ -63,8 +63,17 @@ void ModeAddCube::on_leave() {
 
 void ModeAddCube::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
+	auto dh = session->drawing_helper;
 
-	session->drawing_helper->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
+	dh->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
+
+	// TODO
+	/*dh->set_color(DrawingHelper::COLOR_X);
+	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
+	dh->set_z_test(false);
+	if (points.num == 2)
+		dh->draw_lines({points.back(), next_point});
+	dh->set_z_test(true);*/
 }
 
 void ModeAddCube::on_draw_post(Painter* p) {
@@ -107,7 +116,8 @@ bool ModeAddCube::set_dpos3(const vec2& m) {
 
 void ModeAddCube::on_mouse_move(const vec2& m, const vec2& d) {
 	if (points.num == 0) {
-		mesh = GeometryCube(multi_view->cursor_pos_3d(m), {20,0,0}, {0,20,0}, {0,0,20}, slices[0], slices[1], slices[2]);
+		float r = multi_view->hover_window->pixel_to_size(10);
+		mesh = GeometryCube(multi_view->cursor_pos_3d(m), {r,0,0}, {0,r,0}, {0,0,r}, slices[0], slices[1], slices[2]);
 	} else if (points.num == 1) {
 		vec3 pos2 = multi_view->cursor_pos_3d(m);
 		const mat3 frame = multi_view->hover_window->edit_frame();
@@ -115,7 +125,7 @@ void ModeAddCube::on_mouse_move(const vec2& m, const vec2& d) {
 		vec3 dir2 = frame * vec3::EY;
 		length[0] = dir1 * vec3::dot(dir1, pos2 - points[0]);
 		length[1] = dir2 * vec3::dot(dir2, pos2 - points[0]);
-		float min_thick = 10 / multi_view->hover_window->zoom(); // 10 px
+		float min_thick = multi_view->hover_window->pixel_to_size(10);
 		vec3 n = vec3::cross(length[0], length[1]).normalized();
 		length[2] = n * min_thick;
 		mesh = GeometryCube(points[0] - length[2]/2, length[0], length[1], length[2], slices[0], slices[1], slices[2]);

@@ -34,6 +34,7 @@ public:
 	base::optional<vec3> axis;
 	vec3 preview_axis;
 	Array<vec3> contour;
+	vec3 next_point;
 	PolygonMesh mesh;
 	owned<VertexBuffer> vertex_buffer;
 

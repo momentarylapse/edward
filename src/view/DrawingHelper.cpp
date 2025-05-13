@@ -129,6 +129,12 @@ void main() {
 	pipeline_alpha->set_blend(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA);
 	pipeline_alpha->set_culling(vulkan::CullMode::NONE);
 	pipeline_alpha->rebuild();
+
+	pipeline_no_z_test = new vulkan::GraphicsPipeline(shader, context->render_pass, 0, PrimitiveTopology::TRIANGLES, "3f,3f,2f,4f");
+	pipeline_no_z_test->set_z(false, false);
+	//pipeline_no_z_test->set_blend(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA);
+	pipeline_no_z_test->set_culling(vulkan::CullMode::NONE);
+	pipeline_no_z_test->rebuild();
 #endif
 }
 
@@ -177,6 +183,10 @@ void DrawingHelper::set_blending(bool b) {
 	_blending = b;
 }
 
+void DrawingHelper::set_z_test(bool b) {
+	z_test = b;
+}
+
 
 void DrawingHelper::draw_lines(const Array<vec3>& points, bool contiguous) {
 	Array<color> colors;
@@ -213,7 +223,9 @@ void DrawingHelper::draw_lines_colored(const Array<vec3>& points, const Array<co
 	params.softness = 0;//softness;
 
 	auto cb = context->current_command_buffer();
-	if (_blending)
+	if (!z_test)
+		cb->bind_pipeline(pipeline_no_z_test);
+	else if (_blending)
 		cb->bind_pipeline(pipeline_alpha);
 	else
 		cb->bind_pipeline(pipeline);

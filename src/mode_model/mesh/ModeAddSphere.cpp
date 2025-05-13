@@ -70,9 +70,8 @@ void ModeAddSphere::on_enter() {
 
 	on_type();
 
-	center = {0,0,0};
-	center_selected = false;
-	radius = 10;
+	center = base::None;
+	radius = multi_view->hover_window->pixel_to_size(50);
 	update_mesh();
 }
 
@@ -86,13 +85,21 @@ void ModeAddSphere::on_leave() {
 
 void ModeAddSphere::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
+	auto dh = session->drawing_helper;
 
-	session->drawing_helper->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
+	dh->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
+
+	dh->set_color(DrawingHelper::COLOR_X);
+	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
+	dh->set_z_test(false);
+	if (center)
+		dh->draw_lines({*center, next_point});
+	dh->set_z_test(true);
 }
 
 void ModeAddSphere::on_draw_post(Painter* p) {
 	mode_mesh->on_draw_post(p);
-	if (center_selected)
+	if (center)
 		draw_info(p, format("sphere: radius %s", multi_view->format_length(radius)));
 	else
 		draw_info(p, "sphere: place center");
@@ -106,10 +113,11 @@ void ModeAddSphere::on_key_down(int key) {
 }
 
 void ModeAddSphere::update_mesh() {
+	vec3 p = center.value_or(next_point);
 	if (type == Type::Ball)
-		mesh = GeometryBall(center, radius, slices[0], slices[1]);
+		mesh = GeometryBall(p, radius, slices[0], slices[1]);
 	else
-		mesh = GeometrySphere(center, radius, complexity);
+		mesh = GeometrySphere(p, radius, complexity);
 	mesh.build(vertex_buffer.get());
 
 	session->win->request_redraw();
@@ -117,23 +125,22 @@ void ModeAddSphere::update_mesh() {
 
 
 void ModeAddSphere::on_mouse_move(const vec2& m, const vec2& d) {
-	if (center_selected) {
-		vec3 pos2 = multi_view->cursor_pos_3d(m);
-		radius = (pos2 - center).length();
+	if (center) {
+		next_point = multi_view->hover_window->unproject(m, *center);
+		radius = (next_point - *center).length();
 	} else {
-		center = multi_view->cursor_pos_3d(m);
+		next_point = multi_view->cursor_pos_3d(m);
 	}
 	update_mesh();
 }
 
 
 void ModeAddSphere::on_left_button_down(const vec2& m) {
-	if (center_selected) {
+	if (center) {
 		mode_mesh->data->paste_mesh(mesh, 0);
 		session->set_mode(mode_mesh);
 	} else {
 		center = multi_view->cursor_pos_3d(m);
-		center_selected = true;
 	}
 
 	session->win->request_redraw();

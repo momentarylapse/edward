@@ -49,11 +49,14 @@ public:
 	void set_window(MultiViewWindow* win);
 	void set_blending(bool b);
 	bool _blending = false;
+	void set_z_test(bool b);
+	bool z_test = true;
 
 	Shader* shader = nullptr;
 #ifdef USING_VULKAN
 	vulkan::GraphicsPipeline* pipeline = nullptr;
 	vulkan::GraphicsPipeline* pipeline_alpha = nullptr;
+	vulkan::GraphicsPipeline* pipeline_no_z_test = nullptr;
 	vulkan::DescriptorSet* dset = nullptr;
 #endif
 

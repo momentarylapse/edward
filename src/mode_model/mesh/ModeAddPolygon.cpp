@@ -30,14 +30,17 @@ void ModeAddPolygon::on_enter() {
 
 void ModeAddPolygon::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
+	auto dh = session->drawing_helper;
 
-	session->drawing_helper->set_color(xhui::Theme::_default.text_label);
-	session->drawing_helper->set_line_width(3);
+	dh->set_color(DrawingHelper::COLOR_X);
+	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
+	dh->set_z_test(false);
 	Array<vec3> points;
 	for (int v: vertices)
 		points.add(mode_mesh->data->edit_mesh->vertices[v].pos);
-	//points.add(multi_view->cursor_pos_3d());
-	session->drawing_helper->draw_lines(points, true);
+	points.add(next_point);
+	dh->draw_lines(points, true);
+	dh->set_z_test(true);
 }
 
 void ModeAddPolygon::on_draw_post(Painter* p) {
@@ -57,8 +60,7 @@ void ModeAddPolygon::on_left_button_down(const vec2& m) {
 	if (multi_view->hover and multi_view->hover->type == MultiViewType::MODEL_VERTEX) {
 		vertices.add(multi_view->hover->index);
 	} else {
-		const vec3 p = multi_view->cursor_pos_3d(m);
-		mode_mesh->data->add_vertex(p, {0,0,0,0}, {0,0,0,0}, NORMAL_MODE_HARD);
+		mode_mesh->data->add_vertex(next_point, {0,0,0,0}, {0,0,0,0}, NORMAL_MODE_HARD);
 		vertices.add(mode_mesh->data->edit_mesh->vertices.num - 1);
 	}
 
@@ -72,4 +74,10 @@ void ModeAddPolygon::on_left_button_down(const vec2& m) {
 
 	session->win->request_redraw();
 }
+
+void ModeAddPolygon::on_mouse_move(const vec2& m, const vec2& d) {
+	next_point = multi_view->cursor_pos_3d(m);
+	session->win->request_redraw();
+}
+
 

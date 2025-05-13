@@ -68,8 +68,10 @@ void ModeAddCylinder::on_draw_win(const RenderParams& params, MultiViewWindow* w
 
 	dh->set_color(DrawingHelper::COLOR_X);
 	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
+	dh->set_z_test(false);
 	if (points.num > 0)
 		dh->draw_lines({points.back(), next_point});
+	dh->set_z_test(true);
 }
 
 void ModeAddCylinder::on_draw_post(Painter* p) {
