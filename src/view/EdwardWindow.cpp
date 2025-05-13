@@ -128,16 +128,15 @@ Dialog x x padding=0
 #ifdef USING_VULKAN
 		vulkan::default_device = pp->context->device;
 		api_init_external(pp->context->instance, pp->context->device);
+		session->ctx = new Context;
 #else
 		//xhui::init_nix();
 		nix::create_query_pool(1024);
 		//api_init()
+		session->ctx = xhui::_nix_context.get();
 #endif
-		session->resource_manager = new ResourceManager({});
+		session->resource_manager = new ResourceManager(session->ctx);
 		session->resource_manager->default_shader = "default.shader";
-#ifdef USING_OPENGL
-		session->resource_manager->ctx = xhui::_nix_context.get();
-#endif
 		session->resource_manager->texture_dir = engine.texture_dir;
 		session->resource_manager->shader_dir = engine.shader_dir;
 		session->drawing_helper = new DrawingHelper(pp->context, session->resource_manager);
