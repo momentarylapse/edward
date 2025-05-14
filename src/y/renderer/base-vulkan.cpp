@@ -3,7 +3,13 @@
 #include "../y/EngineData.h"
 #include "../helper/ResourceManager.h"
 #include "../graphics-impl.h"
-#include "../lib/os/msg.h"
+#include <lib/os/msg.h>
+#if __has_include(<lib/xhui/Painter.h>)
+#include <lib/xhui/Painter.h>
+#include <lib/xhui/Context.h>
+#define HAS_XHUI
+#endif
+
 
 #ifdef USING_VULKAN
 
@@ -72,6 +78,15 @@ Context* api_init_external(vulkan::Instance* _instance, vulkan::Device* _device)
 	instance = _instance;
 	device = _device;
 	return _create_context();
+}
+
+Context* api_init_xhui(xhui::Painter* p) {
+#ifdef HAS_XHUI
+	vulkan::default_device = p->context->device;
+	return api_init_external(p->context->instance, p->context->device);
+#else
+	return nullptr;
+#endif
 }
 
 void api_end() {

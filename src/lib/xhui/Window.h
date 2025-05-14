@@ -122,6 +122,7 @@ protected:
 	HeaderBar* header_bar = nullptr;
 
 	Context* context = nullptr;
+	bool first_draw = true;
 
 	struct EventKeyCode {
 		string id;

@@ -405,6 +405,10 @@ void Window::_on_draw() {
 	auto a = p->area();
 	_area = p->area();
 
+	if (first_draw)
+		handle_event_p(id, event_id::Initialize, p);
+	first_draw = false;
+
 	if (flags & Flags::OWN_DECORATION) {
 		p->clear(color(0,0,0,0));
 		float R = Theme::_default.window_radius;

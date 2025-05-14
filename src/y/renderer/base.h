@@ -13,10 +13,15 @@
 
 struct GLFWwindow;
 
+namespace xhui {
+class Painter;
+}
+
 Context* api_init(GLFWwindow* window);
 #ifdef USING_VULKAN
 Context* api_init_external(vulkan::Instance* instance, vulkan::Device* device);
 #endif
+Context* api_init_xhui(xhui::Painter* p);
 void api_end();
 void _create_default_textures();
 

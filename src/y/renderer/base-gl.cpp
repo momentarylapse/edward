@@ -2,7 +2,11 @@
 #include "../y/EngineData.h"
 #include "../helper/ResourceManager.h"
 #include "../graphics-impl.h"
-#include "../lib/os/msg.h"
+#include <lib/os/msg.h>
+#if __has_include(<lib/xhui/Painter.h>)
+#include <lib/xhui/Painter.h>
+#define HAS_XHUI
+#endif
 
 #ifdef USING_OPENGL
 
@@ -10,6 +14,12 @@
 namespace nix {
 extern bool allow_separate_vertex_arrays;
 }
+
+#ifdef HAS_XHUI
+namespace xhui {
+extern owned<nix::Context> _nix_context;
+}
+#endif
 
 
 Context* api_init(GLFWwindow* window) {
@@ -26,6 +36,16 @@ Context* api_init(GLFWwindow* window) {
 	_create_default_textures();
 
 	return gl;
+}
+
+Context* api_init_xhui(xhui::Painter* p) {
+#if HAS_XHUI
+	nix::create_query_pool(MAX_TIMESTAMP_QUERIES);
+	_create_default_textures();
+	return xhui::_nix_context.get();
+#else
+	return nullptr;
+#endif
 }
 
 void reset_gpu_timestamp_queries() {

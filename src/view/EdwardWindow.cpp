@@ -40,13 +40,6 @@ rect dynamicly_scaled_area(FrameBuffer*) { return {}; }
 rect dynamicly_scaled_source() { return {}; }
 void ExternalModelCleanup(Model *m) {}
 
-namespace xhui {
-#ifdef HAS_LIB_GL
-	void init_nix();
-	extern owned<nix::Context> _nix_context;
-#endif
-}
-
 
 
 EdwardWindow::EdwardWindow(xfer<Session> _session) : obs::Node<xhui::Window>(AppName, 1024, 768),
@@ -123,18 +116,9 @@ Dialog x x padding=0
 			session->cur_mode->on_command(id);
 		});
 
-	event_xp("area", xhui::event_id::Initialize, [this] (Painter* p) {
+	event_xp(id, xhui::event_id::Initialize, [this] (Painter* p) {
 		auto pp = (xhui::Painter*)p;
-#ifdef USING_VULKAN
-		vulkan::default_device = pp->context->device;
-		api_init_external(pp->context->instance, pp->context->device);
-		session->ctx = new Context;
-#else
-		//xhui::init_nix();
-		nix::create_query_pool(1024);
-		//api_init()
-		session->ctx = xhui::_nix_context.get();
-#endif
+		session->ctx = api_init_xhui(pp);
 		session->resource_manager = new ResourceManager(session->ctx);
 		session->resource_manager->default_shader = "default.shader";
 		session->resource_manager->texture_dir = engine.texture_dir;
