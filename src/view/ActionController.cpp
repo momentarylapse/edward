@@ -327,15 +327,15 @@ string MouseAction::name() const {
 }
 
 const ActionController::GeoConfig ActionController::geo_config[] = {
-	{color(1, 0.8f, 0.8f, 0.7f),Constraint::XY,0},
-	{color(1, 0.8f, 0.7f, 0.8f),Constraint::XZ,0},
-	{color(1, 0.7f, 0.8f, 0.8f),Constraint::YZ,0},
-	{color(1, 0.8f, 0.5f, 0.5f),Constraint::NEG_X,1},
-	{color(1, 0.8f, 0.5f, 0.5f),Constraint::X,1},
-	{color(1, 0.5f, 0.8f, 0.5f),Constraint::NEG_Y,1},
-	{color(1, 0.5f, 0.8f, 0.5f),Constraint::Y,1},
-	{color(1, 0.5f, 0.5f, 0.8f),Constraint::NEG_Z,1},
-	{color(1, 0.5f, 0.5f, 0.8f),Constraint::Z,1},
+	{color(1, 0.8f, 0.8f, 0.4f),Constraint::XY,0},
+	{color(1, 0.8f, 0.4f, 0.8f),Constraint::XZ,0},
+	{color(1, 0.4f, 0.8f, 0.8f),Constraint::YZ,0},
+	{color(1, 1, 0.2f, 0.2f),Constraint::NEG_X,1},
+	{color(1, 1, 0.2f, 0.2f),Constraint::X,1},
+	{color(1, 0.2f, 1, 0.2f),Constraint::NEG_Y,1},
+	{color(1, 0.2f, 1, 0.2f),Constraint::Y,1},
+	{color(1, 0.2f, 0.2f, 1),Constraint::NEG_Z,1},
+	{color(1, 0.2f, 0.2f, 1),Constraint::Z,1},
 	{color(1, 0.8f, 0.8f, 0.8f),Constraint::FREE,2}
 };
 

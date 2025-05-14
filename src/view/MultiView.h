@@ -62,7 +62,7 @@ public:
 
 		void move(const vec3& drel);
 		void rotate(const quaternion& qrel);
-		void zoom(float factor, const base::optional<vec3>& fix_point);
+		void zoom(float factor, const base::optional<vec3>& focus_point);
 		void suggest_for_box(const Box& box);
 	} view_port;
 
@@ -127,7 +127,7 @@ public:
 
 	multiview::SingleData* get_hover_item();
 	vec3 cursor_pos_3d(const vec2& m) const;
-	vec3 grid_hover_point(const vec2& m) const;
+	base::optional<vec3> grid_hover_point(const vec2& m) const;
 
 	std::function<ActionMultiView*()> f_create_action;
 

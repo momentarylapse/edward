@@ -46,20 +46,18 @@ vec3 MultiViewWindow::unproject(const vec2& v, const vec3& zref) const {
 	return to_pixels.inverse().project(r);
 }
 
-vec3 MultiViewWindow::grid_hover_point(const vec2& m) const {
+base::optional<vec3> MultiViewWindow::grid_hover_point(const vec2& m) const {
 	const auto d = active_grid_direction();
-	vec3 pp0 = {m, 0};
-	vec3 pp1 = {m, 1};
-	vec3 p0 = to_pixels.inverse().project(pp0);
-	vec3 p1 = to_pixels.inverse().project(pp1);
+	vec3 p0 = to_pixels.inverse().project({m, 0});
+	vec3 p1 = to_pixels.inverse().project({m, 1});
 
-	plane pl = plane::from_point_normal({0,0,0}, d);
+	plane grid_plane = plane::from_point_normal({0,0,0}, d);
 	vec3 p;
-	pl.intersect_line(p0, p1, p);
+	grid_plane.intersect_line(p0, p1, p);
+	// the camera is on the "wrong" side of the grid?
+	if (vec3::dot(p0 - p, p0 - p1) < 0)
+		return base::None;
 	return p;
-
-	// TODO check if the camera is on the "wrong" side of the grid
-	//return unproject(vec3(m, 0), view_port.pos);
 }
 
 vec3 MultiViewWindow::direction() const {

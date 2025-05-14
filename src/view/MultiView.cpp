@@ -332,8 +332,13 @@ base::optional<Hover> MultiView::get_hover(MultiViewWindow* win, const vec2& m) 
 		if (auto h = f_hover(win, m))
 			return h;
 
-	if (window.area.inside(m))
-		return Hover{MultiViewType::GRID, -1, grid_hover_point(m)};
+	if (window.area.inside(m)) {
+		// grid? (included here, so we can see the cursor)
+		if (auto p = grid_hover_point(m))
+			return Hover{MultiViewType::GRID, -1, *p};
+
+		// TODO camera focus plane?
+	}
 
 	return base::None;
 }
@@ -412,12 +417,17 @@ void MultiView::draw_mouse_pos(Painter* p) {
 }
 
 vec3 MultiView::cursor_pos_3d(const vec2& m) const {
+	// data? / grid?
 	if (hover)
 		return hover->tp;
-	return grid_hover_point(m);
+	// grid?
+//	if (auto p = grid_hover_point(m))
+//		return *p;
+	// camera focus plane
+	return hover_window->unproject(m, view_port.pos);
 }
 
-vec3 MultiView::grid_hover_point(const vec2& m) const {
+base::optional<vec3> MultiView::grid_hover_point(const vec2& m) const {
 	return window.grid_hover_point(m);
 }
 
@@ -458,11 +468,24 @@ void MultiView::ViewPort::rotate(const quaternion& qrel) {
 	out_changed();
 }
 
-void MultiView::ViewPort::zoom(float factor, const base::optional<vec3>& fix_point) {
-	radius /= factor;
-	if (fix_point) {
-		const vec3 d = *fix_point - pos;
-		pos = *fix_point - d / factor;
+void MultiView::ViewPort::zoom(float factor, const base::optional<vec3>& focus_point) {
+	if (focus_point) {
+		if (factor > 1) {
+			// zoom in -> re-focus camera on plane around <focus_point>
+			auto w = multi_view->hover_window;
+			vec3 pos1 = w->unproject(w->project(pos).xy(), *focus_point);
+			float radius1 = (pos1 - w->view_pos()).length();
+
+			radius = radius1;
+			pos = pos1;
+		}
+
+		// fixed point: <focus_point>
+		radius /= factor;
+		const vec3 d = *focus_point - pos;
+		pos = *focus_point - d / factor;
+	} else {
+		radius /= factor;
 	}
 	out_changed();
 }
