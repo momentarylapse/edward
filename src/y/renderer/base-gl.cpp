@@ -39,7 +39,7 @@ Context* api_init(GLFWwindow* window) {
 }
 
 Context* api_init_xhui(xhui::Painter* p) {
-#if HAS_XHUI
+#ifdef HAS_XHUI
 	nix::create_query_pool(MAX_TIMESTAMP_QUERIES);
 	_create_default_textures();
 	return xhui::_nix_context.get();

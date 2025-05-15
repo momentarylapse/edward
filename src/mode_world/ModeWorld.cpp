@@ -166,6 +166,7 @@ void ModeWorld::on_enter() {
 	});*/
 
 	session->win->event_x("area", xhui::event_id::DragDrop, [this] {
+		multi_view->hover = multi_view->get_hover(multi_view->hover_window, session->win->drag.m);
 		const vec3 p = multi_view->cursor_pos_3d(session->win->drag.m);
 		if (session->win->drag.payload.match("add-entity-default-*")) {
 			int index = session->win->drag.payload.tail(1)._int();
