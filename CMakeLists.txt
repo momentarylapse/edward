@@ -591,6 +591,7 @@ install(TARGETS edward DESTINATION bin)
 # resources
 install(DIRECTORY "static/icons" DESTINATION ${RESOURCE_DESTINATION})
 install(DIRECTORY "static/shader" DESTINATION ${RESOURCE_DESTINATION})
+install(FILES "static/default.theme" DESTINATION ${RESOURCE_DESTINATION})
 install(FILES "static/edward.jpg" DESTINATION ${RESOURCE_DESTINATION})
 install(FILES "static/hui_resources.txt" DESTINATION ${RESOURCE_DESTINATION})
 install(FILES "static/icon.svg" DESTINATION ${RESOURCE_DESTINATION})

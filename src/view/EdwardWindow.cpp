@@ -102,7 +102,7 @@ Dialog x x padding=0
 	set_key_code("open", mod + xhui::KEY_O);
 	set_key_code("save", mod + xhui::KEY_S);
 	set_key_code("save-as", mod + xhui::KEY_SHIFT + xhui::KEY_S);
-	set_key_code("quit", mod + xhui::KEY_Q);
+	set_key_code("exit", mod + xhui::KEY_Q);
 	set_key_code("undo", mod + xhui::KEY_Z);
 	set_key_code("redo", mod + xhui::KEY_Y);
 	set_key_code("copy", mod + xhui::KEY_C);
