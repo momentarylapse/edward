@@ -6,22 +6,22 @@
  */
 
 #include "Session.h"
-#include "view/EdwardWindow.h"
+#include <view/EdwardWindow.h>
 #include "Edward.h"
 /*#include "mode/ModeNone.h"
 #include "mode/ModeCreation.h"
 #include "mode/administration/ModeAdministration.h"
 #include "mode/administration/dialog/ConfigurationDialog.h"*/
-#include "../mode_model/ModeModel.h"
-#include "../mode_model/mesh/ModeMesh.h"
-#include "../mode_material/ModeMaterial.h"
-#include "../mode_world/ModeWorld.h"
+#include <mode_model/ModeModel.h>
+#include <mode_model/mesh/ModeMesh.h>
+#include <mode_material/ModeMaterial.h>
+#include <mode_world/ModeWorld.h>
 /*#include "mode/font/ModeFont.h"
 #include "stuff/Progress.h"*/
-#include "view/MultiView.h"
+#include <stuff/PluginManager.h>
+#include <view/MultiView.h>
 //#include "view/DrawingHelper.h"
 #include <lib/base/algo.h>
-
 #include "view/Mode.h"
 #include "data/Data.h"
 #include "storage/format/Format.h"
@@ -45,7 +45,13 @@ Session *create_session() {
 	auto s = new Session;
 	s->storage = new Storage(s);
 	s->storage->set_root_directory(xhui::config.get_str("RootDir", ""));
-	//s->mode_world = new ModeWorld(s);
+	if (xhui::Application::installed)
+		s->plugin_manager = new PluginManager(xhui::Application::directory_static | "plugins");
+	else
+		s->plugin_manager = new PluginManager(xhui::Application::directory_static | ".." | "plugins");
+	/*s->mode_material = new ModeMaterial(s);
+	s->mode_model = new ModeModel(s);
+	s->mode_world = new ModeWorld(s);*/
 	s->win = new EdwardWindow(s);
 	return s;
 }
@@ -87,6 +93,7 @@ Session::Session() {
 
 	storage = nullptr;
 	resource_manager = nullptr;
+	plugin_manager = nullptr;
 	win = nullptr;
 	drawing_helper = nullptr;
 

@@ -1,0 +1,10 @@
+use edward.*
+
+
+func main()
+	for m in cur_session.mode_model
+		m.data.begin_action("x")
+		let points = mesh_surface_points(m.data.mesh, 5)
+		for p in points
+			m.data.add_vertex(p.pos, [0,0,0,0], [1,0,0,0], -1)
+		m.data.end_action()

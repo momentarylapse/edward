@@ -3,8 +3,8 @@
 //
 
 #include "EdwardWindow.h"
-#include "lib/xhui/xhui.h"
-#include "lib/xhui/Painter.h"
+#include <lib/xhui/xhui.h>
+#include <lib/xhui/Painter.h>
 #include <lib/xhui/Context.h>
 #include <lib/xhui/Dialog.h>
 #include <lib/xhui/controls/DrawingArea.h>
@@ -26,8 +26,10 @@
 #include "y/renderer/Renderer.h"
 #include "y/renderer/target/XhuiRenderer.h"
 #include "y/helper/ResourceManager.h"
-#include "mode_world/ModeWorld.h"
-#include "storage/Storage.h"
+#include <storage/Storage.h>
+#include <stuff/PluginManager.h>
+#include "Mode.h"
+#include <data/Data.h>
 #include "Session.h"
 
 
@@ -107,6 +109,7 @@ Dialog x x padding=0
 	set_key_code("redo", mod + xhui::KEY_Y);
 	set_key_code("copy", mod + xhui::KEY_C);
 	set_key_code("paste", mod + xhui::KEY_V);
+	set_key_code("execute-plugin", mod + xhui::KEY_RETURN);
 
 	toolbar = (xhui::Toolbar*)get_control("toolbar");
 
@@ -247,6 +250,12 @@ Dialog x x padding=0
 	});
 	event("world_new", [this] {
 		session->universal_new(FD_WORLD);
+	});
+	event("execute-plugin", [this] {
+		xhui::FileSelectionDialog::ask(this, "Execute plugin", session->plugin_manager->directory, {}).then( [this] (const Path& path) {
+			msg_error("execute plugins...");
+			session->plugin_manager->execute(session.get(), path);
+		});
 	});
 	auto quit = [this] {
 		if (session->cur_mode->get_data()->action_manager->is_save())

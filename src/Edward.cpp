@@ -3,6 +3,7 @@
 #include <Session.h>
 #include <helper/ResourceManager.h>
 #include <view/EdwardWindow.h>
+#include <stuff/PluginManager.h>
 #include <storage/Storage.h>
 #include <storage/format/Format.h>
 #include <mode_project/ModeProject.h>
@@ -104,8 +105,9 @@ int xhui_main(const Array<string>& args) {
 
 	CommandLineParser p;
 	p.info(AppName, "");
-	p.option("--execute", "FILENAME", "(NOT WORKING) execute a script", [] (const string &a) {
-		//plugins->execute(a);
+	p.cmd("execute", "FILENAME", "(NOT WORKING) execute a script", [] (const Array<string>& args) {
+		auto session = create_session();
+		session->plugin_manager->execute(session, Path(args[0]).absolute());
 	});
 	p.cmd("-h/--help", "", "show this help page", [&p] (const Array<string> &arg) {
 		p.show();
