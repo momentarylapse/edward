@@ -79,7 +79,7 @@ mat4 make_frame(const vec3 &pos, const vec3 &dir, const vec3 &up, const vec3 rig
 
 static PolygonMesh half_ball(float radius, int edges, bool upper) {
 	float scale = upper ? 1 : -1;
-	auto ball = GeometryBall(v_0, radius, edges/2, edges);
+	auto ball = GeometryBall::create(v_0, radius, edges/2, edges);
 	for (int i=ball.polygons.num-1; i>=0; i--) {
 		vec3 m = v_0;
 		for (int k=0; k<ball.polygons[i].side.num; k++)
@@ -87,8 +87,7 @@ static PolygonMesh half_ball(float radius, int edges, bool upper) {
 		if (m.y * scale > 0)
 			ball.polygons.erase(i);
 	}
-	mat4 rot = mat4::rotation_x(pi/2);
-	ball.transform(rot);
+	ball = ball.transform(mat4::rotation_x(pi/2));
 	ball.remove_unused_vertices();
 	return ball;
 }
@@ -204,13 +203,9 @@ void GeometryCylinder::buildFromPath(Interpolator<vec3> &inter, Interpolator<flo
 		float r1 = inter_r.get(1);
 
 		auto b0 = half_ball(r0, edges, true);
-		b0.transform(frame0);
-		b0.invert();
-		add(b0);
+		add(b0.transform(frame0).invert());
 		auto b1 = half_ball(r1, edges, false);
-		b1.transform(frame1);
-		b1.invert();
-		add(b1);
+		add(b1.transform(frame1).invert());
 
 		weld(r0 * 0.001f);
 	}

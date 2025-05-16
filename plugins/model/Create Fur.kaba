@@ -1,0 +1,17 @@
+use edward.*
+
+
+func main()
+	for m in cur_session.mode_model
+		m.data.begin_action("x")
+		let points = mesh_surface_points(m.data.mesh, 5)
+		var mesh: Mesh
+		
+		var hair = Mesh.create_plane([0,20, -2,2], [5,1]).transform(mat4.rotation([0,-pi/2,0]))
+		for mut v in hair.vertices
+			v.pos.x = ((v.pos.z/20)^2) * 30
+		for p in points
+			mesh.add(hair.transform(mat4.translation(p.pos) * mat4.rotation(p.normal.dir2ang())))
+			mesh.add(hair.transform(mat4.translation(p.pos) * mat4.rotation(p.normal.dir2ang())).invert())
+		m.data.paste_mesh(mesh)
+		m.data.end_action()

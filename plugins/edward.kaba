@@ -148,10 +148,10 @@ struct Mesh
 	
 	func extern __init__()
 	func extern __delete__()
-	func extern __assign__(o: Mesh)
-	func extern add(o: Mesh)
-	func extern transform(matrix: mat4)
-	func extern invert()
+	func extern mut __assign__(o: Mesh)
+	func extern mut add(o: Mesh)
+	func extern transform(matrix: mat4) -> Mesh
+	func extern invert() -> Mesh
 	
 	var vertices: Vertex[]
 	var polygons: Polygon[]
@@ -181,7 +181,7 @@ struct Mesh
 	func static extern create_sphere(pos: vec3, radius: f32, num: i32) -> Mesh
 	func static extern create_torus(pos: vec3, axis: vec3, radius1: f32, radius2: f32, num_x: i32, num_y: i32) -> Mesh
 	func static extern create_torus_knot(pos: vec3, axis: vec3, radius1: f32, radius2: f32, radius3: f32, turns: i32, twists: i32, rings: i32, edges: i32) -> Mesh
-	func static extern create_plane(pos: vec3, dv1: vec3, dv2: vec3, slices: ivec2) -> Mesh
+	func static extern create_plane(r: rect, slices: ivec2) -> Mesh
 	func static extern create_platonic(pos: vec3, radius: f32, type: i32) -> Mesh
 
 

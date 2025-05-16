@@ -72,9 +72,8 @@ struct PolygonMesh {
 	void weld(float epsilon);
 	void weld(const PolygonMesh &geo, float epsilon);
 
-	void invert();
-
-	void transform(const mat4 &mat);
+	PolygonMesh invert() const;
+	PolygonMesh transform(const mat4 &mat) const;
 	void smoothen();
 
 	void remove_unused_vertices();

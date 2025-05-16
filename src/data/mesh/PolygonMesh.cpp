@@ -233,12 +233,12 @@ void PolygonMesh::smoothen()
 	}
 }
 
-void PolygonMesh::transform(const mat4 &mat)
-{
-	for (auto &v: vertices)
+PolygonMesh PolygonMesh::transform(const mat4 &mat) const {
+	PolygonMesh mesh = *this;
+	for (auto &v: mesh.vertices)
 		v.pos = mat * v.pos;
 	//matrix mat2 = mat * (float)pow(mat.determinant(), - 1.0f / 3.0f);
-	for (auto &p: polygons){
+	for (auto &p: mesh.polygons){
 		/*p.temp_normal = mat2.transform_normal(p.temp_normal);
 		for (int k=0;k<p.side.num;k++)
 			p.side[k].normal = mat2.transform_normal(p.side[k].normal);*/
@@ -246,6 +246,7 @@ void PolygonMesh::transform(const mat4 &mat)
 		for (int k=0;k<p.side.num;k++)
 			p.side[k].normal = p.temp_normal;
 	}
+	return mesh;
 }
 
 void PolygonMesh::get_bounding_box(vec3 &min, vec3 &max)
@@ -334,9 +335,11 @@ bool PolygonMesh::is_inside(const vec3 &p) const {
 	return ((n % 2) == 1);
 }
 
-void PolygonMesh::invert() {
-	for (auto &p: polygons)
+PolygonMesh PolygonMesh::invert() const {
+	PolygonMesh mesh = *this;
+	for (auto &p: mesh.polygons)
 		p.invert();
+	return mesh;
 }
 
 void PolygonMesh::remove_unused_vertices() {

@@ -11,12 +11,8 @@
 #include "PolygonMesh.h"
 struct vec3;
 
-class GeometryTeapot : public PolygonMesh {
-public:
-	GeometryTeapot(const vec3 &pos, float radius, int samples);
-	static PolygonMesh create(const vec3 &pos, float radius, int samples) {
-		return GeometryTeapot(pos, radius, samples);
-	}
+namespace GeometryTeapot {
+	PolygonMesh create(const vec3 &pos, float radius, int samples);
 };
 
 #endif /* GEOMETRYTEAPOT_H_ */

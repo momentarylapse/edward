@@ -210,7 +210,7 @@ void ModeMaterial::set_mesh(PreviewMesh m) {
 		break;
 	case PreviewMesh::TEAPOT:
 	default:
-		mesh = GeometryTeapot({0,0,0}, 1.5f, 8);
+		mesh = GeometryTeapot::create({0,0,0}, 1.5f, 8);
 		mesh.smoothen();
 		break;
 	}

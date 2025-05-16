@@ -329,10 +329,11 @@ const vec3 tp_vert[] = {
 
 #define _add_bezier(i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15) \
 	fill_array(i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15); \
-	add_bezier3(v, samples, samples, 0.01f / samples)
+	mesh.add_bezier3(v, samples, samples, 0.01f / samples)
 
-GeometryTeapot::GeometryTeapot(const vec3 &pos, float radius, int samples)
-{
+namespace GeometryTeapot {
+PolygonMesh create(const vec3 &pos, float radius, int samples) {
+	PolygonMesh mesh;
 	Array<vec3> v;
 	_add_bezier(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16);
 	_add_bezier(4,17,18,19,8,20,21,22,12,23,24,25,16,26,27,28);
@@ -367,11 +368,12 @@ GeometryTeapot::GeometryTeapot(const vec3 &pos, float radius, int samples)
 	_add_bezier(222,227,228,229,248,255,256,257,251,258,259,260,254,261,262,263);
 	_add_bezier(229,232,233,212,257,264,265,234,260,266,267,238,263,268,269,242);
 
-	weld(0.01f / samples);
+	mesh.weld(0.01f / samples);
 
 	mat4 rot, trans, scale;
 	rot = mat4::rotation_x( - pi / 2);
 	trans = mat4::translation( pos - vec3::EY * radius / 2);
 	scale = mat4::scale( radius / 3, radius / 3, radius / 3);
-	transform(trans * rot * scale);
+	return mesh.transform(trans * rot * scale);
+}
 }

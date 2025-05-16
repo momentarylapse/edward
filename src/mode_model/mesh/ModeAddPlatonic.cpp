@@ -119,7 +119,7 @@ void ModeAddPlatonic::update_mesh() {
 	} else if (type == Type::Icosahedron) {
 		mesh = GeometryPlatonic(center, radius, 20);
 	} else {
-		mesh = GeometryTeapot(center, radius, complexity);
+		mesh = GeometryTeapot::create(center, radius, complexity);
 		mesh.smoothen();
 	}
 
