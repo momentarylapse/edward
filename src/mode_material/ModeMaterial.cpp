@@ -93,7 +93,7 @@ void ModeMaterial::on_enter() {
 
 	// ground
 	vertex_buffer_ground = new VertexBuffer("3f,3f,2f");
-	GeometryCube cube({-4,-1.2f,-4}, {8,0,0}, {0,0.02f,0}, {0,0,8}, 1, 1, 1);
+	auto cube = GeometryCube::create({{-4,-1.2f,-4}, {4,-1.0f,4}}, {1, 1, 1});
 	cube.build(vertex_buffer_ground.get());
 
 	Image im(16,16,White);
@@ -191,7 +191,7 @@ void ModeMaterial::set_mesh(PreviewMesh m) {
 	PolygonMesh mesh;
 	switch (m) {
 	case PreviewMesh::CUBE:
-		mesh = GeometryCube({-1,-1,-1}, vec3::EX*2, vec3::EY*2, vec3::EZ*2, 1, 1, 1);
+		mesh = GeometryCube::create(Box::ID_SYM, {1, 1, 1});
 		break;
 	case PreviewMesh::ICOSAHEDRON:
 		mesh = GeometryPlatonic({0,0,0}, 1, 20);

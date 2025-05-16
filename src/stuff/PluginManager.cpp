@@ -109,6 +109,9 @@ void link_mesh(kaba::ExternalLinkData* ext) {
 	ext->link_class_func("Mesh.__init__", &kaba::generic_init<PolygonMesh>);
 	ext->link_class_func("Mesh.__delete__", &kaba::generic_delete<PolygonMesh>);
 	ext->link_class_func("Mesh.__assign__", &kaba::generic_assign<PolygonMesh>);
+	ext->link_class_func("Mesh.add", &PolygonMesh::add);
+	ext->link_class_func("Mesh.transform", &PolygonMesh::transform);
+	ext->link_class_func("Mesh.invert", &PolygonMesh::invert);
 	ext->declare_class_element("Mesh.vertices", &PolygonMesh::vertices);
 	ext->declare_class_element("Mesh.polygons", &PolygonMesh::polygons);
 	//	ext->declare_class_element("Mesh.edges", &PolygonMesh::edges);

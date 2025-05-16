@@ -7,12 +7,13 @@
 
 #include "GeometryPlatonic.h"
 #include "GeometryCube.h"
+#include <lib/math/Box.h>
 
 GeometryPlatonic::GeometryPlatonic(const vec3 &pos, float radius, int type) {
 	if (type == 4)
 		AddTetrahedron(pos, radius);
 	else if (type == 6)
-		add(GeometryCube(pos - vec3(radius, radius, radius), {radius*2, 0, 0}, {0, radius*2, 0}, {0, 0, radius*2}, 1, 1, 1));
+		add(GeometryCube::create({pos - vec3(radius, radius, radius), pos + vec3(radius, radius, radius)}, {1, 1, 1}));
 	else if (type == 8)
 		AddOctahedron(pos, radius);
 	else if (type == 12)

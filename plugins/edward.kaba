@@ -6,12 +6,16 @@ use os
 
 let MAX_TEXTURES = 8
 
+struct ivec2
+	var x, y: i32
 struct ivec3
 	var x, y, z: i32
 struct ivec4
 	var x, y, z, w: i32
 struct vec4
 	var x, y, z, w: f32
+struct Box
+	var min, max: vec3
 
 class Observable
 	var dummy: int
@@ -145,6 +149,9 @@ struct Mesh
 	func extern __init__()
 	func extern __delete__()
 	func extern __assign__(o: Mesh)
+	func extern add(o: Mesh)
+	func extern transform(matrix: mat4)
+	func extern invert()
 	
 	var vertices: Vertex[]
 	var polygons: Polygon[]
@@ -163,7 +170,7 @@ struct Mesh
 		LOOP
 
 	func static extern create_ball(pos: vec3, radius: f32, num_x: i32, num_y: i32) -> Mesh
-	func static extern create_cube(pos: vec3, dv1: vec3, dv2: vec3, dv3: vec3, slices: ivec3) -> Mesh
+	func static extern create_cube(box: Box, slices: ivec3) -> Mesh
 #
 #	class Cylinder extends Geometry
 #		func extern __init__(pos1: vec3, pos2: vec3, radius: float, rings: int, edges: int, end_mode: EndMode)
@@ -174,8 +181,8 @@ struct Mesh
 	func static extern create_sphere(pos: vec3, radius: f32, num: i32) -> Mesh
 	func static extern create_torus(pos: vec3, axis: vec3, radius1: f32, radius2: f32, num_x: i32, num_y: i32) -> Mesh
 	func static extern create_torus_knot(pos: vec3, axis: vec3, radius1: f32, radius2: f32, radius3: f32, turns: i32, twists: i32, rings: i32, edges: i32) -> Mesh
-	func static extern create_plane(pos: vec3, dv1: vec3, dv2: vec3, num_x: i32, num_y: i32) -> Mesh
-	func static extern create_platonic(pos: vec3, radius: f32, samples: i32) -> Mesh
+	func static extern create_plane(pos: vec3, dv1: vec3, dv2: vec3, slices: ivec2) -> Mesh
+	func static extern create_platonic(pos: vec3, radius: f32, type: i32) -> Mesh
 
 
 struct SurfacePoint
@@ -410,7 +417,7 @@ class DataModel extends Data
 #	extern void SetNormalModeAll(int mode)
 #	extern void SetMaterialSelection(int material)
 #	extern void Easify(float factor)
-	func extern paste_mesh(m: Mesh, default_material: i32 = -1)
+	func extern paste_mesh(m: Mesh, default_material: i32 = 0)
 	
 #	func extern add_animation(index: int, type: Move.Type)
 #	func extern duplicate_animation(source: int, target: int)
