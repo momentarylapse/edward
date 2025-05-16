@@ -166,7 +166,6 @@ enum {
 
 	NUM_KEYS,
 
-	KEY_KEY_CODE,
 	KEY_ANY,
 	KEY_CONTROL = 256,
 	KEY_SHIFT = 512,
@@ -195,6 +194,7 @@ namespace event_id {
 	extern const string RightButtonUp;
 	extern const string KeyDown;
 	extern const string KeyUp;
+	extern const string KeyChar;
 	extern const string Select;
 	extern const string DragStart;
 	extern const string DragDrop;

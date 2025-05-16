@@ -35,6 +35,7 @@ public:
 	void on_mouse_wheel(const vec2& d) override;
 	//void on_left_button_up() override;
 	void on_key_down(int key) override;
+	void on_key_char(int character) override;
 
 	void _draw(Painter* p) override;
 	void draw_background(Painter* p);

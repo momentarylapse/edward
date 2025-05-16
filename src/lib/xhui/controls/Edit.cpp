@@ -188,11 +188,6 @@ void Edit::on_key_down(int key) {
 		}
 	}
 
-	if (key == KEY_KEY_CODE) {
-		auto c = owner->get_window()->state.key_char;
-		if (c != '\n' or multiline)
-			auto_insert(utf32_to_utf8({c}));
-	}
 	if (key == KEY_RETURN) {
 		if (multiline)
 			auto_insert("\n");
@@ -201,6 +196,18 @@ void Edit::on_key_down(int key) {
 	}
 	if (key == KEY_TAB and multiline)
 		auto_insert("\t");
+
+	request_redraw();
+}
+
+void Edit::on_key_char(int character) {
+	if (!enabled) {
+		request_redraw();
+		return;
+	}
+
+	if (character != '\n' or multiline)
+		auto_insert(utf32_to_utf8({character}));
 
 	request_redraw();
 }

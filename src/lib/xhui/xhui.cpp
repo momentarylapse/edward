@@ -410,6 +410,7 @@ namespace event_id {
 	const string RightButtonUp = "hui:right-button-up";
 	const string KeyDown = "hui:key-down";
 	const string KeyUp = "hui:key-up";
+	const string KeyChar = "hui:key-char";
 	const string Select = "hui:select";
 	const string DragStart = "hui:drag-start";
 	const string DragDrop = "hui:drag-drop";
@@ -471,15 +472,6 @@ void set_image(const string& uid, const Image& _im) {
 	if (!im->image)
 		im->image = new Image(8,8,White);
 	*im->image = _im;
-#if HAS_LIB_VULKAN
-	if (vulkan::default_device) {
-		im->texture = new vulkan::Texture();
-		im->texture->write(*im->image);
-	}
-#else
-	im->texture = new Texture();
-	im->texture->write(*im->image);
-#endif
 }
 
 

@@ -103,5 +103,8 @@ void DrawingArea::on_key_down(int key) {
 void DrawingArea::on_key_up(int key) {
 	emit_event(event_id::KeyUp, false);
 }
+void DrawingArea::on_key_char(int character) {
+	emit_event(event_id::KeyChar, false);
+}
 
 }

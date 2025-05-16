@@ -66,6 +66,7 @@ public:
 	virtual void on_mouse_wheel(const vec2& d) {}
 	virtual void on_key_down(int key) {}
 	virtual void on_key_up(int key) {}
+	virtual void on_key_char(int character) {}
 
 	virtual void _draw(Painter *p) {}
 

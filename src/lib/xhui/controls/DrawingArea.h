@@ -25,6 +25,7 @@ public:
 	void on_mouse_wheel(const vec2& d) override;
 	void on_key_down(int key) override;
 	void on_key_up(int key) override;
+	void on_key_char(int key) override;
 
 	bool first_draw = true;
 

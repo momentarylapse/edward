@@ -186,7 +186,7 @@ void Window::_char_callback(GLFWwindow* window, unsigned int codepoint) {
 	//msg_write(format("  glfw  char:  %d", codepoint));
 	auto w = (Window*)glfwGetWindowUserPointer(window);
 	w->state.key_char = (int)codepoint;
-	w->_on_key_down(KEY_KEY_CODE);
+	w->_on_key_char((int)codepoint);
 }
 
 
@@ -381,6 +381,7 @@ void Window::_on_mouse_wheel(const vec2 &d) {
 		hover_control->on_mouse_wheel(d);
 	on_mouse_wheel(d);
 }
+
 void Window::_on_key_down(int k) {
 	for (const auto& e: event_key_codes)
 		if (k == e.key_code)
@@ -391,10 +392,16 @@ void Window::_on_key_down(int k) {
 		dialogs.back()->on_key_down(k);
 	on_key_down(k);
 }
+
 void Window::_on_key_up(int k) {
 	if (focus_control)
 		focus_control->on_key_up(k);
 	on_key_up(k);
+}
+
+void Window::_on_key_char(int character) {
+	if (focus_control)
+		focus_control->on_key_char(character);
 }
 
 
