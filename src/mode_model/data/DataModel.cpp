@@ -104,8 +104,8 @@ void ModelEffect::clear()
 DataModel::DataModel(Session *s) :
 	Data(s, FD_MODEL)
 {
-	mesh = new ModelMesh(this);
-	phys_mesh = new ModelMesh(this);
+	mesh = new ModelMesh();
+	phys_mesh = new ModelMesh();
 	edit_mesh = mesh.get();
 	triangle_mesh.resize(4);
 }
@@ -390,10 +390,10 @@ Data::Selection DataModel::get_selection() const {
 	for (const auto& [i, p]: enumerate(edit_mesh->polygons))
 		if (p.is_selected)
 			sel[MultiViewType::MODEL_POLYGON].add(i);
-	for (const auto& [i, b]: enumerate(edit_mesh->ball))
+	for (const auto& [i, b]: enumerate(edit_mesh->spheres))
 		if (b.is_selected)
 			sel[MultiViewType::MODEL_BALL].add(i);
-	for (const auto& [i, c]: enumerate(edit_mesh->cylinder))
+	for (const auto& [i, c]: enumerate(edit_mesh->cylinders))
 		if (c.is_selected)
 			sel[MultiViewType::MODEL_CYLINDER].add(i);
 	return sel;
@@ -502,14 +502,6 @@ mat3 DataModel::generateInertiaTensor(float mass)
 #endif
 
 	return t;
-}
-
-int DataModel::getNumSelectedSkinVertices() {
-	int r = 0;
-	for (auto &v: mesh->skin_vertex)
-		if (v.is_selected)
-			r ++;
-	return r;
 }
 
 #if 0

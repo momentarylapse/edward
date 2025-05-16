@@ -24,12 +24,12 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(ModelMesh* m, const Data:
 					polygon_indices.add(i);
 				}
 			}
-			for (const auto& [i, o]: enumerate(mesh->ball))
+			for (const auto& [i, o]: enumerate(mesh->spheres))
 				if (selection[MultiViewType::MODEL_VERTEX].contains(o.index)) {
 					spheres.add(o);
 					sphere_indices.add(i);
 				}
-			for (const auto& [i, o]: enumerate(mesh->cylinder))
+			for (const auto& [i, o]: enumerate(mesh->cylinders))
 				if (selection[MultiViewType::MODEL_VERTEX].contains(o.index[0]) and selection[MultiViewType::MODEL_VERTEX].contains(o.index[1])) {
 					cylinders.add(o);
 					cylinder_indices.add(i);
@@ -51,13 +51,13 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(ModelMesh* m, const Data:
 					polygon_indices.add(i);
 				}
 		if (selection.contains(MultiViewType::MODEL_BALL))
-			for (const auto& [i, o]: enumerate(mesh->ball))
+			for (const auto& [i, o]: enumerate(mesh->spheres))
 				if (selection[MultiViewType::MODEL_BALL].contains(i)) {
 					spheres.add(o);
 					sphere_indices.add(i);
 				}
 		if (selection.contains(MultiViewType::MODEL_CYLINDER))
-			for (const auto& [i, o]: enumerate(mesh->cylinder))
+			for (const auto& [i, o]: enumerate(mesh->cylinders))
 				if (selection[MultiViewType::MODEL_CYLINDER].contains(i)) {
 					cylinders.add(o);
 					cylinder_indices.add(i);
@@ -70,11 +70,11 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(ModelMesh* m, const Data:
 						if (s.vertex == i)
 							return true;
 				}
-			for (const auto& [pi, p]: enumerate(mesh->ball))
+			for (const auto& [pi, p]: enumerate(mesh->spheres))
 				if (!selection[MultiViewType::MODEL_BALL].contains(pi))
 					if (p.index == i)
 						return true;
-			for (const auto& [pi, p]: enumerate(mesh->cylinder))
+			for (const auto& [pi, p]: enumerate(mesh->cylinders))
 				if (!selection[MultiViewType::MODEL_CYLINDER].contains(pi))
 					if (p.index[0] == i or p.index[1] == 1)
 						return true;
@@ -99,16 +99,16 @@ void *ActionModelDeleteSelection::execute(Data*) {
 	for (int i: base::reverse(polygon_indices))
 		mesh->polygons.erase(i);
 	for (int i: base::reverse(sphere_indices))
-		mesh->ball.erase(i);
+		mesh->spheres.erase(i);
 	for (int i: base::reverse(cylinder_indices))
-		mesh->cylinder.erase(i);
+		mesh->cylinders.erase(i);
 
 	for (auto& p: mesh->polygons)
 		for (auto& s: p.side)
 			s.vertex = map_vertex(s.vertex);
-	for (auto& p: mesh->ball)
+	for (auto& p: mesh->spheres)
 		p.index = map_vertex(p.index);
-	for (auto& p: mesh->cylinder)
+	for (auto& p: mesh->cylinders)
 		for (int k=0; k<2; k++)
 			p.index[k] = map_vertex(p.index[k]);
 	return nullptr;
@@ -118,9 +118,9 @@ void ActionModelDeleteSelection::undo(Data*) {
 	for (auto& p: mesh->polygons)
 		for (auto& s: p.side)
 			s.vertex = unmap_vertex(s.vertex);
-	for (auto& p: mesh->ball)
+	for (auto& p: mesh->spheres)
 		p.index = unmap_vertex(p.index);
-	for (auto& p: mesh->cylinder)
+	for (auto& p: mesh->cylinders)
 		for (int k=0; k<2; k++)
 			p.index[k] = unmap_vertex(p.index[k]);
 
@@ -129,9 +129,9 @@ void ActionModelDeleteSelection::undo(Data*) {
 	for (const auto& [ii, i]: enumerate(polygon_indices))
 		mesh->polygons.insert(polygons[ii], i);
 	for (const auto& [ii, i]: enumerate(sphere_indices))
-		mesh->ball.insert(spheres[ii], i);
+		mesh->spheres.insert(spheres[ii], i);
 	for (const auto& [ii, i]: enumerate(cylinder_indices))
-		mesh->cylinder.insert(cylinders[ii], i);
+		mesh->cylinders.insert(cylinders[ii], i);
 }
 
 int ActionModelDeleteSelection::map_vertex(int v) const {

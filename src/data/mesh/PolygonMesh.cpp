@@ -51,6 +51,8 @@ MeshVertex::MeshVertex() : MeshVertex(v_0) {}
 void PolygonMesh::clear() {
 	polygons.clear();
 	vertices.clear();
+	spheres.clear();
+	cylinders.clear();
 }
 
 bool PolygonMesh::is_empty() const {
@@ -352,6 +354,21 @@ void PolygonMesh::remove_unused_vertices() {
 					if (p.side[i].vertex > vi)
 						p.side[i].vertex --;
 		}
+}
+
+Box PolygonMesh::bounding_box() const {
+	Box box = {v_0, v_0};
+	if (vertices.num > 0)
+		box = {vertices[0].pos, vertices[0].pos};
+
+	for (const auto &v: vertices)
+		box = box or Box{v.pos, v.pos};
+
+	for (const auto &b: spheres)
+		box = box or Box{
+			vertices[b.index].pos - vec3(1,1,1) * b.radius,
+			vertices[b.index].pos + vec3(1,1,1) * b.radius};
+	return box;
 }
 
 bool PolygonMesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec2& m, vec3 &tp, int& index, bool any_hit) {

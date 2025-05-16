@@ -20,6 +20,7 @@ class MultiViewWindow;
 class VertexStagingBuffer;
 class vec3;
 class mat4;
+struct Box;
 
 /*enum class NormalMode {
 	Smooth,
@@ -42,10 +43,23 @@ struct MeshVertex: multiview::SingleData {
 };
 
 
+struct ModelBall: multiview::SingleData {
+	int index;
+	float radius;
+};
+
+struct ModelCylinder: multiview::SingleData {
+	int index[2];
+	float radius;
+	bool round;
+};
+
 
 struct PolygonMesh {
 	void clear();
 	bool is_empty() const;
+
+	Box bounding_box() const;
 
 	void add_vertex(const vec3 &pos);
 	void add_polygon(const Array<int> &v, const Array<vec3> &sv);
@@ -73,6 +87,10 @@ struct PolygonMesh {
 
 	Array<MeshVertex> vertices;
 	Array<Polygon> polygons;
+
+	// purely physical
+	Array<ModelBall> spheres;
+	Array<ModelCylinder> cylinders;
 
 	bool is_closed() const;
 

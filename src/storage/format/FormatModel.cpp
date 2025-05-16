@@ -502,8 +502,8 @@ public:
 		f->read_int();
 
 		// balls
-		me->ball.resize(f->read_int());
-		for (auto &b: me->ball) {
+		me->spheres.resize(f->read_int());
+		for (auto &b: me->spheres) {
 			b.index = f->read_int();
 			b.radius = f->read_float();
 		}
@@ -547,7 +547,7 @@ public:
 			c.index[1] = f->read_int();
 			c.radius = f->read_float();
 			c.round = f->read_bool();
-			me->cylinder.add(c);
+			me->cylinders.add(c);
 		}
 	}
 	void write(Stream *f) override {
@@ -566,8 +566,8 @@ public:
 		f->write_int(0);
 
 		// balls
-		f->write_int(me->ball.num);
-		for (auto &b: me->ball) {
+		f->write_int(me->spheres.num);
+		for (auto &b: me->spheres) {
 			f->write_int(b.index);
 			f->write_float(b.radius);
 		}
@@ -587,8 +587,8 @@ public:
 		}
 
 		// cylinders
-		f->write_int(me->cylinder.num);
-		for (auto &c: me->cylinder) {
+		f->write_int(me->cylinders.num);
+		for (auto &c: me->cylinders) {
 			f->write_int(c.index[0]);
 			f->write_int(c.index[1]);
 			f->write_float(c.radius);
@@ -1063,7 +1063,7 @@ void FormatModel::_save(const Path &filename, DataModel *data) {
 	//	data->update_normals();
 
 		// export...
-		data->mesh->export_to_triangle_mesh(data->triangle_mesh[1]);
+		data->mesh->export_to_triangle_mesh(data->triangle_mesh[1], data);
 		for (int d=1;d<4;d++) {
 			if (data->triangle_mesh[d].sub.num != data->material.num) {
 				data->triangle_mesh[d].sub.resize(data->material.num);

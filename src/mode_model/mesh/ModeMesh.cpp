@@ -17,6 +17,7 @@
 #include "../action/mesh/ActionModelMoveSelection.h"
 #include "../data/ModelMesh.h"
 #include "../dialog/ModelPropertiesDialog.h"
+#include "../processing/MeshRandomSurfacePoints.h"
 #include <Session.h>
 #include <data/mesh/GeometryCylinder.h>
 #include <data/mesh/GeometrySphere.h>
@@ -49,7 +50,7 @@ ModeMesh::ModeMesh(ModeModel* parent) : SubMode(parent) {
 	material_selection = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, Red, true);
 	material_hover = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, White, true);
 
-	temp_mesh = new ModelMesh(data);
+	temp_mesh = new ModelMesh();
 	current_material = 0;
 	current_texture_level = 0;
 
@@ -427,9 +428,9 @@ void ModeMesh::update_vb() {
 	}
 
 	PolygonMesh m;
-	for (const auto& b: data->edit_mesh->ball)
+	for (const auto& b: data->edit_mesh->spheres)
 		m.add(GeometrySphere(data->edit_mesh->vertices[b.index].pos, b.radius, 8));
-	for (const auto& c: data->edit_mesh->cylinder)
+	for (const auto& c: data->edit_mesh->cylinders)
 		m.add(GeometryCylinder(data->edit_mesh->vertices[c.index[0]].pos, data->edit_mesh->vertices[c.index[1]].pos, c.radius, 1, 32));
 	m.build(vertex_buffer_physical);
 
@@ -508,9 +509,9 @@ base::optional<Box> ModeMesh::get_selection_box() const {
 			for (const auto& s: p.side)
 				p.is_selected &= data->edit_mesh->vertices[s.vertex].is_selected;
 		}
-		for (auto& b: data->edit_mesh->ball)
+		for (auto& b: data->edit_mesh->spheres)
 			b.is_selected = data->edit_mesh->vertices[b.index].is_selected;
-		for (auto& c: data->edit_mesh->cylinder)
+		for (auto& c: data->edit_mesh->cylinders)
 			c.is_selected = data->edit_mesh->vertices[c.index[0]].is_selected and data->edit_mesh->vertices[c.index[1]].is_selected;
 
 		return MultiView::points_get_selection_box(data->edit_mesh->vertices);
@@ -572,6 +573,12 @@ void ModeMesh::on_key_down(int key) {
 		} else {
 			session->set_message("nothing selected");
 		}
+	}
+	if (key == xhui::KEY_X) {
+		data->begin_action_group("a");
+		for (const auto& p: mesh_surface_points(*data->mesh, 5.0f))
+			data->add_vertex(p.pos);
+		data->end_action_group();
 	}
 }
 

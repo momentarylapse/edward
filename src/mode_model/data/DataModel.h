@@ -142,7 +142,7 @@ public:
 
 
 
-	int getNumSelectedSkinVertices();
+	//int getNumSelectedSkinVertices();
 
 /*	void clearSelection();
 	void selectionFromVertices();

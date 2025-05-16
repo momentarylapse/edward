@@ -19,31 +19,11 @@
 
 
 
-ModelMesh::ModelMesh(DataModel *m) {
-	model = m;
+ModelMesh::ModelMesh() {
 	inside_data = nullptr;
 }
 
 ModelMesh::~ModelMesh() = default;
-
-void ModelMesh::clear() {
-	PolygonMesh::clear();
-
-	ball.clear();
-	cylinder.clear();
-}
-
-bool ModelMesh::test_sanity(const string &loc) {
-
-	for (auto &t: polygons)
-		for (int k=0;k<t.side.num;k++)
-			for (int kk=k+1;kk<t.side.num;kk++)
-				if (t.side[k].vertex == t.side[kk].vertex){
-					msg_error(loc + ": surf broken!   identical vertices in poly");
-					return false;
-				}
-	return true;
-}
 
 
 bool int_array_has_duplicates(const Array<int> &a) {
@@ -119,8 +99,6 @@ void ModelMesh::build_topology()
 
 
 void ModelMesh::on_post_action_update() {
-	set_show_vertices(vertices);
-
 	update_normals();
 	for (auto &p: polygons) {
 		p.pos = v_0;
@@ -128,10 +106,6 @@ void ModelMesh::on_post_action_update() {
 			p.pos += vertices[p.side[k].vertex].pos;
 		p.pos /= p.side.num;
 	}
-}
-
-void ModelMesh::set_show_vertices(Array<MeshVertex> &vert) {
-	show_vertices.set_ref(vert);
 }
 
 
@@ -232,7 +206,7 @@ void ModelMesh::importFromTriangleSkin(int index) {
 }
 #endif
 
-void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk) {
+void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk, DataModel* model) {
 	sk.vertices = vertices;
 	sk.sub.clear();
 	sk.sub.resize(model->material.num);
@@ -252,21 +226,6 @@ void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk) {
 	}
 	foreachi(auto *m, model->material, i)
 		sk.sub[i].num_textures = m->texture_levels.num;
-}
-
-Box ModelMesh::bounding_box() {
-	Box box = {v_0, v_0};
-	if (vertices.num > 0)
-		box = {vertices[0].pos, vertices[0].pos};
-
-	for (const auto &v: vertices)
-		box = box or Box{v.pos, v.pos};
-
-	for (const auto &b: ball)
-		box = box or Box{
-			vertices[b.index].pos - vec3(1,1,1) * b.radius,
-			vertices[b.index].pos + vec3(1,1,1) * b.radius};
-	return box;
 }
 
 void ModelMesh::set_normals_dirty_by_vertices(const Array<int> &index)
@@ -291,11 +250,6 @@ void ModelMesh::set_all_normals_dirty() {
 
 
 void ModelMesh::update_normals() {
-	if (this == model->phys_mesh) {
-		for (auto &v: vertices)
-			v.normal_mode = NORMAL_MODE_HARD;
-	}
-
 #define NEW_NORMALS 1
 
 #if NEW_NORMALS
@@ -662,12 +616,12 @@ void ModelMesh::add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &bone_
 
 }
 
-void ModelMesh::_add_vertices(const Array<MeshVertex> &v) {
+void ModelMesh::_add_vertices(const Array<MeshVertex> &v, DataModel* model) {
 	vertices.append(v);
-	_post_vertex_number_change_update();
+	_post_vertex_number_change_update(model);
 }
 
-void ModelMesh::_post_vertex_number_change_update() {
+void ModelMesh::_post_vertex_number_change_update(DataModel* model) {
 	// resize animations
 	for (ModelMove &move: model->move) {
 		if (move.type == AnimationType::VERTEX) {
@@ -692,11 +646,11 @@ void ModelMesh::remove_lonely_vertex(int index) {
 void ModelMesh::_shift_vertex_links(int offset, int delta) {
 
 	// correct references
-	for (auto &t: polygons)
+	for (auto& t: polygons)
 		for (int k=0;k<t.side.num;k++)
 			if (t.side[k].vertex >= offset)
 				t.side[k].vertex += delta;
-	for (ModelBall& b: ball)
+	for (auto& b: spheres)
 		if (b.index >= offset)
 			b.index += delta;
 }

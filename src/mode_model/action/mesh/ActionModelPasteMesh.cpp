@@ -16,12 +16,12 @@ ActionModelPasteMesh::ActionModelPasteMesh(ModelMesh* m, const PolygonMesh &_geo
 	default_material = _default_material;
 }
 
-void *ActionModelPasteMesh::execute(Data*) {
+void *ActionModelPasteMesh::execute(Data* d) {
 	//m->clearSelection();
 
 	int nv = mesh->vertices.num;
 
-	mesh->_add_vertices(geo.vertices);
+	mesh->_add_vertices(geo.vertices, dynamic_cast<DataModel*>(d));
 
 	for (auto &t: geo.polygons) {
 		Array<int> v;
@@ -38,10 +38,10 @@ void *ActionModelPasteMesh::execute(Data*) {
 	return nullptr;
 }
 
-void ActionModelPasteMesh::undo(Data*) {
+void ActionModelPasteMesh::undo(Data* d) {
 	//m->clear_selection();
 
 	mesh->vertices.resize(mesh->vertices.num - geo.vertices.num);
-	mesh->_post_vertex_number_change_update();
+	mesh->_post_vertex_number_change_update(dynamic_cast<DataModel*>(d));
 	mesh->polygons.resize(mesh->polygons.num - geo.polygons.num);
 }
