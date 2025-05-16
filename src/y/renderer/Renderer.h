@@ -9,14 +9,14 @@
 
 
 class RenderTask;
-class rect;
+struct rect;
 
 #include "../graphics-fwd.h"
 #include "../lib/base/pointer.h"
 #include "../lib/base/optional.h"
 #include "../lib/math/rect.h"
 
-class color;
+struct color;
 class ResourceManager;
 
 rect dynamicly_scaled_area(FrameBuffer *fb);

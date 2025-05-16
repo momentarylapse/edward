@@ -6,6 +6,8 @@ use os
 
 let MAX_TEXTURES = 8
 
+struct ivec3
+	var x, y, z: i32
 struct ivec4
 	var x, y, z, w: i32
 struct vec4
@@ -142,6 +144,7 @@ struct Mesh
 	
 	func extern __init__()
 	func extern __delete__()
+	func extern __assign__(o: Mesh)
 	
 	var vertices: Vertex[]
 	var polygons: Polygon[]
@@ -159,32 +162,20 @@ struct Mesh
 		ROUND
 		LOOP
 
-#	class Ball extends Geometry
-#		func extern __init__(pos: vec3, radius: float, num_x: int, num_y: int)
-#
-#	class Cube extends Geometry
-#		func extern __init__(pos: vec3, dv1: vec3, dv2: vec3, dv3: vec3, num_1: int, num_2: int, num_3: int)
+	func static extern create_ball(pos: vec3, radius: f32, num_x: i32, num_y: i32) -> Mesh
+	func static extern create_cube(pos: vec3, dv1: vec3, dv2: vec3, dv3: vec3, slices: ivec3) -> Mesh
 #
 #	class Cylinder extends Geometry
 #		func extern __init__(pos1: vec3, pos2: vec3, radius: float, rings: int, edges: int, end_mode: EndMode)
 #
 #	class CylinderComplex extends Geometry
 #		func extern __init__(pos: vec3[], radius: float[], rings: int, edges: int, end_mode: EndMode)
-#
-#	class Sphere extends Geometry
-#		func extern __init__(pos: vec3, radius: float, num: int)
-#
-#	class Torus extends Geometry
-#		func extern __init__(pos: vec3, axis: vec3, radius1: float, radius2: float, num_x: int, num_y: int)
-#
-#	class TorusKnot extends Geometry
-#		func extern __init__(pos: vec3, axis: vec3, radius1: float, radius2: float, radius3: float, turns: int, twists: int, rings: int, edges: int)
-#
-#	class Plane extends Geometry
-#		func extern __init__(pos: vec3, dv1: vec3, dv2: vec3, num_x: int, num_y: int)
-#
-#	class Platonic extends Geometry
-#		func extern __init__(pos: vec3, radius: float, samples: int)
+
+	func static extern create_sphere(pos: vec3, radius: f32, num: i32) -> Mesh
+	func static extern create_torus(pos: vec3, axis: vec3, radius1: f32, radius2: f32, num_x: i32, num_y: i32) -> Mesh
+	func static extern create_torus_knot(pos: vec3, axis: vec3, radius1: f32, radius2: f32, radius3: f32, turns: i32, twists: i32, rings: i32, edges: i32) -> Mesh
+	func static extern create_plane(pos: vec3, dv1: vec3, dv2: vec3, num_x: i32, num_y: i32) -> Mesh
+	func static extern create_platonic(pos: vec3, radius: f32, samples: i32) -> Mesh
 
 
 struct SurfacePoint
@@ -397,7 +388,7 @@ class DataModel extends Data
 ##	func extern selection_from_polygons()
 	#extern void SelectOnlySurface(ModelSurface s)
 	
-	func extern add_vertex(pos: vec3, bone_index: ivec4, bone_weight: vec4, normal_mode: i32)
+	func extern add_vertex(pos: vec3, bone_index: ivec4 = ivec4(0,0,0,0), bone_weight: vec4 = vec4(1,0,0,0), normal_mode: i32 = -1)
 #	func extern add_triangle(a: int, b: int, c: int, material: int) -> Geometry.Polygon&
 #	func extern add_polygon(v: int[], material: int) -> Geometry.Polygon&
 #	func extern delete_polygon(index: int)
@@ -419,7 +410,7 @@ class DataModel extends Data
 #	extern void SetNormalModeAll(int mode)
 #	extern void SetMaterialSelection(int material)
 #	extern void Easify(float factor)
-#	func extern paste_geometry(g: Geometry, default_material: int)
+	func extern paste_mesh(m: Mesh, default_material: i32 = -1)
 	
 #	func extern add_animation(index: int, type: Move.Type)
 #	func extern duplicate_animation(source: int, target: int)

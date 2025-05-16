@@ -7,7 +7,7 @@
 
 #include <y/world/Material.h>
 
-class vec3;
+struct vec3;
 
 class VertexStagingBuffer {
 public:

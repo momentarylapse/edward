@@ -18,8 +18,8 @@
 
 class MultiViewWindow;
 class VertexStagingBuffer;
-class vec3;
-class mat4;
+struct vec3;
+struct mat4;
 struct Box;
 
 /*enum class NormalMode {

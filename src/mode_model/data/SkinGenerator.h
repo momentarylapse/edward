@@ -11,7 +11,7 @@
 #include "../../lib/math/vec3.h"
 #include "../../lib/math/mat4.h"
 
-class vec3;
+struct vec3;
 class MultiViewWindow;
 struct Polygon;
 struct MeshVertex;

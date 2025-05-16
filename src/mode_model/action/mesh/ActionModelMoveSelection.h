@@ -10,7 +10,7 @@
 #include <lib/base/set.h>
 
 class ModelMesh;
-class vec3;
+struct vec3;
 enum class MultiViewType;
 
 class ActionModelMoveSelection: public ActionMultiView {

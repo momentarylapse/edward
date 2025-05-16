@@ -8,10 +8,9 @@
 #include "GeometryTorusKnot.h"
 #include "GeometryCylinder.h"
 
-GeometryTorusKnot::GeometryTorusKnot(const vec3 &_pos, const vec3 &axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges)
-{
+GeometryTorusKnot::GeometryTorusKnot(const vec3 &_pos, const vec3 &axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges) {
 	Array<vec3> pos;
-	for (int i=0; i<rings;i++){
+	for (int i=0; i<rings;i++) {
 		float t = (float)i / rings;
 		float wx = 2 * pi * t * turns;
 		float wy = 2 * pi * t * twists;
@@ -21,9 +20,4 @@ GeometryTorusKnot::GeometryTorusKnot(const vec3 &_pos, const vec3 &axis, float r
 	}
 	GeometryCylinder geo = GeometryCylinder(pos, radius3, rings, edges, GeometryCylinder::END_LOOP);
 	add(geo);
-}
-
-void GeometryTorusKnot::__init__(const vec3& pos, const vec3& axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges)
-{
-	new (this) GeometryTorusKnot(pos, axis, radius1, radius2, radius3, turns, twists, rings, edges);
 }

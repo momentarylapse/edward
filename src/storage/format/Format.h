@@ -14,7 +14,7 @@
 #include "../../lib/os/file.h"
 
 class Data;
-class color;
+struct color;
 class Path;
 class Session;
 

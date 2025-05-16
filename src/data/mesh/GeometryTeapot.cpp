@@ -375,8 +375,3 @@ GeometryTeapot::GeometryTeapot(const vec3 &pos, float radius, int samples)
 	scale = mat4::scale( radius / 3, radius / 3, radius / 3);
 	transform(trans * rot * scale);
 }
-
-void GeometryTeapot::__init__(const vec3& pos, float radius, int samples)
-{
-	new (this) GeometryTeapot(pos, radius, samples);
-}

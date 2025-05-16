@@ -3,8 +3,8 @@
 #include "../../base/base.h"
 
 class Image;
-class rect;
-class vec2;
+struct rect;
+struct vec2;
 
 namespace xhui {
 enum class Align;

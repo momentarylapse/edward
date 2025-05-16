@@ -7,7 +7,7 @@
 
 #pragma once
 
-class mat4;
+struct mat4;
 
 mat4 jitter(float w, float h, int uid);
 void jitter_iterate();

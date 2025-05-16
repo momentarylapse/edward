@@ -11,7 +11,7 @@
 #include <lib/math/quaternion.h>
 #include "BaseClass.h"
 
-class mat4;
+struct mat4;
 class Component;
 
 

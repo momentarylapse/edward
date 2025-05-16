@@ -12,7 +12,7 @@
 #include <lib/base/set.h>
 
 class DataWorld;
-class vec3;
+struct vec3;
 enum class MultiViewType;
 
 class ActionWorldMoveSelection: public ActionMultiView {

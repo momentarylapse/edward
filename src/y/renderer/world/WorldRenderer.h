@@ -22,9 +22,9 @@ class ShadowMapRenderer;
 class PerformanceMonitor;
 class World;
 class Camera;
-class mat4;
-class vec3;
-class quaternion;
+struct mat4;
+struct vec3;
+struct quaternion;
 class Material;
 class CubeMapSource;
 

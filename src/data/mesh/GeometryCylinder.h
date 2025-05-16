@@ -9,13 +9,12 @@
 #define GEOMETRYCYLINDER_H_
 
 #include "PolygonMesh.h"
-class vec3;
+struct vec3;
 
 template<class T>
 class Interpolator;
 
-class GeometryCylinder : public PolygonMesh
-{
+class GeometryCylinder : public PolygonMesh {
 public:
 	GeometryCylinder(Array<vec3> &pos, Array<float> &radius, int rings, int edges, int end_mode = END_FLAT);
 	GeometryCylinder(Array<vec3> &pos, float radius, int rings, int edges, int end_mode = END_FLAT);

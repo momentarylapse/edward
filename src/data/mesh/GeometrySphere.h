@@ -9,13 +9,14 @@
 #define GEOMETRYSPHERE_H_
 
 #include "PolygonMesh.h"
-class vec3;
+struct vec3;
 
-class GeometrySphere : public PolygonMesh
-{
+class GeometrySphere : public PolygonMesh {
 public:
 	GeometrySphere(const vec3 &pos, float radius, int num);
-	void _cdecl __init__(const vec3 &pos, float radius, int num);
+	static PolygonMesh create(const vec3 &pos, float radius, int num) {
+		return GeometrySphere(pos, radius, num);
+	}
 };
 
 #endif /* GEOMETRYSPHERE_H_ */

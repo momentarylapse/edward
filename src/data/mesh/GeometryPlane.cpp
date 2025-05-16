@@ -35,8 +35,3 @@ GeometryPlane::GeometryPlane(const vec3 &pos, const vec3 &dv1, const vec3 &dv2, 
 			add_polygon_single_texture(v, sv);
 		}
 }
-
-void GeometryPlane::__init__(const vec3& pos, const vec3& dv1, const vec3& dv2, int num_x, int num_y)
-{
-	new (this) GeometryPlane(pos, dv1, dv2, num_x, num_y);
-}

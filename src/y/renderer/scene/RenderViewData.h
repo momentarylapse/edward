@@ -18,7 +18,7 @@
 class Camera;
 struct SceneView;
 class RenderParams;
-class mat4;
+struct mat4;
 class ShaderCache;
 class Material;
 enum class RenderPathType;

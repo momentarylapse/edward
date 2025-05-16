@@ -9,7 +9,7 @@
 
 #include "../Renderer.h"
 
-class vec2;
+struct vec2;
 class Camera;
 class ComputeTask;
 class TextureRenderer;

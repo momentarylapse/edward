@@ -5,8 +5,7 @@
 
 class string;
 
-class complex {
-public:
+struct complex {
 	float x, y;
 	complex(){};
 	complex(float x, float y);

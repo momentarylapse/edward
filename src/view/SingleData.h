@@ -11,8 +11,8 @@
 
 #include "../lib/math/vec3.h"
 
-class rect;
-class vec2;
+struct rect;
+struct vec2;
 
 
 namespace multiview{

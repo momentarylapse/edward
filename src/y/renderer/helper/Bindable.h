@@ -65,9 +65,9 @@ struct BindingData {
 	} \
 
 
-class mat4;
-class vec2;
-class vec3;
+struct mat4;
+struct vec2;
+struct vec3;
 
 Any mat4_to_any(const mat4& m);
 Any vec2_to_any(const vec2& v);

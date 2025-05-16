@@ -16,8 +16,15 @@
 #include <view/MultiViewWindow.h>
 #include <data/Data.h>
 #include <data/mesh/PolygonMesh.h>
-//#include "../mode/material/ModeMaterial.h"
-#include <lib/os/msg.h>
+#include <data/mesh/GeometryBall.h>
+#include <data/mesh/GeometryCube.h>
+#include <data/mesh/GeometryCylinder.h>
+#include <data/mesh/GeometryPlane.h>
+#include <data/mesh/GeometryPlatonic.h>
+#include <data/mesh/GeometrySphere.h>
+#include <data/mesh/GeometryTeapot.h>
+#include <data/mesh/GeometryTorus.h>
+#include <data/mesh/GeometryTorusKnot.h>
 
 #include <mode_material/data/DataMaterial.h>
 #include <mode_material/ModeMaterial.h>
@@ -32,17 +39,9 @@
 #include "../data/model/ModelMesh.h"
 #include "../data/model/ModelPolygon.h"
 #include "../data/model/ModelSelection.h"
-#include "../data/model/ModelMaterial.h"
-#include "../data/model/geometry/GeometryBall.h"
-#include "../data/model/geometry/GeometryCube.h"
-#include "../data/model/geometry/GeometryCylinder.h"
-#include "../data/model/geometry/GeometryPlane.h"
-#include "../data/model/geometry/GeometryPlatonic.h"
-#include "../data/model/geometry/GeometrySphere.h"
-#include "../data/model/geometry/GeometryTeapot.h"
-#include "../data/model/geometry/GeometryTorus.h"
-#include "../data/model/geometry/GeometryTorusKnot.h"
-#include "../data/material/ShaderNode.h"
+#include "../data/model/ModelMaterial.h"*/
+
+/*#include "../data/material/ShaderNode.h"
 #include "../data/material/ShaderBuilderContext.h"*/
 
 
@@ -109,12 +108,25 @@ void link_mesh(kaba::ExternalLinkData* ext) {
 	ext->declare_class_size("Mesh", sizeof(PolygonMesh));
 	ext->link_class_func("Mesh.__init__", &kaba::generic_init<PolygonMesh>);
 	ext->link_class_func("Mesh.__delete__", &kaba::generic_delete<PolygonMesh>);
+	ext->link_class_func("Mesh.__assign__", &kaba::generic_assign<PolygonMesh>);
 	ext->declare_class_element("Mesh.vertices", &PolygonMesh::vertices);
 	ext->declare_class_element("Mesh.polygons", &PolygonMesh::polygons);
 	//	ext->declare_class_element("Mesh.edges", &PolygonMesh::edges);
 	ext->declare_class_element("Mesh.spheres", &PolygonMesh::spheres);
 	ext->declare_class_element("Mesh.cylinders", &PolygonMesh::cylinders);
 
+	ext->link("Mesh.create_ball", (void*)&GeometryBall::create);
+	ext->link("Mesh.create_cube", (void*)&GeometryCube::create);
+	ext->link("Mesh.create_sphere", (void*)&GeometrySphere::create);
+	//ext->link_class_func("Geometry.Cylinder.__init__", &GeometryCylinder::__init__);
+	//ext->link_class_func("Geometry.CylinderComplex.__init__", &GeometryCylinder::__init2__);
+	ext->link("Mesh.create_torus", (void*)&GeometryTorus::create);
+	ext->link("Mesh.create_torus_knot", (void*)&GeometryTorusKnot::create);
+	ext->link("Mesh.create_plane", (void*)&GeometryPlane::create);
+	ext->link("Mesh.create_platonic", (void*)&GeometryPlatonic::create);
+	ext->link("Mesh.create_teapot", (void*)&GeometryTeapot::create);
+//	ext->link("Geometry.subtract", (void*)&GeometrySubtract);
+//	ext->link("Geometry.and", (void*)&GeometryAnd);
 
 	ext->link("mesh_surface_points", (void*)&mesh_surface_points);
 }
@@ -193,9 +205,9 @@ void link_model(kaba::ExternalLinkData* ext) {
 	ext->link_class_func("DataModel.convert_selection_to_triangles", &DataModel::convertSelectionToTriangles);
 	ext->link_class_func("DataModel.triangulate_selected_vertices", &DataModel::triangulateSelectedVertices);
 	ext->link_class_func("DataModel.bevel_selected_vertices", &DataModel::bevelSelectedEdges);
-	ext->link_class_func("DataModel.extrude_selected_polygons", &DataModel::extrudeSelectedPolygons);
-	ext->link_class_func("DataModel.paste_geometry", &DataModel::pasteGeometry);
-	ext->link_class_func("DataModel.add_animation", &DataModel::addAnimation);
+	ext->link_class_func("DataModel.extrude_selected_polygons", &DataModel::extrudeSelectedPolygons);*/
+	ext->link_class_func("DataModel.paste_mesh", &DataModel::paste_mesh);
+	/*ext->link_class_func("DataModel.add_animation", &DataModel::addAnimation);
 	ext->link_class_func("DataModel.duplicate_animation", &DataModel::duplicateAnimation);
 	ext->link_class_func("DataModel.delete_animation", &DataModel::deleteAnimation);
 	ext->link_class_func("DataModel.animation_set_data", &DataModel::setAnimationData);
@@ -261,20 +273,6 @@ void PluginManager::link_plugins() {
 	ext->declare_class_element("MultiView.ActionController.pos", &MultiView::ActionController::pos);*/
 
 #if 0
-	ext->declare_class_size("Geometry", sizeof(Geometry));
-	ext->link_class_func("Geometry.Ball.__init__", &GeometryBall::__init__);
-	ext->link_class_func("Geometry.Cube.__init__", &GeometryCube::__init__);
-	ext->link_class_func("Geometry.Sphere.__init__", &GeometrySphere::__init__);
-	ext->link_class_func("Geometry.Cylinder.__init__", &GeometryCylinder::__init__);
-	ext->link_class_func("Geometry.CylinderComplex.__init__", &GeometryCylinder::__init2__);
-	ext->link_class_func("Geometry.Torus.__init__", &GeometryTorus::__init__);
-	ext->link_class_func("Geometry.TorusKnot.__init__", &GeometryTorusKnot::__init__);
-	ext->link_class_func("Geometry.Plane.__init__", &GeometryPlane::__init__);
-	ext->link_class_func("Geometry.Platonic.__init__", &GeometryPlatonic::__init__);
-	ext->link_class_func("Geometry.Teapot.__init__", &GeometryTeapot::__init__);
-	ext->link("Geometry.subtract", (void*)&GeometrySubtract);
-	ext->link("Geometry.and", (void*)&GeometryAnd);
-
 	// world
 	ext->declare_class_size("World", sizeof(DataWorld));
 	ext->declare_class_element("World.terrains", &DataWorld::terrains);

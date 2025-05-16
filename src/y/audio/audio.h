@@ -7,8 +7,8 @@
 
 #include "../lib/base/base.h"
 
-class vec3;
-class quaternion;
+struct vec3;
+struct quaternion;
 class Path;
 class Entity;
 

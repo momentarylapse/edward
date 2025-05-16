@@ -9,8 +9,8 @@
 
 #include "../y/BaseClass.h"
 
-class vec3;
-class quaternion;
+struct vec3;
+struct quaternion;
 
 class btTypedConstraint;
 

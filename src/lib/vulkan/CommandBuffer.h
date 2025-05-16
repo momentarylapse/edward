@@ -15,8 +15,8 @@
 #include "../base/base.h"
 #include "../base/optional.h"
 
-class rect;
-class color;
+struct rect;
+struct color;
 
 namespace vulkan{
 

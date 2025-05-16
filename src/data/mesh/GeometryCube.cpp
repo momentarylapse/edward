@@ -64,8 +64,3 @@ GeometryCube::GeometryCube(const vec3 &_pos, const vec3 &dv1, const vec3 &dv2, c
 	weld(epsilon);
 
 }
-
-void GeometryCube::__init__(const vec3& pos, const vec3& dv1, const vec3& dv2, const vec3& dv3, int num_1, int num_2, int num_3)
-{
-	new (this) GeometryCube(pos, dv1, dv2, dv3, num_1, num_2, num_3);
-}

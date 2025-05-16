@@ -12,9 +12,9 @@
 #include <lib/base/pointer.h>
 
 class Model;
-class vec3;
-class quaternion;
-class mat4;
+struct vec3;
+struct quaternion;
+struct mat4;
 class MetaMove;
 
 

@@ -11,7 +11,7 @@
 #ifdef USING_VULKAN
 #include "../../graphics-fwd.h"
 
-class vec2;
+struct vec2;
 class Any;
 
 class PostProcessorVulkan : public PostProcessor {

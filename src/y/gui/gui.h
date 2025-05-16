@@ -11,7 +11,7 @@
 #include "../lib/base/pointer.h"
 #include <functional>
 
-class vec2;
+struct vec2;
 
 namespace gui {
 

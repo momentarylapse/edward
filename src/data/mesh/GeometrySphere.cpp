@@ -49,8 +49,3 @@ GeometrySphere::GeometrySphere(const vec3 &pos, float radius, int num)
 	}
 	weld(radius / num * 0.01f);
 }
-
-void GeometrySphere::__init__(const vec3& pos, float radius, int num)
-{
-	new (this) GeometrySphere(pos, radius, num);
-}

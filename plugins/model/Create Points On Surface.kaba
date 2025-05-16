@@ -5,6 +5,9 @@ func main()
 	for m in cur_session.mode_model
 		m.data.begin_action("x")
 		let points = mesh_surface_points(m.data.mesh, 5)
+		let cube = Mesh.create_cube([0,0,0], [1,0,0], [0,1,0], [0,0,1], [1,1,1])
 		for p in points
-			m.data.add_vertex(p.pos, [0,0,0,0], [1,0,0,0], -1)
+			#m.data.add_vertex(p.pos)
+			#m.data.paste_mesh(Mesh.create_cube(p.pos, [1,0,0], [0,1,0], [0,0,1], 1, 1, 1))
+			pass
 		m.data.end_action()

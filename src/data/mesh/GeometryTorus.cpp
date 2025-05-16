@@ -41,8 +41,3 @@ GeometryTorus::GeometryTorus(const vec3 &pos, const vec3 &axis, float radius1, f
 			add_polygon_single_texture(v, sv);
 		}
 }
-
-void GeometryTorus::__init__(const vec3& pos, const vec3& axis, float radius1, float radius2, int num_x, int num_y)
-{
-	new (this) GeometryTorus(pos, axis, radius1, radius2, num_x, num_y);
-}
