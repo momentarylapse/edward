@@ -6,7 +6,7 @@
 
 struct vec3;
 struct mat4;
-class string;
+struct string;
 
 struct quaternion {
 	float x, y, z, w;

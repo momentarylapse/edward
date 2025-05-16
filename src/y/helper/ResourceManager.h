@@ -6,7 +6,7 @@
 #include <lib/os/path.h>
 
 
-class string;
+struct string;
 class MaterialManager;
 class Material;
 class ModelManager;

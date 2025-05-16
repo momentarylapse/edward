@@ -3,7 +3,7 @@
 
 #include "math.h"
 
-class string;
+struct string;
 struct vec2;
 
 struct rect {

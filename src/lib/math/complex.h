@@ -3,7 +3,7 @@
 
 #include "math.h"
 
-class string;
+struct string;
 
 struct complex {
 	float x, y;

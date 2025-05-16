@@ -9,7 +9,7 @@
 #include "../../graphics-fwd.h"
 #ifdef USING_VULKAN
 
-class string;
+struct string;
 
 namespace PipelineManager {
 
