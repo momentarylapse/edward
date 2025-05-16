@@ -422,6 +422,7 @@ add_executable(edward
 	src/mode_model/mesh/ModeMeshMaterial.cpp
 	src/mode_model/mesh/ModeMeshSculpt.cpp
 	src/mode_model/mesh/ModePaste.cpp
+	src/mode_model/processing/MeshRandomSurfacePoints.cpp
 	src/mode_model/ModeModel.cpp
 	src/mode_project/data/AdminFile.cpp
 	src/mode_project/data/AdminFileList.cpp

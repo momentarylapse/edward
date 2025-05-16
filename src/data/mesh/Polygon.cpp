@@ -25,18 +25,7 @@ vec3 Polygon::get_area_vector(const Array<MeshVertex> &vertex) const {
 }
 
 vec3 Polygon::get_normal(const Array<MeshVertex> &vertex) const {
-	// Newell's method
-	vec3 n = v_0;
-	vec3 p1 = vertex[side.back().vertex].pos;
-	for (int i=0; i<side.num; i++) {
-		vec3 p0 = p1;
-		p1 = vertex[side[i].vertex].pos;
-		n.x += (p0.y - p1.y) * (p0.z + p1.z);
-		n.y += (p0.z - p1.z) * (p0.x + p1.x);
-		n.z += (p0.x - p1.x) * (p0.y + p1.y);
-	}
-	n.normalize();
-	return n;
+	return get_area_vector(vertex).normalized();
 }
 
 Array<int> Polygon::get_vertices() const {
