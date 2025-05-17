@@ -349,11 +349,6 @@ CubeMap::CubeMap(int size, const string &format) {
 	type = Type::CUBE;
 	width = size;
 	height = size;
-	const unsigned int COL[6] = {0xff0000ff, 0xffff0000, 0xff000080, 0xff00ff00, 0xff00ffff, 0xffff00ff};
-	Array<unsigned int> data;
-	for (int k=0; k<6; k++)
-		for (int i=0; i<size*size; i++)
-			data.add(COL[k]);
 	_create_image(nullptr, VK_IMAGE_TYPE_2D, parse_format(format), 6, VK_SAMPLE_COUNT_1_BIT, false, false, true);
 	view = image.create_view(VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_CUBE, mip_levels, 0, 6);
 	_create_sampler();

@@ -50,6 +50,8 @@ void TextureRenderer::render(const RenderParams& params) {
 
 	auto cb = params.command_buffer;
 
+//	cb->image_barrier(weak(textures)[0], vulkan::AccessFlags::SHADER_READ_BIT, vulkan::AccessFlags::SHADER_WRITE_BIT, vulkan::ImageLayout::SHADER_READ_ONLY_OPTIMAL, vulkan::ImageLayout::COLOR_ATTACHMENT);
+
 	cb->begin_render_pass(render_pass.get(), frame_buffer.get());
 	cb->set_viewport(p.area);
 	cb->set_bind_point(vulkan::PipelineBindPoint::GRAPHICS);
@@ -61,6 +63,10 @@ void TextureRenderer::render(const RenderParams& params) {
 		c->draw(p);
 
 	cb->end_render_pass();
+
+	// (automatically done by vulkan::RenderPass)
+//	cb->image_barrier(weak(textures)[0], vulkan::AccessFlags::SHADER_WRITE_BIT, vulkan::AccessFlags::SHADER_READ_BIT, vulkan::ImageLayout::COLOR_ATTACHMENT, vulkan::ImageLayout::SHADER_READ_ONLY_OPTIMAL);
+
 	gpu_timestamp_end(params, channel);
 	PerformanceMonitor::end(channel);
 }

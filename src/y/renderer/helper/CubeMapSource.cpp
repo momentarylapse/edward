@@ -76,54 +76,6 @@ void CubeMapRenderer::render(const RenderParams& params) {
 		texture_renderers[i]->render(params);
 	}
 	gpu_timestamp_end(params, channel);
-
-	/*
-#ifdef USING_VULKAN
-	if (!source->render_pass)
-		source->render_pass = new vulkan::RenderPass({source->cube_map.get(), source->depth_buffer.get()}, {"autoclear"});
-#endif
-	if (!source->frame_buffer[0])
-		for (int i=0; i<6; i++) {
-#ifdef USING_VULKAN
-			source->frame_buffer[i] = new FrameBuffer(source->render_pass.get(), {source->cube_map.get(), source->depth_buffer.get()});
-			try {
-				source->frame_buffer[i]->update_x(source->render_pass.get(), {source->cube_map.get(), source->depth_buffer.get()}, i);
-			} catch(Exception &e) {
-				msg_error(e.message());
-				return;
-			}
-#else
-			source->frame_buffer[i] = new FrameBuffer();
-			try {
-				source->frame_buffer[i]->update_x({source->cube_map.get(), source->depth_buffer.get()}, i);
-			} catch(Exception &e) {
-				msg_error(e.message());
-				return;
-			}
-#endif
-		}
-	Entity o(source->owner->pos, quaternion::ID);
-	Camera cam;
-	cam.min_depth = source->min_depth;
-	cam.owner = &o;
-	cam.fov = pi/2;
-	for (int i=0; i<6; i++) {
-		if (i == 0)
-			o.ang = quaternion::rotation(vec3(0,pi/2,0));
-		if (i == 1)
-			o.ang = quaternion::rotation(vec3(0,-pi/2,0));
-		if (i == 2)
-			o.ang = quaternion::rotation(vec3(-pi/2,pi,pi));
-		if (i == 3)
-			o.ang = quaternion::rotation(vec3(pi/2,pi,pi));
-		if (i == 4)
-			o.ang = quaternion::rotation(vec3(0,0,0));
-		if (i == 5)
-			o.ang = quaternion::rotation(vec3(0,pi,0));
-		//prepare_lights(&cam);
-		render_into_texture(source->frame_buffer[i].get(), &cam, rvd[i]);
-	}
-	cam.owner = nullptr;*/
 }
 
 

@@ -33,7 +33,7 @@ static base::map<PipelineKey,GraphicsPipeline*> ob_pipelines_alpha;
 static base::map<Shader*,GraphicsPipeline*> ob_pipelines_gui;
 
 GraphicsPipeline *get(Shader *s, RenderPass *rp, PrimitiveTopology top, VertexBuffer *vb, vulkan::CullMode culling, bool test_z, bool write_z) {
-	PipelineKey key = {s, (int)culling + ((int)write_z << 4) + ((int)test_z << 5)};
+	PipelineKey key = {s, (int)culling + ((int)write_z << 4) + ((int)test_z << 5) + ((int)(int_p)rp << 8)};
 	if (ob_pipelines.contains(key))
 		return ob_pipelines[key];
 	msg_write("NEW PIPELINE");
@@ -45,7 +45,7 @@ GraphicsPipeline *get(Shader *s, RenderPass *rp, PrimitiveTopology top, VertexBu
 	return p;
 }
 GraphicsPipeline *get_alpha(Shader *s, RenderPass *rp, PrimitiveTopology top, VertexBuffer *vb, Alpha src, Alpha dst, vulkan::CullMode culling, bool test_z, bool write_z) {
-	PipelineKey key = {s, (int)src + ((int)dst << 4) + ((int)culling << 8) + ((int)write_z << 12) + ((int)test_z << 13)};
+	PipelineKey key = {s, (int)src + ((int)dst << 4) + ((int)culling << 8) + ((int)write_z << 12) + ((int)test_z << 13) + ((int)(int_p)rp << 16)};
 	if (ob_pipelines_alpha.contains(key))
 		return ob_pipelines_alpha[key];
 	msg_write(format("NEW PIPELINE ALPHA %d %d", (int)src, (int)dst));

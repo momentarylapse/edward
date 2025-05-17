@@ -24,6 +24,8 @@ void WorldSkyboxEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 
 	rvd.clear(params, {world.background}, 1.0f);
 
+#if 1
+
 	auto cam = rvd.scene_view->cam;
 #ifdef USING_OPENGL
 	nix::set_cull(nix::CullMode::NONE);
@@ -65,6 +67,7 @@ void WorldSkyboxEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 	cam->max_depth = max_depth;*/
 #ifdef USING_OPENGL
 	nix::set_cull(nix::CullMode::BACK);
+#endif
 #endif
 	gpu_timestamp_end(params, channel);
 	PerformanceMonitor::end(channel);
