@@ -242,7 +242,7 @@ PolygonMesh PolygonMesh::transform(const mat4 &mat) const {
 		/*p.temp_normal = mat2.transform_normal(p.temp_normal);
 		for (int k=0;k<p.side.num;k++)
 			p.side[k].normal = mat2.transform_normal(p.side[k].normal);*/
-		p.temp_normal = p.get_normal(vertices);
+		p.temp_normal = p.get_normal(mesh.vertices);
 		for (int k=0;k<p.side.num;k++)
 			p.side[k].normal = p.temp_normal;
 	}
