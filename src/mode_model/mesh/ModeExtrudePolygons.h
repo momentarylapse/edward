@@ -6,7 +6,8 @@
 #define MODEEXTRUDEPOLYGONS_H
 
 
-#include "../../view/Mode.h"
+#include <view/Mode.h>
+#include <data/mesh/PolygonMesh.h>
 
 class MultiViewWindow;
 class ModeMesh;
@@ -16,6 +17,7 @@ public:
 	explicit ModeExtrudePolygons(ModeMesh* parent);
 
 	void on_enter() override;
+	void on_leave() override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 	void on_key_down(int key) override;
@@ -23,6 +25,7 @@ public:
 	void on_mouse_move(const vec2& m, const vec2& d) override;
 
 	ModeMesh* mode_mesh;
+	MeshEdit diff;
 };
 
 

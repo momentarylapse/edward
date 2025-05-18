@@ -15,6 +15,8 @@
 
 #include "MultiView.h"
 
+struct MeshEdit;
+struct PolygonMesh;
 struct RenderViewData;
 struct RenderParams;
 class ResourceManager;
@@ -71,6 +73,8 @@ public:
 	static const color COLOR_X;
 };
 
+
+Array<vec3> mesh_edit_to_lines(const PolygonMesh& mesh, const MeshEdit& ed);
 
 
 #endif //DRAWINGHELPER_H

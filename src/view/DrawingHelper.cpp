@@ -11,13 +11,14 @@
 #include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
+#include <data/mesh/PolygonMesh.h>
 #include "MultiView.h"
 #include "SingleData.h"
 
 const float DrawingHelper::LINE_MEDIUM = 3;
 const float DrawingHelper::LINE_THICK = 5;
 const float DrawingHelper::LINE_EXTRA_THICK = 7;
-const color DrawingHelper::COLOR_X = color(1, 0.9f, 0.6f, 0.3f);
+const color DrawingHelper::COLOR_X = color(1, 0.9f, 0.6f, 0.1f);
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {
 	auto material = resource_manager->load_material("");
@@ -295,4 +296,16 @@ void DrawingHelper::draw_data_points(Painter* p, MultiViewWindow* win, const Dyn
 }
 
 
+Array<vec3> mesh_edit_to_lines(const PolygonMesh& mesh, const MeshEdit& ed) {
+	Array<vec3> points;
+	for (const auto& p: ed.new_polygons) {
+		for (int k=0; k<p.side.num; k++) {
+			int v0 = p.side[k].vertex;
+			int v1 = p.side[(k+1) % p.side.num].vertex;
+			points.add((v0 >= 0) ? mesh.vertices[v0].pos : ed.new_vertices[-(v0+1)].pos);
+			points.add((v1 >= 0) ? mesh.vertices[v1].pos : ed.new_vertices[-(v1+1)].pos);
+		}
+	}
+	return points;
+}
 

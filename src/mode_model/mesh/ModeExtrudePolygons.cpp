@@ -5,57 +5,12 @@
 #include "ModeExtrudePolygons.h"
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
+#include "../processing/MeshExtrudePolygons.h"
 #include <Session.h>
-#include <lib/base/algo.h>
-#include <lib/base/iter.h>
-#include <lib/os/msg.h>
-#include <lib/xhui/xhui.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
 
-
-MeshEdit prepare_extrude(const PolygonMesh& mesh, const Data::Selection& sel, float distance) {
-	MeshEdit ed;
-	for (const auto& [i, p]: enumerate(mesh.polygons))
-		if (sel[MultiViewType::MODEL_POLYGON].contains(i)) {
-			ed.delete_polygon(i);
-			Polygon pp = p;
-			Array<int> new_vertices;
-			for (int k=0; k<p.side.num; k++) {
-				int v0 = p.side[k].vertex;
-				MeshVertex vv = mesh.vertices[v0];
-				vv.pos += distance * p.get_normal(mesh.vertices);
-				int v1 = ed.add_vertex(vv);
-				new_vertices.add(v1);
-				pp.side[k].vertex = v1;
-			}
-			for (int k=0; k<p.side.num; k++) {
-				Polygon ppp;
-				ppp.side.resize(4);
-				ppp.side[0].vertex = p.side[k].vertex;
-				ppp.side[1].vertex = p.side[(k+1) % p.side.num].vertex;
-				ppp.side[2].vertex = new_vertices[(k+1) % p.side.num];
-				ppp.side[3].vertex = new_vertices[k];
-				ed.add_polygon(ppp);
-			}
-			ed.add_polygon(pp);
-		}
-	return ed;
-}
-
-Array<vec3> mesh_edit_to_lines(const PolygonMesh& mesh, const MeshEdit& ed) {
-	Array<vec3> points;
-	for (const auto& p: ed.new_polygons) {
-		for (int k=0; k<p.side.num; k++) {
-			int v0 = p.side[k].vertex;
-			int v1 = p.side[(k+1) % p.side.num].vertex;
-			points.add((v0 >= 0) ? mesh.vertices[v0].pos : ed.new_vertices[-(v0+1)].pos);
-			points.add((v1 >= 0) ? mesh.vertices[v1].pos : ed.new_vertices[-(v1+1)].pos);
-		}
-	}
-	return points;
-}
 
 
 ModeExtrudePolygons::ModeExtrudePolygons(ModeMesh* parent) :
@@ -70,18 +25,49 @@ void ModeExtrudePolygons::on_enter() {
 	mode_mesh->set_presentation_mode(ModeMesh::PresentationMode::Polygons);
 	multi_view->set_allow_action(false);
 	session->win->set_visible("overlay-button-grid-left", false);
+
+	auto update = [this] {
+		diff = mesh_prepare_extrude_polygons(*mode_mesh->data->editing_mesh, mode_mesh->data->get_selection(), dialog->get_float("distance"), dialog->is_checked("connected"));
+	};
+
+	dialog = new xhui::Panel("xxx");
+	dialog->from_source(R"foodelim(
+Dialog mesh-extrude-dialog "Extrude" allow-root width=200 noexpandx
+	Grid ? ""
+		Grid ? "" vertical class=card
+			Label header "Extrude" big bold center
+			Grid ? "" vertical
+				Grid ? ""
+					Label l-distance "Distance" right disabled
+					SpinButton distance "" range=::0.1 expandx
+				CheckBox connected "Keep polygons connected"
+		---|
+		Label ? "" expandy ignorehover
+)foodelim");
+	session->win->embed("overlay-main-grid", 1, 0, dialog);
+
+	dialog->set_float("distance", 20);
+	dialog->event("*", update);
+
+	multi_view->out_selection_changed >> create_sink(update);
+
+	update();
 }
+
+void ModeExtrudePolygons::on_leave() {
+	multi_view->out_selection_changed.unsubscribe(this);
+	session->win->unembed(dialog);
+}
+
 
 void ModeExtrudePolygons::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
 	auto dh = session->drawing_helper;
 
-	auto ed = prepare_extrude(*mode_mesh->data->editing_mesh, mode_mesh->data->get_selection(), 20);
-
 	dh->set_color(DrawingHelper::COLOR_X);
-	dh->set_line_width(DrawingHelper::LINE_THICK);
+	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
 	dh->set_z_test(false);
-	auto points = mesh_edit_to_lines(*mode_mesh->data->editing_mesh, ed);
+	auto points = mesh_edit_to_lines(*mode_mesh->data->editing_mesh, diff);
 	dh->draw_lines(points, false);
 	dh->set_z_test(true);
 }
@@ -98,8 +84,7 @@ void ModeExtrudePolygons::on_key_down(int key) {
 		session->set_mode(mode_mesh);
 	}
 	if (key == xhui::KEY_RETURN) {
-		auto ed = prepare_extrude(*mode_mesh->data->editing_mesh, mode_mesh->data->get_selection(), 20);
-		mode_mesh->data->edit_mesh(ed);
+		mode_mesh->data->edit_mesh(diff);
 		session->set_mode(mode_mesh);
 	}
 }

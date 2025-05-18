@@ -74,11 +74,8 @@ bool Storage::load(const Path &_filename, Data *data, bool deep) {
 	auto filename = _filename.absolute().canonical();
 	try {
 		int type = data_type(data);
-		msg_write(type);
 		string ext = filename.extension();
 		for (auto *f: formats) {
-			msg_write(f->extension);
-			msg_write(f->category);
 			if (f->category != type)
 				continue;
 			if (f->extension != ext)
