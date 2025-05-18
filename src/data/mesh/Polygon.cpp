@@ -46,6 +46,21 @@ Array<vec3> Polygon::get_skin_vertices() const {
 	return sv;
 }
 
+int Polygon::next_vertex(int index) const {
+	for (int k=0; k<side.num; k++)
+		if (side[k].vertex == index)
+			return side[(k+1) % side.num].vertex;
+	return -1;
+}
+
+int Polygon::previous_vertex(int index) const {
+	for (int k=0; k<side.num; k++)
+		if (side[k].vertex == index)
+			return side[(k+side.num-1) % side.num].vertex;
+	return -1;
+}
+
+
 
 static float get_ang(const Array<MeshVertex> &vertex, int a, int b, int c, const vec3 &flat_n) {
 	vec3 v1 = vertex[b].pos - vertex[a].pos;

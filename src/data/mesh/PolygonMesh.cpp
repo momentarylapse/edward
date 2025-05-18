@@ -12,6 +12,7 @@
 #include <y/graphics-impl.h>
 #include <y/world/Model.h>
 #include <lib/base/iter.h>
+#include <lib/base/sort.h>
 #include <lib/math/mat4.h>
 #include <lib/math/vec2.h>
 #include <lib/math/plane.h>
@@ -45,6 +46,26 @@ MeshVertex::MeshVertex(const vec3 &_pos) {
 }
 
 MeshVertex::MeshVertex() : MeshVertex(v_0) {}
+
+base::optional<int> Edge::find_other_vertex(int vertex) const {
+	if (vertex == index[0])
+		return index[1];
+	if (vertex == index[1])
+		return index[0];
+	return base::None;
+}
+
+
+bool Edge::operator==(const Edge& o) {
+	return index[0] == o.index[0] and index[1] == o.index[1];
+}
+
+bool Edge::operator>(const Edge& o) {
+	if (index[0] == o.index[0])
+		return index[1] > o.index[1];
+	return index[0] > o.index[0];
+}
+
 
 
 
@@ -249,18 +270,123 @@ PolygonMesh PolygonMesh::transform(const mat4 &mat) const {
 	return mesh;
 }
 
-void PolygonMesh::get_bounding_box(vec3 &min, vec3 &max)
-{
-	if (vertices.num > 0){
-		min = max = vertices[0].pos;
-		for (auto &v: vertices){
-			min._min(v.pos);
-			max._max(v.pos);
-		}
-	}else{
-		min = max = v_0;
-	}
+void MeshEdit::delete_vertex(int index) {
+	del_vertices.add(index);
 }
+
+void MeshEdit::delete_polygon(int index) {
+	del_polygons.add(index);
+}
+
+int MeshEdit::add_vertex(const MeshVertex& v) {
+	new_vertices.add(v);
+	return -new_vertices.num; // starts at -1!
+}
+
+void MeshEdit::add_polygon(const Polygon& p) {
+	new_polygons.add(p);
+}
+
+
+MeshEdit PolygonMesh::edit_inplace(const MeshEdit& edit) {
+	MeshEdit inv;
+
+	// delete vertices
+	for (int i: edit.del_vertices)
+		inv.add_vertex(vertices[i]);
+	for (int i: base::reverse(edit.del_vertices))
+		vertices.erase(i);
+
+	// add vertices
+	for (const auto& v: edit.new_vertices) {
+		inv.delete_vertex(vertices.num);
+		vertices.add(v);
+	}
+
+	// add polygons
+	for (const auto& p: edit.new_polygons) {
+		inv.delete_polygon(polygons.num - edit.del_polygons.num);
+		polygons.add(p);
+		polygons.back().normal_dirty = true;
+	}
+
+	auto remap = [this, &edit] (int index) {
+		if (index < 0)
+			// newly added
+			return vertices.num - edit.new_vertices.num + edit.del_vertices.num - (index + 1);
+
+		for (int i=edit.del_vertices.num-1; i>=0; i--) {
+			if (index == edit.del_vertices[i])
+				index = -1 - i;
+			if (index > edit.del_vertices[i])
+				index --;
+		}
+		return index;
+	};
+
+	// remap
+	for (auto& p: polygons)
+		for (auto& s: p.side)
+			s.vertex = remap(s.vertex);
+	for (auto& s: spheres)
+		s.index = remap(s.index);
+	for (auto& c: cylinders)
+		for (int k=0; k<2; k++)
+			c.index[k] = remap(c.index[k]);
+
+	// delete polygons
+	for (int i: base::reverse(edit.del_polygons)) {
+		auto p = polygons[i];
+		//for (auto& s: p.side)
+		//	s.vertex = remap(...);
+		inv.add_polygon(p);
+		polygons.erase(i);
+	}
+
+	return inv;
+}
+
+
+PolygonMesh PolygonMesh::edit(const MeshEdit& edit) const {
+	auto m = *this;
+	m.edit_inplace(edit);
+	return m;
+}
+
+
+base::set<Edge> PolygonMesh::edges() const {
+	base::set<Edge> _edges;
+	for (const auto& p: polygons)
+		for (int k=0; k<p.side.num; k++) {
+			int a = p.side[k].vertex;
+			int b = p.side[(k+1)%p.side.num].vertex;
+			_edges.add(Edge{min(a, b), max(a, b)});
+		}
+	return _edges;
+}
+
+Array<PolygonCorner> PolygonMesh::get_polygons_around_vertex(int index) const {
+	Array<PolygonCorner> corners;
+
+	// unsorted
+	for (const auto& p: polygons)
+		for (int k=0; k<p.side.num; k++)
+			if (p.side[k].vertex == index)
+				corners.add({&p, k});
+
+	return corners;
+}
+
+int PolygonMesh::next_edge_at_vertex(int index0, int index1) const {
+	for (const auto& p: polygons)
+		for (int k=0; k<p.side.num; k++)
+			if (p.side[k].vertex == index0)
+				if (p.side[(k+p.side.num-1)%p.side.num].vertex == index1)
+					return p.side[(k+1)%p.side.num].vertex;
+	return -1;
+}
+
+
 
 void PolygonMesh::build(VertexBuffer *vb) const {
 	VertexStagingBuffer vbs;

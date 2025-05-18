@@ -45,6 +45,8 @@ struct Polygon: multiview::SingleData {
 	vec3 get_area_vector(const Array<MeshVertex> &vertex) const;
 	Array<int> get_vertices() const;
 	Array<vec3> get_skin_vertices() const;
+	int next_vertex(int index) const;
+	int previous_vertex(int index) const;
 	void invert();
 	void add_to_vertex_buffer(const Array<MeshVertex> &vertex, VertexStagingBuffer &vbs, int num_textures);
 };

@@ -11,11 +11,13 @@
 #include "Polygon.h"
 #include <view/SingleData.h>
 #include <lib/base/base.h>
+#include <lib/base/optional.h>
 #include <lib/math/vec3.h>
 #include <lib/math/vec4.h>
 #include <y/graphics-fwd.h>
 #include <y/world/Material.h>
 
+struct PolygonMesh;
 class MultiViewWindow;
 class VertexStagingBuffer;
 struct vec3;
@@ -54,6 +56,29 @@ struct ModelCylinder: multiview::SingleData {
 	bool round;
 };
 
+struct Edge {
+	int index[2]; // sorted
+	base::optional<int> find_other_vertex(int vertex) const;
+	bool operator==(const Edge& o);
+	bool operator>(const Edge& o);
+};
+
+struct PolygonCorner {
+	const Polygon* polygon;
+	int side;
+};
+
+struct MeshEdit {
+	base::set<int> del_vertices;
+	base::set<int> del_polygons;
+	Array<MeshVertex> new_vertices;
+	Array<Polygon> new_polygons; // indices are pre-vertex-insertion/deletion!
+	void delete_vertex(int index);
+	void delete_polygon(int index);
+	int add_vertex(const MeshVertex& v);
+	void add_polygon(const Polygon& p);
+};
+
 
 struct PolygonMesh {
 	void clear();
@@ -75,11 +100,16 @@ struct PolygonMesh {
 	PolygonMesh invert() const;
 	PolygonMesh transform(const mat4 &mat) const;
 	void smoothen();
+	MeshEdit edit_inplace(const MeshEdit& edit);
+	PolygonMesh edit(const MeshEdit& edit) const;
+
+	base::set<Edge> edges() const;
+	Array<PolygonCorner> get_polygons_around_vertex(int index) const;
+	int next_edge_at_vertex(int index0, int index1) const;
 
 	void remove_unused_vertices();
 	bool is_inside(const vec3 &v) const;
 
-	void get_bounding_box(vec3 &min, vec3 &max);
 	bool is_mouse_over(MultiViewWindow* win, const mat4 &matrix, const vec2& m, vec3 &tp, int& index, bool any_hit);
 
 	void build(VertexBuffer *vb) const;
