@@ -12,6 +12,7 @@
 #include "ModeAddCylinder.h"
 #include "ModePaste.h"
 #include "ModeBevelEdges.h"
+#include "ModeExtrudePolygons.h"
 #include "ModeMeshSculpt.h"
 #include "ModeMeshMaterial.h"
 #include "../ModeModel.h"
@@ -574,8 +575,10 @@ void ModeMesh::on_key_down(int key) {
 			session->set_message("nothing selected");
 		}
 	}
-	if (key == (xhui::KEY_CONTROL | xhui::KEY_X))
+	if (key == (xhui::KEY_CONTROL | xhui::KEY_B))
 		session->set_mode(new ModeBevelEdges(this));
+	if (key == (xhui::KEY_CONTROL | xhui::KEY_X))
+		session->set_mode(new ModeExtrudePolygons(this));
 }
 
 void ModeMesh::on_mouse_move(const vec2& m, const vec2& d) {
