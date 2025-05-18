@@ -11,13 +11,13 @@
 #include "ModeAddFromLathe.h"
 #include "ModeAddCylinder.h"
 #include "ModePaste.h"
+#include "ModeBevelEdges.h"
 #include "ModeMeshSculpt.h"
 #include "ModeMeshMaterial.h"
 #include "../ModeModel.h"
 #include "../action/mesh/ActionModelMoveSelection.h"
 #include "../data/ModelMesh.h"
 #include "../dialog/ModelPropertiesDialog.h"
-#include "../processing/MeshRandomSurfacePoints.h"
 #include <Session.h>
 #include <data/mesh/GeometryCylinder.h>
 #include <data/mesh/GeometrySphere.h>
@@ -574,12 +574,8 @@ void ModeMesh::on_key_down(int key) {
 			session->set_message("nothing selected");
 		}
 	}
-	if (key == xhui::KEY_X) {
-		data->begin_action_group("a");
-		for (const auto& p: mesh_surface_points(*data->mesh, 5.0f))
-			data->add_vertex(p.pos);
-		data->end_action_group();
-	}
+	if (key == (xhui::KEY_CONTROL | xhui::KEY_X))
+		session->set_mode(new ModeBevelEdges(this));
 }
 
 void ModeMesh::on_mouse_move(const vec2& m, const vec2& d) {
