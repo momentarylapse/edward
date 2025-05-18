@@ -66,6 +66,7 @@
 #include "../action/mesh/ActionModelAddPolygon.h"
 #include "../action/mesh/ActionModelDeleteSelection.h"
 #include "../action/mesh/ActionModelPasteMesh.h"
+#include "../action/mesh/ActionModelEditMesh.h"
 #include "../../lib/os/msg.h"
 #include "../../lib/math/quaternion.h"
 #include "../../lib/xhui/language.h"
@@ -106,7 +107,7 @@ DataModel::DataModel(Session *s) :
 {
 	mesh = new ModelMesh();
 	phys_mesh = new ModelMesh();
-	edit_mesh = mesh.get();
+	editing_mesh = mesh.get();
 	triangle_mesh.resize(4);
 }
 
@@ -368,8 +369,13 @@ Polygon *DataModel::add_polygon_with_skin(const Array<int> &v, const Array<vec3>
 		p.side.add(s);
 		p.material = material;
 	}
-	return (Polygon*)execute(new ActionModelAddPolygon(edit_mesh, p));
+	return (Polygon*)execute(new ActionModelAddPolygon(editing_mesh, p));
 }
+
+void DataModel::edit_mesh(const MeshEdit& edit) {
+	execute(new ActionModelEditMesh(editing_mesh, edit));
+}
+
 
 
 #if 0
@@ -384,16 +390,16 @@ Data::Selection DataModel::get_selection() const {
 	sel.add({MultiViewType::MODEL_POLYGON, {}});
 	sel.add({MultiViewType::MODEL_BALL, {}});
 	sel.add({MultiViewType::MODEL_CYLINDER, {}});
-	for (const auto& [i, v]: enumerate(edit_mesh->vertices))
+	for (const auto& [i, v]: enumerate(editing_mesh->vertices))
 		if (v.is_selected)
 			sel[MultiViewType::MODEL_VERTEX].add(i);
-	for (const auto& [i, p]: enumerate(edit_mesh->polygons))
+	for (const auto& [i, p]: enumerate(editing_mesh->polygons))
 		if (p.is_selected)
 			sel[MultiViewType::MODEL_POLYGON].add(i);
-	for (const auto& [i, b]: enumerate(edit_mesh->spheres))
+	for (const auto& [i, b]: enumerate(editing_mesh->spheres))
 		if (b.is_selected)
 			sel[MultiViewType::MODEL_BALL].add(i);
-	for (const auto& [i, c]: enumerate(edit_mesh->cylinders))
+	for (const auto& [i, c]: enumerate(editing_mesh->cylinders))
 		if (c.is_selected)
 			sel[MultiViewType::MODEL_CYLINDER].add(i);
 	return sel;
@@ -549,7 +555,7 @@ void DataModel::animationSetBone(int move, int frame, int bone, const vec3 &dpos
 #endif
 
 void DataModel::delete_selection(const Selection& s, bool greedy) {
-	execute(new ActionModelDeleteSelection(edit_mesh, s, greedy));
+	execute(new ActionModelDeleteSelection(editing_mesh, s, greedy));
 }
 
 #if 0
@@ -584,7 +590,7 @@ void DataModel::apply_material(const Selection& sel, int material) {
 }
 
 void DataModel::paste_mesh(const PolygonMesh& geo, int default_material) {
-	execute(new ActionModelPasteMesh(edit_mesh, geo, default_material));
+	execute(new ActionModelPasteMesh(editing_mesh, geo, default_material));
 }
 
 #if 0

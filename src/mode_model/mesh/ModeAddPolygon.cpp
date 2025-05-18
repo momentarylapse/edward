@@ -37,7 +37,7 @@ void ModeAddPolygon::on_draw_win(const RenderParams& params, MultiViewWindow* wi
 	dh->set_z_test(false);
 	Array<vec3> points;
 	for (int v: vertices)
-		points.add(mode_mesh->data->edit_mesh->vertices[v].pos);
+		points.add(mode_mesh->data->editing_mesh->vertices[v].pos);
 	points.add(next_point);
 	dh->draw_lines(points, true);
 	dh->set_z_test(true);
@@ -61,7 +61,7 @@ void ModeAddPolygon::on_left_button_down(const vec2& m) {
 		vertices.add(multi_view->hover->index);
 	} else {
 		mode_mesh->data->add_vertex(next_point, {0,0,0,0}, {0,0,0,0}, NORMAL_MODE_HARD);
-		vertices.add(mode_mesh->data->edit_mesh->vertices.num - 1);
+		vertices.add(mode_mesh->data->editing_mesh->vertices.num - 1);
 	}
 
 	if (vertices.num >= 3 and vertices.back() == vertices[0]) {

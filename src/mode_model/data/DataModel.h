@@ -15,6 +15,7 @@
 #include <y/world/Material.h>
 #include "ModelMaterial.h"
 
+struct MeshEdit;
 struct Box;
 class DataModel;
 class ModelMaterial;
@@ -164,6 +165,8 @@ public:
 	Polygon *add_polygon(const Array<int> &v, int material);
 	Polygon *add_polygon_with_skin(const Array<int> &v, const Array<vec3> &sv, int material);
 
+	void edit_mesh(const MeshEdit& edit);
+
 /*	void delete_polygon(int index);
 
 	void delete_selection(const ModelSelection &s, bool greedy = false);
@@ -223,7 +226,7 @@ public:
 	// geometry
 	owned<ModelMesh> mesh;
 	owned<ModelMesh> phys_mesh;
-	ModelMesh *edit_mesh;
+	ModelMesh *editing_mesh;
 
 
 	// old geometry

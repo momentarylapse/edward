@@ -402,6 +402,7 @@ add_executable(edward
 	src/mode_model/action/mesh/sculpt/ActionModelBrushExtrude.cpp
 	src/mode_model/action/mesh/ActionModelAddPolygon.cpp
 	src/mode_model/action/mesh/ActionModelDeleteSelection.cpp
+	src/mode_model/action/mesh/ActionModelEditMesh.cpp
 	src/mode_model/action/mesh/ActionModelMoveSelection.cpp
 	src/mode_model/action/mesh/ActionModelPasteMesh.cpp
 	src/mode_model/data/DataModel.cpp
