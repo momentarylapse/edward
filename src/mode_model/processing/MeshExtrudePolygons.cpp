@@ -6,6 +6,7 @@
 #include <Session.h>
 #include <data/mesh/Polygon.h>
 #include <data/mesh/PolygonMesh.h>
+#include <data/mesh/MeshEdit.h>
 #include <lib/base/iter.h>
 
 

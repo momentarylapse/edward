@@ -12,7 +12,7 @@ ActionModelEditMesh::ActionModelEditMesh(ModelMesh* _mesh, const MeshEdit& _edit
 }
 
 void* ActionModelEditMesh::execute(Data* d) {
-	edit = mesh->edit_inplace(edit);
+	edit = edit.apply_inplace(*mesh);
 	return nullptr;
 }
 

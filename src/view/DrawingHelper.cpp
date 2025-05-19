@@ -11,7 +11,7 @@
 #include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
-#include <data/mesh/PolygonMesh.h>
+#include <data/mesh/MeshEdit.h>
 #include "MultiView.h"
 #include "SingleData.h"
 

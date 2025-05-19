@@ -18,6 +18,7 @@ public:
 	Array<Test> tests() override;
 
 	static void test_diff_invertible();
+	static void test_diff_iterated();
 };
 
 }

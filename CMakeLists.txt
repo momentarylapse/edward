@@ -198,6 +198,7 @@ add_executable(edward
 	src/data/mesh/GeometryTeapot.cpp
 	src/data/mesh/GeometryTorus.cpp
 	src/data/mesh/GeometryTorusKnot.cpp
+	src/data/mesh/MeshEdit.cpp
 	src/data/mesh/Polygon.cpp
 	src/data/mesh/PolygonMesh.cpp
 	src/data/mesh/VertexStagingBuffer.cpp

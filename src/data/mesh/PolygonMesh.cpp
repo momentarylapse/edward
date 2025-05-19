@@ -7,6 +7,7 @@
 
 #include "PolygonMesh.h"
 #include "Polygon.h"
+#include "MeshEdit.h"
 #include "VertexStagingBuffer.h"
 #include <view/MultiView.h>
 #include <y/graphics-impl.h>
@@ -270,87 +271,12 @@ PolygonMesh PolygonMesh::transform(const mat4 &mat) const {
 	return mesh;
 }
 
-void MeshEdit::delete_vertex(int index) {
-	_del_vertices.add(index);
-}
-
-void MeshEdit::delete_polygon(int index) {
-	_del_polygons.add(index);
-}
-
-int MeshEdit::add_vertex(const MeshVertex& v) {
-	_new_vertices.add(v);
-	return -_new_vertices.num; // starts at -1!
-}
-
-void MeshEdit::add_polygon(const Polygon& p) {
-	_new_polygons.add(p);
-}
-
-
 MeshEdit PolygonMesh::edit_inplace(const MeshEdit& edit) {
-	MeshEdit inv;
-
-	// delete vertices
-	for (int i: edit._del_vertices)
-		inv.add_vertex(vertices[i]);
-	for (int i: base::reverse(edit._del_vertices))
-		vertices.erase(i);
-
-	// add vertices
-	for (const auto& [i, v]: enumerate(edit._new_vertices)) {
-		inv.delete_vertex(vertices.num);
-		vertices.add(v);
-	}
-
-	// add polygons
-	for (const auto& p: edit._new_polygons) {
-		inv.delete_polygon(polygons.num - edit._del_polygons.num);
-		polygons.add(p);
-		polygons.back().normal_dirty = true;
-	}
-
-	auto remap = [this, &edit] (int index) {
-		if (index < 0)
-			// newly added
-			return vertices.num - edit._new_vertices.num - (index + 1);
-
-		for (int i=edit._del_vertices.num-1; i>=0; i--) {
-			if (index == edit._del_vertices[i])
-				index = -1 - i;
-			if (index > edit._del_vertices[i])
-				index --;
-		}
-		return index;
-	};
-
-	// remap
-	for (auto& p: polygons)
-		for (auto& s: p.side)
-			s.vertex = remap(s.vertex);
-	for (auto& s: spheres)
-		s.index = remap(s.index);
-	for (auto& c: cylinders)
-		for (int k=0; k<2; k++)
-			c.index[k] = remap(c.index[k]);
-
-	// delete polygons
-	for (int i: base::reverse(edit._del_polygons)) {
-		auto p = polygons[i];
-		//for (auto& s: p.side)
-		//	s.vertex = remap(...);
-		inv.add_polygon(p);
-		polygons.erase(i);
-	}
-
-	return inv;
+	return edit.apply_inplace(*this);
 }
 
-
-PolygonMesh PolygonMesh::edit(const MeshEdit& edit) const {
-	auto m = *this;
-	m.edit_inplace(edit);
-	return m;
+PolygonMesh PolygonMesh::edit(const MeshEdit& edit, MeshEdit* inv) const {
+	return edit.apply(*this, inv);
 }
 
 

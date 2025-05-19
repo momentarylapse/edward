@@ -6,10 +6,9 @@
 #include <Session.h>
 #include <data/mesh/Polygon.h>
 #include <data/mesh/PolygonMesh.h>
+#include <data/mesh/MeshEdit.h>
 #include <lib/base/iter.h>
 #include <lib/base/algo.h>
-
-#include "lib/os/msg.h"
 
 
 struct BevelInfo {
@@ -23,26 +22,6 @@ struct BevelInfo {
 	};
 	Array<Cap> caps;
 	Array<Edge> edges;
-
-	/*Array<vec3> to_lines(float r) const {
-		Array<vec3> lines;
-		for (const auto& c: caps) {
-			for (int k=0; k<c.dirs.num; k++) {
-				lines.add(c.p0 + c.dirs[k] * r);
-				lines.add(c.p0 + c.dirs[(k+1)%c.dirs.num] * r);
-			}
-		}
-
-		for (const auto& e: edges) {
-			auto c0 = base::find_by_element(caps, &Cap::index, e.index[0]);
-			auto c1 = base::find_by_element(caps, &Cap::index, e.index[1]);
-			lines.add(c0->p0 + r*c0->dir_next[e.index[1]]);
-			lines.add(c1->p0 + r*c1->dir_prev[e.index[0]]);
-			lines.add(c1->p0 + r*c1->dir_next[e.index[0]]);
-			lines.add(c0->p0 + r*c0->dir_prev[e.index[1]]);
-		}
-		return lines;
-	}*/
 };
 
 BevelInfo prepare_bevel(const PolygonMesh& mesh, const Data::Selection& sel) {

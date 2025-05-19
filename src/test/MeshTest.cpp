@@ -6,6 +6,7 @@
 
 #include "MeshTest.h"
 #include <data/mesh/PolygonMesh.h>
+#include <data/mesh/MeshEdit.h>
 #include <data/mesh/GeometryCube.h>
 #include <lib/os/msg.h>
 
@@ -120,6 +121,7 @@ MeshTest::MeshTest() : UnitTest("mesh") {
 Array<UnitTest::Test> MeshTest::tests() {
 	Array<Test> list;
 	list.add({"diff_invertible", MeshTest::test_diff_invertible});
+	list.add({"diff_iterated", MeshTest::test_diff_iterated});
 	return list;
 }
 
@@ -147,6 +149,41 @@ void MeshTest::test_diff_invertible() {
 			show_mesh(mesh);
 
 		assert_equal(mesh, mesh0);
+	}
+}
+
+void MeshTest::test_diff_iterated() {
+	const PolygonMesh mesh0 = GeometryCube::create(Box::ID_SYM, {1,1,1});
+
+	for (int i=0; i<1; i++) {
+		msg_write("====");
+		msg_write(i);
+		Array<MeshEdit> inv;
+		Array<PolygonMesh> meshes;
+
+		// forward
+		auto mesh = mesh0;
+			show_mesh(mesh);
+		for (int k=0; k<2; k++) {
+			msg_write(format("+++++++ %d" ,k));
+			meshes.add(mesh);
+
+			const auto ed = random_mesh_edit(mesh, 42+i + k);
+			show_mesh_diff(ed);
+			inv.add(ed.apply_inplace(mesh));
+			show_mesh(mesh);
+			check_mesh_health(mesh);
+		}
+
+		// backward
+		for (int k=meshes.num-1; k>=0; k--) {
+			msg_write(format("--------- %d" ,k));
+			inv[k].apply_inplace(mesh);
+			show_mesh_diff(inv[k]);
+			show_mesh(mesh);
+			check_mesh_health(mesh);
+			assert_equal(mesh, meshes[k]);
+		}
 	}
 }
 

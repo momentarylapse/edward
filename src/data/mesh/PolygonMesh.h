@@ -68,16 +68,7 @@ struct PolygonCorner {
 	int side;
 };
 
-struct MeshEdit {
-	base::set<int> _del_vertices;
-	base::set<int> _del_polygons;
-	Array<MeshVertex> _new_vertices;
-	Array<Polygon> _new_polygons; // indices are pre-vertex-insertion/deletion!
-	void delete_vertex(int index);
-	void delete_polygon(int index);
-	int add_vertex(const MeshVertex& v);
-	void add_polygon(const Polygon& p);
-};
+struct MeshEdit;
 
 
 struct PolygonMesh {
@@ -101,7 +92,7 @@ struct PolygonMesh {
 	PolygonMesh transform(const mat4 &mat) const;
 	void smoothen();
 	MeshEdit edit_inplace(const MeshEdit& edit);
-	PolygonMesh edit(const MeshEdit& edit) const;
+	PolygonMesh edit(const MeshEdit& edit, MeshEdit* inv=nullptr) const;
 
 	base::set<Edge> edges() const;
 	Array<PolygonCorner> get_polygons_around_vertex(int index) const;
