@@ -471,6 +471,8 @@ add_executable(edward
 	src/storage/format/FormatWorld.cpp
 	src/storage/Storage.cpp
 	src/stuff/PluginManager.cpp
+	src/test/MeshTest.cpp
+	src/test/UnitTest.cpp
 	src/view/dialogs/CommonDialogs.cpp
 	src/view/ActionController.cpp
 	src/view/DrawingHelper.cpp

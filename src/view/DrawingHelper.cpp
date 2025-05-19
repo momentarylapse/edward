@@ -298,12 +298,12 @@ void DrawingHelper::draw_data_points(Painter* p, MultiViewWindow* win, const Dyn
 
 Array<vec3> mesh_edit_to_lines(const PolygonMesh& mesh, const MeshEdit& ed) {
 	Array<vec3> points;
-	for (const auto& p: ed.new_polygons) {
+	for (const auto& p: ed._new_polygons) {
 		for (int k=0; k<p.side.num; k++) {
 			int v0 = p.side[k].vertex;
 			int v1 = p.side[(k+1) % p.side.num].vertex;
-			points.add((v0 >= 0) ? mesh.vertices[v0].pos : ed.new_vertices[-(v0+1)].pos);
-			points.add((v1 >= 0) ? mesh.vertices[v1].pos : ed.new_vertices[-(v1+1)].pos);
+			points.add((v0 >= 0) ? mesh.vertices[v0].pos : ed._new_vertices[-(v0+1)].pos);
+			points.add((v1 >= 0) ? mesh.vertices[v1].pos : ed._new_vertices[-(v1+1)].pos);
 		}
 	}
 	return points;

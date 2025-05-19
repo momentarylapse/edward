@@ -69,10 +69,10 @@ struct PolygonCorner {
 };
 
 struct MeshEdit {
-	base::set<int> del_vertices;
-	base::set<int> del_polygons;
-	Array<MeshVertex> new_vertices;
-	Array<Polygon> new_polygons; // indices are pre-vertex-insertion/deletion!
+	base::set<int> _del_vertices;
+	base::set<int> _del_polygons;
+	Array<MeshVertex> _new_vertices;
+	Array<Polygon> _new_polygons; // indices are pre-vertex-insertion/deletion!
 	void delete_vertex(int index);
 	void delete_polygon(int index);
 	int add_vertex(const MeshVertex& v);

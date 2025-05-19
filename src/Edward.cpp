@@ -13,6 +13,7 @@
 #include <mode_material/data/DataMaterial.h>
 #include <mode_model/data/DataModel.h>
 #include <mode_world/data/DataWorld.h>
+#include <test/UnitTest.h>
 
 string AppVersion = "0.5.-1.0";
 string AppName = "Edward";
@@ -144,6 +145,9 @@ int xhui_main(const Array<string>& args) {
 		/*Session session;
 		ModeAdministration mode_admin(&session);*/
 		msg_todo("mode admin");
+	});
+	p.cmd("@hidden test", "", "", [] (const Array<string> &arg) {
+		unittest::run_all("*");
 	});
 	p.cmd("", "[FILENAME]", "open editor and load a file", [] (const Array<string> &arg) {
 		msg_write(AppName + " " + AppVersion);
