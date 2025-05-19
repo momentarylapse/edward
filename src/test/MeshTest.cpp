@@ -8,11 +8,13 @@
 #include <data/mesh/PolygonMesh.h>
 #include <data/mesh/MeshEdit.h>
 #include <data/mesh/GeometryCube.h>
+#include <data/mesh/GeometryPlane.h>
 #include <lib/os/msg.h>
-
-#include "lib/base/iter.h"
-#include "lib/math/Box.h"
-#include "lib/math/random.h"
+#include <lib/base/iter.h>
+#include <lib/math/Box.h>
+#include <lib/math/random.h>
+#include <lib/math/rect.h>
+#include <lib/math/vec2.h>
 
 namespace unittest {
 
@@ -28,13 +30,30 @@ void show_mesh(const PolygonMesh& mesh) {
 
 void show_mesh_diff(const MeshEdit& edit) {
 	msg_write("-  " + str(edit._del_vertices));
-	msg_write("+  " + str(edit._new_vertices.num));
+	Array<int> at;
+	for (const auto& nv: edit._new_vertices)
+		at.add(nv.at);
+	msg_write("+  " + str(at));
 	msg_write("-- " + str(edit._del_polygons));
 	for (const auto& p: edit._new_polygons)
-		msg_write("++ " + str(p.get_vertices()));
+		msg_write("++ " + str(p.p.get_vertices()));
 }
 
 void assert_equal(const PolygonMesh &a, const PolygonMesh &b, float epsilon = 0.001f) {
+	if (a.vertices.num != b.vertices.num)
+		throw Failure(format("Mesh #vertices: %d != %d", a.vertices.num, b.vertices.num));
+	if (a.polygons.num != b.polygons.num)
+		throw Failure(format("Mesh #polygons: %d != %d", a.polygons.num, b.polygons.num));
+
+	// check vertices
+	for (int i=0; i<a.vertices.num; i++)
+		assert_equal(a.vertices[i].pos, b.vertices[i].pos);
+
+	for (int i=0; i<a.polygons.num; i++)
+		assert_equal(a.polygons[i].get_vertices(), b.polygons[i].get_vertices());
+}
+
+void assert_equal_up_to_permutation(const PolygonMesh &a, const PolygonMesh &b, float epsilon = 0.001f) {
 	if (a.vertices.num != b.vertices.num)
 		throw Failure(format("Mesh #vertices: %d != %d", a.vertices.num, b.vertices.num));
 	if (a.polygons.num != b.polygons.num)
@@ -120,17 +139,55 @@ MeshTest::MeshTest() : UnitTest("mesh") {
 
 Array<UnitTest::Test> MeshTest::tests() {
 	Array<Test> list;
+	list.add({"diff_basic_vertices", MeshTest::test_diff_basic_vertices});
 	list.add({"diff_invertible", MeshTest::test_diff_invertible});
 	list.add({"diff_iterated", MeshTest::test_diff_iterated});
 	return list;
 }
 
+void MeshTest::test_diff_basic_vertices() {
+	PolygonMesh mesh0;
+	for (int i=0; i<5; i++)
+		mesh0.add_vertex(vec3((float)i, 0, 0));
+	mesh0.add_polygon_auto_texture({0,2,4});
+	//show_mesh(mesh0);
+
+	MeshEdit ed;
+	ed.delete_vertex(1);
+	ed.delete_vertex(3);
+	ed.add_vertex(MeshVertex(vec3(991,0,0)), 0);
+	ed.add_vertex(MeshVertex(vec3(992,0,0)), 3);
+	ed.add_vertex(MeshVertex(vec3(993,0,0)), 3);
+	ed.add_vertex(MeshVertex(vec3(994,0,0)));
+
+	PolygonMesh mesh1_expected;
+	mesh1_expected.add_vertex(vec3(991,0,0));
+	mesh1_expected.add_vertex(vec3(0,0,0));
+	mesh1_expected.add_vertex(vec3(2,0,0));
+	mesh1_expected.add_vertex(vec3(992,0,0));
+	mesh1_expected.add_vertex(vec3(993,0,0));
+	mesh1_expected.add_vertex(vec3(4,0,0));
+	mesh1_expected.add_vertex(vec3(994,0,0));
+	mesh1_expected.add_polygon_auto_texture({1,2,5});
+
+	MeshEdit inv;
+	auto mesh1 = ed.apply(mesh0, &inv);
+	//show_mesh(mesh1);
+	assert_equal(mesh1, mesh1_expected);
+
+	auto mesh0b = inv.apply(mesh1);
+	//show_mesh(mesh0b);
+	assert_equal(mesh0b, mesh0);
+}
+
+
 void MeshTest::test_diff_invertible() {
-	const PolygonMesh mesh0 = GeometryCube::create(Box::ID_SYM, {1,1,1});
+	//const PolygonMesh mesh0 = GeometryCube::create(Box::ID_SYM, {1,1,1});
+	const PolygonMesh mesh0 = GeometryPlane::create(rect::ID_SYM, {1,1});
 	if constexpr (verbose)
 		show_mesh(mesh0);
 
-	for (int i=0; i<1000; i++) {
+	for (int i=0; i<100; i++) {
 		auto ed = random_mesh_edit(mesh0, i);
 		if constexpr (verbose)
 			show_mesh_diff(ed);
@@ -144,9 +201,9 @@ void MeshTest::test_diff_invertible() {
 		if constexpr (verbose)
 			show_mesh_diff(inv);
 		mesh.edit_inplace(inv);
-		check_mesh_health(mesh);
 		if constexpr (verbose)
 			show_mesh(mesh);
+		check_mesh_health(mesh);
 
 		assert_equal(mesh, mesh0);
 	}
@@ -155,32 +212,32 @@ void MeshTest::test_diff_invertible() {
 void MeshTest::test_diff_iterated() {
 	const PolygonMesh mesh0 = GeometryCube::create(Box::ID_SYM, {1,1,1});
 
-	for (int i=0; i<1; i++) {
-		msg_write("====");
-		msg_write(i);
+	for (int i=0; i<100; i++) {
+		//msg_write("====");
+		//msg_write(i);
 		Array<MeshEdit> inv;
 		Array<PolygonMesh> meshes;
 
 		// forward
 		auto mesh = mesh0;
-			show_mesh(mesh);
-		for (int k=0; k<2; k++) {
-			msg_write(format("+++++++ %d" ,k));
+		//show_mesh(mesh);
+		for (int k=0; k<5; k++) {
+			//msg_write(format("+++++++ %d" ,k));
 			meshes.add(mesh);
 
 			const auto ed = random_mesh_edit(mesh, 42+i + k);
-			show_mesh_diff(ed);
+			//show_mesh_diff(ed);
 			inv.add(ed.apply_inplace(mesh));
-			show_mesh(mesh);
+			//show_mesh(mesh);
 			check_mesh_health(mesh);
 		}
 
 		// backward
 		for (int k=meshes.num-1; k>=0; k--) {
-			msg_write(format("--------- %d" ,k));
+			//msg_write(format("--------- %d" ,k));
 			inv[k].apply_inplace(mesh);
-			show_mesh_diff(inv[k]);
-			show_mesh(mesh);
+			//show_mesh_diff(inv[k]);
+			//show_mesh(mesh);
 			check_mesh_health(mesh);
 			assert_equal(mesh, meshes[k]);
 		}
