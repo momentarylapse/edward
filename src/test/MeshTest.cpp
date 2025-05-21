@@ -2,6 +2,8 @@
 // Created by michi on 19.05.25.
 //
 
+#include <Session.h>
+#include <lib/base/sort.h>
 #ifndef NDEBUG
 
 #include "MeshTest.h"
@@ -9,6 +11,7 @@
 #include <data/mesh/MeshEdit.h>
 #include <data/mesh/GeometryCube.h>
 #include <data/mesh/GeometryPlane.h>
+#include <mode_model/processing/MeshExtrudePolygons.h>
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>
 #include <lib/math/Box.h>
@@ -142,6 +145,7 @@ Array<UnitTest::Test> MeshTest::tests() {
 	list.add({"diff_basic_vertices", MeshTest::test_diff_basic_vertices});
 	list.add({"diff_invertible", MeshTest::test_diff_invertible});
 	list.add({"diff_iterated", MeshTest::test_diff_iterated});
+	list.add({"extrude", MeshTest::test_extrude});
 	return list;
 }
 
@@ -243,6 +247,51 @@ void MeshTest::test_diff_iterated() {
 		}
 	}
 }
+
+Data::Selection mesh_select_random_polygons(const PolygonMesh& mesh, int seed) {
+	Data::Selection sel;
+	sel.set(MultiViewType::MODEL_POLYGON, {});
+
+	Random r;
+	r.seed(str(seed));
+	for (int i=0; i<4; i++)
+		sel[MultiViewType::MODEL_POLYGON].add(r._int(mesh.polygons.num));
+	return sel;
+}
+
+void MeshTest::test_extrude() {
+	const PolygonMesh mesh0 = GeometryCube::create(Box::ID_SYM, {1,1,1});
+
+	Array<MeshEdit> edits;
+	Array<MeshEdit> inv;
+	Array<MeshEdit> invinv;
+
+	PolygonMesh mesh = mesh0;
+	for (int i=0; i<15; i++) {
+		auto sel = mesh_select_random_polygons(mesh, i);
+		auto ed = mesh_prepare_extrude_polygons(mesh, sel, 0.1f, false);
+		edits.add(ed);
+		inv.add(ed.apply_inplace(mesh));
+		check_mesh_health(mesh);
+	}
+
+	for (const auto& i: base::reverse(inv)) {
+		invinv.add(i.apply_inplace(mesh));
+		check_mesh_health(mesh);
+	}
+
+	assert_equal(mesh, mesh0);
+
+	// FIXME inversion...
+	show_mesh_diff(edits[0]);
+	show_mesh_diff(invinv.back());
+
+	for (const auto& ii: base::reverse(invinv)) {
+		ii.apply_inplace(mesh);
+		check_mesh_health(mesh);
+	}
+}
+
 
 }
 
