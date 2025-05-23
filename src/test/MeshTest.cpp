@@ -163,6 +163,7 @@ void MeshTest::test_diff_basic_vertices() {
 	ed.add_vertex(MeshVertex(vec3(992,0,0)), 3);
 	ed.add_vertex(MeshVertex(vec3(993,0,0)), 3);
 	ed.add_vertex(MeshVertex(vec3(994,0,0)));
+	//show_mesh_diff(ed);
 
 	PolygonMesh mesh1_expected;
 	mesh1_expected.add_vertex(vec3(991,0,0));
@@ -178,10 +179,17 @@ void MeshTest::test_diff_basic_vertices() {
 	auto mesh1 = ed.apply(mesh0, &inv);
 	//show_mesh(mesh1);
 	assert_equal(mesh1, mesh1_expected);
+	//show_mesh_diff(inv);
 
-	auto mesh0b = inv.apply(mesh1);
+	MeshEdit invinv;
+	auto mesh0b = inv.apply(mesh1, &invinv);
 	//show_mesh(mesh0b);
 	assert_equal(mesh0b, mesh0);
+	//show_mesh_diff(invinv);
+
+	auto mesh1b = invinv.apply(mesh0b);
+	//show_mesh(mesh1b);
+	assert_equal(mesh1b, mesh1);
 }
 
 
@@ -225,7 +233,7 @@ void MeshTest::test_diff_iterated() {
 		// forward
 		auto mesh = mesh0;
 		//show_mesh(mesh);
-		for (int k=0; k<5; k++) {
+		for (int k=0; k<15; k++) {
 			//msg_write(format("+++++++ %d" ,k));
 			meshes.add(mesh);
 
@@ -283,8 +291,9 @@ void MeshTest::test_extrude() {
 	assert_equal(mesh, mesh0);
 
 	// FIXME inversion...
-	show_mesh_diff(edits[0]);
-	show_mesh_diff(invinv.back());
+	/*show_mesh_diff(edits[0]);
+	show_mesh_diff(inv.back());
+	show_mesh_diff(invinv.back());*/
 
 	for (const auto& ii: base::reverse(invinv)) {
 		ii.apply_inplace(mesh);

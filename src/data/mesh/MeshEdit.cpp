@@ -34,6 +34,9 @@ MeshEdit MeshEdit::apply_inplace(PolygonMesh& mesh) const {
 	base::map<int,int> del_map;
 	base::map<int,int> add_map;
 
+	// hmm, we still have don't perfectly invert MeshEdit... but it seems to perfectly apply/invert on Meshes
+	// (appended vertices at -1 => inv(inv) => insert at Mesh.vertices.num)
+
 	// add/delete vertices
 	{
 		out.vertices.resize(mesh.vertices.num - _del_vertices.num + _new_vertices.num);
@@ -59,7 +62,7 @@ MeshEdit MeshEdit::apply_inplace(PolygonMesh& mesh) const {
 		}
 		// append new
 		for (const auto& nv: _new_vertices)
-			if (nv.at == -1) {
+			if (nv.at == -1 or nv.at == mesh.vertices.num) {
 				add_map.set(nv.id, i_out);
 				inv.delete_vertex(i_out);
 				out.vertices[i_out ++] = nv.v;
