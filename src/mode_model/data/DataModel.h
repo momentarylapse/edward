@@ -191,7 +191,7 @@ public:
 	void subdivideSelectedSurfaces(const ModelSelection &s);
 	void automap(int material, int texture_level);*/
 
-	Selection get_selection() const override;
+//	Selection get_selection() const override;
 
 	// actions
 	void delete_selection(const Selection& sel, bool greedy);

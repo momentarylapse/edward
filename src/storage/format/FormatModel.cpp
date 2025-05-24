@@ -436,7 +436,6 @@ public:
 		int num_poly = f->read_int();
 		for (int j=0; j<num_poly; j++) {
 			Polygon t;
-			t.is_selected = false;
 			t.triangulation_dirty = true;
 			int num_faces = f->read_word();
 			t.material = f->read_word();
@@ -617,7 +616,6 @@ public:
 				b.pos += me->bone[b.parent].pos;
 			b.model_file = f->read_str();
 			b.const_pos = false;
-			b.is_selected = b.m_old = false;
 		}
 		f->read_str();
 	}

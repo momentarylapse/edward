@@ -25,7 +25,6 @@ ActionWorldPaste::ActionWorldPaste(const DataWorld& temp) :
 
 void *ActionWorldPaste::compose(Data *d) {
 	auto *w = dynamic_cast<DataWorld*>(d);
-	w->clear_selection();
 
 	for (const auto &o: entities)
 		addSubAction(new ActionWorldAddEntity(o), w);

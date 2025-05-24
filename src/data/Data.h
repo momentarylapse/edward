@@ -49,7 +49,7 @@ public:
 
 	//using Selection = base::set<const void*>;
 	using Selection = base::map<MultiViewType, base::set<int>>;
-	virtual Selection get_selection() const { return {}; }
+	//virtual Selection get_selection() const { return {}; }
 };
 
 #endif /* DATA_H_ */

@@ -77,6 +77,9 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 	cube_map_renderer = new CubeMapRenderer(*view_port.scene_view.get(), {new MultiViewBackgroundEmitter(this)});
 	cube_map_renderer->set_source(cube_map_source.get());
 	view_port.scene_view->cube_map = cube_map_source->cube_map;
+
+	for (int i=0; i<(int)MultiViewType::_NUM; i++)
+		selection.set((MultiViewType)i, {});
 }
 
 MultiView::~MultiView() = default;
@@ -175,9 +178,9 @@ void MultiView::on_mouse_leave() {
 }
 
 void MultiView::clear_selection() {
-	for (auto& d: data_sets)
-		for (int i=0; i<d.array->num; i++)
-			reinterpret_cast<multiview::SingleData*>(d.array->simple_element(i))->is_selected = false;
+	selection.clear();
+	for (int i=0; i<(int)MultiViewType::_NUM; i++)
+		selection.set((MultiViewType)i, {});
 	selection_box = base::None;
 	action_controller->visible = false;
 	out_selection_changed();
@@ -186,17 +189,20 @@ void MultiView::clear_selection() {
 void MultiView::select_in_rect(MultiViewWindow* win, const rect& _r) {
 	const auto r = _r.canonical();
 	if (f_select)
-		f_select(win, r);
+		selection = f_select(win, r);
 
 	update_selection_box();
 	out_selection_changed();
 }
 
-void MultiView::select_points_in_rect(MultiViewWindow* win, const rect& r, DynamicArray& array) {
+base::set<int> MultiView::select_points_in_rect(MultiViewWindow* win, const rect& r, DynamicArray& array) {
+	base::set<int> sel;
 	for (int i=0; i<array.num; i++) {
 		auto p = reinterpret_cast<multiview::SingleData*>(array.simple_element(i));
-		p->is_selected = r.inside(win->project(p->pos).xy());
+		if (r.inside(win->project(p->pos).xy()))
+			sel.add(i);
 	}
+	return sel;
 }
 
 
@@ -211,17 +217,19 @@ multiview::SingleData* MultiView::get_hover_item() {
 
 void MultiView::update_selection_box() {
 	selection_box = base::None;
+	if (f_make_selection_consistent)
+		f_make_selection_consistent(selection);
 	if (f_get_selection_box)
-		selection_box = f_get_selection_box();
+		selection_box = f_get_selection_box(selection);
 	action_controller->update_manipulator();
 }
 
-base::optional<Box> MultiView::points_get_selection_box(const DynamicArray& _array) {
+base::optional<Box> MultiView::points_get_selection_box(const DynamicArray& _array, const base::set<int>& sel) {
 	base::optional<Box> box;
 	auto& array = const_cast<DynamicArray&>(_array);
 	for (int i=0; i<array.num; i++) {
 		auto p = reinterpret_cast<multiview::SingleData*>(array.simple_element(i));
-		if (p->is_selected) {
+		if (sel.contains(i)) {
 			if (box)
 				box = *box or Box{p->pos, p->pos};
 			else
@@ -248,18 +256,21 @@ void MultiView::on_left_button_down(const vec2& m) {
 	} else if (auto p = get_hover_item()) {
 		if (session->win->is_key_pressed(xhui::KEY_SHIFT)) {
 			// toggle p
-			p->is_selected = !p->is_selected;
+			if (selection[hover->type].contains(hover->index))
+				selection[hover->type].erase(hover->index);
+			else
+				selection[hover->type].add(hover->index);
 			update_selection_box();
 			out_selection_changed();
 		} else if (session->win->is_key_pressed(xhui::KEY_CONTROL)) {
 			// add p
-			p->is_selected = true;
+			selection[hover->type].add(hover->index);
 			update_selection_box();
 			out_selection_changed();
 		} else {
 			// select p exclusively
 			clear_selection();
-			p->is_selected = true;
+			selection[hover->type].add(hover->index);
 			update_selection_box();
 			out_selection_changed();
 		}

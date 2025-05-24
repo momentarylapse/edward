@@ -16,6 +16,8 @@
 #include <lib/pattern/Observable.h>
 #include <functional>
 
+#include "data/Data.h"
+
 class CubeMapSource;
 class CubeMapRenderer;
 class SceneRenderer;
@@ -94,7 +96,7 @@ public:
 
 	void clear_selection();
 	void select_in_rect(MultiViewWindow* win, const rect& r);
-	static void select_points_in_rect(MultiViewWindow* win, const rect& r, DynamicArray& array);
+	static base::set<int> select_points_in_rect(MultiViewWindow* win, const rect& r, DynamicArray& array);
 
 	rect area;
 	rect area_native;
@@ -109,12 +111,14 @@ public:
 	bool _allow_action = false;
 	bool _show_grid = false;
 
-	std::function<void(MultiViewWindow*, const rect&)> f_select;
-	std::function<base::optional<Box>()> f_get_selection_box;
+	std::function<Data::Selection(MultiViewWindow*, const rect&)> f_select;
+	std::function<void(Data::Selection&)> f_make_selection_consistent;
+	std::function<base::optional<Box>(const Data::Selection&)> f_get_selection_box;
 	base::optional<Box> selection_box;
 	void update_selection_box();
+	Data::Selection selection;
 
-	static base::optional<Box> points_get_selection_box(const DynamicArray& array);
+	static base::optional<Box> points_get_selection_box(const DynamicArray& array, const base::set<int>& sel);
 
 	base::optional<rect> selection_area;
 	bool possibly_selecting = false; // lbut down?

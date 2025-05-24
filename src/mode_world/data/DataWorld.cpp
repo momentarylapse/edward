@@ -198,17 +198,11 @@ void DataWorld::edit_light(int index, const WorldLight& l) {
 #endif
 
 
-void DataWorld::clear_selection() {
-	for (auto& o: entities)
-		o.is_selected = false;
-}
-
-
-void DataWorld::copy(DataWorld& temp) const {
+void DataWorld::copy(DataWorld& temp, const Data::Selection& sel) const {
 	temp.entities.clear();
 
-	for (auto &o: entities)
-		if (o.is_selected)
+	for (auto&& [i, o]: enumerate(entities))
+		if (sel[MultiViewType::WORLD_ENTITY].contains(i))
 			temp.entities.add(o);
 }
 
@@ -251,6 +245,7 @@ void DataWorld::entity_edit_component(int index, int cindex, const ScriptInstanc
 	execute(new ActionWorldEditComponent(index, cindex, c));
 }
 
+#if 0
 Data::Selection DataWorld::get_selection() const {
 	Selection s;
 	s.add({MultiViewType::WORLD_ENTITY, {}});
@@ -267,4 +262,5 @@ Data::Selection DataWorld::get_selection() const {
 			s[MultiViewType::WORLD_LINK].add(i);
 	return s;
 }
+#endif
 

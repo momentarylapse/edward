@@ -254,9 +254,6 @@ void PluginManager::link_plugins() {
 	ext->declare_class_size("MultiView.SingleData", sizeof(multiview::SingleData));
 	ext->declare_class_element("MultiView.SingleData.pos", &multiview::SingleData::pos);
 	ext->declare_class_element("MultiView.SingleData.view_stage", &multiview::SingleData::view_stage);
-	ext->declare_class_element("MultiView.SingleData.is_selected", &multiview::SingleData::is_selected);
-	ext->declare_class_element("MultiView.SingleData.m_delta", &multiview::SingleData::m_delta);
-	ext->declare_class_element("MultiView.SingleData.m_old", &multiview::SingleData::m_old);
 	ext->declare_class_element("MultiView.SingleData.is_special", &multiview::SingleData::is_special);
 
 	/*ext->declare_class_element("MultiView.action_con", &MultiView::MultiView::action_con);

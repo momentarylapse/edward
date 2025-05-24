@@ -84,8 +84,9 @@ public:
 	void update_menu();
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
-	void select_in_rect(MultiViewWindow* win, const rect& r);
-	base::optional<Box> get_selection_box() const;
+	Data::Selection select_in_rect(MultiViewWindow* win, const rect& r);
+	void make_selection_consistent(Data::Selection& sel) const;
+	base::optional<Box> get_selection_box(const Data::Selection& sel) const;
 };
 
 

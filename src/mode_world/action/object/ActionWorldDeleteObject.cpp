@@ -27,6 +27,6 @@ void* ActionWorldDeleteObject::execute(Data* d) {
 void ActionWorldDeleteObject::undo(Data* d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 
-	object.is_selected = false;
+	//object.is_selected = false;
 	//w->objects.insert(object, index);
 }

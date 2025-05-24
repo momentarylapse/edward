@@ -27,7 +27,7 @@ void ModeBevelEdges::on_enter() {
 	session->win->set_visible("overlay-button-grid-left", false);
 
 	auto update = [this] {
-		diff = mesh_prepare_bevel_edges(*mode_mesh->data->editing_mesh, mode_mesh->data->get_selection(), dialog->get_float("distance"));
+		diff = mesh_prepare_bevel_edges(*mode_mesh->data->editing_mesh, mode_mesh->multi_view->selection, dialog->get_float("distance"));
 	};
 
 	dialog = new xhui::Panel("xxx");

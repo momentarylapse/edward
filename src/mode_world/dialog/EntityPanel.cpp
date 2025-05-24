@@ -35,8 +35,9 @@ Dialog entity-base-panel ''
 	}
 	void update(ModeWorld* mode) {
 		reset("list");
-		for (const auto& e: mode->data->entities)
-			if (e.is_selected) {
+		const auto& sel = mode->multi_view->selection[MultiViewType::WORLD_ENTITY];
+		for (const auto& [i,e]: enumerate(mode->data->entities))
+			if (sel.contains(i)) {
 				string name = "???";
 				if (e.basic_type == MultiViewType::WORLD_OBJECT)
 					name = "Model " + str(e.object.filename);
@@ -503,7 +504,7 @@ Dialog entity-panel ''
 	entity_list_panel = new EntityListPanel();
 
 	mode_world->multi_view->out_selection_changed >> create_sink([this] {
-		auto sel = mode_world->data->get_selection();
+		const auto& sel = mode_world->multi_view->selection;
 		cur_index = -1;
 
 		unembed(add_entity_panel.get());

@@ -384,6 +384,7 @@ void DataModel::create_triangle_mesh(ModelTriangleMesh *src, ModelTriangleMesh *
 }
 #endif
 
+#if 0
 Data::Selection DataModel::get_selection() const {
 	Selection sel;
 	sel.add({MultiViewType::MODEL_VERTEX, {}});
@@ -404,6 +405,7 @@ Data::Selection DataModel::get_selection() const {
 			sel[MultiViewType::MODEL_CYLINDER].add(i);
 	return sel;
 }
+#endif
 
 
 float DataModel::get_radius() {

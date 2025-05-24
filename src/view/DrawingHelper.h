@@ -43,7 +43,7 @@ public:
 
 	void draw_boxed_str(Painter* p, const vec2& pos, const string& str, int align = -1);
 
-	void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& a, MultiViewType kind, const base::optional<Hover>& hover);
+	void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& a, MultiViewType kind, const base::optional<Hover>& hover, const base::set<int>& sel);
 
 	xhui::Context* context;
 	ResourceManager* resource_manager;

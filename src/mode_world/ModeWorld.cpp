@@ -122,13 +122,15 @@ void ModeWorld::on_enter() {
 		return get_hover(win, m);
 	};
 	multi_view->f_select = [this] (MultiViewWindow* win, const rect& r) {
-		MultiView::select_points_in_rect(win, r, data->entities);
+		Data::Selection sel;
+		sel.set(MultiViewType::WORLD_ENTITY, MultiView::select_points_in_rect(win, r, data->entities));
+		return sel;
 	};
-	multi_view->f_get_selection_box = [this] () -> base::optional<Box> {
-		return MultiView::points_get_selection_box(data->entities);
+	multi_view->f_get_selection_box = [this] (const Data::Selection& sel) -> base::optional<Box> {
+		return MultiView::points_get_selection_box(data->entities, sel[MultiViewType::WORLD_ENTITY]);
 	};
 	multi_view->f_create_action = [this] {
-		return new ActionWorldMoveSelection(data, data->get_selection());
+		return new ActionWorldMoveSelection(data, multi_view->selection);
 	};
 	multi_view->data_sets = {
 		{MultiViewType::WORLD_ENTITY, &data->entities}
@@ -372,6 +374,7 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 	auto& rvd = win->rvd();
 	auto dh = multi_view->session->drawing_helper;
+	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
 
 #ifdef USING_VULKAN
 	auto cb = params.command_buffer;
@@ -408,9 +411,9 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 		}
 
 	// selection
-	for (auto& e: data->entities)
+	for (const auto& [i, e]: enumerate(data->entities))
 		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			if (e.is_selected) {
+			if (sel.contains(i)) {
 				auto m = e.object.object;
 				for (int k=0; k<e.object.object->mesh[0]->sub.num; k++) {
 					auto vb = m->mesh[0]->sub[k].vertex_buffer;
@@ -461,7 +464,8 @@ void ModeWorld::on_draw_shadow(const RenderParams& params, RenderViewData& rvd) 
 
 
 void ModeWorld::draw_cameras(MultiViewWindow* win) {
-	for (auto& e: data->entities) {
+	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
+	for (const auto& [i,e]: enumerate(data->entities)) {
 		if (e.basic_type != MultiViewType::WORLD_CAMERA)
 			continue;
 		auto& c = e.camera;
@@ -473,7 +477,7 @@ void ModeWorld::draw_cameras(MultiViewWindow* win) {
 
 		dh->set_color(DrawingHelper::COLOR_X);
 		dh->set_line_width(DrawingHelper::LINE_MEDIUM);
-		if (e.is_selected) {
+		if (sel.contains(i)) {
 			dh->set_color(Red);
 			dh->set_line_width(DrawingHelper::LINE_THICK);
 		}
@@ -528,7 +532,8 @@ const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
 
 void ModeWorld::draw_lights(MultiViewWindow *win) {
 	auto dh = session->drawing_helper;
-	for (auto &e: data->entities) {
+	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
+	for (const auto& [i,e]: enumerate(data->entities)) {
 		if (e.basic_type != MultiViewType::WORLD_LIGHT)
 			continue;
 		auto& l = e.light;
@@ -537,7 +542,7 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 
 		dh->set_color(DrawingHelper::COLOR_X);
 		dh->set_line_width(DrawingHelper::LINE_THICK);
-		if (e.is_selected) {
+		if (sel.contains(i)) {
 			dh->set_color(Red);
 			dh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
 		}
@@ -558,9 +563,8 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 }
 
 
-static base::optional<string> world_selection_description(DataWorld* data) {
+static base::optional<string> world_selection_description(DataWorld* data, const Data::Selection& sel) {
 	int nob = 0, nter = 0, ncam = 0, nent = 0;
-	auto sel = data->get_selection();
 	if (sel.contains(MultiViewType::WORLD_OBJECT))
 		nob = sel[MultiViewType::WORLD_OBJECT].num;
 	if (sel.contains(MultiViewType::WORLD_TERRAIN))
@@ -584,9 +588,13 @@ static base::optional<string> world_selection_description(DataWorld* data) {
 }
 
 void ModeWorld::on_draw_post(Painter* p) {
-	session->drawing_helper->draw_data_points(p, multi_view->active_window, data->entities, MultiViewType::WORLD_ENTITY, multi_view->hover);
+	session->drawing_helper->draw_data_points(p, multi_view->active_window,
+		data->entities,
+		MultiViewType::WORLD_ENTITY,
+		multi_view->hover,
+		multi_view->selection[MultiViewType::WORLD_ENTITY]);
 
-	if (auto s = world_selection_description(data))
+	if (auto s = world_selection_description(data, multi_view->selection))
 		draw_info(p, "selected: " + *s);
 }
 
@@ -603,28 +611,29 @@ void ModeWorld::on_command(const string& id) {
 		data->undo();
 	if (id == "redo")
 		data->redo();
-	if (id == "copy"){
-		data->copy(temp);
+	if (id == "copy") {
+		data->copy(temp, multi_view->selection);
 		if (temp.is_empty())
 			session->set_message("nothing selected");
 		else
-			session->set_message("copied: " + *world_selection_description(data));
+			session->set_message("copied: " + *world_selection_description(data, multi_view->selection));
 	}
-	if (id == "paste"){
+	if (id == "paste") {
 		multi_view->clear_selection();
 		if (temp.is_empty()) {
 			session->set_message("nothing to paste");
 		} else {
 			data->paste(temp);
-			session->set_message("pasted: " + *world_selection_description(data));
+			session->set_message("pasted: " + *world_selection_description(data, multi_view->selection));
 		}
 	}
 }
 
 void ModeWorld::on_key_down(int key) {
 	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE) {
-		if (auto s = world_selection_description(data)) {
-			data->delete_selection(data->get_selection());
+		if (auto s = world_selection_description(data, multi_view->selection)) {
+			data->delete_selection(multi_view->selection);
+			multi_view->clear_selection();
 			session->set_message("deleted: " + *s);
 		} else {
 			session->set_message("nothing selected");

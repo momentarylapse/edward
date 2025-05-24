@@ -26,6 +26,8 @@
 #include <lib/xhui/controls/ListView.h>
 #include <y/EngineData.h>
 
+#include "view/MultiView.h"
+
 static constexpr int PREVIEW_SIZE = 48;
 
 string file_secure(const Path &filename) {
@@ -393,7 +395,7 @@ void ModelMaterialPanel::on_material_delete() {
 }
 
 void ModelMaterialPanel::on_material_apply() {
-	data->apply_material(data->get_selection(), mode_mesh()->current_material);
+	data->apply_material(mode_mesh()->multi_view->selection, mode_mesh()->current_material);
 }
 
 

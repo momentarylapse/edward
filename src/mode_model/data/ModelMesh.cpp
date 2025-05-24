@@ -16,7 +16,7 @@
 #include <y/world/components/Animator.h>
 #include <y/world/Model.h>
 
-
+#include "Session.h"
 
 
 ModelMesh::ModelMesh() {
@@ -682,21 +682,21 @@ bool ModelCylinder::overlap_rect(MultiView::Window *win, const rect &r) {
 }
 #endif
 
-PolygonMesh ModelMesh::copy_geometry() const {
+PolygonMesh ModelMesh::copy_geometry(const Data::Selection& sel) const {
 	PolygonMesh geo;
 
 	// copy vertices
 	Array<int> vert_map;
 	vert_map.resize(vertices.num);
 	for (const auto& [vi, v]: enumerate(vertices))
-		if (v.is_selected) {
+		if (sel[MultiViewType::MODEL_VERTEX].contains(vi)) {
 			vert_map[vi] = geo.vertices.num;
 			geo.vertices.add(v);
 		}
 
 	// copy triangles
-	for (const auto &t: polygons)
-		if (t.is_selected) {
+	for (const auto& [ti, t]: enumerate(polygons))
+		if (sel[MultiViewType::MODEL_POLYGON].contains(ti)) {
 			Polygon tt = t;
 			for (int k=0; k<t.side.num; k++)
 				tt.side[k].vertex = vert_map[t.side[k].vertex];

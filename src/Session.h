@@ -55,7 +55,8 @@ enum class MultiViewType {
 	WORLD_CAM_POINT,
 	WORLD_CAM_POINT_VEL,
 	ACTION_MANAGER,
-	GRID
+	GRID,
+	_NUM
 };
 
 

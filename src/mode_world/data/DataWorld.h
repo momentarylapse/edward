@@ -79,8 +79,6 @@ public:
 
 	void update_data();
 
-	void clear_selection();
-
 	Array<WorldEntity> entities;
 	int EgoIndex;
 
@@ -118,7 +116,7 @@ public:
 	MetaData meta_data;
 
 
-	Selection get_selection() const override;
+	//Selection get_selection() const override;
 
 #if 0
 	// actions
@@ -135,7 +133,7 @@ public:
 	void entity_remove_component(int index, int cindex);
 	void entity_edit_component(int index, int cindex, const ScriptInstanceData& c);
 
-	void copy(DataWorld& temp) const; // actually not an action
+	void copy(DataWorld& temp, const Data::Selection& sel) const; // actually not an action
 	void paste(const DataWorld& temp);
 	void delete_selection(const Data::Selection& selection);
 };

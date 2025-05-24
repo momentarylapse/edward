@@ -27,7 +27,7 @@ void ModeExtrudePolygons::on_enter() {
 	session->win->set_visible("overlay-button-grid-left", false);
 
 	auto update = [this] {
-		diff = mesh_prepare_extrude_polygons(*mode_mesh->data->editing_mesh, mode_mesh->data->get_selection(), dialog->get_float("distance"), dialog->is_checked("connected"));
+		diff = mesh_prepare_extrude_polygons(*mode_mesh->data->editing_mesh, mode_mesh->multi_view->selection, dialog->get_float("distance"), dialog->is_checked("connected"));
 	};
 
 	dialog = new xhui::Panel("xxx");

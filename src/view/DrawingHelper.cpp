@@ -279,14 +279,14 @@ void DrawingHelper::draw_boxed_str(Painter* p, const vec2& _pos, const string& s
 	p->draw_str(pos, str);
 }
 
-void DrawingHelper::draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& _a, MultiViewType kind, const base::optional<Hover>& hover) {
+void DrawingHelper::draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& _a, MultiViewType kind, const base::optional<Hover>& hover, const base::set<int>& sel) {
 	int _hover = -1;
 	if (hover and hover->type == kind)
 		_hover = hover->index;
 	auto& a = const_cast<DynamicArray&>(_a);
 	for (int i=0; i<a.num; i++) {
 		const auto v = static_cast<multiview::SingleData*>(a.simple_element(i));
-		p->set_color(v->is_selected ? Red : Blue);
+		p->set_color(sel.contains(i) ? Red : Blue);
 		auto p1 = win->project(v->pos);
 		float r = 2;
 		if (i == _hover)

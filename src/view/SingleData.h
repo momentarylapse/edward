@@ -22,7 +22,7 @@ class Window;
 // "des Pudels Kern", don't change!!!!!!!
 struct SingleData {
 	int view_stage = -1;
-	bool is_selected = false, m_delta = false, m_old = false, is_special = false;
+	bool is_special = false;
 	vec3 pos = vec3::ZERO;
 };
 
