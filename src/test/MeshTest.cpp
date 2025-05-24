@@ -31,16 +31,7 @@ void show_mesh(const PolygonMesh& mesh) {
 		msg_write(str(p.get_vertices()));
 }
 
-void show_mesh_diff(const MeshEdit& edit) {
-	msg_write("-  " + str(edit._del_vertices));
-	Array<int> at;
-	for (const auto& nv: edit._new_vertices)
-		at.add(nv.at);
-	msg_write("+  " + str(at));
-	msg_write("-- " + str(edit._del_polygons));
-	for (const auto& p: edit._new_polygons)
-		msg_write("++ " + str(p.p.get_vertices()));
-}
+void show_mesh_diff(const MeshEdit& edit);
 
 void assert_equal(const PolygonMesh &a, const PolygonMesh &b, float epsilon = 0.001f) {
 	if (a.vertices.num != b.vertices.num)
@@ -146,6 +137,7 @@ Array<UnitTest::Test> MeshTest::tests() {
 	list.add({"diff_invertible", MeshTest::test_diff_invertible});
 	list.add({"diff_iterated", MeshTest::test_diff_iterated});
 	list.add({"extrude", MeshTest::test_extrude});
+	list.add({"extrude_undo_redo", MeshTest::test_extrude_undo_redo});
 	return list;
 }
 
@@ -299,6 +291,26 @@ void MeshTest::test_extrude() {
 		ii.apply_inplace(mesh);
 		check_mesh_health(mesh);
 	}
+}
+
+void MeshTest::test_extrude_undo_redo() {
+	const PolygonMesh mesh0 = GeometryCube::create(Box::ID_SYM, {1,1,1});
+
+	PolygonMesh mesh = mesh0;
+	Data::Selection sel;
+	sel.set(MultiViewType::MODEL_POLYGON, {0});
+	auto ed = mesh_prepare_extrude_polygons(mesh, sel, 0.1f, false);
+
+	Array<PolygonMesh> meshes;
+
+	for (int i=0; i<3; i++) {
+		ed = ed.apply_inplace(mesh);
+		check_mesh_health(mesh);
+		meshes.add(mesh);
+	}
+
+	assert_equal(meshes[1], mesh0);
+	assert_equal(meshes[2], meshes[0]);
 }
 
 

@@ -21,6 +21,7 @@ public:
 	static void test_diff_invertible();
 	static void test_diff_iterated();
 	static void test_extrude();
+	static void test_extrude_undo_redo();
 };
 
 }

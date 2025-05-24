@@ -10,6 +10,18 @@
 #include <lib/os/msg.h>
 
 
+
+void show_mesh_diff(const MeshEdit& edit) {
+	msg_write("-  " + str(edit._del_vertices));
+	Array<int> at;
+	for (const auto& nv: edit._new_vertices)
+		at.add(nv.at);
+	msg_write("+  " + str(at));
+	msg_write("-- " + str(edit._del_polygons));
+	for (const auto& p: edit._new_polygons)
+		msg_write(format("++ %s @%d",  str(p.p.get_vertices()), p.at));
+}
+
 void MeshEdit::delete_vertex(int index) {
 	_del_vertices.add(index);
 }
@@ -115,7 +127,7 @@ MeshEdit MeshEdit::apply_inplace(PolygonMesh& mesh) const {
 		}
 		// append new
 		for (const auto& np: new_polygons)
-			if (np.at == -1) {
+			if (np.at == -1 or np.at == mesh.polygons.num) {
 				inv.delete_polygon(i_out);
 				out.polygons[i_out ++] = np.p;
 			}
@@ -123,63 +135,6 @@ MeshEdit MeshEdit::apply_inplace(PolygonMesh& mesh) const {
 
 	mesh = out;
 	return inv;
-
-#if 0
-
-	// delete vertices
-	for (int i: _del_vertices)
-		inv.add_vertex(mesh.vertices[i], i);
-	for (int i: base::reverse(_del_vertices))
-		mesh.vertices.erase(i);
-
-	// add vertices
-	for (const auto& [i, v]: enumerate(_new_vertices)) {
-		inv.delete_vertex(mesh.vertices.num);
-		mesh.vertices.add(v.v);
-	}
-
-	// add polygons
-	for (const auto& p: _new_polygons) {
-		inv.delete_polygon(mesh.polygons.num - _del_polygons.num);
-		mesh.polygons.add(p);
-		mesh.polygons.back().normal_dirty = true;
-	}
-
-	auto remap = [this, &mesh] (int index) {
-		if (index < 0)
-			// newly added
-			return mesh.vertices.num - _new_vertices.num - (index + 1);
-
-		for (int i=_del_vertices.num-1; i>=0; i--) {
-			if (index == _del_vertices[i])
-				index = -1 - i;
-			if (index > _del_vertices[i])
-				index --;
-		}
-		return index;
-	};
-
-	// remap
-	for (auto& p: mesh.polygons)
-		for (auto& s: p.side)
-			s.vertex = remap(s.vertex);
-	for (auto& s: mesh.spheres)
-		s.index = remap(s.index);
-	for (auto& c: mesh.cylinders)
-		for (int k=0; k<2; k++)
-			c.index[k] = remap(c.index[k]);
-
-	// delete polygons
-	for (int i: base::reverse(_del_polygons)) {
-		auto p = mesh.polygons[i];
-		//for (auto& s: p.side)
-		//	s.vertex = remap(...);
-		inv.add_polygon(p);
-		mesh.polygons.erase(i);
-	}
-
-	return inv;
-#endif
 }
 
 PolygonMesh MeshEdit::apply(const PolygonMesh& mesh, MeshEdit* inv) const {
