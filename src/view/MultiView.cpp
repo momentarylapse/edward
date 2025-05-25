@@ -190,9 +190,26 @@ void MultiView::select_in_rect(MultiViewWindow* win, const rect& _r) {
 	const auto r = _r.canonical();
 	if (f_select)
 		selection = f_select(win, r);
+
 	for (int i=0; i<(int)MultiViewType::_NUM; i++)
 		if (!selection.contains((MultiViewType)i))
 			selection.set((MultiViewType)i, {});
+
+	if (session->win->is_key_pressed(xhui::KEY_CONTROL)) {
+		// OR
+		for (int i=0; i<(int)MultiViewType::_NUM; i++)
+			for (int k: temp_selection[(MultiViewType)i])
+				selection[(MultiViewType)i].add(k);
+	} else if (session->win->is_key_pressed(xhui::KEY_SHIFT)) {
+		// XOR
+		for (int i=0; i<(int)MultiViewType::_NUM; i++)
+			for (int k: temp_selection[(MultiViewType)i]) {
+				if (selection[(MultiViewType)i].contains(k))
+					selection[(MultiViewType)i].erase(k);
+				else
+					selection[(MultiViewType)i].add(k);
+			}
+	}
 
 	update_selection_box();
 	out_selection_changed();
@@ -246,6 +263,7 @@ base::optional<Box> MultiView::points_get_selection_box(const DynamicArray& _arr
 void MultiView::on_left_button_down(const vec2& m) {
 	hover = get_hover(hover_window, m);
 	possibly_selecting = _allow_select;
+	temp_selection = selection;
 
 	if (!_allow_select)
 		return;

@@ -117,6 +117,7 @@ public:
 	base::optional<Box> selection_box;
 	void update_selection_box();
 	Data::Selection selection;
+	Data::Selection temp_selection;
 
 	static base::optional<Box> points_get_selection_box(const DynamicArray& array, const base::set<int>& sel);
 
