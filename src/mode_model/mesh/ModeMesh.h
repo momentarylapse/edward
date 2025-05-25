@@ -12,6 +12,7 @@
 #include "../../view/Hover.h"
 #include "../data/DataModel.h"
 
+struct Edge;
 class MultiViewWindow;
 namespace xhui {
 	class Panel;
@@ -54,6 +55,7 @@ public:
 	owned<ModeMeshSculpt> mode_mesh_sculpt;
 
 	DataModel* data;
+	Array<Edge> edges_cached;
 
 	int current_material;
 	void set_current_material(int index);

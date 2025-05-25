@@ -190,6 +190,9 @@ void MultiView::select_in_rect(MultiViewWindow* win, const rect& _r) {
 	const auto r = _r.canonical();
 	if (f_select)
 		selection = f_select(win, r);
+	for (int i=0; i<(int)MultiViewType::_NUM; i++)
+		if (!selection.contains((MultiViewType)i))
+			selection.set((MultiViewType)i, {});
 
 	update_selection_box();
 	out_selection_changed();

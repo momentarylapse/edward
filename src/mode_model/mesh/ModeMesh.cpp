@@ -132,7 +132,8 @@ void ModeMesh::on_leave_rec() {
 
 void ModeMesh::on_enter() {
 	auto update = [this] {
-		data->mesh->update_normals();
+		data->editing_mesh->update_normals();
+		edges_cached = data->editing_mesh->edges();
 		update_vb();
 		update_selection_vb();
 		session->win->request_redraw();
@@ -303,8 +304,9 @@ void ModeMesh::on_draw_background(const RenderParams& params, RenderViewData& rv
 void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	auto& rvd = win->rvd();
 	auto dh = win->multi_view->session->drawing_helper;
-	const auto& sel_vert = multi_view->selection[MultiViewType::MODEL_VERTEX];
-	const auto& sel_poly = multi_view->selection[MultiViewType::MODEL_POLYGON];
+	const auto& selv = multi_view->selection[MultiViewType::MODEL_VERTEX];
+	const auto& sele = multi_view->selection[MultiViewType::MODEL_EDGE];
+	const auto& selp = multi_view->selection[MultiViewType::MODEL_POLYGON];
 
 	if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces or data->editing_mesh == data->phys_mesh.get()) {
 		for (int i=0; i<vertex_buffers.num; i++)
@@ -336,7 +338,7 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 					int ib = p.side[(k + 1) % p.side.num].vertex;
 					const auto& a = data->editing_mesh->vertices[ia];
 					const auto& b = data->editing_mesh->vertices[ib];
-					if (sel_vert.contains(ia) and sel_vert.contains(ib))
+					if (selv.contains(ia) and selv.contains(ib))
 						continue;
 					points.add(a.pos);
 					points.add(b.pos);
@@ -356,7 +358,7 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 					int ib = p.side[(k + 1) % p.side.num].vertex;
 					const auto& a = data->editing_mesh->vertices[ia];
 					const auto& b = data->editing_mesh->vertices[ib];
-					if (sel_vert.contains(ia) and sel_vert.contains(ib))
+					if (selv.contains(ia) and selv.contains(ib))
 						continue;
 					points.add(a.pos);
 					points.add(b.pos);
@@ -376,7 +378,7 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 					int ib = p.side[(k + 1) % p.side.num].vertex;
 					const auto& a = data->editing_mesh->vertices[ia];
 					const auto& b = data->editing_mesh->vertices[ib];
-					if (!sel_vert.contains(ia) or !sel_vert.contains(ib))
+					if (!selv.contains(ia) or !selv.contains(ib))
 						continue;
 					points.add(a.pos);
 					points.add(b.pos);
@@ -507,6 +509,14 @@ Data::Selection ModeMesh::select_in_rect(MultiViewWindow* win, const rect& r) {
 	auto selv = sel[MultiViewType::MODEL_VERTEX] = MultiView::select_points_in_rect(win, r, data->editing_mesh->vertices);
 	if (presentation_mode == PresentationMode::Vertices) {
 		sel[MultiViewType::MODEL_VERTEX] = selv;
+	}
+	if (presentation_mode == PresentationMode::Edges) {
+		sel[MultiViewType::MODEL_VERTEX] = selv;
+		// vertices -> edges
+		for (const auto& [i, e]: enumerate(edges_cached)) {
+			if (selv.contains(e.index[0]) and selv.contains(e.index[1]))
+				sel[MultiViewType::MODEL_POLYGON].add(i);
+		}
 	}
 	if (presentation_mode == PresentationMode::Polygons) {
 		sel[MultiViewType::MODEL_VERTEX] = selv;
