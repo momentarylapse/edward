@@ -273,6 +273,8 @@ void ModeMesh::on_leave() {
 
 void ModeMesh::set_presentation_mode(PresentationMode m) {
 	presentation_mode = m;
+	make_selection_consistent(multi_view->selection);
+	multi_view->out_selection_changed();
 	update_menu();
 	session->win->request_redraw();
 }
@@ -499,9 +501,66 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 	return base::None;
 }
 
+void selection_edges_from_vertices(base::set<int>& sele, const base::set<int>& selv, const Array<Edge>& edges) {
+	sele.clear();
+	for (const auto& [i, e]: enumerate(edges)) {
+		if (selv.contains(e.index[0]) and selv.contains(e.index[1]))
+			sele.add(i);
+	}
+}
+
+void selection_polygons_from_vertices(base::set<int>& selp, const base::set<int>& selv, const PolygonMesh& mesh) {
+	selp.clear();
+	for (const auto& [i, p]: enumerate(mesh.polygons)) {
+		bool is_selected = true;
+		for (const auto& s: p.side)
+			is_selected &= selv.contains(s.vertex);
+		if (is_selected)
+			selp.add(i);
+	}
+}
+
+void selection_vertices_from_edges(base::set<int>& selv, const base::set<int>& sele, const Array<Edge>& edges) {
+	selv.clear();
+	for (const auto& [i,e]: enumerate(edges))
+		if (sele.contains(i)) {
+			selv.add(e.index[0]);
+			selv.add(e.index[1]);
+		}
+}
+
+void selection_polygons_from_edges(base::set<int>& selp, const base::set<int>& sele, const PolygonMesh& mesh, const Array<Edge>& edges) {
+	selp.clear();
+	for (const auto& [i,p]: enumerate(mesh.polygons)) {
+		bool is_selected = true;
+		for (const auto& e: p.get_edges())
+			if (!sele.contains(edges.find(e)))
+				is_selected = false;
+		if (is_selected)
+			selp.add(i);
+	}
+}
+
+void selection_vertices_from_polygons(base::set<int>& selv, const base::set<int>& selp, const PolygonMesh& mesh) {
+	selv.clear();
+	for (const auto& [i,p]: enumerate(mesh.polygons))
+		if (selp.contains(i))
+			for (const auto& s: p.side)
+				selv.add(s.vertex);
+}
+
+void selection_edges_from_polygons(base::set<int>& sele, const base::set<int>& selp, const PolygonMesh& mesh, const Array<Edge>& edges) {
+	sele.clear();
+	for (const auto& [i,p]: enumerate(mesh.polygons))
+		if (selp.contains(i))
+			for (const auto& e: p.get_edges())
+				sele.add(edges.find(e));
+}
+
 Data::Selection ModeMesh::select_in_rect(MultiViewWindow* win, const rect& r) {
 	Data::Selection sel;
 	sel.add({MultiViewType::MODEL_VERTEX, {}});
+	sel.add({MultiViewType::MODEL_EDGE, {}});
 	sel.add({MultiViewType::MODEL_POLYGON, {}});
 	sel.add({MultiViewType::MODEL_BALL, {}});
 	sel.add({MultiViewType::MODEL_CYLINDER, {}});
@@ -511,65 +570,35 @@ Data::Selection ModeMesh::select_in_rect(MultiViewWindow* win, const rect& r) {
 		sel[MultiViewType::MODEL_VERTEX] = selv;
 	}
 	if (presentation_mode == PresentationMode::Edges) {
-		sel[MultiViewType::MODEL_VERTEX] = selv;
-		// vertices -> edges
-		for (const auto& [i, e]: enumerate(edges_cached)) {
-			if (selv.contains(e.index[0]) and selv.contains(e.index[1]))
-				sel[MultiViewType::MODEL_POLYGON].add(i);
-		}
+		selection_edges_from_vertices(sel[MultiViewType::MODEL_EDGE], selv, edges_cached);
 	}
 	if (presentation_mode == PresentationMode::Polygons) {
-		sel[MultiViewType::MODEL_VERTEX] = selv;
-		// vertices -> polygons
-		for (const auto& [i, p]: enumerate(data->editing_mesh->polygons)) {
-			bool is_selected = true;
-			for (const auto& s: p.side)
-				is_selected &= selv.contains(s.vertex);
-			if (is_selected)
-				sel[MultiViewType::MODEL_POLYGON].add(i);
-		}
+		selection_polygons_from_vertices(sel[MultiViewType::MODEL_POLYGON], selv, *data->editing_mesh);
 	}
 	return sel;
 }
 
 void ModeMesh::make_selection_consistent(Data::Selection &sel) const {
-	auto& selv = sel[MultiViewType::MODEL_VERTEX];
-	auto& selp = sel[MultiViewType::MODEL_POLYGON];
 	if (presentation_mode == PresentationMode::Vertices) {
-
-		// vertices -> polygons
-		for (const auto& [i,p]: enumerate(data->editing_mesh->polygons)) {
-			bool is_selected = true;
-			for (const auto& s: p.side)
-				is_selected &= selv.contains(s.vertex);
-			if (is_selected)
-				selp.add(i);
-		}
+		selection_edges_from_vertices(sel[MultiViewType::MODEL_EDGE], sel[MultiViewType::MODEL_VERTEX], edges_cached);
+		selection_polygons_from_vertices(sel[MultiViewType::MODEL_POLYGON], sel[MultiViewType::MODEL_VERTEX], *data->editing_mesh);
 		/*for (auto& b: data->editing_mesh->spheres)
 			b.is_selected = data->editing_mesh->vertices[b.index].is_selected;
 		for (auto& c: data->editing_mesh->cylinders)
 			c.is_selected = data->editing_mesh->vertices[c.index[0]].is_selected and data->editing_mesh->vertices[c.index[1]].is_selected;*/
 	}
+	if (presentation_mode == PresentationMode::Edges) {
+		selection_vertices_from_edges(sel[MultiViewType::MODEL_VERTEX], sel[MultiViewType::MODEL_EDGE], edges_cached);
+		selection_polygons_from_edges(sel[MultiViewType::MODEL_POLYGON], sel[MultiViewType::MODEL_EDGE], *data->editing_mesh, edges_cached);
+	}
 	if (presentation_mode == PresentationMode::Polygons) {
-		// polygons -> vertices
-		selv = {};
-		for (const auto& [i,p]: enumerate(data->editing_mesh->polygons))
-			if (selp.contains(i))
-				for (const auto& s: p.side)
-					selv.add(s.vertex);
+		selection_vertices_from_polygons(sel[MultiViewType::MODEL_VERTEX], sel[MultiViewType::MODEL_POLYGON], *data->editing_mesh);
+		selection_edges_from_polygons(sel[MultiViewType::MODEL_EDGE], sel[MultiViewType::MODEL_POLYGON], *data->editing_mesh, edges_cached);
 	}
 }
 
-
-// also "self-consistency"...
 base::optional<Box> ModeMesh::get_selection_box(const Data::Selection& sel) const {
-	if (presentation_mode == PresentationMode::Vertices) {
-		return MultiView::points_get_selection_box(data->editing_mesh->vertices, sel[MultiViewType::MODEL_VERTEX]);
-	}
-	if (presentation_mode == PresentationMode::Polygons) {
-		return MultiView::points_get_selection_box(data->editing_mesh->vertices, sel[MultiViewType::MODEL_VERTEX]);
-	}
-	return base::None;
+	return MultiView::points_get_selection_box(data->editing_mesh->vertices, sel[MultiViewType::MODEL_VERTEX]);
 }
 
 

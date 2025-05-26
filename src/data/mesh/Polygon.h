@@ -16,6 +16,7 @@ class VertexStagingBuffer;
 struct vec3;
 struct mat4;
 struct MeshVertex;
+struct Edge;
 
 struct PolygonSide {
 	int vertex;
@@ -44,6 +45,7 @@ struct Polygon: multiview::SingleData {
 	vec3 get_normal(const Array<MeshVertex> &vertex) const;
 	vec3 get_area_vector(const Array<MeshVertex> &vertex) const;
 	Array<int> get_vertices() const;
+	Array<Edge> get_edges() const;
 	Array<vec3> get_skin_vertices() const;
 	int next_vertex(int index) const;
 	int previous_vertex(int index) const;

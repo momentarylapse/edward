@@ -36,6 +36,18 @@ Array<int> Polygon::get_vertices() const {
 	return v;
 }
 
+Array<Edge> Polygon::get_edges() const {
+	Array<Edge> edges;
+	edges.resize(side.num);
+	for (int i=0; i<side.num; i++) {
+		int a = side[i].vertex;
+		int b = side[(i+1)%side.num].vertex;
+		edges[i] = {min(a, b), max(a, b)};
+	}
+	return edges;
+}
+
+
 Array<vec3> Polygon::get_skin_vertices() const {
 	Array<vec3> sv;
 	sv.resize(side.num * MATERIAL_MAX_TEXTURES);
