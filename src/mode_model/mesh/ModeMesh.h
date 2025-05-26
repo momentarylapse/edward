@@ -45,6 +45,8 @@ public:
 	void on_update_selection();
 	void update_vb();
 	void update_selection_vb();
+	void on_update_topology();
+	void update_edge_info();
 
 	void optimize_view();
 
@@ -56,6 +58,11 @@ public:
 
 	DataModel* data;
 	Array<Edge> edges_cached;
+	struct EdgeInfo {
+		int polygons[2];
+		int sides[2];
+	};
+	Array<EdgeInfo> edge_infos;
 
 	int current_material;
 	void set_current_material(int index);

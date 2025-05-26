@@ -133,7 +133,7 @@ void ModeMesh::on_leave_rec() {
 void ModeMesh::on_enter() {
 	auto update = [this] {
 		data->editing_mesh->update_normals();
-		edges_cached = data->editing_mesh->edges();
+		on_update_topology(); // TODO topology event!
 		update_vb();
 		update_selection_vb();
 		session->win->request_redraw();
@@ -270,6 +270,32 @@ void ModeMesh::on_leave() {
 		session->win->remove_event_handler(uid);
 	event_ids.clear();
 }
+
+void ModeMesh::on_update_topology() {
+	edges_cached = data->editing_mesh->edges();
+	update_edge_info();
+}
+
+void ModeMesh::update_edge_info() {
+	edge_infos.resize(edges_cached.num);
+	for (auto& ei: edge_infos)
+		ei.polygons[0] = ei.polygons[1] = -1;
+
+	for (const auto& [i, p]: enumerate(data->editing_mesh->polygons)) {
+		for (const auto& [k, e]: enumerate(p.get_edges())) {
+			auto& ei = edge_infos[edges_cached.find(e)];
+			if (ei.polygons[0] < 0) {
+				ei.polygons[1] = i;
+				ei.sides[1] = k;
+			} else {
+				ei.polygons[0] = i;
+				ei.sides[0] = k;
+			}
+		}
+	}
+}
+
+
 
 void ModeMesh::set_presentation_mode(PresentationMode m) {
 	presentation_mode = m;
