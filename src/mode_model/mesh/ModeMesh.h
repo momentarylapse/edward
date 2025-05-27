@@ -61,6 +61,7 @@ public:
 	struct EdgeInfo {
 		int polygons[2];
 		int sides[2];
+		vec3 normal;
 	};
 	Array<EdgeInfo> edge_infos;
 

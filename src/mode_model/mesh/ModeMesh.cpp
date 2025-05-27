@@ -287,9 +287,11 @@ void ModeMesh::update_edge_info() {
 			if (ei.polygons[0] < 0) {
 				ei.polygons[1] = i;
 				ei.sides[1] = k;
+				ei.normal = p.temp_normal;
 			} else {
 				ei.polygons[0] = i;
 				ei.sides[0] = k;
+				ei.normal = (ei.normal + p.temp_normal).normalized();
 			}
 		}
 	}
@@ -353,65 +355,30 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_hover, material_hover, 0);
 
 	if (presentation_mode == PresentationMode::Vertices or presentation_mode == PresentationMode::Edges or presentation_mode == PresentationMode::Polygons) {
-		// backside
-		// TODO draw_lines_with_color()
-		dh->set_color(color(1, 0.35f, 0.35f, 0.35f));
-		dh->set_line_width(1.5f);//scheme.LINE_WIDTH_THIN);
-
+		// unselected (colored by normal)
 		Array<vec3> points;
-		for (const auto& p: data->editing_mesh->polygons) {
-			if (vec3::dot(p.temp_normal, win->direction()) >= 0)
-				for (int k=0; k<p.side.num; k++) {
-					int ia = p.side[k].vertex;
-					int ib = p.side[(k + 1) % p.side.num].vertex;
-					const auto& a = data->editing_mesh->vertices[ia];
-					const auto& b = data->editing_mesh->vertices[ib];
-					if (selv.contains(ia) and selv.contains(ib))
-						continue;
-					points.add(a.pos);
-					points.add(b.pos);
-				}
-		}
-		dh->draw_lines(points, false);
-
-
-		dh->set_color(color(1, 0.5f, 0.5f, 0.5f));
+		Array<color> colors;
+		for (const auto& [i, e]: enumerate(edges_cached))
+			if (!sele.contains(i)) {
+				points.add(data->editing_mesh->vertices[e.index[0]].pos);
+				points.add(data->editing_mesh->vertices[e.index[1]].pos);
+				float f = (vec3::dot(edge_infos[i].normal, win->direction()) + 1) * 0.5f;
+				const auto c = color::interpolate(color(1, 0.5f, 0.5f, 0.5f), color(1, 0.35f, 0.35f, 0.35f), f);
+				colors.add(c);
+				colors.add(c);
+			}
 		dh->set_line_width(1.5f);//scheme.LINE_WIDTH_THIN);
+		dh->draw_lines_colored(points, colors, false);
 
+		// selected
 		points.clear();
-		for (const auto& p: data->editing_mesh->polygons) {
-			if (vec3::dot(p.temp_normal, win->direction()) < 0)
-				for (int k=0; k<p.side.num; k++) {
-					int ia = p.side[k].vertex;
-					int ib = p.side[(k + 1) % p.side.num].vertex;
-					const auto& a = data->editing_mesh->vertices[ia];
-					const auto& b = data->editing_mesh->vertices[ib];
-					if (selv.contains(ia) and selv.contains(ib))
-						continue;
-					points.add(a.pos);
-					points.add(b.pos);
-				}
-		}
-		dh->draw_lines(points, false);
-
-
+		for (const auto& [i, e]: enumerate(edges_cached))
+			if (sele.contains(i)) {
+				points.add(data->editing_mesh->vertices[e.index[0]].pos);
+				points.add(data->editing_mesh->vertices[e.index[1]].pos);
+			}
 		dh->set_color(Red);
 		dh->set_line_width(2);//scheme.LINE_WIDTH_THIN);
-
-		points.clear();
-		for (const auto& p: data->editing_mesh->polygons) {
-			//if (vec3::dot(p.temp_normal, win->dir()) < 0)
-				for (int k=0; k<p.side.num; k++) {
-					int ia = p.side[k].vertex;
-					int ib = p.side[(k + 1) % p.side.num].vertex;
-					const auto& a = data->editing_mesh->vertices[ia];
-					const auto& b = data->editing_mesh->vertices[ib];
-					if (!selv.contains(ia) or !selv.contains(ib))
-						continue;
-					points.add(a.pos);
-					points.add(b.pos);
-				}
-		}
 		dh->draw_lines(points, false);
 	}
 
