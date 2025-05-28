@@ -25,10 +25,12 @@ struct BevelInfo {
 };
 
 BevelInfo prepare_bevel(const PolygonMesh& mesh, const Data::Selection& sel) {
+	const auto& selv = sel[MultiViewType::MODEL_VERTEX];
+	const auto& sele = sel[MultiViewType::MODEL_EDGE];
 	BevelInfo b;
 	auto edges = mesh.edges();
 	for (const auto& [i, v]: enumerate(mesh.vertices))
-		if (sel[MultiViewType::MODEL_VERTEX].contains(i)) {
+		if (selv.contains(i)) {
 			const vec3 p0 = mesh.vertices[i].pos;
 			BevelInfo::Cap cap;
 			cap.index = i;
@@ -43,7 +45,7 @@ BevelInfo prepare_bevel(const PolygonMesh& mesh, const Data::Selection& sel) {
 					cap.dirs.add(dir_next + dir_prev);
 					cap.next_dir_no.set(i_prev, cap.dirs.num - 1);
 					cap.prev_dir_no.set(i_next, cap.dirs.num - 1);
-				} else if (!sel[MultiViewType::MODEL_VERTEX].contains(i_next)) {
+				} else if (!selv.contains(i_next)) {
 					cap.dirs.add(dir_next);
 					cap.next_dir_no.set(i_prev, cap.dirs.num - 1);
 					cap.prev_dir_no.set(mesh.next_edge_at_vertex(i, i_next), cap.dirs.num - 1);

@@ -274,9 +274,9 @@ void MultiView::on_left_button_down(const vec2& m) {
 		if (f_create_action and _allow_action)
 			action_controller->start_action(f_create_action(), hover->tp, (ActionController::Constraint)hover->index);
 
-	} else if (auto p = get_hover_item()) {
+	} else if (hover) {
 		if (session->win->is_key_pressed(xhui::KEY_SHIFT)) {
-			// toggle p
+			// toggle
 			if (selection[hover->type].contains(hover->index))
 				selection[hover->type].erase(hover->index);
 			else
@@ -284,12 +284,12 @@ void MultiView::on_left_button_down(const vec2& m) {
 			update_selection_box();
 			out_selection_changed();
 		} else if (session->win->is_key_pressed(xhui::KEY_CONTROL)) {
-			// add p
+			// add
 			selection[hover->type].add(hover->index);
 			update_selection_box();
 			out_selection_changed();
 		} else {
-			// select p exclusively
+			// select exclusively
 			clear_selection();
 			selection[hover->type].add(hover->index);
 			update_selection_box();

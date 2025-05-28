@@ -380,6 +380,16 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 		dh->set_color(Red);
 		dh->set_line_width(2);//scheme.LINE_WIDTH_THIN);
 		dh->draw_lines(points, false);
+
+		if (multi_view->hover and multi_view->hover->type == MultiViewType::MODEL_EDGE) {
+			points.clear();
+			const auto& e = edges_cached[multi_view->hover->index];
+			points.add(data->editing_mesh->vertices[e.index[0]].pos);
+			points.add(data->editing_mesh->vertices[e.index[1]].pos);
+			dh->set_color(White);
+			dh->set_line_width(4);//scheme.LINE_WIDTH_THIN);
+			dh->draw_lines(points, false);
+		}
 	}
 
 
@@ -469,10 +479,20 @@ void ModeMesh::update_selection_vb() {
 	vsb.build(vertex_buffer_selection, 1);
 }
 
+vec2 line_closest_point2d(const vec2& a, const vec2& b, const vec2& p) {
+	vec2 dir = (b - a).normalized();
+	return a + dir * vec2::dot(p - a, dir);
+}
+
+float vec2_factor_between(const vec2& a, const vec2& b, const vec2& p) {
+	if (fabs(b.x - a.x) > fabs(b.y - a.y))
+		return (p.x - a.x) / (b.x - a.x);
+	return (p.y - a.y) / (b.y - a.y);
+}
 
 base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) const {
+	base::optional<Hover> h;
 	if (presentation_mode == PresentationMode::Vertices) {
-		base::optional<Hover> h;
 
 		//float zmin = multi_view->view_port.radius * 2;
 		for (const auto& [i, v]: enumerate(data->editing_mesh->vertices)) {
@@ -483,7 +503,27 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 				continue;
 			h = {MultiViewType::MODEL_VERTEX, i, v.pos};
 		}
-		return h;
+	}
+	if (presentation_mode == PresentationMode::Edges) {
+		float zmax = 1;
+		for (const auto& [i, e]: enumerate(edges_cached)) {
+			const auto pp0 = win->project(data->editing_mesh->vertices[e.index[0]].pos);
+			const auto pp1 = win->project(data->editing_mesh->vertices[e.index[1]].pos);
+			if (pp0.z <= 0 or pp0.z >= 1 or pp1.z <= 0 or pp1.z >= 1)
+				continue;
+			vec2 xx = line_closest_point2d(pp0.xy(), pp1.xy(), m);
+			if ((xx - m).length_fuzzy() > 10)
+				continue;
+			float f = vec2_factor_between(pp0.xy(), pp1.xy(), xx);
+			if (f < 0 or f > 1)
+				continue;
+			const auto p = (1 - f) * data->editing_mesh->vertices[e.index[0]].pos + f * data->editing_mesh->vertices[e.index[1]].pos;
+			const auto pp = win->project(p);
+			if (pp.z > zmax)
+				continue;
+			zmax = pp.z;
+			h = {MultiViewType::MODEL_EDGE, i, p};
+		}
 	}
 	if (presentation_mode == PresentationMode::Polygons) {
 		vec3 tp;
@@ -491,7 +531,7 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 		if (data->editing_mesh->is_mouse_over(win, mat4::ID, m, tp, index, false))
 			return Hover{MultiViewType::MODEL_POLYGON, index, tp};
 	}
-	return base::None;
+	return h;
 }
 
 void selection_edges_from_vertices(base::set<int>& sele, const base::set<int>& selv, const Array<Edge>& edges) {
