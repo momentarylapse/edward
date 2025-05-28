@@ -72,6 +72,16 @@ int Polygon::previous_vertex(int index) const {
 	return -1;
 }
 
+Edge Polygon::get_side_edge_out(int side_no) const {
+	int a = side[side_no].vertex;
+	int b = side[(side_no + 1) % side.num].vertex;
+	return Edge{min(a, b), max(a, b)};
+}
+
+Edge Polygon::get_side_edge_in(int side_no) const {
+	return get_side_edge_out(side_no == 0 ? side.num - 1 : side_no - 1);
+}
+
 
 
 static float get_ang(const Array<MeshVertex> &vertex, int a, int b, int c, const vec3 &flat_n) {

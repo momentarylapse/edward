@@ -22,31 +22,31 @@ ModeBevelEdges::ModeBevelEdges(ModeMesh* parent) :
 }
 
 void ModeBevelEdges::on_enter() {
-	mode_mesh->set_presentation_mode(ModeMesh::PresentationMode::Polygons);
+	if (mode_mesh->presentation_mode == ModeMesh::PresentationMode::Polygons)
+		mode_mesh->set_presentation_mode(ModeMesh::PresentationMode::Edges);
 	multi_view->set_allow_action(false);
 	session->win->set_visible("overlay-button-grid-left", false);
 
 	auto update = [this] {
-		diff = mesh_prepare_bevel_edges(*mode_mesh->data->editing_mesh, mode_mesh->multi_view->selection, dialog->get_float("distance"));
+		diff = mesh_prepare_bevel_edges(*mode_mesh->data->editing_mesh, mode_mesh->multi_view->selection, dialog->get_float("radius"));
 	};
 
 	dialog = new xhui::Panel("xxx");
 	dialog->from_source(R"foodelim(
-Dialog mesh-extrude-dialog "Extrude" allow-root width=200 noexpandx
+Dialog mesh-bevel-dialog "Bevel" allow-root width=200 noexpandx
 	Grid ? ""
 		Grid ? "" vertical class=card
-			Label header "Extrude" big bold center
+			Label header "Bevel" big bold center
 			Grid ? "" vertical
 				Grid ? ""
-					Label l-distance "Distance" right disabled
-					SpinButton distance "" range=::0.1 expandx
-				CheckBox connected "Keep polygons connected"
+					Label l-radius "Radius" right disabled
+					SpinButton radius "" range=::0.1 expandx
 		---|
 		Label ? "" expandy ignorehover
 )foodelim");
 	session->win->embed("overlay-main-grid", 1, 0, dialog);
 
-	dialog->set_float("distance", 5);
+	dialog->set_float("radius", 5);
 	dialog->event("*", update);
 
 	multi_view->out_selection_changed >> create_sink(update);
