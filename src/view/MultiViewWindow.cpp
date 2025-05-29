@@ -46,6 +46,57 @@ vec3 MultiViewWindow::unproject(const vec2& v, const vec3& zref) const {
 	return to_pixels.inverse().project(r);
 }
 
+
+
+vec3 linearized_projection1(const mat4& m, const vec3& p, const vec3& E) {
+	float w = (p.x*m._30 + p.y*m._31 + p.z*m._32 + m._33);
+	vec3 m3 = {m._30, m._31, m._32};
+	return m.transform_normal(E) / w - (m*p) * vec3::dot(m3, E) / (w*w);
+}
+
+vec3 linearized_projection2(const mat4& m, const vec3& p, const vec3& dir) {
+	float epsilon = 0.001;
+	return (m.project(p + epsilon * dir) - m.project(p)) / epsilon;
+}
+
+mat3 linearized_projection(const mat4& m, const vec3& p) {
+	// d/dx m.project(p + x*E)
+	// d/dx m * (p + x*E) / (<(_30,_31,_32), p+x*E> + _33);
+	// d/dx (m*p + x*m_0*E) / (<(_30,_31,_32), p> + _33 + x*<(_30,_31,_32),E>);
+	// m_0*E / (<_3,p>+_33) - (m*p)*<_3,E>/ (<_3,p>+_33)^2
+
+	// d/dx  (a+xb) / (c+xd)
+	// d/dx f/g = f'/g - fg'/gg
+	// b/c - ad/cc
+
+	return mat3(linearized_projection1(m, p, {1,0,0}), linearized_projection1(m, p, {0,1,0}), linearized_projection1(m, p, {0,0,1}));
+
+	float w = (p.x*m._30 + p.y*m._31 + p.z*m._32 + m._33);
+	mat3 r;
+	for (int i=0; i<3; i++)
+		for (int k=0; k<3; k++)
+			r.__e[i][k] = m.__e[i][k] / w;
+	for (int i=0; i<3; i++) {
+		const auto pp = (m*p) * r.e[i*4+3] / (w*w);
+		if (false) {
+			r.__e[i][0] -= pp.x;
+			r.__e[i][1] -= pp.y;
+			r.__e[i][2] -= pp.z;
+		} else {
+			r.__e[0][i] -= pp.x;
+			r.__e[1][i] -= pp.y;
+			r.__e[2][i] -= pp.z;
+		}
+	}
+
+	return r;
+}
+
+mat3 MultiViewWindow::linear_projection(const vec3& p) const {
+	return linearized_projection(to_pixels, p);
+}
+
+
 base::optional<vec3> MultiViewWindow::grid_hover_point(const vec2& m) const {
 	const auto d = active_grid_direction();
 	vec3 p0 = to_pixels.inverse().project({m, 0});

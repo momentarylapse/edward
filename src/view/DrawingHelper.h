@@ -41,10 +41,6 @@ public:
 
 	void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vb, Material* material, int pass_no = 0, const string& vertex_module = "default");
 
-	void draw_boxed_str(Painter* p, const vec2& pos, const string& str, int align = -1);
-
-	void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& a, MultiViewType kind, const base::optional<Hover>& hover, const base::set<int>& sel);
-
 	xhui::Context* context;
 	ResourceManager* resource_manager;
 	MultiViewWindow* window;
@@ -67,11 +63,19 @@ public:
 	Material* material_creation;
 	Material* material_shadow;
 
+	static const float LINE_THIN;
 	static const float LINE_MEDIUM;
 	static const float LINE_THICK;
 	static const float LINE_EXTRA_THICK;
 	static const color COLOR_X;
 };
+
+namespace drawing2d {
+
+void draw_boxed_str(Painter* p, const vec2& pos, const string& str, int align = -1);
+void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& a, MultiViewType kind, const base::optional<Hover>& hover, const base::set<int>& sel);
+
+}
 
 
 Array<vec3> mesh_edit_to_lines(const PolygonMesh& mesh, const MeshEdit& ed);

@@ -22,61 +22,25 @@
 #include <y/graphics-impl.h>
 #include <y/renderer/scene/RenderViewData.h>
 #include <lib/base/iter.h>
+#include <lib/math/mat3.h>
 #include <lib/math/plane.h>
 #include <lib/os/msg.h>
+
+#include "DrawingHelper.h"
+
+const float ActionController::PIXEL_RADIUS = 200;
 
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
 ActionController::Manipulator::Manipulator(MultiView* multi_view) {
-	geo_mat = mat4::ID;
 	scale = 1;
 	pos = v_0;
-
-	float r0 = 1.333f;
-	float r1 = 0.666f;
-	float r = 0.1f;
-	geo.add(new GeometryTorus(v_0, vec3::EZ, 1.0f, r, 32, 8));
-	geo.add(new GeometryTorus(v_0, vec3::EY, 1.0f, r, 32, 8));
-	geo.add(new GeometryTorus(v_0, vec3::EX, 1.0f, r, 32, 8));
-	geo.add(new GeometryCylinder(-vec3::EX*r0, -vec3::EX*r1, r, 1, 8));
-	geo.add(new GeometryCylinder( vec3::EX*r0,  vec3::EX*r1, r, 1, 8));
-	geo.add(new GeometryCylinder(-vec3::EY*r0, -vec3::EY*r1, r, 1, 8));
-	geo.add(new GeometryCylinder( vec3::EY*r0,  vec3::EY*r1, r, 1, 8));
-	geo.add(new GeometryCylinder(-vec3::EZ*r0, -vec3::EZ*r1, r, 1, 8));
-	geo.add(new GeometryCylinder( vec3::EZ*r0,  vec3::EZ*r1, r, 1, 8));
-	r = 0.015f;
-	geo_show.add(new GeometryTorus(v_0, vec3::EZ, 1.0f, r, 128, 8));
-	geo_show.add(new GeometryTorus(v_0, vec3::EY, 1.0f, r, 128, 8));
-	geo_show.add(new GeometryTorus(v_0, vec3::EX, 1.0f, r, 128, 8));
-	r = 0.03f;
-	geo_show.add(new GeometryCylinder(-vec3::EX*r0, -vec3::EX*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder( vec3::EX*r0,  vec3::EX*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder(-vec3::EY*r0, -vec3::EY*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder( vec3::EY*r0,  vec3::EY*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder(-vec3::EZ*r0, -vec3::EZ*r1, r, 1, 8));
-	geo_show.add(new GeometryCylinder( vec3::EZ*r0,  vec3::EZ*r1, r, 1, 8));
-
-	for (auto g: geo_show){
-		auto *vb = new VertexBuffer("3f,3f,2f");
-		g->build(vb);
-		buf.add(vb);
-	}
-
-	for (int i=0; i<geo.num; i++) {
-		auto m = create_material(multi_view->resource_manager, Black, 0.9f, 0, geo_config[i].col);
-		m->pass0.z_buffer = false;
-		m->pass0.z_test = false;
-		materials.add(m);
-	}
-	material_hover = create_material(multi_view->resource_manager, Black, 0.9f, 0, White);
-	material_hover->pass0.z_buffer = false;
-	material_hover->pass0.z_test = false;
 }
 
 ActionController::ActionController(MultiView *view) :
-		in_view_changed(this, &ActionController::update_manipulator),
+		in_view_changed(this, &ActionController::update_manipulator), // FIXME this uses some view matrices that will only be updated later during drawing...
 		in_selection_changed(this, [this] {
 			if (multi_view->selection_box)
 				visible = allowed;
@@ -106,6 +70,7 @@ void ActionController::start_action(Data* _data, ActionMultiView* a, const vec3 
 
 	data = _data;
 	mat = mat4::ID;
+	param = vec3(0, 0, 0);
 	//active_win = multi_view->active_window;
 	dv = dvp = vec3::ZERO;
 	m0 = _m;
@@ -291,10 +256,14 @@ void ActionController::Manipulator::update(ActionController* ac) {
 			float box_size = ac->multi_view->selection_box->size().length();
 			scale = clamp(box_size * 0.5f, scale, scale*3);
 		}
+
+		auto L = ac->multi_view->active_window->linear_projection(pos);
+		//auto Linv = L.inverse();
+		scale = PIXEL_RADIUS / sqrtf((L * vec3::EX).length_sqr() + (L * vec3::EY).length_sqr() + (L * vec3::EZ).length_sqr());
 	}
 	auto s = mat4::scale(scale, scale, scale);
 	auto t = mat4::translation(pos);
-	geo_mat = ac->mat * t * s;
+	//geo_mat = ac->mat * t * s;
 
 	//multi_view->force_redraw();
 }
@@ -370,23 +339,11 @@ bool ActionController::geo_allow(int i, MultiViewWindow* win, const mat4& geo_ma
 }
 
 // in 2d mode!
-void ActionController::draw(const RenderParams& params, RenderViewData& rvd) {
+void ActionController::__draw(const RenderParams& params, RenderViewData& rvd) {
 	//if (!multi_view->allow_mouse_actions)
 	//	return;
 	if (!visible)
 		return;
-
-	for (const auto& [i, vb]: enumerate(manipulator.buf)) {
-		if (!geo_allow(i, multi_view->active_window, manipulator.geo_mat))
-			continue;
-		//draw_mesh(params, geo_mat, vb, material);
-		auto m = manipulator.materials[i];
-		if (multi_view->hover and multi_view->hover->type == MultiViewType::ACTION_MANAGER and multi_view->hover->index == (int)geo_config[i].constraint)
-			m = manipulator.material_hover.get();
-		auto shader = rvd.get_shader(m, 0, "default", "");
-		auto& rd = rvd.start(params, manipulator.geo_mat, shader, *m, 0, PrimitiveTopology::TRIANGLES, vb);
-		rd.draw_triangles(params, vb);
-	}
 
 #if 0 //HAS_LIB_GL
 	nix::set_z(false, false);
@@ -460,74 +417,160 @@ void ActionController::draw(const RenderParams& params, RenderViewData& rvd) {
 #endif
 }
 
+void ActionController::draw_manipulator_default(Painter* p) {
+	if (auto w = multi_view->hover_window) {
+		p->set_line_width(DrawingHelper::LINE_THIN);
+		//p->set_fill(false);
+		const float r = manipulator.scale;
+		constexpr float rr = 8;
+		const vec3 p0 = manipulator.pos;
+		Array basis = {vec3::EX, vec3::EY, vec3::EZ};
+		Array colors = {color(1, 1, 0.2f, 0.2f), color(1, 0.2f, 1, 0.2f), color(1, 0.2f, 0.2f, 1)};
+
+		p->set_color(White.with_alpha(0.7f));
+		int N=64;
+		{
+			Array<vec2> points;
+			for (int i=0; i<N; i++) {
+				float phi = (float)i / (float)N * pi/2;
+				points.add(w->project(p0 + vec3(cosf(phi), sinf(phi), 0) * r * 0.8f).xy());
+			}
+			p->draw_lines(points);
+		}
+		{
+			Array<vec2> points;
+			for (int i=0; i<N; i++) {
+				float phi = (float)i / (float)N * pi/2;
+				points.add(w->project(p0 + vec3(cosf(phi), 0, sinf(phi)) * r * 0.8f).xy());
+			}
+			p->draw_lines(points);
+		}
+		{
+			Array<vec2> points;
+			for (int i=0; i<N; i++) {
+				float phi = (float)i / (float)N * pi/2;
+				points.add(w->project(p0 + vec3(0, cosf(phi), sinf(phi)) * r * 0.8f).xy());
+			}
+			p->draw_lines(points);
+		}
+
+
+		manipulator.handle_positions.clear();
+
+		Array c0 = {Constraint::NEG_X, Constraint::NEG_Y, Constraint::NEG_Z};
+		Array c1 = {Constraint::X, Constraint::Y, Constraint::Z};
+
+		for (const auto& [i, e]: enumerate(basis)) {
+			vec3 a = p0 - r * e;
+			vec3 b = p0 + r * e;
+			p->set_color(White.with_alpha(0.7f));
+			p->draw_line(w->project(a).xy(), w->project(b).xy());
+
+			if (multi_view->hover and multi_view->hover->type == MultiViewType::ACTION_MANAGER and multi_view->hover->index == (int)c0[i])
+				p->set_color(colors[i]);
+			else
+				p->set_color(color::interpolate(colors[i], White, 0.5f));
+			p->draw_circle(w->project(a).xy(), rr);
+
+			if (multi_view->hover and multi_view->hover->type == MultiViewType::ACTION_MANAGER and multi_view->hover->index == (int)c1[i])
+				p->set_color(colors[i]);
+			else
+				p->set_color(color::interpolate(colors[i], White, 0.5f));
+			p->draw_circle(w->project(b).xy(), rr);
+
+			manipulator.handle_positions.add(a);
+			manipulator.handle_positions.add(b);
+		}
+		if (multi_view->hover and multi_view->hover->type == MultiViewType::ACTION_MANAGER and multi_view->hover->index == (int)Constraint::FREE)
+			p->set_color(Gray);
+		else
+			p->set_color(White);
+		manipulator.handle_positions.add(p0);
+		p->draw_circle(w->project(p0).xy(), rr*2);
+		//p->set_fill(true);
+	}
+}
+
+void ActionController::draw_action_stats(Painter* p) {
+	//vec3 pp = win->project(pos);
+
+	//float x0 = pp.x + 120;//multi_view->m.x + 100;//win->dest.x1 + 120;
+	//float y0 = pp.y + 40;//multi_view->m.y + 50;//win->dest.y1 + 100;
+
+	string s;
+	if (action.mode == MouseActionMode::MOVE) {
+		vec3 t = param;
+		string unit = multi_view->get_unit_by_zoom(t);
+		s = f2s(t.x, 2) + " " + unit + "\n" + f2s(t.y, 2) + " " + unit;
+		//	if (multi_view->mode3d)
+		s += "\n" + f2s(t.z, 2) + " " + unit;
+	} else if ((action.mode == MouseActionMode::ROTATE) or (action.mode == MouseActionMode::ROTATE_2D)) {
+		vec3 r = param * 180.0f / pi;
+		s = format("%.1f°\n%.1f°\n%.1f°", r.x, r.y, r.z);
+	} else if ((action.mode == MouseActionMode::SCALE) or (action.mode == MouseActionMode::SCALE_2D)) {
+		if (true) //multi_view->mode3d)
+			s = format("%.1f %%\n%.1f %%\n%.1f %%", param.x*100, param.y*100, param.z*100);
+		else
+			s = format("%.1f%%\n%.1f%%", param.x*100, param.y*100);
+	}
+	drawing2d::draw_boxed_str(p, {100, 100}, s);
+}
+
+void ActionController::draw_manipulator_active(Painter* p) {
+	auto w = multi_view->hover_window;
+	const vec3 p0 = manipulator.pos;
+	Array basis = {vec3::EX, vec3::EY, vec3::EZ};
+	Array colors = {color(1, 1, 0.2f, 0.2f), color(1, 0.2f, 1, 0.2f), color(1, 0.2f, 0.2f, 1)};
+	const float r = manipulator.scale;
+	constexpr float rr = 8;
+
+	float sign = 1.0f;
+	if (constraints == Constraint::NEG_X or constraints == Constraint::NEG_Y or constraints == Constraint::NEG_Z)
+		sign = -1.0f;
+	int axis = -1;
+	if (constraints == Constraint::X or constraints == Constraint::NEG_X)
+		axis = 0;
+	if (constraints == Constraint::Y or constraints == Constraint::NEG_Y)
+		axis = 1;
+	if (constraints == Constraint::Z or constraints == Constraint::NEG_Z)
+		axis = 2;
+
+	// "infinite" constraint axis
+	if (constraints != Constraint::FREE) {
+		p->set_color(colors[axis]);
+		p->set_line_width(DrawingHelper::LINE_MEDIUM);
+		vec2 a = w->project(p0).xy();
+		vec2 b = w->project(p0 + w->pixel_to_size(2) * basis[axis]).xy();
+		vec2 dir = (b - a).normalized();
+		p->draw_line(a - dir * 4000, a + dir * 4000);
+	}
+
+	if (action.mode == MouseActionMode::MOVE) {
+		vec3 pos = p0 + param;
+
+		if (constraints == Constraint::FREE) {
+			p->set_color(White);
+			p->draw_circle(w->project(pos).xy(), rr*2);
+		}
+		if (constraints != Constraint::FREE) {
+			p->set_color(colors[axis]);
+			p->draw_circle(w->project(pos + sign * r * basis[axis]).xy(), rr);
+		}
+	}
+}
+
+
+
 void ActionController::draw_post(Painter* p) {
 	if (!visible)
 		return;
-	Array<vec2> lines;
 
-#if 0
-	auto pr = [this] (const vec3& v) {
-		return multi_view->projection.project(geo_mat * v).xy();
-	};
+	if (performing_action()) {
+		draw_manipulator_active(p);
 
-	p->set_line_width(10);
-	for (float phi=0; phi<2*pi; phi+=0.10f)
-		lines.add(pr({cos(phi), 0, sin(phi)}));
-	p->set_color(color(1, 1, 0, 1));
-	p->draw_lines(lines);
-
-	lines.clear();
-	for (float phi=0; phi<2*pi; phi+=0.10f)
-		lines.add(pr({cos(phi), sin(phi), 0}));
-	p->set_color(color(1, 1, 1, 0));
-	p->draw_lines(lines);
-
-	lines.clear();
-	for (float phi=0; phi<2*pi; phi+=0.10f)
-		lines.add(pr({0, cos(phi), sin(phi)}));
-	p->set_color(color(1, 0, 1, 1));
-	p->draw_lines(lines);
-
-	float r1 = 1.3f;
-	float r2 = 0.7f;
-	p->set_color(Red);
-	p->draw_line(pr({-r1, 0, 0}), pr({-r2, 0, 0}));
-	p->draw_line(pr({r1, 0, 0}), pr({r2, 0, 0}));
-	p->set_color(Green);
-	p->draw_line(pr({0, -r1, 0}), pr({0, -r2, 0}));
-	p->draw_line(pr({0, r1, 0}), pr({0, r2, 0}));
-	p->set_color(Blue);
-	p->draw_line(pr({0, 0, -r1}), pr({0, 0, -r2}));
-	p->draw_line(pr({0, 0, r1}), pr({0, 0, r2}));
-#endif
-
-
-	if (performing_action()) { // and (win == multi_view->active_win)) {
-		//vec3 pp = win->project(pos);
-
-		//float x0 = pp.x + 120;//multi_view->m.x + 100;//win->dest.x1 + 120;
-		//float y0 = pp.y + 40;//multi_view->m.y + 50;//win->dest.y1 + 100;
-
-		string s;
-		if (action.mode == MouseActionMode::MOVE) {
-			vec3 t = param;
-			string unit = multi_view->get_unit_by_zoom(t);
-			s = f2s(t.x, 2) + " " + unit + "\n" + f2s(t.y, 2) + " " + unit;
-		//	if (multi_view->mode3d)
-				s += "\n" + f2s(t.z, 2) + " " + unit;
-		} else if ((action.mode == MouseActionMode::ROTATE) or (action.mode == MouseActionMode::ROTATE_2D)) {
-			vec3 r = param * 180.0f / pi;
-			s = format("%.1f°\n%.1f°\n%.1f°", r.x, r.y, r.z);
-		} else if ((action.mode == MouseActionMode::SCALE) or (action.mode == MouseActionMode::SCALE_2D)) {
-			if (true) //multi_view->mode3d)
-				s = format("%.1f%%\n%.1f%%\n%.1f%%", param.x*100, param.y*100, param.z*100);
-			else
-				s = format("%.1f%%\n%.1f%%", param.x*100, param.y*100);
-		}
-	//	win->drawing_helper->set_color(scheme.TEXT);
-	//	win->drawing_helper->draw_str(x0, y0, s, TextAlign::RIGHT);
-		p->set_color(Black);
-		p->draw_str({100,100}, s);
+		draw_action_stats(p);
+	} else {
+		draw_manipulator_default(p);
 	}
 }
 
@@ -537,7 +580,30 @@ ActionController::Constraint ActionController::get_hover(MultiViewWindow* win, c
 	float z_min = 1;
 	int priority = -1;
 	auto hover = Constraint::UNDEFINED;
-	for (const auto& [i, g]: enumerate(manipulator.geo)) {
+
+	for (const auto& [i, hp]: enumerate(manipulator.handle_positions)) {
+		const auto pp = win->project(hp);
+		if (pp.z > 0 and pp.z < z_min and (pp.xy() - m).length() < 20) {
+			if (i == 0)
+				hover = Constraint::NEG_X;
+			if (i == 1)
+				hover = Constraint::X;
+			if (i == 2)
+				hover = Constraint::NEG_Y;
+			if (i == 3)
+				hover = Constraint::Y;
+			if (i == 4)
+				hover = Constraint::NEG_Z;
+			if (i == 5)
+				hover = Constraint::Z;
+			if (i == 6)
+				hover = Constraint::FREE;
+			tp = hp;
+			z_min = pp.z;
+		}
+	}
+
+	/*for (const auto& [i, g]: enumerate(manipulator.geo)) {
 		vec3 t;
 		int index;
 		if (!geo_allow(i, win, manipulator.geo_mat))
@@ -551,40 +617,20 @@ ActionController::Constraint ActionController::get_hover(MultiViewWindow* win, c
 				tp = t;
 			}
 		}
-	}
+	}*/
 	//hover_constraint = hover;
 	return hover;
 }
-
-#if 0
-bool ActionController::on_left_button_down(const vec2& m) {
-	if (!visible and action.locked)
-		return false;
-	vec3 hp; // = multi_view->hover.point;
-	hover_constraint = get_hover(multi_view->hover_window, m, hp);
-	if (hover_constraint != Constraint::UNDEFINED) {
-		//start_action(multi_view->active_win, hp, hover_constraint);
-		return true;
-	}
-	/*if (multi_view->hover.index >= 0){
-		start_action(multi_view->active_win, hp, Constraint::FREE);
-		return true;
-	}*/
-	return false;
-}
-
-void ActionController::on_left_button_up(const vec2& m) {
-	end_action(true);
-
-	update();
-}
-#endif
 
 bool ActionController::performing_action() {
 	return cur_action;
 }
 
-/*void ActionController::on_mouse_move(const vec2& m, const vec2& d) {
-	update_action();
-}*/
+bool ActionController::on_mouse_move(const vec2& m, const vec2& d) {
+	if (performing_action()) {
+		update_action(d);
+		return true;
+	}
+	return false;
+}
 

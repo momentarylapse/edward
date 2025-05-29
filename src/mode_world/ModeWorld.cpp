@@ -436,8 +436,6 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 
 	draw_cameras(win);
 	draw_lights(win);
-
-	multi_view->action_controller->draw(params, rvd);
 }
 
 void ModeWorld::on_draw_shadow(const RenderParams& params, RenderViewData& rvd) {
@@ -588,7 +586,7 @@ static base::optional<string> world_selection_description(DataWorld* data, const
 }
 
 void ModeWorld::on_draw_post(Painter* p) {
-	session->drawing_helper->draw_data_points(p, multi_view->active_window,
+	drawing2d::draw_data_points(p, multi_view->active_window,
 		data->entities,
 		MultiViewType::WORLD_ENTITY,
 		multi_view->hover,

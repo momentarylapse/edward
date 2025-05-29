@@ -74,7 +74,7 @@ public:
 		YZ,
 	};
 
-	void draw(const RenderParams& params, RenderViewData& rvd);
+	void __draw(const RenderParams& params, RenderViewData& rvd);
 	void draw_post(Painter* p);
 	Constraint get_hover(MultiViewWindow* win, const vec2& m, vec3 &tp) const;
 	bool performing_action();
@@ -87,6 +87,10 @@ public:
 	void set_action_mode(MouseActionMode mode);
 	void set_allowed(bool allowed);
 
+	//bool on_left_button_down(const vec2& m);
+	bool on_mouse_move(const vec2& m, const vec2& d);
+	//bool on_left_button_up(const vec2& m);
+
 private:
 
 	bool visible = false;
@@ -97,12 +101,7 @@ private:
 		void update(ActionController* ac);
 		vec3 pos, pos0;
 		float scale;
-		owned_array<PolygonMesh> geo_show;
-		owned_array<PolygonMesh> geo;
-		owned_array<VertexBuffer> buf;
-		owned_array<Material> materials;
-		owned<Material> material_hover;
-		mat4 geo_mat;
+		Array<vec3> handle_positions;
 	} manipulator;
 	vec3 m0;
 	vec3 dv, dvp;
@@ -115,9 +114,10 @@ private:
 	Data* data;
 
 	void update_manipulator();
-	/*bool on_left_button_down(const vec2& m);
-	void on_mouse_move(const vec2& m, const vec2& d);
-	void on_left_button_up(const vec2& m);*/
+
+	void draw_manipulator_default(Painter* p);
+	void draw_manipulator_active(Painter* p);
+	void draw_action_stats(Painter* p);
 
 
 	static vec3 transform_ang(MultiViewWindow* w, const vec3& ang);
@@ -136,6 +136,8 @@ private:
 	};
 	static const GeoConfig geo_config[];
 	static bool geo_allow(int i, MultiViewWindow* win, const mat4& geo_mat);
+
+	static const float PIXEL_RADIUS;
 };
 
 #endif /* ACTIONCONTROLLER_H_ */

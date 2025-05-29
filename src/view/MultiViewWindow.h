@@ -27,6 +27,7 @@ public:
 	vec3 direction() const;
 	vec3 view_pos() const;
 	quaternion view_ang() const;
+	mat3 linear_projection(const vec3& p) const;
 
 	float zoom() const;
 	float pixel_to_size(float s) const;

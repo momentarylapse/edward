@@ -131,10 +131,9 @@ void MultiView::draw(const RenderParams& params) {
 
 
 void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
-	if (action_controller->performing_action()) {
-		action_controller->update_action(d);
+	if (action_controller->on_mouse_move(m, d))
 		return;
-	}
+
 	if (selection_area) {
 		selection_area = rect(selection_area->p00(), m);
 		select_in_rect(active_window, *selection_area);
@@ -155,7 +154,6 @@ void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
 
 	if (!session->win->button(0) and !session->win->button(1) and !session->win->button(2))
 		hover = get_hover(hover_window, m);
-	//action_controller->on_mouse_move(m, d);
 	// TODO if busy... return
 
 	// left -> ...
@@ -264,9 +262,10 @@ void MultiView::on_left_button_down(const vec2& m) {
 	if (!_allow_select)
 		return;
 
-	//action_controller->on_left_button_down(m);
 	if (hover and hover->type == MultiViewType::ACTION_MANAGER) {
 		auto data = session->cur_mode->get_data();
+		//if (action_controller->on_left_button_down(m, data))
+		//	return;
 		if (f_create_action)
 			action_controller->start_action(data, f_create_action(), hover->tp, (ActionController::Constraint)hover->index);
 
@@ -423,7 +422,7 @@ void MultiView::draw_mouse_pos(Painter* p) {
 	string sy = f2s(m.y,2) + " " + unit;
 	string sz = f2s(m.z,2) + " " + unit;
 
-	session->drawing_helper->draw_boxed_str(p, area.p11() - vec2(30,80), sx + "\n" + sy +  + "\n" + sz, 1);
+	drawing2d::draw_boxed_str(p, area.p11() - vec2(30,80), sx + "\n" + sy +  + "\n" + sz, 1);
 
 #if 0 //HAS_LIB_GL
 	if (mouse_win->type == VIEW_2D) {

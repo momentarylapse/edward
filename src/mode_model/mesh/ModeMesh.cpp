@@ -391,9 +391,6 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 			dh->draw_lines(points, false);
 		}
 	}
-
-
-	multi_view->action_controller->draw(params, rvd);
 }
 
 base::optional<string> model_selection_description(DataModel* m, const Data::Selection& sel) {
@@ -422,7 +419,7 @@ base::optional<string> model_selection_description(DataModel* m, const Data::Sel
 
 void ModeMesh::on_draw_post(Painter* p) {
 	if (presentation_mode == PresentationMode::Vertices)
-		session->drawing_helper->draw_data_points(p, multi_view->active_window, data->editing_mesh->vertices, MultiViewType::MODEL_VERTEX, multi_view->hover, multi_view->selection[MultiViewType::MODEL_VERTEX]);
+		drawing2d::draw_data_points(p, multi_view->active_window, data->editing_mesh->vertices, MultiViewType::MODEL_VERTEX, multi_view->hover, multi_view->selection[MultiViewType::MODEL_VERTEX]);
 
 	if (auto s = model_selection_description(data, multi_view->selection))
 		draw_info(p, "selected: " + *s);

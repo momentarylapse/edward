@@ -7,7 +7,7 @@
 
 #include "GeometryBall.h"
 
-#define ball_ang(x, y)	vector((float)(y)/(float)num_y,(float)(x)/(float)num_x,0)
+#define ball_ang(x, y)	vec3((float)(y)/(float)num_y,(float)(x)/(float)num_x,0)
 
 GeometryBall::GeometryBall(const vec3 &pos, float radius, int num_x, int num_y)
 {

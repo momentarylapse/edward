@@ -15,6 +15,7 @@
 #include "MultiView.h"
 #include "SingleData.h"
 
+const float DrawingHelper::LINE_THIN = 2;
 const float DrawingHelper::LINE_MEDIUM = 3;
 const float DrawingHelper::LINE_THICK = 5;
 const float DrawingHelper::LINE_EXTRA_THICK = 7;
@@ -264,7 +265,9 @@ void DrawingHelper::draw_mesh(const RenderParams& params, RenderViewData& rvd, c
 	rd.draw_triangles(params, vertex_buffer);
 }
 
-void DrawingHelper::draw_boxed_str(Painter* p, const vec2& _pos, const string& str, int align) {
+namespace drawing2d {
+
+void draw_boxed_str(Painter* p, const vec2& _pos, const string& str, int align) {
 	vec2 size = p->get_str_size(str);
 	vec2 pos = _pos;
 	if (align == 0)
@@ -279,7 +282,7 @@ void DrawingHelper::draw_boxed_str(Painter* p, const vec2& _pos, const string& s
 	p->draw_str(pos, str);
 }
 
-void DrawingHelper::draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& _a, MultiViewType kind, const base::optional<Hover>& hover, const base::set<int>& sel) {
+void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& _a, MultiViewType kind, const base::optional<Hover>& hover, const base::set<int>& sel) {
 	int _hover = -1;
 	if (hover and hover->type == kind)
 		_hover = hover->index;
@@ -295,6 +298,7 @@ void DrawingHelper::draw_data_points(Painter* p, MultiViewWindow* win, const Dyn
 	}
 }
 
+}
 
 Array<vec3> mesh_edit_to_lines(const PolygonMesh& mesh, const MeshEdit& ed) {
 	Array<vec3> points;
