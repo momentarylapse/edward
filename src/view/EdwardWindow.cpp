@@ -229,18 +229,19 @@ Dialog x x padding=0
 			session->cur_mode->multi_view->view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
 	});
 	event("mouse-action", [this] {
-		auto& mode = session->cur_mode->multi_view->action_controller->action.mode;
+		auto ac = session->cur_mode->multi_view->action_controller.get();
+		const auto mode = ac->action_mode();
 		if (mode == MouseActionMode::MOVE) {
-			mode = MouseActionMode::ROTATE;
+			ac->set_action_mode(MouseActionMode::ROTATE);
 			set_options("mouse-action", "image=rf-rotate");
 		} else if (mode == MouseActionMode::ROTATE) {
-			mode = MouseActionMode::SCALE;
+			ac->set_action_mode(MouseActionMode::SCALE);
 			set_options("mouse-action", "image=rf-scale");
 		} else if (mode == MouseActionMode::SCALE) {
-			mode = MouseActionMode::MOVE;
+			ac->set_action_mode(MouseActionMode::MOVE);
 			set_options("mouse-action", "image=rf-translate");
 		}
-		set_string("mouse-action", session->cur_mode->multi_view->action_controller->action.name().sub(0, 1).upper());
+		set_string("mouse-action", session->cur_mode->multi_view->action_controller->action_name().sub(0, 1).upper());
 	});
 	event("model_new", [this] {
 		session->universal_new(FD_MODEL);

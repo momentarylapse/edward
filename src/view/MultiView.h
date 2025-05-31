@@ -108,7 +108,6 @@ public:
 	void set_allow_action(bool allow);
 	void set_show_grid(bool show);
 	bool _allow_select = false;
-	bool _allow_action = false;
 	bool _show_grid = false;
 
 	std::function<Data::Selection(MultiViewWindow*, const rect&)> f_select;
@@ -124,7 +123,7 @@ public:
 	base::optional<rect> selection_area;
 	bool possibly_selecting = false; // lbut down?
 
-	ActionController* action_controller;
+	owned<ActionController> action_controller;
 
 	std::function<base::optional<Hover>(MultiViewWindow*,const vec2&)> f_hover;
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;

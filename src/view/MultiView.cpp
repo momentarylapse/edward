@@ -36,7 +36,7 @@ extern float global_shadow_box_size;
 
 MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 		in_data_changed(this, [this] {
-			if (!action_controller->in_use()) {
+			if (!action_controller->performing_action()) {
 				update_selection_box();
 				hover = base::None;
 			}
@@ -48,7 +48,10 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 	resource_manager = session->resource_manager;
 	active_window = &window;
 	hover_window = &window;
+
 	action_controller = new ActionController(this);
+	view_port.out_changed >> action_controller->in_view_changed;
+	out_selection_changed >> action_controller->in_selection_changed;
 
 
 	light_mode = LightMode::FollowCamera;
@@ -59,10 +62,6 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 	default_light->allow_shadow = true;;
 	default_light->light.harshness = 0.5f;
 	lights.add(default_light);
-
-	view_port.out_changed >> create_sink([this] {
-		action_controller->update_manipulator();
-	});
 
 	shadow_renderer = new ShadowRenderer(view_port.scene_view.get(), {new MultiViewShadowGeometryEmitter(this)});
 	view_port.scene_view->shadow_maps.add(shadow_renderer->cascades[0].depth_buffer);
@@ -132,9 +131,8 @@ void MultiView::draw(const RenderParams& params) {
 
 
 void MultiView::on_mouse_move(const vec2& m, const vec2& d) {
-	if (action_controller->cur_action) {
+	if (action_controller->performing_action()) {
 		action_controller->update_action(d);
-		action_controller->visible = true;
 		return;
 	}
 	if (selection_area) {
@@ -182,7 +180,6 @@ void MultiView::clear_selection() {
 	for (int i=0; i<(int)MultiViewType::_NUM; i++)
 		selection.set((MultiViewType)i, {});
 	selection_box = base::None;
-	action_controller->visible = false;
 	out_selection_changed();
 }
 
@@ -212,7 +209,6 @@ void MultiView::select_in_rect(MultiViewWindow* win, const rect& _r) {
 	}
 
 	update_selection_box();
-	out_selection_changed();
 }
 
 base::set<int> MultiView::select_points_in_rect(MultiViewWindow* win, const rect& r, DynamicArray& array) {
@@ -241,7 +237,7 @@ void MultiView::update_selection_box() {
 		f_make_selection_consistent(selection);
 	if (f_get_selection_box)
 		selection_box = f_get_selection_box(selection);
-	action_controller->update_manipulator();
+	out_selection_changed();
 }
 
 base::optional<Box> MultiView::points_get_selection_box(const DynamicArray& _array, const base::set<int>& sel) {
@@ -270,9 +266,9 @@ void MultiView::on_left_button_down(const vec2& m) {
 
 	//action_controller->on_left_button_down(m);
 	if (hover and hover->type == MultiViewType::ACTION_MANAGER) {
-		action_controller->data = session->cur_mode->get_data();
-		if (f_create_action and _allow_action)
-			action_controller->start_action(f_create_action(), hover->tp, (ActionController::Constraint)hover->index);
+		auto data = session->cur_mode->get_data();
+		if (f_create_action)
+			action_controller->start_action(data, f_create_action(), hover->tp, (ActionController::Constraint)hover->index);
 
 	} else if (hover) {
 		if (session->win->is_key_pressed(xhui::KEY_SHIFT)) {
@@ -282,18 +278,15 @@ void MultiView::on_left_button_down(const vec2& m) {
 			else
 				selection[hover->type].add(hover->index);
 			update_selection_box();
-			out_selection_changed();
 		} else if (session->win->is_key_pressed(xhui::KEY_CONTROL)) {
 			// add
 			selection[hover->type].add(hover->index);
 			update_selection_box();
-			out_selection_changed();
 		} else {
 			// select exclusively
 			clear_selection();
 			selection[hover->type].add(hover->index);
 			update_selection_box();
-			out_selection_changed();
 		}
 	} else {
 		if (!session->win->is_key_pressed(xhui::KEY_SHIFT) and !session->win->is_key_pressed(xhui::KEY_CONTROL))
@@ -303,7 +296,7 @@ void MultiView::on_left_button_down(const vec2& m) {
 
 void MultiView::on_left_button_up(const vec2& m) {
 	//action_controller->on_left_button_up(m);
-	if (action_controller->cur_action) {
+	if (action_controller->performing_action()) {
 		action_controller->end_action(true);
 		update_selection_box();
 		return;
@@ -345,13 +338,6 @@ void MultiView::on_draw(Painter* p) {
 	action_controller->draw_post(p);
 	draw_mouse_pos(p);
 }
-
-
-/*void MultiView::set_selection_box(const base::optional<Box>& box) {
-	selection_box = box;
-	out_selection_changed();
-	action_controller->update();
-}*/
 
 
 base::optional<Hover> MultiView::get_hover(MultiViewWindow* win, const vec2& m) const {
@@ -464,7 +450,7 @@ base::optional<vec3> MultiView::grid_hover_point(const vec2& m) const {
 }
 
 void MultiView::set_allow_action(bool allow) {
-	_allow_action = allow;
+	action_controller->set_allowed(allow);
 }
 
 void MultiView::set_allow_select(bool allow) {

@@ -54,8 +54,11 @@ struct MouseAction {
 
 class ActionController : public obs::Node<VirtualBase> {
 public:
-	explicit ActionController(MultiView *multi_view);
+	explicit ActionController(MultiView* multi_view);
 	~ActionController() override;
+
+	obs::sink in_view_changed;
+	obs::sink in_selection_changed;
 
 	enum class Constraint {
 		UNDEFINED = -1,
@@ -71,7 +74,23 @@ public:
 		YZ,
 	};
 
+	void draw(const RenderParams& params, RenderViewData& rvd);
+	void draw_post(Painter* p);
+	Constraint get_hover(MultiViewWindow* win, const vec2& m, vec3 &tp) const;
+	bool performing_action();
+	void start_action(Data* data, ActionMultiView* a, const vec3& m, Constraint constraints);
+	void update_action(const vec2& m);
+	void update_param(const vec3 &p);
+	void end_action(bool set);
+	string action_name() const;
+	MouseActionMode action_mode() const;
+	void set_action_mode(MouseActionMode mode);
+	void set_allowed(bool allowed);
+
+private:
+
 	bool visible = false;
+	bool allowed = false;
 
 	struct Manipulator {
 		explicit Manipulator(MultiView* multi_view);
@@ -94,23 +113,11 @@ public:
 	MouseAction action;
 	ActionMultiView* cur_action = nullptr;
 	Data* data;
-	//void reset();
-	//void draw(Window *win);
-	void draw(const RenderParams& params, RenderViewData& rvd);
-	void draw_post(Painter* p);
-	void show(bool show);
 
 	void update_manipulator();
 	/*bool on_left_button_down(const vec2& m);
 	void on_mouse_move(const vec2& m, const vec2& d);
 	void on_left_button_up(const vec2& m);*/
-	Constraint get_hover(MultiViewWindow* win, const vec2& m, vec3 &tp);
-	bool in_use();
-	void start_action(ActionMultiView* a, const vec3& m, Constraint constraints);
-	void update_action(const vec2& m);
-	void update_param(const vec3 &p);
-	void end_action(bool set);
-	bool is_selecting();
 
 
 	static vec3 transform_ang(MultiViewWindow* w, const vec3& ang);

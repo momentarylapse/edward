@@ -75,7 +75,18 @@ ActionController::Manipulator::Manipulator(MultiView* multi_view) {
 	material_hover->pass0.z_test = false;
 }
 
-ActionController::ActionController(MultiView *view) : manipulator(view) {
+ActionController::ActionController(MultiView *view) :
+		in_view_changed(this, &ActionController::update_manipulator),
+		in_selection_changed(this, [this] {
+			if (multi_view->selection_box)
+				visible = allowed;
+			else
+				visible = false;
+			update_manipulator();
+			out_changed();
+		}),
+		manipulator(view)
+{
 	multi_view = view;
 	mat = mat4::ID;
 	action.mode = MouseActionMode::MOVE;
@@ -85,14 +96,15 @@ ActionController::ActionController(MultiView *view) : manipulator(view) {
 
 ActionController::~ActionController() = default;
 
-void ActionController::start_action(ActionMultiView* a, const vec3 &_m, Constraint _constraints) {
+void ActionController::start_action(Data* _data, ActionMultiView* a, const vec3 &_m, Constraint _constraints) {
 	if (cur_action)
 		end_action(false);
-//	if (!multi_view->allow_mouse_actions)
-//		return;
+	if (!allowed)
+		return;;
 	//if (action.name == "")
 	//	return;
 
+	data = _data;
 	mat = mat4::ID;
 	//active_win = multi_view->active_window;
 	dv = dvp = vec3::ZERO;
@@ -246,22 +258,24 @@ void ActionController::end_action(bool set) {
 	//MouseWrapper::stop(multi_view->session->win);
 }
 
-bool ActionController::is_selecting() {
-#if 0
-	if (action.mode == ACTION_SELECT)
-		return true;
-	if (!action.locked)
-		return !multi_view->hover_selected();
-#endif
-	return false;
+string ActionController::action_name() const {
+	return action.name();
 }
 
-/*void ActionController::reset() {
-	msg_write("reset");
-	visible = false;
-	constraints = Constraint::FREE;
-	hover_constraint = Constraint::UNDEFINED;
-}*/
+
+MouseActionMode ActionController::action_mode() const {
+	return action.mode;
+}
+
+void ActionController::set_action_mode(MouseActionMode mode) {
+	action.mode = mode;
+}
+
+void ActionController::set_allowed(bool _allowed) {
+	allowed = _allowed;
+	visible = allowed and multi_view->selection_box;
+	update_manipulator();
+}
 
 void ActionController::Manipulator::update(ActionController* ac) {
 	if (ac->cur_action) {
@@ -272,13 +286,10 @@ void ActionController::Manipulator::update(ActionController* ac) {
 		scale /= 2;
 		//pos = multi_view->get_selection_center();
 		if (ac->multi_view->selection_box) {
-			ac->visible = true;
 			pos = ac->multi_view->selection_box->center();
 			pos0 = pos;
 			float box_size = ac->multi_view->selection_box->size().length();
 			scale = clamp(box_size * 0.5f, scale, scale*3);
-		} else {
-			ac->visible = false;
 		}
 	}
 	auto s = mat4::scale(scale, scale, scale);
@@ -290,12 +301,6 @@ void ActionController::Manipulator::update(ActionController* ac) {
 
 void ActionController::update_manipulator() {
 	manipulator.update(this);
-}
-
-
-void ActionController::show(bool show) {
-	visible = show;
-	update_manipulator();
 }
 
 string ActionController::constraint_name(Constraint c) {
@@ -497,7 +502,7 @@ void ActionController::draw_post(Painter* p) {
 #endif
 
 
-	if (in_use()) { // and (win == multi_view->active_win)) {
+	if (performing_action()) { // and (win == multi_view->active_win)) {
 		//vec3 pp = win->project(pos);
 
 		//float x0 = pp.x + 120;//multi_view->m.x + 100;//win->dest.x1 + 120;
@@ -526,7 +531,7 @@ void ActionController::draw_post(Painter* p) {
 	}
 }
 
-ActionController::Constraint ActionController::get_hover(MultiViewWindow* win, const vec2& m, vec3 &tp) {
+ActionController::Constraint ActionController::get_hover(MultiViewWindow* win, const vec2& m, vec3 &tp) const {
 	if (!visible)
 		return Constraint::UNDEFINED;
 	float z_min = 1;
@@ -575,7 +580,7 @@ void ActionController::on_left_button_up(const vec2& m) {
 }
 #endif
 
-bool ActionController::in_use() {
+bool ActionController::performing_action() {
 	return cur_action;
 }
 
