@@ -88,8 +88,16 @@ void ModeAddPlatonic::on_leave() {
 
 void ModeAddPlatonic::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
+	auto dh = session->drawing_helper;
 
 	session->drawing_helper->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
+
+	dh->set_color(DrawingHelper::COLOR_X);
+	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
+	dh->set_z_test(false);
+	if (center_selected)
+		dh->draw_lines({center, point2});
+	dh->set_z_test(true);
 }
 
 void ModeAddPlatonic::on_draw_post(Painter* p) {
@@ -131,8 +139,8 @@ void ModeAddPlatonic::update_mesh() {
 
 void ModeAddPlatonic::on_mouse_move(const vec2& m, const vec2& d) {
 	if (center_selected) {
-		vec3 pos2 = multi_view->cursor_pos_3d(m);
-		radius = (pos2 - center).length();
+		point2 = multi_view->hover_window->unproject(m, center);
+		radius = (point2 - center).length();
 	} else {
 		center = multi_view->cursor_pos_3d(m);
 	}
@@ -147,6 +155,7 @@ void ModeAddPlatonic::on_left_button_down(const vec2& m) {
 	} else {
 		center = multi_view->cursor_pos_3d(m);
 		center_selected = true;
+		point2 = center;
 	}
 
 	session->win->request_redraw();

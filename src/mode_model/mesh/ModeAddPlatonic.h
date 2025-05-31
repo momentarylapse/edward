@@ -30,6 +30,7 @@ public:
 
 	vec3 center;
 	bool center_selected;
+	vec3 point2;
 	float radius;
 	PolygonMesh mesh;
 	owned<VertexBuffer> vertex_buffer;
