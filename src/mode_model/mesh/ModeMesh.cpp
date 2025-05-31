@@ -132,7 +132,7 @@ void ModeMesh::on_leave_rec() {
 
 void ModeMesh::on_enter() {
 	auto update = [this] {
-		data->editing_mesh->update_normals();
+		normals_dirty = true;
 		update_vb();
 		update_selection_vb();
 		session->win->request_redraw();
@@ -262,9 +262,23 @@ void ModeMesh::on_enter() {
 	data->out_topology_changed >> create_sink([this] {
 		on_update_topology();
 	});
-	update();
+
 	on_update_topology();
+	data->editing_mesh->update_normals();
+	normals_dirty = false;
+	update();
 	update_menu();
+
+	xhui::run_repeated(1.0f, [this] {
+		if (normals_dirty) {
+			data->editing_mesh->update_normals();
+			update_edge_info();
+			update_vb();
+			update_selection_vb();
+			session->win->request_redraw();
+			normals_dirty = false;
+		}
+	});
 }
 
 void ModeMesh::on_leave() {

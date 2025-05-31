@@ -64,6 +64,7 @@ public:
 		vec3 normal;
 	};
 	Array<EdgeInfo> edge_infos;
+	bool normals_dirty = false;
 
 	int current_material;
 	void set_current_material(int index);
