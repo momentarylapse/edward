@@ -93,7 +93,9 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(ModelMesh* m, const Data:
 	}
 }
 
-void *ActionModelDeleteSelection::execute(Data*) {
+void *ActionModelDeleteSelection::execute(Data* data) {
+	auto d = dynamic_cast<DataModel*>(data);
+
 	for (int i: base::reverse(vertex_indices))
 		mesh->vertices.erase(i);
 	for (int i: base::reverse(polygon_indices))
@@ -111,10 +113,14 @@ void *ActionModelDeleteSelection::execute(Data*) {
 	for (auto& p: mesh->cylinders)
 		for (int k=0; k<2; k++)
 			p.index[k] = map_vertex(p.index[k]);
+
+	d->out_topology_changed();
 	return nullptr;
 }
 
-void ActionModelDeleteSelection::undo(Data*) {
+void ActionModelDeleteSelection::undo(Data* data) {
+	auto d = dynamic_cast<DataModel*>(data);
+
 	for (auto& p: mesh->polygons)
 		for (auto& s: p.side)
 			s.vertex = unmap_vertex(s.vertex);
@@ -132,6 +138,8 @@ void ActionModelDeleteSelection::undo(Data*) {
 		mesh->spheres.insert(spheres[ii], i);
 	for (const auto& [ii, i]: enumerate(cylinder_indices))
 		mesh->cylinders.insert(cylinders[ii], i);
+
+	d->out_topology_changed();
 }
 
 int ActionModelDeleteSelection::map_vertex(int v) const {

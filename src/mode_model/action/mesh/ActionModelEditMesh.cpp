@@ -11,13 +11,16 @@ ActionModelEditMesh::ActionModelEditMesh(ModelMesh* _mesh, const MeshEdit& _edit
 	edit = _edit;
 }
 
-void* ActionModelEditMesh::execute(Data* d) {
+void* ActionModelEditMesh::execute(Data* data) {
+	auto d = dynamic_cast<DataModel*>(data);
 	edit = edit.apply_inplace(*mesh);
+
+	d->out_topology_changed();
 	return nullptr;
 }
 
-void ActionModelEditMesh::undo(Data* d) {
-	execute(d);
+void ActionModelEditMesh::undo(Data* data) {
+	execute(data);
 }
 
 

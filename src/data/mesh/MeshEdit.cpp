@@ -146,3 +146,12 @@ PolygonMesh MeshEdit::apply(const PolygonMesh& mesh, MeshEdit* inv) const {
 	return mesh2;
 }
 
+bool MeshEdit::changes_topology() const {
+	if (_new_polygons.num > 0 or _del_polygons.num > 0 or _del_vertices.num > 0)
+		return true;
+	// TODO
+	//for (const auto& p: _new_polygons)
+	return true;
+}
+
+

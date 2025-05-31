@@ -31,6 +31,8 @@ struct MeshEdit {
 
 	MeshEdit apply_inplace(PolygonMesh& mesh) const;
 	PolygonMesh apply(const PolygonMesh& mesh, MeshEdit* inv = nullptr) const;
+
+	bool changes_topology() const;
 };
 
 

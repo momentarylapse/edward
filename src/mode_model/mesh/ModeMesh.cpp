@@ -133,7 +133,6 @@ void ModeMesh::on_leave_rec() {
 void ModeMesh::on_enter() {
 	auto update = [this] {
 		data->editing_mesh->update_normals();
-		on_update_topology(); // TODO topology event!
 		update_vb();
 		update_selection_vb();
 		session->win->request_redraw();
@@ -260,7 +259,11 @@ void ModeMesh::on_enter() {
 
 
 	data->out_changed >> create_sink(update);
+	data->out_topology_changed >> create_sink([this] {
+		on_update_topology();
+	});
 	update();
+	on_update_topology();
 	update_menu();
 }
 
