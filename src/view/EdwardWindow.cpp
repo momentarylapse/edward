@@ -109,6 +109,7 @@ Dialog x x padding=0
 	set_key_code("redo", mod + xhui::KEY_Y);
 	set_key_code("copy", mod + xhui::KEY_C);
 	set_key_code("paste", mod + xhui::KEY_V);
+	set_key_code("select_all", mod + xhui::KEY_A);
 	set_key_code("execute-plugin", mod + xhui::KEY_RETURN);
 
 	toolbar = (xhui::Toolbar*)get_control("toolbar");
@@ -251,6 +252,15 @@ Dialog x x padding=0
 	});
 	event("world_new", [this] {
 		session->universal_new(FD_WORLD);
+	});
+	event("select_all", [this] {
+		session->cur_mode->multi_view->select_all();
+	});
+	event("select_none", [this] {
+		session->cur_mode->multi_view->clear_selection();
+	});
+	event("invert_selection", [this] {
+		session->cur_mode->multi_view->invert_selection();
 	});
 	event("execute-plugin", [this] {
 		xhui::FileSelectionDialog::ask(this, "Execute plugin", session->plugin_manager->directory, {}).then( [this] (const Path& path) {

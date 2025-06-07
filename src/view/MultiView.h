@@ -95,6 +95,8 @@ public:
 	Array<DataSet> data_sets;
 
 	void clear_selection();
+	void invert_selection();
+	void select_all();
 	void select_in_rect(MultiViewWindow* win, const rect& r);
 	static base::set<int> select_points_in_rect(MultiViewWindow* win, const rect& r, DynamicArray& array);
 

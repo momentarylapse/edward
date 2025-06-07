@@ -181,6 +181,24 @@ void MultiView::clear_selection() {
 	out_selection_changed();
 }
 
+void MultiView::select_all() {
+	for (auto& d: data_sets)
+		for (int i=0; i<d.array->num; i++)
+			selection[d.type].add(i);
+	update_selection_box();
+}
+
+void MultiView::invert_selection() {
+	for (auto& d: data_sets)
+		for (int i=0; i<d.array->num; i++) {
+			if (selection[d.type].contains(i))
+				selection[d.type].erase(i);
+			else
+				selection[d.type].add(i);
+		}
+	update_selection_box();
+}
+
 void MultiView::select_in_rect(MultiViewWindow* win, const rect& _r) {
 	const auto r = _r.canonical();
 	if (f_select)
