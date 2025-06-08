@@ -6,6 +6,7 @@
 #include <lib/image/image.h>
 #if __has_include(<lib/xhui/xhui.h>)
 	#include <lib/xhui/xhui.h>
+	#include <lib/xhui/Application.h>
 	using namespace xhui;
 #elif __has_include(<lib/hui/hui.h>)
 	#include <lib/hui/hui.h>

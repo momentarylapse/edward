@@ -377,6 +377,7 @@ add_executable(edward
 	src/lib/xhui/dialogs/MenuPopup.cpp
 	src/lib/xhui/dialogs/QuestionDialog.cpp
 	src/lib/xhui/draw/font.cpp
+	src/lib/xhui/Application.cpp
 	src/lib/xhui/ContextGL.cpp
 	src/lib/xhui/ContextVulkan.cpp
 	src/lib/xhui/Dialog.cpp

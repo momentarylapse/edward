@@ -7,6 +7,7 @@
 #include "Label.h"
 #include "ListView.h"
 #include "Button.h"
+#include "../Application.h"
 #include "../Painter.h"
 #include "../Theme.h"
 #include "../../base/iter.h"

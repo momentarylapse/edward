@@ -8,7 +8,7 @@
 #ifndef EDWARD_H_
 #define EDWARD_H_
 
-#include "lib/xhui/xhui.h"
+#include <lib/xhui/Application.h>
 
 class PluginManager;
 

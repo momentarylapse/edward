@@ -1,8 +1,7 @@
 #include "Theme.h"
-#include "xhui.h"
+#include "Application.h"
 #include "../os/config.h"
 #include "../os/path.h"
-#include "../os/msg.h"
 
 namespace xhui {
 

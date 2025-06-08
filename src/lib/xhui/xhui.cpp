@@ -1,5 +1,6 @@
 
 #include "xhui.h"
+#include "Application.h"
 #include "Resource.h"
 #include "Window.h"
 #include "Dialog.h"
@@ -21,13 +22,7 @@ namespace xhui {
 	extern Array<Window*> _windows_;
 
 	float global_ui_scale = 1;
-
-	Path Application::directory;
-	Path Application::directory_static;
-	Path Application::initial_working_directory;
-	Path Application::filename;
-	bool Application::installed;
-	bool Application::_end_requested = false;
+	string separator = "\\";
 
 
 	font::Face* default_font_regular = nullptr;
@@ -37,6 +32,13 @@ namespace xhui {
 
 
 	Configuration config;
+
+	Flags operator|(Flags a, Flags b) {
+		return (Flags)((int)a | (int)b);
+	}
+	int operator&(Flags a, Flags b) {
+		return (int)a & (int)b;
+	}
 
 	Array<string> make_args(int num_args, char *args[]) {
 		Array<string> a;
@@ -177,9 +179,9 @@ void init(const Array<string> &arg, const string& app_name) {
 		config.load(Application::directory | "config.txt");
 
 
-	//if ((flags & Flags::DONT_LOAD_RESOURCE) == 0)
-	if (os::fs::exists(Application::directory_static | "hui_resources.txt"))
-		load_resource(Application::directory_static | "hui_resources.txt");
+	if ((Application::flags & Flags::DONT_LOAD_RESOURCE) == 0)
+		if (os::fs::exists(Application::directory_static | "hui_resources.txt"))
+			load_resource(Application::directory_static | "hui_resources.txt");
 
 	string def_lang = "English";
 	//if (def_lang.num > 0)
@@ -228,71 +230,8 @@ void create_default_images() {
 	}
 }
 
-//   filename -> executable file
-//   directory ->
-//      NONINSTALLED:  binary dir
-//      INSTALLED:     ~/.MY_APP/      <<< now always this
-//   directory_static ->
-//      NONINSTALLED:  binary dir/static/
-//      INSTALLED:     /usr/local/share/MY_APP/
-//   initial_working_directory -> working dir before running this program
-void Application::guess_directories(const Array<string> &arg, const string &app_name) {
-
-	initial_working_directory = os::fs::current_directory();
-	installed = false;
 
 
-	// executable file
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_MINGW) //defined(__GNUC__) || defined(OS_LINUX)
-	if (arg.num > 0)
-		filename = arg[0];
-#else // OS_WINDOWS
-	char *ttt = nullptr;
-	int r = _get_pgmptr(&ttt);
-	filename = ttt;
-	hui_win_instance = (void*)GetModuleHandle(nullptr);
-#endif
-
-
-	// first, assume a local/non-installed version
-	directory = initial_working_directory; //strip_dev_dirs(filename.parent());
-	directory_static = directory | "static";
-
-#ifdef INSTALL_PREFIX
-	// our build system should define this:
-	Path prefix = INSTALL_PREFIX;
-#else
-	// oh no... fall-back
-	Path prefix = "/usr/local";
-#endif
-
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_MINGW) //defined(__GNUC__) || defined(OS_LINUX)
-	// installed version?
-	if (filename.is_in(prefix) or (filename.str().find("/") < 0)) {
-		installed = true;
-		directory_static = prefix | "share" | app_name;
-	}
-
-	// inside an AppImage?
-	if (getenv("APPIMAGE")) {
-		installed = true;
-		directory_static = Path(getenv("APPDIR")) | "usr" | "share" | app_name;
-	}
-
-	// inside MacOS bundle?
-	if (str(filename).find(".app/Contents/MacOS/") >= 0) {
-		installed = true;
-		directory_static = filename.parent().parent() | "Resources";
-	}
-
-	directory = format("%s/.%s/", getenv("HOME"), app_name);
-	os::fs::create_directory(directory);
-#endif
-}
-
-void Application::end() {
-	_end_requested = true;
-}
 
 struct Runner {
 	bool used, repeat;

@@ -221,7 +221,13 @@ void texture_write(Texture *t, const Image &im) {
 
 void texture_write_float(Texture *t, const DynamicArray& data) {
 #ifdef USING_VULKAN
-	msg_error("unimplemented:  Texture.write_float()");
+	int n_in = data.num * data.element_size / (int)sizeof(float);
+	int n_tex = t->width * t->height * t->depth;
+	if (n_in != n_tex) {
+		msg_error(format("Texture.write_float(): size mismatch (input: %d - texture: %d)", n_in, n_tex));
+		return;
+	}
+	t->writex(data.data, t->width, t->height, t->depth, "r:f32");
 #else
 	t->write_float(data);
 #endif
@@ -256,11 +262,7 @@ void imagetexture_init(DepthBuffer *t, int w, int h, const string &format) {
 }
 
 void volumetexture_init(VolumeTexture *t, int nx, int ny, int nz, const string &format) {
-#ifdef USING_VULKAN
-	//new(t) DepthBuffer(w, h, format, true);
-#else
 	new(t) VolumeTexture(nx, ny, nz, format);
-#endif
 }
 
 void shader_set_float(Shader *s, const string &name, float f) {

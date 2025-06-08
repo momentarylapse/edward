@@ -14,10 +14,7 @@ class Painter;
 class Dialog;
 class Context;
 
-enum Flags {
-	NONE = 0,
-	OWN_DECORATION = 64
-};
+enum class Flags;
 
 struct Event {
 	enum class Type {

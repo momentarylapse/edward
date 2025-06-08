@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Painter.h"
 #include "../os/path.h"
+#include "../base/map.h"
 
 #if HAS_LIB_VULKAN
 namespace vulkan {
@@ -28,25 +29,24 @@ void run();
 
 #if HAS_LIB_VULKAN
 	using Texture = vulkan::Texture;
-#endif
-#if HAS_LIB_GL
+#else
 	using Texture = nix::Texture;
 #endif
 
 extern float global_ui_scale;
 
-class Application {
-public:
-	static Path directory_static;
-	static Path directory;
-	static Path initial_working_directory;
-	static Path filename;
-	static bool installed;
-	static void guess_directories(const Array<string> &arg, const string &app_name);
-	static void end();
 
-	static bool _end_requested;
+enum class Flags {
+	NONE = 0,
+	DONT_LOAD_RESOURCE = 1,
+	SILENT = 2,
+	NO_ERROR_HANDLER = 4,
+	UNIQUE = 16,
+	OWN_DECORATION = 64
 };
+Flags operator|(Flags a, Flags b);
+int operator&(Flags a, Flags b);
+
 
 int run_repeated(float dt, Callback f);
 int run_later(float dt, Callback f);
