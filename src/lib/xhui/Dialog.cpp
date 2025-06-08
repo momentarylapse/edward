@@ -68,6 +68,7 @@ Dialog::Dialog(const string& _title, int _width, int _height, Panel* parent, Dia
 		});
 	width = _width;
 	height = _height;
+	pos = {0, 0};
 	_area = {0, (float)width, 0, (float)height};
 	padding = Theme::_default.window_margin;
 
@@ -143,6 +144,13 @@ void Dialog::set_title(const string& title) {
 	header->set_title(title);
 }
 
+rect Dialog::suggest_area(const rect& parent_area) const {
+	const vec2 m = parent_area.center();
+	const vec2 size = vec2((float)width, (float)height);
+	if (flags & DialogFlags::FixedPosition)
+		return {pos, pos + size};
+	return {m - size/2, m + size/2};
+}
 
 
 

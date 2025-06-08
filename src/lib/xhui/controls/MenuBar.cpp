@@ -25,7 +25,7 @@ public:
 			owner->handle_event(id, event_id::Activate, true);
 		});*/
 
-		owner->open_dialog(new MenuPopup(*menu.get(), owner, [this] (const string& id) {
+		owner->open_dialog(new MenuPopup(*menu.get(), owner, _area, [this] (const string& id) {
 			owner->handle_event(id, event_id::Activate, true);
 		}));
 	}

@@ -462,9 +462,7 @@ void Window::_on_draw() {
 	for (auto dlg: dialogs) {
 		p->set_color(color(0.3f, 0, 0, 0));
 		p->draw_rect(a);
-		const vec2 m = a.center();
-		const vec2 size = vec2((float)dlg->width, (float)dlg->height);
-		dlg->negotiate_area({m - size/2, m + size/2});
+		dlg->negotiate_area(dlg->suggest_area(a));
 		dlg->_draw(p);
 	}
 

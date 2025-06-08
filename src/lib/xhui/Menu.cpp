@@ -3,6 +3,8 @@
 //
 
 #include "Menu.h"
+
+#include "Window.h"
 #include "dialogs/MenuPopup.h"
 
 namespace xhui {
@@ -32,7 +34,8 @@ void Menu::enable(const string& id, bool enabled) {
 void Menu::open_popup(Panel* p) {
 	if (!p->get_window())
 		return;
-	p->open_dialog(new MenuPopup(*this, p, nullptr));
+	const vec2 m = p->get_window()->mouse_position();
+	p->open_dialog(new MenuPopup(*this, p, {m, m}, nullptr));
 }
 
 } // xhui
