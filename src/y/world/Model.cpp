@@ -174,7 +174,10 @@ void SubMesh::update_vb(Mesh *mesh, bool animated) {
 		for (int i=0; i<num_triangles; i++) {
 			for (int k=0; k<3; k++) {
 				int vi = triangle_index[i*3+k];
-				vertex.add({mesh->vertex[vi], normal[i*3+k], skin_vertex[i*6+k*2  ], skin_vertex[i*6+k*2+1], mesh->bone_index[vi], mesh->bone_weight[vi]});
+				auto bi = mesh->bone_index[vi];
+				for (int l=0; l<4; l++)
+					bi[l] = max(bi[l], 0);
+				vertex.add({mesh->vertex[vi], normal[i*3+k], skin_vertex[i*6+k*2  ], skin_vertex[i*6+k*2+1], bi, mesh->bone_weight[vi]});
 			}
 		}
 		vertex_buffer->update(vertex);

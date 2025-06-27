@@ -15,12 +15,13 @@ class PerformanceMonitor;
 class TemplateDataScriptVariable;
 namespace kaba {
 	class Class;
+	class Exporter;
 }
 
 class PluginManager {
 public:
 	static void init();
-	static void export_kaba();
+	static void export_kaba(kaba::Exporter* exporter);
 	static void import_kaba();
 
 	static const kaba::Class *find_class(const Path &filename, const string &name);

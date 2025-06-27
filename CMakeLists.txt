@@ -240,7 +240,6 @@ add_executable(edward
 	src/lib/kaba/lib/lib.cpp
 	src/lib/kaba/lib/lib_async.cpp
 	src/lib/kaba/lib/lib_base.cpp
-	src/lib/kaba/lib/lib_doc.cpp
 	src/lib/kaba/lib/lib_gl.cpp
 	src/lib/kaba/lib/lib_hui.cpp
 	src/lib/kaba/lib/lib_image.cpp
@@ -248,6 +247,7 @@ add_executable(edward
 	src/lib/kaba/lib/lib_math.cpp
 	src/lib/kaba/lib/lib_net.cpp
 	src/lib/kaba/lib/lib_os.cpp
+	src/lib/kaba/lib/lib_pdf.cpp
 	src/lib/kaba/lib/lib_threads.cpp
 	src/lib/kaba/lib/lib_time.cpp
 	src/lib/kaba/lib/lib_vulkan.cpp

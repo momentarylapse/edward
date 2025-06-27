@@ -33,7 +33,7 @@ NetworkManager::Connection *NetworkManager::connect_to_host(const string &host) 
 	con->buffer = new BinaryBuffer;
 	con->is_host = false;
 	try {
-		con->s = Socket::connect(host, PORT);
+		con->s = net::connect(host, PORT);
 		send_connect(con);
 		con->s->set_blocking(false);
 	} catch (Exception &e) {

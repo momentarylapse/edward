@@ -13,7 +13,9 @@
 #include "../lib/base/pointer.h"
 #include <functional>
 
-class Socket;
+namespace net {
+	class Socket;
+}
 class BinaryBuffer;
 
 class NetworkManager {
@@ -23,7 +25,7 @@ public:
 	NetworkManager();
 
 	struct Connection {
-		owned<Socket> s;
+		owned<net::Socket> s;
 		owned<BinaryBuffer> buffer;
 		bool is_host;
 
