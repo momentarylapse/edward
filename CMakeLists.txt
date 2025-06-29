@@ -430,6 +430,7 @@ add_executable(edward
 	src/mode_model/processing/MeshBevelEdges.cpp
 	src/mode_model/processing/MeshExtrudePolygons.cpp
 	src/mode_model/processing/MeshRandomSurfacePoints.cpp
+	src/mode_model/skeleton/ModeSkeleton.cpp
 	src/mode_model/ModeModel.cpp
 	src/mode_project/data/AdminFile.cpp
 	src/mode_project/data/AdminFileList.cpp

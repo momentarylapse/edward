@@ -10,17 +10,23 @@
 #include "data/DataModel.h"
 
 class ModeMesh;
+class ModeSkeleton;
 
 class ModeModel : public Mode {
 public:
 	explicit ModeModel(Session* session);
 	~ModeModel() override;
 
-	void on_enter() override;
-	void on_leave() override;
+	void on_enter_rec() override;
+	void on_leave_rec() override;
+	void on_command(const string& id) override;
+
+	void update_menu();
 
 	owned<DataModel> data;
 	owned<ModeMesh> mode_mesh;
+	owned<ModeSkeleton> mode_skeleton;
+	Array<int> event_ids_rec;
 };
 
 

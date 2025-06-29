@@ -18,7 +18,6 @@
 #include "../ModeModel.h"
 #include "../action/mesh/ActionModelMoveSelection.h"
 #include "../data/ModelMesh.h"
-#include "../dialog/ModelPropertiesDialog.h"
 #include <Session.h>
 #include <data/mesh/GeometryCylinder.h>
 #include <data/mesh/GeometrySphere.h>
@@ -36,7 +35,6 @@
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
 #include <mode_model/dialog/ModelMaterialSelectionDialog.h>
-#include <storage/Storage.h>
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
@@ -103,9 +101,6 @@ void ModeMesh::on_enter_rec() {
 	event_ids_rec.add(session->win->event("mode_model_materials", [this] {
 		session->set_mode(mode_mesh_material.get());
 	}));
-	event_ids_rec.add(session->win->event("mode_properties", [this] {
-		session->win->open_dialog(new ModelPropertiesDialog(session->win, data));
-	}));
 
 	event_ids_rec.add(session->win->event("mode_model_vertex", [this] {
 		set_presentation_mode(PresentationMode::Vertices);
@@ -148,8 +143,6 @@ void ModeMesh::on_enter() {
 
 	win->enable("mode_model_texture_coord", false);
 	win->enable("mode_model_paint", false);
-	win->enable("mode_model_skeleton", false);
-	win->enable("mode_model_animation", false);
 
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);
@@ -191,16 +184,6 @@ void ModeMesh::on_enter() {
 	win->add_control("Button", "C", 0, 7, "add-cylinder");
 	win->set_options("add-cylinder", "height=50,width=50,noexpandx,ignorefocus");
 
-
-	event_ids.add(session->win->event("save", [this] {
-		if (data->filename.is_empty())
-			session->storage->save_as(data);
-		else
-			session->storage->save(data->filename, data);
-	}));
-	event_ids.add(session->win->event("save-as", [this] {
-		session->storage->save_as(data);
-	}));
 
 	event_ids.add(session->win->event("mesh-visible0", [this] {
 		set_edit_mesh(data->mesh.get());
@@ -329,7 +312,6 @@ void ModeMesh::update_menu() {
 	win->check("mesh-visible0", data->editing_mesh == data->mesh.get());
 	win->check("mesh-physical", data->editing_mesh == data->phys_mesh.get());
 
-	win->check("mode_model_mesh", session->cur_mode == this);
 	win->check("mode_model_deform", session->cur_mode == mode_mesh_sculpt.get());
 	win->check("mode_model_material", session->cur_mode == mode_mesh_material.get());
 
@@ -651,18 +633,11 @@ base::optional<Box> ModeMesh::get_selection_box(const Data::Selection& sel) cons
 
 
 void ModeMesh::on_command(const string& id) {
-	if (id == "new")
-		session->universal_new(FD_MODEL);
-	if (id == "open")
-		session->universal_open(FD_MODEL);
-	if (id == "undo")
-		data->undo();
-	if (id == "redo")
-		data->redo();
 	if (id == "copy")
 		copy();
 	if (id == "paste")
 		paste();
+	_parent->on_command(id);
 }
 
 void ModeMesh::copy() {
