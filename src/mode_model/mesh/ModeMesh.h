@@ -37,6 +37,8 @@ public:
 	void on_prepare_scene(const RenderParams& params) override;
 	void on_draw_background(const RenderParams& params, RenderViewData& rvd) override;
 	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
+	void draw_polygons(const RenderParams& params, MultiViewWindow* win);
+	void draw_edges(const RenderParams& params, MultiViewWindow* win, const base::set<int>& sel);
 	void on_draw_post(Painter*) override;
 	void on_command(const string& id) override;
 	void on_key_down(int key) override;

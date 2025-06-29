@@ -330,6 +330,54 @@ void ModeMesh::on_draw_background(const RenderParams& params, RenderViewData& rv
 	rvd.clear(params, {xhui::Theme::_default.background_low});
 }
 
+void ModeMesh::draw_polygons(const RenderParams& params, MultiViewWindow* win) {
+	auto& rvd = win->rvd();
+	auto dh = win->multi_view->session->drawing_helper;
+
+	for (int i=0; i<vertex_buffers.num; i++)
+		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffers[i], materials[i], 0);
+}
+
+void ModeMesh::draw_edges(const RenderParams& params, MultiViewWindow* win, const base::set<int>& sel) {
+	auto& rvd = win->rvd();
+	auto dh = win->multi_view->session->drawing_helper;
+	// unselected (colored by normal)
+	Array<vec3> points;
+	Array<color> colors;
+	for (const auto& [i, e]: enumerate(edges_cached))
+		if (!sel.contains(i)) {
+			points.add(data->editing_mesh->vertices[e.index[0]].pos);
+			points.add(data->editing_mesh->vertices[e.index[1]].pos);
+			float f = (vec3::dot(edge_infos[i].normal, win->direction()) + 1) * 0.5f;
+			const auto c = color::interpolate(color(1, 0.5f, 0.5f, 0.5f), color(1, 0.35f, 0.35f, 0.35f), f);
+			colors.add(c);
+			colors.add(c);
+		}
+	dh->set_line_width(1.5f);//scheme.LINE_WIDTH_THIN);
+	dh->draw_lines_colored(points, colors, false);
+
+	// selected
+	points.clear();
+	for (const auto& [i, e]: enumerate(edges_cached))
+		if (sel.contains(i)) {
+			points.add(data->editing_mesh->vertices[e.index[0]].pos);
+			points.add(data->editing_mesh->vertices[e.index[1]].pos);
+		}
+	dh->set_color(Red);
+	dh->set_line_width(2);//scheme.LINE_WIDTH_THIN);
+	dh->draw_lines(points, false);
+
+	if (multi_view->hover and multi_view->hover->type == MultiViewType::MODEL_EDGE) {
+		points.clear();
+		const auto& e = edges_cached[multi_view->hover->index];
+		points.add(data->editing_mesh->vertices[e.index[0]].pos);
+		points.add(data->editing_mesh->vertices[e.index[1]].pos);
+		dh->set_color(White);
+		dh->set_line_width(4);//scheme.LINE_WIDTH_THIN);
+		dh->draw_lines(points, false);
+	}
+}
+
 void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	auto& rvd = win->rvd();
 	auto dh = win->multi_view->session->drawing_helper;
@@ -337,10 +385,8 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	const auto& sele = multi_view->selection[MultiViewType::MODEL_EDGE];
 	const auto& selp = multi_view->selection[MultiViewType::MODEL_POLYGON];
 
-	if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces or data->editing_mesh == data->phys_mesh.get()) {
-		for (int i=0; i<vertex_buffers.num; i++)
-			dh->draw_mesh(params, rvd, mat4::ID, vertex_buffers[i], materials[i], 0);
-	}
+	if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces or data->editing_mesh == data->phys_mesh.get())
+		draw_polygons(params, win);
 
 	if (data->editing_mesh == data->phys_mesh.get())
 		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_physical, material_physical, 0);
@@ -353,43 +399,8 @@ void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	vsb.build(vertex_buffer_hover, 1);
 	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_hover, material_hover, 0);
 
-	if (presentation_mode == PresentationMode::Vertices or presentation_mode == PresentationMode::Edges or presentation_mode == PresentationMode::Polygons) {
-		// unselected (colored by normal)
-		Array<vec3> points;
-		Array<color> colors;
-		for (const auto& [i, e]: enumerate(edges_cached))
-			if (!sele.contains(i)) {
-				points.add(data->editing_mesh->vertices[e.index[0]].pos);
-				points.add(data->editing_mesh->vertices[e.index[1]].pos);
-				float f = (vec3::dot(edge_infos[i].normal, win->direction()) + 1) * 0.5f;
-				const auto c = color::interpolate(color(1, 0.5f, 0.5f, 0.5f), color(1, 0.35f, 0.35f, 0.35f), f);
-				colors.add(c);
-				colors.add(c);
-			}
-		dh->set_line_width(1.5f);//scheme.LINE_WIDTH_THIN);
-		dh->draw_lines_colored(points, colors, false);
-
-		// selected
-		points.clear();
-		for (const auto& [i, e]: enumerate(edges_cached))
-			if (sele.contains(i)) {
-				points.add(data->editing_mesh->vertices[e.index[0]].pos);
-				points.add(data->editing_mesh->vertices[e.index[1]].pos);
-			}
-		dh->set_color(Red);
-		dh->set_line_width(2);//scheme.LINE_WIDTH_THIN);
-		dh->draw_lines(points, false);
-
-		if (multi_view->hover and multi_view->hover->type == MultiViewType::MODEL_EDGE) {
-			points.clear();
-			const auto& e = edges_cached[multi_view->hover->index];
-			points.add(data->editing_mesh->vertices[e.index[0]].pos);
-			points.add(data->editing_mesh->vertices[e.index[1]].pos);
-			dh->set_color(White);
-			dh->set_line_width(4);//scheme.LINE_WIDTH_THIN);
-			dh->draw_lines(points, false);
-		}
-	}
+	if (presentation_mode == PresentationMode::Vertices or presentation_mode == PresentationMode::Edges or presentation_mode == PresentationMode::Polygons)
+		draw_edges(params, win, sele);
 }
 
 base::optional<string> model_selection_description(DataModel* m, const Data::Selection& sel) {

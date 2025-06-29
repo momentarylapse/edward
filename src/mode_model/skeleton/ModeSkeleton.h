@@ -44,6 +44,9 @@ public:
 	Array<int> event_ids;
 
 	void update_menu();
+	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
+	Data::Selection select_in_rect(MultiViewWindow* win, const rect& r);
+	base::optional<Box> get_selection_box(const Data::Selection& sel) const;
 };
 
 #endif //MODESKELETON_H
