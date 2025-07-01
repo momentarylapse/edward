@@ -60,11 +60,11 @@ string materialToJson(ModelMaterial *m)
 
 vec3 getMoveDPos(DataModel *m, ModelFrame &f, int bi)
 {
-	ModelBone &b = m->bone[bi];
+	ModelBone &b = m->bones[bi];
 	int r = b.parent;
 	if (r < 0)
 		return b.pos + f.skel_dpos[bi];
-	ModelBone &pb = m->bone[r];
+	ModelBone &pb = m->bones[r];
 	quaternion q;
 	q = quaternion::rotation_v( f.skel_ang[r]);
 	return q * (b.pos - pb.pos) + getMoveDPos(m, f, r);
@@ -84,13 +84,13 @@ string moveToJson(ModelMove &m, DataModel *model)
 	str += "	{\n";
 	str += "		'name': '" + m.name + "',\n";
 	str += "		'fps': " + f2s(m.frames_per_sec_const,6) + ",\n";
-	str += "		'length': " + f2s(m.frame.num / m.frames_per_sec_const, 6) + ",\n";
+	str += "		'length': " + f2s(m.frames.num / m.frames_per_sec_const, 6) + ",\n";
 	str += "		'hierarchy': [\n";
-	foreachi(ModelBone &b, model->bone, i){
+	foreachi(ModelBone &b, model->bones, i){
 		str += "			{\n";
 		str += "				'parent': -1,\n"; //+ i2s(b.parent) + ",\n";
 		str += "				'keys': [\n";
-		foreachi(ModelFrame &f, m.frame, j){
+		foreachi(ModelFrame &f, m.frames, j){
 			getMoveData(model, f, i, q, t);
 			str += "					{\n";
 			str += "						'time': " + f2s(j / m.frames_per_sec_const, 6) + ",\n";
@@ -99,15 +99,15 @@ string moveToJson(ModelMove &m, DataModel *model)
 			str += "						'scl': [1,1,1]\n";
 			str += "					},\n";
 		}
-		getMoveData(model, m.frame[0], i, q, t);
+		getMoveData(model, m.frames[0], i, q, t);
 		str += "					{\n";
-		str += "						'time': " + f2s(m.frame.num / m.frames_per_sec_const, 6) + ",\n";
+		str += "						'time': " + f2s(m.frames.num / m.frames_per_sec_const, 6) + ",\n";
 		str += "						'pos': [" + vecToJson(t) + "],\n";
 		str += "						'rot': [" + qToJson(q) + "],\n";
 		str += "						'scl': [1,1,1]\n";
 		str += "					}\n";
 		str += "				]\n";
-		if (i < model->bone.num - 1)
+		if (i < model->bones.num - 1)
 			str += "			},\n";
 		else
 			str += "			}\n";
@@ -151,7 +151,7 @@ void FormatModelJson::_save(const Path &filename, DataModel *m) {
 	str += "	'colors': 0,\n";
 	str += "	'uvs': 1,\n";
 	str += "	'morphTargets': 0,\n";
-	str += "	'bones': " + i2s(m->bone.num) + "\n";
+	str += "	'bones': " + i2s(m->bones.num) + "\n";
 	str += "},\n";
 	str += "'influencesPerVertex': 1,\n";
 	str += "'scale': 1.000,\n";
@@ -173,9 +173,9 @@ void FormatModelJson::_save(const Path &filename, DataModel *m) {
 	str += "		'vertexColors' : false\n"
 	str += "	}],\n"*/
 	str += "'materials': [\n";
-	foreachi(auto *mat, m->material, i){
+	foreachi(auto *mat, m->materials, i){
 		str += materialToJson(mat);
-		if (i < m->material.num - 1)
+		if (i < m->materials.num - 1)
 			str += ",\n";
 	}
 	str += "],\n";
@@ -226,9 +226,9 @@ void FormatModelJson::_save(const Path &filename, DataModel *m) {
 			str += ",\n"
 	str += "],\n"*/
 	str += "'bones': [\n";
-	foreachi(ModelBone &b, m->bone, i){
+	foreachi(ModelBone &b, m->bones, i){
 		str += boneToJson(b);
-		if (i < m->bone.num - 1)
+		if (i < m->bones.num - 1)
 			str += ",\n";
 	}
 	str += "],\n";
@@ -247,9 +247,9 @@ void FormatModelJson::_save(const Path &filename, DataModel *m) {
 	}
 	str += "],\n";
 	str += "'animations': [\n";
-	foreachi(ModelMove &move, m->move, i){
+	foreachi(ModelMove &move, m->moves, i){
 		str += moveToJson(move, m);
-		if (i < m->move.num - 1)
+		if (i < m->moves.num - 1)
 			str += ",\n";
 	}
 	str += "]\n";
@@ -549,21 +549,21 @@ void FormatModelJson::importBones(DataModel *m, Value *v)
 		b.parent = vb->get("parent")->i();
 		b.pos = val2vec(vb->get("pos"));
 		if (b.parent >= 0)
-			b.pos += m->bone[b.parent].pos;
-		m->bone.add(b);
+			b.pos += m->bones[b.parent].pos;
+		m->bones.add(b);
 	}
 }
 
 void undo_rot(DataModel *m, ModelFrame &f, int b)
 {
-	int r = m->bone[b].parent;
+	int r = m->bones[b].parent;
 	while (r >= 0){
 		quaternion q, qr, qri;
 		q = quaternion::rotation_v( f.skel_ang[b]);
 		qr = quaternion::rotation_v( f.skel_ang[r]);
 		qri = qr.inverse();
 		f.skel_ang[b] = (q * qr).get_angles();
-		r = m->bone[r].parent;
+		r = m->bones[r].parent;
 		break;
 	}
 }
@@ -584,18 +584,18 @@ void FormatModelJson::importMoves(DataModel *m, Value *v)
 			num_frames = max(num_frames, vh->get(j)->get("keys")->getCount());
 		}
 		msg_write(num_frames);
-		move.frame.resize(num_frames);
-		foreachi(ModelFrame &f, move.frame, fi){
+		move.frames.resize(num_frames);
+		foreachi(ModelFrame &f, move.frames, fi){
 			f.duration = 1;
-			f.skel_ang.resize(m->bone.num);
-			f.skel_dpos.resize(m->bone.num);
-			for (int b=0; b<m->bone.num; b++){
+			f.skel_ang.resize(m->bones.num);
+			f.skel_dpos.resize(m->bones.num);
+			for (int b=0; b<m->bones.num; b++){
 				f.skel_ang[b] = val2quat(vh->get(b)->get("keys")->get(fi)->get("rot")).get_angles();
 				undo_rot(m, f, b);
 			}
 		}
 
-		m->move.add(move);
+		m->moves.add(move);
 	}
 }
 

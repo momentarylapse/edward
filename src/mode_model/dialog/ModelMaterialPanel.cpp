@@ -100,7 +100,7 @@ public:
 	}
 
 	ModelMaterial* material() const {
-		return data->material[index];
+		return data->materials[index];
 	}
 
 	void update(int _index) {
@@ -141,7 +141,7 @@ public:
 	void apply_data_color() {
 		parent->apply_queue_depth ++;
 
-		auto m = data->material[index];
+		auto m = data->materials[index];
 		auto col = m->col;
 		auto parent = m->material.get();
 
@@ -252,7 +252,7 @@ public:
 	void on_texture_level_delete() {
 		int sel = get_int("textures");
 		if (sel >= 0) {
-			if (data->material[index]->texture_levels.num <= 1) {
+			if (data->materials[index]->texture_levels.num <= 1) {
 				data->session->error("At least one texture level has to exist!");
 				return;
 			}
@@ -361,9 +361,9 @@ int count_material_polygons(DataModel *data, int index) {
 
 void ModelMaterialPanel::fill_material_list() {
 	reset("materials");
-	for (int i=0;i<data->material.num;i++) {
+	for (int i=0;i<data->materials.num;i++) {
 		int nt = count_material_polygons(data, i);
-		string im = render_material(data->material[i]);
+		string im = render_material(data->materials[i]);
 		add_string("materials", str(i)); //format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 		//add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}

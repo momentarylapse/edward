@@ -407,6 +407,7 @@ add_executable(edward
 	src/mode_model/action/mesh/ActionModelEditMesh.cpp
 	src/mode_model/action/mesh/ActionModelMoveSelection.cpp
 	src/mode_model/action/mesh/ActionModelPasteMesh.cpp
+	src/mode_model/action/skeleton/ActionModelMoveBones.cpp
 	src/mode_model/data/DataModel.cpp
 	src/mode_model/data/ModelMaterial.cpp
 	src/mode_model/data/ModelMesh.cpp

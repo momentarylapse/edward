@@ -339,21 +339,21 @@ void MultiViewWindow::draw(const RenderParams& params) {
 }
 
 void MultiViewWindow::draw_post(Painter* p) {
-	if (multi_view->hover and multi_view->_show_grid) {
+	if (multi_view->hover and multi_view->_show_grid and !multi_view->selection_area) {
 		const auto p0 = multi_view->hover->tp;
-		const float r = 3;
+		const float r = 1.5f;
 		auto px = project({p0.x, 0, 0});
 		p->set_color(color(1, 1, 0.2f, 0.2f));
 		if (px.z > 0 and px.z < 1)
-			p->draw_circle(px.xy(), 3);
+			p->draw_circle(px.xy(), r);
 		auto py = project({0, p0.y, 0});
 		p->set_color(color(1, 0.2f, 1, 0.2f));
 		if (py.z > 0 and py.z < 1)
-			p->draw_circle(py.xy(), 3);
+			p->draw_circle(py.xy(), r);
 		auto pz = project({0, 0, p0.z});
 		p->set_color(color(1, 0.2f, 0.2f, 1));
 		if (px.z > 0 and pz.z < 1)
-			p->draw_circle(pz.xy(), 3);
+			p->draw_circle(pz.xy(), r);
 	}
 }
 

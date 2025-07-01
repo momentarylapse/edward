@@ -150,8 +150,8 @@ void DataModel::reset() {
 	filename = "";
 	for (int i=0;i<4;i++) {
 		triangle_mesh[i].vertices.clear();
-		for (int j=0;j<material.num;j++)
-			triangle_mesh[i].sub[j].triangle.clear();
+		for (int j=0;j<materials.num;j++)
+			triangle_mesh[i].sub[j].triangles.clear();
 		triangle_mesh[i].sub.resize(1);
 	}
 
@@ -160,19 +160,19 @@ void DataModel::reset() {
 
 	fx.clear();
 
-	material.clear();
-	material.resize(1);
-	material[0] = new ModelMaterial(session);
-	material[0]->texture_levels.add(new ModelMaterial::TextureLevel);
-	material[0]->texture_levels[0]->reload_image(session);
-	material[0]->col.user = true;
-	material[0]->col.albedo = White;
-	material[0]->col.roughness = 0.4f;
+	materials.clear();
+	materials.resize(1);
+	materials[0] = new ModelMaterial(session);
+	materials[0]->texture_levels.add(new ModelMaterial::TextureLevel);
+	materials[0]->texture_levels[0]->reload_image(session);
+	materials[0]->col.user = true;
+	materials[0]->col.albedo = White;
+	materials[0]->col.roughness = 0.4f;
 
 	// skeleton
-	bone.clear();
+	bones.clear();
 
-	move.clear();
+	moves.clear();
 
 
 	for (int i=0;i<4;i++){
@@ -419,8 +419,8 @@ float DetailDistTemp1,DetailDistTemp2,DetailDistTemp3;
 
 int get_num_trias(DataModel *m, ModelTriangleMesh *s) {
 	int n = 0;
-	for (int i=0;i<m->material.num;i++)
-		n += s->sub[i].triangle.num;
+	for (int i=0;i<m->materials.num;i++)
+		n += s->sub[i].triangles.num;
 	return n;
 }
 
@@ -666,14 +666,14 @@ void DataModel::set_selection(const ModelSelection &s) {
 float ModelMove::duration()
 {
 	float t = 0;
-	for (ModelFrame &f: frame)
+	for (ModelFrame &f: frames)
 		t += f.duration;
 	return t;
 }
 
 bool ModelMove::needsRubberTiming()
 {
-	for (ModelFrame &f: frame)
+	for (ModelFrame &f: frames)
 		if (fabs(f.duration - 1.0f) > 0.01f)
 			return true;
 	return false;
@@ -682,10 +682,10 @@ bool ModelMove::needsRubberTiming()
 void ModelMove::getTimeInterpolation(float time, int &frame0, int &frame1, float &t)
 {
 	float t0 = 0;
-	foreachi(ModelFrame &f, frame, i){
+	foreachi(ModelFrame &f, frames, i){
 		if (time < t0 + f.duration){
 			frame0 = i;
-			frame1 = (i + 1) % frame.num;
+			frame1 = (i + 1) % frames.num;
 			t = (time - t0) / f.duration;
 			return;
 		}
@@ -702,8 +702,8 @@ ModelFrame ModelMove::interpolate(float time)
 	float t;
 	int frame0, frame1;
 	getTimeInterpolation(time, frame0, frame1, t);
-	ModelFrame &f0 = frame[frame0];
-	ModelFrame &f1 = frame[frame1];
+	ModelFrame &f0 = frames[frame0];
+	ModelFrame &f1 = frames[frame1];
 
 	if (type == AnimationType::VERTEX){
 		int n = f0.vertex_dpos.num;

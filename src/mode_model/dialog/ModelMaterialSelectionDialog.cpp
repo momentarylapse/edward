@@ -36,10 +36,10 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(ModeMesh* _mode_mesh)
 	});
 
 
-	for (int i=0;i<mode_mesh->data->material.num;i++) {
+	for (int i=0;i<mode_mesh->data->materials.num;i++) {
 		//int nt = count_material_polygons(data, i);
-		string im = render_material(mode_mesh->data->material[i]);
-		add_string("material_list", format("%s\\%s", im, file_secure(mode_mesh->data->material[i]->filename)));
+		string im = render_material(mode_mesh->data->materials[i]);
+		add_string("material_list", format("%s\\%s", im, file_secure(mode_mesh->data->materials[i]->filename)));
 		//add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}
 	//set_int("materials", mode_mesh->current_material);

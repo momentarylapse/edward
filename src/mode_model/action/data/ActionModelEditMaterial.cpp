@@ -21,9 +21,9 @@ ActionModelEditMaterial::ActionModelEditMaterial(int _index, const ModelMaterial
 
 void *ActionModelEditMaterial::execute(Data *d) {
 	auto *m = dynamic_cast<DataModel*>(d);
-	assert((index >= 0) and (index < m->material.num));
+	assert((index >= 0) and (index < m->materials.num));
 
-	std::swap(col, m->material[index]->col);
+	std::swap(col, m->materials[index]->col);
 	m->out_material_changed.notify();
 
 	return nullptr;
@@ -45,16 +45,16 @@ ActionModelMaterialAddTexture::ActionModelMaterialAddTexture(int _index) {
 
 void *ActionModelMaterialAddTexture::execute(Data *d) {
 	auto *m = dynamic_cast<DataModel*>(d);
-	assert((index >= 0) and (index < m->material.num));
+	assert((index >= 0) and (index < m->materials.num));
 
 	auto tl = new ModelMaterial::TextureLevel;
 	tl->reload_image(d->session);
-	m->material[index]->texture_levels.add(tl);
+	m->materials[index]->texture_levels.add(tl);
 
 
 	// correct skin vertices
 	// (copy highest texture level when adding more levels)
-	int ntl = m->material[index]->texture_levels.num;
+	int ntl = m->materials[index]->texture_levels.num;
 	for (Polygon &p: m->editing_mesh->polygons) {
 		if (p.material == index) {
 			for (auto &side: p.side)
@@ -69,9 +69,9 @@ void *ActionModelMaterialAddTexture::execute(Data *d) {
 
 void ActionModelMaterialAddTexture::undo(Data *d) {
 	auto *m = dynamic_cast<DataModel*>(d);
-	assert((index >= 0) and (index < m->material.num));
+	assert((index >= 0) and (index < m->materials.num));
 
-	m->material[index]->texture_levels.pop();
+	m->materials[index]->texture_levels.pop();
 
 	m->out_texture_changed.notify();
 }
@@ -87,10 +87,10 @@ ActionModelMaterialDeleteTexture::ActionModelMaterialDeleteTexture(int _index, i
 
 void *ActionModelMaterialDeleteTexture::execute(Data *d) {
 	auto *m = dynamic_cast<DataModel*>(d);
-	assert((index >= 0) and (index < m->material.num));
-	assert((level >= 0) and (level < m->material[index]->texture_levels.num));
+	assert((index >= 0) and (index < m->materials.num));
+	assert((level >= 0) and (level < m->materials[index]->texture_levels.num));
 
-	tl = m->material[index]->texture_levels.extract(level);
+	tl = m->materials[index]->texture_levels.extract(level);
 
 
 	// TODO: correct skin vertices
@@ -103,9 +103,9 @@ void *ActionModelMaterialDeleteTexture::execute(Data *d) {
 
 void ActionModelMaterialDeleteTexture::undo(Data *d) {
 	auto *m = dynamic_cast<DataModel*>(d);
-	assert((index >= 0) and (index < m->material.num));
+	assert((index >= 0) and (index < m->materials.num));
 
-	m->material[index]->texture_levels.insert(tl, level);
+	m->materials[index]->texture_levels.insert(tl, level);
 
 	m->out_texture_changed.notify();
 }
@@ -125,9 +125,9 @@ ActionModelMaterialLoadTexture::ActionModelMaterialLoadTexture(int _index, int _
 
 void *ActionModelMaterialLoadTexture::execute(Data *d) {
 	auto *m = dynamic_cast<DataModel*>(d);
-	assert((index >= 0) and (index < m->material.num));
+	assert((index >= 0) and (index < m->materials.num));
 
-	auto &tl = m->material[index]->texture_levels[level];
+	auto &tl = m->materials[index]->texture_levels[level];
 	std::swap(tl->filename, filename);
 	tl->reload_image(d->session);
 
@@ -161,9 +161,9 @@ ActionModelMaterialScaleTexture::~ActionModelMaterialScaleTexture() {
 
 void *ActionModelMaterialScaleTexture::execute(Data *d) {
 	auto *m = dynamic_cast<DataModel*>(d);
-	assert((index >= 0) and (index < m->material.num));
+	assert((index >= 0) and (index < m->materials.num));
 
-	auto tl = m->material[index]->texture_levels[level];
+	auto tl = m->materials[index]->texture_levels[level];
 
 	if (!image) {
 		image = tl->image->scale(width, height);

@@ -175,7 +175,7 @@ void link_model(kaba::ExternalLinkData* ext) {
 	ext->declare_class_element("DataModel.Move.type", &ModelMove::type);
 	ext->declare_class_element("DataModel.Move.FramesPerSecConst", &ModelMove::frames_per_sec_const);
 	ext->declare_class_element("DataModel.Move.FramesPerSecFactor", &ModelMove::frames_per_sec_factor);
-	ext->declare_class_element("DataModel.Move.frame", &ModelMove::frame);
+	ext->declare_class_element("DataModel.Move.frames", &ModelMove::frames);
 
 	ext->declare_class_size("DataModel.Move.Frame", sizeof(ModelFrame));
 	ext->declare_class_element("DataModel.Move.Frame.skel_ang", &ModelFrame::skel_ang);
@@ -185,14 +185,14 @@ void link_model(kaba::ExternalLinkData* ext) {
 
 
 	ext->declare_class_size("DataModel", sizeof(DataModel));
-	ext->declare_class_element("DataModel.bone", &DataModel::bone);
-	ext->declare_class_element("DataModel.move", &DataModel::move);
+	ext->declare_class_element("DataModel.bones", &DataModel::bones);
+	ext->declare_class_element("DataModel.moves", &DataModel::moves);
 	//ext->declare_class_element("DataModel.move", &DataModel::move);
 	//ext->declare_class_element("DataModel.CurrentMove", &DataModel::CurrentMove);
 	//ext->declare_class_element("DataModel.CurrentFrame", &DataModel::CurrentFrame);
 	ext->declare_class_element("DataModel.mesh", &DataModel::mesh);
 	ext->declare_class_element("DataModel.phys_mesh", &DataModel::phys_mesh);
-	ext->declare_class_element("DataModel.material", &DataModel::material);
+	ext->declare_class_element("DataModel.materials", &DataModel::materials);
 	ext->declare_class_element("DataModel.fx", &DataModel::fx);
 	ext->declare_class_element("DataModel.meta_data", &DataModel::meta_data);
 /*	ext->link_class_func("DataModel.clear_selection", &DataModel::clearSelection);

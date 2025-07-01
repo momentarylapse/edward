@@ -12,6 +12,7 @@
 #include <Session.h>
 #include <lib/base/iter.h>
 #include <lib/xhui/Theme.h>
+#include <mode_model/action/skeleton/ActionModelMoveBones.h>
 
 ModeSkeleton::ModeSkeleton(ModeModel* _parent) : SubMode(_parent) {
 	parent = _parent;
@@ -38,9 +39,9 @@ void ModeSkeleton::on_enter() {
 	multi_view->f_get_selection_box = [this] (const Data::Selection& sel) {
 		return get_selection_box(sel);
 	};
-	/*multi_view->f_create_action = [this] {
-		return new ActionModelMoveSelection(data->editing_mesh, multi_view->selection);
-	};*/
+	multi_view->f_create_action = [this] {
+		return new ActionModelMoveBones(data, multi_view->selection);
+	};
 }
 
 void ModeSkeleton::on_leave() {
@@ -67,7 +68,7 @@ void ModeSkeleton::on_mouse_move(const vec2& m, const vec2& d) {
 }
 
 void ModeSkeleton::on_draw_post(Painter* p) {
-	drawing2d::draw_data_points(p, multi_view->active_window, data->bone, MultiViewType::SKELETON_BONE, multi_view->hover, multi_view->selection[MultiViewType::SKELETON_BONE]);
+	drawing2d::draw_data_points(p, multi_view->active_window, data->bones, MultiViewType::SKELETON_BONE, multi_view->hover, multi_view->selection[MultiViewType::SKELETON_BONE]);
 }
 
 void ModeSkeleton::on_prepare_scene(const RenderParams& params) {
@@ -81,30 +82,32 @@ void ModeSkeleton::on_draw_win(const RenderParams& params, MultiViewWindow* win)
 	parent->mode_mesh->draw_polygons(params, win);
 	parent->mode_mesh->draw_edges(params, win, {});
 	auto dh = session->drawing_helper;
+	const auto& sel = multi_view->selection[MultiViewType::SKELETON_BONE];
 
-	Array<vec3> points;
-
-	auto add_bone = [&points, win] (const vec3& parent, const vec3& child) {
+	auto draw_bone = [win, dh] (const vec3& parent, const vec3& child, bool selected) {
+		Array<vec3> points;
 		const vec3 m = parent * 0.8f + child * 0.2f;
 		const vec3 dir = (child - parent).normalized();
-		const vec3 t = vec3::cross(dir, win->direction()).normalized() * (child - parent).length() * 0.07f;
+		const vec3 t = vec3::cross(dir, win->direction()).normalized() * (child - parent).length() * 0.05f;
 		points.add(parent);
-		points.add(m + t);
-		points.add(parent);
-		points.add(m - t);
-		points.add(child);
 		points.add(m + t);
 		points.add(child);
 		points.add(m - t);
+		points.add(parent);
+		if (selected) {
+			dh->set_color(Red);
+			dh->set_line_width(DrawingHelper::LINE_THICK);
+		} else {
+			dh->set_color(White);
+			dh->set_line_width(DrawingHelper::LINE_MEDIUM);
+		}
+		dh->draw_lines(points);
 	};
 
-	for (const auto& b: data->bone)
-		if (b.parent >= 0)
-			add_bone(data->bone[b.parent].pos, b.pos);
-	dh->set_color(White);
-	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
 	dh->set_z_test(false);
-	dh->draw_lines(points, false);
+	for (const auto& [i, b]: enumerate(data->bones))
+		if (b.parent >= 0)
+			draw_bone(data->bones[b.parent].pos, b.pos, sel.contains(i));
 	dh->set_z_test(true);
 }
 
@@ -114,7 +117,7 @@ void ModeSkeleton::update_menu() {
 base::optional<Hover> ModeSkeleton::get_hover(MultiViewWindow* win, const vec2& m) const {
 	base::optional<Hover> h;
 	//float zmin = multi_view->view_port.radius * 2;
-	for (const auto& [i, b]: enumerate(data->bone)) {
+	for (const auto& [i, b]: enumerate(data->bones)) {
 		const auto pp = win->project(b.pos);
 		if (pp.z <= 0 or pp.z >= 1)
 			continue;
@@ -127,11 +130,11 @@ base::optional<Hover> ModeSkeleton::get_hover(MultiViewWindow* win, const vec2& 
 
 Data::Selection ModeSkeleton::select_in_rect(MultiViewWindow* win, const rect& r) {
 	Data::Selection sel;
-	sel.add({MultiViewType::SKELETON_BONE, MultiView::select_points_in_rect(win, r, data->bone)});
+	sel.add({MultiViewType::SKELETON_BONE, MultiView::select_points_in_rect(win, r, data->bones)});
 	return sel;
 }
 
 base::optional<Box> ModeSkeleton::get_selection_box(const Data::Selection& sel) const {
-	return MultiView::points_get_selection_box(data->bone, sel[MultiViewType::SKELETON_BONE]);
+	return MultiView::points_get_selection_box(data->bones, sel[MultiViewType::SKELETON_BONE]);
 }
 

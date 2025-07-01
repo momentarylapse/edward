@@ -21,8 +21,8 @@ ActionModelDeleteMaterial::ActionModelDeleteMaterial(int _index) {
 void *ActionModelDeleteMaterial::execute(Data *d) {
 	auto m = dynamic_cast<DataModel*>(d);
 
-	mat = m->material[index];
-	m->material.erase(index);
+	mat = m->materials[index];
+	m->materials.erase(index);
 
 	// correct polygons
 	for (auto &p: m->mesh->polygons) {
@@ -40,7 +40,7 @@ void *ActionModelDeleteMaterial::execute(Data *d) {
 void ActionModelDeleteMaterial::undo(Data *d) {
 	auto m = dynamic_cast<DataModel*>(d);
 
-	m->material.insert(mat, index);
+	m->materials.insert(mat, index);
 
 	// correct polygons
 	for (auto &p: m->mesh->polygons) {

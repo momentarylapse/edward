@@ -209,7 +209,7 @@ void ModelMesh::importFromTriangleSkin(int index) {
 void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk, DataModel* model) {
 	sk.vertices = vertices;
 	sk.sub.clear();
-	sk.sub.resize(model->material.num);
+	sk.sub.resize(model->materials.num);
 	for (auto &t: polygons) {
 		if (t.triangulation_dirty)
 			t.update_triangulation(vertices);
@@ -221,10 +221,10 @@ void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk, DataModel* model)
 				for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
 					tt.skin_vertex[l][k] = t.side[t.side[i].triangulation[k]].skin_vertex[l];
 			}
-			sk.sub[t.material].triangle.add(tt);
+			sk.sub[t.material].triangles.add(tt);
 		}
 	}
-	foreachi(auto *m, model->material, i)
+	foreachi(auto *m, model->materials, i)
 		sk.sub[i].num_textures = m->texture_levels.num;
 }
 
@@ -623,9 +623,9 @@ void ModelMesh::_add_vertices(const Array<MeshVertex> &v, DataModel* model) {
 
 void ModelMesh::_post_vertex_number_change_update(DataModel* model) {
 	// resize animations
-	for (ModelMove &move: model->move) {
+	for (ModelMove &move: model->moves) {
 		if (move.type == AnimationType::VERTEX) {
-			for (ModelFrame &f: move.frame)
+			for (ModelFrame &f: move.frames)
 				f.vertex_dpos.resize(vertices.num);
 		}
 	}

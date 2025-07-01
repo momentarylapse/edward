@@ -197,7 +197,7 @@ public:
 	void create() override {
 		me = new ModelMaterial(parent->session);
 		//msg_write(p2s(parent));
-		parent->material.add(me);
+		parent->materials.add(me);
 	}
 	void read(Stream *f) override {
 		me->filename = f->read_str();
@@ -271,28 +271,28 @@ public:
 
 
 		// triangles (subs)
-		me->sub.resize(parent->material.num);
-		for (int m=0; m<parent->material.num; m++) {
+		me->sub.resize(parent->materials.num);
+		for (int m=0; m<parent->materials.num; m++) {
 			int ntria = f->read_int();
-			me->sub[m].triangle.resize(ntria);
+			me->sub[m].triangles.resize(ntria);
 			// vertex
-			for (int j=0;j<me->sub[m].triangle.num;j++)
+			for (int j=0;j<me->sub[m].triangles.num;j++)
 				for (int k=0;k<3;k++)
-					me->sub[m].triangle[j].vertex[k] = f->read_int();
+					me->sub[m].triangles[j].vertex[k] = f->read_int();
 			// skin vertex
-			for (int tl=0;tl<parent->material[m]->texture_levels.num;tl++)
-				for (int j=0;j<me->sub[m].triangle.num;j++)
+			for (int tl=0;tl<parent->materials[m]->texture_levels.num;tl++)
+				for (int j=0;j<me->sub[m].triangles.num;j++)
 					for (int k=0;k<3;k++) {
 						int svi = f->read_int();
-						me->sub[m].triangle[j].skin_vertex[tl][k] = skin_vert[svi];
+						me->sub[m].triangles[j].skin_vertex[tl][k] = skin_vert[svi];
 					}
 			// normals
-			for (int j=0;j<me->sub[m].triangle.num;j++) {
+			for (int j=0;j<me->sub[m].triangles.num;j++) {
 				for (int k=0;k<3;k++) {
 					int normal_index = (int)(unsigned short)f->read_word();
-					me->sub[m].triangle[j].normal[k] = get_normal_by_index(normal_index);
+					me->sub[m].triangles[j].normal[k] = get_normal_by_index(normal_index);
 				}
-				me->sub[m].triangle[j].normal_dirty = false;
+				me->sub[m].triangles[j].normal_dirty = false;
 			}
 		}
 	}
@@ -334,35 +334,35 @@ public:
 
 
 		// triangles (subs)
-		me->sub.resize(parent->material.num);
-		for (int m=0; m<parent->material.num; m++) {
+		me->sub.resize(parent->materials.num);
+		for (int m=0; m<parent->materials.num; m++) {
 			int ntria = f->read_int();
-			me->sub[m].triangle.resize(ntria);
+			me->sub[m].triangles.resize(ntria);
 			// vertex
-			for (int j=0;j<me->sub[m].triangle.num;j++)
+			for (int j=0;j<me->sub[m].triangles.num;j++)
 				for (int k=0;k<3;k++)
-					me->sub[m].triangle[j].vertex[k] = f->read_int();
+					me->sub[m].triangles[j].vertex[k] = f->read_int();
 			// skin vertex
-			for (int tl=0;tl<parent->material[m]->texture_levels.num;tl++)
-				for (int j=0;j<me->sub[m].triangle.num;j++)
+			for (int tl=0;tl<parent->materials[m]->texture_levels.num;tl++)
+				for (int j=0;j<me->sub[m].triangles.num;j++)
 					for (int k=0;k<3;k++) {
 						int svi = f->read_int();
-						me->sub[m].triangle[j].skin_vertex[tl][k] = skin_vert[svi];
+						me->sub[m].triangles[j].skin_vertex[tl][k] = skin_vert[svi];
 					}
 			// normals
-			for (int j=0;j<me->sub[m].triangle.num;j++) {
+			for (int j=0;j<me->sub[m].triangles.num;j++) {
 				for (int k=0;k<3;k++) {
 					int normal_index = (int)(unsigned short)f->read_word();
-					me->sub[m].triangle[j].normal[k] = get_normal_by_index(normal_index);
+					me->sub[m].triangles[j].normal[k] = get_normal_by_index(normal_index);
 				}
-				me->sub[m].triangle[j].normal_dirty = false;
+				me->sub[m].triangles[j].normal_dirty = false;
 			}
 		}
 	}
 	void write(Stream *f) override {
 		f->write_int(0); // version
 		int flags = 0;
-		if (parent->move.num > 0)
+		if (parent->moves.num > 0)
 			flags |= 1;
 		f->write_int(flags); // flags
 
@@ -370,7 +370,7 @@ public:
 		f->write_int(me->vertices.num);
 		for (auto &v: me->vertices)
 			f->write_vector(&v.pos);
-		if (parent->move.num > 0)
+		if (parent->moves.num > 0)
 			for (auto &v: me->vertices) {
 				write_ivec4(f, v.bone_index);
 				write_vec4(f, v.bone_weight);
@@ -378,41 +378,41 @@ public:
 
 		// skin vertices
 		int num_skin_v = 0;
-		for (int m=0;m<parent->material.num;m++)
-			num_skin_v += me->sub[m].triangle.num * parent->material[m]->texture_levels.num * 3;
+		for (int m=0;m<parent->materials.num;m++)
+			num_skin_v += me->sub[m].triangles.num * parent->materials[m]->texture_levels.num * 3;
 		f->write_int(num_skin_v);
-		for (int m=0;m<parent->material.num;m++)
-			for (int tl=0;tl<parent->material[m]->texture_levels.num;tl++)
-				for (int j=0;j<me->sub[m].triangle.num;j++)
+		for (int m=0;m<parent->materials.num;m++)
+			for (int tl=0;tl<parent->materials[m]->texture_levels.num;tl++)
+				for (int j=0;j<me->sub[m].triangles.num;j++)
 					for (int k=0;k<3;k++) {
-						f->write_float(me->sub[m].triangle[j].skin_vertex[tl][k].x);
-						f->write_float(me->sub[m].triangle[j].skin_vertex[tl][k].y);
+						f->write_float(me->sub[m].triangles[j].skin_vertex[tl][k].x);
+						f->write_float(me->sub[m].triangles[j].skin_vertex[tl][k].y);
 					}
 
 
 		// sub skins
 		int svi = 0;
-		for (int m=0;m<parent->material.num;m++) {
+		for (int m=0;m<parent->materials.num;m++) {
 			auto *sub = &me->sub[m];
 
 			// triangles
-			f->write_int(sub->triangle.num);
+			f->write_int(sub->triangles.num);
 
 			// vertex index
-			for (int j=0;j<sub->triangle.num;j++)
+			for (int j=0;j<sub->triangles.num;j++)
 				for (int k=0;k<3;k++)
-					f->write_int(sub->triangle[j].vertex[k]);
+					f->write_int(sub->triangles[j].vertex[k]);
 
 			// skin index
-			for (int tl=0;tl<parent->material[m]->texture_levels.num;tl++)
-				for (int j=0;j<sub->triangle.num;j++)
+			for (int tl=0;tl<parent->materials[m]->texture_levels.num;tl++)
+				for (int j=0;j<sub->triangles.num;j++)
 					for (int k=0;k<3;k++)
 						f->write_int(svi ++);
 
 			// normal
-			for (int j=0;j<sub->triangle.num;j++)
+			for (int j=0;j<sub->triangles.num;j++)
 				for (int k=0;k<3;k++) {
-					f->write_word(get_normal_index(sub->triangle[j].normal[k]));
+					f->write_word(get_normal_index(sub->triangles[j].normal[k]));
 				}
 		}
 	}
@@ -445,7 +445,7 @@ public:
 			t.side.resize(num_faces);
 			for (int k=0; k<num_faces; k++) {
 				t.side[k].vertex = f->read_int();
-				for (int l=0;l<parent->material[t.material]->texture_levels.num;l++) {
+				for (int l=0;l<parent->materials[t.material]->texture_levels.num;l++) {
 					t.side[k].skin_vertex[l].x = f->read_float();
 					t.side[k].skin_vertex[l].y = f->read_float();
 				}
@@ -466,7 +466,7 @@ public:
 			f->write_word(t.smooth_group);
 			for (auto &ss: t.side) {
 				f->write_int(ss.vertex);
-				for (int l=0;l<parent->material[t.material]->texture_levels.num;l++) {
+				for (int l=0;l<parent->materials[t.material]->texture_levels.num;l++) {
 					f->write_float(ss.skin_vertex[l].x);
 					f->write_float(ss.skin_vertex[l].y);
 				}
@@ -606,14 +606,14 @@ public:
 	}
 	void read(Stream *f) override {
 		int version = f->read_int();
-		me->bone.resize(f->read_int());
-		for (auto &b: me->bone) {
+		me->bones.resize(f->read_int());
+		for (auto &b: me->bones) {
 			f->read_vector(&b.pos);
 			b.parent = f->read_int();
-			if ((b.parent < 0) or (b.parent >= me->bone.num))
+			if ((b.parent < 0) or (b.parent >= me->bones.num))
 				b.parent = -1;
 			if (b.parent >= 0)
-				b.pos += me->bone[b.parent].pos;
+				b.pos += me->bones[b.parent].pos;
 			b.model_file = f->read_str();
 			b.const_pos = false;
 		}
@@ -621,10 +621,10 @@ public:
 	}
 	void write(Stream *f) override {
 		f->write_int(0);
-		f->write_int(me->bone.num);
-		for (auto &b: me->bone) {
+		f->write_int(me->bones.num);
+		for (auto &b: me->bones) {
 			if (b.parent >= 0) {
-				vec3 dpos = b.pos - me->bone[b.parent].pos;
+				vec3 dpos = b.pos - me->bones[b.parent].pos;
 				f->write_vector(&dpos);
 			} else {
 				f->write_vector(&b.pos);
@@ -638,13 +638,13 @@ public:
 
 void import_animations(DataModel *me, const Array<ModelFrame> &frames_vert, const Array<ModelFrame> &frames_skel, const Array<int> &offsets) {
 	//msg_write(ia2s(offsets));
-	foreachi (auto &m, me->move, mi) {
+	foreachi (auto &m, me->moves, mi) {
 		if (m.type == AnimationType::VERTEX)
-			m.frame = frames_vert.sub_ref(offsets[mi], offsets[mi] + m.frame.num);
+			m.frames = frames_vert.sub_ref(offsets[mi], offsets[mi] + m.frames.num);
 		else if (m.type == AnimationType::SKELETAL) {
 			//msg_write(format("sk %d  %d    %d", offsets[mi], m.frame.num, frames_skel.num));
-			for (int i=0; i<m.frame.num; i++)
-				m.frame[i] = frames_skel[offsets[mi] + i];
+			for (int i=0; i<m.frames.num; i++)
+				m.frames[i] = frames_skel[offsets[mi] + i];
 			//m.frame = frames_skel.sub(offsets[mi], m.frame.num);
 		}
 	}
@@ -664,14 +664,14 @@ public:
 
 		// headers
 		int num_anims = f->read_int();
-		me->move.resize(num_anims);
+		me->moves.resize(num_anims);
 		Array<int> frame_offset;
-		for (auto &m: me->move) {
+		for (auto &m: me->moves) {
 			m.name = f->read_str();
 			m.id = f->read_int();
 			m.type = (AnimationType)f->read_char();
 			frame_offset.add(f->read_int());
-			m.frame.resize(f->read_int());
+			m.frames.resize(f->read_int());
 			m.frames_per_sec_const = f->read_float();
 			m.frames_per_sec_factor = f->read_float();
 			// flags
@@ -722,14 +722,14 @@ public:
 
 		// headers
 		int num_moves = 0;
-		for (auto &m: me->move)
-			if (m.frame.num > 0)
+		for (auto &m: me->moves)
+			if (m.frames.num > 0)
 				num_moves ++;
 		f->write_int(num_moves);//me->move.num);
 		int n_frames_vert = 0;
 		int n_frames_skel = 0;
-		foreachi (auto &m, me->move, index) {
-			if (m.frame.num == 0)
+		foreachi (auto &m, me->moves, index) {
+			if (m.frames.num == 0)
 				continue;
 			f->write_str(m.name);
 			f->write_int(m.id);
@@ -739,7 +739,7 @@ public:
 				f->write_int(n_frames_vert);
 			else //if (m.type == AnimationType::SKELETAL)
 				f->write_int(n_frames_skel);
-			f->write_int(m.frame.num);
+			f->write_int(m.frames.num);
 			f->write_float(m.frames_per_sec_const);
 			f->write_float(m.frames_per_sec_factor);
 			// flags
@@ -747,17 +747,17 @@ public:
 			f->write_bool(m.interpolated_loop);
 
 			if (m.type == AnimationType::VERTEX)
-				n_frames_vert += m.frame.num;
+				n_frames_vert += m.frames.num;
 			else if (m.type == AnimationType::SKELETAL)
-				n_frames_skel += m.frame.num;
+				n_frames_skel += m.frames.num;
 		}
 
 
 		// vertex animation frames
 		f->write_int(n_frames_vert);
-		for (auto &m: me->move)
+		for (auto &m: me->moves)
 			if (m.type == AnimationType::VERTEX)
-				for (auto &fr: m.frame) {
+				for (auto &fr: m.frames) {
 					f->write_float(fr.duration);
 					for (int s=0; s<4; s++) {
 						// compress (only write != 0)
@@ -776,17 +776,17 @@ public:
 
 		// skeleton animation frames
 		f->write_int(n_frames_skel);
-		f->write_int(parent->bone.num);
-		for (auto &b: parent->bone)
+		f->write_int(parent->bones.num);
+		for (auto &b: parent->bones)
 			f->write_bool(b.parent < 0);
-		for (auto &m: me->move)
+		for (auto &m: me->moves)
 			if (m.type == AnimationType::SKELETAL)
-				for (auto &fr: m.frame) {
+				for (auto &fr: m.frames) {
 					f->write_float(fr.duration);
-					for (int j=0;j<me->bone.num;j++)
+					for (int j=0;j<me->bones.num;j++)
 						f->write_vector(&fr.skel_ang[j]);
-					for (int j=0;j<me->bone.num;j++)
-						if (me->bone[j].parent < 0)
+					for (int j=0;j<me->bones.num;j++)
+						if (me->bones[j].parent < 0)
 							f->write_vector(&fr.skel_dpos[j]);
 				}
 	}
@@ -916,13 +916,13 @@ public:
 	}
 	void write_subs() override {
 		write_sub("meta", me);
-		write_sub_parray("material", me->material);
+		write_sub_parray("material", me->materials);
 		write_sub_array("mesh", me->triangle_mesh.sub_ref(1));
 		write_sub("physmesh", me->phys_mesh.get());
 		write_sub("polymesh", me->mesh.get());
-		if (me->bone.num > 0)
+		if (me->bones.num > 0)
 			write_sub("skeleton", me);
-		if (me->move.num > 0)
+		if (me->moves.num > 0)
 			write_sub("animation", me);
 		if (me->meta_data.script_file or me->meta_data.script_var.num > 0)
 			write_sub("script", me);
@@ -965,7 +965,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 		_load_old(*lf, data, deep);
 	} else {
 		ModelParser p(session);
-		data->material.clear();
+		data->materials.clear();
 		p.read(filename, data);
 	}
 
@@ -982,13 +982,13 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 		if (data->mesh->polygons.num == 0)
 			data->import_from_triangle_mesh(1);
 
-		for (ModelMove &m: data->move)
+		for (ModelMove &m: data->moves)
 			if (m.type == AnimationType::VERTEX) {
-				for (ModelFrame &f: m.frame)
+				for (ModelFrame &f: m.frames)
 					f.vertex_dpos = f.skin[1].dpos;
 			}
 
-		for (auto* m: data->material) {
+		for (auto* m: data->materials) {
 			m->make_consistent_after_shallow_loading();
 
 			// test textures
@@ -997,7 +997,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 					warning(format("Texture file not loadable: %s", t->filename));
 			}
 		}
-		for (auto &b: data->bone) {
+		for (auto &b: data->bones) {
 			try {
 				if (!b.model)
 					b.model = data->session->resource_manager->load_model(b.model_file);
@@ -1027,8 +1027,8 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 	}
 
 
-	if (data->material.num == 0) {
-		data->material.add(new ModelMaterial(data->session));
+	if (data->materials.num == 0) {
+		data->materials.add(new ModelMaterial(data->session));
 	}
 
 
@@ -1063,8 +1063,8 @@ void FormatModel::_save(const Path &filename, DataModel *data) {
 		// export...
 		data->mesh->export_to_triangle_mesh(data->triangle_mesh[1], data);
 		for (int d=1;d<4;d++) {
-			if (data->triangle_mesh[d].sub.num != data->material.num) {
-				data->triangle_mesh[d].sub.resize(data->material.num);
+			if (data->triangle_mesh[d].sub.num != data->materials.num) {
+				data->triangle_mesh[d].sub.resize(data->materials.num);
 			}
 		}
 

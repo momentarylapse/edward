@@ -440,7 +440,7 @@ void ModeMesh::on_update_selection() {
 }
 
 void ModeMesh::update_vb() {
-	vertex_buffers.resize(data->material.num);
+	vertex_buffers.resize(data->materials.num);
 	for (int i=0; i<vertex_buffers.num; i++) {
 		if (!vertex_buffers[i])
 			vertex_buffers[i] = new VertexBuffer("3f,3f,2f");
@@ -460,18 +460,18 @@ void ModeMesh::update_vb() {
 	m.build(vertex_buffer_physical);
 
 	// update material
-	materials.resize(data->material.num);
+	materials.resize(data->materials.num);
 	for (int i=0; i<materials.num; i++) {
 		if (!materials[i])
 			materials[i] = create_material(session->resource_manager, White, 0.7f, 0.2f, Black);
 
-		materials[i]->albedo = data->material[i]->col.albedo;
-		materials[i]->metal = data->material[i]->col.metal;
-		materials[i]->roughness = data->material[i]->col.roughness;
-		materials[i]->emission = data->material[i]->col.emission;
-		materials[i]->textures.resize(data->material[i]->texture_levels.num);
-		for (int k=0; k<data->material[i]->texture_levels.num; k++)
-			materials[i]->textures[k] = data->material[i]->texture_levels[k]->texture;
+		materials[i]->albedo = data->materials[i]->col.albedo;
+		materials[i]->metal = data->materials[i]->col.metal;
+		materials[i]->roughness = data->materials[i]->col.roughness;
+		materials[i]->emission = data->materials[i]->col.emission;
+		materials[i]->textures.resize(data->materials[i]->texture_levels.num);
+		for (int k=0; k<data->materials[i]->texture_levels.num; k++)
+			materials[i]->textures[k] = data->materials[i]->texture_levels[k]->texture;
 	}
 }
 

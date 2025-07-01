@@ -63,7 +63,7 @@ struct ModelTriangleSubMesh {
 	int num_textures; // "read only" (updated automatically...)
 
 	// triangles
-	Array<ModelTriangle> triangle;
+	Array<ModelTriangle> triangles;
 };
 
 
@@ -103,7 +103,7 @@ struct ModelFrame {
 struct ModelMove {
 	AnimationType type;
 	int id;
-	Array<ModelFrame> frame;
+	Array<ModelFrame> frames;
 	float frames_per_sec_const, frames_per_sec_factor;
 	bool interpolated_quadratic, interpolated_loop;
 	string name;
@@ -122,7 +122,7 @@ struct ModelScriptVariable {
 
 class DataModel: public Data {
 public:
-	explicit DataModel(Session *s);
+	explicit DataModel(Session* s);
 	~DataModel() override;
 
 	obs::source out_skin_changed{this, "skin-changed"};
@@ -196,11 +196,11 @@ public:
 
 	// actions
 	void delete_selection(const Selection& sel, bool greedy);
-	void paste_mesh(const PolygonMesh &geo, int default_material = -1);
+	void paste_mesh(const PolygonMesh& geo, int default_material = -1);
 
 
 	// properties
-	Array<ModelBone> bone;
+	Array<ModelBone> bones;
 
 	// actions
 	/*void reconnectBone(int index, int parent);
@@ -212,7 +212,7 @@ public:
 
 
 	// properties
-	Array<ModelMove> move;
+	Array<ModelMove> moves;
 
 	// actions
 	/*void addAnimation(int index, AnimationType type);
@@ -227,14 +227,14 @@ public:
 	// geometry
 	owned<ModelMesh> mesh;
 	owned<ModelMesh> phys_mesh;
-	ModelMesh *editing_mesh;
+	ModelMesh* editing_mesh;
 
 
 	// old geometry
 	Array<ModelTriangleMesh> triangle_mesh;
 
 	// general properties
-	Array<ModelMaterial*> material;
+	Array<ModelMaterial*> materials;
 
 	// effects
 	Array<ModelEffect> fx;

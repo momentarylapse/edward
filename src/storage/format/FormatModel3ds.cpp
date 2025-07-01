@@ -103,7 +103,7 @@ void FormatModel3ds::load_mesh(DataModel *m, Stream *f, int _length)
 					t.vertex[1] = f->read_word() + NumVerticesOld;
 					t.vertex[2] = f->read_word() + NumVerticesOld;
 					f->read_word();
-					m->triangle_mesh[1].sub[0].triangle.add(t);
+					m->triangle_mesh[1].sub[0].triangles.add(t);
 				}
 				}break;
 			case 0x4140:
@@ -122,7 +122,7 @@ void FormatModel3ds::load_mesh(DataModel *m, Stream *f, int _length)
 				break;
 		}
 	}
-	for (ModelTriangle &t: m->triangle_mesh[1].sub[0].triangle)
+	for (ModelTriangle &t: m->triangle_mesh[1].sub[0].triangles)
 		for (int k=0;k<3;k++)
 			if ((t.vertex[k] >= NumVerticesOld) && (t.vertex[k] < NumVerticesOld + skin_vert.num))
 					t.skin_vertex[0][k] = skin_vert[t.vertex[k] - NumVerticesOld];

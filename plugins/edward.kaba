@@ -200,14 +200,14 @@ class DataModel extends Data
 	struct Material
 		var filename: os.Path
 		var material: y.Material&
-		var num_textures: int
+		var num_textures: i32
 		var texture: gl.Texture&[MAX_TEXTURES]
 		var texture_file: string[MAX_TEXTURES]
 
 		var user_transparency: bool
-		var transparency_mode: int
-		var alpha_source, alpha_destination: int
-		var alpha_factor: float
+		var transparency_mode: i32
+		var alpha_source, alpha_destination: i32
+		var alpha_factor: f32
 		var alpha_z_buffer: bool
 
 		var user_color: bool
@@ -215,12 +215,12 @@ class DataModel extends Data
 		var diffuse: color
 		var specular: color
 		var emission: color
-		var shininess: float
+		var shininess: f32
 		func __assign__(other: Material)
 
 	struct Effect
-		var kind, surface, vertex: int
-		var size, speed, intensity: int
+		var kind, surface, vertex: i32
+		var size, speed, intensity: i32
 		var colors: color[3]
 		var inv_quad: bool
 		var file: string
@@ -232,20 +232,20 @@ class DataModel extends Data
 	struct SkinVertexDummy extends MultiView.SingleData
 
 	struct Ball extends MultiView.SingleData
-		var index: int
-		var radius: float
+		var index: i32
+		var radius: f32
 
 
 	# TODO: dynamical!
 	struct Polyhedron extends MultiView.SingleData
 		struct Face
-			var num_vertices: int
-			var index: int[MAX_POLY_VERTICES_PER_FACE]
+			var num_vertices: i32
+			var index: i32[MAX_POLY_VERTICES_PER_FACE]
 			var plane: plane
-		var num_faces: int
+		var num_faces: i32
 		var face: Face[MAX_POLY_FACES]
-		var num_svertices: int
-		var sindex: int[MAX_POLY_FACES * MAX_POLY_VERTICES_PER_FACE]
+		var num_svertices: i32
+		var sindex: i32[MAX_POLY_FACES * MAX_POLY_VERTICES_PER_FACE]
 
 		# non redundant edge list!
 		var num_edges: i32
@@ -258,7 +258,7 @@ class DataModel extends Data
 
 
 	struct Triangle extends MultiView.SingleData
-		var vertex: int[3]
+		var vertex: i32[3]
 		#int[3] edge
 		#int[3] edge_direction # which no of triangle in edge's list are we?
 		var skin_vertex: vec3[MAX_TEXTURES][3]
@@ -266,7 +266,7 @@ class DataModel extends Data
 		var normal: vec3[3]
 		var temp_normal: vec3
 		var normal_dirty: bool
-		var material: int
+		var material: i32
 
 
 	# triangles belonging to one material
@@ -274,13 +274,13 @@ class DataModel extends Data
 		var num_textures: i32
 
 		# triangles
-		var triangle: Triangle[]
+		var triangles: Triangle[]
 
 
 	# geometry
 	struct Skin
 		# general properties
-		var normal_mode_all: int
+		var normal_mode_all: i32
 
 		# vertices
 		var vertex: Mesh.Vertex[]
@@ -316,9 +316,9 @@ class DataModel extends Data
 			var vertex_dpos: vec3[]
 			func __assign__(other: Frame)
 		
-		var type: int
-		var frame: Frame[]
-		var frames_per_sec_const, frames_per_sec_factor: float
+		var type: i32
+		var frames: Frame[]
+		var frames_per_sec_const, frames_per_sec_factor: f32
 		var name: string
 
 
@@ -334,13 +334,13 @@ class DataModel extends Data
 
 	struct MetaData
 		# level of detail
-		var detail_dist: float[3]
-		var detail_factor: int[3]
+		var detail_dist: f32[3]
+		var detail_factor: i32[3]
 		var auto_generate_dists: bool
 		var auto_generate_skin: bool[3]
 
 		# physics
-		var mass: float
+		var mass: f32
 		var active_physics, passive_physics: bool
 		var auto_generate_tensor: bool
 		var inertia_tensor: mat3
@@ -351,19 +351,19 @@ class DataModel extends Data
 
 		# script
 		var script_file: os.Path
-		var script_var: float[]
+		var script_var: f32[]
 		func __assign__(other: MetaData)
 
 	struct Selection
-		var vertex, polygon, edge: int[]
+		var vertex, polygon, edge: i32[]
 
 	
 	# properties
-	var bone: Bone[]
+	var bones: Bone[]
 
 
 	# properties
-	var move: Move[]
+	var moves: Move[]
 
 #	int CurrentMove,CurrentFrame
 
@@ -383,7 +383,7 @@ class DataModel extends Data
 	#ModelPolyhedron Poly[]
 
 	# general properties
-	var material: Material[]
+	var materials: Material[]
 
 	# effects
 	var fx: Effect[]
@@ -438,8 +438,8 @@ class DataWorld extends Data
 	struct Terrain extends MultiView.SingleData
 		var filename: os.Path
 		#WorldTerrainVertex Vertex[]
-		var vertex_buffer_single: int
-		var show_texture: int
+		var vertex_buffer_single: i32
+		var show_texture: i32
 		var changed: bool
 		var terrain: y.Terrain*
 		func __init__()
@@ -455,7 +455,7 @@ class DataWorld extends Data
 
 	var objects: Object[]
 	var terrains: Terrain[]
-	var ego_index: int
+	var ego_index: i32
 
 	# actions
 #	func extern add_object(filename: os.Path, pos: vec3) -> Object&
@@ -494,7 +494,7 @@ class shader
 #		func extern override __delete__()
 		func __assign__(n: Node)
 			pass
-		var x, y: int
+		var x, y: i32
 		var type: string
 	
 		struct Parameter
