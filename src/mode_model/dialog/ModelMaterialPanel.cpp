@@ -376,13 +376,20 @@ void ModelMaterialPanel::on_material_list_select() {
 	mode_mesh()->set_current_material(get_int("materials"));
 }
 
+xfer<ModelMaterial> create_model_material(Session* session, const Path& filename) {
+	auto mat = new ModelMaterial(session, filename);
+	mat->texture_levels.add(new ModelMaterial::TextureLevel);
+	mat->texture_levels[0]->reload_image(session);
+	return mat;
+}
+
 void ModelMaterialPanel::on_material_add() {
-	data->execute(new ActionModelAddMaterial(""));
+	data->execute(new ActionModelAddMaterial(create_model_material(data->session, "")));
 }
 
 void ModelMaterialPanel::on_material_load() {
-	data->session->storage->file_dialog(FD_MATERIAL, false, true).then([this] (const auto& p){
-		data->execute(new ActionModelAddMaterial(p.simple));
+	data->session->storage->file_dialog(FD_MATERIAL, false, true).then([this] (const auto& p) {
+		data->execute(new ActionModelAddMaterial(create_model_material(data->session, p.simple)));
 	});
 }
 

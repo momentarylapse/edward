@@ -8,18 +8,14 @@
 #include "ActionModelAddMaterial.h"
 #include "../../data/DataModel.h"
 
-ActionModelAddMaterial::ActionModelAddMaterial(const Path &_filename) {
-	filename = _filename;
+ActionModelAddMaterial::ActionModelAddMaterial(xfer<ModelMaterial> m) {
+	material = m;
 }
 
 void *ActionModelAddMaterial::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	auto mat = new ModelMaterial(d->session, filename);
-	mat->texture_levels.add(new ModelMaterial::TextureLevel);
-	mat->texture_levels[0]->reload_image(d->session);
-
-	m->materials.add(mat);
+	m->materials.add(material.get());
 	m->out_material_changed.notify();
 	return &m->materials.back();
 }
@@ -29,7 +25,7 @@ void *ActionModelAddMaterial::execute(Data *d) {
 void ActionModelAddMaterial::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
-	delete m->materials.pop();
+	m->materials.pop();
 	m->out_material_changed.notify();
 }
 

@@ -9,16 +9,19 @@
 #define ACTIONMODELADDMATERIAL_H_
 
 #include <action/Action.h>
+#include <lib/base/pointer.h>
+
+class ModelMaterial;
 
 class ActionModelAddMaterial : public Action {
 public:
-	explicit ActionModelAddMaterial(const Path &filename);
+	explicit ActionModelAddMaterial(xfer<ModelMaterial> material);
 	string name() override { return "ModelAddMaterial"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void* execute(Data* d) override;
+	void undo(Data* d) override;
 private:
-	Path filename;
+	owned<ModelMaterial> material;
 };
 
 #endif /* ACTIONMODELADDMATERIAL_H_ */
