@@ -396,16 +396,11 @@ add_executable(edward
 	src/mode_material/dialog/MaterialPanel.cpp
 	src/mode_material/dialog/MaterialPassPanel.cpp
 	src/mode_material/ModeMaterial.cpp
-	src/mode_model/action/data/ActionModelAddMaterial.cpp
-	src/mode_model/action/data/ActionModelDeleteMaterial.cpp
-	src/mode_model/action/data/ActionModelEditData.cpp
-	src/mode_model/action/data/ActionModelEditMaterial.cpp
+	src/mode_model/action/ActionModelEditData.cpp
 	src/mode_model/data/DataModel.cpp
 	src/mode_model/data/ModelMaterial.cpp
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/data/SkinGenerator.cpp
-	src/mode_model/dialog/ModelMaterialPanel.cpp
-	src/mode_model/dialog/ModelMaterialSelectionDialog.cpp
 	src/mode_model/dialog/ModelPropertiesDialog.cpp
 	src/mode_model/mesh/action/look/ActionModelSetMaterial.cpp
 	src/mode_model/mesh/action/sculpt/ActionModelBrushExtrude.cpp
@@ -414,6 +409,15 @@ add_executable(edward
 	src/mode_model/mesh/action/ActionModelEditMesh.cpp
 	src/mode_model/mesh/action/ActionModelMoveSelection.cpp
 	src/mode_model/mesh/action/ActionModelPasteMesh.cpp
+	src/mode_model/mesh/material/action/ActionModelAddMaterial.cpp
+	src/mode_model/mesh/material/action/ActionModelDeleteMaterial.cpp
+	src/mode_model/mesh/material/action/ActionModelEditMaterial.cpp
+	src/mode_model/mesh/material/dialog/ModelMaterialPanel.cpp
+	src/mode_model/mesh/material/dialog/ModelMaterialSelectionDialog.cpp
+	src/mode_model/mesh/material/ModeMeshMaterial.cpp
+	src/mode_model/mesh/processing/MeshBevelEdges.cpp
+	src/mode_model/mesh/processing/MeshExtrudePolygons.cpp
+	src/mode_model/mesh/processing/MeshRandomSurfacePoints.cpp
 	src/mode_model/mesh/ModeAddCube.cpp
 	src/mode_model/mesh/ModeAddCylinder.cpp
 	src/mode_model/mesh/ModeAddFromLathe.cpp
@@ -424,12 +428,8 @@ add_executable(edward
 	src/mode_model/mesh/ModeBevelEdges.cpp
 	src/mode_model/mesh/ModeExtrudePolygons.cpp
 	src/mode_model/mesh/ModeMesh.cpp
-	src/mode_model/mesh/ModeMeshMaterial.cpp
 	src/mode_model/mesh/ModeMeshSculpt.cpp
 	src/mode_model/mesh/ModePaste.cpp
-	src/mode_model/processing/MeshBevelEdges.cpp
-	src/mode_model/processing/MeshExtrudePolygons.cpp
-	src/mode_model/processing/MeshRandomSurfacePoints.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBone.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBoneSelection.cpp
 	src/mode_model/skeleton/action/ActionModelMoveBones.cpp

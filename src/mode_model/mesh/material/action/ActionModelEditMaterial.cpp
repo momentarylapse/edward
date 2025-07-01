@@ -7,8 +7,8 @@
 
 #include <algorithm>
 #include "ActionModelEditMaterial.h"
-#include "../../data/ModelMesh.h"
-#include "../../../data/mesh/Polygon.h"
+#include "../../../data/ModelMesh.h"
+#include <data/mesh/Polygon.h>
 #include <lib/image/image.h>
 #include <graphics-impl.h>
 

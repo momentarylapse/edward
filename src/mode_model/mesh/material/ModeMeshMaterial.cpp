@@ -3,12 +3,10 @@
 //
 
 #include "ModeMeshMaterial.h"
-#include "ModeMesh.h"
-#include "../data/ModelMesh.h"
-#include "../dialog/ModelMaterialPanel.h"
-#include "action/sculpt/ActionModelBrushExtrude.h"
+#include "../ModeMesh.h"
+#include "../../data/ModelMesh.h"
+#include "dialog/ModelMaterialPanel.h"
 #include <Session.h>
-#include <data/mesh/GeometryCube.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>

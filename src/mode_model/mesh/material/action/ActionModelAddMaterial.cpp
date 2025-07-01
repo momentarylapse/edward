@@ -6,7 +6,7 @@
  */
 
 #include "ActionModelAddMaterial.h"
-#include "../../data/DataModel.h"
+#include "../../../data/DataModel.h"
 
 ActionModelAddMaterial::ActionModelAddMaterial(xfer<ModelMaterial> m) {
 	material = m;

@@ -6,7 +6,7 @@
 #define MODELMATERIALPANEL_H
 
 
-#include "../mesh/ModeMeshMaterial.h"
+#include "../ModeMeshMaterial.h"
 #include <lib/xhui/xhui.h>
 #include <lib/pattern/Observable.h>
 

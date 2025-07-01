@@ -9,15 +9,15 @@
 #define ACTIONMODELEDITDATA_H_
 
 #include <action/Action.h>
-#include "../../data/DataModel.h"
+#include "../data/DataModel.h"
 
 class ActionModelEditData : public Action {
 public:
-	explicit ActionModelEditData(const DataModel::MetaData &_data);
+	explicit ActionModelEditData(const DataModel::MetaData& _data);
 	string name() override { return "ModelEditData"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void* execute(Data* d) override;
+	void undo(Data* d) override;
 
 private:
 	DataModel::MetaData data;

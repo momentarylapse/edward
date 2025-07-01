@@ -30,7 +30,7 @@
 #include <mode_material/ModeMaterial.h>
 #include <mode_model/data/DataModel.h>
 #include <mode_model/ModeModel.h>
-#include <mode_model/processing/MeshRandomSurfacePoints.h>
+#include <mode_model/mesh/processing/MeshRandomSurfacePoints.h>
 #include <mode_world/data/DataWorld.h>
 #include <mode_world/ModeWorld.h>
 

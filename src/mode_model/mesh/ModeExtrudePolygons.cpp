@@ -5,7 +5,7 @@
 #include "ModeExtrudePolygons.h"
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
-#include "../processing/MeshExtrudePolygons.h"
+#include "processing/MeshExtrudePolygons.h"
 #include <Session.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>

@@ -3,19 +3,18 @@
 //
 
 #include "ModelMaterialPanel.h"
-#include "../mesh/ModeMesh.h"
-//#include "../mesh/ModeMeshTexture.h"
-#include "../ModeModel.h"
-#include "../data/DataModel.h"
-#include "../data/ModelMesh.h"
-#include "../../data/mesh/Polygon.h"
-#include "../data/ModelMaterial.h"
-#include "../action/data/ActionModelAddMaterial.h"
-#include "../action/data/ActionModelDeleteMaterial.h"
-#include "../action/data/ActionModelEditMaterial.h"
-#include "../action/data/ActionModelEditData.h"
-#include "../../Session.h"
-#include "../../storage/Storage.h"
+#include "../../ModeMesh.h"
+//#include "../ModeMeshTexture.h"
+#include "../../../ModeModel.h"
+#include "../../../data/DataModel.h"
+#include "../../../data/ModelMesh.h"
+#include <data/mesh/Polygon.h>
+#include "../../../data/ModelMaterial.h"
+#include "../action/ActionModelAddMaterial.h"
+#include "../action/ActionModelDeleteMaterial.h"
+#include "../action/ActionModelEditMaterial.h"
+#include <Session.h>
+#include <storage/Storage.h>
 #include <lib/image/image.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/Dialog.h>

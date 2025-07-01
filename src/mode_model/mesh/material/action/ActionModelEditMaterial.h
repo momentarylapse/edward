@@ -9,7 +9,7 @@
 #define ACTIONMODELEDITMATERIAL_H_
 
 #include <action/Action.h>
-#include "../../data/DataModel.h"
+#include "../../../data/DataModel.h"
 
 class ActionModelEditMaterial : public Action {
 public:

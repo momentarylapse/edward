@@ -14,10 +14,11 @@
 #include "ModeBevelEdges.h"
 #include "ModeExtrudePolygons.h"
 #include "ModeMeshSculpt.h"
-#include "ModeMeshMaterial.h"
+#include "material/ModeMeshMaterial.h"
 #include "../ModeModel.h"
 #include "action/ActionModelMoveSelection.h"
 #include "../data/ModelMesh.h"
+#include "material/dialog/ModelMaterialSelectionDialog.h"
 #include <Session.h>
 #include <data/mesh/GeometryCylinder.h>
 #include <data/mesh/GeometrySphere.h>
@@ -34,7 +35,6 @@
 #include <data/mesh/VertexStagingBuffer.h>
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
-#include <mode_model/dialog/ModelMaterialSelectionDialog.h>
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 

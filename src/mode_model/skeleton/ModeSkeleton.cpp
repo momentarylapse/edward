@@ -4,6 +4,7 @@
 
 #include "ModeSkeleton.h"
 #include "action/ActionModelMoveBones.h"
+#include "action/ActionModelDeleteBoneSelection.h"
 #include "../mesh/ModeMesh.h"
 #include "../ModeModel.h"
 #include <view/DrawingHelper.h>
@@ -14,7 +15,6 @@
 #include <lib/base/iter.h>
 #include <lib/xhui/Theme.h>
 
-#include "action/ActionModelDeleteBoneSelection.h"
 
 ModeSkeleton::ModeSkeleton(ModeModel* _parent) : SubMode(_parent) {
 	parent = _parent;

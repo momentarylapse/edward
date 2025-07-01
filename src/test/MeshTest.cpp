@@ -11,7 +11,7 @@
 #include <data/mesh/MeshEdit.h>
 #include <data/mesh/GeometryCube.h>
 #include <data/mesh/GeometryPlane.h>
-#include <mode_model/processing/MeshExtrudePolygons.h>
+#include <mode_model/mesh/processing/MeshExtrudePolygons.h>
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>
 #include <lib/math/Box.h>
