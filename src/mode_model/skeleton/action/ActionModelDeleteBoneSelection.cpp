@@ -8,9 +8,8 @@
 #include "ActionModelDeleteBoneSelection.h"
 #include "ActionModelDeleteBone.h"
 
-ActionModelDeleteBoneSelection::ActionModelDeleteBoneSelection(DataModel *m)
-{
-	foreachib(ModelBone &b, m->bone, bi)
-		if (b.is_selected)
+ActionModelDeleteBoneSelection::ActionModelDeleteBoneSelection(DataModel *m, const base::set<int>& sel) {
+	foreachib(ModelBone &b, m->bones, bi)
+		if (sel.contains(bi))
 			addSubAction(new ActionModelDeleteBone(bi), m);
 }

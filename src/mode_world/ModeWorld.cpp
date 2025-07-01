@@ -625,10 +625,7 @@ void ModeWorld::on_command(const string& id) {
 			session->set_message("pasted: " + *world_selection_description(data, multi_view->selection));
 		}
 	}
-}
-
-void ModeWorld::on_key_down(int key) {
-	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE) {
+	if (id == "delete") {
 		if (auto s = world_selection_description(data, multi_view->selection)) {
 			data->delete_selection(multi_view->selection);
 			multi_view->clear_selection();
@@ -637,6 +634,9 @@ void ModeWorld::on_key_down(int key) {
 			session->set_message("nothing selected");
 		}
 	}
+}
+
+void ModeWorld::on_key_down(int key) {
 }
 
 

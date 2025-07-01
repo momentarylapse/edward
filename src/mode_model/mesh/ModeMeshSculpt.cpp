@@ -5,7 +5,7 @@
 #include "ModeMeshSculpt.h"
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
-#include "../action/mesh/sculpt/ActionModelBrushExtrude.h"
+#include "action/sculpt/ActionModelBrushExtrude.h"
 #include <Session.h>
 #include <data/mesh/GeometryCube.h>
 #include <lib/os/msg.h>

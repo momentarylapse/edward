@@ -6,8 +6,8 @@
  */
 
 #include "ActionModelDeleteBone.h"
-#include "../../../data/model/DataModel.h"
-#include "../../../data/model/ModelMesh.h"
+#include "../../data/DataModel.h"
+#include "../../data/ModelMesh.h"
 
 ActionModelDeleteBone::ActionModelDeleteBone(int _index) {
 	index = _index;
@@ -15,10 +15,9 @@ ActionModelDeleteBone::ActionModelDeleteBone(int _index) {
 
 
 
-void *ActionModelDeleteBone::execute(Data *d)
-{
-	DataModel *m = dynamic_cast<DataModel*>(d);
-	ModelBone &b = m->bone[index];
+void *ActionModelDeleteBone::execute(Data *d) {
+	auto m = dynamic_cast<DataModel*>(d);
+	ModelBone &b = m->bones[index];
 	pos = b.pos;
 	parent = b.parent;
 	filename = b.model_file;
@@ -26,7 +25,7 @@ void *ActionModelDeleteBone::execute(Data *d)
 	child.clear();
 
 	// correct the rest of the skeleton
-	foreachi(ModelBone &bb, m->bone, i)
+	foreachi(ModelBone &bb, m->bones, i)
 		if (i != index){
 			// child -> save and make root
 			if (bb.parent == index){
@@ -42,8 +41,8 @@ void *ActionModelDeleteBone::execute(Data *d)
 	// save + correct animations
 	move_dpos.clear();
 	move_ang.clear();
-	for (ModelMove &move: m->move)
-		for (ModelFrame &f: move.frame){
+	for (ModelMove &move: m->moves)
+		for (ModelFrame &f: move.frames){
 			move_dpos.add(f.skel_dpos[index]);
 			f.skel_dpos.erase(index);
 			move_ang.add(f.skel_ang[index]);
@@ -52,7 +51,7 @@ void *ActionModelDeleteBone::execute(Data *d)
 
 	// save + correct vertices
 	vertex.clear();
-	foreachi(ModelVertex &v, m->edit_mesh->vertex, vi){
+	foreachi(auto &v, m->editing_mesh->vertices, vi){
 		bool found = false;
 		if ((v.bone_index.i == index) and (v.bone_weight.x > 0)) {
 			v.bone_weight.x = 0;
@@ -82,7 +81,7 @@ void *ActionModelDeleteBone::execute(Data *d)
 	}
 
 	// shift vertex references
-	foreachi(ModelVertex &v, m->edit_mesh->vertex, vi) {
+	foreachi(auto &v, m->editing_mesh->vertices, vi) {
 		if (v.bone_index.i > index)
 			v.bone_index.i --;
 		if (v.bone_index.j > index)
@@ -93,15 +92,14 @@ void *ActionModelDeleteBone::execute(Data *d)
 			v.bone_index.l --;
 	}
 
-	m->bone.erase(index);
-	return NULL;
+	m->bones.erase(index);
+	return nullptr;
 }
 
 
 
-void ActionModelDeleteBone::undo(Data *d)
-{
-	DataModel *m = dynamic_cast<DataModel*>(d);
+void ActionModelDeleteBone::undo(Data *d) {
+	auto m = dynamic_cast<DataModel*>(d);
 	ModelBone b;
 	b.parent = parent;
 	b.const_pos = false;
@@ -109,29 +107,29 @@ void ActionModelDeleteBone::undo(Data *d)
 	b._matrix = mat4::ID;
 	b.model_file = filename;
 	b.model = (Model*)model;
-	m->bone.insert(b, index);
+	m->bones.insert(b, index);
 
 	// correct skeleton
-	foreachi(ModelBone &bb, m->bone, i)
+	foreachi(ModelBone &bb, m->bones, i)
 		if (i != index){
 			if (bb.parent >= index)
 				bb.parent ++;
 		}
 	for (int c: child){
-		m->bone[c].parent = index;
+		m->bones[c].parent = index;
 	}
 
 	// correct animations
 	int fi = 0;
-	for (ModelMove &move: m->move)
-		for (ModelFrame &f: move.frame){
+	for (ModelMove &move: m->moves)
+		for (ModelFrame &f: move.frames){
 			f.skel_dpos.insert(move_dpos[fi], index);
 			f.skel_ang.insert(move_ang[fi], index);
 			fi ++;
 		}
 
 	// correct vertices
-	for (ModelVertex &v: m->edit_mesh->vertex) {
+	for (auto &v: m->editing_mesh->vertices) {
 		if (v.bone_index.i >= index)
 			v.bone_index.i ++;
 		if (v.bone_index.j >= index)
@@ -142,8 +140,8 @@ void ActionModelDeleteBone::undo(Data *d)
 			v.bone_index.l ++;
 	}
 	foreachi (int vi, vertex, i) {
-		m->edit_mesh->vertex[vi].bone_index = vertex_bone[i];
-		m->edit_mesh->vertex[vi].bone_weight = vertex_bone_weight[i];
+		m->editing_mesh->vertices[vi].bone_index = vertex_bone[i];
+		m->editing_mesh->vertices[vi].bone_weight = vertex_bone_weight[i];
 	}
 }
 

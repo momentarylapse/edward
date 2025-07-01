@@ -3,6 +3,7 @@
 //
 
 #include "ModeSkeleton.h"
+#include "action/ActionModelMoveBones.h"
 #include "../mesh/ModeMesh.h"
 #include "../ModeModel.h"
 #include <view/DrawingHelper.h>
@@ -12,7 +13,8 @@
 #include <Session.h>
 #include <lib/base/iter.h>
 #include <lib/xhui/Theme.h>
-#include <mode_model/action/skeleton/ActionModelMoveBones.h>
+
+#include "action/ActionModelDeleteBoneSelection.h"
 
 ModeSkeleton::ModeSkeleton(ModeModel* _parent) : SubMode(_parent) {
 	parent = _parent;
@@ -56,8 +58,26 @@ void ModeSkeleton::on_leave_rec() {
 void ModeSkeleton::optimize_view() {
 }
 
+base::optional<string> skeleton_selection_description(DataModel* m, const Data::Selection& sel) {
+	int nbones = 0;
+	if (sel.contains(MultiViewType::SKELETON_BONE))
+		nbones = sel[MultiViewType::SKELETON_BONE].num;
+	if (nbones == 0)
+		return base::None;
+	return format("%d bones", nbones);
+}
+
 void ModeSkeleton::on_command(const string& id) {
 	parent->on_command(id);
+	if (id == "delete") {
+		if (auto s = skeleton_selection_description(data, multi_view->selection)) {
+			data->execute(new ActionModelDeleteBoneSelection(data, multi_view->selection[MultiViewType::SKELETON_BONE]));
+			multi_view->clear_selection();
+			session->set_message("deleted: " + *s);
+		} else {
+			session->set_message("nothing selected");
+		}
+	}
 }
 
 void ModeSkeleton::on_key_down(int key) {
@@ -69,6 +89,9 @@ void ModeSkeleton::on_mouse_move(const vec2& m, const vec2& d) {
 
 void ModeSkeleton::on_draw_post(Painter* p) {
 	drawing2d::draw_data_points(p, multi_view->active_window, data->bones, MultiViewType::SKELETON_BONE, multi_view->hover, multi_view->selection[MultiViewType::SKELETON_BONE]);
+
+	if (auto s = skeleton_selection_description(data, multi_view->selection))
+		draw_info(p, "selected: " + *s);
 }
 
 void ModeSkeleton::on_prepare_scene(const RenderParams& params) {

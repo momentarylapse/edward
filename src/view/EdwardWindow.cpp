@@ -109,12 +109,17 @@ Dialog x x padding=0
 	set_key_code("redo", mod + xhui::KEY_Y);
 	set_key_code("copy", mod + xhui::KEY_C);
 	set_key_code("paste", mod + xhui::KEY_V);
+#ifdef OS_MAC
+	set_key_code("delete", xhui::KEY_BACKSPACE);
+#else
+	set_key_code("delete", xhui::KEY_DELETE);
+#endif
 	set_key_code("select_all", mod + xhui::KEY_A);
 	set_key_code("execute-plugin", mod + xhui::KEY_RETURN);
 
 	toolbar = (xhui::Toolbar*)get_control("toolbar");
 
-	Array<string> ids = {"new", "open", "save", "save-as", "exit", "undo", "redo", "copy", "paste"};
+	Array<string> ids = {"new", "open", "save", "save-as", "exit", "undo", "redo", "copy", "paste", "delete"};
 	for (const string& id: ids)
 		event(id, [this, id=id] {
 			session->cur_mode->on_command(id);

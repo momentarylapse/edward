@@ -41,7 +41,7 @@
 #include "../../action/model/mesh/surface/ActionModelAutoWeldSelection.h"
 #include "../../action/model/mesh/surface/ActionModelSurfacesSubdivide.h"
 #include "../../action/model/mesh/skin/ActionModelAutomap.h"*/
-#include "../action/mesh/look/ActionModelSetMaterial.h"
+#include "../mesh/action/look/ActionModelSetMaterial.h"
 /*#include "../../action/model/mesh/look/ActionModelSetNormalModeSelection.h"
 #include "../../action/model/mesh/effect/ActionModelAddEffects.h"
 #include "../../action/model/mesh/effect/ActionModelClearEffects.h"
@@ -63,10 +63,10 @@
 #include "../../action/model/skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../action/model/skeleton/ActionModelReconnectBone.h"
 #include "../../action/model/skeleton/ActionModelSetSubModel.h"*/
-#include "../action/mesh/ActionModelAddPolygon.h"
-#include "../action/mesh/ActionModelDeleteSelection.h"
-#include "../action/mesh/ActionModelPasteMesh.h"
-#include "../action/mesh/ActionModelEditMesh.h"
+#include "../mesh/action/ActionModelAddPolygon.h"
+#include "../mesh/action/ActionModelDeleteSelection.h"
+#include "../mesh/action/ActionModelPasteMesh.h"
+#include "../mesh/action/ActionModelEditMesh.h"
 #include "../../lib/os/msg.h"
 #include "../../lib/math/quaternion.h"
 #include "../../lib/xhui/language.h"

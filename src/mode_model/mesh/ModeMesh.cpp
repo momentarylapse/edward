@@ -16,7 +16,7 @@
 #include "ModeMeshSculpt.h"
 #include "ModeMeshMaterial.h"
 #include "../ModeModel.h"
-#include "../action/mesh/ActionModelMoveSelection.h"
+#include "action/ActionModelMoveSelection.h"
 #include "../data/ModelMesh.h"
 #include <Session.h>
 #include <data/mesh/GeometryCylinder.h>
@@ -648,6 +648,15 @@ void ModeMesh::on_command(const string& id) {
 		copy();
 	if (id == "paste")
 		paste();
+	if (id == "delete") {
+		if (auto s = model_selection_description(data, multi_view->selection)) {
+			data->delete_selection(multi_view->selection, presentation_mode == PresentationMode::Vertices);
+			multi_view->clear_selection();
+			session->set_message("deleted: " + *s);
+		} else {
+			session->set_message("nothing selected");
+		}
+	}
 	_parent->on_command(id);
 }
 
@@ -671,15 +680,6 @@ void ModeMesh::paste() {
 
 
 void ModeMesh::on_key_down(int key) {
-	if (key == xhui::KEY_DELETE or key == xhui::KEY_BACKSPACE) {
-		if (auto s = model_selection_description(data, multi_view->selection)) {
-			data->delete_selection(multi_view->selection, presentation_mode == PresentationMode::Vertices);
-			multi_view->clear_selection();
-			session->set_message("deleted: " + *s);
-		} else {
-			session->set_message("nothing selected");
-		}
-	}
 	if (key == (xhui::KEY_CONTROL | xhui::KEY_B))
 		session->set_mode(new ModeBevelEdges(this));
 	if (key == (xhui::KEY_CONTROL | xhui::KEY_X))

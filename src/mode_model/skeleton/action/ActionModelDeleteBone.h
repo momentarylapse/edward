@@ -8,17 +8,17 @@
 #ifndef ACTIONMODELDELETEBONE_H_
 #define ACTIONMODELDELETEBONE_H_
 
-#include "../../../lib/math/vec3.h"
-#include "../../Action.h"
-#include "../../../lib/math/vec4.h"
+#include <action/Action.h>
+#include <lib/math/vec3.h>
+#include <lib/math/vec4.h>
 
 class ActionModelDeleteBone: public Action {
 public:
-	ActionModelDeleteBone(int _index);
-	string name(){	return "ModelDeleteBone";	}
+	explicit ActionModelDeleteBone(int _index);
+	string name() override { return "ModelDeleteBone"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	int index;
