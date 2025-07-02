@@ -46,6 +46,10 @@ void MenuBar::_draw(Painter* p) {
 
 
 void MenuBar::set_menu(shared<Menu> _menu) {
+	// clear
+	while (children.num > 0)
+		Grid::remove_child(children.back().control.get());
+
 	menu = _menu;
 	for (const auto [i, it]: enumerate(menu->items)) {
 		Grid::add_child(new MenuBarButton(it.id, it.title, it.menu), i, 0);
