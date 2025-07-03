@@ -11,6 +11,7 @@
 #include <storage/Storage.h>
 #include <view/MultiView.h>
 #include <view/EdwardWindow.h>
+#include <lib/xhui/controls/Toolbar.h>
 
 Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
@@ -32,6 +33,8 @@ void ModeModel::on_enter_rec() {
 	});
 
 	auto win = session->win;
+	auto tb = win->toolbar;
+	tb->set_by_id("model-toolbar");
 	win->enable("mode_model_animation", false);
 
 	event_ids_rec.add(win->event("mode_model_mesh", [this] {

@@ -27,7 +27,6 @@
 #include <lib/image/Painter.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
-#include <lib/xhui/controls/Toolbar.h>
 #include <view/ActionController.h>
 #include <view/MultiView.h>
 #include <view/DrawingHelper.h>
@@ -134,8 +133,6 @@ void ModeMesh::on_enter() {
 	};
 
 	auto win = session->win;
-	auto tb = win->toolbar;
-	tb->set_by_id("model-toolbar");
 
 	auto menu_bar = (xhui::MenuBar*)win->get_control("menu");
 	auto menu = xhui::create_resource_menu("menu_model");
