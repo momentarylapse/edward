@@ -246,6 +246,21 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				if (e.value("role") == "ego")
 					data->EgoIndex = data->entities.num;
 				data->entities.add(o);
+			} else if (e.tag == "entity") {
+				WorldEntity o;
+				o.basic_type = MultiViewType::WORLD_ENTITY;
+				//o.script = e.value("script");
+				o.pos = s2v(e.value("pos", "0 0 0"));
+				o.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
+				for (auto &ee: e.elements)
+					if (ee.tag == "component") {
+						ScriptInstanceData sd;
+						sd.filename = ee.value("script", "");
+						sd.class_name = ee.value("class", "");
+						sd.variables = str2vars(ee.value("var", ""));
+						o.components.add(sd);
+					}
+				data->entities.add(o);
 			} else if (e.tag == "link") {
 				WorldLink l;
 				l.type = LinkType::SOCKET;
