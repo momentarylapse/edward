@@ -10,7 +10,7 @@ Plugins/_*.kaba
 *~
 *.o
 *.a
-edward
+/edward
 Edward.suo
 Edward.sdf
 Edward.opensdf
