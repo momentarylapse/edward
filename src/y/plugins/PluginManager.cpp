@@ -262,6 +262,14 @@ void imagetexture_init(DepthBuffer *t, int w, int h, const string &format) {
 #endif
 }
 
+void storagetexture_init(DepthBuffer *t, int nx, int ny, int nz, const string &format) {
+#ifdef USING_VULKAN
+	new(t) vulkan::StorageTexture(nx, ny, nz, format);
+#else
+	new(t) VolumeTexture(nx, ny, format);
+#endif
+}
+
 void volumetexture_init(VolumeTexture *t, int nx, int ny, int nz, const string &format) {
 	new(t) VolumeTexture(nx, ny, nz, format);
 }
@@ -558,6 +566,7 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("Material.Friction.jump", &Material::Friction::jump);
 
 	ext->declare_class_size("Material", sizeof(Material));
+	ext->link_class_func("Material.__delete__", &kaba::generic_delete<Material>);
 	ext->declare_class_element("Material.textures", &Material::textures);
 	ext->declare_class_element("Material.pass0", &Material::pass0);
 	ext->declare_class_element("Material.albedo", &Material::albedo);
@@ -699,6 +708,8 @@ void export_gfx(kaba::Exporter* ext) {
 	ext->link_class_func("DepthBuffer.__init__", &depthbuffer_init);
 
 	ext->link_class_func("ImageTexture.__init__", &imagetexture_init);
+
+	ext->link_class_func("StorageTexture.__init__", &storagetexture_init);
 
 	ext->link_class_func("VolumeTexture.__init__", &volumetexture_init);
 
@@ -1091,9 +1102,17 @@ void export_renderer(kaba::Exporter* ext) {
 	ext->link_class_func("PostProcessor.process", &PostProcessor::process);
 	ext->link_class_func("PostProcessor.add_stage", &PostProcessor::add_stage);
 
+	ext->declare_class_size("RayTracingData", sizeof(RayTracingData));
+	ext->declare_class_element("RayTracingData.buffer_meshes", &RayTracingData::buffer_meshes);
+	ext->declare_class_element("RayTracingData.num_meshes", &RayTracingData::num_meshes);
+
 	ext->declare_class_size("SceneView", sizeof(SceneView));
 	ext->declare_class_element("SceneView.surfel_buffer", &SceneView::surfel_buffer);
 	ext->declare_class_element("SceneView.num_surfels", &SceneView::num_surfels);
+	ext->declare_class_element("SceneView.probe_cells", &SceneView::probe_cells);
+	ext->declare_class_element("SceneView.probe_min", &SceneView::probe_min);
+	ext->declare_class_element("SceneView.probe_max", &SceneView::probe_max);
+	ext->declare_class_element("SceneView.ray_tracing_data", &SceneView::ray_tracing_data);
 
 	ext->declare_class_size("RenderPath", sizeof(RenderPath));
 	ext->declare_class_element("RenderPath.hdr_resolver", &RenderPath::hdr_resolver);

@@ -13,6 +13,7 @@
 #include "../scene/RenderViewData.h"
 
 class Camera;
+enum class RaytracingMode;
 
 class WorldRendererVulkanRayTracing : public WorldRenderer {
 public:
@@ -23,11 +24,7 @@ public:
 
 	//void render_into_texture(Camera *cam, RenderViewData &rvd, const RenderParams& params) override;
 
-	enum class Mode {
-		NONE,
-		COMPUTE,
-		RTX
-	} mode = Mode::NONE;
+	RaytracingMode mode;
 
 	vulkan::Device *device;
 	RenderViewData rvd;
@@ -68,8 +65,8 @@ public:
 		vulkan::DescriptorPool *pool;
 		vulkan::DescriptorSet *dset;
 		vulkan::RayPipeline *pipeline;
-		vulkan::AccelerationStructure *tlas = nullptr;
-		Array<vulkan::AccelerationStructure*> blas;
+		//vulkan::AccelerationStructure *tlas = nullptr;
+		//Array<vulkan::AccelerationStructure*> blas;
 		vulkan::UniformBuffer *buffer_cam;
 	} rtx;
 

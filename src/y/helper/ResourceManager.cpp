@@ -26,6 +26,7 @@
 #ifdef USING_VULKAN
 namespace vulkan {
 	extern string overwrite_bindings;
+	extern int overwrite_push_size;
 }
 #endif
 
@@ -78,19 +79,21 @@ Path guess_absolute_path(const Path &filename, const Array<Path> dirs) {
 
 
 
-xfer<Shader> ResourceManager::__load_shader(const Path& path, const string &overwrite_bindings) {
+xfer<Shader> ResourceManager::__load_shader(const Path& path, const string &overwrite_bindings, int overwrite_push_size) {
 #ifdef USING_VULKAN
 	//msg_write("loading shader: " + str(path));
 	vulkan::overwrite_bindings = overwrite_bindings;
+	vulkan::overwrite_push_size = overwrite_push_size;
 	return Shader::load(path);
 #else
 	return ctx->load_shader(path);
 #endif
 }
 
-xfer<Shader> ResourceManager::__create_shader(const string& source, const string &overwrite_bindings) {
+xfer<Shader> ResourceManager::__create_shader(const string& source, const string &overwrite_bindings, int overwrite_push_size) {
 #ifdef USING_VULKAN
 	vulkan::overwrite_bindings = overwrite_bindings;
+	vulkan::overwrite_push_size = overwrite_push_size;
 	return Shader::create(source);
 #else
 	return ctx->create_shader(source);
@@ -106,7 +109,7 @@ shared<Shader> ResourceManager::load_shader(const Path& filename) {
 	if (!fn) {
 		if (engine.ignore_missing_files) {
 			msg_error("missing shader: " + str(filename));
-			return __load_shader("", "");
+			return __load_shader("", "", -1);
 		}
 		throw Exception("missing shader: " + str(filename));
 		//fn = shader_dir | filename;
@@ -121,7 +124,7 @@ shared<Shader> ResourceManager::load_shader(const Path& filename) {
 #endif
 		}
 
-	auto s = __load_shader(fn, "");
+	auto s = __load_shader(fn, "", -1);
 	if (!s)
 		return nullptr;
 
@@ -161,13 +164,13 @@ shared<Shader> ResourceManager::load_surface_shader(const Path& _filename, const
 
 
 	if (!filename)
-		return __load_shader("", "");
+		return __load_shader("", "", -1);
 
 	Path fn = guess_absolute_path(filename, {shader_dir, Application::directory_static | "shader"});
 	if (fn.is_empty()) {
 		if (engine.ignore_missing_files) {
 			msg_error("missing shader: " + str(filename));
-			return __load_shader("", "");
+			return __load_shader("", "", -1);
 		}
 		throw Exception("missing shader: " + str(filename));
 		//fn = shader_dir | filename;
@@ -191,7 +194,7 @@ shared<Shader> ResourceManager::load_surface_shader(const Path& _filename, const
 		source = expand_geometry_shader_source(source, geometry_module);
 	source = expand_fragment_shader_source(source, render_path);
 
-	auto shader = __create_shader(source, "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,ubo,ubo,ubo,ubo,ubo]]");
+	auto shader = __create_shader(source, "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,ubo,ubo,ubo,ubo,ubo]]", 96);
 
 	//auto s = Shader::load(fn);
 
@@ -201,7 +204,7 @@ shared<Shader> ResourceManager::load_surface_shader(const Path& _filename, const
 }
 
 Shader* ResourceManager::create_shader(const string &source) {
-	return __create_shader(source, "");
+	return __create_shader(source, "", -1);
 }
 
 void ResourceManager::load_shader_module(const Path& path) {

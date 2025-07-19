@@ -50,6 +50,12 @@ struct LightMetaData {
 	int num_lights;
 	int num_surfels;
 	int dummy[2];
+	ivec3 probe_cells;
+	int _dummy3;
+	vec3 probe_min;
+	float _dummy4;
+	vec3 probe_max;
+	float _dummy5;
 	mat4 shadow_proj[2];
 };
 

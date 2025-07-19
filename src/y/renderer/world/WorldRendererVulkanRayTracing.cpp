@@ -29,19 +29,20 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(vulkan::Device *_de
 
 	rvd.set_scene_view(&scene_view);
 
+	mode = RaytracingMode::NONE;
 	if (device->has_rtx() and config.allow_rtx)
-		mode = Mode::RTX;
+		mode = RaytracingMode::RTX;
 	else if (device->has_compute())
-		mode = Mode::COMPUTE;
+		mode = RaytracingMode::COMPUTE;
 	else
 		throw Exception("neither RTX nor compute shader support");
 
 	offscreen_image = new vulkan::StorageTexture(width, height, 1, "rgba:f16");
 	offscreen_image->set_options("magfilter=nearest,minfilter=nearest");
 
-	rt_setup(scene_view);
+	rt_setup_explicit(scene_view, mode);
 
-	if (mode == Mode::RTX) {
+	if (mode == RaytracingMode::RTX) {
 		msg_error("RTX!!!");
 		rtx.pool = new vulkan::DescriptorPool("acceleration-structure:1,image:1,storage-buffer:1,buffer:1024,sampler:1024", 1024);
 
@@ -60,7 +61,7 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(vulkan::Device *_de
 		rtx.pipeline->create_sbt();
 
 
-	} else if (mode == Mode::COMPUTE) {
+	} else if (mode == RaytracingMode::COMPUTE) {
 		msg_error("COMPUTE!!!");
 
 		compute.pool = new vulkan::DescriptorPool("image:1,storage-buffer:1,buffer:8,sampler:1", 1);
@@ -105,12 +106,12 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 
 	rt_update_frame(scene_view);
 
-	if (mode == Mode::RTX) {
+	if (mode == RaytracingMode::RTX) {
 
 		rtx.buffer_cam->update(&pc);
-		rtx.dset->set_acceleration_structure(0, rtx.tlas);
+		rtx.dset->set_acceleration_structure(0, scene_view.ray_tracing_data->rtx.tlas);
 		rtx.dset->update();
-		
+
 		cb->set_bind_point(vulkan::PipelineBindPoint::RAY_TRACING);
 		cb->bind_pipeline(rtx.pipeline);
 
@@ -119,7 +120,7 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 
 		cb->trace_rays(w, h, 1);
 		
-	} else if (mode == Mode::COMPUTE) {
+	} else if (mode == RaytracingMode::COMPUTE) {
 
 		pc.num_trias = 0;
 		pc.num_meshes = scene_view.ray_tracing_data->num_meshes;

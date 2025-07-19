@@ -28,35 +28,35 @@
 #ifdef USING_VULKAN
 
 static const int MAX_RT_TRIAS = 65536;
-static const int MAX_RT_MESHES = 1024;
+static const int MAX_RT_MESHES = 512;
 static const int MAX_RT_REQUESTS = 4096*16;
 
+void rt_setup_explicit(SceneView& scene_view, RaytracingMode mode) {
+	scene_view.ray_tracing_data = new RayTracingData(engine.window_renderer->device, mode);
+}
+
 void rt_setup(SceneView& scene_view) {
-	scene_view.ray_tracing_data = new RayTracingData(engine.window_renderer->device);
+	rt_setup_explicit(scene_view, RaytracingMode::COMPUTE);
 }
 
 void rt_update_frame(SceneView& scene_view) {
 	scene_view.ray_tracing_data->update_frame();
 }
 
-RayTracingData::RayTracingData(vulkan::Device *device) {
+RayTracingData::RayTracingData(vulkan::Device *device, RaytracingMode _mode) {
 	auto resource_manager = engine.resource_manager;
+	mode = _mode;
 
-	/*if (device->has_rtx() and config.allow_rtx)
-		mode = Mode::RTX;
-	else*/
-	if (device->has_compute())
-		mode = Mode::COMPUTE;
-	else
+	if (mode == RaytracingMode::NONE)
 		throw Exception("no compute shader support");
 
-	buffer_meshes = new UniformBuffer(sizeof(MeshDescription) * MAX_RT_MESHES);
-	buffer_requests = new UniformBuffer(sizeof(RayRequest) * MAX_RT_REQUESTS);
+	buffer_meshes = new UniformBuffer(sizeof(MeshDescription) * MAX_RT_MESHES); // 64k!
+	buffer_requests = new ShaderStorageBuffer(sizeof(RayRequest) * MAX_RT_REQUESTS);
 	buffer_reply = new vulkan::StorageBuffer(sizeof(RayReply) * MAX_RT_REQUESTS);
 
-	if (mode == Mode::RTX) {
+	if (mode == RaytracingMode::RTX) {
 		msg_error("RTX!!!");
-		rtx.pool = new vulkan::DescriptorPool("acceleration-structure:1,image:1,storage-buffer:1,buffer:1024,sampler:1024", 1024);
+		rtx.pool = new vulkan::DescriptorPool("acceleration-structure:128,image:1,storage-buffer:1,buffer:1024,sampler:1024", 1024);
 
 		//rtx.buffer_cam = new UniformBuffer(sizeof(PushConst));
 
@@ -70,15 +70,15 @@ RayTracingData::RayTracingData(vulkan::Device *device) {
 		rtx.pipeline->create_sbt();
 
 
-	} else if (mode == Mode::COMPUTE) {
+	} else if (mode == RaytracingMode::COMPUTE) {
 		//msg_error("COMPUTE!!!");
 
-		compute.pool = new vulkan::DescriptorPool("image:1,storage-buffer:1,buffer:8,sampler:1", 1);
+		compute.pool = new vulkan::DescriptorPool("image:1,storage-buffer:2,buffer:8,sampler:1", 1);
 
 		auto shader = resource_manager->load_shader("compute/raytracing.shader");
 		compute.pipeline = new vulkan::ComputePipeline(shader.get());
-		compute.dset = compute.pool->create_set("buffer,buffer,storage-buffer");
-		compute.dset->set_uniform_buffer(0, buffer_requests.get());
+		compute.dset = compute.pool->create_set("storage-buffer,buffer,storage-buffer");
+		compute.dset->set_storage_buffer(0, buffer_requests.get());
 		compute.dset->set_uniform_buffer(1, buffer_meshes.get());
 		compute.dset->set_storage_buffer(2, buffer_reply.get());
 		compute.dset->update();
@@ -90,6 +90,7 @@ RayTracingData::RayTracingData(vulkan::Device *device) {
 
 
 void RayTracingData::update_frame() {
+	//msg_write("rt update frame");
 
 	auto& models = ComponentManager::get_list_family<Model>();
 	auto& terrains = ComponentManager::get_list_family<Terrain>();
@@ -131,7 +132,7 @@ void RayTracingData::update_frame() {
 
 
 
-	if (mode == Mode::RTX) {
+	if (mode == RaytracingMode::RTX) {
 
 		Array<mat4> matrices;
 
@@ -180,7 +181,7 @@ void RayTracingData::update_frame() {
 			rtx.tlas = vulkan::AccelerationStructure::create_top(device, rtx.blas, matrices);
 		}
 
-	} else if (mode == Mode::COMPUTE) {
+	} else if (mode == RaytracingMode::COMPUTE) {
 	}
 }
 

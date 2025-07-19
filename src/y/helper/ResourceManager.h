@@ -34,8 +34,8 @@ public:
 
 	Path texture_file(Texture* t) const;
 
-	xfer<Shader> __load_shader(const Path& path, const string &overwrite_bindings);
-	xfer<Shader> __create_shader(const string& source, const string &overwrite_bindings);
+	xfer<Shader> __load_shader(const Path& path, const string &overwrite_bindings, int overwrite_push_size);
+	xfer<Shader> __create_shader(const string& source, const string &overwrite_bindings, int overwrite_push_size);
 
 	Path texture_dir;
 	Path shader_dir;

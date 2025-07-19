@@ -70,6 +70,13 @@ public:
 		Array<ScriptData> components;
 	};
 
+	class Entity {
+	public:
+		string name;
+		vec3 pos, ang;
+		Array<ScriptData> components;
+	};
+
 	class Light {
 	public:
 		bool enabled;
@@ -100,6 +107,7 @@ public:
 	color background_color;
 	Array<Object> objects;
 	Array<Terrain> terrains;
+	Array<Entity> entities;
 	int ego_index;
 	Array<ScriptData> systems;
 	Array<Light> lights;

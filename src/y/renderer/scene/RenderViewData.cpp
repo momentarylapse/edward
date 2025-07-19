@@ -168,9 +168,15 @@ RenderData& RenderViewData::start(const RenderParams& params, const mat4& matrix
 
 void RenderViewData::begin_draw() {
 	index = 0;
-	light_meta_data.num_surfels = 0;
-	if (scene_view)
+	if (scene_view) {
 		light_meta_data.num_surfels = scene_view->num_surfels;
+		light_meta_data.probe_cells = scene_view->probe_cells;
+		light_meta_data.probe_min = scene_view->probe_min;
+		light_meta_data.probe_max = scene_view->probe_max;
+	} else {
+		light_meta_data.num_surfels = 0;
+		light_meta_data.probe_cells = ivec3{0, 0, 0};
+	}
 }
 
 void RenderViewData::clear(const RenderParams& params, const Array<color>& colors, float z) {

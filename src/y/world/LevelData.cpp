@@ -56,8 +56,7 @@ bool LevelData::load(const Path &filename) {
 
 	xml::Parser p;
 	p.load(filename);
-	auto *meta = p.elements[0].find("meta");
-	if (meta) {
+	if (auto meta = p.elements[0].find("meta")) {
 		for (auto &e: meta->elements) {
 			if (e.tag == "background") {
 				background_color = s2c(e.value("color"));
@@ -98,8 +97,7 @@ bool LevelData::load(const Path &filename) {
 	}
 
 
-	auto *cont = p.elements[0].find("3d");
-	if (cont) {
+	if (auto cont = p.elements[0].find("3d")) {
 		for (auto &e: cont->elements) {
 			if (e.tag == "camera") {
 				Camera c;
@@ -178,6 +176,19 @@ bool LevelData::load(const Path &filename) {
 						o.components.add(sd);
 					}
 				objects.add(o);
+			} else if (e.tag == "entity") {
+				Entity o;
+				o.pos = s2v(e.value("pos"));
+				o.ang = s2v(e.value("ang"));
+				for (auto &ee: e.elements)
+					if (ee.tag == "component") {
+						ScriptData sd;
+						sd.filename = ee.value("script");
+						sd.class_name = ee.value("class");
+						sd.var = ee.value("var");
+						o.components.add(sd);
+					}
+				entities.add(o);
 			} else if (e.tag == "link") {
 				Link l;
 				l.pos = s2v(e.value("pos"));

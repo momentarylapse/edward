@@ -83,13 +83,15 @@ RenderPath::RenderPath(RenderPathType _type, Camera* _cam) : Renderer("path") {
 	resource_manager->load_shader_module("module-geometry-points.shader");
 
 
-	// not sure this is a good idea...
-	auto e = new Entity;
-	cube_map_source = new CubeMapSource;
-	cube_map_source->owner = e;
-	cube_map_source->cube_map = new CubeMap(cube_map_source->resolution, "rgba:i8");
+	if (type != RenderPathType::PathTracing) {
+		// not sure this is a good idea...
+		auto e = new Entity;
+		cube_map_source = new CubeMapSource;
+		cube_map_source->owner = e;
+		cube_map_source->cube_map = new CubeMap(cube_map_source->resolution, "rgba:i8");
 
-	scene_view.cube_map = cube_map_source->cube_map;
+		scene_view.cube_map = cube_map_source->cube_map;
+	}
 
 
 	world_renderer = create_world_renderer(scene_view, type);
@@ -233,7 +235,11 @@ void RenderPath::prepare(const RenderParams& params) {
 	prepare_instanced_matrices();
 	scene_view.choose_lights();
 	scene_view.choose_shadows();
-	world_renderer->prepare(params);
+
+	if (type != RenderPathType::PathTracing)
+		world_renderer->prepare(params);
+	// FIXME replace by ...
+	//scene_view.cam->update_matrix_cache(params.desired_aspect_ratio);
 
 	if (cube_map_source)
 		scene_view.cube_map = cube_map_source->cube_map;
@@ -244,7 +250,8 @@ void RenderPath::prepare(const RenderParams& params) {
 
 	//cam->update_matrix_cache(params.desired_aspect_ratio);
 
-	render_cubemaps(params);
+	if (type != RenderPathType::PathTracing)
+		render_cubemaps(params);
 
 	if (texture_renderer) {
 		texture_renderer->set_area(dynamicly_scaled_area(texture_renderer->frame_buffer.get()));

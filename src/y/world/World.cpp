@@ -344,6 +344,14 @@ bool World::load(const LevelData &ld) {
 		ok &= !tt->error;
 	}
 
+	// (raw) entities
+	foreachi(auto &e, ld.entities, i) {
+		auto ee = create_entity(e.pos, quaternion::rotation(e.ang));
+		register_entity(ee);
+
+		add_components_no_init(ee, e.components);
+	}
+
 	auto& model_list = ComponentManager::get_list_family<Model>();
 	for (auto &l: ld.links) {
 		Entity *a = model_list[l.object[0]]->owner;

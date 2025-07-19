@@ -9,6 +9,7 @@
 #include <lib/base/pointer.h>
 #include <lib/math/mat4.h>
 #include <graphics-fwd.h>
+#include <lib/math/vec3.h>
 
 class Light;
 class Camera;
@@ -31,6 +32,8 @@ struct SceneView {
 	Array<int> shadow_indices;
 	owned<UniformBuffer> surfel_buffer;
 	int num_surfels = 0;
+	ivec3 probe_cells;
+	vec3 probe_min, probe_max;
 	RayTracingData* ray_tracing_data = nullptr;
 
 	void choose_lights();
