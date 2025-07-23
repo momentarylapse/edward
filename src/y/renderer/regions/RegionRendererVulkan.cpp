@@ -10,10 +10,10 @@
 #ifdef USING_VULKAN
 #include "../base.h"
 #include <graphics-impl.h>
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 
 void RegionRenderer::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	auto cb = params.command_buffer;
 	auto fb = params.frame_buffer;
 	const rect area = rect(0, fb->width, 0, fb->height);
@@ -28,7 +28,7 @@ void RegionRenderer::draw(const RenderParams& params) {
 		}
 	}
 	cb->set_viewport(area);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 #endif

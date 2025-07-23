@@ -6,8 +6,8 @@
  */
 
 #include "Scheduler.h"
-#include "PerformanceMonitor.h"
 #include "../lib/base/algo.h"
+#include "../lib/profiler/Profiler.h"
 
 static int ch_iterate = -1;
 static Array<Scheduler*> schedulers;
@@ -48,7 +48,7 @@ void Scheduler::iterate(float dt) {
 }
 
 void SchedulerManager::init(int ch_iter_parent) {
-	ch_iterate = PerformanceMonitor::create_channel("scheduler", ch_iter_parent);
+	ch_iterate = profiler::create_channel("scheduler", ch_iter_parent);
 }
 
 void SchedulerManager::reset() {
@@ -56,8 +56,8 @@ void SchedulerManager::reset() {
 }
 
 void SchedulerManager::iterate(float dt) {
-	PerformanceMonitor::begin(ch_iterate);
+	profiler::begin(ch_iterate);
 	for (auto s: schedulers)
 		s->iterate(dt);
-	PerformanceMonitor::end(ch_iterate);
+	profiler::end(ch_iterate);
 }

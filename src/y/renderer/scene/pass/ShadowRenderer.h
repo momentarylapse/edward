@@ -17,7 +17,7 @@
 
 class MeshEmitter;
 class Camera;
-class PerformanceMonitor;
+class Profiler;
 class Material;
 class GeometryEmitter;
 class TextureRenderer;

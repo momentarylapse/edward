@@ -17,9 +17,10 @@
 #include "../../Edward.h"
 //#include "../../stuff/Progress.h"
 #include "../../storage/Storage.h"
-#include "../../lib/os/file.h"
-#include "../../lib/os/filesystem.h"
-#include "../../lib/os/formatter.h"
+#include <lib/os/app.h>
+#include <lib/os/file.h>
+#include <lib/os/filesystem.h>
+#include <lib/os/formatter.h>
 
 DataProject::DataProject(Session *s) :
 	Data(s, -1)
@@ -112,7 +113,7 @@ bool DataProject::save(const Path &_filename) {
 }
 
 void DataProject::SaveDatabase() {
-	save(app->directory | "admin_database.txt");
+	save(os::app::directory_dynamic | "admin_database.txt");
 }
 
 void DataProject::reset() {
@@ -158,7 +159,7 @@ bool DataProject::load(const Path &_filename, bool deep) {
 }
 
 void DataProject::LoadDatabase() {
-	load(app->directory | "admin_database.txt");
+	load(os::app::directory_dynamic | "admin_database.txt");
 }
 
 AdminFile *AdminFileList::add_engine_files() {

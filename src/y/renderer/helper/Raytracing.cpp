@@ -8,9 +8,8 @@
 #include "../base.h"
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>
+#include <lib/profiler/Profiler.h>
 #include <renderer/target/WindowRendererVulkan.h>
-
-#include "../../helper/PerformanceMonitor.h"
 #include "../../helper/ResourceManager.h"
 #include "../../gui/Node.h"
 #include "../../fx/Particle.h"

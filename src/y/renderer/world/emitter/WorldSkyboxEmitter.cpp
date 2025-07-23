@@ -6,7 +6,7 @@
 #include "../../scene/RenderViewData.h"
 #include "../../scene/SceneView.h"
 #include "../../base.h"
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 #include <world/World.h>
 #include <world/Model.h>
 #include <world/Camera.h>
@@ -19,7 +19,7 @@ void WorldSkyboxEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 	if (shadow_pass)
 		return;
 
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 
 	rvd.clear(params, {world.background}, 1.0f);
@@ -70,7 +70,7 @@ void WorldSkyboxEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 #endif
 #endif
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 

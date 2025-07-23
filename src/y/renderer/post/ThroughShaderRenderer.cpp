@@ -4,7 +4,7 @@
 #include "ThroughShaderRenderer.h"
 #include "../base.h"
 #include "../../graphics-impl.h"
-#include "../../helper/PerformanceMonitor.h"
+#include <lib/profiler/Profiler.h>
 #include <lib/math/mat4.h>
 
 
@@ -29,7 +29,7 @@ void ThroughShaderRenderer::draw(const RenderParams &params) {
 #ifdef USING_VULKAN
 	auto cb = params.command_buffer;
 
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 
 	if (!pipeline) {
@@ -45,11 +45,11 @@ void ThroughShaderRenderer::draw(const RenderParams &params) {
 
 
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 #else
 	bool flip_y = params.target_is_window;
 
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 
 	nix::set_shader(shader.get());
@@ -66,7 +66,7 @@ void ThroughShaderRenderer::draw(const RenderParams &params) {
 	nix::set_cull(nix::CullMode::BACK);
 
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 #endif
 }
 

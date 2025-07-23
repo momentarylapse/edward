@@ -10,11 +10,11 @@
 #ifdef USING_OPENGL
 #include "../base.h"
 #include <lib/nix/nix.h>
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 
 
 void RegionRenderer::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 
 	const rect area = params.frame_buffer->area();
 
@@ -30,7 +30,7 @@ void RegionRenderer::draw(const RenderParams& params) {
 	}
 	nix::set_scissor(rect::EMPTY);
 	nix::set_viewport(area);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 #endif

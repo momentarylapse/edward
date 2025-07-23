@@ -19,7 +19,7 @@
 
 class GeometryRenderer;
 class ShadowMapRenderer;
-class PerformanceMonitor;
+class Profiler;
 class World;
 class Camera;
 struct mat4;

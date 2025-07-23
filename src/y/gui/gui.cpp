@@ -14,7 +14,7 @@
 #include "../lib/math/mat4.h"
 #include "../lib/kaba/kaba.h"
 #ifdef _X_ALLOW_X_
-#include "../helper/PerformanceMonitor.h"
+#include "../helper/Profiler.h"
 #endif
 #include <stdio.h>
 
@@ -28,7 +28,7 @@ shared<Node> toplevel;
 
 void init(int ch_iter) {
 #ifdef _X_ALLOW_X_
-	ch_gui_iter = PerformanceMonitor::create_channel("gui", ch_iter);
+	ch_gui_iter = profiler::create_channel("gui", ch_iter);
 #endif
 
 	Font::init_fonts();
@@ -95,7 +95,7 @@ void handle_mouse_move(const vec2 &m_prev, const vec2 &m) {
 
 void iterate(float dt) {
 #ifdef _X_ALLOW_X_
-	PerformanceMonitor::begin(ch_gui_iter);
+	profiler::begin(ch_gui_iter);
 #endif
 	auto nodes = all_nodes;
 	// tree might change...
@@ -117,7 +117,7 @@ void iterate(float dt) {
 		}
 	}
 #ifdef _X_ALLOW_X_
-	PerformanceMonitor::end(ch_gui_iter);
+	profiler::end(ch_gui_iter);
 #endif
 }
 

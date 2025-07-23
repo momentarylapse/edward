@@ -10,18 +10,7 @@
 #include "import.h"
 #include "../../os/filesystem.h"
 #include "../../os/msg.h"
-
-
-#include "../../config.h"
-
-#ifdef _X_USE_HUI_
-#include "../../hui/Application.h"
-#elif defined(_X_USE_HUI_MINIMAL_)
-#include "../../hui_minimal/Application.h"
-#elif __has_include("../../xhui/xhui.h")
-#include "../../xhui/xhui.h"
-#include "../../xhui/Application.h"
-#endif
+#include "../../os/app.h"
 
 
 const int MAX_IMPORT_DIRECTORY_PARENTS = 5;
@@ -81,15 +70,10 @@ Path import_dir_match(const Path &dir0, const string &name) {
 }
 
 Path find_installed_lib_import(const string &name) {
-#ifdef _X_USE_XHUI_
-	using App = xhui::Application;
-#else
-	using App = hui::Application;
-#endif
-	Path kaba_dir = App::directory.parent() | "kaba";
-	if (App::directory.basename()[0] == '.')
-		kaba_dir = App::directory.parent() | ".kaba";
-	Path kaba_dir_static = App::directory_static.parent() | "kaba";
+	Path kaba_dir = os::app::directory_dynamic.parent() | "kaba";
+	if (os::app::directory_dynamic.basename()[0] == '.')
+		kaba_dir = os::app::directory_dynamic.parent() | ".kaba";
+	Path kaba_dir_static = os::app::directory_static.parent() | "kaba";
 	for (auto &dir: Array<Path>({kaba_dir, kaba_dir_static})) {
 		auto path1 = (dir | "packages" | (name + ".kaba")).canonical();
 		if (os::fs::exists(path1))
@@ -120,7 +104,7 @@ Path find_import(Module *s, const string &_name) {
 shared<Module> get_import_module(Parser *parser, const string &name, int token_id) {
 
 	// internal packages?
-	for (auto p: parser->context->packages)
+	for (auto p: parser->context->internal_packages)
 		if (p->filename.str() == name)
 			return p;
 

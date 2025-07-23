@@ -3,7 +3,7 @@
 //
 
 #include "WorldModelsEmitter.h"
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 #include <renderer/base.h>
 #include <renderer/scene/RenderViewData.h>
 #include <renderer/scene/SceneView.h>
@@ -21,7 +21,7 @@ WorldModelsEmitter::WorldModelsEmitter() : MeshEmitter("mod") {
 
 
 void WorldModelsEmitter::emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 
 	auto& list = ComponentManager::get_list_family<Model>();
@@ -56,11 +56,11 @@ void WorldModelsEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 		}
 	}
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 void WorldModelsEmitter::emit_transparent(const RenderParams& params, RenderViewData& rvd) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 	auto cam = rvd.scene_view->cam;
 
@@ -115,7 +115,7 @@ void WorldModelsEmitter::emit_transparent(const RenderParams& params, RenderView
 		}
 	}
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 

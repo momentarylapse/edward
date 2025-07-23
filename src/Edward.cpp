@@ -92,8 +92,8 @@ void update_file(const Path &filename, bool allow_write) {
 	delete session;
 }
 
-
-int xhui_main(const Array<string>& args) {
+namespace os::app {
+int main(const Array<string>& args) {
 	try {
 		xhui::init(args, "edward");
 	} catch (Exception &e) {
@@ -177,5 +177,6 @@ int xhui_main(const Array<string>& args) {
 		msg_error(e.message());
 	}
 	return 0;
+}
 }
 

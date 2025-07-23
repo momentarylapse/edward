@@ -4,15 +4,11 @@
 
 #include "Application.h"
 #include "xhui.h"
+#include <lib/os/app.h>
 #include <lib/os/filesystem.h>
 
 namespace xhui {
 
-Path Application::directory;
-Path Application::directory_static;
-Path Application::initial_working_directory;
-Path Application::filename;
-bool Application::installed;
 bool Application::_end_requested = false;
 Array<string> Application::_args;
 base::map<string, string> Application::_properties_;
@@ -29,7 +25,7 @@ Application::Application(const string &app_name, const string &def_lang, Flags _
 	g_set_prgname(app_name.c_str());
 #endif
 
-	guess_directories(_args, app_name);
+	os::app::detect(_args, app_name);
 
 
 	separator = "\\";
@@ -37,12 +33,12 @@ Application::Application(const string &app_name, const string &def_lang, Flags _
 	//	if ((flags & Flags::NO_ERROR_HANDLER) == 0)
 	//		SetDefaultErrorHandler(nullptr);
 
-	if (os::fs::exists(directory | "config.txt"))
-		config.load(directory | "config.txt");
+	if (os::fs::exists(os::app::directory_dynamic | "config.txt"))
+		config.load(os::app::directory_dynamic | "config.txt");
 
 
 	if ((flags & Flags::DONT_LOAD_RESOURCE) == 0)
-		load_resource(directory_static | "hui_resources.txt");
+		load_resource(os::app::directory_static | "hui_resources.txt");
 
 	if (def_lang.num > 0)
 		set_language(config.get_str("Language", def_lang));
@@ -56,10 +52,10 @@ Application::Application(const string &app_name, const string &def_lang, Flags _
 		set_property("logo", str(directory_static | "icon.svg"));
 	else
 #endif
-		if (os::fs::exists(directory_static | "icon.png"))
-			set_property("logo", str(directory_static | "icon.png"));
-		else if (os::fs::exists(directory_static | "icon.ico"))
-			set_property("logo", str(directory_static | "icon.ico"));
+		if (os::fs::exists(os::app::directory_static | "icon.png"))
+			set_property("logo", str(os::app::directory_static | "icon.png"));
+		else if (os::fs::exists(os::app::directory_static | "icon.ico"))
+			set_property("logo", str(os::app::directory_static | "icon.ico"));
 
 	// default "icon" used for windows (just name)
 	set_property("icon", app_name);
@@ -69,68 +65,6 @@ Application::Application(const string &app_name, const string &def_lang, Flags _
 Application::~Application() = default;
 
 
-
-//   filename -> executable file
-//   directory ->
-//      NONINSTALLED:  binary dir
-//      INSTALLED:     ~/.MY_APP/      <<< now always this
-//   directory_static ->
-//      NONINSTALLED:  binary dir/static/
-//      INSTALLED:     /usr/local/share/MY_APP/
-//   initial_working_directory -> working dir before running this program
-void Application::guess_directories(const Array<string> &arg, const string &app_name) {
-
-	initial_working_directory = os::fs::current_directory();
-	installed = false;
-
-
-	// executable file
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_MINGW) //defined(__GNUC__) || defined(OS_LINUX)
-	if (arg.num > 0)
-		filename = arg[0];
-#else // OS_WINDOWS
-	char *ttt = nullptr;
-	int r = _get_pgmptr(&ttt);
-	filename = ttt;
-	hui_win_instance = (void*)GetModuleHandle(nullptr);
-#endif
-
-
-	// first, assume a local/non-installed version
-	directory = initial_working_directory; //strip_dev_dirs(filename.parent());
-	directory_static = directory | "static";
-
-#ifdef INSTALL_PREFIX
-	// our build system should define this:
-	Path prefix = INSTALL_PREFIX;
-#else
-	// oh no... fall-back
-	Path prefix = "/usr/local";
-#endif
-
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_MINGW) //defined(__GNUC__) || defined(OS_LINUX)
-	// installed version?
-	if (filename.is_in(prefix) or (filename.str().find("/") < 0)) {
-		installed = true;
-		directory_static = prefix | "share" | app_name;
-	}
-
-	// inside an AppImage?
-	if (getenv("APPIMAGE")) {
-		installed = true;
-		directory_static = Path(getenv("APPDIR")) | "usr" | "share" | app_name;
-	}
-
-	// inside MacOS bundle?
-	if (str(filename).find(".app/Contents/MacOS/") >= 0) {
-		installed = true;
-		directory_static = filename.parent().parent() | "Resources";
-	}
-
-	directory = format("%s/.%s/", getenv("HOME"), app_name);
-	os::fs::create_directory(directory);
-#endif
-}
 
 void Application::end() {
 	//set_idle_function(nullptr);
@@ -154,7 +88,6 @@ int Application::run() {
 }
 
 int Application::try_execute(const Array<string> &args) {
-	guess_directories(args, get_property("name"));
 
 	// before init
 	auto status = on_startup_before_gui_init(args);

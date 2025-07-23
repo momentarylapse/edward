@@ -11,7 +11,7 @@
 #include <renderer/path/RenderPath.h>
 #include "../../base.h"
 #include <graphics-impl.h>
-#include "../../../helper/PerformanceMonitor.h"
+#include <lib/profiler/Profiler.h>
 #include <world/Material.h>
 #include <world/Camera.h>
 #include <world/Light.h>
@@ -65,7 +65,7 @@ void ShadowRenderer::set_projection(const mat4& proj) {
 }
 
 void ShadowRenderer::render(const RenderParams& params) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 
 	for (int index: parent_scene->shadow_indices) {
@@ -76,7 +76,7 @@ void ShadowRenderer::render(const RenderParams& params) {
 	}
 
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 void ShadowRenderer::render_cascade(const RenderParams& _params, Cascade& c) {

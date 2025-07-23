@@ -36,7 +36,7 @@
 #ifdef _X_ALLOW_X_
 #include "../fx/ParticleManager.h"
 #include "../plugins/PluginManager.h"
-#include "../helper/PerformanceMonitor.h"
+#include <lib/profiler/Profiler.h>
 #endif
 
 #if HAS_LIB_BULLET
@@ -136,8 +136,8 @@ inline bool TestVectorSanity(vec3 &v, const char *name) {
 
 void GodInit(int ch_iter) {
 #ifdef _X_ALLOW_X_
-	world.ch_iterate = PerformanceMonitor::create_channel("world", ch_iter);
-	world.ch_animation = PerformanceMonitor::create_channel("animation", ch_iter);
+	world.ch_iterate = profiler::create_channel("world", ch_iter);
+	world.ch_animation = profiler::create_channel("animation", ch_iter);
 #endif
 }
 
@@ -622,7 +622,7 @@ void World::iterate_physics(float dt) {
 
 void World::iterate_animations(float dt) {
 #ifdef _X_ALLOW_X_
-	PerformanceMonitor::begin(ch_animation);
+	profiler::begin(ch_animation);
 	auto& list = ComponentManager::get_list_family<Animator>();
 	for (auto *o: list)
 		o->do_animation(dt);
@@ -639,7 +639,7 @@ void World::iterate_animations(float dt) {
 		}
 	}
 		//o->do_animation(dt);
-	PerformanceMonitor::end(ch_animation);
+	profiler::end(ch_animation);
 #endif
 }
 
@@ -647,7 +647,7 @@ void World::iterate(float dt) {
 	if (dt == 0)
 		return;
 #ifdef _X_ALLOW_X_
-	PerformanceMonitor::begin(ch_iterate);
+	profiler::begin(ch_iterate);
 	if (engine.physics_enabled) {
 		iterate_physics(dt);
 	} else {
@@ -657,7 +657,7 @@ void World::iterate(float dt) {
 					m->update_matrix();*/
 	}
 
-	PerformanceMonitor::end(ch_iterate);
+	profiler::end(ch_iterate);
 #endif
 }
 

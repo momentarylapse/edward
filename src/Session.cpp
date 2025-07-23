@@ -28,7 +28,8 @@
 #include "storage/Storage.h"
 #include "lib/xhui/config.h"
 #include "lib/image/image.h"
-#include "lib/os/msg.h"
+#include <lib/os/app.h>
+#include <lib/os/msg.h>
 #include <y/EngineData.h>
 #include <y/helper/ResourceManager.h>
 #include <y/world/Camera.h>
@@ -45,10 +46,10 @@ Session *create_session() {
 	auto s = new Session;
 	s->storage = new Storage(s);
 	s->storage->set_root_directory(xhui::config.get_str("RootDir", ""));
-	if (xhui::Application::installed)
-		s->plugin_manager = new PluginManager(xhui::Application::directory_static | "plugins");
+	if (os::app::installed)
+		s->plugin_manager = new PluginManager(os::app::directory_static | "plugins");
 	else
-		s->plugin_manager = new PluginManager(xhui::Application::directory_static | ".." | "plugins");
+		s->plugin_manager = new PluginManager(os::app::directory_static | ".." | "plugins");
 	/*s->mode_material = new ModeMaterial(s);
 	s->mode_model = new ModeModel(s);
 	s->mode_world = new ModeWorld(s);*/
@@ -123,7 +124,7 @@ Session::~Session() {
 		HuiConfig.set_str("ObjectScriptVarFile", ObjectScriptVarFile);
 		HuiConfig.set_str("ItemScriptVarFile", ItemScriptVarFile);*/
 		//HuiConfig.set_int("UpdateNormalMaxTime (ms)", int(UpdateNormalMaxTime * 1000.0f));
-		xhui::config.save(xhui::Application::directory | "config.txt");
+		xhui::config.save(os::app::directory_dynamic | "config.txt");
 		delete storage;
 	}
 

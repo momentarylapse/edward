@@ -8,7 +8,7 @@
 #include "WindowRendererVulkan.h"
 #ifdef USING_VULKAN
 #include "../../graphics-impl.h"
-#include "../../helper/PerformanceMonitor.h"
+#include <lib/profiler/Profiler.h>
 #include <lib/os/msg.h>
 #include <lib/math/rect.h>
 #include "../../Config.h" // for timing experiment
@@ -78,7 +78,7 @@ bool SurfaceRendererVulkan::start_frame() {
 }
 
 void SurfaceRendererVulkan::end_frame(const RenderParams& params) {
-	PerformanceMonitor::begin(ch_end);
+	profiler::begin(ch_end);
 	params.command_buffer->end();
 	auto f = wait_for_frame_fences[image_index];
 	device->present_queue.submit(command_buffers[image_index], {image_available_semaphore}, {render_finished_semaphore}, f);
@@ -86,7 +86,7 @@ void SurfaceRendererVulkan::end_frame(const RenderParams& params) {
 	swap_chain->present(image_index, {render_finished_semaphore});
 
 	device->wait_idle();
-	PerformanceMonitor::end(ch_end);
+	profiler::end(ch_end);
 }
 
 RenderParams SurfaceRendererVulkan::create_params(float aspect_ratio) {
@@ -101,7 +101,7 @@ void SurfaceRendererVulkan::prepare(const RenderParams& params) {
 }
 
 void SurfaceRendererVulkan::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	auto cb = params.command_buffer;
 	auto rp = params.render_pass;
 	auto fb = params.frame_buffer;
@@ -118,7 +118,7 @@ void SurfaceRendererVulkan::draw(const RenderParams& params) {
 
 	cb->end_render_pass();
 	//cb->end();
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 

@@ -16,6 +16,7 @@
 #include "../vulkan/Texture.h"
 #include "../vulkan/Device.h"
 #include "../nix/nix_textures.h"
+#include "lib/os/app.h"
 
 
 namespace xhui {
@@ -40,97 +41,10 @@ namespace xhui {
 		return (int)a & (int)b;
 	}
 
-	Array<string> make_args(int num_args, char *args[]) {
-		Array<string> a;
-		for (int i=0; i<num_args; i++)
-			a.add(args[i]);
-		return a;
-	}
-
 	void create_default_images();
-};
-
-int xhui_main(const Array<string> &);
-
-	// for a system independent usage of this library
-
-#ifdef OS_WINDOWS
-
-	int main(int num_args, char* args[]) {
-		return xhui_main(hui::make_args(num_args, args));
-	}
-
-#ifdef _CONSOLE
-
-	int _tmain(int num_args, _TCHAR *args[]) {
-		return xhui_main(hui::make_args(num_args, args));
-	}
-
-#else
-
-	// split by space... but parts might be in quotes "a b"
-	Array<string> parse_command_line(const string& s) {
-		Array<string> a;
-		a.add("-dummy-");
-
-		for (int i=0; i<s.num; i++) {
-			if (s[i] == '\"') {
-				string t;
-				bool escape = false;
-				i ++;
-				for (int j = i; j<s.num; j++) {
-					i = j;
-					if (escape) {
-						escape = false;
-					} else {
-						if (s[j] == '\\')
-							escape = true;
-						else if (s[j] == '\"')
-							break;
-					}
-					t.add(s[j]);
-				}
-				a.add(t.unescape());
-				i ++;
-			} else if (s[i] == ' ') {
-				continue;
-			} else {
-				string t;
-				for (int j=i; j<s.num; j++) {
-					i = j;
-					if (s[j] == ' ')
-						break;
-					t.add(s[j]);
-				}
-				a.add(t);
-			}
-		}
-		return a;
-	}
-
-	int APIENTRY WinMain(HINSTANCE hInstance,
-						 HINSTANCE hPrevInstance,
-						 LPTSTR    lpCmdLine,
-						 int       nCmdShow)
-	{
-		return xhui_main(parse_command_line(lpCmdLine));
-	}
-
-#endif
-
-#endif
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_MINGW)
-
-	int main(int num_args, char *args[]) {
-		return xhui_main(xhui::make_args(num_args, args));
-	}
-
-#endif
-
-
-namespace xhui {
 
 void init(const Array<string> &arg, const string& app_name) {
+	os::app::detect(arg, app_name);
 	//msg_init();
 	glfwInit();
 
@@ -145,9 +59,6 @@ void init(const Array<string> &arg, const string& app_name) {
 
 	global_ui_scale = 1.0f;
 	glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &global_ui_scale, nullptr);
-
-
-	Application::guess_directories(arg, app_name);
 
 	Theme::load_default();
 
@@ -175,13 +86,13 @@ void init(const Array<string> &arg, const string& app_name) {
 	}
 	// TODO font library!
 
-	if (os::fs::exists(Application::directory | "config.txt"))
-		config.load(Application::directory | "config.txt");
+	if (os::fs::exists(os::app::directory_dynamic | "config.txt"))
+		config.load(os::app::directory_dynamic | "config.txt");
 
 
 	if ((Application::flags & Flags::DONT_LOAD_RESOURCE) == 0)
-		if (os::fs::exists(Application::directory_static | "hui_resources.txt"))
-			load_resource(Application::directory_static | "hui_resources.txt");
+		if (os::fs::exists(os::app::directory_static | "hui_resources.txt"))
+			load_resource(os::app::directory_static | "hui_resources.txt");
 
 	string def_lang = "English";
 	//if (def_lang.num > 0)
@@ -360,10 +271,10 @@ static owned_array<XImage> _images_;
 
 Path find_image(const string& name) {
 	Array<Path> paths;
-	paths.add(Application::directory_static | "icons" | "hicolor" | "64x64" | "actions" | (name + ".png"));
-	paths.add(Application::directory_static | "icons" | "hicolor" | "64x64" | "actions" | (name + ".symbolic.png"));
-	paths.add(Application::directory_static | "icons" | "hicolor" | "24x24" | "actions" | (name + ".png"));
-	paths.add(Application::directory_static | "icons" | "hicolor" | "24x24" | "actions" | (name + ".symbolic.png"));
+	paths.add(os::app::directory_static | "icons" | "hicolor" | "64x64" | "actions" | (name + ".png"));
+	paths.add(os::app::directory_static | "icons" | "hicolor" | "64x64" | "actions" | (name + ".symbolic.png"));
+	paths.add(os::app::directory_static | "icons" | "hicolor" | "24x24" | "actions" | (name + ".png"));
+	paths.add(os::app::directory_static | "icons" | "hicolor" | "24x24" | "actions" | (name + ".symbolic.png"));
 	for (const Path& p: paths)
 	if (os::fs::exists(p))
 		return p;

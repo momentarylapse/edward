@@ -1,7 +1,7 @@
 #include "ComputeTask.h"
 #include <renderer/base.h>
 #include "../../graphics-impl.h"
-#include "../../helper/PerformanceMonitor.h"
+#include <lib/profiler/Profiler.h>
 
 
 
@@ -21,7 +21,7 @@ ComputeTask::ComputeTask(const string& name, const shared<Shader>& _shader, int 
 }
 
 void ComputeTask::render(const RenderParams &params) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
     gpu_timestamp_begin(params, channel);
 #ifdef USING_OPENGL
     bindings.apply(shader.get(), params);
@@ -38,7 +38,7 @@ void ComputeTask::render(const RenderParams &params) {
     // TODO barriers
 #endif
     gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 

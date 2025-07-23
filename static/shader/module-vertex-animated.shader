@@ -18,9 +18,12 @@ layout(location = 3) out vec4 out_color;
 
 void main() {
 	mat4 bm = bone_matrix[in_bone_index.x] * in_bone_weight.x;
-	bm += bone_matrix[in_bone_index.y] * in_bone_weight.y;
-	bm += bone_matrix[in_bone_index.z] * in_bone_weight.z;
-	bm += bone_matrix[in_bone_index.w] * in_bone_weight.w;
+	if (in_bone_weight.y > 0)
+		bm += bone_matrix[in_bone_index.y] * in_bone_weight.y;
+	if (in_bone_weight.z > 0)
+		bm += bone_matrix[in_bone_index.z] * in_bone_weight.z;
+	if (in_bone_weight.w > 0)
+		bm += bone_matrix[in_bone_index.w] * in_bone_weight.w;
 	mat4 model = matrix.model * bm;
 	
 	gl_Position = matrix.project * matrix.view * model * vec4(in_position, 1);

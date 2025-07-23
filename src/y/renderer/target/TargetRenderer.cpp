@@ -6,17 +6,17 @@
  */
 
 #include "TargetRenderer.h"
-#include "../../helper/PerformanceMonitor.h"
+#include <lib/profiler/Profiler.h>
 
 
 TargetRenderer::TargetRenderer(const string &name) : Renderer(name) {
-	ch_end = PerformanceMonitor::create_channel(name + ".end", channel);
+	ch_end = profiler::create_channel(name + ".end", channel);
 }
 
 void TargetRenderer::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	for (auto c: children) {
 		c->draw(params);
 	}
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }

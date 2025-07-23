@@ -1,7 +1,7 @@
 #include "HeadlessRendererVulkan.h"
 
 #ifdef USING_VULKAN
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 #include <renderer/base.h>
 #include "../../graphics-impl.h"
 

@@ -7,7 +7,6 @@
 
 #include "WorldRenderer.h"
 #include "../../graphics-impl.h"
-#include "../../helper/PerformanceMonitor.h"
 #include "../../fx/Particle.h"
 #include "../../gui/Picture.h"
 #include "../../world/Camera.h"
@@ -15,6 +14,7 @@
 #include "../../world/Model.h"
 #include "../../world/Terrain.h"
 #include "../../world/World.h"
+#include <lib/profiler/Profiler.h>
 #include <lib/base/callable.h>
 #include <renderer/helper/CubeMapSource.h>
 

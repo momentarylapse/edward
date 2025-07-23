@@ -12,7 +12,7 @@
 
 class SceneRenderer;
 class Camera;
-class PerformanceMonitor;
+class Profiler;
 
 class WorldRendererForward : public WorldRenderer {
 public:

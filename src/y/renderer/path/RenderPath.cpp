@@ -26,7 +26,7 @@
 #include <y/Entity.h>
 #include <y/ComponentManager.h>
 #include <Config.h>
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 #include <lib/math/Box.h>
 #include <lib/os/msg.h>
 #include <renderer/world/emitter/WorldModelsEmitter.h>
@@ -219,7 +219,7 @@ void RenderPath::render_cubemaps(const RenderParams &params) {
 
 // keep this outside the drawing function, making sure it only gets called once per frame!
 void RenderPath::prepare_instanced_matrices() {
-	//PerformanceMonitor::begin(ch_pre);
+	//profiler::begin(ch_pre);
 	auto& list = ComponentManager::get_list_family<MultiInstance>();
 	for (auto *mi: list) {
 		if (!mi->ubo_matrices)
@@ -227,7 +227,7 @@ void RenderPath::prepare_instanced_matrices() {
 		//mi->ubo_matrices->update_array(mi->matrices);
 		mi->ubo_matrices->update_part(&mi->matrices[0], 0, min(mi->matrices.num, MAX_INSTANCES) * sizeof(mat4));
 	}
-	//PerformanceMonitor::end(ch_pre);
+	//profiler::end(ch_pre);
 }
 
 void RenderPath::prepare(const RenderParams& params) {

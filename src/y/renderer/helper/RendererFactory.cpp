@@ -27,7 +27,7 @@
 #elif __has_include(<lib/hui/hui.h>)
 #include <lib/hui/hui.h>
 #endif
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 #include <Config.h>
 #include <helper/ResourceManager.h>
 
@@ -38,7 +38,7 @@
 
 
 string render_graph_str(Renderer *r) {
-	string s = PerformanceMonitor::get_name(r->channel);
+	string s = profiler::get_name(r->channel);
 	if (r->children.num == 1)
 		s += " <<< " + render_graph_str(r->children[0]);
 	if (r->children.num >= 2) {

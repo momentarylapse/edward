@@ -7,8 +7,8 @@
 
 #include "Renderer.h"
 #include "../y/EngineData.h"
-#include "../lib/math/rect.h"
-#include "../helper/PerformanceMonitor.h"
+#include <lib/math/rect.h>
+#include <lib/profiler/Profiler.h>
 #include "../graphics-impl.h"
 
 
@@ -42,8 +42,8 @@ RenderParams RenderParams::into_texture(FrameBuffer *frame_buffer, const base::o
 
 
 Renderer::Renderer(const string &name) {
-	channel = PerformanceMonitor::create_channel(name, -1);
-	ch_prepare = PerformanceMonitor::create_channel(name + ".p", channel);
+	channel = profiler::create_channel(name, -1);
+	ch_prepare = profiler::create_channel(name + ".p", channel);
 
 	context = engine.context;
 	resource_manager = engine.resource_manager;
@@ -74,7 +74,7 @@ void Renderer::draw(const RenderParams& params) {
 
 
 RenderTask::RenderTask(const string& name) {
-	channel = PerformanceMonitor::create_channel(name, -1);
+	channel = profiler::create_channel(name, -1);
 
 	context = engine.context;
 	resource_manager = engine.resource_manager;

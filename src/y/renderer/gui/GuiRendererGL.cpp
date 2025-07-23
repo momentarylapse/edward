@@ -12,7 +12,7 @@
 #include <lib/os/msg.h>
 #include "../../gui/gui.h"
 #include "../../gui/Picture.h"
-#include "../../helper/PerformanceMonitor.h"
+#include <lib/profiler/Profiler.h>
 #include "../../helper/ResourceManager.h"
 #include <y/EngineData.h>
 
@@ -31,7 +31,7 @@ void GuiRendererGL::draw(const RenderParams& params) {
 }
 
 void GuiRendererGL::draw_gui(const RenderParams& params, FrameBuffer *source) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 	gui::update();
 
@@ -74,7 +74,7 @@ void GuiRendererGL::draw_gui(const RenderParams& params, FrameBuffer *source) {
 	nix::disable_alpha();
 
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 

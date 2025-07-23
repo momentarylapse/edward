@@ -12,8 +12,8 @@
 #include "../../graphics-impl.h"
 #include "../../gui/gui.h"
 #include "../../gui/Picture.h"
-#include "../../helper/PerformanceMonitor.h"
 #include "../../helper/ResourceManager.h"
+#include <lib/profiler/Profiler.h>
 #include <lib/math/mat4.h>
 #include <lib/math/rect.h>
 
@@ -36,12 +36,12 @@ GuiRendererVulkan::GuiRendererVulkan() : Renderer("ui") {
 }
 
 void GuiRendererVulkan::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 	prepare_gui(params.frame_buffer, params);
 	draw_gui(params.command_buffer, params.render_pass);
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 void GuiRendererVulkan::prepare_gui(FrameBuffer *source, const RenderParams& params) {

@@ -3,7 +3,7 @@
 //
 
 #include "WorldTerrainsEmitter.h"
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 #include <renderer/base.h>
 #include <renderer/scene/RenderViewData.h>
 #include <world/Terrain.h>
@@ -15,7 +15,7 @@
 WorldTerrainsEmitter::WorldTerrainsEmitter() : MeshEmitter("ter") {}
 
 void WorldTerrainsEmitter::emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 
 	auto& terrains = ComponentManager::get_list_family<Terrain>();
@@ -43,6 +43,6 @@ void WorldTerrainsEmitter::emit(const RenderParams& params, RenderViewData& rvd,
 		rd.draw_triangles(params, t->vertex_buffer.get());
 	}
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 

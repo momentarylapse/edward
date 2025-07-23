@@ -7,7 +7,7 @@
 #include "../../scene/SceneView.h"
 #include <world/components/MultiInstance.h>
 #include <world/Model.h>
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 #include <renderer/base.h>
 #include <y/ComponentManager.h>
 #include <graphics-impl.h>
@@ -18,7 +18,7 @@ WorldInstancedEmitter::WorldInstancedEmitter() : MeshEmitter("inst") {
 }
 
 void WorldInstancedEmitter::emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 
 	auto& list = ComponentManager::get_list_family<MultiInstance>();
@@ -48,6 +48,6 @@ void WorldInstancedEmitter::emit(const RenderParams& params, RenderViewData& rvd
 		}
 	}
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 

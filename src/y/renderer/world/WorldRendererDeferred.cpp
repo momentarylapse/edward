@@ -15,6 +15,7 @@
 #include <lib/math/random.h>
 #include <lib/math/vec4.h>
 #include <lib/math/vec2.h>
+#include <lib/profiler/Profiler.h>
 #include <renderer/world/emitter/WorldInstancedEmitter.h>
 #include <renderer/world/emitter/WorldModelsEmitter.h>
 #include <renderer/world/emitter/WorldSkyboxEmitter.h>
@@ -22,7 +23,6 @@
 #include <renderer/world/emitter/WorldUserMeshesEmitter.h>
 #include <renderer/world/emitter/WorldParticlesEmitter.h>
 #include <world/World.h>
-#include "../../helper/PerformanceMonitor.h"
 #include "../../helper/ResourceManager.h"
 #include "../../world/Camera.h"
 #include "../../Config.h"
@@ -66,8 +66,8 @@ WorldRendererDeferred::WorldRendererDeferred(SceneView& scene_view, int width, i
 	ssao_sample_buffer = new UniformBuffer(ssao_samples.num * sizeof(vec4));
 	ssao_sample_buffer->update_array(ssao_samples);
 
-	ch_gbuf_out = PerformanceMonitor::create_channel("gbuf-out", channel);
-	ch_trans = PerformanceMonitor::create_channel("trans", channel);
+	ch_gbuf_out = profiler::create_channel("gbuf-out", channel);
+	ch_trans = profiler::create_channel("trans", channel);
 
 	scene_renderer_background = new SceneRenderer(RenderPathType::Forward, scene_view);
 	scene_renderer_background->add_emitter(new WorldSkyboxEmitter);
@@ -90,7 +90,7 @@ WorldRendererDeferred::WorldRendererDeferred(SceneView& scene_view, int width, i
 }
 
 void WorldRendererDeferred::prepare(const RenderParams& params) {
-	PerformanceMonitor::begin(ch_prepare);
+	profiler::begin(ch_prepare);
 
 	auto sub_params = params.with_target(gbuffer_renderer->frame_buffer.get());
 
@@ -108,11 +108,11 @@ void WorldRendererDeferred::prepare(const RenderParams& params) {
 
 	gbuffer_renderer->render(params);
 
-	PerformanceMonitor::end(ch_prepare);
+	profiler::end(ch_prepare);
 }
 
 void WorldRendererDeferred::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 
 	scene_renderer_background->draw(params);
@@ -124,7 +124,7 @@ void WorldRendererDeferred::draw(const RenderParams& params) {
 	msg_todo("deferred rendering in OpenGL is broken");
 	auto& rvd = scene_renderer_trans->rvd;
 
-	PerformanceMonitor::begin(ch_trans);
+	profiler::begin(ch_trans);
 	bool flip_y = params.target_is_window;
 	mat4 m = flip_y ? mat4::scale(1,-1,1) : mat4::ID;
 	auto cam = scene_view.cam;
@@ -142,15 +142,15 @@ void WorldRendererDeferred::draw(const RenderParams& params) {
 	nix::set_z(false, false);
 	//nix::set_projection_matrix(mat4::ID);
 	//nix::set_view_matrix(mat4::ID);
-	PerformanceMonitor::end(ch_trans);
+	profiler::end(ch_trans);
 #endif
 
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 void WorldRendererDeferred::render_out_from_gbuffer(FrameBuffer *source, const RenderParams& params) {
-	PerformanceMonitor::begin(ch_gbuf_out);
+	profiler::begin(ch_gbuf_out);
 
 	auto& data = out_renderer->bindings.shader_data;
 
@@ -179,7 +179,7 @@ void WorldRendererDeferred::render_out_from_gbuffer(FrameBuffer *source, const R
 	// ...
 	//geo_renderer->draw_transparent();
 
-	PerformanceMonitor::end(ch_gbuf_out);
+	profiler::end(ch_gbuf_out);
 }
 
 

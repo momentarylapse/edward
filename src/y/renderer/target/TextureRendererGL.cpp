@@ -7,7 +7,7 @@
 
 #include "TextureRenderer.h"
 #ifdef USING_OPENGL
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 #include <renderer/base.h>
 #include <graphics-impl.h>
 
@@ -42,7 +42,7 @@ void TextureRenderer::set_layer(int layer) {
 }
 
 void TextureRenderer::render(const RenderParams& params) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 
 	auto p = make_params(params);
@@ -60,7 +60,7 @@ void TextureRenderer::render(const RenderParams& params) {
 		c->draw(p);
 
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 

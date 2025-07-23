@@ -207,6 +207,7 @@ add_executable(edward
 	src/lib/base/array.cpp
 	src/lib/base/pointer.cpp
 	src/lib/base/strings.cpp
+	src/lib/doc/_kaba_export.cpp
 	src/lib/doc/chunked.cpp
 	src/lib/doc/pdf.cpp
 	src/lib/doc/ttf.cpp
@@ -247,7 +248,6 @@ add_executable(edward
 	src/lib/kaba/lib/lib_math.cpp
 	src/lib/kaba/lib/lib_net.cpp
 	src/lib/kaba/lib/lib_os.cpp
-	src/lib/kaba/lib/lib_pdf.cpp
 	src/lib/kaba/lib/lib_threads.cpp
 	src/lib/kaba/lib/lib_time.cpp
 	src/lib/kaba/lib/lib_vulkan.cpp
@@ -305,6 +305,7 @@ add_executable(edward
 	src/lib/net/BinaryBuffer.cpp
 	src/lib/net/net.cpp
 	src/lib/net/Socket.cpp
+	src/lib/nix/_kaba_export.cpp
 	src/lib/nix/nix.cpp
 	src/lib/nix/nix_buffer.cpp
 	src/lib/nix/nix_draw.cpp
@@ -314,6 +315,7 @@ add_executable(edward
 	src/lib/nix/nix_textures.cpp
 	src/lib/nix/nix_vertexbuffer.cpp
 	src/lib/nix/nix_view.cpp
+	src/lib/os/app.cpp
 	src/lib/os/CommandLineParser.cpp
 	src/lib/os/config.cpp
 	src/lib/os/date.cpp
@@ -326,9 +328,11 @@ add_executable(edward
 	src/lib/os/terminal.cpp
 	src/lib/os/time.cpp
 	src/lib/pattern/Observable.cpp
+	src/lib/profiler/Profiler.cpp
 	src/lib/threads/Mutex.cpp
 	src/lib/threads/Thread.cpp
 	src/lib/threads/ThreadedWork.cpp
+	src/lib/threads/ThreadPool.cpp
 	src/lib/vulkan/AccelerationStructure.cpp
 	src/lib/vulkan/Buffer.cpp
 	src/lib/vulkan/CommandBuffer.cpp
@@ -505,7 +509,6 @@ add_executable(edward
 	src/y/gui/Text.cpp
 	src/y/helper/DeletionQueue.cpp
 	src/y/helper/ErrorHandler.cpp
-	src/y/helper/PerformanceMonitor.cpp
 	src/y/helper/ResourceManager.cpp
 	src/y/helper/Scheduler.cpp
 	src/y/net/NetworkManager.cpp
@@ -588,7 +591,7 @@ add_executable(edward
 target_include_directories(edward PUBLIC ${INCLUDE_DIRECTORIES})
 target_link_directories(edward PUBLIC ${LINK_DIRECTORIES})
 target_compile_options(edward PUBLIC ${COMPILE_OPTIONS})
-target_compile_definitions(edward PUBLIC ${COMPILE_DEFINITIONS}  INSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
+target_compile_definitions(edward PUBLIC ${COMPILE_DEFINITIONS}  SOURCE_ROOT="${CMAKE_SOURCE_DIR}" INSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
 target_link_libraries(edward PUBLIC ${DEPS})
 target_include_directories(edward PUBLIC src)
 target_include_directories(edward PUBLIC src/y)

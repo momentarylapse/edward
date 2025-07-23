@@ -9,7 +9,7 @@
 #include <fx/Particle.h>
 #include <fx/Beam.h>
 #include <fx/ParticleEmitter.h>
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 #include <world/Camera.h>
 #include <graphics-impl.h>
 #include <y/EngineData.h>
@@ -29,7 +29,7 @@ WorldParticlesEmitter::WorldParticlesEmitter() : MeshEmitter("fx"),
 }
 
 void WorldParticlesEmitter::emit_transparent(const RenderParams& params, RenderViewData& rvd) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 	auto cam = rvd.scene_view->cam;
 
@@ -169,7 +169,7 @@ void WorldParticlesEmitter::emit_transparent(const RenderParams& params, RenderV
 	}
 
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 

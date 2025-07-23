@@ -13,7 +13,7 @@
 #endif
 #include "../base.h"
 #include <lib/nix/nix.h>
-#include "../../helper/PerformanceMonitor.h"
+#include <lib/profiler/Profiler.h>
 
 WindowRendererGL::WindowRendererGL(GLFWwindow* win) : TargetRenderer("win") {
 	window = win;
@@ -38,11 +38,11 @@ bool WindowRendererGL::start_frame() {
 
 void WindowRendererGL::end_frame(const RenderParams& params) {
 #if HAS_LIB_GLFW
-	PerformanceMonitor::begin(ch_end);
+	profiler::begin(ch_end);
 	gpu_timestamp_begin(params, ch_end);
 	nix::end_frame_glfw();
 	gpu_timestamp_end(params, ch_end);
-	PerformanceMonitor::end(ch_end);
+	profiler::end(ch_end);
 #endif
 }
 
@@ -56,7 +56,7 @@ void WindowRendererGL::prepare(const RenderParams& params) {
 }
 
 void WindowRendererGL::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	auto sub_params = RenderParams::into_window(_frame_buffer, params.desired_aspect_ratio);
 	for (auto c: children)
 		c->prepare(sub_params);
@@ -69,7 +69,7 @@ void WindowRendererGL::draw(const RenderParams& params) {
 		c->draw(sub_params);
 
 	nix::set_srgb(prev_srgb);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 #endif

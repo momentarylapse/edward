@@ -28,12 +28,6 @@ public:
 	virtual void on_end() {}
 	int run();
 
-	static Path directory_static;
-	static Path directory;
-	static Path initial_working_directory;
-	static Path filename;
-	static bool installed;
-	static void guess_directories(const Array<string> &arg, const string &app_name);
 	static void end();
 	static void _cdecl set_property(const string &name, const string &value);
 	static string get_property(const string &name);
@@ -53,11 +47,13 @@ public:
 
 
 #define XHUI_EXECUTE(APP_CLASS) \
-int xhui_main(const Array<string> &args) { \
+namespace os::app { \
+int main(const Array<string> &args) { \
 	APP_CLASS::_args = args; \
 	APP_CLASS *app = new APP_CLASS; \
 	int r = app->try_execute(args); \
 	delete app; \
 return r; \
+} \
 }
 

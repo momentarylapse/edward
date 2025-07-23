@@ -3,8 +3,8 @@
 //
 
 #include "MeshEmitter.h"
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 
 MeshEmitter::MeshEmitter(const string &name) {
-	channel = PerformanceMonitor::create_channel(name, -1);
+	channel = profiler::create_channel(name, -1);
 }

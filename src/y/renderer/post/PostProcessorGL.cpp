@@ -13,7 +13,7 @@
 #include <lib/math/vec2.h>
 #include <lib/math/rect.h>
 #include <lib/os/msg.h>
-#include "../../helper/PerformanceMonitor.h"
+#include <lib/profiler/Profiler.h>
 #include "../../helper/ResourceManager.h"
 #include "../../Config.h"
 #include "../../world/Camera.h"
@@ -23,8 +23,8 @@
 
 
 PostProcessorGL::PostProcessorGL(int width, int height) {
-	ch_post_blur = PerformanceMonitor::create_channel("blur", channel);
-	ch_out = PerformanceMonitor::create_channel("out", channel);
+	ch_post_blur = profiler::create_channel("blur", channel);
+	ch_out = profiler::create_channel("out", channel);
 
 
 	fb1 = new nix::FrameBuffer({
@@ -97,10 +97,10 @@ void PostProcessorGL::prepare(const RenderParams& params) {
 	if (child)
 		child->draw();*/
 
-	//PerformanceMonitor::begin(ch_post_blur);
+	//profiler::begin(ch_post_blur);
 	//process_blur(fb_main.get(), fb_small1.get(), 1.0f, {2,0});
 	//process_blur(fb_small1.get(), fb_small2.get(), 0.0f, {0,1});
-	//PerformanceMonitor::end(ch_post_blur);
+	//profiler::end(ch_post_blur);
 }
 
 void PostProcessorGL::draw(const RenderParams& params) {
@@ -117,31 +117,31 @@ void PostProcessorGL::draw(const RenderParams& params) {
 
 // GTX750: 1920x1080 0.277 ms per trivial step
 FrameBuffer* PostProcessorGL::do_post_processing(FrameBuffer *source) {
-	//PerformanceMonitor::begin(ch_post);
+	//profiler::begin(ch_post);
 	auto cur = source;
 
 	// scripts
 	for (auto *p: stages) {
-		PerformanceMonitor::begin(p->channel);
+		profiler::begin(p->channel);
 //		cur = (*p->func)(cur);
-		PerformanceMonitor::end(p->channel);
+		profiler::end(p->channel);
 	}
 
 
 #if 0
 	if (cam_main->focus_enabled) {
-		PerformanceMonitor::begin(ch_post_focus);
+		profiler::begin(ch_post_focus);
 		auto next = next_fb(cur);
 		process_depth(cur, next, complex(1,0));
 		cur = next;
 		next = next_fb(cur);
 		process_depth(cur, next, complex(0,1));
 		cur = next;
-		PerformanceMonitor::end(ch_post_focus);
+		profiler::end(ch_post_focus);
 	}
 #endif
 
-	//PerformanceMonitor::end(ch_post);
+	//profiler::end(ch_post);
 	return cur;
 }
 

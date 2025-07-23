@@ -13,11 +13,10 @@
 #ifdef _X_ALLOW_X_
 #include "../meta.h"
 #include "../plugins/PluginManager.h"
-#include "../helper/PerformanceMonitor.h"
+#include <lib/profiler/Profiler.h>
 #endif
 #include <lib/kaba/syntax/Class.h>
 #include <lib/kaba/syntax/Function.h>
-
 #include <lib/os/msg.h>
 
 static int ch_component = -1;
@@ -63,7 +62,7 @@ ComponentListX &_get_list_x(const kaba::Class *type) {
 		list.needs_update = class_func_did_override(type, "on_iterate");
 #ifdef _X_ALLOW_X_
 		if (list.needs_update)
-			list.ch_iterate = PerformanceMonitor::create_channel(type->long_name(), ch_component);
+			list.ch_iterate = profiler::create_channel(type->long_name(), ch_component);
 #endif
 		component_lists_by_type.set(type, list);
 		return component_lists_by_type[type];
@@ -79,7 +78,7 @@ ComponentListX &_get_list_x_family(const kaba::Class *type_family) {
 		list.needs_update = class_func_did_override(type_family, "on_iterate");
 #ifdef _X_ALLOW_X_
 		if (list.needs_update)
-			list.ch_iterate = PerformanceMonitor::create_channel(type_family->long_name(), ch_component);
+			list.ch_iterate = profiler::create_channel(type_family->long_name(), ch_component);
 #endif
 		component_lists_by_family.set(type_family, list);
 		return component_lists_by_family[type_family];
@@ -88,7 +87,7 @@ ComponentListX &_get_list_x_family(const kaba::Class *type_family) {
 
 void ComponentManager::init() {
 #ifdef _X_ALLOW_X_
-	ch_component = PerformanceMonitor::create_channel("component");
+	ch_component = profiler::create_channel("component");
 #endif
 }
 
@@ -159,21 +158,21 @@ ComponentManager::List &ComponentManager::_get_list_family(const kaba::Class *ty
 
 void ComponentManager::iterate(float dt) {
 #ifdef _X_ALLOW_X_
-	PerformanceMonitor::begin(ch_component);
+	profiler::begin(ch_component);
 #endif
 	for (auto&& [type, list]: component_lists_by_type)
 		if (list.needs_update) {
 #ifdef _X_ALLOW_X_
-			PerformanceMonitor::begin(list.ch_iterate);
+			profiler::begin(list.ch_iterate);
 #endif
 			for (auto *c: list.list)
 				c->on_iterate(dt);
 #ifdef _X_ALLOW_X_
-			PerformanceMonitor::end(list.ch_iterate);
+			profiler::end(list.ch_iterate);
 #endif
 		}
 #ifdef _X_ALLOW_X_
-	PerformanceMonitor::end(ch_component);
+	profiler::end(ch_component);
 #endif
 }
 

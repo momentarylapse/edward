@@ -3,7 +3,7 @@
 #include "TextureRenderer.h"
 
 #ifdef USING_VULKAN
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 #include <renderer/base.h>
 #include "../../graphics-impl.h"
 
@@ -41,7 +41,7 @@ void TextureRenderer::set_layer(int layer) {
 
 
 void TextureRenderer::render(const RenderParams& params) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 
 	auto p = make_params(params);
@@ -68,7 +68,7 @@ void TextureRenderer::render(const RenderParams& params) {
 //	cb->image_barrier(weak(textures)[0], vulkan::AccessFlags::SHADER_WRITE_BIT, vulkan::AccessFlags::SHADER_READ_BIT, vulkan::ImageLayout::COLOR_ATTACHMENT, vulkan::ImageLayout::SHADER_READ_ONLY_OPTIMAL);
 
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 #endif

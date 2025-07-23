@@ -13,6 +13,7 @@
 #include "../../base/iter.h"
 #include "../../image/image.h"
 #include "../../os/filesystem.h"
+#include "../../os/app.h"
 
 namespace xhui {
 
@@ -49,7 +50,7 @@ public:
 	void set_directory(const Path& dir) {
 		current_dir = dir;
 		if (dir.is_empty())
-			current_dir = Application::initial_working_directory;
+			current_dir = os::app::initial_working_directory;
 		update_files();
 	}
 	void set_filter(const string& _filter) {

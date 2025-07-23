@@ -6,7 +6,7 @@
 #include <world/Camera.h>
 #include "../../graphics-impl.h"
 #include "../base.h"
-#include "../../helper/PerformanceMonitor.h"
+#include <lib/profiler/Profiler.h>
 #include "../../helper/ResourceManager.h"
 
 
@@ -16,7 +16,7 @@ constexpr int NSAMPLES = 2560;
 LightMeter::LightMeter(ResourceManager* resource_manager, Texture* tex)
 	: ComputeTask("expo", resource_manager->load_shader("compute/brightness.shader"), NSAMPLES, 1, 1)
 {
-	ch_prepare = PerformanceMonitor::create_channel("expo.p", channel);
+	ch_prepare = profiler::create_channel("expo.p", channel);
 	params = new UniformBuffer(8);
 	buf = new ShaderStorageBuffer(NBINS*4);
 	texture = tex;
@@ -27,7 +27,7 @@ LightMeter::LightMeter(ResourceManager* resource_manager, Texture* tex)
 }
 
 void LightMeter::read() {
-	PerformanceMonitor::begin(ch_prepare);
+	profiler::begin(ch_prepare);
 
 	// TODO barriers...
 	gpu_flush();
@@ -57,7 +57,7 @@ void LightMeter::read() {
 	histogram.resize(NBINS);
 	memset(&histogram[0], 0, NBINS * sizeof(int));
 	buf->update_array(histogram);
-	PerformanceMonitor::end(ch_prepare);
+	profiler::end(ch_prepare);
 }
 
 void LightMeter::setup() {

@@ -13,7 +13,7 @@
 #include "../base.h"
 #include <graphics-impl.h>
 #include <lib/os/msg.h>
-#include "../../helper/PerformanceMonitor.h"
+#include <lib/profiler/Profiler.h>
 #include "../../helper/ResourceManager.h"
 #include "../../world/Camera.h"
 #include "../../world/World.h"
@@ -84,7 +84,7 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(vulkan::Device *_de
 }
 
 void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
-	PerformanceMonitor::begin(ch_prepare);
+	profiler::begin(ch_prepare);
 	gpu_timestamp_begin(params, ch_prepare);
 
 	rvd.set_view(params, scene_view.cam);
@@ -158,7 +158,7 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 	out_renderer->bindings.shader_data.dict_set("scale_y:208", 1.0f);
 
 	gpu_timestamp_end(params, ch_prepare);
-	PerformanceMonitor::end(ch_prepare);
+	profiler::end(ch_prepare);
 }
 
 void WorldRendererVulkanRayTracing::draw(const RenderParams& params) {

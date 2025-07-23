@@ -11,8 +11,8 @@
 #include "../target/TextureRenderer.h"
 #include <graphics-impl.h>
 #include <Config.h>
-#include <helper/PerformanceMonitor.h>
 #include <helper/ResourceManager.h>
+#include <lib/profiler/Profiler.h>
 #include <lib/math/vec2.h>
 #include <lib/os/msg.h>
 #include <world/Camera.h>
@@ -79,7 +79,7 @@ HDRResolver::HDRResolver(Camera *_cam, const shared<Texture>& tex, const shared<
 HDRResolver::~HDRResolver() = default;
 
 void HDRResolver::prepare(const RenderParams& params) {
-	PerformanceMonitor::begin(ch_prepare);
+	profiler::begin(ch_prepare);
 	gpu_timestamp_begin(params, ch_prepare);
 
 	for (auto c: children)
@@ -113,7 +113,7 @@ void HDRResolver::prepare(const RenderParams& params) {
 	data.dict_set("scale_y:208", resolution_scale_y);
 
 	gpu_timestamp_end(params, ch_prepare);
-	PerformanceMonitor::end(ch_prepare);
+	profiler::end(ch_prepare);
 }
 
 #if 0

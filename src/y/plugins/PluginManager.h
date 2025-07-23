@@ -11,7 +11,7 @@
 #include "../lib/base/base.h"
 
 class Path;
-class PerformanceMonitor;
+class Profiler;
 class TemplateDataScriptVariable;
 namespace kaba {
 	class Class;
@@ -21,7 +21,7 @@ namespace kaba {
 class PluginManager {
 public:
 	static void init();
-	static void export_kaba(kaba::Exporter* exporter);
+	static void export_kaba_package_y(kaba::Exporter* exporter);
 	static void import_kaba();
 
 	static const kaba::Class *find_class(const Path &filename, const string &name);

@@ -6,7 +6,7 @@
 #include "RenderViewData.h"
 #include "SceneView.h"
 #include <renderer/base.h>
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 #include <world/Light.h>
 #include <graphics-impl.h>
 #include "renderer/helper/PipelineManager.h"
@@ -43,15 +43,15 @@ void SceneRenderer::set_view_from_camera(const RenderParams& params, Camera* cam
 }
 
 void SceneRenderer::prepare(const RenderParams& params) {
-	PerformanceMonitor::begin(ch_prepare);
+	profiler::begin(ch_prepare);
 
 	if (!is_shadow_pass)
 		rvd.update_light_ubo();
-	PerformanceMonitor::end(ch_prepare);
+	profiler::end(ch_prepare);
 }
 
 void SceneRenderer::draw(const RenderParams& params) {
-	PerformanceMonitor::begin(channel);
+	profiler::begin(channel);
 	gpu_timestamp_begin(params, channel);
 	rvd.begin_draw();
 
@@ -77,7 +77,7 @@ void SceneRenderer::draw(const RenderParams& params) {
 #endif
 
 	gpu_timestamp_end(params, channel);
-	PerformanceMonitor::end(channel);
+	profiler::end(channel);
 }
 
 

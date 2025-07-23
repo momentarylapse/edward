@@ -6,13 +6,13 @@
  */
 
 #include "RegionRenderer.h"
-#include <helper/PerformanceMonitor.h>
+#include <lib/profiler/Profiler.h>
 
 RegionRenderer::RegionRenderer() : Renderer("rgn") {
 }
 
 void RegionRenderer::prepare(const RenderParams& params) {
-	PerformanceMonitor::begin(ch_prepare);
+	profiler::begin(ch_prepare);
 	for (auto r: sorted_regions) {
 		if (r->renderer) {
 			auto sub_params = params;
@@ -20,7 +20,7 @@ void RegionRenderer::prepare(const RenderParams& params) {
 			r->renderer->prepare(sub_params);
 		}
 	}
-	PerformanceMonitor::end(ch_prepare);
+	profiler::end(ch_prepare);
 }
 
 void RegionRenderer::add_region(Renderer *renderer, const rect &dest, int z) {
