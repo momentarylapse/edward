@@ -5,15 +5,17 @@
 #ifndef MULTIVIEWWINDOW_H
 #define MULTIVIEWWINDOW_H
 
-#include <y/renderer/Renderer.h>
+#include <lib/yrenderer/Renderer.h>
 #include <lib/math/mat4.h>
 #include <lib/math/vec3.h>
 #include <lib/math/quaternion.h>
 
 
 class Painter;
-struct RenderViewData;
-class SceneRenderer;
+namespace yrenderer {
+	struct RenderViewData;
+	class SceneRenderer;
+}
 class MultiView;
 
 
@@ -36,8 +38,8 @@ public:
 	vec3 active_grid_direction() const;
 	mat3 active_grid_frame() const;
 	mat3 edit_frame() const;
-	void prepare(const RenderParams& params);
-	void draw(const RenderParams& params);
+	void prepare(const yrenderer::RenderParams& params);
+	void draw(const yrenderer::RenderParams& params);
 	void draw_post(Painter* p);
 
 	MultiView* multi_view;
@@ -47,8 +49,8 @@ public:
 	mat4 to_pixels;
 	mat4 view;
 	mat4 projection;
-	owned<SceneRenderer> scene_renderer;
-	RenderViewData& rvd();
+	owned<yrenderer::SceneRenderer> scene_renderer;
+	yrenderer::RenderViewData& rvd();
 };
 
 

@@ -8,7 +8,7 @@
 #ifndef SRC_FX_PARTICLEEMITTER_H_
 #define SRC_FX_PARTICLEEMITTER_H_
 
-#include "../graphics-fwd.h"
+#include <lib/ygraphics/graphics-fwd.h>
 #include "../lib/base/base.h"
 #include "../lib/base/pointer.h"
 #include "../lib/math/vec3.h"
@@ -30,8 +30,8 @@ public:
 	void on_iterate(float dt) override;
 	void iterate_particles(float dt);
 
-	//shared<Texture> texture;
-	Texture* texture;
+	//shared<ygfx::Texture> texture;
+	ygfx::Texture* texture;
 	rect source;
 
 	Array<Particle> particles;

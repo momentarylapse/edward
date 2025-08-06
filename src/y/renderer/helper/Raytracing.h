@@ -12,10 +12,14 @@
 #include <lib/math/vec3.h>
 #include <lib/math/mat4.h>
 #include <lib/image/color.h>
-#include "../../graphics-fwd.h"
+#include <lib/ygraphics/graphics-fwd.h>
 
 class Model;
-struct SceneView;
+
+namespace yrenderer {
+	class Context;
+	struct SceneView;
+}
 
 enum class RaytracingMode {
 	NONE,
@@ -24,11 +28,12 @@ enum class RaytracingMode {
 };
 
 struct RayTracingData {
-	owned<UniformBuffer> buffer_meshes;
+	yrenderer::Context* ctx;
+	owned<ygfx::UniformBuffer> buffer_meshes;
 	int num_meshes = 0;
 
-	owned<ShaderStorageBuffer> buffer_requests;
-	owned<ShaderStorageBuffer> buffer_reply;
+	owned<ygfx::ShaderStorageBuffer> buffer_requests;
+	owned<ygfx::ShaderStorageBuffer> buffer_reply;
 
 	RaytracingMode mode = RaytracingMode::NONE;
 
@@ -43,7 +48,7 @@ struct RayTracingData {
 	};
 
 #ifdef USING_VULKAN
-	RayTracingData(vulkan::Device* _device, RaytracingMode mode);
+	RayTracingData(yrenderer::Context* ctx, RaytracingMode mode);
 
 	void update_frame();
 
@@ -51,9 +56,9 @@ struct RayTracingData {
 
 	struct ComputeModeData {
 		vulkan::DescriptorPool *pool;
-		DescriptorSet *dset;
-		ComputePipeline *pipeline;
-		CommandBuffer* command_buffer;
+		ygfx::DescriptorSet *dset;
+		ygfx::ComputePipeline *pipeline;
+		ygfx::CommandBuffer* command_buffer;
 		vulkan::Fence* fence;
 	} compute;
 
@@ -91,12 +96,12 @@ struct RayReply {
 	int index, mesh, _a, _b;
 };
 
-void rt_setup_explicit(SceneView& scene_view, RaytracingMode mode);
-void rt_setup(SceneView& scene_view);
-void rt_update_frame(SceneView& scene_view);
+void rt_setup_explicit(yrenderer::SceneView& scene_view, RaytracingMode mode);
+void rt_setup(yrenderer::SceneView& scene_view);
+void rt_update_frame(yrenderer::SceneView& scene_view);
 
 //Array<base::optional<RayHitInfo>>
-Array<RayReply> vtrace(SceneView& scene_view, const Array<RayRequest>& requests);
+Array<RayReply> vtrace(yrenderer::SceneView& scene_view, const Array<RayRequest>& requests);
 
 
 #endif //RAYTRACING_H

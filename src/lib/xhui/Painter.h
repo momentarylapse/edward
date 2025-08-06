@@ -2,19 +2,15 @@
 
 #include "xhui.h"
 #include "draw/font.h"
-#include "../image/ImagePainter.h"
-#include "../math/vec2.h"
+#include <lib/image/ImagePainter.h>
+#include <lib/math/vec2.h>
+#include <lib/ygraphics/graphics-fwd.h>
 
 
 #if HAS_LIB_VULKAN
 namespace vulkan {
 	class CommandBuffer;
 	class DescriptorSet;
-	class Texture;
-}
-#else
-namespace nix {
-	class Texture;
 }
 #endif
 
@@ -103,11 +99,9 @@ struct TextCache {
 	font::Face* face;
 	float font_size;
 	int age;
+	ygfx::Texture* texture;
 #if HAS_LIB_VULKAN
-	vulkan::Texture* texture;
 	vulkan::DescriptorSet* dset;
-#else
-	nix::Texture* texture;
 #endif
 	font::TextDimensions dimensions;
 };

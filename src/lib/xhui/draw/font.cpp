@@ -6,12 +6,16 @@
 #include "../../os/path.h"
 #include "../../os/filesystem.h"
 
+#if HAS_LIB_FREETYPE2
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#endif
 
 namespace font {
 
+#if HAS_LIB_FREETYPE2
 static FT_Library ft2;
+#endif
 static float dpi = 96;
 //static FT_Face face;
 //static float current_font_size = 0;
@@ -23,14 +27,19 @@ static float dpi = 96;
 
 
 void init() {
+#if HAS_LIB_FREETYPE2
 	auto error = FT_Init_FreeType(&ft2);
 	if (error) {
 		throw Exception("can not initialize freetype2 library");
 	}
+#else
+	throw Exception("compiled without freetype2 library");
+#endif
 }
 
 Array<Face*> faces;
 
+#if HAS_LIB_FREETYPE2
 Face* load_face(const string& name, bool bold, bool italic) {
 	Face* face = new Face;
 	face->name = name;
@@ -74,6 +83,8 @@ Face* load_face(const string& name, bool bold, bool italic) {
 	if (!try_load_font(format("/usr/share/fonts/noto/%s-%s.ttf", name, type)))
 	if (!try_load_font(format("/usr/share/fonts/open-sans/%s-%s.ttf", name, type)))
 	if (!try_load_font(format("/usr/share/fonts/Adwaita/%s-%s.ttf", name, type)))
+	if (!try_load_font(format("/usr/share/fonts/opentype/cantarell/%s-VF.otf", name)))
+	if (!try_load_font(format("/usr/share/fonts/truetype/freefont/%s.ttf", namex.replace(" ", ""))))
 	if (!try_load_font(format("static/%s-%s.ttf", name, type))) {
 		delete face;
 		return nullptr;
@@ -83,8 +94,10 @@ Face* load_face(const string& name, bool bold, bool italic) {
 	faces.add(face);
 	return face;
 }
+#endif
 
 void Face::set_size(float size) {
+#if HAS_LIB_FREETYPE2
 	if (size == current_size)
 		return;
 	// size: points<<6
@@ -93,14 +106,18 @@ void Face::set_size(float size) {
 
 	FT_Load_Char(face, ' ', FT_LOAD_DEFAULT);
 	tab_dx = (int)(face->glyph->advance.x >> 6) * 4;
+#endif
 }
 
 float Face::units_to_pixel(float units) const {
+#if HAS_LIB_FREETYPE2
 	// 72 pt/inch
 	return units / (float)face->units_per_EM * current_size * dpi / 72.0f;
+#endif
 }
 
 TextDimensions Face::get_text_dimensions(const string &text) {
+#if HAS_LIB_FREETYPE2
 	auto utf32 = text.utf8_to_utf32();
 	TextDimensions dim;
 
@@ -143,6 +160,9 @@ TextDimensions Face::get_text_dimensions(const string &text) {
 	dim.bounding_height = dim.line_dy * (float)dim.num_lines;
 	//msg_write(f2s(units_to_pixel((float)face->descender), 3));
 	return dim;
+#else
+	return {};
+#endif
 }
 
 float TextDimensions::inner_height() const {
@@ -163,6 +183,7 @@ float Face::get_text_width(const string &text) {
 }
 
 void Face::render_text(const string &text, xhui::Align align, Image &im) {
+#if HAS_LIB_FREETYPE2
 	auto utf32 = text.utf8_to_utf32();
 
 	//auto glyph_index = FT_Get_Char_Index(face, 'A');
@@ -201,6 +222,7 @@ void Face::render_text(const string &text, xhui::Align align, Image &im) {
 			}
 		x += face->glyph->advance.x >> 6;
 	}
+#endif
 }
 
 }

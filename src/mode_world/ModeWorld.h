@@ -10,7 +10,9 @@
 #include "../view/Hover.h"
 #include "data/DataWorld.h"
 
-class Light;
+namespace yrenderer {
+	class Light;
+}
 class MultiViewWindow;
 class EntityPanel;
 namespace xhui {
@@ -30,12 +32,12 @@ public:
 	void on_left_button_up(const vec2&) override;
 	void on_key_down(int key) override;
 
-	void on_prepare_scene(const RenderParams& params) override;
-	void on_draw_background(const RenderParams& params, RenderViewData& rvd) override;
-	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
-	void on_draw_shadow(const RenderParams& params, RenderViewData& rvd) override;
-	void draw_objects(const RenderParams& params, MultiViewWindow* win);
-	void draw_terrains(const RenderParams& params, MultiViewWindow* win);
+	void on_prepare_scene(const yrenderer::RenderParams& params) override;
+	void on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;
+	void on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) override;
+	void on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;
+	void draw_objects(const yrenderer::RenderParams& params, MultiViewWindow* win);
+	void draw_terrains(const yrenderer::RenderParams& params, MultiViewWindow* win);
 	void draw_cameras(MultiViewWindow* win);
 	void draw_lights(MultiViewWindow* win);
 
@@ -46,7 +48,7 @@ public:
 
 	DataWorld* data;
 	DataWorld temp;
-	Array<Light*> lights;
+	Array<yrenderer::Light*> lights;
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 

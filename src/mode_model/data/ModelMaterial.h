@@ -8,10 +8,10 @@
 #ifndef MODELMATERIAL_H_
 #define MODELMATERIAL_H_
 
-#include <y/world/Material.h>
+#include <lib/yrenderer/Material.h>
 #include <lib/base/pointer.h>
 #include <lib/image/image.h>
-#include <graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 
 /*namespace MultiView {
 	class Window;
@@ -32,12 +32,12 @@ public:
 //	void apply_for_rendering(MultiView::Window *win);
 
 	Path filename;
-	owned<Material> material;
-	ShaderCache shader_cache;
+	owned<yrenderer::Material> material;
+	yrenderer::ShaderCache shader_cache;
 
 	struct TextureLevel {
 		Path filename;
-		shared<Texture> texture;
+		shared<ygfx::Texture> texture;
 		owned<Image> image;
 		bool edited = false;
 		void reload_image(Session *s);
@@ -58,7 +58,7 @@ public:
 		void import(const color &am, const color &di, const color &sp, float shininess, const color &em);
 	} col;
 
-	owned<VertexBuffer> vb;
+	owned<ygfx::VertexBuffer> vb;
 };
 
 #endif /* MODELMATERIAL_H_ */

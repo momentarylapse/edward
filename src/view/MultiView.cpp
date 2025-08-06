@@ -14,17 +14,14 @@
 #include <lib/xhui/Theme.h>
 #include <lib/math/mat3.h>
 #include <y/renderer/path/RenderPath.h>
-#include <y/renderer/scene/SceneRenderer.h>
-#include <y/renderer/scene/MeshEmitter.h>
-#include <y/renderer/scene/pass/ShadowRenderer.h>
-#include <y/renderer/helper/CubeMapSource.h>
-#include <y/renderer/target/TextureRenderer.h>
+#include <lib/yrenderer/scene/SceneRenderer.h>
+#include <lib/yrenderer/scene/MeshEmitter.h>
+#include <lib/yrenderer/scene/pass/ShadowRenderer.h>
+#include <lib/yrenderer/helper/CubeMapSource.h>
+#include <lib/yrenderer/target/TextureRenderer.h>
 
 #include "EdwardWindow.h"
-#include <y/world/Camera.h>
-#include <y/world/Light.h>
-#include <y/y/Entity.h>
-#include <y/graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 
 #include "Mode.h"
 
@@ -34,20 +31,22 @@ extern float global_shadow_box_size;
 
 
 
-MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
+MultiView::MultiView(Session* s) :
 		in_data_changed(this, [this] {
 			if (!action_controller->performing_action()) {
 				update_selection_box();
 				hover = base::None;
 			}
 		}),
-		view_port(this),
-		window(this)
+		view_port(this)
 {
 	session = s;
-	resource_manager = session->resource_manager;
-	active_window = &window;
-	hover_window = &window;
+	ctx = session->ctx;
+	window = new MultiViewWindow(this);
+	active_window = window.get();
+	hover_window = window.get();
+
+	renderer = new MultiViewRenderer(session->ctx, this);
 
 	action_controller = new ActionController(this);
 	view_port.out_changed >> action_controller->in_view_changed;
@@ -55,25 +54,24 @@ MultiView::MultiView(Session* s) : obs::Node<Renderer>("multiview"),
 
 
 	light_mode = LightMode::FollowCamera;
-	default_light = new Light(White, -1, -1);
-	default_light->owner = new Entity;
-	default_light->owner->ang = quaternion::ID;
+	default_light = new yrenderer::Light;
+	default_light->init(White, -1, -1);
+	default_light->_ang = quaternion::ID;
 	default_light->enabled = true;
-	default_light->allow_shadow = true;;
+	default_light->allow_shadow = true;
 	default_light->light.harshness = 0.5f;
 	lights.add(default_light);
 
-	shadow_renderer = new ShadowRenderer(view_port.scene_view.get(), {new MultiViewShadowGeometryEmitter(this)});
+	shadow_renderer = new yrenderer::ShadowRenderer(session->ctx, view_port.scene_view.get(), {new MultiViewShadowGeometryEmitter(this)}, 2048);
 	view_port.scene_view->shadow_maps.add(shadow_renderer->cascades[0].depth_buffer);
 	view_port.scene_view->shadow_maps.add(shadow_renderer->cascades[1].depth_buffer);
 	//add_child(shadow_renderer.get());
 
-	cam_main = view_port.cam;
-	cube_map_source = new CubeMapSource;
+	//cam_main = view_port.cam;
+	cube_map_source = new yrenderer::CubeMapSource;
 	cube_map_source->resolution = 256;
-	cube_map_source->cube_map = new CubeMap(cube_map_source->resolution, "rgba:i8");
-	cube_map_source->owner = new Entity;
-	cube_map_renderer = new CubeMapRenderer(*view_port.scene_view.get(), {new MultiViewBackgroundEmitter(this)});
+	cube_map_source->cube_map = new ygfx::CubeMap(cube_map_source->resolution, "rgba:i8");
+	cube_map_renderer = new yrenderer::CubeMapRenderer(session->ctx, *view_port.scene_view.get(), {new MultiViewBackgroundEmitter(this)});
 	cube_map_renderer->set_source(cube_map_source.get());
 	view_port.scene_view->cube_map = cube_map_source->cube_map;
 
@@ -86,47 +84,52 @@ MultiView::~MultiView() = default;
 void MultiView::set_area(const rect& _area) {
 	area = _area;
 	area_native = {_area.p00() * session->win->ui_scale, _area.p11() * session->win->ui_scale};
-	window.area = area;
-	window.area_native = area_native;
+	window->area = area;
+	window->area_native = area_native;
 }
 
 
-void MultiView::prepare(const RenderParams& params) {
-	view_port.cam->owner->ang = view_port.ang;
-	view_port.cam->owner->pos = view_port.pos - view_port.cam->owner->ang * vec3::EZ * view_port.radius;
-	view_port.cam->min_depth = view_port.radius * 0.01f;
-	view_port.cam->max_depth = view_port.radius * 300;
-	view_port.cam->update_matrix_cache(area.width() / area.height());
+MultiViewRenderer::MultiViewRenderer(yrenderer::Context *ctx, MultiView *mv) : Renderer(ctx, "multiview") {
+	multi_view = mv;
+}
+
+void MultiViewRenderer::prepare(const yrenderer::RenderParams& params) {
+	auto& view_port = multi_view->view_port;
+	view_port.cam.ang = view_port.ang;
+	view_port.cam.pos = view_port.pos - view_port.cam.ang * vec3::EZ * view_port.radius;
+	view_port.cam.min_depth = view_port.radius * 0.01f;
+	view_port.cam.max_depth = view_port.radius * 300;
+	//view_port.cam.update_matrix_cache(area.width() / area.height());
 	global_shadow_box_size = view_port.radius * 8;
 
-	window.local_ang = view_port.ang;
+	multi_view->window->local_ang = view_port.ang;
 
 	{
-		if (light_mode == LightMode::FollowCamera)
-			default_light->owner->ang = view_port.ang;
-		lights = {default_light};
+		if (multi_view->light_mode == MultiView::LightMode::FollowCamera)
+			multi_view->default_light->_ang = view_port.ang;
+		multi_view->lights = {multi_view->default_light};
 	}
 
-	session->cur_mode->on_prepare_scene(params);
+	multi_view->session->cur_mode->on_prepare_scene(params);
 
-	view_port.scene_view->lights = lights;
+	view_port.scene_view->choose_lights(multi_view->lights);
 	view_port.scene_view->choose_shadows();
 
-	window.prepare(params);
+	multi_view->window->prepare(params);
 
-	if (shadow_renderer)
-		shadow_renderer->render(params);
+	if (multi_view->shadow_renderer)
+		multi_view->shadow_renderer->render(params);
 
-	if (cube_map_renderer)
-		cube_map_renderer->render(params);
+	if (multi_view->cube_map_renderer)
+		multi_view->cube_map_renderer->render(params);
 
 	//Renderer::prepare(params);
 }
 
-void MultiView::draw(const RenderParams& params) {
+void MultiViewRenderer::draw(const yrenderer::RenderParams& params) {
 	//engine.physical_aspect_ratio = pp->native_area.width() / pp->native_area.height();
 
-	window.draw(params);
+	multi_view->window->draw(params);
 }
 
 
@@ -351,7 +354,7 @@ void MultiView::on_draw(Painter* p) {
 		p->draw_rect(selection_area->canonical());
 		p->set_fill(true);
 	}
-	window.draw_post(p);
+	window->draw_post(p);
 	action_controller->draw_post(p);
 	draw_mouse_pos(p);
 }
@@ -367,7 +370,7 @@ base::optional<Hover> MultiView::get_hover(MultiViewWindow* win, const vec2& m) 
 		if (auto h = f_hover(win, m))
 			return h;
 
-	if (window.area.inside(m)) {
+	if (window->area.inside(m)) {
 		// grid? (included here, so we can see the cursor)
 		if (auto p = grid_hover_point(m))
 			return Hover{MultiViewType::GRID, -1, *p};
@@ -463,7 +466,7 @@ vec3 MultiView::cursor_pos_3d(const vec2& m) const {
 }
 
 base::optional<vec3> MultiView::grid_hover_point(const vec2& m) const {
-	return window.grid_hover_point(m);
+	return window->grid_hover_point(m);
 }
 
 void MultiView::set_allow_action(bool allow) {
@@ -485,12 +488,13 @@ MultiView::ViewPort::ViewPort(MultiView* _multi_view) {
 	pos = v_0;
 	ang = quaternion::ID;
 	radius = 100;
-	cam = new Camera();
-	cam->owner = new Entity;
-	//cam->owner->ang = quaternion::rotation({1, 0, 0}, 0.33f);
-	//cam->owner->pos = {1000,1000,-800};
-	scene_view = new SceneView;
-	scene_view->cam = cam;
+	cam.ang = quaternion::rotation({1, 0, 0}, 0.33f);
+	cam.pos = {1000,1000,-800};
+	cam.fov = pi/4;
+	cam.min_depth = 0.01f;
+	cam.max_depth = 1000.0f;
+	scene_view = new yrenderer::SceneView;
+	scene_view->main_camera_params = cam;
 }
 
 void MultiView::ViewPort::move(const vec3& drel) {

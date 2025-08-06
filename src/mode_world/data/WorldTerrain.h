@@ -9,7 +9,7 @@
 #define SRC_DATA_WORLD_WORLDTERRAIN_H_
 
 #include <view/SingleData.h>
-#include <y/world/Material.h>
+#include <lib/yrenderer/Material.h>
 #include <lib/math/Box.h>
 
 class Terrain;

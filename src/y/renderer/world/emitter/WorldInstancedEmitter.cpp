@@ -3,23 +3,25 @@
 //
 
 #include "WorldInstancedEmitter.h"
-#include "../../scene/RenderViewData.h"
-#include "../../scene/SceneView.h"
+#include <lib/yrenderer/scene/RenderViewData.h>
+#include <lib/yrenderer/scene/SceneView.h>
 #include <world/components/MultiInstance.h>
 #include <world/Model.h>
 #include <lib/profiler/Profiler.h>
-#include <renderer/base.h>
+#include <lib/yrenderer/Context.h>
 #include <y/ComponentManager.h>
-#include <graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
+
+using namespace yrenderer;
 
 class MultiInstance;
 
-WorldInstancedEmitter::WorldInstancedEmitter() : MeshEmitter("inst") {
+WorldInstancedEmitter::WorldInstancedEmitter(Context* ctx) : MeshEmitter(ctx, "inst") {
 }
 
-void WorldInstancedEmitter::emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
+void WorldInstancedEmitter::emit(const yrenderer::RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
 	profiler::begin(channel);
-	gpu_timestamp_begin(params, channel);
+	ctx->gpu_timestamp_begin(params, channel);
 
 	auto& list = ComponentManager::get_list_family<MultiInstance>();
 
@@ -36,7 +38,7 @@ void WorldInstancedEmitter::emit(const RenderParams& params, RenderViewData& rvd
 
 			m->update_matrix();
 			auto vb = m->mesh[0]->sub[i].vertex_buffer;
-			auto& rd = rvd.start(params, mat4::ID, shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+			auto& rd = rvd.start(params, mat4::ID, shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 
 #ifdef USING_VULKAN
 			rd.dset->set_uniform_buffer(BINDING_INSTANCE_MATRICES, mi->ubo_matrices);
@@ -47,7 +49,7 @@ void WorldInstancedEmitter::emit(const RenderParams& params, RenderViewData& rvd
 			rd.draw_instanced(params, vb, min(mi->matrices.num, MAX_INSTANCES));
 		}
 	}
-	gpu_timestamp_end(params, channel);
+	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
 }
 

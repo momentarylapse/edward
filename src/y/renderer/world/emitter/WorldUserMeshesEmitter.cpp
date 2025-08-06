@@ -3,19 +3,19 @@
 //
 
 #include "WorldUserMeshesEmitter.h"
-#include "../../scene/RenderViewData.h"
+#include <lib/yrenderer/scene/RenderViewData.h>
 #include <lib/profiler/Profiler.h>
-#include <renderer/base.h>
+#include <lib/yrenderer/Context.h>
 #include <world/components/UserMesh.h>
 #include <y/ComponentManager.h>
 #include <y/Entity.h>
 
-WorldUserMeshesEmitter::WorldUserMeshesEmitter() : MeshEmitter("user") {
+WorldUserMeshesEmitter::WorldUserMeshesEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "user") {
 }
 
-void WorldUserMeshesEmitter::emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
+void WorldUserMeshesEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {
 	profiler::begin(channel);
-	gpu_timestamp_begin(params, channel);
+	ctx->gpu_timestamp_begin(params, channel);
 
 	auto& meshes = ComponentManager::get_list_family<UserMesh>();
 
@@ -36,11 +36,11 @@ void WorldUserMeshesEmitter::emit(const RenderParams& params, RenderViewData& rv
 
 		rd.draw(params, m->vertex_buffer.get(), m->topology);
 	}
-	gpu_timestamp_end(params, channel);
+	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
 }
 
-void WorldUserMeshesEmitter::emit_transparent(const RenderParams& params, RenderViewData& rvd) {
+void WorldUserMeshesEmitter::emit_transparent(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 
 }
 

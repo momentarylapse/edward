@@ -10,7 +10,7 @@
 #include "MeshEdit.h"
 #include "VertexStagingBuffer.h"
 #include <view/MultiView.h>
-#include <y/graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <y/world/Model.h>
 #include <lib/base/iter.h>
 #include <lib/base/sort.h>
@@ -314,7 +314,7 @@ int PolygonMesh::next_edge_at_vertex(int index0, int index1) const {
 
 
 
-void PolygonMesh::build(VertexBuffer *vb) const {
+void PolygonMesh::build(ygfx::VertexBuffer *vb) const {
 	VertexStagingBuffer vbs;
 #ifdef USING_VULKAN
 	int num_textures = 1;

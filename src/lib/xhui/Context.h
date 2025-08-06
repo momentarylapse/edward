@@ -1,24 +1,9 @@
 #pragma once
 
-#if HAS_LIB_VULKAN
-#include "../vulkan/vulkan.h"
-#else
-#include "../nix/nix.h"
-#endif
-
+#include <lib/base/base.h>
+#include <lib/ygraphics/graphics-fwd.h>
 
 namespace xhui {
-
-#if HAS_LIB_VULKAN
-using Texture = vulkan::Texture;
-using Shader = vulkan::Shader;
-using VertexBuffer = vulkan::VertexBuffer;
-#else
-using Texture = nix::Texture;
-using Shader = nix::Shader;
-using VertexBuffer = nix::VertexBuffer;
-#endif
-
 
 class Painter;
 class Window;
@@ -43,16 +28,16 @@ public:
 	vulkan::DescriptorPool* pool = nullptr;
 	vulkan::Device* device = nullptr;
 #endif
-	Texture* tex_white = nullptr;
-	Texture* tex_black = nullptr;
-	Shader* shader = nullptr;
-	Shader* shader_lines = nullptr;
+	ygfx::Texture* tex_white = nullptr;
+	ygfx::Texture* tex_black = nullptr;
+	ygfx::Shader* shader = nullptr;
+	ygfx::Shader* shader_lines = nullptr;
 #if HAS_LIB_VULKAN
 	vulkan::GraphicsPipeline* pipeline = nullptr;
 	vulkan::GraphicsPipeline* pipeline_alpha = nullptr;
 	vulkan::GraphicsPipeline* pipeline_lines = nullptr;
 #endif
-	VertexBuffer* vb = nullptr;
+	ygfx::VertexBuffer* vb = nullptr;
 
 
 #if HAS_LIB_VULKAN

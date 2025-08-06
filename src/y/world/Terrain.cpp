@@ -8,11 +8,12 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Terrain.h"
-#include "Material.h"
+#include <lib/yrenderer/Material.h>
+#include <lib/yrenderer/TextureManager.h>
+#include <lib/yrenderer/Context.h>
 #include "World.h"
 #include "../y/EngineData.h"
-#include "../helper/ResourceManager.h"
-#include "../graphics-impl.h"
+#include <lib/ygraphics/graphics-impl.h>
 #include <lib/math/vec3.h>
 #include <lib/math/plane.h>
 #include <lib/os/file.h>
@@ -40,11 +41,11 @@ Terrain::Terrain() {
 	reset();
 }
 
-Terrain::Terrain(ResourceManager *resource_manager, const Path &_filename_) : Terrain() {
-	load(resource_manager, _filename_);
+Terrain::Terrain(yrenderer::Context *ctx, const Path &_filename_) : Terrain() {
+	load(ctx, _filename_);
 }
 
-bool Terrain::load(ResourceManager *resource_manager, const Path &_filename_, bool deep) {
+bool Terrain::load(yrenderer::Context* ctx, const Path &_filename_, bool deep) {
 	msg_write(format("loading terrain: %s", _filename_));
 	msg_right();
 
@@ -82,10 +83,10 @@ bool Terrain::load(ResourceManager *resource_manager, const Path &_filename_, bo
 			// Material
 			material_file = f->read_str();
 			if (deep) {
-				material = resource_manager->load_material(material_file);
+				material = ctx->load_material(material_file);
 
 				while (num_textures > material->textures.num)
-					material->textures.add(resource_manager->load_texture(""));
+					material->textures.add(ctx->texture_manager->load_texture(""));
 
 
 				// height
@@ -96,11 +97,7 @@ bool Terrain::load(ResourceManager *resource_manager, const Path &_filename_, bo
 					for (int z=0;z<num_z/TERRAIN_CHUNK_SIZE+1;z++)
 						chunk_lod[x][z] = -1;
 
-//#ifdef USING_VULKAN
-				vertex_buffer = new VertexBuffer("3f,3f,2f");
-//#else
-//				vertex_buffer = new VertexBuffer("3f,3f" + string(",2f").repeat(material->textures.num));
-//#endif
+				vertex_buffer = new ygfx::VertexBuffer("3f,3f,2f");
 			}
 		} else {
 			msg_error(format("wrong file format: %d (4 expected)",ffv));
@@ -127,11 +124,11 @@ bool Terrain::load(ResourceManager *resource_manager, const Path &_filename_, bo
 	return !error;
 }
 
-Terrain::Terrain(int nx, int nz, const vec3& _pattern, Material* _material) : Terrain() {
+Terrain::Terrain(int nx, int nz, const vec3& _pattern, yrenderer::Material* _material) : Terrain() {
 	num_x = nx;
 	num_z = nz;
 	height.resize((num_x + 1) * (num_z + 1));
-	vertex_buffer = new VertexBuffer("3f,3f,2f");
+	vertex_buffer = new ygfx::VertexBuffer("3f,3f,2f");
 	pattern = _pattern;
 	material = _material;
 	update(-1, -1, -1, -1, TerrainUpdateAll);

@@ -8,7 +8,8 @@
 #include "../ModeEditTerrain.h"
 #include "ComponentSelectionDialog.h"
 #include <helper/ResourceManager.h>
-#include <y/graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
+#include <lib/yrenderer/TextureManager.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/xhui.h>
 #include <lib/base/iter.h>
@@ -191,7 +192,7 @@ Dialog light-panel ''
 		auto& e = data->entities[index];
 		auto c = e.camera;
 		auto l = e.light;
-		l.type = (LightType)get_int("type");
+		l.type = (yrenderer::LightType)get_int("type");
 		l.radius = get_float("radius");
 		l.theta = get_float("theta") * pi / 180;
 		l.harshness = get_float("harshness") / 100;
@@ -272,7 +273,7 @@ Dialog object-panel ''
 
 class MaterialComponentPanel : public xhui::Panel {
 public:
-	explicit MaterialComponentPanel(DataWorld* _data, Material* m, const Path& filename, std::function<void(const ComplexPath&)> _f_save) : Panel("material-panel") {
+	explicit MaterialComponentPanel(DataWorld* _data, yrenderer::Material* m, const Path& filename, std::function<void(const ComplexPath&)> _f_save) : Panel("material-panel") {
 		from_source(R"foodelim(
 Dialog material-panel ''
 	Grid card-terrain-material '' class=card
@@ -364,9 +365,9 @@ Dialog material-panel ''
 		reset("textures");
 		const Path dir = data->session->storage->get_root_dir(FD_TEXTURE);
 		for (int i=0; i<min(MATERIAL_MAX_TEXTURES, material->textures.num); i++)
-			add_string("textures", format("%s\\%s", xhui::texture_to_image(material->textures[i]), data->session->resource_manager->texture_file(material->textures[i].get()).relative_to(dir)));
+			add_string("textures", format("%s\\%s", xhui::texture_to_image(material->textures[i]), data->session->ctx->texture_manager->texture_file(material->textures[i].get()).relative_to(dir)));
 	}
-	Material* material;
+	yrenderer::Material* material;
 	DataWorld* data;
 	std::function<void(const ComplexPath&)> f_save;
 };

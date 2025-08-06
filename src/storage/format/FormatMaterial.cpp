@@ -14,7 +14,9 @@
 #include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
 
-color any2color(const Any &a);
+namespace yrenderer {
+	color any2color(const Any &a);
+}
 Any color2any(const color &c) {
 	Any r = Any::EmptyList;
 	r.add(c.r);
@@ -24,7 +26,9 @@ Any color2any(const color &c) {
 	return r;
 }
 
-Alpha parse_alpha(const string& s);
+namespace yrenderer {
+	ygfx::Alpha parse_alpha(const string& s);
+}
 
 FormatMaterial::FormatMaterial(Session *s) : TypedFormat<DataMaterial>(s, FD_MATERIAL, "material", "Material", Flag::CANONICAL_READ_WRITE) {
 }
@@ -47,10 +51,10 @@ void FormatMaterial::load_current(const Path &filename, DataMaterial *data) {
 
 	Configuration c;
 	c.load(filename);
-	data->appearance.albedo = any2color(c.get("color.albedo", Any()));
+	data->appearance.albedo = yrenderer::any2color(c.get("color.albedo", Any()));
 	data->appearance.roughness = c.get_float("color.roughness", 0.5f);
 	data->appearance.metal = c.get_float("color.metal", 0.1f);
-	data->appearance.emissive = any2color(c.get("color.emission", Any()));
+	data->appearance.emissive = yrenderer::any2color(c.get("color.emission", Any()));
 	data->appearance.cast_shadow = c.get_bool("cast-shadows", true);
 
 	if (c.has("color.ambient")) {
@@ -68,41 +72,41 @@ void FormatMaterial::load_current(const Path &filename, DataMaterial *data) {
 		if (index >= data->appearance.passes.num)
 			data->appearance.passes.resize(index + 1);
 		auto &p = data->appearance.passes[index];
-		p.source = Alpha::ONE;
-		p.destination = Alpha::ZERO;
+		p.source = ygfx::Alpha::ONE;
+		p.destination = ygfx::Alpha::ZERO;
 #if ksdjfhskdjfh
 		if (!p.shader.graph)
 			p.shader.graph = new ShaderGraph(session);
 #endif
 		string m = c.get_str(key + ".mode", "none");
 		if (m == "solid" or m == "none") {
-			p.mode = TransparencyMode::NONE;
+			p.mode = yrenderer::TransparencyMode::NONE;
 		} else if (m == "factor") {
-			p.mode = TransparencyMode::FACTOR;
+			p.mode = yrenderer::TransparencyMode::FACTOR;
 			p.factor = c.get_float(key + ".factor");
 			p.z_write = false;
 			p.z_test = true;
 		} else if (m == "function") {
-			p.mode = TransparencyMode::FUNCTIONS;
-			p.source = parse_alpha(c.get_str(key + ".source", 0));
-			p.destination = parse_alpha(c.get_str(key + ".dest", 0));
+			p.mode = yrenderer::TransparencyMode::FUNCTIONS;
+			p.source = yrenderer::parse_alpha(c.get_str(key + ".source", 0));
+			p.destination = yrenderer::parse_alpha(c.get_str(key + ".dest", 0));
 			p.z_write = false;
 			p.z_test = true;
 		} else if (m == "key-hard") {
-			p.mode = TransparencyMode::COLOR_KEY_HARD;
+			p.mode = yrenderer::TransparencyMode::COLOR_KEY_HARD;
 		} else if (m == "key-smooth") {
-			p.mode = TransparencyMode::COLOR_KEY_SMOOTH;
+			p.mode = yrenderer::TransparencyMode::COLOR_KEY_SMOOTH;
 		} else if (m == "mix") {
-			p.mode = TransparencyMode::MIX;
+			p.mode = yrenderer::TransparencyMode::MIX;
 		} else if (m != "") {
 			msg_error("unknown transparency mode: " + m);
 		}
 		p.shader.file = c.get_str(key + ".shader", "");
 		m = c.get_str(key + ".cull", "");
 		if (m == "none")
-			p.culling = CullMode::NONE;
+			p.culling = ygfx::CullMode::NONE;
 		else if (m == "front" or m == "cw")
-			p.culling = CullMode::FRONT;
+			p.culling = ygfx::CullMode::FRONT;
 		m = c.get_str(key + ".z-write", "");
 		if (m != "")
 			p.z_write = m._bool();
@@ -149,10 +153,10 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
-		data->appearance.passes[0].mode = (TransparencyMode)f->read_int();
+		data->appearance.passes[0].mode = (yrenderer::TransparencyMode)f->read_int();
 		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
-		data->appearance.passes[0].source = (Alpha)f->read_int();
-		data->appearance.passes[0].destination = (Alpha)f->read_int();
+		data->appearance.passes[0].source = (ygfx::Alpha)f->read_int();
+		data->appearance.passes[0].destination = (ygfx::Alpha)f->read_int();
 		data->appearance.passes[0].z_write = f->read_bool();
 		data->appearance.passes[0].z_test = true;
 		// Appearance
@@ -193,10 +197,10 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
-		data->appearance.passes[0].mode = (TransparencyMode)f->read_int();
+		data->appearance.passes[0].mode = (yrenderer::TransparencyMode)f->read_int();
 		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
-		data->appearance.passes[0].source = (Alpha)f->read_int();
-		data->appearance.passes[0].destination = (Alpha)f->read_int();
+		data->appearance.passes[0].source = (ygfx::Alpha)f->read_int();
+		data->appearance.passes[0].destination = (ygfx::Alpha)f->read_int();
 		// Appearance
 		f->read_comment();
 		int MetalDensity = f->read_int();
@@ -220,7 +224,7 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		data->physics.vmin_jump = (float)f->read_int() * 0.001f;
 		data->physics.vmin_sliding = (float)f->read_int() * 0.001f;
 
-		data->appearance.passes[0].z_write = (data->appearance.passes[0].mode != TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != TransparencyMode::FACTOR);
+		data->appearance.passes[0].z_write = (data->appearance.passes[0].mode != yrenderer::TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != yrenderer::TransparencyMode::FACTOR);
 		data->appearance.passes[0].z_test = true;
 	}else if (lf.ffv==1){
 		// Colors
@@ -235,10 +239,10 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		read_color_argb(f, data->appearance.emissive);
 		// Transparency
 		f->read_comment();
-		data->appearance.passes[0].mode = (TransparencyMode)f->read_int();
+		data->appearance.passes[0].mode = (yrenderer::TransparencyMode)f->read_int();
 		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
-		data->appearance.passes[0].source = (Alpha)f->read_int();
-		data->appearance.passes[0].destination = (Alpha)f->read_int();
+		data->appearance.passes[0].source = (ygfx::Alpha)f->read_int();
+		data->appearance.passes[0].destination = (ygfx::Alpha)f->read_int();
 		// Appearance
 		f->read_comment();
 		int MetalDensity = f->read_int();
@@ -254,7 +258,7 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		if (!sf.is_empty())
 		data->appearance.passes[0].shader.file = sf.with(".fx.glsl");
 
-		data->appearance.passes[0].z_write = (data->appearance.passes[0].mode != TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != TransparencyMode::FACTOR);
+		data->appearance.passes[0].z_write = (data->appearance.passes[0].mode != yrenderer::TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != yrenderer::TransparencyMode::FACTOR);
 		data->appearance.passes[0].z_test = true;
 	}else{
 		//throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename, ffv, 1, 4));
@@ -290,26 +294,26 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 
 
 
-string alpha_to_str(Alpha a) {
-	if (a == Alpha::ZERO)
+string alpha_to_str(ygfx::Alpha a) {
+	if (a == ygfx::Alpha::ZERO)
 		return "zero";
-	if (a == Alpha::ONE)
+	if (a == ygfx::Alpha::ONE)
 		return "one";
-	if (a == Alpha::SOURCE_COLOR)
+	if (a == ygfx::Alpha::SOURCE_COLOR)
 		return "source-color";
-	if (a == Alpha::SOURCE_INV_COLOR)
+	if (a == ygfx::Alpha::SOURCE_INV_COLOR)
 		return "source-inv-color";
-	if (a == Alpha::SOURCE_ALPHA)
+	if (a == ygfx::Alpha::SOURCE_ALPHA)
 		return "source-alpha";
-	if (a == Alpha::SOURCE_INV_ALPHA)
+	if (a == ygfx::Alpha::SOURCE_INV_ALPHA)
 		return "source-inv-alpha";
-	if (a == Alpha::DEST_COLOR)
+	if (a == ygfx::Alpha::DEST_COLOR)
 		return "dest-color";
-	if (a == Alpha::DEST_INV_COLOR)
+	if (a == ygfx::Alpha::DEST_INV_COLOR)
 		return "dest-inv-color";
-	if (a == Alpha::DEST_ALPHA)
+	if (a == ygfx::Alpha::DEST_ALPHA)
 		return "dest-alpha";
-	if (a == Alpha::DEST_INV_ALPHA)
+	if (a == ygfx::Alpha::DEST_INV_ALPHA)
 		return "dest-inv-alpha";
 	return "???";
 }
@@ -332,27 +336,27 @@ void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
 		string key = format("pass%d", i);
 		c.set_str(key + ".shader", p.shader.file.str());
 
-		if (p.mode == TransparencyMode::FACTOR) {
+		if (p.mode == yrenderer::TransparencyMode::FACTOR) {
 			c.set_str(key + ".mode", "factor");
 			c.set_float(key + ".factor", p.factor);
-		} else if (p.mode == TransparencyMode::FUNCTIONS) {
+		} else if (p.mode == yrenderer::TransparencyMode::FUNCTIONS) {
 			c.set_str(key + ".mode", "function");
 			c.set_str(key + ".source", alpha_to_str(p.source));
 			c.set_str(key + ".dest", alpha_to_str(p.destination));
-		} else if (p.mode == TransparencyMode::MIX) {
+		} else if (p.mode == yrenderer::TransparencyMode::MIX) {
 			c.set_str(key + ".mode", "mix");
-		} else if (p.mode == TransparencyMode::COLOR_KEY_HARD) {
+		} else if (p.mode == yrenderer::TransparencyMode::COLOR_KEY_HARD) {
 			c.set_str(key + ".mode", "key-hard");
-		} else if (p.mode == TransparencyMode::COLOR_KEY_SMOOTH) {
+		} else if (p.mode == yrenderer::TransparencyMode::COLOR_KEY_SMOOTH) {
 			c.set_str(key + ".mode", "key-smooth");
 		} else {
 			c.set_str(key + ".mode", "solid");
 		}
-		if (p.culling == CullMode::NONE)
+		if (p.culling == ygfx::CullMode::NONE)
 			c.set_str(key + ".cull", "none");
-		else if (p.culling == CullMode::FRONT)
+		else if (p.culling == ygfx::CullMode::FRONT)
 			c.set_str(key + ".cull", "front");
-		if (p.mode != TransparencyMode::NONE or !p.z_write or !p.z_test)
+		if (p.mode != yrenderer::TransparencyMode::NONE or !p.z_write or !p.z_test)
 			c.set_bool(key + ".z-write", p.z_write);
 		if (!p.z_test)
 			c.set_bool(key + ".z-test", p.z_test);

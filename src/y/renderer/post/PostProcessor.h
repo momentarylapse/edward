@@ -8,35 +8,35 @@
 
 #pragma once
 
-#include "../Renderer.h"
-#include "../../graphics-fwd.h"
+#include <lib/yrenderer/Renderer.h>
+#include <lib/ygraphics/graphics-fwd.h>
 #include <lib/base/callable.h>
 
 struct vec2;
 class Any;
 class PostProcessor;
 
-struct PostProcessorStage : public Renderer {
-	PostProcessorStage(const string &name);
+struct PostProcessorStage : public yrenderer::Renderer {
+	PostProcessorStage(yrenderer::Context* ctx, const string &name);
 	PostProcessor *post = nullptr;
 
-	VertexBuffer *vb_2d;
+	ygfx::VertexBuffer *vb_2d;
 };
 
 struct PostProcessorStageUser : public PostProcessorStage {
-	using Callback = Callable<void(const RenderParams&)>;
+	using Callback = Callable<void(const yrenderer::RenderParams&)>;
 	const Callback *func_prepare = nullptr;
 	const Callback *func_draw = nullptr;
 
-	PostProcessorStageUser(const Callback *p, const Callback *d);
+	PostProcessorStageUser(yrenderer::Context* ctx, const Callback *p, const Callback *d);
 
-	void prepare(const RenderParams& params) override;
-	void draw(const RenderParams& params) override;
+	void prepare(const yrenderer::RenderParams& params) override;
+	void draw(const yrenderer::RenderParams& params) override;
 };
 
-class PostProcessor : public Renderer {
+class PostProcessor : public yrenderer::Renderer {
 public:
-	PostProcessor();
+	explicit PostProcessor(yrenderer::Context* ctx);
 	virtual ~PostProcessor();
 
 	Array<PostProcessorStage*> stages;

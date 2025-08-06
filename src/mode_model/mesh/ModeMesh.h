@@ -17,7 +17,9 @@ class MultiViewWindow;
 namespace xhui {
 	class Panel;
 }
-class Material;
+namespace yrenderer {
+	class Material;
+}
 class ModeModel;
 class ModeMeshMaterial;
 class ModeMeshSculpt;
@@ -34,11 +36,11 @@ public:
 	void on_leave_rec() override;
 	void on_enter() override;
 	void on_leave() override;
-	void on_prepare_scene(const RenderParams& params) override;
-	void on_draw_background(const RenderParams& params, RenderViewData& rvd) override;
-	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
-	void draw_polygons(const RenderParams& params, MultiViewWindow* win);
-	void draw_edges(const RenderParams& params, MultiViewWindow* win, const base::set<int>& sel);
+	void on_prepare_scene(const yrenderer::RenderParams& params) override;
+	void on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;
+	void on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) override;
+	void draw_polygons(const yrenderer::RenderParams& params, MultiViewWindow* win);
+	void draw_edges(const yrenderer::RenderParams& params, MultiViewWindow* win, const base::set<int>& sel);
 	void on_draw_post(Painter*) override;
 	void on_command(const string& id) override;
 	void on_key_down(int key) override;
@@ -76,14 +78,14 @@ public:
 	void set_edit_mesh(ModelMesh* mesh);
 
 	owned<ModelMesh> temp_mesh;
-	owned_array<VertexBuffer> vertex_buffers;
-	VertexBuffer* vertex_buffer_physical;
-	VertexBuffer* vertex_buffer_selection;
-	VertexBuffer* vertex_buffer_hover;
-	owned_array<Material> materials;
-	Material* material_physical;
-	Material* material_selection;
-	Material* material_hover;
+	owned_array<ygfx::VertexBuffer> vertex_buffers;
+	ygfx::VertexBuffer* vertex_buffer_physical;
+	ygfx::VertexBuffer* vertex_buffer_selection;
+	ygfx::VertexBuffer* vertex_buffer_hover;
+	owned_array<yrenderer::Material> materials;
+	yrenderer::Material* material_physical;
+	yrenderer::Material* material_selection;
+	yrenderer::Material* material_hover;
 	Array<int> event_ids_rec;
 	Array<int> event_ids;
 

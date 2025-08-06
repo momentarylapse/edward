@@ -1,54 +1,35 @@
 #pragma once
 
-#include "../graphics-fwd.h"
+#include <lib/ygraphics/graphics-fwd.h>
 #include <lib/base/pointer.h>
-#include <lib/base/map.h>
 #include <lib/os/path.h>
 
 
 struct string;
-class MaterialManager;
-class Material;
 class ModelManager;
 class Model;
 
+namespace yrenderer {
+	class Context;
+	class Material;
+	class MaterialManager;
+	class ShaderManager;
+	class TextureManager;
+}
+
 class ResourceManager {
 public:
-	explicit ResourceManager(Context *ctx);
-	Context *ctx;
-	MaterialManager *material_manager;
-	ModelManager *model_manager;
+	explicit ResourceManager(yrenderer::Context *ctx, const Path &texture_dir, const Path &material_dir, const Path &shader_dir);
+	yrenderer::Context* ctx;
+	yrenderer::MaterialManager* material_manager;
+	ModelManager* model_manager;
+	yrenderer::ShaderManager* shader_manager;
+	yrenderer::TextureManager* texture_manager;
 
-	shared<Texture> load_texture(const Path& path);
-	shared<Shader> load_shader(const Path& path);
-	xfer<Shader> create_shader(const string &source);
-	shared<Shader> load_surface_shader(const Path& path, const string &render_path, const string &vertex_module, const string &geometry_module);
-	string expand_vertex_shader_source(const string &source, const string &variant);
-	string expand_fragment_shader_source(const string &source, const string &render_path);
-	string expand_geometry_shader_source(const string &source, const string &variant);
-	void load_shader_module(const Path& path);
-	xfer<Material> load_material(const Path &filename);
+	shared<ygfx::Texture> load_texture(const Path& path);
+	xfer<yrenderer::Material> load_material(const Path &filename);
 	xfer<Model> load_model(const Path &filename);
 
-	Path find_absolute_texture_path(const Path& path) const;
-
-	Path texture_file(Texture* t) const;
-
-	xfer<Shader> __load_shader(const Path& path, const string &overwrite_bindings, int overwrite_push_size);
-	xfer<Shader> __create_shader(const string& source, const string &overwrite_bindings, int overwrite_push_size);
-
-	Path texture_dir;
-	Path shader_dir;
-	Path default_shader;
 	void clear();
-
-
-	shared_array<Shader> shaders;
-	Array<Path> shader_modules;
-	shared_array<Texture> textures;
-	base::map<Path,Shader*> shader_map;
-	base::map<Path,Texture*> texture_map;
-
-	shared<Texture> tex_white;
 };
 

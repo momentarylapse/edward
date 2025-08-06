@@ -11,14 +11,16 @@
 namespace xhui {
 	class Toolbar;
 }
-class XhuiRenderer;
+namespace yrenderer {
+	class XhuiRenderer;
+}
 class MultiViewRenderer;
 class Session;
 
 class EdwardWindow : public obs::Node<xhui::Window> {
 public:
 	owned<Session> session;
-	XhuiRenderer* renderer = nullptr;
+	yrenderer::XhuiRenderer* renderer = nullptr;
 	MultiViewRenderer* multi_view_renderer = nullptr;
 	Array<string> args;
 

@@ -3,10 +3,11 @@
 #include "Context.h"
 #include "Theme.h"
 #include "draw/font.h"
-#include "../image/image.h"
-#include "../math/mat4.h"
+#include <lib/image/image.h>
+#include <lib/math/mat4.h>
 #include <lib/base/algo.h>
-#include "../os/msg.h"
+#include <lib/ygraphics/graphics-impl.h>
+#include <lib/os/msg.h>
 
 namespace xhui {
 
@@ -99,7 +100,7 @@ TextCache& get_text_cache(Context* context, const string& text, font::Face* face
 #if HAS_LIB_VULKAN
 		tc->dset = context->pool->create_set(context->shader);
 #endif
-		tc->texture = new Texture();
+		tc->texture = new ygfx::Texture();
 	}
 
 	tc->text = text;

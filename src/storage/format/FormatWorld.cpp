@@ -150,7 +150,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				data->meta_data.gravity = s2v(e.value("gravity", "0 0 0"));
 			} else if (e.tag == "fog") {
 				data->meta_data.fog.enabled = e.value("enabled", "false")._bool();
-				data->meta_data.fog.mode = (FogMode)e.value("mode", "0")._int();
+				data->meta_data.fog.mode = (ygfx::FogMode)e.value("mode", "0")._int();
 				data->meta_data.fog.start = e.value("start", "0")._float();
 				data->meta_data.fog.end = e.value("end", "10000")._float();
 				data->meta_data.fog.density = e.value("density", "0")._float();
@@ -193,11 +193,11 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 			} else if (e.tag == "light") {
 				WorldEntity l;
 				l.basic_type = MultiViewType::WORLD_LIGHT;
-				l.light.type = LightType::POINT;
+				l.light.type = yrenderer::LightType::POINT;
 				if (e.value("type") == "directional")
-					l.light.type = LightType::DIRECTIONAL;
+					l.light.type = yrenderer::LightType::DIRECTIONAL;
 				else if (e.value("type") == "cone")
-					l.light.type = LightType::CONE;
+					l.light.type = yrenderer::LightType::CONE;
 				l.light.radius = e.value("radius", "0")._float();
 				l.light.theta = e.value("theta", "0")._float();
 				l.light.harshness = e.value("harshness", "0.8")._float();
@@ -297,12 +297,12 @@ xml::Element encode_light(WorldEntity &l) {
 	.witha("type", light_type_canonical(l.light.type))
 	.witha("color", c2s(l.light.col))
 	.witha("harshness", f2s(l.light.harshness, 4));
-	if (l.light.type == LightType::DIRECTIONAL) {
+	if (l.light.type == yrenderer::LightType::DIRECTIONAL) {
 		e.add_attribute("ang", v2s(l.ang.get_angles()));
-	} else if (l.light.type == LightType::POINT) {
+	} else if (l.light.type == yrenderer::LightType::POINT) {
 		e.add_attribute("pos", v2s(l.pos));
 		e.add_attribute("radius", f2s(l.light.radius, 3));
-	} else if (l.light.type == LightType::CONE) {
+	} else if (l.light.type == yrenderer::LightType::CONE) {
 		e.add_attribute("pos", v2s(l.pos));
 		e.add_attribute("ang", v2s(l.ang.get_angles()));
 		e.add_attribute("radius", f2s(l.light.radius, 3));

@@ -7,8 +7,8 @@
 #include "MultiViewMeshEmitter.h"
 #include "Mode.h"
 #include "DrawingHelper.h"
-#include <renderer/scene/MeshEmitter.h>
-#include <renderer/scene/SceneRenderer.h>
+#include <lib/yrenderer/scene/MeshEmitter.h>
+#include <lib/yrenderer/scene/SceneRenderer.h>
 #include <renderer/path/RenderPath.h>
 #include <y/world/Camera.h>
 #include <Session.h>
@@ -21,7 +21,7 @@
 
 MultiViewWindow::MultiViewWindow(MultiView* _multi_view) {
 	multi_view = _multi_view;
-	scene_renderer = new SceneRenderer(RenderPathType::Forward, *multi_view->view_port.scene_view.get());
+	scene_renderer = new yrenderer::SceneRenderer(multi_view->session->ctx, yrenderer::RenderPathType::Forward, *multi_view->view_port.scene_view.get());
 	scene_renderer->add_emitter(new MultiViewBackgroundEmitter(multi_view));
 	scene_renderer->add_emitter(new MultiViewGeometryEmitter(this));
 }
@@ -193,10 +193,13 @@ mat3 MultiViewWindow::edit_frame() const {
 	return active_grid_frame();
 }
 
-void MultiViewWindow::prepare(const RenderParams& params) {
-	projection = multi_view->view_port.cam->projection_matrix(area.width() / area.height());
+void MultiViewWindow::prepare(const yrenderer::RenderParams& params) {
+	projection = multi_view->view_port.cam.projection_matrix(area.width() / area.height());
 
-	scene_renderer->set_view(params, view_pos(), view_ang(), projection);
+	auto cam = multi_view->view_port.cam;
+	cam.pos = view_pos();
+	cam.ang = view_ang();
+	scene_renderer->set_view(params, cam, &projection);
 	view = scene_renderer->rvd.ubo.v;
 	scene_renderer->prepare(params);
 
@@ -313,7 +316,7 @@ void draw_grid_3d(const color &bg, MultiViewWindow *w, int plane, float alpha) {
 	dh->set_blending(false);
 }
 
-void MultiViewWindow::draw(const RenderParams& params) {
+void MultiViewWindow::draw(const yrenderer::RenderParams& params) {
 	multi_view->session->drawing_helper->set_window(this);
 
 	scene_renderer->draw(params);
@@ -358,7 +361,7 @@ void MultiViewWindow::draw_post(Painter* p) {
 }
 
 
-RenderViewData& MultiViewWindow::rvd() {
+yrenderer::RenderViewData& MultiViewWindow::rvd() {
 	return scene_renderer->rvd;
 }
 

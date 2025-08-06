@@ -9,26 +9,28 @@
 #define WORLD_COMPONENTS_USERMESH_H
 
 #include "../../y/Component.h"
-#include "../Material.h"
+#include <lib/yrenderer/Material.h>
 #include <lib/base/base.h>
 #include <lib/base/pointer.h>
 #include <lib/math/vec3.h>
 #include <lib/image/color.h>
-#include "../../graphics-impl.h"
+#include <lib/ygraphics/graphics-impl.h>
 
 
-class Material;
+namespace yrenderer {
+	class Material;
+}
 
 class UserMesh : public Component {
 public:
 	UserMesh() = default;
 
-	owned<Material> material;
+	owned<yrenderer::Material> material;
 	string vertex_shader_module = "default";
 	string geometry_shader_module;
 
-	owned<VertexBuffer> vertex_buffer;
-	PrimitiveTopology topology = PrimitiveTopology::TRIANGLES;
+	owned<ygfx::VertexBuffer> vertex_buffer;
+	ygfx::PrimitiveTopology topology = ygfx::PrimitiveTopology::TRIANGLES;
 
 	static const kaba::Class *_class;
 };

@@ -171,38 +171,40 @@ void main() {
 
 Painter::Painter(Window *w) {
 	window = w;
-	ui_scale = window->ui_scale;
-	glfwMakeContextCurrent(w->window);
-	if (!_nix_inited)
-		init_nix();
+	if (window) {
+		ui_scale = window->ui_scale;
+		glfwMakeContextCurrent(w->window);
+		if (!_nix_inited)
+			init_nix();
 
-	Painter::set_color(Theme::_default.text);
-	Painter::set_font(Theme::_default.font_name /*"CAC Champagne"*/, Theme::_default.font_size, false, false);
+		Painter::set_color(Theme::_default.text);
+		Painter::set_font(Theme::_default.font_name /*"CAC Champagne"*/, Theme::_default.font_size, false, false);
 
-	offset_x = 0;
-	offset_y = 0;
+		offset_x = 0;
+		offset_y = 0;
 
 
-	int ww, hh;
-	glfwGetWindowSize(window->window, &ww, &hh);
-	width = (float)ww / ui_scale;
-	height = (float)hh / ui_scale;
+		int ww, hh;
+		glfwGetWindowSize(window->window, &ww, &hh);
+		width = (float)ww / ui_scale;
+		height = (float)hh / ui_scale;
 
-	_area = {0, (float)width, 0, (float)height};
-	native_area = {0, (float)ww, 0, (float)hh};
-	native_area_window = native_area;
-	_clip = _area;
+		_area = {0, (float)width, 0, (float)height};
+		native_area = {0, (float)ww, 0, (float)hh};
+		native_area_window = native_area;
+		_clip = _area;
 
-	window->handle_event_p(window->id, event_id::JustBeforeDraw, this);
+		window->handle_event_p(window->id, event_id::JustBeforeDraw, this);
 
-	// in case the event_id::JustBeforeDraw triggers off-screen rendering...
-	nix::bind_frame_buffer(_nix_context->default_framebuffer);
+		// in case the event_id::JustBeforeDraw triggers off-screen rendering...
+		nix::bind_frame_buffer(_nix_context->default_framebuffer);
 
-	nix::start_frame_glfw(_nix_context.get(), window->window);
-	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(ui_scale, ui_scale, 1));
-	//nix::clear(color(1, 0.15f, 0.15f, 0.3f));
-	nix::set_cull(nix::CullMode::NONE);
-	nix::set_z(false, false);
+		nix::start_frame_glfw(_nix_context.get(), window->window);
+		nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(ui_scale, ui_scale, 1));
+		//nix::clear(color(1, 0.15f, 0.15f, 0.3f));
+		nix::set_cull(nix::CullMode::NONE);
+		nix::set_z(false, false);
+	}
 }
 
 void Painter::end() {

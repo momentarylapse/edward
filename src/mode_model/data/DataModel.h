@@ -12,7 +12,7 @@
 #include <view/SingleData.h>
 #include <lib/base/set.h>
 #include <y/world/Model.h>
-#include <y/world/Material.h>
+#include <lib/yrenderer/Material.h>
 #include "ModelMaterial.h"
 
 struct MeshEdit;

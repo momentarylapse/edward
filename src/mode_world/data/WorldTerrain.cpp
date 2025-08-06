@@ -26,7 +26,7 @@ bool WorldTerrain::load(Session *session, const Path &_filename, bool deep) {
 	filename = _filename.relative_to(engine.map_dir).no_ext();
 
 	terrain = new Terrain();
-	bool Error = !terrain->load(session->resource_manager, this->filename, deep);
+	bool Error = !terrain->load(session->ctx, this->filename, deep);
 
 	if (Error) {
 		delete terrain ;

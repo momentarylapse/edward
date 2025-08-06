@@ -10,7 +10,9 @@
 #include "../view/Mode.h"
 #include "data/DataMaterial.h"
 
-class Light;
+namespace yrenderer {
+	class Light;
+}
 class MultiViewWindow;
 namespace xhui {
 	class Panel;
@@ -34,10 +36,10 @@ public:
 
 	void on_key_down(int key) override;
 
-	void on_prepare_scene(const RenderParams& params) override;
-	void on_draw_background(const RenderParams& params, RenderViewData& rvd) override;
-	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
-	void on_draw_shadow(const RenderParams& params, RenderViewData& rvd) override;
+	void on_prepare_scene(const yrenderer::RenderParams& params) override;
+	void on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;
+	void on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) override;
+	void on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;
 
 	void on_draw_post(Painter*) override;
 	void optimize_view();
@@ -45,14 +47,14 @@ public:
 	void on_command(const string& id) override;
 
 	DataMaterial* data;
-	owned<VertexBuffer> vertex_buffer;
+	owned<ygfx::VertexBuffer> vertex_buffer;
 	PreviewMesh preview_mesh;
-	owned<Material> material;
+	owned<yrenderer::Material> material;
 
-	owned<VertexBuffer> vertex_buffer_ground;
-	owned<Material> material_ground;
+	owned<ygfx::VertexBuffer> vertex_buffer_ground;
+	owned<yrenderer::Material> material_ground;
 
-	owned<Light> spot_light;
+	owned<yrenderer::Light> spot_light;
 
 	void set_mesh(PreviewMesh m);
 };

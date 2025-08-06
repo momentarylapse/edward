@@ -15,6 +15,7 @@
 #include "../y/EngineData.h"
 #include <lib/math/vec3.h>
 #include <lib/math/mat4.h>
+#include <lib/yrenderer/scene/CameraParams.h>
 
 
 const kaba::Class *Camera::_class = nullptr;
@@ -111,6 +112,11 @@ void Camera::update_matrix_cache(float aspect_ratio) {
 	m_all = m_rel * p * v;
 	im_all = m_all.inverse();
 }
+
+yrenderer::CameraParams Camera::params() const {
+	return {owner->pos, owner->ang, fov, min_depth, max_depth};
+}
+
 
 // into [0:R]x[0:1] system!
 vec3 Camera::project(const vec3 &v) {

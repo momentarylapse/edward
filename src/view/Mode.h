@@ -9,10 +9,12 @@
 #include <lib/math/vec2.h>
 #include <lib/pattern/Observable.h>
 
-struct RenderViewData;
-struct SceneView;
-class Renderer;
-struct RenderParams;
+namespace yrenderer {
+	struct RenderViewData;
+	struct SceneView;
+	class Renderer;
+	struct RenderParams;
+}
 class MultiView;
 class Session;
 class Painter;
@@ -45,10 +47,10 @@ public:
 	virtual void on_left_button_down(const vec2&) {}
 	virtual void on_left_button_up(const vec2&) {}
 	virtual void on_key_down(int key) {}
-	virtual void on_prepare_scene(const RenderParams& params) {}
-	virtual void on_draw_background(const RenderParams& params, RenderViewData& rvd) {}
-	virtual void on_draw_win(const RenderParams& params, MultiViewWindow* win) {}
-	virtual void on_draw_shadow(const RenderParams& params, RenderViewData& rvd) {}
+	virtual void on_prepare_scene(const yrenderer::RenderParams& params) {}
+	virtual void on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {}
+	virtual void on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {}
+	virtual void on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {}
 	virtual void on_draw_post(Painter*) {}
 	virtual Mode* get_parent() { return nullptr; }
 	Mode* get_root();
@@ -74,10 +76,10 @@ public:
 
 	void on_command(const string& id) override;
 
-	void on_prepare_scene(const RenderParams& params) override;
-	void on_draw_background(const RenderParams& params, RenderViewData& rvd) override;
-	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
-	void on_draw_shadow(const RenderParams& params, RenderViewData& rvd) override;
+	void on_prepare_scene(const yrenderer::RenderParams& params) override;
+	void on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;
+	void on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) override;
+	void on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;
 
 	Mode* _parent;
 	Mode* get_parent() override { return _parent; }

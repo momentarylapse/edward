@@ -3,6 +3,7 @@
 #include "../os/config.h"
 #include "../os/path.h"
 #include "../os/app.h"
+#include "../os/msg.h"
 
 namespace xhui {
 
@@ -11,7 +12,9 @@ Theme Theme::_default;
 void Theme::load_default() {
 	Configuration c;
 	if (!c.load(os::app::directory_dynamic | "default.theme"))
-		c.load(os::app::directory_static | "default.theme");
+		if (!c.load(os::app::directory_static | "default.theme"))
+			if (!c.load(os::app::directory_dynamic | "packages/xhui/default.theme")) // kaba package workaround...
+				msg_error("failed to load default.theme");
 
 	_default.font_size = c.get_float("font.size", 12);
 	_default.font_name = c.get_str("font.name", "Sans");

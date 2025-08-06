@@ -4,19 +4,19 @@
 
 #include "WorldTerrainsEmitter.h"
 #include <lib/profiler/Profiler.h>
-#include <renderer/base.h>
-#include <renderer/scene/RenderViewData.h>
+#include <lib/yrenderer/Context.h>
+#include <lib/yrenderer/scene/RenderViewData.h>
 #include <world/Terrain.h>
 #include <y/ComponentManager.h>
 #include <y/Entity.h>
-#include <graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/msg.h>
 
-WorldTerrainsEmitter::WorldTerrainsEmitter() : MeshEmitter("ter") {}
+WorldTerrainsEmitter::WorldTerrainsEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "ter") {}
 
-void WorldTerrainsEmitter::emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
+void WorldTerrainsEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {
 	profiler::begin(channel);
-	gpu_timestamp_begin(params, channel);
+	ctx->gpu_timestamp_begin(params, channel);
 
 	auto& terrains = ComponentManager::get_list_family<Terrain>();
 	for (auto *t: terrains) {
@@ -29,7 +29,7 @@ void WorldTerrainsEmitter::emit(const RenderParams& params, RenderViewData& rvd,
 		if (shadow_pass)
 			material = rvd.material_shadow;
 
-		auto& rd = rvd.start(params, mat4::translation(o->pos), shader, *material, 0, PrimitiveTopology::TRIANGLES, t->vertex_buffer.get());
+		auto& rd = rvd.start(params, mat4::translation(o->pos), shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, t->vertex_buffer.get());
 
 		if (!shadow_pass) {
 #ifdef USING_VULKAN
@@ -42,7 +42,7 @@ void WorldTerrainsEmitter::emit(const RenderParams& params, RenderViewData& rvd,
 		}
 		rd.draw_triangles(params, t->vertex_buffer.get());
 	}
-	gpu_timestamp_end(params, channel);
+	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
 }
 

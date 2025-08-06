@@ -207,7 +207,7 @@ void ListView::add_string(const string& s) {
 		string cid = format("%s:%d:%d", id, row, col);
 		auto c = column_factories[col].f_create(cid);
 		//c->size_mode_x = SizeMode::Expand;
-		if (auto p = dynamic_cast<Panel*>(c))
+		if (auto p = as_panel(c))
 			owner->embed(cell_grid->id, col, row, p);
 		else
 			cell_grid->add_child(c, col, row);

@@ -18,7 +18,9 @@ class MeshCollider;
 class Animator;
 class Skeleton;
 class ResourceManager;
-class MaterialManager;
+namespace yrenderer {
+	class MaterialManager;
+}
 
 
 class ModelTemplate : public Sharable<base::Empty> {
@@ -38,10 +40,10 @@ public:
 
 class ModelManager {
 public:
-	ModelManager(ResourceManager *resource_manager, MaterialManager *material_manager);
+	ModelManager(ResourceManager *resource_manager, yrenderer::MaterialManager *material_manager);
 	xfer<Model> load(const Path &filename);
 
 	ResourceManager *resource_manager;
-	MaterialManager *material_manager;
+	yrenderer::MaterialManager *material_manager;
 	Array<Model*> originals;
 };

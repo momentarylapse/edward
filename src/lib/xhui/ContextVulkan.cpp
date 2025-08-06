@@ -5,6 +5,7 @@
 #include "Painter.h"
 #include "../os/msg.h"
 #include "../image/image.h"
+#include "../ygraphics/graphics-impl.h"
 
 namespace xhui {
 

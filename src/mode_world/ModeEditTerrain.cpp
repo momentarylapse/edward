@@ -61,7 +61,7 @@ void ModeEditTerrain::on_mouse_move(const vec2& m, const vec2& d) {
 
 }
 
-void ModeEditTerrain::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void ModeEditTerrain::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	mode_world->on_draw_win(params, win);
 }
 

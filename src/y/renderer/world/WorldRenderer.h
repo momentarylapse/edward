@@ -7,36 +7,39 @@
 
 #pragma once
 
-#include "../Renderer.h"
-#include "../../graphics-fwd.h"
+#include <lib/yrenderer/Renderer.h>
+#include <lib/ygraphics/graphics-fwd.h>
 #include <lib/math/mat4.h>
 #include <lib/math/vec3.h>
 #include <lib/image/color.h>
 #include <lib/base/callable.h>
 #include <lib/base/pointer.h>
 
-#include "../scene/SceneView.h"
+#include <lib/yrenderer/scene/SceneView.h>
 
-class GeometryRenderer;
-class ShadowMapRenderer;
 class Profiler;
 class World;
 class Camera;
 struct mat4;
 struct vec3;
 struct quaternion;
-class Material;
-class CubeMapSource;
+namespace yrenderer {
+	class CubeMapSource;
+	class GeometryRenderer;
+	class ShadowMapRenderer;
+	class Material;
+}
 
 
 
-class WorldRenderer : public Renderer {
+class WorldRenderer : public yrenderer::Renderer {
 public:
-	WorldRenderer(const string &name, SceneView& scene_view);
+	WorldRenderer(yrenderer::Context* ctx, const string &name, Camera* cam, yrenderer::SceneView& scene_view);
 
+	Camera* cam;
 	bool wireframe = false;
 
-	SceneView& scene_view;
+	yrenderer::SceneView& scene_view;
 
 	void reset();
 };

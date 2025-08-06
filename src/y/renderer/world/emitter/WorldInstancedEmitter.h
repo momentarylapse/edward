@@ -4,11 +4,11 @@
 
 #pragma once
 
-#include "../../scene/MeshEmitter.h"
+#include <lib/yrenderer/scene/MeshEmitter.h>
 
 
-class WorldInstancedEmitter : public MeshEmitter {
+class WorldInstancedEmitter : public yrenderer::MeshEmitter {
 public:
-	WorldInstancedEmitter();
-	void emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) override;
+	explicit WorldInstancedEmitter(yrenderer::Context* ctx);
+	void emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) override;
 };

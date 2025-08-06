@@ -56,6 +56,7 @@ public:
 };
 
 Dialog::Dialog(const string& _title, int _width, int _height, Panel* parent, DialogFlags _flags) : Panel("dialog") {
+	type = ControlType::Dialog;
 	flags = _flags;
 	outside = new DialogOutside([this] {
 		if (flags & DialogFlags::CloseByClickOutside)
@@ -75,9 +76,11 @@ Dialog::Dialog(const string& _title, int _width, int _height, Panel* parent, Dia
 	// forward default activation ([Return] key) to default button
 	event_x("*", event_id::ActivateDialogDefault, [this] {
 		for (auto c: controls)
-			if (auto b = dynamic_cast<Button*>(c))
+			if (c->type == ControlType::Button) {
+				auto b = static_cast<Button*>(c);
 				if (b->_default)
 					b->emit_event(event_id::Activate, true);
+			}
 	});
 }
 
@@ -153,6 +156,12 @@ rect Dialog::suggest_area(const rect& parent_area) const {
 }
 
 
+
+Dialog* as_dialog(Control* c) {
+	if (c->type == ControlType::Dialog)
+		return static_cast<Dialog*>(c);
+	return nullptr;
+}
 
 
 

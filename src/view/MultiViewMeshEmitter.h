@@ -5,36 +5,38 @@
 #ifndef MULTIVIEWMESHEMITTER_H
 #define MULTIVIEWMESHEMITTER_H
 
-#include <renderer/scene/MeshEmitter.h>
+#include <lib/yrenderer/scene/MeshEmitter.h>
+
+#include "MultiView.h"
 
 class MultiViewWindow;
 class MultiView;
 
-class MultiViewBackgroundEmitter : public MeshEmitter {
+class MultiViewBackgroundEmitter : public yrenderer::MeshEmitter {
 public:
 	MultiView* multi_view;
-	explicit MultiViewBackgroundEmitter(MultiView* mv) : MeshEmitter("geo") {
+	explicit MultiViewBackgroundEmitter(MultiView* mv) : yrenderer::MeshEmitter(mv->ctx, "geo") {
 		multi_view = mv;
 	}
-	void emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) override;
+	void emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) override;
 };
 
-class MultiViewGeometryEmitter : public MeshEmitter {
+class MultiViewGeometryEmitter : public yrenderer::MeshEmitter {
 public:
 	MultiViewWindow* win;
-	explicit MultiViewGeometryEmitter(MultiViewWindow* _win) : MeshEmitter("geo") {
+	explicit MultiViewGeometryEmitter(MultiViewWindow* _win) : MeshEmitter(_win->multi_view->ctx, "geo") {
 		win = _win;
 	}
-	void emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) override;
+	void emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) override;
 };
 
-class MultiViewShadowGeometryEmitter : public MeshEmitter {
+class MultiViewShadowGeometryEmitter : public yrenderer::MeshEmitter {
 public:
 	MultiView* multi_view;
-	explicit MultiViewShadowGeometryEmitter(MultiView* mv) : MeshEmitter("geo-shdw") {
+	explicit MultiViewShadowGeometryEmitter(MultiView* mv) : MeshEmitter(mv->ctx, "geo-shdw") {
 		multi_view = mv;
 	}
-	void emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) override;
+	void emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) override;
 };
 
 

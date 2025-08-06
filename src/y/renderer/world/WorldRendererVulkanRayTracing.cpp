@@ -8,22 +8,28 @@
 #include "WorldRendererVulkanRayTracing.h"
 #ifdef USING_VULKAN
 #include "../helper/Raytracing.h"
-#include "../scene/SceneView.h"
+#include <lib/yrenderer/scene/SceneView.h>
 #include "../path/RenderPath.h"
-#include "../base.h"
-#include <graphics-impl.h>
+#include <lib/yrenderer/Context.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/msg.h>
 #include <lib/profiler/Profiler.h>
 #include "../../helper/ResourceManager.h"
+#include <lib/yrenderer/ShaderManager.h>
+#include <lib/yrenderer/scene/CameraParams.h>
 #include "../../world/Camera.h"
 #include "../../world/World.h"
 #include "../../y/EngineData.h"
 #include "../../Config.h"
 
 
-WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(vulkan::Device *_device, SceneView& scene_view, int w, int h) :
-		WorldRenderer("rt", scene_view) {
-	device = _device;
+using namespace yrenderer;
+
+WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, Camera* cam, SceneView& scene_view, int w, int h) :
+		WorldRenderer(ctx, "rt", cam, scene_view),
+		rvd(ctx)
+{
+	device = ctx->device;
 	width = w;
 	height = h;
 
@@ -54,9 +60,9 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(vulkan::Device *_de
 		rtx.dset->set_uniform_buffer(4, rvd.ubo_light.get());
 		rtx.dset->set_uniform_buffer(5, scene_view.ray_tracing_data->buffer_meshes.get());
 
-		auto shader_gen = resource_manager->load_shader("vulkan/gen.shader");
-		auto shader1 = resource_manager->load_shader("vulkan/group1.shader");
-		auto shader2 = resource_manager->load_shader("vulkan/group2.shader");
+		auto shader_gen = shader_manager->load_shader("vulkan/gen.shader");
+		auto shader1 = shader_manager->load_shader("vulkan/group1.shader");
+		auto shader2 = shader_manager->load_shader("vulkan/group2.shader");
 		rtx.pipeline = new vulkan::RayPipeline("[[acceleration-structure,image,buffer,buffer,buffer,buffer]]", {shader_gen.get(), shader1.get(), shader2.get()}, 2);
 		rtx.pipeline->create_sbt();
 
@@ -66,7 +72,7 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(vulkan::Device *_de
 
 		compute.pool = new vulkan::DescriptorPool("image:1,storage-buffer:1,buffer:8,sampler:1", 1);
 
-		auto shader = resource_manager->load_shader("compute/pathtracing.shader");
+		auto shader = shader_manager->load_shader("compute/pathtracing.shader");
 		compute.pipeline = new vulkan::ComputePipeline(shader.get());
 		compute.dset = compute.pool->create_set("image,buffer,buffer");
 		compute.dset->set_storage_image(0, offscreen_image);
@@ -78,22 +84,22 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(vulkan::Device *_de
 	pc.t_rand = 0;
 
 
-	auto shader_out = resource_manager->load_shader("vulkan/passthrough.shader");
-	out_renderer = new ThroughShaderRenderer("out", shader_out);
+	auto shader_out = shader_manager->load_shader("vulkan/passthrough.shader");
+	out_renderer = new ThroughShaderRenderer(ctx, "out", shader_out);
 	out_renderer->bind_texture(0, offscreen_image);
 }
 
-void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
+void WorldRendererVulkanRayTracing::prepare(const yrenderer::RenderParams& params) {
 	profiler::begin(ch_prepare);
-	gpu_timestamp_begin(params, ch_prepare);
+	ctx->gpu_timestamp_begin(params, ch_prepare);
 
-	rvd.set_view(params, scene_view.cam);
+	rvd.set_view(params, cam->params());
 	rvd.update_light_ubo();
 
 	int w = width * engine.resolution_scale_x;
 	int h = height * engine.resolution_scale_y;
 
-	pc.iview = scene_view.cam->view_matrix().inverse();
+	pc.iview = cam->view_matrix().inverse();
 	pc.background = world.background;
 	pc.num_lights = scene_view.lights.num;
 	pc.t_rand += loop(pc.t_rand + 0.01f, 0.0f, 10.678f);
@@ -157,11 +163,11 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 	out_renderer->bindings.shader_data.dict_set("scale_x:204", 1.0f);
 	out_renderer->bindings.shader_data.dict_set("scale_y:208", 1.0f);
 
-	gpu_timestamp_end(params, ch_prepare);
+	ctx->gpu_timestamp_end(params, ch_prepare);
 	profiler::end(ch_prepare);
 }
 
-void WorldRendererVulkanRayTracing::draw(const RenderParams& params) {
+void WorldRendererVulkanRayTracing::draw(const yrenderer::RenderParams& params) {
 	out_renderer->draw(params);
 }
 

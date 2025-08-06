@@ -19,8 +19,8 @@
 #include <data/mesh/GeometryCylinder.h>
 #include <data/mesh/GeometryTorus.h>
 #include <data/mesh/GeometryCube.h>
-#include <y/graphics-impl.h>
-#include <y/renderer/scene/RenderViewData.h>
+#include <lib/ygraphics/graphics-impl.h>
+#include <lib/yrenderer/scene/RenderViewData.h>
 #include <lib/base/iter.h>
 #include <lib/math/mat3.h>
 #include <lib/math/plane.h>
@@ -32,7 +32,7 @@ const float ActionController::PIXEL_RADIUS = 200;
 
 #define MVGetSingleData(d, index)	((SingleData*) ((char*)(d).data->data + (d).data->element_size* index))
 
-Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
+yrenderer::Material* create_material(yrenderer::Context, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
 ActionController::Manipulator::Manipulator(MultiView* multi_view) {
 	scale = 1;
@@ -339,7 +339,7 @@ bool ActionController::geo_allow(int i, MultiViewWindow* win, const mat4& geo_ma
 }
 
 // in 2d mode!
-void ActionController::__draw(const RenderParams& params, RenderViewData& rvd) {
+void ActionController::__draw(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	//if (!multi_view->allow_mouse_actions)
 	//	return;
 	if (!visible)

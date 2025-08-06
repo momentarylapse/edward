@@ -14,6 +14,7 @@
 #include "../../lib/os/file.h"
 #include "../../lib/os/msg.h"
 #include <y/helper/ResourceManager.h>
+#include <lib/yrenderer/TextureManager.h>
 
 
 
@@ -91,17 +92,17 @@ void DataMaterial::apply_for_rendering(int pass_no) const {
 	nix::disable_alpha();
 	nix::set_z(true, true);
 	auto &p = appearance.passes[pass_no];
-	if (p.mode == TransparencyMode::COLOR_KEY_HARD) {
+	if (p.mode == yrenderer::TransparencyMode::COLOR_KEY_HARD) {
 		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
-	} else if (p.mode == TransparencyMode::COLOR_KEY_SMOOTH) {
+	} else if (p.mode == yrenderer::TransparencyMode::COLOR_KEY_SMOOTH) {
 		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
-	} else if (p.mode == TransparencyMode::MIX) {
+	} else if (p.mode == yrenderer::TransparencyMode::MIX) {
 		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 		nix::set_z(false, true);
-	} else if (p.mode == TransparencyMode::FUNCTIONS) {
+	} else if (p.mode == yrenderer::TransparencyMode::FUNCTIONS) {
 		nix::set_alpha(p.source, p.destination);
 		nix::set_z(false, true);
-	} else if (p.mode == TransparencyMode::FACTOR) {
+	} else if (p.mode == yrenderer::TransparencyMode::FACTOR) {
 		//nix::set_alpha(appearance.alpha_factor);
 		nix::set_z(false, true);
 	}
@@ -159,7 +160,7 @@ void DataMaterial::ShaderData::save_to_file(Session *s) {
 
 
 
-DataMaterial DataMaterial::from_material(Session* s, Material *material) {
+DataMaterial DataMaterial::from_material(Session* s, yrenderer::Material *material) {
 	DataMaterial m(s);
 	m.appearance.albedo = material->albedo;
 	m.appearance.emissive = material->emission;
@@ -168,7 +169,7 @@ DataMaterial DataMaterial::from_material(Session* s, Material *material) {
 	m.appearance.texture_files.clear();
 	const Path dir = s->storage->get_root_dir(FD_TEXTURE);
 	for (int i=0;i<material->textures.num;i++)
-		m.appearance.texture_files.add(s->resource_manager->texture_file(material->textures[i].get()).relative_to(dir));
+		m.appearance.texture_files.add(s->resource_manager->texture_manager->texture_file(material->textures[i].get()).relative_to(dir));
 	m.appearance.passes[0].shader.file = material->pass0.shader_path;
 
 	// TODO alpha etc
@@ -181,8 +182,8 @@ DataMaterial DataMaterial::from_material(Session* s, Material *material) {
 }
 
 
-Material* DataMaterial::to_material() const {
-	Material* m = new Material(session->resource_manager);
+yrenderer::Material* DataMaterial::to_material() const {
+	auto m = new yrenderer::Material(session->ctx);
 	m->albedo = appearance.albedo;
 	m->roughness = appearance.roughness;
 	m->metal = appearance.metal;
@@ -194,7 +195,7 @@ Material* DataMaterial::to_material() const {
 
 	m->num_passes = appearance.passes.num;
 	if (m->num_passes >= 2)
-		m->extended = new Material::ExtendedData;
+		m->extended = new yrenderer::Material::ExtendedData;
 	for (int i=0; i<appearance.passes.num; i++) {
 		auto &p = appearance.passes[i];
 		auto &pp = m->pass(i);

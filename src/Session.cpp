@@ -34,8 +34,8 @@
 #include <y/helper/ResourceManager.h>
 #include <y/world/Camera.h>
 #include <y/world/World.h>
-#include <y/graphics-impl.h>
-#include <y/renderer/target/XhuiRenderer.h>
+#include <lib/ygraphics/graphics-impl.h>
+#include <lib/yrenderer/target/XhuiRenderer.h>
 
 static Array<Session*> all_sessions;
 bool any_session_running() {
@@ -134,17 +134,21 @@ Session::~Session() {
 }
 
 
-void Session::create_initial_resources(Context *_ctx) {
+// UNUSED...
+void Session::create_initial_resources(yrenderer::Context *_ctx) {
 
 	ctx = _ctx;
 
 	// initialize engine
-	resource_manager = new ResourceManager(ctx);
+	resource_manager = new ResourceManager(ctx, "", "", "");
+	ctx->texture_manager = resource_manager->texture_manager;
+	ctx->shader_manager = resource_manager->shader_manager;
+	ctx->material_manager = resource_manager->material_manager;
 ///	drawing_helper = new DrawingHelper(ctx, resource_manager, app->directory_static);
 
 	engine.ignore_missing_files = true;
 	engine.set_context(ctx, resource_manager);
-	resource_manager->load_shader("module-vertex-default.shader");
+	ctx->load_shader("module-vertex-default.shader");
 	//ResourceManager::default_shader
 
 	CameraInit();
@@ -275,7 +279,7 @@ void Session::set_mode_now(Mode *m) {
 	cur_mode = m;
 	cur_mode->on_enter();
 	win->renderer->children.clear();
-	win->renderer->add_child(cur_mode->multi_view);
+	win->renderer->add_child(cur_mode->multi_view->renderer.get());
 
 	cur_mode->out_redraw >> win->in_redraw;
 	if (cur_mode->multi_view) {
@@ -508,7 +512,7 @@ base::future<void> Session::allow_termination() {
 	return promise.get_future();
 }
 
-string Session::get_tex_image(Texture *tex) {
+string Session::get_tex_image(ygfx::Texture *tex) {
 #if 0
 	if (icon_image.contains(tex))
 		return icon_image[tex];

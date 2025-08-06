@@ -4,25 +4,24 @@
 
 #include "WorldModelsEmitter.h"
 #include <lib/profiler/Profiler.h>
-#include <renderer/base.h>
-#include <renderer/scene/RenderViewData.h>
-#include <renderer/scene/SceneView.h>
+#include <lib/yrenderer/Context.h>
+#include <lib/yrenderer/scene/RenderViewData.h>
+#include <lib/yrenderer/scene/SceneView.h>
 #include <world/Model.h>
 #include <world/ModelManager.h>
 #include <world/components/Animator.h>
-#include <world/Camera.h>
 #include <y/ComponentManager.h>
 #include <y/Entity.h>
-#include <graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <lib/base/sort.h>
 
-WorldModelsEmitter::WorldModelsEmitter() : MeshEmitter("mod") {
+WorldModelsEmitter::WorldModelsEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "mod") {
 }
 
 
-void WorldModelsEmitter::emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
+void WorldModelsEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {
 	profiler::begin(channel);
-	gpu_timestamp_begin(params, channel);
+	ctx->gpu_timestamp_begin(params, channel);
 
 	auto& list = ComponentManager::get_list_family<Model>();
 
@@ -41,28 +40,27 @@ void WorldModelsEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 
 			m->update_matrix();
 			auto vb = m->mesh[0]->sub[i].vertex_buffer;
-			auto& rd = rvd.start(params, m->_matrix, shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+			auto& rd = rvd.start(params, m->_matrix, shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 
 			if (ani) {
 				ani->buf->update_array(ani->dmatrix);
 #ifdef USING_VULKAN
-				rd.dset->set_uniform_buffer(BINDING_BONE_MATRICES, ani->buf);
+				rd.dset->set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
 #else
-				nix::bind_uniform_buffer(BINDING_BONE_MATRICES, ani->buf);
+				nix::bind_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
 #endif
 			}
 
 			rd.draw_triangles(params, vb);
 		}
 	}
-	gpu_timestamp_end(params, channel);
+	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
 }
 
-void WorldModelsEmitter::emit_transparent(const RenderParams& params, RenderViewData& rvd) {
+void WorldModelsEmitter::emit_transparent(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	profiler::begin(channel);
-	gpu_timestamp_begin(params, channel);
-	auto cam = rvd.scene_view->cam;
+	ctx->gpu_timestamp_begin(params, channel);
 
 	struct DrawCallData {
 		Model* model;
@@ -79,7 +77,7 @@ void WorldModelsEmitter::emit_transparent(const RenderParams& params, RenderView
 			if (!material->is_transparent())
 				continue;
 
-			draw_calls.add({m, i, (m->owner->pos - cam->owner->pos).length()});
+			draw_calls.add({m, i, (m->owner->pos - rvd.camera_params.pos).length()});
 		}
 	}
 
@@ -100,21 +98,21 @@ void WorldModelsEmitter::emit_transparent(const RenderParams& params, RenderView
 		for (int k=0; k<material->num_passes; k++) {
 			auto shader = rvd.get_shader(material, k, m->_template->vertex_shader_module, "");
 
-			auto& rd = rvd.start(params, m->_matrix, shader, *material, k, PrimitiveTopology::TRIANGLES, vb);
+			auto& rd = rvd.start(params, m->_matrix, shader, *material, k, ygfx::PrimitiveTopology::TRIANGLES, vb);
 
 			if (ani) {
 				ani->buf->update_array(ani->dmatrix);
 #ifdef USING_VULKAN
-				rd.dset->set_uniform_buffer(BINDING_BONE_MATRICES, ani->buf);
+				rd.dset->set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
 #else
-				nix::bind_uniform_buffer(BINDING_BONE_MATRICES, ani->buf);
+				nix::bind_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
 #endif
 			}
 
 			rd.draw_triangles(params, vb);
 		}
 	}
-	gpu_timestamp_end(params, channel);
+	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
 }
 

@@ -14,7 +14,8 @@
 #include "lib/os/time.h"
 #include "lib/os/path.h"
 #include "lib/pattern/Observable.h"
-#include "y/graphics-fwd.h"
+#include <lib/ygraphics/graphics-fwd.h>
+#include <lib/yrenderer/Context.h>
 
 
 class MultiView;
@@ -65,7 +66,7 @@ public:
 	Session();
 	~Session() override;
 
-	void create_initial_resources(Context *ctx);
+	void create_initial_resources(yrenderer::Context *ctx);
 
 	void set_mode(Mode *m);
 	void set_mode_now(Mode *m);
@@ -101,7 +102,7 @@ public:
 		return static_cast<M*>(find_mode_base(name));
 	}
 
-	Context *ctx;
+	yrenderer::Context *ctx;
 	ResourceManager *resource_manager;
 	DrawingHelper *drawing_helper;
 	PluginManager* plugin_manager;
@@ -112,8 +113,8 @@ public:
 
 	Progress *progress;
 
-	base::map<Texture*, string> icon_image;
-	string get_tex_image(Texture *tex);
+	base::map<ygfx::Texture*, string> icon_image;
+	string get_tex_image(ygfx::Texture *tex);
 
 	os::Timer timer;
 

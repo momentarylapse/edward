@@ -14,7 +14,7 @@
 #include "../lib/math/mat4.h"
 #include "../lib/math/vec3.h"
 #include "../lib/pattern/Observable.h"
-#include <y/graphics-fwd.h>
+#include <lib/ygraphics/graphics-fwd.h>
 
 struct PolygonMesh;
 class ActionMultiView;
@@ -22,9 +22,11 @@ class Data;
 class Painter;
 class MultiView;
 class MultiViewWindow;
-class Material;
-struct RenderParams;
-struct RenderViewData;
+namespace yrenderer {
+	class Material;
+	struct RenderParams;
+	struct RenderViewData;
+}
 
 enum class MouseActionMode {
 	SELECT,
@@ -74,7 +76,7 @@ public:
 		YZ,
 	};
 
-	void __draw(const RenderParams& params, RenderViewData& rvd);
+	void __draw(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd);
 	void draw_post(Painter* p);
 	Constraint get_hover(MultiViewWindow* win, const vec2& m, vec3 &tp) const;
 	bool performing_action();

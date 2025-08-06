@@ -5,7 +5,7 @@
 #ifndef VERTEXSTAGINGBUFFER_H
 #define VERTEXSTAGINGBUFFER_H
 
-#include <y/world/Material.h>
+#include <lib/yrenderer/Material.h>
 
 struct vec3;
 
@@ -13,7 +13,7 @@ class VertexStagingBuffer {
 public:
 	Array<vec3> p, n;
 	Array<float> uv[MATERIAL_MAX_TEXTURES];
-	void build(VertexBuffer *vb, int num_textures);
+	void build(ygfx::VertexBuffer *vb, int num_textures);
 	void clear();
 };
 

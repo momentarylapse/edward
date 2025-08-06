@@ -11,7 +11,7 @@
 #include "../ModelManager.h"
 #include "../../y/Entity.h"
 #include <lib/os/msg.h>
-#include "../../graphics-impl.h"
+#include <lib/ygraphics/graphics-impl.h>
 
 
 const kaba::Class *Animator::_class = nullptr;
@@ -62,7 +62,7 @@ void Animator::on_init() {
 		dmatrix[i] = mat4::translation(sk->pos0[i]);
 	}
 
-	buf = new UniformBuffer(sk->bones.num * sizeof(mat4));
+	buf = new ygfx::UniformBuffer(sk->bones.num * sizeof(mat4));
 }
 
 

@@ -18,7 +18,7 @@ ModePaste::ModePaste(ModeMesh* parent) :
 	mode_mesh = parent;
 	multi_view = mode_mesh->multi_view;
 	generic_data = mode_mesh->generic_data;
-	vertex_buffer = new VertexBuffer("3f,3f,2f");
+	vertex_buffer = new ygfx::VertexBuffer("3f,3f,2f");
 	mode_mesh->temp_mesh->build(vertex_buffer.get());
 	transformation = mat4::ID;
 }
@@ -29,7 +29,7 @@ void ModePaste::on_enter() {
 	session->win->set_visible("overlay-button-grid-left", false);
 }
 
-void ModePaste::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void ModePaste::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
 
 	session->drawing_helper->draw_mesh(params, win->rvd(), transformation, vertex_buffer.get(), session->drawing_helper->material_creation);

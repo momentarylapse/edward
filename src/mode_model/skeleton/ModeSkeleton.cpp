@@ -101,14 +101,14 @@ void ModeSkeleton::on_draw_post(Painter* p) {
 		draw_info(p, "selected: " + *s);
 }
 
-void ModeSkeleton::on_prepare_scene(const RenderParams& params) {
+void ModeSkeleton::on_prepare_scene(const yrenderer::RenderParams& params) {
 }
 
-void ModeSkeleton::on_draw_background(const RenderParams& params, RenderViewData& rvd) {
+void ModeSkeleton::on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	rvd.clear(params, {xhui::Theme::_default.background_low});
 }
 
-void ModeSkeleton::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void ModeSkeleton::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	parent->mode_mesh->draw_polygons(params, win);
 	parent->mode_mesh->draw_edges(params, win, {});
 	auto dh = session->drawing_helper;

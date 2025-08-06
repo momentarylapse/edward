@@ -17,6 +17,10 @@
 #include <lib/math/mat4.h>
 #include <y/Component.h>
 
+namespace yrenderer {
+	struct CameraParams;
+}
+
 
 class Camera : public Component {
 public:
@@ -45,6 +49,8 @@ public:
 	mat4 projection_matrix(float aspect_ratio) const;
 
 	void update_matrix_cache(float aspect_ratio);
+
+	yrenderer::CameraParams params() const;
 
 	mat4 m_all, im_all;
 	vec3 _cdecl project(const vec3 &v);

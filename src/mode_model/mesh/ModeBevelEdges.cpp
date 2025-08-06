@@ -60,7 +60,7 @@ void ModeBevelEdges::on_leave() {
 }
 
 
-void ModeBevelEdges::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void ModeBevelEdges::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
 	auto dh = session->drawing_helper;
 

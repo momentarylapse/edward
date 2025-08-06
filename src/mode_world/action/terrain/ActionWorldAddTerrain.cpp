@@ -10,7 +10,7 @@
 #include "../../data/DataWorld.h"
 #include "../../data/WorldTerrain.h"
 #include <y/world/Terrain.h>
-#include <y/graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <assert.h>
 
 ActionWorldAddTerrain::ActionWorldAddTerrain(const vec3 &_pos, const Path &_filename) {

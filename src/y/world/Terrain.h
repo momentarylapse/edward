@@ -12,12 +12,14 @@
 #include <lib/os/path.h>
 #include <lib/math/vec3.h>
 #include "../y/Component.h"
-#include "Material.h"
-#include "../graphics-fwd.h"
-#include "../y/BaseClass.h"
-class Material;
+#include <lib/yrenderer/Material.h>
+#include <lib/ygraphics/graphics-fwd.h>
+
+namespace yrenderer {
+	class Material;
+	class Context;
+}
 class CollisionData;
-//class DescriptorSet;
 
 enum class TerrainType {
 	CONTINGUOUS,
@@ -55,9 +57,9 @@ public:
 class Terrain : public Component {
 public:
 	Terrain();
-	Terrain(int nx, int nz, const vec3& pattern, Material* material);
-	Terrain(ResourceManager *resource_manager, const Path &filename);
-	bool load(ResourceManager *resource_manager, const Path &filename, bool deep = true);
+	Terrain(int nx, int nz, const vec3& pattern, yrenderer::Material* material);
+	Terrain(yrenderer::Context* ctx, const Path& filename);
+	bool load(yrenderer::Context* ctx, const Path& filename, bool deep = true);
 	~Terrain() override;
 	void reset();
 	void _cdecl update(int x1,int x2,int z1,int z2,int mode);
@@ -79,12 +81,12 @@ public:
 	Array<float> height;
 	Array<vec3> vertex, normal;
 	Array<plane> pl; // for collision detection
-	owned<VertexBuffer> vertex_buffer;
+	owned<ygfx::VertexBuffer> vertex_buffer;
 	int chunk_lod[TERRAIN_MAX_CHUNKS][TERRAIN_MAX_CHUNKS];
 	int chunk_lod_old[TERRAIN_MAX_CHUNKS][TERRAIN_MAX_CHUNKS];
 	vec3 pattern, min, max;
 	string vertex_shader_module;
-	owned<Material> material;
+	owned<yrenderer::Material> material;
 	Path material_file;
 
 	vec3 texture_scale[MATERIAL_MAX_TEXTURES];
@@ -110,7 +112,7 @@ struct XTerrainVBUpdater {
 	int mode = 0;
 	int counter = 0;
 	Terrain* terrain = nullptr;
-	VertexBuffer* vb = nullptr;
+	ygfx::VertexBuffer* vb = nullptr;
 
 	bool build_chunk(int chunk_no);
 	void condense();

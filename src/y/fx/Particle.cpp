@@ -6,9 +6,9 @@
  */
 
 #include "Particle.h"
-#include "../graphics-impl.h"
+#include <lib/ygraphics/graphics-impl.h>
 
-Shader *shader_fx;
+ygfx::Shader *shader_fx;
 
 Particle::Particle(const vec3 &p, const color& _col, float r, float ttl) {
 	pos = p;

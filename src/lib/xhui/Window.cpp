@@ -20,9 +20,11 @@ Array<Window*> _windows_;
 Window::Window(const string &title, int w, int h) : Window(title, w, h, Flags::NONE) {}
 
 Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":window:") {
+	type = ControlType::Window;
 	title = _title;
 	flags = _flags;
 	ui_scale = global_ui_scale;
+	window = nullptr;
 	memset(&state, 0, sizeof(state));
 	memset(&state_prev, 0, sizeof(state_prev));
 
@@ -31,36 +33,39 @@ Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":windo
 		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 	}
 
-	window = glfwCreateWindow(w, h, title.c_str(), nullptr, nullptr);
+	if (!(flags & Flags::FAKE)) {
+		window = glfwCreateWindow(w, h, title.c_str(), nullptr, nullptr);
 
-	if (flags & Flags::OWN_DECORATION) {
-		if (glfwGetWindowAttrib(window, GLFW_TRANSPARENT_FRAMEBUFFER))
-			msg_write("TRANSPARENT");
-		else
-			msg_write("NOT TRANSPARENT");
-		header_bar = new HeaderBar(this, ":headerbar:");
+		if (flags & Flags::OWN_DECORATION) {
+			if (glfwGetWindowAttrib(window, GLFW_TRANSPARENT_FRAMEBUFFER))
+				msg_write("TRANSPARENT");
+			else
+				msg_write("NOT TRANSPARENT");
+			header_bar = new HeaderBar(this, ":headerbar:");
+		}
+
+		glfwGetWindowContentScale(window, &ui_scale, nullptr);
+
+		glfwSetWindowUserPointer(window, this);
+
+		padding = Theme::_default.window_margin;
+
+		glfwSetKeyCallback(window, _key_callback);
+		glfwSetCharCallback(window, _char_callback);
+		glfwSetCursorPosCallback(window, _cursor_position_callback);
+		glfwSetCursorEnterCallback(window, _cursor_enter_callback);
+		glfwSetMouseButtonCallback(window, _mouse_button_callback);
+		glfwSetScrollCallback(window, _scroll_callback);
+		glfwSetWindowRefreshCallback(window, _refresh_callback);
+		glfwSetWindowSizeCallback(window, _resize_callback);
+
+		_windows_.add(this);
 	}
-
-	glfwGetWindowContentScale(window, &ui_scale, nullptr);
-
-	glfwSetWindowUserPointer(window, this);
-
-	padding = Theme::_default.window_margin;
-
-	glfwSetKeyCallback(window, _key_callback);
-	glfwSetCharCallback(window, _char_callback);
-	glfwSetCursorPosCallback(window, _cursor_position_callback);
-	glfwSetCursorEnterCallback(window, _cursor_enter_callback);
-	glfwSetMouseButtonCallback(window, _mouse_button_callback);
-	glfwSetScrollCallback(window, _scroll_callback);
-	glfwSetWindowRefreshCallback(window, _refresh_callback);
-	glfwSetWindowSizeCallback(window, _resize_callback);
-
-	_windows_.add(this);
 }
 
 Window::~Window() {
-	glfwDestroyWindow(window);
+	if (window)
+		glfwDestroyWindow(window);
 
 	for (int i=0; i<_windows_.num; i++)
 		if (_windows_[i] == this)
@@ -658,6 +663,12 @@ void Window::request_destroy() {
 }
 
 WindowX::WindowX(const string &title, int w, int h) : Window(title, w, h, Flags::OWN_DECORATION) {
+}
+
+Window* as_window(Control* c) {
+	if (c->type == ControlType::Window)
+		return static_cast<Window*>(c);
+	return nullptr;
 }
 
 }

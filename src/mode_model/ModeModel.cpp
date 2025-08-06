@@ -13,7 +13,7 @@
 #include <view/EdwardWindow.h>
 #include <lib/xhui/controls/Toolbar.h>
 
-Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
+yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
 ModeModel::ModeModel(Session* session) : Mode(session) {
 	multi_view = new MultiView(session);

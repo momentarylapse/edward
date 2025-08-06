@@ -3,54 +3,48 @@
 //
 
 #include "Raytracing.h"
-
-#include "../scene/SceneView.h"
-#include "../base.h"
+#include <lib/yrenderer/scene/SceneView.h>
+#include <lib/yrenderer/Context.h>
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>
 #include <lib/profiler/Profiler.h>
-#include <renderer/target/WindowRendererVulkan.h>
-#include "../../helper/ResourceManager.h"
-#include "../../gui/Node.h"
-#include "../../fx/Particle.h"
-#include "../../world/Camera.h"
-#include "../../world/Light.h"
-#include "../../world/Material.h"
+#include <lib/yrenderer/target/WindowRenderer.h>
+#include <lib/yrenderer/ShaderManager.h>
+#include <lib/yrenderer/Material.h>
 #include "../../world/Model.h"
 #include "../../world/Terrain.h"
-#include "../../world/World.h"
 #include "../../y/ComponentManager.h"
 #include "../../y/Entity.h"
 #include "../../y/EngineData.h"
 #include "../../Config.h"
-#include "../../graphics-impl.h"
+#include <lib/ygraphics/graphics-impl.h>
 #ifdef USING_VULKAN
 
 static const int MAX_RT_TRIAS = 65536;
 static const int MAX_RT_MESHES = 512;
 static const int MAX_RT_REQUESTS = 4096*16;
 
-void rt_setup_explicit(SceneView& scene_view, RaytracingMode mode) {
-	scene_view.ray_tracing_data = new RayTracingData(engine.window_renderer->device, mode);
+void rt_setup_explicit(yrenderer::SceneView& scene_view, RaytracingMode mode) {
+	scene_view.ray_tracing_data = new RayTracingData(engine.context, mode);
 }
 
-void rt_setup(SceneView& scene_view) {
+void rt_setup(yrenderer::SceneView& scene_view) {
 	rt_setup_explicit(scene_view, RaytracingMode::COMPUTE);
 }
 
-void rt_update_frame(SceneView& scene_view) {
+void rt_update_frame(yrenderer::SceneView& scene_view) {
 	scene_view.ray_tracing_data->update_frame();
 }
 
-RayTracingData::RayTracingData(vulkan::Device *device, RaytracingMode _mode) {
-	auto resource_manager = engine.resource_manager;
+RayTracingData::RayTracingData(yrenderer::Context* _ctx, RaytracingMode _mode) {
+	ctx = _ctx;
 	mode = _mode;
 
 	if (mode == RaytracingMode::NONE)
 		throw Exception("no compute shader support");
 
-	buffer_meshes = new UniformBuffer(sizeof(MeshDescription) * MAX_RT_MESHES); // 64k!
-	buffer_requests = new ShaderStorageBuffer(sizeof(RayRequest) * MAX_RT_REQUESTS);
+	buffer_meshes = new ygfx::UniformBuffer(sizeof(MeshDescription) * MAX_RT_MESHES); // 64k!
+	buffer_requests = new ygfx::ShaderStorageBuffer(sizeof(RayRequest) * MAX_RT_REQUESTS);
 	buffer_reply = new vulkan::StorageBuffer(sizeof(RayReply) * MAX_RT_REQUESTS);
 
 	if (mode == RaytracingMode::RTX) {
@@ -62,9 +56,9 @@ RayTracingData::RayTracingData(vulkan::Device *device, RaytracingMode _mode) {
 		rtx.dset = rtx.pool->create_set("acceleration-structure,image,buffer,buffer,buffer,buffer");
 		rtx.dset->set_uniform_buffer(5, buffer_meshes.get());
 
-		auto shader_gen = resource_manager->load_shader("vulkan/gen.shader");
-		auto shader1 = resource_manager->load_shader("vulkan/group1.shader");
-		auto shader2 = resource_manager->load_shader("vulkan/group2.shader");
+		auto shader_gen = ctx->shader_manager->load_shader("vulkan/gen.shader");
+		auto shader1 = ctx->shader_manager->load_shader("vulkan/group1.shader");
+		auto shader2 = ctx->shader_manager->load_shader("vulkan/group2.shader");
 		rtx.pipeline = new vulkan::RayPipeline("[[acceleration-structure,image,buffer,buffer,buffer,buffer]]", {shader_gen.get(), shader1.get(), shader2.get()}, 2);
 		rtx.pipeline->create_sbt();
 
@@ -74,7 +68,7 @@ RayTracingData::RayTracingData(vulkan::Device *device, RaytracingMode _mode) {
 
 		compute.pool = new vulkan::DescriptorPool("image:1,storage-buffer:2,buffer:8,sampler:1", 1);
 
-		auto shader = resource_manager->load_shader("compute/raytracing.shader");
+		auto shader = ctx->shader_manager->load_shader("compute/raytracing.shader");
 		compute.pipeline = new vulkan::ComputePipeline(shader.get());
 		compute.dset = compute.pool->create_set("storage-buffer,buffer,storage-buffer");
 		compute.dset->set_storage_buffer(0, buffer_requests.get());
@@ -82,8 +76,8 @@ RayTracingData::RayTracingData(vulkan::Device *device, RaytracingMode _mode) {
 		compute.dset->set_storage_buffer(2, buffer_reply.get());
 		compute.dset->update();
 
-		compute.command_buffer = device->command_pool->create_command_buffer();
-		compute.fence = new Fence(device);
+		compute.command_buffer = ctx->device->command_pool->create_command_buffer();
+		compute.fence = new Fence(ctx->device);
 	}
 }
 
@@ -150,7 +144,7 @@ void RayTracingData::update_frame() {
 
 		} else {
 
-			auto make_indexed = [] (VertexBuffer *vb) {
+			auto make_indexed = [] (ygfx::VertexBuffer *vb) {
 				if (!vb->is_indexed()) {
 					Array<int> index;
 					for (int i=0; i<vb->output_count; i++)
@@ -165,7 +159,7 @@ void RayTracingData::update_frame() {
 					m->update_matrix();
 					auto vb = m->mesh[0]->sub[i].vertex_buffer;
 					make_indexed(vb);
-					rtx.blas.add(vulkan::AccelerationStructure::create_bottom(device, vb));
+					rtx.blas.add(vulkan::AccelerationStructure::create_bottom(ctx->device, vb));
 					matrices.add(m->owner->get_matrix().transpose());
 				}
 			}
@@ -173,11 +167,11 @@ void RayTracingData::update_frame() {
 			for (auto *t: terrains) {
 				auto o = t->owner;
 				make_indexed(t->vertex_buffer.get());
-				rtx.blas.add(vulkan::AccelerationStructure::create_bottom(device, t->vertex_buffer.get()));
+				rtx.blas.add(vulkan::AccelerationStructure::create_bottom(ctx->device, t->vertex_buffer.get()));
 				matrices.add(mat4::translation(o->pos).transpose());
 			}
 
-			rtx.tlas = vulkan::AccelerationStructure::create_top(device, rtx.blas, matrices);
+			rtx.tlas = vulkan::AccelerationStructure::create_top(ctx->device, rtx.blas, matrices);
 		}
 
 	} else if (mode == RaytracingMode::COMPUTE) {
@@ -185,7 +179,7 @@ void RayTracingData::update_frame() {
 }
 
 //Array<base::optional<RayHitInfo>>
-Array<RayReply> vtrace(SceneView& scene_view, const Array<RayRequest>& requests) {
+Array<RayReply> vtrace(yrenderer::SceneView& scene_view, const Array<RayRequest>& requests) {
 	if (requests.num > MAX_RT_REQUESTS) {
 		msg_error("too many rt requests");
 		return {};
@@ -221,14 +215,14 @@ Array<RayReply> vtrace(SceneView& scene_view, const Array<RayRequest>& requests)
 }
 #else
 
-void rt_setup(SceneView& scene_view) {
+void rt_setup(yrenderer::SceneView& scene_view) {
 	msg_error("raytracing only supported on vulkan!");
 }
 
-void rt_update_frame(SceneView& scene_view) {
+void rt_update_frame(yrenderer::SceneView& scene_view) {
 }
 
-Array<RayReply> vtrace(SceneView& scene_view, const Array<RayRequest>& requests) {
+Array<RayReply> vtrace(yrenderer::SceneView& scene_view, const Array<RayRequest>& requests) {
 	return {};
 }
 #endif

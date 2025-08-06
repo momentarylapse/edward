@@ -21,7 +21,9 @@
 
 class Model;
 class Object;
-class Material;
+namespace yrenderer {
+	class Material;
+}
 class Terrain;
 class SolidBody;
 class MultiInstance;

@@ -7,9 +7,9 @@
 
 #include "MultiViewWindow.h"
 #include "Hover.h"
-#include <y/renderer/Renderer.h>
-#include <y/renderer/scene/SceneView.h>
-#include <y/renderer/scene/RenderViewData.h>
+#include <lib/yrenderer/Renderer.h>
+#include <lib/yrenderer/scene/SceneView.h>
+#include <lib/yrenderer/scene/RenderViewData.h>
 #include <lib/math/Box.h>
 #include <lib/math/vec3.h>
 #include <lib/math/quaternion.h>
@@ -18,10 +18,12 @@
 
 #include "data/Data.h"
 
-class CubeMapSource;
-class CubeMapRenderer;
-class SceneRenderer;
-class Camera;
+namespace yrenderer {
+	class CubeMapSource;
+	class CubeMapRenderer;
+	class SceneRenderer;
+	class ShadowRenderer;
+}
 class Painter;
 class Session;
 class ActionMultiView;
@@ -30,20 +32,26 @@ class MultiView;
 namespace multiview {
 	struct SingleData;
 }
-class ShadowRenderer;
 
 
 
-class MultiView : public obs::Node<Renderer> {
+class MultiViewRenderer : public yrenderer::Renderer {
+public:
+	explicit MultiViewRenderer(yrenderer::Context* ctx, MultiView* mv);
+
+	void prepare(const yrenderer::RenderParams& params) override;
+	void draw(const yrenderer::RenderParams& params) override;
+
+	MultiView* multi_view;
+};
+
+class MultiView : public obs::Node<VirtualBase> {
 public:
 	explicit MultiView(Session* session);
 	~MultiView() override;
 
 	obs::source out_selection_changed{this, "selection-changed"};
 	obs::sink in_data_changed;
-
-	void prepare(const RenderParams& params) override;
-	void draw(const RenderParams& params) override;
 
 	void on_draw(Painter* p);
 	void on_left_button_down(const vec2& m);
@@ -58,8 +66,8 @@ public:
 		vec3 pos;
 		quaternion ang;
 		float radius;
-		Camera* cam;
-		owned<SceneView> scene_view;
+		yrenderer::CameraParams cam;
+		owned<yrenderer::SceneView> scene_view;
 		MultiView* multi_view;
 
 		void move(const vec3& drel);
@@ -73,13 +81,14 @@ public:
 		FollowCamera
 	} light_mode;
 
-	Array<Light*> lights;
-	Light* default_light;
-	owned<ShadowRenderer> shadow_renderer;
-	owned<CubeMapSource> cube_map_source;
-	owned<CubeMapRenderer> cube_map_renderer;
+	Array<yrenderer::Light*> lights;
+	yrenderer::Light* default_light;
+	owned<yrenderer::ShadowRenderer> shadow_renderer;
+	owned<yrenderer::CubeMapSource> cube_map_source;
+	owned<yrenderer::CubeMapRenderer> cube_map_renderer;
+	owned<MultiViewRenderer> renderer;
 
-	MultiViewWindow window;
+	owned<MultiViewWindow> window;
 	MultiViewWindow* active_window;
 	MultiViewWindow* hover_window;
 
@@ -104,6 +113,7 @@ public:
 	rect area_native;
 	void set_area(const rect& area);
 	Session* session;
+	yrenderer::Context* ctx;
 
 
 	void set_allow_select(bool allow);

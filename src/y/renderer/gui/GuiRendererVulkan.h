@@ -7,22 +7,22 @@
 
 #pragma once
 
-#include "../Renderer.h"
+#include <lib/yrenderer/Renderer.h>
 #ifdef USING_VULKAN
 
-class GuiRendererVulkan : public Renderer {
+class GuiRendererVulkan : public yrenderer::Renderer {
 public:
-	GuiRendererVulkan();
+	explicit GuiRendererVulkan(yrenderer::Context* ctx);
 
-	void draw(const RenderParams& params) override;
+	void draw(const yrenderer::RenderParams& params) override;
 
-	shared<Shader> shader;
-	GraphicsPipeline* pipeline = nullptr;
-	Array<DescriptorSet*> dset;
-	Array<UniformBuffer*> ubo;
-	owned<VertexBuffer> vb;
-	void prepare_gui(FrameBuffer *source, const RenderParams& params);
-	void draw_gui(CommandBuffer *cb, RenderPass *render_pass);
+	shared<ygfx::Shader> shader;
+	ygfx::GraphicsPipeline* pipeline = nullptr;
+	Array<ygfx::DescriptorSet*> dset;
+	Array<ygfx::UniformBuffer*> ubo;
+	owned<ygfx::VertexBuffer> vb;
+	void prepare_gui(ygfx::FrameBuffer *source, const yrenderer::RenderParams& params);
+	void draw_gui(ygfx::CommandBuffer *cb, ygfx::RenderPass *render_pass);
 };
 
 #endif

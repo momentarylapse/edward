@@ -6,10 +6,10 @@
  */
 
 #include "WorldRendererDeferred.h"
-#include "../target/TextureRenderer.h"
-#include "../scene/pass/ShadowRenderer.h"
-#include "../post/ThroughShaderRenderer.h"
-#include "../base.h"
+#include <lib/yrenderer/target/TextureRenderer.h>
+#include <lib/yrenderer/scene/pass/ShadowRenderer.h>
+#include <lib/yrenderer/post/ThroughShaderRenderer.h>
+#include <lib/yrenderer/Context.h>
 #include "../path/RenderPath.h"
 #include <lib/os/msg.h>
 #include <lib/math/random.h>
@@ -25,11 +25,16 @@
 #include <world/World.h>
 #include "../../helper/ResourceManager.h"
 #include "../../world/Camera.h"
+#include <lib/yrenderer/ShaderManager.h>
+#include <lib/yrenderer/scene/CameraParams.h>
 #include "../../Config.h"
-#include "../../graphics-impl.h"
+#include <lib/ygraphics/graphics-impl.h>
 
 
-WorldRendererDeferred::WorldRendererDeferred(SceneView& scene_view, int width, int height) : WorldRenderer("world/def", scene_view) {
+using namespace yrenderer;
+using namespace ygfx;
+
+WorldRendererDeferred::WorldRendererDeferred(yrenderer::Context* ctx, Camera* cam, SceneView& scene_view, int width, int height) : WorldRenderer(ctx, "world/def", cam, scene_view) {
 
 	auto tex1 = new Texture(width, height, "rgba:f16"); // diffuse
 	auto tex2 = new Texture(width, height, "rgba:f16"); // emission
@@ -41,19 +46,19 @@ WorldRendererDeferred::WorldRendererDeferred(SceneView& scene_view, int width, i
 		a->set_options("wrap=clamp,magfilter=nearest,minfilter=nearest");
 
 
-	gbuffer_renderer = new TextureRenderer("gbuf", gbuffer_textures);
+	gbuffer_renderer = new TextureRenderer(ctx, "gbuf", gbuffer_textures);
 	gbuffer_renderer->clear_z = true;
 	gbuffer_renderer->clear_colors = {color(-1, 0,1,0)};
 
 
-	resource_manager->load_shader_module("forward/module-surface.shader");
-	resource_manager->load_shader_module("deferred/module-surface.shader");
+	shader_manager->load_shader_module("forward/module-surface.shader");
+	shader_manager->load_shader_module("deferred/module-surface.shader");
 
-	auto shader_gbuffer_out = resource_manager->load_shader("deferred/out.shader");
+	auto shader_gbuffer_out = shader_manager->load_shader("deferred/out.shader");
 //	if (!shader_gbuffer_out->link_uniform_block("SSAO", 13))
 //		msg_error("SSAO");
 
-	out_renderer = new ThroughShaderRenderer("out", shader_gbuffer_out);
+	out_renderer = new ThroughShaderRenderer(ctx, "out", shader_gbuffer_out);
 	out_renderer->bind_textures(0, {tex1, tex2, tex3, tex4, depth});
 
 
@@ -69,40 +74,41 @@ WorldRendererDeferred::WorldRendererDeferred(SceneView& scene_view, int width, i
 	ch_gbuf_out = profiler::create_channel("gbuf-out", channel);
 	ch_trans = profiler::create_channel("trans", channel);
 
-	scene_renderer_background = new SceneRenderer(RenderPathType::Forward, scene_view);
-	scene_renderer_background->add_emitter(new WorldSkyboxEmitter);
+	scene_renderer_background = new SceneRenderer(ctx, RenderPathType::Forward, scene_view);
+	scene_renderer_background->add_emitter(new WorldSkyboxEmitter(ctx));
 	add_child(scene_renderer_background.get());
 
-	scene_renderer = new SceneRenderer(RenderPathType::Deferred, scene_view);
-	scene_renderer->add_emitter(new WorldModelsEmitter);
-	scene_renderer->add_emitter(new WorldTerrainsEmitter);
-	scene_renderer->add_emitter(new WorldUserMeshesEmitter);
-	scene_renderer->add_emitter(new WorldInstancedEmitter);
+	scene_renderer = new SceneRenderer(ctx, RenderPathType::Deferred, scene_view);
+	scene_renderer->add_emitter(new WorldModelsEmitter(ctx));
+	scene_renderer->add_emitter(new WorldTerrainsEmitter(ctx));
+	scene_renderer->add_emitter(new WorldUserMeshesEmitter(ctx));
+	scene_renderer->add_emitter(new WorldInstancedEmitter(ctx));
 	scene_renderer->allow_transparent = false;
 	gbuffer_renderer->add_child(scene_renderer.get());
 
-	scene_renderer_trans = new SceneRenderer(RenderPathType::Forward, scene_view);
-	scene_renderer_trans->add_emitter(new WorldModelsEmitter);
-	scene_renderer_trans->add_emitter(new WorldUserMeshesEmitter);
-	scene_renderer_trans->add_emitter(new WorldParticlesEmitter);
+	scene_renderer_trans = new SceneRenderer(ctx, RenderPathType::Forward, scene_view);
+	scene_renderer_trans->add_emitter(new WorldModelsEmitter(ctx));
+	scene_renderer_trans->add_emitter(new WorldUserMeshesEmitter(ctx));
+	scene_renderer_trans->add_emitter(new WorldParticlesEmitter(ctx, cam));
 	scene_renderer_trans->allow_opaque = false;
 	add_child(scene_renderer_trans.get());
 }
 
-void WorldRendererDeferred::prepare(const RenderParams& params) {
+void WorldRendererDeferred::prepare(const yrenderer::RenderParams& params) {
 	profiler::begin(ch_prepare);
 
 	auto sub_params = params.with_target(gbuffer_renderer->frame_buffer.get());
 
 	gbuffer_renderer->set_area(dynamicly_scaled_area(gbuffer_renderer->frame_buffer.get()));
+	const auto ycam = cam->params();
 
-	scene_renderer_background->set_view_from_camera(params, scene_view.cam);
+	scene_renderer_background->set_view(params, ycam);
 	scene_renderer_background->prepare(params); // keep drawing into direct target
 
-	scene_renderer->set_view_from_camera(sub_params, scene_view.cam);
+	scene_renderer->set_view(sub_params, ycam);
 	scene_renderer->prepare(sub_params);
 
-	scene_renderer_trans->set_view_from_camera(params, scene_view.cam);
+	scene_renderer_trans->set_view(params, ycam);
 	scene_renderer_trans->prepare(params); // keep drawing into direct target
 
 
@@ -111,9 +117,9 @@ void WorldRendererDeferred::prepare(const RenderParams& params) {
 	profiler::end(ch_prepare);
 }
 
-void WorldRendererDeferred::draw(const RenderParams& params) {
+void WorldRendererDeferred::draw(const yrenderer::RenderParams& params) {
 	profiler::begin(channel);
-	gpu_timestamp_begin(params, channel);
+	ctx->gpu_timestamp_begin(params, channel);
 
 	scene_renderer_background->draw(params);
 
@@ -127,7 +133,6 @@ void WorldRendererDeferred::draw(const RenderParams& params) {
 	profiler::begin(ch_trans);
 	bool flip_y = params.target_is_window;
 	mat4 m = flip_y ? mat4::scale(1,-1,1) : mat4::ID;
-	auto cam = scene_view.cam;
 	//cam->update_matrices(params.desired_aspect_ratio);
 	nix::set_projection_matrix(m * cam->projection_matrix(params.desired_aspect_ratio)); // TODO
 	nix::bind_uniform_buffer(BINDING_LIGHT, rvd.ubo_light.get());
@@ -145,11 +150,11 @@ void WorldRendererDeferred::draw(const RenderParams& params) {
 	profiler::end(ch_trans);
 #endif
 
-	gpu_timestamp_end(params, channel);
+	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
 }
 
-void WorldRendererDeferred::render_out_from_gbuffer(FrameBuffer *source, const RenderParams& params) {
+void WorldRendererDeferred::render_out_from_gbuffer(FrameBuffer *source, const yrenderer::RenderParams& params) {
 	profiler::begin(ch_gbuf_out);
 
 	auto& data = out_renderer->bindings.shader_data;
@@ -158,7 +163,7 @@ void WorldRendererDeferred::render_out_from_gbuffer(FrameBuffer *source, const R
 	if constexpr (SceneRenderer::using_view_space)
 		data.dict_set("eye_pos", vec3_to_any(vec3::ZERO));
 	else
-		data.dict_set("eye_pos", vec3_to_any(scene_view.cam->owner->pos)); // NAH
+		data.dict_set("eye_pos", vec3_to_any(cam->owner->pos)); // NAH
 #endif
 	data.dict_set("ambient_occlusion_radius:8", config.ambient_occlusion_radius);
 	out_renderer->bind_uniform_buffer(13, ssao_sample_buffer);

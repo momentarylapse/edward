@@ -7,21 +7,22 @@
 
 #include "ParticleEmitter.h"
 #include "Particle.h"
-#include "../graphics-impl.h"
-#include "../y/Entity.h"
-#include "../lib/math/math.h"
-#include "../lib/math/random.h"
-#include "../lib/os/msg.h"
+#include <lib/ygraphics/graphics-impl.h>
+#include <y/Entity.h>
+#include <lib/math/math.h>
+#include <lib/math/random.h>
+#include <lib/os/msg.h>
+#include <y/EngineData.h>
+#include <lib/yrenderer/Context.h>
 
-extern Texture *tex_white;
 static Random pe_random;
 
 const kaba::Class *ParticleGroup::_class = nullptr;
 const kaba::Class *ParticleEmitter::_class = nullptr;
 
 ParticleGroup::ParticleGroup() {
-	if (tex_white)
-		texture = tex_white;
+	if (engine.context->tex_white)
+		texture = engine.context->tex_white;
 	source = rect::ID;
 	//pos = vec3::ZERO;
 }

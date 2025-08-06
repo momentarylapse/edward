@@ -44,36 +44,38 @@ struct Parameters {
 
 Painter::Painter(Window *w) {
 	window = w;
-	ui_scale = window->ui_scale;
-	context = window->context;
-	face = default_font_regular;
+	if (window) {
+		ui_scale = window->ui_scale;
+		context = window->context;
+		face = default_font_regular;
 
-	context->start();
+		context->start();
 
-	Painter::set_color(Theme::_default.text);
-	Painter::set_font(Theme::_default.font_name /*"CAC Champagne"*/, Theme::_default.font_size, false, false);
-	
-	cb = context->current_command_buffer();
-	auto fb = context->current_frame_buffer();
-	
-	
-	cb->begin();
+		Painter::set_color(Theme::_default.text);
+		Painter::set_font(Theme::_default.font_name /*"CAC Champagne"*/, Theme::_default.font_size, false, false);
 
-	width = (int)((float)context->swap_chain->width / ui_scale);
-	height = (int)((float)context->swap_chain->height / ui_scale);
-	mat_pixel_to_rel = mat4::translation({- 1,- 1, 0}) *  mat4::scale(2.0f / (float)width, 2.0f / (float)height, 1);
+		cb = context->current_command_buffer();
+		auto fb = context->current_frame_buffer();
 
-	_area = {0, (float)width, 0, (float)height};
-	native_area = {0, (float)context->swap_chain->width, 0, (float)context->swap_chain->height};
-	native_area_window = native_area;
-	_clip = _area;
 
-	window->handle_event_p(window->id, event_id::JustBeforeDraw, this);
+		cb->begin();
 
-	cb->set_viewport(native_area);
-	cb->begin_render_pass(context->render_pass, fb);
-	cb->set_scissor(native_area);
-	cb->clear(native_area, {Black}, 1);
+		width = (int)((float)context->swap_chain->width / ui_scale);
+		height = (int)((float)context->swap_chain->height / ui_scale);
+		mat_pixel_to_rel = mat4::translation({- 1,- 1, 0}) *  mat4::scale(2.0f / (float)width, 2.0f / (float)height, 1);
+
+		_area = {0, (float)width, 0, (float)height};
+		native_area = {0, (float)context->swap_chain->width, 0, (float)context->swap_chain->height};
+		native_area_window = native_area;
+		_clip = _area;
+
+		window->handle_event_p(window->id, event_id::JustBeforeDraw, this);
+
+		cb->set_viewport(native_area);
+		cb->begin_render_pass(context->render_pass, fb);
+		cb->set_scissor(native_area);
+		cb->clear(native_area, {Black}, 1);
+	}
 }
 
 void Painter::end() {

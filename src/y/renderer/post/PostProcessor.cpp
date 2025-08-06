@@ -10,26 +10,26 @@
 
 string callable_name(const void *c);
 
-PostProcessorStage::PostProcessorStage(const string &name) : Renderer(name) {
+PostProcessorStage::PostProcessorStage(yrenderer::Context* ctx, const string &name) : Renderer(ctx, name) {
 }
 
 
-PostProcessorStageUser::PostProcessorStageUser(const PostProcessorStageUser::Callback *p, const PostProcessorStageUser::Callback *d) :
-		PostProcessorStage(callable_name(d)) {
+PostProcessorStageUser::PostProcessorStageUser(yrenderer::Context* ctx, const PostProcessorStageUser::Callback *p, const PostProcessorStageUser::Callback *d) :
+		PostProcessorStage(ctx, callable_name(d)) {
 	func_prepare = p;
 	func_draw = d;
 }
 
-void PostProcessorStageUser::prepare(const RenderParams& params) {
+void PostProcessorStageUser::prepare(const yrenderer::RenderParams& params) {
 	if (func_prepare)
 		(*func_prepare)(params);
 }
-void PostProcessorStageUser::draw(const RenderParams& params) {
+void PostProcessorStageUser::draw(const yrenderer::RenderParams& params) {
 	if (func_draw)
 		(*func_draw)(params);
 }
 
-PostProcessor::PostProcessor() : Renderer("post") {
+PostProcessor::PostProcessor(yrenderer::Context* ctx) : Renderer(ctx, "post") {
 }
 
 PostProcessor::~PostProcessor() {
@@ -37,7 +37,7 @@ PostProcessor::~PostProcessor() {
 
 
 void PostProcessor::add_stage(const PostProcessorStageUser::Callback *p, const PostProcessorStageUser::Callback *d) {
-	stages.add(new PostProcessorStageUser(p, d));
+	stages.add(new PostProcessorStageUser(ctx, p, d));
 	rebuild();
 }
 void PostProcessor::reset() {

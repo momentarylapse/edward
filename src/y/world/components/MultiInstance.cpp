@@ -6,7 +6,7 @@
  */
 
 #include "MultiInstance.h"
-#include "../../graphics-impl.h"
+#include <lib/ygraphics/graphics-impl.h>
 
 const kaba::Class *MultiInstance::_class = nullptr;
 

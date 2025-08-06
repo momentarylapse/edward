@@ -19,7 +19,7 @@ public:
 
 	void on_enter() override;
 	void on_leave() override;
-	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
+	void on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 	void on_key_down(int key) override;
 	void on_left_button_down(const vec2&) override;
@@ -33,7 +33,7 @@ public:
 	vec3 point2;
 	float radius;
 	PolygonMesh mesh;
-	owned<VertexBuffer> vertex_buffer;
+	owned<ygfx::VertexBuffer> vertex_buffer;
 
 	enum class Type {
 		Tetrahedron,

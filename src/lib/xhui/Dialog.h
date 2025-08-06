@@ -50,6 +50,8 @@ public:
 	base::promise<void> basic_promise;
 };
 
+Dialog* as_dialog(Control* c);
+
 } // xhui
 
 #endif //DIALOG_H

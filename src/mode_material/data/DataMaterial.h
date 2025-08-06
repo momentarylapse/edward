@@ -10,8 +10,8 @@
 
 #include "../../data/Data.h"
 //#include "ShaderGraph.h"
-#include <y/world/Material.h>
-#include <graphics-impl.h>
+#include <lib/yrenderer/Material.h>
+#include <lib/ygraphics/graphics-impl.h>
 
 class ShaderGraph;
 
@@ -40,12 +40,12 @@ public:
 	struct RenderPassData {
 		ShaderData shader;
 
-		TransparencyMode mode = TransparencyMode::NONE;
-		Alpha source = Alpha::ONE, destination = Alpha::ONE;
+		yrenderer::TransparencyMode mode = yrenderer::TransparencyMode::NONE;
+		ygfx::Alpha source = ygfx::Alpha::ONE, destination = ygfx::Alpha::ONE;
 		float factor = 1.0f;
 		bool z_write = true;
 		bool z_test = true;
-		CullMode culling = CullMode::BACK;
+		ygfx::CullMode culling = ygfx::CullMode::BACK;
 	};
 
 
@@ -72,8 +72,8 @@ public:
 	};
 	PhysicsData physics;
 
-	Material* to_material() const;
-	static DataMaterial from_material(Session* s, Material *material);
+	yrenderer::Material* to_material() const;
+	static DataMaterial from_material(Session* s, yrenderer::Material *material);
 };
 
 #endif /* DATAMATERIAL_H_ */

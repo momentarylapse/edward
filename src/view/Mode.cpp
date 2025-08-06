@@ -7,7 +7,7 @@
 #include <Session.h>
 #include <lib/image/Painter.h>
 #include <lib/xhui/Theme.h>
-#include <renderer/regions/RegionRenderer.h>
+#include <lib/yrenderer/regions/RegionRenderer.h>
 #include "DrawingHelper.h"
 #include "EdwardWindow.h"
 
@@ -53,19 +53,19 @@ void SubMode::on_command(const string& id) {
 	_parent->on_command(id);
 }
 
-void SubMode::on_draw_background(const RenderParams& params, RenderViewData& rvd) {
+void SubMode::on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	_parent->on_draw_background(params, rvd);
 }
 
-void SubMode::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void SubMode::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	_parent->on_draw_win(params, win);
 }
 
-void SubMode::on_draw_shadow(const RenderParams& params, RenderViewData& rvd) {
+void SubMode::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	_parent->on_draw_shadow(params, rvd);
 }
 
-void SubMode::on_prepare_scene(const RenderParams& params) {
+void SubMode::on_prepare_scene(const yrenderer::RenderParams& params) {
 	_parent->on_prepare_scene(params);
 }
 

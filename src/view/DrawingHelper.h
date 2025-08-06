@@ -7,42 +7,48 @@
 
 
 #include <helper/ResourceManager.h>
-#include <y/graphics-fwd.h>
+#include <lib/ygraphics/graphics-fwd.h>
 #include <lib/image/color.h>
 #include <lib/math/vec3.h>
 #include <lib/math/mat4.h>
-#include <lib/xhui/Context.h>
+//#include <lib/xhui/Context.h>
 
 #include "MultiView.h"
 
 struct MeshEdit;
 struct PolygonMesh;
-struct RenderViewData;
-struct RenderParams;
 class ResourceManager;
 class MultiViewWindow;
-class Material;
+namespace yrenderer {
+	struct RenderViewData;
+	struct RenderParams;
+	class Material;
+	class Context;
+}
+namespace xhui {
+	class Context;
+}
 class Painter;
 
 class DrawingHelper {
 public:
-	explicit DrawingHelper(xhui::Context* ctx, ResourceManager* rm);
+	explicit DrawingHelper(yrenderer::Context* ctx, xhui::Context* xhui_ctx);
 	void set_color(const color& color);
 	color _color;
 
 	void set_line_width(float width);
 	float _line_width;
 
-	static void clear(const RenderParams& params, const color& c);
+	static void clear(const yrenderer::RenderParams& params, const color& c);
 
 	void draw_lines(const Array<vec3>& points, bool contiguous = true);
 	void draw_lines_colored(const Array<vec3>& points, const Array<color>& col, bool contiguous = true);
 	void draw_circle(const vec3& center, const vec3& axis, float r);
 
-	void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vb, Material* material, int pass_no = 0, const string& vertex_module = "default");
+	void draw_mesh(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, const mat4& matrix, ygfx::VertexBuffer* vb, yrenderer::Material* material, int pass_no = 0, const string& vertex_module = "default");
 
-	xhui::Context* context;
-	ResourceManager* resource_manager;
+	yrenderer::Context* ctx;
+	xhui::Context* xhui_ctx;
 	MultiViewWindow* window;
 	void set_window(MultiViewWindow* win);
 	void set_blending(bool b);
@@ -50,7 +56,7 @@ public:
 	void set_z_test(bool b);
 	bool z_test = true;
 
-	Shader* shader = nullptr;
+	ygfx::Shader* shader = nullptr;
 #ifdef USING_VULKAN
 	vulkan::GraphicsPipeline* pipeline = nullptr;
 	vulkan::GraphicsPipeline* pipeline_alpha = nullptr;
@@ -58,10 +64,10 @@ public:
 	vulkan::DescriptorSet* dset = nullptr;
 #endif
 
-	Material* material_hover;
-	Material* material_selection;
-	Material* material_creation;
-	Material* material_shadow;
+	yrenderer::Material* material_hover;
+	yrenderer::Material* material_selection;
+	yrenderer::Material* material_creation;
+	yrenderer::Material* material_shadow;
 
 	static const float LINE_THIN;
 	static const float LINE_MEDIUM;

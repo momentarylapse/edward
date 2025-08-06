@@ -10,34 +10,32 @@
 
 #include <lib/base/base.h>
 #include <lib/os/path.h>
-#include "../graphics-fwd.h"
+#include <lib/ygraphics/graphics-fwd.h>
 
 
 namespace gui {
 	class Font;
 }
 
+namespace yrenderer {
+	class Context;
+	class TargetRenderer;
+	class Renderer;
+	class MaterialManager;
+	class WindowRenderer;
+	class RegionRenderer;
+	class RenderTask;
+}
 
-class TargetRenderer;
-class Renderer;
+
 class ResourceManager;
-class MaterialManager;
 class ModelManager;
-#ifdef USING_VULKAN
-class SurfaceRendererVulkan;
-using WindowRenderer = SurfaceRendererVulkan;
-#else
-class WindowRendererGL;
-using WindowRenderer = WindowRendererGL;
-#endif
-class RegionRenderer;
-class RenderTask;
 struct RenderPath;
 
 class EngineData {
 public:
 	EngineData();
-	void set_context(::Context *ctx, ResourceManager *rm);
+	void set_context(yrenderer::Context *ctx, ResourceManager *rm);
 
 	string app_name, version;
 	bool debug, show_timings, console_enabled, wire_mode;
@@ -85,16 +83,16 @@ public:
 
 	Path map_dir, sound_dir, script_dir, object_dir, texture_dir, shader_dir, material_dir, font_dir;
 
-	::Context *context;
+	yrenderer::Context* context;
 	ResourceManager *resource_manager;
 
-	WindowRenderer *window_renderer;
-	Renderer *gui_renderer;
-	RegionRenderer *region_renderer;
+	yrenderer::WindowRenderer *window_renderer;
+	yrenderer::Renderer *gui_renderer;
+	yrenderer::RegionRenderer *region_renderer;
 	Array<RenderPath*> render_paths;
 
-	Array<RenderTask*> render_tasks;
-	void add_render_task(RenderTask* task, int priority);
+	Array<yrenderer::RenderTask*> render_tasks;
+	void add_render_task(yrenderer::RenderTask* task, int priority);
 };
 extern EngineData engine;
 

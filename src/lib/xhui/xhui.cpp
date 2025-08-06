@@ -16,7 +16,8 @@
 #include "../vulkan/Texture.h"
 #include "../vulkan/Device.h"
 #include "../nix/nix_textures.h"
-#include "lib/os/app.h"
+#include "../os/app.h"
+#include "../ygraphics/graphics-impl.h"
 
 
 namespace xhui {
@@ -64,7 +65,7 @@ void init(const Array<string> &arg, const string& app_name) {
 
 	font::init();
 
-	Array<string> font_names = {"OpenSans", "Helvetica", "NotoSans"};
+	Array<string> font_names = {"FreeSans", "Cantarell", "OpenSans", "Helvetica", "NotoSans"};
 
 	for (const string& name: font_names) {
 		if (!default_font_regular)
@@ -325,7 +326,7 @@ void set_image(const string& uid, const Image& _im) {
 }
 
 
-string texture_to_image(const shared<Texture>& texture) {
+string texture_to_image(const shared<ygfx::Texture>& texture) {
 	for (auto* im: weak(_images_))
 		if (im->texture == texture.get())
 			return im->uid;
@@ -344,26 +345,19 @@ void delete_image(const string& name) {
 }
 
 void prepare_image(XImage* image) {
-#if HAS_LIB_VULKAN
 	if (!image->texture)
+#ifdef USING_VULKAN
 		if (vulkan::default_device) {
+#else
+		{
+#endif
 			if (image->image) {
-				image->texture = new Texture();
+				image->texture = new ygfx::Texture();
 				image->texture->write(*image->image);
 			} else {
-				image->texture = vulkan::Texture::load(image->filename);
+				image->texture = ygfx::Texture::load(image->filename);
 			}
 		}
-#else
-	if (!image->texture) {
-		if (image->image) {
-			image->texture = new Texture();
-			image->texture->write(*image->image);
-		} else {
-			image->texture = nix::Texture::load(image->filename);
-		}
-	}
-#endif
 }
 
 vec2 XImage::size() const {

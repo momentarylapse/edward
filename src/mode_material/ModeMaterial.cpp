@@ -10,12 +10,12 @@
 #include <lib/os/filesystem.h>
 #include <view/MultiView.h>
 #include "data/DataMaterial.h"
-#include <y/renderer/Renderer.h>
-#include <y/renderer/scene/RenderViewData.h>
-#include <y/renderer/scene/SceneView.h>
-#include <y/renderer/base.h>
+#include <lib/yrenderer/Renderer.h>
+#include <lib/yrenderer/scene/RenderViewData.h>
+#include <lib/yrenderer/scene/SceneView.h>
+#include <lib/yrenderer/Context.h>
 #include <y/helper/ResourceManager.h>
-#include <y/world/Material.h>
+#include <lib/yrenderer/Material.h>
 #include <y/world/Camera.h>
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
@@ -92,7 +92,7 @@ void ModeMaterial::on_enter() {
 
 
 	// ground
-	vertex_buffer_ground = new VertexBuffer("3f,3f,2f");
+	vertex_buffer_ground = new ygfx::VertexBuffer("3f,3f,2f");
 	auto cube = GeometryCube::create({{-4,-1.2f,-4}, {4,-1.0f,4}}, {1, 1, 1});
 	cube.build(vertex_buffer_ground.get());
 
@@ -101,7 +101,7 @@ void ModeMaterial::on_enter() {
 		for (int j=0; j<16; j++)
 			if (i%2 == j%2)
 				im.set_pixel(i, j, Black);
-	auto tex = new Texture(16, 16, "rgba:i8");
+	auto tex = new ygfx::Texture(16, 16, "rgba:i8");
 	tex->write(im);
 	tex->set_options("magfilter=nearest");
 	material_ground = session->resource_manager->load_material("");
@@ -124,31 +124,32 @@ void ModeMaterial::optimize_view() {
 	multi_view->view_port.suggest_for_box({vec3(-r,-r,-r), vec3(r,r,r)});
 }
 
-void ModeMaterial::on_prepare_scene(const RenderParams& params) {
+void ModeMaterial::on_prepare_scene(const yrenderer::RenderParams& params) {
 	if (!spot_light) {
-		spot_light = new Light(White * 150, -1, -1);
-		spot_light->owner = new Entity;
-		spot_light->owner->pos = {3, 7, 12};
-		spot_light->owner->ang = quaternion::rotation_v((-spot_light->owner->pos).dir2ang());
+		spot_light = new yrenderer::Light;
+		spot_light->init(White * 150, -1, -1);
+		spot_light->light.pos = {3, 7, 12};
+		spot_light->_ang = quaternion::rotation_v((-spot_light->light.pos).dir2ang());
 		spot_light->light.radius = 400;
 		spot_light->light.theta = 0.15f;
 		spot_light->light.harshness = 1;
 		spot_light->enabled = true;
 	}
 
-	multi_view->default_light->owner->ang = quaternion::rotation_a(vec3::EX, pi*0.20f);
+	multi_view->default_light->_ang = quaternion::rotation_a(vec3::EX, pi*0.20f);
+	multi_view->default_light->allow_shadow = true;
 
 	multi_view->lights = {multi_view->default_light, spot_light.get()};
 }
 
-void ModeMaterial::on_draw_background(const RenderParams& params, RenderViewData& rvd) {
+void ModeMaterial::on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	DrawingHelper::clear(params, xhui::Theme::_default.background_low);
 
 	auto dh = multi_view->session->drawing_helper;
 	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_ground.get(), material_ground.get());
 }
 
-void ModeMaterial::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void ModeMaterial::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	auto& rvd = win->rvd();
 	auto dh = win->multi_view->session->drawing_helper;
 
@@ -156,7 +157,7 @@ void ModeMaterial::on_draw_win(const RenderParams& params, MultiViewWindow* win)
 		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), material.get(), pass_no);
 }
 
-void ModeMaterial::on_draw_shadow(const RenderParams& params, RenderViewData& rvd) {
+void ModeMaterial::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	auto dh = multi_view->session->drawing_helper;
 
 	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_ground.get(), dh->material_shadow);
@@ -215,7 +216,7 @@ void ModeMaterial::set_mesh(PreviewMesh m) {
 		break;
 	}
 	if (!vertex_buffer)
-		vertex_buffer = new VertexBuffer("3f,3f,2f");
+		vertex_buffer = new ygfx::VertexBuffer("3f,3f,2f");
 	mesh.build(vertex_buffer.get());
 	session->win->request_redraw();
 }

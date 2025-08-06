@@ -6,7 +6,7 @@
  */
 
 #include "Beam.h"
-#include "../graphics-impl.h"
+#include <lib/ygraphics/graphics-impl.h>
 
 Beam::Beam(const vec3 &_pos, const vec3 &_length, const color& _col, float _r, float _ttl) : Particle(_pos, _col, _r, _ttl) {
 	length = _length;

@@ -17,7 +17,7 @@ public:
 	explicit ModePaste(ModeMesh* parent);
 
 	void on_enter() override;
-	void on_draw_win(const RenderParams& params, MultiViewWindow* win) override;
+	void on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 	void on_key_down(int key) override;
 	void on_mouse_move(const vec2& m, const vec2& d) override;
@@ -25,7 +25,7 @@ public:
 
 	mat4 transformation;
 	ModeMesh* mode_mesh;
-	owned<VertexBuffer> vertex_buffer;
+	owned<ygfx::VertexBuffer> vertex_buffer;
 };
 
 

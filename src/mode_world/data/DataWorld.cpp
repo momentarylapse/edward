@@ -34,7 +34,7 @@
 #include <mode_world/action/terrain/ActionWorldEditTerrainMetaData.h>
 
 #include "../action/ActionWorldDeleteSelection.h"
-#include <y/graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <y/helper/ResourceManager.h>
 
 
@@ -101,7 +101,7 @@ void DataWorld::add_initial_data() {
 	sun.pos = vec3(0,1000,0);
 	sun.ang = quaternion::rotation(vec3(pi/4,0,0));
 	sun.light.enabled = true;
-	sun.light.type = LightType::DIRECTIONAL;
+	sun.light.type = yrenderer::LightType::DIRECTIONAL;
 	sun.light.radius = 0;
 	sun.light.theta = 0;
 	sun.light.col = White;

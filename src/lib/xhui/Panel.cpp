@@ -35,7 +35,7 @@ namespace xhui {
 
 
 
-Panel::Panel(const string &_id) : Control(_id) {
+Panel::Panel(const string &_id) : Control(_id, ControlType::Panel) {
 	ignore_hover = true;
 
 	padding = 0;
@@ -115,13 +115,9 @@ void Panel::add_child(shared<Control> c, int x, int y) {
 		top_control = c;
 	}
 	// don't register sub-panels!
-	if (dynamic_cast<Panel*>(c.get()) == nullptr)
+	if (c->type != ControlType::Panel)
 		c->_register(this);
 	request_redraw();
-}
-
-void Panel::add_child(shared<Control> c) {
-	add_child(c, 0, 0);
 }
 
 void Panel::set_target(const string& id) {
@@ -331,7 +327,7 @@ Array<Control*> Panel::get_children(ChildFilter) const {
 
 
 void Panel::add_control(const string &type, const string &_title, int x, int y, const string &id) {
-	//printf("HuiPanelAddControl %s  %s  %d  %d  %s\n", type.c_str(), title.c_str(), x, y, id.c_str());
+	//printf("HuiPanelAddControl %s  %s  %d  %d  %s\n", type.c_str(), _title.c_str(), x, y, id.c_str());
 	string title = _title;
 	if (title.head(1) == "!") {
 		int p0 = title.find("\\");
@@ -488,13 +484,13 @@ void Panel::from_resource(const Resource& res) {
 		for (auto &o: res.options)
 			set_options(id, o);
 
-		if (auto dlg = dynamic_cast<Dialog*>(this)) {
+		if (auto dlg = as_dialog(this)) {
 			if (width + height > 0) {
 				dlg->width = width;
 				dlg->height = height;
 			}
 			dlg->set_title(get_language(res.id, res.id));
-		} else if (auto win = dynamic_cast<Window*>(this)) {
+		} else if (auto win = as_window(this)) {
 			/*if (width + height > 0) {
 				win->width = width;
 				win->height = height;
@@ -587,6 +583,12 @@ void Panel::close_dialog(Dialog* dialog) {
 }
 
 
+
+Panel* as_panel(Control* c) {
+	if (c->type == ControlType::Panel or c->type == ControlType::Window)
+		return static_cast<Panel*>(c);
+	return nullptr;
+}
 
 
 }

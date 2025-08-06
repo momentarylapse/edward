@@ -12,7 +12,7 @@
 #include <lib/xhui/dialogs/FileSelectionDialog.h>
 #include <lib/xhui/dialogs/QuestionDialog.h>
 #include <lib/xhui/dialogs/ColorSelectionDialog.h>
-#include <renderer/base.h>
+#include <lib/yrenderer/Context.h>
 #include <renderer/path/RenderPath.h>
 #include <sys/stat.h>
 #include <y/EngineData.h>
@@ -23,8 +23,8 @@
 #include "lib/os/msg.h"
 #include "lib/xhui/Theme.h"
 #include "lib/xhui/draw/font.h"
-#include "y/renderer/Renderer.h"
-#include "y/renderer/target/XhuiRenderer.h"
+#include <lib/yrenderer/Renderer.h>
+#include <lib/yrenderer/target/XhuiRenderer.h>
 #include "y/helper/ResourceManager.h"
 #include <storage/Storage.h>
 #include <stuff/PluginManager.h>
@@ -38,10 +38,17 @@ extern string AppName;
 
 Session* session;
 
-rect dynamicly_scaled_area(FrameBuffer*) { return {}; }
-rect dynamicly_scaled_source() { return {}; }
 void ExternalModelCleanup(Model *m) {}
 
+namespace yrenderer {
+	rect dynamicly_scaled_area(ygfx::FrameBuffer *fb) {
+		return {};
+	}
+
+	rect dynamicly_scaled_source() {
+		return rect::ID;
+	}
+}
 
 
 EdwardWindow::EdwardWindow(xfer<Session> _session) : obs::Node<xhui::Window>(AppName, 1024, 768),
@@ -127,21 +134,22 @@ Dialog x x padding=0
 
 	event_xp(id, xhui::event_id::Initialize, [this] (Painter* p) {
 		auto pp = (xhui::Painter*)p;
-		session->ctx = api_init_xhui(pp);
-		session->resource_manager = new ResourceManager(session->ctx);
-		session->resource_manager->default_shader = "default.shader";
-		session->resource_manager->texture_dir = engine.texture_dir;
-		session->resource_manager->shader_dir = engine.shader_dir;
-		session->drawing_helper = new DrawingHelper(pp->context, session->resource_manager);
+		session->ctx = yrenderer::api_init_xhui(pp);
+		session->resource_manager = new ResourceManager(session->ctx, engine.texture_dir, engine.material_dir, engine.shader_dir);
+		session->ctx->texture_manager = session->resource_manager->texture_manager;
+		session->ctx->shader_manager = session->resource_manager->shader_manager;
+		session->ctx->material_manager = session->resource_manager->material_manager;
+		session->ctx->shader_manager->default_shader = "default.shader";
+		session->drawing_helper = new DrawingHelper(session->ctx, pp->context);
 		try {
-			session->resource_manager->load_shader_module("module-basic-data.shader");
-			session->resource_manager->load_shader_module("module-basic-interface.shader");
-			session->resource_manager->load_shader_module("module-vertex-default.shader");
-			session->resource_manager->load_shader_module("module-vertex-animated.shader");
-			session->resource_manager->load_shader_module("module-light-sources-default.shader");
-			session->resource_manager->load_shader_module("module-shadows-pcf.shader");
-			session->resource_manager->load_shader_module("module-lighting-pbr.shader");
-			session->resource_manager->load_shader_module("forward/module-surface.shader");
+			session->ctx->load_shader_module("module-basic-data.shader");
+			session->ctx->load_shader_module("module-basic-interface.shader");
+			session->ctx->load_shader_module("module-vertex-default.shader");
+			session->ctx->load_shader_module("module-vertex-animated.shader");
+			session->ctx->load_shader_module("module-light-sources-default.shader");
+			session->ctx->load_shader_module("module-shadows-pcf.shader");
+			session->ctx->load_shader_module("module-lighting-pbr.shader");
+			session->ctx->load_shader_module("forward/module-surface.shader");
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
@@ -149,6 +157,8 @@ Dialog x x padding=0
 		engine.file_errors_are_critical = false;
 		engine.ignore_missing_files = true;
 		engine.resource_manager = session->resource_manager;
+
+		renderer = new yrenderer::XhuiRenderer(session->ctx);
 
 		xhui::run_later(0.01f, [this] {
 			session->promise_started(session.get());
@@ -160,14 +170,14 @@ Dialog x x padding=0
 		if (auto da = static_cast<xhui::DrawingArea*>(get_control("area")))
 			da->for_painter_do(static_cast<xhui::Painter*>(p), [this] (Painter* p) {
 				session->cur_mode->multi_view->set_area(p->area());
-				renderer->prepare(p);
+				renderer->before_draw(p);
 			});
 	});
 	event_xp("area", xhui::event_id::Draw, [this] (Painter* p) {
 		if (!session->cur_mode or !session->cur_mode->multi_view)
 			return;
 		session->cur_mode->multi_view->set_area(p->area());
-		renderer->render(p);
+		renderer->draw(p);
 		session->cur_mode->multi_view->on_draw(p);
 		session->cur_mode->on_draw_post(p);
 		p->set_color(White);
@@ -286,8 +296,6 @@ Dialog x x padding=0
 	};
 	event_x(id, xhui::event_id::Close, quit);
 	event("exit", quit);
-
-	renderer = new XhuiRenderer();
 
 	xhui::run_repeated(0.5f, [this] {
 		request_redraw();

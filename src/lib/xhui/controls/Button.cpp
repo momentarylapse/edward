@@ -9,7 +9,7 @@
 namespace xhui {
 
 Button::Button(const string &_id, const string &t) :
-		Control(_id),
+		Control(_id, ControlType::Button),
 		label(_id + ":label", t)
 {
 	state = State::DEFAULT;

@@ -16,11 +16,11 @@
 #include "data/WorldTerrain.h"
 #include "data/WorldCamera.h"
 #include "data/WorldLight.h"
-#include <y/renderer/Renderer.h>
-#include <y/renderer/scene/RenderViewData.h>
-#include <y/renderer/scene/SceneView.h>
+#include <lib/yrenderer/Renderer.h>
+#include <lib/yrenderer/scene/RenderViewData.h>
+#include <lib/yrenderer/scene/SceneView.h>
 #include <y/helper/ResourceManager.h>
-#include <y/world/Material.h>
+#include <lib/yrenderer/Material.h>
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
 #include <y/y/Entity.h>
@@ -28,7 +28,7 @@
 #include <y/world/ModelManager.h>
 #include <y/world/Terrain.h>
 #include <y/world/World.h>
-#include <y/graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/msg.h>
 #include <lib/os/terminal.h>
 #include <lib/xhui/config.h>
@@ -185,14 +185,14 @@ void ModeWorld::on_enter() {
 			} else if (index <= 4) {
 				e.basic_type = MultiViewType::WORLD_LIGHT;
 				e.light.col = White;
-				e.light.type = LightType::DIRECTIONAL;
+				e.light.type = yrenderer::LightType::DIRECTIONAL;
 				e.light.radius = 0;
 				e.light.theta = 0;
 				if (index == 3) {
-					e.light.type = LightType::POINT;
+					e.light.type = yrenderer::LightType::POINT;
 					e.light.radius = multi_view->view_port.radius * 1.3f;
 				} else if (index == 4) {
-					e.light.type = LightType::CONE;
+					e.light.type = yrenderer::LightType::CONE;
 					e.light.radius = multi_view->view_port.radius * 0.3f;
 					e.light.theta = 0.5f;
 				}
@@ -329,48 +329,47 @@ void ModeWorld::on_left_button_up(const vec2&) {
 	out_redraw();
 }
 
-void draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vb, Material* material, const string& vertex_module = "default") {
+void draw_mesh(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, const mat4& matrix, ygfx::VertexBuffer* vb, yrenderer::Material* material, const string& vertex_module = "default") {
 	auto shader = rvd.get_shader(material, 0, vertex_module, "");
-	auto& rd = rvd.start(params, matrix, shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+	auto& rd = rvd.start(params, matrix, shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 	rd.draw_triangles(params, vb);
 }
 
-void ModeWorld::on_prepare_scene(const RenderParams& params) {
+void ModeWorld::on_prepare_scene(const yrenderer::RenderParams& params) {
 	Array<WorldEntity*> data_lights;
 	for (auto& e: data->entities)
 		if (e.basic_type == MultiViewType::WORLD_LIGHT)
 			data_lights.add(&e);
 
 	while (lights.num < data_lights.num) {
-		lights.add(new Light(Black, 0, 0));
-		lights.back()->owner = new Entity;
+		lights.add(new yrenderer::Light);
 	}
 	for (const auto& [i, l]: enumerate(data_lights)) {
-		lights[i]->owner->pos = l->pos;
-		lights[i]->owner->ang = l->ang;
+		lights[i]->light.pos = l->pos;
+		lights[i]->_ang = l->ang;
 		lights[i]->enabled = l->light.enabled;
-		lights[i]->allow_shadow = (l->light.type == LightType::DIRECTIONAL);
+		lights[i]->allow_shadow = (l->light.type == yrenderer::LightType::DIRECTIONAL);
 		lights[i]->light.col = l->light.col;
 		if (!l->light.enabled)
 			lights[i]->light.col = Black;
 		lights[i]->light.radius = l->light.radius;
 		lights[i]->light.theta = l->light.theta;
-		if (l->light.type == LightType::DIRECTIONAL)
+		if (l->light.type == yrenderer::LightType::DIRECTIONAL)
 			lights[i]->light.radius = -1;
 		else
 			lights[i]->light.col = l->light.col * (l->light.radius * l->light.radius / 100);
-		if (l->light.type != LightType::CONE)
+		if (l->light.type != yrenderer::LightType::CONE)
 			lights[i]->light.theta = -1;
 		lights[i]->light.harshness = l->light.harshness;
 	}
 	multi_view->lights = lights.sub_ref(0, data_lights.num);
 }
 
-void ModeWorld::on_draw_background(const RenderParams& params, RenderViewData& rvd) {
+void ModeWorld::on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	rvd.clear(params, {data->meta_data.background_color});
 }
 
-void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 
 	auto& rvd = win->rvd();
 	auto dh = multi_view->session->drawing_helper;
@@ -384,12 +383,12 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 		if (e.basic_type != MultiViewType::WORLD_TERRAIN)
 			continue;
 		auto& t = e.terrain;
-		t.terrain->prepare_draw(rvd.scene_view->cam->owner->pos);
+		t.terrain->prepare_draw(rvd.scene_view->main_camera_params.pos);
 		auto material = t.terrain->material.get();
 		auto vb = t.terrain->vertex_buffer.get();
 
 		auto shader = rvd.get_shader(material, 0, t.terrain->vertex_shader_module, "");
-		auto& rd = rvd.start(params, mat4::translation(e.pos), shader, *material, 0, PrimitiveTopology::TRIANGLES, vb);
+		auto& rd = rvd.start(params, mat4::translation(e.pos), shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 #ifdef USING_VULKAN
 		cb->push_constant(0, 12, &t.terrain->texture_scale[0].x);
 		cb->push_constant(16, 12, &t.terrain->texture_scale[1].x);
@@ -438,14 +437,14 @@ void ModeWorld::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
 	draw_lights(win);
 }
 
-void ModeWorld::on_draw_shadow(const RenderParams& params, RenderViewData& rvd) {
+void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	auto dh = multi_view->session->drawing_helper;
 
 	for (auto& e: data->entities) {
 		if (e.basic_type != MultiViewType::WORLD_TERRAIN)
 			continue;
 		auto& t = e.terrain;
-		t.terrain->prepare_draw(rvd.scene_view->cam->owner->pos);
+		t.terrain->prepare_draw(rvd.scene_view->main_camera_params.pos);
 		auto vb = t.terrain->vertex_buffer.get();
 		dh->draw_mesh(params, rvd, mat4::translation(e.pos), vb, dh->material_shadow);
 	}
@@ -545,13 +544,13 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 			dh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
 		}
 
-		if (l.type == LightType::DIRECTIONAL) {
+		if (l.type == yrenderer::LightType::DIRECTIONAL) {
 			dh->draw_lines({e.pos, e.pos + e.ang * vec3::EZ * win->multi_view->view_port.radius * 0.1f}, false);
-		} else if (l.type == LightType::POINT) {
+		} else if (l.type == yrenderer::LightType::POINT) {
 			//draw_circle(l.pos, win->get_direction(), l.radius);
 			dh->draw_circle(e.pos, win->direction(), l.radius * LIGHT_RADIUS_FACTOR_LO);
 			dh->draw_circle(e.pos, win->direction(), l.radius * LIGHT_RADIUS_FACTOR_HI);
-		} else if (l.type == LightType::CONE) {
+		} else if (l.type == yrenderer::LightType::CONE) {
 			dh->draw_lines({e.pos, e.pos + e.ang * vec3::EZ * l.radius * LIGHT_RADIUS_FACTOR_LO}, false);
 			dh->draw_circle(e.pos + e.ang * vec3::EZ * l.radius*LIGHT_RADIUS_FACTOR_LO, e.ang * vec3::EZ, l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
 			dh->draw_circle(e.pos + e.ang * vec3::EZ * l.radius*LIGHT_RADIUS_FACTOR_HI, e.ang * vec3::EZ, l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_HI);

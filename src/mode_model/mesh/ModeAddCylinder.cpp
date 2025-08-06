@@ -22,7 +22,7 @@ ModeAddCylinder::ModeAddCylinder(ModeMesh* parent) :
 	multi_view = mode_mesh->multi_view;
 	generic_data = mode_mesh->generic_data;
 
-	vertex_buffer = new VertexBuffer("3f,3f,2f");
+	vertex_buffer = new ygfx::VertexBuffer("3f,3f,2f");
 }
 
 void ModeAddCylinder::on_enter() {
@@ -60,7 +60,7 @@ void ModeAddCylinder::on_leave() {
 }
 
 
-void ModeAddCylinder::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void ModeAddCylinder::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
 	auto dh = session->drawing_helper;
 

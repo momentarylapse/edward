@@ -17,7 +17,7 @@
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
-#include <graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <lib/math/Box.h>
 
 FormatModel::FormatModel(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "model", "Model", Flag::CANONICAL_READ_WRITE) {
@@ -227,7 +227,7 @@ public:
 		write_color_argb(f, me->col.emission);
 		f->write_float(me->col.metal);
 		f->write_float(me->col.roughness);
-		f->write_int((int)TransparencyMode::DEFAULT);
+		f->write_int((int)yrenderer::TransparencyMode::DEFAULT);
 		f->write_int(0);
 		f->write_int(0);
 		f->write_float(0);

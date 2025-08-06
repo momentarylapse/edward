@@ -6,7 +6,7 @@
  */
 
 #include "WorldRenderer.h"
-#include "../../graphics-impl.h"
+#include <lib/ygraphics/graphics-impl.h>
 #include "../../fx/Particle.h"
 #include "../../gui/Picture.h"
 #include "../../world/Camera.h"
@@ -16,11 +16,13 @@
 #include "../../world/World.h"
 #include <lib/profiler/Profiler.h>
 #include <lib/base/callable.h>
-#include <renderer/helper/CubeMapSource.h>
+#include <lib/yrenderer/helper/CubeMapSource.h>
 
 #include "../../Config.h"
 #include <y/ComponentManager.h>
 
+
+using namespace yrenderer;
 
 struct GeoPush {
 	alignas(16) mat4 model;
@@ -36,10 +38,11 @@ mat4 mtr(const vec3 &t, const quaternion &a) {
 	return mt * mr;
 }
 
-WorldRenderer::WorldRenderer(const string &name, SceneView& _scene_view) :
-		Renderer(name),
+WorldRenderer::WorldRenderer(Context* ctx, const string &name, Camera* _cam, SceneView& _scene_view) :
+		Renderer(ctx, name),
 		scene_view(_scene_view)
 {
+	cam = _cam;
 }
 
 void WorldRenderer::reset() {

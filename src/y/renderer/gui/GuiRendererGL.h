@@ -7,19 +7,19 @@
 
 #pragma once
 
-#include "../Renderer.h"
+#include <lib/yrenderer/Renderer.h>
 #ifdef USING_OPENGL
 
-class GuiRendererGL : public Renderer {
+class GuiRendererGL : public yrenderer::Renderer {
 public:
-	GuiRendererGL();
+	explicit GuiRendererGL(yrenderer::Context* ctx);
 
-	void draw(const RenderParams& params) override;
+	void draw(const yrenderer::RenderParams& params) override;
 
-	void draw_gui(const RenderParams& params, FrameBuffer *source);
+	void draw_gui(const yrenderer::RenderParams& params, ygfx::FrameBuffer *source);
 
-	shared<Shader> shader;
-	owned<VertexBuffer> vb;
+	shared<ygfx::Shader> shader;
+	owned<ygfx::VertexBuffer> vb;
 };
 
 #endif

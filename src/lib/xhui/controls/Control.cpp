@@ -7,8 +7,9 @@ namespace xhui {
 
 
 
-Control::Control(const string &_id) {
+Control::Control(const string &_id, ControlType _type) {
 	id = _id;
+	type = _type;
 	enabled = true;
 	min_width_user = -1;
 	min_height_user = -1;
@@ -22,7 +23,7 @@ Control::~Control() = default;
 
 void Control::_register(Panel* _owner) {
 	// don't register sub-panels!
-	if (dynamic_cast<Panel*>(this))
+	if (type == ControlType::Panel)
 		return;
 
 	//msg_write("REG  " + id + "   ->   " + _owner->id);
@@ -59,7 +60,7 @@ void Control::_unregister() {
 	if (!owner)
 		return;
 	_unregister_from_window();
-	if (dynamic_cast<Panel*>(this))
+	if (type == ControlType::Panel)
 		return;
 	for (auto cc: get_children(ChildFilter::All))
 		cc->_unregister();
@@ -126,7 +127,7 @@ void Control::enable(bool _enabled) {
 
 
 Window* Control::get_window() const {
-	if (auto w = dynamic_cast<Window*>(const_cast<Control*>(this)))
+	if (auto w = as_window(const_cast<Control*>(this)))
 		return w;
 	if (owner)
 		return owner->get_window();
@@ -184,8 +185,6 @@ void Control::set_option(const string& key, const string& value) {
 		visible = value._bool() or value == "";
 	}
 }
-
-
 
 
 }

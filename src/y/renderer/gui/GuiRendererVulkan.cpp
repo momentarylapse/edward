@@ -7,16 +7,18 @@
 
 #include "GuiRendererVulkan.h"
 #ifdef USING_VULKAN
-#include "../base.h"
-#include "../helper/PipelineManager.h"
-#include "../../graphics-impl.h"
+#include <lib/yrenderer/Context.h>
+#include <lib/yrenderer/helper/PipelineManager.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include "../../gui/gui.h"
 #include "../../gui/Picture.h"
 #include "../../helper/ResourceManager.h"
+#include <lib/yrenderer/ShaderManager.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/math/mat4.h>
 #include <lib/math/rect.h>
 
+using namespace yrenderer;
 
 
 struct UBOGUI {
@@ -27,24 +29,24 @@ struct UBOGUI {
 };
 
 
-GuiRendererVulkan::GuiRendererVulkan() : Renderer("ui") {
+GuiRendererVulkan::GuiRendererVulkan(Context* ctx) : Renderer(ctx, "ui") {
 
-	shader = resource_manager->load_shader("vulkan/2d.shader");
+	shader = shader_manager->load_shader("vulkan/2d.shader");
 
-	vb = new VertexBuffer("3f,3f,2f");
+	vb = new ygfx::VertexBuffer("3f,3f,2f");
 	vb->create_quad(rect::ID);
 }
 
-void GuiRendererVulkan::draw(const RenderParams& params) {
+void GuiRendererVulkan::draw(const yrenderer::RenderParams& params) {
 	profiler::begin(channel);
-	gpu_timestamp_begin(params, channel);
+	ctx->gpu_timestamp_begin(params, channel);
 	prepare_gui(params.frame_buffer, params);
 	draw_gui(params.command_buffer, params.render_pass);
-	gpu_timestamp_end(params, channel);
+	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
 }
 
-void GuiRendererVulkan::prepare_gui(FrameBuffer *source, const RenderParams& params) {
+void GuiRendererVulkan::prepare_gui(ygfx::FrameBuffer *source, const yrenderer::RenderParams& params) {
 	gui::update();
 
 	UBOGUI u;
@@ -62,8 +64,8 @@ void GuiRendererVulkan::prepare_gui(FrameBuffer *source, const RenderParams& par
 			auto *p = (gui::Picture*)n;
 
 			if (index >= ubo.num) {
-				dset.add(pool->create_set("sampler,sampler,buffer"));
-				ubo.add(new UniformBuffer(sizeof(UBOGUI)));
+				dset.add(ctx->pool->create_set("sampler,sampler,buffer"));
+				ubo.add(new ygfx::UniformBuffer(sizeof(UBOGUI)));
 			}
 
 			if (p->angle == 0) {
@@ -87,7 +89,7 @@ void GuiRendererVulkan::prepare_gui(FrameBuffer *source, const RenderParams& par
 	}
 }
 
-void GuiRendererVulkan::draw_gui(CommandBuffer *cb, RenderPass *render_pass) {
+void GuiRendererVulkan::draw_gui(ygfx::CommandBuffer *cb, ygfx::RenderPass *render_pass) {
 	if (!pipeline)
 		pipeline = PipelineManager::get_gui(shader.get(), render_pass, "3f,3f,2f");
 

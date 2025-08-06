@@ -14,11 +14,13 @@
 #endif
 #include <renderer/world/WorldRenderer.h>
 #include <y/helper/ResourceManager.h>
-#include <y/graphics-impl.h>
+#include <lib/yrenderer/TextureManager.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include "../../Session.h"
 
-float col_frac(const color &a, const color &b);
-
+namespace yrenderer {
+	float col_frac(const color &a, const color &b);
+}
 
 ModelMaterial::ModelMaterial(Session *_s) {
 	session = _s;
@@ -43,7 +45,7 @@ void ModelMaterial::TextureLevel::reload_image(Session *session) {
 	if (filename == "")
 		image = new Image(512, 512, White);
 	else
-		image = Image::load(session->resource_manager->texture_dir | filename);
+		image = Image::load(session->resource_manager->texture_manager->texture_dir | filename);
 	edited = false;
 	if (session->resource_manager->ctx)
 		update_texture();
@@ -51,7 +53,7 @@ void ModelMaterial::TextureLevel::reload_image(Session *session) {
 
 void ModelMaterial::TextureLevel::update_texture() {
 	if (!texture)
-		texture = new Texture();
+		texture = new ygfx::Texture();
 	texture->write(*image);
 }
 
@@ -71,14 +73,14 @@ float ModelMaterial::Color::shininess() const {
 void ModelMaterial::Color::import(const color &am, const color &di, const color &sp, float shininess, const color &em) {
 	albedo = di;
 	emission = em;
-	roughness = col_frac(am, di) / 2;
+	roughness = yrenderer::col_frac(am, di) / 2;
 	metal = 0;
 }
 
 void ModelMaterial::make_consistent_after_shallow_loading() {
 	material = session->resource_manager->load_material(filename);
 
-	if (material->reflection.mode == ReflectionMode::CUBE_MAP_DYNAMIC) {
+	if (material->reflection.mode == yrenderer::ReflectionMode::CUBE_MAP_DYNAMIC) {
 	//	if (!material->cube_map)
 	//		material->cube_map = new nix::CubeMap(material->cube_map_size);
 	//	create_fake_dynamic_cube_map(material->cube_map);

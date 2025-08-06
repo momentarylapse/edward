@@ -6,7 +6,7 @@
  */
 
 #include "UserMesh.h"
-#include "../../graphics-impl.h"
+#include <lib/ygraphics/graphics-impl.h>
 
 const kaba::Class *UserMesh::_class = nullptr;
 

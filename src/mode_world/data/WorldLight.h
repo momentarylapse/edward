@@ -13,12 +13,12 @@
 
 
 
-string light_type(LightType t);
-string light_type_canonical(LightType t);
+string light_type(yrenderer::LightType t);
+string light_type_canonical(yrenderer::LightType t);
 
 struct WorldLight {
 	string name;
-	LightType type = LightType::POINT;
+	yrenderer::LightType type = yrenderer::LightType::POINT;
 	float radius = 100;
 	float theta = 0;
 	bool enabled = true;

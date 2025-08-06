@@ -23,7 +23,7 @@ ModeAddSphere::ModeAddSphere(ModeMesh* parent) :
 	multi_view = mode_mesh->multi_view;
 	generic_data = mode_mesh->generic_data;
 
-	vertex_buffer = new VertexBuffer("3f,3f,2f");
+	vertex_buffer = new ygfx::VertexBuffer("3f,3f,2f");
 }
 
 void ModeAddSphere::on_enter() {
@@ -83,7 +83,7 @@ void ModeAddSphere::on_leave() {
 	xhui::config.set_int("mesh.new_sphere.type", (int)type);
 }
 
-void ModeAddSphere::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void ModeAddSphere::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
 	auto dh = session->drawing_helper;
 

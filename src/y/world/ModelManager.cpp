@@ -23,12 +23,14 @@
 #include <lib/os/file.h>
 #include <lib/os/msg.h>
 #include <lib/doc/chunked.h>
-#include "../graphics-impl.h"
+#include <lib/ygraphics/graphics-impl.h>
 #include "../meta.h"
-#include "Material.h"
+#include <lib/yrenderer/MaterialManager.h>
 
 
-Alpha parse_alpha_i(int a); // Material.h
+namespace yrenderer {
+	ygfx::Alpha parse_alpha_i(int a); // Material.h
+}
 
 
 ModelTemplate::ModelTemplate(Model *m) {
@@ -39,7 +41,7 @@ ModelTemplate::ModelTemplate(Model *m) {
 	skeleton = nullptr;
 }
 
-MaterialManager *chunked_file_parser_get_material_manager(ChunkedFileParser *p);
+yrenderer::MaterialManager *chunked_file_parser_get_material_manager(ChunkedFileParser *p);
 ResourceManager *chunked_file_parser_get_resource_manager(ChunkedFileParser *p);
 
 
@@ -208,7 +210,7 @@ public:
 	void write(Stream *f) override {}
 };
 
-class ChunkMaterial : public FileChunk<Model, Material> {
+class ChunkMaterial : public FileChunk<Model, yrenderer::Material> {
 public:
 	ChunkMaterial() : FileChunk("material") {}
 	void create() override {
@@ -231,11 +233,11 @@ public:
 			f->read_float();
 		}
 
-		auto alpha_mode = (TransparencyMode)f->read_int();
-		if (alpha_mode != TransparencyMode::DEFAULT) {
+		auto alpha_mode = (yrenderer::TransparencyMode)f->read_int();
+		if (alpha_mode != yrenderer::TransparencyMode::DEFAULT) {
 			me->pass0.mode = alpha_mode;
-			me->pass0.source = parse_alpha_i(f->read_int());
-			me->pass0.destination = parse_alpha_i(f->read_int());
+			me->pass0.source = yrenderer::parse_alpha_i(f->read_int());
+			me->pass0.destination = yrenderer::parse_alpha_i(f->read_int());
 			me->pass0.factor = f->read_float();
 			me->pass0.z_buffer = f->read_bool();
 		} else {
@@ -627,7 +629,7 @@ xfer<Model> fancy_copy(Model *orig) {
 }
 
 
-ModelManager::ModelManager(ResourceManager *_resource_manager, MaterialManager *_material_manager) {
+ModelManager::ModelManager(ResourceManager *_resource_manager, yrenderer::MaterialManager *_material_manager) {
 	resource_manager = _resource_manager;
 	material_manager = _material_manager;
 }
@@ -697,7 +699,7 @@ xfer<Model> ModelManager::load(const Path &_filename) {
 }
 
 
-MaterialManager *chunked_file_parser_get_material_manager(ChunkedFileParser *p) {
+yrenderer::MaterialManager *chunked_file_parser_get_material_manager(ChunkedFileParser *p) {
 	return static_cast<modelmanager::ModelParser*>(p)->model_manager->material_manager;
 }
 ResourceManager *chunked_file_parser_get_resource_manager(ChunkedFileParser *p) {

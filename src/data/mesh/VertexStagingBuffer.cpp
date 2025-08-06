@@ -3,12 +3,12 @@
 //
 
 #include "VertexStagingBuffer.h"
-#include <y/graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <lib/math/plane.h>
 #include <lib/math/vec2.h>
 
 
-void VertexStagingBuffer::build(VertexBuffer *vb, int num_textures) {
+void VertexStagingBuffer::build(ygfx::VertexBuffer *vb, int num_textures) {
 	Array<float> temp;
 	int d = 3 + 3 + 2*num_textures;
 	temp.resize(p.num * d);

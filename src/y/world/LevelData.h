@@ -20,7 +20,9 @@ class LevelData;
 
 class Model;
 class Object;
-class Material;
+namespace yrenderer {
+	class Material;
+}
 class Terrain;
 class TemplateDataScriptVariable;
 class Light;

@@ -24,9 +24,9 @@
 #pragma once
 
 
-#include "../graphics-fwd.h"
+#include <lib/ygraphics/graphics-fwd.h>
 #include "../y/Component.h"
-#include "Material.h"
+#include <lib/yrenderer/Material.h>
 #include <lib/base/base.h>
 #include <lib/base/pointer.h>
 #include <lib/os/path.h>
@@ -38,7 +38,9 @@
 
 
 class Model;
-class Material;
+namespace yrenderer {
+	class Material;
+}
 class TraceData;
 class TemplateDataScriptVariable;
 class ModelTemplate;
@@ -68,7 +70,7 @@ public:
 	// normals
 	Array<vec3> normal;
 
-	VertexBuffer *vertex_buffer;
+	ygfx::VertexBuffer *vertex_buffer;
 
 	// refill the vertex buffer etc...
 	bool force_update;
@@ -138,7 +140,7 @@ public:
 	shared<Mesh> mesh[MODEL_NUM_MESHES];
 
 	// material
-	owned_array<Material> material;
+	owned_array<yrenderer::Material> material;
 	Array<int> num_uvs;
 
 	// properties

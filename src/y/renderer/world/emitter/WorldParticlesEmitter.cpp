@@ -3,22 +3,27 @@
 //
 
 #include "WorldParticlesEmitter.h"
-#include "../../scene/RenderViewData.h"
-#include "../../scene/SceneView.h"
-#include "../../base.h"
+#include <lib/yrenderer/scene/RenderViewData.h>
+#include <lib/yrenderer/scene/SceneView.h>
+#include <lib/yrenderer/Context.h>
 #include <fx/Particle.h>
 #include <fx/Beam.h>
 #include <fx/ParticleEmitter.h>
 #include <lib/profiler/Profiler.h>
 #include <world/Camera.h>
-#include <graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <y/EngineData.h>
 #include <y/ComponentManager.h>
 #include <y/Entity.h>
 
-WorldParticlesEmitter::WorldParticlesEmitter() : MeshEmitter("fx"),
-                                                 fx_material(engine.resource_manager)
+using namespace yrenderer;
+using namespace ygfx;
+
+WorldParticlesEmitter::WorldParticlesEmitter(yrenderer::Context* ctx, Camera* _cam) :
+		MeshEmitter(ctx, "fx"),
+		fx_material(ctx)
 {
+	cam = _cam;
 	fx_material.pass0.cull_mode = CullMode::NONE;
 	fx_material.pass0.mode = TransparencyMode::FUNCTIONS;
 	fx_material.pass0.source = Alpha::SOURCE_ALPHA;
@@ -28,10 +33,9 @@ WorldParticlesEmitter::WorldParticlesEmitter() : MeshEmitter("fx"),
 	fx_vertex_buffers.add(new VertexBuffer("3f,4f,2f"));
 }
 
-void WorldParticlesEmitter::emit_transparent(const RenderParams& params, RenderViewData& rvd) {
+void WorldParticlesEmitter::emit_transparent(const yrenderer::RenderParams& params, RenderViewData& rvd) {
 	profiler::begin(channel);
-	gpu_timestamp_begin(params, channel);
-	auto cam = rvd.scene_view->cam;
+	ctx->gpu_timestamp_begin(params, channel);
 
 	auto shader = rvd.get_shader(&fx_material, 0, "fx", "");
 
@@ -168,7 +172,7 @@ void WorldParticlesEmitter::emit_transparent(const RenderParams& params, RenderV
 		rd.draw_triangles(params, vb);
 	}
 
-	gpu_timestamp_end(params, channel);
+	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
 }
 

@@ -23,12 +23,12 @@
 
 #include "Model.h"
 #include "ModelManager.h"
-#include "Material.h"
+#include <lib/yrenderer/Material.h>
 #include "World.h"
 #include "../y/Entity.h"
 #include <lib/math/complex.h>
 #include "../meta.h"
-#include "../graphics-impl.h"
+#include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/msg.h>
 #include "components/Animator.h"
 
@@ -128,9 +128,9 @@ void Model::_ResetPhysAbsolute_() {
 // TODO: move this into the renderer
 void SubMesh::create_vb(bool animated) {
 	if (animated)
-		vertex_buffer = new VertexBuffer("3f,3f,2f,4i,4f");
+		vertex_buffer = new ygfx::VertexBuffer("3f,3f,2f,4i,4f");
 	else
-		vertex_buffer = new VertexBuffer("3f,3f,2f");
+		vertex_buffer = new ygfx::VertexBuffer("3f,3f,2f");
 }
 void Mesh::create_vb(bool animated) {
 	for (auto &s: sub)
@@ -182,7 +182,7 @@ void SubMesh::update_vb(Mesh *mesh, bool animated) {
 		}
 		vertex_buffer->update(vertex);
 	} else {
-		Array<Vertex1> vertex;
+		Array<ygfx::Vertex1> vertex;
 		for (int i=0; i<num_triangles; i++) {
 			for (int k=0; k<3; k++) {
 				int vi = triangle_index[i*3+k];
@@ -264,7 +264,7 @@ Model *Model::copy(Model *pre_allocated) {
 	m->_template = _template;
 	m->script_data = script_data;
 
-	for (Material* mat: material)
+	for (auto mat: material)
 		m->material.add(mat->copy());
 	
 

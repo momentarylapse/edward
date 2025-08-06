@@ -6,9 +6,9 @@
  */
 
 #include "WorldRendererForward.h"
-#include "../scene/pass/ShadowRenderer.h"
-#include "../base.h"
-#include "../helper/CubeMapSource.h"
+#include <lib/yrenderer/scene/pass/ShadowRenderer.h>
+#include <lib/yrenderer/Context.h>
+#include <lib/yrenderer/helper/CubeMapSource.h>
 #include "../path/RenderPath.h"
 #include <lib/image/image.h>
 #include <lib/profiler/Profiler.h>
@@ -18,40 +18,39 @@
 #include <renderer/world/emitter/WorldSkyboxEmitter.h>
 #include <renderer/world/emitter/WorldTerrainsEmitter.h>
 #include <renderer/world/emitter/WorldUserMeshesEmitter.h>
-#include "../../helper/ResourceManager.h"
+#include <lib/yrenderer/ShaderManager.h>
 #include "../../world/Camera.h"
-#include <graphics-impl.h>
 
 
-WorldRendererForward::WorldRendererForward(SceneView& scene_view) : WorldRenderer("world", scene_view) {
-	resource_manager->load_shader_module("forward/module-surface.shader");
+WorldRendererForward::WorldRendererForward(yrenderer::Context* ctx, Camera* cam, yrenderer::SceneView& scene_view) : WorldRenderer(ctx, "world", cam, scene_view) {
+	shader_manager->load_shader_module("forward/module-surface.shader");
 
-	scene_renderer = new SceneRenderer(RenderPathType::Forward, scene_view);
-	scene_renderer->add_emitter(new WorldSkyboxEmitter);
-	scene_renderer->add_emitter(new WorldModelsEmitter);
-	scene_renderer->add_emitter(new WorldTerrainsEmitter);
-	scene_renderer->add_emitter(new WorldUserMeshesEmitter);
-	scene_renderer->add_emitter(new WorldInstancedEmitter);
-	scene_renderer->add_emitter(new WorldParticlesEmitter);
+	scene_renderer = new yrenderer::SceneRenderer(ctx, yrenderer::RenderPathType::Forward, scene_view);
+	scene_renderer->add_emitter(new WorldSkyboxEmitter(ctx));
+	scene_renderer->add_emitter(new WorldModelsEmitter(ctx));
+	scene_renderer->add_emitter(new WorldTerrainsEmitter(ctx));
+	scene_renderer->add_emitter(new WorldUserMeshesEmitter(ctx));
+	scene_renderer->add_emitter(new WorldInstancedEmitter(ctx));
+	scene_renderer->add_emitter(new WorldParticlesEmitter(ctx, cam));
 }
 
-void WorldRendererForward::prepare(const RenderParams& params) {
+void WorldRendererForward::prepare(const yrenderer::RenderParams& params) {
 	profiler::begin(ch_prepare);
-	scene_view.cam->update_matrix_cache(params.desired_aspect_ratio);
+	cam->update_matrix_cache(params.desired_aspect_ratio);
 	
-	scene_renderer->set_view_from_camera(params, scene_view.cam);
+	scene_renderer->set_view(params, cam->params());
 	scene_renderer->prepare(params);
 
 	profiler::end(ch_prepare);
 }
 
-void WorldRendererForward::draw(const RenderParams& params) {
+void WorldRendererForward::draw(const yrenderer::RenderParams& params) {
 	profiler::begin(channel);
-	gpu_timestamp_begin(params, channel);
+	ctx->gpu_timestamp_begin(params, channel);
 
 	scene_renderer->draw(params);
 
-	gpu_timestamp_end(params, channel);
+	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
 }
 

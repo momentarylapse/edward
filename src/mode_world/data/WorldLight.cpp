@@ -8,22 +8,22 @@
 #include "WorldLight.h"
 
 
-string light_type_canonical(LightType t) {
-	if (t == LightType::DIRECTIONAL)
+string light_type_canonical(yrenderer::LightType t) {
+	if (t == yrenderer::LightType::DIRECTIONAL)
 		return "directional";
-	if (t == LightType::POINT)
+	if (t == yrenderer::LightType::POINT)
 		return "point";
-	if (t == LightType::CONE)
+	if (t == yrenderer::LightType::CONE)
 		return "cone";
 	return "???";
 }
 
-string light_type(LightType t) {
-	if (t == LightType::DIRECTIONAL)
+string light_type(yrenderer::LightType t) {
+	if (t == yrenderer::LightType::DIRECTIONAL)
 		return "directional";
-	if (t == LightType::POINT)
+	if (t == yrenderer::LightType::POINT)
 		return "point";
-	if (t == LightType::CONE)
+	if (t == yrenderer::LightType::CONE)
 		return "cone";
 	return "???";
 }

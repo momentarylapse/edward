@@ -11,11 +11,11 @@
 #include <lib/base/sort.h>
 #include <lib/nix/nix.h>
 #include <lib/kaba/kaba.h>
-#include <renderer/Renderer.h>
+#include <lib/yrenderer/Renderer.h>
 
-#include "../world/Model.h"
-#include "../world/Material.h"
 #include "../helper/ResourceManager.h"
+#include <lib/yrenderer/ShaderManager.h>
+#include <lib/yrenderer/TextureManager.h>
 
 EngineData engine;
 
@@ -65,11 +65,9 @@ EngineData::EngineData() {
 	game_running = false;
 }
 
-void EngineData::set_context(Context *ctx, ResourceManager *rm) {
+void EngineData::set_context(yrenderer::Context *ctx, ResourceManager *rm) {
 	context = ctx;
 	resource_manager = rm;
-	resource_manager->texture_dir = texture_dir;
-	resource_manager->shader_dir = material_dir;
 }
 
 void EngineData::set_dirs(const Path &_texture_dir, const Path &_map_dir, const Path &_object_dir, const Path &_sound_dir, const Path &_script_dir, const Path &_material_dir, const Path &_font_dir) {
@@ -81,11 +79,6 @@ void EngineData::set_dirs(const Path &_texture_dir, const Path &_map_dir, const 
 	script_dir = _script_dir;
 	material_dir = _material_dir;
 	font_dir = _font_dir;
-
-	if (resource_manager) {
-		resource_manager->texture_dir = _texture_dir;
-		resource_manager->shader_dir = _material_dir;
-	}
 	kaba::config.directory = _script_dir;
 }
 
@@ -93,10 +86,10 @@ void EngineData::exit() {
 	end_requested = true;
 }
 
-void EngineData::add_render_task(RenderTask* task, int priority) {
+void EngineData::add_render_task(yrenderer::RenderTask* task, int priority) {
 	task->_priority = priority;
 	render_tasks.add(task);
-	base::inplace_sort(render_tasks, [](RenderTask *a, RenderTask *b) {
+	base::inplace_sort(render_tasks, [](yrenderer::RenderTask *a, yrenderer::RenderTask *b) {
 		return a->_priority <= b->_priority;
 	});
 }

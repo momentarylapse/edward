@@ -6,36 +6,34 @@
  */
 
 #include "RendererFactory.h"
-#include "../base.h"
+#include <lib/yrenderer/Context.h>
 #include "../path/RenderPath.h"
 #include "../world/WorldRenderer.h"
-#include "../post/ThroughShaderRenderer.h"
-#include "../regions/RegionRenderer.h"
+#include <lib/yrenderer/helper/CubeMapSource.h>
+#include <lib/yrenderer/post/ThroughShaderRenderer.h>
+#include <lib/yrenderer/regions/RegionRenderer.h>
+#include <lib/yrenderer/target/WindowRenderer.h>
 #ifdef USING_VULKAN
 	#include "../gui/GuiRendererVulkan.h"
 	#include "../post/PostProcessorVulkan.h"
-	#include "../target/WindowRendererVulkan.h"
 #else
 	#include "../gui/GuiRendererGL.h"
 	#include "../post/PostProcessorGL.h"
-	#include "../target/WindowRendererGL.h"
 #endif
 #include <y/EngineData.h>
 #include <lib/os/msg.h>
-#if __has_include(<lib/hui_minimal/hui.h>)
-#include <lib/hui_minimal/hui.h>
-#elif __has_include(<lib/hui/hui.h>)
-#include <lib/hui/hui.h>
-#endif
 #include <lib/profiler/Profiler.h>
 #include <Config.h>
 #include <helper/ResourceManager.h>
+#include <lib/yrenderer/ShaderManager.h>
 
 // for debugging
-#include <graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <lib/image/image.h>
-#include <renderer/target/TextureRenderer.h>
+#include <lib/yrenderer/target/TextureRenderer.h>
 
+using namespace yrenderer;
+using namespace ygfx;
 
 string render_graph_str(Renderer *r) {
 	string s = profiler::get_name(r->channel);
@@ -57,35 +55,31 @@ void print_render_chain() {
 }
 
 
-WindowRenderer *create_window_renderer(GLFWwindow* window) {
+WindowRenderer *create_window_renderer(yrenderer::Context* ctx, GLFWwindow* window) {
 #ifdef HAS_LIB_GLFW
-#ifdef USING_VULKAN
-	return WindowRendererVulkan::create(window, device);
-#else
-	return new WindowRendererGL(window);
-#endif
+	return new WindowRenderer(ctx, window);
 #else
 	return nullptr;
 #endif
 }
 
-Renderer *create_gui_renderer() {
+Renderer *create_gui_renderer(yrenderer::Context* ctx) {
 #ifdef USING_VULKAN
-	return new GuiRendererVulkan();
+	return new GuiRendererVulkan(ctx);
 #else
-	return new GuiRendererGL();
+	return new GuiRendererGL(ctx);
 #endif
 }
 
-RegionRenderer *create_region_renderer() {
-	return new RegionRenderer();
+RegionRenderer *create_region_renderer(yrenderer::Context* ctx) {
+	return new RegionRenderer(ctx);
 }
 
-PostProcessor *create_post_processor() {
+PostProcessor *create_post_processor(yrenderer::Context* ctx) {
 #ifdef USING_VULKAN
-	return new PostProcessorVulkan();
+	return new PostProcessorVulkan(ctx);
 #else
-	return new PostProcessorGL(engine.width, engine.height);
+	return new PostProcessorGL(ctx, engine.width, engine.height);
 #endif
 }
 
@@ -95,7 +89,7 @@ public:
 	TextureWriter(shared<Texture> t) : Renderer("www") {
 		texture = t;
 	}
-	void prepare(const RenderParams& params) override {
+	void prepare(const yrenderer::RenderParams& params) override {
 		Renderer::prepare(params);
 
 		Image i;
@@ -104,18 +98,21 @@ public:
 	}
 };*/
 
-void create_and_attach_render_path(Camera *cam) {
-	auto rp = create_render_path(cam);
+void create_and_attach_render_path(yrenderer::Context* ctx, Camera *cam) {
+	auto rp = create_render_path(ctx, cam);
 	engine.render_paths.add(rp);
 	engine.region_renderer->add_region(rp, rect::ID, 0);
 }
 
 
-void create_base_renderer(GLFWwindow* window) {
+void create_base_renderer(yrenderer::Context* ctx, GLFWwindow* window) {
+	yrenderer::cubemap_default_resolution = config.get_int("cubemap.resolution", 256);
+	yrenderer::cubemap_default_rate = config.get_int("cubemap.update_rate", 9);
+
 	try {
-		engine.window_renderer = create_window_renderer(window);
-		engine.region_renderer = create_region_renderer();
-		engine.gui_renderer = create_gui_renderer();
+		engine.window_renderer = create_window_renderer(ctx, window);
+		engine.region_renderer = create_region_renderer(ctx);
+		engine.gui_renderer = create_gui_renderer(ctx);
 		engine.window_renderer->add_child(engine.region_renderer);
 		engine.region_renderer->add_region(engine.gui_renderer, rect::ID, 999);
 
@@ -128,8 +125,8 @@ void create_base_renderer(GLFWwindow* window) {
 					im.set_pixel(i, j, ((i/16+j/16)%2 == 0) ? Black : White);
 			shared tex = new Texture();
 			tex->write(im);
-			auto shader = engine.resource_manager->load_shader("forward/blur.shader");
-			auto tsr = new ThroughShaderRenderer("blur", shader);
+			auto shader = engine.resource_manager->shader_manager->load_shader("forward/blur.shader");
+			auto tsr = new ThroughShaderRenderer(ctx, "blur", shader);
 			tsr->bind_texture(0, tex.get());
 			Any axis_x, axis_y;
 			axis_x.list_set(0, 1.0f);
@@ -149,12 +146,12 @@ void create_base_renderer(GLFWwindow* window) {
 #else
 			shared<Texture> depth2 = new DepthBuffer(N, N, "d24s8");
 #endif
-			auto tr = new TextureRenderer("tex", {tex2, depth2});
+			auto tr = new TextureRenderer(ctx, "tex", {tex2, depth2});
 			//tr->use_params_area = false;
 			tr->add_child(tsr);
 			// tr:  ... -> tex2
 
-			auto tsr2 = new ThroughShaderRenderer("text", shader);
+			auto tsr2 = new ThroughShaderRenderer(ctx, "text", shader);
 			tsr2->bind_texture(0, tex2.get());
 			data.dict_set("radius:8", 5.0f);
 			data.dict_set("threshold:12", 0.0f);
@@ -167,9 +164,7 @@ void create_base_renderer(GLFWwindow* window) {
 		}
 
 	} catch(Exception &e) {
-#if __has_include(<lib/hui_minimal/hui.h>)
-		hui::ShowError(e.message());
-#endif
+		msg_error(e.message());
 		throw e;
 	}
 	print_render_chain();

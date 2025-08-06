@@ -9,7 +9,7 @@
 #include <lib/base/base.h>
 #include <lib/math/vec3.h>
 #include <lib/math/vec4.h>
-#include <y/world/Material.h>
+#include <lib/yrenderer/Material.h>
 
 class MultiViewWindow;
 class VertexStagingBuffer;

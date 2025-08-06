@@ -35,18 +35,18 @@
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
 
-Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
+yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
 ModeMesh::ModeMesh(ModeModel* parent) : SubMode(parent) {
 	multi_view = parent->multi_view;
 	data = parent->data.get();
 	generic_data = data;
-	vertex_buffer_physical = new VertexBuffer("3f,3f,2f");
-	vertex_buffer_selection = new VertexBuffer("3f,3f,2f");
-	vertex_buffer_hover = new VertexBuffer("3f,3f,2f");
-	material_physical = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, color(1,1,1,0.4f), true);
-	material_selection = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, Red, true);
-	material_hover = create_material(session->resource_manager, Black.with_alpha(0.4f), 0.7f, 0.2f, White, true);
+	vertex_buffer_physical = new ygfx::VertexBuffer("3f,3f,2f");
+	vertex_buffer_selection = new ygfx::VertexBuffer("3f,3f,2f");
+	vertex_buffer_hover = new ygfx::VertexBuffer("3f,3f,2f");
+	material_physical = create_material(session->ctx, Black.with_alpha(0.4f), 0.7f, 0.2f, color(1,1,1,0.4f), true);
+	material_selection = create_material(session->ctx, Black.with_alpha(0.4f), 0.7f, 0.2f, Red, true);
+	material_hover = create_material(session->ctx, Black.with_alpha(0.4f), 0.7f, 0.2f, White, true);
 
 	temp_mesh = new ModelMesh();
 	current_material = 0;
@@ -320,14 +320,14 @@ void ModeMesh::update_menu() {
 
 
 
-void ModeMesh::on_prepare_scene(const RenderParams& params) {
+void ModeMesh::on_prepare_scene(const yrenderer::RenderParams& params) {
 }
 
-void ModeMesh::on_draw_background(const RenderParams& params, RenderViewData& rvd) {
+void ModeMesh::on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	rvd.clear(params, {xhui::Theme::_default.background_low});
 }
 
-void ModeMesh::draw_polygons(const RenderParams& params, MultiViewWindow* win) {
+void ModeMesh::draw_polygons(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	auto& rvd = win->rvd();
 	auto dh = win->multi_view->session->drawing_helper;
 
@@ -335,7 +335,7 @@ void ModeMesh::draw_polygons(const RenderParams& params, MultiViewWindow* win) {
 		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffers[i], materials[i], 0);
 }
 
-void ModeMesh::draw_edges(const RenderParams& params, MultiViewWindow* win, const base::set<int>& sel) {
+void ModeMesh::draw_edges(const yrenderer::RenderParams& params, MultiViewWindow* win, const base::set<int>& sel) {
 	auto& rvd = win->rvd();
 	auto dh = win->multi_view->session->drawing_helper;
 	// unselected (colored by normal)
@@ -375,7 +375,7 @@ void ModeMesh::draw_edges(const RenderParams& params, MultiViewWindow* win, cons
 	}
 }
 
-void ModeMesh::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void ModeMesh::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	auto& rvd = win->rvd();
 	auto dh = win->multi_view->session->drawing_helper;
 	const auto& selv = multi_view->selection[MultiViewType::MODEL_VERTEX];
@@ -440,7 +440,7 @@ void ModeMesh::update_vb() {
 	vertex_buffers.resize(data->materials.num);
 	for (int i=0; i<vertex_buffers.num; i++) {
 		if (!vertex_buffers[i])
-			vertex_buffers[i] = new VertexBuffer("3f,3f,2f");
+			vertex_buffers[i] = new ygfx::VertexBuffer("3f,3f,2f");
 
 		VertexStagingBuffer vsb;
 		for (auto& p: data->mesh->polygons)
@@ -460,7 +460,7 @@ void ModeMesh::update_vb() {
 	materials.resize(data->materials.num);
 	for (int i=0; i<materials.num; i++) {
 		if (!materials[i])
-			materials[i] = create_material(session->resource_manager, White, 0.7f, 0.2f, Black);
+			materials[i] = create_material(session->ctx, White, 0.7f, 0.2f, Black);
 
 		materials[i]->albedo = data->materials[i]->col.albedo;
 		materials[i]->metal = data->materials[i]->col.metal;

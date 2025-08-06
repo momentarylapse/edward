@@ -11,7 +11,7 @@
 #include "../../y/Entity.h"
 #include <lib/base/pointer.h>
 #include <lib/math/mat4.h>
-#include "../../graphics-fwd.h"
+#include <lib/ygraphics/graphics-fwd.h>
 
 class Model;
 
@@ -22,7 +22,7 @@ public:
 
 	Model *model = nullptr;
 	Array<mat4> matrices;
-	UniformBuffer *ubo_matrices = nullptr;
+	ygfx::UniformBuffer *ubo_matrices = nullptr;
 
 	static const kaba::Class *_class;
 };

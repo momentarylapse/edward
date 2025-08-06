@@ -28,7 +28,7 @@ void ModeAddPolygon::on_enter() {
 	session->win->set_visible("overlay-button-grid-left", false);
 }
 
-void ModeAddPolygon::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void ModeAddPolygon::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
 	auto dh = session->drawing_helper;
 

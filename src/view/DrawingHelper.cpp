@@ -3,9 +3,9 @@
 //
 
 #include "DrawingHelper.h"
-#include <y/graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <y/helper/ResourceManager.h>
-#include <y/renderer/base.h>
+#include <lib/yrenderer/Context.h>
 #include <lib/math/mat4.h>
 #include <lib/math/vec2.h>
 #include <lib/os/msg.h>
@@ -14,6 +14,7 @@
 #include <data/mesh/MeshEdit.h>
 #include "MultiView.h"
 #include "SingleData.h"
+#include "lib/xhui/Context.h"
 
 const float DrawingHelper::LINE_THIN = 2;
 const float DrawingHelper::LINE_MEDIUM = 3;
@@ -21,26 +22,26 @@ const float DrawingHelper::LINE_THICK = 5;
 const float DrawingHelper::LINE_EXTRA_THICK = 7;
 const color DrawingHelper::COLOR_X = color(1, 0.9f, 0.6f, 0.1f);
 
-Material* create_material(ResourceManager* resource_manager, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {
-	auto material = resource_manager->load_material("");
+yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {
+	auto material = ctx->load_material("");
 	material->albedo = albedo;
 	material->roughness = roughness;
 	material->metal = metal;
 	material->emission = emission;
-	material->textures = {tex_white};
+	material->textures = {ctx->tex_white};
 	if (transparent) {
-		material->pass0.cull_mode = CullMode::NONE;
-		material->pass0.mode = TransparencyMode::FUNCTIONS;
-		material->pass0.source = Alpha::SOURCE_ALPHA;
-		material->pass0.destination = Alpha::SOURCE_INV_ALPHA;
+		material->pass0.cull_mode = ygfx::CullMode::NONE;
+		material->pass0.mode = yrenderer::TransparencyMode::FUNCTIONS;
+		material->pass0.source = ygfx::Alpha::SOURCE_ALPHA;
+		material->pass0.destination = ygfx::Alpha::SOURCE_INV_ALPHA;
 		material->pass0.z_buffer = false;
 	}
 	return material;
 }
 
-DrawingHelper::DrawingHelper(xhui::Context* ctx, ResourceManager* rm) {
-	context = ctx;
-	resource_manager = rm;
+DrawingHelper::DrawingHelper(yrenderer::Context* _ctx, xhui::Context* _xhui_ctx) {
+	ctx = _ctx;
+	xhui_ctx = _xhui_ctx;
 
 	/*light = new Light(White, -1, -1);
 	light->owner = new Entity;
@@ -48,11 +49,11 @@ DrawingHelper::DrawingHelper(xhui::Context* ctx, ResourceManager* rm) {
 	light->light.harshness = 0.5f;*/
 
 	try {
-		material_hover = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, White, true);
-		material_selection = create_material(resource_manager, {0.3f, 0,0,0}, 0.9f, 0, Red, true);
-		material_creation = create_material(resource_manager, {0.3f, 0,0.5f,0}, 0.9f, 0, color(1,0,0.5f,0), true);
+		material_hover = create_material(ctx, {0.3f, 0,0,0}, 0.9f, 0, White, true);
+		material_selection = create_material(ctx, {0.3f, 0,0,0}, 0.9f, 0, Red, true);
+		material_creation = create_material(ctx, {0.3f, 0,0.5f,0}, 0.9f, 0, color(1,0,0.5f,0), true);
 
-		material_shadow = new Material(resource_manager);
+		material_shadow = new yrenderer::Material(ctx);
 		material_shadow->pass0.shader_path = "shadow.shader";
 	} catch(Exception& e) {
 		msg_error(e.message());
@@ -121,18 +122,18 @@ void main() {
 	dset->set_texture(0, ctx->tex_white);
 	dset->update();
 
-	pipeline = new vulkan::GraphicsPipeline(shader, context->render_pass, 0, PrimitiveTopology::TRIANGLES, "3f,3f,2f,4f");
+	pipeline = new vulkan::GraphicsPipeline(shader, xhui_ctx->render_pass, 0, ygfx::PrimitiveTopology::TRIANGLES, "3f,3f,2f,4f");
 	//pipeline->set_z(false, false);
 	pipeline->set_culling(vulkan::CullMode::NONE);
 	pipeline->rebuild();
 
-	pipeline_alpha = new vulkan::GraphicsPipeline(shader, context->render_pass, 0, PrimitiveTopology::TRIANGLES, "3f,3f,2f,4f");
+	pipeline_alpha = new vulkan::GraphicsPipeline(shader, xhui_ctx->render_pass, 0, ygfx::PrimitiveTopology::TRIANGLES, "3f,3f,2f,4f");
 	pipeline_alpha->set_z(true, false);
-	pipeline_alpha->set_blend(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA);
+	pipeline_alpha->set_blend(ygfx::Alpha::SOURCE_ALPHA, ygfx::Alpha::SOURCE_INV_ALPHA);
 	pipeline_alpha->set_culling(vulkan::CullMode::NONE);
 	pipeline_alpha->rebuild();
 
-	pipeline_no_z_test = new vulkan::GraphicsPipeline(shader, context->render_pass, 0, PrimitiveTopology::TRIANGLES, "3f,3f,2f,4f");
+	pipeline_no_z_test = new vulkan::GraphicsPipeline(shader, xhui_ctx->render_pass, 0, ygfx::PrimitiveTopology::TRIANGLES, "3f,3f,2f,4f");
 	pipeline_no_z_test->set_z(false, false);
 	//pipeline_no_z_test->set_blend(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA);
 	pipeline_no_z_test->set_culling(vulkan::CullMode::NONE);
@@ -200,7 +201,7 @@ void DrawingHelper::draw_lines(const Array<vec3>& points, bool contiguous) {
 
 void DrawingHelper::draw_lines_colored(const Array<vec3>& points, const Array<color>& cols, bool contiguous) {
 #ifdef USING_VULKAN
-	auto vb = context->get_line_vb(true);
+	auto vb = xhui_ctx->get_line_vb(true);
 	Array<XVertex> vertices;
 	mat4 m = window->projection * window->view;
 	if (contiguous) {
@@ -224,7 +225,7 @@ void DrawingHelper::draw_lines_colored(const Array<vec3>& points, const Array<co
 	params.radius = 0;//line_width;
 	params.softness = 0;//softness;
 
-	auto cb = context->current_command_buffer();
+	auto cb = xhui_ctx->current_command_buffer();
 	if (!z_test)
 		cb->bind_pipeline(pipeline_no_z_test);
 	else if (_blending)
@@ -250,7 +251,7 @@ void DrawingHelper::draw_circle(const vec3& center, const vec3& axis, float r) {
 }
 
 
-void DrawingHelper::clear(const RenderParams& params, const color& c) {
+void DrawingHelper::clear(const yrenderer::RenderParams& params, const color& c) {
 #ifdef USING_VULKAN
 	auto cb = params.command_buffer;
 	cb->clear(params.area, {c}, 1.0);
@@ -259,9 +260,9 @@ void DrawingHelper::clear(const RenderParams& params, const color& c) {
 #endif
 }
 
-void DrawingHelper::draw_mesh(const RenderParams& params, RenderViewData& rvd, const mat4& matrix, VertexBuffer* vertex_buffer, Material* material, int pass_no, const string& vertex_module) {
+void DrawingHelper::draw_mesh(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, const mat4& matrix, ygfx::VertexBuffer* vertex_buffer, yrenderer::Material* material, int pass_no, const string& vertex_module) {
 	auto shader = rvd.get_shader(material, pass_no, vertex_module, "");
-	auto& rd = rvd.start(params, matrix, shader, *material, pass_no, PrimitiveTopology::TRIANGLES, vertex_buffer);
+	auto& rd = rvd.start(params, matrix, shader, *material, pass_no, ygfx::PrimitiveTopology::TRIANGLES, vertex_buffer);
 	rd.draw_triangles(params, vertex_buffer);
 }
 

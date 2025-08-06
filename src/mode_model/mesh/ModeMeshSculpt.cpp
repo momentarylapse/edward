@@ -51,7 +51,7 @@ void ModeMeshSculpt::on_leave() {
 	data->out_changed.unsubscribe(this);
 }
 
-void ModeMeshSculpt::on_draw_win(const RenderParams& params, MultiViewWindow* win) {
+void ModeMeshSculpt::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->on_draw_win(params, win);
 	if (target) {
 		session->drawing_helper->set_color(DrawingHelper::COLOR_X);

@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../../y/Component.h"
-#include "../../graphics-fwd.h"
+#include <lib/ygraphics/graphics-fwd.h>
 #include <lib/base/base.h>
 #include <lib/base/pointer.h>
 
@@ -101,7 +101,7 @@ public:
 	//Mesh *mesh[MODEL_NUM_MESHES]; // here the animated vertices are stored before rendering
 
 	Array<mat4> dmatrix;
-	UniformBuffer* buf;
+	ygfx::UniformBuffer* buf;
 
 	// animation
 	void _cdecl reset();

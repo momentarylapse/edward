@@ -152,4 +152,6 @@ public:
 	WindowX(const string &title, int width, int height);
 };
 
+Window* as_window(Control* c);
+
 }

@@ -10,6 +10,7 @@
 #include <lib/os/CommandLineParser.h>
 #include <lib/os/msg.h>
 #include <lib/kaba/lib/lib.h>
+#include <lib/yrenderer/MaterialManager.h>
 #include <mode_material/data/DataMaterial.h>
 #include <mode_model/data/DataModel.h>
 #include <mode_world/data/DataWorld.h>
@@ -35,14 +36,14 @@ void update_file(const Path &filename, bool allow_write) {
 	//Session session;
 
 	auto session = new Session;
-	session->resource_manager = new ResourceManager(nullptr);
+	session->resource_manager = new ResourceManager(nullptr, "", "", "");
 	auto storage = new Storage(session);
 
 
 	auto _filename = filename.absolute().canonical();
 
 	storage->guess_root_directory(_filename);
-	session->resource_manager->shader_dir = storage->root_dir_kind[FD_MATERIAL];
+	session->resource_manager->shader_manager->shader_dir = storage->root_dir_kind[FD_MATERIAL];
 	//msg_write(storage->root_dir.str());
 
 	/*int pp = filename.str().find("/Objects/", 0);
@@ -72,7 +73,7 @@ void update_file(const Path &filename, bool allow_write) {
 
 	if (ext == "model") {
 		//MaterialInit();
-		session->resource_manager->material_manager->set_default(new Material(session->resource_manager));
+		session->ctx->material_manager->set_default(new yrenderer::Material(session->ctx));
 		data = new DataModel(session);
 		DataModelAllowUpdating = false;
 	} else if (ext == "material") {

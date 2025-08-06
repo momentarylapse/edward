@@ -10,7 +10,7 @@
 #include "../../../data/ModelMesh.h"
 #include <data/mesh/Polygon.h>
 #include <lib/image/image.h>
-#include <graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
 
 #include <assert.h>
 

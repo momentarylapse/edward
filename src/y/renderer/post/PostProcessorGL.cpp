@@ -8,7 +8,7 @@
 #include "PostProcessorGL.h"
 
 #ifdef USING_OPENGL
-#include "../base.h"
+#include <lib/yrenderer/Context.h>
 #include <lib/nix/nix.h>
 #include <lib/math/vec2.h>
 #include <lib/math/rect.h>
@@ -18,11 +18,14 @@
 #include "../../Config.h"
 #include "../../world/Camera.h"
 
+using namespace yrenderer;
+using namespace ygfx;
+
 //static float resolution_scale_x = 1.0f;
 //static float resolution_scale_y = 1.0f;
 
 
-PostProcessorGL::PostProcessorGL(int width, int height) {
+PostProcessorGL::PostProcessorGL(yrenderer::Context* ctx, int width, int height) : PostProcessor(ctx) {
 	ch_post_blur = profiler::create_channel("blur", channel);
 	ch_out = profiler::create_channel("out", channel);
 
@@ -77,7 +80,7 @@ FrameBuffer *PostProcessorGL::next_fb(FrameBuffer *cur) {
 	return (cur == fb1) ? fb2.get() : fb1.get();
 }
 
-void PostProcessorGL::prepare(const RenderParams& params) {
+void PostProcessorGL::prepare(const yrenderer::RenderParams& params) {
 	if (stages.num == 0) {
 		for (auto c: children)
 			c->prepare(params);
@@ -103,7 +106,7 @@ void PostProcessorGL::prepare(const RenderParams& params) {
 	//profiler::end(ch_post_blur);
 }
 
-void PostProcessorGL::draw(const RenderParams& params) {
+void PostProcessorGL::draw(const yrenderer::RenderParams& params) {
 	if (stages.num == 0) {
 		for (auto c: children)
 			c->draw(params);

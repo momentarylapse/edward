@@ -15,8 +15,8 @@
 #include "WorldTerrain.h"
 #include <data/Data.h>
 #include <view/SingleData.h>
-#include <y/world/Material.h>
-#include <y/graphics-fwd.h>
+#include <lib/yrenderer/Material.h>
+#include <lib/ygraphics/graphics-fwd.h>
 #include <lib/any/any.h>
 #include <lib/math/quaternion.h>
 
@@ -98,7 +98,7 @@ public:
 		// fog
 		struct Fog {
 			bool enabled;
-			FogMode mode;
+			ygfx::FogMode mode;
 			float start;
 			float end;
 			float density;

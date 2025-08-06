@@ -21,36 +21,36 @@ list(APPEND DEPS ZLIB::ZLIB)
 list(APPEND COMPILE_DEFINITIONS HAS_LIB_ZLIB=1)
 
 
-# lib: gl or vulkan (mandatory)
-set(GL_OR_VULKAN "gl" CACHE STRING "Use gl or vulkan?")
-find_package(OpenGL)
-if(OPENGL_FOUND AND NOT APPLE AND NOT WIN32)
-	list(APPEND GL_OR_VULKAN_FOUND "gl")
-endif()
+# lib: vulkan or gl (mandatory)
+set(VULKAN_OR_GL "vulkan" CACHE STRING "Use vulkan or gl?")
 pkg_check_modules(VULKAN vulkan)
 if(VULKAN_FOUND)
-	list(APPEND GL_OR_VULKAN_FOUND "vulkan")
+	list(APPEND VULKAN_OR_GL_FOUND "vulkan")
 endif()
-if(GL_OR_VULKAN_FOUND)
-	if(NOT ${GL_OR_VULKAN} IN_LIST GL_OR_VULKAN_FOUND)
-		list(GET GL_OR_VULKAN_FOUND 0 X)
-		set(GL_OR_VULKAN ${X} CACHE STRING "choose" FORCE)
-		message(WARNING "Choice for GL_OR_VULKAN invalid, using ${GL_OR_VULKAN} instead")
+find_package(OpenGL)
+if(OPENGL_FOUND AND NOT APPLE AND NOT WIN32)
+	list(APPEND VULKAN_OR_GL_FOUND "gl")
+endif()
+if(VULKAN_OR_GL_FOUND)
+	if(NOT ${VULKAN_OR_GL} IN_LIST VULKAN_OR_GL_FOUND)
+		list(GET VULKAN_OR_GL_FOUND 0 X)
+		set(VULKAN_OR_GL ${X} CACHE STRING "choose" FORCE)
+		message(WARNING "Choice for VULKAN_OR_GL invalid, using ${VULKAN_OR_GL} instead")
 	endif()
 else()
-	message(SEND_ERROR "Neither gl or vulkan found") #  or/nor..
-	set(GL_OR_VULKAN "")
+	message(SEND_ERROR "Neither vulkan or gl found") #  or/nor..
+	set(VULKAN_OR_GL "")
 endif()
-if(GL_OR_VULKAN STREQUAL "gl")
-	list(APPEND DEPS OpenGL::OpenGL)
-	list(APPEND COMPILE_DEFINITIONS HAS_LIB_GL=1)
-endif()
-if(GL_OR_VULKAN STREQUAL "vulkan")
+if(VULKAN_OR_GL STREQUAL "vulkan")
 	list(APPEND INCLUDE_DIRECTORIES ${VULKAN_INCLUDE_DIRS})
 	list(APPEND LINK_DIRECTORIES ${VULKAN_LIBRARY_DIRS})
 	list(APPEND DEPS ${VULKAN_LIBRARIES})
 	list(APPEND COMPILE_OPTIONS ${VULKAN_CFLAGS_OTHER})
 	list(APPEND COMPILE_DEFINITIONS HAS_LIB_VULKAN=1)
+endif()
+if(VULKAN_OR_GL STREQUAL "gl")
+	list(APPEND DEPS OpenGL::OpenGL)
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_GL=1)
 endif()
 
 
@@ -241,8 +241,6 @@ add_executable(edward
 	src/lib/kaba/lib/lib.cpp
 	src/lib/kaba/lib/lib_async.cpp
 	src/lib/kaba/lib/lib_base.cpp
-	src/lib/kaba/lib/lib_gl.cpp
-	src/lib/kaba/lib/lib_hui.cpp
 	src/lib/kaba/lib/lib_image.cpp
 	src/lib/kaba/lib/lib_kaba.cpp
 	src/lib/kaba/lib/lib_math.cpp
@@ -250,7 +248,6 @@ add_executable(edward
 	src/lib/kaba/lib/lib_os.cpp
 	src/lib/kaba/lib/lib_threads.cpp
 	src/lib/kaba/lib/lib_time.cpp
-	src/lib/kaba/lib/lib_vulkan.cpp
 	src/lib/kaba/lib/list.cpp
 	src/lib/kaba/parser/abstract.cpp
 	src/lib/kaba/parser/Concretifier.cpp
@@ -333,6 +330,7 @@ add_executable(edward
 	src/lib/threads/Thread.cpp
 	src/lib/threads/ThreadedWork.cpp
 	src/lib/threads/ThreadPool.cpp
+	src/lib/vulkan/_kaba_export.cpp
 	src/lib/vulkan/AccelerationStructure.cpp
 	src/lib/vulkan/Buffer.cpp
 	src/lib/vulkan/CommandBuffer.cpp
@@ -381,6 +379,7 @@ add_executable(edward
 	src/lib/xhui/dialogs/MenuPopup.cpp
 	src/lib/xhui/dialogs/QuestionDialog.cpp
 	src/lib/xhui/draw/font.cpp
+	src/lib/xhui/_kaba_export.cpp
 	src/lib/xhui/Application.cpp
 	src/lib/xhui/ContextGL.cpp
 	src/lib/xhui/ContextVulkan.cpp
@@ -395,6 +394,45 @@ add_executable(edward
 	src/lib/xhui/Theme.cpp
 	src/lib/xhui/Window.cpp
 	src/lib/xhui/xhui.cpp
+	src/lib/yrenderer/helper/Bindable.cpp
+	src/lib/yrenderer/helper/ComputeTask.cpp
+	src/lib/yrenderer/helper/CubeMapSource.cpp
+	src/lib/yrenderer/helper/jitter.cpp
+	src/lib/yrenderer/helper/LightMeter.cpp
+	src/lib/yrenderer/helper/Pipeline.cpp
+	src/lib/yrenderer/helper/PipelineManager.cpp
+	src/lib/yrenderer/post/HDRResolver.cpp
+	src/lib/yrenderer/post/MultisampleResolver.cpp
+	src/lib/yrenderer/post/ThroughShaderRenderer.cpp
+	src/lib/yrenderer/regions/RegionRenderer.cpp
+	src/lib/yrenderer/regions/RegionRendererGL.cpp
+	src/lib/yrenderer/regions/RegionRendererVulkan.cpp
+	src/lib/yrenderer/scene/mesh/CubeEmitter.cpp
+	src/lib/yrenderer/scene/pass/ShadowRenderer.cpp
+	src/lib/yrenderer/scene/CameraParams.cpp
+	src/lib/yrenderer/scene/Light.cpp
+	src/lib/yrenderer/scene/MeshEmitter.cpp
+	src/lib/yrenderer/scene/RenderViewData.cpp
+	src/lib/yrenderer/scene/SceneRenderer.cpp
+	src/lib/yrenderer/scene/SceneView.cpp
+	src/lib/yrenderer/target/HeadlessRendererVulkan.cpp
+	src/lib/yrenderer/target/HuiWindowRendererGL.cpp
+	src/lib/yrenderer/target/HuiWindowRendererVulkan.cpp
+	src/lib/yrenderer/target/TargetRenderer.cpp
+	src/lib/yrenderer/target/TextureRendererGL.cpp
+	src/lib/yrenderer/target/TextureRendererVulkan.cpp
+	src/lib/yrenderer/target/WindowRendererGL.cpp
+	src/lib/yrenderer/target/WindowRendererVulkan.cpp
+	src/lib/yrenderer/target/XhuiRenderer.cpp
+	src/lib/yrenderer/_kaba_export.cpp
+	src/lib/yrenderer/Context.cpp
+	src/lib/yrenderer/ContextGL.cpp
+	src/lib/yrenderer/ContextVulkan.cpp
+	src/lib/yrenderer/Material.cpp
+	src/lib/yrenderer/MaterialManager.cpp
+	src/lib/yrenderer/Renderer.cpp
+	src/lib/yrenderer/ShaderManager.cpp
+	src/lib/yrenderer/TextureManager.cpp
 	src/mode_material/action/ActionMaterialEditAppearance.cpp
 	src/mode_material/data/DataMaterial.cpp
 	src/mode_material/dialog/MaterialPanel.cpp
@@ -515,40 +553,12 @@ add_executable(edward
 	src/y/plugins/PluginManager.cpp
 	src/y/renderer/gui/GuiRendererGL.cpp
 	src/y/renderer/gui/GuiRendererVulkan.cpp
-	src/y/renderer/helper/Bindable.cpp
-	src/y/renderer/helper/ComputeTask.cpp
-	src/y/renderer/helper/CubeMapSource.cpp
-	src/y/renderer/helper/jitter.cpp
-	src/y/renderer/helper/LightMeter.cpp
-	src/y/renderer/helper/Pipeline.cpp
-	src/y/renderer/helper/PipelineManager.cpp
 	src/y/renderer/helper/Raytracing.cpp
 	src/y/renderer/helper/RendererFactory.cpp
 	src/y/renderer/path/RenderPath.cpp
-	src/y/renderer/post/HDRResolver.cpp
-	src/y/renderer/post/MultisampleResolver.cpp
 	src/y/renderer/post/PostProcessor.cpp
 	src/y/renderer/post/PostProcessorGL.cpp
 	src/y/renderer/post/PostProcessorVulkan.cpp
-	src/y/renderer/post/ThroughShaderRenderer.cpp
-	src/y/renderer/regions/RegionRenderer.cpp
-	src/y/renderer/regions/RegionRendererGL.cpp
-	src/y/renderer/regions/RegionRendererVulkan.cpp
-	src/y/renderer/scene/mesh/CubeEmitter.cpp
-	src/y/renderer/scene/pass/ShadowRenderer.cpp
-	src/y/renderer/scene/MeshEmitter.cpp
-	src/y/renderer/scene/RenderViewData.cpp
-	src/y/renderer/scene/SceneRenderer.cpp
-	src/y/renderer/scene/SceneView.cpp
-	src/y/renderer/target/HeadlessRendererVulkan.cpp
-	src/y/renderer/target/HuiWindowRendererGL.cpp
-	src/y/renderer/target/HuiWindowRendererVulkan.cpp
-	src/y/renderer/target/TargetRenderer.cpp
-	src/y/renderer/target/TextureRendererGL.cpp
-	src/y/renderer/target/TextureRendererVulkan.cpp
-	src/y/renderer/target/WindowRendererGL.cpp
-	src/y/renderer/target/WindowRendererVulkan.cpp
-	src/y/renderer/target/XhuiRenderer.cpp
 	src/y/renderer/world/emitter/WorldInstancedEmitter.cpp
 	src/y/renderer/world/emitter/WorldModelsEmitter.cpp
 	src/y/renderer/world/emitter/WorldParticlesEmitter.cpp
@@ -559,12 +569,9 @@ add_executable(edward
 	src/y/renderer/world/WorldRendererDeferred.cpp
 	src/y/renderer/world/WorldRendererForward.cpp
 	src/y/renderer/world/WorldRendererVulkanRayTracing.cpp
-	src/y/renderer/base-gl.cpp
-	src/y/renderer/base-vulkan.cpp
-	src/y/renderer/base.cpp
-	src/y/renderer/Renderer.cpp
 	src/y/world/components/Animator.cpp
 	src/y/world/components/Collider.cpp
+	src/y/world/components/CubeMapSource.cpp
 	src/y/world/components/MultiInstance.cpp
 	src/y/world/components/Skeleton.cpp
 	src/y/world/components/SolidBody.cpp
@@ -573,7 +580,6 @@ add_executable(edward
 	src/y/world/LevelData.cpp
 	src/y/world/Light.cpp
 	src/y/world/Link.cpp
-	src/y/world/Material.cpp
 	src/y/world/Model.cpp
 	src/y/world/ModelManager.cpp
 	src/y/world/Terrain.cpp

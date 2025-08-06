@@ -13,6 +13,7 @@
 #include <lib/xhui/Menu.h>
 #include <lib/xhui/controls/Image.h>
 #include <lib/xhui/controls/ListView.h>
+#include <lib/yrenderer/TextureManager.h>
 #include <storage/format/Format.h>
 
 
@@ -138,7 +139,7 @@ Image* preview_texture(Session* s, const Path& filename) {
 	if (previews.contains(filename))
 		return previews[filename];
 
-	const auto path = s->resource_manager->find_absolute_texture_path(filename);
+	const auto path = s->resource_manager->texture_manager->find_absolute_texture_path(filename);
 	if (path.is_empty()) {
 		return dummy;
 	} else {
