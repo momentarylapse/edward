@@ -11,7 +11,7 @@
 struct GLFWwindow;
 class Camera;
 
-class RenderPath;
+class FullCameraRenderer;
 
 namespace yrenderer {
 	class Context;
@@ -22,7 +22,7 @@ namespace yrenderer {
 void create_base_renderer(yrenderer::Context* ctx, GLFWwindow* window);
 
 // camera (plug into region)
-RenderPath* create_render_path(yrenderer::Context* ctx, Camera* cam);
-void create_and_attach_render_path(yrenderer::Context* ctx, Camera* cam);
+FullCameraRenderer* create_camera_renderer(yrenderer::Context* ctx, Camera* cam);
+void create_and_attach_camera_renderer(yrenderer::Context* ctx, Camera* cam);
 
 #endif /* SRC_RENDERER_HELPER_RENDERERFACTORY_H_ */

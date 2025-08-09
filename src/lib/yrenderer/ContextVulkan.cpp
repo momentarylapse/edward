@@ -30,40 +30,40 @@ Context* api_init_glfw(GLFWwindow* window) {
 	ctx->instance = vulkan::init({"glfw", "validation", "api=1.3", "rtx?", "verbosity=3"});
 	surface = ctx->instance->create_glfw_surface(window);
 	try {
-		ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation", "rtx", "compute"});
+		ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "rtx", "compute"});
 		msg_write("device found: RTX + COMPUTE");
 	} catch (...) {}
 
 	if (!ctx->device) {
 		try {
-			ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation", "rtx"});
+			ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "rtx"});
 			msg_write("device found: RTX");
 		} catch (...) {}
 	}
 
 	if (!ctx->device) {
 		try {
-			ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation", "compute", "meshshader"});
+			ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "compute", "meshshader"});
 			msg_write("device found: COMPUTE + MESH SHADER");
 		} catch (...) {}
 	}
 
 	if (!ctx->device) {
 		try {
-			ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation", "compute", "tesselationshader"});
+			ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "compute", "tesselationshader"});
 			msg_write("device found: COMPUTE + TESSELATION");
 		} catch (...) {}
 	}
 
 	if (!ctx->device) {
 		try {
-			ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation", "compute"});
+			ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "compute"});
 			msg_write("device found: COMPUTE");
 		} catch (...) {}
 	}
 
 	if (!ctx->device) {
-		ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation"});
+		ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation"});
 		msg_write("WARNING:  device found: neither RTX nor COMPUTE");
 	}
 

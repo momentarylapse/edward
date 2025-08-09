@@ -37,7 +37,7 @@ GuiRendererVulkan::GuiRendererVulkan(Context* ctx) : Renderer(ctx, "ui") {
 	vb->create_quad(rect::ID);
 }
 
-void GuiRendererVulkan::draw(const yrenderer::RenderParams& params) {
+void GuiRendererVulkan::draw(const RenderParams& params) {
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 	prepare_gui(params.frame_buffer, params);
@@ -46,7 +46,7 @@ void GuiRendererVulkan::draw(const yrenderer::RenderParams& params) {
 	profiler::end(channel);
 }
 
-void GuiRendererVulkan::prepare_gui(ygfx::FrameBuffer *source, const yrenderer::RenderParams& params) {
+void GuiRendererVulkan::prepare_gui(ygfx::FrameBuffer *source, const RenderParams& params) {
 	gui::update();
 
 	UBOGUI u;

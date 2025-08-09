@@ -139,7 +139,7 @@ namespace vulkan {
 		if (sa_contains(options, "clear") or sa_contains(options, "autoclear"))
 			color_load_op = depth_load_op = VK_ATTACHMENT_LOAD_OP_CLEAR;
 
-		auto samples = VK_SAMPLE_COUNT_1_BIT;
+		samples = VK_SAMPLE_COUNT_1_BIT;
 		if (sa_contains(options, "samples=2"))
 			samples = VK_SAMPLE_COUNT_2_BIT;
 		if (sa_contains(options, "samples=4"))
@@ -159,7 +159,7 @@ namespace vulkan {
 				a.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 				a.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 				a.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-				a.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+				a.finalLayout = sa_contains(options, "dest=shader-read-only") ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 			} else {
 				// color attachment
 				a.samples = samples;

@@ -33,7 +33,9 @@ WorldParticlesEmitter::WorldParticlesEmitter(yrenderer::Context* ctx, Camera* _c
 	fx_vertex_buffers.add(new VertexBuffer("3f,4f,2f"));
 }
 
-void WorldParticlesEmitter::emit_transparent(const yrenderer::RenderParams& params, RenderViewData& rvd) {
+void WorldParticlesEmitter::emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
+	if (shadow_pass)
+		return;
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 

@@ -7,10 +7,15 @@
 #include <lib/yrenderer/scene/MeshEmitter.h>
 
 
-class WorldUserMeshesEmitter : public yrenderer::MeshEmitter {
+class WorldOpaqueUserMeshesEmitter : public yrenderer::MeshEmitter {
 public:
-	explicit WorldUserMeshesEmitter(yrenderer::Context* ctx);
+	explicit WorldOpaqueUserMeshesEmitter(yrenderer::Context* ctx);
 	void emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) override;
-	void emit_transparent(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;
+};
+
+class WorldTransparentUserMeshesEmitter : public yrenderer::MeshEmitter {
+public:
+	explicit WorldTransparentUserMeshesEmitter(yrenderer::Context* ctx);
+	void emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) override;
 };
 

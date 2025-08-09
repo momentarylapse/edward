@@ -19,7 +19,6 @@ public:
 	explicit MeshEmitter(Context* ctx, const string& name);
 
 	virtual void emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {}
-	virtual void emit_transparent(const RenderParams& params, RenderViewData& rvd) {}
 
 	Context* ctx;
 	int channel;

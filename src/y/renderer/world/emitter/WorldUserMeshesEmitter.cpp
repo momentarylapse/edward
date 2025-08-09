@@ -10,10 +10,10 @@
 #include <y/ComponentManager.h>
 #include <y/Entity.h>
 
-WorldUserMeshesEmitter::WorldUserMeshesEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "user") {
+WorldOpaqueUserMeshesEmitter::WorldOpaqueUserMeshesEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "user") {
 }
 
-void WorldUserMeshesEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {
+void WorldOpaqueUserMeshesEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
@@ -40,8 +40,10 @@ void WorldUserMeshesEmitter::emit(const yrenderer::RenderParams& params, yrender
 	profiler::end(channel);
 }
 
-void WorldUserMeshesEmitter::emit_transparent(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
+WorldTransparentUserMeshesEmitter::WorldTransparentUserMeshesEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "user*") {
+}
 
+void WorldTransparentUserMeshesEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {
 }
 
 

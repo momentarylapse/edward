@@ -42,6 +42,7 @@ namespace vulkan{
 		Array<color> clear_color;
 		float clear_z;
 		unsigned int clear_stencil;
+		VkSampleCountFlagBits samples;
 
 		int num_subpasses() { return subpass_data.num; }
 		int num_color_attachments(int sub) { return subpass_data[sub].color_attachment_refs.num; }

@@ -19,7 +19,7 @@ class ThroughShaderRenderer;
 
 class HDRResolver : public Renderer {
 public:
-	HDRResolver(Context* ctx, const shared<ygfx::Texture>& tex, const shared<ygfx::DepthBuffer>& depth_buffer, bool manual_mode = false);
+	HDRResolver(Context* ctx, int width, int height, bool manual_mode = false);
 	~HDRResolver() override;
 
 	void prepare(const RenderParams& params) override;
@@ -28,7 +28,8 @@ public:
 	float exposure = 1.0f;
 	float bloom_factor = 1.0f;
 
-	shared<ygfx::Texture> tex_main;
+	shared<ygfx::Texture> texture;
+	shared<ygfx::DepthBuffer> depth_buffer;
 
 	owned<ThroughShaderRenderer> out_renderer;
 
@@ -43,7 +44,7 @@ public:
 
 	owned<TextureRenderer> texture_renderer;
 
-	shared<ygfx::DepthBuffer> _depth_buffer;
+	static string magfilter;
 };
 
 }

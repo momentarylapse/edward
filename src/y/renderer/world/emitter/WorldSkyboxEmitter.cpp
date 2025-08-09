@@ -17,7 +17,7 @@ using namespace yrenderer;
 WorldSkyboxEmitter::WorldSkyboxEmitter(Context* ctx) : MeshEmitter(ctx, "sky") {
 }
 
-void WorldSkyboxEmitter::emit(const yrenderer::RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
+void WorldSkyboxEmitter::emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
 	if (shadow_pass)
 		return;
 

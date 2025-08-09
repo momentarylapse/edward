@@ -5,7 +5,7 @@
  *      Author: michi
  */
 
-#include "PostProcessorVulkan.h"
+#include "PostProcessor.h"
 
 #ifdef USING_VULKAN
 #include <lib/yrenderer/Context.h>
@@ -14,17 +14,17 @@
 #include <lib/math/rect.h>
 #include <lib/os/msg.h>
 #include <lib/profiler/Profiler.h>
-#include "../../helper/ResourceManager.h"
-#include "../../Config.h"
-#include "../../world/Camera.h"
 
-static float resolution_scale_x = 1.0f;
-static float resolution_scale_y = 1.0f;
+//static float resolution_scale_x = 1.0f;
+//static float resolution_scale_y = 1.0f;
 
 using namespace ygfx;
 
 
-PostProcessorVulkan::PostProcessorVulkan(yrenderer::Context* ctx) : PostProcessor(ctx) {
+namespace yrenderer {
+
+
+PostProcessor::PostProcessor(Context* ctx) : PostProcessorBase(ctx) {
 	ch_post_blur = profiler::create_channel("blur", channel);
 	ch_out = profiler::create_channel("out", channel);
 
@@ -72,14 +72,14 @@ PostProcessorVulkan::PostProcessorVulkan(yrenderer::Context* ctx) : PostProcesso
 	//shader_resolve_multisample = ResourceManager::load_shader("forward/resolve-multisample.shader");
 }
 
-PostProcessorVulkan::~PostProcessorVulkan() {
+PostProcessor::~PostProcessor() {
 }
 
-FrameBuffer *PostProcessorVulkan::next_fb(FrameBuffer *cur) {
+FrameBuffer *PostProcessor::next_fb(FrameBuffer *cur) {
 	return (cur == fb1) ? fb2.get() : fb1.get();
 }
 
-void PostProcessorVulkan::prepare(const yrenderer::RenderParams& params) {
+void PostProcessor::prepare(const RenderParams& params) {
 	for (auto c: children)
 		c->prepare(params);
 
@@ -100,7 +100,7 @@ void PostProcessorVulkan::prepare(const yrenderer::RenderParams& params) {
 	//profiler::end(ch_post_blur);
 }
 
-void PostProcessorVulkan::draw(const yrenderer::RenderParams& params) {
+void PostProcessor::draw(const RenderParams& params) {
 	if (stages.num == 0) {
 		for (auto c: children)
 			c->draw(params);
@@ -112,7 +112,7 @@ void PostProcessorVulkan::draw(const yrenderer::RenderParams& params) {
 }
 
 // GTX750: 1920x1080 0.277 ms per trivial step
-FrameBuffer* PostProcessorVulkan::do_post_processing(FrameBuffer *source) {
+FrameBuffer* PostProcessor::do_post_processing(FrameBuffer *source) {
 	//profiler::begin(ch_post);
 	auto cur = source;
 
@@ -145,7 +145,7 @@ FrameBuffer* PostProcessorVulkan::do_post_processing(FrameBuffer *source) {
 
 
 
-FrameBuffer* PostProcessorVulkan::resolve_multisampling(FrameBuffer *source) {
+FrameBuffer* PostProcessor::resolve_multisampling(FrameBuffer *source) {
 	//auto next = next_fb(source);
 	/*if (true) {
 		shader_resolve_multisample->set_float("width", source->width);
@@ -160,7 +160,7 @@ FrameBuffer* PostProcessorVulkan::resolve_multisampling(FrameBuffer *source) {
 }
 
 
-void PostProcessorVulkan::process_blur(FrameBuffer *source, FrameBuffer *target, float threshold, const vec2 &axis) {
+void PostProcessor::process_blur(FrameBuffer *source, FrameBuffer *target, float threshold, const vec2 &axis) {
 	/*float r = cam->bloom_radius * resolution_scale_x;
 	shader_blur->set_float("radius", r);
 	shader_blur->set_float("threshold", threshold / cam->exposure);
@@ -168,7 +168,7 @@ void PostProcessorVulkan::process_blur(FrameBuffer *source, FrameBuffer *target,
 	process(weak(source->color_attachments), target, shader_blur.get());*/
 }
 
-void PostProcessorVulkan::process_depth(FrameBuffer *source, FrameBuffer *target, const vec2 &axis) {
+void PostProcessor::process_depth(FrameBuffer *source, FrameBuffer *target, const vec2 &axis) {
 	/*shader_depth->set_float("max_radius", 50);
 	shader_depth->set_float("focal_length", cam->focal_length);
 	shader_depth->set_float("focal_blur", cam->focal_blur);
@@ -177,7 +177,7 @@ void PostProcessorVulkan::process_depth(FrameBuffer *source, FrameBuffer *target
 //	process({source->color_attachments[0].get(), depth_buffer()}, target, shader_depth.get());
 }
 
-void PostProcessorVulkan::process(const Array<Texture*> &source, FrameBuffer *target, Shader *shader, const Any &data) {
+void PostProcessor::process(const Array<Texture*> &source, FrameBuffer *target, Shader *shader, const Any &data) {
 	/*nix::bind_frame_buffer(target);
 	nix::set_scissor(dynamicly_scaled_area(target));
 	nix::set_z(false, false);
@@ -191,6 +191,8 @@ void PostProcessorVulkan::process(const Array<Texture*> &source, FrameBuffer *ta
 	nix::set_textures(source);
 	nix::draw_triangles(vb_2d);
 	nix::set_scissor(rect::EMPTY);*/
+}
+
 }
 
 #endif

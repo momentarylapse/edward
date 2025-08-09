@@ -7,19 +7,18 @@
 
 #include "RendererFactory.h"
 #include <lib/yrenderer/Context.h>
-#include "../path/RenderPath.h"
-#include "../world/WorldRenderer.h"
+#include "../FullCameraRenderer.h"
+#include <lib/yrenderer/scene/path/RenderPath.h>
 #include <lib/yrenderer/helper/CubeMapSource.h>
 #include <lib/yrenderer/post/ThroughShaderRenderer.h>
 #include <lib/yrenderer/regions/RegionRenderer.h>
 #include <lib/yrenderer/target/WindowRenderer.h>
 #ifdef USING_VULKAN
 	#include "../gui/GuiRendererVulkan.h"
-	#include "../post/PostProcessorVulkan.h"
 #else
 	#include "../gui/GuiRendererGL.h"
-	#include "../post/PostProcessorGL.h"
 #endif
+#include <lib/yrenderer/post/PostProcessor.h>
 #include <y/EngineData.h>
 #include <lib/os/msg.h>
 #include <lib/profiler/Profiler.h>
@@ -77,9 +76,9 @@ RegionRenderer *create_region_renderer(yrenderer::Context* ctx) {
 
 PostProcessor *create_post_processor(yrenderer::Context* ctx) {
 #ifdef USING_VULKAN
-	return new PostProcessorVulkan(ctx);
+	return new PostProcessor(ctx);
 #else
-	return new PostProcessorGL(ctx, engine.width, engine.height);
+	return new PostProcessor(ctx, engine.width, engine.height);
 #endif
 }
 
@@ -89,7 +88,7 @@ public:
 	TextureWriter(shared<Texture> t) : Renderer("www") {
 		texture = t;
 	}
-	void prepare(const yrenderer::RenderParams& params) override {
+	void prepare(const RenderParams& params) override {
 		Renderer::prepare(params);
 
 		Image i;
@@ -98,10 +97,10 @@ public:
 	}
 };*/
 
-void create_and_attach_render_path(yrenderer::Context* ctx, Camera *cam) {
-	auto rp = create_render_path(ctx, cam);
-	engine.render_paths.add(rp);
-	engine.region_renderer->add_region(rp, rect::ID, 0);
+void create_and_attach_camera_renderer(yrenderer::Context* ctx, Camera *cam) {
+	auto cr = create_camera_renderer(ctx, cam);
+	engine.camera_renderers.add(cr);
+	engine.region_renderer->add_region(cr, rect::ID, 0);
 }
 
 

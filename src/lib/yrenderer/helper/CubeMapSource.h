@@ -2,14 +2,9 @@
 
 #include <lib/ygraphics/graphics-fwd.h>
 #include <lib/base/pointer.h>
-#include <lib/yrenderer/Renderer.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
 
 namespace yrenderer {
-
-class TextureRenderer;
-class MeshEmitter;
-class SceneRenderer;
 
 extern int cubemap_default_resolution;
 extern int cubemap_default_rate;
@@ -31,20 +26,6 @@ public:
 	int resolution;
 	int update_rate;
 	int counter;
-};
-
-
-
-class CubeMapRenderer : public RenderTask {
-public:
-	explicit CubeMapRenderer(Context* ctx, SceneView& scene_view, shared_array<MeshEmitter> emitters);
-
-	CubeMapSource* source = nullptr;
-	void set_source(CubeMapSource* s);
-	owned<SceneRenderer> scene_renderers[6];
-	owned<TextureRenderer> texture_renderers[6];
-
-	void render(const RenderParams& params) override;
 };
 
 }

@@ -15,11 +15,11 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/base/sort.h>
 
-WorldModelsEmitter::WorldModelsEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "mod") {
+WorldOpaqueModelsEmitter::WorldOpaqueModelsEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "mod") {
 }
 
 
-void WorldModelsEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {
+void WorldOpaqueModelsEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
@@ -58,7 +58,12 @@ void WorldModelsEmitter::emit(const yrenderer::RenderParams& params, yrenderer::
 	profiler::end(channel);
 }
 
-void WorldModelsEmitter::emit_transparent(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
+WorldTransparentModelsEmitter::WorldTransparentModelsEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "trans") {
+}
+
+void WorldTransparentModelsEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {
+	if (shadow_pass)
+		return;
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 

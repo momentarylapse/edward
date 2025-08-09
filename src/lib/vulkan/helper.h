@@ -21,7 +21,9 @@ namespace vulkan{
 		void generate_mipmaps(uint32_t width, uint32_t height, uint32_t mip_levels, uint32_t layer0, uint32_t num_layers, VkImageLayout new_layout);
 
 		VkImageView create_view(VkImageAspectFlags aspect_flags, VkImageViewType type, uint32_t mip_levels, uint32_t layer0, uint32_t num_layers) const;
-		void transition_layout(VkImageLayout old_layout, VkImageLayout new_layout, uint32_t mip_levels, uint32_t layer0, uint32_t num_layers) const;
+		void transition_layout(VkImageLayout old_layout, VkAccessFlags source_flags, VkPipelineStageFlags source_stage,
+			VkImageLayout new_layout, VkAccessFlags dest_flags, VkPipelineStageFlags dest_stage,
+			uint32_t mip_levels, uint32_t layer0, uint32_t num_layers) const;
 
 
 		bool is_depth_buffer() const;

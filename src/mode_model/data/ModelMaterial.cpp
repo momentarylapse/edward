@@ -12,7 +12,6 @@
 #include "../../multiview/Window.h"
 #include "../../multiview/DrawingHelper.h"
 #endif
-#include <renderer/world/WorldRenderer.h>
 #include <y/helper/ResourceManager.h>
 #include <lib/yrenderer/TextureManager.h>
 #include <lib/ygraphics/graphics-impl.h>

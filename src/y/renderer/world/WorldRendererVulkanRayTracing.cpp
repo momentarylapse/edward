@@ -9,12 +9,10 @@
 #ifdef USING_VULKAN
 #include "../helper/Raytracing.h"
 #include <lib/yrenderer/scene/SceneView.h>
-#include "../path/RenderPath.h"
 #include <lib/yrenderer/Context.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/msg.h>
 #include <lib/profiler/Profiler.h>
-#include "../../helper/ResourceManager.h"
 #include <lib/yrenderer/ShaderManager.h>
 #include <lib/yrenderer/scene/CameraParams.h>
 #include "../../world/Camera.h"
@@ -25,8 +23,8 @@
 
 using namespace yrenderer;
 
-WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, Camera* cam, SceneView& scene_view, int w, int h) :
-		WorldRenderer(ctx, "rt", cam, scene_view),
+WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, int w, int h) :
+		RenderPath(ctx, "rt"),
 		rvd(ctx)
 {
 	device = ctx->device;
@@ -89,17 +87,17 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, Camer
 	out_renderer->bind_texture(0, offscreen_image);
 }
 
-void WorldRendererVulkanRayTracing::prepare(const yrenderer::RenderParams& params) {
+void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 	profiler::begin(ch_prepare);
 	ctx->gpu_timestamp_begin(params, ch_prepare);
 
-	rvd.set_view(params, cam->params());
+	rvd.set_view(params, view);
 	rvd.update_light_ubo();
 
 	int w = width * engine.resolution_scale_x;
 	int h = height * engine.resolution_scale_y;
 
-	pc.iview = cam->view_matrix().inverse();
+	pc.iview = view.view_matrix().inverse();
 	pc.background = world.background;
 	pc.num_lights = scene_view.lights.num;
 	pc.t_rand += loop(pc.t_rand + 0.01f, 0.0f, 10.678f);
@@ -167,7 +165,7 @@ void WorldRendererVulkanRayTracing::prepare(const yrenderer::RenderParams& param
 	profiler::end(ch_prepare);
 }
 
-void WorldRendererVulkanRayTracing::draw(const yrenderer::RenderParams& params) {
+void WorldRendererVulkanRayTracing::draw(const RenderParams& params) {
 	out_renderer->draw(params);
 }
 

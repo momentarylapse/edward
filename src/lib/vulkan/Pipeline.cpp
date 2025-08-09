@@ -167,8 +167,14 @@ GraphicsPipeline::GraphicsPipeline(Shader *_shader, RenderPass *_render_pass, in
 
 	multisampling = {};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-	multisampling.sampleShadingEnable = VK_FALSE;
-	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+	if (render_pass->samples > VK_SAMPLE_COUNT_1_BIT) {
+		multisampling.sampleShadingEnable = VK_TRUE;
+		multisampling.rasterizationSamples = render_pass->samples;
+		multisampling.minSampleShading = 0.2f;
+	} else {
+		multisampling.sampleShadingEnable = VK_FALSE;
+		multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+	}
 
 	depth_stencil = {};
 	depth_stencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;

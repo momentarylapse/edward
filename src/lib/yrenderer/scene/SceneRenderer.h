@@ -37,8 +37,6 @@ public:
 
 	base::optional<color> background_color;
 	bool is_shadow_pass = false;
-	bool allow_opaque = true;
-	bool allow_transparent = true;
 
 	static constexpr bool using_view_space = true;
 

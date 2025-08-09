@@ -30,7 +30,7 @@ namespace yrenderer {
 
 class ResourceManager;
 class ModelManager;
-struct RenderPath;
+class FullCameraRenderer;
 
 class EngineData {
 public:
@@ -86,10 +86,10 @@ public:
 	yrenderer::Context* context;
 	ResourceManager *resource_manager;
 
-	yrenderer::WindowRenderer *window_renderer;
-	yrenderer::Renderer *gui_renderer;
-	yrenderer::RegionRenderer *region_renderer;
-	Array<RenderPath*> render_paths;
+	yrenderer::WindowRenderer* window_renderer;
+	yrenderer::Renderer* gui_renderer;
+	yrenderer::RegionRenderer* region_renderer;
+	Array<FullCameraRenderer*> camera_renderers;
 
 	Array<yrenderer::RenderTask*> render_tasks;
 	void add_render_task(yrenderer::RenderTask* task, int priority);

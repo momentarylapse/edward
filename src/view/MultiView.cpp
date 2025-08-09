@@ -13,7 +13,6 @@
 #include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
 #include <lib/math/mat3.h>
-#include <y/renderer/path/RenderPath.h>
 #include <lib/yrenderer/scene/SceneRenderer.h>
 #include <lib/yrenderer/scene/MeshEmitter.h>
 #include <lib/yrenderer/scene/pass/ShadowRenderer.h>
@@ -24,6 +23,7 @@
 #include <lib/ygraphics/graphics-impl.h>
 
 #include "Mode.h"
+#include "lib/yrenderer/scene/pass/CubeMapRenderer.h"
 
 extern float global_shadow_box_size;
 
@@ -62,7 +62,8 @@ MultiView::MultiView(Session* s) :
 	default_light->light.harshness = 0.5f;
 	lights.add(default_light);
 
-	shadow_renderer = new yrenderer::ShadowRenderer(session->ctx, view_port.scene_view.get(), {new MultiViewShadowGeometryEmitter(this)}, 2048);
+	shadow_renderer = new yrenderer::ShadowRenderer(session->ctx, view_port.scene_view.get(), 2048);
+	shadow_renderer->add_emitter(new MultiViewShadowGeometryEmitter(this));
 	view_port.scene_view->shadow_maps.add(shadow_renderer->cascades[0].depth_buffer);
 	view_port.scene_view->shadow_maps.add(shadow_renderer->cascades[1].depth_buffer);
 	//add_child(shadow_renderer.get());
@@ -71,7 +72,8 @@ MultiView::MultiView(Session* s) :
 	cube_map_source = new yrenderer::CubeMapSource;
 	cube_map_source->resolution = 256;
 	cube_map_source->cube_map = new ygfx::CubeMap(cube_map_source->resolution, "rgba:i8");
-	cube_map_renderer = new yrenderer::CubeMapRenderer(session->ctx, *view_port.scene_view.get(), {new MultiViewBackgroundEmitter(this)});
+	cube_map_renderer = new yrenderer::CubeMapRenderer(session->ctx, *view_port.scene_view.get());
+	cube_map_renderer->add_emitter(new MultiViewBackgroundEmitter(this));
 	cube_map_renderer->set_source(cube_map_source.get());
 	view_port.scene_view->cube_map = cube_map_source->cube_map;
 

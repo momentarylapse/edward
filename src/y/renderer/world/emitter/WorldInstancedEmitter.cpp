@@ -19,7 +19,7 @@ class MultiInstance;
 WorldInstancedEmitter::WorldInstancedEmitter(Context* ctx) : MeshEmitter(ctx, "inst") {
 }
 
-void WorldInstancedEmitter::emit(const yrenderer::RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
+void WorldInstancedEmitter::emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 

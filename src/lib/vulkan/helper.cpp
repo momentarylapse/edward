@@ -232,7 +232,7 @@ void copy_image_to_buffer(VkImage image, uint32_t width, uint32_t height, uint32
 }
 
 VkImageAspectFlags image_aspect(const ImageAndMemory &i, VkImageLayout new_layout) {
-	if (new_layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+	if (i.is_depth_buffer()) {
 		VkImageAspectFlags a = VK_IMAGE_ASPECT_DEPTH_BIT;
 		if (i.has_stencil_component())
 			a |= VK_IMAGE_ASPECT_STENCIL_BIT;
@@ -242,7 +242,9 @@ VkImageAspectFlags image_aspect(const ImageAndMemory &i, VkImageLayout new_layou
 	}
 }
 
-void ImageAndMemory::transition_layout(VkImageLayout old_layout, VkImageLayout new_layout, uint32_t mip_levels, uint32_t layer0, uint32_t num_layers) const {
+void ImageAndMemory::transition_layout(VkImageLayout old_layout, VkAccessFlags source_flags, VkPipelineStageFlags source_stage,
+		VkImageLayout new_layout, VkAccessFlags dest_flags, VkPipelineStageFlags dest_stage,
+		uint32_t mip_levels, uint32_t layer0, uint32_t num_layers) const {
 	auto command_buffer = begin_single_time_commands();
 
 	VkImageMemoryBarrier barrier = {};
@@ -258,49 +260,14 @@ void ImageAndMemory::transition_layout(VkImageLayout old_layout, VkImageLayout n
 	barrier.subresourceRange.levelCount = mip_levels;
 	barrier.subresourceRange.baseArrayLayer = layer0;
 	barrier.subresourceRange.layerCount = num_layers;
-
-	VkPipelineStageFlags source_stage;
-	VkPipelineStageFlags destination_stage;
-
-	if (old_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL and new_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-		barrier.srcAccessMask = 0;
-		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-		source_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-		destination_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-	} else if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED and new_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-		barrier.srcAccessMask = 0;
-		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-		source_stage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-		destination_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-	} else if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED and new_layout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
-		barrier.srcAccessMask = 0;
-		barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
-
-		source_stage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-		destination_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-	} else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL and new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-		source_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-		destination_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-	} else if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED and new_layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
-		barrier.srcAccessMask = 0;
-		barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-
-		source_stage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-		destination_stage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-	} else {
-		throw Exception("unsupported layout transition!");
-	}
+	barrier.srcAccessMask = source_flags;
+	barrier.dstAccessMask = dest_flags;
 
 	//command_buffer->image_barrier();
 
 	vkCmdPipelineBarrier(
 		command_buffer->buffer,
-		source_stage, destination_stage,
+		source_stage, dest_stage,
 		0,
 		0, nullptr,
 		0, nullptr,

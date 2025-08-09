@@ -32,11 +32,11 @@ GuiRendererGL::GuiRendererGL(yrenderer::Context* ctx) : Renderer(ctx, "gui") {
 	vb->create_quad(rect::ID);
 }
 
-void GuiRendererGL::draw(const yrenderer::RenderParams& params) {
+void GuiRendererGL::draw(const RenderParams& params) {
 	draw_gui(params, nullptr);
 }
 
-void GuiRendererGL::draw_gui(const yrenderer::RenderParams& params, FrameBuffer *source) {
+void GuiRendererGL::draw_gui(const RenderParams& params, FrameBuffer *source) {
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 	gui::update();

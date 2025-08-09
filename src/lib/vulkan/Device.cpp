@@ -251,6 +251,8 @@ void Device::create_logical_device(VkSurfaceKHR surface, Requirements req) {
 		device_features.features.tessellationShader = VK_TRUE;
 	if (req & Requirements::ANISOTROPY)
 		device_features.features.samplerAnisotropy = VK_TRUE;
+	if (req & Requirements::MULTISAMPLE)
+		device_features.features.sampleRateShading = VK_TRUE;
 	if (req & Requirements::RTX) {
 		rt_features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
 		rt_features.rayTracingPipeline = VK_TRUE;
@@ -396,6 +398,8 @@ Requirements parse_requirements(const Array<string> &op) {
 			req = req | Requirements::RTX;
 		else if (o == "meshshader")
 			req = req | Requirements::MESH_SHADER;
+		else if (o == "multisample")
+			req = req | Requirements::MULTISAMPLE;
 		else
 			throw Exception("unknown requirement: " + o);
 	}

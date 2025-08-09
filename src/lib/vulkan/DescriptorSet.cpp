@@ -17,8 +17,6 @@
 #include "Texture.h"
 #include <vulkan/vulkan.h>
 
-#include "helper.h"
-
 namespace vulkan {
 
 string result2str(VkResult r);

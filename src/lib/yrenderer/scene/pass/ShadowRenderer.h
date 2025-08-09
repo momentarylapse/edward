@@ -28,9 +28,11 @@ struct SceneView;
 
 class ShadowRenderer : public RenderTask {
 public:
-	explicit ShadowRenderer(Context* ctx, SceneView* parent, shared_array<MeshEmitter> emitters, int resolution);
+	explicit ShadowRenderer(Context* ctx, SceneView* parent, int resolution);
 
 	static constexpr int NUM_CASCADES = 2;
+
+	void add_emitter(shared<MeshEmitter> emitter);
 
     void render(const RenderParams& params) override;
 

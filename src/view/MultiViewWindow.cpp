@@ -9,7 +9,6 @@
 #include "DrawingHelper.h"
 #include <lib/yrenderer/scene/MeshEmitter.h>
 #include <lib/yrenderer/scene/SceneRenderer.h>
-#include <renderer/path/RenderPath.h>
 #include <y/world/Camera.h>
 #include <Session.h>
 #include <lib/math/mat3.h>

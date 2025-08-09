@@ -13,7 +13,6 @@
 #include <lib/xhui/dialogs/QuestionDialog.h>
 #include <lib/xhui/dialogs/ColorSelectionDialog.h>
 #include <lib/yrenderer/Context.h>
-#include <renderer/path/RenderPath.h>
 #include <sys/stat.h>
 #include <y/EngineData.h>
 

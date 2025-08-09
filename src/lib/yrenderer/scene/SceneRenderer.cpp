@@ -62,13 +62,12 @@ void SceneRenderer::draw(const RenderParams& params) {
 	//cur_rvd.set_wire(wireframe);
 #endif
 
-	if (allow_opaque)
-		for (auto e: weak(emitters))
-			e->emit(params, rvd, is_shadow_pass);
+	for (auto e: weak(emitters))
+		e->emit(params, rvd, is_shadow_pass);
 
-	if (allow_transparent and !is_shadow_pass)
+	/*if (allow_transparent and !is_shadow_pass)
 		for (auto e: weak(emitters))
-			e->emit_transparent(params, rvd);
+			e->emit_transparent(params, rvd);*/
 
 #ifdef USING_OPENGL
 	nix::set_front(nix::Orientation::CW);

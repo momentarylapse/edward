@@ -1,11 +1,11 @@
 /*
- * PostProcessorGL.cpp
+ * PostProcessor.cpp
  *
  *  Created on: Dec 7, 2021
  *      Author: michi
  */
 
-#include "PostProcessorGL.h"
+#include "PostProcessor.h"
 
 #ifdef USING_OPENGL
 #include <lib/yrenderer/Context.h>
@@ -14,18 +14,17 @@
 #include <lib/math/rect.h>
 #include <lib/os/msg.h>
 #include <lib/profiler/Profiler.h>
-#include "../../helper/ResourceManager.h"
-#include "../../Config.h"
-#include "../../world/Camera.h"
 
-using namespace yrenderer;
 using namespace ygfx;
+
+
+namespace yrenderer {
 
 //static float resolution_scale_x = 1.0f;
 //static float resolution_scale_y = 1.0f;
 
 
-PostProcessorGL::PostProcessorGL(yrenderer::Context* ctx, int width, int height) : PostProcessor(ctx) {
+PostProcessor::PostProcessor(Context* ctx, int width, int height) : PostProcessorBase(ctx) {
 	ch_post_blur = profiler::create_channel("blur", channel);
 	ch_out = profiler::create_channel("out", channel);
 
@@ -73,14 +72,14 @@ PostProcessorGL::PostProcessorGL(yrenderer::Context* ctx, int width, int height)
 	//shader_resolve_multisample = ResourceManager::load_shader("forward/resolve-multisample.shader");
 }
 
-PostProcessorGL::~PostProcessorGL() {
+PostProcessor::~PostProcessor() {
 }
 
-FrameBuffer *PostProcessorGL::next_fb(FrameBuffer *cur) {
+FrameBuffer *PostProcessor::next_fb(FrameBuffer *cur) {
 	return (cur == fb1) ? fb2.get() : fb1.get();
 }
 
-void PostProcessorGL::prepare(const yrenderer::RenderParams& params) {
+void PostProcessor::prepare(const RenderParams& params) {
 	if (stages.num == 0) {
 		for (auto c: children)
 			c->prepare(params);
@@ -106,7 +105,7 @@ void PostProcessorGL::prepare(const yrenderer::RenderParams& params) {
 	//profiler::end(ch_post_blur);
 }
 
-void PostProcessorGL::draw(const yrenderer::RenderParams& params) {
+void PostProcessor::draw(const RenderParams& params) {
 	if (stages.num == 0) {
 		for (auto c: children)
 			c->draw(params);
@@ -119,7 +118,7 @@ void PostProcessorGL::draw(const yrenderer::RenderParams& params) {
 }
 
 // GTX750: 1920x1080 0.277 ms per trivial step
-FrameBuffer* PostProcessorGL::do_post_processing(FrameBuffer *source) {
+FrameBuffer* PostProcessor::do_post_processing(FrameBuffer *source) {
 	//profiler::begin(ch_post);
 	auto cur = source;
 
@@ -152,7 +151,7 @@ FrameBuffer* PostProcessorGL::do_post_processing(FrameBuffer *source) {
 
 
 
-FrameBuffer* PostProcessorGL::resolve_multisampling(FrameBuffer *source) {
+FrameBuffer* PostProcessor::resolve_multisampling(FrameBuffer *source) {
 	//auto next = next_fb(source);
 	/*if (true) {
 		shader_resolve_multisample->set_float("width", source->width);
@@ -167,7 +166,7 @@ FrameBuffer* PostProcessorGL::resolve_multisampling(FrameBuffer *source) {
 }
 
 
-void PostProcessorGL::process_blur(FrameBuffer *source, FrameBuffer *target, float threshold, const vec2 &axis) {
+void PostProcessor::process_blur(FrameBuffer *source, FrameBuffer *target, float threshold, const vec2 &axis) {
 	/*float r = cam->bloom_radius * resolution_scale_x;
 	shader_blur->set_float("radius", r);
 	shader_blur->set_float("threshold", threshold / cam->exposure);
@@ -175,7 +174,7 @@ void PostProcessorGL::process_blur(FrameBuffer *source, FrameBuffer *target, flo
 	process(weak(source->color_attachments), target, shader_blur.get());*/
 }
 
-void PostProcessorGL::process_depth(FrameBuffer *source, FrameBuffer *target, const vec2 &axis) {
+void PostProcessor::process_depth(FrameBuffer *source, FrameBuffer *target, const vec2 &axis) {
 	/*shader_depth->set_float("max_radius", 50);
 	shader_depth->set_float("focal_length", cam_main->focal_length);
 	shader_depth->set_float("focal_blur", cam_main->focal_blur);
@@ -184,7 +183,7 @@ void PostProcessorGL::process_depth(FrameBuffer *source, FrameBuffer *target, co
 //	process({source->color_attachments[0].get(), depth_buffer()}, target, shader_depth.get());*/
 }
 
-void PostProcessorGL::process(const Array<Texture*> &source, FrameBuffer *target, Shader *shader, const Any &data) {
+void PostProcessor::process(const Array<Texture*> &source, FrameBuffer *target, Shader *shader, const Any &data) {
 	nix::bind_frame_buffer(target);
 	nix::set_scissor(dynamicly_scaled_area(target));
 	nix::set_z(false, false);
@@ -198,6 +197,8 @@ void PostProcessorGL::process(const Array<Texture*> &source, FrameBuffer *target
 	nix::bind_textures(source);
 	nix::draw_triangles(vb_2d);
 	nix::set_scissor(rect::EMPTY);
+}
+
 }
 
 #endif
