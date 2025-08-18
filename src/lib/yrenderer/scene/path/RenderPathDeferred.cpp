@@ -166,7 +166,7 @@ void RenderPathDeferred::render_out_from_gbuffer(FrameBuffer *source, const Rend
 	else
 		data.dict_set("eye_pos", vec3_to_any(view.pos)); // NAH
 #endif
-	data.dict_set("ambient_occlusion_radius:8", ambient_occlusion_radius);
+	data.dict_set("ambient_occlusion_radius:8", Any(ambient_occlusion_radius));
 	out_renderer->bind_uniform_buffer(13, ssao_sample_buffer);
 
 	auto& rvd = scene_renderer->rvd;

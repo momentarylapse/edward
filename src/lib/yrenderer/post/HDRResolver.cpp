@@ -55,13 +55,13 @@ HDRResolver::HDRResolver(Context* ctx, int width, int height, bool manual_mode) 
 		bl.tsr[0] = new ThroughShaderRenderer(ctx, "blur", shader_blur);
 		bl.tsr[0]->bind_texture(0, bloom_input.get());
 		bl.tsr[0]->bindings.shader_data.dict_set("axis:0", vec2_to_any(vec2::EX));
-		bl.tsr[0]->bindings.shader_data.dict_set("radius:8", r * (float)BLOOM_LEVEL_SCALE);
-		bl.tsr[0]->bindings.shader_data.dict_set("threshold:12", threshold);
+		bl.tsr[0]->bindings.shader_data.dict_set("radius:8", Any(r * (float)BLOOM_LEVEL_SCALE));
+		bl.tsr[0]->bindings.shader_data.dict_set("threshold:12", Any(threshold));
 		bl.tsr[1] = new ThroughShaderRenderer(ctx, "blur", shader_blur);
 		bl.tsr[1]->bind_texture(0, bl.tex_temp.get());
 		bl.tsr[1]->bindings.shader_data.dict_set("axis:0", vec2_to_any(vec2::EY));
-		bl.tsr[1]->bindings.shader_data.dict_set("radius:8", r);
-		bl.tsr[1]->bindings.shader_data.dict_set("threshold:12", 0.0f);
+		bl.tsr[1]->bindings.shader_data.dict_set("radius:8", Any(r));
+		bl.tsr[1]->bindings.shader_data.dict_set("threshold:12", Any(0.0f));
 		bl.renderer[0] = new TextureRenderer(ctx, "blur", {bl.tex_temp, depth0});
 		bl.renderer[0]->add_child(bl.tsr[0].get());
 		bl.renderer[1] = new TextureRenderer(ctx, "blur", {bl.tex_out, depth1});
@@ -116,13 +116,13 @@ void HDRResolver::prepare(const RenderParams& params) {
 
 	auto& data = out_renderer->bindings.shader_data;
 	data.dict_set("project:128", mat4_to_any(mat4::ID));
-	data.dict_set("exposure:192", exposure);
-	data.dict_set("bloom_factor:196", bloom_factor);
+	data.dict_set("exposure:192", Any(exposure));
+	data.dict_set("bloom_factor:196", Any(bloom_factor));
 #ifdef USING_VULKAN
-	data.dict_set("gamma:200", 2.2f);
+	data.dict_set("gamma:200", Any(2.2f));
 #endif
-	data.dict_set("scale_x:204", resolution_scale_x);
-	data.dict_set("scale_y:208", resolution_scale_y);
+	data.dict_set("scale_x:204", Any(resolution_scale_x));
+	data.dict_set("scale_y:208", Any(resolution_scale_y));
 
 	ctx->gpu_timestamp_end(params, ch_prepare);
 	profiler::end(ch_prepare);

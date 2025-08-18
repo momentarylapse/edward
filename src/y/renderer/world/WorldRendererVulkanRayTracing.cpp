@@ -158,8 +158,8 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 	//out_renderer->bindings.shader_data.dict_set("model:0", mat4_to_any(mat4::ID));
 	//out_renderer->bindings.shader_data.dict_set("view:64", mat4_to_any(mat4::ID));
 	out_renderer->bindings.shader_data.dict_set("project:128", mat4_to_any(mat4::ID));
-	out_renderer->bindings.shader_data.dict_set("scale_x:204", 1.0f);
-	out_renderer->bindings.shader_data.dict_set("scale_y:208", 1.0f);
+	out_renderer->bindings.shader_data.dict_set("scale_x:204", Any(1.0f));
+	out_renderer->bindings.shader_data.dict_set("scale_y:208", Any(1.0f));
 
 	ctx->gpu_timestamp_end(params, ch_prepare);
 	profiler::end(ch_prepare);

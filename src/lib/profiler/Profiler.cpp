@@ -22,6 +22,8 @@ namespace profiler {
 
 	FrameTimingData current_frame_timing;
 	FrameTimingData previous_frame_timing;
+	FrameHistory history;
+	int max_history_length = 1024;
 
 	void _reset() {
 		temp_frame_time = 0;
@@ -96,6 +98,10 @@ namespace profiler {
 		current_frame_timing.cpu0.simple_reserve(256);
 		current_frame_timing.gpu.clear();
 		current_frame_timing.gpu.simple_reserve(256);
+
+		history.total_times.add(frame_dt);
+		while (history.total_times.num > max_history_length)
+			history.total_times.erase(0);
 	}
 
 	Array<ChannelStats> digest_report(const FrameTimingData& td) {

@@ -97,11 +97,11 @@ color any2color(const Any &a) {
 		return color::parse(a.str());
 	if (a.is_list() and (a.length() >= 3)) {
 		color c = White;
-		c.r = a[0]._float();
-		c.g = a[1]._float();
-		c.b = a[2]._float();
+		c.r = a[0].to_f32();
+		c.g = a[1].to_f32();
+		c.b = a[2].to_f32();
 		if (a.length() >= 4)
-			c.a = a[3]._float();
+			c.a = a[3].to_f32();
 		return c;
 	}
 	return Black;
@@ -129,7 +129,7 @@ xfer<Material> MaterialManager::load(const Path &filename) {
 			throw Exception("material file missing: " + filename.str());
 		}*/
 	}
-	Material *m = new Material(ctx);
+	auto m = new Material(ctx);
 
 	m->albedo = any2color(c.get("color.albedo"));
 	m->roughness = c.get_float("color.roughness", 0.5f);
@@ -209,7 +209,7 @@ xfer<Material> MaterialManager::load(const Path &filename) {
 	} else if (mode == "dynamic") {
 		m->reflection.mode = ReflectionMode::CUBE_MAP_DYNAMIC;
 		m->reflection.density = c.get_float("reflection.density", 1);
-		m->reflection.cube_map_size = c.get_float("reflection.size", 128);
+		m->reflection.cube_map_size = c.get_int("reflection.size", 128);
 		//m->cube_map = FxCubeMapNew(m->cube_map_size);
 		//FxCubeMapCreate(m->cube_map,cmt[0],cmt[1],cmt[2],cmt[3],cmt[4],cmt[5]);
 	} else if (mode == "mirror") {

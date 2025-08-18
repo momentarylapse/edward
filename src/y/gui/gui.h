@@ -8,7 +8,7 @@
 #pragma once
 
 
-#include "../lib/base/pointer.h"
+#include <lib/base/pointer.h>
 #include <functional>
 
 struct vec2;
@@ -32,6 +32,16 @@ extern Array<Node*> sorted_nodes;
 void update_tree();
 
 void delete_node(Node *n);
+
+struct Resource {
+	string type;
+	string id;
+	Array<string> options;
+	Array<Resource> children;
+};
+
+Resource parse_resource(const string& s);
+Node* create_node(const string& type);
 }
 
 

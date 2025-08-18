@@ -15,13 +15,14 @@ class Font;
 
 class Text : public Picture {
 public:
+	Text();
 	Text(const string &t, float h, const vec2 &p);
 	~Text() override;
-	void __init__(const string &t, float h, const vec2 &p);
-	void __delete__() override;
 
 	void rebuild();
 	void set_text(const string &t);
+
+	void _set_option(const string &k, const string &v);
 
 	string text;
 	float font_size;

@@ -6,22 +6,18 @@
  */
 
 #include "Picture.h"
-#include "../lib/math/rect.h"
-#include "../lib/math/vec3.h"
-#include "../lib/math/mat4.h"
+#include <lib/math/rect.h>
+#include <lib/yrenderer/Context.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <iostream>
+#include <y/EngineData.h>
 
-
-/*vulkan::Shader *Picture::shader = nullptr;
-vulkan::Pipeline *Picture::pipeline = nullptr;
-vulkan::VertexBuffer *Picture::vertex_buffer = nullptr;
-vulkan::RenderPass *Picture::render_pass = nullptr;*/
 
 
 namespace gui {
 
-Picture::Picture(const rect &r, shared<ygfx::Texture> tex, const rect &s, shared<ygfx::Shader> _shader) :
+Picture::Picture() : Picture(rect::ID, engine.context->tex_white) {}
+
+Picture::Picture(const rect &r, shared<ygfx::Texture> tex, const rect &s) :
 	Node(r)
 {
 	type = Type::PICTURE;
@@ -30,22 +26,20 @@ Picture::Picture(const rect &r, shared<ygfx::Texture> tex, const rect &s, shared
 	bg_blur = 0;
 	angle = 0;
 	visible = true;
-	shader = _shader;
-}
-
-Picture::Picture(const rect &r, shared<ygfx::Texture> tex, const rect &s) : Picture(r, tex, s, nullptr) {
 }
 
 Picture::~Picture() = default;
 
-void Picture::__init__(const rect &r, shared<ygfx::Texture> tex, const rect &s) {
-	new(this) Picture(r, tex, s);
-	source = s;
+void Picture::_set_option(const string &k, const string &v) {
+	if (k == "texture") {
+		// ...
+	} else if (k == "angle") {
+		angle = v._float();
+	} else {
+		Node::_set_option(k, v);
+	}
 }
 
-void Picture::__delete__() {
-	this->Picture::~Picture();
-}
 
 
 }

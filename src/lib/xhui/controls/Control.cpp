@@ -93,11 +93,11 @@ vec2 Control::get_content_min_size() const {
 }
 
 vec2 Control::get_greed_factor() const {
-	vec2 f = {0,0};
-	if (size_mode_x == SizeMode::Expand)
-		f.x = 1;
-	if (size_mode_y == SizeMode::Expand)
-		f.y = 1;
+	vec2 f = greed_factor;
+	if (size_mode_x != SizeMode::Expand)
+		f.x = 0;
+	if (size_mode_y != SizeMode::Expand)
+		f.y = 0;
 	return f;
 }
 
@@ -168,6 +168,14 @@ void Control::set_option(const string& key, const string& value) {
 	} else if (key == "height") {
 		min_height_user = value._int();
 		size_mode_y = SizeMode::Shrink;
+		request_redraw();
+	} else if (key == "greedfactorx") {
+		greed_factor.x = value._float();
+		size_mode_x = SizeMode::Expand;
+		request_redraw();
+	} else if (key == "greedfactory") {
+		greed_factor.y = value._float();
+		size_mode_y = SizeMode::Expand;
 		request_redraw();
 	} else if (key == "ignorehover") {
 		ignore_hover = true;

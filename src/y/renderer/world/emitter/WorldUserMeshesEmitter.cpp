@@ -23,9 +23,10 @@ void WorldOpaqueUserMeshesEmitter::emit(const yrenderer::RenderParams& params, y
 		auto material = m->material.get();
 		//if (material->is_transparent() != transparent)
 		//	continue;
+		if ((m->topology != ygfx::PrimitiveTopology::TRIANGLES) and shadow_pass) // FIXME workaround for bug?
+			continue;
 		if (!material->cast_shadow and shadow_pass)
 			continue;
-		auto o = m->owner;
 
 		if (shadow_pass)
 			material = rvd.material_shadow;

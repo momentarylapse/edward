@@ -13,11 +13,7 @@
 #include <lib/yrenderer/post/ThroughShaderRenderer.h>
 #include <lib/yrenderer/regions/RegionRenderer.h>
 #include <lib/yrenderer/target/WindowRenderer.h>
-#ifdef USING_VULKAN
-	#include "../gui/GuiRendererVulkan.h"
-#else
-	#include "../gui/GuiRendererGL.h"
-#endif
+#include "../gui/GuiRenderer.h"
 #include <lib/yrenderer/post/PostProcessor.h>
 #include <y/EngineData.h>
 #include <lib/os/msg.h>
@@ -63,11 +59,7 @@ WindowRenderer *create_window_renderer(yrenderer::Context* ctx, GLFWwindow* wind
 }
 
 Renderer *create_gui_renderer(yrenderer::Context* ctx) {
-#ifdef USING_VULKAN
-	return new GuiRendererVulkan(ctx);
-#else
-	return new GuiRendererGL(ctx);
-#endif
+	return new GuiRenderer(ctx);
 }
 
 RegionRenderer *create_region_renderer(yrenderer::Context* ctx) {
@@ -128,13 +120,13 @@ void create_base_renderer(yrenderer::Context* ctx, GLFWwindow* window) {
 			auto tsr = new ThroughShaderRenderer(ctx, "blur", shader);
 			tsr->bind_texture(0, tex.get());
 			Any axis_x, axis_y;
-			axis_x.list_set(0, 1.0f);
-			axis_x.list_set(1, 0.0f);
-			axis_y.list_set(0, 0.0f);
-			axis_y.list_set(1, 1.0f);
+			axis_x.list_set(0, Any(1.0f));
+			axis_x.list_set(1, Any(0.0f));
+			axis_y.list_set(0, Any(0.0f));
+			axis_y.list_set(1, Any(1.0f));
 			Any data;
-			data.dict_set("radius:8", 5.0f);
-			data.dict_set("threshold:12", 0.0f);
+			data.dict_set("radius:8", Any(5.0f));
+			data.dict_set("threshold:12", Any(0.0f));
 			data.dict_set("axis:0", axis_x);
 			tsr->bindings.shader_data = data;
 			// tsr:  tex -> shader -> ...
@@ -152,8 +144,8 @@ void create_base_renderer(yrenderer::Context* ctx, GLFWwindow* window) {
 
 			auto tsr2 = new ThroughShaderRenderer(ctx, "text", shader);
 			tsr2->bind_texture(0, tex2.get());
-			data.dict_set("radius:8", 5.0f);
-			data.dict_set("threshold:12", 0.0f);
+			data.dict_set("radius:8", Any(5.0f));
+			data.dict_set("threshold:12", Any(0.0f));
 			data.dict_set("axis:0", axis_y);
 			tsr2->bindings.shader_data = data;
 			tsr2->add_sub_task(tr);

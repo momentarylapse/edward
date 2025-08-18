@@ -105,24 +105,6 @@ else()
 endif()
 
 
-# lib: spirv (optional)
-set(LIB_SPIRV_ENABLED true CACHE BOOL "Use spirv library?")
-pkg_check_modules(SPIRV spirv)
-if(SPIRV_FOUND)
-else()
-	set(LIB_SPIRV_ENABLED false CACHE BOOL "spirv library not found" FORCE)
-endif()
-if(${LIB_SPIRV_ENABLED})
-	list(APPEND INCLUDE_DIRECTORIES ${SPIRV_INCLUDE_DIRS})
-	list(APPEND LINK_DIRECTORIES ${SPIRV_LIBRARY_DIRS})
-	list(APPEND DEPS ${SPIRV_LIBRARIES})
-	list(APPEND COMPILE_OPTIONS ${SPIRV_CFLAGS_OTHER})
-	list(APPEND COMPILE_DEFINITIONS HAS_LIB_SPIRV=1)
-else()
-	list(APPEND COMPILE_DEFINITIONS HAS_LIB_SPIRV=0)
-endif()
-
-
 # lib: unwind (optional)
 set(LIB_UNWIND_ENABLED true CACHE BOOL "Use unwind library?")
 pkg_check_modules(LIBUNWIND libunwind)
@@ -325,6 +307,7 @@ add_executable(edward
 	src/lib/os/terminal.cpp
 	src/lib/os/time.cpp
 	src/lib/pattern/Observable.cpp
+	src/lib/profiler/_kaba_export.cpp
 	src/lib/profiler/Profiler.cpp
 	src/lib/threads/Mutex.cpp
 	src/lib/threads/Thread.cpp

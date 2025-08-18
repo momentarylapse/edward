@@ -52,7 +52,7 @@ UBOLight Light::to_ubo(const vec3& view_pos, const quaternion& view_ang, bool us
 }
 
 mat4 Light::suggest_shadow_projection(const CameraParams& cam, float shadow_box_size) const {
-	if (type() == yrenderer::LightType::DIRECTIONAL) {
+	if (type() == LightType::DIRECTIONAL) {
 		//msg_write(format("shadow dir: %s  %s", light.pos.str(), light.dir.str()));
 		vec3 center = cam.pos + cam.ang*vec3::EZ * (shadow_box_size / 3.0f);
 		float grid = shadow_box_size / 16;
@@ -72,7 +72,7 @@ mat4 Light::suggest_shadow_projection(const CameraParams& cam, float shadow_box_
 	} else {
 		auto t = mat4::translation(- light.pos);
 		auto ang = cam.ang;
-		if (type() == yrenderer::LightType::CONE or user_shadow_control)
+		if (type() == LightType::CONE or user_shadow_control)
 			ang = _ang;
 		auto r = mat4::rotation(ang).transpose();
 		float theta = 1.35f;

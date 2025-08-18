@@ -15,12 +15,11 @@ namespace gui {
 
 class Picture : public Node {
 public:
-	Picture(const rect &r, shared<ygfx::Texture> tex, const rect &source, shared<ygfx::Shader> shader);
+	Picture();
 	Picture(const rect &r, shared<ygfx::Texture> tex, const rect &source = rect::ID);
 	~Picture() override;
 
-	void __init__(const rect &r, shared<ygfx::Texture> tex, const rect &source);
-	void __delete__() override;
+	void _set_option(const string &k, const string &v);
 
 	rect source;
 

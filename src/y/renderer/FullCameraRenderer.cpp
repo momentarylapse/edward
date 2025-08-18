@@ -62,14 +62,11 @@ yrenderer::RenderPath* create_render_path(Context* ctx, RenderPathType type, int
 	return new yrenderer::RenderPathForward(ctx, shadow_resolution);
 }
 
-float global_shadow_box_size;
-
 FullCameraRenderer::FullCameraRenderer(Context* ctx, Camera* _cam, RenderPathType _type) : Renderer(ctx, "cam") {
 	type = _type;
 	cam = _cam;
 	shadow_box_size = config.get_float("shadow.boxsize", 2000);
 	shadow_resolution = config.get_int("shadow.resolution", 1024);
-	global_shadow_box_size = shadow_box_size;
 
 	yrenderer::RenderPath::light_sources_module = config.get_str("renderer.light_sources", "default");
 	yrenderer::RenderPath::shadow_method = config.get_str("shadow.quality", "pcf-hardening");
@@ -229,6 +226,7 @@ void FullCameraRenderer::prepare_instanced_matrices() {
 
 
 void FullCameraRenderer::prepare(const yrenderer::RenderParams& params) {
+	render_path->scene_view.shadow_box_size = shadow_box_size;
 	render_path->set_view(cam->params());
 	//render_path->background_color = world.background; // no, WorldSkyboxEmitter will clear -> easier for cube maps (currently)
 	check_terrains(cam_main->owner->pos);

@@ -5,7 +5,7 @@
  *      Author: michi
  */
 
-#include "GuiRendererGL.h"
+#include "GuiRenderer.h"
 #ifdef USING_OPENGL
 #include <lib/yrenderer/Context.h>
 #include <lib/ygraphics/graphics-impl.h>
@@ -25,18 +25,14 @@ namespace yrenderer {
 	void apply_shader_data(Shader *s, const Any &shader_data);
 }
 
-GuiRendererGL::GuiRendererGL(yrenderer::Context* ctx) : Renderer(ctx, "gui") {
+GuiRenderer::GuiRenderer(yrenderer::Context* ctx) : Renderer(ctx, "gui") {
 	shader = shader_manager->load_shader("forward/2d.shader");
 
 	vb = new VertexBuffer("3f,3f,2f");
 	vb->create_quad(rect::ID);
 }
 
-void GuiRendererGL::draw(const RenderParams& params) {
-	draw_gui(params, nullptr);
-}
-
-void GuiRendererGL::draw_gui(const RenderParams& params, FrameBuffer *source) {
+void GuiRenderer::draw(const RenderParams& params) {
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 	gui::update();
@@ -55,6 +51,8 @@ void GuiRendererGL::draw_gui(const RenderParams& params, FrameBuffer *source) {
 			continue;
 		if (n->type == gui::Node::Type::PICTURE or n->type == gui::Node::Type::TEXT) {
 			auto *p = (gui::Picture*)n;
+			if (!p->texture)
+				continue;
 			auto s = shader.get();
 			if (p->shader) {
 				s = p->shader.get();

@@ -25,8 +25,6 @@
 #include "Mode.h"
 #include "lib/yrenderer/scene/pass/CubeMapRenderer.h"
 
-extern float global_shadow_box_size;
-
 
 
 
@@ -102,7 +100,7 @@ void MultiViewRenderer::prepare(const yrenderer::RenderParams& params) {
 	view_port.cam.min_depth = view_port.radius * 0.01f;
 	view_port.cam.max_depth = view_port.radius * 300;
 	//view_port.cam.update_matrix_cache(area.width() / area.height());
-	global_shadow_box_size = view_port.radius * 8;
+	view_port.scene_view->shadow_box_size = view_port.radius * 8;
 
 	multi_view->window->local_ang = view_port.ang;
 

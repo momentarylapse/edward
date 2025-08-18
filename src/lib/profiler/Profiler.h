@@ -28,6 +28,10 @@ namespace profiler {
 		float total_time;
 	};
 
+	struct FrameHistory {
+		Array<float> total_times;
+	};
+
 	struct ChannelStats {
 		int channel = -1;
 		float total = 0, average = 0;
@@ -63,6 +67,8 @@ namespace profiler {
 	extern Array<Channel> channels;
 	extern FrameTimingData current_frame_timing;
 	extern FrameTimingData previous_frame_timing;
+	extern FrameHistory history;
+	extern int max_history_length;
 
 	extern float frame_dt;
 }

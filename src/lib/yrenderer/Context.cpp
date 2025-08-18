@@ -19,6 +19,7 @@ void Context::_create_default_textures() {
 	tex_black = new ygfx::Texture();
 	tex_white->write(Image(16, 16, White));
 	tex_black->write(Image(16, 16, Black));
+	tex_white->_pointer_ref_counter = 999999999;
 }
 
 void Context::create_managers(const Path &texture_dir, const Path &shader_dir, const Path &material_dir) {

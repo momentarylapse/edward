@@ -8,36 +8,35 @@
 #include "gui.h"
 #include "Node.h"
 #include "Font.h"
-#include "../meta.h"
-#include "../lib/math/rect.h"
-#include "../lib/math/vec3.h"
-#include "../lib/math/mat4.h"
-#include "../lib/kaba/kaba.h"
-#ifdef _X_ALLOW_X_
-#include "../helper/Profiler.h"
-#endif
+#include "Text.h"
+#include <lib/math/rect.h>
+#include <lib/kaba/kaba.h>
+#include <lib/ygraphics/graphics-impl.h>
+
+#include "../plugins/PluginManager.h"
+#include <lib/profiler/Profiler.h>
 #include <stdio.h>
+
+extern bool _parse_tokens_smart_strings_;
 
 namespace gui {
 
 Array<Node*> all_nodes;
 Array<Node*> sorted_nodes;
 shared<Node> toplevel;
-//static int ch_gui_iter = -1;
+static int ch_gui_iter = -1;
 
 
 void init(int ch_iter) {
-#ifdef _X_ALLOW_X_
 	ch_gui_iter = profiler::create_channel("gui", ch_iter);
-#endif
 
 	Font::init_fonts();
 
-	toplevel = new Node(rect::ID);
+	toplevel = new Node();
 }
 
 void reset() {
-	toplevel = new Node(rect::ID);
+	toplevel = new Node();
 
 	all_nodes = {};
 	sorted_nodes = {};
@@ -94,9 +93,7 @@ void handle_mouse_move(const vec2 &m_prev, const vec2 &m) {
 }
 
 void iterate(float dt) {
-#ifdef _X_ALLOW_X_
 	profiler::begin(ch_gui_iter);
-#endif
 	auto nodes = all_nodes;
 	// tree might change...
 	for (auto n: nodes) {
@@ -116,9 +113,7 @@ void iterate(float dt) {
 #endif
 		}
 	}
-#ifdef _X_ALLOW_X_
 	profiler::end(ch_gui_iter);
-#endif
 }
 
 void delete_node(Node *n) {
@@ -128,6 +123,67 @@ void delete_node(Node *n) {
 				n->parent->children.erase(i);
 	}
 	update_tree();
+}
+
+Resource parse_resource_line(const string& l) {
+	Resource r;
+	_parse_tokens_smart_strings_ = true;
+	auto x = l.parse_tokens();//trim().explode(" ");
+	_parse_tokens_smart_strings_ = false;
+	if (x.num >= 1)
+		r.type = x[0];
+	if (x.num >= 2) {
+		r.id = x[1];
+		r.options = x.sub_ref(2);
+	}
+	return r;
+}
+
+int count_initial_tabs(const string& s) {
+	for (int i=0; i<s.num; i++)
+		if (s[i] != '\t')
+			return i;
+	return -1;
+}
+
+Resource parse_resource(const Array<string>& lines, int& line_no) {
+	int indent0 = count_initial_tabs(lines[line_no]);
+	auto r = parse_resource_line(lines[line_no ++]);
+
+	while (line_no < lines.num) {
+		int indent = count_initial_tabs(lines[line_no]);
+		if (indent > indent0)
+			r.children.add(parse_resource(lines, line_no));
+		else
+			break;
+	}
+	return r;
+}
+
+Resource parse_resource(const string& s) {
+	auto lines = s.explode("\n");
+	int line_no = 0;
+	for (int i=0; i<lines.num; i++)
+		if (count_initial_tabs(lines[i]) == 0)
+			line_no = i;
+	return parse_resource(lines, line_no);
+}
+
+
+Node* create_node(const string& type) {
+	if (type == "Node")
+		return new Node();
+	if (type == "Picture")
+		return new Picture();
+	if (type == "Text")
+		return new Text();
+	if (type == "HBox")
+		return new HBox();
+	if (type == "VBox")
+		return new VBox();
+	if (type.find(".") >= 0)
+		return static_cast<Node*>(PluginManager::create_instance_auto(type));
+	return nullptr;
 }
 
 

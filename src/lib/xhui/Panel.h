@@ -36,6 +36,7 @@ public:
 	void expand(const string& id, bool expanded);
 	void reset(const string& id);
 	void set_visible(const string& id, bool visible);
+	void activate(const string& id);
 	string get_string(const string& id) const;
 	float get_float(const string& id) const;
 	int get_int(const string& id) const;

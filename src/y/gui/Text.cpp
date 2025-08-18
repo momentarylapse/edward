@@ -7,34 +7,29 @@
 
 #include "Text.h"
 #include "Font.h"
-#include "../lib/math/vec2.h"
-#include "../lib/image/image.h"
+#include <lib/math/vec2.h>
+#include <lib/image/image.h>
 #include <lib/ygraphics/graphics-impl.h>
-
-#include "../y/EngineData.h"
+#include <y/EngineData.h>
 
 
 namespace gui {
 
+
+//Text::Text(const string &t, float h, const vec2 &p) : Picture(rect(p.x,p.x,p.y,p.y), nullptr) {//rect::ID
+Text::Text() : Text(":::fake:::", 0.05f, {0,0}) {}
 
 Text::Text(const string &t, float h, const vec2 &p) : Picture(rect(p.x,p.x,p.y,p.y), nullptr) {//rect::ID
 	type = Type::TEXT;
 	//margin = rect(x, h/6, y, h/10);
 	font = Font::_default;
 	font_size = h;
+//	texture = nullptr; // needed, so we don't mess with tex_white...
 	if (t != ":::fake:::")
 		set_text(t);
 }
 
 Text::~Text() = default;
-
-void Text::__init__(const string &t, float h, const vec2 &p) {
-	new(this) Text(t, h, p);
-}
-
-void Text::__delete__() {
-	this->Text::~Text();
-}
 
 void Text::rebuild() {
 	if (!font)
@@ -63,5 +58,17 @@ void Text::set_text(const string &t) {
 		rebuild();
 	}
 }
+
+void Text::_set_option(const string &k, const string &v) {
+	if (k == "size") {
+		font_size = v._float();
+		rebuild();
+	} else if (k == "text") {
+		set_text(v);
+	} else {
+		Picture::_set_option(k, v);
+	}
+}
+
 
 }

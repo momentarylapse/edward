@@ -8,7 +8,6 @@
 #include "PluginManager.h"
 #include <lib/kaba/kaba.h>
 #include <lib/kaba/lib/extern.h>
-#include <lib/profiler/Profiler.h>
 #include "../audio/SoundSource.h"
 #include "../audio/AudioBuffer.h"
 #include "../audio/AudioStream.h"
@@ -24,6 +23,7 @@
 #include "../helper/ResourceManager.h"
 #include <lib/yrenderer/ShaderManager.h>
 #include <lib/yrenderer/_kaba_export.h>
+#include <lib/profiler/_kaba_export.h>
 #include "../helper/Scheduler.h"
 #if __has_include("../input/InputManager.h")
 #include "../input/InputManager.h"
@@ -41,14 +41,8 @@
 #include "../renderer/FullCameraRenderer.h"
 #include <lib/yrenderer/scene/path/RenderPathForward.h>
 #include <lib/yrenderer/scene/path/RenderPathDeferred.h>
-#ifdef USING_OPENGL
-#include "../renderer/gui/GuiRendererGL.h"
-#endif
-#ifdef USING_VULKAN
-#include "../renderer/gui/GuiRendererVulkan.h"
-#endif
+#include "../renderer/gui/GuiRenderer.h"
 #include <lib/yrenderer/post/PostProcessor.h>
-#include <lib/yrenderer/target/WindowRenderer.h>
 #include <renderer/helper/Raytracing.h>
 #include <lib/yrenderer/scene/SceneView.h>
 #include "../y/EngineData.h"
@@ -183,6 +177,12 @@ audio::AudioStream* __create_audio_stream(Callable<Array<float>(int)>& f, float 
 	return audio::create_stream([&f] (int n) { return f(n); }, sample_rate);
 }
 
+mat4 scene_view_shadow_projection(yrenderer::SceneView* s) {
+	if (s->shadow_indices.num < 1)
+		return mat4::ID;
+	return s->lights[s->shadow_indices[0]]->shadow_projection;
+}
+
 void PluginManager::init() {
 	kaba::default_context->register_package_init("y", engine.script_dir | "y", &export_kaba_package_y);
 	import_kaba();
@@ -278,12 +278,17 @@ void export_world(kaba::Exporter* ext) {
 	ext->link_class_func("Camera.unproject", &Camera::unproject);
 
 
-	ext->declare_class_size("CubeMapSource", sizeof(yrenderer::CubeMapSource));
-	ext->declare_class_element("CubeMapSource.min_depth", &yrenderer::CubeMapSource::min_depth);
-	ext->declare_class_element("CubeMapSource.max_depth", &yrenderer::CubeMapSource::max_depth);
-	ext->declare_class_element("CubeMapSource.cube_map", &yrenderer::CubeMapSource::cube_map);
-	ext->declare_class_element("CubeMapSource.resolution", &yrenderer::CubeMapSource::resolution);
-	ext->declare_class_element("CubeMapSource.update_rate", &yrenderer::CubeMapSource::update_rate);
+#define _OFFSET(VAR, MEMBER)	(char*)&VAR.MEMBER - (char*)&VAR
+
+	{
+		CubeMapSource source;
+		ext->declare_class_size("CubeMapSource", sizeof(CubeMapSource));
+		ext->declare_class_element("CubeMapSource.min_depth", _OFFSET(source, source.min_depth));
+		ext->declare_class_element("CubeMapSource.max_depth", _OFFSET(source, source.max_depth));
+		ext->declare_class_element("CubeMapSource.cube_map", _OFFSET(source, source.cube_map));
+		ext->declare_class_element("CubeMapSource.resolution", _OFFSET(source, source.resolution));
+		ext->declare_class_element("CubeMapSource.update_rate", _OFFSET(source, source.update_rate));
+	}
 
 
 	ext->declare_class_size("Model.Mesh", sizeof(Mesh));
@@ -555,59 +560,70 @@ void export_ui(kaba::Exporter* ext) {
 	ext->declare_enum("VRDeviceRole.LIGHTHOUSE1", input::VRDeviceRole::Lighthouse1);
 #endif
 
-	gui::Node node(rect::ID);
-	ext->declare_class_size("Node", sizeof(gui::Node));
-	ext->declare_class_element("Node.x", &gui::Node::pos);
-	ext->declare_class_element("Node.y", _OFFSET(node, pos.y));
-	ext->declare_class_element("Node.pos", &gui::Node::pos);
-	ext->declare_class_element("Node.width", &gui::Node::width);
-	ext->declare_class_element("Node.height", &gui::Node::height);
-	ext->declare_class_element("Node._eff_area", &gui::Node::eff_area);
-	ext->declare_class_element("Node.margin", &gui::Node::margin);
-	ext->declare_class_element("Node.align", &gui::Node::align);
-	ext->declare_class_element("Node.dz", &gui::Node::dz);
-	ext->declare_class_element("Node.color", &gui::Node::col);
-	ext->declare_class_element("Node.visible", &gui::Node::visible);
-	ext->declare_class_element("Node.children", &gui::Node::children);
-	ext->declare_class_element("Node.parent", &gui::Node::parent);
-	ext->link_class_func("Node.__init__", &gui::Node::__init_base__);
-	ext->link_virtual("Node.__delete__", &gui::Node::__delete__, &node);
-	ext->link_class_func("Node.__del_override__", &DeletionQueue::add);
-	ext->link_class_func("Node.add", &gui::Node::add);
-	ext->link_class_func("Node.remove", &gui::Node::remove);
-	ext->link_class_func("Node.remove_all_children", &gui::Node::remove_all_children);
-	ext->link_class_func("Node.set_area", &gui::Node::set_area);
-	ext->link_virtual("Node.on_iterate", &gui::Node::on_iterate, &node);
-	ext->link_virtual("Node.on_enter", &gui::Node::on_enter, &node);
-	ext->link_virtual("Node.on_leave", &gui::Node::on_leave, &node);
-	ext->link_virtual("Node.on_left_button_down", &gui::Node::on_left_button_down, &node);
-	ext->link_virtual("Node.on_left_button_up", &gui::Node::on_left_button_up, &node);
-	ext->link_virtual("Node.on_middle_button_down", &gui::Node::on_middle_button_down, &node);
-	ext->link_virtual("Node.on_middle_button_up", &gui::Node::on_middle_button_up, &node);
-	ext->link_virtual("Node.on_right_button_down", &gui::Node::on_right_button_down, &node);
-	ext->link_virtual("Node.on_right_button_up", &gui::Node::on_right_button_up, &node);
+	{
+		gui::Node node;
+		ext->declare_class_size("Node", sizeof(gui::Node));
+		ext->declare_class_element("Node.x", &gui::Node::pos);
+		ext->declare_class_element("Node.y", _OFFSET(node, pos.y));
+		ext->declare_class_element("Node.pos", &gui::Node::pos);
+		ext->declare_class_element("Node.width", &gui::Node::width);
+		ext->declare_class_element("Node.height", &gui::Node::height);
+		ext->declare_class_element("Node._eff_area", &gui::Node::eff_area);
+		ext->declare_class_element("Node.margin", &gui::Node::margin);
+		ext->declare_class_element("Node.align", &gui::Node::align);
+		ext->declare_class_element("Node.dz", &gui::Node::dz);
+		ext->declare_class_element("Node.color", &gui::Node::col);
+		ext->declare_class_element("Node.visible", &gui::Node::visible);
+		ext->declare_class_element("Node.children", &gui::Node::children);
+		ext->declare_class_element("Node.parent", &gui::Node::parent);
+		ext->link_class_func("Node.__init__:Node", &kaba::generic_init<gui::Node>);
+		ext->link_class_func("Node.__init__:Node:math.Rect", &kaba::generic_init_ext<gui::Node, const rect&>);
+		ext->link_virtual("Node.__delete__", &kaba::generic_virtual<gui::Node>::__delete__, &node);
+		ext->link_class_func("Node.__del_override__", &DeletionQueue::add);
+		ext->link_class_func("Node.add", &gui::Node::add);
+		ext->link_class_func("Node.add_from_source", &gui::Node::add_from_source);
+		ext->link_class_func("Node.remove", &gui::Node::remove);
+		ext->link_class_func("Node.remove_all_children", &gui::Node::remove_all_children);
+		ext->link_class_func("Node.set_area", &gui::Node::set_area);
+		ext->link_class_func("Node._get", &gui::Node::get);
+		ext->link_virtual("Node.on_iterate", &gui::Node::on_iterate, &node);
+		ext->link_virtual("Node.on_enter", &gui::Node::on_enter, &node);
+		ext->link_virtual("Node.on_leave", &gui::Node::on_leave, &node);
+		ext->link_virtual("Node.on_left_button_down", &gui::Node::on_left_button_down, &node);
+		ext->link_virtual("Node.on_left_button_up", &gui::Node::on_left_button_up, &node);
+		ext->link_virtual("Node.on_middle_button_down", &gui::Node::on_middle_button_down, &node);
+		ext->link_virtual("Node.on_middle_button_up", &gui::Node::on_middle_button_up, &node);
+		ext->link_virtual("Node.on_right_button_down", &gui::Node::on_right_button_down, &node);
+		ext->link_virtual("Node.on_right_button_up", &gui::Node::on_right_button_up, &node);
+	}
 
-	gui::Picture picture(rect::ID, nullptr);
-	ext->declare_class_size("Picture", sizeof(gui::Picture));
-	ext->declare_class_element("Picture.source", &gui::Picture::source);
-	ext->declare_class_element("Picture.texture", &gui::Picture::texture);
-	ext->declare_class_element("Picture.shader", &gui::Picture::shader);
-	ext->declare_class_element("Picture.shader_data", &gui::Picture::shader_data);
-	ext->declare_class_element("Picture.blur", &gui::Picture::bg_blur);
-	ext->declare_class_element("Picture.angle", &gui::Picture::angle);
-	ext->link_class_func("Picture.__init__", &gui::Picture::__init__);
-	ext->link_virtual("Picture.__delete__", &gui::Picture::__delete__, &picture);
+	{
+		gui::Picture picture;//(rect::ID, nullptr);
+		ext->declare_class_size("Picture", sizeof(gui::Picture));
+		ext->declare_class_element("Picture.source", &gui::Picture::source);
+		ext->declare_class_element("Picture.texture", &gui::Picture::texture);
+		ext->declare_class_element("Picture.shader", &gui::Picture::shader);
+		ext->declare_class_element("Picture.shader_data", &gui::Picture::shader_data);
+		ext->declare_class_element("Picture.blur", &gui::Picture::bg_blur);
+		ext->declare_class_element("Picture.angle", &gui::Picture::angle);
+		ext->link_class_func("Picture.__init__:Picture", &kaba::generic_init<gui::Picture>);
+		ext->link_class_func("Picture.__init__:Picture:math.Rect:shared![Texture]:math.Rect", &kaba::generic_init_ext<gui::Picture, const rect&, shared<Texture>, const rect&>);
+		ext->link_virtual("Picture.__delete__", &kaba::generic_virtual<gui::Picture>::__delete__, &picture);
+	}
 
-	gui::Text text(":::fake:::", 0, vec2::ZERO);
-	ext->declare_class_size("Text", sizeof(gui::Text));
-	ext->declare_class_element("Text.font_size", &gui::Text::font_size);
-	ext->declare_class_element("Text.text", &gui::Text::text);
-	ext->link_class_func("Text.__init__", &gui::Text::__init__);
-	ext->link_virtual("Text.__delete__", &gui::Text::__delete__, &text);
-	ext->link_class_func("Text.set_text", &gui::Text::set_text);
+	{
+		gui::Text text;//(":::fake:::", 0, vec2::ZERO);
+		ext->declare_class_size("Text", sizeof(gui::Text));
+		ext->declare_class_element("Text.font_size", &gui::Text::font_size);
+		ext->declare_class_element("Text.text", &gui::Text::text);
+		ext->link_class_func("Text.__init__:Text", &kaba::generic_init<gui::Text>);
+		ext->link_class_func("Text.__init__:Text:string:f32:math.vec2", &kaba::generic_init_ext<gui::Text, const string&, float, const vec2&>);
+		ext->link_virtual("Text.__delete__", &kaba::generic_virtual<gui::Text>::__delete__, &text);
+		ext->link_class_func("Text.set_text", &gui::Text::set_text);
+	}
 
-	ext->link_class_func("HBox.__init__", &gui::HBox::__init__);
-	ext->link_class_func("VBox.__init__", &gui::VBox::__init__);
+	ext->link_class_func("HBox.__init__", &kaba::generic_init<gui::HBox>);
+	ext->link_class_func("VBox.__init__", &kaba::generic_init<gui::VBox>);
 
 #ifdef HAS_INPUT
 	ext->link_func("key_state", &input::get_key);
@@ -711,28 +727,6 @@ void export_net(kaba::Exporter* ext) {
 
 void export_engine(kaba::Exporter* ext) {
 
-	ext->declare_class_size("Profiler.Channel", sizeof(profiler::Channel));
-	ext->declare_class_element("Profiler.Channel.name", &profiler::Channel::name);
-	ext->declare_class_element("Profiler.Channel.parent", &profiler::Channel::parent);
-
-	ext->declare_class_size("Profiler.TimingData", sizeof(profiler::TimingData));
-	ext->declare_class_element("Profiler.TimingData.channel", &profiler::TimingData::channel);
-	ext->declare_class_element("Profiler.TimingData.offset", &profiler::TimingData::offset);
-
-	ext->declare_class_size("Profiler.FrameTimingData", sizeof(profiler::FrameTimingData));
-	ext->declare_class_element("Profiler.FrameTimingData.cpu0", &profiler::FrameTimingData::cpu0);
-	ext->declare_class_element("Profiler.FrameTimingData.gpu", &profiler::FrameTimingData::gpu);
-	ext->declare_class_element("Profiler.FrameTimingData.total_time", &profiler::FrameTimingData::total_time);
-
-	ext->declare_class_size("Profiler", sizeof(profiler::Profiler));
-	ext->link_func("Profiler.get_name", &profiler::get_name);
-	ext->link("Profiler.avg_frame_time", &profiler::avg_frame_time);
-	ext->link("Profiler.frames", &profiler::frames);
-	ext->link("Profiler.channels", &profiler::channels);
-	ext->link("Profiler.previous_frame_timing", &profiler::previous_frame_timing);
-	//ext->link("perf_mon", &global_perf_mon);
-
-
 	// unused
 /*	ext->declare_class_size("ResourceManager", sizeof(ResourceManager));
 	ext->link_class_func("ResourceManager.load_shader", &ResourceManager::load_shader);
@@ -802,6 +796,9 @@ void export_engine(kaba::Exporter* ext) {
 	ext->link_func("rt_setup", &rt_setup);
 	ext->link_func("rt_update_frame", &rt_update_frame);
 	ext->link_func("rt_vtrace", &vtrace);
+
+
+	ext->link_func("SceneView.shadow_projection", &scene_view_shadow_projection);
 }
 
 void export_renderer(kaba::Exporter* ext) {
@@ -849,6 +846,7 @@ void PluginManager::export_kaba_package_y(kaba::Exporter* ext) {
 	export_engine(ext);
 	export_renderer(ext);
 	export_package_yrenderer(ext);
+	export_package_profiler(ext);
 }
 
 template<class C>
@@ -1014,6 +1012,21 @@ void *PluginManager::create_instance(const Path &filename, const string &base_cl
 		return nullptr;
 	return create_instance(c, variables);
 }
+
+void* PluginManager::create_instance_auto(const string& extended_type_name) {
+	auto x = extended_type_name.explode(".");
+	string type = x.back();
+
+	for (auto m: weak(kaba::default_context->public_modules)) {
+		for (auto c: m->classes())
+			if (c->name == type) {
+				msg_error("create: " + c->long_name());
+				return create_instance(c, "");
+			}
+	}
+	return nullptr;
+}
+
 
 
 

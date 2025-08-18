@@ -5,7 +5,7 @@
  *      Author: michi
  */
 
-#include "GuiRendererVulkan.h"
+#include "GuiRenderer.h"
 #ifdef USING_VULKAN
 #include <lib/yrenderer/Context.h>
 #include <lib/yrenderer/helper/PipelineManager.h>
@@ -29,7 +29,7 @@ struct UBOGUI {
 };
 
 
-GuiRendererVulkan::GuiRendererVulkan(Context* ctx) : Renderer(ctx, "ui") {
+GuiRenderer::GuiRenderer(Context* ctx) : Renderer(ctx, "ui") {
 
 	shader = shader_manager->load_shader("vulkan/2d.shader");
 
@@ -37,7 +37,7 @@ GuiRendererVulkan::GuiRendererVulkan(Context* ctx) : Renderer(ctx, "ui") {
 	vb->create_quad(rect::ID);
 }
 
-void GuiRendererVulkan::draw(const RenderParams& params) {
+void GuiRenderer::draw(const RenderParams& params) {
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 	prepare_gui(params.frame_buffer, params);
@@ -46,7 +46,7 @@ void GuiRendererVulkan::draw(const RenderParams& params) {
 	profiler::end(channel);
 }
 
-void GuiRendererVulkan::prepare_gui(ygfx::FrameBuffer *source, const RenderParams& params) {
+void GuiRenderer::prepare_gui(ygfx::FrameBuffer *source, const RenderParams& params) {
 	gui::update();
 
 	UBOGUI u;
@@ -62,6 +62,8 @@ void GuiRendererVulkan::prepare_gui(ygfx::FrameBuffer *source, const RenderParam
 			continue;
 		if (n->type == gui::Node::Type::PICTURE or n->type == gui::Node::Type::TEXT) {
 			auto *p = (gui::Picture*)n;
+			if (!p->texture)
+				continue;
 
 			if (index >= ubo.num) {
 				dset.add(ctx->pool->create_set("sampler,sampler,buffer"));
@@ -89,7 +91,7 @@ void GuiRendererVulkan::prepare_gui(ygfx::FrameBuffer *source, const RenderParam
 	}
 }
 
-void GuiRendererVulkan::draw_gui(ygfx::CommandBuffer *cb, ygfx::RenderPass *render_pass) {
+void GuiRenderer::draw_gui(ygfx::CommandBuffer *cb, ygfx::RenderPass *render_pass) {
 	if (!pipeline)
 		pipeline = PipelineManager::get_gui(shader.get(), render_pass, "3f,3f,2f");
 
@@ -101,6 +103,8 @@ void GuiRendererVulkan::draw_gui(ygfx::CommandBuffer *cb, ygfx::RenderPass *rend
 			continue;
 		if (n->type == gui::Node::Type::PICTURE or n->type == gui::Node::Type::TEXT) {
 			auto *p = (gui::Picture*)n;
+			if (!p->texture)
+				continue;
 			if (p->shader) {
 				auto pl = PipelineManager::get_gui(p->shader.get(), render_pass, "3f,3f,2f");
 				cb->bind_pipeline(pl);

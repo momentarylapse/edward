@@ -8,12 +8,20 @@
 #include "Node.h"
 #include "gui.h"
 #include "../y/EngineData.h"
+#include <lib/yrenderer/Context.h>
+#include <lib/ygraphics/graphics-impl.h>
+
+#include "Text.h"
+#include "lib/os/msg.h"
 //#include <algorithm>
 
 namespace gui {
 
+Node::Node() : Node(rect::ID) {}
+
 Node::Node(const rect &r) {
 	type = Type::NODE;
+	id = p2s(this);
 	set_area(r);
 	dz = 1;
 	col = White;
@@ -29,16 +37,7 @@ Node::Node(const rect &r) {
 	parent = nullptr;
 }
 
-Node::~Node() {
-}
-
-void Node::__init_base__(const rect &r) {
-	new(this) Node(r);
-}
-
-void Node::__delete__() {
-	this->Node::~Node();
-}
+Node::~Node() = default;
 
 void Node::add(shared<Node> n) {
 	children.add(n);
@@ -131,7 +130,7 @@ void Node::update_geometry(const rect &target) {
 	}
 
 	auto sub_area = eff_area;
-	for (auto n: children) {
+	for (auto n: weak(children)) {
 		n->update_geometry(sub_area);
 		if (type == Type::VBOX)
 			sub_area.y1 = n->eff_area.y2 + n->margin.y2;
@@ -140,25 +139,127 @@ void Node::update_geometry(const rect &target) {
 	}
 }
 
+Node* Node::get(const string& _id) {
+	if (id == _id)
+		return this;
+	for (auto n: weak(children)) {
+		if (n->id == _id)
+			return n;
+		if (auto c = n->get(_id))
+			return c;
+	}
+	return nullptr;
+}
 
-HBox::HBox() : Node(rect::ID) {
+void print_resource(const Resource& r, const string& prefix) {
+	msg_write(format("%s%s %s  %s", prefix, r.type, r.id, str(r.options)));
+	for (const auto& c: r.children)
+		print_resource(c, prefix + "    ");
+}
+
+void Node::apply_resource(const Resource &r) {
+	if (r.id != "?" and r.id != "")
+		id = r.id;
+	//n->align = Align::NONE;
+	for (const auto& o: r.options) {
+		if (o.find("=") >= 0) {
+			auto xx = o.explode("=");
+			if (xx[1].head(1) == "'")
+				set_option(xx[0], xx[1].sub_ref(1, -1).unescape());
+			else
+				set_option(xx[0], xx[1]);
+		} else {
+			set_option(o, "");
+		}
+	}
+
+	for (const auto& c: r.children) {
+		if (Node* n = create_node(c.type)) {
+			//msg_write("create " + c.type + "   " + p2s(n));
+			add(n);
+			n->apply_resource(c);
+		}
+	}
+}
+
+
+void Node::add_from_source(const string& source) {
+	auto r = parse_resource(source);
+	//print_resource(r, "");
+	//if (r.id != "?")
+
+	apply_resource(r);
+}
+
+void Node::_set_option(const string& key, const string& value) {
+	if (key == "width") {
+		width = value._float();
+	} else if (key == "height") {
+		height = value._float();
+	} else if (key == "x") {
+		pos.x = value._float();
+	} else if (key == "y") {
+		pos.y = value._float();
+	} else if (key == "dz") {
+		dz = value._float();
+	} else if (key == "margin") {
+		float f = value._float();
+		margin = rect(f, f, f, f);
+	} else if (key == "visible") {
+		visible = value._bool();
+	} else if (key == "hidden") {
+		visible = false;
+	} else if (key == "color") {
+		col = color::parse(value);
+	} else if (key == "top") {
+		align = (Align)(align & ~(Align::TOP | Align::CENTER_V | Align::BOTTOM | Align::FILL_Y));
+		align = (Align)(align | Align::TOP);
+	} else if (key == "bottom") {
+		align = (Align)(align & ~(Align::TOP | Align::CENTER_V | Align::BOTTOM | Align::FILL_Y));
+		align = (Align)(align | Align::BOTTOM);
+	} else if (key == "left") {
+		align = (Align)(align & ~(Align::LEFT | Align::CENTER_H | Align::RIGHT | Align::FILL_X));
+		align = (Align)(align | Align::LEFT);
+	} else if (key == "right") {
+		align = (Align)(align & ~(Align::LEFT | Align::CENTER_H | Align::RIGHT | Align::FILL_X));
+		align = (Align)(align | Align::RIGHT);
+	} else if (key == "centerh") {
+		align = (Align)(align & ~(Align::LEFT | Align::CENTER_H | Align::RIGHT | Align::FILL_X));
+		align = (Align)(align | Align::CENTER_H);
+	} else if (key == "centerv") {
+		align = (Align)(align & ~(Align::TOP | Align::CENTER_V | Align::BOTTOM | Align::FILL_Y));
+		align = (Align)(align | Align::CENTER_V);
+	} else if (key == "fillx") {
+		align = (Align)(align & ~(Align::LEFT | Align::CENTER_H | Align::RIGHT | Align::FILL_X));
+		align = (Align)(align | Align::FILL_X);
+	} else if (key == "filly") {
+		align = (Align)(align & ~(Align::TOP | Align::CENTER_V | Align::BOTTOM | Align::FILL_Y));
+		align = (Align)(align | Align::FILL_Y);
+	} else if (key == "nonsquare") {
+		align = (Align)(align | Align::NONSQUARE);
+	}
+}
+
+void Node::set_option(const string& key, const string& value) {
+	if (type == Type::TEXT)
+		(static_cast<Text&>(*this)._set_option(key, value));
+	else if (type == Type::PICTURE)
+		(static_cast<Picture&>(*this)._set_option(key, value));
+	else
+		_set_option(key, value);
+}
+
+
+HBox::HBox() {
 	type = Type::HBOX;
 	align = Align::_FILL_XY;
 }
 
-void HBox::__init__() {
-	new(this) HBox();
-}
 
 
-
-VBox::VBox() : Node(rect::ID) {
+VBox::VBox() {
 	type = Type::VBOX;
 	align = Align::_FILL_XY;
-}
-
-void VBox::__init__() {
-	new(this) VBox();
 }
 
 }

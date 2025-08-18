@@ -27,6 +27,7 @@ static constexpr int MAX_LIGHTS = 1024 - 24; // :P
 //   (might be shared with nearby cameras)
 struct SceneView {
 	CameraParams main_camera_params;
+	float shadow_box_size = 1000;
 	Array<ygfx::DepthBuffer*> shadow_maps;
 	shared<ygfx::CubeMap> cube_map;
 	Array<Light*> lights;
