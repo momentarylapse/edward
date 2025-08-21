@@ -13,6 +13,7 @@
 #include <lib/yrenderer/post/ThroughShaderRenderer.h>
 #include <lib/yrenderer/Context.h>
 #include <lib/os/msg.h>
+#include <lib/any/conversion.h>
 #include <lib/math/random.h>
 #include <lib/math/vec4.h>
 #include <lib/math/vec2.h>

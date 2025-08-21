@@ -492,7 +492,7 @@ Dialog entity-panel ''
 	Grid main-grid '' expandx
 		.
 		---|
-		Viewport components-viewport '' noexpandy hidden
+		Viewport components-viewport '' noexpandy
 			Grid components-grid ''
 )foodelim");
 	size_mode_x = SizeMode::Shrink;

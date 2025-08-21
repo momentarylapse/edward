@@ -204,8 +204,13 @@ void Painter::draw_lines(const Array<vec2> &p) {
 
 	auto vb = context->get_line_vb();
 	Array<Vertex1> vertices;
-	for (int i=0; i<p.num-1; i++)
-		add_vb_line(vertices, p[i], p[i+1], line_width);
+	if (contiguous) {
+		for (int i=0; i<p.num-1; i++)
+			add_vb_line(vertices, p[i], p[i+1], line_width);
+	} else {
+		for (int i=0; i<p.num-1; i+=2)
+			add_vb_line(vertices, p[i], p[i+1], line_width);
+	}
 	vb->update(vertices);
 	Parameters params;
 	params.matrix = mat_pixel_to_rel;

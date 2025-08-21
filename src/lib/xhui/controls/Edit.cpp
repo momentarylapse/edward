@@ -330,6 +330,8 @@ void Edit::draw_text(Painter* p) {
 		const vec2 pos = index_to_xy(cursor_pos);
 		p->draw_line({pos.x, pos.y}, {pos.x, pos.y + cache.line_height[0]});
 	}
+
+	p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
 	p->set_clip(clip0);
 
 #ifdef PERF_OUT

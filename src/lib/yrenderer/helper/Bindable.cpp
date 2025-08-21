@@ -11,42 +11,17 @@
 #include <lib/math/vec2.h>
 
 
-Any mat4_to_any(const mat4& m) {
-	Any a = Any::EmptyList;
-	for (int i=0; i<16; i++)
-		a.list_set(i, Any(((float*)&m)[i]));
-	return a;
-}
-Any vec2_to_any(const vec2& v) {
-	Any a = Any::EmptyList;
-	a.list_set(0, Any(v.x));
-	a.list_set(1, Any(v.y));
-	return a;
-}
-Any vec3_to_any(const vec3& v) {
-	Any a = Any::EmptyList;
-	a.list_set(0, Any(v.x));
-	a.list_set(1, Any(v.y));
-	a.list_set(2, Any(v.z));
-	return a;
-}
-
 using namespace ygfx;
 
 namespace yrenderer {
 
-#ifdef USING_VULKAN
-void apply_shader_data(CommandBuffer* cb, const Any &shader_data);
-#else
-void apply_shader_data(Shader *s, const Any &shader_data);
-#endif
-
 
 #ifdef USING_VULKAN
-void apply_shader_data(CommandBuffer* cb, const Any &shader_data) {
-	if (shader_data.is_empty()) {
+void apply_shader_data(const RenderParams& params, Shader*, const Any &shader_data) {
+	if (shader_data.is_empty())
 		return;
-	} else if (shader_data.is_dict()) {
+	auto cb = params.command_buffer;
+	if (shader_data.is_dict()) {
 		char temp[256];
 		int max_used = 0;
 		for (auto &key: shader_data.keys()) {
@@ -82,10 +57,10 @@ void apply_shader_data(CommandBuffer* cb, const Any &shader_data) {
 	}
 }
 #else
-void apply_shader_data(Shader *s, const Any &shader_data) {
-	if (shader_data.is_empty()) {
+void apply_shader_data(const RenderParams&, Shader *s, const Any& shader_data) {
+	if (shader_data.is_empty())
 		return;
-	} else if (shader_data.is_dict()) {
+	if (shader_data.is_dict()) {
 		for (auto &key: shader_data.keys()) {
 			auto &val = shader_data[key];
 			string name = key.explode(":")[0];
@@ -179,12 +154,11 @@ void BindingData::apply(Shader* shader, const RenderParams& params) {
 		else if (b.type == Binding::Type::StorageBuffer)
 			nix::bind_storage_buffer(b.index, static_cast<nix::ShaderStorageBuffer*>(b.p));
 	}
-	apply_shader_data(shader, shader_data);
 #else
     auto cb = params.command_buffer;
 	cb->bind_descriptor_set(0, dset.get());
-	apply_shader_data(cb, shader_data);
 #endif
+	apply_shader_data(params, shader, shader_data);
 }
 
 }

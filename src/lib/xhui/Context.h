@@ -27,6 +27,8 @@ public:
 	vulkan::Instance* instance = nullptr;
 	vulkan::DescriptorPool* pool = nullptr;
 	vulkan::Device* device = nullptr;
+#else
+	nix::Context* ctx = nullptr;
 #endif
 	ygfx::Texture* tex_white = nullptr;
 	ygfx::Texture* tex_black = nullptr;

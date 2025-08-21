@@ -10,6 +10,7 @@
 
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/Context.h>
+#include <lib/yrenderer/helper/Bindable.h>
 
 namespace yrenderer {
 using namespace ygfx;
@@ -75,8 +76,7 @@ void RenderData::set_material_x(const SceneView& scene_view, const Material& mat
 		shader->set_floats("eye_pos", &scene_view.main_camera_params.pos.x, 3); // NAH....
 	else
 		shader->set_floats("eye_pos", &vec3::ZERO.x, 3);
-	for (auto &u: material.uniforms)
-		shader->set_floats(u.name, u.p, u.size/4);
+	apply_shader_data(RenderParams{}, shader, material.shader_data);
 
 	auto& pass = material.pass(pass_no);
 	nix::set_z(pass.z_buffer, pass.z_test);

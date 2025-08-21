@@ -9,6 +9,7 @@
 
 #include <lib/yrenderer/Renderer.h>
 #include <lib/yrenderer/scene/SceneView.h>
+#include <lib/yrenderer/scene/MeshEmitter.h>
 #include <lib/base/pointer.h>
 #include <lib/image/color.h>
 

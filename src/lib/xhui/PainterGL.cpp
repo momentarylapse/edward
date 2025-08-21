@@ -3,6 +3,7 @@
 #include "Painter.h"
 #include "Theme.h"
 #include "draw/font.h"
+#include "Context.h"
 
 #include "../nix/nix.h"
 #include "../image/image.h"
@@ -23,13 +24,13 @@ nix::Shader *shader_round = nullptr;
 nix::Texture *tex_xxx = nullptr;
 
 bool _nix_inited = false;
-owned<nix::Context> _nix_context;
+owned<nix::Context> __nix_context;
 
-void init_nix() {
+nix::Context* init_nix() {
 	if (_nix_inited)
-		return;
+		return __nix_context.get();
 	nix::default_shader_bindings = false;
-	_nix_context = nix::init();
+	__nix_context = nix::init();
 	tex_text = new nix::Texture();
 	tex_white = new nix::Texture();
 	Image im;
@@ -62,7 +63,7 @@ void init_nix() {
 	</VertexShader>
 #endif
 
-	shader = _nix_context->create_shader(
+	shader = __nix_context->create_shader(
 			R"foodelim(
 <Layout>
 	version = 420
@@ -107,7 +108,7 @@ void main() {
 	shader->filename = "-my-shader-";
 
 
-	shader_round  = _nix_context->create_shader(
+	shader_round  = __nix_context->create_shader(
 			R"foodelim(
 <Layout>
 	version = 420
@@ -167,15 +168,17 @@ void main() {
 	tex_xxx = new nix::Texture();
 
 	_nix_inited = true;
+	return __nix_context.get();
 }
 
 Painter::Painter(Window *w) {
 	window = w;
+	context = window->context;
 	if (window) {
 		ui_scale = window->ui_scale;
 		glfwMakeContextCurrent(w->window);
 		if (!_nix_inited)
-			init_nix();
+			context->ctx = init_nix();
 
 		Painter::set_color(Theme::_default.text);
 		Painter::set_font(Theme::_default.font_name /*"CAC Champagne"*/, Theme::_default.font_size, false, false);
@@ -197,9 +200,9 @@ Painter::Painter(Window *w) {
 		window->handle_event_p(window->id, event_id::JustBeforeDraw, this);
 
 		// in case the event_id::JustBeforeDraw triggers off-screen rendering...
-		nix::bind_frame_buffer(_nix_context->default_framebuffer);
+		nix::bind_frame_buffer(context->ctx->default_framebuffer);
 
-		nix::start_frame_glfw(_nix_context.get(), window->window);
+		nix::start_frame_glfw(context->ctx, window->window);
 		nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(ui_scale, ui_scale, 1));
 		//nix::clear(color(1, 0.15f, 0.15f, 0.3f));
 		nix::set_cull(nix::CullMode::NONE);
@@ -294,8 +297,13 @@ void Painter::draw_line(const vec2 &a, const vec2 &b) {
 }
 
 void Painter::draw_lines(const Array<vec2> &p) {
-	for (int i=0; i<p.num-1; i++)
-		draw_line(p[i], p[i+1]);
+	if (contiguous) {
+		for (int i=0; i<p.num-1; i++)
+			draw_line(p[i], p[i+1]);
+	} else {
+		for (int i=0; i<p.num-1; i+=2)
+			draw_line(p[i], p[i+1]);
+	}
 }
 
 

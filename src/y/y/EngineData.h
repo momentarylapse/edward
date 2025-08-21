@@ -18,7 +18,7 @@ namespace gui {
 }
 
 namespace yrenderer {
-	class Context;
+	struct Context;
 	class TargetRenderer;
 	class Renderer;
 	class MaterialManager;

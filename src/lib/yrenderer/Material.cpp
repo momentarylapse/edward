@@ -34,10 +34,6 @@ Material::Material(Context* _ctx) {
 	friction.rolling = 0.90f;
 }
 
-void Material::add_uniform(const string &name, float *p, int size) {
-	uniforms.add({name, p, size});
-}
-
 xfer<Material> Material::copy() {
 	auto m = new Material(ctx);
 	m->albedo = albedo;

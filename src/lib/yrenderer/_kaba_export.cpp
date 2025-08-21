@@ -232,7 +232,7 @@ void export_package_yrenderer(kaba::Exporter* ext) {
 	ext->declare_class_element("Material.emission", &Material::emission);
 	ext->declare_class_element("Material.cast_shadow", &Material::cast_shadow);
 	ext->declare_class_element("Material.friction", &Material::friction);
-	ext->link_class_func("Material.add_uniform", &Material::add_uniform);
+	ext->declare_class_element("Material.shader_data", &Material::shader_data);
 
 	{
 		Light light;

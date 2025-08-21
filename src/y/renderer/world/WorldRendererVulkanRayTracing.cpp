@@ -12,6 +12,7 @@
 #include <lib/yrenderer/Context.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/msg.h>
+#include <lib/any/conversion.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/yrenderer/ShaderManager.h>
 #include <lib/yrenderer/scene/CameraParams.h>

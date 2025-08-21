@@ -9,7 +9,9 @@
 
 namespace xhui {
 
-Separator::Separator(const string& id) : Control(id) {}
+Separator::Separator(const string& id, Orientation _orientation) : Control(id) {
+	orientation = _orientation;
+}
 
 vec2 Separator::get_content_min_size() const {
 	return {10, 10};
@@ -22,8 +24,26 @@ vec2 Separator::get_greed_factor() const {
 void Separator::_draw(Painter* p) {
 	p->set_color(Theme::_default.background_button);
 	p->set_line_width(3);
-	float y = _area.center().y;
-	p->draw_line({_area.x1, y}, {_area.x2, y});
+	if (orientation == Orientation::HORIZONTAL) {
+		float y = _area.center().y;
+		p->draw_line({_area.x1 + 8, y}, {_area.x2 - 8, y});
+	} else {
+		float x = _area.center().x;
+		p->draw_line({x, _area.y1 + 8}, {x, _area.y2 - 8});
+	}
 }
+
+void Separator::set_option(const string &key, const string &value) {
+	if (key == "horizontal") {
+		orientation = Orientation::HORIZONTAL;
+		request_redraw();
+	} else if (key == "vertical") {
+		orientation = Orientation::VERTICAL;
+		request_redraw();
+	} else {
+		Control::set_option(key, value);
+	}
+}
+
 
 } // xhui

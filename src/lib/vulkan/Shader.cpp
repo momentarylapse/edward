@@ -15,8 +15,10 @@
 #include "../os/msg.h"
 #include "../image/image.h"
 
+#define HAS_LIB_SHADERC 1
+
 #if HAS_LIB_SHADERC
-#include "shaderc/shaderc.h"
+#include <shaderc/shaderc.h>
 #endif
 
 string with_line_numbers(const string& s) {

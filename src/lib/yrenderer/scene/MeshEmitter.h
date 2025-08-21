@@ -9,7 +9,7 @@
 
 namespace yrenderer {
 
-class Context;
+struct Context;
 struct RenderViewData;
 struct RenderParams;
 

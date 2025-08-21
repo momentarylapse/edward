@@ -22,7 +22,7 @@ namespace xhui {
 
 extern string get_lang(const string &ns, const string &id, const string &text, bool allow_keys=false);
 
-class Resource;
+struct Resource;
 
 
 // language

@@ -3,6 +3,7 @@
 //
 
 #include "WorldTerrainsEmitter.h"
+#include <lib/any/conversion.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/yrenderer/Context.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
@@ -10,7 +11,7 @@
 #include <y/ComponentManager.h>
 #include <y/Entity.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <lib/os/msg.h>
+#include <lib/yrenderer/helper/Bindable.h>
 
 WorldTerrainsEmitter::WorldTerrainsEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "ter") {}
 
@@ -32,13 +33,10 @@ void WorldTerrainsEmitter::emit(const yrenderer::RenderParams& params, yrenderer
 		auto& rd = rvd.start(params, mat4::translation(o->pos), shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, t->vertex_buffer.get());
 
 		if (!shadow_pass) {
-#ifdef USING_VULKAN
-			params.command_buffer->push_constant(0, 12, &t->texture_scale[0].x);
-			params.command_buffer->push_constant(16, 12, &t->texture_scale[1].x);
-#else
-			shader->set_floats("pattern0", &t->texture_scale[0].x, 3);
-			shader->set_floats("pattern1", &t->texture_scale[1].x, 3);
-#endif
+			Any data;
+			data.dict_set("pattern0:0", vec3_to_any(t->texture_scale[0]));
+			data.dict_set("pattern1:16", vec3_to_any(t->texture_scale[1]));
+			yrenderer::apply_shader_data(params, shader, data);
 		}
 		rd.draw_triangles(params, t->vertex_buffer.get());
 	}

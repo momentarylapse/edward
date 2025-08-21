@@ -20,7 +20,7 @@ struct color;
 
 namespace yrenderer {
 
-class Context;
+struct Context;
 class RenderTask;
 class ShaderManager;
 

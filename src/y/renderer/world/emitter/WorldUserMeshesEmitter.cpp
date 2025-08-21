@@ -6,6 +6,7 @@
 #include <lib/yrenderer/scene/RenderViewData.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/yrenderer/Context.h>
+#include <lib/yrenderer/helper/Bindable.h>
 #include <world/components/UserMesh.h>
 #include <y/ComponentManager.h>
 #include <y/Entity.h>
@@ -34,6 +35,7 @@ void WorldOpaqueUserMeshesEmitter::emit(const yrenderer::RenderParams& params, y
 		auto vb = m->vertex_buffer.get();
 		auto shader = rvd.get_shader(material, 0, m->vertex_shader_module, m->geometry_shader_module);
 		auto& rd = rvd.start(params, m->owner->get_matrix(), shader, *material, 0, m->topology, vb);
+		yrenderer::apply_shader_data(params, shader, m->material->shader_data);
 
 		rd.draw(params, m->vertex_buffer.get(), m->topology);
 	}

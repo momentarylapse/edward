@@ -14,16 +14,13 @@
 #include "../../gui/Picture.h"
 #include <lib/profiler/Profiler.h>
 #include <lib/yrenderer/ShaderManager.h>
+#include <lib/yrenderer/helper/Bindable.h>
 #include "../../helper/ResourceManager.h"
 #include <y/EngineData.h>
 
 
 using namespace yrenderer;
 using namespace ygfx;
-
-namespace yrenderer {
-	void apply_shader_data(Shader *s, const Any &shader_data);
-}
 
 GuiRenderer::GuiRenderer(yrenderer::Context* ctx) : Renderer(ctx, "gui") {
 	shader = shader_manager->load_shader("forward/2d.shader");
@@ -56,7 +53,7 @@ void GuiRenderer::draw(const RenderParams& params) {
 			auto s = shader.get();
 			if (p->shader) {
 				s = p->shader.get();
-				apply_shader_data(s, p->shader_data);
+				apply_shader_data(params, s, p->shader_data);
 			}
 			nix::set_shader(s);
 			s->set_float("blur", p->bg_blur);

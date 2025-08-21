@@ -20,12 +20,12 @@ struct mat4;
 
 namespace yrenderer {
 
-class Context;
+struct Context;
 class ShaderCache;
 class Material;
 struct CameraParams;
 struct SceneView;
-class RenderParams;
+struct RenderParams;
 enum class RenderPathType;
 
 static constexpr int MAX_INSTANCES = 1<<11;

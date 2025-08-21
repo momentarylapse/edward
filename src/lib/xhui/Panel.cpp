@@ -381,7 +381,7 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 	else if (type == "RadioButton")
 		add_child(new RadioButton(id, title), x, y);
 	else if (type == "Separator")
-		add_child(new Separator(id), x, y);
+		add_child(new Separator(id, Orientation::VERTICAL), x, y);
 	else if (type == "Slider")
 		add_child(new Slider(id), x, y);
 	else if (type == "SpinButton")
@@ -398,18 +398,12 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 //		add_tree_view(title, x, y, id);
 //	else if (type == "ProgressBar")
 //		add_progress_bar(title, x, y, id);
-//	else if (type == "Slider")
-//		add_slider(title, x, y, id);
-//	else if (type == "Image")
-//		add_image(title, x, y, id);
 /*	else if ((type == "Expander") or (type == "Revealer"))
 		add_expander(title, x, y, id);
 	else if (type == "Scroller")
 		add_scroller(title, x, y, id);
 	else if (type == "Paned")
 		add_paned(title, x, y, id);
-	else if (type == "Separator")
-		add_separator(title, x, y, id);
 	else if (type == "MenuButton")
 		add_menu_button(title, x, y, id);*/
 	else

@@ -17,7 +17,7 @@
 
 namespace yrenderer {
 	class Material;
-	class Context;
+	struct Context;
 }
 class CollisionData;
 

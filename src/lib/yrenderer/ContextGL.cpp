@@ -1,8 +1,10 @@
 #include "Context.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/msg.h>
+
 #if __has_include(<lib/xhui/Painter.h>)
 #include <lib/xhui/Painter.h>
+#include <lib/xhui/Context.h>
 #define HAS_XHUI
 #endif
 
@@ -40,11 +42,13 @@ Context* api_init_glfw(GLFWwindow* window) {
 
 Context* api_init_xhui(xhui::Painter* p) {
 #ifdef HAS_XHUI
-	msg_error("TODO");
-//	nix::create_query_pool(MAX_TIMESTAMP_QUERIES);
-//	_create_default_textures();
-//	return xhui::_nix_context.get();
-	return nullptr;
+	auto ctx = new Context();
+	nix::allow_separate_vertex_arrays = true;
+	nix::default_shader_bindings = false;
+	ctx->context = p->context->ctx;
+	nix::create_query_pool(MAX_TIMESTAMP_QUERIES);
+	ctx->_create_default_textures();
+	return ctx;
 #else
 	return nullptr;
 #endif

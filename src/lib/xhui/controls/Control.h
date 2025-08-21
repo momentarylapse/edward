@@ -26,6 +26,11 @@ enum class ControlType {
 	Window
 };
 
+enum class Orientation {
+	HORIZONTAL,
+	VERTICAL,
+};
+
 class Control : public Sharable<VirtualBase> {
 	friend class Window;
 	friend class Panel;

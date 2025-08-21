@@ -5,6 +5,7 @@
 #include "Toolbar.h"
 #include "Button.h"
 #include "ToggleButton.h"
+#include "Separator.h"
 #include "../Painter.h"
 #include "../Theme.h"
 #include "../Resource.h"
@@ -12,19 +13,6 @@
 #include "../../os/msg.h"
 
 namespace xhui {
-
-class Separator : public Control {
-public:
-	Separator() : Control("") {
-		min_width_user = 1;
-		size_mode_x = SizeMode::Shrink;
-		size_mode_y = SizeMode::Shrink; // "Fill"?
-	}
-	void _draw(Painter* p) override {
-		p->set_color(Theme::_default.background_active);
-		p->draw_line(_area.p00(), _area.p01());
-	}
-};
 
 Toolbar::Toolbar(const string& id) : Grid(id) {
 	//size_mode_y = SizeMode::Shrink;
@@ -60,7 +48,7 @@ void Toolbar::add_item_checkable(const string& id, const string& title, const st
 
 void Toolbar::add_separator() {
 	int n = get_children(ChildFilter::All).num;
-	add_child(new Separator, n, 0);
+	add_child(new Separator("", Orientation::VERTICAL), n, 0);
 }
 
 

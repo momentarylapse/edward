@@ -189,6 +189,8 @@ void Control::set_option(const string& key, const string& value) {
 			if (auto w = get_window())
 				w->focus_control = this;
 		});
+	} else if (key == "hidden") {
+		visible = false;
 	} else if (key == "visible") {
 		visible = value._bool() or value == "";
 	}

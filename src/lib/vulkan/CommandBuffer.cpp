@@ -325,9 +325,9 @@ void CommandBuffer::image_barrier(const Texture *t, AccessFlags src_access, Acce
 
 void CommandBuffer::copy_image(const Texture *source, const Texture *dest, const Array<int> &extend) {
 	VkImageCopy region;
-	region.srcSubresource = {source->image.aspect(), 0, 0, 1};
+	region.srcSubresource = {(VkImageAspectFlags)source->image.aspect(), 0, 0, 1};
 	region.srcOffset = {extend[0], extend[1], 0};
-	region.dstSubresource = {dest->image.aspect(), 0, 0, 1};
+	region.dstSubresource = {(VkImageAspectFlags)dest->image.aspect(), 0, 0, 1};
 	region.dstOffset = {extend[4], extend[5], 0};
 	region.extent = {(unsigned)extend[2], (unsigned)extend[3], 1};
 	vkCmdCopyImage(buffer,

@@ -6,6 +6,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_BUILD_TYPE Debug)
 
+if(WIN32)
+	list(APPEND COMPILE_OPTIONS /permissive-)
+endif()
+
 
 #=======================================================================================
 #    libraries
@@ -23,7 +27,7 @@ list(APPEND COMPILE_DEFINITIONS HAS_LIB_ZLIB=1)
 
 # lib: vulkan or gl (mandatory)
 set(VULKAN_OR_GL "vulkan" CACHE STRING "Use vulkan or gl?")
-pkg_check_modules(VULKAN vulkan)
+find_package(Vulkan COMPONENTS shaderc_combined)
 if(VULKAN_FOUND)
 	list(APPEND VULKAN_OR_GL_FOUND "vulkan")
 endif()
@@ -42,10 +46,7 @@ else()
 	set(VULKAN_OR_GL "")
 endif()
 if(VULKAN_OR_GL STREQUAL "vulkan")
-	list(APPEND INCLUDE_DIRECTORIES ${VULKAN_INCLUDE_DIRS})
-	list(APPEND LINK_DIRECTORIES ${VULKAN_LIBRARY_DIRS})
-	list(APPEND DEPS ${VULKAN_LIBRARIES})
-	list(APPEND COMPILE_OPTIONS ${VULKAN_CFLAGS_OTHER})
+	list(APPEND DEPS Vulkan::Vulkan Vulkan::shaderc_combined)
 	list(APPEND COMPILE_DEFINITIONS HAS_LIB_VULKAN=1)
 endif()
 if(VULKAN_OR_GL STREQUAL "gl")
@@ -87,21 +88,21 @@ else()
 endif()
 
 
-# lib: shaderc (optional)
-set(LIB_SHADERC_ENABLED true CACHE BOOL "Use shaderc library?")
-pkg_check_modules(SHADERC shaderc)
-if(SHADERC_FOUND)
+# lib: spirv (optional)
+set(LIB_SPIRV_ENABLED true CACHE BOOL "Use spirv library?")
+pkg_check_modules(SPIRV spirv)
+if(SPIRV_FOUND)
 else()
-	set(LIB_SHADERC_ENABLED false CACHE BOOL "shaderc library not found" FORCE)
+	set(LIB_SPIRV_ENABLED false CACHE BOOL "spirv library not found" FORCE)
 endif()
-if(${LIB_SHADERC_ENABLED})
-	list(APPEND INCLUDE_DIRECTORIES ${SHADERC_INCLUDE_DIRS})
-	list(APPEND LINK_DIRECTORIES ${SHADERC_LIBRARY_DIRS})
-	list(APPEND DEPS ${SHADERC_LIBRARIES})
-	list(APPEND COMPILE_OPTIONS ${SHADERC_CFLAGS_OTHER})
-	list(APPEND COMPILE_DEFINITIONS HAS_LIB_SHADERC=1)
+if(${LIB_SPIRV_ENABLED})
+	list(APPEND INCLUDE_DIRECTORIES ${SPIRV_INCLUDE_DIRS})
+	list(APPEND LINK_DIRECTORIES ${SPIRV_LIBRARY_DIRS})
+	list(APPEND DEPS ${SPIRV_LIBRARIES})
+	list(APPEND COMPILE_OPTIONS ${SPIRV_CFLAGS_OTHER})
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_SPIRV=1)
 else()
-	list(APPEND COMPILE_DEFINITIONS HAS_LIB_SHADERC=0)
+	list(APPEND COMPILE_DEFINITIONS HAS_LIB_SPIRV=0)
 endif()
 
 
@@ -186,6 +187,7 @@ add_executable(edward
 	src/data/mesh/VertexStagingBuffer.cpp
 	src/data/Data.cpp
 	src/lib/any/any.cpp
+	src/lib/any/conversion.cpp
 	src/lib/base/array.cpp
 	src/lib/base/pointer.cpp
 	src/lib/base/strings.cpp

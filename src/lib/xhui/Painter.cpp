@@ -45,7 +45,7 @@ void Painter::set_font_size(float size) {
 }
 
 vec2 Painter::get_str_size(const string &str) {
-	auto dim = get_cached_text_dimensions(str, face, font_size, ui_scale);
+	const auto& dim = get_cached_text_dimensions(str, face, font_size, ui_scale);
 	return {dim.bounding_width / ui_scale, dim.inner_height() / ui_scale};
 }
 
@@ -59,7 +59,7 @@ void Painter::set_roundness(float radius) {
 
 void Painter::draw_arc(const vec2& p, float r, float w0, float w1) {
 	//float w = (w0 + w1) / 2;
-	draw_line({p.x + r * (float)cos(w0), p.y - r * (float)sin(w0)}, {p.x + r * (float)cos(w1), p.y - r * (float)sin(w1)});
+	draw_line({p.x + r * cosf(w0), p.y - r * sinf(w0)}, {p.x + r * cosf(w1), p.y - r * sinf(w1)});
 	//draw_line({p.x + r * cos(w), p.y - r * sin(w)}, {p.x + r * cos(w1), p.y - r * sin(w1)});
 }
 
