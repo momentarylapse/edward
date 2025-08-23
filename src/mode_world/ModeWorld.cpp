@@ -4,6 +4,7 @@
 
 #include "ModeWorld.h"
 #include "ModeEditTerrain.h"
+#include "ModeScripting.h"
 #include "dialog/EntityPanel.h"
 #include "action/ActionWorldMoveSelection.h"
 #include <Session.h>
@@ -54,6 +55,8 @@ ModeWorld::ModeWorld(Session* session) :
 		//data->lights
 		//	world.en
 	});
+
+	mode_scripting = new ModeScripting(this);
 }
 
 Array<WorldScriptVariable> load_variables(const kaba::Class* c) {
@@ -114,6 +117,49 @@ void update_class(Session* session, ScriptInstanceData& _c) {
 	}
 }
 
+void ModeWorld::on_enter_rec() {
+	session->out_changed >> create_sink([this] {
+		update_menu();
+	});
+
+	event_ids_rec.add(session->win->event("mode_world", [this] {
+		session->set_mode(this);
+	}));
+	event_ids_rec.add(session->win->event("mode-world-scripting", [this] {
+		session->set_mode(mode_scripting.get());
+	}));
+	session->win->event("properties", [this] {
+		session->win->open_dialog(new PropertiesDialog(session->win, data));
+	});
+	session->win->event("run-game", [this] {
+		Path engine_dir = xhui::config.get_str("EngineDir", "");
+		if (engine_dir.is_empty()) {
+			session->error("cn not run engine. Config 'EngineDir' is not set");
+			return;
+		}
+
+		auto cmd = format("cd \"%s\"; \"%s\" \"%s\"", session->storage->root_dir, engine_dir | "y", data->filename.basename_no_ext());
+		try {
+			os::terminal::shell_execute(cmd);
+		} catch (Exception &e) {
+			session->error(format("failed to run '%s'", cmd));
+		}
+	});
+
+	/*session->win->event("mode_world_terrain", [this] {
+		session->set_mode(new ModeEditTerrain(this));
+	});*/
+}
+
+void ModeWorld::on_leave_rec() {
+	session->out_changed.unsubscribe(this);
+
+	for (int uid: event_ids_rec)
+		session->win->remove_event_handler(uid);
+	event_ids_rec.clear();
+}
+
+
 void ModeWorld::on_enter() {
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);
@@ -144,28 +190,6 @@ void ModeWorld::on_enter() {
 	auto menu_bar = (xhui::MenuBar*)session->win->get_control("menu");
 	auto menu = xhui::create_resource_menu("menu_world");
 	menu_bar->set_menu(menu);
-
-	session->win->event("properties", [this] {
-		session->win->open_dialog(new PropertiesDialog(session->win, data));
-	});
-	session->win->event("run-game", [this] {
-		Path engine_dir = xhui::config.get_str("EngineDir", "");
-		if (engine_dir.is_empty()) {
-			session->error("cn not run egine. Config 'EngineDir' is not set");
-			return;
-		}
-
-		auto cmd = format("cd \"%s\"; \"%s\" \"%s\"", session->storage->root_dir, engine_dir | "y", data->filename.basename_no_ext());
-		try {
-			os::terminal::shell_execute(cmd);
-		} catch (Exception &e) {
-			session->error(format("failed to run '%s'", cmd));
-		}
-	});
-
-	/*session->win->event("mode_world_terrain", [this] {
-		session->set_mode(new ModeEditTerrain(this));
-	});*/
 
 	session->win->event_x("area", xhui::event_id::DragDrop, [this] {
 		multi_view->hover = multi_view->get_hover(multi_view->hover_window, session->win->drag.m);
@@ -225,6 +249,14 @@ void ModeWorld::on_leave() {
 	set_side_panel(nullptr);
 
 	data->out_changed.unsubscribe(this);
+}
+
+
+void ModeWorld::update_menu() {
+	auto win = session->win;
+
+	win->check("mode_world", session->cur_mode == this);
+	win->check("mode-world-scripting", session->cur_mode == mode_scripting.get());
 }
 
 

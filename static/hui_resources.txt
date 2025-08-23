@@ -10337,7 +10337,7 @@ world-toolbar
 
 0
 0
-16
+17
 Item
 new
 image=new
@@ -10406,32 +10406,38 @@ checkable,image=model-surface
 0
 Item
 mode_world_terrain
-checkable,image=terrain
+checkable,image=terrain,disabled
 11
 0
 0
 Item
 mode_world_camera
-checkable,image=world-cam
+checkable,image=world-cam,hidden
 12
+0
+0
+Item
+mode-world-scripting
+checkable,image=world-scripting
+13
 0
 0
 Separator
 
 
-13
+14
 0
 0
 Item
 properties
 image=configure
-14
+15
 0
 0
 Item
 run-game
 image=hui:media-play
-15
+16
 0
 0
 # Number Of Languages
@@ -10439,7 +10445,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1045
+1046
 # Text
 /ambient
 Ambient
@@ -13413,6 +13419,9 @@ Skybox
 
 world-skybox-popup/world-skybox-popup
 Skybox
+
+world-toolbar/mode-world-scripting
+Scripts
 
 world-toolbar/mode_world
 Objects and terrains

@@ -10,8 +10,9 @@ Toolbar world-toolbar ""
 	Item view_pop "Pop" image=view-pop "tooltip=Viewstage Pop"
 	Separator
 	Item mode_world "Objects and terrains" checkable image=model-surface
-	Item mode_world_terrain "Height map" checkable image=terrain
-	Item mode_world_camera "Camera flight" checkable image=world-cam
+	Item mode_world_terrain "Height map" checkable image=terrain disabled
+	Item mode_world_camera "Camera flight" checkable image=world-cam hidden
+	Item mode-world-scripting "Scripts" checkable image=world-scripting
 	Separator
 	Item properties "Properties" image=configure
 	Item run-game "Run game" image=hui:media-play

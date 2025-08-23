@@ -10,11 +10,13 @@
 #include "../view/Hover.h"
 #include "data/DataWorld.h"
 
+
 namespace yrenderer {
 	class Light;
 }
 class MultiViewWindow;
 class EntityPanel;
+class ModeScripting;
 namespace xhui {
 	class Panel;
 }
@@ -23,8 +25,11 @@ class ModeWorld : public Mode {
 public:
 	explicit ModeWorld(Session* session);
 
+	void on_enter_rec() override;
+	void on_leave_rec() override;
 	void on_enter() override;
 	void on_leave() override;
+	void update_menu();
 
 	void on_mouse_move(const vec2& m, const vec2& d) override;
 	void on_mouse_leave(const vec2&) override;
@@ -49,6 +54,9 @@ public:
 	DataWorld* data;
 	DataWorld temp;
 	Array<yrenderer::Light*> lights;
+
+	Array<int> event_ids_rec;
+	owned<ModeScripting> mode_scripting;
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 

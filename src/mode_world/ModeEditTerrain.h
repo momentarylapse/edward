@@ -2,8 +2,7 @@
 // Created by Michael Ankele on 2025-04-21.
 //
 
-#ifndef MODEEDITTERRAIN_H
-#define MODEEDITTERRAIN_H
+#pragma once
 
 
 #include "../view/Mode.h"
@@ -37,5 +36,3 @@ public:
 };
 
 
-
-#endif //MODEEDITTERRAIN_H
