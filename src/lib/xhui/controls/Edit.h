@@ -46,6 +46,7 @@ public:
 	using Index = int;
 
 	void set_cursor_pos(Index index, bool selecting = false);
+	void scroll_into_view(Index index);
 
 	mutable float ui_scale = 1.0f;
 	bool multiline = false;
@@ -62,6 +63,7 @@ public:
 	Index cursor_pos = 0;
 	Index selection_start = 0;
 	vec2 viewport_offset = {0,0};
+	vec2 viewport_size() const;
 	bool enabled = true;
 	float text_x0 = 0;
 	struct Cache {
@@ -81,6 +83,7 @@ public:
 	void _replace_range(Index i0, Index i1, const string& t);
 	void replace_range(Index i0, Index i1, const string& t);
 	void auto_insert(const string& t);
+	void multi_line_indent(int indent);
 	string get_range(Index i0, Index i1) const;
 
 	struct LinePos {

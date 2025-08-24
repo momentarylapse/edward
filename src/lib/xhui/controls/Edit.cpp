@@ -72,7 +72,9 @@ void Edit::Cache::rebuild(const string& text) {
 void Edit::set_string(const string &s) {
 	text = s;
 	cache.rebuild(text);
-	set_cursor_pos(0);
+	//set_cursor_pos(0); // depends on cache update (after on_draw!)
+	cursor_pos = 0;
+	selection_start = 0;
 	request_redraw();
 }
 
@@ -91,7 +93,7 @@ vec2 Edit::get_content_min_size() const {
 }
 
 void Edit::on_left_button_down(const vec2& m) {
-	set_cursor_pos(xy_to_index(m));
+	set_cursor_pos(xy_to_index(m), get_window()->is_key_pressed(KEY_SHIFT));
 }
 
 void Edit::on_mouse_move(const vec2& m, const vec2& d) {
@@ -100,9 +102,13 @@ void Edit::on_mouse_move(const vec2& m, const vec2& d) {
 	}
 }
 
+vec2 Edit::viewport_size() const {
+	return vec2::max(cache.content_size - _area.size() + vec2(margin_x * 2, 0), vec2::ZERO);
+}
+
+
 void Edit::on_mouse_wheel(const vec2& d) {
-	auto mm = cache.content_size - _area.size();
-	viewport_offset = vec2::max(vec2::min(viewport_offset - d * 10, mm), vec2::ZERO);
+	viewport_offset = vec2::max(vec2::min(viewport_offset - d * 20, viewport_size()), vec2::ZERO);
 	request_redraw();
 	emit_event(event_id::Scroll, false);
 }
@@ -138,10 +144,16 @@ void Edit::on_key_down(int key) {
 	auto jump_lines = [this, cur_lp, shift] (int dlines) {
 		set_cursor_pos(line_pos_to_index({cur_lp.line + dlines, cur_lp.offset}), shift);
 	};
-	if (key_no_shift == KEY_UP and multiline)
-		jump_lines(-1);
-	if (key_no_shift == KEY_DOWN and multiline)
-		jump_lines(1);
+	if (multiline) {
+		if (key_no_shift == KEY_UP)
+			jump_lines(-1);
+		if (key_no_shift == KEY_DOWN)
+			jump_lines(1);
+		if (key_no_shift == KEY_PAGE_UP)
+			jump_lines(- (int)(_area.height() / cache.line_height[0]));
+		if (key_no_shift == KEY_PAGE_DOWN)
+			jump_lines((int)(_area.height() / cache.line_height[0]));
+	}
 
 
 #ifdef OS_MAC
@@ -194,10 +206,34 @@ void Edit::on_key_down(int key) {
 		else
 			emit_event(event_id::ActivateDialogDefault, false);
 	}
-	if (key == KEY_TAB and multiline)
-		auto_insert("\t");
+	if (key == KEY_TAB and multiline) {
+		if (index_to_line_pos(selection_start).line != index_to_line_pos(cursor_pos).line) {
+			multi_line_indent(1);
+		} else {
+			auto_insert("\t");
+		}
+	}
+	if (key == (KEY_TAB | KEY_SHIFT) and multiline) {
+		multi_line_indent(-1);
+	}
 
 	request_redraw();
+}
+
+void Edit::multi_line_indent(int indent) {
+	int line0 = index_to_line_pos(min(selection_start, cursor_pos)).line;
+	int line1 = index_to_line_pos(max(selection_start, cursor_pos)).line;
+	for (int l=line0; l<=line1; l++) {
+		int p = line_pos_to_index({l, 0});
+		if (indent > 0) {
+			replace_range(p, p, "\t");
+		} else {
+			if (get_range(p, p + 1) == "\t")
+				replace_range(p, p + 1, "");
+			else if (get_range(p, p + tab_size) == string(" ").repeat(tab_size))
+				replace_range(p, p + tab_size, "");
+		}
+	}
 }
 
 void Edit::on_key_char(int character) {
@@ -230,6 +266,7 @@ void Edit::draw_text(Painter* p) {
 
 	// update text dims
 	float inner_height = 0;
+	float line_height = 0;
 	{
 		auto& lines = cache.lines;
 		cache.line_y0.clear();
@@ -240,16 +277,16 @@ void Edit::draw_text(Painter* p) {
 		for (const string &l: lines) {
 			auto dim = get_cached_text_dimensions(l, face, font_size, p->ui_scale);
 			inner_height = dim.inner_height() / ui_scale;
-			float dy = dim.line_dy / ui_scale * line_height_scale;
-			cache.line_height.add(dy);
+			line_height = dim.bounding_height / ui_scale * line_height_scale;
+			cache.line_height.add(line_height);
 			cache.line_y0.add(y0);
-			cache.line_width.add(dim.dx / ui_scale);
-			cache.content_size.x = max(cache.content_size.x, dim.dx / ui_scale);
-			y0 += dy;
-			cache.content_size.y += dy;
+			cache.line_width.add(dim.bounding_width / ui_scale);
+			cache.content_size.x = max(cache.content_size.x, dim.bounding_width / ui_scale);
+			y0 += line_height;
+			cache.content_size.y += line_height;
 		}
 		if (!multiline)
-			cache.line_y0[0] = _area.center().y - inner_height / 2;
+			cache.line_y0[0] = _area.center().y - line_height / 2;
 	}
 
 	// selection
@@ -279,6 +316,7 @@ void Edit::draw_text(Painter* p) {
 	if (!enabled)
 		col0 = Theme::_default.text_disabled;
 	p->set_color(col0);
+	float dy = (line_height - inner_height) / 2;
 	for (const auto& [line, l]: enumerate(cache.lines)) {
 		if (cache.line_y0[line] + cache.line_height[line] < _area.y1)
 			continue;
@@ -295,7 +333,7 @@ void Edit::draw_text(Painter* p) {
 						p->set_font(font_name, font_size, false, false);
 						p->set_color(col0);
 						string t = text.sub(i0, m.i0);
-						p->draw_str({x0, cache.line_y0[line]}, t);
+						p->draw_str({x0, cache.line_y0[line] + dy}, t);
 						x0 += p->get_str_width(t);
 						i0 = m.i0;
 					}
@@ -305,7 +343,7 @@ void Edit::draw_text(Painter* p) {
 						p->set_color(m.col);
 						p->set_font(font_name, font_size, m.flags & FontFlags::Bold, m.flags & FontFlags::Italic);
 						string t = text.sub(i0, min(m.i1, i1));
-						p->draw_str({x0, cache.line_y0[line]}, t);
+						p->draw_str({x0, cache.line_y0[line] + dy}, t);
 						x0 += p->get_str_width(t);
 						i0 = min(m.i1, i1);
 					}
@@ -317,11 +355,11 @@ void Edit::draw_text(Painter* p) {
 				p->set_color(col0);
 				p->set_font(font_name, font_size, false, false);
 				string t = text.sub(i0, i1);
-				p->draw_str({x0, cache.line_y0[line]}, t);
+				p->draw_str({x0, cache.line_y0[line] + dy}, t);
 			}
 
 		} else {
-			p->draw_str({text_x0, cache.line_y0[line]}, l);
+			p->draw_str({text_x0, cache.line_y0[line] + dy}, l);
 		}
 	}
 
@@ -365,10 +403,15 @@ void Edit::_replace_range(Index i0, Index i1, const string& t) {
 
 	text = text.sub_ref(0, i0) + t + text.sub_ref(i1);
 	cache.rebuild(text);
-	if (cursor_pos >= i1)
-		set_cursor_pos(cursor_pos - (i1 - i0) + t.num);
-	else if (cursor_pos >= i0)
-		set_cursor_pos(i0 + t.num);
+	auto map_index = [i0, i1, &t] (int index) {
+		if (index >= i1)
+			return index - (i1 - i0) + t.num;
+		if (index >= i0)
+			return i0 + t.num;
+		return index;
+	};
+	cursor_pos = map_index(cursor_pos);
+	selection_start = map_index(selection_start);
 	on_edit();
 	emit_event(event_id::Changed, true);
 }
@@ -397,11 +440,29 @@ void Edit::set_cursor_pos(Index index, bool selecting) {
 	cursor_pos = index;
 	if (!selecting)
 		selection_start = index;
+	scroll_into_view(cursor_pos);
 	request_redraw();
+}
+
+void Edit::scroll_into_view(Index index) {
+	if (!face)
+		return;
+	const auto xy = index_to_xy(index);
+	if (xy.x < _area.x1)
+		viewport_offset.x -= (_area.x1 - xy.x);
+	else if (xy.x > _area.x2)
+		viewport_offset.x += (xy.x - _area.x2);
+	if (xy.y < _area.y1)
+		viewport_offset.y -= (_area.y1 - xy.y);
+	else if (xy.y + font_size > _area.y2)
+		viewport_offset.y += (xy.y - _area.y2) + font_size * 2;
+	viewport_offset = vec2::max(vec2::min(viewport_offset, viewport_size()), vec2::ZERO);
 }
 
 
 vec2 Edit::index_to_xy(Index index) const {
+	if (!face)
+		return {0,0};
 	auto lp = index_to_line_pos(index);
 	int first = cache.line_first_index[lp.line];
 	face->set_size(font_size * ui_scale);
@@ -443,7 +504,7 @@ void Edit::_draw(Painter *p) {
 	// background
 	color bg = Theme::_default.background_button;
 	if (alt_background)
-		bg = Theme::_default.background;
+		bg = Theme::_default.background_low;
 	p->set_color(bg);
 	p->set_roundness(Theme::_default.button_radius);
 	p->draw_rect(_area);

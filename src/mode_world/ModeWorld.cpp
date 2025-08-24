@@ -191,7 +191,7 @@ void ModeWorld::on_enter() {
 	auto menu = xhui::create_resource_menu("menu_world");
 	menu_bar->set_menu(menu);
 
-	session->win->event_x("area", xhui::event_id::DragDrop, [this] {
+	event_ids.add(session->win->event_x("area", xhui::event_id::DragDrop, [this] {
 		multi_view->hover = multi_view->get_hover(multi_view->hover_window, session->win->drag.m);
 		const vec3 p = multi_view->cursor_pos_3d(session->win->drag.m);
 		if (session->win->drag.payload.match("add-entity-default-*")) {
@@ -238,7 +238,7 @@ void ModeWorld::on_enter() {
 			e.object.object = e.object.object = session->resource_manager->load_model(e.object.filename);
 			data->add_entity(e);
 		}
-	});
+	}));
 
 	set_side_panel(new EntityPanel(this));
 }
@@ -249,6 +249,9 @@ void ModeWorld::on_leave() {
 	set_side_panel(nullptr);
 
 	data->out_changed.unsubscribe(this);
+
+	for (int uid: event_ids)
+		session->win->remove_event_handler(uid);
 }
 
 

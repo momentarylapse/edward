@@ -187,10 +187,10 @@ Painter::Painter(Window *w) {
 		offset_y = 0;
 
 
+		glfwGetWindowSize(window->window, &width, &height);
+	//	mat_pixel_to_rel = mat4::translation({- 1,- 1, 0}) *  mat4::scale(2.0f / (float)width, 2.0f / (float)height, 1);
 		int ww, hh;
-		glfwGetWindowSize(window->window, &ww, &hh);
-		width = (float)ww / ui_scale;
-		height = (float)hh / ui_scale;
+		glfwGetFramebufferSize(window->window, &ww, &hh);
 
 		_area = {0, (float)width, 0, (float)height};
 		native_area = {0, (float)ww, 0, (float)hh};

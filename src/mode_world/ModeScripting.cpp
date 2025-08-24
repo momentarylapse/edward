@@ -5,7 +5,7 @@
 #include "ModeScripting.h"
 #include "ModeWorld.h"
 #include "../view/MultiView.h"
-#include "dialog/EditTerrainPanel.h"
+#include "dialog/ScriptingPanel.h"
 #include <lib/xhui/xhui.h>
 
 ModeScripting::ModeScripting(ModeWorld* _mode_world) : SubMode(_mode_world) {
@@ -28,11 +28,10 @@ void ModeScripting::on_enter() {
 		{MultiViewType::WORLD_ENTITY, &data->entities}
 	};
 
-//	set_side_panel(new EditTerrainPanel(this));
+	set_side_panel(new ScriptingPanel(mode_world));
 }
 
 void ModeScripting::on_leave() {
-	//session->win->unembed(dialog);
 	set_side_panel(nullptr);
 
 	data->out_changed.unsubscribe(this);

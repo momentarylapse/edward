@@ -149,6 +149,11 @@ layout(binding = 0) uniform sampler2D tex0;
 void main() {
 	/*out_color = texture(tex0, in_uv);
 	out_color *= params.color;*/
+#if 0
+	out_color = params.color;
+	out_color.rg = fract(in_uv * params.size);
+	return;
+#endif
 
 	out_color = texture(tex0, in_uv);
 	out_color *= params.color;

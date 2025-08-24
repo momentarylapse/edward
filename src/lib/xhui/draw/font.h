@@ -19,15 +19,15 @@ void init();
 
 struct TextDimensions {
 	float bounding_width;
-	float bounding_height;
-	float bounding_top_to_line;
+	float bounding_height; // = num_lines * line_dy
 	float line_dy;
-	float dx;
+	float ascender;
+	float descender; // positive
 	int num_lines;
 
 	float inner_height() const;
-	rect bounding_box(const vec2& p0) const;
-	rect inner_box(const vec2& p0) const;
+	rect bounding_box(const vec2& p0) const; // with padding below last line
+	rect inner_box(const vec2& p0) const; // without padding
 };
 
 struct Face {

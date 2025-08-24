@@ -2,8 +2,7 @@
 // Created by michi on 02.02.25.
 //
 
-#ifndef ENTITYPANEL_H
-#define ENTITYPANEL_H
+#pragma once
 
 #include <lib/xhui/Panel.h>
 #include <lib/pattern/Observable.h>
@@ -23,6 +22,3 @@ public:
 	Array<xhui::Panel*> component_panels;
 };
 
-
-
-#endif //ENTITYPANEL_H

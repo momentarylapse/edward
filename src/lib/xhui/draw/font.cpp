@@ -150,13 +150,13 @@ TextDimensions Face::get_text_dimensions(const string &text) {
 			continue;
 		}
 		//wmax = max(wmax, x + face->glyph->width);
-		x += face->glyph->advance.x >> 6;
+		x += (int)face->glyph->advance.x >> 6;
 	}
-	dim.dx = max(x, wmax);
-	dim.bounding_width = max(x, wmax);// + current_font_size*0.1f;
+	dim.bounding_width = (float)max(x, wmax);
 	//dim.line_dy = current_font_size - units_to_pixel((float)face->descender);
 	dim.line_dy = units_to_pixel((float)face->height);
-	dim.bounding_top_to_line = current_size;
+	dim.ascender = units_to_pixel((float)face->ascender);
+	dim.descender = -units_to_pixel((float)face->descender);
 	dim.bounding_height = dim.line_dy * (float)dim.num_lines;
 	//msg_write(f2s(units_to_pixel((float)face->descender), 3));
 	return dim;
@@ -166,7 +166,7 @@ TextDimensions Face::get_text_dimensions(const string &text) {
 }
 
 float TextDimensions::inner_height() const {
-	return bounding_height - line_dy + bounding_top_to_line;
+	return bounding_height - line_dy + ascender + descender;
 }
 
 rect TextDimensions::bounding_box(const vec2& p0) const {
@@ -195,22 +195,21 @@ void Face::render_text(const string &text, xhui::Align align, Image &im) {
 
 	//font_set_font(font_name, font_size);
 
-	im.create(dim.bounding_width, dim.bounding_height, color(0,0,0,0));
+	im.create((int)dim.bounding_width, (int)dim.bounding_height, color(0,0,0,0));
 
-	int x=0, y = dim.bounding_top_to_line;
+	int x=0, y = (int)dim.ascender;
 
 	for (int u: utf32) {
 		if (u == '\n') {
 			x = 0;
-			y += dim.line_dy;
+			y += (int)dim.line_dy;
 			continue;
 		}
 		if (u == '\t') {
 			x = ((x / tab_dx) + 1) * tab_dx;
 			continue;
 		}
-		int error = FT_Load_Char(face, u, FT_LOAD_RENDER);
-		if (error) {
+		if (int error = FT_Load_Char(face, u, FT_LOAD_RENDER)) {
 			msg_write("E");
 			continue;
 		}
@@ -220,7 +219,7 @@ void Face::render_text(const string &text, xhui::Align align, Image &im) {
 				float f = (float)face->glyph->bitmap.buffer[i + j*face->glyph->bitmap.width] / 255.0f;
 				im.set_pixel(x+face->glyph->bitmap_left+i,y-face->glyph->bitmap_top+j, color(f, 1,1,1));
 			}
-		x += face->glyph->advance.x >> 6;
+		x += (int)face->glyph->advance.x >> 6;
 	}
 #endif
 }

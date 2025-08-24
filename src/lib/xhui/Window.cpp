@@ -31,6 +31,8 @@ Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":windo
 	if (flags & Flags::OWN_DECORATION) {
 		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+	} else {
+		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_FALSE);
 	}
 
 	if (!(flags & Flags::FAKE)) {
@@ -608,7 +610,7 @@ bool Window::button_down(int index) const {
 	return false;
 }
 
-	bool Window::is_key_pressed(int key) const {
+bool Window::is_key_pressed(int key) const {
 	if (key == KEY_CONTROL)
 		return state.key[KEY_LCONTROL] or state.key[KEY_RCONTROL];
 	if (key == KEY_SHIFT)

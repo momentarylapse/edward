@@ -36,10 +36,10 @@ vec2 Label::get_content_min_size() const {
 				ui_scale = win->ui_scale;
 			auto face = pick_font(Theme::_default.font_name, bold, italic);
 			auto dim = get_cached_text_dimensions(title, face, font_size, ui_scale);
-			text_w = int(dim.bounding_width / ui_scale);
-			text_h = int(dim.inner_height() / ui_scale);
+			text_w = dim.bounding_width / ui_scale;
+			text_h = dim.inner_height() / ui_scale;
 		}
-		return vec2((float)text_w, (float)text_h) + margin.p00() + margin.p11();
+		return vec2(text_w, text_h) + margin.p00() + margin.p11();
 	}
 }
 

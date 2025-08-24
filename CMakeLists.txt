@@ -283,6 +283,7 @@ add_executable(edward
 	src/lib/math/vec2.cpp
 	src/lib/math/vec3.cpp
 	src/lib/math/vec4.cpp
+	src/lib/net/_kaba_export.cpp
 	src/lib/net/BinaryBuffer.cpp
 	src/lib/net/net.cpp
 	src/lib/net/Socket.cpp
@@ -311,6 +312,15 @@ add_executable(edward
 	src/lib/pattern/Observable.cpp
 	src/lib/profiler/_kaba_export.cpp
 	src/lib/profiler/Profiler.cpp
+	src/lib/syntaxhighlight/BaseParser.cpp
+	src/lib/syntaxhighlight/ParserC.cpp
+	src/lib/syntaxhighlight/ParserCmake.cpp
+	src/lib/syntaxhighlight/ParserHui.cpp
+	src/lib/syntaxhighlight/ParserIni.cpp
+	src/lib/syntaxhighlight/ParserKaba.cpp
+	src/lib/syntaxhighlight/ParserPython.cpp
+	src/lib/syntaxhighlight/ParserShader.cpp
+	src/lib/syntaxhighlight/ParserText.cpp
 	src/lib/threads/Mutex.cpp
 	src/lib/threads/Thread.cpp
 	src/lib/threads/ThreadedWork.cpp
@@ -498,6 +508,7 @@ add_executable(edward
 	src/mode_world/dialog/EditTerrainPanel.cpp
 	src/mode_world/dialog/EntityPanel.cpp
 	src/mode_world/dialog/PropertiesDialog.cpp
+	src/mode_world/dialog/ScriptingPanel.cpp
 	src/mode_world/ModeEditTerrain.cpp
 	src/mode_world/ModeScripting.cpp
 	src/mode_world/ModeWorld.cpp
@@ -586,6 +597,7 @@ target_link_directories(edward PUBLIC ${LINK_DIRECTORIES})
 target_compile_options(edward PUBLIC ${COMPILE_OPTIONS})
 target_compile_definitions(edward PUBLIC ${COMPILE_DEFINITIONS}  SOURCE_ROOT="${CMAKE_SOURCE_DIR}" INSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
 target_link_libraries(edward PUBLIC ${DEPS})
+target_include_directories(edward PUBLIC src/)
 target_include_directories(edward PUBLIC src)
 target_include_directories(edward PUBLIC src/y)
 

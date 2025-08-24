@@ -30,7 +30,7 @@ public:
 
 	XImage* image = nullptr;
 
-	mutable int text_w, text_h;
+	mutable float text_w, text_h;
 };
 
 }

@@ -56,6 +56,7 @@ public:
 	Array<yrenderer::Light*> lights;
 
 	Array<int> event_ids_rec;
+	Array<int> event_ids;
 	owned<ModeScripting> mode_scripting;
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
