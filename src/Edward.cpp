@@ -11,6 +11,7 @@
 #include <lib/os/msg.h>
 #include <lib/kaba/lib/lib.h>
 #include <lib/yrenderer/MaterialManager.h>
+#include <lib/syntaxhighlight/Theme.h>
 #include <mode_material/data/DataMaterial.h>
 #include <mode_model/data/DataModel.h>
 #include <mode_world/data/DataWorld.h>
@@ -103,6 +104,8 @@ int main(const Array<string>& args) {
 	}
 
 	kaba::init();
+	syntaxhighlight::init();
+	syntaxhighlight::default_theme = syntaxhighlight::get_theme("dark2");
 
 
 	CommandLineParser p;
