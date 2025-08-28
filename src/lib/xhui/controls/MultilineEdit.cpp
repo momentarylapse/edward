@@ -7,7 +7,7 @@ MultilineEdit::MultilineEdit(const string &_id, const string &t) : Edit(_id, t) 
 	multiline = true;
 	margin_x = 0;
 	margin_y = 0;
-	show_focus_frame = false;
+	//show_focus_frame = false;
 }
 
 }

@@ -61,12 +61,11 @@ void export_package_net(kaba::Exporter* e) {
 	e->link_class_func("BinaryBuffer.set_pos", &BinaryBuffer::set_pos);
 	e->link_class_func("BinaryBuffer.get_pos", &BinaryBuffer::get_pos);
 	e->link_class_func("BinaryBuffer.__lshift__:BinaryBuffer:i32", (void(BinaryBuffer::*)(int))&BinaryBuffer::operator<<);
-	e->link_class_func("BinaryBuffer.__lshift__:BinaryBuffer:fi32", (void(BinaryBuffer::*)(float))&BinaryBuffer::operator<<);
+	e->link_class_func("BinaryBuffer.__lshift__:BinaryBuffer:f32", (void(BinaryBuffer::*)(float))&BinaryBuffer::operator<<);
 	e->link_class_func("BinaryBuffer.__lshift__:BinaryBuffer:bool", (void(BinaryBuffer::*)(bool))&BinaryBuffer::operator<<);
 	e->link_class_func("BinaryBuffer.__lshift__:BinaryBuffer:u8", (void(BinaryBuffer::*)(char))&BinaryBuffer::operator<<);
 	e->link_class_func("BinaryBuffer.__lshift__:BinaryBuffer:string", (void(BinaryBuffer::*)(const string&))&BinaryBuffer::operator<<);
 	e->link_class_func("BinaryBuffer.__lshift__:BinaryBuffer:math.vec3", (void(BinaryBuffer::*)(const vec3&))&BinaryBuffer::operator<<);
-	msg_error("WARNING: (net export) CHECK INTERFACE!!!");
 
 	e->link_func("listen", &__socket_listen__);
 	e->link_func("connect", &__socket_connect__);

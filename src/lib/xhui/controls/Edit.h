@@ -52,6 +52,8 @@ public:
 	bool multiline = false;
 	bool numerical = false;
 	bool show_focus_frame = true;
+	bool show_line_numbers = false;
+	float line_number_area_width = 0;
 	float margin_x, margin_y;
 	string font_name;
 	float font_size;

@@ -80,6 +80,14 @@ RenderPathDeferred::RenderPathDeferred(Context* ctx, int width, int height, int 
 	}
 }
 
+void RenderPathDeferred::remove_all_emitters() {
+	scene_renderer_background->emitters.clear();
+	scene_renderer->emitters.clear();
+	scene_renderer_trans->emitters.clear();
+	shadow_renderer->remove_all_emitters();
+	cube_map_renderer->remove_all_emitters();
+}
+
 void RenderPathDeferred::add_background_emitter(shared<MeshEmitter> emitter) {
 	scene_renderer_background->add_emitter(emitter);
 	cube_map_renderer->add_emitter(emitter);

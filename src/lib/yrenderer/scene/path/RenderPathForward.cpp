@@ -28,6 +28,11 @@ RenderPathForward::RenderPathForward(Context* ctx, int shadow_resolution) : Rend
 	}
 }
 
+void RenderPathForward::remove_all_emitters() {
+	scene_renderer->emitters.clear();
+	shadow_renderer->remove_all_emitters();
+	cube_map_renderer->remove_all_emitters();
+}
 
 void RenderPathForward::add_background_emitter(shared<MeshEmitter> emitter) {
 	scene_renderer->add_emitter(emitter);
@@ -50,7 +55,7 @@ void RenderPathForward::add_transparent_emitter(shared<MeshEmitter> emitter) {
 
 void RenderPathForward::prepare(const RenderParams& params) {
 	profiler::begin(ch_prepare);
-	
+
 	scene_renderer->set_view(params, view);
 	scene_renderer->background_color = background_color;
 	scene_renderer->prepare(params);

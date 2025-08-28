@@ -38,6 +38,7 @@ public:
 	owned<ShadowRenderer> shadow_renderer;
 	owned<CubeMapRenderer> cube_map_renderer;
 
+	virtual void remove_all_emitters() {}
 	virtual void add_background_emitter(shared<MeshEmitter> emitter) {}
 	virtual void add_opaque_emitter(shared<MeshEmitter> emitter) {}
 	virtual void add_transparent_emitter(shared<MeshEmitter> emitter) {}
@@ -46,6 +47,7 @@ public:
 	void create_shadow_renderer(int resolution);
 	void create_cube_renderer();
 
+	// call BEFORE prepare()!
 	void set_view(const CameraParams& view);
 	void set_lights(const Array<Light*>& lights);
 

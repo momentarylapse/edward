@@ -44,6 +44,11 @@ ShadowRenderer::ShadowRenderer(Context* ctx, SceneView* parent, int resolution) 
 	}
 }
 
+void ShadowRenderer::remove_all_emitters() {
+	for (int i=0; i<NUM_CASCADES; i++)
+		cascades[i].scene_renderer->emitters.clear();
+}
+
 void ShadowRenderer::add_emitter(shared<MeshEmitter> emitter) {
 	for (int i=0; i<NUM_CASCADES; i++)
 		cascades[i].scene_renderer->add_emitter(emitter);

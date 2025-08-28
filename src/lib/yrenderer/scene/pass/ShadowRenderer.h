@@ -32,6 +32,7 @@ public:
 
 	static constexpr int NUM_CASCADES = 2;
 
+	void remove_all_emitters();
 	void add_emitter(shared<MeshEmitter> emitter);
 
     void render(const RenderParams& params) override;

@@ -88,11 +88,11 @@ vec2 Grid::get_greed_factor() const {
 	get_grid_greed_factors(xx, yy);
 	vec2 f = {0, 0};
 	if (size_mode_x == SizeMode::Expand)
-		f.x = 1;
+		f.x = greed_factor.x;
 	else if (size_mode_x == SizeMode::ForwardChild)
 		f.x = sum(xx);
 	if (size_mode_y == SizeMode::Expand)
-		f.y = 1;
+		f.y = greed_factor.y;
 	else if (size_mode_y == SizeMode::ForwardChild)
 		f.y = sum(yy);
 	return f;
@@ -101,11 +101,12 @@ vec2 Grid::get_greed_factor() const {
 void Grid::get_grid_greed_factors(Array<float> &x, Array<float> &y) const {
 	x.resize(nx);
 	y.resize(ny);
-	for (auto &c: children) {
-		vec2 f = c.control->get_greed_factor();
-		x[c.x] = max(x[c.x], f.x);
-		y[c.y] = max(y[c.y], f.y);
-	}
+	for (auto& c: children)
+		if (c.control->visible) {
+			vec2 f = c.control->get_greed_factor();
+			x[c.x] = max(x[c.x], f.x);
+			y[c.y] = max(y[c.y], f.y);
+		}
 }
 
 void Grid::negotiate_area(const rect &available) {
@@ -129,21 +130,23 @@ void Grid::negotiate_area(const rect &available) {
 	for (int i=0; i<h.num; i++)
 		h[i] += greed_to_y * gy[i];
 
-	for (auto &c: children) {
-		float x0 = _area.x1 + margin.x1;
-		float y0 = _area.y1 + margin.y1;
-		for (int i=0; i<c.x; i++)
-			x0 += w[i] + spacing;
-		for (int i=0; i<c.y; i++)
-			y0 += h[i] + spacing;
-		c.control->negotiate_area(rect(x0, x0 + w[c.x], y0, y0 + h[c.y]));
-	}
+	for (auto &c: children)
+		if (c.control->visible) {
+			float x0 = _area.x1 + margin.x1;
+			float y0 = _area.y1 + margin.y1;
+			for (int i=0; i<c.x; i++)
+				x0 += w[i] + spacing;
+			for (int i=0; i<c.y; i++)
+				y0 += h[i] + spacing;
+			c.control->negotiate_area(rect(x0, x0 + w[c.x], y0, y0 + h[c.y]));
+		}
 }
 
-Array<Control*> Grid::get_children(ChildFilter) const {
+Array<Control*> Grid::get_children(ChildFilter f) const {
 	Array<Control*> r;
 	for (auto& c: children)
-		r.add(c.control.get());
+		if (f == ChildFilter::All or c.control->visible)
+			r.add(c.control.get());
 	return r;
 }
 

@@ -31,6 +31,7 @@ public:
 
 	RenderPathDeferred(Context* ctx, int width, int height, int shadow_resolution);
 
+	void remove_all_emitters() override;
 	void add_background_emitter(shared<MeshEmitter> emitter) override;
 	void add_opaque_emitter(shared<MeshEmitter> emitter) override;
 	void add_transparent_emitter(shared<MeshEmitter> emitter) override;

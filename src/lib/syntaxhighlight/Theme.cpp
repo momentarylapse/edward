@@ -48,7 +48,6 @@ namespace syntaxhighlight {
 		schema->context[(int)MarkupType::STRING] = Context{color(1, 1, 0, 0), Black, false, false, false};
 		schema->context[(int)MarkupType::STRING_SUBSTITUTE] = Context{color(1, 0.6f, 0.3f, 0), Black, false, false, true};
 		schema->context[(int)MarkupType::MACRO] = Context{color(1, 0, 0.5f, 0.5f), Black, false, false, false};
-		default_theme = schema;
 		HighlightSchemas.add(schema);
 
 		schema = new Theme;
@@ -92,6 +91,7 @@ namespace syntaxhighlight {
 		schema->context[(int)MarkupType::STRING] = Context{color(1, 1, 0, 0), Black, false, false, false};
 		schema->context[(int)MarkupType::STRING_SUBSTITUTE] = Context{color(1, 0.6f, 0.3f, 0), Black, false, false, true};
 		schema->context[(int)MarkupType::MACRO] = Context{color(1, 0, 0.5f, 0.5f), Black, false, false, false};
+		default_theme = schema;
 		HighlightSchemas.add(schema);
 
 		InitParser();
