@@ -31,7 +31,8 @@ struct Box;
 };*/
 
 
-struct MeshVertex: multiview::SingleData {
+struct MeshVertex {
+	vec3 pos;
 	int normal_mode;
 	ivec4 bone_index;
 	vec4 bone_weight;
@@ -45,12 +46,12 @@ struct MeshVertex: multiview::SingleData {
 };
 
 
-struct ModelBall: multiview::SingleData {
+struct ModelBall {
 	int index;
 	float radius;
 };
 
-struct ModelCylinder: multiview::SingleData {
+struct ModelCylinder {
 	int index[2];
 	float radius;
 	bool round;

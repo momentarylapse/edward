@@ -100,12 +100,6 @@ void ModelMesh::build_topology()
 
 void ModelMesh::on_post_action_update() {
 	update_normals();
-	for (auto &p: polygons) {
-		p.pos = v_0;
-		for (int k=0;k<p.side.num;k++)
-			p.pos += vertices[p.side[k].vertex].pos;
-		p.pos /= p.side.num;
-	}
 }
 
 

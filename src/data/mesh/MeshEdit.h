@@ -2,8 +2,7 @@
 // Created by Michael Ankele on 2025-05-19.
 //
 
-#ifndef MESHEDIT_H
-#define MESHEDIT_H
+#pragma once
 
 #include <lib/base/base.h>
 #include <lib/base/set.h>
@@ -35,5 +34,3 @@ struct MeshEdit {
 	bool changes_topology() const;
 };
 
-
-#endif //MESHEDIT_H

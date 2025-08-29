@@ -2,10 +2,8 @@
 // Created by Michael Ankele on 2025-02-19.
 //
 
-#ifndef POLYGON_H
-#define POLYGON_H
+#pragma once
 
-#include <view/SingleData.h>
 #include <lib/base/base.h>
 #include <lib/math/vec3.h>
 #include <lib/math/vec4.h>
@@ -27,7 +25,7 @@ struct PolygonSide {
 	unsigned char triangulation[3];
 };
 
-struct Polygon: multiview::SingleData {
+struct Polygon {
 	Array<PolygonSide> side;
 	vec3 temp_normal;
 	bool normal_dirty = true;
@@ -56,4 +54,3 @@ struct Polygon: multiview::SingleData {
 };
 
 
-#endif //POLYGON_H
