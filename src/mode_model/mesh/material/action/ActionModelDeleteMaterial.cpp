@@ -8,7 +8,7 @@
 #include "ActionModelDeleteMaterial.h"
 #include "../../../data/DataModel.h"
 #include "../../../data/ModelMesh.h"
-#include <data/mesh/Polygon.h>
+#include <lib/mesh/Polygon.h>
 #include <assert.h>
 
 ActionModelDeleteMaterial::ActionModelDeleteMaterial(int _index) {

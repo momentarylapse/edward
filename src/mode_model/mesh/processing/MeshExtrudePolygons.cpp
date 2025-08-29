@@ -4,9 +4,9 @@
 
 #include "MeshExtrudePolygons.h"
 #include <Session.h>
-#include <data/mesh/Polygon.h>
-#include <data/mesh/PolygonMesh.h>
-#include <data/mesh/MeshEdit.h>
+#include <lib/mesh/Polygon.h>
+#include <lib/mesh/PolygonMesh.h>
+#include <lib/mesh/MeshEdit.h>
 #include <lib/base/iter.h>
 
 

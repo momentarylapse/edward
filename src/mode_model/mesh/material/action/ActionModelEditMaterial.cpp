@@ -8,7 +8,7 @@
 #include <algorithm>
 #include "ActionModelEditMaterial.h"
 #include "../../../data/ModelMesh.h"
-#include <data/mesh/Polygon.h>
+#include <lib/mesh/Polygon.h>
 #include <lib/image/image.h>
 #include <lib/ygraphics/graphics-impl.h>
 

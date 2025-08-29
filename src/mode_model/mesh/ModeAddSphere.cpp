@@ -6,8 +6,8 @@
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
 #include <Session.h>
-#include <data/mesh/GeometryBall.h>
-#include <data/mesh/GeometrySphere.h>
+#include <lib/mesh/GeometryBall.h>
+#include <lib/mesh/GeometrySphere.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>

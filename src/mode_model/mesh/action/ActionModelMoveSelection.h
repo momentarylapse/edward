@@ -9,7 +9,7 @@
 #include <action/ActionMultiView.h>
 #include <lib/base/set.h>
 
-class ModelMesh;
+struct ModelMesh;
 struct vec3;
 enum class MultiViewType;
 

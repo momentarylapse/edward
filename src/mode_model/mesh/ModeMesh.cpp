@@ -20,8 +20,8 @@
 #include "../data/ModelMesh.h"
 #include "material/dialog/ModelMaterialSelectionDialog.h"
 #include <Session.h>
-#include <data/mesh/GeometryCylinder.h>
-#include <data/mesh/GeometrySphere.h>
+#include <lib/mesh/GeometryCylinder.h>
+#include <lib/mesh/GeometrySphere.h>
 #include <helper/ResourceManager.h>
 #include <lib/base/iter.h>
 #include <lib/image/Painter.h>
@@ -31,7 +31,7 @@
 #include <view/MultiView.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
-#include <data/mesh/VertexStagingBuffer.h>
+#include <lib/mesh/VertexStagingBuffer.h>
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
 

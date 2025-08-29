@@ -7,10 +7,10 @@
 
 
 #include <action/Action.h>
-#include <data/mesh/Polygon.h>
+#include <lib/mesh/Polygon.h>
 #include "../../data/ModelMesh.h"
 class DataModel;
-class ModelMesh;
+struct ModelMesh;
 
 class ActionModelDeleteSelection : public Action {
 public:

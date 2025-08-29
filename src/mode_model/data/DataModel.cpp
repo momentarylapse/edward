@@ -9,7 +9,7 @@
 #include "ModelMesh.h"
 #include "ModelMaterial.h"
 //#include "ModelSelection.h"
-#include "../../data/mesh/PolygonMesh.h"
+#include <lib/mesh/PolygonMesh.h>
 #if 0 //HAS_LIB_GL
 #include "../../mode/model/ModeModel.h"
 #include "../../mode/model/mesh/ModeModelMesh.h"

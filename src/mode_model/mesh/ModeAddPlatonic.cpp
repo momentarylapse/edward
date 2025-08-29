@@ -6,8 +6,8 @@
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
 #include <Session.h>
-#include <data/mesh/GeometryPlatonic.h>
-#include <data/mesh/GeometryTeapot.h>
+#include <lib/mesh/GeometryPlatonic.h>
+#include <lib/mesh/GeometryTeapot.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>

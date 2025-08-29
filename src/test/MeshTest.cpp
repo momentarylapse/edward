@@ -7,10 +7,10 @@
 #ifndef NDEBUG
 
 #include "MeshTest.h"
-#include <data/mesh/PolygonMesh.h>
-#include <data/mesh/MeshEdit.h>
-#include <data/mesh/GeometryCube.h>
-#include <data/mesh/GeometryPlane.h>
+#include <lib/mesh/PolygonMesh.h>
+#include <lib/mesh/MeshEdit.h>
+#include <lib/mesh/GeometryCube.h>
+#include <lib/mesh/GeometryPlane.h>
 #include <mode_model/mesh/processing/MeshExtrudePolygons.h>
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>

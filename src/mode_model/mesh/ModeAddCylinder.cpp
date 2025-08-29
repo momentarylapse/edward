@@ -6,7 +6,7 @@
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
 #include <Session.h>
-#include <data/mesh/GeometryCylinder.h>
+#include <lib/mesh/GeometryCylinder.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>

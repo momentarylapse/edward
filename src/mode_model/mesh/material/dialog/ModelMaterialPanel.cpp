@@ -8,7 +8,7 @@
 #include "../../../ModeModel.h"
 #include "../../../data/DataModel.h"
 #include "../../../data/ModelMesh.h"
-#include <data/mesh/Polygon.h>
+#include <lib/mesh/Polygon.h>
 #include "../../../data/ModelMaterial.h"
 #include "../action/ActionModelAddMaterial.h"
 #include "../action/ActionModelDeleteMaterial.h"

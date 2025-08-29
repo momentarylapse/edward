@@ -9,8 +9,8 @@
 #define ACTIONMODELPASTEGEOMETRY_H_
 
 #include <action/Action.h>
-#include <data/mesh/PolygonMesh.h>
-class ModelMesh;
+#include <lib/mesh/PolygonMesh.h>
+struct ModelMesh;
 
 class ActionModelPasteMesh : public Action {
 public:

@@ -15,16 +15,16 @@
 #include <view/ActionController.h>
 #include <view/MultiViewWindow.h>
 #include <data/Data.h>
-#include <data/mesh/PolygonMesh.h>
-#include <data/mesh/GeometryBall.h>
-#include <data/mesh/GeometryCube.h>
-#include <data/mesh/GeometryCylinder.h>
-#include <data/mesh/GeometryPlane.h>
-#include <data/mesh/GeometryPlatonic.h>
-#include <data/mesh/GeometrySphere.h>
-#include <data/mesh/GeometryTeapot.h>
-#include <data/mesh/GeometryTorus.h>
-#include <data/mesh/GeometryTorusKnot.h>
+#include <lib/mesh/PolygonMesh.h>
+#include <lib/mesh/GeometryBall.h>
+#include <lib/mesh/GeometryCube.h>
+#include <lib/mesh/GeometryCylinder.h>
+#include <lib/mesh/GeometryPlane.h>
+#include <lib/mesh/GeometryPlatonic.h>
+#include <lib/mesh/GeometrySphere.h>
+#include <lib/mesh/GeometryTeapot.h>
+#include <lib/mesh/GeometryTorus.h>
+#include <lib/mesh/GeometryTorusKnot.h>
 
 #include <mode_material/data/DataMaterial.h>
 #include <mode_material/ModeMaterial.h>

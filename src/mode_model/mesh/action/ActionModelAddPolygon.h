@@ -6,9 +6,9 @@
 #define ACTIONMODELADDPOLYGON_H
 
 #include <action/Action.h>
-#include <data/mesh/Polygon.h>
+#include <lib/mesh/Polygon.h>
 class DataModel;
-class ModelMesh;
+struct ModelMesh;
 
 class ActionModelAddPolygon : public Action {
 public:

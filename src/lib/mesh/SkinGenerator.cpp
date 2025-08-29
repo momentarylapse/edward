@@ -7,7 +7,7 @@
 
 #include <lib/math/math.h>
 #include "SkinGenerator.h"
-#include <data/mesh/PolygonMesh.h>
+#include <lib/mesh/PolygonMesh.h>
 #if 0 //HAS_LIB_GL
 #include "../../multiview/MultiView.h"
 #include "../../multiview/Window.h"
