@@ -11,6 +11,7 @@
 #include "PolygonMesh.h"
 
 struct ivec2;
+struct rect;
 
 class GeometryPlane : public PolygonMesh {
 public:

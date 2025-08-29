@@ -5,15 +5,15 @@
  *      Author: michi
  */
 
-#include "../../lib/math/math.h"
+#include <lib/math/math.h>
 #include "SkinGenerator.h"
 #include <data/mesh/PolygonMesh.h>
 #if 0 //HAS_LIB_GL
 #include "../../multiview/MultiView.h"
 #include "../../multiview/Window.h"
 #endif
-#include "../../lib/nix/nix.h"
-#include <mode_model/data/ModelMesh.h>
+//#include "../../lib/nix/nix.h"
+//#include <mode_model/data/ModelMesh.h>
 
 SkinGenerator::SkinGenerator() {
 	m = mat4::ID;
@@ -37,7 +37,7 @@ void SkinGenerator::init_projective(const mat4 &_m) {
 	m = _m;
 }
 
-void SkinGenerator::init_projective(MultiViewWindow *win) {
+//void SkinGenerator::init_projective(MultiViewWindow *win) {
 #if 0 //HAS_LIB_GL
 	rect d = win->dest;
 	mat4 s, t1, t2;
@@ -46,7 +46,7 @@ void SkinGenerator::init_projective(MultiViewWindow *win) {
 	t1 = mat4::translation( vec3(1, -1, 0));
 	init_projective(t2 * s * t1 * win->pv_matrix);
 #endif
-}
+//}
 
 void SkinGenerator::init_polygon(const Array<MeshVertex> &v, Polygon &p, int level) {
 	vec3 n = p.temp_normal;
@@ -144,6 +144,8 @@ vec3 SkinGenerator::get(const vec3& v) const
 	return p;
 }
 
+#if 0
+
 SkinGeneratorMulti::SkinGeneratorMulti()
 {
 	gen = new SkinGenerator[MATERIAL_MAX_TEXTURES];
@@ -171,3 +173,5 @@ vec3 SkinGeneratorMulti::get(const vec3& v, int level) const
 {
 	return gen[level].get(v);
 }
+
+#endif

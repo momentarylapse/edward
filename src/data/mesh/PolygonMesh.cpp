@@ -9,15 +9,17 @@
 #include "Polygon.h"
 #include "MeshEdit.h"
 #include "VertexStagingBuffer.h"
-#include <view/MultiView.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <y/world/Model.h>
 #include <lib/base/iter.h>
 #include <lib/base/sort.h>
 #include <lib/math/mat4.h>
 #include <lib/math/vec2.h>
 #include <lib/math/plane.h>
-#include "mode_model/data/SkinGenerator.h"
+#include <lib/math/Box.h>
+#include "SkinGenerator.h"
+#if __has_include(<view/MultiView.h>)
+#include <view/MultiView.h>
+#endif
 
 class GeometryException : public Exception {
 public:
@@ -40,7 +42,7 @@ static float Bernstein3(int i, float t) {
 MeshVertex::MeshVertex(const vec3 &_pos) {
 	pos = _pos;
 	ref_count = 0;
-	normal_mode = NORMAL_MODE_ANGULAR;
+	normal_mode = 3;//NORMAL_MODE_ANGULAR;
 	bone_index = {-1,-1,-1,-1};
 	bone_weight = {1,0,0,0};
 	normal_dirty = false;
@@ -426,6 +428,7 @@ Box PolygonMesh::bounding_box() const {
 	return box;
 }
 
+#if __has_include(<view/MultiView.h>)
 bool PolygonMesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec2& m, vec3 &tp, int& index, bool any_hit) {
 	vec3 M = vec3(m, 0);
 	float zmin = 1;
@@ -475,6 +478,7 @@ bool PolygonMesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec
 	}
 	return zmin < 1;
 }
+#endif
 
 void geo_poly_find_connected(const PolygonMesh &g, int p0, base::set<int> &polys) {
 	base::set<int> verts;

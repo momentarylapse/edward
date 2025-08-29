@@ -184,6 +184,7 @@ add_executable(edward
 	src/data/mesh/MeshEdit.cpp
 	src/data/mesh/Polygon.cpp
 	src/data/mesh/PolygonMesh.cpp
+	src/data/mesh/SkinGenerator.cpp
 	src/data/mesh/VertexStagingBuffer.cpp
 	src/data/Data.cpp
 	src/lib/any/any.cpp
@@ -444,7 +445,6 @@ add_executable(edward
 	src/mode_model/data/DataModel.cpp
 	src/mode_model/data/ModelMaterial.cpp
 	src/mode_model/data/ModelMesh.cpp
-	src/mode_model/data/SkinGenerator.cpp
 	src/mode_model/dialog/ModelPropertiesDialog.cpp
 	src/mode_model/mesh/action/look/ActionModelSetMaterial.cpp
 	src/mode_model/mesh/action/sculpt/ActionModelBrushExtrude.cpp
