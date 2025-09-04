@@ -14,6 +14,7 @@
 #include <lib/yrenderer/Context.h>
 #include <lib/nix/nix.h>
 #include <lib/profiler/Profiler.h>
+#include <lib/ygraphics/Context.h>
 
 namespace yrenderer {
 
@@ -25,14 +26,14 @@ WindowRenderer::WindowRenderer(Context* ctx, GLFWwindow* win) : TargetRenderer(c
 		//glfwGetFramebufferSize(window, &width, &height);
 #endif
 
-		_frame_buffer = ctx->context->default_framebuffer;
+		_frame_buffer = ctx->context->ctx->default_framebuffer;
 	}
 }
 
 
 bool WindowRenderer::start_frame() {
 #if HAS_LIB_GLFW
-	nix::start_frame_glfw(ctx->context, window);
+	nix::start_frame_glfw(ctx->context->ctx, window);
 	//jitter_iterate();
 	return true;
 #else

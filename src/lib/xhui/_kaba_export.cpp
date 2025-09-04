@@ -238,7 +238,7 @@ void export_package_xhui(kaba::Exporter* e) {
 	e->link_virtual("Dialog.__delete__", &xhui::Dialog::__delete__, &win);*/
 	
 
-	xhui::Painter painter(nullptr);
+	xhui::Painter painter(nullptr, nullptr, rect::ID, rect::ID);
 	e->link_func("Painter.__init__", &_dummy); // dummy
 	e->link_virtual("Painter.__delete__", &kaba::generic_virtual<xhui::Painter>::__delete__, &painter);
 

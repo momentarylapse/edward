@@ -21,6 +21,7 @@
 #include <lib/yrenderer/ShaderManager.h>
 #include <lib/yrenderer/scene/CameraParams.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <cmath>
 
 
 using namespace yrenderer;

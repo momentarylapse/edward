@@ -102,6 +102,16 @@ void Buffer::update_array(const DynamicArray &array, int offset) {
 	update_part(array.data, offset, array.num * array.element_size);
 }
 
+void Buffer::read(void *data, int read_size) {
+	void* temp = map_part(0, read_size);
+	memcpy(data, temp, read_size);
+	unmap();
+}
+
+void Buffer::read_array(DynamicArray &a) {
+	read(a.data, a.num * a.element_size);
+}
+
 int64 Buffer::get_device_address() const {
 	VkBufferDeviceAddressInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;

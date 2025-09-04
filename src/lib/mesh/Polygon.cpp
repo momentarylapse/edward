@@ -7,6 +7,7 @@
 #include "VertexStagingBuffer.h"
 #include <lib/math/vec2.h>
 #include <lib/math/plane.h>
+#include <cmath>
 
 
 

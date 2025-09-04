@@ -5,6 +5,7 @@
 #include "SpinButton.h"
 #include <lib/xhui/Painter.h>
 #include <lib/xhui/Theme.h>
+#include <cmath>
 
 namespace xhui {
 

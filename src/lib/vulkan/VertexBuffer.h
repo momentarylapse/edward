@@ -5,8 +5,6 @@
 #include "../base/base.h"
 #include "../math/vec3.h"
 #include "../math/rect.h"
-#include <vector>
-#include <vulkan/vulkan.h>
 #include "Buffer.h"
 
 struct rect;

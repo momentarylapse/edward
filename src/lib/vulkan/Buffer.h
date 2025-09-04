@@ -25,9 +25,12 @@ namespace vulkan {
 		void *map();
 		void *map_part(VkDeviceSize offset, VkDeviceSize size);
 		void unmap();
-		void update(void *source);
-		void update_array(const DynamicArray &array, int offset = 0);
-		void update_part(const void *source, int offset, int update_size);
+		void update(void* source);
+		void update_array(const DynamicArray& array, int offset = 0);
+		void update_part(const void* source, int offset, int update_size);
+
+		void read(void* data, int size);
+		void read_array(DynamicArray& a);
 
 		int64 get_device_address() const;
 

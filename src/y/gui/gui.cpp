@@ -9,6 +9,7 @@
 #include "Node.h"
 #include "Font.h"
 #include "Text.h"
+#include "Canvas.h"
 #include <lib/math/rect.h>
 #include <lib/kaba/kaba.h>
 #include <lib/ygraphics/graphics-impl.h>
@@ -177,6 +178,8 @@ Node* create_node(const string& type) {
 		return new Picture();
 	if (type == "Text")
 		return new Text();
+	if (type == "Canvas")
+		return new Canvas();
 	if (type == "HBox")
 		return new HBox();
 	if (type == "VBox")

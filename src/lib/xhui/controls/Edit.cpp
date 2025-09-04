@@ -6,9 +6,10 @@
 
 #include "../Painter.h"
 #include "../Theme.h"
-#include "../draw/font.h"
-#include "../../base/iter.h"
-#include "../../os/msg.h"
+#include <lib/ygraphics/font.h>
+#include <lib/base/iter.h>
+#include <lib/os/msg.h>
+#include <cmath>
 
 namespace xhui {
 

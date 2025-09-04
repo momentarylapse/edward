@@ -24,7 +24,7 @@
 
 #include "Mode.h"
 #include "lib/yrenderer/scene/pass/CubeMapRenderer.h"
-
+#include <cmath>
 
 
 

@@ -8,24 +8,18 @@
 #include <lib/os/msg.h>
 #include <lib/image/image.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/ygraphics/Context.h>
 
 namespace yrenderer {
 
-Path guess_absolute_path(const Path &filename, const Array<Path> dirs);
+Path guess_absolute_path(const Path &filename, const Array<Path>& dirs);
 
 TextureManager::TextureManager(ygfx::Context *_ctx, const Path &_texture_dir) {
 	ctx = _ctx;
 	texture_dir = _texture_dir;
 
 	if (ctx) {
-#ifdef USING_VULKAN
-		Image im;
-		im.create(8, 8, White);
-		tex_white = new ygfx::Texture();
-		tex_white->write(im);
-#else
 		tex_white = ctx->tex_white;
-#endif
 	}
 }
 

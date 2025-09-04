@@ -10,6 +10,7 @@
 
 #include "Semaphore.h"
 #include "vulkan.h"
+#include <cmath>
 
 namespace vulkan {
 

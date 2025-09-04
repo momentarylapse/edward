@@ -7,6 +7,7 @@
 
 #include "GeometryTorusKnot.h"
 #include "GeometryCylinder.h"
+#include <cmath>
 
 GeometryTorusKnot::GeometryTorusKnot(const vec3 &_pos, const vec3 &axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges) {
 	Array<vec3> pos;

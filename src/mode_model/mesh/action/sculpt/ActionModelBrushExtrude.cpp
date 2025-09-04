@@ -9,6 +9,7 @@
 #include <mode_model/data/DataModel.h>
 #include <mode_model/data/ModelMesh.h>
 #include <lib/base/iter.h>
+#include <cmath>
 
 ActionModelBrushExtrude::ActionModelBrushExtrude(const vec3& _pos, const vec3& _n, float _radius, float _depth) {
 	pos = _pos;

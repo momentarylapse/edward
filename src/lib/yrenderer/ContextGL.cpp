@@ -1,5 +1,6 @@
 #include "Context.h"
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/ygraphics/Context.h>
 #include <lib/os/msg.h>
 
 #if __has_include(<lib/xhui/Painter.h>)
@@ -23,14 +24,18 @@ extern owned<nix::Context> _nix_context;
 
 namespace yrenderer {
 
+
+Context::Context(ygfx::Context* ctx) {
+	context = ctx;
+}
+
 Context* api_init_glfw(GLFWwindow* window) {
-	auto ctx = new Context();
 	nix::allow_separate_vertex_arrays = true;
 	nix::default_shader_bindings = false;
-	ctx->context = nix::init();
+	auto ctx = new Context(new ygfx::Context(nix::init()));
 
-	if (ctx->context->total_mem() > 0) {
-		msg_write(format("VRAM: %d mb  of  %d mb available", ctx->context->available_mem() / 1024, ctx->context->total_mem() / 1024));
+	if (ctx->context->ctx->total_mem() > 0) {
+		msg_write(format("VRAM: %d mb  of  %d mb available", ctx->context->ctx->available_mem() / 1024, ctx->context->ctx->total_mem() / 1024));
 	}
 
 	nix::create_query_pool(MAX_TIMESTAMP_QUERIES);
@@ -42,10 +47,7 @@ Context* api_init_glfw(GLFWwindow* window) {
 
 Context* api_init_xhui(xhui::Painter* p) {
 #ifdef HAS_XHUI
-	auto ctx = new Context();
-	nix::allow_separate_vertex_arrays = true;
-	nix::default_shader_bindings = false;
-	ctx->context = p->context->ctx;
+	auto ctx = new Context(p->context->context);
 	nix::create_query_pool(MAX_TIMESTAMP_QUERIES);
 	ctx->_create_default_textures();
 	return ctx;

@@ -24,8 +24,8 @@
 #include <lib/xhui/controls/Image.h>
 #include <lib/xhui/controls/ListView.h>
 #include <y/EngineData.h>
-
 #include "view/MultiView.h"
+#include <cmath>
 
 static constexpr int PREVIEW_SIZE = 48;
 

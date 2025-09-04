@@ -14,6 +14,7 @@
 #include "../../image/image.h"
 #include "../../os/filesystem.h"
 #include "../../os/app.h"
+#include <cmath>
 
 namespace xhui {
 

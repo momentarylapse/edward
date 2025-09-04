@@ -14,6 +14,7 @@
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
+#include <cmath>
 
 ModeAddFromLathe::ModeAddFromLathe(ModeMesh* parent) :
 	SubMode(parent)

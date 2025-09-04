@@ -25,8 +25,8 @@
 #include <lib/math/mat3.h>
 #include <lib/math/plane.h>
 #include <lib/os/msg.h>
-
 #include "DrawingHelper.h"
+#include <cmath>
 
 const float ActionController::PIXEL_RADIUS = 200;
 

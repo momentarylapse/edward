@@ -19,6 +19,7 @@
 #include <lib/os/file.h>
 #include <lib/os/msg.h>
 #include <lib/os/time.h>
+#include <cmath>
 
 const kaba::Class *Terrain::_class = nullptr;
 

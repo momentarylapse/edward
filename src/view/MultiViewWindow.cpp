@@ -16,6 +16,7 @@
 
 #include "lib/math/plane.h"
 #include "lib/xhui/Theme.h"
+#include <cmath>
 
 
 MultiViewWindow::MultiViewWindow(MultiView* _multi_view) {

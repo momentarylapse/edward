@@ -34,6 +34,7 @@
 #include <lib/mesh/VertexStagingBuffer.h>
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
+#include <cmath>
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 

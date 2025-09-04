@@ -4,6 +4,7 @@
 
 #include "Light.h"
 #include "CameraParams.h"
+#include <cmath>
 
 namespace yrenderer {
 

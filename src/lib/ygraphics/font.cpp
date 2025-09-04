@@ -1,10 +1,10 @@
 #include "font.h"
-#include "../../image/image.h"
-#include "../../math/rect.h"
-#include "../../math/vec2.h"
-#include "../../os/msg.h"
-#include "../../os/path.h"
-#include "../../os/filesystem.h"
+#include <lib/image/image.h>
+#include <lib/math/rect.h>
+#include <lib/math/vec2.h>
+#include <lib/os/msg.h>
+#include <lib/os/path.h>
+#include <lib/os/filesystem.h>
 
 #if HAS_LIB_FREETYPE2
 #include <ft2build.h>
@@ -116,7 +116,7 @@ float Face::units_to_pixel(float units) const {
 #endif
 }
 
-TextDimensions Face::get_text_dimensions(const string &text) {
+TextDimensions Face::get_text_dimensions(const string &text) const {
 #if HAS_LIB_FREETYPE2
 	auto utf32 = text.utf8_to_utf32();
 	TextDimensions dim;
@@ -177,12 +177,12 @@ rect TextDimensions::inner_box(const vec2& p0) const {
 }
 
 
-float Face::get_text_width(const string &text) {
+float Face::get_text_width(const string &text) const {
 	auto dim = get_text_dimensions(text);
 	return dim.bounding_width;
 }
 
-void Face::render_text(const string &text, xhui::Align align, Image &im) {
+void Face::render_text(const string &text, Align align, Image &im) {
 #if HAS_LIB_FREETYPE2
 	auto utf32 = text.utf8_to_utf32();
 

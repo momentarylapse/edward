@@ -1,6 +1,7 @@
 #include "Context.h"
 #include "helper/PipelineManager.h"
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/ygraphics/Context.h>
 #include <lib/os/msg.h>
 #if __has_include(<lib/xhui/Painter.h>)
 #include <lib/xhui/Painter.h>
@@ -15,58 +16,69 @@ namespace yrenderer {
 
 static vulkan::Surface surface; // FIXME
 
+Context::Context(ygfx::Context* ctx) {
+	context = ctx;
+	device = ctx->device;
+}
+
+Context::~Context() {
+	delete pool;
+	delete context;
+}
+
+
+
 void _create_context_stuff(Context* ctx) {
 	ctx->device->create_query_pool(MAX_TIMESTAMP_QUERIES);
 	ctx->pool = new vulkan::DescriptorPool("ubo:65536,sampler:65536", 65536);
 
 	ctx->_create_default_textures();
-
-	ctx->context = new ygfx::Context;
 }
 
 #if HAS_LIB_GLFW
 Context* api_init_glfw(GLFWwindow* window) {
-	auto ctx = new Context();
-	ctx->instance = vulkan::init({"glfw", "validation", "api=1.3", "rtx?", "verbosity=3"});
-	surface = ctx->instance->create_glfw_surface(window);
+	auto instance = vulkan::init({"glfw", "validation", "api=1.3", "rtx?", "verbosity=3"});
+	surface = instance->create_glfw_surface(window);
+	vulkan::Device* device = nullptr;
 	try {
-		ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "rtx", "compute"});
+		device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "rtx", "compute"});
 		msg_write("device found: RTX + COMPUTE");
 	} catch (...) {}
 
-	if (!ctx->device) {
+	if (!device) {
 		try {
-			ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "rtx"});
+			device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "rtx"});
 			msg_write("device found: RTX");
 		} catch (...) {}
 	}
 
-	if (!ctx->device) {
+	if (!device) {
 		try {
-			ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "compute", "meshshader"});
+			device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "compute", "meshshader"});
 			msg_write("device found: COMPUTE + MESH SHADER");
 		} catch (...) {}
 	}
 
-	if (!ctx->device) {
+	if (!device) {
 		try {
-			ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "compute", "tesselationshader"});
+			device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "compute", "tesselationshader"});
 			msg_write("device found: COMPUTE + TESSELATION");
 		} catch (...) {}
 	}
 
-	if (!ctx->device) {
+	if (!device) {
 		try {
-			ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "compute"});
+			device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "compute"});
 			msg_write("device found: COMPUTE");
 		} catch (...) {}
 	}
 
-	if (!ctx->device) {
-		ctx->device = vulkan::Device::create_simple(ctx->instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation"});
+	if (!device) {
+		device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation"});
 		msg_write("WARNING:  device found: neither RTX nor COMPUTE");
 	}
 
+	auto ctx = new Context(new ygfx::Context(instance, device));
 	_create_context_stuff(ctx);
 
 	return ctx;
@@ -74,18 +86,16 @@ Context* api_init_glfw(GLFWwindow* window) {
 #endif
 
 
-Context* api_init_external(vulkan::Instance* _instance, vulkan::Device* _device) {
-	auto ctx = new Context();
-	ctx->instance = _instance;
-	ctx->device = _device;
+Context* api_init_external(ygfx::Context* _ctx) {
+	vulkan::default_device = _ctx->device;
+	auto ctx = new Context(_ctx);
 	_create_context_stuff(ctx);
 	return ctx;
 }
 
 Context* api_init_xhui(xhui::Painter* p) {
 #ifdef HAS_XHUI
-	vulkan::default_device = p->context->device;
-	return api_init_external(p->context->instance, p->context->device);
+	return api_init_external(p->context->context);
 #else
 	return nullptr;
 #endif
@@ -94,9 +104,6 @@ Context* api_init_xhui(xhui::Painter* p) {
 void api_end(Context* ctx) {
 	ctx->gpu_flush();
 	PipelineManager::clear();
-	delete ctx->pool;
-	delete ctx->device;
-	delete ctx->instance;
 	delete ctx;
 }
 

@@ -1,6 +1,6 @@
 #include "CheckBox.h"
 #include "../Painter.h"
-#include "../draw/font.h"
+#include <lib/ygraphics/font.h>
 #include "../Theme.h"
 
 namespace xhui {

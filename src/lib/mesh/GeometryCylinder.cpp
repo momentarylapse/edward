@@ -9,6 +9,7 @@
 #include "GeometryBall.h"
 #include <lib/math/mat4.h>
 #include <lib/math/interpolation.h>
+#include <cmath>
 
 #define _cyl_vert(i, j)         ( edges      * (i) +(j) % edges)
 #define _cyl_svert(i, j)        sv[(edges + 1) * (i) +(j) % (edges + 1)]

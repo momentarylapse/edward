@@ -5,7 +5,7 @@
 #include "Expander.h"
 #include "../Painter.h"
 #include "../Theme.h"
-#include "../draw/font.h"
+#include <lib/ygraphics/font.h>
 
 namespace xhui {
 

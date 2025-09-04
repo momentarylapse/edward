@@ -32,7 +32,8 @@ public:
 		VBOX,
 		PICTURE,
 		TEXT,
-		MODEL
+		MODEL,
+		CANVAS
 	};
 
 	enum Align {

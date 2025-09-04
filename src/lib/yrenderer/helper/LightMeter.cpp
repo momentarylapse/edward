@@ -7,6 +7,7 @@
 #include <lib/yrenderer/Context.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/yrenderer/ShaderManager.h>
+#include <cmath>
 
 namespace yrenderer {
 

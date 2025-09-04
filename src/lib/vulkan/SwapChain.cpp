@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include "../os/msg.h"
+#include <cmath>
 
 namespace vulkan {
 

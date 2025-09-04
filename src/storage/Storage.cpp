@@ -23,6 +23,8 @@
 #include <y/EngineData.h>
 #include "../Session.h"
 #include "../view/EdwardWindow.h"
+#include "lib/yrenderer/MaterialManager.h"
+#include "lib/yrenderer/TextureManager.h"
 
 
 Path Storage::CANONICAL_SUB_DIR[NUM_FDS];
@@ -227,6 +229,11 @@ void Storage::set_root_directory(const Path &_directory) {
 			root_dir_kind[FD_SCRIPT],
 			root_dir_kind[FD_MATERIAL],
 			root_dir_kind[FD_FONT]);
+	if (session->ctx) {
+		session->ctx->texture_manager->texture_dir = root_dir_kind[FD_TEXTURE];
+		session->ctx->shader_manager->shader_dir = root_dir_kind[FD_SHADERFILE];
+		session->ctx->material_manager->material_dir = root_dir_kind[FD_MATERIAL];
+	}
 }
 
 

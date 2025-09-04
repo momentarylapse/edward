@@ -42,12 +42,6 @@ namespace clipboard {
 	string paste();
 }
 
-enum class Align {
-	RIGHT = 1,
-	CENTER_H = 2,
-	LEFT = 4
-};
-
 // key codes (physical keys)
 enum {
 	KEY_LCONTROL,

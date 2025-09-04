@@ -19,8 +19,8 @@ public:
 	void set_default_shader(ygfx::Shader *s);
 	xfer<Material> load(const Path &filename);
 
-private:
 	Path material_dir;
+private:
 	Context* ctx;
 	ShaderManager* shader_manager;
 	Material* default_material;

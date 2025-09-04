@@ -14,6 +14,7 @@
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
+#include <cmath>
 
 ModeAddCube::ModeAddCube(ModeMesh* parent) :
 	SubMode(parent)

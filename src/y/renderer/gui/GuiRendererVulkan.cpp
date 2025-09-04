@@ -7,16 +7,21 @@
 
 #include "GuiRenderer.h"
 #ifdef USING_VULKAN
+#include "../../gui/gui.h"
+#include "../../gui/Picture.h"
+#include "../../gui/Canvas.h"
+#include "../../helper/ResourceManager.h"
 #include <lib/yrenderer/Context.h>
 #include <lib/yrenderer/helper/PipelineManager.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include "../../gui/gui.h"
-#include "../../gui/Picture.h"
-#include "../../helper/ResourceManager.h"
+#include <lib/ygraphics/Context.h>
+#include <lib/ygraphics/Painter.h>
 #include <lib/yrenderer/ShaderManager.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/math/mat4.h>
 #include <lib/math/rect.h>
+
+#include "lib/os/msg.h"
 
 using namespace yrenderer;
 
@@ -37,11 +42,37 @@ GuiRenderer::GuiRenderer(Context* ctx) : Renderer(ctx, "ui") {
 	vb->create_quad(rect::ID);
 }
 
+void GuiRenderer::prepare(const RenderParams &params) {
+	if (!aux) {
+		aux = ctx->context->_create_auxiliary_stuff();
+		aux->rebuild(params.render_pass);
+	}
+	aux->num_line_vbs_used = 0;
+	aux->num_line_vbs_with_color_used = 0;
+}
+
+
 void GuiRenderer::draw(const RenderParams& params) {
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 	prepare_gui(params.frame_buffer, params);
-	draw_gui(params.command_buffer, params.render_pass);
+	draw_gui(params.command_buffer, params);
+
+
+//	aux->cb = params.command_buffer;
+//	auto p = new ygfx::Painter(aux.get(), params.area, rect(0,params.desired_aspect_ratio, 0, 1), params.area.height(), nullptr);
+
+	/*p->set_color(Red);
+	p->draw_rect({0.1f, 0.5f, 0.1f, 0.5f});
+
+	p->set_color(White);
+	p->set_line_width(0.02f);
+	p->set_fill(false);
+	p->draw_circle({0.4f, 0.3f}, 0.2f);*/
+
+//	delete p;
+
+
 	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
 }
@@ -91,22 +122,26 @@ void GuiRenderer::prepare_gui(ygfx::FrameBuffer *source, const RenderParams& par
 	}
 }
 
-void GuiRenderer::draw_gui(ygfx::CommandBuffer *cb, ygfx::RenderPass *render_pass) {
+void GuiRenderer::draw_gui(ygfx::CommandBuffer *cb, const RenderParams& params) {
 	if (!pipeline)
-		pipeline = PipelineManager::get_gui(shader.get(), render_pass, "3f,3f,2f");
+		pipeline = PipelineManager::get_gui(shader.get(), params.render_pass, "3f,3f,2f");
 
 	cb->bind_pipeline(pipeline);
+
+	aux->cb = cb;
+	ygfx::Painter painter(aux.get(), params.area, rect(0,params.desired_aspect_ratio, 0, 1), params.area.height(), nullptr);
+
 
 	int index = 0;
 	for (auto *n: gui::sorted_nodes) {
 		if (!n->eff_visible)
 			continue;
 		if (n->type == gui::Node::Type::PICTURE or n->type == gui::Node::Type::TEXT) {
-			auto *p = (gui::Picture*)n;
+			auto *p = static_cast<gui::Picture*>(n);
 			if (!p->texture)
 				continue;
 			if (p->shader) {
-				auto pl = PipelineManager::get_gui(p->shader.get(), render_pass, "3f,3f,2f");
+				auto pl = PipelineManager::get_gui(p->shader.get(), params.render_pass, "3f,3f,2f");
 				cb->bind_pipeline(pl);
 			}
 
@@ -116,6 +151,13 @@ void GuiRenderer::draw_gui(ygfx::CommandBuffer *cb, ygfx::RenderPass *render_pas
 			if (p->shader)
 				cb->bind_pipeline(pipeline);
 			index ++;
+		} else if (n->type == gui::Node::Type::CANVAS) {
+			auto *c = static_cast<gui::Canvas*>(n);
+			float fx = params.desired_aspect_ratio;
+			painter._area = {c->eff_area.x1 * fx, c->eff_area.x2 * fx, c->eff_area.y1, c->eff_area.y2};
+			c->on_draw(&painter);
+
+			cb->bind_pipeline(pipeline);
 		}
 	}
 }

@@ -19,6 +19,7 @@
 #include "../../lib/os/msg.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/math/Box.h>
+#include <cmath>
 
 FormatModel::FormatModel(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "model", "Model", Flag::CANONICAL_READ_WRITE) {
 }

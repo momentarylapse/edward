@@ -26,6 +26,9 @@ class Material;
 
 struct Context {
 
+	explicit Context(ygfx::Context* ctx);
+	~Context();
+
 	ygfx::Context* context;
 
 	ShaderManager* shader_manager = nullptr;
@@ -38,7 +41,6 @@ struct Context {
 	Array<int> gpu_timestamp_queries;
 
 #ifdef USING_VULKAN
-	vulkan::Instance* instance = nullptr;
 	vulkan::DescriptorPool* pool;
 	vulkan::Device* device;
 #endif
@@ -66,7 +68,7 @@ struct Context {
 
 Context* api_init_glfw(GLFWwindow* window);
 #ifdef USING_VULKAN
-Context* api_init_external(vulkan::Instance* instance, vulkan::Device* device);
+Context* api_init_external(ygfx::Context* c);
 #endif
 Context* api_init_xhui(xhui::Painter* p);
 void api_end(Context* ctx);

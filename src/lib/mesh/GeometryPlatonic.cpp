@@ -8,6 +8,7 @@
 #include "GeometryPlatonic.h"
 #include "GeometryCube.h"
 #include <lib/math/Box.h>
+#include <cmath>
 
 GeometryPlatonic::GeometryPlatonic(const vec3 &pos, float radius, int type) {
 	if (type == 4)

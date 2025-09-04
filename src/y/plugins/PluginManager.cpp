@@ -19,6 +19,7 @@
 #include "../gui/Node.h"
 #include "../gui/Picture.h"
 #include "../gui/Text.h"
+#include "../gui/Canvas.h"
 #include "../helper/DeletionQueue.h"
 #include "../helper/ResourceManager.h"
 #include <lib/yrenderer/ShaderManager.h>
@@ -66,6 +67,7 @@
 #include "../world/components/CubeMapSource.h"
 #include "../meta.h"
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/ygraphics/Context.h>
 #include "../lib/kaba/dynamic/exception.h"
 #include "../lib/os/msg.h"
 #include "../lib/image/image.h"
@@ -129,7 +131,7 @@ void screenshot(Image& im) {
 #ifdef USING_VULKAN
 	msg_error("unimplemented:  screenshot()");
 #else
-	engine.context->context->default_framebuffer->read(im);
+	engine.context->context->ctx->default_framebuffer->read(im);
 #endif
 }
 
@@ -620,6 +622,13 @@ void export_ui(kaba::Exporter* ext) {
 		ext->link_class_func("Text.__init__:Text:string:f32:math.vec2", &kaba::generic_init_ext<gui::Text, const string&, float, const vec2&>);
 		ext->link_virtual("Text.__delete__", &kaba::generic_virtual<gui::Text>::__delete__, &text);
 		ext->link_class_func("Text.set_text", &gui::Text::set_text);
+	}
+
+	{
+		gui::Canvas canvas;
+		ext->declare_class_size("Canvas", sizeof(gui::Canvas));
+		ext->link_class_func("Canvas.__init__:Canvas", &kaba::generic_init<gui::Canvas>);
+		ext->link_virtual("Canvas.__delete__", &kaba::generic_virtual<gui::Canvas>::__delete__, &canvas);
 	}
 
 	ext->link_class_func("HBox.__init__", &kaba::generic_init<gui::HBox>);

@@ -4,6 +4,7 @@
 
 #include "DrawingHelper.h"
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/ygraphics/Context.h>
 #include <y/helper/ResourceManager.h>
 #include <lib/yrenderer/Context.h>
 #include <lib/math/mat4.h>
@@ -15,6 +16,7 @@
 #include "MultiView.h"
 #include "SingleData.h"
 #include "lib/xhui/Context.h"
+#include <cmath>
 
 const float DrawingHelper::LINE_THIN = 2;
 const float DrawingHelper::LINE_MEDIUM = 3;
@@ -201,7 +203,7 @@ void DrawingHelper::draw_lines(const Array<vec3>& points, bool contiguous) {
 
 void DrawingHelper::draw_lines_colored(const Array<vec3>& points, const Array<color>& cols, bool contiguous) {
 #ifdef USING_VULKAN
-	auto vb = xhui_ctx->get_line_vb(true);
+	auto vb = xhui_ctx->aux->get_line_vb(true);
 	Array<XVertex> vertices;
 	mat4 m = window->projection * window->view;
 	if (contiguous) {

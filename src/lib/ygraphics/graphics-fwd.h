@@ -52,10 +52,7 @@ namespace vulkan {
 }
 
 namespace ygfx {
-	class Context {
-	public:
-		int dummy = 0;
-	};
+	class Context;
 	using Texture = vulkan::Texture;
 	using Shader = vulkan::Shader;
 	using VertexBuffer = vulkan::VertexBuffer;
@@ -113,8 +110,7 @@ namespace nix {
 }
 
 namespace ygfx {
-
-	using Context = nix::Context;
+	class Context;
 	using Texture = nix::Texture;
 	using Shader = nix::Shader;
 	using VertexBuffer = nix::VertexBuffer;

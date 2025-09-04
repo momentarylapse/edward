@@ -6,6 +6,8 @@
  */
 
 #include "Context.h"
+#include "lib/ygraphics/Context.h"
+
 #include "TextureManager.h"
 #include "ShaderManager.h"
 #include "MaterialManager.h"
@@ -15,11 +17,9 @@
 namespace yrenderer {
 
 void Context::_create_default_textures() {
-	tex_white = new ygfx::Texture();
-	tex_black = new ygfx::Texture();
-	tex_white->write(Image(16, 16, White));
-	tex_black->write(Image(16, 16, Black));
-	tex_white->_pointer_ref_counter = 999999999;
+	context->_create_default_textures();
+	tex_white = context->tex_white;
+	tex_black = context->tex_black;
 }
 
 void Context::create_managers(const Path &texture_dir, const Path &shader_dir, const Path &material_dir) {

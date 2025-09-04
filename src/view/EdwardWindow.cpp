@@ -21,15 +21,17 @@
 #include "MultiView.h"
 #include "lib/os/msg.h"
 #include "lib/xhui/Theme.h"
-#include "lib/xhui/draw/font.h"
 #include <lib/yrenderer/Renderer.h>
 #include <lib/yrenderer/target/XhuiRenderer.h>
+#include <lib/yrenderer/TextureManager.h>
 #include "y/helper/ResourceManager.h"
 #include <storage/Storage.h>
 #include <stuff/PluginManager.h>
 #include "Mode.h"
 #include <data/Data.h>
 #include "Session.h"
+#include <cmath>
+
 
 
 extern string AppName;
@@ -136,6 +138,7 @@ Dialog x x padding=0
 		session->ctx = yrenderer::api_init_xhui(pp);
 		session->resource_manager = new ResourceManager(session->ctx, engine.texture_dir, engine.material_dir, engine.shader_dir);
 		session->ctx->texture_manager = session->resource_manager->texture_manager;
+		session->ctx->texture_manager->ignore_missing_files = true;
 		session->ctx->shader_manager = session->resource_manager->shader_manager;
 		session->ctx->material_manager = session->resource_manager->material_manager;
 		session->ctx->shader_manager->default_shader = "default.shader";

@@ -41,6 +41,7 @@
 #include <view/ActionController.h>
 #include <view/DrawingHelper.h>
 #include "dialog/PropertiesDialog.h"
+#include <cmath>
 
 
 ModeWorld::ModeWorld(Session* session) :

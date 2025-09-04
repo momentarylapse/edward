@@ -298,7 +298,7 @@ void AccelerationStructure::_create_bottom(VertexBuffer *vb) {
 	accelerationStructureBuildRangeInfo.primitiveOffset = 0;
 	accelerationStructureBuildRangeInfo.firstVertex = 0;
 	accelerationStructureBuildRangeInfo.transformOffset = 0;
-	std::vector<VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfos = { &accelerationStructureBuildRangeInfo };
+	Array<VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfos = { &accelerationStructureBuildRangeInfo };
 
 	// Build the acceleration structure on the device via a one-time command buffer submission
 	// Some implementations may support acceleration structure building on the host (VkPhysicalDeviceAccelerationStructureFeaturesKHR->accelerationStructureHostCommands), but we prefer device builds
@@ -309,7 +309,7 @@ void AccelerationStructure::_create_bottom(VertexBuffer *vb) {
 		cb->buffer,
 		1,
 		&info,
-		accelerationBuildStructureRangeInfos.data());
+		&accelerationBuildStructureRangeInfos[0]);
 	//vulkanDevice->flushCommandBuffer(cb->buffer, queue);
 
 	// multiple needs a memory barrier
@@ -400,7 +400,7 @@ void AccelerationStructure::_create_top(const Array<AccelerationStructure *> &bl
 	accelerationStructureBuildRangeInfo.primitiveOffset = 0;
 	accelerationStructureBuildRangeInfo.firstVertex = 0;
 	accelerationStructureBuildRangeInfo.transformOffset = 0;
-	std::vector<VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfos = { &accelerationStructureBuildRangeInfo };
+	Array<VkAccelerationStructureBuildRangeInfoKHR*> accelerationBuildStructureRangeInfos = { &accelerationStructureBuildRangeInfo };
 
 
 	auto cb = begin_single_time_commands();
@@ -408,7 +408,7 @@ void AccelerationStructure::_create_top(const Array<AccelerationStructure *> &bl
 		cb->buffer,
 		1,
 		&info,
-		accelerationBuildStructureRangeInfos.data());
+		&accelerationBuildStructureRangeInfos[0]);
 	end_single_time_commands(cb);
 
 

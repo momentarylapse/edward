@@ -9,6 +9,7 @@
 #include <lib/os/app.h>
 #include <lib/image/image.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/ygraphics/Context.h>
 
 #ifdef USING_VULKAN
 namespace vulkan {
@@ -19,7 +20,7 @@ namespace vulkan {
 
 namespace yrenderer {
 
-Path guess_absolute_path(const Path &filename, const Array<Path> dirs) {
+Path guess_absolute_path(const Path &filename, const Array<Path>& dirs) {
 	if (filename.is_empty())
 		return Path::EMPTY;
 
@@ -54,7 +55,7 @@ xfer<ygfx::Shader> ShaderManager::__load_shader(const Path& path, const string &
 	vulkan::overwrite_push_size = overwrite_push_size;
 	return ygfx::Shader::load(path);
 #else
-	return ctx->load_shader(path);
+	return ctx->ctx->load_shader(path);
 #endif
 }
 
@@ -64,7 +65,7 @@ xfer<ygfx::Shader> ShaderManager::__create_shader(const string& source, const st
 	vulkan::overwrite_push_size = overwrite_push_size;
 	return ygfx::Shader::create(source);
 #else
-	return ctx->create_shader(source);
+	return ctx->ctx->create_shader(source);
 #endif
 }
 

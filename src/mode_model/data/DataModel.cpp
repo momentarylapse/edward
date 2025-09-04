@@ -74,6 +74,7 @@
 #include <y/world/components/Animator.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/base/iter.h>
+#include <cmath>
 
 
 string ModelEffect::get_type()

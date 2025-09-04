@@ -26,6 +26,7 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include "../meta.h"
 #include <lib/yrenderer/MaterialManager.h>
+#include <cmath>
 
 
 namespace yrenderer {

@@ -5,7 +5,6 @@
 #include "Window.h"
 #include "Dialog.h"
 #include "Theme.h"
-#include "draw/font.h"
 #include "config.h"
 #include "language.h"
 #include "../base/algo.h"

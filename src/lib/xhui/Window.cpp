@@ -414,14 +414,19 @@ void Window::_on_key_char(int character) {
 
 void Window::_on_draw() {
 	if (!context)
-		context = new Context(this);
-	auto p = new Painter(this);
+		context = Context::create(this);
+	auto p = context->prepare_draw();
+	if (!p)
+		return;
 	auto a = p->area();
 	_area = p->area();
 
 	if (first_draw)
 		handle_event_p(id, event_id::Initialize, p);
 	first_draw = false;
+
+	handle_event_p(id, event_id::JustBeforeDraw, p);
+	context->begin_draw(p);
 
 	if (flags & Flags::OWN_DECORATION) {
 		p->clear(color(0,0,0,0));
@@ -501,9 +506,8 @@ void Window::_on_draw() {
 			p->draw_rect(hover_control->_area);
 	}
 
-	p->end();
 	_refresh_requested = false;
-	delete p;
+	context->end_draw(p);
 }
 
 void Window::_compress_events() {
