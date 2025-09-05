@@ -31,13 +31,16 @@ bool CheckBox::is_checked() {
 }
 
 void CheckBox::on_left_button_down(const vec2&) {
-	state = State::PRESSED;
+	if (enabled)
+		state = State::PRESSED;
 	request_redraw();
 }
 void CheckBox::on_left_button_up(const vec2&) {
-	state = State::HOVER;
-	checked = !checked;
-	emit_event(event_id::Changed, true);
+	if (enabled) {
+		state = State::HOVER;
+		checked = !checked;
+		emit_event(event_id::Changed, true);
+	}
 	request_redraw();
 }
 void CheckBox::on_mouse_enter(const vec2&) {
