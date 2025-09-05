@@ -60,26 +60,24 @@ public:
 	explicit EntityBasePanel(WorldEntity& e) : Panel("entity-base-panel") {
 		from_source(R"foodelim(
 Dialog entity-base-panel ''
-	Grid card-entity '' class=card
-		Group group-entity 'Entity'
-			Grid ? ''
-				Label ? 'Position'
-				SpinButton pos-x '' range=::0.001 expandx
-				---|
-				.
-				SpinButton pos-y '' range=::0.001
-				---|
-				.
-				SpinButton pos-z '' range=::0.001
-				---|
-				Label ? 'Orientation'
-				SpinButton ang-x '' range=::0.001
-				---|
-				.
-				SpinButton ang-y '' range=::0.001
-				---|
-				.
-				SpinButton ang-z '' range=::0.001
+	Grid ? ''
+		Label ? 'Position'
+		SpinButton pos-x '' range=::0.001 expandx
+		---|
+		.
+		SpinButton pos-y '' range=::0.001
+		---|
+		.
+		SpinButton pos-z '' range=::0.001
+		---|
+		Label ? 'Orientation'
+		SpinButton ang-x '' range=::0.001
+		---|
+		.
+		SpinButton ang-y '' range=::0.001
+		---|
+		.
+		SpinButton ang-z '' range=::0.001
 )foodelim");
 		set_float("pos-x", e.pos.x);
 		set_float("pos-y", e.pos.y);
@@ -96,21 +94,19 @@ public:
 	explicit CameraPanel(DataWorld* _data, int _index) : Panel("camera-panel") {
 		from_source(R"foodelim(
 Dialog camera-panel ''
-	Grid card-camera '' class=card
-		Group group-camera 'Camera'
-			Grid ? ''
-				Label ? 'Min distance'
-				SpinButton z-min '' range=0::0.001
-				---|
-				Label ? 'Max distance'
-				SpinButton z-max '' range=0::0.001
-				---|
-				Label ? 'Field of view'
-				SpinButton fov '' range=0:180:0.1
-				Label ? '°'
-				---|
-				Label ? 'Exposure'
-				SpinButton z-min '' range=0:100:0.001
+	Grid ? ''
+		Label ? 'Min distance'
+		SpinButton z-min '' range=0::0.001 expandx
+		---|
+		Label ? 'Max distance'
+		SpinButton z-max '' range=0::0.001
+		---|
+		Label ? 'Field of view'
+		SpinButton fov '' range=0:180:0.1
+		Label ? '°'
+		---|
+		Label ? 'Exposure'
+		SpinButton z-min '' range=0:100:0.001
 )foodelim");
 		data = _data;
 		index = _index;
@@ -144,28 +140,26 @@ public:
 	explicit LightPanel(DataWorld* _data, int _index) : Panel("light-panel") {
 		from_source(R"foodelim(
 Dialog light-panel ''
-	Grid card-light '' class=card
-		Group group-light 'Light'
-			Grid ? ''
-				Label ? 'Type'
-				ComboBox type 'Directional\\Point\\Cone' range=0:2:1
-				---|
-				Label ? 'Radius'
-				SpinButton radius '' range=0::0.1
-				---|
-				Label ? 'Theta'
-				SpinButton theta '' range=0:180:0.1
-				Label ? '°'
-				---|
-				Label ? 'Color'
-				ColorButton color ''
-				---|
-				Label ? 'Power'
-				SpinButton power '' range=0::0.1
-				---|
-				Label ? 'Harshness'
-				SpinButton harshness '' range=0:100:1
-				Label ? '%'
+	Grid ? ''
+		Label ? 'Type'
+		ComboBox type 'Directional\\Point\\Cone' range=0:2:1
+		---|
+		Label ? 'Radius'
+		SpinButton radius '' range=0::0.1
+		---|
+		Label ? 'Theta'
+		SpinButton theta '' range=0:180:0.1
+		Label ? '°'
+		---|
+		Label ? 'Color'
+		ColorButton color ''
+		---|
+		Label ? 'Power'
+		SpinButton power '' range=0::0.1
+		---|
+		Label ? 'Harshness'
+		SpinButton harshness '' range=0:100:1
+		Label ? '%'
 )foodelim");
 		data = _data;
 		index = _index;
@@ -206,24 +200,22 @@ public:
 	explicit TerrainPanel(DataWorld* _data, int _index) : Panel("terrain-panel") {
 		from_source(R"foodelim(
 Dialog terrain-panel ''
-	Grid ? '' class=card
-		Group ? 'Terrain'
-			Grid ? ''
-				Grid ? ''
-					Label ? 'Filename'
-					Button filename ''
-					---|
-					Label ? 'Size X'
-					SpinButton size-x '' range=::0.1
-					---|
-					Label ? 'Size Z'
-					SpinButton size-z '' range=::0.1
-					---|
-					Label ? 'Cells'
-					Label cells ''
-				---|
-				Grid ? ''
-					Button edit 'edit...'
+	Grid ? ''
+		Grid ? ''
+			Label ? 'Filename'
+			Button filename ''
+			---|
+			Label ? 'Size X'
+			SpinButton size-x '' range=::0.1
+			---|
+			Label ? 'Size Z'
+			SpinButton size-z '' range=::0.1
+			---|
+			Label ? 'Cells'
+			Label cells ''
+		---|
+		Grid ? ''
+			Button edit 'edit...'
 )foodelim");
 		data = _data;
 		index = _index;
@@ -256,11 +248,9 @@ public:
 	explicit ObjectPanel(DataWorld* _data, int _index) : Panel("object-panel") {
 		from_source(R"foodelim(
 Dialog object-panel ''
-	Grid card-object '' class=card
-		Group group-terrain 'Model'
-			Grid ? ''
-				Label ? 'Filename'
-				Button filename '' expandx
+	Grid ? ''
+		Label ? 'Filename'
+		Button filename '' expandx
 )foodelim");
 		data = _data;
 		index = _index;
@@ -276,35 +266,33 @@ public:
 	explicit MaterialComponentPanel(DataWorld* _data, yrenderer::Material* m, const Path& filename, std::function<void(const ComplexPath&)> _f_save) : Panel("material-panel") {
 		from_source(R"foodelim(
 Dialog material-panel ''
-	Grid card-terrain-material '' class=card
-		Group group-material 'Material'
+	Grid ? ''
+		Grid ? ''
+			Label ? 'Filename'
 			Grid ? ''
-				Grid ? ''
-					Label ? 'Filename'
-					Grid ? ''
-						Button filename '' disabled
-						Button load-material 'L' noexpandx
-						Button save-material 'S' noexpandx
+				Button filename '' disabled
+				Button load-material 'L' noexpandx
+				Button save-material 'S' noexpandx
+		---|
+		TabControl ? 'Color\\Textures\\Shader'
+			Grid ? ''
+				Label ? 'Albedo'
+				ColorButton albedo ''
 				---|
-				TabControl ? 'Color\\Textures\\Shader'
-					Grid ? ''
-						Label ? 'Albedo'
-						ColorButton albedo ''
-						---|
-						Label ? 'Emission'
-						ColorButton emission ''
-						---|
-						Label ? 'Roughness'
-						SpinButton roughness '' range=0:100:1
-						---|
-						Label ? 'Metal'
-						SpinButton metal '' range=0:100:1
-					ListView textures 'a\\filename' nobar format=it noexpandy height=200
-					Grid ? ''
-						Label ? 'Shader'
-						Grid ? ''
-							Button shader '' disabled
-							Button load-shader 'L' noexpandx
+				Label ? 'Emission'
+				ColorButton emission ''
+				---|
+				Label ? 'Roughness'
+				SpinButton roughness '' range=0:100:1
+				---|
+				Label ? 'Metal'
+				SpinButton metal '' range=0:100:1
+			ListView textures 'a\\filename' nobar format=it noexpandy height=200
+			Grid ? ''
+				Label ? 'Shader'
+				Grid ? ''
+					Button shader '' disabled
+					Button load-shader 'L' noexpandx
 )foodelim");
 		auto list = dynamic_cast<xhui::ListView*>(get_control("textures"));
 		list->column_factories[0].f_create = [] (const string& id) {
@@ -379,9 +367,7 @@ public:
 	explicit UserComponentPanel(DataWorld* _data, int _index, int _cindex) : Panel("user-component-panel") {
 		from_source(R"foodelim(
 Dialog user-component-panel ''
-	Grid card-component '' class=card
-		Group group-component '...'
-			Grid grid-variables ''
+	Grid grid-variables ''
 )foodelim");
 		data = _data;
 		index = _index;
@@ -404,86 +390,115 @@ Dialog user-component-panel ''
 
 class SolidBodyPanel : public xhui::Panel {
 public:
-	explicit SolidBodyPanel(DataWorld* _data, int _index, bool _in_model) : Panel("solid-body-panel") {
+	explicit SolidBodyPanel(DataWorld* _data, int _index) : Panel("solid-body-panel") {
+		from_source(R"foodelim(
+Dialog solid-body-panel ''
+	Grid ? ''
+		Label ? 'Mass'
+		SpinButton mass '' range=0::0.001
+		---|
+		Label ? 'Active'
+		CheckBox active ''
+)foodelim");
+		data = _data;
+		index = _index;
+		auto& e = data->entities[index];
+		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+			set_float("mass", e.object.object->_template->solid_body->mass);
+			check("active", e.object.object->_template->solid_body->active);
+		} else {
+			enable("mass", false);
+			enable("active", false);
+		}
+	}
+	DataWorld* data;
+	int index;
+};
+
+class DummyComponentPanel : public xhui::Panel {
+	public:
+	DummyComponentPanel() : Panel("dummy-panel") {
+		add_control("Label", "!italic\\no configuration", 0, 0, "message");
+	}
+};
+
+class ComponentPanel : public xhui::Panel {
+public:
+	explicit ComponentPanel(DataWorld* _data) : Panel("component-panel") {
 		from_source(R"foodelim(
 Dialog solid-body-panel ''
 	Grid ? '' class=card
-		Group ? 'SolidBody'
-			Grid ? ''
-				Label ? 'Mass'
-				SpinButton mass '' range=0::0.001
-				---|
-				Label ? 'Active'
-				CheckBox active ''
+		Group title 'Component' expandx
+			Grid contents '' hidden
 )foodelim");
 		data = _data;
-		index = _index;
-		auto& e = data->entities[index];
-		if (_in_model) {
-			set_float("mass", e.object.object->_template->solid_body->mass);
-			check("active", e.object.object->_template->solid_body->active);
+	}
+	void update(int _entity_index, const string& _component_class) {
+		entity_index = _entity_index;
+		auto& e = data->entities[entity_index];
+		set_class(_component_class);
+		set_string("title", component_class);
+	}
+	void set_class(const string& _component_class) {
+		if (_component_class == component_class)
+			return;
+		component_class = _component_class;
+		if (content_panel) {
+			unembed(content_panel);
+			content_panel = nullptr;
 		}
+
+		auto& e = data->entities[entity_index];
+		if (component_class == "Entity") {
+			content_panel = new EntityBasePanel(e);
+		} else if (component_class == "Model") {
+			content_panel = new ObjectPanel(data, entity_index);
+		} else if (component_class == "SolidBody") {
+			content_panel = new SolidBodyPanel(data, entity_index);
+		} else if (component_class == "Material") {
+			if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+				content_panel = new MaterialComponentPanel(data, e.object.object->material[0], "???", [this] (const ComplexPath& p) {
+				});
+			} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
+				content_panel = new MaterialComponentPanel(data, e.terrain.terrain->material.get(), e.terrain.terrain->material_file, [this, index=entity_index] (const ComplexPath& p) {
+					data->entities[entity_index].terrain.save_material(data->session, p.complete);
+				});
+			}
+		} else if (component_class == "MeshCollider") {
+			content_panel = new DummyComponentPanel;
+		} else if (component_class == "TerrainCollider") {
+			content_panel = new DummyComponentPanel;
+		} else if (component_class == "Skeleton") {
+			content_panel = new DummyComponentPanel;
+		} else if (component_class == "Animator") {
+			content_panel = new DummyComponentPanel;
+		} else if (component_class == "Terrain") {
+			content_panel = new TerrainPanel(data, entity_index);
+		} else if (component_class == "Camera") {
+			content_panel = new CameraPanel(data, entity_index);
+		} else if (component_class == "Light") {
+			content_panel = new LightPanel(data, entity_index);
+		} else {
+			for (int i=0; i<e.components.num; i++)
+				if (e.components[i].class_name == component_class) {
+					content_panel = new UserComponentPanel(data, entity_index, i);
+					break;
+				}
+		}
+
+		if (content_panel)
+			embed("contents", 0, 0, content_panel);
+	}
+	void set_selected(bool select) {
+		set_visible("contents", select);
 	}
 	DataWorld* data;
-	int index;
+	int entity_index = -1;
+	string component_class;
+	Panel* content_panel = nullptr;
 };
 
-class MeshColliderPanel : public xhui::Panel {
-public:
-	explicit MeshColliderPanel(DataWorld* _data, int _index, bool _in_model) : Panel("collider-panel") {
-		from_source(R"foodelim(
-Dialog collider-panel ''
-	Grid ? '' class=card
-		Group ? 'MeshCollider'
-			Grid ? ''
-)foodelim");
-		data = _data;
-		index = _index;
-		auto& e = data->entities[index];
-		if (_in_model) {
-		}
-	}
-	DataWorld* data;
-	int index;
-};
 
-class AnimatorPanel : public xhui::Panel {
-public:
-	explicit AnimatorPanel(DataWorld* _data, int _index, bool _in_model) : Panel("collider-panel") {
-		from_source(R"foodelim(
-Dialog collider-panel ''
-	Grid ? '' class=card
-		Group ? 'Animator'
-			Grid ? ''
-)foodelim");
-		data = _data;
-		index = _index;
-		auto& e = data->entities[index];
-		if (_in_model) {
-		}
-	}
-	DataWorld* data;
-	int index;
-};
-
-class SkeletonPanel : public xhui::Panel {
-public:
-	explicit SkeletonPanel(DataWorld* _data, int _index, bool _in_model) : Panel("collider-panel") {
-		from_source(R"foodelim(
-Dialog collider-panel ''
-	Grid ? '' class=card
-		Group ? 'Skeleton'
-			Grid ? ''
-)foodelim");
-		data = _data;
-		index = _index;
-		auto& e = data->entities[index];
-		if (_in_model) {
-		}
-	}
-	DataWorld* data;
-	int index;
-};
 
 EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-panel") {
 	mode_world = _mode;
@@ -492,8 +507,9 @@ Dialog entity-panel ''
 	Grid main-grid '' expandx
 		.
 		---|
-		Viewport components-viewport '' noexpandy
-			Grid components-grid ''
+		ListView components 'c' nobar sunkenbackground=no selectsingle hidden
+		---|
+		Button add-component '+' hidden
 )foodelim");
 	size_mode_x = SizeMode::Shrink;
 	size_mode_y = SizeMode::Shrink;
@@ -504,23 +520,28 @@ Dialog entity-panel ''
 
 	entity_list_panel = new EntityListPanel();
 
+	auto component_list = (xhui::ListView*)get_control("components");
+	component_list->column_factories[0].f_create = [this](const string& id) -> xhui::Control* {
+		return new ComponentPanel(mode_world->data);
+	};
+	component_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
+		const auto xx = t.explode(":");
+		reinterpret_cast<ComponentPanel*>(c)->update(xx[0]._int(), xx[1]);
+	};
+	component_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
+		reinterpret_cast<ComponentPanel*>(c)->set_selected(selected);
+	};
+
 	mode_world->multi_view->out_selection_changed >> create_sink([this] {
 		const auto& sel = mode_world->multi_view->selection;
 		cur_index = -1;
 
 		unembed(add_entity_panel.get());
 		unembed(entity_list_panel.get());
-		for (auto p: component_panels)
-			unembed(p);
-		component_panels.clear();
-		remove_control("add-component");
-		set_options("components-viewport", "noexpandy");
 
-		auto add_component_panel = [this] (Panel* p) {
-			embed("components-grid", 0, component_panels.num + 1, p);
-			component_panels.add(p);
-		};
-
+		set_visible("components", false);
+		set_visible("add-component", false);
+		reset("components");
 		if (sel[MultiViewType::WORLD_ENTITY].num == 0) {
 			if (!add_entity_panel->owner)
 				embed("main-grid", 0, 0, add_entity_panel);
@@ -528,35 +549,35 @@ Dialog entity-panel ''
 			cur_index = sel[MultiViewType::WORLD_ENTITY][0];
 			auto& e = mode_world->data->entities[cur_index];
 			set_options("components-viewport", "expandy");
-			add_component_panel(new EntityBasePanel(e));
+			set_visible("components", true);
+			set_visible("add-component", true);
+			add_string("components", str(cur_index) + ":Entity");
 
 			if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-				add_component_panel(new ObjectPanel(mode_world->data, cur_index));
-				add_component_panel(new MaterialComponentPanel(mode_world->data, e.object.object->material[0], "???", [this] (const ComplexPath& p) {
-				}));
+				add_string("components", str(cur_index) + ":Model");
+				add_string("components", str(cur_index) + ":Material");
 				if (e.object.object->_template->solid_body)
-					add_component_panel(new SolidBodyPanel(mode_world->data, cur_index, true));
+					add_string("components", str(cur_index) + ":SolidBody");
 				if (e.object.object->_template->mesh_collider)
-					add_component_panel(new MeshColliderPanel(mode_world->data, cur_index, true));
+					add_string("components", str(cur_index) + ":MeshCollider");
 				if (e.object.object->_template->skeleton)
-					add_component_panel(new SkeletonPanel(mode_world->data, cur_index, true));
+					add_string("components", str(cur_index) + ":Skeleton");
 				if (e.object.object->_template->animator)
-					add_component_panel(new AnimatorPanel(mode_world->data, cur_index, true));
+					add_string("components", str(cur_index) + ":Animator");
 			} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
-				add_component_panel(new TerrainPanel(mode_world->data, cur_index));
-				add_component_panel(new MaterialComponentPanel(mode_world->data, e.terrain.terrain->material.get(), e.terrain.terrain->material_file, [this, &e] (const ComplexPath& p) {
-					e.terrain.save_material(mode_world->session, p.complete);
-				}));
-				add_component_panel(new SolidBodyPanel(mode_world->data, cur_index, false)); // FIXME
-				add_component_panel(new MeshColliderPanel(mode_world->data, cur_index, true));
+				add_string("components", str(cur_index) + ":Terrain");
+				add_string("components", str(cur_index) + ":Material");
+				add_string("components", str(cur_index) + ":SolidBody");
+				add_string("components", str(cur_index) + ":TerrainCollider");
 			} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
-				add_component_panel(new CameraPanel(mode_world->data, cur_index));
+				add_string("components", str(cur_index) + ":Camera");
 			} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {
-				add_component_panel(new LightPanel(mode_world->data, cur_index));
+				add_string("components", str(cur_index) + ":Light");
 			}
-			for (int i=0; i<e.components.num; i++)
-				add_component_panel(new UserComponentPanel(mode_world->data, cur_index, i));
-			add_control("Button", "+", 0, 1 + component_panels.num, "add-component");
+			for (int i=0; i<e.components.num; i++) {
+				add_string("components", str(cur_index) + ":" + e.components[i].class_name);
+			}
+			set_int("components", 0);
 		} else {
 			if (!entity_list_panel->owner)
 				embed("main-grid", 0, 0, entity_list_panel);

@@ -19,6 +19,5 @@ public:
 
 	shared<xhui::Panel> add_entity_panel;
 	shared<xhui::Panel> entity_list_panel;
-	Array<xhui::Panel*> component_panels;
 };
 
