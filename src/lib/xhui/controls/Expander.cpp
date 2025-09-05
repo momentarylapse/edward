@@ -17,6 +17,7 @@ Expander::Expander(const string& id, const string& title) :
 {
 	header.font_size = Theme::_default.font_size * 1.0f;
 	header.bold = true;
+	ignore_hover = true; // TODO interactive expand-button/header
 	size_mode_x = SizeMode::ForwardChild;
 	size_mode_y = SizeMode::ForwardChild;
 }

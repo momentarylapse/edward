@@ -17,6 +17,7 @@ Group::Group(const string& id, const string& title) :
 {
 	header.font_size = Theme::_default.font_size * 1.0f;
 	header.bold = true;
+	ignore_hover = true;
 	size_mode_x = SizeMode::ForwardChild;
 	size_mode_y = SizeMode::ForwardChild;
 }
@@ -44,9 +45,10 @@ void Group::remove_child(Control* c) {
 		child = nullptr;
 }
 
-Array<Control*> Group::get_children(ChildFilter) const {
+Array<Control*> Group::get_children(ChildFilter f) const {
 	if (child)
-		return {static_cast<Control*>(const_cast<Label*>(&header)), child.get()};
+		if (f == ChildFilter::All or child->visible)
+			return {static_cast<Control*>(const_cast<Label*>(&header)), child.get()};
 	return {static_cast<Control*>(const_cast<Label*>(&header))};
 }
 
@@ -54,13 +56,13 @@ void Group::negotiate_area(const rect& available) {
 	_area = available;
 	float hh = header.get_content_min_size().y;
 	header.negotiate_area({available.p00(), available.p10() + vec2(0, hh)});
-	if (child)
+	if (child and child->visible)
 		child->negotiate_area({_area.p00() + vec2(0, hh + SPACING), _area.p11()});
 }
 
 vec2 Group::get_content_min_size() const {
 	vec2 s = header.get_effective_min_size();
-	if (child) {
+	if (child and child->visible) {
 		vec2 cs = child->get_effective_min_size();
 		s.x = max(s.x, cs.x);
 		s.y += SPACING + cs.y;
