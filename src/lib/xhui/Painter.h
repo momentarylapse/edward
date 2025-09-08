@@ -47,7 +47,7 @@ struct TextCache {
 	int age;
 	ygfx::Texture* texture;
 #if HAS_LIB_VULKAN
-	vulkan::DescriptorSet* dset;
+	vulkan::DescriptorSet* __dset;
 #endif
 	font::TextDimensions dimensions;
 };

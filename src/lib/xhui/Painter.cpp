@@ -83,7 +83,7 @@ TextCache& get_text_cache(Context* context, const string& text, font::Face* face
 		text_caches.add({});
 		tc = &text_caches.back();
 #if HAS_LIB_VULKAN
-		tc->dset = context->aux->pool->create_set(context->aux->shader);
+		tc->__dset = context->aux->pool->create_set(context->aux->shader);
 #endif
 		tc->texture = new ygfx::Texture();
 	}
@@ -103,8 +103,8 @@ TextCache& get_text_cache(Context* context, const string& text, font::Face* face
 	tc->dimensions = face->get_text_dimensions(text);
 
 #if HAS_LIB_VULKAN
-	tc->dset->set_texture(0, tc->texture);
-	tc->dset->update();
+	tc->__dset->set_texture(0, tc->texture);
+	tc->__dset->update();
 #endif
 	return *tc;
 }
