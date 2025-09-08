@@ -64,8 +64,8 @@ ModeMesh::~ModeMesh() = default;
 void ModeMesh::set_current_material(int index) {
 	if (index == current_material or index < 0)
 		return;
-	set_current_texture_level(0);
 	current_material = index;
+	set_current_texture_level(0);
 	out_current_material_changed();
 }
 

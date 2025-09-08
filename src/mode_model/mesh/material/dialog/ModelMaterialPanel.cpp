@@ -49,7 +49,7 @@ string render_material(ModelMaterial *m) {
 			const vec2 p0 = vec2((float)i / PREVIEW_SIZE - 0.5f, (float)j / PREVIEW_SIZE - 0.5f) * 2;
 			float r = p0.length();
 			if (r < 1) {
-				vec3 n = vec3(p0.x, p0.y, -sqrt(1 - r*r));
+				vec3 n = vec3(p0.x, p0.y, -sqrtf(1 - r*r));
 				float d = clamp(-vec3::dot(n, L), 0.0f, 1.0f);
 				c = c * (d*(1-m->col.roughness) + m->col.roughness);
 				c += m->col.emission;
@@ -130,10 +130,7 @@ public:
 		fill_texture_list();
 	}
 	void set_selected(bool selected) {
-		expand("grp-color", selected);
-		expand("grp-textures", selected);
-		set_visible("grp-color", selected);
-		set_visible("grp-textures", selected);
+		expand("contents", selected);
 	}
 
 	// GUI -> data
@@ -309,12 +306,16 @@ ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui:
 			load_data();
 	});
 
-	mode_mesh()->out_current_material_changed >> create_sink([this] { load_data(); });
+	mode_mesh()->out_current_material_changed >> create_sink([this] {
+		set_int("materials", mode_mesh()->current_material);
+	});
 	mode_mesh()->out_texture_level_changed >> create_sink([this] { load_data(); });
 
 	popup_materials = xhui::create_resource_menu("model-material-list-popup");
 
-	event_x("materials", xhui::event_id::Select, [this] { on_material_list_select(); });
+	event_x("materials", xhui::event_id::Select, [this] {
+		on_material_list_select();
+	});
 	event_x("materials", xhui::event_id::RightButtonDown, [this] { on_material_list_right_click(); });
 	event("add-new-material", [this] { on_material_add(); });
 	event("load-material", [this] { on_material_load(); });
@@ -323,8 +324,8 @@ ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui:
 
 
 
-	set_visible("model_material_dialog_grp_color", full);
-	set_visible("model_material_dialog_grp_transparency", full);
+	//set_visible("model_material_dialog_grp_color", full);
+	//set_visible("model_material_dialog_grp_transparency", full);
 
 	load_data();
 	apply_queue_depth = 0;

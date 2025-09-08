@@ -3595,7 +3595,7 @@ card
 class=card
 0
 0
-3
+2
 Grid
 ?
 spacing=16
@@ -3627,10 +3627,22 @@ italic,small
 1
 0
 Expander
-grp-color
+contents
 
 0
 1
+1
+Grid
+?
+
+0
+0
+2
+Group
+grp-color
+
+0
+0
 1
 Grid
 ?
@@ -3722,11 +3734,11 @@ emission
 1
 3
 0
-Expander
+Group
 grp-textures
 
 0
-2
+1
 1
 ListView
 textures

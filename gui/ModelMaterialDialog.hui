@@ -7,26 +7,28 @@ Dialog model-material-dialog ''
 				---|
 				Label subheader '' italic small
 		---|
-		Expander grp-color 'Colors'
+		Expander contents ''
 			Grid ? ''
-				CheckBox override-colors 'Override material'
+				Group grp-color 'Colors'
+					Grid ? ''
+						CheckBox override-colors 'Override material'
+						---|
+						Grid ? ""
+							Label /t-albedo "Albedo" right disabled
+							ColorButton albedo "" alpha
+							---|
+							Label /t-roughness "Roughness" right disabled
+							Grid ? ""
+								Slider slider-roughness "" range=0:1:0.01 expandx
+								SpinButton roughness "" range=0:1:0.01
+							---|
+							Label /t-reflectivity "Metal" right disabled
+							Grid ? ""
+								Slider slider-metal "" range=0:1:0.01 expandx
+								SpinButton metal "" range=0:1:0.01
+							---|
+							Label /t-emission "Emission" right disabled
+							ColorButton emission "" "tooltip=Color in absolute darkness"
 				---|
-				Grid ? ""
-					Label /t-albedo "Albedo" right disabled
-					ColorButton albedo "" alpha
-					---|
-					Label /t-roughness "Roughness" right disabled
-					Grid ? ""
-						Slider slider-roughness "" range=0:1:0.01 expandx
-						SpinButton roughness "" range=0:1:0.01
-					---|
-					Label /t-reflectivity "Metal" right disabled
-					Grid ? ""
-						Slider slider-metal "" range=0:1:0.01 expandx
-						SpinButton metal "" range=0:1:0.01
-					---|
-					Label /t-emission "Emission" right disabled
-					ColorButton emission "" "tooltip=Color in absolute darkness"
-		---|
-		Expander grp-textures "Textures"
-			ListView textures "Level\\\\Texture" height=130 nobar format=tit select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
+				Group grp-textures "Textures"
+					ListView textures "Level\\\\Texture" height=130 nobar format=tit select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"

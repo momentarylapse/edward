@@ -453,7 +453,7 @@ Dialog solid-body-panel ''
 class DummyComponentPanel : public xhui::Panel {
 	public:
 	DummyComponentPanel() : Panel("dummy-panel") {
-		add_control("Label", "!italic\\no configuration", 0, 0, "message");
+		add_control("Label", "!italic,expandx,center\\no configuration", 0, 0, "message");
 	}
 };
 
