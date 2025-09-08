@@ -53,7 +53,7 @@ void Viewport::_draw(Painter *p) {
 		content_size = child->get_effective_min_size();
 
 		auto clip0 = p->clip();
-		p->set_clip(_area);
+		p->set_clip(_area and clip0);
 		child->_draw(p);
 		p->set_clip(clip0);
 	}

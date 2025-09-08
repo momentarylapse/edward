@@ -375,6 +375,7 @@ add_executable(edward
 	src/lib/xhui/dialogs/MenuPopup.cpp
 	src/lib/xhui/dialogs/QuestionDialog.cpp
 	src/lib/xhui/_kaba_export.cpp
+	src/lib/xhui/Animator.cpp
 	src/lib/xhui/Application.cpp
 	src/lib/xhui/ContextGL.cpp
 	src/lib/xhui/ContextVulkan.cpp

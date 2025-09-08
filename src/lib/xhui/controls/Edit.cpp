@@ -268,7 +268,7 @@ void Edit::draw_text(Painter* p) {
 
 	const auto clip0 = p->clip();
 
-	p->set_clip(_area);
+	p->set_clip(_area and clip0);
 	p->set_font(font_name, font_size, false, false);
 	face = p->face;
 
