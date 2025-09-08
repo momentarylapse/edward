@@ -17,6 +17,7 @@ Expander::Expander(const string& id, const string& title) :
 {
 	header.font_size = Theme::_default.font_size * 1.0f;
 	header.bold = true;
+	show_header = (title != "");
 	ignore_hover = true; // TODO interactive expand-button/header
 	size_mode_x = SizeMode::ForwardChild;
 	size_mode_y = SizeMode::ForwardChild;
@@ -24,12 +25,18 @@ Expander::Expander(const string& id, const string& title) :
 
 void Expander::set_string(const string& s) {
 	header.set_string(s);
+	show_header = (s != "");
+}
+
+void Expander::expand(bool _expanded) {
+	expanded = _expanded;
 }
 
 void Expander::_draw(Painter* p) {
-	header._draw(p);
+	if (show_header)
+		header._draw(p);
 
-	if (child and child->visible)
+	if (child and child->visible and expanded)
 		child->_draw(p);
 }
 
@@ -45,23 +52,27 @@ void Expander::remove_child(Control* c) {
 		child = nullptr;
 }
 
-Array<Control*> Expander::get_children(ChildFilter) const {
-	if (child)
+Array<Control*> Expander::get_children(ChildFilter f) const {
+	if (child and (expanded or f == ChildFilter::All))
 		return {static_cast<Control*>(const_cast<Label*>(&header)), child.get()};
 	return {static_cast<Control*>(const_cast<Label*>(&header))};
 }
 
 void Expander::negotiate_area(const rect& available) {
 	_area = available;
-	float hh = header.get_content_min_size().y;
+	float hh = 0;
+	if (show_header)
+		hh = header.get_content_min_size().y;
 	header.negotiate_area({available.p00(), available.p10() + vec2(0, hh)});
-	if (child)
+	if (child and expanded)
 		child->negotiate_area({_area.p00() + vec2(0, hh + SPACING), _area.p11()});
 }
 
 vec2 Expander::get_content_min_size() const {
-	vec2 s = header.get_effective_min_size();
-	if (child) {
+	vec2 s = {0,0};
+	if (show_header)
+		s += header.get_effective_min_size();
+	if (child and expanded) {
 		vec2 cs = child->get_effective_min_size();
 		s.x = max(s.x, cs.x);
 		s.y += SPACING + cs.y;
@@ -71,7 +82,7 @@ vec2 Expander::get_content_min_size() const {
 
 vec2 Expander::get_greed_factor() const {
 	vec2 cf = {0, 0};
-	if (child)
+	if (child and expanded)
 		cf = child->get_greed_factor();
 	vec2 f = {0, 0};
 	if (size_mode_x == SizeMode::Expand)

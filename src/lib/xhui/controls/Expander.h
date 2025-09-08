@@ -19,7 +19,9 @@ public:
 	void _draw(Painter* p) override;
 
 	void set_string(const string& s) override;
+	void expand(bool expanded) override;
 
+	bool show_header = false;
 	bool expanded = true;
 	Label header;
 	shared<Control> child;
