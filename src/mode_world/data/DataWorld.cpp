@@ -226,6 +226,10 @@ void DataWorld::edit_light(int index, const WorldLight& l) {
 	execute(new ActionWorldEditLight(index, l));
 }
 
+void DataWorld::edit_entity(int index, const WorldEntity& e) {
+	execute(new ActionWorldEditBaseEntity(index, e));
+}
+
 void DataWorld::edit_camera(int index, const WorldCamera& c) {
 	execute(new ActionWorldEditCamera(index, c));
 }

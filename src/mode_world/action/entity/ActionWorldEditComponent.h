@@ -11,6 +11,19 @@
 #include "../../data/WorldLight.h"
 #include "../../data/WorldCamera.h"
 
+class ActionWorldEditBaseEntity : public Action {
+public:
+	explicit ActionWorldEditBaseEntity(int index, const WorldEntity& e);
+	string name() override { return "WorldEditBaseEntity"; }
+
+	void *execute(Data* d) override;
+	void undo(Data* d) override;
+
+private:
+	int index;
+	WorldEntity entity;
+};
+
 class ActionWorldEditLight : public Action {
 public:
 	explicit ActionWorldEditLight(int index, const WorldLight& l);

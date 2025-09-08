@@ -57,7 +57,7 @@ Dialog entity-base-panel ''
 
 class EntityBasePanel : public xhui::Panel {
 public:
-	explicit EntityBasePanel(WorldEntity& e) : Panel("entity-base-panel") {
+	explicit EntityBasePanel(DataWorld* _data, int _index) : Panel("entity-base-panel") {
 		from_source(R"foodelim(
 Dialog entity-base-panel ''
 	Grid ? ''
@@ -71,14 +71,28 @@ Dialog entity-base-panel ''
 		SpinButton pos-z '' range=::0.001
 		---|
 		Label ? 'Orientation'
-		SpinButton ang-x '' range=::0.001
+		SpinButton ang-x '' range=::0.01
+		Label ? '°'
 		---|
 		.
-		SpinButton ang-y '' range=::0.001
+		SpinButton ang-y '' range=::0.01
 		---|
 		.
-		SpinButton ang-z '' range=::0.001
+		SpinButton ang-z '' range=::0.01
 )foodelim");
+		data = _data;
+		index = _index;
+		update_ui();
+
+		event("pos-x", [this] { on_edit(); });
+		event("pos-y", [this] { on_edit(); });
+		event("pos-z", [this] { on_edit(); });
+		event("ang-x", [this] { on_edit(); });
+		event("ang-y", [this] { on_edit(); });
+		event("ang-z", [this] { on_edit(); });
+	}
+	void update_ui() {
+		auto& e = data->entities[index];
 		set_float("pos-x", e.pos.x);
 		set_float("pos-y", e.pos.y);
 		set_float("pos-z", e.pos.z);
@@ -87,6 +101,16 @@ Dialog entity-base-panel ''
 		set_float("ang-y", ang.y * 180 / pi);
 		set_float("ang-z", ang.z * 180 / pi);
 	}
+	void on_edit() {
+		auto e = data->entities[index];
+		e.pos.x = get_float("pos-x");
+		e.pos.y = get_float("pos-y");
+		e.pos.z = get_float("pos-z");
+		e.ang = quaternion::rotation({get_float("ang-x") * pi / 180, get_float("ang-y") * pi / 180, get_float("ang-z") * pi / 180});
+		data->edit_entity(index, e);
+	}
+	DataWorld* data;
+	int index;
 };
 
 class CameraPanel : public xhui::Panel {
@@ -110,11 +134,7 @@ Dialog camera-panel ''
 )foodelim");
 		data = _data;
 		index = _index;
-		auto& e = data->entities[index];
-		set_float("z-min", e.camera.min_depth);
-		set_float("z-max", e.camera.max_depth);
-		set_float("fov", e.camera.fov * 180 / pi);
-		set_float("exposure", e.camera.exposure);
+		update_ui();
 
 		event("z-min", [this] { on_edit(); });
 		event("z-max", [this] { on_edit(); });
@@ -124,6 +144,13 @@ Dialog camera-panel ''
 	DataWorld* data;
 	int index;
 
+	void update_ui() {
+		auto& e = data->entities[index];
+		set_float("z-min", e.camera.min_depth);
+		set_float("z-max", e.camera.max_depth);
+		set_float("fov", e.camera.fov * 180 / pi);
+		set_float("exposure", e.camera.exposure);
+	}
 	void on_edit() {
 		auto& e = data->entities[index];
 		auto c = e.camera;
@@ -135,9 +162,9 @@ Dialog camera-panel ''
 	}
 };
 
-class LightPanel : public xhui::Panel {
+class LightPanel : public obs::Node<xhui::Panel> {
 public:
-	explicit LightPanel(DataWorld* _data, int _index) : Panel("light-panel") {
+	explicit LightPanel(DataWorld* _data, int _index) : obs::Node<xhui::Panel>("light-panel") {
 		from_source(R"foodelim(
 Dialog light-panel ''
 	Grid ? ''
@@ -163,14 +190,11 @@ Dialog light-panel ''
 )foodelim");
 		data = _data;
 		index = _index;
-		auto& e = data->entities[index];
-		set_int("type", (int)e.light.type);
-		set_float("radius", e.light.radius);
-		set_float("harshness", e.light.harshness * 100);
-		set_float("theta", e.light.theta * 180 / pi);
-		set_float("radius", e.light.radius);
-		set_color("color", e.light.col);
-		set_float("power", e.light.col.r + e.light.col.g + e.light.col.b);
+		update_ui();
+		/*data->out_changed >> create_sink([this] {
+			msg_write("update");
+			update_ui();
+		});*/
 
 		event("type", [this] { on_edit(); });
 		event("radius", [this] { on_edit(); });
@@ -181,6 +205,17 @@ Dialog light-panel ''
 	}
 	DataWorld* data;
 	int index;
+
+	void update_ui() {
+		auto& e = data->entities[index];
+		set_int("type", (int)e.light.type);
+		set_float("radius", e.light.radius);
+		set_float("harshness", e.light.harshness * 100);
+		set_float("theta", e.light.theta * 180 / pi);
+		set_float("radius", e.light.radius);
+		set_color("color", e.light.col);
+		set_float("power", e.light.col.r + e.light.col.g + e.light.col.b);
+	}
 
 	void on_edit() {
 		auto& e = data->entities[index];
@@ -428,8 +463,7 @@ public:
 		from_source(R"foodelim(
 Dialog solid-body-panel ''
 	Grid ? '' class=card
-		Group title 'Component' expandx
-			Grid contents '' hidden
+		Expander contents 'Component' expandx
 )foodelim");
 		data = _data;
 	}
@@ -437,7 +471,7 @@ Dialog solid-body-panel ''
 		entity_index = _entity_index;
 		auto& e = data->entities[entity_index];
 		set_class(_component_class);
-		set_string("title", component_class);
+		set_string("contents", component_class);
 	}
 	void set_class(const string& _component_class) {
 		if (_component_class == component_class)
@@ -450,7 +484,7 @@ Dialog solid-body-panel ''
 
 		auto& e = data->entities[entity_index];
 		if (component_class == "Entity") {
-			content_panel = new EntityBasePanel(e);
+			content_panel = new EntityBasePanel(data, entity_index);
 		} else if (component_class == "Model") {
 			content_panel = new ObjectPanel(data, entity_index);
 		} else if (component_class == "SolidBody") {
@@ -490,7 +524,8 @@ Dialog solid-body-panel ''
 			embed("contents", 0, 0, content_panel);
 	}
 	void set_selected(bool select) {
-		set_visible("contents", select);
+		//set_visible("contents", select);
+		expand("contents", select);
 	}
 	DataWorld* data;
 	int entity_index = -1;
@@ -507,7 +542,7 @@ Dialog entity-panel ''
 	Grid main-grid '' expandx
 		.
 		---|
-		ListView components 'c' nobar sunkenbackground=no selectsingle hidden
+		ListView components 'c' nobar sunkenbackground=no showselection=no selectsingle hidden
 		---|
 		Button add-component '+' hidden
 )foodelim");
@@ -534,19 +569,23 @@ Dialog entity-panel ''
 
 	mode_world->multi_view->out_selection_changed >> create_sink([this] {
 		const auto& sel = mode_world->multi_view->selection;
-		cur_index = -1;
 
 		unembed(add_entity_panel.get());
 		unembed(entity_list_panel.get());
 
-		set_visible("components", false);
-		set_visible("add-component", false);
-		reset("components");
 		if (sel[MultiViewType::WORLD_ENTITY].num == 0) {
+			cur_index = -1;
+			reset("components");
+			set_visible("components", false);
+			set_visible("add-component", false);
 			if (!add_entity_panel->owner)
 				embed("main-grid", 0, 0, add_entity_panel);
 		} else if (sel[MultiViewType::WORLD_ENTITY].num == 1) {
-			cur_index = sel[MultiViewType::WORLD_ENTITY][0];
+			int next = sel[MultiViewType::WORLD_ENTITY][0];
+			if (next == cur_index)
+				return;
+			cur_index = next;
+			reset("components");
 			auto& e = mode_world->data->entities[cur_index];
 			set_options("components-viewport", "expandy");
 			set_visible("components", true);
@@ -579,6 +618,10 @@ Dialog entity-panel ''
 			}
 			set_int("components", 0);
 		} else {
+			cur_index = -1;
+			reset("components");
+			set_visible("components", false);
+			set_visible("add-component", false);
 			if (!entity_list_panel->owner)
 				embed("main-grid", 0, 0, entity_list_panel);
 			entity_list_panel.to<EntityListPanel>()->update(mode_world);

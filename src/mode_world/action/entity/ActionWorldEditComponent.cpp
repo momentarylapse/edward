@@ -6,6 +6,25 @@
 #include "../../data/DataWorld.h"
 
 
+ActionWorldEditBaseEntity::ActionWorldEditBaseEntity(int _index, const WorldEntity &e) {
+	entity = e;
+	index = _index;
+}
+
+void* ActionWorldEditBaseEntity::execute(Data *d) {
+	auto w = dynamic_cast<DataWorld*>(d);
+	std::swap(w->entities[index].pos, entity.pos);
+	std::swap(w->entities[index].ang, entity.ang);
+	return nullptr;
+}
+
+void ActionWorldEditBaseEntity::undo(Data *d) {
+	auto w = dynamic_cast<DataWorld*>(d);
+	std::swap(w->entities[index].pos, entity.pos);
+	std::swap(w->entities[index].ang, entity.ang);
+}
+
+
 ActionWorldEditLight::ActionWorldEditLight(int _index, const WorldLight &l) {
 	light = l;
 	index = _index;

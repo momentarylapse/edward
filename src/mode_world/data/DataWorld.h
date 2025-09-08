@@ -126,6 +126,7 @@ public:
 	WorldCamera *add_camera(const WorldCamera& c);
 #endif
 	WorldEntity* add_entity(const WorldEntity& e);
+	void edit_entity(int index, const WorldEntity& e);
 	void edit_camera(int index, const WorldCamera& c);
 	void edit_light(int index, const WorldLight& l);
 	void edit_terrain_meta_data(int index, const vec3& pattern);
