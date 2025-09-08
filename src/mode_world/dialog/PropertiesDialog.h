@@ -5,10 +5,11 @@
 #pragma once
 
 #include <lib/xhui/Dialog.h>
+#include <lib/pattern/Observable.h>
 #include "../data/DataWorld.h"
 
 
-class PropertiesDialog : public xhui::Panel {
+class PropertiesDialog : public obs::Node<xhui::Panel> {
 public:
 	explicit PropertiesDialog(DataWorld* data);
 	DataWorld* data;

@@ -6,18 +6,10 @@
  */
 
 #include "ActionWorldEditData.h"
-#include <y/world/Terrain.h>
 
 ActionWorldEditData::ActionWorldEditData(const DataWorld::MetaData &_data) {
 	data = _data;
 }
-
-void ActionWorldEditData::undo(Data *d) {
-	execute(d);
-}
-
-
-
 void *ActionWorldEditData::execute(Data *d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 
@@ -25,5 +17,10 @@ void *ActionWorldEditData::execute(Data *d) {
 
 	return nullptr;
 }
+
+void ActionWorldEditData::undo(Data *d) {
+	execute(d);
+}
+
 
 

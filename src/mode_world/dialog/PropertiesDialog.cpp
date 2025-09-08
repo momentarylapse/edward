@@ -15,15 +15,20 @@
 
 #include "ComponentSelectionDialog.h"
 
-PropertiesDialog::PropertiesDialog(DataWorld* _data) : Panel("") {//: Dialog("world_dialog", parent) {
+PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//: Dialog("world_dialog", parent) {
 	data = _data;
 	temp = data->meta_data;
 
 	from_resource("world_dialog");
 
-	event(xhui::event_id::Close, [this] {
-		//request_destroy();
+	data->out_changed >> create_sink([this] {
+		temp = data->meta_data;
+		fill();
 	});
+
+	/*event(xhui::event_id::Close, [this] {
+		//request_destroy();
+	});*/
 
 	fill();
 
@@ -39,18 +44,28 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Panel("") {//: Dialog("wo
 		if (n >= 0)
 			temp.skybox_files.erase(n);
 		apply();
-		fill();
 	});
 	event("skybox-add", [this] {
 		data->session->storage->file_dialog(FD_MODEL, false, true).then([this] (const ComplexPath& p) {
 			temp.skybox_files.add(p.simple);
 			apply();
-			fill();
 		});
 	});
 
 	event("bgc", [this] {
 		temp.background_color = get_color("bgc");
+		apply();
+	});
+	event("physics_enabled", [this] {
+		temp.physics_enabled = is_checked("physics_enabled");
+		apply();
+	});
+	event("physics-mode", [this] {
+		int n = get_int("physics-mode");
+		if (n == 0)
+			temp.physics_mode = PhysicsMode::SIMPLE;
+		else if (n == 1)
+			temp.physics_mode = PhysicsMode::FULL_EXTERNAL;
 		apply();
 	});
 	event("gravitation_x", [this] {
@@ -78,13 +93,11 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Panel("") {//: Dialog("wo
 		if (n >= 0)
 			temp.systems.erase(n);
 		apply();
-		fill();
 	});
 	event("system-add", [this] {
 		ComponentSelectionDialog::ask(this, data->session, "ui.Controller").then([this] (const ScriptInstanceData& c) {
 			temp.systems.add(c);
 			apply();
-			fill();
 		});
 	});
 	event("system-create", [this] {
@@ -102,7 +115,6 @@ class <NAME> extends Controller
 
 				temp.systems.add({path.relative, name});
 				apply();
-				fill();
 			});
 		});
 	});
@@ -116,9 +128,9 @@ void PropertiesDialog::fill() {
 
 	check("physics_enabled", temp.physics_enabled);
 	if (temp.physics_mode == PhysicsMode::SIMPLE)
-		set_int("physics_mode", 0);
+		set_int("physics-mode", 0);
 	else if (temp.physics_mode == PhysicsMode::FULL_EXTERNAL)
-		set_int("physics_mode", 1);
+		set_int("physics-mode", 1);
 
 	reset("skybox");
 	for (const auto&& [i, sb]: enumerate(temp.skybox_files))

@@ -5,8 +5,7 @@
  *      Author: michi
  */
 
-#ifndef ACTIONWORLDEDITDATA_H_
-#define ACTIONWORLDEDITDATA_H_
+#pragma once
 
 #include <action/Action.h>
 #include "../data/DataWorld.h"
@@ -23,4 +22,3 @@ private:
 	DataWorld::MetaData data;
 };
 
-#endif /* ACTIONWORLDEDITDATA_H_ */
