@@ -31,6 +31,8 @@
 
 static string _(const string &s) { return s; }
 
+Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full_base_class);
+
 FormatWorld::FormatWorld(Session *s) : TypedFormat<DataWorld>(s, FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
 }
 
@@ -109,8 +111,23 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 					if (auto sk = e.object.object->_template->skeleton)
 						for (int i=0; i<sk->bones.num; i++)
 							if (sk->filename[i]){}
+				}
 			}
-		}
+			bool system_classes_missing = false;
+			for (auto& s: data->meta_data.systems)
+				if (s.class_name == "")
+					system_classes_missing = true;
+			if (system_classes_missing) {
+				const auto system_classes = enumerate_classes(session, "ui.Controller");
+				for (auto& s: data->meta_data.systems)
+					if (s.class_name == "") {
+						for (const auto& c: system_classes)
+							if (c.filename == s.filename) {
+								s.class_name = c.class_name;
+								//s.variables = c.variables;
+							}
+					}
+			}
 		} catch (Exception &e) {
 			msg_error("ABORT: " + e.message());
 		}
@@ -158,6 +175,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 			} else if (e.tag == "script" or e.tag == "system") {
 				ScriptInstanceData s;
 				s.filename = e.value("file");
+				s.class_name = e.value("class");
 				for (auto &ee: e.elements) {
 					WorldScriptVariable v;
 					v.name = ee.value("name");

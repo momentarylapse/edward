@@ -2,16 +2,15 @@
 // Created by Michael Ankele on 2025-02-10.
 //
 
-#ifndef PROPERTIESDIALOG_H
-#define PROPERTIESDIALOG_H
+#pragma once
 
 #include <lib/xhui/Dialog.h>
 #include "../data/DataWorld.h"
 
 
-class PropertiesDialog : public xhui::Dialog {
+class PropertiesDialog : public xhui::Panel {
 public:
-	explicit PropertiesDialog(xhui::Panel* parent, DataWorld* data);
+	explicit PropertiesDialog(DataWorld* data);
 	DataWorld* data;
 
 	DataWorld::MetaData temp;
@@ -23,5 +22,3 @@ public:
 };
 
 
-
-#endif //PROPERTIESDIALOG_H

@@ -1,4 +1,4 @@
-Dialog world_dialog "World properties" width=520 height=420 resizable headerbar closebutton=no __borderwidth=0
+Dialog world_dialog "World properties" width=320
 	Grid ? "" vertical
 		TabControl world_dialog_tab_control "Background\\Fog\\Physics\\Scripts"
 			Grid ? "" vertical
@@ -7,21 +7,21 @@ Dialog world_dialog "World properties" width=520 height=420 resizable headerbar 
 				Group grp_skybox "Skybox models"
 					ListView skybox "#\\Model" "tooltip=Models drawn over the sky color\n- double click to select" reorderable style=rich-list
 			Grid ? "" vertical
-				RadioButton fog_mode:none "Deactivated" expandx
-				RadioButton fog_mode:linear "Linear"
+				RadioButton fog_mode:none "Deactivated" expandx disabled
+				RadioButton fog_mode:linear "Linear" disabled
 				Grid ? "" indent
 					Label world_dialog_t_fog_start "Distance" right disabled
-					SpinButton fog_start "" range=0:1000000000:0.1 "tooltip=Distance, at which fog starts (intensity 0)"
+					SpinButton fog_start "" range=0:1000000000:0.1 "tooltip=Distance, at which fog starts (intensity 0)" disabled
 					---|
 					Label world_dialog_t_fog_end "to" right disabled
-					SpinButton fog_end "" range=0:1000000000:0.1 "tooltip=maximum viewing distance before full fog intensity"
+					SpinButton fog_end "" range=0:1000000000:0.1 "tooltip=maximum viewing distance before full fog intensity" disabled
 				Grid ? ""
-					RadioButton fog_mode:exp "Exponential"
-					RadioButton fog_mode:exp2 "Square exponential"
+					RadioButton fog_mode:exp "Exponential" disabled
+					RadioButton fog_mode:exp2 "Square exponential" disabled
 				Grid ? "" indent
 					Label world_dialog_t_fog_distance "Distance" right disabled
-					SpinButton fog_distance "" range=0:1000000000:0.1 "tooltip=fog intensity = exp( - distance / viewing-distance )"
-				ColorButton fog_color ""
+					SpinButton fog_distance "" range=0:1000000000:0.1 "tooltip=fog intensity = exp( - distance / viewing-distance )" disabled
+				ColorButton fog_color "" disabled
 			Grid ? "" vertical
 				CheckBox physics_enabled "Enabled"
 				Grid ? ""
@@ -41,8 +41,3 @@ Dialog world_dialog "World properties" width=520 height=420 resizable headerbar 
 						SpinButton gravitation_z "" range=::0.1
 						Label /luss "lu/s²"
 			ListView script_list "File" nobar style=rich-list "tooltip=Global scripts - a class derived from y.Controller is instantiated and running in the background\n * double click to edit variables\n * right click to edit"
-		Grid ? "" buttonbar
-			Button /cancel "Cancel" image=hui:cancel
-			---|
-			Button /ok "Ok" image=hui:ok default
-			Button /apply "Apply" image=hui:apply

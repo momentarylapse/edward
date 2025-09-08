@@ -5,6 +5,7 @@
 #include "ModeWorld.h"
 #include "ModeEditTerrain.h"
 #include "ModeScripting.h"
+#include "ModeWorldProperties.h"
 #include "dialog/EntityPanel.h"
 #include "action/ActionWorldMoveSelection.h"
 #include <Session.h>
@@ -58,6 +59,7 @@ ModeWorld::ModeWorld(Session* session) :
 	});
 
 	mode_scripting = new ModeScripting(this);
+	mode_properties = new ModeWorldProperties(this);
 }
 
 Array<WorldScriptVariable> load_variables(const kaba::Class* c) {
@@ -130,7 +132,8 @@ void ModeWorld::on_enter_rec() {
 		session->set_mode(mode_scripting.get());
 	}));
 	session->win->event("properties", [this] {
-		session->win->open_dialog(new PropertiesDialog(session->win, data));
+		session->set_mode(mode_properties.get());
+		//session->win->open_dialog(new PropertiesDialog(session->win, data));
 	});
 	session->win->event("run-game", [this] {
 		Path engine_dir = xhui::config.get_str("EngineDir", "");
@@ -261,6 +264,7 @@ void ModeWorld::update_menu() {
 
 	win->check("mode_world", session->cur_mode == this);
 	win->check("mode-world-scripting", session->cur_mode == mode_scripting.get());
+	win->check("properties", session->cur_mode == mode_properties.get());
 }
 
 

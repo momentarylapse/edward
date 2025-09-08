@@ -13,6 +13,6 @@ Toolbar world-toolbar ""
 	Item mode_world_terrain "Height map" checkable image=terrain disabled
 	Item mode_world_camera "Camera flight" checkable image=world-cam hidden
 	Item mode-world-scripting "Scripts" checkable image=world-scripting
+	Item properties "Properties" checkable image=configure
 	Separator
-	Item properties "Properties" image=configure
 	Item run-game "Run game" image=hui:media-play

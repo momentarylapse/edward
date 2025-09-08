@@ -15,12 +15,14 @@
 
 #include "ComponentSelectionDialog.h"
 
-PropertiesDialog::PropertiesDialog(xhui::Panel* parent, DataWorld* _data) : Dialog("world_dialog", parent) {
+PropertiesDialog::PropertiesDialog(DataWorld* _data) : Panel("") {//: Dialog("world_dialog", parent) {
 	data = _data;
 	temp = data->meta_data;
 
+	from_resource("world_dialog");
+
 	event(xhui::event_id::Close, [this] {
-		request_destroy();
+		//request_destroy();
 	});
 
 	fill();
