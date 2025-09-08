@@ -463,7 +463,13 @@ public:
 		from_source(R"foodelim(
 Dialog solid-body-panel ''
 	Grid ? '' class=card
-		Expander contents 'Component' expandx
+		Expander expander 'Component' expandx
+			Grid contents ''
+				.
+				---|
+				Grid ? ''
+					Label ? '' expandx
+					Button delete 'Delete' danger noexpandx
 )foodelim");
 		data = _data;
 	}
@@ -471,7 +477,7 @@ Dialog solid-body-panel ''
 		entity_index = _entity_index;
 		auto& e = data->entities[entity_index];
 		set_class(_component_class);
-		set_string("contents", component_class);
+		set_string("expander", component_class);
 	}
 	void set_class(const string& _component_class) {
 		if (_component_class == component_class)
@@ -524,8 +530,7 @@ Dialog solid-body-panel ''
 			embed("contents", 0, 0, content_panel);
 	}
 	void set_selected(bool select) {
-		//set_visible("contents", select);
-		expand("contents", select);
+		expand("expander", select);
 	}
 	DataWorld* data;
 	int entity_index = -1;

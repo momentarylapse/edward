@@ -8,18 +8,87 @@
 #include <lib/xhui/xhui.h>
 #include <lib/base/iter.h>
 #include <lib/xhui/Menu.h>
+#include <lib/xhui/controls/ListView.h>
 #include <mode_world/action/ActionWorldEditData.h>
 #include <storage/Storage.h>
 #include <view/dialogs/CommonDialogs.h>
 #include <world/World.h>
 
 #include "ComponentSelectionDialog.h"
+#include "gui/Node.h"
+
+class SystemPanel : public obs::Node<xhui::Panel> {
+public:
+	explicit SystemPanel(PropertiesDialog* _properties_dialog) : obs::Node<xhui::Panel>("") {
+		properties_dialog = _properties_dialog;
+		data = properties_dialog->data;
+		from_source(R"foodelim(
+Dialog system 'System'
+	Grid ? '' class=card
+		Grid ? ''
+			Label class '' bold
+			Label filename '' small
+		---|
+		Expander contents '' expandx
+			Grid ? ''
+				Grid variables ''
+				---|
+				Grid ? ''
+					Label ? '' expandx
+					Button edit 'Edit code' primary noexpandx
+					Button delete 'Delete' danger noexpandx
+)foodelim");
+		event("delete", [this] {
+			if (index >= 0) {
+				properties_dialog->temp = data->meta_data;
+				properties_dialog->temp.systems.erase(index);
+				properties_dialog->apply();
+			}
+		});
+	}
+	void update(int _index) {
+		index = _index;
+		auto& s = data->meta_data.systems[index];
+		set_string("class", s.class_name);
+		set_string("filename", str(s.filename));
+		set_target("variables");
+		for (const auto& [i, v]: enumerate(s.variables)) {
+			string id_var = format("var-%d", i);
+			add_control("Label", v.name, 0, i, format("l-var-%d", i));
+			add_control("Edit", v.value, 1, i, id_var);
+			event(id_var, [this, i, id=id_var] {
+				properties_dialog->temp = data->meta_data;
+				properties_dialog->temp.systems[index].variables[i].value = get_string(id);
+				properties_dialog->apply();
+			});
+		}
+		if (s.variables.num == 0)
+			add_control("Label", "no variables", 0, 0, "");
+	}
+	void set_selected(bool selected) {
+		expand("contents", selected);
+	}
+	PropertiesDialog* properties_dialog;
+	DataWorld* data;
+	int index = -1;
+};
 
 PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//: Dialog("world_dialog", parent) {
 	data = _data;
 	temp = data->meta_data;
 
 	from_resource("world_dialog");
+
+	auto script_list = (xhui::ListView*)get_control("script_list");
+	script_list->column_factories[0].f_create = [this](const string& id) -> xhui::Control* {
+		return new SystemPanel(this);
+	};
+	script_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
+		reinterpret_cast<SystemPanel*>(c)->update(t._int());
+	};
+	script_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
+		reinterpret_cast<SystemPanel*>(c)->set_selected(selected);
+	};
 
 	data->out_changed >> create_sink([this] {
 		temp = data->meta_data;
@@ -137,8 +206,8 @@ void PropertiesDialog::fill() {
 		add_string("skybox", format("%d\\%s", i, sb));
 
 	reset("script_list");
-	for (const auto& s: temp.systems)
-		add_string("script_list", format("%s - %s", s.class_name, s.filename));
+	for (int i=0; i<temp.systems.num; i++)
+		add_string("script_list", str(i));
 }
 
 

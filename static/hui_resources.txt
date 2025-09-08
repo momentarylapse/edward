@@ -8533,7 +8533,7 @@ luss
 0
 ListView
 script_list
-nobar,style=rich-list
+nobar,sunkenbackground=no,showselection=no,selectsingle
 3
 0
 0
@@ -10325,7 +10325,7 @@ world-toolbar
 
 0
 0
-17
+16
 Item
 new
 image=new
@@ -10405,27 +10405,21 @@ checkable,image=world-cam,hidden
 0
 0
 Item
-mode-world-scripting
-checkable,image=world-scripting
-13
-0
-0
-Item
 properties
 checkable,image=configure
-14
+13
 0
 0
 Separator
 
 
-15
+14
 0
 0
 Item
 run-game
 image=hui:media-play
-16
+15
 0
 0
 # Number Of Languages
@@ -10433,7 +10427,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1046
+1045
 # Text
 /ambient
 Ambient
@@ -13407,9 +13401,6 @@ Skybox
 
 world-skybox-popup/world-skybox-popup
 Skybox
-
-world-toolbar/mode-world-scripting
-Scripts
 
 world-toolbar/mode_world
 Objects and terrains
