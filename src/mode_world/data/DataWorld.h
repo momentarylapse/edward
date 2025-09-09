@@ -70,6 +70,9 @@ public:
 	explicit DataWorld(Session *ed);
 	~DataWorld() override;
 
+	obs::source out_component_added{this, "component-added"};
+	obs::source out_component_removed{this, "component-removed"};
+
 	void reset() override;
 	void add_initial_data();
 	bool is_empty() const;

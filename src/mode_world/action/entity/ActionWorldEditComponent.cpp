@@ -83,12 +83,14 @@ ActionWorldAddComponent::ActionWorldAddComponent(int _index, const ScriptInstanc
 void *ActionWorldAddComponent::execute(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	w->entities[index].components.add(component);
+	w->out_component_added();
 	return &w->entities[index].components;
 }
 
 void ActionWorldAddComponent::undo(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	w->entities[index].components.pop();
+	w->out_component_removed();
 }
 
 
@@ -101,11 +103,13 @@ void *ActionWorldRemoveComponent::execute(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	component = w->entities[index].components[cindex];
 	w->entities[index].components.erase(cindex);
+	w->out_component_removed();
 	return nullptr;
 }
 
 void ActionWorldRemoveComponent::undo(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	w->entities[index].components.insert(component, cindex);
+	w->out_component_added();
 }
 

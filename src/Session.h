@@ -31,6 +31,7 @@ class ResourceManager;
 class PluginManager;
 class DrawingHelper;
 class EdwardWindow;
+class CodeEditorWindow;
 
 
 
@@ -87,6 +88,9 @@ public:
 	base::future<void> allow_termination();
 
 	EdwardWindow *win;
+	CodeEditorWindow* code_editor_window = nullptr;
+
+	void edit_code_file(const Path& filename);
 
 	Mode *mode_none;
 	ModeModel* mode_model;

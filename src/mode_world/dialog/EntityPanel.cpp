@@ -469,9 +469,18 @@ Dialog solid-body-panel ''
 				---|
 				Grid ? ''
 					Label ? '' expandx
+					Button edit 'Edit code' primary noexpandx
 					Button delete 'Delete' danger noexpandx
 )foodelim");
 		data = _data;
+		event("delete", [this] {
+			if (entity_index >= 0 and component_index >= 0)
+				data->entity_remove_component(entity_index, component_index);
+		});
+		event("edit", [this] {
+			if (entity_index >= 0 and component_index >= 0)
+				data->session->edit_code_file(data->entities[entity_index].components[component_index].filename);
+		});
 	}
 	void update(int _entity_index, const string& _component_class) {
 		entity_index = _entity_index;
@@ -483,6 +492,8 @@ Dialog solid-body-panel ''
 		if (_component_class == component_class)
 			return;
 		component_class = _component_class;
+		component_index = -1;
+		user_component = false;
 		if (content_panel) {
 			unembed(content_panel);
 			content_panel = nullptr;
@@ -521,21 +532,27 @@ Dialog solid-body-panel ''
 		} else {
 			for (int i=0; i<e.components.num; i++)
 				if (e.components[i].class_name == component_class) {
+					component_index = i;
 					content_panel = new UserComponentPanel(data, entity_index, i);
+					user_component = true;
 					break;
 				}
 		}
 
 		if (content_panel)
 			embed("contents", 0, 0, content_panel);
+		set_visible("delete", component_class != "Entity");
+		set_visible("edit", user_component);
 	}
 	void set_selected(bool select) {
 		expand("expander", select);
 	}
 	DataWorld* data;
 	int entity_index = -1;
+	int component_index = -1;
 	string component_class;
 	Panel* content_panel = nullptr;
+	bool user_component = false;
 };
 
 
@@ -572,65 +589,14 @@ Dialog entity-panel ''
 		reinterpret_cast<ComponentPanel*>(c)->set_selected(selected);
 	};
 
+	mode_world->data->out_component_added >> create_sink([this] {
+		update(true);
+	});
+	mode_world->data->out_component_removed >> create_sink([this] {
+		update(true);
+	});
 	mode_world->multi_view->out_selection_changed >> create_sink([this] {
-		const auto& sel = mode_world->multi_view->selection;
-
-		unembed(add_entity_panel.get());
-		unembed(entity_list_panel.get());
-
-		if (sel[MultiViewType::WORLD_ENTITY].num == 0) {
-			cur_index = -1;
-			reset("components");
-			set_visible("components", false);
-			set_visible("add-component", false);
-			if (!add_entity_panel->owner)
-				embed("main-grid", 0, 0, add_entity_panel);
-		} else if (sel[MultiViewType::WORLD_ENTITY].num == 1) {
-			int next = sel[MultiViewType::WORLD_ENTITY][0];
-			if (next == cur_index)
-				return;
-			cur_index = next;
-			reset("components");
-			auto& e = mode_world->data->entities[cur_index];
-			set_options("components-viewport", "expandy");
-			set_visible("components", true);
-			set_visible("add-component", true);
-			add_string("components", str(cur_index) + ":Entity");
-
-			if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-				add_string("components", str(cur_index) + ":Model");
-				add_string("components", str(cur_index) + ":Material");
-				if (e.object.object->_template->solid_body)
-					add_string("components", str(cur_index) + ":SolidBody");
-				if (e.object.object->_template->mesh_collider)
-					add_string("components", str(cur_index) + ":MeshCollider");
-				if (e.object.object->_template->skeleton)
-					add_string("components", str(cur_index) + ":Skeleton");
-				if (e.object.object->_template->animator)
-					add_string("components", str(cur_index) + ":Animator");
-			} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
-				add_string("components", str(cur_index) + ":Terrain");
-				add_string("components", str(cur_index) + ":Material");
-				add_string("components", str(cur_index) + ":SolidBody");
-				add_string("components", str(cur_index) + ":TerrainCollider");
-			} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
-				add_string("components", str(cur_index) + ":Camera");
-			} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {
-				add_string("components", str(cur_index) + ":Light");
-			}
-			for (int i=0; i<e.components.num; i++) {
-				add_string("components", str(cur_index) + ":" + e.components[i].class_name);
-			}
-			set_int("components", 0);
-		} else {
-			cur_index = -1;
-			reset("components");
-			set_visible("components", false);
-			set_visible("add-component", false);
-			if (!entity_list_panel->owner)
-				embed("main-grid", 0, 0, entity_list_panel);
-			entity_list_panel.to<EntityListPanel>()->update(mode_world);
-		}
+		update(false);
 	});
 
 	event("add-component", [this] {
@@ -642,6 +608,68 @@ Dialog entity-panel ''
 	/*mode->data->out_changed >> create_sink([this] {
 	});*/
 }
+
+void EntityPanel::update(bool force) {
+	const auto& sel = mode_world->multi_view->selection;
+
+	unembed(add_entity_panel.get());
+	unembed(entity_list_panel.get());
+
+	if (sel[MultiViewType::WORLD_ENTITY].num == 0) {
+		cur_index = -1;
+		reset("components");
+		set_visible("components", false);
+		set_visible("add-component", false);
+		if (!add_entity_panel->owner)
+			embed("main-grid", 0, 0, add_entity_panel);
+	} else if (sel[MultiViewType::WORLD_ENTITY].num == 1) {
+		int next = sel[MultiViewType::WORLD_ENTITY][0];
+		if (next == cur_index and !force)
+			return;
+		cur_index = next;
+		reset("components");
+		auto& e = mode_world->data->entities[cur_index];
+		set_options("components-viewport", "expandy");
+		set_visible("components", true);
+		set_visible("add-component", true);
+		add_string("components", str(cur_index) + ":Entity");
+
+		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+			add_string("components", str(cur_index) + ":Model");
+			add_string("components", str(cur_index) + ":Material");
+			if (e.object.object->_template->solid_body)
+				add_string("components", str(cur_index) + ":SolidBody");
+			if (e.object.object->_template->mesh_collider)
+				add_string("components", str(cur_index) + ":MeshCollider");
+			if (e.object.object->_template->skeleton)
+				add_string("components", str(cur_index) + ":Skeleton");
+			if (e.object.object->_template->animator)
+				add_string("components", str(cur_index) + ":Animator");
+		} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
+			add_string("components", str(cur_index) + ":Terrain");
+			add_string("components", str(cur_index) + ":Material");
+			add_string("components", str(cur_index) + ":SolidBody");
+			add_string("components", str(cur_index) + ":TerrainCollider");
+		} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
+			add_string("components", str(cur_index) + ":Camera");
+		} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {
+			add_string("components", str(cur_index) + ":Light");
+		}
+		for (int i=0; i<e.components.num; i++) {
+			add_string("components", str(cur_index) + ":" + e.components[i].class_name);
+		}
+		set_int("components", 0);
+	} else {
+		cur_index = -1;
+		reset("components");
+		set_visible("components", false);
+		set_visible("add-component", false);
+		if (!entity_list_panel->owner)
+			embed("main-grid", 0, 0, entity_list_panel);
+		entity_list_panel.to<EntityListPanel>()->update(mode_world);
+	}
+}
+
 
 
 

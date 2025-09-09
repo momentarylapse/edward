@@ -7,6 +7,7 @@
 
 #include "Session.h"
 #include <view/EdwardWindow.h>
+#include <view/codeeditor/CodeEditorWindow.h>
 #include "Edward.h"
 /*#include "mode/ModeNone.h"
 #include "mode/ModeCreation.h"
@@ -564,5 +565,11 @@ Mode *Session::find_mode_base(const string &name) {
 #endif
 	return mode_none;
 }
+
+void Session::edit_code_file(const Path &filename) {
+	if (!code_editor_window)
+		code_editor_window = new CodeEditorWindow();
+}
+
 
 

@@ -45,6 +45,9 @@ Dialog system 'System'
 				properties_dialog->apply();
 			}
 		});
+		event("edit", [this] {
+			data->session->edit_code_file(data->meta_data.systems[index].filename);
+		});
 	}
 	void update(int _index) {
 		index = _index;

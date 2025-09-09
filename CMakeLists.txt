@@ -533,6 +533,7 @@ add_executable(edward
 	src/stuff/PluginManager.cpp
 	src/test/MeshTest.cpp
 	src/test/UnitTest.cpp
+	src/view/codeeditor/CodeEditorWindow.cpp
 	src/view/dialogs/CommonDialogs.cpp
 	src/view/ActionController.cpp
 	src/view/DrawingHelper.cpp
