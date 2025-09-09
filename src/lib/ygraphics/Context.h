@@ -3,10 +3,23 @@
 #include <lib/base/base.h>
 #include <lib/base/pointer.h>
 #include "graphics-fwd.h"
+#include "font.h"
 
 namespace ygfx {
 
 class Context;
+
+struct TextCache {
+	string text;
+	font::Face* face;
+	float font_size;
+	int age;
+	Texture* texture;
+#if HAS_LIB_VULKAN
+	vulkan::DescriptorSet* dset;
+#endif
+	font::TextDimensions dimensions;
+};
 
 struct DrawingHelperData {
 	explicit DrawingHelperData(Context*);
@@ -44,6 +57,10 @@ struct DrawingHelperData {
 	Shader* shader_round = nullptr;
 #endif
 	void reset_frame();
+
+	Array<TextCache> text_caches;
+	TextCache& get_text_cache(const string& text, font::Face* face, float font_size, float ui_scale);
+	void iterate_text_caches();
 };
 
 class Context {
@@ -62,12 +79,16 @@ public:
 	nix::Context* ctx = nullptr;
 #endif
 
+	void make_current();
+
 	DrawingHelperData* _create_auxiliary_stuff();
 
 	Texture* tex_white = nullptr;
 	Texture* tex_black = nullptr;
 	void _create_default_textures();
 };
+
+font::TextDimensions& get_cached_text_dimensions(const string& text, font::Face* face, float font_size, float ui_scale);
 
 }
 

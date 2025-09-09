@@ -303,6 +303,9 @@ DrawingHelperData* Context::_create_auxiliary_stuff() {
 	return aux;
 }
 
+void Context::make_current() {
+	vulkan::default_device = device;
+}
 
 
 }

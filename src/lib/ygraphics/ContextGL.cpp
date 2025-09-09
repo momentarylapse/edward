@@ -11,7 +11,7 @@ DrawingHelperData::DrawingHelperData(Context* c) {
 
 
 void DrawingHelperData::reset_frame() {
-	descriptor_sets_used = 0;
+	//descriptor_sets_used = 0;
 }
 
 void DrawingHelperData::create_basic() {
@@ -160,6 +160,8 @@ DrawingHelperData* Context::_create_auxiliary_stuff() {
 	return aux;
 }
 
+void Context::make_current() {
+}
 
 }
 

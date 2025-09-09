@@ -30,7 +30,7 @@ void Painter::clear(const color &c) {
 void Painter::draw_str(const vec2 &p, const string &str) {
 	if (str.num == 0)
 		return;
-	auto& tc = get_text_cache(aux, str, face, font_size, ui_scale);
+	auto& tc = aux->get_text_cache(str, face, font_size, ui_scale);
 
 	float w = (float)tc.texture->width / ui_scale;
 	float h = (float)tc.texture->height / ui_scale;

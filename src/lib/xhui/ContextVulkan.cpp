@@ -16,6 +16,7 @@ Context::Context(Window* w, ygfx::Context* ctx) {
 }
 
 Painter* Context::prepare_draw() {
+	context->make_current();
 	if (!swap_chain->acquire_image(&image_index, image_available_semaphore)) {
 		rebuild_default_stuff();
 		return nullptr;
@@ -97,8 +98,12 @@ void Context::_create_swap_chain_and_stuff() {
 
 Context* Context::create(Window* window) {
 
-	glfwMakeContextCurrent(window->window);
-	auto instance = vulkan::init({"glfw", "validation", "api=1.2", "verbosity=1"});
+	static vulkan::Instance* global_instance = nullptr;
+
+	if (!global_instance) {
+		global_instance = vulkan::init({"glfw", "validation", "api=1.4", "verbosity=1"});
+	}
+	auto instance = global_instance;
 	auto surface = instance->create_glfw_surface(window->window);
 	auto device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation"});
 	auto ctx = new Context(window, new ygfx::Context(instance, device));

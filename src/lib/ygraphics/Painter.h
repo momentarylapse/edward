@@ -3,7 +3,6 @@
 #include <lib/image/ImagePainter.h>
 #include <lib/math/vec2.h>
 #include <lib/math/mat4.h>
-#include <lib/ygraphics/font.h>
 #include <lib/ygraphics/graphics-fwd.h>
 
 
@@ -89,21 +88,5 @@ public:
 #endif
 };
 
-
-struct TextCache {
-	string text;
-	font::Face* face;
-	float font_size;
-	int age;
-	Texture* texture;
-#if HAS_LIB_VULKAN
-	vulkan::DescriptorSet* dset;
-#endif
-	font::TextDimensions dimensions;
-};
-
-TextCache& get_text_cache(DrawingHelperData* aux, const string& text, font::Face* face, float font_size, float ui_scale);
-void iterate_text_caches();
-font::TextDimensions& get_cached_text_dimensions(const string& text, font::Face* face, float font_size, float ui_scale);
 
 }

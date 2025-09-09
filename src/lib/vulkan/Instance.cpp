@@ -85,6 +85,8 @@ Array<const char*> get_required_instance_extensions(bool glfw, bool validation, 
 			return "VK_ERROR_SURFACE_LOST_KHR";
 		if (r == VK_ERROR_NATIVE_WINDOW_IN_USE_KHR)
 			return "VK_ERROR_NATIVE_WINDOW_IN_USE_KHR";
+		if (r == VK_ERROR_DEVICE_LOST)
+			return "VK_ERROR_DEVICE_LOST";
 		return "err=" + str((int)r);
 	}
 
