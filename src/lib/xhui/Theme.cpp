@@ -18,6 +18,8 @@ void Theme::load_default() {
 
 	_default.font_size = c.get_float("font.size", 12);
 	_default.font_name = c.get_str("font.name", "Sans");
+	_default.font_size_big = _default.font_size * 1.7f;
+	_default.font_size_small = _default.font_size * 0.7f;
 
 	_default.spacing = c.get_float("spacing", 8);
 	_default.focus_frame_width = c.get_float("focus-frame-width", 1);

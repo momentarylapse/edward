@@ -124,6 +124,14 @@ void Button::set_option(const string& key, const string& value) {
 		float f = value._float();
 		padding = {f, f, f, f};
 		request_redraw();
+	} else if (key == "paddingx") {
+		float f = value._float();
+		padding.x1 = padding.x2 = f;
+		request_redraw();
+	} else if (key == "paddingy") {
+		float f = value._float();
+		padding.y1 = padding.y2 = f;
+		request_redraw();
 	} else if (key == "primary") {
 		primary = true;
 		request_redraw();
@@ -137,6 +145,8 @@ void Button::set_option(const string& key, const string& value) {
 	} else if (key == "flat") {
 		flat = true;
 		request_redraw();
+	} else if (key == "small" or key == "small" or key == "bold") {
+		label.set_option(key, value);
 	} else {
 		Control::set_option(key, value);
 	}

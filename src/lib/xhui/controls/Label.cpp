@@ -91,9 +91,9 @@ void Label::set_option(const string& key, const string& value) {
 	} else if (key == "italic") {
 		italic = true;
 	} else if (key == "big") {
-		font_size = Theme::_default.font_size * 1.7f;
+		font_size = Theme::_default.font_size_big;
 	} else if (key == "small") {
-		font_size = Theme::_default.font_size * 0.7f;
+		font_size = Theme::_default.font_size_small;
 	} else {
 		Control::set_option(key, value);
 	}

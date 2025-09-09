@@ -8,6 +8,8 @@ class Theme {
 public:
 	string font_name;
 	float font_size;
+	float font_size_small;
+	float font_size_big;
 
 	float spacing, window_margin;
 	float label_margin_x;
