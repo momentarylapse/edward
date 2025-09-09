@@ -8531,10 +8531,34 @@ luss
 2
 2
 0
-ListView
-script_list
-nobar,sunkenbackground=no,showselection=no,selectsingle
+Grid
+?
+vertical
 3
+0
+2
+ListView
+systems
+nobar,sunkenbackground=no,showselection=no,selectsingle
+0
+0
+0
+Grid
+?
+
+1
+0
+2
+Button
+add-system
+image=open
+0
+0
+0
+Button
+create-system
+image=new
+1
 0
 0
 # Resource
@@ -13483,12 +13507,12 @@ Simple\\Full (using Bullet)
 world_dialog/physics_enabled
 Enabled
 
-world_dialog/script_list
-File
-Global scripts - a class derived from y.Controller is instantiated and running in the background\n * double click to edit variables\n * right click to edit
 world_dialog/skybox
 #\\Model
 Models drawn over the sky color\n- double click to select
+world_dialog/systems
+systems
+Global scripts - a class derived from y.Controller is instantiated and running in the background\n * double click to edit variables\n * right click to edit
 world_dialog/t-physics-mode
 Simulation mode
 

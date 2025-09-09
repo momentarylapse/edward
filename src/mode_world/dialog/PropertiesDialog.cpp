@@ -79,14 +79,14 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//
 
 	from_resource("world_dialog");
 
-	auto script_list = (xhui::ListView*)get_control("script_list");
-	script_list->column_factories[0].f_create = [this](const string& id) -> xhui::Control* {
+	auto systems_list = (xhui::ListView*)get_control("systems");
+	systems_list->column_factories[0].f_create = [this](const string& id) -> xhui::Control* {
 		return new SystemPanel(this);
 	};
-	script_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
+	systems_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
 		reinterpret_cast<SystemPanel*>(c)->update(t._int());
 	};
-	script_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
+	systems_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
 		reinterpret_cast<SystemPanel*>(c)->set_selected(selected);
 	};
 
@@ -149,30 +149,35 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//
 		temp.gravity.z = get_float("gravitation_z");
 		apply();
 	});
-	event_x("script_list", xhui::event_id::RightButtonDown, [this] {
+	event_x("systems", xhui::event_id::RightButtonDown, [this] {
 		auto m = new xhui::Menu;
-		m->add_item("system-delete", "Delete");
+		m->add_item("delete-system", "Delete");
 		//m->add_item("system-choose", "Choose file...");
-		m->add_item("system-add", "Add from file...");
-		m->add_item("system-create", "Create new...");
+		m->add_item("add-system", "Add from file...");
+		m->add_item("create-system", "Create new...");
 		m->open_popup(this);
 	});
-	event("system-delete", [this] {
-		int n = get_int("script_list");
+	event("delete-system", [this] {
+		int n = get_int("systems");
 		if (n >= 0)
 			temp.systems.erase(n);
 		apply();
 	});
-	event("system-add", [this] {
+	event("add-system", [this] {
 		ComponentSelectionDialog::ask(this, data->session, "ui.Controller").then([this] (const ScriptInstanceData& c) {
 			temp.systems.add(c);
 			apply();
 		});
 	});
-	event("system-create", [this] {
-		data->session->storage->file_dialog(FD_SCRIPT, true, true).then([this] (const ComplexPath& path) {
-			TextDialog::ask(this, "System name", "Test").then([this, path] (const string& name) {
-				os::fs::write_text(path.complete, string(R"foodelim(use y.*
+	event("create-system", [this] {
+		add_new_system();
+	});
+}
+
+void PropertiesDialog::add_new_system() {
+	data->session->storage->file_dialog(FD_SCRIPT, true, true).then([this] (const ComplexPath& path) {
+		TextDialog::ask(this, "System name", "Test").then([this, path] (const string& name) {
+			os::fs::write_text(path.complete, string(R"foodelim(use y.*
 
 class <NAME> extends Controller
 	var some_variable: f32
@@ -182,12 +187,12 @@ class <NAME> extends Controller
 	func override on_iterate(dt: f32)
 )foodelim").replace("<NAME>", name));
 
-				temp.systems.add({path.relative, name});
-				apply();
-			});
+			temp.systems.add({path.relative, name});
+			apply();
 		});
 	});
 }
+
 
 void PropertiesDialog::fill() {
 	set_color("bgc", temp.background_color);
@@ -205,9 +210,9 @@ void PropertiesDialog::fill() {
 	for (const auto&& [i, sb]: enumerate(temp.skybox_files))
 		add_string("skybox", format("%d\\%s", i, sb));
 
-	reset("script_list");
+	reset("systems");
 	for (int i=0; i<temp.systems.num; i++)
-		add_string("script_list", str(i));
+		add_string("systems", str(i));
 }
 
 

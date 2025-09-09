@@ -40,4 +40,8 @@ Dialog world_dialog "World properties" width=320
 						Label /z "Z" right disabled
 						SpinButton gravitation_z "" range=::0.1
 						Label /luss "lu/s²"
-			ListView script_list "File" nobar sunkenbackground=no showselection=no selectsingle "tooltip=Global scripts - a class derived from y.Controller is instantiated and running in the background\n * double click to edit variables\n * right click to edit"
+			Grid ? "" vertical
+				ListView systems "systems" nobar sunkenbackground=no showselection=no selectsingle "tooltip=Global scripts - a class derived from y.Controller is instantiated and running in the background\n * double click to edit variables\n * right click to edit"
+				Grid ? ""
+					Button add-system "" image=open
+					Button create-system "" image=new
