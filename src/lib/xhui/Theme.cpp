@@ -36,6 +36,9 @@ void Theme::load_default() {
 	_default.background_button_primary = color::parse(c.get_str("colors.background-button-primary", "#0000ff"));
 	_default.background_button_primary_hover = color::parse(c.get_str("colors.background-button-primary-hover", "#0000ff"));
 	_default.background_button_primary_active = color::parse(c.get_str("colors.background-button-primary-active", "#0000ff"));
+	_default.background_button_danger = color::parse(c.get_str("colors.background-button-danger", "#0000ff"));
+	_default.background_button_danger_hover = color::parse(c.get_str("colors.background-button-danger-hover", "#0000ff"));
+	_default.background_button_danger = color::parse(c.get_str("colors.background-button-danger-active", "#0000ff"));
 	_default.background_header = color::parse(c.get_str("colors.background-header", "#000000"));
 	_default.background_header_button = color::parse(c.get_str("colors.background-header-button", "#000000"));
 	_default.background_hover = color::parse(c.get_str("colors.background-hover", "#404040"));

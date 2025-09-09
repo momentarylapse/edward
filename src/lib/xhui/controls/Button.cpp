@@ -84,7 +84,15 @@ string Button::get_string() {
 
 void Button::_draw(Painter *p) {
 	color bg = Theme::_default.background_button;
-	if (primary) {
+	if (danger) {
+		if (state == State::HOVER) {
+			bg = Theme::_default.background_button_danger_hover;
+		} else if (state == State::PRESSED) {
+			bg = Theme::_default.background_button_danger_active;
+		} else {
+			bg = Theme::_default.background_button_danger;
+		}
+	} else if (primary) {
 		if (state == State::HOVER) {
 			bg = Theme::_default.background_button_primary_hover;
 		} else if (state == State::PRESSED) {
@@ -118,6 +126,9 @@ void Button::set_option(const string& key, const string& value) {
 		request_redraw();
 	} else if (key == "primary") {
 		primary = true;
+		request_redraw();
+	} else if (key == "danger") {
+		danger = true;
 		request_redraw();
 	} else if (key == "default") {
 		_default = true;

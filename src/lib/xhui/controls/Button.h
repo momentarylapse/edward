@@ -28,6 +28,7 @@ public:
 
 	bool _default = false;
 	bool primary = false;
+	bool danger = false;
 	bool flat = false;
 	rect padding;
 
