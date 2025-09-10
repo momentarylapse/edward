@@ -5,15 +5,14 @@
  *      Author: michi
  */
 
-#ifndef SRC_SESSION_H_
-#define SRC_SESSION_H_
+#pragma once
 
-#include "lib/base/base.h"
-#include "lib/base/map.h"
-#include "lib/base/future.h"
-#include "lib/os/time.h"
-#include "lib/os/path.h"
-#include "lib/pattern/Observable.h"
+#include <lib/base/base.h>
+#include <lib/base/map.h>
+#include <lib/base/future.h>
+#include <lib/os/time.h>
+#include <lib/os/path.h>
+#include <lib/pattern/Observable.h>
 #include <lib/ygraphics/graphics-fwd.h>
 #include <lib/yrenderer/Context.h>
 
@@ -31,7 +30,9 @@ class ResourceManager;
 class PluginManager;
 class DrawingHelper;
 class EdwardWindow;
-class CodeEditorWindow;
+namespace codeedit {
+	class EditorWindow;
+}
 
 
 
@@ -88,7 +89,7 @@ public:
 	base::future<void> allow_termination();
 
 	EdwardWindow *win;
-	CodeEditorWindow* code_editor_window = nullptr;
+	codeedit::EditorWindow* code_editor_window = nullptr;
 
 	void edit_code_file(const Path& filename);
 
@@ -126,5 +127,3 @@ public:
 };
 
 Session *create_session();
-
-#endif /* SRC_SESSION_H_ */

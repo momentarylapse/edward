@@ -7,7 +7,7 @@
 
 #include "Session.h"
 #include <view/EdwardWindow.h>
-#include <view/codeeditor/CodeEditorWindow.h>
+#include <view/codeeditor/EditorWindow.h>
 #include "Edward.h"
 /*#include "mode/ModeNone.h"
 #include "mode/ModeCreation.h"
@@ -37,6 +37,8 @@
 #include <y/world/World.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/target/XhuiRenderer.h>
+
+#include "view/codeeditor/DocumentEditor.h"
 
 static Array<Session*> all_sessions;
 bool any_session_running() {
@@ -568,7 +570,13 @@ Mode *Session::find_mode_base(const string &name) {
 
 void Session::edit_code_file(const Path &filename) {
 	if (!code_editor_window)
-		code_editor_window = new CodeEditorWindow();
+		code_editor_window = new codeedit::EditorWindow();
+	auto e = code_editor_window->create_document_editor();
+	try {
+		e->load(storage->get_root_dir(FD_SCRIPT) | filename);
+	} catch (Exception &e) {
+		error(e.message());
+	}
 }
 
 
