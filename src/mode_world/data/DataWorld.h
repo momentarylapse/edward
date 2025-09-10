@@ -52,8 +52,10 @@ struct WorldComponent {
 	Component* component = nullptr;
 };
 
-struct WorldEntity : multiview::SingleData {
+struct WorldEntity { //: multiview::SingleData {
+	vec3 pos = vec3::ZERO;
 	quaternion ang = quaternion::ID;
+	int view_stage = -1;
 
 	MultiViewType basic_type = MultiViewType::WORLD_ENTITY;
 	WorldLight light;

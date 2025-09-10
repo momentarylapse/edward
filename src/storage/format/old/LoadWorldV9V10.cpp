@@ -97,7 +97,6 @@ void FormatWorld::_load_old(LegacyFile& lf, DataWorld *data, bool deep) {
 			o.ang.z = f->read_float();
 			o.object.object = nullptr;
 			o.view_stage = 0;
-			o.is_special = false;
 			data->entities.add(o);
 		}
 		// Scripts

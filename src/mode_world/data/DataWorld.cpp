@@ -160,8 +160,6 @@ Box DataWorld::get_bounding_box() const {
 
 void DataWorld::update_data() {
 	for (auto&& [i, e]: enumerate(entities)) {
-		e.is_special = (i == EgoIndex);
-
 		if (e.basic_type == MultiViewType::WORLD_OBJECT)
 			e.object.update_data();
 		if (e.basic_type == MultiViewType::WORLD_TERRAIN)

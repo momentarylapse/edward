@@ -12,9 +12,8 @@
 #include <lib/os/path.h>
 
 class Model;
-class ScriptInstanceData;
 
-struct WorldObject: multiview::SingleData {
+struct WorldObject {
 	Path filename;
 	string name;
 	Model *object = nullptr;

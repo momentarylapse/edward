@@ -25,15 +25,6 @@ public:
 	Array<WorldEntity> entities;
 	Array<int> entity_indices;
 
-	Array<WorldObject> objects;
-	Array<int> object_indices;
-
-	Array<WorldTerrain> terrains;
-	Array<int> terrain_indices;
-
-	Array<WorldLight> lights;
-	Array<int> light_indices;
-
 	Array<WorldLink> links;
 	Array<int> link_indices;
 };

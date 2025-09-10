@@ -13,7 +13,6 @@
 #include <lib/math/Box.h>
 
 class Terrain;
-class ScriptInstanceData;
 class Session;
 
 /*class WorldTerrainVertex: public MultiView::SingleData
