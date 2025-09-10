@@ -7,6 +7,8 @@
 #include <lib/xhui/Window.h>
 #include <lib/pattern/Observable.h>
 
+class Path;
+
 namespace codeedit {
 
 class DocumentEditor;
@@ -25,6 +27,8 @@ public:
 	void set_active(DocumentEditor* editor);
 
 	void update_title();
+
+	void open_file(const Path& filename);
 
 	DocumentSwitcher* switcher = nullptr;
 };

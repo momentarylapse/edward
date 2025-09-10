@@ -571,9 +571,8 @@ Mode *Session::find_mode_base(const string &name) {
 void Session::edit_code_file(const Path &filename) {
 	if (!code_editor_window)
 		code_editor_window = new codeedit::EditorWindow();
-	auto e = code_editor_window->create_document_editor();
 	try {
-		e->load(storage->get_root_dir(FD_SCRIPT) | filename);
+		code_editor_window->open_file(storage->get_root_dir(FD_SCRIPT) | filename);
 	} catch (Exception &e) {
 		error(e.message());
 	}

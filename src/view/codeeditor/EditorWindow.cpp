@@ -17,6 +17,7 @@ EditorWindow::EditorWindow() : obs::Node<Window>("", 800, 600) {
 Window test 'test' padding=0
 	TabControl tab 'a' bar=no
 )foodelim");
+	maximize(true);
 
 #ifdef OS_MAC
 	int mod = xhui::KEY_SUPER;
@@ -114,5 +115,16 @@ void EditorWindow::update_title() {
 	if (active_editor)
 		set_title(active_editor->title() + " - xedit");
 }
+
+void EditorWindow::open_file(const Path &filename) {
+	for (auto d: weak(document_editors))
+		if (d->filename == filename) {
+			set_active(d);
+			return;
+		}
+	auto d = create_document_editor();
+	d->load(filename);
+}
+
 
 }
