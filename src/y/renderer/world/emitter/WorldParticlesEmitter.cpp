@@ -13,7 +13,7 @@
 #include <world/Camera.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <y/EngineData.h>
-#include <y/ComponentManager.h>
+#include <y/EntityManager.h>
 #include <y/Entity.h>
 
 using namespace yrenderer;
@@ -57,7 +57,7 @@ void WorldParticlesEmitter::emit(const RenderParams& params, RenderViewData& rvd
 
 	base::map<Texture*, Array<LegacyParticle*>> legacy_groups;
 
-	auto& legacy_particles = ComponentManager::get_list_family<LegacyParticle>();
+	auto& legacy_particles = EntityManager::global->get_component_list_family<LegacyParticle>();
 	for (auto p: legacy_particles) {
 		int i = legacy_groups.find(p->texture.get());
 		if (i >= 0) {
@@ -115,7 +115,7 @@ void WorldParticlesEmitter::emit(const RenderParams& params, RenderViewData& rvd
 
 
 	// new particles
-	auto& particle_groups = ComponentManager::get_list_family<ParticleGroup>();
+	auto& particle_groups = EntityManager::global->get_component_list_family<ParticleGroup>();
 	for (auto g: particle_groups) {
 		auto source = g->source;
 		Array<VertexFx> v;

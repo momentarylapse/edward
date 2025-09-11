@@ -64,8 +64,6 @@ public:
 
 void CameraInit();
 void CameraReset();
-void CameraCalcMove(float dt);
-void CameraShiftAll(const vec3 &dpos);
 
 extern Camera *cam_main; // "camera"
 

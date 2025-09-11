@@ -9,12 +9,14 @@
 #define SRC_HELPER_DELETIONQUEUE_H_
 
 class BaseClass;
+class Entity;
 namespace gui {
 	class Node;
 }
 
 namespace DeletionQueue {
-	void add(BaseClass *c);
+	void add(BaseClass* c);
+	void add_entity(Entity *e);
 	void add_ui(gui::Node *n);
 	void delete_all();
 	void reset();

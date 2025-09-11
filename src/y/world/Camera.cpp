@@ -78,16 +78,6 @@ void Camera::__delete__() {
 	this->Camera::~Camera();
 }
 
-
-void CameraCalcMove(float dt) {
-	auto& cameras = ComponentManager::get_list_family<Camera>();
-	for (auto c: cameras){
-		if (!c->enabled)
-			continue;
-		c->on_iterate(dt);
-	}
-}
-
 // view space -> relative screen space (API independent)
 // (-1,-1) = top left
 // (+1,+1) = bottom right
@@ -130,11 +120,5 @@ vec3 Camera::unproject(const vec3 &v) {
 	float yy = (v.y - 0.5f) * 2;
 	float zz = (v.z - 0.5f) * 2;
 	return im_all.project(vec3(xx,yy,zz));*/
-}
-
-void CameraShiftAll(const vec3 &dpos) {
-	auto& cameras = ComponentManager::get_list_family<Camera>();
-	for (auto c: cameras)
-		c->owner->pos += dpos;
 }
 

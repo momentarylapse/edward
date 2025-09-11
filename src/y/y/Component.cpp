@@ -12,6 +12,8 @@
 #include "../plugins/PluginManager.h"
 #endif
 
+const kaba::Class* NameTag::_class = nullptr;
+
 Component::Component() {
 	owner = nullptr;
 	component_type = nullptr;

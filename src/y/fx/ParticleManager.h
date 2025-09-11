@@ -9,10 +9,13 @@
 
 #include "../lib/base/base.h"
 
+class EntityManager;
 
 class ParticleManager {
 public:
+	explicit ParticleManager(EntityManager* entity_manager);
 	void iterate(float dt);
+	EntityManager* entity_manager;
 };
 
 

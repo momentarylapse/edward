@@ -8,7 +8,7 @@
 #include <lib/yrenderer/Context.h>
 #include <lib/yrenderer/helper/Bindable.h>
 #include <world/components/UserMesh.h>
-#include <y/ComponentManager.h>
+#include <y/EntityManager.h>
 #include <y/Entity.h>
 
 WorldOpaqueUserMeshesEmitter::WorldOpaqueUserMeshesEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "user") {
@@ -18,7 +18,7 @@ void WorldOpaqueUserMeshesEmitter::emit(const yrenderer::RenderParams& params, y
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
-	auto& meshes = ComponentManager::get_list_family<UserMesh>();
+	auto& meshes = EntityManager::global->get_component_list_family<UserMesh>();
 
 	for (auto m: meshes) {
 		auto material = m->material.get();

@@ -15,11 +15,11 @@ class Model;
 
 class btRigidBody;
 
-
+// attach AFTER [Model, Terrain, Collider]
 class SolidBody : public Component {
 public:
 	SolidBody();
-	virtual ~SolidBody();
+	~SolidBody() override;
 
 	void copy_data(SolidBody *source);
 

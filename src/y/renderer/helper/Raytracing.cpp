@@ -13,7 +13,7 @@
 #include <lib/yrenderer/Material.h>
 #include "../../world/Model.h"
 #include "../../world/Terrain.h"
-#include "../../y/ComponentManager.h"
+#include "../../y/EntityManager.h"
 #include "../../y/Entity.h"
 #include "../../y/EngineData.h"
 #include "../../Config.h"
@@ -85,8 +85,8 @@ RayTracingData::RayTracingData(yrenderer::Context* _ctx, RaytracingMode _mode) {
 void RayTracingData::update_frame() {
 	//msg_write("rt update frame");
 
-	auto& models = ComponentManager::get_list_family<Model>();
-	auto& terrains = ComponentManager::get_list_family<Terrain>();
+	auto& models = EntityManager::global->get_component_list<Model>();
+	auto& terrains = EntityManager::global->get_component_list<Terrain>();
 
 
 	Array<MeshDescription> meshes;

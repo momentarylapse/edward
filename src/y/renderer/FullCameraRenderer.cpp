@@ -27,7 +27,7 @@
 #include <world/World.h>
 #include <y/EngineData.h>
 #include <y/Entity.h>
-#include <y/ComponentManager.h>
+#include <y/EntityManager.h>
 #include <Config.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/math/Box.h>
@@ -98,7 +98,7 @@ FullCameraRenderer::FullCameraRenderer(Context* ctx, Camera* _cam, RenderPathTyp
 FullCameraRenderer::~FullCameraRenderer() = default;
 
 void FullCameraRenderer::check_terrains(const vec3& cam_pos) {
-	auto& terrains = ComponentManager::get_list_family<Terrain>();
+	auto& terrains = EntityManager::global->get_component_list<Terrain>();
 	if (terrains.num == 0)
 		return;
 
@@ -173,7 +173,7 @@ void FullCameraRenderer::suggest_cube_map_pos() {
 			cube_map_source->min_depth = m->prop.radius * 1.1f;
 		return;
 	}
-	auto& list = ComponentManager::get_list_family<Model>();
+	auto& list = EntityManager::global->get_component_list<Model>();
 	float max_score = 0;
 	cube_map_source->pos = cam->view_matrix() * vec3(0,0,1000);
 	cube_map_source->min_depth = 1000;
@@ -191,7 +191,7 @@ void FullCameraRenderer::suggest_cube_map_pos() {
 void FullCameraRenderer::render_cubemaps(const yrenderer::RenderParams &params) {
 	suggest_cube_map_pos();
 
-	auto cube_map_sources = ComponentManager::get_list<::CubeMapSource>();
+	auto cube_map_sources = EntityManager::global->get_component_list<::CubeMapSource>();
 	for (auto source: cube_map_sources)
 		source->source.pos = source->owner->pos;
 
@@ -214,7 +214,7 @@ void FullCameraRenderer::render_cubemaps(const yrenderer::RenderParams &params) 
 // keep this outside the drawing function, making sure it only gets called once per frame!
 void FullCameraRenderer::prepare_instanced_matrices() {
 	//profiler::begin(ch_pre);
-	auto& list = ComponentManager::get_list_family<MultiInstance>();
+	auto& list = EntityManager::global->get_component_list<MultiInstance>();
 	for (auto *mi: list) {
 		if (!mi->ubo_matrices)
 			mi->ubo_matrices = new ygfx::UniformBuffer(yrenderer::MAX_INSTANCES * sizeof(mat4));
@@ -236,7 +236,7 @@ void FullCameraRenderer::prepare(const yrenderer::RenderParams& params) {
 	render_path->ambient_occlusion_radius = config.ambient_occlusion_radius;
 
 	// lights
-	const auto& all_lights = ComponentManager::get_list_family<::Light>();
+	const auto& all_lights = EntityManager::global->get_component_list<::Light>();
 	Array<yrenderer::Light*> lights;
 	for (auto l: all_lights) {
 		l->light._ang = l->owner->ang;

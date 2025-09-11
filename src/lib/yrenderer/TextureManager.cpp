@@ -41,11 +41,8 @@ shared<ygfx::Texture> TextureManager::load_texture(const Path& filename) {
 
 	Path fn = find_absolute_texture_path(filename);
 	if (fn.is_empty()) {
-		if (ignore_missing_files) {
-			msg_error("missing texture: " + str(filename));
-			return tex_white;
-		}
-		throw Exception("missing texture: " + str(filename));
+		msg_error("missing texture (ignore): " + str(filename));
+		return tex_white;
 	}
 
 	for (auto&& [key, t]: texture_map)
@@ -66,8 +63,6 @@ shared<ygfx::Texture> TextureManager::load_texture(const Path& filename) {
 		texture_map.add({fn, t});
 		return t;
 	} catch(Exception &e) {
-		if (!ignore_missing_files)
-			throw;
 		msg_error(e.message());
 		return tex_white;
 	}

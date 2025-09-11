@@ -34,3 +34,9 @@ public:
 	Owner *get_owner() const { return (Owner*)owner; };*/
 };
 
+class NameTag : public Component {
+public:
+	string name;
+	static const kaba::Class* _class;
+};
+

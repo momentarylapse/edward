@@ -10,8 +10,7 @@
 
 const kaba::Class *MultiInstance::_class = nullptr;
 
-MultiInstance::MultiInstance() {
-}
+MultiInstance::MultiInstance() = default;
 
 MultiInstance::~MultiInstance() {
     if (ubo_matrices)

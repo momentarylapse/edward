@@ -8,7 +8,7 @@
 #include <lib/yrenderer/Context.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
 #include <world/Terrain.h>
-#include <y/ComponentManager.h>
+#include <y/EntityManager.h>
 #include <y/Entity.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/helper/Bindable.h>
@@ -19,7 +19,7 @@ void WorldTerrainsEmitter::emit(const yrenderer::RenderParams& params, yrenderer
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
-	auto& terrains = ComponentManager::get_list_family<Terrain>();
+	auto& terrains = EntityManager::global->get_component_list<Terrain>();
 	for (auto *t: terrains) {
 		auto o = t->owner;
 

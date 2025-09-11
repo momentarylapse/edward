@@ -10,16 +10,10 @@
 #include "Entity.h"
 #include <lib/base/map.h>
 #include <lib/config.h>
-#ifdef _X_ALLOW_X_
-#include "../meta.h"
-#include "../plugins/PluginManager.h"
 #include <lib/profiler/Profiler.h>
-#endif
 #include <lib/kaba/syntax/Class.h>
 #include <lib/kaba/syntax/Function.h>
 #include <lib/os/msg.h>
-
-static int ch_component = -1;
 
 class ComponentListX {
 public:
@@ -41,55 +35,49 @@ public:
 	}
 };
 
-base::map<const kaba::Class*, ComponentListX> component_lists_by_type;
-base::map<const kaba::Class*, ComponentListX> component_lists_by_family;
-
 bool class_func_did_override(const kaba::Class *type, const string &fname) {
-#ifdef _X_ALLOW_X_
 	for (auto f: weak(type->functions))
 		if (f->name == fname)
 			return f->name_space != type->get_root();
-#endif
 	return false;
 }
 
-ComponentListX &_get_list_x(const kaba::Class *type) {
-	if (component_lists_by_type.find(type) >= 0) {
-		return component_lists_by_type[type];
+ComponentListX &_get_list_x(ComponentManager* cm, const kaba::Class *type) {
+	if (cm->component_lists_by_type.find(type) >= 0) {
+		return cm->component_lists_by_type[type];
 	} else {
 		ComponentListX list;
 		list.type_family = type;
 		list.needs_update = class_func_did_override(type, "on_iterate");
-#ifdef _X_ALLOW_X_
 		if (list.needs_update)
-			list.ch_iterate = profiler::create_channel(type->long_name(), ch_component);
-#endif
-		component_lists_by_type.set(type, list);
-		return component_lists_by_type[type];
+			list.ch_iterate = profiler::create_channel(type->long_name(), cm->ch_component);
+		cm->component_lists_by_type.set(type, list);
+		return cm->component_lists_by_type[type];
 	}
 }
 
-ComponentListX &_get_list_x_family(const kaba::Class *type_family) {
-	if (component_lists_by_family.find(type_family) >= 0) {
-		return component_lists_by_family[type_family];
+ComponentListX &_get_list_x_family(ComponentManager* cm, const kaba::Class *type_family) {
+	if (cm->component_lists_by_family.find(type_family) >= 0) {
+		return cm->component_lists_by_family[type_family];
 	} else {
 		ComponentListX list;
 		list.type_family = type_family;
 		list.needs_update = class_func_did_override(type_family, "on_iterate");
-#ifdef _X_ALLOW_X_
 		if (list.needs_update)
-			list.ch_iterate = profiler::create_channel(type_family->long_name(), ch_component);
-#endif
-		component_lists_by_family.set(type_family, list);
-		return component_lists_by_family[type_family];
+			list.ch_iterate = profiler::create_channel(type_family->long_name(), cm->ch_component);
+		cm->component_lists_by_family.set(type_family, list);
+		return cm->component_lists_by_family[type_family];
 	}
 }
 
-void ComponentManager::init() {
-#ifdef _X_ALLOW_X_
+ComponentManager::ComponentManager() {
 	ch_component = profiler::create_channel("component");
-#endif
 }
+
+ComponentManager::~ComponentManager() {
+	profiler::delete_channel(ch_component);
+}
+
 
 
 void ComponentManager::_register(Component *c) {
@@ -102,39 +90,32 @@ void ComponentManager::_register(Component *c) {
 }
 
 void ComponentManager::_unregister(Component *c) {
-	auto& list = _get_list_x(c->component_type);
+	auto& list = _get_list_x(this, c->component_type);
 	list.remove(c);
 
 	auto type_family = get_component_type_family(c->component_type);
-	auto& flist = _get_list_x_family(type_family);
+	auto& flist = _get_list_x_family(this, type_family);
 	flist.remove(c);
 }
 
 
 const kaba::Class *ComponentManager::get_component_type_family(const kaba::Class *type) {
-#ifdef _X_ALLOW_X_
 	while (type->parent) {
 		if (type->parent->name == "Component")
 			return type;
 		type = type->parent;
 	}
 	return type;
-#else
-	return nullptr;
-#endif
 }
 
 // TODO (later) optimize...
 Component *ComponentManager::create_component(const kaba::Class *type, const string &var) {
-#ifdef _X_ALLOW_X_
-	//Component *c = nullptr;
-	auto c = (Component*)PluginManager::create_instance(type, var);
+	if (!factory)
+		return nullptr;
+	auto c = factory(type, var);
 	c->component_type = type;
 	_register(c);
 	return c;
-#else
-	return nullptr;
-#endif
 }
 
 // should already be unlinked from entity!
@@ -149,31 +130,23 @@ void ComponentManager::delete_component(Component *c) {
 
 
 ComponentManager::List &ComponentManager::_get_list(const kaba::Class *type) {
-	return _get_list_x(type).list;
+	return _get_list_x(this, type).list;
 }
 
 ComponentManager::List &ComponentManager::_get_list_family(const kaba::Class *type_family) {
-	return _get_list_x_family(type_family).list;
+	return _get_list_x_family(this, type_family).list;
 }
 
 void ComponentManager::iterate(float dt) {
-#ifdef _X_ALLOW_X_
 	profiler::begin(ch_component);
-#endif
 	for (auto&& [type, list]: component_lists_by_type)
 		if (list.needs_update) {
-#ifdef _X_ALLOW_X_
 			profiler::begin(list.ch_iterate);
-#endif
 			for (auto *c: list.list)
 				c->on_iterate(dt);
-#ifdef _X_ALLOW_X_
 			profiler::end(list.ch_iterate);
-#endif
 		}
-#ifdef _X_ALLOW_X_
 	profiler::end(ch_component);
-#endif
 }
 
 
@@ -183,7 +156,7 @@ ComponentManager::PairList& ComponentManager::_get_list2(const kaba::Class *type
 	// TODO cache
 	_list.clear();
 	for (auto c1: _get_list(type_a)) {
-		if (auto c2 = c1->owner->_get_component_untyped_(type_b))
+		if (auto c2 = c1->owner->_get_component_generic_(type_b))
 			_list.add({c1->owner, c1, c2});
 	}
 

@@ -10,7 +10,7 @@
 #include <world/Model.h>
 #include <world/ModelManager.h>
 #include <world/components/Animator.h>
-#include <y/ComponentManager.h>
+#include <y/EntityManager.h>
 #include <y/Entity.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/base/sort.h>
@@ -23,7 +23,7 @@ void WorldOpaqueModelsEmitter::emit(const yrenderer::RenderParams& params, yrend
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
-	auto& list = ComponentManager::get_list_family<Model>();
+	auto& list = EntityManager::global->get_component_list<Model>();
 
 	for (auto m: list) {
 		auto ani = m->owner ? m->owner->get_component<Animator>() : nullptr;
@@ -74,7 +74,7 @@ void WorldTransparentModelsEmitter::emit(const yrenderer::RenderParams& params, 
 	};
 	Array<DrawCallData> draw_calls;
 
-	auto& list = ComponentManager::get_list_family<Model>();
+	auto& list = EntityManager::global->get_component_list<Model>();
 
 	for (auto m: list) {
 		for (int i=0; i<m->material.num; i++) {

@@ -9,7 +9,7 @@
 #include <world/Model.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/yrenderer/Context.h>
-#include <y/ComponentManager.h>
+#include <y/EntityManager.h>
 #include <lib/ygraphics/graphics-impl.h>
 
 using namespace yrenderer;
@@ -23,7 +23,7 @@ void WorldInstancedEmitter::emit(const RenderParams& params, RenderViewData& rvd
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
-	auto& list = ComponentManager::get_list_family<MultiInstance>();
+	auto& list = EntityManager::global->get_component_list<MultiInstance>();
 
 	for (auto mi: list) {
 		auto m = mi->model;

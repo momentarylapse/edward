@@ -138,7 +138,6 @@ Dialog x x padding=0
 		session->ctx = yrenderer::api_init_xhui(pp);
 		session->resource_manager = new ResourceManager(session->ctx, engine.texture_dir, engine.material_dir, engine.shader_dir);
 		session->ctx->texture_manager = session->resource_manager->texture_manager;
-		session->ctx->texture_manager->ignore_missing_files = true;
 		session->ctx->shader_manager = session->resource_manager->shader_manager;
 		session->ctx->material_manager = session->resource_manager->material_manager;
 		session->ctx->shader_manager->default_shader = "default.shader";

@@ -29,8 +29,6 @@ public:
 	base::map<Path,ygfx::Texture*> texture_map;
 
 	shared<ygfx::Texture> tex_white;
-
-	bool ignore_missing_files = false;
 };
 
 }

@@ -28,6 +28,7 @@ class Terrain;
 class SolidBody;
 class MultiInstance;
 class Entity;
+class EntityManager;
 class TemplateDataScriptVariable;
 class Light;
 class Camera;
@@ -81,19 +82,16 @@ public:
 	void save(const Path &filename);
 
 	Entity *create_entity(const vec3 &pos, const quaternion &ang);
-	Array<Entity*> entities;
+	owned<EntityManager> entity_manager;
 	void register_entity(Entity *e);
 	void unregister_entity(Entity *e);
 
 	Model *create_object(const Path &filename, const vec3 &pos, const quaternion &ang);
-	Model *create_object_no_reg(const Path &filename, const vec3 &pos, const quaternion &ang);
-	Model *create_object_no_reg_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang);
+	Model *create_object_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang);
 	Terrain *create_terrain(const Path &filename, const vec3 &pos);
-	Terrain *create_terrain_no_reg(const Path &filename, const vec3 &pos);
 
-	Model& attach_model_no_reg(Entity &e, const Path &filename);
-	Model& attach_model(Entity &e, const Path &filename);
-	void unattach_model(Model& m);
+	Model* attach_model(Entity* e, const Path &filename);
+	void unattach_model(Model* m);
 
 	MultiInstance* create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang);
 
@@ -109,6 +107,10 @@ public:
 	color background;
 	Array<Model*> skybox;
 	Fog fog;
+
+	Light* attach_light_parallel(Entity* e, const color& c);
+	Light* attach_light_point(Entity* e, const color& c, float r);
+	Light* attach_light_cone(Entity* e, const color& c, float r, float theta);
 
 	Light *create_light_parallel(const quaternion &ang, const color &c);
 	Light *create_light_point(const vec3 &p, const color &c, float r);
@@ -179,10 +181,6 @@ void GodInit(int ch_iter);
 void GodEnd();
 bool GodLoadWorld(const Path &filename);
 
-
-Light* attach_light_parallel(Entity* e, const color& c);
-Light* attach_light_point(Entity* e, const color& c, float r);
-Light* attach_light_cone(Entity* e, const color& c, float r, float theta);
 
 enum {
 	NET_MSG_CREATE_OBJECT = 1000,

@@ -10,6 +10,7 @@
 #include "../World.h"
 #include "../Model.h"
 #include "../ModelManager.h"
+#include "../Terrain.h"
 #include "../../y/Entity.h"
 #include "../../y/EngineData.h"
 #include <lib/math/quaternion.h>
@@ -98,17 +99,24 @@ void SolidBody::copy_data(SolidBody *source) {
 void SolidBody::on_init() {
 	auto o = owner;
 	auto m = owner->get_component<Model>();
+	auto t = o->get_component<Terrain>();
 
 	// import
-	if (m and m->_template->solid_body)
+	// TODO better place for this hack!
+	if (m and m->_template->solid_body) {
 		copy_data(m->_template->solid_body);
+	} else if (t) {
+		mass = 10000.0f;
+		theta_0 = mat3::ZERO;
+		passive = true;
+	}
 
 	if (!active and !passive)
 		return;
 
 #if HAS_LIB_BULLET
 	btCollisionShape *col_shape = nullptr;
-	if (auto col = owner->get_component<Collider>())
+	if (auto col = owner->get_component_derived<Collider>())
 		col_shape = col->col_shape;
 
 

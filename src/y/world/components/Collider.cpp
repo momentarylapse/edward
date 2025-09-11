@@ -50,6 +50,10 @@ MeshCollider::MeshCollider() {
 
 void MeshCollider::on_init() {
 	auto m = owner->get_component<Model>();
+	if (!m) {
+		msg_error("MeshCollider without Model");
+		return;
+	}
 
 	phys = m->_template->mesh_collider->phys;
 	phys_is_reference = true;
@@ -124,10 +128,14 @@ void MeshCollider::on_init() {
 }
 
 
-TerrainCollider::TerrainCollider(){}
+TerrainCollider::TerrainCollider() = default;
 
 void TerrainCollider::on_init() {
 	auto t = owner->get_component<Terrain>();
+	if (!t) {
+		msg_error("TerrainCollider without Terrain!");
+		return;
+	}
 
 	float a = 0, b = 0;
 	for (float f: t->height){

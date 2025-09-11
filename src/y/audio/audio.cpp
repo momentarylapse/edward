@@ -6,11 +6,11 @@
 #include "SoundSource.h"
 #include "../helper/DeletionQueue.h"
 #include "../world/World.h" // FIXME
-#include "../y/ComponentManager.h"
+#include "../y/EntityManager.h"
 #include "../y/Entity.h"
 #include "../y/EngineData.h"
-#include "../lib/base/base.h"
-#include "../lib/base/algo.h"
+#include <lib/base/base.h>
+#include <lib/base/algo.h>
 
 #if HAS_LIB_OPENAL
 
@@ -58,7 +58,7 @@ void exit() {
 
 void attach_listener(Entity* e) {
 	if (e)
-		e->add_component<Listener>();
+		EntityManager::global->add_component<Listener>(e);
 }
 
 float VolumeMusic = 1.0f, VolumeSound = 1.0f;
@@ -75,12 +75,12 @@ void garbage_collection() {
 }
 
 void iterate(float dt) {
-	auto& sources = ComponentManager::get_list<SoundSource>();
+	auto& sources = EntityManager::global->get_component_list<SoundSource>();
 	for (auto s: sources) {
 		// TODO owner->get_component<SolidBody>()->vel
 		s->_apply_data();
 		if (s->suicidal and s->has_ended()) {
-			DeletionQueue::add(s->owner);
+			DeletionQueue::add_entity(s->owner);
 
 		} else if (s->stream) {
 #if HAS_LIB_OPENAL
@@ -96,7 +96,7 @@ void iterate(float dt) {
 		}
 	}
 	DeletionQueue::delete_all();
-	auto& listeners = ComponentManager::get_list<Listener>();
+	auto& listeners = EntityManager::global->get_component_list<Listener>();
 	if (listeners.num >= 1)
 		listeners[0]->apply_data();
 }
@@ -107,7 +107,7 @@ void reset() {
 
 SoundSource& emit_sound(AudioBuffer* buffer, const vec3 &pos, float radius1) {
 	auto e = world.create_entity(pos, quaternion::ID);
-	auto s = e->add_component<SoundSource>();
+	auto s = EntityManager::global->add_component<SoundSource>(e);
 	s->set_buffer(buffer);
 	s->min_distance = radius1;
 	s->max_distance = radius1 * 100;
@@ -122,7 +122,7 @@ SoundSource& emit_sound_file(const Path &filename, const vec3 &pos, float radius
 
 SoundSource& emit_sound_stream(AudioStream* stream, const vec3 &pos, float radius1) {
 	auto e = world.create_entity(pos, quaternion::ID);
-	auto s = e->add_component<SoundSource>();
+	auto s = EntityManager::global->add_component<SoundSource>(e);
 	s->set_stream(stream);
 	s->min_distance = radius1;
 	s->max_distance = radius1 * 100;

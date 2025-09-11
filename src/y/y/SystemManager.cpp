@@ -25,7 +25,7 @@ void SystemManager::init(int ch_iter_parent) {
 }
 
 void SystemManager::reset() {
-	msg_write("del controller");
+	msg_write("del systems");
 	for (auto *c: systems)
 		delete c;
 	systems.clear();

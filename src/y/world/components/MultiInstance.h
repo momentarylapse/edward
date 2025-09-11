@@ -18,7 +18,7 @@ class Model;
 class MultiInstance : public Component {
 public:
 	MultiInstance();
-	virtual ~MultiInstance();
+	~MultiInstance() override;
 
 	Model *model = nullptr;
 	Array<mat4> matrices;

@@ -71,6 +71,7 @@
 #include "../lib/kaba/dynamic/exception.h"
 #include "../lib/os/msg.h"
 #include "../lib/image/image.h"
+#include "y/EntityManager.h"
 
 
 //using namespace yrenderer;
@@ -97,25 +98,19 @@ Model* _create_object(World *w, const Path &filename, const vec3 &pos, const qua
 	return nullptr;
 }
 
-Model* _create_object_no_reg(World *w, const Path &filename, const vec3 &pos, const quaternion &ang) {
-	KABA_EXCEPTION_WRAPPER( return w->create_object_no_reg(filename, pos, ang); );
-	return nullptr;
-}
-
 MultiInstance* _create_object_multi(World *w, const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang) {
 	KABA_EXCEPTION_WRAPPER( return w->create_object_multi(filename, pos, ang); );
 	return nullptr;
 }
 
-Model* _attach_model(World *w, Entity& e, const Path &filename) {
-	KABA_EXCEPTION_WRAPPER( return &w->attach_model(e, filename); );
+Model* _attach_model(World* w, Entity* e, const Path& filename) {
+	KABA_EXCEPTION_WRAPPER( return w->attach_model(e, filename); );
 	return nullptr;
 }
 
 LegacyParticle* _world_add_legacy_particle(World* w, const kaba::Class* type, const vec3& pos, float radius, const color& c, shared<Texture>& tex, float ttl) {
 	auto e = w->create_entity(pos, quaternion::ID);
-	auto p = reinterpret_cast<LegacyParticle*>(e->_add_component_untyped_(type, ""));
-	//auto p = reinterpret_cast<LegacyParticle*>(PluginManager::create_instance(type, ""));
+	auto p = reinterpret_cast<LegacyParticle*>(EntityManager::global->_add_component_generic_(e, type, ""));
 	p->radius = radius;
 	p->col = c;
 	p->texture = tex;
@@ -190,6 +185,37 @@ void PluginManager::init() {
 	import_kaba();
 }
 
+ComponentManager::List& __query_component_list(const kaba::Class* type) {
+	return EntityManager::global->component_manager->_get_list(type);
+}
+
+ComponentManager::List& __query_component_list_family(const kaba::Class* type) {
+	return EntityManager::global->component_manager->_get_list_family(type);
+}
+
+ComponentManager::PairList& __query_component_list2(const kaba::Class* type1, const kaba::Class* type2) {
+	return EntityManager::global->component_manager->_get_list2(type1, type2);
+}
+
+class EntityWrapper : public Entity {
+public:
+	Component* add_component_generic(const kaba::Class* type, const string& vars) {
+		return EntityManager::global->_add_component_generic_(this, type, vars);
+	}
+	void delete_component(Component* c) {
+		return EntityManager::global->delete_component(this, c);
+	}
+};
+Light* attach_light_parallel(Entity* e, const color& c) {
+	return world.attach_light_parallel(e, c);
+}
+Light* attach_light_point(Entity* e, const color& c, float r) {
+	return world.attach_light_point(e, c, r);
+}
+Light* attach_light_cone(Entity* e, const color& c, float r, float theta) {
+	return world.attach_light_cone(e, c, r, theta);
+}
+
 void export_ecs(kaba::Exporter* ext) {
 	BaseClass entity(BaseClass::Type::NONE);
 	ext->declare_class_size("BaseClass", sizeof(BaseClass));
@@ -204,11 +230,11 @@ void export_ecs(kaba::Exporter* ext) {
 	ext->declare_class_element("Entity.ang", &Entity::ang);
 	ext->declare_class_element("Entity.parent", &Entity::parent);
 	ext->link_class_func("Entity.get_matrix", &Entity::get_matrix);
-	ext->link_class_func("Entity.__get_component", &Entity::_get_component_untyped_);
-	ext->link_class_func("Entity.__add_component", &Entity::_add_component_untyped_);
-	ext->link_class_func("Entity.__add_component_no_init", &Entity::add_component_no_init);
-	ext->link_class_func("Entity.delete_component", &Entity::delete_component);
-	ext->link_class_func("Entity.__del_override__", &DeletionQueue::add);
+	ext->link_class_func("Entity.__get_component", &Entity::_get_component_generic_);
+	ext->link_class_func("Entity.__get_component_derived", &Entity::_get_component_derived_generic_);
+	ext->link_class_func("Entity.__add_component", &EntityWrapper::add_component_generic);
+	ext->link_class_func("Entity.delete_component", &EntityWrapper::delete_component);
+	ext->link_class_func("Entity.__del_override__", &DeletionQueue::add_entity);
 
 	Component component;
 	ext->declare_class_size("Component", sizeof(Component));
@@ -220,6 +246,9 @@ void export_ecs(kaba::Exporter* ext) {
 	ext->link_virtual("Component.on_iterate", &Component::on_iterate, &component);
 	ext->link_virtual("Component.on_collide", &Component::on_collide, &component);
 	ext->link_class_func("Component.set_variables", &Component::set_variables);
+
+	ext->declare_class_size("NameTag", sizeof(NameTag));
+	ext->declare_class_element("NameTag.name", &NameTag::name);
 
 	System con;
 	ext->declare_class_size("Controller", sizeof(System));
@@ -243,9 +272,9 @@ void export_ecs(kaba::Exporter* ext) {
 	ext->link_virtual("Controller.on_render_inject", &System::on_render_inject, &con);
 	ext->link_class_func("Controller.__del_override__", &DeletionQueue::add);
 
-	ext->link_func("__get_component_list", &ComponentManager::_get_list);
-	ext->link_func("__get_component_family_list", &ComponentManager::_get_list_family);
-	ext->link_func("__get_component_list2", &ComponentManager::_get_list2);
+	ext->link_func("__get_component_list", &__query_component_list);
+	ext->link_func("__get_component_family_list", &__query_component_list_family);
+	ext->link_func("__get_component_list2", &__query_component_list2);
 
 	ext->link_func("__get_controller", &SystemManager::get);
 }
@@ -312,7 +341,6 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("Model.radius", (char*)&model.prop.radius - (char*)&model);
 	ext->declare_class_element("Model.min", (char*)&model.prop.min - (char*)&model);
 	ext->declare_class_element("Model.max", (char*)&model.prop.max- (char*)&model);
-	ext->declare_class_element("Model.name", (char*)&model.script_data.name - (char*)&model);
 	ext->link_class_func("Model.__init__", &Model::__init__);
 	ext->link_virtual("Model.__delete__", &Model::__delete__, &model);
 	ext->link_class_func("Model.make_editable", &Model::make_editable);
@@ -405,7 +433,6 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("World.msg_data", &World::msg_data);
 	ext->link_class_func("World.load_soon", &World::load_soon);
 	ext->link_class_func("World.create_object", &_create_object);
-	ext->link_class_func("World.create_object_no_reg", &_create_object_no_reg);
 	ext->link_class_func("World.create_object_multi", &_create_object_multi);
 	ext->link_class_func("World.create_terrain", &World::create_terrain);
 	ext->link_class_func("World.create_entity", &World::create_entity);
@@ -888,6 +915,7 @@ void PluginManager::import_kaba() {
 	import_component_class<Light>(m_world, "Light");
 	import_component_class<Camera>(m_world, "Camera");
 	import_component_class<::CubeMapSource>(m_world, "CubeMapSource");
+	import_component_class<NameTag>(m_world, "NameTag");
 
 	auto m_fx = kaba::default_context->load_module("y/fx.kaba");
 	import_component_class<ParticleGroup>(m_fx, "ParticleGroup");
@@ -1009,17 +1037,11 @@ void *PluginManager::create_instance(const kaba::Class *c, const Array<TemplateD
 		return new LegacyBeam;
 	if (c == CubeMapSource::_class)
 		return new CubeMapSource;
+	if (c == NameTag::_class)
+		return new NameTag;
 	void *p = c->create_instance();
 	assign_variables(p, c, variables);
 	return p;
-}
-
-void *PluginManager::create_instance(const Path &filename, const string &base_class, const Array<TemplateDataScriptVariable> &variables) {
-	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
-	auto c = find_class_derived(filename, base_class);
-	if (!c)
-		return nullptr;
-	return create_instance(c, variables);
 }
 
 void* PluginManager::create_instance_auto(const string& extended_type_name) {

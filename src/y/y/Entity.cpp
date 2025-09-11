@@ -8,6 +8,7 @@
 #include "Entity.h"
 #include "Component.h"
 #include "ComponentManager.h"
+#include "EntityManager.h"
 #include <lib/math/mat4.h>
 #include <lib/kaba/syntax/Class.h>
 #include <lib/os/msg.h>
@@ -15,7 +16,7 @@
 
 Entity::Entity() : Entity(vec3::ZERO, quaternion::ID) {}
 
-Entity::Entity(const vec3 &_pos, const quaternion &_ang) : BaseClass(BaseClass::Type::ENTITY) {
+Entity::Entity(const vec3 &_pos, const quaternion &_ang) {
 	pos = _pos;
 	ang = _ang;
 	parent = nullptr;
@@ -28,65 +29,28 @@ Entity::Entity(const vec3 &_pos, const quaternion &_ang) : BaseClass(BaseClass::
 Entity::~Entity() {
 	for (auto *c: components) {
 		c->owner = nullptr;
-		ComponentManager::delete_component(c);
-	}
-}
-
-void Entity::on_init_rec() {
-	//msg_write("init rec");
-	on_init();
-	for (auto c: components) {
-		//msg_write(" -> " + c->component_type->name);
-		c->on_init();
+		msg_error(format("deleting entity %s while component %s still attached", p2s(this), c->component_type->long_name()));
+		int*p = nullptr;
+		*p = 13;
 	}
 }
 
 void Entity::on_delete_rec() {
 	for (auto c: components)
 		c->on_delete();
-	on_delete();
 }
 
-
-// TODO (later) optimize...
-Component *Entity::_add_component_untyped_(const kaba::Class *type, const string &var) {
-	auto c = add_component_no_init(type, var);
-
-	c->on_init();
-	return c;
-}
-
-Component *Entity::add_component_no_init(const kaba::Class *type, const string &var) {
-	auto c = ComponentManager::create_component(type, var);
-	components.add(c);
-	c->owner = this;
-	return c;
-}
-
-void Entity::_add_component_external_no_init_(Component *c) {
-	ComponentManager::_register(c);
-	components.add(c);
-	c->owner = this;
-}
-
-void Entity::delete_component(Component *c) {
-	int i = components.find(c);
-	if (i >= 0) {
-		c->on_delete();
-		c->owner = nullptr;
-		components.erase(i);
-		ComponentManager::delete_component(c);
-	}
-}
-
-Component *Entity::_get_component_untyped_(const kaba::Class *type) const {
-	//msg_write("get " + type->name);
-	for (auto *c: components) {
-		//msg_write(p2s(c->component_type));
-		//msg_write("... " + c->component_type->name);
+Component *Entity::_get_component_derived_generic_(const kaba::Class *type) const {
+	for (auto *c: components)
 		if (c->component_type->is_derived_from(type))
 			return c;
-	}
+	return nullptr;
+}
+
+Component *Entity::_get_component_generic_(const kaba::Class *type) const {
+	for (auto *c: components)
+		if (c->component_type == type)
+			return c;
 	return nullptr;
 }
 

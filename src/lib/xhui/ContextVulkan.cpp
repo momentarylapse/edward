@@ -101,7 +101,7 @@ Context* Context::create(Window* window) {
 	static vulkan::Instance* global_instance = nullptr;
 
 	if (!global_instance) {
-		global_instance = vulkan::init({"glfw", "validation", "api=1.4", "verbosity=1"});
+		global_instance = vulkan::init({"glfw", "validation", "api=1.3", "verbosity=1"});
 	}
 	auto instance = global_instance;
 	auto surface = instance->create_glfw_surface(window->window);

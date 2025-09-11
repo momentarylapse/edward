@@ -262,7 +262,6 @@ Model *Model::copy(Model *pre_allocated) {
 
 	m->prop = prop;
 	m->_template = _template;
-	m->script_data = script_data;
 
 	for (auto mat: material)
 		m->material.add(mat->copy());

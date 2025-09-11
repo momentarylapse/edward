@@ -10,6 +10,7 @@
 #include "../Model.h"
 #include "../ModelManager.h"
 #include "../../y/Entity.h"
+#include <lib/base/iter.h>
 #include <lib/os/msg.h>
 #include <lib/ygraphics/graphics-impl.h>
 
@@ -118,8 +119,7 @@ void Animator::do_animation(float elapsed) {
 
 // skeletal animation
 
-	for (int i=0;i<sk->bones.num;i++){
-		auto *b = &sk->bones[i];
+	for (auto&& [i, b]: enumerate(sk->bones)) {
 
 		// operations
 		for (int iop=0;iop<num_ops;iop++){
@@ -204,7 +204,7 @@ void Animator::do_animation(float elapsed) {
 		//vec3 dpos = b->delta_pos;
 		auto t0 = mat4::translation(- sk->pos0[i]);
 		if (sk->parents[i] >= 0) {
-			b->pos = sk->bones[sk->parents[i]].pos + sk->bones[sk->parents[i]].ang * sk->dpos[i];
+			b->pos = sk->bones[sk->parents[i]]->pos + sk->bones[sk->parents[i]]->ang * sk->dpos[i];
 			//dpos = b->cur_pos - b->rest_pos;
 		}
 

@@ -12,6 +12,8 @@
 #include "../../y/EngineData.h"
 #include "../ModelManager.h"
 #include "../../y/Entity.h"
+#include "y/EntityManager.h"
+#include <lib/base/iter.h>
 
 const kaba::Class *Skeleton::_class = nullptr;
 
@@ -31,41 +33,49 @@ Skeleton::~Skeleton() {
 
 void Skeleton::on_init() {
 	auto m = owner->get_component<Model>();
+	if (!m)
+		return;
 
-	bones = m->_template->skeleton->bones;
+	// FIXME ...everything...
+
+	for (const auto b: m->_template->skeleton->bones) {
+		auto bb = EntityManager::global->create_entity(b->pos, b->ang);
+		bb->parent = owner;
+		bones.add(bb);
+	}
 	parents = m->_template->skeleton->parents;
 	dpos = m->_template->skeleton->dpos;
 	pos0 = m->_template->skeleton->pos0;
 
 	// skeleton
-	for (int i=0; i<bones.num; i++) {
-		bones[i].parent = owner;
+	for (auto&& [i, b]: enumerate(bones)) {
+		b->parent = owner;
 		pos0[i] = _calc_bone_rest_pos(i);
-		bones[i].pos = pos0[i];
-		bones[i].ang = quaternion::ID;
+		b->pos = pos0[i];
+		b->ang = quaternion::ID;
 		auto mm = engine.resource_manager->load_model(m->_template->skeleton->filename[i]);
 		if (mm) {
-			bones[i]._add_component_external_no_init_(mm);
+			EntityManager::global->_add_component_external_(b, mm);
 
 			if (mm->_template->skeleton)
-				bones[i].add_component_no_init(Skeleton::_class, "");
+				EntityManager::global->add_component<Skeleton>(b);
 
 			if (mm->_template->animator)
-				bones[i].add_component_no_init(Animator::_class, "");
+				EntityManager::global->add_component<Animator>(b);
 		}
-		bones[i].on_init_rec();
 	}
 }
 
 void Skeleton::on_delete() {
-	for (auto &b: bones)
-		b.on_delete_rec();
+	for (auto b: bones)
+		EntityManager::global->delete_entity(b);
+	bones.clear();
 }
 
 void Skeleton::reset() {
 	for (int i=0; i<bones.num; i++){
-		bones[i].ang = quaternion::ID;
-		bones[i].pos = pos0[i];
+		bones[i]->ang = quaternion::ID;
+		bones[i]->pos = pos0[i];
 	}
 }
 

@@ -153,11 +153,6 @@ public:
 
 	bool is_copy;
 
-	// script data (own)
-	struct ScriptData {
-		string name;
-	} script_data;
-
 	bool visible;
 
 	mat4 _matrix, matrix_old;
