@@ -11,14 +11,16 @@
 
 class ActionWorldAddEntity : public Action {
 public:
-	explicit ActionWorldAddEntity(const WorldEntity& e);
+	explicit ActionWorldAddEntity(const vec3& pos, const quaternion& ang);
 	string name() override { return "WorldAddEntity"; }
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;
 
 private:
-	WorldEntity entity;
+	vec3 pos;
+	quaternion ang;
+	Entity* entity = nullptr;
 };
 
 

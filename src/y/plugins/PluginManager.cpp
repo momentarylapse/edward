@@ -110,7 +110,7 @@ Model* _attach_model(World* w, Entity* e, const Path& filename) {
 
 LegacyParticle* _world_add_legacy_particle(World* w, const kaba::Class* type, const vec3& pos, float radius, const color& c, shared<Texture>& tex, float ttl) {
 	auto e = w->create_entity(pos, quaternion::ID);
-	auto p = reinterpret_cast<LegacyParticle*>(EntityManager::global->_add_component_generic_(e, type, ""));
+	auto p = reinterpret_cast<LegacyParticle*>(EntityManager::global->_add_component_generic_(e, type));
 	p->radius = radius;
 	p->col = c;
 	p->texture = tex;
@@ -200,7 +200,9 @@ ComponentManager::PairList& __query_component_list2(const kaba::Class* type1, co
 class EntityWrapper : public Entity {
 public:
 	Component* add_component_generic(const kaba::Class* type, const string& vars) {
-		return EntityManager::global->_add_component_generic_(this, type, vars);
+		if (vars != "")
+			msg_error("TODO component params Any{}");
+		return EntityManager::global->_add_component_generic_(this, type, {});
 	}
 	void delete_component(Component* c) {
 		return EntityManager::global->delete_component(this, c);

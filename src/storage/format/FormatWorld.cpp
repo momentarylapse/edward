@@ -18,16 +18,24 @@
 #include <lib/base/iter.h>
 #include <y/world/Model.h>
 #include <y/world/World.h>
+#include <y/world/Camera.h>
 #include <y/y/EngineData.h>
 #include <y/world/ModelManager.h>
 #include <y/helper/ResourceManager.h>
 #include <y/world/components/Skeleton.h>
+#include <y/world/components/Collider.h>
+#include <y/world/components/SolidBody.h>
+#include <y/world/components/Animator.h>
+#include <y/world/Terrain.h>
 #include "../../lib/os/date.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/filesystem.h"
 #include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
 #include "../../lib/doc/xml.h"
+#include <y/EntityManager.h>
+#include <meta.h>
+
 
 static string _(const string &s) { return s; }
 
@@ -101,7 +109,30 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 
 	if (deep) {
 		try {
-			for (auto& e: data->entities) {
+			for (auto m: data->entity_manager->get_component_list<ModelRef>()) {
+				m->model = data->session->resource_manager->load_model(m->filename);
+				if (m->model->_template->mesh_collider)
+					data->entity_manager->add_component<MeshCollider>(m->owner);
+				if (m->model->_template->solid_body) {
+					auto sb = data->entity_manager->add_component<SolidBody>(m->owner);
+					sb->mass = m->model->_template->solid_body->mass;
+					sb->active = m->model->_template->solid_body->active;
+				}
+				if (m->model->_template->skeleton)
+					data->entity_manager->add_component<Skeleton>(m->owner);
+				if (m->model->_template->animator)
+					data->entity_manager->add_component<Animator>(m->owner);
+			}
+			for (auto t: data->entity_manager->get_component_list<TerrainRef>()) {
+				if (t->filename) {
+					t->terrain = new Terrain(session->ctx, t->filename);
+				}
+				data->entity_manager->add_component<TerrainCollider>(t->owner);
+				data->entity_manager->add_component<SolidBody>(t->owner);
+			}
+
+
+			/*for (auto& e: data->entities) {
 				if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
 //					session->progress->set(_("Terrains"), (float)i / (float)data->terrains.num / 2.0f);
 					e.terrain.load(session, engine.map_dir | e.terrain.filename.with(".map"), true);
@@ -112,7 +143,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 						for (int i=0; i<sk->bones.num; i++)
 							if (sk->filename[i]){}
 				}
-			}
+			}*/
 			bool system_classes_missing = false;
 			for (auto& s: data->meta_data.systems)
 				if (s.class_name == "")
@@ -144,9 +175,75 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	}*/
 }
 
+void read_components(WorldEntity& o, const xml::Element& e) {
+	for (auto &ee: e.elements)
+		if (ee.tag == "component") {
+			ScriptInstanceData sd;
+			sd.filename = ee.value("script", "");
+			sd.class_name = ee.value("class", "");
+			if (ee.value("var") != "")
+				sd.variables = str2vars(ee.value("var", ""));
+			for (const auto& a: ee.attributes)
+				if (a.key != "script" and a.key != "class" and a.key != "var") {
+					msg_write(a.key + " = " + a.value);
+					sd.variables.add({a.key, "", a.value});
+				}
+			o.components.add(sd);
+		}
+}
+
 void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	data->entities.clear();
 	data->meta_data.skybox_files.clear();
+
+
+	LevelData ld;
+	ld.load(filename);
+
+	data->meta_data.background_color = ld.background_color;
+	data->meta_data.skybox_files = ld.skybox_filename;
+	for (auto& e: ld.objects) {
+		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
+		data->entity_manager->add_component<EdwardTag>(o);
+		auto m = data->entity_manager->add_component<ModelRef>(o);
+		m->filename = e.filename;
+	}
+	for (auto& e: ld.cameras) {
+		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
+		data->entity_manager->add_component<EdwardTag>(o);
+		auto c = data->entity_manager->add_component<Camera>(o);
+		c->min_depth = e.min_depth;
+		c->max_depth = e.max_depth;
+		c->exposure = e.exposure;
+		c->fov = e.fov;
+		c->bloom_factor = e.bloom_factor;
+	}
+	for (auto& e: ld.lights) {
+		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
+		data->entity_manager->add_component<EdwardTag>(o);
+		auto l = data->entity_manager->add_component<Light>(o);
+		l->light.light.col = e._color;
+		l->light.light.radius = e.radius;
+		l->light.light.theta = e.theta;
+		l->light.light.harshness = e.harshness;
+		l->light.enabled = e.enabled;
+		// FIXME old format
+		if (l->light.type() != yrenderer::LightType::DIRECTIONAL) {
+		//	l->light.light.col *= 1 / (l->light.light.radius * l->light.light.radius / 100);
+		}
+	}
+	for (auto& e: ld.terrains) {
+		auto o = data->entity_manager->create_entity(e.pos, quaternion::ID);
+		data->entity_manager->add_component<EdwardTag>(o);
+		auto t = data->entity_manager->add_component<TerrainRef>(o);
+		t->filename = e.filename;
+	}
+	for (auto& e: ld.entities) {
+		auto o = data->entity_manager->create_entity(e.pos, quaternion::ID);
+		data->entity_manager->add_component<EdwardTag>(o);
+	}
+
+
 
 	xml::Parser p;
 	p.load(filename);
@@ -191,22 +288,21 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	if (auto *cont = p.elements[0].find("3d")) {
 		for (auto &e: cont->elements) {
 			if (e.tag == "camera") {
-				WorldEntity c;
-				c.basic_type = MultiViewType::WORLD_CAMERA;
+				/*WorldEntity c;
+				c.basic_type = MultiViewType::WORLD_ENTITY;
 				c.pos = s2v(e.value("pos", "0 0 0"));
 				c.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
-				c.camera.fov = e.value("fov", f2s(pi/4, 3))._float();
-				c.camera.min_depth = e.value("minDepth", "1")._float();
-				c.camera.max_depth = e.value("maxDepth", "10000")._float();
-				c.camera.exposure = e.value("exposure", "1")._float();
-				c.camera.bloom_factor = e.value("bloomFactor", "0.15")._float();
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptInstanceData sd;
-						sd.filename = ee.value("script", "");
-						sd.class_name = ee.value("class", "");
-						c.components.add(sd);
-					}
+				{
+					ScriptInstanceData cc;
+					cc.class_name = "Camera";
+					cc.variables.add({"fov", "f32", e.value("fov", f2s(pi/4, 3))});
+					cc.variables.add({"min_depth", "f32", e.value("minDepth", "1.0")});
+					cc.variables.add({"max_depth", "f32", e.value("maxDepth", "10000")});
+					cc.variables.add({"exposure", "f32", e.value("exposure", "1.0")});
+					cc.variables.add({"bloom_factor", "f32", e.value("bloomFactor", "0.15")});
+					c.components.add(cc);
+				}
+				read_components(c, e);
 				data->entities.add(c);
 			} else if (e.tag == "light") {
 				WorldEntity l;
@@ -222,27 +318,14 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				l.light.col = s2c(e.value("color", "1 1 1"));
 				l.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
 				l.pos= s2v(e.value("pos", "0 0 0"));
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptInstanceData sd;
-						sd.filename = ee.value("script", "");
-						sd.class_name = ee.value("class", "");
-						l.components.add(sd);
-					}
+				read_components(l, e);
 				data->entities.add(l);
 			} else if (e.tag == "terrain") {
 				WorldEntity t;
 				t.basic_type = MultiViewType::WORLD_TERRAIN;
 				t.terrain.filename = e.value("file");
 				t.pos = s2v(e.value("pos", "0 0 0"));
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptInstanceData sd;
-						sd.filename = ee.value("script", "");
-						sd.class_name = ee.value("class", "");
-						sd.variables = str2vars(ee.value("var", ""));
-						t.components.add(sd);
-					}
+				read_components(t, e);
 				data->entities.add(t);
 			} else if (e.tag == "object") {
 				WorldEntity o;
@@ -253,31 +336,17 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				//o.script = e.value("script");
 				o.pos = s2v(e.value("pos", "0 0 0"));
 				o.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptInstanceData sd;
-						sd.filename = ee.value("script", "");
-						sd.class_name = ee.value("class", "");
-						sd.variables = str2vars(ee.value("var", ""));
-						o.components.add(sd);
-					}
+				read_components(o, e);
 				if (e.value("role") == "ego")
 					data->EgoIndex = data->entities.num;
-				data->entities.add(o);
+				data->entities.add(o);*/
 			} else if (e.tag == "entity") {
 				WorldEntity o;
 				o.basic_type = MultiViewType::WORLD_ENTITY;
 				//o.script = e.value("script");
 				o.pos = s2v(e.value("pos", "0 0 0"));
 				o.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptInstanceData sd;
-						sd.filename = ee.value("script", "");
-						sd.class_name = ee.value("class", "");
-						sd.variables = str2vars(ee.value("var", ""));
-						o.components.add(sd);
-					}
+				read_components(o, e);
 				data->entities.add(o);
 			} else if (e.tag == "link") {
 				WorldLink l;
@@ -292,13 +361,6 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				l.object[1] = e.value("b")._int();
 				l.pos = s2v(e.value("pos", "0 0 0"));
 				l.ang = s2v(e.value("ang", "0 0 0"));
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptInstanceData sd;
-						sd.filename = ee.value("script", "");
-						sd.class_name = ee.value("class", "");
-						l.components.add(sd);
-					}
 				//l.radius = e.value("radius")._float();
 				data->links.add(l);
 			} else {
@@ -375,11 +437,15 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 	}
 
 	auto add_components = [] (xml::Element& e, const Array<ScriptInstanceData>& components) {
-		for (auto &c: components)
-			e.add(xml::Element("component")
-				.witha("script", c.filename.str())
-				.witha("class", c.class_name)
-				.witha("var", vars2str(c.variables)));
+		for (auto &c: components) {
+			auto ee = xml::Element("component");
+			if (!c.filename.is_empty())
+				ee.add_attribute("script", str(c.filename));
+			ee.add_attribute("class", c.class_name);
+			for (auto &v: c.variables)
+				ee.add_attribute(v.name, v.value);
+			e.add(ee);
+		}
 	};
 
 	auto cont = xml::Element("3d");
@@ -400,7 +466,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 				el.add_attribute("role", "ego");
 		} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {
 			el = encode_light(e);
-		} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
+		/*} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
 			el = xml::Element("camera")
 			.witha("pos", v2s(e.pos))
 			.witha("ang", v2s(e.ang.get_angles()))
@@ -408,7 +474,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 			.witha("minDepth", f2s(e.camera.min_depth, 3))
 			.witha("maxDepth", f2s(e.camera.max_depth, 3))
 			.witha("exposure", f2s(e.camera.exposure, 3))
-			.witha("bloomFactor", f2s(e.camera.bloom_factor, 3));
+			.witha("bloomFactor", f2s(e.camera.bloom_factor, 3));*/
 		} else {
 			el = xml::Element("entity")
 			.witha("pos", v2s(e.pos))
@@ -427,7 +493,6 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		//.witha("pivotA", v2s(l.pos - data->objects[l.object[0]].pos))
 		//.witha("pivotB", v2s(l.pos - data->objects[l.object[1]].pos))
 		.witha("ang", v2s(l.ang));
-		add_components(e, l.components);
 		cont.add(e);
 	}
 	w.add(cont);

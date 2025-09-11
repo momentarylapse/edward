@@ -20,6 +20,9 @@
 #include <lib/any/any.h>
 #include <lib/math/quaternion.h>
 
+#include "fx/ParticleEmitter.h"
+//#include <y/EntityManager.h>
+
 class DataWorld;
 class Terrain;
 class Object;
@@ -27,10 +30,10 @@ struct WorldLink;
 struct WorldLight;
 struct WorldObject;
 struct WorldTerrain;
-struct WorldCamera;
 enum class PhysicsMode;
 class Entity;
 class Component;
+class EntityManager;
 
 
 struct WorldScriptVariable {
@@ -43,14 +46,16 @@ struct ScriptInstanceData {
 	Path filename;
 	string class_name;
 	Array<WorldScriptVariable> variables;
+	string get(const string& name) const;
+	void set(const string& name, const string& type, const string& value);
 };
 
-struct WorldComponent {
+/*struct WorldComponent {
 	Path filename;
 	string class_name;
 	Any data;
 	Component* component = nullptr;
-};
+};*/
 
 struct WorldEntity { //: multiview::SingleData {
 	vec3 pos = vec3::ZERO;
@@ -59,12 +64,31 @@ struct WorldEntity { //: multiview::SingleData {
 
 	MultiViewType basic_type = MultiViewType::WORLD_ENTITY;
 	WorldLight light;
-	WorldCamera camera;
+//	WorldCamera camera;
 	WorldObject object;
 	WorldTerrain terrain;
 
 	//Entity* entity = nullptr;
 	Array<ScriptInstanceData> components;
+
+	ScriptInstanceData& get(const string& class_name);
+};
+
+struct EdwardTag : Component {
+	int entity_index;
+	static const kaba::Class* _class;
+};
+
+struct ModelRef : Component {
+	Path filename;
+	Model* model = nullptr;
+	static const kaba::Class* _class;
+};
+
+struct TerrainRef : Component {
+	Path filename;
+	Terrain* terrain = nullptr;
+	static const kaba::Class* _class;
 };
 
 class DataWorld: public Data {
@@ -86,6 +110,10 @@ public:
 
 	Array<WorldEntity> entities;
 	int EgoIndex;
+
+	owned<EntityManager> entity_manager;
+	Array<multiview::SingleData> dummy_entities;
+	Entity* entity(int index);
 
 	Array<WorldLink> links;
 
@@ -130,12 +158,16 @@ public:
 	WorldTerrain *add_new_terrain(const vec3 &pos, const vec3 &size, int num_x, int num_z);
 	WorldCamera *add_camera(const WorldCamera& c);
 #endif
-	WorldEntity* add_entity(const WorldEntity& e);
-	void edit_entity(int index, const WorldEntity& e);
-	void edit_camera(int index, const WorldCamera& c);
+	Entity* add_entity(const vec3& pos, const quaternion& ang);
+	void edit_entity(int index, const vec3& pos, const quaternion& ang);
+//	void edit_camera(int index, const WorldCamera& c);
 	void edit_light(int index, const WorldLight& l);
 	void edit_terrain_meta_data(int index, const vec3& pattern);
-	void entity_add_component(int index, const ScriptInstanceData& c);
+	Component* entity_add_component_generic(int index, const kaba::Class* _class, const base::map<string, Any>& variables = {});//, const ScriptInstanceData& c);
+	template<class T>
+	T* entity_add_component(int index, const base::map<string, Any>& variables = {}) {
+		return static_cast<T*>(entity_add_component_generic(index, T::_class, variables));
+	}
 	void entity_remove_component(int index, int cindex);
 	void entity_edit_component(int index, int cindex, const ScriptInstanceData& c);
 

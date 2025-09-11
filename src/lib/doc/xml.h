@@ -41,7 +41,7 @@ struct Element : Tag {
 	Element with(const string &tag, const string &text = "");
 	Element witha(const string &key, const string &value);
 	Element* find(const string &tag);
-	string value(const string &key, const string &def = "");
+	string value(const string &key, const string &def = "") const;
 };
 
 class Parser {

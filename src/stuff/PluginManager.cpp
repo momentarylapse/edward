@@ -44,6 +44,15 @@
 /*#include "../data/material/ShaderNode.h"
 #include "../data/material/ShaderBuilderContext.h"*/
 
+#include <y/world/Camera.h>
+#include <y/world/Light.h>
+#include <y/world/components/Skeleton.h>
+#include <y/world/components/Animator.h>
+#include <y/world/components/SolidBody.h>
+#include <y/world/components/Collider.h>
+
+#include "lib/os/msg.h"
+
 
 Path PluginManager::directory;
 
@@ -226,6 +235,11 @@ void link_world(kaba::ExternalLinkData* ext) {
 	ext->declare_class_element("ModeWorld.data", &ModeWorld::data);
 }
 
+template<class T>
+void link_component(shared<kaba::Module> mm, const string& name) {
+	T::_class = mm->tree->create_new_class(name, nullptr, sizeof(T), 0, nullptr, {}, mm->tree->base_class, -1);
+}
+
 void PluginManager::link_plugins() {
 
 	//GlobalMainWin = ed;
@@ -318,6 +332,20 @@ void PluginManager::link_plugins() {
 	ext->link_class_func("shader.BuilderContext.create_temp", &ShaderBuilderContext::create_temp);
 	ext->link_class_func("shader.BuilderContext.create_out", &ShaderBuilderContext::create_out);
 #endif
+
+
+	auto mm = kaba::default_context->create_empty_module("edward-internal");
+	mm->_pointer_ref_counter = 999999;
+	link_component<Camera>(mm, "Camera");
+	link_component<Light>(mm, "Light");
+	link_component<SolidBody>(mm, "SolidBody");
+	link_component<MeshCollider>(mm, "MeshCollider");
+	link_component<TerrainCollider>(mm, "TerrainCollider");
+	link_component<Skeleton>(mm, "Skeleton");
+	link_component<Animator>(mm, "Animator");
+	link_component<ModelRef>(mm, "ModelRef");
+	link_component<TerrainRef>(mm, "TerrainRef");
+	link_component<EdwardTag>(mm, ":EdwardTag:");
 }
 
 void PluginManager::find_plugins() {

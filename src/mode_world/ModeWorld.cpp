@@ -44,6 +44,8 @@
 #include "dialog/PropertiesDialog.h"
 #include <cmath>
 
+#include "y/EntityManager.h"
+
 
 ModeWorld::ModeWorld(Session* session) :
 	Mode(session),
@@ -52,11 +54,6 @@ ModeWorld::ModeWorld(Session* session) :
 	multi_view = new MultiView(session);
 	data = new DataWorld(session);
 	generic_data = data;
-
-	data->out_changed >> create_sink([this] {
-		//data->lights
-		//	world.en
-	});
 
 	mode_scripting = new ModeScripting(this);
 	mode_properties = new ModeWorldProperties(this);
@@ -124,6 +121,17 @@ void ModeWorld::on_enter_rec() {
 	session->out_changed >> create_sink([this] {
 		update_menu();
 	});
+	auto update_dummies = [this]() {
+		// FIXME
+		auto list = data->entity_manager->get_component_list<EdwardTag>();
+		data->dummy_entities.resize(list.num);
+		for (auto&& [i, e]: enumerate(list)) {
+			data->dummy_entities[i].pos = e->owner->pos;
+			e->entity_index = i;
+		}
+	};
+	data->out_changed >> create_sink(update_dummies);
+	update_dummies();
 
 	event_ids_rec.add(session->win->event("mode_world", [this] {
 		session->set_mode(this);
@@ -138,7 +146,7 @@ void ModeWorld::on_enter_rec() {
 	session->win->event("run-game", [this] {
 		Path engine_dir = xhui::config.get_str("EngineDir", "");
 		if (engine_dir.is_empty()) {
-			session->error("cn not run engine. Config 'EngineDir' is not set");
+			session->error("can not run engine. Config 'EngineDir' is not set");
 			return;
 		}
 
@@ -173,17 +181,17 @@ void ModeWorld::on_enter() {
 	};
 	multi_view->f_select = [this] (MultiViewWindow* win, const rect& r) {
 		Data::Selection sel;
-		sel.set(MultiViewType::WORLD_ENTITY, MultiView::select_points_in_rect(win, r, data->entities));
+		sel.set(MultiViewType::WORLD_ENTITY, MultiView::select_points_in_rect(win, r, data->dummy_entities));
 		return sel;
 	};
 	multi_view->f_get_selection_box = [this] (const Data::Selection& sel) -> base::optional<Box> {
-		return MultiView::points_get_selection_box(data->entities, sel[MultiViewType::WORLD_ENTITY]);
+		return MultiView::points_get_selection_box(data->dummy_entities, sel[MultiViewType::WORLD_ENTITY]);
 	};
 	multi_view->f_create_action = [this] {
 		return new ActionWorldMoveSelection(data, multi_view->selection);
 	};
 	multi_view->data_sets = {
-		{MultiViewType::WORLD_ENTITY, &data->entities}
+		{MultiViewType::WORLD_ENTITY, &data->dummy_entities}//data->entities}
 	};
 	multi_view->light_mode = MultiView::LightMode::Fixed;
 
@@ -200,18 +208,24 @@ void ModeWorld::on_enter() {
 		const vec3 p = multi_view->cursor_pos_3d(session->win->drag.m);
 		if (session->win->drag.payload.match("add-entity-default-*")) {
 			int index = session->win->drag.payload.tail(1)._int();
-			WorldEntity e;
-			e.pos = p;
+			data->begin_action_group("new-entity");
+			auto e = data->add_entity(p, quaternion::ID);
+			int i = e->get_component<EdwardTag>()->entity_index;
 			if (index == 0) {
-				e.basic_type = MultiViewType::WORLD_ENTITY;
+				// raw entity
 			} else if (index == 1) {
-				e.basic_type = MultiViewType::WORLD_CAMERA;
-				e.camera.min_depth = 1;
-				e.camera.max_depth = 100000;
-				e.camera.fov = 0.7f;
-				e.camera.exposure = 1;
-			} else if (index <= 4) {
-				e.basic_type = MultiViewType::WORLD_LIGHT;
+				auto c = data->entity_add_component<Camera>(i);
+			} else if (index == 2) {
+				// directional
+				auto l = data->entity_add_component<Light>(i, {{{"radius", 0.0f}, {"theta", 0.0f}}});
+			} else if (index == 3) {
+				// point
+				auto l = data->entity_add_component<Light>(i, {{{"radius", multi_view->view_port.radius * 1.3f}, {"theta", 0.0f}}});
+			} else if (index == 4) {
+				// cone
+				auto l = data->entity_add_component<Light>(i);
+
+				/*e.basic_type = MultiViewType::WORLD_LIGHT;
 				e.light.col = White;
 				e.light.type = yrenderer::LightType::DIRECTIONAL;
 				e.light.radius = 0;
@@ -225,22 +239,27 @@ void ModeWorld::on_enter() {
 					e.light.theta = 0.5f;
 				}
 				e.light.harshness = 1;
-				e.light.enabled = true;
+				e.light.enabled = true;*/
 			} else if (index == 5) {
-				e.basic_type = MultiViewType::WORLD_TERRAIN;
-				e.terrain.terrain = new Terrain(16, 16, {10, 0, 10}, session->resource_manager->load_material(""));
+				auto t = data->entity_add_component<TerrainRef>(i);
+	//			e.basic_type = MultiViewType::WORLD_TERRAIN;
+	//			e.terrain.terrain = new Terrain(16, 16, {10, 0, 10}, session->resource_manager->load_material(""));
 			}
-			data->add_entity(e);
+			data->end_action_group();
 		} else if (session->win->drag.payload.match("filename:*.model")) {
 			Path filename = session->win->drag.payload.sub_ref(9);
 			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_MODEL));
 			session->set_message(str(fn_rel));
-			WorldEntity e;
-			e.pos = p;
+			auto e = data->add_entity(p, quaternion::ID);
+			int i = e->get_component<EdwardTag>()->entity_index;
+			auto c = data->entity_add_component<ModelRef>(i);
+			c->filename = fn_rel.no_ext();
+			c->model = session->resource_manager->load_model(c->filename);
+			/*e.pos = p;
 			e.basic_type = MultiViewType::WORLD_OBJECT;
 			e.object.filename = fn_rel.no_ext();
 			e.object.object = e.object.object = session->resource_manager->load_model(e.object.filename);
-			data->add_entity(e);
+			data->add_entity(e);*/
 		}
 	}));
 
@@ -277,15 +296,14 @@ vec3 tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
 
-float model_hover_z(Model *o, const vec3& pos, const quaternion& ang, MultiViewWindow* win, const vec2 &mv, vec3 &tp) {
+float model_hover_z(const Model *o, const mat4& matrix, MultiViewWindow* win, const vec2 &mv, vec3 &tp) {
 	if (!o)
 		return -1;
 	int d = 0;//o->_detail_;
 	if ((d<0) or (d>2))
 		return -1;
-	o->_matrix = mat4::translation(pos) * mat4::rotation(ang);
 	for (int i=0;i<o->mesh[d]->vertex.num;i++) {
-		tmv[i] = o->_matrix * o->mesh[d]->vertex[i];
+		tmv[i] = matrix * o->mesh[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
 	}
 	float z_min = 1;
@@ -313,25 +331,29 @@ float model_hover_z(Model *o, const vec3& pos, const quaternion& ang, MultiViewW
 	return z_min;
 }
 
-float object_hover_distance(const WorldEntity& me, MultiViewWindow* win, const vec2 &mv, vec3 &tp, float &z) {
+/*float object_hover_distance(const WorldEntity& me, MultiViewWindow* win, const vec2 &mv, vec3 &tp, float &z) {
 	Model *o = me.object.object;
 	if (!o)
 		return -1;
 	z = model_hover_z(o, me.pos, me.ang, win, mv, tp);
 	return (z < 1) ? 0 : -1;
-}
+}*/
 
-base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& m) const {
+base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& mouse) const {
 	base::optional<Hover> h;
 
-	float zmin = multi_view->view_port.radius * 2;
-	for (const auto& [i, e]: enumerate(data->entities))
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			float z;
+	float zmin = 1;//multi_view->view_port.radius * 2;
+
+
+	const auto models = data->entity_manager->get_component_list<ModelRef>();
+	for (auto mr: models)
+		if (auto m = mr->model) {
 			vec3 tp;
-			float dist = object_hover_distance(e, win, m, tp, z);
-			if (dist >= 0 and z < zmin) {
+			float z = model_hover_z(m, mr->owner->get_matrix(), win, mouse, tp);
+			//float dist = object_hover_distance(e, win, m, tp, z);
+			if (z >= 0 and z < zmin) {
 				zmin = z;
+				int i = mr->owner->get_component<EdwardTag>()->entity_index;
 				h = {MultiViewType::WORLD_ENTITY, i, tp};
 			}
 		}
@@ -342,8 +364,8 @@ Data::Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) c
 	auto r = _r.canonical();
 	Data::Selection s;
 	s.add({MultiViewType::WORLD_ENTITY, {}});
-	for (const auto& [i, e]: enumerate(data->entities)) {
-		const auto p = win->project(e.pos);
+	for (const auto& [i, e]: enumerate(data->entity_manager->entities)) {
+		const auto p = win->project(e->pos);
 		if (p.z <= 0 or p.z >= 1)
 			continue;
 		if (r.inside({p.x, p.y}))
@@ -376,31 +398,28 @@ void draw_mesh(const yrenderer::RenderParams& params, yrenderer::RenderViewData&
 }
 
 void ModeWorld::on_prepare_scene(const yrenderer::RenderParams& params) {
-	Array<WorldEntity*> data_lights;
-	for (auto& e: data->entities)
-		if (e.basic_type == MultiViewType::WORLD_LIGHT)
-			data_lights.add(&e);
+	auto data_lights = data->entity_manager->get_component_list<Light>();
 
 	while (lights.num < data_lights.num) {
 		lights.add(new yrenderer::Light);
 	}
 	for (const auto& [i, l]: enumerate(data_lights)) {
-		lights[i]->light.pos = l->pos;
-		lights[i]->_ang = l->ang;
+		lights[i]->light.pos = l->owner->pos;
+		lights[i]->_ang = l->owner->ang;
 		lights[i]->enabled = l->light.enabled;
-		lights[i]->allow_shadow = (l->light.type == yrenderer::LightType::DIRECTIONAL);
-		lights[i]->light.col = l->light.col;
+		lights[i]->allow_shadow = (l->light.type() == yrenderer::LightType::DIRECTIONAL);
+		lights[i]->light.col = l->light.light.col;
 		if (!l->light.enabled)
 			lights[i]->light.col = Black;
-		lights[i]->light.radius = l->light.radius;
-		lights[i]->light.theta = l->light.theta;
-		if (l->light.type == yrenderer::LightType::DIRECTIONAL)
+		lights[i]->light.radius = l->light.light.radius;
+		lights[i]->light.theta = l->light.light.theta;
+		if (l->light.type() == yrenderer::LightType::DIRECTIONAL)
 			lights[i]->light.radius = -1;
-		else
-			lights[i]->light.col = l->light.col * (l->light.radius * l->light.radius / 100);
-		if (l->light.type != yrenderer::LightType::CONE)
+	//	else
+	//		lights[i]->light.col = l->light.light.col * (l->light.light.radius * l->light.light.radius / 100);
+		if (l->light.type() != yrenderer::LightType::CONE)
 			lights[i]->light.theta = -1;
-		lights[i]->light.harshness = l->light.harshness;
+		lights[i]->light.harshness = l->light.light.harshness;
 	}
 	multi_view->lights = lights.sub_ref(0, data_lights.num);
 }
@@ -419,56 +438,55 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 	auto cb = params.command_buffer;
 #endif
 
-	for (auto& e: data->entities) {
-		if (e.basic_type != MultiViewType::WORLD_TERRAIN)
-			continue;
-		auto& t = e.terrain;
-		t.terrain->prepare_draw(rvd.scene_view->main_camera_params.pos);
-		auto material = t.terrain->material.get();
-		auto vb = t.terrain->vertex_buffer.get();
+	const auto terrains = data->entity_manager->get_component_list<TerrainRef>();
+	for (auto tr: terrains)
+		if (auto t = tr->terrain) {
+			t->prepare_draw(rvd.scene_view->main_camera_params.pos);
+			auto material = t->material.get();
+			auto vb = t->vertex_buffer.get();
 
-		auto shader = rvd.get_shader(material, 0, t.terrain->vertex_shader_module, "");
-		auto& rd = rvd.start(params, mat4::translation(e.pos), shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
+			auto shader = rvd.get_shader(material, 0, t->vertex_shader_module, "");
+			auto& rd = rvd.start(params, tr->owner->get_matrix(), shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 #ifdef USING_VULKAN
-		cb->push_constant(0, 12, &t.terrain->texture_scale[0].x);
-		cb->push_constant(16, 12, &t.terrain->texture_scale[1].x);
+			cb->push_constant(0, 12, &t->texture_scale[0].x);
+			cb->push_constant(16, 12, &t->texture_scale[1].x);
 #else
-		shader->set_floats("pattern0", &t.terrain->texture_scale[0].x, 3);
-		shader->set_floats("pattern1", &t.terrain->texture_scale[1].x, 3);
+			shader->set_floats("pattern0", &t->texture_scale[0].x, 3);
+			shader->set_floats("pattern1", &t->texture_scale[1].x, 3);
 #endif
-		rd.draw_triangles(params, vb);
-	}
+			rd.draw_triangles(params, vb);
+		}
 
-	for (auto& e: data->entities)
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			auto m = e.object.object;
+	const auto models = data->entity_manager->get_component_list<ModelRef>();
+	for (auto mr: models)
+		if (auto m = mr->model)
 			for (int k=0; k<m->mesh[0]->sub.num; k++) {
 				auto material = m->material[k];
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				dh->draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, material, 0, m->_template->vertex_shader_module);
+				dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, material, 0, m->_template->vertex_shader_module);
 			}
-		}
 
 	// selection
-	for (const auto& [i, e]: enumerate(data->entities))
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			if (sel.contains(i)) {
-				auto m = e.object.object;
-				for (int k=0; k<e.object.object->mesh[0]->sub.num; k++) {
+	for (auto mr: models) {
+		int i = mr->owner->get_component<EdwardTag>()->entity_index;
+		if (sel.contains(i)) {
+			if (auto m = mr->model)
+				for (int k=0; k<m->mesh[0]->sub.num; k++) {
 					auto vb = m->mesh[0]->sub[k].vertex_buffer;
-					dh->draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_selection, 0, m->_template->vertex_shader_module);
+					dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, dh->material_selection, 0, m->_template->vertex_shader_module);
 				}
-			}
 		}
+	}
 
 	// hover...
 	if (multi_view->hover and multi_view->hover->type == MultiViewType::WORLD_ENTITY) {
-		auto& e = data->entities[multi_view->hover->index];
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			auto m = e.object.object;
-			for (int k=0; k<m->mesh[0]->sub.num; k++) {
-				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				dh->draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_hover, 0, m->_template->vertex_shader_module);
+		auto e = data->entity_manager->entities[multi_view->hover->index];
+		if (auto mr = e->get_component<ModelRef>()) {
+			if (auto m = mr->model) {
+				for (int k=0; k<m->mesh[0]->sub.num; k++) {
+					auto vb = m->mesh[0]->sub[k].vertex_buffer;
+					dh->draw_mesh(params, rvd, e->get_matrix(), vb, dh->material_hover, 0, m->_template->vertex_shader_module);
+				}
 			}
 		}
 	}
@@ -480,37 +498,31 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	auto dh = multi_view->session->drawing_helper;
 
-	for (auto& e: data->entities) {
-		if (e.basic_type != MultiViewType::WORLD_TERRAIN)
-			continue;
-		auto& t = e.terrain;
-		t.terrain->prepare_draw(rvd.scene_view->main_camera_params.pos);
-		auto vb = t.terrain->vertex_buffer.get();
-		dh->draw_mesh(params, rvd, mat4::translation(e.pos), vb, dh->material_shadow);
-	}
+	const auto terrains = data->entity_manager->get_component_list<TerrainRef>();
+	for (auto tr: terrains)
+		if (auto t = tr->terrain) {
+			t->prepare_draw(rvd.scene_view->main_camera_params.pos);
+			auto vb = t->vertex_buffer.get();
+			dh->draw_mesh(params, rvd, tr->owner->get_matrix(), vb, dh->material_shadow);
+		}
 
-	for (auto& e: data->entities)
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			auto m = e.object.object;
+	const auto models = data->entity_manager->get_component_list<ModelRef>();
+	for (auto mr: models)
+		if (auto m = mr->model)
 			for (int k=0; k<m->mesh[0]->sub.num; k++) {
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				dh->draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_shadow, 0, m->_template->vertex_shader_module);
+				dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, dh->material_shadow, 0, m->_template->vertex_shader_module);
 			}
-		}
 }
 
 
 void ModeWorld::draw_cameras(MultiViewWindow* win) {
+	auto dh = session->drawing_helper;
 	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
-	for (const auto& [i,e]: enumerate(data->entities)) {
-		if (e.basic_type != MultiViewType::WORLD_CAMERA)
-			continue;
-		auto& c = e.camera;
+	for (const auto c: data->entity_manager->get_component_list<Camera>()) {
 		//if (c.view_stage < mode->multi_view->view_stage)
 		//	continue;
-
-		auto dh = session->drawing_helper;
-		auto win = dh->window;
+		int i = c->owner->get_component<EdwardTag>()->entity_index;
 
 		dh->set_color(DrawingHelper::COLOR_X);
 		dh->set_line_width(DrawingHelper::LINE_MEDIUM);
@@ -518,25 +530,27 @@ void ModeWorld::draw_cameras(MultiViewWindow* win) {
 			dh->set_color(Red);
 			dh->set_line_width(DrawingHelper::LINE_THICK);
 		}
-		auto q = e.ang;
+		auto q = c->owner->ang;
 		float r = win->multi_view->view_port.radius * 0.1f;
-		float rr = r * tan(c.fov / 2);
+		float rr = r * tanf(c->fov / 2);
 		vec3 ex = q * vec3::EX * rr * 1.333f;
 		vec3 ey = q * vec3::EY * rr;
 		vec3 ez = q * vec3::EZ * r;
 
+		const vec3 pos = c->owner->pos;
 		Array<vec3> points = {
-			e.pos, e.pos + ez + ex + ey,
-			e.pos, e.pos + ez - ex + ey,
-			e.pos, e.pos + ez + ex - ey,
-			e.pos, e.pos + ez - ex - ey,
-			e.pos + ez + ex + ey, e.pos + ez - ex + ey,
-			e.pos + ez - ex + ey, e.pos + ez - ex - ey,
-			e.pos + ez - ex - ey, e.pos + ez + ex - ey,
-			e.pos + ez + ex - ey, e.pos + ez + ex + ey};
+			pos, pos + ez + ex + ey,
+			pos, pos + ez - ex + ey,
+			pos, pos + ez + ex - ey,
+			pos, pos + ez - ex - ey,
+			pos + ez + ex + ey, pos + ez - ex + ey,
+			pos + ez - ex + ey, pos + ez - ex - ey,
+			pos + ez - ex - ey, pos + ez + ex - ey,
+			pos + ez + ex - ey, pos + ez + ex + ey};
 		dh->draw_lines(points, false);
 	}
 }
+
 
 
 
@@ -551,17 +565,17 @@ void draw_tangent_circle(MultiViewWindow *win, const vec3 &p, const vec3 &c, con
 	int i_max = 0;
 	float d_max = 0;
 	for (int i=0; i<=N; i++) {
-		float w = i * 2 * pi / N;
-		vec2 pp = win->project(c + sin(w) * e1 + cos(w) * e2).xy();
+		float w = (float)i * 2 * pi / (float)N;
+		vec2 pp = win->project(c + sinf(w) * e1 + cosf(w) * e2).xy();
 		if ((pp - pc).length() > d_max) {
 			i_max = i;
 			d_max = (pp - pc).length();
 		}
 	}
-	float w = i_max * 2 * pi / N;
+	float w = (float)i_max * 2 * pi / (float)N;
 	auto dh = win->multi_view->session->drawing_helper;
-	dh->draw_lines({p, c + sin(w) * e1 + cos(w) * e2,
-		p, c - sin(w) * e1 - cos(w) * e2}, false);
+	dh->draw_lines({p, c + sinf(w) * e1 + cosf(w) * e2,
+		p, c - sinf(w) * e1 - cosf(w) * e2}, false);
 }
 
 const float LIGHT_RADIUS_FACTOR_HI = 0.03f;
@@ -570,12 +584,10 @@ const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
 void ModeWorld::draw_lights(MultiViewWindow *win) {
 	auto dh = session->drawing_helper;
 	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
-	for (const auto& [i,e]: enumerate(data->entities)) {
-		if (e.basic_type != MultiViewType::WORLD_LIGHT)
-			continue;
-		auto& l = e.light;
+	for (const auto l: data->entity_manager->get_component_list<Light>()) {
 		//if (l.view_stage < multi_view->view_stage)
 		//	continue;
+		int i = l->owner->get_component<EdwardTag>()->entity_index;
 
 		dh->set_color(DrawingHelper::COLOR_X);
 		dh->set_line_width(DrawingHelper::LINE_THICK);
@@ -584,17 +596,21 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 			dh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
 		}
 
-		if (l.type == yrenderer::LightType::DIRECTIONAL) {
-			dh->draw_lines({e.pos, e.pos + e.ang * vec3::EZ * win->multi_view->view_port.radius * 0.1f}, false);
-		} else if (l.type == yrenderer::LightType::POINT) {
+		const vec3 pos = l->owner->pos;
+		const quaternion ang = l->owner->ang;
+		const float radius = l->light.light.radius;
+		if (l->light.type() == yrenderer::LightType::DIRECTIONAL) {
+			dh->draw_lines({pos, pos + ang * vec3::EZ * win->multi_view->view_port.radius * 0.1f}, false);
+		} else if (l->light.type() == yrenderer::LightType::POINT) {
 			//draw_circle(l.pos, win->get_direction(), l.radius);
-			dh->draw_circle(e.pos, win->direction(), l.radius * LIGHT_RADIUS_FACTOR_LO);
-			dh->draw_circle(e.pos, win->direction(), l.radius * LIGHT_RADIUS_FACTOR_HI);
-		} else if (l.type == yrenderer::LightType::CONE) {
-			dh->draw_lines({e.pos, e.pos + e.ang * vec3::EZ * l.radius * LIGHT_RADIUS_FACTOR_LO}, false);
-			dh->draw_circle(e.pos + e.ang * vec3::EZ * l.radius*LIGHT_RADIUS_FACTOR_LO, e.ang * vec3::EZ, l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
-			dh->draw_circle(e.pos + e.ang * vec3::EZ * l.radius*LIGHT_RADIUS_FACTOR_HI, e.ang * vec3::EZ, l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_HI);
-			draw_tangent_circle(win, e.pos, e.pos + e.ang * vec3::EZ * l.radius*LIGHT_RADIUS_FACTOR_LO, e.ang * vec3::EZ, l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
+			dh->draw_circle(pos, win->direction(), radius * LIGHT_RADIUS_FACTOR_LO);
+			dh->draw_circle(pos, win->direction(), radius * LIGHT_RADIUS_FACTOR_HI);
+		} else if (l->light.type() == yrenderer::LightType::CONE) {
+			const float theta = l->light.light.theta;
+			dh->draw_lines({pos, pos + ang * vec3::EZ * radius * LIGHT_RADIUS_FACTOR_LO}, false);
+			dh->draw_circle(pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_LO, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_LO);
+			dh->draw_circle(pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_HI, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_HI);
+			draw_tangent_circle(win, pos, pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_LO, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_LO);
 		}
 	}
 }
@@ -606,8 +622,8 @@ static base::optional<string> world_selection_description(DataWorld* data, const
 		nob = sel[MultiViewType::WORLD_OBJECT].num;
 	if (sel.contains(MultiViewType::WORLD_TERRAIN))
 		nter = sel[MultiViewType::WORLD_TERRAIN].num;
-	if (sel.contains(MultiViewType::WORLD_CAMERA))
-		ncam = sel[MultiViewType::WORLD_CAMERA].num;
+//	if (sel.contains(MultiViewType::WORLD_CAMERA))
+//		ncam = sel[MultiViewType::WORLD_CAMERA].num;
 	if (sel.contains(MultiViewType::WORLD_ENTITY))
 		nent = sel[MultiViewType::WORLD_ENTITY].num;
 	if (nob + nter + ncam + nent == 0)
@@ -626,7 +642,7 @@ static base::optional<string> world_selection_description(DataWorld* data, const
 
 void ModeWorld::on_draw_post(Painter* p) {
 	drawing2d::draw_data_points(p, multi_view->active_window,
-		data->entities,
+		data->dummy_entities,
 		MultiViewType::WORLD_ENTITY,
 		multi_view->hover,
 		multi_view->selection[MultiViewType::WORLD_ENTITY]);

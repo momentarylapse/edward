@@ -27,7 +27,7 @@ void *ActionWorldPaste::compose(Data *d) {
 	auto *w = dynamic_cast<DataWorld*>(d);
 
 	for (const auto &o: entities)
-		addSubAction(new ActionWorldAddEntity(o), w);
+	{}//addSubAction(new ActionWorldAddEntity(o), w);
 
 	return nullptr;
 }

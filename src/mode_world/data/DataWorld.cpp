@@ -6,11 +6,20 @@
  */
 
 #include "DataWorld.h"
+
+#include <sys/stat.h>
+
 #include "WorldLight.h"
 #include "WorldObject.h"
 #include "WorldTerrain.h"
 #include "WorldCamera.h"
 #include "WorldLink.h"
+#include "lib/kaba/syntax/Class.h"
+#include "world/Camera.h"
+#include "world/components/Animator.h"
+#include "world/components/Collider.h"
+#include "world/components/Skeleton.h"
+#include "world/components/SolidBody.h"
 #if 0 //HAS_LIB_GL
 #include "../../mode/world/ModeWorld.h"
 #endif
@@ -36,12 +45,71 @@
 #include "../action/ActionWorldDeleteSelection.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <y/helper/ResourceManager.h>
+#include <y/EntityManager.h>
 
+const kaba::Class* EdwardTag::_class = nullptr;
+const kaba::Class* ModelRef::_class = nullptr;
+const kaba::Class* TerrainRef::_class = nullptr;
+
+string ScriptInstanceData::get(const string &name) const {
+	for (const auto& v: variables)
+		if (v.name == name)
+			return v.value;
+	return "";
+}
+
+void ScriptInstanceData::set(const string &name, const string &type, const string &value) {
+	for (auto& v: variables)
+		if (v.name == name) {
+			v.value = value;
+			v.type = type;
+			return;
+		}
+	variables.add({name, type, value});
+}
+
+ScriptInstanceData& WorldEntity::get(const string& class_name) {
+	for (auto& c: components)
+		if (c.class_name == class_name)
+			return c;
+	static ScriptInstanceData dummy;
+	dummy.class_name = "";
+	return dummy;
+}
 
 
 DataWorld::DataWorld(Session *s) :
 	Data(s, FD_WORLD)
 {
+	entity_manager = new EntityManager;
+	entity_manager->component_manager->factory = [] (const kaba::Class* type, const base::map<string, Any>& var) -> Component* {
+		if (type == Camera::_class)
+			return new Camera();
+		if (type == Light::_class) {
+			float radius = var.contains("radius") ? var["radius"].to_f32() : 100.0f;
+			float theta = var.contains("theta") ? var["theta"].to_f32() : 0.0f;
+			return new Light(White, radius, theta);
+		}
+		if (type == EdwardTag::_class)
+			return new EdwardTag;
+		if (type == ModelRef::_class)
+			return new ModelRef;
+		if (type == TerrainRef::_class)
+			return new TerrainRef;
+		if (type == Skeleton::_class)
+			return new Skeleton;
+		if (type == Animator::_class)
+			return new Animator;
+		if (type == SolidBody::_class)
+			return new SolidBody;
+		if (type == MeshCollider::_class)
+			return new MeshCollider;
+		if (type == TerrainCollider::_class)
+			return new TerrainCollider;
+		msg_error("new component..." + p2s(type));
+		msg_write(type->name);
+		return nullptr;
+	};
 	reset();
 }
 
@@ -93,7 +161,17 @@ void DataWorld::reset() {
 
 void DataWorld::add_initial_data() {
 	WorldEntity cam;
-	cam.basic_type = MultiViewType::WORLD_CAMERA;
+	cam.basic_type = MultiViewType::WORLD_ENTITY;
+	{
+		ScriptInstanceData cc;
+		cc.class_name = "Camera";
+		cc.variables.add({"min_depth", "f32", "1.0"});
+		cc.variables.add({"max_depth", "f32", "1.0"});
+		cc.variables.add({"fov", "f32", f2s(pi/4, 3)});
+		cc.variables.add({"exposure", "f32", "1.0"});
+		cc.variables.add({"bloom_factor", "f32", "0.15"});
+		cam.components.add(cc);
+	}
 	entities.add(cam);
 
 	WorldEntity sun;
@@ -127,25 +205,33 @@ Box DataWorld::get_bounding_box() const {
 		found_any = true; //|=(_min!=_max);
 	};
 
-	for (const auto &e: entities)
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			if (e.object.object) {
-				vec3 min2 = e.pos - vec3(1,1,1) * e.object.object->prop.radius;
-				vec3 max2 = e.pos + vec3(1,1,1) * e.object.object->prop.radius;
-				merge(min2, max2);
-			}
-		} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
-			if (e.terrain.terrain) {
-				auto box = e.terrain.bounding_box();
-				merge(box.min, box.max);
-			}
+	for (auto mr: entity_manager->get_component_list_const<ModelRef>())
+		if (auto m = mr->model) {
+			vec3 min2 = mr->owner->pos - vec3(1,1,1) * m->prop.radius;
+			vec3 max2 = mr->owner->pos + vec3(1,1,1) * m->prop.radius;
+			merge(min2, max2);
 		}
+#if 0
+	for (auto tr: entity_manager->get_component_list_const<TerrainRef>())
+		if (auto t = tr->terrain) {
+			//auto box = t->bounding_box();
+			vec3 min2 = tr->owner->pos - vec3(1,1,1) * t->...;
+			vec3 max2 = tr->owner->pos + vec3(1,1,1) * t->...;
+			merge(min2, max2);
+		}
+#endif
+
 	if (!found_any) {
 		min = vec3(-100,-100,-100);
 		max = vec3( 100, 100, 100);
 	}
 	return {min, max};
 }
+
+Entity *DataWorld::entity(int index) {
+	return entity_manager->entities[index];
+}
+
 
 #define IMPLEMENT_COUNT_SELECTED(FUNC, ARRAY) \
 	int DataWorld::FUNC() {                   \
@@ -216,29 +302,29 @@ void DataWorld::delete_selection(const Selection& selection) {
 	execute(new ActionWorldDeleteSelection(this, selection));
 }
 
-WorldEntity* DataWorld::add_entity(const WorldEntity& e) {
-	return (WorldEntity*)execute(new ActionWorldAddEntity(e));
+Entity* DataWorld::add_entity(const vec3& pos, const quaternion& ang) {
+	return static_cast<Entity*>(execute(new ActionWorldAddEntity(pos, ang)));
 }
 
 void DataWorld::edit_light(int index, const WorldLight& l) {
 	execute(new ActionWorldEditLight(index, l));
 }
 
-void DataWorld::edit_entity(int index, const WorldEntity& e) {
-	execute(new ActionWorldEditBaseEntity(index, e));
+void DataWorld::edit_entity(int index, const vec3& pos, const quaternion& ang) {
+	execute(new ActionWorldEditBaseEntity(index, pos, ang));
 }
 
-void DataWorld::edit_camera(int index, const WorldCamera& c) {
+/*void DataWorld::edit_camera(int index, const WorldCamera& c) {
 	execute(new ActionWorldEditCamera(index, c));
-}
+}*/
 
 void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
 	execute(new ActionWorldEditTerrainMetaData(index, pattern));
 }
 
 
-void DataWorld::entity_add_component(int index, const ScriptInstanceData& c) {
-	execute(new ActionWorldAddComponent(index, c));
+Component* DataWorld::entity_add_component_generic(int index, const kaba::Class* _class, const base::map<string, Any>& variables) {
+	return static_cast<Component*>(execute(new ActionWorldAddComponent(index, _class, variables)));
 }
 void DataWorld::entity_remove_component(int index, int cindex) {
 	execute(new ActionWorldRemoveComponent(index, cindex));

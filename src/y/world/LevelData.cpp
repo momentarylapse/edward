@@ -96,6 +96,21 @@ bool LevelData::load(const Path &filename) {
 		}
 	}
 
+	auto read_components = [] (Array<ScriptData>& components, xml::Element &e) {
+		for (const auto &ee: e.elements)
+			if (ee.tag == "component") {
+				ScriptData sd;
+				sd.filename = ee.value("script");
+				sd.class_name = ee.value("class");
+				sd.var = ee.value("var");
+				// TODO
+				for (const auto& a: ee.attributes)
+					if (a.key != "script" and a.key != "class" and a.key != "var")
+						sd.variables.add({a.key, a.value});
+				components.add(sd);
+			}
+	};
+
 
 	if (auto cont = p.elements[0].find("3d")) {
 		for (auto &e: cont->elements) {
@@ -108,14 +123,7 @@ bool LevelData::load(const Path &filename) {
 				c.max_depth = e.value("maxDepth", "10000")._float();
 				c.exposure = e.value("exposure", "1")._float();
 				c.bloom_factor = e.value("bloomFactor", "0.15")._float();
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptData sd;
-						sd.filename = ee.value("script");
-						sd.class_name = ee.value("class");
-						sd.var = ee.value("var");
-						c.components.add(sd);
-					}
+				read_components(c.components, e);
 				cameras.add(c);
 			} else if (e.tag == "light") {
 				Light l;
@@ -137,27 +145,13 @@ bool LevelData::load(const Path &filename) {
 					l._color *= l.radius * l.radius / 100;
 				}
 				l.enabled = e.value("enabled", "true")._bool();
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptData sd;
-						sd.filename = ee.value("script");
-						sd.class_name = ee.value("class");
-						sd.var = ee.value("var");
-						l.components.add(sd);
-					}
+				read_components(l.components, e);
 				lights.add(l);
 			} else if (e.tag == "terrain") {
 				Terrain t;
 				t.filename = e.value("file");
 				t.pos = s2v(e.value("pos"));
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptData sd;
-						sd.filename = ee.value("script");
-						sd.class_name = ee.value("class");
-						sd.var = ee.value("var");
-						t.components.add(sd);
-					}
+				read_components(t.components, e);
 				terrains.add(t);
 			} else if (e.tag == "object") {
 				Object o;
@@ -167,27 +161,13 @@ bool LevelData::load(const Path &filename) {
 				o.ang = s2v(e.value("ang"));
 				if (e.value("role") == "ego")
 					ego_index = objects.num;
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptData sd;
-						sd.filename = ee.value("script");
-						sd.class_name = ee.value("class");
-						sd.var = ee.value("var");
-						o.components.add(sd);
-					}
+				read_components(o.components, e);
 				objects.add(o);
 			} else if (e.tag == "entity") {
 				Entity o;
 				o.pos = s2v(e.value("pos"));
 				o.ang = s2v(e.value("ang"));
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptData sd;
-						sd.filename = ee.value("script");
-						sd.class_name = ee.value("class");
-						sd.var = ee.value("var");
-						o.components.add(sd);
-					}
+				read_components(o.components, e);
 				entities.add(o);
 			} else if (e.tag == "link") {
 				Link l;
