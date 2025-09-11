@@ -42,7 +42,7 @@ void ActionWorldEditLight::undo(Data *d) {
 }
 
 
-ActionWorldEditCamera::ActionWorldEditCamera(int _index, const WorldCamera& c) {
+/*ActionWorldEditCamera::ActionWorldEditCamera(int _index, const WorldCamera& c) {
 	camera = c;
 	index = _index;
 }
@@ -56,7 +56,7 @@ void* ActionWorldEditCamera::execute(Data *d) {
 void ActionWorldEditCamera::undo(Data *d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	std::swap(w->entities[index].camera, camera);
-}
+}*/
 
 
 ActionWorldEditComponent::ActionWorldEditComponent(int _index, int _cindex, const ScriptInstanceData& c) {

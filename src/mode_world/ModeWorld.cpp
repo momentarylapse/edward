@@ -205,11 +205,11 @@ void ModeWorld::on_enter() {
 			if (index == 0) {
 				e.basic_type = MultiViewType::WORLD_ENTITY;
 			} else if (index == 1) {
-				e.basic_type = MultiViewType::WORLD_CAMERA;
+				/*e.basic_type = MultiViewType::WORLD_CAMERA;
 				e.camera.min_depth = 1;
 				e.camera.max_depth = 100000;
 				e.camera.fov = 0.7f;
-				e.camera.exposure = 1;
+				e.camera.exposure = 1;*/
 			} else if (index <= 4) {
 				e.basic_type = MultiViewType::WORLD_LIGHT;
 				e.light.col = White;
@@ -503,9 +503,9 @@ void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer:
 void ModeWorld::draw_cameras(MultiViewWindow* win) {
 	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
 	for (const auto& [i,e]: enumerate(data->entities)) {
-		if (e.basic_type != MultiViewType::WORLD_CAMERA)
+		auto& c = e.get("Camera");
+		if (c.class_name == "")
 			continue;
-		auto& c = e.camera;
 		//if (c.view_stage < mode->multi_view->view_stage)
 		//	continue;
 
@@ -520,7 +520,7 @@ void ModeWorld::draw_cameras(MultiViewWindow* win) {
 		}
 		auto q = e.ang;
 		float r = win->multi_view->view_port.radius * 0.1f;
-		float rr = r * tan(c.fov / 2);
+		float rr = r * tan(c.get("fov")._float() / 2);
 		vec3 ex = q * vec3::EX * rr * 1.333f;
 		vec3 ey = q * vec3::EY * rr;
 		vec3 ez = q * vec3::EZ * r;
@@ -606,8 +606,8 @@ static base::optional<string> world_selection_description(DataWorld* data, const
 		nob = sel[MultiViewType::WORLD_OBJECT].num;
 	if (sel.contains(MultiViewType::WORLD_TERRAIN))
 		nter = sel[MultiViewType::WORLD_TERRAIN].num;
-	if (sel.contains(MultiViewType::WORLD_CAMERA))
-		ncam = sel[MultiViewType::WORLD_CAMERA].num;
+//	if (sel.contains(MultiViewType::WORLD_CAMERA))
+//		ncam = sel[MultiViewType::WORLD_CAMERA].num;
 	if (sel.contains(MultiViewType::WORLD_ENTITY))
 		nent = sel[MultiViewType::WORLD_ENTITY].num;
 	if (nob + nter + ncam + nent == 0)

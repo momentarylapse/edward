@@ -192,14 +192,19 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		for (auto &e: cont->elements) {
 			if (e.tag == "camera") {
 				WorldEntity c;
-				c.basic_type = MultiViewType::WORLD_CAMERA;
+				c.basic_type = MultiViewType::WORLD_ENTITY;
 				c.pos = s2v(e.value("pos", "0 0 0"));
 				c.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
-				c.camera.fov = e.value("fov", f2s(pi/4, 3))._float();
-				c.camera.min_depth = e.value("minDepth", "1")._float();
-				c.camera.max_depth = e.value("maxDepth", "10000")._float();
-				c.camera.exposure = e.value("exposure", "1")._float();
-				c.camera.bloom_factor = e.value("bloomFactor", "0.15")._float();
+				{
+					ScriptInstanceData cc;
+					cc.class_name = "Camera";
+					cc.variables.add({"fov", "f32", e.value("fov", f2s(pi/4, 3))});
+					cc.variables.add({"min_depth", "f32", e.value("minDepth", "1.0")});
+					cc.variables.add({"max_depth", "f32", e.value("maxDepth", "10000")});
+					cc.variables.add({"exposure", "f32", e.value("exposure", "1.0")});
+					cc.variables.add({"bloom_factor", "f32", e.value("bloomFactor", "0.15")});
+					c.components.add(cc);
+				}
 				for (auto &ee: e.elements)
 					if (ee.tag == "component") {
 						ScriptInstanceData sd;
@@ -375,11 +380,15 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 	}
 
 	auto add_components = [] (xml::Element& e, const Array<ScriptInstanceData>& components) {
-		for (auto &c: components)
-			e.add(xml::Element("component")
-				.witha("script", c.filename.str())
-				.witha("class", c.class_name)
-				.witha("var", vars2str(c.variables)));
+		for (auto &c: components) {
+			auto ee = xml::Element("component");
+			if (!c.filename.is_empty())
+				ee.add_attribute("script", str(c.filename));
+			ee.add_attribute("class", c.class_name);
+			for (auto &v: c.variables)
+				ee.add_attribute(v.name, v.value);
+			e.add(ee);
+		}
 	};
 
 	auto cont = xml::Element("3d");
@@ -400,7 +409,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 				el.add_attribute("role", "ego");
 		} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {
 			el = encode_light(e);
-		} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
+		/*} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
 			el = xml::Element("camera")
 			.witha("pos", v2s(e.pos))
 			.witha("ang", v2s(e.ang.get_angles()))
@@ -408,7 +417,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 			.witha("minDepth", f2s(e.camera.min_depth, 3))
 			.witha("maxDepth", f2s(e.camera.max_depth, 3))
 			.witha("exposure", f2s(e.camera.exposure, 3))
-			.witha("bloomFactor", f2s(e.camera.bloom_factor, 3));
+			.witha("bloomFactor", f2s(e.camera.bloom_factor, 3));*/
 		} else {
 			el = xml::Element("entity")
 			.witha("pos", v2s(e.pos))

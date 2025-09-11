@@ -46,8 +46,8 @@ Dialog entity-base-panel ''
 					name = "Terrain " + str(e.terrain.filename);
 				else if (e.basic_type == MultiViewType::WORLD_LIGHT)
 					name = "Light";
-				else if (e.basic_type == MultiViewType::WORLD_CAMERA)
-					name = "Camera";
+				/*else if (e.basic_type == MultiViewType::WORLD_CAMERA)
+					name = "Camera";*/
 				else if (e.basic_type == MultiViewType::WORLD_ENTITY)
 					name = "Entity";
 				add_string("list", name);
@@ -115,7 +115,7 @@ Dialog entity-base-panel ''
 
 class CameraPanel : public xhui::Panel {
 public:
-	explicit CameraPanel(DataWorld* _data, int _index) : Panel("camera-panel") {
+	explicit CameraPanel(DataWorld* _data, int _index, int _cindex) : Panel("camera-panel") {
 		from_source(R"foodelim(
 Dialog camera-panel ''
 	Grid ? ''
@@ -134,6 +134,7 @@ Dialog camera-panel ''
 )foodelim");
 		data = _data;
 		index = _index;
+		cindex = _cindex;
 		update_ui();
 
 		event("z-min", [this] { on_edit(); });
@@ -142,23 +143,22 @@ Dialog camera-panel ''
 		event("exposure", [this] { on_edit(); });
 	}
 	DataWorld* data;
-	int index;
+	int index, cindex;;
 
 	void update_ui() {
-		auto& e = data->entities[index];
-		set_float("z-min", e.camera.min_depth);
-		set_float("z-max", e.camera.max_depth);
-		set_float("fov", e.camera.fov * 180 / pi);
-		set_float("exposure", e.camera.exposure);
+		auto& c = data->entities[index].get("Camera");
+		set_float("z-min", c.get("min_depth")._float());
+		set_float("z-max", c.get("max_depth")._float());
+		set_float("fov", c.get("fov")._float() * 180 / pi);
+		set_float("exposure", c.get("exposure")._float());
 	}
 	void on_edit() {
-		auto& e = data->entities[index];
-		auto c = e.camera;
-		c.min_depth = get_float("z-min");
-		c.max_depth = get_float("z-max");
-		c.exposure = get_float("exposure");
-		c.fov = get_float("fov") * pi / 180;
-		data->edit_camera(index, c);
+		auto& c = data->entities[index].get("Camera");
+		c.set("min_depth", "f32", f2s(get_float("z-min"), 3));
+		c.set("max_depth", "f32", f2s(get_float("z-max"), 3));
+		c.set("exposure", "f32", f2s(get_float("exposure"), 3));
+		c.set("fov", "f32", f2s(get_float("fov") * pi / 180, 3));
+		data->entity_edit_component(index, cindex, c);
 	}
 };
 
@@ -219,7 +219,6 @@ Dialog light-panel ''
 
 	void on_edit() {
 		auto& e = data->entities[index];
-		auto c = e.camera;
 		auto l = e.light;
 		l.type = (yrenderer::LightType)get_int("type");
 		l.radius = get_float("radius");
@@ -482,8 +481,9 @@ Dialog solid-body-panel ''
 				data->session->edit_code_file(data->entities[entity_index].components[component_index].filename);
 		});
 	}
-	void update(int _entity_index, const string& _component_class) {
+	void update(int _entity_index, int _component_index, const string& _component_class) {
 		entity_index = _entity_index;
+		component_index = _component_index;
 		auto& e = data->entities[entity_index];
 		set_class(_component_class);
 		set_string("expander", component_class);
@@ -492,7 +492,6 @@ Dialog solid-body-panel ''
 		if (_component_class == component_class)
 			return;
 		component_class = _component_class;
-		component_index = -1;
 		user_component = false;
 		if (content_panel) {
 			unembed(content_panel);
@@ -526,17 +525,12 @@ Dialog solid-body-panel ''
 		} else if (component_class == "Terrain") {
 			content_panel = new TerrainPanel(data, entity_index);
 		} else if (component_class == "Camera") {
-			content_panel = new CameraPanel(data, entity_index);
+			content_panel = new CameraPanel(data, entity_index, component_index);
 		} else if (component_class == "Light") {
 			content_panel = new LightPanel(data, entity_index);
 		} else {
-			for (int i=0; i<e.components.num; i++)
-				if (e.components[i].class_name == component_class) {
-					component_index = i;
-					content_panel = new UserComponentPanel(data, entity_index, i);
-					user_component = true;
-					break;
-				}
+			content_panel = new UserComponentPanel(data, entity_index, component_index);
+			user_component = true;
 		}
 
 		if (content_panel)
@@ -583,7 +577,7 @@ Dialog entity-panel ''
 	};
 	component_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
 		const auto xx = t.explode(":");
-		reinterpret_cast<ComponentPanel*>(c)->update(xx[0]._int(), xx[1]);
+		reinterpret_cast<ComponentPanel*>(c)->update(xx[0]._int(), xx[1]._int(), xx[2]);
 	};
 	component_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
 		reinterpret_cast<ComponentPanel*>(c)->set_selected(selected);
@@ -632,31 +626,31 @@ void EntityPanel::update(bool force) {
 		set_options("components-viewport", "expandy");
 		set_visible("components", true);
 		set_visible("add-component", true);
-		add_string("components", str(cur_index) + ":Entity");
+		add_string("components", str(cur_index) + ":-1:Entity");
 
 		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			add_string("components", str(cur_index) + ":Model");
-			add_string("components", str(cur_index) + ":Material");
+			add_string("components", str(cur_index) + ":-1:Model");
+			add_string("components", str(cur_index) + ":-1:Material");
 			if (e.object.object->_template->solid_body)
-				add_string("components", str(cur_index) + ":SolidBody");
+				add_string("components", str(cur_index) + ":-1:SolidBody");
 			if (e.object.object->_template->mesh_collider)
-				add_string("components", str(cur_index) + ":MeshCollider");
+				add_string("components", str(cur_index) + ":-1:MeshCollider");
 			if (e.object.object->_template->skeleton)
-				add_string("components", str(cur_index) + ":Skeleton");
+				add_string("components", str(cur_index) + ":-1:Skeleton");
 			if (e.object.object->_template->animator)
-				add_string("components", str(cur_index) + ":Animator");
+				add_string("components", str(cur_index) + ":-1:Animator");
 		} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
-			add_string("components", str(cur_index) + ":Terrain");
-			add_string("components", str(cur_index) + ":Material");
-			add_string("components", str(cur_index) + ":SolidBody");
-			add_string("components", str(cur_index) + ":TerrainCollider");
-		} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
-			add_string("components", str(cur_index) + ":Camera");
+			add_string("components", str(cur_index) + ":-1:Terrain");
+			add_string("components", str(cur_index) + ":-1:Material");
+			add_string("components", str(cur_index) + ":-1:SolidBody");
+			add_string("components", str(cur_index) + ":-1:TerrainCollider");
+	//	} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
+	//		add_string("components", str(cur_index) + ":Camera");
 		} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {
-			add_string("components", str(cur_index) + ":Light");
+			add_string("components", str(cur_index) + ":-1:Light");
 		}
 		for (int i=0; i<e.components.num; i++) {
-			add_string("components", str(cur_index) + ":" + e.components[i].class_name);
+			add_string("components", str(cur_index) + ":" + str(i) + ":" + e.components[i].class_name);
 		}
 		set_int("components", 0);
 	} else {

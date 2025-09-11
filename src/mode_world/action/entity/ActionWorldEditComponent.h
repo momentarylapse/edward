@@ -37,7 +37,7 @@ private:
 	WorldLight light;
 };
 
-class ActionWorldEditCamera : public Action {
+/*class ActionWorldEditCamera : public Action {
 public:
 	explicit ActionWorldEditCamera(int index, const WorldCamera& c);
 	string name() override { return "WorldEditCamera"; }
@@ -48,7 +48,7 @@ public:
 private:
 	int index;
 	WorldCamera camera;
-};
+};*/
 
 class ActionWorldEditComponent : public Action {
 public:

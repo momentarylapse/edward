@@ -37,6 +37,31 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <y/helper/ResourceManager.h>
 
+string ScriptInstanceData::get(const string &name) const {
+	for (const auto& v: variables)
+		if (v.name == name)
+			return v.value;
+	return "";
+}
+
+void ScriptInstanceData::set(const string &name, const string &type, const string &value) {
+	for (auto& v: variables)
+		if (v.name == name) {
+			v.value = value;
+			v.type = type;
+			return;
+		}
+	variables.add({name, type, value});
+}
+
+ScriptInstanceData& WorldEntity::get(const string& class_name) {
+	for (auto& c: components)
+		if (c.class_name == class_name)
+			return c;
+	static ScriptInstanceData dummy;
+	dummy.class_name = "";
+	return dummy;
+}
 
 
 DataWorld::DataWorld(Session *s) :
@@ -93,7 +118,17 @@ void DataWorld::reset() {
 
 void DataWorld::add_initial_data() {
 	WorldEntity cam;
-	cam.basic_type = MultiViewType::WORLD_CAMERA;
+	cam.basic_type = MultiViewType::WORLD_ENTITY;
+	{
+		ScriptInstanceData cc;
+		cc.class_name = "Camera";
+		cc.variables.add({"min_depth", "f32", "1.0"});
+		cc.variables.add({"max_depth", "f32", "1.0"});
+		cc.variables.add({"fov", "f32", f2s(pi/4, 3)});
+		cc.variables.add({"exposure", "f32", "1.0"});
+		cc.variables.add({"bloom_factor", "f32", "0.15"});
+		cam.components.add(cc);
+	}
 	entities.add(cam);
 
 	WorldEntity sun;
@@ -228,9 +263,9 @@ void DataWorld::edit_entity(int index, const WorldEntity& e) {
 	execute(new ActionWorldEditBaseEntity(index, e));
 }
 
-void DataWorld::edit_camera(int index, const WorldCamera& c) {
+/*void DataWorld::edit_camera(int index, const WorldCamera& c) {
 	execute(new ActionWorldEditCamera(index, c));
-}
+}*/
 
 void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
 	execute(new ActionWorldEditTerrainMetaData(index, pattern));

@@ -43,14 +43,16 @@ struct ScriptInstanceData {
 	Path filename;
 	string class_name;
 	Array<WorldScriptVariable> variables;
+	string get(const string& name) const;
+	void set(const string& name, const string& type, const string& value);
 };
 
-struct WorldComponent {
+/*struct WorldComponent {
 	Path filename;
 	string class_name;
 	Any data;
 	Component* component = nullptr;
-};
+};*/
 
 struct WorldEntity { //: multiview::SingleData {
 	vec3 pos = vec3::ZERO;
@@ -59,12 +61,14 @@ struct WorldEntity { //: multiview::SingleData {
 
 	MultiViewType basic_type = MultiViewType::WORLD_ENTITY;
 	WorldLight light;
-	WorldCamera camera;
+//	WorldCamera camera;
 	WorldObject object;
 	WorldTerrain terrain;
 
 	//Entity* entity = nullptr;
 	Array<ScriptInstanceData> components;
+
+	ScriptInstanceData& get(const string& class_name);
 };
 
 class DataWorld: public Data {
@@ -132,7 +136,7 @@ public:
 #endif
 	WorldEntity* add_entity(const WorldEntity& e);
 	void edit_entity(int index, const WorldEntity& e);
-	void edit_camera(int index, const WorldCamera& c);
+//	void edit_camera(int index, const WorldCamera& c);
 	void edit_light(int index, const WorldLight& l);
 	void edit_terrain_meta_data(int index, const vec3& pattern);
 	void entity_add_component(int index, const ScriptInstanceData& c);
