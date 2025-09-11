@@ -144,6 +144,23 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	}*/
 }
 
+void read_components(WorldEntity& o, const xml::Element& e) {
+	for (auto &ee: e.elements)
+		if (ee.tag == "component") {
+			ScriptInstanceData sd;
+			sd.filename = ee.value("script", "");
+			sd.class_name = ee.value("class", "");
+			if (ee.value("var") != "")
+				sd.variables = str2vars(ee.value("var", ""));
+			for (const auto& a: ee.attributes)
+				if (a.key != "script" and a.key != "class" and a.key != "var") {
+					msg_write(a.key + " = " + a.value);
+					sd.variables.add({a.key, "", a.value});
+				}
+			o.components.add(sd);
+		}
+}
+
 void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	data->entities.clear();
 	data->meta_data.skybox_files.clear();
@@ -205,13 +222,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 					cc.variables.add({"bloom_factor", "f32", e.value("bloomFactor", "0.15")});
 					c.components.add(cc);
 				}
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptInstanceData sd;
-						sd.filename = ee.value("script", "");
-						sd.class_name = ee.value("class", "");
-						c.components.add(sd);
-					}
+				read_components(c, e);
 				data->entities.add(c);
 			} else if (e.tag == "light") {
 				WorldEntity l;
@@ -227,27 +238,14 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				l.light.col = s2c(e.value("color", "1 1 1"));
 				l.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
 				l.pos= s2v(e.value("pos", "0 0 0"));
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptInstanceData sd;
-						sd.filename = ee.value("script", "");
-						sd.class_name = ee.value("class", "");
-						l.components.add(sd);
-					}
+				read_components(l, e);
 				data->entities.add(l);
 			} else if (e.tag == "terrain") {
 				WorldEntity t;
 				t.basic_type = MultiViewType::WORLD_TERRAIN;
 				t.terrain.filename = e.value("file");
 				t.pos = s2v(e.value("pos", "0 0 0"));
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptInstanceData sd;
-						sd.filename = ee.value("script", "");
-						sd.class_name = ee.value("class", "");
-						sd.variables = str2vars(ee.value("var", ""));
-						t.components.add(sd);
-					}
+				read_components(t, e);
 				data->entities.add(t);
 			} else if (e.tag == "object") {
 				WorldEntity o;
@@ -258,14 +256,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				//o.script = e.value("script");
 				o.pos = s2v(e.value("pos", "0 0 0"));
 				o.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptInstanceData sd;
-						sd.filename = ee.value("script", "");
-						sd.class_name = ee.value("class", "");
-						sd.variables = str2vars(ee.value("var", ""));
-						o.components.add(sd);
-					}
+				read_components(o, e);
 				if (e.value("role") == "ego")
 					data->EgoIndex = data->entities.num;
 				data->entities.add(o);
@@ -275,14 +266,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				//o.script = e.value("script");
 				o.pos = s2v(e.value("pos", "0 0 0"));
 				o.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptInstanceData sd;
-						sd.filename = ee.value("script", "");
-						sd.class_name = ee.value("class", "");
-						sd.variables = str2vars(ee.value("var", ""));
-						o.components.add(sd);
-					}
+				read_components(o, e);
 				data->entities.add(o);
 			} else if (e.tag == "link") {
 				WorldLink l;
@@ -297,13 +281,6 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				l.object[1] = e.value("b")._int();
 				l.pos = s2v(e.value("pos", "0 0 0"));
 				l.ang = s2v(e.value("ang", "0 0 0"));
-				for (auto &ee: e.elements)
-					if (ee.tag == "component") {
-						ScriptInstanceData sd;
-						sd.filename = ee.value("script", "");
-						sd.class_name = ee.value("class", "");
-						l.components.add(sd);
-					}
 				//l.radius = e.value("radius")._float();
 				data->links.add(l);
 			} else {
@@ -436,7 +413,6 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		//.witha("pivotA", v2s(l.pos - data->objects[l.object[0]].pos))
 		//.witha("pivotB", v2s(l.pos - data->objects[l.object[1]].pos))
 		.witha("ang", v2s(l.ang));
-		add_components(e, l.components);
 		cont.add(e);
 	}
 	w.add(cont);

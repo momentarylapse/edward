@@ -27,7 +27,6 @@ struct WorldLink: multiview::SingleData {
 	vec3 ang = vec3::ZERO;
 	float param[4] = {0,0,0,0};
 	float friction = 0;
-	Array<ScriptInstanceData> components;
 };
 
 

@@ -27,7 +27,6 @@ struct WorldLink;
 struct WorldLight;
 struct WorldObject;
 struct WorldTerrain;
-struct WorldCamera;
 enum class PhysicsMode;
 class Entity;
 class Component;
