@@ -28,6 +28,8 @@
 #include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
 #include "../../lib/doc/xml.h"
+#include <y/EntityManager.h>
+#include <meta.h>
 
 static string _(const string &s) { return s; }
 
@@ -164,6 +166,20 @@ void read_components(WorldEntity& o, const xml::Element& e) {
 void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	data->entities.clear();
 	data->meta_data.skybox_files.clear();
+
+
+	LevelData ld;
+	ld.load(filename);
+	for (auto& e: ld.objects)
+		data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
+	for (auto& e: ld.cameras)
+		data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
+	for (auto& e: ld.lights)
+		data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
+	for (auto& e: ld.terrains)
+		data->entity_manager->create_entity(e.pos, quaternion::ID);
+
+
 
 	xml::Parser p;
 	p.load(filename);

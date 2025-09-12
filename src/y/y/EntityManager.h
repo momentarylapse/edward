@@ -45,7 +45,7 @@ public:
 	static EntityManager* global;
 	owned<ComponentManager> component_manager;
 
-private:
+//private:
 	Array<Entity*> entities;
 };
 

@@ -44,6 +44,8 @@
 #include "dialog/PropertiesDialog.h"
 #include <cmath>
 
+#include "y/EntityManager.h"
+
 
 ModeWorld::ModeWorld(Session* session) :
 	Mode(session),
@@ -124,6 +126,14 @@ void ModeWorld::on_enter_rec() {
 	session->out_changed >> create_sink([this] {
 		update_menu();
 	});
+	auto update_dummies = [this]() {
+		// FIXME
+		data->dummy_entities.resize(data->entity_manager->entities.num);
+		for (auto&& [i, e]: enumerate(data->entity_manager->entities))
+			data->dummy_entities[i].pos = e->pos;
+	};
+	data->out_changed >> create_sink(update_dummies);
+	update_dummies();
 
 	event_ids_rec.add(session->win->event("mode_world", [this] {
 		session->set_mode(this);
@@ -138,7 +148,7 @@ void ModeWorld::on_enter_rec() {
 	session->win->event("run-game", [this] {
 		Path engine_dir = xhui::config.get_str("EngineDir", "");
 		if (engine_dir.is_empty()) {
-			session->error("cn not run engine. Config 'EngineDir' is not set");
+			session->error("can not run engine. Config 'EngineDir' is not set");
 			return;
 		}
 
@@ -183,7 +193,7 @@ void ModeWorld::on_enter() {
 		return new ActionWorldMoveSelection(data, multi_view->selection);
 	};
 	multi_view->data_sets = {
-		{MultiViewType::WORLD_ENTITY, &data->entities}
+		{MultiViewType::WORLD_ENTITY, &data->dummy_entities}//data->entities}
 	};
 	multi_view->light_mode = MultiView::LightMode::Fixed;
 
@@ -342,7 +352,7 @@ Data::Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) c
 	auto r = _r.canonical();
 	Data::Selection s;
 	s.add({MultiViewType::WORLD_ENTITY, {}});
-	for (const auto& [i, e]: enumerate(data->entities)) {
+	for (const auto& [i, e]: enumerate(data->dummy_entities)) {
 		const auto p = win->project(e.pos);
 		if (p.z <= 0 or p.z >= 1)
 			continue;
@@ -626,7 +636,7 @@ static base::optional<string> world_selection_description(DataWorld* data, const
 
 void ModeWorld::on_draw_post(Painter* p) {
 	drawing2d::draw_data_points(p, multi_view->active_window,
-		data->entities,
+		data->dummy_entities,
 		MultiViewType::WORLD_ENTITY,
 		multi_view->hover,
 		multi_view->selection[MultiViewType::WORLD_ENTITY]);

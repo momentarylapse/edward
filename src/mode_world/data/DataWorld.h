@@ -19,6 +19,7 @@
 #include <lib/ygraphics/graphics-fwd.h>
 #include <lib/any/any.h>
 #include <lib/math/quaternion.h>
+//#include <y/EntityManager.h>
 
 class DataWorld;
 class Terrain;
@@ -30,6 +31,7 @@ struct WorldTerrain;
 enum class PhysicsMode;
 class Entity;
 class Component;
+class EntityManager;
 
 
 struct WorldScriptVariable {
@@ -89,6 +91,9 @@ public:
 
 	Array<WorldEntity> entities;
 	int EgoIndex;
+
+	owned<EntityManager> entity_manager;
+	Array<multiview::SingleData> dummy_entities;
 
 	Array<WorldLink> links;
 

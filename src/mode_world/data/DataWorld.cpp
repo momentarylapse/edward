@@ -36,6 +36,7 @@
 #include "../action/ActionWorldDeleteSelection.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <y/helper/ResourceManager.h>
+#include <y/EntityManager.h>
 
 string ScriptInstanceData::get(const string &name) const {
 	for (const auto& v: variables)
@@ -67,6 +68,7 @@ ScriptInstanceData& WorldEntity::get(const string& class_name) {
 DataWorld::DataWorld(Session *s) :
 	Data(s, FD_WORLD)
 {
+	entity_manager = new EntityManager;
 	reset();
 }
 

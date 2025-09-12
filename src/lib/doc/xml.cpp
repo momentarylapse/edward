@@ -133,7 +133,7 @@ Element* Element::find(const string &tag) {
 	return &dummy_element;
 }
 
-string Element::value(const string &key, const string &def) {
+string Element::value(const string &key, const string &def) const {
 	for (auto &a: attributes)
 		if (a.key == key)
 			return a.value;
