@@ -24,6 +24,13 @@
 #include <world/Terrain.h>
 #include <world/components/SolidBody.h>
 
+#include <y/EntityManager.h>
+#include <y/Entity.h>
+#include <y/world/Camera.h>
+#include <y/world/Light.h>
+
+#include <lib/kaba/syntax/Class.h>
+
 class EntityListPanel : public xhui::Panel {
 public:
 	explicit EntityListPanel() : Panel("entity-list-panel") {
@@ -92,22 +99,22 @@ Dialog entity-base-panel ''
 		event("ang-z", [this] { on_edit(); });
 	}
 	void update_ui() {
-		auto& e = data->entities[index];
-		set_float("pos-x", e.pos.x);
-		set_float("pos-y", e.pos.y);
-		set_float("pos-z", e.pos.z);
-		auto ang = e.ang.get_angles();
+		auto& e = data->entity_manager->entities[index];
+		set_float("pos-x", e->pos.x);
+		set_float("pos-y", e->pos.y);
+		set_float("pos-z", e->pos.z);
+		auto ang = e->ang.get_angles();
 		set_float("ang-x", ang.x * 180 / pi);
 		set_float("ang-y", ang.y * 180 / pi);
 		set_float("ang-z", ang.z * 180 / pi);
 	}
 	void on_edit() {
-		auto e = data->entities[index];
-		e.pos.x = get_float("pos-x");
+		auto e = data->entity_manager->entities[index];
+		/*e.pos.x = get_float("pos-x");
 		e.pos.y = get_float("pos-y");
 		e.pos.z = get_float("pos-z");
 		e.ang = quaternion::rotation({get_float("ang-x") * pi / 180, get_float("ang-y") * pi / 180, get_float("ang-z") * pi / 180});
-		data->edit_entity(index, e);
+		data->edit_entity(index, e);*/
 	}
 	DataWorld* data;
 	int index;
@@ -146,19 +153,19 @@ Dialog camera-panel ''
 	int index, cindex;;
 
 	void update_ui() {
-		auto& c = data->entities[index].get("Camera");
-		set_float("z-min", c.get("min_depth")._float());
-		set_float("z-max", c.get("max_depth")._float());
-		set_float("fov", c.get("fov")._float() * 180 / pi);
-		set_float("exposure", c.get("exposure")._float());
+		auto c = data->entity_manager->entities[index]->get_component<Camera>();
+		set_float("z-min", c->min_depth);
+		set_float("z-max", c->max_depth);
+		set_float("fov", c->fov * 180 / pi);
+		set_float("exposure", c->exposure);
 	}
 	void on_edit() {
-		auto& c = data->entities[index].get("Camera");
+		/*auto& c = data->entities[index].get("Camera");
 		c.set("min_depth", "f32", f2s(get_float("z-min"), 3));
 		c.set("max_depth", "f32", f2s(get_float("z-max"), 3));
 		c.set("exposure", "f32", f2s(get_float("exposure"), 3));
 		c.set("fov", "f32", f2s(get_float("fov") * pi / 180, 3));
-		data->entity_edit_component(index, cindex, c);
+		data->entity_edit_component(index, cindex, c);*/
 	}
 };
 
@@ -207,25 +214,26 @@ Dialog light-panel ''
 	int index;
 
 	void update_ui() {
-		auto& e = data->entities[index];
-		set_int("type", (int)e.light.type);
-		set_float("radius", e.light.radius);
-		set_float("harshness", e.light.harshness * 100);
-		set_float("theta", e.light.theta * 180 / pi);
-		set_float("radius", e.light.radius);
-		set_color("color", e.light.col);
-		set_float("power", e.light.col.r + e.light.col.g + e.light.col.b);
+		auto e = data->entity_manager->entities[index];
+		auto l = e->get_component<Light>();
+		set_int("type", (int)l->light.type());
+		set_float("radius", l->light.light.radius);
+		set_float("harshness", l->light.light.harshness * 100);
+		set_float("theta", l->light.light.theta * 180 / pi);
+		set_float("radius", l->light.light.radius);
+		set_color("color", l->light.light.col);
+		set_float("power", l->light.light.col.brightness());
 	}
 
 	void on_edit() {
-		auto& e = data->entities[index];
-		auto l = e.light;
-		l.type = (yrenderer::LightType)get_int("type");
+		auto e = data->entity_manager->entities[index];
+		auto l = e->get_component<Light>();
+		/*l.type = (yrenderer::LightType)get_int("type");
 		l.radius = get_float("radius");
 		l.theta = get_float("theta") * pi / 180;
 		l.harshness = get_float("harshness") / 100;
 		l.col = get_color("color");
-		data->edit_light(index, l);
+		data->edit_light(index, l);*/
 	}
 };
 
@@ -481,11 +489,14 @@ Dialog solid-body-panel ''
 				data->session->edit_code_file(data->entities[entity_index].components[component_index].filename);
 		});
 	}
-	void update(int _entity_index, int _component_index, const string& _component_class) {
+	void update(int _entity_index, int _component_index) {
 		entity_index = _entity_index;
 		component_index = _component_index;
-		auto& e = data->entities[entity_index];
-		set_class(_component_class);
+		auto e = data->entity_manager->entities[entity_index];
+		if (component_index < 0)
+			set_class("Entity");
+		else
+			set_class(e->components[component_index]->component_type->name);
 		set_string("expander", component_class);
 	}
 	void set_class(const string& _component_class) {
@@ -498,14 +509,15 @@ Dialog solid-body-panel ''
 			content_panel = nullptr;
 		}
 
-		auto& e = data->entities[entity_index];
+		auto e = data->entity_manager->entities[entity_index];
+		msg_write(component_class);
 		if (component_class == "Entity") {
 			content_panel = new EntityBasePanel(data, entity_index);
 		} else if (component_class == "Model") {
 			content_panel = new ObjectPanel(data, entity_index);
 		} else if (component_class == "SolidBody") {
 			content_panel = new SolidBodyPanel(data, entity_index);
-		} else if (component_class == "Material") {
+		/*} else if (component_class == "Material") {
 			if (e.basic_type == MultiViewType::WORLD_OBJECT) {
 				content_panel = new MaterialComponentPanel(data, e.object.object->material[0], "???", [this] (const ComplexPath& p) {
 				});
@@ -513,7 +525,7 @@ Dialog solid-body-panel ''
 				content_panel = new MaterialComponentPanel(data, e.terrain.terrain->material.get(), e.terrain.terrain->material_file, [this, index=entity_index] (const ComplexPath& p) {
 					data->entities[entity_index].terrain.save_material(data->session, p.complete);
 				});
-			}
+			}*/
 		} else if (component_class == "MeshCollider") {
 			content_panel = new DummyComponentPanel;
 		} else if (component_class == "TerrainCollider") {
@@ -577,7 +589,7 @@ Dialog entity-panel ''
 	};
 	component_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
 		const auto xx = t.explode(":");
-		reinterpret_cast<ComponentPanel*>(c)->update(xx[0]._int(), xx[1]._int(), xx[2]);
+		reinterpret_cast<ComponentPanel*>(c)->update(xx[0]._int(), xx[1]._int());
 	};
 	component_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
 		reinterpret_cast<ComponentPanel*>(c)->set_selected(selected);
@@ -622,13 +634,17 @@ void EntityPanel::update(bool force) {
 			return;
 		cur_index = next;
 		reset("components");
-		auto& e = mode_world->data->entities[cur_index];
+		auto e = mode_world->data->entity_manager->entities[cur_index];
 		set_options("components-viewport", "expandy");
 		set_visible("components", true);
 		set_visible("add-component", true);
-		add_string("components", str(cur_index) + ":-1:Entity");
 
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
+		add_string("components", format("%d:%d", cur_index, -1)); // Entity...
+		for (int j=0; j<e->components.num; j++)
+			if (e->components[j]->component_type != EdwardTag::_class)
+				add_string("components", format("%d:%d", cur_index, j));
+
+		/*if (e.basic_type == MultiViewType::WORLD_OBJECT) {
 			add_string("components", str(cur_index) + ":-1:Model");
 			add_string("components", str(cur_index) + ":-1:Material");
 			if (e.object.object->_template->solid_body)
@@ -651,7 +667,7 @@ void EntityPanel::update(bool force) {
 		}
 		for (int i=0; i<e.components.num; i++) {
 			add_string("components", str(cur_index) + ":" + str(i) + ":" + e.components[i].class_name);
-		}
+		}*/
 		set_int("components", 0);
 	} else {
 		cur_index = -1;
