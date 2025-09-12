@@ -128,9 +128,12 @@ void ModeWorld::on_enter_rec() {
 	});
 	auto update_dummies = [this]() {
 		// FIXME
-		data->dummy_entities.resize(data->entity_manager->entities.num);
-		for (auto&& [i, e]: enumerate(data->entity_manager->entities))
-			data->dummy_entities[i].pos = e->pos;
+		auto list = data->entity_manager->get_component_list<EdwardTag>();
+		data->dummy_entities.resize(list.num);
+		for (auto&& [i, e]: enumerate(list)) {
+			data->dummy_entities[i].pos = e->owner->pos;
+			e->entity_index = i;
+		}
 	};
 	data->out_changed >> create_sink(update_dummies);
 	update_dummies();
@@ -183,11 +186,11 @@ void ModeWorld::on_enter() {
 	};
 	multi_view->f_select = [this] (MultiViewWindow* win, const rect& r) {
 		Data::Selection sel;
-		sel.set(MultiViewType::WORLD_ENTITY, MultiView::select_points_in_rect(win, r, data->entities));
+		sel.set(MultiViewType::WORLD_ENTITY, MultiView::select_points_in_rect(win, r, data->dummy_entities));
 		return sel;
 	};
 	multi_view->f_get_selection_box = [this] (const Data::Selection& sel) -> base::optional<Box> {
-		return MultiView::points_get_selection_box(data->entities, sel[MultiViewType::WORLD_ENTITY]);
+		return MultiView::points_get_selection_box(data->dummy_entities, sel[MultiViewType::WORLD_ENTITY]);
 	};
 	multi_view->f_create_action = [this] {
 		return new ActionWorldMoveSelection(data, multi_view->selection);
@@ -352,8 +355,8 @@ Data::Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) c
 	auto r = _r.canonical();
 	Data::Selection s;
 	s.add({MultiViewType::WORLD_ENTITY, {}});
-	for (const auto& [i, e]: enumerate(data->dummy_entities)) {
-		const auto p = win->project(e.pos);
+	for (const auto& [i, e]: enumerate(data->entity_manager->entities)) {
+		const auto p = win->project(e->pos);
 		if (p.z <= 0 or p.z >= 1)
 			continue;
 		if (r.inside({p.x, p.y}))
@@ -386,31 +389,28 @@ void draw_mesh(const yrenderer::RenderParams& params, yrenderer::RenderViewData&
 }
 
 void ModeWorld::on_prepare_scene(const yrenderer::RenderParams& params) {
-	Array<WorldEntity*> data_lights;
-	for (auto& e: data->entities)
-		if (e.basic_type == MultiViewType::WORLD_LIGHT)
-			data_lights.add(&e);
+	auto data_lights = data->entity_manager->get_component_list<Light>();
 
 	while (lights.num < data_lights.num) {
 		lights.add(new yrenderer::Light);
 	}
 	for (const auto& [i, l]: enumerate(data_lights)) {
-		lights[i]->light.pos = l->pos;
-		lights[i]->_ang = l->ang;
+		lights[i]->light.pos = l->owner->pos;
+		lights[i]->_ang = l->owner->ang;
 		lights[i]->enabled = l->light.enabled;
-		lights[i]->allow_shadow = (l->light.type == yrenderer::LightType::DIRECTIONAL);
-		lights[i]->light.col = l->light.col;
+		lights[i]->allow_shadow = (l->light.type() == yrenderer::LightType::DIRECTIONAL);
+		lights[i]->light.col = l->light.light.col;
 		if (!l->light.enabled)
 			lights[i]->light.col = Black;
-		lights[i]->light.radius = l->light.radius;
-		lights[i]->light.theta = l->light.theta;
-		if (l->light.type == yrenderer::LightType::DIRECTIONAL)
+		lights[i]->light.radius = l->light.light.radius;
+		lights[i]->light.theta = l->light.light.theta;
+		if (l->light.type() == yrenderer::LightType::DIRECTIONAL)
 			lights[i]->light.radius = -1;
-		else
-			lights[i]->light.col = l->light.col * (l->light.radius * l->light.radius / 100);
-		if (l->light.type != yrenderer::LightType::CONE)
+	//	else
+	//		lights[i]->light.col = l->light.light.col * (l->light.light.radius * l->light.light.radius / 100);
+		if (l->light.type() != yrenderer::LightType::CONE)
 			lights[i]->light.theta = -1;
-		lights[i]->light.harshness = l->light.harshness;
+		lights[i]->light.harshness = l->light.light.harshness;
 	}
 	multi_view->lights = lights.sub_ref(0, data_lights.num);
 }
@@ -511,13 +511,12 @@ void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer:
 
 
 void ModeWorld::draw_cameras(MultiViewWindow* win) {
+	auto dh = session->drawing_helper;
 	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
-	for (const auto& [i,c]: enumerate(data->entity_manager->get_component_list<Camera>())) {
+	for (const auto c: data->entity_manager->get_component_list<Camera>()) {
 		//if (c.view_stage < mode->multi_view->view_stage)
 		//	continue;
-
-		auto dh = session->drawing_helper;
-		auto win = dh->window;
+		int i = c->owner->get_component<EdwardTag>()->entity_index;
 
 		dh->set_color(DrawingHelper::COLOR_X);
 		dh->set_line_width(DrawingHelper::LINE_MEDIUM);
@@ -559,17 +558,17 @@ void draw_tangent_circle(MultiViewWindow *win, const vec3 &p, const vec3 &c, con
 	int i_max = 0;
 	float d_max = 0;
 	for (int i=0; i<=N; i++) {
-		float w = i * 2 * pi / N;
-		vec2 pp = win->project(c + sin(w) * e1 + cos(w) * e2).xy();
+		float w = (float)i * 2 * pi / (float)N;
+		vec2 pp = win->project(c + sinf(w) * e1 + cosf(w) * e2).xy();
 		if ((pp - pc).length() > d_max) {
 			i_max = i;
 			d_max = (pp - pc).length();
 		}
 	}
-	float w = i_max * 2 * pi / N;
+	float w = (float)i_max * 2 * pi / (float)N;
 	auto dh = win->multi_view->session->drawing_helper;
-	dh->draw_lines({p, c + sin(w) * e1 + cos(w) * e2,
-		p, c - sin(w) * e1 - cos(w) * e2}, false);
+	dh->draw_lines({p, c + sinf(w) * e1 + cosf(w) * e2,
+		p, c - sinf(w) * e1 - cosf(w) * e2}, false);
 }
 
 const float LIGHT_RADIUS_FACTOR_HI = 0.03f;
@@ -578,12 +577,10 @@ const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
 void ModeWorld::draw_lights(MultiViewWindow *win) {
 	auto dh = session->drawing_helper;
 	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
-	for (const auto& [i,e]: enumerate(data->entities)) {
-		if (e.basic_type != MultiViewType::WORLD_LIGHT)
-			continue;
-		auto& l = e.light;
+	for (const auto l: data->entity_manager->get_component_list<Light>()) {
 		//if (l.view_stage < multi_view->view_stage)
 		//	continue;
+		int i = l->owner->get_component<EdwardTag>()->entity_index;
 
 		dh->set_color(DrawingHelper::COLOR_X);
 		dh->set_line_width(DrawingHelper::LINE_THICK);
@@ -592,17 +589,21 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 			dh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
 		}
 
-		if (l.type == yrenderer::LightType::DIRECTIONAL) {
-			dh->draw_lines({e.pos, e.pos + e.ang * vec3::EZ * win->multi_view->view_port.radius * 0.1f}, false);
-		} else if (l.type == yrenderer::LightType::POINT) {
+		const vec3 pos = l->owner->pos;
+		const quaternion ang = l->owner->ang;
+		const float radius = l->light.light.radius;
+		if (l->light.type() == yrenderer::LightType::DIRECTIONAL) {
+			dh->draw_lines({pos, pos + ang * vec3::EZ * win->multi_view->view_port.radius * 0.1f}, false);
+		} else if (l->light.type() == yrenderer::LightType::POINT) {
 			//draw_circle(l.pos, win->get_direction(), l.radius);
-			dh->draw_circle(e.pos, win->direction(), l.radius * LIGHT_RADIUS_FACTOR_LO);
-			dh->draw_circle(e.pos, win->direction(), l.radius * LIGHT_RADIUS_FACTOR_HI);
-		} else if (l.type == yrenderer::LightType::CONE) {
-			dh->draw_lines({e.pos, e.pos + e.ang * vec3::EZ * l.radius * LIGHT_RADIUS_FACTOR_LO}, false);
-			dh->draw_circle(e.pos + e.ang * vec3::EZ * l.radius*LIGHT_RADIUS_FACTOR_LO, e.ang * vec3::EZ, l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
-			dh->draw_circle(e.pos + e.ang * vec3::EZ * l.radius*LIGHT_RADIUS_FACTOR_HI, e.ang * vec3::EZ, l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_HI);
-			draw_tangent_circle(win, e.pos, e.pos + e.ang * vec3::EZ * l.radius*LIGHT_RADIUS_FACTOR_LO, e.ang * vec3::EZ, l.radius * tan(l.theta) * LIGHT_RADIUS_FACTOR_LO);
+			dh->draw_circle(pos, win->direction(), radius * LIGHT_RADIUS_FACTOR_LO);
+			dh->draw_circle(pos, win->direction(), radius * LIGHT_RADIUS_FACTOR_HI);
+		} else if (l->light.type() == yrenderer::LightType::CONE) {
+			const float theta = l->light.light.theta;
+			dh->draw_lines({pos, pos + ang * vec3::EZ * radius * LIGHT_RADIUS_FACTOR_LO}, false);
+			dh->draw_circle(pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_LO, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_LO);
+			dh->draw_circle(pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_HI, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_HI);
+			draw_tangent_circle(win, pos, pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_LO, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_LO);
 		}
 	}
 }

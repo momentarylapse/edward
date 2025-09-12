@@ -40,7 +40,7 @@
 #include <y/helper/ResourceManager.h>
 #include <y/EntityManager.h>
 
-const kaba::Class* EdwardComponent::_class = nullptr;
+const kaba::Class* EdwardTag::_class = nullptr;
 
 string ScriptInstanceData::get(const string &name) const {
 	for (const auto& v: variables)
@@ -74,13 +74,14 @@ DataWorld::DataWorld(Session *s) :
 {
 	entity_manager = new EntityManager;
 	entity_manager->component_manager->factory = [] (const kaba::Class* type, const string& var) -> Component* {
+		if (type == Camera::_class)
+			return new Camera();
+		if (type == Light::_class)
+			return new Light(White, 100, 0);
+		if (type == EdwardTag::_class)
+			return new EdwardTag;
 		msg_error("new component..." + p2s(type));
 		msg_write(type->name);
-		if (type == Camera::_class) {
-			return new Camera();
-		} else if (type == Light::_class) {
-			return new Light(White, 100, 0);
-		}
 		return nullptr;
 	};
 	reset();

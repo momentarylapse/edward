@@ -72,7 +72,8 @@ struct WorldEntity { //: multiview::SingleData {
 	ScriptInstanceData& get(const string& class_name);
 };
 
-struct EdwardComponent : Component {
+struct EdwardTag : Component {
+	int entity_index;
 	static const kaba::Class* _class;
 };
 

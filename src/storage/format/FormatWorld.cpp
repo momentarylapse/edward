@@ -174,10 +174,13 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 
 	data->meta_data.background_color = ld.background_color;
 	data->meta_data.skybox_files = ld.skybox_filename;
-	for (auto& e: ld.objects)
+/*	for (auto& e: ld.objects) {
 		data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
+		data->entity_manager->add_component<EdwardTag>(o);
+	}*/
 	for (auto& e: ld.cameras) {
 		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
+		data->entity_manager->add_component<EdwardTag>(o);
 		auto c = data->entity_manager->add_component<Camera>(o);
 		c->min_depth = e.min_depth;
 		c->max_depth = e.max_depth;
@@ -187,15 +190,22 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	}
 	for (auto& e: ld.lights) {
 		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
+		data->entity_manager->add_component<EdwardTag>(o);
 		auto l = data->entity_manager->add_component<Light>(o);
 		l->light.light.col = e._color;
 		l->light.light.radius = e.radius;
 		l->light.light.theta = e.theta;
 		l->light.light.harshness = e.harshness;
 		l->light.enabled = e.enabled;
+		// FIXME old format
+		if (l->light.type() != yrenderer::LightType::DIRECTIONAL) {
+		//	l->light.light.col *= 1 / (l->light.light.radius * l->light.light.radius / 100);
+		}
 	}
-	for (auto& e: ld.terrains)
-		data->entity_manager->create_entity(e.pos, quaternion::ID);
+/*	for (auto& e: ld.terrains) {
+		auto o = data->entity_manager->create_entity(e.pos, quaternion::ID);
+		data->entity_manager->add_component<EdwardTag>(o);
+	}*/
 
 
 
@@ -242,7 +252,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	if (auto *cont = p.elements[0].find("3d")) {
 		for (auto &e: cont->elements) {
 			if (e.tag == "camera") {
-				WorldEntity c;
+				/*WorldEntity c;
 				c.basic_type = MultiViewType::WORLD_ENTITY;
 				c.pos = s2v(e.value("pos", "0 0 0"));
 				c.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
@@ -273,7 +283,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				l.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
 				l.pos= s2v(e.value("pos", "0 0 0"));
 				read_components(l, e);
-				data->entities.add(l);
+				data->entities.add(l);*/
 			} else if (e.tag == "terrain") {
 				WorldEntity t;
 				t.basic_type = MultiViewType::WORLD_TERRAIN;
