@@ -44,6 +44,9 @@
 /*#include "../data/material/ShaderNode.h"
 #include "../data/material/ShaderBuilderContext.h"*/
 
+#include <y/world/Camera.h>
+#include <y/world/Light.h>
+
 
 Path PluginManager::directory;
 
@@ -318,6 +321,11 @@ void PluginManager::link_plugins() {
 	ext->link_class_func("shader.BuilderContext.create_temp", &ShaderBuilderContext::create_temp);
 	ext->link_class_func("shader.BuilderContext.create_out", &ShaderBuilderContext::create_out);
 #endif
+
+
+	auto mm = kaba::default_context->create_empty_module("edward-internal");
+	Camera::_class = mm->tree->create_new_class("Camera", nullptr, sizeof(Camera), 0, nullptr, {}, mm->tree->base_class, -1);
+	Light::_class = mm->tree->create_new_class("Light", nullptr, sizeof(Light), 0, nullptr, {}, mm->tree->base_class, -1);
 }
 
 void PluginManager::find_plugins() {

@@ -18,6 +18,7 @@
 #include <lib/base/iter.h>
 #include <y/world/Model.h>
 #include <y/world/World.h>
+#include <y/world/Camera.h>
 #include <y/y/EngineData.h>
 #include <y/world/ModelManager.h>
 #include <y/helper/ResourceManager.h>
@@ -170,12 +171,24 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 
 	LevelData ld;
 	ld.load(filename);
+
+	data->meta_data.background_color = ld.background_color;
+	data->meta_data.skybox_files = ld.skybox_filename;
 	for (auto& e: ld.objects)
 		data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
-	for (auto& e: ld.cameras)
-		data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
-	for (auto& e: ld.lights)
-		data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
+	for (auto& e: ld.cameras) {
+		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
+		auto c = data->entity_manager->add_component<Camera>(o);
+		c->min_depth = e.min_depth;
+		c->max_depth = e.max_depth;
+		c->exposure = e.exposure;
+		c->fov = e.fov;
+		c->bloom_factor = e.bloom_factor;
+	}
+	for (auto& e: ld.lights) {
+		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
+		auto l = data->entity_manager->add_component<Light>(o);
+	}
 	for (auto& e: ld.terrains)
 		data->entity_manager->create_entity(e.pos, quaternion::ID);
 

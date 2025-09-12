@@ -72,6 +72,10 @@ struct WorldEntity { //: multiview::SingleData {
 	ScriptInstanceData& get(const string& class_name);
 };
 
+struct EdwardComponent : Component {
+	static const kaba::Class* _class;
+};
+
 class DataWorld: public Data {
 public:
 	explicit DataWorld(Session *ed);

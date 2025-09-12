@@ -11,6 +11,8 @@
 #include "WorldTerrain.h"
 #include "WorldCamera.h"
 #include "WorldLink.h"
+#include "lib/kaba/syntax/Class.h"
+#include "world/Camera.h"
 #if 0 //HAS_LIB_GL
 #include "../../mode/world/ModeWorld.h"
 #endif
@@ -37,6 +39,8 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <y/helper/ResourceManager.h>
 #include <y/EntityManager.h>
+
+const kaba::Class* EdwardComponent::_class = nullptr;
 
 string ScriptInstanceData::get(const string &name) const {
 	for (const auto& v: variables)
@@ -69,6 +73,15 @@ DataWorld::DataWorld(Session *s) :
 	Data(s, FD_WORLD)
 {
 	entity_manager = new EntityManager;
+	entity_manager->component_manager->factory = [] (const kaba::Class* type, const string& var) -> Component* {
+		msg_error("new component..." + type->name);
+		if (type == Camera::_class) {
+			return new Camera();
+		} else if (type == Light::_class) {
+			return new Light(White, 100, 0);
+		}
+		return nullptr;
+	};
 	reset();
 }
 
