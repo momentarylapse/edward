@@ -74,7 +74,8 @@ DataWorld::DataWorld(Session *s) :
 {
 	entity_manager = new EntityManager;
 	entity_manager->component_manager->factory = [] (const kaba::Class* type, const string& var) -> Component* {
-		msg_error("new component..." + type->name);
+		msg_error("new component..." + p2s(type));
+		msg_write(type->name);
 		if (type == Camera::_class) {
 			return new Camera();
 		} else if (type == Light::_class) {

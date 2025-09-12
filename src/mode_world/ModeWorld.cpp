@@ -512,10 +512,7 @@ void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer:
 
 void ModeWorld::draw_cameras(MultiViewWindow* win) {
 	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
-	for (const auto& [i,e]: enumerate(data->entities)) {
-		auto& c = e.get("Camera");
-		if (c.class_name == "")
-			continue;
+	for (const auto& [i,c]: enumerate(data->entity_manager->get_component_list<Camera>())) {
 		//if (c.view_stage < mode->multi_view->view_stage)
 		//	continue;
 
@@ -528,22 +525,23 @@ void ModeWorld::draw_cameras(MultiViewWindow* win) {
 			dh->set_color(Red);
 			dh->set_line_width(DrawingHelper::LINE_THICK);
 		}
-		auto q = e.ang;
+		auto q = c->owner->ang;
 		float r = win->multi_view->view_port.radius * 0.1f;
-		float rr = r * tan(c.get("fov")._float() / 2);
+		float rr = r * tanf(c->fov / 2);
 		vec3 ex = q * vec3::EX * rr * 1.333f;
 		vec3 ey = q * vec3::EY * rr;
 		vec3 ez = q * vec3::EZ * r;
 
+		const vec3 pos = c->owner->pos;
 		Array<vec3> points = {
-			e.pos, e.pos + ez + ex + ey,
-			e.pos, e.pos + ez - ex + ey,
-			e.pos, e.pos + ez + ex - ey,
-			e.pos, e.pos + ez - ex - ey,
-			e.pos + ez + ex + ey, e.pos + ez - ex + ey,
-			e.pos + ez - ex + ey, e.pos + ez - ex - ey,
-			e.pos + ez - ex - ey, e.pos + ez + ex - ey,
-			e.pos + ez + ex - ey, e.pos + ez + ex + ey};
+			pos, pos + ez + ex + ey,
+			pos, pos + ez - ex + ey,
+			pos, pos + ez + ex - ey,
+			pos, pos + ez - ex - ey,
+			pos + ez + ex + ey, pos + ez - ex + ey,
+			pos + ez - ex + ey, pos + ez - ex - ey,
+			pos + ez - ex - ey, pos + ez + ex - ey,
+			pos + ez + ex - ey, pos + ez + ex + ey};
 		dh->draw_lines(points, false);
 	}
 }

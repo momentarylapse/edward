@@ -47,6 +47,8 @@
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
 
+#include "lib/os/msg.h"
+
 
 Path PluginManager::directory;
 
@@ -324,8 +326,15 @@ void PluginManager::link_plugins() {
 
 
 	auto mm = kaba::default_context->create_empty_module("edward-internal");
+	mm->_pointer_ref_counter = 999999;
 	Camera::_class = mm->tree->create_new_class("Camera", nullptr, sizeof(Camera), 0, nullptr, {}, mm->tree->base_class, -1);
 	Light::_class = mm->tree->create_new_class("Light", nullptr, sizeof(Light), 0, nullptr, {}, mm->tree->base_class, -1);
+	msg_error("LINK Camera...");
+	msg_write(p2s(Camera::_class));
+	msg_write(Camera::_class->name);
+	msg_error("LINK Light...");
+	msg_write(p2s(Light::_class));
+	msg_write(Light::_class->name);
 }
 
 void PluginManager::find_plugins() {

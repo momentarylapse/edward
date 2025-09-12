@@ -188,6 +188,11 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	for (auto& e: ld.lights) {
 		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
 		auto l = data->entity_manager->add_component<Light>(o);
+		l->light.light.col = e._color;
+		l->light.light.radius = e.radius;
+		l->light.light.theta = e.theta;
+		l->light.light.harshness = e.harshness;
+		l->light.enabled = e.enabled;
 	}
 	for (auto& e: ld.terrains)
 		data->entity_manager->create_entity(e.pos, quaternion::ID);
