@@ -55,11 +55,6 @@ ModeWorld::ModeWorld(Session* session) :
 	data = new DataWorld(session);
 	generic_data = data;
 
-	data->out_changed >> create_sink([this] {
-		//data->lights
-		//	world.en
-	});
-
 	mode_scripting = new ModeScripting(this);
 	mode_properties = new ModeWorldProperties(this);
 }
@@ -213,18 +208,21 @@ void ModeWorld::on_enter() {
 		const vec3 p = multi_view->cursor_pos_3d(session->win->drag.m);
 		if (session->win->drag.payload.match("add-entity-default-*")) {
 			int index = session->win->drag.payload.tail(1)._int();
-			WorldEntity e;
-			e.pos = p;
+			data->begin_action_group("new-entity");
+			auto e = data->add_entity(p, quaternion::ID);
+			int i = e->get_component<EdwardTag>()->entity_index;
 			if (index == 0) {
-				e.basic_type = MultiViewType::WORLD_ENTITY;
+				//e.basic_type = MultiViewType::WORLD_ENTITY;
 			} else if (index == 1) {
+				auto c = data->entity_add_component<Camera>(i);
 				/*e.basic_type = MultiViewType::WORLD_CAMERA;
 				e.camera.min_depth = 1;
 				e.camera.max_depth = 100000;
 				e.camera.fov = 0.7f;
 				e.camera.exposure = 1;*/
 			} else if (index <= 4) {
-				e.basic_type = MultiViewType::WORLD_LIGHT;
+				auto l = data->entity_add_component<Light>(i);
+				/*e.basic_type = MultiViewType::WORLD_LIGHT;
 				e.light.col = White;
 				e.light.type = yrenderer::LightType::DIRECTIONAL;
 				e.light.radius = 0;
@@ -238,22 +236,27 @@ void ModeWorld::on_enter() {
 					e.light.theta = 0.5f;
 				}
 				e.light.harshness = 1;
-				e.light.enabled = true;
+				e.light.enabled = true;*/
 			} else if (index == 5) {
-				e.basic_type = MultiViewType::WORLD_TERRAIN;
-				e.terrain.terrain = new Terrain(16, 16, {10, 0, 10}, session->resource_manager->load_material(""));
+				auto t = data->entity_add_component<TerrainRef>(i);
+	//			e.basic_type = MultiViewType::WORLD_TERRAIN;
+	//			e.terrain.terrain = new Terrain(16, 16, {10, 0, 10}, session->resource_manager->load_material(""));
 			}
-			data->add_entity(e);
+			data->end_action_group();
 		} else if (session->win->drag.payload.match("filename:*.model")) {
 			Path filename = session->win->drag.payload.sub_ref(9);
 			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_MODEL));
 			session->set_message(str(fn_rel));
-			WorldEntity e;
-			e.pos = p;
+			auto e = data->add_entity(p, quaternion::ID);
+			int i = e->get_component<EdwardTag>()->entity_index;
+			auto c = data->entity_add_component<ModelRef>(i);
+			c->filename = fn_rel.no_ext();
+			c->model = session->resource_manager->load_model(c->filename);
+			/*e.pos = p;
 			e.basic_type = MultiViewType::WORLD_OBJECT;
 			e.object.filename = fn_rel.no_ext();
 			e.object.object = e.object.object = session->resource_manager->load_model(e.object.filename);
-			data->add_entity(e);
+			data->add_entity(e);*/
 		}
 	}));
 

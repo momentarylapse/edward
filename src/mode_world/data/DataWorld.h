@@ -19,6 +19,8 @@
 #include <lib/ygraphics/graphics-fwd.h>
 #include <lib/any/any.h>
 #include <lib/math/quaternion.h>
+
+#include "fx/ParticleEmitter.h"
 //#include <y/EntityManager.h>
 
 class DataWorld;
@@ -156,12 +158,16 @@ public:
 	WorldTerrain *add_new_terrain(const vec3 &pos, const vec3 &size, int num_x, int num_z);
 	WorldCamera *add_camera(const WorldCamera& c);
 #endif
-	WorldEntity* add_entity(const WorldEntity& e);
-	void edit_entity(int index, const WorldEntity& e);
+	Entity* add_entity(const vec3& pos, const quaternion& ang);
+	void edit_entity(int index, const vec3& pos, const quaternion& ang);
 //	void edit_camera(int index, const WorldCamera& c);
 	void edit_light(int index, const WorldLight& l);
 	void edit_terrain_meta_data(int index, const vec3& pattern);
-	void entity_add_component(int index, const ScriptInstanceData& c);
+	Component* entity_add_component_generic(int index, const kaba::Class* _class, const Array<WorldScriptVariable>& variables = {});//, const ScriptInstanceData& c);
+	template<class T>
+	T* entity_add_component(int index, const Array<WorldScriptVariable>& variables = {}) {
+		return static_cast<T*>(entity_add_component_generic(index, T::_class, variables));
+	}
 	void entity_remove_component(int index, int cindex);
 	void entity_edit_component(int index, int cindex, const ScriptInstanceData& c);
 

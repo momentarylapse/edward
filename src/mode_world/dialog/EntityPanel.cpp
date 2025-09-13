@@ -605,7 +605,7 @@ Dialog entity-panel ''
 
 	event("add-component", [this] {
 		ComponentSelectionDialog::ask(this, mode_world->session).then([this] (const ScriptInstanceData& c) {
-			mode_world->data->entity_add_component(cur_index, c);
+			//mode_world->data->entity_add_component(cur_index, c);
 		});
 	});
 

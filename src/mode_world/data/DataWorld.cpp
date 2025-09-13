@@ -6,6 +6,9 @@
  */
 
 #include "DataWorld.h"
+
+#include <sys/stat.h>
+
 #include "WorldLight.h"
 #include "WorldObject.h"
 #include "WorldTerrain.h"
@@ -296,16 +299,16 @@ void DataWorld::delete_selection(const Selection& selection) {
 	execute(new ActionWorldDeleteSelection(this, selection));
 }
 
-WorldEntity* DataWorld::add_entity(const WorldEntity& e) {
-	return (WorldEntity*)execute(new ActionWorldAddEntity(e));
+Entity* DataWorld::add_entity(const vec3& pos, const quaternion& ang) {
+	return static_cast<Entity*>(execute(new ActionWorldAddEntity(pos, ang)));
 }
 
 void DataWorld::edit_light(int index, const WorldLight& l) {
 	execute(new ActionWorldEditLight(index, l));
 }
 
-void DataWorld::edit_entity(int index, const WorldEntity& e) {
-	execute(new ActionWorldEditBaseEntity(index, e));
+void DataWorld::edit_entity(int index, const vec3& pos, const quaternion& ang) {
+	execute(new ActionWorldEditBaseEntity(index, pos, ang));
 }
 
 /*void DataWorld::edit_camera(int index, const WorldCamera& c) {
@@ -317,8 +320,8 @@ void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
 }
 
 
-void DataWorld::entity_add_component(int index, const ScriptInstanceData& c) {
-	execute(new ActionWorldAddComponent(index, c));
+Component* DataWorld::entity_add_component_generic(int index, const kaba::Class* _class, const Array<WorldScriptVariable>& variables) {
+	return static_cast<Component*>(execute(new ActionWorldAddComponent(index, _class, variables)));
 }
 void DataWorld::entity_remove_component(int index, int cindex) {
 	execute(new ActionWorldRemoveComponent(index, cindex));

@@ -13,15 +13,16 @@
 
 class ActionWorldEditBaseEntity : public Action {
 public:
-	explicit ActionWorldEditBaseEntity(int index, const WorldEntity& e);
+	explicit ActionWorldEditBaseEntity(int index, const vec3& pos, const quaternion& ang);
 	string name() override { return "WorldEditBaseEntity"; }
 
-	void *execute(Data* d) override;
+	void* execute(Data* d) override;
 	void undo(Data* d) override;
 
 private:
 	int index;
-	WorldEntity entity;
+	vec3 pos;
+	quaternion ang;
 };
 
 class ActionWorldEditLight : public Action {
@@ -65,15 +66,17 @@ private:
 
 class ActionWorldAddComponent : public Action {
 public:
-	explicit ActionWorldAddComponent(int index, const ScriptInstanceData& c);
+	explicit ActionWorldAddComponent(int index, const kaba::Class* type, const Array<WorldScriptVariable>& variables);
 	string name() override { return "WorldAddComponent"; }
 
-	void *execute(Data* d) override;
+	void* execute(Data* d) override;
 	void undo(Data* d) override;
 
 private:
 	int index;
-	ScriptInstanceData component;
+	const kaba::Class* type;
+	Array<WorldScriptVariable> variables;
+	Component* component = nullptr;
 };
 
 class ActionWorldRemoveComponent : public Action {
