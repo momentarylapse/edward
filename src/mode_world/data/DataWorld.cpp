@@ -13,6 +13,10 @@
 #include "WorldLink.h"
 #include "lib/kaba/syntax/Class.h"
 #include "world/Camera.h"
+#include "world/components/Animator.h"
+#include "world/components/Collider.h"
+#include "world/components/Skeleton.h"
+#include "world/components/SolidBody.h"
 #if 0 //HAS_LIB_GL
 #include "../../mode/world/ModeWorld.h"
 #endif
@@ -86,6 +90,16 @@ DataWorld::DataWorld(Session *s) :
 			return new ModelRef;
 		if (type == TerrainRef::_class)
 			return new TerrainRef;
+		if (type == Skeleton::_class)
+			return new Skeleton;
+		if (type == Animator::_class)
+			return new Animator;
+		if (type == SolidBody::_class)
+			return new SolidBody;
+		if (type == MeshCollider::_class)
+			return new MeshCollider;
+		if (type == TerrainCollider::_class)
+			return new TerrainCollider;
 		msg_error("new component..." + p2s(type));
 		msg_write(type->name);
 		return nullptr;

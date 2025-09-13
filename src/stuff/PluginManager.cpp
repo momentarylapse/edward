@@ -46,6 +46,10 @@
 
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
+#include <y/world/components/Skeleton.h>
+#include <y/world/components/Animator.h>
+#include <y/world/components/SolidBody.h>
+#include <y/world/components/Collider.h>
 
 #include "lib/os/msg.h"
 
@@ -231,6 +235,11 @@ void link_world(kaba::ExternalLinkData* ext) {
 	ext->declare_class_element("ModeWorld.data", &ModeWorld::data);
 }
 
+template<class T>
+void link_component(shared<kaba::Module> mm, const string& name) {
+	T::_class = mm->tree->create_new_class(name, nullptr, sizeof(T), 0, nullptr, {}, mm->tree->base_class, -1);
+}
+
 void PluginManager::link_plugins() {
 
 	//GlobalMainWin = ed;
@@ -327,11 +336,16 @@ void PluginManager::link_plugins() {
 
 	auto mm = kaba::default_context->create_empty_module("edward-internal");
 	mm->_pointer_ref_counter = 999999;
-	Camera::_class = mm->tree->create_new_class("Camera", nullptr, sizeof(Camera), 0, nullptr, {}, mm->tree->base_class, -1);
-	Light::_class = mm->tree->create_new_class("Light", nullptr, sizeof(Light), 0, nullptr, {}, mm->tree->base_class, -1);
-	ModelRef::_class = mm->tree->create_new_class("ModelRef", nullptr, sizeof(ModelRef), 0, nullptr, {}, mm->tree->base_class, -1);
-	TerrainRef::_class = mm->tree->create_new_class("TerrainRef", nullptr, sizeof(TerrainRef), 0, nullptr, {}, mm->tree->base_class, -1);
-	EdwardTag::_class = mm->tree->create_new_class(":EdwardTag:", nullptr, sizeof(EdwardTag), 0, nullptr, {}, mm->tree->base_class, -1);
+	link_component<Camera>(mm, "Camera");
+	link_component<Light>(mm, "Light");
+	link_component<SolidBody>(mm, "SolidBody");
+	link_component<MeshCollider>(mm, "MeshCollider");
+	link_component<TerrainCollider>(mm, "TerrainCollider");
+	link_component<Skeleton>(mm, "Skeleton");
+	link_component<Animator>(mm, "Animator");
+	link_component<ModelRef>(mm, "ModelRef");
+	link_component<TerrainRef>(mm, "TerrainRef");
+	link_component<EdwardTag>(mm, ":EdwardTag:");
 }
 
 void PluginManager::find_plugins() {

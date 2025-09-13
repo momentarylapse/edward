@@ -23,6 +23,10 @@
 #include <y/world/ModelManager.h>
 #include <y/helper/ResourceManager.h>
 #include <y/world/components/Skeleton.h>
+#include <y/world/components/Collider.h>
+#include <y/world/components/SolidBody.h>
+#include <y/world/components/Animator.h>
+#include <y/world/Terrain.h>
 #include "../../lib/os/date.h"
 #include "../../lib/os/file.h"
 #include "../../lib/os/filesystem.h"
@@ -32,7 +36,6 @@
 #include <y/EntityManager.h>
 #include <meta.h>
 
-#include "world/Terrain.h"
 
 static string _(const string &s) { return s; }
 
@@ -108,11 +111,24 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 		try {
 			for (auto m: data->entity_manager->get_component_list<ModelRef>()) {
 				m->model = data->session->resource_manager->load_model(m->filename);
+				if (m->model->_template->mesh_collider)
+					data->entity_manager->add_component<MeshCollider>(m->owner);
+				if (m->model->_template->solid_body) {
+					auto sb = data->entity_manager->add_component<SolidBody>(m->owner);
+					sb->mass = m->model->_template->solid_body->mass;
+					sb->active = m->model->_template->solid_body->active;
+				}
+				if (m->model->_template->skeleton)
+					data->entity_manager->add_component<Skeleton>(m->owner);
+				if (m->model->_template->animator)
+					data->entity_manager->add_component<Animator>(m->owner);
 			}
 			for (auto t: data->entity_manager->get_component_list<TerrainRef>()) {
 				if (t->filename) {
 					t->terrain = new Terrain(session->ctx, t->filename);
 				}
+				data->entity_manager->add_component<TerrainCollider>(t->owner);
+				data->entity_manager->add_component<SolidBody>(t->owner);
 			}
 
 

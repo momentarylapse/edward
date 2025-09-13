@@ -439,22 +439,19 @@ public:
 		from_source(R"foodelim(
 Dialog solid-body-panel ''
 	Grid ? ''
-		Label ? 'Mass'
-		SpinButton mass '' range=0::0.001
-		---|
 		Label ? 'Active'
 		CheckBox active ''
+		---|
+		Label ? 'Mass'
+		SpinButton mass '' range=0::0.001
 )foodelim");
 		data = _data;
 		index = _index;
-		auto& e = data->entities[index];
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			set_float("mass", e.object.object->_template->solid_body->mass);
-			check("active", e.object.object->_template->solid_body->active);
-		} else {
-			enable("mass", false);
-			enable("active", false);
-		}
+		auto e = data->entity(index);
+		auto sb = e->get_component<SolidBody>();
+		check("active", sb->active);
+		set_float("mass", sb->mass);
+		enable("mass", sb->active);
 	}
 	DataWorld* data;
 	int index;
