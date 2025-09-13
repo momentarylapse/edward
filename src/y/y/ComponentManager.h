@@ -9,6 +9,7 @@
 
 #include <lib/base/base.h>
 #include <lib/base/map.h>
+#include <lib/any/any.h>
 #include <functional>
 
 class Entity;
@@ -17,16 +18,18 @@ class ComponentListX;
 namespace kaba {
 	class Class;
 }
+class Any;
 
 
 class ComponentManager {
 public:
 	using List = Array<Component*>;
+	using Params = base::map<string, Any>;
 
 	ComponentManager();
 	~ComponentManager();
 
-	Component *create_component(const kaba::Class *type, const string &var);
+	Component *create_component(const kaba::Class *type, const Params &var);
 	void delete_component(Component *c);
 	List& _get_list_family(const kaba::Class *type_family);
 	List& _get_list(const kaba::Class *type);
@@ -59,6 +62,6 @@ public:
 	base::map<const kaba::Class*, ComponentListX> component_lists_by_family;
 	int ch_component = -1;
 
-	std::function<Component*(const kaba::Class*, const string& var)> factory;
+	std::function<Component*(const kaba::Class*, const Params& var)> factory;
 };
 

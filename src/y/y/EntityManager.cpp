@@ -38,7 +38,7 @@ void EntityManager::delete_entity(Entity* e) {
 }
 
 
-Component *EntityManager::_add_component_generic_(Entity* entity, const kaba::Class *type, const string &var) {
+Component *EntityManager::_add_component_generic_(Entity* entity, const kaba::Class *type, const Params &var) {
 	auto c = component_manager->create_component(type, var);
 	entity->components.add(c);
 	c->owner = entity;

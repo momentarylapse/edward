@@ -82,11 +82,14 @@ DataWorld::DataWorld(Session *s) :
 	Data(s, FD_WORLD)
 {
 	entity_manager = new EntityManager;
-	entity_manager->component_manager->factory = [] (const kaba::Class* type, const string& var) -> Component* {
+	entity_manager->component_manager->factory = [] (const kaba::Class* type, const base::map<string, Any>& var) -> Component* {
 		if (type == Camera::_class)
 			return new Camera();
-		if (type == Light::_class)
-			return new Light(White, 100, 0);
+		if (type == Light::_class) {
+			float radius = var.contains("radius") ? var["radius"].to_f32() : 100.0f;
+			float theta = var.contains("theta") ? var["theta"].to_f32() : 0.0f;
+			return new Light(White, radius, theta);
+		}
 		if (type == EdwardTag::_class)
 			return new EdwardTag;
 		if (type == ModelRef::_class)
@@ -320,7 +323,7 @@ void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
 }
 
 
-Component* DataWorld::entity_add_component_generic(int index, const kaba::Class* _class, const Array<WorldScriptVariable>& variables) {
+Component* DataWorld::entity_add_component_generic(int index, const kaba::Class* _class, const base::map<string, Any>& variables) {
 	return static_cast<Component*>(execute(new ActionWorldAddComponent(index, _class, variables)));
 }
 void DataWorld::entity_remove_component(int index, int cindex) {

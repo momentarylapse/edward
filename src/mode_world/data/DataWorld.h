@@ -163,9 +163,9 @@ public:
 //	void edit_camera(int index, const WorldCamera& c);
 	void edit_light(int index, const WorldLight& l);
 	void edit_terrain_meta_data(int index, const vec3& pattern);
-	Component* entity_add_component_generic(int index, const kaba::Class* _class, const Array<WorldScriptVariable>& variables = {});//, const ScriptInstanceData& c);
+	Component* entity_add_component_generic(int index, const kaba::Class* _class, const base::map<string, Any>& variables = {});//, const ScriptInstanceData& c);
 	template<class T>
-	T* entity_add_component(int index, const Array<WorldScriptVariable>& variables = {}) {
+	T* entity_add_component(int index, const base::map<string, Any>& variables = {}) {
 		return static_cast<T*>(entity_add_component_generic(index, T::_class, variables));
 	}
 	void entity_remove_component(int index, int cindex);

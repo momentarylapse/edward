@@ -109,7 +109,7 @@ const kaba::Class *ComponentManager::get_component_type_family(const kaba::Class
 }
 
 // TODO (later) optimize...
-Component *ComponentManager::create_component(const kaba::Class *type, const string &var) {
+Component *ComponentManager::create_component(const kaba::Class *type, const Params &var) {
 	if (!factory)
 		return nullptr;
 	auto c = factory(type, var);

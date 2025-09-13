@@ -78,7 +78,7 @@ void ActionWorldEditComponent::undo(Data* d) {
 	execute(d);
 }
 
-ActionWorldAddComponent::ActionWorldAddComponent(int _index, const kaba::Class* _type, const Array<WorldScriptVariable>& _variables) {
+ActionWorldAddComponent::ActionWorldAddComponent(int _index, const kaba::Class* _type, const base::map<string, Any>& _variables) {
 	index = _index;
 	type = _type;
 	variables = _variables;
@@ -87,7 +87,7 @@ ActionWorldAddComponent::ActionWorldAddComponent(int _index, const kaba::Class* 
 void *ActionWorldAddComponent::execute(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto e = w->entity(index);
-	component = w->entity_manager->_add_component_generic_(e, type, "");
+	component = w->entity_manager->_add_component_generic_(e, type, variables);
 	return component;
 }
 

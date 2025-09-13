@@ -212,16 +212,19 @@ void ModeWorld::on_enter() {
 			auto e = data->add_entity(p, quaternion::ID);
 			int i = e->get_component<EdwardTag>()->entity_index;
 			if (index == 0) {
-				//e.basic_type = MultiViewType::WORLD_ENTITY;
+				// raw entity
 			} else if (index == 1) {
 				auto c = data->entity_add_component<Camera>(i);
-				/*e.basic_type = MultiViewType::WORLD_CAMERA;
-				e.camera.min_depth = 1;
-				e.camera.max_depth = 100000;
-				e.camera.fov = 0.7f;
-				e.camera.exposure = 1;*/
-			} else if (index <= 4) {
+			} else if (index == 2) {
+				// directional
+				auto l = data->entity_add_component<Light>(i, {{{"radius", 0.0f}, {"theta", 0.0f}}});
+			} else if (index == 3) {
+				// point
+				auto l = data->entity_add_component<Light>(i, {{{"radius", multi_view->view_port.radius * 1.3f}, {"theta", 0.0f}}});
+			} else if (index == 4) {
+				// cone
 				auto l = data->entity_add_component<Light>(i);
+
 				/*e.basic_type = MultiViewType::WORLD_LIGHT;
 				e.light.col = White;
 				e.light.type = yrenderer::LightType::DIRECTIONAL;
