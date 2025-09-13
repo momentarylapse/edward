@@ -449,15 +449,14 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 		rd.draw_triangles(params, vb);
 	}
 
-	for (auto& e: data->entities)
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			auto m = e.object.object;
+	const auto models = data->entity_manager->get_component_list<ModelRef>();
+	for (auto mr: models)
+		if (auto m = mr->model)
 			for (int k=0; k<m->mesh[0]->sub.num; k++) {
 				auto material = m->material[k];
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				dh->draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, material, 0, m->_template->vertex_shader_module);
+				dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, material, 0, m->_template->vertex_shader_module);
 			}
-		}
 
 	// selection
 	for (const auto& [i, e]: enumerate(data->entities))
@@ -499,14 +498,13 @@ void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer:
 		dh->draw_mesh(params, rvd, mat4::translation(e.pos), vb, dh->material_shadow);
 	}
 
-	for (auto& e: data->entities)
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			auto m = e.object.object;
+	const auto models = data->entity_manager->get_component_list<ModelRef>();
+	for (auto mr: models)
+		if (auto m = mr->model)
 			for (int k=0; k<m->mesh[0]->sub.num; k++) {
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				dh->draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_shadow, 0, m->_template->vertex_shader_module);
+				dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, dh->material_shadow, 0, m->_template->vertex_shader_module);
 			}
-		}
 }
 
 
@@ -544,6 +542,7 @@ void ModeWorld::draw_cameras(MultiViewWindow* win) {
 		dh->draw_lines(points, false);
 	}
 }
+
 
 
 

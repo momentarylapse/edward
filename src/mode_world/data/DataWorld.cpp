@@ -41,6 +41,8 @@
 #include <y/EntityManager.h>
 
 const kaba::Class* EdwardTag::_class = nullptr;
+const kaba::Class* ModelRef::_class = nullptr;
+const kaba::Class* TerrainRef::_class = nullptr;
 
 string ScriptInstanceData::get(const string &name) const {
 	for (const auto& v: variables)
@@ -80,6 +82,10 @@ DataWorld::DataWorld(Session *s) :
 			return new Light(White, 100, 0);
 		if (type == EdwardTag::_class)
 			return new EdwardTag;
+		if (type == ModelRef::_class)
+			return new ModelRef;
+		if (type == TerrainRef::_class)
+			return new TerrainRef;
 		msg_error("new component..." + p2s(type));
 		msg_write(type->name);
 		return nullptr;

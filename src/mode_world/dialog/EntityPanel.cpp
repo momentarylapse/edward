@@ -285,19 +285,20 @@ Dialog terrain-panel ''
 	int index;
 };
 
-class ObjectPanel : public xhui::Panel {
+class ModelPanel : public xhui::Panel {
 public:
-	explicit ObjectPanel(DataWorld* _data, int _index) : Panel("object-panel") {
+	explicit ModelPanel(DataWorld* _data, int _index) : Panel("model-panel") {
 		from_source(R"foodelim(
-Dialog object-panel ''
+Dialog model-panel ''
 	Grid ? ''
 		Label ? 'Filename'
 		Button filename '' expandx
 )foodelim");
 		data = _data;
 		index = _index;
-		auto& e = data->entities[index];
-		set_string("filename", str(e.object.filename));
+		auto e = data->entity_manager->entities[index];
+		auto m = e->get_component<ModelRef>();
+		set_string("filename", str(m->filename));
 	}
 	DataWorld* data;
 	int index;
@@ -415,7 +416,7 @@ Dialog user-component-panel ''
 		index = _index;
 		cindex = _cindex;
 
-		auto& e = data->entities[index];
+		/*auto& e = data->entities[index];
 		auto& cc = e.components[cindex];
 		update_class(data->session, cc);
 		set_string("group-component", cc.class_name);
@@ -424,7 +425,7 @@ Dialog user-component-panel ''
 			add_control("Label", v.name, 0, i, "");
 			add_control("Label", v.type, 1, i, "");
 			add_control("Edit", v.value, 2, i, format("var-%d", i));
-		}
+		}*/
 	}
 	DataWorld* data;
 	int index, cindex;
@@ -513,8 +514,8 @@ Dialog solid-body-panel ''
 		msg_write(component_class);
 		if (component_class == "Entity") {
 			content_panel = new EntityBasePanel(data, entity_index);
-		} else if (component_class == "Model") {
-			content_panel = new ObjectPanel(data, entity_index);
+		} else if (component_class == "ModelRef") {
+			content_panel = new ModelPanel(data, entity_index);
 		} else if (component_class == "SolidBody") {
 			content_panel = new SolidBodyPanel(data, entity_index);
 		/*} else if (component_class == "Material") {

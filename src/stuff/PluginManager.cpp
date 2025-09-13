@@ -329,6 +329,8 @@ void PluginManager::link_plugins() {
 	mm->_pointer_ref_counter = 999999;
 	Camera::_class = mm->tree->create_new_class("Camera", nullptr, sizeof(Camera), 0, nullptr, {}, mm->tree->base_class, -1);
 	Light::_class = mm->tree->create_new_class("Light", nullptr, sizeof(Light), 0, nullptr, {}, mm->tree->base_class, -1);
+	ModelRef::_class = mm->tree->create_new_class("ModelRef", nullptr, sizeof(ModelRef), 0, nullptr, {}, mm->tree->base_class, -1);
+	TerrainRef::_class = mm->tree->create_new_class("TerrainRef", nullptr, sizeof(TerrainRef), 0, nullptr, {}, mm->tree->base_class, -1);
 	EdwardTag::_class = mm->tree->create_new_class(":EdwardTag:", nullptr, sizeof(EdwardTag), 0, nullptr, {}, mm->tree->base_class, -1);
 }
 

@@ -77,6 +77,18 @@ struct EdwardTag : Component {
 	static const kaba::Class* _class;
 };
 
+struct ModelRef : Component {
+	Path filename;
+	Model* model = nullptr;
+	static const kaba::Class* _class;
+};
+
+struct TerrainRef : Component {
+	Path filename;
+	Terrain* terrain = nullptr;
+	static const kaba::Class* _class;
+};
+
 class DataWorld: public Data {
 public:
 	explicit DataWorld(Session *ed);
