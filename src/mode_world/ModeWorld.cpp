@@ -432,25 +432,24 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 	auto cb = params.command_buffer;
 #endif
 
-	for (auto& e: data->entities) {
-		if (e.basic_type != MultiViewType::WORLD_TERRAIN)
-			continue;
-		auto& t = e.terrain;
-		t.terrain->prepare_draw(rvd.scene_view->main_camera_params.pos);
-		auto material = t.terrain->material.get();
-		auto vb = t.terrain->vertex_buffer.get();
+	const auto terrains = data->entity_manager->get_component_list<TerrainRef>();
+	for (auto tr: terrains)
+		if (auto t = tr->terrain) {
+			t->prepare_draw(rvd.scene_view->main_camera_params.pos);
+			auto material = t->material.get();
+			auto vb = t->vertex_buffer.get();
 
-		auto shader = rvd.get_shader(material, 0, t.terrain->vertex_shader_module, "");
-		auto& rd = rvd.start(params, mat4::translation(e.pos), shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
+			auto shader = rvd.get_shader(material, 0, t->vertex_shader_module, "");
+			auto& rd = rvd.start(params, tr->owner->get_matrix(), shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 #ifdef USING_VULKAN
-		cb->push_constant(0, 12, &t.terrain->texture_scale[0].x);
-		cb->push_constant(16, 12, &t.terrain->texture_scale[1].x);
+			cb->push_constant(0, 12, &t->texture_scale[0].x);
+			cb->push_constant(16, 12, &t->texture_scale[1].x);
 #else
-		shader->set_floats("pattern0", &t.terrain->texture_scale[0].x, 3);
-		shader->set_floats("pattern1", &t.terrain->texture_scale[1].x, 3);
+			shader->set_floats("pattern0", &t->texture_scale[0].x, 3);
+			shader->set_floats("pattern1", &t->texture_scale[1].x, 3);
 #endif
-		rd.draw_triangles(params, vb);
-	}
+			rd.draw_triangles(params, vb);
+		}
 
 	const auto models = data->entity_manager->get_component_list<ModelRef>();
 	for (auto mr: models)
@@ -493,14 +492,13 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	auto dh = multi_view->session->drawing_helper;
 
-	for (auto& e: data->entities) {
-		if (e.basic_type != MultiViewType::WORLD_TERRAIN)
-			continue;
-		auto& t = e.terrain;
-		t.terrain->prepare_draw(rvd.scene_view->main_camera_params.pos);
-		auto vb = t.terrain->vertex_buffer.get();
-		dh->draw_mesh(params, rvd, mat4::translation(e.pos), vb, dh->material_shadow);
-	}
+	const auto terrains = data->entity_manager->get_component_list<TerrainRef>();
+	for (auto tr: terrains)
+		if (auto t = tr->terrain) {
+			t->prepare_draw(rvd.scene_view->main_camera_params.pos);
+			auto vb = t->vertex_buffer.get();
+			dh->draw_mesh(params, rvd, tr->owner->get_matrix(), vb, dh->material_shadow);
+		}
 
 	const auto models = data->entity_manager->get_component_list<ModelRef>();
 	for (auto mr: models)

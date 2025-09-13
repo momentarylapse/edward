@@ -208,6 +208,11 @@ Box DataWorld::get_bounding_box() const {
 	return {min, max};
 }
 
+Entity *DataWorld::entity(int index) {
+	return entity_manager->entities[index];
+}
+
+
 #define IMPLEMENT_COUNT_SELECTED(FUNC, ARRAY) \
 	int DataWorld::FUNC() {                   \
 		int n = 0;                            \

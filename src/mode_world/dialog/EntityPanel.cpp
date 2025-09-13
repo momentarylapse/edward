@@ -261,12 +261,14 @@ Dialog terrain-panel ''
 )foodelim");
 		data = _data;
 		index = _index;
-		auto& e = data->entities[index];
-		auto& t = e.terrain;
-		set_string("filename", str(t.filename));
-		set_float("size-x", t.terrain->pattern.x * (float)t.terrain->num_x);
-		set_float("size-z", t.terrain->pattern.z * (float)t.terrain->num_z);
-		set_string("cells", format("%d x %d", t.terrain->num_x, t.terrain->num_z));
+		auto e = data->entity(index);
+		auto tr = e->get_component<TerrainRef>();
+		set_string("filename", str(tr->filename));
+		if (auto t = tr->terrain) {
+			set_float("size-x", t->pattern.x * (float)t->num_x);
+			set_float("size-z", t->pattern.z * (float)t->num_z);
+			set_string("cells", format("%d x %d", t->num_x, t->num_z));
+		}
 		event("size-x", [this] {
 			auto& e = data->entities[index];
 			auto& t = e.terrain;
@@ -511,7 +513,6 @@ Dialog solid-body-panel ''
 		}
 
 		auto e = data->entity_manager->entities[entity_index];
-		msg_write(component_class);
 		if (component_class == "Entity") {
 			content_panel = new EntityBasePanel(data, entity_index);
 		} else if (component_class == "ModelRef") {
@@ -535,7 +536,7 @@ Dialog solid-body-panel ''
 			content_panel = new DummyComponentPanel;
 		} else if (component_class == "Animator") {
 			content_panel = new DummyComponentPanel;
-		} else if (component_class == "Terrain") {
+		} else if (component_class == "TerrainRef") {
 			content_panel = new TerrainPanel(data, entity_index);
 		} else if (component_class == "Camera") {
 			content_panel = new CameraPanel(data, entity_index, component_index);
@@ -546,8 +547,7 @@ Dialog solid-body-panel ''
 			user_component = true;
 		}
 
-		if (content_panel)
-			embed("contents", 0, 0, content_panel);
+		embed("contents", 0, 0, content_panel);
 		set_visible("delete", component_class != "Entity");
 		set_visible("edit", user_component);
 	}

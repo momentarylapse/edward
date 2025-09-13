@@ -32,6 +32,8 @@
 #include <y/EntityManager.h>
 #include <meta.h>
 
+#include "world/Terrain.h"
+
 static string _(const string &s) { return s; }
 
 Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full_base_class);
@@ -108,11 +110,13 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 				m->model = data->session->resource_manager->load_model(m->filename);
 			}
 			for (auto t: data->entity_manager->get_component_list<TerrainRef>()) {
-				//m->model = data->session->resource_manager->load_model(m->filename);
+				if (t->filename) {
+					t->terrain = new Terrain(session->ctx, t->filename);
+				}
 			}
 
 
-			for (auto& e: data->entities) {
+			/*for (auto& e: data->entities) {
 				if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
 //					session->progress->set(_("Terrains"), (float)i / (float)data->terrains.num / 2.0f);
 					e.terrain.load(session, engine.map_dir | e.terrain.filename.with(".map"), true);
@@ -123,7 +127,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 						for (int i=0; i<sk->bones.num; i++)
 							if (sk->filename[i]){}
 				}
-			}
+			}*/
 			bool system_classes_missing = false;
 			for (auto& s: data->meta_data.systems)
 				if (s.class_name == "")
@@ -218,6 +222,10 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		auto t = data->entity_manager->add_component<TerrainRef>(o);
 		t->filename = e.filename;
 	}
+	for (auto& e: ld.entities) {
+		auto o = data->entity_manager->create_entity(e.pos, quaternion::ID);
+		data->entity_manager->add_component<EdwardTag>(o);
+	}
 
 
 
@@ -295,7 +303,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				l.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
 				l.pos= s2v(e.value("pos", "0 0 0"));
 				read_components(l, e);
-				data->entities.add(l);*/
+				data->entities.add(l);
 			} else if (e.tag == "terrain") {
 				WorldEntity t;
 				t.basic_type = MultiViewType::WORLD_TERRAIN;
@@ -303,7 +311,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 				t.pos = s2v(e.value("pos", "0 0 0"));
 				read_components(t, e);
 				data->entities.add(t);
-			/*} else if (e.tag == "object") {
+			} else if (e.tag == "object") {
 				WorldEntity o;
 				o.basic_type = MultiViewType::WORLD_OBJECT;
 				o.object.object = nullptr;

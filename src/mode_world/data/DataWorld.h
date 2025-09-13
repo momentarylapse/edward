@@ -111,6 +111,7 @@ public:
 
 	owned<EntityManager> entity_manager;
 	Array<multiview::SingleData> dummy_entities;
+	Entity* entity(int index);
 
 	Array<WorldLink> links;
 
