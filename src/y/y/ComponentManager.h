@@ -28,8 +28,8 @@ public:
 
 	Component *create_component(const kaba::Class *type, const string &var);
 	void delete_component(Component *c);
-	List &_get_list_family(const kaba::Class *type_family);
-	List &_get_list(const kaba::Class *type);
+	List& _get_list_family(const kaba::Class *type_family);
+	List& _get_list(const kaba::Class *type);
 
 	struct ComponentPair {
 		Entity *e;

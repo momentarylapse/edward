@@ -290,15 +290,14 @@ vec3 tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
 
 
-float model_hover_z(Model *o, const vec3& pos, const quaternion& ang, MultiViewWindow* win, const vec2 &mv, vec3 &tp) {
+float model_hover_z(const Model *o, const mat4& matrix, MultiViewWindow* win, const vec2 &mv, vec3 &tp) {
 	if (!o)
 		return -1;
 	int d = 0;//o->_detail_;
 	if ((d<0) or (d>2))
 		return -1;
-	o->_matrix = mat4::translation(pos) * mat4::rotation(ang);
 	for (int i=0;i<o->mesh[d]->vertex.num;i++) {
-		tmv[i] = o->_matrix * o->mesh[d]->vertex[i];
+		tmv[i] = matrix * o->mesh[d]->vertex[i];
 		pmv[i] = win->project(tmv[i]);
 	}
 	float z_min = 1;
@@ -326,25 +325,29 @@ float model_hover_z(Model *o, const vec3& pos, const quaternion& ang, MultiViewW
 	return z_min;
 }
 
-float object_hover_distance(const WorldEntity& me, MultiViewWindow* win, const vec2 &mv, vec3 &tp, float &z) {
+/*float object_hover_distance(const WorldEntity& me, MultiViewWindow* win, const vec2 &mv, vec3 &tp, float &z) {
 	Model *o = me.object.object;
 	if (!o)
 		return -1;
 	z = model_hover_z(o, me.pos, me.ang, win, mv, tp);
 	return (z < 1) ? 0 : -1;
-}
+}*/
 
-base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& m) const {
+base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& mouse) const {
 	base::optional<Hover> h;
 
-	float zmin = multi_view->view_port.radius * 2;
-	for (const auto& [i, e]: enumerate(data->entities))
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			float z;
+	float zmin = 1;//multi_view->view_port.radius * 2;
+
+
+	const auto models = data->entity_manager->get_component_list<ModelRef>();
+	for (auto mr: models)
+		if (auto m = mr->model) {
 			vec3 tp;
-			float dist = object_hover_distance(e, win, m, tp, z);
-			if (dist >= 0 and z < zmin) {
+			float z = model_hover_z(m, mr->owner->get_matrix(), win, mouse, tp);
+			//float dist = object_hover_distance(e, win, m, tp, z);
+			if (z >= 0 and z < zmin) {
 				zmin = z;
+				int i = mr->owner->get_component<EdwardTag>()->entity_index;
 				h = {MultiViewType::WORLD_ENTITY, i, tp};
 			}
 		}
@@ -459,25 +462,26 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 			}
 
 	// selection
-	for (const auto& [i, e]: enumerate(data->entities))
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			if (sel.contains(i)) {
-				auto m = e.object.object;
-				for (int k=0; k<e.object.object->mesh[0]->sub.num; k++) {
+	for (auto mr: models) {
+		int i = mr->owner->get_component<EdwardTag>()->entity_index;
+		if (sel.contains(i)) {
+			if (auto m = mr->model)
+				for (int k=0; k<m->mesh[0]->sub.num; k++) {
 					auto vb = m->mesh[0]->sub[k].vertex_buffer;
-					dh->draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_selection, 0, m->_template->vertex_shader_module);
+					dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, dh->material_selection, 0, m->_template->vertex_shader_module);
 				}
-			}
 		}
+	}
 
 	// hover...
 	if (multi_view->hover and multi_view->hover->type == MultiViewType::WORLD_ENTITY) {
-		auto& e = data->entities[multi_view->hover->index];
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			auto m = e.object.object;
-			for (int k=0; k<m->mesh[0]->sub.num; k++) {
-				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				dh->draw_mesh(params, rvd, mat4::translation(e.pos) * mat4::rotation(e.ang), vb, dh->material_hover, 0, m->_template->vertex_shader_module);
+		auto e = data->entity_manager->entities[multi_view->hover->index];
+		if (auto mr = e->get_component<ModelRef>()) {
+			if (auto m = mr->model) {
+				for (int k=0; k<m->mesh[0]->sub.num; k++) {
+					auto vb = m->mesh[0]->sub[k].vertex_buffer;
+					dh->draw_mesh(params, rvd, e->get_matrix(), vb, dh->material_hover, 0, m->_template->vertex_shader_module);
+				}
 			}
 		}
 	}

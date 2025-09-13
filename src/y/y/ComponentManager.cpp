@@ -129,11 +129,11 @@ void ComponentManager::delete_component(Component *c) {
 }
 
 
-ComponentManager::List &ComponentManager::_get_list(const kaba::Class *type) {
+ComponentManager::List& ComponentManager::_get_list(const kaba::Class *type) {
 	return _get_list_x(this, type).list;
 }
 
-ComponentManager::List &ComponentManager::_get_list_family(const kaba::Class *type_family) {
+ComponentManager::List& ComponentManager::_get_list_family(const kaba::Class *type_family) {
 	return _get_list_x_family(this, type_family).list;
 }
 

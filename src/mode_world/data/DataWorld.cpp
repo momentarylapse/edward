@@ -185,19 +185,22 @@ Box DataWorld::get_bounding_box() const {
 		found_any = true; //|=(_min!=_max);
 	};
 
-	for (const auto &e: entities)
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			if (e.object.object) {
-				vec3 min2 = e.pos - vec3(1,1,1) * e.object.object->prop.radius;
-				vec3 max2 = e.pos + vec3(1,1,1) * e.object.object->prop.radius;
-				merge(min2, max2);
-			}
-		} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
-			if (e.terrain.terrain) {
-				auto box = e.terrain.bounding_box();
-				merge(box.min, box.max);
-			}
+	for (auto mr: entity_manager->get_component_list_const<ModelRef>())
+		if (auto m = mr->model) {
+			vec3 min2 = mr->owner->pos - vec3(1,1,1) * m->prop.radius;
+			vec3 max2 = mr->owner->pos + vec3(1,1,1) * m->prop.radius;
+			merge(min2, max2);
 		}
+#if 0
+	for (auto tr: entity_manager->get_component_list_const<TerrainRef>())
+		if (auto t = tr->terrain) {
+			//auto box = t->bounding_box();
+			vec3 min2 = tr->owner->pos - vec3(1,1,1) * t->...;
+			vec3 max2 = tr->owner->pos + vec3(1,1,1) * t->...;
+			merge(min2, max2);
+		}
+#endif
+
 	if (!found_any) {
 		min = vec3(-100,-100,-100);
 		max = vec3( 100, 100, 100);

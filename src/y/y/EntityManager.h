@@ -38,6 +38,11 @@ public:
 	}
 
 	template<class C>
+	Array<const C*>& get_component_list_const() const {
+		return (Array<const C*>&) const_cast<ComponentManager*>(component_manager.get())->_get_list(C::_class);
+	}
+
+	template<class C>
 	Array<C*>& get_component_list_family() {
 		return (Array<C*>&) component_manager->_get_list_family(C::_class);
 	}
