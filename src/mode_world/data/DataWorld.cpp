@@ -313,11 +313,21 @@ void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
 Component* DataWorld::entity_add_component_generic(int index, const kaba::Class* _class, const base::map<string, Any>& variables) {
 	return static_cast<Component*>(execute(new ActionWorldAddComponent(index, _class, variables)));
 }
-void DataWorld::entity_remove_component(int index, int cindex) {
-	execute(new ActionWorldRemoveComponent(index, cindex));
+void DataWorld::entity_remove_component(int index, const kaba::Class* type) {
+	execute(new ActionWorldRemoveComponent(index, type));
 }
-void DataWorld::entity_edit_component(int index, int cindex, const ScriptInstanceData& c) {
-	execute(new ActionWorldEditComponent(index, cindex, c));
+void DataWorld::entity_edit_component(int index, const kaba::Class* type, const ScriptInstanceData& c) {
+	execute(new ActionWorldEditComponent(index, type, c));
+}
+
+void DataWorld::entity_add_user_component(int index, const ScriptInstanceData& c) {
+	execute(new ActionWorldAddUserComponent(index, c));
+}
+void DataWorld::entity_remove_user_component(int index, int cindex) {
+	execute(new ActionWorldRemoveUserComponent(index, cindex));
+}
+void DataWorld::entity_edit_user_component(int index, int cindex, const ScriptInstanceData& c) {
+	//execute(new ActionWorldEditUserComponent(index, cindex, c));
 }
 
 #if 0

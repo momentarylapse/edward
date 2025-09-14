@@ -28,21 +28,22 @@ void ActionWorldEditBaseEntity::undo(Data* d) {
 }
 
 
-ActionWorldEditComponent::ActionWorldEditComponent(int _index, int _cindex, const ScriptInstanceData& c) {
+ActionWorldEditComponent::ActionWorldEditComponent(int _index, const kaba::Class* _type, const ScriptInstanceData& c) {
 	index = _index;
-	cindex = _cindex;
+	type = _type;
 	component = c;
 }
 
 void* ActionWorldEditComponent::execute(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
-	std::swap(w->entities[index].components[cindex], component);
+	//std::swap(w->entities[index].components[cindex], component);
 	return nullptr;
 }
 
 void ActionWorldEditComponent::undo(Data* d) {
 	execute(d);
 }
+
 
 ActionWorldAddComponent::ActionWorldAddComponent(int _index, const kaba::Class* _type, const base::map<string, Any>& _variables) {
 	index = _index;
@@ -64,22 +65,69 @@ void ActionWorldAddComponent::undo(Data* d) {
 }
 
 
-ActionWorldRemoveComponent::ActionWorldRemoveComponent(int _index, int _cindex) {
+ActionWorldAddUserComponent::ActionWorldAddUserComponent(int _index, const ScriptInstanceData& c) {
 	index = _index;
-	cindex = _cindex;
+	component = c;
+}
+
+void *ActionWorldAddUserComponent::execute(Data* d) {
+	auto w = dynamic_cast<DataWorld*>(d);
+	auto tag = w->entity(index)->get_component<EdwardTag>();
+	tag->user_components.add(component);
+	w->out_component_added();
+	return nullptr;
+}
+
+void ActionWorldAddUserComponent::undo(Data* d) {
+	auto w = dynamic_cast<DataWorld*>(d);
+	auto tag = w->entity(index)->get_component<EdwardTag>();
+	tag->user_components.pop();
+	w->out_component_removed();
+}
+
+
+ActionWorldRemoveComponent::ActionWorldRemoveComponent(int _index, const kaba::Class* _type) {
+	index = _index;
+	type = _type;
 }
 
 void *ActionWorldRemoveComponent::execute(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
-	component = w->entities[index].components[cindex];
-	w->entities[index].components.erase(cindex);
+	auto e = w->entity(index);
+	auto c = e->_get_component_generic_(type);
+	w->entity_manager->delete_component(e, c);
+	//w->entities[index].components.erase(cindex);
 	w->out_component_removed();
 	return nullptr;
 }
 
 void ActionWorldRemoveComponent::undo(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
-	w->entities[index].components.insert(component, cindex);
+	auto e = w->entity(index);
+	w->entity_manager->_add_component_generic_(e, type);
+	//w->entities[index].components.insert(component, cindex);
+	w->out_component_added();
+}
+
+
+ActionWorldRemoveUserComponent::ActionWorldRemoveUserComponent(int _index, int _cindex) {
+	index = _index;
+	cindex = _cindex;
+}
+
+void *ActionWorldRemoveUserComponent::execute(Data* d) {
+	auto w = dynamic_cast<DataWorld*>(d);
+	auto tag = w->entity(index)->get_component<EdwardTag>();
+	component = tag->user_components[cindex];
+	tag->user_components.erase(cindex);
+	w->out_component_removed();
+	return nullptr;
+}
+
+void ActionWorldRemoveUserComponent::undo(Data* d) {
+	auto w = dynamic_cast<DataWorld*>(d);
+	auto tag = w->entity(index)->get_component<EdwardTag>();
+	tag->user_components.insert(component, cindex);
 	w->out_component_added();
 }
 

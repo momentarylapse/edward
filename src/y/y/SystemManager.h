@@ -9,7 +9,7 @@
 
 class Path;
 class System;
-class TemplateDataScriptVariable;
+struct TemplateDataScriptVariable;
 namespace kaba {
 	class Class;
 }

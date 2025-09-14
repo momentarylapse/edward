@@ -20,13 +20,11 @@ class Light;
 
 
 
-class TemplateDataScriptVariable {
-public:
+struct TemplateDataScriptVariable {
 	string name, value;
 };
 
-class TemplateDataScript {
-public:
+struct TemplateDataScript {
 	Path filename;
 	Array<TemplateDataScriptVariable> variables;
 };
