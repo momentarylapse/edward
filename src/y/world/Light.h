@@ -20,7 +20,7 @@ namespace yrenderer {
 
 class Light : public Component {
 public:
-	Light(const color &c, float r, float t);
+	Light(yrenderer::LightType type, const color &c, float theta = -1);
 	/*void __init_parallel__(const quaternion &ang, const color &c);
 	void __init_spherical__(const vec3 &p, const color &c, float r);
 	void __init_cone__(const vec3 &p, const quaternion &ang, const color &c, float r, float t);*/

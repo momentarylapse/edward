@@ -12,9 +12,9 @@
 
 const kaba::Class *Light::_class = nullptr;
 
-Light::Light(const color &c, float r, float t) {
+Light::Light(yrenderer::LightType type, const color &c, float theta) {
 	component_type = _class;
-	light.init(c, r, t);
+	light.init(type, c, theta);
 }
 
 

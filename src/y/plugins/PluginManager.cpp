@@ -468,7 +468,7 @@ void export_world(kaba::Exporter* ext) {
 
 #define _OFFSET(VAR, MEMBER)	(char*)&VAR.MEMBER - (char*)&VAR
 
-	Light light(Black, 0, 0);
+	Light light(yrenderer::LightType::DIRECTIONAL, Black);
 	ext->declare_class_size("Light", sizeof(Light));
 	ext->declare_class_element("Light.dir", _OFFSET(light, light.light.dir));
 	ext->declare_class_element("Light.color", _OFFSET(light, light.light.col));
@@ -1028,7 +1028,7 @@ void *PluginManager::create_instance(const kaba::Class *c, const Array<TemplateD
 	if (c == Skeleton::_class)
 		return new Skeleton;
 	if (c == Light::_class)
-		return new Light(White, -1, -1);
+		return new Light(yrenderer::LightType::POINT, White);
 	if (c == Camera::_class)
 		return new Camera;
 	if (c == audio::SoundSource::_class)

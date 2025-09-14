@@ -31,7 +31,7 @@ enum class LightType {
 
 struct Light {
 
-	void init(const color &c, float r, float t);
+	void init(LightType type, const color &c, float theta=-1);
 
 	UBOLight to_ubo(const vec3& view_pos, const quaternion& view_ang, bool using_view_space) const;
 	mat4 suggest_shadow_projection(const CameraParams& cam, float shadow_box_size) const;
@@ -45,7 +45,7 @@ struct Light {
 	mat4 shadow_projection; // world -> texture
 	float shadow_dist_min, shadow_dist_max;
 
-	LightType type() const;
+	LightType type;
 };
 
 struct LightMetaData {

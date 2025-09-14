@@ -285,10 +285,10 @@ bool World::load(const LevelData &ld) {
 	for (auto &l: ld.lights) {
 		auto o = create_entity(l.pos, quaternion::rotation(l.ang));
 		auto ll = entity_manager->add_component<Light>(o);
-		ll->light.init(l._color, l.radius, l.theta);
+		ll->light.init(l.type, l._color, l.theta);
 		ll->light.light.harshness = l.harshness;
 		ll->light.enabled = l.enabled;
-		if (ll->light.light.radius < 0)
+		if (ll->light.type == yrenderer::LightType::DIRECTIONAL)
 			ll->light.allow_shadow = true;
 
 		add_user_components(entity_manager.get(), o, l.components);

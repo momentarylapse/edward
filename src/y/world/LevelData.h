@@ -22,6 +22,7 @@ class Model;
 class Object;
 namespace yrenderer {
 	class Material;
+	enum class LightType;
 }
 class Terrain;
 class TemplateDataScriptVariable;
@@ -83,7 +84,8 @@ public:
 	public:
 		bool enabled;
 		vec3 pos, ang;
-		color _color;
+		yrenderer::LightType type;
+		color _color; // physical units
 		float radius, theta, harshness;
 		Array<ScriptData> components;
 	};

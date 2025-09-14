@@ -53,7 +53,7 @@ MultiView::MultiView(Session* s) :
 
 	light_mode = LightMode::FollowCamera;
 	default_light = new yrenderer::Light;
-	default_light->init(White, -1, -1);
+	default_light->init(yrenderer::LightType::DIRECTIONAL, White);
 	default_light->_ang = quaternion::ID;
 	default_light->enabled = true;
 	default_light->allow_shadow = true;

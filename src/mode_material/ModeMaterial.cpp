@@ -127,11 +127,9 @@ void ModeMaterial::optimize_view() {
 void ModeMaterial::on_prepare_scene(const yrenderer::RenderParams& params) {
 	if (!spot_light) {
 		spot_light = new yrenderer::Light;
-		spot_light->init(White * 150, -1, -1);
+		spot_light->init(yrenderer::LightType::CONE, White * 150, 0.15f);
 		spot_light->light.pos = {3, 7, 12};
 		spot_light->_ang = quaternion::rotation_v((-spot_light->light.pos).dir2ang());
-		spot_light->light.radius = 400;
-		spot_light->light.theta = 0.15f;
 		spot_light->light.harshness = 1;
 		spot_light->enabled = true;
 	}
