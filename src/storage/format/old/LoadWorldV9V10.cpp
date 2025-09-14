@@ -8,8 +8,6 @@
 
 #include "../FormatWorld.h"
 #include "../../../mode_world/data/DataWorld.h"
-#include "../../../mode_world/data/WorldCamera.h"
-#include "../../../mode_world/data/WorldLight.h"
 #include "../../../mode_world/data/WorldLink.h"
 #include "../../../mode_world/data/WorldObject.h"
 #include "../../../mode_world/data/WorldTerrain.h"
@@ -29,6 +27,8 @@
 
 void FormatWorld::_load_old(LegacyFile& lf, DataWorld *data, bool deep) {
 
+	// TODO read into LevelData...
+#if 0
 	os::fs::FileStream *f = lf.f;
 
 	try{
@@ -151,5 +151,6 @@ void FormatWorld::_load_old(LegacyFile& lf, DataWorld *data, bool deep) {
 		delete f;
 		throw e;
 	}
+#endif
 }
 

@@ -9,7 +9,6 @@
 #include <lib/base/iter.h>
 #include <lib/math/quaternion.h>
 #include "../data/DataWorld.h"
-#include "../data/WorldLight.h"
 #include "../data/WorldLink.h"
 #include <y/world/Terrain.h>
 #include "../../Session.h"

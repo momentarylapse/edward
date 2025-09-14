@@ -9,10 +9,8 @@
 
 #include <sys/stat.h>
 
-#include "WorldLight.h"
 #include "WorldObject.h"
 #include "WorldTerrain.h"
-#include "WorldCamera.h"
 #include "WorldLink.h"
 #include "lib/kaba/syntax/Class.h"
 #include "world/Camera.h"
@@ -28,12 +26,10 @@
 #include <y/world/Model.h>
 #include <y/world/Terrain.h>
 #include <y/world/World.h>
+#include <y/world/Light.h>
+#include <y/world/Camera.h>
 #include <y/meta.h>
-//#include "../action/camera/ActionWorldEditCamera.h"
-#include "../action/light/ActionWorldAddLight.h"
 #include "../action/entity/ActionWorldEditComponent.h"
-//#include "../action/light/ActionWorldEditLight.h"
-//#include "../action/light/ActionWorldDeleteLight.h"
 #include "../action/object/ActionWorldAddObject.h"
 #include "../action/terrain/ActionWorldAddTerrain.h"
 #include "../action/ActionWorldPaste.h"
@@ -68,6 +64,15 @@ void ScriptInstanceData::set(const string &name, const string &type, const strin
 
 ScriptInstanceData& WorldEntity::get(const string& class_name) {
 	for (auto& c: components)
+		if (c.class_name == class_name)
+			return c;
+	static ScriptInstanceData dummy;
+	dummy.class_name = "";
+	return dummy;
+}
+
+ScriptInstanceData& EdwardTag::get(const string& class_name) {
+	for (auto& c: user_components)
 		if (c.class_name == class_name)
 			return c;
 	static ScriptInstanceData dummy;
@@ -159,31 +164,18 @@ void DataWorld::reset() {
 }
 
 void DataWorld::add_initial_data() {
-	WorldEntity cam;
-	cam.basic_type = MultiViewType::WORLD_ENTITY;
 	{
-		ScriptInstanceData cc;
-		cc.class_name = "Camera";
-		cc.variables.add({"min_depth", "f32", "1.0"});
-		cc.variables.add({"max_depth", "f32", "1.0"});
-		cc.variables.add({"fov", "f32", f2s(pi/4, 3)});
-		cc.variables.add({"exposure", "f32", "1.0"});
-		cc.variables.add({"bloom_factor", "f32", "0.15"});
-		cam.components.add(cc);
+		auto e = add_entity({0,0,0}, quaternion::ID);
+		auto cam = entity_manager->add_component<Camera>(e);
 	}
-	entities.add(cam);
 
-	WorldEntity sun;
-	sun.basic_type = MultiViewType::WORLD_LIGHT;
-	sun.pos = vec3(0,1000,0);
-	sun.ang = quaternion::rotation(vec3(pi/4,0,0));
-	sun.light.enabled = true;
-	sun.light.type = yrenderer::LightType::DIRECTIONAL;
-	sun.light.radius = 0;
-	sun.light.theta = 0;
-	sun.light.col = White;
-	sun.light.harshness = 0.75;
-	entities.add(sun);
+	{
+		auto e = add_entity({0,1000,0}, quaternion::rotation(vec3(pi/4,0,0)));
+		auto sun = entity_manager->add_component<Light>(e);
+		sun->light.enabled = true;
+		sun->light.init(yrenderer::LightType::DIRECTIONAL, White);
+		sun->light.light.harshness = 0.75;
+	}
 
 	reset_history();
 	out_changed();
@@ -303,10 +295,6 @@ void DataWorld::delete_selection(const Selection& selection) {
 
 Entity* DataWorld::add_entity(const vec3& pos, const quaternion& ang) {
 	return static_cast<Entity*>(execute(new ActionWorldAddEntity(pos, ang)));
-}
-
-void DataWorld::edit_light(int index, const WorldLight& l) {
-	execute(new ActionWorldEditLight(index, l));
 }
 
 void DataWorld::edit_entity(int index, const vec3& pos, const quaternion& ang) {

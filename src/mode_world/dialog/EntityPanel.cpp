@@ -434,8 +434,8 @@ Dialog user-component-panel ''
 		index = _index;
 		cindex = _cindex;
 
-		/*auto& e = data->entities[index];
-		auto& cc = e.components[cindex];
+		auto e = data->entity(index);
+		auto& cc = e->get_component<EdwardTag>()->user_components[cindex];
 		update_class(data->session, cc);
 		set_string("group-component", cc.class_name);
 		set_target("grid-variables");
@@ -443,7 +443,7 @@ Dialog user-component-panel ''
 			add_control("Label", v.name, 0, i, "");
 			add_control("Label", v.type, 1, i, "");
 			add_control("Edit", v.value, 2, i, format("var-%d", i));
-		}*/
+		}
 	}
 	DataWorld* data;
 	int index, cindex;
@@ -505,14 +505,16 @@ Dialog solid-body-panel ''
 				data->session->edit_code_file(data->entities[entity_index].components[component_index].filename);
 		});
 	}
-	void update(int _entity_index, int _component_index) {
+	void update(int _entity_index, const string& category, int _component_index) {
 		entity_index = _entity_index;
 		component_index = _component_index;
 		auto e = data->entity_manager->entities[entity_index];
-		if (component_index < 0)
+		if (category == "e")
 			set_class("Entity");
-		else
+		else if (category == "c")
 			set_class(e->components[component_index]->component_type->name);
+		else
+			set_class(e->get_component<EdwardTag>()->user_components[component_index].class_name);
 		set_string("expander", component_class);
 	}
 	void set_class(const string& _component_class) {
@@ -603,7 +605,7 @@ Dialog entity-panel ''
 	};
 	component_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
 		const auto xx = t.explode(":");
-		reinterpret_cast<ComponentPanel*>(c)->update(xx[0]._int(), xx[1]._int());
+		reinterpret_cast<ComponentPanel*>(c)->update(xx[0]._int(), xx[1], xx[2]._int());
 	};
 	component_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
 		reinterpret_cast<ComponentPanel*>(c)->set_selected(selected);
@@ -653,35 +655,13 @@ void EntityPanel::update(bool force) {
 		set_visible("components", true);
 		set_visible("add-component", true);
 
-		add_string("components", format("%d:%d", cur_index, -1)); // Entity...
+		add_string("components", format("%d:e:0", cur_index)); // Entity...
 		for (int j=0; j<e->components.num; j++)
 			if (e->components[j]->component_type != EdwardTag::_class)
-				add_string("components", format("%d:%d", cur_index, j));
+				add_string("components", format("%d:c:%d", cur_index, j));
+		for (int j=0; j<e->get_component<EdwardTag>()->user_components.num; j++)
+			add_string("components", format("%d:u:%d", cur_index, j));
 
-		/*if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			add_string("components", str(cur_index) + ":-1:Model");
-			add_string("components", str(cur_index) + ":-1:Material");
-			if (e.object.object->_template->solid_body)
-				add_string("components", str(cur_index) + ":-1:SolidBody");
-			if (e.object.object->_template->mesh_collider)
-				add_string("components", str(cur_index) + ":-1:MeshCollider");
-			if (e.object.object->_template->skeleton)
-				add_string("components", str(cur_index) + ":-1:Skeleton");
-			if (e.object.object->_template->animator)
-				add_string("components", str(cur_index) + ":-1:Animator");
-		} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
-			add_string("components", str(cur_index) + ":-1:Terrain");
-			add_string("components", str(cur_index) + ":-1:Material");
-			add_string("components", str(cur_index) + ":-1:SolidBody");
-			add_string("components", str(cur_index) + ":-1:TerrainCollider");
-	//	} else if (e.basic_type == MultiViewType::WORLD_CAMERA) {
-	//		add_string("components", str(cur_index) + ":Camera");
-		} else if (e.basic_type == MultiViewType::WORLD_LIGHT) {
-			add_string("components", str(cur_index) + ":-1:Light");
-		}
-		for (int i=0; i<e.components.num; i++) {
-			add_string("components", str(cur_index) + ":" + str(i) + ":" + e.components[i].class_name);
-		}*/
 		set_int("components", 0);
 	} else {
 		cur_index = -1;

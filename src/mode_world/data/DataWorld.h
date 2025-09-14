@@ -9,8 +9,6 @@
 #define DATAWORLD_H_
 
 #include <Session.h>
-#include "WorldCamera.h"
-#include "WorldLight.h"
 #include "WorldObject.h"
 #include "WorldTerrain.h"
 #include <data/Data.h>
@@ -27,7 +25,6 @@ class DataWorld;
 class Terrain;
 class Object;
 struct WorldLink;
-struct WorldLight;
 struct WorldObject;
 struct WorldTerrain;
 enum class PhysicsMode;
@@ -63,8 +60,6 @@ struct WorldEntity { //: multiview::SingleData {
 	int view_stage = -1;
 
 	MultiViewType basic_type = MultiViewType::WORLD_ENTITY;
-	WorldLight light;
-//	WorldCamera camera;
 	WorldObject object;
 	WorldTerrain terrain;
 
@@ -76,6 +71,9 @@ struct WorldEntity { //: multiview::SingleData {
 
 struct EdwardTag : Component {
 	int entity_index;
+	Array<ScriptInstanceData> user_components;
+	ScriptInstanceData& get(const string& class_name);
+
 	static const kaba::Class* _class;
 };
 
@@ -148,8 +146,6 @@ public:
 #endif
 	Entity* add_entity(const vec3& pos, const quaternion& ang);
 	void edit_entity(int index, const vec3& pos, const quaternion& ang);
-//	void edit_camera(int index, const WorldCamera& c);
-	void edit_light(int index, const WorldLight& l);
 	void edit_terrain_meta_data(int index, const vec3& pattern);
 	Component* entity_add_component_generic(int index, const kaba::Class* _class, const base::map<string, Any>& variables = {});//, const ScriptInstanceData& c);
 	template<class T>
