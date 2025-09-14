@@ -21,7 +21,8 @@
 #include <lib/os/time.h>
 #include <cmath>
 
-const kaba::Class *Terrain::_class = nullptr;
+const kaba::Class* TerrainRef::_class = nullptr;
+const kaba::Class* Terrain::_class = nullptr;
 
 
 #define Index(x,z)		((x)*(num_z+1)+(z))

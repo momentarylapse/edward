@@ -50,6 +50,12 @@ class Animator;
 
 
 
+struct ModelRef : Component {
+	Path filename;
+	Model* model = nullptr;
+	static const kaba::Class* _class;
+};
+
 class Mesh;
 
 

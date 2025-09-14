@@ -87,7 +87,7 @@ public:
 // physical skin, but in world coordinates
 class PhysicalMeshAbsolute {
 public:
-	bool is_ok;
+	bool is_ok = true;
 	Array<vec3> p;
 	Array<plane> pl;
 };

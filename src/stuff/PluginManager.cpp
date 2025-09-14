@@ -46,6 +46,7 @@
 
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
+#include <y/world/Terrain.h>
 #include <y/world/components/Skeleton.h>
 #include <y/world/components/Animator.h>
 #include <y/world/components/SolidBody.h>
