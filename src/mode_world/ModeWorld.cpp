@@ -16,8 +16,6 @@
 #include "data/DataWorld.h"
 #include "data/WorldObject.h"
 #include "data/WorldTerrain.h"
-#include "data/WorldCamera.h"
-#include "data/WorldLight.h"
 #include <lib/yrenderer/Renderer.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
 #include <lib/yrenderer/scene/SceneView.h>

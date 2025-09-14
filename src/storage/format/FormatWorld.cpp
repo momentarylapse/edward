@@ -7,8 +7,6 @@
 
 #include "FormatWorld.h"
 #include "../../mode_world/data/DataWorld.h"
-#include "../../mode_world/data/WorldCamera.h"
-#include "../../mode_world/data/WorldLight.h"
 #include "../../mode_world/data/WorldLink.h"
 #include "../../mode_world/data/WorldObject.h"
 #include "../../mode_world/data/WorldTerrain.h"
@@ -19,6 +17,7 @@
 #include <y/world/Model.h>
 #include <y/world/World.h>
 #include <y/world/Camera.h>
+#include <y/world/Light.h>
 #include <y/y/EngineData.h>
 #include <y/world/ModelManager.h>
 #include <y/helper/ResourceManager.h>
@@ -27,14 +26,12 @@
 #include <y/world/components/SolidBody.h>
 #include <y/world/components/Animator.h>
 #include <y/world/Terrain.h>
-#include "../../lib/os/date.h"
-#include "../../lib/os/file.h"
 #include "../../lib/os/filesystem.h"
-#include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
 #include "../../lib/doc/xml.h"
 #include <y/EntityManager.h>
 #include <meta.h>
+#include <lib/kaba/kaba.h>
 
 
 static string _(const string &s) { return s; }
@@ -203,12 +200,38 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	data->meta_data.background_color = ld.background_color;
 	data->meta_data.skybox_files = ld.skybox_filename;
 
+	auto apply_components = [this] (Entity* e, const Array<LevelData::ScriptData>& components) {
+		for (const auto& cc: components) {
+			if (cc.filename == "")
+				continue;
+
+			auto tag = e->get_component<EdwardTag>();
+			ScriptInstanceData c;
+			c.class_name = cc.class_name;
+			c.filename = cc.filename;
+			for (const auto& v: cc.variables) {
+				msg_error((v.name + "  " + v.value));
+				c.variables.add({v.name, "", v.value});
+			}
+			tag->user_components.add(c);
+
+			/*try {
+				auto m = kaba::default_context->load_module(cc.filename);
+				PluginManager
+			} catch (Exception& ee) {
+
+			}
+			//cc.filename*/
+		}
+	};
+
 
 	for (auto& e: ld.objects) {
 		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
 		data->entity_manager->add_component<EdwardTag>(o);
 		auto m = data->entity_manager->add_component<ModelRef>(o);
 		m->filename = e.filename;
+		apply_components(o, e.components);
 	}
 	for (auto& e: ld.cameras) {
 		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
@@ -219,6 +242,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		c->exposure = e.exposure;
 		c->fov = e.fov;
 		c->bloom_factor = e.bloom_factor;
+		apply_components(o, e.components);
 	}
 	for (auto& e: ld.lights) {
 		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
@@ -230,16 +254,19 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		l->light.light.theta = e.theta;
 		l->light.light.harshness = e.harshness;
 		l->light.enabled = e.enabled;
+		apply_components(o, e.components);
 	}
 	for (auto& e: ld.terrains) {
 		auto o = data->entity_manager->create_entity(e.pos, quaternion::ID);
 		data->entity_manager->add_component<EdwardTag>(o);
 		auto t = data->entity_manager->add_component<TerrainRef>(o);
 		t->filename = e.filename;
+		apply_components(o, e.components);
 	}
 	for (auto& e: ld.entities) {
 		auto o = data->entity_manager->create_entity(e.pos, quaternion::ID);
 		data->entity_manager->add_component<EdwardTag>(o);
+		apply_components(o, e.components);
 	}
 	for (const auto& ll: ld.links) {
 		WorldLink l;
@@ -277,6 +304,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 
 string phys_mode_name(PhysicsMode m);
 
+#if 0
 xml::Element encode_light(WorldEntity &l) {
 	auto e = xml::Element("light")
 	.witha("type", light_type_canonical(l.light.type))
@@ -299,8 +327,10 @@ xml::Element encode_light(WorldEntity &l) {
 			.witha("class", c.class_name));
 	return e;
 }
+#endif
 
 void FormatWorld::_save(const Path &filename, DataWorld *data) {
+	return;
 
 	xml::Parser p;
 	p.elements.add(xml::Element("world"));
@@ -355,6 +385,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 
 	auto cont = xml::Element("3d");
 
+#if 0
 	for (const auto& [i,e]: enumerate(data->entities)) {
 		xml::Element el;
 		if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
@@ -388,6 +419,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		add_components(el, e.components);
 		cont.add(el);
 	}
+#endif
 
 	for (auto &l: data->links) {
 		auto e = xml::Element("link")

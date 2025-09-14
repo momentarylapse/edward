@@ -10,12 +10,7 @@
 #include "object/ActionWorldAddObject.h"
 #include "terrain/ActionWorldAddTerrain.h"
 //#include "camera/
-#include "light/ActionWorldAddLight.h"
 #include "../data/DataWorld.h"
-#include "../data/WorldObject.h"
-#include "../data/WorldTerrain.h"
-#include "../data/WorldCamera.h"
-#include "../data/WorldLight.h"
 
 
 ActionWorldPaste::ActionWorldPaste(const DataWorld& temp) :

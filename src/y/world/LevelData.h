@@ -54,7 +54,6 @@ public:
 	public:
 		Path filename;
 		string class_name;
-		string var;
 		Array<TemplateDataScriptVariable> variables;
 	};
 

@@ -12,6 +12,7 @@
 #include "../meta.h"
 #include <lib/yrenderer/scene/Light.h>
 
+Array<TemplateDataScriptVariable> parse_variables(const string &var);
 
 LevelData::LevelData() {
 	ego_index = -1;
@@ -83,7 +84,12 @@ bool LevelData::load(const Path &filename) {
 				ScriptData s;
 				s.filename = e.value("file");
 				s.class_name = e.value("class");
-				s.var = e.value("var");
+
+				// deprecated
+				const string var = e.value("var");
+				if (var.num > 0)
+					s.variables = parse_variables(var);
+
 				for (auto &ee: e.elements) {
 					TemplateDataScriptVariable v;
 					v.name = ee.value("name");//.lower().replace("_", "");
@@ -101,8 +107,12 @@ bool LevelData::load(const Path &filename) {
 				ScriptData sd;
 				sd.filename = ee.value("script");
 				sd.class_name = ee.value("class");
-				sd.var = ee.value("var");
-				// TODO
+
+				// deprecated...
+				const string var = ee.value("var");
+				if (var.num > 0)
+					sd.variables = parse_variables(var);
+
 				for (const auto& a: ee.attributes)
 					if (a.key != "script" and a.key != "class" and a.key != "var")
 						sd.variables.add({a.key, a.value});
