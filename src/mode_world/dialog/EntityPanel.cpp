@@ -32,6 +32,10 @@
 #include <lib/kaba/syntax/Class.h>
 #include <cmath>
 
+#include "world/components/Animator.h"
+#include "world/components/Collider.h"
+#include "world/components/Skeleton.h"
+
 class EntityListPanel : public xhui::Panel {
 public:
 	explicit EntityListPanel() : Panel("entity-list-panel") {
@@ -497,12 +501,16 @@ Dialog solid-body-panel ''
 )foodelim");
 		data = _data;
 		event("delete", [this] {
-			if (entity_index >= 0 and component_index >= 0)
-				data->entity_remove_component(entity_index, component_index);
+			if (entity_index >= 0 and component_index >= 0) {
+				if (user_component)
+					data->entity_remove_user_component(entity_index, component_index);
+				else
+					data->entity_remove_component(entity_index, component_type);
+			}
 		});
 		event("edit", [this] {
-			if (entity_index >= 0 and component_index >= 0)
-				data->session->edit_code_file(data->entities[entity_index].components[component_index].filename);
+			if (entity_index >= 0 and component_index >= 0 and user_component)
+				data->session->edit_code_file(data->entity(entity_index)->get_component<EdwardTag>()->user_components[component_index].filename);
 		});
 	}
 	void update(int _entity_index, const string& category, int _component_index) {
@@ -531,8 +539,10 @@ Dialog solid-body-panel ''
 		if (component_class == "Entity") {
 			content_panel = new EntityBasePanel(data, entity_index);
 		} else if (component_class == "ModelRef") {
+			component_type = ModelRef::_class;
 			content_panel = new ModelPanel(data, entity_index);
 		} else if (component_class == "SolidBody") {
+			component_type = SolidBody::_class;
 			content_panel = new SolidBodyPanel(data, entity_index);
 		/*} else if (component_class == "Material") {
 			if (e.basic_type == MultiViewType::WORLD_OBJECT) {
@@ -544,18 +554,25 @@ Dialog solid-body-panel ''
 				});
 			}*/
 		} else if (component_class == "MeshCollider") {
+			component_type = MeshCollider::_class;
 			content_panel = new DummyComponentPanel;
 		} else if (component_class == "TerrainCollider") {
+			component_type = TerrainRef::_class;
 			content_panel = new DummyComponentPanel;
 		} else if (component_class == "Skeleton") {
+			component_type = Skeleton::_class;
 			content_panel = new DummyComponentPanel;
 		} else if (component_class == "Animator") {
+			component_type = Animator::_class;
 			content_panel = new DummyComponentPanel;
 		} else if (component_class == "TerrainRef") {
+			component_type = TerrainRef::_class;
 			content_panel = new TerrainPanel(data, entity_index);
 		} else if (component_class == "Camera") {
+			component_type = Camera::_class;
 			content_panel = new CameraPanel(data, entity_index, component_index);
 		} else if (component_class == "Light") {
+			component_type = Light::_class;
 			content_panel = new LightPanel(data, entity_index);
 		} else {
 			content_panel = new UserComponentPanel(data, entity_index, component_index);
@@ -572,6 +589,7 @@ Dialog solid-body-panel ''
 	DataWorld* data;
 	int entity_index = -1;
 	int component_index = -1;
+	const kaba::Class* component_type;
 	string component_class;
 	Panel* content_panel = nullptr;
 	bool user_component = false;
@@ -623,6 +641,8 @@ Dialog entity-panel ''
 
 	event("add-component", [this] {
 		ComponentSelectionDialog::ask(this, mode_world->session).then([this] (const ScriptInstanceData& c) {
+			//if (c.filename...)
+				mode_world->data->entity_add_user_component(cur_index, c);
 			//mode_world->data->entity_add_component(cur_index, c);
 		});
 	});

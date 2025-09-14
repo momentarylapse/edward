@@ -29,13 +29,13 @@ class SolidBody;
 class MultiInstance;
 class Entity;
 class EntityManager;
-class TemplateDataScriptVariable;
+struct TemplateDataScriptVariable;
 class Light;
 class Camera;
 class ParticleManager;
 class LegacyParticle;
 class Link;
-class LevelData;
+struct LevelData;
 enum class LinkType;
 
 

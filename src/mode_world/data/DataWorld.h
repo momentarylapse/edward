@@ -147,13 +147,16 @@ public:
 	Entity* add_entity(const vec3& pos, const quaternion& ang);
 	void edit_entity(int index, const vec3& pos, const quaternion& ang);
 	void edit_terrain_meta_data(int index, const vec3& pattern);
-	Component* entity_add_component_generic(int index, const kaba::Class* _class, const base::map<string, Any>& variables = {});//, const ScriptInstanceData& c);
+	Component* entity_add_component_generic(int index, const kaba::Class* type, const base::map<string, Any>& variables = {});//, const ScriptInstanceData& c);
 	template<class T>
 	T* entity_add_component(int index, const base::map<string, Any>& variables = {}) {
 		return static_cast<T*>(entity_add_component_generic(index, T::_class, variables));
 	}
-	void entity_remove_component(int index, int cindex);
-	void entity_edit_component(int index, int cindex, const ScriptInstanceData& c);
+	void entity_remove_component(int index, const kaba::Class* type);
+	void entity_edit_component(int index, const kaba::Class* type, const ScriptInstanceData& c);
+	void entity_add_user_component(int index, const ScriptInstanceData& c);
+	void entity_remove_user_component(int index, int cindex);
+	void entity_edit_user_component(int index, int cindex, const ScriptInstanceData& c);
 
 	void copy(DataWorld& temp, const Data::Selection& sel) const; // actually not an action
 	void paste(const DataWorld& temp);

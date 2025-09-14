@@ -12,7 +12,7 @@
 
 class Path;
 class Profiler;
-class TemplateDataScriptVariable;
+struct TemplateDataScriptVariable;
 namespace kaba {
 	class Class;
 	class Exporter;
@@ -30,7 +30,6 @@ public:
 	static void *create_instance(const kaba::Class *type, const Array<TemplateDataScriptVariable> &variables);
 	static void *create_instance_auto(const string& extended_type_name);
 	static void assign_variables(void *p, const kaba::Class *c, const Array<TemplateDataScriptVariable> &variables);
-	static void assign_variables(void *p, const kaba::Class *c, const string &variables);
 
 };
 

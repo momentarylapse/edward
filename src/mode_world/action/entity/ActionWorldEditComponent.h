@@ -25,14 +25,15 @@ private:
 
 class ActionWorldEditComponent : public Action {
 public:
-	explicit ActionWorldEditComponent(int index, int cindex, const ScriptInstanceData& c);
+	explicit ActionWorldEditComponent(int index, const kaba::Class* type, const ScriptInstanceData& c);
 	string name() override { return "WorldEditComponent"; }
 
 	void *execute(Data* d) override;
 	void undo(Data* d) override;
 
 private:
-	int index, cindex;
+	int index;
+	const kaba::Class* type;
 	ScriptInstanceData component;
 };
 
@@ -51,10 +52,37 @@ private:
 	Component* component = nullptr;
 };
 
+class ActionWorldAddUserComponent : public Action {
+public:
+	explicit ActionWorldAddUserComponent(int index, const ScriptInstanceData& c);
+	string name() override { return "WorldAddUserComponent"; }
+
+	void* execute(Data* d) override;
+	void undo(Data* d) override;
+
+private:
+	int index;
+	ScriptInstanceData component;
+};
+
 class ActionWorldRemoveComponent : public Action {
 public:
-	explicit ActionWorldRemoveComponent(int index, int cindex);
+	explicit ActionWorldRemoveComponent(int index, const kaba::Class* type);
 	string name() override { return "WorldRemoveComponent"; }
+
+	void *execute(Data* d) override;
+	void undo(Data* d) override;
+
+private:
+	int index;
+	const kaba::Class* type;
+	ScriptInstanceData component;
+};
+
+class ActionWorldRemoveUserComponent : public Action {
+public:
+	explicit ActionWorldRemoveUserComponent(int index, int cindex);
+	string name() override { return "WorldRemoveUserComponent"; }
 
 	void *execute(Data* d) override;
 	void undo(Data* d) override;

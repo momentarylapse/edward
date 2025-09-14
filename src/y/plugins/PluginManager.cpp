@@ -970,10 +970,6 @@ void PluginManager::assign_variables(void *_p, const kaba::Class *c, const Array
 	}
 }
 
-void PluginManager::assign_variables(void *_p, const kaba::Class *c, const string &variables) {
-	assign_variables(_p, c, parse_variables(variables));
-}
-
 const kaba::Class *PluginManager::find_class_derived(const Path &filename, const string &base_class) {
 	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
 	try {
