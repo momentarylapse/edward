@@ -222,15 +222,12 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
 		data->entity_manager->add_component<EdwardTag>(o);
 		auto l = data->entity_manager->add_component<Light>(o);
+		l->light.type = e.type;
 		l->light.light.col = e._color;
 		l->light.light.radius = e.radius;
 		l->light.light.theta = e.theta;
 		l->light.light.harshness = e.harshness;
 		l->light.enabled = e.enabled;
-		// FIXME old format
-		if (l->light.type() != yrenderer::LightType::DIRECTIONAL) {
-		//	l->light.light.col *= 1 / (l->light.light.radius * l->light.light.radius / 100);
-		}
 	}
 	for (auto& e: ld.terrains) {
 		auto o = data->entity_manager->create_entity(e.pos, quaternion::ID);

@@ -407,17 +407,18 @@ void ModeWorld::on_prepare_scene(const yrenderer::RenderParams& params) {
 		lights[i]->light.pos = l->owner->pos;
 		lights[i]->_ang = l->owner->ang;
 		lights[i]->enabled = l->light.enabled;
-		lights[i]->allow_shadow = (l->light.type() == yrenderer::LightType::DIRECTIONAL);
+		lights[i]->type = l->light.type;
+		lights[i]->allow_shadow = (l->light.type == yrenderer::LightType::DIRECTIONAL);
 		lights[i]->light.col = l->light.light.col;
 		if (!l->light.enabled)
 			lights[i]->light.col = Black;
 		lights[i]->light.radius = l->light.light.radius;
 		lights[i]->light.theta = l->light.light.theta;
-		if (l->light.type() == yrenderer::LightType::DIRECTIONAL)
+		if (l->light.type == yrenderer::LightType::DIRECTIONAL)
 			lights[i]->light.radius = -1;
 	//	else
 	//		lights[i]->light.col = l->light.light.col * (l->light.light.radius * l->light.light.radius / 100);
-		if (l->light.type() != yrenderer::LightType::CONE)
+		if (l->light.type != yrenderer::LightType::CONE)
 			lights[i]->light.theta = -1;
 		lights[i]->light.harshness = l->light.light.harshness;
 	}
@@ -599,13 +600,13 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 		const vec3 pos = l->owner->pos;
 		const quaternion ang = l->owner->ang;
 		const float radius = l->light.light.radius;
-		if (l->light.type() == yrenderer::LightType::DIRECTIONAL) {
+		if (l->light.type == yrenderer::LightType::DIRECTIONAL) {
 			dh->draw_lines({pos, pos + ang * vec3::EZ * win->multi_view->view_port.radius * 0.1f}, false);
-		} else if (l->light.type() == yrenderer::LightType::POINT) {
+		} else if (l->light.type == yrenderer::LightType::POINT) {
 			//draw_circle(l.pos, win->get_direction(), l.radius);
 			dh->draw_circle(pos, win->direction(), radius * LIGHT_RADIUS_FACTOR_LO);
 			dh->draw_circle(pos, win->direction(), radius * LIGHT_RADIUS_FACTOR_HI);
-		} else if (l->light.type() == yrenderer::LightType::CONE) {
+		} else if (l->light.type == yrenderer::LightType::CONE) {
 			const float theta = l->light.light.theta;
 			dh->draw_lines({pos, pos + ang * vec3::EZ * radius * LIGHT_RADIUS_FACTOR_LO}, false);
 			dh->draw_circle(pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_LO, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_LO);

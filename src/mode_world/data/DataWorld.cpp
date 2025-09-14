@@ -86,9 +86,10 @@ DataWorld::DataWorld(Session *s) :
 		if (type == Camera::_class)
 			return new Camera();
 		if (type == Light::_class) {
+			yrenderer::LightType type = var.contains("type") ? (yrenderer::LightType)var["type"].to_i32() : yrenderer::LightType::POINT;
 			float radius = var.contains("radius") ? var["radius"].to_f32() : 100.0f;
 			float theta = var.contains("theta") ? var["theta"].to_f32() : 0.0f;
-			return new Light(White, radius, theta);
+			return new Light(type, White * (radius * radius / 100), theta);
 		}
 		if (type == EdwardTag::_class)
 			return new EdwardTag;

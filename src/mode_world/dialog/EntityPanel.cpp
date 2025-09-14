@@ -30,6 +30,7 @@
 #include <y/world/Light.h>
 
 #include <lib/kaba/syntax/Class.h>
+#include <cmath>
 
 class EntityListPanel : public xhui::Panel {
 public:
@@ -216,24 +217,39 @@ Dialog light-panel ''
 	void update_ui() {
 		auto e = data->entity_manager->entities[index];
 		auto l = e->get_component<Light>();
-		set_int("type", (int)l->light.type());
-		set_float("radius", l->light.light.radius);
+		float b = l->light.light.col.brightness();
+		set_int("type", (int)l->light.type);
+		set_float("radius", sqrtf(b*b) / 10);
 		set_float("harshness", l->light.light.harshness * 100);
-		set_float("theta", l->light.light.theta * 180 / pi);
-		set_float("radius", l->light.light.radius);
-		set_color("color", l->light.light.col);
-		set_float("power", l->light.light.col.brightness());
+		set_float("theta", max(l->light.light.theta * 180 / pi, 0.0f));
+		set_color("color", l->light.light.col * (1.0f / b));
+		set_float("power", b);
+		enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL);
+		enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL);
+		enable("theta", l->light.type == yrenderer::LightType::CONE);
 	}
 
 	void on_edit() {
 		auto e = data->entity_manager->entities[index];
 		auto l = e->get_component<Light>();
-		/*l.type = (yrenderer::LightType)get_int("type");
-		l.radius = get_float("radius");
-		l.theta = get_float("theta") * pi / 180;
-		l.harshness = get_float("harshness") / 100;
-		l.col = get_color("color");
-		data->edit_light(index, l);*/
+		l->light.type = (yrenderer::LightType)get_int("type");
+		enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL);
+		enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL);
+		enable("theta", l->light.type == yrenderer::LightType::CONE);
+
+		float radius = get_float("radius");
+		float power = get_float("power");
+		if (l->light.type == yrenderer::LightType::DIRECTIONAL) {
+			l->light.light.col = get_color("color") * power;
+			l->light.light.radius = -1;
+			l->light.light.theta = -1;
+		} else {
+			l->light.light.col = get_color("color") * (radius * radius / 100);
+			l->light.light.radius = radius;
+			l->light.light.theta = get_float("theta") * pi / 180;
+		}
+		l->light.light.harshness = get_float("harshness") / 100;
+		//data->edit_light(index, l);*/
 	}
 };
 

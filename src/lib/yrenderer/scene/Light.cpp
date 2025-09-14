@@ -8,16 +8,22 @@
 
 namespace yrenderer {
 
-void Light::init(const color &c, float r, float t) {
+void Light::init(LightType _type, const color &c, float t) {
 	_ang = quaternion::ID;
+	type = _type;
 	light.pos = vec3(0,0,0);
 	light.dir = vec3::EZ;
 	light.col = c;
-	light.radius = r;
-	light.theta = t;
-	light.harshness = 0.8f;
-	if (light.radius >= 0)
+	if (type == LightType::DIRECTIONAL) {
+		light.radius = -1;
+		light.theta = -1;
+		light.harshness = 0.8f;
+	} else {
+		const float b = light.col.brightness();
+		light.radius = sqrtf(b) * 10.0f;
+		light.theta = t;
 		light.harshness = 1;
+	}
 	enabled = true;
 	allow_shadow = false;
 	user_shadow_control = false;
@@ -25,15 +31,6 @@ void Light::init(const color &c, float r, float t) {
 	shadow_dist_min = -1;
 	shadow_dist_max = -1;
 }
-
-LightType Light::type() const {
-	if (light.radius <= 0)
-		return LightType::DIRECTIONAL;
-	if (light.theta > 0)
-		return LightType::CONE;
-	return LightType::POINT;
-}
-
 
 UBOLight Light::to_ubo(const vec3& view_pos, const quaternion& view_ang, bool using_view_space) const {
 	UBOLight l;
@@ -53,7 +50,7 @@ UBOLight Light::to_ubo(const vec3& view_pos, const quaternion& view_ang, bool us
 }
 
 mat4 Light::suggest_shadow_projection(const CameraParams& cam, float shadow_box_size) const {
-	if (type() == LightType::DIRECTIONAL) {
+	if (type == LightType::DIRECTIONAL) {
 		//msg_write(format("shadow dir: %s  %s", light.pos.str(), light.dir.str()));
 		vec3 center = cam.pos + cam.ang*vec3::EZ * (shadow_box_size / 3.0f);
 		float grid = shadow_box_size / 16;
@@ -73,11 +70,11 @@ mat4 Light::suggest_shadow_projection(const CameraParams& cam, float shadow_box_
 	} else {
 		auto t = mat4::translation(- light.pos);
 		auto ang = cam.ang;
-		if (type() == LightType::CONE or user_shadow_control)
+		if (type == LightType::CONE or user_shadow_control)
 			ang = _ang;
 		auto r = mat4::rotation(ang).transpose();
 		float theta = 1.35f;
-		if (type() == yrenderer::LightType::CONE)
+		if (type == LightType::CONE)
 			theta = light.theta;
 		if (user_shadow_theta > 0)
 			theta = user_shadow_theta;

@@ -8,10 +8,9 @@
 #include "LevelData.h"
 #include "Link.h"
 #include "World.h"
-#include <lib/os/file.h>
 #include <lib/doc/xml.h>
-#include "../y/EngineData.h"
 #include "../meta.h"
+#include <lib/yrenderer/scene/Light.h>
 
 
 LevelData::LevelData() {
@@ -132,12 +131,15 @@ bool LevelData::load(const Path &filename) {
 				l.radius = -1;
 				l.theta = -1;
 				if (e.value("type") == "directional") {
+					l.type = yrenderer::LightType::DIRECTIONAL;
 					l.ang = s2v(e.value("ang"));
 				} else if (e.value("type") == "point") {
+					l.type = yrenderer::LightType::POINT;
 					l.pos= s2v(e.value("pos"));
 					l.radius = e.value("radius")._float();
 					l._color *= l.radius * l.radius / 100;
 				} else if (e.value("type") == "cone") {
+					l.type = yrenderer::LightType::CONE;
 					l.pos= s2v(e.value("pos"));
 					l.ang = s2v(e.value("ang"));
 					l.radius = e.value("radius")._float();
