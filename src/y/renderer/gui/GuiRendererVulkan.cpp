@@ -42,13 +42,14 @@ GuiRenderer::GuiRenderer(Context* ctx) : Renderer(ctx, "ui") {
 	vb->create_quad(rect::ID);
 }
 
+GuiRenderer::~GuiRenderer() = default;
+
 void GuiRenderer::prepare(const RenderParams &params) {
 	if (!aux) {
 		aux = ctx->context->_create_auxiliary_stuff();
 		aux->rebuild(params.render_pass);
 	}
-	aux->num_line_vbs_used = 0;
-	aux->num_line_vbs_with_color_used = 0;
+	aux->reset_frame();
 }
 
 

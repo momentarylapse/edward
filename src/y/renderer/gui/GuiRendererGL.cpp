@@ -9,6 +9,8 @@
 #ifdef USING_OPENGL
 #include <lib/yrenderer/Context.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/ygraphics/Context.h>
+#include <lib/ygraphics/Painter.h>
 #include <lib/os/msg.h>
 #include "../../gui/gui.h"
 #include "../../gui/Picture.h"
@@ -27,6 +29,16 @@ GuiRenderer::GuiRenderer(yrenderer::Context* ctx) : Renderer(ctx, "gui") {
 
 	vb = new VertexBuffer("3f,3f,2f");
 	vb->create_quad(rect::ID);
+}
+
+GuiRenderer::~GuiRenderer() = default;
+
+
+void GuiRenderer::prepare(const RenderParams &params) {
+	if (!aux) {
+		aux = ctx->context->_create_auxiliary_stuff();
+	}
+	aux->reset_frame();
 }
 
 void GuiRenderer::draw(const RenderParams& params) {
