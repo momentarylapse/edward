@@ -16,6 +16,7 @@ namespace ygfx {
 class GuiRenderer : public yrenderer::Renderer {
 public:
 	explicit GuiRenderer(yrenderer::Context* ctx);
+	~GuiRenderer() override;
 
 	void prepare(const yrenderer::RenderParams &params) override;
 	void draw(const yrenderer::RenderParams& params) override;
