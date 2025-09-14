@@ -86,7 +86,7 @@ bool LevelData::load(const Path &filename) {
 				s.var = e.value("var");
 				for (auto &ee: e.elements) {
 					TemplateDataScriptVariable v;
-					v.name = ee.value("name").lower().replace("_", "");
+					v.name = ee.value("name");//.lower().replace("_", "");
 					v.value = ee.value("value");
 					s.variables.add(v);
 				}
