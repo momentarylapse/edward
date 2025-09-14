@@ -202,6 +202,8 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 
 	data->meta_data.background_color = ld.background_color;
 	data->meta_data.skybox_files = ld.skybox_filename;
+
+
 	for (auto& e: ld.objects) {
 		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
 		data->entity_manager->add_component<EdwardTag>(o);
@@ -239,131 +241,37 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		auto o = data->entity_manager->create_entity(e.pos, quaternion::ID);
 		data->entity_manager->add_component<EdwardTag>(o);
 	}
-
-
-
-	xml::Parser p;
-	p.load(filename);
-	if (auto *meta = p.elements[0].find("meta")) {
-		for (auto &e: meta->elements) {
-			if (e.tag == "background") {
-				data->meta_data.background_color = s2c(e.value("color", "0 0 0"));
-				for (auto &ee: e.elements) {
-					if (ee.tag == "skybox")
-						data->meta_data.skybox_files.add(ee.value("file"));
-				}
-			} else if (e.tag == "physics") {
-				data->meta_data.physics_enabled = e.value("enabled", "true")._bool();
-				if (e.value("mode") == "full")
-					data->meta_data.physics_mode = PhysicsMode::FULL_EXTERNAL;
-				else if (e.value("mode") == "simple")
-					data->meta_data.physics_mode = PhysicsMode::SIMPLE;
-				data->meta_data.gravity = s2v(e.value("gravity", "0 0 0"));
-			} else if (e.tag == "fog") {
-				data->meta_data.fog.enabled = e.value("enabled", "false")._bool();
-				data->meta_data.fog.mode = (ygfx::FogMode)e.value("mode", "0")._int();
-				data->meta_data.fog.start = e.value("start", "0")._float();
-				data->meta_data.fog.end = e.value("end", "10000")._float();
-				data->meta_data.fog.density = e.value("density", "0")._float();
-				data->meta_data.fog.col = s2c(e.value("color", "0 0 0"));
-			} else if (e.tag == "script" or e.tag == "system") {
-				ScriptInstanceData s;
-				s.filename = e.value("file");
-				s.class_name = e.value("class");
-				for (auto &ee: e.elements) {
-					WorldScriptVariable v;
-					v.name = ee.value("name");
-					v.value = ee.value("value");
-					s.variables.add(v);
-				}
-				data->meta_data.systems.add(s);
-			}
-		}
+	for (const auto& ll: ld.links) {
+		WorldLink l;
+		l.type = ll.type;
+		l.object[0] = ll.object[0];
+		l.object[1] = ll.object[1];
+		l.pos = ll.pos;
+		l.ang = ll.ang;
+		//l.radius = e.value("radius")._float();
+		data->links.add(l);
 	}
 
-
-	if (auto *cont = p.elements[0].find("3d")) {
-		for (auto &e: cont->elements) {
-			if (e.tag == "camera") {
-				/*WorldEntity c;
-				c.basic_type = MultiViewType::WORLD_ENTITY;
-				c.pos = s2v(e.value("pos", "0 0 0"));
-				c.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
-				{
-					ScriptInstanceData cc;
-					cc.class_name = "Camera";
-					cc.variables.add({"fov", "f32", e.value("fov", f2s(pi/4, 3))});
-					cc.variables.add({"min_depth", "f32", e.value("minDepth", "1.0")});
-					cc.variables.add({"max_depth", "f32", e.value("maxDepth", "10000")});
-					cc.variables.add({"exposure", "f32", e.value("exposure", "1.0")});
-					cc.variables.add({"bloom_factor", "f32", e.value("bloomFactor", "0.15")});
-					c.components.add(cc);
-				}
-				read_components(c, e);
-				data->entities.add(c);
-			} else if (e.tag == "light") {
-				WorldEntity l;
-				l.basic_type = MultiViewType::WORLD_LIGHT;
-				l.light.type = yrenderer::LightType::POINT;
-				if (e.value("type") == "directional")
-					l.light.type = yrenderer::LightType::DIRECTIONAL;
-				else if (e.value("type") == "cone")
-					l.light.type = yrenderer::LightType::CONE;
-				l.light.radius = e.value("radius", "0")._float();
-				l.light.theta = e.value("theta", "0")._float();
-				l.light.harshness = e.value("harshness", "0.8")._float();
-				l.light.col = s2c(e.value("color", "1 1 1"));
-				l.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
-				l.pos= s2v(e.value("pos", "0 0 0"));
-				read_components(l, e);
-				data->entities.add(l);
-			} else if (e.tag == "terrain") {
-				WorldEntity t;
-				t.basic_type = MultiViewType::WORLD_TERRAIN;
-				t.terrain.filename = e.value("file");
-				t.pos = s2v(e.value("pos", "0 0 0"));
-				read_components(t, e);
-				data->entities.add(t);
-			} else if (e.tag == "object") {
-				WorldEntity o;
-				o.basic_type = MultiViewType::WORLD_OBJECT;
-				o.object.object = nullptr;
-				o.object.filename = e.value("file");
-				o.object.name = e.value("name");
-				//o.script = e.value("script");
-				o.pos = s2v(e.value("pos", "0 0 0"));
-				o.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
-				read_components(o, e);
-				if (e.value("role") == "ego")
-					data->EgoIndex = data->entities.num;
-				data->entities.add(o);*/
-			} else if (e.tag == "entity") {
-				WorldEntity o;
-				o.basic_type = MultiViewType::WORLD_ENTITY;
-				//o.script = e.value("script");
-				o.pos = s2v(e.value("pos", "0 0 0"));
-				o.ang = quaternion::rotation(s2v(e.value("ang", "0 0 0")));
-				read_components(o, e);
-				data->entities.add(o);
-			} else if (e.tag == "link") {
-				WorldLink l;
-				l.type = LinkType::SOCKET;
-				if (e.value("type") == "hinge")
-					l.type = LinkType::HINGE;
-				if (e.value("type") == "spring")
-					l.type = LinkType::SPRING;
-				if (e.value("type") == "universal")
-					l.type = LinkType::UNIVERSAL;
-				l.object[0] = e.value("a")._int();
-				l.object[1] = e.value("b")._int();
-				l.pos = s2v(e.value("pos", "0 0 0"));
-				l.ang = s2v(e.value("ang", "0 0 0"));
-				//l.radius = e.value("radius")._float();
-				data->links.add(l);
-			} else {
-				msg_error("unhandled tag: " + e.tag);
-			}
+	data->meta_data.physics_enabled = ld.physics_enabled;
+	data->meta_data.physics_mode = ld.physics_mode;
+	data->meta_data.gravity = ld.gravity;
+	data->meta_data.fog.enabled = ld.fog.enabled;
+	data->meta_data.fog.mode = (ygfx::FogMode)ld.fog.mode;
+	data->meta_data.fog.start = ld.fog.start;
+	data->meta_data.fog.end = ld.fog.end;
+	data->meta_data.fog.density = 1/ld.fog.distance;
+	data->meta_data.fog.col = ld.fog._color;
+	for (const auto& ss: ld.systems) {
+		ScriptInstanceData s;
+		s.filename = ss.filename;
+		s.class_name = ss.class_name;
+		for (auto &ee: ss.variables) {
+			WorldScriptVariable v;
+			v.name = ee.name;
+			v.value = ee.value;
+			s.variables.add(v);
 		}
+		data->meta_data.systems.add(s);
 	}
 }
 

@@ -110,12 +110,12 @@ Dialog entity-base-panel ''
 		set_float("ang-z", ang.z * 180 / pi);
 	}
 	void on_edit() {
-		auto e = data->entity_manager->entities[index];
-		/*e.pos.x = get_float("pos-x");
-		e.pos.y = get_float("pos-y");
-		e.pos.z = get_float("pos-z");
-		e.ang = quaternion::rotation({get_float("ang-x") * pi / 180, get_float("ang-y") * pi / 180, get_float("ang-z") * pi / 180});
-		data->edit_entity(index, e);*/
+		vec3 pos;
+		pos.x = get_float("pos-x");
+		pos.y = get_float("pos-y");
+		pos.z = get_float("pos-z");
+		auto ang = quaternion::rotation({get_float("ang-x") * pi / 180, get_float("ang-y") * pi / 180, get_float("ang-z") * pi / 180});
+		data->edit_entity(index, pos, ang);
 	}
 	DataWorld* data;
 	int index;
