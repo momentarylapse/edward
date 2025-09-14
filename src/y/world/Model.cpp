@@ -35,7 +35,8 @@
 
 #define DynamicNormalCorrect
 
-const kaba::Class *Model::_class = nullptr;
+const kaba::Class* ModelRef::_class = nullptr;
+const kaba::Class* Model::_class = nullptr;
 
 
 

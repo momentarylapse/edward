@@ -20,6 +20,14 @@ namespace yrenderer {
 	struct Context;
 }
 class CollisionData;
+class Terrain;
+
+
+struct TerrainRef : Component {
+	Path filename;
+	Terrain* terrain = nullptr;
+	static const kaba::Class* _class;
+};
 
 enum class TerrainType {
 	CONTINGUOUS,

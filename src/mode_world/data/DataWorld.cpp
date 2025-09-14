@@ -48,8 +48,6 @@
 #include <y/EntityManager.h>
 
 const kaba::Class* EdwardTag::_class = nullptr;
-const kaba::Class* ModelRef::_class = nullptr;
-const kaba::Class* TerrainRef::_class = nullptr;
 
 string ScriptInstanceData::get(const string &name) const {
 	for (const auto& v: variables)

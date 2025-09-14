@@ -1017,6 +1017,10 @@ void *PluginManager::create_instance(const kaba::Class *c, const Array<TemplateD
 	msg_write(format("creating instance  %s", c->long_name()));
 	if (c == SolidBody::_class)
 		return new SolidBody;
+	if (c == ModelRef::_class)
+		return new ModelRef;
+	if (c == TerrainRef::_class)
+		return new TerrainRef;
 	if (c == MeshCollider::_class)
 		return new MeshCollider;
 	if (c == TerrainCollider::_class)
