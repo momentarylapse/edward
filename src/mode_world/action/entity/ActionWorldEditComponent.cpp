@@ -55,6 +55,7 @@ void *ActionWorldAddComponent::execute(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto e = w->entity(index);
 	component = w->entity_manager->_add_component_generic_(e, type, variables);
+	w->out_component_added();
 	return component;
 }
 
@@ -62,6 +63,7 @@ void ActionWorldAddComponent::undo(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto e = w->entity(index);
 	w->entity_manager->delete_component(e, component);
+	w->out_component_removed();
 }
 
 

@@ -110,10 +110,12 @@ const kaba::Class *ComponentManager::get_component_type_family(const kaba::Class
 
 // TODO (later) optimize...
 Component *ComponentManager::create_component(const kaba::Class *type, const Params &var) {
-	if (!factory)
+	if (!f_create)
 		return nullptr;
-	auto c = factory(type, var);
+	auto c = f_create(type);
 	c->component_type = type;
+	if (f_apply)
+		f_apply(type, c, var);
 	_register(c);
 	return c;
 }
