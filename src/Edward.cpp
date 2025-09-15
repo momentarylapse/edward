@@ -112,7 +112,7 @@ int main(const Array<string>& args) {
 	p.info(AppName, "");
 	p.cmd("execute", "FILENAME", "(NOT WORKING) execute a script", [] (const Array<string>& args) {
 		auto session = create_session();
-		session->plugin_manager->execute(session, Path(args[0]).absolute());
+		session->plugin_manager->execute(Path(args[0]).absolute());
 	});
 	p.cmd("-h/--help", "", "show this help page", [&p] (const Array<string> &arg) {
 		p.show();

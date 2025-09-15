@@ -37,6 +37,7 @@
 #include <y/world/World.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/target/XhuiRenderer.h>
+#include <lib/kaba/kaba.h>
 
 #include "view/codeeditor/DocumentEditor.h"
 
@@ -47,15 +48,13 @@ bool any_session_running() {
 
 Session *create_session() {
 	auto s = new Session;
+	s->kaba_ctx = kaba::Context::create();
 	s->storage = new Storage(s);
 	s->storage->set_root_directory(xhui::config.get_str("RootDir", ""));
 	if (os::app::installed)
-		s->plugin_manager = new PluginManager(os::app::directory_static | "plugins");
+		s->plugin_manager = new PluginManager(s, os::app::directory_static | "plugins");
 	else
-		s->plugin_manager = new PluginManager(os::app::directory_static | ".." | "plugins");
-	/*s->mode_material = new ModeMaterial(s);
-	s->mode_model = new ModeModel(s);
-	s->mode_world = new ModeWorld(s);*/
+		s->plugin_manager = new PluginManager(s, os::app::directory_static | ".." | "plugins");
 	s->win = new EdwardWindow(s);
 	return s;
 }

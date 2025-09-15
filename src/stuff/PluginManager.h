@@ -15,7 +15,7 @@ class Session;
 
 class PluginManager {
 public:
-	explicit PluginManager(const Path &dir);
+	explicit PluginManager(Session* s, const Path &dir);
 	~PluginManager();
 
 	void init_edward();
@@ -29,6 +29,7 @@ public:
 	};
 
 	struct Plugin {
+		PluginManager* plugin_manager;
 		Path filename;
 		string name;
 		string category;
@@ -37,11 +38,12 @@ public:
 		void* create_instance(const string &parent) const;
 	};
 	Array<Plugin> plugins;
+	Session* session;
+	Path directory;
 
-	void execute(Session *session, const Path &filename);
+	void execute(const Path &filename);
 
-	static Path directory;
-	static void* create_instance(const Path &filename, const string &parent);
+	void* create_instance(const Path &filename, const string &parent);
 };
 
 #endif /* PLUGINMANAGER_H_ */

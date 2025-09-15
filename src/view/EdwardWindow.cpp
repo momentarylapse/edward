@@ -280,7 +280,7 @@ Dialog x x padding=0
 	});
 	event("execute-plugin", [this] {
 		xhui::FileSelectionDialog::ask(this, "Execute plugin", session->plugin_manager->directory, {}).then( [this] (const Path& path) {
-			session->plugin_manager->execute(session.get(), path);
+			session->plugin_manager->execute(path);
 		});
 	});
 	auto quit = [this] {
