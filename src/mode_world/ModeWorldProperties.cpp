@@ -25,7 +25,7 @@ void ModeWorldProperties::on_enter() {
 	multi_view->f_get_selection_box = nullptr;
 	multi_view->f_create_action = nullptr;
 	multi_view->data_sets = {
-		{MultiViewType::WORLD_ENTITY, &data->entities}
+		{MultiViewType::WORLD_ENTITY, &data->dummy_entities}
 	};
 
 	set_side_panel(new PropertiesDialog(mode_world->data));

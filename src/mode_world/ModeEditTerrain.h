@@ -7,7 +7,7 @@
 
 #include "../view/Mode.h"
 
-struct WorldTerrain;
+class Terrain;
 class DataWorld;
 class ModeWorld;
 
@@ -32,7 +32,7 @@ public:
 	ModeWorld* mode_world;
 	int index;
 
-	WorldTerrain& terrain() const;
+	Terrain* terrain() const;
 };
 
 

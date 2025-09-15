@@ -13,16 +13,16 @@
 #include "../data/DataWorld.h"
 
 
-ActionWorldPaste::ActionWorldPaste(const DataWorld& temp) :
-	entities(temp.entities)
+ActionWorldPaste::ActionWorldPaste(const DataWorld& temp) //:
+	//entities(temp.entities)
 {
 }
 
 void *ActionWorldPaste::compose(Data *d) {
 	auto *w = dynamic_cast<DataWorld*>(d);
 
-	for (const auto &o: entities)
-	{}//addSubAction(new ActionWorldAddEntity(o), w);
+	//for (const auto &o: entities)
+	//{}addSubAction(new ActionWorldAddEntity(o), w);
 
 	return nullptr;
 }

@@ -4,8 +4,8 @@
 
 #include "ActionWorldEditTerrainMetaData.h"
 #include "../../data/DataWorld.h"
-#include "../../data/WorldTerrain.h"
 #include <y/world/Terrain.h>
+#include <y/Entity.h>
 
 ActionWorldEditTerrainMetaData::ActionWorldEditTerrainMetaData(int _index, const vec3& _pattern) {
 	index = _index;
@@ -14,8 +14,9 @@ ActionWorldEditTerrainMetaData::ActionWorldEditTerrainMetaData(int _index, const
 
 void* ActionWorldEditTerrainMetaData::execute(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
-	std::swap(w->entities[index].terrain.terrain->pattern, pattern);
-	w->entities[index].terrain.terrain->update(-1, -1, -1, -1, TerrainUpdateAll);
+	auto terrain = w->entity(index)->get_component<TerrainRef>()->terrain;
+	std::swap(terrain->pattern, pattern);
+	terrain->update(-1, -1, -1, -1, TerrainUpdateAll);
 	return nullptr;
 }
 

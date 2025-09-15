@@ -7,6 +7,8 @@
 #include "../view/MultiView.h"
 #include "dialog/EditTerrainPanel.h"
 #include <lib/xhui/xhui.h>
+#include <y/Entity.h>
+#include <y/world/Terrain.h>
 
 ModeEditTerrain::ModeEditTerrain(ModeWorld* _mode_world, int _index) : SubMode(_mode_world) {
 	mode_world = _mode_world;
@@ -26,7 +28,7 @@ void ModeEditTerrain::on_enter() {
 	multi_view->f_get_selection_box = nullptr;
 	multi_view->f_create_action = nullptr;
 	multi_view->data_sets = {
-		{MultiViewType::WORLD_ENTITY, &data->entities}
+		{MultiViewType::WORLD_ENTITY, &data->dummy_entities}
 	};
 
 	set_side_panel(new EditTerrainPanel(this));
@@ -69,8 +71,8 @@ void ModeEditTerrain::on_draw_post(Painter*) {
 
 }
 
-WorldTerrain& ModeEditTerrain::terrain() const {
-	return data->entities[index].terrain;
+Terrain* ModeEditTerrain::terrain() const {
+	return data->entity(index)->get_component<TerrainRef>()->terrain;
 }
 
 void ModeEditTerrain::on_command(const string& id) {

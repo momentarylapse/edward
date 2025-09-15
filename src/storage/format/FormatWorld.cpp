@@ -190,7 +190,8 @@ void read_components(WorldEntity& o, const xml::Element& e) {
 }
 
 void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
-	data->entities.clear();
+	//data->entities.clear();
+	data->entity_manager->reset();
 	data->meta_data.skybox_files.clear();
 
 
