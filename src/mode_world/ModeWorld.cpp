@@ -78,8 +78,7 @@ Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full
 	auto files = os::fs::search(session->storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
 	for (auto &f: files) {
 		try {
-			auto context = ownify(kaba::Context::create());
-			auto s = context->load_module(session->storage->root_dir_kind[FD_SCRIPT] | f, true);
+			auto s = session->kaba_ctx->load_module(session->storage->root_dir_kind[FD_SCRIPT] | f, true);
 			for (auto c: s->classes()) {
 				if (c->is_derived_from_s(full_base_class) and c->name != base_class) {
 					auto variables = load_variables(c);

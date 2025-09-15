@@ -12,6 +12,7 @@
 #include "WorldObject.h"
 #include "WorldTerrain.h"
 #include "WorldLink.h"
+#include "lib/any/conversion.h"
 #include "lib/kaba/syntax/Class.h"
 #include "world/Camera.h"
 #include "world/components/Animator.h"
@@ -85,15 +86,11 @@ DataWorld::DataWorld(Session *s) :
 	Data(s, FD_WORLD)
 {
 	entity_manager = new EntityManager;
-	entity_manager->component_manager->factory = [] (const kaba::Class* type, const base::map<string, Any>& var) -> Component* {
+	entity_manager->component_manager->f_create = [] (const kaba::Class* type) -> Component* {
 		if (type == Camera::_class)
 			return new Camera();
-		if (type == Light::_class) {
-			yrenderer::LightType type = var.contains("type") ? (yrenderer::LightType)var["type"].to_i32() : yrenderer::LightType::POINT;
-			float radius = var.contains("radius") ? var["radius"].to_f32() : 100.0f;
-			float theta = var.contains("theta") ? var["theta"].to_f32() : 0.0f;
-			return new Light(type, White * (radius * radius / 100), theta);
-		}
+		if (type == Light::_class)
+			return new Light(yrenderer::LightType::POINT, White);
 		if (type == EdwardTag::_class)
 			return new EdwardTag;
 		if (type == ModelRef::_class)
@@ -112,6 +109,26 @@ DataWorld::DataWorld(Session *s) :
 			return new TerrainCollider;
 		msg_error("new component..." + p2s(type));
 		msg_write(type->name);
+		return nullptr;
+	};
+	entity_manager->component_manager->f_apply = [] (const kaba::Class* type, Component* c, const base::map<string, Any>& var) {
+		if (type == Light::_class) {
+			auto l = static_cast<Light*>(c);
+			if (var.contains("type"))
+				l->light.type = (yrenderer::LightType)var["type"].to_i32();
+			if (var.contains("radius") and var.contains("color"))
+				l->light.light.col = any_to_color(var["color"]) * (var["radius"].to_f32() * var["radius"].to_f32() / 100);
+			if (var.contains("power") and var.contains("color"))
+				l->light.light.col = any_to_color(var["color"]) * var["power"].to_f32();
+			if (var.contains("theta"))
+				l->light.light.theta = var["theta"].to_f32();
+		}
+	};
+	entity_manager->component_manager->f_parse_type = [] (const string& name) -> const kaba::Class* {
+		const Array list = {Camera::_class, Light::_class, ModelRef::_class, TerrainRef::_class, Skeleton::_class, Animator::_class, SolidBody::_class, MeshCollider::_class, TerrainCollider::_class, EdwardTag::_class};
+		for (const auto* t: list)
+			if (t->name == name)
+				return t;
 		return nullptr;
 	};
 	reset();
@@ -300,8 +317,8 @@ void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
 }
 
 
-Component* DataWorld::entity_add_component_generic(int index, const kaba::Class* _class, const base::map<string, Any>& variables) {
-	return static_cast<Component*>(execute(new ActionWorldAddComponent(index, _class, variables)));
+Component* DataWorld::entity_add_component_generic(int index, const kaba::Class* type, const base::map<string, Any>& variables) {
+	return static_cast<Component*>(execute(new ActionWorldAddComponent(index, type, variables)));
 }
 void DataWorld::entity_remove_component(int index, const kaba::Class* type) {
 	execute(new ActionWorldRemoveComponent(index, type));

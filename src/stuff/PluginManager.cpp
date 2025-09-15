@@ -55,24 +55,25 @@
 #include "lib/os/msg.h"
 
 
-Path PluginManager::directory;
+//Path PluginManager::directory;
 
 
 Session* cur_session = nullptr;
 
 
-PluginManager::PluginManager(const Path &dir) {
+PluginManager::PluginManager(Session* s, const Path &dir) {
+	session = s;
 	directory = dir;
 	init_edward();
 }
 
 PluginManager::~PluginManager() = default;
 
-void PluginManager::execute(Session* session, const Path& filename) {
+void PluginManager::execute(const Path& filename) {
 	cur_session = session;
 	//kaba::config.directory = "";
 	try {
-		auto s = kaba::default_context->load_module(filename);
+		auto s = session->kaba_ctx->load_module(filename);
 		typedef void func_t();
 		if (auto f = (func_t*)s->match_function("main", "void", {}))
 			f();
@@ -87,7 +88,6 @@ void PluginManager::execute(Session* session, const Path& filename) {
 //hui::Window *GlobalMainWin = ed;
 
 void PluginManager::init_edward() {
-	kaba::init();
 	link_plugins();
 	find_plugins();
 }
@@ -245,7 +245,7 @@ void PluginManager::link_plugins() {
 
 	//GlobalMainWin = ed;
 
-	auto ext = kaba::default_context->external.get();
+	auto ext = session->kaba_ctx->external.get();
 
 	link_mesh(ext);
 	link_model(ext);
@@ -335,7 +335,7 @@ void PluginManager::link_plugins() {
 #endif
 
 
-	auto mm = kaba::default_context->create_empty_module("edward-internal");
+	auto mm = session->kaba_ctx->create_empty_module("edward-internal");
 	mm->_pointer_ref_counter = 999999;
 	link_component<Camera>(mm, "Camera");
 	link_component<Light>(mm, "Light");
@@ -358,6 +358,7 @@ void PluginManager::find_plugins() {
 			auto list2 = os::fs::search(dir, "*.kaba", "f");
 			for (auto &e2: list2) {
 				Plugin p;
+				p.plugin_manager = this;
 				p.filename = dir | e2;
 				p.name = e2.str().replace(".kaba", "");
 				p.category = e.str();
@@ -370,7 +371,7 @@ void PluginManager::find_plugins() {
 
 void *PluginManager::create_instance(const Path &filename, const string &parent) {
 	//kaba::config.directory = "";
-	auto s = kaba::default_context->load_module(filename);
+	auto s = session->kaba_ctx->load_module(filename);
 	for (auto c: s->classes()){
 		if (c->is_derived_from_s(parent)) {
 			return c->create_instance();
@@ -381,5 +382,5 @@ void *PluginManager::create_instance(const Path &filename, const string &parent)
 }
 
 void *PluginManager::Plugin::create_instance(const string &parent) const {
-	return PluginManager::create_instance(filename, parent);
+	return plugin_manager->create_instance(filename, parent);
 }

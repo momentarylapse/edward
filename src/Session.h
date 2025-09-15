@@ -33,6 +33,9 @@ class EdwardWindow;
 namespace codeedit {
 	class EditorWindow;
 }
+namespace kaba {
+	class Context;
+}
 
 
 
@@ -122,6 +125,7 @@ public:
 	string get_tex_image(ygfx::Texture *tex);
 
 	os::Timer timer;
+	owned<kaba::Context> kaba_ctx;
 
 	base::promise<Session*> promise_started;
 };

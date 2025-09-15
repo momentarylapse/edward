@@ -61,20 +61,8 @@ Dialog entity-base-panel ''
 				if (auto r = e->owner->get_component<ModelRef>()) {
 					name = "Model (no file)";
 					if (r->model)
-						name += " " + str(r->model->filename());
+						name = "Model " + str(r->filename);
 				}
-#if 0
-				if (e.basic_type == MultiViewType::WORLD_OBJECT)
-					name = "Model " + str(e.object.filename);
-				else if (e.basic_type == MultiViewType::WORLD_TERRAIN)
-					name = "Terrain " + str(e.terrain.filename);
-				else if (e.basic_type == MultiViewType::WORLD_LIGHT)
-					name = "Light";
-				/*else if (e.basic_type == MultiViewType::WORLD_CAMERA)
-					name = "Camera";*/
-				else if (e.basic_type == MultiViewType::WORLD_ENTITY)
-					name = "Entity";
-#endif
 				add_string("list", name);
 			}
 	}
@@ -654,9 +642,10 @@ Dialog entity-panel ''
 
 	event("add-component", [this] {
 		ComponentSelectionDialog::ask(this, mode_world->session).then([this] (const ScriptInstanceData& c) {
-			//if (c.filename...)
+			if (c.filename.is_in("y"))
+				mode_world->data->entity_add_component_generic(cur_index, mode_world->data->entity_manager->component_manager->f_parse_type(c.class_name));
+			else
 				mode_world->data->entity_add_user_component(cur_index, c);
-			//mode_world->data->entity_add_component(cur_index, c);
 		});
 	});
 

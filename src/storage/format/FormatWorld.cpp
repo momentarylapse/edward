@@ -217,7 +217,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 			tag->user_components.add(c);
 
 			/*try {
-				auto m = kaba::default_context->load_module(cc.filename);
+				auto m = session->kaba_ctx->load_module(cc.filename);
 				PluginManager
 			} catch (Exception& ee) {
 
