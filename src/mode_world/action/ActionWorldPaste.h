@@ -20,7 +20,7 @@ public:
 
 	void *compose(Data *d) override;
 private:
-	const Array<WorldEntity>& entities;
+	//const Array<WorldEntity>& entities;
 };
 
 #endif /* ACTIONWORLDPASTE_H_ */

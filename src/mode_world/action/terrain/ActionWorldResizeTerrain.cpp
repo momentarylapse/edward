@@ -4,8 +4,8 @@
 
 #include "ActionWorldResizeTerrain.h"
 #include "../../data/DataWorld.h"
-#include "../../data/WorldTerrain.h"
 #include <y/world/Terrain.h>
+#include <y/Entity.h>
 
 ActionWorldResizeTerrain::ActionWorldResizeTerrain(int _index, int _nx, int _nz) {
 	index = _index;
@@ -16,10 +16,11 @@ ActionWorldResizeTerrain::ActionWorldResizeTerrain(int _index, int _nx, int _nz)
 
 void* ActionWorldResizeTerrain::execute(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
-	std::swap(w->entities[index].terrain.terrain->num_x, nx);
-	std::swap(w->entities[index].terrain.terrain->num_z, nz);
-	std::swap(w->entities[index].terrain.terrain->height, heights);
-	w->entities[index].terrain.terrain->update(-1, -1, -1, -1, TerrainUpdateAll);
+	auto terrain = w->entity(index)->get_component<TerrainRef>()->terrain;
+	std::swap(terrain->num_x, nx);
+	std::swap(terrain->num_z, nz);
+	std::swap(terrain->height, heights);
+	terrain->update(-1, -1, -1, -1, TerrainUpdateAll);
 	return nullptr;
 }
 

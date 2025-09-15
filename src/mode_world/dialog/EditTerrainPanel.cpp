@@ -34,20 +34,20 @@ Dialog edit-terrain-panel ''
 	min_width_user = 320;
 
 	event("resize", [this] {
-		auto& t = mode_terrain->terrain();
-		IntPairDialog::ask(this, "New terrain size", t.terrain->num_x, t.terrain->num_z).then([this] (const base::tuple<int,int>& size) {
+		auto t = mode_terrain->terrain();
+		IntPairDialog::ask(this, "New terrain size", t->num_x, t->num_z).then([this] (const base::tuple<int,int>& size) {
 			mode_terrain->data->execute(new ActionWorldResizeTerrain(mode_terrain->index, size.a, size.b));
 		});
 	});
 	event("load-heightmap", [this] {
 		mode_terrain->session->storage->file_dialog(FD_TEXTURE, false, false).then([this] (const ComplexPath& path) {
 			FloatDialog::ask(this, "Maximum height", 10.0f).then([this, path] (float scale) {
-				auto& t = mode_terrain->terrain();
+				auto t = mode_terrain->terrain();
 				auto im = Image::load(path.complete);
-				for (int i=0; i<t.terrain->num_x; i++)
-					for (int j=0; j<t.terrain->num_z; j++)
-						t.terrain->height[i * (t.terrain->num_z+1) + j] = im->get_pixel(i % im->width, j % im->height).brightness() * scale;
-				t.terrain->update(-1, -1, -1, -1, TerrainUpdateAll);
+				for (int i=0; i<t->num_x; i++)
+					for (int j=0; j<t->num_z; j++)
+						t->height[i * (t->num_z+1) + j] = im->get_pixel(i % im->width, j % im->height).brightness() * scale;
+				t->update(-1, -1, -1, -1, TerrainUpdateAll);
 				delete im;
 			});
 		});

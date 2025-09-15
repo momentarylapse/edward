@@ -49,9 +49,21 @@ Dialog entity-base-panel ''
 	void update(ModeWorld* mode) {
 		reset("list");
 		const auto& sel = mode->multi_view->selection[MultiViewType::WORLD_ENTITY];
-		for (const auto& [i,e]: enumerate(mode->data->entities))
+		for (const auto& [i,e]: enumerate(mode->data->entity_manager->get_component_list<EdwardTag>()))
 			if (sel.contains(i)) {
-				string name = "???";
+				string name = "Entity";
+				if (e->owner->get_component<Camera>())
+					name = "Camera";
+				if (e->owner->get_component<Light>())
+					name = "Light";
+				if (e->owner->get_component<TerrainRef>())
+					name = "Terrain";
+				if (auto r = e->owner->get_component<ModelRef>()) {
+					name = "Model (no file)";
+					if (r->model)
+						name += " " + str(r->model->filename());
+				}
+#if 0
 				if (e.basic_type == MultiViewType::WORLD_OBJECT)
 					name = "Model " + str(e.object.filename);
 				else if (e.basic_type == MultiViewType::WORLD_TERRAIN)
@@ -62,6 +74,7 @@ Dialog entity-base-panel ''
 					name = "Camera";*/
 				else if (e.basic_type == MultiViewType::WORLD_ENTITY)
 					name = "Entity";
+#endif
 				add_string("list", name);
 			}
 	}
@@ -290,14 +303,14 @@ Dialog terrain-panel ''
 			set_string("cells", format("%d x %d", t->num_x, t->num_z));
 		}
 		event("size-x", [this] {
-			auto& e = data->entities[index];
-			auto& t = e.terrain;
-			data->edit_terrain_meta_data(index, {get_float("size-x") / (float)t.terrain->num_x, 0, t.terrain->pattern.z});
+			auto e = data->entity(index);
+			if (auto t = e->get_component<TerrainRef>()->terrain)
+				data->edit_terrain_meta_data(index, {get_float("size-x") / (float)t->num_x, 0, t->pattern.z});
 		});
 		event("size-z", [this] {
-			auto& e = data->entities[index];
-			auto& t = e.terrain;
-			data->edit_terrain_meta_data(index, {t.terrain->pattern.x, 0, get_float("size-z") / (float)t.terrain->num_z});
+			auto e = data->entity(index);
+			if (auto t = e->get_component<TerrainRef>()->terrain)
+				data->edit_terrain_meta_data(index, {t->pattern.x, 0, get_float("size-z") / (float)t->num_z});
 		});
 		event("edit", [this] {
 			data->session->set_mode(new ModeEditTerrain(data->session->mode_world, index));

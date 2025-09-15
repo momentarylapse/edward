@@ -148,11 +148,7 @@ void DataWorld::reset() {
 	filename = "";
 
 	// delete old data...
-	for (int i=0;i<entities.num;i++)
-		if (entities[i].object.object)
-			delete entities[i].object.object;
-
-	entities.clear();
+	entity_manager->reset();
 	links.clear();
 
 	EgoIndex = -1;
@@ -236,12 +232,6 @@ Entity *DataWorld::entity(int index) {
 
 
 void DataWorld::update_data() {
-	for (auto&& [i, e]: enumerate(entities)) {
-		if (e.basic_type == MultiViewType::WORLD_OBJECT)
-			e.object.update_data();
-		if (e.basic_type == MultiViewType::WORLD_TERRAIN)
-			e.terrain.update_data();
-	}
 }
 
 #if 0
@@ -274,15 +264,15 @@ void DataWorld::edit_light(int index, const WorldLight& l) {
 
 
 void DataWorld::copy(DataWorld& temp, const Data::Selection& sel) const {
-	temp.entities.clear();
+	/*temp.entities.clear();
 
 	for (auto&& [i, o]: enumerate(entities))
 		if (sel[MultiViewType::WORLD_ENTITY].contains(i))
-			temp.entities.add(o);
+			temp.entities.add(o);*/
 }
 
 bool DataWorld::is_empty() const {
-	return entities.num == 0;
+	return entity_manager->entities.num == 0;
 }
 
 void DataWorld::paste(const DataWorld& temp) {

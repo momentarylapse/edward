@@ -94,7 +94,6 @@ public:
 
 	void update_data();
 
-	Array<WorldEntity> entities;
 	int EgoIndex;
 
 	owned<EntityManager> entity_manager;
