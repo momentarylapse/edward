@@ -5,32 +5,40 @@
  *      Author: michi
  */
 
-#ifndef SRC_PLUGINS_PLUGINMANAGER_H_
-#define SRC_PLUGINS_PLUGINMANAGER_H_
+#pragma once
 
-#include "../lib/base/base.h"
+#include <lib/base/base.h>
 
 class Path;
 class Profiler;
-struct TemplateDataScriptVariable;
+struct ScriptInstanceDataVariable;
 namespace kaba {
 	class Class;
 	class Exporter;
 }
+struct vec3;
+struct color;
 
-class PluginManager {
-public:
-	static void init();
-	static void export_kaba_package_y(kaba::Exporter* exporter);
-	static void import_kaba();
+namespace PluginManager {
+	void init();
+	void export_kaba_package_y(kaba::Exporter* exporter);
+	void import_kaba();
 
-	static const kaba::Class *find_class(const Path &filename, const string &name);
-	static const kaba::Class *find_class_derived(const Path &filename, const string &base_class);
-	static void *create_instance(const kaba::Class *type, const string &variables);
-	static void *create_instance(const kaba::Class *type, const Array<TemplateDataScriptVariable> &variables);
-	static void *create_instance_auto(const string& extended_type_name);
-	static void assign_variables(void *p, const kaba::Class *c, const Array<TemplateDataScriptVariable> &variables);
+	const kaba::Class *find_class(const Path &filename, const string &name);
+	const kaba::Class *find_class_derived(const Path &filename, const string &base_class);
+	void *create_instance(const kaba::Class *type, const string &variables);
+	void *create_instance(const kaba::Class *type, const Array<ScriptInstanceDataVariable> &variables);
+	void *create_instance_auto(const string& extended_type_name);
+	void assign_variables(void *p, const kaba::Class *c, const Array<ScriptInstanceDataVariable> &variables);
+
+	string whatever_to_string(const void* instance, int offset, const kaba::Class* c);
+	void whatever_from_string(void* p, const kaba::Class* type, const string& value);
+
+	Array<ScriptInstanceDataVariable> parse_variables(const string &var);
+
+	vec3 s2v(const string &s);
+	// RGBA
+	color s2c(const string &s);
 
 };
 
-#endif /* SRC_PLUGINS_PLUGINMANAGER_H_ */

@@ -65,14 +65,19 @@
 #include "../world/components/UserMesh.h"
 #include "../world/components/MultiInstance.h"
 #include "../world/components/CubeMapSource.h"
-#include "../meta.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/ygraphics/Context.h>
 #include "../lib/kaba/dynamic/exception.h"
 #include "../lib/os/msg.h"
 #include "../lib/image/image.h"
 #include "y/EntityManager.h"
+#include "y/BaseClass.h"
 
+namespace kaba {
+	extern const Class* TypePath;
+}
+
+namespace PluginManager {
 
 //using namespace yrenderer;
 using namespace ygfx;
@@ -180,7 +185,7 @@ mat4 scene_view_shadow_projection(yrenderer::SceneView* s) {
 	return s->lights[s->shadow_indices[0]]->shadow_projection;
 }
 
-void PluginManager::init() {
+void init() {
 	kaba::default_context->register_package_init("y", engine.script_dir | "y", &export_kaba_package_y);
 	import_kaba();
 }
@@ -424,6 +429,13 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("CollisionData.pos", &CollisionData::pos);
 	ext->declare_class_element("CollisionData.n", &CollisionData::n);
 
+	ext->declare_class_size("ModelRef", sizeof(ModelRef));
+	ext->declare_class_element("ModelRef.filename", &ModelRef::filename);
+	ext->declare_class_element("ModelRef.model", &ModelRef::model);
+
+	ext->declare_class_size("TerrainRef", sizeof(TerrainRef));
+	ext->declare_class_element("TerrainRef.filename", &TerrainRef::filename);
+	ext->declare_class_element("TerrainRef.terrain", &TerrainRef::terrain);
 
 	ext->declare_class_element("World.background", &World::background);
 	ext->declare_class_element("World.skyboxes", &World::skybox);
@@ -470,6 +482,7 @@ void export_world(kaba::Exporter* ext) {
 
 	Light light(yrenderer::LightType::DIRECTIONAL, Black);
 	ext->declare_class_size("Light", sizeof(Light));
+	ext->declare_class_element("Light.type", _OFFSET(light, light.type));
 	ext->declare_class_element("Light.dir", _OFFSET(light, light.light.dir));
 	ext->declare_class_element("Light.color", _OFFSET(light, light.light.col));
 	ext->declare_class_element("Light.radius", _OFFSET(light, light.light.radius));
@@ -511,7 +524,12 @@ void export_gfx(kaba::Exporter* ext) {
 	ext->link_func("create_shader", &__create_shader);
 	ext->link_func("load_texture", &__load_texture);
 
-	ext->link("tex_white", &engine.context->tex_white);
+	static void* dummy = nullptr;
+
+	if (engine.context)
+		ext->link("tex_white", &engine.context->tex_white);
+	else
+		ext->link("tex_white", &dummy);
 }
 
 void export_fx(kaba::Exporter* ext) {
@@ -694,7 +712,7 @@ void export_ui(kaba::Exporter* ext) {
 	ext->link_class_func("VRDevice.clicked", &input::VRDevice::clicked);
 	ext->link_class_func("VRDevice.axis", &input::VRDevice::axis);
 #else
-	int dummy;
+	static int dummy;
 	ext->link("key_state", &dummy);
 	ext->link("key_down", &dummy);
 	ext->link("key_up", &dummy);
@@ -702,8 +720,10 @@ void export_ui(kaba::Exporter* ext) {
 	ext->link("mouse", &dummy);
 	ext->link("dmouse", &dummy);
 	ext->link("scroll", &dummy);
+	ext->link("vr_active", &dummy);
 	ext->link("link_mouse_and_keyboard_into_pad", &dummy);
 	ext->link("get_pad", &dummy);
+	ext->link("get_vr_device", &dummy);
 
 	ext->declare_class_size("Gamepad", 1);
 	ext->declare_class_element("Gamepad.deadzone", &dummy);
@@ -713,6 +733,10 @@ void export_ui(kaba::Exporter* ext) {
 	ext->link_class_func("Gamepad.axis", &dummy);
 	ext->link_class_func("Gamepad.button", &dummy);
 	ext->link_class_func("Gamepad.clicked", &dummy);
+
+	ext->link_class_func("VRDevice.button", &dummy);
+	ext->link_class_func("VRDevice.clicked", &dummy);
+	ext->link_class_func("VRDevice.axis", &dummy);
 #endif
 
 	ext->link("toplevel", &gui::toplevel);
@@ -873,7 +897,7 @@ void export_renderer(kaba::Exporter* ext) {
 	ext->link_class_func("FullCameraRenderer.get_cubemap", &camera_renderer_get_cubemap);
 }
 
-void PluginManager::export_kaba_package_y(kaba::Exporter* ext) {
+void export_kaba_package_y(kaba::Exporter* ext) {
 	export_gfx(ext);
 	export_ecs(ext);
 	export_world(ext);
@@ -899,7 +923,7 @@ void import_component_class(shared<kaba::Module> m, const string &name) {
 		throw Exception(format("y.kaba: %s not derived from Component", name));
 }
 
-void PluginManager::import_kaba() {
+void import_kaba() {
 	auto m_model = kaba::default_context->load_module("y/model.kaba");
 	import_component_class<Animator>(m_model, "Animator");
 	import_component_class<Skeleton>(m_model, "Skeleton");
@@ -937,40 +961,80 @@ void PluginManager::import_kaba() {
 	//msg_write(MeshCollider::_class->parent->parent->name);
 }
 
-Array<TemplateDataScriptVariable> parse_variables(const string &var) {
-	Array<TemplateDataScriptVariable> r;
+Array<ScriptInstanceDataVariable> parse_variables(const string &var) {
+	Array<ScriptInstanceDataVariable> r;
 	auto xx = var.explode(",");
 	for (auto &x: xx) {
 		auto y = x.explode(":");
 		auto name = y[0].trim().lower().replace("_", "");
 		if (y[1].trim().match("\"*\""))
-			r.add({name, y[1].trim().sub_ref(1, -1)});
+			r.add({name, "", y[1].trim().sub_ref(1, -1)});
 		else
-			r.add({name, y[1].trim().unescape()});
+			r.add({name, "", y[1].trim().unescape()});
 	}
 	return r;
 }
 
-void PluginManager::assign_variables(void *_p, const kaba::Class *c, const Array<TemplateDataScriptVariable> &variables) {
-	char *p = (char*)_p;
-	for (auto &v: variables) {
-		for (auto &e: c->elements) {
-			if (v.name == e.name.lower().replace("_", "")) {
-				//msg_write("  " + e.type->long_name() + " " + e.name + " = " + v.value);
-				if (e.type == kaba::TypeInt32)
-					*(int*)(p + e.offset) = v.value._int();
-				else if (e.type == kaba::TypeFloat32)
-					*(float*)(p + e.offset) = v.value._float();
-				else if (e.type == kaba::TypeBool)
-					*(bool*)(p + e.offset) = v.value._bool();
-				else if (e.type == kaba::TypeString)
-					*(string*)(p + e.offset) = v.value;
-			}
-		}
-	}
+vec3 s2v(const string &s) {
+	auto x = s.explode(" ");
+	return vec3(x[0]._float(), x[1]._float(), x[2]._float());
 }
 
-const kaba::Class *PluginManager::find_class_derived(const Path &filename, const string &base_class) {
+color s2c(const string &s) {
+	auto x = s.explode(" ");
+	return color(x[3]._float(), x[0]._float(), x[1]._float(), x[2]._float());
+}
+
+string whatever_to_string(const void* instance, int offset, const kaba::Class* c) {
+	if (!instance)
+		return "";
+	auto p = (const char*)instance + offset;
+	if (c == kaba::TypeString)
+		return *(const string*)p;
+	if (c == kaba::TypePath)
+		return str(*(const Path*)p);
+	if (c == kaba::TypeFloat32)
+		return f2s(*(const float*)p, 3);
+	if (c == kaba::TypeInt32 or c->is_enum())
+		return str(*(const int*)p);
+	if (c == kaba::TypeVec3) {
+		const auto v = *(const vec3*)p;
+		return format("%.3f %.3f %.3f", v.x, v.y, v.z);
+	}
+	if (c == kaba::TypeColor) {
+		const auto v = *(const color*)p;
+		return format("%.3f %.3f %.3f %.3f", v.r, v.g, v.b, v.a);
+	}
+	return "???";
+}
+
+void whatever_from_string(void* p, const kaba::Class* type, const string& value) {
+	if (type == kaba::TypeString)
+		*(string*)p = value;
+	if (type == kaba::TypePath)
+		*(Path*)p = value;
+	if (type == kaba::TypeFloat32)
+		*(float*)p = value._float();
+	if (type == kaba::TypeInt32 or type->is_enum())
+		*(int*)p = value._int();
+	if (type == kaba::TypeBool)
+		*(bool*)p = value._bool();
+	if (type == kaba::TypeVec3)
+		*(vec3*)p = s2v(value);
+	if (type == kaba::TypeColor)
+		*(color*)p = s2c(value);
+}
+
+void assign_variables(void* p, const kaba::Class* c, const Array<ScriptInstanceDataVariable>& variables) {
+	for (const auto& v: variables)
+		for (const auto& e: c->elements)
+			if (v.name == e.name) {
+				//msg_write("  " + e.type->long_name() + " " + e.name + " = " + v.value);
+				whatever_from_string((char*)p + e.offset, e.type, v.value);
+			}
+}
+
+const kaba::Class *find_class_derived(const Path &filename, const string &base_class) {
 	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
 	try {
 		auto s = kaba::default_context->load_module(filename);
@@ -987,7 +1051,7 @@ const kaba::Class *PluginManager::find_class_derived(const Path &filename, const
 	return nullptr;
 }
 
-const kaba::Class *PluginManager::find_class(const Path &filename, const string &name) {
+const kaba::Class *find_class(const Path &filename, const string &name) {
 	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
 	try {
 		auto s = kaba::default_context->load_module(filename);
@@ -1004,11 +1068,11 @@ const kaba::Class *PluginManager::find_class(const Path &filename, const string 
 	return nullptr;
 }
 
-void *PluginManager::create_instance(const kaba::Class *c, const string &variables) {
+void *create_instance(const kaba::Class *c, const string &variables) {
 	return create_instance(c, parse_variables(variables));
 }
 
-void *PluginManager::create_instance(const kaba::Class *c, const Array<TemplateDataScriptVariable> &variables) {
+void *create_instance(const kaba::Class *c, const Array<ScriptInstanceDataVariable> &variables) {
 	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
 	msg_write(format("creating instance  %s", c->long_name()));
 	if (c == SolidBody::_class)
@@ -1046,7 +1110,7 @@ void *PluginManager::create_instance(const kaba::Class *c, const Array<TemplateD
 	return p;
 }
 
-void* PluginManager::create_instance_auto(const string& extended_type_name) {
+void* create_instance_auto(const string& extended_type_name) {
 	auto x = extended_type_name.explode(".");
 	string type = x.back();
 
@@ -1089,6 +1153,9 @@ string callable_name(const void *c) {
 		return t->name_space->owner->module->filename.basename();//relative_to(engine.script_dir).str();
 	}
 	return "callable:" + p2s(c);
+}
+
+
 }
 
 

@@ -64,6 +64,6 @@ public:
 
 	std::function<Component*(const kaba::Class*)> f_create;
 	std::function<void(const kaba::Class*, Component*, const Params& var)> f_apply;
-	std::function<const kaba::Class*(const string&)> f_parse_type;
+	//std::function<const kaba::Class*(const string&)> f_parse_type;
 };
 

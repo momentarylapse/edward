@@ -15,7 +15,7 @@
 
 namespace gui {
 
-Picture::Picture() : Picture(rect::ID, engine.context->tex_white) {}
+Picture::Picture() : Picture(rect::ID, engine.context ? engine.context->tex_white : nullptr) {}
 
 Picture::Picture(const rect &r, shared<ygfx::Texture> tex, const rect &s) :
 	Node(r)

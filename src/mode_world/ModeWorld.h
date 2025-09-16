@@ -2,13 +2,13 @@
 // Created by Michael Ankele on 2025-01-20.
 //
 
-#ifndef MODEWORLD_H
-#define MODEWORLD_H
+#pragma once
 
 #include <lib/base/optional.h>
 #include "../view/Mode.h"
 #include "../view/Hover.h"
 #include "data/DataWorld.h"
+#include <y/world/LevelData.h>
 
 
 namespace yrenderer {
@@ -53,7 +53,7 @@ public:
 	void on_command(const string& id) override;
 
 	DataWorld* data;
-	DataWorld temp;
+	LevelData temp;
 	Array<yrenderer::Light*> lights;
 
 	Array<int> event_ids_rec;
@@ -66,6 +66,3 @@ public:
 	Data::Selection get_selection(MultiViewWindow* win, const rect& r) const;
 };
 
-
-
-#endif //MODEWORLD_H

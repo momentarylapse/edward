@@ -31,28 +31,9 @@ enum class PhysicsMode;
 class Entity;
 class Component;
 class EntityManager;
+struct LevelData;
 
 
-struct WorldScriptVariable {
-	string name;
-	string type;
-	string value;
-};
-
-struct ScriptInstanceData {
-	Path filename;
-	string class_name;
-	Array<WorldScriptVariable> variables;
-	string get(const string& name) const;
-	void set(const string& name, const string& type, const string& value);
-};
-
-/*struct WorldComponent {
-	Path filename;
-	string class_name;
-	Any data;
-	Component* component = nullptr;
-};*/
 
 struct WorldEntity { //: multiview::SingleData {
 	vec3 pos = vec3::ZERO;
@@ -70,8 +51,8 @@ struct WorldEntity { //: multiview::SingleData {
 };
 
 struct EdwardTag : Component {
-	int entity_index;
-	Array<ScriptInstanceData> user_components;
+	int entity_index; // auto updated by ModeWorld
+	Array<ScriptInstanceData> unknown_components;
 	ScriptInstanceData& get(const string& class_name);
 
 	static const kaba::Class* _class;
@@ -144,22 +125,26 @@ public:
 	WorldCamera *add_camera(const WorldCamera& c);
 #endif
 	Entity* add_entity(const vec3& pos, const quaternion& ang);
-	void edit_entity(int index, const vec3& pos, const quaternion& ang);
+	void edit_entity(Entity* e, const vec3& pos, const quaternion& ang);
 	void edit_terrain_meta_data(int index, const vec3& pattern);
-	Component* entity_add_component_generic(int index, const kaba::Class* type, const base::map<string, Any>& variables = {});//, const ScriptInstanceData& c);
+	Component* entity_add_component_generic(Entity* e, const kaba::Class* type, const base::map<string, Any>& variables = {});//, const ScriptInstanceData& c);
 	template<class T>
-	T* entity_add_component(int index, const base::map<string, Any>& variables = {}) {
-		return static_cast<T*>(entity_add_component_generic(index, T::_class, variables));
+	T* entity_add_component(Entity* e, const base::map<string, Any>& variables = {}) {
+		return static_cast<T*>(entity_add_component_generic(e, T::_class, variables));
 	}
-	void entity_remove_component(int index, const kaba::Class* type);
-	void entity_edit_component(int index, const kaba::Class* type, const ScriptInstanceData& c);
-	void entity_add_user_component(int index, const ScriptInstanceData& c);
-	void entity_remove_user_component(int index, int cindex);
-	void entity_edit_user_component(int index, int cindex, const ScriptInstanceData& c);
+	void entity_remove_component(Entity* e, const kaba::Class* type);
+	void entity_edit_component(Entity* e, const kaba::Class* type, const ScriptInstanceData& c);
+	void entity_remove_unknown_component(Entity* e, int cindex);
+	void entity_edit_unknown_component(Entity* e, int cindex, const ScriptInstanceData& c);
 
-	void copy(DataWorld& temp, const Data::Selection& sel) const; // actually not an action
-	void paste(const DataWorld& temp);
+	void copy(LevelData& temp, const Data::Selection& sel) const; // actually not an action
+	void paste(const LevelData& temp, Selection* selection = nullptr);
 	void delete_selection(const Data::Selection& selection);
+
+	// low level (no action)
+	//Entity* _create_entity(const LevelData::Entity& e);
+	Entity* _create_entity(const vec3& pos, const quaternion& ang);
+	void _entity_apply_components(Entity* e, const Array<ScriptInstanceData>& components);
 };
 
 #endif /* DATAWORLD_H_ */

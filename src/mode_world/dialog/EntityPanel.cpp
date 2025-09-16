@@ -30,6 +30,8 @@
 #include <y/world/Light.h>
 
 #include <lib/kaba/syntax/Class.h>
+#include <lib/kaba/syntax/SyntaxTree.h>
+#include <lib/kaba/Module.h>
 #include <cmath>
 
 #include "world/components/Animator.h"
@@ -105,7 +107,7 @@ Dialog entity-base-panel ''
 		event("ang-z", [this] { on_edit(); });
 	}
 	void update_ui() {
-		auto& e = data->entity_manager->entities[index];
+		auto e = data->entity(index);
 		set_float("pos-x", e->pos.x);
 		set_float("pos-y", e->pos.y);
 		set_float("pos-z", e->pos.z);
@@ -115,12 +117,13 @@ Dialog entity-base-panel ''
 		set_float("ang-z", ang.z * 180 / pi);
 	}
 	void on_edit() {
+		auto e = data->entity(index);
 		vec3 pos;
 		pos.x = get_float("pos-x");
 		pos.y = get_float("pos-y");
 		pos.z = get_float("pos-z");
 		auto ang = quaternion::rotation({get_float("ang-x") * pi / 180, get_float("ang-y") * pi / 180, get_float("ang-z") * pi / 180});
-		data->edit_entity(index, pos, ang);
+		data->edit_entity(e, pos, ang);
 	}
 	DataWorld* data;
 	int index;
@@ -128,7 +131,7 @@ Dialog entity-base-panel ''
 
 class CameraPanel : public xhui::Panel {
 public:
-	explicit CameraPanel(DataWorld* _data, int _index, int _cindex) : Panel("camera-panel") {
+	explicit CameraPanel(DataWorld* _data, int _index) : Panel("camera-panel") {
 		from_source(R"foodelim(
 Dialog camera-panel ''
 	Grid ? ''
@@ -147,7 +150,6 @@ Dialog camera-panel ''
 )foodelim");
 		data = _data;
 		index = _index;
-		cindex = _cindex;
 		update_ui();
 
 		event("z-min", [this] { on_edit(); });
@@ -156,22 +158,21 @@ Dialog camera-panel ''
 		event("exposure", [this] { on_edit(); });
 	}
 	DataWorld* data;
-	int index, cindex;;
+	int index;;
 
 	void update_ui() {
-		auto c = data->entity_manager->entities[index]->get_component<Camera>();
+		auto c = data->entity(index)->get_component<Camera>();
 		set_float("z-min", c->min_depth);
 		set_float("z-max", c->max_depth);
 		set_float("fov", c->fov * 180 / pi);
 		set_float("exposure", c->exposure);
 	}
 	void on_edit() {
-		/*auto& c = data->entities[index].get("Camera");
-		c.set("min_depth", "f32", f2s(get_float("z-min"), 3));
-		c.set("max_depth", "f32", f2s(get_float("z-max"), 3));
-		c.set("exposure", "f32", f2s(get_float("exposure"), 3));
-		c.set("fov", "f32", f2s(get_float("fov") * pi / 180, 3));
-		data->entity_edit_component(index, cindex, c);*/
+		auto c = data->entity(index)->get_component<Camera>();
+		c->min_depth = get_float("z-min");
+		c->max_depth = get_float("z-max");
+		c->exposure = get_float("exposure");
+		c->fov = get_float("fov") * pi / 180;
 	}
 };
 
@@ -181,6 +182,9 @@ public:
 		from_source(R"foodelim(
 Dialog light-panel ''
 	Grid ? ''
+		Label ? 'Enabled'
+		CheckBox enabled ''
+		---|
 		Label ? 'Type'
 		ComboBox type 'Directional\\Point\\Cone' range=0:2:1
 		---|
@@ -200,6 +204,9 @@ Dialog light-panel ''
 		Label ? 'Harshness'
 		SpinButton harshness '' range=0:100:1
 		Label ? '%'
+		---|
+		Label ? 'Shadows'
+		CheckBox allow-shadows ''
 )foodelim");
 		data = _data;
 		index = _index;
@@ -209,12 +216,14 @@ Dialog light-panel ''
 			update_ui();
 		});*/
 
+		event("enabled", [this] { on_edit(); });
 		event("type", [this] { on_edit(); });
 		event("radius", [this] { on_edit(); });
 		event("theta", [this] { on_edit(); });
 		event("color", [this] { on_edit(); });
 		event("power", [this] { on_edit(); });
 		event("harshness", [this] { on_edit(); });
+		event("allow-shadows", [this] { on_edit(); });
 	}
 	DataWorld* data;
 	int index;
@@ -223,12 +232,14 @@ Dialog light-panel ''
 		auto e = data->entity_manager->entities[index];
 		auto l = e->get_component<Light>();
 		float b = l->light.light.col.brightness();
+		check("enabled", l->light.enabled);
 		set_int("type", (int)l->light.type);
 		set_float("radius", sqrtf(b*b) / 10);
 		set_float("harshness", l->light.light.harshness * 100);
 		set_float("theta", max(l->light.light.theta * 180 / pi, 0.0f));
 		set_color("color", l->light.light.col * (1.0f / b));
 		set_float("power", b);
+		check("allow-shadows", l->light.allow_shadow);
 		enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL);
 		enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL);
 		enable("theta", l->light.type == yrenderer::LightType::CONE);
@@ -237,6 +248,7 @@ Dialog light-panel ''
 	void on_edit() {
 		auto e = data->entity_manager->entities[index];
 		auto l = e->get_component<Light>();
+		l->light.enabled = is_checked("enabled");
 		l->light.type = (yrenderer::LightType)get_int("type");
 		enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL);
 		enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL);
@@ -254,6 +266,7 @@ Dialog light-panel ''
 			l->light.light.theta = get_float("theta") * pi / 180;
 		}
 		l->light.light.harshness = get_float("harshness") / 100;
+		l->light.allow_shadow = is_checked("allow-shadows");
 		//data->edit_light(index, l);*/
 	}
 };
@@ -426,7 +439,31 @@ Dialog material-panel ''
 	std::function<void(const ComplexPath&)> f_save;
 };
 
-void update_class(Session* session, ScriptInstanceData& _c);
+class UnknownComponentPanel : public xhui::Panel {
+public:
+	explicit UnknownComponentPanel(DataWorld* _data, int _index, int _cindex) : Panel("unknown-component-panel") {
+		from_source(R"foodelim(
+Dialog unknown-component-panel ''
+	Grid grid-variables ''
+)foodelim");
+		data = _data;
+		index = _index;
+		cindex = _cindex;
+
+		auto e = data->entity(index);
+		auto& cc = e->get_component<EdwardTag>()->unknown_components[cindex];
+		data->session->plugin_manager->update_class(cc);
+		set_string("group-component", cc.class_name + " (not found)");
+		set_target("grid-variables");
+		for (const auto& [i, v]: enumerate(cc.variables)) {
+			add_control("Label", v.name, 0, i, "");
+			add_control("Label", v.type, 1, i, "");
+			add_control("Edit", v.value, 2, i, format("var-%d", i));
+		}
+	}
+	DataWorld* data;
+	int index, cindex;
+};
 
 class UserComponentPanel : public xhui::Panel {
 public:
@@ -440,11 +477,12 @@ Dialog user-component-panel ''
 		cindex = _cindex;
 
 		auto e = data->entity(index);
-		auto& cc = e->get_component<EdwardTag>()->user_components[cindex];
-		update_class(data->session, cc);
-		set_string("group-component", cc.class_name);
+		auto c = e->components[cindex];
+		auto type = c->component_type;
+		set_string("group-component", type->name);
 		set_target("grid-variables");
-		for (const auto& [i, v]: enumerate(cc.variables)) {
+		const auto desc = data->session->plugin_manager->describe_class(type, c);
+		for (const auto& [i, v]: enumerate(desc.variables)) {
 			add_control("Label", v.name, 0, i, "");
 			add_control("Label", v.type, 1, i, "");
 			add_control("Edit", v.value, 2, i, format("var-%d", i));
@@ -468,10 +506,22 @@ Dialog solid-body-panel ''
 )foodelim");
 		data = _data;
 		index = _index;
+		update_ui();
+		event("active", [this] { on_edit(); });
+		event("mass", [this] { on_edit(); });
+	}
+	void update_ui() {
 		auto e = data->entity(index);
 		auto sb = e->get_component<SolidBody>();
 		check("active", sb->active);
 		set_float("mass", sb->mass);
+		enable("mass", sb->active);
+	}
+	void on_edit() {
+		auto e = data->entity(index);
+		auto sb = e->get_component<SolidBody>();
+		sb->active = is_checked("active");
+		sb->mass = get_float("mass");
 		enable("mass", sb->active);
 	}
 	DataWorld* data;
@@ -502,28 +552,32 @@ Dialog solid-body-panel ''
 )foodelim");
 		data = _data;
 		event("delete", [this] {
+			auto e = data->entity(entity_index);
 			if (entity_index >= 0 and component_index >= 0) {
-				if (user_component)
-					data->entity_remove_user_component(entity_index, component_index);
+				if (unknown_component)
+					data->entity_remove_unknown_component(e, component_index);
 				else
-					data->entity_remove_component(entity_index, component_type);
+					data->entity_remove_component(e, component_type);
 			}
 		});
 		event("edit", [this] {
 			if (entity_index >= 0 and component_index >= 0 and user_component)
-				data->session->edit_code_file(data->entity(entity_index)->get_component<EdwardTag>()->user_components[component_index].filename);
+				data->session->edit_code_file(data->entity(entity_index)->components[component_index]->component_type->owner->module->filename);
 		});
 	}
 	void update(int _entity_index, const string& category, int _component_index) {
 		entity_index = _entity_index;
 		component_index = _component_index;
+		unknown_component = false;
 		auto e = data->entity_manager->entities[entity_index];
 		if (category == "e")
 			set_class("Entity");
 		else if (category == "c")
 			set_class(e->components[component_index]->component_type->name);
-		else
-			set_class(e->get_component<EdwardTag>()->user_components[component_index].class_name);
+		else {
+			unknown_component = true;
+			set_class(e->get_component<EdwardTag>()->unknown_components[component_index].class_name);
+		}
 		set_string("expander", component_class);
 	}
 	void set_class(const string& _component_class) {
@@ -537,7 +591,10 @@ Dialog solid-body-panel ''
 		}
 
 		auto e = data->entity_manager->entities[entity_index];
-		if (component_class == "Entity") {
+		if (unknown_component) {
+			content_panel = new UnknownComponentPanel(data, entity_index, component_index);
+			user_component = true;
+		} else if (component_class == "Entity") {
 			content_panel = new EntityBasePanel(data, entity_index);
 		} else if (component_class == "ModelRef") {
 			component_type = ModelRef::_class;
@@ -571,7 +628,7 @@ Dialog solid-body-panel ''
 			content_panel = new TerrainPanel(data, entity_index);
 		} else if (component_class == "Camera") {
 			component_type = Camera::_class;
-			content_panel = new CameraPanel(data, entity_index, component_index);
+			content_panel = new CameraPanel(data, entity_index);
 		} else if (component_class == "Light") {
 			component_type = Light::_class;
 			content_panel = new LightPanel(data, entity_index);
@@ -583,6 +640,7 @@ Dialog solid-body-panel ''
 		embed("contents", 0, 0, content_panel);
 		set_visible("delete", component_class != "Entity");
 		set_visible("edit", user_component);
+		enable("edit", !unknown_component);
 	}
 	void set_selected(bool select) {
 		expand("expander", select);
@@ -594,6 +652,7 @@ Dialog solid-body-panel ''
 	string component_class;
 	Panel* content_panel = nullptr;
 	bool user_component = false;
+	bool unknown_component = false;
 };
 
 
@@ -641,11 +700,11 @@ Dialog entity-panel ''
 	});
 
 	event("add-component", [this] {
-		ComponentSelectionDialog::ask(this, mode_world->session).then([this] (const ScriptInstanceData& c) {
-			if (c.filename.is_in("y"))
-				mode_world->data->entity_add_component_generic(cur_index, mode_world->data->entity_manager->component_manager->f_parse_type(c.class_name));
-			else
-				mode_world->data->entity_add_user_component(cur_index, c);
+		ComponentSelectionDialog::ask(this, mode_world->session).then([this] (const kaba::Class* c) {
+			auto e = mode_world->data->entity(cur_index);
+			mode_world->data->entity_add_component_generic(e, c);
+			//else
+			//	mode_world->data->entity_add_user_component(cur_index, c);
 		});
 	});
 
@@ -681,7 +740,7 @@ void EntityPanel::update(bool force) {
 		for (int j=0; j<e->components.num; j++)
 			if (e->components[j]->component_type != EdwardTag::_class)
 				add_string("components", format("%d:c:%d", cur_index, j));
-		for (int j=0; j<e->get_component<EdwardTag>()->user_components.num; j++)
+		for (int j=0; j<e->get_component<EdwardTag>()->unknown_components.num; j++)
 			add_string("components", format("%d:u:%d", cur_index, j));
 
 		set_int("components", 0);

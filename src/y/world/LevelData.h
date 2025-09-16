@@ -25,7 +25,7 @@ namespace yrenderer {
 	enum class LightType;
 }
 class Terrain;
-struct TemplateDataScriptVariable;
+struct ScriptInstanceData;
 class Light;
 class ParticleManager;
 class Particle;
@@ -48,29 +48,24 @@ struct LevelData {
 	void save(const Path &filename);
 
 
-	struct ScriptData {
-		Path filename;
-		string class_name;
-		Array<TemplateDataScriptVariable> variables;
-	};
-
 	struct Terrain {
 		Path filename;
 		vec3 pos;
-		Array<ScriptData> components;
+		Array<ScriptInstanceData> components;
 	};
 
 	struct Object {
 		Path filename;
 		string name;
 		vec3 pos, ang;
-		Array<ScriptData> components;
+		Array<ScriptInstanceData> components;
 	};
 
 	struct Entity {
 		string name;
-		vec3 pos, ang;
-		Array<ScriptData> components;
+		vec3 pos;
+		quaternion ang;
+		Array<ScriptInstanceData> components;
 	};
 
 	struct Light {
@@ -79,20 +74,20 @@ struct LevelData {
 		yrenderer::LightType type;
 		color _color; // physical units
 		float radius, theta, harshness;
-		Array<ScriptData> components;
+		Array<ScriptInstanceData> components;
 	};
 
 	struct Camera {
 		vec3 pos, ang;
 		float fov, min_depth, max_depth, exposure, bloom_factor;
-		Array<ScriptData> components;
+		Array<ScriptInstanceData> components;
 	};
 
 	struct Link {
 		int object[2];
 		LinkType type;
 		vec3 pos, ang;
-		Array<ScriptData> components;
+		Array<ScriptInstanceData> components;
 	};
 
 	Path world_filename;
@@ -103,7 +98,7 @@ struct LevelData {
 	Array<Terrain> terrains;
 	Array<Entity> entities;
 	int ego_index;
-	Array<ScriptData> systems;
+	Array<ScriptInstanceData> systems;
 	Array<Light> lights;
 	Array<Link> links;
 

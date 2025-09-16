@@ -30,13 +30,12 @@
 #include "../../lib/os/msg.h"
 #include "../../lib/doc/xml.h"
 #include <y/EntityManager.h>
+#include <stuff/PluginManager.h>
 #include <meta.h>
 #include <lib/kaba/kaba.h>
 
 
 static string _(const string &s) { return s; }
-
-Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full_base_class);
 
 FormatWorld::FormatWorld(Session *s) : TypedFormat<DataWorld>(s, FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
 }
@@ -68,7 +67,7 @@ static color s2c(const string &s) {
 }
 
 // script vars
-string vars2str(const Array<WorldScriptVariable>& vars) {
+string vars2str(const Array<ScriptInstanceDataVariable>& vars) {
 	string s;
 	for (auto &v: vars) {
 		if (v.value == "")
@@ -80,13 +79,13 @@ string vars2str(const Array<WorldScriptVariable>& vars) {
 	return s;
 }
 
-Array<WorldScriptVariable> str2vars(const string& s) {
-	Array<WorldScriptVariable> vars;
+Array<ScriptInstanceDataVariable> str2vars(const string& s) {
+	Array<ScriptInstanceDataVariable> vars;
 	for (auto &x: s.explode(",")) {
 		auto xx = x.explode(":");
 		if (xx.num != 2)
 			continue;
-		WorldScriptVariable v;
+		ScriptInstanceDataVariable v;
 		v.name = xx[0].trim();
 		v.value = xx[1].trim();
 		vars.add(v);
@@ -114,6 +113,9 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 					auto sb = data->entity_manager->add_component<SolidBody>(m->owner);
 					sb->mass = m->model->_template->solid_body->mass;
 					sb->active = m->model->_template->solid_body->active;
+					sb->passive = m->model->_template->solid_body->passive;
+					sb->g_factor = m->model->_template->solid_body->g_factor;
+					sb->theta_0 = m->model->_template->solid_body->theta_0;
 				}
 				if (m->model->_template->skeleton)
 					data->entity_manager->add_component<Skeleton>(m->owner);
@@ -146,12 +148,12 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 				if (s.class_name == "")
 					system_classes_missing = true;
 			if (system_classes_missing) {
-				const auto system_classes = enumerate_classes(session, "ui.Controller");
+				const auto system_classes = session->plugin_manager->enumerate_classes("ui.Controller");
 				for (auto& s: data->meta_data.systems)
 					if (s.class_name == "") {
-						for (const auto& c: system_classes)
-							if (c.filename == s.filename) {
-								s.class_name = c.class_name;
+						for (const auto c: system_classes)
+							if (c->owner->module->filename == s.filename) {
+								s.class_name = c->name;
 								//s.variables = c.variables;
 							}
 					}
@@ -201,53 +203,25 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	data->meta_data.background_color = ld.background_color;
 	data->meta_data.skybox_files = ld.skybox_filename;
 
-	auto apply_components = [this] (Entity* e, const Array<LevelData::ScriptData>& components) {
-		for (const auto& cc: components) {
-			if (cc.filename == "")
-				continue;
-
-			auto tag = e->get_component<EdwardTag>();
-			ScriptInstanceData c;
-			c.class_name = cc.class_name;
-			c.filename = cc.filename;
-			for (const auto& v: cc.variables) {
-				msg_error((v.name + "  " + v.value));
-				c.variables.add({v.name, "", v.value});
-			}
-			tag->user_components.add(c);
-
-			/*try {
-				auto m = session->kaba_ctx->load_module(cc.filename);
-				PluginManager
-			} catch (Exception& ee) {
-
-			}
-			//cc.filename*/
-		}
-	};
-
 
 	for (auto& e: ld.objects) {
-		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
-		data->entity_manager->add_component<EdwardTag>(o);
+		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
 		auto m = data->entity_manager->add_component<ModelRef>(o);
 		m->filename = e.filename;
-		apply_components(o, e.components);
+		data->_entity_apply_components(o, e.components);
 	}
 	for (auto& e: ld.cameras) {
-		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
-		data->entity_manager->add_component<EdwardTag>(o);
+		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
 		auto c = data->entity_manager->add_component<Camera>(o);
 		c->min_depth = e.min_depth;
 		c->max_depth = e.max_depth;
 		c->exposure = e.exposure;
 		c->fov = e.fov;
 		c->bloom_factor = e.bloom_factor;
-		apply_components(o, e.components);
+		data->_entity_apply_components(o, e.components);
 	}
 	for (auto& e: ld.lights) {
-		auto o = data->entity_manager->create_entity(e.pos, quaternion::rotation(e.ang));
-		data->entity_manager->add_component<EdwardTag>(o);
+		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
 		auto l = data->entity_manager->add_component<Light>(o);
 		l->light.type = e.type;
 		l->light.light.col = e._color;
@@ -255,19 +229,18 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		l->light.light.theta = e.theta;
 		l->light.light.harshness = e.harshness;
 		l->light.enabled = e.enabled;
-		apply_components(o, e.components);
+		l->light.allow_shadow = (l->light.type == yrenderer::LightType::DIRECTIONAL);
+		data->_entity_apply_components(o, e.components);
 	}
 	for (auto& e: ld.terrains) {
-		auto o = data->entity_manager->create_entity(e.pos, quaternion::ID);
-		data->entity_manager->add_component<EdwardTag>(o);
+		auto o = data->_create_entity(e.pos, quaternion::ID);
 		auto t = data->entity_manager->add_component<TerrainRef>(o);
 		t->filename = e.filename;
-		apply_components(o, e.components);
+		data->_entity_apply_components(o, e.components);
 	}
 	for (auto& e: ld.entities) {
-		auto o = data->entity_manager->create_entity(e.pos, quaternion::ID);
-		data->entity_manager->add_component<EdwardTag>(o);
-		apply_components(o, e.components);
+		auto o = data->_create_entity(e.pos, e.ang);
+		data->_entity_apply_components(o, e.components);
 	}
 	for (const auto& ll: ld.links) {
 		WorldLink l;
@@ -294,7 +267,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		s.filename = ss.filename;
 		s.class_name = ss.class_name;
 		for (auto &ee: ss.variables) {
-			WorldScriptVariable v;
+			ScriptInstanceDataVariable v;
 			v.name = ee.name;
 			v.value = ee.value;
 			s.variables.add(v);

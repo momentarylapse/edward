@@ -5,6 +5,7 @@
 #include "EntityManager.h"
 #include "Entity.h"
 #include "Component.h"
+#include <lib/base/iter.h>
 
 EntityManager* EntityManager::global = nullptr;
 
@@ -36,6 +37,14 @@ void EntityManager::delete_entity(Entity* e) {
 	entities.erase(index);
 	delete e;
 }
+
+int EntityManager::entity_index(Entity *entity) const {
+	for (auto&& [i, e]: enumerate(entities))
+		if (e == entity)
+			return i;
+	return -1;
+}
+
 
 
 Component *EntityManager::_add_component_generic_(Entity* entity, const kaba::Class *type, const Params &var) {

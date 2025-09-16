@@ -260,7 +260,7 @@ void World::load_soon(const Path &filename) {
 	next_filename = filename;
 }
 
-void add_user_components(EntityManager* em, Entity *ent, const Array<LevelData::ScriptData> &components) {
+void add_user_components(EntityManager* em, Entity *ent, const Array<ScriptInstanceData>& components) {
 	for (auto &cc: components) {
 		msg_write("add component " + cc.class_name);
 #ifdef _X_ALLOW_X_
@@ -352,7 +352,7 @@ bool World::load(const LevelData &ld) {
 
 	// (raw) entities
 	foreachi(auto &e, ld.entities, i) {
-		auto ee = create_entity(e.pos, quaternion::rotation(e.ang));
+		auto ee = create_entity(e.pos, e.ang);
 
 		add_user_components(entity_manager.get(), ee, e.components);
 	}

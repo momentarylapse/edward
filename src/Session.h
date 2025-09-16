@@ -16,6 +16,8 @@
 #include <lib/ygraphics/graphics-fwd.h>
 #include <lib/yrenderer/Context.h>
 
+#include "stuff/PluginManager.h"
+
 
 class MultiView;
 class Mode;
@@ -27,7 +29,9 @@ class ModeAdministration;
 class Storage;
 class Progress;
 class ResourceManager;
-class PluginManager;
+namespace edward {
+	class PluginManager;
+}
 class DrawingHelper;
 class EdwardWindow;
 namespace codeedit {
@@ -111,7 +115,7 @@ public:
 	yrenderer::Context *ctx;
 	ResourceManager *resource_manager;
 	DrawingHelper *drawing_helper;
-	PluginManager* plugin_manager;
+	edward::PluginManager* plugin_manager;
 
 	Storage *storage;
 	MultiView *multi_view_2d;

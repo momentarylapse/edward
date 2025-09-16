@@ -5,13 +5,20 @@
  *      Author: michi
  */
 
-#ifndef PLUGINMANAGER_H_
-#define PLUGINMANAGER_H_
+#pragma once
 
 #include <lib/base/base.h>
 #include <lib/os/path.h>
 
+namespace kaba {
+	class Class;
+}
+
 class Session;
+struct ScriptInstanceData;
+struct ScriptInstanceDataVariable;
+
+namespace edward {
 
 class PluginManager {
 public:
@@ -46,6 +53,15 @@ public:
 	void execute(const Path &filename);
 
 	void* create_instance(const Path &filename, const string &parent);
+	Array<const kaba::Class*> enumerate_classes(const string& full_base_class);
+	//Array<ScriptInstanceData> enumerate_classes(const string& full_base_class);
+
+	ScriptInstanceData describe_class(const kaba::Class* type, const void* instance = nullptr);
+	void update_class(ScriptInstanceData& c);
+	void set_variables(void* p, const kaba::Class* type, const Array<ScriptInstanceDataVariable>& variables);
+
+	Array<const kaba::Class*> component_classes;
+	Array<const kaba::Class*> system_classes;
 };
 
-#endif /* PLUGINMANAGER_H_ */
+}

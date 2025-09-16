@@ -46,23 +46,6 @@
 
 const kaba::Class* EdwardTag::_class = nullptr;
 
-string ScriptInstanceData::get(const string &name) const {
-	for (const auto& v: variables)
-		if (v.name == name)
-			return v.value;
-	return "";
-}
-
-void ScriptInstanceData::set(const string &name, const string &type, const string &value) {
-	for (auto& v: variables)
-		if (v.name == name) {
-			v.value = value;
-			v.type = type;
-			return;
-		}
-	variables.add({name, type, value});
-}
-
 ScriptInstanceData& WorldEntity::get(const string& class_name) {
 	for (auto& c: components)
 		if (c.class_name == class_name)
@@ -73,7 +56,7 @@ ScriptInstanceData& WorldEntity::get(const string& class_name) {
 }
 
 ScriptInstanceData& EdwardTag::get(const string& class_name) {
-	for (auto& c: user_components)
+	for (auto& c: unknown_components)
 		if (c.class_name == class_name)
 			return c;
 	static ScriptInstanceData dummy;
@@ -107,6 +90,7 @@ DataWorld::DataWorld(Session *s) :
 			return new MeshCollider;
 		if (type == TerrainCollider::_class)
 			return new TerrainCollider;
+		return reinterpret_cast<Component*>(type->create_instance());
 		msg_error("new component..." + p2s(type));
 		msg_write(type->name);
 		return nullptr;
@@ -124,13 +108,13 @@ DataWorld::DataWorld(Session *s) :
 				l->light.light.theta = var["theta"].to_f32();
 		}
 	};
-	entity_manager->component_manager->f_parse_type = [] (const string& name) -> const kaba::Class* {
+	/*entity_manager->component_manager->f_parse_type = [] (const string& name) -> const kaba::Class* {
 		const Array list = {Camera::_class, Light::_class, ModelRef::_class, TerrainRef::_class, Skeleton::_class, Animator::_class, SolidBody::_class, MeshCollider::_class, TerrainCollider::_class, EdwardTag::_class};
 		for (const auto* t: list)
 			if (t->name == name)
 				return t;
 		return nullptr;
-	};
+	};*/
 	reset();
 }
 
@@ -280,20 +264,42 @@ void DataWorld::edit_light(int index, const WorldLight& l) {
 #endif
 
 
-void DataWorld::copy(DataWorld& temp, const Data::Selection& sel) const {
-	/*temp.entities.clear();
+void DataWorld::copy(LevelData& temp, const Data::Selection& sel) const {
+	temp.entities.clear();
 
-	for (auto&& [i, o]: enumerate(entities))
-		if (sel[MultiViewType::WORLD_ENTITY].contains(i))
-			temp.entities.add(o);*/
+	if (sel.contains(MultiViewType::WORLD_ENTITY))
+		for (auto&& [i, e]: enumerate(entity_manager->entities))
+			if (sel[MultiViewType::WORLD_ENTITY].contains(i)) {
+				LevelData::Entity ee;
+				ee.pos = e->pos;
+				ee.ang = e->ang;
+				for (auto c: e->components)
+					if (c->component_type != EdwardTag::_class)
+						ee.components.add(session->plugin_manager->describe_class(c->component_type, c));
+				for (const auto& c: e->get_component<EdwardTag>()->unknown_components)
+					ee.components.add(c);
+
+				temp.entities.add(ee);
+			}
+	if (sel.contains(MultiViewType::WORLD_LINK))
+		for (const auto& [i, o]: enumerate(links))
+			if (sel[MultiViewType::WORLD_LINK].contains(i)) {
+				//links.add(o);
+			}
 }
 
 bool DataWorld::is_empty() const {
 	return entity_manager->entities.num == 0;
 }
 
-void DataWorld::paste(const DataWorld& temp) {
+void DataWorld::paste(const LevelData& temp, Selection* selection) {
 	execute(new ActionWorldPaste(temp));
+	if (selection) {
+		selection->clear();
+		selection->set(MultiViewType::WORLD_ENTITY, {});
+		for (int i=0; i < temp.entities.num; i++)
+			(*selection)[MultiViewType::WORLD_ENTITY].add(entity_manager->entities.num - 1 - i);
+	}
 }
 
 void DataWorld::delete_selection(const Selection& selection) {
@@ -304,8 +310,8 @@ Entity* DataWorld::add_entity(const vec3& pos, const quaternion& ang) {
 	return static_cast<Entity*>(execute(new ActionWorldAddEntity(pos, ang)));
 }
 
-void DataWorld::edit_entity(int index, const vec3& pos, const quaternion& ang) {
-	execute(new ActionWorldEditBaseEntity(index, pos, ang));
+void DataWorld::edit_entity(Entity* e, const vec3& pos, const quaternion& ang) {
+	execute(new ActionWorldEditBaseEntity(entity_manager->entity_index(e), pos, ang));
 }
 
 /*void DataWorld::edit_camera(int index, const WorldCamera& c) {
@@ -317,42 +323,43 @@ void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
 }
 
 
-Component* DataWorld::entity_add_component_generic(int index, const kaba::Class* type, const base::map<string, Any>& variables) {
-	return static_cast<Component*>(execute(new ActionWorldAddComponent(index, type, variables)));
+Component* DataWorld::entity_add_component_generic(Entity* e, const kaba::Class* type, const base::map<string, Any>& variables) {
+	return static_cast<Component*>(execute(new ActionWorldAddComponent(entity_manager->entity_index(e), type, variables)));
 }
-void DataWorld::entity_remove_component(int index, const kaba::Class* type) {
-	execute(new ActionWorldRemoveComponent(index, type));
+void DataWorld::entity_remove_component(Entity* e, const kaba::Class* type) {
+	execute(new ActionWorldRemoveComponent(entity_manager->entity_index(e), type));
 }
-void DataWorld::entity_edit_component(int index, const kaba::Class* type, const ScriptInstanceData& c) {
-	execute(new ActionWorldEditComponent(index, type, c));
-}
-
-void DataWorld::entity_add_user_component(int index, const ScriptInstanceData& c) {
-	execute(new ActionWorldAddUserComponent(index, c));
-}
-void DataWorld::entity_remove_user_component(int index, int cindex) {
-	execute(new ActionWorldRemoveUserComponent(index, cindex));
-}
-void DataWorld::entity_edit_user_component(int index, int cindex, const ScriptInstanceData& c) {
-	//execute(new ActionWorldEditUserComponent(index, cindex, c));
+void DataWorld::entity_edit_component(Entity* e, const kaba::Class* type, const ScriptInstanceData& c) {
+	execute(new ActionWorldEditComponent(entity_manager->entity_index(e), type, c));
 }
 
-#if 0
-Data::Selection DataWorld::get_selection() const {
-	Selection s;
-	s.add({MultiViewType::WORLD_ENTITY, {}});
-	s.add({MultiViewType::WORLD_OBJECT, {}});
-	s.add({MultiViewType::WORLD_TERRAIN, {}});
-	s.add({MultiViewType::WORLD_CAMERA, {}});
-	s.add({MultiViewType::WORLD_LINK, {}});
-	s.add({MultiViewType::WORLD_LIGHT, {}});
-	for (const auto& [i, o]: enumerate(entities))
-		if (o.is_selected)
-			s[MultiViewType::WORLD_ENTITY].add(i);
-	for (const auto& [i, o]: enumerate(links))
-		if (o.is_selected)
-			s[MultiViewType::WORLD_LINK].add(i);
-	return s;
+void DataWorld::entity_remove_unknown_component(Entity* e, int cindex) {
+	execute(new ActionWorldRemoveUnknownComponent(entity_manager->entity_index(e), cindex));
 }
-#endif
+void DataWorld::entity_edit_unknown_component(Entity* e, int cindex, const ScriptInstanceData& c) {
+	//execute(new ActionWorldEditUnknownComponent(index, cindex, c));
+}
+
+Entity *DataWorld::_create_entity(const vec3 &pos, const quaternion &ang) {
+	auto e = entity_manager->create_entity(pos, ang);
+	entity_manager->add_component<EdwardTag>(e);
+	return e;
+}
+
+
+void DataWorld::_entity_apply_components(Entity *e, const Array<ScriptInstanceData> &components) {
+	for (const auto& cc: components) {
+		for (const auto c: session->plugin_manager->component_classes)
+			if (cc.class_name == c->name) {
+				auto comp = entity_manager->_add_component_generic_(e, c);
+				session->plugin_manager->set_variables(comp, c, cc.variables);
+				return;
+			}
+
+		msg_error("UNKNOWN COMPONENT: " + cc.class_name);
+		auto tag = e->get_component<EdwardTag>();
+		tag->unknown_components.add(cc);
+	}
+};
+
 

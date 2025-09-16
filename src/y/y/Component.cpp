@@ -19,7 +19,7 @@ Component::Component() {
 
 Component::~Component() = default;
 
-void Component::set_variables(const Array<TemplateDataScriptVariable>& variables) {
+void Component::set_variables(const Array<ScriptInstanceDataVariable>& variables) {
 	PluginManager::assign_variables(this, component_type, variables);
 }
 

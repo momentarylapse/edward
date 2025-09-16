@@ -9,7 +9,7 @@
 
 class Path;
 class System;
-struct TemplateDataScriptVariable;
+struct ScriptInstanceDataVariable;
 namespace kaba {
 	class Class;
 }
@@ -20,7 +20,7 @@ public:
 
 	static void reset();
 
-	static void create(const Path& filename, const string& name, const Array<TemplateDataScriptVariable> &variables);
+	static void create(const Path& filename, const string& name, const Array<ScriptInstanceDataVariable> &variables);
 	static System *get(const kaba::Class *_class);
 
 	static void handle_iterate_pre(float dt);

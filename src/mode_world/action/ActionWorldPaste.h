@@ -5,22 +5,22 @@
  *      Author: michi
  */
 
-#ifndef ACTIONWORLDPASTE_H_
-#define ACTIONWORLDPASTE_H_
+#pragma once
 
-#include "../../action/ActionGroup.h"
+#include "../../action/Action.h"
+#include <y/world/LevelData.h>
 
 class DataWorld;
 struct WorldEntity;
 
-class ActionWorldPaste : public ActionGroup {
+class ActionWorldPaste : public Action {
 public:
-	explicit ActionWorldPaste(const DataWorld& temp);
+	explicit ActionWorldPaste(const LevelData& temp);
 	string name() override { return "WorldPaste"; }
 
-	void *compose(Data *d) override;
+	void* execute(Data *d) override;
+	void undo(Data *d) override;
 private:
-	//const Array<WorldEntity>& entities;
+	LevelData temp;
 };
 
-#endif /* ACTIONWORLDPASTE_H_ */

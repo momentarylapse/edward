@@ -46,8 +46,7 @@
 
 
 ModeWorld::ModeWorld(Session* session) :
-	Mode(session),
-	temp(session)
+	Mode(session)
 {
 	multi_view = new MultiView(session);
 	data = new DataWorld(session);
@@ -55,63 +54,6 @@ ModeWorld::ModeWorld(Session* session) :
 
 	mode_scripting = new ModeScripting(this);
 	mode_properties = new ModeWorldProperties(this);
-}
-
-Array<WorldScriptVariable> load_variables(const kaba::Class* c) {
-	Array<WorldScriptVariable> variables;
-	for (auto cc: weak(c->constants))
-		if (cc->type.get() == kaba::TypeString and cc->name == "PARAMETERS") {
-			auto params = cc->as_string().explode(",");
-			for (auto& v: c->elements)
-				if (sa_contains(params, v.name)) {
-					if (v.type == kaba::TypeString or v.type == kaba::TypeFloat32 or v.type == kaba::TypeInt32)
-						variables.add({v.name, v.type->name});
-				}
-		}
-	return variables;
-}
-
-// seems quick enough
-Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full_base_class) {
-	string base_class = full_base_class.explode(".").back();
-	Array<ScriptInstanceData> r;
-	auto files = os::fs::search(session->storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
-	for (auto &f: files) {
-		try {
-			auto s = session->kaba_ctx->load_module(session->storage->root_dir_kind[FD_SCRIPT] | f, true);
-			for (auto c: s->classes()) {
-				if (c->is_derived_from_s(full_base_class) and c->name != base_class) {
-					auto variables = load_variables(c);
-					r.add({f, c->name, variables});
-				}
-			}
-		} catch (Exception &e) {
-			msg_error(e.message());
-		}
-	}
-	return r;
-}
-
-
-void update_class(Session* session, ScriptInstanceData& _c) {
-	try {
-		auto context = ownify(kaba::Context::create());
-		auto s = context->load_module(session->storage->root_dir_kind[FD_SCRIPT] | _c.filename, true);
-		for (auto c: s->classes())
-			if (c->name == _c.class_name) {
-				auto variables = load_variables(c);
-				for (const auto& v: variables) {
-					bool has = false;
-					for (const auto& x: _c.variables)
-						if (x.name == v.name)
-							has = true;
-					if (!has)
-						_c.variables.add(v);
-				}
-			}
-	} catch (Exception &e) {
-		msg_error(e.message());
-	}
 }
 
 void ModeWorld::on_enter_rec() {
@@ -127,7 +69,15 @@ void ModeWorld::on_enter_rec() {
 			e->entity_index = i;
 		}
 	};
+	auto update_model_refs = [this]() {
+		// FIXME
+		auto list = data->entity_manager->get_component_list<ModelRef>();
+		for (auto mr: list) {
+			mr->model = session->resource_manager->load_model(mr->filename);
+		}
+	};
 	data->out_changed >> create_sink(update_dummies);
+	data->out_changed >> create_sink(update_model_refs);
 	update_dummies();
 
 	event_ids_rec.add(session->win->event("mode_world", [this] {
@@ -207,38 +157,23 @@ void ModeWorld::on_enter() {
 			int index = session->win->drag.payload.tail(1)._int();
 			data->begin_action_group("new-entity");
 			auto e = data->add_entity(p, quaternion::ID);
-			int i = e->get_component<EdwardTag>()->entity_index;
 			if (index == 0) {
 				// raw entity
 			} else if (index == 1) {
-				auto c = data->entity_add_component<Camera>(i);
+				auto c = data->entity_add_component<Camera>(e);
 			} else if (index == 2) {
-				// directional
-				auto l = data->entity_add_component<Light>(i, {{{"radius", 0.0f}, {"theta", 0.0f}}});
+				auto l = data->entity_add_component<Light>(e, {{{"radius", 0.0f}, {"theta", 0.0f}}});
+				l->light.init(yrenderer::LightType::DIRECTIONAL, White);
 			} else if (index == 3) {
-				// point
-				auto l = data->entity_add_component<Light>(i, {{{"radius", multi_view->view_port.radius * 1.3f}, {"theta", 0.0f}}});
+				auto l = data->entity_add_component<Light>(e, {{{"radius", multi_view->view_port.radius * 1.3f}, {"theta", 0.0f}}});
+				float r = multi_view->view_port.radius * 1.3f;
+				l->light.init(yrenderer::LightType::POINT, White * (r*r/100.0f));
 			} else if (index == 4) {
-				// cone
-				auto l = data->entity_add_component<Light>(i);
-
-				/*e.basic_type = MultiViewType::WORLD_LIGHT;
-				e.light.col = White;
-				e.light.type = yrenderer::LightType::DIRECTIONAL;
-				e.light.radius = 0;
-				e.light.theta = 0;
-				if (index == 3) {
-					e.light.type = yrenderer::LightType::POINT;
-					e.light.radius = multi_view->view_port.radius * 1.3f;
-				} else if (index == 4) {
-					e.light.type = yrenderer::LightType::CONE;
-					e.light.radius = multi_view->view_port.radius * 0.3f;
-					e.light.theta = 0.5f;
-				}
-				e.light.harshness = 1;
-				e.light.enabled = true;*/
+				auto l = data->entity_add_component<Light>(e);
+				float r = multi_view->view_port.radius * 1.3f;
+				l->light.init(yrenderer::LightType::CONE, White * (r*r/100.0f), 0.5f);
 			} else if (index == 5) {
-				auto t = data->entity_add_component<TerrainRef>(i);
+				auto t = data->entity_add_component<TerrainRef>(e);
 	//			e.basic_type = MultiViewType::WORLD_TERRAIN;
 	//			e.terrain.terrain = new Terrain(16, 16, {10, 0, 10}, session->resource_manager->load_material(""));
 			}
@@ -248,8 +183,7 @@ void ModeWorld::on_enter() {
 			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_MODEL));
 			session->set_message(str(fn_rel));
 			auto e = data->add_entity(p, quaternion::ID);
-			int i = e->get_component<EdwardTag>()->entity_index;
-			auto c = data->entity_add_component<ModelRef>(i);
+			auto c = data->entity_add_component<ModelRef>(e);
 			c->filename = fn_rel.no_ext();
 			c->model = session->resource_manager->load_model(c->filename);
 			/*e.pos = p;
@@ -405,7 +339,7 @@ void ModeWorld::on_prepare_scene(const yrenderer::RenderParams& params) {
 		lights[i]->_ang = l->owner->ang;
 		lights[i]->enabled = l->light.enabled;
 		lights[i]->type = l->light.type;
-		lights[i]->allow_shadow = (l->light.type == yrenderer::LightType::DIRECTIONAL);
+		lights[i]->allow_shadow = l->light.allow_shadow;
 		lights[i]->light.col = l->light.light.col;
 		if (!l->light.enabled)
 			lights[i]->light.col = Black;
@@ -664,18 +598,18 @@ void ModeWorld::on_command(const string& id) {
 		data->redo();
 	if (id == "copy") {
 		data->copy(temp, multi_view->selection);
-		if (temp.is_empty())
+		if (temp.entities.num == 0)
 			session->set_message("nothing selected");
 		else
-			session->set_message("copied: " + *world_selection_description(data, multi_view->selection));
+			session->set_message("copied: " + world_selection_description(data, multi_view->selection).value_or("???"));
 	}
 	if (id == "paste") {
-		multi_view->clear_selection();
-		if (temp.is_empty()) {
+		if (temp.entities.num == 0) {
 			session->set_message("nothing to paste");
 		} else {
-			data->paste(temp);
-			session->set_message("pasted: " + *world_selection_description(data, multi_view->selection));
+			data->paste(temp, &multi_view->selection);
+			multi_view->update_selection_box();
+			session->set_message("pasted: " + world_selection_description(data, multi_view->selection).value_or("???"));
 		}
 	}
 	if (id == "delete") {

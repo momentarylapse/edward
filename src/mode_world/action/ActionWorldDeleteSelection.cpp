@@ -12,24 +12,25 @@
 #include "y/EntityManager.h"
 
 ActionWorldDeleteSelection::ActionWorldDeleteSelection(DataWorld* w, const Data::Selection& selection) {
+	w->copy(temp, selection);
 	if (selection.contains(MultiViewType::WORLD_ENTITY))
-		for (auto t: w->entity_manager->get_component_list<EdwardTag>())
-			if (selection[MultiViewType::WORLD_ENTITY].contains(t->entity_index)) {
-				//entities.add(o);
-				entity_indices.add(t->entity_index);
+		for (auto&& [i, e]: enumerate(w->entity_manager->entities))
+			if (selection[MultiViewType::WORLD_ENTITY].contains(i)) {
+				entity_indices.add(i);
 			}
 	if (selection.contains(MultiViewType::WORLD_LINK))
 		for (const auto& [i, o]: enumerate(w->links))
 			if (selection[MultiViewType::WORLD_LINK].contains(i)) {
-				links.add(o);
-				link_indices.add(i);
+		//		link_indices.add(i);
 			}
 }
 
 void *ActionWorldDeleteSelection::execute(Data *d) {
 	auto w = dynamic_cast<DataWorld*>(d);
-	/*for (int i: base::reverse(entity_indices))
-		w->entities.erase(i);*/
+
+	for (int i: base::reverse(entity_indices))
+		w->entity_manager->delete_entity(w->entity(i));
+
 	for (int i: base::reverse(link_indices))
 		w->links.erase(i);
 	return nullptr;
@@ -37,9 +38,18 @@ void *ActionWorldDeleteSelection::execute(Data *d) {
 
 void ActionWorldDeleteSelection::undo(Data *d) {
 	auto w = dynamic_cast<DataWorld*>(d);
-	/*for (const auto& [ii, i]: enumerate(entity_indices))
-		w->entities.insert(entities[ii], i);*/
-	for (const auto& [ii, i]: enumerate(link_indices))
-		w->links.insert(links[ii], i);
+
+	// TODO keep indices...
+	entity_indices.clear();
+	for (const auto& [i, ee]: enumerate(temp.entities)) {
+		entity_indices.add(w->entity_manager->entities.num);
+		auto e = w->entity_manager->create_entity(ee.pos, ee.ang);
+		w->entity_manager->add_component<EdwardTag>(e);
+		w->_entity_apply_components(e, ee.components);
+	}
+
+
+//	for (const auto& [ii, i]: enumerate(link_indices))
+//		w->links.insert(temp.links[ii], i);
 }
 

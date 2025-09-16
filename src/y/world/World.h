@@ -29,7 +29,6 @@ class SolidBody;
 class MultiInstance;
 class Entity;
 class EntityManager;
-struct TemplateDataScriptVariable;
 class Light;
 class Camera;
 class ParticleManager;
@@ -141,7 +140,7 @@ public:
 	Entity *ego;
 
 
-	Array<LevelData::ScriptData> systems;
+	Array<ScriptInstanceData> systems;
 
 
 	btDefaultCollisionConfiguration* collisionConfiguration;

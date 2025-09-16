@@ -21,7 +21,7 @@ const kaba::Class *ParticleGroup::_class = nullptr;
 const kaba::Class *ParticleEmitter::_class = nullptr;
 
 ParticleGroup::ParticleGroup() {
-	if (engine.context->tex_white)
+	if (engine.context and engine.context->tex_white)
 		texture = engine.context->tex_white;
 	source = rect::ID;
 	//pos = vec3::ZERO;

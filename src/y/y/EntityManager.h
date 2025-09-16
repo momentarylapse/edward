@@ -21,6 +21,7 @@ public:
 
 	Entity* create_entity(const vec3& pos, const quaternion& ang);
 	void delete_entity(Entity* entity);
+	int entity_index(Entity* entity) const;
 
 	Component *_add_component_generic_(Entity* entity, const kaba::Class *type, const Params &var = {});
 	void _add_component_external_(Entity* entity, Component *c);

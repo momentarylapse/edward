@@ -52,7 +52,7 @@ private:
 	Component* component = nullptr;
 };
 
-class ActionWorldAddUserComponent : public Action {
+/*class ActionWorldAddUserComponent : public Action {
 public:
 	explicit ActionWorldAddUserComponent(int index, const ScriptInstanceData& c);
 	string name() override { return "WorldAddUserComponent"; }
@@ -63,7 +63,7 @@ public:
 private:
 	int index;
 	ScriptInstanceData component;
-};
+};*/
 
 class ActionWorldRemoveComponent : public Action {
 public:
@@ -79,10 +79,10 @@ private:
 	ScriptInstanceData component;
 };
 
-class ActionWorldRemoveUserComponent : public Action {
+class ActionWorldRemoveUnknownComponent : public Action {
 public:
-	explicit ActionWorldRemoveUserComponent(int index, int cindex);
-	string name() override { return "WorldRemoveUserComponent"; }
+	explicit ActionWorldRemoveUnknownComponent(int index, int cindex);
+	string name() override { return "WorldRemoveUnknownComponent"; }
 
 	void *execute(Data* d) override;
 	void undo(Data* d) override;

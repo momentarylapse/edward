@@ -5,14 +5,12 @@
  *      Author: michi
  */
 
-#ifndef ACTIONWORLDDELETESELECTION_H_
-#define ACTIONWORLDDELETESELECTION_H_
+#pragma once
 
 #include <action/Action.h>
 #include "../data/DataWorld.h"
-#include "../data/WorldObject.h"
-#include "../data/WorldTerrain.h"
 #include "../data/WorldLink.h"
+#include <y/world/LevelData.h>
 
 class ActionWorldDeleteSelection : public Action {
 public:
@@ -22,11 +20,7 @@ public:
 	void *execute(Data *d) override;
 	void undo(Data *d) override;
 
-	Array<WorldEntity> entities;
+	LevelData temp;
 	Array<int> entity_indices;
-
-	Array<WorldLink> links;
 	Array<int> link_indices;
 };
-
-#endif /* ACTIONWORLDDELETESELECTION_H_ */

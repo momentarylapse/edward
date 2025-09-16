@@ -42,7 +42,6 @@ namespace yrenderer {
 	class Material;
 }
 class TraceData;
-struct TemplateDataScriptVariable;
 class ModelTemplate;
 class MeshCollider;
 class SolidBody;

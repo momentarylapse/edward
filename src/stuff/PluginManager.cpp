@@ -44,6 +44,9 @@
 /*#include "../data/material/ShaderNode.h"
 #include "../data/material/ShaderBuilderContext.h"*/
 
+#include "plugins/PluginManager.h"
+
+#include <string>
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
 #include <y/world/Terrain.h>
@@ -51,14 +54,15 @@
 #include <y/world/components/Animator.h>
 #include <y/world/components/SolidBody.h>
 #include <y/world/components/Collider.h>
+#include <storage/Storage.h>
 
-#include "lib/os/msg.h"
+#include <lib/os/msg.h>
 
-
-//Path PluginManager::directory;
 
 
 Session* cur_session = nullptr;
+
+namespace edward {
 
 
 PluginManager::PluginManager(Session* s, const Path &dir) {
@@ -236,11 +240,6 @@ void link_world(kaba::ExternalLinkData* ext) {
 	ext->declare_class_element("ModeWorld.data", &ModeWorld::data);
 }
 
-template<class T>
-void link_component(shared<kaba::Module> mm, const string& name) {
-	T::_class = mm->tree->create_new_class(name, nullptr, sizeof(T), 0, nullptr, {}, mm->tree->base_class, -1);
-}
-
 void PluginManager::link_plugins() {
 	//GlobalMainWin = ed;
 
@@ -334,19 +333,42 @@ void PluginManager::link_plugins() {
 #endif
 }
 
+template<class T>
+void link_component_x(shared<kaba::Module> mm, const string& name) {
+	T::_class = mm->tree->create_new_class(name, nullptr, sizeof(T), 0, nullptr, {}, mm->tree->base_class, -1);
+}
+
 void PluginManager::load_project_stuff(const Path &dir) {
+
+	session->kaba_ctx->register_package_init("y", dir | "Scripts/y", &::PluginManager::export_kaba_package_y);
+
+	component_classes = enumerate_classes("ecs.Component");
+	system_classes = enumerate_classes("ui.Controller");
+
+	auto link_component = [this] (const string& name) -> const kaba::Class* {
+		for (auto* c : component_classes)
+			if (c->name == name)
+				return c;
+		msg_error("component class not linkable: " + name);
+		return nullptr;
+	};
+
+	Camera::_class = link_component("Camera");
+	Light::_class = link_component("Light");
+	SolidBody::_class = link_component("SolidBody");
+	MeshCollider::_class = link_component("MeshCollider");
+	TerrainCollider::_class = link_component("TerrainCollider");
+	Skeleton::_class = link_component("Skeleton");
+	Animator::_class = link_component("Animator");
+	Model::_class = link_component("Model");
+	Terrain::_class = link_component("Terrain");
+	ModelRef::_class = link_component("ModelRef");
+	TerrainRef::_class = link_component("TerrainRef");
+
 	auto mm = session->kaba_ctx->create_empty_module("edward-internal");
 	mm->_pointer_ref_counter = 999999;
-	link_component<Camera>(mm, "Camera");
-	link_component<Light>(mm, "Light");
-	link_component<SolidBody>(mm, "SolidBody");
-	link_component<MeshCollider>(mm, "MeshCollider");
-	link_component<TerrainCollider>(mm, "TerrainCollider");
-	link_component<Skeleton>(mm, "Skeleton");
-	link_component<Animator>(mm, "Animator");
-	link_component<ModelRef>(mm, "ModelRef");
-	link_component<TerrainRef>(mm, "TerrainRef");
-	link_component<EdwardTag>(mm, ":EdwardTag:");
+
+	link_component_x<EdwardTag>(mm, ":EdwardTag:");
 }
 
 void PluginManager::find_plugins() {
@@ -383,4 +405,69 @@ void *PluginManager::create_instance(const Path &filename, const string &parent)
 
 void *PluginManager::Plugin::create_instance(const string &parent) const {
 	return plugin_manager->create_instance(filename, parent);
+}
+
+Array<ScriptInstanceDataVariable> load_variables(const kaba::Class* c, const void* instance = nullptr) {
+	Array<ScriptInstanceDataVariable> variables;
+	for (auto cc: weak(c->constants))
+		if (cc->type.get() == kaba::TypeString and cc->name == "PARAMETERS") {
+			auto params = cc->as_string().explode(",");
+			for (auto& v: c->elements)
+				if (sa_contains(params, v.name)) {
+					variables.add({v.name, v.type->name, ::PluginManager::whatever_to_string(instance, v.offset, v.type)});
+				}
+		}
+	return variables;
+}
+
+// seems quick enough
+Array<const kaba::Class*> PluginManager::enumerate_classes(const string& full_base_class) {
+	string base_class = full_base_class.explode(".").back();
+	Array<const kaba::Class*> r;
+	auto files = os::fs::search(session->storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
+	for (auto &f: files) {
+		try {
+			auto s = session->kaba_ctx->load_module(session->storage->root_dir_kind[FD_SCRIPT] | f);//, true);
+			for (auto c: s->classes())
+				if (c->is_derived_from_s(full_base_class) and c->name != base_class)
+					r.add(c);
+		} catch (Exception &e) {
+			msg_error(e.message());
+		}
+	}
+	return r;
+}
+
+ScriptInstanceData PluginManager::describe_class(const kaba::Class* type, const void* instance) {
+	auto variables = load_variables(type, instance);
+	return {type->name, type->owner->module->filename.relative_to(session->storage->root_dir_kind[FD_SCRIPT]), variables};
+}
+
+
+void PluginManager::update_class(ScriptInstanceData& _c) {
+	try {
+		auto context = ownify(kaba::Context::create());
+		auto s = context->load_module(session->storage->root_dir_kind[FD_SCRIPT] | _c.filename, true);
+		for (auto c: s->classes())
+			if (c->name == _c.class_name) {
+				auto variables = load_variables(c);
+				for (const auto& v: variables) {
+					bool has = false;
+					for (const auto& x: _c.variables)
+						if (x.name == v.name)
+							has = true;
+					if (!has)
+						_c.variables.add(v);
+				}
+			}
+	} catch (Exception &e) {
+		msg_error(e.message());
+	}
+}
+
+void PluginManager::set_variables(void *p, const kaba::Class *type, const Array<ScriptInstanceDataVariable> &variables) {
+	::PluginManager::assign_variables(p, type, variables);
+}
+
+
 }

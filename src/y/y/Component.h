@@ -11,7 +11,7 @@
 
 class Entity;
 class CollisionData;
-struct TemplateDataScriptVariable;
+struct ScriptInstanceDataVariable;
 namespace kaba {
 	class Class;
 }
@@ -26,7 +26,7 @@ public:
 
 	virtual void on_collide(const CollisionData& col) {}
 
-	void set_variables(const Array<TemplateDataScriptVariable>& variables);
+	void set_variables(const Array<ScriptInstanceDataVariable>& variables);
 
 	Entity* owner;
 	const kaba::Class* component_type;
