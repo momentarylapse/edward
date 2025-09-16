@@ -237,11 +237,6 @@ void link_world(kaba::ExternalLinkData* ext) {
 	ext->declare_class_element("ModeWorld.data", &ModeWorld::data);
 }
 
-template<class T>
-void link_component(shared<kaba::Module> mm, const string& name) {
-	T::_class = mm->tree->create_new_class(name, nullptr, sizeof(T), 0, nullptr, {}, mm->tree->base_class, -1);
-}
-
 void PluginManager::link_plugins() {
 	//GlobalMainWin = ed;
 
@@ -335,19 +330,38 @@ void PluginManager::link_plugins() {
 #endif
 }
 
+template<class T>
+void link_component_x(shared<kaba::Module> mm, const string& name) {
+	T::_class = mm->tree->create_new_class(name, nullptr, sizeof(T), 0, nullptr, {}, mm->tree->base_class, -1);
+}
+
 void PluginManager::load_project_stuff(const Path &dir) {
+
+	component_classes = enumerate_classes("ecs.Component");
+	system_classes = enumerate_classes("ui.Controller");
+
+	auto link_component = [this] (const string& name) -> const kaba::Class* {
+		for (auto* c : component_classes)
+			if (c->name == name)
+				return c;
+		msg_error("component class not linkable: " + name);
+		return nullptr;
+	};
+
+	Camera::_class = link_component("Camera");
+	Light::_class = link_component("Light");
+	SolidBody::_class = link_component("SolidBody");
+	MeshCollider::_class = link_component("MeshCollider");
+	TerrainCollider::_class = link_component("TerrainCollider");
+	Skeleton::_class = link_component("Skeleton");
+	Animator::_class = link_component("Animator");
+
 	auto mm = session->kaba_ctx->create_empty_module("edward-internal");
 	mm->_pointer_ref_counter = 999999;
-	link_component<Camera>(mm, "Camera");
-	link_component<Light>(mm, "Light");
-	link_component<SolidBody>(mm, "SolidBody");
-	link_component<MeshCollider>(mm, "MeshCollider");
-	link_component<TerrainCollider>(mm, "TerrainCollider");
-	link_component<Skeleton>(mm, "Skeleton");
-	link_component<Animator>(mm, "Animator");
-	link_component<ModelRef>(mm, "ModelRef");
-	link_component<TerrainRef>(mm, "TerrainRef");
-	link_component<EdwardTag>(mm, ":EdwardTag:");
+
+	link_component_x<ModelRef>(mm, "ModelRef");
+	link_component_x<TerrainRef>(mm, "TerrainRef");
+	link_component_x<EdwardTag>(mm, ":EdwardTag:");
 }
 
 void PluginManager::find_plugins() {

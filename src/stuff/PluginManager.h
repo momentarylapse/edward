@@ -57,6 +57,9 @@ public:
 
 	ScriptInstanceData describe_class(const kaba::Class* type);
 	void update_class(ScriptInstanceData& c);
+
+	Array<const kaba::Class*> component_classes;
+	Array<const kaba::Class*> system_classes;
 };
 
 }
