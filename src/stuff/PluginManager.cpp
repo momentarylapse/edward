@@ -242,7 +242,6 @@ void link_component(shared<kaba::Module> mm, const string& name) {
 }
 
 void PluginManager::link_plugins() {
-
 	//GlobalMainWin = ed;
 
 	auto ext = session->kaba_ctx->external.get();
@@ -255,8 +254,8 @@ void PluginManager::link_plugins() {
 
 	ext->declare_class_element("Edward.cur_mode", &Session::cur_mode);
 
-//	ext->declare_class_element("Mode.name", &ModeBase::name);
-//	ext->declare_class_element("Mode.multi_view", &ModeBase::multi_view);
+	//	ext->declare_class_element("Mode.name", &ModeBase::name);
+	//	ext->declare_class_element("Mode.multi_view", &ModeBase::multi_view);
 
 	ext->declare_class_size("Data", sizeof(Data));
 	ext->declare_class_element("Data.filename", &Data::filename);
@@ -333,8 +332,9 @@ void PluginManager::link_plugins() {
 	ext->link_class_func("shader.BuilderContext.create_temp", &ShaderBuilderContext::create_temp);
 	ext->link_class_func("shader.BuilderContext.create_out", &ShaderBuilderContext::create_out);
 #endif
+}
 
-
+void PluginManager::load_project_stuff(const Path &dir) {
 	auto mm = session->kaba_ctx->create_empty_module("edward-internal");
 	mm->_pointer_ref_counter = 999999;
 	link_component<Camera>(mm, "Camera");

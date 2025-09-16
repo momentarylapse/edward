@@ -17,9 +17,6 @@ class EdwardApp : public xhui::Application {
 public:
 	EdwardApp();
 	//hui::AppStatus on_startup(const Array<string> &arg) override;
-
-
-	PluginManager *plugins;
 };
 
 extern EdwardApp *app;

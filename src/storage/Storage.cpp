@@ -23,8 +23,6 @@
 #include <y/EngineData.h>
 #include "../Session.h"
 #include "../view/EdwardWindow.h"
-#include "lib/yrenderer/MaterialManager.h"
-#include "lib/yrenderer/TextureManager.h"
 
 
 Path Storage::CANONICAL_SUB_DIR[NUM_FDS];
@@ -193,13 +191,14 @@ base::future<void> Storage::auto_save(Data *data) {
 
 
 void Storage::guess_root_directory(const Path &filename) {
+	msg_error("FILE " + str(filename));
 	for (auto &d: filename.all_parents())
 		if (os::fs::exists(d | "game.ini")) {
-			set_root_directory(d);
+			session->load_project(d);
 			return;
 		}
 
-	set_root_directory(filename.parent());
+	session->load_project(filename.parent());
 }
 
 
@@ -209,7 +208,6 @@ void Storage::set_root_directory(const Path &_directory) {
 		return;
 
 	root_dir = directory;
-	msg_error("ROOT: " + str(root_dir));
 
 	bool compact_mode = !os::fs::exists(root_dir | "game.ini");
 
@@ -220,19 +218,6 @@ void Storage::set_root_directory(const Path &_directory) {
 		else
 			root_dir_kind[i] = root_dir | CANONICAL_SUB_DIR[i];
 		last_dir[i] = root_dir_kind[i];
-	}
-
-	engine.set_dirs(root_dir_kind[FD_TEXTURE],
-			root_dir_kind[FD_WORLD],
-			root_dir_kind[FD_MODEL],
-			root_dir_kind[FD_SOUND],
-			root_dir_kind[FD_SCRIPT],
-			root_dir_kind[FD_MATERIAL],
-			root_dir_kind[FD_FONT]);
-	if (session->ctx) {
-		session->ctx->texture_manager->texture_dir = root_dir_kind[FD_TEXTURE];
-		session->ctx->shader_manager->shader_dir = root_dir_kind[FD_SHADERFILE];
-		session->ctx->material_manager->material_dir = root_dir_kind[FD_MATERIAL];
 	}
 }
 

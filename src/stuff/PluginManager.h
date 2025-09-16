@@ -23,6 +23,8 @@ public:
 	void link_plugins_later();
 	void find_plugins();
 
+	void load_project_stuff(const Path& dir);
+
 	enum class PluginType {
 		PLUGIN,
 		SHADER_NODE,

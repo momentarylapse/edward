@@ -37,6 +37,8 @@
 #include <y/world/World.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/target/XhuiRenderer.h>
+#include <lib/yrenderer/MaterialManager.h>
+#include <lib/yrenderer/TextureManager.h>
 #include <lib/kaba/kaba.h>
 
 #include "view/codeeditor/DocumentEditor.h"
@@ -55,6 +57,7 @@ Session *create_session() {
 		s->plugin_manager = new PluginManager(s, os::app::directory_static | "plugins");
 	else
 		s->plugin_manager = new PluginManager(s, os::app::directory_static | ".." | "plugins");
+	s->load_project(xhui::config.get_str("RootDir", ""));
 	s->win = new EdwardWindow(s);
 	return s;
 }
@@ -74,6 +77,30 @@ base::future<Session*> emit_empty_session(Session* parent) {
 	if (session_is_empty(parent))
 		return parent->promise_started.get_future();
 	return emit_new_session();
+}
+
+void Session::load_project(const Path& dir) {
+	if (project_dir == dir)
+		return;
+
+	project_dir = dir;
+	msg_write(">>> project root: " + str(project_dir));
+
+	storage->set_root_directory(dir);
+	engine.set_dirs(storage->root_dir_kind[FD_TEXTURE],
+			storage->root_dir_kind[FD_WORLD],
+			storage->root_dir_kind[FD_MODEL],
+			storage->root_dir_kind[FD_SOUND],
+			storage->root_dir_kind[FD_SCRIPT],
+			storage->root_dir_kind[FD_MATERIAL],
+			storage->root_dir_kind[FD_FONT]);
+	if (ctx) {
+		ctx->texture_manager->texture_dir = storage->root_dir_kind[FD_TEXTURE];
+		ctx->shader_manager->shader_dir = storage->root_dir_kind[FD_SHADERFILE];
+		ctx->material_manager->material_dir = storage->root_dir_kind[FD_MATERIAL];
+	}
+
+	plugin_manager->load_project_stuff(project_dir);
 }
 
 Session::Session() {
@@ -118,8 +145,8 @@ Session::~Session() {
 		delete multi_view_3d;
 	// saving the configuration data...
 #endif
+	xhui::config.set_str("RootDir", str(project_dir));
 	if (storage) {
-		xhui::config.set_str("RootDir", storage->root_dir.str());
 		//xhui::config.set_str("Language", xhui::get_cur_language());
 		/*HuiConfig.set_bool("LocalDocumentation", LocalDocumentation);
 		HuiConfig.set_str("WorldScriptVarFile", WorldScriptVarFile);
@@ -135,78 +162,6 @@ Session::~Session() {
 	//app->end();
 }
 
-
-// UNUSED...
-void Session::create_initial_resources(yrenderer::Context *_ctx) {
-
-	ctx = _ctx;
-
-	// initialize engine
-	resource_manager = new ResourceManager(ctx, "", "", "");
-	ctx->texture_manager = resource_manager->texture_manager;
-	ctx->shader_manager = resource_manager->shader_manager;
-	ctx->material_manager = resource_manager->material_manager;
-///	drawing_helper = new DrawingHelper(ctx, resource_manager, app->directory_static);
-
-	engine.ignore_missing_files = true;
-	engine.set_context(ctx, resource_manager);
-	ctx->load_shader("module-vertex-default.shader");
-	//ResourceManager::default_shader
-
-	CameraInit();
-	GodInit(0);
-
-#if 0
-	multi_view_3d = new MultiView::MultiView(this, true);
-	multi_view_2d = new MultiView::MultiView(this, false);
-	mode_model = new ModeModel(this, multi_view_3d, multi_view_2d);
-	mode_world = new ModeWorld(this, multi_view_3d);
-	mode_font = new ModeFont(this, multi_view_2d);
-	mode_admin = new ModeAdministration(this);
-#endif
-
-	storage = new Storage(this);
-	storage->set_root_directory(xhui::config.get_str("RootDir", ""));
-
-#if 0
-	mode_material = new ModeMaterial(this, multi_view_3d);
-
-	/*mmodel->FFVBinary = mobject->FFVBinary = mitem->FFVBinary = mmaterial->FFVBinary = mworld->FFVBinary = mfont->FFVBinary = false;
-	mworld->FFVBinaryMap = true;*/
-
-	multi_view_3d->out_settings_changed >> create_sink([this] {
-		win->update_menu();
-	});
-	multi_view_3d->out_selection_changed >> create_sink([this] {
-		cur_mode->on_selection_change();
-		win->update_menu();
-	});
-	multi_view_3d->out_viewstage_changed >> create_sink([this] {
-		cur_mode->on_view_stage_change();
-		win->update_menu();
-	});
-	multi_view_3d->out_redraw >> create_sink([this] {
-		win->redraw("nix-area");
-	});
-
-	multi_view_2d->out_settings_changed >> create_sink([this]{
-		win->update_menu();
-	});
-	multi_view_2d->out_selection_changed >> create_sink([this] {
-		cur_mode->on_selection_change();
-		win->update_menu();
-	});
-	multi_view_2d->out_viewstage_changed >> create_sink([this] {
-		cur_mode->on_view_stage_change();
-		win->update_menu();
-	});
-	multi_view_2d->out_redraw >> create_sink([this] {
-		win->redraw("nix-area");
-	});
-#endif
-
-	promise_started(this);
-}
 
 // do we change roots?
 //  -> data loss?

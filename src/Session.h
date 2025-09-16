@@ -71,8 +71,6 @@ public:
 	Session();
 	~Session() override;
 
-	void create_initial_resources(yrenderer::Context *ctx);
-
 	void set_mode(Mode *m);
 	void set_mode_now(Mode *m);
 
@@ -128,6 +126,9 @@ public:
 	owned<kaba::Context> kaba_ctx;
 
 	base::promise<Session*> promise_started;
+
+	Path project_dir;
+	void load_project(const Path& dir);
 };
 
 Session *create_session();
