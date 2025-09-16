@@ -10,15 +10,17 @@
 #include <lib/xhui/Dialog.h>
 
 class Session;
-struct ScriptInstanceData;
+namespace kaba {
+	class Class;
+}
 
 class ComponentSelectionDialog : public xhui::Dialog {
 public:
 	ComponentSelectionDialog(xhui::Panel* parent, Session* session, const string& base_class);
-	base::promise<ScriptInstanceData> promise;
-	Array<ScriptInstanceData> classes;
+	base::promise<const kaba::Class*> promise;
+	Array<const kaba::Class*> classes;
 
-	static base::future<ScriptInstanceData> ask(xhui::Panel* parent, Session* session, const string& base_class = "ecs.Component");
+	static base::future<const kaba::Class*> ask(xhui::Panel* parent, Session* session, const string& base_class = "ecs.Component");
 };
 
 

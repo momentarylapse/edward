@@ -30,13 +30,12 @@
 #include "../../lib/os/msg.h"
 #include "../../lib/doc/xml.h"
 #include <y/EntityManager.h>
+#include <stuff/PluginManager.h>
 #include <meta.h>
 #include <lib/kaba/kaba.h>
 
 
 static string _(const string &s) { return s; }
-
-Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full_base_class);
 
 FormatWorld::FormatWorld(Session *s) : TypedFormat<DataWorld>(s, FD_WORLD, "world", _("World"), Flag::CANONICAL_READ_WRITE) {
 }
@@ -146,12 +145,12 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 				if (s.class_name == "")
 					system_classes_missing = true;
 			if (system_classes_missing) {
-				const auto system_classes = enumerate_classes(session, "ui.Controller");
+				const auto system_classes = session->plugin_manager->enumerate_classes("ui.Controller");
 				for (auto& s: data->meta_data.systems)
 					if (s.class_name == "") {
-						for (const auto& c: system_classes)
-							if (c.filename == s.filename) {
-								s.class_name = c.class_name;
+						for (const auto c: system_classes)
+							if (c->owner->module->filename == s.filename) {
+								s.class_name = c->name;
 								//s.variables = c.variables;
 							}
 					}

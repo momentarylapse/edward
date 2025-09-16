@@ -6,20 +6,25 @@
 #include <lib/base/sort.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/xhui.h>
+#include <stuff/PluginManager.h>
 
-Array<ScriptInstanceData> enumerate_classes(Session *session, const string& full_base_class);
+#include "lib/kaba/Module.h"
+#include "lib/kaba/syntax/Class.h"
+#include "lib/kaba/syntax/SyntaxTree.h"
 
 ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session* session, const string& base_class) : Dialog("component-selection-dialog", parent) {
 	width = 400;
 	height = 600;
 
-	classes = enumerate_classes(session, base_class);
-	classes = base::sorted(classes, [] (const ScriptInstanceData& a, const ScriptInstanceData& b) {
-		return a.class_name <= b.class_name;
+	classes = session->plugin_manager->enumerate_classes(base_class);
+	classes = base::sorted(classes, [] (const kaba::Class* a, const kaba::Class* b) {
+		return a->name <= b->name;
 	});
 
-	for (const auto& c: classes)
-		add_string("list", format("%s\\%s", c.class_name, c.filename));
+	for (const auto c: classes) {
+		auto s = session->plugin_manager->describe_class(c);
+		add_string("list", format("%s\\%s", c->name, s.filename));
+	}
 
 	event("list", [this] {
 		int n = get_int("list");
@@ -34,7 +39,7 @@ ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session*
 	});
 }
 
-base::future<ScriptInstanceData> ComponentSelectionDialog::ask(xhui::Panel* parent, Session* session, const string& base_class) {
+base::future<const kaba::Class*> ComponentSelectionDialog::ask(xhui::Panel* parent, Session* session, const string& base_class) {
 	auto dlg = new ComponentSelectionDialog(parent, session, base_class);
 	parent->open_dialog(dlg);
 	return dlg->promise.get_future();

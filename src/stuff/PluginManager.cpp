@@ -51,14 +51,15 @@
 #include <y/world/components/Animator.h>
 #include <y/world/components/SolidBody.h>
 #include <y/world/components/Collider.h>
+#include <storage/Storage.h>
 
-#include "lib/os/msg.h"
+#include <lib/os/msg.h>
 
-
-//Path PluginManager::directory;
 
 
 Session* cur_session = nullptr;
+
+namespace edward {
 
 
 PluginManager::PluginManager(Session* s, const Path &dir) {
@@ -383,4 +384,67 @@ void *PluginManager::create_instance(const Path &filename, const string &parent)
 
 void *PluginManager::Plugin::create_instance(const string &parent) const {
 	return plugin_manager->create_instance(filename, parent);
+}
+
+
+
+Array<WorldScriptVariable> load_variables(const kaba::Class* c) {
+	Array<WorldScriptVariable> variables;
+	for (auto cc: weak(c->constants))
+		if (cc->type.get() == kaba::TypeString and cc->name == "PARAMETERS") {
+			auto params = cc->as_string().explode(",");
+			for (auto& v: c->elements)
+				if (sa_contains(params, v.name)) {
+					if (v.type == kaba::TypeString or v.type == kaba::TypeFloat32 or v.type == kaba::TypeInt32)
+						variables.add({v.name, v.type->name});
+				}
+		}
+	return variables;
+}
+
+// seems quick enough
+Array<const kaba::Class*> PluginManager::enumerate_classes(const string& full_base_class) {
+	string base_class = full_base_class.explode(".").back();
+	Array<const kaba::Class*> r;
+	auto files = os::fs::search(session->storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
+	for (auto &f: files) {
+		try {
+			auto s = session->kaba_ctx->load_module(session->storage->root_dir_kind[FD_SCRIPT] | f, true);
+			for (auto c: s->classes())
+				if (c->is_derived_from_s(full_base_class) and c->name != base_class)
+					r.add(c);
+		} catch (Exception &e) {
+			msg_error(e.message());
+		}
+	}
+	return r;
+}
+
+ScriptInstanceData PluginManager::describe_class(const kaba::Class* type) {
+	auto variables = load_variables(type);
+	return {type->owner->module->filename.relative_to(session->storage->root_dir_kind[FD_SCRIPT]), type->name, variables};
+}
+
+
+void PluginManager::update_class(ScriptInstanceData& _c) {
+	try {
+		auto context = ownify(kaba::Context::create());
+		auto s = context->load_module(session->storage->root_dir_kind[FD_SCRIPT] | _c.filename, true);
+		for (auto c: s->classes())
+			if (c->name == _c.class_name) {
+				auto variables = load_variables(c);
+				for (const auto& v: variables) {
+					bool has = false;
+					for (const auto& x: _c.variables)
+						if (x.name == v.name)
+							has = true;
+					if (!has)
+						_c.variables.add(v);
+				}
+			}
+	} catch (Exception &e) {
+		msg_error(e.message());
+	}
+}
+
 }

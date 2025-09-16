@@ -54,9 +54,9 @@ Session *create_session() {
 	s->storage = new Storage(s);
 	s->storage->set_root_directory(xhui::config.get_str("RootDir", ""));
 	if (os::app::installed)
-		s->plugin_manager = new PluginManager(s, os::app::directory_static | "plugins");
+		s->plugin_manager = new edward::PluginManager(s, os::app::directory_static | "plugins");
 	else
-		s->plugin_manager = new PluginManager(s, os::app::directory_static | ".." | "plugins");
+		s->plugin_manager = new edward::PluginManager(s, os::app::directory_static | ".." | "plugins");
 	s->load_project(xhui::config.get_str("RootDir", ""));
 	s->win = new EdwardWindow(s);
 	return s;

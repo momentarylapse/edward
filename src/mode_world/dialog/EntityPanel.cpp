@@ -426,8 +426,6 @@ Dialog material-panel ''
 	std::function<void(const ComplexPath&)> f_save;
 };
 
-void update_class(Session* session, ScriptInstanceData& _c);
-
 class UserComponentPanel : public xhui::Panel {
 public:
 	explicit UserComponentPanel(DataWorld* _data, int _index, int _cindex) : Panel("user-component-panel") {
@@ -441,7 +439,7 @@ Dialog user-component-panel ''
 
 		auto e = data->entity(index);
 		auto& cc = e->get_component<EdwardTag>()->user_components[cindex];
-		update_class(data->session, cc);
+		data->session->plugin_manager->update_class(cc);
 		set_string("group-component", cc.class_name);
 		set_target("grid-variables");
 		for (const auto& [i, v]: enumerate(cc.variables)) {
@@ -641,11 +639,10 @@ Dialog entity-panel ''
 	});
 
 	event("add-component", [this] {
-		ComponentSelectionDialog::ask(this, mode_world->session).then([this] (const ScriptInstanceData& c) {
-			if (c.filename.is_in("y"))
-				mode_world->data->entity_add_component_generic(cur_index, mode_world->data->entity_manager->component_manager->f_parse_type(c.class_name));
-			else
-				mode_world->data->entity_add_user_component(cur_index, c);
+		ComponentSelectionDialog::ask(this, mode_world->session).then([this] (const kaba::Class* c) {
+			mode_world->data->entity_add_component_generic(cur_index, c);
+			//else
+			//	mode_world->data->entity_add_user_component(cur_index, c);
 		});
 	});
 

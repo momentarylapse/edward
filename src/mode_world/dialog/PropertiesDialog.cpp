@@ -15,7 +15,7 @@
 #include <world/World.h>
 
 #include "ComponentSelectionDialog.h"
-#include "gui/Node.h"
+#include <stuff/PluginManager.h>
 
 class SystemPanel : public obs::Node<xhui::Panel> {
 public:
@@ -167,8 +167,8 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//
 		apply();
 	});
 	event("add-system", [this] {
-		ComponentSelectionDialog::ask(this, data->session, "ui.Controller").then([this] (const ScriptInstanceData& c) {
-			temp.systems.add(c);
+		ComponentSelectionDialog::ask(this, data->session, "ui.Controller").then([this] (const kaba::Class* c) {
+			temp.systems.add(data->session->plugin_manager->describe_class(c));
 			apply();
 		});
 	});
