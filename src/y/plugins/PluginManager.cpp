@@ -511,7 +511,12 @@ void export_gfx(kaba::Exporter* ext) {
 	ext->link_func("create_shader", &__create_shader);
 	ext->link_func("load_texture", &__load_texture);
 
-	ext->link("tex_white", &engine.context->tex_white);
+	static void* dummy = nullptr;
+
+	if (engine.context)
+		ext->link("tex_white", &engine.context->tex_white);
+	else
+		ext->link("tex_white", &dummy);
 }
 
 void export_fx(kaba::Exporter* ext) {
@@ -694,7 +699,7 @@ void export_ui(kaba::Exporter* ext) {
 	ext->link_class_func("VRDevice.clicked", &input::VRDevice::clicked);
 	ext->link_class_func("VRDevice.axis", &input::VRDevice::axis);
 #else
-	int dummy;
+	static int dummy;
 	ext->link("key_state", &dummy);
 	ext->link("key_down", &dummy);
 	ext->link("key_up", &dummy);
@@ -702,8 +707,10 @@ void export_ui(kaba::Exporter* ext) {
 	ext->link("mouse", &dummy);
 	ext->link("dmouse", &dummy);
 	ext->link("scroll", &dummy);
+	ext->link("vr_active", &dummy);
 	ext->link("link_mouse_and_keyboard_into_pad", &dummy);
 	ext->link("get_pad", &dummy);
+	ext->link("get_vr_device", &dummy);
 
 	ext->declare_class_size("Gamepad", 1);
 	ext->declare_class_element("Gamepad.deadzone", &dummy);
@@ -713,6 +720,10 @@ void export_ui(kaba::Exporter* ext) {
 	ext->link_class_func("Gamepad.axis", &dummy);
 	ext->link_class_func("Gamepad.button", &dummy);
 	ext->link_class_func("Gamepad.clicked", &dummy);
+
+	ext->link_class_func("VRDevice.button", &dummy);
+	ext->link_class_func("VRDevice.clicked", &dummy);
+	ext->link_class_func("VRDevice.axis", &dummy);
 #endif
 
 	ext->link("toplevel", &gui::toplevel);

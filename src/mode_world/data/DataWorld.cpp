@@ -109,6 +109,9 @@ DataWorld::DataWorld(Session *s) :
 			return new TerrainCollider;
 		msg_error("new component..." + p2s(type));
 		msg_write(type->name);
+		return reinterpret_cast<Component*>(type->create_instance());
+		msg_error("new component..." + p2s(type));
+		msg_write(type->name);
 		return nullptr;
 	};
 	entity_manager->component_manager->f_apply = [] (const kaba::Class* type, Component* c, const base::map<string, Any>& var) {

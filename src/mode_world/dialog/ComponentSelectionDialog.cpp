@@ -16,7 +16,7 @@ ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session*
 	width = 400;
 	height = 600;
 
-	classes = session->plugin_manager->enumerate_classes(base_class);
+	classes = session->plugin_manager->component_classes;
 	classes = base::sorted(classes, [] (const kaba::Class* a, const kaba::Class* b) {
 		return a->name <= b->name;
 	});

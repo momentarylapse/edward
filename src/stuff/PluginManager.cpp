@@ -44,6 +44,8 @@
 /*#include "../data/material/ShaderNode.h"
 #include "../data/material/ShaderBuilderContext.h"*/
 
+#include "plugins/PluginManager.h"
+
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
 #include <y/world/Terrain.h>
@@ -337,6 +339,8 @@ void link_component_x(shared<kaba::Module> mm, const string& name) {
 
 void PluginManager::load_project_stuff(const Path &dir) {
 
+	session->kaba_ctx->register_package_init("y", dir | "Scripts/y", &::PluginManager::export_kaba_package_y);
+
 	component_classes = enumerate_classes("ecs.Component");
 	system_classes = enumerate_classes("ui.Controller");
 
@@ -362,6 +366,8 @@ void PluginManager::load_project_stuff(const Path &dir) {
 	link_component_x<ModelRef>(mm, "ModelRef");
 	link_component_x<TerrainRef>(mm, "TerrainRef");
 	link_component_x<EdwardTag>(mm, ":EdwardTag:");
+	component_classes.add(ModelRef::_class);
+	component_classes.add(TerrainRef::_class);
 }
 
 void PluginManager::find_plugins() {
@@ -423,7 +429,7 @@ Array<const kaba::Class*> PluginManager::enumerate_classes(const string& full_ba
 	auto files = os::fs::search(session->storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
 	for (auto &f: files) {
 		try {
-			auto s = session->kaba_ctx->load_module(session->storage->root_dir_kind[FD_SCRIPT] | f, true);
+			auto s = session->kaba_ctx->load_module(session->storage->root_dir_kind[FD_SCRIPT] | f);//, true);
 			for (auto c: s->classes())
 				if (c->is_derived_from_s(full_base_class) and c->name != base_class)
 					r.add(c);
