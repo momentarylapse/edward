@@ -406,9 +406,17 @@ void *PluginManager::Plugin::create_instance(const string &parent) const {
 	return plugin_manager->create_instance(filename, parent);
 }
 
+string whatever_to_string(const void* instance, int offset, const kaba::Class* c) {
+	if (!instance)
+		return "";
+	if (c == kaba::TypeString)
+		return *(const string*)((const char*)instance + offset);
+	if (c == kaba::TypeFloat32)
+		return f2s(*(const float*)((const char*)instance + offset), 3);
+	return "";
+}
 
-
-Array<ScriptInstanceDataVariable> load_variables(const kaba::Class* c) {
+Array<ScriptInstanceDataVariable> load_variables(const kaba::Class* c, const void* instance = nullptr) {
 	Array<ScriptInstanceDataVariable> variables;
 	for (auto cc: weak(c->constants))
 		if (cc->type.get() == kaba::TypeString and cc->name == "PARAMETERS") {
@@ -416,7 +424,7 @@ Array<ScriptInstanceDataVariable> load_variables(const kaba::Class* c) {
 			for (auto& v: c->elements)
 				if (sa_contains(params, v.name)) {
 					if (v.type == kaba::TypeString or v.type == kaba::TypeFloat32 or v.type == kaba::TypeInt32)
-						variables.add({v.name, v.type->name});
+						variables.add({v.name, v.type->name, whatever_to_string(instance, v.offset, v.type)});
 				}
 		}
 	return variables;
@@ -440,8 +448,8 @@ Array<const kaba::Class*> PluginManager::enumerate_classes(const string& full_ba
 	return r;
 }
 
-ScriptInstanceData PluginManager::describe_class(const kaba::Class* type) {
-	auto variables = load_variables(type);
+ScriptInstanceData PluginManager::describe_class(const kaba::Class* type, const void* instance) {
+	auto variables = load_variables(type, (const char*)instance);
 	return {type->name, type->owner->module->filename.relative_to(session->storage->root_dir_kind[FD_SCRIPT]), variables};
 }
 

@@ -156,30 +156,16 @@ void ModeWorld::on_enter() {
 			} else if (index == 1) {
 				auto c = data->entity_add_component<Camera>(i);
 			} else if (index == 2) {
-				// directional
 				auto l = data->entity_add_component<Light>(i, {{{"radius", 0.0f}, {"theta", 0.0f}}});
+				l->light.init(yrenderer::LightType::DIRECTIONAL, White);
 			} else if (index == 3) {
-				// point
 				auto l = data->entity_add_component<Light>(i, {{{"radius", multi_view->view_port.radius * 1.3f}, {"theta", 0.0f}}});
+				float r = multi_view->view_port.radius * 1.3f;
+				l->light.init(yrenderer::LightType::POINT, White * (r*r/100.0f));
 			} else if (index == 4) {
-				// cone
 				auto l = data->entity_add_component<Light>(i);
-
-				/*e.basic_type = MultiViewType::WORLD_LIGHT;
-				e.light.col = White;
-				e.light.type = yrenderer::LightType::DIRECTIONAL;
-				e.light.radius = 0;
-				e.light.theta = 0;
-				if (index == 3) {
-					e.light.type = yrenderer::LightType::POINT;
-					e.light.radius = multi_view->view_port.radius * 1.3f;
-				} else if (index == 4) {
-					e.light.type = yrenderer::LightType::CONE;
-					e.light.radius = multi_view->view_port.radius * 0.3f;
-					e.light.theta = 0.5f;
-				}
-				e.light.harshness = 1;
-				e.light.enabled = true;*/
+				float r = multi_view->view_port.radius * 1.3f;
+				l->light.init(yrenderer::LightType::CONE, White * (r*r/100.0f), 0.5f);
 			} else if (index == 5) {
 				auto t = data->entity_add_component<TerrainRef>(i);
 	//			e.basic_type = MultiViewType::WORLD_TERRAIN;

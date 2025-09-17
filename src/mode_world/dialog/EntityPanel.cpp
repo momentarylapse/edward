@@ -470,12 +470,11 @@ Dialog user-component-panel ''
 		auto type = c->component_type;
 		set_string("group-component", type->name);
 		set_target("grid-variables");
-		for (const auto& [i, v]: enumerate(type->elements)) {
+		const auto desc = data->session->plugin_manager->describe_class(type, c);
+		for (const auto& [i, v]: enumerate(desc.variables)) {
 			add_control("Label", v.name, 0, i, "");
-			add_control("Label", v.type->name, 1, i, "");
-			void* p = (char*)c + v.offset;
-			if (v.type->name == "f32")
-				add_control("Edit", f2s(*(float*)p, 3), 2, i, format("var-%d", i));
+			add_control("Label", v.type, 1, i, "");
+			add_control("Edit", v.value, 2, i, format("var-%d", i));
 		}
 	}
 	DataWorld* data;

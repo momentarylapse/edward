@@ -55,7 +55,7 @@ public:
 	Array<const kaba::Class*> enumerate_classes(const string& full_base_class);
 	//Array<ScriptInstanceData> enumerate_classes(const string& full_base_class);
 
-	ScriptInstanceData describe_class(const kaba::Class* type);
+	ScriptInstanceData describe_class(const kaba::Class* type, const void* instance = nullptr);
 	void update_class(ScriptInstanceData& c);
 
 	Array<const kaba::Class*> component_classes;

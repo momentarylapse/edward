@@ -205,7 +205,6 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 
 			for (const auto c: session->plugin_manager->component_classes)
 				if (cc.class_name == c->name) {
-					msg_write(">>> COMP " + c->name + " <<<");
 					data->entity_manager->_add_component_generic_(e, c);
 					return;
 				}
