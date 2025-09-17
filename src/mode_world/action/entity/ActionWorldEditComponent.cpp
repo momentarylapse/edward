@@ -67,7 +67,7 @@ void ActionWorldAddComponent::undo(Data* d) {
 }
 
 
-ActionWorldAddUserComponent::ActionWorldAddUserComponent(int _index, const ScriptInstanceData& c) {
+/*ActionWorldAddUserComponent::ActionWorldAddUserComponent(int _index, const ScriptInstanceData& c) {
 	index = _index;
 	component = c;
 }
@@ -85,7 +85,7 @@ void ActionWorldAddUserComponent::undo(Data* d) {
 	auto tag = w->entity(index)->get_component<EdwardTag>();
 	tag->user_components.pop();
 	w->out_component_removed();
-}
+}*/
 
 
 ActionWorldRemoveComponent::ActionWorldRemoveComponent(int _index, const kaba::Class* _type) {
@@ -112,24 +112,24 @@ void ActionWorldRemoveComponent::undo(Data* d) {
 }
 
 
-ActionWorldRemoveUserComponent::ActionWorldRemoveUserComponent(int _index, int _cindex) {
+ActionWorldRemoveUnknownComponent::ActionWorldRemoveUnknownComponent(int _index, int _cindex) {
 	index = _index;
 	cindex = _cindex;
 }
 
-void *ActionWorldRemoveUserComponent::execute(Data* d) {
+void *ActionWorldRemoveUnknownComponent::execute(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto tag = w->entity(index)->get_component<EdwardTag>();
-	component = tag->user_components[cindex];
-	tag->user_components.erase(cindex);
+	component = tag->unknown_components[cindex];
+	tag->unknown_components.erase(cindex);
 	w->out_component_removed();
 	return nullptr;
 }
 
-void ActionWorldRemoveUserComponent::undo(Data* d) {
+void ActionWorldRemoveUnknownComponent::undo(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto tag = w->entity(index)->get_component<EdwardTag>();
-	tag->user_components.insert(component, cindex);
+	tag->unknown_components.insert(component, cindex);
 	w->out_component_added();
 }
 

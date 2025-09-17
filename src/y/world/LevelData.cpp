@@ -9,10 +9,9 @@
 #include "Link.h"
 #include "World.h"
 #include <lib/doc/xml.h>
-#include "../meta.h"
 #include <lib/yrenderer/scene/Light.h>
 
-Array<TemplateDataScriptVariable> parse_variables(const string &var);
+Array<ScriptInstanceDataVariable> parse_variables(const string &var);
 
 LevelData::LevelData() {
 	ego_index = -1;
@@ -81,7 +80,7 @@ bool LevelData::load(const Path &filename) {
 				fog.distance = 1.0f / e.value("density")._float();
 				fog._color = s2c(e.value("color"));
 			} else if (e.tag == "script" or e.tag == "system") {
-				ScriptData s;
+				ScriptInstanceData s;
 				s.filename = e.value("file");
 				s.class_name = e.value("class");
 
@@ -91,7 +90,7 @@ bool LevelData::load(const Path &filename) {
 					s.variables = parse_variables(var);
 
 				for (auto &ee: e.elements) {
-					TemplateDataScriptVariable v;
+					ScriptInstanceDataVariable v;
 					v.name = ee.value("name");//.lower().replace("_", "");
 					v.value = ee.value("value");
 					s.variables.add(v);
@@ -101,10 +100,10 @@ bool LevelData::load(const Path &filename) {
 		}
 	}
 
-	auto read_components = [] (Array<ScriptData>& components, xml::Element &e) {
+	auto read_components = [] (Array<ScriptInstanceData>& components, xml::Element &e) {
 		for (const auto &ee: e.elements)
 			if (ee.tag == "component") {
-				ScriptData sd;
+				ScriptInstanceData sd;
 				sd.filename = ee.value("script");
 				sd.class_name = ee.value("class");
 

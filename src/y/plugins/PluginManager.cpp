@@ -65,13 +65,13 @@
 #include "../world/components/UserMesh.h"
 #include "../world/components/MultiInstance.h"
 #include "../world/components/CubeMapSource.h"
-#include "../meta.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/ygraphics/Context.h>
 #include "../lib/kaba/dynamic/exception.h"
 #include "../lib/os/msg.h"
 #include "../lib/image/image.h"
 #include "y/EntityManager.h"
+#include "y/BaseClass.h"
 
 
 //using namespace yrenderer;
@@ -948,8 +948,8 @@ void PluginManager::import_kaba() {
 	//msg_write(MeshCollider::_class->parent->parent->name);
 }
 
-Array<TemplateDataScriptVariable> parse_variables(const string &var) {
-	Array<TemplateDataScriptVariable> r;
+Array<ScriptInstanceDataVariable> parse_variables(const string &var) {
+	Array<ScriptInstanceDataVariable> r;
 	auto xx = var.explode(",");
 	for (auto &x: xx) {
 		auto y = x.explode(":");
@@ -962,7 +962,7 @@ Array<TemplateDataScriptVariable> parse_variables(const string &var) {
 	return r;
 }
 
-void PluginManager::assign_variables(void *_p, const kaba::Class *c, const Array<TemplateDataScriptVariable> &variables) {
+void PluginManager::assign_variables(void *_p, const kaba::Class *c, const Array<ScriptInstanceDataVariable> &variables) {
 	char *p = (char*)_p;
 	for (auto &v: variables) {
 		for (auto &e: c->elements) {
@@ -1019,7 +1019,7 @@ void *PluginManager::create_instance(const kaba::Class *c, const string &variabl
 	return create_instance(c, parse_variables(variables));
 }
 
-void *PluginManager::create_instance(const kaba::Class *c, const Array<TemplateDataScriptVariable> &variables) {
+void *PluginManager::create_instance(const kaba::Class *c, const Array<ScriptInstanceDataVariable> &variables) {
 	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
 	msg_write(format("creating instance  %s", c->long_name()));
 	if (c == SolidBody::_class)

@@ -33,26 +33,6 @@ class Component;
 class EntityManager;
 
 
-struct WorldScriptVariable {
-	string name;
-	string type;
-	string value;
-};
-
-struct ScriptInstanceData {
-	Path filename;
-	string class_name;
-	Array<WorldScriptVariable> variables;
-	string get(const string& name) const;
-	void set(const string& name, const string& type, const string& value);
-};
-
-/*struct WorldComponent {
-	Path filename;
-	string class_name;
-	Any data;
-	Component* component = nullptr;
-};*/
 
 struct WorldEntity { //: multiview::SingleData {
 	vec3 pos = vec3::ZERO;
@@ -71,7 +51,7 @@ struct WorldEntity { //: multiview::SingleData {
 
 struct EdwardTag : Component {
 	int entity_index;
-	Array<ScriptInstanceData> user_components;
+	Array<ScriptInstanceData> unknown_components;
 	ScriptInstanceData& get(const string& class_name);
 
 	static const kaba::Class* _class;
@@ -153,9 +133,8 @@ public:
 	}
 	void entity_remove_component(int index, const kaba::Class* type);
 	void entity_edit_component(int index, const kaba::Class* type, const ScriptInstanceData& c);
-	void entity_add_user_component(int index, const ScriptInstanceData& c);
-	void entity_remove_user_component(int index, int cindex);
-	void entity_edit_user_component(int index, int cindex, const ScriptInstanceData& c);
+	void entity_remove_unknown_component(int index, int cindex);
+	void entity_edit_unknown_component(int index, int cindex, const ScriptInstanceData& c);
 
 	void copy(DataWorld& temp, const Data::Selection& sel) const; // actually not an action
 	void paste(const DataWorld& temp);

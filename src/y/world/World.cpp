@@ -260,7 +260,7 @@ void World::load_soon(const Path &filename) {
 	next_filename = filename;
 }
 
-void add_user_components(EntityManager* em, Entity *ent, const Array<LevelData::ScriptData> &components) {
+void add_user_components(EntityManager* em, Entity *ent, const Array<ScriptInstanceData>& components) {
 	for (auto &cc: components) {
 		msg_write("add component " + cc.class_name);
 #ifdef _X_ALLOW_X_

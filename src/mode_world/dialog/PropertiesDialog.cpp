@@ -13,6 +13,7 @@
 #include <storage/Storage.h>
 #include <view/dialogs/CommonDialogs.h>
 #include <world/World.h>
+#include <y/BaseClass.h>
 
 #include "ComponentSelectionDialog.h"
 #include <stuff/PluginManager.h>
@@ -190,7 +191,7 @@ class <NAME> extends Controller
 	func override on_iterate(dt: f32)
 )foodelim").replace("<NAME>", name));
 
-			temp.systems.add({path.relative, name});
+			temp.systems.add({name, path.relative, {}});
 			apply();
 		});
 	});

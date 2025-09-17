@@ -8,6 +8,7 @@
 #pragma once
 
 #include <lib/base/base.h>
+#include <lib/os/path.h>
 
 namespace kaba {
 	class Class;
@@ -33,4 +34,17 @@ public:
 	virtual void _cdecl on_delete() {}
 
 	Type type;
+};
+
+
+struct ScriptInstanceDataVariable {
+	string name, type, value;
+};
+
+struct ScriptInstanceData {
+	string class_name;
+	Path filename;
+	Array<ScriptInstanceDataVariable> variables;
+	string get(const string& name) const;
+	void set(const string& name, const string& type, const string& value);
 };

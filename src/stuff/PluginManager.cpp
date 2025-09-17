@@ -408,8 +408,8 @@ void *PluginManager::Plugin::create_instance(const string &parent) const {
 
 
 
-Array<WorldScriptVariable> load_variables(const kaba::Class* c) {
-	Array<WorldScriptVariable> variables;
+Array<ScriptInstanceDataVariable> load_variables(const kaba::Class* c) {
+	Array<ScriptInstanceDataVariable> variables;
 	for (auto cc: weak(c->constants))
 		if (cc->type.get() == kaba::TypeString and cc->name == "PARAMETERS") {
 			auto params = cc->as_string().explode(",");
@@ -442,7 +442,7 @@ Array<const kaba::Class*> PluginManager::enumerate_classes(const string& full_ba
 
 ScriptInstanceData PluginManager::describe_class(const kaba::Class* type) {
 	auto variables = load_variables(type);
-	return {type->owner->module->filename.relative_to(session->storage->root_dir_kind[FD_SCRIPT]), type->name, variables};
+	return {type->name, type->owner->module->filename.relative_to(session->storage->root_dir_kind[FD_SCRIPT]), variables};
 }
 
 

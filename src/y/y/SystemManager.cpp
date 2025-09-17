@@ -31,7 +31,7 @@ void SystemManager::reset() {
 	systems.clear();
 }
 
-void SystemManager::create(const Path& filename, const string& __name, const Array<TemplateDataScriptVariable> &variables) {
+void SystemManager::create(const Path& filename, const string& __name, const Array<ScriptInstanceDataVariable> &variables) {
 	msg_write("add system: " + filename.str());
 	auto type = PluginManager::find_class_derived(filename, "ui.Controller");
 	auto *c = reinterpret_cast<System*>(PluginManager::create_instance(type, variables));

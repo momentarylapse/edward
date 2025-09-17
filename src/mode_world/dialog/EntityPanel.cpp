@@ -30,6 +30,8 @@
 #include <y/world/Light.h>
 
 #include <lib/kaba/syntax/Class.h>
+#include <lib/kaba/syntax/SyntaxTree.h>
+#include <lib/kaba/Module.h>
 #include <cmath>
 
 #include "world/components/Animator.h"
@@ -426,6 +428,32 @@ Dialog material-panel ''
 	std::function<void(const ComplexPath&)> f_save;
 };
 
+class UnknownComponentPanel : public xhui::Panel {
+public:
+	explicit UnknownComponentPanel(DataWorld* _data, int _index, int _cindex) : Panel("unknown-component-panel") {
+		from_source(R"foodelim(
+Dialog unknown-component-panel ''
+	Grid grid-variables ''
+)foodelim");
+		data = _data;
+		index = _index;
+		cindex = _cindex;
+
+		auto e = data->entity(index);
+		auto& cc = e->get_component<EdwardTag>()->unknown_components[cindex];
+		data->session->plugin_manager->update_class(cc);
+		set_string("group-component", cc.class_name);
+		set_target("grid-variables");
+		for (const auto& [i, v]: enumerate(cc.variables)) {
+			add_control("Label", v.name, 0, i, "");
+			add_control("Label", v.type, 1, i, "");
+			add_control("Edit", v.value, 2, i, format("var-%d", i));
+		}
+	}
+	DataWorld* data;
+	int index, cindex;
+};
+
 class UserComponentPanel : public xhui::Panel {
 public:
 	explicit UserComponentPanel(DataWorld* _data, int _index, int _cindex) : Panel("user-component-panel") {
@@ -438,14 +466,16 @@ Dialog user-component-panel ''
 		cindex = _cindex;
 
 		auto e = data->entity(index);
-		auto& cc = e->get_component<EdwardTag>()->user_components[cindex];
-		data->session->plugin_manager->update_class(cc);
-		set_string("group-component", cc.class_name);
+		auto c = e->components[cindex];
+		auto type = c->component_type;
+		set_string("group-component", type->name);
 		set_target("grid-variables");
-		for (const auto& [i, v]: enumerate(cc.variables)) {
+		for (const auto& [i, v]: enumerate(type->elements)) {
 			add_control("Label", v.name, 0, i, "");
-			add_control("Label", v.type, 1, i, "");
-			add_control("Edit", v.value, 2, i, format("var-%d", i));
+			add_control("Label", v.type->name, 1, i, "");
+			void* p = (char*)c + v.offset;
+			if (v.type->name == "f32")
+				add_control("Edit", f2s(*(float*)p, 3), 2, i, format("var-%d", i));
 		}
 	}
 	DataWorld* data;
@@ -501,27 +531,30 @@ Dialog solid-body-panel ''
 		data = _data;
 		event("delete", [this] {
 			if (entity_index >= 0 and component_index >= 0) {
-				if (user_component)
-					data->entity_remove_user_component(entity_index, component_index);
+				if (unknown_component)
+					data->entity_remove_unknown_component(entity_index, component_index);
 				else
 					data->entity_remove_component(entity_index, component_type);
 			}
 		});
 		event("edit", [this] {
 			if (entity_index >= 0 and component_index >= 0 and user_component)
-				data->session->edit_code_file(data->entity(entity_index)->get_component<EdwardTag>()->user_components[component_index].filename);
+				data->session->edit_code_file(data->entity(entity_index)->components[component_index]->component_type->owner->module->filename);
 		});
 	}
 	void update(int _entity_index, const string& category, int _component_index) {
 		entity_index = _entity_index;
 		component_index = _component_index;
+		unknown_component = false;
 		auto e = data->entity_manager->entities[entity_index];
 		if (category == "e")
 			set_class("Entity");
 		else if (category == "c")
 			set_class(e->components[component_index]->component_type->name);
-		else
-			set_class(e->get_component<EdwardTag>()->user_components[component_index].class_name);
+		else {
+			unknown_component = true;
+			set_class(e->get_component<EdwardTag>()->unknown_components[component_index].class_name);
+		}
 		set_string("expander", component_class);
 	}
 	void set_class(const string& _component_class) {
@@ -535,7 +568,10 @@ Dialog solid-body-panel ''
 		}
 
 		auto e = data->entity_manager->entities[entity_index];
-		if (component_class == "Entity") {
+		if (unknown_component) {
+			content_panel = new UnknownComponentPanel(data, entity_index, component_index);
+			user_component = true;
+		} else if (component_class == "Entity") {
 			content_panel = new EntityBasePanel(data, entity_index);
 		} else if (component_class == "ModelRef") {
 			component_type = ModelRef::_class;
@@ -581,6 +617,7 @@ Dialog solid-body-panel ''
 		embed("contents", 0, 0, content_panel);
 		set_visible("delete", component_class != "Entity");
 		set_visible("edit", user_component);
+		enable("edit", !unknown_component);
 	}
 	void set_selected(bool select) {
 		expand("expander", select);
@@ -592,6 +629,7 @@ Dialog solid-body-panel ''
 	string component_class;
 	Panel* content_panel = nullptr;
 	bool user_component = false;
+	bool unknown_component = false;
 };
 
 
@@ -678,7 +716,7 @@ void EntityPanel::update(bool force) {
 		for (int j=0; j<e->components.num; j++)
 			if (e->components[j]->component_type != EdwardTag::_class)
 				add_string("components", format("%d:c:%d", cur_index, j));
-		for (int j=0; j<e->get_component<EdwardTag>()->user_components.num; j++)
+		for (int j=0; j<e->get_component<EdwardTag>()->unknown_components.num; j++)
 			add_string("components", format("%d:u:%d", cur_index, j));
 
 		set_int("components", 0);

@@ -46,23 +46,6 @@
 
 const kaba::Class* EdwardTag::_class = nullptr;
 
-string ScriptInstanceData::get(const string &name) const {
-	for (const auto& v: variables)
-		if (v.name == name)
-			return v.value;
-	return "";
-}
-
-void ScriptInstanceData::set(const string &name, const string &type, const string &value) {
-	for (auto& v: variables)
-		if (v.name == name) {
-			v.value = value;
-			v.type = type;
-			return;
-		}
-	variables.add({name, type, value});
-}
-
 ScriptInstanceData& WorldEntity::get(const string& class_name) {
 	for (auto& c: components)
 		if (c.class_name == class_name)
@@ -73,7 +56,7 @@ ScriptInstanceData& WorldEntity::get(const string& class_name) {
 }
 
 ScriptInstanceData& EdwardTag::get(const string& class_name) {
-	for (auto& c: user_components)
+	for (auto& c: unknown_components)
 		if (c.class_name == class_name)
 			return c;
 	static ScriptInstanceData dummy;
@@ -127,13 +110,13 @@ DataWorld::DataWorld(Session *s) :
 				l->light.light.theta = var["theta"].to_f32();
 		}
 	};
-	entity_manager->component_manager->f_parse_type = [] (const string& name) -> const kaba::Class* {
+	/*entity_manager->component_manager->f_parse_type = [] (const string& name) -> const kaba::Class* {
 		const Array list = {Camera::_class, Light::_class, ModelRef::_class, TerrainRef::_class, Skeleton::_class, Animator::_class, SolidBody::_class, MeshCollider::_class, TerrainCollider::_class, EdwardTag::_class};
 		for (const auto* t: list)
 			if (t->name == name)
 				return t;
 		return nullptr;
-	};
+	};*/
 	reset();
 }
 
@@ -330,14 +313,11 @@ void DataWorld::entity_edit_component(int index, const kaba::Class* type, const 
 	execute(new ActionWorldEditComponent(index, type, c));
 }
 
-void DataWorld::entity_add_user_component(int index, const ScriptInstanceData& c) {
-	execute(new ActionWorldAddUserComponent(index, c));
+void DataWorld::entity_remove_unknown_component(int index, int cindex) {
+	execute(new ActionWorldRemoveUnknownComponent(index, cindex));
 }
-void DataWorld::entity_remove_user_component(int index, int cindex) {
-	execute(new ActionWorldRemoveUserComponent(index, cindex));
-}
-void DataWorld::entity_edit_user_component(int index, int cindex, const ScriptInstanceData& c) {
-	//execute(new ActionWorldEditUserComponent(index, cindex, c));
+void DataWorld::entity_edit_unknown_component(int index, int cindex, const ScriptInstanceData& c) {
+	//execute(new ActionWorldEditUnknownComponent(index, cindex, c));
 }
 
 #if 0

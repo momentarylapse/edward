@@ -67,7 +67,7 @@ static color s2c(const string &s) {
 }
 
 // script vars
-string vars2str(const Array<WorldScriptVariable>& vars) {
+string vars2str(const Array<ScriptInstanceDataVariable>& vars) {
 	string s;
 	for (auto &v: vars) {
 		if (v.value == "")
@@ -79,13 +79,13 @@ string vars2str(const Array<WorldScriptVariable>& vars) {
 	return s;
 }
 
-Array<WorldScriptVariable> str2vars(const string& s) {
-	Array<WorldScriptVariable> vars;
+Array<ScriptInstanceDataVariable> str2vars(const string& s) {
+	Array<ScriptInstanceDataVariable> vars;
 	for (auto &x: s.explode(",")) {
 		auto xx = x.explode(":");
 		if (xx.num != 2)
 			continue;
-		WorldScriptVariable v;
+		ScriptInstanceDataVariable v;
 		v.name = xx[0].trim();
 		v.value = xx[1].trim();
 		vars.add(v);
@@ -200,28 +200,19 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	data->meta_data.background_color = ld.background_color;
 	data->meta_data.skybox_files = ld.skybox_filename;
 
-	auto apply_components = [this] (Entity* e, const Array<LevelData::ScriptData>& components) {
+	auto apply_components = [this, data] (Entity* e, const Array<ScriptInstanceData>& components) {
 		for (const auto& cc: components) {
-			if (cc.filename == "")
-				continue;
 
+			for (const auto c: session->plugin_manager->component_classes)
+				if (cc.class_name == c->name) {
+					msg_write(">>> COMP " + c->name + " <<<");
+					data->entity_manager->_add_component_generic_(e, c);
+					return;
+				}
+
+			msg_error("UNKNOWN COMPONENT: " + cc.class_name);
 			auto tag = e->get_component<EdwardTag>();
-			ScriptInstanceData c;
-			c.class_name = cc.class_name;
-			c.filename = cc.filename;
-			for (const auto& v: cc.variables) {
-				msg_error((v.name + "  " + v.value));
-				c.variables.add({v.name, "", v.value});
-			}
-			tag->user_components.add(c);
-
-			/*try {
-				auto m = session->kaba_ctx->load_module(cc.filename);
-				PluginManager
-			} catch (Exception& ee) {
-
-			}
-			//cc.filename*/
+			tag->unknown_components.add(cc);
 		}
 	};
 
@@ -293,7 +284,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		s.filename = ss.filename;
 		s.class_name = ss.class_name;
 		for (auto &ee: ss.variables) {
-			WorldScriptVariable v;
+			ScriptInstanceDataVariable v;
 			v.name = ee.name;
 			v.value = ee.value;
 			s.variables.add(v);
