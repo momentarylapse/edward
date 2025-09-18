@@ -199,7 +199,7 @@ Dialog light-panel ''
 		ColorButton color ''
 		---|
 		Label ? 'Power'
-		SpinButton power '' range=0::0.1
+		SpinButton power '' range=0::0.01
 		---|
 		Label ? 'Harshness'
 		SpinButton harshness '' range=0:100:1

@@ -446,8 +446,7 @@ ScriptInstanceData PluginManager::describe_class(const kaba::Class* type, const 
 
 void PluginManager::update_class(ScriptInstanceData& _c) {
 	try {
-		auto context = ownify(kaba::Context::create());
-		auto s = context->load_module(session->storage->root_dir_kind[FD_SCRIPT] | _c.filename, true);
+		auto s = session->kaba_ctx->load_module(session->storage->root_dir_kind[FD_SCRIPT] | _c.filename, true);
 		for (auto c: s->classes())
 			if (c->name == _c.class_name) {
 				auto variables = load_variables(c);

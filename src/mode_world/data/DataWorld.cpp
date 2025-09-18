@@ -69,6 +69,7 @@ DataWorld::DataWorld(Session *s) :
 	Data(s, FD_WORLD)
 {
 	entity_manager = new EntityManager;
+	entity_manager->init_components = false;
 	entity_manager->component_manager->f_create = [] (const kaba::Class* type) -> Component* {
 		if (type == Camera::_class)
 			return new Camera();

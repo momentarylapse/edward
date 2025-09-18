@@ -55,5 +55,6 @@ public:
 
 //private:
 	Array<Entity*> entities;
+	bool init_components = true;
 };
 
