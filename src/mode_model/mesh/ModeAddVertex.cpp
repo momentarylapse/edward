@@ -8,6 +8,7 @@
 #include <Session.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
+#include <view/DocumentSession.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
 
@@ -35,7 +36,7 @@ void ModeAddVertex::on_draw_post(Painter* p) {
 
 void ModeAddVertex::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		session->set_mode(mode_mesh);
+		doc->set_mode(mode_mesh);
 	}
 }
 

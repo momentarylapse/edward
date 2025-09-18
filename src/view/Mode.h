@@ -16,6 +16,7 @@ namespace yrenderer {
 	struct RenderParams;
 }
 class MultiView;
+class DocumentSession;
 class Session;
 class Painter;
 class Data;
@@ -28,7 +29,7 @@ namespace xhui {
 
 class Mode : public obs::Node<VirtualBase> {
 public:
-	explicit Mode(Session* session);
+	explicit Mode(DocumentSession* doc);
 
 	obs::source out_redraw{this, "redraw"};
 
@@ -58,6 +59,7 @@ public:
 
 	void draw_info(Painter* p, const string& msg);
 
+	DocumentSession* doc = nullptr;
 	Session* session = nullptr;
 	MultiView* multi_view = nullptr;
 	Data* generic_data = nullptr;

@@ -11,13 +11,14 @@
 #include <storage/Storage.h>
 #include <view/MultiView.h>
 #include <view/EdwardWindow.h>
+#include <view/DocumentSession.h>
 #include <lib/xhui/controls/Toolbar.h>
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
-ModeModel::ModeModel(Session* session) : Mode(session) {
-	multi_view = new MultiView(session);
-	data = new DataModel(session);
+ModeModel::ModeModel(DocumentSession* doc) : Mode(doc) {
+	multi_view = new MultiView(doc);
+	data = new DataModel(doc);
 	data->reset();
 	generic_data = data.get();
 
@@ -38,10 +39,10 @@ void ModeModel::on_enter_rec() {
 	win->enable("mode_model_animation", false);
 
 	event_ids_rec.add(win->event("mode_model_mesh", [this] {
-		session->set_mode(mode_mesh.get());
+		doc->set_mode(mode_mesh.get());
 	}));
 	event_ids_rec.add(win->event("mode_model_skeleton", [this] {
-		session->set_mode(mode_skeleton.get());
+		doc->set_mode(mode_skeleton.get());
 	}));
 	event_ids_rec.add(session->win->event("mode_properties", [this] {
 		session->win->open_dialog(new ModelPropertiesDialog(session->win, data.get()));
@@ -81,8 +82,8 @@ void ModeModel::on_command(const string& id) {
 void ModeModel::update_menu() {
 	auto win = session->win;
 
-	win->check("mode_model_mesh", session->cur_mode == mode_mesh.get());
-	win->check("mode_model_skeleton", session->cur_mode == mode_skeleton.get());
+	win->check("mode_model_mesh", doc->cur_mode == mode_mesh.get());
+	win->check("mode_model_skeleton", doc->cur_mode == mode_skeleton.get());
 }
 
 

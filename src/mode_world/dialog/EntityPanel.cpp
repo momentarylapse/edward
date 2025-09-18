@@ -8,6 +8,7 @@
 #include "../ModeEditTerrain.h"
 #include "ComponentSelectionDialog.h"
 #include <helper/ResourceManager.h>
+#include <stuff/PluginManager.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/TextureManager.h>
 #include <lib/os/msg.h>
@@ -19,6 +20,7 @@
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
+#include <view/DocumentSession.h>
 #include <world/Model.h>
 #include <world/ModelManager.h>
 #include <world/Terrain.h>
@@ -314,7 +316,7 @@ Dialog terrain-panel ''
 				data->edit_terrain_meta_data(index, {t->pattern.x, 0, get_float("size-z") / (float)t->num_z});
 		});
 		event("edit", [this] {
-			data->session->set_mode(new ModeEditTerrain(data->session->mode_world, index));
+			data->doc->set_mode(new ModeEditTerrain(data->doc->mode_world, index));
 		});
 	}
 	DataWorld* data;

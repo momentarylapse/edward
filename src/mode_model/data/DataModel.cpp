@@ -103,7 +103,7 @@ void ModelEffect::clear()
 }
 
 
-DataModel::DataModel(Session *s) :
+DataModel::DataModel(DocumentSession *s) :
 	Data(s, FD_MODEL)
 {
 	mesh = new ModelMesh();

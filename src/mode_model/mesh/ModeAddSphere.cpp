@@ -12,6 +12,7 @@
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
+#include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
@@ -108,7 +109,7 @@ void ModeAddSphere::on_draw_post(Painter* p) {
 
 void ModeAddSphere::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		session->set_mode(mode_mesh);
+		doc->set_mode(mode_mesh);
 	}
 }
 
@@ -138,7 +139,7 @@ void ModeAddSphere::on_mouse_move(const vec2& m, const vec2& d) {
 void ModeAddSphere::on_left_button_down(const vec2& m) {
 	if (center) {
 		mode_mesh->data->paste_mesh(mesh, 0);
-		session->set_mode(mode_mesh);
+		doc->set_mode(mode_mesh);
 	} else {
 		center = multi_view->cursor_pos_3d(m);
 	}

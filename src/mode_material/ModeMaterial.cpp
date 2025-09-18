@@ -36,7 +36,7 @@
 #include <y/Entity.h>
 
 
-ModeMaterial::ModeMaterial(Session* session) :
+ModeMaterial::ModeMaterial(DocumentSession* session) :
 	Mode(session)
 {
 	multi_view = new MultiView(session);

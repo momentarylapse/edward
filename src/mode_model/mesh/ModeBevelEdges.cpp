@@ -7,6 +7,7 @@
 #include "../data/ModelMesh.h"
 #include "processing/MeshBevelEdges.h"
 #include <Session.h>
+#include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
@@ -81,11 +82,11 @@ void ModeBevelEdges::on_draw_post(Painter* p) {
 
 void ModeBevelEdges::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		session->set_mode(mode_mesh);
+		doc->set_mode(mode_mesh);
 	}
 	if (key == xhui::KEY_RETURN) {
 		mode_mesh->data->edit_mesh(diff);
-		session->set_mode(mode_mesh);
+		doc->set_mode(mode_mesh);
 	}
 }
 

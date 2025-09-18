@@ -3,7 +3,7 @@
 //
 
 #include "Mode.h"
-
+#include "DocumentSession.h"
 #include <Session.h>
 #include <lib/image/Painter.h>
 #include <lib/xhui/Theme.h>
@@ -11,8 +11,9 @@
 #include "DrawingHelper.h"
 #include "EdwardWindow.h"
 
-Mode::Mode(Session* _session) {
-	session = _session;
+Mode::Mode(DocumentSession* _doc) {
+	doc = _doc;
+	session = doc->session;
 	multi_view = nullptr;
 }
 
@@ -45,7 +46,7 @@ bool Mode::is_ancestor_of(Mode* m) {
 }
 
 
-SubMode::SubMode(Mode* parent) : Mode(parent->session) {
+SubMode::SubMode(Mode* parent) : Mode(parent->doc) {
 	_parent = parent;
 }
 

@@ -14,6 +14,7 @@
 #include <view/MultiView.h>
 #include <view/ActionController.h>
 #include <view/MultiViewWindow.h>
+#include <view/DocumentSession.h>
 #include <data/Data.h>
 #include <lib/mesh/PolygonMesh.h>
 #include <lib/mesh/GeometryBall.h>
@@ -251,7 +252,7 @@ void PluginManager::link_plugins() {
 
 	ext->link("cur_session", &cur_session);
 
-	ext->declare_class_element("Edward.cur_mode", &Session::cur_mode);
+//	ext->declare_class_element("Edward.cur_mode", &Session::cur_mode);
 
 	//	ext->declare_class_element("Mode.name", &ModeBase::name);
 	//	ext->declare_class_element("Mode.multi_view", &ModeBase::multi_view);
@@ -297,10 +298,13 @@ void PluginManager::link_plugins() {
 #endif
 
 	ext->declare_class_size("Session", sizeof(Session));
-	ext->declare_class_element("Session.mode_model", &Session::mode_model);
-	ext->declare_class_element("Session.mode_world", &Session::mode_world);
-	ext->declare_class_element("Session.mode_material", &Session::mode_material);
 	ext->declare_class_element("Session.win", &Session::win);
+
+	ext->declare_class_size("DocumentSession", sizeof(DocumentSession));
+	ext->declare_class_element("DocumentSession.mode_model", &DocumentSession::mode_model);
+	ext->declare_class_element("DocumentSession.mode_world", &DocumentSession::mode_world);
+	ext->declare_class_element("DocumentSession.mode_material", &DocumentSession::mode_material);
+	ext->declare_class_element("DocumentSession.session", &DocumentSession::session);
 
 #if 0
 	ShaderNode node("");

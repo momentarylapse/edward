@@ -60,7 +60,7 @@ struct EdwardTag : Component {
 
 class DataWorld: public Data {
 public:
-	explicit DataWorld(Session *ed);
+	explicit DataWorld(DocumentSession* doc);
 	~DataWorld() override;
 
 	obs::source out_component_added{this, "component-added"};

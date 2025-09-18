@@ -24,7 +24,7 @@ namespace xhui {
 
 class ModeWorld : public Mode {
 public:
-	explicit ModeWorld(Session* session);
+	explicit ModeWorld(DocumentSession* session);
 
 	void on_enter_rec() override;
 	void on_leave_rec() override;

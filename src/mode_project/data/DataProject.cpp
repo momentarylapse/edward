@@ -22,7 +22,7 @@
 #include <lib/os/filesystem.h>
 #include <lib/os/formatter.h>
 
-DataProject::DataProject(Session *s) :
+DataProject::DataProject(DocumentSession *s) :
 	Data(s, -1)
 {
 	GameIni = new GameIniData;

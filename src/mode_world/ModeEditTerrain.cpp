@@ -4,7 +4,8 @@
 
 #include "ModeEditTerrain.h"
 #include "ModeWorld.h"
-#include "../view/MultiView.h"
+#include <view/MultiView.h>
+#include <view/DocumentSession.h>
 #include "dialog/EditTerrainPanel.h"
 #include <lib/xhui/xhui.h>
 #include <y/Entity.h>
@@ -43,7 +44,7 @@ void ModeEditTerrain::on_leave() {
 
 void ModeEditTerrain::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		session->set_mode(mode_world);
+		doc->set_mode(mode_world);
 	}
 }
 

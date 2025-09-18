@@ -19,6 +19,7 @@
 #include "ActionController.h"
 #include "DrawingHelper.h"
 #include "MultiView.h"
+#include "DocumentSession.h"
 #include "lib/os/msg.h"
 #include "lib/xhui/Theme.h"
 #include <lib/yrenderer/Renderer.h>
@@ -69,7 +70,7 @@ EdwardWindow::EdwardWindow(xfer<Session> _session) : obs::Node<xhui::Window>(App
 		update_menu();
 	}),
 	in_action_failed(this, [this] {
-		auto am = session->cur_mode->get_data()->action_manager;
+		auto am = session->cur_doc->cur_mode->get_data()->action_manager;
 		session->error(format("Action failed: %s\nReason: %s", am->error_location.c_str(), am->error_message.c_str()));
 	}),
 	in_saved(this, [this] {
@@ -130,7 +131,7 @@ Dialog x x padding=0
 	Array<string> ids = {"new", "open", "save", "save-as", "exit", "undo", "redo", "copy", "paste", "delete"};
 	for (const string& id: ids)
 		event(id, [this, id=id] {
-			session->cur_mode->on_command(id);
+			session->cur_doc->cur_mode->on_command(id);
 		});
 
 	event_xp(id, xhui::event_id::Initialize, [this] (Painter* p) {
@@ -166,58 +167,58 @@ Dialog x x padding=0
 		});
 	});
 	event_xp(id, xhui::event_id::JustBeforeDraw, [this] (Painter* p) {
-		if (!session->cur_mode or !session->cur_mode->multi_view)
+		if (!session->cur_doc or !session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
 			return;
 		if (auto da = static_cast<xhui::DrawingArea*>(get_control("area")))
 			da->for_painter_do(static_cast<xhui::Painter*>(p), [this] (Painter* p) {
-				session->cur_mode->multi_view->set_area(p->area());
+				session->cur_doc->cur_mode->multi_view->set_area(p->area());
 				renderer->before_draw(p);
 			});
 	});
 	event_xp("area", xhui::event_id::Draw, [this] (Painter* p) {
-		if (!session->cur_mode or !session->cur_mode->multi_view)
+		if (!session->cur_doc or !session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
 			return;
-		session->cur_mode->multi_view->set_area(p->area());
+		session->cur_doc->cur_mode->multi_view->set_area(p->area());
 		renderer->draw(p);
-		session->cur_mode->multi_view->on_draw(p);
-		session->cur_mode->on_draw_post(p);
+		session->cur_doc->cur_mode->multi_view->on_draw(p);
+		session->cur_doc->cur_mode->on_draw_post(p);
 		p->set_color(White);
 		p->set_font_size(xhui::Theme::_default.font_size * 1.5f);
 		for (int i=0; i<session->message_str.num; i++)
 			drawing2d::draw_boxed_str(p, _area.center() + vec2(0, 20*i), session->message_str[i], 0);
 	});
 	event_x("area", xhui::event_id::MouseMove, [this] {
-		if (!session->cur_mode or !session->cur_mode->multi_view)
+		if (!session->cur_doc or !session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
 			return;
-		session->cur_mode->multi_view->on_mouse_move(state.m, state.m - state_prev.m);
-		session->cur_mode->on_mouse_move(state.m, state.m - state_prev.m);
+		session->cur_doc->cur_mode->multi_view->on_mouse_move(state.m, state.m - state_prev.m);
+		session->cur_doc->cur_mode->on_mouse_move(state.m, state.m - state_prev.m);
 	});
 	event_x("area", xhui::event_id::MouseWheel, [this] {
-		if (!session->cur_mode or !session->cur_mode->multi_view)
+		if (!session->cur_doc or !session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
 			return;
-		session->cur_mode->multi_view->on_mouse_wheel(state.m, state.scroll);
+		session->cur_doc->cur_mode->multi_view->on_mouse_wheel(state.m, state.scroll);
 	});
 	event_x("area", xhui::event_id::MouseLeave, [this] {
-		if (!session->cur_mode or !session->cur_mode->multi_view)
+		if (!session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
 			return;
-		session->cur_mode->multi_view->on_mouse_leave();
-		session->cur_mode->on_mouse_leave(state.m);
+		session->cur_doc->cur_mode->multi_view->on_mouse_leave();
+		session->cur_doc->cur_mode->on_mouse_leave(state.m);
 	});
 	event_x("area", xhui::event_id::LeftButtonDown, [this] {
-		if (!session->cur_mode or !session->cur_mode->multi_view)
+		if (!session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
 			return;
-		session->cur_mode->multi_view->on_left_button_down(state.m);
-		session->cur_mode->on_left_button_down(state.m);
+		session->cur_doc->cur_mode->multi_view->on_left_button_down(state.m);
+		session->cur_doc->cur_mode->on_left_button_down(state.m);
 	});
 	event_x("area", xhui::event_id::LeftButtonUp, [this] {
-		if (!session->cur_mode or !session->cur_mode->multi_view)
+		if (!session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
 			return;
-		session->cur_mode->multi_view->on_left_button_up(state.m);
-		session->cur_mode->on_left_button_up(state.m);
+		session->cur_doc->cur_mode->multi_view->on_left_button_up(state.m);
+		session->cur_doc->cur_mode->on_left_button_up(state.m);
 	});
 	event_x("area", xhui::event_id::KeyDown, [this] {
-		session->cur_mode->multi_view->on_key_down(state.key_code);
-		session->cur_mode->on_key_down(state.key_code);
+		session->cur_doc->cur_mode->multi_view->on_key_down(state.key_code);
+		session->cur_doc->cur_mode->on_key_down(state.key_code);
 	});
 	event_x("cam-move", xhui::event_id::LeftButtonDown, [this] {
 		set_mouse_mode(0);
@@ -229,9 +230,9 @@ Dialog x x padding=0
 		vec2 d = state.m - state_prev.m;
 		if (state.lbut) {
 			if (is_key_pressed(xhui::KEY_SHIFT))
-				session->cur_mode->multi_view->view_port.move(vec3(0,0,d.y) / 800.0f);
+				session->cur_doc->cur_mode->multi_view->view_port.move(vec3(0,0,d.y) / 800.0f);
 			else
-				session->cur_mode->multi_view->view_port.move(vec3(-d.x, d.y, 0) / 800.0f);
+				session->cur_doc->cur_mode->multi_view->view_port.move(vec3(-d.x, d.y, 0) / 800.0f);
 		}
 	});
 	event_x("cam-rotate", xhui::event_id::LeftButtonDown, [this] {
@@ -243,10 +244,10 @@ Dialog x x padding=0
 	event_x("cam-rotate", xhui::event_id::MouseMove, [this] {
 		vec2 d = state.m - state_prev.m;
 		if (state.lbut)
-			session->cur_mode->multi_view->view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
+			session->cur_doc->cur_mode->multi_view->view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
 	});
 	event("mouse-action", [this] {
-		auto ac = session->cur_mode->multi_view->action_controller.get();
+		auto ac = session->cur_doc->cur_mode->multi_view->action_controller.get();
 		const auto mode = ac->action_mode();
 		if (mode == MouseActionMode::MOVE) {
 			ac->set_action_mode(MouseActionMode::ROTATE);
@@ -258,7 +259,7 @@ Dialog x x padding=0
 			ac->set_action_mode(MouseActionMode::MOVE);
 			set_options("mouse-action", "image=rf-translate");
 		}
-		set_string("mouse-action", session->cur_mode->multi_view->action_controller->action_name().sub(0, 1).upper());
+		set_string("mouse-action", session->cur_doc->cur_mode->multi_view->action_controller->action_name().sub(0, 1).upper());
 	});
 	event("model_new", [this] {
 		session->universal_new(FD_MODEL);
@@ -270,13 +271,13 @@ Dialog x x padding=0
 		session->universal_new(FD_WORLD);
 	});
 	event("select_all", [this] {
-		session->cur_mode->multi_view->select_all();
+		session->cur_doc->cur_mode->multi_view->select_all();
 	});
 	event("select_none", [this] {
-		session->cur_mode->multi_view->clear_selection();
+		session->cur_doc->cur_mode->multi_view->clear_selection();
 	});
 	event("invert_selection", [this] {
-		session->cur_mode->multi_view->invert_selection();
+		session->cur_doc->cur_mode->multi_view->invert_selection();
 	});
 	event("execute-plugin", [this] {
 		xhui::FileSelectionDialog::ask(this, "Execute plugin", session->plugin_manager->directory, {}).then( [this] (const Path& path) {
@@ -284,11 +285,11 @@ Dialog x x padding=0
 		});
 	});
 	auto quit = [this] {
-		if (session->cur_mode->get_data()->action_manager->is_save())
+		if (session->cur_doc->cur_mode->get_data()->action_manager->is_save())
 			request_destroy();
 		else xhui::QuestionDialog::ask(this, "Question", "You have unsaved changes. Do you want to save?").then([this] (xhui::Answer a) {
 			if (a == xhui::Answer::Yes)
-				session->storage->auto_save(session->cur_mode->get_data()).then([this] {
+				session->storage->auto_save(session->cur_doc->cur_mode->get_data()).then([this] {
 					request_destroy();
 				});
 			else if (a == xhui::Answer::No)
@@ -316,7 +317,7 @@ string nice_path(const Path& p) {
 }
 
 void EdwardWindow::update_menu() {
-	if (auto d = session->cur_mode->get_data()) {
+	if (auto d = session->cur_doc->cur_mode->get_data()) {
 		enable("undo", d->action_manager->undoable());
 		enable("redo", d->action_manager->redoable());
 

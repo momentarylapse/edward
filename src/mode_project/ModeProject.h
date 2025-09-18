@@ -16,7 +16,7 @@ class Path;
 
 class ModeProject: public Mode {
 public:
-	explicit ModeProject(Session *s);
+	explicit ModeProject(DocumentSession *s);
 	~ModeProject() override;
 
 	void _new();

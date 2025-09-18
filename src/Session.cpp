@@ -6,6 +6,7 @@
  */
 
 #include "Session.h"
+#include <view/DocumentSession.h>
 #include <view/EdwardWindow.h>
 #include <view/codeeditor/EditorWindow.h>
 #include "Edward.h"
@@ -67,6 +68,7 @@ base::future<Session*> emit_new_session() {
 	return s->promise_started.get_future();
 }
 
+#if 0
 bool session_is_empty(Session *s) {
 	if (s->cur_mode == s->mode_none)
 		return true;
@@ -78,6 +80,7 @@ base::future<Session*> emit_empty_session(Session* parent) {
 		return parent->promise_started.get_future();
 	return emit_new_session();
 }
+#endif
 
 void Session::load_project(const Path& dir) {
 	if (project_dir == dir)
@@ -105,21 +108,6 @@ void Session::load_project(const Path& dir) {
 
 Session::Session() {
 	ctx = nullptr;
-	mode_none = nullptr;
-#if 0
-	mode_none = new ModeNone(this);
-	cur_mode = mode_none;
-	progress = new Progress;
-#endif
-
-
-	multi_view_2d = nullptr;
-	multi_view_3d = nullptr;
-	mode_model = nullptr;
-	mode_admin = nullptr;
-	mode_font = nullptr;
-	mode_material = nullptr;
-	mode_world = nullptr;
 
 	storage = nullptr;
 	resource_manager = nullptr;
@@ -131,20 +119,7 @@ Session::Session() {
 }
 
 Session::~Session() {
-#if 0
-	if (mode_world)
-		delete mode_world;
-	/*delete mode_material;
-	delete mode_model;
-	delete mode_font;
-	delete mode_admin;*/
-
-	if (multi_view_2d)
-		delete multi_view_2d;
-	if (multi_view_3d)
-		delete multi_view_3d;
 	// saving the configuration data...
-#endif
 	xhui::config.set_str("RootDir", str(project_dir));
 	if (storage) {
 		//xhui::config.set_str("Language", xhui::get_cur_language());
@@ -162,99 +137,21 @@ Session::~Session() {
 	//app->end();
 }
 
-
-// do we change roots?
-//  -> data loss?
-base::future<void> mode_switch_allowed(Mode *m) {
-//	if (!m->session->cur_mode or m->equal_roots(m->session->cur_mode)) {
-		base::promise<void> promise;
-		promise();
-		return promise.get_future();
-//	} else {
-//		return m->session->allow_termination();
-//	}
+DocumentSession* Session::create_doc() {
+	auto doc = new DocumentSession(this);
+	documents.add(doc);
+	cur_doc = doc;
+	return doc;
 }
 
-void Session::set_mode(Mode *m) {
-	if (cur_mode == m)
-		return;
-	mode_switch_allowed(m).then([this, m] {
-		set_mode_now(m);
+base::future<DocumentSession*> Session::emit_doc() {
+	auto doc = create_doc();
+	promise_started.get_future().then([this, doc] (Session*) {
+		doc->promise_started(doc);
 	});
+	return doc->promise_started.get_future();
 }
 
-Mode* get_next_child_to(Mode* from, Mode* to) {
-	if (!from)
-		return to->get_root();
-	if (from->is_ancestor_of(to))
-		return to;
-	return get_next_child_to(from, to->get_parent());
-}
-
-void Session::set_mode_now(Mode *m) {
-	if (cur_mode == m)
-		return;
-
-	// end current
-	if (cur_mode) {
-		//msg_write("LEAVE");
-		cur_mode->on_leave();
-		if (cur_mode->get_data()) {
-			cur_mode->get_data()->unsubscribe(win);
-			if (cur_mode->multi_view)
-				cur_mode->get_data()->unsubscribe(cur_mode->multi_view);
-			cur_mode->get_data()->action_manager->unsubscribe(win);
-		}
-		if (cur_mode->multi_view) {
-			cur_mode->multi_view->unsubscribe(win);
-			win->renderer->children.pop();
-		}
-		cur_mode->unsubscribe(win);
-	}
-
-	// close current modes up
-	while (cur_mode) {
-		if (cur_mode->is_ancestor_of(m))
-			break;
-		//msg_write("UP");
-		cur_mode->on_leave_rec();
-		cur_mode = cur_mode->get_parent();
-	}
-
-	// start new modes down
-	while (cur_mode != m) {
-		cur_mode = get_next_child_to(cur_mode, m);
-		//msg_write("DOWN");
-		cur_mode->on_enter_rec();
-	}
-
-	//win->update_menu();
-
-
-	// start new
-	//msg_write("ENTER");
-	cur_mode = m;
-	cur_mode->on_enter();
-	win->renderer->children.clear();
-	win->renderer->add_child(cur_mode->multi_view->renderer.get());
-
-	cur_mode->out_redraw >> win->in_redraw;
-	if (cur_mode->multi_view) {
-		cur_mode->multi_view->out_selection_changed >> win->in_redraw;
-		cur_mode->multi_view->view_port.out_changed >> win->in_data_selection_changed;
-	}
-	if (cur_mode->get_data()) {
-		cur_mode->get_data()->out_changed >> win->in_data_changed;
-		if (cur_mode->multi_view)
-			cur_mode->get_data()->out_changed >> cur_mode->multi_view->in_data_changed;
-		auto *am = cur_mode->get_data()->action_manager;
-		am->out_failed >> win->in_action_failed;
-		am->out_saved >> win->in_saved;
-	}
-
-	out_changed();
-	win->request_redraw();
-}
 
 
 void Session::remove_message() {
@@ -281,6 +178,7 @@ void Session::error(const string &message) {
 #endif
 }
 
+#if 0
 Mode *Session::get_mode(int preferred_type) {
 #if 0
 	if (preferred_type == FD_MODEL)
@@ -294,65 +192,71 @@ Mode *Session::get_mode(int preferred_type) {
 #endif
 	return mode_none;
 }
+#endif
 
 void Session::universal_new(int preferred_type) {
-	auto call_new = [preferred_type] (Session* session) {
+	auto call_new = [preferred_type] (DocumentSession* doc) {
 		if (preferred_type == FD_MODEL) {
-			session->mode_model = new ModeModel(session);
-			session->set_mode(session->mode_model->mode_mesh.get());
-			session->mode_model->mode_mesh->optimize_view();
+			doc->mode_model = new ModeModel(doc);
+			doc->set_mode(doc->mode_model->mode_mesh.get());
+			doc->mode_model->mode_mesh->optimize_view();
 		} else if (preferred_type == FD_WORLD) {
-			session->mode_world = new ModeWorld(session);
-			session->set_mode(session->mode_world);
-			session->mode_world->optimize_view();
+			doc->mode_world = new ModeWorld(doc);
+			doc->set_mode(doc->mode_world);
+			doc->mode_world->optimize_view();
 		} else if (preferred_type == FD_MATERIAL) {
-			session->mode_material = new ModeMaterial(session);
-			//session->mode_material->_new();
-			session->set_mode(session->mode_material);
-			session->mode_material->optimize_view();
+			doc->mode_material = new ModeMaterial(doc);
+			//doc->mode_material->_new();
+			doc->set_mode(doc->mode_material);
+			doc->mode_material->optimize_view();
 		} /*else if (preferred_type == FD_FONT) {
-			session->mode_font->_new();
-			session->set_mode(session->mode_font);
-			session->mode_font->optimize_view();
+			doc->mode_font->_new();
+			doc->set_mode(doc->mode_font);
+			doc->mode_font->optimize_view();
 		}*/
 	};
 
 	if (false) {
 		// replace
-		allow_termination().then([this, call_new] { call_new(this); });
+		//allow_termination().then([this, call_new] { call_new(this); });
 
 	} else {
-		// new window
-		emit_empty_session(this).then(call_new);
+		// new doc
+		emit_doc().then([this, call_new] (DocumentSession* doc) {
+			msg_write("universal_new ...started");
+			call_new(doc);
+		});
 	}
 }
 
 void Session::universal_open(int preferred_type) {
 	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false).then([this] (const auto& p) {
 
-		auto call_open = [kind=p.kind, path=p.complete] (Session* session) {
+		auto call_open = [kind=p.kind, path=p.complete] (DocumentSession* doc) {
 			if (kind == FD_MODEL) {
-				if (!session->mode_model)
-					session->mode_model = new ModeModel(session);
-				session->storage->load(path, session->mode_model->data.get());
-				session->set_mode(session->mode_model->mode_mesh.get());
-				session->mode_model->mode_mesh->optimize_view();
+				if (!doc->mode_model)
+					doc->mode_model = new ModeModel(doc);
+				doc->session->storage->load(path, doc->mode_model->data.get());
+				doc->set_mode(doc->mode_model->mode_mesh.get());
+				doc->mode_model->mode_mesh->optimize_view();
 			} else if (kind == FD_WORLD) {
-				if (!session->mode_world)
-					session->mode_world = new ModeWorld(session);
-				session->storage->load(path, session->mode_world->data);
-				session->set_mode(session->mode_world);
-				session->mode_world->optimize_view();
+				if (!doc->mode_world)
+					doc->mode_world = new ModeWorld(doc);
+				doc->session->storage->load(path, doc->mode_world->data);
+				doc->set_mode(doc->mode_world);
+				doc->mode_world->optimize_view();
 			} else if (kind == FD_MATERIAL) {
-				if (!session->mode_material)
-					session->mode_material = new ModeMaterial(session);
-				session->storage->load(path, session->mode_material->data);
-				session->set_mode(session->mode_material);
-				session->mode_material->optimize_view();
+				if (!doc->mode_material)
+					doc->mode_material = new ModeMaterial(doc);
+				doc->session->storage->load(path, doc->mode_material->data);
+				doc->set_mode(doc->mode_material);
+				doc->mode_material->optimize_view();
 			}
 		};
 
-		emit_empty_session(this).then(call_open);
+		auto doc = create_doc();
+		call_open(doc);
+		//emit_empty_session(this).then(call_open);
 	});
 }
 
@@ -372,6 +276,7 @@ Path make_absolute_path(Session *session, int type, const Path &filename, bool r
 void Session::universal_edit(int type, const Path &_filename, bool relative_path) {
 	Path filename = make_absolute_path(this, type, add_extension_if_needed(this, type, _filename), relative_path);
 
+	emit_doc().then([this, type, filename] (DocumentSession* doc) {
 		switch (type){
 			/*case -1:
 				if (filename.basename() == "config.txt")
@@ -385,43 +290,41 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 			case FD_WORLD:
 			case FD_TERRAIN:
 			case FD_CAMERAFLIGHT:
-				emit_empty_session(this).then([type, filename] (Session* session) {
-					if (type == FD_MODEL) {
-						if (!session->mode_model)
-							session->mode_model = new ModeModel(session);
-						session->storage->load(filename, session->mode_model->data.get(), true);
-						session->set_mode(session->mode_model->mode_mesh.get());
-						session->mode_model->mode_mesh->optimize_view();
-					} else if (type == FD_MATERIAL) {
-						if (!session->mode_material)
-							session->mode_material = new ModeMaterial(session);
-						session->storage->load(filename, session->mode_material->data, true);
-						session->set_mode(session->mode_material);
-						session->mode_material->optimize_view();
+				if (type == FD_MODEL) {
+					if (!doc->mode_model)
+						doc->mode_model = new ModeModel(doc);
+					doc->session->storage->load(filename, doc->mode_model->data.get(), true);
+					doc->set_mode(doc->mode_model->mode_mesh.get());
+					doc->mode_model->mode_mesh->optimize_view();
+				} else if (type == FD_MATERIAL) {
+					if (!doc->mode_material)
+						doc->mode_material = new ModeMaterial(doc);
+					doc->session->storage->load(filename, doc->mode_material->data, true);
+					doc->set_mode(doc->mode_material);
+					doc->mode_material->optimize_view();
 #if 0
-					} else if (type == FD_FONT) {
-						session->storage->load(filename, session->mode_font->data, true);
-						session->set_mode(session->mode_font);
-					} else if (type == FD_TERRAIN) {
-						session->mode_world->data->add_terrain(filename.relative_to(engine.map_dir).no_ext(), v_0);
-						session->set_mode(session->mode_world);
-						session->mode_world->optimize_view();
-					} else if (type == FD_CAMERAFLIGHT) {
-						/*mode_world->data->Reset();
-						strcpy(mworld->CamScriptFile,a->Name);
-						if (mworld->LoadCameraScript()){
-							SetMode(ModeWorld);
-							mworld->OptimizeView();
-						}*/
+				} else if (type == FD_FONT) {
+					session->storage->load(filename, session->mode_font->data, true);
+					session->set_mode(session->mode_font);
+				} else if (type == FD_TERRAIN) {
+					session->mode_world->data->add_terrain(filename.relative_to(engine.map_dir).no_ext(), v_0);
+					session->set_mode(session->mode_world);
+					session->mode_world->optimize_view();
+				} else if (type == FD_CAMERAFLIGHT) {
+					/*mode_world->data->Reset();
+					strcpy(mworld->CamScriptFile,a->Name);
+					if (mworld->LoadCameraScript()){
+						SetMode(ModeWorld);
+						mworld->OptimizeView();
+					}*/
 #endif
-					} else if (type == FD_WORLD) {
-						if (!session->mode_world)
-							session->mode_world = new ModeWorld(session);
-						session->storage->load(filename, session->mode_world->data, true);
-						session->set_mode(session->mode_world);
-						session->mode_world->optimize_view();
-					}
-				});
+				} else if (type == FD_WORLD) {
+					if (!doc->mode_world)
+						doc->mode_world = new ModeWorld(doc);
+					doc->session->storage->load(filename, doc->mode_world->data, true);
+					doc->set_mode(doc->mode_world);
+					doc->mode_world->optimize_view();
+				}
 				break;
 			case FD_TEXTURE:
 			case FD_SOUND:
@@ -432,6 +335,7 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 				break;
 		}
 		//return true;
+	});
 }
 
 base::future<void> Session::allow_termination() {
@@ -494,6 +398,7 @@ string Session::get_tex_image(ygfx::Texture *tex) {
 	return "";
 }
 
+#if 0
 Mode *Session::find_mode_base(const string &name) {
 #if 0
 	if (name == "model")
@@ -521,6 +426,7 @@ Mode *Session::find_mode_base(const string &name) {
 #endif
 	return mode_none;
 }
+#endif
 
 void Session::edit_code_file(const Path &filename) {
 	if (!code_editor_window)

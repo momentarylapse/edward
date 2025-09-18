@@ -31,6 +31,7 @@
 #include <view/MultiView.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
+#include <view/DocumentSession.h>
 #include <lib/mesh/VertexStagingBuffer.h>
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
@@ -93,13 +94,13 @@ void ModeMesh::on_enter_rec() {
 	});
 
 	event_ids_rec.add(session->win->event("mode_model_mesh", [this] {
-		session->set_mode(this);
+		doc->set_mode(this);
 	}));
 	event_ids_rec.add(session->win->event("mode_model_deform", [this] {
-		session->set_mode(mode_mesh_sculpt.get());
+		doc->set_mode(mode_mesh_sculpt.get());
 	}));
 	event_ids_rec.add(session->win->event("mode_model_materials", [this] {
-		session->set_mode(mode_mesh_material.get());
+		doc->set_mode(mode_mesh_material.get());
 	}));
 
 	event_ids_rec.add(session->win->event("mode_model_vertex", [this] {
@@ -192,25 +193,25 @@ void ModeMesh::on_enter() {
 
 
 	event_ids.add(session->win->event("add-vertex", [this] {
-		session->set_mode(new ModeAddVertex(this));
+		doc->set_mode(new ModeAddVertex(this));
 	}));
 	event_ids.add(session->win->event("add-polygon", [this] {
-		session->set_mode(new ModeAddPolygon(this));
+		doc->set_mode(new ModeAddPolygon(this));
 	}));
 	event_ids.add(session->win->event("add-cube", [this] {
-		session->set_mode(new ModeAddCube(this));
+		doc->set_mode(new ModeAddCube(this));
 	}));
 	event_ids.add(session->win->event("add-sphere", [this] {
-		session->set_mode(new ModeAddSphere(this));
+		doc->set_mode(new ModeAddSphere(this));
 	}));
 	event_ids.add(session->win->event("add-platonic", [this] {
-		session->set_mode(new ModeAddPlatonic(this));
+		doc->set_mode(new ModeAddPlatonic(this));
 	}));
 	event_ids.add(session->win->event("add-from-lathe", [this] {
-		session->set_mode(new ModeAddFromLathe(this));
+		doc->set_mode(new ModeAddFromLathe(this));
 	}));
 	event_ids.add(session->win->event("add-cylinder", [this] {
-		session->set_mode(new ModeAddCylinder(this));
+		doc->set_mode(new ModeAddCylinder(this));
 	}));
 	event_ids.add(session->win->event("normal_this_hard", [this] {
 		const auto& sel = multi_view->selection[MultiViewType::MODEL_POLYGON];
@@ -310,8 +311,8 @@ void ModeMesh::update_menu() {
 	win->check("mesh-visible0", data->editing_mesh == data->mesh.get());
 	win->check("mesh-physical", data->editing_mesh == data->phys_mesh.get());
 
-	win->check("mode_model_deform", session->cur_mode == mode_mesh_sculpt.get());
-	win->check("mode_model_material", session->cur_mode == mode_mesh_material.get());
+	win->check("mode_model_deform", doc->cur_mode == mode_mesh_sculpt.get());
+	win->check("mode_model_material", doc->cur_mode == mode_mesh_material.get());
 
 	win->check("mode_model_vertex", presentation_mode == PresentationMode::Vertices);
 	win->check("mode_model_edge", presentation_mode == PresentationMode::Edges);
@@ -672,16 +673,16 @@ void ModeMesh::paste() {
 	if (temp_mesh->is_empty()) {
 		session->set_message("nothing to paste");
 	} else {
-		session->set_mode(new ModePaste(this));
+		doc->set_mode(new ModePaste(this));
 	}
 }
 
 
 void ModeMesh::on_key_down(int key) {
 	if (key == (xhui::KEY_CONTROL | xhui::KEY_B))
-		session->set_mode(new ModeBevelEdges(this));
+		doc->set_mode(new ModeBevelEdges(this));
 	if (key == (xhui::KEY_CONTROL | xhui::KEY_X))
-		session->set_mode(new ModeExtrudePolygons(this));
+		doc->set_mode(new ModeExtrudePolygons(this));
 }
 
 void ModeMesh::on_mouse_move(const vec2& m, const vec2& d) {

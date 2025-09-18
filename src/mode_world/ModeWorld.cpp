@@ -13,9 +13,8 @@
 #include <lib/kaba/kaba.h>
 #include <lib/os/filesystem.h>
 #include <view/MultiView.h>
+#include <view/DocumentSession.h>
 #include "data/DataWorld.h"
-#include "data/WorldObject.h"
-#include "data/WorldTerrain.h"
 #include <lib/yrenderer/Renderer.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
 #include <lib/yrenderer/scene/SceneView.h>
@@ -45,11 +44,11 @@
 #include "y/EntityManager.h"
 
 
-ModeWorld::ModeWorld(Session* session) :
-	Mode(session)
+ModeWorld::ModeWorld(DocumentSession* doc) :
+	Mode(doc)
 {
-	multi_view = new MultiView(session);
-	data = new DataWorld(session);
+	multi_view = new MultiView(doc);
+	data = new DataWorld(doc);
 	generic_data = data;
 
 	mode_scripting = new ModeScripting(this);
@@ -81,13 +80,13 @@ void ModeWorld::on_enter_rec() {
 	update_dummies();
 
 	event_ids_rec.add(session->win->event("mode_world", [this] {
-		session->set_mode(this);
+		doc->set_mode(this);
 	}));
 	event_ids_rec.add(session->win->event("mode-world-scripting", [this] {
-		session->set_mode(mode_scripting.get());
+		doc->set_mode(mode_scripting.get());
 	}));
 	session->win->event("properties", [this] {
-		session->set_mode(mode_properties.get());
+		doc->set_mode(mode_properties.get());
 		//session->win->open_dialog(new PropertiesDialog(session->win, data));
 	});
 	session->win->event("run-game", [this] {
@@ -212,9 +211,9 @@ void ModeWorld::on_leave() {
 void ModeWorld::update_menu() {
 	auto win = session->win;
 
-	win->check("mode_world", session->cur_mode == this);
-	win->check("mode-world-scripting", session->cur_mode == mode_scripting.get());
-	win->check("properties", session->cur_mode == mode_properties.get());
+	win->check("mode_world", doc->cur_mode == this);
+	win->check("mode-world-scripting", doc->cur_mode == mode_scripting.get());
+	win->check("properties", doc->cur_mode == mode_properties.get());
 }
 
 

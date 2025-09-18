@@ -29,7 +29,7 @@ enum class AnimationType;
 
 class GeometryException : public ActionException {
 public:
-	GeometryException(const string &message) : ActionException(message){}
+	explicit GeometryException(const string &message) : ActionException(message){}
 };
 
 
@@ -122,7 +122,7 @@ struct ModelScriptVariable {
 
 class DataModel: public Data {
 public:
-	explicit DataModel(Session* s);
+	explicit DataModel(DocumentSession* s);
 	~DataModel() override;
 
 	obs::source out_skin_changed{this, "skin-changed"};

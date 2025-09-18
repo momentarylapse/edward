@@ -17,7 +17,7 @@ class ShaderGraph;
 
 class DataMaterial: public Data {
 public:
-	explicit DataMaterial(Session *s);
+	explicit DataMaterial(DocumentSession *doc);
 	~DataMaterial() override;
 
 	void reset() override;
@@ -30,11 +30,11 @@ public:
 		ShaderGraph *graph = nullptr;
 		bool from_graph = false;
 		bool is_default = false;
-		void load_from_file(Session *s);
-		void set_engine_default(Session *s);
-		void save_to_file(Session *s);
+		void load_from_file(DocumentSession *s);
+		void set_engine_default(DocumentSession *s);
+		void save_to_file(DocumentSession *s);
 
-		void reset(Session *s);
+		void reset(DocumentSession *s);
 	};
 
 	struct RenderPassData {
@@ -60,7 +60,7 @@ public:
 
 		bool cast_shadow = true;
 
-		void reset(Session *session);
+		void reset(DocumentSession* doc);
 	};
 	AppearanceData appearance;
 
@@ -73,7 +73,7 @@ public:
 	PhysicsData physics;
 
 	yrenderer::Material* to_material() const;
-	static DataMaterial from_material(Session* s, yrenderer::Material *material);
+	static DataMaterial from_material(DocumentSession* doc, yrenderer::Material* material);
 };
 
 #endif /* DATAMATERIAL_H_ */

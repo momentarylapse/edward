@@ -3,6 +3,7 @@
 #include <Session.h>
 #include <helper/ResourceManager.h>
 #include <view/EdwardWindow.h>
+#include <view/DocumentSession.h>
 #include <stuff/PluginManager.h>
 #include <storage/Storage.h>
 #include <storage/format/Format.h>
@@ -39,6 +40,7 @@ void update_file(const Path &filename, bool allow_write) {
 	auto session = new Session;
 	session->resource_manager = new ResourceManager(nullptr, "", "", "");
 	auto storage = new Storage(session);
+	auto doc = session->create_doc();
 
 
 	auto _filename = filename.absolute().canonical();
@@ -58,13 +60,13 @@ void update_file(const Path &filename, bool allow_write) {
 	string ext = filename.extension();
 
 	if (ext == "shader") {
-		auto mat = new DataMaterial(session);
+		auto mat = new DataMaterial(doc);
 		msg_write("loading " + filename.str());
 		auto &s = mat->appearance.passes[0].shader;
 		s.file = _filename.relative_to(storage->root_dir_kind[FD_MATERIAL]);
-		s.load_from_file(session);
+		s.load_from_file(doc);
 		if (s.from_graph)
-			s.save_to_file(session);
+			s.save_to_file(doc);
 		delete mat;
 		delete storage;
 		delete session;
@@ -75,12 +77,12 @@ void update_file(const Path &filename, bool allow_write) {
 	if (ext == "model") {
 		//MaterialInit();
 		session->ctx->material_manager->set_default(new yrenderer::Material(session->ctx));
-		data = new DataModel(session);
+		data = new DataModel(doc);
 		DataModelAllowUpdating = false;
 	} else if (ext == "material") {
-		data = new DataMaterial(session);
+		data = new DataMaterial(doc);
 	} else if (ext == "world") {
-		data = new DataWorld(session);
+		data = new DataWorld(doc);
 	}
 
 	if (data) {
@@ -137,12 +139,14 @@ int main(const Array<string>& args) {
 	});
 	p.cmd("project create", "DIR FIRST_WORLD", "create a new project", [] (const Array<string> &arg) {
 		Session session;
-		ModeProject mode_project(&session);
+		DocumentSession doc(&session);
+		ModeProject mode_project(&doc);
 		mode_project.create_project(arg[0], arg[1]);
 	});
 	p.cmd("project upgrade", "DIR", "upgrade scripts of a project", [] (const Array<string> &arg) {
 		Session session;
-		ModeProject mode_project(&session);
+		DocumentSession doc(&session);
+		ModeProject mode_project(&doc);
 		mode_project.upgrade_project(arg[0]);
 	});
 	p.cmd("xxx", "", "", [] (const Array<string> &arg) {

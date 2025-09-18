@@ -21,7 +21,7 @@
 #include "../view/EdwardWindow.h"
 #include "../storage/Storage.h"
 
-ModeProject::ModeProject(Session *s): Mode(s)
+ModeProject::ModeProject(DocumentSession *s): Mode(s)
 	//Mode<ModeProject, DataAdministration>(s, "Administration", nullptr, new DataAdministration(s), nullptr, "menu_administration")
 {
 	dialog = nullptr;
@@ -67,7 +67,7 @@ void ModeProject::create_project(const Path &dir, const string &first_world) {
 
 	Path world_file = dir | "Maps" | (first_world + ".world");
 	msg_write(format("%sCREATE%s  %s", os::terminal::YELLOW, os::terminal::END, world_file));
-	DataWorld w(data->session);
+	DataWorld w(data->doc);
 	Storage s(data->session);
 	s.save(world_file, &w);
 }

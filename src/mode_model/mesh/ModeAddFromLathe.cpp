@@ -5,6 +5,7 @@
 #include "ModeAddFromLathe.h"
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
+#include <view/DocumentSession.h>
 #include <Session.h>
 #include <lib/mesh/GeometryCube.h>
 #include <lib/os/msg.h>
@@ -102,11 +103,11 @@ void ModeAddFromLathe::on_draw_post(Painter* p) {
 
 void ModeAddFromLathe::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		session->set_mode(mode_mesh);
+		doc->set_mode(mode_mesh);
 	}
 	if (key == xhui::KEY_RETURN and contour.num > 0) {
 		mode_mesh->data->paste_mesh(mesh, 0);
-		session->set_mode(mode_mesh);
+		doc->set_mode(mode_mesh);
 	}
 }
 

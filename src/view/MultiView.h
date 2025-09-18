@@ -25,6 +25,7 @@ namespace yrenderer {
 	class ShadowRenderer;
 }
 class Painter;
+class DocumentSession;
 class Session;
 class ActionMultiView;
 class ActionController;
@@ -47,7 +48,7 @@ public:
 
 class MultiView : public obs::Node<VirtualBase> {
 public:
-	explicit MultiView(Session* session);
+	explicit MultiView(DocumentSession* doc);
 	~MultiView() override;
 
 	obs::source out_selection_changed{this, "selection-changed"};
@@ -112,6 +113,7 @@ public:
 	rect area;
 	rect area_native;
 	void set_area(const rect& area);
+	DocumentSession* doc;
 	Session* session;
 	yrenderer::Context* ctx;
 

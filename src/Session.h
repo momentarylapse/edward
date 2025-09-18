@@ -16,8 +16,6 @@
 #include <lib/ygraphics/graphics-fwd.h>
 #include <lib/yrenderer/Context.h>
 
-#include "stuff/PluginManager.h"
-
 
 class MultiView;
 class Mode;
@@ -40,6 +38,7 @@ namespace codeedit {
 namespace kaba {
 	class Context;
 }
+class DocumentSession;
 
 
 
@@ -75,13 +74,9 @@ public:
 	Session();
 	~Session() override;
 
-	void set_mode(Mode *m);
-	void set_mode_now(Mode *m);
-
 	void on_command(const string &id);
 	void on_close();
 
-	Mode *get_mode(int type);
 	void universal_new(int type);
 	void universal_open(int preferred_type);
 	void universal_edit(int type, const Path &filename, bool relative_path);
@@ -98,28 +93,17 @@ public:
 
 	void edit_code_file(const Path& filename);
 
-	Mode *mode_none;
-	ModeModel* mode_model;
-	ModeMaterial* mode_material;
-	ModeWorld* mode_world;
-	ModeFont* mode_font;
-	ModeAdministration* mode_admin;
-	Mode *cur_mode = nullptr;
-	Array<Mode*> mode_queue;
-	Mode *find_mode_base(const string &name);
-	template<class M>
-	M *find_mode(const string &name) {
-		return static_cast<M*>(find_mode_base(name));
-	}
-
 	yrenderer::Context *ctx;
 	ResourceManager *resource_manager;
 	DrawingHelper *drawing_helper;
 	edward::PluginManager* plugin_manager;
 
+	Array<DocumentSession*> documents;
+	DocumentSession* cur_doc = nullptr;
+	DocumentSession* create_doc();
+	base::future<DocumentSession*> emit_doc();
+
 	Storage *storage;
-	MultiView *multi_view_2d;
-	MultiView *multi_view_3d;
 
 	Progress *progress;
 

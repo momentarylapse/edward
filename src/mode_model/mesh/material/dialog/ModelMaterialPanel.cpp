@@ -24,7 +24,8 @@
 #include <lib/xhui/controls/Image.h>
 #include <lib/xhui/controls/ListView.h>
 #include <y/EngineData.h>
-#include "view/MultiView.h"
+#include <view/MultiView.h>
+#include <view/DocumentSession.h>
 #include <cmath>
 
 static constexpr int PREVIEW_SIZE = 48;
@@ -340,7 +341,7 @@ ModelMaterialPanel::~ModelMaterialPanel() {
 
 
 ModeMesh *ModelMaterialPanel::mode_mesh() {
-	return data->session->mode_model->mode_mesh.get();
+	return data->doc->mode_model->mode_mesh.get();
 }
 /*ModeMeshTexture *ModelMaterialPanel::mode_mesh_texture() {
 	return mode_mesh()->mode_mesh_texture;

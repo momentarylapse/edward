@@ -9,6 +9,7 @@
 #include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
+#include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
@@ -52,7 +53,7 @@ void ModeAddPolygon::on_draw_post(Painter* p) {
 
 void ModeAddPolygon::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		session->set_mode(mode_mesh);
+		doc->set_mode(mode_mesh);
 	}
 }
 
@@ -69,7 +70,7 @@ void ModeAddPolygon::on_left_button_down(const vec2& m) {
 		Array<vec3> sv;
 		sv.resize(vertices.num);
 		mode_mesh->data->add_polygon(vertices, 0);
-		session->set_mode(mode_mesh);
+		doc->set_mode(mode_mesh);
 	}
 
 	session->win->request_redraw();

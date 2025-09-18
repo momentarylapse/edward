@@ -6,17 +6,17 @@
 #include "MultiView.h"
 #include "MultiViewWindow.h"
 #include "Mode.h"
-#include <Session.h>
+#include "DocumentSession.h"
 
 
 void MultiViewBackgroundEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {
-	multi_view->session->cur_mode->on_draw_background(params, rvd);
+	multi_view->doc->cur_mode->on_draw_background(params, rvd);
 }
 
 void MultiViewGeometryEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {
-	win->multi_view->session->cur_mode->on_draw_win(params, win);
+	win->multi_view->doc->cur_mode->on_draw_win(params, win);
 }
 
 void MultiViewShadowGeometryEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {
-	multi_view->session->cur_mode->on_draw_shadow(params, rvd);
+	multi_view->doc->cur_mode->on_draw_shadow(params, rvd);
 }

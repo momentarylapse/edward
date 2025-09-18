@@ -6,9 +6,11 @@
  */
 
 #include "Data.h"
+#include <view/DocumentSession.h>
 
-Data::Data(Session *_session, int _type) {
-	session = _session;
+Data::Data(DocumentSession *_doc, int _type) {
+	doc = _doc;
+	session = doc->session;
 	type = _type;
 	action_manager = new ActionManager(this);
 	file_time = 0;

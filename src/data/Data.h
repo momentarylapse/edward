@@ -19,11 +19,12 @@
 enum class MultiViewType;
 class ActionManager;
 class Action;
+class DocumentSession;
 class Session;
 
 class Data : public obs::Node<VirtualBase> {
 public:
-	Data(Session *s, int _type);
+	Data(DocumentSession *doc, int _type);
 	~Data() override;
 
 	//obs::source out_selection{this, "selection"};
@@ -44,8 +45,9 @@ public:
 	bool binary_file_format;
 	int type;
 
-	Session *session;
-	ActionManager *action_manager;
+	DocumentSession* doc;
+	Session* session;
+	ActionManager* action_manager;
 
 	//using Selection = base::set<const void*>;
 	using Selection = base::map<MultiViewType, base::set<int>>;

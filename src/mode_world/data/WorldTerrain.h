@@ -13,7 +13,7 @@
 #include <lib/math/Box.h>
 
 class Terrain;
-class Session;
+class DocumentSession;
 
 /*class WorldTerrainVertex: public MultiView::SingleData
 {
@@ -24,6 +24,7 @@ public:
 
 struct WorldTerrain {
 
+	DocumentSession* doc;
 	Path filename;
 	//Array<WorldTerrainVertex> Vertex;
 	int VertexBufferSingle = -1;
@@ -31,7 +32,7 @@ struct WorldTerrain {
 	bool Changed = false;
 	Terrain *terrain = nullptr;
 
-	bool load(Session *s, const Path &filename, bool deep = true);
+	bool load(const Path &filename, bool deep = true);
 	bool save(const Path &filename);
 
 	/*float hover_distance(multiview::Window *win, const vec2 &m, vec3 &tp, float &z) override;
@@ -40,7 +41,7 @@ struct WorldTerrain {
 
 
 	Box bounding_box() const;
-	void save_material(Session* s, const Path& filename);
+	void save_material(const Path& filename);
 
 	void update_data();
 };

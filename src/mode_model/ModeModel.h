@@ -14,7 +14,7 @@ class ModeSkeleton;
 
 class ModeModel : public Mode {
 public:
-	explicit ModeModel(Session* session);
+	explicit ModeModel(DocumentSession* doc);
 	~ModeModel() override;
 
 	void on_enter_rec() override;

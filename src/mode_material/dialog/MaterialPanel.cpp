@@ -15,6 +15,7 @@
 #include <lib/xhui/controls/ListView.h>
 #include <lib/yrenderer/TextureManager.h>
 #include <storage/format/Format.h>
+#include <view/DocumentSession.h>
 
 
 string file_secure(const Path &filename);
@@ -118,7 +119,7 @@ MaterialPanel::~MaterialPanel() {
 
 
 ModeMaterial *MaterialPanel::mode_material() {
-	return data->session->mode_material;
+	return data->doc->mode_material;
 }
 
 Image* preview_texture(Session* s, const Path& filename) {

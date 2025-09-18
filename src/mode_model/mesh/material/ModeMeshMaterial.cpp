@@ -11,7 +11,7 @@
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
-#include <view/DrawingHelper.h>
+#include <view/DocumentSession.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
 
@@ -55,7 +55,7 @@ Mode* ModeMeshMaterial::get_parent() {
 
 void ModeMeshMaterial::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		session->set_mode(mode_mesh);
+		doc->set_mode(mode_mesh);
 	}
 }
 

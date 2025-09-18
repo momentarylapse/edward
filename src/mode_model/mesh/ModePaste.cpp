@@ -8,6 +8,7 @@
 #include <Session.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
+#include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
@@ -44,7 +45,7 @@ void ModePaste::on_draw_post(Painter* p) {
 
 void ModePaste::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		session->set_mode(mode_mesh);
+		doc->set_mode(mode_mesh);
 	}
 }
 
@@ -60,5 +61,5 @@ void ModePaste::on_left_button_down(const vec2& m) {
 	for (auto& v: mesh.vertices)
 		v.pos = transformation * v.pos;
 	mode_mesh->data->paste_mesh(mesh);
-	session->set_mode(mode_mesh);
+	doc->set_mode(mode_mesh);
 }

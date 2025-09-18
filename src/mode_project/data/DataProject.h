@@ -26,7 +26,7 @@ public:
 
 class DataProject : public Data {
 public:
-	explicit DataProject(Session *s);
+	explicit DataProject(DocumentSession *s);
 	~DataProject() override;
 
 	void reset() override;

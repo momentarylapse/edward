@@ -13,20 +13,21 @@
 #include <storage/Storage.h>
 
 #include "DataWorld.h"
-#include "../../Session.h"
+#include <Session.h>
 #include <y/y/EngineData.h>
 #include <y/world/Terrain.h>
-#include "../../lib/os/file.h"
-#include "../../lib/os/filesystem.h"
-#include "../../lib/os/formatter.h"
+#include <lib/os/file.h>
+#include <lib/os/filesystem.h>
+#include <lib/os/formatter.h>
+#include <view/DocumentSession.h>
 
 
-bool WorldTerrain::load(Session *session, const Path &_filename, bool deep) {
+bool WorldTerrain::load(const Path &_filename, bool deep) {
 
 	filename = _filename.relative_to(engine.map_dir).no_ext();
 
 	terrain = new Terrain();
-	bool Error = !terrain->load(session->ctx, this->filename, deep);
+	bool Error = !terrain->load(doc->session->ctx, this->filename, deep);
 
 	if (Error) {
 		delete terrain ;
@@ -85,9 +86,9 @@ void WorldTerrain::update_data() {
 	//terrain->pos = pos;
 }
 
-void WorldTerrain::save_material(Session* s, const Path& filename) {
-	auto m = DataMaterial::from_material(s, terrain->material.get());
-	s->storage->save(filename, &m);
+void WorldTerrain::save_material(const Path& filename) {
+	auto m = DataMaterial::from_material(doc, terrain->material.get());
+	doc->session->storage->save(filename, &m);
 }
 
 

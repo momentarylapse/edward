@@ -25,11 +25,10 @@
 #include "Mode.h"
 #include "lib/yrenderer/scene/pass/CubeMapRenderer.h"
 #include <cmath>
+#include "DocumentSession.h"
 
 
-
-
-MultiView::MultiView(Session* s) :
+MultiView::MultiView(DocumentSession* _doc) :
 		in_data_changed(this, [this] {
 			if (!action_controller->performing_action()) {
 				update_selection_box();
@@ -38,7 +37,8 @@ MultiView::MultiView(Session* s) :
 		}),
 		view_port(this)
 {
-	session = s;
+	doc = _doc;
+	session = doc->session;
 	ctx = session->ctx;
 	window = new MultiViewWindow(this);
 	active_window = window.get();
@@ -110,7 +110,7 @@ void MultiViewRenderer::prepare(const yrenderer::RenderParams& params) {
 		multi_view->lights = {multi_view->default_light};
 	}
 
-	multi_view->session->cur_mode->on_prepare_scene(params);
+	multi_view->doc->cur_mode->on_prepare_scene(params);
 
 	view_port.scene_view->choose_lights(multi_view->lights);
 	view_port.scene_view->choose_shadows();
@@ -284,7 +284,7 @@ void MultiView::on_left_button_down(const vec2& m) {
 		return;
 
 	if (hover and hover->type == MultiViewType::ACTION_MANAGER) {
-		auto data = session->cur_mode->get_data();
+		auto data = doc->cur_mode->get_data();
 		//if (action_controller->on_left_button_down(m, data))
 		//	return;
 		if (f_create_action)

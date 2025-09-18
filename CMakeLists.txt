@@ -535,6 +535,7 @@ add_executable(edward
 	src/view/codeeditor/EditorWindow.cpp
 	src/view/dialogs/CommonDialogs.cpp
 	src/view/ActionController.cpp
+	src/view/DocumentSession.cpp
 	src/view/DrawingHelper.cpp
 	src/view/EdwardWindow.cpp
 	src/view/Mode.cpp

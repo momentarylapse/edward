@@ -29,7 +29,7 @@ enum class PreviewMesh {
 
 class ModeMaterial : public Mode {
 public:
-	explicit ModeMaterial(Session* session);
+	explicit ModeMaterial(DocumentSession* session);
 
 	void on_enter() override;
 	void on_leave() override;

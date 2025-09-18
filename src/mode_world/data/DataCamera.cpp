@@ -12,7 +12,7 @@
 #include <lib/os/formatter.h>
 #include <lib/os/msg.h>
 
-DataCamera::DataCamera(Session *s) :
+DataCamera::DataCamera(DocumentSession *s) :
 	Data(s, FD_CAMERAFLIGHT)
 {
 }

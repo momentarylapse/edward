@@ -33,7 +33,7 @@ class WorldCamPointVel: public multiview::SingleData {
 
 class DataCamera : public Data {
 public:
-	DataCamera(Session *s);
+	explicit DataCamera(DocumentSession *s);
 	virtual ~DataCamera();
 
 	void reset();

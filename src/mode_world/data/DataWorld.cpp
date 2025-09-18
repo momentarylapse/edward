@@ -43,6 +43,7 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <y/helper/ResourceManager.h>
 #include <y/EntityManager.h>
+#include <stuff/PluginManager.h>
 
 const kaba::Class* EdwardTag::_class = nullptr;
 
@@ -65,8 +66,8 @@ ScriptInstanceData& EdwardTag::get(const string& class_name) {
 }
 
 
-DataWorld::DataWorld(Session *s) :
-	Data(s, FD_WORLD)
+DataWorld::DataWorld(DocumentSession* doc) :
+	Data(doc, FD_WORLD)
 {
 	entity_manager = new EntityManager;
 	entity_manager->init_components = false;
