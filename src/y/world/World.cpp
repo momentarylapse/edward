@@ -178,8 +178,14 @@ void myTickCallback(btDynamicsWorld *world, btScalar timeStep) {
 World::World() {
 	entity_manager = new EntityManager;
 #ifdef _X_ALLOW_X_
-	entity_manager->component_manager->factory = [] (const kaba::Class* type, const string& var) {
-		return (Component*)PluginManager::create_instance(type, var);
+	entity_manager->component_manager->f_create = [] (const kaba::Class* type) {
+		return (Component*)PluginManager::create_instance(type, Array<ScriptInstanceDataVariable>{});
+	};
+	entity_manager->component_manager->f_apply = [] (const kaba::Class* type, Component* c, const Array<ScriptInstanceDataVariable>& vars) {
+		/*Array<ScriptInstanceDataVariable> vars;
+		for (const auto& [k, v]: params)
+			vars.add({k, v.str()});*/
+		PluginManager::assign_variables(c, type, vars);
 	};
 #endif
 
@@ -265,7 +271,10 @@ void add_user_components(EntityManager* em, Entity *ent, const Array<ScriptInsta
 		msg_write("add component " + cc.class_name);
 #ifdef _X_ALLOW_X_
 		auto type = PluginManager::find_class(cc.filename, cc.class_name);
-		[[maybe_unused]] auto comp = em->_add_component_generic_(ent, type, cc.var);
+		/*base::map<string, Any> params;
+		for (const auto& v: cc.variables)
+			params.set(v.name, v.value);*/
+		[[maybe_unused]] auto comp = em->_add_component_generic_(ent, type, cc.variables);
 #endif
 	}
 }

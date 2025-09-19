@@ -19,6 +19,10 @@ class ModeMaterial;
 class ModeWorld;
 class MultiView;
 
+namespace xhui {
+	class Panel;
+}
+
 class DocumentSession : public obs::Node<VirtualBase> {
 public:
 	explicit DocumentSession(Session* session);
@@ -27,9 +31,7 @@ public:
 	Session* session;
 	base::promise<DocumentSession*> promise_started;
 
-	MultiView *multi_view_2d;
-	MultiView *multi_view_3d;
-
+	xhui::Panel* panel;
 
 	void set_mode(Mode *m);
 	void set_mode_now(Mode *m);

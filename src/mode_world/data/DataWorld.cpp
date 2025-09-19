@@ -14,6 +14,7 @@
 #include "WorldLink.h"
 #include "lib/any/conversion.h"
 #include "lib/kaba/syntax/Class.h"
+#include "plugins/PluginManager.h"
 #include "world/Camera.h"
 #include "world/components/Animator.h"
 #include "world/components/Collider.h"
@@ -97,26 +98,30 @@ DataWorld::DataWorld(DocumentSession* doc) :
 		msg_write(type->name);
 		return nullptr;
 	};
-	entity_manager->component_manager->f_apply = [] (const kaba::Class* type, Component* c, const base::map<string, Any>& var) {
+	entity_manager->component_manager->f_apply = [] (const kaba::Class* type, Component* c, const Array<ScriptInstanceDataVariable>& var) {
 		if (type == Light::_class) {
 			auto l = static_cast<Light*>(c);
-			if (var.contains("type"))
-				l->light.type = (yrenderer::LightType)var["type"].to_i32();
-			if (var.contains("radius") and var.contains("color"))
-				l->light.light.col = any_to_color(var["color"]) * (var["radius"].to_f32() * var["radius"].to_f32() / 100);
-			if (var.contains("power") and var.contains("color"))
-				l->light.light.col = any_to_color(var["color"]) * var["power"].to_f32();
-			if (var.contains("theta"))
-				l->light.light.theta = var["theta"].to_f32();
+			float radius = 1;
+			float power = 1;
+			color col = White;
+			for (const auto& v: var) {
+				if (v.name == "type")
+					l->light.type = (yrenderer::LightType)v.value._int();
+				if (v.name == "radius")
+					radius = v.value._float();
+				if (v.name == "power")
+					power = v.value._float();
+				if (v.name == "color")
+					col = PluginManager::s2c(v.value);
+				if (v.name == "theta")
+					l->light.light.theta = v.value._float();
+			}
+			if (l->light.type == yrenderer::LightType::DIRECTIONAL)
+				l->light.light.col = col * power;
+			else
+				l->light.light.col = col * (radius * radius / 100);
 		}
 	};
-	/*entity_manager->component_manager->f_parse_type = [] (const string& name) -> const kaba::Class* {
-		const Array list = {Camera::_class, Light::_class, ModelRef::_class, TerrainRef::_class, Skeleton::_class, Animator::_class, SolidBody::_class, MeshCollider::_class, TerrainCollider::_class, EdwardTag::_class};
-		for (const auto* t: list)
-			if (t->name == name)
-				return t;
-		return nullptr;
-	};*/
 	reset();
 }
 
@@ -325,7 +330,10 @@ void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
 }
 
 
-Component* DataWorld::entity_add_component_generic(Entity* e, const kaba::Class* type, const base::map<string, Any>& variables) {
+Component* DataWorld::entity_add_component_generic(Entity* e, const kaba::Class* type, const ComponentParams& _variables) {
+	Array<ScriptInstanceDataVariable> variables;
+	for (const auto& [k, v]: _variables)
+		variables.add({k, "", str(v)});
 	return static_cast<Component*>(execute(new ActionWorldAddComponent(entity_manager->entity_index(e), type, variables)));
 }
 void DataWorld::entity_remove_component(Entity* e, const kaba::Class* type) {

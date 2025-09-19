@@ -20,14 +20,13 @@ DocumentSession::DocumentSession(Session* _session) {
 	progress = new Progress;
 #endif
 
-
-	multi_view_2d = nullptr;
-	multi_view_3d = nullptr;
 	mode_model = nullptr;
 //	mode_admin = nullptr;
 //	mode_font = nullptr;
 	mode_material = nullptr;
 	mode_world = nullptr;
+
+	panel = new xhui::Panel(p2s(this));
 }
 
 DocumentSession::~DocumentSession() {
@@ -39,10 +38,6 @@ DocumentSession::~DocumentSession() {
 	delete mode_font;
 	delete mode_admin;*/
 
-	if (multi_view_2d)
-		delete multi_view_2d;
-	if (multi_view_3d)
-		delete multi_view_3d;
 	// saving the configuration data...
 #endif
 }

@@ -63,6 +63,9 @@ public:
 	explicit DataWorld(DocumentSession* doc);
 	~DataWorld() override;
 
+	using ComponentParams = base::map<string, Any>;
+	//using ComponentParams = Array<ScriptInstanceDataVariable>;
+
 	obs::source out_component_added{this, "component-added"};
 	obs::source out_component_removed{this, "component-removed"};
 
@@ -127,9 +130,9 @@ public:
 	Entity* add_entity(const vec3& pos, const quaternion& ang);
 	void edit_entity(Entity* e, const vec3& pos, const quaternion& ang);
 	void edit_terrain_meta_data(int index, const vec3& pattern);
-	Component* entity_add_component_generic(Entity* e, const kaba::Class* type, const base::map<string, Any>& variables = {});//, const ScriptInstanceData& c);
+	Component* entity_add_component_generic(Entity* e, const kaba::Class* type, const ComponentParams& variables = {});
 	template<class T>
-	T* entity_add_component(Entity* e, const base::map<string, Any>& variables = {}) {
+	T* entity_add_component(Entity* e, const ComponentParams& variables = {}) {
 		return static_cast<T*>(entity_add_component_generic(e, T::_class, variables));
 	}
 	void entity_remove_component(Entity* e, const kaba::Class* type);

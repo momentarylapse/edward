@@ -39,7 +39,7 @@ private:
 
 class ActionWorldAddComponent : public Action {
 public:
-	explicit ActionWorldAddComponent(int index, const kaba::Class* type, const base::map<string, Any>& variables);
+	explicit ActionWorldAddComponent(int index, const kaba::Class* type, const Array<ScriptInstanceDataVariable>& variables);
 	string name() override { return "WorldAddComponent"; }
 
 	void* execute(Data* d) override;
@@ -48,7 +48,7 @@ public:
 private:
 	int index;
 	const kaba::Class* type;
-	base::map<string, Any> variables;
+	Array<ScriptInstanceDataVariable> variables;
 	Component* component = nullptr;
 };
 

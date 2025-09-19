@@ -45,7 +45,7 @@ void ActionWorldEditComponent::undo(Data* d) {
 }
 
 
-ActionWorldAddComponent::ActionWorldAddComponent(int _index, const kaba::Class* _type, const base::map<string, Any>& _variables) {
+ActionWorldAddComponent::ActionWorldAddComponent(int _index, const kaba::Class* _type, const Array<ScriptInstanceDataVariable>& _variables) {
 	index = _index;
 	type = _type;
 	variables = _variables;
