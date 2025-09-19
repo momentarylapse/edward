@@ -9,6 +9,7 @@
 #include <lib/kaba/kaba.h>
 #include <lib/os/filesystem.h>
 #include <view/MultiView.h>
+#include <view/DocumentSession.h>
 #include "data/DataMaterial.h"
 #include <lib/yrenderer/Renderer.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
@@ -33,14 +34,15 @@
 #include <lib/mesh/GeometryTeapot.h>
 #include <lib/os/msg.h>
 #include <world/Light.h>
-#include <y/Entity.h>
 
 
-ModeMaterial::ModeMaterial(DocumentSession* session) :
-	Mode(session)
+ModeMaterial::ModeMaterial(DocumentSession* doc) :
+	Mode(doc)
 {
-	multi_view = new MultiView(session);
-	data = new DataMaterial(session);
+	auto mvp = new MultiViewPanel(doc);
+	multi_view = mvp->multi_view;
+	doc->set_document_panel(mvp);
+	data = new DataMaterial(doc);
 	generic_data = data;
 
 	data->out_changed >> create_sink([this] {
@@ -136,6 +138,7 @@ void ModeMaterial::on_prepare_scene(const yrenderer::RenderParams& params) {
 
 	multi_view->default_light->_ang = quaternion::rotation_a(vec3::EX, pi*0.20f);
 	multi_view->default_light->allow_shadow = true;
+	multi_view->default_light->light.harshness = 0.7f;
 
 	multi_view->lights = {multi_view->default_light, spot_light.get()};
 }

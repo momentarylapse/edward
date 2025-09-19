@@ -26,7 +26,10 @@ DocumentSession::DocumentSession(Session* _session) {
 	mode_material = nullptr;
 	mode_world = nullptr;
 
-	panel = new xhui::Panel(p2s(this));
+	//panel = new MultiViewPanel(this);
+	base_panel = new xhui::Panel(p2s(this));
+	base_panel->propagate_events = true;
+	base_panel->add_control("Grid", "", 0, 0, "base-grid");
 }
 
 DocumentSession::~DocumentSession() {
@@ -40,6 +43,11 @@ DocumentSession::~DocumentSession() {
 
 	// saving the configuration data...
 #endif
+}
+
+void DocumentSession::set_document_panel(xhui::Panel* panel) {
+	document_panel = panel;
+	base_panel->embed("base-grid", 0, 0, panel);
 }
 
 
@@ -91,7 +99,7 @@ void DocumentSession::set_mode_now(Mode *m) {
 		}
 		if (cur_mode->multi_view) {
 			cur_mode->multi_view->unsubscribe(win);
-			win->renderer->children.pop();
+//			win->renderer->children.pop();
 		}
 		cur_mode->unsubscribe(win);
 	}
@@ -119,8 +127,8 @@ void DocumentSession::set_mode_now(Mode *m) {
 	//msg_write("ENTER");
 	cur_mode = m;
 	cur_mode->on_enter();
-	win->renderer->children.clear();
-	win->renderer->add_child(cur_mode->multi_view->renderer.get());
+//	win->renderer->children.clear();
+//	win->renderer->add_child(cur_mode->multi_view->renderer.get());
 
 	cur_mode->out_redraw >> win->in_redraw;
 	if (cur_mode->multi_view) {

@@ -18,6 +18,7 @@ class ModeModel;
 class ModeMaterial;
 class ModeWorld;
 class MultiView;
+class DocumentPanel;
 
 namespace xhui {
 	class Panel;
@@ -31,7 +32,10 @@ public:
 	Session* session;
 	base::promise<DocumentSession*> promise_started;
 
-	xhui::Panel* panel;
+	xhui::Panel* base_panel;
+	xhui::Panel* document_panel;
+	//DocumentPanel* document_panel;
+	void set_document_panel(xhui::Panel* panel);
 
 	void set_mode(Mode *m);
 	void set_mode_now(Mode *m);
@@ -51,4 +55,9 @@ public:
 		return static_cast<M*>(find_mode_base(name));
 	}
 };
+
+/*class DocumentPanel : public xhui::Panel {
+public:
+	DocumentPanel();
+};*/
 

@@ -7,6 +7,8 @@
 
 #include "MultiViewWindow.h"
 #include "Hover.h"
+#include <data/Data.h>
+#include <lib/xhui/Panel.h>
 #include <lib/yrenderer/Renderer.h>
 #include <lib/yrenderer/scene/SceneView.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
@@ -16,13 +18,12 @@
 #include <lib/pattern/Observable.h>
 #include <functional>
 
-#include "data/Data.h"
-
 namespace yrenderer {
 	class CubeMapSource;
 	class CubeMapRenderer;
 	class SceneRenderer;
 	class ShadowRenderer;
+	class XhuiRenderer;
 }
 class Painter;
 class DocumentSession;
@@ -162,6 +163,18 @@ public:
 	void draw_mouse_pos(Painter* p);
 };
 
+
+class MultiViewPanel : public xhui::Panel {
+public:
+	explicit MultiViewPanel(DocumentSession* doc);
+
+	MultiView* multi_view;
+	DocumentSession* doc;
+	xhui::Window* win;
+
+	yrenderer::XhuiRenderer* renderer = nullptr;
+	MultiViewRenderer* multi_view_renderer = nullptr;
+};
 
 
 #endif //MULTIVIEW_H

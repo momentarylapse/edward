@@ -64,6 +64,7 @@ public:
 		int uid;
 	};
 	Array<EventHandler> event_handlers;
+	bool propagate_events = false;
 
 	bool handle_event(const string& id, const string& msg, bool is_default);
 	bool handle_event_p(const string& id, const string& msg, Painter* p);

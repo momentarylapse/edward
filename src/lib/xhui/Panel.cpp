@@ -187,6 +187,8 @@ bool Panel::handle_event(const string &id, const string &msg, bool is_default) {
 			e.f();
 			any_match = true;
 		}
+	if (propagate_events and owner)
+		any_match |= owner->handle_event(id, msg, is_default);
 	return any_match;
 }
 
@@ -198,6 +200,8 @@ bool Panel::handle_event_p(const string &id, const string &msg, Painter *p) {
 			e.fp(p);
 			any_match = true;
 		}
+	if (propagate_events and owner)
+		any_match |= owner->handle_event_p(id, msg, p);
 	return any_match;
 }
 
@@ -326,6 +330,8 @@ void Panel::set_options(const string& id, const string& options) {
 void Panel::set_option(const string& key, const string& value) {
 	if (key == "padding") {
 		padding = value._float();
+	} else if (key == "propagateevents") {
+		propagate_events = true;
 	} else {
 		Control::set_option(key, value);
 	}

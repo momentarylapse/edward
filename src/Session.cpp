@@ -141,6 +141,7 @@ DocumentSession* Session::create_doc() {
 	auto doc = new DocumentSession(this);
 	documents.add(doc);
 	cur_doc = doc;
+	win->embed("main-grid", 0, 0, doc->base_panel);
 	return doc;
 }
 

@@ -167,21 +167,22 @@ void ModeMesh::on_enter() {
 		on_update_selection();
 	});
 
-	win->set_target("overlay-button-grid-left");
-	win->add_control("Button", "V", 0, 1, "add-vertex");
-	win->set_options("add-vertex", "height=50,width=50,noexpandx,ignorefocus");
-	win->add_control("Button", "P", 0, 2, "add-polygon");
-	win->set_options("add-polygon", "height=50,width=50,noexpandx,ignorefocus");
-	win->add_control("Button", "Q", 0, 3, "add-cube");
-	win->set_options("add-cube", "height=50,width=50,noexpandx,ignorefocus");
-	win->add_control("Button", "S", 0, 4, "add-sphere");
-	win->set_options("add-sphere", "height=50,width=50,noexpandx,ignorefocus");
-	win->add_control("Button", "P", 0, 5, "add-platonic");
-	win->set_options("add-platonic", "height=50,width=50,noexpandx,ignorefocus");
-	win->add_control("Button", "L", 0, 6, "add-from-lathe");
-	win->set_options("add-from-lathe", "height=50,width=50,noexpandx,ignorefocus");
-	win->add_control("Button", "C", 0, 7, "add-cylinder");
-	win->set_options("add-cylinder", "height=50,width=50,noexpandx,ignorefocus");
+	auto dp = doc->document_panel;
+	dp->set_target("overlay-button-grid-left");
+	dp->add_control("Button", "V", 0, 1, "add-vertex");
+	dp->set_options("add-vertex", "height=50,width=50,noexpandx,ignorefocus");
+	dp->add_control("Button", "P", 0, 2, "add-polygon");
+	dp->set_options("add-polygon", "height=50,width=50,noexpandx,ignorefocus");
+	dp->add_control("Button", "Q", 0, 3, "add-cube");
+	dp->set_options("add-cube", "height=50,width=50,noexpandx,ignorefocus");
+	dp->add_control("Button", "S", 0, 4, "add-sphere");
+	dp->set_options("add-sphere", "height=50,width=50,noexpandx,ignorefocus");
+	dp->add_control("Button", "P", 0, 5, "add-platonic");
+	dp->set_options("add-platonic", "height=50,width=50,noexpandx,ignorefocus");
+	dp->add_control("Button", "L", 0, 6, "add-from-lathe");
+	dp->set_options("add-from-lathe", "height=50,width=50,noexpandx,ignorefocus");
+	dp->add_control("Button", "C", 0, 7, "add-cylinder");
+	dp->set_options("add-cylinder", "height=50,width=50,noexpandx,ignorefocus");
 
 
 	event_ids.add(session->win->event("mesh-visible0", [this] {

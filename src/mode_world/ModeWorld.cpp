@@ -47,7 +47,10 @@
 ModeWorld::ModeWorld(DocumentSession* doc) :
 	Mode(doc)
 {
-	multi_view = new MultiView(doc);
+	auto mvp = new MultiViewPanel(doc);
+	multi_view = mvp->multi_view;
+	doc->set_document_panel(mvp);
+
 	data = new DataWorld(doc);
 	generic_data = data;
 
@@ -149,7 +152,7 @@ void ModeWorld::on_enter() {
 	auto menu = xhui::create_resource_menu("menu_world");
 	menu_bar->set_menu(menu);
 
-	event_ids.add(session->win->event_x("area", xhui::event_id::DragDrop, [this] {
+	event_ids.add(doc->document_panel->event_x("area", xhui::event_id::DragDrop, [this] {
 		multi_view->hover = multi_view->get_hover(multi_view->hover_window, session->win->drag.m);
 		const vec3 p = multi_view->cursor_pos_3d(session->win->drag.m);
 		if (session->win->drag.payload.match("add-entity-default-*")) {
@@ -203,8 +206,10 @@ void ModeWorld::on_leave() {
 
 	data->out_changed.unsubscribe(this);
 
-	for (int uid: event_ids)
+	for (int uid: event_ids) {
+		doc->document_panel->remove_event_handler(uid);
 		session->win->remove_event_handler(uid);
+	}
 }
 
 

@@ -23,7 +23,6 @@
 #include "lib/os/msg.h"
 #include "lib/xhui/Theme.h"
 #include <lib/yrenderer/Renderer.h>
-#include <lib/yrenderer/target/XhuiRenderer.h>
 #include <lib/yrenderer/TextureManager.h>
 #include "y/helper/ResourceManager.h"
 #include <storage/Storage.h>
@@ -90,17 +89,6 @@ Dialog x x padding=0
 		Toolbar toolbar '' main
 		---|
 		Grid main-grid ''
-			Overlay ? ''
-				DrawingArea area '' grabfocus
-				Grid overlay-main-grid '' margin=25
-					Grid overlay-button-grid-left '' spacing=20
-						Button mouse-action 'T' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
-					.
-					Label ? '' ignorehover expandx
-					Grid overlay-button-grid-right '' spacing=20
-						Button cam-rotate 'R' image=rf-rotate height=50 width=50 padding=7 noexpandx ignorefocus
-						---|
-						Button cam-move 'M' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 
 #ifdef OS_MAC
@@ -160,106 +148,9 @@ Dialog x x padding=0
 		engine.ignore_missing_files = true;
 		engine.resource_manager = session->resource_manager;
 
-		renderer = new yrenderer::XhuiRenderer(session->ctx);
-
 		xhui::run_later(0.01f, [this] {
 			session->promise_started(session.get());
 		});
-	});
-	event_xp(id, xhui::event_id::JustBeforeDraw, [this] (Painter* p) {
-		if (!session->cur_doc or !session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
-			return;
-		if (auto da = static_cast<xhui::DrawingArea*>(get_control("area")))
-			da->for_painter_do(static_cast<xhui::Painter*>(p), [this] (Painter* p) {
-				session->cur_doc->cur_mode->multi_view->set_area(p->area());
-				renderer->before_draw(p);
-			});
-	});
-	event_xp("area", xhui::event_id::Draw, [this] (Painter* p) {
-		if (!session->cur_doc or !session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
-			return;
-		session->cur_doc->cur_mode->multi_view->set_area(p->area());
-		renderer->draw(p);
-		session->cur_doc->cur_mode->multi_view->on_draw(p);
-		session->cur_doc->cur_mode->on_draw_post(p);
-		p->set_color(White);
-		p->set_font_size(xhui::Theme::_default.font_size * 1.5f);
-		for (int i=0; i<session->message_str.num; i++)
-			drawing2d::draw_boxed_str(p, _area.center() + vec2(0, 20*i), session->message_str[i], 0);
-	});
-	event_x("area", xhui::event_id::MouseMove, [this] {
-		if (!session->cur_doc or !session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
-			return;
-		session->cur_doc->cur_mode->multi_view->on_mouse_move(state.m, state.m - state_prev.m);
-		session->cur_doc->cur_mode->on_mouse_move(state.m, state.m - state_prev.m);
-	});
-	event_x("area", xhui::event_id::MouseWheel, [this] {
-		if (!session->cur_doc or !session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
-			return;
-		session->cur_doc->cur_mode->multi_view->on_mouse_wheel(state.m, state.scroll);
-	});
-	event_x("area", xhui::event_id::MouseLeave, [this] {
-		if (!session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
-			return;
-		session->cur_doc->cur_mode->multi_view->on_mouse_leave();
-		session->cur_doc->cur_mode->on_mouse_leave(state.m);
-	});
-	event_x("area", xhui::event_id::LeftButtonDown, [this] {
-		if (!session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
-			return;
-		session->cur_doc->cur_mode->multi_view->on_left_button_down(state.m);
-		session->cur_doc->cur_mode->on_left_button_down(state.m);
-	});
-	event_x("area", xhui::event_id::LeftButtonUp, [this] {
-		if (!session->cur_doc->cur_mode or !session->cur_doc->cur_mode->multi_view)
-			return;
-		session->cur_doc->cur_mode->multi_view->on_left_button_up(state.m);
-		session->cur_doc->cur_mode->on_left_button_up(state.m);
-	});
-	event_x("area", xhui::event_id::KeyDown, [this] {
-		session->cur_doc->cur_mode->multi_view->on_key_down(state.key_code);
-		session->cur_doc->cur_mode->on_key_down(state.key_code);
-	});
-	event_x("cam-move", xhui::event_id::LeftButtonDown, [this] {
-		set_mouse_mode(0);
-	});
-	event_x("cam-move", xhui::event_id::LeftButtonUp, [this] {
-		set_mouse_mode(1);
-	});
-	event_x("cam-move", xhui::event_id::MouseMove, [this] {
-		vec2 d = state.m - state_prev.m;
-		if (state.lbut) {
-			if (is_key_pressed(xhui::KEY_SHIFT))
-				session->cur_doc->cur_mode->multi_view->view_port.move(vec3(0,0,d.y) / 800.0f);
-			else
-				session->cur_doc->cur_mode->multi_view->view_port.move(vec3(-d.x, d.y, 0) / 800.0f);
-		}
-	});
-	event_x("cam-rotate", xhui::event_id::LeftButtonDown, [this] {
-		set_mouse_mode(0);
-	});
-	event_x("cam-rotate", xhui::event_id::LeftButtonUp, [this] {
-		set_mouse_mode(1);
-	});
-	event_x("cam-rotate", xhui::event_id::MouseMove, [this] {
-		vec2 d = state.m - state_prev.m;
-		if (state.lbut)
-			session->cur_doc->cur_mode->multi_view->view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
-	});
-	event("mouse-action", [this] {
-		auto ac = session->cur_doc->cur_mode->multi_view->action_controller.get();
-		const auto mode = ac->action_mode();
-		if (mode == MouseActionMode::MOVE) {
-			ac->set_action_mode(MouseActionMode::ROTATE);
-			set_options("mouse-action", "image=rf-rotate");
-		} else if (mode == MouseActionMode::ROTATE) {
-			ac->set_action_mode(MouseActionMode::SCALE);
-			set_options("mouse-action", "image=rf-scale");
-		} else if (mode == MouseActionMode::SCALE) {
-			ac->set_action_mode(MouseActionMode::MOVE);
-			set_options("mouse-action", "image=rf-translate");
-		}
-		set_string("mouse-action", session->cur_doc->cur_mode->multi_view->action_controller->action_name().sub(0, 1).upper());
 	});
 	event("model_new", [this] {
 		session->universal_new(FD_MODEL);

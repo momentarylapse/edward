@@ -11,17 +11,11 @@
 namespace xhui {
 	class Toolbar;
 }
-namespace yrenderer {
-	class XhuiRenderer;
-}
-class MultiViewRenderer;
 class Session;
 
 class EdwardWindow : public obs::Node<xhui::Window> {
 public:
 	owned<Session> session;
-	yrenderer::XhuiRenderer* renderer = nullptr;
-	MultiViewRenderer* multi_view_renderer = nullptr;
 	Array<string> args;
 
 	obs::sink in_redraw;

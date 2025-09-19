@@ -17,7 +17,9 @@
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
 ModeModel::ModeModel(DocumentSession* doc) : Mode(doc) {
-	multi_view = new MultiView(doc);
+	auto mvp = new MultiViewPanel(doc);
+	multi_view = mvp->multi_view;
+	doc->set_document_panel(mvp);
 	data = new DataModel(doc);
 	data->reset();
 	generic_data = data.get();
