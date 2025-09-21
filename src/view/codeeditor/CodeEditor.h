@@ -12,10 +12,9 @@ enum class MarkupType;
 
 namespace codeedit {
 
-class DocumentEditor : public obs::Node<VirtualBase> {
+class CodeEditor : public obs::Node<VirtualBase> {
 public:
-	explicit DocumentEditor();
-	void create_controls(xhui::Window* win, int index);
+	explicit CodeEditor(xhui::Panel* panel, const string& id);
 
 	void load(const Path& filename);
 	string title() const;
@@ -28,11 +27,15 @@ public:
 
 //	void mark_word(int line_no, int pos0, int num_uchars, int type, char* p0, char* p1);
 	void mark_word(Index i0, Index i1, MarkupType type);
-	void clear_markings(int first_line, int last_line);
+	void clear_markings(Index i0, Index i1);
+
+	void update_highlight_current_line();
+	void update_highlight_all();
 
 	Path filename;
+	xhui::Panel* panel;
 	xhui::MultilineEdit* edit = nullptr;
-	string grid_id, __lines_id, edit_id;
+	string id;
 };
 
 }

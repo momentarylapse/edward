@@ -17,6 +17,7 @@ class Mode;
 class ModeModel;
 class ModeMaterial;
 class ModeWorld;
+class ModeCoding;
 class MultiView;
 class DocumentPanel;
 
@@ -47,6 +48,7 @@ public:
 	ModeModel* mode_model;
 	ModeMaterial* mode_material;
 	ModeWorld* mode_world;
+	ModeCoding* mode_coding;
 	//ModeFont* mode_font;
 	//ModeAdministration* mode_admin;
 	Mode *cur_mode = nullptr;

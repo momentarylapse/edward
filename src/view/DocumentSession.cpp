@@ -25,6 +25,7 @@ DocumentSession::DocumentSession(Session* _session) {
 //	mode_font = nullptr;
 	mode_material = nullptr;
 	mode_world = nullptr;
+	mode_coding = nullptr;
 
 	//panel = new MultiViewPanel(this);
 	base_panel = new xhui::Panel(p2s(this));
@@ -150,7 +151,7 @@ void DocumentSession::set_mode_now(Mode *m) {
 
 string DocumentSession::title() const {
 	if (cur_mode)
-		return str(cur_mode->generic_data->filename.relative_to(session->project_dir));
+		return str(cur_mode->generic_data->filename.absolute().relative_to(session->project_dir));
 	return "no file";
 }
 

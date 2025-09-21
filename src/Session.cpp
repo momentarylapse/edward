@@ -8,7 +8,6 @@
 #include "Session.h"
 #include <view/DocumentSession.h>
 #include <view/EdwardWindow.h>
-#include <view/codeeditor/EditorWindow.h>
 #include "Edward.h"
 /*#include "mode/ModeNone.h"
 #include "mode/ModeCreation.h"
@@ -18,6 +17,7 @@
 #include <mode_model/mesh/ModeMesh.h>
 #include <mode_material/ModeMaterial.h>
 #include <mode_world/ModeWorld.h>
+#include <mode_coding/ModeCoding.h>
 /*#include "mode/font/ModeFont.h"
 #include "stuff/Progress.h"*/
 #include <stuff/PluginManager.h>
@@ -41,8 +41,6 @@
 #include <lib/yrenderer/MaterialManager.h>
 #include <lib/yrenderer/TextureManager.h>
 #include <lib/kaba/kaba.h>
-
-#include "view/codeeditor/DocumentEditor.h"
 
 static Array<Session*> all_sessions;
 bool any_session_running() {
@@ -291,6 +289,8 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 			case FD_WORLD:
 			case FD_TERRAIN:
 			case FD_CAMERAFLIGHT:
+			case FD_SCRIPT:
+			case FD_SHADERFILE:
 				if (type == FD_MODEL) {
 					if (!doc->mode_model)
 						doc->mode_model = new ModeModel(doc);
@@ -325,12 +325,15 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 					doc->session->storage->load(filename, doc->mode_world->data, true);
 					doc->set_mode(doc->mode_world);
 					doc->mode_world->optimize_view();
+				} else if (type == FD_SCRIPT or type == FD_SHADERFILE) {
+					if (!doc->mode_coding)
+						doc->mode_coding = new ModeCoding(doc);
+					doc->mode_coding->load(filename);
+					doc->set_mode(doc->mode_coding);
 				}
 				break;
 			case FD_TEXTURE:
 			case FD_SOUND:
-			case FD_SHADERFILE:
-			case FD_SCRIPT:
 			case FD_FILE:
 				//hui::open_document(filename);
 				break;
@@ -428,16 +431,6 @@ Mode *Session::find_mode_base(const string &name) {
 	return mode_none;
 }
 #endif
-
-void Session::edit_code_file(const Path &filename) {
-	if (!code_editor_window)
-		code_editor_window = new codeedit::EditorWindow();
-	try {
-		code_editor_window->open_file(storage->get_root_dir(FD_SCRIPT) | filename);
-	} catch (Exception &e) {
-		error(e.message());
-	}
-}
 
 
 

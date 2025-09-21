@@ -2,11 +2,10 @@
 // Created by Michael Ankele on 2025-02-07.
 //
 
-#ifndef MODEMODEL_H
-#define MODEMODEL_H
+#pragma once
 
 
-#include "../view/Mode.h"
+#include <view/Mode.h>
 #include "data/DataModel.h"
 
 class ModeMesh;
@@ -30,5 +29,3 @@ public:
 };
 
 
-
-#endif //MODEMODEL_H

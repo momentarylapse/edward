@@ -47,7 +47,7 @@ Dialog system 'System'
 			}
 		});
 		event("edit", [this] {
-			data->session->edit_code_file(data->meta_data.systems[index].filename);
+			data->session->universal_edit(FD_SCRIPT, data->meta_data.systems[index].filename, true);
 		});
 	}
 	void update(int _index) {

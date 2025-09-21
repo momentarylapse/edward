@@ -443,6 +443,7 @@ add_executable(edward
 	src/lib/yrenderer/Renderer.cpp
 	src/lib/yrenderer/ShaderManager.cpp
 	src/lib/yrenderer/TextureManager.cpp
+	src/mode_coding/ModeCoding.cpp
 	src/mode_material/action/ActionMaterialEditAppearance.cpp
 	src/mode_material/data/DataMaterial.cpp
 	src/mode_material/dialog/MaterialPanel.cpp
@@ -530,8 +531,7 @@ add_executable(edward
 	src/stuff/PluginManager.cpp
 	src/test/MeshTest.cpp
 	src/test/UnitTest.cpp
-	src/view/codeeditor/DocumentEditor.cpp
-	src/view/codeeditor/EditorWindow.cpp
+	src/view/codeeditor/CodeEditor.cpp
 	src/view/dialogs/CommonDialogs.cpp
 	src/view/dialogs/DocumentSwitcher.cpp
 	src/view/ActionController.cpp

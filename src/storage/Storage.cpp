@@ -67,6 +67,10 @@ int Storage::guess_type(const Path &filename) {
 		if (f->extension == ext)
 			return f->category;
 	}
+	if (ext == "kaba")
+		return FD_SCRIPT;
+	if (ext == "shader")
+		return FD_SHADERFILE;
 	return -1;
 }
 

@@ -32,9 +32,6 @@ namespace edward {
 }
 class DrawingHelper;
 class EdwardWindow;
-namespace codeedit {
-	class EditorWindow;
-}
 namespace kaba {
 	class Context;
 }
@@ -89,9 +86,6 @@ public:
 	base::future<void> allow_termination();
 
 	EdwardWindow *win;
-	codeedit::EditorWindow* code_editor_window = nullptr;
-
-	void edit_code_file(const Path& filename);
 
 	yrenderer::Context *ctx;
 	ResourceManager *resource_manager;
