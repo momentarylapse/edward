@@ -8,30 +8,32 @@
 
 #if HAS_LIB_VULKAN
 
+#include <lib/base/set.h>
+
 namespace vulkan {
 
 extern int verbosity;
 
-enum class Requirements {
-	NONE = 0,
-	ANISOTROPY = 1,
-	SWAP_CHAIN = 2,
-	PRESENT = 4,
-	GRAPHICS = 8,
-	COMPUTE = 16,
-	VALIDATION = 32,
-	RTX = 64,
-	MESH_SHADER = 128,
-	GEOMETRY_SHADER = 256,
-	TESSELATION_SHADER = 512,
-	MULTISAMPLE = 1024
+enum class Feature {
+	ANISOTROPY,
+	SWAP_CHAIN,
+	PRESENT,
+	GRAPHICS,
+	COMPUTE,
+	VALIDATION,
+	RTX,
+	MESH_SHADER,
+	GEOMETRY_SHADER,
+	TESSELATION_SHADER,
+	MULTISAMPLE,
+	PHYSICAL,
+	_NUM
 };
-inline bool operator&(Requirements a, Requirements b) {
-	return ((int)a & (int)b);
-}
-inline Requirements operator|(Requirements a, Requirements b) {
-	return (Requirements)((int)a | (int)b);
-}
+
+struct Requirements {
+	base::set<Feature> required;
+	base::set<Feature> optional;
+};
 
 
 }

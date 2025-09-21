@@ -9,15 +9,16 @@
 
 #if HAS_LIB_VULKAN
 
-#include "../base/base.h"
-#include "../base/pointer.h"
+#include <lib/base/base.h>
+#include <lib/base/pointer.h>
+#include <lib/base/set.h>
 #include "Queue.h"
 
 namespace vulkan {
 
 	class Instance;
 	class CommandPool;
-	enum class Requirements;
+	enum class Feature;
 
 
 class Device {
@@ -33,7 +34,7 @@ public:
 
 	VkSurfaceKHR surface = VK_NULL_HANDLE; // TODO extract
 
-	Requirements requirements;
+	base::set<Feature> features;
 	bool has_rtx() const;
 	bool has_compute() const;
 
@@ -49,8 +50,8 @@ public:
 
 	static xfer<Device> create_simple(Instance *instance, VkSurfaceKHR surface, const Array<string> &op);
 
-	void pick_physical_device(Instance *instance, VkSurfaceKHR surface, Requirements req);
-	void create_logical_device(VkSurfaceKHR surface, Requirements req);
+	void pick_physical_device(Instance *instance, VkSurfaceKHR surface, const Requirements& req);
+	void create_logical_device(VkSurfaceKHR surface);
 
 
 
@@ -73,6 +74,8 @@ public:
 };
 
 extern Device *default_device;
+
+string features_to_string(const base::set<Feature>& features);
 
 
 } /* namespace vulkan */

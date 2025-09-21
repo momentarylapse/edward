@@ -40,42 +40,13 @@ Context* api_init_glfw(GLFWwindow* window) {
 	auto instance = vulkan::init({"glfw", "validation", "api=1.3", "rtx?", "verbosity=3"});
 	surface = instance->create_glfw_surface(window);
 	vulkan::Device* device = nullptr;
+
 	try {
-		device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "rtx", "compute"});
-		msg_write("device found: RTX + COMPUTE");
-	} catch (...) {}
-
-	if (!device) {
-		try {
-			device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "rtx"});
-			msg_write("device found: RTX");
-		} catch (...) {}
-	}
-
-	if (!device) {
-		try {
-			device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "compute", "meshshader"});
-			msg_write("device found: COMPUTE + MESH SHADER");
-		} catch (...) {}
-	}
-
-	if (!device) {
-		try {
-			device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "compute", "tesselationshader"});
-			msg_write("device found: COMPUTE + TESSELATION");
-		} catch (...) {}
-	}
-
-	if (!device) {
-		try {
-			device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "compute"});
-			msg_write("device found: COMPUTE");
-		} catch (...) {}
-	}
-
-	if (!device) {
-		device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation"});
-		msg_write("WARNING:  device found: neither RTX nor COMPUTE");
+		// try physical first
+		device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "physical", "rtx?", "compute?", "meshshader?", "tesselationshader?"});
+	} catch (...) {
+		msg_error("no valid GPU found. Trying again, allowing CPU backend...");
+		device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "physical?", "rtx?", "compute?", "meshshader?", "tesselationshader?"});
 	}
 
 	auto ctx = new Context(new ygfx::Context(instance, device));

@@ -17,7 +17,7 @@ namespace vulkan {
 	class CommandBuffer;
 	class Semaphore;
 	class Fence;
-	enum class Requirements;
+	struct Requirements;
 
 class Queue {
 public:
@@ -29,16 +29,16 @@ public:
 
 
 
-	struct QueueFamilyIndices {
-		base::optional<uint32_t> graphics_family;
-		base::optional<uint32_t> present_family;
-		base::optional<uint32_t> compute_family;
+struct QueueFamilyIndices {
+	base::optional<uint32_t> graphics_family;
+	base::optional<uint32_t> present_family;
+	base::optional<uint32_t> compute_family;
 
-		bool is_complete(Requirements req) const;
-		Array<uint32_t> unique() const;
+	bool is_complete(const Requirements& req) const;
+	Array<uint32_t> unique() const;
 
-		static base::optional<QueueFamilyIndices> query(VkPhysicalDevice device, VkSurfaceKHR surface, Requirements req);
-	};
+	static QueueFamilyIndices query(VkPhysicalDevice device, VkSurfaceKHR surface);
+};
 
 
 } /* namespace vulkan */
