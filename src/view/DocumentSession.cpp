@@ -153,9 +153,11 @@ void DocumentSession::set_mode_now(Mode *m) {
 }
 
 string DocumentSession::title() const {
-	if (cur_mode)
-		return str(cur_mode->generic_data->filename.absolute().relative_to(session->project_dir));
-	return "no file";
+	if (!cur_mode)
+		return "???";
+	if (!cur_mode->generic_data->filename)
+		return "new " + i2s(cur_mode->generic_data->type);
+	return str(cur_mode->generic_data->filename.absolute().relative_to(session->project_dir));
 }
 
 

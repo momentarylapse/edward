@@ -230,17 +230,7 @@ void Session::universal_new(int preferred_type) {
 		}*/
 	};
 
-	if (false) {
-		// replace
-		//allow_termination().then([this, call_new] { call_new(this); });
-
-	} else {
-		// new doc
-		emit_doc().then([this, call_new] (DocumentSession* doc) {
-			msg_write("universal_new ...started");
-			call_new(doc);
-		});
-	}
+	emit_doc().then(call_new);
 }
 
 void Session::universal_open(int preferred_type) {
@@ -268,9 +258,7 @@ void Session::universal_open(int preferred_type) {
 			}
 		};
 
-		auto doc = create_doc();
-		call_open(doc);
-		//emit_empty_session(this).then(call_open);
+		emit_doc().then(call_open);
 	});
 }
 

@@ -3,11 +3,12 @@
 #include "Painter.h"
 #include "Context.h"
 #include <lib/ygraphics/font.h>
-#include "../vulkan/vulkan.h"
-#include "../image/image.h"
-#include "../math/mat4.h"
+#include <lib/vulkan/vulkan.h>
+#include <lib/image/image.h>
+#include <lib/math/mat4.h>
 #include <lib/base/algo.h>
-#include "../os/msg.h"
+#include <lib/os/msg.h>
+#include <cmath>
 
 using namespace vulkan;
 
@@ -31,11 +32,21 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 	if (str.num == 0)
 		return;
 	auto& tc = aux->get_text_cache(str, face, font_size, ui_scale);
+	bool round_to_pixels = true;
 
 	float w = (float)tc.texture->width / ui_scale;
 	float h = (float)tc.texture->height / ui_scale;
 	Parameters params;
-	params.matrix = mat_pixel_to_rel * mat4::translation(vec3(offset_x + p.x, offset_y + p.y, 0)) * mat4::scale(w, h, 1);
+	vec2 q = p + vec2(offset_x, offset_y);
+	if (round_to_pixels) {
+		float fx = native_area.width() / _area.width();
+		float fy = native_area.height() / _area.height();
+		w = (float)tc.texture->width / fx;
+		h = (float)tc.texture->height / fy;
+		q.x = std::roundf(q.x * fx) / fx;
+		q.y = std::roundf(q.y * fy) / fy;
+	}
+	params.matrix = mat_pixel_to_rel * mat4::translation(vec3(q, 0)) * mat4::scale(w, h, 1);
 	params.col = _color;
 	params.size = {w,h};
 	params.radius = 0;
