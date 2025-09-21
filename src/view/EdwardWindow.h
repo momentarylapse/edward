@@ -12,6 +12,7 @@ namespace xhui {
 	class Toolbar;
 }
 class Session;
+class DocumentSwitcher;
 
 class EdwardWindow : public obs::Node<xhui::Window> {
 public:
@@ -29,8 +30,11 @@ public:
 	explicit EdwardWindow(xfer<Session> session);
 
 	void on_key_down(int key) override;
+	void on_key_up(int key_code) override;
 
 	void update_menu();
+
+	DocumentSwitcher* switcher = nullptr;
 };
 
 

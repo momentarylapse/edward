@@ -41,6 +41,8 @@ public:
 	void set_mode_now(Mode *m);
 	Mode *get_mode(int type);
 
+	string title() const;
+
 	Mode *mode_none;
 	ModeModel* mode_model;
 	ModeMaterial* mode_material;

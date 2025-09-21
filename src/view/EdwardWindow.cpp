@@ -20,6 +20,7 @@
 #include "DrawingHelper.h"
 #include "MultiView.h"
 #include "DocumentSession.h"
+#include "dialogs/DocumentSwitcher.h"
 #include "lib/os/msg.h"
 #include "lib/xhui/Theme.h"
 #include <lib/yrenderer/Renderer.h>
@@ -93,8 +94,10 @@ Dialog x x padding=0
 
 #ifdef OS_MAC
 	int mod = xhui::KEY_SUPER;
+	int key_next_doc = xhui::KEY_TAB + xhui::KEY_ALT;//xhui::KEY_CONTROL;
 #else
 	int mod = xhui::KEY_CONTROL;
+	int key_next_doc = xhui::KEY_TAB + xhui::KEY_CONTROL;
 #endif
 
 	set_key_code("new", mod + xhui::KEY_N);
@@ -113,6 +116,8 @@ Dialog x x padding=0
 #endif
 	set_key_code("select_all", mod + xhui::KEY_A);
 	set_key_code("execute-plugin", mod + xhui::KEY_RETURN);
+	set_key_code("next-document", key_next_doc);
+	set_key_code("previous-document", key_next_doc + xhui::KEY_SHIFT);
 
 	toolbar = (xhui::Toolbar*)get_control("toolbar");
 
@@ -175,6 +180,22 @@ Dialog x x padding=0
 			session->plugin_manager->execute(path);
 		});
 	});
+	event("next-document", [this] {
+		if (switcher) {
+			switcher->next();
+		} else {
+			switcher = new DocumentSwitcher(this);
+			open_dialog(switcher);
+		}
+	});
+	event("previous-document", [this] {
+		if (switcher) {
+			switcher->previous();
+		} else {
+			switcher = new DocumentSwitcher(this);
+			open_dialog(switcher);
+		}
+	});
 	auto quit = [this] {
 		if (session->cur_doc->cur_mode->get_data()->action_manager->is_save())
 			request_destroy();
@@ -196,6 +217,14 @@ Dialog x x padding=0
 }
 
 void EdwardWindow::on_key_down(int key) {
+}
+
+void EdwardWindow::on_key_up(int key_code) {
+	int key = key_code & 0xff;
+	if ((key == xhui::KEY_LCONTROL or key == xhui::KEY_LALT) and switcher) {
+		switcher->request_destroy();
+		switcher = nullptr;
+	}
 }
 
 string nice_path(const Path& p) {

@@ -98,7 +98,7 @@ public:
 	DrawingHelper *drawing_helper;
 	edward::PluginManager* plugin_manager;
 
-	Array<DocumentSession*> documents;
+	owned_array<DocumentSession> documents;
 	DocumentSession* cur_doc = nullptr;
 	DocumentSession* create_doc();
 	base::future<DocumentSession*> emit_doc();

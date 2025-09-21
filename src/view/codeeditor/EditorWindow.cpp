@@ -4,7 +4,7 @@
 
 #include "EditorWindow.h"
 #include "DocumentEditor.h"
-#include "DocumentSwitcher.h"
+//#include "DocumentSwitcher.h"
 #include <lib/xhui/xhui.h>
 #include <lib/xhui/dialogs/FileSelectionDialog.h>
 #include <lib/xhui/controls/MultilineEdit.h>
@@ -49,7 +49,7 @@ Window test 'test' padding=0
 		});
 		create_document_editor();
 	});
-	event("next-document", [this] {
+/*	event("next-document", [this] {
 		if (switcher) {
 			switcher->next();
 		} else {
@@ -64,15 +64,15 @@ Window test 'test' padding=0
 			switcher = new DocumentSwitcher(this);
 			open_dialog(switcher);
 		}
-	});
+	});*/
 }
 
 void EditorWindow::on_key_up(int key_code) {
-	int key = key_code & 0xff;
+	/*int key = key_code & 0xff;
 	if ((key == xhui::KEY_LCONTROL or key == xhui::KEY_LALT) and switcher) {
 		switcher->request_destroy();
 		switcher = nullptr;
-	}
+	}*/
 }
 
 

@@ -12,7 +12,7 @@ class Path;
 namespace codeedit {
 
 class DocumentEditor;
-class DocumentSwitcher;
+//class DocumentSwitcher;
 
 class EditorWindow : public obs::Node<xhui::Window> {
 public:
@@ -30,7 +30,7 @@ public:
 
 	void open_file(const Path& filename);
 
-	DocumentSwitcher* switcher = nullptr;
+//	DocumentSwitcher* switcher = nullptr;
 };
 
 }

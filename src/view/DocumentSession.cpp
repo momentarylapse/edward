@@ -148,4 +148,11 @@ void DocumentSession::set_mode_now(Mode *m) {
 	win->request_redraw();
 }
 
+string DocumentSession::title() const {
+	if (cur_mode)
+		return str(cur_mode->generic_data->filename.relative_to(session->project_dir));
+	return "no file";
+}
+
+
 

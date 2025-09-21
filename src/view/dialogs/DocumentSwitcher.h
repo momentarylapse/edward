@@ -6,21 +6,16 @@
 
 #include <lib/xhui/Dialog.h>
 
-
-namespace codeedit {
-
-class EditorWindow;
+class EdwardWindow;
 
 class DocumentSwitcher : public xhui::Dialog {
 public:
-	explicit DocumentSwitcher(EditorWindow* editor_window);
+	explicit DocumentSwitcher(EdwardWindow* window);
 	~DocumentSwitcher() override;
 
 	void next();
 	void previous();
 
-	EditorWindow* editor_window;
+	EdwardWindow* editor_window;
 };
-
-}
 

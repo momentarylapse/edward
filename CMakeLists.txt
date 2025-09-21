@@ -531,9 +531,9 @@ add_executable(edward
 	src/test/MeshTest.cpp
 	src/test/UnitTest.cpp
 	src/view/codeeditor/DocumentEditor.cpp
-	src/view/codeeditor/DocumentSwitcher.cpp
 	src/view/codeeditor/EditorWindow.cpp
 	src/view/dialogs/CommonDialogs.cpp
+	src/view/dialogs/DocumentSwitcher.cpp
 	src/view/ActionController.cpp
 	src/view/DocumentSession.cpp
 	src/view/DrawingHelper.cpp
