@@ -120,7 +120,10 @@ int TabControl::get_int() {
 }
 
 void TabControl::set_int(int i) {
+	if (i < 0 or i >= pages.num)
+		return;
 	current_page = i;
+	header->set_current_page(i);
 	request_redraw();
 }
 
@@ -132,9 +135,12 @@ void TabControl::_draw(Painter* p) {
 		pages[current_page].child->_draw(p);
 }
 
-void TabControl::set_option(const string& key, const string& value) {
+	void TabControl::set_option(const string& key, const string& value) {
 	if (key == "bar") {
 		show_header = value._bool();
+		request_redraw();
+	} else if (key == "nobar") {
+		show_header = false;
 		request_redraw();
 	} else {
 		Control::set_option(key, value);
