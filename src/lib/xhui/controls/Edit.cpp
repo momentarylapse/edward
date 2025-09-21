@@ -511,6 +511,13 @@ Edit::Index Edit::xy_to_index(const vec2& pos) const {
 void Edit::_draw(Painter *p) {
 	ui_scale = p->ui_scale;
 
+	if (markup_dirty) {
+		base::inplace_sort(markups, [] (const Markup& a, const Markup& b) {
+			return a.i0 <= b.i0;
+		});
+		markup_dirty = false;
+	}
+
 	// background
 	color bg = Theme::_default.background_button;
 	if (alt_background)
@@ -592,9 +599,7 @@ Edit::Index Edit::prior_index(Index index) const {
 
 void Edit::add_markup(const Markup& m) {
 	markups.add(m);
-	base::inplace_sort(markups, [] (const Markup& a, const Markup& b) {
-		return a.i0 <= b.i0;
-	});
+	markup_dirty = true;
 	request_redraw();
 }
 
@@ -603,7 +608,7 @@ void Edit::clean_markup(Index i0, Index i1) {
 	base::remove_if(markups, [i0, i1] (const Markup& m) {
 		return i0 <= m.i0 and i1 >= m.i1;
 	});
-	// shink?
+	// shrink?
 	for (auto& m: markups) {
 		if (m.i0 >= i0 and m.i0 <= i1)
 			m.i0 = i1;
@@ -619,6 +624,7 @@ void Edit::clean_markup(Index i0, Index i1) {
 		}
 	for (const auto& m: to_add)
 		add_markup(m);
+	markup_dirty = true;
 	request_redraw();
 }
 

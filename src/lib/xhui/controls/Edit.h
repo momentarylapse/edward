@@ -105,6 +105,7 @@ public:
 		color col;
 	};
 	Array<Markup> markups;
+	bool markup_dirty = false;
 	void add_markup(const Markup& m);
 	void clean_markup(Index i0, Index i1);
 
