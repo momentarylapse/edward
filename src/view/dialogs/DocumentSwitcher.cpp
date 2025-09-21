@@ -6,7 +6,6 @@
 #include "../EdwardWindow.h"
 #include "../DocumentSession.h"
 #include "../../Session.h"
-#include <lib/os/msg.h>
 
 
 // TODO sort by last-active
@@ -24,7 +23,7 @@ DocumentSwitcher::DocumentSwitcher(EdwardWindow* _editor_window) : Dialog("...",
 
 DocumentSwitcher::~DocumentSwitcher() {
 	int i = get_int("list");
-	//editor_window->set_active(weak(editor_window->document_editors)[i]);
+	editor_window->session->set_active_doc(weak(editor_window->session->documents)[i]);
 }
 
 void DocumentSwitcher::next() {

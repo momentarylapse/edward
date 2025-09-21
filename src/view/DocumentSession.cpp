@@ -27,10 +27,13 @@ DocumentSession::DocumentSession(Session* _session) {
 	mode_world = nullptr;
 	mode_coding = nullptr;
 
-	//panel = new MultiViewPanel(this);
 	base_panel = new xhui::Panel(p2s(this));
 	base_panel->propagate_events = true;
 	base_panel->add_control("Grid", "", 0, 0, "base-grid");
+
+	promise_started.get_future().then([this] (DocumentSession*) {
+		out_started();
+	});
 }
 
 DocumentSession::~DocumentSession() {
@@ -46,7 +49,7 @@ DocumentSession::~DocumentSession() {
 #endif
 }
 
-void DocumentSession::set_document_panel(xhui::Panel* panel) {
+void DocumentSession::set_document_panel(shared<xhui::Panel> panel) {
 	document_panel = panel;
 	base_panel->embed("base-grid", 0, 0, panel);
 }

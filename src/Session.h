@@ -71,6 +71,8 @@ public:
 	Session();
 	~Session() override;
 
+	obs::source out_started{this, "started"};
+
 	void on_command(const string &id);
 	void on_close();
 
@@ -96,6 +98,7 @@ public:
 	DocumentSession* cur_doc = nullptr;
 	DocumentSession* create_doc();
 	base::future<DocumentSession*> emit_doc();
+	void set_active_doc(DocumentSession* doc);
 
 	Storage *storage;
 

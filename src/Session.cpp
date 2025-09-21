@@ -106,6 +106,7 @@ void Session::load_project(const Path& dir) {
 
 Session::Session() {
 	ctx = nullptr;
+	cur_doc = nullptr;
 
 	storage = nullptr;
 	resource_manager = nullptr;
@@ -138,17 +139,31 @@ Session::~Session() {
 DocumentSession* Session::create_doc() {
 	auto doc = new DocumentSession(this);
 	documents.add(doc);
-	cur_doc = doc;
-	win->embed("main-grid", 0, 0, doc->base_panel);
+	doc->grid_id = format("x-grid-%d", documents.num);
+	win->set_target("tab");
+	win->add_control("Grid", "", documents.num-1, 0, doc->grid_id);
+	win->embed(doc->grid_id, 0, 0, doc->base_panel);
+	//win->set_target(grid_id);
+	//win->add_control("Button", p2s(doc), 0, 0, "");
+
 	return doc;
 }
 
 base::future<DocumentSession*> Session::emit_doc() {
 	auto doc = create_doc();
 	promise_started.get_future().then([this, doc] (Session*) {
+		set_active_doc(doc);
 		doc->promise_started(doc);
 	});
 	return doc->promise_started.get_future();
+}
+
+void Session::set_active_doc(DocumentSession* doc) {
+	if (doc == cur_doc)
+		return;
+	int i = weak(documents).find(doc);
+	cur_doc = doc;
+	win->set_int("tab", i);
 }
 
 

@@ -10,6 +10,8 @@
 #include <lib/xhui/Panel.h>
 #include <lib/os/file.h>
 
+#include "lib/os/msg.h"
+
 class CodingPanel : public xhui::Panel {
 public:
 	DocumentSession* doc;

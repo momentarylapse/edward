@@ -564,7 +564,7 @@ Dialog solid-body-panel ''
 		});
 		event("edit", [this] {
 			if (entity_index >= 0 and component_index >= 0 and user_component)
-				data->session->universal_edit(FD_SCRIPT, data->entity(entity_index)->components[component_index]->component_type->owner->module->filename, true);
+				data->session->universal_edit(FD_SCRIPT, data->entity(entity_index)->components[component_index]->component_type->owner->module->filename, false);
 		});
 	}
 	void update(int _entity_index, const string& category, int _component_index) {

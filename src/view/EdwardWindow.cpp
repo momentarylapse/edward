@@ -90,6 +90,7 @@ Dialog x x padding=0
 		Toolbar toolbar '' main
 		---|
 		Grid main-grid ''
+			TabControl tab 'a' nobar
 )foodelim");
 
 #ifdef OS_MAC
@@ -237,6 +238,8 @@ string nice_path(const Path& p) {
 }
 
 void EdwardWindow::update_menu() {
+	if (!session->cur_doc or !session->cur_doc->cur_mode)
+		return;
 	if (auto d = session->cur_doc->cur_mode->get_data()) {
 		enable("undo", d->action_manager->undoable());
 		enable("redo", d->action_manager->redoable());

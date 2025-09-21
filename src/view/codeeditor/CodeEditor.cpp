@@ -44,7 +44,7 @@ CodeEditor::CodeEditor(xhui::Panel* _panel, const string& _id) {
 	});
 
 	xhui::run_later(0.1f, [this] {
-		panel->get_window()->request_redraw();
+		panel->request_redraw();
 	});
 }
 

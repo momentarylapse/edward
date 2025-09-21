@@ -30,13 +30,15 @@ public:
 	explicit DocumentSession(Session* session);
 	~DocumentSession() override;
 
+	obs::source out_started{this, "started"};
+
 	Session* session;
 	base::promise<DocumentSession*> promise_started;
 
-	xhui::Panel* base_panel;
-	xhui::Panel* document_panel;
-	//DocumentPanel* document_panel;
-	void set_document_panel(xhui::Panel* panel);
+	shared<xhui::Panel> base_panel;
+	shared<xhui::Panel> document_panel;
+	void set_document_panel(shared<xhui::Panel> panel);
+	string grid_id;
 
 	void set_mode(Mode *m);
 	void set_mode_now(Mode *m);
