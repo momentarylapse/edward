@@ -331,12 +331,19 @@ Dialog model-panel ''
 	Grid ? ''
 		Label ? 'Filename'
 		Button filename '' expandx
+		Button edit 'E' noexpandx
 )foodelim");
 		data = _data;
 		index = _index;
 		auto e = data->entity_manager->entities[index];
 		auto m = e->get_component<ModelRef>();
 		set_string("filename", str(m->filename));
+		event("edit", [this] {
+			auto e = data->entity_manager->entities[index];
+			auto m = e->get_component<ModelRef>();
+			if (m->filename)
+				data->session->universal_edit(FD_MODEL, m->filename, true);
+		});
 	}
 	DataWorld* data;
 	int index;

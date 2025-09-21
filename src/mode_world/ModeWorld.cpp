@@ -365,7 +365,6 @@ void ModeWorld::on_draw_background(const yrenderer::RenderParams& params, yrende
 }
 
 void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
-
 	auto& rvd = win->rvd();
 	auto dh = multi_view->session->drawing_helper;
 	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];

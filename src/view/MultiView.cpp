@@ -569,6 +569,8 @@ Dialog multi-view-panel ''
 	win->event_xp(win->id, xhui::event_id::JustBeforeDraw, [this] (Painter* p) {
 		if (!doc->cur_mode or !multi_view)
 			return;
+		if (doc != doc->session->cur_doc)
+			return;
 		if (auto da = static_cast<xhui::DrawingArea*>(get_control("area")))
 			da->for_painter_do(static_cast<xhui::Painter*>(p), [this] (Painter* p) {
 				multi_view->set_area(p->area());

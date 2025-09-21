@@ -17,7 +17,8 @@ DocumentSwitcher::DocumentSwitcher(EdwardWindow* _editor_window) : Dialog("...",
 
 	for (auto doc: weak(editor_window->session->documents))
 		add_string("list", doc->title());
-	//set_int("list", weak(editor_window->document_editors).find(editor_window->active_editor));
+	auto session = editor_window->session.get();
+	set_int("list", weak(session->documents).find(session->cur_doc));
 	next();
 }
 

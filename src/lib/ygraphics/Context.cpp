@@ -45,7 +45,7 @@ TextCache& DrawingHelperData::get_text_cache(const string& text, font::Face* fac
 	tc->texture->write(im);
 	tc->texture->set_options("minfilter=nearest,wrap=clamp");
 	// fractional coordinates (especially with ui_scale)... not sure what to do m(-_-)m
-	//	tc->texture->set_options("minfilter=nearest,magfilter=nearest,wrap=clamp");
+	tc->texture->set_options("minfilter=nearest,magfilter=nearest,wrap=clamp");
 
 	face->set_size(font_size * ui_scale);
 	tc->dimensions = face->get_text_dimensions(text);
