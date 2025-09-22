@@ -125,6 +125,12 @@ void ModeMesh::on_leave_rec() {
 	event_ids_rec.clear();
 }
 
+void ModeMesh::on_set_menu() {
+	_parent->on_set_menu();
+	auto menu = xhui::create_resource_menu("menu_model");
+	session->win->menu_bar->set_menu(menu);
+}
+
 
 void ModeMesh::on_enter() {
 	auto update = [this] {

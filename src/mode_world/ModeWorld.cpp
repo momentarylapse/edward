@@ -58,6 +58,16 @@ ModeWorld::ModeWorld(DocumentSession* doc) :
 	mode_properties = new ModeWorldProperties(this);
 }
 
+void ModeWorld::on_set_menu() {
+	auto tb = session->win->tool_bar;
+	tb->set_by_id("world-toolbar");
+
+
+	auto menu = xhui::create_resource_menu("menu_world");
+	session->win->menu_bar->set_menu(menu);
+}
+
+
 void ModeWorld::on_enter_rec() {
 	session->out_changed >> create_sink([this] {
 		update_menu();
@@ -143,14 +153,6 @@ void ModeWorld::on_enter() {
 		{MultiViewType::WORLD_ENTITY, &data->dummy_entities}//data->entities}
 	};
 	multi_view->light_mode = MultiView::LightMode::Fixed;
-
-	auto tb = session->win->toolbar;
-	tb->set_by_id("world-toolbar");
-
-
-	auto menu_bar = (xhui::MenuBar*)session->win->get_control("menu");
-	auto menu = xhui::create_resource_menu("menu_world");
-	menu_bar->set_menu(menu);
 
 	event_ids.add(doc->document_panel->event_x("area", xhui::event_id::DragDrop, [this] {
 		multi_view->hover = multi_view->get_hover(multi_view->hover_window, session->win->drag.m);

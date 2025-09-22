@@ -45,6 +45,7 @@ public:
 	void optimize_view();
 
 	void on_command(const string& id) override;
+	void on_set_menu() override;
 
 	DataMaterial* data;
 	owned<ygfx::VertexBuffer> vertex_buffer;

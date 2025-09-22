@@ -19,6 +19,7 @@ public:
 	void on_enter_rec() override;
 	void on_leave_rec() override;
 	void on_command(const string& id) override;
+	void on_set_menu() override;
 
 	void update_menu();
 

@@ -50,19 +50,21 @@ ModeMaterial::ModeMaterial(DocumentSession* doc) :
 	});
 }
 
+void ModeMaterial::on_set_menu() {
+	auto tb = session->win->tool_bar;
+	tb->set_by_id("material-toolbar");
+
+
+	auto menu = xhui::create_resource_menu("menu_material");
+	session->win->menu_bar->set_menu(menu);
+}
+
+
 void ModeMaterial::on_enter() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 	multi_view->data_sets = {};
 	multi_view->light_mode = MultiView::LightMode::Fixed;
-
-	auto tb = session->win->toolbar;
-	tb->set_by_id("material-toolbar");
-
-
-	auto menu_bar = (xhui::MenuBar*)session->win->get_control("menu");
-	auto menu = xhui::create_resource_menu("menu_material");
-	menu_bar->set_menu(menu);
 
 	session->win->event("material_shape_cube", [this] {
 		set_mesh(PreviewMesh::CUBE);

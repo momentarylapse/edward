@@ -9,6 +9,7 @@
 #include "lib/pattern/Observable.h"
 
 namespace xhui {
+	class MenuBar;
 	class Toolbar;
 }
 class Session;
@@ -25,7 +26,8 @@ public:
 	obs::sink in_action_failed;
 	obs::sink in_saved;
 
-	xhui::Toolbar* toolbar;
+	xhui::MenuBar* menu_bar;
+	xhui::Toolbar* tool_bar;
 
 	explicit EdwardWindow(xfer<Session> session);
 

@@ -27,12 +27,14 @@ ModeSkeleton::ModeSkeleton(ModeModel* _parent) : SubMode(_parent) {
 
 ModeSkeleton::~ModeSkeleton() = default;
 
-void ModeSkeleton::on_enter() {
-	auto win = session->win;
-	auto menu_bar = (xhui::MenuBar*)win->get_control("menu");
+void ModeSkeleton::on_set_menu() {
+	parent->on_set_menu();
 	auto menu = xhui::create_resource_menu("menu_skeleton");
-	menu_bar->set_menu(menu);
+	session->win->menu_bar->set_menu(menu);
+}
 
+
+void ModeSkeleton::on_enter() {
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);
 	multi_view->set_show_grid(true);

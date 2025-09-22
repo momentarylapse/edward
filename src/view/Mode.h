@@ -42,6 +42,7 @@ public:
 	virtual void on_leave() {}
 
 	virtual void on_command(const string& id) {}
+	virtual void on_set_menu() {}
 
 	virtual void on_mouse_move(const vec2& m, const vec2& d) {}
 	virtual void on_mouse_leave(const vec2&) {}
@@ -77,6 +78,7 @@ public:
 	explicit SubMode(Mode* parent);
 
 	void on_command(const string& id) override;
+	void on_set_menu() override;
 
 	void on_prepare_scene(const yrenderer::RenderParams& params) override;
 	void on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;

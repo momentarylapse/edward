@@ -54,6 +54,10 @@ void SubMode::on_command(const string& id) {
 	_parent->on_command(id);
 }
 
+void SubMode::on_set_menu() {
+	_parent->on_set_menu();
+}
+
 void SubMode::on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	_parent->on_draw_background(params, rvd);
 }

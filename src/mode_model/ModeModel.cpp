@@ -30,14 +30,19 @@ ModeModel::ModeModel(DocumentSession* doc) : Mode(doc) {
 
 ModeModel::~ModeModel() = default;
 
+void ModeModel::on_set_menu() {
+	auto win = session->win;
+	auto tb = win->tool_bar;
+	tb->set_by_id("model-toolbar");
+}
+
+
 void ModeModel::on_enter_rec() {
 	session->out_changed >> create_sink([this] {
 		update_menu();
 	});
 
 	auto win = session->win;
-	auto tb = win->toolbar;
-	tb->set_by_id("model-toolbar");
 	win->enable("mode_model_animation", false);
 
 	event_ids_rec.add(win->event("mode_model_mesh", [this] {

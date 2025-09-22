@@ -130,6 +130,7 @@ void DocumentSession::set_mode_now(Mode *m) {
 	// start new
 	//msg_write("ENTER");
 	cur_mode = m;
+	cur_mode->on_set_menu();
 	cur_mode->on_enter();
 //	win->renderer->children.clear();
 //	win->renderer->add_child(cur_mode->multi_view->renderer.get());

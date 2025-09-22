@@ -164,6 +164,9 @@ void Session::set_active_doc(DocumentSession* doc) {
 	int i = weak(documents).find(doc);
 	cur_doc = doc;
 	win->set_int("tab", i);
+	if (auto m = cur_doc->cur_mode) {
+		m->on_set_menu();
+	}
 }
 
 
