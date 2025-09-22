@@ -4,7 +4,6 @@
 
 #include "ModeWorld.h"
 #include "ModeEditTerrain.h"
-#include "ModeScripting.h"
 #include "ModeWorldProperties.h"
 #include "dialog/EntityPanel.h"
 #include "action/ActionWorldMoveSelection.h"
@@ -54,7 +53,6 @@ ModeWorld::ModeWorld(DocumentSession* doc) :
 	data = new DataWorld(doc);
 	generic_data = data;
 
-	mode_scripting = new ModeScripting(this);
 	mode_properties = new ModeWorldProperties(this);
 }
 
@@ -94,9 +92,6 @@ void ModeWorld::on_enter_rec() {
 
 	event_ids_rec.add(session->win->event("mode_world", [this] {
 		doc->set_mode(this);
-	}));
-	event_ids_rec.add(session->win->event("mode-world-scripting", [this] {
-		doc->set_mode(mode_scripting.get());
 	}));
 	session->win->event("properties", [this] {
 		doc->set_mode(mode_properties.get());
@@ -219,7 +214,6 @@ void ModeWorld::update_menu() {
 	auto win = session->win;
 
 	win->check("mode_world", doc->cur_mode == this);
-	win->check("mode-world-scripting", doc->cur_mode == mode_scripting.get());
 	win->check("properties", doc->cur_mode == mode_properties.get());
 }
 

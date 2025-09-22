@@ -16,7 +16,6 @@ namespace yrenderer {
 }
 class MultiViewWindow;
 class EntityPanel;
-class ModeScripting;
 class ModeWorldProperties;
 namespace xhui {
 	class Panel;
@@ -59,7 +58,6 @@ public:
 
 	Array<int> event_ids_rec;
 	Array<int> event_ids;
-	owned<ModeScripting> mode_scripting;
 	owned<ModeWorldProperties> mode_properties;
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;

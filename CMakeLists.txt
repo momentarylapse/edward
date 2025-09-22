@@ -515,7 +515,6 @@ add_executable(edward
 	src/mode_world/dialog/PropertiesDialog.cpp
 	src/mode_world/dialog/ScriptingPanel.cpp
 	src/mode_world/ModeEditTerrain.cpp
-	src/mode_world/ModeScripting.cpp
 	src/mode_world/ModeWorld.cpp
 	src/mode_world/ModeWorldProperties.cpp
 	src/storage/format/old/LoadWorldV9V10.cpp
