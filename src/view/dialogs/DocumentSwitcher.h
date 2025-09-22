@@ -6,6 +6,8 @@
 
 #include <lib/xhui/Dialog.h>
 
+class Session;
+class DocumentSession;
 class EdwardWindow;
 
 class DocumentSwitcher : public xhui::Dialog {
@@ -17,5 +19,7 @@ public:
 	void previous();
 
 	EdwardWindow* editor_window;
+	Session* session;
+	Array<DocumentSession*> documents;
 };
 

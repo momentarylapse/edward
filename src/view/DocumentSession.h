@@ -40,26 +40,28 @@ public:
 	void set_document_panel(shared<xhui::Panel> panel);
 	string grid_id;
 
-	void set_mode(Mode *m);
-	void set_mode_now(Mode *m);
-	Mode *get_mode(int type);
+	void set_mode(Mode* m);
+	void set_mode_now(Mode* m);
+	Mode* get_mode(int type);
 
 	string title() const;
 
-	Mode *mode_none;
+	Mode* mode_none;
 	ModeModel* mode_model;
 	ModeMaterial* mode_material;
 	ModeWorld* mode_world;
 	ModeCoding* mode_coding;
 	//ModeFont* mode_font;
 	//ModeAdministration* mode_admin;
-	Mode *cur_mode = nullptr;
+	Mode* cur_mode = nullptr;
 	Array<Mode*> mode_queue;
-	Mode *find_mode_base(const string &name);
+	Mode* find_mode_base(const string &name);
 	template<class M>
-	M *find_mode(const string &name) {
+	M* find_mode(const string &name) {
 		return static_cast<M*>(find_mode_base(name));
 	}
+
+	int _last_usage_counter = -1;
 };
 
 /*class DocumentPanel : public xhui::Panel {

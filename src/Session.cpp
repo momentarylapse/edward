@@ -163,6 +163,8 @@ void Session::set_active_doc(DocumentSession* doc) {
 		return;
 	int i = weak(documents).find(doc);
 	cur_doc = doc;
+	static int counter = 0;
+	cur_doc->_last_usage_counter = counter ++;
 	win->set_int("tab", i);
 	if (auto m = cur_doc->cur_mode) {
 		m->on_set_menu();
