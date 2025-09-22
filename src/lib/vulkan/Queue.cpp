@@ -71,16 +71,16 @@ QueueFamilyIndices QueueFamilyIndices::query(VkPhysicalDevice device, VkSurfaceK
 		if (family.queueCount == 0)
 			continue;
 
-		if (family.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		if (family.queueFlags & VK_QUEUE_GRAPHICS_BIT and !indices.graphics_family)
 			indices.graphics_family = i;
 
-		if (family.queueFlags & VK_QUEUE_COMPUTE_BIT)
+		if (family.queueFlags & VK_QUEUE_COMPUTE_BIT and !indices.compute_family)
 			indices.compute_family = i;
 
 		if (surface) {
 			VkBool32 present_support = false;
 			vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &present_support);
-			if (present_support)
+			if (present_support and !indices.present_family)
 				indices.present_family = i;
 		}
 	}
