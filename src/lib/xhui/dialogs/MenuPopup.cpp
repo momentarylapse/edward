@@ -29,8 +29,10 @@ MenuPopup::MenuPopup(const Menu& m, Panel* _parent, const rect& anchor, const st
 
 	owner = parent; // can only call get_content_min_size() with an owner...
 	set_sub_menu(menu);
-	if (auto w = get_window())
+	if (auto w = get_window()) {
 		pos.y = max(min(pos.y, w->_area.y2 - (float)height), w->_area.y1);
+		pos.x = max(min(pos.x, w->_area.x2 - (float)width), w->_area.x1);
+	}
 	owner = nullptr;
 }
 

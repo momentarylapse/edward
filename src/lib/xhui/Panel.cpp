@@ -575,6 +575,7 @@ base::future<void> Panel::open_dialog(shared<Dialog> dialog) {
 	dialog->owner = this;
 	if (auto w = get_window()) {
 		w->dialogs.add(dialog.get());
+		w->hover_control = nullptr;
 	}
 	request_redraw();
 	return dialog->basic_promise.get_future();
