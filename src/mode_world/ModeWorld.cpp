@@ -67,8 +67,8 @@ void ModeWorld::on_set_menu() {
 
 
 void ModeWorld::on_enter_rec() {
-	session->out_changed >> create_sink([this] {
-		update_menu();
+	doc->out_changed >> create_sink([this] {
+		on_update_menu();
 	});
 	auto update_dummies = [this]() {
 		// FIXME
@@ -89,15 +89,17 @@ void ModeWorld::on_enter_rec() {
 	data->out_changed >> create_sink(update_dummies);
 	data->out_changed >> create_sink(update_model_refs);
 	update_dummies();
+}
 
-	event_ids_rec.add(session->win->event("mode_world", [this] {
+void ModeWorld::on_connect_events_rec() {
+	doc->event("mode_world", [this] {
 		doc->set_mode(this);
-	}));
-	session->win->event("properties", [this] {
+	});
+	doc->event("properties", [this] {
 		doc->set_mode(mode_properties.get());
 		//session->win->open_dialog(new PropertiesDialog(session->win, data));
 	});
-	session->win->event("run-game", [this] {
+	doc->event("run-game", [this] {
 		Path engine_dir = xhui::config.get_str("EngineDir", "");
 		if (engine_dir.is_empty()) {
 			session->error("can not run engine. Config 'EngineDir' is not set");
@@ -112,17 +114,13 @@ void ModeWorld::on_enter_rec() {
 		}
 	});
 
-	/*session->win->event("mode_world_terrain", [this] {
+	/*doc->event("mode_world_terrain", [this] {
 		session->set_mode(new ModeEditTerrain(this));
 	});*/
 }
 
 void ModeWorld::on_leave_rec() {
-	session->out_changed.unsubscribe(this);
-
-	for (int uid: event_ids_rec)
-		session->win->remove_event_handler(uid);
-	event_ids_rec.clear();
+	doc->out_changed.unsubscribe(this);
 }
 
 
@@ -205,12 +203,12 @@ void ModeWorld::on_leave() {
 
 	for (int uid: event_ids) {
 		doc->document_panel->remove_event_handler(uid);
-		session->win->remove_event_handler(uid);
 	}
+	event_ids.clear();
 }
 
 
-void ModeWorld::update_menu() {
+void ModeWorld::on_update_menu() {
 	auto win = session->win;
 
 	win->check("mode_world", doc->cur_mode == this);

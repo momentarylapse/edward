@@ -62,6 +62,12 @@ public:
 	}
 
 	int _last_usage_counter = -1;
+
+
+	Array<int> event_ids;
+	void event(const string &id, const std::function<void()>& f);
+	void enter();
+	void leave();
 };
 
 /*class DocumentPanel : public xhui::Panel {

@@ -66,29 +66,6 @@ void ModeMaterial::on_enter() {
 	multi_view->data_sets = {};
 	multi_view->light_mode = MultiView::LightMode::Fixed;
 
-	session->win->event("material_shape_cube", [this] {
-		set_mesh(PreviewMesh::CUBE);
-	});
-	session->win->event("material_shape_icosahedron", [this] {
-		set_mesh(PreviewMesh::ICOSAHEDRON);
-	});
-	session->win->event("material_shape_ball", [this] {
-		set_mesh(PreviewMesh::SPHERE);
-	});
-	session->win->event("material_shape_torus", [this] {
-		set_mesh(PreviewMesh::TORUS);
-	});
-	session->win->event("material_shape_torusknot", [this] {
-		set_mesh(PreviewMesh::TORUS_KNOT);
-	});
-	session->win->event("material_shape_teapot", [this] {
-		set_mesh(PreviewMesh::TEAPOT);
-	});
-
-	session->win->event("properties", [this] {
-		//session->win->open_dialog(new PropertiesDialog(session->win, data));
-	});
-
 	material = data->to_material();
 	set_mesh(PreviewMesh::TEAPOT);
 
@@ -113,6 +90,31 @@ void ModeMaterial::on_enter() {
 	material_ground->metal = 0;
 	material_ground->albedo = color(1, 0.3f, 0.3f, 0.3f);
 	material_ground->textures.add(tex);
+}
+
+void ModeMaterial::on_connect_events() {
+	doc->event("material_shape_cube", [this] {
+		set_mesh(PreviewMesh::CUBE);
+	});
+	doc->event("material_shape_icosahedron", [this] {
+		set_mesh(PreviewMesh::ICOSAHEDRON);
+	});
+	doc->event("material_shape_ball", [this] {
+		set_mesh(PreviewMesh::SPHERE);
+	});
+	doc->event("material_shape_torus", [this] {
+		set_mesh(PreviewMesh::TORUS);
+	});
+	doc->event("material_shape_torusknot", [this] {
+		set_mesh(PreviewMesh::TORUS_KNOT);
+	});
+	doc->event("material_shape_teapot", [this] {
+		set_mesh(PreviewMesh::TEAPOT);
+	});
+
+	doc->event("properties", [this] {
+		//session->win->open_dialog(new PropertiesDialog(session->win, data));
+	});
 }
 
 

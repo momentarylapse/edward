@@ -107,6 +107,7 @@ void DocumentSession::set_mode_now(Mode *m) {
 		}
 		cur_mode->unsubscribe(win);
 	}
+	leave();
 
 	// close current modes up
 	while (cur_mode) {
@@ -140,6 +141,7 @@ void DocumentSession::set_mode_now(Mode *m) {
 		cur_mode->multi_view->out_selection_changed >> win->in_redraw;
 		cur_mode->multi_view->view_port.out_changed >> win->in_data_selection_changed;
 	}
+	enter();
 	if (cur_mode->get_data()) {
 		cur_mode->get_data()->out_changed >> win->in_data_changed;
 		if (cur_mode->multi_view)
@@ -160,6 +162,31 @@ string DocumentSession::title() const {
 		return "new " + i2s(cur_mode->generic_data->type);
 	return str(cur_mode->generic_data->filename.absolute().relative_to(session->project_dir));
 }
+
+void DocumentSession::event(const string &id, const std::function<void()>& f) {
+	event_ids.add(session->win->event(id, f));
+}
+
+void DocumentSession::enter() {
+	if (auto m = cur_mode) {
+		auto p = m;
+		while (p) {
+			p->on_connect_events_rec();
+			p = p->get_parent();
+		}
+		m->on_connect_events();
+		m->on_set_menu();
+		m->on_update_menu();
+	}
+}
+
+void DocumentSession::leave() {
+	for (int uid: event_ids)
+		session->win->remove_event_handler(uid);
+	event_ids.clear();
+}
+
+
 
 
 

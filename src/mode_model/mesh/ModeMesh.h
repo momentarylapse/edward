@@ -33,10 +33,13 @@ public:
 	obs::source out_texture_level_changed{this, "texture-level-changed"};
 
 	void on_enter_rec() override;
+	void on_connect_events_rec() override;
 	void on_leave_rec() override;
 	void on_enter() override;
+	void on_connect_events() override;
 	void on_leave() override;
 	void on_set_menu() override;
+	void on_update_menu() override;
 	void on_prepare_scene(const yrenderer::RenderParams& params) override;
 	void on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;
 	void on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) override;
@@ -87,8 +90,6 @@ public:
 	yrenderer::Material* material_physical;
 	yrenderer::Material* material_selection;
 	yrenderer::Material* material_hover;
-	Array<int> event_ids_rec;
-	Array<int> event_ids;
 
 	enum class PresentationMode {
 		Vertices,
@@ -97,7 +98,6 @@ public:
 		Surfaces
 	} presentation_mode;
 	void set_presentation_mode(PresentationMode m);
-	void update_menu();
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 	Data::Selection select_in_rect(MultiViewWindow* win, const rect& r);

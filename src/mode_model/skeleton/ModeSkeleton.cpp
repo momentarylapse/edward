@@ -143,7 +143,8 @@ void ModeSkeleton::on_draw_win(const yrenderer::RenderParams& params, MultiViewW
 	dh->set_z_test(true);
 }
 
-void ModeSkeleton::update_menu() {
+void ModeSkeleton::on_update_menu() {
+	parent->on_update_menu();
 }
 
 base::optional<Hover> ModeSkeleton::get_hover(MultiViewWindow* win, const vec2& m) const {

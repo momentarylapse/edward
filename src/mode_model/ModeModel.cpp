@@ -14,6 +14,8 @@
 #include <view/DocumentSession.h>
 #include <lib/xhui/controls/Toolbar.h>
 
+#include "lib/os/msg.h"
+
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
 ModeModel::ModeModel(DocumentSession* doc) : Mode(doc) {
@@ -38,40 +40,38 @@ void ModeModel::on_set_menu() {
 
 
 void ModeModel::on_enter_rec() {
-	session->out_changed >> create_sink([this] {
-		update_menu();
+	doc->out_changed >> create_sink([this] {
+		on_update_menu();
 	});
 
 	auto win = session->win;
 	win->enable("mode_model_animation", false);
+}
 
-	event_ids_rec.add(win->event("mode_model_mesh", [this] {
+void ModeModel::on_connect_events_rec() {
+	doc->event("mode_model_mesh", [this] {
 		doc->set_mode(mode_mesh.get());
-	}));
-	event_ids_rec.add(win->event("mode_model_skeleton", [this] {
+	});
+	doc->event("mode_model_skeleton", [this] {
 		doc->set_mode(mode_skeleton.get());
-	}));
-	event_ids_rec.add(session->win->event("mode_properties", [this] {
+	});
+	doc->event("mode_properties", [this] {
 		session->win->open_dialog(new ModelPropertiesDialog(session->win, data.get()));
-	}));
+	});
 
-	event_ids_rec.add(session->win->event("save", [this] {
+	doc->event("save", [this] {
 		if (data->filename.is_empty())
 			session->storage->save_as(data.get());
 		else
 			session->storage->save(data->filename, data.get());
-	}));
-	event_ids_rec.add(session->win->event("save-as", [this] {
+	});
+	doc->event("save-as", [this] {
 		session->storage->save_as(data.get());
-	}));
+	});
 }
 
 void ModeModel::on_leave_rec() {
-	session->out_changed.unsubscribe(this);
-
-	for (int uid: event_ids_rec)
-		session->win->remove_event_handler(uid);
-	event_ids_rec.clear();
+	doc->out_changed.unsubscribe(this);
 }
 
 void ModeModel::on_command(const string& id) {
@@ -86,7 +86,7 @@ void ModeModel::on_command(const string& id) {
 }
 
 
-void ModeModel::update_menu() {
+void ModeModel::on_update_menu() {
 	auto win = session->win;
 
 	win->check("mode_model_mesh", doc->cur_mode == mode_mesh.get());

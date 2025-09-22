@@ -85,7 +85,6 @@ void Session::load_project(const Path& dir) {
 		return;
 
 	project_dir = dir;
-	msg_write(">>> project root: " + str(project_dir));
 
 	storage->set_root_directory(dir);
 	engine.set_dirs(storage->root_dir_kind[FD_TEXTURE],
@@ -102,6 +101,7 @@ void Session::load_project(const Path& dir) {
 	}
 
 	plugin_manager->load_project_stuff(project_dir);
+	out_project_loaded();
 }
 
 Session::Session() {
@@ -161,14 +161,18 @@ base::future<DocumentSession*> Session::emit_doc() {
 void Session::set_active_doc(DocumentSession* doc) {
 	if (doc == cur_doc)
 		return;
+
+	if (cur_doc)
+		cur_doc->leave();
+
 	int i = weak(documents).find(doc);
 	cur_doc = doc;
 	static int counter = 0;
 	cur_doc->_last_usage_counter = counter ++;
 	win->set_int("tab", i);
-	if (auto m = cur_doc->cur_mode) {
-		m->on_set_menu();
-	}
+
+	if (cur_doc)
+		cur_doc->enter();
 }
 
 

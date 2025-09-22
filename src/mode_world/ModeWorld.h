@@ -26,10 +26,12 @@ public:
 	explicit ModeWorld(DocumentSession* session);
 
 	void on_enter_rec() override;
+	void on_connect_events_rec() override;
 	void on_leave_rec() override;
 	void on_enter() override;
+	//void on_connect_events() override;
 	void on_leave() override;
-	void update_menu();
+	void on_update_menu();
 
 	void on_mouse_move(const vec2& m, const vec2& d) override;
 	void on_mouse_leave(const vec2&) override;
@@ -56,9 +58,9 @@ public:
 	LevelData temp;
 	Array<yrenderer::Light*> lights;
 
-	Array<int> event_ids_rec;
-	Array<int> event_ids;
 	owned<ModeWorldProperties> mode_properties;
+
+	Array<int> event_ids;
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 

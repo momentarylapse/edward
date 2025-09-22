@@ -27,7 +27,9 @@ void Menu::add_item_menu(const string& id, const string& title, shared<Menu> men
 }
 
 void Menu::enable(const string& id, bool enabled) {
-	// TODO
+	for (auto& item: items)
+		if (item.id == id)
+			item.enabled = enabled;
 }
 
 

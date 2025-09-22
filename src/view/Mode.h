@@ -35,14 +35,17 @@ public:
 
 	// this or a child
 	virtual void on_enter_rec() {}
+	virtual void on_connect_events_rec() {}
 	virtual void on_leave_rec() {}
 
 	// this exactly
 	virtual void on_enter() {}
+	virtual void on_connect_events() {}
 	virtual void on_leave() {}
 
 	virtual void on_command(const string& id) {}
 	virtual void on_set_menu() {}
+	virtual void on_update_menu() {}
 
 	virtual void on_mouse_move(const vec2& m, const vec2& d) {}
 	virtual void on_mouse_leave(const vec2&) {}
@@ -68,7 +71,6 @@ public:
 
 	xhui::Panel* dialog = nullptr;
 
-
 	xhui::Panel* side_panel = nullptr;
 	void set_side_panel(xhui::Panel* p);
 };
@@ -79,6 +81,8 @@ public:
 
 	void on_command(const string& id) override;
 	void on_set_menu() override;
+	void on_update_menu() override;
+	void on_connect_events_rec() override;
 
 	void on_prepare_scene(const yrenderer::RenderParams& params) override;
 	void on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;

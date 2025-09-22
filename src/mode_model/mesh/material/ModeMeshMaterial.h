@@ -2,8 +2,7 @@
 // Created by Michael Ankele on 2025-04-16.
 //
 
-#ifndef MODEMESHMATERIAL_H
-#define MODEMESHMATERIAL_H
+#pragma once
 
 
 #include <view/Mode.h>
@@ -29,6 +28,3 @@ public:
 	DataModel* data;
 };
 
-
-
-#endif //MODEMESHMATERIAL_H

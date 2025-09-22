@@ -72,6 +72,7 @@ public:
 	~Session() override;
 
 	obs::source out_started{this, "started"};
+	obs::source out_project_loaded{this, "project-loaded"};
 
 	void on_command(const string &id);
 	void on_close();

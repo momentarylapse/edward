@@ -28,6 +28,7 @@ public:
 
 	xhui::MenuBar* menu_bar;
 	xhui::Toolbar* tool_bar;
+	xhui::MenuBar* project_menu_bar;
 
 	explicit EdwardWindow(xfer<Session> session);
 

@@ -84,45 +84,43 @@ void ModeMesh::set_edit_mesh(ModelMesh* mesh) {
 		{MultiViewType::MODEL_VERTEX, &mesh->vertices},
 		{MultiViewType::MODEL_POLYGON, &mesh->polygons},
 	};
-	update_menu();
+	on_update_menu();
 	update_vb();
 }
 
 void ModeMesh::on_enter_rec() {
-	session->out_changed >> create_sink([this] {
-		update_menu();
+	doc->out_changed >> create_sink([this] {
+		on_update_menu();
+	});
+}
+
+void ModeMesh::on_connect_events_rec() {
+	doc->event("mode_model_mesh", [this] {
+		doc->set_mode(this);
+	});
+	doc->event("mode_model_deform", [this] {
+		doc->set_mode(mode_mesh_sculpt.get());
+	});
+	doc->event("mode_model_materials", [this] {
+		doc->set_mode(mode_mesh_material.get());
 	});
 
-	event_ids_rec.add(session->win->event("mode_model_mesh", [this] {
-		doc->set_mode(this);
-	}));
-	event_ids_rec.add(session->win->event("mode_model_deform", [this] {
-		doc->set_mode(mode_mesh_sculpt.get());
-	}));
-	event_ids_rec.add(session->win->event("mode_model_materials", [this] {
-		doc->set_mode(mode_mesh_material.get());
-	}));
-
-	event_ids_rec.add(session->win->event("mode_model_vertex", [this] {
+	doc->event("mode_model_vertex", [this] {
 		set_presentation_mode(PresentationMode::Vertices);
-	}));
-	event_ids_rec.add(session->win->event("mode_model_edge", [this] {
+	});
+	doc->event("mode_model_edge", [this] {
 		set_presentation_mode(PresentationMode::Edges);
-	}));
-	event_ids_rec.add(session->win->event("mode_model_polygon", [this] {
+	});
+	doc->event("mode_model_polygon", [this] {
 		set_presentation_mode(PresentationMode::Polygons);
-	}));
-	event_ids_rec.add(session->win->event("mode_model_surface", [this] {
+	});
+	doc->event("mode_model_surface", [this] {
 		set_presentation_mode(PresentationMode::Surfaces);
-	}));
+	});
 }
 
 void ModeMesh::on_leave_rec() {
-	session->out_changed.unsubscribe(this);
-
-	for (int uid: event_ids_rec)
-		session->win->remove_event_handler(uid);
-	event_ids_rec.clear();
+	doc->out_changed.unsubscribe(this);
 }
 
 void ModeMesh::on_set_menu() {
@@ -152,7 +150,6 @@ void ModeMesh::on_enter() {
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);
 	multi_view->set_show_grid(true);
-	session->win->set_visible("overlay-button-grid-left", true);
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
 		return get_hover(win, m);
 	};
@@ -174,6 +171,7 @@ void ModeMesh::on_enter() {
 	});
 
 	auto dp = doc->document_panel;
+	dp->set_visible("overlay-button-grid-left", true);
 	dp->set_target("overlay-button-grid-left");
 	dp->add_control("Button", "V", 0, 1, "add-vertex");
 	dp->set_options("add-vertex", "height=50,width=50,noexpandx,ignorefocus");
@@ -191,62 +189,6 @@ void ModeMesh::on_enter() {
 	dp->set_options("add-cylinder", "height=50,width=50,noexpandx,ignorefocus");
 
 
-	event_ids.add(session->win->event("mesh-visible0", [this] {
-		set_edit_mesh(data->mesh.get());
-	}));
-	event_ids.add(session->win->event("mesh-physical", [this] {
-		set_edit_mesh(data->phys_mesh.get());
-	}));
-
-
-	event_ids.add(session->win->event("add-vertex", [this] {
-		doc->set_mode(new ModeAddVertex(this));
-	}));
-	event_ids.add(session->win->event("add-polygon", [this] {
-		doc->set_mode(new ModeAddPolygon(this));
-	}));
-	event_ids.add(session->win->event("add-cube", [this] {
-		doc->set_mode(new ModeAddCube(this));
-	}));
-	event_ids.add(session->win->event("add-sphere", [this] {
-		doc->set_mode(new ModeAddSphere(this));
-	}));
-	event_ids.add(session->win->event("add-platonic", [this] {
-		doc->set_mode(new ModeAddPlatonic(this));
-	}));
-	event_ids.add(session->win->event("add-from-lathe", [this] {
-		doc->set_mode(new ModeAddFromLathe(this));
-	}));
-	event_ids.add(session->win->event("add-cylinder", [this] {
-		doc->set_mode(new ModeAddCylinder(this));
-	}));
-	event_ids.add(session->win->event("normal_this_hard", [this] {
-		const auto& sel = multi_view->selection[MultiViewType::MODEL_POLYGON];
-		for (auto&& [i, p]: enumerate(data->mesh->polygons))
-			if (sel.contains(i)) {
-				p.smooth_group = -1;
-				p.normal_dirty = true;
-			}
-		data->mesh->update_normals();
-		data->out_changed();
-	}));
-	event_ids.add(session->win->event("normal_this_smooth", [this] {
-		const auto& sel = multi_view->selection[MultiViewType::MODEL_POLYGON];
-		for (auto&& [i, p]: enumerate(data->mesh->polygons))
-			if (sel.contains(i)) {
-				p.smooth_group = 42;
-				p.normal_dirty = true;
-			}
-		data->mesh->update_normals();
-		data->out_changed();
-	}));
-	event_ids.add(session->win->event("choose_material", [this] {
-		ModelMaterialSelectionDialog::ask(this).then([this] (int material) {
-			data->apply_material(multi_view->selection, material);
-		});
-	}));
-
-
 	data->out_changed >> create_sink(update);
 	data->out_topology_changed >> create_sink([this] {
 		on_update_topology();
@@ -256,7 +198,6 @@ void ModeMesh::on_enter() {
 	data->editing_mesh->update_normals();
 	normals_dirty = false;
 	update();
-	update_menu();
 
 	xhui::run_repeated(1.0f, [this] {
 		if (normals_dirty) {
@@ -270,11 +211,66 @@ void ModeMesh::on_enter() {
 	});
 }
 
+void ModeMesh::on_connect_events() {
+	doc->event("mesh-visible0", [this] {
+		set_edit_mesh(data->mesh.get());
+	});
+	doc->event("mesh-physical", [this] {
+		set_edit_mesh(data->phys_mesh.get());
+	});
+
+
+	doc->event("add-vertex", [this] {
+		doc->set_mode(new ModeAddVertex(this));
+	});
+	doc->event("add-polygon", [this] {
+		doc->set_mode(new ModeAddPolygon(this));
+	});
+	doc->event("add-cube", [this] {
+		doc->set_mode(new ModeAddCube(this));
+	});
+	doc->event("add-sphere", [this] {
+		doc->set_mode(new ModeAddSphere(this));
+	});
+	doc->event("add-platonic", [this] {
+		doc->set_mode(new ModeAddPlatonic(this));
+	});
+	doc->event("add-from-lathe", [this] {
+		doc->set_mode(new ModeAddFromLathe(this));
+	});
+	doc->event("add-cylinder", [this] {
+		doc->set_mode(new ModeAddCylinder(this));
+	});
+	doc->event("normal_this_hard", [this] {
+		const auto& sel = multi_view->selection[MultiViewType::MODEL_POLYGON];
+		for (auto&& [i, p]: enumerate(data->mesh->polygons))
+			if (sel.contains(i)) {
+				p.smooth_group = -1;
+				p.normal_dirty = true;
+			}
+		data->mesh->update_normals();
+		data->out_changed();
+	});
+	doc->event("normal_this_smooth", [this] {
+		const auto& sel = multi_view->selection[MultiViewType::MODEL_POLYGON];
+		for (auto&& [i, p]: enumerate(data->mesh->polygons))
+			if (sel.contains(i)) {
+				p.smooth_group = 42;
+				p.normal_dirty = true;
+			}
+		data->mesh->update_normals();
+		data->out_changed();
+	});
+	doc->event("choose_material", [this] {
+		ModelMaterialSelectionDialog::ask(this).then([this] (int material) {
+			data->apply_material(multi_view->selection, material);
+		});
+	});
+}
+
+
 void ModeMesh::on_leave() {
 	data->out_changed.unsubscribe(this);
-	for (int uid: event_ids)
-		session->win->remove_event_handler(uid);
-	event_ids.clear();
 }
 
 void ModeMesh::on_update_topology() {
@@ -309,17 +305,18 @@ void ModeMesh::set_presentation_mode(PresentationMode m) {
 	presentation_mode = m;
 	make_selection_consistent(multi_view->selection);
 	multi_view->out_selection_changed();
-	update_menu();
+	on_update_menu();
 	session->win->request_redraw();
 }
 
-void ModeMesh::update_menu() {
+void ModeMesh::on_update_menu() {
+	_parent->on_update_menu();
 	auto win = session->win;
 	win->check("mesh-visible0", data->editing_mesh == data->mesh.get());
 	win->check("mesh-physical", data->editing_mesh == data->phys_mesh.get());
 
 	win->check("mode_model_deform", doc->cur_mode == mode_mesh_sculpt.get());
-	win->check("mode_model_material", doc->cur_mode == mode_mesh_material.get());
+	win->check("mode_model_materials", doc->cur_mode == mode_mesh_material.get());
 
 	win->check("mode_model_vertex", presentation_mode == PresentationMode::Vertices);
 	win->check("mode_model_edge", presentation_mode == PresentationMode::Edges);

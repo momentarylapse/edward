@@ -9,9 +9,9 @@
 #include <lib/xhui/Dialog.h>
 #include <lib/xhui/controls/DrawingArea.h>
 #include <lib/xhui/controls/Toolbar.h>
+#include <lib/xhui/controls/MenuBar.h>
 #include <lib/xhui/dialogs/FileSelectionDialog.h>
 #include <lib/xhui/dialogs/QuestionDialog.h>
-#include <lib/xhui/dialogs/ColorSelectionDialog.h>
 #include <lib/yrenderer/Context.h>
 #include <sys/stat.h>
 #include <y/EngineData.h>
@@ -34,7 +34,6 @@
 #include <cmath>
 
 
-
 extern string AppName;
 
 
@@ -50,6 +49,15 @@ namespace yrenderer {
 	rect dynamicly_scaled_source() {
 		return rect::ID;
 	}
+}
+
+string nice_path(const Path& p) {
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_MINGW) //defined(__GNUC__) || defined(OS_LINUX)
+	string home = getenv("HOME");
+	if (str(p).head(home.num) == home)
+		return "~" + str(p).sub_ref(home.num);
+#endif
+	return str(p);
 }
 
 
@@ -85,9 +93,11 @@ EdwardWindow::EdwardWindow(xfer<Session> _session) : obs::Node<xhui::Window>(App
 	from_source(R"foodelim(
 Dialog x x padding=0
 	Grid grid '' spacing=0
-		MenuBar menu '' main
+		Grid ? '' spacing=0
+			MenuBar menu '' main expandx
+			MenuBar project-menu '' main
 		---|
-		Toolbar toolbar '' main
+		Toolbar toolbar '' main expandx
 		---|
 		Grid main-grid ''
 			TabControl tab 'a' nobar
@@ -122,6 +132,7 @@ Dialog x x padding=0
 
 	menu_bar = (xhui::MenuBar*)get_control("menu");
 	tool_bar = (xhui::Toolbar*)get_control("toolbar");
+	project_menu_bar = (xhui::MenuBar*)get_control("project-menu");
 
 	Array<string> ids = {"new", "open", "save", "save-as", "exit", "undo", "redo", "copy", "paste", "delete"};
 	for (const string& id: ids)
@@ -213,6 +224,24 @@ Dialog x x padding=0
 	event_x(id, xhui::event_id::Close, quit);
 	event("exit", quit);
 
+	auto update_project_menu = [this] {
+		auto sub = new xhui::Menu;
+		if (session->project_dir)
+			sub->add_item("project-dir", nice_path(session->project_dir));
+		sub->enable("project-dir", false);
+		sub->add_item("project-settings", "Project settings..");
+		sub->add_item("import-project", "Import project..");
+		sub->add_item("create-project", "New project..");
+		auto mm = new xhui::Menu;
+		if (session->project_dir)
+			mm->add_item_menu("project", "[" + session->project_dir.basename() + "]", sub);
+		else
+			mm->add_item_menu("project", "Project", sub);
+		project_menu_bar->set_menu(mm);
+	};
+	update_project_menu();
+	session->out_project_loaded >> create_sink(update_project_menu);
+
 	xhui::run_repeated(0.5f, [this] {
 		request_redraw();
 	});
@@ -227,15 +256,6 @@ void EdwardWindow::on_key_up(int key_code) {
 		switcher->request_destroy();
 		switcher = nullptr;
 	}
-}
-
-string nice_path(const Path& p) {
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_MINGW) //defined(__GNUC__) || defined(OS_LINUX)
-	string home = getenv("HOME");
-	if (str(p).head(home.num) == home)
-		return "~" + str(p).sub_ref(home.num);
-#endif
-	return str(p);
 }
 
 void EdwardWindow::update_menu() {

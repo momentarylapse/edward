@@ -67,8 +67,8 @@ void ModeProject::create_project(const Path &dir, const string &first_world) {
 
 	Path world_file = dir | "Maps" | (first_world + ".world");
 	msg_write(format("%sCREATE%s  %s", os::terminal::YELLOW, os::terminal::END, world_file));
-	DataWorld w(data->doc);
-	Storage s(data->session);
+	DataWorld w(doc);
+	Storage s(session);
 	s.save(world_file, &w);
 }
 
@@ -99,7 +99,7 @@ static void sync_files(const Path &source, const Path &dest, bool required) {
 }
 
 void ModeProject::upgrade_project(const Path &dir) {
-	Storage s(data->session); // create CANONICAL_SUB_DIR[]
+	Storage s(session); // create CANONICAL_SUB_DIR[]
 
 	for (int k=0; k<NUM_FDS; k++)
 		create_directory_recursive(dir | Storage::CANONICAL_SUB_DIR[k]);
@@ -116,7 +116,7 @@ void ModeProject::upgrade_project(const Path &dir) {
 	if (xhui::config.has("EngineDir")) {
 		Path engine_dir = xhui::config.get_str("EngineDir");
 		Path engine_api_dir = engine_dir | "api";
-		auto list = os::fs::search(engine_api_dir, "*.kaba", "rf");
+		auto list = os::fs::search(engine_api_dir, "*", "rf");
 		for (auto &f: list) {
 			auto dest = dir | "Scripts" | f;
 			bool required = true;//f.is_in("y");
