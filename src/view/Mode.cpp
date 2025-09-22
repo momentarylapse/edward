@@ -24,10 +24,10 @@ void Mode::draw_info(Painter* p, const string& msg) {
 
 void Mode::set_side_panel(xhui::Panel* p) {
 	if (side_panel)
-		session->win->unembed(side_panel);
+		doc->base_panel->unembed(side_panel);
 	side_panel = p;
 	if (side_panel)
-		session->win->embed("main-grid", 1, 0, side_panel);
+		doc->base_panel->embed("base-grid", 1, 0, side_panel);
 }
 
 Mode* Mode::get_root() {
