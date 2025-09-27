@@ -114,6 +114,7 @@ protected:
 
 	Control* hover_control = nullptr;
 	Control* focus_control = nullptr;
+	void _clear_hover();
 	Flags flags;
 	string title;
 

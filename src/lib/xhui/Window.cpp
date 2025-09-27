@@ -592,6 +592,12 @@ void Window::focus(const string& id) {
 	}
 }
 
+void Window::_clear_hover() {
+	if (hover_control)
+		hover_control->on_mouse_leave(state.m);
+	hover_control = nullptr;
+}
+
 
 
 bool Window::button(int index) const {
