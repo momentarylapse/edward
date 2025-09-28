@@ -25,7 +25,6 @@ ModeExtrudePolygons::ModeExtrudePolygons(ModeMesh* parent) :
 void ModeExtrudePolygons::on_enter() {
 	mode_mesh->set_presentation_mode(ModeMesh::PresentationMode::Polygons);
 	multi_view->set_allow_action(false);
-	session->win->set_visible("overlay-button-grid-left", false);
 
 	auto update = [this] {
 		diff = mesh_prepare_extrude_polygons(*mode_mesh->data->editing_mesh, mode_mesh->multi_view->selection, dialog->get_float("distance"), dialog->is_checked("connected"));
@@ -33,8 +32,8 @@ void ModeExtrudePolygons::on_enter() {
 
 	dialog = new xhui::Panel("xxx");
 	dialog->from_source(R"foodelim(
-Dialog mesh-extrude-dialog "Extrude" allow-root width=200 noexpandx
-	Grid ? ""
+Dialog mesh-extrude-dialog "Extrude" allow-root width=250 noexpandx
+	Grid ? "" vertical class=card
 		Grid ? "" vertical class=card
 			Label header "Extrude" big bold center
 			Grid ? "" vertical
@@ -42,13 +41,23 @@ Dialog mesh-extrude-dialog "Extrude" allow-root width=200 noexpandx
 					Label l-distance "Distance" right disabled
 					SpinButton distance "" range=::0.1 expandx
 				CheckBox connected "Keep polygons connected"
-		---|
-		Label ? "" expandy ignorehover
+		Separator ? "" horizontal
+		Grid ? ""
+			Label ? "" expandx
+			Button cancel "Cancel" noexpandx
+			Button apply "Apply" noexpandx primary
 )foodelim");
-	session->win->embed("overlay-main-grid", 1, 0, dialog);
+	set_overlay_panel(dialog);
 
 	dialog->set_float("distance", 20);
 	dialog->event("*", update);
+	dialog->event("cancel", [this] {
+		request_mode_end();
+	});
+	dialog->event("apply", [this] {
+		mode_mesh->data->edit_mesh(diff);
+		request_mode_end();
+	});
 
 	multi_view->out_selection_changed >> create_sink(update);
 
@@ -56,8 +65,8 @@ Dialog mesh-extrude-dialog "Extrude" allow-root width=200 noexpandx
 }
 
 void ModeExtrudePolygons::on_leave() {
+	set_overlay_panel(nullptr);
 	multi_view->out_selection_changed.unsubscribe(this);
-	session->win->unembed(dialog);
 }
 
 
@@ -82,11 +91,11 @@ void ModeExtrudePolygons::on_draw_post(Painter* p) {
 
 void ModeExtrudePolygons::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 	if (key == xhui::KEY_RETURN) {
 		mode_mesh->data->edit_mesh(diff);
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 }
 

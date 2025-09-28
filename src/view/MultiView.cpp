@@ -549,7 +549,6 @@ Dialog multi-view-panel ''
 			DrawingArea area '' grabfocus
 			Grid overlay-main-grid '' margin=25
 				Grid overlay-button-grid-left '' spacing=20
-					Button mouse-action 'T' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
 				.
 				Label ? '' ignorehover expandx
 				Grid overlay-button-grid-right '' spacing=20
@@ -647,21 +646,6 @@ Dialog multi-view-panel ''
 		vec2 d = win->state.m - win->state_prev.m;
 		if (win->state.lbut)
 			multi_view->view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
-	});
-	event("mouse-action", [this] {
-		auto ac = multi_view->action_controller.get();
-		const auto mode = ac->action_mode();
-		if (mode == MouseActionMode::MOVE) {
-			ac->set_action_mode(MouseActionMode::ROTATE);
-			set_options("mouse-action", "image=rf-rotate");
-		} else if (mode == MouseActionMode::ROTATE) {
-			ac->set_action_mode(MouseActionMode::SCALE);
-			set_options("mouse-action", "image=rf-scale");
-		} else if (mode == MouseActionMode::SCALE) {
-			ac->set_action_mode(MouseActionMode::MOVE);
-			set_options("mouse-action", "image=rf-translate");
-		}
-		set_string("mouse-action", multi_view->action_controller->action_name().sub(0, 1).upper());
 	});
 }
 

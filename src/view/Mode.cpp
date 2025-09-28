@@ -26,8 +26,20 @@ void Mode::set_side_panel(xhui::Panel* p) {
 	if (side_panel)
 		doc->base_panel->unembed(side_panel);
 	side_panel = p;
-	if (side_panel)
+	if (side_panel) {
+		side_panel->min_width_user = 320;
+		side_panel->size_mode_x = xhui::Control::SizeMode::Shrink;
 		doc->base_panel->embed("base-grid", 1, 0, side_panel);
+	}
+}
+
+void Mode::set_overlay_panel(xhui::Panel* p) {
+	if (overlay_panel)
+		doc->document_panel->unembed(overlay_panel);
+	overlay_panel = p;
+	if (overlay_panel) {
+		doc->document_panel->embed("overlay-button-grid-left", 0, 0, overlay_panel);
+	}
 }
 
 Mode* Mode::get_root() {
@@ -81,6 +93,13 @@ void SubMode::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::R
 void SubMode::on_prepare_scene(const yrenderer::RenderParams& params) {
 	_parent->on_prepare_scene(params);
 }
+
+void SubMode::request_mode_end() {
+	xhui::run_later(0.01f, [this] {
+		doc->set_mode(_parent);
+	});
+}
+
 
 
 

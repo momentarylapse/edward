@@ -34,11 +34,9 @@ void ModeMeshSculpt::on_enter() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 
-	session->win->set_visible("overlay-button-grid-left", false);
-
 	/*dialog = new xhui::Panel("xxx");
 	dialog->from_resource("new_cube_dialog");
-	session->win->embed("overlay-main-grid", 1, 0, dialog);*/
+	set_side_panel(dialog);*/
 
 	data->out_changed >> create_sink([this] {
 		mode_mesh->update_vb();
@@ -47,7 +45,7 @@ void ModeMeshSculpt::on_enter() {
 }
 
 void ModeMeshSculpt::on_leave() {
-	//session->win->unembed(dialog);
+	//set_side_panel(nullptr);
 
 	data->out_changed.unsubscribe(this);
 }

@@ -1,16 +1,17 @@
-Dialog new-platonic-dialog "New platonic" width=200 noexpandx
-	Grid ? ""
-		Grid ? "" vertical class=card
-			Label header "New platonic" big bold center expandx
-			Grid ? "" vertical
-				RadioButton type:tetrahedron "Tetrahedron"
-				RadioButton type:cube "Cube"
-				RadioButton type:octahedron "Octahedron"
-				RadioButton type:dodecahedron "Dodecahedron"
-				RadioButton type:icosahedron "Icosahedron"
-				RadioButton type:teapot "Teapot"
-				Grid ? "" indent
-					Label t_complexity "Complexity" right disabled hgroup=a
-					SpinButton complexity "" range=1: expandx
-		---|
-		Label ? "" expandy ignorehover
+Dialog new-platonic-dialog "New platonic" width=240 noexpandx
+	Grid ? "" vertical class=card
+		Label header "New platonic" big bold center expandx
+		Grid ? "" vertical
+			RadioButton type:tetrahedron "Tetrahedron"
+			RadioButton type:cube "Cube"
+			RadioButton type:octahedron "Octahedron"
+			RadioButton type:dodecahedron "Dodecahedron"
+			RadioButton type:icosahedron "Icosahedron"
+			RadioButton type:teapot "Teapot"
+			Grid ? "" indent
+				Label t_complexity "Complexity" right disabled hgroup=a
+				SpinButton complexity "" range=1: expandx
+			Separator ? "" horizontal
+			Grid ? ""
+				Label ? "" expandx
+				Button cancel "Cancel" noexpandx

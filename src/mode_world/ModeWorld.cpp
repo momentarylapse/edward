@@ -124,6 +124,30 @@ void ModeWorld::on_leave_rec() {
 }
 
 
+class WorldOpButtons : public xhui::Panel {
+public:
+	explicit WorldOpButtons(MultiView* multi_view) : xhui::Panel("world-op-buttons") {
+		from_source(R"foodelim(
+Dialog world-op-buttons '' propagateevents
+	Grid ? '' spacing=20 vertical
+		Button mouse-action 'T' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
+)foodelim");
+
+		event("mouse-action", [this, multi_view] {
+			auto ac = multi_view->action_controller.get();
+			const auto mode = ac->action_mode();
+			if (mode == MouseActionMode::MOVE) {
+				ac->set_action_mode(MouseActionMode::ROTATE);
+				set_options("mouse-action", "image=rf-rotate");
+			} else if (mode == MouseActionMode::ROTATE) {
+				ac->set_action_mode(MouseActionMode::MOVE);
+				set_options("mouse-action", "image=rf-translate");
+			}
+			set_string("mouse-action", multi_view->action_controller->action_name().sub(0, 1).upper());
+		});
+	}
+};
+
 void ModeWorld::on_enter() {
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);
@@ -192,12 +216,13 @@ void ModeWorld::on_enter() {
 	}));
 
 	set_side_panel(new EntityPanel(this));
+	set_overlay_panel(new WorldOpButtons(multi_view));
 }
 
 
 void ModeWorld::on_leave() {
-	//session->win->unembed(dialog);
 	set_side_panel(nullptr);
+	set_overlay_panel(nullptr);
 
 	data->out_changed.unsubscribe(this);
 

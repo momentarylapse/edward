@@ -1,16 +1,17 @@
 Dialog new_cube_dialog "new cube" allow-root width=200 noexpandx
-	Grid ? ""
-		Grid ? "" vertical class=card
-			Label header "New cube" big bold center
-			Group ncdt_slides "Stripes"
-				Grid ? ""
-					Label /x "X" right disabled
-					SpinButton nc_x "" range=1: expandx
-					---|
-					Label /y "Y" right disabled
-					SpinButton nc_y "" range=1:
-					---|
-					Label /z "Z" right disabled
-					SpinButton nc_z "" range=1:
-		---|
-		Label ? "" expandy ignorehover
+	Grid ? "" vertical class=card
+		Label header "New cube" big bold center
+		Group ncdt_slides "Stripes"
+			Grid ? ""
+				Label /x "X" right disabled
+				SpinButton nc_x "" range=1: expandx
+				---|
+				Label /y "Y" right disabled
+				SpinButton nc_y "" range=1:
+				---|
+				Label /z "Z" right disabled
+				SpinButton nc_z "" range=1:
+		Separator ? "" horizontal
+		Grid ? ""
+			Label ? "" expandx
+			Button cancel "Cancel" noexpandx

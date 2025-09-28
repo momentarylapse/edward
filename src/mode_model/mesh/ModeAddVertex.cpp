@@ -24,7 +24,6 @@ void ModeAddVertex::on_enter() {
 	mode_mesh->set_presentation_mode(ModeMesh::PresentationMode::Vertices);
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
-	session->win->set_visible("overlay-button-grid-left", false);
 }
 
 void ModeAddVertex::on_draw_post(Painter* p) {
@@ -36,7 +35,7 @@ void ModeAddVertex::on_draw_post(Painter* p) {
 
 void ModeAddVertex::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 }
 

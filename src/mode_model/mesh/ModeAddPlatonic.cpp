@@ -32,11 +32,9 @@ void ModeAddPlatonic::on_enter() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 
-	session->win->set_visible("overlay-button-grid-left", false);
-
 	dialog = new xhui::Panel("xxx");
 	dialog->from_resource("new-platonic-dialog");
-	session->win->embed("overlay-main-grid", 1, 0, dialog);
+	set_overlay_panel(dialog);
 
 	complexity = xhui::config.get_int("mesh.new_platonic.complexity", 4);
 	type = (Type)xhui::config.get_int("mesh.new_platonic.type", (int)Type::Teapot);
@@ -72,6 +70,9 @@ void ModeAddPlatonic::on_enter() {
 	dialog->event("type:dodecahedron", on_type);
 	dialog->event("type:icosahedron", on_type);
 	dialog->event("type:teapot", on_type);
+	dialog->event("cancel", [this] {
+		request_mode_end();
+	});
 
 	on_type();
 
@@ -82,7 +83,7 @@ void ModeAddPlatonic::on_enter() {
 }
 
 void ModeAddPlatonic::on_leave() {
-	session->win->unembed(dialog);
+	set_overlay_panel(nullptr);
 	xhui::config.set_int("mesh.new_platonic.complexity", complexity);
 	xhui::config.set_int("mesh.new_platonic.type", (int)type);
 }
@@ -112,7 +113,7 @@ void ModeAddPlatonic::on_draw_post(Painter* p) {
 
 void ModeAddPlatonic::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 }
 

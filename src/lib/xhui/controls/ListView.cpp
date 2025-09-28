@@ -281,6 +281,9 @@ void ListView::set_option(const string& key, const string& value) {
 			padding = {0,0,0,0};
 			selection_radius = 0;
 		}
+	} else if (key == "padding") {
+		float x = value._float();
+		padding = {x, x, x, x};
 	} else if (key == "dragsource") {
 		drag_source_id = value;
 	} else if (key == "selectsingle" or key == "select-single") {

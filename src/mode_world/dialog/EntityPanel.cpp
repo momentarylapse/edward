@@ -669,17 +669,14 @@ Dialog solid-body-panel ''
 EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-panel") {
 	mode_world = _mode;
 	from_source(R"foodelim(
-Dialog entity-panel ''
-	Grid main-grid '' expandx
+Dialog entity-panel '' padding=0
+	Grid main-grid '' expandx spacing=0
 		.
 		---|
-		ListView components 'c' nobar sunkenbackground=no showselection=no selectsingle hidden
+		ListView components 'c' nobar sunkenbackground=no showselection=no padding=7 selectsingle hidden
 		---|
 		Button add-component '+' hidden
 )foodelim");
-	size_mode_x = SizeMode::Shrink;
-	size_mode_y = SizeMode::Shrink;
-	min_width_user = 320;
 
 	add_entity_panel = new AddEntityPanel(mode_world);
 	embed("main-grid", 0, 0, add_entity_panel);

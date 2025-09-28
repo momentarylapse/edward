@@ -129,6 +129,39 @@ void ModeMesh::on_set_menu() {
 	session->win->menu_bar->set_menu(menu);
 }
 
+class MeshOpButtons : public xhui::Panel {
+public:
+	explicit MeshOpButtons(MultiView* multi_view) : xhui::Panel("mesh-op-buttons") {
+		from_source(R"foodelim(
+Dialog mesh-op-buttons '' propagateevents
+	Grid ? '' spacing=20 vertical
+		Button mouse-action 'T' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-vertex 'V' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-polygon 'P' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-cube 'Q' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-sphere 'S' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-platonic 'P' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-from-lathe 'L' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-cylinder 'C' height=50 width=50 padding=7 noexpandx ignorefocus
+)foodelim");
+
+		event("mouse-action", [this, multi_view] {
+			auto ac = multi_view->action_controller.get();
+			const auto mode = ac->action_mode();
+			if (mode == MouseActionMode::MOVE) {
+				ac->set_action_mode(MouseActionMode::ROTATE);
+				set_options("mouse-action", "image=rf-rotate");
+			} else if (mode == MouseActionMode::ROTATE) {
+				ac->set_action_mode(MouseActionMode::SCALE);
+				set_options("mouse-action", "image=rf-scale");
+			} else if (mode == MouseActionMode::SCALE) {
+				ac->set_action_mode(MouseActionMode::MOVE);
+				set_options("mouse-action", "image=rf-translate");
+			}
+			set_string("mouse-action", multi_view->action_controller->action_name().sub(0, 1).upper());
+		});
+	}
+};
 
 void ModeMesh::on_enter() {
 	auto update = [this] {
@@ -170,24 +203,7 @@ void ModeMesh::on_enter() {
 		on_update_selection();
 	});
 
-	auto dp = doc->document_panel;
-	dp->set_visible("overlay-button-grid-left", true);
-	dp->set_target("overlay-button-grid-left");
-	dp->add_control("Button", "V", 0, 1, "add-vertex");
-	dp->set_options("add-vertex", "height=50,width=50,noexpandx,ignorefocus");
-	dp->add_control("Button", "P", 0, 2, "add-polygon");
-	dp->set_options("add-polygon", "height=50,width=50,noexpandx,ignorefocus");
-	dp->add_control("Button", "Q", 0, 3, "add-cube");
-	dp->set_options("add-cube", "height=50,width=50,noexpandx,ignorefocus");
-	dp->add_control("Button", "S", 0, 4, "add-sphere");
-	dp->set_options("add-sphere", "height=50,width=50,noexpandx,ignorefocus");
-	dp->add_control("Button", "P", 0, 5, "add-platonic");
-	dp->set_options("add-platonic", "height=50,width=50,noexpandx,ignorefocus");
-	dp->add_control("Button", "L", 0, 6, "add-from-lathe");
-	dp->set_options("add-from-lathe", "height=50,width=50,noexpandx,ignorefocus");
-	dp->add_control("Button", "C", 0, 7, "add-cylinder");
-	dp->set_options("add-cylinder", "height=50,width=50,noexpandx,ignorefocus");
-
+	set_overlay_panel(new MeshOpButtons(multi_view));
 
 	data->out_changed >> create_sink(update);
 	data->out_topology_changed >> create_sink([this] {
@@ -271,6 +287,7 @@ void ModeMesh::on_connect_events() {
 
 void ModeMesh::on_leave() {
 	data->out_changed.unsubscribe(this);
+	set_overlay_panel(nullptr);
 }
 
 void ModeMesh::on_update_topology() {

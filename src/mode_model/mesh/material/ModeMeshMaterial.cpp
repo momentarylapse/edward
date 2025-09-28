@@ -29,8 +29,6 @@ void ModeMeshMaterial::on_enter() {
 	multi_view->set_allow_select(true);
 	//multi_view->set_allow_action(false);
 
-	doc->document_panel->set_visible("overlay-button-grid-left", false);
-
 	dialog = new ModelMaterialPanel(data);
 	set_side_panel(dialog);
 

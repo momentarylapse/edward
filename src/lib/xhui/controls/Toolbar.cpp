@@ -128,6 +128,7 @@ void Toolbar::_draw(Painter* p) {
 void Toolbar::set_option(const string& key, const string& value) {
 	if (key == "main") {
 		is_main = true;
+		margin.y2 = 3;
 	} else if (key == "menu") {
 		set_by_id(value);
 	} else {

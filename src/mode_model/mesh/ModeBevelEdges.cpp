@@ -26,7 +26,6 @@ void ModeBevelEdges::on_enter() {
 	if (mode_mesh->presentation_mode == ModeMesh::PresentationMode::Polygons)
 		mode_mesh->set_presentation_mode(ModeMesh::PresentationMode::Edges);
 	multi_view->set_allow_action(false);
-	session->win->set_visible("overlay-button-grid-left", false);
 
 	auto update = [this] {
 		diff = mesh_prepare_bevel_edges(*mode_mesh->data->editing_mesh, mode_mesh->multi_view->selection, dialog->get_float("radius"));
@@ -35,20 +34,29 @@ void ModeBevelEdges::on_enter() {
 	dialog = new xhui::Panel("xxx");
 	dialog->from_source(R"foodelim(
 Dialog mesh-bevel-dialog "Bevel" allow-root width=200 noexpandx
-	Grid ? ""
-		Grid ? "" vertical class=card
-			Label header "Bevel" big bold center
-			Grid ? "" vertical
-				Grid ? ""
-					Label l-radius "Radius" right disabled
-					SpinButton radius "" range=::0.1 expandx
-		---|
-		Label ? "" expandy ignorehover
+	Grid ? "" vertical class=card
+		Label header "Bevel" big bold center
+		Grid ? "" vertical
+			Grid ? ""
+				Label l-radius "Radius" right disabled
+				SpinButton radius "" range=::0.1 expandx
+		Separator ? "" horizontal
+		Grid ? ""
+			Label ? "" expandx
+			Button cancel "Cancel" noexpandx
+			Button apply "Apply" noexpandx primary
 )foodelim");
-	session->win->embed("overlay-main-grid", 1, 0, dialog);
+	set_overlay_panel(dialog);
 
 	dialog->set_float("radius", 5);
 	dialog->event("*", update);
+	dialog->event("cancel", [this] {
+		request_mode_end();
+	});
+	dialog->event("apply", [this] {
+		mode_mesh->data->edit_mesh(diff);
+		request_mode_end();
+	});
 
 	multi_view->out_selection_changed >> create_sink(update);
 
@@ -56,8 +64,8 @@ Dialog mesh-bevel-dialog "Bevel" allow-root width=200 noexpandx
 }
 
 void ModeBevelEdges::on_leave() {
+	set_overlay_panel(nullptr);
 	multi_view->out_selection_changed.unsubscribe(this);
-	session->win->unembed(dialog);
 }
 
 
@@ -82,11 +90,11 @@ void ModeBevelEdges::on_draw_post(Painter* p) {
 
 void ModeBevelEdges::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 	if (key == xhui::KEY_RETURN) {
 		mode_mesh->data->edit_mesh(diff);
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 }
 

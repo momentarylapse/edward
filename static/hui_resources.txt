@@ -5447,22 +5447,16 @@ image=hui:about
 # Resource
 Dialog
 new_ball_dialog
-width=240,noexpandx
+width=250,noexpandx
 0
 0
 1
 Grid
 ?
-
-0
-0
-2
-Grid
-?
 vertical,class=card
 0
 0
-2
+4
 Label
 header
 big,bold,center,expandx
@@ -5535,11 +5529,29 @@ range=1:,expandx
 1
 0
 0
+Separator
+?
+horizontal
+2
+0
+0
+Grid
+?
+
+3
+0
+2
 Label
 ?
-expandy,ignorehover
+expandx
 0
+0
+0
+Button
+cancel
+noexpandx
 1
+0
 0
 # Resource
 Dialog
@@ -5550,16 +5562,10 @@ allow-root,width=200,noexpandx
 1
 Grid
 ?
-
-0
-0
-2
-Grid
-?
 vertical,class=card
 0
 0
-2
+4
 Label
 header
 big,bold,center
@@ -5614,11 +5620,29 @@ range=1:
 1
 2
 0
+Separator
+?
+horizontal
+2
+0
+0
+Grid
+?
+
+3
+0
+2
 Label
 ?
-expandy,ignorehover
+expandx
 0
+0
+0
+Button
+cancel
+noexpandx
 1
+0
 0
 # Resource
 Dialog
@@ -5629,16 +5653,10 @@ allow-root,width=200,noexpandx
 1
 Grid
 ?
-
-0
-0
-2
-Grid
-?
 vertical,class=card
 0
 0
-2
+4
 Label
 header
 big,bold,center
@@ -5693,11 +5711,29 @@ round
 1
 0
 0
+Separator
+?
+horizontal
+2
+0
+0
+Grid
+?
+
+3
+0
+2
 Label
 ?
-expandy,ignorehover
+expandx
 0
+0
+0
+Button
+cancel
+noexpandx
 1
+0
 0
 # Resource
 Dialog
@@ -5757,16 +5793,10 @@ range=1:
 # Resource
 Dialog
 new-platonic-dialog
-width=200,noexpandx
+width=240,noexpandx
 0
 0
 1
-Grid
-?
-
-0
-0
-2
 Grid
 ?
 vertical,class=card
@@ -5784,7 +5814,7 @@ Grid
 vertical
 1
 0
-7
+9
 RadioButton
 type:tetrahedron
 
@@ -5839,11 +5869,29 @@ range=1:,expandx
 1
 0
 0
+Separator
+?
+horizontal
+7
+0
+0
+Grid
+?
+
+8
+0
+2
 Label
 ?
-expandy,ignorehover
+expandx
 0
+0
+0
+Button
+cancel
+noexpandx
 1
+0
 0
 # Resource
 Dialog
@@ -10451,7 +10499,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1045
+1049
 # Text
 /ambient
 Ambient
@@ -12928,6 +12976,9 @@ model_material_selection_dialog/material_list
 model_material_selection_dialog/model_material_selection_dialog
 Select a material
 
+new-platonic-dialog/cancel
+Cancel
+
 new-platonic-dialog/header
 New platonic
 
@@ -12991,6 +13042,9 @@ Type
 new_animation_dialog/new_animation_type
 vertex\\skeleton
 
+new_ball_dialog/cancel
+Cancel
+
 new_ball_dialog/header
 New sphere
 
@@ -13012,6 +13066,9 @@ From disks
 new_ball_dialog/type:sphere
 Sphere
 
+new_cube_dialog/cancel
+Cancel
+
 new_cube_dialog/header
 New cube
 
@@ -13020,6 +13077,9 @@ Stripes
 
 new_cube_dialog/new_cube_dialog
 new cube
+
+new_cylinder_dialog/cancel
+Cancel
 
 new_cylinder_dialog/grp-geometry
 Geometry

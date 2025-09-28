@@ -27,7 +27,6 @@ ModePaste::ModePaste(ModeMesh* parent) :
 void ModePaste::on_enter() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
-	session->win->set_visible("overlay-button-grid-left", false);
 }
 
 void ModePaste::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
@@ -45,7 +44,7 @@ void ModePaste::on_draw_post(Painter* p) {
 
 void ModePaste::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 }
 

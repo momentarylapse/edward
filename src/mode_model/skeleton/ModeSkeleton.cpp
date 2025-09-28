@@ -38,7 +38,6 @@ void ModeSkeleton::on_enter() {
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);
 	multi_view->set_show_grid(true);
-	//session->win->set_visible("overlay-button-grid-left", true);
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
 		return get_hover(win, m);
 	};

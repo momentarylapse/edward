@@ -32,11 +32,9 @@ void ModeAddSphere::on_enter() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 
-	session->win->set_visible("overlay-button-grid-left", false);
-
 	dialog = new xhui::Panel("xxx");
 	dialog->from_resource("new_ball_dialog");
-	session->win->embed("overlay-main-grid", 1, 0, dialog);
+	set_overlay_panel(dialog);
 
 	slices[0] = xhui::config.get_int("mesh.new_sphere.slices_x", 8);
 	slices[1] = xhui::config.get_int("mesh.new_sphere.slices_y", 16);
@@ -68,6 +66,9 @@ void ModeAddSphere::on_enter() {
 	};
 	dialog->event("type:ball", on_type);
 	dialog->event("type:sphere", on_type);
+	dialog->event("cancel", [this] {
+		request_mode_end();
+	});
 
 	on_type();
 
@@ -77,7 +78,7 @@ void ModeAddSphere::on_enter() {
 }
 
 void ModeAddSphere::on_leave() {
-	session->win->unembed(dialog);
+	set_overlay_panel(nullptr);
 	xhui::config.set_int("mesh.new_sphere.slices_x", slices[0]);
 	xhui::config.set_int("mesh.new_sphere.slices_y", slices[1]);
 	xhui::config.set_int("mesh.new_sphere.complexity", complexity);
@@ -109,7 +110,7 @@ void ModeAddSphere::on_draw_post(Painter* p) {
 
 void ModeAddSphere::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 }
 

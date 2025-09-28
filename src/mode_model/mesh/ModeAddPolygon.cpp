@@ -26,7 +26,6 @@ void ModeAddPolygon::on_enter() {
 	mode_mesh->set_presentation_mode(ModeMesh::PresentationMode::Vertices);
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
-	session->win->set_visible("overlay-button-grid-left", false);
 }
 
 void ModeAddPolygon::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
@@ -53,7 +52,7 @@ void ModeAddPolygon::on_draw_post(Painter* p) {
 
 void ModeAddPolygon::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 }
 
@@ -70,7 +69,7 @@ void ModeAddPolygon::on_left_button_down(const vec2& m) {
 		Array<vec3> sv;
 		sv.resize(vertices.num);
 		mode_mesh->data->add_polygon(vertices, 0);
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 
 	session->win->request_redraw();

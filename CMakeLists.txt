@@ -513,7 +513,6 @@ add_executable(edward
 	src/mode_world/dialog/EditTerrainPanel.cpp
 	src/mode_world/dialog/EntityPanel.cpp
 	src/mode_world/dialog/PropertiesDialog.cpp
-	src/mode_world/dialog/ScriptingPanel.cpp
 	src/mode_world/ModeEditTerrain.cpp
 	src/mode_world/ModeWorld.cpp
 	src/mode_world/ModeWorldProperties.cpp

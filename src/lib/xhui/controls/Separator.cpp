@@ -3,7 +3,6 @@
 //
 
 #include "Separator.h"
-
 #include <lib/xhui/Painter.h>
 #include <lib/xhui/Theme.h>
 
@@ -23,10 +22,10 @@ vec2 Separator::get_greed_factor() const {
 
 void Separator::_draw(Painter* p) {
 	p->set_color(Theme::_default.background_button);
-	p->set_line_width(3);
+	p->set_line_width(2);
 	if (orientation == Orientation::HORIZONTAL) {
 		float y = _area.center().y;
-		p->draw_line({_area.x1 + 8, y}, {_area.x2 - 8, y});
+		p->draw_line({_area.x1, y}, {_area.x2, y});
 	} else {
 		float x = _area.center().x;
 		p->draw_line({x, _area.y1 + 8}, {x, _area.y2 - 8});

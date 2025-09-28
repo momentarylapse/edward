@@ -30,11 +30,9 @@ void ModeAddCylinder::on_enter() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 
-	session->win->set_visible("overlay-button-grid-left", false);
-
 	dialog = new xhui::Panel("xxx");
 	dialog->from_resource("new_cylinder_dialog");
-	session->win->embed("overlay-main-grid", 1, 0, dialog);
+	set_overlay_panel(dialog);
 
 	edges = xhui::config.get_int("mesh.new_cylinder.edges", 32);
 	rings = xhui::config.get_int("mesh.new_cylinder.rings", 1);
@@ -51,10 +49,13 @@ void ModeAddCylinder::on_enter() {
 	dialog->event("round", [this] {
 		round = dialog->is_checked("round");
 	});
+	dialog->event("cancel", [this] {
+		request_mode_end();
+	});
 }
 
 void ModeAddCylinder::on_leave() {
-	session->win->unembed(dialog);
+	set_overlay_panel(nullptr);
 	xhui::config.set_int("mesh.new_cylinder.edges", edges);
 	xhui::config.set_int("mesh.new_cylinder.rings", rings);
 	xhui::config.set_bool("mesh.new_cylinder.round", round);
@@ -89,7 +90,7 @@ void ModeAddCylinder::on_draw_post(Painter* p) {
 
 void ModeAddCylinder::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 }
 
@@ -117,7 +118,7 @@ void ModeAddCylinder::on_mouse_move(const vec2& m, const vec2& d) {
 void ModeAddCylinder::on_left_button_down(const vec2& m) {
 	if (points.num >= 2) {
 		mode_mesh->data->paste_mesh(mesh, 0);
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	} else {
 		points.add(next_point);
 	}

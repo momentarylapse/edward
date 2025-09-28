@@ -32,33 +32,40 @@ void ModeAddFromLathe::on_enter() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(false);
 
-	session->win->set_visible("overlay-button-grid-left", false);
-
 	dialog = new xhui::Panel("xxx");
 	dialog->from_source(R"foodelim(
 Dialog new-lathe-dialog "Lathe" allow-root width=200 noexpandx
-	Grid ? ""
-		Grid ? "" vertical class=card
-			Label header "Lathe" big bold center
-			Group ncdt_slides "Stripes"
-				Grid ? ""
-					SpinButton stripes "" range=1: expandx
-		---|
-		Label ? "" expandy ignorehover
+	Grid ? "" vertical class=card
+		Label header "Lathe" big bold center
+		Group ncdt_slides "Stripes"
+			Grid ? ""
+				SpinButton stripes "" range=1: expandx
+		Separator ? "" horizontal
+		Grid ? ""
+			Label ? "" expandx
+			Button cancel "Cancel" noexpandx
+			Button apply "Apply" noexpandx primary disabled
 
 )foodelim");
 	//dialog->from_resource("new_cube_dialog");
-	session->win->embed("overlay-main-grid", 1, 0, dialog);
+	set_overlay_panel(dialog);
 
 	slices = xhui::config.get_int("mesh.new_lathe.stripes", 32);
 	dialog->set_int("stripes", slices);
 	dialog->event("stripes", [this] {
 		slices = dialog->get_int("stripes");
 	});
+	dialog->event("cancel", [this] {
+		request_mode_end();
+	});
+	dialog->event("apply", [this] {
+		mode_mesh->data->paste_mesh(mesh, 0);
+		request_mode_end();
+	});
 }
 
 void ModeAddFromLathe::on_leave() {
-	session->win->unembed(dialog);
+	set_overlay_panel(nullptr);
 	xhui::config.set_int("mesh.new_lathe.stripes", slices);
 }
 
@@ -103,11 +110,11 @@ void ModeAddFromLathe::on_draw_post(Painter* p) {
 
 void ModeAddFromLathe::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 	if (key == xhui::KEY_RETURN and contour.num > 0) {
 		mode_mesh->data->paste_mesh(mesh, 0);
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	}
 }
 
@@ -170,6 +177,7 @@ void ModeAddFromLathe::on_left_button_down(const vec2& m) {
 		contour.add(next_point);
 		create_turned_mesh();
 		mesh.build(vertex_buffer.get());
+		dialog->enable("apply", true);
 	}
 
 	session->win->request_redraw();

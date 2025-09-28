@@ -70,6 +70,8 @@ public:
 	Data* get_data() const { return generic_data; }
 
 	xhui::Panel* dialog = nullptr;
+	xhui::Panel* overlay_panel = nullptr;
+	void set_overlay_panel(xhui::Panel* p);
 
 	xhui::Panel* side_panel = nullptr;
 	void set_side_panel(xhui::Panel* p);
@@ -91,6 +93,8 @@ public:
 
 	Mode* _parent;
 	Mode* get_parent() override { return _parent; }
+
+	void request_mode_end();
 };
 
 
