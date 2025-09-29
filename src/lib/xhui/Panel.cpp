@@ -477,6 +477,7 @@ void Panel::embed(const string& target, int x, int y, shared<Panel> p) {
 }
 
 void Panel::unembed(Panel* p) {
+	shared<Panel> tmp = p; // prevent deletion
 	remove_control(p);
 	p->owner = nullptr;
 }

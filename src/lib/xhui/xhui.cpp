@@ -188,7 +188,8 @@ void cancel_runner(int id) {
 }
 
 void iterate_runners(float dt) {
-	for (auto r: runners)
+	for (int i=0; i<runners.num; i++) {
+		auto r = runners[i]; // in case a new runner is added
 		if (r->used) {
 			r->t += dt;
 			if (r->t >= r->dt) {
@@ -199,6 +200,7 @@ void iterate_runners(float dt) {
 					r->used = false;
 			}
 		}
+	}
 }
 
 void run() {
