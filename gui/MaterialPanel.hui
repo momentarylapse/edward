@@ -1,5 +1,5 @@
 Dialog material-panel "Material appearance" width=365 height=715 allow-root
-	Grid ? "" vertical
+	Grid ? "" vertical margin=7
 		Label header "Material properties" expandx center big bold
 		TabControl tab "Parameters\\Rendering\\Physics"
 			Grid ? "" vertical
@@ -28,7 +28,9 @@ Dialog material-panel "Material appearance" width=365 height=715 allow-root
 					Grid ? "" vertical
 						CheckBox cast-shadows "Cast shadows"
 				Group grp-passes "Render passes"
-					ListView passes "pass" nobar select-single sunkenbackground=no showselection=no expandy
+					Grid ? "" vertical
+						ListView passes "pass" nobar select-single sunkenbackground=no showselection=no expandy
+						Button add-pass "+"
 			Group grp-friction "Friction"
 				Grid ? ""
 					Label t-rcstatic "Static" right disabled

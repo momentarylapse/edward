@@ -102,6 +102,11 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	event("texture-level-delete", [this] { on_texture_level_delete(); });
 	event("texture-level-clear", [this] { on_texture_level_clear(); });
 	event("texture-level-load", [this] { on_texture_level_load(); });
+	event("add-pass", [this] {
+		auto a = data->appearance;
+		a.passes.add({});
+		data->execute(new ActionMaterialEditAppearance(a));
+	});
 
 	data->out_changed >> create_sink([this] {
 		if (apply_queue_depth == 0)
@@ -118,7 +123,7 @@ MaterialPanel::~MaterialPanel() {
 }
 
 
-ModeMaterial *MaterialPanel::mode_material() {
+ModeMaterial* MaterialPanel::mode_material() {
 	return data->doc->mode_material;
 }
 

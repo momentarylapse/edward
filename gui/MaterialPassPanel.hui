@@ -1,30 +1,36 @@
 Dialog material-pass-panel "Pass"
-	Grid card '' class=card
+	Grid card '' class=card vertical
 		Grid ? '' spacing=0
 			Label header '' bold expandx
 			---|
 			Label subheader '' italic small
-		---|
-		Grid g-pass "" visible=no
-			Label l-mode "Mode" disabled right
-			ComboBox mode "Solid\\Transparency functions\\Color keyed hard\\Color keyed soft\\Transparency factor\\Transparency mix" expandx
-			---|
-			Label l-source "Source" disabled right
-			ComboBox source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha" expandx
-			---|
-			Label l-destination "Destination" disabled right
-			ComboBox destination "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha" expandx
-			---|
-			Label l-cull "Visible" disabled right
-			Grid ? "" expandx
-				RadioButton cull:back "Front" "tooltip=Only front side of triangles visible" expandx
-				RadioButton cull:front "Back" "tooltip=Only back side of triangles visible" expandx
-				RadioButton cull:none "Both" "tooltip=Front and back side of triangles visible" expandx
-			---|
-			Label l-z-buffer "Z buffer" disabled right
+		Grid g-pass "" visible=no vertical
 			Grid ? ""
-				CheckBox z-write "Write"
-				CheckBox z-test "Test"
-			---|
-			Label l-shader "Shader" disabled right
-			Label shader "" expandx
+				Label l-mode "Mode" disabled right
+				ComboBox mode "Solid\\Transparency functions\\Color keyed hard\\Color keyed soft\\Transparency factor\\Transparency mix" expandx
+				---|
+				Label l-source "Source" disabled right
+				ComboBox source "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha" expandx
+				---|
+				Label l-destination "Destination" disabled right
+				ComboBox destination "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha" expandx
+				---|
+				Label l-cull "Visible" disabled right
+				Grid ? ""
+					RadioButton cull:back "Front" "tooltip=Only front side of triangles visible"
+					RadioButton cull:front "Back" "tooltip=Only back side of triangles visible" expandx
+					---|
+					RadioButton cull:none "Both" "tooltip=Front and back side of triangles visible"
+				---|
+				Label l-z-buffer "Z buffer" disabled right
+				Grid ? ""
+					CheckBox z-write "Write"
+					CheckBox z-test "Test"
+				---|
+				Label l-shader "Shader" disabled right
+				Label shader "" expandx
+			Separator ? "" horizontal
+			Grid ? ""
+				Label ? "" expandx
+				Button delete "Delete" noexpandx danger
+		

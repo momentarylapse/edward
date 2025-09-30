@@ -2034,7 +2034,7 @@ width=365,height=715,allow-root
 1
 Grid
 ?
-vertical
+vertical,margin=7
 0
 0
 2
@@ -2188,10 +2188,22 @@ grp-passes
 1
 0
 1
+Grid
+?
+vertical
+0
+0
+2
 ListView
 passes
 nobar,select-single,sunkenbackground=no,showselection=no,expandy
 0
+0
+0
+Button
+add-pass
+
+1
 0
 0
 Group
@@ -2263,7 +2275,7 @@ material-pass-panel
 1
 Grid
 card
-class=card
+class=card,vertical
 0
 0
 2
@@ -2287,9 +2299,15 @@ italic,small
 0
 Grid
 g-pass
-visible=no
-0
+visible=no,vertical
 1
+0
+3
+Grid
+?
+
+0
+0
 12
 Label
 l-mode
@@ -2335,13 +2353,13 @@ disabled,right
 0
 Grid
 ?
-expandx
+
 1
 3
 3
 RadioButton
 cull:back
-expandx
+
 0
 0
 0
@@ -2353,9 +2371,9 @@ expandx
 0
 RadioButton
 cull:none
-expandx
-2
+
 0
+1
 0
 Label
 l-z-buffer
@@ -2392,6 +2410,30 @@ shader
 expandx
 1
 5
+0
+Separator
+?
+horizontal
+1
+0
+0
+Grid
+?
+
+2
+0
+2
+Label
+?
+expandx
+0
+0
+0
+Button
+delete
+noexpandx,danger
+1
+0
 0
 # Resource
 Dialog
@@ -3755,7 +3797,7 @@ width=350,height=371
 1
 Grid
 ?
-vertical
+vertical,margin=7
 0
 0
 3
@@ -10499,7 +10541,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1049
+1051
 # Text
 /ambient
 Ambient
@@ -11035,6 +11077,9 @@ Number of photons
 lightmap_dialog/lmt_spacial_resolution
 Spacial resolution
 
+material-panel/add-pass
++
+
 material-panel/cast-shadows
 Cast shadows
 
@@ -11092,6 +11137,9 @@ Only back side of triangles visible
 material-pass-panel/cull:none
 Both
 Front and back side of triangles visible
+material-pass-panel/delete
+Delete
+
 material-pass-panel/destination
 Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha
 

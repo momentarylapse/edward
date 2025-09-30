@@ -41,6 +41,12 @@ MaterialPassPanel::MaterialPassPanel(MaterialPanel* _parent, DataMaterial* _data
 	event("cull:none", [this] { apply_data(); });
 	event("z-write", [this] { apply_data(); });
 	event("z-test", [this] { apply_data(); });
+	event("delete", [this] {
+		auto a = data->appearance;
+		a.passes.erase(index);
+		if (a.passes.num >= 1)
+			data->execute(new ActionMaterialEditAppearance(a));
+	});
 }
 
 void MaterialPassPanel::update(int _index) {
@@ -69,6 +75,7 @@ void MaterialPassPanel::update(int _index) {
 	check("cull:none", p.culling == ygfx::CullMode::NONE);
 	check("z-write", p.z_write);
 	check("z-test", p.z_test);
+	enable("delete", data->appearance.passes.num >= 2);
 }
 void MaterialPassPanel::set_selected(bool selected) {
 	set_visible("g-pass", selected);
