@@ -328,19 +328,15 @@ void ModeMesh::set_presentation_mode(PresentationMode m) {
 
 void ModeMesh::on_update_menu() {
 	_parent->on_update_menu();
+}
+
+void ModeMesh::update_menu_presentation_mode() {
 	auto win = session->win;
-	win->check("mesh-visible0", data->editing_mesh == data->mesh.get());
-	win->check("mesh-physical", data->editing_mesh == data->phys_mesh.get());
-
-	win->check("mode_model_deform", doc->cur_mode == mode_mesh_sculpt.get());
-	win->check("mode_model_materials", doc->cur_mode == mode_mesh_material.get());
-
 	win->check("mode_model_vertex", presentation_mode == PresentationMode::Vertices);
 	win->check("mode_model_edge", presentation_mode == PresentationMode::Edges);
 	win->check("mode_model_polygon", presentation_mode == PresentationMode::Polygons);
 	win->check("mode_model_surface", presentation_mode == PresentationMode::Surfaces);
 }
-
 
 
 void ModeMesh::on_prepare_scene(const yrenderer::RenderParams& params) {

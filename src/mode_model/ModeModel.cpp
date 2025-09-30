@@ -90,7 +90,14 @@ void ModeModel::on_update_menu() {
 	auto win = session->win;
 
 	win->check("mode_model_mesh", doc->cur_mode == mode_mesh.get());
+	win->check("mesh-visible0", data->editing_mesh == data->mesh.get());
+	win->check("mesh-physical", data->editing_mesh == data->phys_mesh.get());
+
+	win->check("mode_model_deform", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_sculpt.get());
+	win->check("mode_model_materials", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_material.get());
 	win->check("mode_model_skeleton", doc->cur_mode == mode_skeleton.get());
+
+	mode_mesh->update_menu_presentation_mode();
 }
 
 

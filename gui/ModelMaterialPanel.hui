@@ -1,5 +1,5 @@
 Dialog model-material-panel "Material" width=350 height=371
-	Grid ? "" vertical
+	Grid ? "" vertical margin=7
 		Label header "Materials" big bold center expandx
 		ListView materials "Materials" nobar select-single expandy sunkenbackground=no showselection=no "tooltip=Materials\n - Actions via right click"
 		Grid ? ""
