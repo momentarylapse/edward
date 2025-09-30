@@ -8395,7 +8395,7 @@ width=320
 1
 Grid
 ?
-vertical
+vertical,margin=7
 0
 0
 1
@@ -8530,35 +8530,47 @@ Grid
 vertical
 2
 0
-3
-CheckBox
-physics_enabled
+2
+Group
+grp-simulation
 
 0
 0
-0
+1
 Grid
 ?
 
+0
+0
+4
+Label
+t-physics-enabled
+right,disabled
+0
+0
+0
+CheckBox
+physics_enabled
+expandx
 1
 0
-2
+0
 Label
 t-physics-mode
 right,disabled
 0
-0
+1
 0
 ComboBox
 physics-mode
 expandx
 1
-0
+1
 0
 Group
 grp_gravitation
 
-2
+1
 0
 1
 Grid
@@ -8575,7 +8587,7 @@ right,disabled
 0
 SpinButton
 gravitation_x
-range=::0.1
+range=::0.1,expandx
 1
 0
 0
@@ -10541,7 +10553,7 @@ image=hui:media-play
 # Language
 English
 # Number Of IDs
-1051
+1052
 # Text
 /ambient
 Ambient
@@ -13600,6 +13612,9 @@ Deactivated
 world_dialog/fog_start
 
 Distance, at which fog starts (intensity 0)
+world_dialog/grp-simulation
+Simulation
+
 world_dialog/grp_bg_color
 Color
 
@@ -13612,17 +13627,17 @@ Skybox models
 world_dialog/physics-mode
 Simple\\Full (using Bullet)
 * Simple: only update positions via velocity\n* Full: gravity, collisions, friction, links
-world_dialog/physics_enabled
-Enabled
-
 world_dialog/skybox
 #\\Model
 Models drawn over the sky color\n- double click to select
 world_dialog/systems
 systems
 Global scripts - a class derived from y.Controller is instantiated and running in the background\n * double click to edit variables\n * right click to edit
+world_dialog/t-physics-enabled
+Enabled
+
 world_dialog/t-physics-mode
-Simulation mode
+Mode
 
 world_dialog/world_dialog
 World properties

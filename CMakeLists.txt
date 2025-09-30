@@ -509,10 +509,18 @@ add_executable(edward
 	src/mode_world/data/WorldObject.cpp
 	src/mode_world/data/WorldTerrain.cpp
 	src/mode_world/dialog/AddEntityPanel.cpp
+	src/mode_world/dialog/CameraPanel.cpp
+	src/mode_world/dialog/ComponentPanel.cpp
 	src/mode_world/dialog/ComponentSelectionDialog.cpp
 	src/mode_world/dialog/EditTerrainPanel.cpp
+	src/mode_world/dialog/EntityBasePanel.cpp
 	src/mode_world/dialog/EntityPanel.cpp
+	src/mode_world/dialog/LightPanel.cpp
+	src/mode_world/dialog/ModelRefPanel.cpp
 	src/mode_world/dialog/PropertiesDialog.cpp
+	src/mode_world/dialog/SolidBodyPanel.cpp
+	src/mode_world/dialog/TerrainRefPanel.cpp
+	src/mode_world/dialog/UserComponentPanel.cpp
 	src/mode_world/ModeEditTerrain.cpp
 	src/mode_world/ModeWorld.cpp
 	src/mode_world/ModeWorldProperties.cpp

@@ -1,5 +1,5 @@
 Dialog world_dialog "World properties" width=320
-	Grid ? "" vertical
+	Grid ? "" vertical margin=7
 		TabControl world_dialog_tab_control "Background\\Fog\\Physics\\Scripts"
 			Grid ? "" vertical
 				Group grp_bg_color "Color"
@@ -23,14 +23,17 @@ Dialog world_dialog "World properties" width=320
 					SpinButton fog_distance "" range=0:1000000000:0.1 "tooltip=fog intensity = exp( - distance / viewing-distance )" disabled
 				ColorButton fog_color "" disabled
 			Grid ? "" vertical
-				CheckBox physics_enabled "Enabled"
-				Grid ? ""
-					Label t-physics-mode "Simulation mode" right disabled
-					ComboBox physics-mode "Simple\\Full (using Bullet)" expandx "tooltip=* Simple: only update positions via velocity\n* Full: gravity, collisions, friction, links"
+				Group grp-simulation "Simulation"
+					Grid ? ""
+						Label t-physics-enabled "Enabled" right disabled
+						CheckBox physics_enabled "" expandx
+						---|
+						Label t-physics-mode "Mode" right disabled
+						ComboBox physics-mode "Simple\\Full (using Bullet)" expandx "tooltip=* Simple: only update positions via velocity\n* Full: gravity, collisions, friction, links"
 				Group grp_gravitation "Gravity"
 					Grid ? ""
 						Label /x "X" right disabled
-						SpinButton gravitation_x "" range=::0.1
+						SpinButton gravitation_x "" range=::0.1 expandx
 						Label /luss "lu/s²"
 						---|
 						Label /y "Y" right disabled
