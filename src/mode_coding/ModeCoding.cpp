@@ -21,7 +21,7 @@ public:
 		doc = _doc;
 		from_source(R"foodelim(
 Dialog coding-panel ''
-	MultilineEdit edit grabfocus monospace fontsize=15 linenumbers focusframe=no
+	MultilineEdit edit grabfocus monospace linenumbers focusframe=no
 )foodelim");
 		propagate_events = true;
 		editor = new codeedit::CodeEditor(this, "edit");

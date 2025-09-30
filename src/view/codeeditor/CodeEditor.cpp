@@ -19,9 +19,8 @@ CodeEditor::CodeEditor(xhui::Panel* _panel, const string& _id) {
 	edit = (xhui::MultilineEdit*)panel->get_control(id);
 	edit->set_option("focusframe", "no");
 	edit->set_option("monospace", "");
-	edit->set_option("fontsize", "15");
-	//	edit->set_option("fontsize", "13");
-	edit->set_option("lineheightscale", "1.1f");
+	edit->set_option("fontsize", "12");
+//	edit->set_option("lineheightscale", "1.1f");
 	edit->set_option("altbg", "");
 	edit->set_option("linenumbers", "");
 

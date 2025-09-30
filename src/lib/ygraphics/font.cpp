@@ -46,11 +46,14 @@ Face* load_face(const string& name, bool bold, bool italic) {
 	face->bold = bold;
 	face->italic = italic;
 
+	int flags = 0;
 	string type = "Regular";
-	if (bold)
+	if (bold) {
 		type = "Bold";
+		flags = FT_STYLE_FLAG_BOLD;
+	}
 
-	auto try_load_font = [face, &type] (const Path& filename) {
+	auto try_load_font = [face, &type, flags] (const Path& filename) {
 		if (!os::fs::exists(filename))
 			return false;
 		int error = FT_New_Face(ft2, filename.c_str(), -1, &face->face);
@@ -65,11 +68,13 @@ Face* load_face(const string& name, bool bold, bool italic) {
 			error = FT_New_Face(ft2, filename.c_str(), i, &face->face);
 			if (error)
 				continue;
-			if (string(face->face->style_name) == type)
-				break;
+			if (((int)face->face->style_flags & 0xffff) == flags) {
+				msg_write(str(filename) + "   " + type);
+				return true;
+			}
 		}
 
-		return true;
+		return false;
 	};
 
 	string namex = name;
@@ -85,6 +90,7 @@ Face* load_face(const string& name, bool bold, bool italic) {
 	if (!try_load_font(format("/usr/share/fonts/Adwaita/%s-%s.ttf", name, type)))
 	if (!try_load_font(format("/usr/share/fonts/opentype/cantarell/%s-VF.otf", name)))
 	if (!try_load_font(format("/usr/share/fonts/truetype/freefont/%s.ttf", namex.replace(" ", ""))))
+	if (!try_load_font(format("/usr/share/fonts/truetype/dejavu/%s.ttf", namex.replace(" ", "-"))))
 	if (!try_load_font(format("static/%s-%s.ttf", name, type))) {
 		delete face;
 		return nullptr;
