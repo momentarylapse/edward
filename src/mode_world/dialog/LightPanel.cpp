@@ -12,30 +12,30 @@ LightPanel::LightPanel(DataWorld* _data, int _index) : obs::Node<xhui::Panel>("l
 	from_source(R"foodelim(
 Dialog light-panel ''
 	Grid ? ''
-		Label ? 'Enabled'
+		Label ? 'Enabled' right disabled
 		CheckBox enabled ''
 		---|
-		Label ? 'Type'
+		Label ? 'Type' right disabled
 		ComboBox type 'Directional\\Point\\Cone' range=0:2:1
 		---|
-		Label ? 'Radius'
+		Label ? 'Radius' right disabled
 		SpinButton radius '' range=0::0.1
 		---|
-		Label ? 'Theta'
+		Label ? 'Theta' right disabled
 		SpinButton theta '' range=0:180:0.1
 		Label ? '°'
 		---|
-		Label ? 'Color'
+		Label ? 'Color' right disabled
 		ColorButton color ''
 		---|
-		Label ? 'Power'
+		Label ? 'Power' right disabled
 		SpinButton power '' range=0::0.01
 		---|
-		Label ? 'Harshness'
+		Label ? 'Harshness' right disabled
 		SpinButton harshness '' range=0:100:1
 		Label ? '%'
 		---|
-		Label ? 'Shadows'
+		Label ? 'Shadows' right disabled
 		CheckBox allow-shadows ''
 )foodelim");
 	data = _data;

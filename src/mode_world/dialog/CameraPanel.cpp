@@ -11,17 +11,17 @@ CameraPanel::CameraPanel(DataWorld* _data, int _index) : Panel("camera-panel") {
 	from_source(R"foodelim(
 Dialog camera-panel ''
 	Grid ? ''
-		Label ? 'Min distance'
+		Label ? 'Min distance' right disabled
 		SpinButton z-min '' range=0::0.001 expandx
 		---|
-		Label ? 'Max distance'
+		Label ? 'Max distance' right disabled
 		SpinButton z-max '' range=0::0.001
 		---|
-		Label ? 'Field of view'
+		Label ? 'Field of view' right disabled
 		SpinButton fov '' range=0:180:0.1
 		Label ? '°'
 		---|
-		Label ? 'Exposure'
+		Label ? 'Exposure' right disabled
 		SpinButton z-min '' range=0:100:0.001
 )foodelim");
 	data = _data;

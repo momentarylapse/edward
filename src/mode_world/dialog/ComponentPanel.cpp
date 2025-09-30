@@ -59,20 +59,20 @@ Dialog material-panel ''
 		---|
 		TabControl ? 'Color\\Textures\\Shader'
 			Grid ? ''
-				Label ? 'Albedo'
+				Label ? 'Albedo' right disabled
 				ColorButton albedo ''
 				---|
-				Label ? 'Emission'
+				Label ? 'Emission' right disabled
 				ColorButton emission ''
 				---|
-				Label ? 'Roughness'
+				Label ? 'Roughness' right disabled
 				SpinButton roughness '' range=0:100:1
 				---|
-				Label ? 'Metal'
+				Label ? 'Metal' right disabled
 				SpinButton metal '' range=0:100:1
 			ListView textures 'a\\filename' nobar format=it noexpandy height=200
 			Grid ? ''
-				Label ? 'Shader'
+				Label ? 'Shader' right disabled
 				Grid ? ''
 					Button shader '' disabled
 					Button load-shader 'L' noexpandx

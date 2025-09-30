@@ -193,6 +193,10 @@ void Control::set_option(const string& key, const string& value) {
 		visible = false;
 	} else if (key == "visible") {
 		visible = value._bool() or value == "";
+	} else if (key == "disabled") {
+		enable(false);
+	} else if (key == "enabled") {
+		enable(value._bool() or value == "");
 	}
 }
 

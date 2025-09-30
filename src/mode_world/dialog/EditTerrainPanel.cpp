@@ -15,7 +15,7 @@ EditTerrainPanel::EditTerrainPanel(ModeEditTerrain* mode) : Node<xhui::Panel>("e
 	mode_terrain = mode;
 	from_source(R"foodelim(
 Dialog edit-terrain-panel ''
-	Grid ? ''
+	Grid ? '' margin=7
 		Label ? 'Terrain' big center
 		---|
 		Grid ? '' class=card
@@ -29,9 +29,6 @@ Dialog edit-terrain-panel ''
 					---|
 					Button load-heightmap 'Load heightmap...'
 )foodelim");
-	size_mode_x = SizeMode::Shrink;
-	size_mode_y = SizeMode::Shrink;
-	min_width_user = 320;
 
 	event("resize", [this] {
 		auto t = mode_terrain->terrain();

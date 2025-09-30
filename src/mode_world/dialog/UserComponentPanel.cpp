@@ -26,7 +26,8 @@ Dialog user-component-panel ''
 	set_target("grid-variables");
 	const auto desc = data->session->plugin_manager->describe_class(type, c);
 	for (const auto& [i, v]: enumerate(desc.variables)) {
-		add_control("Label", v.name, 0, i, "");
+		add_control("Label", v.name, 0, i, format("l-%d", i));
+		set_options(format("l-%d", i), "right,disabled");
 		add_control("Label", v.type, 1, i, "");
 		add_control("Edit", v.value, 2, i, format("var-%d", i));
 	}

@@ -11,7 +11,7 @@ EntityBasePanel::EntityBasePanel(DataWorld* _data, int _index) : Panel("entity-b
 	from_source(R"foodelim(
 Dialog entity-base-panel ''
 	Grid ? ''
-		Label ? 'Position'
+		Label ? 'Position' right disabled
 		SpinButton pos-x '' range=::0.001 expandx
 		---|
 		.
@@ -20,7 +20,7 @@ Dialog entity-base-panel ''
 		.
 		SpinButton pos-z '' range=::0.001
 		---|
-		Label ? 'Orientation'
+		Label ? 'Orientation' right disabled
 		SpinButton ang-x '' range=::0.01
 		Label ? '°'
 		---|

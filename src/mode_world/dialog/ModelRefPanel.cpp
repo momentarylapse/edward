@@ -15,9 +15,13 @@ ModelRefPanel::ModelRefPanel(DataWorld* _data, int _index) : Panel("model-panel"
 	from_source(R"foodelim(
 Dialog model-panel ''
 	Grid ? ''
-		Label ? 'Model'
-		Button filename '' expandx
-		Button edit 'E' noexpandx primary
+		Grid ? ''
+			Label ? 'Model' right disabled
+			Button filename '' expandx
+		---|
+		Grid ? ''
+			Label ? '' expandx
+			Button edit 'Edit' noexpandx primary
 )foodelim");
 	data = _data;
 	index = _index;

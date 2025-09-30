@@ -19,7 +19,7 @@ Dialog add-entity-panel ''
 	Grid card-add '' class=card
 		Group group-add 'Add'
 			Grid ? ''
-				ListView add-list 'a' nobar dragsource=entity cangrabfocus=no noexpandy height=220
+				ListView add-list 'a' nobar dragsource=entity cangrabfocus=no noexpandy height=250
 				---|
 				FileSelector add-files '' dragsource=entity-file expandy
 )foodelim");

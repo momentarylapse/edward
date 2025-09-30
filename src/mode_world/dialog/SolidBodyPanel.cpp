@@ -12,10 +12,10 @@ SolidBodyPanel::SolidBodyPanel(DataWorld* _data, int _index) : Panel("solid-body
 	from_source(R"foodelim(
 Dialog solid-body-panel ''
 	Grid ? ''
-		Label ? 'Active'
+		Label ? 'Active' right disabled
 		CheckBox active ''
 		---|
-		Label ? 'Mass'
+		Label ? 'Mass' right disabled
 		SpinButton mass '' range=0::0.001
 )foodelim");
 	data = _data;
