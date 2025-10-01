@@ -5,6 +5,8 @@
 #include "MaterialPassPanel.h"
 #include "MaterialPanel.h"
 #include <mode_material/action/ActionMaterialEditAppearance.h>
+#include <Session.h>
+#include <storage/Storage.h>
 
 string file_secure(const Path &filename);
 
@@ -41,6 +43,29 @@ MaterialPassPanel::MaterialPassPanel(MaterialPanel* _parent, DataMaterial* _data
 	event("cull:none", [this] { apply_data(); });
 	event("z-write", [this] { apply_data(); });
 	event("z-test", [this] { apply_data(); });
+	event("shader", [this] {
+		data->session->storage->file_dialog(FD_SHADERFILE, false, true).then([this] (const ComplexPath& p) {
+			parent->apply_queue_depth ++;
+			auto a = data->appearance;
+			a.passes[index].shader.file = p.relative;
+			data->execute(new ActionMaterialEditAppearance(a));
+			parent->apply_queue_depth --;
+			update(index);
+		});
+	});
+	event("clear-shader", [this] {
+		parent->apply_queue_depth ++;
+		auto a = data->appearance;
+		a.passes[index].shader.file = "";
+		data->execute(new ActionMaterialEditAppearance(a));
+		parent->apply_queue_depth --;
+		update(index);
+	});
+	event("edit-shader", [this] {
+		auto a = data->appearance;
+		if (!a.passes[index].shader.file.is_empty())
+			data->session->universal_edit(FD_SHADERFILE, a.passes[index].shader.file, true);
+	});
 	event("delete", [this] {
 		auto a = data->appearance;
 		a.passes.erase(index);
@@ -76,6 +101,7 @@ void MaterialPassPanel::update(int _index) {
 	check("z-write", p.z_write);
 	check("z-test", p.z_test);
 	enable("delete", data->appearance.passes.num >= 2);
+	enable("edit-shader", !p.shader.file.is_empty());
 }
 void MaterialPassPanel::set_selected(bool selected) {
 	set_visible("g-pass", selected);

@@ -16,10 +16,9 @@ Dialog material-pass-panel "Pass"
 				ComboBox destination "Zero\\One\\SourceColor\\SourceInvColor\\SourceAlpha\\SourceInvAlpha\\DestColor\\DestInvColor\\DestAlpha\\DestInvAlpha" expandx
 				---|
 				Label l-cull "Visible" disabled right
-				Grid ? ""
+				Grid ? "" spacing=0
 					RadioButton cull:back "Front" "tooltip=Only front side of triangles visible"
-					RadioButton cull:front "Back" "tooltip=Only back side of triangles visible" expandx
-					---|
+					RadioButton cull:front "Back" "tooltip=Only back side of triangles visible"
 					RadioButton cull:none "Both" "tooltip=Front and back side of triangles visible"
 				---|
 				Label l-z-buffer "Z buffer" disabled right
@@ -28,7 +27,13 @@ Dialog material-pass-panel "Pass"
 					CheckBox z-test "Test"
 				---|
 				Label l-shader "Shader" disabled right
-				Label shader "" expandx
+				Button shader "" expandx
+				---|
+				.
+				Grid ? ''
+					Label ? '' expandx
+					Button clear-shader "Clear" noexpandx
+					Button edit-shader "Edit" primary noexpandx
 			Separator ? "" horizontal
 			Grid ? ""
 				Label ? "" expandx
