@@ -58,12 +58,5 @@ void ModeMeshMaterial::on_key_down(int key) {
 }
 
 void ModeMeshMaterial::on_command(const string& id) {
-/*	if (id == "new")
-		session->universal_new(FD_MODEL);
-	if (id == "open")
-		session->universal_open(FD_MODEL);*/
-	if (id == "undo")
-		data->undo();
-	if (id == "redo")
-		data->redo();
+	_parent->on_command(id);
 }

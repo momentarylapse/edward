@@ -487,7 +487,7 @@ Edit::Index Edit::xy_to_index(const vec2& pos) const {
 	float dy = pos.y - cache.line_y0[0];
 
 	face->set_size(font_size * ui_scale);
-	int line_no = min((int)(dy / cache.line_height[0]), cache.lines.num - 1);
+	int line_no = clamp((int)(dy / cache.line_height[0]), 0, cache.lines.num - 1);
 	const auto& l = cache.lines[line_no];
 
 	if (dx > cache.line_width[line_no])
