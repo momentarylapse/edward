@@ -63,7 +63,10 @@ Mesh* Mesh::copy(Model *new_owner) {
 		ss.vertex_buffer = nullptr;
 		//ss.force_update = true;
 	}
-	bool using_animation = owner->_template->animator;
+	bool using_animation = false;
+	for (const auto& c: owner->_template->components)
+		if (c.class_name == "Animator")
+			using_animation = true;
 	s->create_vb(using_animation);
 	s->update_vb(using_animation);
 

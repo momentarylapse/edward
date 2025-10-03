@@ -43,9 +43,6 @@ Collider::~Collider() {
 
 
 MeshCollider::MeshCollider() {
-	// physical
-	if (phys and !phys_is_reference)
-		delete phys;
 }
 
 void MeshCollider::on_init() {
@@ -59,8 +56,7 @@ void MeshCollider::on_init() {
 		return;
 	}
 
-	phys = m->_template->mesh_collider->phys;
-	phys_is_reference = true;
+	phys = m->_template->physical_mesh;
 
 
 

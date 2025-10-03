@@ -10,6 +10,7 @@
 #include "../../y/Component.h"
 #include <lib/math/plane.h>
 #include <lib/math/vec3.h>
+#include <lib/base/pointer.h>
 
 class Model;
 class Terrain;
@@ -24,16 +25,14 @@ class btCollisionShape;
 
 
 // the face of a polyhedron (=> a polygon)
-class ConvexPolyhedronFace {
-public:
+struct ConvexPolyhedronFace {
 	int num_vertices;
 	int index[MODEL_MAX_POLY_VERTICES_PER_FACE];
 	plane pl; // in model space
 };
 
 // a convex polyhedron (for the physical skin)
-class ConvexPolyhedron {
-public:
+struct ConvexPolyhedron {
 	int num_faces;
 	ConvexPolyhedronFace face[MODEL_MAX_POLY_FACES];
 
@@ -50,23 +49,20 @@ public:
 };
 
 // a ball (for the physical skin)
-class Ball {
-public:
+struct Ball {
 	int index;
 	float radius;
 };
 
 // a cylinder (for the physical skin)
-class Cylinder {
-public:
+struct Cylinder {
 	int index[2];
 	float radius;
 	bool round;
 };
 
 // data for collision detection
-class PhysicalMesh {
-public:
+struct PhysicalMesh : Sharable<base::Empty> {
 	Array<int> bone_nr;
 	Array<vec3> vertex; // original vertices
 	Array<vec3> vertex_dyn; // here the animated vertices are stored before collision detection
@@ -85,8 +81,7 @@ public:
 };
 
 // physical skin, but in world coordinates
-class PhysicalMeshAbsolute {
-public:
+struct PhysicalMeshAbsolute {
 	bool is_ok = true;
 	Array<vec3> p;
 	Array<plane> pl;
@@ -113,8 +108,7 @@ public:
 
 
 	// physical skin (shared)
-	PhysicalMesh *phys = nullptr;
-	bool phys_is_reference = false;
+	shared<PhysicalMesh> phys;
 	PhysicalMeshAbsolute phys_absolute;
 
 	static const kaba::Class *_class;

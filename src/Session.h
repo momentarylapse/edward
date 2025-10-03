@@ -117,4 +117,4 @@ public:
 	void load_project(const Path& dir);
 };
 
-Session *create_session();
+Session* create_session(bool with_window = true);

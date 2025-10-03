@@ -60,8 +60,10 @@ void Skeleton::on_init() {
 			if (mm->_template->skeleton)
 				EntityManager::global->add_component<Skeleton>(b);
 
-			if (mm->_template->animator)
-				EntityManager::global->add_component<Animator>(b);
+			for (const auto& c: mm->_template->components) {
+				if (c.class_name == "Animator")
+					EntityManager::global->add_component<Animator>(b);
+			}
 		}
 	}
 }

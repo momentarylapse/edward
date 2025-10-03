@@ -18,6 +18,9 @@
 #include <mode_world/data/DataWorld.h>
 #include <test/UnitTest.h>
 
+#include "mode_model/data/ModelMesh.h"
+#include "world/LevelData.h"
+
 string AppVersion = "0.5.-1.0";
 string AppName = "Edward";
 
@@ -37,9 +40,8 @@ extern bool DataModelAllowUpdating;
 void update_file(const Path &filename, bool allow_write) {
 	//Session session;
 
-	auto session = new Session;
-	session->resource_manager = new ResourceManager(nullptr, "", "", "");
-	auto storage = new Storage(session);
+	auto session = create_session(false);
+	auto storage = session->storage;
 	auto doc = session->create_doc();
 
 
@@ -76,7 +78,7 @@ void update_file(const Path &filename, bool allow_write) {
 
 	if (ext == "model") {
 		//MaterialInit();
-		session->ctx->material_manager->set_default(new yrenderer::Material(session->ctx));
+		//session->ctx->material_manager->set_default(new yrenderer::Material(session->ctx));
 		data = new DataModel(doc);
 		DataModelAllowUpdating = false;
 	} else if (ext == "material") {
@@ -93,6 +95,69 @@ void update_file(const Path &filename, bool allow_write) {
 		delete data;
 	}
 	delete storage;
+	delete session;
+}
+
+void templatify(const Path &filename) {
+	auto session = create_session(false);
+	auto storage = session->storage;
+	auto doc = session->create_doc();
+
+
+	auto _filename = filename.absolute().canonical();
+
+	//storage->guess_root_directory(_filename);
+	//session->resource_manager->shader_manager->shader_dir = storage->root_dir_kind[FD_MATERIAL];
+	//msg_write(storage->root_dir.str());
+
+	/*int pp = filename.str().find("/Objects/", 0);
+	if (pp > 0) {
+		kaba::config.directory = Path(filename.str().sub(0, pp)) | "Scripts";
+		//msg_write(kaba::config.directory.str());
+	}*/
+
+
+	string ext = filename.extension();
+
+	if (ext == "model") {
+		//MaterialInit();
+		//session->ctx->material_manager->set_default(new yrenderer::Material(session->ctx));
+		auto data = new DataModel(doc);
+		storage->load(_filename, data, false);
+		DataModelAllowUpdating = false;
+
+	    LevelData::Template t;
+		{
+		    ScriptInstanceData c;
+		    c.class_name = "Model";
+		    c.set("file", "", str(_filename.basename()));
+		    t.components.add(c);
+		}
+		if (data->phys_mesh->vertices.num > 0) {
+		    t.components.add({"MeshCollider"});
+		}
+	    if (data->meta_data.passive_physics) {
+	        ScriptInstanceData c;
+	        c.class_name = "SolidBody";
+	        c.set("active", "", b2s(data->meta_data.active_physics));
+	        c.set("mass", "", f2s(data->meta_data.mass, 3));
+	        c.set("theta_xx", "", f2s(data->meta_data.inertia_tensor._00, 3));
+	        c.set("theta_xy", "", f2s(data->meta_data.inertia_tensor._01, 3));
+	        c.set("theta_xz", "", f2s(data->meta_data.inertia_tensor._02, 3));
+	        c.set("theta_yy", "", f2s(data->meta_data.inertia_tensor._11, 3));
+	        c.set("theta_yz", "", f2s(data->meta_data.inertia_tensor._12, 3));
+	        c.set("theta_zz", "", f2s(data->meta_data.inertia_tensor._22, 3));
+	        t.components.add(c);
+	    }
+		if (data->bones.num > 0) {
+	        t.components.add({"Skeleton"});
+	    }
+		if (data->moves.num > 0) {
+	        t.components.add({"Animator"});
+	    }
+	    LevelData::save_template(t, str(_filename).replace(".model", ".template"));
+	}
+
 	delete session;
 }
 
@@ -124,6 +189,9 @@ int main(const Array<string>& args) {
 	});
 	p.cmd("file check", "FILENAME", "load file and check for errors", [] (const Array<string> &arg) {
 		update_file(arg[0], false);
+	});
+	p.cmd("model templatify", "FILENAME", "convert to new template system", [] (const Array<string> &arg) {
+		templatify(arg[0]);
 	});
 	p.cmd("new material", "", "open editor in material mode", [] (const Array<string> &arg) {
 		auto session = create_session();

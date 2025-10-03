@@ -107,7 +107,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 		try {
 			for (auto m: data->entity_manager->get_component_list<ModelRef>()) {
 				m->model = data->session->resource_manager->load_model(m->filename);
-				if (m->model->_template->mesh_collider)
+				if (m->model->_template->physical_mesh)
 					data->entity_manager->add_component<MeshCollider>(m->owner);
 				if (m->model->_template->solid_body) {
 					auto sb = data->entity_manager->add_component<SolidBody>(m->owner);
@@ -119,8 +119,10 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 				}
 				if (m->model->_template->skeleton)
 					data->entity_manager->add_component<Skeleton>(m->owner);
-				if (m->model->_template->animator)
-					data->entity_manager->add_component<Animator>(m->owner);
+				for (const auto& c: m->model->_template->components) {
+					if (c.class_name == "Animator")
+						data->entity_manager->add_component<Animator>(m->owner);
+				}
 			}
 			for (auto t: data->entity_manager->get_component_list<TerrainRef>()) {
 				if (t->filename) {

@@ -24,7 +24,6 @@
 #include <lib/os/msg.h>
 #include <lib/doc/chunked.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include "../meta.h"
 #include <lib/yrenderer/MaterialManager.h>
 #include <cmath>
 
@@ -37,10 +36,11 @@ namespace yrenderer {
 ModelTemplate::ModelTemplate(Model *m) {
 	model = m;
 	solid_body = nullptr;
-	mesh_collider = nullptr;
-	animator = nullptr;
 	skeleton = nullptr;
 }
+
+ModelTemplate::~ModelTemplate() = default;
+
 
 yrenderer::MaterialManager *chunked_file_parser_get_material_manager(ChunkedFileParser *p);
 ResourceManager *chunked_file_parser_get_resource_manager(ChunkedFileParser *p);
@@ -139,15 +139,14 @@ void AppraiseDimensions(Model *m) {
 	}
 
 	// physical skin
-	auto col = m->_template->mesh_collider;
-	if (col) {
-		for (int i=0;i<col->phys->vertex.num;i++) {
-			float r = _vec_length_fuzzy_(col->phys->vertex[i]);
+	if (auto phys = m->_template->physical_mesh) {
+		for (int i=0;i<phys->vertex.num;i++) {
+			float r = _vec_length_fuzzy_(phys->vertex[i]);
 			if (r > rad)
 				rad = r;
 		}
-		for (auto &b: col->phys->balls) {
-			float r = _vec_length_fuzzy_(col->phys->vertex[b.index]) + b.radius;
+		for (auto &b: phys->balls) {
+			float r = _vec_length_fuzzy_(phys->vertex[b.index]) + b.radius;
 			if (r > rad)
 				rad = r;
 		}
@@ -156,6 +155,7 @@ void AppraiseDimensions(Model *m) {
 }
 
 
+#if 0
 void PostProcessPhys(Model *m, PhysicalMesh *s) {
 	auto col = m->_template->mesh_collider;
 	if (col) {
@@ -164,6 +164,7 @@ void PostProcessPhys(Model *m, PhysicalMesh *s) {
 	}
 	m->_ResetPhysAbsolute_();
 }
+#endif
 
 
 namespace modelmanager {
@@ -333,7 +334,8 @@ public:
 	}
 	void create() override {
 		me = new PhysicalMesh;
-		parent->_template->mesh_collider->phys = me;
+		parent->_template->physical_mesh = me;
+		parent->_template->components.add({"MeshCollider"});
 	}
 	void read(Stream *f) override {
 		[[maybe_unused]] int version = f->read_int();
@@ -437,14 +439,14 @@ public:
 	ChunkAnimation() : FileChunk("animation") {}
 	void create() override {
 		me = parent;
+		auto meta = new MetaMove;
+		me->_template->meta_move = meta;
+		me->_template->components.add({"Animator"});
 	}
 	void read(Stream *f) override {
 #if 1
 		[[maybe_unused]] int version = f->read_int();
-
-
-		auto meta = new MetaMove;
-		me->_template->animator->meta = meta;
+		auto meta = me->_template->meta_move.get();
 
 		// headers
 		int num_anims = f->read_int();
@@ -468,8 +470,8 @@ public:
 		meta->num_frames_vertex = f->read_int();
 		for (int s=0; s<4; s++) {
 			int n_vert = 0;
-			if (parent->_template->mesh_collider->phys)
-				n_vert = parent->_template->mesh_collider->phys->vertex.num;
+			if (auto phys = parent->_template->physical_mesh.get())
+				n_vert = phys->vertex.num;
 			if (s > 0)
 				n_vert = parent->mesh[s - 1]->vertex.num;
 			meta->mesh[s].dpos.resize(meta->num_frames_vertex * n_vert);
@@ -477,7 +479,9 @@ public:
 		for (int fr=0; fr<meta->num_frames_vertex; fr++) {
 			/*fr.duration =*/ f->read_float();
 			for (int s=0; s<4; s++) {
-				int np = parent->_template->mesh_collider->phys->vertex.num;
+				int np = 0;
+				if (auto phys = parent->_template->physical_mesh.get())
+					np = phys->vertex.num;
 				if (s >= 1)
 					np = parent->mesh[s - 1]->vertex.num;
 				int num_vertices = f->read_int();
@@ -650,10 +654,7 @@ xfer<Model> ModelManager::load(const Path &_filename) {
 	m->_template = new ModelTemplate(m);
 	m->_template->filename = filename;
 	m->_template->solid_body = new SolidBody;
-	m->_template->mesh_collider = new MeshCollider;
-	m->_template->animator = new Animator;
 	m->_template->skeleton = new Skeleton;
-	m->_template->vertex_shader_module = "default";
 
 	modelmanager::ModelParser p(this);
 	p.read(filename, m);
@@ -667,10 +668,6 @@ xfer<Model> ModelManager::load(const Path &_filename) {
 		delete m->_template->solid_body;
 		m->_template->solid_body = nullptr;
 	}
-	if (!m->_template->animator->meta) {
-		delete m->_template->animator;
-		m->_template->animator = nullptr;
-	}
 	if (m->_template->skeleton->bones.num == 0) {
 		delete m->_template->skeleton;
 		m->_template->skeleton = nullptr;
@@ -681,12 +678,9 @@ xfer<Model> ModelManager::load(const Path &_filename) {
 	AppraiseDimensions(m);
 
 	for (int i=0; i<MODEL_NUM_MESHES; i++)
-		m->mesh[i]->post_process(m->_template->animator);
+		m->mesh[i]->post_process(m->_template->meta_move.get());
 
-	PostProcessPhys(m, m->_template->mesh_collider->phys);
-
-	if (m->_template->animator)
-		m->_template->vertex_shader_module = "animated";
+	//PostProcessPhys(m, m->_template->physical_mesh);
 
 
 

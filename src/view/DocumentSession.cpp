@@ -27,10 +27,12 @@ DocumentSession::DocumentSession(Session* _session) {
 	mode_world = nullptr;
 	mode_coding = nullptr;
 
-	base_panel = new xhui::Panel(p2s(this));
-	base_panel->propagate_events = true;
-	base_panel->add_control("Grid", "", 0, 0, "base-grid");
-	base_panel->set_options("base-grid", "padding=0,spacing=0");
+	if (session->win) { // only in UI mode
+		base_panel = new xhui::Panel(p2s(this));
+		base_panel->propagate_events = true;
+		base_panel->add_control("Grid", "", 0, 0, "base-grid");
+		base_panel->set_options("base-grid", "padding=0,spacing=0");
+	}
 
 	promise_started.get_future().then([this] (DocumentSession*) {
 		out_started();

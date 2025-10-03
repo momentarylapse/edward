@@ -417,7 +417,7 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 			for (int k=0; k<m->mesh[0]->sub.num; k++) {
 				auto material = m->material[k];
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, material, 0, m->_template->vertex_shader_module);
+				dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, material, 0, "default");
 			}
 
 	// selection
@@ -427,7 +427,7 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 			if (auto m = mr->model)
 				for (int k=0; k<m->mesh[0]->sub.num; k++) {
 					auto vb = m->mesh[0]->sub[k].vertex_buffer;
-					dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, dh->material_selection, 0, m->_template->vertex_shader_module);
+					dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, dh->material_selection, 0, "default");
 				}
 		}
 	}
@@ -439,7 +439,7 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 			if (auto m = mr->model) {
 				for (int k=0; k<m->mesh[0]->sub.num; k++) {
 					auto vb = m->mesh[0]->sub[k].vertex_buffer;
-					dh->draw_mesh(params, rvd, e->get_matrix(), vb, dh->material_hover, 0, m->_template->vertex_shader_module);
+					dh->draw_mesh(params, rvd, e->get_matrix(), vb, dh->material_hover, 0, "default");
 				}
 			}
 		}
@@ -465,7 +465,7 @@ void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer:
 		if (auto m = mr->model)
 			for (int k=0; k<m->mesh[0]->sub.num; k++) {
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, dh->material_shadow, 0, m->_template->vertex_shader_module);
+				dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, dh->material_shadow, 0, "default");
 			}
 }
 

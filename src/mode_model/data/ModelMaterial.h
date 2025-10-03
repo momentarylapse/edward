@@ -28,7 +28,7 @@ public:
 
 	void make_consistent_after_shallow_loading();
 	void check_textures();
-	void load_colors_from_file();
+	void load_colors_from_material(const yrenderer::Material* m);
 //	void apply_for_rendering(MultiView::Window *win);
 
 	Path filename;

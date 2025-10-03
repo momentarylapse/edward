@@ -54,7 +54,7 @@ Animator::~Animator() {
 void Animator::on_init() {
 	auto m = owner->get_component<Model>();
 
-	meta = m->_template->animator->meta;
+	meta = m->_template->meta_move;
 
 	// skeleton
 	auto sk = m->owner->get_component<Skeleton>();

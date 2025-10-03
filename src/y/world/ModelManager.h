@@ -11,12 +11,13 @@
 #include <lib/base/pointer.h>
 #include <lib/os/path.h>
 
+class MetaMove;
 class Model;
 class Path;
 class SolidBody;
-class MeshCollider;
-class Animator;
+struct PhysicalMesh;
 class Skeleton;
+struct ScriptInstanceData;
 class ResourceManager;
 namespace yrenderer {
 	class MaterialManager;
@@ -29,13 +30,14 @@ public:
 	Model *model;
 	Array<Path> bone_model_filename;
 	SolidBody *solid_body;
-	MeshCollider *mesh_collider;
-	Animator *animator;
+	shared<PhysicalMesh> physical_mesh;
+	shared<MetaMove> meta_move;
 	Skeleton *skeleton;
-	string vertex_shader_module;
+	Array<ScriptInstanceData> components;
 
 
-	ModelTemplate(Model *m);
+	explicit ModelTemplate(Model *m);
+	~ModelTemplate();
 };
 
 class ModelManager {

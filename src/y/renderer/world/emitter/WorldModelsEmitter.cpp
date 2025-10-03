@@ -15,6 +15,10 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/base/sort.h>
 
+
+
+static const string vertex_shader_module[2] = {"default", "animated"};
+
 WorldOpaqueModelsEmitter::WorldOpaqueModelsEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "mod") {
 }
 
@@ -34,7 +38,7 @@ void WorldOpaqueModelsEmitter::emit(const yrenderer::RenderParams& params, yrend
 			if (!material->cast_shadow and shadow_pass)
 				continue;
 
-			auto shader = rvd.get_shader(material, 0, m->_template->vertex_shader_module, "");
+			auto shader = rvd.get_shader(material, 0, vertex_shader_module[(int)(bool)ani], "");
 			if (shadow_pass)
 				material = rvd.material_shadow;
 
@@ -101,7 +105,7 @@ void WorldTransparentModelsEmitter::emit(const yrenderer::RenderParams& params, 
 		auto vb = m->mesh[0]->sub[i].vertex_buffer;
 
 		for (int k=0; k<material->num_passes; k++) {
-			auto shader = rvd.get_shader(material, k, m->_template->vertex_shader_module, "");
+			auto shader = rvd.get_shader(material, k, vertex_shader_module[(int)(bool)ani], "");
 
 			auto& rd = rvd.start(params, m->_matrix, shader, *material, k, ygfx::PrimitiveTopology::TRIANGLES, vb);
 

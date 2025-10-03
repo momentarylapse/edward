@@ -24,11 +24,13 @@ namespace yrenderer {
 ModelMaterial::ModelMaterial(Session *_s) {
 	session = _s;
 	// default file
-	material = session->resource_manager->load_material("");
+	if (session->resource_manager)
+		material = session->resource_manager->load_material("");
 
 	// color
 	col.user = false;
-	load_colors_from_file();
+	if (material)
+		load_colors_from_material(material.get());
 }
 
 
@@ -41,12 +43,12 @@ ModelMaterial::ModelMaterial(Session *_s, const Path &_filename) : ModelMaterial
 ModelMaterial::~ModelMaterial() = default;
 
 void ModelMaterial::TextureLevel::reload_image(Session *session) {
-	if (filename == "")
+	if (filename == "" or !session->win)
 		image = new Image(512, 512, White);
 	else
 		image = Image::load(session->resource_manager->texture_manager->texture_dir | filename);
 	edited = false;
-	if (session->resource_manager->ctx)
+	if (session->win and session->resource_manager->ctx)
 		update_texture();
 }
 
@@ -87,7 +89,7 @@ void ModelMaterial::make_consistent_after_shallow_loading() {
 
 	check_textures();
 	if (!col.user)
-		load_colors_from_file();
+		load_colors_from_material(material.get());
 }
 
 
@@ -123,11 +125,11 @@ void ModelMaterial::check_textures() {
 	}
 }
 
-void ModelMaterial::load_colors_from_file() {
-	col.albedo = material->albedo;
-	col.roughness = material->roughness;
-	col.metal = material->metal;
-	col.emission = material->emission;
+void ModelMaterial::load_colors_from_material(const yrenderer::Material* m) {
+	col.albedo = m->albedo;
+	col.roughness = m->roughness;
+	col.metal = m->metal;
+	col.emission = m->emission;
 }
 
 #if 0

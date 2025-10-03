@@ -468,8 +468,10 @@ Model* World::attach_model(Entity* e, const Path& filename) {
 	if (m->_template->skeleton)
 		entity_manager->add_component<Skeleton>(e);
 
-	if (m->_template->animator)
-		entity_manager->add_component<Animator>(e);
+	for (const auto& c: m->_template->components) {
+		if (c.class_name == "Animator")
+			entity_manager->add_component<Animator>(e);
+	}
 
 	return m;
 }

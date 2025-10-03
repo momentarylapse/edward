@@ -47,6 +47,12 @@ struct LevelData {
 	bool load(const Path &filename);
 	void save(const Path &filename);
 
+	struct Template {
+		Array<ScriptInstanceData> components;
+	};
+	static Template load_template(const Path &filename);
+    static void save_template(const Template& t, const Path &filename);
+
 
 	struct Terrain {
 		Path filename;

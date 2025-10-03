@@ -47,7 +47,7 @@ bool any_session_running() {
 	return all_sessions.num > 0;
 }
 
-Session *create_session() {
+Session* create_session(bool with_window) {
 	auto s = new Session;
 	s->kaba_ctx = kaba::Context::create();
 	s->storage = new Storage(s);
@@ -56,8 +56,9 @@ Session *create_session() {
 		s->plugin_manager = new edward::PluginManager(s, os::app::directory_static | "plugins");
 	else
 		s->plugin_manager = new edward::PluginManager(s, os::app::directory_static | ".." | "plugins");
-	s->load_project(xhui::config.get_str("RootDir", ""));
-	s->win = new EdwardWindow(s);
+	//s->load_project(xhui::config.get_str("RootDir", ""));
+	if (with_window)
+		s->win = new EdwardWindow(s);
 	return s;
 }
 
@@ -139,12 +140,14 @@ Session::~Session() {
 DocumentSession* Session::create_doc() {
 	auto doc = new DocumentSession(this);
 	documents.add(doc);
-	doc->grid_id = format("x-grid-%d", documents.num);
-	win->set_target("tab");
-	win->add_control("Grid", "", documents.num-1, 0, doc->grid_id);
-	win->embed(doc->grid_id, 0, 0, doc->base_panel);
-	//win->set_target(grid_id);
-	//win->add_control("Button", p2s(doc), 0, 0, "");
+	if (win) { // only in UI mode
+		doc->grid_id = format("x-grid-%d", documents.num);
+		win->set_target("tab");
+		win->add_control("Grid", "", documents.num-1, 0, doc->grid_id);
+		win->embed(doc->grid_id, 0, 0, doc->base_panel);
+		//win->set_target(grid_id);
+		//win->add_control("Button", p2s(doc), 0, 0, "");
+	}
 
 	return doc;
 }
