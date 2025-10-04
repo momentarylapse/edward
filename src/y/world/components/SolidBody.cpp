@@ -70,6 +70,7 @@ SolidBody::SolidBody() {
 	passive = true;
 	mass = 1;
 	body = nullptr;
+	theta_0 = mat3::ID;
 
 	vel = rot = v_0;
 	rotating  = true;

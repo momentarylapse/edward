@@ -123,20 +123,6 @@ DataWorld::DataWorld(DocumentSession* doc) :
 		} else {
 			session->plugin_manager->set_variables(c, type, var);
 		}
-		return;
-		if (type == SolidBody::_class) {
-			auto sb = static_cast<SolidBody*>(c);
-			for (const auto& v: var) {
-				if (v.name == "mass")
-					sb->mass = v.value._float();
-				if (v.name == "physics_active")
-					sb->active = v.value._bool();
-				if (v.name == "physics_passive")
-					sb->passive = v.value._bool();
-				if (v.name == "g_factor")
-					sb->g_factor = v.value._float();
-			}
-		}
 	};
 	reset();
 }
