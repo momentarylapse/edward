@@ -107,22 +107,9 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 		try {
 			for (auto m: data->entity_manager->get_component_list<ModelRef>()) {
 				m->model = data->session->resource_manager->load_model(m->filename);
-				if (m->model->_template->physical_mesh)
-					data->entity_manager->add_component<MeshCollider>(m->owner);
-				if (m->model->_template->solid_body) {
-					auto sb = data->entity_manager->add_component<SolidBody>(m->owner);
-					sb->mass = m->model->_template->solid_body->mass;
-					sb->active = m->model->_template->solid_body->active;
-					sb->passive = m->model->_template->solid_body->passive;
-					sb->g_factor = m->model->_template->solid_body->g_factor;
-					sb->theta_0 = m->model->_template->solid_body->theta_0;
-				}
-				if (m->model->_template->skeleton)
-					data->entity_manager->add_component<Skeleton>(m->owner);
-				for (const auto& c: m->model->_template->components) {
-					if (c.class_name == "Animator")
-						data->entity_manager->add_component<Animator>(m->owner);
-				}
+
+				// automagic components for now...
+				data->_entity_apply_components(m->owner, m->model->_template->components);
 			}
 			for (auto t: data->entity_manager->get_component_list<TerrainRef>()) {
 				if (t->filename) {

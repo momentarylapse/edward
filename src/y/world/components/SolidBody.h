@@ -21,8 +21,6 @@ public:
 	SolidBody();
 	~SolidBody() override;
 
-	void copy_data(SolidBody *source);
-
 
 	float mass, g_factor;
 	mat3 theta_0;

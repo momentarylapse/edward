@@ -21,9 +21,11 @@ EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-pane
 	from_source(R"foodelim(
 Dialog entity-panel '' padding=0
 	Grid main-grid '' margin=7
-		ListView components 'c' nobar sunkenbackground=no showselection=no selectsingle hidden
+		ListView components 'c' nobar sunkenbackground=no showselection=no selectsingle
 		---|
-		Button add-component '+' hidden
+		Grid ? ""
+			Button add-component '+' noexpandx
+			Button save-template '' noexpandx image=save
 )foodelim");
 
 	auto component_list = (xhui::ListView*)get_control("components");
@@ -56,6 +58,9 @@ Dialog entity-panel '' padding=0
 			//	mode_world->data->entity_add_user_component(cur_index, c);
 		});
 	});
+	event("save-template", [this] {
+		LevelData::Template t;
+	});
 
 	/*mode->data->out_changed >> create_sink([this] {
 	});*/
@@ -67,9 +72,6 @@ void EntityPanel::update_xxx(int next, bool force) {
 	cur_index = next;
 	reset("components");
 	auto e = mode_world->data->entity(cur_index);
-	set_options("components-viewport", "expandy");
-	set_visible("components", true);
-	set_visible("add-component", true);
 
 	add_string("components", format("%d:e:0", cur_index)); // Entity...
 	for (int j=0; j<e->components.num; j++)

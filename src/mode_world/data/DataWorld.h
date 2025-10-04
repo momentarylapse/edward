@@ -148,6 +148,7 @@ public:
 	//Entity* _create_entity(const LevelData::Entity& e);
 	Entity* _create_entity(const vec3& pos, const quaternion& ang);
 	void _entity_apply_components(Entity* e, const Array<ScriptInstanceData>& components);
+	void _entity_apply_component(Entity* e, const ScriptInstanceData& component);
 };
 
 #endif /* DATAWORLD_H_ */

@@ -66,9 +66,9 @@ inline bool TestVectorSanity(vec3 &v,char *name) {
 
 
 SolidBody::SolidBody() {
-	active = false;
-	passive = false;
-	mass = 0;
+	active = true;
+	passive = true;
+	mass = 1;
 	body = nullptr;
 
 	vel = rot = v_0;
@@ -87,29 +87,11 @@ SolidBody::SolidBody() {
 	test_collisions = true;
 }
 
-void SolidBody::copy_data(SolidBody *source) {
-	mass = source->mass;
-	theta_0 = source->theta_0;
-	active = source->active;
-	passive = source->passive;
-	test_collisions = source->test_collisions;
-}
-
 
 void SolidBody::on_init() {
 	auto o = owner;
 	auto m = owner->get_component<Model>();
 	auto t = o->get_component<Terrain>();
-
-	// import
-	// TODO better place for this hack!
-	if (m and m->_template->solid_body) {
-		copy_data(m->_template->solid_body);
-	} else if (t) {
-		mass = 10000.0f;
-		theta_0 = mat3::ZERO;
-		passive = true;
-	}
 
 	if (!active and !passive)
 		return;

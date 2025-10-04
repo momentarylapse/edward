@@ -98,7 +98,7 @@ DataWorld::DataWorld(DocumentSession* doc) :
 		msg_write(type->name);
 		return nullptr;
 	};
-	entity_manager->component_manager->f_apply = [] (const kaba::Class* type, Component* c, const Array<ScriptInstanceDataVariable>& var) {
+	entity_manager->component_manager->f_apply = [this] (const kaba::Class* type, Component* c, const Array<ScriptInstanceDataVariable>& var) {
 		if (type == Light::_class) {
 			auto l = static_cast<Light*>(c);
 			float radius = 1;
@@ -120,6 +120,22 @@ DataWorld::DataWorld(DocumentSession* doc) :
 				l->light.light.col = col * power;
 			else
 				l->light.light.col = col * (radius * radius / 100);
+		} else {
+			session->plugin_manager->set_variables(c, type, var);
+		}
+		return;
+		if (type == SolidBody::_class) {
+			auto sb = static_cast<SolidBody*>(c);
+			for (const auto& v: var) {
+				if (v.name == "mass")
+					sb->mass = v.value._float();
+				if (v.name == "physics_active")
+					sb->active = v.value._bool();
+				if (v.name == "physics_passive")
+					sb->passive = v.value._bool();
+				if (v.name == "g_factor")
+					sb->g_factor = v.value._float();
+			}
 		}
 	};
 	reset();
@@ -357,18 +373,22 @@ Entity *DataWorld::_create_entity(const vec3 &pos, const quaternion &ang) {
 }
 
 
+void DataWorld::_entity_apply_component(Entity *e, const ScriptInstanceData& cc) {
+	for (const auto c: session->plugin_manager->component_classes)
+		if (cc.class_name == c->name) {
+			auto comp = entity_manager->_add_component_generic_(e, c);
+			session->plugin_manager->set_variables(comp, c, cc.variables);
+			return;
+		}
+
+	msg_error("UNKNOWN COMPONENT: " + cc.class_name);
+	auto tag = e->get_component<EdwardTag>();
+	tag->unknown_components.add(cc);
+};
+
 void DataWorld::_entity_apply_components(Entity *e, const Array<ScriptInstanceData> &components) {
 	for (const auto& cc: components) {
-		for (const auto c: session->plugin_manager->component_classes)
-			if (cc.class_name == c->name) {
-				auto comp = entity_manager->_add_component_generic_(e, c);
-				session->plugin_manager->set_variables(comp, c, cc.variables);
-				return;
-			}
-
-		msg_error("UNKNOWN COMPONENT: " + cc.class_name);
-		auto tag = e->get_component<EdwardTag>();
-		tag->unknown_components.add(cc);
+		_entity_apply_component(e, cc);
 	}
 };
 

@@ -29,7 +29,6 @@ public:
 	Path filename;
 	Model *model;
 	Array<Path> bone_model_filename;
-	SolidBody *solid_body;
 	shared<PhysicalMesh> physical_mesh;
 	shared<MetaMove> meta_move;
 	Skeleton *skeleton;

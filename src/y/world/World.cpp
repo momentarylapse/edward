@@ -457,13 +457,14 @@ Model* World::attach_model(Entity* e, const Path& filename) {
 
 
 	// automatic components
-	if (m->_template->solid_body) {
-		[[maybe_unused]] auto col = entity_manager->add_component<MeshCollider>(e);
-		[[maybe_unused]] auto sb = entity_manager->add_component<SolidBody>(e);
+	for (const auto& c: m->_template->components)
+		if (c.class_name == "SolidBody") {
+			[[maybe_unused]] auto col = entity_manager->add_component<MeshCollider>(e);
+			[[maybe_unused]] auto sb = entity_manager->add_component<SolidBody>(e, c.variables);
 #if HAS_LIB_BULLET
-		dynamicsWorld->addRigidBody(sb->body);
+			dynamicsWorld->addRigidBody(sb->body);
 #endif
-	}
+		}
 
 	if (m->_template->skeleton)
 		entity_manager->add_component<Skeleton>(e);

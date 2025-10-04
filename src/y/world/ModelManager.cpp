@@ -35,7 +35,6 @@ namespace yrenderer {
 
 ModelTemplate::ModelTemplate(Model *m) {
 	model = m;
-	solid_body = nullptr;
 	skeleton = nullptr;
 }
 
@@ -177,18 +176,23 @@ public:
 	}
 	void read(Stream *f) override {
 		[[maybe_unused]] int version = f->read_int();
-		auto sb = me->_template->solid_body;
 
 		f->read_vector(&me->prop.min);
 		f->read_vector(&me->prop.max);
 		me->prop.radius = f->read_float();
 
 		// physics
-		sb->mass = f->read_float();
+		ScriptInstanceData sb;
+		sb.class_name = "SolidBody";
+		sb.set("mass", "", f2s(f->read_float(), 3));
+		mat3 theta;
 		for (int i=0;i<9;i++)
-			sb->theta_0.e[i] = f->read_float();
-		sb->active = f->read_bool();
-		sb->passive = f->read_bool();
+			theta.e[i] = f->read_float();
+		sb.set("theta", "", "");
+		sb.set("physics_active", "", b2s(f->read_bool()));
+		sb.set("physics_passive", "", b2s(f->read_bool()));
+		if (sb.get("physics_active")._bool() or sb.get("physics_passive")._bool())
+			me->_template->components.add(sb);
 	}
 	void write(Stream *f) override {}
 };
@@ -393,6 +397,7 @@ public:
 	ChunkSkeleton() : FileChunk("skeleton") {}
 	void create() override {
 		me = parent;
+		parent->_template->components.add({"Skeleton"});
 	}
 	void read(Stream *f) override {
 		[[maybe_unused]] int version = f->read_int();
@@ -653,7 +658,6 @@ xfer<Model> ModelManager::load(const Path &_filename) {
 	auto m = new Model();
 	m->_template = new ModelTemplate(m);
 	m->_template->filename = filename;
-	m->_template->solid_body = new SolidBody;
 	m->_template->skeleton = new Skeleton;
 
 	modelmanager::ModelParser p(this);
@@ -664,10 +668,10 @@ xfer<Model> ModelManager::load(const Path &_filename) {
 		delete m->_template->mesh_collider;
 		m->_template->mesh_collider = nullptr;
 	}*/
-	if (!m->_template->solid_body->active and !m->_template->solid_body->passive) {
+	/*if (!m->_template->solid_body->active and !m->_template->solid_body->passive) {
 		delete m->_template->solid_body;
 		m->_template->solid_body = nullptr;
-	}
+	}*/
 	if (m->_template->skeleton->bones.num == 0) {
 		delete m->_template->skeleton;
 		m->_template->skeleton = nullptr;
