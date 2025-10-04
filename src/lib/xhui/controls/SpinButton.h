@@ -16,6 +16,7 @@ public:
 	float value;
 	float _min, _max, step;
 	int decimals;
+	bool show_buttons = true;
 
 	enum class Hover {
 		Other,

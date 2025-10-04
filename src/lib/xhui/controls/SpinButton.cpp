@@ -62,13 +62,15 @@ vec2 SpinButton::get_content_min_size() const {
 	auto dims = get_cached_text_dimensions(f2s(_max, decimals), default_font_regular, font_size, ui_scale);
 	auto s = Edit::get_content_min_size();
 	float w = dims.bounding_width / ui_scale;
-	s.x = BUTTON_DX*2 + w + margin_x*2;
+	s.x = w + margin_x*2;
+	if (show_buttons)
+		s.x += BUTTON_DX*2;
 	return s;
 }
 
 
 SpinButton::Hover SpinButton::get_hover(const vec2& m) const {
-	if (_area.inside(m) and enabled) {
+	if (_area.inside(m) and enabled and show_buttons) {
 		if (m.x > _area.x2 - BUTTON_DX)
 			return Hover::Plus;
 		if (m.x > _area.x2 - BUTTON_DX * 2)
@@ -145,6 +147,9 @@ void SpinButton::_draw(Painter* p) {
 		_update_text_from_value();
 	Edit::_draw(p);
 
+	if (!show_buttons)
+		return;
+
 	float dx = BUTTON_DX;
 
 	const rect area_plus = {_area.p10() - vec2(dx,0), _area.p11()};
@@ -202,6 +207,8 @@ void SpinButton::set_option(const string& key, const string& value) {
 			decimals = max((int)(-log10f(step) + 0.5f), 0);
 		}
 		request_redraw();
+	} else if (key == "compact") {
+		show_buttons = false;
 	} else {
 		Control::set_option(key, value);
 	}
