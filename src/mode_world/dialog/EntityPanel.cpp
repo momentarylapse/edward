@@ -16,6 +16,10 @@
 #include <y/Entity.h>
 #include <y/world/Camera.h>
 
+#include "lib/os/msg.h"
+#include <lib/xhui/dialogs/FileSelectionDialog.h>
+#include <storage/Storage.h>
+
 EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-panel") {
 	mode_world = _mode;
 	from_source(R"foodelim(
@@ -59,7 +63,14 @@ Dialog entity-panel '' padding=0
 		});
 	});
 	event("save-template", [this] {
-		LevelData::Template t;
+		xhui::FileSelectionDialog::ask(this, "Save template", mode_world->session->storage->get_root_dir(FD_MODEL), {"filter=*.template", "save"}).then([this] (const Path& p) {
+			LevelData::Template t;
+			auto e = mode_world->data->entity(cur_index);
+			for (auto c: e->components)
+				if (c->component_type != EdwardTag::_class)
+					t.components.add(mode_world->session->plugin_manager->describe_class(c->component_type, c));
+			LevelData::save_template(t, p);
+		});
 	});
 
 	/*mode->data->out_changed >> create_sink([this] {

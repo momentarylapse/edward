@@ -648,7 +648,9 @@ ModelManager::ModelManager(ResourceManager *_resource_manager, yrenderer::Materi
 xfer<Model> ModelManager::load(const Path &_filename) {
 	if (_filename == "")
 		return nullptr;
-	auto filename = engine.object_dir | _filename.with(".model");
+	auto filename = engine.object_dir | _filename;
+	if (filename.extension() != "model")
+		filename = filename.with(".model");
 	for (auto *o: originals)
 		if (o->_template->filename == filename) {
 			return fancy_copy(o);

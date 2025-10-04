@@ -997,6 +997,8 @@ string whatever_to_string(const void* instance, int offset, const kaba::Class* c
 		return f2s(*(const float*)p, 3);
 	if (c == kaba::TypeInt32 or c->is_enum())
 		return str(*(const int*)p);
+	if (c == kaba::TypeBool)
+		return b2s(*(const bool*)p);
 	if (c == kaba::TypeVec3) {
 		const auto v = *(const vec3*)p;
 		return format("%.3f %.3f %.3f", v.x, v.y, v.z);
@@ -1004,6 +1006,10 @@ string whatever_to_string(const void* instance, int offset, const kaba::Class* c
 	if (c == kaba::TypeColor) {
 		const auto v = *(const color*)p;
 		return format("%.3f %.3f %.3f %.3f", v.r, v.g, v.b, v.a);
+	}
+	if (c->name == "mat3") {
+		const auto v = *(const mat3*)p;
+		return format("[%.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f]", v._00, v._01, v._02, v._10, v._11, v._12, v._20, v._21, v._22);
 	}
 	return "???";
 }

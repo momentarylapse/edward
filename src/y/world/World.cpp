@@ -397,7 +397,7 @@ Terrain *World::create_terrain(const Path &filename, const vec3 &pos) {
 	t->load(engine.context, filename);
 
 	[[maybe_unused]] auto col = entity_manager->add_component<TerrainCollider>(o);
-	[[maybe_unused]] auto sb = entity_manager->add_component<SolidBody>(o);
+	[[maybe_unused]] auto sb = entity_manager->add_component<SolidBody>(o, {{"physics_active", "", "false"}});
 #if HAS_LIB_BULLET
 	dynamicsWorld->addRigidBody(sb->body);
 #endif

@@ -33,7 +33,7 @@ Dialog model-panel ''
 			auto e = data->entity(index);
 			auto m = e->get_component<ModelRef>();
 			// TODO action
-			m->filename = p.simple;
+			m->filename = p.relative;
 			set_string("filename", str(m->filename));
 			data->out_changed();
 		});

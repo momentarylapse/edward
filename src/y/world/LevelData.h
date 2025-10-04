@@ -52,6 +52,7 @@ struct LevelData {
 	};
 	static Template load_template(const Path &filename);
     static void save_template(const Template& t, const Path &filename);
+	static Array<ScriptInstanceData> auto_terrain_components();
 
 
 	struct Terrain {

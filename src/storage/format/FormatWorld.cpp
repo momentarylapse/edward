@@ -115,8 +115,9 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 				if (t->filename) {
 					t->terrain = new Terrain(session->ctx, t->filename);
 				}
-				data->entity_manager->add_component<TerrainCollider>(t->owner);
-				data->entity_manager->add_component<SolidBody>(t->owner);
+
+				// automagic components for now...
+				data->_entity_apply_components(t->owner, LevelData::auto_terrain_components());
 			}
 
 
@@ -196,7 +197,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	for (auto& e: ld.objects) {
 		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
 		auto m = data->entity_manager->add_component<ModelRef>(o);
-		m->filename = e.filename;
+		m->filename = e.filename.with(".model");
 		data->_entity_apply_components(o, e.components);
 	}
 	for (auto& e: ld.cameras) {
@@ -224,7 +225,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	for (auto& e: ld.terrains) {
 		auto o = data->_create_entity(e.pos, quaternion::ID);
 		auto t = data->entity_manager->add_component<TerrainRef>(o);
-		t->filename = e.filename;
+		t->filename = e.filename.with(".map");
 		data->_entity_apply_components(o, e.components);
 	}
 	for (auto& e: ld.entities) {

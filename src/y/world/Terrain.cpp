@@ -54,8 +54,9 @@ bool Terrain::load(yrenderer::Context* ctx, const Path &_filename_, bool deep) {
 	reset();
 
 	filename = _filename_;
-	auto f = os::fs::open(engine.map_dir | filename.with(".map"), "rb");
-	if (f) {
+	if (filename.extension() != "map")
+		filename = filename.with(".map");
+	if (auto f = os::fs::open(engine.map_dir | filename, "rb")) {
 		//int ffv = f->read_ReadFileFormatVersion();
 
 		char c = f->read_char();

@@ -98,6 +98,7 @@ void update_file(const Path &filename, bool allow_write) {
 	delete session;
 }
 
+// only temporarily needed...
 void templatify(const Path &filename) {
 	auto session = create_session(false);
 	auto storage = session->storage;
@@ -137,16 +138,12 @@ void templatify(const Path &filename) {
 		    t.components.add({"MeshCollider"});
 		}
 	    if (data->meta_data.passive_physics) {
+	    	auto T = data->meta_data.inertia_tensor;
 	        ScriptInstanceData c;
 	        c.class_name = "SolidBody";
-	        c.set("active", "", b2s(data->meta_data.active_physics));
+	        c.set("physics_active", "", b2s(data->meta_data.active_physics));
 	        c.set("mass", "", f2s(data->meta_data.mass, 3));
-	        c.set("theta_xx", "", f2s(data->meta_data.inertia_tensor._00, 3));
-	        c.set("theta_xy", "", f2s(data->meta_data.inertia_tensor._01, 3));
-	        c.set("theta_xz", "", f2s(data->meta_data.inertia_tensor._02, 3));
-	        c.set("theta_yy", "", f2s(data->meta_data.inertia_tensor._11, 3));
-	        c.set("theta_yz", "", f2s(data->meta_data.inertia_tensor._12, 3));
-	        c.set("theta_zz", "", f2s(data->meta_data.inertia_tensor._22, 3));
+	        c.set("theta0", "", format("%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f", T._00, T._01, T._02, T._10, T._11, T._12, T._20, T._21, T._22));
 	        t.components.add(c);
 	    }
 		if (data->bones.num > 0) {
@@ -190,7 +187,7 @@ int main(const Array<string>& args) {
 	p.cmd("file check", "FILENAME", "load file and check for errors", [] (const Array<string> &arg) {
 		update_file(arg[0], false);
 	});
-	p.cmd("model templatify", "FILENAME", "convert to new template system", [] (const Array<string> &arg) {
+	p.cmd("@hidden templatify", "FILENAME", "convert to new template system", [] (const Array<string> &arg) {
 		templatify(arg[0]);
 	});
 	p.cmd("new material", "", "open editor in material mode", [] (const Array<string> &arg) {

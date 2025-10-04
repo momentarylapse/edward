@@ -33,7 +33,7 @@ Dialog add-entity-panel ''
 
 	set_options("add-files", "linkevents");
 	set_options("add-files", "directory=" + str(mode_world->session->storage->root_dir));
-	set_options("add-files", "filter=*.model");
+//	set_options("add-files", "filter=*.model");
 
 	event_x("add-list", xhui::event_id::DragStart, [this] {
 		int i = get_int("add-list");

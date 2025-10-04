@@ -337,7 +337,8 @@ LevelData::Template LevelData::load_template(const Path& filename) {
                 }
             }
         } else {
-            if (int p = l.find(" ") >= 0) {
+        	int p = l.find(" ");
+            if (p >= 0) {
                 t.components.add({l.sub_ref(0, p), l.sub_ref(p + 1)});
             } else {
                 t.components.add({l});
@@ -351,7 +352,7 @@ LevelData::Template LevelData::load_template(const Path& filename) {
 void LevelData::save_template(const Template& t, const Path& filename) {
     string o;
     for (const auto& c: t.components) {
-        if (c.filename)
+        if (c.filename and !c.filename.is_in("y"))
             o += format("%s %s\n", c.class_name, c.filename);
         else
             o += c.class_name + "\n";
@@ -361,6 +362,12 @@ void LevelData::save_template(const Template& t, const Path& filename) {
 
     os::fs::write_text(filename, o);
 }
+
+Array<ScriptInstanceData> LevelData::auto_terrain_components() {
+	return {{"TerrainCollider", "", {{}}},
+		{"SolidBody", "", {{"physics_active", "", "false"}}}};
+}
+
 
 
 

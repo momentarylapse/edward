@@ -22,6 +22,7 @@
 #include <y/world/Camera.h>
 #include <y/world/Light.h>
 #include <y/y/Entity.h>
+#include <y/world/components/Collider.h>
 #include <y/world/Model.h>
 #include <y/world/ModelManager.h>
 #include <y/world/Terrain.h>
@@ -40,6 +41,7 @@
 #include "dialog/PropertiesDialog.h"
 #include <cmath>
 
+#include "world/components/SolidBody.h"
 #include "y/EntityManager.h"
 
 
@@ -205,13 +207,36 @@ void ModeWorld::on_enter() {
 			session->set_message(str(fn_rel));
 			auto e = data->add_entity(p, quaternion::ID);
 			auto c = data->entity_add_component<ModelRef>(e);
-			c->filename = fn_rel.no_ext();
+			c->filename = fn_rel;
 			c->model = session->resource_manager->load_model(c->filename);
-			/*e.pos = p;
-			e.basic_type = MultiViewType::WORLD_OBJECT;
-			e.object.filename = fn_rel.no_ext();
-			e.object.object = e.object.object = session->resource_manager->load_model(e.object.filename);
-			data->add_entity(e);*/
+
+			// suggest automatic components...
+			// well... SolidBody will be removed soon!
+			if (c->model)
+				data->_entity_apply_components(e, c->model->_template->components);
+		} else if (session->win->drag.payload.match("filename:*.map")) {
+			Path filename = session->win->drag.payload.sub_ref(9);
+			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_TERRAIN));
+			session->set_message(str(fn_rel));
+			auto e = data->add_entity(p, quaternion::ID);
+			auto c = data->entity_add_component<TerrainRef>(e);
+			c->filename = fn_rel;
+			c->terrain = new Terrain(session->ctx, c->filename.no_ext());
+
+			// suggest automatic components
+			data->_entity_apply_components(e, LevelData::auto_terrain_components());
+		} else if (session->win->drag.payload.match("filename:*.template")) {
+			Path filename = session->win->drag.payload.sub_ref(9);
+			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_MODEL));
+			session->set_message(str(fn_rel));
+			auto e = data->add_entity(p, quaternion::ID);
+			auto t = LevelData::load_template(filename);
+			data->_entity_apply_components(e, t.components);
+
+			if (auto m = e->get_component<ModelRef>()) {
+				if (m->filename)
+					m->model = session->resource_manager->load_model(m->filename.no_ext());
+			}
 		}
 	}));
 

@@ -418,7 +418,7 @@ Array<ScriptInstanceDataVariable> load_variables(const kaba::Class* c, const voi
 			auto params = cc->as_string().explode(",");
 			for (auto& v: c->elements)
 				if (sa_contains(params, v.name)) {
-					variables.add({v.name, v.type->name, ::PluginManager::whatever_to_string(instance, v.offset, v.type)});
+					variables.add({v.name, v.type->name, ::PluginManager::whatever_to_string(instance, (int)v.offset, v.type)});
 				}
 		}
 	return variables;
