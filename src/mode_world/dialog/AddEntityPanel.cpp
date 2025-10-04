@@ -23,9 +23,6 @@ Dialog add-entity-panel ''
 				---|
 				FileSelector add-files '' dragsource=entity-file expandy
 )foodelim");
-	/*size_mode_y = SizeMode::Shrink;
-	min_width_user = 320;*/
-
 
 	add_string("add-list", "Entity - empty");
 	add_string("add-list", "Camera");

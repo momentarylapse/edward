@@ -17,9 +17,7 @@ public:
 	ModeWorld* mode_world;
 	int cur_index = -1;
 
-	shared<xhui::Panel> add_entity_panel;
-	shared<xhui::Panel> entity_list_panel;
-
 	void update(bool force);
+	void update_xxx(int next, bool force);
 };
 

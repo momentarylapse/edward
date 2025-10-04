@@ -12,7 +12,6 @@
 #include <lib/doc/xml.h>
 #include <lib/yrenderer/scene/Light.h>
 #include <lib/os/file.h>
-#include <lib/os/msg.h>
 
 
 LevelData::LevelData() {
@@ -360,7 +359,6 @@ void LevelData::save_template(const Template& t, const Path& filename) {
             o += format("\t%s=%s\n", v.name, v.value);
     }
 
-    msg_write(o);
     os::fs::write_text(filename, o);
 }
 

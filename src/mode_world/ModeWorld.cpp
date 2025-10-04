@@ -5,7 +5,7 @@
 #include "ModeWorld.h"
 #include "ModeEditTerrain.h"
 #include "ModeWorldProperties.h"
-#include "dialog/EntityPanel.h"
+#include "dialog/WorldSidePanel.h"
 #include "action/ActionWorldMoveSelection.h"
 #include <Session.h>
 #include <lib/base/iter.h>
@@ -215,7 +215,7 @@ void ModeWorld::on_enter() {
 		}
 	}));
 
-	set_side_panel(new EntityPanel(this));
+	set_side_panel(new WorldSidePanel(this));
 	set_overlay_panel(new WorldOpButtons(multi_view));
 }
 
