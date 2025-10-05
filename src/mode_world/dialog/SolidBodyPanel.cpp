@@ -40,6 +40,13 @@ Dialog solid-body-panel ''
 	update_ui();
 	event("active", [this] { on_edit(); });
 	event("mass", [this] { on_edit(); });
+	event("g-factor", [this] { on_edit(); });
+	event("theta-xx", [this] { on_edit(); });
+	event("theta-xy", [this] { on_edit(); });
+	event("theta-xz", [this] { on_edit(); });
+	event("theta-yy", [this] { on_edit(); });
+	event("theta-yz", [this] { on_edit(); });
+	event("theta-zz", [this] { on_edit(); });
 }
 void SolidBodyPanel::update_ui() {
 	auto e = data->entity(index);

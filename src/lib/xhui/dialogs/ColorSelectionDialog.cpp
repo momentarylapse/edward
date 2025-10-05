@@ -64,9 +64,9 @@ public:
 
 		const int N = 100;
 		for (int i=0; i<N; i++) {
-			p->set_color(color::hsb((float)i / (float)N, 1, 1, 1));
+			p->set_color(color::from_hsb((float)i / (float)N, 1, 1, 1));
 			p->draw_rect({_area.x1, _area.x2, _area.y1 + (float)i / (float)N * h, _area.y1 + (float)(i + 1) / (float)N * h});
-			p->set_color(color::hsb(color::hsb((float)i / (float)N, 1, 1, 1).hue(), 1, 1, 1));
+			p->set_color(color::from_hsb(color::from_hsb((float)i / (float)N, 1, 1, 1).hue(), 1, 1, 1));
 			p->draw_rect({_area.x1 + w/2, _area.x2, _area.y1 + (float)i / (float)N * h, _area.y1 + (float)(i + 1) / (float)N * h});
 		}
 
@@ -119,7 +119,7 @@ public:
 		const int N = 100;
 		for (int i=0; i<N; i++) {
 			for (int j=0; j<N; j++) {
-				p->set_color(color::hsb(hue, (float)i / (float)N, 1 - (float)j / (float)N, 1));
+				p->set_color(color::from_hsb(hue, (float)i / (float)N, 1 - (float)j / (float)N, 1));
 
 				p->draw_rect({_area.x1 + (float)i / (float)N * w, _area.x1 + (float)(i + 1) / (float)N * w, _area.y1 + (float)j / (float)N * h, _area.y1 + (float)(j + 1) / (float)N * h});
 			}
@@ -219,7 +219,7 @@ public:
 			alpha_selector->set_float(c.a);
 	}
 	color get_color_no_alpha() const {
-		return color::hsb(hue_selector->hue, sb_selector->saturation, sb_selector->brightness, 1);
+		return color::from_hsb(hue_selector->hue, sb_selector->saturation, sb_selector->brightness, 1);
 	}
 	color get_color() override {
 		float alpha = 1;

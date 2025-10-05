@@ -18,6 +18,7 @@
 #include <mode_world/data/DataWorld.h>
 #include <test/UnitTest.h>
 
+#include "lib/any/conversion.h"
 #include "mode_model/data/ModelMesh.h"
 #include "world/LevelData.h"
 
@@ -143,7 +144,7 @@ void templatify(const Path &filename) {
 	        c.class_name = "SolidBody";
 	        c.set("physics_active", "", b2s(data->meta_data.active_physics));
 	        c.set("mass", "", f2s(data->meta_data.mass, 3));
-	        c.set("theta0", "", format("%.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f %.3f", T._00, T._01, T._02, T._10, T._11, T._12, T._20, T._21, T._22));
+	        c.set("theta0", "", mat3_to_any(T).str());
 	        t.components.add(c);
 	    }
 		if (data->bones.num > 0) {

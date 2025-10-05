@@ -26,6 +26,7 @@
 #include <lib/yrenderer/_kaba_export.h>
 #include <lib/profiler/_kaba_export.h>
 #include "../helper/Scheduler.h"
+#include "lib/any/conversion.h"
 #if __has_include("../input/InputManager.h")
 #include "../input/InputManager.h"
 #include "../input/Gamepad.h"
@@ -985,6 +986,15 @@ color s2c(const string &s) {
 	return color(x[3]._float(), x[0]._float(), x[1]._float(), x[2]._float());
 }
 
+mat3 s2mat3(const string &s) {
+	const auto a = Any::parse(s);
+	mat3 m = mat3::ZERO;
+	if (a.is_list())
+		for (int i=0; i<min(9, a.length()); i++)
+			m.e[i] = a[i].to_f32();
+	return m;
+}
+
 string whatever_to_string(const void* instance, int offset, const kaba::Class* c) {
 	if (!instance)
 		return "";
@@ -1007,10 +1017,8 @@ string whatever_to_string(const void* instance, int offset, const kaba::Class* c
 		const auto v = *(const color*)p;
 		return format("%.3f %.3f %.3f %.3f", v.r, v.g, v.b, v.a);
 	}
-	if (c->name == "mat3") {
-		const auto v = *(const mat3*)p;
-		return format("[%.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f]", v._00, v._01, v._02, v._10, v._11, v._12, v._20, v._21, v._22);
-	}
+	if (c->name == "mat3")
+		return mat3_to_any(*(const mat3*)p).str();
 	return "???";
 }
 
@@ -1029,6 +1037,8 @@ void whatever_from_string(void* p, const kaba::Class* type, const string& value)
 		*(vec3*)p = s2v(value);
 	if (type == kaba::TypeColor)
 		*(color*)p = s2c(value);
+	if (type->name == "mat3")
+		*(mat3*)p = s2mat3(value);
 }
 
 void assign_variables(void* p, const kaba::Class* c, const Array<ScriptInstanceDataVariable>& variables) {

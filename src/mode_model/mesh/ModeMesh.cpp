@@ -365,7 +365,7 @@ void ModeMesh::draw_edges(const yrenderer::RenderParams& params, MultiViewWindow
 			points.add(data->editing_mesh->vertices[e.index[0]].pos);
 			points.add(data->editing_mesh->vertices[e.index[1]].pos);
 			float f = (vec3::dot(edge_infos[i].normal, win->direction()) + 1) * 0.5f;
-			const auto c = color::interpolate(color(1, 0.5f, 0.5f, 0.5f), color(1, 0.35f, 0.35f, 0.35f), f);
+			const auto c = color::mix(color(1, 0.5f, 0.5f, 0.5f), color(1, 0.35f, 0.35f, 0.35f), f);
 			colors.add(c);
 			colors.add(c);
 		}

@@ -469,13 +469,13 @@ void ActionController::draw_manipulator_default(Painter* p) {
 			if (multi_view->hover and multi_view->hover->type == MultiViewType::ACTION_MANAGER and multi_view->hover->index == (int)c0[i])
 				p->set_color(colors[i]);
 			else
-				p->set_color(color::interpolate(colors[i], White, 0.5f));
+				p->set_color(color::mix(colors[i], White, 0.5f));
 			p->draw_circle(w->project(a).xy(), rr);
 
 			if (multi_view->hover and multi_view->hover->type == MultiViewType::ACTION_MANAGER and multi_view->hover->index == (int)c1[i])
 				p->set_color(colors[i]);
 			else
-				p->set_color(color::interpolate(colors[i], White, 0.5f));
+				p->set_color(color::mix(colors[i], White, 0.5f));
 			p->draw_circle(w->project(b).xy(), rr);
 
 			manipulator.handle_positions.add(a);

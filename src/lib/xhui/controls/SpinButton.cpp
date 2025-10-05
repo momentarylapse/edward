@@ -166,7 +166,7 @@ void SpinButton::_draw(Painter* p) {
 		p->draw_rect(area_minus.grow(-2));
 	}
 
-	p->set_color(color::interpolate(Theme::_default.text_label, Theme::_default.background, 0.8f));
+	p->set_color(color::mix(Theme::_default.text_label, Theme::_default.background, 0.8f));
 	p->draw_line(area_minus.p00(), area_minus.p01());
 	p->draw_line(area_plus.p00(), area_plus.p01());
 

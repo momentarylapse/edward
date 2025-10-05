@@ -139,11 +139,11 @@ void DataWorld::MetaData::reset() {
 	fog.start = 1;
 	fog.end = 1000;
 	fog.density = 0.0001f;
-	fog.col = color(1, 0.8f, 0.8f, 0.8f).srgb_to_lin();
+	fog.col = color(1, 0.8f, 0.8f, 0.8f).srgb_to_linear();
 
 	skybox_files.clear();
 
-	background_color = color(1, 0.2f, 0.4f, 0.6f).srgb_to_lin();
+	background_color = color(1, 0.2f, 0.4f, 0.6f).srgb_to_linear();
 
 	physics_enabled = false;
 	physics_mode = PhysicsMode::FULL_EXTERNAL;

@@ -23,6 +23,7 @@
 #include <lib/os/file.h>
 #include <lib/os/msg.h>
 #include <lib/doc/chunked.h>
+#include <lib/any/conversion.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/MaterialManager.h>
 #include <cmath>
@@ -188,7 +189,7 @@ public:
 		mat3 theta;
 		for (int i=0;i<9;i++)
 			theta.e[i] = f->read_float();
-		sb.set("theta", "", "");
+		sb.set("theta", "", mat3_to_any(theta).str());
 		sb.set("physics_active", "", b2s(f->read_bool()));
 		sb.set("physics_passive", "", b2s(f->read_bool()));
 		if (sb.get("physics_active")._bool() or sb.get("physics_passive")._bool())

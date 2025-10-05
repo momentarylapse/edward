@@ -210,7 +210,7 @@ void Image::draw_pixel(int x, int y, const color &c) {
 	} else if (c.a <= 0){
 	} else {
 		color c0 = get_pixel(x, y);
-		set_pixel(x, y, color::interpolate(c0, c, c.a));
+		set_pixel(x, y, color::mix(c0, c, c.a));
 	}
 }
 

@@ -55,7 +55,7 @@ void Theme::load_default() {
 }
 
 color Theme::background_raised() const {
-	return color::interpolate(background, background_button, 0.5f);
+	return color::mix(background, background_button, 0.5f);
 }
 
 

@@ -546,7 +546,7 @@ void Edit::_draw(Painter *p) {
 		line_number_area_width = DEFAULT_LINE_NUMBER_WIDTH;//p->get_str_width(str(cache.lines.num));
 
 
-		p->set_color(alt_background ? Theme::_default.background : color::interpolate(Theme::_default.background_active, bg, 0.7f));
+		p->set_color(alt_background ? Theme::_default.background : color::mix(Theme::_default.background_active, bg, 0.7f));
 		p->draw_rect({_area.x1, _area.x1 + line_number_area_width, _area.y1, _area.y2});
 
 		int cursor_line = index_to_line_pos(cursor_pos).line;
