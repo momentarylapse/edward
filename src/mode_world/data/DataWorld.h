@@ -52,6 +52,8 @@ struct WorldEntity { //: multiview::SingleData {
 
 struct EdwardTag : Component {
 	int entity_index; // auto updated by ModeWorld
+	Path _template;
+	bool request_auto_components = false;
 	Array<ScriptInstanceData> unknown_components;
 	ScriptInstanceData& get(const string& class_name);
 

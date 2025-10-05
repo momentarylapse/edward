@@ -109,7 +109,8 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 				m->model = data->session->resource_manager->load_model(m->filename);
 
 				// automagic components for now...
-				data->_entity_apply_components(m->owner, m->model->_template->components);
+				if (m->owner->get_component<EdwardTag>()->request_auto_components)
+					data->_entity_apply_components(m->owner, m->model->_template->components);
 			}
 			for (auto t: data->entity_manager->get_component_list<TerrainRef>()) {
 				if (t->filename) {
@@ -117,7 +118,8 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 				}
 
 				// automagic components for now...
-				data->_entity_apply_components(t->owner, LevelData::auto_terrain_components());
+				if (t->owner->get_component<EdwardTag>()->request_auto_components)
+					data->_entity_apply_components(t->owner, LevelData::auto_terrain_components());
 			}
 
 
@@ -196,6 +198,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 
 	for (auto& e: ld.objects) {
 		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
+		o->get_component<EdwardTag>()->request_auto_components = true;
 		auto m = data->entity_manager->add_component<ModelRef>(o);
 		m->filename = e.filename.with(".model");
 		data->_entity_apply_components(o, e.components);
@@ -224,6 +227,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	}
 	for (auto& e: ld.terrains) {
 		auto o = data->_create_entity(e.pos, quaternion::ID);
+		o->get_component<EdwardTag>()->request_auto_components = true;
 		auto t = data->entity_manager->add_component<TerrainRef>(o);
 		t->filename = e.filename.with(".map");
 		data->_entity_apply_components(o, e.components);
