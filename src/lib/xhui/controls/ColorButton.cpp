@@ -8,6 +8,22 @@
 #include "../Theme.h"
 
 namespace xhui {
+// perform gamma corrections?
+// (gtk uses sRGB internally)
+bool color_button_linear = false;
+
+
+color color_to_user(const color &c) {
+	if (color_button_linear)
+		return c.srgb_to_linear();
+	return c;
+}
+
+color color_from_user(const color &c) {
+	if (color_button_linear)
+		return c.linear_to_srgb();
+	return c;
+}
 
 void draw_checkerboard(Painter* p, const rect& area);
 
@@ -15,11 +31,11 @@ ColorButton::ColorButton(const string& id) : Button(id, "") {
 }
 
 color ColorButton::get_color() {
-	return _color;
+	return color_to_user(_color);
 }
 
 void ColorButton::set_color(const color& c) {
-	_color = c;
+	_color = color_from_user(c);
 	request_redraw();
 }
 
