@@ -31,7 +31,7 @@ public:
 	void on_enter() override;
 	//void on_connect_events() override;
 	void on_leave() override;
-	void on_update_menu();
+	void on_update_menu() override;
 
 	void on_mouse_move(const vec2& m, const vec2& d) override;
 	void on_mouse_leave(const vec2&) override;

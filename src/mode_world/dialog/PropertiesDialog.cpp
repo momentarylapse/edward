@@ -60,7 +60,7 @@ Dialog system 'System'
 			string id_var = format("var-%d", i);
 			add_control("Label", v.name, 0, i, format("l-var-%d", i));
 			add_control("Edit", v.value, 1, i, id_var);
-			event(id_var, [this, i, id=id_var] {
+			event(id_var, [this, i=i, id=id_var] {
 				properties_dialog->temp = data->meta_data;
 				properties_dialog->temp.systems[index].variables[i].value = get_string(id);
 				properties_dialog->apply();
