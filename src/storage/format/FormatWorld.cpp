@@ -294,7 +294,7 @@ xml::Element encode_light(WorldEntity &l) {
 #endif
 
 void FormatWorld::_save(const Path &filename, DataWorld *data) {
-	return;
+	//return;
 
 	xml::Parser p;
 	p.elements.add(xml::Element("world"));
@@ -302,6 +302,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 
 	{
 	auto meta = xml::Element("meta");
+	meta.add(xml::Element("version", "1"));
 	auto bg = xml::Element("background")
 		.witha("color", c2s(data->meta_data.background_color));
 	for (auto &sb: data->meta_data.skybox_files)
@@ -335,23 +336,37 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 	w.add(meta);
 	}
 
-	auto add_components = [] (xml::Element& e, const Array<ScriptInstanceData>& components) {
+
+	auto save_component = [] (const ScriptInstanceData& c) {
+		auto ee = xml::Element("component");
+		if (!c.filename.is_empty() and !c.filename.is_in("y"))
+			ee.add_attribute("script", str(c.filename));
+		ee.add_attribute("class", c.class_name);
+		for (auto &v: c.variables)
+			ee.add_attribute(v.name, v.value);
+		return ee;
+	};
+
+	auto add_components = [save_component] (xml::Element& e, const Array<ScriptInstanceData>& components) {
 		for (auto &c: components) {
-			auto ee = xml::Element("component");
-			if (!c.filename.is_empty())
-				ee.add_attribute("script", str(c.filename));
-			ee.add_attribute("class", c.class_name);
-			for (auto &v: c.variables)
-				ee.add_attribute(v.name, v.value);
-			e.add(ee);
+			e.add(save_component(c));
 		}
 	};
 
 	auto cont = xml::Element("3d");
 
-#if 0
-	for (const auto& [i,e]: enumerate(data->entities)) {
+	for (const auto& [i,e]: enumerate(data->entity_manager->entities)) {
 		xml::Element el;
+
+		el = xml::Element("entity").witha("pos", v2s(e->pos));
+		if (e->ang != quaternion::ID)
+			el.add_attribute("ang", v2s(e->ang.get_angles()));
+		for (auto c: e->components) {
+			if (c->component_type != EdwardTag::_class)
+				el.add(save_component(session->plugin_manager->describe_class(c->component_type, c)));
+		}
+
+#if 0
 		if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
 			el = xml::Element("terrain")
 			.witha("file", str(e.terrain.filename))
@@ -381,9 +396,9 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 			.witha("ang", v2s(e.ang.get_angles()));
 		}
 		add_components(el, e.components);
+#endif
 		cont.add(el);
 	}
-#endif
 
 	for (auto &l: data->links) {
 		auto e = xml::Element("link")
