@@ -22,8 +22,12 @@ VkFormat parse_format(const string &s) {
 		return VK_FORMAT_B8G8R8A8_UNORM;
 	if (s == "rgb:i8")
 		return VK_FORMAT_R8G8B8_UNORM;
+	if (s == "rg:i8")
+		return VK_FORMAT_R8G8_UNORM;
 	if (s == "r:i8")
 		return VK_FORMAT_R8_UNORM;
+	if (s == "srgba:i8")
+		return VK_FORMAT_R8G8B8A8_SRGB;
 	if (s == "argb:i10")
 		return VK_FORMAT_A2R10G10B10_SNORM_PACK32;
 	if (s == "rgba:f32")
@@ -56,11 +60,13 @@ VkFormat parse_format(const string &s) {
 
 int format_size(VkFormat f) {
 	// i8
-	if (f == VK_FORMAT_R8G8B8A8_UNORM)
+	if (f == VK_FORMAT_R8G8B8A8_UNORM or f == VK_FORMAT_R8G8B8A8_SRGB)
 		return 4;
-	if (f == VK_FORMAT_R8G8B8_UNORM)
+	if (f == VK_FORMAT_R8G8B8_UNORM or f == VK_FORMAT_R8G8B8_SRGB)
 		return 3;
-	if (f == VK_FORMAT_R8_UNORM)
+	if (f == VK_FORMAT_R8G8_UNORM or f == VK_FORMAT_R8G8_SRGB)
+		return 2;
+	if (f == VK_FORMAT_R8_UNORM or f == VK_FORMAT_R8_SRGB)
 		return 1;
 	// weird
 	if (f == VK_FORMAT_A2R10G10B10_SNORM_PACK32)

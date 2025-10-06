@@ -28,12 +28,13 @@ VkSurfaceFormatKHR choose_swap_surface_format(const Array<VkSurfaceFormatKHR>& a
 
 	for (const auto& format: available_formats)
 		if (format.format == VK_FORMAT_B8G8R8A8_UNORM and format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+		//if (format.format == VK_FORMAT_R8G8B8A8_SRGB and format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
 			return format;
 
 	return available_formats[0];
 }
 
-VkPresentModeKHR choose_swap_present_mode(const Array<VkPresentModeKHR> available_present_modes) {
+VkPresentModeKHR choose_swap_present_mode(const Array<VkPresentModeKHR>& available_present_modes) {
 	VkPresentModeKHR best_mode = VK_PRESENT_MODE_FIFO_KHR;
 
 	for (const auto& mode: available_present_modes) {
@@ -88,11 +89,11 @@ Array<xfer<Texture>> SwapChain::create_textures() {
 }
 
 
-Array<xfer<FrameBuffer>> SwapChain::create_frame_buffers(RenderPass *render_pass, DepthBuffer *depth_buffer) {
+Array<xfer<FrameBuffer>> SwapChain::create_frame_buffers(RenderPass* render_pass, DepthBuffer* depth_buffer) {
 	Array<xfer<FrameBuffer>> frame_buffers;
 	auto textures = create_textures();
 
-	for (size_t i=0; i<image_count; i++)
+	for (int i=0; i<image_count; i++)
 		frame_buffers.add(new FrameBuffer(render_pass, {textures[i], depth_buffer}));
 
 	return frame_buffers;
@@ -107,7 +108,7 @@ SwapChainSupportDetails query_swap_chain_support(VkPhysicalDevice device, VkSurf
 	vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &format_count, nullptr);
 
 	if (format_count != 0) {
-		details.formats.resize(format_count);
+		details.formats.resize((int)format_count);
 		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &format_count, &details.formats[0]);
 	}
 
@@ -115,14 +116,14 @@ SwapChainSupportDetails query_swap_chain_support(VkPhysicalDevice device, VkSurf
 	vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &present_mode_count, nullptr);
 
 	if (present_mode_count != 0) {
-		details.present_modes.resize(present_mode_count);
+		details.present_modes.resize((int)present_mode_count);
 		vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &present_mode_count, &details.present_modes[0]);
 	}
 
 	return details;
 }
 
-xfer<DepthBuffer> SwapChain::create_depth_buffer() {
+xfer<DepthBuffer> SwapChain::create_depth_buffer() const {
 	return new DepthBuffer(width, height, device->find_depth_format(), false);
 }
 
@@ -138,6 +139,11 @@ void SwapChain::rebuild(int w, int h) {
 	height = h;
 
 	const SwapChainSupportDetails swap_chain_support = query_swap_chain_support(device->physical_device, device->surface);
+
+	/*msg_write("-----SWAPCHAIN----");
+	for (auto f: swap_chain_support.formats)
+		msg_write(format("%d  %d", (int)f.format, (int)f.colorSpace));
+	msg_write("-----");*/
 
 	const VkSurfaceFormatKHR surface_format = choose_swap_surface_format(swap_chain_support.formats);
 	const VkPresentModeKHR present_mode = choose_swap_present_mode(swap_chain_support.present_modes);
@@ -180,6 +186,7 @@ void SwapChain::rebuild(int w, int h) {
 		throw Exception("failed to create swap chain!  " + result2str(r));
 
 	image_format = surface_format.format;
+	color_space = surface_format.colorSpace;
 }
 
 

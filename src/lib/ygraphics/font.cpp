@@ -69,7 +69,7 @@ Face* load_face(const string& name, bool bold, bool italic) {
 			if (error)
 				continue;
 			if (((int)face->face->style_flags & 0xffff) == flags) {
-				msg_write(str(filename) + "   " + type);
+				//msg_write(str(filename) + "   " + type);
 				return true;
 			}
 		}

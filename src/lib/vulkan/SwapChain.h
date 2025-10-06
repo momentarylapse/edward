@@ -45,36 +45,37 @@ public:
 	int width, height;
 	VkSwapchainKHR swap_chain;
 	VkFormat image_format;
+	VkColorSpaceKHR color_space;
 	uint32_t image_count;
 	Array<VkImageView> _image_views;
-	Device *device;
+	Device* device;
 
-	explicit SwapChain(Device *device);
+	explicit SwapChain(Device* device);
 	~SwapChain();
 
 	void rebuild(int w, int h);
 
-	static xfer<SwapChain> create(Device *device, int w, int h);
+	static xfer<SwapChain> create(Device* device, int w, int h);
 #ifdef HAS_LIB_GLFW
-	static xfer<SwapChain> create_for_glfw(Device *device, GLFWwindow* window);
+	static xfer<SwapChain> create_for_glfw(Device* device, GLFWwindow* window);
 #endif
 
 	Array<VkImage> get_images();
-	Array<VkImageView> create_image_views(Array<VkImage> &images);
+	Array<VkImageView> create_image_views(Array<VkImage>& images);
 
-	xfer<DepthBuffer> create_depth_buffer();
-	xfer<RenderPass> create_render_pass(DepthBuffer *depth_buffer, const Array<string> &options = {});
+	xfer<DepthBuffer> create_depth_buffer() const;
+	xfer<RenderPass> create_render_pass(DepthBuffer* depth_buffer, const Array<string>& options = {});
 	Array<xfer<Texture>> create_textures();
-	Array<xfer<FrameBuffer>> create_frame_buffers(RenderPass *rp, DepthBuffer *db);
+	Array<xfer<FrameBuffer>> create_frame_buffers(RenderPass* rp, DepthBuffer* db);
 
-	bool present(int image_index, const Array<Semaphore*> &wait_sem);
-	bool acquire_image(int *image_index, Semaphore *signal_sem);
+	bool present(int image_index, const Array<Semaphore*>& wait_sem);
+	bool acquire_image(int* image_index, Semaphore* signal_sem);
 };
 
 
 
 VkSurfaceFormatKHR choose_swap_surface_format(const Array<VkSurfaceFormatKHR>& available_formats);
-VkPresentModeKHR choose_swap_present_mode(const Array<VkPresentModeKHR> available_present_modes);
+VkPresentModeKHR choose_swap_present_mode(const Array<VkPresentModeKHR>& available_present_modes);
 VkExtent2D choose_swap_extent(const VkSurfaceCapabilitiesKHR& capabilities);
 
 
