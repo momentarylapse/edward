@@ -326,9 +326,9 @@ void export_package_yrenderer(kaba::Exporter* ext) {
 		ext->link_virtual("Renderer.draw", &Renderer::draw, &renderer);
 	}
 	{
-		WindowRenderer wr(nullptr, nullptr);
+		WindowRenderer wr(nullptr, nullptr, true);
 		ext->declare_class_size("WindowRenderer", sizeof(WindowRenderer));
-		ext->link_class_func("WindowRenderer.__init__", &kaba::generic_init_ext<WindowRenderer, yrenderer::Context*, GLFWwindow*>);
+		ext->link_class_func("WindowRenderer.__init__", &kaba::generic_init_ext<WindowRenderer, yrenderer::Context*, GLFWwindow*, bool>);
 		ext->link_virtual("WindowRenderer.__delete__", &kaba::generic_virtual<WindowRenderer>::__delete__, &wr);
 		ext->link_class_func("WindowRenderer.start_frame", &WindowRenderer::start_frame);
 		ext->link_class_func("WindowRenderer.end_frame", &WindowRenderer::end_frame);

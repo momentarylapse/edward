@@ -18,8 +18,9 @@
 
 namespace yrenderer {
 
-WindowRenderer::WindowRenderer(Context* ctx, GLFWwindow* win) : TargetRenderer(ctx, "win") {
+WindowRenderer::WindowRenderer(Context* ctx, GLFWwindow* win, bool _gamma_correction) : TargetRenderer(ctx, "win") {
 	window = win;
+	gamma_correction = _gamma_correction;
 	if (ctx and window) {
 #if HAS_LIB_GLFW
 		glfwMakeContextCurrent(window);
@@ -67,7 +68,7 @@ void WindowRenderer::draw(const RenderParams& params) {
 		c->prepare(sub_params);
 
 	bool prev_srgb = nix::get_srgb();
-	nix::set_srgb(true);
+	nix::set_srgb(gamma_correction);
 	nix::bind_frame_buffer(_frame_buffer);
 
 	for (auto c: children)

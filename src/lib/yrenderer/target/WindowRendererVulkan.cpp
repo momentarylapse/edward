@@ -15,13 +15,14 @@
 
 namespace yrenderer {
 
-SurfaceRendererVulkan::SurfaceRendererVulkan(Context* ctx, const string& name) : TargetRenderer(ctx, name) {
+SurfaceRendererVulkan::SurfaceRendererVulkan(Context* ctx, const string& name, bool _gamma_correction) : TargetRenderer(ctx, name) {
 	if (ctx) {
 		device = ctx->device;
 
 		image_available_semaphore = new vulkan::Semaphore(device);
 		render_finished_semaphore = new vulkan::Semaphore(device);
 	}
+	gamma_correction = _gamma_correction;
 
 
 	framebuffer_resized = false;
@@ -126,30 +127,30 @@ void SurfaceRendererVulkan::draw(const RenderParams& params) {
 
 
 #ifdef HAS_LIB_GLFW
-WindowRenderer::WindowRenderer(Context* ctx, GLFWwindow* _window) :
-		SurfaceRendererVulkan(ctx, "win") {
+WindowRenderer::WindowRenderer(Context* ctx, GLFWwindow* _window, bool gamma_correction) :
+		SurfaceRendererVulkan(ctx, "win", gamma_correction) {
 	window = _window;
 	if (ctx and window)
 		_create_swap_chain_and_stuff();
 }
 
 void WindowRenderer::create_swap_chain() {
-	swap_chain = vulkan::SwapChain::create_for_glfw(device, window);
+	swap_chain = vulkan::SwapChain::create_for_glfw(device, window, gamma_correction);
 }
 #endif
 
-HeadlessSurfaceRendererVulkan::HeadlessSurfaceRendererVulkan(Context* ctx, int _width, int _height) :
-		SurfaceRendererVulkan(ctx, "headless") {
+HeadlessSurfaceRendererVulkan::HeadlessSurfaceRendererVulkan(Context* ctx, int _width, int _height, bool gamma_correction) :
+		SurfaceRendererVulkan(ctx, "headless", gamma_correction) {
 	width = _width;
 	height = _height;
 }
 
 void HeadlessSurfaceRendererVulkan::create_swap_chain() {
-	swap_chain = vulkan::SwapChain::create(device, width, height);
+	swap_chain = vulkan::SwapChain::create(device, width, height, gamma_correction);
 }
 
-xfer<HeadlessSurfaceRendererVulkan> HeadlessSurfaceRendererVulkan::create(Context* ctx, int width, int height) {
-	auto r = new HeadlessSurfaceRendererVulkan(ctx, width, height);
+xfer<HeadlessSurfaceRendererVulkan> HeadlessSurfaceRendererVulkan::create(Context* ctx, int width, int height, bool gamma_correction) {
+	auto r = new HeadlessSurfaceRendererVulkan(ctx, width, height, gamma_correction);
 	r->_create_swap_chain_and_stuff();
 	return r;
 }

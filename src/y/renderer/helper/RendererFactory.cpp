@@ -52,7 +52,7 @@ void print_render_chain() {
 
 WindowRenderer *create_window_renderer(yrenderer::Context* ctx, GLFWwindow* window) {
 #ifdef HAS_LIB_GLFW
-	return new WindowRenderer(ctx, window);
+	return new WindowRenderer(ctx, window, true);
 #else
 	return nullptr;
 #endif

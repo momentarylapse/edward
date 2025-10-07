@@ -17,11 +17,10 @@
 #include <lib/ygraphics/Context.h>
 #include <lib/ygraphics/Painter.h>
 #include <lib/yrenderer/ShaderManager.h>
+#include <lib/yrenderer/helper/Bindable.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/math/mat4.h>
 #include <lib/math/rect.h>
-
-#include "lib/os/msg.h"
 
 using namespace yrenderer;
 
@@ -144,6 +143,7 @@ void GuiRenderer::draw_gui(ygfx::CommandBuffer *cb, const RenderParams& params) 
 			if (p->shader) {
 				auto pl = PipelineManager::get_gui(p->shader.get(), params.render_pass, "3f,3f,2f");
 				cb->bind_pipeline(pl);
+				apply_shader_data(params, p->shader.get(), p->shader_data);
 			}
 
 			cb->bind_descriptor_set(0, dset[index]);

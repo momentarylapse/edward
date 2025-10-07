@@ -26,7 +26,7 @@ namespace yrenderer {
 #ifdef USING_VULKAN
 class SurfaceRendererVulkan : public TargetRenderer {
 public:
-	SurfaceRendererVulkan(Context* ctx, const string& name);
+	SurfaceRendererVulkan(Context* ctx, const string& name, bool gamma_correction);
 	~SurfaceRendererVulkan() override;
 
 
@@ -48,6 +48,7 @@ public:
 	Array<ygfx::CommandBuffer*> command_buffers;
 
 	Device *device;
+	bool gamma_correction;
 	SwapChain *swap_chain = nullptr;
 	Array<ygfx::Texture*> swap_images;
 	RenderPass* default_render_pass = nullptr;
@@ -65,7 +66,7 @@ public:
 #ifdef USING_VULKAN
 class WindowRenderer : public SurfaceRendererVulkan {
 public:
-	WindowRenderer(Context* ctx, GLFWwindow* win);
+	WindowRenderer(Context* ctx, GLFWwindow* win, bool gamma_correction);
 
 	void create_swap_chain() override;
 
@@ -74,7 +75,7 @@ public:
 #else
 class WindowRenderer : public TargetRenderer {
 public:
-	explicit WindowRenderer(Context* ctx, GLFWwindow* win);
+	explicit WindowRenderer(Context* ctx, GLFWwindow* win, bool gamma_correction);
 
 
 	bool start_frame();
@@ -86,6 +87,7 @@ public:
 	RenderParams create_params(float aspect_ratio);
 
 	GLFWwindow* window;
+	bool gamma_correction;
 
 	ygfx::DepthBuffer* _depth_buffer;
 	ygfx::FrameBuffer* _frame_buffer;
@@ -96,13 +98,13 @@ public:
 #ifdef USING_VULKAN
 class HeadlessSurfaceRendererVulkan : public SurfaceRendererVulkan {
 public:
-	HeadlessSurfaceRendererVulkan(Context* ctx, int width, int height);
+	HeadlessSurfaceRendererVulkan(Context* ctx, int width, int height, bool gamma_correction);
 
 	void create_swap_chain() override;
 
 	int width, height;
 
-	static xfer<HeadlessSurfaceRendererVulkan> create(Context* ctx, int width, int height);
+	static xfer<HeadlessSurfaceRendererVulkan> create(Context* ctx, int width, int height, bool gamma_correction);
 };
 #endif
 
