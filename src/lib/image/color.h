@@ -5,6 +5,11 @@
 
 #include "../base/base.h"
 
+enum class ColorSpace {
+	Linear,
+	SRGB,
+};
+
 struct color {
 	float r,g,b,a;
 	color() {};

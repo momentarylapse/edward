@@ -24,10 +24,6 @@ public:
 		RGBA, // 0xrr 0xgg 0xbb 0xaa = 0xaabbggrr
 		BGRA, // 0xbb 0xgg 0xrr 0xaa = 0xaarrggbb
 	};
-	enum class ColorSpace {
-		Linear,
-		SRGB,
-	};
 
 	int width, height;
 	mutable Mode mode;

@@ -22,7 +22,11 @@ public:
 	color get_color() override;
 
 	bool with_alpha = false;
+	ColorSpace color_space_user;
 	void set_option(const string& key, const string& value) override;
+
+	color color_to_user(const color &c) const;
+	color color_from_user(const color &c) const;
 };
 
 } // xhui

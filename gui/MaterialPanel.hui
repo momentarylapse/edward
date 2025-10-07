@@ -6,10 +6,10 @@ Dialog material-panel "Material appearance" width=365 height=715 allow-root
 				Group grp-color "Colors"
 					Grid ? ""
 						Label /t-albedo "Albedo" right disabled
-						ColorButton albedo "" alpha
+						ColorButton albedo "" alpha linear
 						---|
 						Label /t-emission "Emission" right disabled
-						ColorButton emission "" "tooltip=Color in absolute darkness"
+						ColorButton emission "" linear "tooltip=Color in absolute darkness"
 						---|
 						Label /t-roughness "Roughness" right disabled
 						Grid ? ""

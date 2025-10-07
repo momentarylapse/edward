@@ -3,7 +3,7 @@ Dialog world_dialog "World properties" width=320
 		TabControl world_dialog_tab_control "Background\\Fog\\Physics\\Scripts"
 			Grid ? "" vertical
 				Group grp_bg_color "Color"
-					ColorButton bgc "" alpha "tooltip=Sky color"
+					ColorButton bgc "" alpha linear "tooltip=Sky color"
 				Group grp_skybox "Skybox models"
 					ListView skybox "#\\Model" "tooltip=Models drawn over the sky color\n- double click to select" reorderable style=rich-list
 			Grid ? "" vertical
@@ -21,7 +21,7 @@ Dialog world_dialog "World properties" width=320
 				Grid ? "" indent
 					Label world_dialog_t_fog_distance "Distance" right disabled
 					SpinButton fog_distance "" range=0:1000000000:0.1 "tooltip=fog intensity = exp( - distance / viewing-distance )" disabled
-				ColorButton fog_color "" disabled
+				ColorButton fog_color "" linear disabled
 			Grid ? "" vertical
 				Group grp-simulation "Simulation"
 					Grid ? ""

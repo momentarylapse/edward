@@ -18,9 +18,9 @@
 #include <mode_world/data/DataWorld.h>
 #include <test/UnitTest.h>
 
-#include "lib/any/conversion.h"
-#include "mode_model/data/ModelMesh.h"
-#include "world/LevelData.h"
+#include <lib/any/conversion.h>
+#include <mode_model/data/ModelMesh.h>
+#include <world/LevelData.h>
 
 string AppVersion = "0.5.-1.0";
 string AppName = "Edward";

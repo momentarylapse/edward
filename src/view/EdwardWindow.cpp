@@ -36,10 +36,6 @@
 
 extern string AppName;
 
-namespace xhui {
-	extern bool color_button_linear;
-}
-
 Session* session;
 
 void ExternalModelCleanup(Model *m) {}
@@ -92,8 +88,6 @@ EdwardWindow::EdwardWindow(xfer<Session> _session) : obs::Node<xhui::Window>(App
 {
 	maximize(true);
 	session = _session;
-
-	xhui::color_button_linear = true;
 
 	from_source(R"foodelim(
 Dialog x x padding=0

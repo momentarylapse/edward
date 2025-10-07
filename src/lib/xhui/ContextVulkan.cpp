@@ -74,12 +74,13 @@ void Context::end_draw(Painter *p) {
 
 
 void Context::_create_swap_chain_and_stuff() {
+	bool gamma_correction = (color_space_shaders == ColorSpace::Linear) and (color_space_display == ColorSpace::SRGB);
 	if (swap_chain) {
 		int w, h;
 		glfwGetFramebufferSize(window->window, &w, &h);
-		swap_chain->rebuild(w, h, false);
+		swap_chain->rebuild(w, h, gamma_correction);
 	} else {
-		swap_chain = vulkan::SwapChain::create_for_glfw(device, window->window, false);
+		swap_chain = vulkan::SwapChain::create_for_glfw(device, window->window, gamma_correction);
 	}
 	auto swap_images = swap_chain->create_textures();
 	for (auto t: swap_images)

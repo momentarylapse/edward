@@ -23,6 +23,12 @@ namespace ygfx {
 struct DrawingHelperData;
 class Context;
 
+
+extern ColorSpace color_space_shaders;
+extern ColorSpace color_space_input; // how to interpret parameters?
+
+color color_input_to_shaders(const color& c);
+
 class Painter : public ::Painter {
 public:
 	explicit Painter(DrawingHelperData* aux, const rect& native_area, const rect& area, float ui_scale, font::Face* _face);
@@ -65,7 +71,7 @@ public:
 	rect native_area;
 	rect native_area_window;
 
-	color _color = White;;
+	color _color = White; // shaders color space
 	string font_name;
 	rect _clip;
 	mat4 mat_pixel_to_rel;

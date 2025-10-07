@@ -15,7 +15,7 @@ Dialog model-material-dialog ''
 						---|
 						Grid ? ""
 							Label /t-albedo "Albedo" right disabled
-							ColorButton albedo "" alpha
+							ColorButton albedo "" alpha linear
 							---|
 							Label /t-roughness "Roughness" right disabled
 							Grid ? ""
@@ -28,7 +28,7 @@ Dialog model-material-dialog ''
 								SpinButton metal "" range=0:1:0.01
 							---|
 							Label /t-emission "Emission" right disabled
-							ColorButton emission "" "tooltip=Color in absolute darkness"
+							ColorButton emission "" linear "tooltip=Color in absolute darkness"
 				---|
 				Group grp-textures "Textures"
 					ListView textures "Level\\\\Texture" height=130 nobar format=tit select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"

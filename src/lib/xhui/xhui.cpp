@@ -23,6 +23,9 @@ namespace xhui {
 	extern Array<Window*> _windows_;
 
 	float global_ui_scale = 1;
+	ColorSpace color_space_display = ColorSpace::SRGB;
+	ColorSpace color_space_shaders = ColorSpace::SRGB;
+	ColorSpace color_space_input = ColorSpace::SRGB;
 	string separator = "\\";
 
 
