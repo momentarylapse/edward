@@ -161,6 +161,10 @@ void templatify(const Path &filename) {
 
 namespace os::app {
 int main(const Array<string>& args) {
+	xhui::color_space_input = ColorSpace::SRGB;
+	xhui::color_space_shaders = ColorSpace::Linear;
+	xhui::color_space_display = ColorSpace::SRGB;
+
 	try {
 		xhui::init(args, "edward");
 	} catch (Exception &e) {

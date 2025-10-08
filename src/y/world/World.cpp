@@ -660,14 +660,14 @@ Light* World::attach_light_parallel(Entity* e, const color& c) {
 Light* World::attach_light_point(Entity* e, const color& c, float r) {
 	auto l = entity_manager->add_component<Light>(e);
 	l->light.col = c;
-	l->light.power = yrenderer::Light::_radius_to_power(r);
+	//l->light.power = yrenderer::Light::_radius_to_power(r);
 	return l;
 }
 
 Light* World::attach_light_cone(Entity* e, const color& c, float r, float theta) {
 	auto l = entity_manager->add_component<Light>(e);
 	l->light.col = c;
-	l->light.power = yrenderer::Light::_radius_to_power(r);
+	//l->light.power = yrenderer::Light::_radius_to_power(r);
 	l->light.theta = theta;
 	return l;
 }

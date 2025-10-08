@@ -25,7 +25,7 @@ struct Parameters {
 };
 
 void Painter::clear(const color &c) {
-	cb->clear(native_area, {color_input_to_shaders(c)}, 1);
+	cb->clear(native_area, {context->color_input_to_shaders(c)}, 1);
 }
 
 void Painter::draw_str(const vec2 &p, const string &str) {

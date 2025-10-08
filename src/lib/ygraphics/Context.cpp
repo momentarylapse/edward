@@ -8,6 +8,16 @@
 
 namespace ygfx {
 
+color Context::color_input_to_shaders(const color& c) const {
+	if (color_space_input == color_space_shaders)
+		return c;
+	if (color_space_input == ColorSpace::SRGB and color_space_shaders == ColorSpace::Linear)
+		return c.srgb_to_linear();
+	if (color_space_input == ColorSpace::Linear and color_space_shaders == ColorSpace::SRGB)
+		return c.linear_to_srgb();
+	return c;
+}
+
 void Context::_create_default_textures() {
 	tex_white = new Texture();
 	tex_black = new Texture();

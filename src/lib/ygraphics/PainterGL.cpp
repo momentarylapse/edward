@@ -11,7 +11,7 @@
 namespace ygfx {
 
 void Painter::clear(const color &c) {
-	nix::clear(color_input_to_shaders(c));
+	nix::clear(context->color_input_to_shaders(c));
 }
 
 void Painter::draw_str(const vec2 &p, const string &str) {

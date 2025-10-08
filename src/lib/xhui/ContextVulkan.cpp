@@ -110,6 +110,9 @@ Context* Context::create(Window* window) {
 	auto ctx = new Context(window, new ygfx::Context(instance, device));
 	//msg_write("device found");
 
+	ctx->context->color_space_shaders = color_space_shaders;
+	ctx->context->color_space_input = color_space_input;
+
 	ctx->context->_create_default_textures();
 	ctx->tex_white = ctx->context->tex_white;
 	ctx->tex_black = ctx->context->tex_black;

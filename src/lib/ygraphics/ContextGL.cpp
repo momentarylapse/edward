@@ -152,6 +152,8 @@ void main() {
 
 Context::Context(nix::Context* _ctx) {
 	ctx = _ctx;
+	color_space_shaders = ColorSpace::Linear;
+	color_space_input = ColorSpace::SRGB;
 }
 
 DrawingHelperData* Context::_create_auxiliary_stuff() {

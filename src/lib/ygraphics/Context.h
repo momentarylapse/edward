@@ -5,6 +5,9 @@
 #include "graphics-fwd.h"
 #include "font.h"
 
+enum class ColorSpace;
+struct color;
+
 namespace ygfx {
 
 class Context;
@@ -80,6 +83,11 @@ public:
 #endif
 
 	void make_current();
+
+	ColorSpace color_space_shaders;
+	ColorSpace color_space_input; // how to interpret parameters?
+
+	color color_input_to_shaders(const color& c) const;
 
 	DrawingHelperData* _create_auxiliary_stuff();
 
