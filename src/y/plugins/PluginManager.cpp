@@ -484,11 +484,10 @@ void export_world(kaba::Exporter* ext) {
 	Light light(yrenderer::LightType::DIRECTIONAL, Black);
 	ext->declare_class_size("Light", sizeof(Light));
 	ext->declare_class_element("Light.type", _OFFSET(light, light.type));
-	ext->declare_class_element("Light.dir", _OFFSET(light, light.light.dir));
-	ext->declare_class_element("Light.color", _OFFSET(light, light.light.col));
-	ext->declare_class_element("Light.radius", _OFFSET(light, light.light.radius));
-	ext->declare_class_element("Light.theta", _OFFSET(light, light.light.theta));
-	ext->declare_class_element("Light.harshness", _OFFSET(light, light.light.harshness));
+	ext->declare_class_element("Light.color", _OFFSET(light, light.col));
+	ext->declare_class_element("Light.power", _OFFSET(light, light.power));
+	ext->declare_class_element("Light.theta", _OFFSET(light, light.theta));
+	ext->declare_class_element("Light.harshness", _OFFSET(light, light.harshness));
 	ext->declare_class_element("Light.enabled", _OFFSET(light, light.enabled));
 	ext->declare_class_element("Light.allow_shadow", _OFFSET(light, light.allow_shadow));
 	ext->declare_class_element("Light.user_shadow_control", _OFFSET(light, light.user_shadow_control));

@@ -237,13 +237,13 @@ void export_package_yrenderer(kaba::Exporter* ext) {
 	{
 		Light light;
 		ext->declare_class_size("YLight", sizeof(Light));
-		ext->declare_class_element("YLight.pos", _OFFSET(light, light.pos));
+		ext->declare_class_element("YLight.pos", &Light::pos);
 		ext->declare_class_element("YLight.ang", &Light::_ang);
-		ext->declare_class_element("YLight.dir", _OFFSET(light, light.dir));
-		ext->declare_class_element("YLight.color", _OFFSET(light, light.col));
-		ext->declare_class_element("YLight.radius", _OFFSET(light, light.radius));
-		ext->declare_class_element("YLight.theta", _OFFSET(light, light.theta));
-		ext->declare_class_element("YLight.harshness", _OFFSET(light, light.harshness));
+		ext->declare_class_element("YLight.color", &Light::col);
+		ext->declare_class_element("YLight.power", &Light::power);
+	//	ext->declare_class_element("YLight.radius", _OFFSET(light, light.radius));
+		ext->declare_class_element("YLight.theta", &Light::theta);
+		ext->declare_class_element("YLight.harshness", &Light::harshness);
 		ext->declare_class_element("YLight.enabled", &Light::enabled);
 		ext->declare_class_element("YLight.allow_shadow", &Light::allow_shadow);
 		ext->declare_class_element("YLight.user_shadow_control", &Light::user_shadow_control);

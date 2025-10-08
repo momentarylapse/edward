@@ -11,18 +11,15 @@ namespace yrenderer {
 void Light::init(LightType _type, const color &c, float t) {
 	_ang = quaternion::ID;
 	type = _type;
-	light.pos = vec3(0,0,0);
-	light.dir = vec3::EZ;
-	light.col = c;
+	pos = vec3(0,0,0);
+	col = c;
+	power = 1.0f;
 	if (type == LightType::DIRECTIONAL) {
-		light.radius = -1;
-		light.theta = -1;
-		light.harshness = 0.8f;
+		theta = -1;
+		harshness = 0.8f;
 	} else {
-		const float b = light.col.brightness();
-		light.radius = sqrtf(b) * 10.0f;
-		light.theta = t;
-		light.harshness = 1;
+		theta = t;
+		harshness = 1;
 	}
 	enabled = true;
 	allow_shadow = false;
@@ -32,20 +29,33 @@ void Light::init(LightType _type, const color &c, float t) {
 	shadow_dist_max = -1;
 }
 
+float Light::radius() const {
+	const float b = col.brightness() * power;
+	return sqrtf(b) * 10.0f;
+}
+
+float Light::_radius_to_power(float radius) {
+	return radius * radius / 100.0f;
+}
+
+
 UBOLight Light::to_ubo(const vec3& view_pos, const quaternion& view_ang, bool using_view_space) const {
 	UBOLight l;
-	l.col = light.col;
-	l.harshness = light.harshness;
-	l.radius = light.radius;
-	l.theta = light.theta;
+	l.col = col * power;
+	l.harshness = harshness;
+	if (type == LightType::DIRECTIONAL)
+		l.radius = -1;
+	else
+		l.radius = radius();
+	l.theta = theta;
 	if (using_view_space) {
-		l.pos = view_ang.bar() * (light.pos - view_pos);
+		l.pos = view_ang.bar() * (pos - view_pos);
 		l.dir = view_ang.bar() * _ang * vec3::EZ;
 	} else {
-		l.pos = light.pos;
+		l.pos = pos;
 		l.dir = _ang * vec3::EZ;
 	}
-	l.shadow_index = light.shadow_index;
+	l.shadow_index = shadow_index;
 	return l;
 }
 
@@ -68,19 +78,20 @@ mat4 Light::suggest_shadow_projection(const CameraParams& cam, float shadow_box_
 		return mat4::translation(vec3(0,0,0.5f)) * mat4::scale(1,1,0.5f) * mat4::translation(vec3(0,0,-0.5f)) * s * r * t;
 		//msg_write(shadow_projection.str());
 	} else {
-		auto t = mat4::translation(- light.pos);
+		auto t = mat4::translation(- pos);
 		auto ang = cam.ang;
 		if (type == LightType::CONE or user_shadow_control)
 			ang = _ang;
 		auto r = mat4::rotation(ang).transpose();
-		float theta = 1.35f;
+		float _theta = 1.35f;
 		if (type == LightType::CONE)
-			theta = light.theta;
+			_theta = theta;
 		if (user_shadow_theta > 0)
-			theta = user_shadow_theta;
-		float dist_min = (shadow_dist_min > 0) ? shadow_dist_min : light.radius * 0.01f;
-		float dist_max = (shadow_dist_max > 0) ? shadow_dist_max : light.radius;
-		auto p = mat4::perspective(2 * theta, 1.0f, dist_min, dist_max, false);
+			_theta = user_shadow_theta;
+		float _radius = radius();
+		float dist_min = (shadow_dist_min > 0) ? shadow_dist_min : _radius * 0.01f;
+		float dist_max = (shadow_dist_max > 0) ? shadow_dist_max : _radius;
+		auto p = mat4::perspective(2 * _theta, 1.0f, dist_min, dist_max, false);
 		return p * r * t;
 	}
 }

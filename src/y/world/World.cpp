@@ -295,10 +295,12 @@ bool World::load(const LevelData &ld) {
 		auto o = create_entity(l.pos, quaternion::rotation(l.ang));
 		auto ll = entity_manager->add_component<Light>(o);
 		ll->light.init(l.type, l._color, l.theta);
-		ll->light.light.harshness = l.harshness;
+		ll->light.harshness = l.harshness;
 		ll->light.enabled = l.enabled;
 		if (ll->light.type == yrenderer::LightType::DIRECTIONAL)
 			ll->light.allow_shadow = true;
+		else
+			ll->light.power = yrenderer::Light::_radius_to_power(l.radius);
 
 		add_user_components(entity_manager.get(), o, l.components);
 		register_entity(o);
@@ -651,22 +653,22 @@ void World::iterate(float dt) {
 
 Light* World::attach_light_parallel(Entity* e, const color& c) {
 	auto l = entity_manager->add_component<Light>(e);
-	l->light.light.col = c;
+	l->light.col = c;
 	return l;
 }
 
 Light* World::attach_light_point(Entity* e, const color& c, float r) {
 	auto l = entity_manager->add_component<Light>(e);
-	l->light.light.col = c;
-	l->light.light.radius = r;
+	l->light.col = c;
+	l->light.power = yrenderer::Light::_radius_to_power(r);
 	return l;
 }
 
 Light* World::attach_light_cone(Entity* e, const color& c, float r, float theta) {
 	auto l = entity_manager->add_component<Light>(e);
-	l->light.light.col = c;
-	l->light.light.radius = r;
-	l->light.light.theta = theta;
+	l->light.col = c;
+	l->light.power = yrenderer::Light::_radius_to_power(r);
+	l->light.theta = theta;
 	return l;
 }
 

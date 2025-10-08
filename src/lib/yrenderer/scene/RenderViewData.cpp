@@ -58,9 +58,9 @@ void RenderViewData::update_light_ubo() {
 		// from reference cam
 		ll->shadow_projection = ll->suggest_shadow_projection(scene_view->main_camera_params, scene_view->shadow_box_size);
 		if constexpr (true)
-			light_meta_data.shadow_proj[ll->light.shadow_index] = ll->shadow_projection * ubo.v.inverse();
+			light_meta_data.shadow_proj[ll->shadow_index] = ll->shadow_projection * ubo.v.inverse();
 		else
-			light_meta_data.shadow_proj[ll->light.shadow_index] = ll->shadow_projection;
+			light_meta_data.shadow_proj[ll->shadow_index] = ll->shadow_projection;
 	}
 	light_meta_data.num_lights = scene_view->lights.num;
 	ubo_light->update_part(&light_meta_data, 0, sizeof(LightMetaData));

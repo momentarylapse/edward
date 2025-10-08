@@ -59,14 +59,15 @@ Dialog light-panel ''
 void LightPanel::update_ui() {
 	auto e = data->entity(index);
 	auto l = e->get_component<Light>();
-	float b = l->light.light.col.brightness();
+	float max_component = max(max(l->light.col.r, l->light.col.g), l->light.col.b);
+	float factor = max(max_component, 1.0f); // correction for invalid colors
 	check("enabled", l->light.enabled);
 	set_int("type", (int)l->light.type);
-	set_float("radius", sqrtf(b*b) / 10);
-	set_float("harshness", l->light.light.harshness * 100);
-	set_float("theta", max(l->light.light.theta * 180 / pi, 0.0f));
-	set_color("color", l->light.light.col * (1.0f / b));
-	set_float("power", b);
+	set_float("radius", l->light.radius());
+	set_float("harshness", l->light.harshness * 100);
+	set_float("theta", max(l->light.theta * 180 / pi, 0.0f));
+	set_color("color", l->light.col * (1.0f / factor));
+	set_float("power", l->light.power * factor);
 	check("allow-shadows", l->light.allow_shadow);
 	enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL);
 	enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL);
@@ -85,15 +86,16 @@ void LightPanel::on_edit() {
 	float radius = get_float("radius");
 	float power = get_float("power");
 	if (l->light.type == yrenderer::LightType::DIRECTIONAL) {
-		l->light.light.col = get_color("color") * power;
-		l->light.light.radius = -1;
-		l->light.light.theta = -1;
+		l->light.col = get_color("color") * power;
+		l->light.power = power;
+		l->light.theta = -1;
 	} else {
-		l->light.light.col = get_color("color") * (radius * radius / 100);
-		l->light.light.radius = radius;
-		l->light.light.theta = get_float("theta") * pi / 180;
+		l->light.col = get_color("color");
+		l->light.power = yrenderer::Light::_radius_to_power(radius);
+		l->light.theta = get_float("theta") * pi / 180;
+		set_float("power", l->light.power);
 	}
-	l->light.light.harshness = get_float("harshness") / 100;
+	l->light.harshness = get_float("harshness") / 100;
 	l->light.allow_shadow = is_checked("allow-shadows");
 	//data->edit_light(index, l);*/
 }

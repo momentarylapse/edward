@@ -217,10 +217,11 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
 		auto l = data->entity_manager->add_component<Light>(o);
 		l->light.type = e.type;
-		l->light.light.col = e._color;
-		l->light.light.radius = e.radius;
-		l->light.light.theta = e.theta;
-		l->light.light.harshness = e.harshness;
+		l->light.col = e._color;
+		if (l->light.type != yrenderer::LightType::DIRECTIONAL)
+			l->light.power = yrenderer::Light::_radius_to_power(e.radius);
+		l->light.theta = e.theta;
+		l->light.harshness = e.harshness;
 		l->light.enabled = e.enabled;
 		l->light.allow_shadow = (l->light.type == yrenderer::LightType::DIRECTIONAL);
 		data->_entity_apply_components(o, e.components);

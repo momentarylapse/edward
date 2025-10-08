@@ -240,7 +240,7 @@ void FullCameraRenderer::prepare(const yrenderer::RenderParams& params) {
 	Array<yrenderer::Light*> lights;
 	for (auto l: all_lights) {
 		l->light._ang = l->owner->ang;
-		l->light.light.pos = l->owner->pos;
+		l->light.pos = l->owner->pos;
 		lights.add(&l->light);
 	}
 	render_path->set_lights(lights);

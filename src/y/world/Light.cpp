@@ -20,9 +20,8 @@ Light::Light(yrenderer::LightType type, const color &c, float theta) {
 
 void Light::on_init() {
 	auto o = owner;
-	light.light.pos = o->pos;
+	light.pos = o->pos;
 	light._ang = o->ang;
-	light.light.dir = o->ang * vec3::EZ;
 }
 
 /*void Light::__init_parallel__(const quaternion &ang, const color &c) {

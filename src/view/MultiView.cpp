@@ -57,7 +57,7 @@ MultiView::MultiView(DocumentSession* _doc) :
 	default_light->_ang = quaternion::ID;
 	default_light->enabled = true;
 	default_light->allow_shadow = true;
-	default_light->light.harshness = 0.5f;
+	default_light->harshness = 0.5f;
 	lights.add(default_light);
 
 	shadow_renderer = new yrenderer::ShadowRenderer(session->ctx, view_port.scene_view.get(), 2048);

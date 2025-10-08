@@ -10,20 +10,17 @@ namespace yrenderer {
 
 void SceneView::choose_lights(const Array<Light*>& all_lights) {
 	lights.clear();
-	for (auto l: all_lights) {
-		if (l->enabled) {
-			l->light.dir = l->_ang * vec3::EZ;
+	for (auto l: all_lights)
+		if (l->enabled)
 			lights.add(l);
-		}
-	}
 }
 
 void SceneView::choose_shadows() {
 	shadow_indices.clear();
 	for (auto&& [i,l]: enumerate(lights)) {
-		l->light.shadow_index = -1;
+		l->shadow_index = -1;
 		if (l->allow_shadow and shadow_indices.num == 0) {
-			l->light.shadow_index = shadow_indices.num;
+			l->shadow_index = shadow_indices.num;
 			shadow_indices.add(i);
 		}
 	}

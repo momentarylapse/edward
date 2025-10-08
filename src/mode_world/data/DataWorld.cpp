@@ -101,25 +101,17 @@ DataWorld::DataWorld(DocumentSession* doc) :
 	entity_manager->component_manager->f_apply = [this] (const kaba::Class* type, Component* c, const Array<ScriptInstanceDataVariable>& var) {
 		if (type == Light::_class) {
 			auto l = static_cast<Light*>(c);
-			float radius = 1;
-			float power = 1;
-			color col = White;
 			for (const auto& v: var) {
+				msg_write(v.name + " = " + v.value);
 				if (v.name == "type")
 					l->light.type = (yrenderer::LightType)v.value._int();
-				if (v.name == "radius")
-					radius = v.value._float();
 				if (v.name == "power")
-					power = v.value._float();
+					l->light.power = v.value._float();
 				if (v.name == "color")
-					col = PluginManager::s2c(v.value);
+					l->light.col = PluginManager::s2c(v.value);
 				if (v.name == "theta")
-					l->light.light.theta = v.value._float();
+					l->light.theta = v.value._float();
 			}
-			if (l->light.type == yrenderer::LightType::DIRECTIONAL)
-				l->light.light.col = col * power;
-			else
-				l->light.light.col = col * (radius * radius / 100);
 		} else {
 			session->plugin_manager->set_variables(c, type, var);
 		}
@@ -180,7 +172,7 @@ void DataWorld::add_initial_data() {
 		auto sun = entity_manager->add_component<Light>(e);
 		sun->light.enabled = true;
 		sun->light.init(yrenderer::LightType::DIRECTIONAL, White);
-		sun->light.light.harshness = 0.75;
+		sun->light.harshness = 0.75;
 	}
 
 	reset_history();

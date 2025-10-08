@@ -383,23 +383,19 @@ void ModeWorld::on_prepare_scene(const yrenderer::RenderParams& params) {
 		lights.add(new yrenderer::Light);
 	}
 	for (const auto& [i, l]: enumerate(data_lights)) {
-		lights[i]->light.pos = l->owner->pos;
+		lights[i]->pos = l->owner->pos;
 		lights[i]->_ang = l->owner->ang;
 		lights[i]->enabled = l->light.enabled;
 		lights[i]->type = l->light.type;
 		lights[i]->allow_shadow = l->light.allow_shadow;
-		lights[i]->light.col = l->light.light.col;
+		lights[i]->col = l->light.col;
 		if (!l->light.enabled)
-			lights[i]->light.col = Black;
-		lights[i]->light.radius = l->light.light.radius;
-		lights[i]->light.theta = l->light.light.theta;
-		if (l->light.type == yrenderer::LightType::DIRECTIONAL)
-			lights[i]->light.radius = -1;
-	//	else
-	//		lights[i]->light.col = l->light.light.col * (l->light.light.radius * l->light.light.radius / 100);
+			lights[i]->col = Black;
+		lights[i]->power = l->light.power;
+		lights[i]->theta = l->light.theta;
 		if (l->light.type != yrenderer::LightType::CONE)
-			lights[i]->light.theta = -1;
-		lights[i]->light.harshness = l->light.light.harshness;
+			lights[i]->theta = -1;
+		lights[i]->harshness = l->light.harshness;
 	}
 	multi_view->lights = lights.sub_ref(0, data_lights.num);
 }
@@ -577,7 +573,7 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 
 		const vec3 pos = l->owner->pos;
 		const quaternion ang = l->owner->ang;
-		const float radius = l->light.light.radius;
+		const float radius = l->light.radius();
 		if (l->light.type == yrenderer::LightType::DIRECTIONAL) {
 			dh->draw_lines({pos, pos + ang * vec3::EZ * win->multi_view->view_port.radius * 0.1f}, false);
 		} else if (l->light.type == yrenderer::LightType::POINT) {
@@ -585,7 +581,7 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 			dh->draw_circle(pos, win->direction(), radius * LIGHT_RADIUS_FACTOR_LO);
 			dh->draw_circle(pos, win->direction(), radius * LIGHT_RADIUS_FACTOR_HI);
 		} else if (l->light.type == yrenderer::LightType::CONE) {
-			const float theta = l->light.light.theta;
+			const float theta = l->light.theta;
 			dh->draw_lines({pos, pos + ang * vec3::EZ * radius * LIGHT_RADIUS_FACTOR_LO}, false);
 			dh->draw_circle(pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_LO, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_LO);
 			dh->draw_circle(pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_HI, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_HI);

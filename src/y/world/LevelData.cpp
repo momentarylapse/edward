@@ -123,14 +123,12 @@ bool LevelData::load(const Path &filename) {
 					l.type = yrenderer::LightType::POINT;
 					l.pos= s2v(e.value("pos"));
 					l.radius = e.value("radius")._float();
-					l._color *= l.radius * l.radius / 100;
 				} else if (e.value("type") == "cone") {
 					l.type = yrenderer::LightType::CONE;
 					l.pos= s2v(e.value("pos"));
 					l.ang = s2v(e.value("ang"));
 					l.radius = e.value("radius")._float();
 					l.theta = e.value("theta")._float();
-					l._color *= l.radius * l.radius / 100;
 				}
 				l.enabled = e.value("enabled", "true")._bool();
 				read_components(l.components, e);

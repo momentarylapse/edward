@@ -134,15 +134,15 @@ void ModeMaterial::on_prepare_scene(const yrenderer::RenderParams& params) {
 	if (!spot_light) {
 		spot_light = new yrenderer::Light;
 		spot_light->init(yrenderer::LightType::CONE, White * 150, 0.15f);
-		spot_light->light.pos = {3, 7, 12};
-		spot_light->_ang = quaternion::rotation_v((-spot_light->light.pos).dir2ang());
-		spot_light->light.harshness = 1;
+		spot_light->pos = {3, 7, 12};
+		spot_light->_ang = quaternion::rotation_v((-spot_light->pos).dir2ang());
+		spot_light->harshness = 1;
 		spot_light->enabled = true;
 	}
 
 	multi_view->default_light->_ang = quaternion::rotation_a(vec3::EX, pi*0.20f);
 	multi_view->default_light->allow_shadow = true;
-	multi_view->default_light->light.harshness = 0.7f;
+	multi_view->default_light->harshness = 0.7f;
 
 	multi_view->lights = {multi_view->default_light, spot_light.get()};
 }

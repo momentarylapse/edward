@@ -35,13 +35,20 @@ struct Light {
 
 	UBOLight to_ubo(const vec3& view_pos, const quaternion& view_ang, bool using_view_space) const;
 	mat4 suggest_shadow_projection(const CameraParams& cam, float shadow_box_size) const;
+	float radius() const;
 
-	UBOLight light;
+	static float _radius_to_power(float radius);
+
+	vec3 pos;
+	color col;
+	float power;
+	float theta, harshness;
 	quaternion _ang;
 	bool enabled;
 	bool allow_shadow;
 	bool user_shadow_control;
 	float user_shadow_theta;
+	int shadow_index;
 	mat4 shadow_projection; // world -> texture
 	float shadow_dist_min, shadow_dist_max;
 
