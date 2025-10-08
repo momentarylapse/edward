@@ -36,6 +36,9 @@ Painter* Context::prepare_draw() {
 }
 
 void Context::begin_draw(Painter *p) {
+	bool gamma_correction = (color_space_display == ColorSpace::SRGB) and (color_space_shaders == ColorSpace::Linear);
+	nix::set_srgb(gamma_correction);
+
 	// in case the event_id::JustBeforeDraw triggers off-screen rendering...
 	nix::bind_frame_buffer(context->ctx->default_framebuffer);
 
@@ -48,6 +51,7 @@ void Context::begin_draw(Painter *p) {
 
 void Context::end_draw(Painter *p) {
 	nix::end_frame_glfw();
+	nix::set_srgb(false);
 	aux->reset_frame();
 	iterate_text_caches();
 }

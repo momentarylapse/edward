@@ -2,8 +2,7 @@
 // Created by michi on 25.01.25.
 //
 
-#ifndef DRAWINGHELPER_H
-#define DRAWINGHELPER_H
+#pragma once
 
 
 #include <helper/ResourceManager.h>
@@ -29,6 +28,8 @@ namespace xhui {
 	class Context;
 }
 class Painter;
+
+// color parameters are in LINEAR space!
 
 class DrawingHelper {
 public:
@@ -86,5 +87,3 @@ void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& a, M
 
 Array<vec3> mesh_edit_to_lines(const PolygonMesh& mesh, const MeshEdit& ed);
 
-
-#endif //DRAWINGHELPER_H

@@ -343,7 +343,7 @@ void ModeMesh::on_prepare_scene(const yrenderer::RenderParams& params) {
 }
 
 void ModeMesh::on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
-	rvd.clear(params, {xhui::Theme::_default.background_low});
+	rvd.clear(params, {xhui::Theme::_default.background_low.srgb_to_linear()});
 }
 
 void ModeMesh::draw_polygons(const yrenderer::RenderParams& params, MultiViewWindow* win) {
@@ -365,7 +365,7 @@ void ModeMesh::draw_edges(const yrenderer::RenderParams& params, MultiViewWindow
 			points.add(data->editing_mesh->vertices[e.index[0]].pos);
 			points.add(data->editing_mesh->vertices[e.index[1]].pos);
 			float f = (vec3::dot(edge_infos[i].normal, win->direction()) + 1) * 0.5f;
-			const auto c = color::mix(color(1, 0.5f, 0.5f, 0.5f), color(1, 0.35f, 0.35f, 0.35f), f);
+			const auto c = color::mix(color(1, 0.6f, 0.6f, 0.6f), color(1, 0.25f, 0.25f, 0.25f), f).srgb_to_linear();
 			colors.add(c);
 			colors.add(c);
 		}

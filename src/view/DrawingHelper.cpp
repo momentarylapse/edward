@@ -22,7 +22,7 @@ const float DrawingHelper::LINE_THIN = 2;
 const float DrawingHelper::LINE_MEDIUM = 3;
 const float DrawingHelper::LINE_THICK = 5;
 const float DrawingHelper::LINE_EXTRA_THICK = 7;
-const color DrawingHelper::COLOR_X = color(1, 0.9f, 0.6f, 0.1f);
+const color DrawingHelper::COLOR_X = color(1, 0.9f, 0.6f, 0.1f).srgb_to_linear();
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {
 	auto material = ctx->load_material("");
@@ -53,7 +53,7 @@ DrawingHelper::DrawingHelper(yrenderer::Context* _ctx, xhui::Context* _xhui_ctx)
 	try {
 		material_hover = create_material(ctx, {0.3f, 0,0,0}, 0.9f, 0, White, true);
 		material_selection = create_material(ctx, {0.3f, 0,0,0}, 0.9f, 0, Red, true);
-		material_creation = create_material(ctx, {0.3f, 0,0.5f,0}, 0.9f, 0, color(1,0,0.5f,0), true);
+		material_creation = create_material(ctx, {0.3f, 0,0.5f,0}, 0.9f, 0, color(1,0,0.5f,0).srgb_to_linear(), true);
 
 		material_shadow = new yrenderer::Material(ctx);
 		material_shadow->pass0.shader_path = "shadow.shader";

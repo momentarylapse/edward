@@ -298,10 +298,6 @@ XImage* load_image(const string& name) {
 	auto im = new XImage;
 	im->filename = path;
 	im->uid = name;
-#if HAS_LIB_VULKAN
-	if (vulkan::default_device)
-		im->texture = vulkan::Texture::load(path);
-#endif
 	_images_.add(im);
 	return im;
 }
@@ -355,12 +351,14 @@ void prepare_image(XImage* image) {
 #else
 		{
 #endif
-			if (image->image) {
-				image->texture = new ygfx::Texture();
-				image->texture->write(*image->image);
-			} else {
-				image->texture = ygfx::Texture::load(image->filename);
-			}
+			if (!image->image)
+				image->image = Image::load(image->filename);
+
+			image->texture = new ygfx::Texture();
+			ColorSpace cs = image->image->color_space;
+			if (color_space_shaders == ColorSpace::SRGB)
+				cs = ColorSpace::Linear;
+			image->texture->write_with_color_space(*image->image, cs);
 		}
 }
 

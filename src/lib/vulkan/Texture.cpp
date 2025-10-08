@@ -209,7 +209,13 @@ void Texture::_load(const Path &filename) {
 }
 
 void Texture::write(const Image &im) {
-	writex(im.data.data, im.width, im.height, 1, "rgba:i8");
+	writex(im.data.data, im.width, im.height, 1, im.color_space == ColorSpace::SRGB ? "srgba:i8" : "rgba:i8");
+}
+
+void Texture::write_with_color_space(const Image &im, ColorSpace color_space) {
+	if (color_space == ColorSpace::Undefined)
+		color_space = im.color_space;;
+	writex(im.data.data, im.width, im.height, 1, color_space == ColorSpace::SRGB ? "srgba:i8" : "rgba:i8");
 }
 
 void Texture::writex(const void *data, int nx, int ny, int nz, const string &format) {

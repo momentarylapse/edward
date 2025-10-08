@@ -8,6 +8,7 @@
 #include "../os/path.h"
 #include <vulkan/vulkan.h>
 #include "helper.h"
+#include "lib/image/color.h"
 
 class Image;
 
@@ -34,6 +35,7 @@ namespace vulkan {
 
 		void _load(const Path &filename);
 		void write(const Image &image);
+		void write_with_color_space(const Image &image, ColorSpace color_space);
 		void writex(const void *image, int nx, int ny, int nz, const string &format);
 		void read(void* data);
 

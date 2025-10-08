@@ -148,7 +148,7 @@ void ModeMaterial::on_prepare_scene(const yrenderer::RenderParams& params) {
 }
 
 void ModeMaterial::on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
-	DrawingHelper::clear(params, xhui::Theme::_default.background_low);
+	DrawingHelper::clear(params, xhui::Theme::_default.background_low.srgb_to_linear());
 
 	auto dh = multi_view->session->drawing_helper;
 	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_ground.get(), material_ground.get());

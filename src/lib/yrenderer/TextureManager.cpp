@@ -35,37 +35,53 @@ Path TextureManager::find_absolute_texture_path(const Path& filename) const {
 	return guess_absolute_path(filename, {texture_dir});
 }
 
-shared<ygfx::Texture> TextureManager::load_texture(const Path& filename) {
+string split_filename_flags(Path& filename) {
+	const string s = str(filename);
+	int p = s.find("@");
+	if (p < 0)
+		return "";
+	string flags = s.sub(p);
+	filename = Path(s.sub_ref(0, p));
+	return flags;
+}
+
+shared<ygfx::Texture> TextureManager::load_texture(const Path& filename_with_flags) {
+	Path filename = filename_with_flags;
+	string flags = split_filename_flags(filename);
+
+
 	if (filename.is_empty())
 		return tex_white;
 
-	Path fn = find_absolute_texture_path(filename);
-	if (fn.is_empty()) {
+	Path filename_absolute = find_absolute_texture_path(filename);
+	if (filename_absolute.is_empty()) {
 		msg_error("missing texture (ignore): " + str(filename));
 		return tex_white;
 	}
+	Path filename_absolute_with_flags = filename_absolute.with(flags);
 
 	for (auto&& [key, t]: texture_map)
-		if (fn == key) {
-#ifdef USING_VULKAN
+		if (filename_absolute_with_flags == key)
 			return t;
-#else
-			return t->valid ? t : tex_white;
-#endif
-		}
 
-	try {
-#ifdef USING_VULKAN
-		msg_write("loading texture: " + str(fn));
-#endif
-		auto t = ygfx::Texture::load(fn);
-		textures.add(t);
-		texture_map.add({fn, t});
-		return t;
-	} catch(Exception &e) {
-		msg_error(e.message());
+	msg_write("loading texture: " + str(filename_absolute_with_flags));
+
+	auto im = ownify(Image::load(filename_absolute));
+	if (!im) {
+		msg_error("failed to load texture image!");
 		return tex_white;
 	}
+
+	ColorSpace color_space = im->color_space;
+	if (flags.find("@linear") >= 0)
+		color_space = ColorSpace::Linear;
+
+	auto t = new ygfx::Texture();
+	t->write_with_color_space(*im, color_space);
+
+	textures.add(t);
+	texture_map.add({filename_absolute_with_flags, t});
+	return t;
 }
 
 void TextureManager::clear() {

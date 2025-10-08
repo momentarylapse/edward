@@ -219,7 +219,7 @@ void add_grid(const rect &r, Array<vec3> p[4], Array<color> col[4], float D, flo
 	for (int i=ix0; i<=ix1; i++) {
 		int level = grid_level(i);
 		float dens = grid_density(level, DERR);
-		color c = xhui::Theme::_default.background_hover; //ColorInterpolate(bg, scheme.GRID, alpha * dens);
+		color c = xhui::Theme::_default.background_hover.srgb_to_linear(); //ColorInterpolate(bg, scheme.GRID, alpha * dens);
 		c.a = alpha * dens;
 		p[level].add(dir_1 * (float)(i*D) + dir_2 * r.y1);
 		p[level].add(dir_1 * (float)(i*D) + dir_2 * r.y2);
@@ -233,7 +233,7 @@ void add_grid(const rect &r, Array<vec3> p[4], Array<color> col[4], float D, flo
 	for (int i=iy0; i<=iy1; i++) {
 		int level = grid_level(i);
 		float dens = grid_density(level, DERR);
-		color c = xhui::Theme::_default.background_hover;//scheme.GRID;//ColorInterpolate(bg, scheme.GRID, alpha * dens);
+		color c = xhui::Theme::_default.background_hover.srgb_to_linear();//scheme.GRID;//ColorInterpolate(bg, scheme.GRID, alpha * dens);
 		c.a = alpha * dens;
 		p[level].add(dir_2 * (float)(i*D) + dir_1 * r.x1);
 		p[level].add(dir_2 * (float)(i*D) + dir_1 * r.x2);

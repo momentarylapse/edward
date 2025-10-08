@@ -8,6 +8,7 @@
 enum class ColorSpace {
 	Linear,
 	SRGB,
+	Undefined = -1
 };
 
 struct color {
