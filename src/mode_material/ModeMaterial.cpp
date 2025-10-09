@@ -126,22 +126,25 @@ void ModeMaterial::on_leave() {
 
 
 void ModeMaterial::optimize_view() {
-	float r = 2.0f;
+	float r = 1.8f;
 	multi_view->view_port.suggest_for_box({vec3(-r,-r,-r), vec3(r,r,r)});
+	multi_view->view_port.ang = quaternion::rotation(vec3(0.4f,-0.8f,0));
 }
 
 void ModeMaterial::on_prepare_scene(const yrenderer::RenderParams& params) {
 	if (!spot_light) {
 		spot_light = new yrenderer::Light;
-		spot_light->init(yrenderer::LightType::CONE, White * 150, 0.15f);
-		spot_light->pos = {3, 7, 12};
-		spot_light->_ang = quaternion::rotation_v((-spot_light->pos).dir2ang());
+		spot_light->init(yrenderer::LightType::CONE, White, 0.15f);
+		spot_light->pos = {3, 6, 12};
+		spot_light->_ang = quaternion::rotation_v((-spot_light->pos).normalized().dir2ang());
+		spot_light->power = 170;
 		spot_light->harshness = 1;
 		spot_light->enabled = true;
 	}
 
-	multi_view->default_light->_ang = quaternion::rotation_a(vec3::EX, pi*0.20f);
+	multi_view->default_light->_ang = quaternion::rotation_a(vec3::EX, pi*0.23f);
 	multi_view->default_light->allow_shadow = true;
+	multi_view->default_light->power = 0.3f;
 	multi_view->default_light->harshness = 0.7f;
 
 	multi_view->lights = {multi_view->default_light, spot_light.get()};

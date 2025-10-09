@@ -534,7 +534,7 @@ void MultiView::ViewPort::suggest_for_box(const Box& box) {
 	if (box.size() == v_0)
 		radius = 200;
 	else
-		radius = box.size().length() * 0.7f;
+		radius = box.size().length() * 0.8f;
 	ang = quaternion::rotation({0.35f, 0, 0});
 	out_changed();
 }

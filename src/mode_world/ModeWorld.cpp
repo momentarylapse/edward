@@ -268,6 +268,7 @@ void ModeWorld::on_update_menu() {
 
 void ModeWorld::optimize_view() {
 	multi_view->view_port.suggest_for_box(data->get_bounding_box());
+	multi_view->view_port.ang = quaternion::rotation(vec3(0.7f,0,0));
 }
 
 #define MODEL_MAX_VERTICES	65536
