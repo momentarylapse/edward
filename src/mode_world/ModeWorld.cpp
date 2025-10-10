@@ -41,9 +41,16 @@
 #include "dialog/PropertiesDialog.h"
 #include <cmath>
 
+#include "lib/mesh/Polygon.h"
+#include "lib/mesh/VertexStagingBuffer.h"
+#include "lib/mesh/PolygonMesh.h"
+#include "lib/mesh/GeometrySphere.h"
+#include "lib/mesh/GeometryCylinder.h"
 #include "world/components/SolidBody.h"
 #include "y/EntityManager.h"
 
+
+yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
 ModeWorld::ModeWorld(DocumentSession* doc) :
 	Mode(doc)
@@ -54,6 +61,10 @@ ModeWorld::ModeWorld(DocumentSession* doc) :
 
 	data = new DataWorld(doc);
 	generic_data = data;
+
+	view_mode = ViewMode::Default;
+
+	material_physical = create_material(session->ctx, Black.with_alpha(0.4f), 0.7f, 0.2f, color(1,1,1,0.4f).srgb_to_linear(), true);
 
 	mode_properties = new ModeWorldProperties(this);
 }
@@ -271,6 +282,13 @@ void ModeWorld::optimize_view() {
 	multi_view->view_port.ang = quaternion::rotation(vec3(0.7f,0,0));
 }
 
+void ModeWorld::set_view_mode(ViewMode mode) {
+	view_mode = mode;
+	out_changed();
+	session->win->request_redraw();
+}
+
+
 #define MODEL_MAX_VERTICES	65536
 vec3 tmv[MODEL_MAX_VERTICES*5],pmv[MODEL_MAX_VERTICES*5];
 bool tvm[MODEL_MAX_VERTICES*5];
@@ -441,6 +459,43 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
 				dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, material, 0, "default");
 			}
+
+	if (view_mode == ViewMode::Physical) {
+		for (auto mr: models)
+			if (auto m = mr->model) {
+				if (auto p = m->_template->physical_mesh.get()) {
+					if (!physical_vertex_buffers.contains(p)) {
+						auto _vb = new ygfx::VertexBuffer("3f,3f,2f");
+						PolygonMesh mesh;
+						for (const auto& v: p->vertex)
+							mesh.vertices.add(MeshVertex(v));
+						for (const auto& poly: p->poly) {
+							Polygon polygon;
+							for (int f=0; f<poly.num_faces; f++) {
+								polygon.side.resize(poly.face[f].num_vertices);
+								for (int k=0; k<poly.face[f].num_vertices; k++)
+									polygon.side[k].vertex = poly.face[f].index[k];
+								mesh.polygons.add(polygon);
+							}
+						}
+						for (const auto& b: p->balls)
+							mesh.add(GeometrySphere(p->vertex[b.index], b.radius, 8));
+						for (const auto& c: p->cylinders)
+							mesh.add(GeometryCylinder(p->vertex[c.index[0]], p->vertex[c.index[1]], c.radius, 1, 32, c.round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT));
+
+						mesh.build(_vb);
+						physical_vertex_buffers.set(p, _vb);
+					}
+					auto vb = physical_vertex_buffers[p];
+					dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, material_physical, 0, "default");
+				}
+			}
+				/*for (int k=0; k<m->mesh[0]->sub.num; k++) {
+					auto material = m->material[k];
+					auto vb = m->mesh[0]->sub[k].vertex_buffer;
+					dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, material, 0, "default");
+				}*/
+	}
 
 	// selection
 	for (auto mr: models) {
@@ -668,6 +723,12 @@ void ModeWorld::on_command(const string& id) {
 }
 
 void ModeWorld::on_key_down(int key) {
+	if (key == xhui::KEY_P) {
+		if (view_mode == ViewMode::Physical)
+			set_view_mode(ViewMode::Default);
+		else
+			set_view_mode(ViewMode::Physical);
+	}
 }
 
 

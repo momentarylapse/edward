@@ -46,7 +46,7 @@ ModeMesh::ModeMesh(ModeModel* parent) : SubMode(parent) {
 	vertex_buffer_physical = new ygfx::VertexBuffer("3f,3f,2f");
 	vertex_buffer_selection = new ygfx::VertexBuffer("3f,3f,2f");
 	vertex_buffer_hover = new ygfx::VertexBuffer("3f,3f,2f");
-	material_physical = create_material(session->ctx, Black.with_alpha(0.4f), 0.7f, 0.2f, color(1,1,1,0.4f), true);
+	material_physical = create_material(session->ctx, Black.with_alpha(0.4f), 0.7f, 0.2f, color(1,1,1,0.4f).srgb_to_linear(), true);
 	material_selection = create_material(session->ctx, Black.with_alpha(0.4f), 0.7f, 0.2f, Red, true);
 	material_hover = create_material(session->ctx, Black.with_alpha(0.4f), 0.7f, 0.2f, White, true);
 

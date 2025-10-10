@@ -11,6 +11,8 @@
 #include <y/world/LevelData.h>
 
 
+struct PhysicalMesh;
+
 namespace yrenderer {
 	struct Light;
 }
@@ -57,6 +59,15 @@ public:
 	DataWorld* data;
 	LevelData temp;
 	Array<yrenderer::Light*> lights;
+
+	enum class ViewMode {
+		Default,
+		Physical
+	} view_mode;
+	void set_view_mode(ViewMode mode);
+
+	yrenderer::Material* material_physical;
+	base::map<PhysicalMesh*, ygfx::VertexBuffer*> physical_vertex_buffers;
 
 	owned<ModeWorldProperties> mode_properties;
 
