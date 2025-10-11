@@ -188,6 +188,7 @@ struct XImage {
 	Path filename;
 	owned<::Image> image;
 	shared<ygfx::Texture> texture;
+	bool dirty = true;
 	vec2 size() const;
 };
 

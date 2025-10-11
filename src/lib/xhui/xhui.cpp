@@ -298,6 +298,7 @@ XImage* load_image(const string& name) {
 	auto im = new XImage;
 	im->filename = path;
 	im->uid = name;
+	im->dirty = true;
 	_images_.add(im);
 	return im;
 }
@@ -323,6 +324,7 @@ void set_image(const string& uid, const Image& _im) {
 	if (!im->image)
 		im->image = new Image(8,8,White);
 	*im->image = _im;
+	im->dirty = true;
 }
 
 
@@ -345,21 +347,25 @@ void delete_image(const string& name) {
 }
 
 void prepare_image(XImage* image) {
-	if (!image->texture)
-#ifdef USING_VULKAN
-		if (vulkan::default_device) {
-#else
-		{
-#endif
-			if (!image->image)
-				image->image = Image::load(image->filename);
+	if (!image->dirty)
+		return;
 
-			image->texture = new ygfx::Texture();
-			ColorSpace cs = image->image->color_space;
-			if (color_space_shaders == ColorSpace::SRGB)
-				cs = ColorSpace::Linear;
-			image->texture->write_with_color_space(*image->image, cs);
-		}
+	if (!image->image)
+		image->image = Image::load(image->filename);
+
+#ifdef USING_VULKAN
+	if (!vulkan::default_device)
+		return;
+#endif
+
+	if (!image->texture)
+		image->texture = new ygfx::Texture();
+
+	ColorSpace cs = image->image->color_space;
+	if (color_space_shaders == ColorSpace::SRGB)
+		cs = ColorSpace::Linear;
+	image->texture->write_with_color_space(*image->image, cs);
+	image->dirty = false;
 }
 
 vec2 XImage::size() const {
