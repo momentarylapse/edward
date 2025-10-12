@@ -10568,7 +10568,7 @@ Separator
 0
 Item
 run-game
-image=hui:media-play
+image=media-playback-start-symbolic
 15
 0
 0
