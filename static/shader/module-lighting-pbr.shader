@@ -78,9 +78,13 @@ vec3 _surf_light_add(Light l, vec3 p, vec3 n, vec3 albedo, float metal, float ro
 	// TODO only affect "diffuse"
 	shadow_factor *= (1-ambient_occlusion);
 
+
+	// calculate per-light radiance
+	vec3 radiance = l.color.rgb * _light_source_brightness(l, p) * PI * shadow_factor;
 	
-        // calculate per-light radiance
-        vec3 radiance = l.color.rgb * _light_source_brightness(l, p) * PI * shadow_factor;
+	if (l.theta > 3.0) {
+		return albedo / PI * radiance;
+	}
         
         vec3 V = -view_dir;
         vec3 L = -_light_source_dir(l, p);

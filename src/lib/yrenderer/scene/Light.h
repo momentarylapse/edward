@@ -26,7 +26,8 @@ struct UBOLight {
 enum class LightType {
 	DIRECTIONAL,
 	POINT,
-	CONE
+	CONE,
+	AMBIENT
 };
 
 struct Light {

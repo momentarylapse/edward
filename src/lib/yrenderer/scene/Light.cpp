@@ -43,7 +43,7 @@ UBOLight Light::to_ubo(const vec3& view_pos, const quaternion& view_ang, bool us
 	UBOLight l;
 	l.col = col * power;
 	l.harshness = harshness;
-	if (type == LightType::DIRECTIONAL)
+	if (type == LightType::DIRECTIONAL or type == LightType::AMBIENT)
 		l.radius = -1;
 	else
 		l.radius = radius();
@@ -64,9 +64,9 @@ mat4 Light::suggest_shadow_projection(const CameraParams& cam, float shadow_box_
 		//msg_write(format("shadow dir: %s  %s", light.pos.str(), light.dir.str()));
 		vec3 center = cam.pos + cam.ang*vec3::EZ * (shadow_box_size / 3.0f);
 		float grid = shadow_box_size / 16;
-		center.x -= fmod(center.x, grid) - grid/2;
-		center.y -= fmod(center.y, grid) - grid/2;
-		center.z -= fmod(center.z, grid) - grid/2;
+		center.x -= fmodf(center.x, grid) - grid/2;
+		center.y -= fmodf(center.y, grid) - grid/2;
+		center.z -= fmodf(center.z, grid) - grid/2;
 		//center = vec3(0,200,0);
 		auto t = mat4::translation(- center);
 		//auto r = mat4::rotation({pi/2,0,0}).transpose();

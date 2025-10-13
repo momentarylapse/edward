@@ -16,7 +16,7 @@ Dialog light-panel ''
 		CheckBox enabled ''
 		---|
 		Label ? 'Type' right disabled
-		ComboBox type 'Directional\\Point\\Cone' range=0:2:1
+		ComboBox type 'Directional\\Point\\Cone\\Ambient' range=0:2:1
 		---|
 		Label ? 'Radius' right disabled
 		SpinButton radius '' range=0::0.1
@@ -69,9 +69,9 @@ void LightPanel::update_ui() {
 	set_color("color", l->light.col * (1.0f / factor));
 	set_float("power", l->light.power * factor);
 	check("allow-shadows", l->light.allow_shadow);
-	enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL);
-	enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL);
-	enable("theta", l->light.type == yrenderer::LightType::CONE);
+	enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL or l->light.type == yrenderer::LightType::AMBIENT);
+	enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL and l->light.type != yrenderer::LightType::AMBIENT);
+	enable("theta", l->light.type == yrenderer::LightType::CONE or l->light.type == yrenderer::LightType::AMBIENT);
 }
 
 void LightPanel::on_edit() {
@@ -79,21 +79,25 @@ void LightPanel::on_edit() {
 	auto l = e->get_component<Light>();
 	l->light.enabled = is_checked("enabled");
 	l->light.type = (yrenderer::LightType)get_int("type");
-	enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL);
-	enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL);
-	enable("theta", l->light.type == yrenderer::LightType::CONE);
+	enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL or l->light.type == yrenderer::LightType::AMBIENT);
+	enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL and l->light.type != yrenderer::LightType::AMBIENT);
+	enable("theta", l->light.type == yrenderer::LightType::CONE or l->light.type == yrenderer::LightType::AMBIENT);
 
+	l->light.col = get_color("color");
 	float radius = get_float("radius");
 	float power = get_float("power");
-	if (l->light.type == yrenderer::LightType::DIRECTIONAL) {
-		l->light.col = get_color("color") * power;
+	if (l->light.type == yrenderer::LightType::DIRECTIONAL or l->light.type == yrenderer::LightType::AMBIENT) {
 		l->light.power = power;
-		l->light.theta = -1;
 	} else {
-		l->light.col = get_color("color");
 		l->light.power = yrenderer::Light::_radius_to_power(radius);
-		l->light.theta = get_float("theta") * pi / 180;
 		set_float("power", l->light.power);
+	}
+	if (l->light.type == yrenderer::LightType::CONE) {
+		l->light.theta = get_float("theta") * pi / 180;
+	} else if (l->light.type == yrenderer::LightType::AMBIENT) {
+		l->light.theta = 5;
+	} else {
+		l->light.theta = -1;
 	}
 	l->light.harshness = get_float("harshness") / 100;
 	l->light.allow_shadow = is_checked("allow-shadows");

@@ -402,19 +402,9 @@ void ModeWorld::on_prepare_scene(const yrenderer::RenderParams& params) {
 		lights.add(new yrenderer::Light);
 	}
 	for (const auto& [i, l]: enumerate(data_lights)) {
+		*lights[i] = l->light;
 		lights[i]->pos = l->owner->pos;
 		lights[i]->_ang = l->owner->ang;
-		lights[i]->enabled = l->light.enabled;
-		lights[i]->type = l->light.type;
-		lights[i]->allow_shadow = l->light.allow_shadow;
-		lights[i]->col = l->light.col;
-		if (!l->light.enabled)
-			lights[i]->col = Black;
-		lights[i]->power = l->light.power;
-		lights[i]->theta = l->light.theta;
-		if (l->light.type != yrenderer::LightType::CONE)
-			lights[i]->theta = -1;
-		lights[i]->harshness = l->light.harshness;
 	}
 	multi_view->lights = lights.sub_ref(0, data_lights.num);
 }
