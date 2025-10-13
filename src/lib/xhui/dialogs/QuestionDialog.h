@@ -2,8 +2,7 @@
 // Created by Michael Ankele on 2025-01-26.
 //
 
-#ifndef QUESTIONDIALOG_H
-#define QUESTIONDIALOG_H
+#pragma once
 
 #include <lib/base/optional.h>
 
@@ -28,5 +27,3 @@ public:
 };
 
 } // xhui
-
-#endif //QUESTIONDIALOG_H

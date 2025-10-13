@@ -2,8 +2,7 @@
 // Created by Michael Ankele on 2025-01-26.
 //
 
-#ifndef FILESELECTIONDIALOG_H
-#define FILESELECTIONDIALOG_H
+#pragma once
 
 #include <lib/base/optional.h>
 
@@ -30,5 +29,3 @@ public:
 };
 
 } // xhui
-
-#endif //FILESELECTIONDIALOG_H

@@ -2,8 +2,7 @@
 // Created by michi on 03.02.25.
 //
 
-#ifndef COLORSELECTIONDIALOG_H
-#define COLORSELECTIONDIALOG_H
+#pragma once
 
 #include <lib/base/optional.h>
 
@@ -21,6 +20,7 @@ public:
 	ColorSelectionDialog(Panel* parent, const string& title, const color& col, const Array<string>& params);
 
 	ColorHSBSelector* selector;
+	ColorIndicator* indicator_original;
 	ColorIndicator* indicator;
 	base::optional<color> answer;
 	base::promise<color> promise;
@@ -29,5 +29,3 @@ public:
 };
 
 } // xhui
-
-#endif //COLORSELECTIONDIALOG_H

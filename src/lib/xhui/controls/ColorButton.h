@@ -2,8 +2,7 @@
 // Created by Michael Ankele on 2025-02-03.
 //
 
-#ifndef COLORBUTTON_H
-#define COLORBUTTON_H
+#pragma once
 
 #include "Button.h"
 #include "../../image/color.h"
@@ -30,5 +29,3 @@ public:
 };
 
 } // xhui
-
-#endif //COLORBUTTON_H

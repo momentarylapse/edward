@@ -7,6 +7,7 @@
 #include "../Theme.h"
 #include "../controls/Button.h"
 #include "../controls/Grid.h"
+#include <cmath>
 
 namespace xhui {
 
@@ -132,6 +133,164 @@ public:
 	}
 };
 
+class ColorHSBWheel : public Control {
+public:
+	float hue, saturation, brightness;
+	std::function<void(const color&)> callback;
+	enum class MouseMode {
+		None,
+		Hue,
+		SaturationBrightness
+	} mouse_mode;
+
+	static constexpr float R_CIRCLE = 0.94f;
+	static constexpr float R_TRIANGLE = 0.86f;
+
+	explicit ColorHSBWheel(const string& id, const std::function<void(const color&)>& _callback) : Control(id) {
+		size_mode_x = SizeMode::Expand;
+		size_mode_y = SizeMode::Expand;
+		hue = 0;
+		saturation = 0;
+		brightness = 0;
+		mouse_mode = MouseMode::None;
+		callback = _callback;
+	}
+
+	void set(const color& c) {
+		hue = c.hue();
+		saturation = c.saturation();
+		brightness = c.hsb_brightness();
+		request_redraw();
+	}
+	color get() const {
+		return color::from_hsb(hue, saturation, brightness);
+	}
+	float radius() const {
+		float w = _area.width();
+		float h = _area.height();
+		return min(w, h) / 2;
+	}
+	vec2 hue_circle_pos(float _hue, float r) const {
+		const float R = radius();
+		const vec2 m = _area.center();
+
+		const float phi = _hue * 2 * pi;
+		return m + vec2(cosf(phi), sinf(phi)) * R * r;
+	}
+	void hue_from_mouse(const vec2& m) {
+		const vec2 center = _area.center();
+		const vec2 d = m - center;
+		hue = atan2f(d.y, d.x) / (2 * pi);
+		if (hue < 0)
+			hue += 1;
+	}
+	void saturation_brightness_from_mouse(const vec2& m) {
+		const vec2 pos0 = hue_circle_pos(hue, R_TRIANGLE);
+		const vec2 pos1 = hue_circle_pos(hue + 1.0f / 3, R_TRIANGLE);
+		const vec2 pos2 = hue_circle_pos(hue + 2.0f / 3, R_TRIANGLE);
+		const vec2 fg = vec2::bary_centric(m, pos0, pos1, pos2);
+		// m = pos0 + f (1 - 0) + g (2 - 0)
+		saturation = clamp(1 - fg.x / (1 - fg.y), 0.0f, 1.0f);
+		brightness = clamp(1 - fg.y, 0.0f, 1.0f);
+	}
+	void on_left_button_down(const vec2& m) override {
+		const float R = radius();
+		const vec2 center = _area.center();
+		const vec2 d = m - center;
+		const float r = d.length();
+		mouse_mode = MouseMode::None;
+
+		if (r > R * 0.88f) {
+			mouse_mode = MouseMode::Hue;
+			hue_from_mouse(m);
+		} else {
+			mouse_mode = MouseMode::SaturationBrightness;
+			saturation_brightness_from_mouse(m);
+		}
+
+		emit_event(event_id::Changed, true);
+		if (callback)
+			callback(get());
+	}
+	void on_mouse_move(const vec2& m, const vec2& d) override {
+		if (auto w = get_window())
+			if (w->button(0)) {
+				if (mouse_mode == MouseMode::Hue) {
+					hue_from_mouse(m);
+				} else if (mouse_mode == MouseMode::SaturationBrightness) {
+					saturation_brightness_from_mouse(m);
+				}
+				request_redraw();
+			}
+
+		emit_event(event_id::Changed, true);
+		if (callback)
+			callback(get());
+	}
+	void draw_hue_circle(Painter* p) const {
+		float R = radius();
+		const vec2 m = _area.center();
+
+		auto pos = [&m, R] (float t) {
+			float phi = t * 2 * pi;
+			return m + vec2(cosf(phi), sinf(phi)) * R * 0.94f;
+		};
+
+		const int N = 500;
+		for (int i=0; i<N; i++) {
+			p->set_color(color::from_hsb((float)i / (float)N, 1, 1));
+			p->draw_circle(pos((float)i / (float)N), R * 0.06f);
+		}
+		p->set_color(Black);
+		p->draw_circle(pos(hue), 6);
+		p->set_color(White);
+		p->draw_circle(pos(hue), 4);
+	}
+	void draw_sb_triangle(Painter* p) const {
+		const float R = radius();
+
+		const vec2 pos0 = hue_circle_pos(hue, R_TRIANGLE);
+		const vec2 pos1 = hue_circle_pos(hue + 1.0f / 3, R_TRIANGLE);
+		const vec2 pos2 = hue_circle_pos(hue + 2.0f / 3, R_TRIANGLE);
+		const vec2 pos0b = hue_circle_pos(hue, R_TRIANGLE + 0.02f);
+		const vec2 pos1b = hue_circle_pos(hue + 1.0f / 3, R_TRIANGLE + 0.02f);
+		const vec2 pos2b = hue_circle_pos(hue + 2.0f / 3, R_TRIANGLE + 0.02f);
+
+		// (1,1) -> pos0
+		// (0,1) -> pos1
+		// (x,0) -> pos2
+		auto pos = [&pos0, &pos1, &pos2] (float s, float b) {
+			vec2 a = pos1 + s * (pos0 - pos1);
+			return pos2 + b * (a - pos2);
+		};
+
+		const int N = 100;
+		for (int i=0; i<N; i++) {
+			for (int j=0; j<N; j++) {
+				float s = (float)i / (float)N;
+				float b = (float)j / (float)N;
+				p->set_color(color::from_hsb(hue, s, b));
+				p->draw_circle(pos(s, b), R * 0.02f);
+			}
+		}
+
+		// border
+		p->set_color(White);
+		p->set_line_width(4.0f);
+		p->draw_lines({pos0b, pos1b, pos2b, pos0b});
+
+		// marker
+		p->set_color(Black);
+		p->draw_circle(pos(saturation, brightness), 6);
+		p->set_color(White);
+		p->draw_circle(pos(saturation, brightness), 4);
+	}
+	void _draw(Painter* p) override {
+		draw_hue_circle(p);
+		draw_sb_triangle(p);
+	}
+};
+
 class ColorAlphaSelector : public Control {
 public:
 	color col;
@@ -191,35 +350,25 @@ public:
 
 class ColorHSBSelector : public Grid {
 public:
-	ColorSBSelector* sb_selector;
-	ColorHueSelector* hue_selector;
+	ColorHSBWheel* hsb_selector;
 	ColorAlphaSelector* alpha_selector = nullptr;
 
 	explicit ColorHSBSelector(const string& id) : Grid(id) {
-		sb_selector = new ColorSBSelector("sb", [this] (float s, float b) {
+		hsb_selector = new ColorHSBWheel("hsb", [this] (const color& c) {
 			if (alpha_selector)
-				alpha_selector->set_color(get_color_no_alpha());
+				alpha_selector->set_color(c);
 			emit_event(event_id::Changed, true);
 		});
-		hue_selector = new ColorHueSelector("hue", [this] (float hue) {
-			sb_selector->set_hue(hue);
-			if (alpha_selector)
-				alpha_selector->set_color(get_color_no_alpha());
-			emit_event(event_id::Changed, true);
-		});
-		Grid::add_child(sb_selector, 0, 0);
-		Grid::add_child(hue_selector, 1, 0);
+		Grid::add_child(hsb_selector, 0, 0);
 	}
 
 	void set_color(const color& c) override {
-		hue_selector->set_float(c.hue());
-		sb_selector->set_hue(c.hue());
-		sb_selector->set_sb(c.saturation(), c.hsb_brightness());
+		hsb_selector->set(c);
 		if (alpha_selector)
 			alpha_selector->set_float(c.a);
 	}
 	color get_color_no_alpha() const {
-		return color::from_hsb(hue_selector->hue, sb_selector->saturation, sb_selector->brightness, 1);
+		return hsb_selector->get();
 	}
 	color get_color() override {
 		float alpha = 1;
@@ -266,31 +415,39 @@ ColorSelectionDialog::ColorSelectionDialog(Panel* parent, const string& title, c
 	selector->set_color(col);
 
 	auto g1 = new Grid("grid1");
-	add_child(g1);
+	Dialog::add_child(g1);
 	auto g2 = new Grid("grid2");
 	g1->add_child(g2, 0, 0);
 	g1->add_child(selector, 0, 1);
 
 	auto g3 = new Grid("grid3");
 	g1->add_child(g3, 0, 2);
+	g3->add_child(new Label("spacer", ">"), 1, 0);
 	auto spacer = new Label("spacer", "");
-	g3->add_child(spacer, 1, 0);
+	g3->add_child(spacer, 3, 0);
 	spacer->size_mode_x = SizeMode::Expand;
+	indicator_original = new ColorIndicator("indicator-original");
+	indicator_original->set_color(col);
+	indicator_original->min_width_user = 100;
+	indicator_original->size_mode_x = SizeMode::Shrink;
+	indicator_original->size_mode_y = SizeMode::Shrink;
+	g3->add_child(indicator_original, 0, 0);
 	indicator = new ColorIndicator("indicator");
 	indicator->set_color(col);
 	indicator->min_width_user = 100;
 	indicator->size_mode_x = SizeMode::Shrink;
 	indicator->size_mode_y = SizeMode::Shrink;
-	g3->add_child(indicator, 0, 0);
+	g3->add_child(indicator, 2, 0);
 	auto button_cancel = new Button("cancel", "Cancel");
 	button_cancel->min_width_user = 100;
 	button_cancel->size_mode_x = SizeMode::Shrink;
-	g3->add_child(button_cancel, 2, 0);
+	g3->add_child(button_cancel, 4, 0);
 	auto button_ok = new Button("ok", "Ok");
+	button_ok->set_option("primary", "");
 	button_ok->min_width_user = 100;
 	button_ok->size_mode_x = SizeMode::Shrink;
 	//button_ok->enable(false);
-	g3->add_child(button_ok, 3, 0);
+	g3->add_child(button_ok, 5, 0);
 
 	event("selector", [this] {
 		indicator->set_color(selector->get_color());

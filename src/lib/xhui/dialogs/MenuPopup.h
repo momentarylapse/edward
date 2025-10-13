@@ -2,8 +2,7 @@
 // Created by Michael Ankele on 2025-02-12.
 //
 
-#ifndef MENUPOPUP_H
-#define MENUPOPUP_H
+#pragma once
 
 #include "../Dialog.h"
 #include <functional>
@@ -27,5 +26,3 @@ public:
 };
 
 } // xhui
-
-#endif //MENUPOPUP_H

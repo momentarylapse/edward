@@ -39,6 +39,8 @@ color ColorButton::get_color() {
 
 void ColorButton::set_color(const color& c) {
 	_color = color_from_user(c);
+	if (!with_alpha)
+		_color.a = 1;
 	request_redraw();
 }
 
@@ -46,8 +48,13 @@ void ColorButton::on_click() {
 	Array<string> params;
 	if (with_alpha)
 		params.add("alpha");
+	if (color_space_user == ColorSpace::Linear)
+		params.add("linear");
+
+	// using "internal" (srgb) colors here:
 	ColorSelectionDialog::ask(owner, "Pick a color", _color, params).then([this] (const color& c) {
-		set_color(color_to_user(c));
+		_color = c;
+		request_redraw();
 		emit_event(event_id::Changed, true);
 	});
 }
