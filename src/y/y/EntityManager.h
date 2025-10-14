@@ -6,16 +6,26 @@
 
 #include <lib/base/base.h>
 #include <lib/base/pointer.h>
+#include <lib/pattern/Observable.h>
 #include "ComponentManager.h"
 
 struct vec3;
 struct quaternion;
 class Entity;
 
-class EntityManager {
+
+struct EntityMessageParams {
+	Entity* entity;
+	Component* component;
+};
+
+class EntityManager : public obs::Node<VirtualBase> {
 public:
 	EntityManager();
-	~EntityManager();
+	~EntityManager() override;
+
+	obs::xsource<EntityMessageParams> out_add_component{this, "add-component"};
+	obs::xsource<EntityMessageParams> out_remove_component{this, "remove-component"};
 
 	using Params = ComponentManager::Params;
 

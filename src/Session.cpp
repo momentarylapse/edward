@@ -228,6 +228,7 @@ void Session::universal_new(int preferred_type) {
 			doc->mode_model->mode_mesh->optimize_view();
 		} else if (preferred_type == FD_WORLD) {
 			doc->mode_world = new ModeWorld(doc);
+			doc->mode_world->data->add_initial_data();
 			doc->set_mode(doc->mode_world);
 			doc->mode_world->optimize_view();
 		} else if (preferred_type == FD_MATERIAL) {

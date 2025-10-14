@@ -598,6 +598,7 @@ add_executable(edward
 	src/y/world/Link.cpp
 	src/y/world/Model.cpp
 	src/y/world/ModelManager.cpp
+	src/y/world/PhysicsSimulation.cpp
 	src/y/world/Terrain.cpp
 	src/y/world/World.cpp
 	src/y/y/BaseClass.cpp

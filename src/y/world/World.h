@@ -19,6 +19,7 @@
 #include "LevelData.h"
 
 
+class PhysicsSimulation;
 class Model;
 class Object;
 namespace yrenderer {
@@ -38,11 +39,6 @@ struct LevelData;
 enum class LinkType;
 
 
-class btDefaultCollisionConfiguration;
-class btCollisionDispatcher;
-class btBroadphaseInterface;
-class btSequentialImpulseConstraintSolver;
-class btDiscreteDynamicsWorld;
 
 
 
@@ -82,8 +78,8 @@ public:
 
 	Entity *create_entity(const vec3 &pos, const quaternion &ang);
 	owned<EntityManager> entity_manager;
-	void register_entity(Entity *e);
-	void unregister_entity(Entity *e);
+
+	Entity* load_template(const Path &filename, const vec3 &pos, const quaternion &ang);
 
 	Model *create_object(const Path &filename, const vec3 &pos, const quaternion &ang);
 	Model *create_object_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang);
@@ -96,7 +92,6 @@ public:
 
 	void set_active_physics(Entity *o, bool active, bool passive);//, bool test_collisions);
 
-	bool unregister(BaseClass *o);
 	void delete_entity(Entity *e);
 	void delete_link(Link *l);
 
@@ -120,7 +115,6 @@ public:
 	ParticleManager *particle_manager;
 
 	void iterate(float dt);
-	void iterate_physics(float dt);
 	void iterate_animations(float dt);
 
 	void shift_all(const vec3 &dpos);
@@ -142,16 +136,10 @@ public:
 
 	Array<ScriptInstanceData> systems;
 
-
-	btDefaultCollisionConfiguration* collisionConfiguration;
-	btCollisionDispatcher* dispatcher;
-	btBroadphaseInterface* overlappingPairCache;
-	btSequentialImpulseConstraintSolver* solver;
-	btDiscreteDynamicsWorld* dynamicsWorld;
-
 	Array<Link*> links;
 
 	PhysicsMode physics_mode;
+	PhysicsSimulation* physics_simulation;
 
 
 	base::optional<CollisionData> trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore = nullptr);

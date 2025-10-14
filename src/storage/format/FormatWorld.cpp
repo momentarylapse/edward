@@ -366,6 +366,8 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		el = xml::Element("entity").witha("pos", v2s(e->pos));
 		if (e->ang != quaternion::ID)
 			el.add_attribute("ang", v2s(e->ang.get_angles()));
+		if (i == data->EgoIndex)
+			el.add_attribute("role", "ego");
 		for (auto c: e->components) {
 			if (c->component_type != EdwardTag::_class)
 				el.add(save_component(session->plugin_manager->describe_class(c->component_type, c)));

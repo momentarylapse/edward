@@ -447,11 +447,11 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("World.physics_mode", &World::physics_mode);
 	ext->declare_class_element("World.msg_data", &World::msg_data);
 	ext->link_class_func("World.load_soon", &World::load_soon);
+	ext->link_class_func("World.load_template", &World::load_template);
 	ext->link_class_func("World.create_object", &_create_object);
 	ext->link_class_func("World.create_object_multi", &_create_object_multi);
 	ext->link_class_func("World.create_terrain", &World::create_terrain);
 	ext->link_class_func("World.create_entity", &World::create_entity);
-	ext->link_class_func("World.register_entity", &World::register_entity);
 	ext->link_class_func("World.set_active_physics", &World::set_active_physics);
 	ext->link_class_func("World.create_light_parallel", &World::create_light_parallel);
 	ext->link_class_func("World.create_light_point", &World::create_light_point);
@@ -464,7 +464,6 @@ void export_world(kaba::Exporter* ext) {
 	ext->link_class_func("World.shift_all", &World::shift_all);
 	ext->link_class_func("World.get_g", &World::get_g);
 	ext->link_class_func("World.trace", &World::trace);
-	ext->link_class_func("World.unregister", &World::unregister);
 	ext->link_class_func("World.delete_entity", &World::delete_entity);
 	ext->link_class_func("World.delete_link", &World::delete_link);
 	ext->link_class_func("World.subscribe", &World::subscribe);
@@ -942,6 +941,8 @@ void import_kaba() {
 	import_component_class<Camera>(m_world, "Camera");
 	import_component_class<::CubeMapSource>(m_world, "CubeMapSource");
 	import_component_class<NameTag>(m_world, "NameTag");
+	import_component_class<ModelRef>(m_world, "ModelRef");
+	import_component_class<TerrainRef>(m_world, "TerrainRef");
 
 	auto m_fx = kaba::default_context->load_module("y/fx.kaba");
 	import_component_class<ParticleGroup>(m_fx, "ParticleGroup");
@@ -1068,6 +1069,30 @@ const kaba::Class *find_class_derived(const Path &filename, const string &base_c
 
 const kaba::Class *find_class(const Path &filename, const string &name) {
 	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
+	if (filename.is_empty()) {
+		if (name == "Camera")
+			return Camera::_class;
+		if (name == "Light")
+			return Light::_class;
+		if (name == "ModelRef")
+			return ModelRef::_class;
+		if (name == "TerrainRef")
+			return TerrainRef::_class;
+		if (name == "SolidBody")
+			return SolidBody::_class;
+		if (name == "Skeleton")
+			return Skeleton::_class;
+		if (name == "Animator")
+			return Animator::_class;
+		if (name == "MeshCollider")
+			return MeshCollider::_class;
+		if (name == "TerrainCollider")
+			return TerrainCollider::_class;
+		if (name == "BoxCollider")
+			return BoxCollider::_class;
+		if (name == "SphereCollider")
+			return SphereCollider::_class;
+	}
 	try {
 		auto s = kaba::default_context->load_module(filename);
 		for (auto c: s->classes()) {

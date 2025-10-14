@@ -19,8 +19,7 @@ void WorldTerrainsEmitter::emit(const yrenderer::RenderParams& params, yrenderer
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
-	auto& terrains = EntityManager::global->get_component_list<Terrain>();
-	for (auto *t: terrains) {
+	auto draw_terrains = [&params, &rvd, shadow_pass] (Terrain* t) {
 		auto o = t->owner;
 
 		auto material = t->material.get();
@@ -39,7 +38,21 @@ void WorldTerrainsEmitter::emit(const yrenderer::RenderParams& params, yrenderer
 			yrenderer::apply_shader_data(params, shader, data);
 		}
 		rd.draw_triangles(params, t->vertex_buffer.get());
+	};
+
+	auto& terrains = EntityManager::global->get_component_list<Terrain>();
+	for (auto *t: terrains) {
+		draw_terrains(t);
 	}
+
+	auto& terrains2 = EntityManager::global->get_component_list<TerrainRef>();
+	for (auto t: terrains2) {
+		if (t->terrain) {
+			t->terrain->owner = t->owner;
+			draw_terrains(t->terrain);
+		}
+	}
+
 	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
 }

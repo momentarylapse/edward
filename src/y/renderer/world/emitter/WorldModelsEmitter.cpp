@@ -27,9 +27,7 @@ void WorldOpaqueModelsEmitter::emit(const yrenderer::RenderParams& params, yrend
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
-	auto& list = EntityManager::global->get_component_list<Model>();
-
-	for (auto m: list) {
+	auto draw_model = [&params, &rvd, shadow_pass] (Model* m) {
 		auto ani = m->owner ? m->owner->get_component<Animator>() : nullptr;
 		for (int i=0; i<m->material.num; i++) {
 			auto material = m->material[i];
@@ -57,7 +55,21 @@ void WorldOpaqueModelsEmitter::emit(const yrenderer::RenderParams& params, yrend
 
 			rd.draw_triangles(params, vb);
 		}
+	};
+
+	auto& list = EntityManager::global->get_component_list<Model>();
+	for (auto m: list) {
+		draw_model(m);
 	}
+
+	auto& list2 = EntityManager::global->get_component_list<ModelRef>();
+	for (auto m: list2) {
+		if (m->model) {
+			m->model->owner = m->owner;
+			draw_model(m->model);
+		}
+	}
+
 	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
 }

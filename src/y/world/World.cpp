@@ -40,52 +40,15 @@
 #include <lib/profiler/Profiler.h>
 #endif
 
-#if HAS_LIB_BULLET
-#include <btBulletDynamicsCommon.h>
-//#include <BulletCollision/CollisionShapes/btConvexPointCloudShape.h>
-#endif
 
 #include "Camera.h"
-
+#include "PhysicsSimulation.h"
+#include "lib/base/sort.h"
 
 
 //#define _debug_matrices_
 
 
-#if HAS_LIB_BULLET
-quaternion bt_get_q(const btQuaternion &q) {
-	quaternion r;
-	r.x = q.x();
-	r.y = q.y();
-	r.z = q.z();
-	r.w = q.w();
-	return r;
-}
-
-vec3 bt_get_v(const btVector3 &v) {
-	vec3 r;
-	r.x = v.x();
-	r.y = v.y();
-	r.z = v.z();
-	return r;
-}
-
-btVector3 bt_set_v(const vec3 &v) {
-	return btVector3(v.x, v.y, v.z);
-}
-
-btQuaternion bt_set_q(const quaternion &q) {
-	return btQuaternion(q.x, q.y, q.z, q.w);
-}
-
-btTransform bt_set_trafo(const vec3 &p, const quaternion &q) {
-	btTransform trafo;
-	trafo.setIdentity();
-	trafo.setOrigin(bt_set_v(p));
-	trafo.setRotation(bt_set_q(q));
-	return trafo;
-}
-#endif
 
 // game data
 World world;
@@ -115,27 +78,13 @@ void AddNetMsg(int msg, int argi0, const string &args)
 }
 
 
-int num_insane=0;
-
-inline bool TestVectorSanity(vec3 &v, const char *name) {
-	if (inf_v(v)) {
-		num_insane++;
-		v=v_0;
-		if (num_insane>100)
-			return false;
-		msg_error(format("Vektor %s unendlich!!!!!!!",name));
-		return true;
-	}
-	return false;
-}
-
-
 
 
 
 
 
 void GodInit(int ch_iter) {
+	// FIXME: heap allocate world?
 #ifdef _X_ALLOW_X_
 	world.ch_iterate = profiler::create_channel("world", ch_iter);
 	world.ch_animation = profiler::create_channel("animation", ch_iter);
@@ -145,47 +94,25 @@ void GodInit(int ch_iter) {
 void GodEnd() {
 }
 
-void send_collision(SolidBody *a, const CollisionData &col) {
-	for (auto c: a->owner->components)
-		c->on_collide(col);
-}
-
-#if HAS_LIB_BULLET
-void myTickCallback(btDynamicsWorld *world, btScalar timeStep) {
-	auto dispatcher = world->getDispatcher();
-	int n = dispatcher->getNumManifolds();
-	//CollisionData col;
-	for (int i=0; i<n; i++) {
-		auto contactManifold = dispatcher->getManifoldByIndexInternal(i);
-		auto obA = const_cast<btCollisionObject*>(contactManifold->getBody0());
-		auto obB = const_cast<btCollisionObject*>(contactManifold->getBody1());
-		auto a = static_cast<SolidBody*>(obA->getUserPointer());
-		auto b = static_cast<SolidBody*>(obB->getUserPointer());
-		int np = contactManifold->getNumContacts();
-		for (int j=0; j<np; j++) {
-			auto &pt = contactManifold->getContactPoint(j);
-			if (pt.getDistance() <= 0) {
-				if (a->active)
-					send_collision(a, {b->owner, b, bt_get_v(pt.m_positionWorldOnB), bt_get_v(pt.m_normalWorldOnB)});
-				if (b->active)
-					send_collision(b, {a->owner, a, bt_get_v(pt.m_positionWorldOnA), -bt_get_v(pt.m_normalWorldOnB)});
-			}
-		}
-	}
-}
-#endif
-
 World::World() {
 	entity_manager = new EntityManager;
 #ifdef _X_ALLOW_X_
 	entity_manager->component_manager->f_create = [] (const kaba::Class* type) {
 		return (Component*)PluginManager::create_instance(type, Array<ScriptInstanceDataVariable>{});
 	};
-	entity_manager->component_manager->f_apply = [] (const kaba::Class* type, Component* c, const Array<ScriptInstanceDataVariable>& vars) {
+	entity_manager->component_manager->f_apply = [this] (const kaba::Class* type, Component* c, const Array<ScriptInstanceDataVariable>& vars) {
 		/*Array<ScriptInstanceDataVariable> vars;
 		for (const auto& [k, v]: params)
 			vars.add({k, v.str()});*/
 		PluginManager::assign_variables(c, type, vars);
+		if (type == ModelRef::_class) {
+			auto cc = static_cast<ModelRef*>(c);
+			cc->model = engine.resource_manager->load_model(cc->filename);
+		}
+		if (type == TerrainRef::_class) {
+			auto cc = static_cast<TerrainRef*>(c);
+			cc->terrain = new Terrain(engine.context, cc->filename);
+		}
 	};
 #endif
 
@@ -195,27 +122,14 @@ World::World() {
 
 
 	physics_mode = PhysicsMode::FULL_EXTERNAL;
-#if HAS_LIB_BULLET
-	collisionConfiguration = new btDefaultCollisionConfiguration();
-	dispatcher = new btCollisionDispatcher(collisionConfiguration);
-	overlappingPairCache = new btDbvtBroadphase();
-	solver = new btSequentialImpulseConstraintSolver;
-	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
-	dynamicsWorld->setInternalTickCallback(myTickCallback);
-#endif
+	physics_simulation = new PhysicsSimulation(this);
 
 
 	reset();
 }
 
 World::~World() {
-#if HAS_LIB_BULLET
-	delete dynamicsWorld;
-	delete solver;
-	delete overlappingPairCache;
-	delete dispatcher;
-	delete collisionConfiguration;
-#endif
+	delete physics_simulation;
 }
 
 void World::reset() {
@@ -266,8 +180,22 @@ void World::load_soon(const Path &filename) {
 	next_filename = filename;
 }
 
+Array<ScriptInstanceData> sort_components(const Array<ScriptInstanceData>& components) {
+	auto r = components;
+	for (int i=0; i<r.num; i++)
+		for (int k=i+1; k<r.num; k++) {
+			if (!r[i].filename.is_empty() and r[k].filename.is_empty())
+				r.swap(i, k);
+			else if (r[i].class_name == "SolidBody" and r[k].class_name == "MeshCollider")
+				r.swap(i, k);
+			else if (r[i].class_name == "SolidBody" and r[k].class_name == "TerrainCollider")
+				r.swap(i, k);
+		}
+	return r;
+}
+
 void add_user_components(EntityManager* em, Entity *ent, const Array<ScriptInstanceData>& components) {
-	for (auto &cc: components) {
+	for (auto &cc: sort_components(components)) {
 		msg_write("add component " + cc.class_name);
 #ifdef _X_ALLOW_X_
 		auto type = PluginManager::find_class(cc.filename, cc.class_name);
@@ -303,7 +231,6 @@ bool World::load(const LevelData &ld) {
 			ll->light.power = yrenderer::Light::_radius_to_power(l.radius);
 
 		add_user_components(entity_manager.get(), o, l.components);
-		register_entity(o);
 	}
 
 	// skybox
@@ -324,12 +251,7 @@ bool World::load(const LevelData &ld) {
 		cc->bloom_factor = c.bloom_factor;
 		cc->fov = c.fov;
 
-		add_user_components(entity_manager.get(), cam_main->owner, c.components);
-	}
-	auto& cameras = entity_manager->get_component_list<Camera>();
-	if (cameras.num == 0) {
-		msg_error("no camera defined... creating one");
-		cam_main = create_camera(v_0, quaternion::ID);
+		add_user_components(entity_manager.get(), cc->owner, c.components);
 	}
 
 	// objects
@@ -341,8 +263,7 @@ bool World::load(const LevelData &ld) {
 				auto *oo = create_object_x(o.filename, o.name, o.pos, q);
 
 				add_user_components(entity_manager.get(), oo->owner, o.components);
-				register_entity(oo->owner);
-				if (ld.ego_index == i)
+				if (ld.ego_index == i + 1000000000)
 					ego = oo->owner;
 				if (i % 5 == 0)
 					DrawSplashScreen("Objects", (float)i / (float)ld.objects.num / 5 * 3);
@@ -366,6 +287,8 @@ bool World::load(const LevelData &ld) {
 		auto ee = create_entity(e.pos, e.ang);
 
 		add_user_components(entity_manager.get(), ee, e.components);
+		if (ld.ego_index == i)
+			ego = ee;
 	}
 
 	auto& model_list = entity_manager->get_component_list<Model>();
@@ -377,6 +300,14 @@ bool World::load(const LevelData &ld) {
 		add_link(Link::create(l.type, a, b, l.pos, quaternion::rotation(l.ang)));
 	}
 
+	auto& cameras = entity_manager->get_component_list<Camera>();
+	if (cameras.num == 0) {
+		msg_error("no camera defined... creating one");
+		cam_main = create_camera(v_0, quaternion::ID);
+	} else if (!cam_main) {
+		cam_main = cameras[0];
+	}
+
 	systems = ld.systems;
 
 	net_msg_enabled = true;
@@ -385,33 +316,25 @@ bool World::load(const LevelData &ld) {
 
 void World::add_link(Link *l) {
 	links.add(l);
-#if HAS_LIB_BULLET
-	dynamicsWorld->addConstraint(l->con, true);
-#endif
+	physics_simulation->add_link(l);
 }
 
 
 Terrain *World::create_terrain(const Path &filename, const vec3 &pos) {
+	auto e = create_entity(pos, quaternion::ID);
 
-	auto o = create_entity(pos, quaternion::ID);
-
-	auto t = entity_manager->add_component<Terrain>(o);
+	auto t = entity_manager->add_component<Terrain>(e);
 	t->load(engine.context, filename);
 
-	[[maybe_unused]] auto col = entity_manager->add_component<TerrainCollider>(o);
-	[[maybe_unused]] auto sb = entity_manager->add_component<SolidBody>(o, {{"physics_active", "", "false"}});
-#if HAS_LIB_BULLET
-	dynamicsWorld->addRigidBody(sb->body);
-#endif
-
-	register_entity(t->owner);
+	entity_manager->add_component<TerrainCollider>(e);
+	entity_manager->add_component<SolidBody>(e, {{"physics_active", "", "false"}});
 
 	return t;
 }
 
-bool GodLoadWorld(const Path &filename) {
+bool GodLoadWorld(const Path& filename) {
 	LevelData level_data;
-	bool ok = level_data.load(engine.map_dir | filename.with(".world"));
+	bool ok = level_data.load(filename);
 	ok &= world.load(level_data);
 	return ok;
 }
@@ -420,18 +343,26 @@ Entity *World::create_entity(const vec3& pos, const quaternion& ang) {
 	return entity_manager->create_entity(pos, ang);
 }
 
-// deprecated
-void World::register_entity(Entity *e) {
-	msg_data.e = e;
-	notify("entity-add"); // FIXME this is pointless...
+Entity* World::load_template(const Path& filename, const vec3 &pos, const quaternion& ang) {
+	auto e = create_entity(pos, ang);
+
+	const auto t = LevelData::load_template(engine.object_dir | filename);
+	add_user_components(entity_manager.get(), e, t.components);
+
+	return e;
 }
 
 Model *World::create_object(const Path &filename, const vec3 &pos, const quaternion &ang) {
-	auto o = create_object_x(filename, "", pos, ang);
-	return o;
+	return create_object_x(filename, "", pos, ang);
 }
 
 Model *World::create_object_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang) {
+	if (engine.resetting_game)
+		throw Exception("create_object during game reset");
+
+	if (filename.is_empty())
+		throw Exception("create_object: empty filename");
+
 	auto e = create_entity(pos, ang);
 	auto m = attach_model(e, filename);
 
@@ -445,46 +376,18 @@ Model *World::create_object_x(const Path &filename, const string &name, const ve
 
 
 Model* World::attach_model(Entity* e, const Path& filename) {
-	if (engine.resetting_game)
-		throw Exception("create_object during game reset");
-
-	if (filename.is_empty())
-		throw Exception("create_object: empty filename");
-
-	//msg_write(on);
 	auto *m = engine.resource_manager->load_model(filename);
 
 	entity_manager->_add_component_external_(e, m);
 	m->update_matrix();
 
-
 	// automatic components
-	for (const auto& c: m->_template->components)
-		if (c.class_name == "SolidBody") {
-			[[maybe_unused]] auto col = entity_manager->add_component<MeshCollider>(e);
-			[[maybe_unused]] auto sb = entity_manager->add_component<SolidBody>(e, c.variables);
-#if HAS_LIB_BULLET
-			dynamicsWorld->addRigidBody(sb->body);
-#endif
-		}
-
-	if (m->_template->skeleton)
-		entity_manager->add_component<Skeleton>(e);
-
-	for (const auto& c: m->_template->components) {
-		if (c.class_name == "Animator")
-			entity_manager->add_component<Animator>(e);
-	}
+	add_user_components(entity_manager.get(), e, m->_template->components);
 
 	return m;
 }
 
 void World::unattach_model(Model* m) {
-#if HAS_LIB_BULLET
-	if (auto sb = m->owner->get_component<SolidBody>())
-		dynamicsWorld->removeRigidBody(sb->body);
-#endif
-
 	entity_manager->delete_component(m->owner, m);
 }
 
@@ -502,34 +405,7 @@ MultiInstance* World::create_object_multi(const Path &filename, const Array<vec3
 
 
 void World::set_active_physics(Entity *o, bool active, bool passive) { //, bool test_collisions) {
-	auto sb = o->get_component<SolidBody>();
-	auto c = o->get_component_derived<Collider>();
-
-#if HAS_LIB_BULLET
-	btScalar mass(active ? sb->mass : 0);
-	btVector3 local_inertia(0, 0, 0);
-	if (c->col_shape) {
-		c->col_shape->calculateLocalInertia(mass, local_inertia);
-		sb->theta_0._00 = local_inertia.x();
-		sb->theta_0._11 = local_inertia.y();
-		sb->theta_0._22 = local_inertia.z();
-	}
-	sb->body->setMassProps(mass, local_inertia);
-	if (passive and !sb->passive)
-		dynamicsWorld->addRigidBody(sb->body);
-	if (!passive and sb->passive)
-		dynamicsWorld->removeRigidBody(sb->body);
-
-	/*if (!passive and test_collisions) {
-		msg_error("FIXME pure collision");
-		dynamicsWorld->addCollisionObject(o->body);
-	}*/
-#endif
-
-
-	sb->active = active;
-	sb->passive = passive;
-	//b->test_collisions = test_collisions;
+	physics_simulation->set_active_physics(o, active, passive);
 }
 
 void World::subscribe(const string &msg, const Callback &f) {
@@ -543,71 +419,21 @@ void World::notify(const string &msg) {
 		}
 }
 
-void World::unregister_entity(Entity *e) {
-	if (false)
-		AddNetMsg(NET_MSG_DELETE_OBJECT, e->object_id, "");
-
-	// ego...
-	if (e == ego)
-		ego = nullptr;
-
-
-#if HAS_LIB_BULLET
-	if (auto sb = e->get_component<SolidBody>())
-		dynamicsWorld->removeRigidBody(sb->body);
-#endif
-}
-
 void World::delete_entity(Entity *e) {
-	unregister_entity(e);
-	e->on_delete_rec();
+	//e->on_delete_rec();
 
 	msg_data.e = e;
 	notify("entity-delete");
 	entity_manager->delete_entity(e);
 }
 
-void World::delete_link(Link *l) {
-	if (unregister(l))
-		delete l;
-}
-
-bool World::unregister(BaseClass* x) {
-	//msg_error("World.unregister  " + i2s((int)x->type));
-	if (x->type == BaseClass::Type::ENTITY) {
-		auto e = (Entity*)x;
-		unregister_entity(e);
-	} else if (x->type == BaseClass::Type::LINK) {
-		foreachi(auto *l, links, i)
-			if (l == x) {
-				//msg_write(" -> LINK");
-				links.erase(i);
-				return true;
-			}
-	}
-	return false;
-}
-
-void World::iterate_physics(float dt) {
-	auto& list = entity_manager->get_component_list<SolidBody>();
-
-	if (physics_mode == PhysicsMode::FULL_EXTERNAL) {
-#if HAS_LIB_BULLET
-		dynamicsWorld->setGravity(bt_set_v(gravity));
-		dynamicsWorld->stepSimulation(dt, 10);
-
-		for (auto *o: list)
-			o->get_state_from_bullet();
-#endif
-	} else if (physics_mode == PhysicsMode::SIMPLE) {
-		for (auto *o: list)
-			o->do_simple_physics(dt);
-	}
-
-	for (auto *sb: list) {
-		if (auto m = sb->owner->get_component<Model>())
-			m->update_matrix();
-	}
+void World::delete_link(Link* _l) {
+	foreachi(auto *l, links, i)
+		if (l == _l) {
+			//msg_write(" -> LINK");
+			links.erase(i);
+			delete l;
+		}
 }
 
 void World::iterate_animations(float dt) {
@@ -639,7 +465,7 @@ void World::iterate(float dt) {
 #ifdef _X_ALLOW_X_
 	profiler::begin(ch_iterate);
 	if (engine.physics_enabled) {
-		iterate_physics(dt);
+		physics_simulation->on_iterate(dt);
 	} else {
 		/*for (auto *o: objects)
 			if (o)
@@ -653,12 +479,15 @@ void World::iterate(float dt) {
 
 Light* World::attach_light_parallel(Entity* e, const color& c) {
 	auto l = entity_manager->add_component<Light>(e);
+	l->light.type = yrenderer::LightType::DIRECTIONAL;
 	l->light.col = c;
 	return l;
 }
 
+// r is deprecated... c used to defined power -> implicit radius
 Light* World::attach_light_point(Entity* e, const color& c, float r) {
 	auto l = entity_manager->add_component<Light>(e);
+	l->light.type = yrenderer::LightType::POINT;
 	l->light.col = c;
 	//l->light.power = yrenderer::Light::_radius_to_power(r);
 	return l;
@@ -666,6 +495,7 @@ Light* World::attach_light_point(Entity* e, const color& c, float r) {
 
 Light* World::attach_light_cone(Entity* e, const color& c, float r, float theta) {
 	auto l = entity_manager->add_component<Light>(e);
+	l->light.type = yrenderer::LightType::CONE;
 	l->light.col = c;
 	//l->light.power = yrenderer::Light::_radius_to_power(r);
 	l->light.theta = theta;
@@ -696,8 +526,7 @@ Camera *World::create_camera(const vec3 &pos, const quaternion &ang) {
 void World::shift_all(const vec3 &dpos) {
 	entity_manager->shift_all(dpos);
 
-	for (auto &sb: entity_manager->get_component_list<SolidBody>())
-		sb->state_to_bullet();
+	physics_simulation->update_all_bullet();
 
 	for (auto *m: entity_manager->get_component_list<Model>())
 		m->update_matrix();
@@ -718,28 +547,7 @@ enum TraceMode {
 
 base::optional<CollisionData> World::trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore) {
 	if (mode & TraceMode::PHYSICAL) {
-#if HAS_LIB_BULLET
-		btCollisionWorld::ClosestRayResultCallback ray_callback(bt_set_v(p1), bt_set_v(p2));
-		//ray_callback.m_collisionFilterMask = FILTER_CAMERA;
-
-		// Perform raycast
-		this->dynamicsWorld->getCollisionWorld()->rayTest(bt_set_v(p1), bt_set_v(p2), ray_callback);
-		if (ray_callback.hasHit()) {
-			CollisionData d;
-			auto sb = static_cast<SolidBody *>(ray_callback.m_collisionObject->getUserPointer());
-			d.pos = bt_get_v(ray_callback.m_hitPointWorld);
-			d.n = bt_get_v(ray_callback.m_hitNormalWorld);
-			d.entity = sb->owner;
-			d.body = sb;
-
-			// ignore...
-			if (sb and sb->owner == o_ignore) {
-				vec3 dir = (p2 - p1).normalized();
-				return trace(d.pos + dir * 2, p2, mode, o_ignore);
-			}
-			return d;
-		}
-#endif
+		return physics_simulation->trace(p1, p2, mode, o_ignore);
 	} else if (mode & TraceMode::VISIBLE) {
 
 	}

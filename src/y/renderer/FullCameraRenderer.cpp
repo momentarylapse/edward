@@ -98,7 +98,11 @@ FullCameraRenderer::FullCameraRenderer(Context* ctx, Camera* _cam, RenderPathTyp
 FullCameraRenderer::~FullCameraRenderer() = default;
 
 void FullCameraRenderer::check_terrains(const vec3& cam_pos) {
-	auto& terrains = EntityManager::global->get_component_list<Terrain>();
+	auto terrains = EntityManager::global->get_component_list<Terrain>();
+	for (auto t: EntityManager::global->get_component_list<TerrainRef>())
+		if (t->terrain)
+			terrains.add(t->terrain);
+
 	if (terrains.num == 0)
 		return;
 

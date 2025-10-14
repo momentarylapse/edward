@@ -25,13 +25,13 @@ LevelData::LevelData() {
 }
 
 
-bool LevelData::load(const Path &filename) {
+bool LevelData::load(const Path& filename) {
 	world_filename = filename;
 
 	using namespace PluginManager;
 
 	xml::Parser p;
-	p.load(filename);
+	p.load(world_filename);
 	if (auto meta = p.elements[0].find("meta")) {
 		for (auto &e: meta->elements) {
 			if (e.tag == "background") {
@@ -146,13 +146,15 @@ bool LevelData::load(const Path &filename) {
 				o.pos = s2v(e.value("pos"));
 				o.ang = s2v(e.value("ang"));
 				if (e.value("role") == "ego")
-					ego_index = objects.num;
+					ego_index = objects.num + 1000000000; // :P
 				read_components(o.components, e);
 				objects.add(o);
 			} else if (e.tag == "entity") {
 				Entity o;
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
+				if (e.value("role") == "ego")
+					ego_index = entities.num;
 				read_components(o.components, e);
 				entities.add(o);
 			} else if (e.tag == "link") {
