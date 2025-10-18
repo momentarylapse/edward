@@ -37,7 +37,7 @@ HDRResolver::HDRResolver(Context* ctx, int width, int height, bool manual_mode) 
 	depth_buffer = new ygfx::DepthBuffer(width, height, "d:f32");
 
 
-	auto shader_blur = shader_manager->load_shader("forward/blur.shader");
+	auto shader_blur = shader_manager->load_shader("post/blur.shader");
 	int bloomw = width, bloomh = height;
 	auto bloom_input = texture;
 	float r = 3;
@@ -70,7 +70,7 @@ HDRResolver::HDRResolver(Context* ctx, int width, int height, bool manual_mode) 
 		threshold = 0;
 	}
 
-	auto shader_out = shader_manager->load_shader("forward/hdr.shader");
+	auto shader_out = shader_manager->load_shader("post/hdr.shader");
 	out_renderer = new ThroughShaderRenderer(ctx, "out", shader_out);
 	out_renderer->bind_textures(0, {texture.get(), bloom_levels[0].tex_out.get(), bloom_levels[1].tex_out.get(), bloom_levels[2].tex_out.get(), bloom_levels[3].tex_out.get()});
 

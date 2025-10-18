@@ -61,15 +61,15 @@ PostProcessor::PostProcessor(Context* ctx, int width, int height) : PostProcesso
 	fb_small1->color_attachments[0]->set_options("wrap=clamp");
 	fb_small2->color_attachments[0]->set_options("wrap=clamp");
 
-	shader_blur = ResourceManager::load_shader("forward/blur.shader");
-	shader_out = ResourceManager::load_shader("forward/hdr.shader");*/
+	shader_blur = ResourceManager::load_shader("post/blur.shader");
+	shader_out = ResourceManager::load_shader("post/hdr.shader");*/
 
 	vb_2d = new nix::VertexBuffer("3f,3f,2f");
 	vb_2d->create_quad(rect::ID_SYM);
 
 
 	//shader_depth = ResourceManager::load_shader("forward/depth.shader");
-	//shader_resolve_multisample = ResourceManager::load_shader("forward/resolve-multisample.shader");
+	//shader_resolve_multisample = ResourceManager::load_shader("post/resolve-multisample.shader");
 }
 
 PostProcessor::~PostProcessor() {

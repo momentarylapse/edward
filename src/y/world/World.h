@@ -97,7 +97,6 @@ public:
 
 	void add_link(Link *l);
 
-	Path filename;
 	color background;
 	Array<Model*> skybox;
 	Fog fog;

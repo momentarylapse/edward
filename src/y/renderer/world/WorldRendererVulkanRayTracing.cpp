@@ -59,9 +59,9 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, int w
 		rtx.dset->set_uniform_buffer(4, rvd.ubo_light.get());
 		rtx.dset->set_uniform_buffer(5, scene_view.ray_tracing_data->buffer_meshes.get());
 
-		auto shader_gen = shader_manager->load_shader("vulkan/gen.shader");
-		auto shader1 = shader_manager->load_shader("vulkan/group1.shader");
-		auto shader2 = shader_manager->load_shader("vulkan/group2.shader");
+		auto shader_gen = shader_manager->load_shader("raytracing/gen.shader");
+		auto shader1 = shader_manager->load_shader("raytracing/group1.shader");
+		auto shader2 = shader_manager->load_shader("raytracing/group2.shader");
 		rtx.pipeline = new vulkan::RayPipeline("[[acceleration-structure,image,buffer,buffer,buffer,buffer]]", {shader_gen.get(), shader1.get(), shader2.get()}, 2);
 		rtx.pipeline->create_sbt();
 

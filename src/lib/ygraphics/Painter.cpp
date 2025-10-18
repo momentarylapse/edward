@@ -26,8 +26,10 @@ Painter::Painter(DrawingHelperData* _aux, const rect& native_area, const rect& a
 	ui_scale = _ui_scale;
 	face = _face;
 
-	Painter::set_color(White);
-	Painter::set_font("", 16, false, false);
+	if (aux) {
+		Painter::set_color(White);
+		Painter::set_font("", 16, false, false);
+	}
 
 #ifdef USING_VULKAN
 	if (aux)

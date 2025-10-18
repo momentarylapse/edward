@@ -56,9 +56,9 @@ RayTracingData::RayTracingData(yrenderer::Context* _ctx, RaytracingMode _mode) {
 		rtx.dset = rtx.pool->create_set("acceleration-structure,image,buffer,buffer,buffer,buffer");
 		rtx.dset->set_uniform_buffer(5, buffer_meshes.get());
 
-		auto shader_gen = ctx->shader_manager->load_shader("vulkan/gen.shader");
-		auto shader1 = ctx->shader_manager->load_shader("vulkan/group1.shader");
-		auto shader2 = ctx->shader_manager->load_shader("vulkan/group2.shader");
+		auto shader_gen = ctx->shader_manager->load_shader("raytracing/gen.shader");
+		auto shader1 = ctx->shader_manager->load_shader("raytracing/group1.shader");
+		auto shader2 = ctx->shader_manager->load_shader("raytracing/group2.shader");
 		rtx.pipeline = new vulkan::RayPipeline("[[acceleration-structure,image,buffer,buffer,buffer,buffer]]", {shader_gen.get(), shader1.get(), shader2.get()}, 2);
 		rtx.pipeline->create_sbt();
 
