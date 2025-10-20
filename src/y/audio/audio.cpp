@@ -4,11 +4,11 @@
 #include "Listener.h"
 #include "Loading.h"
 #include "SoundSource.h"
-#include "../helper/DeletionQueue.h"
-#include "../world/World.h" // FIXME
-#include "../y/EntityManager.h"
-#include "../y/Entity.h"
-#include "../y/EngineData.h"
+#include <helper/DeletionQueue.h>
+#include <world/World.h> // FIXME
+#include <ecs/EntityManager.h>
+#include <ecs/Entity.h>
+#include <EngineData.h>
 #include <lib/base/base.h>
 #include <lib/base/algo.h>
 

@@ -48,8 +48,8 @@
 #include "plugins/PluginManager.h"
 
 #include <string>
-#include <y/world/Camera.h>
-#include <y/world/Light.h>
+#include <y/world/components/Camera.h>
+#include <y/world/components/Light.h>
 #include <y/world/Terrain.h>
 #include <y/world/components/Skeleton.h>
 #include <y/world/components/Animator.h>

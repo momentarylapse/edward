@@ -5,10 +5,9 @@
 #include "ModelRefPanel.h"
 #include "../data/DataWorld.h"
 #include <y/world/Model.h>
-#include <y/y/Entity.h>
+#include <ecs/Entity.h>
 #include <storage/format/Format.h>
-
-#include "storage/Storage.h"
+#include <storage/Storage.h>
 
 
 ModelRefPanel::ModelRefPanel(DataWorld* _data, int _index) : Panel("model-panel") {

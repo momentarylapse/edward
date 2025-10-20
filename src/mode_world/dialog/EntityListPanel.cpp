@@ -7,10 +7,10 @@
 #include <lib/base/iter.h>
 #include <view/MultiView.h>
 #include <view/DocumentSession.h>
-#include <y/EntityManager.h>
-#include <y/Entity.h>
-#include <y/world/Camera.h>
-#include <y/world/Light.h>
+#include <ecs/EntityManager.h>
+#include <ecs/Entity.h>
+#include <y/world/components/Camera.h>
+#include <y/world/components/Light.h>
 #include <y/world/Model.h>
 #include <y/world/Terrain.h>
 

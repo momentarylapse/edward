@@ -8,10 +8,9 @@
 #include <lib/yrenderer/scene/RenderViewData.h>
 #include <lib/yrenderer/scene/SceneView.h>
 #include <world/Model.h>
-#include <world/ModelManager.h>
 #include <world/components/Animator.h>
-#include <y/EntityManager.h>
-#include <y/Entity.h>
+#include <ecs/EntityManager.h>
+#include <ecs/Entity.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/base/sort.h>
 

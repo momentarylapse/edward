@@ -13,7 +13,8 @@
 #include <storage/Storage.h>
 #include <view/dialogs/CommonDialogs.h>
 #include <world/World.h>
-#include <y/BaseClass.h>
+#include <world/Physics.h>
+#include <ecs/BaseClass.h>
 
 #include "ComponentSelectionDialog.h"
 #include <stuff/PluginManager.h>

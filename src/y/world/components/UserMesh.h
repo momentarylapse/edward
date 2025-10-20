@@ -8,7 +8,7 @@
 #ifndef WORLD_COMPONENTS_USERMESH_H
 #define WORLD_COMPONENTS_USERMESH_H
 
-#include "../../y/Component.h"
+#include <ecs/Component.h>
 #include <lib/yrenderer/Material.h>
 #include <lib/base/base.h>
 #include <lib/base/pointer.h>

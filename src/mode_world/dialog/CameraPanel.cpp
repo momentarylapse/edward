@@ -4,8 +4,8 @@
 
 #include "CameraPanel.h"
 #include "../data/DataWorld.h"
-#include <y/world/Camera.h>
-#include <y/y/Entity.h>
+#include <y/world/components/Camera.h>
+#include <ecs/Entity.h>
 
 CameraPanel::CameraPanel(DataWorld* _data, int _index) : Panel("camera-panel") {
 	from_source(R"foodelim(

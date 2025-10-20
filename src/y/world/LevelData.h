@@ -13,7 +13,7 @@
 #include <lib/os/path.h>
 #include <lib/math/vec3.h>
 #include <lib/image/color.h>
-#include <y/Entity.h>
+#include <ecs/Entity.h>
 
 struct LevelData;
 

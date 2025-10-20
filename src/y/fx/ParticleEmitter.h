@@ -13,8 +13,8 @@
 #include "../lib/base/pointer.h"
 #include "../lib/math/vec3.h"
 #include "../lib/image/color.h"
-#include "../y/BaseClass.h"
-#include "../y/Component.h"
+#include <ecs/BaseClass.h>
+#include <ecs/Component.h>
 #include "Particle.h"
 #include "Beam.h"
 

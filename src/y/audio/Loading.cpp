@@ -5,7 +5,7 @@
 #include <lib/os/filesystem.h>
 #include <lib/os/file.h>
 #include <lib/os/msg.h>
-#include "../y/EngineData.h"
+#include <EngineData.h>
 
 
 #ifdef HAS_LIB_OGG

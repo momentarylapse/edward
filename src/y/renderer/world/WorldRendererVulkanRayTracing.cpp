@@ -16,9 +16,9 @@
 #include <lib/profiler/Profiler.h>
 #include <lib/yrenderer/ShaderManager.h>
 #include <lib/yrenderer/scene/CameraParams.h>
-#include "../../world/Camera.h"
+#include "../../world/components/Camera.h"
 #include "../../world/World.h"
-#include "../../y/EngineData.h"
+#include <EngineData.h>
 #include "../../Config.h"
 
 

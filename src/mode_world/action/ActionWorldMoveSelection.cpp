@@ -12,8 +12,8 @@
 #include "../data/WorldLink.h"
 #include <y/world/Terrain.h>
 #include "../../Session.h"
-#include <y/EntityManager.h>
-#include <y/Entity.h>
+#include <ecs/EntityManager.h>
+#include <ecs/Entity.h>
 
 ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Selection& selection) {
 	// list of selected objects and save old pos

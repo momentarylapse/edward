@@ -11,7 +11,7 @@
 #include <lib/base/base.h>
 #include <lib/os/path.h>
 #include <lib/math/vec3.h>
-#include "../y/Component.h"
+#include <ecs/Component.h>
 #include <lib/yrenderer/Material.h>
 #include <lib/ygraphics/graphics-fwd.h>
 

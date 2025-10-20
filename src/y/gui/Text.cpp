@@ -10,7 +10,7 @@
 #include <lib/math/vec2.h>
 #include <lib/image/image.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <y/EngineData.h>
+#include <EngineData.h>
 
 
 namespace gui {

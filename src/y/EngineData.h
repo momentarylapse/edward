@@ -51,7 +51,6 @@ public:
 	bool resetting_game;
 	gui::Font *default_font;
 	Path initial_world_file, second_world_file;
-	bool physics_enabled, collisions_enabled;
 	int mirror_level_max;
 
 	int num_real_col_tests;

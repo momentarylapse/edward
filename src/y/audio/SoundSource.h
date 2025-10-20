@@ -1,9 +1,9 @@
 #pragma once
 
 #include "audio.h"
-#include "../lib/math/vec3.h"
-#include "../lib/base/pointer.h"
-#include "../y/Component.h"
+#include <lib/math/vec3.h>
+#include <lib/base/pointer.h>
+#include <ecs/Component.h>
 
 class Path;
 

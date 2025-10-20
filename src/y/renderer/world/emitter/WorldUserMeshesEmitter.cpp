@@ -8,8 +8,8 @@
 #include <lib/yrenderer/Context.h>
 #include <lib/yrenderer/helper/Bindable.h>
 #include <world/components/UserMesh.h>
-#include <y/EntityManager.h>
-#include <y/Entity.h>
+#include <ecs/EntityManager.h>
+#include <ecs/Entity.h>
 
 WorldOpaqueUserMeshesEmitter::WorldOpaqueUserMeshesEmitter(yrenderer::Context* ctx) : MeshEmitter(ctx, "user") {
 }

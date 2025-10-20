@@ -47,18 +47,19 @@
 #include <lib/yrenderer/post/PostProcessor.h>
 #include <renderer/helper/Raytracing.h>
 #include <lib/yrenderer/scene/SceneView.h>
-#include "../y/EngineData.h"
-#include "../y/Component.h"
-#include "../y/ComponentManager.h"
-#include "../y/System.h"
-#include "../y/SystemManager.h"
-#include "../world/Camera.h"
+#include <EngineData.h>
+#include <ecs/Component.h>
+#include <ecs/ComponentManager.h>
+#include <ecs/System.h>
+#include <ecs/SystemManager.h>
+#include "../world/components/Camera.h"
 #include "../world/Link.h"
 #include "../world/Model.h"
 #include "../world/ModelManager.h"
 #include "../world/Terrain.h"
 #include "../world/World.h"
-#include "../world/Light.h"
+#include "../world/Physics.h"
+#include "../world/components/Light.h"
 #include "../world/components/SolidBody.h"
 #include "../world/components/Collider.h"
 #include "../world/components/Animator.h"
@@ -68,11 +69,11 @@
 #include "../world/components/CubeMapSource.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/ygraphics/Context.h>
-#include "../lib/kaba/dynamic/exception.h"
-#include "../lib/os/msg.h"
-#include "../lib/image/image.h"
-#include "y/EntityManager.h"
-#include "y/BaseClass.h"
+#include <lib/kaba/dynamic/exception.h>
+#include <lib/os/msg.h>
+#include <lib/image/image.h>
+#include <ecs/EntityManager.h>
+#include <ecs/BaseClass.h>
 
 namespace kaba {
 	extern const Class* TypePath;
@@ -259,32 +260,32 @@ void export_ecs(kaba::Exporter* ext) {
 	ext->declare_class_element("NameTag.name", &NameTag::name);
 
 	System con;
-	ext->declare_class_size("Controller", sizeof(System));
-	ext->link_class_func("Controller.__init__", &System::__init__);
-	ext->link_virtual("Controller.__delete__", &System::__delete__, &con);
-	ext->link_virtual("Controller.on_init", &System::on_init, &con);
-	ext->link_virtual("Controller.on_delete", &System::on_delete, &con);
-	ext->link_virtual("Controller.on_iterate", &System::on_iterate, &con);
-	ext->link_virtual("Controller.on_iterate_pre", &System::on_iterate_pre, &con);
-	ext->link_virtual("Controller.on_draw_pre", &System::on_draw_pre, &con);
-	ext->link_virtual("Controller.on_input", &System::on_input, &con);
-	ext->link_virtual("Controller.on_key", &System::on_key, &con);
-	ext->link_virtual("Controller.on_key_down", &System::on_key_down, &con);
-	ext->link_virtual("Controller.on_key_up", &System::on_key_up, &con);
-	ext->link_virtual("Controller.on_left_button_down", &System::on_left_button_down, &con);
-	ext->link_virtual("Controller.on_left_button_up", &System::on_left_button_up, &con);
-	ext->link_virtual("Controller.on_middle_button_down", &System::on_middle_button_down, &con);
-	ext->link_virtual("Controller.on_middle_button_up", &System::on_middle_button_up, &con);
-	ext->link_virtual("Controller.on_right_button_down", &System::on_right_button_down, &con);
-	ext->link_virtual("Controller.on_right_button_up", &System::on_right_button_up, &con);
-	ext->link_virtual("Controller.on_render_inject", &System::on_render_inject, &con);
-	ext->link_class_func("Controller.__del_override__", &DeletionQueue::add);
+	ext->declare_class_size("System", sizeof(System));
+	ext->link_class_func("System.__init__", &System::__init__);
+	ext->link_virtual("System.__delete__", &System::__delete__, &con);
+	ext->link_virtual("System.on_init", &System::on_init, &con);
+	ext->link_virtual("System.on_delete", &System::on_delete, &con);
+	ext->link_virtual("System.on_iterate", &System::on_iterate, &con);
+	ext->link_virtual("System.on_iterate_pre", &System::on_iterate_pre, &con);
+	ext->link_virtual("System.on_draw_pre", &System::on_draw_pre, &con);
+	ext->link_virtual("System.on_input", &System::on_input, &con);
+	ext->link_virtual("System.on_key", &System::on_key, &con);
+	ext->link_virtual("System.on_key_down", &System::on_key_down, &con);
+	ext->link_virtual("System.on_key_up", &System::on_key_up, &con);
+	ext->link_virtual("System.on_left_button_down", &System::on_left_button_down, &con);
+	ext->link_virtual("System.on_left_button_up", &System::on_left_button_up, &con);
+	ext->link_virtual("System.on_middle_button_down", &System::on_middle_button_down, &con);
+	ext->link_virtual("System.on_middle_button_up", &System::on_middle_button_up, &con);
+	ext->link_virtual("System.on_right_button_down", &System::on_right_button_down, &con);
+	ext->link_virtual("System.on_right_button_up", &System::on_right_button_up, &con);
+	ext->link_virtual("System.on_render_inject", &System::on_render_inject, &con);
+	ext->link_class_func("System.__del_override__", &DeletionQueue::add);
 
 	ext->link_func("__get_component_list", &__query_component_list);
 	ext->link_func("__get_component_family_list", &__query_component_list_family);
 	ext->link_func("__get_component_list2", &__query_component_list2);
 
-	ext->link_func("__get_controller", &SystemManager::get);
+	ext->link_func("__get_system", &SystemManager::get);
 }
 
 void export_world(kaba::Exporter* ext) {
@@ -438,34 +439,40 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("TerrainRef.filename", &TerrainRef::filename);
 	ext->declare_class_element("TerrainRef.terrain", &TerrainRef::terrain);
 
+
+	ext->declare_class_size("Physics", sizeof(Physics));
+	ext->declare_class_element("Physics.links", &Physics::links);
+	ext->declare_class_element("Physics.gravity", &Physics::gravity);
+	ext->declare_class_element("Physics.mode", &Physics::mode);
+	ext->declare_class_element("Physics.enabled", &Physics::enabled);
+	ext->declare_class_element("Physics.collisions_enabled", &Physics::collisions_enabled);
+	ext->link_class_func("Physics.set_active_physics", &Physics::set_active_physics);
+	ext->link_class_func("Physics.add_link", &Physics::add_link);
+	ext->link_class_func("Physics.delete_link", &Physics::delete_link);
+	ext->link_class_func("Physics.get_g", &Physics::get_g);
+
+
 	ext->declare_class_element("World.background", &World::background);
 	ext->declare_class_element("World.skyboxes", &World::skybox);
-	ext->declare_class_element("World.links", &World::links);
-	ext->declare_class_element("World.ego", &World::ego);
 	ext->declare_class_element("World.fog", &World::fog);
-	ext->declare_class_element("World.gravity", &World::gravity);
-	ext->declare_class_element("World.physics_mode", &World::physics_mode);
 	ext->declare_class_element("World.msg_data", &World::msg_data);
+	ext->link_class_func("World.ego", &World::ego);
 	ext->link_class_func("World.load_soon", &World::load_soon);
 	ext->link_class_func("World.load_template", &World::load_template);
 	ext->link_class_func("World.create_object", &_create_object);
 	ext->link_class_func("World.create_object_multi", &_create_object_multi);
 	ext->link_class_func("World.create_terrain", &World::create_terrain);
 	ext->link_class_func("World.create_entity", &World::create_entity);
-	ext->link_class_func("World.set_active_physics", &World::set_active_physics);
 	ext->link_class_func("World.create_light_parallel", &World::create_light_parallel);
 	ext->link_class_func("World.create_light_point", &World::create_light_point);
 	ext->link_class_func("World.create_light_cone", &World::create_light_cone);
 	ext->link_class_func("World.create_camera", &World::create_camera);
 	ext->link_class_func("World.attach_model", &_attach_model);
 	ext->link_class_func("World.unattach_model", &World::unattach_model);
-	ext->link_class_func("World.add_link", &World::add_link);
 	ext->link_class_func("World._add_particle", &_world_add_legacy_particle);
 	ext->link_class_func("World.shift_all", &World::shift_all);
-	ext->link_class_func("World.get_g", &World::get_g);
 	ext->link_class_func("World.trace", &World::trace);
 	ext->link_class_func("World.delete_entity", &World::delete_entity);
-	ext->link_class_func("World.delete_link", &World::delete_link);
 	ext->link_class_func("World.subscribe", &World::subscribe);
 
 
@@ -800,8 +807,6 @@ void export_engine(kaba::Exporter* ext) {
 	ext->declare_class_element("EngineData.app_name", &EngineData::app_name);
 	ext->declare_class_element("EngineData.version", &EngineData::version);
 	ext->declare_class_element("EngineData.context", &EngineData::context);
-	ext->declare_class_element("EngineData.physics_enabled", &EngineData::physics_enabled);
-	ext->declare_class_element("EngineData.collisions_enabled", &EngineData::collisions_enabled);
 	ext->declare_class_element("EngineData.elapsed", &EngineData::elapsed);
 	ext->declare_class_element("EngineData.elapsed_rt", &EngineData::elapsed_rt);
 	ext->declare_class_element("EngineData.time_scale", &EngineData::time_scale);
@@ -911,15 +916,15 @@ void export_kaba_package_y(kaba::Exporter* ext) {
 }
 
 template<class C>
-void import_component_class(shared<kaba::Module> m, const string &name) {
+void import_component_class(shared<kaba::Module> m, const string& name, const string& base_class = "ecs.Component") {
 	for (auto c: m->classes()) {
 		if (c->name == name)
 			C::_class = c;
 	}
 	if (!C::_class)
 		throw Exception(format("y.kaba: %s missing", name));
-	if (!C::_class->is_derived_from_s("ecs.Component"))
-		throw Exception(format("y.kaba: %s not derived from Component", name));
+	if (!C::_class->is_derived_from_s(base_class))
+		throw Exception(format("y.kaba: %s not derived from %s", name, base_class));
 }
 
 void import_kaba() {
@@ -943,6 +948,8 @@ void import_kaba() {
 	import_component_class<NameTag>(m_world, "NameTag");
 	import_component_class<ModelRef>(m_world, "ModelRef");
 	import_component_class<TerrainRef>(m_world, "TerrainRef");
+	import_component_class<EgoMarker>(m_world, "EgoMarker");
+	import_component_class<Physics>(m_world, "Physics", "ecs.System"); // well, not a Component... but ok
 
 	auto m_fx = kaba::default_context->load_module("y/fx.kaba");
 	import_component_class<ParticleGroup>(m_fx, "ParticleGroup");
@@ -1092,6 +1099,8 @@ const kaba::Class *find_class(const Path &filename, const string &name) {
 			return BoxCollider::_class;
 		if (name == "SphereCollider")
 			return SphereCollider::_class;
+		if (name == "EgoMarker")
+			return EgoMarker::_class;
 	}
 	try {
 		auto s = kaba::default_context->load_module(filename);

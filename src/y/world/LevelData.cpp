@@ -8,6 +8,7 @@
 #include "LevelData.h"
 #include "Link.h"
 #include "World.h"
+#include "Physics.h"
 #include "../plugins/PluginManager.h"
 #include <lib/doc/xml.h>
 #include <lib/yrenderer/scene/Light.h>
@@ -200,9 +201,9 @@ string phys_mode_name(PhysicsMode m) {
 
 #include "Model.h"
 #include "Terrain.h"
-#include "Camera.h"
-#include "../y/Entity.h"
-#include "../y/ComponentManager.h"
+#include "components/Camera.h"
+#include <ecs/Entity.h>
+#include <ecs/ComponentManager.h>
 #ifdef _X_ALLOW_X_
 #include "../plugins/PluginManager.h"
 #include "../plugins/Controller.h"

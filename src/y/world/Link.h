@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "../y/BaseClass.h"
+#include <ecs/BaseClass.h>
 
 struct vec3;
 struct quaternion;

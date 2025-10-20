@@ -15,7 +15,7 @@
 #include <lib/math/quaternion.h>
 #include <lib/math/rect.h>
 #include <lib/math/mat4.h>
-#include <y/Component.h>
+#include <ecs/Component.h>
 
 namespace yrenderer {
 	struct CameraParams;

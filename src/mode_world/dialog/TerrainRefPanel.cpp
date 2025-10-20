@@ -7,7 +7,7 @@
 #include "../data/DataWorld.h"
 #include <view/DocumentSession.h>
 #include <y/world/Terrain.h>
-#include <y/y/Entity.h>
+#include <ecs/Entity.h>
 
 TerrainRefPanel::TerrainRefPanel(DataWorld* _data, int _index) : Panel("terrain-panel") {
 	from_source(R"foodelim(

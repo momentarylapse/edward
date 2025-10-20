@@ -5,7 +5,7 @@
 #include "SolidBodyPanel.h"
 #include "../data/DataWorld.h"
 #include <y/world/components/SolidBody.h>
-#include <y/y/Entity.h>
+#include <ecs/Entity.h>
 
 
 SolidBodyPanel::SolidBodyPanel(DataWorld* _data, int _index) : Panel("solid-body-panel") {

@@ -15,7 +15,7 @@
 #include <lib/yrenderer/target/WindowRenderer.h>
 #include "../gui/GuiRenderer.h"
 #include <lib/yrenderer/post/PostProcessor.h>
-#include <y/EngineData.h>
+#include <EngineData.h>
 #include <lib/os/msg.h>
 #include <lib/profiler/Profiler.h>
 #include <Config.h>

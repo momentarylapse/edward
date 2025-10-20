@@ -17,7 +17,8 @@
 #include <lib/yrenderer/Context.h>
 #include <y/helper/ResourceManager.h>
 #include <lib/yrenderer/Material.h>
-#include <y/world/Camera.h>
+#include <world/components/Camera.h>
+#include <world/components/Light.h>
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
 #include <lib/xhui/controls/Toolbar.h>
@@ -33,7 +34,6 @@
 #include <lib/mesh/GeometryTorusKnot.h>
 #include <lib/mesh/GeometryTeapot.h>
 #include <lib/os/msg.h>
-#include <world/Light.h>
 
 
 ModeMaterial::ModeMaterial(DocumentSession* doc) :

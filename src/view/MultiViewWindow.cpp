@@ -9,13 +9,12 @@
 #include "DrawingHelper.h"
 #include <lib/yrenderer/scene/MeshEmitter.h>
 #include <lib/yrenderer/scene/SceneRenderer.h>
-#include <y/world/Camera.h>
+#include <y/world/components/Camera.h>
 #include <Session.h>
 #include <lib/math/mat3.h>
 #include <lib/image/Painter.h>
-
-#include "lib/math/plane.h"
-#include "lib/xhui/Theme.h"
+#include <lib/math/plane.h>
+#include <lib/xhui/Theme.h>
 #include <cmath>
 
 

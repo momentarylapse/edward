@@ -8,7 +8,7 @@
 #include <view/DocumentSession.h>
 #include "dialog/EditTerrainPanel.h"
 #include <lib/xhui/xhui.h>
-#include <y/Entity.h>
+#include <ecs/Entity.h>
 #include <y/world/Terrain.h>
 
 ModeEditTerrain::ModeEditTerrain(ModeWorld* _mode_world, int _index) : SubMode(_mode_world) {

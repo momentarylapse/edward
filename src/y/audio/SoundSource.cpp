@@ -2,7 +2,7 @@
 #include "AudioBuffer.h"
 #include "AudioStream.h"
 #include "Loading.h"
-#include "../y/Entity.h"
+#include <ecs/Entity.h>
 
 #if HAS_LIB_OPENAL
 

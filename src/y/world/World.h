@@ -19,7 +19,7 @@
 #include "LevelData.h"
 
 
-class PhysicsSimulation;
+class Physics;
 class Model;
 class Object;
 namespace yrenderer {
@@ -40,14 +40,6 @@ enum class LinkType;
 
 
 
-
-
-enum class PhysicsMode {
-	NONE,
-	SIMPLE,
-	FULL_INTERNAL,
-	FULL_EXTERNAL,
-};
 
 
 // network messages
@@ -81,21 +73,16 @@ public:
 
 	Entity* load_template(const Path &filename, const vec3 &pos, const quaternion &ang);
 
-	Model *create_object(const Path &filename, const vec3 &pos, const quaternion &ang);
-	Model *create_object_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang);
-	Terrain *create_terrain(const Path &filename, const vec3 &pos);
+	Model* create_object(const Path &filename, const vec3 &pos, const quaternion &ang);
+	Model* create_object_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang);
+	Terrain* create_terrain(const Path &filename, const vec3 &pos);
 
 	Model* attach_model(Entity* e, const Path &filename);
 	void unattach_model(Model* m);
 
 	MultiInstance* create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang);
 
-	void set_active_physics(Entity *o, bool active, bool passive);//, bool test_collisions);
-
 	void delete_entity(Entity *e);
-	void delete_link(Link *l);
-
-	void add_link(Link *l);
 
 	color background;
 	Array<Model*> skybox;
@@ -117,28 +104,16 @@ public:
 	void iterate_animations(float dt);
 
 	void shift_all(const vec3 &dpos);
-	vec3 get_g(const vec3 &pos) const;
-
-
-	float speed_of_sound;
-
-	vec3 gravity;
-
-
-	int physics_num_steps, physics_num_link_steps;
 
 	bool net_msg_enabled;
 	Array<GodNetMessage> net_messages;
 
-	Entity *ego;
+	Entity* ego();
 
 
 	Array<ScriptInstanceData> systems;
 
-	Array<Link*> links;
-
-	PhysicsMode physics_mode;
-	PhysicsSimulation* physics_simulation;
+	Physics* physics;
 
 
 	base::optional<CollisionData> trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore = nullptr);

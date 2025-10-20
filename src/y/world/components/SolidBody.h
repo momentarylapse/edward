@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "../../y/Component.h"
+#include <ecs/Component.h>
 #include <lib/math/mat3.h>
 #include <lib/math/vec3.h>
 

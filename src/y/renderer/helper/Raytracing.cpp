@@ -13,9 +13,9 @@
 #include <lib/yrenderer/Material.h>
 #include "../../world/Model.h"
 #include "../../world/Terrain.h"
-#include "../../y/EntityManager.h"
-#include "../../y/Entity.h"
-#include "../../y/EngineData.h"
+#include <ecs/EntityManager.h>
+#include <ecs/Entity.h>
+#include <EngineData.h>
 #include "../../Config.h"
 #include <lib/ygraphics/graphics-impl.h>
 #ifdef USING_VULKAN

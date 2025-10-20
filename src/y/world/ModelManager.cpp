@@ -11,8 +11,8 @@
 #include "components/Animator.h"
 #include "components/SolidBody.h"
 #include "components/Skeleton.h"
-#include "../y/Entity.h"
-#include "../y/EngineData.h"
+#include <ecs/Entity.h>
+#include <EngineData.h>
 #include <lib/math/complex.h>
 #include <lib/kaba/kaba.h>
 #include <lib/config.h>

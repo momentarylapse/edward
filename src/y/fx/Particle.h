@@ -13,8 +13,8 @@
 #include "../lib/math/vec3.h"
 #include "../lib/math/rect.h"
 #include "../lib/image/color.h"
-#include <y/BaseClass.h>
-#include <y/Component.h>
+#include <ecs/BaseClass.h>
+#include <ecs/Component.h>
 
 
 class Particle {

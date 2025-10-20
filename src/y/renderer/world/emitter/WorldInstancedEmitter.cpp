@@ -9,7 +9,7 @@
 #include <world/Model.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/yrenderer/Context.h>
-#include <y/EntityManager.h>
+#include <ecs/EntityManager.h>
 #include <lib/ygraphics/graphics-impl.h>
 
 using namespace yrenderer;

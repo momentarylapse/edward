@@ -8,10 +8,10 @@
 #include "Font.h"
 #include "gui.h"
 #include "../Config.h"
-#include "../y/EngineData.h"
-#include "../lib/image/image.h"
-#include "../lib/os/msg.h"
-#include "../lib/os/filesystem.h"
+#include <EngineData.h>
+#include <lib/image/image.h>
+#include <lib/os/msg.h>
+#include <lib/os/filesystem.h>
 
 //#define USE_CAIRO 1
 #if HAS_LIB_FREETYPE2

@@ -38,3 +38,8 @@ public:
 	static const kaba::Class* _class;
 };
 
+class EgoMarker : public Component {
+public:
+	static const kaba::Class* _class;
+};
+

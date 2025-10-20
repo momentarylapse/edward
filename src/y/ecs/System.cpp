@@ -8,7 +8,6 @@
 #include "System.h"
 
 System::System() : BaseClass(Type::SYSTEM) {
-	_class = nullptr;
 }
 
 void System::__init__() {

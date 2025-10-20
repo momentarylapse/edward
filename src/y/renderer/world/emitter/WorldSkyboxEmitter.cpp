@@ -9,7 +9,7 @@
 #include <lib/profiler/Profiler.h>
 #include <world/World.h>
 #include <world/Model.h>
-#include <world/Camera.h>
+#include <world/components/Camera.h>
 #include <lib/ygraphics/graphics-impl.h>
 
 using namespace yrenderer;

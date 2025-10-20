@@ -1,7 +1,7 @@
 #ifndef AUDIO_LISTENER_H
 #define AUDIO_LISTENER_H
 
-#include "../y/Component.h"
+#include <ecs/Component.h>
 
 namespace audio {
 

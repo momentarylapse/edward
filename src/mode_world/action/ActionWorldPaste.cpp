@@ -7,7 +7,7 @@
 
 #include "ActionWorldPaste.h"
 #include "../data/DataWorld.h"
-#include <y/EntityManager.h>
+#include <ecs/EntityManager.h>
 
 
 ActionWorldPaste::ActionWorldPaste(const LevelData& _temp) {

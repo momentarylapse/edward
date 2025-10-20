@@ -7,7 +7,7 @@
 
 #include "Light.h"
 #include <lib/yrenderer/scene/CameraParams.h>
-#include "../y/Entity.h"
+#include <ecs/Entity.h>
 //#include <lib/os/msg.h>
 
 const kaba::Class *Light::_class = nullptr;

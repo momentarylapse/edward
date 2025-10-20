@@ -9,10 +9,10 @@
 #include "Animator.h"
 #include "../Model.h"
 #include "../../helper/ResourceManager.h"
-#include "../../y/EngineData.h"
+#include <EngineData.h>
 #include "../ModelManager.h"
-#include "../../y/Entity.h"
-#include "y/EntityManager.h"
+#include <ecs/Entity.h>
+#include <ecs/EntityManager.h>
 #include <lib/base/iter.h>
 
 const kaba::Class *Skeleton::_class = nullptr;

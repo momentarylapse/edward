@@ -8,8 +8,8 @@
 #include <lib/yrenderer/Context.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
 #include <world/Terrain.h>
-#include <y/EntityManager.h>
-#include <y/Entity.h>
+#include <ecs/EntityManager.h>
+#include <ecs/Entity.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/helper/Bindable.h>
 

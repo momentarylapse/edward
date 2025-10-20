@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include "../../y/Component.h"
-#include "../../y/Entity.h"
+#include <ecs/Component.h>
 #include <lib/base/pointer.h>
 #include <lib/math/mat4.h>
 #include <lib/ygraphics/graphics-fwd.h>

@@ -7,7 +7,7 @@
 
 #include "Node.h"
 #include "gui.h"
-#include "../y/EngineData.h"
+#include <EngineData.h>
 #include <lib/yrenderer/Context.h>
 #include <lib/ygraphics/graphics-impl.h>
 

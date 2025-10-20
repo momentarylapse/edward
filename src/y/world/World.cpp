@@ -13,16 +13,15 @@
 #include <lib/os/msg.h>
 #include <lib/nix/nix.h>
 #include <lib/kaba/kaba.h>
-#include "../y/EngineData.h"
-#include "../y/Component.h"
-#include "../y/ComponentManager.h"
-#include "../y/Entity.h"
-#include "../y/EntityManager.h"
+#include <EngineData.h>
+#include <ecs/Component.h>
+#include <ecs/ComponentManager.h>
+#include <ecs/Entity.h>
+#include <ecs/EntityManager.h>
 #include "../meta.h"
 #include "ModelManager.h"
 #include "../helper/ResourceManager.h"
 #include "Link.h"
-#include "Light.h"
 #include <lib/yrenderer/Material.h>
 #include "Model.h"
 #include "Terrain.h"
@@ -33,6 +32,8 @@
 #include "components/Animator.h"
 #include "components/Skeleton.h"
 #include "components/MultiInstance.h"
+#include "components/Light.h"
+#include "components/Camera.h"
 
 #ifdef _X_ALLOW_X_
 #include "../fx/ParticleManager.h"
@@ -41,8 +42,8 @@
 #endif
 
 
-#include "Camera.h"
-#include "PhysicsSimulation.h"
+#include "Physics.h"
+#include "ecs/SystemManager.h"
 #include "lib/base/sort.h"
 
 
@@ -120,16 +121,12 @@ World::World() {
 	particle_manager = new ParticleManager(entity_manager.get());
 #endif
 
-
-	physics_mode = PhysicsMode::FULL_EXTERNAL;
-	physics_simulation = new PhysicsSimulation(this);
-
-
 	reset();
 }
 
 World::~World() {
-	delete physics_simulation;
+	if (physics)
+		delete physics;
 }
 
 void World::reset() {
@@ -137,8 +134,6 @@ void World::reset() {
 	net_messages.clear();
 
 	observers.clear();
-
-	gravity = v_0;
 
 	entity_manager->reset();
 
@@ -156,13 +151,6 @@ void World::reset() {
 	fog.enabled = false;
 	fog.start = 0;
 	fog.end = 100000;
-	speed_of_sound = 1000;
-
-	physics_mode = PhysicsMode::FULL_EXTERNAL;
-	engine.physics_enabled = false;
-	engine.collisions_enabled = true;
-	physics_num_steps = 10;
-	physics_num_link_steps = 5;
 
 
 	// physics
@@ -212,11 +200,17 @@ bool World::load(const LevelData &ld) {
 	bool ok = true;
 	reset();
 
+	if (!physics) {
+		physics = new Physics(this);
+		SystemManager::add_external(Physics::_class, physics, true);
+		physics->mode = PhysicsMode::FULL_EXTERNAL;
+	}
 
-	engine.physics_enabled = ld.physics_enabled;
-	world.physics_mode = ld.physics_mode;
-	engine.collisions_enabled = true;//LevelData.physics_enabled;
-	gravity = ld.gravity;
+
+	physics->enabled = ld.physics_enabled;
+	physics->mode = ld.physics_mode;
+	physics->gravity = ld.gravity;
+	physics->collisions_enabled = true;//LevelData.physics_enabled;
 	fog = ld.fog;
 
 	for (auto &l: ld.lights) {
@@ -255,7 +249,6 @@ bool World::load(const LevelData &ld) {
 	}
 
 	// objects
-	ego = nullptr;
 	foreachi(auto &o, ld.objects, i)
 		if (!o.filename.is_empty()) {
 			//try {
@@ -264,7 +257,7 @@ bool World::load(const LevelData &ld) {
 
 				add_user_components(entity_manager.get(), oo->owner, o.components);
 				if (ld.ego_index == i + 1000000000)
-					ego = oo->owner;
+					entity_manager->add_component<EgoMarker>(oo->owner);
 				if (i % 5 == 0)
 					DrawSplashScreen("Objects", (float)i / (float)ld.objects.num / 5 * 3);
 
@@ -288,7 +281,7 @@ bool World::load(const LevelData &ld) {
 
 		add_user_components(entity_manager.get(), ee, e.components);
 		if (ld.ego_index == i)
-			ego = ee;
+			entity_manager->add_component<EgoMarker>(ee);
 	}
 
 	auto& model_list = entity_manager->get_component_list<Model>();
@@ -297,7 +290,7 @@ bool World::load(const LevelData &ld) {
 		Entity *b = nullptr;
 		if (l.object[1] >= 0)
 			b = model_list[l.object[1]]->owner;
-		add_link(Link::create(l.type, a, b, l.pos, quaternion::rotation(l.ang)));
+		physics->add_link(Link::create(l.type, a, b, l.pos, quaternion::rotation(l.ang)));
 	}
 
 	auto& cameras = entity_manager->get_component_list<Camera>();
@@ -314,9 +307,11 @@ bool World::load(const LevelData &ld) {
 	return ok;
 }
 
-void World::add_link(Link *l) {
-	links.add(l);
-	physics_simulation->add_link(l);
+Entity* World::ego() {
+	auto& list = entity_manager->get_component_list<EgoMarker>();
+	if (list.num >= 1)
+		return list[0]->owner;
+	return nullptr;
 }
 
 
@@ -403,11 +398,6 @@ MultiInstance* World::create_object_multi(const Path &filename, const Array<vec3
 	return mi;
 }
 
-
-void World::set_active_physics(Entity *o, bool active, bool passive) { //, bool test_collisions) {
-	physics_simulation->set_active_physics(o, active, passive);
-}
-
 void World::subscribe(const string &msg, const Callback &f) {
 	observers.add({msg, &f});
 }
@@ -425,15 +415,6 @@ void World::delete_entity(Entity *e) {
 	msg_data.e = e;
 	notify("entity-delete");
 	entity_manager->delete_entity(e);
-}
-
-void World::delete_link(Link* _l) {
-	foreachi(auto *l, links, i)
-		if (l == _l) {
-			//msg_write(" -> LINK");
-			links.erase(i);
-			delete l;
-		}
 }
 
 void World::iterate_animations(float dt) {
@@ -464,14 +445,12 @@ void World::iterate(float dt) {
 		return;
 #ifdef _X_ALLOW_X_
 	profiler::begin(ch_iterate);
-	if (engine.physics_enabled) {
-		physics_simulation->on_iterate(dt);
-	} else {
+	//physics->on_iterate(dt);
+
 		/*for (auto *o: objects)
 			if (o)
 				if (auto m = o->get_component<Model>())
 					m->update_matrix();*/
-	}
 
 	profiler::end(ch_iterate);
 #endif
@@ -526,17 +505,14 @@ Camera *World::create_camera(const vec3 &pos, const quaternion &ang) {
 void World::shift_all(const vec3 &dpos) {
 	entity_manager->shift_all(dpos);
 
-	physics_simulation->update_all_bullet();
+	if (physics)
+		physics->update_all_bullet();
 
 	for (auto *m: entity_manager->get_component_list<Model>())
 		m->update_matrix();
 
 	msg_data.v = dpos;
 	notify("shift");
-}
-
-vec3 World::get_g(const vec3 &pos) const {
-	return gravity;
 }
 
 enum TraceMode {
@@ -547,7 +523,7 @@ enum TraceMode {
 
 base::optional<CollisionData> World::trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore) {
 	if (mode & TraceMode::PHYSICAL) {
-		return physics_simulation->trace(p1, p2, mode, o_ignore);
+		return physics->trace(p1, p2, mode, o_ignore);
 	} else if (mode & TraceMode::VISIBLE) {
 
 	}

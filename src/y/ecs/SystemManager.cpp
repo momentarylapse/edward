@@ -12,6 +12,8 @@
 
 
 Array<System*> SystemManager::systems;
+static base::map<const kaba::Class*, System*> immprtal_systems;
+static base::map<const kaba::Class*, System*> system_by_type;
 static int ch_system = -1;
 static int ch_con_iter_pre = -1;
 static int ch_con_input = -1;
@@ -26,26 +28,40 @@ void SystemManager::init(int ch_iter_parent) {
 
 void SystemManager::reset() {
 	msg_write("del systems");
-	for (auto *c: systems)
-		delete c;
+	for (auto&& [c, s]: system_by_type)
+		if (!immprtal_systems.contains(c))
+			delete s;
 	systems.clear();
+	system_by_type.clear();
+	for (auto&& [c, s]: immprtal_systems) {
+		systems.add(s);
+		system_by_type.add({c, s});
+	}
 }
 
 void SystemManager::create(const Path& filename, const string& __name, const Array<ScriptInstanceDataVariable> &variables) {
 	msg_write("add system: " + filename.str());
-	auto type = PluginManager::find_class_derived(filename, "ui.Controller");
-	auto *c = reinterpret_cast<System*>(PluginManager::create_instance(type, variables));
-	c->_class = type;
-	c->ch_iterate = profiler::create_channel(type->long_name(), ch_system);
+	auto type = PluginManager::find_class_derived(filename, "ecs.System");
+	auto* s = reinterpret_cast<System*>(PluginManager::create_instance(type, variables));
+	s->ch_iterate = profiler::create_channel(type->long_name(), ch_system);
 
-	systems.add(c);
-	c->on_init();
+	systems.add(s);
+	system_by_type.add({type, s});
+	s->on_init();
 }
 
-System *SystemManager::get(const kaba::Class *type) {
-	for (auto c: systems)
-		if (c->_class == type)
-			return c;
+void SystemManager::add_external(const kaba::Class* type, System* s, bool immortal) {
+	systems.add(s);
+	system_by_type.add({type, s});
+	if (immortal)
+		immprtal_systems.add({type, s});
+}
+
+
+System *SystemManager::get(const kaba::Class* type) {
+	for (auto&& [t, s]: system_by_type)
+		if (t == type)
+			return s;
 	return nullptr;
 }
 

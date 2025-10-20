@@ -7,8 +7,6 @@
 
 #include "Entity.h"
 #include "Component.h"
-#include "ComponentManager.h"
-#include "EntityManager.h"
 #include <lib/math/mat4.h>
 #include <lib/kaba/syntax/Class.h>
 #include <lib/os/msg.h>

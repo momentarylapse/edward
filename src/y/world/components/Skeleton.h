@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../../y/Component.h"
-#include "../../y/Entity.h"
+#include <ecs/Component.h>
+#include <ecs/Entity.h>
 
 class Model;
 class Path;

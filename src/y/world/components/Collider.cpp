@@ -9,7 +9,7 @@
 #include "../Model.h"
 #include "../ModelManager.h"
 #include "../Terrain.h"
-#include "../../y/Entity.h"
+#include <ecs/Entity.h>
 #include <lib/base/set.h>
 #include <lib/math/quaternion.h>
 #include <lib/os/msg.h>

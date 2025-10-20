@@ -34,7 +34,7 @@
 #include <lib/os/msg.h>
 #include <y/EngineData.h>
 #include <y/helper/ResourceManager.h>
-#include <y/world/Camera.h>
+#include <y/world/components/Camera.h>
 #include <y/world/World.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/target/XhuiRenderer.h>

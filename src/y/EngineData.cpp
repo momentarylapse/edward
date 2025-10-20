@@ -13,7 +13,7 @@
 #include <lib/kaba/kaba.h>
 #include <lib/yrenderer/Renderer.h>
 
-#include "../helper/ResourceManager.h"
+#include <helper/ResourceManager.h>
 #include <lib/yrenderer/ShaderManager.h>
 #include <lib/yrenderer/TextureManager.h>
 
@@ -51,8 +51,6 @@ EngineData::EngineData() {
 	multisampling = 1;
 
 	wire_mode = false;
-	physics_enabled = false;
-	collisions_enabled = false;
 	elapsed = elapsed_rt = 0;
 
 	time_scale = 1.0f;

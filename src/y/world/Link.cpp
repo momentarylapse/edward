@@ -6,7 +6,7 @@
  */
 
 #include "Link.h"
-#include "../y/Entity.h"
+#include <ecs/Entity.h>
 #include <lib/os/msg.h>
 #include "components/SolidBody.h"
 

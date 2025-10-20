@@ -12,9 +12,9 @@
 #include <lib/xhui/controls/ListView.h>
 #include <view/MultiView.h>
 #include <view/DocumentSession.h>
-#include <y/EntityManager.h>
-#include <y/Entity.h>
-#include <y/world/Camera.h>
+#include <ecs/EntityManager.h>
+#include <ecs/Entity.h>
+#include <y/world/components/Camera.h>
 
 #include "lib/os/msg.h"
 #include <lib/xhui/dialogs/FileSelectionDialog.h>

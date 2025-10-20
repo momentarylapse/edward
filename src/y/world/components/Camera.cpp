@@ -9,10 +9,10 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Camera.h"
-#include "World.h"
-#include "../y/Entity.h"
-#include "../y/ComponentManager.h"
-#include "../y/EngineData.h"
+#include "../World.h"
+#include <ecs/Entity.h>
+#include <ecs/ComponentManager.h>
+#include <EngineData.h>
 #include <lib/math/vec3.h>
 #include <lib/math/mat4.h>
 #include <lib/yrenderer/scene/CameraParams.h>

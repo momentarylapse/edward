@@ -5,7 +5,7 @@
 #pragma once
 
 
-#include <y/Component.h>
+#include <ecs/Component.h>
 #include <lib/yrenderer/helper/CubeMapSource.h>
 
 

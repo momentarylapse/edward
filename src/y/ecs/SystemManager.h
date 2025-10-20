@@ -2,10 +2,9 @@
 // Created by Michael Ankele on 2024-10-13.
 //
 
-#ifndef CONTROLLERMANAGER_H
-#define CONTROLLERMANAGER_H
+#pragma once
 
-#include "../lib/base/base.h"
+#include <lib/base/base.h>
 
 class Path;
 class System;
@@ -20,8 +19,9 @@ public:
 
 	static void reset();
 
-	static void create(const Path& filename, const string& name, const Array<ScriptInstanceDataVariable> &variables);
-	static System *get(const kaba::Class *_class);
+	static void create(const Path& filename, const string& name, const Array<ScriptInstanceDataVariable>& variables);
+	static System* get(const kaba::Class* _class);
+	static void add_external(const kaba::Class* _class, System* s, bool immortal);
 
 	static void handle_iterate_pre(float dt);
 	static void handle_iterate(float dt);
@@ -33,6 +33,3 @@ public:
 	static Array<System*> systems;
 };
 
-
-
-#endif //CONTROLLERMANAGER_H

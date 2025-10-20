@@ -25,7 +25,7 @@
 #include "ModelManager.h"
 #include <lib/yrenderer/Material.h>
 #include "World.h"
-#include "../y/Entity.h"
+#include <ecs/Entity.h>
 #include <lib/math/complex.h>
 #include "../meta.h"
 #include <lib/ygraphics/graphics-impl.h>

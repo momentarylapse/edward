@@ -4,7 +4,7 @@
 
 #include "EntityBasePanel.h"
 #include "../data/DataWorld.h"
-#include <y/y/Entity.h>
+#include <ecs/Entity.h>
 
 
 EntityBasePanel::EntityBasePanel(DataWorld* _data, int _index) : Panel("entity-base-panel") {

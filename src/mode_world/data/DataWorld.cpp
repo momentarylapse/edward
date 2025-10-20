@@ -12,24 +12,24 @@
 #include "WorldObject.h"
 #include "WorldTerrain.h"
 #include "WorldLink.h"
-#include "lib/any/conversion.h"
-#include "lib/kaba/syntax/Class.h"
+#include <lib/any/conversion.h>
+#include <lib/kaba/syntax/Class.h>
 #include "plugins/PluginManager.h"
-#include "world/Camera.h"
-#include "world/components/Animator.h"
-#include "world/components/Collider.h"
-#include "world/components/Skeleton.h"
-#include "world/components/SolidBody.h"
+#include <world/components/Camera.h>
+#include <world/components/Animator.h>
+#include <world/components/Collider.h>
+#include <world/components/Skeleton.h>
+#include <world/components/SolidBody.h>
 #if 0 //HAS_LIB_GL
 #include "../../mode/world/ModeWorld.h"
 #endif
 #include "../../Session.h"
 #include "../../storage/Storage.h"
-#include <y/world/Model.h>
-#include <y/world/Terrain.h>
-#include <y/world/World.h>
-#include <y/world/Light.h>
-#include <y/world/Camera.h>
+#include <world/Model.h>
+#include <world/Terrain.h>
+#include <world/Physics.h>
+#include <world/components/Light.h>
+#include <world/components/Camera.h>
 #include <y/meta.h>
 #include "../action/entity/ActionWorldEditComponent.h"
 #include "../action/object/ActionWorldAddObject.h"
@@ -43,7 +43,7 @@
 #include "../action/ActionWorldDeleteSelection.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <y/helper/ResourceManager.h>
-#include <y/EntityManager.h>
+#include <ecs/EntityManager.h>
 #include <stuff/PluginManager.h>
 
 const kaba::Class* EdwardTag::_class = nullptr;

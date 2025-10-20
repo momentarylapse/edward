@@ -16,9 +16,9 @@
 #include <lib/base/iter.h>
 #include <y/world/Model.h>
 #include <y/world/World.h>
-#include <y/world/Camera.h>
-#include <y/world/Light.h>
-#include <y/y/EngineData.h>
+#include <y/world/components/Camera.h>
+#include <y/world/components/Light.h>
+#include <y/EngineData.h>
 #include <y/world/ModelManager.h>
 #include <y/helper/ResourceManager.h>
 #include <y/world/components/Skeleton.h>
@@ -26,10 +26,10 @@
 #include <y/world/components/SolidBody.h>
 #include <y/world/components/Animator.h>
 #include <y/world/Terrain.h>
-#include "../../lib/os/filesystem.h"
-#include "../../lib/os/msg.h"
-#include "../../lib/doc/xml.h"
-#include <y/EntityManager.h>
+#include <lib/os/filesystem.h>
+#include <lib/os/msg.h>
+#include <lib/doc/xml.h>
+#include <ecs/EntityManager.h>
 #include <stuff/PluginManager.h>
 #include <meta.h>
 #include <lib/kaba/kaba.h>

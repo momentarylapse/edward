@@ -4,9 +4,8 @@
 
 #include "ActionWorldEditComponent.h"
 #include "../../data/DataWorld.h"
-#include <y/Entity.h>
-
-#include "y/EntityManager.h"
+#include <ecs/Entity.h>
+#include <ecs/EntityManager.h>
 
 
 ActionWorldEditBaseEntity::ActionWorldEditBaseEntity(int _index, const vec3& _pos, const quaternion& _ang) {

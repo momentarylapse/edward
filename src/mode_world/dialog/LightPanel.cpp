@@ -4,8 +4,8 @@
 
 #include "LightPanel.h"
 #include "../data/DataWorld.h"
-#include <y/world/Light.h>
-#include <y/y/Entity.h>
+#include <y/world/components/Light.h>
+#include <ecs/Entity.h>
 #include <cmath>
 
 LightPanel::LightPanel(DataWorld* _data, int _index) : obs::Node<xhui::Panel>("light-panel") {

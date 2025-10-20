@@ -5,7 +5,7 @@
 #include "ActionWorldEditTerrainMetaData.h"
 #include "../../data/DataWorld.h"
 #include <y/world/Terrain.h>
-#include <y/Entity.h>
+#include <ecs/Entity.h>
 
 ActionWorldEditTerrainMetaData::ActionWorldEditTerrainMetaData(int _index, const vec3& _pattern) {
 	index = _index;

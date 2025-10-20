@@ -11,6 +11,7 @@
 #include "../plugins/PluginManager.h"
 
 const kaba::Class* NameTag::_class = nullptr;
+const kaba::Class* EgoMarker::_class = nullptr;
 
 Component::Component() {
 	owner = nullptr;

@@ -4,7 +4,7 @@
 
 #include "ActionWorldAddEntity.h"
 #include "../../data/DataWorld.h"
-#include <y/EntityManager.h>
+#include <ecs/EntityManager.h>
 
 ActionWorldAddEntity::ActionWorldAddEntity(const vec3& _pos, const quaternion& _ang) {
 	pos = _pos;

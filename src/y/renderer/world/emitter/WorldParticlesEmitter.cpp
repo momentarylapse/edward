@@ -10,11 +10,11 @@
 #include <fx/Beam.h>
 #include <fx/ParticleEmitter.h>
 #include <lib/profiler/Profiler.h>
-#include <world/Camera.h>
+#include <world/components/Camera.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <y/EngineData.h>
-#include <y/EntityManager.h>
-#include <y/Entity.h>
+#include <EngineData.h>
+#include <ecs/EntityManager.h>
+#include <ecs/Entity.h>
 
 using namespace yrenderer;
 using namespace ygfx;

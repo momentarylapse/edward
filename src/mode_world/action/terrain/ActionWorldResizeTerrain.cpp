@@ -5,7 +5,7 @@
 #include "ActionWorldResizeTerrain.h"
 #include "../../data/DataWorld.h"
 #include <y/world/Terrain.h>
-#include <y/Entity.h>
+#include <ecs/Entity.h>
 
 ActionWorldResizeTerrain::ActionWorldResizeTerrain(int _index, int _nx, int _nz) {
 	index = _index;

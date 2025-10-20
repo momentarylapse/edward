@@ -21,13 +21,14 @@
 #include "../helper/ResourceManager.h"
 #include <lib/yrenderer/ShaderManager.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <world/Camera.h>
+#include <world/components/Camera.h>
+#include <world/components/Light.h>
 #include <world/Model.h>
 #include <world/Terrain.h>
 #include <world/World.h>
-#include <y/EngineData.h>
-#include <y/Entity.h>
-#include <y/EntityManager.h>
+#include <EngineData.h>
+#include <ecs/Entity.h>
+#include <ecs/EntityManager.h>
 #include <Config.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/math/Box.h>
@@ -42,7 +43,6 @@
 #include <world/components/MultiInstance.h>
 #include <world/components/CubeMapSource.h>
 #include <lib/yrenderer/scene/MeshEmitter.h>
-#include "world/Light.h"
 
 //using namespace yrenderer;
 using Context = yrenderer::Context;
@@ -170,10 +170,10 @@ void FullCameraRenderer::suggest_cube_map_pos() {
 		return;
 	cube_map_source->min_depth = cam->min_depth;
 	cube_map_source->max_depth = cam->max_depth;
-	if (world.ego) {
-		cube_map_source->pos = world.ego->pos;
+	if (auto e = world.ego()) {
+		cube_map_source->pos = e->pos;
 		cube_map_source->min_depth = 200;
-		if (auto m = world.ego->get_component<Model>())
+		if (auto m = e->get_component<Model>())
 			cube_map_source->min_depth = m->prop.radius * 1.1f;
 		return;
 	}

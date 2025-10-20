@@ -9,7 +9,7 @@
 #include "Skeleton.h"
 #include "../Model.h"
 #include "../ModelManager.h"
-#include "../../y/Entity.h"
+#include <ecs/Entity.h>
 #include <lib/base/iter.h>
 #include <lib/os/msg.h>
 #include <lib/ygraphics/graphics-impl.h>

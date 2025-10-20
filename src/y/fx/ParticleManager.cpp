@@ -9,8 +9,8 @@
 #include "ParticleManager.h"
 #include "Particle.h"
 #include "ParticleEmitter.h"
-#include <y/Entity.h>
-#include <y/EntityManager.h>
+#include <ecs/Entity.h>
+#include <ecs/EntityManager.h>
 
 
 static void iterate_legacy_particles(Array<LegacyParticle*>& particles, float dt) {

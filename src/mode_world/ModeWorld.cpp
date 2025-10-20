@@ -19,9 +19,9 @@
 #include <lib/yrenderer/scene/SceneView.h>
 #include <y/helper/ResourceManager.h>
 #include <lib/yrenderer/Material.h>
-#include <y/world/Camera.h>
-#include <y/world/Light.h>
-#include <y/y/Entity.h>
+#include <y/world/components/Camera.h>
+#include <y/world/components/Light.h>
+#include <ecs/Entity.h>
 #include <y/world/components/Collider.h>
 #include <y/world/Model.h>
 #include <y/world/ModelManager.h>
@@ -41,13 +41,13 @@
 #include "dialog/PropertiesDialog.h"
 #include <cmath>
 
-#include "lib/mesh/Polygon.h"
-#include "lib/mesh/VertexStagingBuffer.h"
-#include "lib/mesh/PolygonMesh.h"
-#include "lib/mesh/GeometrySphere.h"
-#include "lib/mesh/GeometryCylinder.h"
-#include "world/components/SolidBody.h"
-#include "y/EntityManager.h"
+#include <lib/mesh/Polygon.h>
+#include <lib/mesh/VertexStagingBuffer.h>
+#include <lib/mesh/PolygonMesh.h>
+#include <lib/mesh/GeometrySphere.h>
+#include <lib/mesh/GeometryCylinder.h>
+#include <y/world/components/SolidBody.h>
+#include <ecs/EntityManager.h>
 
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);

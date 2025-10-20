@@ -11,13 +11,13 @@
 #include "TerrainRefPanel.h"
 #include "UserComponentPanel.h"
 #include "../data/DataWorld.h"
-#include <y/world/Camera.h>
-#include <y/y/Entity.h>
+#include <y/world/components/Camera.h>
+#include <ecs/Entity.h>
 #include <y/world/components/Animator.h>
 #include <y/world/components/Collider.h>
 #include <y/world/components/Skeleton.h>
 #include <y/world/components/SolidBody.h>
-#include <y/world/Light.h>
+#include <y/world/components/Light.h>
 #include <y/world/Model.h>
 #include <y/world/Terrain.h>
 

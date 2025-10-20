@@ -557,6 +557,13 @@ add_executable(edward
 	src/y/audio/Listener.cpp
 	src/y/audio/Loading.cpp
 	src/y/audio/SoundSource.cpp
+	src/y/ecs/BaseClass.cpp
+	src/y/ecs/Component.cpp
+	src/y/ecs/ComponentManager.cpp
+	src/y/ecs/Entity.cpp
+	src/y/ecs/EntityManager.cpp
+	src/y/ecs/System.cpp
+	src/y/ecs/SystemManager.cpp
 	src/y/fx/Beam.cpp
 	src/y/fx/Particle.cpp
 	src/y/fx/ParticleEmitter.cpp
@@ -586,30 +593,23 @@ add_executable(edward
 	src/y/renderer/world/WorldRendererVulkanRayTracing.cpp
 	src/y/renderer/FullCameraRenderer.cpp
 	src/y/world/components/Animator.cpp
+	src/y/world/components/Camera.cpp
 	src/y/world/components/Collider.cpp
 	src/y/world/components/CubeMapSource.cpp
+	src/y/world/components/Light.cpp
 	src/y/world/components/MultiInstance.cpp
 	src/y/world/components/Skeleton.cpp
 	src/y/world/components/SolidBody.cpp
 	src/y/world/components/UserMesh.cpp
-	src/y/world/Camera.cpp
 	src/y/world/LevelData.cpp
-	src/y/world/Light.cpp
 	src/y/world/Link.cpp
 	src/y/world/Model.cpp
 	src/y/world/ModelManager.cpp
-	src/y/world/PhysicsSimulation.cpp
+	src/y/world/Physics.cpp
 	src/y/world/Terrain.cpp
 	src/y/world/World.cpp
-	src/y/y/BaseClass.cpp
-	src/y/y/Component.cpp
-	src/y/y/ComponentManager.cpp
-	src/y/y/EngineData.cpp
-	src/y/y/Entity.cpp
-	src/y/y/EntityManager.cpp
-	src/y/y/System.cpp
-	src/y/y/SystemManager.cpp
 	src/y/Config.cpp
+	src/y/EngineData.cpp
 	src/Edward.cpp
 	src/Session.cpp)
 target_include_directories(edward PUBLIC ${INCLUDE_DIRECTORIES})

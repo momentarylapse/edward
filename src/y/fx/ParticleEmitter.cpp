@@ -7,12 +7,12 @@
 
 #include "ParticleEmitter.h"
 #include "Particle.h"
-#include <lib/ygraphics/graphics-impl.h>
-#include <y/Entity.h>
+#include <ecs/Entity.h>
+#include <EngineData.h>
 #include <lib/math/math.h>
 #include <lib/math/random.h>
 #include <lib/os/msg.h>
-#include <y/EngineData.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/Context.h>
 
 static Random pe_random;
