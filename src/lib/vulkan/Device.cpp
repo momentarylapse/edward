@@ -481,7 +481,7 @@ xfer<Device> Device::create_simple(Instance *instance, VkSurfaceKHR surface, con
 
 	device->command_pool = new CommandPool(device);
 
-	if (sa_contains(op, "rtx"))
+	if (device->features.contains(Feature::RTX))
 		device->get_rtx_properties();
 
 	default_device = device;

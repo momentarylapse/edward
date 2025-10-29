@@ -235,6 +235,13 @@ void GraphicsPipeline::set_line_width(float line_width) {
 	rasterizer.lineWidth = line_width;
 }
 
+void GraphicsPipeline::set_depth_bias(bool enabled, float constant_factor, float clamp, float slope_factor) {
+	rasterizer.depthBiasEnable = enabled;
+	rasterizer.depthBiasConstantFactor = constant_factor;
+	rasterizer.depthBiasClamp = clamp;
+	rasterizer.depthBiasSlopeFactor = slope_factor;
+}
+
 void GraphicsPipeline::set_wireframe(bool wireframe) {
 	if (wireframe) {
 		rasterizer.polygonMode = VK_POLYGON_MODE_LINE;
@@ -272,6 +279,8 @@ VkDynamicState parse_dynamic_state(const string &d) {
 		return VK_DYNAMIC_STATE_SCISSOR;
 	if (d == "linewidth")
 		return VK_DYNAMIC_STATE_LINE_WIDTH;
+	if (d == "depthbias")
+		return VK_DYNAMIC_STATE_DEPTH_BIAS;
 	msg_error("unknown dynamic state: " + d);
 	return VK_DYNAMIC_STATE_MAX_ENUM;
 }

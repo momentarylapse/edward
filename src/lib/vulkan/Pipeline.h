@@ -100,6 +100,7 @@ namespace vulkan{
 		void set_blend(float factor);
 		void set_wireframe(bool wireframe);
 		void set_line_width(float line_width);
+		void set_depth_bias(bool enabled, float constant_factor, float clamp, float slope_factor);
 		void set_z(bool test, bool write);
 		void set_viewport(const rect &r);
 		void set_culling(CullMode mode);

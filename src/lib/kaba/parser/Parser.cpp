@@ -2091,18 +2091,24 @@ Function *Parser::parse_function_header(const Class *default_type, Class *name_s
 
 			string param_name = Exp.consume();
 
-			expect_identifier(":", "':' expected after parameter name");
+			//expect_identifier(":", "':' expected after parameter name");
 
 			// type of parameter variable
-			f->abstract_param_types.add(parse_abstract_operand(block, true));
+			if (try_consume(":"))
+				f->abstract_param_types.add(parse_abstract_operand(block, true));
+			else
+				f->abstract_param_types.add(nullptr);
 			[[maybe_unused]] auto v = f->add_param(param_name, TypeUnknown, param_flags);
 
 			// default parameter?
 			if (try_consume("=")) {
 				f->default_parameters.resize(f->num_params - 1);
-				auto dp = parse_abstract_operand(block);
+				auto dp = parse_abstract_operand_greedy(block, false, 1);
 				f->default_parameters.add(dp);
 			}
+
+			if (f->abstract_param_types.back() == nullptr and f->default_parameters.num < f->num_params)
+				do_error("':' or '=' expected after parameter name", Exp.cur_token());
 
 			if (try_consume(")"))
 				break;
