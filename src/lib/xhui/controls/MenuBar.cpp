@@ -26,7 +26,10 @@ public:
 		});*/
 
 		owner->open_dialog(new MenuPopup(*menu.get(), owner, _area, [this] (const string& id) {
-			owner->handle_event(id, event_id::Activate, true);
+			// wait for the popup to close
+			run_later(0.01f, [this, id] {
+				owner->handle_event(id, event_id::Activate, true);
+			});
 		}));
 	}
 	shared<Menu> menu;

@@ -11,6 +11,7 @@ namespace xhui {
 class Grid;
 class Menu;
 
+// menu click events via callback!
 class MenuPopup : public Dialog {
 public:
 	explicit MenuPopup(const Menu& m, Panel* parent, const rect& anchor, const std::function<void(const string&)>& f);

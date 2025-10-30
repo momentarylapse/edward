@@ -52,8 +52,6 @@ void MenuPopup::set_sub_menu(const Menu* m) {
 			grid->add_child(new CallbackButton(item.id, item.title, [id=item.id, this] {
 				if (callback)
 					callback(id);
-				else
-					parent->handle_event(id, event_id::Click, true);
 				request_destroy();
 			}), 0, i);
 		}

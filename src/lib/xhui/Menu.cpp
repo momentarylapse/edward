@@ -5,6 +5,7 @@
 #include "Menu.h"
 
 #include "Window.h"
+#include "xhui.h"
 #include "dialogs/MenuPopup.h"
 
 namespace xhui {
@@ -37,7 +38,12 @@ void Menu::open_popup(Panel* p) {
 	if (!p->get_window())
 		return;
 	const vec2 m = p->get_window()->mouse_position();
-	p->open_dialog(new MenuPopup(*this, p, {m, m}, nullptr));
+	p->open_dialog(new MenuPopup(*this, p, {m, m}, [p] (const string& id) {
+		// wait for the popup to close
+		run_later(0.01f, [p, id] {
+			p->handle_event(id, event_id::Click, true);
+		});
+	}));
 }
 
 } // xhui
