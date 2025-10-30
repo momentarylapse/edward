@@ -51,6 +51,7 @@ void Theme::load_default() {
 	_default.text = color::parse(c.get_str("colors.text", "#ffffff"));
 	_default.text_label = color::parse(c.get_str("colors.text-label", "#ffffff"));
 	_default.text_disabled = color::parse(c.get_str("colors.text-disabled", "#808080"));
+	_default.text_link = color::parse(c.get_str("colors.text-link", "#8080ff"));
 	_default.border = color::parse(c.get_str("colors.border", "#ffffff"));
 }
 

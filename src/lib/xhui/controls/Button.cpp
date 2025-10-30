@@ -145,6 +145,13 @@ void Button::set_option(const string& key, const string& value) {
 	} else if (key == "flat") {
 		flat = true;
 		request_redraw();
+	} else if (key == "url") {
+		flat = true;
+		//padding = {0, 0, 0, 0};
+		//label.margin.y1 = label.margin.y2 = Theme::_default.label_margin_y;
+		label.set_option("bold", "false");
+		label.set_option("url", "true");
+		request_redraw();
 	} else if (key == "small" or key == "small" or key == "bold") {
 		label.set_option(key, value);
 	} else {

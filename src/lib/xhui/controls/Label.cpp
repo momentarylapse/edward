@@ -10,6 +10,7 @@ Label::Label(const string &_id, const string &t) : Control(_id) {
 	font_size = Theme::_default.font_size;
 	bold = false;
 	italic = false;
+	url = false;
 	align = Align::Left;
 	margin.x1 = margin.x2 = 0;
 	margin.y1 = margin.y2 = Theme::_default.label_margin_y;
@@ -57,7 +58,10 @@ void Label::_draw(Painter *p) {
 			p->set_color(White.with_alpha(0.35f));
 		p->draw_ximage({_area.center() - size/2, _area.center() + size/2}, image);
 	} else {
-		p->set_color(Theme::_default.text_label);
+		if (url)
+			p->set_color(Theme::_default.text_link);
+		else
+			p->set_color(Theme::_default.text_label);
 		if (!enabled)
 			p->set_color(Theme::_default.text_disabled);
 
@@ -87,13 +91,15 @@ void Label::set_option(const string& key, const string& value) {
 	} else if (key == "center") {
 		align = Align::Center;
 	} else if (key == "bold") {
-		bold = true;
+		bold = (value == "") ? true : value._bool();
 	} else if (key == "italic") {
 		italic = true;
 	} else if (key == "big") {
 		font_size = Theme::_default.font_size_big;
 	} else if (key == "small") {
 		font_size = Theme::_default.font_size_small;
+	} else if (key == "url") {
+		url = true;
 	} else {
 		Control::set_option(key, value);
 	}

@@ -30,6 +30,7 @@ public:
 	color background_hover, background_active;
 	color background_low, background_low_hover, background_low_selected;
 	color text, text_label, text_disabled;
+	color text_link;
 	color border;
 
 	color background_raised() const;

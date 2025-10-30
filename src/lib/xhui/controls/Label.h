@@ -20,6 +20,7 @@ public:
 	float font_size;
 	bool bold;
 	bool italic;
+	bool url;
 	string title;
 	enum class Align {
 		Left,
