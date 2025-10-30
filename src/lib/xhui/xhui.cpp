@@ -133,6 +133,7 @@ void create_default_images() {
 		auto p = im.start_draw();
 		p->set_color(White);
 		p->set_line_width(2);
+		m.y -= r * 0.2f;
 		p->draw_line(m - vec2(r, 0), m + vec2(r, 0));
 		p->draw_line(m - vec2(r, 0), m + vec2(0, r));
 		p->draw_line(m + vec2(0, r), m + vec2(r, 0));

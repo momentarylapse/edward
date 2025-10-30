@@ -167,8 +167,11 @@ void SpinButton::_draw(Painter* p) {
 	}
 
 	p->set_color(color::mix(Theme::_default.text_label, Theme::_default.background, 0.8f));
-	p->draw_line(area_minus.p00(), area_minus.p01());
-	p->draw_line(area_plus.p00(), area_plus.p01());
+	//p->draw_line(area_minus.p00(), area_minus.p01());
+	//p->draw_line(area_plus.p00(), area_plus.p01());
+	// TODO fix line rendering performance...
+	p->draw_rect(rect(area_minus.x1, area_minus.x1 + 1, area_minus.y1, area_minus.y2));
+	p->draw_rect(rect(area_plus.x1, area_plus.x1 + 1, area_plus.y1, area_plus.y2));
 
 	p->set_color(Theme::_default.text);
 	/*if (!enabled)

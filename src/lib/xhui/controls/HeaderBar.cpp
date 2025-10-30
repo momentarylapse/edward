@@ -50,7 +50,6 @@ void HeaderBar::on_left_button_up(const vec2& m) {
 void HeaderBar::on_mouse_move(const vec2& m, const vec2& d) {
 	if (dragging) {
 		// FIXME...
-		//msg_write(str(m - drag_m0));
 		if (auto w = owner->get_window())
 			w->set_position(window_pos_x0 + m.x - drag_m0.x, window_pos_y0 + m.y - drag_m0.y);
 	}
