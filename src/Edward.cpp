@@ -13,6 +13,7 @@
 #include <lib/kaba/lib/lib.h>
 #include <lib/yrenderer/MaterialManager.h>
 #include <lib/syntaxhighlight/Theme.h>
+#include <lib/xhui/Application.h>
 #include <mode_material/data/DataMaterial.h>
 #include <mode_model/data/DataModel.h>
 #include <mode_world/data/DataWorld.h>
@@ -167,6 +168,13 @@ int main(const Array<string>& args) {
 
 	try {
 		xhui::init(args, "edward");
+		xhui::Application::set_property("name", AppName);
+		xhui::Application::set_property("version", AppVersion);
+		xhui::Application::set_property("comment", "Editor for the y game engine");
+		xhui::Application::set_property("website", "https://github.com/momentarylapse/edward");
+	//	xhui::Application::set_property("website", "http://michi.is-a-geek.org/software");
+		xhui::Application::set_property("copyright", "© 2006-2025 by Michael Ankele"); // ??? min=2004 (objectmaker) max=2006
+		xhui::Application::set_property("logo-big", "icons/png/model_128.png");
 	} catch (Exception &e) {
 		msg_error(e.message());
 		return 1;

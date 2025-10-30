@@ -7,11 +7,16 @@
 #include <lib/xhui/Painter.h>
 #include <lib/xhui/Context.h>
 #include <lib/xhui/Dialog.h>
+#include <lib/xhui/Theme.h>
 #include <lib/xhui/controls/DrawingArea.h>
 #include <lib/xhui/controls/Toolbar.h>
 #include <lib/xhui/controls/MenuBar.h>
 #include <lib/xhui/dialogs/FileSelectionDialog.h>
 #include <lib/xhui/dialogs/QuestionDialog.h>
+#include <lib/xhui/dialogs/AboutDialog.h>
+#include <lib/os/msg.h>
+#include <lib/yrenderer/Renderer.h>
+#include <lib/yrenderer/TextureManager.h>
 #include <lib/yrenderer/Context.h>
 #include <sys/stat.h>
 #include <y/EngineData.h>
@@ -21,10 +26,6 @@
 #include "MultiView.h"
 #include "DocumentSession.h"
 #include "dialogs/DocumentSwitcher.h"
-#include "lib/os/msg.h"
-#include "lib/xhui/Theme.h"
-#include <lib/yrenderer/Renderer.h>
-#include <lib/yrenderer/TextureManager.h>
 #include "y/helper/ResourceManager.h"
 #include <storage/Storage.h>
 #include <stuff/PluginManager.h>
@@ -32,6 +33,7 @@
 #include <data/Data.h>
 #include "Session.h"
 #include <cmath>
+
 
 
 extern string AppName;
@@ -207,6 +209,9 @@ Dialog x x padding=0
 			switcher = new DocumentSwitcher(this);
 			open_dialog(switcher);
 		}
+	});
+	event("what_the_fuck", [this] {
+		xhui::AboutDialog::show(this);
 	});
 	auto quit = [this] {
 		if (session->cur_doc->cur_mode->get_data()->action_manager->is_save())

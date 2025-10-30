@@ -276,13 +276,15 @@ static owned_array<XImage> _images_;
 
 Path find_image(const string& name) {
 	Array<Path> paths;
+	paths.add(name);
+	paths.add(os::app::directory_static | name);
 	paths.add(os::app::directory_static | "icons" | "hicolor" | "64x64" | "actions" | (name + ".png"));
 	paths.add(os::app::directory_static | "icons" | "hicolor" | "64x64" | "actions" | (name + ".symbolic.png"));
 	paths.add(os::app::directory_static | "icons" | "hicolor" | "24x24" | "actions" | (name + ".png"));
 	paths.add(os::app::directory_static | "icons" | "hicolor" | "24x24" | "actions" | (name + ".symbolic.png"));
 	for (const Path& p: paths)
-	if (os::fs::exists(p))
-		return p;
+		if (os::fs::exists(p))
+			return p;
 	return "";
 }
 
