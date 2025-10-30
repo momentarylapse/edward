@@ -17,6 +17,7 @@
 #include "material/ModeMeshMaterial.h"
 #include "../ModeModel.h"
 #include "action/ActionModelMoveSelection.h"
+#include "action/ActionModelAlignToGrid.h"
 #include "../data/ModelMesh.h"
 #include "material/dialog/ModelMaterialSelectionDialog.h"
 #include <Session.h>
@@ -281,6 +282,19 @@ void ModeMesh::on_connect_events() {
 		ModelMaterialSelectionDialog::ask(this).then([this] (int material) {
 			data->apply_material(multi_view->selection, material);
 		});
+	});
+	doc->event("align_to_grid", [this] {
+		data->execute(new ActionModelAlignToGrid(data->editing_mesh, multi_view->selection, [this] (const vec3& v) {
+			return multi_view->snap_v(v);
+		}));
+		session->set_message(format("aligned to grid (%s)", multi_view->format_length(multi_view->active_window->get_grid_d())));
+	});
+	doc->event("bevel_edges", [this] {
+		doc->set_mode(new ModeBevelEdges(this));
+	});
+	// extrude_triangles_independent
+	doc->event("extrude_triangles", [this] {
+		doc->set_mode(new ModeExtrudePolygons(this));
 	});
 }
 

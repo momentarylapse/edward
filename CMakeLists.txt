@@ -457,6 +457,7 @@ add_executable(edward
 	src/mode_model/mesh/action/look/ActionModelSetMaterial.cpp
 	src/mode_model/mesh/action/sculpt/ActionModelBrushExtrude.cpp
 	src/mode_model/mesh/action/ActionModelAddPolygon.cpp
+	src/mode_model/mesh/action/ActionModelAlignToGrid.cpp
 	src/mode_model/mesh/action/ActionModelDeleteSelection.cpp
 	src/mode_model/mesh/action/ActionModelEditMesh.cpp
 	src/mode_model/mesh/action/ActionModelMoveSelection.cpp

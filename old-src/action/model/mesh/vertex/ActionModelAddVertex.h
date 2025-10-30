@@ -8,9 +8,9 @@
 #ifndef ACTIONMODELADDVERTEX_H_
 #define ACTIONMODELADDVERTEX_H_
 
-#include "../../../../lib/math/vec3.h"
-#include "../../../Action.h"
-#include "../../../../lib/math/vec4.h"
+#include <action/Action.h>
+#include <lib/math/vec3.h>
+#include <lib/math/vec4.h>
 
 class ActionModelAddVertex: public Action {
 public:
