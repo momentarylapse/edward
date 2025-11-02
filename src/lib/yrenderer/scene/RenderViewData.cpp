@@ -6,11 +6,13 @@
 
 #include <algorithm>
 #include <lib/base/iter.h>
-#include <lib/os/msg.h>
+#include <lib/math/plane.h>
 
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/Context.h>
 #include <lib/yrenderer/helper/Bindable.h>
+
+#include <cmath>
 
 namespace yrenderer {
 using namespace ygfx;
@@ -23,6 +25,9 @@ RenderViewData::RenderViewData(Context* _ctx) {
 	light_meta_data = {};
 	set_view(RenderParams::WHATEVER, CameraParams{});
 }
+
+RenderViewData::~RenderViewData() = default;
+
 
 void RenderViewData::set_scene_view(SceneView* _scene_view) {
 	scene_view = _scene_view;
@@ -43,6 +48,18 @@ void RenderViewData::set_view(const RenderParams& params, const CameraParams& vi
 		ubo.p = *proj * m;
 	else
 		ubo.p = view.projection_matrix(params.desired_aspect_ratio) * m;
+
+	// bounding planes of the camera frustum
+	// (positive inside, negative outside)
+	float phiv = view.fov / 2;
+	float phih = view.fov * params.desired_aspect_ratio / 2;
+	frustum.resize(6);
+	frustum[0] = plane::from_point_normal(view.pos + (view.ang * vec3::EZ) * view.min_depth, view.ang * vec3::EZ);
+	frustum[1] = plane::from_point_normal(view.pos + (view.ang * vec3::EZ) * view.max_depth, - (view.ang * vec3::EZ));
+	frustum[2] = plane::from_point_normal(view.pos, view.ang * vec3(0,-cosf(phiv),sinf(phiv)));
+	frustum[3] = plane::from_point_normal(view.pos, view.ang * vec3(0,cosf(phiv),sinf(phiv)));
+	frustum[4] = plane::from_point_normal(view.pos, view.ang * vec3(-cosf(phih), 0,sinf(phih)));
+	frustum[5] = plane::from_point_normal(view.pos, view.ang * vec3(cosf(phih), 0,sinf(phih)));
 }
 
 

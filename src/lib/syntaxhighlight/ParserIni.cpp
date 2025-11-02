@@ -35,7 +35,7 @@ bool is_numeric(const string& s) {
 }
 
 Array<Markup> ParserIni::create_markup_key_value(const string& line, int index0) {
-	int num_uchars = line.utf8len();
+	[[maybe_unused]] int num_uchars = line.utf8len();
 //	char *p = (char*)line.data;//(const char*)&line[0];
 //	char *p0 = p;
 

@@ -10,6 +10,9 @@
 #include <lib/base/base.h>
 
 class Path;
+namespace autocomplete {
+	struct Data;
+}
 
 enum class MarkupType {
 	WORD,
@@ -68,6 +71,7 @@ public:
 	virtual Array<Label> find_labels(const string& text, int offset);
 	virtual MarkupType word_type(const string &name);
 	virtual Array<Markup> create_markup(const string& text, int offset);
+	virtual autocomplete::Data run_autocomplete(const string &code, const Path &filename, int line, int pos);
 
 	Array<Markup> create_markup_default(const string& text, int offset);
 };

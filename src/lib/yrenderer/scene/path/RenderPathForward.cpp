@@ -47,7 +47,7 @@ void RenderPathForward::add_opaque_emitter(shared<MeshEmitter> emitter) {
 
 void RenderPathForward::add_transparent_emitter(shared<MeshEmitter> emitter) {
 	scene_renderer->add_emitter(emitter);
-	//cube_map_renderer->add_emitter(emitter);
+	cube_map_renderer->add_emitter(emitter);
 }
 
 

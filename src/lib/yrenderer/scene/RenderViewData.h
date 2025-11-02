@@ -69,6 +69,7 @@ struct RenderData {
 // "draw call" manager (single scene/pass)
 struct RenderViewData {
 	explicit RenderViewData(Context* ctx);
+	~RenderViewData();
 	void begin_draw();
 
 	SceneView* scene_view = nullptr;
@@ -79,6 +80,7 @@ struct RenderViewData {
 
 	Context* ctx;
 	CameraParams camera_params;
+	Array<plane> frustum;
 	UBO ubo;
 #ifdef USING_VULKAN
 	Array<RenderData> rda;

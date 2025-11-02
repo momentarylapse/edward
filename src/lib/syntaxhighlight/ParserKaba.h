@@ -24,6 +24,8 @@ public:
 	void clear_symbols();
 	void prepare_symbols(const string &text, const Path& filename) override;
 
+	autocomplete::Data run_autocomplete(const string &code, const Path &filename, int line, int pos) override;
+
 	owned<kaba::Context> context;
 };
 

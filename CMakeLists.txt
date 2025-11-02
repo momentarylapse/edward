@@ -312,6 +312,7 @@ add_executable(edward
 	src/lib/pattern/Observable.cpp
 	src/lib/profiler/_kaba_export.cpp
 	src/lib/profiler/Profiler.cpp
+	src/lib/syntaxhighlight/AutoComplete.cpp
 	src/lib/syntaxhighlight/BaseParser.cpp
 	src/lib/syntaxhighlight/ParserC.cpp
 	src/lib/syntaxhighlight/ParserCmake.cpp

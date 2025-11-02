@@ -105,6 +105,8 @@ ParserHui::ParserHui() : Parser("Hui") {
 	types.add("Dialog");
 	types.add("Window");
 	types.add("Menu");
+	types.add("Toolbar");
+	types.add("Separator");
 	types.add("Label");
 	types.add("Group");
 	types.add("Button");

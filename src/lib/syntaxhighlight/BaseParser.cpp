@@ -14,6 +14,7 @@
 #include "ParserPython.h"
 #include "ParserHui.h"
 #include "ParserIni.h"
+#include "AutoComplete.h"
 #include <lib/os/path.h>
 
 #include "lib/os/msg.h"
@@ -236,18 +237,24 @@ Array<Markup> Parser::create_markup_default(const string &text, int offset) {
 			last_type = type;
 			next_char();
 		}
-		if (s.num > 0)
-			markups.add({i0 + pos0, i0 + s.num, in_type});
+		if (s.num > 0) {
+			pos = s.num;
+			set_mark();
+		}
 		i0 += s.num + 1;
 	}
 	return markups;
 }
 
 
+autocomplete::Data Parser::run_autocomplete(const string &code, const Path &filename, int line, int pos) {
+	return {};
+}
+
+
 
 
 void InitParser() {
-	msg_write("INIT PARSERS");
 	ParserAssociations.add(ParserAssociation(new ParserText, "*"));
 	ParserAssociations.add(ParserAssociation(new ParserKaba, "kaba"));
 	ParserAssociations.add(ParserAssociation(new ParserC, "c"));

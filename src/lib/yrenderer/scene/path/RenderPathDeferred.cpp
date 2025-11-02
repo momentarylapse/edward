@@ -102,6 +102,7 @@ void RenderPathDeferred::add_opaque_emitter(shared<MeshEmitter> emitter) {
 
 void RenderPathDeferred::add_transparent_emitter(shared<MeshEmitter> emitter) {
 	scene_renderer_trans->add_emitter(emitter);
+	cube_map_renderer->add_emitter(emitter);
 }
 
 void RenderPathDeferred::prepare(const RenderParams& params) {
