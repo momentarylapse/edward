@@ -1,0 +1,9 @@
+Toolbar coding-toolbar ""
+	Item /new "New" image=new
+	Item /open "Open..." image=open
+	Item /save "Save..." image=save
+	Separator
+	Item /undo "Undo" image=undo
+	Item /redo "Redo" image=redo
+	Separator
+	Item compile "Compile" image=media-playback-start-symbolic

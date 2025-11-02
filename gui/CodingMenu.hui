@@ -1,0 +1,38 @@
+Menu menu-coding "Coding" disabled
+	Menu menu_coding_file "File"
+		Item new "New" image=hui:new
+		Item open "Open..." image=hui:open
+		Item save "Save" image=hui:save
+		Item save_as "Save as..." image=hui:save-as
+		Separator
+		Item execute_plugin "Execute plugin"
+		Separator
+		Menu menu_model "Model"
+			Item model_new "New" image=hui:new
+			Item model_open "Open..." image=hui:open
+		Menu menu_font "Font"
+			Item font_new "New" image=hui:new
+			Item font_open "Open..." image=hui:open
+		Menu menu_material "Material"
+			Item material_new "New" image=hui:new
+			Item material_open "Open..." image=hui:open
+		Menu menu_project "Project"
+			Item project_new "New..." image=hui:new
+			Item project_open "Open..." image=hui:open
+			Item administrate "Administrate..." image=hui:preferences
+			Item project_settings "Settings..." image=hui:preferences
+		Item settings "Settings..." image=hui:preferences
+		Separator
+		Item exit "Exit" image=hui:quit
+	Menu menu_world_edit "Edit"
+		Item undo "Undo" image=hui:undo
+		Item redo "Redo" image=hui:redo
+		Separator
+		Item copy "Copy" image=hui:copy
+		Item paste "Paste" image=hui:paste
+		Item delete "Delete" image=hui:delete
+	Menu menu_world_help "?"
+		Item help "Help..." image=hui:help
+		Separator
+		Item send_bug_report "Report a bug"
+		Item what_the_fuck "\"about\"" image=hui:about

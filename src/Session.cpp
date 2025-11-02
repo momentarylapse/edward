@@ -247,7 +247,7 @@ void Session::universal_new(int preferred_type) {
 }
 
 void Session::universal_open(int preferred_type) {
-	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD}, preferred_type, false, false).then([this] (const auto& p) {
+	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD, FD_SCRIPT}, preferred_type, false, false).then([this] (const auto& p) {
 
 		auto call_open = [kind=p.kind, path=p.complete] (DocumentSession* doc) {
 			if (kind == FD_MODEL) {
@@ -268,6 +268,11 @@ void Session::universal_open(int preferred_type) {
 				doc->session->storage->load(path, doc->mode_material->data);
 				doc->set_mode(doc->mode_material);
 				doc->mode_material->optimize_view();
+			} else if (kind == FD_SCRIPT) {
+				if (!doc->mode_coding)
+					doc->mode_coding = new ModeCoding(doc);
+				doc->session->storage->load(path, doc->mode_coding->data.get());
+				doc->set_mode(doc->mode_coding);
 			}
 		};
 

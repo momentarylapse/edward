@@ -8,7 +8,12 @@
 #include <data/Data.h>
 #include <storage/format/Format.h>
 #include <lib/xhui/Panel.h>
+#include <lib/xhui/controls/Toolbar.h>
+#include <lib/xhui/controls/MenuBar.h>
+#include <lib/xhui/Resource.h>
 #include <lib/os/file.h>
+#include <Session.h>
+#include <view/EdwardWindow.h>
 
 #include "lib/os/msg.h"
 
@@ -31,12 +36,8 @@ Dialog coding-panel ''
 	}
 };
 
-class CodeData : public Data {
-public:
-	CodeData(DocumentSession* doc) : Data(doc, FD_SCRIPT) {
-	}
-	void reset() override {}
-};
+CodeData::CodeData(DocumentSession* doc) : Data(doc, FD_SCRIPT) {
+}
 
 
 ModeCoding::ModeCoding(DocumentSession* doc) : Mode(doc) {
@@ -89,16 +90,25 @@ void ModeCoding::on_leave_rec() {
 }
 
 void ModeCoding::on_command(const string& id) {
-	/*if (id == "new")
-		session->universal_new(FD_MODEL);
+	if (id == "new")
+		session->universal_new(FD_SCRIPT);
 	if (id == "open")
-		session->universal_open(FD_MODEL);
+		session->universal_open(FD_SCRIPT);
 	if (id == "undo")
 		data->undo();
 	if (id == "redo")
-		data->redo();*/
+		data->redo();
 }
 
+
+void ModeCoding::on_set_menu() {
+	auto tb = session->win->tool_bar;
+	tb->set_by_id("coding-toolbar");
+
+
+	auto menu = xhui::create_resource_menu("menu-coding");
+	session->win->menu_bar->set_menu(menu);
+}
 
 void ModeCoding::update_menu() {
 }

@@ -5,11 +5,18 @@
 #pragma once
 
 #include <view/Mode.h>
+#include <data/Data.h>
 #include <lib/base/pointer.h>
 
 class Path;
 class CodingPanel;
-class CodeData;
+
+
+class CodeData : public Data {
+public:
+	CodeData(DocumentSession* doc);
+	void reset() override {}
+};
 
 
 class ModeCoding : public Mode {
@@ -21,6 +28,7 @@ public:
 	void on_leave_rec() override;
 	void on_command(const string& id) override;
 
+	void on_set_menu() override;
 	void update_menu();
 
 	void load(const Path& filename);
