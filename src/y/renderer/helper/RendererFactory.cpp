@@ -97,8 +97,8 @@ void create_and_attach_camera_renderer(yrenderer::Context* ctx, Camera *cam) {
 
 
 void create_base_renderer(yrenderer::Context* ctx, GLFWwindow* window) {
-	yrenderer::cubemap_default_resolution = config.get_int("cubemap.resolution", 256);
-	yrenderer::cubemap_default_rate = config.get_int("cubemap.update_rate", 9);
+	yrenderer::cubemap_default_resolution = config.cubemap_resolution;
+	yrenderer::cubemap_default_rate = config.cubemap_update_rate;
 
 	try {
 		engine.window_renderer = create_window_renderer(ctx, window);

@@ -97,7 +97,23 @@ void WorldTransparentModelsEmitter::emit(const yrenderer::RenderParams& params, 
 			if (!material->is_transparent())
 				continue;
 
-			draw_calls.add({m, i, (m->owner->pos - rvd.camera_params.pos).length()});
+			// inside camera frustum?
+			const float r = m->prop.radius;
+			float zz = rvd.frustum[0].distance(m->owner->pos); // also used for z-sorting
+			if (zz < -r)
+				continue;
+			if (rvd.frustum[1].distance(m->owner->pos) < -r)
+				continue;
+			if (rvd.frustum[2].distance(m->owner->pos) < -r)
+				continue;
+			if (rvd.frustum[3].distance(m->owner->pos) < -r)
+				continue;
+			if (rvd.frustum[4].distance(m->owner->pos) < -r)
+				continue;
+			if (rvd.frustum[5].distance(m->owner->pos) < -r)
+				continue;
+
+			draw_calls.add({m, i, zz});
 		}
 	}
 

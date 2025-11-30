@@ -17,6 +17,8 @@
 #include "data/DataProject.h"
 #include "data/GameIniData.h"
 #include <mode_world/data/DataWorld.h>
+
+#include "EngineData.h"
 #include "../Session.h"
 #include "../view/EdwardWindow.h"
 #include "../storage/Storage.h"
@@ -62,7 +64,7 @@ void ModeProject::create_project(const Path &dir, const string &first_world) {
 
 	GameIniData gi;
 	gi.load(dir);
-	gi.set_str(GameIniData::ID_WORLD, first_world);
+	gi.set_str(GameIniData::ID_DEFAULT_WORLD, first_world);
 	gi.save(dir);
 
 	Path world_file = dir | "Maps" | (first_world + ".world");
@@ -105,7 +107,15 @@ void ModeProject::upgrade_project(const Path &dir) {
 		create_directory_recursive(dir | Storage::CANONICAL_SUB_DIR[k]);
 
 	if (os::fs::exists(dir | "game.ini")) {
-		msg_write(format("%sOK%s  %s", os::terminal::GREEN, os::terminal::END, (dir | "game.ini")));
+		GameIniData gi;
+		gi.load(dir);
+		if (gi.get_int(GameIniData::ID_API_VERSION) == EngineData::CURRENT_API_VERSION) {
+			msg_write(format("%sOK%s  %s", os::terminal::GREEN, os::terminal::END, (dir | "game.ini")));
+		} else {
+			gi.set_int(GameIniData::ID_API_VERSION, EngineData::CURRENT_API_VERSION);
+			gi.save(dir);
+			msg_write(format("%sUPDATE%s  %s", os::terminal::YELLOW, os::terminal::END, (dir | "game.ini")));
+		}
 	} else {
 		msg_write(format("%sCREATE%s  %s", os::terminal::YELLOW, os::terminal::END, (dir | "game.ini")));
 		GameIniData gi;

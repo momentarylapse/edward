@@ -65,12 +65,12 @@ yrenderer::RenderPath* create_render_path(Context* ctx, RenderPathType type, int
 FullCameraRenderer::FullCameraRenderer(Context* ctx, Camera* _cam, RenderPathType _type) : Renderer(ctx, "cam") {
 	type = _type;
 	cam = _cam;
-	shadow_box_size = config.get_float("shadow.boxsize", 2000);
-	shadow_resolution = config.get_int("shadow.resolution", 1024);
+	shadow_box_size = config.shadow_box_size;
+	shadow_resolution = config.shadow_resolution;
 
-	yrenderer::RenderPath::light_sources_module = config.get_str("renderer.light_sources", "default");
-	yrenderer::RenderPath::shadow_method = config.get_str("shadow.quality", "pcf-hardening");
-	yrenderer::RenderPath::lighting_method = config.get_str("renderer.lighting", "pbr");
+	yrenderer::RenderPath::light_sources_module = config.light_sources;
+	yrenderer::RenderPath::shadow_method = config.shadow_quality;
+	yrenderer::RenderPath::lighting_method = config.lighting;
 
 
 	if (type != RenderPathType::PathTracing) {
@@ -290,7 +290,7 @@ void FullCameraRenderer::draw(const yrenderer::RenderParams& params) {
 }
 
 FullCameraRenderer* create_camera_renderer(Context* ctx, Camera *cam) {
-	string type = config.get_str("renderer.path", "forward");
+	string type = config.renderer_path;
 
 	if (type == "direct")
 		return new FullCameraRenderer(ctx, cam, RenderPathType::Direct);

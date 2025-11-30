@@ -214,11 +214,7 @@ void Font::init_fonts() {
 	if (error) {
 		throw Exception("can not initialize freetype2 library");
 	}
-#ifdef OS_WINDOWS
-	_default = Font::load(config.get_str("default.font", "Arial"));
-#else
-	_default = Font::load(config.get_str("default.font", "NotoSans"));
-#endif
+	_default = Font::load(config.default_font);
 #endif
 }
 
