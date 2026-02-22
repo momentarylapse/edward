@@ -1,7 +1,4 @@
 #include "Window.h"
-
-#include <lib/base/algo.h>
-
 #include "xhui.h"
 #include "Painter.h"
 #include "Context.h"
@@ -11,6 +8,8 @@
 #include "controls/HeaderBar.h"
 #include "../os/time.h"
 #include "../os/msg.h"
+#include <lib/base/algo.h>
+#include <lib/base/optional.h>
 
 
 namespace xhui {
@@ -249,9 +248,15 @@ void Window::_mouse_button_callback(GLFWwindow *window, int button, int action, 
 void Window::_scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
 	//std::cout << "scroll " << xoffset << " " << yoffset << "\n";
 	auto w = (Window*)glfwGetWindowUserPointer(window);
-	w->state.scroll.x = xoffset;
+
+	Event e;
+	e.type = Event::Type::Scroll;
+	e.param1 = {(float)xoffset, (float)yoffset};
+	w->event_stack.add(e);
+
+	/*w->state.scroll.x = xoffset;
 	w->state.scroll.y = yoffset;
-	w->_on_mouse_wheel(w->state.scroll);
+	w->_on_mouse_wheel(w->state.scroll);*/
 }
 
 void Window::_refresh_callback(GLFWwindow *window) {
@@ -511,16 +516,29 @@ void Window::_on_draw() {
 }
 
 void Window::_compress_events() {
+	if (event_stack.num <= 1)
+		return;
 	// find last MouseMove event
-	int n = 0;
-	for (auto& e: event_stack)
+	base::optional<Event> last_mouse_move;
+	Event total_scroll = {Event::Type::Scroll, {0,0}, 0, 0};
+	//int n = 0;
+	for (auto& e: event_stack) {
 		if (e.type == Event::Type::MouseMove)
-			e.param2 = n ++;
+			last_mouse_move = e;
+		if (e.type == Event::Type::Scroll)
+			total_scroll.param1 += e.param1;
+	}
 
 	// remove all other MouseMove events
-	base::remove_if(event_stack, [n] (const Event& e) {
-		return e.type == Event::Type::MouseMove and e.param2 < n - 1;
-	});
+	/*base::remove_if(event_stack, [n] (const Event& e) {
+		return e.type == Event::Type::MouseMove or e.type == Event::Type::Scroll;
+	});*/
+	event_stack.clear();
+
+	if (last_mouse_move)
+		event_stack.add(*last_mouse_move);
+	if (total_scroll.param1 != vec2(0,0))
+		event_stack.add(total_scroll);
 }
 
 void Window::_handle_events() {
@@ -534,6 +552,9 @@ void Window::_handle_events() {
 				resync_next_mouse_move = false;
 			}
 			_on_mouse_move(state.m, state.m - state_prev.m);
+		} else if (e.type == Event::Type::Scroll) {
+			state.scroll = e.param1;
+			_on_mouse_wheel(e.param1);
 		}
 	}
 	event_stack.clear();

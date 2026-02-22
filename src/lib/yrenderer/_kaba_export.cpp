@@ -213,6 +213,8 @@ shared_array<Texture> hdr_resolver_get_tex_bloom(yrenderer::HDRResolver &r) {
 void export_package_yrenderer(kaba::Exporter* ext) {
 	using namespace yrenderer;
 
+	ext->package_info("yrenderer", "0.7");
+
 	ext->declare_class_size("Material.Pass", sizeof(Material::RenderPassData));
 	ext->declare_class_element("Material.Pass.shader_path", &Material::RenderPassData::shader_path);
 

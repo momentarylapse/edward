@@ -414,7 +414,7 @@ void *PluginManager::Plugin::create_instance(const string &parent) const {
 Array<ScriptInstanceDataVariable> load_variables(const kaba::Class* c, const void* instance = nullptr) {
 	Array<ScriptInstanceDataVariable> variables;
 	for (auto cc: weak(c->constants))
-		if (cc->type.get() == kaba::TypeString and cc->name == "PARAMETERS") {
+		if (cc->type.get() == kaba::common_types.string and cc->name == "PARAMETERS") {
 			auto params = cc->as_string().explode(",");
 			for (auto& v: c->elements)
 				if (sa_contains(params, v.name)) {

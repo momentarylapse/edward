@@ -75,10 +75,6 @@
 #include <ecs/EntityManager.h>
 #include <ecs/BaseClass.h>
 
-namespace kaba {
-	extern const Class* TypePath;
-}
-
 namespace PluginManager {
 
 //using namespace yrenderer;
@@ -1006,45 +1002,45 @@ string whatever_to_string(const void* instance, int offset, const kaba::Class* c
 	if (!instance)
 		return "";
 	auto p = (const char*)instance + offset;
-	if (c == kaba::TypeString)
+	if (c == kaba::common_types.string)
 		return *(const string*)p;
-	if (c == kaba::TypePath)
+	if (c == kaba::common_types.path)
 		return str(*(const Path*)p);
-	if (c == kaba::TypeFloat32)
+	if (c == kaba::common_types.f32)
 		return f2s(*(const float*)p, 3);
-	if (c == kaba::TypeInt32 or c->is_enum())
+	if (c == kaba::common_types.i32 or c->is_enum())
 		return str(*(const int*)p);
-	if (c == kaba::TypeBool)
+	if (c == kaba::common_types._bool)
 		return b2s(*(const bool*)p);
-	if (c == kaba::TypeVec3) {
+	if (c == kaba::common_types.vec3) {
 		const auto v = *(const vec3*)p;
 		return format("%.3f %.3f %.3f", v.x, v.y, v.z);
 	}
-	if (c == kaba::TypeColor) {
+	if (c == kaba::common_types.color) {
 		const auto v = *(const color*)p;
 		return format("%.3f %.3f %.3f %.3f", v.r, v.g, v.b, v.a);
 	}
-	if (c->name == "mat3")
+	if (c == kaba::common_types.mat3)
 		return mat3_to_any(*(const mat3*)p).str();
 	return "???";
 }
 
 void whatever_from_string(void* p, const kaba::Class* type, const string& value) {
-	if (type == kaba::TypeString)
+	if (type == kaba::common_types.string)
 		*(string*)p = value;
-	if (type == kaba::TypePath)
+	if (type == kaba::common_types.path)
 		*(Path*)p = value;
-	if (type == kaba::TypeFloat32)
+	if (type == kaba::common_types.f32)
 		*(float*)p = value._float();
-	if (type == kaba::TypeInt32 or type->is_enum())
+	if (type == kaba::common_types.i32 or type->is_enum())
 		*(int*)p = value._int();
-	if (type == kaba::TypeBool)
+	if (type == kaba::common_types._bool)
 		*(bool*)p = value._bool();
-	if (type == kaba::TypeVec3)
+	if (type == kaba::common_types.vec3)
 		*(vec3*)p = s2v(value);
-	if (type == kaba::TypeColor)
+	if (type == kaba::common_types.color)
 		*(color*)p = s2c(value);
-	if (type->name == "mat3")
+	if (type == kaba::common_types.mat3)
 		*(mat3*)p = s2mat3(value);
 }
 

@@ -218,7 +218,7 @@ add_executable(edward
 	src/lib/kaba/lib/lib_threads.cpp
 	src/lib/kaba/lib/lib_time.cpp
 	src/lib/kaba/lib/list.cpp
-	src/lib/kaba/parser/abstract.cpp
+	src/lib/kaba/parser/AbstractParser.cpp
 	src/lib/kaba/parser/Concretifier.cpp
 	src/lib/kaba/parser/import.cpp
 	src/lib/kaba/parser/lexical.cpp

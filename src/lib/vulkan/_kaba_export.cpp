@@ -268,6 +268,8 @@ public:
 
 void export_package_vulkan(kaba::Exporter* e) {
 	//printf("<vulkan export>\n");
+	e->package_info("vulkan", "2");
+
 	e->declare_class_size("Instance", sizeof(vulkan::Instance));
 	e->link_class_func("Instance.__delete__", &kaba::generic_delete<vulkan::Instance>);
 	e->link_class_func("Instance.create_glfw_surface", &VulkanInstance::_create_glfw_surface);

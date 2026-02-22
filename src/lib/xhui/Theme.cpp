@@ -13,7 +13,7 @@ void Theme::load_default() {
 	Configuration c;
 	if (!c.load(os::app::directory_dynamic | "default.theme"))
 		if (!c.load(os::app::directory_static | "default.theme"))
-			if (!c.load(os::app::directory_dynamic | "packages/xhui/default.theme")) // kaba package workaround...
+			if (!c.load(os::app::home_directory | ".kaba/packages/xhui/default.theme")) // kaba package workaround...
 				msg_error("failed to load default.theme");
 
 	_default.font_size = c.get_float("font.size", 12);
