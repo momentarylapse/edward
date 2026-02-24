@@ -158,12 +158,25 @@ void DocumentSession::set_mode_now(Mode *m) {
 	win->request_redraw();
 }
 
+Path DocumentSession::filename() const {
+	if (!cur_mode)
+		return Path::EMPTY;
+	return cur_mode->generic_data->filename;
+}
+
+int DocumentSession::file_type() const {
+	if (!cur_mode)
+		return 0;
+	return cur_mode->generic_data->type;
+}
+
 string DocumentSession::title() const {
 	if (!cur_mode)
 		return "???";
-	if (!cur_mode->generic_data->filename)
-		return "new " + i2s(cur_mode->generic_data->type);
-	return str(cur_mode->generic_data->filename.absolute().relative_to(session->project_dir));
+	auto fn = filename();
+	if (!fn)
+		return "new " + i2s(file_type());
+	return str(fn.absolute().relative_to(session->project_dir));
 }
 
 void DocumentSession::event(const string &id, const std::function<void()>& f) {

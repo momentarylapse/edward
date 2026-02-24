@@ -44,7 +44,8 @@ public:
 	void guess_root_directory(const Path &filename);
 
 	Path get_root_dir(int kind);
-	string fd_ext(int kind);
+	static string fd_ext(int kind);
+	static int get_file_kind(const Path& filename);
 
 	base::future<ComplexPath> file_dialog(int kind, bool save, bool force_in_root_dir);
 	base::future<ComplexPath> file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir);

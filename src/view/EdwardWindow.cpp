@@ -26,6 +26,7 @@
 #include "MultiView.h"
 #include "DocumentSession.h"
 #include "dialogs/DocumentSwitcher.h"
+#include "dialogs/ProjectPanel.h"
 #include "y/helper/ResourceManager.h"
 #include <storage/Storage.h>
 #include <stuff/PluginManager.h>
@@ -100,7 +101,8 @@ Dialog x x padding=0
 		---|
 		Toolbar toolbar '' main expandx
 		---|
-		Grid main-grid ''
+		Grid main-grid '' spacing=0
+			.
 			TabControl tab 'a' nobar
 )foodelim");
 
@@ -245,6 +247,9 @@ Dialog x x padding=0
 	};
 	update_project_menu();
 	session->out_project_loaded >> create_sink(update_project_menu);
+
+	project_panel = new ProjectPanel(this);
+	embed("main-grid", 0, 0, project_panel);
 
 	xhui::run_repeated(0.5f, [this] {
 		request_redraw();

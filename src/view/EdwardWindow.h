@@ -14,6 +14,7 @@ namespace xhui {
 }
 class Session;
 class DocumentSwitcher;
+class ProjectPanel;
 
 class EdwardWindow : public obs::Node<xhui::Window> {
 public:
@@ -38,6 +39,7 @@ public:
 	void update_menu();
 
 	DocumentSwitcher* switcher = nullptr;
+	ProjectPanel* project_panel = nullptr;
 };
 
 

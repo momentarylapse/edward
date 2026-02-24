@@ -288,6 +288,14 @@ string fd_name(int kind) {
 	return "?";
 }
 
+int Storage::get_file_kind(const Path& filename) {
+	for (int k=0; k<NUM_FDS; k++)
+		for (auto &ext: fd_ext(k).explode(","))
+			if (filename.extension() == ext)
+				return k;
+	return FD_FILE;
+}
+
 base::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int preferred, bool save, bool force_in_root_dir) {
 	int done;
 	//static hui::promise<ComplexPath> promise;
@@ -320,14 +328,7 @@ base::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int pre
 
 	auto on_select_base = [this, kind, force_in_root_dir, promise] (const Path &path) mutable {
 		ComplexPath cp;
-		cp.kind = FD_FILE;
-		for (auto k: kind) {
-			for (auto &ext: fd_ext(k).explode(","))
-				if (path.extension() == ext) {
-					cp.kind = k;
-				}
-		}
-
+		cp.kind = get_file_kind(path);
 
 		bool in_root_dir = (path.is_in(root_dir_kind[cp.kind]));
 

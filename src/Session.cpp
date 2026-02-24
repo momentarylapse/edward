@@ -248,35 +248,7 @@ void Session::universal_new(int preferred_type) {
 
 void Session::universal_open(int preferred_type) {
 	storage->file_dialog_x({FD_MODEL, FD_MATERIAL, FD_WORLD, FD_SCRIPT}, preferred_type, false, false).then([this] (const auto& p) {
-
-		auto call_open = [kind=p.kind, path=p.complete] (DocumentSession* doc) {
-			if (kind == FD_MODEL) {
-				if (!doc->mode_model)
-					doc->mode_model = new ModeModel(doc);
-				doc->session->storage->load(path, doc->mode_model->data.get());
-				doc->set_mode(doc->mode_model->mode_mesh.get());
-				doc->mode_model->mode_mesh->optimize_view();
-			} else if (kind == FD_WORLD) {
-				if (!doc->mode_world)
-					doc->mode_world = new ModeWorld(doc);
-				doc->session->storage->load(path, doc->mode_world->data);
-				doc->set_mode(doc->mode_world);
-				doc->mode_world->optimize_view();
-			} else if (kind == FD_MATERIAL) {
-				if (!doc->mode_material)
-					doc->mode_material = new ModeMaterial(doc);
-				doc->session->storage->load(path, doc->mode_material->data);
-				doc->set_mode(doc->mode_material);
-				doc->mode_material->optimize_view();
-			} else if (kind == FD_SCRIPT) {
-				if (!doc->mode_coding)
-					doc->mode_coding = new ModeCoding(doc);
-				doc->session->storage->load(path, doc->mode_coding->data.get());
-				doc->set_mode(doc->mode_coding);
-			}
-		};
-
-		emit_doc().then(call_open);
+		universal_edit(p.kind, p.complete, false);
 	});
 }
 
@@ -296,6 +268,12 @@ Path make_absolute_path(Session *session, int type, const Path &filename, bool r
 void Session::universal_edit(int type, const Path &_filename, bool relative_path) {
 	Path filename = make_absolute_path(this, type, add_extension_if_needed(this, type, _filename), relative_path);
 
+	for (auto d: documents)
+		if (d->filename() == _filename) {
+			set_active_doc(d);
+			return;
+		}
+
 	emit_doc().then([this, type, filename] (DocumentSession* doc) {
 		switch (type){
 			/*case -1:
@@ -305,25 +283,41 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 					mode_admin->basic_settings();
 				break;*/
 			case FD_MODEL:
+				if (!doc->mode_model)
+					doc->mode_model = new ModeModel(doc);
+				doc->session->storage->load(filename, doc->mode_model->data.get(), true);
+				doc->set_mode(doc->mode_model->mode_mesh.get());
+				doc->mode_model->mode_mesh->optimize_view();
+				break;
 			case FD_MATERIAL:
+				if (!doc->mode_material)
+					doc->mode_material = new ModeMaterial(doc);
+				doc->session->storage->load(filename, doc->mode_material->data, true);
+				doc->set_mode(doc->mode_material);
+				doc->mode_material->optimize_view();
+				break;
 			case FD_FONT:
+				break;
 			case FD_WORLD:
+				if (!doc->mode_world)
+					doc->mode_world = new ModeWorld(doc);
+				doc->session->storage->load(filename, doc->mode_world->data, true);
+				doc->set_mode(doc->mode_world);
+				doc->mode_world->optimize_view();
+				break;
 			case FD_TERRAIN:
+				break;
 			case FD_CAMERAFLIGHT:
+				break;
 			case FD_SCRIPT:
 			case FD_SHADERFILE:
+				if (!doc->mode_coding)
+					doc->mode_coding = new ModeCoding(doc);
+				doc->mode_coding->load(filename);
+				doc->set_mode(doc->mode_coding);
+				break;
 				if (type == FD_MODEL) {
-					if (!doc->mode_model)
-						doc->mode_model = new ModeModel(doc);
-					doc->session->storage->load(filename, doc->mode_model->data.get(), true);
-					doc->set_mode(doc->mode_model->mode_mesh.get());
-					doc->mode_model->mode_mesh->optimize_view();
 				} else if (type == FD_MATERIAL) {
-					if (!doc->mode_material)
-						doc->mode_material = new ModeMaterial(doc);
-					doc->session->storage->load(filename, doc->mode_material->data, true);
-					doc->set_mode(doc->mode_material);
-					doc->mode_material->optimize_view();
 #if 0
 				} else if (type == FD_FONT) {
 					session->storage->load(filename, session->mode_font->data, true);
@@ -341,16 +335,7 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 					}*/
 #endif
 				} else if (type == FD_WORLD) {
-					if (!doc->mode_world)
-						doc->mode_world = new ModeWorld(doc);
-					doc->session->storage->load(filename, doc->mode_world->data, true);
-					doc->set_mode(doc->mode_world);
-					doc->mode_world->optimize_view();
 				} else if (type == FD_SCRIPT or type == FD_SHADERFILE) {
-					if (!doc->mode_coding)
-						doc->mode_coding = new ModeCoding(doc);
-					doc->mode_coding->load(filename);
-					doc->set_mode(doc->mode_coding);
 				}
 				break;
 			case FD_TEXTURE:

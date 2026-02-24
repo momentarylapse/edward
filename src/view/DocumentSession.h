@@ -44,6 +44,8 @@ public:
 	void set_mode_now(Mode* m);
 	Mode* get_mode(int type);
 
+	Path filename() const;
+	int file_type() const;
 	string title() const;
 
 	Mode* mode_none;
