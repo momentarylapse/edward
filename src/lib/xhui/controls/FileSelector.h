@@ -20,6 +20,9 @@ public:
 
 	FileListView* list;
 	Label* directory_label;
+	Path root;
+
+	string get_string() override;
 
 	void set_filter(const string& filter);
 	void set_directory(const Path& dir);

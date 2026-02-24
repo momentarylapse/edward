@@ -57,8 +57,8 @@ Dialog xxx ''
 	for (const auto& o: params)
 		if (o.head(7) == "filter=")
 			selector->set_filter(o.sub(7));
-	selector->set_directory(dir);
 	selector->link_events();
+	selector->set_directory(dir);
 
 	event("ok", [this] {
 		answer = selected_path();

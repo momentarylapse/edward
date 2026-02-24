@@ -53,6 +53,7 @@ public:
 		if (dir.is_empty())
 			current_dir = os::app::initial_working_directory;
 		update_files();
+		emit_event(event_id::DirectoryChanged, false);
 	}
 	void set_filter(const string& _filter) {
 		filter = _filter.explode(";");
@@ -84,14 +85,14 @@ public:
 		const auto e = items[row];
 		if (e.is_directory) {
 			set_directory(current_dir | e.filename);
-			emit_event("hui:change-directory", false);
+			emit_event(event_id::DirectoryChanged, false);
 		}
 	}
 	void on_double_click_row(int row) override {
 		const auto e = items[row];
 		if (e.is_directory) {
 			set_directory(current_dir | e.filename);
-			emit_event("hui:change-directory", false);
+			emit_event(event_id::DirectoryChanged, false);
 		} else {
 			emit_event(event_id::Activate, false);
 		}
@@ -128,7 +129,10 @@ public:
  *		Grid
  *			Button up
  *			Label dir
- *		ListView
+ *		FileListView
+ *
+ *	FileListView will emit event_id::DirectoryChanged (also for set_directory())
+ *	-> update label etc on this event
  */
 FileSelector::FileSelector(const string& id) : Grid(id) {
 	auto g = new Grid(id + ":group");
@@ -144,14 +148,16 @@ FileSelector::FileSelector(const string& id) : Grid(id) {
 
 	directory_label->set_string(str(current_directory().basename()));
 }
+
 void FileSelector::link_events() {
 	owner->event(id + ":up", [this] {
 		if (!current_directory().parent().is_empty())
 			set_directory(current_directory().parent());
 	});
-	owner->event_x(list->id, "hui:change-directory", [this] {
+	owner->event_x(list->id, event_id::DirectoryChanged, [this] {
 		//directory_label->set_string(str(current_directory()));
-			directory_label->set_string(str(current_directory().basename()));
+		directory_label->set_string(str(current_directory().basename()));
+		owner->enable(id + ":up", (!root or current_directory() != root));
 	});
 	owner->event_x(list->id, event_id::Select, [this] {
 		emit_event(event_id::Select, false);
@@ -168,21 +174,34 @@ void FileSelector::link_events() {
 void FileSelector::set_filter(const string& filter) {
 	list->set_filter(filter);
 }
+
 void FileSelector::set_directory(const Path& dir) {
+	if (root and !dir.is_in(root))
+		return;
 	list->set_directory(dir);
-	directory_label->set_string(str(current_directory().basename()));
 }
+
 Path FileSelector::get_selected_filename() const {
 	return list->get_selected_filename();
 }
+
 Path FileSelector::current_directory() const {
 	return list->current_dir;
 }
+
+string FileSelector::get_string() {
+	return str(get_selected_filename());
+}
+
 void FileSelector::set_option(const string& key, const string& value) {
 	if (key == "linkevents")
 		link_events();
-	else if (key == "directory" or key == "filter" or key == "dragsource")
+	else if (key == "directory")
+		set_directory(value);
+	else if (key == "filter" or key == "dragsource")
 		list->set_option(key, value);
+	else if (key == "root")
+		root = value;
 	else
 		Grid::set_option(key, value);
 }

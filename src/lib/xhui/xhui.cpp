@@ -271,6 +271,7 @@ namespace event_id {
 	const string DragStart = "hui:drag-start";
 	const string DragDrop = "hui:drag-drop";
 	const string Scroll = "hui:scroll";
+	const string DirectoryChanged = "hui:directory-changed";
 };
 
 static owned_array<XImage> _images_;
