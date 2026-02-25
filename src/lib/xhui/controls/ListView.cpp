@@ -201,6 +201,8 @@ void ListView::add_string(const string& s) {
 	int row = cells.num;
 	cells.add({});
 	auto xx = s.explode("\\");
+	while (xx.num < column_factories.num)
+		xx.add("");
 	for (const auto& [col, t]: enumerate(xx)) { //s.explode("\\"))) {
 		if (col >= column_factories.num)
 			continue;

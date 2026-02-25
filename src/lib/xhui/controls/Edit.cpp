@@ -179,20 +179,10 @@ void Edit::on_key_down(int key) {
 		cursor_pos = text.num;
 		request_redraw();
 	}
-	if (key == KEY_Z + mod and current_history_index > 0) {
-		auto& op = history[-- current_history_index];
-		string old = get_range(op.i0, op.i1);
-		_replace_range(op.i0, op.i1, op.t);
-		op.i1 = op.i0 + op.t.num;
-		op.t = old;
-	}
-	if (key == KEY_Y + mod and current_history_index < history.num) {
-		auto& op = history[current_history_index ++];
-		string old = get_range(op.i0, op.i1);
-		_replace_range(op.i0, op.i1, op.t);
-		op.i1 = op.i0 + op.t.num;
-		op.t = old;
-	}
+	if (key == KEY_Z + mod)
+		undo();
+	if (key == KEY_Y + mod)
+		redo();
 
 	if (key == KEY_BACKSPACE) {
 		if (cursor_pos != selection_start) {
@@ -429,14 +419,57 @@ void Edit::_replace_range(Index i0, Index i1, const string& t) {
 void Edit::clear_history() {
 	history.clear();
 	current_history_index = 0;
+	save_history_index = -1;
 }
 
+void Edit::set_save_state() {
+	save_history_index = current_history_index;
+	emit_event(event_id::Changed, true);
+}
+
+bool Edit::is_save_state() const {
+	return current_history_index == save_history_index;
+}
+
+bool Edit::is_undoable() const {
+	return current_history_index > 0;
+}
+
+bool Edit::is_redoable() const {
+	return current_history_index < history.num;
+}
+
+void Edit::undo() {
+	if (is_undoable()) {
+		auto& op = history[-- current_history_index];
+		string old = get_range(op.i0, op.i1);
+		_replace_range(op.i0, op.i1, op.t);
+		op.i1 = op.i0 + op.t.num;
+		op.t = old;
+	}
+}
+
+void Edit::redo() {
+	if (is_redoable()) {
+		auto& op = history[current_history_index ++];
+		string old = get_range(op.i0, op.i1);
+		_replace_range(op.i0, op.i1, op.t);
+		op.i1 = op.i0 + op.t.num;
+		op.t = old;
+	}
+}
+
+void Edit::prune_history() {
+	history.resize(current_history_index);
+	if (save_history_index > current_history_index)
+		save_history_index = -1;
+}
 
 void Edit::replace_range(Index _i0, Index _i1, const string& t) {
 	auto i0 = min(_i0, _i1);
 	auto i1 = max(_i0, _i1);
 	string old = get_range(i0, i1);
-	history.resize(current_history_index);
+	prune_history();
 	history.add({i0, i0 + t.num, old});
 	current_history_index ++;
 	_replace_range(i0, i1, t);
@@ -653,6 +686,11 @@ void Edit::set_option(const string& key, const string& value) {
 		show_line_numbers = true;
 		line_number_area_width = DEFAULT_LINE_NUMBER_WIDTH;
 		request_redraw();
+	} else if (key == "savestate") {
+		set_save_state();
+	} else if (key == "resetsavestate") {
+		save_history_index = -1;
+		emit_event(event_id::Changed, true);
 	} else {
 		Control::set_option(key, value);
 	}

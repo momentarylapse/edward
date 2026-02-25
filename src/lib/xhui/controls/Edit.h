@@ -115,7 +115,15 @@ public:
 	};
 	Array<Operation> history;
 	int current_history_index = 0;
+	int save_history_index = 0;
 	void clear_history();
+	void prune_history();
+	void set_save_state();
+	bool is_save_state() const;
+	bool is_undoable() const;
+	bool is_redoable() const;
+	void undo();
+	void redo();
 
 
 	// override in SpinButton etc
