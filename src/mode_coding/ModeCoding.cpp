@@ -18,40 +18,18 @@
 
 #include "lib/os/msg.h"
 
-class CodingPanel : public xhui::Panel {
-public:
-	DocumentSession* doc;
-	codeedit::CodeEditor* editor;
-
-	explicit CodingPanel(DocumentSession* _doc) : xhui::Panel("") {
-		doc = _doc;
-		from_source(R"foodelim(
-Dialog coding-panel ''
-	MultilineEdit edit grabfocus monospace linenumbers focusframe=no
-)foodelim");
-		propagate_events = true;
-		editor = new codeedit::CodeEditor(this, "edit");
-	}
-	void load(const Path& filename) {
-		editor->load(filename);
-	}
-	void save(const Path& filename) {
-		editor->save(filename);
-	}
-};
-
 CodeData::CodeData(DocumentSession* doc) : Data(doc, FD_SCRIPT) {
 }
 
 
 ModeCoding::ModeCoding(DocumentSession* doc) : Mode(doc) {
-	coding_panel = new CodingPanel(doc);
-	doc->set_document_panel(coding_panel);
+	editor = new codeedit::CodeEditor();
+	doc->set_document_panel(editor);
 	data = new CodeData(doc);
 	data->reset();
 	generic_data = data.get();
 
-	coding_panel->editor->out_changed >> create_sink([this] {
+	editor->out_changed >> create_sink([this] {
 		data->out_changed();
 	});
 }
@@ -103,13 +81,13 @@ void ModeCoding::on_command(const string& id) {
 	if (id == "open")
 		session->universal_open(FD_SCRIPT);
 	if (id == "save") {
-		coding_panel->save(get_filename());
+		editor->save(get_filename());
 		//session->storage->save(get_filename(), data.get());
 	}
 	if (id == "undo")
-		coding_panel->editor->undo();
+		editor->undo();
 	if (id == "redo")
-		coding_panel->editor->redo();
+		editor->redo();
 	if (id == "compile")
 	{}
 }
@@ -130,22 +108,22 @@ void ModeCoding::update_menu() {
 void ModeCoding::load(const Path& _filename) {
 	auto filename = _filename.absolute().canonical();
 	session->storage->guess_root_directory(filename);
-	coding_panel->load(filename);
+	editor->load(filename);
 	data->filename = filename;
 	data->reset_history();
 	data->out_changed();
 }
 
 bool ModeCoding::is_save_state() const {
-	return coding_panel->editor->is_save_state();
+	return editor->is_save_state();
 }
 
 bool ModeCoding::is_undoable() const {
-	return coding_panel->editor->is_undoable();
+	return editor->is_undoable();
 }
 
 bool ModeCoding::is_redoable() const {
-	return coding_panel->editor->is_redoable();
+	return editor->is_redoable();
 }
 
 

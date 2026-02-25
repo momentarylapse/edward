@@ -12,6 +12,8 @@
 #include <lib/kaba/parser/Parser.h>
 #include <stdio.h>
 
+#include "lib/base/iter.h"
+
 static bool verbose = false;
 
 #include "lib/os/msg.h"
@@ -95,6 +97,7 @@ ParserKaba::ParserKaba() : Parser("Kaba") {
 	modifiers.add(kaba::Identifier::Mutable);
 	modifiers.add(kaba::Identifier::Selfref);
 	modifiers.add(kaba::Identifier::Ref);
+	modifiers.add(kaba::Identifier::Globalref);
 	modifiers.add(kaba::Identifier::Out);
 	modifiers.add(kaba::Identifier::Shared);
 	modifiers.add(kaba::Identifier::Owned);
@@ -210,36 +213,35 @@ void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 }
 
 
-Array<Parser::Label> ParserKaba::find_labels(const string &text, int offset) {
-	Array<Parser::Label> labels;
+Array<Parser::Label> ParserKaba::find_labels(const string& text) {
+	Array<Label> labels;
 
-#if 0
-	int num_lines = sv->get_num_lines();
+	auto ff = [] (const string& s) {
+		auto x = s.replace(" virtual ", " ").replace(" extern ", " ").replace(" mut ", " ").replace(" selfref ", " ").replace(" globalref ", " ").replace(" pure ", " ").replace(" override ", " ");
+		int p = x.find(" extends ");
+		if (p > 0)
+			return x.head(p);
+		return x;
+	};
+
+	auto lines = text.explode("\n");
 	string last_class;
-	for (int l=0;l<num_lines;l++) {
-		string s = sv->get_line(l);
-		if (s.num < 4)
+	for (const auto& [line_no, l]: enumerate(lines)) {
+		if (l.num < 4)
 			continue;
-		if (char_type(s[0]) == CHAR_LETTER) {
-			if (s.find("class ") >= 0) {
-				last_class = s.replace("\t", " ").replace(":", " ").explode(" ")[1];
-				s = "class " + last_class;
-			} else if (s.find("(") >= 0) {
-				last_class = "";
-			} else {
-				continue;
-			}
-			if (s.find(kaba::Identifier::Extern) >= 0)
-				continue;
-			labels.add(Label(s, l, 0));
-		} else if ((last_class.num > 0) && (s[0] == '\t') && (char_type(s[1]) == CHAR_LETTER)) {
-			if (s.find("(") < 0)
-				continue;
-			s = s.replace(kaba::Identifier::Virtual + " ", "").replace(kaba::Identifier::Override + " ", "").trim();
-			labels.add(Label(s, l, 1));
+		auto ll = l.trim();
+		int level = 0;
+		if (l[0] == '\t')
+			level ++;
+		if (l[1] == '\t')
+			level ++;
+		if (l[2] == '\t')
+			level ++;
+		// meh :P
+		if (ll.head(5) == "class" or ll.head(6) == "struct" or ll.head(4) == "func") {
+			labels.add({ff(ll), line_no, level});
 		}
 	}
-#endif
 	return labels;
 }
 

@@ -18,7 +18,7 @@ class ParserKaba : public Parser {
 public:
 	ParserKaba();
 
-	Array<Label> find_labels(const string &text, int offset) override;
+	Array<Label> find_labels(const string &text) override;
 	Array<Markup> create_markup(const string &text, int offset) override;
 
 	void clear_symbols();

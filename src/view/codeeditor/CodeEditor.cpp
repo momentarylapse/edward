@@ -12,11 +12,25 @@
 
 namespace codeedit {
 
-CodeEditor::CodeEditor(xhui::Panel* _panel, const string& _id) {
-	panel = _panel;
-	id = _id;
+CodeEditor::CodeEditor() : obs::Node<xhui::Panel>("") {
+	from_source(R"foodelim(
+Dialog coding-panel ''
+	Grid ? ''
+		Grid search-grid '' hidden
+			Edit search '' width=300
+			Button search-next '>' width=25
+			Button search-prev '<' width=25
+			Label ? '' expandx
+		---|
+		Grid ? ''
+			MultilineEdit edit grabfocus monospace linenumbers focusframe=no
+			ListView structure 'symbol' nobar style=compact width=250
+)foodelim");
+	propagate_events = true;
 
-	edit = (xhui::MultilineEdit*)panel->get_control(id);
+	id_edit = "edit";
+
+	edit = (xhui::MultilineEdit*)get_control(id_edit);
 	edit->set_option("focusframe", "no");
 	edit->set_option("monospace", "");
 	edit->set_option("fontsize", "12");
@@ -31,7 +45,7 @@ CodeEditor::CodeEditor(xhui::Panel* _panel, const string& _id) {
 	});*/
 
 	static int xcounter = 0;
-	panel->event_x(id, xhui::event_id::Changed, [this] {
+	event_x(id_edit, xhui::event_id::Changed, [this] {
 		//msg_write(edit->is_save_state());
 		xcounter ++;
 		update_highlight_current_line();
@@ -39,13 +53,20 @@ CodeEditor::CodeEditor(xhui::Panel* _panel, const string& _id) {
 			xcounter --;
 			if (xcounter == 0) {
 				update_highlight_all();
+				update_structure();
 			}
 		});
 		out_changed();
 	});
+	event_x("structure", xhui::event_id::Select, [this] {
+		int n = get_int("structure");
+		if (n >= 0 and n < label_line_numbers.num)
+			edit->set_cursor_pos(edit->line_pos_to_index({label_line_numbers[n], 0}));
+		activate(id_edit);
+	});
 
 	xhui::run_later(0.1f, [this] {
-		panel->request_redraw();
+		request_redraw();
 	});
 }
 
@@ -71,11 +92,23 @@ void CodeEditor::update_highlight_all() {
 	}
 }
 
+void CodeEditor::update_structure() {
+	if (auto p = GetParser(filename)) {
+		reset("structure");
+		label_line_numbers.clear();
+		for (const auto& l: p->find_labels(edit->text)) {
+			add_string("structure", string("        ").repeat(l.level) + l.name);
+			label_line_numbers.add(l.line);
+		}
+	}
+}
+
 
 void CodeEditor::load(const Path& _filename) {
 	filename = _filename;
 	edit->set_string(os::fs::read_text(filename));
 	update_highlight_all();
+	update_structure();
 
 	edit->clear_history();
 	edit->set_save_state();

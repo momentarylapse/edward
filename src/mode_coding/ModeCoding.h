@@ -9,7 +9,11 @@
 #include <lib/base/pointer.h>
 
 class Path;
-class CodingPanel;
+//class CodingPanel;
+
+namespace codeedit {
+	class CodeEditor;
+}
 
 
 class CodeData : public Data {
@@ -37,7 +41,7 @@ public:
 
 	void load(const Path& filename);
 
-	CodingPanel* coding_panel;
+	codeedit::CodeEditor* editor;
 	owned<CodeData> data;
 };
 

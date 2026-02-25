@@ -42,7 +42,7 @@ struct ParserAssociation {
 };
 static Array<ParserAssociation> ParserAssociations;
 
-Parser::Parser(const string &_name) {
+Parser::Parser(const string& _name) {
 	name = _name;
 	macro_begin = "-none-";
 	line_comment_begin = "-none-";
@@ -55,11 +55,11 @@ Parser::Parser(const string &_name) {
 Parser::~Parser() = default;
 
 
-Array<Parser::Label> Parser::find_labels(const string& text, int offset) {
+Array<Parser::Label> Parser::find_labels(const string&) {
 	return {};
 }
 
-MarkupType Parser::word_type(const string &name) {
+MarkupType Parser::word_type(const string& name) {
 	if (name.head(macro_begin.num) == macro_begin)
 		return MarkupType::MACRO;
 	for (string &n : keywords)

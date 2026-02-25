@@ -185,15 +185,18 @@ Dialog x x padding=0
 	});
 	event("select_all", [this] {
 		if (auto m = cur_mode())
-			m->multi_view->select_all();
+			if (auto mv = m->multi_view)
+				mv->select_all();
 	});
 	event("select_none", [this] {
 		if (auto m = cur_mode())
-			m->multi_view->clear_selection();
+			if (auto mv = m->multi_view)
+				mv->clear_selection();
 	});
 	event("invert_selection", [this] {
 		if (auto m = cur_mode())
-			m->multi_view->invert_selection();
+			if (auto mv = m->multi_view)
+				mv->invert_selection();
 	});
 	event("execute-plugin", [this] {
 		xhui::FileSelectionDialog::ask(this, "Execute plugin", session->plugin_manager->directory, {}).then( [this] (const Path& path) {

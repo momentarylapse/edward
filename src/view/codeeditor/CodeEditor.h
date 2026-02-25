@@ -3,6 +3,7 @@
 #include <lib/os/path.h>
 #include <lib/pattern/Observable.h>
 #include <lib/xhui/controls/MultilineEdit.h>
+#include <lib/xhui/Panel.h>
 
 namespace xhui {
 class MultilineEdit;
@@ -12,9 +13,9 @@ enum class MarkupType;
 
 namespace codeedit {
 
-class CodeEditor : public obs::Node<VirtualBase> {
+class CodeEditor : public obs::Node<xhui::Panel> {
 public:
-	explicit CodeEditor(xhui::Panel* panel, const string& id);
+	explicit CodeEditor();
 
 	void load(const Path& filename);
 	void save(const Path& filename);
@@ -40,10 +41,13 @@ public:
 	void update_highlight_current_line();
 	void update_highlight_all();
 
+	void update_structure();
+
 	Path filename;
-	xhui::Panel* panel;
 	xhui::MultilineEdit* edit = nullptr;
-	string id;
+	string id_edit;
+
+	Array<int> label_line_numbers;
 };
 
 }
