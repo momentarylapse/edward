@@ -174,8 +174,10 @@ void Session::set_active_doc(DocumentSession* doc) {
 	cur_doc->_last_usage_counter = counter ++;
 	win->set_int("tab", i);
 
-	if (cur_doc)
+	if (cur_doc) {
 		cur_doc->enter();
+		win->update_menu();
+	}
 }
 
 

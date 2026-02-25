@@ -46,6 +46,7 @@ public:
 
 	Path filename() const;
 	int file_type() const;
+	bool is_save_state() const;
 	string title() const;
 
 	Mode* mode_none;

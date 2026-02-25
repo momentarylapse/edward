@@ -31,6 +31,10 @@ public:
 	void on_set_menu() override;
 	void update_menu();
 
+	bool is_save_state() const override;
+	bool is_undoable() const override;
+	bool is_redoable() const override;
+
 	void load(const Path& filename);
 
 	CodingPanel* coding_panel;

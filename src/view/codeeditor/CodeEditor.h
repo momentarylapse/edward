@@ -17,7 +17,15 @@ public:
 	explicit CodeEditor(xhui::Panel* panel, const string& id);
 
 	void load(const Path& filename);
+	void save(const Path& filename);
 	string title() const;
+
+	bool is_save_state() const;
+	void set_save_state();
+	bool is_undoable() const;
+	bool is_redoable() const;
+	void undo();
+	void redo();
 
 	int get_num_lines() const;
 	string get_line(int line_no) const;

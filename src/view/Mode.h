@@ -2,8 +2,7 @@
 // Created by Michael Ankele on 2025-01-20.
 //
 
-#ifndef MODE_H
-#define MODE_H
+#pragma once
 
 #include <lib/base/base.h>
 #include <lib/math/vec2.h>
@@ -22,6 +21,7 @@ class Painter;
 class Data;
 class MultiViewWindow;
 struct Hover;
+class Path;
 
 namespace xhui {
 	class Panel;
@@ -68,6 +68,12 @@ public:
 	MultiView* multi_view = nullptr;
 	Data* generic_data = nullptr;
 	Data* get_data() const { return generic_data; }
+	virtual Path get_filename() const;
+	virtual bool is_save_state() const;
+	virtual bool is_undoable() const;
+	virtual bool is_redoable() const;
+	/*virtual void undo();
+	virtual void redo();*/
 
 	xhui::Panel* dialog = nullptr;
 	xhui::Panel* overlay_panel = nullptr;
@@ -97,6 +103,3 @@ public:
 	void request_mode_end();
 };
 
-
-
-#endif //MODE_H

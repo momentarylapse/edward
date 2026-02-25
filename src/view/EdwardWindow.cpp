@@ -80,7 +80,7 @@ EdwardWindow::EdwardWindow(xfer<Session> _session) : obs::Node<xhui::Window>(App
 		update_menu();
 	}),
 	in_action_failed(this, [this] {
-		auto am = session->cur_doc->cur_mode->get_data()->action_manager;
+		auto am = cur_mode()->get_data()->action_manager;
 		session->error(format("Action failed: %s\nReason: %s", am->error_location.c_str(), am->error_message.c_str()));
 	}),
 	in_saved(this, [this] {
@@ -140,7 +140,8 @@ Dialog x x padding=0
 	Array<string> ids = {"new", "open", "save", "save-as", "exit", "undo", "redo", "copy", "paste", "delete"};
 	for (const string& id: ids)
 		event(id, [this, id=id] {
-			session->cur_doc->cur_mode->on_command(id);
+			if (auto m = cur_mode())
+				m->on_command(id);
 		});
 
 	event_xp(id, xhui::event_id::Initialize, [this] (Painter* p) {
@@ -183,13 +184,16 @@ Dialog x x padding=0
 		session->universal_new(FD_WORLD);
 	});
 	event("select_all", [this] {
-		session->cur_doc->cur_mode->multi_view->select_all();
+		if (auto m = cur_mode())
+			m->multi_view->select_all();
 	});
 	event("select_none", [this] {
-		session->cur_doc->cur_mode->multi_view->clear_selection();
+		if (auto m = cur_mode())
+			m->multi_view->clear_selection();
 	});
 	event("invert_selection", [this] {
-		session->cur_doc->cur_mode->multi_view->invert_selection();
+		if (auto m = cur_mode())
+			m->multi_view->invert_selection();
 	});
 	event("execute-plugin", [this] {
 		xhui::FileSelectionDialog::ask(this, "Execute plugin", session->plugin_manager->directory, {}).then( [this] (const Path& path) {
@@ -216,11 +220,14 @@ Dialog x x padding=0
 		xhui::AboutDialog::show(this);
 	});
 	auto quit = [this] {
-		if (session->cur_doc->cur_mode->get_data()->action_manager->is_save())
+		auto m = cur_mode();
+		if (!m)
+			return;
+		if (m->is_save_state())
 			request_destroy();
-		else xhui::QuestionDialog::ask(this, "Question", "You have unsaved changes. Do you want to save?").then([this] (xhui::Answer a) {
+		else xhui::QuestionDialog::ask(this, "Question", "You have unsaved changes. Do you want to save?").then([this, m] (xhui::Answer a) {
 			if (a == xhui::Answer::Yes)
-				session->storage->auto_save(session->cur_doc->cur_mode->get_data()).then([this] {
+				session->storage->auto_save(m->get_data()).then([this] {
 					request_destroy();
 				});
 			else if (a == xhui::Answer::No)
@@ -268,16 +275,21 @@ void EdwardWindow::on_key_up(int key_code) {
 }
 
 void EdwardWindow::update_menu() {
-	if (!session->cur_doc or !session->cur_doc->cur_mode)
+	auto m = cur_mode();
+	if (!m)
 		return;
-	if (auto d = session->cur_doc->cur_mode->get_data()) {
-		enable("undo", d->action_manager->undoable());
-		enable("redo", d->action_manager->redoable());
+	enable("undo", m->is_undoable());
+	enable("redo", m->is_redoable());
 
-		string prefix = d->action_manager->is_save() ? "" : "*";
-		set_title(format("%s%s  - [%s]", prefix, d->filename.relative_to(session->storage->root_dir), nice_path(session->storage->root_dir)));
-	}
+
+	string prefix = m->is_save_state() ? "" : "*";
+	set_title(format("%s%s  - [%s]", prefix, session->cur_doc->filename().relative_to(session->storage->root_dir), nice_path(session->storage->root_dir)));
 }
 
+Mode *EdwardWindow::cur_mode() const {
+	if (!session->cur_doc)
+		return nullptr;
+	return session->cur_doc->cur_mode;
+}
 
 

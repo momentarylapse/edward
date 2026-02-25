@@ -32,6 +32,7 @@ CodeEditor::CodeEditor(xhui::Panel* _panel, const string& _id) {
 
 	static int xcounter = 0;
 	panel->event_x(id, xhui::event_id::Changed, [this] {
+		//msg_write(edit->is_save_state());
 		xcounter ++;
 		update_highlight_current_line();
 		xhui::run_later(2.0f, [this] {
@@ -40,6 +41,7 @@ CodeEditor::CodeEditor(xhui::Panel* _panel, const string& _id) {
 				update_highlight_all();
 			}
 		});
+		out_changed();
 	});
 
 	xhui::run_later(0.1f, [this] {
@@ -76,6 +78,15 @@ void CodeEditor::load(const Path& _filename) {
 	update_highlight_all();
 
 	edit->clear_history();
+	edit->set_save_state();
+
+	out_changed();
+}
+
+void CodeEditor::save(const Path& _filename) {
+	filename = _filename;
+	os::fs::write_text(filename, edit->text);
+	edit->set_save_state();
 
 	out_changed();
 }
@@ -84,6 +95,30 @@ string CodeEditor::title() const {
 	if (filename.is_empty())
 		return "new document";
 	return filename.basename();
+}
+
+bool CodeEditor::is_save_state() const {
+	return edit->is_save_state();
+}
+
+void CodeEditor::set_save_state() {
+	edit->set_save_state();
+}
+
+bool CodeEditor::is_undoable() const {
+	return edit->is_undoable();
+}
+
+bool CodeEditor::is_redoable() const {
+	return edit->is_redoable();
+}
+
+void CodeEditor::undo() {
+	edit->undo();
+}
+
+void CodeEditor::redo() {
+	edit->redo();
 }
 
 int CodeEditor::get_num_lines() const {

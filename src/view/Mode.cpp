@@ -57,6 +57,30 @@ bool Mode::is_ancestor_of(Mode* m) {
 	return false;
 }
 
+Path Mode::get_filename() const {
+	return generic_data->filename;
+}
+
+bool Mode::is_save_state() const {
+	return generic_data->action_manager->is_save();
+}
+
+bool Mode::is_undoable() const {
+	return generic_data->action_manager->undoable();
+}
+
+bool Mode::is_redoable() const {
+	return generic_data->action_manager->redoable();
+}
+
+/*void Mode::undo() {
+	generic_data->action_manager->undo();
+}
+
+void Mode::redo() {
+	generic_data->action_manager->redo();
+}*/
+
 
 SubMode::SubMode(Mode* parent) : Mode(parent->doc) {
 	_parent = parent;

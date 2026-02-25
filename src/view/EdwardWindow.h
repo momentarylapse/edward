@@ -2,8 +2,7 @@
 // Created by michi on 19.01.25.
 //
 
-#ifndef EDWARDWINDOW_H
-#define EDWARDWINDOW_H
+#pragma once
 
 #include "lib/xhui/xhui.h"
 #include "lib/pattern/Observable.h"
@@ -13,6 +12,7 @@ namespace xhui {
 	class Toolbar;
 }
 class Session;
+class Mode;
 class DocumentSwitcher;
 class ProjectPanel;
 
@@ -38,9 +38,9 @@ public:
 
 	void update_menu();
 
+	Mode* cur_mode() const;
+
 	DocumentSwitcher* switcher = nullptr;
 	ProjectPanel* project_panel = nullptr;
 };
 
-
-#endif //EDWARDWINDOW_H

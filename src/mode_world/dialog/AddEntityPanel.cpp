@@ -20,8 +20,6 @@ Dialog add-entity-panel ''
 		Group group-add 'Add'
 			Grid ? ''
 				ListView add-list 'a' nobar dragsource=entity cangrabfocus=no noexpandy height=250
-				---|
-				FileSelector add-files '' dragsource=entity-file expandy
 )foodelim");
 
 	add_string("add-list", "Entity - empty");

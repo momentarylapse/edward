@@ -7,6 +7,7 @@
 #include <view/codeeditor/CodeEditor.h>
 #include <data/Data.h>
 #include <storage/format/Format.h>
+#include <storage/Storage.h>
 #include <lib/xhui/Panel.h>
 #include <lib/xhui/controls/Toolbar.h>
 #include <lib/xhui/controls/MenuBar.h>
@@ -34,6 +35,9 @@ Dialog coding-panel ''
 	void load(const Path& filename) {
 		editor->load(filename);
 	}
+	void save(const Path& filename) {
+		editor->save(filename);
+	}
 };
 
 CodeData::CodeData(DocumentSession* doc) : Data(doc, FD_SCRIPT) {
@@ -46,6 +50,10 @@ ModeCoding::ModeCoding(DocumentSession* doc) : Mode(doc) {
 	data = new CodeData(doc);
 	data->reset();
 	generic_data = data.get();
+
+	coding_panel->editor->out_changed >> create_sink([this] {
+		data->out_changed();
+	});
 }
 
 ModeCoding::~ModeCoding() = default;
@@ -94,10 +102,16 @@ void ModeCoding::on_command(const string& id) {
 		session->universal_new(FD_SCRIPT);
 	if (id == "open")
 		session->universal_open(FD_SCRIPT);
+	if (id == "save") {
+		coding_panel->save(get_filename());
+		//session->storage->save(get_filename(), data.get());
+	}
 	if (id == "undo")
-		data->undo();
+		coding_panel->editor->undo();
 	if (id == "redo")
-		data->redo();
+		coding_panel->editor->redo();
+	if (id == "compile")
+	{}
 }
 
 
@@ -113,9 +127,25 @@ void ModeCoding::on_set_menu() {
 void ModeCoding::update_menu() {
 }
 
-void ModeCoding::load(const Path& filename) {
+void ModeCoding::load(const Path& _filename) {
+	auto filename = _filename.absolute().canonical();
+	session->storage->guess_root_directory(filename);
 	coding_panel->load(filename);
 	data->filename = filename;
+	data->reset_history();
+	data->out_changed();
+}
+
+bool ModeCoding::is_save_state() const {
+	return coding_panel->editor->is_save_state();
+}
+
+bool ModeCoding::is_undoable() const {
+	return coding_panel->editor->is_undoable();
+}
+
+bool ModeCoding::is_redoable() const {
+	return coding_panel->editor->is_redoable();
 }
 
 
