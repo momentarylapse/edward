@@ -216,6 +216,7 @@ void Edit::on_key_down(int key) {
 		multi_line_indent(-1);
 	}
 
+	emit_event(event_id::KeyDown, false);
 	request_redraw();
 }
 
@@ -488,6 +489,10 @@ void Edit::set_cursor_pos(Index index, bool selecting) {
 }
 
 void Edit::scroll_into_view(Index index) {
+	_scroll_into_view_request = index;
+}
+
+void Edit::_scroll_into_view(Index index) {
 	if (!face)
 		return;
 	const auto xy = index_to_xy(index);
@@ -500,6 +505,8 @@ void Edit::scroll_into_view(Index index) {
 	else if (xy.y + font_size > _area.y2)
 		viewport_offset.y += (xy.y - _area.y2) + font_size * 2;
 	viewport_offset = vec2::max(vec2::min(viewport_offset, viewport_size()), vec2::ZERO);
+	_scroll_into_view_request = base::None;
+	request_redraw();
 }
 
 
@@ -600,6 +607,9 @@ void Edit::_draw(Painter *p) {
 	p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
 	p->set_line_width(1);
 	p->set_roundness(0);
+
+	if (_scroll_into_view_request)
+		_scroll_into_view(*_scroll_into_view_request);
 }
 
 // TODO count utf8 chars

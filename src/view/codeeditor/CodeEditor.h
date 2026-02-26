@@ -43,6 +43,14 @@ public:
 
 	void update_structure();
 
+	void search_start();
+	void search_start_replace();
+	void search_next();
+	void search_replace_next();
+	void search_end();
+	bool search_find(int pos0);
+	int search_pos = 0;
+
 	Path filename;
 	xhui::MultilineEdit* edit = nullptr;
 	string id_edit;

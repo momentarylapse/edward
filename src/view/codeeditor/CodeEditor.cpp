@@ -16,15 +16,26 @@ CodeEditor::CodeEditor() : obs::Node<xhui::Panel>("") {
 	from_source(R"foodelim(
 Dialog coding-panel ''
 	Grid ? ''
-		Grid search-grid '' hidden
-			Edit search '' width=300
-			Button search-next '>' width=25
-			Button search-prev '<' width=25
-			Label ? '' expandx
-		---|
-		Grid ? ''
+		Overlay ? ''
 			MultilineEdit edit grabfocus monospace linenumbers focusframe=no
-			ListView structure 'symbol' nobar style=compact width=250
+			Grid ? ''
+				Label ? '' height=25
+				---|
+				Label ? '' expandx
+				Grid search-grid '' class=card hidden
+					Edit search-pattern '' width=300
+					Grid ? ''
+						Button search-next '>' width=25
+						Button search-prev '<' width=25
+						Button search-close 'x' width=25
+					---|
+					Edit search-replace '' noexpandx
+					Grid ? ''
+						Button search-replace-next 'replace' noexpandx
+				Label ? '' width=25
+				---|
+					Label ? '' expandy
+		ListView structure 'symbol' nobar style=compact width=250
 )foodelim");
 	propagate_events = true;
 
@@ -58,6 +69,57 @@ Dialog coding-panel ''
 		});
 		out_changed();
 	});
+#ifdef OS_MAC
+	constexpr int mod = xhui::KEY_SUPER;
+#else
+	constexpr int mod = xhui::KEY_CONTROL;
+#endif
+	event_x(id_edit, xhui::event_id::KeyDown, [this] {
+		if (auto w = get_window()) {
+			if (w->state.key_code == xhui::KEY_F + mod) {
+				search_start();
+			} else if (w->state.key_code == xhui::KEY_R + mod) {
+				search_start_replace();
+			}
+		}
+	});
+	event_x("search-pattern", xhui::event_id::Changed, [this] {
+		search_find(search_pos);
+	});
+	event_x("search-pattern", xhui::event_id::ActivateDialogDefault, [this] {
+		// [Return]
+		search_next();
+	});
+	event_x("search-pattern", xhui::event_id::KeyDown, [this] {
+		if (auto w = get_window()) {
+			if (w->state.key_code == xhui::KEY_ESCAPE) {
+				search_end();
+			}
+		}
+	});
+	event("search-next", [this] {
+		search_next();
+	});
+	event_x("search-replace", xhui::event_id::Changed, [this] {
+		search_find(search_pos);
+	});
+	event_x("search-replace", xhui::event_id::ActivateDialogDefault, [this] {
+		// [Return]
+		search_replace_next();
+	});
+	event_x("search-replace", xhui::event_id::KeyDown, [this] {
+		if (auto w = get_window()) {
+			if (w->state.key_code == xhui::KEY_ESCAPE) {
+				search_end();
+			}
+		}
+	});
+	event("search-close", [this] {
+		search_end();
+	});
+	event("search-replace-next", [this] {
+		search_replace_next();
+	});
 	event_x("structure", xhui::event_id::Select, [this] {
 		int n = get_int("structure");
 		if (n >= 0 and n < label_line_numbers.num)
@@ -66,6 +128,7 @@ Dialog coding-panel ''
 	});
 
 	xhui::run_later(0.1f, [this] {
+		activate(id_edit);
 		request_redraw();
 	});
 }
@@ -180,6 +243,62 @@ void CodeEditor::clear_markings(Index i0, Index i1) {
 	edit->clean_markup(i0, i1);
 }
 
+void CodeEditor::search_start() {
+	int p0 = min(edit->selection_start, edit->cursor_pos);
+	int p1 = max(edit->selection_start, edit->cursor_pos);
+	search_pos = p0;
+	set_visible("search-grid", true);
+	activate("search-pattern");
+
+	if (p0 == p1)
+		search_find(search_pos);
+	else
+		set_string("search-pattern", edit->text.sub(p0, p1).escape());
+}
+
+void CodeEditor::search_start_replace() {
+	search_start();
+}
+
+void CodeEditor::search_end() {
+	set_visible("search-grid", false);
+	activate(id_edit);
+}
+
+bool CodeEditor::search_find(int pos0) {
+	const string pattern = get_string("search-pattern").unescape();
+	if (pattern.num == 0)
+		return false;
+	int p1 = edit->text.find(pattern, pos0);
+	if (p1 > 0) {
+		edit->set_cursor_pos(p1);
+		edit->set_cursor_pos(p1 + pattern.num, true);
+		return true;
+	}
+	return false;
+}
+
+void CodeEditor::search_next() {
+	int p0 = min(edit->selection_start, edit->cursor_pos);
+	if (search_find(p0 + 1)) {
+		search_pos = edit->selection_start;
+	}
+}
+
+void CodeEditor::search_replace_next() {
+	const string filler = get_string("search-replace").unescape();
+	if (filler.num == 0)
+		return;
+
+	int p0 = min(edit->selection_start, edit->cursor_pos);
+	int p1 = max(edit->selection_start, edit->cursor_pos);
+	if (search_find(p0)) {
+		edit->replace_range(p0, p1, filler);
+	}
+	if (search_find(p0 + 1)) {
+		search_pos = edit->selection_start;
+	}
+}
 }
 
 

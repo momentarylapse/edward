@@ -46,7 +46,9 @@ public:
 	using Index = int;
 
 	void set_cursor_pos(Index index, bool selecting = false);
-	void scroll_into_view(Index index);
+	void scroll_into_view(Index index); // lazy request
+	void _scroll_into_view(Index index); // actual operation during draw
+	base::optional<Index> _scroll_into_view_request;
 
 	mutable float ui_scale = 1.0f;
 	bool multiline = false;
