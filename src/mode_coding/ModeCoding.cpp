@@ -43,42 +43,15 @@ ModeCoding::ModeCoding(DocumentSession* doc) : Mode(doc) {
 ModeCoding::~ModeCoding() = default;
 
 void ModeCoding::on_enter_rec() {
-	/*session->out_changed >> create_sink([this] {
-		update_menu();
+}
+
+void ModeCoding::on_connect_events_rec() {
+	doc->event("compile", [this] {
+		editor->show_errors();
 	});
-
-	auto win = session->win;
-	auto tb = win->toolbar;
-	tb->set_by_id("model-toolbar");
-	win->enable("mode_model_animation", false);
-
-	event_ids_rec.add(win->event("mode_model_mesh", [this] {
-		doc->set_mode(mode_mesh.get());
-	}));
-	event_ids_rec.add(win->event("mode_model_skeleton", [this] {
-		doc->set_mode(mode_skeleton.get());
-	}));
-	event_ids_rec.add(session->win->event("mode_properties", [this] {
-		session->win->open_dialog(new ModelPropertiesDialog(session->win, data.get()));
-	}));
-
-	event_ids_rec.add(session->win->event("save", [this] {
-		if (data->filename.is_empty())
-			session->storage->save_as(data.get());
-		else
-			session->storage->save(data->filename, data.get());
-	}));
-	event_ids_rec.add(session->win->event("save-as", [this] {
-		session->storage->save_as(data.get());
-	}));*/
 }
 
 void ModeCoding::on_leave_rec() {
-	/*session->out_changed.unsubscribe(this);
-
-	for (int uid: event_ids_rec)
-		session->win->remove_event_handler(uid);
-	event_ids_rec.clear();*/
 }
 
 void ModeCoding::on_command(const string& id) {
@@ -94,8 +67,6 @@ void ModeCoding::on_command(const string& id) {
 		editor->undo();
 	if (id == "redo")
 		editor->redo();
-	if (id == "compile")
-	{}
 }
 
 
