@@ -81,10 +81,20 @@ public:
 	void universal_open(int preferred_type);
 	void universal_edit(int type, const Path &filename, bool relative_path);
 
-	void set_message(const string &message);
+	void info(const string &message);
+	void warning(const string &message);
 	void remove_message();
 	void error(const string &message);
-	Array<string> message_str;
+	struct Message {
+		enum class Type {
+			INFO,
+			WARNING,
+			ERROR
+		};
+		Type type;
+		string message;
+	};
+	Array<Message> messages;
 
 	base::future<void> allow_termination();
 

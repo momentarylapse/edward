@@ -81,9 +81,9 @@ void ModeSkeleton::on_command(const string& id) {
 		if (auto s = skeleton_selection_description(data, multi_view->selection)) {
 			data->execute(new ActionModelDeleteBoneSelection(data, multi_view->selection[MultiViewType::SKELETON_BONE]));
 			multi_view->clear_selection();
-			session->set_message("deleted: " + *s);
+			session->info("deleted: " + *s);
 		} else {
-			session->set_message("nothing selected");
+			session->warning("nothing selected");
 		}
 	}
 }

@@ -79,7 +79,13 @@ public:
 
 namespace drawing2d {
 
-void draw_boxed_str(Painter* p, const vec2& pos, const string& str, int align = -1);
+enum class Style {
+	DEFAULT,
+	WARNING,
+	ERROR,
+};
+
+void draw_boxed_str(Painter* p, const vec2& pos, const string& str, int align = -1, Style style = Style::DEFAULT);
 void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& a, MultiViewType kind, const base::optional<Hover>& hover, const base::set<int>& sel);
 
 }

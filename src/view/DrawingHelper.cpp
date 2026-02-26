@@ -270,14 +270,19 @@ void DrawingHelper::draw_mesh(const yrenderer::RenderParams& params, yrenderer::
 
 namespace drawing2d {
 
-void draw_boxed_str(Painter* p, const vec2& _pos, const string& str, int align) {
+void draw_boxed_str(Painter* p, const vec2& _pos, const string& str, int align, Style style) {
 	vec2 size = p->get_str_size(str);
 	vec2 pos = _pos;
 	if (align == 0)
 		pos.x -= size.x / 2;
 	if (align == 1)
 		pos.x -= size.x;
-	p->set_color(xhui::Theme::_default.background_button);
+	if (style == Style::ERROR)
+		p->set_color(color(1, 0.6f, 0.1f, 0.1f));
+	else if (style == Style::WARNING)
+		p->set_color(xhui::Theme::_default.background_button_danger);
+	else
+		p->set_color(xhui::Theme::_default.background_button);
 	p->set_roundness(7);
 	p->draw_rect(rect(pos, pos + size).grow(7));
 	p->set_color(xhui::Theme::_default.text_label);

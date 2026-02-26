@@ -23,6 +23,9 @@
 #include <stuff/PluginManager.h>
 #include <view/MultiView.h>
 //#include "view/DrawingHelper.h"
+#include "Session.h"
+#include "Session.h"
+
 #include <lib/base/algo.h>
 #include "view/Mode.h"
 #include "data/Data.h"
@@ -183,27 +186,32 @@ void Session::set_active_doc(DocumentSession* doc) {
 
 
 void Session::remove_message() {
-	message_str.erase(0);
+	messages.erase(0);
 	win->request_redraw();
 }
 
-void Session::set_message(const string &message) {
-	msg_write(message);
-	message_str.add(message);
+void Session::info(const string &message) {
+	messages.add({Message::Type::INFO, message});
 	win->request_redraw();
-	xhui::run_later(2.0f, [this] {
+	xhui::run_later(4.0f, [this] {
 		remove_message();
 	});
 }
 
-
 void Session::error(const string &message) {
-#if 0
-	//set_info_text(message, {"error", "allow-close"});
-	hui::error_box(win, _("Error"), message);
-#else
-	set_message("ERROR: " + message);
-#endif
+	messages.add({Message::Type::ERROR, message});
+	win->request_redraw();
+	xhui::run_later(4.0f, [this] {
+		remove_message();
+	});
+}
+
+void Session::warning(const string &message) {
+	messages.add({Message::Type::WARNING, message});
+	win->request_redraw();
+	xhui::run_later(4.0f, [this] {
+		remove_message();
+	});
 }
 
 #if 0

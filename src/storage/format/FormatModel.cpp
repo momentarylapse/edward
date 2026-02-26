@@ -944,7 +944,7 @@ public:
 	}
 	void on_notify() override {}
 	void on_unhandled() override {
-		session->set_message("unhandled chunk " + context.str());
+		session->warning("unhandled chunk " + context.str());
 	}
 	void on_error(const string &message) override {
 		session->error(message);

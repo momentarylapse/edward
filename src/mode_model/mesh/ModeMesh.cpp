@@ -287,7 +287,7 @@ void ModeMesh::on_connect_events() {
 		data->execute(new ActionModelAlignToGrid(data->editing_mesh, multi_view->selection, [this] (const vec3& v) {
 			return multi_view->snap_v(v);
 		}));
-		session->set_message(format("aligned to grid (%s)", multi_view->format_length(multi_view->active_window->get_grid_d())));
+		session->info(format("aligned to grid (%s)", multi_view->format_length(multi_view->active_window->get_grid_d())));
 	});
 	doc->event("bevel_edges", [this] {
 		doc->set_mode(new ModeBevelEdges(this));
@@ -682,9 +682,9 @@ void ModeMesh::on_command(const string& id) {
 		if (auto s = model_selection_description(data, multi_view->selection)) {
 			data->delete_selection(multi_view->selection, presentation_mode == PresentationMode::Vertices);
 			multi_view->clear_selection();
-			session->set_message("deleted: " + *s);
+			session->info("deleted: " + *s);
 		} else {
-			session->set_message("nothing selected");
+			session->warning("nothing selected");
 		}
 	}
 	_parent->on_command(id);
@@ -694,15 +694,15 @@ void ModeMesh::copy() {
 	temp_mesh->clear();
 	temp_mesh->add(data->editing_mesh->copy_geometry(multi_view->selection));
 	if (temp_mesh->is_empty())
-		session->set_message("nothing selected");
+		session->warning("nothing selected");
 	else
-		session->set_message("copied: " + *model_selection_description(data, multi_view->selection));
+		session->info("copied: " + *model_selection_description(data, multi_view->selection));
 }
 
 void ModeMesh::paste() {
 	multi_view->clear_selection();
 	if (temp_mesh->is_empty()) {
-		session->set_message("nothing to paste");
+		session->warning("nothing to paste");
 	} else {
 		doc->set_mode(new ModePaste(this));
 	}

@@ -28,7 +28,7 @@ Format::~Format() = default;
 void Format::warning(const string &message) {
 	msg_error(message);
 	if (session)
-		session->set_message(message);
+		session->warning(message);
 }
 
 

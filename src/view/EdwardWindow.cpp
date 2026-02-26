@@ -35,6 +35,9 @@
 #include "Session.h"
 #include <cmath>
 
+#include "Session.h"
+#include "Session.h"
+#include "lib/base/iter.h"
 
 
 extern string AppName;
@@ -84,8 +87,7 @@ EdwardWindow::EdwardWindow(xfer<Session> _session) : obs::Node<xhui::Window>(App
 		session->error(format("Action failed: %s\nReason: %s", am->error_location.c_str(), am->error_message.c_str()));
 	}),
 	in_saved(this, [this] {
-		msg_write("SAVED");
-		session->set_message("Saved!");
+		session->info("Saved!");
 		update_menu();
 	})
 {
@@ -179,8 +181,14 @@ Dialog x x padding=0
 	event_xp("overlay-area", xhui::event_id::Draw, [this] (Painter* p) {
 		p->set_color(White);
 		p->set_font_size(xhui::Theme::_default.font_size * 1.5f);
-		for (int i=0; i<session->message_str.num; i++)
-			drawing2d::draw_boxed_str(p, _area.center() + vec2(0, 20*i), session->message_str[i], 0);
+		for (const auto& [i, m]: enumerate(session->messages)) {
+			if (m.type == Session::Message::Type::ERROR)
+				drawing2d::draw_boxed_str(p, _area.center() + vec2(0, 20*i), m.message, 0, drawing2d::Style::ERROR);
+			else if (m.type == Session::Message::Type::WARNING)
+				drawing2d::draw_boxed_str(p, _area.center() + vec2(0, 20*i), m.message, 0, drawing2d::Style::WARNING);
+			else //if (m.type == Session::Message::Type::INFO)
+				drawing2d::draw_boxed_str(p, _area.center() + vec2(0, 20*i), m.message, 0);
+		}
 	});
 	event("model_new", [this] {
 		session->universal_new(FD_MODEL);

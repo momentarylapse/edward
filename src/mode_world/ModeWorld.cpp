@@ -215,7 +215,7 @@ void ModeWorld::on_enter() {
 		} else if (session->win->drag.payload.match("filename:*.model")) {
 			Path filename = session->win->drag.payload.sub_ref(9);
 			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_MODEL));
-			session->set_message(str(fn_rel));
+			session->info(str(fn_rel));
 			auto e = data->add_entity(p, quaternion::ID);
 			auto c = data->entity_add_component<ModelRef>(e);
 			c->filename = fn_rel;
@@ -228,7 +228,7 @@ void ModeWorld::on_enter() {
 		} else if (session->win->drag.payload.match("filename:*.map")) {
 			Path filename = session->win->drag.payload.sub_ref(9);
 			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_TERRAIN));
-			session->set_message(str(fn_rel));
+			session->info(str(fn_rel));
 			auto e = data->add_entity(p, quaternion::ID);
 			auto c = data->entity_add_component<TerrainRef>(e);
 			c->filename = fn_rel;
@@ -239,7 +239,7 @@ void ModeWorld::on_enter() {
 		} else if (session->win->drag.payload.match("filename:*.template")) {
 			Path filename = session->win->drag.payload.sub_ref(9);
 			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_MODEL));
-			session->set_message(str(fn_rel));
+			session->info(str(fn_rel));
 			auto e = data->add_entity(p, quaternion::ID);
 			auto t = LevelData::load_template(filename);
 			data->_entity_apply_components(e, t.components);
@@ -688,26 +688,26 @@ void ModeWorld::on_command(const string& id) {
 	if (id == "copy") {
 		data->copy(temp, multi_view->selection);
 		if (temp.entities.num == 0)
-			session->set_message("nothing selected");
+			session->warning("nothing selected");
 		else
-			session->set_message("copied: " + world_selection_description(data, multi_view->selection).value_or("???"));
+			session->info("copied: " + world_selection_description(data, multi_view->selection).value_or("???"));
 	}
 	if (id == "paste") {
 		if (temp.entities.num == 0) {
-			session->set_message("nothing to paste");
+			session->warning("nothing to paste");
 		} else {
 			data->paste(temp, &multi_view->selection);
 			multi_view->update_selection_box();
-			session->set_message("pasted: " + world_selection_description(data, multi_view->selection).value_or("???"));
+			session->info("pasted: " + world_selection_description(data, multi_view->selection).value_or("???"));
 		}
 	}
 	if (id == "delete") {
 		if (auto s = world_selection_description(data, multi_view->selection)) {
 			data->delete_selection(multi_view->selection);
 			multi_view->clear_selection();
-			session->set_message("deleted: " + *s);
+			session->info("deleted: " + *s);
 		} else {
-			session->set_message("nothing selected");
+			session->warning("nothing selected");
 		}
 	}
 }

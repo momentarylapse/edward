@@ -137,7 +137,7 @@ bool DataCamera::save(const Path &_filename)
 	f->write_comment("#");
 
 	delete f;
-	session->set_message("Camera script saved!");
+	session->info("Camera script saved!");
 	action_manager->mark_current_as_save();
 
 	} catch(Exception &e) {
