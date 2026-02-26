@@ -17,6 +17,9 @@ class CodeEditor : public obs::Node<xhui::Panel> {
 public:
 	explicit CodeEditor();
 
+	obs::source out_no_error{this, "no-error"};
+	obs::xsource<string> out_error{this, "error"};
+
 	void load(const Path& filename);
 	void save(const Path& filename);
 	string title() const;
@@ -42,6 +45,8 @@ public:
 	void update_highlight_all();
 
 	void update_structure();
+
+	void show_errors();
 
 	void search_start();
 	void search_start_replace();

@@ -80,6 +80,8 @@ Dialog coding-panel ''
 				search_start();
 			} else if (w->state.key_code == xhui::KEY_R + mod) {
 				search_start_replace();
+			} else if (w->state.key_code == xhui::KEY_B + mod) {
+				show_errors();
 			}
 		}
 	});
@@ -297,6 +299,18 @@ void CodeEditor::search_replace_next() {
 	}
 	if (search_find(p0 + 1)) {
 		search_pos = edit->selection_start;
+	}
+}
+
+void CodeEditor::show_errors() {
+	if (auto p = GetParser(filename)) {
+		auto errors = p->find_errors(edit->text);
+		if (errors.num > 0) {
+			edit->set_cursor_pos(errors[0].position);
+			out_error(errors[0].message);
+		} else {
+			out_no_error();
+		}
 	}
 }
 }

@@ -19,6 +19,7 @@ public:
 	ParserKaba();
 
 	Array<Label> find_labels(const string &text) override;
+	Array<Error> find_errors(const string &text) override;
 	Array<Markup> create_markup(const string &text, int offset) override;
 
 	void clear_symbols();
@@ -27,5 +28,6 @@ public:
 	autocomplete::Data run_autocomplete(const string &code, const Path &filename, int line, int pos) override;
 
 	owned<kaba::Context> context;
+	Array<Error> errors;
 };
 

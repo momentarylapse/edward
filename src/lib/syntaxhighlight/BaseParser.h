@@ -67,8 +67,14 @@ public:
 		int level;
 	};
 
+	struct Error {
+		string message;
+		int position;
+	};
+
 	virtual void prepare_symbols(const string& text, const Path& filename) {}
 	virtual Array<Label> find_labels(const string& text);
+	virtual Array<Error> find_errors(const string& text);
 	virtual MarkupType word_type(const string &name);
 	virtual Array<Markup> create_markup(const string& text, int offset);
 	virtual autocomplete::Data run_autocomplete(const string &code, const Path &filename, int line, int pos);

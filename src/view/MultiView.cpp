@@ -583,10 +583,6 @@ Dialog multi-view-panel ''
 		renderer->draw(p);
 		multi_view->on_draw(p);
 		doc->cur_mode->on_draw_post(p);
-		p->set_color(White);
-		p->set_font_size(xhui::Theme::_default.font_size * 1.5f);
-		for (int i=0; i<doc->session->message_str.num; i++)
-			drawing2d::draw_boxed_str(p, _area.center() + vec2(0, 20*i), doc->session->message_str[i], 0);
 	});
 	event_x("area", xhui::event_id::MouseMove, [this] {
 		if (!doc->cur_mode or !multi_view)

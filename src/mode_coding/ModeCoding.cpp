@@ -32,6 +32,12 @@ ModeCoding::ModeCoding(DocumentSession* doc) : Mode(doc) {
 	editor->out_changed >> create_sink([this] {
 		data->out_changed();
 	});
+	editor->out_no_error >> create_sink([this] {
+		session->set_message("no error");
+	});
+	editor->out_error >> create_data_sink<string>([this] (const string& msg) {
+		session->set_message("Error: " + msg);
+	});
 }
 
 ModeCoding::~ModeCoding() = default;

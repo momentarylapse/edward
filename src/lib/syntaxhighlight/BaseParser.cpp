@@ -59,6 +59,10 @@ Array<Parser::Label> Parser::find_labels(const string&) {
 	return {};
 }
 
+Array<Parser::Error> Parser::find_errors(const string&) {
+	return {};
+}
+
 MarkupType Parser::word_type(const string& name) {
 	if (name.head(macro_begin.num) == macro_begin)
 		return MarkupType::MACRO;

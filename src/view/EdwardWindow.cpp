@@ -101,9 +101,11 @@ Dialog x x padding=0
 		---|
 		Toolbar toolbar '' main expandx
 		---|
-		Grid main-grid '' spacing=0
-			.
-			TabControl tab 'a' nobar
+		Overlay ? ''
+			Grid main-grid '' spacing=0
+				.
+				TabControl tab 'a' nobar
+			DrawingArea overlay-area '' ignorehover
 )foodelim");
 
 #ifdef OS_MAC
@@ -173,6 +175,12 @@ Dialog x x padding=0
 		xhui::run_later(0.01f, [this] {
 			session->promise_started(session.get());
 		});
+	});
+	event_xp("overlay-area", xhui::event_id::Draw, [this] (Painter* p) {
+		p->set_color(White);
+		p->set_font_size(xhui::Theme::_default.font_size * 1.5f);
+		for (int i=0; i<session->message_str.num; i++)
+			drawing2d::draw_boxed_str(p, _area.center() + vec2(0, 20*i), session->message_str[i], 0);
 	});
 	event("model_new", [this] {
 		session->universal_new(FD_MODEL);

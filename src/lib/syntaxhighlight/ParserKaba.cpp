@@ -177,6 +177,7 @@ void ParserKaba::clear_symbols() {
 
 
 void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
+	errors.clear();
 
 	context = kaba::default_context->dll_create_context();
 
@@ -201,7 +202,14 @@ void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 //		add_class_content(this, m->tree->imported_symbols.get(), "");
 		add_class_content(this, m->tree->base_class, "");
 
+	} catch (kaba::Exception &e) {
+		int pos = e.column;
+		auto lines = text.explode("\n");
+		for (int i=0; i<e.line; i++)
+			pos += lines[i].num + 1;
+		errors.add({e.message(), pos});
 	} catch (Exception &e) {
+		errors.add({e.message(), 0});
 		//msg_error(e.message());
 	}
 
@@ -243,6 +251,10 @@ Array<Parser::Label> ParserKaba::find_labels(const string& text) {
 		}
 	}
 	return labels;
+}
+
+Array<Parser::Error> ParserKaba::find_errors(const string &text) {
+	return errors;
 }
 
 Array<Markup> ParserKaba::create_markup(const string &text, int offset) {
