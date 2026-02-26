@@ -4,10 +4,10 @@
 
 #include "ModeCoding.h"
 #include <view/DocumentSession.h>
-#include <view/codeeditor/CodeEditor.h>
 #include <data/Data.h>
 #include <storage/format/Format.h>
 #include <storage/Storage.h>
+#include <lib/codeeditor/CodeEditor.h>
 #include <lib/xhui/Panel.h>
 #include <lib/xhui/controls/Toolbar.h>
 #include <lib/xhui/controls/MenuBar.h>

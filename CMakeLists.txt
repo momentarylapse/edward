@@ -177,6 +177,7 @@ add_executable(edward
 	src/lib/base/array.cpp
 	src/lib/base/pointer.cpp
 	src/lib/base/strings.cpp
+	src/lib/codeeditor/CodeEditor.cpp
 	src/lib/doc/_kaba_export.cpp
 	src/lib/doc/chunked.cpp
 	src/lib/doc/pdf.cpp
@@ -542,7 +543,6 @@ add_executable(edward
 	src/stuff/PluginManager.cpp
 	src/test/MeshTest.cpp
 	src/test/UnitTest.cpp
-	src/view/codeeditor/CodeEditor.cpp
 	src/view/dialogs/CommonDialogs.cpp
 	src/view/dialogs/DocumentSwitcher.cpp
 	src/view/dialogs/ProjectPanel.cpp
