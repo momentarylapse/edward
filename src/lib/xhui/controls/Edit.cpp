@@ -547,6 +547,36 @@ Edit::Index Edit::xy_to_index(const vec2& pos) const {
 }
 
 
+void Edit::draw_line_numbers(Painter* p, const color& bg) {
+	const auto clip0 = p->clip();
+
+	p->set_clip(_area and clip0);
+
+	p->set_font("monospace", font_size, false, false);
+	//p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
+	line_number_area_width = DEFAULT_LINE_NUMBER_WIDTH;//p->get_str_width(str(cache.lines.num));
+
+
+	p->set_color(alt_background ? Theme::_default.background : color::mix(Theme::_default.background_active, bg, 0.7f));
+	p->draw_rect({_area.x1, _area.x1 + line_number_area_width, _area.y1, _area.y2});
+
+	int cursor_line = index_to_line_pos(cursor_pos).line;
+	float dy = -1;
+	for (const auto& [l, y0]: enumerate(cache.line_y0))
+		if (y0 + cache.line_height[l] > _area.y1 and y0 < _area.y2) {
+			p->set_color(Theme::_default.text_disabled);
+			if (l == cursor_line)
+				p->set_color(Theme::_default.text);
+			if (dy < 0) {
+				auto size = p->get_str_size("0");
+				dy = (cache.line_height[l] - size.y) / 2.0f;
+			}
+			p->draw_str({_area.x1, y0 + dy}, format("%3d", l+1));
+		}
+
+	p->set_clip(clip0);
+}
+
 
 void Edit::_draw(Painter *p) {
 	ui_scale = p->ui_scale;
@@ -580,29 +610,8 @@ void Edit::_draw(Painter *p) {
 
 	draw_text(p);
 
-	if (show_line_numbers) {
-		p->set_font("monospace", font_size, false, false);
-		//p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
-		line_number_area_width = DEFAULT_LINE_NUMBER_WIDTH;//p->get_str_width(str(cache.lines.num));
-
-
-		p->set_color(alt_background ? Theme::_default.background : color::mix(Theme::_default.background_active, bg, 0.7f));
-		p->draw_rect({_area.x1, _area.x1 + line_number_area_width, _area.y1, _area.y2});
-
-		int cursor_line = index_to_line_pos(cursor_pos).line;
-		float dy = -1;
-		for (const auto& [l, y0]: enumerate(cache.line_y0))
-			if (y0 + cache.line_height[l] > _area.y1 and y0 < _area.y2) {
-				p->set_color(Theme::_default.text_disabled);
-				if (l == cursor_line)
-					p->set_color(Theme::_default.text);
-				if (dy < 0) {
-					auto size = p->get_str_size("0");
-					dy = (cache.line_height[l] - size.y) / 2.0f;
-				}
-				p->draw_str({_area.x1, y0 + dy}, format("%3d", l+1));
-			}
-	}
+	if (show_line_numbers)
+		draw_line_numbers(p, bg);
 
 	p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
 	p->set_line_width(1);

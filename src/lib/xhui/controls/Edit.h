@@ -41,6 +41,7 @@ public:
 	void draw_background(Painter* p);
 	void draw_text(Painter* p);
 	void draw_active_marker(Painter* p);
+	void draw_line_numbers(Painter* p, const color& bg);
 
 	// byte offset in text buffer
 	using Index = int;
