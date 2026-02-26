@@ -91,6 +91,9 @@ public:
 	void multi_line_indent(int indent);
 	string get_range(Index i0, Index i1) const;
 
+	Index find_word_start(Index i0) const;
+	Index find_word_end(Index i0) const;
+
 	struct LinePos {
 		int line, offset;
 	};

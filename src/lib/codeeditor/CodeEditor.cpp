@@ -17,7 +17,7 @@ CodeEditor::CodeEditor() : obs::Node<xhui::Panel>("") {
 Dialog coding-panel ''
 	Grid ? ''
 		Overlay ? ''
-			MultilineEdit edit grabfocus monospace linenumbers focusframe=no
+			MultilineEdit edit '' grabfocus monospace linenumbers focusframe=no
 			Grid ? ''
 				Label ? '' height=25
 				---|

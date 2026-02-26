@@ -10,6 +10,7 @@
 #include <lib/base/iter.h>
 #include <lib/os/msg.h>
 #include <cmath>
+#include <locale>
 
 namespace xhui {
 
@@ -198,6 +199,24 @@ void Edit::on_key_down(int key) {
 			delete_range(cursor_pos, next_index(cursor_pos));
 		}
 	}
+	if (key == KEY_BACKSPACE + mod) {
+		if (cursor_pos != selection_start) {
+			delete_selection();
+		} else if (cursor_pos > 0) {
+			delete_range(find_word_start(cursor_pos), cursor_pos);
+		}
+	}
+	if (key == KEY_DELETE + mod) {
+		if (cursor_pos != selection_start) {
+			delete_selection();
+		} else if (cursor_pos < text.num) {
+			delete_range(cursor_pos, find_word_end(cursor_pos));
+		}
+	}
+	if (key_no_shift == KEY_LEFT + mod)
+		set_cursor_pos(find_word_start(cursor_pos-1), shift);
+	if (key_no_shift == KEY_RIGHT + mod)
+		set_cursor_pos(find_word_end(cursor_pos+1), shift);
 
 	if (key == KEY_RETURN) {
 		if (multiline)
@@ -382,6 +401,25 @@ string Edit::get_range(Index _i0, Index _i1) const {
 	auto i0 = min(_i0, _i1);
 	auto i1 = max(_i0, _i1);
 	return text.sub(i0, i1);
+}
+
+// TODO better operator handling...
+Edit::Index Edit::find_word_start(Index i0) const {
+	while (true) {
+		auto i = prior_index(i0);
+		if (i == i0 or (std::isalnum(text[i0]) and !std::isalnum(text[i])))
+			return i0;
+		i0 = i;
+	}
+}
+
+Edit::Index Edit::find_word_end(Index i0) const {
+	while (true) {
+		auto i = next_index(i0);
+		if (i == i0 or (std::isalnum(text[i0]) and !std::isalnum(text[i])))
+			return i;
+		i0 = i;
+	}
 }
 
 void Edit::delete_range(Index i0, Index i1) {
