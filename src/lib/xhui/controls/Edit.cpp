@@ -100,6 +100,15 @@ void Edit::on_left_button_down(const vec2& m) {
 	set_cursor_pos(xy_to_index(m), get_window()->is_key_pressed(KEY_SHIFT));
 }
 
+void Edit::on_left_double_click(const vec2 &m) {
+	Index p0 = xy_to_index(m);
+	float x = index_to_xy(p0).x;
+	if (m.x < x)
+		p0 --;
+	set_cursor_pos(find_word_start(p0+1));
+	set_cursor_pos(find_word_end(p0), true);
+}
+
 void Edit::on_mouse_move(const vec2& m, const vec2& d) {
 	if (owner->get_window()->button(0)) {
 		set_cursor_pos(xy_to_index(m), true);
@@ -403,11 +412,15 @@ string Edit::get_range(Index _i0, Index _i1) const {
 	return text.sub(i0, i1);
 }
 
+static bool is_word_char(unsigned char c) {
+	return isalnum(c) or c == '_';
+}
+
 // TODO better operator handling...
 Edit::Index Edit::find_word_start(Index i0) const {
 	while (true) {
 		auto i = prior_index(i0);
-		if (i == i0 or (std::isalnum(text[i0]) and !std::isalnum(text[i])))
+		if (i == i0 or (is_word_char(text[i0]) and !is_word_char(text[i])))
 			return i0;
 		i0 = i;
 	}
@@ -416,7 +429,7 @@ Edit::Index Edit::find_word_start(Index i0) const {
 Edit::Index Edit::find_word_end(Index i0) const {
 	while (true) {
 		auto i = next_index(i0);
-		if (i == i0 or (std::isalnum(text[i0]) and !std::isalnum(text[i])))
+		if (i == i0 or (is_word_char(text[i0]) and !is_word_char(text[i])))
 			return i;
 		i0 = i;
 	}
