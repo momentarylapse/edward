@@ -210,10 +210,8 @@ shared_array<Texture> hdr_resolver_get_tex_bloom(yrenderer::HDRResolver &r) {
 }
 
 
-void export_package_yrenderer(kaba::Exporter* ext) {
+void _export_package_yrenderer_internal(kaba::Exporter* ext) {
 	using namespace yrenderer;
-
-	ext->package_info("yrenderer", "0.7");
 
 	ext->declare_class_size("Material.Pass", sizeof(Material::RenderPassData));
 	ext->declare_class_element("Material.Pass.shader_path", &Material::RenderPassData::shader_path);
@@ -496,6 +494,11 @@ void export_package_yrenderer(kaba::Exporter* ext) {
 
 	ext->link_func("api_init_glfw", &api_init_glfw);
 	ext->link_func("api_init_xhui", &api_init_xhui);
+}
+
+void export_package_yrenderer(kaba::Exporter* ext) {
+	ext->package_info("yrenderer", "0.9");
+	_export_package_yrenderer_internal(ext);
 }
 
 
