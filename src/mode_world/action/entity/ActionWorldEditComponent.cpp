@@ -7,6 +7,8 @@
 #include <ecs/Entity.h>
 #include <ecs/EntityManager.h>
 
+#include "stuff/PluginManager.h"
+
 
 ActionWorldEditBaseEntity::ActionWorldEditBaseEntity(int _index, const vec3& _pos, const quaternion& _ang) {
 	pos = _pos;
@@ -35,7 +37,11 @@ ActionWorldEditComponent::ActionWorldEditComponent(int _index, const kaba::Class
 
 void* ActionWorldEditComponent::execute(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
-	//std::swap(w->entities[index].components[cindex], component);
+	if (auto c = w->entity(index)->_get_component_generic_(type)) {
+		auto temp = w->session->plugin_manager->describe_class(type, c);
+		c->set_variables(component.variables);
+		std::swap(component.variables, temp.variables);
+	}
 	return nullptr;
 }
 

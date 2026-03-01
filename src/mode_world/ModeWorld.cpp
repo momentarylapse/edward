@@ -194,21 +194,17 @@ void ModeWorld::on_enter() {
 			if (index == 0) {
 				// raw entity
 			} else if (index == 1) {
-				auto c = data->entity_add_component<Camera>(e);
+				data->entity_add_component<Camera>(e);
 			} else if (index == 2) {
-				auto l = data->entity_add_component<Light>(e, {{{"radius", 0.0f}, {"theta", 0.0f}}});
-				l->light.init(yrenderer::LightType::DIRECTIONAL, White);
+				data->entity_add_component<Light>(e, {{{"type", (int)yrenderer::LightType::DIRECTIONAL}}});
 			} else if (index == 3) {
-				auto l = data->entity_add_component<Light>(e, {{{"radius", multi_view->view_port.radius * 1.3f}, {"theta", 0.0f}}});
-				float r = multi_view->view_port.radius * 1.3f;
-				l->light.init(yrenderer::LightType::POINT, White * (r*r/100.0f));
+				const float r = multi_view->view_port.radius * 1.3f;
+				data->entity_add_component<Light>(e, {{{"type", (int)yrenderer::LightType::POINT}, {"power", yrenderer::Light::_radius_to_power(r)}}});
 			} else if (index == 4) {
-				auto l = data->entity_add_component<Light>(e);
-				float r = multi_view->view_port.radius * 1.3f;
-				l->light.init(yrenderer::LightType::CONE, White * (r*r/100.0f), 0.5f);
+				const float r = multi_view->view_port.radius * 1.3f;
+				data->entity_add_component<Light>(e, {{{"type", (int)yrenderer::LightType::CONE}, {"power", yrenderer::Light::_radius_to_power(r)}, {"theta", 0.5f}}});
 			} else if (index == 5) {
 				auto t = data->entity_add_component<TerrainRef>(e);
-	//			e.basic_type = MultiViewType::WORLD_TERRAIN;
 	//			e.terrain.terrain = new Terrain(16, 16, {10, 0, 10}, session->resource_manager->load_material(""));
 			}
 			data->end_action_group();

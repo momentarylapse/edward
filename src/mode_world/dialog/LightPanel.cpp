@@ -8,6 +8,8 @@
 #include <ecs/Entity.h>
 #include <cmath>
 
+#include "stuff/PluginManager.h"
+
 LightPanel::LightPanel(DataWorld* _data, int _index) : obs::Node<xhui::Panel>("light-panel") {
 	from_source(R"foodelim(
 Dialog light-panel ''
@@ -75,31 +77,34 @@ void LightPanel::update_ui() {
 }
 
 void LightPanel::on_edit() {
-	auto e = data->entity(index);
-	auto l = e->get_component<Light>();
-	l->light.enabled = is_checked("enabled");
-	l->light.type = (yrenderer::LightType)get_int("type");
-	enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL or l->light.type == yrenderer::LightType::AMBIENT);
-	enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL and l->light.type != yrenderer::LightType::AMBIENT);
-	enable("theta", l->light.type == yrenderer::LightType::CONE or l->light.type == yrenderer::LightType::AMBIENT);
+	yrenderer::Light l;
+	l.enabled = is_checked("enabled");
+	l.type = (yrenderer::LightType)get_int("type");
+	enable("power", l.type == yrenderer::LightType::DIRECTIONAL or l.type == yrenderer::LightType::AMBIENT);
+	enable("radius", l.type != yrenderer::LightType::DIRECTIONAL and l.type != yrenderer::LightType::AMBIENT);
+	enable("theta", l.type == yrenderer::LightType::CONE or l.type == yrenderer::LightType::AMBIENT);
 
-	l->light.col = get_color("color");
+	l.col = get_color("color");
 	float radius = get_float("radius");
 	float power = get_float("power");
-	if (l->light.type == yrenderer::LightType::DIRECTIONAL or l->light.type == yrenderer::LightType::AMBIENT) {
-		l->light.power = power;
+	if (l.type == yrenderer::LightType::DIRECTIONAL or l.type == yrenderer::LightType::AMBIENT) {
+		l.power = power;
 	} else {
-		l->light.power = yrenderer::Light::_radius_to_power(radius);
-		set_float("power", l->light.power);
+		l.power = yrenderer::Light::_radius_to_power(radius);
+		set_float("power", l.power);
 	}
-	if (l->light.type == yrenderer::LightType::CONE) {
-		l->light.theta = get_float("theta") * pi / 180;
-	} else if (l->light.type == yrenderer::LightType::AMBIENT) {
-		l->light.theta = 5;
+	if (l.type == yrenderer::LightType::CONE) {
+		l.theta = get_float("theta") * pi / 180;
+	} else if (l.type == yrenderer::LightType::AMBIENT) {
+		l.theta = 5;
 	} else {
-		l->light.theta = -1;
+		l.theta = -1;
 	}
-	l->light.harshness = get_float("harshness") / 100;
-	l->light.allow_shadow = is_checked("allow-shadows");
-	//data->edit_light(index, l);*/
+	l.harshness = get_float("harshness") / 100;
+	l.allow_shadow = is_checked("allow-shadows");
+
+	auto e = data->entity(index);
+	Light ll(yrenderer::LightType::DIRECTIONAL, White);
+	ll.light = l;
+	data->entity_edit_component(e, Light::_class, data->session->plugin_manager->describe_class(Light::_class, &ll));
 }
