@@ -30,8 +30,11 @@ void Light::init(LightType _type, const color &c, float t) {
 }
 
 float Light::radius() const {
-	const float b = col.brightness() * power;
-	return sqrtf(b) * 10.0f;
+	return sqrtf(power) * 10.0f;
+}
+
+float Light::render_radius() const {
+	return col.brightness() * radius();
 }
 
 float Light::_radius_to_power(float radius) {
@@ -46,7 +49,7 @@ UBOLight Light::to_ubo(const vec3& view_pos, const quaternion& view_ang, bool us
 	if (type == LightType::DIRECTIONAL or type == LightType::AMBIENT)
 		l.radius = -1;
 	else
-		l.radius = radius();
+		l.radius = render_radius();
 	l.theta = theta;
 	if (using_view_space) {
 		l.pos = view_ang.bar() * (pos - view_pos);
@@ -88,7 +91,7 @@ mat4 Light::suggest_shadow_projection(const CameraParams& cam, float shadow_box_
 			_theta = theta;
 		if (user_shadow_theta > 0)
 			_theta = user_shadow_theta;
-		float _radius = radius();
+		float _radius = render_radius();
 		float dist_min = (shadow_dist_min > 0) ? shadow_dist_min : _radius * 0.01f;
 		float dist_max = (shadow_dist_max > 0) ? shadow_dist_max : _radius;
 		auto p = mat4::perspective(2 * _theta, 1.0f, dist_min, dist_max, false);

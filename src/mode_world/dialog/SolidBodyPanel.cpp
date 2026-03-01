@@ -6,6 +6,8 @@
 #include "../data/DataWorld.h"
 #include <y/world/components/SolidBody.h>
 #include <ecs/Entity.h>
+#include <stuff/PluginManager.h>
+
 
 
 SolidBodyPanel::SolidBodyPanel(DataWorld* _data, int _index) : Panel("solid-body-panel") {
@@ -71,26 +73,28 @@ void SolidBodyPanel::update_ui() {
 	enable("theta-zz", sb->active);
 }
 void SolidBodyPanel::on_edit() {
+	SolidBody sb;
+	sb.active = is_checked("active");
+	sb.mass = get_float("mass");
+	sb.g_factor = get_float("g-factor");
+	sb.theta_0._00 = get_float("theta-xx");
+	sb.theta_0._01 = get_float("theta-xy");
+	sb.theta_0._02 = get_float("theta-xz");
+	sb.theta_0._11 = get_float("theta-yy");
+	sb.theta_0._12 = get_float("theta-yz");
+	sb.theta_0._22 = get_float("theta-zz");
+	sb.theta_0._10 = sb.theta_0._01;
+	sb.theta_0._20 = sb.theta_0._02;
+	sb.theta_0._21 = sb.theta_0._12;
+	enable("mass", sb.active);
+	enable("g-factor", sb.active);
+	enable("theta-xx", sb.active);
+	enable("theta-xy", sb.active);
+	enable("theta-xz", sb.active);
+	enable("theta-yy", sb.active);
+	enable("theta-yz", sb.active);
+	enable("theta-zz", sb.active);
+
 	auto e = data->entity(index);
-	auto sb = e->get_component<SolidBody>();
-	sb->active = is_checked("active");
-	sb->mass = get_float("mass");
-	sb->g_factor = get_float("g-factor");
-	sb->theta_0._00 = get_float("theta-xx");
-	sb->theta_0._01 = get_float("theta-xy");
-	sb->theta_0._02 = get_float("theta-xz");
-	sb->theta_0._11 = get_float("theta-yy");
-	sb->theta_0._12 = get_float("theta-yz");
-	sb->theta_0._22 = get_float("theta-zz");
-	sb->theta_0._10 = sb->theta_0._01;
-	sb->theta_0._20 = sb->theta_0._02;
-	sb->theta_0._21 = sb->theta_0._12;
-	enable("mass", sb->active);
-	enable("g-factor", sb->active);
-	enable("theta-xx", sb->active);
-	enable("theta-xy", sb->active);
-	enable("theta-xz", sb->active);
-	enable("theta-yy", sb->active);
-	enable("theta-yz", sb->active);
-	enable("theta-zz", sb->active);
+	data->entity_edit_component(e, SolidBody::_class, data->session->plugin_manager->describe_class(SolidBody::_class, &sb));
 }

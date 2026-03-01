@@ -5,10 +5,9 @@
 #include "LightPanel.h"
 #include "../data/DataWorld.h"
 #include <y/world/components/Light.h>
+#include <stuff/PluginManager.h>
 #include <ecs/Entity.h>
 #include <cmath>
-
-#include "stuff/PluginManager.h"
 
 LightPanel::LightPanel(DataWorld* _data, int _index) : obs::Node<xhui::Panel>("light-panel") {
 	from_source(R"foodelim(
@@ -61,15 +60,13 @@ Dialog light-panel ''
 void LightPanel::update_ui() {
 	auto e = data->entity(index);
 	auto l = e->get_component<Light>();
-	float max_component = max(max(l->light.col.r, l->light.col.g), l->light.col.b);
-	float factor = max(max_component, 1.0f); // correction for invalid colors
 	check("enabled", l->light.enabled);
 	set_int("type", (int)l->light.type);
 	set_float("radius", l->light.radius());
 	set_float("harshness", l->light.harshness * 100);
 	set_float("theta", max(l->light.theta * 180 / pi, 0.0f));
-	set_color("color", l->light.col * (1.0f / factor));
-	set_float("power", l->light.power * factor);
+	set_color("color", l->light.col);
+	set_float("power", l->light.power);
 	check("allow-shadows", l->light.allow_shadow);
 	enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL or l->light.type == yrenderer::LightType::AMBIENT);
 	enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL and l->light.type != yrenderer::LightType::AMBIENT);

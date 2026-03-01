@@ -6,6 +6,7 @@
 #include "../data/DataWorld.h"
 #include <y/world/components/Camera.h>
 #include <ecs/Entity.h>
+#include <stuff/PluginManager.h>
 
 CameraPanel::CameraPanel(DataWorld* _data, int _index) : Panel("camera-panel") {
 	from_source(R"foodelim(
@@ -42,9 +43,12 @@ void CameraPanel::update_ui() {
 	set_float("exposure", c->exposure);
 }
 void CameraPanel::on_edit() {
-	auto c = data->entity(index)->get_component<Camera>();
-	c->min_depth = get_float("z-min");
-	c->max_depth = get_float("z-max");
-	c->exposure = get_float("exposure");
-	c->fov = get_float("fov") * pi / 180;
+	Camera c;
+	c.min_depth = get_float("z-min");
+	c.max_depth = get_float("z-max");
+	c.exposure = get_float("exposure");
+	c.fov = get_float("fov") * pi / 180;
+
+	auto e = data->entity(index);
+	data->entity_edit_component(e, Camera::_class, data->session->plugin_manager->describe_class(Camera::_class, &c));
 }
