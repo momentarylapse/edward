@@ -27,8 +27,10 @@ ActionWorldDeleteSelection::ActionWorldDeleteSelection(DataWorld* w, const Data:
 void *ActionWorldDeleteSelection::execute(Data *d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 
-	for (int i: base::reverse(entity_indices))
+	for (int i: base::reverse(entity_indices)) {
 		w->entity_manager->delete_entity(w->entity(i));
+		w->out_entity_removed();
+	}
 
 	for (int i: base::reverse(link_indices))
 		w->links.erase(i);
@@ -44,6 +46,7 @@ void ActionWorldDeleteSelection::undo(Data *d) {
 		entity_indices.add(w->entity_manager->entities.num);
 		auto e = w->entity_manager->create_entity(ee.pos, ee.ang);
 		w->entity_manager->add_component<EdwardTag>(e);
+		w->out_entity_added();
 		w->_entity_apply_components(e, ee.components);
 	}
 

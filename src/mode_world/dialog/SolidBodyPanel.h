@@ -10,11 +10,12 @@
 class DataWorld;
 
 
-class SolidBodyPanel : public xhui::Panel {
+class SolidBodyPanel : public obs::Node<xhui::Panel> {
 public:
 	explicit SolidBodyPanel(DataWorld* _data, int _index);
 	void update_ui();
 	void on_edit();
 	DataWorld* data;
 	int index;
+	bool editing = false;
 };

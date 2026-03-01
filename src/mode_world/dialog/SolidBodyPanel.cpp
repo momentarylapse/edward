@@ -10,7 +10,7 @@
 
 
 
-SolidBodyPanel::SolidBodyPanel(DataWorld* _data, int _index) : Panel("solid-body-panel") {
+SolidBodyPanel::SolidBodyPanel(DataWorld* _data, int _index) : Node("solid-body-panel") {
 	from_source(R"foodelim(
 Dialog solid-body-panel ''
 	Grid ? ''
@@ -49,6 +49,11 @@ Dialog solid-body-panel ''
 	event("theta-yy", [this] { on_edit(); });
 	event("theta-yz", [this] { on_edit(); });
 	event("theta-zz", [this] { on_edit(); });
+
+	data->out_changed >> create_sink([this] {
+		if (!editing)
+			update_ui();
+	});
 }
 void SolidBodyPanel::update_ui() {
 	auto e = data->entity(index);
@@ -95,6 +100,8 @@ void SolidBodyPanel::on_edit() {
 	enable("theta-yz", sb.active);
 	enable("theta-zz", sb.active);
 
+	editing = true;
 	auto e = data->entity(index);
 	data->entity_edit_component(e, SolidBody::_class, data->session->plugin_manager->describe_class(SolidBody::_class, &sb));
+	editing = false;
 }

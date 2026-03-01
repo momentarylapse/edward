@@ -9,7 +9,7 @@
 #include <ecs/Entity.h>
 #include <cmath>
 
-LightPanel::LightPanel(DataWorld* _data, int _index) : obs::Node<xhui::Panel>("light-panel") {
+LightPanel::LightPanel(DataWorld* _data, int _index) : Node("light-panel") {
 	from_source(R"foodelim(
 Dialog light-panel ''
 	Grid ? ''
@@ -55,6 +55,11 @@ Dialog light-panel ''
 	event("power", [this] { on_edit(); });
 	event("harshness", [this] { on_edit(); });
 	event("allow-shadows", [this] { on_edit(); });
+
+	data->out_changed >> create_sink([this] {
+		if (!editing)
+			update_ui();
+	});
 }
 
 void LightPanel::update_ui() {
@@ -100,8 +105,10 @@ void LightPanel::on_edit() {
 	l.harshness = get_float("harshness") / 100;
 	l.allow_shadow = is_checked("allow-shadows");
 
+	editing = true;
 	auto e = data->entity(index);
 	Light ll(yrenderer::LightType::DIRECTIONAL, White);
 	ll.light = l;
 	data->entity_edit_component(e, Light::_class, data->session->plugin_manager->describe_class(Light::_class, &ll));
+	editing = false;
 }

@@ -43,6 +43,7 @@ void ModeModel::on_enter_rec() {
 	doc->out_changed >> create_sink([this] {
 		on_update_menu();
 	});
+	data->out_changed >> multi_view->in_data_changed;
 
 	auto win = session->win;
 	win->enable("mode_model_animation", false);

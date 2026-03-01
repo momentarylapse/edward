@@ -15,10 +15,12 @@ void* ActionWorldAddEntity::execute(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	entity = w->entity_manager->create_entity(pos, ang);
 	w->entity_manager->add_component<EdwardTag>(entity);
+	w->out_entity_added();
 	return entity;
 }
 
 void ActionWorldAddEntity::undo(Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	w->entity_manager->delete_entity(entity);
+	w->out_entity_removed();
 }

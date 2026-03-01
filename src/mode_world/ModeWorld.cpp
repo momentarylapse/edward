@@ -83,6 +83,8 @@ void ModeWorld::on_enter_rec() {
 	doc->out_changed >> create_sink([this] {
 		on_update_menu();
 	});
+	data->out_entity_added >> multi_view->in_data_changed;
+	data->out_entity_removed >> multi_view->in_data_changed;
 	auto update_dummies = [this]() {
 		// FIXME
 		auto list = data->entity_manager->get_component_list<EdwardTag>();

@@ -8,7 +8,7 @@
 #include <ecs/Entity.h>
 #include <stuff/PluginManager.h>
 
-CameraPanel::CameraPanel(DataWorld* _data, int _index) : Panel("camera-panel") {
+CameraPanel::CameraPanel(DataWorld* _data, int _index) : Node("camera-panel") {
 	from_source(R"foodelim(
 Dialog camera-panel ''
 	Grid ? ''
@@ -33,6 +33,11 @@ Dialog camera-panel ''
 	event("z-max", [this] { on_edit(); });
 	event("fov", [this] { on_edit(); });
 	event("exposure", [this] { on_edit(); });
+
+	data->out_changed >> create_sink([this] {
+		if (!editing)
+			update_ui();
+	});
 }
 
 void CameraPanel::update_ui() {
@@ -49,6 +54,8 @@ void CameraPanel::on_edit() {
 	c.exposure = get_float("exposure");
 	c.fov = get_float("fov") * pi / 180;
 
+	editing = true;
 	auto e = data->entity(index);
 	data->entity_edit_component(e, Camera::_class, data->session->plugin_manager->describe_class(Camera::_class, &c));
+	editing = false;
 }

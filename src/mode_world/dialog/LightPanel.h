@@ -14,6 +14,7 @@ public:
 	explicit LightPanel(DataWorld* _data, int _index);
 	DataWorld* data;
 	int index;
+	bool editing = false;
 
 	void update_ui();
 	void on_edit();

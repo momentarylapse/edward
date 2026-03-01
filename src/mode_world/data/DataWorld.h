@@ -68,6 +68,8 @@ public:
 	using ComponentParams = base::map<string, Any>;
 	//using ComponentParams = Array<ScriptInstanceDataVariable>;
 
+	obs::source out_entity_added{this, "entity-added"};
+	obs::source out_entity_removed{this, "entity-removed"};
 	obs::source out_component_added{this, "component-added"};
 	obs::source out_component_removed{this, "component-removed"};
 
