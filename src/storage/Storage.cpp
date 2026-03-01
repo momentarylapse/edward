@@ -195,7 +195,6 @@ base::future<void> Storage::auto_save(Data *data) {
 
 
 void Storage::guess_root_directory(const Path &filename) {
-	msg_error("FILE " + str(filename));
 	for (auto &d: filename.all_parents())
 		if (os::fs::exists(d | "game.ini")) {
 			session->load_project(d);

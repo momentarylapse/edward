@@ -279,7 +279,7 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 	Path filename = make_absolute_path(this, type, add_extension_if_needed(this, type, _filename), relative_path);
 
 	for (auto d: documents)
-		if (d->filename() == _filename) {
+		if (d->filename() == filename) {
 			set_active_doc(d);
 			return;
 		}
