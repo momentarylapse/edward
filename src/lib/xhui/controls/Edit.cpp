@@ -98,6 +98,19 @@ vec2 Edit::get_content_min_size() const {
 
 void Edit::on_left_button_down(const vec2& m) {
 	set_cursor_pos(xy_to_index(m), get_window()->is_key_pressed(KEY_SHIFT));
+	emit_event(event_id::LeftButtonDown, false);
+}
+
+void Edit::on_left_button_up(const vec2&) {
+	emit_event(event_id::LeftButtonUp, false);
+}
+
+void Edit::on_right_button_down(const vec2& m) {
+	emit_event(event_id::RightButtonDown, false);
+}
+
+void Edit::on_right_button_up(const vec2&) {
+	emit_event(event_id::RightButtonUp, false);
 }
 
 void Edit::on_left_double_click(const vec2 &m) {
