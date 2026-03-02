@@ -17,8 +17,15 @@ class CodeEditor : public obs::Node<xhui::Panel> {
 public:
 	explicit CodeEditor();
 
+	struct Location {
+		Path filename;
+		int line_no = -1;
+		int offset = -1;
+	};
+
 	obs::source out_no_error{this, "no-error"};
 	obs::xsource<string> out_error{this, "error"};
+	obs::xsource<Location> out_request_open_file{this, "request-open-file"};
 
 	void load(const Path& filename);
 	void save(const Path& filename);

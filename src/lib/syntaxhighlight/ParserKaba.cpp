@@ -180,15 +180,16 @@ void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 	errors.clear();
 
 	context = kaba::default_context->dll_create_context();
+	module = nullptr;
 
 	try {
 		kaba::config.default_filename = filename;
 		//msg_write(kaba::config.directory.str());
-		auto m = context->dll_create_module_for_source(text, true);
+		module = context->dll_create_module_for_source(text, true);
 
 		clear_symbols();
 
-		add_scope_content(this, m->tree->global_scope, "");
+		add_scope_content(this, module->tree->global_scope, "");
 
 		//m->tree->
 
@@ -200,14 +201,14 @@ void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 		}*/
 
 //		add_class_content(this, m->tree->imported_symbols.get(), "");
-		add_class_content(this, m->tree->base_class, "");
+		add_class_content(this, module->tree->base_class, "");
 
 	} catch (kaba::Exception &e) {
 		int pos = e.column;
 		auto lines = text.explode("\n");
 		for (int i=0; i<e.line; i++)
 			pos += lines[i].num + 1;
-		errors.add({e.message(), pos});
+		errors.add({e.filename, e.message(), pos});
 	} catch (Exception &e) {
 		errors.add({e.message(), 0});
 		//msg_error(e.message());
@@ -551,4 +552,45 @@ autocomplete::Data ParserKaba::run_autocomplete(const string &_code, const Path 
 			}
 		}
 	return data;
+}
+
+base::optional<Parser::Origin> node_origin(kaba::Node* n) {
+	auto xxx = [] (kaba::Module* m, int token_id) -> base::optional<Parser::Origin> {
+		if (m->tree and m->tree->parser) {
+			Parser::Origin o;
+			o.filename = m->filename;
+			o.line = m->tree->parser->Exp.token_physical_line_no(token_id);
+			msg_write(str(o.filename));
+			return o;
+		}
+		return base::None;
+	};
+
+	n->show();
+	if (n->kind == kaba::NodeKind::Class) {
+		auto t = n->as_class();
+		return xxx(t->owner->module, t->token_id);
+	} else if (n->kind == kaba::NodeKind::Function) {
+		auto f = n->as_func();
+		return xxx(f->owner()->module, f->token_id);
+	} else if (n->kind == kaba::NodeKind::Constant) {
+		auto c = n->as_const();
+		return xxx(c->owner->module, c->token_id);
+	} else if (n->kind == kaba::NodeKind::VarGlobal) {
+		// ...
+	}
+	return base::None;
+}
+
+base::optional<Parser::Origin> ParserKaba::find_origin(const string& text, int offset, int length) {
+	if (!module)
+		return base::None;
+
+	// TODO search node
+	string x = text.sub(offset, offset + length);
+	auto xx = module->tree->get_existence(x, module->tree->root_of_all_evil->block, module->tree->base_class, -1);
+
+	for (auto n: weak(xx))
+		return node_origin(n);
+	return base::None;
 }

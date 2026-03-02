@@ -26,8 +26,10 @@ public:
 	void prepare_symbols(const string &text, const Path& filename) override;
 
 	autocomplete::Data run_autocomplete(const string &code, const Path &filename, int line, int pos) override;
+	base::optional<Origin> find_origin(const string& text, int offset, int length) override;
 
 	owned<kaba::Context> context;
+	shared<kaba::Module> module;
 	Array<Error> errors;
 };
 

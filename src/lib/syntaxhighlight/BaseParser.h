@@ -8,6 +8,8 @@
 #pragma once
 
 #include <lib/base/base.h>
+#include <lib/base/optional.h>
+#include <lib/os/path.h>
 
 class Path;
 namespace autocomplete {
@@ -68,6 +70,7 @@ public:
 	};
 
 	struct Error {
+		Path filename;
 		string message;
 		int position;
 	};
@@ -80,6 +83,12 @@ public:
 	virtual autocomplete::Data run_autocomplete(const string &code, const Path &filename, int line, int pos);
 
 	Array<Markup> create_markup_default(const string& text, int offset);
+	struct Origin {
+		Path filename;
+		int position = -1;
+		int line = -1;
+	};
+	virtual base::optional<Origin> find_origin(const string& text, int offset, int length);
 };
 
 void InitParser();

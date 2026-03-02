@@ -49,15 +49,8 @@ Dialog coding-panel ''
 	edit->set_option("altbg", "");
 	edit->set_option("linenumbers", "");
 
-	/*win->event(edit_id, [this, win] {
-		int n = edit->cache.lines.num;
-		int digits = log10(n);
-		win->set_options(lines_id, "width=50");
-	});*/
-
 	static int xcounter = 0;
 	event_x(id_edit, xhui::event_id::Changed, [this] {
-		//msg_write(edit->is_save_state());
 		xcounter ++;
 		update_highlight_current_line();
 		xhui::run_later(2.0f, [this] {
@@ -68,6 +61,27 @@ Dialog coding-panel ''
 			}
 		});
 		out_changed();
+	});
+	event_x(id_edit, xhui::event_id::LeftButtonUp, [this] {
+		if (get_window()->is_key_pressed(xhui::KEY_CONTROL)) {
+			if (auto p = GetParser(filename)) {
+				int p0 = edit->find_word_start(edit->cursor_pos);
+				int p1 = edit->find_word_end(edit->cursor_pos);
+				if (auto o = p->find_origin(edit->text, p0, p1 - p0)) {
+					if (o->filename == filename) {
+						msg_write(o->line);
+						edit->set_cursor_pos(edit->line_pos_to_index({o->line, 0}));
+					} else if (o->filename) {
+						msg_write("r");
+						out_request_open_file({o->filename, o->line, 0});
+					} else {
+						msg_write("???");
+						out_error("???");
+					}
+				}
+
+			}
+		}
 	});
 #ifdef OS_MAC
 	constexpr int mod = xhui::KEY_SUPER;
