@@ -530,7 +530,7 @@ void class_link_vtable(void *p) {
 //------------------------------------------------------------------------------------------------//
 
 void class_add_const(const string &name, const Class *type, const void *value) {
-	Constant *c = cur_package_module->tree->add_constant(type, cur_class);
+	Constant *c = cur_package_module->tree->add_constant(type, -1, cur_class);
 	c->name = name;
 
 	// enums can't be referenced...
@@ -601,7 +601,7 @@ void func_add_param_def_x(const string &name, const Class *type, const void *p, 
 		//cur_func->mandatory_params = cur_func->num_params;
 		cur_func->abstract_node->params[2]->params.resize(cur_func->num_params*3);
 
-		Constant *c = cur_package_module->tree->add_constant(type, cur_class);
+		Constant *c = cur_package_module->tree->add_constant(type, -1, cur_class);
 		if (type == common_types.i32)
 			c->as_int() = *(int*)p;
 		if (type == common_types.f32)

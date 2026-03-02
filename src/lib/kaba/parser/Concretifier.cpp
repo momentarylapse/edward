@@ -650,7 +650,7 @@ shared_array<Node> Concretifier::concretify_token(shared<Node> node, Block *bloc
 		if (t == common_types.string) {
 			return {parser->try_parse_format_string(block, v, node->token_id)};
 		} else {
-			auto *c = tree->add_constant(t);
+			auto *c = tree->add_constant(t, node->token_id);
 			c->set(v);
 			return {add_node_const(c, node->token_id)};
 		}
@@ -856,7 +856,7 @@ shared<Node> Concretifier::concretify_statement_for_range(shared<Node> node, Blo
 		if (t) {
 			step = add_node_const(tree->add_constant_int(1));
 		} else {
-			step = add_node_const(tree->add_constant(common_types.f32));
+			step = add_node_const(tree->add_constant(common_types.f32, -1));
 			step->as_const()->as_float() = 1.0f;
 		}
 	}
@@ -1095,7 +1095,7 @@ shared<Node> Concretifier::concretify_special_function_sort(shared<Node> node, B
 		// default criterion ""
 		node = cp_node(node);
 		node->set_num_params(2);
-		auto crit = tree->add_constant(common_types.string);
+		auto crit = tree->add_constant(common_types.string, -1);
 		node->set_param(1, add_node_const(crit));
 	}
 
@@ -1163,7 +1163,7 @@ shared<Node> Concretifier::concretify_statement_raw_function_pointer(shared<Node
 	auto sub = concretify_node(node->params[0], block, block->name_space());
 	if (sub->kind != NodeKind::Function)
 		do_error("raw_function_pointer() expects a function name", sub);
-	auto func = add_node_const(tree->add_constant(common_types.function_code_ref), node->token_id);
+	auto func = add_node_const(tree->add_constant(common_types.function_code_ref, node->token_id), node->token_id);
 	func->as_const()->as_int64() = (int_p)sub->as_func(); // will be replaced during linking
 
 	node = node->shallow_copy();
@@ -2007,7 +2007,7 @@ shared<Node> Concretifier::wrap_function_into_callable(Function *f, int token_id
 		if (cf->num_params == 2) {
 			auto cmd = add_node_statement(StatementID::New, token_id);
 			auto con = add_node_constructor(cf);
-			auto fp = tree->add_constant(common_types.function_ref);
+			auto fp = tree->add_constant(common_types.function_ref, token_id);
 			fp->as_int64() = (int_p)f;
 			con = apply_params_direct(con, {add_node_const(fp, token_id)}, 1);
 			con->kind = NodeKind::CallFunction;
@@ -2505,7 +2505,7 @@ shared<Node> Concretifier::build_pipe_sort(const shared<Node> &input, const shar
 			do_error(format("%s() expects a string literal when used in a pipe", Identifier::Sort), token_id);
 		cmd->set_param(2, crit);
 	} else {
-		auto crit = tree->add_constant(common_types.string);
+		auto crit = tree->add_constant(common_types.string, token_id);
 		cmd->set_param(2, add_node_const(crit));
 	}
 	cmd->type = input->type;
