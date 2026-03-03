@@ -7126,7 +7126,7 @@ model-texture-list-popup
 
 0
 0
-8
+9
 Item
 header
 disabled
@@ -7163,16 +7163,34 @@ image=hui:edit
 5
 0
 0
+Menu
+color-space
+
+6
+0
+2
+Item
+texture-level-srgb
+
+0
+0
+0
+Item
+texture-level-linear
+
+1
+0
+0
 Item
 texture-level-clear
 image=hui:clear
-6
+7
 0
 0
 Item
 texture-level-delete
 image=hui:delete
-7
+8
 0
 0
 # Resource
@@ -10861,7 +10879,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1088
+1091
 # Text
 /ambient
 Ambient
@@ -13287,6 +13305,9 @@ Sticky grid
 model-skeleton-toolbar/skeleton_new_point
 new bone
 
+model-texture-list-popup/color-space
+Color space
+
 model-texture-list-popup/header
 Texture
 
@@ -13299,6 +13320,9 @@ replace the selected texture with homogenous white
 model-texture-list-popup/texture-level-delete
 Delete
 delete the selected texture level
+model-texture-list-popup/texture-level-linear
+Linear
+
 model-texture-list-popup/texture-level-load
 Load...
 load a texture file into the selected texture level
@@ -13308,6 +13332,9 @@ save texture into file
 model-texture-list-popup/texture-level-scale
 Scale...
 scale texture
+model-texture-list-popup/texture-level-srgb
+sRGB
+
 model-texture-paint-brush-dialog/brush-type
 icon\\type
 

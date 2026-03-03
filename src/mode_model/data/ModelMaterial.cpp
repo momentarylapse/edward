@@ -46,7 +46,9 @@ void ModelMaterial::TextureLevel::reload_image(Session *session) {
 	if (filename == "" or !session->win)
 		image = new Image(512, 512, White);
 	else
-		image = Image::load(session->resource_manager->texture_manager->texture_dir | filename);
+		image = Image::load(session->resource_manager->texture_manager->texture_dir | str(filename).replace("@linear", ""));
+	if (str(filename).find("@linear") >= 0)
+		image->color_space = ColorSpace::Linear;
 	edited = false;
 	if (session->win and session->resource_manager->ctx)
 		update_texture();

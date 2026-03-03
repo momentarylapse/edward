@@ -53,10 +53,10 @@ private:
 class ActionModelMaterialLoadTexture : public Action {
 public:
 	ActionModelMaterialLoadTexture(int index, int level, const Path &filename);
-	string name(){ return "ModelMaterialAddTexture"; }
+	string name() override { return "ModelMaterialAddTexture"; }
 
-	void *execute(Data *d);
-	void undo(Data *d);
+	void *execute(Data *d) override;
+	void undo(Data *d) override;
 
 private:
 	int index, level;

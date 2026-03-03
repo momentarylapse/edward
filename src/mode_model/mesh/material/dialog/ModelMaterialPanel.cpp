@@ -89,6 +89,8 @@ public:
 		event("texture-level-load", [this] { on_texture_level_load(); });
 		event("texture-level-save", [this] { on_texture_level_save(); });
 		event("texture-level-scale", [this] { on_texture_level_scale(); });
+		event("texture-level-linear", [this] { on_texture_level_linear(); });
+		event("texture-level-srgb", [this] { on_texture_level_srgb(); });
 
 		event("override-colors", [this] { on_override_colors(); });
 		event("albedo", [this] { apply_data_color(); });
@@ -263,6 +265,20 @@ public:
 			data->execute(new ActionModelMaterialLoadTexture(index, sel, ""));
 	}
 
+	void on_texture_level_linear() {
+		auto mat = material();
+		int sel = get_int("textures");
+		if (sel >= 0)
+			data->execute(new ActionModelMaterialLoadTexture(index, sel, mat->texture_levels[sel]->filename.with("@linear")));
+	}
+
+	void on_texture_level_srgb() {
+		auto mat = material();
+		int sel = get_int("textures");
+		if (sel >= 0)
+			data->execute(new ActionModelMaterialLoadTexture(index, sel, str(mat->texture_levels[sel]->filename).replace("@linear", "")));
+	}
+
 	void on_textures_right_click() {
 		int n = get_int("textures");
 		if (n >= 0) {
@@ -273,6 +289,8 @@ public:
 		popup_textures->enable("texture-level-load", n>=0);
 		popup_textures->enable("texture-level-save", n>=0);
 		popup_textures->enable("texture-level-scale", n>=0);
+		popup_textures->enable("texture-level-linear", n>=0);
+		popup_textures->enable("texture-level-srgb", n>=0);
 		popup_textures->open_popup(this);
 	}
 
