@@ -177,6 +177,10 @@ void ParserKaba::clear_symbols() {
 
 
 void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
+	if (text == current_code)
+		return;
+
+	current_code = text;
 	errors.clear();
 
 	context = kaba::default_context->dll_create_context();
@@ -560,7 +564,6 @@ base::optional<Parser::Origin> node_origin(kaba::Node* n) {
 			Parser::Origin o;
 			o.filename = m->filename;
 			o.line = m->tree->parser->Exp.token_physical_line_no(token_id);
-			msg_write(str(o.filename));
 			return o;
 		}
 		return base::None;

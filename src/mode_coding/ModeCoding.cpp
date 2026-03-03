@@ -13,6 +13,7 @@
 #include <lib/xhui/controls/MenuBar.h>
 #include <lib/xhui/Resource.h>
 #include <lib/os/file.h>
+#include <lib/syntaxhighlight/BaseParser.h>
 #include <Session.h>
 #include <view/EdwardWindow.h>
 
@@ -39,7 +40,6 @@ ModeCoding::ModeCoding(DocumentSession* doc) : Mode(doc) {
 		session->error(msg);
 	});
 	editor->out_request_open_file >> create_data_sink<codeedit::CodeEditor::Location>([this] (const codeedit::CodeEditor::Location& l) {
-		msg_write("REQ OPEN");
 		session->universal_edit(FD_SCRIPT, l.filename, false);
 		xhui::run_later(0.1f, [l, this] {
 			auto e =reinterpret_cast<ModeCoding*>(session->cur_doc->cur_mode)->editor->edit;

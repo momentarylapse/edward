@@ -73,6 +73,7 @@ public:
 
 	obs::source out_started{this, "started"};
 	obs::source out_project_loaded{this, "project-loaded"};
+	obs::source out_document_switched{this, "document-switched"};
 
 	void on_command(const string &id);
 	void on_close();

@@ -55,7 +55,7 @@ void _dummy() {}
 
 
 void export_package_xhui(kaba::Exporter* e) {
-	e->package_info("xhui", "0.6");
+	e->package_info("xhui", "0.7");
 
 #if 0
 	e->declare_class_size("Menu", sizeof(xhui::Menu));

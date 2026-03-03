@@ -181,6 +181,7 @@ void Session::set_active_doc(DocumentSession* doc) {
 		cur_doc->enter();
 		win->update_menu();
 	}
+	out_document_switched();
 }
 
 

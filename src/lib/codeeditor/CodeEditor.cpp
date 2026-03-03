@@ -65,19 +65,19 @@ Dialog coding-panel ''
 	event_x(id_edit, xhui::event_id::LeftButtonUp, [this] {
 		if (get_window()->is_key_pressed(xhui::KEY_CONTROL)) {
 			if (auto p = GetParser(filename)) {
+				p->prepare_symbols(edit->text, filename);
 				int p0 = edit->find_word_start(edit->cursor_pos);
 				int p1 = edit->find_word_end(edit->cursor_pos);
 				if (auto o = p->find_origin(edit->text, p0, p1 - p0)) {
 					if (o->filename == filename) {
-						msg_write(o->line);
 						edit->set_cursor_pos(edit->line_pos_to_index({o->line, 0}));
 					} else if (o->filename) {
-						msg_write("r");
 						out_request_open_file({o->filename, o->line, 0});
 					} else {
-						msg_write("???");
 						out_error("???");
 					}
+				} else {
+					out_error("???");
 				}
 
 			}

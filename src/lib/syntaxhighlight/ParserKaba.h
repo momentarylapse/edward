@@ -28,6 +28,7 @@ public:
 	autocomplete::Data run_autocomplete(const string &code, const Path &filename, int line, int pos) override;
 	base::optional<Origin> find_origin(const string& text, int offset, int length) override;
 
+	string current_code;
 	owned<kaba::Context> context;
 	shared<kaba::Module> module;
 	Array<Error> errors;
