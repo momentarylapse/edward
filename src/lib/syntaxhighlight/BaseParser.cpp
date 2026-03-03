@@ -254,7 +254,7 @@ Array<Markup> Parser::create_markup_default(const string &text, int offset) {
 autocomplete::Data Parser::run_autocomplete(const string &code, const Path &filename, int line, int pos) {
 	return {};
 }
-base::optional<Parser::Origin> Parser::find_origin(const string& text, int offset, int length) {
+base::optional<Parser::SymbolInfo> Parser::symbol_info(const string& text, int offset, int length) {
 	return base::None;
 }
 

@@ -558,34 +558,39 @@ autocomplete::Data ParserKaba::run_autocomplete(const string &_code, const Path 
 	return data;
 }
 
-base::optional<Parser::Origin> node_origin(kaba::Node* n) {
-	auto xxx = [] (kaba::Module* m, int token_id) -> base::optional<Parser::Origin> {
+base::optional<Parser::SymbolInfo> node_info(kaba::Node* n) {
+	auto xxx = [] (kaba::Module* m, int token_id, const string& description) -> Parser::SymbolInfo {
+		Parser::SymbolInfo o;
+		o.description = description;
 		if (m->tree and m->tree->parser) {
-			Parser::Origin o;
 			o.filename = m->filename;
+			o.position = m->tree->parser->Exp.token_offset(token_id);
 			o.line = m->tree->parser->Exp.token_physical_line_no(token_id);
 			return o;
 		}
-		return base::None;
+		return o;
 	};
 
 	n->show();
 	if (n->kind == kaba::NodeKind::Class) {
 		auto t = n->as_class();
-		return xxx(t->owner->module, t->token_id);
+		return xxx(t->owner->module, t->token_id, "class");
 	} else if (n->kind == kaba::NodeKind::Function) {
 		auto f = n->as_func();
-		return xxx(f->owner()->module, f->token_id);
+		return xxx(f->owner()->module, f->token_id, "function  " + f->signature());
 	} else if (n->kind == kaba::NodeKind::Constant) {
 		auto c = n->as_const();
-		return xxx(c->owner->module, c->token_id);
+		return xxx(c->owner->module, c->token_id, format("constant  %s: %s = %s", c->name, c->type->long_name(), c->str()));
 	} else if (n->kind == kaba::NodeKind::VarGlobal) {
-		// ...
+		auto v = n->as_global();
+		return xxx(v->ns->owner->module, v->token_id, "variable  " + v->type->long_name());
+	} else if (n->kind == kaba::NodeKind::Statement) {
+		return xxx(nullptr, -1, "statement");
 	}
 	return base::None;
 }
 
-base::optional<Parser::Origin> ParserKaba::find_origin(const string& text, int offset, int length) {
+base::optional<Parser::SymbolInfo> ParserKaba::symbol_info(const string& text, int offset, int length) {
 	if (!module)
 		return base::None;
 
@@ -594,6 +599,6 @@ base::optional<Parser::Origin> ParserKaba::find_origin(const string& text, int o
 	auto xx = module->tree->get_existence(x, module->tree->root_of_all_evil->block, module->tree->base_class, -1);
 
 	for (auto n: weak(xx))
-		return node_origin(n);
+		return node_info(n);
 	return base::None;
 }

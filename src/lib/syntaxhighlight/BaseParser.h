@@ -83,12 +83,13 @@ public:
 	virtual autocomplete::Data run_autocomplete(const string &code, const Path &filename, int line, int pos);
 
 	Array<Markup> create_markup_default(const string& text, int offset);
-	struct Origin {
+	struct SymbolInfo {
+		string description;
 		Path filename;
 		int position = -1;
 		int line = -1;
 	};
-	virtual base::optional<Origin> find_origin(const string& text, int offset, int length);
+	virtual base::optional<SymbolInfo> symbol_info(const string& text, int offset, int length);
 };
 
 void InitParser();

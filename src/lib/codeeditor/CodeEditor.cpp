@@ -68,16 +68,18 @@ Dialog coding-panel ''
 				p->prepare_symbols(edit->text, filename);
 				int p0 = edit->find_word_start(edit->cursor_pos);
 				int p1 = edit->find_word_end(edit->cursor_pos);
-				if (auto o = p->find_origin(edit->text, p0, p1 - p0)) {
+				if (auto o = p->symbol_info(edit->text, p0, p1 - p0)) {
 					if (o->filename == filename) {
-						edit->set_cursor_pos(edit->line_pos_to_index({o->line, 0}));
+						out_info(o->description);
+						edit->set_cursor_pos(o->position);
 					} else if (o->filename) {
-						out_request_open_file({o->filename, o->line, 0});
+						out_info(o->description);
+						out_request_open_file({o->filename, o->position});
 					} else {
-						out_error("???");
+						out_info("internal:  " + o->description);
 					}
 				} else {
-					out_error("???");
+					out_error("unknown symbol");
 				}
 
 			}
@@ -323,7 +325,7 @@ void CodeEditor::show_errors() {
 			edit->set_cursor_pos(errors[0].position);
 			out_error(errors[0].message);
 		} else {
-			out_no_error();
+			out_info("no error");
 		}
 	}
 }
