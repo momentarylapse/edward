@@ -10,13 +10,12 @@
 //#ifdef SYNTAX_HIGHLIGHT_KABA ...
 #include <lib/kaba/kaba.h>
 #include <lib/kaba/parser/Parser.h>
+#include <lib/base/iter.h>
+#include <lib/os/file.h>
 #include <stdio.h>
 
-#include "lib/base/iter.h"
 
 static bool verbose = false;
-
-#include "lib/os/msg.h"
 
 void add_class(ParserKaba *p, const kaba::Class *c, const string &ns);
 
@@ -175,6 +174,14 @@ void ParserKaba::clear_symbols() {
 	constants.clear();
 }
 
+int file_line_column_to_offset(const Path& file, int line, int col) {
+	string text = os::fs::read_text(file);
+	int offset = col;
+	auto lines = text.explode("\n");
+	for (int i=0; i<line; i++)
+		offset += lines[i].num + 1;
+	return offset;
+}
 
 void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 	if (text == current_code)
@@ -208,13 +215,14 @@ void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 		add_class_content(this, module->tree->base_class, "");
 
 	} catch (kaba::Exception &e) {
-		int pos = e.column;
-		auto lines = text.explode("\n");
-		for (int i=0; i<e.line; i++)
-			pos += lines[i].num + 1;
-		errors.add({e.filename, e.message(), pos});
+		auto ee = &e;
+		while (ee->parent)
+			ee = ee->parent.get();
+
+		int offset = file_line_column_to_offset(ee->filename, ee->line, ee->column);
+		errors.add({ee->filename, ee->message(), offset});
 	} catch (Exception &e) {
-		errors.add({e.message(), 0});
+		errors.add({"", e.message(), 0});
 		//msg_error(e.message());
 	}
 

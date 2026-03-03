@@ -202,8 +202,12 @@ void FileSelector::set_option(const string& key, const string& value) {
 		list->set_option(key, value);
 	else if (key == "root")
 		root = value;
-	else
+	else if (key == "width") {
 		Grid::set_option(key, value);
+		list->set_option(key, value);
+	} else {
+		Grid::set_option(key, value);
+	}
 }
 
 } // xhui

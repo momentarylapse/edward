@@ -322,8 +322,12 @@ void CodeEditor::show_errors() {
 	if (auto p = GetParser(filename)) {
 		auto errors = p->find_errors(edit->text);
 		if (errors.num > 0) {
-			edit->set_cursor_pos(errors[0].position);
-			out_error(errors[0].message);
+			auto& e = errors[0];
+			if (e.filename == filename)
+				edit->set_cursor_pos(e.position);
+			else
+				out_request_open_file({e.filename, e.position});
+			out_error(e.message);
 		} else {
 			out_info("no error");
 		}
