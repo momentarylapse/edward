@@ -453,7 +453,7 @@ void parser_class_add_element(Parser *p, Class *_class, const string &name, cons
 
 	// add element
 	if (flags_has(flags, Flags::Static)) {
-		auto v = new Variable(name, type);
+		auto v = new Variable(name, type, _class, token_id);
 		flags_set(v->flags, flags);
 		_class->static_variables.add(v);
 	} else {
@@ -798,7 +798,8 @@ Function *Parser::realize_function_header(shared<Node> node, const Class *defaul
 	// parameter list
 	if (auto pnode = node->params[2]) {
 		for (int i=0; i<pnode->params.num/3; i++) {
-			[[maybe_unused]] auto v = f->add_param(pnode->params[i*3]->as_token(), common_types.unknown, pnode->params[i*3]->flags);
+			auto p = pnode->params[i*3];
+			[[maybe_unused]] auto v = f->add_param(p->as_token(), common_types.unknown, p->token_id, p->flags);
 		}
 	}
 
