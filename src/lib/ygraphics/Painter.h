@@ -60,7 +60,6 @@ public:
 		return _area;
 	}
 
-	float ui_scale;
 	rect _area;
 	rect native_area;
 	rect native_area_window;

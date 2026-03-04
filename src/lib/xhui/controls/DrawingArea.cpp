@@ -49,8 +49,8 @@ void DrawingArea::for_painter_do(Painter* p, std::function<void(Painter*)> f) {
 	auto old_area = p->_area;
 	auto old_native_area = p->native_area;
 	// new config
-	p->width = _area.width();
-	p->height = _area.height();
+	p->width = (int)_area.width();
+	p->height = (int)_area.height();
 	p->_area = _area;
 	p->native_area = {_area.x1 * p->ui_scale, _area.x2 * p->ui_scale, _area.y1 * p->ui_scale, _area.y2 * p->ui_scale};
 
