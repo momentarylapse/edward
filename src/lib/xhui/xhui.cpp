@@ -20,7 +20,7 @@
 
 
 namespace xhui {
-	extern Array<Window*> _windows_;
+	extern shared_array<Window> _windows_;
 
 	float global_ui_scale = 1;
 	ColorSpace color_space_display = ColorSpace::SRGB;
@@ -222,7 +222,10 @@ void run() {
 
 		for (int i=_windows_.num-1; i>=0; i--)
 			if (_windows_[i]->_destroy_requested) {
-				delete _windows_[i];
+				_windows_[i]->end_run_promise();
+				_windows_.erase(i);
+
+				// last window closed -> end
 				if (_windows_.num == 0)
 					return;
 			}

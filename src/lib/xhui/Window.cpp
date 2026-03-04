@@ -14,7 +14,7 @@
 
 namespace xhui {
 
-Array<Window*> _windows_;
+shared_array<Window> _windows_;
 
 Window::Window(const string &title, int w, int h) : Window(title, w, h, Flags::NONE) {}
 
@@ -59,9 +59,17 @@ Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":windo
 		glfwSetScrollCallback(window, _scroll_callback);
 		glfwSetWindowRefreshCallback(window, _refresh_callback);
 		glfwSetWindowSizeCallback(window, _resize_callback);
-
-		_windows_.add(this);
 	}
+}
+
+base::future<void> fly(shared<Window> win) {
+	_windows_.add(win);
+	return win->end_run_promise.get_future();
+}
+
+void fly_and_wait(shared<Window> win) {
+	fly(win);
+	run();
 }
 
 Window::~Window() {

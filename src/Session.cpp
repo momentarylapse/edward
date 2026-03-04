@@ -60,8 +60,11 @@ Session* create_session(bool with_window) {
 	else
 		s->plugin_manager = new edward::PluginManager(s, os::app::directory_static | ".." | "plugins");
 	//s->load_project(xhui::config.get_str("RootDir", ""));
-	if (with_window)
-		s->win = new EdwardWindow(s);
+	if (with_window) {
+		s->_win = new EdwardWindow(s);
+		s->win = s->_win.get();
+		xhui::fly(s->win);
+	}
 	return s;
 }
 

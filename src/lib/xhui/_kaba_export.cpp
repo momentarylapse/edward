@@ -2,9 +2,11 @@
 #include "config.h"
 #include "Menu.h"
 #include "Panel.h"
+#include "Resource.h"
 #include "Window.h"
 #include "../kabaexport/KabaExporter.h"
 #include "../base/callable.h"
+#include "controls/Toolbar.h"
 
 
 #define KABA_EXPORT_HUI
@@ -36,7 +38,7 @@ namespace hui{
 			event(id, [&c]{ c(); });
 		}
 		void _kaba_event_x(const string &id, const string &msg, void *f) {
-			if (msg == "hui:draw"){
+			if (msg == xhui::event_id::Draw or msg == xhui::event_id::Initialize or msg == xhui::event_id::JustBeforeDraw){
 				auto &ff = *(Callable<void(Painter*)>*)f;
 				event_xp(id, msg, [&ff](Painter *p){ ff(p); });
 			}else{
@@ -55,11 +57,10 @@ void _dummy() {}
 
 
 void export_package_xhui(kaba::Exporter* e) {
-	e->package_info("xhui", "0.7");
+	e->package_info("xhui", "0.8");
 
-#if 0
 	e->declare_class_size("Menu", sizeof(xhui::Menu));
-	e->link_class_func("Menu.__init__", &xhui::Menu::__init__);
+	e->link_class_func("Menu.__init__", &kaba::generic_init<xhui::Menu>);
 	e->link_class_func("Menu.popup", &xhui::Menu::open_popup);
 	e->link_class_func("Menu.add", &xhui::Menu::add_item);
 /*	e->link_class_func("Menu.add_with_image", &xhui::Menu::add_with_image);
@@ -68,12 +69,11 @@ void export_package_xhui(kaba::Exporter* e) {
 	e->link_class_func("Menu.add_sub_menu", &xhui::Menu::add_sub_menu);*/
 	e->link_class_func("Menu.enable", &xhui::Menu::enable);
 //	e->link_class_func("Menu.check", &xhui::Menu::check);
-#endif
 
 
-/*	e->declare_class_size("Toolbar", sizeof(xhui::Toolbar));
+	e->declare_class_size("Toolbar", sizeof(xhui::Toolbar));
 	e->link_class_func("Toolbar.set_by_id", &xhui::Toolbar::set_by_id);
-	e->link_class_func("Toolbar.from_source", &xhui::Toolbar::from_source);*/
+	//e->link_class_func("Toolbar.from_source", &xhui::Toolbar::from_source);
 
 
 	{
@@ -194,7 +194,7 @@ void export_package_xhui(kaba::Exporter* e) {
 
 		e->link_class_func("Panel.event", &KabaPanelWrapper::_kaba_event);
 		e->link_class_func("Panel.event_x", &KabaPanelWrapper::_kaba_event_x);
-		e->link_class_func("Panel.event_xp", &KabaPanelWrapper::_kaba_event_xp);
+	//	e->link_class_func("Panel.event_xp", &KabaPanelWrapper::_kaba_event_xp);
 		e->link_class_func("Panel.remove_event_handler", &xhui::Panel::remove_event_handler);
 
 		e->link_virtual("Panel._draw", &xhui::Panel::_draw, &panel);
@@ -251,9 +251,9 @@ void export_package_xhui(kaba::Exporter* e) {
 	e->link_func("run_repeated", &hui_run_repeated_kaba);
 	e->link_func("cancel_runner", &xhui::cancel_runner);
 	e->link_func("run", &xhui::run);
-#if 0
 	e->link_func("fly", &xhui::fly);
 	e->link_func("fly_and_wait", &xhui::fly_and_wait);
+#if 0
 	/*e->link_func("HuiAddKeyCode", &xhui::AddKeyCode);
 	e->link_func("HuiAddCommand", &xhui::AddCommand);*/
 	e->link_func("get_event", &xhui::get_event);
@@ -290,6 +290,12 @@ void export_package_xhui(kaba::Exporter* e) {
 	e->declare_class_element("Event.button_r", &xhui::Event::rbut);
 	e->declare_class_element("Event.row", &xhui::Event::row);
 	e->declare_class_element("Event.column", &xhui::Event::column);*/
+
+	e->declare_class_size("Resource", sizeof(xhui::Resource));
+	e->link_class_func("Resource.show", &xhui::Resource::show);
+	e->link_class_func("Resource.str", &xhui::Resource::to_string);
+
+	e->link_func("parse_resource", &xhui::parse_resource);
 
 #if 0
 	// key ids (int)

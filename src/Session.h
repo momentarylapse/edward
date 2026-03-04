@@ -99,7 +99,8 @@ public:
 
 	base::future<void> allow_termination();
 
-	EdwardWindow *win;
+	EdwardWindow* win;
+	shared<EdwardWindow> _win;
 
 	yrenderer::Context *ctx;
 	ResourceManager *resource_manager;

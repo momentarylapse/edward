@@ -146,6 +146,7 @@ public:
 	void set_key_code(const string& id, int key_code);
 
 	shared_array<Dialog> dialogs;
+	base::promise<void> end_run_promise;
 };
 
 class WindowX : public Window {
@@ -154,5 +155,8 @@ public:
 };
 
 Window* as_window(Control* c);
+
+void fly_and_wait(shared<Window> win);
+base::future<void> fly(shared<Window> win);
 
 }
