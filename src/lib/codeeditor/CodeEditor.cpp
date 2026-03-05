@@ -188,7 +188,12 @@ void CodeEditor::update_structure() {
 		reset(id_structure);
 		label_line_numbers.clear();
 		for (const auto& l: p->find_labels(edit->text)) {
-			add_string(id_structure, string("        ").repeat(l.level) + l.name.replace("class ", "<b>C</b> ").replace("func ", "<b>F</b> "));
+			string title = l.name;
+			title = title.replace("class ", "<b><red>C</red></b>  ").replace("struct ", "<b><red>S</red></b>  ").replace("enum ", "<b><red>E</red></b>  ").replace("func ", "<green><b>F</b></green>  ");
+			int p0 = title.find("(");
+			if (p0 >= 0)
+				title = title.sub(0, p0) + " <soft>" + title.sub(p0) + "</soft>";
+			add_string(id_structure, string("        ").repeat(l.level) + title);
 			label_line_numbers.add(l.line);
 		}
 	}

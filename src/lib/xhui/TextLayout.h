@@ -10,13 +10,18 @@ class Painter;
 
 namespace xhui {
 
+struct TextFormat {
+	float font_size;
+	base::optional<color> col;
+	float alpha;
+	bool bold;
+	bool italic;
+};
+
 struct TextLayout {
 	struct Part {
 		string text;
-		float font_size;
-		base::optional<color> col;
-		bool bold;
-		bool italic;
+		TextFormat format;
 		vec2 pos;
 		rect box;
 	};

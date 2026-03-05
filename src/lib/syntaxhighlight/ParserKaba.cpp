@@ -238,7 +238,7 @@ Array<Parser::Label> ParserKaba::find_labels(const string& text) {
 	Array<Label> labels;
 
 	auto ff = [] (const string& s) {
-		auto x = s.replace(" virtual ", " ").replace(" extern ", " ").replace(" mut ", " ").replace(" selfref ", " ").replace(" globalref ", " ").replace(" pure ", " ").replace(" override ", " ");
+		auto x = s.replace(" virtual ", " ").replace(" extern ", " ").replace(" mut ", " ").replace(" selfref ", " ").replace(" globalref ", " ").replace(" pure ", " ").replace(" override ", " ").replace(" static ", " ").replace(" as shared", "");
 		int p = x.find(" extends ");
 		if (p > 0)
 			return x.head(p);
@@ -259,7 +259,7 @@ Array<Parser::Label> ParserKaba::find_labels(const string& text) {
 		if (l[2] == '\t')
 			level ++;
 		// meh :P
-		if (ll.head(5) == "class" or ll.head(6) == "struct" or ll.head(4) == "func") {
+		if (ll.head(5) == "class" or ll.head(6) == "struct" or ll.head(4) == "enum" or ll.head(4) == "func") {
 			labels.add({ff(ll), line_no, level});
 		}
 	}
