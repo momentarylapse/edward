@@ -64,7 +64,7 @@ public:
 
 	Path filename;
 	xhui::MultilineEdit* edit = nullptr;
-	string id_edit;
+	string id_edit, id_structure;
 
 	Array<int> label_line_numbers;
 };

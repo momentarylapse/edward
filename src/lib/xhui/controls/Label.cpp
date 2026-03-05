@@ -1,16 +1,14 @@
 #include "Label.h"
 #include "../Painter.h"
 #include "../Theme.h"
+#include "../TextLayout.h"
 #include <lib/ygraphics/font.h>
 
 namespace xhui {
 
 Label::Label(const string &_id, const string &t) : Control(_id) {
-	text_w = text_h = 0;
+	text_w = text_h = -1;
 	font_size = Theme::_default.font_size;
-	bold = false;
-	italic = false;
-	url = false;
 	align = Align::Left;
 	margin.x1 = margin.x2 = 0;
 	margin.y1 = margin.y2 = Theme::_default.label_margin_y;
@@ -35,10 +33,15 @@ vec2 Label::get_content_min_size() const {
 		if (text_w < 0) {
 			if (auto win = get_window())
 				ui_scale = win->ui_scale;
-			auto face = pick_font(Theme::_default.font_name, bold, italic);
-			auto dim = get_cached_text_dimensions(title, face, font_size, ui_scale);
-			text_w = dim.bounding_width / ui_scale;
-			text_h = dim.inner_height() / ui_scale;
+			if (markup and false) {
+				//auto l = TextLayout::from_format_string(title, );
+
+			} else {
+				auto face = pick_font(Theme::_default.font_name, bold, italic);
+				auto dim = get_cached_text_dimensions(title, face, font_size, ui_scale);
+				text_w = dim.bounding_width / ui_scale;
+				text_h = dim.inner_height() / ui_scale;
+			}
 		}
 		return vec2(text_w, text_h) + margin.p00() + margin.p11();
 	}
@@ -57,6 +60,11 @@ void Label::_draw(Painter *p) {
 		if (!enabled)
 			p->set_color(White.with_alpha(0.35f));
 		p->draw_ximage({_area.center() - size/2, _area.center() + size/2}, image);
+	} else if (markup) {
+		auto l = TextLayout::from_format_string(p, title, font_size);
+		text_h = l.box().height();
+		text_w = l.box().width();
+		draw_text_layout(p, _area.p00() + margin.p00() - l.box().p00(), l, enabled ? Theme::_default.text_label : Theme::_default.text_disabled);
 	} else {
 		if (url)
 			p->set_color(Theme::_default.text_link);
@@ -100,6 +108,15 @@ void Label::set_option(const string& key, const string& value) {
 		font_size = Theme::_default.font_size_small;
 	} else if (key == "url") {
 		url = true;
+	} else if (key == "markup") {
+		markup = true;
+	} else if (key == "margin") {
+		float f = value._float();
+		margin = rect(f, f, f, f);
+	} else if (key == "hmargin") {
+		margin.x1 = margin.x2 = value._float();
+	} else if (key == "vmargin") {
+		margin.y1 = margin.y2 = value._float();
 	} else {
 		Control::set_option(key, value);
 	}

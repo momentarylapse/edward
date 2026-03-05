@@ -18,9 +18,10 @@ public:
 
 	mutable float ui_scale = 1.0f;
 	float font_size;
-	bool bold;
-	bool italic;
-	bool url;
+	bool bold = false;
+	bool italic = false;
+	bool url = false;
+	bool markup = false;
 	string title;
 	enum class Align {
 		Left,

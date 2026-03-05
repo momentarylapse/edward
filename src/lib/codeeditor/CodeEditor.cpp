@@ -3,10 +3,10 @@
 #include <lib/base/iter.h>
 #include <lib/syntaxhighlight/BaseParser.h>
 #include <lib/os/file.h>
-#include <lib/xhui/Theme.h>
 #include <lib/xhui/Window.h>
 #include <lib/xhui/xhui.h>
 #include <lib/xhui/controls/MultilineEdit.h>
+#include <lib/xhui/controls/ListView.h>
 
 #include "lib/os/msg.h"
 
@@ -40,6 +40,7 @@ Dialog coding-panel ''
 	propagate_events = true;
 
 	id_edit = "edit";
+	id_structure = "structure";
 
 	edit = (xhui::MultilineEdit*)get_control(id_edit);
 	edit->set_option("focusframe", "no");
@@ -48,6 +49,15 @@ Dialog coding-panel ''
 //	edit->set_option("lineheightscale", "1.1f");
 	edit->set_option("altbg", "");
 	edit->set_option("linenumbers", "");
+
+
+	auto list = (xhui::ListView*)get_control(id_structure);
+	list->column_factories[0].f_create = [] (const string& id) -> xhui::Control* {
+		auto l = new xhui::Label(id, "");
+		l->set_option("markup", "");
+		l->set_option("vmargin", "2");
+		return l;
+	};
 
 	static int xcounter = 0;
 	event_x(id_edit, xhui::event_id::Changed, [this] {
@@ -138,8 +148,8 @@ Dialog coding-panel ''
 	event("search-replace-next", [this] {
 		search_replace_next();
 	});
-	event_x("structure", xhui::event_id::Select, [this] {
-		int n = get_int("structure");
+	event_x(id_structure, xhui::event_id::Select, [this] {
+		int n = get_int(id_structure);
 		if (n >= 0 and n < label_line_numbers.num)
 			edit->set_cursor_pos(edit->line_pos_to_index({label_line_numbers[n], 0}));
 		activate(id_edit);
@@ -175,10 +185,10 @@ void CodeEditor::update_highlight_all() {
 
 void CodeEditor::update_structure() {
 	if (auto p = GetParser(filename)) {
-		reset("structure");
+		reset(id_structure);
 		label_line_numbers.clear();
 		for (const auto& l: p->find_labels(edit->text)) {
-			add_string("structure", string("        ").repeat(l.level) + l.name);
+			add_string(id_structure, string("        ").repeat(l.level) + l.name.replace("class ", "<b>C</b> ").replace("func ", "<b>F</b> "));
 			label_line_numbers.add(l.line);
 		}
 	}
