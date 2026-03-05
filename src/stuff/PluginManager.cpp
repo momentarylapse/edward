@@ -347,7 +347,7 @@ void PluginManager::load_project_stuff(const Path &dir) {
 	session->kaba_ctx->register_package_init("y", dir.absolute().canonical() | "Scripts/y", &::PluginManager::export_kaba_package_y);
 
 	component_classes = enumerate_classes("ecs.Component");
-	system_classes = enumerate_classes("ui.Controller");
+	system_classes = enumerate_classes("ecs.System");
 
 	auto link_component = [this] (const string& name) -> const kaba::Class* {
 		for (auto* c : component_classes)

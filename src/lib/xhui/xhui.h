@@ -15,7 +15,8 @@ class Image;
 namespace xhui {
 
 void init(const Array<string> &arg, const string& app_name);
-void run();
+void run(); // wait_till_all_windows_closed
+void do_single_main_loop();
 
 	extern float global_ui_scale;
 	extern ColorSpace color_space_display;

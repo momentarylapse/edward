@@ -4,12 +4,14 @@
 #include "Context.h"
 #include "Dialog.h"
 #include "Theme.h"
+#include "Application.h"
 #include "controls/Control.h"
 #include "controls/HeaderBar.h"
-#include "../os/time.h"
-#include "../os/msg.h"
 #include <lib/base/algo.h>
 #include <lib/base/optional.h>
+#include <lib/os/time.h>
+#include <lib/os/msg.h>
+
 
 
 namespace xhui {
@@ -69,16 +71,17 @@ base::future<void> fly(shared<Window> win) {
 
 void fly_and_wait(shared<Window> win) {
 	fly(win);
-	run();
+
+	while (!Application::_end_requested) {
+		do_single_main_loop();
+		if (weak(_windows_).find(win.get()) < 0)
+			break;
+	}
 }
 
 Window::~Window() {
 	if (window)
 		glfwDestroyWindow(window);
-
-	for (int i=0; i<_windows_.num; i++)
-		if (_windows_[i] == this)
-			_windows_.erase(i);
 }
 
 

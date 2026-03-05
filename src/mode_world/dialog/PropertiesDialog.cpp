@@ -88,10 +88,10 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//
 	systems_list->column_factories[0].f_create = [this](const string& id) -> xhui::Control* {
 		return new SystemPanel(this);
 	};
-	systems_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
+	systems_list->column_factories[0].f_set = [](xhui::Control* c, const string& t) {
 		reinterpret_cast<SystemPanel*>(c)->update(t._int());
 	};
-	systems_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
+	systems_list->column_factories[0].f_select = [](xhui::Control* c, bool selected) {
 		reinterpret_cast<SystemPanel*>(c)->set_selected(selected);
 	};
 
@@ -169,7 +169,7 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//
 		apply();
 	});
 	event("add-system", [this] {
-		ComponentSelectionDialog::ask(this, data->session, "ui.Controller").then([this] (const kaba::Class* c) {
+		ComponentSelectionDialog::ask(this, data->session, "System").then([this] (const kaba::Class* c) {
 			temp.systems.add(data->session->plugin_manager->describe_class(c));
 			apply();
 		});
