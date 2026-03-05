@@ -33,7 +33,7 @@ static constexpr int PREVIEW_SIZE = 48;
 string file_secure(const Path &filename) {
 	if (filename)
 		return str(filename);
-	return "<no file>";
+	return "[no file]";
 }
 
 string render_material(ModelMaterial *m) {
@@ -78,6 +78,11 @@ public:
 		auto tex_list = (xhui::ListView*)get_control("textures");
 		tex_list->column_factories[1].f_create = [](const string& id) {
 			return new xhui::Image(id, "");
+		};
+		tex_list->column_factories[2].f_create = [](const string& id) {
+			auto l = new xhui::Label(id, "");
+			l->set_option("markup", "");
+			return l;
 		};
 
 		event("texture-level-add", [this] { on_texture_level_add(); });
@@ -185,10 +190,11 @@ public:
 			auto *img = mat->texture_levels[i]->image.get();
 			auto *icon = img->scale(PREVIEW_SIZE, PREVIEW_SIZE);
 			xhui::set_image(id, *icon);
-			string ext = format(" (%dx%d)", img->width, img->height);
+			string space = (img->color_space == ColorSpace::Linear) ? "linear" : "srgb";
+			string ext = format("\n<small><soft>   %d x %d, %s</soft></small>", img->width, img->height, space);
 			if (mat->texture_levels[i]->edited)
 				ext += " *";
-			add_string("textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(mat->texture_levels[i]->filename) + ext)));
+			add_string("textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(mat->texture_levels[i]->filename).replace("@linear", "") + ext)));
 			delete icon;
 		}
 	//	set_int("textures", mode_mesh()->current_texture_level);

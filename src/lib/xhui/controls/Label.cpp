@@ -62,9 +62,9 @@ void Label::_draw(Painter *p) {
 		p->draw_ximage({_area.center() - size/2, _area.center() + size/2}, image);
 	} else if (markup) {
 		auto l = TextLayout::from_format_string(p, title, font_size);
-		text_h = l.box().height();
-		text_w = l.box().width();
-		draw_text_layout(p, _area.p00() + margin.p00() - l.box().p00(), l, enabled ? Theme::_default.text_label : Theme::_default.text_disabled);
+		text_h = l.box.height();
+		text_w = l.box.width();
+		draw_text_layout(p, _area.p00() + margin.p00() - l.box.p00(), l, enabled ? Theme::_default.text_label : Theme::_default.text_disabled);
 	} else {
 		if (url)
 			p->set_color(Theme::_default.text_link);
