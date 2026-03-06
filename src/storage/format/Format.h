@@ -90,7 +90,7 @@ enum {
 	FD_CAMERAFLIGHT,
 	FD_FILE, // any file
 	FD_PROJECT,
-//	FD_TEMPLATE,
+	FD_TEMPLATE,
 	NUM_FDS
 };
 

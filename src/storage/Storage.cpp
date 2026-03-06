@@ -252,6 +252,8 @@ string Storage::fd_ext(int kind) {
 		return "kaba";
 	if (kind == FD_CAMERAFLIGHT)
 		return "camera";
+	if (kind == FD_TEMPLATE)
+		return "template";
 	if (kind == FD_FILE)
 		return "*";
 	return "?";

@@ -325,6 +325,7 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 				break;
 			case FD_SCRIPT:
 			case FD_SHADERFILE:
+			case FD_TEMPLATE:
 				if (!doc->mode_coding)
 					doc->mode_coding = new ModeCoding(doc);
 				doc->mode_coding->load(filename);
