@@ -191,7 +191,7 @@ public:
 			auto *icon = img->scale(PREVIEW_SIZE, PREVIEW_SIZE);
 			xhui::set_image(id, *icon);
 			string space = (img->color_space == ColorSpace::Linear) ? "linear" : "srgb";
-			string ext = format("\n<small><soft>   %d x %d, %s</soft></small>", img->width, img->height, space);
+			string ext = format("\n<span size='small' alpha='50%%>   %d x %d, %s</span>", img->width, img->height, space);
 			if (mat->texture_levels[i]->edited)
 				ext += " *";
 			add_string("textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(mat->texture_levels[i]->filename).replace("@linear", "") + ext)));
