@@ -11,22 +11,32 @@
 #include "lib/kaba/Module.h"
 #include "lib/kaba/syntax/Class.h"
 #include "lib/kaba/syntax/SyntaxTree.h"
+#include "lib/xhui/controls/ListView.h"
 
 ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session* session, const string& base_class) : Dialog("component-selection-dialog", parent) {
 	width = 400;
 	height = 600;
 
-	if (base_class.match("*System"))
+	if (base_class.match("*System")) {
 		classes = session->plugin_manager->system_classes;
-	else
+		set_title("Systems");
+	} else {
 		classes = session->plugin_manager->component_classes;
+	}
 	classes = base::sorted(classes, [] (const kaba::Class* a, const kaba::Class* b) {
 		return a->name <= b->name;
 	});
 
+	auto list = (xhui::ListView*)get_control("list");
+	list->column_factories[0].f_create = [] (const string& id) {
+		auto l = new xhui::Label(id, "");
+		l->set_option("markup", "");
+		return l;
+	};
+
 	for (const auto c: classes) {
 		auto s = session->plugin_manager->describe_class(c);
-		add_string("list", format("%s\\%s", c->name, s.filename));
+		add_string("list", format("<b>%s</b>  <small>%s</small>", c->name, s.filename));
 	}
 
 	event("list", [this] {

@@ -862,7 +862,7 @@ Grid
 2
 ListView
 list
-
+nobar
 0
 0
 0
@@ -11107,7 +11107,7 @@ component-selection-dialog/component-selection-dialog
 Component
 
 component-selection-dialog/list
-Class\\File
+Class
 
 deformation_cylinder_dialog/axis
 X\\Y\\Z
