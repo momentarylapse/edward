@@ -117,12 +117,21 @@ public:
 class SphereCollider : public Collider {
 public:
 	SphereCollider();
+	void on_init() override;
+
+	float radius = 1;
+
 	static const kaba::Class *_class;
 };
 
 class BoxCollider : public Collider {
 public:
 	BoxCollider();
+	void on_init() override;
+
+	vec3 min = {-1,-1,-1};
+	vec3 max = {1,1,1};
+
 	static const kaba::Class *_class;
 };
 

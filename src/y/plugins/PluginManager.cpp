@@ -402,6 +402,13 @@ void export_world(kaba::Exporter* ext) {
 
 	ext->declare_class_size("Collider", sizeof(Collider));
 
+	ext->declare_class_size("SphereCollider", sizeof(SphereCollider));
+	ext->declare_class_element("SphereCollider.radius", &SphereCollider::radius);
+
+	ext->declare_class_size("BoxCollider", sizeof(BoxCollider));
+	ext->declare_class_element("BoxCollider.min", &BoxCollider::min);
+	ext->declare_class_element("BoxCollider.max", &BoxCollider::max);
+
 	ext->declare_class_size("MultiInstance", sizeof(MultiInstance));
 	ext->declare_class_element("MultiInstance.model", &MultiInstance::model);
 	ext->declare_class_element("MultiInstance.matrices", &MultiInstance::matrices);
@@ -1118,6 +1125,7 @@ void *create_instance(const kaba::Class *c, const string &variables) {
 	return create_instance(c, parse_variables(variables));
 }
 
+// yes, we could skip the special cases... but then we need to export virtual functions properly...
 void *create_instance(const kaba::Class *c, const Array<ScriptInstanceDataVariable> &variables) {
 	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
 	msg_write(format("creating instance  %s", c->long_name()));
@@ -1131,6 +1139,10 @@ void *create_instance(const kaba::Class *c, const Array<ScriptInstanceDataVariab
 		return new MeshCollider;
 	if (c == TerrainCollider::_class)
 		return new TerrainCollider;
+	if (c == SphereCollider::_class)
+		return new SphereCollider;
+	if (c == BoxCollider::_class)
+		return new BoxCollider;
 	if (c == Terrain::_class)
 		return new Terrain;
 	if (c == Animator::_class)

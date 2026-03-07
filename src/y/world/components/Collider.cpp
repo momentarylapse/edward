@@ -128,6 +128,27 @@ void MeshCollider::on_init() {
 }
 
 
+SphereCollider::SphereCollider() = default;
+
+void SphereCollider::on_init() {
+#if HAS_LIB_BULLET
+	col_shape = new btSphereShape(btScalar(radius));
+#endif
+}
+
+
+BoxCollider::BoxCollider() = default;
+
+void BoxCollider::on_init() {
+#if HAS_LIB_BULLET
+	auto comp = new btCompoundShape(false, 0);
+	auto pp = new btBoxShape(bt_set_v((max-min) / 2));
+	comp->addChildShape(bt_set_trafo((min+max)/2, quaternion::ID), pp);
+	col_shape = comp;
+#endif
+}
+
+
 TerrainCollider::TerrainCollider() = default;
 
 void TerrainCollider::on_init() {

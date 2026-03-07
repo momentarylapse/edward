@@ -174,9 +174,7 @@ Array<ScriptInstanceData> sort_components(const Array<ScriptInstanceData>& compo
 		for (int k=i+1; k<r.num; k++) {
 			if (!r[i].filename.is_empty() and r[k].filename.is_empty())
 				r.swap(i, k);
-			else if (r[i].class_name == "SolidBody" and r[k].class_name == "MeshCollider")
-				r.swap(i, k);
-			else if (r[i].class_name == "SolidBody" and r[k].class_name == "TerrainCollider")
+			else if (r[i].class_name == "SolidBody" and r[k].class_name.match("*Collider"))
 				r.swap(i, k);
 		}
 	return r;
