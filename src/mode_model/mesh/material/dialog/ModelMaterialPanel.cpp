@@ -21,7 +21,6 @@
 #include <lib/xhui/Menu.h>
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/Grid.h>
-#include <lib/xhui/controls/Image.h>
 #include <lib/xhui/controls/ListView.h>
 #include <y/EngineData.h>
 #include <view/MultiView.h>
@@ -77,12 +76,10 @@ public:
 
 		auto tex_list = (xhui::ListView*)get_control("textures");
 		tex_list->column_factories[1].f_create = [](const string& id) {
-			return new xhui::Image(id, "");
+			return xhui::create_control("Image", "", id);
 		};
 		tex_list->column_factories[2].f_create = [](const string& id) {
-			auto l = new xhui::Label(id, "");
-			l->set_option("markup", "");
-			return l;
+			return xhui::create_control("Label", "!markup", id);
 		};
 
 		event("texture-level-add", [this] { on_texture_level_add(); });

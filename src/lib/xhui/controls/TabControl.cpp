@@ -7,7 +7,7 @@
 #include "Grid.h"
 #include "../Painter.h"
 #include "../Theme.h"
-#include "../../base/iter.h"
+#include <lib/base/iter.h>
 
 namespace xhui {
 
@@ -95,7 +95,7 @@ Array<Control*> TabControl::get_children(ChildFilter f) const {
 	Array<Control*> children;
 	if (f == ChildFilter::All or show_header)
 		children.add(header.get());
-	for (auto&& [i, p]: enumerate(pages))
+	for (const auto& [i, p]: enumerate(pages))
 		if (p.child and (f == ChildFilter::All or i == current_page))
 			children.add(p.child.get());
 	return children;
@@ -108,10 +108,22 @@ void TabControl::add_child(shared<Control> c, int x, int y) {
 		pages[x].child = c;
 		if (owner)
 			c->_register(owner);
-	} else if (x == pages.num) {
+	} else /*if (x == pages.num)*/ { // allow -1
 		pages.add({"+", c});
 		if (owner)
 			c->_register(owner);
+	}
+}
+
+void TabControl::remove_child(Control* c) {
+	int index = -1;
+	for (const auto& [i, p]: enumerate(pages))
+		if (p.child == c)
+			index = i;
+	if (index >= 0) {
+		c->_unregister();
+		pages.erase(index);
+		request_redraw();
 	}
 }
 
@@ -135,7 +147,7 @@ void TabControl::_draw(Painter* p) {
 		pages[current_page].child->_draw(p);
 }
 
-	void TabControl::set_option(const string& key, const string& value) {
+void TabControl::set_option(const string& key, const string& value) {
 	if (key == "bar") {
 		show_header = value._bool();
 		request_redraw();
@@ -146,11 +158,5 @@ void TabControl::_draw(Painter* p) {
 		Control::set_option(key, value);
 	}
 }
-
-
-
-
-
-
 
 } // xhui

@@ -8,8 +8,6 @@
 #include <lib/xhui/controls/MultilineEdit.h>
 #include <lib/xhui/controls/ListView.h>
 
-#include "lib/os/msg.h"
-
 namespace codeedit {
 
 CodeEditor::CodeEditor() : obs::Node<xhui::Panel>("") {
@@ -53,10 +51,7 @@ Dialog coding-panel ''
 
 	auto list = (xhui::ListView*)get_control(id_structure);
 	list->column_factories[0].f_create = [] (const string& id) -> xhui::Control* {
-		auto l = new xhui::Label(id, "");
-		l->set_option("markup", "");
-		l->set_option("vmargin", "2");
-		return l;
+		return xhui::create_control("Label", "!markup,vmargin=2", id);
 	};
 
 	static int xcounter = 0;

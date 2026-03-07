@@ -8,10 +8,10 @@
 #include <lib/xhui/xhui.h>
 #include <stuff/PluginManager.h>
 
-#include "lib/kaba/Module.h"
-#include "lib/kaba/syntax/Class.h"
-#include "lib/kaba/syntax/SyntaxTree.h"
-#include "lib/xhui/controls/ListView.h"
+#include <lib/kaba/Module.h>
+#include <lib/kaba/syntax/Class.h>
+#include <lib/kaba/syntax/SyntaxTree.h>
+#include <lib/xhui/controls/ListView.h>
 
 ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session* session, const string& base_class) : Dialog("component-selection-dialog", parent) {
 	width = 400;
@@ -29,9 +29,7 @@ ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session*
 
 	auto list = (xhui::ListView*)get_control("list");
 	list->column_factories[0].f_create = [] (const string& id) {
-		auto l = new xhui::Label(id, "");
-		l->set_option("markup", "");
-		return l;
+		return xhui::create_control("Label", "!markup", id);
 	};
 
 	for (const auto c: classes) {

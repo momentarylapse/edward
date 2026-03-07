@@ -120,4 +120,6 @@ public:
 	bool emit_event(const string& msg, bool is_default);
 };
 
+xfer<Control> create_control(const string &type, const string &_title, const string &id);
+
 }

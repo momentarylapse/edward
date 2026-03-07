@@ -34,6 +34,22 @@
 namespace xhui {
 
 
+struct Option {
+	string key, value;
+};
+
+Array<Option> parse_options(const string& s) {
+	Array<Option> r;
+	for (const auto& o: s.explode(",")) {
+		auto xx = o.explode("=");
+		if (xx.num >= 2)
+			r.add({xx[0], xx[1]});
+		else
+			r.add({xx[0], ""});
+	}
+	return r;
+}
+
 
 Panel::Panel(const string &_id) : Control(_id, ControlType::Panel) {
 	ignore_hover = true;
@@ -314,15 +330,10 @@ void Panel::activate(const string &id) {
 			}
 }
 
-
 void Panel::set_options(const string& id, const string& options) {
 	for_control(id, [&options] (Control* c) {
-		for (const auto& o: options.explode(",")) {
-			auto xx = o.explode("=");
-			if (xx.num >= 2)
-				c->set_option(xx[0], xx[1]);
-			else
-				c->set_option(xx[0], "");
+		for (const auto& [k,v]: parse_options(options)) {
+			c->set_option(k, v);
 		}
 	});
 }
@@ -345,6 +356,89 @@ Array<Control*> Panel::get_children(ChildFilter) const {
 	return {};
 }
 
+xfer<Control> create_raw_control(const string& type, const string& title, const string& id) {
+	if (type == "Button")
+		return new Button(id, title);
+	if (type == "CheckBox")
+		return new CheckBox(id, title);
+	if (type == "ColorButton")
+		return new ColorButton(id);
+	if (type == "ComboBox")
+		return new ComboBox(id, title);
+	if (type == "DrawingArea")
+		return new DrawingArea(id);
+	if (type == "Edit")
+		return new Edit(id, title);
+	if (type == "Expander")
+		return new Expander(id, title);
+	if (type == "FileSelector")
+		return new FileSelector(id);
+	if (type == "Grid")
+		return new Grid(id);
+	if (type == "Group")
+		return new Group(id, title);
+	if (type == "Image")
+		return new Image(id, title);
+	if (type == "Label")
+		return new Label(id, title);
+	if (type == "ListView")
+		return new ListView(id, title);
+	if (type == "MenuBar")
+		return new MenuBar(id);
+	if (type == "MultilineEdit")
+		return new MultilineEdit(id, title);
+	if (type == "Overlay")
+		return new Overlay(id);
+	if (type == "RadioButton")
+		return new RadioButton(id, title);
+	if (type == "Separator")
+		return new Separator(id, Orientation::VERTICAL);
+	if (type == "Slider")
+		return new Slider(id);
+	if (type == "SpinButton")
+		return new SpinButton(id, title._float());
+	if (type == "TabControl")
+		return new TabControl(id, title);
+	if (type == "ToggleButton")
+		return new ToggleButton(id, title);
+	if (type == "Toolbar")
+		return new Toolbar(id);
+	if (type == "Viewport")
+		return new Viewport(id);
+//	if (type == "TreeView")
+//		add_tree_view(title, x, y, id);
+//	if (type == "ProgressBar")
+//		add_progress_bar(title, x, y, id);
+/*	if ((type == "Expander") or (type == "Revealer"))
+		add_expander(title, x, y, id);
+	if (type == "Scroller")
+		add_scroller(title, x, y, id);
+	if (type == "Paned")
+		add_paned(title, x, y, id);
+	if (type == "MenuButton")
+		add_menu_button(title, x, y, id);*/
+	else
+		msg_error("unknown hui control: " + type);
+	return new Label(id, title);
+}
+
+xfer<Control> create_control(const string &type, const string &_title, const string &id) {
+	string title = _title;
+	string options;
+	if (title.head(1) == "!") {
+		int p0 = title.find("\\");
+		if (p0 > 0) {
+			title = title.sub(p0 + 1);
+			options = title.sub(1, p0);
+		} else {
+			options = title.sub(1);
+		}
+	}
+	auto c = create_raw_control(type, _title, id);
+	for (const auto& [k,v]: parse_options(options))
+		c->set_option(k, v);
+	return c;
+}
 
 void Panel::add_control(const string &type, const string &_title, int x, int y, const string &id) {
 	//printf("HuiPanelAddControl %s  %s  %d  %d  %s\n", type.c_str(), _title.c_str(), x, y, id.c_str());
@@ -354,68 +448,8 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 		if (p0 > 0)
 			title = title.sub(p0 + 1);
 	}
-	if (type == "Button")
-		add_child(new Button(id, title), x, y);
-	else if (type == "CheckBox")
-		add_child(new CheckBox(id, title), x, y);
-	else if (type == "ColorButton")
-		add_child(new ColorButton(id), x, y);
-	else if (type == "ComboBox")
-		add_child(new ComboBox(id, title), x, y);
-	else if (type == "DrawingArea")
-		add_child(new DrawingArea(id), x, y);
-	else if (type == "Edit")
-		add_child(new Edit(id, title), x, y);
-	else if (type == "Expander")
-		add_child(new Expander(id, title), x, y);
-	else if (type == "FileSelector")
-		add_child(new FileSelector(id), x, y);
-	else if (type == "Grid")
-		add_child(new Grid(id), x, y);
-	else if (type == "Group")
-		add_child(new Group(id, title), x, y);
-	else if (type == "Image")
-		add_child(new Image(id, title), x, y);
-	else if (type == "Label")
-		add_child(new Label(id, title), x, y);
-	else if (type == "ListView")
-		add_child(new ListView(id, title), x, y);
-	else if (type == "MenuBar")
-		add_child(new MenuBar(id), x, y);
-	else if (type == "MultilineEdit")
-		add_child(new MultilineEdit(id, title), x, y);
-	else if (type == "Overlay")
-		add_child(new Overlay(id), x, y);
-	else if (type == "RadioButton")
-		add_child(new RadioButton(id, title), x, y);
-	else if (type == "Separator")
-		add_child(new Separator(id, Orientation::VERTICAL), x, y);
-	else if (type == "Slider")
-		add_child(new Slider(id), x, y);
-	else if (type == "SpinButton")
-		add_child(new SpinButton(id, title._float()), x, y);
-	else if (type == "TabControl")
-		add_child(new TabControl(id, title), x, y);
-	else if (type == "ToggleButton")
-		add_child(new ToggleButton(id, title), x, y);
-	else if (type == "Toolbar")
-		add_child(new Toolbar(id), x, y);
-	else if (type == "Viewport")
-		add_child(new Viewport(id), x, y);
-//	else if (type == "TreeView")
-//		add_tree_view(title, x, y, id);
-//	else if (type == "ProgressBar")
-//		add_progress_bar(title, x, y, id);
-/*	else if ((type == "Expander") or (type == "Revealer"))
-		add_expander(title, x, y, id);
-	else if (type == "Scroller")
-		add_scroller(title, x, y, id);
-	else if (type == "Paned")
-		add_paned(title, x, y, id);
-	else if (type == "MenuButton")
-		add_menu_button(title, x, y, id);*/
-	else
-		msg_error("unknown hui control: " + type);
+	auto c = create_control(type, title, id);
+	add_child(c, x, y);
 }
 
 void Panel::_add_control(const string &ns, const Resource &cmd, const string &parent_id) {
