@@ -636,26 +636,35 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 
 
 static base::optional<string> world_selection_description(DataWorld* data, const Data::Selection& sel) {
-	int nob = 0, nter = 0, ncam = 0, nent = 0;
-	if (sel.contains(MultiViewType::WORLD_OBJECT))
-		nob = sel[MultiViewType::WORLD_OBJECT].num;
-	if (sel.contains(MultiViewType::WORLD_TERRAIN))
-		nter = sel[MultiViewType::WORLD_TERRAIN].num;
-//	if (sel.contains(MultiViewType::WORLD_CAMERA))
-//		ncam = sel[MultiViewType::WORLD_CAMERA].num;
-	if (sel.contains(MultiViewType::WORLD_ENTITY))
+	int nob = 0, nter = 0, ncam = 0, nlight = 0, nent = 0;
+	if (sel.contains(MultiViewType::WORLD_ENTITY)) {
 		nent = sel[MultiViewType::WORLD_ENTITY].num;
-	if (nob + nter + ncam + nent == 0)
+		for (auto i: sel[MultiViewType::WORLD_ENTITY]) {
+			auto e = data->entity(i);
+			if (e->get_component<Light>())
+				nlight ++;
+			if (e->get_component<Camera>())
+				ncam ++;
+			if (e->get_component<ModelRef>())
+				nob ++;
+			if (e->get_component<TerrainRef>())
+				nter ++;
+		}
+
+	}
+	if (nent == 0)
 		return base::None;
 	Array<string> s;
+	if (nent > 0)
+		s.add(format("%d entities", nent));
 	if (nob > 0)
-		s.add(format("%d objects", nob));
+		s.add(format("%d models", nob));
 	if (nter > 0)
 		s.add(format("%d terrains", nter));
 	if (ncam > 0)
 		s.add(format("%d cameras", ncam));
-	if (nent > 0)
-		s.add(format("%d entities", nent));
+	if (nlight > 0)
+		s.add(format("%d lights", nlight));
 	return implode(s, ", ");
 }
 
@@ -671,7 +680,6 @@ void ModeWorld::on_draw_post(Painter* p) {
 }
 
 void ModeWorld::on_command(const string& id) {
-	msg_write(id);
 	if (id == "new")
 		session->universal_new(FD_WORLD);
 	if (id == "open")
