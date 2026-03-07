@@ -177,7 +177,8 @@ void Session::set_active_doc(DocumentSession* doc) {
 	int i = weak(documents).find(doc);
 	cur_doc = doc;
 	static int counter = 0;
-	cur_doc->_last_usage_counter = counter ++;
+	if (cur_doc)
+		cur_doc->_last_usage_counter = counter ++;
 	win->set_int("tab", i);
 
 	if (cur_doc) {
@@ -187,6 +188,17 @@ void Session::set_active_doc(DocumentSession* doc) {
 	out_document_switched();
 }
 
+void Session::close_doc(DocumentSession* doc) {
+	if (!doc)
+		return;
+	int index = weak(documents).find(doc);
+	if (documents.num > 0)
+		set_active_doc(weak(documents)[(index + 1) % documents.num]);
+	else
+		set_active_doc(nullptr);
+	documents.erase(index);
+	win->get_control("tab")->remove_child(win->get_control(doc->grid_id));
+}
 
 
 void Session::remove_message() {

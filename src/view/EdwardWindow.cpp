@@ -122,6 +122,7 @@ Dialog x x padding=0
 	set_key_code("open", mod + xhui::KEY_O);
 	set_key_code("save", mod + xhui::KEY_S);
 	set_key_code("save-as", mod + xhui::KEY_SHIFT + xhui::KEY_S);
+	set_key_code("close-document", mod + xhui::KEY_W);
 	set_key_code("exit", mod + xhui::KEY_Q);
 	set_key_code("undo", mod + xhui::KEY_Z);
 	set_key_code("redo", mod + xhui::KEY_Y);
@@ -237,6 +238,21 @@ Dialog x x padding=0
 	});
 	event("what_the_fuck", [this] {
 		xhui::AboutDialog::show(this);
+	});
+	event("close-document", [this] {
+		auto m = cur_mode();
+		if (!m)
+			return;
+		if (m->is_save_state()) {
+			session->close_doc(session->cur_doc);
+		} else xhui::QuestionDialog::ask(this, "Question", "You have unsaved changes. Do you want to save?").then([this, m] (xhui::Answer a) {
+			if (a == xhui::Answer::Yes)
+				session->storage->auto_save(m->get_data()).then([this] {
+					session->close_doc(session->cur_doc);
+				});
+			else if (a == xhui::Answer::No)
+				session->close_doc(session->cur_doc);
+		});
 	});
 	auto quit = [this] {
 		auto m = cur_mode();

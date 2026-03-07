@@ -565,7 +565,7 @@ Dialog multi-view-panel ''
 	renderer = new yrenderer::XhuiRenderer(doc->session->ctx);
 	renderer->add_child(multi_view->renderer.get());
 
-	win->event_xp(win->id, xhui::event_id::JustBeforeDraw, [this] (Painter* p) {
+	win_events.add(win->event_xp(win->id, xhui::event_id::JustBeforeDraw, [this] (Painter* p) {
 		if (!doc->cur_mode or !multi_view)
 			return;
 		if (doc != doc->session->cur_doc)
@@ -575,55 +575,55 @@ Dialog multi-view-panel ''
 				multi_view->set_area(p->area());
 				renderer->before_draw(p);
 			});
-	});
-	event_xp("area", xhui::event_id::Draw, [this] (Painter* p) {
+	}));
+	events.add(event_xp("area", xhui::event_id::Draw, [this] (Painter* p) {
 		if (!doc->cur_mode or !multi_view)
 			return;
 		multi_view->set_area(p->area());
 		renderer->draw(p);
 		multi_view->on_draw(p);
 		doc->cur_mode->on_draw_post(p);
-	});
-	event_x("area", xhui::event_id::MouseMove, [this] {
+	}));
+	events.add(event_x("area", xhui::event_id::MouseMove, [this] {
 		if (!doc->cur_mode or !multi_view)
 			return;
 		multi_view->on_mouse_move(win->state.m, win->state.m - win->state_prev.m);
 		doc->cur_mode->on_mouse_move(win->state.m, win->state.m - win->state_prev.m);
-	});
-	event_x("area", xhui::event_id::MouseWheel, [this] {
+	}));
+	events.add(event_x("area", xhui::event_id::MouseWheel, [this] {
 		if (!doc->cur_mode or !multi_view)
 			return;
 		multi_view->on_mouse_wheel(win->state.m, win->state.scroll);
-	});
-	event_x("area", xhui::event_id::MouseLeave, [this] {
+	}));
+	events.add(event_x("area", xhui::event_id::MouseLeave, [this] {
 		if (!doc->cur_mode or !multi_view)
 			return;
 		multi_view->on_mouse_leave();
 		doc->cur_mode->on_mouse_leave(win->state.m);
-	});
-	event_x("area", xhui::event_id::LeftButtonDown, [this] {
+	}));
+	events.add(event_x("area", xhui::event_id::LeftButtonDown, [this] {
 		if (!doc->cur_mode or !multi_view)
 			return;
 		multi_view->on_left_button_down(win->state.m);
 		doc->cur_mode->on_left_button_down(win->state.m);
-	});
-	event_x("area", xhui::event_id::LeftButtonUp, [this] {
+	}));
+	events.add(event_x("area", xhui::event_id::LeftButtonUp, [this] {
 		if (!doc->cur_mode or !multi_view)
 			return;
 		multi_view->on_left_button_up(win->state.m);
 		doc->cur_mode->on_left_button_up(win->state.m);
-	});
-	event_x("area", xhui::event_id::KeyDown, [this] {
+	}));
+	events.add(event_x("area", xhui::event_id::KeyDown, [this] {
 		multi_view->on_key_down(win->state.key_code);
 		doc->cur_mode->on_key_down(win->state.key_code);
-	});
-	event_x("cam-move", xhui::event_id::LeftButtonDown, [this] {
+	}));
+	events.add(event_x("cam-move", xhui::event_id::LeftButtonDown, [this] {
 		win->set_mouse_mode(0);
-	});
-	event_x("cam-move", xhui::event_id::LeftButtonUp, [this] {
+	}));
+	events.add(event_x("cam-move", xhui::event_id::LeftButtonUp, [this] {
 		win->set_mouse_mode(1);
-	});
-	event_x("cam-move", xhui::event_id::MouseMove, [this] {
+	}));
+	events.add(event_x("cam-move", xhui::event_id::MouseMove, [this] {
 		vec2 d = win->state.m - win->state_prev.m;
 		if (win->state.lbut) {
 			if (win->is_key_pressed(xhui::KEY_SHIFT))
@@ -631,18 +631,24 @@ Dialog multi-view-panel ''
 			else
 				multi_view->view_port.move(vec3(-d.x, d.y, 0) / 800.0f);
 		}
-	});
-	event_x("cam-rotate", xhui::event_id::LeftButtonDown, [this] {
+	}));
+	events.add(event_x("cam-rotate", xhui::event_id::LeftButtonDown, [this] {
 		win->set_mouse_mode(0);
-	});
-	event_x("cam-rotate", xhui::event_id::LeftButtonUp, [this] {
+	}));
+	events.add(event_x("cam-rotate", xhui::event_id::LeftButtonUp, [this] {
 		win->set_mouse_mode(1);
-	});
-	event_x("cam-rotate", xhui::event_id::MouseMove, [this] {
+	}));
+	events.add(event_x("cam-rotate", xhui::event_id::MouseMove, [this] {
 		vec2 d = win->state.m - win->state_prev.m;
 		if (win->state.lbut)
 			multi_view->view_port.rotate(quaternion::rotation({d.y*0.003f, d.x*0.003f, 0}));
-	});
+	}));
 }
 
+MultiViewPanel::~MultiViewPanel() {
+	for (int eid: events)
+		remove_event_handler(eid);
+	for (int eid: win_events)
+		win->remove_event_handler(eid);
+}
 

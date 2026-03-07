@@ -112,6 +112,7 @@ public:
 	DocumentSession* create_doc();
 	base::future<DocumentSession*> emit_doc();
 	void set_active_doc(DocumentSession* doc);
+	void close_doc(DocumentSession* doc);
 
 	Storage *storage;
 
