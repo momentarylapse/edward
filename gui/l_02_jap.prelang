@@ -1398,7 +1398,7 @@ face\\texture
 /save
 保存
 
-/save_as
+/save-as
 別名で保存...
 
 /scale
@@ -1605,7 +1605,7 @@ properties\\textures\\material\\import
 /terrain_rescale
 
 
-/terrain_save_as
+/terrain-save-as
 保存...
 
 /terrain_show_texture_final
@@ -2634,7 +2634,7 @@ menu_font/open
 menu_font/save
 保存
 
-menu_font/save_as
+menu_font/save-as
 別名で保存...
 
 menu_font/send_bug_report
@@ -2748,7 +2748,7 @@ menu_material/opt_view
 menu_material/save
 保存
 
-menu_material/save_as
+menu_material/save-as
 別名で保存...
 
 menu_material/send_bug_report
@@ -3120,7 +3120,7 @@ menu_model/rotate
 menu_model/save
 保存
 
-menu_model/save_as
+menu_model/save-as
 別名で保存...
 
 menu_model/scale
@@ -3384,7 +3384,7 @@ menu_move/redo
 menu_move/save
 保存
 
-menu_move/save_as
+menu_move/save-as
 別名で保存...
 
 menu_move/select_all
@@ -3636,7 +3636,7 @@ menu_skeleton/opt_view
 menu_skeleton/save
 保存
 
-menu_skeleton/save_as
+menu_skeleton/save-as
 別名で保存...
 
 menu_skeleton/send_bug_report
@@ -3870,7 +3870,7 @@ menu_world/redo
 menu_world/save
 保存
 
-menu_world/save_as
+menu_world/save-as
 別名で保存...
 
 menu_world/select_all
@@ -4470,7 +4470,7 @@ terrain_dialog/terrain_dialog_t_stripes
 terrain_dialog/terrain_dialog_tab_control
 properties\\textures\\material\\import
 
-terrain_dialog/terrain_save_as
+terrain_dialog/terrain-save-as
 保存...
 
 terrain_dialog/texture_map_complete

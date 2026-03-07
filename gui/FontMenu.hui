@@ -3,7 +3,7 @@ Menu menu_font "Font" disabled
 		Item new "New" image=hui:new
 		Item open "Open..." image=hui:open
 		Item save "Save" image=hui:save
-		Item save_as "Save as..." image=hui:save-as
+		Item save-as "Save as..." image=hui:save-as
 		Separator
 		Item execute_plugin "Execute plugin"
 		Separator

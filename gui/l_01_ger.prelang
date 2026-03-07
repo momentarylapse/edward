@@ -960,7 +960,7 @@ menu_font/project_open
 menu_font/save
 Speichern
 
-menu_font/save_as
+menu_font/save-as
 Speichern unter...
 
 menu_font/send_bug_report
@@ -1077,7 +1077,7 @@ menu_material/project_open
 menu_material/save
 Speichern
 
-menu_material/save_as
+menu_material/save-as
 Speichern unter...
 
 menu_material/send_bug_report
@@ -1452,7 +1452,7 @@ Rotieren
 menu_model/save
 Speichern
 
-menu_model/save_as
+menu_model/save-as
 Speichern unter...
 
 menu_model/scale
@@ -1722,7 +1722,7 @@ Wiederherstellen
 menu_move/save
 Speichern
 
-menu_move/save_as
+menu_move/save-as
 Speichern unter...
 
 menu_move/select_all
@@ -1953,7 +1953,7 @@ Optimal
 menu_skeleton/save
 Speichern
 
-menu_skeleton/save_as
+menu_skeleton/save-as
 Speichern unter...
 
 menu_skeleton/send_bug_report
@@ -2202,7 +2202,7 @@ Wiederherstellen
 menu_world/save
 Speichern
 
-menu_world/save_as
+menu_world/save-as
 Speichern unter...
 
 menu_world/select_all
@@ -3075,7 +3075,7 @@ Terrain-Eigenschaften
 terrain_dialog/terrain_dialog_tab_control
 Eigenschaften\\Texturen\\Material
 
-terrain_dialog/terrain_save_as
+terrain_dialog/terrain-save-as
 Speichern...
 
 terrain_dialog/texture_map_complete

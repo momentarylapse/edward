@@ -671,6 +671,7 @@ void ModeWorld::on_draw_post(Painter* p) {
 }
 
 void ModeWorld::on_command(const string& id) {
+	msg_write(id);
 	if (id == "new")
 		session->universal_new(FD_WORLD);
 	if (id == "open")

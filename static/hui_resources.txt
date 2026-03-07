@@ -595,7 +595,7 @@ image=hui:save
 0
 0
 Item
-save_as
+save-as
 image=hui:save-as
 3
 0
@@ -1236,7 +1236,7 @@ image=hui:save
 0
 0
 Item
-save_as
+save-as
 image=hui:save-as
 3
 0
@@ -2058,7 +2058,7 @@ image=hui:save
 0
 0
 Item
-save_as
+save-as
 image=hui:save-as
 3
 0
@@ -4239,7 +4239,7 @@ image=hui:save
 0
 0
 Item
-save_as
+save-as
 image=hui:save-as
 3
 0
@@ -5303,7 +5303,7 @@ image=hui:save
 0
 0
 Item
-save_as
+save-as
 image=hui:save-as
 3
 0
@@ -6640,7 +6640,7 @@ image=hui:save
 0
 0
 Item
-save_as
+save-as
 image=hui:save-as
 3
 0
@@ -8156,7 +8156,7 @@ expandx,disabled
 0
 0
 Button
-terrain_save_as
+terrain-save-as
 noexpandx,image=hui:save-as
 1
 0
@@ -9221,7 +9221,7 @@ image=hui:save
 0
 0
 Item
-save_as
+save-as
 image=hui:save-as
 3
 0
@@ -11697,7 +11697,7 @@ Redo
 menu-coding/save
 Save
 
-menu-coding/save_as
+menu-coding/save-as
 Save as...
 
 menu-coding/send_bug_report
@@ -11859,7 +11859,7 @@ Settings...
 menu_font/save
 Save
 
-menu_font/save_as
+menu_font/save-as
 Save as...
 
 menu_font/send_bug_report
@@ -11979,7 +11979,7 @@ Settings...
 menu_material/save
 Save
 
-menu_material/save_as
+menu_material/save-as
 Save as...
 
 menu_material/send_bug_report
@@ -12360,7 +12360,7 @@ Rotate
 menu_model/save
 Save
 
-menu_model/save_as
+menu_model/save-as
 Save as...
 
 menu_model/scale
@@ -12633,7 +12633,7 @@ Redo
 menu_move/save
 Save
 
-menu_move/save_as
+menu_move/save-as
 Save as...
 
 menu_move/select_all
@@ -12870,7 +12870,7 @@ Settings...
 menu_skeleton/save
 Save
 
-menu_skeleton/save_as
+menu_skeleton/save-as
 Save as...
 
 menu_skeleton/send_bug_report
@@ -13119,7 +13119,7 @@ Redo
 menu_world/save
 Save
 
-menu_world/save_as
+menu_world/save-as
 Save as...
 
 menu_world/select_all
@@ -14861,7 +14861,7 @@ menu_font/project_open
 menu_font/save
 Speichern
 
-menu_font/save_as
+menu_font/save-as
 Speichern unter...
 
 menu_font/send_bug_report
@@ -14978,7 +14978,7 @@ menu_material/project_open
 menu_material/save
 Speichern
 
-menu_material/save_as
+menu_material/save-as
 Speichern unter...
 
 menu_material/send_bug_report
@@ -15353,7 +15353,7 @@ Rotieren
 menu_model/save
 Speichern
 
-menu_model/save_as
+menu_model/save-as
 Speichern unter...
 
 menu_model/scale
@@ -15617,7 +15617,7 @@ Wiederherstellen
 menu_move/save
 Speichern
 
-menu_move/save_as
+menu_move/save-as
 Speichern unter...
 
 menu_move/select_all
@@ -15842,7 +15842,7 @@ Optimal
 menu_skeleton/save
 Speichern
 
-menu_skeleton/save_as
+menu_skeleton/save-as
 Speichern unter...
 
 menu_skeleton/send_bug_report
@@ -16088,7 +16088,7 @@ Wiederherstellen
 menu_world/save
 Speichern
 
-menu_world/save_as
+menu_world/save-as
 Speichern unter...
 
 menu_world/select_all
@@ -16709,14 +16709,14 @@ Raster-Größe
 terrain_dialog/t_stripes
 Streifen-Zahl
 
+terrain_dialog/terrain-save-as
+Speichern...
+
 terrain_dialog/terrain_dialog
 Terrain-Eigenschaften
 
 terrain_dialog/terrain_dialog_tab_control
 Eigenschaften\\Texturen\\Material
-
-terrain_dialog/terrain_save_as
-Speichern...
 
 terrain_dialog/texture_map_complete
 auf ganzes Terrain
@@ -17747,7 +17747,7 @@ face\\texture
 /save
 保存
 
-/save_as
+/save-as
 別名で保存...
 
 /scale
@@ -17798,14 +17798,14 @@ face\\texture
 /specular
 反射光
 
+/terrain-save-as
+保存...
+
 /terrain_create
 新しい　陸...
 
 /terrain_dialog_tab_control
 properties\\textures\\material\\import
-
-/terrain_save_as
-保存...
 
 /texture
 テクスチャ...
@@ -18116,7 +18116,7 @@ menu_font/open
 menu_font/save
 保存
 
-menu_font/save_as
+menu_font/save-as
 別名で保存...
 
 menu_font/texture
@@ -18188,7 +18188,7 @@ menu_material/open
 menu_material/save
 保存
 
-menu_material/save_as
+menu_material/save-as
 別名で保存...
 
 menu_material/world_new
@@ -18323,7 +18323,7 @@ menu_model/rotate
 menu_model/save
 保存
 
-menu_model/save_as
+menu_model/save-as
 別名で保存...
 
 menu_model/scale
@@ -18461,7 +18461,7 @@ menu_move/redo
 menu_move/save
 保存
 
-menu_move/save_as
+menu_move/save-as
 別名で保存...
 
 menu_move/undo
@@ -18611,7 +18611,7 @@ menu_skeleton/open
 menu_skeleton/save
 保存
 
-menu_skeleton/save_as
+menu_skeleton/save-as
 別名で保存...
 
 menu_skeleton/skeleton_import
@@ -18737,7 +18737,7 @@ menu_world/redo
 menu_world/save
 保存
 
-menu_world/save_as
+menu_world/save-as
 別名で保存...
 
 menu_world/selection_properties
@@ -18893,11 +18893,11 @@ lu
 terrain_dialog/ok
 OK
 
+terrain_dialog/terrain-save-as
+保存...
+
 terrain_dialog/terrain_dialog_tab_control
 properties\\textures\\material\\import
-
-terrain_dialog/terrain_save_as
-保存...
 
 terrain_dialog/x
 X
