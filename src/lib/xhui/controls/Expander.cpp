@@ -39,7 +39,8 @@ void Expander::expand(bool expanded) {
 		return;
 	}
 
-	animator.duration = 0.200f;
+	animator.duration = 0.220f;
+	animator.mode = Animator::Mode::EASE_OUT;
 	if (expanded) {
 		state = State::Expanding;
 		animator.t0 = 0;

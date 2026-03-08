@@ -4,6 +4,7 @@
 
 #include "Animator.h"
 #include "xhui.h"
+#include <lib/math/interpolation.h>
 
 namespace xhui {
 
@@ -36,7 +37,14 @@ void Animator::start() {
 			stop();
 			return;
 		}
-		t = t0 + (t1 - t0) * time / duration;
+		float tt = time / duration; // uniform
+		if (mode == Mode::EASE_IN)
+			tt = tt * tt;
+		else if (mode == Mode::EASE_OUT)
+			tt = tt * (2 - tt);
+		else if (mode == Mode::EASE_IN_OUT)
+			tt = cubic_spline<float>({0,0,1,0}, tt);
+		t = t0 + (t1 - t0) * tt;
 		if (on_update)
 			on_update(t);
 		owner->owner->request_redraw();

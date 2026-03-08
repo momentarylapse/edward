@@ -26,6 +26,14 @@ struct Animator {
 	int id_runner = -1;
 	os::Timer timer;
 
+	enum class Mode {
+		LINEAR,
+		EASE_IN,
+		EASE_OUT,
+		EASE_IN_OUT
+	};
+	Mode mode = Mode::LINEAR;
+
 	std::function<void()> on_start;
 	std::function<void(float)> on_update;
 	std::function<void()> on_end;
