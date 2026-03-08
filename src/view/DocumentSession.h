@@ -47,7 +47,7 @@ public:
 	Path filename() const;
 	int file_type() const;
 	bool is_save_state() const;
-	string title() const;
+	string title(bool with_markup = false) const;
 
 	Mode* mode_none;
 	ModeModel* mode_model;

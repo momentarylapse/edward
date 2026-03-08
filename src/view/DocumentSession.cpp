@@ -175,12 +175,14 @@ bool DocumentSession::is_save_state() const {
 	return cur_mode->is_save_state();
 }
 
-string DocumentSession::title() const {
+string DocumentSession::title(bool with_markup) const {
 	if (!cur_mode)
 		return "???";
 	auto fn = filename();
 	if (!fn)
-		return "new " + i2s(file_type());
+		return with_markup ? "<b>new file</b>" : "new file";// + i2s(file_type());
+	if (with_markup)
+		return format("<font alpha='50%%'>%s</font><b>%s</b>", fn.relative_to(session->project_dir).dirname(), fn.basename());
 	return str(fn.relative_to(session->project_dir));
 }
 

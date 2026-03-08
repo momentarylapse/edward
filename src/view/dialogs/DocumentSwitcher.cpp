@@ -7,6 +7,7 @@
 #include "../DocumentSession.h"
 #include "../../Session.h"
 #include <lib/base/sort.h>
+#include <lib/xhui/controls/ListView.h>
 
 
 DocumentSwitcher::DocumentSwitcher(EdwardWindow* _editor_window) : Dialog("...", 400, 400, _editor_window, xhui::DialogFlags::NoHeader) {
@@ -18,16 +19,21 @@ DocumentSwitcher::DocumentSwitcher(EdwardWindow* _editor_window) : Dialog("...",
 	});
 
 	add_control("ListView", "open files", 0, 0, "list");
+	auto list = (xhui::ListView*)get_control("list");
+	list->column_factories[0].f_create = [this] (const string& id) {
+		return xhui::create_control("Label", "!markup", id);
+	};
 
 	for (auto doc: documents)
-		add_string("list", doc->title());
+		add_string("list", doc->title(true));
 	set_int("list", documents.find(session->cur_doc));
 	next();
 }
 
 DocumentSwitcher::~DocumentSwitcher() {
 	int i = get_int("list");
-	session->set_active_doc(documents[i]);
+	if (documents.num > 0 and i >= 0)
+		session->set_active_doc(documents[i]);
 }
 
 void DocumentSwitcher::next() {

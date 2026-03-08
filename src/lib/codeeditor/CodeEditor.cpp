@@ -16,10 +16,8 @@ Dialog coding-panel ''
 	Grid ? ''
 		Overlay ? ''
 			MultilineEdit edit '' grabfocus monospace linenumbers focusframe=no
-			Grid ? ''
-				Label ? '' height=25
-				---|
-				Label ? '' expandx
+			Grid ? '' margin=25
+				Label ? '' ignorehover expandx
 				Grid search-grid '' class=card hidden
 					Edit search-pattern '' width=300
 					Grid ? ''
@@ -30,9 +28,6 @@ Dialog coding-panel ''
 					Edit search-replace '' noexpandx
 					Grid ? ''
 						Button search-replace-next 'replace' noexpandx
-				Label ? '' width=25
-				---|
-					Label ? '' expandy
 		ListView structure 'symbol' nobar style=compact width=250
 )foodelim");
 	propagate_events = true;
