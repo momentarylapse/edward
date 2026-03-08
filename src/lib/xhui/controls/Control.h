@@ -86,6 +86,7 @@ public:
 
 	void request_redraw();
 	bool has_focus() const;
+	void prevent_event_propagation();
 
 	rect _area;
 	string id;

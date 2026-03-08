@@ -406,20 +406,25 @@ void Window::_on_mouse_wheel(const vec2 &d) {
 }
 
 void Window::_on_key_down(int k) {
-	for (const auto& e: event_key_codes)
-		if (k == e.key_code)
-			handle_event(e.id, event_id::Activate, true);
+	allow_event_propagation = true;
 	if (focus_control)
 		focus_control->on_key_down(k);
-	if (dialogs.num > 0)
+	if (allow_event_propagation)
+		for (const auto& e: event_key_codes)
+			if (k == e.key_code)
+				handle_event(e.id, event_id::Activate, true);
+	if (allow_event_propagation and dialogs.num > 0)
 		dialogs.back()->on_key_down(k);
-	on_key_down(k);
+	if (allow_event_propagation)
+		on_key_down(k);
 }
 
 void Window::_on_key_up(int k) {
+	allow_event_propagation = true;
 	if (focus_control)
 		focus_control->on_key_up(k);
-	on_key_up(k);
+	if (allow_event_propagation)
+		on_key_up(k);
 }
 
 void Window::_on_key_char(int character) {

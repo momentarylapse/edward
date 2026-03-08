@@ -120,6 +120,11 @@ bool Control::has_focus() const {
 	return false;
 }
 
+void Control::prevent_event_propagation() {
+	if (auto w = get_window())
+		w->allow_event_propagation = false;
+}
+
 void Control::enable(bool _enabled) {
 	enabled = _enabled;
 	request_redraw();

@@ -106,6 +106,7 @@ protected:
 	void _on_key_down(int key);
 	void _on_key_up(int key);
 	void _on_key_char(int character);
+	bool allow_event_propagation = true;
 
 	bool _refresh_requested = true;
 	void _on_draw();

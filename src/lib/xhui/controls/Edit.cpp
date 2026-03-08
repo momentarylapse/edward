@@ -150,111 +150,127 @@ void Edit::on_key_down(int key) {
 	bool shift = (key & KEY_SHIFT);
 	int key_no_shift = key & ~KEY_SHIFT;
 
-	if (key_no_shift == KEY_LEFT)
-		set_cursor_pos(clamp(prior_index(cursor_pos), 0, text.num), shift);
-	if (key_no_shift == KEY_RIGHT)
-		set_cursor_pos(clamp(next_index(cursor_pos), 0, text.num), shift);
-#ifdef OS_MAC
-	if (key_no_shift == KEY_LEFT + KEY_ALT)
-#else
-	if (key_no_shift == KEY_HOME)
-#endif
-		set_cursor_pos(cache.line_first_index[cur_lp.line], shift);
-#ifdef OS_MAC
-	if (key_no_shift == KEY_RIGHT + KEY_ALT)
-#else
-	if (key_no_shift == KEY_END)
-#endif
-		set_cursor_pos(cache.line_first_index[cur_lp.line] + cache.line_num_characters[cur_lp.line], shift);
-
-	auto jump_lines = [this, cur_lp, shift] (int dlines) {
-		set_cursor_pos(line_pos_to_index({cur_lp.line + dlines, cur_lp.offset}), shift);
-	};
-	if (multiline) {
-		if (key_no_shift == KEY_UP)
-			jump_lines(-1);
-		if (key_no_shift == KEY_DOWN)
-			jump_lines(1);
-		if (key_no_shift == KEY_PAGE_UP)
-			jump_lines(- (int)(_area.height() / cache.line_height[0]));
-		if (key_no_shift == KEY_PAGE_DOWN)
-			jump_lines((int)(_area.height() / cache.line_height[0]));
-	}
-
-
 #ifdef OS_MAC
 	int mod = KEY_SUPER;
 #else
 	int mod = KEY_CONTROL;
 #endif
 
-	if (key == KEY_C + mod)
+	if (key_no_shift == KEY_LEFT) {
+		set_cursor_pos(clamp(prior_index(cursor_pos), 0, text.num), shift);
+		prevent_event_propagation();
+	} else if (key_no_shift == KEY_RIGHT) {
+		set_cursor_pos(clamp(next_index(cursor_pos), 0, text.num), shift);
+		prevent_event_propagation();
+#ifdef OS_MAC
+	} else if (key_no_shift == KEY_LEFT + KEY_ALT) {
+#else
+	} else if (key_no_shift == KEY_HOME) {
+#endif
+		set_cursor_pos(cache.line_first_index[cur_lp.line], shift);
+		prevent_event_propagation();
+#ifdef OS_MAC
+	} else if (key_no_shift == KEY_RIGHT + KEY_ALT) {
+#else
+	} else if (key_no_shift == KEY_END) {
+#endif
+		set_cursor_pos(cache.line_first_index[cur_lp.line] + cache.line_num_characters[cur_lp.line], shift);
+		prevent_event_propagation();
+	}
+
+	auto jump_lines = [this, cur_lp, shift] (int dlines) {
+		set_cursor_pos(line_pos_to_index({cur_lp.line + dlines, cur_lp.offset}), shift);
+	};
+	if (multiline) {
+		if (key_no_shift == KEY_UP) {
+			jump_lines(-1);
+			prevent_event_propagation();
+		} else if (key_no_shift == KEY_DOWN) {
+			jump_lines(1);
+			prevent_event_propagation();
+		} else if (key_no_shift == KEY_PAGE_UP) {
+			jump_lines(- (int)(_area.height() / cache.line_height[0]));
+			prevent_event_propagation();
+		} else if (key_no_shift == KEY_PAGE_DOWN) {
+			jump_lines((int)(_area.height() / cache.line_height[0]));
+			prevent_event_propagation();
+		}
+	}
+
+
+
+	if (key == KEY_C + mod) {
 		clipboard::copy(get_range(selection_start, cursor_pos));
-	if (key == KEY_V + mod)
+		prevent_event_propagation();
+	} else if (key == KEY_V + mod) {
 		auto_insert(clipboard::paste());
-	if (key == KEY_X + mod) {
+		prevent_event_propagation();
+	} else if (key == KEY_X + mod) {
 		clipboard::copy(get_range(selection_start, cursor_pos));
 		delete_selection();
-	}
-	if (key == KEY_A + mod) {
+		prevent_event_propagation();
+	} else if (key == KEY_A + mod) {
 		// select all
 		selection_start = 0;
 		cursor_pos = text.num;
 		request_redraw();
-	}
-	if (key == KEY_Z + mod)
+		prevent_event_propagation();
+	} else if (key == KEY_Z + mod) {
 		undo();
-	if (key == KEY_Y + mod)
+		prevent_event_propagation();
+	} else if (key == KEY_Y + mod) {
 		redo();
-
-	if (key == KEY_BACKSPACE) {
+		prevent_event_propagation();
+	} else if (key == KEY_BACKSPACE) {
 		if (cursor_pos != selection_start) {
 			delete_selection();
 		} else if (cursor_pos > 0) {
 			delete_range(prior_index(cursor_pos), cursor_pos);
 		}
-	}
-	if (key == KEY_DELETE) {
+		prevent_event_propagation();
+	} else if (key == KEY_DELETE) {
 		if (cursor_pos != selection_start) {
 			delete_selection();
 		} else if (cursor_pos < text.num) {
 			delete_range(cursor_pos, next_index(cursor_pos));
 		}
-	}
-	if (key == KEY_BACKSPACE + mod) {
+		prevent_event_propagation();
+	} else if (key == KEY_BACKSPACE + mod) {
 		if (cursor_pos != selection_start) {
 			delete_selection();
 		} else if (cursor_pos > 0) {
 			delete_range(find_word_start(cursor_pos), cursor_pos);
 		}
-	}
-	if (key == KEY_DELETE + mod) {
+		prevent_event_propagation();
+	} else if (key == KEY_DELETE + mod) {
 		if (cursor_pos != selection_start) {
 			delete_selection();
 		} else if (cursor_pos < text.num) {
 			delete_range(cursor_pos, find_word_end(cursor_pos));
 		}
-	}
-	if (key_no_shift == KEY_LEFT + mod)
+		prevent_event_propagation();
+	} else if (key_no_shift == KEY_LEFT + mod) {
 		set_cursor_pos(find_word_start(cursor_pos-1), shift);
-	if (key_no_shift == KEY_RIGHT + mod)
+		prevent_event_propagation();
+	} else if (key_no_shift == KEY_RIGHT + mod) {
 		set_cursor_pos(find_word_end(cursor_pos+1), shift);
-
-	if (key == KEY_RETURN) {
+		prevent_event_propagation();
+	} else if (key == KEY_RETURN) {
 		if (multiline)
 			auto_insert("\n");
 		else
 			emit_event(event_id::ActivateDialogDefault, false);
-	}
-	if (key == KEY_TAB and multiline) {
+		prevent_event_propagation();
+	} else if (key == KEY_TAB and multiline) {
 		if (index_to_line_pos(selection_start).line != index_to_line_pos(cursor_pos).line) {
 			multi_line_indent(1);
 		} else {
 			auto_insert("\t");
 		}
-	}
-	if (key == (KEY_TAB | KEY_SHIFT) and multiline) {
+		prevent_event_propagation();
+	} else if (key == (KEY_TAB | KEY_SHIFT) and multiline) {
 		multi_line_indent(-1);
+		prevent_event_propagation();
 	}
 
 	emit_event(event_id::KeyDown, false);
