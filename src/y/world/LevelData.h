@@ -104,7 +104,6 @@ struct LevelData {
 	Array<Object> objects;
 	Array<Terrain> terrains;
 	Array<Entity> entities;
-	int ego_index;
 	Array<ScriptInstanceData> systems;
 	Array<Light> lights;
 	Array<Link> links;

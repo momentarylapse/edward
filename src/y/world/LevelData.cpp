@@ -16,7 +16,6 @@
 
 
 LevelData::LevelData() {
-	ego_index = -1;
 	background_color = Gray;
 
 	gravity = v_0;
@@ -147,7 +146,7 @@ bool LevelData::load(const Path& filename) {
 				o.pos = s2v(e.value("pos"));
 				o.ang = s2v(e.value("ang"));
 				if (e.value("role") == "ego")
-					ego_index = objects.num + 1000000000; // :P
+					o.components.add({"EgoMarker", "", {}});
 				read_components(o.components, e);
 				objects.add(o);
 			} else if (e.tag == "entity") {
@@ -155,7 +154,7 @@ bool LevelData::load(const Path& filename) {
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
 				if (e.value("role") == "ego")
-					ego_index = entities.num;
+					o.components.add({"EgoMarker", "", {}});
 				read_components(o.components, e);
 				entities.add(o);
 			} else if (e.tag == "link") {

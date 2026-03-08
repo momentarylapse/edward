@@ -14,8 +14,6 @@ struct ivec4
 	var x, y, z, w: i32
 struct vec4
 	var x, y, z, w: f32
-struct Box
-	var min, max: vec3
 
 class Observable
 	var dummy: int
@@ -62,11 +60,11 @@ class MultiView
 		var pos: vec3
 
 	class Window
-		var local_ang: quaternion
+		var local_ang: Quaternion
 
 	struct Camera
 		var pos: vec3
-		var ang: quaternion
+		var ang: Quaternion
 
 	# "des Pudels Kern", don't change!!!!!!!
 	struct SingleData
@@ -181,7 +179,7 @@ struct Mesh
 	func static extern create_sphere(pos: vec3, radius: f32, num: i32) -> Mesh
 	func static extern create_torus(pos: vec3, axis: vec3, radius1: f32, radius2: f32, num_x: i32, num_y: i32) -> Mesh
 	func static extern create_torus_knot(pos: vec3, axis: vec3, radius1: f32, radius2: f32, radius3: f32, turns: i32, twists: i32, rings: i32, edges: i32) -> Mesh
-	func static extern create_plane(r: rect, slices: ivec2) -> Mesh
+	func static extern create_plane(r: Rect, slices: ivec2) -> Mesh
 	func static extern create_platonic(pos: vec3, radius: f32, type: i32) -> Mesh
 
 
@@ -211,17 +209,17 @@ class DataModel extends Data
 		var alpha_z_buffer: bool
 
 		var user_color: bool
-		var ambient: color
-		var diffuse: color
-		var specular: color
-		var emission: color
+		var ambient: Color
+		var diffuse: Color
+		var specular: Color
+		var emission: Color
 		var shininess: f32
 		func __assign__(other: Material)
 
 	struct Effect
 		var kind, surface, vertex: i32
 		var size, speed, intensity: i32
-		var colors: color[3]
+		var colors: Color[3]
 		var inv_quad: bool
 		var file: string
 		func __assign__(other: Effect)
@@ -241,7 +239,7 @@ class DataModel extends Data
 		struct Face
 			var num_vertices: i32
 			var index: i32[MAX_POLY_VERTICES_PER_FACE]
-			var plane: plane
+			var plane: Plane
 		var num_faces: i32
 		var face: Face[MAX_POLY_FACES]
 		var num_svertices: i32
@@ -455,7 +453,6 @@ class DataWorld extends Data
 
 	var objects: Object[]
 	var terrains: Terrain[]
-	var ego_index: i32
 
 	# actions
 #	func extern add_object(filename: os.Path, pos: vec3) -> Object&

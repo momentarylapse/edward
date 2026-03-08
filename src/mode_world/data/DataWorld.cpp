@@ -153,8 +153,6 @@ void DataWorld::reset() {
 	entity_manager->reset();
 	links.clear();
 
-	EgoIndex = -1;
-
 	meta_data.reset();
 
 	reset_history();

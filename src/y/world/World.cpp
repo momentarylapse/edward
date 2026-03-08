@@ -254,8 +254,6 @@ bool World::load(const LevelData &ld) {
 				auto *oo = create_object_x(o.filename, o.name, o.pos, q);
 
 				add_user_components(entity_manager.get(), oo->owner, o.components);
-				if (ld.ego_index == i + 1000000000)
-					entity_manager->add_component<EgoMarker>(oo->owner);
 				if (i % 5 == 0)
 					DrawSplashScreen("Objects", (float)i / (float)ld.objects.num / 5 * 3);
 
@@ -278,8 +276,6 @@ bool World::load(const LevelData &ld) {
 		auto ee = create_entity(e.pos, e.ang);
 
 		add_user_components(entity_manager.get(), ee, e.components);
-		if (ld.ego_index == i)
-			entity_manager->add_component<EgoMarker>(ee);
 	}
 
 	auto& model_list = entity_manager->get_component_list<Model>();
