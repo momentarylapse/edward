@@ -109,12 +109,13 @@ void ModeProject::upgrade_project(const Path &dir) {
 	if (os::fs::exists(dir | "game.ini")) {
 		GameIniData gi;
 		gi.load(dir);
-		if (gi.get_int(GameIniData::ID_API_VERSION) == EngineData::CURRENT_API_VERSION) {
+		string version = gi.get_str(GameIniData::ID_API_VERSION);
+		if (version == EngineData::CURRENT_API_VERSION) {
 			msg_write(format("%sOK%s  %s", os::terminal::GREEN, os::terminal::END, (dir | "game.ini")));
 		} else {
-			gi.set_int(GameIniData::ID_API_VERSION, EngineData::CURRENT_API_VERSION);
+			gi.set_str(GameIniData::ID_API_VERSION, EngineData::CURRENT_API_VERSION);
 			gi.save(dir);
-			msg_write(format("%sUPDATE%s  %s", os::terminal::YELLOW, os::terminal::END, (dir | "game.ini")));
+			msg_write(format("%sUPDATE%s  %s   (v%s -> v%s)", os::terminal::YELLOW, os::terminal::END, (dir | "game.ini"), version, EngineData::CURRENT_API_VERSION));
 		}
 	} else {
 		msg_write(format("%sCREATE%s  %s", os::terminal::YELLOW, os::terminal::END, (dir | "game.ini")));

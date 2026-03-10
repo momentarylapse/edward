@@ -165,3 +165,10 @@ ComponentManager::PairList& ComponentManager::_get_list2(const kaba::Class *type
 	return _list;
 }
 
+Array<const kaba::Class*> ComponentManager::all_types() const {
+	Array<const kaba::Class*> r;
+	for (const auto& [t, l]: component_lists_by_type)
+		r.add(t);
+	return r;
+}
+

@@ -257,17 +257,13 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	data->meta_data.fog.end = ld.fog.end;
 	data->meta_data.fog.density = 1/ld.fog.distance;
 	data->meta_data.fog.col = ld.fog._color;
-	for (const auto& ss: ld.systems) {
-		ScriptInstanceData s;
-		s.filename = ss.filename;
-		s.class_name = ss.class_name;
-		for (auto &ee: ss.variables) {
-			ScriptInstanceDataVariable v;
-			v.name = ee.name;
-			v.value = ee.value;
-			s.variables.add(v);
+	data->meta_data.systems = ld.systems;
+	for (auto& ss: data->meta_data.systems) {
+		if (ss.class_name == "") {
+			for (const auto& sss: session->plugin_manager->system_classes)
+				if (sss->owner->module->filename == (session->project_dir | "Scripts" | ss.filename))
+					ss.class_name = sss->name;
 		}
-		data->meta_data.systems.add(s);
 	}
 }
 

@@ -19,7 +19,7 @@ namespace yrenderer {
 	class Material;
 	struct Context;
 }
-class CollisionData;
+struct CollisionData;
 class Terrain;
 
 

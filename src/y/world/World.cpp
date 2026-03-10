@@ -124,10 +124,7 @@ World::World() {
 	reset();
 }
 
-World::~World() {
-	if (physics)
-		delete physics;
-}
+World::~World() = default;
 
 void World::reset() {
 	net_msg_enabled = false;
@@ -198,17 +195,14 @@ bool World::load(const LevelData &ld) {
 	bool ok = true;
 	reset();
 
-	if (!physics) {
-		physics = new Physics(this);
-		SystemManager::add_external(Physics::_class, physics, true);
+	if (auto physics = SystemManager::get<Physics>()) {
 		physics->mode = PhysicsMode::FULL_EXTERNAL;
+		physics->enabled = ld.physics_enabled;
+		physics->mode = ld.physics_mode;
+		physics->gravity = ld.gravity;
+		physics->collisions_enabled = true;//LevelData.physics_enabled;
 	}
 
-
-	physics->enabled = ld.physics_enabled;
-	physics->mode = ld.physics_mode;
-	physics->gravity = ld.gravity;
-	physics->collisions_enabled = true;//LevelData.physics_enabled;
 	fog = ld.fog;
 
 	for (auto &l: ld.lights) {
@@ -278,13 +272,16 @@ bool World::load(const LevelData &ld) {
 		add_user_components(entity_manager.get(), ee, e.components);
 	}
 
-	auto& model_list = entity_manager->get_component_list<Model>();
-	for (auto &l: ld.links) {
-		Entity *a = model_list[l.object[0]]->owner;
-		Entity *b = nullptr;
-		if (l.object[1] >= 0)
-			b = model_list[l.object[1]]->owner;
-		physics->add_link(Link::create(l.type, a, b, l.pos, quaternion::rotation(l.ang)));
+
+	if (auto physics = SystemManager::get<Physics>()) {
+		auto& model_list = entity_manager->get_component_list<Model>();
+		for (auto &l: ld.links) {
+			Entity *a = model_list[l.object[0]]->owner;
+			Entity *b = nullptr;
+			if (l.object[1] >= 0)
+				b = model_list[l.object[1]]->owner;
+			physics->add_link(Link::create(l.type, a, b, l.pos, quaternion::rotation(l.ang)));
+		}
 	}
 
 	auto& cameras = entity_manager->get_component_list<Camera>();
@@ -294,8 +291,6 @@ bool World::load(const LevelData &ld) {
 	} else if (!cam_main) {
 		cam_main = cameras[0];
 	}
-
-	systems = ld.systems;
 
 	net_msg_enabled = true;
 	return ok;
@@ -319,13 +314,6 @@ Terrain *World::create_terrain(const Path &filename, const vec3 &pos) {
 	entity_manager->add_component<SolidBody>(e, {{"physics_active", "", "false"}});
 
 	return t;
-}
-
-bool GodLoadWorld(const Path& filename) {
-	LevelData level_data;
-	bool ok = level_data.load(filename);
-	ok &= world.load(level_data);
-	return ok;
 }
 
 Entity *World::create_entity(const vec3& pos, const quaternion& ang) {
@@ -499,7 +487,7 @@ Camera *World::create_camera(const vec3 &pos, const quaternion &ang) {
 void World::shift_all(const vec3 &dpos) {
 	entity_manager->shift_all(dpos);
 
-	if (physics)
+	if (auto physics = SystemManager::get<Physics>())
 		physics->update_all_bullet();
 
 	for (auto *m: entity_manager->get_component_list<Model>())
@@ -517,7 +505,8 @@ enum TraceMode {
 
 base::optional<CollisionData> World::trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore) {
 	if (mode & TraceMode::PHYSICAL) {
-		return physics->trace(p1, p2, mode, o_ignore);
+		if (auto physics = SystemManager::get<Physics>())
+			return physics->trace(p1, p2, mode, o_ignore);
 	} else if (mode & TraceMode::VISIBLE) {
 
 	}

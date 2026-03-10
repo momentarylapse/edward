@@ -50,7 +50,8 @@ DocumentSession::~DocumentSession() {
 
 	// saving the configuration data...
 #endif
-	base_panel->unembed(document_panel.get());
+	if (base_panel and document_panel)
+		base_panel->unembed(document_panel.get());
 }
 
 void DocumentSession::set_document_panel(shared<xhui::Panel> panel) {

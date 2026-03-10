@@ -6,6 +6,7 @@
 
 #include <lib/base/base.h>
 
+class EntityManager;
 class Path;
 class System;
 struct ScriptInstanceDataVariable;
@@ -15,13 +16,17 @@ namespace kaba {
 
 class SystemManager {
 public:
-	static void init(int ch_iter);
+	static void init(int ch_iter, EntityManager* entity_manager);
 
 	static void reset();
 
 	static void create(const Path& filename, const string& name, const Array<ScriptInstanceDataVariable>& variables);
-	static System* get(const kaba::Class* _class);
-	static void add_external(const kaba::Class* _class, System* s, bool immortal);
+	static System* _get_generic(const kaba::Class* _class);
+	template<class T>
+	static T* get() {
+		return (T*)_get_generic(T::_class);
+	}
+	static void register_system(const kaba::Class* _class, System* s);
 
 	static void handle_iterate_pre(float dt);
 	static void handle_iterate(float dt);
@@ -31,5 +36,6 @@ public:
 	static void handle_render_inject2();
 
 	static Array<System*> systems;
+	static EntityManager* entity_manager;
 };
 

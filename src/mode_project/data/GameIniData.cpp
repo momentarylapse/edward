@@ -41,7 +41,7 @@ Path GameIniData::second_world() const {
 
 void GameIniData::reset_default() {
 	map.clear();
-	set_int(ID_API_VERSION, EngineData::CURRENT_API_VERSION);
+	set_str(ID_API_VERSION, EngineData::CURRENT_API_VERSION);
 	set_str(ID_DEFAULT_SCRIPT, "");
 	set_str(ID_DEFAULT_WORLD, "");
 	set_str(ID_DEFAULT_WORLD2, "");

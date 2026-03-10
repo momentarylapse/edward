@@ -13,9 +13,11 @@
 #include "../ModelManager.h"
 #include "../Terrain.h"
 #include <ecs/Entity.h>
+#include <ecs/SystemManager.h>
 #include <EngineData.h>
 #include <lib/math/quaternion.h>
 #include <lib/os/msg.h>
+
 
 const kaba::Class *SolidBody::_class = nullptr;
 
@@ -150,7 +152,8 @@ void SolidBody::add_force(const vec3 &f, const vec3 &rho) {
 		return;
 	if (!active)
 		return;
-	if (world.physics->mode == PhysicsMode::FULL_EXTERNAL) {
+	auto physics = SystemManager::get<Physics>();
+	if (physics and physics->mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
 		body->activate(); // why doesn't this happen automatically?!? bug in bullet?
 		body->applyForce(bt_set_v(f), bt_set_v(rho));
@@ -170,7 +173,8 @@ void SolidBody::add_impulse(const vec3 &p, const vec3 &rho) {
 		return;
 	if (!active)
 		return;
-	if (world.physics->mode == PhysicsMode::FULL_EXTERNAL) {
+	auto physics = SystemManager::get<Physics>();
+	if (physics and physics->mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
 		body->activate();
 		body->applyImpulse(bt_set_v(p), bt_set_v(rho));
@@ -187,7 +191,8 @@ void SolidBody::add_torque(const vec3 &t) {
 		return;
 	if (!active)
 		return;
-	if (world.physics->mode == PhysicsMode::FULL_EXTERNAL) {
+	auto physics = SystemManager::get<Physics>();
+	if (physics and physics->mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
 		body->activate();
 		body->applyTorque(bt_set_v(t));
@@ -204,7 +209,8 @@ void SolidBody::add_torque_impulse(const vec3 &l) {
 		return;
 	if (!active)
 		return;
-	if (world.physics->mode == PhysicsMode::FULL_EXTERNAL) {
+	auto physics = SystemManager::get<Physics>();
+	if (physics and physics->mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
 		body->activate();
 		body->applyTorqueImpulse(bt_set_v(l));

@@ -84,8 +84,7 @@ void myTickCallback(btDynamicsWorld *world, btScalar timeStep) {
 }
 #endif
 
-Physics::Physics(World* _world) {
-	world = _world;
+Physics::Physics() {
 	gravity = v_0;
 	speed_of_sound = 1000;
 
@@ -94,7 +93,9 @@ Physics::Physics(World* _world) {
 	collisions_enabled = true;
 	num_steps = 10;
 	num_link_steps = 5;
+}
 
+void Physics::on_init() {
 #if HAS_LIB_BULLET
 	collisionConfiguration = new btDefaultCollisionConfiguration();
 	dispatcher = new btCollisionDispatcher(collisionConfiguration);
@@ -103,9 +104,6 @@ Physics::Physics(World* _world) {
 	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, overlappingPairCache, solver, collisionConfiguration);
 	dynamicsWorld->setInternalTickCallback(myTickCallback);
 #endif
-
-	world->entity_manager->out_add_component >> in_add_component;
-	world->entity_manager->out_remove_component >> in_remove_component;
 }
 
 Physics::~Physics() {
@@ -119,15 +117,15 @@ Physics::~Physics() {
 }
 
 void Physics::on_add_component(const EntityMessageParams &params) {
-	if (params.component->component_type == SolidBody::_class) {
+	if (auto sb = params.component->as<SolidBody>()) {
 		//msg_error("ADD SOLID BODY");
-		register_body(static_cast<SolidBody*>(params.component));
+		register_body(sb);
 	}
 }
 
 void Physics::on_remove_component(const EntityMessageParams &params) {
-	if (params.component->component_type == SolidBody::_class) {
-		unregister_body(static_cast<SolidBody*>(params.component));
+	if (auto sb = params.component->as<SolidBody>()) {
+		unregister_body(sb);
 	}
 }
 
@@ -137,7 +135,7 @@ void Physics::on_iterate(float dt) {
 	if (!enabled)
 		return;
 
-	auto& list = world->entity_manager->get_component_list<SolidBody>();
+	auto& list = entity_manager->get_component_list<SolidBody>();
 
 	if (mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
@@ -246,7 +244,7 @@ base::optional<CollisionData> Physics::trace(const vec3 &p1, const vec3 &p2, int
 }
 
 void Physics::update_all_bullet() {
-	for (auto &sb: world->entity_manager->get_component_list<SolidBody>())
+	for (auto &sb: entity_manager->get_component_list<SolidBody>())
 		sb->state_to_bullet();
 }
 

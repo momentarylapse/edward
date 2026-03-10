@@ -53,6 +53,8 @@ public:
 		return (Array<C*>&) _get_list_family(C::_class);
 	}
 
+	Array<const kaba::Class*> all_types() const;
+
 	void _register(Component *c);
 	void _unregister(Component *c);
 

@@ -17,7 +17,7 @@
 #include <lib/yrenderer/ShaderManager.h>
 #include <lib/yrenderer/TextureManager.h>
 
-const int EngineData::CURRENT_API_VERSION = 13;
+const string EngineData::CURRENT_API_VERSION = "0.13";
 
 EngineData engine;
 

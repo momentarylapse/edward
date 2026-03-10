@@ -148,7 +148,7 @@ void RawConfig::load(const Array<string> &arg) {
 DigestedConfig RawConfig::digest() const {
 	DigestedConfig c;
 
-	c.api_version = get_int(ID_API_VERSION, 0);
+	c.api_version = get_str(ID_API_VERSION, "0");
 
 	c.default_world = get_str(ID_DEFAULT_WORLD, "");
 	c.second_world = get_str(ID_DEFAULT_WORLD2, "");

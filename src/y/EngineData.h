@@ -93,7 +93,7 @@ public:
 	Array<yrenderer::RenderTask*> render_tasks;
 	void add_render_task(yrenderer::RenderTask* task, int priority);
 
-	static const int CURRENT_API_VERSION;
+	static const string CURRENT_API_VERSION;
 };
 extern EngineData engine;
 

@@ -25,7 +25,7 @@ enum class ScreenMode {
 };
 
 struct DigestedConfig {
-	int api_version = 0;
+	string api_version = "0";
 	int debug_level = 0;
 	string main_script;
 	string default_world;

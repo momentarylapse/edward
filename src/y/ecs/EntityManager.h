@@ -17,6 +17,7 @@ class Entity;
 struct EntityMessageParams {
 	Entity* entity;
 	Component* component;
+	const kaba::Class* type;
 };
 
 class EntityManager : public obs::Node<VirtualBase> {

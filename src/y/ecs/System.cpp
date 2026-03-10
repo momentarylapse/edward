@@ -7,14 +7,8 @@
 
 #include "System.h"
 
-System::System() : BaseClass(Type::SYSTEM) {
+System::System() : Node<BaseClass>(Type::SYSTEM) {
 }
 
-void System::__init__() {
-	new(this) System;
-}
-
-void System::__delete__() {
-	this->System::~System();
-}
+System::~System() = default;
 

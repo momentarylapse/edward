@@ -7,13 +7,10 @@
 #include <ecs/System.h>
 #include <ecs/EntityManager.h>
 #include <lib/base/optional.h>
-#include <lib/pattern/Observable.h>
 
-#include "World.h"
-
-struct EntityMessageParams;
 class Link;
 class CollisionData;
+class SolidBody;
 
 class btDefaultCollisionConfiguration;
 class btCollisionDispatcher;
@@ -29,17 +26,15 @@ enum class PhysicsMode {
 	FULL_EXTERNAL,
 };
 
-class Physics : public obs::Node<System> {
+class Physics : public System {
 public:
-	explicit Physics(World* world);
+	explicit Physics();
 	~Physics() override;
 
-	obs::xsink<EntityMessageParams> in_add_component{this, &Physics::on_add_component};
-	obs::xsink<EntityMessageParams> in_remove_component{this, &Physics::on_remove_component};
+	void on_add_component(const EntityMessageParams& params) override;
+	void on_remove_component(const EntityMessageParams& params) override;
 
-	void on_add_component(const EntityMessageParams& params);
-	void on_remove_component(const EntityMessageParams& params);
-
+	void on_init() override;
 	void on_iterate(float dt) override;
 
 	void add_link(Link *l);
@@ -51,8 +46,6 @@ public:
 	void update_all_bullet();
 
 	base::optional<CollisionData> trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore = nullptr);
-
-	World* world;
 
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;

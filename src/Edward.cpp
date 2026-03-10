@@ -173,7 +173,7 @@ int main(const Array<string>& args) {
 		xhui::Application::set_property("comment", "Editor for the y game engine");
 		xhui::Application::set_property("website", "https://github.com/momentarylapse/edward");
 	//	xhui::Application::set_property("website", "http://michi.is-a-geek.org/software");
-		xhui::Application::set_property("copyright", "© 2006-2025 by Michael Ankele"); // ??? min=2004 (objectmaker) max=2006
+		xhui::Application::set_property("copyright", "© 2006-2026 by Michael Ankele"); // ??? min=2004 (objectmaker) max=2006
 		xhui::Application::set_property("logo-big", "icons/png/model_128.png");
 	} catch (Exception &e) {
 		msg_error(e.message());
@@ -225,7 +225,8 @@ int main(const Array<string>& args) {
 		Session session;
 		DocumentSession doc(&session);
 		ModeProject mode_project(&doc);
-		mode_project.upgrade_project(arg[0]);
+		for (const auto& a: arg)
+			mode_project.upgrade_project(a);
 	});
 	p.cmd("xxx", "", "", [] (const Array<string> &arg) {
 		/*Session session;

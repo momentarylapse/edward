@@ -48,8 +48,7 @@ struct GodNetMessage {
 	string arg_s;
 };
 
-class CollisionData {
-public:
+struct CollisionData {
 	Entity *entity;
 	SolidBody *body;
 	vec3 pos, n;
@@ -111,11 +110,6 @@ public:
 	Entity* ego();
 
 
-	Array<ScriptInstanceData> systems;
-
-	Physics* physics;
-
-
 	base::optional<CollisionData> trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore = nullptr);
 
 	typedef void callback();
@@ -140,7 +134,6 @@ extern World world;
 
 void GodInit(int ch_iter);
 void GodEnd();
-bool GodLoadWorld(const Path &filename);
 
 
 enum {

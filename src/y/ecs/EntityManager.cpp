@@ -54,7 +54,7 @@ Component *EntityManager::_add_component_generic_(Entity* entity, const kaba::Cl
 	c->owner = entity;
 	if (init_components)
 		c->on_init();
-	out_add_component({entity, c});
+	out_add_component({entity, c, type});
 	return c;
 }
 
@@ -64,13 +64,13 @@ void EntityManager::_add_component_external_(Entity* entity, Component *c) {
 	c->owner = entity;
 	if (init_components)
 		c->on_init();
-	out_add_component({entity, c});
+	out_add_component({entity, c, c->component_type});
 }
 
 void EntityManager::delete_component(Entity* entity, Component *c, bool notify) {
 	int i = entity->components.find(c);
 	if (i >= 0) {
-		out_remove_component({entity, c});
+		out_remove_component({entity, c, c->component_type});
 		if (notify and init_components)
 			c->on_delete();
 		c->owner = nullptr;

@@ -10,7 +10,7 @@
 #include <lib/base/base.h>
 
 class Entity;
-class CollisionData;
+struct CollisionData;
 struct ScriptInstanceDataVariable;
 namespace kaba {
 	class Class;
@@ -30,6 +30,13 @@ public:
 
 	Entity* owner;
 	const kaba::Class* component_type;
+
+	template<class T>
+	T* as() {
+		if (component_type == T::_class)
+			return static_cast<T*>(this);
+		return nullptr;
+	}
 };
 
 class NameTag : public Component {
