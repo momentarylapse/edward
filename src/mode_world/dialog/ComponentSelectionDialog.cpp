@@ -34,7 +34,10 @@ ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session*
 
 	for (const auto c: classes) {
 		auto s = session->plugin_manager->describe_class(c);
-		add_string("list", format("<b>%s</b>  <small>%s</small>", c->name, s.filename));
+		if (s.filename.is_in("yengine"))
+			add_string("list", format("<b>%s</b>    <span alpha=40%%><small>internal</small></span>", c->name));
+		else
+			add_string("list", format("<b>%s</b>    <small>%s</small>", c->name, s.filename));
 	}
 
 	event("list", [this] {

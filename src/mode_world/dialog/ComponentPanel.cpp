@@ -31,6 +31,7 @@
 #include <lib/xhui/controls/ListView.h>
 #include <lib/xhui/controls/Image.h>
 #include <lib/xhui/xhui.h>
+#include <lib/xhui/Theme.h>
 #include <lib/base/iter.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/TextureManager.h>
@@ -172,8 +173,8 @@ Dialog unknown-component-panel ''
 ComponentPanel::ComponentPanel(DataWorld* _data) : Panel("component-panel") {
 	from_source(R"foodelim(
 Dialog solid-body-panel ''
-	Grid ? '' class=card
-		Expander expander 'Component' expandx
+	Grid card '' class=card
+		Expander expander 'Component' markup expandx
 			Grid contents ''
 				.
 				---|
@@ -210,7 +211,12 @@ void ComponentPanel::update(int _entity_index, const string& category, int _comp
 		unknown_component = true;
 		set_class(e->get_component<EdwardTag>()->unknown_components[component_index].class_name);
 	}
-	set_string("expander", component_class);
+	set_string("expander", "<b>" + component_class + "</b>");
+	if (component_class != "Entity") {
+		int h = component_class.hash() / 213;
+		color c = color::mix(xhui::Theme::_default.text_label, color::from_hsb(0.03f * (float)h, 1.0f, 0.7f), 0.30f);
+		set_string("expander", format("<b><span color='%s'>%s</span></b>", c.hex(), component_class));
+	}
 }
 void ComponentPanel::set_class(const string& _component_class) {
 	if (_component_class == component_class)
