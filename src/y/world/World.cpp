@@ -108,12 +108,13 @@ World::World() {
 		PluginManager::assign_variables(c, type, vars);
 		if (type == ModelRef::_class) {
 			auto cc = static_cast<ModelRef*>(c);
-			cc->model = engine.resource_manager->load_model(cc->filename);
+			cc->model = engine.resource_manager->load_model_copy(cc->filename);
 		}
-		if (type == TerrainRef::_class) {
+		/*if (type == TerrainRef::_class) {
 			auto cc = static_cast<TerrainRef*>(c);
-			cc->terrain = new Terrain(engine.context, cc->filename);
-		}
+			if (cc->terrain)
+				cc->terrain->reload(engine.resource_manager);
+		}*/
 	};
 #endif
 
@@ -222,7 +223,7 @@ bool World::load(const LevelData &ld) {
 	// skybox
 	skybox.resize(ld.skybox_filename.num);
 	for (int i=0; i<skybox.num; i++) {
-		skybox[i] = engine.resource_manager->load_model(ld.skybox_filename[i]);
+		skybox[i] = engine.resource_manager->load_model_copy(ld.skybox_filename[i]);
 		if (skybox[i])
 			skybox[i]->owner = new Entity(v_0, quaternion::rotation_v(ld.skybox_ang[i]));
 	}
@@ -260,9 +261,10 @@ bool World::load(const LevelData &ld) {
 	foreachi(auto &t, ld.terrains, i) {
 		DrawSplashScreen("Terrain...", 0.6f + (float)i / (float)ld.terrains.num * 0.4f);
 		auto tt = create_terrain(t.filename, t.pos);
+		tt->material = engine.resource_manager->load_material(t.material);
 
 		add_user_components(entity_manager.get(), tt->owner, t.components);
-		ok &= !tt->error;
+		ok &= tt->terrain and !tt->terrain->error;
 	}
 
 	// (raw) entities
@@ -304,11 +306,13 @@ Entity* World::ego() {
 }
 
 
-Terrain *World::create_terrain(const Path &filename, const vec3 &pos) {
+TerrainRef* World::create_terrain(const Path &filename, const vec3 &pos) {
 	auto e = create_entity(pos, quaternion::ID);
 
-	auto t = entity_manager->add_component<Terrain>(e);
-	t->load(engine.context, filename);
+	auto t = entity_manager->add_component<TerrainRef>(e);
+	t->terrain = engine.resource_manager->load_terrain_lazy(filename);
+	t->terrain->reload(engine.resource_manager);
+	t->material = engine.resource_manager->load_material("");
 
 	entity_manager->add_component<TerrainCollider>(e);
 	entity_manager->add_component<SolidBody>(e, {{"physics_active", "", "false"}});
@@ -353,7 +357,7 @@ Model *World::create_object_x(const Path &filename, const string &name, const ve
 
 
 Model* World::attach_model(Entity* e, const Path& filename) {
-	auto *m = engine.resource_manager->load_model(filename);
+	auto *m = engine.resource_manager->load_model_copy(filename);
 
 	entity_manager->_add_component_external_(e, m);
 	m->update_matrix();
@@ -372,7 +376,7 @@ MultiInstance* World::create_object_multi(const Path &filename, const Array<vec3
 	auto e = create_entity(vec3::ZERO, quaternion::ID);
 	auto mi = entity_manager->add_component<MultiInstance>(e);
 
-	mi->model = engine.resource_manager->load_model(filename);
+	mi->model = engine.resource_manager->load_model_copy(filename);
 
 	for (int i=0; i<pos.num; i++)
 		mi->matrices.add(mat4::translation(pos[i]) * mat4::rotation(ang[i]));

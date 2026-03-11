@@ -8,6 +8,7 @@
 struct string;
 class ModelManager;
 class Model;
+class Terrain;
 
 namespace yrenderer {
 	class Context;
@@ -27,8 +28,10 @@ public:
 	yrenderer::TextureManager* texture_manager;
 
 	shared<ygfx::Texture> load_texture(const Path& path);
-	xfer<yrenderer::Material> load_material(const Path &filename);
-	xfer<Model> load_model(const Path &filename);
+	xfer<yrenderer::Material> load_material_copy(const Path &filename);
+	yrenderer::Material* load_material(const Path &filename);
+	xfer<Model> load_model_copy(const Path &filename);
+	Terrain* load_terrain_lazy(const Path &filename);
 
 	void clear();
 };

@@ -38,6 +38,7 @@
 #include "Session.h"
 #include "Session.h"
 #include "lib/base/iter.h"
+#include "plugins/PluginManager.h"
 
 
 extern string AppName;
@@ -170,6 +171,7 @@ Dialog x x padding=0
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
+		PluginManager::default_resource_manager = session->resource_manager;
 
 		engine.file_errors_are_critical = false;
 		engine.ignore_missing_files = true;

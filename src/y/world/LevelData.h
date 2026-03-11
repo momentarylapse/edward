@@ -57,6 +57,7 @@ struct LevelData {
 
 	struct Terrain {
 		Path filename;
+		Path material;
 		vec3 pos;
 		Array<ScriptInstanceData> components;
 	};

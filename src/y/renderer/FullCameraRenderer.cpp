@@ -98,22 +98,23 @@ FullCameraRenderer::FullCameraRenderer(Context* ctx, Camera* _cam, RenderPathTyp
 FullCameraRenderer::~FullCameraRenderer() = default;
 
 void FullCameraRenderer::check_terrains(const vec3& cam_pos) {
-	auto terrains = EntityManager::global->get_component_list<Terrain>();
-	for (auto t: EntityManager::global->get_component_list<TerrainRef>())
-		if (t->terrain)
-			terrains.add(t->terrain);
+	auto terrain_refs = EntityManager::global->get_component_list<TerrainRef>();
+	Array<TerrainRef*> terrains;
+	for (auto r: terrain_refs)
+		if (r->terrain)
+			terrains.add(r);
 
 	if (terrains.num == 0)
 		return;
 
 	if (updater.num == 0) {
 		auto u = new XTerrainVBUpdater;
-		u->terrain = terrains[0];
+		u->terrain = terrains[0]->terrain;
 		u->vb = new ygfx::VertexBuffer("3f,3f,2f");;
 		updater.add(u);
 
 		// first time: complete update!
-		terrains[0]->prepare_draw(cam_pos);
+		terrains[0]->terrain->prepare_draw(terrains[0]->owner, cam_pos);
 		return;
 	}
 
@@ -125,8 +126,8 @@ void FullCameraRenderer::check_terrains(const vec3& cam_pos) {
 				break;
 			if (r == 2) {
 				auto vb = u->vb;
-				u->vb = terrains[0]->vertex_buffer.give();
-				terrains[0]->vertex_buffer = vb;
+				u->vb = terrains[0]->terrain->vertex_buffer.give();
+				terrains[0]->terrain->vertex_buffer = vb;
 				break;
 			}
 		}

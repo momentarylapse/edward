@@ -107,15 +107,21 @@ color any2color(const Any &a) {
 	return Black;
 }
 
+Path MaterialManager::get_filename(const Material* m) {
+	for (auto&& [f, _m]: materials)
+		if (_m == m)
+			return f;
+	return "";
+}
 
-xfer<Material> MaterialManager::load(const Path &filename) {
+Material* MaterialManager::load(const Path& filename) {
 	// an empty name loads the default material
 	if (filename.is_empty())
-		return default_material->copy();
+		return default_material;
 
 	for (auto&& [f, m]: materials)
 		if (f == filename)
-			return m->copy();
+			return m;
 
 
 	msg_write("loading material " + filename.str());
@@ -219,7 +225,11 @@ xfer<Material> MaterialManager::load(const Path &filename) {
 	}
 
 	materials.set(filename, m);
-	return m->copy();
+	return m;
+}
+
+xfer<Material> MaterialManager::load_copy(const Path &filename) {
+	return load(filename)->copy();
 }
 
 }

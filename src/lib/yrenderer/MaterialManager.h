@@ -10,14 +10,16 @@ namespace yrenderer {
 
 class MaterialManager {
 public:
-	explicit MaterialManager(Context *ctx, const Path& material_dir);
+	explicit MaterialManager(Context* ctx, const Path& material_dir);
 	~MaterialManager();
 
 	void reset();
 
-	void set_default(Material *m);
-	void set_default_shader(ygfx::Shader *s);
-	xfer<Material> load(const Path &filename);
+	void set_default(Material* m);
+	void set_default_shader(ygfx::Shader* s);
+	Material* load(const Path& filename);
+	xfer<Material> load_copy(const Path& filename);
+	Path get_filename(const Material* m);
 
 	Path material_dir;
 private:

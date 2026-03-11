@@ -85,7 +85,7 @@ void ModeMaterial::on_enter() {
 	auto tex = new ygfx::Texture(16, 16, "rgba:i8");
 	tex->write(im);
 	tex->set_options("magfilter=nearest");
-	material_ground = session->resource_manager->load_material("");
+	material_ground = session->resource_manager->load_material_copy("");
 	material_ground->roughness = 0.4f;
 	material_ground->metal = 0;
 	material_ground->albedo = color(1, 0.3f, 0.3f, 0.3f);

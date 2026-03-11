@@ -95,7 +95,7 @@ SolidBody::SolidBody() {
 void SolidBody::on_init() {
 	auto o = owner;
 	auto m = owner->get_component<Model>();
-	auto t = o->get_component<Terrain>();
+	auto t = o->get_component<TerrainRef>();
 
 	if (!active and !passive)
 		return;

@@ -53,7 +53,7 @@ void Skeleton::on_init() {
 		pos0[i] = _calc_bone_rest_pos(i);
 		b->pos = pos0[i];
 		b->ang = quaternion::ID;
-		auto mm = engine.resource_manager->load_model(m->_template->skeleton->filename[i]);
+		auto mm = engine.resource_manager->load_model_copy(m->_template->skeleton->filename[i]);
 		if (mm) {
 			EntityManager::global->_add_component_external_(b, mm);
 

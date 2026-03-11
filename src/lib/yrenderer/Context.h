@@ -49,7 +49,7 @@ struct Context {
 
 	void create_managers(const Path& texture_dir, const Path& shader_dir, const Path& material_dir);
 	shared<ygfx::Texture> load_texture(const Path& path) const;
-	xfer<Material> load_material(const Path &filename) const;
+	xfer<Material> load_material_copy(const Path &filename) const;
 
 	shared<ygfx::Shader> load_shader(const Path& path) const;
 	xfer<ygfx::Shader> create_shader(const string &source) const;

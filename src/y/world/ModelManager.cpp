@@ -225,7 +225,7 @@ public:
 		//parent->material.add(me);
 	}
 	void read(Stream *f) override {
-		me = chunked_file_parser_get_material_manager(root)->load(f->read_str());
+		me = chunked_file_parser_get_material_manager(root)->load_copy(f->read_str());
 		parent->material.add(me);
 		bool user_colors = f->read_bool();
 		if (user_colors) {
@@ -646,16 +646,15 @@ ModelManager::ModelManager(ResourceManager *_resource_manager, yrenderer::Materi
 	material_manager = _material_manager;
 }
 
-xfer<Model> ModelManager::load(const Path &_filename) {
+Model* ModelManager::load(const Path &_filename) {
 	if (_filename == "")
 		return nullptr;
 	auto filename = engine.object_dir | _filename;
 	if (filename.extension() != "model")
 		filename = filename.with(".model");
 	for (auto *o: originals)
-		if (o->_template->filename == filename) {
-			return fancy_copy(o);
-		}
+		if (o->_template->filename == filename)
+			return o;
 
 	msg_write("loading " + filename.str());
 	auto m = new Model();
@@ -698,7 +697,17 @@ xfer<Model> ModelManager::load(const Path &_filename) {
 
 	//m->load(filename);
 	originals.add(m);
-	return fancy_copy(m);
+	return m;
+}
+
+
+xfer<Model> ModelManager::load_copy(const Path &_filename) {
+	if (_filename == "")
+		return nullptr;
+	auto m = load(_filename);
+	if (m)
+		return fancy_copy(m);
+	return nullptr;
 }
 
 

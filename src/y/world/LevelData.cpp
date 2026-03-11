@@ -136,6 +136,7 @@ bool LevelData::load(const Path& filename) {
 			} else if (e.tag == "terrain") {
 				Terrain t;
 				t.filename = e.value("file");
+				t.material = e.value("material");
 				t.pos = s2v(e.value("pos"));
 				read_components(t.components, e);
 				terrains.add(t);

@@ -25,7 +25,7 @@ const float DrawingHelper::LINE_EXTRA_THICK = 7;
 const color DrawingHelper::COLOR_X = color(1, 0.9f, 0.6f, 0.1f).srgb_to_linear();
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {
-	auto material = ctx->load_material("");
+	auto material = ctx->load_material_copy("");
 	material->albedo = albedo;
 	material->roughness = roughness;
 	material->metal = metal;

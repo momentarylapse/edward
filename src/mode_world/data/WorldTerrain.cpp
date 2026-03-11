@@ -27,7 +27,8 @@ bool WorldTerrain::load(const Path &_filename, bool deep) {
 	filename = _filename.relative_to(engine.map_dir).no_ext();
 
 	terrain = new Terrain();
-	bool Error = !terrain->load(doc->session->ctx, this->filename, deep);
+	terrain->filename = filename;
+	bool Error = !terrain->reload(doc->session->resource_manager, deep);
 
 	if (Error) {
 		delete terrain ;
@@ -60,13 +61,8 @@ bool WorldTerrain::save(const Path &_filename) {
 
 	// Textures
 	f->write_comment("// Textures");
-	f->write_int(terrain->material->textures.num);
-	for (int i=0;i<terrain->material->textures.num;i++){
-		f->write_str("");
-		f->write_float(terrain->texture_scale[i].x);
-		f->write_float(terrain->texture_scale[i].z);
-	}
-	f->write_str(terrain->material_file.str());
+	f->write_int(0);
+	f->write_str("");
 
 	// height
 	for (int x=0;x<terrain->num_x+1;x++)
@@ -84,11 +80,6 @@ void WorldTerrain::update_data() {
 	if (!terrain)
 		return;
 	//terrain->pos = pos;
-}
-
-void WorldTerrain::save_material(const Path& filename) {
-	auto m = DataMaterial::from_material(doc, terrain->material.get());
-	doc->session->storage->save(filename, &m);
 }
 
 

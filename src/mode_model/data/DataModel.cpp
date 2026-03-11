@@ -518,7 +518,7 @@ void DataModel::reconnectBone(int index, int parent)
 {	execute(new ActionModelReconnectBone(index, parent));	}
 
 void DataModel::setBoneModel(int index, const Path &filename)
-{	execute(new ActionModelSetSubModel(index, filename, session->resource_manager->load_model(filename)));	}
+{	execute(new ActionModelSetSubModel(index, filename, session->resource_manager->load_model_copy(filename)));	}
 
 void DataModel::addBone(const vec3 &pos, int parent)
 {	execute(new ActionModelAddBone(pos, parent));	}

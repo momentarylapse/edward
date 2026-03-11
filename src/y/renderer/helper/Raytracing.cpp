@@ -86,7 +86,7 @@ void RayTracingData::update_frame() {
 	//msg_write("rt update frame");
 
 	auto& models = EntityManager::global->get_component_list<Model>();
-	auto& terrains = EntityManager::global->get_component_list<Terrain>();
+	auto& terrains = EntityManager::global->get_component_list<TerrainRef>();
 
 
 	Array<MeshDescription> meshes;
@@ -106,17 +106,18 @@ void RayTracingData::update_frame() {
 			meshes.add(md);
 		}
 	}
-	for (auto *t: terrains) {
-		auto o = t->owner;
+	for (auto *t: terrains)
+		if (t->terrain) {
+			auto o = t->owner;
 
-		MeshDescription md;
-		md.matrix = mat4::translation(o->pos);
-		md.albedo = t->material->albedo.with_alpha(t->material->roughness);
-		md.emission = t->material->emission.with_alpha(t->material->metal);
-		md.num_triangles = t->vertex_buffer->output_count / 3;
-		md.address_vertices = t->vertex_buffer->vertex_buffer.get_device_address();
-		meshes.add(md);
-	}
+			MeshDescription md;
+			md.matrix = mat4::translation(o->pos);
+			md.albedo = t->material->albedo.with_alpha(t->material->roughness);
+			md.emission = t->material->emission.with_alpha(t->material->metal);
+			md.num_triangles = t->terrain->vertex_buffer->output_count / 3;
+			md.address_vertices = t->terrain->vertex_buffer->vertex_buffer.get_device_address();
+			meshes.add(md);
+		}
 
 
 	buffer_meshes->update_array(meshes, 0);
@@ -164,12 +165,13 @@ void RayTracingData::update_frame() {
 				}
 			}
 
-			for (auto *t: terrains) {
-				auto o = t->owner;
-				make_indexed(t->vertex_buffer.get());
-				rtx.blas.add(vulkan::AccelerationStructure::create_bottom(ctx->device, t->vertex_buffer.get()));
-				matrices.add(mat4::translation(o->pos).transpose());
-			}
+			for (auto *t: terrains)
+				if (t->terrain) {
+					auto o = t->owner;
+					make_indexed(t->terrain->vertex_buffer.get());
+					rtx.blas.add(vulkan::AccelerationStructure::create_bottom(ctx->device, t->terrain->vertex_buffer.get()));
+					matrices.add(mat4::translation(o->pos).transpose());
+				}
 
 			rtx.tlas = vulkan::AccelerationStructure::create_top(ctx->device, rtx.blas, matrices);
 		}

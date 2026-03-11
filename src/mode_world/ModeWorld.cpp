@@ -98,7 +98,7 @@ void ModeWorld::on_enter_rec() {
 		// FIXME
 		auto list = data->entity_manager->get_component_list<ModelRef>();
 		for (auto mr: list) {
-			mr->model = session->resource_manager->load_model(mr->filename);
+			mr->model = session->resource_manager->load_model_copy(mr->filename);
 		}
 	};
 	data->out_changed >> create_sink(update_dummies);
@@ -217,7 +217,7 @@ void ModeWorld::on_enter() {
 			auto e = data->add_entity(p, quaternion::ID);
 			auto c = data->entity_add_component<ModelRef>(e);
 			c->filename = fn_rel;
-			c->model = session->resource_manager->load_model(c->filename);
+			c->model = session->resource_manager->load_model_copy(c->filename);
 
 			// suggest automatic components...
 			// well... SolidBody will be removed soon!
@@ -229,8 +229,8 @@ void ModeWorld::on_enter() {
 			session->info(str(fn_rel));
 			auto e = data->add_entity(p, quaternion::ID);
 			auto c = data->entity_add_component<TerrainRef>(e);
-			c->filename = fn_rel;
-			c->terrain = new Terrain(session->ctx, c->filename.no_ext());
+			c->terrain = session->resource_manager->load_terrain_lazy(fn_rel);
+			c->terrain->reload(session->resource_manager);
 
 			// suggest automatic components
 			data->_entity_apply_components(e, LevelData::auto_terrain_components());
@@ -244,7 +244,7 @@ void ModeWorld::on_enter() {
 
 			if (auto m = e->get_component<ModelRef>()) {
 				if (m->filename)
-					m->model = session->resource_manager->load_model(m->filename.no_ext());
+					m->model = session->resource_manager->load_model_copy(m->filename.no_ext());
 			}
 		}
 	}));
@@ -423,8 +423,10 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 	const auto terrains = data->entity_manager->get_component_list<TerrainRef>();
 	for (auto tr: terrains)
 		if (auto t = tr->terrain) {
-			t->prepare_draw(rvd.scene_view->main_camera_params.pos);
-			auto material = t->material.get();
+			t->prepare_draw(tr->owner, rvd.scene_view->main_camera_params.pos);
+			auto material = tr->material;
+			if (!material)
+				material = session->resource_manager->load_material("");
 			auto vb = t->vertex_buffer.get();
 
 			auto shader = rvd.get_shader(material, 0, t->vertex_shader_module, "");
@@ -520,7 +522,7 @@ void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer:
 	const auto terrains = data->entity_manager->get_component_list<TerrainRef>();
 	for (auto tr: terrains)
 		if (auto t = tr->terrain) {
-			t->prepare_draw(rvd.scene_view->main_camera_params.pos);
+			t->prepare_draw(tr->owner, rvd.scene_view->main_camera_params.pos);
 			auto vb = t->vertex_buffer.get();
 			dh->draw_mesh(params, rvd, tr->owner->get_matrix(), vb, dh->material_shadow);
 		}

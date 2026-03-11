@@ -152,11 +152,9 @@ void BoxCollider::on_init() {
 TerrainCollider::TerrainCollider() = default;
 
 void TerrainCollider::on_init() {
-	auto t = owner->get_component<Terrain>();
-	if (!t) {
-		if (auto r = owner->get_component<TerrainRef>())
-			t = r->terrain;
-	}
+	Terrain* t = nullptr;
+	if (auto r = owner->get_component<TerrainRef>())
+		t = r->terrain;
 	if (!t) {
 		msg_error("TerrainCollider without Terrain!");
 		return;

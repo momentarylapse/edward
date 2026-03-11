@@ -25,7 +25,7 @@ ModelMaterial::ModelMaterial(Session *_s) {
 	session = _s;
 	// default file
 	if (session->resource_manager)
-		material = session->resource_manager->load_material("");
+		material = session->resource_manager->load_material_copy("");
 
 	// color
 	col.user = false;
@@ -81,7 +81,7 @@ void ModelMaterial::Color::import(const color &am, const color &di, const color 
 }
 
 void ModelMaterial::make_consistent_after_shallow_loading() {
-	material = session->resource_manager->load_material(filename);
+	material = session->resource_manager->load_material_copy(filename);
 
 	if (material->reflection.mode == yrenderer::ReflectionMode::CUBE_MAP_DYNAMIC) {
 	//	if (!material->cube_map)

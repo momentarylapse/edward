@@ -27,6 +27,7 @@
 #include <lib/profiler/_kaba_export.h>
 #include "../helper/Scheduler.h"
 #include "lib/any/conversion.h"
+#include "lib/yrenderer/MaterialManager.h"
 #if __has_include("../input/InputManager.h")
 #include "../input/InputManager.h"
 #include "../input/Gamepad.h"
@@ -80,7 +81,7 @@ namespace PluginManager {
 //using namespace yrenderer;
 using namespace ygfx;
 
-const string api_version = "0.2";
+ResourceManager* default_resource_manager = nullptr;
 
 /*void global_delete(BaseClass *e) {
 	//msg_error("global delete... " + p2s(e));
@@ -137,7 +138,7 @@ void screenshot(Image& im) {
 
 
 xfer<Model> __load_model(const Path& filename) {
-	return engine.resource_manager->load_model(filename);
+	return engine.resource_manager->load_model_copy(filename);
 }
 
 shared<Shader> __load_shader(const Path& filename) {
@@ -153,7 +154,7 @@ shared<Texture> __load_texture(const Path& filename) {
 }
 
 xfer<yrenderer::Material> __load_material(const Path& filename) {
-	return engine.resource_manager->load_material(filename);
+	return engine.resource_manager->load_material_copy(filename);
 }
 
 
@@ -186,7 +187,7 @@ mat4 scene_view_shadow_projection(yrenderer::SceneView* s) {
 }
 
 void init() {
-	kaba::default_context->register_package_init("yengine", engine.script_dir | "yengine", &export_kaba_package_y);
+	kaba::default_context->register_package_init("yengine", engine.script_dir | "yengine", &export_kaba_package_yengine);
 	import_kaba();
 }
 
@@ -420,7 +421,7 @@ void export_world(kaba::Exporter* ext) {
 
 	ext->declare_class_size("Terrain", sizeof(Terrain));
 	//ext->declare_class_element("Terrain.pos", &Terrain::pos);
-	ext->declare_class_element("Terrain.material", &Terrain::material);
+	//ext->declare_class_element("Terrain.material", &Terrain::material);
 	ext->declare_class_element("Terrain.height", &Terrain::height);
 	ext->declare_class_element("Terrain.vertex", &Terrain::vertex);
 	ext->declare_class_element("Terrain.normal", &Terrain::normal);
@@ -443,8 +444,8 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("ModelRef.model", &ModelRef::model);
 
 	ext->declare_class_size("TerrainRef", sizeof(TerrainRef));
-	ext->declare_class_element("TerrainRef.filename", &TerrainRef::filename);
 	ext->declare_class_element("TerrainRef.terrain", &TerrainRef::terrain);
+	ext->declare_class_element("TerrainRef.material", &TerrainRef::material);
 
 
 	ext->declare_class_size("Physics", sizeof(Physics));
@@ -908,7 +909,7 @@ void export_renderer(kaba::Exporter* ext) {
 	ext->link_class_func("FullCameraRenderer.get_cubemap", &camera_renderer_get_cubemap);
 }
 
-void export_kaba_package_y(kaba::Exporter* ext) {
+void export_kaba_package_yengine(kaba::Exporter* ext) {
 	ext->package_info("yengine", EngineData::CURRENT_API_VERSION);
 	export_gfx(ext);
 	export_ecs(ext);
@@ -949,7 +950,7 @@ void import_kaba() {
 	import_component_class<BoxCollider>(m_world, "BoxCollider");
 	import_component_class<TerrainCollider>(m_world, "TerrainCollider");
 	import_component_class<MultiInstance>(m_world, "MultiInstance");
-	import_component_class<Terrain>(m_world, "Terrain");
+//	import_component_class<Terrain>(m_world, "Terrain");
 	import_component_class<Light>(m_world, "Light");
 	import_component_class<Camera>(m_world, "Camera");
 	import_component_class<::CubeMapSource>(m_world, "CubeMapSource");
@@ -1034,6 +1035,10 @@ string whatever_to_string(const void* instance, int offset, const kaba::Class* c
 	}
 	if (c == kaba::common_types.mat3)
 		return mat3_to_any(*(const mat3*)p).str();
+	if (c->name == "Material*" and default_resource_manager)
+		return str(default_resource_manager->material_manager->get_filename(*(const yrenderer::Material**)p));
+	if (c->name == "Terrain*")
+		return str((*(const Terrain**)p)->filename);
 	return "???";
 }
 
@@ -1054,6 +1059,12 @@ void whatever_from_string(void* p, const kaba::Class* type, const string& value)
 		*(color*)p = s2c(value);
 	if (type == kaba::common_types.mat3)
 		*(mat3*)p = s2mat3(value);
+	if (type->name == "Material*" and default_resource_manager)
+		*(yrenderer::Material**)p = default_resource_manager->load_material(value);
+	if (type->name == "Terrain*" and default_resource_manager) {
+		*(Terrain**)p = default_resource_manager->load_terrain_lazy(value);
+		(*(Terrain**)p)->reload(default_resource_manager); // TODO lazy loading in edward...
+	}
 }
 
 void assign_variables(void* p, const kaba::Class* c, const Array<ScriptInstanceDataVariable>& variables) {
@@ -1130,7 +1141,7 @@ void *create_instance(const kaba::Class *c, const string &variables) {
 }
 
 // yes, we could skip the special cases... but then we need to export virtual functions properly...
-void *create_instance(const kaba::Class *c, const Array<ScriptInstanceDataVariable> &variables) {
+void* create_instance(const kaba::Class *c, const Array<ScriptInstanceDataVariable> &variables) {
 	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
 	msg_write(format("creating instance  %s", c->long_name()));
 	if (c == SolidBody::_class)
@@ -1147,8 +1158,8 @@ void *create_instance(const kaba::Class *c, const Array<ScriptInstanceDataVariab
 		return new SphereCollider;
 	if (c == BoxCollider::_class)
 		return new BoxCollider;
-	if (c == Terrain::_class)
-		return new Terrain;
+//	if (c == Terrain::_class)
+//		return new Terrain;
 	if (c == Animator::_class)
 		return new Animator;
 	if (c == Skeleton::_class)
@@ -1174,7 +1185,7 @@ void *create_instance(const kaba::Class *c, const Array<ScriptInstanceDataVariab
 
 void* create_instance_auto(const string& extended_type_name) {
 	auto x = extended_type_name.explode(".");
-	string type = x.back();
+	string& type = x.back();
 
 	for (auto m: weak(kaba::default_context->public_modules)) {
 		for (auto c: m->classes())

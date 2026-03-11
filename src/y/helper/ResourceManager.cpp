@@ -7,6 +7,7 @@
 #include <lib/yrenderer/MaterialManager.h>
 #include <lib/yrenderer/Context.h>
 #include <world/ModelManager.h>
+#include <world/Terrain.h>
 
 #ifdef USING_VULKAN
 namespace vulkan {
@@ -25,14 +26,23 @@ ResourceManager::ResourceManager(yrenderer::Context *_ctx, const Path &texture_d
 	texture_manager = new yrenderer::TextureManager(ctx->context, texture_dir);
 }
 
-xfer<yrenderer::Material> ResourceManager::load_material(const Path &filename) {
+xfer<yrenderer::Material> ResourceManager::load_material_copy(const Path& filename) {
+	return material_manager->load_copy(filename);
+}
+
+yrenderer::Material* ResourceManager::load_material(const Path& filename) {
 	return material_manager->load(filename);
 }
 
-xfer<Model> ResourceManager::load_model(const Path &filename) {
-	return model_manager->load(filename);
+xfer<Model> ResourceManager::load_model_copy(const Path& filename) {
+	return model_manager->load_copy(filename);
 }
 
+Terrain *ResourceManager::load_terrain_lazy(const Path& filename) {
+	auto t = new Terrain();
+	t->filename = filename;
+	return t;
+}
 
 
 shared<ygfx::Texture> ResourceManager::load_texture(const Path& filename) {

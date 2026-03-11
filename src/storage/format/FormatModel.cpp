@@ -1001,7 +1001,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 		for (auto &b: data->bones) {
 			try {
 				if (!b.model)
-					b.model = data->session->resource_manager->load_model(b.model_file);
+					b.model = data->session->resource_manager->load_model_copy(b.model_file);
 			} catch(Exception &e) {
 				msg_error(e.message());
 			}

@@ -344,7 +344,7 @@ void link_component_x(shared<kaba::Module> mm, const string& name) {
 
 void PluginManager::load_project_stuff(const Path &dir) {
 
-	session->kaba_ctx->register_package_init("yengine", dir.absolute().canonical() | "Scripts/yengine", &::PluginManager::export_kaba_package_y);
+	session->kaba_ctx->register_package_init("yengine", dir.absolute().canonical() | "Scripts/yengine", &::PluginManager::export_kaba_package_yengine);
 
 	component_classes = enumerate_classes("ecs.Component");
 	system_classes = enumerate_classes("ecs.System");
@@ -365,7 +365,6 @@ void PluginManager::load_project_stuff(const Path &dir) {
 	Skeleton::_class = link_component("Skeleton");
 	Animator::_class = link_component("Animator");
 	Model::_class = link_component("Model");
-	Terrain::_class = link_component("Terrain");
 	ModelRef::_class = link_component("ModelRef");
 	TerrainRef::_class = link_component("TerrainRef");
 

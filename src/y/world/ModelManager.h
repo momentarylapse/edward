@@ -42,7 +42,8 @@ public:
 class ModelManager {
 public:
 	ModelManager(ResourceManager *resource_manager, yrenderer::MaterialManager *material_manager);
-	xfer<Model> load(const Path &filename);
+	Model* load(const Path &filename);
+	xfer<Model> load_copy(const Path &filename);
 
 	ResourceManager *resource_manager;
 	yrenderer::MaterialManager *material_manager;
