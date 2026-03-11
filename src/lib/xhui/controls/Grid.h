@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Control.h"
+#include <lib/base/optional.h>
 
 namespace xhui {
 
@@ -24,6 +25,8 @@ public:
 	rect margin;
 	bool card = false;
 	bool vertical = false;
+	float corner_radius = 0;
+	base::optional<color> background;
 
 	void get_grid_min_sizes(Array<float> &w, Array<float> &h) const;
 	void get_grid_greed_factors(Array<float> &x, Array<float> &y) const;

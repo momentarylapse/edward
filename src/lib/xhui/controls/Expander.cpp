@@ -138,6 +138,8 @@ vec2 Expander::get_greed_factor() const {
 void Expander::set_option(const string &key, const string &value) {
 	if (key == "expanded") {
 		expand(value == "" or value._bool());
+	} else if (key == "markup") {
+		header.set_option(key, value);
 	} else {
 		Control::set_option(key, value);
 	}

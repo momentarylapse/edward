@@ -50,9 +50,9 @@ void Grid::remove_child(Control* c) {
 
 
 void Grid::_draw(Painter *p) {
-	if (card) {
-		p->set_roundness(Theme::_default.button_radius);
-		p->set_color(Theme::_default.background_raised());
+	if (background) {
+		p->set_roundness(corner_radius);
+		p->set_color(*background);
 		p->draw_rect(_area);
 		p->set_roundness(0);
 	}
@@ -160,7 +160,11 @@ void Grid::set_option(const string& key, const string& value) {
 		if (value == "card") {
 			card = true;
 			margin = {7,7,7,7};
+			background = Theme::_default.background_raised();
+			corner_radius = Theme::_default.button_radius;
 		}
+	} else if (key == "background") {
+		background = color::parse(value);
 	} else if (key == "vertical") {
 		vertical = true;
 	} else {
