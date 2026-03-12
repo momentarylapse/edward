@@ -39,8 +39,21 @@ xfer<Model> ResourceManager::load_model_copy(const Path& filename) {
 }
 
 Terrain *ResourceManager::load_terrain_lazy(const Path& filename) {
+	if (!filename)
+		return nullptr;
+	for (auto t: weak(terrains))
+		if (t->filename == filename)
+			return t;
 	auto t = new Terrain();
 	t->filename = filename;
+	terrains.add(t);
+	return t;
+}
+
+Terrain *ResourceManager::load_terrain(const Path& filename) {
+	auto t = load_terrain_lazy(filename);
+	if (t and t->filename and t->height.num == 0)
+		t->reload(this, true);
 	return t;
 }
 

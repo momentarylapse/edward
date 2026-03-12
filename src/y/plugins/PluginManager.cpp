@@ -1061,10 +1061,8 @@ void whatever_from_string(void* p, const kaba::Class* type, const string& value)
 		*(mat3*)p = s2mat3(value);
 	if (type->name == "Material*" and default_resource_manager)
 		*(yrenderer::Material**)p = default_resource_manager->load_material(value);
-	if (type->name == "Terrain*" and default_resource_manager) {
-		*(Terrain**)p = default_resource_manager->load_terrain_lazy(value);
-		(*(Terrain**)p)->reload(default_resource_manager); // TODO lazy loading in edward...
-	}
+	if (type->name == "Terrain*" and default_resource_manager)
+		*(Terrain**)p = default_resource_manager->load_terrain(value);
 }
 
 void assign_variables(void* p, const kaba::Class* c, const Array<ScriptInstanceDataVariable>& variables) {

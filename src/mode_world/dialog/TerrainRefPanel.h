@@ -5,13 +5,15 @@
 #pragma once
 
 #include <lib/xhui/Panel.h>
-//#include <lib/pattern/Observable.h>
+#include <lib/pattern/Observable.h>
 
 class DataWorld;
 
-class TerrainRefPanel : public xhui::Panel {
+class TerrainRefPanel : public obs::Node<xhui::Panel> {
 public:
 	explicit TerrainRefPanel(DataWorld* _data, int _index);
 	DataWorld* data;
 	int index;
+
+	void update_ui();
 };

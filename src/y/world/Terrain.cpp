@@ -117,7 +117,7 @@ bool Terrain::reload(ResourceManager* resource_manager, bool deep) {
 	} else {
 		error = true;
 	}
-	msg_write("/terrain");
+	//msg_write("/terrain");
 	msg_left();
 	return !error;
 }
