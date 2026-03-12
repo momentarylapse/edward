@@ -13,17 +13,17 @@ CameraPanel::CameraPanel(DataWorld* _data, int _index) : Node("camera-panel") {
 Dialog camera-panel ''
 	Grid ? ''
 		Label ? 'Min distance' right disabled
-		SpinButton z-min '' range=0::0.001 expandx
+		SpinButton z-min '' 'tooltip=Minimum rendering distance' range=0::0.001 expandx
 		---|
 		Label ? 'Max distance' right disabled
-		SpinButton z-max '' range=0::0.001
+		SpinButton z-max '' 'tooltip=Maximum rendering distance' range=0::0.001
 		---|
 		Label ? 'Field of view' right disabled
-		SpinButton fov '' range=0:180:0.1
+		SpinButton fov '' 'tooltip=Vertical opening angle' range=0:180:0.1
 		Label ? '°'
 		---|
 		Label ? 'Exposure' right disabled
-		SpinButton z-min '' range=0:100:0.001
+		SpinButton exposure '' 'tooltip=Brightness scaling factor' range=0:100:0.001
 )foodelim");
 	data = _data;
 	index = _index;

@@ -16,11 +16,11 @@ Dialog model-panel ''
 	Grid ? ''
 		Grid ? ''
 			Label ? 'Model' right disabled
-			Button filename '' expandx
+			Button filename '' 'tooltip=Select model' expandx
 		---|
 		Grid ? ''
 			Label ? '' expandx
-			Button edit 'Edit' noexpandx primary
+			Button edit 'Edit' 'tooltip=Edit model' noexpandx primary
 )foodelim");
 	data = _data;
 	index = _index;

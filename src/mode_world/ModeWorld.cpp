@@ -145,7 +145,7 @@ public:
 		from_source(R"foodelim(
 Dialog world-op-buttons '' propagateevents
 	Grid ? '' spacing=20 vertical
-		Button mouse-action 'T' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
+		Button mouse-action 'T' 'tooltip=Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 
 		event("mouse-action", [this, multi_view] {
@@ -154,9 +154,11 @@ Dialog world-op-buttons '' propagateevents
 			if (mode == MouseActionMode::MOVE) {
 				ac->set_action_mode(MouseActionMode::ROTATE);
 				set_options("mouse-action", "image=rf-rotate");
+				set_tooltip("mouse-action", "Left button action: rotate selection");
 			} else if (mode == MouseActionMode::ROTATE) {
 				ac->set_action_mode(MouseActionMode::MOVE);
 				set_options("mouse-action", "image=rf-translate");
+				set_tooltip("mouse-action", "Left button action: move selection");
 			}
 			set_string("mouse-action", multi_view->action_controller->action_name().sub(0, 1).upper());
 		});

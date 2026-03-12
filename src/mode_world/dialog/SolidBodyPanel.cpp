@@ -15,13 +15,13 @@ SolidBodyPanel::SolidBodyPanel(DataWorld* _data, int _index) : Node("solid-body-
 Dialog solid-body-panel ''
 	Grid ? ''
 		Label ? 'Active' right disabled
-		CheckBox active ''
+		CheckBox active '' 'tooltip=Active bodies can move and fall.\nOtherwise the body will become a static obstacle'
 		---|
 		Label ? 'Mass' right disabled
-		SpinButton mass '' range=0::0.001
+		SpinButton mass '' 'tooltip=Mass for gravity and inertia. Arbitrary units' range=0::0.001
 		---|
 		Label ? 'G-Factor' right disabled
-		SpinButton g-factor '' range=0::0.001
+		SpinButton g-factor '' 'tooltip=Scaling factor for effect of gravity' range=0::0.001
 		---|
 		Label ? 'Theta' right disabled
 		Grid ? ''

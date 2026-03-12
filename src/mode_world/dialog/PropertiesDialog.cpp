@@ -35,10 +35,12 @@ Dialog system 'System'
 			Grid ? ''
 				Grid variables ''
 				---|
+				Separator ? "" horizontal
+				---|
 				Grid ? ''
 					Label ? '' expandx
-					Button edit 'Edit code' primary noexpandx
-					Button delete 'Delete' danger noexpandx
+					Button edit 'Edit code' 'tooltip=Edit script file that defines this system class' primary noexpandx
+					Button delete 'Delete' 'tooltip=Remove system' danger noexpandx
 )foodelim");
 		event("delete", [this] {
 			if (index >= 0) {
@@ -184,7 +186,7 @@ void PropertiesDialog::add_new_system() {
 		TextDialog::ask(this, "System name", "Test").then([this, path] (const string& name) {
 			os::fs::write_text(path.complete, string(R"foodelim(use y.*
 
-class <NAME> extends Controller
+class <NAME> extends System
 	var some_variable: f32
 
 	func override on_init()

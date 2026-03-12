@@ -20,24 +20,24 @@ Dialog light-panel ''
 		ComboBox type 'Directional\\Point\\Cone\\Ambient' range=0:2:1
 		---|
 		Label ? 'Radius' right disabled
-		SpinButton radius '' range=0::0.1
+		SpinButton radius '' 'tooltip=Distance at which point and cone lights fall off to 10% power' range=0::0.1
 		---|
 		Label ? 'Theta' right disabled
-		SpinButton theta '' range=0:180:0.1
+		SpinButton theta '' 'tooltip=Opening angle for cone lights' range=0:180:0.1
 		Label ? '°'
 		---|
 		Label ? 'Color' right disabled
-		ColorButton color ''
+		ColorButton color '' 'tooltip=Basic color. Will be scaled by power and distance.'
 		---|
 		Label ? 'Power' right disabled
-		SpinButton power '' range=0::0.01
+		SpinButton power '' 'tooltip=Intensity scale for color (at 1 unit distance)' range=0::0.01
 		---|
 		Label ? 'Harshness' right disabled
-		SpinButton harshness '' range=0:100:1
+		SpinButton harshness '' 'tooltip=Suppress lighting in shadowed areas' range=0:100:1
 		Label ? '%'
 		---|
 		Label ? 'Shadows' right disabled
-		CheckBox allow-shadows ''
+		CheckBox allow-shadows '' 'tooltip=Cast shadows (if allowed by mesh materials)?'
 )foodelim");
 	data = _data;
 	index = _index;

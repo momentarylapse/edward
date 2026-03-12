@@ -22,8 +22,8 @@ Dialog terrain-panel ''
 		Grid ? ''
 			Label ? 'Terrain' right disabled
 			Grid ? ''
-				Button terrain ''
-				Button edit-terrain 'E' primary noexpandx
+				Button terrain '' 'tooltip=Select a terrain'
+				Button edit-terrain 'E' 'tooltip=Edit terrain' primary noexpandx
 			---|
 			Label ? 'Size' right disabled
 			Label size ''
@@ -33,8 +33,8 @@ Dialog terrain-panel ''
 			---|
 			Label ? 'Material' right disabled
 			Grid ? ''
-				Button material ''
-				Button edit-material 'E' primary noexpandx
+				Button material '' 'tooltip=Select a material'
+				Button edit-material 'E' 'tooltip=Edit material' primary noexpandx
 )foodelim");
 	data = _data;
 	index = _index;

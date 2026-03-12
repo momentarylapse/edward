@@ -178,10 +178,12 @@ Dialog solid-body-panel ''
 			Grid contents ''
 				.
 				---|
+				Separator ? "" horizontal
+				---|
 				Grid ? ''
 					Label ? '' expandx
-					Button edit 'Edit code' primary noexpandx
-					Button delete 'Delete' danger noexpandx
+					Button edit 'Edit code' 'tooltip=Edit the script file that defines this component class' primary noexpandx
+					Button delete 'Delete' 'tooltip=Remove component from entity' danger noexpandx
 )foodelim");
 	data = _data;
 	event("delete", [this] {

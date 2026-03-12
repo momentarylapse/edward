@@ -552,9 +552,9 @@ Dialog multi-view-panel ''
 				.
 				Label ? '' ignorehover expandx
 				Grid overlay-button-grid-right '' spacing=20
-					Button cam-rotate 'R' image=rf-rotate height=50 width=50 padding=7 noexpandx ignorefocus
+					Button cam-rotate 'R' 'tooltip=Drag button to rotate camera' image=rf-rotate height=50 width=50 padding=7 noexpandx ignorefocus
 					---|
-					Button cam-move 'M' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
+					Button cam-move 'M' 'tooltip=Drag button to move camera' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 	propagate_events = true;
 

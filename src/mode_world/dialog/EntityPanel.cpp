@@ -28,8 +28,8 @@ Dialog entity-panel '' padding=0
 		ListView components 'c' nobar sunkenbackground=no showselection=no selectsingle
 		---|
 		Grid ? ""
-			Button add-component '+' noexpandx
-			Button save-template '' noexpandx image=save
+			Button add-component '+' 'tooltip=Select a component class to add to this entity' noexpandx
+			Button save-template '' 'tooltip=Save current components as template' noexpandx image=save
 )foodelim");
 
 	auto component_list = (xhui::ListView*)get_control("components");

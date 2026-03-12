@@ -136,14 +136,14 @@ public:
 		from_source(R"foodelim(
 Dialog mesh-op-buttons '' propagateevents
 	Grid ? '' spacing=20 vertical
-		Button mouse-action 'T' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-vertex 'V' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-polygon 'P' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-cube 'Q' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-sphere 'S' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-platonic 'P' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-from-lathe 'L' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-cylinder 'C' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button mouse-action 'T' 'tooltip=Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-vertex 'V' 'tooltip=Add Vertex' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-polygon 'P' 'tooltip=Add Polygon' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-cube 'Q' 'tooltip=Add cube' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-sphere 'S' 'tooltip=Add sphere' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-platonic 'P' 'tooltip=Add platonic body' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-from-lathe 'L' 'tooltip=Add rotational symmetric (lathe)' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-cylinder 'C' 'tooltip=Add cylinder' height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 
 		event("mouse-action", [this, multi_view] {
