@@ -12,6 +12,7 @@
 #include <lib/os/time.h>
 #include <lib/os/msg.h>
 
+#include "TextLayout.h"
 
 
 namespace xhui {
@@ -382,8 +383,23 @@ void Window::_on_mouse_move(const vec2 &m, const vec2& d) {
 		if (hover_control)
 			hover_control->on_mouse_leave(m);
 		hover_control = hover;
-		if (hover_control)
+		if (hover_control) {
 			hover_control->on_mouse_enter(m);
+			if (tooltip == "" and hover_control->tooltip != "") {
+				// start tooltip -> delayed
+				run_later(0.25f, [this] {
+					if (hover_control) {
+						tooltip = hover_control->tooltip;
+						request_redraw();
+					}
+				});
+			} else if (tooltip != "") {
+				// switch -> quick
+				tooltip = hover_control->tooltip;
+			}
+		} else {
+			tooltip = "";
+		}
 	}
 	if (hover_control)
 		hover_control->on_mouse_move(m, d);
@@ -497,6 +513,13 @@ void Window::_on_draw() {
 		p->draw_rect(a);
 		dlg->negotiate_area(dlg->suggest_area(a));
 		dlg->_draw(p);
+	}
+
+	if (hover_control and tooltip != "") {
+		auto l = TextLayout::from_format_string(p, tooltip, Theme::_default.font_size);
+		vec2 pos = hover_control->_area.p01() + vec2(10, 20);
+		pos.x = clamp(pos.x, 5.0f, _area.x2 - l.box.x2 - 5);
+		draw_text_layout_with_box(p, pos, l, White, Black);
 	}
 
 	if (drag.active) {

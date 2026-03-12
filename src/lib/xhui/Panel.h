@@ -42,6 +42,7 @@ public:
 	int get_int(const string& id) const;
 	bool is_checked(const string& id) const;
 	color get_color(const string& c) const;
+	void set_tooltip(const string& id, const string& tip);
 	void set_options(const string& id, const string& options);
 	void set_option(const string& key, const string& value) override;
 

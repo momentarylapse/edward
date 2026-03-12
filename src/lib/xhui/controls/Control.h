@@ -110,6 +110,7 @@ public:
 	bool ignore_hover = false;
 	bool visible = true;
 	bool enabled;
+	string tooltip;
 
 	virtual vec2 get_greed_factor() const;
 	virtual vec2 get_content_min_size() const;

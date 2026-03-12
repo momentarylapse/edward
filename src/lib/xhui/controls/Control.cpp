@@ -202,6 +202,8 @@ void Control::set_option(const string& key, const string& value) {
 		enable(false);
 	} else if (key == "enabled") {
 		enable(value._bool() or value == "");
+	} else if (key == "tooltip") {
+		tooltip = value;
 	}
 }
 

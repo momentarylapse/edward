@@ -330,6 +330,10 @@ void Panel::activate(const string &id) {
 			}
 }
 
+void Panel::set_tooltip(const string& id, const string& tip) {
+	set_options(id, "tooltip=" + tip);
+}
+
 void Panel::set_options(const string& id, const string& options) {
 	for_control(id, [&options] (Control* c) {
 		for (const auto& [k,v]: parse_options(options)) {
@@ -467,12 +471,12 @@ void Panel::_add_control(const string &ns, const Resource &cmd, const string &pa
 		hide_control(cmd.id, true);
 
 	if (cmd.image().num > 0)
-		set_image(cmd.id, cmd.image());
+		set_image(cmd.id, cmd.image());*/
 
 
 	string tooltip = get_language_t(ns, cmd.id, cmd.tooltip);
 	if (tooltip.num > 0)
-		set_tooltip(cmd.id, tooltip);*/
+		set_tooltip(cmd.id, tooltip);
 
 	for (const Resource &c: cmd.children)
 		_add_control(ns, c, cmd.id);

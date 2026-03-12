@@ -84,7 +84,7 @@ void Toolbar::from_resource(Resource *res) {
 				add_item_checkable(cmd.id, title, cmd.image());
 			else
 				add_item(cmd.id, title, cmd.image());
-//			items.back()->set_tooltip(tooltip);
+			children.back().control->set_option("tooltip", tooltip);
 		} else if (cmd.type == "Separator") {
 			add_separator();
 		} else if (cmd.type == "Menu") {
