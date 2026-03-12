@@ -18,9 +18,10 @@ btVector3 bt_set_v(const vec3 &v);
 btQuaternion bt_set_q(const quaternion &q);
 #endif
 
+const kaba::Class* Link::_class = nullptr;
 
 
-Link::Link(LinkType t, Entity *_a, Entity *_b) : BaseClass(Type::LINK) {
+/*Link::Link(LinkType t, Entity *_a, Entity *_b) : BaseClass(Type::LINK) {
 	link_type = t;
 	a = nullptr;
 	b = nullptr;
@@ -29,85 +30,107 @@ Link::Link(LinkType t, Entity *_a, Entity *_b) : BaseClass(Type::LINK) {
 	if (_b)
 		b = _b->get_component<SolidBody>();
 	con = nullptr;
-}
+}*/
 
 
 void Link::_create_link_data(vec3 &pa, vec3 &pb, quaternion &iqa, quaternion &iqb, const vec3 &pos) {
-	iqa = a->owner->ang.bar();
+	iqa = a->ang.bar();
 	iqb = quaternion::ID;
-	pa = iqa * (pos - a->owner->pos);
+	pa = iqa * (pos - a->pos);
 	pb = pos;
 	if (b) {
-		iqb = b->owner->ang.bar();
-		pb = iqb * (pos - b->owner->pos);
+		iqb = b->ang.bar();
+		pb = iqb * (pos - b->pos);
+	}
+}
+
+void Link::create() {
+	switch (link_type) {
+		case LinkType::SOCKET:
+			create_socket();
+			break;
+		case LinkType::HINGE:
+			create_hinge();
+			break;
+		case LinkType::UNIVERSAL:
+			create_universal();
+			break;
+		default:
+			break;
 	}
 }
 
 
-LinkSocket::LinkSocket(Entity *_a, Entity *_b, const vec3 &pos) : Link(LinkType::SOCKET, _a, _b) {
+void Link::create_socket() {
+	if (!a->get_component<SolidBody>())
+		return;
 	vec3 pa, pb;
 	quaternion iqa, iqb;
-	_create_link_data(pa, pb, iqa, iqb, pos);
+	_create_link_data(pa, pb, iqa, iqb, owner->pos);
 #if HAS_LIB_BULLET
 	if (b) {
 		//msg_write("-----------add socket 2");
 		con = new btPoint2PointConstraint(
-			*a->body,
-			*b->body,
+			*a->get_component<SolidBody>()->body,
+			*b->get_component<SolidBody>()->body,
 			bt_set_v(pa),
 			bt_set_v(pb));
 	} else {
 		//msg_write("-----------add socket 1");
 		con = new btPoint2PointConstraint(
-			*a->body,
+			*a->get_component<SolidBody>()->body,
 			bt_set_v(pa));
 	}
 #endif
 }
 
-LinkHinge::LinkHinge(Entity *_a, Entity *_b, const vec3 &pos, const quaternion &ang) : Link(LinkType::HINGE, _a, _b) {
+void Link::create_hinge() {
+	if (!a->get_component<SolidBody>())
+		return;
 	vec3 pa, pb;
 	quaternion iqa, iqb;
-	_create_link_data(pa, pb, iqa, iqb, pos);
+	_create_link_data(pa, pb, iqa, iqb, owner->pos);
 #if HAS_LIB_BULLET
 	if (b) {
 		//msg_write("-----------add hinge 2");
 		con = new btHingeConstraint(
-			*a->body,
-			*b->body,
+			*a->get_component<SolidBody>()->body,
+			*b->get_component<SolidBody>()->body,
 			bt_set_v(pa),
 			bt_set_v(pb),
-			bt_set_v(iqa * ang * vec3::EZ),
-			bt_set_v(iqb * ang * vec3::EZ),
+			bt_set_v(iqa * owner->ang * vec3::EZ),
+			bt_set_v(iqb * owner->ang * vec3::EZ),
 			true);
 	} else {
 		//msg_write("-----------add hinge 1");
 		con = new btHingeConstraint(
-			*a->body,
+			*a->get_component<SolidBody>()->body,
 			bt_set_v(pa),
-			bt_set_v(iqa * ang * vec3::EZ),
+			bt_set_v(iqa * owner->ang * vec3::EZ),
 			true);
 	}
 #endif
 }
 
-LinkUniversal::LinkUniversal(Entity *_a, Entity *_b, const vec3 &pos, const quaternion &ang) : Link(LinkType::UNIVERSAL, _a, _b) {
+void Link::create_universal() {
+	if (!a->get_component<SolidBody>() or !b->get_component<SolidBody>())
+		return;
 	vec3 pa, pb;
 	quaternion iqa, iqb;
-	_create_link_data(pa, pb, iqa, iqb, pos);
+	_create_link_data(pa, pb, iqa, iqb, owner->pos);
 	//msg_write("-----------add universal");
 #if HAS_LIB_BULLET
 	con = new btUniversalConstraint(
-		*a->body,
-		*b->body,
-		bt_set_v(pos),
-		bt_set_v(ang * vec3::EZ),
-		bt_set_v(ang * vec3::EY));
+		*a->get_component<SolidBody>()->body,
+		*b->get_component<SolidBody>()->body,
+		bt_set_v(owner->pos),
+		bt_set_v(owner->ang * vec3::EZ),
+		bt_set_v(owner->ang * vec3::EY));
 	((btUniversalConstraint*)con)->setLimit(4, 0,0.1f);
 #endif
 }
 
-Link *Link::create(LinkType type, Entity *a, Entity *b, const vec3 &pos, const quaternion &ang) {
+/*Link *Link::create(LinkType type, Entity *a, Entity *b, const vec3 &pos, const quaternion &ang) {
 	msg_write(format("LINK   %d   %s  %s", (int)type, p2s(a), p2s(b)));
 	if (type == LinkType::SOCKET) {
 		return new LinkSocket(a, b, pos);
@@ -119,10 +142,9 @@ Link *Link::create(LinkType type, Entity *a, Entity *b, const vec3 &pos, const q
 		throw Exception("unknown link: " + i2s((int)type));
 	}
 	return nullptr;
-}
+}*/
 
-Link::~Link() {
-}
+Link::~Link() = default;
 
 void Link::set_motor(float v, float max) {
 #if HAS_LIB_BULLET

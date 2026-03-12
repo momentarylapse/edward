@@ -37,8 +37,8 @@ public:
 	void on_init() override;
 	void on_iterate(float dt) override;
 
-	void add_link(Link *l);
-	void delete_link(Link *l);
+	void register_link(Link *l);
+	void unregister_link(Link *l);
 
 	void set_active_physics(Entity *o, bool active, bool passive);
 	void register_body(SolidBody* sb);
@@ -64,8 +64,6 @@ public:
 	vec3 gravity;
 
 	int num_steps, num_link_steps;
-
-	Array<Link*> links;
 
 	static const kaba::Class* _class;
 };

@@ -20,6 +20,7 @@ MaterialManager::MaterialManager(Context* _ctx, const Path& _material_dir) {
 	material_dir = _material_dir;
 	// create the default material
 	trivial_material = new Material(ctx);
+	trivial_material->textures = {ctx->tex_white};
 	//trivial_material->shader_path = Shader::default_3d;
 
 	set_default(trivial_material);
@@ -130,7 +131,7 @@ Material* MaterialManager::load(const Path& filename) {
 	if (!c.load(material_dir | filename.with(".material"))) {
 		//if (engine.ignore_missing_files) {
 			msg_error("material file missing: " + filename.str());
-			return default_material->copy();
+			return default_material;
 		/*} else {
 			throw Exception("material file missing: " + filename.str());
 		}*/

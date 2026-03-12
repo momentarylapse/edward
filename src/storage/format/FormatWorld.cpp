@@ -340,7 +340,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 
 	auto save_component = [] (const ScriptInstanceData& c) {
 		auto ee = xml::Element("component");
-		if (!c.filename.is_empty() and !c.filename.is_in("y"))
+		if (!c.filename.is_empty() and !c.filename.is_in("yengine"))
 			ee.add_attribute("script", str(c.filename));
 		ee.add_attribute("class", c.class_name);
 		for (auto &v: c.variables)

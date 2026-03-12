@@ -275,15 +275,17 @@ bool World::load(const LevelData &ld) {
 	}
 
 
-	if (auto physics = SystemManager::get<Physics>()) {
-		auto& model_list = entity_manager->get_component_list<Model>();
-		for (auto &l: ld.links) {
-			Entity *a = model_list[l.object[0]]->owner;
-			Entity *b = nullptr;
-			if (l.object[1] >= 0)
-				b = model_list[l.object[1]]->owner;
-			physics->add_link(Link::create(l.type, a, b, l.pos, quaternion::rotation(l.ang)));
-		}
+	auto& model_list = entity_manager->get_component_list<Model>();
+	for (auto &l: ld.links) {
+		Entity *a = model_list[l.object[0]]->owner;
+		Entity *b = nullptr;
+		if (l.object[1] >= 0)
+			b = model_list[l.object[1]]->owner;
+		auto e = create_entity(l.pos, quaternion::rotation(l.ang));
+		auto ll = entity_manager->add_component<Link>(e);
+		ll->a = a;
+		ll->b = b;
+		ll->link_type = l.type;
 	}
 
 	auto& cameras = entity_manager->get_component_list<Camera>();

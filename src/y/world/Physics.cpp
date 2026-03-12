@@ -12,6 +12,9 @@
 #include <ecs/Entity.h>
 #include <lib/base/iter.h>
 
+#include "lib/kaba/syntax/Class.h"
+#include "lib/os/msg.h"
+
 #if HAS_LIB_BULLET
 #include <btBulletDynamicsCommon.h>
 //#include <BulletCollision/CollisionShapes/btConvexPointCloudShape.h>
@@ -120,12 +123,17 @@ void Physics::on_add_component(const EntityMessageParams &params) {
 	if (auto sb = params.component->as<SolidBody>()) {
 		//msg_error("ADD SOLID BODY");
 		register_body(sb);
+	} else if (auto l = params.component->as<Link>()) {
+		//msg_error("ADD LINK");
+		register_link(l);
 	}
 }
 
 void Physics::on_remove_component(const EntityMessageParams &params) {
 	if (auto sb = params.component->as<SolidBody>()) {
 		unregister_body(sb);
+	} else if (auto l = params.component->as<Link>()) {
+		unregister_link(l);
 	}
 }
 
@@ -156,20 +164,15 @@ void Physics::on_iterate(float dt) {
 	}
 }
 
-void Physics::add_link(Link *l) {
-	links.add(l);
+void Physics::register_link(Link *l) {
+	l->create();
 #if HAS_LIB_BULLET
 	dynamicsWorld->addConstraint(l->con, true);
 #endif
 }
 
-void Physics::delete_link(Link* _l) {
-	for (auto&& [i, l]: enumerate(links))
-		if (l == _l) {
-			//msg_write(" -> LINK");
-			links.erase(i);
-			delete l;
-		}
+void Physics::unregister_link(Link *l) {
+
 }
 
 void Physics::register_body(SolidBody *sb) {

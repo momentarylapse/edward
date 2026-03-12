@@ -449,14 +449,11 @@ void export_world(kaba::Exporter* ext) {
 
 
 	ext->declare_class_size("Physics", sizeof(Physics));
-	ext->declare_class_element("Physics.links", &Physics::links);
 	ext->declare_class_element("Physics.gravity", &Physics::gravity);
 	ext->declare_class_element("Physics.mode", &Physics::mode);
 	ext->declare_class_element("Physics.enabled", &Physics::enabled);
 	ext->declare_class_element("Physics.collisions_enabled", &Physics::collisions_enabled);
 	ext->link_class_func("Physics.set_active_physics", &Physics::set_active_physics);
-	ext->link_class_func("Physics.add_link", &Physics::add_link);
-	ext->link_class_func("Physics.delete_link", &Physics::delete_link);
 	ext->link_class_func("Physics.get_g", &Physics::get_g);
 
 
@@ -515,12 +512,13 @@ void export_world(kaba::Exporter* ext) {
 	ext->link_class_func("Light.Cone.__init__", &Light::__init_cone__);*/
 
 	ext->declare_class_size("Link", sizeof(Link));
+	ext->declare_class_element("Link.type", &Link::link_type);
 	ext->declare_class_element("Link.a", &Link::a);
 	ext->declare_class_element("Link.b", &Link::b);
 	ext->link_class_func("Link.set_motor", &Link::set_motor);
 	ext->link_class_func("Link.set_frame", &Link::set_frame);
 	//ext->link_class_func("Link.set_axis", &Link::set_axis);
-	ext->link_class_func("Link.__del_override__", &DeletionQueue::add);
+	//ext->link_class_func("Link.__del_override__", &DeletionQueue::add);
 
 	ext->link("world", &world);
 	ext->link("cam", &cam_main);
@@ -958,6 +956,7 @@ void import_kaba() {
 	import_component_class<ModelRef>(m_world, "ModelRef");
 	import_component_class<TerrainRef>(m_world, "TerrainRef");
 	import_component_class<EgoMarker>(m_world, "EgoMarker");
+	import_component_class<Link>(m_world, "Link");
 	import_component_class<Physics>(m_world, "Physics", "ecs.System"); // well, not a Component... but ok
 
 	auto m_fx = kaba::default_context->load_module("yengine/fx.kaba");
@@ -1098,6 +1097,8 @@ const kaba::Class *find_class(const Path &filename, const string &name) {
 			return Camera::_class;
 		if (name == "Light")
 			return Light::_class;
+		if (name == "Link")
+			return Link::_class;
 		if (name == "ModelRef")
 			return ModelRef::_class;
 		if (name == "TerrainRef")
@@ -1164,6 +1165,8 @@ void* create_instance(const kaba::Class *c, const Array<ScriptInstanceDataVariab
 		return new Skeleton;
 	if (c == Light::_class)
 		return new Light(yrenderer::LightType::POINT, White);
+	if (c == Link::_class)
+		return new Link;
 	if (c == Camera::_class)
 		return new Camera;
 	if (c == audio::SoundSource::_class)

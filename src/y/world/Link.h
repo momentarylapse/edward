@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <ecs/BaseClass.h>
+#include <ecs/Component.h>
 
 struct vec3;
 struct quaternion;
@@ -20,6 +20,7 @@ class SolidBody;
 
 
 enum class LinkType {
+	NONE,
 	SOCKET,
 	HINGE,
 	UNIVERSAL,
@@ -27,25 +28,32 @@ enum class LinkType {
 	SLIDER
 };
 
-class Link : public BaseClass {
+class Link : public Component {
 public:
-	Link(LinkType type, Entity *a, Entity *b);
-	~Link();
+	//Link();
+	~Link() override;
 
 	void set_motor(float v, float max);
 	void set_frame(int n, const quaternion &q);
 
-	btTypedConstraint *con;
-	LinkType link_type;
-	SolidBody *a;
-	SolidBody *b;
+	btTypedConstraint *con = nullptr;
+	LinkType link_type = LinkType::NONE;
+	Entity *a = nullptr;
+	Entity *b = nullptr;
 
 	void _create_link_data(vec3 &pa, vec3 &pb, quaternion &iqa, quaternion &iqb, const vec3 &pos);
 
-	static Link* create(LinkType type, Entity *a, Entity *b, const vec3 &pos, const quaternion &ang);
+	//static Link* create(LinkType type, Entity *a, Entity *b, const vec3 &pos, const quaternion &ang);
+
+	void create();
+	void create_socket();
+	void create_hinge();
+	void create_universal();
+
+	static const kaba::Class* _class;
 };
 
-class LinkSocket : public Link {
+/*class LinkSocket : public Link {
 public:
 	LinkSocket(Entity *a, Entity *b, const vec3 &pos);
 	void __init__(Entity *a, Entity *b, const vec3 &pos);
@@ -61,6 +69,6 @@ class LinkUniversal : public Link {
 public:
 	LinkUniversal(Entity *a, Entity *b, const vec3 &pos, const quaternion &ang);
 	void __init__(Entity *a, Entity *b, const vec3 &pos, const quaternion &ang);
-};
+};*/
 
 
