@@ -9,7 +9,6 @@
 #include "AdminFileList.h"
 #include "DataProject.h"
 #include "../../mode_world/data/DataWorld.h"
-#include "../../mode_world/data/WorldObject.h"
 #include "../../mode_world/data/WorldTerrain.h"
 #include "../../mode_model/data/DataModel.h"
 #include "../../mode_material/data/DataMaterial.h"

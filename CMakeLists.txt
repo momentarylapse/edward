@@ -499,8 +499,6 @@ add_executable(edward
 	src/mode_project/ModeProject.cpp
 	src/mode_world/action/entity/ActionWorldAddEntity.cpp
 	src/mode_world/action/entity/ActionWorldEditComponent.cpp
-	src/mode_world/action/object/ActionWorldAddObject.cpp
-	src/mode_world/action/object/ActionWorldDeleteObject.cpp
 	src/mode_world/action/terrain/ActionWorldAddTerrain.cpp
 	src/mode_world/action/terrain/ActionWorldEditTerrainMetaData.cpp
 	src/mode_world/action/terrain/ActionWorldResizeTerrain.cpp
@@ -511,7 +509,6 @@ add_executable(edward
 	src/mode_world/data/DataCamera.cpp
 	src/mode_world/data/DataWorld.cpp
 	src/mode_world/data/WorldLink.cpp
-	src/mode_world/data/WorldObject.cpp
 	src/mode_world/data/WorldTerrain.cpp
 	src/mode_world/dialog/AddEntityPanel.cpp
 	src/mode_world/dialog/CameraPanel.cpp

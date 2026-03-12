@@ -9,7 +9,6 @@
 
 #include <sys/stat.h>
 
-#include "WorldObject.h"
 #include "WorldTerrain.h"
 #include "WorldLink.h"
 #include <lib/any/conversion.h>
@@ -32,7 +31,6 @@
 #include <world/components/Camera.h>
 #include <y/meta.h>
 #include "../action/entity/ActionWorldEditComponent.h"
-#include "../action/object/ActionWorldAddObject.h"
 #include "../action/terrain/ActionWorldAddTerrain.h"
 #include "../action/ActionWorldPaste.h"
 #include <lib/os/msg.h>
@@ -234,34 +232,6 @@ Entity *DataWorld::entity(int index) {
 void DataWorld::update_data() {
 }
 
-#if 0
-WorldObject* DataWorld::add_object(const Path &filename, const vec3& pos) {
-	WorldObject o;
-	o.pos = pos;
-	o.ang = v_0;//quaternion::ID;
-	o.is_selected = true;
-	o.filename = filename;
-	o.object = session->resource_manager->load_model_copy(filename);
-	return (WorldObject*)execute(new ActionWorldAddObject(o));
-}
-
-WorldTerrain* DataWorld::add_terrain(const Path &filename, const vec3& pos) {
-	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, filename));
-}
-
-WorldTerrain* DataWorld::add_new_terrain(const vec3& pos, const vec3& size, int num_x, int num_z) {
-	return (WorldTerrain*)execute(new ActionWorldAddTerrain(pos, size, num_x, num_z));
-}
-
-void DataWorld::edit_light(int index, const WorldLight& l) {
-	execute(new ActionWorldEditLight(index, l));
-}
-
-/*WorldCamera* DataWorld::add_camera(const WorldCamera &c) {
-	return (WorldCamera*)execute(new ActionWorldAddCamera(c));
-}*/
-#endif
-
 
 void DataWorld::copy(LevelData& temp, const Data::Selection& sel) const {
 	temp.entities.clear();
@@ -312,10 +282,6 @@ Entity* DataWorld::add_entity(const vec3& pos, const quaternion& ang) {
 void DataWorld::edit_entity(Entity* e, const vec3& pos, const quaternion& ang) {
 	execute(new ActionWorldEditBaseEntity(entity_manager->entity_index(e), pos, ang));
 }
-
-/*void DataWorld::edit_camera(int index, const WorldCamera& c) {
-	execute(new ActionWorldEditCamera(index, c));
-}*/
 
 void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
 	execute(new ActionWorldEditTerrainMetaData(index, pattern));

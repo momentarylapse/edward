@@ -8,7 +8,6 @@
 #include "FormatWorld.h"
 #include "../../mode_world/data/DataWorld.h"
 #include "../../mode_world/data/WorldLink.h"
-#include "../../mode_world/data/WorldObject.h"
 #include "../../mode_world/data/WorldTerrain.h"
 //#include "../../EdwardWindow.h"
 #include "../../Session.h"

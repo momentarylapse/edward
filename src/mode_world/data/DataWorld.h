@@ -9,7 +9,6 @@
 #define DATAWORLD_H_
 
 #include <Session.h>
-#include "WorldObject.h"
 #include "WorldTerrain.h"
 #include <data/Data.h>
 #include <view/SingleData.h>
@@ -41,7 +40,6 @@ struct WorldEntity { //: multiview::SingleData {
 	int view_stage = -1;
 
 	MultiViewType basic_type = MultiViewType::WORLD_ENTITY;
-	WorldObject object;
 	WorldTerrain terrain;
 
 	//Entity* entity = nullptr;
@@ -122,13 +120,6 @@ public:
 
 	//Selection get_selection() const override;
 
-#if 0
-	// actions
-	WorldObject *add_object(const Path &filename, const vec3 &pos);
-	WorldTerrain *add_terrain(const Path &filename, const vec3 &pos);
-	WorldTerrain *add_new_terrain(const vec3 &pos, const vec3 &size, int num_x, int num_z);
-	WorldCamera *add_camera(const WorldCamera& c);
-#endif
 	Entity* add_entity(const vec3& pos, const quaternion& ang);
 	void edit_entity(Entity* e, const vec3& pos, const quaternion& ang);
 	void edit_terrain_meta_data(int index, const vec3& pattern);
