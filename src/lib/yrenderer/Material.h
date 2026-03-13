@@ -96,7 +96,8 @@ public:
 	} friction;
 
 	explicit Material(Context* ctx);
-	xfer<Material> copy();
+	void operator=(const Material& material);
+	xfer<Material> copy() const;
 
 	bool is_transparent() const;
 	const RenderPassData& pass(int k) const;

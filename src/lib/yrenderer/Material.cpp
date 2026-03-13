@@ -34,29 +34,33 @@ Material::Material(Context* _ctx) {
 	friction.rolling = 0.90f;
 }
 
-xfer<Material> Material::copy() {
-	auto m = new Material(ctx);
-	m->albedo = albedo;
-	m->roughness = roughness;
-	m->metal = metal;
-	m->emission = emission;
+void Material::operator=(const Material& o) {
+	albedo = o.albedo;
+	roughness = o.roughness;
+	metal = o.metal;
+	emission = o.emission;
 
-	m->textures = textures;
-	m->cast_shadow = cast_shadow;
+	textures = o.textures;
+	cast_shadow = o.cast_shadow;
 
-	m->pass0 = pass0;
-	m->num_passes = num_passes;
+	pass0 = o.pass0;
+	num_passes = o.num_passes;
 	if (extended) {
-		m->extended = new ExtendedData;
-		*m->extended = *extended;
+		extended = new ExtendedData;
+		*extended = *o.extended;
 	}
-	m->reflection = reflection;
-	m->reflection.cube_map = reflection.cube_map;
-/*	if ((cube_map < 0) and (m2->cube_map_size > 0) and (reflection.mode == ReflectionCubeMapDynamical)){
-		cube_map = FxCubeMapNew(m2->cube_map_size);
-		FxCubeMapCreate(cube_map, model);
-	}*/
-	m->friction = friction;
+	reflection = o.reflection;
+	reflection.cube_map = o.reflection.cube_map;
+	/*	if ((cube_map < 0) and (m2->cube_map_size > 0) and (reflection.mode == ReflectionCubeMapDynamical)){
+			cube_map = FxCubeMapNew(m2->cube_map_size);
+			FxCubeMapCreate(cube_map, model);
+		}*/
+	friction = o.friction;
+}
+
+xfer<Material> Material::copy() const {
+	auto m = new Material(ctx);
+	*m = *this;
 	return m;
 }
 

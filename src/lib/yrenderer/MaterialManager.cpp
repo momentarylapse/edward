@@ -9,6 +9,7 @@
 #include <lib/any/any.h>
 #include <lib/os/msg.h>
 #include <lib/os/config.h>
+#include <lib/base/iter.h>
 
 namespace yrenderer {
 
@@ -138,21 +139,39 @@ Material* MaterialManager::load(const Path& filename) {
 	}
 	auto m = new Material(ctx);
 
-	m->albedo = any2color(c.get("color.albedo"));
-	m->roughness = c.get_float("color.roughness", 0.5f);
-	m->metal = c.get_float("color.metal", 0.1f);
-	m->emission = any2color(c.get("color.emission"));
+	if (c.has("parent")) {
+		auto parent = load(str(c.get("parent")));
+		*m = *parent;
+	}
 
-	auto texture_files = c.get_str_array("textures");
-	for (auto &f: texture_files)
-		m->textures.add(ctx->texture_manager->load_texture(f));
-	m->pass0.shader_path = c.get_str("shader", "");
-	m->cast_shadow = c.get_bool("shadow.cast", true);
+	if (c.has("color.albedo"))
+		m->albedo = any2color(c.get("color.albedo"));
+	if (c.has("color.roughness"))
+		m->roughness = c.get_float("color.roughness", 0.5f);
+	if (c.has("color.metal"))
+		m->metal = c.get_float("color.metal", 0.1f);
+	if (c.has("color.emission"))
+		m->emission = any2color(c.get("color.emission"));
 
-	m->friction._static = c.get_float("friction.static", 0.5f);
-	m->friction.sliding = c.get_float("friction.slide", 0.5f);
-	m->friction.rolling = c.get_float("friction.roll", 0.5f);
-	m->friction.jump = c.get_float("friction.jump", 0.5f);
+	if (c.has("textures")) {
+		auto texture_files = c.get_str_array("textures");
+		m->textures.resize(max(m->textures.num, texture_files.num));
+		for (const auto& [i, f]: enumerate(texture_files))
+			m->textures[i] = ctx->texture_manager->load_texture(f);
+	}
+	if (c.has("shader"))
+		m->pass0.shader_path = c.get_str("shader", "");
+	if (c.has("shadow.cast"))
+		m->cast_shadow = c.get_bool("shadow.cast", true);
+
+	if (c.has("friction.static"))
+		m->friction._static = c.get_float("friction.static", 0.5f);
+	if (c.has("friction.slide"))
+		m->friction.sliding = c.get_float("friction.slide", 0.5f);
+	if (c.has("friction.roll"))
+		m->friction.rolling = c.get_float("friction.roll", 0.5f);
+	if (c.has("friction.jump"))
+		m->friction.jump = c.get_float("friction.jump", 0.5f);
 
 	auto add_pass = [m] (int index) -> Material::RenderPassData& {
 		if (index == 1)
@@ -203,7 +222,7 @@ Material* MaterialManager::load(const Path& filename) {
 	string mode = c.get_str("reflection.mode", "");
 	if (mode == "static") {
 		m->reflection.mode = ReflectionMode::CUBE_MAP_STATIC;
-		texture_files = c.get_str_array("reflection.cubemap");
+		auto texture_files = c.get_str_array("reflection.cubemap");
 		shared_array<Texture> cmt;
 		for (auto &f: texture_files)
 			cmt.add(ctx->texture_manager->load_texture(f));
