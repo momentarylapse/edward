@@ -35,35 +35,7 @@ string file_secure(const Path &filename) {
 	return "[no file]";
 }
 
-string render_material(ModelMaterial *m) {
-	string uid = "image:" + p2s(m);
-	Image im(PREVIEW_SIZE, PREVIEW_SIZE, White);
-	const vec3 L = vec3(-0.2f, 0.6f, 1).normalized();
-	for (int i=0; i<PREVIEW_SIZE; i++)
-		for (int j=0; j<PREVIEW_SIZE; j++) {
-			color c = m->col.albedo;
-			if (m->texture_levels.num >= 1) {
-				auto t = m->texture_levels[0]->image.get();
-				c *= t->get_pixel(i * t->width / PREVIEW_SIZE, j * t->height / PREVIEW_SIZE);
-			}
-			const vec2 p0 = vec2((float)i / PREVIEW_SIZE - 0.5f, (float)j / PREVIEW_SIZE - 0.5f) * 2;
-			float r = p0.length();
-			if (r < 1) {
-				vec3 n = vec3(p0.x, p0.y, -sqrtf(1 - r*r));
-				float d = clamp(-vec3::dot(n, L), 0.0f, 1.0f);
-				c = c * (d*(1-m->col.roughness) + m->col.roughness);
-				c += m->col.emission;
-			} else {
-				c = color(0,0,0,0);
-			}
-			c.clamp();
-
-			im.set_pixel(i, j, c);
-		}
-	// TODO really render!
-	xhui::set_image(uid, im);
-	return uid;
-}
+string render_material(Session*, yrenderer::Material*);
 
 class XMaterialPanel : public xhui::Panel {
 public:
@@ -75,10 +47,10 @@ public:
 		popup_textures = xhui::create_resource_menu("model-texture-list-popup");
 
 		auto tex_list = (xhui::ListView*)get_control("textures");
-		tex_list->column_factories[1].f_create = [](const string& id) {
+		tex_list->column_factories[0].f_create = [](const string& id) {
 			return xhui::create_control("Image", "", id);
 		};
-		tex_list->column_factories[2].f_create = [](const string& id) {
+		tex_list->column_factories[1].f_create = [](const string& id) {
 			return xhui::create_control("Label", "!markup", id);
 		};
 
@@ -113,7 +85,7 @@ public:
 		auto m = material();
 		int nt = 0;
 
-		set_string("preview", render_material(m));
+		set_string("preview", render_material(data->session, m->material.get()));
 		set_string("header", file_secure(m->filename));
 		set_string("subheader", format("%d polygons", nt));
 
@@ -171,7 +143,7 @@ public:
 		data->execute(new ActionModelEditMaterial(index, col));
 		this->parent->apply_queue_depth --;
 
-		set_string("preview", render_material(m));
+		set_string("preview", render_material(data->session, m->material.get()));
 	}
 
 
@@ -191,7 +163,7 @@ public:
 			string ext = format("\n<span size='small' alpha='50%%>   %d x %d, %s</span>", img->width, img->height, space);
 			if (mat->texture_levels[i]->edited)
 				ext += " *";
-			add_string("textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(mat->texture_levels[i]->filename).replace("@linear", "") + ext)));
+			add_string("textures", format("%s\\%s", id, (file_secure(mat->texture_levels[i]->filename).replace("@linear", "") + ext)));
 			delete icon;
 		}
 	//	set_int("textures", mode_mesh()->current_texture_level);
@@ -385,7 +357,7 @@ void ModelMaterialPanel::fill_material_list() {
 	reset("materials");
 	for (int i=0;i<data->materials.num;i++) {
 		int nt = count_material_polygons(data, i);
-		string im = render_material(data->materials[i]);
+		string im = render_material(data->session, data->materials[i]->material.get());
 		add_string("materials", str(i)); //format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 		//add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}

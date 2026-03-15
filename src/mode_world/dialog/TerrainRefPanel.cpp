@@ -6,6 +6,7 @@
 #include "../ModeEditTerrain.h"
 #include "../data/DataWorld.h"
 #include <view/DocumentSession.h>
+#include <view/dialogs/MaterialEditDialog.h>
 #include <y/world/Terrain.h>
 #include <lib/yrenderer/Material.h>
 #include <lib/ygraphics/graphics-impl.h>
@@ -18,7 +19,7 @@
 TerrainRefPanel::TerrainRefPanel(DataWorld* _data, int _index) : Node("terrain-panel") {
 	from_source(R"foodelim(
 Dialog terrain-panel ''
-	Grid ? ''
+	Grid main-grid ''
 		Grid ? ''
 			Label ? 'Terrain' right disabled
 			Grid ? ''
@@ -38,6 +39,10 @@ Dialog terrain-panel ''
 )foodelim");
 	data = _data;
 	index = _index;
+
+	material_edit_panel = new MaterialEditPanel(data);
+	//embed("main-grid", 0, 1, material_edit_panel);
+
 	auto e = data->entity(index);
 	auto tr = e->get_component<TerrainRef>();
 
@@ -86,5 +91,6 @@ void TerrainRefPanel::update_ui() {
 	}
 	if (auto m = tr->material) {
 		set_string("material", str(data->session->ctx->material_manager->get_filename(m)));
+		material_edit_panel->set_material(m);
 	}
 }

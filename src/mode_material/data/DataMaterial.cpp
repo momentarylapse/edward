@@ -168,9 +168,8 @@ DataMaterial DataMaterial::from_material(DocumentSession* s, yrenderer::Material
 	m.appearance.metal = material->metal;
 	m.appearance.roughness = material->roughness;
 	m.appearance.texture_files.clear();
-	const Path dir = s->session->storage->get_root_dir(FD_TEXTURE);
 	for (int i=0;i<material->textures.num;i++)
-		m.appearance.texture_files.add(s->session->resource_manager->texture_manager->texture_file(material->textures[i].get()).relative_to(dir));
+		m.appearance.texture_files.add(s->session->resource_manager->texture_manager->texture_file(material->textures[i].get()));
 	m.appearance.passes[0].shader.file = material->pass0.shader_path;
 
 	// TODO alpha etc
@@ -191,7 +190,7 @@ yrenderer::Material* DataMaterial::to_material() const {
 	m->emission = appearance.emissive;
 	m->cast_shadow = appearance.cast_shadow;
 
-	for (const auto t: appearance.texture_files)
+	for (const auto& t: appearance.texture_files)
 		m->textures.add(session->resource_manager->load_texture(t));
 
 	m->num_passes = appearance.passes.num;

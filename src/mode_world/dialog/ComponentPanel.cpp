@@ -135,9 +135,8 @@ Dialog material-panel ''
 	}
 	void fill_texture_list() {
 		reset("textures");
-		const Path dir = data->session->storage->get_root_dir(FD_TEXTURE);
 		for (int i=0; i<min(MATERIAL_MAX_TEXTURES, material->textures.num); i++)
-			add_string("textures", format("%s\\%s", xhui::texture_to_image(material->textures[i]), data->session->ctx->texture_manager->texture_file(material->textures[i].get()).relative_to(dir)));
+			add_string("textures", format("%s\\%s", xhui::texture_to_image(material->textures[i]), data->session->ctx->texture_manager->texture_file(material->textures[i].get())));
 	}
 	yrenderer::Material* material;
 	DataWorld* data;

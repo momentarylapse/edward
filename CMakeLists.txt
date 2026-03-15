@@ -543,6 +543,7 @@ add_executable(edward
 	src/test/UnitTest.cpp
 	src/view/dialogs/CommonDialogs.cpp
 	src/view/dialogs/DocumentSwitcher.cpp
+	src/view/dialogs/MaterialEditDialog.cpp
 	src/view/dialogs/ProjectPanel.cpp
 	src/view/ActionController.cpp
 	src/view/DocumentSession.cpp

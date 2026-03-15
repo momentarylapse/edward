@@ -11,7 +11,7 @@
 
 
 string file_secure(const Path &filename);
-string render_material(ModelMaterial *m);
+string render_material(Session*, yrenderer::Material*);
 
 ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(ModeMesh* _mode_mesh) : Dialog("", _mode_mesh->session->win) {
 	mode_mesh = _mode_mesh;
@@ -38,7 +38,7 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(ModeMesh* _mode_mesh)
 
 	for (int i=0;i<mode_mesh->data->materials.num;i++) {
 		//int nt = count_material_polygons(data, i);
-		string im = render_material(mode_mesh->data->materials[i]);
+		string im = render_material(mode_mesh->data->session, mode_mesh->data->materials[i]->material.get());
 		add_string("material_list", format("%s\\%s", im, file_secure(mode_mesh->data->materials[i]->filename)));
 		//add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}

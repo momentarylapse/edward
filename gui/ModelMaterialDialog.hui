@@ -1,7 +1,7 @@
 Dialog model-material-dialog ''
 	Grid card '' class=card
 		Grid ? '' spacing=16
-			Image preview ''
+			Image preview '' width=48 height=48
 			Grid ? '' spacing=0
 				Label header '' bold expandx
 				---|
@@ -31,4 +31,4 @@ Dialog model-material-dialog ''
 							ColorButton emission "" linear "tooltip=Color in absolute darkness"
 				---|
 				Group grp-textures "Textures"
-					ListView textures "Level\\\\Texture" height=130 nobar format=tit select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
+					ListView textures "\\Texture" height=130 nobar format=it select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"

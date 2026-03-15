@@ -357,7 +357,7 @@ void prepare_image(XImage* image) {
 	if (!image->dirty)
 		return;
 
-	if (!image->image)
+	if (!image->image and image->filename)
 		image->image = Image::load(image->filename);
 
 #ifdef USING_VULKAN
@@ -368,10 +368,12 @@ void prepare_image(XImage* image) {
 	if (!image->texture)
 		image->texture = new ygfx::Texture();
 
-	ColorSpace cs = image->image->color_space;
-	if (color_space_shaders == ColorSpace::SRGB)
-		cs = ColorSpace::Linear;
-	image->texture->write_with_color_space(*image->image, cs);
+	if (image->image) {
+		ColorSpace cs = image->image->color_space;
+		if (color_space_shaders == ColorSpace::SRGB)
+			cs = ColorSpace::Linear;
+		image->texture->write_with_color_space(*image->image, cs);
+	}
 	image->dirty = false;
 }
 

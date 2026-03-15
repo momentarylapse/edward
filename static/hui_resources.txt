@@ -3954,7 +3954,7 @@ spacing=16
 2
 Image
 preview
-
+width=48,height=48
 0
 0
 0
@@ -4092,7 +4092,7 @@ grp-textures
 1
 ListView
 textures
-height=130,nobar,format=tit,select-single
+height=130,nobar,format=it,select-single
 0
 0
 0
@@ -13258,7 +13258,7 @@ model-material-dialog/override-colors
 Override material
 
 model-material-dialog/textures
-Level\\\\Texture
+\\Texture
 Mixing texture levels (multitexturing)\n- Actions via right click
 model-material-list-popup/apply-material
 Apply to selection
