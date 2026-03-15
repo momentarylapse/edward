@@ -26,6 +26,7 @@ class ModeFont;
 class ModeAdministration;
 class Storage;
 class Progress;
+class MaterialPreviewManager;
 class ResourceManager;
 namespace edward {
 	class PluginManager;
@@ -103,6 +104,7 @@ public:
 	ResourceManager *resource_manager;
 	DrawingHelper *drawing_helper;
 	edward::PluginManager* plugin_manager;
+	owned<MaterialPreviewManager> material_preview_manager;
 
 	owned_array<DocumentSession> documents;
 	DocumentSession* cur_doc = nullptr;

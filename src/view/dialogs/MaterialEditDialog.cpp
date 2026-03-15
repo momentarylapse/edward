@@ -1,97 +1,19 @@
 #include "MaterialEditDialog.h"
-
-#include <cmath>
-
-#include "Session.h"
-#include "data/Data.h"
+#include <Session.h>
+#include <data/Data.h>
 #include "helper/ResourceManager.h"
-#include "lib/xhui/xhui.h"
-#include "lib/yrenderer/MaterialManager.h"
-#include <lib/ygraphics/graphics-impl.h>
-
-#include "lib/mesh/GeometryBall.h"
-#include "lib/os/msg.h"
-#include "lib/xhui/controls/ListView.h"
-#include "lib/yrenderer/scene/SceneRenderer.h"
-#include "lib/yrenderer/scene/path/RenderPathForward.h"
-#include "lib/yrenderer/target/TextureRenderer.h"
-#include "view/EdwardWindow.h"
-#include <lib/image/image.h>
-
-#include "lib/yrenderer/TextureManager.h"
-#include "lib/yrenderer/post/ThroughShaderRenderer.h"
-#include "lib/yrenderer/target/HeadlessRendererVulkan.h"
+#include <lib/xhui/xhui.h>
+#include <lib/yrenderer/MaterialManager.h>
+#include <lib/os/msg.h>
+#include <lib/xhui/controls/ListView.h>
+#include <lib/yrenderer/TextureManager.h>
+#include <view/MaterialPreviewManager.h>
 
 
 string file_secure(const Path& filename);
 
 constexpr int PREVIEW_SIZE = 48;
 
-static base::map<yrenderer::Material*, shared<ygfx::Texture>> mat_textures;
-static shared<ygfx::DepthBuffer> mat_depth_buffer;
-
-ygfx::Texture* get_mat_texture(yrenderer::Material* m) {
-	if (mat_textures.contains(m))
-		return mat_textures[m].get();
-	auto tex = new ygfx::Texture(PREVIEW_SIZE*2, PREVIEW_SIZE*2, "rgba:i8");
-	mat_textures.set(m, tex);
-	if (!mat_depth_buffer)
-		mat_depth_buffer = new ygfx::DepthBuffer(PREVIEW_SIZE*2, PREVIEW_SIZE*2, "d:f32");
-	return tex;
-}
-
-class XEmitter : public yrenderer::MeshEmitter {
-public:
-	yrenderer::Material* material;
-	owned<ygfx::VertexBuffer> vb;
-	XEmitter(Session* s, yrenderer::Material* m) : yrenderer::MeshEmitter(s->ctx, "x") {
-		material = m;
-		vb = new ygfx::VertexBuffer("3f,3f,2f");
-		auto g = GeometryBall::create({0,0,4}, 1, 32, 64);
-		g.smoothen();
-		g.build(vb.get());
-	}
-	void emit(const yrenderer::RenderParams &params, yrenderer::RenderViewData &rvd, bool shadow_pass) override {
-		if (!material->cast_shadow and shadow_pass)
-			return;
-
-		auto shader = rvd.get_shader(material, 0, "default", "");
-		if (shadow_pass)
-			material = rvd.material_shadow;
-
-		auto& rd = rvd.start(params, mat4::ID, shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb.get());
-
-		rd.draw_triangles(params, vb.get());
-	}
-};
-
-string render_material(Session* session, yrenderer::Material *m) {
-	auto tex = get_mat_texture(m);
-
-	yrenderer::Light light;
-	light.init(yrenderer::LightType::DIRECTIONAL, White);
-	light._ang = quaternion::rotation({0.5f,-0.5f,0});
-	light.harshness = 0.5f;
-	light.allow_shadow = false;//true;
-	light.enabled = true;
-
-	yrenderer::RenderPathForward path(session->ctx, 256);
-	path.background_color = color(0,0,0,0);
-	path.add_opaque_emitter(new XEmitter(session, m));
-	path.set_view({{0,0,0}, quaternion::ID, pi/6, 0.1f, 100});
-	path.set_lights({&light});
-
-	Image im(64, 64, Black);
-	path.scene_view.cube_map = new ygfx::CubeMap(64, "rgba:i8");
-	for (int i=0; i<6; i++)
-		path.scene_view.cube_map->write_side(i, im);
-
-	yrenderer::HeadlessRenderer hr(session->ctx, {tex, mat_depth_buffer.get()});
-	hr.add_child(&path);
-	hr.render({1, false});
-
-	return xhui::texture_to_image(tex);
-}
 
 MaterialEditPanel::MaterialEditPanel(Data* _data) : xhui::Panel("") {
 	data = _data;
@@ -143,6 +65,10 @@ Dialog model-material-dialog ''
 	tex_list->column_factories[1].f_create = [](const string& id) {
 		return xhui::create_control("Label", "!markup", id);
 	};
+	event("albedo", [this] {
+		material->albedo = get_color("albedo");
+		data->session->material_preview_manager->invalidate(material);
+	});
 }
 
 void MaterialEditPanel::set_material(yrenderer::Material* _material) {
@@ -153,7 +79,7 @@ void MaterialEditPanel::set_material(yrenderer::Material* _material) {
 void MaterialEditPanel::update_ui() {
 	int nt = 0;
 
-	set_string("preview", render_material(data->session, material));
+	set_string("preview", data->session->material_preview_manager->get(material));
 	set_string("header", str(data->session->resource_manager->material_manager->get_filename(material)));
 	set_string("subheader", "...");
 	set_color("albedo", material->albedo);

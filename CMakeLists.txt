@@ -549,6 +549,7 @@ add_executable(edward
 	src/view/DocumentSession.cpp
 	src/view/DrawingHelper.cpp
 	src/view/EdwardWindow.cpp
+	src/view/MaterialPreviewManager.cpp
 	src/view/Mode.cpp
 	src/view/MultiView.cpp
 	src/view/MultiViewMeshEmitter.cpp

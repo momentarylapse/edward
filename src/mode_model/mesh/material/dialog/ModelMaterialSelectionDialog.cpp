@@ -7,11 +7,11 @@
 #include <lib/xhui/controls/Image.h>
 #include <lib/xhui/controls/ListView.h>
 #include <view/EdwardWindow.h>
+#include <view/MaterialPreviewManager.h>
 #include <mode_model/mesh/ModeMesh.h>
 
 
 string file_secure(const Path &filename);
-string render_material(Session*, yrenderer::Material*);
 
 ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(ModeMesh* _mode_mesh) : Dialog("", _mode_mesh->session->win) {
 	mode_mesh = _mode_mesh;
@@ -38,7 +38,7 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(ModeMesh* _mode_mesh)
 
 	for (int i=0;i<mode_mesh->data->materials.num;i++) {
 		//int nt = count_material_polygons(data, i);
-		string im = render_material(mode_mesh->data->session, mode_mesh->data->materials[i]->material.get());
+		string im = mode_mesh->data->session->material_preview_manager->get(mode_mesh->data->materials[i]->material.get());
 		add_string("material_list", format("%s\\%s", im, file_secure(mode_mesh->data->materials[i]->filename)));
 		//add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}

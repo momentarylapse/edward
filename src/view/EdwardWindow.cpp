@@ -35,6 +35,7 @@
 #include "Session.h"
 #include <cmath>
 
+#include "MaterialPreviewManager.h"
 #include "Session.h"
 #include "Session.h"
 #include "lib/base/iter.h"
@@ -180,6 +181,9 @@ Dialog x x padding=0
 		xhui::run_later(0.01f, [this] {
 			session->promise_started(session.get());
 		});
+	});
+	event_xp(id, xhui::event_id::JustBeforeDraw, [this] (Painter* p) {
+		session->material_preview_manager->update();
 	});
 	event_xp("overlay-area", xhui::event_id::Draw, [this] (Painter* p) {
 		p->set_color(White);

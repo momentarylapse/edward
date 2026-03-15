@@ -25,7 +25,7 @@
 #include <y/EngineData.h>
 #include <view/MultiView.h>
 #include <view/DocumentSession.h>
-#include <cmath>
+#include <view/MaterialPreviewManager.h>
 
 static constexpr int PREVIEW_SIZE = 48;
 
@@ -34,8 +34,6 @@ string file_secure(const Path &filename) {
 		return str(filename);
 	return "[no file]";
 }
-
-string render_material(Session*, yrenderer::Material*);
 
 class XMaterialPanel : public xhui::Panel {
 public:
@@ -85,7 +83,7 @@ public:
 		auto m = material();
 		int nt = 0;
 
-		set_string("preview", render_material(data->session, m->material.get()));
+		set_string("preview", data->session->material_preview_manager->get(m->material.get()));
 		set_string("header", file_secure(m->filename));
 		set_string("subheader", format("%d polygons", nt));
 
@@ -143,7 +141,7 @@ public:
 		data->execute(new ActionModelEditMaterial(index, col));
 		this->parent->apply_queue_depth --;
 
-		set_string("preview", render_material(data->session, m->material.get()));
+		set_string("preview", data->session->material_preview_manager->get(m->material.get()));
 	}
 
 
@@ -357,7 +355,7 @@ void ModelMaterialPanel::fill_material_list() {
 	reset("materials");
 	for (int i=0;i<data->materials.num;i++) {
 		int nt = count_material_polygons(data, i);
-		string im = render_material(data->session, data->materials[i]->material.get());
+		string im = data->session->material_preview_manager->get(data->materials[i]->material.get());
 		add_string("materials", str(i)); //format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 		//add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}

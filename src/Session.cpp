@@ -8,6 +8,7 @@
 #include "Session.h"
 #include <view/DocumentSession.h>
 #include <view/EdwardWindow.h>
+#include <view/MaterialPreviewManager.h>
 #include "Edward.h"
 /*#include "mode/ModeNone.h"
 #include "mode/ModeCreation.h"
@@ -59,6 +60,7 @@ Session* create_session(bool with_window) {
 		s->plugin_manager = new edward::PluginManager(s, os::app::directory_static | "plugins");
 	else
 		s->plugin_manager = new edward::PluginManager(s, os::app::directory_static | ".." | "plugins");
+	s->material_preview_manager = new MaterialPreviewManager(s);
 	//s->load_project(xhui::config.get_str("RootDir", ""));
 	if (with_window) {
 		s->_win = new EdwardWindow(s);
