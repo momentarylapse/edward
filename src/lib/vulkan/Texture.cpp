@@ -135,13 +135,16 @@ Texture::Texture(int w, int h, const string &format) : Texture() {
 	override(im);*/
 	width = w;
 	height = h;
-	_create_image(nullptr, VK_IMAGE_TYPE_2D, parse_format(format), 1, VK_SAMPLE_COUNT_1_BIT, false, false, false);
-	view = image.create_view(VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D, mip_levels, 0, 1);
-	_create_sampler();
+	if (default_device) {
+		_create_image(nullptr, VK_IMAGE_TYPE_2D, parse_format(format), 1, VK_SAMPLE_COUNT_1_BIT, false, false, false);
+		view = image.create_view(VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D, mip_levels, 0, 1);
+		_create_sampler();
+	}
 }
 
 Texture::~Texture() {
-	_destroy();
+	if (default_device)
+		_destroy();
 }
 
 VolumeTexture::VolumeTexture(int nx, int ny, int nz, const string &format) {
@@ -202,6 +205,8 @@ xfer<Texture> Texture::load(const Path &filename) {
 
 
 void Texture::_load(const Path &filename) {
+	if (!default_device)
+		return;
 	auto im = ownify(Image::load(filename));
 	if (!im)
 		throw Exception("failed to load texture image!");
@@ -219,6 +224,8 @@ void Texture::write_with_color_space(const Image &im, ColorSpace color_space) {
 }
 
 void Texture::writex(const void *data, int nx, int ny, int nz, const string &format) {
+	if (!default_device)
+		return;
 	_destroy();
 	width = nx;
 	height = ny;

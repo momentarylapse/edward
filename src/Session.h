@@ -127,6 +127,7 @@ public:
 
 	Path project_dir;
 	void load_project(const Path& dir);
+	static Path guess_root_directory(const Path& filename);
 };
 
 Session* create_session(bool with_window = true);

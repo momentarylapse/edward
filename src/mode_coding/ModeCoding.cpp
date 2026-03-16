@@ -92,7 +92,7 @@ void ModeCoding::update_menu() {
 
 void ModeCoding::load(const Path& _filename) {
 	auto filename = _filename.absolute().canonical();
-	session->storage->guess_root_directory(filename);
+	session->load_project(Session::guess_root_directory(filename));
 	editor->load(filename);
 	data->filename = filename;
 	data->reset_history();

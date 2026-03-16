@@ -41,7 +41,6 @@ public:
 
 
 	void set_root_directory(const Path &directory);
-	void guess_root_directory(const Path &filename);
 
 	Path get_root_dir(int kind);
 	static string fd_ext(int kind);

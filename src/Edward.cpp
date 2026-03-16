@@ -40,7 +40,6 @@ bool any_session_running();
 extern bool DataModelAllowUpdating;
 
 void update_file(const Path &filename, bool allow_write) {
-	//Session session;
 
 	auto session = create_session(false);
 	auto storage = session->storage;
@@ -49,7 +48,7 @@ void update_file(const Path &filename, bool allow_write) {
 
 	auto _filename = filename.absolute().canonical();
 
-	storage->guess_root_directory(_filename);
+	session->load_project(Session::guess_root_directory(_filename));
 	session->resource_manager->shader_manager->shader_dir = storage->root_dir_kind[FD_MATERIAL];
 	//msg_write(storage->root_dir.str());
 

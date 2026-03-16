@@ -15,13 +15,12 @@ namespace yrenderer {
 
 	using namespace ygfx;
 
-MaterialManager::MaterialManager(Context* _ctx, const Path& _material_dir) {
-	ctx = _ctx;
-	shader_manager = ctx->shader_manager;
+MaterialManager::MaterialManager(TextureManager* tm, const Path& _material_dir) {
+	texture_manager = tm;
 	material_dir = _material_dir;
 	// create the default material
 	trivial_material = new Material();
-	trivial_material->textures = {ctx->tex_white};
+	trivial_material->textures = {texture_manager->tex_white};
 	//trivial_material->shader_path = Shader::default_3d;
 
 	set_default(trivial_material);
@@ -157,7 +156,7 @@ Material* MaterialManager::load(const Path& filename) {
 		auto texture_files = c.get_str_array("textures");
 		m->textures.resize(max(m->textures.num, texture_files.num));
 		for (const auto& [i, f]: enumerate(texture_files))
-			m->textures[i] = ctx->texture_manager->load_texture(f);
+			m->textures[i] = texture_manager->load_texture(f);
 	}
 	if (c.has("shader"))
 		m->pass0.shader_path = c.get_str("shader", "");
@@ -225,7 +224,7 @@ Material* MaterialManager::load(const Path& filename) {
 		auto texture_files = c.get_str_array("reflection.cubemap");
 		shared_array<Texture> cmt;
 		for (auto &f: texture_files)
-			cmt.add(ctx->texture_manager->load_texture(f));
+			cmt.add(texture_manager->load_texture(f));
 		m->reflection.density = c.get_float("reflection.density", 1);
 #if 0
 			m->reflection.cube_map = new CubeMap(m->reflection.cube_map_size);

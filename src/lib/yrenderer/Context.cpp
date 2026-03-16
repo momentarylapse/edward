@@ -25,7 +25,7 @@ void Context::_create_default_textures() {
 void Context::create_managers(const Path &texture_dir, const Path &shader_dir, const Path &material_dir) {
 	texture_manager = new TextureManager(context, texture_dir);
 	shader_manager = new ShaderManager(context, shader_dir);
-	material_manager = new MaterialManager(this, material_dir);
+	material_manager = new MaterialManager(texture_manager, material_dir);
 }
 
 xfer<Material> Context::load_material_copy(const Path &filename) const {

@@ -236,10 +236,12 @@ public:
 		f->read_float();
 		f->read_bool();
 		int n = f->read_int();
-		me->textures.clear();
+		if (me->textures.num < n)
+			me->textures.resize(n);
 		for (int t=0; t<n; t++) {
 			filename = f->read_str();
-			me->textures.add(session->resource_manager->load_texture(filename));
+			if (filename != "")
+				me->textures[t] = session->resource_manager->load_texture(filename);
 		}
 	}
 	void write(Stream *f) override {

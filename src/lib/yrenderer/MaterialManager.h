@@ -8,23 +8,23 @@
 
 namespace yrenderer {
 
+class TextureManager;
+
 class MaterialManager {
 public:
-	explicit MaterialManager(Context* ctx, const Path& material_dir);
+	explicit MaterialManager(TextureManager* texture_manager, const Path& material_dir);
 	~MaterialManager();
 
 	void reset();
 
 	void set_default(Material* m);
-	void set_default_shader(ygfx::Shader* s);
 	Material* load(const Path& filename);
 	xfer<Material> load_copy(const Path& filename);
 	Path get_filename(const Material* m);
 
 	Path material_dir;
 private:
-	Context* ctx;
-	ShaderManager* shader_manager;
+	TextureManager* texture_manager;
 	Material* default_material;
 	Material* trivial_material;
 	base::map<Path, Material*> materials; // "originals" owned!

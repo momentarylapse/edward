@@ -87,7 +87,7 @@ bool Storage::load(const Path &_filename, Data *data, bool deep) {
 			if (((int)f->flags & (int)Format::Flag::READ) == 0)
 				continue;
 
-			guess_root_directory(filename);
+			session->load_project(Session::guess_root_directory(filename));
 			data->reset();
 			f->load(filename, data, deep);
 			data->filename = filename;
@@ -139,7 +139,7 @@ base::future<void> Storage::open(Data *data) {
 	session->allow_termination().then([this, data, promise] {
 		int type = data_type(data);
 		file_dialog(type, false, false).then([this, data, promise] (const auto& p) mutable {
-			guess_root_directory(p.complete);
+			session->load_project(Session::guess_root_directory(p.complete));
 
 			try {
 				if (this->load(p.complete, data))
@@ -163,7 +163,7 @@ base::future<void> Storage::save_as(Data *data) {
 
 	int type = data_type(data);
 	file_dialog(type, true, false).then([this, data, promise] (const auto& p) mutable {
-		guess_root_directory(p.complete);
+		session->load_project(Session::guess_root_directory(p.complete));
 
 		try {
 			if (save(p.complete, data))
@@ -192,17 +192,6 @@ base::future<void> Storage::auto_save(Data *data) {
 	}
 }
 
-
-
-void Storage::guess_root_directory(const Path &filename) {
-	for (auto &d: filename.all_parents())
-		if (os::fs::exists(d | "game.ini")) {
-			session->load_project(d);
-			return;
-		}
-
-	session->load_project(filename.parent());
-}
 
 
 void Storage::set_root_directory(const Path &_directory) {

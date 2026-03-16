@@ -46,6 +46,8 @@
 #include <lib/yrenderer/TextureManager.h>
 #include <lib/kaba/kaba.h>
 
+#include "lib/os/filesystem.h"
+
 static Array<Session*> all_sessions;
 bool any_session_running() {
 	return all_sessions.num > 0;
@@ -66,6 +68,8 @@ Session* create_session(bool with_window) {
 		s->_win = new EdwardWindow(s);
 		s->win = s->_win.get();
 		xhui::fly(s->win);
+	} else {
+		s->resource_manager = new ResourceManager(nullptr, "", "", "");
 	}
 	return s;
 }
@@ -89,6 +93,14 @@ base::future<Session*> emit_empty_session(Session* parent) {
 }
 #endif
 
+Path Session::guess_root_directory(const Path &filename) {
+	for (auto &d: filename.all_parents())
+		if (os::fs::exists(d | "game.ini"))
+			return d;
+
+	return filename.parent();
+}
+
 void Session::load_project(const Path& dir) {
 	if (project_dir == dir)
 		return;
@@ -103,11 +115,9 @@ void Session::load_project(const Path& dir) {
 			storage->root_dir_kind[FD_SCRIPT],
 			storage->root_dir_kind[FD_MATERIAL],
 			storage->root_dir_kind[FD_FONT]);
-	if (ctx) {
-		ctx->texture_manager->texture_dir = storage->root_dir_kind[FD_TEXTURE];
-		ctx->shader_manager->shader_dir = storage->root_dir_kind[FD_SHADERFILE];
-		ctx->material_manager->material_dir = storage->root_dir_kind[FD_MATERIAL];
-	}
+	resource_manager->texture_manager->texture_dir = storage->root_dir_kind[FD_TEXTURE];
+	resource_manager->shader_manager->shader_dir = storage->root_dir_kind[FD_SHADERFILE];
+	resource_manager->material_manager->material_dir = storage->root_dir_kind[FD_MATERIAL];
 
 	plugin_manager->load_project_stuff(project_dir);
 	out_project_loaded();
