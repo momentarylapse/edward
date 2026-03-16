@@ -24,7 +24,7 @@ ShadowRenderer::ShadowRenderer(Context* ctx, SceneView* parent, int resolution) 
 		RenderTask(ctx, "shdw")
 {
 
-	material = new Material(ctx);
+	material = new Material();
 	material->pass0.shader_path = "shadow.shader";
 
 	parent_scene = parent;

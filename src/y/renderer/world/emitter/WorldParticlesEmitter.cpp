@@ -20,8 +20,7 @@ using namespace yrenderer;
 using namespace ygfx;
 
 WorldParticlesEmitter::WorldParticlesEmitter(yrenderer::Context* ctx, Camera* _cam) :
-		MeshEmitter(ctx, "fx"),
-		fx_material(ctx)
+		MeshEmitter(ctx, "fx")
 {
 	cam = _cam;
 	fx_material.pass0.cull_mode = CullMode::NONE;

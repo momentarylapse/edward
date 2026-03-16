@@ -55,7 +55,7 @@ DrawingHelper::DrawingHelper(yrenderer::Context* _ctx, xhui::Context* _xhui_ctx)
 		material_selection = create_material(ctx, {0.3f, 0,0,0}, 0.9f, 0, Red, true);
 		material_creation = create_material(ctx, {0.3f, 0,0.5f,0}, 0.9f, 0, color(1,0,0.5f,0).srgb_to_linear(), true);
 
-		material_shadow = new yrenderer::Material(ctx);
+		material_shadow = new yrenderer::Material();
 		material_shadow->pass0.shader_path = "shadow.shader";
 	} catch(Exception& e) {
 		msg_error(e.message());

@@ -33,7 +33,6 @@ public:
 
 	Path filename;
 	owned<yrenderer::Material> material;
-	yrenderer::ShaderCache shader_cache;
 
 	struct TextureLevel {
 		Path filename;
@@ -57,8 +56,6 @@ public:
 		float shininess() const;
 		void import(const color &am, const color &di, const color &sp, float shininess, const color &em);
 	} col;
-
-	owned<ygfx::VertexBuffer> vb;
 };
 
 #endif /* MODELMATERIAL_H_ */

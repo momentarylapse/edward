@@ -20,7 +20,7 @@ MaterialManager::MaterialManager(Context* _ctx, const Path& _material_dir) {
 	shader_manager = ctx->shader_manager;
 	material_dir = _material_dir;
 	// create the default material
-	trivial_material = new Material(ctx);
+	trivial_material = new Material();
 	trivial_material->textures = {ctx->tex_white};
 	//trivial_material->shader_path = Shader::default_3d;
 
@@ -137,7 +137,7 @@ Material* MaterialManager::load(const Path& filename) {
 			throw Exception("material file missing: " + filename.str());
 		}*/
 	}
-	auto m = new Material(ctx);
+	auto m = new Material();
 
 	if (c.has("parent")) {
 		auto parent = load(str(c.get("parent")));

@@ -183,7 +183,7 @@ DataMaterial DataMaterial::from_material(DocumentSession* s, yrenderer::Material
 
 
 yrenderer::Material* DataMaterial::to_material() const {
-	auto m = new yrenderer::Material(session->ctx);
+	auto m = new yrenderer::Material();
 	m->albedo = appearance.albedo;
 	m->roughness = appearance.roughness;
 	m->metal = appearance.metal;

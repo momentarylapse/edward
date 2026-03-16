@@ -270,7 +270,7 @@ void RenderData::draw(const RenderParams& params, VertexBuffer* vb, PrimitiveTop
 
 Shader* RenderViewData::get_shader(Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module) {
 	if (!multi_pass_shader_cache[pass_no].contains(material))
-		multi_pass_shader_cache[pass_no].set(material, {});
+		multi_pass_shader_cache[pass_no].set(material, {ctx});
 	auto& cache = multi_pass_shader_cache[pass_no][material];
 	if (is_shadow_pass())
 		cache._prepare_shader_multi_pass(type, *material_shadow, vertex_shader_module, geometry_shader_module, pass_no);

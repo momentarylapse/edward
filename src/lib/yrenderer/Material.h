@@ -54,8 +54,6 @@ class ShaderManager;
 // visual and physical properties
 class Material {
 public:
-	Context* ctx;
-
 	shared_array<ygfx::Texture> textures;
 
 	Any shader_data;
@@ -95,7 +93,7 @@ public:
 		float jump, _static, sliding, rolling;
 	} friction;
 
-	explicit Material(Context* ctx);
+	explicit Material();
 	void operator=(const Material& material);
 	xfer<Material> copy() const;
 
@@ -105,6 +103,7 @@ public:
 };
 
 struct ShaderCache {
+	Context* ctx;
 	shared<ygfx::Shader> shader[2]; // * #(render paths)
 	void _prepare_shader(RenderPathType render_path_type, const Material& material, const string& vertex_module, const string& geometry_module);
 	void _prepare_shader_multi_pass(RenderPathType render_path_type, const Material& material, const string& vertex_module, const string& geometry_module, int k);

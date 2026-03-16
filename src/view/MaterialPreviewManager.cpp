@@ -21,11 +21,11 @@ MaterialPreviewManager::MaterialPreviewManager(Session* s) {
 ygfx::Texture* MaterialPreviewManager::get_mat_texture(yrenderer::Material* m) {
 	if (textures.contains(m))
 		return textures[m].get();
-	auto tex = new ygfx::Texture(PREVIEW_SIZE*2, PREVIEW_SIZE*2, "rgba:i8");
+	auto tex = new ygfx::Texture(PREVIEW_SIZE, PREVIEW_SIZE, "rgba:i8");
 	textures.set(m, tex);
 	dirty.add(m);
 	if (!depth_buffer)
-		depth_buffer = new ygfx::DepthBuffer(PREVIEW_SIZE*2, PREVIEW_SIZE*2, "d:f32");
+		depth_buffer = new ygfx::DepthBuffer(PREVIEW_SIZE, PREVIEW_SIZE, "d:f32");
 	return tex;
 }
 

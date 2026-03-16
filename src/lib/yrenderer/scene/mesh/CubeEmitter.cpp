@@ -14,7 +14,7 @@ CubeEmitter::CubeEmitter(Context* ctx) : MeshEmitter(ctx, "cube") {
 	if (ctx) {
 		vb = new ygfx::VertexBuffer("3f,3f,2f");
 		set_cube(Box::ID_SYM);
-		material = new Material(ctx);
+		material = new Material();
 		material->textures.add(ctx->tex_white);
 	}
 	matrix = mat4::ID;
