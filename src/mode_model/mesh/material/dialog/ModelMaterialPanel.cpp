@@ -181,17 +181,19 @@ public:
 	}
 
 	void on_texture_level_load() {
-#if 0
 		int sel = get_int("textures");
-		if (sel >= 0)
+		if (sel >= 0) {
 			data->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, sel] (const auto& p) {
-				data->execute(new ActionModelMaterialLoadTexture(index, sel, p.relative));
+				auto m = *material();
+				auto rm = data->session->resource_manager;
+				m.textures[sel] = rm->load_texture(p.relative);
+				data->execute(new ActionModelEditMaterial(index, m));
 			});
-#endif
-		msg_error("TODO");
+		}
 	}
 
 	void on_texture_level_save() {
+		data->session->error("TODO");
 #if 0
 		int sel = get_int("textures");
 		if (sel >= 0)
@@ -202,11 +204,10 @@ public:
 				tl->edited = false;
 			});
 #endif
-		msg_error("TODO");
 	}
 
 	void on_texture_level_scale() {
-		msg_todo("texture scale");
+		data->session->error("texture scale");
 		/*int sel = get_int("textures");
 		if (sel >= 0) {
 			auto& tl = data->material[mode_mesh()->current_material]->texture_levels[sel];
@@ -235,32 +236,33 @@ public:
 	}
 
 	void on_texture_level_clear() {
-		msg_error("TODO");
-#if 0
 		int sel = get_int("textures");
-		if (sel >= 0)
-			data->execute(new ActionModelMaterialLoadTexture(index, sel, ""));
-#endif
+		if (sel >= 0) {
+			auto m = *material();
+			m.textures[sel] = new ygfx::Texture;
+			m.textures[sel]->write(Image(512, 512, White));
+			data->execute(new ActionModelEditMaterial(index, m));
+		}
 	}
 
 	void on_texture_level_linear() {
-		msg_error("TODO");
-#if 0
-		auto mat = material();
 		int sel = get_int("textures");
-		if (sel >= 0)
-			data->execute(new ActionModelMaterialLoadTexture(index, sel, mat->texture_levels[sel]->filename.with("@linear")));
-#endif
+		if (sel >= 0) {
+			auto m = *material();
+			auto rm = data->session->resource_manager;
+			m.textures[sel] = rm->load_texture(rm->texture_manager->texture_file(m.textures[sel].get()).with("@linear"));
+			data->execute(new ActionModelEditMaterial(index, m));
+		}
 	}
 
 	void on_texture_level_srgb() {
-		msg_error("TODO");
-#if 0
-		auto mat = material();
 		int sel = get_int("textures");
-		if (sel >= 0)
-			data->execute(new ActionModelMaterialLoadTexture(index, sel, str(mat->texture_levels[sel]->filename).replace("@linear", "")));
-#endif
+		if (sel >= 0) {
+			auto m = *material();
+			auto rm = data->session->resource_manager;
+			m.textures[sel] = rm->load_texture(str(rm->texture_manager->texture_file(m.textures[sel].get())).replace("@linear", ""));
+			data->execute(new ActionModelEditMaterial(index, m));
+		}
 	}
 
 	void on_textures_right_click() {
