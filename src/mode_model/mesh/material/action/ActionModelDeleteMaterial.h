@@ -10,7 +10,11 @@
 
 #include <action/Action.h>
 
-class ModelMaterial;
+#include "lib/base/pointer.h"
+
+namespace yrenderer {
+	class Material;
+}
 
 class ActionModelDeleteMaterial : public Action {
 public:
@@ -21,7 +25,7 @@ public:
 	void undo(Data *d) override;
 private:
 	int index;
-	ModelMaterial *mat;
+	owned<yrenderer::Material> material;
 };
 
 #endif /* SRC_ACTION_MODEL_DATA_ACTIONMODELDELETEMATERIAL_H_ */

@@ -21,11 +21,30 @@
 #include <lib/math/Box.h>
 #include <cmath>
 
+#include "lib/yrenderer/MaterialManager.h"
+#include "lib/yrenderer/TextureManager.h"
+
 FormatModel::FormatModel(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "model", "Model", Flag::CANONICAL_READ_WRITE) {
 }
 
 const bool write_external_edit_file = false;
 
+
+
+class ModelParser : public ChunkedFileParser {
+public:
+	explicit ModelParser(Session *s);
+	void on_notify() override {}
+	void on_unhandled() override {
+		session->warning("unhandled chunk " + context.str());
+	}
+	void on_error(const string &message) override {
+		session->error(message);
+	}
+	void on_warn(const string &message) override {}
+	void on_info(const string &message) override {}
+	Session *session;
+};
 
 void update_model_script_data(Session *session, DataModel::MetaData &m) {}
 
@@ -192,21 +211,24 @@ public:
 	}
 };
 
-class ChunkMaterial : public FileChunk<DataModel, ModelMaterial> {
+class ChunkMaterial : public FileChunk<DataModel, yrenderer::Material> {
 public:
 	ChunkMaterial() : FileChunk("material") {}
 	void create() override {
-		me = new ModelMaterial(parent->session);
+		me = new yrenderer::Material();
 		//msg_write(p2s(parent));
 		parent->materials.add(me);
 	}
 	void read(Stream *f) override {
-		me->filename = f->read_str();
-		me->col.user = f->read_bool();
-		read_color_argb(f, me->col.albedo);
-		read_color_argb(f, me->col.emission);
-		me->col.metal = f->read_float();
-		me->col.roughness = f->read_float();
+		auto session = dynamic_cast<ModelParser*>(root)->session;
+		string filename = f->read_str();
+		if (filename != "")
+			me->derive_from(session->resource_manager->load_material(filename));
+		bool user_color = f->read_bool();
+		read_color_argb(f, me->albedo);
+		read_color_argb(f, me->emission);
+		me->metal = f->read_float();
+		me->roughness = f->read_float();
 
 		f->read_int();
 		f->read_int();
@@ -214,28 +236,31 @@ public:
 		f->read_float();
 		f->read_bool();
 		int n = f->read_int();
-		me->texture_levels.clear();
-		for (int t=0;t<n;t++) {
-			auto tl = new ModelMaterial::TextureLevel;
-			tl->filename = f->read_str();
-			me->texture_levels.add(tl);
+		me->textures.clear();
+		for (int t=0; t<n; t++) {
+			filename = f->read_str();
+			me->textures.add(session->resource_manager->load_texture(filename));
 		}
 	}
 	void write(Stream *f) override {
-		f->write_str(me->filename.str());
-		f->write_bool(me->col.user);
-		write_color_argb(f, me->col.albedo);
-		write_color_argb(f, me->col.emission);
-		f->write_float(me->col.metal);
-		f->write_float(me->col.roughness);
+		auto session = dynamic_cast<ModelParser*>(root)->session;
+		if (me->parent)
+			f->write_str(str(session->resource_manager->material_manager->get_filename(me->parent)));
+		else
+			f->write_str("");
+		f->write_bool(true);
+		write_color_argb(f, me->albedo);
+		write_color_argb(f, me->emission);
+		f->write_float(me->metal);
+		f->write_float(me->roughness);
 		f->write_int((int)yrenderer::TransparencyMode::DEFAULT);
 		f->write_int(0);
 		f->write_int(0);
 		f->write_float(0);
 		f->write_bool(false);
-		f->write_int(me->texture_levels.num);
-		for (int t=0;t<me->texture_levels.num;t++)
-			f->write_str(me->texture_levels[t]->filename.str());
+		f->write_int(me->textures.num);
+		for (int t=0;t<me->textures.num;t++)
+			f->write_str(str(session->resource_manager->texture_manager->texture_file(me->textures[t].get())));
 	}
 };
 
@@ -281,7 +306,7 @@ public:
 				for (int k=0;k<3;k++)
 					me->sub[m].triangles[j].vertex[k] = f->read_int();
 			// skin vertex
-			for (int tl=0;tl<parent->materials[m]->texture_levels.num;tl++)
+			for (int tl=0;tl<parent->materials[m]->textures.num;tl++)
 				for (int j=0;j<me->sub[m].triangles.num;j++)
 					for (int k=0;k<3;k++) {
 						int svi = f->read_int();
@@ -344,7 +369,7 @@ public:
 				for (int k=0;k<3;k++)
 					me->sub[m].triangles[j].vertex[k] = f->read_int();
 			// skin vertex
-			for (int tl=0;tl<parent->materials[m]->texture_levels.num;tl++)
+			for (int tl=0;tl<parent->materials[m]->textures.num;tl++)
 				for (int j=0;j<me->sub[m].triangles.num;j++)
 					for (int k=0;k<3;k++) {
 						int svi = f->read_int();
@@ -380,10 +405,10 @@ public:
 		// skin vertices
 		int num_skin_v = 0;
 		for (int m=0;m<parent->materials.num;m++)
-			num_skin_v += me->sub[m].triangles.num * parent->materials[m]->texture_levels.num * 3;
+			num_skin_v += me->sub[m].triangles.num * parent->materials[m]->textures.num * 3;
 		f->write_int(num_skin_v);
 		for (int m=0;m<parent->materials.num;m++)
-			for (int tl=0;tl<parent->materials[m]->texture_levels.num;tl++)
+			for (int tl=0;tl<parent->materials[m]->textures.num;tl++)
 				for (int j=0;j<me->sub[m].triangles.num;j++)
 					for (int k=0;k<3;k++) {
 						f->write_float(me->sub[m].triangles[j].skin_vertex[tl][k].x);
@@ -405,7 +430,7 @@ public:
 					f->write_int(sub->triangles[j].vertex[k]);
 
 			// skin index
-			for (int tl=0;tl<parent->materials[m]->texture_levels.num;tl++)
+			for (int tl=0;tl<parent->materials[m]->textures.num;tl++)
 				for (int j=0;j<sub->triangles.num;j++)
 					for (int k=0;k<3;k++)
 						f->write_int(svi ++);
@@ -446,7 +471,7 @@ public:
 			t.side.resize(num_faces);
 			for (int k=0; k<num_faces; k++) {
 				t.side[k].vertex = f->read_int();
-				for (int l=0;l<parent->materials[t.material]->texture_levels.num;l++) {
+				for (int l=0;l<parent->materials[t.material]->textures.num;l++) {
 					t.side[k].skin_vertex[l].x = f->read_float();
 					t.side[k].skin_vertex[l].y = f->read_float();
 				}
@@ -467,7 +492,7 @@ public:
 			f->write_word(t.smooth_group);
 			for (auto &ss: t.side) {
 				f->write_int(ss.vertex);
-				for (int l=0;l<parent->materials[t.material]->texture_levels.num;l++) {
+				for (int l=0;l<parent->materials[t.material]->textures.num;l++) {
 					f->write_float(ss.skin_vertex[l].x);
 					f->write_float(ss.skin_vertex[l].y);
 				}
@@ -935,24 +960,11 @@ public:
 };
 
 
-class ModelParser : public ChunkedFileParser {
-public:
-	explicit ModelParser(Session *s) : ChunkedFileParser(8) {
-		session = s;
-		_model_parser_tria_mesh_count = 0;
-		set_base(new ChunkModel);
-	}
-	void on_notify() override {}
-	void on_unhandled() override {
-		session->warning("unhandled chunk " + context.str());
-	}
-	void on_error(const string &message) override {
-		session->error(message);
-	}
-	void on_warn(const string &message) override {}
-	void on_info(const string &message) override {}
-	Session *session;
-};
+ModelParser::ModelParser(Session *s) : ChunkedFileParser(8) {
+	session = s;
+	_model_parser_tria_mesh_count = 0;
+	set_base(new ChunkModel);
+}
 
 void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
@@ -989,15 +1001,14 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 					f.vertex_dpos = f.skin[1].dpos;
 			}
 
-		for (auto* m: data->materials) {
-			m->make_consistent_after_shallow_loading();
+		/*for (auto* m: data->materials) {
 
 			// test textures
 			for (auto t: weak(m->texture_levels)) {
 				if (!t->texture and t->filename)
 					warning(format("Texture file not loadable: %s", t->filename));
 			}
-		}
+		}*/
 		for (auto &b: data->bones) {
 			try {
 				if (!b.model)
@@ -1029,7 +1040,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
 
 	if (data->materials.num == 0) {
-		data->materials.add(new ModelMaterial(data->session));
+		data->materials.add(new yrenderer::Material);
 	}
 
 

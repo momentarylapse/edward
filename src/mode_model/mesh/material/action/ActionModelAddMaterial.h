@@ -11,17 +11,19 @@
 #include <action/Action.h>
 #include <lib/base/pointer.h>
 
-class ModelMaterial;
+namespace yrenderer {
+	class Material;
+}
 
 class ActionModelAddMaterial : public Action {
 public:
-	explicit ActionModelAddMaterial(xfer<ModelMaterial> material);
+	explicit ActionModelAddMaterial(xfer<yrenderer::Material> material);
 	string name() override { return "ModelAddMaterial"; }
 
 	void* execute(Data* d) override;
 	void undo(Data* d) override;
 private:
-	owned<ModelMaterial> material;
+	owned<yrenderer::Material> material;
 };
 
 #endif /* ACTIONMODELADDMATERIAL_H_ */

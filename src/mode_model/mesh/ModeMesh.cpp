@@ -36,6 +36,7 @@
 #include <lib/mesh/VertexStagingBuffer.h>
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <cmath>
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
@@ -365,7 +366,7 @@ void ModeMesh::draw_polygons(const yrenderer::RenderParams& params, MultiViewWin
 	auto dh = win->multi_view->session->drawing_helper;
 
 	for (int i=0; i<vertex_buffers.num; i++)
-		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffers[i], materials[i], 0);
+		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffers[i], data->materials[i], 0);
 }
 
 void ModeMesh::draw_edges(const yrenderer::RenderParams& params, MultiViewWindow* win, const base::set<int>& sel) {
@@ -488,21 +489,6 @@ void ModeMesh::update_vb() {
 	for (const auto& c: data->editing_mesh->cylinders)
 		m.add(GeometryCylinder(data->editing_mesh->vertices[c.index[0]].pos, data->editing_mesh->vertices[c.index[1]].pos, c.radius, 1, 32));
 	m.build(vertex_buffer_physical);
-
-	// update material
-	materials.resize(data->materials.num);
-	for (int i=0; i<materials.num; i++) {
-		if (!materials[i])
-			materials[i] = create_material(session->ctx, White, 0.7f, 0.2f, Black);
-
-		materials[i]->albedo = data->materials[i]->col.albedo;
-		materials[i]->metal = data->materials[i]->col.metal;
-		materials[i]->roughness = data->materials[i]->col.roughness;
-		materials[i]->emission = data->materials[i]->col.emission;
-		materials[i]->textures.resize(data->materials[i]->texture_levels.num);
-		for (int k=0; k<data->materials[i]->texture_levels.num; k++)
-			materials[i]->textures[k] = data->materials[i]->texture_levels[k]->texture;
-	}
 }
 
 

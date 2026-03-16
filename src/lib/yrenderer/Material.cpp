@@ -33,7 +33,13 @@ Material::Material() {
 	friction.rolling = 0.90f;
 }
 
+Material::Material(const Material &m) {
+	*this = m;
+}
+
 void Material::operator=(const Material& o) {
+	parent = o.parent;
+
 	albedo = o.albedo;
 	roughness = o.roughness;
 	metal = o.metal;
@@ -61,6 +67,11 @@ xfer<Material> Material::copy() const {
 	auto m = new Material();
 	*m = *this;
 	return m;
+}
+
+void Material::derive_from(Material* _parent) {
+	*this = *_parent;
+	parent = _parent;
 }
 
 inline int shader_index(RenderPathType render_path_type) {

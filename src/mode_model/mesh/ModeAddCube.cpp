@@ -11,6 +11,7 @@
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>

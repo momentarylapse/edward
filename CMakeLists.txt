@@ -455,7 +455,6 @@ add_executable(edward
 	src/mode_material/ModeMaterial.cpp
 	src/mode_model/action/ActionModelEditData.cpp
 	src/mode_model/data/DataModel.cpp
-	src/mode_model/data/ModelMaterial.cpp
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/dialog/ModelPropertiesDialog.cpp
 	src/mode_model/mesh/action/look/ActionModelSetMaterial.cpp

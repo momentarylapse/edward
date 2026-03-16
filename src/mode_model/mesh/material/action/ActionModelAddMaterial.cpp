@@ -7,8 +7,9 @@
 
 #include "ActionModelAddMaterial.h"
 #include "../../../data/DataModel.h"
+#include <lib/ygraphics/graphics-impl.h>
 
-ActionModelAddMaterial::ActionModelAddMaterial(xfer<ModelMaterial> m) {
+ActionModelAddMaterial::ActionModelAddMaterial(xfer<yrenderer::Material> m) {
 	material = m;
 }
 

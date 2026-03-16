@@ -9,11 +9,11 @@
 #include "../../../data/DataModel.h"
 #include "../../../data/ModelMesh.h"
 #include <lib/mesh/Polygon.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <assert.h>
 
 ActionModelDeleteMaterial::ActionModelDeleteMaterial(int _index) {
 	index = _index;
-	mat = nullptr;
 }
 
 
@@ -21,7 +21,7 @@ ActionModelDeleteMaterial::ActionModelDeleteMaterial(int _index) {
 void *ActionModelDeleteMaterial::execute(Data *d) {
 	auto m = dynamic_cast<DataModel*>(d);
 
-	mat = m->materials[index];
+	material = m->materials[index];
 	m->materials.erase(index);
 
 	// correct polygons
@@ -40,7 +40,7 @@ void *ActionModelDeleteMaterial::execute(Data *d) {
 void ActionModelDeleteMaterial::undo(Data *d) {
 	auto m = dynamic_cast<DataModel*>(d);
 
-	m->materials.insert(mat, index);
+	m->materials.insert(material.give(), index);
 
 	// correct polygons
 	for (auto &p: m->mesh->polygons) {

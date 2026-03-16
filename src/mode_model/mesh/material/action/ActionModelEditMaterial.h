@@ -11,9 +11,11 @@
 #include <action/Action.h>
 #include "../../../data/DataModel.h"
 
+class Image;
+
 class ActionModelEditMaterial : public Action {
 public:
-	ActionModelEditMaterial(int index, const ModelMaterial::Color &_col);
+	ActionModelEditMaterial(int index, const yrenderer::Material& m);
 	string name() override { return "ModelEditMaterial"; }
 
 	void *execute(Data *d) override;
@@ -21,7 +23,7 @@ public:
 
 private:
 	int index;
-	ModelMaterial::Color col;
+	yrenderer::Material material;
 };
 
 class ActionModelMaterialAddTexture : public Action {
@@ -34,6 +36,7 @@ public:
 
 private:
 	int index;
+	shared<ygfx::Texture> texture;
 };
 
 class ActionModelMaterialDeleteTexture : public Action {
@@ -46,21 +49,7 @@ public:
 
 private:
 	int index, level;
-	ModelMaterial::TextureLevel* tl;
-};
-
-
-class ActionModelMaterialLoadTexture : public Action {
-public:
-	ActionModelMaterialLoadTexture(int index, int level, const Path &filename);
-	string name() override { return "ModelMaterialAddTexture"; }
-
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
-
-private:
-	int index, level;
-	Path filename;
+	shared<ygfx::Texture> texture;
 };
 
 

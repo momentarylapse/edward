@@ -36,16 +36,17 @@ string qToJson(const quaternion &q) {
 	return format("%f, %f, %f, %f", -q.x, q.y, q.z, -q.w);
 }
 
-string materialToJson(ModelMaterial *m)
+string materialToJson(yrenderer::Material *m)
 {
 	string str;
+#if 0
 	str += "	{\n";
 	str += "		'DbgColor' : 15658734,\n";
 	str += "		'DbgIndex' : 0,\n";
 	str += "		'DbgName' : 'Test',\n";
 	str += "		'blending' : 'NormalBlending',\n";
 	str += "		'colorAmbient' : [" + col3ToJson(m->col.ambient()) + "],\n";
-	str += "		'colorDiffuse' : [" + col3ToJson(m->col.albedo) + "],\n";
+	str += "		'colorDiffuse' : [" + col3ToJson(m->albedo) + "],\n";
 	str += "		'colorSpecular' : [" + col3ToJson(m->col.specular()) + "],\n";
 	str += "		'depthTest' : true,\n";
 	str += "		'depthWrite' : true,\n";
@@ -55,6 +56,7 @@ string materialToJson(ModelMaterial *m)
 	str += "		'transparent' : false,\n";
 	str += "		'vertexColors' : false\n";
 	str += "	}";
+#endif
 	return str;
 }
 

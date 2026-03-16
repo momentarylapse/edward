@@ -5,20 +5,17 @@
  *      Author: michi
  */
 
-#ifndef DATAMODEL_H_
-#define DATAMODEL_H_
+#pragma once
 
 #include <data/Data.h>
 #include <view/SingleData.h>
 #include <lib/base/set.h>
 #include <y/world/Model.h>
 #include <lib/yrenderer/Material.h>
-#include "ModelMaterial.h"
 
 struct MeshEdit;
 struct Box;
 class DataModel;
-class ModelMaterial;
 struct ModelMesh;
 struct Polygon;
 struct MeshVertex;
@@ -234,7 +231,7 @@ public:
 	Array<ModelTriangleMesh> triangle_mesh;
 
 	// general properties
-	Array<ModelMaterial*> materials;
+	owned_array<yrenderer::Material> materials;
 
 	// effects
 	Array<ModelEffect> fx;
@@ -279,5 +276,3 @@ public:
 	bool normal_indices_ok[4];
 
 };
-
-#endif /* DATAMODEL_H_ */

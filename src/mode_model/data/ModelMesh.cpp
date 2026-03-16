@@ -219,7 +219,7 @@ void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk, DataModel* model)
 		}
 	}
 	foreachi(auto *m, model->materials, i)
-		sk.sub[i].num_textures = m->texture_levels.num;
+		sk.sub[i].num_textures = m->textures.num;
 }
 
 void ModelMesh::set_normals_dirty_by_vertices(const Array<int> &index)

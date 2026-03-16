@@ -87,7 +87,6 @@ public:
 	ygfx::VertexBuffer* vertex_buffer_physical;
 	ygfx::VertexBuffer* vertex_buffer_selection;
 	ygfx::VertexBuffer* vertex_buffer_hover;
-	owned_array<yrenderer::Material> materials;
 	yrenderer::Material* material_physical;
 	yrenderer::Material* material_selection;
 	yrenderer::Material* material_hover;

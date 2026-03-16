@@ -54,6 +54,8 @@ class ShaderManager;
 // visual and physical properties
 class Material {
 public:
+	Material* parent = nullptr;
+
 	shared_array<ygfx::Texture> textures;
 
 	Any shader_data;
@@ -94,8 +96,10 @@ public:
 	} friction;
 
 	explicit Material();
+	Material(const Material& m);
 	void operator=(const Material& material);
 	xfer<Material> copy() const;
+	void derive_from(Material* parent);
 
 	bool is_transparent() const;
 	const RenderPassData& pass(int k) const;

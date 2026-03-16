@@ -7,7 +7,6 @@
 
 #include "DataModel.h"
 #include "ModelMesh.h"
-#include "ModelMaterial.h"
 //#include "ModelSelection.h"
 #include <lib/mesh/PolygonMesh.h>
 #if 0 //HAS_LIB_GL
@@ -163,12 +162,10 @@ void DataModel::reset() {
 
 	materials.clear();
 	materials.resize(1);
-	materials[0] = new ModelMaterial(session);
-	materials[0]->texture_levels.add(new ModelMaterial::TextureLevel);
-	materials[0]->texture_levels[0]->reload_image(session);
-	materials[0]->col.user = true;
-	materials[0]->col.albedo = White;
-	materials[0]->col.roughness = 0.4f;
+	materials[0] = new yrenderer::Material();
+	materials[0]->textures.add(new ygfx::Texture(512, 512, "rgba:i8"));
+	materials[0]->albedo = White;
+	materials[0]->roughness = 0.4f;
 
 	// skeleton
 	bones.clear();

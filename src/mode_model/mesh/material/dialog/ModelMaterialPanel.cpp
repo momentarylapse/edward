@@ -9,7 +9,6 @@
 #include "../../../data/DataModel.h"
 #include "../../../data/ModelMesh.h"
 #include <lib/mesh/Polygon.h>
-#include "../../../data/ModelMaterial.h"
 #include "../action/ActionModelAddMaterial.h"
 #include "../action/ActionModelDeleteMaterial.h"
 #include "../action/ActionModelEditMaterial.h"
@@ -17,6 +16,7 @@
 #include <storage/Storage.h>
 #include <lib/image/image.h>
 #include <lib/os/msg.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <lib/xhui/Dialog.h>
 #include <lib/xhui/Menu.h>
 #include <lib/xhui/Resource.h>
@@ -26,6 +26,10 @@
 #include <view/MultiView.h>
 #include <view/DocumentSession.h>
 #include <view/MaterialPreviewManager.h>
+
+#include <y/helper/ResourceManager.h>
+#include <lib/yrenderer/MaterialManager.h>
+#include <lib/yrenderer/TextureManager.h>
 
 static constexpr int PREVIEW_SIZE = 48;
 
@@ -46,7 +50,7 @@ public:
 
 		auto tex_list = (xhui::ListView*)get_control("textures");
 		tex_list->column_factories[0].f_create = [](const string& id) {
-			return xhui::create_control("Image", "", id);
+			return xhui::create_control("Image", "!width=48,height=48", id);
 		};
 		tex_list->column_factories[1].f_create = [](const string& id) {
 			return xhui::create_control("Label", "!markup", id);
@@ -73,7 +77,7 @@ public:
 		event("emission", [this] { apply_data_color(); });
 	}
 
-	ModelMaterial* material() const {
+	yrenderer::Material* material() const {
 		return data->materials[index];
 	}
 
@@ -83,24 +87,23 @@ public:
 		auto m = material();
 		int nt = 0;
 
-		set_string("preview", data->session->material_preview_manager->get(m->material.get()));
-		set_string("header", file_secure(m->filename));
+		set_string("preview", data->session->material_preview_manager->get(m));
+		set_string("header", file_secure(data->session->resource_manager->material_manager->get_filename(m->parent)));
 		set_string("subheader", format("%d polygons", nt));
 
-		auto& col = m->col;
-		check("override-colors", col.user);
-		enable("albedo", col.user);
+		check("override-colors", true);
+		/*enable("albedo", col.user);
 		enable("roughness", col.user);
 		enable("slider-roughness", col.user);
 		enable("metal", col.user);
 		enable("slider-metal", col.user);
-		enable("emission", col.user);
-		set_color("albedo", col.albedo);
-		set_float("roughness", col.roughness);
-		set_float("slider-roughness", col.roughness);
-		set_float("metal", col.metal);
-		set_float("slider-metal", col.metal);
-		set_color("emission", col.emission);
+		enable("emission", col.user);*/
+		set_color("albedo", m->albedo);
+		set_float("roughness", m->roughness);
+		set_float("slider-roughness", m->roughness);
+		set_float("metal", m->metal);
+		set_float("slider-metal", m->metal);
+		set_color("emission", m->emission);
 
 		fill_texture_list();
 	}
@@ -112,36 +115,32 @@ public:
 	void apply_data_color() {
 		parent->apply_queue_depth ++;
 
-		auto m = data->materials[index];
-		auto col = m->col;
-		auto parent = m->material.get();
+		auto m = *data->materials[index];
 
-		col.user= is_checked("override-colors");
+		bool user= is_checked("override-colors");
 
-		if (col.user) {
-			col.albedo = get_color("albedo");
-			col.roughness = get_float("slider-roughness");
-			col.metal = get_float("slider-metal");
-			col.emission = get_color("emission");
-		} else {
-			col.albedo = parent->albedo;
-			col.roughness = parent->roughness;
-			col.metal = parent->metal;
-			col.emission = parent->emission;
+		if (user) {
+			m.albedo = get_color("albedo");
+			m.roughness = get_float("slider-roughness");
+			m.metal = get_float("slider-metal");
+			m.emission = get_color("emission");
+		} else if (m.parent) {
+			m.albedo = m.parent->albedo;
+			m.roughness = m.parent->roughness;
+			m.metal = m.parent->metal;
+			m.emission = m.parent->emission;
 		}
-		set_float("metal", col.metal);
-		set_float("roughness", col.roughness);
-		enable("albedo", col.user);
-		enable("roughness", col.user);
-		enable("slider-roughness", col.user);
-		enable("metal", col.user);
-		enable("slider-metal", col.user);
-		enable("emission", col.user);
+		set_float("metal", m.metal);
+		set_float("roughness", m.roughness);
+		enable("albedo", user);
+		enable("roughness", user);
+		enable("slider-roughness", user);
+		enable("metal", user);
+		enable("slider-metal", user);
+		enable("emission", user);
 
-		data->execute(new ActionModelEditMaterial(index, col));
+		data->execute(new ActionModelEditMaterial(index, m));
 		this->parent->apply_queue_depth --;
-
-		set_string("preview", data->session->material_preview_manager->get(m->material.get()));
 	}
 
 
@@ -152,17 +151,14 @@ public:
 	void fill_texture_list() {
 		auto mat = material();
 		reset("textures");
-		for (int i=0;i<mat->texture_levels.num;i++) {
-			string id = format("image:material[%d]-texture[%d]", index, i);
-			auto *img = mat->texture_levels[i]->image.get();
-			auto *icon = img->scale(PREVIEW_SIZE, PREVIEW_SIZE);
-			xhui::set_image(id, *icon);
-			string space = (img->color_space == ColorSpace::Linear) ? "linear" : "srgb";
-			string ext = format("\n<span size='small' alpha='50%%>   %d x %d, %s</span>", img->width, img->height, space);
-			if (mat->texture_levels[i]->edited)
-				ext += " *";
-			add_string("textures", format("%s\\%s", id, (file_secure(mat->texture_levels[i]->filename).replace("@linear", "") + ext)));
-			delete icon;
+		for (int i=0;i<mat->textures.num;i++) {
+			auto t = mat->textures[i].get();
+			string id = xhui::texture_to_image(t);
+			string space = (t->color_space() == ColorSpace::Linear) ? "linear" : "srgb";
+			string ext = format("\n<span size='small' alpha='50%%>   %d x %d, %s</span>", t->width, t->height, space);
+		//	if (mat->texture_levels[i]->edited)
+		//		ext += " *";
+			add_string("textures", format("%s\\%s", id, (file_secure(data->session->resource_manager->texture_manager->texture_file(t)).replace("@linear", "") + ext)));
 		}
 	//	set_int("textures", mode_mesh()->current_texture_level);
 	}
@@ -170,7 +166,7 @@ public:
 
 	void on_texture_level_add() {
 		auto temp = material();
-		if (temp->texture_levels.num >= MATERIAL_MAX_TEXTURES) {
+		if (temp->textures.num >= MATERIAL_MAX_TEXTURES) {
 			data->session->error(format("Only %d texture levels allowed!", MATERIAL_MAX_TEXTURES));
 			return;
 		}
@@ -185,14 +181,18 @@ public:
 	}
 
 	void on_texture_level_load() {
+#if 0
 		int sel = get_int("textures");
 		if (sel >= 0)
 			data->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, sel] (const auto& p) {
 				data->execute(new ActionModelMaterialLoadTexture(index, sel, p.relative));
 			});
+#endif
+		msg_error("TODO");
 	}
 
 	void on_texture_level_save() {
+#if 0
 		int sel = get_int("textures");
 		if (sel >= 0)
 			data->session->storage->file_dialog(FD_TEXTURE, true, true).then([this, sel] (const auto& p) {
@@ -201,6 +201,8 @@ public:
 				tl->filename = p.relative; // ...
 				tl->edited = false;
 			});
+#endif
+		msg_error("TODO");
 	}
 
 	void on_texture_level_scale() {
@@ -224,7 +226,7 @@ public:
 	void on_texture_level_delete() {
 		int sel = get_int("textures");
 		if (sel >= 0) {
-			if (data->materials[index]->texture_levels.num <= 1) {
+			if (data->materials[index]->textures.num <= 1) {
 				data->session->error("At least one texture level has to exist!");
 				return;
 			}
@@ -233,23 +235,32 @@ public:
 	}
 
 	void on_texture_level_clear() {
+		msg_error("TODO");
+#if 0
 		int sel = get_int("textures");
 		if (sel >= 0)
 			data->execute(new ActionModelMaterialLoadTexture(index, sel, ""));
+#endif
 	}
 
 	void on_texture_level_linear() {
+		msg_error("TODO");
+#if 0
 		auto mat = material();
 		int sel = get_int("textures");
 		if (sel >= 0)
 			data->execute(new ActionModelMaterialLoadTexture(index, sel, mat->texture_levels[sel]->filename.with("@linear")));
+#endif
 	}
 
 	void on_texture_level_srgb() {
+		msg_error("TODO");
+#if 0
 		auto mat = material();
 		int sel = get_int("textures");
 		if (sel >= 0)
 			data->execute(new ActionModelMaterialLoadTexture(index, sel, str(mat->texture_levels[sel]->filename).replace("@linear", "")));
+#endif
 	}
 
 	void on_textures_right_click() {
@@ -355,7 +366,7 @@ void ModelMaterialPanel::fill_material_list() {
 	reset("materials");
 	for (int i=0;i<data->materials.num;i++) {
 		int nt = count_material_polygons(data, i);
-		string im = data->session->material_preview_manager->get(data->materials[i]->material.get());
+		string im = data->session->material_preview_manager->get(data->materials[i]);
 		add_string("materials", str(i)); //format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 		//add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
 	}
@@ -368,20 +379,15 @@ void ModelMaterialPanel::on_material_list_select() {
 	mode_mesh()->set_current_material(get_int("materials"));
 }
 
-xfer<ModelMaterial> create_model_material(Session* session, const Path& filename) {
-	auto mat = new ModelMaterial(session, filename);
-	mat->texture_levels.add(new ModelMaterial::TextureLevel);
-	mat->texture_levels[0]->reload_image(session);
-	return mat;
-}
-
 void ModelMaterialPanel::on_material_add() {
-	data->execute(new ActionModelAddMaterial(create_model_material(data->session, "")));
+	data->execute(new ActionModelAddMaterial(new yrenderer::Material));
 }
 
 void ModelMaterialPanel::on_material_load() {
 	data->session->storage->file_dialog(FD_MATERIAL, false, true).then([this] (const auto& p) {
-		data->execute(new ActionModelAddMaterial(create_model_material(data->session, p.simple)));
+		auto m = new yrenderer::Material;
+		m->derive_from(data->session->resource_manager->load_material(p.simple));
+		data->execute(new ActionModelAddMaterial(m));
 	});
 }
 

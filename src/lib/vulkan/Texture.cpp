@@ -298,6 +298,20 @@ void Texture::read(void* data) {
 	// transition back...?
 }
 
+ColorSpace Texture::color_space() const {
+	switch (image.format) {
+		case VK_FORMAT_R8G8B8A8_SRGB:
+		case VK_FORMAT_B8G8R8A8_SRGB:
+		case VK_FORMAT_R8G8B8_SRGB:
+		case VK_FORMAT_B8G8R8_SRGB:
+		case VK_FORMAT_R8G8_SRGB:
+		case VK_FORMAT_R8_SRGB:
+			return ColorSpace::SRGB;
+		default:
+			return ColorSpace::Linear;
+	}
+}
+
 void Texture::_create_sampler() const {
 	VkSamplerCreateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
