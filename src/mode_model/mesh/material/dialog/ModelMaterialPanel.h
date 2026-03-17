@@ -12,14 +12,14 @@
 
 class DataModel;
 class ModeMesh;
-class XMaterialPanel;
+class InlineMaterialEditorPanel;
 //class ModeMeshTexture;
 namespace xhui {
 	class Menu;
 }
 
 class ModelMaterialPanel: public obs::Node<xhui::Panel> {
-	friend XMaterialPanel;
+	friend InlineMaterialEditorPanel;
 public:
 	explicit ModelMaterialPanel(DataModel *_data, bool full=true);
 	~ModelMaterialPanel() override;
@@ -28,11 +28,8 @@ public:
 	void fill_material_list();
 
 	void on_material_list_select();
-	void on_material_list_right_click();
 	void on_material_add();
 	void on_material_load();
-	void on_material_delete();
-	void on_material_apply();
 
 private:
 	DataModel *data;
@@ -40,7 +37,6 @@ private:
 //	ModeMeshTexture *mode_mesh_texture();
 	//ModelMaterial temp;
 	int apply_queue_depth;
-	xhui::Menu *popup_materials;
 };
 
 

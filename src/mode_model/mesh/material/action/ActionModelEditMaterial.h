@@ -15,15 +15,15 @@ class Image;
 
 class ActionModelEditMaterial : public Action {
 public:
-	ActionModelEditMaterial(int index, const yrenderer::Material& m);
+	ActionModelEditMaterial(yrenderer::Material* material, const yrenderer::Material& new_material);
 	string name() override { return "ModelEditMaterial"; }
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;
 
 private:
-	int index;
-	yrenderer::Material material;
+	yrenderer::Material* material;
+	yrenderer::Material new_material;
 };
 
 class ActionModelMaterialAddTexture : public Action {

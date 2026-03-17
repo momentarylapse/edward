@@ -39,6 +39,8 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <cmath>
 
+#include "material/action/ActionModelAddMaterial.h"
+
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
 ModeMesh::ModeMesh(ModeModel* parent) : SubMode(parent) {
@@ -280,8 +282,19 @@ void ModeMesh::on_connect_events() {
 		data->out_changed();
 	});
 	doc->event("choose_material", [this] {
-		ModelMaterialSelectionDialog::ask(this).then([this] (int material) {
-			data->apply_material(multi_view->selection, material);
+		ModelMaterialSelectionDialog::ask(session, weak(data->materials)).then([this] (yrenderer::Material* material) {
+			int n = weak(data->materials).find(material);
+			if (n >= 0) {
+				// already internal
+				data->apply_material(multi_view->selection, n);
+				session->info("applied material to polygons");
+			} else {
+				data->begin_action_group("apply-material");
+				data->execute(new ActionModelAddMaterial(material));
+				data->apply_material(multi_view->selection, data->materials.num - 1);
+				data->end_action_group();
+				session->info("added material and applied to polygons");
+			}
 		});
 	});
 	doc->event("align_to_grid", [this] {

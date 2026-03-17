@@ -3987,7 +3987,7 @@ Grid
 
 0
 0
-2
+4
 Group
 grp-color
 
@@ -4106,6 +4106,36 @@ ListView
 textures
 height=130,nobar,format=it,select-single
 0
+0
+0
+Separator
+?
+horizontal
+0
+2
+0
+Grid
+?
+
+0
+3
+3
+Label
+?
+expandx
+0
+0
+0
+Button
+apply-to-selection
+primary,noexpandx
+1
+0
+0
+Button
+delete
+danger,noexpandx
+2
 0
 0
 # Resource
@@ -10891,7 +10921,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1093
+1095
 # Text
 /ambient
 Ambient
@@ -13254,6 +13284,12 @@ Depth
 model-deformation-brush-dialog/t-diameter
 Diameter
 
+model-material-dialog/apply-to-selection
+Apply
+Apply to selection
+model-material-dialog/delete
+Delete
+Remove from model
 model-material-dialog/emission
 
 Color in absolute darkness

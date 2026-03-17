@@ -7,18 +7,22 @@
 
 #include <lib/xhui/Dialog.h>
 
+namespace yrenderer {
+	class Material;
+}
 
-class ModeMesh;
-class DataModel;
+class Session;
 
 class ModelMaterialSelectionDialog : public xhui::Dialog {
 public:
-	explicit ModelMaterialSelectionDialog(ModeMesh* mode_mesh);
+	explicit ModelMaterialSelectionDialog(Session* session, const Array<yrenderer::Material*>& internal_materials);
 
-	ModeMesh* mode_mesh;
-	base::promise<int> promise;
+	Session* session;
+	base::promise<yrenderer::Material*> promise;
 
-	static base::future<int> ask(ModeMesh* mode_mesh);
+	Array<yrenderer::Material*> materials;
+
+	static base::future<yrenderer::Material*> ask(Session* session, const Array<yrenderer::Material*>& internal_materials);
 };
 
 

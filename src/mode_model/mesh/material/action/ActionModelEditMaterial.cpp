@@ -18,19 +18,14 @@
 #include <assert.h>
 
 
-ActionModelEditMaterial::ActionModelEditMaterial(int _index, const yrenderer::Material &m) {
-	index = _index;
-	material = m;
+ActionModelEditMaterial::ActionModelEditMaterial(yrenderer::Material* _material, const yrenderer::Material &_new_material) {
+	material = _material;
+	new_material = _new_material;
 }
 
 void *ActionModelEditMaterial::execute(Data *d) {
-	auto *m = dynamic_cast<DataModel*>(d);
-	assert((index >= 0) and (index < m->materials.num));
-
-	std::swap(material, *m->materials[index]);
-	m->out_material_changed.notify();
-	d->session->resource_manager->material_manager->invalidate(m->materials[index]);
-
+	std::swap(*material, new_material);
+	d->session->resource_manager->material_manager->invalidate(material);
 	return nullptr;
 }
 

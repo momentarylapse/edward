@@ -96,7 +96,10 @@ void MaterialPreviewManager::update() {
 
 		yrenderer::HeadlessRenderer hr(session->ctx, {tex, depth_buffer.get()});
 		hr.add_child(&path);
-		hr.render({1, false});
+		try {
+			hr.render({1, false});
+		} catch (...) {
+		}
 	}
 
 	dirty.clear();

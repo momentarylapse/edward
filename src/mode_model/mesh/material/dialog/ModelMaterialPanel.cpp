@@ -39,9 +39,17 @@ string file_secure(const Path &filename) {
 	return "[no file]";
 }
 
-class XMaterialPanel : public obs::Node<xhui::Panel> {
+int count_material_polygons(DataModel *data, int index) {
+	int n = 0;
+	for (auto &t: data->mesh->polygons)
+		if (t.material == index)
+			n ++;
+	return n;
+}
+
+class InlineMaterialEditorPanel : public obs::Node<xhui::Panel> {
 public:
-	XMaterialPanel(ModelMaterialPanel* _parent, DataModel* _data, int _index) : Node("") {
+	InlineMaterialEditorPanel(ModelMaterialPanel* _parent, DataModel* _data, int _index) : Node("") {
 		from_resource("model-material-dialog");
 		parent = _parent;
 		data = _data;
@@ -70,33 +78,33 @@ public:
 
 		event("reset-albedo", [this] {
 			parent->apply_queue_depth ++;
-			auto m = *data->materials[index];
+			auto m = *material();
 			m.albedo = m.parent->albedo;
-			data->execute(new ActionModelEditMaterial(index, m));
+			data->execute(new ActionModelEditMaterial(material(), m));
 			update_ui();
 			parent->apply_queue_depth --;
 		});
 		event("reset-roughness", [this] {
 			parent->apply_queue_depth ++;
-			auto m = *data->materials[index];
+			auto m = *material();
 			m.roughness = m.parent->roughness;
-			data->execute(new ActionModelEditMaterial(index, m));
+			data->execute(new ActionModelEditMaterial(material(), m));
 			update_ui();
 			parent->apply_queue_depth --;
 		});
 		event("reset-metal", [this] {
 			parent->apply_queue_depth ++;
-			auto m = *data->materials[index];
+			auto m = *material();
 			m.metal = m.parent->metal;
-			data->execute(new ActionModelEditMaterial(index, m));
+			data->execute(new ActionModelEditMaterial(material(), m));
 			update_ui();
 			parent->apply_queue_depth --;
 		});
 		event("reset-emission", [this] {
 			parent->apply_queue_depth ++;
-			auto m = *data->materials[index];
+			auto m = *material();
 			m.emission = m.parent->emission;
-			data->execute(new ActionModelEditMaterial(index, m));
+			data->execute(new ActionModelEditMaterial(material(), m));
 			update_ui();
 			parent->apply_queue_depth --;
 		});
@@ -107,10 +115,29 @@ public:
 		event("slider-metal", [this] { apply_data_color(); });
 		event("emission", [this] { apply_data_color(); });
 
+		event("delete", [this] { on_delete(); });
+		event("apply-to-selection", [this] { on_apply(); });
+
 		data->session->resource_manager->material_manager->out_material_edited >> create_data_sink<yrenderer::Material*>([this] (yrenderer::Material* m) {
-			if (m == material())
-				update_reset_buttons();
+			if (m == material()) {
+				if (parent->apply_queue_depth == 0)
+					update_ui();
+				else
+					update_reset_buttons();
+			}
 		});
+	}
+
+	void on_delete() {
+		if (count_material_polygons(data, index) > 0) {
+			data->session->error("can only delete materials that are not applied to any polygons");
+			return;
+		}
+		data->execute(new ActionModelDeleteMaterial(index));
+	}
+
+	void on_apply() {
+		data->apply_material(parent->mode_mesh()->multi_view->selection, index);
 	}
 
 	yrenderer::Material* material() const {
@@ -135,7 +162,7 @@ public:
 
 	void update_ui() {
 		auto m = material();
-		int nt = 0;
+		int nt = count_material_polygons(data, index);;
 
 		set_string("preview", data->session->material_preview_manager->get(m));
 		set_string("header", material_name());
@@ -169,7 +196,7 @@ public:
 	void apply_data_color() {
 		parent->apply_queue_depth ++;
 
-		auto m = *data->materials[index];
+		auto m = *material();
 
 		m.albedo = get_color("albedo");
 		m.roughness = get_float("slider-roughness");
@@ -179,7 +206,7 @@ public:
 		set_float("metal", m.metal);
 		set_float("roughness", m.roughness);
 
-		data->execute(new ActionModelEditMaterial(index, m));
+		data->execute(new ActionModelEditMaterial(material(), m));
 		this->parent->apply_queue_depth --;
 	}
 
@@ -222,7 +249,7 @@ public:
 				auto m = *material();
 				auto rm = data->session->resource_manager;
 				m.textures[sel] = rm->load_texture(p.relative);
-				data->execute(new ActionModelEditMaterial(index, m));
+				data->execute(new ActionModelEditMaterial(material(), m));
 			});
 		}
 	}
@@ -262,7 +289,7 @@ public:
 	void on_texture_level_delete() {
 		int sel = get_int("textures");
 		if (sel >= 0) {
-			if (data->materials[index]->textures.num <= 1) {
+			if (material()->textures.num <= 1) {
 				data->session->error("At least one texture level has to exist!");
 				return;
 			}
@@ -276,7 +303,7 @@ public:
 			auto m = *material();
 			m.textures[sel] = new ygfx::Texture;
 			m.textures[sel]->write(Image(512, 512, White));
-			data->execute(new ActionModelEditMaterial(index, m));
+			data->execute(new ActionModelEditMaterial(material(), m));
 		}
 	}
 
@@ -286,7 +313,7 @@ public:
 			auto m = *material();
 			auto rm = data->session->resource_manager;
 			m.textures[sel] = rm->load_texture(rm->texture_manager->texture_file(m.textures[sel].get()).with("@linear"));
-			data->execute(new ActionModelEditMaterial(index, m));
+			data->execute(new ActionModelEditMaterial(material(), m));
 		}
 	}
 
@@ -296,7 +323,7 @@ public:
 			auto m = *material();
 			auto rm = data->session->resource_manager;
 			m.textures[sel] = rm->load_texture(str(rm->texture_manager->texture_file(m.textures[sel].get())).replace("@linear", ""));
-			data->execute(new ActionModelEditMaterial(index, m));
+			data->execute(new ActionModelEditMaterial(material(), m));
 		}
 	}
 
@@ -327,19 +354,18 @@ ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui:
 
 	auto mat_list = (xhui::ListView*)get_control("materials");
 	mat_list->column_factories[0].f_create = [this](const string& id) {
-		return new XMaterialPanel(this, data, 0);
+		return new InlineMaterialEditorPanel(this, data, 0);
 	};
-	mat_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
+	mat_list->column_factories[0].f_set = [](xhui::Control* c, const string& t) {
 		int i = t._int();
-		reinterpret_cast<XMaterialPanel*>(c)->set_index(i);
+		reinterpret_cast<InlineMaterialEditorPanel*>(c)->set_index(i);
 	};
-	mat_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
-		reinterpret_cast<XMaterialPanel*>(c)->set_selected(selected);
+	mat_list->column_factories[0].f_select = [](xhui::Control* c, bool selected) {
+		reinterpret_cast<InlineMaterialEditorPanel*>(c)->set_selected(selected);
 	};
 
-	data->out_material_changed >> create_sink([this] {
-		if (apply_queue_depth == 0)
-			load_data();
+	data->out_material_added_or_deleted >> create_sink([this] {
+		load_data();
 	});
 	data->out_texture_changed >> create_sink([this] {
 		if (apply_queue_depth == 0)
@@ -351,21 +377,12 @@ ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui:
 	});
 	mode_mesh()->out_texture_level_changed >> create_sink([this] { load_data(); });
 
-	popup_materials = xhui::create_resource_menu("model-material-list-popup");
-
 	event_x("materials", xhui::event_id::Select, [this] {
 		on_material_list_select();
 	});
-	event_x("materials", xhui::event_id::RightButtonDown, [this] { on_material_list_right_click(); });
 	event("add-new-material", [this] { on_material_add(); });
 	event("load-material", [this] { on_material_load(); });
-	event("delete-material", [this] { on_material_delete(); });
-	event("apply-material", [this] { on_material_apply(); });
 
-
-
-	//set_visible("model_material_dialog_grp_color", full);
-	//set_visible("model_material_dialog_grp_transparency", full);
 
 	load_data();
 	apply_queue_depth = 0;
@@ -374,8 +391,6 @@ ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui:
 ModelMaterialPanel::~ModelMaterialPanel() {
 	mode_mesh()->unsubscribe(this);
 	data->unsubscribe(this);
-
-	delete popup_materials;
 }
 
 
@@ -389,14 +404,6 @@ ModeMesh *ModelMaterialPanel::mode_mesh() {
 // data -> GUI
 void ModelMaterialPanel::load_data() {
 	fill_material_list();
-}
-
-int count_material_polygons(DataModel *data, int index) {
-	int n = 0;
-	for (auto &t: data->mesh->polygons)
-		if (t.material == index)
-			n ++;
-	return n;
 }
 
 void ModelMaterialPanel::fill_material_list() {
@@ -428,18 +435,6 @@ void ModelMaterialPanel::on_material_load() {
 	});
 }
 
-void ModelMaterialPanel::on_material_delete() {
-	if (count_material_polygons(data, mode_mesh()->current_material) > 0) {
-		data->session->error("can only delete materials that are not applied to any polygons");
-		return;
-	}
-	data->execute(new ActionModelDeleteMaterial(mode_mesh()->current_material));
-}
-
-void ModelMaterialPanel::on_material_apply() {
-	data->apply_material(mode_mesh()->multi_view->selection, mode_mesh()->current_material);
-}
-
 
 class TextureScaleDialog : public xhui::Dialog {
 public:
@@ -469,13 +464,3 @@ public:
 		});
 	}
 };
-
-void ModelMaterialPanel::on_material_list_right_click() {
-	int n = get_int("materials");
-	if (n >= 0) {
-		mode_mesh()->set_current_material(n);
-		popup_materials->enable("apply-material", n>=0);
-		popup_materials->enable("delete-material", n>=0);
-		popup_materials->open_popup(this);
-	}
-}

@@ -17,7 +17,7 @@ void *ActionModelAddMaterial::execute(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	m->materials.add(material.get());
-	m->out_material_changed.notify();
+	m->out_material_added_or_deleted.notify();
 	return &m->materials.back();
 }
 
@@ -27,7 +27,7 @@ void ActionModelAddMaterial::undo(Data *d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	m->materials.pop();
-	m->out_material_changed.notify();
+	m->out_material_added_or_deleted.notify();
 }
 
 

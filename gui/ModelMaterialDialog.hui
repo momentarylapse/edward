@@ -10,7 +10,7 @@ Dialog model-material-dialog ''
 		Expander contents ''
 			Grid ? ''
 				Group grp-color 'Colors'
-					Grid ? ""
+					Grid ? ''
 						Label /t-albedo "Albedo" right disabled
 						ColorButton albedo "" alpha linear
 						Button reset-albedo "R" "tooltip=Reset to parent value" width=25 primary
@@ -33,3 +33,10 @@ Dialog model-material-dialog ''
 				---|
 				Group grp-textures "Textures"
 					ListView textures "\\Texture" height=130 nobar format=it select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
+				---|
+				Separator ? '' horizontal
+				---|
+				Grid ? ''
+					Label ? '' expandx
+					Button apply-to-selection "Apply" "tooltip=Apply to selection" primary noexpandx
+					Button delete "Delete" "tooltip=Remove from model" danger noexpandx
