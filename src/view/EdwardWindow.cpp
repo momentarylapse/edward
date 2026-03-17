@@ -27,19 +27,19 @@
 #include "DocumentSession.h"
 #include "dialogs/DocumentSwitcher.h"
 #include "dialogs/ProjectPanel.h"
-#include "y/helper/ResourceManager.h"
+#include <y/helper/ResourceManager.h>
 #include <storage/Storage.h>
 #include <stuff/PluginManager.h>
 #include "Mode.h"
 #include <data/Data.h>
-#include "Session.h"
+#include <Session.h>
 #include <cmath>
 
 #include "MaterialPreviewManager.h"
 #include "Session.h"
 #include "Session.h"
-#include "lib/base/iter.h"
-#include "plugins/PluginManager.h"
+#include <lib/base/iter.h>
+#include <plugins/PluginManager.h>
 
 
 extern string AppName;
@@ -160,6 +160,7 @@ Dialog x x padding=0
 		session->ctx->material_manager = session->resource_manager->material_manager;
 		session->ctx->shader_manager->default_shader = "default.shader";
 		session->drawing_helper = new DrawingHelper(session->ctx, pp->context);
+		session->material_preview_manager = new MaterialPreviewManager(session.get());
 		try {
 			session->ctx->load_shader_module("module-basic-data.shader");
 			session->ctx->load_shader_module("module-basic-interface.shader");

@@ -39,9 +39,9 @@ string file_secure(const Path &filename) {
 	return "[no file]";
 }
 
-class XMaterialPanel : public xhui::Panel {
+class XMaterialPanel : public obs::Node<xhui::Panel> {
 public:
-	XMaterialPanel(ModelMaterialPanel* _parent, DataModel* _data, int _index) : xhui::Panel("") {
+	XMaterialPanel(ModelMaterialPanel* _parent, DataModel* _data, int _index) : Node("") {
 		from_resource("model-material-dialog");
 		parent = _parent;
 		data = _data;
@@ -68,36 +68,79 @@ public:
 		event("texture-level-linear", [this] { on_texture_level_linear(); });
 		event("texture-level-srgb", [this] { on_texture_level_srgb(); });
 
-		event("override-colors", [this] { on_override_colors(); });
+		event("reset-albedo", [this] {
+			parent->apply_queue_depth ++;
+			auto m = *data->materials[index];
+			m.albedo = m.parent->albedo;
+			data->execute(new ActionModelEditMaterial(index, m));
+			update_ui();
+			parent->apply_queue_depth --;
+		});
+		event("reset-roughness", [this] {
+			parent->apply_queue_depth ++;
+			auto m = *data->materials[index];
+			m.roughness = m.parent->roughness;
+			data->execute(new ActionModelEditMaterial(index, m));
+			update_ui();
+			parent->apply_queue_depth --;
+		});
+		event("reset-metal", [this] {
+			parent->apply_queue_depth ++;
+			auto m = *data->materials[index];
+			m.metal = m.parent->metal;
+			data->execute(new ActionModelEditMaterial(index, m));
+			update_ui();
+			parent->apply_queue_depth --;
+		});
+		event("reset-emission", [this] {
+			parent->apply_queue_depth ++;
+			auto m = *data->materials[index];
+			m.emission = m.parent->emission;
+			data->execute(new ActionModelEditMaterial(index, m));
+			update_ui();
+			parent->apply_queue_depth --;
+		});
 		event("albedo", [this] { apply_data_color(); });
 		event("roughness", [this] { apply_data_color(); });
 		event("slider-roughness", [this] { apply_data_color(); });
 		event("metal", [this] { apply_data_color(); });
 		event("slider-metal", [this] { apply_data_color(); });
 		event("emission", [this] { apply_data_color(); });
+
+		data->session->resource_manager->material_manager->out_material_edited >> create_data_sink<yrenderer::Material*>([this] (yrenderer::Material* m) {
+			if (m == material())
+				update_reset_buttons();
+		});
 	}
 
 	yrenderer::Material* material() const {
 		return data->materials[index];
 	}
 
-	void update(int _index) {
-		index = _index;
+	string material_name() const {
+		auto mm = data->session->resource_manager->material_manager;
+		auto m = material();
+		string name = str(mm->get_filename(m));
+		if (name == "")
+			name = "[internal]";
+		if (m->parent)
+			name += " < " + str(mm->get_filename(m->parent));
+		return name;
+	}
 
+	void set_index(int _index) {
+		index = _index;
+		update_ui();
+	}
+
+	void update_ui() {
 		auto m = material();
 		int nt = 0;
 
 		set_string("preview", data->session->material_preview_manager->get(m));
-		set_string("header", file_secure(data->session->resource_manager->material_manager->get_filename(m->parent)));
+		set_string("header", material_name());
 		set_string("subheader", format("%d polygons", nt));
 
-		check("override-colors", true);
-		/*enable("albedo", col.user);
-		enable("roughness", col.user);
-		enable("slider-roughness", col.user);
-		enable("metal", col.user);
-		enable("slider-metal", col.user);
-		enable("emission", col.user);*/
 		set_color("albedo", m->albedo);
 		set_float("roughness", m->roughness);
 		set_float("slider-roughness", m->roughness);
@@ -106,7 +149,18 @@ public:
 		set_color("emission", m->emission);
 
 		fill_texture_list();
+		update_reset_buttons();
 	}
+
+	void update_reset_buttons() {
+		auto m = material();
+
+		enable("reset-albedo", m->parent and (m->albedo != m->parent->albedo));
+		enable("reset-roughness", m->parent and (m->roughness != m->parent->roughness));
+		enable("reset-metal", m->parent and (m->metal != m->parent->metal));
+		enable("reset-emission", m->parent and (m->emission != m->parent->emission));
+	}
+
 	void set_selected(bool selected) {
 		expand("contents", selected);
 	}
@@ -117,35 +171,16 @@ public:
 
 		auto m = *data->materials[index];
 
-		bool user= is_checked("override-colors");
+		m.albedo = get_color("albedo");
+		m.roughness = get_float("slider-roughness");
+		m.metal = get_float("slider-metal");
+		m.emission = get_color("emission");
 
-		if (user) {
-			m.albedo = get_color("albedo");
-			m.roughness = get_float("slider-roughness");
-			m.metal = get_float("slider-metal");
-			m.emission = get_color("emission");
-		} else if (m.parent) {
-			m.albedo = m.parent->albedo;
-			m.roughness = m.parent->roughness;
-			m.metal = m.parent->metal;
-			m.emission = m.parent->emission;
-		}
 		set_float("metal", m.metal);
 		set_float("roughness", m.roughness);
-		enable("albedo", user);
-		enable("roughness", user);
-		enable("slider-roughness", user);
-		enable("metal", user);
-		enable("slider-metal", user);
-		enable("emission", user);
 
 		data->execute(new ActionModelEditMaterial(index, m));
 		this->parent->apply_queue_depth --;
-	}
-
-
-	void on_override_colors() {
-		apply_data_color();
 	}
 
 	void fill_texture_list() {
@@ -296,7 +331,7 @@ ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui:
 	};
 	mat_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
 		int i = t._int();
-		reinterpret_cast<XMaterialPanel*>(c)->update(i);
+		reinterpret_cast<XMaterialPanel*>(c)->set_index(i);
 	};
 	mat_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
 		reinterpret_cast<XMaterialPanel*>(c)->set_selected(selected);

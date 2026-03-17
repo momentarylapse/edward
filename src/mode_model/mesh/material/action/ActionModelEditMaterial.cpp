@@ -11,8 +11,9 @@
 #include <lib/mesh/Polygon.h>
 #include <lib/image/image.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/yrenderer/MaterialManager.h>
+#include <y/helper/ResourceManager.h>
 #include <Session.h>
-#include <view/MaterialPreviewManager.h>
 
 #include <assert.h>
 
@@ -28,7 +29,7 @@ void *ActionModelEditMaterial::execute(Data *d) {
 
 	std::swap(material, *m->materials[index]);
 	m->out_material_changed.notify();
-	d->session->material_preview_manager->invalidate(m->materials[index]);
+	d->session->resource_manager->material_manager->invalidate(m->materials[index]);
 
 	return nullptr;
 }

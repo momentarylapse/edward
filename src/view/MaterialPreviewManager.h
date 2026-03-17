@@ -5,6 +5,7 @@
 #include <lib/base/set.h>
 #include <lib/base/pointer.h>
 #include <lib/ygraphics/graphics-fwd.h>
+#include <lib/pattern/Observable.h>
 
 
 class Session;
@@ -12,12 +13,13 @@ namespace yrenderer {
 	class Material;
 }
 
-class MaterialPreviewManager {
+class MaterialPreviewManager : public obs::Node<VirtualBase> {
 public:
 	explicit MaterialPreviewManager(Session*);
+	~MaterialPreviewManager() override;
+
 
 	string get(yrenderer::Material* material);
-	void invalidate(yrenderer::Material* material);
 	void update();
 
 	Session* session;

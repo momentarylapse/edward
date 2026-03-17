@@ -12,11 +12,20 @@
 #include <lib/yrenderer/scene/MeshEmitter.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
 #include <lib/yrenderer/target/HeadlessRendererVulkan.h>
+#include <y/helper/ResourceManager.h>
+#include <lib/yrenderer/MaterialManager.h>
 
 
 MaterialPreviewManager::MaterialPreviewManager(Session* s) {
 	session = s;
+
+	session->resource_manager->material_manager->out_material_edited >> create_data_sink<yrenderer::Material*>([this] (yrenderer::Material* m) {
+		dirty.add(m);
+		out_changed();
+	});
 }
+
+MaterialPreviewManager::~MaterialPreviewManager() = default;
 
 ygfx::Texture* MaterialPreviewManager::get_mat_texture(yrenderer::Material* m) {
 	if (textures.contains(m))
@@ -91,8 +100,4 @@ void MaterialPreviewManager::update() {
 	}
 
 	dirty.clear();
-}
-
-void MaterialPreviewManager::invalidate(yrenderer::Material* material) {
-	dirty.add(material);
 }

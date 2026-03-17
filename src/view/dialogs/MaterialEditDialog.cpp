@@ -67,7 +67,7 @@ Dialog model-material-dialog ''
 	};
 	event("albedo", [this] {
 		material->albedo = get_color("albedo");
-		data->session->material_preview_manager->invalidate(material);
+		data->session->resource_manager->material_manager->invalidate(material);
 	});
 }
 

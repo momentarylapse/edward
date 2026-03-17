@@ -15,7 +15,7 @@ namespace yrenderer {
 
 	using namespace ygfx;
 
-MaterialManager::MaterialManager(TextureManager* tm, const Path& _material_dir) {
+MaterialManager::MaterialManager(TextureManager* tm, const Path& _material_dir) : Node() {
 	texture_manager = tm;
 	material_dir = _material_dir;
 	// create the default material
@@ -251,4 +251,7 @@ xfer<Material> MaterialManager::load_copy(const Path &filename) {
 	return load(filename)->copy();
 }
 
+void MaterialManager::invalidate(Material *m) {
+	out_material_edited(m);
+}
 }

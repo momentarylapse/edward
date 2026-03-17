@@ -10,6 +10,9 @@
 #include <view/MaterialPreviewManager.h>
 #include <mode_model/mesh/ModeMesh.h>
 
+#include "helper/ResourceManager.h"
+#include "lib/yrenderer/MaterialManager.h"
+
 
 string file_secure(const Path &filename);
 
@@ -20,6 +23,9 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(ModeMesh* _mode_mesh)
 	auto list = (xhui::ListView*)get_control("material_list");
 	list->column_factories[0].f_create = [](const string& id) {
 		return new xhui::Image(id, "");
+	};
+	list->column_factories[1].f_create = [](const string& id) {
+		return new xhui::Label(id, "!markup");
 	};
 
 	event("apply", [this] {
@@ -36,11 +42,16 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(ModeMesh* _mode_mesh)
 	});
 
 
-	for (int i=0;i<mode_mesh->data->materials.num;i++) {
+	auto mm = mode_mesh->session->resource_manager->material_manager;
+	for (auto m: mode_mesh->data->materials) {
 		//int nt = count_material_polygons(data, i);
-		string im = mode_mesh->data->session->material_preview_manager->get(mode_mesh->data->materials[i]);
-		add_string("material_list", format("%s\\%s", im, "..."));//file_secure(mode_mesh->data->materials[i]->filename)));
-		//add_string("material_list", format("Mat[%d]\\%d\\%s\\%s", i, nt, im, file_secure(data->material[i]->filename)));
+		string im = mode_mesh->session->material_preview_manager->get(m);
+		string name = str(mm->get_filename(m));
+		if (name == "")
+			name = "[internal]";
+		if (m->parent)
+			name += format("\n <span size='small' alpha='50%%>derived from %s</span>", mm->get_filename(m->parent));
+		add_string("material_list", format("%s\\%s", im, name));
 	}
 	//set_int("materials", mode_mesh->current_material);
 }

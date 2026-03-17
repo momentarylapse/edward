@@ -3999,19 +3999,7 @@ Grid
 
 0
 0
-2
-CheckBox
-override-colors
-
-0
-0
-0
-Grid
-?
-
-0
-1
-8
+12
 Label
 t-albedo
 right,disabled
@@ -4022,6 +4010,12 @@ ColorButton
 albedo
 alpha,linear
 1
+0
+0
+Button
+reset-albedo
+width=25,primary
+2
 0
 0
 Label
@@ -4048,8 +4042,14 @@ range=0:1:0.01
 1
 0
 0
+Button
+reset-roughness
+width=25,primary
+2
+1
+0
 Label
-t-reflectivity
+t-metal
 right,disabled
 0
 2
@@ -4072,6 +4072,12 @@ range=0:1:0.01
 1
 0
 0
+Button
+reset-metal
+width=25,primary
+2
+2
+0
 Label
 t-emission
 right,disabled
@@ -4082,6 +4088,12 @@ ColorButton
 emission
 linear
 1
+3
+0
+Button
+reset-emission
+width=25,primary
+2
 3
 0
 Group
@@ -10879,7 +10891,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1091
+1093
 # Text
 /ambient
 Ambient
@@ -10954,9 +10966,6 @@ Albedo
 Emission
 
 /t-metal
-Metal
-
-/t-reflectivity
 Metal
 
 /t-roughness
@@ -13254,9 +13263,18 @@ Colors
 model-material-dialog/grp-textures
 Textures
 
-model-material-dialog/override-colors
-Override material
-
+model-material-dialog/reset-albedo
+R
+Reset to parent value
+model-material-dialog/reset-emission
+R
+Reset to parent value
+model-material-dialog/reset-metal
+R
+Reset to parent value
+model-material-dialog/reset-roughness
+R
+Reset to parent value
 model-material-dialog/textures
 \\Texture
 Mixing texture levels (multitexturing)\n- Actions via right click

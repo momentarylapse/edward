@@ -62,7 +62,6 @@ Session* create_session(bool with_window) {
 		s->plugin_manager = new edward::PluginManager(s, os::app::directory_static | "plugins");
 	else
 		s->plugin_manager = new edward::PluginManager(s, os::app::directory_static | ".." | "plugins");
-	s->material_preview_manager = new MaterialPreviewManager(s);
 	//s->load_project(xhui::config.get_str("RootDir", ""));
 	if (with_window) {
 		s->_win = new EdwardWindow(s);
@@ -70,6 +69,7 @@ Session* create_session(bool with_window) {
 		xhui::fly(s->win);
 	} else {
 		s->resource_manager = new ResourceManager(nullptr, "", "", "");
+		s->material_preview_manager = new MaterialPreviewManager(s);
 	}
 	return s;
 }

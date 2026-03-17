@@ -5,15 +5,18 @@
 #pragma once
 
 #include "Material.h"
+#include <lib/pattern/Observable.h>
 
 namespace yrenderer {
 
 class TextureManager;
 
-class MaterialManager {
+class MaterialManager : public obs::Node<VirtualBase> {
 public:
 	explicit MaterialManager(TextureManager* texture_manager, const Path& material_dir);
-	~MaterialManager();
+	~MaterialManager() override;
+
+	obs::xsource<Material*> out_material_edited{this, "material-edited"};
 
 	void reset();
 
@@ -21,6 +24,7 @@ public:
 	Material* load(const Path& filename);
 	xfer<Material> load_copy(const Path& filename);
 	Path get_filename(const Material* m);
+	void invalidate(Material* m);
 
 	Path material_dir;
 private:
