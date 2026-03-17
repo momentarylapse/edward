@@ -3987,12 +3987,36 @@ Grid
 
 0
 0
-4
+5
 Group
-grp-color
+grp-parent
 
 0
 0
+1
+Grid
+?
+spacing=16
+0
+0
+2
+Image
+parent-preview
+width=32,height=32
+0
+0
+0
+Button
+parent
+expandx
+1
+0
+0
+Group
+grp-colors
+
+0
+1
 1
 Grid
 ?
@@ -4014,7 +4038,7 @@ alpha,linear
 0
 Button
 reset-albedo
-width=25,primary
+width=25,danger
 2
 0
 0
@@ -4044,7 +4068,7 @@ range=0:1:0.01
 0
 Button
 reset-roughness
-width=25,primary
+width=25,danger
 2
 1
 0
@@ -4074,7 +4098,7 @@ range=0:1:0.01
 0
 Button
 reset-metal
-width=25,primary
+width=25,danger
 2
 2
 0
@@ -4092,7 +4116,7 @@ linear
 0
 Button
 reset-emission
-width=25,primary
+width=25,danger
 2
 3
 0
@@ -4100,7 +4124,7 @@ Group
 grp-textures
 
 0
-1
+2
 1
 ListView
 textures
@@ -4112,13 +4136,13 @@ Separator
 ?
 horizontal
 0
-2
+3
 0
 Grid
 ?
 
 0
-3
+4
 3
 Label
 ?
@@ -4163,22 +4187,10 @@ nobar,select-single,expandy,sunkenbackground=no,showselection=no
 1
 0
 0
-Grid
-?
+Button
+add
 
 2
-0
-2
-Button
-add-new-material
-
-0
-0
-0
-Button
-load-material
-image=open
-1
 0
 0
 # Resource
@@ -10921,7 +10933,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1095
+1096
 # Text
 /ambient
 Ambient
@@ -13293,23 +13305,26 @@ Remove from model
 model-material-dialog/emission
 
 Color in absolute darkness
-model-material-dialog/grp-color
+model-material-dialog/grp-colors
 Colors
+
+model-material-dialog/grp-parent
+Parent
 
 model-material-dialog/grp-textures
 Textures
 
 model-material-dialog/reset-albedo
-R
+x
 Reset to parent value
 model-material-dialog/reset-emission
-R
+x
 Reset to parent value
 model-material-dialog/reset-metal
-R
+x
 Reset to parent value
 model-material-dialog/reset-roughness
-R
+x
 Reset to parent value
 model-material-dialog/textures
 \\Texture
@@ -13326,9 +13341,9 @@ Material
 model-material-list-popup/reset-material
 Reload
 
-model-material-panel/add-new-material
+model-material-panel/add
 +
-
+Add new material or load from file
 model-material-panel/header
 Materials
 

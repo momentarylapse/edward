@@ -23,8 +23,10 @@ public:
 	void set_default(Material* m);
 	Material* load(const Path& filename);
 	xfer<Material> load_copy(const Path& filename);
-	Path get_filename(const Material* m);
+	Path get_filename(const Material* m) const;
+	string describe(const Material* m) const;
 	void invalidate(Material* m);
+	Material* create_internal();
 
 	Path material_dir;
 private:
@@ -32,6 +34,7 @@ private:
 	Material* default_material;
 	Material* trivial_material;
 	base::map<Path, Material*> materials; // "originals" owned!
+	owned_array<Material> internal_materials;
 };
 
 }

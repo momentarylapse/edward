@@ -19,9 +19,7 @@ MaterialManager::MaterialManager(TextureManager* tm, const Path& _material_dir) 
 	texture_manager = tm;
 	material_dir = _material_dir;
 	// create the default material
-	trivial_material = new Material();
-	trivial_material->textures = {texture_manager->tex_white};
-	//trivial_material->shader_path = Shader::default_3d;
+	trivial_material = create_internal();
 
 	set_default(trivial_material);
 }
@@ -108,11 +106,22 @@ color any2color(const Any &a) {
 	return Black;
 }
 
-Path MaterialManager::get_filename(const Material* m) {
-	for (auto&& [f, _m]: materials)
+Path MaterialManager::get_filename(const Material* m) const {
+	for (const auto&& [f, _m]: materials)
 		if (_m == m)
 			return f;
 	return "";
+}
+
+string MaterialManager::describe(const Material* m) const {
+	if (!m)
+		return "[none]";
+	string name = str(get_filename(m));
+	if (name == "")
+		name = "[internal]";
+	if (m->parent)
+		name += " < " + str(get_filename(m->parent));
+	return name;
 }
 
 Material* MaterialManager::load(const Path& filename) {
@@ -253,5 +262,12 @@ xfer<Material> MaterialManager::load_copy(const Path &filename) {
 
 void MaterialManager::invalidate(Material *m) {
 	out_material_edited(m);
+}
+
+Material* MaterialManager::create_internal() {
+	auto m = new Material();
+	m->textures = {texture_manager->load_texture("")};
+	internal_materials.add(m);
+	return m;
 }
 }

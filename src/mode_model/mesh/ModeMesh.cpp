@@ -39,6 +39,7 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <cmath>
 
+#include "lib/yrenderer/MaterialManager.h"
 #include "material/action/ActionModelAddMaterial.h"
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
@@ -282,7 +283,7 @@ void ModeMesh::on_connect_events() {
 		data->out_changed();
 	});
 	doc->event("choose_material", [this] {
-		ModelMaterialSelectionDialog::ask(session, weak(data->materials)).then([this] (yrenderer::Material* material) {
+		ModelMaterialSelectionDialog::ask(session, "Apply material", weak(data->materials), true, false).then([this] (yrenderer::Material* material) {
 			int n = weak(data->materials).find(material);
 			if (n >= 0) {
 				// already internal

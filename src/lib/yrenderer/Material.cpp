@@ -70,7 +70,8 @@ xfer<Material> Material::copy() const {
 }
 
 void Material::derive_from(Material* _parent) {
-	*this = *_parent;
+	if (_parent)
+		*this = *_parent;
 	parent = _parent;
 }
 

@@ -28,8 +28,7 @@ public:
 	void fill_material_list();
 
 	void on_material_list_select();
-	void on_material_add();
-	void on_material_load();
+	void on_add();
 
 private:
 	DataModel *data;

@@ -45,6 +45,9 @@ void ModeMeshMaterial::on_leave() {
 	data->out_changed.unsubscribe(this);
 }
 
+void ModeMeshMaterial::on_connect_events() {
+	mode_mesh->on_connect_events();
+}
 
 Mode* ModeMeshMaterial::get_parent() {
 	return mode_mesh;

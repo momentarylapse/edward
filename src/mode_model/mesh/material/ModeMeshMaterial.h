@@ -21,6 +21,7 @@ public:
 	void on_leave() override;
 	void on_key_down(int key) override;
 	void on_command(const string& id) override;
+	void on_connect_events() override;
 
 	ModeMesh* mode_mesh;
 	Mode* get_parent() override;

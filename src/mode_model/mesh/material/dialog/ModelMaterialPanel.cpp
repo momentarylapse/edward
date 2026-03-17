@@ -31,6 +31,9 @@
 #include <lib/yrenderer/MaterialManager.h>
 #include <lib/yrenderer/TextureManager.h>
 
+#include "ModelMaterialSelectionDialog.h"
+#include "world/ModelManager.h"
+
 static constexpr int PREVIEW_SIZE = 48;
 
 string file_secure(const Path &filename) {
@@ -75,6 +78,14 @@ public:
 		event("texture-level-scale", [this] { on_texture_level_scale(); });
 		event("texture-level-linear", [this] { on_texture_level_linear(); });
 		event("texture-level-srgb", [this] { on_texture_level_srgb(); });
+
+		event("parent", [this] {
+			ModelMaterialSelectionDialog::ask(data->session, "Select parent material", {}, false, true).then([this] (yrenderer::Material* parent) {
+				auto m = *material();
+				m.derive_from(parent);
+				data->execute(new ActionModelEditMaterial(material(), m));
+			});
+		});
 
 		event("reset-albedo", [this] {
 			parent->apply_queue_depth ++;
@@ -146,13 +157,7 @@ public:
 
 	string material_name() const {
 		auto mm = data->session->resource_manager->material_manager;
-		auto m = material();
-		string name = str(mm->get_filename(m));
-		if (name == "")
-			name = "[internal]";
-		if (m->parent)
-			name += " < " + str(mm->get_filename(m->parent));
-		return name;
+		return mm->describe(material());
 	}
 
 	void set_index(int _index) {
@@ -162,7 +167,10 @@ public:
 
 	void update_ui() {
 		auto m = material();
-		int nt = count_material_polygons(data, index);;
+		int nt = count_material_polygons(data, index);
+
+		set_string("parent", m->parent ? str(data->session->resource_manager->material_manager->get_filename(m->parent)) : "none");
+		set_string("parent-preview", data->session->material_preview_manager->get(m->parent));
 
 		set_string("preview", data->session->material_preview_manager->get(m));
 		set_string("header", material_name());
@@ -380,8 +388,9 @@ ModelMaterialPanel::ModelMaterialPanel(DataModel *_data, bool full) : Node<xhui:
 	event_x("materials", xhui::event_id::Select, [this] {
 		on_material_list_select();
 	});
-	event("add-new-material", [this] { on_material_add(); });
-	event("load-material", [this] { on_material_load(); });
+	event("add", [this] {
+		on_add();
+	});
 
 
 	load_data();
@@ -423,15 +432,10 @@ void ModelMaterialPanel::on_material_list_select() {
 	mode_mesh()->set_current_material(get_int("materials"));
 }
 
-void ModelMaterialPanel::on_material_add() {
-	data->execute(new ActionModelAddMaterial(new yrenderer::Material));
-}
-
-void ModelMaterialPanel::on_material_load() {
-	data->session->storage->file_dialog(FD_MATERIAL, false, true).then([this] (const auto& p) {
-		auto m = new yrenderer::Material;
-		m->derive_from(data->session->resource_manager->load_material(p.simple));
-		data->execute(new ActionModelAddMaterial(m));
+void ModelMaterialPanel::on_add() {
+	ModelMaterialSelectionDialog::ask(data->session, "Add a material", {}, true, false).then([this] (yrenderer::Material* material) {
+		data->execute(new ActionModelAddMaterial(material));
+		data->session->info("added material");
 	});
 }
 
