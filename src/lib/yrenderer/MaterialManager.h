@@ -27,6 +27,7 @@ public:
 	string describe(const Material* m) const;
 	void invalidate(Material* m);
 	Material* create_internal();
+	bool is_from_file(Material* m) const;
 
 	Path material_dir;
 private:

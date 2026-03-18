@@ -270,4 +270,11 @@ Material* MaterialManager::create_internal() {
 	internal_materials.add(m);
 	return m;
 }
+
+bool MaterialManager::is_from_file(Material *m) const {
+	for (const auto&& [f, _m]: materials)
+		if (_m == m)
+			return true;
+	return false;
+}
 }

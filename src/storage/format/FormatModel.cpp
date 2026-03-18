@@ -215,42 +215,66 @@ class ChunkMaterial : public FileChunk<DataModel, yrenderer::Material> {
 public:
 	ChunkMaterial() : FileChunk("material") {}
 	void create() override {
-		me = new yrenderer::Material();
+		/*me = new yrenderer::Material();
 		//msg_write(p2s(parent));
-		parent->materials.add(me);
+		parent->materials.add(me);*/
 	}
 	void read(Stream *f) override {
 		auto session = dynamic_cast<ModelParser*>(root)->session;
 		string filename = f->read_str();
-		if (filename != "")
-			me->derive_from(session->resource_manager->load_material(filename));
 		bool user_color = f->read_bool();
-		read_color_argb(f, me->albedo);
-		read_color_argb(f, me->emission);
-		me->metal = f->read_float();
-		me->roughness = f->read_float();
+		if (filename != "") {
+			me = session->resource_manager->load_material(filename);
+			if (user_color) {
+				auto p = me;
+				me = session->resource_manager->material_manager->create_internal();
+				me->derive_from(p);
+			}
+		} else {
+			me = session->resource_manager->material_manager->create_internal();
+		}
+		parent->materials.add(me);
+		yrenderer::Material temp;
+		read_color_argb(f, temp.albedo);
+		read_color_argb(f, temp.emission);
+		temp.metal = f->read_float();
+		temp.roughness = f->read_float();
 
 		f->read_int();
 		f->read_int();
 		f->read_int();
 		f->read_float();
 		f->read_bool();
-		int n = f->read_int();
-		if (me->textures.num < n)
-			me->textures.resize(n);
-		for (int t=0; t<n; t++) {
-			filename = f->read_str();
-			if (filename != "")
-				me->textures[t] = session->resource_manager->load_texture(filename);
+		temp.textures.resize(f->read_int());
+		for (int t=0; t<temp.textures.num; t++)
+			temp.textures[t] = session->resource_manager->load_texture(f->read_str());
+
+		// overwrite...?
+		if (filename == "" or user_color) {
+			me->albedo = temp.albedo;
+			me->emission = temp.emission;
+			me->metal = temp.metal;
+			me->roughness = temp.roughness;
+			for (int t=0; t<min(me->textures.num, temp.textures.num); t++)
+				if (temp.textures[t] != session->resource_manager->texture_manager->tex_white.get())
+					me->textures[t] = temp.textures[t];
+			for (int t=me->textures.num; t<temp.textures.num; t++)
+				if (temp.textures[t] != session->resource_manager->texture_manager->tex_white.get())
+					me->textures.add(temp.textures[t]);
 		}
 	}
 	void write(Stream *f) override {
 		auto session = dynamic_cast<ModelParser*>(root)->session;
-		if (me->parent)
+		if (session->resource_manager->material_manager->is_from_file(me)) {
+			f->write_str(str(session->resource_manager->material_manager->get_filename(me)));
+			f->write_bool(false);
+		} else if (me->parent) {
 			f->write_str(str(session->resource_manager->material_manager->get_filename(me->parent)));
-		else
+			f->write_bool(true);
+		} else {
 			f->write_str("");
-		f->write_bool(true);
+			f->write_bool(true);
+		}
 		write_color_argb(f, me->albedo);
 		write_color_argb(f, me->emission);
 		f->write_float(me->metal);
@@ -261,7 +285,7 @@ public:
 		f->write_float(0);
 		f->write_bool(false);
 		f->write_int(me->textures.num);
-		for (int t=0;t<me->textures.num;t++)
+		for (int t=0; t<me->textures.num; t++)
 			f->write_str(str(session->resource_manager->texture_manager->texture_file(me->textures[t].get())));
 	}
 };
