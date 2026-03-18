@@ -13,17 +13,12 @@
 #include "../../lib/os/file.h"
 #include "../../lib/os/formatter.h"
 #include "../../lib/os/msg.h"
+#include "helper/ResourceManager.h"
+#include "lib/yrenderer/MaterialManager.h"
+#include "lib/yrenderer/TextureManager.h"
 
 namespace yrenderer {
 	color any2color(const Any &a);
-}
-Any color2any(const color &c) {
-	Any r = Any::EmptyList;
-	r.add(c.r);
-	r.add(c.g);
-	r.add(c.b);
-	r.add(c.a);
-	return r;
 }
 
 namespace yrenderer {
@@ -31,13 +26,6 @@ namespace yrenderer {
 }
 
 FormatMaterial::FormatMaterial(Session *s) : TypedFormat<DataMaterial>(s, FD_MATERIAL, "material", "Material", Flag::CANONICAL_READ_WRITE) {
-}
-
-Array<string> paths_to_str_arr(const Array<Path> &files) {
-	Array<string> r;
-	for (auto f: files)
-		r.add(f.str());
-	return r;
 }
 
 Array<Path> str_arr_to_paths(const Array<string> &s) {
@@ -49,6 +37,8 @@ Array<Path> str_arr_to_paths(const Array<string> &s) {
 
 void FormatMaterial::load_current(const Path &filename, DataMaterial *data) {
 
+	session->resource_manager->material_manager->_load_from_file(&data->material, filename);
+#if 0
 	Configuration c;
 	c.load(filename);
 	data->appearance.albedo = yrenderer::any2color(c.get("color.albedo", Any()));
@@ -127,6 +117,7 @@ void FormatMaterial::load_current(const Path &filename, DataMaterial *data) {
 	data->physics.friction_sliding = c.get_float("friction.slide", 0.5f);
 	data->physics.friction_rolling = c.get_float("friction.roll", 0.5f);
 	data->physics.friction_jump = c.get_float("friction.jump", 0.5f);
+#endif
 }
 
 void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
@@ -135,30 +126,28 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		if (lf.ffv >= 4) {
 			f->read_comment();
 			int n = f->read_int();
+			data->material.textures.resize(n);
 			for (int i=0;i<n;i++)
-				data->appearance.texture_files.add(f->read_str());
-			if ((data->appearance.texture_files.num == 1) and (data->appearance.texture_files[0] == "")){
-				data->appearance.texture_files.clear();
-			}
+				data->material.textures[i] = session->resource_manager->load_texture(f->read_str());
 		}
 		// Colors
 		f->read_comment();
 		color cc;
 		read_color_argb(f, cc);
-		read_color_argb(f, data->appearance.albedo);
-		data->appearance.roughness = 0.5f;
+		read_color_argb(f, data->material.albedo);
+		data->material.roughness = 0.5f;
 		read_color_argb(f, cc);
-		data->appearance.metal = 0.1f;
+		data->material.metal = 0.1f;
 		/*shininess = */ f->read_int();
-		read_color_argb(f, data->appearance.emissive);
+		read_color_argb(f, data->material.emission);
 		// Transparency
 		f->read_comment();
-		data->appearance.passes[0].mode = (yrenderer::TransparencyMode)f->read_int();
-		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
-		data->appearance.passes[0].source = (ygfx::Alpha)f->read_int();
-		data->appearance.passes[0].destination = (ygfx::Alpha)f->read_int();
-		data->appearance.passes[0].z_write = f->read_bool();
-		data->appearance.passes[0].z_test = true;
+		data->material.pass0.mode = (yrenderer::TransparencyMode)f->read_int();
+		data->material.pass0.factor = (float)f->read_int() * 0.01f;
+		data->material.pass0.source = (ygfx::Alpha)f->read_int();
+		data->material.pass0.destination = (ygfx::Alpha)f->read_int();
+		data->material.pass0.z_buffer = f->read_bool();
+		data->material.pass0.z_test = true;
 		// Appearance
 		f->read_comment();
 		f->read_int();
@@ -173,15 +162,15 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 			f->read_str();
 		// ShaderFile
 		f->read_comment();
-		data->appearance.passes[0].shader.file = f->read_str();
+		data->material.pass0.shader_path = f->read_str();
 		// Physics
 		f->read_comment();
-		data->physics.friction_jump = (float)f->read_int() * 0.001f;
-		data->physics.friction_static = (float)f->read_int() * 0.001f;
-		data->physics.friction_sliding = (float)f->read_int() * 0.001f;
-		data->physics.friction_rolling = (float)f->read_int() * 0.001f;
-		data->physics.vmin_jump = (float)f->read_int() * 0.001f;
-		data->physics.vmin_sliding = (float)f->read_int() * 0.001f;
+		data->material.friction.jump = (float)f->read_int() * 0.001f;
+		data->material.friction._static = (float)f->read_int() * 0.001f;
+		data->material.friction.sliding = (float)f->read_int() * 0.001f;
+		data->material.friction.rolling = (float)f->read_int() * 0.001f;
+		/*data->material.vmin_jump =*/ (float)f->read_int() * 0.001f;
+		/*data->material.vmin_sliding =*/ (float)f->read_int() * 0.001f;
 
 		//AlphaZBuffer=(TransparencyMode!=TransparencyMode::FUNCTIONS)and(TransparencyMode!=TransparencyMode::FACTOR);
 	}else if (lf.ffv==2){
@@ -189,23 +178,23 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		f->read_comment();
 		color cc;
 		read_color_argb(f, cc);
-		data->appearance.roughness = 0.5f;
-		read_color_argb(f, data->appearance.albedo);
+		data->material.roughness = 0.5f;
+		read_color_argb(f, data->material.albedo);
 		read_color_argb(f, cc);
-		data->appearance.metal = 0.1f;
+		data->material.metal = 0.1f;
 		[[maybe_unused]] auto shininess = (float)f->read_int();
-		read_color_argb(f, data->appearance.emissive);
+		read_color_argb(f, data->material.emission);
 		// Transparency
 		f->read_comment();
-		data->appearance.passes[0].mode = (yrenderer::TransparencyMode)f->read_int();
-		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
-		data->appearance.passes[0].source = (ygfx::Alpha)f->read_int();
-		data->appearance.passes[0].destination = (ygfx::Alpha)f->read_int();
+		data->material.pass0.mode = (yrenderer::TransparencyMode)f->read_int();
+		data->material.pass0.factor = (float)f->read_int() * 0.01f;
+		data->material.pass0.source = (ygfx::Alpha)f->read_int();
+		data->material.pass0.destination = (ygfx::Alpha)f->read_int();
 		// Appearance
 		f->read_comment();
 		int MetalDensity = f->read_int();
 		if (MetalDensity > 0)
-			data->appearance.metal = (float)MetalDensity * 0.01f;
+			data->material.metal = (float)MetalDensity * 0.01f;
 		f->read_int();
 		f->read_int();
 		bool Mirror = f->read_bool();
@@ -214,40 +203,40 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		f->read_comment();
 		string sf = f->read_str();
 		if (sf.num > 0)
-			data->appearance.passes[0].shader.file = sf + ".fx.glsl";
+			data->material.pass0.shader_path = sf + ".fx.glsl";
 		// Physics
 		f->read_comment();
-		data->physics.friction_jump = (float)f->read_int() * 0.001f;
-		data->physics.friction_static = (float)f->read_int() * 0.001f;
-		data->physics.friction_sliding = (float)f->read_int() * 0.001f;
-		data->physics.friction_rolling = (float)f->read_int() * 0.001f;
-		data->physics.vmin_jump = (float)f->read_int() * 0.001f;
-		data->physics.vmin_sliding = (float)f->read_int() * 0.001f;
+		data->material.friction.jump = (float)f->read_int() * 0.001f;
+		data->material.friction._static = (float)f->read_int() * 0.001f;
+		data->material.friction.sliding = (float)f->read_int() * 0.001f;
+		data->material.friction.rolling = (float)f->read_int() * 0.001f;
+		/*data->material.vmin_jump =*/ (float)f->read_int() * 0.001f;
+		/*data->material.vmin_sliding =*/ (float)f->read_int() * 0.001f;
 
-		data->appearance.passes[0].z_write = (data->appearance.passes[0].mode != yrenderer::TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != yrenderer::TransparencyMode::FACTOR);
-		data->appearance.passes[0].z_test = true;
+		data->material.pass0.z_buffer = (data->material.pass0.mode != yrenderer::TransparencyMode::FUNCTIONS) and (data->material.pass0.mode != yrenderer::TransparencyMode::FACTOR);
+		data->material.pass0.z_test = true;
 	}else if (lf.ffv==1){
 		// Colors
 		f->read_comment();
 		color cc;
 		read_color_argb(f, cc);
-		data->appearance.roughness = 0.5f;
-		read_color_argb(f, data->appearance.albedo);
+		data->material.roughness = 0.5f;
+		read_color_argb(f, data->material.albedo);
 		read_color_argb(f, cc);
-		data->appearance.metal = 0.1f;
+		data->material.metal = 0.1f;
 		[[maybe_unused]] auto shininess = (float)f->read_int();
-		read_color_argb(f, data->appearance.emissive);
+		read_color_argb(f, data->material.emission);
 		// Transparency
 		f->read_comment();
-		data->appearance.passes[0].mode = (yrenderer::TransparencyMode)f->read_int();
-		data->appearance.passes[0].factor = (float)f->read_int() * 0.01f;
-		data->appearance.passes[0].source = (ygfx::Alpha)f->read_int();
-		data->appearance.passes[0].destination = (ygfx::Alpha)f->read_int();
+		data->material.pass0.mode = (yrenderer::TransparencyMode)f->read_int();
+		data->material.pass0.factor = (float)f->read_int() * 0.01f;
+		data->material.pass0.source = (ygfx::Alpha)f->read_int();
+		data->material.pass0.destination = (ygfx::Alpha)f->read_int();
 		// Appearance
 		f->read_comment();
 		int MetalDensity = f->read_int();
 		if (MetalDensity > 0)
-			data->appearance.metal = (float)MetalDensity * 0.01f;
+			data->material.metal = (float)MetalDensity * 0.01f;
 		f->read_int();
 		f->read_int();
 		f->read_bool();
@@ -256,10 +245,10 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		f->read_comment();
 		Path sf = f->read_str();
 		if (!sf.is_empty())
-		data->appearance.passes[0].shader.file = sf.with(".fx.glsl");
+		data->material.pass0.shader_path = sf.with(".fx.glsl");
 
-		data->appearance.passes[0].z_write = (data->appearance.passes[0].mode != yrenderer::TransparencyMode::FUNCTIONS) and (data->appearance.passes[0].mode != yrenderer::TransparencyMode::FACTOR);
-		data->appearance.passes[0].z_test = true;
+		data->material.pass0.z_buffer = (data->material.pass0.mode != yrenderer::TransparencyMode::FUNCTIONS) and (data->material.pass0.mode != yrenderer::TransparencyMode::FACTOR);
+		data->material.pass0.z_test = true;
 	}else{
 		//throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename, ffv, 1, 4));
 	}
@@ -284,91 +273,19 @@ void FormatMaterial::_load(const Path &filename, DataMaterial *data, bool deep) 
 	/*if (ffv<0){
 		throw FormatError(_("File format unreadable!"));*/
 
+#if 0
 	if (deep) {
-		for (auto &p: data->appearance.passes)
+		for (auto &p: data->material.passes)
 			p.shader.load_from_file(data->doc);
 	}
+#endif
 
 	delete f;
 }
 
 
 
-string alpha_to_str(ygfx::Alpha a) {
-	if (a == ygfx::Alpha::ZERO)
-		return "zero";
-	if (a == ygfx::Alpha::ONE)
-		return "one";
-	if (a == ygfx::Alpha::SOURCE_COLOR)
-		return "source-color";
-	if (a == ygfx::Alpha::SOURCE_INV_COLOR)
-		return "source-inv-color";
-	if (a == ygfx::Alpha::SOURCE_ALPHA)
-		return "source-alpha";
-	if (a == ygfx::Alpha::SOURCE_INV_ALPHA)
-		return "source-inv-alpha";
-	if (a == ygfx::Alpha::DEST_COLOR)
-		return "dest-color";
-	if (a == ygfx::Alpha::DEST_INV_COLOR)
-		return "dest-inv-color";
-	if (a == ygfx::Alpha::DEST_ALPHA)
-		return "dest-alpha";
-	if (a == ygfx::Alpha::DEST_INV_ALPHA)
-		return "dest-inv-alpha";
-	return "???";
-}
 
 void FormatMaterial::_save(const Path &filename, DataMaterial *data) {
-	Configuration c;
-
-	c.set_str_array("textures", paths_to_str_arr(data->appearance.texture_files));
-	if (!data->appearance.cast_shadow)
-		c.set_bool("cast-shadows", data->appearance.cast_shadow);
-
-	c.set("color.albedo", color2any(data->appearance.albedo));
-	if (data->appearance.emissive != Black)
-		c.set("color.emission", color2any(data->appearance.emissive));
-	c.set_float("color.roughness", data->appearance.roughness);
-	c.set_float("color.metal", data->appearance.metal);
-
-	for (int i=0; i<data->appearance.passes.num; i++) {
-		auto &p = data->appearance.passes[i];
-		string key = format("pass%d", i);
-		c.set_str(key + ".shader", p.shader.file.str());
-
-		if (p.mode == yrenderer::TransparencyMode::FACTOR) {
-			c.set_str(key + ".mode", "factor");
-			c.set_float(key + ".factor", p.factor);
-		} else if (p.mode == yrenderer::TransparencyMode::FUNCTIONS) {
-			c.set_str(key + ".mode", "function");
-			c.set_str(key + ".source", alpha_to_str(p.source));
-			c.set_str(key + ".dest", alpha_to_str(p.destination));
-		} else if (p.mode == yrenderer::TransparencyMode::MIX) {
-			c.set_str(key + ".mode", "mix");
-		} else if (p.mode == yrenderer::TransparencyMode::COLOR_KEY_HARD) {
-			c.set_str(key + ".mode", "key-hard");
-		} else if (p.mode == yrenderer::TransparencyMode::COLOR_KEY_SMOOTH) {
-			c.set_str(key + ".mode", "key-smooth");
-		} else {
-			c.set_str(key + ".mode", "solid");
-		}
-		if (p.culling == ygfx::CullMode::NONE)
-			c.set_str(key + ".cull", "none");
-		else if (p.culling == ygfx::CullMode::FRONT)
-			c.set_str(key + ".cull", "front");
-		if (p.mode != yrenderer::TransparencyMode::NONE or !p.z_write or !p.z_test)
-			c.set_bool(key + ".z-write", p.z_write);
-		if (!p.z_test)
-			c.set_bool(key + ".z-test", p.z_test);
-		/*if (data->appearance.transparency_mode != TransparencyMode::NONE) {
-			c.set_bool("transparency.zbuffer", data->appearance.alpha_z_buffer);
-		}*/
-	}
-
-	c.set_float("friction.static", data->physics.friction_static);
-	c.set_float("friction.slide", data->physics.friction_sliding);
-	c.set_float("friction.roll", data->physics.friction_rolling);
-	c.set_float("friction.jump", data->physics.friction_jump);
-
-	c.save(filename);
+	session->resource_manager->material_manager->_write_to_file(&data->material, filename);
 }

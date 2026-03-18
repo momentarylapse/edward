@@ -77,6 +77,7 @@ public:
 	};
 	int num_passes = 1;
 	RenderPassData pass0;
+	void set_num_passes(int num_passes);
 
 	struct ExtendedData {
 		RenderPassData pass[4];

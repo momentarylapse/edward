@@ -46,8 +46,8 @@ MaterialPassPanel::MaterialPassPanel(MaterialPanel* _parent, DataMaterial* _data
 	event("shader", [this] {
 		data->session->storage->file_dialog(FD_SHADERFILE, false, true).then([this] (const ComplexPath& p) {
 			parent->apply_queue_depth ++;
-			auto a = data->appearance;
-			a.passes[index].shader.file = p.relative;
+			auto a = data->material;
+			a.pass(index).shader_path = p.relative;
 			data->execute(new ActionMaterialEditAppearance(a));
 			parent->apply_queue_depth --;
 			update(index);
@@ -55,53 +55,55 @@ MaterialPassPanel::MaterialPassPanel(MaterialPanel* _parent, DataMaterial* _data
 	});
 	event("clear-shader", [this] {
 		parent->apply_queue_depth ++;
-		auto a = data->appearance;
-		a.passes[index].shader.file = "";
+		auto a = data->material;
+		a.pass(index).shader_path = "";
 		data->execute(new ActionMaterialEditAppearance(a));
 		parent->apply_queue_depth --;
 		update(index);
 	});
 	event("edit-shader", [this] {
-		auto a = data->appearance;
-		if (!a.passes[index].shader.file.is_empty())
-			data->session->universal_edit(FD_SHADERFILE, a.passes[index].shader.file, true);
+		auto a = data->material;
+		if (!a.pass(index).shader_path.is_empty())
+			data->session->universal_edit(FD_SHADERFILE, a.pass(index).shader_path, true);
 	});
 	event("delete", [this] {
-		auto a = data->appearance;
-		a.passes.erase(index);
-		if (a.passes.num >= 1)
+		auto a = data->material;
+		for (int k=index; k<a.num_passes-1; k++)
+			a.pass(k) = a.pass(k+1);
+		a.set_num_passes(a.num_passes - 1);
+		if (a.num_passes >= 1)
 			data->execute(new ActionMaterialEditAppearance(a));
 	});
 }
 
 void MaterialPassPanel::update(int _index) {
 	index = _index;
-	auto& p = data->appearance.passes[index];
+	auto& p = data->material.pass(index);
 
 	if (p.mode == yrenderer::TransparencyMode::NONE)
 		set_string("header", "Solid");
 	if (p.mode == yrenderer::TransparencyMode::FUNCTIONS)
 		set_string("header", "Transparent");
-	if (p.culling == ygfx::CullMode::BACK)
+	if (p.cull_mode == ygfx::CullMode::BACK)
 		set_string("subheader", "Front");
-	else if (p.culling == ygfx::CullMode::FRONT)
+	else if (p.cull_mode == ygfx::CullMode::FRONT)
 		set_string("subheader", "Back");
-	else if (p.culling == ygfx::CullMode::NONE)
+	else if (p.cull_mode == ygfx::CullMode::NONE)
 		set_string("subheader", "Front & back");
 
-	set_string("shader", file_secure(p.shader.file));
+	set_string("shader", file_secure(p.shader_path));
 	set_int("mode", transparency_modes.find(p.mode));
 	set_int("source", alphas.find(p.source));
 	set_int("destination", alphas.find(p.destination));
 	enable("source", p.mode == yrenderer::TransparencyMode::FUNCTIONS);
 	enable("destination", p.mode == yrenderer::TransparencyMode::FUNCTIONS);
-	check("cull:front", p.culling == ygfx::CullMode::FRONT);
-	check("cull:back", p.culling == ygfx::CullMode::BACK);
-	check("cull:none", p.culling == ygfx::CullMode::NONE);
-	check("z-write", p.z_write);
+	check("cull:front", p.cull_mode == ygfx::CullMode::FRONT);
+	check("cull:back", p.cull_mode == ygfx::CullMode::BACK);
+	check("cull:none", p.cull_mode == ygfx::CullMode::NONE);
+	check("z-write", p.z_buffer);
 	check("z-test", p.z_test);
-	enable("delete", data->appearance.passes.num >= 2);
-	enable("edit-shader", !p.shader.file.is_empty());
+	enable("delete", data->material.num_passes >= 2);
+	enable("edit-shader", !p.shader_path.is_empty());
 }
 void MaterialPassPanel::set_selected(bool selected) {
 	set_visible("g-pass", selected);
@@ -111,19 +113,19 @@ void MaterialPassPanel::set_selected(bool selected) {
 void MaterialPassPanel::apply_data() {
 	parent->apply_queue_depth ++;
 
-	auto a = data->appearance;
-	auto& p = a.passes[index];
+	auto a = data->material;
+	auto& p = a.pass(index);
 
 	p.mode = transparency_modes[get_int("mode")];
 	p.source = alphas[get_int("source")];
 	p.destination = alphas[get_int("destination")];
 	if (is_checked("cull:back"))
-		p.culling = ygfx::CullMode::BACK;
+		p.cull_mode = ygfx::CullMode::BACK;
 	else if (is_checked("cull:front"))
-		p.culling = ygfx::CullMode::FRONT;
+		p.cull_mode = ygfx::CullMode::FRONT;
 	else if (is_checked("cull:none"))
-		p.culling = ygfx::CullMode::NONE;
-	p.z_write = is_checked("z-write");
+		p.cull_mode = ygfx::CullMode::NONE;
+	p.z_buffer = is_checked("z-write");
 	p.z_test = is_checked("z-test");
 
 	enable("source", p.mode == yrenderer::TransparencyMode::FUNCTIONS);

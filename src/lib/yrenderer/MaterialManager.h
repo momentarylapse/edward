@@ -32,6 +32,11 @@ public:
 	bool has_changes(Material* m) const;
 
 	Path material_dir;
+
+
+	void _load_from_file(Material* material, const Path& filename);
+	void _write_to_file(Material* material, const Path& filename);
+
 private:
 	TextureManager* texture_manager;
 	Material* default_material;

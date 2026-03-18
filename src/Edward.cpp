@@ -62,10 +62,11 @@ void update_file(const Path &filename, bool allow_write) {
 	Data *data = nullptr;
 	string ext = filename.extension();
 
+#if 0
 	if (ext == "shader") {
 		auto mat = new DataMaterial(doc);
 		msg_write("loading " + filename.str());
-		auto &s = mat->appearance.passes[0].shader;
+		auto &s = mat->material.pass0.shader_path;
 		s.file = _filename.relative_to(storage->root_dir_kind[FD_MATERIAL]);
 		s.load_from_file(doc);
 		if (s.from_graph)
@@ -75,6 +76,7 @@ void update_file(const Path &filename, bool allow_write) {
 		delete session;
 		return;
 	}
+#endif
 
 
 	if (ext == "model") {

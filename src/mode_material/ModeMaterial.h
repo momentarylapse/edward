@@ -51,7 +51,7 @@ public:
 	DataMaterial* data;
 	owned<ygfx::VertexBuffer> vertex_buffer;
 	PreviewMesh preview_mesh;
-	owned<yrenderer::Material> material;
+	const yrenderer::Material* material;
 
 	owned<ygfx::VertexBuffer> vertex_buffer_ground;
 	owned<yrenderer::Material> material_ground;

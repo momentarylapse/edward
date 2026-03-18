@@ -2438,7 +2438,7 @@ Grid
 1
 ListView
 textures
-format=tit,select-single,nobar
+format=it,select-single,nobar
 0
 0
 0
@@ -4243,7 +4243,7 @@ image=hui:save-as
 0
 0
 Item
-delete-material
+delete
 image=hui:delete
 6
 0
@@ -11536,7 +11536,7 @@ material-panel/tab
 Parameters\\Rendering\\Physics
 
 material-panel/textures
-Level\\\\Texture
+\\Texture
 
 material-pass-panel/clear-shader
 Clear
@@ -13353,7 +13353,7 @@ Mixing texture levels (multitexturing)\n- Actions via right click
 model-material-list-popup/apply-to-selection
 Apply to selection
 
-model-material-list-popup/delete-material
+model-material-list-popup/delete
 Delete
 
 model-material-list-popup/header

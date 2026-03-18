@@ -124,26 +124,13 @@ string MaterialManager::describe(const Material* m) const {
 	return name;
 }
 
-Material* MaterialManager::load(const Path& filename) {
-	// an empty name loads the default material
-	if (filename.is_empty())
-		return default_material;
-
-	for (auto&& [f, m]: materials)
-		if (f == filename)
-			return m;
-
-
-	msg_write("loading material " + filename.str());
-
-	auto m = new Material();
-	materials.set(filename, m);
+void MaterialManager::_load_from_file(Material* m, const Path &filename) {
 
 	Configuration c;
-	if (!c.load(material_dir | filename.with(".material"))) {
+	if (!c.load(filename)) {
 		//if (engine.ignore_missing_files) {
 			msg_error("material file missing: " + filename.str());
-			return m;
+			return;
 		/*} else {
 			throw Exception("material file missing: " + filename.str());
 		}*/
@@ -184,9 +171,7 @@ Material* MaterialManager::load(const Path& filename) {
 		m->friction.jump = c.get_float("friction.jump", 0.5f);
 
 	auto add_pass = [m] (int index) -> Material::RenderPassData& {
-		if (index == 1)
-			m->extended = new Material::ExtendedData;
-		m->num_passes = max(m->num_passes, index + 1);
+		m->set_num_passes(max(m->num_passes, index + 1));
 		return m->pass(index);
 	};
 	auto try_parse_pass = [m, &c, add_pass] (const string& key, int index) {
@@ -253,6 +238,123 @@ Material* MaterialManager::load(const Path& filename) {
 	} else if (mode != "") {
 		msg_error("unknown reflection mode: " + mode);
 	}
+}
+
+string alpha_to_str(ygfx::Alpha a) {
+	if (a == ygfx::Alpha::ZERO)
+		return "zero";
+	if (a == ygfx::Alpha::ONE)
+		return "one";
+	if (a == ygfx::Alpha::SOURCE_COLOR)
+		return "source-color";
+	if (a == ygfx::Alpha::SOURCE_INV_COLOR)
+		return "source-inv-color";
+	if (a == ygfx::Alpha::SOURCE_ALPHA)
+		return "source-alpha";
+	if (a == ygfx::Alpha::SOURCE_INV_ALPHA)
+		return "source-inv-alpha";
+	if (a == ygfx::Alpha::DEST_COLOR)
+		return "dest-color";
+	if (a == ygfx::Alpha::DEST_INV_COLOR)
+		return "dest-inv-color";
+	if (a == ygfx::Alpha::DEST_ALPHA)
+		return "dest-alpha";
+	if (a == ygfx::Alpha::DEST_INV_ALPHA)
+		return "dest-inv-alpha";
+	return "???";
+}
+
+Array<string> paths_to_str_arr(const Array<Path> &files) {
+	Array<string> r;
+	for (auto f: files)
+		r.add(f.str());
+	return r;
+}
+
+Any color2any(const color &c) {
+	Any r = Any::EmptyList;
+	r.add(c.r);
+	r.add(c.g);
+	r.add(c.b);
+	r.add(c.a);
+	return r;
+}
+
+void MaterialManager::_write_to_file(Material* material, const Path &filename) {
+
+	Configuration c;
+
+	Array<Path> texture_files;
+	for (auto t: weak(material->textures))
+		texture_files.add(texture_manager->texture_file(t));
+
+	c.set_str_array("textures", paths_to_str_arr(texture_files));
+	if (!material->cast_shadow)
+		c.set_bool("cast-shadows", material->cast_shadow);
+
+	c.set("color.albedo", color2any(material->albedo));
+	if (material->emission != Black)
+		c.set("color.emission", color2any(material->emission));
+	c.set_float("color.roughness", material->roughness);
+	c.set_float("color.metal", material->metal);
+
+	for (int i=0; i<material->num_passes; i++) {
+		auto &p = material->pass(i);
+		string key = format("pass%d", i);
+		c.set_str(key + ".shader", str(p.shader_path));
+
+		if (p.mode == yrenderer::TransparencyMode::FACTOR) {
+			c.set_str(key + ".mode", "factor");
+			c.set_float(key + ".factor", p.factor);
+		} else if (p.mode == yrenderer::TransparencyMode::FUNCTIONS) {
+			c.set_str(key + ".mode", "function");
+			c.set_str(key + ".source", alpha_to_str(p.source));
+			c.set_str(key + ".dest", alpha_to_str(p.destination));
+		} else if (p.mode == yrenderer::TransparencyMode::MIX) {
+			c.set_str(key + ".mode", "mix");
+		} else if (p.mode == yrenderer::TransparencyMode::COLOR_KEY_HARD) {
+			c.set_str(key + ".mode", "key-hard");
+		} else if (p.mode == yrenderer::TransparencyMode::COLOR_KEY_SMOOTH) {
+			c.set_str(key + ".mode", "key-smooth");
+		} else {
+			c.set_str(key + ".mode", "solid");
+		}
+		if (p.cull_mode == ygfx::CullMode::NONE)
+			c.set_str(key + ".cull", "none");
+		else if (p.cull_mode == ygfx::CullMode::FRONT)
+			c.set_str(key + ".cull", "front");
+		if (p.mode != yrenderer::TransparencyMode::NONE or !p.z_buffer or !p.z_test)
+			c.set_bool(key + ".z-write", p.z_buffer);
+		if (!p.z_test)
+			c.set_bool(key + ".z-test", p.z_test);
+		/*if (material->transparency_mode != TransparencyMode::NONE) {
+			c.set_bool("transparency.zbuffer", material->alpha_z_buffer);
+		}*/
+	}
+
+	c.set_float("friction.static", material->friction._static);
+	c.set_float("friction.slide", material->friction.sliding);
+	c.set_float("friction.roll", material->friction.rolling);
+	c.set_float("friction.jump", material->friction.jump);
+
+	c.save(filename);
+}
+
+Material* MaterialManager::load(const Path& filename) {
+	// an empty name loads the default material
+	if (filename.is_empty())
+		return default_material;
+
+	for (auto&& [f, m]: materials)
+		if (f == filename)
+			return m;
+
+
+	msg_write("loading material " + str(filename));
+
+	auto m = new Material();
+	materials.set(filename, m);
+	_load_from_file(m, material_dir | filename.with(".material"));
 	return m;
 }
 

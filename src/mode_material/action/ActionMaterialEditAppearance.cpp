@@ -4,14 +4,14 @@
 
 #include "ActionMaterialEditAppearance.h"
 
-ActionMaterialEditAppearance::ActionMaterialEditAppearance(const DataMaterial::AppearanceData& _data) {
-	data = _data;
+ActionMaterialEditAppearance::ActionMaterialEditAppearance(const yrenderer::Material& m) {
+	data = m;
 }
 
 void* ActionMaterialEditAppearance::execute(Data* d) {
 	auto m = static_cast<DataMaterial*>(d);
 
-	std::swap(m->appearance, data);
+	std::swap(m->material, data);
 	return nullptr;
 }
 

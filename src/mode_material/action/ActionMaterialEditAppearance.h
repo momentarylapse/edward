@@ -11,14 +11,14 @@
 
 class ActionMaterialEditAppearance : public Action {
 public:
-	explicit ActionMaterialEditAppearance(const DataMaterial::AppearanceData &_data);
+	explicit ActionMaterialEditAppearance(const yrenderer::Material& m);
 	string name() override { return "MaterialEditAppearance"; }
 
 	void *execute(Data *d) override;
 	void undo(Data *d) override;
 
 private:
-	DataMaterial::AppearanceData data;
+	yrenderer::Material data;
 };
 
 

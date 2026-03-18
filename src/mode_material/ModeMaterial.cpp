@@ -162,7 +162,7 @@ void ModeMaterial::on_draw_win(const yrenderer::RenderParams& params, MultiViewW
 	auto dh = win->multi_view->session->drawing_helper;
 
 	for (int pass_no=0; pass_no<material->num_passes; pass_no++)
-		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), material.get(), pass_no);
+		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), const_cast<yrenderer::Material*>(material), pass_no);
 }
 
 void ModeMaterial::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {

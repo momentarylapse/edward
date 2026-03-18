@@ -48,12 +48,10 @@ void Material::operator=(const Material& o) {
 	textures = o.textures;
 	cast_shadow = o.cast_shadow;
 
-	pass0 = o.pass0;
-	num_passes = o.num_passes;
-	if (extended) {
-		extended = new ExtendedData;
-		*extended = *o.extended;
-	}
+	set_num_passes(o.num_passes);
+	for (int k=0; k<o.num_passes; k++)
+		pass(k) = o.pass(k);
+
 	reflection = o.reflection;
 	reflection.cube_map = o.reflection.cube_map;
 	/*	if ((cube_map < 0) and (m2->cube_map_size > 0) and (reflection.mode == ReflectionCubeMapDynamical)){
@@ -61,6 +59,12 @@ void Material::operator=(const Material& o) {
 			FxCubeMapCreate(cube_map, model);
 		}*/
 	friction = o.friction;
+}
+
+void Material::set_num_passes(int _num_passes) {
+	num_passes = _num_passes;
+	if (num_passes >= 2 and !extended)
+		extended = new ExtendedData;
 }
 
 xfer<Material> Material::copy() const {

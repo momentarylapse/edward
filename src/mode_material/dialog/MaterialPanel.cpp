@@ -27,8 +27,11 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	popup_textures = xhui::create_resource_menu("model-texture-list-popup");
 
 	auto tex_list = (xhui::ListView*)get_control("textures");
+	tex_list->column_factories[0].f_create = [](const string& id) {
+		return xhui::create_control("Image", "!width=48,height=48", id);
+	};
 	tex_list->column_factories[1].f_create = [](const string& id) {
-		return new xhui::Image(id, "");
+		return xhui::create_control("Label", "!markup", id);
 	};
 
 
@@ -46,21 +49,21 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 
 	event("albedo", [this] {
 		apply_queue_depth ++;
-		auto a = data->appearance;
+		auto a = data->material;
 		a.albedo = get_color("albedo");
 		data->execute(new ActionMaterialEditAppearance(a));
 		apply_queue_depth --;
 	});
 	event("emission", [this] {
 		apply_queue_depth ++;
-		auto a = data->appearance;
-		a.emissive = get_color("emission");
+		auto a = data->material;
+		a.emission = get_color("emission");
 		data->execute(new ActionMaterialEditAppearance(a));
 		apply_queue_depth --;
 	});
 	event("metal", [this] {
 		apply_queue_depth ++;
-		auto a = data->appearance;
+		auto a = data->material;
 		a.metal = get_float("metal");
 		data->execute(new ActionMaterialEditAppearance(a));
 		set_float("slider-metal", a.metal);
@@ -68,7 +71,7 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	});
 	event("slider-metal", [this] {
 		apply_queue_depth ++;
-		auto a = data->appearance;
+		auto a = data->material;
 		a.metal = get_float("slider-metal");
 		data->execute(new ActionMaterialEditAppearance(a));
 		set_float("metal", a.metal);
@@ -76,7 +79,7 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	});
 	event("roughness", [this] {
 		apply_queue_depth ++;
-		auto a = data->appearance;
+		auto a = data->material;
 		a.roughness = get_float("roughness");
 		data->execute(new ActionMaterialEditAppearance(a));
 		set_float("slider-roughness", a.roughness);
@@ -84,7 +87,7 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	});
 	event("slider-roughness", [this] {
 		apply_queue_depth ++;
-		auto a = data->appearance;
+		auto a = data->material;
 		a.roughness = get_float("slider-roughness");
 		data->execute(new ActionMaterialEditAppearance(a));
 		set_float("roughness", a.roughness);
@@ -92,7 +95,7 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	});
 	event("cast-shadows", [this] {
 		apply_queue_depth ++;
-		auto a = data->appearance;
+		auto a = data->material;
 		a.cast_shadow = is_checked("cast-shadows");
 		data->execute(new ActionMaterialEditAppearance(a));
 		apply_queue_depth --;
@@ -103,8 +106,8 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	event("texture-level-clear", [this] { on_texture_level_clear(); });
 	event("texture-level-load", [this] { on_texture_level_load(); });
 	event("add-pass", [this] {
-		auto a = data->appearance;
-		a.passes.add({});
+		auto a = data->material;
+		a.set_num_passes(a.num_passes + 1);
 		data->execute(new ActionMaterialEditAppearance(a));
 	});
 
@@ -127,74 +130,44 @@ ModeMaterial* MaterialPanel::mode_material() {
 	return data->doc->mode_material;
 }
 
-Image* preview_texture(Session* s, const Path& filename) {
-	static Image* empty = nullptr;
-	static Image* dummy = nullptr;
-	static base::map<Path, Image*> previews;
-
-	if (!empty)
-		empty = new Image(40, 40, White);
-	if (!dummy) {
-		dummy = new Image(40, 40, Red);
-		// TODO "X" or "?"
-	}
-
-	if (filename.is_empty())
-		return empty;
-
-	if (previews.contains(filename))
-		return previews[filename];
-
-	const auto path = s->resource_manager->texture_manager->find_absolute_texture_path(filename);
-	if (path.is_empty()) {
-		return dummy;
-	} else {
-		auto im = Image::load(path);
-		auto preview = im->scale(40, 40);
-		previews.set(filename, preview);
-		delete im;
-		return preview;
-	}
-}
-
 void MaterialPanel::fill_texture_list() {
 	reset("textures");
-	for (int i=0;i<data->appearance.texture_files.num;i++) {
-		string id = format("image:texture-icon[%s]", data->appearance.texture_files[i]);
-		auto icon = preview_texture(data->session, data->appearance.texture_files[i]);
-		xhui::set_image(id, *icon);
+	for (int i=0;i<data->material.textures.num;i++) {
+		auto t = data->material.textures[i].get();
+		auto fn = data->session->resource_manager->texture_manager->texture_file(t);
+		string id = xhui::texture_to_image(t);
 		string ext = "";//format(" (%dx%d)", img->width, img->height);
-		add_string("textures", format("Tex[%d]\\%s\\%s", i, id, (file_secure(data->appearance.texture_files[i]) + ext)));
+		add_string("textures", format("%s\\%s", id, (file_secure(fn) + ext)));
 	}
 }
 
 // data -> GUI
 void MaterialPanel::load_data() {
-	set_color("albedo", data->appearance.albedo);
-	set_color("emission", data->appearance.emissive);
-	set_float("roughness", data->appearance.roughness);
-	set_float("slider-roughness", data->appearance.roughness);
-	set_float("metal", data->appearance.metal);
-	set_float("slider-metal", data->appearance.metal);
-	check("cast-shadows", data->appearance.cast_shadow);
+	set_color("albedo", data->material.albedo);
+	set_color("emission", data->material.emission);
+	set_float("roughness", data->material.roughness);
+	set_float("slider-roughness", data->material.roughness);
+	set_float("metal", data->material.metal);
+	set_float("slider-metal", data->material.metal);
+	check("cast-shadows", data->material.cast_shadow);
 	fill_texture_list();
 
 
 	reset("passes");
-	for (int i=0;i<data->appearance.passes.num;i++) {
+	for (int i=0;i<data->material.num_passes;i++) {
 		add_string("passes", str(i));
 	}
 }
 
 
 void MaterialPanel::on_texture_level_add() {
-	if (data->appearance.texture_files.num >= MATERIAL_MAX_TEXTURES) {
+	if (data->material.textures.num >= MATERIAL_MAX_TEXTURES) {
 		data->session->error(format("Only %d texture levels allowed!", MATERIAL_MAX_TEXTURES));
 		return;
 	}
 
-	auto a = data->appearance;
-	a.texture_files.add("");
+	auto a = data->material;
+	a.textures.add(data->session->resource_manager->load_texture(""));
 	data->execute(new ActionMaterialEditAppearance(a));
 }
 
@@ -202,8 +175,8 @@ void MaterialPanel::on_texture_level_load() {
 	int index = get_int("textures");
 	if (index >= 0)
 		data->session->storage->file_dialog(FD_TEXTURE, false, true).then([this, index] (const auto& p) {
-			auto a = data->appearance;
-			a.texture_files[index] = p.relative;
+			auto a = data->material;
+			a.textures[index] = data->session->resource_manager->load_texture(p.relative);
 			data->execute(new ActionMaterialEditAppearance(a));
 		});
 }
@@ -211,13 +184,13 @@ void MaterialPanel::on_texture_level_load() {
 void MaterialPanel::on_texture_level_delete() {
 	int index = get_int("textures");
 	if (index >= 0) {
-		if (data->appearance.texture_files.num <= 1) {
+		if (data->material.textures.num <= 1) {
 			data->session->error("At least one texture level has to exist!");
 			return;
 		}
 
-		auto a = data->appearance;
-		a.texture_files.erase(index);
+		auto a = data->material;
+		a.textures.erase(index);
 		data->execute(new ActionMaterialEditAppearance(a));
 	}
 }
@@ -225,8 +198,8 @@ void MaterialPanel::on_texture_level_delete() {
 void MaterialPanel::on_texture_level_clear() {
 	int index = get_int("textures");
 	if (index >= 0) {
-		auto a = data->appearance;
-		a.texture_files[index] = "";
+		auto a = data->material;
+		a.textures[index] = data->session->resource_manager->load_texture("");
 		data->execute(new ActionMaterialEditAppearance(a));
 	}
 }

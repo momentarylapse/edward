@@ -34,28 +34,6 @@ DataMaterial::~DataMaterial() {
 }
 
 
-void DataMaterial::AppearanceData::reset(DocumentSession *session) {
-	texture_files = {""};
-
-	albedo = White;
-	roughness = 0.5f;
-	metal = 0;
-	emissive = Black;
-
-	cast_shadow = true;
-
-#if ksdjfhskdjfh
-	for (auto &p: passes) {
-		if (p.shader.graph)
-			delete p.shader.graph;
-		p.shader.graph = nullptr;
-	}
-#endif
-	passes.clear();
-
-	passes.resize(1);
-	passes[0].shader.reset(session);
-}
 
 void DataMaterial::ShaderData::reset(DocumentSession *s) {
 #if ksdjfhskdjfh
@@ -66,20 +44,37 @@ void DataMaterial::ShaderData::reset(DocumentSession *s) {
 }
 
 
-void DataMaterial::PhysicsData::reset() {
-	friction_jump = 0.7f;
-	friction_static = 0.8f;
-	friction_sliding = 0.5f;
-	friction_rolling = 0.2f;
-	vmin_jump = 10;
-	vmin_sliding = 10;
-}
 
 void DataMaterial::reset() {
 	filename = "";
 
-	appearance.reset(doc);
-	physics.reset();
+	material.textures = {session->resource_manager->load_texture("")};
+
+	material.albedo = White;
+	material.roughness = 0.5f;
+	material.metal = 0;
+	material.emission = Black;
+
+	material.cast_shadow = true;
+
+#if ksdjfhskdjfh
+	for (auto &p: passes) {
+		if (p.shader.graph)
+			delete p.shader.graph;
+		p.shader.graph = nullptr;
+	}
+#endif
+
+	material.set_num_passes(1);
+	material.pass(0) = yrenderer::Material::RenderPassData();
+	//material.pass(0).shader_path = "";
+
+	material.friction.jump = 0.7f;
+	material.friction._static = 0.8f;
+	material.friction.sliding = 0.5f;
+	material.friction.rolling = 0.2f;
+//	material.friction.vmin_jump = 10;
+//	material.friction.vmin_sliding = 10;
 
 
 	reset_history();
@@ -163,52 +158,13 @@ void DataMaterial::ShaderData::save_to_file(DocumentSession *s) {
 
 DataMaterial DataMaterial::from_material(DocumentSession* s, yrenderer::Material *material) {
 	DataMaterial m(s);
-	m.appearance.albedo = material->albedo;
-	m.appearance.emissive = material->emission;
-	m.appearance.metal = material->metal;
-	m.appearance.roughness = material->roughness;
-	m.appearance.texture_files.clear();
-	for (int i=0;i<material->textures.num;i++)
-		m.appearance.texture_files.add(s->session->resource_manager->texture_manager->texture_file(material->textures[i].get()));
-	m.appearance.passes[0].shader.file = material->pass0.shader_path;
-
-	// TODO alpha etc
-
-	m.physics.friction_jump = material->friction.jump;
-	m.physics.friction_rolling = material->friction.rolling;
-	m.physics.friction_static = material->friction._static;
-	m.physics.friction_sliding = material->friction.sliding;
+	m.material = *material;
 	return m;
 }
 
 
-yrenderer::Material* DataMaterial::to_material() const {
-	auto m = new yrenderer::Material();
-	m->albedo = appearance.albedo;
-	m->roughness = appearance.roughness;
-	m->metal = appearance.metal;
-	m->emission = appearance.emissive;
-	m->cast_shadow = appearance.cast_shadow;
-
-	for (const auto& t: appearance.texture_files)
-		m->textures.add(session->resource_manager->load_texture(t));
-
-	m->num_passes = appearance.passes.num;
-	if (m->num_passes >= 2)
-		m->extended = new yrenderer::Material::ExtendedData;
-	for (int i=0; i<appearance.passes.num; i++) {
-		auto &p = appearance.passes[i];
-		auto &pp = m->pass(i);
-		pp.mode = p.mode;
-		pp.source = p.source;
-		pp.destination = p.destination;
-		pp.z_buffer = p.z_write;
-		pp.z_test = p.z_test;
-		pp.cull_mode = p.culling;
-		pp.shader_path = p.shader.file;
-	}
-
-	return m;
+const yrenderer::Material* DataMaterial::to_material() const {
+	return &material;
 }
 
 

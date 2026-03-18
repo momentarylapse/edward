@@ -22,7 +22,7 @@ Dialog material-panel "Material appearance" width=365 height=715 allow-root
 							SpinButton metal "" range=0:1:0.01
 				Group grp-textures "Textures"
 					Grid ? ""
-						ListView textures "Level\\\\Texture" format=tit select-single nobar
+						ListView textures "\\Texture" format=it select-single nobar
 			Grid ? "" vertical
 				Group grp-detail "Details"
 					Grid ? "" vertical
