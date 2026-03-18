@@ -26,8 +26,10 @@ public:
 	Path get_filename(const Material* m) const;
 	string describe(const Material* m) const;
 	void invalidate(Material* m);
+	void set_save_state(Material* m);
 	Material* create_internal();
 	bool is_from_file(Material* m) const;
+	bool has_changes(Material* m) const;
 
 	Path material_dir;
 private:
@@ -36,6 +38,7 @@ private:
 	Material* trivial_material;
 	base::map<Path, Material*> materials; // "originals" owned!
 	owned_array<Material> internal_materials;
+	base::set<Material*> having_changes;
 };
 
 }

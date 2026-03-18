@@ -139,6 +139,10 @@ public:
 					mm->multi_view->selection[MultiViewType::MODEL_POLYGON].add(i);
 			mm->multi_view->update_selection_box();
 		});
+		event("save", [this] {
+		});
+		event("save-as", [this] {
+		});
 		event("menu", [this] {
 			auto menu = xhui::create_resource_menu("model-material-list-popup");
 			xhui::open_popup_menu(get_control("menu"), menu);
@@ -146,10 +150,12 @@ public:
 
 		data->session->resource_manager->material_manager->out_material_edited >> create_data_sink<yrenderer::Material*>([this] (yrenderer::Material* m) {
 			if (m == material()) {
-				if (parent->apply_queue_depth == 0)
+				if (parent->apply_queue_depth == 0) {
 					update_ui();
-				else
+				} else {
+					set_string("header", material_name());
 					update_reset_buttons();
+				}
 			}
 		});
 	}
@@ -172,7 +178,7 @@ public:
 
 	string material_name() const {
 		auto mm = data->session->resource_manager->material_manager;
-		return mm->describe(material());
+		return mm->describe(material()) + (mm->has_changes(material()) ? " *" : "");
 	}
 
 	void set_index(int _index) {

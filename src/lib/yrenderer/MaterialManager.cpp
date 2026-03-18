@@ -136,16 +136,18 @@ Material* MaterialManager::load(const Path& filename) {
 
 	msg_write("loading material " + filename.str());
 
+	auto m = new Material();
+	materials.set(filename, m);
+
 	Configuration c;
 	if (!c.load(material_dir | filename.with(".material"))) {
 		//if (engine.ignore_missing_files) {
 			msg_error("material file missing: " + filename.str());
-			return default_material;
+			return m;
 		/*} else {
 			throw Exception("material file missing: " + filename.str());
 		}*/
 	}
-	auto m = new Material();
 
 	if (c.has("parent")) {
 		auto parent = load(str(c.get("parent")));
@@ -251,17 +253,24 @@ Material* MaterialManager::load(const Path& filename) {
 	} else if (mode != "") {
 		msg_error("unknown reflection mode: " + mode);
 	}
-
-	materials.set(filename, m);
 	return m;
 }
 
-xfer<Material> MaterialManager::load_copy(const Path &filename) {
+xfer<Material> MaterialManager::load_copy(const Path& filename) {
 	return load(filename)->copy();
 }
 
-void MaterialManager::invalidate(Material *m) {
+void MaterialManager::invalidate(Material* m) {
+	having_changes.add(m);
 	out_material_edited(m);
+}
+
+bool MaterialManager::has_changes(Material *m) const {
+	return having_changes.contains(m);
+}
+
+void MaterialManager::set_save_state(Material* m) {
+	having_changes.erase(m);
 }
 
 Material* MaterialManager::create_internal() {
@@ -271,7 +280,7 @@ Material* MaterialManager::create_internal() {
 	return m;
 }
 
-bool MaterialManager::is_from_file(Material *m) const {
+bool MaterialManager::is_from_file(Material* m) const {
 	for (const auto&& [f, _m]: materials)
 		if (_m == m)
 			return true;
