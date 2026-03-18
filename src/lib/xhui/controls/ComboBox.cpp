@@ -47,9 +47,9 @@ vec2 ComboBox::get_content_min_size() const {
 
 
 void ComboBox::on_click() {
-	Menu menu;
+	auto menu = new Menu;
 	for (const auto& [i, e]: enumerate(entries))
-		menu.add_item(format(":combo:%d", i), e);
+		menu->add_item(format(":combo:%d", i), e);
 	owner->open_dialog(new MenuPopup(menu, owner, _area, [this] (const string& id) {
 		int n = id.sub_ref(7)._int();
 		set_int(n);

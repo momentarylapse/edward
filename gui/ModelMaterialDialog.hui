@@ -44,4 +44,5 @@ Dialog model-material-dialog ''
 				Grid ? ''
 					Label ? '' expandx
 					Button apply-to-selection "Apply" "tooltip=Apply to selection" primary noexpandx
+					Button menu "..." "tooltip=More actions" noexpandx
 					Button delete "Delete" "tooltip=Remove from model" danger noexpandx

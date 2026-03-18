@@ -16,19 +16,19 @@
 namespace xhui {
 
 
-MenuPopup::MenuPopup(const Menu& m, Panel* _parent, const rect& anchor, const std::function<void(const string&)>& f) :
+MenuPopup::MenuPopup(const shared<Menu>& m, Panel* _parent, const rect& anchor, const std::function<void(const string&)>& f) :
 		Dialog("", 100, 20, _parent, DialogFlags::NoHeader | DialogFlags::CloseByEscape | DialogFlags::CloseByClickOutside | DialogFlags::FixedPosition) {
 	id = "menu-popup";
 	padding = Theme::_default.spacing;
 	pos = anchor.p01();
 	grid = new Grid("grid");
 	Dialog::add_child(grid, 0, 0);
-	menu = &m;
+	menu = m;
 	parent = _parent;
 	callback = f;
 
 	owner = parent; // can only call get_content_min_size() with an owner...
-	set_sub_menu(menu);
+	set_sub_menu(menu.get());
 	if (auto w = get_window()) {
 		pos.y = max(min(pos.y, w->_area.y2 - (float)height), w->_area.y1);
 		pos.x = max(min(pos.x, w->_area.x2 - (float)width), w->_area.x1);

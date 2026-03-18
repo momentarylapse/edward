@@ -1,6 +1,8 @@
 Menu model-material-list-popup ""
 	Item header "Material" disabled
 	Separator
-	Item reset-material "Reload"
-	Item apply-material "Apply to selection" image=hui:apply
-	Item delete-material "Delete" image=hui:delete
+	Item apply-to-selection "Apply to selection" image=hui:apply
+	Item select-polygons "Select polygons"
+	Item save "Save" image=hui:save
+	Item save-as "Save as.." image=hui:save-as
+	Item delete "Delete" image=hui:delete

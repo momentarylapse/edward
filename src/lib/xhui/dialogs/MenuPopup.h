@@ -14,13 +14,13 @@ class Menu;
 // menu click events via callback!
 class MenuPopup : public Dialog {
 public:
-	explicit MenuPopup(const Menu& m, Panel* parent, const rect& anchor, const std::function<void(const string&)>& f);
+	explicit MenuPopup(const shared<Menu>& m, Panel* parent, const rect& anchor, const std::function<void(const string&)>& f);
 
 	std::function<void(const string&)> callback;
 	Panel* parent;
 
 	Grid* grid;
-	const Menu* menu;
+	shared<Menu> menu;
 	const Menu* current_sub_menu;
 
 	void set_sub_menu(const Menu* m);

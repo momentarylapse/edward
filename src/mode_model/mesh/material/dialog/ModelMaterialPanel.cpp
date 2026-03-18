@@ -32,6 +32,8 @@
 #include <lib/yrenderer/TextureManager.h>
 
 #include "ModelMaterialSelectionDialog.h"
+#include "lib/base/iter.h"
+#include "mode_model/mesh/ModeMesh.h"
 #include "world/ModelManager.h"
 
 static constexpr int PREVIEW_SIZE = 48;
@@ -128,6 +130,19 @@ public:
 
 		event("delete", [this] { on_delete(); });
 		event("apply-to-selection", [this] { on_apply(); });
+		event("select-polygons", [this] {
+			auto mm = parent->mode_mesh();
+			mm->set_presentation_mode(ModeMesh::PresentationMode::Polygons);
+			mm->multi_view->clear_selection();
+			for (const auto& [i, p]: enumerate(mm->data->mesh->polygons))
+				if (p.material == index)
+					mm->multi_view->selection[MultiViewType::MODEL_POLYGON].add(i);
+			mm->multi_view->update_selection_box();
+		});
+		event("menu", [this] {
+			auto menu = xhui::create_resource_menu("model-material-list-popup");
+			xhui::open_popup_menu(get_control("menu"), menu);
+		});
 
 		data->session->resource_manager->material_manager->out_material_edited >> create_data_sink<yrenderer::Material*>([this] (yrenderer::Material* m) {
 			if (m == material()) {

@@ -4143,7 +4143,7 @@ Grid
 
 0
 4
-3
+4
 Label
 ?
 expandx
@@ -4157,9 +4157,15 @@ primary,noexpandx
 0
 0
 Button
+menu
+noexpandx
+2
+0
+0
+Button
 delete
 danger,noexpandx
-2
+3
 0
 0
 # Resource
@@ -4199,7 +4205,7 @@ model-material-list-popup
 
 0
 0
-5
+7
 Item
 header
 disabled
@@ -4213,21 +4219,33 @@ Separator
 0
 0
 Item
-reset-material
-
+apply-to-selection
+image=hui:apply
 2
 0
 0
 Item
-apply-material
-image=hui:apply
+select-polygons
+
 3
+0
+0
+Item
+save
+image=hui:save
+4
+0
+0
+Item
+save-as
+image=hui:save-as
+5
 0
 0
 Item
 delete-material
 image=hui:delete
-4
+6
 0
 0
 # Resource
@@ -10933,7 +10951,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1096
+1099
 # Text
 /ambient
 Ambient
@@ -13314,6 +13332,9 @@ Parent
 model-material-dialog/grp-textures
 Textures
 
+model-material-dialog/menu
+...
+More actions
 model-material-dialog/reset-albedo
 x
 Reset to parent value
@@ -13329,7 +13350,7 @@ Reset to parent value
 model-material-dialog/textures
 \\Texture
 Mixing texture levels (multitexturing)\n- Actions via right click
-model-material-list-popup/apply-material
+model-material-list-popup/apply-to-selection
 Apply to selection
 
 model-material-list-popup/delete-material
@@ -13338,8 +13359,14 @@ Delete
 model-material-list-popup/header
 Material
 
-model-material-list-popup/reset-material
-Reload
+model-material-list-popup/save
+Save
+
+model-material-list-popup/save-as
+Save as..
+
+model-material-list-popup/select-polygons
+Select polygons
 
 model-material-panel/add
 +

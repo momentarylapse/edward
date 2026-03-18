@@ -12,6 +12,15 @@
 
 namespace xhui {
 
+void open_popup_menu(Control* c, shared<Menu> menu) {
+	c->owner->open_dialog(new MenuPopup(menu, c->owner, c->_area, [c] (const string& id) {
+		// wait for the popup to close
+		run_later(0.01f, [c, id] {
+			c->owner->handle_event(id, event_id::Activate, true);
+		});
+	}));
+}
+
 class MenuBarButton : public Button {
 public:
 	explicit MenuBarButton(const string& id, const string& title, shared<Menu> _menu) : Button(id, title) {
@@ -21,16 +30,7 @@ public:
 		menu = _menu;
 	}
 	void on_click() override {
-		/*menu->open_popup_x(owner).then([this] (const string& id) {
-			owner->handle_event(id, event_id::Activate, true);
-		});*/
-
-		owner->open_dialog(new MenuPopup(*menu.get(), owner, _area, [this] (const string& id) {
-			// wait for the popup to close
-			run_later(0.01f, [this, id] {
-				owner->handle_event(id, event_id::Activate, true);
-			});
-		}));
+		open_popup_menu(this, menu);
 	}
 	shared<Menu> menu;
 };

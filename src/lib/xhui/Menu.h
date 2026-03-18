@@ -30,6 +30,8 @@ public:
 	base::future<string> open_popup_x(Panel* p);
 };
 
+void open_popup_menu(Control* c, shared<Menu> menu);
+
 } // xhui
 
 #endif //MENU_H
