@@ -8,36 +8,8 @@ Dialog model-material-dialog ''
 				Label subheader '' italic small
 		---|
 		Expander contents ''
-			Grid ? ''
-				Group grp-parent 'Parent'
-					Grid ? '' spacing=16
-						Image parent-preview '' width=32 height=32
-						Button parent '' expandx
-				---|
-				Group grp-colors 'Colors'
-					Grid ? ''
-						Label /t-albedo "Albedo" right disabled
-						ColorButton albedo "" alpha linear
-						Button reset-albedo "x" "tooltip=Reset to parent value" width=25 danger
-						---|
-						Label /t-roughness "Roughness" right disabled
-						Grid ? ""
-							Slider slider-roughness "" range=0:1:0.01 expandx
-							SpinButton roughness "" range=0:1:0.01
-						Button reset-roughness "x" "tooltip=Reset to parent value" width=25 danger
-						---|
-						Label /t-metal "Metal" right disabled
-						Grid ? ""
-							Slider slider-metal "" range=0:1:0.01 expandx
-							SpinButton metal "" range=0:1:0.01
-						Button reset-metal "x" "tooltip=Reset to parent value" width=25 danger
-						---|
-						Label /t-emission "Emission" right disabled
-						ColorButton emission "" linear "tooltip=Color in absolute darkness"
-						Button reset-emission "x" "tooltip=Reset to parent value" width=25 danger
-				---|
-				Group grp-textures "Textures"
-					ListView textures "\\Texture" height=130 nobar format=it select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
+			Grid contents-grid ''
+				.
 				---|
 				Separator ? '' horizontal
 				---|

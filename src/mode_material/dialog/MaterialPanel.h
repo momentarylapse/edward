@@ -11,6 +11,7 @@
 #include <lib/pattern/Observable.h>
 
 class DataMaterial;
+class MaterialParameterPanel;
 namespace xhui {
 class Menu;
 }
@@ -22,20 +23,13 @@ public:
 	~MaterialPanel() override;
 
 	void load_data();
-	void fill_texture_list();
-
-	void on_texture_level_add();
-	void on_texture_level_load();
-	void on_texture_level_delete();
-	void on_texture_level_clear();
-	void on_textures_right_click();
 
 
 private:
 	DataMaterial* data;
 	ModeMaterial* mode_material();
+	MaterialParameterPanel* material_parameter_panel;
 	int apply_queue_depth;
-	owned<xhui::Menu> popup_textures;
 };
 
 
