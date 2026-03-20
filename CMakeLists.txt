@@ -453,6 +453,7 @@ add_executable(edward
 	src/mode_material/dialog/MaterialPanel.cpp
 	src/mode_material/dialog/MaterialParameterPanel.cpp
 	src/mode_material/dialog/MaterialPassPanel.cpp
+	src/mode_material/dialog/MaterialSelectionDialog.cpp
 	src/mode_material/ModeMaterial.cpp
 	src/mode_model/action/ActionModelEditData.cpp
 	src/mode_model/data/DataModel.cpp
@@ -470,7 +471,6 @@ add_executable(edward
 	src/mode_model/mesh/material/action/ActionModelDeleteMaterial.cpp
 	src/mode_model/mesh/material/action/ActionModelEditMaterial.cpp
 	src/mode_model/mesh/material/dialog/ModelMaterialPanel.cpp
-	src/mode_model/mesh/material/dialog/ModelMaterialSelectionDialog.cpp
 	src/mode_model/mesh/material/ModeMeshMaterial.cpp
 	src/mode_model/mesh/processing/MeshBevelEdges.cpp
 	src/mode_model/mesh/processing/MeshExtrudePolygons.cpp

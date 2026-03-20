@@ -3,6 +3,7 @@ Menu model-material-list-popup ""
 	Separator
 	Item apply-to-selection "Apply to selection" image=hui:apply
 	Item select-polygons "Select polygons"
+	Item edit "Edit fully"
 	Item save "Save" image=hui:save
 	Item save-as "Save as.." image=hui:save-as
 	Item delete "Delete" image=hui:delete

@@ -17,7 +17,7 @@ public:
 	Session* session;
 	Data* data;
 	yrenderer::Material* material;
-	owned<xhui::Menu> popup_textures;
+	shared<xhui::Menu> popup_textures;
 	int apply_queue_depth = 0;
 
 	MaterialParameterPanel(Data* _data, yrenderer::Material* _material);

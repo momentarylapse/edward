@@ -19,7 +19,7 @@
 #include "action/ActionModelMoveSelection.h"
 #include "action/ActionModelAlignToGrid.h"
 #include "../data/ModelMesh.h"
-#include "material/dialog/ModelMaterialSelectionDialog.h"
+#include <mode_material/dialog/MaterialSelectionDialog.h>
 #include <Session.h>
 #include <lib/mesh/GeometryCylinder.h>
 #include <lib/mesh/GeometrySphere.h>
@@ -283,7 +283,7 @@ void ModeMesh::on_connect_events() {
 		data->out_changed();
 	});
 	doc->event("choose_material", [this] {
-		ModelMaterialSelectionDialog::ask(session, "Apply material", weak(data->materials), true, false).then([this] (yrenderer::Material* material) {
+		MaterialSelectionDialog::ask(session, "Apply material", weak(data->materials), true, false).then([this] (yrenderer::Material* material) {
 			int n = weak(data->materials).find(material);
 			if (n >= 0) {
 				// already internal

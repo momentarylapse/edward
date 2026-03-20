@@ -15,6 +15,8 @@
 #include <y/helper/ResourceManager.h>
 #include <lib/yrenderer/MaterialManager.h>
 
+#include "lib/os/msg.h"
+
 
 MaterialPreviewManager::MaterialPreviewManager(Session* s) {
 	session = s;

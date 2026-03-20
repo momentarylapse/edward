@@ -12,12 +12,7 @@
 #include <lib/mesh/Polygon.h>
 #include "../action/ActionModelAddMaterial.h"
 #include "../action/ActionModelDeleteMaterial.h"
-#include "../action/ActionModelEditMaterial.h"
 #include <Session.h>
-#include <storage/Storage.h>
-#include <lib/image/image.h>
-#include <lib/os/msg.h>
-#include <lib/ygraphics/graphics-impl.h>
 #include <lib/xhui/Dialog.h>
 #include <lib/xhui/Menu.h>
 #include <lib/xhui/Resource.h>
@@ -30,14 +25,11 @@
 
 #include <y/helper/ResourceManager.h>
 #include <lib/yrenderer/MaterialManager.h>
-#include <lib/yrenderer/TextureManager.h>
 
-#include "ModelMaterialSelectionDialog.h"
-#include "lib/base/iter.h"
+#include <mode_material/dialog/MaterialSelectionDialog.h>
+#include <lib/base/iter.h>
 #include "mode_model/mesh/ModeMesh.h"
-#include "world/ModelManager.h"
-
-static constexpr int PREVIEW_SIZE = 48;
+#include <storage/format/Format.h>
 
 string file_secure(const Path &filename) {
 	if (filename)
@@ -79,6 +71,13 @@ public:
 		event("save", [this] {
 		});
 		event("save-as", [this] {
+		});
+		event("edit", [this] {
+			if (data->session->resource_manager->material_manager->is_from_file(material())) {
+				data->session->universal_edit(FD_MATERIAL, data->session->resource_manager->material_manager->get_filename(material()).with(".material"), true);
+			} else {
+				data->session->error("can not edit internal material");
+			}
 		});
 		event("menu", [this] {
 			auto menu = xhui::create_resource_menu("model-material-list-popup");
@@ -218,7 +217,7 @@ void ModelMaterialPanel::on_material_list_select() {
 }
 
 void ModelMaterialPanel::on_add() {
-	ModelMaterialSelectionDialog::ask(data->session, "Add a material", {}, true, false).then([this] (yrenderer::Material* material) {
+	MaterialSelectionDialog::ask(data->session, "Add a material", {}, true, false).then([this] (yrenderer::Material* material) {
 		data->execute(new ActionModelAddMaterial(material));
 		data->session->info("added material");
 	});

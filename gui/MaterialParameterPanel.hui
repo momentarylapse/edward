@@ -28,4 +28,4 @@ Dialog material-parameter-panel ''
 				Button reset-emission "x" "tooltip=Reset to parent value" width=25 danger
 		---|
 		Group grp-textures "Textures"
-			ListView textures "\\Texture" height=130 nobar format=it select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click"
+			ListView textures "\\Texture" height=150 nobar format=it select-single "tooltip=Mixing texture levels (multitexturing)\n- Actions via right click" style=compact

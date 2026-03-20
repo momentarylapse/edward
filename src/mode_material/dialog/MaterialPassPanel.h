@@ -15,7 +15,8 @@ class MaterialPanel;
 class MaterialPassPanel : public xhui::Panel {
 public:
 	MaterialPassPanel(MaterialPanel* _parent, DataMaterial* _data, int _index);
-	void update(int _index);
+	void set_pass_no(int _index);
+	void update();
 	void set_selected(bool selected);
 	void apply_data();
 

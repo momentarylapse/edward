@@ -28,11 +28,11 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	pass_list->column_factories[0].f_create = [this](const string& id) {
 		return new MaterialPassPanel(this, data, 0);
 	};
-	pass_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
+	pass_list->column_factories[0].f_set = [](xhui::Control* c, const string& t) {
 		int i = t._int();
-		reinterpret_cast<MaterialPassPanel*>(c)->update(i);
+		reinterpret_cast<MaterialPassPanel*>(c)->set_pass_no(i);
 	};
-	pass_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
+	pass_list->column_factories[0].f_select = [](xhui::Control* c, bool selected) {
 		reinterpret_cast<MaterialPassPanel*>(c)->set_selected(selected);
 	};
 	event("cast-shadows", [this] {
@@ -51,7 +51,6 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	data->out_changed >> create_sink([this] {
 		if (apply_queue_depth == 0) {
 			load_data();
-			//material_parameter_panel->update_ui();
 		}
 	});
 

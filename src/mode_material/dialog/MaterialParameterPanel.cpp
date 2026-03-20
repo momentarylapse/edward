@@ -17,7 +17,7 @@
 #include <lib/yrenderer/Material.h>
 #include <lib/yrenderer/MaterialManager.h>
 #include <y/helper/ResourceManager.h>
-#include <mode_model/mesh/material/dialog/ModelMaterialSelectionDialog.h>
+#include <mode_material/dialog/MaterialSelectionDialog.h>
 #include <mode_model/mesh/material/action/ActionModelEditMaterial.h>
 
 string file_secure(const Path &filename);
@@ -50,7 +50,7 @@ MaterialParameterPanel::MaterialParameterPanel(Data* _data, yrenderer::Material*
 	event("texture-level-srgb", [this] { on_texture_level_srgb(); });
 
 	event("parent", [this] {
-		ModelMaterialSelectionDialog::ask(session, "Select parent material", {}, false, true).then([this] (yrenderer::Material* parent) {
+		MaterialSelectionDialog::ask(session, "Select parent material", {}, false, true).then([this] (yrenderer::Material* parent) {
 			auto m = *material;
 			m.derive_from(parent);
 			data->execute(new ActionModelEditMaterial(material, m));

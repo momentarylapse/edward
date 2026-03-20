@@ -138,7 +138,7 @@ void MaterialManager::_load_from_file(Material* m, const Path &filename) {
 
 	if (c.has("parent")) {
 		auto parent = load(str(c.get("parent")));
-		*m = *parent;
+		m->derive_from(parent);
 	}
 
 	if (c.has("color.albedo"))

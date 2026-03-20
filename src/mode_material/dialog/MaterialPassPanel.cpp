@@ -45,25 +45,19 @@ MaterialPassPanel::MaterialPassPanel(MaterialPanel* _parent, DataMaterial* _data
 	event("z-test", [this] { apply_data(); });
 	event("shader", [this] {
 		data->session->storage->file_dialog(FD_SHADERFILE, false, true).then([this] (const ComplexPath& p) {
-			parent->apply_queue_depth ++;
 			auto a = data->material;
 			a.pass(index).shader_path = p.relative;
 			data->execute(new ActionMaterialEditAppearance(a));
-			parent->apply_queue_depth --;
-			update(index);
 		});
 	});
 	event("clear-shader", [this] {
-		parent->apply_queue_depth ++;
 		auto a = data->material;
 		a.pass(index).shader_path = "";
 		data->execute(new ActionMaterialEditAppearance(a));
-		parent->apply_queue_depth --;
-		update(index);
 	});
 	event("edit-shader", [this] {
 		auto a = data->material;
-		if (!a.pass(index).shader_path.is_empty())
+		if (a.pass(index).shader_path)
 			data->session->universal_edit(FD_SHADERFILE, a.pass(index).shader_path, true);
 	});
 	event("delete", [this] {
@@ -76,20 +70,28 @@ MaterialPassPanel::MaterialPassPanel(MaterialPanel* _parent, DataMaterial* _data
 	});
 }
 
-void MaterialPassPanel::update(int _index) {
+void MaterialPassPanel::set_pass_no(int _index) {
 	index = _index;
+	update();
+}
+
+void MaterialPassPanel::update() {
 	auto& p = data->material.pass(index);
 
+	string h1 = "???", h2;
+
 	if (p.mode == yrenderer::TransparencyMode::NONE)
-		set_string("header", "Solid");
+		h1 = "Solid";
 	if (p.mode == yrenderer::TransparencyMode::FUNCTIONS)
-		set_string("header", "Transparent");
+		h1 =  "Transparent";
 	if (p.cull_mode == ygfx::CullMode::BACK)
-		set_string("subheader", "Front");
+		h2 =  "Front";
 	else if (p.cull_mode == ygfx::CullMode::FRONT)
-		set_string("subheader", "Back");
+		h2 =  "Back";
 	else if (p.cull_mode == ygfx::CullMode::NONE)
-		set_string("subheader", "Front & back");
+		h2 =  "Front & back";
+
+	set_string("header", format("<b>%s</b>\n  <span size='small'>%s</span>", h1, h2));
 
 	set_string("shader", file_secure(p.shader_path));
 	set_int("mode", transparency_modes.find(p.mode));
@@ -105,8 +107,9 @@ void MaterialPassPanel::update(int _index) {
 	enable("delete", data->material.num_passes >= 2);
 	enable("edit-shader", !p.shader_path.is_empty());
 }
+
 void MaterialPassPanel::set_selected(bool selected) {
-	set_visible("g-pass", selected);
+	expand("expander", selected);
 }
 
 // GUI -> data

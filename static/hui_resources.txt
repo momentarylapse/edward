@@ -2601,7 +2601,7 @@ grp-textures
 1
 ListView
 textures
-height=130,nobar,format=it,select-single
+height=150,nobar,format=it,select-single,style=compact
 0
 0
 0
@@ -2618,28 +2618,22 @@ class=card,vertical
 0
 0
 2
-Grid
-?
-spacing=0
-0
-0
-2
 Label
 header
-bold,expandx
+markup,bold,expandx
 0
 0
 0
-Label
-subheader
-italic,small
-0
+Expander
+expander
+
 1
 0
+1
 Grid
-g-pass
-visible=no,vertical
-1
+?
+vertical
+0
 0
 3
 Grid
@@ -4116,7 +4110,7 @@ model-material-list-popup
 
 0
 0
-7
+8
 Item
 header
 disabled
@@ -4142,21 +4136,27 @@ select-polygons
 0
 0
 Item
+edit
+
+4
+0
+0
+Item
 save
 image=hui:save
-4
+5
 0
 0
 Item
 save-as
 image=hui:save-as
-5
+6
 0
 0
 Item
 delete
 image=hui:delete
-6
+7
 0
 0
 # Resource
@@ -10862,7 +10862,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1095
+1096
 # Text
 /ambient
 Ambient
@@ -13254,6 +13254,9 @@ Apply to selection
 
 model-material-list-popup/delete
 Delete
+
+model-material-list-popup/edit
+Edit fully
 
 model-material-list-popup/header
 Material

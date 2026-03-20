@@ -2,7 +2,7 @@
 // Created by Michael Ankele on 2025-04-18.
 //
 
-#include "ModelMaterialSelectionDialog.h"
+#include "MaterialSelectionDialog.h"
 #include <Session.h>
 #include <lib/xhui/controls/Image.h>
 #include <lib/xhui/controls/ListView.h>
@@ -15,9 +15,9 @@
 
 string file_secure(const Path &filename);
 
-yrenderer::Material* ModelMaterialSelectionDialog::new_material = nullptr;
+yrenderer::Material* MaterialSelectionDialog::new_material = nullptr;
 
-ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(Session* _session, const string& title, const Array<yrenderer::Material*>& _internal_materials, bool allow_new, bool allow_none) : Dialog("", _session->win) {
+MaterialSelectionDialog::MaterialSelectionDialog(Session* _session, const string& title, const Array<yrenderer::Material*>& _internal_materials, bool allow_new, bool allow_none) : Dialog("", _session->win) {
 	session = _session;
 	if (!new_material)
 		new_material = session->resource_manager->material_manager->create_internal();
@@ -73,8 +73,8 @@ ModelMaterialSelectionDialog::ModelMaterialSelectionDialog(Session* _session, co
 }
 
 
-base::future<yrenderer::Material*> ModelMaterialSelectionDialog::ask(Session* session, const string& title, const Array<yrenderer::Material*>& internal_materials, bool allow_new, bool allow_none) {
-	auto dlg = new ModelMaterialSelectionDialog(session, title, internal_materials, allow_new, allow_none);
+base::future<yrenderer::Material*> MaterialSelectionDialog::ask(Session* session, const string& title, const Array<yrenderer::Material*>& internal_materials, bool allow_new, bool allow_none) {
+	auto dlg = new MaterialSelectionDialog(session, title, internal_materials, allow_new, allow_none);
 	session->win->open_dialog(dlg);
 
 	return dlg->promise.get_future();
