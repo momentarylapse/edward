@@ -22,6 +22,13 @@
 
 string file_secure(const Path &filename);
 
+ygfx::Texture* create_blank_texture() {
+	constexpr int N = 512;
+	auto t = new ygfx::Texture(N, N, "rgba:i8");
+	t->write(Image(N, N, White));
+	return t;
+}
+
 MaterialParameterPanel::MaterialParameterPanel(Data* _data, yrenderer::Material* _material) : Node("") {
 	from_resource("material-parameter-panel");
 	data = _data;
@@ -96,6 +103,17 @@ MaterialParameterPanel::MaterialParameterPanel(Data* _data, yrenderer::Material*
 	event("slider-metal", [this] { apply_data_color(); });
 	event("emission", [this] { apply_data_color(); });
 
+	f_add_texture = [this] (shared<ygfx::Texture> t) {
+		auto temp = *material;
+		temp.textures.add(t);
+		data->execute(new ActionModelEditMaterial(material, temp));
+	};
+	f_delete_texture = [this] (int index) {
+		auto temp = *material;
+		temp.textures.erase(index);
+		data->execute(new ActionModelEditMaterial(material, temp));
+	};
+
 	session->resource_manager->material_manager->out_material_edited >> create_data_sink<yrenderer::Material*>([this] (yrenderer::Material* m) {
 		if (m == material) {
 			if (apply_queue_depth == 0) {
@@ -147,17 +165,17 @@ void MaterialParameterPanel::update_reset_buttons() {
 void MaterialParameterPanel::apply_data_color() {
 	apply_queue_depth ++;
 
-	auto m = *material;
+	auto temp = *material;
 
-	m.albedo = get_color("albedo");
-	m.roughness = get_float("slider-roughness");
-	m.metal = get_float("slider-metal");
-	m.emission = get_color("emission");
+	temp.albedo = get_color("albedo");
+	temp.roughness = get_float("slider-roughness");
+	temp.metal = get_float("slider-metal");
+	temp.emission = get_color("emission");
 
-	set_float("metal", m.metal);
-	set_float("roughness", m.roughness);
+	set_float("metal", temp.metal);
+	set_float("roughness", temp.roughness);
 
-	data->execute(new ActionModelEditMaterial(material, m));
+	data->execute(new ActionModelEditMaterial(material, temp));
 	this->apply_queue_depth --;
 }
 
@@ -178,16 +196,12 @@ void MaterialParameterPanel::fill_texture_list() {
 
 
 void MaterialParameterPanel::on_texture_level_add() {
-	session->error("TODO");
-#if 0
-	auto temp = material;
-	if (temp->textures.num >= MATERIAL_MAX_TEXTURES) {
+	if (material->textures.num >= MATERIAL_MAX_TEXTURES) {
 		session->error(format("Only %d texture levels allowed!", MATERIAL_MAX_TEXTURES));
 		return;
 	}
 
-	data->execute(new ActionModelMaterialAddTexture(index));
-#endif
+	f_add_texture(create_blank_texture());
 }
 
 void MaterialParameterPanel::on_textures() {
@@ -199,26 +213,27 @@ void MaterialParameterPanel::on_texture_level_load() {
 	int sel = get_int("textures");
 	if (sel >= 0) {
 		session->storage->file_dialog(FD_TEXTURE, false, true).then([this, sel] (const auto& p) {
-			auto m = *material;
+			auto temp = *material;
 			auto rm = session->resource_manager;
-			m.textures[sel] = rm->load_texture(p.relative);
-			data->execute(new ActionModelEditMaterial(material, m));
+			temp.textures[sel] = rm->load_texture(p.relative);
+			data->execute(new ActionModelEditMaterial(material, temp));
 		});
 	}
 }
 
 void MaterialParameterPanel::on_texture_level_save() {
-	session->error("TODO");
-#if 0
 	int sel = get_int("textures");
 	if (sel >= 0)
 		session->storage->file_dialog(FD_TEXTURE, true, true).then([this, sel] (const auto& p) {
-			auto tl = material->texture_levels[sel];
-			tl->image->save(p.complete);
-			tl->filename = p.relative; // ...
-			tl->edited = false;
+			auto t = material->textures[sel];
+			Image im(t->width, t->height, Black);
+			t->read(&im.data.data);
+			im.save(p.complete);
+
+			auto temp = *material;
+			temp.textures[sel] = session->resource_manager->load_texture(p.relative);
+			data->execute(new ActionModelEditMaterial(material, temp));
 		});
-#endif
 }
 
 void MaterialParameterPanel::on_texture_level_scale() {
@@ -240,46 +255,42 @@ void MaterialParameterPanel::on_textures_select() {
 }
 
 void MaterialParameterPanel::on_texture_level_delete() {
-	session->error("TODO");
-#if 0
 	int sel = get_int("textures");
 	if (sel >= 0) {
 		if (material->textures.num <= 1) {
 			session->error("At least one texture level has to exist!");
 			return;
 		}
-		data->execute(new ActionModelMaterialDeleteTexture(index, sel));
+		f_delete_texture(sel);
 	}
-#endif
 }
 
 void MaterialParameterPanel::on_texture_level_clear() {
 	int sel = get_int("textures");
 	if (sel >= 0) {
-		auto m = *material;
-		m.textures[sel] = new ygfx::Texture;
-		m.textures[sel]->write(Image(512, 512, White));
-		data->execute(new ActionModelEditMaterial(material, m));
+		auto temp = *material;
+		temp.textures[sel] = create_blank_texture();
+		data->execute(new ActionModelEditMaterial(material, temp));
 	}
 }
 
 void MaterialParameterPanel::on_texture_level_linear() {
 	int sel = get_int("textures");
 	if (sel >= 0) {
-		auto m = *material;
+		auto temp = *material;
 		auto rm = session->resource_manager;
-		m.textures[sel] = rm->load_texture(rm->texture_manager->texture_file(m.textures[sel].get()).with("@linear"));
-		data->execute(new ActionModelEditMaterial(material, m));
+		temp.textures[sel] = rm->load_texture(rm->texture_manager->texture_file(temp.textures[sel].get()).with("@linear"));
+		data->execute(new ActionModelEditMaterial(material, temp));
 	}
 }
 
 void MaterialParameterPanel::on_texture_level_srgb() {
 	int sel = get_int("textures");
 	if (sel >= 0) {
-		auto m = *material;
+		auto temp = *material;
 		auto rm = session->resource_manager;
-		m.textures[sel] = rm->load_texture(str(rm->texture_manager->texture_file(m.textures[sel].get())).replace("@linear", ""));
-		data->execute(new ActionModelEditMaterial(material, m));
+		temp.textures[sel] = rm->load_texture(str(rm->texture_manager->texture_file(temp.textures[sel].get())).replace("@linear", ""));
+		data->execute(new ActionModelEditMaterial(material, temp));
 	}
 }
 

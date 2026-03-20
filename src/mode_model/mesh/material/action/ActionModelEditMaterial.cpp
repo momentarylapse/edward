@@ -39,16 +39,14 @@ void ActionModelEditMaterial::undo(Data *d) {
 
 
 
-ActionModelMaterialAddTexture::ActionModelMaterialAddTexture(int _index) {
+ActionModelMaterialAddTexture::ActionModelMaterialAddTexture(int _index, shared<ygfx::Texture> _texture) {
 	index = _index;
+	texture = _texture;
 }
 
 void *ActionModelMaterialAddTexture::execute(Data *d) {
 	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->materials.num));
-
-	if (!texture)
-		texture = new ygfx::Texture(512, 512, "rgba:i8");
 
 	m->materials[index]->textures.add(texture);
 

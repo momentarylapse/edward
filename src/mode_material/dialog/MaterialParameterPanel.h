@@ -3,6 +3,8 @@
 #include <lib/pattern/Observable.h>
 #include <lib/xhui/Panel.h>
 
+#include "lib/ygraphics/graphics-impl.h"
+
 class Data;
 class Session;
 namespace yrenderer {
@@ -19,6 +21,9 @@ public:
 	yrenderer::Material* material;
 	shared<xhui::Menu> popup_textures;
 	int apply_queue_depth = 0;
+
+	std::function<void(shared<ygfx::Texture>)> f_add_texture;
+	std::function<void(int index)> f_delete_texture;
 
 	MaterialParameterPanel(Data* _data, yrenderer::Material* _material);
 	void set_material(yrenderer::Material* m);

@@ -28,7 +28,7 @@ private:
 
 class ActionModelMaterialAddTexture : public Action {
 public:
-	explicit ActionModelMaterialAddTexture(int _index);
+	explicit ActionModelMaterialAddTexture(int _index, shared<ygfx::Texture> texture);
 	string name() override { return "ModelMaterialAddTexture"; }
 
 	void *execute(Data *d) override;

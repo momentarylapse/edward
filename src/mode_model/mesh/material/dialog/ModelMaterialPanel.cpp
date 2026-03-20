@@ -31,6 +31,8 @@
 #include "mode_model/mesh/ModeMesh.h"
 #include <storage/format/Format.h>
 
+#include "mode_model/mesh/material/action/ActionModelEditMaterial.h"
+
 string file_secure(const Path &filename) {
 	if (filename)
 		return str(filename);
@@ -55,6 +57,12 @@ public:
 		index = _index;
 
 		material_parameter_panel = new MaterialParameterPanel(data, material());
+		material_parameter_panel->f_add_texture = [this] (shared<ygfx::Texture> t) {
+			data->execute(new ActionModelMaterialAddTexture(index, t));
+		};
+		material_parameter_panel->f_delete_texture = [this] (int texture_index) {
+			data->execute(new ActionModelMaterialDeleteTexture(index, texture_index));
+		};
 		embed("contents-grid", 0, 0, material_parameter_panel);
 
 		event("delete", [this] { on_delete(); });
