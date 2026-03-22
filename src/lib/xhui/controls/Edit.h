@@ -126,6 +126,7 @@ public:
 	Array<Operation> history;
 	int current_history_index = 0;
 	int save_history_index = 0;
+	bool user_editing = false;
 	void clear_history();
 	void prune_history();
 	void set_save_state();

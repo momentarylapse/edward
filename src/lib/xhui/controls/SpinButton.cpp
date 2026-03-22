@@ -45,7 +45,8 @@ void SpinButton::set_int(int i) {
 
 void SpinButton::on_edit() {
 	_update_value_from_text();
-	emit_event(event_id::Changed, true);
+	if (user_editing)
+		emit_event(event_id::Changed, true);
 }
 
 void SpinButton::_update_text_from_value() {

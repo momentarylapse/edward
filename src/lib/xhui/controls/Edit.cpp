@@ -146,6 +146,7 @@ void Edit::on_key_down(int key) {
 		return;
 	}
 	const auto cur_lp = index_to_line_pos(cursor_pos);
+	user_editing = true;
 
 	bool shift = (key & KEY_SHIFT);
 	int key_no_shift = key & ~KEY_SHIFT;
@@ -275,6 +276,7 @@ void Edit::on_key_down(int key) {
 
 	emit_event(event_id::KeyDown, false);
 	request_redraw();
+	user_editing = false;
 }
 
 void Edit::multi_line_indent(int indent) {
@@ -299,8 +301,10 @@ void Edit::on_key_char(int character) {
 		return;
 	}
 
+	user_editing = true;
 	if (character != '\n' or multiline)
 		auto_insert(utf32_to_utf8({character}));
+	user_editing = false;
 
 	request_redraw();
 }
@@ -494,7 +498,8 @@ void Edit::_replace_range(Index i0, Index i1, const string& t) {
 	//scroll_into_view(cursor_pos);
 	selection_start = map_index(selection_start);
 	on_edit();
-	emit_event(event_id::Changed, true);
+	if (user_editing)
+		emit_event(event_id::Changed, true);
 }
 
 void Edit::clear_history() {
