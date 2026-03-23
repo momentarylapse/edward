@@ -9,41 +9,33 @@
 #include <storage/format/Format.h>
 #include <storage/Storage.h>
 #include <view/dialogs/MaterialEditDialog.h>
+#include <mode_material/dialog/MaterialSelector.h>
 
 
-ModelRefPanel::ModelRefPanel(DataWorld* _data, int _index) : Panel("model-panel") {
+ModelRefPanel::ModelRefPanel(DataWorld* _data, int _index) : Node("model-panel") {
 	from_source(R"foodelim(
 Dialog model-panel ''
 	Grid main-grid ''
 		Grid ? ''
-			Grid ? ''
-				Label ? 'Model' right disabled
-				Button filename '' 'tooltip=Select model' expandx
-			---|
-			Grid ? ''
-				Label ? '' expandx
-				Button edit 'Edit' 'tooltip=Edit model' noexpandx primary
+			Label ? 'Model' right disabled
+			Button filename '' 'tooltip=Select model' expandx
 )foodelim");
 	data = _data;
 	index = _index;
+	material_selector = new MaterialSelector(data);
 
-	material_edit_panel = new MaterialEditPanel(data);
-	embed("main-grid", 0, 1, material_edit_panel);
+	embed("main-grid", 0, 1, material_selector);
 
 	auto e = data->entity(index);
-	auto m = e->get_component<ModelRef>();
-	set_string("filename", str(m->filename));
-	if (m->model)
-		material_edit_panel->set_material(m->model->material[0]);
+	auto mr = e->get_component<ModelRef>();
+	set_string("filename", str(mr->filename));
+	if (mr->model)
+		material_selector->set_material(mr->model->material[0]);
 
 	event("filename", [this] {
 		data->session->storage->file_dialog(FD_MODEL, false, true).then([this] (const ComplexPath& p) {
 			auto e = data->entity(index);
-			auto m = e->get_component<ModelRef>();
-			// TODO action
-			m->filename = p.relative;
-			set_string("filename", str(m->filename));
-			data->out_changed();
+			data->entity_edit_component(e, ModelRef::_class, {"", "", {{"filename", "", str(p.relative)}}});
 		});
 	});
 	event("edit", [this] {
@@ -51,5 +43,13 @@ Dialog model-panel ''
 		auto m = e->get_component<ModelRef>();
 		if (m->filename)
 			data->session->universal_edit(FD_MODEL, m->filename, true);
+	});
+
+	material_selector->out_selected >> create_data_sink<yrenderer::Material*>([this, mr] (yrenderer::Material* m) {
+		data->session->error("material changed... but not working");
+		//mr->material...
+		mr->model->material[0] = m->copy();
+		data->out_changed();
+		// FIXME :D
 	});
 }
