@@ -389,12 +389,6 @@ void ModeWorld::on_left_button_up(const vec2&) {
 	out_redraw();
 }
 
-void draw_mesh(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, const mat4& matrix, ygfx::VertexBuffer* vb, yrenderer::Material* material, const string& vertex_module = "default") {
-	auto shader = rvd.get_shader(material, 0, vertex_module, "");
-	auto& rd = rvd.start(params, matrix, shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
-	rd.draw_triangles(params, vb);
-}
-
 void ModeWorld::on_prepare_scene(const yrenderer::RenderParams& params) {
 	auto data_lights = data->entity_manager->get_component_list<Light>();
 
