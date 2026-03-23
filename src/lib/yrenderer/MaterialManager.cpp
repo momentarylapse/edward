@@ -113,10 +113,12 @@ Path MaterialManager::get_filename(const Material* m) const {
 	return "";
 }
 
-string MaterialManager::describe(const Material* m) const {
+string MaterialManager::describe(const Material* m, bool with_save_state) const {
 	if (!m)
 		return "[none]";
 	string name = str(get_filename(m));
+	if (with_save_state and has_changes(m))
+		name += " *";
 	if (name == "")
 		name = "[internal]";
 	if (m->parent)
@@ -367,7 +369,7 @@ void MaterialManager::invalidate(Material* m) {
 	out_material_edited(m);
 }
 
-bool MaterialManager::has_changes(Material *m) const {
+bool MaterialManager::has_changes(const Material *m) const {
 	return having_changes.contains(m);
 }
 
@@ -382,7 +384,7 @@ Material* MaterialManager::create_internal() {
 	return m;
 }
 
-bool MaterialManager::is_from_file(Material* m) const {
+bool MaterialManager::is_from_file(const Material* m) const {
 	for (const auto&& [f, _m]: materials)
 		if (_m == m)
 			return true;

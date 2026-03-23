@@ -7,7 +7,6 @@
 #include "../data/DataWorld.h"
 #include <view/DocumentSession.h>
 #include <view/MaterialPreviewManager.h>
-#include <view/dialogs/MaterialEditDialog.h>
 #include <y/world/Terrain.h>
 #include <lib/yrenderer/Material.h>
 #include <lib/ygraphics/graphics-impl.h>
@@ -27,7 +26,7 @@ Dialog terrain-panel ''
 			Label ? 'Terrain' right disabled
 			Grid ? ''
 				Button terrain '' 'tooltip=Select a terrain'
-				Button edit-terrain 'E' 'tooltip=Edit terrain' primary noexpandx
+				Button edit-terrain 'E' paddingx=5 'tooltip=Edit terrain' primary noexpandx
 			---|
 			Label ? 'Size' right disabled
 			Label size ''

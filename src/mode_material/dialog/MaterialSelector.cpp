@@ -16,7 +16,7 @@ Dialog material-selector ''
 		Grid ? ''
 			Image preview '' width=48 height=48 noexpandx
 			Button material '' 'tooltip=Select a material'
-			ToggleButton edit-internal 'E' 'tooltip=Edit material' primary noexpandx
+			ToggleButton edit-internal 'E' paddingx=5 'tooltip=Edit material' primary noexpandx
 		---|
 		Expander expander ''
 			Grid editor-grid ''
@@ -33,7 +33,7 @@ Dialog material-selector ''
 	embed("editor-grid", 0, 0, edit_panel);
 
 	event("material", [this] {
-		MaterialSelectionDialog::ask(session, "Select material", {}, false, false).then([this] (yrenderer::Material* m) {
+		MaterialSelectionDialog::ask(session, "Select material", internal_materials, false, false).then([this] (yrenderer::Material* m) {
 			set_material(m);
 			out_selected(material);
 		});
@@ -42,16 +42,24 @@ Dialog material-selector ''
 		expand("expander", is_checked("edit-internal"));
 	});
 	event("edit", [this] {
-		session->universal_edit(FD_MATERIAL, session->resource_manager->material_manager->get_filename(material).with(".material"), true);
+		if (session->resource_manager->material_manager->is_from_file(material))
+			session->universal_edit(FD_MATERIAL, session->resource_manager->material_manager->get_filename(material).with(".material"), true);
+		else
+			session->error("Can not fully edit internal materials");
 	});
 	event("save", [this] {
 		session->error("TODO");
+	});
+
+	session->ctx->material_manager->out_material_edited >> create_data_sink<yrenderer::Material*>([this] (yrenderer::Material* m) {
+		if (m == material)
+			set_string("material", session->ctx->material_manager->describe(material, true));
 	});
 }
 
 void MaterialSelector::set_material(yrenderer::Material* m) {
 	material = m;
 	set_string("preview", session->material_preview_manager->get(material));
-	set_string("material", str(session->ctx->material_manager->get_filename(material)));
+	set_string("material", session->ctx->material_manager->describe(material, true));
 	edit_panel->set_material(material);
 }

@@ -121,7 +121,7 @@ public:
 
 	string material_name() const {
 		auto mm = data->session->resource_manager->material_manager;
-		return mm->describe(material()) + (mm->has_changes(material()) ? " *" : "");
+		return mm->describe(material(), true);
 	}
 
 	void set_index(int _index) {

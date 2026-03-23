@@ -8,7 +8,6 @@
 #include <ecs/Entity.h>
 #include <storage/format/Format.h>
 #include <storage/Storage.h>
-#include <view/dialogs/MaterialEditDialog.h>
 #include <mode_material/dialog/MaterialSelector.h>
 
 
@@ -19,6 +18,7 @@ Dialog model-panel ''
 		Grid ? ''
 			Label ? 'Model' right disabled
 			Button filename '' 'tooltip=Select model' expandx
+			Button edit 'E' paddingx=5  'tooltip=Edit model' noexpandx primary
 )foodelim");
 	data = _data;
 	index = _index;
@@ -29,13 +29,16 @@ Dialog model-panel ''
 	auto e = data->entity(index);
 	auto mr = e->get_component<ModelRef>();
 	set_string("filename", str(mr->filename));
-	if (mr->model)
+	if (mr->model) {
 		material_selector->set_material(mr->model->material[0]);
+		material_selector->internal_materials = mr->model->material;
+	}
 
 	event("filename", [this] {
 		data->session->storage->file_dialog(FD_MODEL, false, true).then([this] (const ComplexPath& p) {
 			auto e = data->entity(index);
 			data->entity_edit_component(e, ModelRef::_class, {"", "", {{"filename", "", str(p.relative)}}});
+			//material_selector->internal_materials = mr->model->material; ...
 		});
 	});
 	event("edit", [this] {

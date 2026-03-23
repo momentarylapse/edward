@@ -13,12 +13,13 @@ namespace yrenderer {
 
 class MaterialSelector : public obs::Node<xhui::Panel> {
 public:
-	MaterialSelector(Data* _data);
+	explicit MaterialSelector(Data* _data);
 	void set_material(yrenderer::Material* m);
 	obs::xsource<yrenderer::Material*> out_selected{this, "selected"};
 	Data* data;
 	Session* session;
 	yrenderer::Material* material = nullptr;
 	MaterialParameterPanel* edit_panel;
+	Array<yrenderer::Material*> internal_materials;
 };
 

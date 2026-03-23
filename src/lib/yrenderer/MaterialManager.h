@@ -24,12 +24,12 @@ public:
 	Material* load(const Path& filename);
 	xfer<Material> load_copy(const Path& filename);
 	Path get_filename(const Material* m) const;
-	string describe(const Material* m) const;
+	string describe(const Material* m, bool with_save_state = false) const;
 	void invalidate(Material* m);
 	void set_save_state(Material* m);
 	Material* create_internal();
-	bool is_from_file(Material* m) const;
-	bool has_changes(Material* m) const;
+	bool is_from_file(const Material* m) const;
+	bool has_changes(const Material* m) const;
 
 	Path material_dir;
 
@@ -43,7 +43,7 @@ private:
 	Material* trivial_material;
 	base::map<Path, Material*> materials; // "originals" owned!
 	owned_array<Material> internal_materials;
-	base::set<Material*> having_changes;
+	base::set<const Material*> having_changes;
 };
 
 }
