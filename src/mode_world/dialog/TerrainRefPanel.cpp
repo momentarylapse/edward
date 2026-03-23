@@ -6,6 +6,7 @@
 #include "../ModeEditTerrain.h"
 #include "../data/DataWorld.h"
 #include <view/DocumentSession.h>
+#include <view/MaterialPreviewManager.h>
 #include <view/dialogs/MaterialEditDialog.h>
 #include <y/world/Terrain.h>
 #include <lib/yrenderer/Material.h>
@@ -14,6 +15,8 @@
 #include <y/helper/ResourceManager.h>
 #include <lib/yrenderer/MaterialManager.h>
 #include <storage/Storage.h>
+#include <mode_material/dialog/MaterialSelector.h>
+
 
 
 TerrainRefPanel::TerrainRefPanel(DataWorld* _data, int _index) : Node("terrain-panel") {
@@ -31,17 +34,12 @@ Dialog terrain-panel ''
 			---|
 			Label ? 'Cells' right disabled
 			Label cells ''
-			---|
-			Label ? 'Material' right disabled
-			Grid ? ''
-				Button material '' 'tooltip=Select a material'
-				Button edit-material 'E' 'tooltip=Edit material' primary noexpandx
 )foodelim");
 	data = _data;
 	index = _index;
 
-	material_edit_panel = new MaterialEditPanel(data);
-	//embed("main-grid", 0, 1, material_edit_panel);
+	material_selector = new MaterialSelector(data);
+	embed("main-grid", 0, 1, material_selector);
 
 	auto e = data->entity(index);
 	auto tr = e->get_component<TerrainRef>();
@@ -51,10 +49,8 @@ Dialog terrain-panel ''
 			data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"terrain", "", str(p.relative)}}});
 		});
 	});
-	event("material", [this, e, tr] {
-		data->session->storage->file_dialog(FD_MATERIAL, false, true).then([this, e, tr] (const ComplexPath& p) {
-			data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"material", "", str(p.relative.no_ext())}}});
-		});
+	material_selector->out_selected >> create_data_sink<yrenderer::Material*>([this, e] (yrenderer::Material* m) {
+		data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"material", "", str(data->session->resource_manager->material_manager->get_filename(m))}}});
 	});
 	/*event("size-x", [this] {
 		auto e = data->entity(index);
@@ -68,10 +64,6 @@ Dialog terrain-panel ''
 	});*/
 	event("edit-terrain", [this] {
 		data->doc->set_mode(new ModeEditTerrain(data->doc->mode_world, index));
-	});
-	event("edit-material", [this, tr] {
-		if (tr->material)
-			data->session->universal_edit(FD_MATERIAL, data->session->resource_manager->material_manager->get_filename(tr->material), true);
 	});
 
 	data->out_changed >> create_sink([this] {
@@ -90,7 +82,6 @@ void TerrainRefPanel::update_ui() {
 		set_string("cells", format("%d x %d", t->num_x, t->num_z));
 	}
 	if (auto m = tr->material) {
-		set_string("material", str(data->session->ctx->material_manager->get_filename(m)));
-		material_edit_panel->set_material(m);
+		material_selector->set_material(m);
 	}
 }

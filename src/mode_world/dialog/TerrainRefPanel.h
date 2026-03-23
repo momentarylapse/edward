@@ -8,14 +8,14 @@
 #include <lib/pattern/Observable.h>
 
 class DataWorld;
-class MaterialEditPanel;
+class MaterialSelector;
 
 class TerrainRefPanel : public obs::Node<xhui::Panel> {
 public:
 	explicit TerrainRefPanel(DataWorld* _data, int _index);
 	DataWorld* data;
 	int index;
-	MaterialEditPanel* material_edit_panel;
+	MaterialSelector* material_selector;
 
 	void update_ui();
 };

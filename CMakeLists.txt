@@ -454,6 +454,7 @@ add_executable(edward
 	src/mode_material/dialog/MaterialParameterPanel.cpp
 	src/mode_material/dialog/MaterialPassPanel.cpp
 	src/mode_material/dialog/MaterialSelectionDialog.cpp
+	src/mode_material/dialog/MaterialSelector.cpp
 	src/mode_material/ModeMaterial.cpp
 	src/mode_model/action/ActionModelEditData.cpp
 	src/mode_model/data/DataModel.cpp
