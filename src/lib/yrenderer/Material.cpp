@@ -7,8 +7,13 @@
 
 namespace yrenderer {
 
-	using namespace ygfx;
+using namespace ygfx;
 
+Material::RenderPassData::RenderPassData() {
+	cull_mode = CullMode::BACK;
+	source = Alpha::ONE;
+	destination = Alpha::ZERO;
+}
 
 Material::Material() {
 	// default values

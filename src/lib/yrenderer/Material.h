@@ -67,12 +67,13 @@ public:
 	bool cast_shadow;
 
 	struct RenderPassData {
+		RenderPassData();
 		TransparencyMode mode = TransparencyMode::NONE;
 		ygfx::Alpha source, destination;
 		float factor = 1;
 		bool z_buffer = true;
 		bool z_test = true;
-		ygfx::CullMode cull_mode = (ygfx::CullMode)0;
+		ygfx::CullMode cull_mode;
 		Path shader_path;
 	};
 	int num_passes = 1;
