@@ -1,6 +1,7 @@
 #pragma once
 
 #include <lib/base/base.h>
+#include <lib/base/pointer.h>
 #include <lib/ygraphics/graphics-fwd.h>
 
 namespace ygfx {
@@ -54,6 +55,7 @@ public:
 #else
 #endif
 	bool framebuffer_resized = true;
+	owned<Painter> painter;
 };
 
 }

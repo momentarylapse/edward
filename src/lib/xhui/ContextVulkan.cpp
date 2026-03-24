@@ -39,9 +39,10 @@ Painter* Context::prepare_draw() {
 	const rect area = {0, (float)width, 0, (float)height};
 	const rect native_area = {0, (float)swap_chain->width, 0, (float)swap_chain->height};
 
-	auto p = new Painter(this, window, native_area, area);
-	p->cb = cb;
-	return p;
+	//if (!painter)
+	painter = new Painter(this, window, native_area, area);
+	painter->cb = cb;
+	return painter.get();
 }
 
 void Context::begin_draw(Painter* p) {
@@ -68,7 +69,6 @@ void Context::end_draw(Painter *p) {
 
 	aux->reset_frame();
 	iterate_text_caches();
-	delete p;
 }
 
 

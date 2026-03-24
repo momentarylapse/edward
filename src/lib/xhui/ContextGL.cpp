@@ -32,7 +32,9 @@ Painter* Context::prepare_draw() {
 
 	const rect area = {0, (float)width, 0, (float)height};
 	const rect native_area = {0, (float)ww, 0, (float)hh};
-	return new Painter(this, window, native_area, area);
+	//if (!painter)
+	painter = new Painter(this, window, native_area, area);
+	return painter.get();
 }
 
 void Context::begin_draw(Painter *p) {

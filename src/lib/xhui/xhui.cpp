@@ -22,7 +22,6 @@
 namespace xhui {
 	extern shared_array<Window> _windows_;
 
-	float global_ui_scale = 1;
 	ColorSpace color_space_display = ColorSpace::SRGB;
 	ColorSpace color_space_shaders = ColorSpace::SRGB;
 	ColorSpace color_space_input = ColorSpace::SRGB;
@@ -36,6 +35,8 @@ namespace xhui {
 
 
 	Configuration config;
+
+	static owned_array<XImage> _images_;
 
 	Flags operator|(Flags a, Flags b) {
 		return (Flags)((int)a | (int)b);
@@ -59,9 +60,6 @@ void init(const Array<string> &arg, const string& app_name) {
 #endif
 
 	//glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
-
-	global_ui_scale = 1.0f;
-	glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), &global_ui_scale, nullptr);
 
 	Theme::load_default();
 
@@ -232,9 +230,14 @@ void do_single_main_loop() {
 	os::sleep(0.008f);
 }
 
+void destroy() {
+	_images_.clear();
+}
+
 void run() {
 	while (!Application::_end_requested and _windows_.num > 0)
 		do_single_main_loop();
+	destroy();
 }
 
 namespace clipboard {
@@ -276,8 +279,6 @@ namespace event_id {
 	const string Scroll = "hui:scroll";
 	const string DirectoryChanged = "hui:directory-changed";
 };
-
-static owned_array<XImage> _images_;
 
 Path find_image(const string& name) {
 	Array<Path> paths;

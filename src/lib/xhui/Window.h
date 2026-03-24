@@ -90,6 +90,8 @@ protected:
 	static void _scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 	static void _refresh_callback(GLFWwindow *window);
 	static void _resize_callback(GLFWwindow* window, int width, int height);
+	static void _framebuffer_size_callback(GLFWwindow* window, int width, int height);
+	static void _content_scale_callback(GLFWwindow* window, float fx, float fy);
 
 
 	void _on_left_button_down(const vec2& m);
