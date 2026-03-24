@@ -14,6 +14,7 @@ Slider::Slider(const string& id) : Control(id) {
 	size_mode_x = SizeMode::Expand;
 	size_mode_y = SizeMode::Shrink;
 	state = State::DEFAULT;
+	min_height_user = 25;
 	min = 0;
 	max = 1;
 	step = 0;

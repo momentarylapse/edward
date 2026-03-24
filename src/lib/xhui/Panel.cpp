@@ -113,11 +113,11 @@ vec2 Panel::get_greed_factor() const {
 		f = top_control->get_greed_factor();
 	if (size_mode_x == SizeMode::Expand)
 		f.x = 1;
-	else if (size_mode_x == SizeMode::Shrink)
+	else if (size_mode_x == SizeMode::Fill or size_mode_x == SizeMode::Shrink)
 		f.x = 0;
 	if (size_mode_y == SizeMode::Expand)
 		f.y = 1;
-	else if (size_mode_y == SizeMode::Shrink)
+	else if (size_mode_y == SizeMode::Fill or size_mode_y == SizeMode::Shrink)
 		f.y = 0;
 	return f;
 }

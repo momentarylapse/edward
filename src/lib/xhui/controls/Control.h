@@ -98,8 +98,9 @@ public:
 	Window* get_window() const;
 
 	enum class SizeMode {
-		Shrink,
-		Expand,
+		Shrink, // as small as possible = get_content_min_size()
+		Fill,   // use up available space, >= get_content_min_size()
+		Expand, // as large as possible (using greed-factor)
 		ForwardChild
 	};
 

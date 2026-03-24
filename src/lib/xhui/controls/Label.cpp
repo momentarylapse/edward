@@ -14,8 +14,8 @@ Label::Label(const string &_id, const string &t) : Control(_id) {
 	margin.y1 = margin.y2 = Theme::_default.label_margin_y;
 	ignore_hover = true;
 
-	size_mode_x = SizeMode::Shrink;
-	size_mode_y = SizeMode::Shrink;
+	size_mode_x = SizeMode::Fill;
+	size_mode_y = SizeMode::Fill;
 
 	Label::set_string(t);
 }

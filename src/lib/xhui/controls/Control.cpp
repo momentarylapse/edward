@@ -112,6 +112,18 @@ vec2 Control::get_effective_min_size() const {
 
 void Control::negotiate_area(const rect &available) {
 	_area = available;
+	if (size_mode_x != SizeMode::Expand or size_mode_y != SizeMode::Expand) {
+		const auto min_size = get_effective_min_size();
+		//if (size_mode_x == SizeMode::Expand)
+		if (size_mode_x == SizeMode::Shrink) {
+			_area.x1 = available.center().x - min_size.x / 2;
+			_area.x2 = available.center().x + min_size.x / 2;
+		}
+		if (size_mode_y == SizeMode::Shrink) {
+			_area.y1 = available.center().y - min_size.y / 2;
+			_area.y2 = available.center().y + min_size.y / 2;
+		}
+	}
 }
 
 bool Control::has_focus() const {
@@ -153,17 +165,23 @@ void Control::set_option(const string& key, const string& value) {
 	if (key == "expandx") {
 		size_mode_x = SizeMode::Expand;
 		if (value._bool())
-			size_mode_x = SizeMode::Shrink;
+			size_mode_x = SizeMode::Fill;
 		request_redraw();
 	} else if (key == "expandy") {
 		size_mode_y = SizeMode::Expand;
 		if (value._bool())
-			size_mode_y = SizeMode::Shrink;
+			size_mode_y = SizeMode::Fill;
 		request_redraw();
-	} else if (key == "noexpandx") {
+	} else if (key == "noexpandx" or key == "fillx") {
+		size_mode_x = SizeMode::Fill;
+		request_redraw();
+	} else if (key == "noexpandy" or key == "filly") {
+		size_mode_y = SizeMode::Fill;
+		request_redraw();
+	} else if (key == "shrinkx") {
 		size_mode_x = SizeMode::Shrink;
 		request_redraw();
-	} else if (key == "noexpandy") {
+	} else if (key == "shrinky") {
 		size_mode_y = SizeMode::Shrink;
 		request_redraw();
 	} else if (key == "width") {

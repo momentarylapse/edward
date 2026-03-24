@@ -24,7 +24,7 @@ void open_popup_menu(Control* c, shared<Menu> menu) {
 class MenuBarButton : public Button {
 public:
 	explicit MenuBarButton(const string& id, const string& title, shared<Menu> _menu) : Button(id, title) {
-		size_mode_x = SizeMode::Shrink;
+		size_mode_x = SizeMode::Fill;
 		padding.x1 = padding.x2 = Theme::_default.button_margin_y;
 		flat = true;
 		menu = _menu;
