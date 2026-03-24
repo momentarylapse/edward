@@ -2,21 +2,20 @@
 // Created by michi on 1/12/25.
 //
 
-#ifndef HEADLESSRENDERERVULKAN_H
-#define HEADLESSRENDERERVULKAN_H
+#pragma once
 
 #include "TextureRenderer.h"
-
-#ifdef USING_VULKAN
 
 namespace yrenderer {
 
 // TODO "task executor"...
 class HeadlessRenderer : public RenderTask {
 public:
+#ifdef USING_VULKAN
 	vulkan::Device* device;
 	ygfx::CommandBuffer* command_buffer;
 	vulkan::Fence* fence;
+#endif
 
 	owned<TextureRenderer> texture_renderer;
 
@@ -29,7 +28,3 @@ public:
 };
 
 }
-
-#endif
-
-#endif //HEADLESSRENDERERVULKAN_H

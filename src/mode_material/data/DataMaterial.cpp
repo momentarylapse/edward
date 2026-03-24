@@ -83,11 +83,11 @@ void DataMaterial::reset() {
 
 void DataMaterial::apply_for_rendering(int pass_no) const {
 #if HAS_LIB_GL
-	nix::set_material(appearance.albedo, appearance.roughness, appearance.metal, appearance.emissive);
+	nix::set_material(material.albedo, material.roughness, material.metal, material.emission);
 
 	nix::disable_alpha();
 	nix::set_z(true, true);
-	auto &p = appearance.passes[pass_no];
+	auto &p = material.pass(pass_no);
 	if (p.mode == yrenderer::TransparencyMode::COLOR_KEY_HARD) {
 		nix::set_alpha(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA);
 	} else if (p.mode == yrenderer::TransparencyMode::COLOR_KEY_SMOOTH) {
@@ -102,7 +102,7 @@ void DataMaterial::apply_for_rendering(int pass_no) const {
 		//nix::set_alpha(appearance.alpha_factor);
 		nix::set_z(false, true);
 	}
-	nix::set_cull(p.culling);
+	nix::set_cull(p.cull_mode);
 #endif
 }
 

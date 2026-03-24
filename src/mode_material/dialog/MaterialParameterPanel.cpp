@@ -227,7 +227,11 @@ void MaterialParameterPanel::on_texture_level_save() {
 		session->storage->file_dialog(FD_TEXTURE, true, true).then([this, sel] (const auto& p) {
 			auto t = material->textures[sel];
 			Image im(t->width, t->height, Black);
+#ifdef USING_OPENGL
+			t->read(im);
+#else
 			t->read(&im.data.data);
+#endif
 			im.save(p.complete);
 
 			auto temp = *material;
