@@ -65,9 +65,9 @@ void Panel::_draw(Painter *p) {
 }
 
 void Panel::negotiate_area(const rect &available) {
-	_area = available;
+	area = available;
 	if (top_control)
-		top_control->negotiate_area(_area.grow(-padding));
+		top_control->negotiate_area(area.grow(-padding));
 
 	/*Array<int> w, h;
 	get_grid_min_sizes(w, h);
@@ -354,8 +354,8 @@ void Panel::set_option(const string& key, const string& value) {
 
 
 
-Array<Control*> Panel::get_children(ChildFilter) const {
-	if (top_control)
+Array<Control*> Panel::get_children(ChildFilter f) const {
+	if (top_control and (top_control->visible or f == ChildFilter::All))
 		return {top_control.get()};
 	return {};
 }

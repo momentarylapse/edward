@@ -2,6 +2,7 @@
 
 #include "Control.h"
 #include <lib/base/optional.h>
+#include <lib/layout/Grid.h>
 
 namespace xhui {
 
@@ -12,24 +13,13 @@ public:
 
 	void _draw(Painter *p) override;
 
-	struct Child {
-		shared<Control> control;
-		int x, y;
-	};
-	Array<Child> children;
-
 	void add_child(shared<Control> c, int x, int y) override;
 	void remove_child(Control* c) override;
-	int nx = 0, ny = 0;
-	float spacing;
-	rect margin;
 	bool card = false;
-	bool vertical = false;
 	float corner_radius = 0;
 	base::optional<color> background;
 
-	void get_grid_min_sizes(Array<float> &w, Array<float> &h) const;
-	void get_grid_greed_factors(Array<float> &x, Array<float> &y) const;
+	layout::Grid grid;
 	
 	vec2 get_greed_factor() const override;
 	vec2 get_content_min_size() const override;

@@ -12,7 +12,7 @@ namespace xhui {
 constexpr float BUTTON_DX = 30;
 
 SpinButton::SpinButton(const string& id, float _value) : Edit(id, "") {
-	size_mode_x = SizeMode::Shrink;
+	size_mode_x = SizeMode::Fill;
 	numerical = true;
 	hover = Hover::Other;
 	pressed = Hover::Other;
@@ -71,10 +71,10 @@ vec2 SpinButton::get_content_min_size() const {
 
 
 SpinButton::Hover SpinButton::get_hover(const vec2& m) const {
-	if (_area.inside(m) and enabled and show_buttons) {
-		if (m.x > _area.x2 - BUTTON_DX)
+	if (area.inside(m) and enabled and show_buttons) {
+		if (m.x > area.x2 - BUTTON_DX)
 			return Hover::Plus;
-		if (m.x > _area.x2 - BUTTON_DX * 2)
+		if (m.x > area.x2 - BUTTON_DX * 2)
 			return Hover::Minus;
 	}
 	return Hover::Other;
@@ -153,8 +153,8 @@ void SpinButton::_draw(Painter* p) {
 
 	float dx = BUTTON_DX;
 
-	const rect area_plus = {_area.p10() - vec2(dx,0), _area.p11()};
-	const rect area_minus = {_area.p10() - vec2(dx*2,0), _area.p11() - vec2(dx,0)};
+	const rect area_plus = {area.p10() - vec2(dx,0), area.p11()};
+	const rect area_minus = {area.p10() - vec2(dx*2,0), area.p11() - vec2(dx,0)};
 
 	if (hover == Hover::Plus or pressed == Hover::Plus) {
 		p->set_color(pressed == Hover::Plus ? Theme::_default.background_active : Theme::_default.background_hover);

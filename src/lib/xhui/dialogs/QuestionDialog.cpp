@@ -12,18 +12,20 @@
 namespace xhui {
 
 QuestionDialog::QuestionDialog(Panel* parent, const string& title, const string& question, bool allow_cancel) : Dialog(title, 450, 120, parent) {
-	auto g1 = new Grid("");
-	add_child(g1);
-	auto label = new Label("", question);
-	label->align = Label::Align::Center;
-	g1->add_child(label, 0, 0);
-	label->size_mode_y = SizeMode::Expand;
-	auto g2 = new Grid("");
-	g1->add_child(g2, 0, 1);
-	g2->add_child(new Button("yes", "Yes"), 0, 0);
-	g2->add_child(new Button("no", "No"), 1, 0);
-	if (allow_cancel)
-		g2->add_child(new Button("cancel", "Cancel"), 2, 0);
+	from_source(R"foodelim(
+Dialog question-dialog ''
+	Grid ? ''
+		Label question '' expandx expandy center
+		---|
+		Grid ? ''
+			Label ? '' expandx
+			Button yes 'Yes' primary
+			Button no 'No' danger
+			Button cancel 'Cancel'
+)foodelim");
+	set_title(title);
+	set_string("question", question);
+	set_visible("cancel", allow_cancel);
 
 	event("yes", [this] {
 		answer = Answer::Yes;

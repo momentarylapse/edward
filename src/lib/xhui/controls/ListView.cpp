@@ -26,8 +26,8 @@ ListView::ListView(const string &_id, const string &t) :
 		}});
 	}
 	cell_grid = new Grid(_id + ":grid");
-	cell_grid->margin = {7,7,4,4};
-	cell_grid->spacing = 8;
+	cell_grid->grid.margin = {7,7,4,4};
+	cell_grid->grid.spacing = 8;
 	viewport.add_child(cell_grid, 0, 0);
 	viewport.size_mode_y = SizeMode::Shrink;
 	viewport.ignore_hover = true;
@@ -150,14 +150,14 @@ void ListView::negotiate_area(const rect& available) {
 	viewport.negotiate_area({available.p00() + vec2(0, dy) + padding.p00(), available.p11() - padding.p11()});
 	if (show_headers and cells.num > 0) {
 		for (int i=0; i<min(headers.num, cells[0].num); i++)
-			column_offsets[i] = cells[0][i].control->_area.x1 - _area.x1;
+			column_offsets[i] = cells[0][i].control->area.x1 - area.x1;
 	}
 }
 
 
 rect ListView::row_area(int row) const {
-	const auto r0 = cells[row][0].control->_area;
-	return {_area.x1, _area.x2, r0.y1 - 4, r0.y2 + 4};
+	const auto r0 = cells[row][0].control->area;
+	return {area.x1, area.x2, r0.y1 - 4, r0.y2 + 4};
 }
 
 
@@ -166,7 +166,7 @@ void ListView::_draw(Painter *p) {
 		color bg = Theme::_default.background_low;
 		p->set_color(bg);
 		p->set_roundness(Theme::_default.button_radius);
-		p->draw_rect(_area);
+		p->draw_rect(area);
 		p->set_roundness(0);
 	}
 
@@ -177,7 +177,7 @@ void ListView::_draw(Painter *p) {
 	if (show_headers) {
 		p->set_color(Theme::_default.text_disabled);
 		for (int col=0; col<headers.num; col++) {
-			p->draw_str({_area.x1 + (float)column_offsets[col], _area.y1 + 9}, headers[col]);
+			p->draw_str({area.x1 + (float)column_offsets[col], area.y1 + 9}, headers[col]);
 		}
 	}
 
@@ -185,11 +185,11 @@ void ListView::_draw(Painter *p) {
 		p->set_roundness(selection_radius);
 		if (hover_row >= 0) {
 			p->set_color(Theme::_default.background_hover.with_alpha(0.5f));
-			p->draw_rect(row_area(hover_row) and viewport._area);
+			p->draw_rect(row_area(hover_row) and viewport.area);
 		}
 		for (int row: selected) {
 			p->set_color(Theme::_default.background_low_selected);
-			p->draw_rect(row_area(row) and viewport._area);
+			p->draw_rect(row_area(row) and viewport.area);
 		}
 		p->set_roundness(0);
 	}
@@ -276,7 +276,7 @@ void ListView::set_option(const string& key, const string& value) {
 		sunken_background = value._bool();
 		if (!sunken_background) {
 			padding = {0,0,0,0};
-			cell_grid->margin = {0, 0, 0, 0};
+			cell_grid->grid.margin = {0, 0, 0, 0};
 		}
 	} else if (key == "style") {
 		if (value == "compact") {

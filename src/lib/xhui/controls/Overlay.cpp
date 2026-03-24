@@ -64,7 +64,7 @@ vec2 Overlay::get_greed_factor() const {
 }
 
 void Overlay::negotiate_area(const rect &available) {
-	_area = available;
+	area = available;
 	for (auto c: children)
 		c->negotiate_area(available);
 }

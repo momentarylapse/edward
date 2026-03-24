@@ -50,7 +50,7 @@ void ComboBox::on_click() {
 	auto menu = new Menu;
 	for (const auto& [i, e]: enumerate(entries))
 		menu->add_item(format(":combo:%d", i), e);
-	owner->open_dialog(new MenuPopup(menu, owner, _area, [this] (const string& id) {
+	owner->open_dialog(new MenuPopup(menu, owner, area, [this] (const string& id) {
 		int n = id.sub_ref(7)._int();
 		set_int(n);
 		emit_event(event_id::Changed, true);
@@ -61,7 +61,7 @@ void ComboBox::_draw(Painter* p) {
 	Button::_draw(p);
 	float dx = BUTTON_DX;
 
-	const rect area_arrow = {_area.p10() - vec2(dx,0), _area.p11()};
+	const rect area_arrow = {area.p10() - vec2(dx,0), area.p11()};
 
 	p->set_color(Theme::_default.text_label);
 	if (!enabled)

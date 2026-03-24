@@ -46,7 +46,7 @@ Edit::Edit(const string &_id, const string &t) : Control(_id) {
 	can_grab_focus = true;
 
 	size_mode_x = SizeMode::Expand;
-	size_mode_y = SizeMode::Shrink;
+	size_mode_y = SizeMode::Fill;
 
 	font_name = Theme::_default.font_name;
 	font_size = Theme::_default.font_size;
@@ -129,7 +129,7 @@ void Edit::on_mouse_move(const vec2& m, const vec2& d) {
 }
 
 vec2 Edit::viewport_size() const {
-	return vec2::max(cache.content_size - _area.size() + vec2(margin_x * 2 + line_number_area_width, 0), vec2::ZERO);
+	return vec2::max(cache.content_size - area.size() + vec2(margin_x * 2 + line_number_area_width, 0), vec2::ZERO);
 }
 
 
@@ -190,10 +190,10 @@ void Edit::on_key_down(int key) {
 			jump_lines(1);
 			prevent_event_propagation();
 		} else if (key_no_shift == KEY_PAGE_UP) {
-			jump_lines(- (int)(_area.height() / cache.line_height[0]));
+			jump_lines(- (int)(area.height() / cache.line_height[0]));
 			prevent_event_propagation();
 		} else if (key_no_shift == KEY_PAGE_DOWN) {
-			jump_lines((int)(_area.height() / cache.line_height[0]));
+			jump_lines((int)(area.height() / cache.line_height[0]));
 			prevent_event_propagation();
 		}
 	}
@@ -320,11 +320,11 @@ void Edit::draw_text(Painter* p) {
 
 	const auto clip0 = p->clip();
 
-	p->set_clip(_area and clip0);
+	p->set_clip(area and clip0);
 	p->set_font(font_name, font_size, false, false);
 	face = p->face;
 
-	text_x0 = _area.x1 + margin_x + line_number_area_width - viewport_offset.x;
+	text_x0 = area.x1 + margin_x + line_number_area_width - viewport_offset.x;
 
 	// update text dims
 	float inner_height = 0;
@@ -334,7 +334,7 @@ void Edit::draw_text(Painter* p) {
 		cache.line_y0.clear();
 		cache.line_height.clear();
 		cache.line_width.clear();
-		float y0 = _area.y1 + margin_y - viewport_offset.y;
+		float y0 = area.y1 + margin_y - viewport_offset.y;
 		cache.content_size = {0,0};
 		for (const string &l: lines) {
 			auto dim = get_cached_text_dimensions(l, face, font_size, p->ui_scale);
@@ -348,7 +348,7 @@ void Edit::draw_text(Painter* p) {
 			cache.content_size.y += line_height;
 		}
 		if (!multiline)
-			cache.line_y0[0] = _area.center().y - line_height / 2;
+			cache.line_y0[0] = area.center().y - line_height / 2;
 	}
 
 	// selection
@@ -380,9 +380,9 @@ void Edit::draw_text(Painter* p) {
 	p->set_color(col0);
 	float dy = (line_height - inner_height) / 2;
 	for (const auto& [line, l]: enumerate(cache.lines)) {
-		if (cache.line_y0[line] + cache.line_height[line] < _area.y1)
+		if (cache.line_y0[line] + cache.line_height[line] < area.y1)
 			continue;
-		if (cache.line_y0[line] > _area.y2)
+		if (cache.line_y0[line] > area.y2)
 			continue;
 		if (markups.num > 0) {
 			int i0 = cache.line_first_index[line];
@@ -581,14 +581,14 @@ void Edit::_scroll_into_view(Index index) {
 	if (!face)
 		return;
 	const auto xy = index_to_xy(index);
-	if (xy.x < _area.x1 + line_number_area_width)
-		viewport_offset.x -= (_area.x1 + line_number_area_width - xy.x);
-	else if (xy.x > _area.x2)
-		viewport_offset.x += (xy.x - _area.x2);
-	if (xy.y < _area.y1)
-		viewport_offset.y -= (_area.y1 - xy.y);
-	else if (xy.y + font_size > _area.y2)
-		viewport_offset.y += (xy.y - _area.y2) + font_size * 2;
+	if (xy.x < area.x1 + line_number_area_width)
+		viewport_offset.x -= (area.x1 + line_number_area_width - xy.x);
+	else if (xy.x > area.x2)
+		viewport_offset.x += (xy.x - area.x2);
+	if (xy.y < area.y1)
+		viewport_offset.y -= (area.y1 - xy.y);
+	else if (xy.y + font_size > area.y2)
+		viewport_offset.y += (xy.y - area.y2) + font_size * 2;
 	viewport_offset = vec2::max(vec2::min(viewport_offset, viewport_size()), vec2::ZERO);
 	_scroll_into_view_request = base::None;
 	request_redraw();
@@ -635,7 +635,7 @@ Edit::Index Edit::xy_to_index(const vec2& pos) const {
 void Edit::draw_line_numbers(Painter* p, const color& bg) {
 	const auto clip0 = p->clip();
 
-	p->set_clip(_area and clip0);
+	p->set_clip(area and clip0);
 
 	p->set_font("monospace", font_size, false, false);
 	//p->set_font(Theme::_default.font_name, Theme::_default.font_size, false, false);
@@ -643,12 +643,12 @@ void Edit::draw_line_numbers(Painter* p, const color& bg) {
 
 
 	p->set_color(alt_background ? Theme::_default.background : color::mix(Theme::_default.background_active, bg, 0.7f));
-	p->draw_rect({_area.x1, _area.x1 + line_number_area_width, _area.y1, _area.y2});
+	p->draw_rect({area.x1, area.x1 + line_number_area_width, area.y1, area.y2});
 
 	int cursor_line = index_to_line_pos(cursor_pos).line;
 	float dy = -1;
 	for (const auto& [l, y0]: enumerate(cache.line_y0))
-		if (y0 + cache.line_height[l] > _area.y1 and y0 < _area.y2) {
+		if (y0 + cache.line_height[l] > area.y1 and y0 < area.y2) {
 			p->set_color(Theme::_default.text_disabled);
 			if (l == cursor_line)
 				p->set_color(Theme::_default.text);
@@ -656,7 +656,7 @@ void Edit::draw_line_numbers(Painter* p, const color& bg) {
 				auto size = p->get_str_size("0");
 				dy = (cache.line_height[l] - size.y) / 2.0f;
 			}
-			p->draw_str({_area.x1, y0 + dy}, format("%3d", l+1));
+			p->draw_str({area.x1, y0 + dy}, format("%3d", l+1));
 		}
 
 	p->set_clip(clip0);
@@ -679,17 +679,17 @@ void Edit::_draw(Painter *p) {
 		bg = Theme::_default.background_low;
 	p->set_color(bg);
 	p->set_roundness(Theme::_default.button_radius);
-	p->draw_rect(_area);
+	p->draw_rect(area);
 
 	// focus frame
 	if (has_focus() and show_focus_frame) {
 		p->set_color(Theme::_default.background_button_primary.with_alpha(0.6f));
-		p->draw_rect(_area);
+		p->draw_rect(area);
 
 		float dr = Theme::_default.focus_frame_width;
 		p->set_roundness(Theme::_default.button_radius - dr);
 		p->set_color(bg);
-		p->draw_rect(_area.grow(-dr));
+		p->draw_rect(area.grow(-dr));
 	}
 	p->set_roundness(0);
 

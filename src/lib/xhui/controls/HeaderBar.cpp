@@ -56,7 +56,7 @@ void HeaderBar::on_mouse_move(const vec2& m, const vec2& d) {
 }
 
 void HeaderBar::negotiate_area(const rect &available) {
-	_area = available;
+	area = available;
 	vec2 s = grid_right->get_content_min_size();
 	float R = Theme::_default.spacing;
 	grid_right->negotiate_area(rect(available.x2 - s.x - R, available.x2 - R, available.y1 + R, available.y2 - R));
@@ -69,18 +69,18 @@ void HeaderBar::_draw(Painter *p) {
 	// round bg
 	p->set_roundness(R);
 	p->set_color(Theme::_default.background_header);
-	p->draw_rect(_area);
+	p->draw_rect(area);
 
 	// flat lower bg
 	p->set_roundness(0);
-	p->draw_rect({_area.x1, _area.x2, _area.y2 - R, _area.y2});
+	p->draw_rect({area.x1, area.x2, area.y2 - R, area.y2});
 	p->set_color({0.2, 0,0,0});
-	p->draw_line({_area.x1, _area.y2}, {_area.x2, _area.y2});
+	p->draw_line({area.x1, area.y2}, {area.x2, area.y2});
 
 	p->set_color(Theme::_default.text);
 	p->set_font_size(Theme::_default.font_size * 1.6f);
 	float ww = p->get_str_width(window->get_title());
-	p->draw_str(_area.center() - vec2(ww/2, Theme::_default.font_size * 0.8f), window->get_title());
+	p->draw_str(area.center() - vec2(ww/2, Theme::_default.font_size * 0.8f), window->get_title());
 	p->set_font_size(Theme::_default.font_size);
 
 	grid_right->_draw(p);

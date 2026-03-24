@@ -24,11 +24,11 @@ void Separator::_draw(Painter* p) {
 	p->set_color(Theme::_default.background_button);
 	p->set_line_width(2);
 	if (orientation == Orientation::HORIZONTAL) {
-		float y = _area.center().y;
-		p->draw_line({_area.x1, y}, {_area.x2, y});
+		float y = area.center().y;
+		p->draw_line({area.x1, y}, {area.x2, y});
 	} else {
-		float x = _area.center().x;
-		p->draw_line({x, _area.y1 + 8}, {x, _area.y2 - 8});
+		float x = area.center().x;
+		p->draw_line({x, area.y1 + 8}, {x, area.y2 - 8});
 	}
 }
 

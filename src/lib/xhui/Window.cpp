@@ -473,7 +473,7 @@ void Window::_on_draw() {
 	if (!p)
 		return;
 	auto a = p->area();
-	_area = p->area();
+	area = p->area();
 
 	if (first_draw)
 		handle_event_p(id, event_id::Initialize, p);
@@ -534,8 +534,8 @@ void Window::_on_draw() {
 
 	if (hover_control and tooltip != "") {
 		auto l = TextLayout::from_format_string(p, tooltip, Theme::_default.font_size);
-		vec2 pos = hover_control->_area.p01() + vec2(10, 20);
-		pos.x = clamp(pos.x, 5.0f, _area.x2 - l.box.x2 - 5);
+		vec2 pos = hover_control->area.p01() + vec2(10, 20);
+		pos.x = clamp(pos.x, 5.0f, area.x2 - l.box.x2 - 5);
 		draw_text_layout_with_box(p, pos, l, White, Black);
 	}
 
@@ -550,7 +550,7 @@ void Window::_on_draw() {
 	if (hover_control) {
 		p->set_color(Red);
 		p->set_fill(false);
-		p->draw_rect(hover_control->_area);
+		p->draw_rect(hover_control->area);
 		p->set_fill(true);
 	}
 
@@ -564,7 +564,7 @@ void Window::_on_draw() {
 		// hover debug
 		p->set_color(color(0.2f, 1, 0,0));
 		if (hover_control)
-			p->draw_rect(hover_control->_area);
+			p->draw_rect(hover_control->area);
 	}
 
 	_refresh_requested = false;
@@ -649,11 +649,11 @@ Control *Window::get_hover_control(const vec2 &p) {
 	while (cur_seed < seeds.num) {
 		auto c = seeds[cur_seed ++];
 		while (c) {
-			if (c->_area.inside(p) and !c->ignore_hover and c->visible)
+			if (c->area.inside(p) and !c->ignore_hover and c->visible)
 				best = c;
 			Control* next = nullptr;
 			for (auto cc: c->get_children(ChildFilter::OnlyActive))
-				if (cc->_area.inside(p) and cc->visible) {
+				if (cc->area.inside(p) and cc->visible) {
 					if (next)
 						seeds.add(cc);
 					else

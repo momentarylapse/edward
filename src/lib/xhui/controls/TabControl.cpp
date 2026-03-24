@@ -15,7 +15,7 @@ class TabControlHeader : public Grid {
 public:
 	explicit TabControlHeader(const string& id, const Array<string>& headers, const std::function<void(int)>& f) : Grid(id) {
 		callback = f;
-		spacing = 2;
+		grid.spacing = 2;
 		for (const auto&& [i, h] : enumerate(headers)) {
 			auto b = new CallbackToggleButton(id + i2s(i), h, [this, i=i] {
 				current_page = i;
@@ -71,12 +71,12 @@ vec2 TabControl::get_content_min_size() const {
 }
 
 void TabControl::negotiate_area(const rect& available) {
-	_area = available;
+	area = available;
 	vec2 p00 = available.p00();
 	if (show_header) {
 		const vec2 s = header->get_effective_min_size();
 		header->negotiate_area({available.p00(), available.p10() + vec2(0, s.y)});
-		p00 = header->_area.p01() + vec2(0, Theme::_default.spacing);
+		p00 = header->area.p01() + vec2(0, Theme::_default.spacing);
 	}
 	for (auto& p: pages)
 		if (p.child)

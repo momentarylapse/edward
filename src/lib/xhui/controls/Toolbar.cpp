@@ -16,7 +16,7 @@ namespace xhui {
 
 Toolbar::Toolbar(const string& id) : Grid(id) {
 	//size_mode_y = SizeMode::Shrink;
-	spacing = 2;
+	grid.spacing = 2;
 }
 
 void Toolbar::add_item(const string& id, const string& title, const string& image) {
@@ -84,7 +84,7 @@ void Toolbar::from_resource(Resource *res) {
 				add_item_checkable(cmd.id, title, cmd.image());
 			else
 				add_item(cmd.id, title, cmd.image());
-			children.back().control->set_option("tooltip", tooltip);
+			static_cast<Control*>(grid.children.back().node.get())->set_option("tooltip", tooltip);
 		} else if (cmd.type == "Separator") {
 			add_separator();
 		} else if (cmd.type == "Menu") {
@@ -119,7 +119,7 @@ void Toolbar::from_resource(Resource *res) {
 void Toolbar::_draw(Painter* p) {
 	if (is_main) {
 		p->set_color(Theme::_default.background_raised());
-		p->draw_rect(_area);
+		p->draw_rect(area);
 	}
 	Grid::_draw(p);
 }
@@ -128,7 +128,7 @@ void Toolbar::_draw(Painter* p) {
 void Toolbar::set_option(const string& key, const string& value) {
 	if (key == "main") {
 		is_main = true;
-		margin.y2 = 3;
+		grid.margin.y2 = 3;
 	} else if (key == "menu") {
 		set_by_id(value);
 	} else {

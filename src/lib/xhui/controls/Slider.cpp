@@ -11,9 +11,10 @@ namespace xhui {
 
 Slider::Slider(const string& id) : Control(id) {
 	can_grab_focus = true;
-	size_mode_x = SizeMode::Expand;
+	size_mode_x = SizeMode::Fill;
 	size_mode_y = SizeMode::Shrink;
 	state = State::DEFAULT;
+	min_width_user = 50;
 	min_height_user = 25;
 	min = 0;
 	max = 1;
@@ -66,7 +67,7 @@ void Slider::on_mouse_wheel(const vec2& d) {
 
 
 float Slider::mouse_to_value(const vec2& m) const {
-	float v = (m.x - _area.x1 - button_radius) / (_area.width() - button_radius*2);
+	float v = (m.x - area.x1 - button_radius) / (area.width() - button_radius*2);
 	v = clamp(v, 0.0f, 1.0f);
 	return min + v * (max - min);
 }
@@ -99,8 +100,8 @@ void Slider::negotiate_area(const rect& available) {
 void Slider::_draw(Painter* p) {
 	p->set_color(Theme::_default.background_button);
 	p->set_line_width(3);
-	float y = _area.center().y;
-	p->draw_line({_area.x1, y}, {_area.x2, y});
+	float y = area.center().y;
+	p->draw_line({area.x1, y}, {area.x2, y});
 
 
 	color bg = Theme::_default.background_button;
@@ -110,11 +111,11 @@ void Slider::_draw(Painter* p) {
 		bg = Theme::_default.background_active;
 	}
 
-	float x = _area.x1 + button_radius + value * (_area.width() - button_radius*2);
+	float x = area.x1 + button_radius + value * (area.width() - button_radius*2);
 
 	p->set_color(bg);
 	p->set_roundness(Theme::_default.button_radius);
-	p->draw_rect({x-button_radius, x+button_radius, _area.y1, _area.y2});
+	p->draw_rect({x-button_radius, x+button_radius, area.y1, area.y2});
 	p->set_roundness(0);
 }
 

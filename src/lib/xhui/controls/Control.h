@@ -1,10 +1,7 @@
 #pragma once
 
-#include "../../base/base.h"
-#include "../../base/pointer.h"
-#include "../../math/rect.h"
-#include "../../math/vec2.h"
-#include "../../image/color.h"
+#include <lib/layout/Node.h>
+#include <lib/image/color.h>
 
 namespace xhui {
 
@@ -13,6 +10,7 @@ class Window;
 class Dialog;
 class Panel;
 
+// using ChildFilter = layout::ChildFilter;
 enum class ChildFilter {
 	All,
 	OnlyActive
@@ -26,17 +24,16 @@ enum class ControlType {
 	Window
 };
 
-enum class Orientation {
-	HORIZONTAL,
-	VERTICAL,
-};
+using Orientation = layout::Orientation;
 
-class Control : public Sharable<VirtualBase> {
+class Control : public layout::Node {
 	friend class Window;
 	friend class Panel;
 public:
 	explicit Control(const string& id, ControlType type = ControlType::SomeControl);
 	~Control() override;
+
+	using SizeMode = layout::SizeMode;
 
 	void _register(Panel* owner);
 	void _unregister();
@@ -88,8 +85,6 @@ public:
 	bool has_focus() const;
 	void prevent_event_propagation();
 
-	rect _area;
-	string id;
 	ControlType type;
 
 	// Control: surrounding Panel (might be Window)
@@ -97,28 +92,10 @@ public:
 	Panel *owner = nullptr;
 	Window* get_window() const;
 
-	enum class SizeMode {
-		Shrink, // as small as possible = get_content_min_size()
-		Fill,   // use up available space, >= get_content_min_size()
-		Expand, // as large as possible (using greed-factor)
-		ForwardChild
-	};
-
-	float min_width_user, min_height_user;
-	SizeMode size_mode_x, size_mode_y;
-	vec2 greed_factor = vec2(1, 1); // if expanding...
 	bool can_grab_focus = false;
 	bool ignore_hover = false;
-	bool visible = true;
 	bool enabled;
 	string tooltip;
-
-	virtual vec2 get_greed_factor() const;
-	virtual vec2 get_content_min_size() const;
-	vec2 get_effective_min_size() const;
-
-	//virtual void negotiate_min_size();
-	virtual void negotiate_area(const rect &available);
 
 	bool emit_event(const string& msg, bool is_default);
 };

@@ -12,7 +12,7 @@ CheckBox::CheckBox(const string &_id, const string &t) :
 	state = State::DEFAULT;
 	can_grab_focus = true;
 	size_mode_x = SizeMode::Expand;
-	size_mode_y = SizeMode::Shrink;
+	size_mode_y = SizeMode::Fill;
 	label.margin.x1 = label.margin.x2 = Theme::_default.button_margin_x;
 	label.margin.y1 = label.margin.y2 = Theme::_default.button_margin_y;
 }
@@ -58,7 +58,7 @@ vec2 CheckBox::get_content_min_size() const {
 
 void CheckBox::negotiate_area(const rect& available) {
 	Control::negotiate_area(available);
-	label.negotiate_area({_area.p00() + vec2(20, 0), _area.p11()});
+	label.negotiate_area({area.p00() + vec2(20, 0), area.p11()});
 }
 
 void CheckBox::_draw(Painter *p) {
@@ -78,7 +78,7 @@ void CheckBox::_draw(Painter *p) {
 			bg = Theme::_default.background_active;
 		}
 	}
-	rect box = {_area.x1 + 7, _area.x1 + 28, _area.center().y - 11, _area.center().y + 11};
+	rect box = {area.x1 + 7, area.x1 + 28, area.center().y - 11, area.center().y + 11};
 	p->set_color(bg);
 	p->set_roundness(Theme::_default.button_radius);
 	p->draw_rect(box);
@@ -92,8 +92,8 @@ void CheckBox::_draw(Painter *p) {
 	if (checked) {
 		p->set_color(Theme::_default.text);
 		p->set_line_width(4);
-		float ym = _area.center().y;
-		p->draw_lines({{_area.x1 + 11, ym}, {_area.x1 + 17, ym + 6}, {_area.x1 + 23, ym - 6}});
+		float ym = area.center().y;
+		p->draw_lines({{area.x1 + 11, ym}, {area.x1 + 17, ym + 6}, {area.x1 + 23, ym - 6}});
 		p->set_line_width(1);
 	}
 

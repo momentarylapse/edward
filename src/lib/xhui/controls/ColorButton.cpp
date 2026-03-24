@@ -80,14 +80,14 @@ void ColorButton::_draw(Painter* p) {
 	}
 	p->set_roundness(Theme::_default.button_radius);
 	p->set_color(bg);
-	p->draw_rect(_area);
+	p->draw_rect(area);
 	if (_color.a < 1) {
 		p->set_roundness(0);
-		draw_checkerboard(p, _area.grow(-5));
+		draw_checkerboard(p, area.grow(-5));
 		p->set_roundness(Theme::_default.button_radius);
 	}
 	p->set_color(_color);
-	p->draw_rect(_area.grow(-5));
+	p->draw_rect(area.grow(-5));
 	p->set_roundness(0);
 }
 

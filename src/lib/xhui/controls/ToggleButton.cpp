@@ -47,7 +47,7 @@ void ToggleButton::_draw(Painter* p) {
 	if (primary or state != State::DEFAULT or !flat or checked) {
 		p->set_color(bg);
 		p->set_roundness(Theme::_default.button_radius);
-		p->draw_rect(_area);
+		p->draw_rect(area);
 		p->set_roundness(0);
 	}
 

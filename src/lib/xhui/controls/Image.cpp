@@ -32,8 +32,8 @@ void Image::_draw(Painter *p) {
 		if (!enabled)
 			p->set_color(White.with_alpha(0.35f));
 		vec2 s = image->size();
-		float scale = min(_area.width() / s.x, _area.height() / s.y);
-		p->draw_ximage({_area.center() - s * scale/2, _area.center() + s * scale/2}, image);
+		float scale = min(area.width() / s.x, area.height() / s.y);
+		p->draw_ximage({area.center() - s * scale/2, area.center() + s * scale/2}, image);
 	}
 }
 

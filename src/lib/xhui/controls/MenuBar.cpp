@@ -13,7 +13,7 @@
 namespace xhui {
 
 void open_popup_menu(Control* c, shared<Menu> menu) {
-	c->owner->open_dialog(new MenuPopup(menu, c->owner, c->_area, [c] (const string& id) {
+	c->owner->open_dialog(new MenuPopup(menu, c->owner, c->area, [c] (const string& id) {
 		// wait for the popup to close
 		run_later(0.01f, [c, id] {
 			c->owner->handle_event(id, event_id::Activate, true);
@@ -36,13 +36,13 @@ public:
 };
 
 MenuBar::MenuBar(const string& id) : Grid(id) {
-	spacing = 3;
+	grid.spacing = 3;
 }
 
 void MenuBar::_draw(Painter* p) {
 	if (is_main) {
 		p->set_color(Theme::_default.background_raised());
-		p->draw_rect(_area);
+		p->draw_rect(area);
 	}
 	Grid::_draw(p);
 }
@@ -50,8 +50,8 @@ void MenuBar::_draw(Painter* p) {
 
 void MenuBar::set_menu(shared<Menu> _menu) {
 	// clear
-	while (children.num > 0)
-		Grid::remove_child(children.back().control.get());
+	while (grid.children.num > 0)
+		Grid::remove_child((Control*)grid.children.back().node.get());
 
 	menu = _menu;
 	for (const auto [i, it]: enumerate(menu->items)) {

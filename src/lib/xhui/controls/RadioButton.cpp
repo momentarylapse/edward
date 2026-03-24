@@ -63,7 +63,7 @@ void RadioButton::_draw(Painter *p) {
 			bg = Theme::_default.background_active;
 		}
 	}
-	rect box = {_area.x1 + 7, _area.x1 + 28, _area.center().y - 11, _area.center().y + 11};
+	rect box = {area.x1 + 7, area.x1 + 28, area.center().y - 11, area.center().y + 11};
 	p->set_color(bg);
 	p->draw_circle(box.center(), 10);
 	if (!checked) {

@@ -70,7 +70,7 @@ Dialog::Dialog(const string& _title, int _width, int _height, Panel* parent, Dia
 	width = _width;
 	height = _height;
 	pos = {0, 0};
-	_area = {0, (float)width, 0, (float)height};
+	area = {0, (float)width, 0, (float)height};
 	padding = Theme::_default.window_margin;
 
 	// forward default activation ([Return] key) to default button
@@ -103,12 +103,12 @@ Array<Control*> Dialog::get_children(ChildFilter f) const {
 
 
 void Dialog::negotiate_area(const rect& available) {
-	outside->_area = {0, 10000, 0, 10000}; // what could go wrong :P
+	outside->area = {0, 10000, 0, 10000}; // what could go wrong :P
 	if (header) {
-		_area = {available.p00() - vec2(0, HEADER_HEIGHT), available.p11()};
-		header->negotiate_area({_area.p00(), available.p10()});
+		area = {available.p00() - vec2(0, HEADER_HEIGHT), available.p11()};
+		header->negotiate_area({area.p00(), available.p10()});
 	} else {
-		_area = {available.p00(), available.p11()};
+		area = {available.p00(), available.p11()};
 	}
 	if (top_control)
 		top_control->negotiate_area(available.grow(- padding));
@@ -124,13 +124,13 @@ void Dialog::_draw(Painter* p) {
 	p->set_color(Black.with_alpha(0.3f));
 	p->set_roundness(25);
 	p->softness = 50;
-	p->draw_rect(_area.grow(30));
+	p->draw_rect(area.grow(30));
 	p->softness = 0;
 
 	// background
 	p->set_color(Theme::_default.background);
 	p->set_roundness(Theme::_default.window_radius);
-	p->draw_rect(_area);
+	p->draw_rect(area);
 	p->set_roundness(0);
 
 	if (header)

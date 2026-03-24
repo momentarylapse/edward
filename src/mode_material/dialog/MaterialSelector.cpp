@@ -15,7 +15,7 @@ Dialog material-selector ''
 	Grid ? ''
 		Grid ? ''
 			Image preview '' width=48 height=48 noexpandx
-			Button material '' 'tooltip=Select a material'
+			Button material '' 'tooltip=Select a material' expandx
 			ToggleButton edit-internal 'E' paddingx=5 'tooltip=Edit material' primary noexpandx
 		---|
 		Expander expander ''

@@ -39,9 +39,9 @@ void Viewport::on_mouse_wheel(const vec2& d) {
 		constexpr float speed = 3;
 #endif
 		offset -= d * speed;
-		offset.x = clamp(offset.x, 0.0f, content_size.x - _area.width());
-		offset.y = clamp(offset.y, 0.0f, content_size.y - _area.height());
-		child->negotiate_area({_area.p00() - offset, _area.p00() + content_size - offset});
+		offset.x = clamp(offset.x, 0.0f, content_size.x - area.width());
+		offset.y = clamp(offset.y, 0.0f, content_size.y - area.height());
+		child->negotiate_area({area.p00() - offset, area.p00() + content_size - offset});
 	}
 	request_redraw();
 }
@@ -53,7 +53,7 @@ void Viewport::_draw(Painter *p) {
 		content_size = child->get_effective_min_size();
 
 		auto clip0 = p->clip();
-		p->set_clip(_area and clip0);
+		p->set_clip(area and clip0);
 		child->_draw(p);
 		p->set_clip(clip0);
 	}
@@ -88,17 +88,17 @@ vec2 Viewport::get_greed_factor() const {
 }
 
 void Viewport::negotiate_area(const rect &available) {
-	_area = available;
+	area = available;
 
 	if (child) {
-		rect content_area = {_area.p00() - offset, _area.p00() + content_size - offset};
+		rect content_area = {area.p00() - offset, area.p00() + content_size - offset};
 		if (size_mode_x == SizeMode::ForwardChild) {
-			content_area.x1 = _area.x1;
-			content_area.x2 = _area.x2;
+			content_area.x1 = area.x1;
+			content_area.x2 = area.x2;
 		}
 		if (size_mode_y == SizeMode::ForwardChild) {
-			content_area.y1 = _area.y1;
-			content_area.y2 = _area.y2;
+			content_area.y1 = area.y1;
+			content_area.y2 = area.y2;
 		}
 		child->negotiate_area(content_area);
 	}

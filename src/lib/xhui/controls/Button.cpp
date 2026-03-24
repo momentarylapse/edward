@@ -12,7 +12,7 @@ Button::Button(const string &_id, const string &t) :
 {
 	state = State::DEFAULT;
 	can_grab_focus = true;
-	size_mode_x = SizeMode::Expand;
+	size_mode_x = SizeMode::Fill;
 	size_mode_y = SizeMode::Shrink;
 	label.align = Label::Align::Center;
 	label.margin = {0,0,0,0};
@@ -66,7 +66,7 @@ vec2 Button::get_content_min_size() const {
 
 void Button::negotiate_area(const rect& available) {
 	Control::negotiate_area(available);
-	label.negotiate_area({_area.p00() + padding.p00(), _area.p11() - padding.p11()});
+	label.negotiate_area({area.p00() + padding.p00(), area.p11() - padding.p11()});
 }
 
 Array<Control*> Button::get_children(ChildFilter f) const {
@@ -110,7 +110,7 @@ void Button::_draw(Painter *p) {
 	if (primary or state != State::DEFAULT or !flat) {
 		p->set_color(bg);
 		p->set_roundness(Theme::_default.button_radius);
-		p->draw_rect(_area);
+		p->draw_rect(area);
 		p->set_roundness(0);
 	}
 
