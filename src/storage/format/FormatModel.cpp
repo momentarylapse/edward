@@ -73,54 +73,51 @@ int get_normal_index(vec3 &n) {
 vec3 get_normal_by_index(int index);
 
 
+Array<Array<Polygon>> split_conv_polyhedra(ModelMesh* m) {
+	Array<Array<Polygon>> polyhedra;
+	base::set<const Polygon*> done;
 
-base::set<int> get_all_poly_vert(DataModel *m) {
-	base::set<int> all_vert;
-	for (auto &p: m->phys_mesh->polygons)
-		for (auto &f: p.side)
-			all_vert.add(f.vertex);
-	return all_vert;
-}
+	auto find_next_polyhedron = [&] {
+		Array<Polygon> polyhedron;
+		base::set<int> cur_vertices;
 
-Array<base::set<int>> split_conv_polyhedra(DataModel *m) {
-	auto all_vert = get_all_poly_vert(m);
+		auto add_poly = [&] (const Polygon& p) {
+			polyhedron.add(p);
+			done.add(&p);
+			for (const auto& ss: p.side)
+				cur_vertices.add(ss.vertex);
+		};
 
-	msg_error("TODO   phys polyhedra");
-	Array<base::set<int>> surf;
-
-#if 0
-	while (all_vert.num > 0) {
-		msg_write("----surf");
-		base::set<int> cur;
-		cur.add(all_vert.pop());
-		int n = 0;
-		while (cur.num > n) {
-			n = cur.num;
-
-			for (auto &e: m->phys_mesh->edge) {
-				if (cur.contains(e.vertex[0]) and all_vert.contains(e.vertex[1])) {
-					cur.add(e.vertex[1]);
-					all_vert.erase(e.vertex[1]);
-				}
-				if (cur.contains(e.vertex[1]) and all_vert.contains(e.vertex[0])) {
-					cur.add(e.vertex[0]);
-					all_vert.erase(e.vertex[0]);
+		while (true) {
+			bool found_new = false;
+			for (const auto& p: m->polygons) {
+				if (done.contains(&p))
+					continue;
+				if (polyhedron.num == 0) {
+					add_poly(p);
+					found_new = true;
+					break;
+				} else {
+					// sharing vertex with current polyhedron?
+					for (const auto& s: p.side)
+						if (cur_vertices.contains(s.vertex)) {
+							add_poly(p);
+							found_new = true;
+							break;
+						}
 				}
 			}
+			if (!found_new)
+				break;
 		}
-		msg_write(str(cur));
-		surf.add(cur);
-	}
-#endif
-	return surf;
-}
 
-Array<Polygon> conv_poly_poly(DataModel *m, const base::set<int> &v) {
-	Array<Polygon> poly;
-	for (auto &p: m->phys_mesh->polygons)
-		if (v.contains(p.side[0].vertex))
-			poly.add(p);
-	return poly;
+		polyhedra.add(polyhedron);
+	};
+
+	while (done.num < m->polygons.num) {
+		find_next_polyhedron();
+	}
+	return polyhedra;
 }
 
 
@@ -624,11 +621,9 @@ public:
 		}
 
 		// polyhedra
-		auto surf = split_conv_polyhedra(parent);
-		f->write_int(surf.num);
-		for (auto &pp: surf) {
-			auto p = conv_poly_poly(parent, pp);
-
+		auto polyhedra = split_conv_polyhedra(me);
+		f->write_int(polyhedra.num);
+		for (auto &p: polyhedra) {
 			f->write_int(p.num);
 			for (int k=0;k<p.num;k++) {
 				f->write_int(p[k].side.num);
