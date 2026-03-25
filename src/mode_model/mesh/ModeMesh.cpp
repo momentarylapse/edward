@@ -89,6 +89,7 @@ void ModeMesh::set_edit_mesh(ModelMesh* mesh) {
 		{MultiViewType::MODEL_VERTEX, &mesh->vertices},
 		{MultiViewType::MODEL_POLYGON, &mesh->polygons},
 	};
+	data->out_topology_changed();
 	on_update_menu();
 	update_vb();
 }
@@ -434,6 +435,7 @@ void ModeMesh::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindo
 		draw_polygons(params, win);
 
 	if (data->editing_mesh == data->phys_mesh.get())
+		// spheres & cylinders
 		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_physical, material_physical, 0);
 
 	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_selection, material_selection, 0);
@@ -498,6 +500,8 @@ void ModeMesh::update_vb() {
 	}
 
 	PolygonMesh m;
+	m.vertices = data->phys_mesh->vertices;
+	m.polygons = data->phys_mesh->polygons;
 	for (const auto& b: data->editing_mesh->spheres)
 		m.add(GeometrySphere(data->editing_mesh->vertices[b.index].pos, b.radius, 8));
 	for (const auto& c: data->editing_mesh->cylinders)
