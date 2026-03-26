@@ -13,6 +13,7 @@ class MaterialSelector;
 class ModelRefPanel : public obs::Node<xhui::Panel> {
 public:
 	explicit ModelRefPanel(DataWorld* _data, int _index);
+	void update_ui();
 	DataWorld* data;
 	int index;
 	MaterialSelector* material_selector;
