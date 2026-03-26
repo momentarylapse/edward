@@ -31,11 +31,6 @@ Dialog model-panel ''
 
 	auto e = data->entity(index);
 	auto mr = e->get_component<ModelRef>();
-	set_string("model", str(data->session->resource_manager->filename(mr->model)));
-	if (mr->model) {
-		material_selector->set_material(mr->model->material[0]);
-		material_selector->internal_materials = mr->model->material;
-	}
 
 	event("model", [this] {
 		data->session->storage->file_dialog(FD_MODEL, false, true).then([this] (const ComplexPath& p) {
@@ -48,14 +43,30 @@ Dialog model-panel ''
 		auto e = data->entity(index);
 		auto mr = e->get_component<ModelRef>();
 		if (mr->model)
-			data->session->universal_edit(FD_MODEL, mr->model->filename(), true);
+			data->session->universal_edit(FD_MODEL, data->session->resource_manager->filename(mr->model), true);
 	});
 
 	material_selector->out_selected >> create_data_sink<yrenderer::Material*>([this, mr] (yrenderer::Material* m) {
 		data->session->error("material changed... but not working");
 		//mr->material...
-		mr->model->material[0] = m->copy();
+		mr->model->material[0] = m;
 		data->out_changed();
 		// FIXME :D
 	});
+
+	data->out_changed >> create_sink([this] {
+		if (true) //!editing)
+			update_ui();
+	});
+	update_ui();
+}
+
+void ModelRefPanel::update_ui() {
+	auto e = data->entity(index);
+	auto mr = e->get_component<ModelRef>();
+	set_string("model", str(data->session->resource_manager->filename(mr->model)));
+	if (mr->model) {
+		material_selector->set_material(mr->model->material[0]);
+		material_selector->internal_materials = mr->model->material;
+	}
 }
