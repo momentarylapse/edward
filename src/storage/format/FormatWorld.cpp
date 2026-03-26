@@ -105,8 +105,6 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	if (deep) {
 		try {
 			for (auto m: data->entity_manager->get_component_list<ModelRef>()) {
-				m->model = data->session->resource_manager->load_model_copy(m->filename);
-
 				// automagic components for now...
 				if (m->owner->get_component<EdwardTag>()->request_auto_components)
 					data->_entity_apply_components(m->owner, m->model->_template->components);
@@ -199,7 +197,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
 		o->get_component<EdwardTag>()->request_auto_components = true;
 		auto m = data->entity_manager->add_component<ModelRef>(o);
-		m->filename = e.filename.with(".model");
+		m->model = data->session->resource_manager->load_model(e.filename.with(".model"));
 		data->_entity_apply_components(o, e.components);
 	}
 	for (auto& e: ld.cameras) {

@@ -94,15 +94,7 @@ void ModeWorld::on_enter_rec() {
 			e->entity_index = i;
 		}
 	};
-	auto update_model_refs = [this]() {
-		// FIXME
-		auto list = data->entity_manager->get_component_list<ModelRef>();
-		for (auto mr: list) {
-			mr->model = session->resource_manager->load_model_copy(mr->filename);
-		}
-	};
 	data->out_changed >> create_sink(update_dummies);
-	data->out_changed >> create_sink(update_model_refs);
 	update_dummies();
 }
 
@@ -218,8 +210,7 @@ void ModeWorld::on_enter() {
 			session->info(str(fn_rel));
 			auto e = data->add_entity(p, quaternion::ID);
 			auto c = data->entity_add_component<ModelRef>(e);
-			c->filename = fn_rel;
-			c->model = session->resource_manager->load_model_copy(c->filename);
+			c->model = session->resource_manager->load_model(fn_rel);
 
 			// suggest automatic components...
 			// well... SolidBody will be removed soon!
@@ -243,11 +234,6 @@ void ModeWorld::on_enter() {
 			auto e = data->add_entity(p, quaternion::ID);
 			auto t = LevelData::load_template(filename);
 			data->_entity_apply_components(e, t.components);
-
-			if (auto m = e->get_component<ModelRef>()) {
-				if (m->filename)
-					m->model = session->resource_manager->load_model_copy(m->filename.no_ext());
-			}
 		}
 	}));
 

@@ -19,7 +19,7 @@ public:
 
 	Path find_absolute_texture_path(const Path& path) const;
 
-	Path texture_file(ygfx::Texture* t) const;
+	Path get_filename(const ygfx::Texture* t) const;
 
 	Path texture_dir;
 	void clear();

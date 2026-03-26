@@ -34,7 +34,6 @@
 #include <lib/xhui/Theme.h>
 #include <lib/base/iter.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <lib/yrenderer/TextureManager.h>
 #include <y/helper/ResourceManager.h>
 
 
@@ -136,7 +135,7 @@ Dialog material-panel ''
 	void fill_texture_list() {
 		reset("textures");
 		for (int i=0; i<min(MATERIAL_MAX_TEXTURES, material->textures.num); i++)
-			add_string("textures", format("%s\\%s", xhui::texture_to_image(material->textures[i]), data->session->ctx->texture_manager->texture_file(material->textures[i].get())));
+			add_string("textures", format("%s\\%s", xhui::texture_to_image(material->textures[i]), data->session->resource_manager->filename(material->textures[i].get())));
 	}
 	yrenderer::Material* material;
 	DataWorld* data;

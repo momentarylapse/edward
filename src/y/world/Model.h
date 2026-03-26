@@ -50,7 +50,6 @@ class Animator;
 
 
 struct ModelRef : Component {
-	Path filename;
 	Model* model = nullptr;
 	static const kaba::Class* _class;
 };
@@ -163,7 +162,7 @@ public:
 
 	// template
 	shared<ModelTemplate> _template;
-	Path filename();
+	Path filename() const;
 
 	// engine data
 	bool _detail_needed_[MODEL_NUM_MESHES]; // per frame

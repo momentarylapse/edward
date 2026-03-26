@@ -9,6 +9,7 @@
 
 #include <lib/base/base.h>
 #include <lib/base/pointer.h>
+#include <lib/base/map.h>
 #include <lib/os/path.h>
 
 class MetaMove;
@@ -44,8 +45,9 @@ public:
 	ModelManager(ResourceManager *resource_manager, yrenderer::MaterialManager *material_manager);
 	Model* load(const Path &filename);
 	xfer<Model> load_copy(const Path &filename);
+	Path get_filename(const Model* m);
 
 	ResourceManager *resource_manager;
 	yrenderer::MaterialManager *material_manager;
-	Array<Model*> originals;
+	base::map<Path, Model*> originals;
 };

@@ -652,8 +652,8 @@ Model* ModelManager::load(const Path &_filename) {
 	auto filename = engine.object_dir | _filename;
 	if (filename.extension() != "model")
 		filename = filename.with(".model");
-	for (auto *o: originals)
-		if (o->_template->filename == filename)
+	for (auto&& [f, o]: originals)
+		if (f == filename)
 			return o;
 
 	msg_write("loading " + filename.str());
@@ -696,7 +696,7 @@ Model* ModelManager::load(const Path &_filename) {
 
 
 	//m->load(filename);
-	originals.add(m);
+	originals.set(filename, m);
 	return m;
 }
 
@@ -708,6 +708,15 @@ xfer<Model> ModelManager::load_copy(const Path &_filename) {
 	if (m)
 		return fancy_copy(m);
 	return nullptr;
+}
+
+Path ModelManager::get_filename(const Model* m) {
+	for (auto&& [f, _m]: originals)
+		if (_m == m)
+			return f.relative_to(engine.object_dir);
+	if (m)
+		return m->filename().relative_to(engine.object_dir);
+	return "";
 }
 
 
