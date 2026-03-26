@@ -21,8 +21,8 @@
 #include <lib/math/Box.h>
 #include <cmath>
 
-#include "lib/yrenderer/MaterialManager.h"
-#include "lib/yrenderer/TextureManager.h"
+#include <lib/yrenderer/MaterialManager.h>
+#include <lib/yrenderer/TextureManager.h>
 
 FormatModel::FormatModel(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "model", "Model", Flag::CANONICAL_READ_WRITE) {
 }
@@ -283,7 +283,7 @@ public:
 		f->write_bool(false);
 		f->write_int(me->textures.num);
 		for (int t=0; t<me->textures.num; t++)
-			f->write_str(str(session->resource_manager->texture_manager->texture_file(me->textures[t].get())));
+			f->write_str(str(session->resource_manager->filename(me->textures[t].get())));
 	}
 };
 
@@ -1033,7 +1033,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 		for (auto &b: data->bones) {
 			try {
 				if (!b.model)
-					b.model = data->session->resource_manager->load_model_copy(b.model_file);
+					b.model = data->session->resource_manager->load_model(b.model_file);
 			} catch(Exception &e) {
 				msg_error(e.message());
 			}

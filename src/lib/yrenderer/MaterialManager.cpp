@@ -288,7 +288,7 @@ void MaterialManager::_write_to_file(Material* material, const Path &filename) {
 
 	Array<Path> texture_files;
 	for (auto t: weak(material->textures))
-		texture_files.add(texture_manager->texture_file(t));
+		texture_files.add(texture_manager->get_filename(t));
 
 	c.set_str_array("textures", paths_to_str_arr(texture_files));
 	if (!material->cast_shadow)

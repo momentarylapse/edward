@@ -31,8 +31,14 @@ public:
 	xfer<yrenderer::Material> load_material_copy(const Path &filename);
 	yrenderer::Material* load_material(const Path &filename);
 	xfer<Model> load_model_copy(const Path &filename);
+	Model* load_model(const Path &filename);
 	Terrain* load_terrain(const Path &filename);
 	Terrain* load_terrain_lazy(const Path &filename);
+
+	Path filename(const Model* m) const;
+	Path filename(const Terrain* t) const;
+	Path filename(const yrenderer::Material* m) const;
+	Path filename(const ygfx::Texture* t) const;
 
 	owned_array<Terrain> terrains;
 

@@ -13,6 +13,7 @@
 #include <y/world/components/Light.h>
 #include <y/world/Model.h>
 #include <y/world/Terrain.h>
+#include <y/helper/ResourceManager.h>
 
 
 EntityListPanel::EntityListPanel() : Panel("entity-list-panel") {
@@ -37,8 +38,8 @@ void EntityListPanel::update(ModeWorld* mode) {
 				name = "Terrain";
 			if (auto r = e->owner->get_component<ModelRef>()) {
 				name = "Model (no file)";
-			if (r->model)
-				name = "Model " + str(r->filename);
+				if (r->model)
+					name = "Model " + str(mode->session->resource_manager->filename(r->model));
 		}
 		add_string("list", name);
 	}

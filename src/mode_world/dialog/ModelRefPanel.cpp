@@ -10,6 +10,9 @@
 #include <storage/Storage.h>
 #include <mode_material/dialog/MaterialSelector.h>
 
+#include "helper/ResourceManager.h"
+#include "world/ModelManager.h"
+
 
 ModelRefPanel::ModelRefPanel(DataWorld* _data, int _index) : Node("model-panel") {
 	from_source(R"foodelim(
@@ -17,7 +20,7 @@ Dialog model-panel ''
 	Grid main-grid ''
 		Grid ? ''
 			Label ? 'Model' right disabled
-			Button filename '' 'tooltip=Select model' expandx
+			Button model '' 'tooltip=Select model' expandx
 			Button edit 'E' paddingx=5  'tooltip=Edit model' noexpandx primary
 )foodelim");
 	data = _data;
@@ -28,24 +31,24 @@ Dialog model-panel ''
 
 	auto e = data->entity(index);
 	auto mr = e->get_component<ModelRef>();
-	set_string("filename", str(mr->filename));
+	set_string("model", str(data->session->resource_manager->filename(mr->model)));
 	if (mr->model) {
 		material_selector->set_material(mr->model->material[0]);
 		material_selector->internal_materials = mr->model->material;
 	}
 
-	event("filename", [this] {
+	event("model", [this] {
 		data->session->storage->file_dialog(FD_MODEL, false, true).then([this] (const ComplexPath& p) {
 			auto e = data->entity(index);
-			data->entity_edit_component(e, ModelRef::_class, {"", "", {{"filename", "", str(p.relative)}}});
+			data->entity_edit_component(e, ModelRef::_class, {"", "", {{"model", "", str(p.relative)}}});
 			//material_selector->internal_materials = mr->model->material; ...
 		});
 	});
 	event("edit", [this] {
 		auto e = data->entity(index);
-		auto m = e->get_component<ModelRef>();
-		if (m->filename)
-			data->session->universal_edit(FD_MODEL, m->filename, true);
+		auto mr = e->get_component<ModelRef>();
+		if (mr->model)
+			data->session->universal_edit(FD_MODEL, mr->model->filename(), true);
 	});
 
 	material_selector->out_selected >> create_data_sink<yrenderer::Material*>([this, mr] (yrenderer::Material* m) {

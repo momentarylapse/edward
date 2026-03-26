@@ -13,7 +13,6 @@
 #include <lib/xhui/controls/ListView.h>
 #include <lib/xhui/xhui.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <lib/yrenderer/TextureManager.h>
 #include <lib/yrenderer/Material.h>
 #include <lib/yrenderer/MaterialManager.h>
 #include <y/helper/ResourceManager.h>
@@ -139,7 +138,7 @@ string MaterialParameterPanel::material_name() const {
 void MaterialParameterPanel::update_ui() {
 	auto m = material;
 
-	set_string("parent", m->parent ? str(session->resource_manager->material_manager->get_filename(m->parent)) : "none");
+	set_string("parent", m->parent ? str(session->resource_manager->filename(m->parent)) : "none");
 	set_string("parent-preview", session->material_preview_manager->get(m->parent));
 
 	set_color("albedo", m->albedo);
@@ -189,7 +188,7 @@ void MaterialParameterPanel::fill_texture_list() {
 		string ext = format("\n<span size='small' alpha='50%%>   %d x %d, %s</span>", t->width, t->height, space);
 	//	if (mat->texture_levels[i]->edited)
 	//		ext += " *";
-		add_string("textures", format("%s\\%s", id, (file_secure(session->resource_manager->texture_manager->texture_file(t)).replace("@linear", "") + ext)));
+		add_string("textures", format("%s\\%s", id, (file_secure(session->resource_manager->filename(t)).replace("@linear", "") + ext)));
 	}
 //	set_int("textures", mode_mesh()->current_texture_level);
 }
@@ -283,7 +282,7 @@ void MaterialParameterPanel::on_texture_level_linear() {
 	if (sel >= 0) {
 		auto temp = *material;
 		auto rm = session->resource_manager;
-		temp.textures[sel] = rm->load_texture(rm->texture_manager->texture_file(temp.textures[sel].get()).with("@linear"));
+		temp.textures[sel] = rm->load_texture(rm->filename(temp.textures[sel].get()).with("@linear"));
 		data->execute(new ActionModelEditMaterial(material, temp));
 	}
 }
@@ -293,7 +292,7 @@ void MaterialParameterPanel::on_texture_level_srgb() {
 	if (sel >= 0) {
 		auto temp = *material;
 		auto rm = session->resource_manager;
-		temp.textures[sel] = rm->load_texture(str(rm->texture_manager->texture_file(temp.textures[sel].get())).replace("@linear", ""));
+		temp.textures[sel] = rm->load_texture(str(rm->filename(temp.textures[sel].get())).replace("@linear", ""));
 		data->execute(new ActionModelEditMaterial(material, temp));
 	}
 }

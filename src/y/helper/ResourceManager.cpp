@@ -38,6 +38,10 @@ xfer<Model> ResourceManager::load_model_copy(const Path& filename) {
 	return model_manager->load_copy(filename);
 }
 
+Model* ResourceManager::load_model(const Path& filename) {
+	return model_manager->load(filename);
+}
+
 Terrain *ResourceManager::load_terrain_lazy(const Path& filename) {
 	if (!filename)
 		return nullptr;
@@ -60,6 +64,25 @@ Terrain *ResourceManager::load_terrain(const Path& filename) {
 
 shared<ygfx::Texture> ResourceManager::load_texture(const Path& filename) {
 	return texture_manager->load_texture(filename);
+}
+
+Path ResourceManager::filename(const Model *m) const {
+	return model_manager->get_filename(m);
+}
+
+Path ResourceManager::filename(const Terrain *t) const {
+	for (auto _t: weak(terrains))
+		if (_t == t)
+			return _t->filename;
+	return "";
+}
+
+Path ResourceManager::filename(const yrenderer::Material *m) const {
+	return material_manager->get_filename(m);
+}
+
+Path ResourceManager::filename(const ygfx::Texture *t) const {
+	return texture_manager->get_filename(t);
 }
 
 void ResourceManager::clear() {

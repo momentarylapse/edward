@@ -543,7 +543,7 @@ void Model::end_edit(int detail) {
 void Model::make_editable() {
 }
 
-Path Model::filename() {
+Path Model::filename() const {
 	if (_template)
 		return _template->filename;
 	return "?";

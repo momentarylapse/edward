@@ -440,7 +440,6 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("CollisionData.n", &CollisionData::n);
 
 	ext->declare_class_size("ModelRef", sizeof(ModelRef));
-	ext->declare_class_element("ModelRef.filename", &ModelRef::filename);
 	ext->declare_class_element("ModelRef.model", &ModelRef::model);
 
 	ext->declare_class_size("TerrainRef", sizeof(TerrainRef));
@@ -1035,9 +1034,11 @@ string whatever_to_string(const void* instance, int offset, const kaba::Class* c
 	if (c == kaba::common_types.mat3)
 		return mat3_to_any(*(const mat3*)p).str();
 	if (c->name == "Material*" and default_resource_manager)
-		return str(default_resource_manager->material_manager->get_filename(*(const yrenderer::Material**)p));
-	if (c->name == "Terrain*")
-		return str((*(const Terrain**)p)->filename);
+		return str(default_resource_manager->filename(*(const yrenderer::Material**)p));
+	if (c->name == "Terrain*" and default_resource_manager)
+		return str(default_resource_manager->filename(*(const Terrain**)p));
+	if (c->name == "Model*" and default_resource_manager)
+		return str(default_resource_manager->filename(*(const Model**)p));
 	return "???";
 }
 
@@ -1062,6 +1063,8 @@ void whatever_from_string(void* p, const kaba::Class* type, const string& value)
 		*(yrenderer::Material**)p = default_resource_manager->load_material(value);
 	if (type->name == "Terrain*" and default_resource_manager)
 		*(Terrain**)p = default_resource_manager->load_terrain(value);
+	if (type->name == "Model*" and default_resource_manager)
+		*(Model**)p = default_resource_manager->load_model(value);
 }
 
 void assign_variables(void* p, const kaba::Class* c, const Array<ScriptInstanceDataVariable>& variables) {

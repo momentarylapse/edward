@@ -102,19 +102,7 @@ World::World() {
 		return (Component*)PluginManager::create_instance(type, Array<ScriptInstanceDataVariable>{});
 	};
 	entity_manager->component_manager->f_apply = [this] (const kaba::Class* type, Component* c, const Array<ScriptInstanceDataVariable>& vars) {
-		/*Array<ScriptInstanceDataVariable> vars;
-		for (const auto& [k, v]: params)
-			vars.add({k, v.str()});*/
 		PluginManager::assign_variables(c, type, vars);
-		if (type == ModelRef::_class) {
-			auto cc = static_cast<ModelRef*>(c);
-			cc->model = engine.resource_manager->load_model_copy(cc->filename);
-		}
-		/*if (type == TerrainRef::_class) {
-			auto cc = static_cast<TerrainRef*>(c);
-			if (cc->terrain)
-				cc->terrain->reload(engine.resource_manager);
-		}*/
 	};
 #endif
 
