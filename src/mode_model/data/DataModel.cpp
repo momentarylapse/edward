@@ -195,34 +195,31 @@ void DataModel::debug_show() {
 
 
 void DataModel::import_from_triangle_mesh(int index) {
-#if 0
-	mesh->vertex.clear();
-	mesh->polygon.clear();
-	mesh->edge.clear();
+	mesh->clear();
 	action_manager->enable(false);
 
 	ModelTriangleMesh &s = triangle_mesh[index];
 	begin_action_group("ImportFromTriangleSkin");
-	foreachi(ModelVertex &v, s.vertex, i) {
-		addVertex(v.pos, v.bone_index, v.bone_weight);
+	foreachi(auto &v, s.vertices, i) {
+		mesh->add_vertex(v.pos, v.bone_index, v.bone_weight, 0);
 	}
-	for (int i=0;i<material.num;i++) {
-		for (ModelTriangle &t: s.sub[i].triangle) {
+	for (int i=0;i<materials.num;i++) {
+		for (ModelTriangle &t: s.sub[i].triangles) {
 			if ((t.vertex[0] == t.vertex[1]) || (t.vertex[1] == t.vertex[2]) || (t.vertex[2] == t.vertex[0]))
 				continue;
 			Array<int> v;
 			for (int k=0;k<3;k++)
 				v.add(t.vertex[k]);
 			Array<vec3> sv;
-			for (int tl=0;tl<material[i]->texture_levels.num;tl++)
-				for (int k=0;k<3;k++)
-					sv.add(t.skin_vertex[tl][k]);
+			for (int k=0;k<3;k++)
+				sv.add(t.skin_vertex[k]);
 			try {
-				addPolygonWithSkin(v, sv, i);
+				mesh->add_polygon(v, sv);
+				mesh->polygons.back().material = t.material;
 			} catch(GeometryException &e) {
 				msg_error("polygon..." + e.message);
 				msg_write("trying to copy vertices...");
-
+#if 0
 				// copy all vertices m(-_-)m
 				int nv0 = mesh->vertex.num;
 				for (int k=0; k<3; k++) {
@@ -230,6 +227,7 @@ void DataModel::import_from_triangle_mesh(int index) {
 					v[k] = nv0 + k;
 				}
 				addPolygonWithSkin(v, sv, i);
+#endif
 			}
 		}
 	}
@@ -275,10 +273,8 @@ void DataModel::import_from_triangle_mesh(int index) {
 	polyhedron.clear();
 #endif
 
-	//clearSelection();
 	end_action_group();
 	action_manager->reset();
-#endif
 }
 
 
