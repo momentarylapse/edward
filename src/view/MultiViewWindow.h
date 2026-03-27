@@ -43,12 +43,12 @@ public:
 	void draw_post(Painter* p);
 
 	MultiView* multi_view;
-	rect area;
-	rect area_native;
-	quaternion local_ang;
-	mat4 to_pixels;
-	mat4 view;
-	mat4 projection;
+	rect area = rect::EMPTY;
+	rect area_native = rect::EMPTY;
+	quaternion local_ang = quaternion::ID;
+	mat4 to_pixels = mat4::ID;
+	mat4 view = mat4::ID;
+	mat4 projection = mat4::ID;
 	owned<yrenderer::SceneRenderer> scene_renderer;
 	yrenderer::RenderViewData& rvd();
 };

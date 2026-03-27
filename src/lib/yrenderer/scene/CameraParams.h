@@ -11,10 +11,10 @@
 namespace yrenderer {
 
 struct CameraParams {
-	vec3 pos;
-	quaternion ang;
-	float fov;
-	float min_depth, max_depth;
+	vec3 pos = vec3::ZERO;
+	quaternion ang = quaternion::ID;
+	float fov = 1.0f;
+	float min_depth = 0.1f, max_depth = 1000.0f;
 
 
 	// view space -> relative screen space (API independent)
