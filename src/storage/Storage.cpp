@@ -71,6 +71,8 @@ int Storage::guess_type(const Path &filename) {
 		return FD_SCRIPT;
 	if (ext == "shader")
 		return FD_SHADERFILE;
+	if (ext == "template")
+		return FD_TEMPLATE;
 	return -1;
 }
 

@@ -190,12 +190,13 @@ Dialog x x padding=0
 		p->set_color(White);
 		p->set_font_size(xhui::Theme::_default.font_size * 1.5f);
 		for (const auto& [i, m]: enumerate(session->messages)) {
+			vec2 pos = area.center() + vec2(0, 40*(float)i);
 			if (m.type == Session::Message::Type::ERROR)
-				drawing2d::draw_boxed_str(p, area.center() + vec2(0, 20*i), m.message, 0, drawing2d::Style::ERROR);
+				drawing2d::draw_boxed_str(p, pos, m.message, 0, drawing2d::Style::ERROR);
 			else if (m.type == Session::Message::Type::WARNING)
-				drawing2d::draw_boxed_str(p, area.center() + vec2(0, 20*i), m.message, 0, drawing2d::Style::WARNING);
+				drawing2d::draw_boxed_str(p, pos, m.message, 0, drawing2d::Style::WARNING);
 			else //if (m.type == Session::Message::Type::INFO)
-				drawing2d::draw_boxed_str(p, area.center() + vec2(0, 20*i), m.message, 0);
+				drawing2d::draw_boxed_str(p, pos, m.message, 0);
 		}
 	});
 	event("model_new", [this] {

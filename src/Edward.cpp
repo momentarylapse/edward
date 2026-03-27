@@ -133,7 +133,7 @@ void templatify(const Path &filename) {
 	    Template t;
 		{
 		    ScriptInstanceData c;
-		    c.class_name = "Model";
+		    c.class_name = "ModelRef";
 		    c.set("model", "", str(_filename.basename()));
 		    t.components.add(c);
 		}
