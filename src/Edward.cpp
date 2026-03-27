@@ -134,7 +134,7 @@ void templatify(const Path &filename) {
 		{
 		    ScriptInstanceData c;
 		    c.class_name = "Model";
-		    c.set("file", "", str(_filename.basename()));
+		    c.set("model", "", str(_filename.basename()));
 		    t.components.add(c);
 		}
 		if (data->phys_mesh->vertices.num > 0) {
@@ -145,8 +145,10 @@ void templatify(const Path &filename) {
 	        ScriptInstanceData c;
 	        c.class_name = "SolidBody";
 	        c.set("physics_active", "", b2s(data->meta_data.active_physics));
+	        c.set("passive_physics", "", b2s(data->meta_data.passive_physics));
+	        //c.set("g_factor", "", "1.0");
 	        c.set("mass", "", f2s(data->meta_data.mass, 3));
-	        c.set("theta0", "", mat3_to_any(T).str());
+	        c.set("theta", "", mat3_to_any(T).str());
 	        t.components.add(c);
 	    }
 		if (data->bones.num > 0) {

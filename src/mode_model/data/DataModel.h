@@ -253,15 +253,7 @@ public:
 		bool auto_generate_tensor;
 		mat3 inertia_tensor;
 
-		// object-properties
-		string name, description;
-		Array<Path> inventary;
-
-		// script
-		Path script_file;
-		Array<ModelScriptVariable> variables;
-		Array<float> script_var;
-		string _script_class;
+		Array<ModelScriptVariable> legacy;
 
 		void reset();
 	};

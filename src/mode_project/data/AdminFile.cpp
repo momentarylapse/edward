@@ -222,14 +222,11 @@ void AdminFile::check(Session *session, AdminFileList &list) {
 				if (m.fx[i].type == FX_TYPE_SOUND)
 					add_possible_link(l, FD_SOUND, m.fx[i].file);
 			}
-			for (Path &s: m.meta_data.inventary)
-				add_possible_link(l, FD_MODEL, s);
 			for (auto mat: m.material){
 				add_possible_link(l, FD_MATERIAL, mat->filename);
 				for (auto &tl: mat->texture_levels)
 					add_possible_link(l, FD_TEXTURE, tl.filename);
 			}
-			add_possible_link(l, FD_SCRIPT, m.meta_data.script_file);
 		}else
 			Missing=true;
 	}else if (Kind==FD_MATERIAL){

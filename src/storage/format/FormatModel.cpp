@@ -188,23 +188,16 @@ public:
 	}
 	void read(Stream *f) override {
 		// Object Data
-		me->meta_data.name = f->read_str();
-		me->meta_data.description = f->read_str();
+		me->meta_data.legacy.add({"name", "", f->read_str()});
+		me->meta_data.legacy.add({"description", "", f->read_str()});
 
-		// Inventary
-		me->meta_data.inventary.resize(f->read_int());
-		for (int i=0;i<me->meta_data.inventary.num;i++)
-			me->meta_data.inventary[i] = f->read_str();
+		Array<string> inventory;
+		inventory.resize(f->read_int());
+		for (int i=0;i<inventory.num;i++)
+			inventory[i] = f->read_str();
+		me->meta_data.legacy.add({"inventory", "", str(inventory)});
 	}
 	void write(Stream *f) override {
-		// object data
-		f->write_str(me->meta_data.name);
-		f->write_str(me->meta_data.description);
-
-		// inventory
-		f->write_int(me->meta_data.inventary.num);
-		for (int i=0;i<me->meta_data.inventary.num;i++)
-			f->write_str(me->meta_data.inventary[i].str());
 	}
 };
 
@@ -913,31 +906,20 @@ public:
 		me = parent;
 	}
 	void read(Stream *f) override {
-		me->meta_data.script_file = f->read_str();
-		me->meta_data.script_var.resize(f->read_int());
-		for (int i=0;i<me->meta_data.script_var.num;i++)
-			me->meta_data.script_var[i] = f->read_float();
-
+		me->meta_data.legacy.add({"script_file", "", f->read_str()});
 		int n = f->read_int();
+		for (int i=0;i<n;i++)
+			me->meta_data.legacy.add({format("var[%d]", i), "", f2s(f->read_float(), 6)});
+
+		n = f->read_int();
 		for (int i=0; i<n; i++) {
 			ModelScriptVariable v;
 			v.name = f->read_str();
 			v.value = f->read_str();
-			me->meta_data.variables.add(v);
+			me->meta_data.legacy.add({format("var:%s", v.name), "", v.value});
 		}
 	}
 	void write(Stream *f) override {
-		f->write_str(me->meta_data.script_file.str());
-		f->write_int(me->meta_data.script_var.num);
-		for (int i=0;i<me->meta_data.script_var.num;i++)
-			f->write_float(me->meta_data.script_var[i]);
-
-		// new script vars
-		f->write_int(me->meta_data.variables.num);
-		for (auto &v: me->meta_data.variables) {
-			f->write_str(v.name);
-			f->write_str(v.value);
-		}
 	}
 };
 
@@ -952,9 +934,9 @@ public:
 		add_child(new ChunkPhysicalMesh);
 		add_child(new ChunkSkeleton);
 		add_child(new ChunkAnimation);
-		add_child(new ChunkScript);
+		add_child(new ChunkScript); // deprecated
 		add_child(new ChunkEffect);
-		add_child(new ChunkOldMeta);
+		add_child(new ChunkOldMeta); // deprecated
 		add_child(new ChunkTriangleMeshOld);
 	}
 	void read(Stream *f) override {
@@ -971,12 +953,7 @@ public:
 			write_sub("skeleton", me);
 		if (me->moves.num > 0)
 			write_sub("animation", me);
-		if (me->meta_data.script_file or me->meta_data.script_var.num > 0)
-			write_sub("script", me);
 		write_sub_array("effect", me->fx);
-
-		if (me->meta_data.name != "" or me->meta_data.description != "" or me->meta_data.inventary.num > 0)
-			write_sub("xxx1", me);
 	}
 };
 
@@ -1049,7 +1026,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 	}
 
 	// FIXME
-	if (data->meta_data.script_file and (data->meta_data.variables.num == 0)) {
+	/*if (data->meta_data.script_file and (data->meta_data.variables.num == 0)) {
 		update_model_script_data(session, data->meta_data);
 		msg_write(data->meta_data.variables.num);
 		for (int i=0; i<min(data->meta_data.script_var.num, data->meta_data.variables.num); i++) {
@@ -1057,7 +1034,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 				data->meta_data.variables[i].value = f2s(data->meta_data.script_var[i], 6);
 			msg_write(format("  try import var  %s = %s", data->meta_data.variables[i].name, data->meta_data.variables[i].value));
 		}
-	}
+	}*/
 
 
 	if (data->materials.num == 0) {

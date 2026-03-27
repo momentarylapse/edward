@@ -132,15 +132,7 @@ void DataModel::MetaData::reset() {
 	auto_generate_tensor = true;
 	inertia_tensor = mat3::ID;
 
-	// object data
-	name = "";
-	description = "";
-	inventary.clear();
-
-	// script
-	script_file = "";
-	script_var.clear();
-	variables.clear();
+	legacy.clear();
 }
 
 
