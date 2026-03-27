@@ -154,6 +154,8 @@ void MaterialManager::_load_from_file(Material* m, const Path &filename) {
 
 	if (c.has("textures")) {
 		auto texture_files = c.get_str_array("textures");
+		if (texture_files.num == 0)
+			texture_files.add("");
 		m->textures.resize(max(m->textures.num, texture_files.num));
 		for (const auto& [i, f]: enumerate(texture_files))
 			m->textures[i] = texture_manager->load_texture(f);

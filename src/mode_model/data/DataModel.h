@@ -47,7 +47,7 @@ public:
 	int vertex[3];
 	//int Edge[3];
 	//int EdgeDirection[3]; // which no of triangle in edge's list are we?
-	vec3 skin_vertex[MATERIAL_MAX_TEXTURES][3];
+	vec3 skin_vertex[3];
 	vec3 normal[3];
 	vec3 temp_normal;
 	bool normal_dirty;
@@ -267,4 +267,6 @@ public:
 	bool force_new_normals[4];
 	bool normal_indices_ok[4];
 
+	// during loading...
+	Array<int> num_uvs;
 };

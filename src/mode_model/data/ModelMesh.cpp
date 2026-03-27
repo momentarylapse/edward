@@ -212,8 +212,7 @@ void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk, DataModel* model)
 			for (int k=0;k<3;k++) {
 				tt.vertex[k] = t.side[t.side[i].triangulation[k]].vertex;
 				tt.normal[k] = t.side[t.side[i].triangulation[k]].normal;
-				for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
-					tt.skin_vertex[l][k] = t.side[t.side[i].triangulation[k]].skin_vertex[l];
+				tt.skin_vertex[k] = t.side[t.side[i].triangulation[k]].skin_vertex[0];
 			}
 			sk.sub[t.material].triangles.add(tt);
 		}

@@ -238,6 +238,7 @@ public:
 		temp.textures.resize(f->read_int());
 		for (int t=0; t<temp.textures.num; t++)
 			temp.textures[t] = session->resource_manager->load_texture(f->read_str());
+		parent->num_uvs.add(temp.textures.num);
 
 		// overwrite...?
 		if (filename == "" or user_color) {
@@ -323,10 +324,11 @@ public:
 					me->sub[m].triangles[j].vertex[k] = f->read_int();
 			// skin vertex
 			for (int tl=0;tl<parent->materials[m]->textures.num;tl++)
+				// FIXME... do we really have multiple uvs?!?
 				for (int j=0;j<me->sub[m].triangles.num;j++)
 					for (int k=0;k<3;k++) {
 						int svi = f->read_int();
-						me->sub[m].triangles[j].skin_vertex[tl][k] = skin_vert[svi];
+						me->sub[m].triangles[j].skin_vertex[k] = skin_vert[svi];
 					}
 			// normals
 			for (int j=0;j<me->sub[m].triangles.num;j++) {
@@ -385,12 +387,15 @@ public:
 				for (int k=0;k<3;k++)
 					me->sub[m].triangles[j].vertex[k] = f->read_int();
 			// skin vertex
-			for (int tl=0;tl<parent->materials[m]->textures.num;tl++)
+			for (int j=0;j<me->sub[m].triangles.num;j++)
+				for (int k=0;k<3;k++) {
+					int svi = f->read_int();
+					me->sub[m].triangles[j].skin_vertex[k] = skin_vert[svi];
+				}
+			for (int tl=1; tl<parent->num_uvs[m]; tl++)
 				for (int j=0;j<me->sub[m].triangles.num;j++)
-					for (int k=0;k<3;k++) {
-						int svi = f->read_int();
-						me->sub[m].triangles[j].skin_vertex[tl][k] = skin_vert[svi];
-					}
+					for (int k=0;k<3;k++)
+						f->read_int();
 			// normals
 			for (int j=0;j<me->sub[m].triangles.num;j++) {
 				for (int k=0;k<3;k++) {
@@ -424,12 +429,11 @@ public:
 			num_skin_v += me->sub[m].triangles.num * parent->materials[m]->textures.num * 3;
 		f->write_int(num_skin_v);
 		for (int m=0;m<parent->materials.num;m++)
-			for (int tl=0;tl<parent->materials[m]->textures.num;tl++)
-				for (int j=0;j<me->sub[m].triangles.num;j++)
-					for (int k=0;k<3;k++) {
-						f->write_float(me->sub[m].triangles[j].skin_vertex[tl][k].x);
-						f->write_float(me->sub[m].triangles[j].skin_vertex[tl][k].y);
-					}
+			for (int j=0;j<me->sub[m].triangles.num;j++)
+				for (int k=0;k<3;k++) {
+					f->write_float(me->sub[m].triangles[j].skin_vertex[k].x);
+					f->write_float(me->sub[m].triangles[j].skin_vertex[k].y);
+				}
 
 
 		// sub skins
@@ -977,6 +981,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 	} else {
 		ModelParser p(session);
 		data->materials.clear();
+		data->num_uvs.clear();
 		p.read(filename, data);
 	}
 
