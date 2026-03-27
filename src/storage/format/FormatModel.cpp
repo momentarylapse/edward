@@ -213,17 +213,6 @@ public:
 		auto session = dynamic_cast<ModelParser*>(root)->session;
 		string filename = f->read_str();
 		bool user_color = f->read_bool();
-		if (filename != "") {
-			me = session->resource_manager->load_material(filename);
-			if (user_color) {
-				auto p = me;
-				me = session->resource_manager->material_manager->create_internal();
-				me->derive_from(p);
-			}
-		} else {
-			me = session->resource_manager->material_manager->create_internal();
-		}
-		parent->materials.add(me);
 		yrenderer::Material temp;
 		read_color_argb(f, temp.albedo);
 		read_color_argb(f, temp.emission);
@@ -240,12 +229,30 @@ public:
 			temp.textures[t] = session->resource_manager->load_texture(f->read_str());
 		parent->num_uvs.add(temp.textures.num);
 
+		bool user_texture = user_color;
+		if (filename != "") {
+			me = session->resource_manager->load_material(filename);
+			user_texture = weak(temp.textures) != weak(me->textures);
+			if (user_color or user_texture) {
+				auto p = me;
+				me = session->resource_manager->material_manager->create_internal();
+				me->derive_from(p);
+			}
+		} else {
+			me = session->resource_manager->material_manager->create_internal();
+			user_color = true;
+			user_texture = true;
+		}
+		parent->materials.add(me);
+
 		// overwrite...?
-		if (filename == "" or user_color) {
+		if (user_color) {
 			me->albedo = temp.albedo;
 			me->emission = temp.emission;
 			me->metal = temp.metal;
 			me->roughness = temp.roughness;
+		}
+		if (user_texture) {
 			for (int t=0; t<min(me->textures.num, temp.textures.num); t++)
 				if (temp.textures[t] != session->resource_manager->texture_manager->tex_white.get())
 					me->textures[t] = temp.textures[t];
