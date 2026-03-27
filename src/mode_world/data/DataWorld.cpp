@@ -71,6 +71,7 @@ DataWorld::DataWorld(DocumentSession* doc) :
 	entity_manager = new EntityManager;
 	entity_manager->init_components = false;
 	entity_manager->component_manager->f_create = [] (const kaba::Class* type) -> Component* {
+		//PluginManager::create_instance(type, "");
 		if (type == Camera::_class)
 			return new Camera();
 		if (type == Light::_class)
@@ -81,6 +82,8 @@ DataWorld::DataWorld(DocumentSession* doc) :
 			return new ModelRef;
 		if (type == TerrainRef::_class)
 			return new TerrainRef;
+		if (type == TemplateRef::_class)
+			return new TemplateRef;
 		if (type == Skeleton::_class)
 			return new Skeleton;
 		if (type == Animator::_class)

@@ -233,6 +233,8 @@ void ModeWorld::on_enter() {
 			session->info(str(fn_rel));
 			auto e = data->add_entity(p, quaternion::ID);
 			auto t = session->resource_manager->load_template(filename);
+			auto tr = data->entity_add_component<TemplateRef>(e);
+			tr->_template = t;
 			data->_entity_apply_components(e, t->components);
 		}
 	}));

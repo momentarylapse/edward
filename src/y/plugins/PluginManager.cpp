@@ -446,6 +446,9 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("TerrainRef.terrain", &TerrainRef::terrain);
 	ext->declare_class_element("TerrainRef.material", &TerrainRef::material);
 
+	ext->declare_class_size("TemplateRef", sizeof(TemplateRef));
+	ext->declare_class_element("TemplateRef.template", &TemplateRef::_template);
+
 
 	ext->declare_class_size("Physics", sizeof(Physics));
 	ext->declare_class_element("Physics.gravity", &Physics::gravity);
@@ -954,6 +957,7 @@ void import_kaba() {
 	import_component_class<NameTag>(m_world, "NameTag");
 	import_component_class<ModelRef>(m_world, "ModelRef");
 	import_component_class<TerrainRef>(m_world, "TerrainRef");
+	import_component_class<TemplateRef>(m_world, "TemplateRef");
 	import_component_class<EgoMarker>(m_world, "EgoMarker");
 	import_component_class<Link>(m_world, "Link");
 	import_component_class<Physics>(m_world, "Physics", "ecs.System"); // well, not a Component... but ok
@@ -1039,6 +1043,8 @@ string whatever_to_string(const void* instance, int offset, const kaba::Class* c
 		return str(default_resource_manager->filename(*(const Terrain**)p));
 	if (c->name == "Model*" and default_resource_manager)
 		return str(default_resource_manager->filename(*(const Model**)p));
+	if (c->name == "Template*" and default_resource_manager)
+		return str(default_resource_manager->filename(*(const Template**)p));
 	return "???";
 }
 
@@ -1065,6 +1071,8 @@ void whatever_from_string(void* p, const kaba::Class* type, const string& value)
 		*(Terrain**)p = default_resource_manager->load_terrain(value);
 	if (type->name == "Model*" and default_resource_manager)
 		*(Model**)p = default_resource_manager->load_model(value);
+	if (type->name == "Template*" and default_resource_manager)
+		*(Template**)p = default_resource_manager->load_template(value);
 }
 
 void assign_variables(void* p, const kaba::Class* c, const Array<ScriptInstanceDataVariable>& variables) {
@@ -1106,6 +1114,8 @@ const kaba::Class *find_class(const Path &filename, const string &name) {
 			return ModelRef::_class;
 		if (name == "TerrainRef")
 			return TerrainRef::_class;
+		if (name == "TemplateRef")
+			return TemplateRef::_class;
 		if (name == "SolidBody")
 			return SolidBody::_class;
 		if (name == "Skeleton")
@@ -1152,6 +1162,8 @@ void* create_instance(const kaba::Class *c, const Array<ScriptInstanceDataVariab
 		return new ModelRef;
 	if (c == TerrainRef::_class)
 		return new TerrainRef;
+	if (c == TemplateRef::_class)
+		return new TemplateRef;
 	if (c == MeshCollider::_class)
 		return new MeshCollider;
 	if (c == TerrainCollider::_class)

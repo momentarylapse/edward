@@ -367,6 +367,7 @@ void PluginManager::load_project_stuff(const Path &dir) {
 	Model::_class = link_component("Model");
 	ModelRef::_class = link_component("ModelRef");
 	TerrainRef::_class = link_component("TerrainRef");
+	TemplateRef::_class = link_component("TemplateRef");
 
 	auto mm = session->kaba_ctx->create_empty_module("edward-internal");
 	mm->_pointer_ref_counter = 999999;
