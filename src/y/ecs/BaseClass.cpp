@@ -29,4 +29,20 @@ void ScriptInstanceData::set(const string &name, const string &type, const strin
 	variables.add({name, type, value});
 }
 
+bool ScriptInstanceDataVariable::operator==(const ScriptInstanceDataVariable& other) const {
+	return name == other.name and value == other.value;
+}
+
+bool ScriptInstanceDataVariable::operator!=(const ScriptInstanceDataVariable& other) const {
+	return !(*this == other);
+}
+
+bool ScriptInstanceData::operator==(const ScriptInstanceData& other) const {
+	return class_name == other.class_name and filename == other.filename and variables == other.variables;
+}
+
+bool ScriptInstanceData::operator!=(const ScriptInstanceData& other) const {
+	return !(*this == other);
+}
+
 

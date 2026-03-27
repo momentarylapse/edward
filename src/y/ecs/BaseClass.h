@@ -39,6 +39,8 @@ public:
 
 struct ScriptInstanceDataVariable {
 	string name, type, value;
+	bool operator==(const ScriptInstanceDataVariable& other) const;
+	bool operator!=(const ScriptInstanceDataVariable& other) const;
 };
 
 struct ScriptInstanceData {
@@ -47,4 +49,6 @@ struct ScriptInstanceData {
 	Array<ScriptInstanceDataVariable> variables;
 	string get(const string& name) const;
 	void set(const string& name, const string& type, const string& value);
+	bool operator==(const ScriptInstanceData& other) const;
+	bool operator!=(const ScriptInstanceData& other) const;
 };

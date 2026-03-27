@@ -17,7 +17,8 @@ public:
 	DataWorld::MetaData temp;
 
 	void apply();
-	void fill();
+	void update_ui();
+	void fill_systems_list();
 
 	void add_new_system();
 };

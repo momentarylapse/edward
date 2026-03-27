@@ -70,6 +70,9 @@ public:
 	obs::source out_entity_removed{this, "entity-removed"};
 	obs::source out_component_added{this, "component-added"};
 	obs::source out_component_removed{this, "component-removed"};
+	obs::source out_system_added{this, "system-added"};
+	obs::source out_system_removed{this, "system-removed"};
+	obs::xsource<int> out_system_changed{this, "system-changed"};
 
 	void reset() override;
 	void add_initial_data();

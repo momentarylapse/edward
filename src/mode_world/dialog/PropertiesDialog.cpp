@@ -52,12 +52,16 @@ Dialog system 'System'
 		event("edit", [this] {
 			data->session->universal_edit(FD_SCRIPT, data->meta_data.systems[index].filename, true);
 		});
+		data->out_system_changed >> create_data_sink<int>([this] (int _index) {
+			if (_index == index and !editing)
+				update_ui();
+		});
 	}
-	void update(int _index) {
+	void set_index(int _index) {
+		if (editing)
+			return;
 		index = _index;
 		auto& s = data->meta_data.systems[index];
-		set_string("class", s.class_name);
-		set_string("filename", str(s.filename));
 		set_target("variables");
 		for (const auto& [i, v]: enumerate(s.variables)) {
 			string id_var = format("var-%d", i);
@@ -66,11 +70,23 @@ Dialog system 'System'
 			event(id_var, [this, i=i, id=id_var] {
 				properties_dialog->temp = data->meta_data;
 				properties_dialog->temp.systems[index].variables[i].value = get_string(id);
+				editing = true;
 				properties_dialog->apply();
+				editing = false;
 			});
 		}
 		if (s.variables.num == 0)
 			add_control("Label", "no variables", 0, 0, "");
+		update_ui();
+	}
+	void update_ui() {
+		auto& s = data->meta_data.systems[index];
+		set_string("class", s.class_name);
+		set_string("filename", str(s.filename));
+		for (const auto& [i, v]: enumerate(s.variables)) {
+			string id_var = format("var-%d", i);
+			set_string(id_var, v.value);
+		}
 	}
 	void set_selected(bool selected) {
 		expand("contents", selected);
@@ -78,6 +94,7 @@ Dialog system 'System'
 	PropertiesDialog* properties_dialog;
 	DataWorld* data;
 	int index = -1;
+	bool editing = false;
 };
 
 PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//: Dialog("world_dialog", parent) {
@@ -91,7 +108,7 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//
 		return new SystemPanel(this);
 	};
 	systems_list->column_factories[0].f_set = [](xhui::Control* c, const string& t) {
-		reinterpret_cast<SystemPanel*>(c)->update(t._int());
+		reinterpret_cast<SystemPanel*>(c)->set_index(t._int());
 	};
 	systems_list->column_factories[0].f_select = [](xhui::Control* c, bool selected) {
 		reinterpret_cast<SystemPanel*>(c)->set_selected(selected);
@@ -99,14 +116,23 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//
 
 	data->out_changed >> create_sink([this] {
 		temp = data->meta_data;
-		fill();
+		update_ui();
+	});
+	data->out_system_added >> create_sink([this] {
+		temp = data->meta_data;
+		fill_systems_list();
+	});
+	data->out_system_removed >> create_sink([this] {
+		temp = data->meta_data;
+		fill_systems_list();
 	});
 
 	/*event(xhui::event_id::Close, [this] {
 		//request_destroy();
 	});*/
 
-	fill();
+	update_ui();
+	fill_systems_list();
 
 	event_x("skybox", xhui::event_id::RightButtonDown, [this] {
 		auto m = new xhui::Menu;
@@ -184,7 +210,7 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//
 void PropertiesDialog::add_new_system() {
 	data->session->storage->file_dialog(FD_SCRIPT, true, true).then([this] (const ComplexPath& path) {
 		TextDialog::ask(this, "System name", "Test").then([this, path] (const string& name) {
-			os::fs::write_text(path.complete, string(R"foodelim(use y.*
+			os::fs::write_text(path.complete, string(R"foodelim(use yengine.*
 
 class <NAME> extends System
 	var some_variable: f32
@@ -201,7 +227,7 @@ class <NAME> extends System
 }
 
 
-void PropertiesDialog::fill() {
+void PropertiesDialog::update_ui() {
 	set_color("bgc", temp.background_color);
 	set_float("gravitation_x", temp.gravity.x);
 	set_float("gravitation_y", temp.gravity.y);
@@ -216,7 +242,9 @@ void PropertiesDialog::fill() {
 	reset("skybox");
 	for (const auto&& [i, sb]: enumerate(temp.skybox_files))
 		add_string("skybox", format("%d\\%s", i, sb));
+}
 
+void PropertiesDialog::fill_systems_list() {
 	reset("systems");
 	for (int i=0; i<temp.systems.num; i++)
 		add_string("systems", str(i));
