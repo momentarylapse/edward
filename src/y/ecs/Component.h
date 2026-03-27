@@ -9,9 +9,12 @@
 
 #include <lib/base/base.h>
 
+#include "BaseClass.h"
+
 class Entity;
 struct CollisionData;
 struct ScriptInstanceDataVariable;
+struct ScriptInstanceData;
 namespace kaba {
 	class Class;
 }
@@ -47,6 +50,16 @@ public:
 
 class EgoMarker : public Component {
 public:
+	static const kaba::Class* _class;
+};
+
+struct Template {
+	Array<ScriptInstanceData> components;
+};
+
+class TemplateRef : public Component {
+public:
+	Template* _template = nullptr;
 	static const kaba::Class* _class;
 };
 

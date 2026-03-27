@@ -13,7 +13,7 @@ Button::Button(const string &_id, const string &t) :
 	state = State::DEFAULT;
 	can_grab_focus = true;
 	size_mode_x = SizeMode::Fill;
-	size_mode_y = SizeMode::Shrink;
+	size_mode_y = SizeMode::Fill;
 	label.align = Label::Align::Center;
 	label.margin = {0,0,0,0};
 	label.bold = true;

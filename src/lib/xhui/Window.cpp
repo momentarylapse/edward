@@ -536,6 +536,8 @@ void Window::_on_draw() {
 		auto l = TextLayout::from_format_string(p, tooltip, Theme::_default.font_size);
 		vec2 pos = hover_control->area.p01() + vec2(10, 20);
 		pos.x = clamp(pos.x, 5.0f, area.x2 - l.box.x2 - 5);
+		if (pos.y + l.box.y2 > area.y2)
+			pos.y = hover_control->area.y1 - l.box.y2 - 5;
 		draw_text_layout_with_box(p, pos, l, White, Black);
 	}
 

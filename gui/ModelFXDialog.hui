@@ -46,7 +46,7 @@ Dialog fx_dialog "Add a new effect..." width=470 height=205
 				Text fxt_force_intensity "density"
 				Grid ? ""
 					Edit intensity "" expandx "tooltip=attracting acceleration, Linear: maximum value, 1/r²: Value at r=100 lu"
-					Text /luss "lu/s²"
+					Text /luss "/s²"
 		Grid ? "" buttonbar
 			Button /cancel "Cancel" image=hui:cancel
 			DefButton /ok "Ok" image=hui:ok

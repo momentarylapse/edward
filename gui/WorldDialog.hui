@@ -1,6 +1,6 @@
 Dialog world_dialog "World properties" width=320
 	Grid ? "" vertical margin=7
-		TabControl world_dialog_tab_control "Background\\Fog\\Physics\\Scripts"
+		TabControl world_dialog_tab_control "Background\\Fog\\Physics\\Systems"
 			Grid ? "" vertical
 				Group grp_bg_color "Color"
 					ColorButton bgc "" alpha linear "tooltip=Sky color"
@@ -34,17 +34,17 @@ Dialog world_dialog "World properties" width=320
 					Grid ? ""
 						Label /x "X" right disabled
 						SpinButton gravitation_x "" range=::0.1 expandx
-						Label /luss "lu/s²"
+						Label /luss "/s²"
 						---|
 						Label /y "Y" right disabled
 						SpinButton gravitation_y "" range=::0.1
-						Label /luss "lu/s²"
+						Label /luss "/s²"
 						---|
 						Label /z "Z" right disabled
 						SpinButton gravitation_z "" range=::0.1
-						Label /luss "lu/s²"
+						Label /luss "/s²"
 			Grid ? "" vertical
-				ListView systems "systems" nobar sunkenbackground=no showselection=no selectsingle "tooltip=Global scripts - a class derived from y.Controller is instantiated and running in the background\n * double click to edit variables\n * right click to edit"
+				ListView systems "systems" nobar sunkenbackground=no showselection=no selectsingle "tooltip=Global scripts - a class derived from yengine.System is instantiated and running in the background\n * click to edit variables etc."
 				Grid ? ""
-					Button add-system "" image=open
-					Button create-system "" image=new
+					Button add-system "" image=open "tooltip=Add system"
+					Button create-system "" image=new "tooltip=Create new system"

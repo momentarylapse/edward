@@ -10862,7 +10862,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1096
+1098
 # Text
 /ambient
 Ambient
@@ -10886,7 +10886,7 @@ Diffuse
 lu
 
 /luss
-lu/s²
+/s²
 
 /mirror
 Reflect
@@ -14029,9 +14029,15 @@ Delete
 world_camera_dialog/world_camera_dialog
 Camera flight
 
+world_dialog/add-system
+
+Add system
 world_dialog/bgc
 
 Sky color
+world_dialog/create-system
+
+Create new system
 world_dialog/fog_distance
 
 fog intensity = exp( - distance / viewing-distance )
@@ -14073,7 +14079,7 @@ world_dialog/skybox
 Models drawn over the sky color\n- double click to select
 world_dialog/systems
 systems
-Global scripts - a class derived from y.Controller is instantiated and running in the background\n * double click to edit variables\n * right click to edit
+Global scripts - a class derived from yengine.System is instantiated and running in the background\n * click to edit variables etc.
 world_dialog/t-physics-enabled
 Enabled
 
@@ -14093,7 +14099,7 @@ world_dialog/world_dialog_t_fog_start
 Distance
 
 world_dialog/world_dialog_tab_control
-Background\\Fog\\Physics\\Scripts
+Background\\Fog\\Physics\\Systems
 
 world_new_object_dialog/l-title
 New object
