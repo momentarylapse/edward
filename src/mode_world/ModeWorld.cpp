@@ -232,8 +232,8 @@ void ModeWorld::on_enter() {
 			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_MODEL));
 			session->info(str(fn_rel));
 			auto e = data->add_entity(p, quaternion::ID);
-			auto t = LevelData::load_template(filename);
-			data->_entity_apply_components(e, t.components);
+			auto t = session->resource_manager->load_template(filename);
+			data->_entity_apply_components(e, t->components);
 		}
 	}));
 

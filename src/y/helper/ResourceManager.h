@@ -9,6 +9,9 @@ struct string;
 class ModelManager;
 class Model;
 class Terrain;
+struct Template;
+class TemplateManager;
+class TerrainManager;
 
 namespace yrenderer {
 	class Context;
@@ -26,6 +29,8 @@ public:
 	ModelManager* model_manager;
 	yrenderer::ShaderManager* shader_manager;
 	yrenderer::TextureManager* texture_manager;
+	owned<TemplateManager> template_manager;
+	owned<TerrainManager> terrain_manager;
 
 	shared<ygfx::Texture> load_texture(const Path& path);
 	xfer<yrenderer::Material> load_material_copy(const Path &filename);
@@ -34,13 +39,15 @@ public:
 	Model* load_model(const Path &filename);
 	Terrain* load_terrain(const Path &filename);
 	Terrain* load_terrain_lazy(const Path &filename);
+	Template* load_template(const Path& filename);
+
+	void save_template(const Template* t, const Path& filename);
 
 	Path filename(const Model* m) const;
 	Path filename(const Terrain* t) const;
 	Path filename(const yrenderer::Material* m) const;
 	Path filename(const ygfx::Texture* t) const;
-
-	owned_array<Terrain> terrains;
+	Path filename(const Template* t) const;
 
 	void clear();
 };

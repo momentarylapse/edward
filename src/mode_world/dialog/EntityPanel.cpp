@@ -19,6 +19,8 @@
 #include <storage/Storage.h>
 #include <lib/base/iter.h>
 
+#include "helper/ResourceManager.h"
+
 
 EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-panel") {
 	mode_world = _mode;
@@ -64,12 +66,12 @@ Dialog entity-panel '' padding=0
 	});
 	event("save-template", [this] {
 		xhui::FileSelectionDialog::ask(this, "Save template", mode_world->session->storage->get_root_dir(FD_MODEL), {"filter=*.template", "save"}).then([this] (const Path& p) {
-			LevelData::Template t;
+			Template t;
 			auto e = mode_world->data->entity(cur_entity_index);
 			for (auto c: e->components)
 				if (c->component_type != EdwardTag::_class)
 					t.components.add(mode_world->session->plugin_manager->describe_class(c->component_type, c));
-			LevelData::save_template(t, p);
+			mode_world->session->resource_manager->save_template(&t, p);
 		});
 	});
 	event_x("components", xhui::event_id::Select, [this] {

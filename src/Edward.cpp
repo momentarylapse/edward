@@ -130,7 +130,7 @@ void templatify(const Path &filename) {
 		storage->load(_filename, data, false);
 		DataModelAllowUpdating = false;
 
-	    LevelData::Template t;
+	    Template t;
 		{
 		    ScriptInstanceData c;
 		    c.class_name = "Model";
@@ -155,7 +155,7 @@ void templatify(const Path &filename) {
 		if (data->moves.num > 0) {
 	        t.components.add({"Animator"});
 	    }
-	    LevelData::save_template(t, str(_filename).replace(".model", ".template"));
+		session->resource_manager->save_template(&t, str(_filename).replace(".model", ".template"));
 	}
 
 	delete session;

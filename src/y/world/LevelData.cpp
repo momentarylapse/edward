@@ -323,47 +323,6 @@ void LevelData::save(const Path &filename) {
 #endif
 }
 
-LevelData::Template LevelData::load_template(const Path& filename) {
-    Template t;
-    ScriptInstanceData* current = nullptr;
-    const auto s = os::fs::read_text(filename);
-    for (const auto& l: s.explode("\n")) {
-        if (l.num == 0)
-            continue;
-        if (l[0] == '\t') {
-            if (current) {
-                const auto xx = l.sub_ref(1).explode("=");
-                if (xx.num >= 2) {
-                    current->variables.add({xx[0], "", xx[1]});
-                }
-            }
-        } else {
-        	int p = l.find(" ");
-            if (p >= 0) {
-                t.components.add({l.sub_ref(0, p), l.sub_ref(p + 1)});
-            } else {
-                t.components.add({l});
-            }
-            current = &t.components.back();
-        }
-    }
-    return t;
-}
-
-void LevelData::save_template(const Template& t, const Path& filename) {
-    string o;
-    for (const auto& c: t.components) {
-        if (c.filename and !c.filename.is_in("y"))
-            o += format("%s %s\n", c.class_name, c.filename);
-        else
-            o += c.class_name + "\n";
-        for (const auto& v: c.variables)
-            o += format("\t%s=%s\n", v.name, v.value);
-    }
-
-    os::fs::write_text(filename, o);
-}
-
 Array<ScriptInstanceData> LevelData::auto_terrain_components() {
 	return {{"TerrainCollider", "", {{}}},
 		{"SolidBody", "", {{"physics_active", "", "false"}}}};
