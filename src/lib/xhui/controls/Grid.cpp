@@ -26,9 +26,6 @@ void Grid::add_child(shared<Control> c, int x, int y) {
 void Grid::remove_child(Control* c) {
 	c->_unregister();
 	grid.remove_child(c);
-	base::remove_if(grid.children, [c] (const layout::GridChild& child) {
-		return child.node == c;
-	});
 }
 
 

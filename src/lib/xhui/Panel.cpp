@@ -196,9 +196,12 @@ bool match_event(Panel::EventHandler& e, const string &id, const string &msg, bo
 }
 
 bool Panel::handle_event(const string &id, const string &msg, bool is_default) {
+	if (_pointer_ref_counter == 0)
+		return false;
 	shared<Panel> _keep_alive = this;
 	bool any_match = false;
-	for (auto& e: event_handlers)
+	const auto xxx = event_handlers; // in case we add/remove event handlers here...
+	for (auto& e: xxx)
 		if (match_event(e, id, msg, is_default) and e.f) {
 			e.f();
 			any_match = true;
@@ -209,9 +212,12 @@ bool Panel::handle_event(const string &id, const string &msg, bool is_default) {
 }
 
 bool Panel::handle_event_p(const string &id, const string &msg, Painter *p) {
+	if (_pointer_ref_counter == 0)
+		return false;
 	shared<Panel> _keep_alive = this;
 	bool any_match = false;
-	for (auto& e: event_handlers)
+	const auto xxx = event_handlers;
+	for (auto& e: xxx)
 		if (match_event(e, id, msg, false) and e.fp) {
 			e.fp(p);
 			any_match = true;
