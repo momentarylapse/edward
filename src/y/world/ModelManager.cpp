@@ -42,7 +42,6 @@ ModelTemplate::ModelTemplate(Model *m) {
 ModelTemplate::~ModelTemplate() = default;
 
 
-yrenderer::MaterialManager *chunked_file_parser_get_material_manager(ChunkedFileParser *p);
 ResourceManager *chunked_file_parser_get_resource_manager(ChunkedFileParser *p);
 
 
@@ -225,8 +224,9 @@ public:
 		//parent->material.add(me);
 	}
 	void read(Stream *f) override {
-		me = chunked_file_parser_get_material_manager(root)->load_copy(f->read_str());
-		parent->material.add(me);
+		// TODO make proper "internal" material...
+		me = chunked_file_parser_get_resource_manager(root)->load_material(f->read_str())->copy();
+		parent->materials.add(me);
 		bool user_colors = f->read_bool();
 		if (user_colors) {
 			me->albedo = file_read_color4i(f);
@@ -302,8 +302,8 @@ public:
 		}
 
 		// sub skins
-		me->sub.resize(parent->material.num);
-		for (int m=0;m<parent->material.num;m++) {
+		me->sub.resize(parent->materials.num);
+		for (int m=0;m<parent->materials.num;m++) {
 			auto *sub = &me->sub[m];
 			int num_uvs = parent->num_uvs[m];
 			// triangles
@@ -719,10 +719,6 @@ Path ModelManager::get_filename(const Model* m) {
 	return "";
 }
 
-
-yrenderer::MaterialManager *chunked_file_parser_get_material_manager(ChunkedFileParser *p) {
-	return static_cast<modelmanager::ModelParser*>(p)->model_manager->material_manager;
-}
 ResourceManager *chunked_file_parser_get_resource_manager(ChunkedFileParser *p) {
 	return static_cast<modelmanager::ModelParser*>(p)->model_manager->resource_manager;
 }

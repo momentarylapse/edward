@@ -85,27 +85,28 @@ RayTracingData::RayTracingData(yrenderer::Context* _ctx, RaytracingMode _mode) {
 void RayTracingData::update_frame() {
 	//msg_write("rt update frame");
 
-	auto& models = EntityManager::global->get_component_list<Model>();
+	auto& models = EntityManager::global->get_component_list<ModelRef>();
 	auto& terrains = EntityManager::global->get_component_list<TerrainRef>();
 
 
 	Array<MeshDescription> meshes;
 
-	for (auto m: models) {
-		m->update_matrix();
-		for (int i=0; i<m->material.num; i++) {
-			auto material = m->material[i];
+	for (auto mr: models)
+		if (auto m = mr->model) {
+			mr->update_materials();
+			for (int i=0; i<m->materials.num; i++) {
+				auto material = mr->get_material(i);
 
-			MeshDescription md;
-			md.matrix = m->_matrix;
-			md.num_triangles = m->mesh[0]->sub[i].triangle_index.num / 3;
-			md.albedo = material->albedo.with_alpha(material->roughness);
-			md.emission = material->emission.with_alpha(material->metal);
-			md.address_vertices = m->mesh[0]->sub[i].vertex_buffer->vertex_buffer.get_device_address();
-			//md.address_indices = m->mesh[0]->sub[i].vertex_buffer->index_buffer.get_device_address();
-			meshes.add(md);
+				MeshDescription md;
+				md.matrix = mr->owner->get_matrix();
+				md.num_triangles = m->mesh[0]->sub[i].triangle_index.num / 3;
+				md.albedo = material->albedo.with_alpha(material->roughness);
+				md.emission = material->emission.with_alpha(material->metal);
+				md.address_vertices = m->mesh[0]->sub[i].vertex_buffer->vertex_buffer.get_device_address();
+				//md.address_indices = m->mesh[0]->sub[i].vertex_buffer->index_buffer.get_device_address();
+				meshes.add(md);
+			}
 		}
-	}
 	for (auto *t: terrains)
 		if (t->terrain) {
 			auto o = t->owner;
@@ -132,11 +133,11 @@ void RayTracingData::update_frame() {
 
 		if (rtx.tlas) {
 			// update
-			for (auto m: models) {
-				m->update_matrix();
-				for (int i=0; i<m->material.num; i++)
-					matrices.add(m->owner->get_matrix().transpose());
-			}
+			for (auto mr: models)
+				if (auto m = mr->model) {
+					for (int i=0; i<m->materials.num; i++)
+						matrices.add(mr->owner->get_matrix().transpose());
+				}
 			for (auto *t: terrains) {
 				auto o = t->owner;
 				matrices.add(mat4::translation(o->pos).transpose());
@@ -154,16 +155,15 @@ void RayTracingData::update_frame() {
 				}
 			};
 
-			for (auto m: models) {
-				m->update_matrix();
-				for (int i=0; i<m->material.num; i++) {
-					m->update_matrix();
-					auto vb = m->mesh[0]->sub[i].vertex_buffer;
-					make_indexed(vb);
-					rtx.blas.add(vulkan::AccelerationStructure::create_bottom(ctx->device, vb));
-					matrices.add(m->owner->get_matrix().transpose());
+			for (auto mr: models)
+				if (auto m = mr->model) {
+					for (int i=0; i<m->materials.num; i++) {
+						auto vb = m->mesh[0]->sub[i].vertex_buffer;
+						make_indexed(vb);
+						rtx.blas.add(vulkan::AccelerationStructure::create_bottom(ctx->device, vb));
+						matrices.add(mr->owner->get_matrix().transpose());
+					}
 				}
-			}
 
 			for (auto *t: terrains)
 				if (t->terrain) {

@@ -24,26 +24,47 @@
 #include "Model.h"
 #include "ModelManager.h"
 #include <lib/yrenderer/Material.h>
-#include "World.h"
 #include <ecs/Entity.h>
 #include <lib/math/complex.h>
-#include "../meta.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/msg.h>
-#include "components/Animator.h"
 
 
 #define DynamicNormalCorrect
 
 const kaba::Class* ModelRef::_class = nullptr;
-const kaba::Class* Model::_class = nullptr;
 
 
 
 
 bool Model::AllowDeleteRecursive = true;
 
+void ModelRef::update_materials() {
+	if (model) {
+		materials.resize(model->materials.num);
+		for (int i=0; i<model->materials.num; i++)
+			if (!materials[i])
+				materials[i] = model->materials[i];
+	}
+}
 
+void ModelRef::set_material(int index, yrenderer::Material *m) {
+	if (index < 0)
+		return;
+	if (materials.num <= index)
+		materials.resize(index + 1);
+	materials[index] = m;
+}
+
+yrenderer::Material *ModelRef::get_material(int index) {
+	if (index < 0)
+		return nullptr;
+	if (index < materials.num and materials[index])
+		return materials[index];
+	if (model and index < model->materials.num)
+		return model->materials[index];
+	return nullptr;
+}
 
 
 SubMesh::SubMesh() {
@@ -63,10 +84,7 @@ Mesh* Mesh::copy(Model *new_owner) {
 		ss.vertex_buffer = nullptr;
 		//ss.force_update = true;
 	}
-	bool using_animation = false;
-	for (const auto& c: owner->_template->components)
-		if (c.class_name == "Animator")
-			using_animation = true;
+	bool using_animation = owner->_template->meta_move.get();
 	s->create_vb(using_animation);
 	s->update_vb(using_animation);
 
@@ -230,8 +248,6 @@ void Model::reset_data() {
 
 
 Model::Model() {
-	component_type = Model::_class;
-
 	visible = true;
 
 	is_copy = false;
@@ -240,10 +256,6 @@ Model::Model() {
 		_detail_needed_[i] = false;
 		mesh[i] = nullptr;
 	}
-}
-
-void Model::__init__() {
-	new(this) Model;
 }
 
 #if 0
@@ -267,8 +279,7 @@ Model *Model::copy(Model *pre_allocated) {
 	m->prop = prop;
 	m->_template = _template;
 
-	for (auto mat: material)
-		m->material.add(mat->copy());
+	m->materials = materials;
 	
 
 	// "copy" presettings (just using references)
@@ -317,10 +328,6 @@ Model::~Model() {
 
 	for (Material* m: material)
 		delete m;*/
-}
-
-void Model::__delete__() {
-	this->Model::~Model();
 }
 
 
@@ -520,7 +527,7 @@ bool Model::TraceMesh(const vec3 &p1, const vec3 &p2, const vec3 &dir, float ran
 
 vec3 _cdecl Model::get_vertex(int index) {
 	auto s = mesh[MESH_HIGH];
-	return _matrix * s->vertex[index];
+	return s->vertex[index];
 }
 
 
@@ -534,7 +541,7 @@ void Model::begin_edit(int detail) {
 
 // force an update for this model/skin
 void Model::end_edit(int detail) {
-	mesh[detail]->update_vb(owner->get_component<Animator>());
+	mesh[detail]->update_vb(_template->meta_move.get());
 	//for (int i=0; i<material.num; i++)
 	//	mesh[detail]->sub[i].force_update = true;
 }
@@ -547,11 +554,6 @@ Path Model::filename() const {
 	if (_template)
 		return _template->filename;
 	return "?";
-}
-
-void Model::update_matrix() {
-	if (owner)
-		_matrix = owner->get_matrix();
 }
 
 #if 0
@@ -592,4 +594,11 @@ void Model::SortingTest(vec3 &delta_pos,const vec3 &dpos,matrix *mat,bool allow_
 	MetaAddSorted(this,delta_pos,mat,_Detail_,ld,trans,allow_shadow);
 }
 #endif
+
+
+Model* entity_get_model(Entity* entity) {
+	if (auto mr = entity->get_component<ModelRef>())
+		return mr->model;
+	return nullptr;
+}
 

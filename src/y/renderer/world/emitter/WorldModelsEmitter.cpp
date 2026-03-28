@@ -6,14 +6,12 @@
 #include <lib/profiler/Profiler.h>
 #include <lib/yrenderer/Context.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
-#include <lib/yrenderer/scene/SceneView.h>
 #include <world/Model.h>
 #include <world/components/Animator.h>
 #include <ecs/EntityManager.h>
 #include <ecs/Entity.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/base/sort.h>
-
 
 
 static const string vertex_shader_module[2] = {"default", "animated"};
@@ -26,10 +24,9 @@ void WorldOpaqueModelsEmitter::emit(const yrenderer::RenderParams& params, yrend
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
-	auto draw_model = [&params, &rvd, shadow_pass] (Model* m) {
-		auto ani = m->owner ? m->owner->get_component<Animator>() : nullptr;
-		for (int i=0; i<m->material.num; i++) {
-			auto material = m->material[i];
+	auto draw_model = [&params, &rvd, shadow_pass] (Entity* e, Model* m, const Array<yrenderer::Material*>& materials, Animator* ani) {
+		for (int i=0; i<materials.num; i++) {
+			auto material = materials[i];
 			if (material->is_transparent())
 				continue;
 			if (!material->cast_shadow and shadow_pass)
@@ -39,9 +36,8 @@ void WorldOpaqueModelsEmitter::emit(const yrenderer::RenderParams& params, yrend
 			if (shadow_pass)
 				material = rvd.material_shadow;
 
-			m->update_matrix();
 			auto vb = m->mesh[0]->sub[i].vertex_buffer;
-			auto& rd = rvd.start(params, m->_matrix, shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
+			auto& rd = rvd.start(params, e->get_matrix(), shader, material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 
 			if (ani) {
 				ani->buf->update_array(ani->dmatrix);
@@ -56,18 +52,17 @@ void WorldOpaqueModelsEmitter::emit(const yrenderer::RenderParams& params, yrend
 		}
 	};
 
-	auto& list = EntityManager::global->get_component_list<Model>();
+	/*auto& list = EntityManager::global->get_component_list<Model>();
 	for (auto m: list) {
-		draw_model(m);
-	}
+		draw_model(m, m->materials, m->owner->get_component<Animator>());
+	}*/
 
 	auto& list2 = EntityManager::global->get_component_list<ModelRef>();
-	for (auto m: list2) {
-		if (m->model) {
-			m->model->owner = m->owner;
-			draw_model(m->model);
+	for (auto mr: list2)
+		if (mr->model) {
+			mr->update_materials();
+			draw_model(mr->owner, mr->model, mr->materials, mr->owner->get_component<Animator>());
 		}
-	}
 
 	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
@@ -83,39 +78,50 @@ void WorldTransparentModelsEmitter::emit(const yrenderer::RenderParams& params, 
 	ctx->gpu_timestamp_begin(params, channel);
 
 	struct DrawCallData {
+		Entity* entity;
 		Model* model;
 		int material_index;
+		yrenderer::Material* material;
+		Animator* ani;
 		float z;
 	};
 	Array<DrawCallData> draw_calls;
 
-	auto& list = EntityManager::global->get_component_list<Model>();
-
-	for (auto m: list) {
-		for (int i=0; i<m->material.num; i++) {
-			auto material = m->material[i];
+	auto maybe_add = [&] (Entity* e, Model* m, const Array<yrenderer::Material*>& materials, Animator* ani) {
+		for (int i=0; i<materials.num; i++) {
+			auto material = materials[i];
 			if (!material->is_transparent())
 				continue;
 
 			// inside camera frustum?
 			const float r = m->prop.radius;
-			float zz = rvd.frustum[0].distance(m->owner->pos); // also used for z-sorting
+			float zz = rvd.frustum[0].distance(e->pos); // also used for z-sorting
 			if (zz < -r)
 				continue;
-			if (rvd.frustum[1].distance(m->owner->pos) < -r)
+			if (rvd.frustum[1].distance(e->pos) < -r)
 				continue;
-			if (rvd.frustum[2].distance(m->owner->pos) < -r)
+			if (rvd.frustum[2].distance(e->pos) < -r)
 				continue;
-			if (rvd.frustum[3].distance(m->owner->pos) < -r)
+			if (rvd.frustum[3].distance(e->pos) < -r)
 				continue;
-			if (rvd.frustum[4].distance(m->owner->pos) < -r)
+			if (rvd.frustum[4].distance(e->pos) < -r)
 				continue;
-			if (rvd.frustum[5].distance(m->owner->pos) < -r)
+			if (rvd.frustum[5].distance(e->pos) < -r)
 				continue;
 
-			draw_calls.add({m, i, zz});
+			draw_calls.add({e, m, i, material, ani, zz});
 		}
-	}
+	};
+
+	/*auto& list = EntityManager::global->get_component_list<Model>();
+	for (auto m: list)
+		maybe_add(m, m->materials);*/
+	auto& list2 = EntityManager::global->get_component_list<ModelRef>();
+	for (auto mr: list2)
+		if (auto m = mr->model) {
+			mr->update_materials();
+			maybe_add(mr->owner, m, mr->materials, mr->owner->get_component<Animator>());
+		}
 
 	// sort: far to near
 	draw_calls = base::sorted(draw_calls, [] (const auto& a, const auto& b) { return a.z >= b.z; });
@@ -124,24 +130,22 @@ void WorldTransparentModelsEmitter::emit(const yrenderer::RenderParams& params, 
 	// draw!
 	for (const auto& dc: draw_calls) {
 		auto m = dc.model;
-		auto material = dc.model->material[dc.material_index];
+		auto material = dc.material;
 		int i = dc.material_index;
-		auto ani = m->owner ? m->owner->get_component<Animator>() : nullptr;
 
-		m->update_matrix();
 		auto vb = m->mesh[0]->sub[i].vertex_buffer;
 
 		for (int k=0; k<material->num_passes; k++) {
-			auto shader = rvd.get_shader(material, k, vertex_shader_module[(int)(bool)ani], "");
+			auto shader = rvd.get_shader(material, k, vertex_shader_module[(int)(bool)dc.ani], "");
 
-			auto& rd = rvd.start(params, m->_matrix, shader, *material, k, ygfx::PrimitiveTopology::TRIANGLES, vb);
+			auto& rd = rvd.start(params, dc.entity->get_matrix(), shader, material, k, ygfx::PrimitiveTopology::TRIANGLES, vb);
 
-			if (ani) {
-				ani->buf->update_array(ani->dmatrix);
+			if (dc.ani) {
+				dc.ani->buf->update_array(dc.ani->dmatrix);
 #ifdef USING_VULKAN
-				rd.dset->set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
+				rd.dset->set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, dc.ani->buf);
 #else
-				nix::bind_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
+				nix::bind_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, dc.ani->buf);
 #endif
 			}
 

@@ -51,6 +51,10 @@ class Animator;
 
 struct ModelRef : Component {
 	Model* model = nullptr;
+	Array<yrenderer::Material*> materials;
+	void update_materials();
+	void set_material(int index, yrenderer::Material* m);
+	yrenderer::Material* get_material(int index);
 	static const kaba::Class* _class;
 };
 
@@ -108,13 +112,10 @@ enum {
 	MESH_PHYSICAL = 42 // for edward
 };
 
-class Model : public Component {
+class Model {
 public:
 	Model();
-	~Model() override;
-
-	void _cdecl __init__();
-	void _cdecl __delete__() override;
+	~Model();
 
 	Model *copy(Model *pre_allocated = nullptr);
 	void reset_data();
@@ -142,7 +143,7 @@ public:
 	shared<Mesh> mesh[MODEL_NUM_MESHES];
 
 	// material
-	owned_array<yrenderer::Material> material;
+	Array<yrenderer::Material*> materials;
 	Array<int> num_uvs;
 
 	// properties
@@ -157,19 +158,15 @@ public:
 
 	bool visible;
 
-	mat4 _matrix, matrix_old;
-	void update_matrix();
-
 	// template
 	shared<ModelTemplate> _template;
 	Path filename() const;
 
 	// engine data
 	bool _detail_needed_[MODEL_NUM_MESHES]; // per frame
-
-
-	static const kaba::Class *_class;
 };
+
+Model* entity_get_model(Entity* entity);
 
 
 // types of shading/normal vectors

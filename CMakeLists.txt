@@ -603,15 +603,16 @@ add_executable(edward
 	src/y/world/components/Collider.cpp
 	src/y/world/components/CubeMapSource.cpp
 	src/y/world/components/Light.cpp
+	src/y/world/components/Link.cpp
 	src/y/world/components/MultiInstance.cpp
 	src/y/world/components/Skeleton.cpp
 	src/y/world/components/SolidBody.cpp
 	src/y/world/components/UserMesh.cpp
+	src/y/world/systems/AnimationManager.cpp
+	src/y/world/systems/Physics.cpp
 	src/y/world/LevelData.cpp
-	src/y/world/Link.cpp
 	src/y/world/Model.cpp
 	src/y/world/ModelManager.cpp
-	src/y/world/Physics.cpp
 	src/y/world/Terrain.cpp
 	src/y/world/World.cpp
 	src/y/Config.cpp

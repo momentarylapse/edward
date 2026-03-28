@@ -293,7 +293,7 @@ float model_hover_z(const Model *o, const mat4& matrix, MultiViewWindow* win, co
 		pmv[i] = win->project(tmv[i]);
 	}
 	float z_min = 1;
-	for (int mm=0;mm<o->material.num;mm++)
+	for (int mm=0;mm<o->materials.num;mm++)
 		for (int i=0;i<o->mesh[d]->sub[mm].num_triangles;i++) {
 			int ia = o->mesh[d]->sub[mm].triangle_index[i*3  ];
 			int ib = o->mesh[d]->sub[mm].triangle_index[i*3+1];
@@ -414,7 +414,7 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 			auto vb = t->vertex_buffer.get();
 
 			auto shader = rvd.get_shader(material, 0, t->vertex_shader_module, "");
-			auto& rd = rvd.start(params, tr->owner->get_matrix(), shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
+			auto& rd = rvd.start(params, tr->owner->get_matrix(), shader, material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 #ifdef USING_VULKAN
 			cb->push_constant(0, 12, &t->texture_scale[0].x);
 			cb->push_constant(16, 12, &t->texture_scale[1].x);
@@ -429,7 +429,7 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 	for (auto mr: models)
 		if (auto m = mr->model)
 			for (int k=0; k<m->mesh[0]->sub.num; k++) {
-				auto material = m->material[k];
+				auto material = mr->get_material(k);
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
 				dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, material, 0, "default");
 			}

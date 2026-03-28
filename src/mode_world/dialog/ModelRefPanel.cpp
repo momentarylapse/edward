@@ -49,7 +49,7 @@ Dialog model-panel ''
 	material_selector->out_selected >> create_data_sink<yrenderer::Material*>([this, mr] (yrenderer::Material* m) {
 		data->session->error("material changed... but not working");
 		//mr->material...
-		mr->model->material[0] = m;
+		mr->set_material(0, m);
 		data->out_changed();
 		// FIXME :D
 	});
@@ -66,7 +66,7 @@ void ModelRefPanel::update_ui() {
 	auto mr = e->get_component<ModelRef>();
 	set_string("model", str(data->session->resource_manager->filename(mr->model)));
 	if (mr->model) {
-		material_selector->set_material(mr->model->material[0]);
-		material_selector->internal_materials = mr->model->material;
+		material_selector->set_material(mr->get_material(0));
+		material_selector->internal_materials = mr->model->materials;
 	}
 }

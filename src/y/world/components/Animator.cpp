@@ -52,12 +52,16 @@ Animator::~Animator() {
 }
 
 void Animator::on_init() {
-	auto m = owner->get_component<Model>();
+	auto m = entity_get_model(owner);
+	if (!m)
+		return;
 
 	meta = m->_template->meta_move;
 
 	// skeleton
-	auto sk = m->owner->get_component<Skeleton>();
+	auto sk = owner->get_component<Skeleton>();
+	if (!sk)
+		return;
 	dmatrix.resize(sk->bones.num);
 	for (int i=0; i<sk->bones.num; i++) {
 		dmatrix[i] = mat4::translation(sk->pos0[i]);
@@ -70,8 +74,12 @@ void Animator::on_init() {
 
 
 void Animator::do_animation(float elapsed) {
-	[[maybe_unused]] auto m = owner->get_component<Model>();
+	auto m = entity_get_model(owner);
+	if (!m)
+		return;
 	auto sk = owner->get_component<Skeleton>();
+	if (!sk)
+		return;
 
 	// recursion
 	//for (auto &b: sk->bone)
@@ -307,9 +315,11 @@ int Animator::get_frames(int move_no) {
 
 
 vec3 Animator::get_vertex(int index) {
-	auto m = owner->get_component<Model>();
+	auto m = entity_get_model(owner);
 	auto sk = owner->get_component<Skeleton>();
+	if (!m or !sk)
+		return vec3::ZERO;
 	auto s = m->mesh[MESH_HIGH].get();
 	int b = s->bone_index[index].i;
-	return m->owner->get_matrix() * dmatrix[b] * s->vertex[index] - sk->pos0[b];
+	return owner->get_matrix() * dmatrix[b] * s->vertex[index] - sk->pos0[b];
 }

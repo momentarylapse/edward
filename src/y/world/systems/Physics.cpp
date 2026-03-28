@@ -3,11 +3,11 @@
 //
 
 #include "Physics.h"
-#include "World.h"
-#include "Link.h"
-#include "Model.h"
-#include "components/Collider.h"
-#include "components/SolidBody.h"
+#include "../World.h"
+#include "../components/Link.h"
+#include "../Model.h"
+#include "../components/Collider.h"
+#include "../components/SolidBody.h"
 #include <ecs/EntityManager.h>
 #include <ecs/Entity.h>
 #include <lib/base/iter.h>
@@ -156,11 +156,6 @@ void Physics::on_iterate(float dt) {
 	} else if (mode == PhysicsMode::SIMPLE) {
 		for (auto *o: list)
 			o->do_simple_physics(dt);
-	}
-
-	for (auto *sb: list) {
-		if (auto m = sb->owner->get_component<Model>())
-			m->update_matrix();
 	}
 }
 

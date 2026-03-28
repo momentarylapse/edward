@@ -28,8 +28,8 @@ void Context::create_managers(const Path &texture_dir, const Path &shader_dir, c
 	material_manager = new MaterialManager(texture_manager, material_dir);
 }
 
-xfer<Material> Context::load_material_copy(const Path &filename) const {
-	return material_manager->load_copy(filename);
+Material* Context::load_material(const Path &filename) const {
+	return material_manager->load(filename);
 }
 
 shared<ygfx::Texture> Context::load_texture(const Path& filename) const {

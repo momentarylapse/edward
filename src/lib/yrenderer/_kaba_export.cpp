@@ -484,7 +484,7 @@ void _export_package_yrenderer_internal(kaba::Exporter* ext) {
 	ext->declare_class_element("Context.ctx", &yrenderer::Context::context);
 	ext->declare_class_element("Context.tex_white", &yrenderer::Context::tex_white);
 	ext->link_class_func("Context.create_managers", &yrenderer::Context::create_managers);
-	ext->link_class_func("Context.load_material", &yrenderer::Context::load_material_copy);
+	ext->link_class_func("Context.load_material", &yrenderer::Context::load_material);
 	ext->link_class_func("Context.load_texture", &yrenderer::Context::load_texture);
 	ext->link_class_func("Context.load_shader", &yrenderer::Context::load_shader);
 	ext->link_class_func("Context.create_shader", &yrenderer::Context::create_shader);

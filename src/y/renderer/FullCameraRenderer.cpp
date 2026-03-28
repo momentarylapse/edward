@@ -174,23 +174,24 @@ void FullCameraRenderer::suggest_cube_map_pos() {
 	if (auto e = world.ego()) {
 		cube_map_source->pos = e->pos;
 		cube_map_source->min_depth = 200;
-		if (auto m = e->get_component<Model>())
+		if (auto m = entity_get_model(e))
 			cube_map_source->min_depth = m->prop.radius * 1.1f;
 		return;
 	}
-	auto& list = EntityManager::global->get_component_list<Model>();
+	auto& list = EntityManager::global->get_component_list<ModelRef>();
 	float max_score = 0;
 	cube_map_source->pos = cam->view_matrix() * vec3(0,0,1000);
 	cube_map_source->min_depth = 1000;
-	for (auto m: list)
-		for (auto mat: m->material) {
-			float score = mat->metal;
-			if (score > max_score) {
-				max_score = score;
-				cube_map_source->pos = m->owner->pos;
-				cube_map_source->min_depth = m->prop.radius;
+	for (auto mr: list)
+		if (auto m = mr->model)
+			for (auto mat: m->materials) {
+				float score = mat->metal;
+				if (score > max_score) {
+					max_score = score;
+					cube_map_source->pos = mr->owner->pos;
+					cube_map_source->min_depth = m->prop.radius;
+				}
 			}
-		}
 }
 
 void FullCameraRenderer::render_cubemaps(const yrenderer::RenderParams &params) {

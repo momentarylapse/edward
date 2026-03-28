@@ -57,7 +57,7 @@ struct RenderData {
 	ygfx::UniformBuffer* ubo;
 	ygfx::DescriptorSet* dset;
 #else
-	void set_material_x(const SceneView& scene_view, const Material& m, ygfx::Shader* s, int pass_no);
+	void set_material_x(const SceneView& scene_view, const Material* m, ygfx::Shader* s, int pass_no);
 #endif
 	void set_texture(int binding, ygfx::Texture* tex);
 	void set_textures(const SceneView& scene_view, const Array<ygfx::Texture*>& tex);
@@ -101,13 +101,13 @@ struct RenderViewData {
 	void clear(const RenderParams& params, const Array<color>& colors, float z=-1);
 
 	RenderData& start(const RenderParams& params, const mat4& matrix,
-	                  ygfx::Shader* shader, const Material& material, int pass_no,
+	                  ygfx::Shader* shader, const Material* material, int pass_no,
 	                  ygfx::PrimitiveTopology top, ygfx::VertexBuffer *vb);
 
 
-	base::map<Material*, ShaderCache> multi_pass_shader_cache[4];
+	base::map<const Material*, ShaderCache> multi_pass_shader_cache[4];
 	// material as id!
-	ygfx::Shader* get_shader(Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module);
+	ygfx::Shader* get_shader(const Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module);
 };
 
 }

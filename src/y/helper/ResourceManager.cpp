@@ -22,12 +22,21 @@ class TemplateManager {
 public:
 	base::map<Path, Template*> templates;
 
+	Path full_path(const Path& _filename) const {
+		auto filename = _filename.is_absolute() ? _filename : engine.object_dir | _filename;
+		if (filename.extension() != "template")
+			return filename.with(".template");
+		return filename;
+	}
+
 	// relative filename!
 	Template* load(const Path& _filename) {
-		auto filename = _filename.is_absolute() ? _filename : engine.object_dir | _filename;
+		auto filename = full_path(_filename);
 		for (auto&& [f, t]: templates)
 			if (f == filename)
 				return t;
+		if (!os::fs::exists(filename))
+			return nullptr;
 		auto t = new Template;
 		templates.set(filename, t);
 		ScriptInstanceData* current = nullptr;
@@ -65,7 +74,7 @@ public:
 			for (const auto& v: c.variables)
 				o += format("\t%s=%s\n", v.name, v.value);
 		}
-		os::fs::write_text(filename.is_absolute() ? filename : engine.object_dir | filename, o);
+		os::fs::write_text(full_path(filename), o);
 	}
 
 	Path get_filename(const Template* t) const {
@@ -127,10 +136,6 @@ ResourceManager::ResourceManager(yrenderer::Context *_ctx, const Path &texture_d
 	shader_manager->ignore_missing_files = engine.ignore_missing_files;
 	template_manager = new TemplateManager();
 	terrain_manager = new TerrainManager();
-}
-
-xfer<yrenderer::Material> ResourceManager::load_material_copy(const Path& filename) {
-	return material_manager->load_copy(filename);
 }
 
 yrenderer::Material* ResourceManager::load_material(const Path& filename) {

@@ -33,7 +33,6 @@ public:
 	owned<TerrainManager> terrain_manager;
 
 	shared<ygfx::Texture> load_texture(const Path& path);
-	xfer<yrenderer::Material> load_material_copy(const Path &filename);
 	yrenderer::Material* load_material(const Path &filename);
 	xfer<Model> load_model_copy(const Path &filename);
 	Model* load_model(const Path &filename);

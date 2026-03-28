@@ -37,7 +37,7 @@ public:
 	owned<ygfx::VertexBuffer> vb_fx;
 	owned<ygfx::VertexBuffer> vb_fx_points;
 
-	yrenderer::Material fx_material;
+	owned<yrenderer::Material> fx_material;
 
 	owned_array<ygfx::VertexBuffer> fx_vertex_buffers;
 };

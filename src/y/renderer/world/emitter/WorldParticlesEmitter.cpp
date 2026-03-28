@@ -23,11 +23,12 @@ WorldParticlesEmitter::WorldParticlesEmitter(yrenderer::Context* ctx, Camera* _c
 		MeshEmitter(ctx, "fx")
 {
 	cam = _cam;
-	fx_material.pass0.cull_mode = CullMode::NONE;
-	fx_material.pass0.mode = TransparencyMode::FUNCTIONS;
-	fx_material.pass0.source = Alpha::SOURCE_ALPHA;
-	fx_material.pass0.destination = Alpha::SOURCE_INV_ALPHA;
-	fx_material.pass0.shader_path = "fx.shader";
+	fx_material = new yrenderer::Material();
+	fx_material->pass0.cull_mode = CullMode::NONE;
+	fx_material->pass0.mode = TransparencyMode::FUNCTIONS;
+	fx_material->pass0.source = Alpha::SOURCE_ALPHA;
+	fx_material->pass0.destination = Alpha::SOURCE_INV_ALPHA;
+	fx_material->pass0.shader_path = "fx.shader";
 
 	fx_vertex_buffers.add(new VertexBuffer("3f,4f,2f"));
 }
@@ -38,9 +39,9 @@ void WorldParticlesEmitter::emit(const RenderParams& params, RenderViewData& rvd
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
-	auto shader = rvd.get_shader(&fx_material, 0, "fx", "");
+	auto shader = rvd.get_shader(fx_material.get(), 0, "fx", "");
 
-	auto& rd = rvd.start(params, mat4::ID, shader, fx_material, 0, PrimitiveTopology::TRIANGLES, fx_vertex_buffers[0]);
+	auto& rd = rvd.start(params, mat4::ID, shader, fx_material.get(), 0, PrimitiveTopology::TRIANGLES, fx_vertex_buffers[0]);
 
 	// particles
 	auto r = mat4::rotation(cam->owner->ang);

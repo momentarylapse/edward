@@ -32,7 +32,7 @@ Skeleton::~Skeleton() {
 }
 
 void Skeleton::on_init() {
-	auto m = owner->get_component<Model>();
+	auto m = entity_get_model(owner);
 	if (!m)
 		return;
 
@@ -53,14 +53,13 @@ void Skeleton::on_init() {
 		pos0[i] = _calc_bone_rest_pos(i);
 		b->pos = pos0[i];
 		b->ang = quaternion::ID;
-		auto mm = engine.resource_manager->load_model_copy(m->_template->skeleton->filename[i]);
-		if (mm) {
-			EntityManager::global->_add_component_external_(b, mm);
-
-			if (mm->_template->skeleton)
+		auto mr = EntityManager::global->add_component<ModelRef>(b);
+		mr->model = engine.resource_manager->load_model(m->_template->skeleton->filename[i]);
+		if (mr->model) {
+			if (mr->model->_template->skeleton)
 				EntityManager::global->add_component<Skeleton>(b);
 
-			for (const auto& c: mm->_template->components) {
+			for (const auto& c: mr->model->_template->components) {
 				if (c.class_name == "Animator")
 					EntityManager::global->add_component<Animator>(b);
 			}

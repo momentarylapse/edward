@@ -101,7 +101,7 @@ Path Session::guess_root_directory(const Path &filename) {
 	return filename.parent();
 }
 
-void Session::load_project(const Path& dir) {
+void Session::load_project(const Path& dir, bool serious) {
 	if (project_dir == dir)
 		return;
 
@@ -119,7 +119,9 @@ void Session::load_project(const Path& dir) {
 	resource_manager->shader_manager->shader_dir = storage->root_dir_kind[FD_SHADERFILE];
 	resource_manager->material_manager->material_dir = storage->root_dir_kind[FD_MATERIAL];
 
-	plugin_manager->load_project_stuff(project_dir);
+	if (serious)
+		plugin_manager->load_project_stuff(project_dir);
+
 	out_project_loaded();
 }
 

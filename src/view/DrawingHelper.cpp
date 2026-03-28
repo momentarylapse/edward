@@ -25,7 +25,7 @@ const float DrawingHelper::LINE_EXTRA_THICK = 7;
 const color DrawingHelper::COLOR_X = color(1, 0.9f, 0.6f, 0.1f).srgb_to_linear();
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false) {
-	auto material = ctx->load_material_copy("");
+	auto material = ctx->load_material("")->copy();
 	material->albedo = albedo;
 	material->roughness = roughness;
 	material->metal = metal;
@@ -264,7 +264,7 @@ void DrawingHelper::clear(const yrenderer::RenderParams& params, const color& c)
 
 void DrawingHelper::draw_mesh(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, const mat4& matrix, ygfx::VertexBuffer* vertex_buffer, yrenderer::Material* material, int pass_no, const string& vertex_module) {
 	auto shader = rvd.get_shader(material, pass_no, vertex_module, "");
-	auto& rd = rvd.start(params, matrix, shader, *material, pass_no, ygfx::PrimitiveTopology::TRIANGLES, vertex_buffer);
+	auto& rd = rvd.start(params, matrix, shader, material, pass_no, ygfx::PrimitiveTopology::TRIANGLES, vertex_buffer);
 	rd.draw_triangles(params, vertex_buffer);
 }
 

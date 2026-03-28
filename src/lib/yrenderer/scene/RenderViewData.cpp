@@ -202,7 +202,7 @@ void RenderViewData::clear(const RenderParams& params, const Array<color>& color
 
 RenderData& RenderViewData::start(
 		const RenderParams& params, const mat4& matrix,
-		Shader* shader, const Material& material, int pass_no,
+		Shader* shader, const Material* material, int pass_no,
 		PrimitiveTopology top, VertexBuffer *vb) {
 	if (index >= rda.num) {
 		rda.add({new UniformBuffer(sizeof(UBO)),
@@ -212,18 +212,18 @@ RenderData& RenderViewData::start(
 	}
 
 	ubo.m = matrix;
-	ubo.albedo = material.albedo;
-	ubo.emission = material.emission;
-	ubo.metal = material.metal;
-	ubo.roughness = material.roughness;
+	ubo.albedo = material->albedo;
+	ubo.emission = material->emission;
+	ubo.metal = material->metal;
+	ubo.roughness = material->roughness;
 	rda[index].ubo->update_part(&ubo, 0, sizeof(UBO));
 
-	auto p = SceneRenderer::get_pipeline(shader, params.render_pass, material.pass(pass_no), top, vb);
+	auto p = SceneRenderer::get_pipeline(shader, params.render_pass, material->pass(pass_no), top, vb);
 
 	params.command_buffer->bind_pipeline(p);
 
 	if (scene_view) {
-		rda[index].set_textures(*scene_view, weak(material.textures));
+		rda[index].set_textures(*scene_view, weak(material->textures));
 		if (scene_view->surfel_buffer)
 			rda[index].dset->set_uniform_buffer(12, scene_view->surfel_buffer.get());
 	}
@@ -268,14 +268,14 @@ void RenderData::draw(const RenderParams& params, VertexBuffer* vb, PrimitiveTop
 
 
 
-Shader* RenderViewData::get_shader(Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module) {
+Shader* RenderViewData::get_shader(const Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module) {
 	if (!multi_pass_shader_cache[pass_no].contains(material))
 		multi_pass_shader_cache[pass_no].set(material, {ctx});
 	auto& cache = multi_pass_shader_cache[pass_no][material];
 	if (is_shadow_pass())
-		cache._prepare_shader_multi_pass(type, *material_shadow, vertex_shader_module, geometry_shader_module, pass_no);
+		cache._prepare_shader_multi_pass(type, material_shadow, vertex_shader_module, geometry_shader_module, pass_no);
 	else
-		cache._prepare_shader_multi_pass(type, *material, vertex_shader_module, geometry_shader_module, pass_no);
+		cache._prepare_shader_multi_pass(type, material, vertex_shader_module, geometry_shader_module, pass_no);
 	return cache.get_shader(type);
 }
 

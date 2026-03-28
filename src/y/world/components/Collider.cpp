@@ -46,11 +46,7 @@ MeshCollider::MeshCollider() {
 }
 
 void MeshCollider::on_init() {
-	auto m = owner->get_component<Model>();
-	if (!m) {
-		if (auto r = owner->get_component<ModelRef>())
-			m = r->model;
-	}
+	auto m = entity_get_model(owner);
 	if (!m) {
 		msg_error("MeshCollider without Model");
 		return;

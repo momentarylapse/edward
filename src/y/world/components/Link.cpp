@@ -8,7 +8,7 @@
 #include "Link.h"
 #include <ecs/Entity.h>
 #include <lib/os/msg.h>
-#include "components/SolidBody.h"
+#include "SolidBody.h"
 
 
 #if HAS_LIB_BULLET

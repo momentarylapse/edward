@@ -26,7 +26,7 @@ void WorldTerrainsEmitter::emit(const yrenderer::RenderParams& params, yrenderer
 		if (shadow_pass)
 			material = rvd.material_shadow;
 
-		auto& rd = rvd.start(params, mat4::translation(o->pos), shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, t->vertex_buffer.get());
+		auto& rd = rvd.start(params, mat4::translation(o->pos), shader, material, 0, ygfx::PrimitiveTopology::TRIANGLES, t->vertex_buffer.get());
 
 		if (!shadow_pass) {
 			Any data;

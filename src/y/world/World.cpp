@@ -9,6 +9,8 @@
 \*----------------------------------------------------------------------------*/
 
 #include <algorithm>
+#include <lib/base/base.h>
+#include <lib/base/sort.h>
 #include <lib/config.h>
 #include <lib/os/msg.h>
 #include <lib/nix/nix.h>
@@ -21,12 +23,12 @@
 #include "../meta.h"
 #include "ModelManager.h"
 #include "../helper/ResourceManager.h"
-#include "Link.h"
 #include <lib/yrenderer/Material.h>
 #include "Model.h"
 #include "Terrain.h"
 #include "World.h"
 
+#include "components/Link.h"
 #include "components/SolidBody.h"
 #include "components/Collider.h"
 #include "components/Animator.h"
@@ -34,6 +36,8 @@
 #include "components/MultiInstance.h"
 #include "components/Light.h"
 #include "components/Camera.h"
+#include "systems/Physics.h"
+#include "ecs/SystemManager.h"
 
 #ifdef _X_ALLOW_X_
 #include "../fx/ParticleManager.h"
@@ -41,10 +45,6 @@
 #include <lib/profiler/Profiler.h>
 #endif
 
-
-#include "Physics.h"
-#include "ecs/SystemManager.h"
-#include "lib/base/sort.h"
 
 
 //#define _debug_matrices_
@@ -85,11 +85,6 @@ void AddNetMsg(int msg, int argi0, const string &args)
 
 
 void GodInit(int ch_iter) {
-	// FIXME: heap allocate world?
-#ifdef _X_ALLOW_X_
-	world.ch_iterate = profiler::create_channel("world", ch_iter);
-	world.ch_animation = profiler::create_channel("animation", ch_iter);
-#endif
 }
 
 void GodEnd() {
@@ -171,9 +166,6 @@ void add_user_components(EntityManager* em, Entity *ent, const Array<ScriptInsta
 		msg_write("add component " + cc.class_name);
 #ifdef _X_ALLOW_X_
 		auto type = PluginManager::find_class(cc.filename, cc.class_name);
-		/*base::map<string, Any> params;
-		for (const auto& v: cc.variables)
-			params.set(v.name, v.value);*/
 		[[maybe_unused]] auto comp = em->_add_component_generic_(ent, type, cc.variables);
 #endif
 	}
@@ -211,9 +203,9 @@ bool World::load(const LevelData &ld) {
 	// skybox
 	skybox.resize(ld.skybox_filename.num);
 	for (int i=0; i<skybox.num; i++) {
-		skybox[i] = engine.resource_manager->load_model_copy(ld.skybox_filename[i]);
-		if (skybox[i])
-			skybox[i]->owner = new Entity(v_0, quaternion::rotation_v(ld.skybox_ang[i]));
+		skybox[i] = new ModelRef;
+		skybox[i]->owner = new Entity(v_0, quaternion::rotation_v(ld.skybox_ang[i])); // FIXME data leak... eh
+		skybox[i]->model = engine.resource_manager->load_model(ld.skybox_filename[i]);
 	}
 	background = ld.background_color;
 
@@ -234,9 +226,9 @@ bool World::load(const LevelData &ld) {
 		if (!o.filename.is_empty()) {
 			//try {
 				auto q = quaternion::rotation(o.ang);
-				auto *oo = create_object_x(o.filename, o.name, o.pos, q);
+				auto *oo = create_from_template(o.filename, o.pos, q);
 
-				add_user_components(entity_manager.get(), oo->owner, o.components);
+				add_user_components(entity_manager.get(), oo, o.components);
 				if (i % 5 == 0)
 					DrawSplashScreen("Objects", (float)i / (float)ld.objects.num / 5 * 3);
 
@@ -263,7 +255,8 @@ bool World::load(const LevelData &ld) {
 	}
 
 
-	auto& model_list = entity_manager->get_component_list<Model>();
+	// FIXME...
+	auto& model_list = entity_manager->get_component_list<ModelRef>();
 	for (auto &l: ld.links) {
 		Entity *a = model_list[l.object[0]]->owner;
 		Entity *b = nullptr;
@@ -314,11 +307,14 @@ Entity *World::create_entity(const vec3& pos, const quaternion& ang) {
 	return entity_manager->create_entity(pos, ang);
 }
 
-Entity* World::load_template(const Path& filename, const vec3 &pos, const quaternion& ang) {
+Entity* World::create_from_template(const Path& filename, const vec3 &pos, const quaternion& ang) {
 	auto e = create_entity(pos, ang);
 
-	const auto t = engine.resource_manager->load_template(filename);
-	add_user_components(entity_manager.get(), e, t->components);
+	if (const auto t = engine.resource_manager->load_template(filename)) {
+		add_user_components(entity_manager.get(), e, t->components);
+	} else {
+		attach_model(e, filename.no_ext());
+	}
 
 	return e;
 }
@@ -342,24 +338,18 @@ Model *World::create_object_x(const Path &filename, const string &name, const ve
 		tag->name = name;
 	}
 
-	return m;
+	return m->model;
 }
 
 
-Model* World::attach_model(Entity* e, const Path& filename) {
-	auto *m = engine.resource_manager->load_model_copy(filename);
-
-	entity_manager->_add_component_external_(e, m);
-	m->update_matrix();
+ModelRef* World::attach_model(Entity* e, const Path& filename) {
+	auto mr = entity_manager->add_component<ModelRef>(e);
+	mr->model = engine.resource_manager->load_model(filename);
 
 	// automatic components
-	add_user_components(entity_manager.get(), e, m->_template->components);
+	add_user_components(entity_manager.get(), e, mr->model->_template->components);
 
-	return m;
-}
-
-void World::unattach_model(Model* m) {
-	entity_manager->delete_component(m->owner, m);
+	return mr;
 }
 
 MultiInstance* World::create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang) {
@@ -391,45 +381,6 @@ void World::delete_entity(Entity *e) {
 	msg_data.e = e;
 	notify("entity-delete");
 	entity_manager->delete_entity(e);
-}
-
-void World::iterate_animations(float dt) {
-#ifdef _X_ALLOW_X_
-	profiler::begin(ch_animation);
-	auto& list = entity_manager->get_component_list<Animator>();
-	for (auto *o: list)
-		o->do_animation(dt);
-
-
-	// TODO
-	auto& list2 = entity_manager->get_component_list<Skeleton>();
-	for (auto o: list2) {
-		for (auto b: o->bones) {
-			if ([[maybe_unused]] auto *mm = b->get_component<Model>()) {
-//				b.dmatrix = matrix::translation(b.cur_pos) * matrix::rotation(b.cur_ang);
-//				mm->_matrix = o->get_owner<Entity3D>()->get_matrix() * b.dmatrix;
-			}
-		}
-	}
-		//o->do_animation(dt);
-	profiler::end(ch_animation);
-#endif
-}
-
-void World::iterate(float dt) {
-	if (dt == 0)
-		return;
-#ifdef _X_ALLOW_X_
-	profiler::begin(ch_iterate);
-	//physics->on_iterate(dt);
-
-		/*for (auto *o: objects)
-			if (o)
-				if (auto m = o->get_component<Model>())
-					m->update_matrix();*/
-
-	profiler::end(ch_iterate);
-#endif
 }
 
 Light* World::attach_light_parallel(Entity* e, const color& c) {
@@ -483,9 +434,6 @@ void World::shift_all(const vec3 &dpos) {
 
 	if (auto physics = SystemManager::get<Physics>())
 		physics->update_all_bullet();
-
-	for (auto *m: entity_manager->get_component_list<Model>())
-		m->update_matrix();
 
 	msg_data.v = dpos;
 	notify("shift");

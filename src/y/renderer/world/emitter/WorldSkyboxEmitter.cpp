@@ -49,17 +49,19 @@ void WorldSkyboxEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 	int nlights = rvd.light_meta_data.num_lights;
 	rvd.light_meta_data.num_lights = 0;
 
-	for (auto *sb: world.skybox) {
-		sb->_matrix = mat4::rotation(sb->owner->ang);
+	for (auto sb: weak(world.skybox))
+		if (auto m = sb->model) {
+			sb->update_materials();
+			auto matrix = mat4::rotation(sb->owner->ang);
 
-		for (int i=0; i<sb->material.num; i++) {
-			auto vb = sb->mesh[0]->sub[i].vertex_buffer;
-			auto shader = rvd.get_shader(sb->material[i], 0, "default", "");
-			auto& rd = rvd.start(params, sb->_matrix * mat4::scale(10,10,10), shader, *sb->material[i], 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
+			for (int i=0; i<m->materials.num; i++) {
+				auto vb = m->mesh[0]->sub[i].vertex_buffer;
+				auto shader = rvd.get_shader(sb->materials[i], 0, "default", "");
+				auto& rd = rvd.start(params, matrix * mat4::scale(10,10,10), shader, sb->materials[i], 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 
-			rd.draw_triangles(params, vb);
+				rd.draw_triangles(params, vb);
+			}
 		}
-	}
 
 	rvd.ubo.v = mv;
 	rvd.ubo.p = mp;

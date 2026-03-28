@@ -27,8 +27,8 @@ void WorldInstancedEmitter::emit(const RenderParams& params, RenderViewData& rvd
 
 	for (auto mi: list) {
 		auto m = mi->model;
-		for (int i=0; i<m->material.num; i++) {
-			auto material = m->material[i];
+		for (int i=0; i<m->materials.num; i++) {
+			auto material = m->materials[i];
 			if (material->is_transparent())
 				continue;
 			if (!material->cast_shadow and shadow_pass)
@@ -36,9 +36,8 @@ void WorldInstancedEmitter::emit(const RenderParams& params, RenderViewData& rvd
 
 			auto shader = rvd.get_shader(material, 0, "instanced", "");
 
-			m->update_matrix();
 			auto vb = m->mesh[0]->sub[i].vertex_buffer;
-			auto& rd = rvd.start(params, mat4::ID, shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
+			auto& rd = rvd.start(params, mat4::ID, shader, material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 
 #ifdef USING_VULKAN
 			rd.dset->set_uniform_buffer(BINDING_INSTANCE_MATRICES, mi->ubo_matrices);

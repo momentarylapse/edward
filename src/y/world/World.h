@@ -21,7 +21,7 @@
 
 class Physics;
 class Model;
-class Object;
+struct ModelRef;
 namespace yrenderer {
 	class Material;
 }
@@ -68,24 +68,23 @@ public:
 	void load_soon(const Path &filename);
 	void save(const Path &filename);
 
-	Entity *create_entity(const vec3 &pos, const quaternion &ang);
+	Entity* create_entity(const vec3 &pos, const quaternion &ang);
 	owned<EntityManager> entity_manager;
 
-	Entity* load_template(const Path &filename, const vec3 &pos, const quaternion &ang);
+	Entity* create_from_template(const Path &filename, const vec3 &pos, const quaternion &ang);
 
 	Model* create_object(const Path &filename, const vec3 &pos, const quaternion &ang);
 	Model* create_object_x(const Path &filename, const string &name, const vec3 &pos, const quaternion &ang);
 	TerrainRef* create_terrain(const Path &filename, const vec3 &pos);
 
-	Model* attach_model(Entity* e, const Path &filename);
-	void unattach_model(Model* m);
+	ModelRef* attach_model(Entity* e, const Path &filename);
 
 	MultiInstance* create_object_multi(const Path &filename, const Array<vec3> &pos, const Array<quaternion> &ang);
 
 	void delete_entity(Entity *e);
 
 	color background;
-	Array<Model*> skybox;
+	owned_array<ModelRef> skybox;
 	Fog fog;
 
 	Light* attach_light_parallel(Entity* e, const color& c);
@@ -99,9 +98,6 @@ public:
 	Camera *create_camera(const vec3 &pos, const quaternion &ang);
 
 	ParticleManager *particle_manager;
-
-	void iterate(float dt);
-	void iterate_animations(float dt);
 
 	void shift_all(const vec3 &dpos);
 
@@ -127,8 +123,6 @@ public:
 		Entity *e;
 		vec3 v;
 	} msg_data;
-
-	int ch_iterate = -1, ch_animation = -1;
 };
 extern World world;
 

@@ -79,9 +79,7 @@ bool Terrain::reload(ResourceManager* resource_manager, bool deep) {
 				texture_scale[i].z = f->read_float();
 			}
 			// Material
-			/*material_file =*/ //f->read_str();
-			string mat = f->read_str();
-			msg_error(mat);
+			/*material_file =*/ f->read_str();
 			if (deep) {
 				//material = resource_manager->load_material_copy(material_file);
 

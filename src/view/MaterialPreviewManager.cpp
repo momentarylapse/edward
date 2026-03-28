@@ -60,7 +60,7 @@ public:
 		if (shadow_pass)
 			material = rvd.material_shadow;
 
-		auto& rd = rvd.start(params, mat4::ID, shader, *material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb.get());
+		auto& rd = rvd.start(params, mat4::ID, shader, material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb.get());
 
 		rd.draw_triangles(params, vb.get());
 	}

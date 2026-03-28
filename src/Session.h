@@ -126,7 +126,7 @@ public:
 	base::promise<Session*> promise_started;
 
 	Path project_dir;
-	void load_project(const Path& dir);
+	void load_project(const Path& dir, bool serious = true);
 	static Path guess_root_directory(const Path& filename);
 };
 

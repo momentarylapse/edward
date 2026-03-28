@@ -364,7 +364,6 @@ void PluginManager::load_project_stuff(const Path &dir) {
 	TerrainCollider::_class = link_component("TerrainCollider");
 	Skeleton::_class = link_component("Skeleton");
 	Animator::_class = link_component("Animator");
-	Model::_class = link_component("Model");
 	ModelRef::_class = link_component("ModelRef");
 	TerrainRef::_class = link_component("TerrainRef");
 	TemplateRef::_class = link_component("TemplateRef");

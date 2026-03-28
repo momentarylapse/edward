@@ -26,21 +26,16 @@
 #include "../../storage/Storage.h"
 #include <world/Model.h>
 #include <world/Terrain.h>
-#include <world/Physics.h>
+#include <world/systems/Physics.h>
 #include <world/components/Light.h>
-#include <world/components/Camera.h>
-#include <y/meta.h>
 #include "../action/entity/ActionWorldEditComponent.h"
-#include "../action/terrain/ActionWorldAddTerrain.h"
 #include "../action/ActionWorldPaste.h"
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>
 #include <mode_world/action/entity/ActionWorldAddEntity.h>
 #include <mode_world/action/terrain/ActionWorldEditTerrainMetaData.h>
-
 #include "../action/ActionWorldDeleteSelection.h"
 #include <lib/ygraphics/graphics-impl.h>
-#include <y/helper/ResourceManager.h>
 #include <ecs/EntityManager.h>
 #include <stuff/PluginManager.h>
 

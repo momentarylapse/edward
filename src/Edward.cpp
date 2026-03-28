@@ -106,6 +106,7 @@ void templatify(const Path &filename) {
 	auto session = create_session(false);
 	auto storage = session->storage;
 	auto doc = session->create_doc();
+	session->load_project(session->guess_root_directory(filename), false);
 
 
 	auto _filename = filename.absolute().canonical();
@@ -134,7 +135,8 @@ void templatify(const Path &filename) {
 		{
 		    ScriptInstanceData c;
 		    c.class_name = "ModelRef";
-		    c.set("model", "", str(_filename.basename()));
+		    //c.set("model", "", str(_filename.basename()));
+			c.set("model", "", str(_filename.relative_to(session->project_dir | "Objects")));
 		    t.components.add(c);
 		}
 		if (data->phys_mesh->vertices.num > 0) {

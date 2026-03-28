@@ -6,9 +6,9 @@
  */
 
 #include "LevelData.h"
-#include "Link.h"
+#include "components/Link.h"
 #include "World.h"
-#include "Physics.h"
+#include "systems/Physics.h"
 #include "../plugins/PluginManager.h"
 #include <lib/doc/xml.h>
 #include <lib/yrenderer/scene/Light.h>

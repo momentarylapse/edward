@@ -54,12 +54,13 @@
 #include <ecs/System.h>
 #include <ecs/SystemManager.h>
 #include "../world/components/Camera.h"
-#include "../world/Link.h"
+#include "../world/components/Link.h"
 #include "../world/Model.h"
 #include "../world/ModelManager.h"
 #include "../world/Terrain.h"
 #include "../world/World.h"
-#include "../world/Physics.h"
+#include "../world/systems/Physics.h"
+#include "../world/systems/AnimationManager.h"
 #include "../world/components/Light.h"
 #include "../world/components/SolidBody.h"
 #include "../world/components/Collider.h"
@@ -75,6 +76,7 @@
 #include <lib/image/image.h>
 #include <ecs/EntityManager.h>
 #include <ecs/BaseClass.h>
+
 
 namespace PluginManager {
 
@@ -109,7 +111,7 @@ MultiInstance* _create_object_multi(World *w, const Path &filename, const Array<
 	return nullptr;
 }
 
-Model* _attach_model(World* w, Entity* e, const Path& filename) {
+ModelRef* _attach_model(World* w, Entity* e, const Path& filename) {
 	KABA_EXCEPTION_WRAPPER( return w->attach_model(e, filename); );
 	return nullptr;
 }
@@ -137,8 +139,8 @@ void screenshot(Image& im) {
 }
 
 
-xfer<Model> __load_model(const Path& filename) {
-	return engine.resource_manager->load_model_copy(filename);
+Model* __load_model(const Path& filename) {
+	return engine.resource_manager->load_model(filename);
 }
 
 shared<Shader> __load_shader(const Path& filename) {
@@ -153,8 +155,19 @@ shared<Texture> __load_texture(const Path& filename) {
 	return engine.resource_manager->load_texture(filename);
 }
 
-xfer<yrenderer::Material> __load_material(const Path& filename) {
-	return engine.resource_manager->load_material_copy(filename);
+yrenderer::Material* __load_material(const Path& filename) {
+	return engine.resource_manager->load_material(filename);
+}
+
+yrenderer::Material* make_material_unique(yrenderer::Material* m) {
+	//if (engine.resource_manager->material_manager->is_from_file(m))
+	if (!m->is_unique) {
+		// TODO should be owned by MaterialManager
+		auto mm = m->copy();
+		mm->is_unique = true;
+		return mm;
+	}
+	return m;
 }
 
 
@@ -346,23 +359,17 @@ void export_world(kaba::Exporter* ext) {
 	Model model;
 	ext->declare_class_size("Model", sizeof(Model));
 	ext->declare_class_element("Model.mesh", &Model::mesh);
-	ext->declare_class_element("Model.materials", &Model::material);
-	ext->declare_class_element("Model.matrix", &Model::_matrix);
+	ext->declare_class_element("Model.materials", &Model::materials);
 	ext->declare_class_element("Model.radius", (char*)&model.prop.radius - (char*)&model);
 	ext->declare_class_element("Model.min", (char*)&model.prop.min - (char*)&model);
 	ext->declare_class_element("Model.max", (char*)&model.prop.max- (char*)&model);
-	ext->link_class_func("Model.__init__", &Model::__init__);
-	ext->link_virtual("Model.__delete__", &Model::__delete__, &model);
+	ext->link_class_func("Model.__init__", &kaba::generic_init<Model>);
+	ext->link_class_func("Model.__delete__", &kaba::generic_delete<Model>);
 	ext->link_class_func("Model.make_editable", &Model::make_editable);
 	ext->link_class_func("Model.begin_edit", &Model::begin_edit);
 	ext->link_class_func("Model.end_edit", &Model::end_edit);
 	ext->link_class_func("Model.get_vertex", &Model::get_vertex);
-	ext->link_class_func("Model.update_matrix", &Model::update_matrix);
 //	ext->link_class_func("Model.set_bone_model", &Model::set_bone_model);
-
-	ext->link_virtual("Model.on_init", &Model::on_init, &model);
-	ext->link_virtual("Model.on_delete", &Model::on_delete, &model);
-	ext->link_virtual("Model.on_iterate", &Model::on_iterate, &model);
 
 
 	ext->declare_class_size("UserMesh", sizeof(UserMesh));
@@ -441,6 +448,9 @@ void export_world(kaba::Exporter* ext) {
 
 	ext->declare_class_size("ModelRef", sizeof(ModelRef));
 	ext->declare_class_element("ModelRef.model", &ModelRef::model);
+	ext->declare_class_element("ModelRef.materials", &ModelRef::materials);
+	ext->link_class_func("ModelRef.get_material", &ModelRef::get_material);
+	ext->link_class_func("ModelRef.set_material", &ModelRef::set_material);
 
 	ext->declare_class_size("TerrainRef", sizeof(TerrainRef));
 	ext->declare_class_element("TerrainRef.terrain", &TerrainRef::terrain);
@@ -465,7 +475,7 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("World.msg_data", &World::msg_data);
 	ext->link_class_func("World.ego", &World::ego);
 	ext->link_class_func("World.load_soon", &World::load_soon);
-	ext->link_class_func("World.load_template", &World::load_template);
+	ext->link_class_func("World.load_template", &World::create_from_template);
 	ext->link_class_func("World.create_object", &_create_object);
 	ext->link_class_func("World.create_object_multi", &_create_object_multi);
 	ext->link_class_func("World.create_terrain", &World::create_terrain);
@@ -475,7 +485,6 @@ void export_world(kaba::Exporter* ext) {
 	ext->link_class_func("World.create_light_cone", &World::create_light_cone);
 	ext->link_class_func("World.create_camera", &World::create_camera);
 	ext->link_class_func("World.attach_model", &_attach_model);
-	ext->link_class_func("World.unattach_model", &World::unattach_model);
 	ext->link_class_func("World._add_particle", &_world_add_legacy_particle);
 	ext->link_class_func("World.shift_all", &World::shift_all);
 	ext->link_class_func("World.trace", &World::trace);
@@ -526,6 +535,7 @@ void export_world(kaba::Exporter* ext) {
 	ext->link("cam", &cam_main);
 	ext->link_func("load_model", &__load_model);
 	ext->link_func("load_material", &__load_material);
+	ext->link_func("make_material_unique", &make_material_unique);
 
 	ext->link_func("attach_light_parallel", &attach_light_parallel);
 	ext->link_func("attach_light_point", &attach_light_point);
@@ -940,7 +950,7 @@ void import_kaba() {
 	auto m_model = kaba::default_context->load_module("yengine/model.kaba");
 	import_component_class<Animator>(m_model, "Animator");
 	import_component_class<Skeleton>(m_model, "Skeleton");
-	import_component_class<Model>(m_model, "Model");
+	//import_component_class<Model>(m_model, "Model");
 
 	auto m_world = kaba::default_context->load_module("yengine/world.kaba");
 	import_component_class<SolidBody>(m_world, "SolidBody");
@@ -961,6 +971,7 @@ void import_kaba() {
 	import_component_class<EgoMarker>(m_world, "EgoMarker");
 	import_component_class<Link>(m_world, "Link");
 	import_component_class<Physics>(m_world, "Physics", "ecs.System"); // well, not a Component... but ok
+	import_component_class<AnimationManager>(m_world, "AnimationManager", "ecs.System");
 
 	auto m_fx = kaba::default_context->load_module("yengine/fx.kaba");
 	import_component_class<ParticleGroup>(m_fx, "ParticleGroup");
@@ -1037,13 +1048,13 @@ string whatever_to_string(const void* instance, int offset, const kaba::Class* c
 	}
 	if (c == kaba::common_types.mat3)
 		return mat3_to_any(*(const mat3*)p).str();
-	if (c->name == "Material*" and default_resource_manager)
+	if ((c->name == "Material*" or c->name == "Material&") and default_resource_manager)
 		return str(default_resource_manager->filename(*(const yrenderer::Material**)p));
 	if (c->name == "Terrain*" and default_resource_manager)
 		return str(default_resource_manager->filename(*(const Terrain**)p));
 	if (c->name == "Model*" and default_resource_manager)
 		return str(default_resource_manager->filename(*(const Model**)p));
-	if (c->name == "Template*" and default_resource_manager)
+	if ((c->name == "Template*" or c->name == "Template&") and default_resource_manager)
 		return str(default_resource_manager->filename(*(const Template**)p));
 	return "???";
 }
@@ -1065,13 +1076,13 @@ void whatever_from_string(void* p, const kaba::Class* type, const string& value)
 		*(color*)p = s2c(value);
 	if (type == kaba::common_types.mat3)
 		*(mat3*)p = s2mat3(value);
-	if (type->name == "Material*" and default_resource_manager)
+	if ((type->name == "Material*" or type->name == "Material&") and default_resource_manager)
 		*(yrenderer::Material**)p = default_resource_manager->load_material(value);
 	if (type->name == "Terrain*" and default_resource_manager)
 		*(Terrain**)p = default_resource_manager->load_terrain(value);
 	if (type->name == "Model*" and default_resource_manager)
 		*(Model**)p = default_resource_manager->load_model(value);
-	if (type->name == "Template*" and default_resource_manager)
+	if ((type->name == "Template*" or type->name == "Template&") and default_resource_manager)
 		*(Template**)p = default_resource_manager->load_template(value);
 }
 
