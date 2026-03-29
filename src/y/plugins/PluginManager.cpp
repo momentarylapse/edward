@@ -1007,6 +1007,8 @@ Array<ScriptInstanceDataVariable> parse_variables(const string &var) {
 
 vec3 s2v(const string &s) {
 	auto x = s.explode(" ");
+	if (x.num < 3)
+		return vec3::ZERO;
 	return vec3(x[0]._float(), x[1]._float(), x[2]._float());
 }
 
@@ -1024,10 +1026,9 @@ mat3 s2mat3(const string &s) {
 	return m;
 }
 
-string whatever_to_string(const void* instance, int offset, const kaba::Class* c) {
-	if (!instance)
+string whatever_to_string(const void* p, const kaba::Class* c) {
+	if (!p)
 		return "";
-	auto p = (const char*)instance + offset;
 	if (c == kaba::common_types.string)
 		return *(const string*)p;
 	if (c == kaba::common_types.path)
@@ -1056,7 +1057,18 @@ string whatever_to_string(const void* instance, int offset, const kaba::Class* c
 		return str(default_resource_manager->filename(*(const Model**)p));
 	if ((c->name == "Template*" or c->name == "Template&") and default_resource_manager)
 		return str(default_resource_manager->filename(*(const Template**)p));
-	return "???";
+	if (c->is_list()) {
+		string s;
+		auto arr = (DynamicArray*)p;
+		for (int i=0; i<arr->num; i++) {
+			if (i > 0)
+				s += ", ";
+			// ARGH, TODO switch to any
+			s += whatever_to_string(arr->simple_element(i), c->parent).repr();
+		}
+		return "[" + s + "]";
+	}
+	return "nil";
 }
 
 void whatever_from_string(void* p, const kaba::Class* type, const string& value) {
@@ -1084,6 +1096,10 @@ void whatever_from_string(void* p, const kaba::Class* type, const string& value)
 		*(Model**)p = default_resource_manager->load_model(value);
 	if ((type->name == "Template*" or type->name == "Template&") and default_resource_manager)
 		*(Template**)p = default_resource_manager->load_template(value);
+	if (type->is_list() and value.head(0) == "[") {
+		auto arr = (DynamicArray*)p;
+		// TODO
+	}
 }
 
 void assign_variables(void* p, const kaba::Class* c, const Array<ScriptInstanceDataVariable>& variables) {

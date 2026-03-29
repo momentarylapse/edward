@@ -104,6 +104,10 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 
 	if (deep) {
 		try {
+			for (auto tr: data->entity_manager->get_component_list<TemplateRef>()) {
+				if (tr->_template)
+					data->_entity_apply_components(tr->owner, tr->_template->components);
+			}
 			for (auto m: data->entity_manager->get_component_list<ModelRef>()) {
 				// automagic components for now...
 				if (m->owner->get_component<EdwardTag>()->request_auto_components)
@@ -193,7 +197,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 	data->meta_data.skybox_files = ld.skybox_filename;
 
 
-	for (auto& e: ld.objects) {
+	/*for (auto& e: ld.objects) {
 		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
 		o->get_component<EdwardTag>()->request_auto_components = true;
 		auto m = data->entity_manager->add_component<ModelRef>(o);
@@ -230,12 +234,12 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		t->terrain = data->session->resource_manager->load_terrain_lazy(e.filename);
 		t->material = data->session->resource_manager->load_material(e.material);
 		data->_entity_apply_components(o, e.components);
-	}
+	}*/
 	for (auto& e: ld.entities) {
 		auto o = data->_create_entity(e.pos, e.ang);
 		data->_entity_apply_components(o, e.components);
 	}
-	for (const auto& ll: ld.links) {
+	/*for (const auto& ll: ld.links) {
 		WorldLink l;
 		l.type = ll.type;
 		l.object[0] = ll.object[0];
@@ -244,7 +248,7 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 		l.ang = ll.ang;
 		//l.radius = e.value("radius")._float();
 		data->links.add(l);
-	}
+	}*/
 
 	data->meta_data.physics_enabled = ld.physics_enabled;
 	data->meta_data.physics_mode = ld.physics_mode;
@@ -266,6 +270,20 @@ void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
 }
 
 string phys_mode_name(PhysicsMode m);
+
+string light_type_canonical(yrenderer::LightType t) {
+	switch (t) {
+		case yrenderer::LightType::DIRECTIONAL:
+			return "directional";
+		case yrenderer::LightType::POINT:
+			return "point";
+		case yrenderer::LightType::CONE:
+			return "cone";
+		case yrenderer::LightType::AMBIENT:
+			return "ambient";
+	}
+	return "???";
+}
 
 #if 0
 xml::Element encode_light(WorldEntity &l) {
@@ -338,7 +356,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 
 	auto save_component = [] (const ScriptInstanceData& c) {
 		auto ee = xml::Element("component");
-		if (!c.filename.is_empty() and !c.filename.is_in("yengine"))
+		if (!c.is_internal())
 			ee.add_attribute("script", str(c.filename));
 		ee.add_attribute("class", c.class_name);
 		for (auto &v: c.variables)
@@ -357,12 +375,87 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 	for (const auto& [i,e]: enumerate(data->entity_manager->entities)) {
 		xml::Element el;
 
-		el = xml::Element("entity").witha("pos", v2s(e->pos));
-		if (e->ang != quaternion::ID)
-			el.add_attribute("ang", v2s(e->ang.get_angles()));
-		for (auto c: e->components) {
-			if (c->component_type != EdwardTag::_class)
-				el.add(save_component(session->plugin_manager->describe_class(c->component_type, c)));
+		if (auto tr = e->get_component<TemplateRef>()) {
+			if (auto t = tr->_template) {
+				el = xml::Element("object");
+				el.add_attribute("file", str(session->resource_manager->filename(tr->_template).no_ext()));
+				if (e->pos != vec3::ZERO)
+					el.add_attribute("pos", v2s(e->pos));
+				if (e->ang != quaternion::ID)
+					el.add_attribute("ang", v2s(e->ang.get_angles()));
+				//if (e->get_component<EgoMarker>())
+				//	el.add_attribute("role", "ego");
+
+				// TODO check if any components got removed!
+
+				for (auto c: e->components) {
+					const auto description = session->plugin_manager->describe_class(c->component_type, c);
+					bool covered = t->components.find(description) >= 0;
+					if (c->component_type != EdwardTag::_class and c->component_type != TemplateRef::_class /*and c->component_type != EgoMarker::_class*/ and !covered)
+						el.add(save_component(description));
+				}
+				cont.add(el);
+				continue;
+			}
+		}
+		if (auto cam = e->get_component<Camera>()) {
+			el = xml::Element("camera");
+			if (e->pos != vec3::ZERO)
+				el.add_attribute("pos", v2s(e->pos));
+			if (e->ang != quaternion::ID)
+				el.add_attribute("ang", v2s(e->ang.get_angles()));
+			el.add_attribute("fov", f2s(cam->fov, 3));
+			el.add_attribute("minDepth", f2s(cam->min_depth, 3));
+			el.add_attribute("maxDepth", f2s(cam->max_depth, 3));
+			el.add_attribute("exposure", f2s(cam->exposure, 3));
+			el.add_attribute("bloomFactor", f2s(cam->bloom_factor, 3));
+			for (auto c: e->components) {
+				if (c->component_type != EdwardTag::_class and c->component_type != Camera::_class)
+					el.add(save_component(session->plugin_manager->describe_class(c->component_type, c)));
+			}
+		} else if (auto tr = e->get_component<TerrainRef>()) {
+			el = xml::Element("terrain");
+			if (auto t = tr->terrain)
+				el.add_attribute("file", str(session->resource_manager->filename(t).no_ext()));
+			if (auto m = tr->material)
+				el.add_attribute("material", str(session->resource_manager->filename(m)));
+			if (e->pos != vec3::ZERO)
+				el.add_attribute("pos", v2s(e->pos));
+			if (e->ang != quaternion::ID)
+				el.add_attribute("ang", v2s(e->ang.get_angles()));
+			for (auto c: e->components) {
+				if (c->component_type != EdwardTag::_class and c->component_type != TerrainRef::_class and c->component_type != TerrainCollider::_class and c->component_type != SolidBody::_class)
+					el.add(save_component(session->plugin_manager->describe_class(c->component_type, c)));
+			}
+		} else if (auto l = e->get_component<Light>()) {
+			el = xml::Element("light").witha("type", light_type_canonical(l->light.type))
+			.witha("color", c2s(l->light.col))
+			.witha("harshness", f2s(l->light.harshness, 4));
+			if (l->light.type == yrenderer::LightType::DIRECTIONAL) {
+				el.add_attribute("ang", v2s(e->ang.get_angles()));
+			} else if (l->light.type == yrenderer::LightType::POINT) {
+				el.add_attribute("pos", v2s(e->pos));
+				el.add_attribute("radius", f2s(l->light.radius(), 3));
+			} else if (l->light.type == yrenderer::LightType::CONE) {
+				el.add_attribute("pos", v2s(e->pos));
+				el.add_attribute("ang", v2s(e->ang.get_angles()));
+				el.add_attribute("radius", f2s(l->light.radius(), 3));
+				el.add_attribute("theta", f2s(l->light.theta, 3));
+			}
+			for (auto c: e->components) {
+				if (c->component_type != EdwardTag::_class and c->component_type != Light::_class)
+					el.add(save_component(session->plugin_manager->describe_class(c->component_type, c)));
+			}
+		} else {
+			el = xml::Element("entity");
+			if (e->pos != vec3::ZERO)
+				el.add_attribute("pos", v2s(e->pos));
+			if (e->ang != quaternion::ID)
+				el.add_attribute("ang", v2s(e->ang.get_angles()));
+			for (auto c: e->components) {
+				if (c->component_type != EdwardTag::_class)
+					el.add(save_component(session->plugin_manager->describe_class(c->component_type, c)));
+			}
 		}
 
 #if 0

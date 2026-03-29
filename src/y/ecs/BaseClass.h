@@ -49,6 +49,7 @@ struct ScriptInstanceData {
 	Array<ScriptInstanceDataVariable> variables;
 	string get(const string& name) const;
 	void set(const string& name, const string& type, const string& value);
+	bool is_internal() const;
 	bool operator==(const ScriptInstanceData& other) const;
 	bool operator!=(const ScriptInstanceData& other) const;
 };

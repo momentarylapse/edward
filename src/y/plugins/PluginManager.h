@@ -32,7 +32,7 @@ namespace PluginManager {
 	void* create_instance_auto(const string& extended_type_name);
 	void assign_variables(void *p, const kaba::Class *c, const Array<ScriptInstanceDataVariable> &variables);
 
-	string whatever_to_string(const void* instance, int offset, const kaba::Class* c);
+	string whatever_to_string(const void* p, const kaba::Class* c);
 	void whatever_from_string(void* p, const kaba::Class* type, const string& value);
 
 	Array<ScriptInstanceDataVariable> parse_variables(const string &var);

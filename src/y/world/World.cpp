@@ -186,7 +186,7 @@ bool World::load(const LevelData &ld) {
 
 	fog = ld.fog;
 
-	for (auto &l: ld.lights) {
+	/*for (auto &l: ld.lights) {
 		auto o = create_entity(l.pos, quaternion::rotation(l.ang));
 		auto ll = entity_manager->add_component<Light>(o);
 		ll->light.init(l.type, l._color, l.theta);
@@ -198,7 +198,7 @@ bool World::load(const LevelData &ld) {
 			ll->light.power = yrenderer::Light::_radius_to_power(l.radius);
 
 		add_user_components(entity_manager.get(), o, l.components);
-	}
+	}*/
 
 	// skybox
 	skybox.resize(ld.skybox_filename.num);
@@ -209,6 +209,7 @@ bool World::load(const LevelData &ld) {
 	}
 	background = ld.background_color;
 
+#if 0
 	for (auto &c: ld.cameras) {
 		auto cc = create_camera(c.pos, quaternion::rotation(c.ang));
 		cam_main = cc;
@@ -246,6 +247,7 @@ bool World::load(const LevelData &ld) {
 		add_user_components(entity_manager.get(), tt->owner, t.components);
 		ok &= tt->terrain and !tt->terrain->error;
 	}
+#endif
 
 	// (raw) entities
 	foreachi(auto &e, ld.entities, i) {
@@ -256,7 +258,7 @@ bool World::load(const LevelData &ld) {
 
 
 	// FIXME...
-	auto& model_list = entity_manager->get_component_list<ModelRef>();
+	/*auto& model_list = entity_manager->get_component_list<ModelRef>();
 	for (auto &l: ld.links) {
 		Entity *a = model_list[l.object[0]]->owner;
 		Entity *b = nullptr;
@@ -267,7 +269,7 @@ bool World::load(const LevelData &ld) {
 		ll->a = a;
 		ll->b = b;
 		ll->link_type = l.type;
-	}
+	}*/
 
 	auto& cameras = entity_manager->get_component_list<Camera>();
 	if (cameras.num == 0) {

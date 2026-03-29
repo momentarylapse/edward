@@ -7,6 +7,9 @@
 
 #include "BaseClass.h"
 
+#include "lib/base/sort.h"
+#include "lib/os/msg.h"
+
 
 BaseClass::BaseClass(Type t) {
 	type = t;
@@ -37,8 +40,25 @@ bool ScriptInstanceDataVariable::operator!=(const ScriptInstanceDataVariable& ot
 	return !(*this == other);
 }
 
+
+Array<ScriptInstanceDataVariable> sorted_variables(const Array<ScriptInstanceDataVariable>& variables) {
+	return base::sorted(variables, [] (const ScriptInstanceDataVariable& a, const ScriptInstanceDataVariable& b) {
+		return a.name < b.name;
+	});
+}
+
+bool ScriptInstanceData::is_internal() const {
+	return filename.is_empty() or filename.is_in("yengine");
+}
+
 bool ScriptInstanceData::operator==(const ScriptInstanceData& other) const {
-	return class_name == other.class_name and filename == other.filename and variables == other.variables;
+	if (class_name != other.class_name)
+		return false;
+	if (filename != other.filename and !is_internal() and !other.is_internal())
+		return false;
+	auto vv = sorted_variables(variables);
+	auto vv2 = sorted_variables(other.variables);
+	return vv == vv2;
 }
 
 bool ScriptInstanceData::operator!=(const ScriptInstanceData& other) const {

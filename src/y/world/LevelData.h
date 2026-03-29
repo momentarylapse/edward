@@ -50,7 +50,7 @@ struct LevelData {
 	static Array<ScriptInstanceData> auto_terrain_components();
 
 
-	struct Terrain {
+	/*struct Terrain {
 		Path filename;
 		Path material;
 		vec3 pos;
@@ -62,7 +62,7 @@ struct LevelData {
 		string name;
 		vec3 pos, ang;
 		Array<ScriptInstanceData> components;
-	};
+	};*/
 
 	struct Entity {
 		string name;
@@ -71,7 +71,7 @@ struct LevelData {
 		Array<ScriptInstanceData> components;
 	};
 
-	struct Light {
+	/*struct Light {
 		bool enabled;
 		vec3 pos, ang;
 		yrenderer::LightType type;
@@ -91,20 +91,19 @@ struct LevelData {
 		LinkType type;
 		vec3 pos, ang;
 		Array<ScriptInstanceData> components;
-	};
+	};*/
 
 	Path world_filename;
 	Array<Path> skybox_filename;
 	Array<vec3> skybox_ang;
 	color background_color;
-	Array<Object> objects;
-	Array<Terrain> terrains;
+	//Array<Object> objects;
+	//Array<Terrain> terrains;
 	Array<Entity> entities;
 	Array<ScriptInstanceData> systems;
-	Array<Light> lights;
-	Array<Link> links;
-
-	Array<Camera> cameras;
+	//Array<Light> lights;
+	//Array<Link> links;
+	//Array<Camera> cameras;
 
 	bool physics_enabled;
 	PhysicsMode physics_mode;

@@ -137,6 +137,7 @@ void templatify(const Path &filename) {
 		    c.class_name = "ModelRef";
 		    //c.set("model", "", str(_filename.basename()));
 			c.set("model", "", str(_filename.relative_to(session->project_dir | "Objects")));
+			c.set("materials", "", "[]");
 		    t.components.add(c);
 		}
 		if (data->phys_mesh->vertices.num > 0) {
@@ -148,7 +149,7 @@ void templatify(const Path &filename) {
 	        c.class_name = "SolidBody";
 	        c.set("physics_active", "", b2s(data->meta_data.active_physics));
 	        c.set("passive_physics", "", b2s(data->meta_data.passive_physics));
-	        //c.set("g_factor", "", "1.0");
+	        c.set("g_factor", "", "1.000");
 	        c.set("mass", "", f2s(data->meta_data.mass, 3));
 	        c.set("theta", "", mat3_to_any(T).str());
 	        t.components.add(c);
