@@ -62,7 +62,7 @@
 #include "../world/systems/Physics.h"
 #include "../world/systems/AnimationManager.h"
 #include "../world/components/Light.h"
-#include "../world/components/SolidBody.h"
+#include "../world/components/RigidBody.h"
 #include "../world/components/Collider.h"
 #include "../world/components/Animator.h"
 #include "../world/components/Skeleton.h"
@@ -396,21 +396,20 @@ void export_world(kaba::Exporter* ext) {
 	ext->link_class_func("Skeleton.reset", &Skeleton::reset);
 
 
-	ext->declare_class_size("SolidBody", sizeof(SolidBody));
-	ext->declare_class_element("SolidBody.vel", &SolidBody::vel);
-	ext->declare_class_element("SolidBody.rot", &SolidBody::rot);
-	ext->declare_class_element("SolidBody.mass", &SolidBody::mass);
-	//ext->declare_class_element("SolidBody.theta", &SolidBody::theta_world);
-	ext->declare_class_element("SolidBody.theta", &SolidBody::theta_0);
-	ext->declare_class_element("SolidBody.g_factor", &SolidBody::g_factor);
-	ext->declare_class_element("SolidBody.physics_active", &SolidBody::active);
-	ext->declare_class_element("SolidBody.physics_passive", &SolidBody::passive);
-	ext->link_class_func("SolidBody.add_force", &SolidBody::add_force);
-	ext->link_class_func("SolidBody.add_impulse", &SolidBody::add_impulse);
-	ext->link_class_func("SolidBody.add_torque", &SolidBody::add_torque);
-	ext->link_class_func("SolidBody.add_torque_impulse", &SolidBody::add_torque_impulse);
-	ext->link_class_func("SolidBody.update_motion", &SolidBody::update_motion);
-	ext->link_class_func("SolidBody.update_mass", &SolidBody::update_mass);
+	ext->declare_class_size("RigidBody", sizeof(RigidBody));
+	ext->declare_class_element("RigidBody.vel", &RigidBody::vel);
+	ext->declare_class_element("RigidBody.rot", &RigidBody::rot);
+	ext->declare_class_element("RigidBody.mass", &RigidBody::mass);
+	//ext->declare_class_element("RigidBody.theta", &RigidBody::theta_world);
+	ext->declare_class_element("RigidBody.theta", &RigidBody::theta_0);
+	ext->declare_class_element("RigidBody.g_factor", &RigidBody::g_factor);
+	ext->declare_class_element("RigidBody.dynamic", &RigidBody::dynamic);
+	ext->link_class_func("RigidBody.add_force", &RigidBody::add_force);
+	ext->link_class_func("RigidBody.add_impulse", &RigidBody::add_impulse);
+	ext->link_class_func("RigidBody.add_torque", &RigidBody::add_torque);
+	ext->link_class_func("RigidBody.add_torque_impulse", &RigidBody::add_torque_impulse);
+	ext->link_class_func("RigidBody.update_motion", &RigidBody::update_motion);
+	ext->link_class_func("RigidBody.update_mass", &RigidBody::update_mass);
 
 	ext->declare_class_size("Collider", sizeof(Collider));
 
@@ -465,7 +464,7 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("Physics.mode", &Physics::mode);
 	ext->declare_class_element("Physics.enabled", &Physics::enabled);
 	ext->declare_class_element("Physics.collisions_enabled", &Physics::collisions_enabled);
-	ext->link_class_func("Physics.set_active_physics", &Physics::set_active_physics);
+	ext->link_class_func("Physics.set_dynamic", &Physics::set_dynamic);
 	ext->link_class_func("Physics.get_g", &Physics::get_g);
 
 
@@ -953,7 +952,7 @@ void import_kaba() {
 	//import_component_class<Model>(m_model, "Model");
 
 	auto m_world = kaba::default_context->load_module("yengine/world.kaba");
-	import_component_class<SolidBody>(m_world, "SolidBody");
+	import_component_class<RigidBody>(m_world, "RigidBody");
 	import_component_class<Collider>(m_world, "Collider");
 	import_component_class<MeshCollider>(m_world, "MeshCollider");
 	import_component_class<SphereCollider>(m_world, "SphereCollider");
@@ -1143,8 +1142,8 @@ const kaba::Class *find_class(const Path &filename, const string &name) {
 			return TerrainRef::_class;
 		if (name == "TemplateRef")
 			return TemplateRef::_class;
-		if (name == "SolidBody")
-			return SolidBody::_class;
+		if (name == "RigidBody")
+			return RigidBody::_class;
 		if (name == "Skeleton")
 			return Skeleton::_class;
 		if (name == "Animator")
@@ -1183,8 +1182,8 @@ void *create_instance(const kaba::Class *c, const string &variables) {
 void* create_instance(const kaba::Class *c, const Array<ScriptInstanceDataVariable> &variables) {
 	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
 	msg_write(format("creating instance  %s", c->long_name()));
-	if (c == SolidBody::_class)
-		return new SolidBody;
+	if (c == RigidBody::_class)
+		return new RigidBody;
 	if (c == ModelRef::_class)
 		return new ModelRef;
 	if (c == TerrainRef::_class)

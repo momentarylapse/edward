@@ -27,7 +27,7 @@ namespace yrenderer {
 }
 class Terrain;
 class TerrainRef;
-class SolidBody;
+class RigidBody;
 class MultiInstance;
 class Entity;
 class EntityManager;
@@ -51,7 +51,7 @@ struct GodNetMessage {
 
 struct CollisionData {
 	Entity *entity;
-	SolidBody *body;
+	RigidBody *body;
 	vec3 pos, n;
 };
 

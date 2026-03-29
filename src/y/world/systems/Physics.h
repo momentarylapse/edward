@@ -10,7 +10,7 @@
 
 class Link;
 class CollisionData;
-class SolidBody;
+class RigidBody;
 
 class btDefaultCollisionConfiguration;
 class btCollisionDispatcher;
@@ -40,9 +40,9 @@ public:
 	void register_link(Link *l);
 	void unregister_link(Link *l);
 
-	void set_active_physics(Entity *o, bool active, bool passive);
-	void register_body(SolidBody* sb);
-	void unregister_body(SolidBody* sb);
+	void set_dynamic(Entity *o, bool dynamic);
+	void register_body(RigidBody* sb);
+	void unregister_body(RigidBody* sb);
 	void update_all_bullet();
 
 	base::optional<CollisionData> trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore = nullptr);

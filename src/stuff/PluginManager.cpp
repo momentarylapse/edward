@@ -53,7 +53,7 @@
 #include <y/world/Terrain.h>
 #include <y/world/components/Skeleton.h>
 #include <y/world/components/Animator.h>
-#include <y/world/components/SolidBody.h>
+#include <y/world/components/RigidBody.h>
 #include <y/world/components/Collider.h>
 #include <storage/Storage.h>
 
@@ -359,7 +359,7 @@ void PluginManager::load_project_stuff(const Path &dir) {
 
 	Camera::_class = link_component("Camera");
 	Light::_class = link_component("Light");
-	SolidBody::_class = link_component("SolidBody");
+	RigidBody::_class = link_component("RigidBody");
 	MeshCollider::_class = link_component("MeshCollider");
 	TerrainCollider::_class = link_component("TerrainCollider");
 	Skeleton::_class = link_component("Skeleton");

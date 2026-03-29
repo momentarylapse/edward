@@ -8,7 +8,7 @@
 #include "Link.h"
 #include <ecs/Entity.h>
 #include <lib/os/msg.h>
-#include "SolidBody.h"
+#include "RigidBody.h"
 
 
 #if HAS_LIB_BULLET
@@ -26,9 +26,9 @@ const kaba::Class* Link::_class = nullptr;
 	a = nullptr;
 	b = nullptr;
 	if (_a)
-		a = _a->get_component<SolidBody>();
+		a = _a->get_component<RigidBody>();
 	if (_b)
-		b = _b->get_component<SolidBody>();
+		b = _b->get_component<RigidBody>();
 	con = nullptr;
 }*/
 
@@ -62,7 +62,7 @@ void Link::create() {
 
 
 void Link::create_socket() {
-	if (!a->get_component<SolidBody>())
+	if (!a->get_component<RigidBody>())
 		return;
 	vec3 pa, pb;
 	quaternion iqa, iqb;
@@ -71,21 +71,21 @@ void Link::create_socket() {
 	if (b) {
 		//msg_write("-----------add socket 2");
 		con = new btPoint2PointConstraint(
-			*a->get_component<SolidBody>()->body,
-			*b->get_component<SolidBody>()->body,
+			*a->get_component<RigidBody>()->body,
+			*b->get_component<RigidBody>()->body,
 			bt_set_v(pa),
 			bt_set_v(pb));
 	} else {
 		//msg_write("-----------add socket 1");
 		con = new btPoint2PointConstraint(
-			*a->get_component<SolidBody>()->body,
+			*a->get_component<RigidBody>()->body,
 			bt_set_v(pa));
 	}
 #endif
 }
 
 void Link::create_hinge() {
-	if (!a->get_component<SolidBody>())
+	if (!a->get_component<RigidBody>())
 		return;
 	vec3 pa, pb;
 	quaternion iqa, iqb;
@@ -94,8 +94,8 @@ void Link::create_hinge() {
 	if (b) {
 		//msg_write("-----------add hinge 2");
 		con = new btHingeConstraint(
-			*a->get_component<SolidBody>()->body,
-			*b->get_component<SolidBody>()->body,
+			*a->get_component<RigidBody>()->body,
+			*b->get_component<RigidBody>()->body,
 			bt_set_v(pa),
 			bt_set_v(pb),
 			bt_set_v(iqa * owner->ang * vec3::EZ),
@@ -104,7 +104,7 @@ void Link::create_hinge() {
 	} else {
 		//msg_write("-----------add hinge 1");
 		con = new btHingeConstraint(
-			*a->get_component<SolidBody>()->body,
+			*a->get_component<RigidBody>()->body,
 			bt_set_v(pa),
 			bt_set_v(iqa * owner->ang * vec3::EZ),
 			true);
@@ -113,7 +113,7 @@ void Link::create_hinge() {
 }
 
 void Link::create_universal() {
-	if (!a->get_component<SolidBody>() or !b->get_component<SolidBody>())
+	if (!a->get_component<RigidBody>() or !b->get_component<RigidBody>())
 		return;
 	vec3 pa, pb;
 	quaternion iqa, iqb;
@@ -121,8 +121,8 @@ void Link::create_universal() {
 	//msg_write("-----------add universal");
 #if HAS_LIB_BULLET
 	con = new btUniversalConstraint(
-		*a->get_component<SolidBody>()->body,
-		*b->get_component<SolidBody>()->body,
+		*a->get_component<RigidBody>()->body,
+		*b->get_component<RigidBody>()->body,
 		bt_set_v(owner->pos),
 		bt_set_v(owner->ang * vec3::EZ),
 		bt_set_v(owner->ang * vec3::EY));

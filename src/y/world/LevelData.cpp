@@ -331,7 +331,7 @@ void LevelData::save(const Path &filename) {
 
 Array<ScriptInstanceData> LevelData::auto_terrain_components() {
 	return {{"TerrainCollider", "", {{}}},
-		{"SolidBody", "", {{"physics_active", "", "false"}}}};
+		{"RigidBody", "", {{"dynamic", "", "false"}}}};
 }
 
 

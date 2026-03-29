@@ -15,7 +15,7 @@
 class MetaMove;
 class Model;
 class Path;
-class SolidBody;
+class RigidBody;
 struct PhysicalMesh;
 class Skeleton;
 struct ScriptInstanceData;

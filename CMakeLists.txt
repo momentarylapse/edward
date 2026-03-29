@@ -605,8 +605,8 @@ add_executable(edward
 	src/y/world/components/Light.cpp
 	src/y/world/components/Link.cpp
 	src/y/world/components/MultiInstance.cpp
+	src/y/world/components/RigidBody.cpp
 	src/y/world/components/Skeleton.cpp
-	src/y/world/components/SolidBody.cpp
 	src/y/world/components/UserMesh.cpp
 	src/y/world/systems/AnimationManager.cpp
 	src/y/world/systems/Physics.cpp

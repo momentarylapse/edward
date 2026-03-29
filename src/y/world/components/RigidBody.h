@@ -1,5 +1,5 @@
 /*
- * SolidBody.h
+ * RigidBody.h
  *
  *  Created on: Jul 13, 2021
  *      Author: michi
@@ -16,16 +16,15 @@ class Model;
 class btRigidBody;
 
 // attach AFTER [Model, Terrain, Collider]
-class SolidBody : public Component {
+class RigidBody : public Component {
 public:
-	SolidBody();
-	~SolidBody() override;
+	RigidBody();
+	~RigidBody() override;
 
 
 	float mass, g_factor;
 	mat3 theta_0;
-	bool active, passive;
-	bool test_collisions;
+	bool dynamic;
 
 
 	vec3 force_int, torque_int;
@@ -52,7 +51,6 @@ public:
 	void _cdecl add_torque(const vec3 &t);
 	void _cdecl add_torque_impulse(const vec3 &l);
 
-	void _cdecl make_visible(bool visible);
 	void update_motion(int mask);
 	void update_mass();
 

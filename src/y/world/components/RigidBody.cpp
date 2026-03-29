@@ -1,11 +1,11 @@
 /*
- * SolidBodyComponent.cpp
+ * RigidBody.cpp
  *
  *  Created on: Jul 13, 2021
  *      Author: michi
  */
 
-#include "SolidBody.h"
+#include "RigidBody.h"
 #include "Collider.h"
 #include "../World.h"
 #include "../systems/Physics.h"
@@ -18,7 +18,7 @@
 #include <lib/os/msg.h>
 
 
-const kaba::Class *SolidBody::_class = nullptr;
+const kaba::Class* RigidBody::_class = nullptr;
 
 
 #if HAS_LIB_BULLET
@@ -67,9 +67,8 @@ inline bool TestVectorSanity(vec3 &v,char *name) {
 
 
 
-SolidBody::SolidBody() {
-	active = true;
-	passive = true;
+RigidBody::RigidBody() {
+	dynamic = true;
 	mass = 1;
 	body = nullptr;
 	theta_0 = mat3::ID;
@@ -87,17 +86,13 @@ SolidBody::SolidBody() {
 	force_ext = torque_ext = v_0;
 
 	g_factor = 1;
-	test_collisions = true;
 }
 
 
-void SolidBody::on_init() {
+void RigidBody::on_init() {
 	auto o = owner;
 	auto m = entity_get_model(owner);
 	auto t = o->get_component<TerrainRef>();
-
-	if (!active and !passive)
-		return;
 
 #if HAS_LIB_BULLET
 	btCollisionShape *col_shape = nullptr;
@@ -107,7 +102,7 @@ void SolidBody::on_init() {
 
 	btTransform start_transform = bt_set_trafo(o->pos, o->ang);
 
-	btScalar _mass(active ? mass : 0);
+	btScalar _mass(dynamic ? mass : 0);
 	btVector3 local_inertia(0, 0, 0);
 	//if (isDynamic)
 	if (col_shape) {
@@ -134,7 +129,7 @@ void SolidBody::on_init() {
 #endif
 }
 
-SolidBody::~SolidBody() {
+RigidBody::~RigidBody() {
 #if HAS_LIB_BULLET
 	if (body) {
 		delete body->getMotionState();
@@ -146,10 +141,10 @@ SolidBody::~SolidBody() {
 
 
 
-void SolidBody::add_force(const vec3 &f, const vec3 &rho) {
+void RigidBody::add_force(const vec3 &f, const vec3 &rho) {
 	if (engine.elapsed<=0)
 		return;
-	if (!active)
+	if (!dynamic)
 		return;
 	auto physics = SystemManager::get<Physics>();
 	if (physics and physics->mode == PhysicsMode::FULL_EXTERNAL) {
@@ -167,10 +162,10 @@ void SolidBody::add_force(const vec3 &f, const vec3 &rho) {
 	}
 }
 
-void SolidBody::add_impulse(const vec3 &p, const vec3 &rho) {
+void RigidBody::add_impulse(const vec3 &p, const vec3 &rho) {
 	if (engine.elapsed<=0)
 		return;
-	if (!active)
+	if (!dynamic)
 		return;
 	auto physics = SystemManager::get<Physics>();
 	if (physics and physics->mode == PhysicsMode::FULL_EXTERNAL) {
@@ -185,10 +180,10 @@ void SolidBody::add_impulse(const vec3 &p, const vec3 &rho) {
 	}
 }
 
-void SolidBody::add_torque(const vec3 &t) {
+void RigidBody::add_torque(const vec3 &t) {
 	if (engine.elapsed <= 0)
 		return;
-	if (!active)
+	if (!dynamic)
 		return;
 	auto physics = SystemManager::get<Physics>();
 	if (physics and physics->mode == PhysicsMode::FULL_EXTERNAL) {
@@ -203,10 +198,10 @@ void SolidBody::add_torque(const vec3 &t) {
 	}
 }
 
-void SolidBody::add_torque_impulse(const vec3 &l) {
+void RigidBody::add_torque_impulse(const vec3 &l) {
 	if (engine.elapsed <= 0)
 		return;
-	if (!active)
+	if (!dynamic)
 		return;
 	auto physics = SystemManager::get<Physics>();
 	if (physics and physics->mode == PhysicsMode::FULL_EXTERNAL) {
@@ -223,19 +218,19 @@ void SolidBody::add_torque_impulse(const vec3 &l) {
 
 
 
-void SolidBody::do_simple_physics(float dt) {
+void RigidBody::do_simple_physics(float dt) {
 	if (dt <= 0)
 		return;
 
 	auto o = owner;
 
 
-	if (active) {
+	if (dynamic) {
 		if (_vec_length_fuzzy_(force_int) > AccThreshold * mass)
 		{unfreeze(this);}
 	}
 
-	if (active and !frozen) {
+	if (dynamic and !frozen) {
 
 		if (inf_v(o->pos))	msg_error("inf   CalcMove Pos  1");
 		if (inf_v(vel))	msg_error("inf   CalcMove Vel  1");
@@ -287,7 +282,7 @@ void SolidBody::do_simple_physics(float dt) {
 	float rr = m ? m->prop.radius : 1.0f;
 	//if ((Pos!=Pos_old)or(ang!=ang_old))
 	//if ( (vel_surf!=v_0) or (VecLengthFuzzy(Pos-Pos_old)>2.0f*Elapsed) )//or(VecAng!=ang_old))
-	if (active) {
+	if (dynamic) {
 		if ( (vel_surf != v_0) or (_vec_length_fuzzy_(vel) > VelThreshold) or (_vec_length_fuzzy_(rot) * rr > VelThreshold))
 			moved = true;
 	} else {
@@ -312,12 +307,12 @@ void SolidBody::do_simple_physics(float dt) {
 
 
 // rotate inertia tensor into world coordinates
-void SolidBody::get_theta_world(mat3 &theta_world, mat3 &theta_world_inv) {
+void RigidBody::get_theta_world(mat3 &theta_world, mat3 &theta_world_inv) {
 	auto r = mat3::rotation(owner->ang);
 	auto r_inv = r.transpose();
 	theta_world = (r * theta_0 * r_inv);
 
-	if (active) {
+	if (dynamic) {
 		theta_world_inv = theta_world.inverse();
 	} else {
 		// Theta and ThetaInv already = identity
@@ -328,9 +323,9 @@ void SolidBody::get_theta_world(mat3 &theta_world, mat3 &theta_world_inv) {
 
 
 // scripts have to call this after
-void SolidBody::update_data() {
+void RigidBody::update_data() {
 	unfreeze(this);
-	if (!active) {
+	if (!dynamic) {
 		//entity_get_model(owner)->update_matrix();
 	}
 
@@ -338,7 +333,7 @@ void SolidBody::update_data() {
 }
 
 
-void SolidBody::update_motion(int mask) {
+void RigidBody::update_motion(int mask) {
 #if HAS_LIB_BULLET
 	auto o = owner;
 	btTransform trans;
@@ -353,9 +348,9 @@ void SolidBody::update_motion(int mask) {
 #endif
 }
 
-void SolidBody::update_mass() {
+void RigidBody::update_mass() {
 #if HAS_LIB_BULLET
-	if (active) {
+	if (dynamic) {
 		btScalar _mass(mass);
 		btVector3 local_inertia(theta_0._00, theta_0._11, theta_0._22);
 		//if (colShape)
@@ -369,9 +364,9 @@ void SolidBody::update_mass() {
 #endif
 }
 
-void SolidBody::get_state_from_bullet() {
+void RigidBody::get_state_from_bullet() {
 #if HAS_LIB_BULLET
-	if (active) {
+	if (dynamic) {
 		btTransform trans;
 		body->getMotionState()->getWorldTransform(trans);
 		owner->pos = bt_get_v(trans.getOrigin());
@@ -384,9 +379,9 @@ void SolidBody::get_state_from_bullet() {
 #endif
 }
 
-void SolidBody::state_to_bullet() {
+void RigidBody::state_to_bullet() {
 #if HAS_LIB_BULLET
-	if (active) {
+	if (dynamic) {
 		btTransform trans;
 		trans.setOrigin(bt_set_v(owner->pos));
 		trans.setRotation(bt_set_q(owner->ang));

@@ -16,7 +16,7 @@
 #include <y/world/components/Animator.h>
 #include <y/world/components/Collider.h>
 #include <y/world/components/Skeleton.h>
-#include <y/world/components/SolidBody.h>
+#include <y/world/components/RigidBody.h>
 #include <y/world/components/Light.h>
 #include <y/world/Model.h>
 #include <y/world/Terrain.h>
@@ -237,8 +237,8 @@ void ComponentPanel::set_class(const string& _component_class) {
 	} else if (component_class == "ModelRef") {
 		component_type = ModelRef::_class;
 		content_panel = new ModelRefPanel(data, entity_index);
-	} else if (component_class == "SolidBody") {
-		component_type = SolidBody::_class;
+	} else if (component_class == "RigidBody") {
+		component_type = RigidBody::_class;
 		content_panel = new SolidBodyPanel(data, entity_index);
 	/*} else if (component_class == "Material") {
 		if (e.basic_type == MultiViewType::WORLD_OBJECT) {

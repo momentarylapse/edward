@@ -46,7 +46,7 @@
 #include <lib/mesh/PolygonMesh.h>
 #include <lib/mesh/GeometrySphere.h>
 #include <lib/mesh/GeometryCylinder.h>
-#include <y/world/components/SolidBody.h>
+#include <y/world/components/RigidBody.h>
 #include <ecs/EntityManager.h>
 
 

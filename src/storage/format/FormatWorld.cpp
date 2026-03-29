@@ -22,7 +22,7 @@
 #include <y/helper/ResourceManager.h>
 #include <y/world/components/Skeleton.h>
 #include <y/world/components/Collider.h>
-#include <y/world/components/SolidBody.h>
+#include <y/world/components/RigidBody.h>
 #include <y/world/components/Animator.h>
 #include <y/world/Terrain.h>
 #include <lib/os/filesystem.h>
@@ -424,7 +424,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 			if (e->ang != quaternion::ID)
 				el.add_attribute("ang", v2s(e->ang.get_angles()));
 			for (auto c: e->components) {
-				if (c->component_type != EdwardTag::_class and c->component_type != TerrainRef::_class and c->component_type != TerrainCollider::_class and c->component_type != SolidBody::_class)
+				if (c->component_type != EdwardTag::_class and c->component_type != TerrainRef::_class and c->component_type != TerrainCollider::_class and c->component_type != RigidBody::_class)
 					el.add(save_component(session->plugin_manager->describe_class(c->component_type, c)));
 			}
 		} else if (auto l = e->get_component<Light>()) {

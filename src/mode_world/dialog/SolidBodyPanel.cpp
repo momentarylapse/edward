@@ -4,7 +4,7 @@
 
 #include "SolidBodyPanel.h"
 #include "../data/DataWorld.h"
-#include <y/world/components/SolidBody.h>
+#include <y/world/components/RigidBody.h>
 #include <ecs/Entity.h>
 #include <stuff/PluginManager.h>
 
@@ -57,8 +57,8 @@ Dialog solid-body-panel ''
 }
 void SolidBodyPanel::update_ui() {
 	auto e = data->entity(index);
-	auto sb = e->get_component<SolidBody>();
-	check("active", sb->active);
+	auto sb = e->get_component<RigidBody>();
+	check("active", sb->dynamic);
 	set_float("mass", sb->mass);
 	set_float("g-factor", sb->g_factor);
 	set_float("theta-xx", sb->theta_0._00);
@@ -68,18 +68,18 @@ void SolidBodyPanel::update_ui() {
 	set_float("theta-yz", sb->theta_0._12);
 	set_float("theta-zz", sb->theta_0._22);
 
-	enable("mass", sb->active);
-	enable("g-factor", sb->active);
-	enable("theta-xx", sb->active);
-	enable("theta-xy", sb->active);
-	enable("theta-xz", sb->active);
-	enable("theta-yy", sb->active);
-	enable("theta-yz", sb->active);
-	enable("theta-zz", sb->active);
+	enable("mass", sb->dynamic);
+	enable("g-factor", sb->dynamic);
+	enable("theta-xx", sb->dynamic);
+	enable("theta-xy", sb->dynamic);
+	enable("theta-xz", sb->dynamic);
+	enable("theta-yy", sb->dynamic);
+	enable("theta-yz", sb->dynamic);
+	enable("theta-zz", sb->dynamic);
 }
 void SolidBodyPanel::on_edit() {
-	SolidBody sb;
-	sb.active = is_checked("active");
+	RigidBody sb;
+	sb.dynamic = is_checked("active");
 	sb.mass = get_float("mass");
 	sb.g_factor = get_float("g-factor");
 	sb.theta_0._00 = get_float("theta-xx");
@@ -91,17 +91,17 @@ void SolidBodyPanel::on_edit() {
 	sb.theta_0._10 = sb.theta_0._01;
 	sb.theta_0._20 = sb.theta_0._02;
 	sb.theta_0._21 = sb.theta_0._12;
-	enable("mass", sb.active);
-	enable("g-factor", sb.active);
-	enable("theta-xx", sb.active);
-	enable("theta-xy", sb.active);
-	enable("theta-xz", sb.active);
-	enable("theta-yy", sb.active);
-	enable("theta-yz", sb.active);
-	enable("theta-zz", sb.active);
+	enable("mass", sb.dynamic);
+	enable("g-factor", sb.dynamic);
+	enable("theta-xx", sb.dynamic);
+	enable("theta-xy", sb.dynamic);
+	enable("theta-xz", sb.dynamic);
+	enable("theta-yy", sb.dynamic);
+	enable("theta-yz", sb.dynamic);
+	enable("theta-zz", sb.dynamic);
 
 	editing = true;
 	auto e = data->entity(index);
-	data->entity_edit_component(e, SolidBody::_class, data->session->plugin_manager->describe_class(SolidBody::_class, &sb));
+	data->entity_edit_component(e, RigidBody::_class, data->session->plugin_manager->describe_class(RigidBody::_class, &sb));
 	editing = false;
 }

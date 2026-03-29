@@ -15,7 +15,7 @@ struct quaternion;
 class btTypedConstraint;
 
 class Entity;
-class SolidBody;
+class RigidBody;
 
 
 

@@ -7,7 +7,7 @@
 #include "../components/Link.h"
 #include "../Model.h"
 #include "../components/Collider.h"
-#include "../components/SolidBody.h"
+#include "../components/RigidBody.h"
 #include <ecs/EntityManager.h>
 #include <ecs/Entity.h>
 #include <lib/base/iter.h>
@@ -57,7 +57,7 @@ btTransform bt_set_trafo(const vec3 &p, const quaternion &q) {
 }
 #endif
 
-void send_collision(SolidBody *a, const CollisionData &col) {
+void send_collision(RigidBody *a, const CollisionData &col) {
 	for (auto c: a->owner->components)
 		c->on_collide(col);
 }
@@ -71,15 +71,15 @@ void myTickCallback(btDynamicsWorld *world, btScalar timeStep) {
 		auto contactManifold = dispatcher->getManifoldByIndexInternal(i);
 		auto obA = const_cast<btCollisionObject*>(contactManifold->getBody0());
 		auto obB = const_cast<btCollisionObject*>(contactManifold->getBody1());
-		auto a = static_cast<SolidBody*>(obA->getUserPointer());
-		auto b = static_cast<SolidBody*>(obB->getUserPointer());
+		auto a = static_cast<RigidBody*>(obA->getUserPointer());
+		auto b = static_cast<RigidBody*>(obB->getUserPointer());
 		int np = contactManifold->getNumContacts();
 		for (int j=0; j<np; j++) {
 			auto &pt = contactManifold->getContactPoint(j);
 			if (pt.getDistance() <= 0) {
-				if (a->active)
+				if (a->dynamic)
 					send_collision(a, {b->owner, b, bt_get_v(pt.m_positionWorldOnB), bt_get_v(pt.m_normalWorldOnB)});
-				if (b->active)
+				if (b->dynamic)
 					send_collision(b, {a->owner, a, bt_get_v(pt.m_positionWorldOnA), -bt_get_v(pt.m_normalWorldOnB)});
 			}
 		}
@@ -120,7 +120,7 @@ Physics::~Physics() {
 }
 
 void Physics::on_add_component(const EntityMessageParams &params) {
-	if (auto sb = params.component->as<SolidBody>()) {
+	if (auto sb = params.component->as<RigidBody>()) {
 		//msg_error("ADD SOLID BODY");
 		register_body(sb);
 	} else if (auto l = params.component->as<Link>()) {
@@ -130,7 +130,7 @@ void Physics::on_add_component(const EntityMessageParams &params) {
 }
 
 void Physics::on_remove_component(const EntityMessageParams &params) {
-	if (auto sb = params.component->as<SolidBody>()) {
+	if (auto sb = params.component->as<RigidBody>()) {
 		unregister_body(sb);
 	} else if (auto l = params.component->as<Link>()) {
 		unregister_link(l);
@@ -143,7 +143,7 @@ void Physics::on_iterate(float dt) {
 	if (!enabled)
 		return;
 
-	auto& list = entity_manager->get_component_list<SolidBody>();
+	auto& list = entity_manager->get_component_list<RigidBody>();
 
 	if (mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
@@ -170,13 +170,13 @@ void Physics::unregister_link(Link *l) {
 
 }
 
-void Physics::register_body(SolidBody *sb) {
+void Physics::register_body(RigidBody *sb) {
 #if HAS_LIB_BULLET
 	dynamicsWorld->addRigidBody(sb->body);
 #endif
 }
 
-void Physics::unregister_body(SolidBody *sb) {
+void Physics::unregister_body(RigidBody *sb) {
 #if HAS_LIB_BULLET
 	dynamicsWorld->removeRigidBody(sb->body);
 #endif
@@ -184,12 +184,12 @@ void Physics::unregister_body(SolidBody *sb) {
 
 
 
-void Physics::set_active_physics(Entity *o, bool active, bool passive) { //, bool test_collisions) {
-	auto sb = o->get_component<SolidBody>();
+void Physics::set_dynamic(Entity *o, bool dynamic) {
+	auto sb = o->get_component<RigidBody>();
 	auto c = o->get_component_derived<Collider>();
 
 #if HAS_LIB_BULLET
-	btScalar mass(active ? sb->mass : 0);
+	btScalar mass(dynamic ? sb->mass : 0);
 	btVector3 local_inertia(0, 0, 0);
 	if (c->col_shape) {
 		c->col_shape->calculateLocalInertia(mass, local_inertia);
@@ -198,10 +198,6 @@ void Physics::set_active_physics(Entity *o, bool active, bool passive) { //, boo
 		sb->theta_0._22 = local_inertia.z();
 	}
 	sb->body->setMassProps(mass, local_inertia);
-	if (passive and !sb->passive)
-		dynamicsWorld->addRigidBody(sb->body);
-	if (!passive and sb->passive)
-		dynamicsWorld->removeRigidBody(sb->body);
 
 	/*if (!passive and test_collisions) {
 		msg_error("FIXME pure collision");
@@ -210,9 +206,7 @@ void Physics::set_active_physics(Entity *o, bool active, bool passive) { //, boo
 #endif
 
 
-	sb->active = active;
-	sb->passive = passive;
-	//b->test_collisions = test_collisions;
+	sb->dynamic = dynamic;
 }
 
 base::optional<CollisionData> Physics::trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore) {
@@ -224,7 +218,7 @@ base::optional<CollisionData> Physics::trace(const vec3 &p1, const vec3 &p2, int
 	this->dynamicsWorld->getCollisionWorld()->rayTest(bt_set_v(p1), bt_set_v(p2), ray_callback);
 	if (ray_callback.hasHit()) {
 		CollisionData d;
-		auto sb = static_cast<SolidBody *>(ray_callback.m_collisionObject->getUserPointer());
+		auto sb = static_cast<RigidBody *>(ray_callback.m_collisionObject->getUserPointer());
 		d.pos = bt_get_v(ray_callback.m_hitPointWorld);
 		d.n = bt_get_v(ray_callback.m_hitNormalWorld);
 		d.entity = sb->owner;
@@ -242,7 +236,7 @@ base::optional<CollisionData> Physics::trace(const vec3 &p1, const vec3 &p2, int
 }
 
 void Physics::update_all_bullet() {
-	for (auto &sb: entity_manager->get_component_list<SolidBody>())
+	for (auto &sb: entity_manager->get_component_list<RigidBody>())
 		sb->state_to_bullet();
 }
 

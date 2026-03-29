@@ -146,9 +146,8 @@ void templatify(const Path &filename) {
 	    if (data->meta_data.passive_physics) {
 	    	auto T = data->meta_data.inertia_tensor;
 	        ScriptInstanceData c;
-	        c.class_name = "SolidBody";
-	        c.set("physics_active", "", b2s(data->meta_data.active_physics));
-	        c.set("passive_physics", "", b2s(data->meta_data.passive_physics));
+	        c.class_name = "RigidBody";
+	        c.set("dynamic", "", b2s(data->meta_data.active_physics));
 	        c.set("g_factor", "", "1.000");
 	        c.set("mass", "", f2s(data->meta_data.mass, 3));
 	        c.set("theta", "", mat3_to_any(T).str());

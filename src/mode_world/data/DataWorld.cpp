@@ -18,7 +18,7 @@
 #include <world/components/Animator.h>
 #include <world/components/Collider.h>
 #include <world/components/Skeleton.h>
-#include <world/components/SolidBody.h>
+#include <world/components/RigidBody.h>
 #if 0 //HAS_LIB_GL
 #include "../../mode/world/ModeWorld.h"
 #endif
@@ -83,8 +83,8 @@ DataWorld::DataWorld(DocumentSession* doc) :
 			return new Skeleton;
 		if (type == Animator::_class)
 			return new Animator;
-		if (type == SolidBody::_class)
-			return new SolidBody;
+		if (type == RigidBody::_class)
+			return new RigidBody;
 		if (type == MeshCollider::_class)
 			return new MeshCollider;
 		if (type == TerrainCollider::_class)

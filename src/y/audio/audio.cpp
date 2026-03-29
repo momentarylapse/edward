@@ -77,7 +77,7 @@ void garbage_collection() {
 void iterate(float dt) {
 	auto& sources = EntityManager::global->get_component_list<SoundSource>();
 	for (auto s: sources) {
-		// TODO owner->get_component<SolidBody>()->vel
+		// TODO owner->get_component<RigidBody>()->vel
 		s->_apply_data();
 		if (s->suicidal and s->has_ended()) {
 			DeletionQueue::add_entity(s->owner);

@@ -44,7 +44,6 @@ namespace yrenderer {
 class TraceData;
 class ModelTemplate;
 class MeshCollider;
-class SolidBody;
 class Animator;
 
 

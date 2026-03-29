@@ -29,7 +29,7 @@
 #include "World.h"
 
 #include "components/Link.h"
-#include "components/SolidBody.h"
+#include "components/RigidBody.h"
 #include "components/Collider.h"
 #include "components/Animator.h"
 #include "components/Skeleton.h"
@@ -155,7 +155,7 @@ Array<ScriptInstanceData> sort_components(const Array<ScriptInstanceData>& compo
 		for (int k=i+1; k<r.num; k++) {
 			if (!r[i].filename.is_empty() and r[k].filename.is_empty())
 				r.swap(i, k);
-			else if (r[i].class_name == "SolidBody" and r[k].class_name.match("*Collider"))
+			else if (r[i].class_name == "RigidBody" and r[k].class_name.match("*Collider"))
 				r.swap(i, k);
 		}
 	return r;
@@ -300,7 +300,7 @@ TerrainRef* World::create_terrain(const Path &filename, const vec3 &pos) {
 	t->material = engine.resource_manager->load_material("");
 
 	entity_manager->add_component<TerrainCollider>(e);
-	entity_manager->add_component<SolidBody>(e, {{"physics_active", "", "false"}});
+	entity_manager->add_component<RigidBody>(e, {{"dynamic", "", "false"}});
 
 	return t;
 }
