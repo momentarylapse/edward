@@ -38,8 +38,8 @@ public:
 
 	btTypedConstraint *con = nullptr;
 	LinkType link_type = LinkType::NONE;
-	Entity *a = nullptr;
-	Entity *b = nullptr;
+	int a = -1;
+	int b = -1;
 
 	void _create_link_data(vec3 &pa, vec3 &pb, quaternion &iqa, quaternion &iqb, const vec3 &pos);
 

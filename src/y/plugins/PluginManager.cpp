@@ -474,6 +474,7 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("World.fog", &World::fog);
 	ext->declare_class_element("World.msg_data", &World::msg_data);
 	ext->link_class_func("World.ego", &World::ego);
+	ext->link_class_func("World.entity", &World::get_entity);
 	ext->link_class_func("World.load_soon", &World::load_soon);
 	ext->link_class_func("World.load_template", &World::create_from_template);
 	ext->link_class_func("World.create_object", &_create_object);

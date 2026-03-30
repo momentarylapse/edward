@@ -83,6 +83,8 @@ public:
 
 	void delete_entity(Entity *e);
 
+	Entity* get_entity(int index);
+
 	color background;
 	owned_array<ModelRef> skybox;
 	Fog fog;

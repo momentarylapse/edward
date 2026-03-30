@@ -170,19 +170,23 @@ bool LevelData::load(const Path& filename) {
 				read_components(o.components, e);
 				entities.add(o);
 			} else if (e.tag == "link") {
-				/*Link l;
-				l.pos = s2v(e.value("pos"));
-				l.ang = s2v(e.value("ang"));
-				l.object[0] = e.value("a")._int();
-				l.object[1] = e.value("b")._int();
-				l.type = LinkType::SOCKET;
+				Entity o;
+				o.pos = s2v(e.value("pos"));
+				o.ang = quaternion::rotation(s2v(e.value("ang")));
+				ScriptInstanceData l = {"Link"};
+				auto type = LinkType::SOCKET;
 				if (e.value("type") == "hinge")
-					l.type = LinkType::HINGE;
-				if (e.value("type") == "universal")
-					l.type = LinkType::UNIVERSAL;
-				if (e.value("type") == "spring")
-					l.type = LinkType::SPRING;
-				links.add(l);*/
+					type = LinkType::HINGE;
+				else if (e.value("type") == "universal")
+					type = LinkType::UNIVERSAL;
+				else if (e.value("type") == "spring")
+					type = LinkType::SPRING;
+				l.set("type", (int)type);
+				l.set("a", e.value("a", "-1")._int());
+				l.set("b", e.value("b", "-1")._int());
+				o.components.add(l);
+				read_components(o.components, e);
+				entities.add(o);
 			}
 		}
 	}

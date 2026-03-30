@@ -294,6 +294,12 @@ Entity* World::ego() {
 	return nullptr;
 }
 
+Entity* World::get_entity(int index) {
+	if (index < 0 or index >= entity_manager->entities.num)
+		return nullptr;
+	return entity_manager->entities[index];
+}
+
 
 TerrainRef* World::create_terrain(const Path &filename, const vec3 &pos) {
 	auto e = create_entity(pos, quaternion::ID);
