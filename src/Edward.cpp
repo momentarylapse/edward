@@ -136,8 +136,8 @@ void templatify(const Path &filename) {
 		    ScriptInstanceData c;
 		    c.class_name = "ModelRef";
 		    //c.set("model", "", str(_filename.basename()));
-			c.set("model", "", str(_filename.relative_to(session->project_dir | "Objects")));
-			c.set("materials", "", "[]");
+			c.set("model", str(_filename.relative_to(session->project_dir | "Objects")));
+			c.set("materials", Any::EmptyList);
 		    t.components.add(c);
 		}
 		if (data->phys_mesh->vertices.num > 0) {
@@ -147,10 +147,10 @@ void templatify(const Path &filename) {
 	    	auto T = data->meta_data.inertia_tensor;
 	        ScriptInstanceData c;
 	        c.class_name = "RigidBody";
-	        c.set("dynamic", "", b2s(data->meta_data.active_physics));
-	        c.set("g_factor", "", "1.000");
-	        c.set("mass", "", f2s(data->meta_data.mass, 3));
-	        c.set("theta", "", mat3_to_any(T).str());
+	        c.set("dynamic", data->meta_data.active_physics);
+	        c.set("g_factor", 1.0);
+	        c.set("mass", data->meta_data.mass);
+	        c.set("theta", mat3_to_any(T));
 	        t.components.add(c);
 	    }
 		if (data->bones.num > 0) {

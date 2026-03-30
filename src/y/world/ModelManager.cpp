@@ -184,14 +184,14 @@ public:
 		// physics
 		ScriptInstanceData sb;
 		sb.class_name = "RigidBody";
-		sb.set("mass", "", f2s(f->read_float(), 3));
+		sb.set("mass", f->read_float());
 		mat3 theta;
 		for (int i=0;i<9;i++)
 			theta.e[i] = f->read_float();
-		sb.set("theta", "", mat3_to_any(theta).str());
-		sb.set("dynamic", "", b2s(f->read_bool()));
+		sb.set("theta", mat3_to_any(theta));
+		sb.set("dynamic", f->read_bool());
 		bool passive = f->read_bool();
-		if (passive or sb.get("dynamic")._bool())
+		if (passive or sb.get("dynamic").to_bool())
 			me->_template->components.add(sb);
 	}
 	void write(Stream *f) override {}

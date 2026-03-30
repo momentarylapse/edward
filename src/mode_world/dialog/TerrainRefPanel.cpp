@@ -45,11 +45,11 @@ Dialog terrain-panel ''
 
 	event("terrain", [this, e, tr] {
 		data->session->storage->file_dialog(FD_TERRAIN, false, true).then([this, e, tr] (const ComplexPath& p) {
-			data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"terrain", "", str(p.relative)}}});
+			data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"terrain", str(p.relative)}}});
 		});
 	});
 	material_selector->out_selected >> create_data_sink<yrenderer::Material*>([this, e] (yrenderer::Material* m) {
-		data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"material", "", str(data->session->resource_manager->material_manager->get_filename(m))}}});
+		data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"material", str(data->session->resource_manager->material_manager->get_filename(m))}}});
 	});
 	/*event("size-x", [this] {
 		auto e = data->entity(index);

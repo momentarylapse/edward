@@ -160,8 +160,8 @@ Dialog unknown-component-panel ''
 		set_target("grid-variables");
 		for (const auto& [i, v]: enumerate(cc.variables)) {
 			add_control("Label", v.name, 0, i, "");
-			add_control("Label", v.type, 1, i, "");
-			add_control("Edit", v.value, 2, i, format("var-%d", i));
+			//add_control("Label", v.type, 1, i, "");
+			add_control("Edit", str(v.value), 2, i, format("var-%d", i));
 		}
 	}
 	DataWorld* data;

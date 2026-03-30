@@ -95,22 +95,7 @@ DataWorld::DataWorld(DocumentSession* doc) :
 		return nullptr;
 	};
 	entity_manager->component_manager->f_apply = [this] (const kaba::Class* type, Component* c, const Array<ScriptInstanceDataVariable>& var) {
-		if (type == Light::_class) {
-			auto l = static_cast<Light*>(c);
-			for (const auto& v: var) {
-				msg_write(v.name + " = " + v.value);
-				if (v.name == "type")
-					l->light.type = (yrenderer::LightType)v.value._int();
-				if (v.name == "power")
-					l->light.power = v.value._float();
-				if (v.name == "color")
-					l->light.col = PluginManager::s2c(v.value);
-				if (v.name == "theta")
-					l->light.theta = v.value._float();
-			}
-		} else {
-			session->plugin_manager->set_variables(c, type, var);
-		}
+		session->plugin_manager->set_variables(c, type, var);
 	};
 	reset();
 }
@@ -289,7 +274,7 @@ void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
 Component* DataWorld::entity_add_component_generic(Entity* e, const kaba::Class* type, const ComponentParams& _variables) {
 	Array<ScriptInstanceDataVariable> variables;
 	for (const auto& [k, v]: _variables)
-		variables.add({k, "", str(v)});
+		variables.add({k, v});
 	return static_cast<Component*>(execute(new ActionWorldAddComponent(entity_manager->entity_index(e), type, variables)));
 }
 void DataWorld::entity_remove_component(Entity* e, const kaba::Class* type) {

@@ -74,6 +74,7 @@
 #include <lib/kaba/dynamic/exception.h>
 #include <lib/os/msg.h>
 #include <lib/image/image.h>
+#include <lib/any/conversion.h>
 #include <ecs/EntityManager.h>
 #include <ecs/BaseClass.h>
 
@@ -996,10 +997,7 @@ Array<ScriptInstanceDataVariable> parse_variables(const string &var) {
 	for (auto &x: xx) {
 		auto y = x.explode(":");
 		auto name = y[0].trim().lower().replace("_", "");
-		if (y[1].trim().match("\"*\""))
-			r.add({name, "", y[1].trim().sub_ref(1, -1)});
-		else
-			r.add({name, "", y[1].trim().unescape()});
+			r.add({name, Any::parse(y[1])});
 	}
 	return r;
 }
@@ -1025,29 +1023,25 @@ mat3 s2mat3(const string &s) {
 	return m;
 }
 
-string whatever_to_string(const void* p, const kaba::Class* c) {
+Any whatever_to_any(const void* p, const kaba::Class* c) {
 	if (!p)
-		return "";
+		return {};
 	if (c == kaba::common_types.string)
 		return *(const string*)p;
 	if (c == kaba::common_types.path)
 		return str(*(const Path*)p);
 	if (c == kaba::common_types.f32)
-		return f2s(*(const float*)p, 3);
+		return *(const float*)p;
 	if (c == kaba::common_types.i32 or c->is_enum())
-		return str(*(const int*)p);
+		return *(const int*)p;
 	if (c == kaba::common_types._bool)
-		return b2s(*(const bool*)p);
-	if (c == kaba::common_types.vec3) {
-		const auto v = *(const vec3*)p;
-		return format("%.3f %.3f %.3f", v.x, v.y, v.z);
-	}
-	if (c == kaba::common_types.color) {
-		const auto v = *(const color*)p;
-		return format("%.3f %.3f %.3f %.3f", v.r, v.g, v.b, v.a);
-	}
+		return *(const bool*)p;
+	if (c == kaba::common_types.vec3)
+		return vec3_to_any(*(const vec3*)p);
+	if (c == kaba::common_types.color)
+		return color_to_any(*(const color*)p);
 	if (c == kaba::common_types.mat3)
-		return mat3_to_any(*(const mat3*)p).str();
+		return mat3_to_any(*(const mat3*)p);
 	if ((c->name == "Material*" or c->name == "Material&") and default_resource_manager)
 		return str(default_resource_manager->filename(*(const yrenderer::Material**)p));
 	if (c->name == "Terrain*" and default_resource_manager)
@@ -1057,45 +1051,42 @@ string whatever_to_string(const void* p, const kaba::Class* c) {
 	if ((c->name == "Template*" or c->name == "Template&") and default_resource_manager)
 		return str(default_resource_manager->filename(*(const Template**)p));
 	if (c->is_list()) {
-		string s;
+		Any r = Any::EmptyList;
 		auto arr = (DynamicArray*)p;
-		for (int i=0; i<arr->num; i++) {
-			if (i > 0)
-				s += ", ";
+		for (int i=0; i<arr->num; i++)
 			// ARGH, TODO switch to any
-			s += whatever_to_string(arr->simple_element(i), c->parent).repr();
-		}
-		return "[" + s + "]";
+			r.add(whatever_to_any(arr->simple_element(i), c->parent));
+		return r;
 	}
-	return "nil";
+	return {};
 }
 
-void whatever_from_string(void* p, const kaba::Class* type, const string& value) {
+void whatever_from_any(void* p, const kaba::Class* type, const Any& value) {
 	if (type == kaba::common_types.string)
-		*(string*)p = value;
+		*(string*)p = str(value);
 	if (type == kaba::common_types.path)
-		*(Path*)p = value;
+		*(Path*)p = str(value);
 	if (type == kaba::common_types.f32)
-		*(float*)p = value._float();
+		*(float*)p = value.to_f32();
 	if (type == kaba::common_types.i32 or type->is_enum())
-		*(int*)p = value._int();
+		*(int*)p = value.to_i32();
 	if (type == kaba::common_types._bool)
-		*(bool*)p = value._bool();
+		*(bool*)p = value.to_bool();
 	if (type == kaba::common_types.vec3)
-		*(vec3*)p = s2v(value);
+		*(vec3*)p = any_to_vec3(value);
 	if (type == kaba::common_types.color)
-		*(color*)p = s2c(value);
+		*(color*)p = any_to_color(value);
 	if (type == kaba::common_types.mat3)
-		*(mat3*)p = s2mat3(value);
+		*(mat3*)p = any_to_mat3(value);
 	if ((type->name == "Material*" or type->name == "Material&") and default_resource_manager)
-		*(yrenderer::Material**)p = default_resource_manager->load_material(value);
+		*(yrenderer::Material**)p = default_resource_manager->load_material(str(value));
 	if (type->name == "Terrain*" and default_resource_manager)
-		*(Terrain**)p = default_resource_manager->load_terrain(value);
+		*(Terrain**)p = default_resource_manager->load_terrain(str(value));
 	if (type->name == "Model*" and default_resource_manager)
-		*(Model**)p = default_resource_manager->load_model(value);
+		*(Model**)p = default_resource_manager->load_model(str(value));
 	if ((type->name == "Template*" or type->name == "Template&") and default_resource_manager)
-		*(Template**)p = default_resource_manager->load_template(value);
-	if (type->is_list() and value.head(0) == "[") {
+		*(Template**)p = default_resource_manager->load_template(str(value));
+	if (type->is_list() and value.is_list()) {
 		auto arr = (DynamicArray*)p;
 		// TODO
 	}
@@ -1106,7 +1097,7 @@ void assign_variables(void* p, const kaba::Class* c, const Array<ScriptInstanceD
 		for (const auto& e: c->elements)
 			if (v.name == e.name) {
 				//msg_write("  " + e.type->long_name() + " " + e.name + " = " + v.value);
-				whatever_from_string((char*)p + e.offset, e.type, v.value);
+				whatever_from_any((char*)p + e.offset, e.type, v.value);
 			}
 }
 

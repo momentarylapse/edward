@@ -91,7 +91,7 @@ bool LevelData::load(const Path& filename) {
 
 				for (const auto& a: ee.attributes)
 					if (a.key != "script" and a.key != "class" and a.key != "var")
-						sd.variables.add({a.key, "", a.value});
+						sd.variables.add({a.key, Any::parse(a.value)});
 				components.add(sd);
 			}
 	};
@@ -104,11 +104,11 @@ bool LevelData::load(const Path& filename) {
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
 				ScriptInstanceData c = {"Camera"};
-				c.set("fov", "", e.value("fov", f2s(pi/4, 3)));
-				c.set("min_depth", "", e.value("minDepth", "1"));
-				c.set("max_depth", "", e.value("maxDepth", "10000"));
-				c.set("exposure", "", e.value("exposure", "1"));
-				c.set("bloom_factor", "", e.value("bloomFactor", "0.15"));
+				c.set("fov", e.value("fov", f2s(pi/4, 3))._float());
+				c.set("min_depth", e.value("minDepth", "1")._float());
+				c.set("max_depth", e.value("maxDepth", "10000")._float());
+				c.set("exposure", e.value("exposure", "1")._float());
+				c.set("bloom_factor", e.value("bloomFactor", "0.15")._float());
 				o.components.add(c);
 				read_components(o.components, e);
 				entities.add(o);
@@ -117,21 +117,25 @@ bool LevelData::load(const Path& filename) {
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
 				ScriptInstanceData l = {"Light"};
-				l.set("harshness", "", e.value("harshness"));
-				l.set("color", "", e.value("color"));
-				l.set("radius", "", "-1");
-				l.set("theta", "", "-1");
+				l.set("harshness", e.value("harshness")._float());
+				l.set("color", e.value("color"));
+				l.set("power", e.value("power", "1.0")._float());
+				l.set("theta", -1.0);
+				l.set("allow_shadow", false);
 				if (e.value("type") == "directional") {
-					l.set("type", "", str((int)yrenderer::LightType::DIRECTIONAL));
+					l.set("type", (int)yrenderer::LightType::DIRECTIONAL);
+					l.set("allow_shadow", true);
 				} else if (e.value("type") == "point") {
-					l.set("type", "", str((int)yrenderer::LightType::POINT));
-					l.set("radius", "", e.value("radius"));
+					l.set("type", (int)yrenderer::LightType::POINT);
+					if (e.has_value("radius"))
+						l.set("power", yrenderer::Light::_radius_to_power(e.value("radius")._float()));
 				} else if (e.value("type") == "cone") {
-					l.set("type", "", str((int)yrenderer::LightType::CONE));
-					l.set("radius", "", e.value("radius"));
-					l.set("theta", "", e.value("theta"));
+					l.set("type", (int)yrenderer::LightType::CONE);
+					if (e.has_value("radius"))
+						l.set("power", yrenderer::Light::_radius_to_power(e.value("radius")._float()));
+					l.set("theta", e.value("theta")._float());
 				}
-				l.set("enabled", "", e.value("enabled", "true"));
+				l.set("enabled", e.value("enabled", "true")._bool());
 				o.components.add(l);
 				read_components(o.components, e);
 				entities.add(o);
@@ -140,9 +144,10 @@ bool LevelData::load(const Path& filename) {
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
 				ScriptInstanceData t = {"TerrainRef"};
-				t.set("terrain", "", e.value("file"));
-				t.set("material", "", e.value("material"));
+				t.set("terrain", e.value("file"));
+				t.set("material", e.value("material"));
 				o.components.add(t);
+				o.components.append(auto_terrain_components());
 				read_components(o.components, e);
 				entities.add(o);
 			} else if (e.tag == "object") {
@@ -150,7 +155,7 @@ bool LevelData::load(const Path& filename) {
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
 				ScriptInstanceData t = {"TemplateRef"};
-				t.set("template", "", e.value("file"));
+				t.set("template", e.value("file"));
 				o.components.add(t);
 				if (e.value("role") == "ego")
 					o.components.add({"EgoMarker", "", {}});
@@ -331,7 +336,7 @@ void LevelData::save(const Path &filename) {
 
 Array<ScriptInstanceData> LevelData::auto_terrain_components() {
 	return {{"TerrainCollider", "", {{}}},
-		{"RigidBody", "", {{"dynamic", "", "false"}}}};
+		{"RigidBody", "", {{"dynamic", false}}}};
 }
 
 

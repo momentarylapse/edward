@@ -35,7 +35,7 @@ Dialog model-panel ''
 	event("model", [this] {
 		data->session->storage->file_dialog(FD_MODEL, false, true).then([this] (const ComplexPath& p) {
 			auto e = data->entity(index);
-			data->entity_edit_component(e, ModelRef::_class, {"", "", {{"model", "", str(p.relative)}}});
+			data->entity_edit_component(e, ModelRef::_class, {"", "", {{"model", str(p.relative)}}});
 			//material_selector->internal_materials = mr->model->material; ...
 		});
 	});

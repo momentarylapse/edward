@@ -66,10 +66,10 @@ Dialog system 'System'
 		for (const auto& [i, v]: enumerate(s.variables)) {
 			string id_var = format("var-%d", i);
 			add_control("Label", v.name, 0, i, format("l-var-%d", i));
-			add_control("Edit", v.value, 1, i, id_var);
+			add_control("Edit", str(v.value), 1, i, id_var);
 			event(id_var, [this, i=i, id=id_var] {
 				properties_dialog->temp = data->meta_data;
-				properties_dialog->temp.systems[index].variables[i].value = get_string(id);
+				properties_dialog->temp.systems[index].variables[i].value = Any::parse(get_string(id));
 				editing = true;
 				properties_dialog->apply();
 				editing = false;
@@ -85,7 +85,7 @@ Dialog system 'System'
 		set_string("filename", str(s.filename));
 		for (const auto& [i, v]: enumerate(s.variables)) {
 			string id_var = format("var-%d", i);
-			set_string(id_var, v.value);
+			set_string(id_var, str(v.value));
 		}
 	}
 	void set_selected(bool selected) {

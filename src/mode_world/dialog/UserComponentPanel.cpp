@@ -28,8 +28,8 @@ Dialog user-component-panel ''
 	for (const auto& [i, v]: enumerate(desc.variables)) {
 		add_control("Label", v.name, 0, i, format("l-%d", i));
 		set_options(format("l-%d", i), "right,disabled");
-		add_control("Label", v.type, 1, i, "");
-		add_control("Edit", v.value, 2, i, format("var-%d", i));
+		//add_control("Label", v.type, 1, i, "");
+		add_control("Edit", str(v.value), 2, i, format("var-%d", i));
 
 		event(format("var-%d", i), [this] {
 			on_edit();
@@ -50,7 +50,7 @@ void UserComponentPanel::update_ui() {
 	auto type = c->component_type;
 	const auto desc = data->session->plugin_manager->describe_class(type, c);
 	for (const auto& [i, v]: enumerate(desc.variables)) {
-		set_string(format("var-%d", i), v.value);
+		set_string(format("var-%d", i), str(v.value));
 	}
 }
 

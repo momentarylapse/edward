@@ -9,6 +9,7 @@
 
 #include <lib/base/base.h>
 #include <lib/os/path.h>
+#include <lib/any/any.h>
 
 namespace kaba {
 	class Class;
@@ -38,7 +39,8 @@ public:
 
 
 struct ScriptInstanceDataVariable {
-	string name, type, value;
+	string name;
+	Any value;
 	bool operator==(const ScriptInstanceDataVariable& other) const;
 	bool operator!=(const ScriptInstanceDataVariable& other) const;
 };
@@ -47,8 +49,8 @@ struct ScriptInstanceData {
 	string class_name;
 	Path filename;
 	Array<ScriptInstanceDataVariable> variables;
-	string get(const string& name) const;
-	void set(const string& name, const string& type, const string& value);
+	Any get(const string& name) const;
+	void set(const string& name, const Any& value);
 	bool is_internal() const;
 	bool operator==(const ScriptInstanceData& other) const;
 	bool operator!=(const ScriptInstanceData& other) const;

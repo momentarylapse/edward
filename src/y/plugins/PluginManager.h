@@ -9,6 +9,7 @@
 
 #include <lib/base/base.h>
 
+class Any;
 class Path;
 class Profiler;
 struct ScriptInstanceDataVariable;
@@ -32,15 +33,15 @@ namespace PluginManager {
 	void* create_instance_auto(const string& extended_type_name);
 	void assign_variables(void *p, const kaba::Class *c, const Array<ScriptInstanceDataVariable> &variables);
 
-	string whatever_to_string(const void* p, const kaba::Class* c);
-	void whatever_from_string(void* p, const kaba::Class* type, const string& value);
+	Any whatever_to_any(const void* p, const kaba::Class* c);
+	void whatever_from_any(void* p, const kaba::Class* type, const Any& value);
 
 	Array<ScriptInstanceDataVariable> parse_variables(const string &var);
 	extern ResourceManager* default_resource_manager;
 
 	vec3 s2v(const string &s);
 	// RGBA
-	color s2c(const string &s);
+	color s2c(const string& s);
 
 };
 

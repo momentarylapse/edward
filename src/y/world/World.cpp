@@ -15,6 +15,8 @@
 #include <lib/os/msg.h>
 #include <lib/nix/nix.h>
 #include <lib/kaba/kaba.h>
+#include <lib/os/filesystem.h>
+#include <lib/profiler/Profiler.h>
 #include <EngineData.h>
 #include <ecs/Component.h>
 #include <ecs/ComponentManager.h>
@@ -39,10 +41,9 @@
 #include "systems/Physics.h"
 #include "ecs/SystemManager.h"
 
+#include "../plugins/PluginManager.h"
 #ifdef _X_ALLOW_X_
 #include "../fx/ParticleManager.h"
-#include "../plugins/PluginManager.h"
-#include <lib/profiler/Profiler.h>
 #endif
 
 
@@ -164,10 +165,13 @@ Array<ScriptInstanceData> sort_components(const Array<ScriptInstanceData>& compo
 void add_user_components(EntityManager* em, Entity *ent, const Array<ScriptInstanceData>& components) {
 	for (auto &cc: sort_components(components)) {
 		msg_write("add component " + cc.class_name);
-#ifdef _X_ALLOW_X_
 		auto type = PluginManager::find_class(cc.filename, cc.class_name);
 		[[maybe_unused]] auto comp = em->_add_component_generic_(ent, type, cc.variables);
-#endif
+
+		// templates -> recursion...
+		if (type == TemplateRef::_class)
+			if (auto t = ((TemplateRef*)comp)->_template)
+				add_user_components(em, ent, t->components);
 	}
 }
 
@@ -300,7 +304,7 @@ TerrainRef* World::create_terrain(const Path &filename, const vec3 &pos) {
 	t->material = engine.resource_manager->load_material("");
 
 	entity_manager->add_component<TerrainCollider>(e);
-	entity_manager->add_component<RigidBody>(e, {{"dynamic", "", "false"}});
+	entity_manager->add_component<RigidBody>(e, {{"dynamic", false}});
 
 	return t;
 }
@@ -314,8 +318,8 @@ Entity* World::create_from_template(const Path& filename, const vec3 &pos, const
 
 	if (const auto t = engine.resource_manager->load_template(filename)) {
 		add_user_components(entity_manager.get(), e, t->components);
-	} else {
-		attach_model(e, filename.no_ext());
+	} else if (os::fs::exists(engine.object_dir | filename.with(".model"))) {
+		attach_model(e, filename);
 	}
 
 	return e;

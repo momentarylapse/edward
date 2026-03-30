@@ -48,7 +48,7 @@ public:
 				if (current) {
 					const auto xx = l.sub_ref(1).explode("=");
 					if (xx.num >= 2) {
-						current->variables.add({xx[0], "", xx[1]});
+						current->variables.add({xx[0], Any::parse(xx[1])});
 					}
 				}
 			} else {
@@ -72,7 +72,7 @@ public:
 			else
 				o += c.class_name + "\n";
 			for (const auto& v: c.variables)
-				o += format("\t%s=%s\n", v.name, v.value);
+				o += format("\t%s=%s\n", v.name, str(v.value));
 		}
 		os::fs::write_text(full_path(filename), o);
 	}

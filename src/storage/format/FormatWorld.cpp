@@ -73,7 +73,7 @@ string vars2str(const Array<ScriptInstanceDataVariable>& vars) {
 			continue;
 		if (s != "")
 			s += ", ";
-		s += v.name + ":" + v.value;
+		s += v.name + ":" + str(v.value);
 	}
 	return s;
 }
@@ -178,7 +178,7 @@ void read_components(WorldEntity& o, const xml::Element& e) {
 			for (const auto& a: ee.attributes)
 				if (a.key != "script" and a.key != "class" and a.key != "var") {
 					msg_write(a.key + " = " + a.value);
-					sd.variables.add({a.key, "", a.value});
+					sd.variables.add({a.key, Any::parse(a.value)});
 				}
 			o.components.add(sd);
 		}
@@ -347,7 +347,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		.witha("file", s.filename.str())
 		.witha("class", s.class_name);
 		for (auto &v: s.variables)
-			e.elements.add(xml::Element("var").witha("name", v.name).witha("value", v.value));
+			e.elements.add(xml::Element("var").witha("name", v.name).witha("value", str(v.value)));
 		meta.add(e);
 	}
 	w.add(meta);
@@ -360,7 +360,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 			ee.add_attribute("script", str(c.filename));
 		ee.add_attribute("class", c.class_name);
 		for (auto &v: c.variables)
-			ee.add_attribute(v.name, v.value);
+			ee.add_attribute(v.name, str(v.value));
 		return ee;
 	};
 
@@ -430,16 +430,16 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		} else if (auto l = e->get_component<Light>()) {
 			el = xml::Element("light").witha("type", light_type_canonical(l->light.type))
 			.witha("color", c2s(l->light.col))
-			.witha("harshness", f2s(l->light.harshness, 4));
+			.witha("harshness", f2s(l->light.harshness, 4))
+			.witha("power", f2s(l->light.power, 3));
 			if (l->light.type == yrenderer::LightType::DIRECTIONAL) {
 				el.add_attribute("ang", v2s(e->ang.get_angles()));
 			} else if (l->light.type == yrenderer::LightType::POINT) {
 				el.add_attribute("pos", v2s(e->pos));
-				el.add_attribute("radius", f2s(l->light.radius(), 3));
+				el.add_attribute("allow_shadow", b2s(l->light.allow_shadow));
 			} else if (l->light.type == yrenderer::LightType::CONE) {
 				el.add_attribute("pos", v2s(e->pos));
 				el.add_attribute("ang", v2s(e->ang.get_angles()));
-				el.add_attribute("radius", f2s(l->light.radius(), 3));
 				el.add_attribute("theta", f2s(l->light.theta, 3));
 			}
 			for (auto c: e->components) {
