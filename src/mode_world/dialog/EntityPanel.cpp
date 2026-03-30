@@ -5,9 +5,9 @@
 #include "EntityPanel.h"
 #include "EntityListPanel.h"
 #include "AddEntityPanel.h"
-#include "ComponentPanel.h"
+#include "components/ComponentPanel.h"
 #include "../ModeWorld.h"
-#include "ComponentSelectionDialog.h"
+#include "components/ComponentSelectionDialog.h"
 #include <stuff/PluginManager.h>
 #include <lib/xhui/controls/ListView.h>
 #include <lib/xhui/dialogs/FileSelectionDialog.h>

@@ -3,7 +3,7 @@
 //
 
 #include "ModelRefPanel.h"
-#include "../data/DataWorld.h"
+#include "../../data/DataWorld.h"
 #include <y/world/Model.h>
 #include <ecs/Entity.h>
 #include <storage/format/Format.h>

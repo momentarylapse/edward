@@ -3,7 +3,7 @@
 //
 
 #include "CameraPanel.h"
-#include "../data/DataWorld.h"
+#include "../../data/DataWorld.h"
 #include <y/world/components/Camera.h>
 #include <ecs/Entity.h>
 #include <stuff/PluginManager.h>

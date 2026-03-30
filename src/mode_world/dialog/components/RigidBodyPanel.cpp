@@ -2,17 +2,17 @@
 // Created by michi on 9/30/25.
 //
 
-#include "SolidBodyPanel.h"
-#include "../data/DataWorld.h"
+#include "RigidBodyPanel.h"
+#include "../../data/DataWorld.h"
 #include <y/world/components/RigidBody.h>
 #include <ecs/Entity.h>
 #include <stuff/PluginManager.h>
 
 
 
-SolidBodyPanel::SolidBodyPanel(DataWorld* _data, int _index) : Node("solid-body-panel") {
+RigidBodyPanel::RigidBodyPanel(DataWorld* _data, int _index) : Node("rigid-body-panel") {
 	from_source(R"foodelim(
-Dialog solid-body-panel ''
+Dialog rigid-body-panel ''
 	Grid ? ''
 		Label ? 'Active' right disabled
 		CheckBox active '' 'tooltip=Active bodies can move and fall.\nOtherwise the body will become a static obstacle'
@@ -55,7 +55,7 @@ Dialog solid-body-panel ''
 			update_ui();
 	});
 }
-void SolidBodyPanel::update_ui() {
+void RigidBodyPanel::update_ui() {
 	auto e = data->entity(index);
 	auto sb = e->get_component<RigidBody>();
 	check("active", sb->dynamic);
@@ -77,7 +77,7 @@ void SolidBodyPanel::update_ui() {
 	enable("theta-yz", sb->dynamic);
 	enable("theta-zz", sb->dynamic);
 }
-void SolidBodyPanel::on_edit() {
+void RigidBodyPanel::on_edit() {
 	RigidBody sb;
 	sb.dynamic = is_checked("active");
 	sb.mass = get_float("mass");

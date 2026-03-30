@@ -3,7 +3,7 @@
 //
 
 #include "EntityBasePanel.h"
-#include "../data/DataWorld.h"
+#include "../../data/DataWorld.h"
 #include <ecs/Entity.h>
 
 

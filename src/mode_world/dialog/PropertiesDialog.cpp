@@ -16,7 +16,7 @@
 #include <world/systems/Physics.h>
 #include <ecs/BaseClass.h>
 
-#include "ComponentSelectionDialog.h"
+#include "components/ComponentSelectionDialog.h"
 #include <stuff/PluginManager.h>
 
 class SystemPanel : public obs::Node<xhui::Panel> {

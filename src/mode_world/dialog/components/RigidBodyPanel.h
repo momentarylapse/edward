@@ -10,9 +10,9 @@
 class DataWorld;
 
 
-class SolidBodyPanel : public obs::Node<xhui::Panel> {
+class RigidBodyPanel : public obs::Node<xhui::Panel> {
 public:
-	explicit SolidBodyPanel(DataWorld* _data, int _index);
+	explicit RigidBodyPanel(DataWorld* _data, int _index);
 	void update_ui();
 	void on_edit();
 	DataWorld* data;

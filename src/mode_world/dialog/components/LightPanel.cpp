@@ -3,7 +3,7 @@
 //
 
 #include "LightPanel.h"
-#include "../data/DataWorld.h"
+#include "../../data/DataWorld.h"
 #include <y/world/components/Light.h>
 #include <stuff/PluginManager.h>
 #include <ecs/Entity.h>

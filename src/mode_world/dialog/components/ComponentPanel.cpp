@@ -5,12 +5,12 @@
 #include "ComponentPanel.h"
 #include "CameraPanel.h"
 #include "LightPanel.h"
-#include "SolidBodyPanel.h"
+#include "RigidBodyPanel.h"
 #include "ModelRefPanel.h"
 #include "EntityBasePanel.h"
 #include "TerrainRefPanel.h"
 #include "UserComponentPanel.h"
-#include "../data/DataWorld.h"
+#include "../../data/DataWorld.h"
 #include <y/world/components/Camera.h>
 #include <ecs/Entity.h>
 #include <y/world/components/Animator.h>
@@ -239,7 +239,7 @@ void ComponentPanel::set_class(const string& _component_class) {
 		content_panel = new ModelRefPanel(data, entity_index);
 	} else if (component_class == "RigidBody") {
 		component_type = RigidBody::_class;
-		content_panel = new SolidBodyPanel(data, entity_index);
+		content_panel = new RigidBodyPanel(data, entity_index);
 	/*} else if (component_class == "Material") {
 		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
 			content_panel = new MaterialComponentPanel(data, e.object.object->material[0], "???", [this] (const ComplexPath& p) {

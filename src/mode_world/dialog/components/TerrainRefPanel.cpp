@@ -3,8 +3,8 @@
 //
 
 #include "TerrainRefPanel.h"
-#include "../ModeEditTerrain.h"
-#include "../data/DataWorld.h"
+#include "../../ModeEditTerrain.h"
+#include "../../data/DataWorld.h"
 #include <view/DocumentSession.h>
 #include <view/MaterialPreviewManager.h>
 #include <y/world/Terrain.h>

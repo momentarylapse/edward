@@ -4,7 +4,7 @@
 
 #include "UserComponentPanel.h"
 
-#include "../data/DataWorld.h"
+#include "../../data/DataWorld.h"
 #include <ecs/Entity.h>
 #include <stuff/PluginManager.h>
 #include <lib/base/iter.h>
