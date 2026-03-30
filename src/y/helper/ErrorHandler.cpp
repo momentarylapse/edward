@@ -6,9 +6,10 @@
  */
 
 #include "ErrorHandler.h"
-#include "../lib/base/base.h"
-#include "../lib/os/msg.h"
-#include "../lib/kaba/kaba.h"
+#include <lib/base/base.h>
+#include <lib/os/app.h>
+#include <lib/os/msg.h>
+#include <lib/kaba/kaba.h>
 
 #if HAS_LIB_UNWIND
 #define UNW_LOCAL_ONLY
@@ -161,6 +162,6 @@ void ErrorHandler::signal_handler(int signum) {
 
 	show_backtrace();
 
-	exit(signum);
+	os::app::exit(signum);
 }
 

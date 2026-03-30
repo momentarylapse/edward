@@ -6,6 +6,7 @@
  */
 
 #include "Config.h"
+#include <lib/os/app.h>
 #include <lib/os/msg.h>
 #include <lib/os/CommandLineParser.h>
 
@@ -122,7 +123,7 @@ void RawConfig::load(const Array<string> &arg) {
 	});
 	p.cmd("--help", "", "show help", [&p] (const Array<string>& a) {
 		p.show();
-		exit(0);
+		os::app::exit(0);
 	});
 	p.cmd("", "[WORLD]", "run game (optionally select first world)", [this, &p] (const Array<string>& a) {
 		if (a.num > 0)
@@ -130,7 +131,7 @@ void RawConfig::load(const Array<string> &arg) {
 	});
 	p.parse(arg);
 	if (p.error)
-		exit(1);
+		os::app::exit(1);
 
 	// deprecated
 	if (has("default-world") and !has(ID_DEFAULT_WORLD))
