@@ -5,6 +5,7 @@
 #include "ComponentPanel.h"
 #include "CameraPanel.h"
 #include "LightPanel.h"
+#include "LinkPanel.h"
 #include "RigidBodyPanel.h"
 #include "ModelRefPanel.h"
 #include "EntityBasePanel.h"
@@ -18,6 +19,7 @@
 #include <y/world/components/Skeleton.h>
 #include <y/world/components/RigidBody.h>
 #include <y/world/components/Light.h>
+#include <y/world/components/Link.h>
 #include <y/world/Model.h>
 #include <y/world/Terrain.h>
 
@@ -270,6 +272,9 @@ void ComponentPanel::set_class(const string& _component_class) {
 	} else if (component_class == "Light") {
 		component_type = Light::_class;
 		content_panel = new LightPanel(data, entity_index);
+	} else if (component_class == "Link") {
+		component_type = Link::_class;
+		content_panel = new LinkPanel(data, entity_index);
 	} else {
 		content_panel = new UserComponentPanel(data, entity_index, component_index);
 		user_component = true;

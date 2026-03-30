@@ -50,6 +50,7 @@
 #include <string>
 #include <y/world/components/Camera.h>
 #include <y/world/components/Light.h>
+#include <y/world/components/Link.h>
 #include <y/world/Terrain.h>
 #include <y/world/components/Skeleton.h>
 #include <y/world/components/Animator.h>
@@ -359,6 +360,7 @@ void PluginManager::load_project_stuff(const Path &dir) {
 
 	Camera::_class = link_component("Camera");
 	Light::_class = link_component("Light");
+	Link::_class = link_component("Link");
 	RigidBody::_class = link_component("RigidBody");
 	MeshCollider::_class = link_component("MeshCollider");
 	TerrainCollider::_class = link_component("TerrainCollider");
