@@ -21,6 +21,7 @@
 #include <lib/yrenderer/Material.h>
 #include <y/world/components/Camera.h>
 #include <y/world/components/Light.h>
+#include <y/world/components/Link.h>
 #include <ecs/Entity.h>
 #include <y/world/components/Collider.h>
 #include <y/world/Model.h>
@@ -48,6 +49,8 @@
 #include <lib/mesh/GeometryCylinder.h>
 #include <y/world/components/RigidBody.h>
 #include <ecs/EntityManager.h>
+
+#include "ecs/SystemManager.h"
 
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
@@ -498,6 +501,7 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 
 	draw_cameras(win);
 	draw_lights(win);
+	draw_links(win);
 }
 
 void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
@@ -617,6 +621,29 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 			dh->draw_circle(pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_HI, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_HI);
 			draw_tangent_circle(win, pos, pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_LO, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_LO);
 		}
+	}
+}
+
+void ModeWorld::draw_links(MultiViewWindow *win) {
+	auto dh = session->drawing_helper;
+	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
+	for (const auto l: data->entity_manager->get_component_list<Link>()) {
+		//if (l.view_stage < multi_view->view_stage)
+		//	continue;
+		int i = l->owner->get_component<EdwardTag>()->entity_index;
+
+		dh->set_color(DrawingHelper::COLOR_X);
+		dh->set_line_width(DrawingHelper::LINE_THICK);
+		if (sel.contains(i)) {
+			dh->set_color(Red);
+			dh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
+		}
+
+		const vec3 pos = l->owner->pos;
+		if (auto a = data->entity(l->a))
+			dh->draw_lines({pos, a->pos}, false);
+		if (auto b = data->entity(l->b))
+			dh->draw_lines({pos, b->pos}, false);
 	}
 }
 

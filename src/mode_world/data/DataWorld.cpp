@@ -197,6 +197,8 @@ Box DataWorld::get_bounding_box() const {
 }
 
 Entity *DataWorld::entity(int index) {
+	if (index < 0 or index >= entity_manager->entities.num)
+		return nullptr;
 	return entity_manager->entities[index];
 }
 

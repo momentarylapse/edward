@@ -49,6 +49,7 @@ public:
 	void draw_terrains(const yrenderer::RenderParams& params, MultiViewWindow* win);
 	void draw_cameras(MultiViewWindow* win);
 	void draw_lights(MultiViewWindow* win);
+	void draw_links(MultiViewWindow* win);
 
 	void on_draw_post(Painter*) override;
 	void optimize_view();
