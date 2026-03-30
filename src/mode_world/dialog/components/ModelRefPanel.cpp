@@ -5,13 +5,11 @@
 #include "ModelRefPanel.h"
 #include "../../data/DataWorld.h"
 #include <y/world/Model.h>
-#include <ecs/Entity.h>
+#include <y/helper/ResourceManager.h>
+#include <y/ecs/Entity.h>
 #include <storage/format/Format.h>
 #include <storage/Storage.h>
 #include <mode_material/dialog/MaterialSelector.h>
-
-#include "helper/ResourceManager.h"
-#include "world/ModelManager.h"
 
 
 ModelRefPanel::ModelRefPanel(DataWorld* _data, int _index) : Node("model-panel") {
@@ -36,7 +34,9 @@ Dialog model-panel ''
 		data->session->storage->file_dialog(FD_MODEL, false, true).then([this] (const ComplexPath& p) {
 			auto e = data->entity(index);
 			data->entity_edit_component(e, ModelRef::_class, {"", "", {{"model", str(p.relative)}}});
-			//material_selector->internal_materials = mr->model->material; ...
+			auto mr = e->get_component<ModelRef>();
+			if (mr->model)
+				material_selector->internal_materials = {mr->model->materials[0]};
 		});
 	});
 	event("edit", [this] {
@@ -47,11 +47,10 @@ Dialog model-panel ''
 	});
 
 	material_selector->out_selected >> create_data_sink<yrenderer::Material*>([this, mr] (yrenderer::Material* m) {
-		data->session->error("material changed... but not working");
-		//mr->material...
-		mr->set_material(0, m);
-		data->out_changed();
-		// FIXME :D
+		auto e = data->entity(index);
+		Any x = Any::EmptyList;
+		x.add(str(data->session->resource_manager->filename(m).no_ext()));
+		data->entity_edit_component(e, ModelRef::_class, {"", "", {{"materials", x}}});
 	});
 
 	data->out_changed >> create_sink([this] {
@@ -67,6 +66,6 @@ void ModelRefPanel::update_ui() {
 	set_string("model", str(data->session->resource_manager->filename(mr->model)));
 	if (mr->model) {
 		material_selector->set_material(mr->get_material(0));
-		material_selector->internal_materials = mr->model->materials;
+		material_selector->internal_materials = {mr->model->materials[0]};
 	}
 }

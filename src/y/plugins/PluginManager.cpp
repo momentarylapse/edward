@@ -1055,8 +1055,7 @@ Any whatever_to_any(const void* p, const kaba::Class* c) {
 		Any r = Any::EmptyList;
 		auto arr = (DynamicArray*)p;
 		for (int i=0; i<arr->num; i++)
-			// ARGH, TODO switch to any
-			r.add(whatever_to_any(arr->simple_element(i), c->parent));
+			r.add(whatever_to_any(arr->simple_element(i), c->param[0]));
 		return r;
 	}
 	return {};
@@ -1088,8 +1087,12 @@ void whatever_from_any(void* p, const kaba::Class* type, const Any& value) {
 	if ((type->name == "Template*" or type->name == "Template&") and default_resource_manager)
 		*(Template**)p = default_resource_manager->load_template(str(value));
 	if (type->is_list() and value.is_list()) {
+		if (!type->param[0]->can_memcpy())
+			return;
 		auto arr = (DynamicArray*)p;
-		// TODO
+		arr->simple_resize(value.length());
+		for (int i=0; i<value.length(); i++)
+			whatever_from_any(arr->simple_element(i), type->param[0], value[i]);
 	}
 }
 
