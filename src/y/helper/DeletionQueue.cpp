@@ -12,12 +12,11 @@
 
 namespace DeletionQueue {
 
-static Array<ecs::BaseClass*> queue;
 static Array<ecs::Entity*> queue_entity;
 static Array<gui::Node*> queue_ui;
 
 void add(ecs::BaseClass *c) {
-	queue.add(c);
+	msg_error("this delete operation is deprecated... call Mi :(");
 }
 
 void add_entity(ecs::Entity *e) {
@@ -29,9 +28,6 @@ void add_ui(gui::Node *n) {
 }
 
 void delete_all() {
-	for (auto c: queue) {
-		msg_error(format("unable to delete: %d", (int)c->type));
-	}
 	for (auto e: queue_entity)
 		world.delete_entity(e);
 	for (auto n: queue_ui)
@@ -40,7 +36,6 @@ void delete_all() {
 }
 
 void reset() {
-	queue.clear();
 	queue_entity.clear();
 	queue_ui.clear();
 }

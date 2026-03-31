@@ -12,8 +12,11 @@
 
 const kaba::Class* AnimationManager::_class = nullptr;
 
+AnimationManager::AnimationManager() {
+	set_profiler_name("ani");
+}
+
 void AnimationManager::on_iterate(float dt) {
-	profiler::begin(channel);
 	auto& list = entity_manager->get_component_list<Animator>();
 	for (auto *o: list)
 		o->do_animation(dt);
@@ -31,8 +34,6 @@ void AnimationManager::on_iterate(float dt) {
 		}
 	}
 #endif
-
-	profiler::end(channel);
 }
 
 void AnimationManager::on_add_component(const ecs::MessageParams &params) {

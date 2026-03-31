@@ -8,9 +8,10 @@
 #ifndef SRC_NET_NETWORKMANAGER_H_
 #define SRC_NET_NETWORKMANAGER_H_
 
-#include "../lib/base/base.h"
-#include "../lib/base/callable.h"
-#include "../lib/base/pointer.h"
+#include <lib/base/base.h>
+#include <lib/base/callable.h>
+#include <lib/base/pointer.h>
+#include <ecs/System.h>
 #include <functional>
 
 namespace net {
@@ -18,7 +19,7 @@ namespace net {
 }
 class BinaryBuffer;
 
-class NetworkManager {
+class NetworkManager : public ecs::System {
 public:
 	static void init();
 
@@ -39,8 +40,8 @@ public:
 
 	//Socket *socket_to_host;
 
-	Connection *connect_to_host(const string &host);
-	void iterate();
+	Connection* connect_to_host(const string &host);
+	void on_iterate(float dt) override;
 	void iterate_client(Connection *con);
 	void handle_block(Connection *con);
 
@@ -55,8 +56,8 @@ public:
 	};
 	Array<Observer> observers;
 	void event(const string &message, VirtualBase *ob, Callback *cb);
-};
 
-extern NetworkManager network_manager;
+	static const kaba::Class* _class;
+};
 
 #endif /* SRC_NET_NETWORKMANAGER_H_ */

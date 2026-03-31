@@ -19,6 +19,7 @@ class System : public obs::Node<BaseClass> {
 public:
 	System();
 	~System() override;
+	void set_profiler_name(const string& name);
 
 	obs::xsink<MessageParams> in_add_component{this, &System::on_add_component};
 	obs::xsink<MessageParams> in_remove_component{this, &System::on_remove_component};

@@ -11,9 +11,7 @@
 
 namespace ecs {
 
-BaseClass::BaseClass(Type t) {
-	type = t;
-}
+BaseClass::BaseClass() {}
 
 Any InstanceData::get(const string &name) const {
 	for (const auto& v: variables)

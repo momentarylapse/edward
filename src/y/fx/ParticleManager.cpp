@@ -14,9 +14,13 @@
 
 const kaba::Class* ParticleManager::_class = nullptr;
 
-static void iterate_legacy_particles(Array<LegacyParticle*>& particles, float dt) {
+ParticleManager::ParticleManager() {
+	set_profiler_name("fx");
+}
+
+void ParticleManager::iterate_legacy_particles(float dt) {
 	Array<LegacyParticle*> to_del;
-	foreachi (auto p, particles, i) {
+	for (auto p: entity_manager->get_component_list_family<LegacyParticle>()) {
 		p->owner->pos += p->vel * dt;
 		if (p->time_to_live >= 0) {
 			p->time_to_live -= dt;
@@ -30,13 +34,12 @@ static void iterate_legacy_particles(Array<LegacyParticle*>& particles, float dt
 	}
 
 	for (auto p: to_del)
-		ecs::EntityManager::global->delete_component(p->owner, p);
+		entity_manager->delete_component(p->owner, p);
 }
 
 
 void ParticleManager::on_iterate(float dt) {
-	auto& list = entity_manager->get_component_list_family<LegacyParticle>();
-	iterate_legacy_particles(list, dt);
+	iterate_legacy_particles(dt);
 }
 
 

@@ -88,6 +88,7 @@ void myTickCallback(btDynamicsWorld *world, btScalar timeStep) {
 #endif
 
 Physics::Physics() {
+	set_profiler_name("phys");
 	gravity = v_0;
 	speed_of_sound = 1000;
 

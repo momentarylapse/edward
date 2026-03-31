@@ -2,7 +2,7 @@
 
 #include "VertexBuffer.h"
 #include <vulkan/vulkan.h>
-
+#include "CommandBuffer.h"
 #include "helper.h"
 #include "../os/msg.h"
 
@@ -130,7 +130,9 @@ void VertexBuffer::_create_buffer(Buffer &buf, const DynamicArray &array) {
 		buf.create(buffer_size, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	}
 
-	copy_buffer(staging.buffer, buf.buffer, buffer_size);
+	auto cb = begin_single_time_commands();
+	copy_buffer(cb, staging.buffer, buf.buffer, buffer_size);
+	end_single_time_commands(cb);
 }
 
 void VertexBuffer::_create_index_buffer_i16(const Array<uint16_t> &indices) {

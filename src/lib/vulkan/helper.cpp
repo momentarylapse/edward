@@ -60,7 +60,7 @@ void ImageAndMemory::create(VkImageType type, uint32_t width, uint32_t height, u
 	vkBindImageMemory(default_device->device, image, memory, 0);
 }
 
-void ImageAndMemory::generate_mipmaps(uint32_t width, uint32_t height, uint32_t mip_levels, uint32_t layer0, uint32_t num_layers, VkImageLayout new_layout) {
+void ImageAndMemory::generate_mipmaps(CommandBuffer* cb, uint32_t width, uint32_t height, uint32_t mip_levels, uint32_t layer0, uint32_t num_layers, VkImageLayout new_layout) {
 	// Check if image format supports linear blitting
 	VkFormatProperties fp;
 	vkGetPhysicalDeviceFormatProperties(default_device->physical_device, format, &fp);
@@ -68,8 +68,6 @@ void ImageAndMemory::generate_mipmaps(uint32_t width, uint32_t height, uint32_t 
 	if (!(fp.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
 		throw Exception("texture image format does not support linear blitting!");
 	}
-
-	auto command_buffer = begin_single_time_commands();
 
 	VkImageMemoryBarrier barrier = {};
 	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -91,7 +89,7 @@ void ImageAndMemory::generate_mipmaps(uint32_t width, uint32_t height, uint32_t 
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 		barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 
-		vkCmdPipelineBarrier(command_buffer->buffer,
+		vkCmdPipelineBarrier(cb->buffer,
 			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
 			0, nullptr,
 			0, nullptr,
@@ -111,7 +109,7 @@ void ImageAndMemory::generate_mipmaps(uint32_t width, uint32_t height, uint32_t 
 		blit.dstSubresource.baseArrayLayer = layer0;
 		blit.dstSubresource.layerCount = num_layers;
 
-		vkCmdBlitImage(command_buffer->buffer,
+		vkCmdBlitImage(cb->buffer,
 			image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 			image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			1, &blit,
@@ -122,7 +120,7 @@ void ImageAndMemory::generate_mipmaps(uint32_t width, uint32_t height, uint32_t 
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-		vkCmdPipelineBarrier(command_buffer->buffer,
+		vkCmdPipelineBarrier(cb->buffer,
 			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 			0, nullptr,
 			0, nullptr,
@@ -138,13 +136,11 @@ void ImageAndMemory::generate_mipmaps(uint32_t width, uint32_t height, uint32_t 
 	barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 	barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-	vkCmdPipelineBarrier(command_buffer->buffer,
+	vkCmdPipelineBarrier(cb->buffer,
 		VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 		0, nullptr,
 		0, nullptr,
 		1, &barrier);
-
-	end_single_time_commands(command_buffer);
 }
 
 bool format_is_depth_buffer(VkFormat f) {
@@ -164,14 +160,10 @@ VkImageAspectFlagBits ImageAndMemory::aspect() const {
 	return VK_IMAGE_ASPECT_COLOR_BIT;
 }
 
-void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size) {
-	auto command_buffer = begin_single_time_commands();
-
+void copy_buffer(CommandBuffer* cb, VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size) {
 	VkBufferCopy copy_region = {};
 	copy_region.size = size;
-	vkCmdCopyBuffer(command_buffer->buffer, src_buffer, dst_buffer, 1, &copy_region);
-
-	end_single_time_commands(command_buffer);
+	vkCmdCopyBuffer(cb->buffer, src_buffer, dst_buffer, 1, &copy_region);
 }
 
 VkImageView ImageAndMemory::create_view(VkImageAspectFlags aspect, VkImageViewType type, uint32_t mip_levels, uint32_t layer0, uint32_t num_layers) const {
@@ -193,9 +185,7 @@ VkImageView ImageAndMemory::create_view(VkImageAspectFlags aspect, VkImageViewTy
 	return image_view;
 }
 
-void copy_buffer_to_image(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t depth, uint32_t level, uint32_t layer) {
-	auto command_buffer = begin_single_time_commands();
-
+void copy_buffer_to_image(CommandBuffer* cb, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t depth, uint32_t level, uint32_t layer) {
 	VkBufferImageCopy region = {};
 	region.bufferOffset = 0;
 	region.bufferRowLength = 0;
@@ -207,14 +197,10 @@ void copy_buffer_to_image(VkBuffer buffer, VkImage image, uint32_t width, uint32
 	region.imageOffset = {0, 0, 0};
 	region.imageExtent = {width, height, depth};
 
-	vkCmdCopyBufferToImage(command_buffer->buffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
-
-	end_single_time_commands(command_buffer);
+	vkCmdCopyBufferToImage(cb->buffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 }
 
-void copy_image_to_buffer(VkImage image, uint32_t width, uint32_t height, uint32_t depth, uint32_t level, uint32_t layer, VkBuffer buffer) {
-	auto command_buffer = begin_single_time_commands();
-
+void copy_image_to_buffer(CommandBuffer* cb, VkImage image, uint32_t width, uint32_t height, uint32_t depth, uint32_t level, uint32_t layer, VkBuffer buffer) {
 	VkBufferImageCopy region = {};
 	region.bufferOffset = 0;
 	region.bufferRowLength = 0;
@@ -226,9 +212,7 @@ void copy_image_to_buffer(VkImage image, uint32_t width, uint32_t height, uint32
 	region.imageOffset = {0, 0, 0};
 	region.imageExtent = {width, height, depth};
 
-	vkCmdCopyImageToBuffer(command_buffer->buffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buffer, 1, &region);
-
-	end_single_time_commands(command_buffer);
+	vkCmdCopyImageToBuffer(cb->buffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buffer, 1, &region);
 }
 
 VkImageAspectFlags image_aspect(const ImageAndMemory &i, VkImageLayout new_layout) {
@@ -242,10 +226,9 @@ VkImageAspectFlags image_aspect(const ImageAndMemory &i, VkImageLayout new_layou
 	}
 }
 
-void ImageAndMemory::transition_layout(VkImageLayout old_layout, VkAccessFlags source_flags, VkPipelineStageFlags source_stage,
+void ImageAndMemory::transition_layout(CommandBuffer* cb, VkImageLayout old_layout, VkAccessFlags source_flags, VkPipelineStageFlags source_stage,
 		VkImageLayout new_layout, VkAccessFlags dest_flags, VkPipelineStageFlags dest_stage,
 		uint32_t mip_levels, uint32_t layer0, uint32_t num_layers) const {
-	auto command_buffer = begin_single_time_commands();
 
 	VkImageMemoryBarrier barrier = {};
 	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -266,15 +249,13 @@ void ImageAndMemory::transition_layout(VkImageLayout old_layout, VkAccessFlags s
 	//command_buffer->image_barrier();
 
 	vkCmdPipelineBarrier(
-		command_buffer->buffer,
+		cb->buffer,
 		source_stage, dest_stage,
 		0,
 		0, nullptr,
 		0, nullptr,
 		1, &barrier
 	);
-
-	end_single_time_commands(command_buffer);
 }
 
 

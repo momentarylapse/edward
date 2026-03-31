@@ -12,7 +12,7 @@
 
 const int PORT = 2184;
 
-NetworkManager network_manager;
+const kaba::Class* NetworkManager::_class = nullptr;
 
 void NetworkManager::init() {
 	NetInit();
@@ -45,7 +45,7 @@ NetworkManager::Connection *NetworkManager::connect_to_host(const string &host) 
 	return con;
 }
 
-void NetworkManager::iterate() {
+void NetworkManager::on_iterate(float dt) {
 	for (auto con: connections)
 		if (!con->is_host)
 			iterate_client(con);

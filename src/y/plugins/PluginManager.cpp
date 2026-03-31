@@ -240,7 +240,7 @@ Light* attach_light_cone(ecs::Entity* e, const color& c, float r, float theta) {
 }
 
 void export_ecs(kaba::Exporter* ext) {
-	ecs::BaseClass entity(ecs::BaseClass::Type::NONE);
+	ecs::BaseClass entity;
 	ext->declare_class_size("BaseClass", sizeof(ecs::BaseClass));
 	//	ext->link_class_func("BaseClass.__init__", &ecs::Entity::__init__);
 	ext->link_virtual("BaseClass.__delete__", &ecs::BaseClass::__delete__, &entity);
@@ -809,8 +809,6 @@ void export_net(kaba::Exporter* ext) {
 	ext->link_class_func("Connection.start_block", &NetworkManager::Connection::start_block);
 	ext->link_class_func("Connection.end_block", &NetworkManager::Connection::end_block);
 	ext->link_class_func("Connection.send", &NetworkManager::Connection::send);
-
-	ext->link("network", &network_manager);
 }
 
 void export_engine(kaba::Exporter* ext) {
@@ -985,6 +983,9 @@ void import_kaba() {
 	auto m_audio = kaba::default_context->load_module("yengine/audio.kaba");
 	import_component_class<audio::SoundSource>(m_audio, "SoundSource");
 	import_component_class<audio::Listener>(m_audio, "Listener");
+
+	auto m_net = kaba::default_context->load_module("yengine/networking.kaba");
+	import_component_class<NetworkManager>(m_net, "NetworkManager", "ecs.System");
 
 	auto m_y = kaba::default_context->load_module("yengine/yengine.kaba");
 	import_component_class<UserMesh>(m_y, "UserMesh");

@@ -6,14 +6,21 @@
  */
 
 #include "System.h"
+#include <lib/profiler/Profiler.h>
 
 
 namespace ecs {
 
-System::System() : Node<BaseClass>(Type::SYSTEM) {
+System::System() {
+	channel = profiler::create_channel("System", -1);
 }
 
-System::~System() = default;
+System::~System() {
+	profiler::delete_channel(channel);
+}
 
+void System::set_profiler_name(const string &name) {
+	profiler::set_name(channel, name);
+}
 }
 

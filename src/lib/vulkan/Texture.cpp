@@ -136,7 +136,9 @@ Texture::Texture(int w, int h, const string &format) : Texture() {
 	width = w;
 	height = h;
 	if (default_device) {
+		//auto cb = begin_single_time_commands();
 		_create_image(nullptr, VK_IMAGE_TYPE_2D, parse_format(format), 1, VK_SAMPLE_COUNT_1_BIT, false, false, false);
+		//end_single_time_commands(cb);
 		view = image.create_view(VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_2D, mip_levels, 0, 1);
 		_create_sampler();
 	}
@@ -152,7 +154,9 @@ VolumeTexture::VolumeTexture(int nx, int ny, int nz, const string &format) {
 	width = nx;
 	height = ny;
 	depth = nz;
+	//auto cb = begin_single_time_commands();
 	_create_image(nullptr, VK_IMAGE_TYPE_3D, parse_format(format), 1, VK_SAMPLE_COUNT_1_BIT, false, false, false);
+	//end_single_time_commands(cb);
 	view = image.create_view(VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_3D, mip_levels, 0, 1);
 	_create_sampler();
 }
@@ -162,7 +166,9 @@ TextureArray::TextureArray(int w, int h, int layers, const string &format) {
 	width = w;
 	height = h;
 	num_layers = layers;
+	//auto cb = begin_single_time_commands();
 	_create_image(nullptr, VK_IMAGE_TYPE_2D, parse_format(format), layers, VK_SAMPLE_COUNT_1_BIT, false, false, false);
+	//end_single_time_commands(cb);
 	view = image.create_view(VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_VIEW_TYPE_3D, mip_levels, 0, layers);
 	_create_sampler();
 }
@@ -231,12 +237,15 @@ void Texture::writex(const void *data, int nx, int ny, int nz, const string &for
 	height = ny;
 	depth = nz;
 
+	//auto cb = begin_single_time_commands();
 	_create_image(data, depth == 1 ? VK_IMAGE_TYPE_2D : VK_IMAGE_TYPE_3D, parse_format(format), 1, VK_SAMPLE_COUNT_1_BIT, depth == 1, false, false);
+	//end_single_time_commands(cb);
 	view = image.create_view(VK_IMAGE_ASPECT_COLOR_BIT, depth == 1 ? VK_IMAGE_VIEW_TYPE_2D : VK_IMAGE_VIEW_TYPE_3D, mip_levels, 0, 1);
 	_create_sampler();
 }
 
 void Texture::_create_image(const void *image_data, VkImageType type, VkFormat format, int num_layers, VkSampleCountFlagBits samples, bool allow_mip, bool allow_storage, bool cube) {
+	//auto cb = begin_single_time_commands();
 	int layer_size = width * height * depth * format_size(format);
 	//VkDeviceSize image_size = layer_size * num_layers;
 	mip_levels = static_cast<uint32_t>(std::floor(std::log2(max(width, height)))) + 1;
@@ -257,37 +266,43 @@ void Texture::_create_image(const void *image_data, VkImageType type, VkFormat f
 		usage |= VK_IMAGE_USAGE_STORAGE_BIT;
 	image.create(type, width, height, depth, mip_levels, num_layers, samples, format, usage, cube);
 
-	image.transition_layout(
+	auto cb = begin_single_time_commands();
+	image.transition_layout(cb,
 		VK_IMAGE_LAYOUT_UNDEFINED, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
 		mip_levels, 0, num_layers);
 
-
+	Buffer staging(default_device); // keep alive longer than the command buffer
 	if (image_data) {
-		Buffer staging(default_device);
+		if (num_layers > 1) {
+			// otherwise we need multiple staging buffers
+			end_single_time_commands(cb);
+			cb = begin_single_time_commands();
+		}
 		staging.create(layer_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 		for (int k=0; k<num_layers; k++) {
 			staging.update_part((char*)image_data + k * layer_size, 0, layer_size);
-			copy_buffer_to_image(staging.buffer, image.image, width, height, depth, 0, k);
+			copy_buffer_to_image(cb, staging.buffer, image.image, width, height, depth, 0, k);
 		}
 	}
 
-
 	if (allow_mip)
-		image.generate_mipmaps(width, height, mip_levels, 0, num_layers, layout);
+		image.generate_mipmaps(cb, width, height, mip_levels, 0, num_layers, layout);
 	else
-		image.transition_layout(
+		image.transition_layout(cb,
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
 			layout, VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 			mip_levels, 0, num_layers);
+	end_single_time_commands(cb);
 }
 
 
 void Texture::read(void* data) {
 	int layer_size = width * height * depth * format_size(image.format);
 
-	image.transition_layout(
+	auto cb = begin_single_time_commands();
+	image.transition_layout(cb,
 		VK_IMAGE_LAYOUT_UNDEFINED, 0, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
 		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_ACCESS_TRANSFER_READ_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
 		1, 0, 1);
@@ -296,7 +311,8 @@ void Texture::read(void* data) {
 	staging.create(layer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 	int layer = 0;
-	copy_image_to_buffer(image.image, width, height, depth, 0, layer, staging.buffer);
+	copy_image_to_buffer(cb, image.image, width, height, depth, 0, layer, staging.buffer);
+	end_single_time_commands(cb);
 
 	void* p = staging.map();
 	memcpy(data, p, layer_size);
@@ -411,7 +427,8 @@ void CubeMap::write_side(int side, const Image &_image) {
 
 	auto layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-	image.transition_layout(
+	auto cb = begin_single_time_commands();
+	image.transition_layout(cb,
 		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 0, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
 		mip_levels, side, 1);
@@ -423,16 +440,17 @@ void CubeMap::write_side(int side, const Image &_image) {
 	staging.create(layer_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 	staging.update_part(&_image.data[0], 0, layer_size);
-	copy_buffer_to_image(staging.buffer, image.image, width, height, depth, 0, side);
+	copy_buffer_to_image(cb, staging.buffer, image.image, width, height, depth, 0, side);
 
 
 	/*if (allow_mip)
 		image.generate_mipmaps(width, height, mip_levels, 0, num_layers, layout);
 	else*/
-		image.transition_layout(
+		image.transition_layout(cb,
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_ACCESS_TRANSFER_WRITE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
 			layout, VK_ACCESS_SHADER_READ_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
 			mip_levels, side, 1);
+	end_single_time_commands(cb);
 }
 
 TextureMultiSample::TextureMultiSample(int nx, int ny, int samples, const string &format) {
@@ -440,7 +458,9 @@ TextureMultiSample::TextureMultiSample(int nx, int ny, int samples, const string
 	width = nx;
 	height = ny;
 
+	//auto cb = begin_single_time_commands();
 	_create_image(nullptr, VK_IMAGE_TYPE_2D, parse_format(format), 1, (VkSampleCountFlagBits)samples, false, false, false);
+	//end_single_time_commands(cb);
 
 	auto aspect = format_is_depth(parse_format(format)) ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
 	view = image.create_view(aspect, VK_IMAGE_VIEW_TYPE_2D, mip_levels, 0, 1);//samples);

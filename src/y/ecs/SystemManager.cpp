@@ -53,7 +53,9 @@ void SystemManager::create(const Path& filename, const string& __name, const Arr
 void SystemManager::register_system(const kaba::Class* type, System* s) {
 	systems.add(s);
 	system_by_type.add({type, s});
-	s->channel = profiler::create_channel(type->long_name(), ch_system);
+	profiler::set_parent(s->channel, ch_system);
+	if (profiler::get_name(s->channel) == "System")
+		profiler::set_name(s->channel, type->name);
 
 	s->entity_manager = entity_manager;
 	entity_manager->out_add_component >> s->in_add_component;
