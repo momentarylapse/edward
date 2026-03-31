@@ -7,8 +7,13 @@
 
 #include "System.h"
 
+
+namespace ecs {
+
 System::System() : Node<BaseClass>(Type::SYSTEM) {
 }
 
 System::~System() = default;
+
+}
 

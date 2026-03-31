@@ -18,7 +18,7 @@ void WorldOpaqueUserMeshesEmitter::emit(const yrenderer::RenderParams& params, y
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
-	auto& meshes = EntityManager::global->get_component_list_family<UserMesh>();
+	auto& meshes = ecs::EntityManager::global->get_component_list_family<UserMesh>();
 
 	for (auto m: meshes) {
 		auto material = m->material.get();

@@ -193,7 +193,7 @@ void Terrain::update(int x1,int x2,int z1,int z2,int mode) {
 	force_redraw = true;
 }
 
-float Terrain::gimme_height(Entity* o, const vec3 &p) // liefert die interpolierte Hoehe zu einer Position
+float Terrain::gimme_height(ecs::Entity* o, const vec3 &p) // liefert die interpolierte Hoehe zu einer Position
 {
 	float x = p.x - o->pos.x;
 	float z = p.z - o->pos.z;
@@ -220,7 +220,7 @@ float Terrain::gimme_height(Entity* o, const vec3 &p) // liefert die interpolier
 	return he+o->pos.y;
 }
 
-float Terrain::gimme_height_n(Entity* o, const vec3 &p, vec3 &n) {
+float Terrain::gimme_height_n(ecs::Entity* o, const vec3 &p, vec3 &n) {
 	float he = gimme_height(o, p);
 	vec3 vdx = vec3(pattern.x, dhx,0        );
 	vec3 vdz = vec3(0        ,-dhz,pattern.z);
@@ -229,7 +229,7 @@ float Terrain::gimme_height_n(Entity* o, const vec3 &p, vec3 &n) {
 }
 
 // Daten fuer das Darstellen des Bodens
-void Terrain::calc_detail(Entity* owner, const vec3 &cam_pos) {
+void Terrain::calc_detail(ecs::Entity* owner, const vec3 &cam_pos) {
 	vec3 dpos = cam_pos;
 	if (owner)
 		dpos -= owner->pos;
@@ -276,7 +276,7 @@ inline void add_edge(int &num, int e0, int e1)
 
 // for collision detection:
 //    get a part of the terrain
-void Terrain::get_triangle_hull(Entity* o, TriangleHull *h, vec3 &_pos_, float _radius_)
+void Terrain::get_triangle_hull(ecs::Entity* o, TriangleHull *h, vec3 &_pos_, float _radius_)
 {
 	h->p = &vertex[0];
 	h->index = TempVertexIndex;
@@ -333,7 +333,7 @@ void Terrain::get_triangle_hull(Entity* o, TriangleHull *h, vec3 &_pos_, float _
 		}
 }
 
-inline bool TracePattern(Entity* owner, Terrain *t, const vec3 &pos, const vec3 &p1,const vec3 &p2, CollisionData &data, int x, int z, float y_min, int dir, float range)
+inline bool TracePattern(ecs::Entity* owner, Terrain *t, const vec3 &pos, const vec3 &p1,const vec3 &p2, CollisionData &data, int x, int z, float y_min, int dir, float range)
 {
 	// trace beam too high above this pattern?
 	if ( (t->height[Index2(t,x,z)]<y_min) and (t->height[Index2(t,x,z+1)]<y_min) and (t->height[Index2(t,x+1,z)]<y_min) and (t->height[Index2(t,x+1,z+1)]<y_min) )
@@ -374,7 +374,7 @@ inline bool TracePattern(Entity* owner, Terrain *t, const vec3 &pos, const vec3 
 	return true;
 }
 
-bool Terrain::trace(Entity* owner, const vec3 &p1, const vec3 &p2, const vec3 &dir, float range, CollisionData &data, bool simple_test) {
+bool Terrain::trace(ecs::Entity* owner, const vec3 &p1, const vec3 &p2, const vec3 &dir, float range, CollisionData &data, bool simple_test) {
 	vec3 pr1 = p1;
 	vec3 pr2 = p2;
 	vec3 pos = v_0;
@@ -664,7 +664,7 @@ int XTerrainVBUpdater::iterate(const vec3 &cam_pos) {
 	return 1; // keep iterating!
 }
 
-void Terrain::prepare_draw(Entity* owner, const vec3 &cam_pos) {
+void Terrain::prepare_draw(ecs::Entity* owner, const vec3 &cam_pos) {
 	// c d
 	// a b
 	// (acd),(adb)

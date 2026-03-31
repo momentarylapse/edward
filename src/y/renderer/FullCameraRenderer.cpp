@@ -98,7 +98,7 @@ FullCameraRenderer::FullCameraRenderer(Context* ctx, Camera* _cam, RenderPathTyp
 FullCameraRenderer::~FullCameraRenderer() = default;
 
 void FullCameraRenderer::check_terrains(const vec3& cam_pos) {
-	auto terrain_refs = EntityManager::global->get_component_list<TerrainRef>();
+	auto terrain_refs = ecs::EntityManager::global->get_component_list<TerrainRef>();
 	Array<TerrainRef*> terrains;
 	for (auto r: terrain_refs)
 		if (r->terrain)
@@ -178,7 +178,7 @@ void FullCameraRenderer::suggest_cube_map_pos() {
 			cube_map_source->min_depth = m->prop.radius * 1.1f;
 		return;
 	}
-	auto& list = EntityManager::global->get_component_list<ModelRef>();
+	auto& list = ecs::EntityManager::global->get_component_list<ModelRef>();
 	float max_score = 0;
 	cube_map_source->pos = cam->view_matrix() * vec3(0,0,1000);
 	cube_map_source->min_depth = 1000;
@@ -197,7 +197,7 @@ void FullCameraRenderer::suggest_cube_map_pos() {
 void FullCameraRenderer::render_cubemaps(const yrenderer::RenderParams &params) {
 	suggest_cube_map_pos();
 
-	auto cube_map_sources = EntityManager::global->get_component_list<::CubeMapSource>();
+	auto cube_map_sources = ecs::EntityManager::global->get_component_list<::CubeMapSource>();
 	for (auto source: cube_map_sources)
 		source->source.pos = source->owner->pos;
 
@@ -220,7 +220,7 @@ void FullCameraRenderer::render_cubemaps(const yrenderer::RenderParams &params) 
 // keep this outside the drawing function, making sure it only gets called once per frame!
 void FullCameraRenderer::prepare_instanced_matrices() {
 	//profiler::begin(ch_pre);
-	auto& list = EntityManager::global->get_component_list<MultiInstance>();
+	auto& list = ecs::EntityManager::global->get_component_list<MultiInstance>();
 	for (auto *mi: list) {
 		if (!mi->ubo_matrices)
 			mi->ubo_matrices = new ygfx::UniformBuffer(yrenderer::MAX_INSTANCES * sizeof(mat4));
@@ -242,7 +242,7 @@ void FullCameraRenderer::prepare(const yrenderer::RenderParams& params) {
 	render_path->ambient_occlusion_radius = config.ambient_occlusion_radius;
 
 	// lights
-	const auto& all_lights = EntityManager::global->get_component_list<::Light>();
+	const auto& all_lights = ecs::EntityManager::global->get_component_list<::Light>();
 	Array<yrenderer::Light*> lights;
 	for (auto l: all_lights) {
 		l->light._ang = l->owner->ang;

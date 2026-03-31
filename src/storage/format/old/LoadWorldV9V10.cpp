@@ -103,7 +103,7 @@ void FormatWorld::_load_old(LegacyFile& lf, DataWorld *data, bool deep) {
 		f->read_comment();
 		n = f->read_int();
 		for (int i=0;i<n;i++){
-			ScriptInstanceData s;
+			ecs::InstanceData s;
 			s.filename = f->read_str();
 			int nv = f->read_int();
 			for (int j=0; j<nv; j++){

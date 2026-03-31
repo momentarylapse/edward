@@ -8,14 +8,12 @@
 #pragma once
 
 #include "../lib/base/base.h"
+#include <ecs/System.h>
 
-class EntityManager;
-
-class ParticleManager {
+class ParticleManager : public ecs::System {
 public:
-	explicit ParticleManager(EntityManager* entity_manager);
-	void iterate(float dt);
-	EntityManager* entity_manager;
+	void on_iterate(float dt) override;
+	static const kaba::Class* _class;
 };
 
 

@@ -24,7 +24,7 @@ void WorldOpaqueModelsEmitter::emit(const yrenderer::RenderParams& params, yrend
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
-	auto draw_model = [&params, &rvd, shadow_pass] (Entity* e, Model* m, const Array<yrenderer::Material*>& materials, Animator* ani) {
+	auto draw_model = [&params, &rvd, shadow_pass] (ecs::Entity* e, Model* m, const Array<yrenderer::Material*>& materials, Animator* ani) {
 		for (int i=0; i<materials.num; i++) {
 			auto material = materials[i];
 			if (material->is_transparent())
@@ -39,14 +39,8 @@ void WorldOpaqueModelsEmitter::emit(const yrenderer::RenderParams& params, yrend
 			auto vb = m->mesh[0]->sub[i].vertex_buffer;
 			auto& rd = rvd.start(params, e->get_matrix(), shader, material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 
-			if (ani) {
-				ani->buf->update_array(ani->dmatrix);
-#ifdef USING_VULKAN
-				rd.dset->set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
-#else
-				nix::bind_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
-#endif
-			}
+			if (ani)
+				rd.set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
 
 			rd.draw_triangles(params, vb);
 		}
@@ -57,7 +51,7 @@ void WorldOpaqueModelsEmitter::emit(const yrenderer::RenderParams& params, yrend
 		draw_model(m, m->materials, m->owner->get_component<Animator>());
 	}*/
 
-	auto& list2 = EntityManager::global->get_component_list<ModelRef>();
+	auto& list2 = ecs::EntityManager::global->get_component_list<ModelRef>();
 	for (auto mr: list2)
 		if (mr->model) {
 			mr->update_materials();
@@ -78,7 +72,7 @@ void WorldTransparentModelsEmitter::emit(const yrenderer::RenderParams& params, 
 	ctx->gpu_timestamp_begin(params, channel);
 
 	struct DrawCallData {
-		Entity* entity;
+		ecs::Entity* entity;
 		Model* model;
 		int material_index;
 		yrenderer::Material* material;
@@ -87,7 +81,7 @@ void WorldTransparentModelsEmitter::emit(const yrenderer::RenderParams& params, 
 	};
 	Array<DrawCallData> draw_calls;
 
-	auto maybe_add = [&] (Entity* e, Model* m, const Array<yrenderer::Material*>& materials, Animator* ani) {
+	auto maybe_add = [&] (ecs::Entity* e, Model* m, const Array<yrenderer::Material*>& materials, Animator* ani) {
 		for (int i=0; i<materials.num; i++) {
 			auto material = materials[i];
 			if (!material->is_transparent())
@@ -116,7 +110,7 @@ void WorldTransparentModelsEmitter::emit(const yrenderer::RenderParams& params, 
 	/*auto& list = EntityManager::global->get_component_list<Model>();
 	for (auto m: list)
 		maybe_add(m, m->materials);*/
-	auto& list2 = EntityManager::global->get_component_list<ModelRef>();
+	auto& list2 = ecs::EntityManager::global->get_component_list<ModelRef>();
 	for (auto mr: list2)
 		if (auto m = mr->model) {
 			mr->update_materials();
@@ -140,14 +134,8 @@ void WorldTransparentModelsEmitter::emit(const yrenderer::RenderParams& params, 
 
 			auto& rd = rvd.start(params, dc.entity->get_matrix(), shader, material, k, ygfx::PrimitiveTopology::TRIANGLES, vb);
 
-			if (dc.ani) {
-				dc.ani->buf->update_array(dc.ani->dmatrix);
-#ifdef USING_VULKAN
-				rd.dset->set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, dc.ani->buf);
-#else
-				nix::bind_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, dc.ani->buf);
-#endif
-			}
+			if (dc.ani)
+				rd.set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, dc.ani->buf);
 
 			rd.draw_triangles(params, vb);
 		}

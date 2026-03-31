@@ -12,12 +12,14 @@
 #include "BaseClass.h"
 
 struct mat4;
-class Component;
+
+namespace ecs {
+
+struct Component;
 class EntityManager;
 
 
-class Entity {
-public:
+struct Entity {
 	Entity();
 	Entity(const vec3 &pos, const quaternion &ang);
 	~Entity();
@@ -48,4 +50,6 @@ public:
 	Entity *parent;
 	Entity *_cdecl root() const;
 };
+
+}
 

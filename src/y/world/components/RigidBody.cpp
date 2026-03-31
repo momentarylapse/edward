@@ -146,7 +146,7 @@ void RigidBody::add_force(const vec3 &f, const vec3 &rho) {
 		return;
 	if (!dynamic)
 		return;
-	auto physics = SystemManager::get<Physics>();
+	auto physics = ecs::SystemManager::get<Physics>();
 	if (physics and physics->mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
 		body->activate(); // why doesn't this happen automatically?!? bug in bullet?
@@ -167,7 +167,7 @@ void RigidBody::add_impulse(const vec3 &p, const vec3 &rho) {
 		return;
 	if (!dynamic)
 		return;
-	auto physics = SystemManager::get<Physics>();
+	auto physics = ecs::SystemManager::get<Physics>();
 	if (physics and physics->mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
 		body->activate();
@@ -185,7 +185,7 @@ void RigidBody::add_torque(const vec3 &t) {
 		return;
 	if (!dynamic)
 		return;
-	auto physics = SystemManager::get<Physics>();
+	auto physics = ecs::SystemManager::get<Physics>();
 	if (physics and physics->mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
 		body->activate();
@@ -203,7 +203,7 @@ void RigidBody::add_torque_impulse(const vec3 &l) {
 		return;
 	if (!dynamic)
 		return;
-	auto physics = SystemManager::get<Physics>();
+	auto physics = ecs::SystemManager::get<Physics>();
 	if (physics and physics->mode == PhysicsMode::FULL_EXTERNAL) {
 #if HAS_LIB_BULLET
 		body->activate();

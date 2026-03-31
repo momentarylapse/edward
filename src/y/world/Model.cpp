@@ -596,7 +596,7 @@ void Model::SortingTest(vec3 &delta_pos,const vec3 &dpos,matrix *mat,bool allow_
 #endif
 
 
-Model* entity_get_model(Entity* entity) {
+Model* entity_get_model(ecs::Entity* entity) {
 	if (auto mr = entity->get_component<ModelRef>())
 		return mr->model;
 	return nullptr;

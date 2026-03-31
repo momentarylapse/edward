@@ -8,7 +8,6 @@
 | last updated: 2009.11.22 (c) by MichiSoft TM                                 |
 \*----------------------------------------------------------------------------*/
 
-#include <algorithm>
 #include <lib/base/base.h>
 #include <lib/base/sort.h>
 #include <lib/config.h>
@@ -16,25 +15,19 @@
 #include <lib/nix/nix.h>
 #include <lib/kaba/kaba.h>
 #include <lib/os/filesystem.h>
-#include <lib/profiler/Profiler.h>
 #include <EngineData.h>
 #include <ecs/Component.h>
 #include <ecs/ComponentManager.h>
 #include <ecs/Entity.h>
 #include <ecs/EntityManager.h>
-#include "../meta.h"
 #include "ModelManager.h"
 #include "../helper/ResourceManager.h"
-#include <lib/yrenderer/Material.h>
 #include "Model.h"
 #include "Terrain.h"
 #include "World.h"
 
-#include "components/Link.h"
 #include "components/RigidBody.h"
 #include "components/Collider.h"
-#include "components/Animator.h"
-#include "components/Skeleton.h"
 #include "components/MultiInstance.h"
 #include "components/Light.h"
 #include "components/Camera.h"
@@ -42,13 +35,7 @@
 #include "ecs/SystemManager.h"
 
 #include "../plugins/PluginManager.h"
-#ifdef _X_ALLOW_X_
-#include "../fx/ParticleManager.h"
-#endif
 
-
-
-//#define _debug_matrices_
 
 
 
@@ -63,47 +50,17 @@ void DrawSplashScreen(const string &str, float per){}
 #endif
 
 
-// network messages
-void AddNetMsg(int msg, int argi0, const string &args)
-{
-#if 0
-#ifdef _X_ALLOW_X_
-	if ((!world.net_msg_enabled) || (!Net.Enabled))
-		return;
-	GodNetMessage m;
-	m.msg = msg;
-	m.arg_i[0] = argi0;
-	m.arg_s = args;
-	world.net_messages.add(m);
-#endif
-#endif
-}
 
-
-
-
-
-
-
-void GodInit(int ch_iter) {
-}
-
-void GodEnd() {
-}
 
 World::World() {
-	entity_manager = new EntityManager;
+	entity_manager = new ecs::EntityManager;
 #ifdef _X_ALLOW_X_
 	entity_manager->component_manager->f_create = [] (const kaba::Class* type) {
-		return (Component*)PluginManager::create_instance(type, Array<ScriptInstanceDataVariable>{});
+		return (ecs::Component*)PluginManager::create_instance(type, Array<ecs::InstanceDataVariable>{});
 	};
-	entity_manager->component_manager->f_apply = [this] (const kaba::Class* type, Component* c, const Array<ScriptInstanceDataVariable>& vars) {
+	entity_manager->component_manager->f_apply = [this] (const kaba::Class* type, ecs::Component* c, const Array<ecs::InstanceDataVariable>& vars) {
 		PluginManager::assign_variables(c, type, vars);
 	};
-#endif
-
-#ifdef _X_ALLOW_X_
-	particle_manager = new ParticleManager(entity_manager.get());
 #endif
 
 	reset();
@@ -112,17 +69,10 @@ World::World() {
 World::~World() = default;
 
 void World::reset() {
-	net_msg_enabled = false;
-	net_messages.clear();
-
 	observers.clear();
 
 	entity_manager->reset();
 
-
-
-	// skybox
-	//   (models deleted by meta)
 	skybox.clear();
 	
 
@@ -133,12 +83,6 @@ void World::reset() {
 	fog.enabled = false;
 	fog.start = 0;
 	fog.end = 100000;
-
-
-	// physics
-#ifdef _X_ALLOW_X_
-	//LinksReset();
-#endif
 }
 
 void World::save(const Path &filename) {
@@ -150,7 +94,7 @@ void World::load_soon(const Path &filename) {
 	next_filename = filename;
 }
 
-Array<ScriptInstanceData> sort_components(const Array<ScriptInstanceData>& components) {
+Array<ecs::InstanceData> sort_components(const Array<ecs::InstanceData>& components) {
 	auto r = components;
 	for (int i=0; i<r.num; i++)
 		for (int k=i+1; k<r.num; k++) {
@@ -162,7 +106,7 @@ Array<ScriptInstanceData> sort_components(const Array<ScriptInstanceData>& compo
 	return r;
 }
 
-void add_user_components(EntityManager* em, Entity *ent, const Array<ScriptInstanceData>& components) {
+void add_user_components(ecs::EntityManager* em, ecs::Entity *ent, const Array<ecs::InstanceData>& components) {
 	for (auto &cc: sort_components(components)) {
 		msg_write("add component " + cc.class_name);
 		auto type = PluginManager::find_class(cc.filename, cc.class_name);
@@ -175,12 +119,11 @@ void add_user_components(EntityManager* em, Entity *ent, const Array<ScriptInsta
 	}
 }
 
-bool World::load(const LevelData &ld) {
-	net_msg_enabled = false;
+bool World::load(const LevelData& ld) {
 	bool ok = true;
 	reset();
 
-	if (auto physics = SystemManager::get<Physics>()) {
+	if (auto physics = ecs::SystemManager::get<Physics>()) {
 		physics->mode = PhysicsMode::FULL_EXTERNAL;
 		physics->enabled = ld.physics_enabled;
 		physics->mode = ld.physics_mode;
@@ -190,91 +133,23 @@ bool World::load(const LevelData &ld) {
 
 	fog = ld.fog;
 
-	/*for (auto &l: ld.lights) {
-		auto o = create_entity(l.pos, quaternion::rotation(l.ang));
-		auto ll = entity_manager->add_component<Light>(o);
-		ll->light.init(l.type, l._color, l.theta);
-		ll->light.harshness = l.harshness;
-		ll->light.enabled = l.enabled;
-		if (ll->light.type == yrenderer::LightType::DIRECTIONAL)
-			ll->light.allow_shadow = true;
-		else
-			ll->light.power = yrenderer::Light::_radius_to_power(l.radius);
-
-		add_user_components(entity_manager.get(), o, l.components);
-	}*/
-
 	// skybox
 	skybox.resize(ld.skybox_filename.num);
 	for (int i=0; i<skybox.num; i++) {
 		skybox[i] = new ModelRef;
-		skybox[i]->owner = new Entity(v_0, quaternion::rotation_v(ld.skybox_ang[i])); // FIXME data leak... eh
+		skybox[i]->owner = new ecs::Entity(v_0, quaternion::rotation_v(ld.skybox_ang[i])); // FIXME data leak... eh
 		skybox[i]->model = engine.resource_manager->load_model(ld.skybox_filename[i]);
 	}
 	background = ld.background_color;
 
-#if 0
-	for (auto &c: ld.cameras) {
-		auto cc = create_camera(c.pos, quaternion::rotation(c.ang));
-		cam_main = cc;
-		cc->min_depth = c.min_depth;
-		cc->max_depth = c.max_depth;
-		cc->exposure = c.exposure;
-		cc->bloom_factor = c.bloom_factor;
-		cc->fov = c.fov;
 
-		add_user_components(entity_manager.get(), cc->owner, c.components);
-	}
-
-	// objects
-	foreachi(auto &o, ld.objects, i)
-		if (!o.filename.is_empty()) {
-			//try {
-				auto q = quaternion::rotation(o.ang);
-				auto *oo = create_from_template(o.filename, o.pos, q);
-
-				add_user_components(entity_manager.get(), oo, o.components);
-				if (i % 5 == 0)
-					DrawSplashScreen("Objects", (float)i / (float)ld.objects.num / 5 * 3);
-
-			/*} catch (...) {
-				ok = false;
-			}*/
-		}
-
-	// terrains
-	foreachi(auto &t, ld.terrains, i) {
-		DrawSplashScreen("Terrain...", 0.6f + (float)i / (float)ld.terrains.num * 0.4f);
-		auto tt = create_terrain(t.filename, t.pos);
-		tt->material = engine.resource_manager->load_material(t.material);
-
-		add_user_components(entity_manager.get(), tt->owner, t.components);
-		ok &= tt->terrain and !tt->terrain->error;
-	}
-#endif
-
-	// (raw) entities
-	foreachi(auto &e, ld.entities, i) {
+	// entities
+	for (const auto& e: ld.entities) {
 		auto ee = create_entity(e.pos, e.ang);
-
 		add_user_components(entity_manager.get(), ee, e.components);
 	}
 
-
-	// FIXME...
-	/*auto& model_list = entity_manager->get_component_list<ModelRef>();
-	for (auto &l: ld.links) {
-		Entity *a = model_list[l.object[0]]->owner;
-		Entity *b = nullptr;
-		if (l.object[1] >= 0)
-			b = model_list[l.object[1]]->owner;
-		auto e = create_entity(l.pos, quaternion::rotation(l.ang));
-		auto ll = entity_manager->add_component<Link>(e);
-		ll->a = a;
-		ll->b = b;
-		ll->link_type = l.type;
-	}*/
-
+	// pick main camera
 	auto& cameras = entity_manager->get_component_list<Camera>();
 	if (cameras.num == 0) {
 		msg_error("no camera defined... creating one");
@@ -283,18 +158,17 @@ bool World::load(const LevelData &ld) {
 		cam_main = cameras[0];
 	}
 
-	net_msg_enabled = true;
 	return ok;
 }
 
-Entity* World::ego() {
+ecs::Entity* World::ego() {
 	auto& list = entity_manager->get_component_list<EgoMarker>();
 	if (list.num >= 1)
 		return list[0]->owner;
 	return nullptr;
 }
 
-Entity* World::get_entity(int index) {
+ecs::Entity* World::get_entity(int index) {
 	if (index < 0 or index >= entity_manager->entities.num)
 		return nullptr;
 	return entity_manager->entities[index];
@@ -315,11 +189,11 @@ TerrainRef* World::create_terrain(const Path &filename, const vec3 &pos) {
 	return t;
 }
 
-Entity *World::create_entity(const vec3& pos, const quaternion& ang) {
+ecs::Entity *World::create_entity(const vec3& pos, const quaternion& ang) {
 	return entity_manager->create_entity(pos, ang);
 }
 
-Entity* World::create_from_template(const Path& filename, const vec3 &pos, const quaternion& ang) {
+ecs::Entity* World::create_from_template(const Path& filename, const vec3 &pos, const quaternion& ang) {
 	auto e = create_entity(pos, ang);
 
 	if (const auto t = engine.resource_manager->load_template(filename)) {
@@ -354,7 +228,7 @@ Model *World::create_object_x(const Path &filename, const string &name, const ve
 }
 
 
-ModelRef* World::attach_model(Entity* e, const Path& filename) {
+ModelRef* World::attach_model(ecs::Entity* e, const Path& filename) {
 	auto mr = entity_manager->add_component<ModelRef>(e);
 	mr->model = engine.resource_manager->load_model(filename);
 
@@ -387,15 +261,14 @@ void World::notify(const string &msg) {
 		}
 }
 
-void World::delete_entity(Entity *e) {
-	//e->on_delete_rec();
+void World::delete_entity(ecs::Entity *e) {
 
 	msg_data.e = e;
 	notify("entity-delete");
 	entity_manager->delete_entity(e);
 }
 
-Light* World::attach_light_parallel(Entity* e, const color& c) {
+Light* World::attach_light_parallel(ecs::Entity* e, const color& c) {
 	auto l = entity_manager->add_component<Light>(e);
 	l->light.type = yrenderer::LightType::DIRECTIONAL;
 	l->light.col = c;
@@ -403,7 +276,7 @@ Light* World::attach_light_parallel(Entity* e, const color& c) {
 }
 
 // r is deprecated... c used to defined power -> implicit radius
-Light* World::attach_light_point(Entity* e, const color& c, float r) {
+Light* World::attach_light_point(ecs::Entity* e, const color& c, float r) {
 	auto l = entity_manager->add_component<Light>(e);
 	l->light.type = yrenderer::LightType::POINT;
 	l->light.col = c;
@@ -411,7 +284,7 @@ Light* World::attach_light_point(Entity* e, const color& c, float r) {
 	return l;
 }
 
-Light* World::attach_light_cone(Entity* e, const color& c, float r, float theta) {
+Light* World::attach_light_cone(ecs::Entity* e, const color& c, float r, float theta) {
 	auto l = entity_manager->add_component<Light>(e);
 	l->light.type = yrenderer::LightType::CONE;
 	l->light.col = c;
@@ -444,7 +317,7 @@ Camera *World::create_camera(const vec3 &pos, const quaternion &ang) {
 void World::shift_all(const vec3 &dpos) {
 	entity_manager->shift_all(dpos);
 
-	if (auto physics = SystemManager::get<Physics>())
+	if (auto physics = ecs::SystemManager::get<Physics>())
 		physics->update_all_bullet();
 
 	msg_data.v = dpos;
@@ -457,9 +330,9 @@ enum TraceMode {
 	SIMPLE = 4
 };
 
-base::optional<CollisionData> World::trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore) {
+base::optional<CollisionData> World::trace(const vec3 &p1, const vec3 &p2, int mode, ecs::Entity *o_ignore) {
 	if (mode & TraceMode::PHYSICAL) {
-		if (auto physics = SystemManager::get<Physics>())
+		if (auto physics = ecs::SystemManager::get<Physics>())
 			return physics->trace(p1, p2, mode, o_ignore);
 	} else if (mode & TraceMode::VISIBLE) {
 

@@ -22,7 +22,7 @@ struct VertexPoint {
 	color col;
 };
 
-class Camera;
+struct Camera;
 
 
 class WorldParticlesEmitter : public yrenderer::MeshEmitter {

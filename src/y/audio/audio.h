@@ -10,7 +10,9 @@
 struct vec3;
 struct quaternion;
 class Path;
-class Entity;
+namespace ecs {
+	struct Entity;
+}
 
 namespace audio {
 
@@ -22,19 +24,19 @@ extern float VolumeMusic, VolumeSound;
 
 void init();
 void exit();
-void attach_listener(Entity* e);
+void attach_listener(ecs::Entity* e);
 void iterate(float dt);
 void reset();
 
 
 
 
-class SoundSource;
+struct SoundSource;
 
 // TODO move to World?
-SoundSource& emit_sound(AudioBuffer* buffer, const vec3 &pos, float radius1);
-SoundSource& emit_sound_file(const Path &filename, const vec3 &pos, float radius1);
-SoundSource& emit_sound_stream(AudioStream* stream, const vec3 &pos, float radius1);
+SoundSource* emit_sound(AudioBuffer* buffer, const vec3 &pos, float radius1);
+SoundSource* emit_sound_file(const Path &filename, const vec3 &pos, float radius1);
+SoundSource* emit_sound_stream(AudioStream* stream, const vec3 &pos, float radius1);
 
 };
 

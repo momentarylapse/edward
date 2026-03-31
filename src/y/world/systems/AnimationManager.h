@@ -7,9 +7,11 @@
 #include "../../ecs/System.h"
 
 
-class AnimationManager : public System {
+class AnimationManager : public ecs::System {
 public:
 	void on_iterate(float dt) override;
+	void on_add_component(const ecs::MessageParams &params) override;
+	void on_remove_component(const ecs::MessageParams &params) override;
 
 	static const kaba::Class* _class;
 };

@@ -12,15 +12,15 @@
 
 namespace DeletionQueue {
 
-static Array<BaseClass*> queue;
-static Array<Entity*> queue_entity;
+static Array<ecs::BaseClass*> queue;
+static Array<ecs::Entity*> queue_entity;
 static Array<gui::Node*> queue_ui;
 
-void add(BaseClass *c) {
+void add(ecs::BaseClass *c) {
 	queue.add(c);
 }
 
-void add_entity(Entity *e) {
+void add_entity(ecs::Entity *e) {
 	queue_entity.add(e);
 }
 

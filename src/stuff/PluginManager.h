@@ -15,8 +15,10 @@ namespace kaba {
 }
 
 class Session;
-struct ScriptInstanceData;
-struct ScriptInstanceDataVariable;
+namespace ecs {
+	struct InstanceData;
+	struct InstanceDataVariable;
+}
 
 namespace edward {
 
@@ -54,11 +56,11 @@ public:
 
 	void* create_instance(const Path &filename, const string &parent);
 	Array<const kaba::Class*> enumerate_classes(const string& full_base_class);
-	//Array<ScriptInstanceData> enumerate_classes(const string& full_base_class);
+	//Array<ecs::InstanceData> enumerate_classes(const string& full_base_class);
 
-	ScriptInstanceData describe_class(const kaba::Class* type, const void* instance = nullptr);
-	void update_class(ScriptInstanceData& c);
-	void set_variables(void* p, const kaba::Class* type, const Array<ScriptInstanceDataVariable>& variables);
+	ecs::InstanceData describe_class(const kaba::Class* type, const void* instance = nullptr);
+	void update_class(ecs::InstanceData& c);
+	void set_variables(void* p, const kaba::Class* type, const Array<ecs::InstanceDataVariable>& variables);
 
 	Array<const kaba::Class*> component_classes;
 	Array<const kaba::Class*> system_classes;

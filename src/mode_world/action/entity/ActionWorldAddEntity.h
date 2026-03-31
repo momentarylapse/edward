@@ -20,7 +20,7 @@ public:
 private:
 	vec3 pos;
 	quaternion ang;
-	Entity* entity = nullptr;
+	ecs::Entity* entity = nullptr;
 };
 
 

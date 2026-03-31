@@ -11,16 +11,18 @@
 
 #include "BaseClass.h"
 
-class Entity;
-struct CollisionData;
-struct ScriptInstanceDataVariable;
-struct ScriptInstanceData;
 namespace kaba {
 	class Class;
 }
+struct CollisionData;
 
-class Component : public VirtualBase {
-public:
+namespace ecs {
+
+struct Entity;
+struct InstanceDataVariable;
+struct InstanceData;
+
+struct Component : VirtualBase {
 	Component();
 	~Component() override;
 	virtual void on_init() {}
@@ -29,7 +31,7 @@ public:
 
 	virtual void on_collide(const CollisionData& col) {}
 
-	void set_variables(const Array<ScriptInstanceDataVariable>& variables);
+	void set_variables(const Array<InstanceDataVariable>& variables);
 
 	Entity* owner;
 	const kaba::Class* component_type;
@@ -42,23 +44,22 @@ public:
 	}
 };
 
-class NameTag : public Component {
-public:
+}
+
+struct NameTag : ecs::Component {
 	string name;
 	static const kaba::Class* _class;
 };
 
-class EgoMarker : public Component {
-public:
+struct EgoMarker : ecs::Component {
 	static const kaba::Class* _class;
 };
 
 struct Template {
-	Array<ScriptInstanceData> components;
+	Array<ecs::InstanceData> components;
 };
 
-class TemplateRef : public Component {
-public:
+struct TemplateRef : ecs::Component {
 	Template* _template = nullptr;
 	static const kaba::Class* _class;
 };

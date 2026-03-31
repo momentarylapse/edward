@@ -9,8 +9,7 @@
 
 #include "Particle.h"
 
-class Beam : public Particle {
-public:
+struct Beam : Particle {
 	Beam() {}
 	Beam(const vec3 &pos, const vec3 &length, const color& col, float r, float ttl);
 
@@ -18,8 +17,7 @@ public:
 };
 
 
-class LegacyBeam : public LegacyParticle {
-public:
+struct LegacyBeam : LegacyParticle {
 	LegacyBeam();
 
 	void __init_beam__();

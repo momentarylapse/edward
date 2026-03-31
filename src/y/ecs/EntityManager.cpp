@@ -8,6 +8,9 @@
 #include <lib/base/iter.h>
 #include <lib/kaba/syntax/Class.h>
 
+
+namespace ecs {
+
 EntityManager* EntityManager::global = nullptr;
 
 EntityManager::EntityManager() {
@@ -96,5 +99,5 @@ void EntityManager::reset() {
 	entities.clear();
 }
 
-
+}
 

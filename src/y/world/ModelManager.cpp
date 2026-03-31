@@ -182,7 +182,7 @@ public:
 		me->prop.radius = f->read_float();
 
 		// physics
-		ScriptInstanceData sb;
+		ecs::InstanceData sb;
 		sb.class_name = "RigidBody";
 		sb.set("mass", f->read_float());
 		mat3 theta;
@@ -410,7 +410,7 @@ public:
 		sk->pos0.resize(n);
 		sk->filename.resize(n);
 		foreachi ([[maybe_unused]] auto& b, sk->bones, i) {
-			b = new Entity;
+			b = new ecs::Entity;
 			f->read_vector(&sk->dpos[i]);
 			sk->parents[i] = f->read_int();
 			sk->filename[i] = f->read_str();
@@ -585,7 +585,7 @@ public:
 
 		n = f->read_int();
 		for (int i=0; i<n; i++) {
-			ScriptInstanceDataVariable v;
+			ecs::InstanceDataVariable v;
 			v.name = f->read_str().lower().replace("_", "");
 			v.value = f->read_str();
 		}

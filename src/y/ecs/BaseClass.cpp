@@ -9,18 +9,20 @@
 #include <lib/base/sort.h>
 
 
+namespace ecs {
+
 BaseClass::BaseClass(Type t) {
 	type = t;
 }
 
-Any ScriptInstanceData::get(const string &name) const {
+Any InstanceData::get(const string &name) const {
 	for (const auto& v: variables)
 		if (v.name == name)
 			return v.value;
 	return "";
 }
 
-void ScriptInstanceData::set(const string &name, const Any &value) {
+void InstanceData::set(const string &name, const Any &value) {
 	for (auto& v: variables)
 		if (v.name == name) {
 			v.value = value;
@@ -29,26 +31,26 @@ void ScriptInstanceData::set(const string &name, const Any &value) {
 	variables.add({name, value});
 }
 
-bool ScriptInstanceDataVariable::operator==(const ScriptInstanceDataVariable& other) const {
+bool InstanceDataVariable::operator==(const InstanceDataVariable& other) const {
 	return name == other.name and value == other.value;
 }
 
-bool ScriptInstanceDataVariable::operator!=(const ScriptInstanceDataVariable& other) const {
+bool InstanceDataVariable::operator!=(const InstanceDataVariable& other) const {
 	return !(*this == other);
 }
 
 
-Array<ScriptInstanceDataVariable> sorted_variables(const Array<ScriptInstanceDataVariable>& variables) {
-	return base::sorted(variables, [] (const ScriptInstanceDataVariable& a, const ScriptInstanceDataVariable& b) {
+Array<InstanceDataVariable> sorted_variables(const Array<InstanceDataVariable>& variables) {
+	return base::sorted(variables, [] (const InstanceDataVariable& a, const InstanceDataVariable& b) {
 		return a.name < b.name;
 	});
 }
 
-bool ScriptInstanceData::is_internal() const {
+bool InstanceData::is_internal() const {
 	return filename.is_empty() or filename.is_in("yengine");
 }
 
-bool ScriptInstanceData::operator==(const ScriptInstanceData& other) const {
+bool InstanceData::operator==(const InstanceData& other) const {
 	if (class_name != other.class_name)
 		return false;
 	if (filename != other.filename and !is_internal() and !other.is_internal())
@@ -58,8 +60,10 @@ bool ScriptInstanceData::operator==(const ScriptInstanceData& other) const {
 	return vv == vv2;
 }
 
-bool ScriptInstanceData::operator!=(const ScriptInstanceData& other) const {
+bool InstanceData::operator!=(const InstanceData& other) const {
 	return !(*this == other);
+}
+
 }
 
 

@@ -11,13 +11,21 @@
 
 struct vec3;
 struct quaternion;
-class Entity;
 
+namespace ecs {
 
-struct EntityMessageParams {
+struct Entity;
+
+struct MessageParams {
 	Entity* entity;
 	Component* component;
 	const kaba::Class* type;
+	template<class T>
+	T* get() const {
+		if (type == T::_class)
+			return (T*)component;
+		return nullptr;
+	}
 };
 
 class EntityManager : public obs::Node<VirtualBase> {
@@ -25,8 +33,8 @@ public:
 	EntityManager();
 	~EntityManager() override;
 
-	obs::xsource<EntityMessageParams> out_add_component{this, "add-component"};
-	obs::xsource<EntityMessageParams> out_remove_component{this, "remove-component"};
+	obs::xsource<MessageParams> out_add_component{this, "add-component"};
+	obs::xsource<MessageParams> out_remove_component{this, "remove-component"};
 
 	using Params = ComponentManager::Params;
 
@@ -68,4 +76,6 @@ public:
 	Array<Entity*> entities;
 	bool init_components = true;
 };
+
+}
 

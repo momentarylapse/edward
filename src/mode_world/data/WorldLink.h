@@ -10,7 +10,9 @@
 
 #include <view/SingleData.h>
 
-class ScriptInstanceData;
+namespace ecs {
+	struct InstanceData;
+}
 
 enum class LinkType {
 	SOCKET,

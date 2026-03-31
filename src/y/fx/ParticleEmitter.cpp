@@ -24,11 +24,6 @@ ParticleGroup::ParticleGroup() {
 	if (engine.context and engine.context->tex_white)
 		texture = engine.context->tex_white;
 	source = rect::ID;
-	//pos = vec3::ZERO;
-}
-
-void ParticleGroup::__init__() {
-	new(this) ParticleGroup;
 }
 
 
@@ -93,9 +88,6 @@ ParticleEmitter::ParticleEmitter() {
 	spawn_dradius = 5;
 }
 
-void ParticleEmitter::__init__() {
-	new(this) ParticleEmitter;
-}
 void ParticleEmitter::on_iterate(float dt) {
 	iterate_emitter(dt);
 }

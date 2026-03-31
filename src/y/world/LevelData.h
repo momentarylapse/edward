@@ -19,16 +19,17 @@ struct LevelData;
 
 
 class Model;
-class Object;
 namespace yrenderer {
-	class Material;
+	struct Material;
 	enum class LightType;
 }
 class Terrain;
-struct ScriptInstanceData;
-class Light;
+namespace ecs {
+	struct InstanceData;
+}
+struct Light;
 class ParticleManager;
-class Particle;
+struct Particle;
 
 
 enum class PhysicsMode;
@@ -47,63 +48,21 @@ struct LevelData {
 	bool load(const Path &filename);
 	void save(const Path &filename);
 
-	static Array<ScriptInstanceData> auto_terrain_components();
-
-
-	/*struct Terrain {
-		Path filename;
-		Path material;
-		vec3 pos;
-		Array<ScriptInstanceData> components;
-	};
-
-	struct Object {
-		Path filename;
-		string name;
-		vec3 pos, ang;
-		Array<ScriptInstanceData> components;
-	};*/
+	static Array<ecs::InstanceData> auto_terrain_components();
 
 	struct Entity {
 		string name;
 		vec3 pos;
 		quaternion ang;
-		Array<ScriptInstanceData> components;
+		Array<ecs::InstanceData> components;
 	};
-
-	/*struct Light {
-		bool enabled;
-		vec3 pos, ang;
-		yrenderer::LightType type;
-		color _color; // physical units
-		float radius, theta, harshness;
-		Array<ScriptInstanceData> components;
-	};
-
-	struct Camera {
-		vec3 pos, ang;
-		float fov, min_depth, max_depth, exposure, bloom_factor;
-		Array<ScriptInstanceData> components;
-	};
-
-	struct Link {
-		int object[2];
-		LinkType type;
-		vec3 pos, ang;
-		Array<ScriptInstanceData> components;
-	};*/
 
 	Path world_filename;
 	Array<Path> skybox_filename;
 	Array<vec3> skybox_ang;
 	color background_color;
-	//Array<Object> objects;
-	//Array<Terrain> terrains;
 	Array<Entity> entities;
-	Array<ScriptInstanceData> systems;
-	//Array<Light> lights;
-	//Array<Link> links;
-	//Array<Camera> cameras;
+	Array<ecs::InstanceData> systems;
 
 	bool physics_enabled;
 	PhysicsMode physics_mode;

@@ -57,7 +57,7 @@ bool LevelData::load(const Path& filename) {
 				fog.distance = 1.0f / e.value("density")._float();
 				fog._color = s2c(e.value("color"));
 			} else if (e.tag == "script" or e.tag == "system") {
-				ScriptInstanceData s;
+				ecs::InstanceData s;
 				s.filename = e.value("file");
 				s.class_name = e.value("class");
 
@@ -67,7 +67,7 @@ bool LevelData::load(const Path& filename) {
 					s.variables = parse_variables(var);
 
 				for (auto &ee: e.elements) {
-					ScriptInstanceDataVariable v;
+					ecs::InstanceDataVariable v;
 					v.name = ee.value("name");//.lower().replace("_", "");
 					v.value = ee.value("value");
 					s.variables.add(v);
@@ -77,10 +77,10 @@ bool LevelData::load(const Path& filename) {
 		}
 	}
 
-	auto read_components = [] (Array<ScriptInstanceData>& components, xml::Element &e) {
+	auto read_components = [] (Array<ecs::InstanceData>& components, xml::Element &e) {
 		for (const auto &ee: e.elements)
 			if (ee.tag == "component") {
-				ScriptInstanceData sd;
+				ecs::InstanceData sd;
 				sd.filename = ee.value("script");
 				sd.class_name = ee.value("class");
 
@@ -103,7 +103,7 @@ bool LevelData::load(const Path& filename) {
 				Entity o;
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
-				ScriptInstanceData c = {"Camera"};
+				ecs::InstanceData c = {"Camera"};
 				c.set("fov", e.value("fov", f2s(pi/4, 3))._float());
 				c.set("min_depth", e.value("minDepth", "1")._float());
 				c.set("max_depth", e.value("maxDepth", "10000")._float());
@@ -116,7 +116,7 @@ bool LevelData::load(const Path& filename) {
 				Entity o;
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
-				ScriptInstanceData l = {"Light"};
+				ecs::InstanceData l = {"Light"};
 				l.set("harshness", e.value("harshness")._float());
 				l.set("color", e.value("color"));
 				l.set("power", e.value("power", "1.0")._float());
@@ -143,7 +143,7 @@ bool LevelData::load(const Path& filename) {
 				Entity o;
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
-				ScriptInstanceData t = {"TerrainRef"};
+				ecs::InstanceData t = {"TerrainRef"};
 				t.set("terrain", e.value("file"));
 				t.set("material", e.value("material"));
 				o.components.add(t);
@@ -154,7 +154,7 @@ bool LevelData::load(const Path& filename) {
 				Entity o;
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
-				ScriptInstanceData t = {"TemplateRef"};
+				ecs::InstanceData t = {"TemplateRef"};
 				t.set("template", e.value("file"));
 				o.components.add(t);
 				if (e.value("role") == "ego")
@@ -173,7 +173,7 @@ bool LevelData::load(const Path& filename) {
 				Entity o;
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
-				ScriptInstanceData l = {"Link"};
+				ecs::InstanceData l = {"Link"};
 				auto type = LinkType::SOCKET;
 				if (e.value("type") == "hinge")
 					type = LinkType::HINGE;
@@ -338,7 +338,7 @@ void LevelData::save(const Path &filename) {
 #endif
 }
 
-Array<ScriptInstanceData> LevelData::auto_terrain_components() {
+Array<ecs::InstanceData> LevelData::auto_terrain_components() {
 	return {{"TerrainCollider", "", {{}}},
 		{"RigidBody", "", {{"dynamic", false}}}};
 }

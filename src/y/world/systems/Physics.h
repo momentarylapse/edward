@@ -8,9 +8,9 @@
 #include <ecs/EntityManager.h>
 #include <lib/base/optional.h>
 
-class Link;
-class CollisionData;
-class RigidBody;
+struct Link;
+struct CollisionData;
+struct RigidBody;
 
 class btDefaultCollisionConfiguration;
 class btCollisionDispatcher;
@@ -26,13 +26,13 @@ enum class PhysicsMode {
 	FULL_EXTERNAL,
 };
 
-class Physics : public System {
+class Physics : public ecs::System {
 public:
 	explicit Physics();
 	~Physics() override;
 
-	void on_add_component(const EntityMessageParams& params) override;
-	void on_remove_component(const EntityMessageParams& params) override;
+	void on_add_component(const ecs::MessageParams& params) override;
+	void on_remove_component(const ecs::MessageParams& params) override;
 
 	void on_init() override;
 	void on_iterate(float dt) override;
@@ -40,12 +40,12 @@ public:
 	void register_link(Link *l);
 	void unregister_link(Link *l);
 
-	void set_dynamic(Entity *o, bool dynamic);
+	void set_dynamic(ecs::Entity *o, bool dynamic);
 	void register_body(RigidBody* sb);
 	void unregister_body(RigidBody* sb);
 	void update_all_bullet();
 
-	base::optional<CollisionData> trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore = nullptr);
+	base::optional<CollisionData> trace(const vec3 &p1, const vec3 &p2, int mode, ecs::Entity *o_ignore = nullptr);
 
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;

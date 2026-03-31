@@ -14,7 +14,7 @@
 
 using namespace yrenderer;
 
-class MultiInstance;
+struct MultiInstance;
 
 WorldInstancedEmitter::WorldInstancedEmitter(Context* ctx) : MeshEmitter(ctx, "inst") {
 }
@@ -23,7 +23,7 @@ void WorldInstancedEmitter::emit(const RenderParams& params, RenderViewData& rvd
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
-	auto& list = EntityManager::global->get_component_list<MultiInstance>();
+	auto& list = ecs::EntityManager::global->get_component_list<MultiInstance>();
 
 	for (auto mi: list) {
 		auto m = mi->model;

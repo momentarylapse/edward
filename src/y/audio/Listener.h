@@ -5,8 +5,7 @@
 
 namespace audio {
 
-class Listener : public Component {
-public:
+struct Listener : ecs::Component {
 	Listener();
 	void apply_data();
 

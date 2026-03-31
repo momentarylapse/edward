@@ -9,7 +9,7 @@
 #define SRC_RENDERER_HELPER_RENDERERFACTORY_H_
 
 struct GLFWwindow;
-class Camera;
+struct Camera;
 
 class FullCameraRenderer;
 

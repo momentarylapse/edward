@@ -15,6 +15,8 @@
 #include "Component.h"
 
 
+namespace ecs {
+
 Array<System*> SystemManager::systems;
 EntityManager* SystemManager::entity_manager;
 
@@ -40,7 +42,7 @@ void SystemManager::reset() {
 	system_by_type.clear();
 }
 
-void SystemManager::create(const Path& filename, const string& __name, const Array<ScriptInstanceDataVariable> &variables) {
+void SystemManager::create(const Path& filename, const string& __name, const Array<InstanceDataVariable> &variables) {
 	msg_write("add system: " + filename.str());
 	auto type = PluginManager::find_class_derived(filename, "ecs.System");
 	auto* s = reinterpret_cast<System*>(PluginManager::create_instance(type, variables));
@@ -51,8 +53,7 @@ void SystemManager::create(const Path& filename, const string& __name, const Arr
 void SystemManager::register_system(const kaba::Class* type, System* s) {
 	systems.add(s);
 	system_by_type.add({type, s});
-	s->ch_iterate = profiler::create_channel(type->long_name(), ch_system);
-	// TODO set entity_manager
+	s->channel = profiler::create_channel(type->long_name(), ch_system);
 
 	s->entity_manager = entity_manager;
 	entity_manager->out_add_component >> s->in_add_component;
@@ -80,9 +81,9 @@ System* SystemManager::_get_generic(const kaba::Class* type) {
 void SystemManager::handle_iterate(float dt) {
 	profiler::begin(ch_system);
 	for (auto *c: systems) {
-		profiler::begin(c->ch_iterate);
+		profiler::begin(c->channel);
 		c->on_iterate(dt);
-		profiler::end(c->ch_iterate);
+		profiler::end(c->channel);
 	}
 	profiler::end(ch_system);
 }
@@ -118,4 +119,5 @@ void SystemManager::handle_render_inject2() {
 		c->on_render_inject2();
 }
 
+}
 

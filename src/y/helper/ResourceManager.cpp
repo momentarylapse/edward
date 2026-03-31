@@ -39,7 +39,7 @@ public:
 			return nullptr;
 		auto t = new Template;
 		templates.set(filename, t);
-		ScriptInstanceData* current = nullptr;
+		ecs::InstanceData* current = nullptr;
 		const auto s = os::fs::read_text(filename);
 		for (const auto& l: s.explode("\n")) {
 			if (l.num == 0)

@@ -22,14 +22,15 @@
 
 class DataWorld;
 class Terrain;
-class Object;
 struct WorldLink;
 struct WorldObject;
 struct WorldTerrain;
 enum class PhysicsMode;
-class Entity;
-class Component;
-class EntityManager;
+namespace ecs {
+	struct Entity;
+	struct Component;
+	class EntityManager;
+}
 struct LevelData;
 
 
@@ -43,17 +44,17 @@ struct WorldEntity { //: multiview::SingleData {
 	WorldTerrain terrain;
 
 	//Entity* entity = nullptr;
-	Array<ScriptInstanceData> components;
+	Array<ecs::InstanceData> components;
 
-	ScriptInstanceData& get(const string& class_name);
+	ecs::InstanceData& get(const string& class_name);
 };
 
-struct EdwardTag : Component {
+struct EdwardTag : ecs::Component {
 	int entity_index; // auto updated by ModeWorld
 	Path _template;
 	bool request_auto_components = false;
-	Array<ScriptInstanceData> unknown_components;
-	ScriptInstanceData& get(const string& class_name);
+	Array<ecs::InstanceData> unknown_components;
+	ecs::InstanceData& get(const string& class_name);
 
 	static const kaba::Class* _class;
 };
@@ -64,7 +65,7 @@ public:
 	~DataWorld() override;
 
 	using ComponentParams = base::map<string, Any>;
-	//using ComponentParams = Array<ScriptInstanceDataVariable>;
+	//using ComponentParams = Array<ecs::InstanceDataVariable>;
 
 	obs::source out_entity_added{this, "entity-added"};
 	obs::source out_entity_removed{this, "entity-removed"};
@@ -83,9 +84,9 @@ public:
 
 	void update_data();
 
-	owned<EntityManager> entity_manager;
+	owned<ecs::EntityManager> entity_manager;
 	Array<multiview::SingleData> dummy_entities;
-	Entity* entity(int index);
+	ecs::Entity* entity(int index);
 
 	Array<WorldLink> links;
 
@@ -111,7 +112,7 @@ public:
 		} fog;
 
 		// scripts
-		Array<ScriptInstanceData> systems;
+		Array<ecs::InstanceData> systems;
 
 		// music
 		Array<Path> music_files;
@@ -123,18 +124,18 @@ public:
 
 	//Selection get_selection() const override;
 
-	Entity* add_entity(const vec3& pos, const quaternion& ang);
-	void edit_entity(Entity* e, const vec3& pos, const quaternion& ang);
+	ecs::Entity* add_entity(const vec3& pos, const quaternion& ang);
+	void edit_entity(ecs::Entity* e, const vec3& pos, const quaternion& ang);
 	void edit_terrain_meta_data(int index, const vec3& pattern);
-	Component* entity_add_component_generic(Entity* e, const kaba::Class* type, const ComponentParams& variables = {});
+	ecs::Component* entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const ComponentParams& variables = {});
 	template<class T>
-	T* entity_add_component(Entity* e, const ComponentParams& variables = {}) {
+	T* entity_add_component(ecs::Entity* e, const ComponentParams& variables = {}) {
 		return static_cast<T*>(entity_add_component_generic(e, T::_class, variables));
 	}
-	void entity_remove_component(Entity* e, const kaba::Class* type);
-	void entity_edit_component(Entity* e, const kaba::Class* type, const ScriptInstanceData& c);
-	void entity_remove_unknown_component(Entity* e, int cindex);
-	void entity_edit_unknown_component(Entity* e, int cindex, const ScriptInstanceData& c);
+	void entity_remove_component(ecs::Entity* e, const kaba::Class* type);
+	void entity_edit_component(ecs::Entity* e, const kaba::Class* type, const ecs::InstanceData& c);
+	void entity_remove_unknown_component(ecs::Entity* e, int cindex);
+	void entity_edit_unknown_component(ecs::Entity* e, int cindex, const ecs::InstanceData& c);
 
 	void copy(LevelData& temp, const Data::Selection& sel) const; // actually not an action
 	void paste(const LevelData& temp, Selection* selection = nullptr);
@@ -142,9 +143,9 @@ public:
 
 	// low level (no action)
 	//Entity* _create_entity(const LevelData::Entity& e);
-	Entity* _create_entity(const vec3& pos, const quaternion& ang);
-	void _entity_apply_components(Entity* e, const Array<ScriptInstanceData>& components);
-	void _entity_apply_component(Entity* e, const ScriptInstanceData& component);
+	ecs::Entity* _create_entity(const vec3& pos, const quaternion& ang);
+	void _entity_apply_components(ecs::Entity* e, const Array<ecs::InstanceData>& components);
+	void _entity_apply_component(ecs::Entity* e, const ecs::InstanceData& component);
 };
 
 #endif /* DATAWORLD_H_ */

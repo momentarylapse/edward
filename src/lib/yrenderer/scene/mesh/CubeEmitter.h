@@ -13,7 +13,7 @@ struct Box;
 
 namespace yrenderer {
 
-class Material;
+struct Material;
 
 class CubeEmitter : public MeshEmitter {
 public:

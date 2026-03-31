@@ -35,11 +35,3 @@ LegacyParticle::LegacyParticle() {
 
 LegacyParticle::~LegacyParticle() = default;
 
-void LegacyParticle::__init__() {
-	new(this) LegacyParticle();
-}
-
-void LegacyParticle::__delete__() {
-	this->LegacyParticle::~LegacyParticle();
-}
-

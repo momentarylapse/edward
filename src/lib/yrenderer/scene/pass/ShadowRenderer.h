@@ -15,12 +15,12 @@
 #include <lib/yrenderer/scene/SceneRenderer.h>
 #include "../../scene/SceneView.h"
 
-class Camera;
+struct Camera;
 class Profiler;
 
 namespace yrenderer {
 
-class Material;
+struct Material;
 class MeshEmitter;
 class GeometryEmitter;
 class TextureRenderer;

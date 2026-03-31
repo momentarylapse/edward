@@ -15,6 +15,7 @@ namespace kaba {
 	class Class;
 }
 
+namespace ecs {
 
 class BaseClass : public VirtualBase {
 public:
@@ -38,20 +39,22 @@ public:
 };
 
 
-struct ScriptInstanceDataVariable {
+struct InstanceDataVariable {
 	string name;
 	Any value;
-	bool operator==(const ScriptInstanceDataVariable& other) const;
-	bool operator!=(const ScriptInstanceDataVariable& other) const;
+	bool operator==(const InstanceDataVariable& other) const;
+	bool operator!=(const InstanceDataVariable& other) const;
 };
 
-struct ScriptInstanceData {
+struct InstanceData {
 	string class_name;
 	Path filename;
-	Array<ScriptInstanceDataVariable> variables;
+	Array<InstanceDataVariable> variables;
 	Any get(const string& name) const;
 	void set(const string& name, const Any& value);
 	bool is_internal() const;
-	bool operator==(const ScriptInstanceData& other) const;
-	bool operator!=(const ScriptInstanceData& other) const;
+	bool operator==(const InstanceData& other) const;
+	bool operator!=(const InstanceData& other) const;
 };
+
+}

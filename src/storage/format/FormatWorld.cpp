@@ -30,7 +30,6 @@
 #include <lib/doc/xml.h>
 #include <ecs/EntityManager.h>
 #include <stuff/PluginManager.h>
-#include <meta.h>
 #include <lib/kaba/kaba.h>
 
 
@@ -66,7 +65,7 @@ static color s2c(const string &s) {
 }
 
 // script vars
-string vars2str(const Array<ScriptInstanceDataVariable>& vars) {
+string vars2str(const Array<ecs::InstanceDataVariable>& vars) {
 	string s;
 	for (auto &v: vars) {
 		if (v.value == "")
@@ -78,13 +77,13 @@ string vars2str(const Array<ScriptInstanceDataVariable>& vars) {
 	return s;
 }
 
-Array<ScriptInstanceDataVariable> str2vars(const string& s) {
-	Array<ScriptInstanceDataVariable> vars;
+Array<ecs::InstanceDataVariable> str2vars(const string& s) {
+	Array<ecs::InstanceDataVariable> vars;
 	for (auto &x: s.explode(",")) {
 		auto xx = x.explode(":");
 		if (xx.num != 2)
 			continue;
-		ScriptInstanceDataVariable v;
+		ecs::InstanceDataVariable v;
 		v.name = xx[0].trim();
 		v.value = xx[1].trim();
 		vars.add(v);
@@ -170,7 +169,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 void read_components(WorldEntity& o, const xml::Element& e) {
 	for (auto &ee: e.elements)
 		if (ee.tag == "component") {
-			ScriptInstanceData sd;
+			ecs::InstanceData sd;
 			sd.filename = ee.value("script", "");
 			sd.class_name = ee.value("class", "");
 			if (ee.value("var") != "")
@@ -354,7 +353,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 	}
 
 
-	auto save_component = [] (const ScriptInstanceData& c) {
+	auto save_component = [] (const ecs::InstanceData& c) {
 		auto ee = xml::Element("component");
 		if (!c.is_internal())
 			ee.add_attribute("script", str(c.filename));
@@ -364,7 +363,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		return ee;
 	};
 
-	auto add_components = [save_component] (xml::Element& e, const Array<ScriptInstanceData>& components) {
+	auto add_components = [save_component] (xml::Element& e, const Array<ecs::InstanceData>& components) {
 		for (auto &c: components) {
 			e.add(save_component(c));
 		}

@@ -13,6 +13,9 @@ const kaba::Class* NameTag::_class = nullptr;
 const kaba::Class* EgoMarker::_class = nullptr;
 const kaba::Class* TemplateRef::_class = nullptr;
 
+
+namespace ecs {
+
 Component::Component() {
 	owner = nullptr;
 	component_type = nullptr;
@@ -20,7 +23,9 @@ Component::Component() {
 
 Component::~Component() = default;
 
-void Component::set_variables(const Array<ScriptInstanceDataVariable>& variables) {
+void Component::set_variables(const Array<InstanceDataVariable>& variables) {
 	PluginManager::assign_variables(this, component_type, variables);
+}
+
 }
 

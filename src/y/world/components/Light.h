@@ -18,8 +18,7 @@ namespace yrenderer {
 	struct CameraParams;
 }
 
-class Light : public Component {
-public:
+struct Light : ecs::Component {
 	Light(yrenderer::LightType type, const color &c, float theta = -1);
 	/*void __init_parallel__(const quaternion &ang, const color &c);
 	void __init_spherical__(const vec3 &p, const color &c, float r);

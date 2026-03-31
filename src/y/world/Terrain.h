@@ -21,7 +21,7 @@ struct CollisionData;
 class Terrain;
 
 
-struct TerrainRef : Component {
+struct TerrainRef : ecs::Component {
 	Terrain* terrain = nullptr;
 	yrenderer::Material* material = nullptr;
 	static const kaba::Class* _class;
@@ -69,15 +69,15 @@ public:
 	~Terrain();
 	void reset();
 	void _cdecl update(int x1,int x2,int z1,int z2,int mode);
-	float _cdecl gimme_height(Entity* o, const vec3 &p);
-	float _cdecl gimme_height_n(Entity* o, const vec3 &p, vec3 &n);
+	float _cdecl gimme_height(ecs::Entity* o, const vec3 &p);
+	float _cdecl gimme_height_n(ecs::Entity* o, const vec3 &p, vec3 &n);
 
-	void get_triangle_hull(Entity* o, TriangleHull *hull, vec3 &pos, float radius);
+	void get_triangle_hull(ecs::Entity* o, TriangleHull *hull, vec3 &pos, float radius);
 
-	bool _cdecl trace(Entity* owner, const vec3 &p1, const vec3 &p2, const vec3 &dir, float range, CollisionData &data, bool simple_test);
+	bool _cdecl trace(ecs::Entity* owner, const vec3 &p1, const vec3 &p2, const vec3 &dir, float range, CollisionData &data, bool simple_test);
 
-	void calc_detail(Entity* o, const vec3 &cam_pos);
-	void prepare_draw(Entity* o, const vec3 &cam_pos);
+	void calc_detail(ecs::Entity* o, const vec3 &cam_pos);
+	void prepare_draw(ecs::Entity* o, const vec3 &cam_pos);
 
 	Path filename;
 	TerrainType terrain_type;
@@ -113,7 +113,7 @@ struct XTerrainVBUpdater {
 	int mode = 0;
 	int counter = 0;
 	Terrain* terrain = nullptr;
-	Entity* owner = nullptr;
+	ecs::Entity* owner = nullptr;
 	ygfx::VertexBuffer* vb = nullptr;
 
 	bool build_chunk(int chunk_no);

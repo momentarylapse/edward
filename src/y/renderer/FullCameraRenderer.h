@@ -7,7 +7,7 @@
 
 #include <lib/yrenderer/Renderer.h>
 
-class Camera;
+struct Camera;
 class XTerrainVBUpdater;
 
 namespace yrenderer {

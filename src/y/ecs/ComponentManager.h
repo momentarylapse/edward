@@ -12,21 +12,25 @@
 #include <lib/any/any.h>
 #include <functional>
 
-class Entity;
-class Component;
-class ComponentListX;
 namespace kaba {
 	class Class;
 }
 class Any;
-struct ScriptInstanceDataVariable;
+
+
+namespace ecs {
+
+struct Entity;
+struct Component;
+struct ComponentListX;
+struct InstanceDataVariable;
 
 
 class ComponentManager {
 public:
 	using List = Array<Component*>;
 	//using Params = base::map<string, Any>;
-	using Params = Array<ScriptInstanceDataVariable>;
+	using Params = Array<InstanceDataVariable>;
 
 	ComponentManager();
 	~ComponentManager();
@@ -70,4 +74,6 @@ public:
 	std::function<void(const kaba::Class*, Component*, const Params&)> f_apply;
 	//std::function<const kaba::Class*(const string&)> f_parse_type;
 };
+
+}
 

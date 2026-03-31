@@ -12,28 +12,29 @@
 #include <lib/base/map.h>
 #include <lib/os/path.h>
 
-class MetaMove;
+struct MetaMove;
 class Model;
 class Path;
-class RigidBody;
+struct RigidBody;
 struct PhysicalMesh;
-class Skeleton;
-struct ScriptInstanceData;
+struct Skeleton;
+namespace ecs {
+	struct InstanceData;
+}
 class ResourceManager;
 namespace yrenderer {
 	class MaterialManager;
 }
 
 
-class ModelTemplate : public Sharable<base::Empty> {
-public:
+struct ModelTemplate : Sharable<base::Empty> {
 	Path filename;
 	Model *model;
 	Array<Path> bone_model_filename;
 	shared<PhysicalMesh> physical_mesh;
 	shared<MetaMove> meta_move;
 	Skeleton *skeleton;
-	Array<ScriptInstanceData> components;
+	Array<ecs::InstanceData> components;
 
 
 	explicit ModelTemplate(Model *m);

@@ -11,15 +11,17 @@
 #include "EntityManager.h"
 #include <lib/pattern/Observable.h>
 
-struct EntityMessageParams;
+namespace ecs {
+
+struct MessageParams;
 
 class System : public obs::Node<BaseClass> {
 public:
 	System();
 	~System() override;
 
-	obs::xsink<EntityMessageParams> in_add_component{this, &System::on_add_component};
-	obs::xsink<EntityMessageParams> in_remove_component{this, &System::on_remove_component};
+	obs::xsink<MessageParams> in_add_component{this, &System::on_add_component};
+	obs::xsink<MessageParams> in_remove_component{this, &System::on_remove_component};
 
 	virtual void on_input() {}
 	virtual void on_key_down(int k) {}
@@ -37,9 +39,11 @@ public:
 	virtual void on_render_inject() {}
 	virtual void on_render_inject2() {}
 
-	virtual void on_add_component(const EntityMessageParams& params) {}
-	virtual void on_remove_component(const EntityMessageParams& params) {}
+	virtual void on_add_component(const MessageParams& params) {}
+	virtual void on_remove_component(const MessageParams& params) {}
 
-	int ch_iterate = -1;
+	int channel = -1;
 	EntityManager* entity_manager = nullptr;
 };
+
+}

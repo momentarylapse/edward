@@ -15,6 +15,7 @@
 #include "../fx/Particle.h"
 #include "../fx/Beam.h"
 #include "../fx/ParticleEmitter.h"
+#include "../fx/ParticleManager.h"
 #include "../gui/gui.h"
 #include "../gui/Node.h"
 #include "../gui/Picture.h"
@@ -112,14 +113,14 @@ MultiInstance* _create_object_multi(World *w, const Path &filename, const Array<
 	return nullptr;
 }
 
-ModelRef* _attach_model(World* w, Entity* e, const Path& filename) {
+ModelRef* _attach_model(World* w, ecs::Entity* e, const Path& filename) {
 	KABA_EXCEPTION_WRAPPER( return w->attach_model(e, filename); );
 	return nullptr;
 }
 
 LegacyParticle* _world_add_legacy_particle(World* w, const kaba::Class* type, const vec3& pos, float radius, const color& c, shared<Texture>& tex, float ttl) {
 	auto e = w->create_entity(pos, quaternion::ID);
-	auto p = reinterpret_cast<LegacyParticle*>(EntityManager::global->_add_component_generic_(e, type));
+	auto p = reinterpret_cast<LegacyParticle*>(ecs::EntityManager::global->_add_component_generic_(e, type));
 	p->radius = radius;
 	p->col = c;
 	p->texture = tex;
@@ -205,102 +206,102 @@ void init() {
 	import_kaba();
 }
 
-ComponentManager::List& __query_component_list(const kaba::Class* type) {
-	return EntityManager::global->component_manager->_get_list(type);
+ecs::ComponentManager::List& __query_component_list(const kaba::Class* type) {
+	return ecs::EntityManager::global->component_manager->_get_list(type);
 }
 
-ComponentManager::List& __query_component_list_family(const kaba::Class* type) {
-	return EntityManager::global->component_manager->_get_list_family(type);
+ecs::ComponentManager::List& __query_component_list_family(const kaba::Class* type) {
+	return ecs::EntityManager::global->component_manager->_get_list_family(type);
 }
 
-ComponentManager::PairList& __query_component_list2(const kaba::Class* type1, const kaba::Class* type2) {
-	return EntityManager::global->component_manager->_get_list2(type1, type2);
+ecs::ComponentManager::PairList& __query_component_list2(const kaba::Class* type1, const kaba::Class* type2) {
+	return ecs::EntityManager::global->component_manager->_get_list2(type1, type2);
 }
 
-class EntityWrapper : public Entity {
+class EntityWrapper : public ecs::Entity {
 public:
-	Component* add_component_generic(const kaba::Class* type, const string& vars) {
+	ecs::Component* add_component_generic(const kaba::Class* type, const string& vars) {
 		if (vars != "")
 			msg_error("TODO component params Any{}");
-		return EntityManager::global->_add_component_generic_(this, type, {});
+		return ecs::EntityManager::global->_add_component_generic_(this, type, {});
 	}
-	void delete_component(Component* c) {
-		return EntityManager::global->delete_component(this, c);
+	void delete_component(ecs::Component* c) {
+		return ecs::EntityManager::global->delete_component(this, c);
 	}
 };
-Light* attach_light_parallel(Entity* e, const color& c) {
+Light* attach_light_parallel(ecs::Entity* e, const color& c) {
 	return world.attach_light_parallel(e, c);
 }
-Light* attach_light_point(Entity* e, const color& c, float r) {
+Light* attach_light_point(ecs::Entity* e, const color& c, float r) {
 	return world.attach_light_point(e, c, r);
 }
-Light* attach_light_cone(Entity* e, const color& c, float r, float theta) {
+Light* attach_light_cone(ecs::Entity* e, const color& c, float r, float theta) {
 	return world.attach_light_cone(e, c, r, theta);
 }
 
 void export_ecs(kaba::Exporter* ext) {
-	BaseClass entity(BaseClass::Type::NONE);
-	ext->declare_class_size("BaseClass", sizeof(BaseClass));
-	//	ext->link_class_func("BaseClass.__init__", &Entity::__init__);
-	ext->link_virtual("BaseClass.__delete__", &BaseClass::__delete__, &entity);
-	ext->link_virtual("BaseClass.on_init", &BaseClass::on_init, &entity);
-	ext->link_virtual("BaseClass.on_delete", &BaseClass::on_delete, &entity);
-	ext->link_virtual("BaseClass.on_iterate", &BaseClass::on_iterate, &entity);
+	ecs::BaseClass entity(ecs::BaseClass::Type::NONE);
+	ext->declare_class_size("BaseClass", sizeof(ecs::BaseClass));
+	//	ext->link_class_func("BaseClass.__init__", &ecs::Entity::__init__);
+	ext->link_virtual("BaseClass.__delete__", &ecs::BaseClass::__delete__, &entity);
+	ext->link_virtual("BaseClass.on_init", &ecs::BaseClass::on_init, &entity);
+	ext->link_virtual("BaseClass.on_delete", &ecs::BaseClass::on_delete, &entity);
+	ext->link_virtual("BaseClass.on_iterate", &ecs::BaseClass::on_iterate, &entity);
 
-	ext->declare_class_size("Entity", sizeof(Entity));
-	ext->declare_class_element("Entity.pos", &Entity::pos);
-	ext->declare_class_element("Entity.ang", &Entity::ang);
-	ext->declare_class_element("Entity.parent", &Entity::parent);
-	ext->link_class_func("Entity.get_matrix", &Entity::get_matrix);
-	ext->link_class_func("Entity.__get_component", &Entity::_get_component_generic_);
-	ext->link_class_func("Entity.__get_component_derived", &Entity::_get_component_derived_generic_);
+	ext->declare_class_size("Entity", sizeof(ecs::Entity));
+	ext->declare_class_element("Entity.pos", &ecs::Entity::pos);
+	ext->declare_class_element("Entity.ang", &ecs::Entity::ang);
+	ext->declare_class_element("Entity.parent", &ecs::Entity::parent);
+	ext->link_class_func("Entity.get_matrix", &ecs::Entity::get_matrix);
+	ext->link_class_func("Entity.__get_component", &ecs::Entity::_get_component_generic_);
+	ext->link_class_func("Entity.__get_component_derived", &ecs::Entity::_get_component_derived_generic_);
 	ext->link_class_func("Entity.__add_component", &EntityWrapper::add_component_generic);
 	ext->link_class_func("Entity.delete_component", &EntityWrapper::delete_component);
 	ext->link_class_func("Entity.__del_override__", &DeletionQueue::add_entity);
 
-	Component component;
-	ext->declare_class_size("Component", sizeof(Component));
-	ext->declare_class_element("Component.owner", &Component::owner);
-	ext->link_class_func("Component.__init__", &kaba::generic_init<Component>);
-	ext->link_virtual("Component.__delete__", &Component::__delete__, &component);
-	ext->link_virtual("Component.on_init", &Component::on_init, &component);
-	ext->link_virtual("Component.on_delete", &Component::on_delete, &component);
-	ext->link_virtual("Component.on_iterate", &Component::on_iterate, &component);
-	ext->link_virtual("Component.on_collide", &Component::on_collide, &component);
-	ext->link_class_func("Component.set_variables", &Component::set_variables);
+	ecs::Component component;
+	ext->declare_class_size("Component", sizeof(ecs::Component));
+	ext->declare_class_element("Component.owner", &ecs::Component::owner);
+	ext->link_class_func("Component.__init__", &kaba::generic_init<ecs::Component>);
+	ext->link_virtual("Component.__delete__", &ecs::Component::__delete__, &component);
+	ext->link_virtual("Component.on_init", &ecs::Component::on_init, &component);
+	ext->link_virtual("Component.on_delete", &ecs::Component::on_delete, &component);
+	ext->link_virtual("Component.on_iterate", &ecs::Component::on_iterate, &component);
+	ext->link_virtual("Component.on_collide", &ecs::Component::on_collide, &component);
+	ext->link_class_func("Component.set_variables", &ecs::Component::set_variables);
 
 	ext->declare_class_size("NameTag", sizeof(NameTag));
 	ext->declare_class_element("NameTag.name", &NameTag::name);
 
-	System con;
-	ext->declare_class_size("System", sizeof(System));
-	ext->link_class_func("System.__init__", &kaba::generic_init<System>);
-	ext->link_virtual("System.__delete__", &kaba::generic_virtual<System>::__delete__, &con);
-	ext->link_virtual("System.on_init", &System::on_init, &con);
-	ext->link_virtual("System.on_delete", &System::on_delete, &con);
-	ext->link_virtual("System.on_add_component", &System::on_add_component, &con);
-	ext->link_virtual("System.on_remove_component", &System::on_remove_component, &con);
-	ext->link_virtual("System.on_iterate", &System::on_iterate, &con);
-	ext->link_virtual("System.on_iterate_pre", &System::on_iterate_pre, &con);
-	ext->link_virtual("System.on_draw_pre", &System::on_draw_pre, &con);
-	ext->link_virtual("System.on_input", &System::on_input, &con);
-	ext->link_virtual("System.on_key", &System::on_key, &con);
-	ext->link_virtual("System.on_key_down", &System::on_key_down, &con);
-	ext->link_virtual("System.on_key_up", &System::on_key_up, &con);
-	ext->link_virtual("System.on_left_button_down", &System::on_left_button_down, &con);
-	ext->link_virtual("System.on_left_button_up", &System::on_left_button_up, &con);
-	ext->link_virtual("System.on_middle_button_down", &System::on_middle_button_down, &con);
-	ext->link_virtual("System.on_middle_button_up", &System::on_middle_button_up, &con);
-	ext->link_virtual("System.on_right_button_down", &System::on_right_button_down, &con);
-	ext->link_virtual("System.on_right_button_up", &System::on_right_button_up, &con);
-	ext->link_virtual("System.on_render_inject", &System::on_render_inject, &con);
+	ecs::System con;
+	ext->declare_class_size("System", sizeof(ecs::System));
+	ext->link_class_func("System.__init__", &kaba::generic_init<ecs::System>);
+	ext->link_virtual("System.__delete__", &kaba::generic_virtual<ecs::System>::__delete__, &con);
+	ext->link_virtual("System.on_init", &ecs::System::on_init, &con);
+	ext->link_virtual("System.on_delete", &ecs::System::on_delete, &con);
+	ext->link_virtual("System.on_add_component", &ecs::System::on_add_component, &con);
+	ext->link_virtual("System.on_remove_component", &ecs::System::on_remove_component, &con);
+	ext->link_virtual("System.on_iterate", &ecs::System::on_iterate, &con);
+	ext->link_virtual("System.on_iterate_pre", &ecs::System::on_iterate_pre, &con);
+	ext->link_virtual("System.on_draw_pre", &ecs::System::on_draw_pre, &con);
+	ext->link_virtual("System.on_input", &ecs::System::on_input, &con);
+	ext->link_virtual("System.on_key", &ecs::System::on_key, &con);
+	ext->link_virtual("System.on_key_down", &ecs::System::on_key_down, &con);
+	ext->link_virtual("System.on_key_up", &ecs::System::on_key_up, &con);
+	ext->link_virtual("System.on_left_button_down", &ecs::System::on_left_button_down, &con);
+	ext->link_virtual("System.on_left_button_up", &ecs::System::on_left_button_up, &con);
+	ext->link_virtual("System.on_middle_button_down", &ecs::System::on_middle_button_down, &con);
+	ext->link_virtual("System.on_middle_button_up", &ecs::System::on_middle_button_up, &con);
+	ext->link_virtual("System.on_right_button_down", &ecs::System::on_right_button_down, &con);
+	ext->link_virtual("System.on_right_button_up", &ecs::System::on_right_button_up, &con);
+	ext->link_virtual("System.on_render_inject", &ecs::System::on_render_inject, &con);
 	ext->link_class_func("System.__del_override__", &DeletionQueue::add);
 
 	ext->link_func("__get_component_list", &__query_component_list);
 	ext->link_func("__get_component_family_list", &__query_component_list_family);
 	ext->link_func("__get_component_list2", &__query_component_list2);
 
-	ext->link_func("__get_system", &SystemManager::_get_generic);
+	ext->link_func("__get_system", &ecs::SystemManager::_get_generic);
 }
 
 void export_world(kaba::Exporter* ext) {
@@ -581,8 +582,8 @@ void export_fx(kaba::Exporter* ext) {
 		ext->declare_class_element("LegacyParticle.color", &LegacyParticle::col);
 		ext->declare_class_element("LegacyParticle.source", &LegacyParticle::source);
 		ext->declare_class_element("LegacyParticle.enabled", &LegacyParticle::enabled);
-		ext->link_class_func("LegacyParticle.__init__", &LegacyParticle::__init__);
-		ext->link_virtual("LegacyParticle.__delete__", &LegacyParticle::__delete__, &particle);
+		ext->link_class_func("LegacyParticle.__init__", &kaba::generic_init<LegacyParticle>);
+		ext->link_virtual("LegacyParticle.__delete__", &kaba::generic_virtual<LegacyParticle>::__delete__, &particle);
 		//ext->link_virtual("LegacyParticle.on_iterate", &Particle::on_iterate, &particle);
 		//ext->link_class_func("LegacyParticle.__del_override__", &global_delete);
 		ext->link_class_func("LegacyParticle.__del_override__", &DeletionQueue::add);
@@ -596,7 +597,7 @@ void export_fx(kaba::Exporter* ext) {
 	ParticleGroup group;
 	ext->declare_class_size("ParticleGroup", sizeof(ParticleGroup));
 	ext->declare_class_element("ParticleGroup.source", &ParticleGroup::source);
-	ext->link_class_func("ParticleGroup.__init__", &ParticleGroup::__init__);
+	ext->link_class_func("ParticleGroup.__init__", &kaba::generic_init<ParticleGroup>);
 	ext->link_class_func("ParticleGroup.emit", &ParticleGroup::emit_particle);
 	ext->link_class_func("ParticleGroup.emit_beam", &ParticleGroup::emit_beam);
 	ext->link_class_func("ParticleGroup.iterate_particles", &ParticleGroup::iterate_particles);
@@ -613,7 +614,7 @@ void export_fx(kaba::Exporter* ext) {
 	ext->declare_class_element("ParticleEmitter.spawn_beams", &ParticleEmitter::spawn_beams);
 	ext->declare_class_element("ParticleEmitter.spawn_dt", &ParticleEmitter::spawn_dt);
 	ext->declare_class_element("ParticleEmitter.spawn_time_to_live", &ParticleEmitter::spawn_time_to_live);
-	ext->link_class_func("ParticleEmitter.__init__", &ParticleEmitter::__init__);
+	ext->link_class_func("ParticleEmitter.__init__", &kaba::generic_init<ParticleEmitter>);
 	ext->link_class_func("ParticleEmitter.emit_particle", &ParticleEmitter::emit_particle);
 	ext->link_class_func("ParticleEmitter.iterate_emitter", &ParticleEmitter::iterate_emitter);
 	ext->link_virtual("ParticleEmitter.__delete__", &ParticleEmitter::__delete__, &emitter);
@@ -973,6 +974,7 @@ void import_kaba() {
 	import_component_class<Link>(m_world, "Link");
 	import_component_class<Physics>(m_world, "Physics", "ecs.System"); // well, not a Component... but ok
 	import_component_class<AnimationManager>(m_world, "AnimationManager", "ecs.System");
+	import_component_class<ParticleManager>(m_world, "ParticleManager", "ecs.System");
 
 	auto m_fx = kaba::default_context->load_module("yengine/fx.kaba");
 	import_component_class<ParticleGroup>(m_fx, "ParticleGroup");
@@ -992,8 +994,8 @@ void import_kaba() {
 	//msg_write(MeshCollider::_class->parent->parent->name);
 }
 
-Array<ScriptInstanceDataVariable> parse_variables(const string &var) {
-	Array<ScriptInstanceDataVariable> r;
+Array<ecs::InstanceDataVariable> parse_variables(const string &var) {
+	Array<ecs::InstanceDataVariable> r;
 	auto xx = var.explode(",");
 	for (auto &x: xx) {
 		auto y = x.explode(":");
@@ -1096,7 +1098,7 @@ void whatever_from_any(void* p, const kaba::Class* type, const Any& value) {
 	}
 }
 
-void assign_variables(void* p, const kaba::Class* c, const Array<ScriptInstanceDataVariable>& variables) {
+void assign_variables(void* p, const kaba::Class* c, const Array<ecs::InstanceDataVariable>& variables) {
 	for (const auto& v: variables)
 		for (const auto& e: c->elements)
 			if (v.name == e.name) {
@@ -1174,7 +1176,7 @@ void *create_instance(const kaba::Class *c, const string &variables) {
 }
 
 // yes, we could skip the special cases... but then we need to export virtual functions properly...
-void* create_instance(const kaba::Class *c, const Array<ScriptInstanceDataVariable> &variables) {
+void* create_instance(const kaba::Class *c, const Array<ecs::InstanceDataVariable> &variables) {
 	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
 	msg_write(format("creating instance  %s", c->long_name()));
 	if (c == RigidBody::_class)

@@ -119,7 +119,7 @@ Physics::~Physics() {
 #endif
 }
 
-void Physics::on_add_component(const EntityMessageParams &params) {
+void Physics::on_add_component(const ecs::MessageParams &params) {
 	if (auto sb = params.component->as<RigidBody>()) {
 		//msg_error("ADD SOLID BODY");
 		register_body(sb);
@@ -129,7 +129,7 @@ void Physics::on_add_component(const EntityMessageParams &params) {
 	}
 }
 
-void Physics::on_remove_component(const EntityMessageParams &params) {
+void Physics::on_remove_component(const ecs::MessageParams &params) {
 	if (auto sb = params.component->as<RigidBody>()) {
 		unregister_body(sb);
 	} else if (auto l = params.component->as<Link>()) {
@@ -184,7 +184,7 @@ void Physics::unregister_body(RigidBody *sb) {
 
 
 
-void Physics::set_dynamic(Entity *o, bool dynamic) {
+void Physics::set_dynamic(ecs::Entity *o, bool dynamic) {
 	auto sb = o->get_component<RigidBody>();
 	auto c = o->get_component_derived<Collider>();
 
@@ -209,7 +209,7 @@ void Physics::set_dynamic(Entity *o, bool dynamic) {
 	sb->dynamic = dynamic;
 }
 
-base::optional<CollisionData> Physics::trace(const vec3 &p1, const vec3 &p2, int mode, Entity *o_ignore) {
+base::optional<CollisionData> Physics::trace(const vec3 &p1, const vec3 &p2, int mode, ecs::Entity *o_ignore) {
 #if HAS_LIB_BULLET
 	btCollisionWorld::ClosestRayResultCallback ray_callback(bt_set_v(p1), bt_set_v(p2));
 	//ray_callback.m_collisionFilterMask = FILTER_CAMERA;

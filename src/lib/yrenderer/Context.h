@@ -22,7 +22,7 @@ namespace yrenderer {
 class ShaderManager;
 class TextureManager;
 class MaterialManager;
-class Material;
+struct Material;
 
 struct Context {
 

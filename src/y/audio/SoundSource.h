@@ -9,8 +9,7 @@ class Path;
 
 namespace audio {
 
-class SoundSource : public Component {
-public:
+struct SoundSource : ecs::Component {
 	bool loop, suicidal;
 	float volume, speed;
 	float min_distance, max_distance;

@@ -56,9 +56,9 @@ void exit() {
 #endif
 }
 
-void attach_listener(Entity* e) {
+void attach_listener(ecs::Entity* e) {
 	if (e)
-		EntityManager::global->add_component<Listener>(e);
+		ecs::EntityManager::global->add_component<Listener>(e);
 }
 
 float VolumeMusic = 1.0f, VolumeSound = 1.0f;
@@ -75,7 +75,7 @@ void garbage_collection() {
 }
 
 void iterate(float dt) {
-	auto& sources = EntityManager::global->get_component_list<SoundSource>();
+	auto& sources = ecs::EntityManager::global->get_component_list<SoundSource>();
 	for (auto s: sources) {
 		// TODO owner->get_component<RigidBody>()->vel
 		s->_apply_data();
@@ -96,7 +96,7 @@ void iterate(float dt) {
 		}
 	}
 	DeletionQueue::delete_all();
-	auto& listeners = EntityManager::global->get_component_list<Listener>();
+	auto& listeners = ecs::EntityManager::global->get_component_list<Listener>();
 	if (listeners.num >= 1)
 		listeners[0]->apply_data();
 }
@@ -105,30 +105,30 @@ void reset() {
 }
 
 
-SoundSource& emit_sound(AudioBuffer* buffer, const vec3 &pos, float radius1) {
+SoundSource* emit_sound(AudioBuffer* buffer, const vec3 &pos, float radius1) {
 	auto e = world.create_entity(pos, quaternion::ID);
-	auto s = EntityManager::global->add_component<SoundSource>(e);
+	auto s = ecs::EntityManager::global->add_component<SoundSource>(e);
 	s->set_buffer(buffer);
 	s->min_distance = radius1;
 	s->max_distance = radius1 * 100;
 	s->suicidal = true;
 	s->play(false);
-	return *s;
+	return s;
 }
 
-SoundSource& emit_sound_file(const Path &filename, const vec3 &pos, float radius1) {
+SoundSource* emit_sound_file(const Path &filename, const vec3 &pos, float radius1) {
 	return emit_sound(load_buffer(filename), pos, radius1);
 }
 
-SoundSource& emit_sound_stream(AudioStream* stream, const vec3 &pos, float radius1) {
+SoundSource* emit_sound_stream(AudioStream* stream, const vec3 &pos, float radius1) {
 	auto e = world.create_entity(pos, quaternion::ID);
-	auto s = EntityManager::global->add_component<SoundSource>(e);
+	auto s = ecs::EntityManager::global->add_component<SoundSource>(e);
 	s->set_stream(stream);
 	s->min_distance = radius1;
 	s->max_distance = radius1 * 100;
 	s->suicidal = true;
 	s->play(false);
-	return *s;
+	return s;
 }
 }
 

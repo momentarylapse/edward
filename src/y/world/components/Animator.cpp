@@ -30,12 +30,12 @@ Animator::Animator() {
 
 	// "auto-animate"
 	auto_animated = true;
-	num_operations = 0;
-	operation[0].move = 0;
-	operation[0].time = 0;
-	operation[0].command = MoveOperation::Command::SET;
-	operation[0].param1 = 0;
-	operation[0].param2 = 0;
+	operations.resize(1);
+	operations[0].move = 0;
+	operations[0].time = 0;
+	operations[0].command = MoveOperation::Command::SET;
+	operations[0].param1 = 0;
+	operations[0].param2 = 0;
 	/*if (anim.meta) {
 		for (int i=0; i<anim.meta->move.num; i++)
 			if (anim.meta->move[i].num_frames > 0) {
@@ -46,12 +46,15 @@ Animator::Animator() {
 
 }
 
-Animator::~Animator() {
+Animator::~Animator() = default;
+
+void Animator::unregister() {
 	if (buf)
 		delete buf;
+	buf = nullptr;
 }
 
-void Animator::on_init() {
+void Animator::_register() {
 	auto m = entity_get_model(owner);
 	if (!m)
 		return;
@@ -67,7 +70,7 @@ void Animator::on_init() {
 		dmatrix[i] = mat4::translation(sk->pos0[i]);
 	}
 
-	buf = new ygfx::UniformBuffer(sk->bones.num * sizeof(mat4));
+	buf = new ygfx::UniformBuffer(sk->bones.num * (int)sizeof(mat4));
 }
 
 
@@ -81,33 +84,21 @@ void Animator::do_animation(float elapsed) {
 	if (!sk)
 		return;
 
-	// recursion
-	//for (auto &b: sk->bone)
-	//	if (auto bm = b.get_component<Model>()) {
-			//bm->_matrix = b.get_matrix();
-
-			// done by global Animator[] list iteration
-			//b.model->do_animation(elapsed);
-	//	}
-
 	if (!meta)
 		return;
 
-
-	int num_ops = num_operations;
 	if (auto_animated) {
 		// default: just run a single animation
-		_add_time(0, elapsed, 0, true);
-		num_ops = 1;
+		_add_time(operations[0], elapsed, 0, true);
 	}
 
 // vertex animation
 
 	[[maybe_unused]] bool vertex_animated = false;
-	for (int op=0;op<num_ops;op++){
-		if (operation[op].move < 0)
+	for (const auto& op: operations){
+		if (op.move < 0)
 			continue;
-		Move *m = &meta->move[operation[op].move];
+		Move *m = &meta->move[op.move];
 		//msg_write(GetFilename() + format(" %d %d %p %d", op, anim.operation[op].move, m, m->num_frames));
 		if (m->num_frames == 0)
 			continue;
@@ -117,8 +108,8 @@ void Animator::do_animation(float elapsed) {
 			vertex_animated = true;
 
 			// frame data
-			[[maybe_unused]] int fr = (int)(operation[op].time); // current frame (relative)
-			[[maybe_unused]] float dt = operation[op].time - (float)fr;
+			[[maybe_unused]] int fr = (int)(op.time); // current frame (relative)
+			[[maybe_unused]] float dt = op.time - (float)fr;
 			[[maybe_unused]] int f1 = m->frame0 + fr; // current frame (absolute)
 			[[maybe_unused]] int f2 = m->frame0 + (fr+1)%m->num_frames; // next frame (absolute)
 
@@ -130,11 +121,10 @@ void Animator::do_animation(float elapsed) {
 	for (auto&& [i, b]: enumerate(sk->bones)) {
 
 		// operations
-		for (int iop=0;iop<num_ops;iop++){
-			MoveOperation *op = &operation[iop];
-			if (op->move < 0)
+		for (const auto& op: operations) {
+			if (op.move < 0)
 				continue;
-			Move *move = &meta->move[op->move];
+			Move *move = &meta->move[op.move];
 			if (move->num_frames == 0)
 				continue;
 			if (move->type != AnimationType::SKELETAL)
@@ -143,12 +133,11 @@ void Animator::do_animation(float elapsed) {
 			vec3 p,p1,p2;
 
 		// calculate the alignment belonging to this argument
-			float t = max(op->time, 0.0f);
+			float t = max(op.time, 0.0f);
 			int fr = (int)t; // current frame (relative)
 			int f1 = move->frame0 + fr; // current frame (absolute)
 			int f2 = move->frame0 + (fr+1)%move->num_frames; // next frame (absolute)
 			float df = t-(float)fr; // time since start of current frame
-			//msg_write(format("%d   %d  %d    %d", i, f1, sk->bones.num, meta->skel_ang.num));
 			w1 = meta->skel_ang[f1 * sk->bones.num + i]; // first value
 			p1 = meta->skel_dpos[f1 * sk->bones.num + i];
 			w2 = meta->skel_ang[f2 * sk->bones.num + i]; // second value
@@ -170,41 +159,41 @@ void Animator::do_animation(float elapsed) {
 		// execute the operations
 
 			// overwrite
-			if (op->command == MoveOperation::Command::SET){
+			if (op.command == MoveOperation::Command::SET){
 				b->ang = w;
 				b->pos = p;
 
 			// overwrite, if current doesn't equal 0
-			}else if (op->command == MoveOperation::Command::SET_NEW_KEYED){
+			}else if (op.command == MoveOperation::Command::SET_NEW_KEYED){
 				if (w.w != 1)
 					b->ang = w;
 				if (p != v_0)
 					b->pos = p;
 
 			// overwrite, if last equals 0
-			}else if (op->command == MoveOperation::Command::SET_OLD_KEYED){
+			}else if (op.command == MoveOperation::Command::SET_OLD_KEYED){
 				if (b->ang.w==1)
 					b->ang=w;
 				if (b->pos==v_0)
 					b->pos=p;
 
 			// w = w_old         + w_new * f
-			}else if (op->command == MoveOperation::Command::ADD_1_FACTOR){
-				w = w.scale_angle(op->param1);
+			}else if (op.command == MoveOperation::Command::ADD_1_FACTOR){
+				w = w.scale_angle(op.param1);
 				b->ang = w * b->ang;
-				b->pos += op->param1 * p;
+				b->pos += op.param1 * p;
 
 			// w = w_old * (1-f) + w_new * f
-			}else if (op->command == MoveOperation::Command::MIX_1_FACTOR){
-				b->ang = quaternion::interpolate(b->ang, w, op->param1);
-				b->pos = (1 - op->param1) * b->pos + op->param1 * p;
+			}else if (op.command == MoveOperation::Command::MIX_1_FACTOR){
+				b->ang = quaternion::interpolate(b->ang, w, op.param1);
+				b->pos = (1 - op.param1) * b->pos + op.param1 * p;
 
 			// w = w_old * a     + w_new * b
-			}else if (op->command == MoveOperation::Command::MIX_2_FACTOR){
-				b->ang = b->ang.scale_angle(op->param1);
-				w = w.scale_angle(op->param2);
+			}else if (op.command == MoveOperation::Command::MIX_2_FACTOR){
+				b->ang = b->ang.scale_angle(op.param1);
+				w = w.scale_angle(op.param2);
 				b->ang = quaternion::interpolate(b->ang, w, 0.5f);
-				b->pos = op->param1 * b->pos + op->param2 * p;
+				b->pos = op.param1 * b->pos + op.param2 * p;
 			}
 		}
 
@@ -222,31 +211,36 @@ void Animator::do_animation(float elapsed) {
 		//b->dmatrix = t * r;
 		dmatrix[i] = t * r * t0;
 	}
+
+	buf->update_array(dmatrix);
 }
 
 
 
 // reset all animation data for a model (needed in each frame before applying animations!)
 void Animator::reset() {
-	num_operations = 0;
+	operations.clear();
 	auto_animated = false;
 }
 
 // did the animation reach its end?
-bool Animator::is_done(int operation_no) {
-	int move_no = operation[operation_no].move;
+bool Animator::_is_done(MoveOperation& op) {
+	int move_no = op.move;
 	if (move_no < 0)
 		return true;
 	// in case animation doesn't exist
 	if (meta->move[move_no].num_frames == 0)
 		return true;
-	return (operation[operation_no].time >= (float)(meta->move[move_no].num_frames - 1));
+	return (op.time >= (float)(meta->move[move_no].num_frames - 1));
+}
+
+bool Animator::is_done(int operation_no) {
+	return _is_done(operations[operation_no]);
 }
 
 
 // dumbly add the correct animation time, ignore animation's ending
-void Animator::_add_time(int operation_no, float elapsed, float v, bool loop) {
-	auto &op = operation[operation_no];
+void Animator::_add_time(MoveOperation& op, float elapsed, float v, bool loop) {
 	int move_no = op.move;
 	if (move_no < 0)
 		return;
@@ -261,7 +255,7 @@ void Animator::_add_time(int operation_no, float elapsed, float v, bool loop) {
 	op.time += dt;
 	// time may now be way out of range of the animation!!!
 
-	if (is_done(operation_no)) {
+	if (_is_done(op)) {
 		if (loop)
 			op.time -= float(move->num_frames) * (int)((float)(op.time / move->num_frames));
 		else
@@ -275,10 +269,6 @@ void Animator::_add_time(int operation_no, float elapsed, float v, bool loop) {
 bool Animator::add_x(MoveOperation::Command cmd, float param1, float param2, int move_no, float &time, float dt, float vel_param, bool loop) {
 	if (!meta)
 		return false;
-	if (num_operations >= MODEL_MAX_MOVE_OPS - 1) {
-		msg_error("Animator.add(): no more than " + i2s(MODEL_MAX_MOVE_OPS) + " animation layers allowed");
-		return false;
-	}
 	int index = -1;
 	foreachi (auto &m, meta->move, i)
 		if (m.id == move_no)
@@ -289,16 +279,12 @@ bool Animator::add_x(MoveOperation::Command cmd, float param1, float param2, int
 			msg_write(m.id);
 		return false;
 	}
-	int n = num_operations ++;
-	operation[n].move = index;
-	operation[n].command = cmd;
-	operation[n].param1 = param1;
-	operation[n].param2 = param2;
-	operation[n].time = time;
 
-	_add_time(n, dt, vel_param, loop);
-	time = operation[n].time;
-	return is_done(n);
+	operations.add({index, cmd, time, param1, param2});
+
+	_add_time(operations.back(), dt, vel_param, loop);
+	time = operations.back().time;
+	return is_done(operations.num - 1);
 }
 
 bool Animator::add(MoveOperation::Command cmd, int move_no, float &time, float dt, bool loop) {

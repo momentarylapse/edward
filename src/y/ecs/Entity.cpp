@@ -12,6 +12,8 @@
 #include <lib/os/msg.h>
 
 
+namespace ecs {
+
 Entity::Entity() : Entity(vec3::ZERO, quaternion::ID) {}
 
 Entity::Entity(const vec3 &_pos, const quaternion &_ang) {
@@ -69,5 +71,7 @@ Entity *Entity::root() const {
 	while (next->parent)
 		next = next->parent;
 	return next;
+}
+
 }
 

@@ -12,6 +12,7 @@
 #include <ecs/Entity.h>
 #include <ecs/EntityManager.h>
 
+const kaba::Class* ParticleManager::_class = nullptr;
 
 static void iterate_legacy_particles(Array<LegacyParticle*>& particles, float dt) {
 	Array<LegacyParticle*> to_del;
@@ -29,15 +30,11 @@ static void iterate_legacy_particles(Array<LegacyParticle*>& particles, float dt
 	}
 
 	for (auto p: to_del)
-		EntityManager::global->delete_component(p->owner, p);
-}
-
-ParticleManager::ParticleManager(EntityManager* _entity_manager) {
-	entity_manager = _entity_manager;
+		ecs::EntityManager::global->delete_component(p->owner, p);
 }
 
 
-void ParticleManager::iterate(float dt) {
+void ParticleManager::on_iterate(float dt) {
 	auto& list = entity_manager->get_component_list_family<LegacyParticle>();
 	iterate_legacy_particles(list, dt);
 }

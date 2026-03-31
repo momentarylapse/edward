@@ -6,13 +6,16 @@
 
 #include <lib/base/base.h>
 
-class EntityManager;
 class Path;
-class System;
-struct ScriptInstanceDataVariable;
 namespace kaba {
 	class Class;
 }
+
+namespace ecs {
+
+class EntityManager;
+class System;
+struct InstanceDataVariable;
 
 class SystemManager {
 public:
@@ -20,7 +23,7 @@ public:
 
 	static void reset();
 
-	static void create(const Path& filename, const string& name, const Array<ScriptInstanceDataVariable>& variables);
+	static void create(const Path& filename, const string& name, const Array<InstanceDataVariable>& variables);
 	static System* _get_generic(const kaba::Class* _class);
 	template<class T>
 	static T* get() {
@@ -39,3 +42,4 @@ public:
 	static EntityManager* entity_manager;
 };
 
+}

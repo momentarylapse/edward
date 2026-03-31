@@ -85,8 +85,8 @@ RayTracingData::RayTracingData(yrenderer::Context* _ctx, RaytracingMode _mode) {
 void RayTracingData::update_frame() {
 	//msg_write("rt update frame");
 
-	auto& models = EntityManager::global->get_component_list<ModelRef>();
-	auto& terrains = EntityManager::global->get_component_list<TerrainRef>();
+	auto& models = ecs::EntityManager::global->get_component_list<ModelRef>();
+	auto& terrains = ecs::EntityManager::global->get_component_list<TerrainRef>();
 
 
 	Array<MeshDescription> meshes;

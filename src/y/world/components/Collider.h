@@ -90,8 +90,7 @@ struct PhysicalMeshAbsolute {
 
 
 
-class Collider : public Component {
-public:
+struct Collider : ecs::Component {
 	Collider();
 	~Collider() override;
 
@@ -101,8 +100,7 @@ public:
 };
 
 // requires an already attached Model component
-class MeshCollider : public Collider {
-public:
+struct MeshCollider : Collider {
 	MeshCollider();
 	void on_init() override;
 
@@ -114,8 +112,7 @@ public:
 	static const kaba::Class *_class;
 };
 
-class SphereCollider : public Collider {
-public:
+struct SphereCollider : Collider {
 	SphereCollider();
 	void on_init() override;
 
@@ -124,8 +121,7 @@ public:
 	static const kaba::Class *_class;
 };
 
-class BoxCollider : public Collider {
-public:
+struct BoxCollider : Collider {
 	BoxCollider();
 	void on_init() override;
 

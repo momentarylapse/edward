@@ -52,8 +52,7 @@ struct Context;
 class ShaderManager;
 
 // visual and physical properties
-class Material {
-public:
+struct Material {
 	Material* parent = nullptr;
 
 	shared_array<ygfx::Texture> textures;

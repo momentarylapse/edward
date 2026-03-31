@@ -41,20 +41,20 @@
 
 const kaba::Class* EdwardTag::_class = nullptr;
 
-ScriptInstanceData& WorldEntity::get(const string& class_name) {
+ecs::InstanceData& WorldEntity::get(const string& class_name) {
 	for (auto& c: components)
 		if (c.class_name == class_name)
 			return c;
-	static ScriptInstanceData dummy;
+	static ecs::InstanceData dummy;
 	dummy.class_name = "";
 	return dummy;
 }
 
-ScriptInstanceData& EdwardTag::get(const string& class_name) {
+ecs::InstanceData& EdwardTag::get(const string& class_name) {
 	for (auto& c: unknown_components)
 		if (c.class_name == class_name)
 			return c;
-	static ScriptInstanceData dummy;
+	static ecs::InstanceData dummy;
 	dummy.class_name = "";
 	return dummy;
 }
@@ -63,9 +63,9 @@ ScriptInstanceData& EdwardTag::get(const string& class_name) {
 DataWorld::DataWorld(DocumentSession* doc) :
 	Data(doc, FD_WORLD)
 {
-	entity_manager = new EntityManager;
+	entity_manager = new ecs::EntityManager;
 	entity_manager->init_components = false;
-	entity_manager->component_manager->f_create = [] (const kaba::Class* type) -> Component* {
+	entity_manager->component_manager->f_create = [] (const kaba::Class* type) -> ecs::Component* {
 		//PluginManager::create_instance(type, "");
 		if (type == Camera::_class)
 			return new Camera();
@@ -89,12 +89,12 @@ DataWorld::DataWorld(DocumentSession* doc) :
 			return new MeshCollider;
 		if (type == TerrainCollider::_class)
 			return new TerrainCollider;
-		return reinterpret_cast<Component*>(type->create_instance());
+		return reinterpret_cast<ecs::Component*>(type->create_instance());
 		msg_error("new component..." + p2s(type));
 		msg_write(type->name);
 		return nullptr;
 	};
-	entity_manager->component_manager->f_apply = [this] (const kaba::Class* type, Component* c, const Array<ScriptInstanceDataVariable>& var) {
+	entity_manager->component_manager->f_apply = [this] (const kaba::Class* type, ecs::Component* c, const Array<ecs::InstanceDataVariable>& var) {
 		session->plugin_manager->set_variables(c, type, var);
 	};
 	reset();
@@ -196,7 +196,7 @@ Box DataWorld::get_bounding_box() const {
 	return {min, max};
 }
 
-Entity *DataWorld::entity(int index) {
+ecs::Entity *DataWorld::entity(int index) {
 	if (index < 0 or index >= entity_manager->entities.num)
 		return nullptr;
 	return entity_manager->entities[index];
@@ -260,11 +260,11 @@ void DataWorld::delete_selection(const Selection& selection) {
 	execute(new ActionWorldDeleteSelection(this, selection));
 }
 
-Entity* DataWorld::add_entity(const vec3& pos, const quaternion& ang) {
-	return static_cast<Entity*>(execute(new ActionWorldAddEntity(pos, ang)));
+ecs::Entity* DataWorld::add_entity(const vec3& pos, const quaternion& ang) {
+	return static_cast<ecs::Entity*>(execute(new ActionWorldAddEntity(pos, ang)));
 }
 
-void DataWorld::edit_entity(Entity* e, const vec3& pos, const quaternion& ang) {
+void DataWorld::edit_entity(ecs::Entity* e, const vec3& pos, const quaternion& ang) {
 	execute(new ActionWorldEditBaseEntity(entity_manager->entity_index(e), pos, ang));
 }
 
@@ -273,34 +273,34 @@ void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
 }
 
 
-Component* DataWorld::entity_add_component_generic(Entity* e, const kaba::Class* type, const ComponentParams& _variables) {
-	Array<ScriptInstanceDataVariable> variables;
+ecs::Component* DataWorld::entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const ComponentParams& _variables) {
+	Array<ecs::InstanceDataVariable> variables;
 	for (const auto& [k, v]: _variables)
 		variables.add({k, v});
-	return static_cast<Component*>(execute(new ActionWorldAddComponent(entity_manager->entity_index(e), type, variables)));
+	return static_cast<ecs::Component*>(execute(new ActionWorldAddComponent(entity_manager->entity_index(e), type, variables)));
 }
-void DataWorld::entity_remove_component(Entity* e, const kaba::Class* type) {
+void DataWorld::entity_remove_component(ecs::Entity* e, const kaba::Class* type) {
 	execute(new ActionWorldRemoveComponent(entity_manager->entity_index(e), type));
 }
-void DataWorld::entity_edit_component(Entity* e, const kaba::Class* type, const ScriptInstanceData& c) {
+void DataWorld::entity_edit_component(ecs::Entity* e, const kaba::Class* type, const ecs::InstanceData& c) {
 	execute(new ActionWorldEditComponent(entity_manager->entity_index(e), type, c));
 }
 
-void DataWorld::entity_remove_unknown_component(Entity* e, int cindex) {
+void DataWorld::entity_remove_unknown_component(ecs::Entity* e, int cindex) {
 	execute(new ActionWorldRemoveUnknownComponent(entity_manager->entity_index(e), cindex));
 }
-void DataWorld::entity_edit_unknown_component(Entity* e, int cindex, const ScriptInstanceData& c) {
+void DataWorld::entity_edit_unknown_component(ecs::Entity* e, int cindex, const ecs::InstanceData& c) {
 	//execute(new ActionWorldEditUnknownComponent(index, cindex, c));
 }
 
-Entity *DataWorld::_create_entity(const vec3 &pos, const quaternion &ang) {
+ecs::Entity *DataWorld::_create_entity(const vec3 &pos, const quaternion &ang) {
 	auto e = entity_manager->create_entity(pos, ang);
 	entity_manager->add_component<EdwardTag>(e);
 	return e;
 }
 
 
-void DataWorld::_entity_apply_component(Entity *e, const ScriptInstanceData& cc) {
+void DataWorld::_entity_apply_component(ecs::Entity *e, const ecs::InstanceData& cc) {
 	for (const auto c: session->plugin_manager->component_classes)
 		if (cc.class_name == c->name) {
 			auto comp = entity_manager->_add_component_generic_(e, c);
@@ -313,7 +313,7 @@ void DataWorld::_entity_apply_component(Entity *e, const ScriptInstanceData& cc)
 	tag->unknown_components.add(cc);
 };
 
-void DataWorld::_entity_apply_components(Entity *e, const Array<ScriptInstanceData> &components) {
+void DataWorld::_entity_apply_components(ecs::Entity *e, const Array<ecs::InstanceData> &components) {
 	for (const auto& cc: components) {
 		_entity_apply_component(e, cc);
 	}

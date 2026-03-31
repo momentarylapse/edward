@@ -22,7 +22,7 @@ namespace yrenderer {
 
 struct Context;
 class ShaderCache;
-class Material;
+struct Material;
 struct CameraParams;
 struct SceneView;
 struct RenderParams;
@@ -61,6 +61,7 @@ struct RenderData {
 #endif
 	void set_texture(int binding, ygfx::Texture* tex);
 	void set_textures(const SceneView& scene_view, const Array<ygfx::Texture*>& tex);
+	void set_uniform_buffer(int binding, ygfx::UniformBuffer* ubo);
 	void draw_triangles(const RenderParams& params, ygfx::VertexBuffer* vb);
 	void draw_instanced(const RenderParams& params, ygfx::VertexBuffer* vb, int count);
 	void draw(const RenderParams& params, ygfx::VertexBuffer* vb, ygfx::PrimitiveTopology topology);

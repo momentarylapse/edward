@@ -18,10 +18,8 @@
 #include "Particle.h"
 #include "Beam.h"
 
-class ParticleGroup : public Component {
-public:
+struct ParticleGroup : ecs::Component {
 	ParticleGroup();
-	void __init__();
 
 	Particle* emit_particle(const vec3& pos, const color& col, float r, float ttl);
 	Beam* emit_beam(const vec3& pos, const vec3& length, const color& col, float r, float ttl);
@@ -40,10 +38,8 @@ public:
 	static const kaba::Class *_class;
 };
 
-class ParticleEmitter : public ParticleGroup {
-public:
+struct ParticleEmitter : ParticleGroup {
 	ParticleEmitter();
-	void __init__();
 
 	virtual void on_init_particle(Particle *p) {}
 	virtual void on_init_beam(Beam *b) {}

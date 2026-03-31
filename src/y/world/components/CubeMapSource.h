@@ -9,8 +9,7 @@
 #include <lib/yrenderer/helper/CubeMapSource.h>
 
 
-class CubeMapSource : public Component {
-public:
+struct CubeMapSource : ecs::Component {
 	~CubeMapSource() override;
 
 	yrenderer::CubeMapSource source;
