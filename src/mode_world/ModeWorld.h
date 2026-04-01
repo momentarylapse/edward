@@ -22,6 +22,7 @@ class ModeWorldProperties;
 namespace xhui {
 	class Panel;
 }
+class AnimationManager;
 
 class ModeWorld : public Mode {
 public:
@@ -73,6 +74,7 @@ public:
 	owned<ModeWorldProperties> mode_properties;
 
 	Array<int> event_ids;
+	owned<AnimationManager> animation_manager;
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 

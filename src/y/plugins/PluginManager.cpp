@@ -279,6 +279,7 @@ void export_ecs(kaba::Exporter* ext) {
 	ext->link_virtual("System.__delete__", &kaba::generic_virtual<ecs::System>::__delete__, &con);
 	ext->link_virtual("System.on_init", &ecs::System::on_init, &con);
 	ext->link_virtual("System.on_delete", &ecs::System::on_delete, &con);
+	ext->link_virtual("System.on_finished_loading", &ecs::System::on_finished_loading, &con);
 	ext->link_virtual("System.on_add_component", &ecs::System::on_add_component, &con);
 	ext->link_virtual("System.on_remove_component", &ecs::System::on_remove_component, &con);
 	ext->link_virtual("System.on_iterate", &ecs::System::on_iterate, &con);
@@ -950,6 +951,7 @@ void import_kaba() {
 	auto m_model = kaba::default_context->load_module("yengine/model.kaba");
 	import_component_class<Animator>(m_model, "Animator");
 	import_component_class<Skeleton>(m_model, "Skeleton");
+	import_component_class<ModelRef>(m_model, "ModelRef");
 	//import_component_class<Model>(m_model, "Model");
 
 	auto m_world = kaba::default_context->load_module("yengine/world.kaba");
@@ -965,7 +967,6 @@ void import_kaba() {
 	import_component_class<Camera>(m_world, "Camera");
 	import_component_class<::CubeMapSource>(m_world, "CubeMapSource");
 	import_component_class<NameTag>(m_world, "NameTag");
-	import_component_class<ModelRef>(m_world, "ModelRef");
 	import_component_class<TerrainRef>(m_world, "TerrainRef");
 	import_component_class<TemplateRef>(m_world, "TemplateRef");
 	import_component_class<EgoMarker>(m_world, "EgoMarker");

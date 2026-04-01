@@ -98,7 +98,7 @@ Array<ecs::InstanceData> sort_components(const Array<ecs::InstanceData>& compone
 	auto r = components;
 	for (int i=0; i<r.num; i++)
 		for (int k=i+1; k<r.num; k++) {
-			if (!r[i].filename.is_empty() and r[k].filename.is_empty())
+			if (!r[i].is_internal() and r[k].is_internal())
 				r.swap(i, k);
 			else if (r[i].class_name == "RigidBody" and r[k].class_name.match("*Collider"))
 				r.swap(i, k);

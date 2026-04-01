@@ -65,11 +65,21 @@ void SystemManager::register_system(const kaba::Class* type, System* s) {
 
 	// already existing components...
 	// TODO filter!
+#if 1
+	// keep the correct order :(  (e.g. Skeleton before Animator)
+	auto entities = entity_manager->entities;
+	for (auto e: entities) {
+		auto components = e->components;
+		for (auto c: components)
+			s->on_add_component({c->owner, c, c->component_type});
+	}
+#else
 	for (auto t: entity_manager->component_manager->all_types()) {
 		auto& l = entity_manager->component_manager->_get_list(t);
 		for (auto c: l)
 			s->on_add_component({c->owner, c, t});
 	}
+#endif
 }
 
 
@@ -78,6 +88,11 @@ System* SystemManager::_get_generic(const kaba::Class* type) {
 		if (t == type)
 			return s;
 	return nullptr;
+}
+
+void SystemManager::handle_finished_loading() {
+	for (auto *c: systems)
+		c->on_finished_loading();
 }
 
 void SystemManager::handle_iterate(float dt) {

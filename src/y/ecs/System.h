@@ -24,6 +24,7 @@ public:
 	obs::xsink<MessageParams> in_add_component{this, &System::on_add_component};
 	obs::xsink<MessageParams> in_remove_component{this, &System::on_remove_component};
 
+	virtual void on_finished_loading() {}
 	virtual void on_input() {}
 	virtual void on_key_down(int k) {}
 	virtual void on_key_up(int k) {}

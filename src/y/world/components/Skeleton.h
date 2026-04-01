@@ -18,8 +18,8 @@ struct Skeleton : ecs::Component {
 	Skeleton();
 	~Skeleton() override;
 
-	void on_init() override;
-	void on_delete() override;
+	void _register(ecs::EntityManager* entity_manager);
+	void unregister(ecs::EntityManager* entity_manager);
 
 	Array<ecs::Entity*> bones; // pos relative to parent entity (skeleton)
 	Array<int> parents;

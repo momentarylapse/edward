@@ -38,16 +38,16 @@ void AnimationManager::on_iterate(float dt) {
 
 void AnimationManager::on_add_component(const ecs::MessageParams &params) {
 	if (auto a = params.get<Skeleton>()) {
-		msg_error("ADD SKELETON");
-		//a->_register(entity_manager);
+		a->_register(entity_manager);
 	} else if (auto a = params.get<Animator>()) {
-		msg_error("ADD ANIMATION");
 		a->_register();
 	}
 }
 
 void AnimationManager::on_remove_component(const ecs::MessageParams &params) {
-	if (auto a = params.get<Animator>()) {
+	if (auto a = params.get<Skeleton>()) {
+		a->unregister(entity_manager);
+	} else if (auto a = params.get<Animator>()) {
 		a->unregister();
 	}
 }

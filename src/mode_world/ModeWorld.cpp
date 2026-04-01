@@ -22,6 +22,7 @@
 #include <y/world/components/Camera.h>
 #include <y/world/components/Light.h>
 #include <y/world/components/Link.h>
+#include <y/world/components/Animator.h>
 #include <ecs/Entity.h>
 #include <y/world/components/Collider.h>
 #include <y/world/Model.h>
@@ -48,9 +49,9 @@
 #include <lib/mesh/GeometrySphere.h>
 #include <lib/mesh/GeometryCylinder.h>
 #include <y/world/components/RigidBody.h>
-#include <ecs/EntityManager.h>
-
-#include "ecs/SystemManager.h"
+#include <y/world/systems/AnimationManager.h>
+#include <y/ecs/EntityManager.h>
+#include <y/ecs/SystemManager.h>
 
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
@@ -70,6 +71,11 @@ ModeWorld::ModeWorld(DocumentSession* doc) :
 	material_physical = create_material(session->ctx, Black.with_alpha(0.4f), 0.7f, 0.2f, color(1,1,1,0.4f).srgb_to_linear(), true);
 
 	mode_properties = new ModeWorldProperties(this);
+
+	animation_manager = new AnimationManager();
+	animation_manager->entity_manager = data->entity_manager.get();
+	data->entity_manager->out_add_component >> animation_manager->in_add_component;
+	data->entity_manager->out_remove_component >> animation_manager->in_remove_component;
 }
 
 void ModeWorld::on_set_menu() {
@@ -85,6 +91,7 @@ void ModeWorld::on_set_menu() {
 void ModeWorld::on_enter_rec() {
 	doc->out_changed >> create_sink([this] {
 		on_update_menu();
+		animation_manager->on_iterate(0.1f);
 	});
 	data->out_entity_added >> multi_view->in_data_changed;
 	data->out_entity_removed >> multi_view->in_data_changed;
@@ -434,7 +441,15 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 			for (int k=0; k<m->mesh[0]->sub.num; k++) {
 				auto material = mr->get_material(k);
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, material, 0, "default");
+				if (auto ani = mr->owner->get_component<Animator>()) {
+					auto shader = rvd.get_shader(material, 0, "animated", "");
+					auto& rd = rvd.start(params, mr->owner->get_matrix(), shader, material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
+					if (ani->buf)
+						rd.dset->set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
+					rd.draw_triangles(params, vb);
+				} else {
+					dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, material, 0, "default");
+				}
 			}
 
 	if (view_mode == ViewMode::Physical) {
@@ -519,8 +534,20 @@ void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer:
 	for (auto mr: models)
 		if (auto m = mr->model)
 			for (int k=0; k<m->mesh[0]->sub.num; k++) {
+				if (!mr->get_material(0)->cast_shadow)
+					continue;
 				auto vb = m->mesh[0]->sub[k].vertex_buffer;
-				dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, dh->material_shadow, 0, "default");
+				//dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, dh->material_shadow, 0, "default");
+
+				if (auto ani = mr->owner->get_component<Animator>()) {
+					auto shader = rvd.get_shader(dh->material_shadow, 0, "animated", "");
+					auto& rd = rvd.start(params, mr->owner->get_matrix(), shader, dh->material_shadow, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
+					if (ani->buf)
+						rd.dset->set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
+					rd.draw_triangles(params, vb);
+				} else {
+					dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, dh->material_shadow, 0, "default");
+				}
 			}
 }
 

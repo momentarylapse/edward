@@ -31,6 +31,7 @@ public:
 	}
 	static void register_system(const kaba::Class* _class, System* s);
 
+	static void handle_finished_loading();
 	static void handle_iterate_pre(float dt);
 	static void handle_iterate(float dt);
 	static void handle_input();

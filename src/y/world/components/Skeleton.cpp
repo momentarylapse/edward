@@ -14,11 +14,13 @@
 #include <ecs/Entity.h>
 #include <ecs/EntityManager.h>
 #include <lib/base/iter.h>
+#include <lib/config.h>
+
+#include "lib/os/msg.h"
 
 const kaba::Class *Skeleton::_class = nullptr;
 
-Skeleton::Skeleton() {
-}
+Skeleton::Skeleton() = default;
 
 Skeleton::~Skeleton() {
 
@@ -31,7 +33,7 @@ Skeleton::~Skeleton() {
 	}
 }
 
-void Skeleton::on_init() {
+void Skeleton::_register(ecs::EntityManager* entity_manager) {
 	auto m = entity_get_model(owner);
 	if (!m)
 		return;
@@ -39,7 +41,11 @@ void Skeleton::on_init() {
 	// FIXME ...everything...
 
 	for (const auto b: m->_template->skeleton->bones) {
-		auto bb = ecs::EntityManager::global->create_entity(b->pos, b->ang);
+#ifdef _X_ALLOW_X_
+		auto bb = entity_manager->create_entity(b->pos, b->ang);
+#else
+		auto bb = new ecs::Entity(b->pos, b->ang);
+#endif
 		bb->parent = owner;
 		bones.add(bb);
 	}
@@ -53,23 +59,27 @@ void Skeleton::on_init() {
 		pos0[i] = _calc_bone_rest_pos(i);
 		b->pos = pos0[i];
 		b->ang = quaternion::ID;
-		auto mr = ecs::EntityManager::global->add_component<ModelRef>(b);
+#ifdef _X_ALLOW_X_
+		auto mr = entity_manager->add_component<ModelRef>(b);
 		mr->model = engine.resource_manager->load_model(m->_template->skeleton->filename[i]);
 		if (mr->model) {
 			if (mr->model->_template->skeleton)
-				ecs::EntityManager::global->add_component<Skeleton>(b);
+				entity_manager->add_component<Skeleton>(b);
 
 			for (const auto& c: mr->model->_template->components) {
 				if (c.class_name == "Animator")
-					ecs::EntityManager::global->add_component<Animator>(b);
+					entity_manager->add_component<Animator>(b);
 			}
 		}
+#endif
 	}
 }
 
-void Skeleton::on_delete() {
+void Skeleton::unregister(ecs::EntityManager* entity_manager) {
+#ifdef _X_ALLOW_X_
 	for (auto b: bones)
-		ecs::EntityManager::global->delete_entity(b);
+		entity_manager->delete_entity(b);
+#endif
 	bones.clear();
 }
 
