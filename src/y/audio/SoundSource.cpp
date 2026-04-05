@@ -28,11 +28,13 @@ SoundSource::SoundSource() {
 	loop = false;
 	min_distance = 100;
 	max_distance = 10000;
+}
 
+void SoundSource::_register() {
 	alGenSources(1, &al_source);
 }
 
-SoundSource::~SoundSource() {
+void SoundSource::unregister() {
 	stop();
 	set_buffer(nullptr);
 	//alDeleteBuffers(1, &al_buffer);
@@ -46,7 +48,7 @@ void SoundSource::set_buffer(AudioBuffer* _buffer) {
 	buffer = _buffer;
 	if (buffer) {
 		buffer->ref_count ++;
-		alSourcei (al_source, AL_BUFFER, buffer->al_buffer);
+		alSourcei (al_source, AL_BUFFER, (int)buffer->al_buffer);
 	}
 }
 
@@ -70,9 +72,9 @@ void SoundSource::set_stream(AudioStream* _stream) {
 	}
 }
 
-void SoundSource::_apply_data() {
+void SoundSource::_apply_data(float global_volume) {
 	alSourcef (al_source, AL_PITCH,    speed);
-	alSourcef (al_source, AL_GAIN,     volume * VolumeSound);
+	alSourcef (al_source, AL_GAIN,     volume * global_volume);
 	alSource3f(al_source, AL_POSITION, -owner->pos.x, owner->pos.y, owner->pos.z);
 //	alSource3f(al_source, AL_VELOCITY, -vel.x, vel.y, vel.z);
 	alSourcei (al_source, AL_LOOPING,  loop);
@@ -125,7 +127,8 @@ const kaba::Class *SoundSource::_class = nullptr;
 xfer<SoundSource> load_sound(const Path &filename){ return nullptr; }
 xfer<SoundSource> emit_sound(const Path &filename, const vec3 &pos, float min_dist, float max_dist, float speed, float volume, bool loop){ return nullptr; }
 SoundSource::SoundSource() {}
-SoundSource::~SoundSource() = default;
+void SoundSource::_register() {}
+void SoundSource::unregister() {}
 void SoundClearSmallCache() {}
 void SoundSource::play(bool repeat) {}
 void SoundSource::stop() {}
@@ -134,7 +137,7 @@ bool SoundSource::is_playing() const { return false; }
 bool SoundSource::has_ended() const { return false; }
 void SoundSource::set_buffer(AudioBuffer* _buffer) {}
 void SoundSource::set_stream(AudioStream* _stream) {}
-void SoundSource::_apply_data() {}
+void SoundSource::_apply_data(float) {}
 
 void clear_small_cache() {}
 

@@ -2,10 +2,10 @@
 // Created by Michael Ankele on 2024-10-01.
 //
 
-#ifndef AUDIO_AUDIO_H
-#define AUDIO_AUDIO_H
+#pragma once
 
-#include "../lib/base/base.h"
+#include <lib/base/base.h>
+#include <ecs/System.h>
 
 struct vec3;
 struct quaternion;
@@ -19,27 +19,27 @@ namespace audio {
 struct AudioBuffer;
 struct AudioStream;
 
-extern float VolumeMusic, VolumeSound;
-
 
 void init();
 void exit();
-void attach_listener(ecs::Entity* e);
-void iterate(float dt);
-void reset();
 
 
+class Manager : public ecs::System {
+public:
+	Manager();
+	void on_finished_loading() override;
+	void on_iterate(float dt) override;
+
+	void on_add_component(const ecs::MessageParams &params) override;
+	void on_remove_component(const ecs::MessageParams &params) override;
+
+	float volume_music, volume_sound;
+
+	static const kaba::Class* _class;
+};
 
 
 struct SoundSource;
 
-// TODO move to World?
-SoundSource* emit_sound(AudioBuffer* buffer, const vec3 &pos, float radius1);
-SoundSource* emit_sound_file(const Path &filename, const vec3 &pos, float radius1);
-SoundSource* emit_sound_stream(AudioStream* stream, const vec3 &pos, float radius1);
-
 };
 
-
-
-#endif //AUDIO_AUDIO_H

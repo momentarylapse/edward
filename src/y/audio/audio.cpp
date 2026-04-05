@@ -5,12 +5,11 @@
 #include "Loading.h"
 #include "SoundSource.h"
 #include <helper/DeletionQueue.h>
-#include <world/World.h> // FIXME
 #include <ecs/EntityManager.h>
 #include <ecs/Entity.h>
-#include <EngineData.h>
 #include <lib/base/base.h>
 #include <lib/base/algo.h>
+#include <world/components/Camera.h>
 
 #if HAS_LIB_OPENAL
 
@@ -23,6 +22,8 @@
 #endif
 
 namespace audio {
+
+const kaba::Class* Manager::_class = nullptr;
 
 #if HAS_LIB_OPENAL
 ALCdevice *al_dev = nullptr;
@@ -44,8 +45,6 @@ void init() {
 }
 
 void exit() {
-	reset();
-
 #if HAS_LIB_OPENAL
 	if (al_context)
 		alcDestroyContext(al_context);
@@ -55,13 +54,6 @@ void exit() {
 	al_dev = nullptr;
 #endif
 }
-
-void attach_listener(ecs::Entity* e) {
-	if (e)
-		ecs::EntityManager::global->add_component<Listener>(e);
-}
-
-float VolumeMusic = 1.0f, VolumeSound = 1.0f;
 
 void garbage_collection() {
 	/*for (auto b: created_audio_buffers)
@@ -74,11 +66,33 @@ void garbage_collection() {
 			b = nullptr;*/
 }
 
-void iterate(float dt) {
-	auto& sources = ecs::EntityManager::global->get_component_list<SoundSource>();
+Manager::Manager() {
+	volume_sound = 1.0f;
+	volume_music = 1.0f;
+	set_profiler_name("audio");
+}
+
+void Manager::on_finished_loading() {
+	entity_manager->add_component<Listener>(cam_main->owner);
+}
+
+void Manager::on_add_component(const ecs::MessageParams &params) {
+	if (auto s = params.get<SoundSource>()) {
+		s->_register();
+	}
+}
+
+void Manager::on_remove_component(const ecs::MessageParams &params) {
+	if (auto s = params.get<SoundSource>()) {
+		s->unregister();
+	}
+}
+
+void Manager::on_iterate(float dt) {
+	auto& sources = entity_manager->get_component_list<SoundSource>();
 	for (auto s: sources) {
 		// TODO owner->get_component<RigidBody>()->vel
-		s->_apply_data();
+		s->_apply_data(volume_sound);
 		if (s->suicidal and s->has_ended()) {
 			DeletionQueue::add_entity(s->owner);
 
@@ -96,40 +110,12 @@ void iterate(float dt) {
 		}
 	}
 	DeletionQueue::delete_all();
-	auto& listeners = ecs::EntityManager::global->get_component_list<Listener>();
+
+	auto& listeners = entity_manager->get_component_list<Listener>();
 	if (listeners.num >= 1)
 		listeners[0]->apply_data();
 }
 
-void reset() {
-}
-
-
-SoundSource* emit_sound(AudioBuffer* buffer, const vec3 &pos, float radius1) {
-	auto e = world.create_entity(pos, quaternion::ID);
-	auto s = ecs::EntityManager::global->add_component<SoundSource>(e);
-	s->set_buffer(buffer);
-	s->min_distance = radius1;
-	s->max_distance = radius1 * 100;
-	s->suicidal = true;
-	s->play(false);
-	return s;
-}
-
-SoundSource* emit_sound_file(const Path &filename, const vec3 &pos, float radius1) {
-	return emit_sound(load_buffer(filename), pos, radius1);
-}
-
-SoundSource* emit_sound_stream(AudioStream* stream, const vec3 &pos, float radius1) {
-	auto e = world.create_entity(pos, quaternion::ID);
-	auto s = ecs::EntityManager::global->add_component<SoundSource>(e);
-	s->set_stream(stream);
-	s->min_distance = radius1;
-	s->max_distance = radius1 * 100;
-	s->suicidal = true;
-	s->play(false);
-	return s;
-}
 }
 
 

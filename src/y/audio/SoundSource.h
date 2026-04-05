@@ -9,6 +9,8 @@ class Path;
 
 namespace audio {
 
+class Manager;
+
 struct SoundSource : ecs::Component {
 	bool loop, suicidal;
 	float volume, speed;
@@ -20,7 +22,9 @@ struct SoundSource : ecs::Component {
 	unsigned int al_source;
 
 	SoundSource();
-	~SoundSource() override;
+
+	void _register();
+	void unregister();
 
 	void set_buffer(AudioBuffer* buffer);
 	void set_stream(AudioStream* stream);
@@ -31,7 +35,7 @@ struct SoundSource : ecs::Component {
 	bool is_playing() const;
 	bool has_ended() const;
 
-	void _apply_data();
+	void _apply_data(float global_volume);
 
 	static const kaba::Class *_class;
 };

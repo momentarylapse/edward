@@ -20,7 +20,8 @@ public:
 	void prepare(const RenderParams& params) override;
 	void draw(const RenderParams& params) override;
 
-	void add_region(Renderer *renderer, const rect &dest, int z);
+	void add_region(Renderer* renderer, const rect& dest, int z);
+	void remove_region(Renderer* renderer);
 
 	struct Region {
 		rect dest;
@@ -30,6 +31,9 @@ public:
 
 	Array<Region> regions;
 	Array<Region*> sorted_regions;
+
+private:
+	void update_regions();
 };
 
 }

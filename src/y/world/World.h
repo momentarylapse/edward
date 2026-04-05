@@ -19,6 +19,12 @@
 #include "LevelData.h"
 
 
+namespace audio {
+	struct AudioStream;
+	struct AudioBuffer;
+	struct SoundSource;
+}
+
 class Physics;
 class Model;
 struct ModelRef;
@@ -92,6 +98,10 @@ public:
 	Light* create_light_cone(const vec3& p, const quaternion& ang, const color& c, float r, float t);
 
 	Camera* create_camera(const vec3& pos, const quaternion& ang);
+
+	audio::SoundSource* emit_sound(audio::AudioBuffer* buffer, const vec3 &pos, float radius1);
+	audio::SoundSource* emit_sound_file(const Path &filename, const vec3 &pos, float radius1);
+	audio::SoundSource* emit_sound_stream(audio::AudioStream* stream, const vec3 &pos, float radius1);
 
 	void shift_all(const vec3& dpos);
 

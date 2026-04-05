@@ -37,7 +37,7 @@ struct RenderParams {
 	ygfx::CommandBuffer *command_buffer;
 #endif
 
-	RenderParams with_target(ygfx::FrameBuffer *fb) const;
+	RenderParams with_target(ygfx::FrameBuffer* fb) const;
 	RenderParams with_area(const rect& area) const;
 	static const RenderParams WHATEVER;
 	static RenderParams into_window(ygfx::FrameBuffer *frame_buffer, const base::optional<float>& aspect_ratio = base::None);
@@ -50,9 +50,11 @@ public:
 	~Renderer() override;
 
 	Array<Renderer*> children;
-	void add_child(Renderer *child);
+	void add_child(Renderer* child);
+	void remove_child(Renderer* child);
 	Array<RenderTask*> sub_tasks;
 	void add_sub_task(RenderTask* child);
+	void remove_sub_task(RenderTask* child);
 
 	// (vulkan: BEFORE/OUTSIDE a render pass)
 	// can render into separate targets

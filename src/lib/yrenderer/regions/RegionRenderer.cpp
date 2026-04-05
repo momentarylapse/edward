@@ -8,6 +8,8 @@
 #include "RegionRenderer.h"
 #include <lib/profiler/Profiler.h>
 
+#include "lib/base/algo.h"
+
 namespace yrenderer {
 
 RegionRenderer::RegionRenderer(Context* ctx) : Renderer(ctx, "rgn") {
@@ -27,9 +29,19 @@ void RegionRenderer::prepare(const RenderParams& params) {
 
 void RegionRenderer::add_region(Renderer *renderer, const rect &dest, int z) {
 	add_child(renderer);
-
 	regions.add({dest, z, renderer});
+	update_regions();
+}
 
+void RegionRenderer::remove_region(Renderer* renderer) {
+	base::remove_if(regions, [renderer] (const Region& r) {
+		return r.renderer == renderer;
+	});
+	remove_child(renderer);
+	update_regions();
+}
+
+void RegionRenderer::update_regions() {
 	// resort
 	sorted_regions.clear();
 	for (auto &r: regions)

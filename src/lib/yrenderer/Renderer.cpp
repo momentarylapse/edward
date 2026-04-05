@@ -54,12 +54,20 @@ Renderer::Renderer(Context* _ctx, const string &name) {
 
 Renderer::~Renderer() = default;
 
-void Renderer::add_child(Renderer *child) {
+void Renderer::add_child(Renderer* child) {
 	children.add(child);
+}
+
+void Renderer::remove_child(Renderer* child) {
+	children.erase(children.find(child));
 }
 
 void Renderer::add_sub_task(RenderTask* child) {
 	sub_tasks.add(child);
+}
+
+void Renderer::remove_sub_task(RenderTask* child) {
+	sub_tasks.erase(sub_tasks.find(child));
 }
 
 void Renderer::prepare(const RenderParams& params) {

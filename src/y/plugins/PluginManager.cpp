@@ -487,6 +487,9 @@ void export_world(kaba::Exporter* ext) {
 	ext->link_class_func("World.create_light_point", &World::create_light_point);
 	ext->link_class_func("World.create_light_cone", &World::create_light_cone);
 	ext->link_class_func("World.create_camera", &World::create_camera);
+	ext->link_class_func("World.emit_sound", &World::emit_sound);
+	ext->link_class_func("World.emit_sound_file", &World::emit_sound_file);
+	ext->link_class_func("World.emit_sound_stream", &World::emit_sound_stream);
 	ext->link_class_func("World.attach_model", &_attach_model);
 	ext->link_class_func("World._add_particle", &_world_add_legacy_particle);
 	ext->link_class_func("World.shift_all", &World::shift_all);
@@ -792,9 +795,6 @@ void export_sound(kaba::Exporter* ext) {
 	ext->link_func("create_buffer", &audio::create_buffer);
 	ext->link_func("load_audio_stream", &audio::load_stream);
 	ext->link_func("create_audio_stream", &__create_audio_stream);
-	ext->link_func("emit_sound", &audio::emit_sound);
-	ext->link_func("emit_sound_file", &audio::emit_sound_file);
-	ext->link_func("emit_sound_stream", &audio::emit_sound_stream);
 }
 
 void export_net(kaba::Exporter* ext) {
@@ -984,6 +984,7 @@ void import_kaba() {
 	auto m_audio = kaba::default_context->load_module("yengine/audio.kaba");
 	import_component_class<audio::SoundSource>(m_audio, "SoundSource");
 	import_component_class<audio::Listener>(m_audio, "Listener");
+	import_component_class<audio::Manager>(m_audio, "AudioManager", "ecs.System");
 
 	auto m_net = kaba::default_context->load_module("yengine/networking.kaba");
 	import_component_class<NetworkManager>(m_net, "NetworkManager", "ecs.System");

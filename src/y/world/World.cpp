@@ -32,8 +32,9 @@
 #include "components/Light.h"
 #include "components/Camera.h"
 #include "systems/Physics.h"
-#include "ecs/SystemManager.h"
-
+#include <ecs/SystemManager.h>
+#include <audio/SoundSource.h>
+#include <audio/AudioBuffer.h>
 #include "../plugins/PluginManager.h"
 
 
@@ -313,6 +314,32 @@ Camera *World::create_camera(const vec3 &pos, const quaternion &ang) {
 	return entity_manager->add_component<Camera>(e);
 }
 
+
+audio::SoundSource* World::emit_sound(audio::AudioBuffer* buffer, const vec3& pos, float radius1) {
+	auto e = create_entity(pos, quaternion::ID);
+	auto s = entity_manager->add_component<audio::SoundSource>(e);
+	s->set_buffer(buffer);
+	s->min_distance = radius1;
+	s->max_distance = radius1 * 100;
+	s->suicidal = true;
+	s->play(false);
+	return s;
+}
+
+audio::SoundSource* World::emit_sound_file(const Path &filename, const vec3& pos, float radius1) {
+	return emit_sound(audio::load_buffer(filename), pos, radius1);
+}
+
+audio::SoundSource* World::emit_sound_stream(audio::AudioStream* stream, const vec3& pos, float radius1) {
+	auto e = create_entity(pos, quaternion::ID);
+	auto s = entity_manager->add_component<audio::SoundSource>(e);
+	s->set_stream(stream);
+	s->min_distance = radius1;
+	s->max_distance = radius1 * 100;
+	s->suicidal = true;
+	s->play(false);
+	return s;
+}
 
 void World::shift_all(const vec3 &dpos) {
 	entity_manager->shift_all(dpos);
