@@ -101,7 +101,8 @@ void MaterialPreviewManager::update() {
 		hr.add_child(&path);
 		try {
 			hr.render({1, false});
-		} catch (...) {
+		} catch (Exception& e) {
+			msg_error(e.message());
 		}
 	}
 
