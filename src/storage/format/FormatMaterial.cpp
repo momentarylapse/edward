@@ -65,7 +65,7 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		data->material.pass0.factor = (float)f->read_int() * 0.01f;
 		data->material.pass0.source = (ygfx::Alpha)f->read_int();
 		data->material.pass0.destination = (ygfx::Alpha)f->read_int();
-		data->material.pass0.z_buffer = f->read_bool();
+		data->material.pass0.z_write = f->read_bool();
 		data->material.pass0.z_test = true;
 		// Appearance
 		f->read_comment();
@@ -132,7 +132,7 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		/*data->material.vmin_jump =*/ (float)f->read_int() * 0.001f;
 		/*data->material.vmin_sliding =*/ (float)f->read_int() * 0.001f;
 
-		data->material.pass0.z_buffer = (data->material.pass0.mode != yrenderer::TransparencyMode::FUNCTIONS) and (data->material.pass0.mode != yrenderer::TransparencyMode::FACTOR);
+		data->material.pass0.z_write = (data->material.pass0.mode != yrenderer::TransparencyMode::FUNCTIONS) and (data->material.pass0.mode != yrenderer::TransparencyMode::FACTOR);
 		data->material.pass0.z_test = true;
 	}else if (lf.ffv==1){
 		// Colors
@@ -166,7 +166,7 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 		if (!sf.is_empty())
 		data->material.pass0.shader_path = sf.with(".fx.glsl");
 
-		data->material.pass0.z_buffer = (data->material.pass0.mode != yrenderer::TransparencyMode::FUNCTIONS) and (data->material.pass0.mode != yrenderer::TransparencyMode::FACTOR);
+		data->material.pass0.z_write = (data->material.pass0.mode != yrenderer::TransparencyMode::FUNCTIONS) and (data->material.pass0.mode != yrenderer::TransparencyMode::FACTOR);
 		data->material.pass0.z_test = true;
 	}else{
 		//throw FormatError(format(_("File %s has a wrong file format: %d (expected: %d - %d)!"), filename, ffv, 1, 4));

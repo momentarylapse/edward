@@ -34,14 +34,15 @@ static base::map<PipelineKey,GraphicsPipeline*> ob_pipelines;
 static base::map<PipelineKey,GraphicsPipeline*> ob_pipelines_alpha;
 static base::map<Shader*,GraphicsPipeline*> ob_pipelines_gui;
 
-GraphicsPipeline *get(Shader *s, RenderPass *rp, PrimitiveTopology top, VertexBuffer *vb, vulkan::CullMode culling, bool test_z, bool write_z) {
-	PipelineKey key = {s, (int)culling + ((int)write_z << 4) + ((int)test_z << 5) + ((int)top << 6) + ((int)(int_p)rp << 10)};
+GraphicsPipeline *get(Shader *s, RenderPass *rp, PrimitiveTopology top, VertexBuffer *vb, vulkan::CullMode culling, bool test_z, bool write_z, bool wire) {
+	PipelineKey key = {s, (int)culling + ((int)write_z << 4) + ((int)test_z << 5) + ((int)wire << 6) + ((int)top << 7) + ((int)(int_p)rp << 11)};
 	if (ob_pipelines.contains(key))
 		return ob_pipelines[key];
 	msg_write("NEW PIPELINE");
 	auto p = new GraphicsPipeline(s, rp, 0, top, vb);
 	p->set_culling(culling);
 	p->set_z(test_z, write_z);
+	p->set_wireframe(wire);
 	p->rebuild();
 	ob_pipelines.add({key, p});
 	return p;

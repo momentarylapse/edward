@@ -11,6 +11,9 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/ygraphics/Context.h>
 
+static const string DEFAULT_BINDINGS = "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,ubo,ubo,ubo,ubo,ubo]]";
+static constexpr int DEFAULT_PUSH_SIZE = 96;
+
 #ifdef USING_VULKAN
 namespace vulkan {
 	extern string overwrite_bindings;
@@ -118,11 +121,22 @@ string ShaderManager::expand_fragment_shader_source(const string &source, const 
 string ShaderManager::expand_geometry_shader_source(const string &source, const string &variant) {
 	if (source.find("<GeometryShader>") >= 0)
 		return source;
-	//msg_write("INJECTING " + variant);
 	return source + format("\n<GeometryShader>\n#import geometry-%s\n</GeometryShader>", variant);
 }
 
-shared<ygfx::Shader> ShaderManager::load_surface_shader(const Path& _filename, const string &render_path, const string &vertex_module, const string &geometry_module) {
+string ShaderManager::expand_tessellation_control_shader_source(const string &source, const string &variant) {
+	if (source.find("<TessellationControlShader>") >= 0)
+		return source;
+	return source + format("\n<TessellationControlShader>\n#import tessellation-control-%s\n</TessellationControlShader>", variant);
+}
+
+string ShaderManager::expand_tessellation_evaluation_shader_source(const string &source, const string &variant) {
+	if (source.find("<TessellationEvaluationShader>") >= 0)
+		return source;
+	return source + format("\n<TessellationEvaluationShader>\n#import tessellation-evaluation-%s\n</TessellationEvaluationShader>", variant);
+}
+
+shared<ygfx::Shader> ShaderManager::load_surface_shader(const Path& _filename, const string& render_path, const string& vertex_module, const string& geometry_module, const string& tessellation_module) {
 	//msg_write("load_surface_shader: " + str(_filename) + "  " + render_path + "  " + vertex_module + "  " + geometry_module);
 	//select_default_vertex_module("vertex-" + variant);
 	//return load_shader(filename);
@@ -146,6 +160,8 @@ shared<ygfx::Shader> ShaderManager::load_surface_shader(const Path& _filename, c
 	}
 
 	Path fnx = fn.with(":" + render_path +  ":" + vertex_module + ":" + geometry_module);
+	if (tessellation_module != "")
+		fnx = fnx.with(":" + tessellation_module);
 	for (auto&& [key, s]: shader_map)
 		if (key == fnx) {
 #ifdef USING_VULKAN
@@ -161,9 +177,13 @@ shared<ygfx::Shader> ShaderManager::load_surface_shader(const Path& _filename, c
 	string source = expand_vertex_shader_source(os::fs::read_text(fn), vertex_module);
 	if (geometry_module != "")
 		source = expand_geometry_shader_source(source, geometry_module);
+	if (tessellation_module != "") {
+		source = expand_tessellation_control_shader_source(source, tessellation_module);
+		source = expand_tessellation_evaluation_shader_source(source, tessellation_module);
+	}
 	source = expand_fragment_shader_source(source, render_path);
 
-	auto shader = __create_shader(source, "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,ubo,ubo,ubo,ubo,ubo]]", 96);
+	auto shader = __create_shader(source, DEFAULT_BINDINGS, DEFAULT_PUSH_SIZE);
 
 	//auto s = Shader::load(fn);
 

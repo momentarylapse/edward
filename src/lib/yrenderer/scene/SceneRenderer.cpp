@@ -17,10 +17,10 @@ namespace yrenderer {
 #ifdef USING_VULKAN
 GraphicsPipeline* SceneRenderer::get_pipeline(Shader *s, RenderPass *rp, const Material::RenderPassData &pass, PrimitiveTopology top, VertexBuffer *vb) {
 	if (pass.mode == TransparencyMode::FUNCTIONS)
-		return PipelineManager::get_alpha(s, rp, top, vb, pass.source, pass.destination, pass.cull_mode, pass.z_test, pass.z_buffer);
+		return PipelineManager::get_alpha(s, rp, top, vb, pass.source, pass.destination, pass.cull_mode, pass.z_test, pass.z_write);
 	if (pass.mode == TransparencyMode::COLOR_KEY_HARD)
-		return PipelineManager::get_alpha(s, rp, top, vb, Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, pass.cull_mode, pass.z_test, pass.z_buffer);
-	return PipelineManager::get(s, rp, top, vb, pass.cull_mode, pass.z_test, pass.z_buffer);
+		return PipelineManager::get_alpha(s, rp, top, vb, Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, pass.cull_mode, pass.z_test, pass.z_write);
+	return PipelineManager::get(s, rp, top, vb, pass.cull_mode, pass.z_test, pass.z_write, pass.wire_mode);
 }
 #endif
 

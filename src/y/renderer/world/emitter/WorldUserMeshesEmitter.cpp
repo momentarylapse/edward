@@ -33,7 +33,7 @@ void WorldOpaqueUserMeshesEmitter::emit(const yrenderer::RenderParams& params, y
 			material = rvd.material_shadow;
 
 		auto vb = m->vertex_buffer.get();
-		auto shader = rvd.get_shader(material, 0, m->vertex_shader_module, m->geometry_shader_module);
+		auto shader = rvd.get_shader(material, 0, m->vertex_shader_module, m->geometry_shader_module, m->tessellation_shader_module);
 		auto& rd = rvd.start(params, m->owner->get_matrix(), shader, material, 0, m->topology, vb);
 		yrenderer::apply_shader_data(params, shader, m->material->shader_data);
 

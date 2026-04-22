@@ -57,6 +57,8 @@ struct DigestedConfig {
 	string lighting;
 	string renderer_path;
 
+	bool terrain_tessellated = false;
+
 	int cubemap_resolution = 64;
 	int cubemap_update_rate = 0;
 };
@@ -91,6 +93,7 @@ public:
 	static const string ID_SHADOW_QUALITY;
 	static const string ID_CUBEMAP_RESOLUTION;
 	static const string ID_CUBEMAP_UPDATE_RATE;
+	static const string ID_TERRAIN_TESSELLATED;
 	static const string ID_DEBUG_LEVEL;
 	static const string ID_DEBUG_SCRIPTS1;
 	static const string ID_DEBUG_SCRIPTS2;

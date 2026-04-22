@@ -43,10 +43,10 @@ Context* api_init_glfw(GLFWwindow* window) {
 
 	try {
 		// try physical first
-		device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "physical", "rtx?", "compute?", "geometryshader?", "meshshader?", "tesselationshader?"});
+		device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "physical", "rtx?", "compute?", "geometryshader?", "meshshader?", "tessellationshader?"});
 	} catch (...) {
 		msg_error("no valid GPU found. Trying again, allowing CPU backend...");
-		device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "physical?", "rtx?", "compute?", "meshshader?", "tesselationshader?"});
+		device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "physical?", "rtx?", "compute?", "meshshader?", "tessellationshader?"});
 	}
 
 	auto ctx = new Context(new ygfx::Context(instance, device));

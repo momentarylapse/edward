@@ -246,7 +246,7 @@ public:
 			me->pass0.source = yrenderer::parse_alpha_i(f->read_int());
 			me->pass0.destination = yrenderer::parse_alpha_i(f->read_int());
 			me->pass0.factor = f->read_float();
-			me->pass0.z_buffer = f->read_bool();
+			me->pass0.z_write = f->read_bool();
 		} else {
 			f->read_int();
 			f->read_int();

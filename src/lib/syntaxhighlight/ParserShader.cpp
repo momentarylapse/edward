@@ -47,8 +47,8 @@ ParserShader::ParserShader() : Parser("Shader") {
 	keywords.add("FragmentShader");
 	keywords.add("GeometryShader");
 	keywords.add("ComputeShader");
-	keywords.add("TesselationControlShader");
-	keywords.add("TesselationEvaluationShader");
+	keywords.add("TessellationControlShader");
+	keywords.add("TessellationEvaluationShader");
 	keywords.add("RayGenShader");
 	keywords.add("RayMissShader");
 	keywords.add("RayClosestHitShader");

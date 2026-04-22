@@ -80,6 +80,10 @@ FullCameraRenderer::FullCameraRenderer(Context* ctx, Camera* _cam, RenderPathTyp
 //		scene_view.cube_map = cube_map_source->cube_map;
 	}
 
+	ctx->load_shader_module("module-vertex-terrain.shader");
+	ctx->load_shader_module("module-tessellation-control-terrain.shader");
+	ctx->load_shader_module("module-tessellation-evaluation-terrain.shader");
+
 
 	render_path = create_render_path(ctx, type, shadow_resolution);
 	render_path->add_background_emitter(new WorldSkyboxEmitter(ctx));

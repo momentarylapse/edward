@@ -32,7 +32,7 @@ void WorldOpaqueModelsEmitter::emit(const yrenderer::RenderParams& params, yrend
 			if (!material->cast_shadow and shadow_pass)
 				continue;
 
-			auto shader = rvd.get_shader(material, 0, vertex_shader_module[(int)(bool)ani], "");
+			auto shader = rvd.get_shader(material, 0, vertex_shader_module[(int)(bool)ani], "", "");
 			if (shadow_pass)
 				material = rvd.material_shadow;
 

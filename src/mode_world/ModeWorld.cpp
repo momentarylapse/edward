@@ -445,7 +445,7 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 					auto shader = rvd.get_shader(material, 0, "animated", "");
 					auto& rd = rvd.start(params, mr->owner->get_matrix(), shader, material, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 					if (ani->buf)
-						rd.dset->set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
+						rd.set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
 					rd.draw_triangles(params, vb);
 				} else {
 					dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, material, 0, "default");
@@ -543,7 +543,7 @@ void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer:
 					auto shader = rvd.get_shader(dh->material_shadow, 0, "animated", "");
 					auto& rd = rvd.start(params, mr->owner->get_matrix(), shader, dh->material_shadow, 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 					if (ani->buf)
-						rd.dset->set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
+						rd.set_uniform_buffer(yrenderer::BINDING_BONE_MATRICES, ani->buf);
 					rd.draw_triangles(params, vb);
 				} else {
 					dh->draw_mesh(params, rvd, mr->owner->get_matrix(), vb, dh->material_shadow, 0, "default");

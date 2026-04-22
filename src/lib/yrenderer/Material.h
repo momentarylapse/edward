@@ -71,8 +71,9 @@ struct Material {
 		TransparencyMode mode = TransparencyMode::NONE;
 		ygfx::Alpha source, destination;
 		float factor = 1;
-		bool z_buffer = true;
+		bool z_write = true;
 		bool z_test = true;
+		bool wire_mode = false;
 		ygfx::CullMode cull_mode;
 		Path shader_path;
 	};
@@ -111,8 +112,8 @@ struct Material {
 struct ShaderCache {
 	Context* ctx;
 	shared<ygfx::Shader> shader[2]; // * #(render paths)
-	void _prepare_shader(RenderPathType render_path_type, const Material* material, const string& vertex_module, const string& geometry_module);
-	void _prepare_shader_multi_pass(RenderPathType render_path_type, const Material* material, const string& vertex_module, const string& geometry_module, int k);
+	void _prepare_shader(RenderPathType render_path_type, const Material* material, const string& vertex_module, const string& geometry_module, const string& tessellation_module);
+	void _prepare_shader_multi_pass(RenderPathType render_path_type, const Material* material, const string& vertex_module, const string& geometry_module, const string& tessellation_module, int k);
 	ygfx::Shader *get_shader(RenderPathType render_path_type);
 };
 

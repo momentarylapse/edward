@@ -96,7 +96,7 @@ void RenderData::set_material_x(const SceneView& scene_view, const Material* mat
 	apply_shader_data(RenderParams{}, shader, material->shader_data);
 
 	auto& pass = material->pass(pass_no);
-	nix::set_z(pass.z_buffer, pass.z_test);
+	nix::set_z(pass.z_write, pass.z_test);
 	if (pass.mode == TransparencyMode::FUNCTIONS)
 		nix::set_alpha(pass.source, pass.destination);
 	else if (pass.mode == TransparencyMode::COLOR_KEY_HARD)
@@ -229,7 +229,7 @@ RenderData& RenderViewData::start(
 	if (scene_view) {
 		rda[index].set_textures(*scene_view, weak(material->textures));
 		if (scene_view->surfel_buffer)
-			rda[index].dset->set_uniform_buffer(12, scene_view->surfel_buffer.get());
+			rda[index].dset->set_uniform_buffer(BINDING_SURFELS, scene_view->surfel_buffer.get());
 	}
 
 	return rda[index ++];
@@ -276,14 +276,14 @@ void RenderData::draw(const RenderParams& params, VertexBuffer* vb, PrimitiveTop
 
 
 
-Shader* RenderViewData::get_shader(const Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module) {
+Shader* RenderViewData::get_shader(const Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module, const string& tessellation_module) {
 	if (!multi_pass_shader_cache[pass_no].contains(material))
 		multi_pass_shader_cache[pass_no].set(material, {ctx});
 	auto& cache = multi_pass_shader_cache[pass_no][material];
 	if (is_shadow_pass())
-		cache._prepare_shader_multi_pass(type, material_shadow, vertex_shader_module, geometry_shader_module, pass_no);
+		cache._prepare_shader_multi_pass(type, material_shadow, vertex_shader_module, geometry_shader_module, tessellation_module, pass_no);
 	else
-		cache._prepare_shader_multi_pass(type, material, vertex_shader_module, geometry_shader_module, pass_no);
+		cache._prepare_shader_multi_pass(type, material, vertex_shader_module, geometry_shader_module, tessellation_module, pass_no);
 	return cache.get_shader(type);
 }
 

@@ -36,7 +36,7 @@ yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albed
 		material->pass0.mode = yrenderer::TransparencyMode::FUNCTIONS;
 		material->pass0.source = ygfx::Alpha::SOURCE_ALPHA;
 		material->pass0.destination = ygfx::Alpha::SOURCE_INV_ALPHA;
-		material->pass0.z_buffer = false;
+		material->pass0.z_write = false;
 	}
 	return material;
 }

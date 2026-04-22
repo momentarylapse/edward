@@ -88,10 +88,13 @@ public:
 	Array<vec3> vertex, normal;
 	Array<plane> pl; // for collision detection
 	owned<ygfx::VertexBuffer> vertex_buffer;
+	owned<ygfx::Texture> texture_height;
+	ygfx::PrimitiveTopology topology;
 	int chunk_lod[TERRAIN_MAX_CHUNKS][TERRAIN_MAX_CHUNKS];
 	int chunk_lod_old[TERRAIN_MAX_CHUNKS][TERRAIN_MAX_CHUNKS];
 	vec3 pattern, min, max;
 	string vertex_shader_module;
+	string tessellation_shader_module;
 
 	vec3 texture_scale[MATERIAL_MAX_TEXTURES];
 
@@ -121,6 +124,7 @@ struct XTerrainVBUpdater {
 	void upload();
 
 	int iterate(const vec3 &cam_pos);
+	int iterate_new();
 };
 
 

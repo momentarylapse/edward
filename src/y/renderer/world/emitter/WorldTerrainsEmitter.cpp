@@ -22,11 +22,11 @@ void WorldTerrainsEmitter::emit(const yrenderer::RenderParams& params, yrenderer
 	auto draw_terrains = [&params, &rvd, shadow_pass] (ecs::Entity* o, Terrain* t, yrenderer::Material* material) {
 		if (shadow_pass and !material->cast_shadow)
 			return;
-		auto shader = rvd.get_shader(material, 0, t->vertex_shader_module, "");
+		auto shader = rvd.get_shader(material, 0, t->vertex_shader_module, "", t->tessellation_shader_module);
 		if (shadow_pass)
 			material = rvd.material_shadow;
 
-		auto& rd = rvd.start(params, mat4::translation(o->pos), shader, material, 0, ygfx::PrimitiveTopology::TRIANGLES, t->vertex_buffer.get());
+		auto& rd = rvd.start(params, mat4::translation(o->pos), shader, material, 0, t->topology, t->vertex_buffer.get());
 
 		if (!shadow_pass) {
 			Any data;
@@ -34,6 +34,8 @@ void WorldTerrainsEmitter::emit(const yrenderer::RenderParams& params, yrenderer
 			data.dict_set("pattern1:16", vec3_to_any(t->texture_scale[1]));
 			yrenderer::apply_shader_data(params, shader, data);
 		}
+		if (t->texture_height)
+			rd.set_texture(4, t->texture_height.get());
 		rd.draw_triangles(params, t->vertex_buffer.get());
 	};
 

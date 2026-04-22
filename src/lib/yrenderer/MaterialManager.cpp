@@ -196,12 +196,12 @@ void MaterialManager::_load_from_file(Material* m, const Path &filename) {
 		} else if (mode == "factor") {
 				p.mode = TransparencyMode::FACTOR;
 			p.factor = c.get_float(key + ".factor");
-			p.z_buffer = false;
+			p.z_write = false;
 		} else if (mode == "function") {
 			p.mode = TransparencyMode::FUNCTIONS;
 			p.source = parse_alpha(c.get_str(key + ".source", "zero"));
 			p.destination = parse_alpha(c.get_str(key + ".dest", "zero"));
-			p.z_buffer = false;
+			p.z_write = false;
 		} else if (mode == "key-hard") {
 			p.mode = TransparencyMode::COLOR_KEY_HARD;
 		} else if (mode == "key-smooth") {
@@ -327,8 +327,8 @@ void MaterialManager::_write_to_file(Material* material, const Path &filename) {
 			c.set_str(key + ".cull", "none");
 		else if (p.cull_mode == ygfx::CullMode::FRONT)
 			c.set_str(key + ".cull", "front");
-		if (p.mode != yrenderer::TransparencyMode::NONE or !p.z_buffer or !p.z_test)
-			c.set_bool(key + ".z-write", p.z_buffer);
+		if (p.mode != yrenderer::TransparencyMode::NONE or !p.z_write or !p.z_test)
+			c.set_bool(key + ".z-write", p.z_write);
 		if (!p.z_test)
 			c.set_bool(key + ".z-test", p.z_test);
 		/*if (material->transparency_mode != TransparencyMode::NONE) {

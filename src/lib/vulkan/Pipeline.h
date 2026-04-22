@@ -124,7 +124,7 @@ namespace vulkan{
 		VkPipelineMultisampleStateCreateInfo multisampling;
 		VkPipelineDepthStencilStateCreateInfo depth_stencil;
 		VkPipelineInputAssemblyStateCreateInfo input_assembly;
-		VkPipelineTessellationStateCreateInfo tesselation;
+		VkPipelineTessellationStateCreateInfo tessellation;
 	};
 
 

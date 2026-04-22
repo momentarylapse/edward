@@ -244,6 +244,16 @@ void Texture::writex(const void *data, int nx, int ny, int nz, const string &for
 	_create_sampler();
 }
 
+void Texture::write_float(const DynamicArray& data) {
+	int n_in = data.num * data.element_size / (int)sizeof(float);
+	int n_tex = width * height * depth;
+	if (n_in != n_tex) {
+		msg_error(format("Texture.write_float(): size mismatch (input: %d - texture: %d)", n_in, n_tex));
+		return;
+	}
+	writex(data.data, width, height, depth, "r:f32");
+}
+
 void Texture::_create_image(const void *image_data, VkImageType type, VkFormat format, int num_layers, VkSampleCountFlagBits samples, bool allow_mip, bool allow_storage, bool cube) {
 	//auto cb = begin_single_time_commands();
 	int layer_size = width * height * depth * format_size(format);

@@ -106,7 +106,7 @@ Context* Context::create(Window* window) {
 	}
 	auto instance = global_instance;
 	auto surface = instance->create_glfw_surface(window->window);
-	auto device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation", "tesselationshader?"});
+	auto device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation"});
 	auto ctx = new Context(window, new ygfx::Context(instance, device));
 	//msg_write("device found");
 

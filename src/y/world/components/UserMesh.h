@@ -27,6 +27,7 @@ struct UserMesh : ecs::Component {
 	owned<yrenderer::Material> material;
 	string vertex_shader_module = "default";
 	string geometry_shader_module;
+	string tessellation_shader_module;
 
 	owned<ygfx::VertexBuffer> vertex_buffer;
 	ygfx::PrimitiveTopology topology = ygfx::PrimitiveTopology::TRIANGLES;

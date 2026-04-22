@@ -129,17 +129,7 @@ void texture_write(Texture *t, const Image &im) {
 }
 
 void texture_write_float(Texture *t, const DynamicArray& data) {
-#ifdef USING_VULKAN
-	int n_in = data.num * data.element_size / (int)sizeof(float);
-	int n_tex = t->width * t->height * t->depth;
-	if (n_in != n_tex) {
-		msg_error(format("Texture.write_float(): size mismatch (input: %d - texture: %d)", n_in, n_tex));
-		return;
-	}
-	t->writex(data.data, t->width, t->height, t->depth, "r:f32");
-#else
 	t->write_float(data);
-#endif
 }
 
 void texture_read(Texture* t, Image& im) {
@@ -215,6 +205,13 @@ void _export_package_yrenderer_internal(kaba::Exporter* ext) {
 
 	ext->declare_class_size("Material.Pass", sizeof(Material::RenderPassData));
 	ext->declare_class_element("Material.Pass.shader_path", &Material::RenderPassData::shader_path);
+	ext->declare_class_element("Material.Pass.cull_mode", &Material::RenderPassData::cull_mode);
+	ext->declare_class_element("Material.Pass.wire_mode", &Material::RenderPassData::wire_mode);
+	ext->declare_class_element("Material.Pass.z_write", &Material::RenderPassData::z_write);
+	ext->declare_class_element("Material.Pass.z_test", &Material::RenderPassData::z_test);
+	ext->declare_class_element("Material.Pass.mode", &Material::RenderPassData::mode);
+	ext->declare_class_element("Material.Pass.source", &Material::RenderPassData::source);
+	ext->declare_class_element("Material.Pass.destination", &Material::RenderPassData::destination);
 
 	ext->declare_class_size("Material.Friction", sizeof(Material::Friction));
 	ext->declare_class_element("Material.Friction.sliding", &Material::Friction::sliding);

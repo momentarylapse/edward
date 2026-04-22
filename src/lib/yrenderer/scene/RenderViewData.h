@@ -39,6 +39,7 @@ static constexpr int BINDING_PARAMS = 8;
 static constexpr int BINDING_LIGHT = 9;
 static constexpr int BINDING_INSTANCE_MATRICES = 10;
 static constexpr int BINDING_BONE_MATRICES = 11;
+static constexpr int BINDING_SURFELS = 12;
 
 
 // per mesh
@@ -108,7 +109,7 @@ struct RenderViewData {
 
 	base::map<const Material*, ShaderCache> multi_pass_shader_cache[4];
 	// material as id!
-	ygfx::Shader* get_shader(const Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module);
+	ygfx::Shader* get_shader(const Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module = "", const string& tessellation_module = "");
 };
 
 }

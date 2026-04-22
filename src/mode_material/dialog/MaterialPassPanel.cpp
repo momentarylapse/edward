@@ -102,7 +102,7 @@ void MaterialPassPanel::update() {
 	check("cull:front", p.cull_mode == ygfx::CullMode::FRONT);
 	check("cull:back", p.cull_mode == ygfx::CullMode::BACK);
 	check("cull:none", p.cull_mode == ygfx::CullMode::NONE);
-	check("z-write", p.z_buffer);
+	check("z-write", p.z_write);
 	check("z-test", p.z_test);
 	enable("delete", data->material.num_passes >= 2);
 	enable("edit-shader", !p.shader_path.is_empty());
@@ -128,7 +128,7 @@ void MaterialPassPanel::apply_data() {
 		p.cull_mode = ygfx::CullMode::FRONT;
 	else if (is_checked("cull:none"))
 		p.cull_mode = ygfx::CullMode::NONE;
-	p.z_buffer = is_checked("z-write");
+	p.z_write = is_checked("z-write");
 	p.z_test = is_checked("z-test");
 
 	enable("source", p.mode == yrenderer::TransparencyMode::FUNCTIONS);

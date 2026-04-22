@@ -380,6 +380,7 @@ void export_world(kaba::Exporter* ext) {
 	ext->declare_class_element("UserMesh.material", &UserMesh::material);
 	ext->declare_class_element("UserMesh.vertex_shader_module", &UserMesh::vertex_shader_module);
 	ext->declare_class_element("UserMesh.geometry_shader_module", &UserMesh::geometry_shader_module);
+	ext->declare_class_element("UserMesh.tessellation_shader_module", &UserMesh::tessellation_shader_module);
 	ext->declare_class_element("UserMesh.topology", &UserMesh::topology);
 
 

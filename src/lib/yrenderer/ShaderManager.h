@@ -18,10 +18,12 @@ public:
 
 	shared<ygfx::Shader> load_shader(const Path& path);
 	xfer<ygfx::Shader> create_shader(const string &source);
-	shared<ygfx::Shader> load_surface_shader(const Path& path, const string &render_path, const string &vertex_module, const string &geometry_module);
-	string expand_vertex_shader_source(const string &source, const string &variant);
-	string expand_fragment_shader_source(const string &source, const string &render_path);
-	string expand_geometry_shader_source(const string &source, const string &variant);
+	shared<ygfx::Shader> load_surface_shader(const Path& path, const string& render_path, const string& vertex_module, const string& geometry_module, const string& tessellation_module);
+	static string expand_vertex_shader_source(const string &source, const string &variant);
+	static string expand_fragment_shader_source(const string &source, const string &render_path);
+	static string expand_geometry_shader_source(const string &source, const string &variant);
+	static string expand_tessellation_control_shader_source(const string &source, const string &variant);
+	static string expand_tessellation_evaluation_shader_source(const string &source, const string &variant);
 	void load_shader_module(const Path& path);
 
 	xfer<ygfx::Shader> __load_shader(const Path& path, const string &overwrite_bindings, int overwrite_push_size);

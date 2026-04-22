@@ -19,7 +19,7 @@ ygfx::GraphicsPipeline *get(
 		ygfx::PrimitiveTopology top,
 		ygfx::VertexBuffer *vb,
 		vulkan::CullMode culling,
-		bool test_z, bool write_z);
+		bool test_z, bool write_z, bool wire);
 ygfx::GraphicsPipeline *get_alpha(
 		ygfx::Shader *s,
 		ygfx::RenderPass *rp,

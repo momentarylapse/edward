@@ -32,7 +32,7 @@ base::map<Feature, string> feature_names() {
 		{Feature::SWAP_CHAIN, "swapchain"},
 		{Feature::ANISOTROPY, "anisotropy"},
 		{Feature::GEOMETRY_SHADER, "geometryshader"},
-		{Feature::TESSELATION_SHADER, "tesselationshader"},
+		{Feature::TESSELLATION_SHADER, "tessellationshader"},
 		{Feature::RTX, "rtx"},
 		{Feature::MESH_SHADER, "meshshader"},
 		{Feature::MULTISAMPLE, "multisample"},
@@ -133,7 +133,7 @@ base::set<Feature> device_features(VkPhysicalDevice device, VkSurfaceKHR surface
 	if (supported_features.geometryShader)
 		features.add(Feature::GEOMETRY_SHADER);
 	if (supported_features.tessellationShader)
-		features.add(Feature::TESSELATION_SHADER);
+		features.add(Feature::TESSELLATION_SHADER);
 
 	if (properties.limits.framebufferColorSampleCounts > 1)
 		features.add(Feature::MULTISAMPLE);
@@ -318,7 +318,7 @@ void Device::create_logical_device(VkSurfaceKHR surface) {
 	VkPhysicalDeviceAccelerationStructureFeaturesKHR as_features = {};
 	if (features.contains(Feature::GEOMETRY_SHADER))
 		device_features.features.geometryShader = VK_TRUE;
-	if (features.contains(Feature::TESSELATION_SHADER))
+	if (features.contains(Feature::TESSELLATION_SHADER))
 		device_features.features.tessellationShader = VK_TRUE;
 	if (features.contains(Feature::ANISOTROPY))
 		device_features.features.samplerAnisotropy = VK_TRUE;

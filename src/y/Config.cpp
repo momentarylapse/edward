@@ -33,6 +33,7 @@ const string RawConfig::ID_SHADOW_RESOLUTION = "shadow.resolution";
 const string RawConfig::ID_SHADOW_QUALITY = "shadow.quality";
 const string RawConfig::ID_CUBEMAP_RESOLUTION = "cubemap.resolution";
 const string RawConfig::ID_CUBEMAP_UPDATE_RATE = "cubemap.update-rate";
+const string RawConfig::ID_TERRAIN_TESSELLATED = "terrain.tessellated";
 const string RawConfig::ID_DEBUG_LEVEL = "debug.level";
 const string RawConfig::ID_DEBUG_SCRIPTS1 = "debug.scripts1";
 const string RawConfig::ID_DEBUG_SCRIPTS2 = "debug.scripts2";
@@ -64,7 +65,7 @@ void RawConfig::load(const Array<string> &arg) {
 	p.info("y", "game engine");
 	p.option("-c", "CONFIG", "set config A=B", [this] (const string& a) {
 		auto xx = a.explode("=");
-		set_str(xx[0].trim(), xx[1].trim());
+		set(xx[0].trim(), Any::parse(xx[1].trim()));
 	});
 	p.option("-u/--uncapped", "uncapped framerate", [this] {
 		set_bool("renderer.uncapped-framerate", true);
@@ -162,6 +163,8 @@ DigestedConfig RawConfig::digest() const {
 #endif
 	c.default_material = get_str(ID_DEFAULT_MATERIAL, "");
 	c.debug_level = get_int(ID_DEBUG_LEVEL, 1);
+
+	c.terrain_tessellated = get_bool(ID_TERRAIN_TESSELLATED, false);
 
 	c.renderer_path = get_str(ID_RENDERER_PATH, "forward");
 	c.allow_rtx = get_bool("renderer.allow-rtx", true);
