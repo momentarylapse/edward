@@ -340,6 +340,15 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& mou
 
 	float zmin = 1;//multi_view->view_port.radius * 2;
 
+	for (const auto& [i, e]: enumerate(data->entity_manager->entities)) {
+		const auto pp = win->project(e->pos);
+		if (pp.z <= 0 or pp.z >= 1)
+			continue;
+		if ((pp.xy() - mouse).length_fuzzy() > 10)
+			continue;
+		h = {MultiViewType::WORLD_ENTITY, i, e->pos};
+	}
+
 
 	const auto models = data->entity_manager->get_component_list<ModelRef>();
 	for (auto mr: models)
@@ -353,6 +362,7 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& mou
 				h = {MultiViewType::WORLD_ENTITY, i, tp};
 			}
 		}
+
 	return h;
 }
 
