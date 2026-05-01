@@ -194,9 +194,8 @@ void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 	module = nullptr;
 
 	try {
-		kaba::config.default_filename = filename;
 		//msg_write(kaba::config.directory.str());
-		module = context->dll_create_module_for_source(text, true);
+		module = context->dll_create_module_for_source(text, filename, true);
 
 		clear_symbols();
 

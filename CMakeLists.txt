@@ -586,6 +586,7 @@ add_executable(edward
 	src/y/helper/ResourceManager.cpp
 	src/y/helper/Scheduler.cpp
 	src/y/net/NetworkManager.cpp
+	src/y/plugins/export.cpp
 	src/y/plugins/PluginManager.cpp
 	src/y/renderer/gui/GuiRendererGL.cpp
 	src/y/renderer/gui/GuiRendererVulkan.cpp
