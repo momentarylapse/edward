@@ -17,9 +17,6 @@ Menu menu_model "Model" disabled
 		Separator
 		Item execute_plugin "Execute plugin"
 		Separator
-		Menu menu_font "Font"
-			Item font_new "New" image=hui:new
-			Item font_open "Open..." image=hui:open
 		Menu menu_material "Material"
 			Item material_new "New" image=hui:new
 			Item material_open "Open..." image=hui:open

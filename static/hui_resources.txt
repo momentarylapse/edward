@@ -171,7 +171,7 @@ menu_administration_file
 
 0
 0
-8
+7
 Menu
 menu_model
 
@@ -191,27 +191,9 @@ image=hui:open
 0
 0
 Menu
-menu_font
-
-1
-0
-2
-Item
-font_new
-image=hui:new
-0
-0
-0
-Item
-font_open
-image=hui:open
-1
-0
-0
-Menu
 menu_material
 
-2
+1
 0
 2
 Item
@@ -229,7 +211,7 @@ image=hui:open
 Menu
 menu_world
 
-3
+2
 0
 2
 Item
@@ -247,25 +229,25 @@ image=hui:open
 Item
 administrate
 image=hui:preferences
-4
+3
 0
 0
 Item
 settings
 image=hui:preferences
-5
+4
 0
 0
 Separator
 
 
-6
+5
 0
 0
 Item
 exit
 image=hui:quit
-7
+6
 0
 0
 Menu
@@ -637,27 +619,9 @@ image=hui:open
 0
 0
 Menu
-menu_font
-
-8
-0
-2
-Item
-font_new
-image=hui:new
-0
-0
-0
-Item
-font_open
-image=hui:open
-1
-0
-0
-Menu
 menu_material
 
-9
+8
 0
 2
 Item
@@ -668,6 +632,24 @@ image=hui:new
 0
 Item
 material_open
+image=hui:open
+1
+0
+0
+Menu
+menu_world
+
+9
+0
+2
+Item
+world_new
+image=hui:new
+0
+0
+0
+Item
+world_open
 image=hui:open
 1
 0
@@ -2038,7 +2020,7 @@ menu_file
 
 0
 0
-14
+13
 Item
 new
 image=hui:new
@@ -2100,27 +2082,9 @@ image=hui:open
 0
 0
 Menu
-menu_font
-
-8
-0
-2
-Item
-font_new
-image=hui:new
-0
-0
-0
-Item
-font_open
-image=hui:open
-1
-0
-0
-Menu
 menu_world
 
-9
+8
 0
 2
 Item
@@ -2138,7 +2102,7 @@ image=hui:open
 Menu
 menu_project
 
-10
+9
 0
 4
 Item
@@ -2168,19 +2132,19 @@ image=hui:preferences
 Item
 settings
 image=hui:preferences
-11
+10
 0
 0
 Separator
 
 
-12
+11
 0
 0
 Item
 exit
 image=hui:quit
-13
+12
 0
 0
 Menu
@@ -4202,7 +4166,7 @@ menu_model_file
 
 0
 0
-17
+16
 Item
 new
 image=hui:new
@@ -4306,27 +4270,9 @@ Separator
 0
 0
 Menu
-menu_font
-
-10
-0
-2
-Item
-font_new
-image=hui:new
-0
-0
-0
-Item
-font_open
-image=hui:open
-1
-0
-0
-Menu
 menu_material
 
-11
+10
 0
 2
 Item
@@ -4344,7 +4290,7 @@ image=hui:open
 Menu
 menu_world
 
-12
+11
 0
 2
 Item
@@ -4362,7 +4308,7 @@ image=hui:open
 Menu
 menu_project
 
-13
+12
 0
 4
 Item
@@ -4392,19 +4338,19 @@ image=hui:preferences
 Item
 settings
 image=hui:preferences
-14
+13
 0
 0
 Separator
 
 
-15
+14
 0
 0
 Item
 exit
 image=hui:quit
-16
+15
 0
 0
 Menu
@@ -5266,7 +5212,7 @@ menu_file
 
 0
 0
-18
+17
 Item
 new
 image=hui:new
@@ -5382,27 +5328,9 @@ image=hui:open
 0
 0
 Menu
-menu_font
-
-11
-0
-2
-Item
-font_new
-image=hui:new
-0
-0
-0
-Item
-font_open
-image=hui:open
-1
-0
-0
-Menu
 menu_material
 
-12
+11
 0
 2
 Item
@@ -5420,7 +5348,7 @@ image=hui:open
 Menu
 menu_world
 
-13
+12
 0
 2
 Item
@@ -5438,25 +5366,25 @@ image=hui:open
 Item
 administrate
 image=hui:preferences
-14
+13
 0
 0
 Item
 settings
 image=hui:preferences
-15
+14
 0
 0
 Separator
 
 
-16
+15
 0
 0
 Item
 exit
 image=hui:quit
-17
+16
 0
 0
 Menu
@@ -6603,7 +6531,7 @@ menu_file
 
 0
 0
-18
+17
 Item
 new
 image=hui:new
@@ -6725,27 +6653,9 @@ image=hui:open
 0
 0
 Menu
-menu_font
-
-11
-0
-2
-Item
-font_new
-image=hui:new
-0
-0
-0
-Item
-font_open
-image=hui:open
-1
-0
-0
-Menu
 menu_material
 
-12
+11
 0
 2
 Item
@@ -6763,7 +6673,7 @@ image=hui:open
 Menu
 menu_world
 
-13
+12
 0
 2
 Item
@@ -6781,7 +6691,7 @@ image=hui:open
 Menu
 menu_project
 
-14
+13
 0
 4
 Item
@@ -6811,19 +6721,19 @@ image=hui:preferences
 Item
 settings
 image=hui:preferences
-15
+14
 0
 0
 Separator
 
 
-16
+15
 0
 0
 Item
 exit
 image=hui:quit
-17
+16
 0
 0
 Menu
@@ -9184,7 +9094,7 @@ menu_world_file
 
 0
 0
-17
+16
 Item
 new
 image=hui:new
@@ -9288,27 +9198,9 @@ image=hui:open
 0
 0
 Menu
-menu_font
-
-11
-0
-2
-Item
-font_new
-image=hui:new
-0
-0
-0
-Item
-font_open
-image=hui:open
-1
-0
-0
-Menu
 menu_material
 
-12
+11
 0
 2
 Item
@@ -9326,7 +9218,7 @@ image=hui:open
 Menu
 menu_project
 
-13
+12
 0
 4
 Item
@@ -9356,19 +9248,19 @@ image=hui:preferences
 Item
 settings
 image=hui:preferences
-14
+13
 0
 0
 Separator
 
 
-15
+14
 0
 0
 Item
 exit
 image=hui:quit
-16
+15
 0
 0
 Menu
@@ -10862,7 +10754,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1098
+1080
 # Text
 /ambient
 Ambient
@@ -11623,12 +11515,6 @@ Execute plugin
 menu-coding/exit
 Exit
 
-menu-coding/font_new
-New
-
-menu-coding/font_open
-Open...
-
 menu-coding/help
 Help...
 
@@ -11644,9 +11530,6 @@ Coding
 menu-coding/menu_coding_file
 File
 
-menu-coding/menu_font
-Font
-
 menu-coding/menu_material
 Material
 
@@ -11655,6 +11538,9 @@ Model
 
 menu-coding/menu_project
 Project
+
+menu-coding/menu_world
+World
 
 menu-coding/menu_world_edit
 Edit
@@ -11707,6 +11593,12 @@ Undo
 menu-coding/what_the_fuck
 \"about\"
 
+menu-coding/world_new
+New
+
+menu-coding/world_open
+Open...
+
 menu_administration/administrate
 Administrate
 
@@ -11715,12 +11607,6 @@ Exit
 
 menu_administration/export_game
 Export...
-
-menu_administration/font_new
-New
-
-menu_administration/font_open
-Open...
 
 menu_administration/help
 Help...
@@ -11739,9 +11625,6 @@ File
 
 menu_administration/menu_administration_game
 Game
-
-menu_administration/menu_font
-Font
 
 menu_administration/menu_material
 Material
@@ -11884,12 +11767,6 @@ Execute plugin
 menu_material/exit
 Exit
 
-menu_material/font_new
-New
-
-menu_material/font_open
-Open...
-
 menu_material/grid
 Grid
 
@@ -11922,9 +11799,6 @@ Torusknot
 
 menu_material/menu_file
 File
-
-menu_material/menu_font
-Font
 
 menu_material/menu_help
 ?
@@ -12076,12 +11950,6 @@ Extrude (independent)
 menu_model/flatten_vertices
 Flatten 2d
 
-menu_model/font_new
-New
-
-menu_model/font_open
-Open...
-
 menu_model/fx_edit
 Edit...
 
@@ -12147,9 +12015,6 @@ All
 
 menu_model/menu_edge_header
 Edges
-
-menu_model/menu_font
-Font
 
 menu_model/menu_help
 ?
@@ -12472,12 +12337,6 @@ To GameStudio...
 menu_move/export_to_json
 Three.js (json)...
 
-menu_move/font_new
-New
-
-menu_move/font_open
-Open...
-
 menu_move/grid
 Grid
 
@@ -12510,9 +12369,6 @@ Open...
 
 menu_move/menu_file
 File
-
-menu_move/menu_font
-Font
 
 menu_move/menu_help
 ?
@@ -12757,12 +12613,6 @@ To GameStudio...
 menu_skeleton/export_to_json
 Three.js (json)...
 
-menu_skeleton/font_new
-New
-
-menu_skeleton/font_open
-Open...
-
 menu_skeleton/grid
 Grid
 
@@ -12798,9 +12648,6 @@ Edit
 
 menu_skeleton/menu_file
 File
-
-menu_skeleton/menu_font
-Font
 
 menu_skeleton/menu_help
 ?
@@ -12985,12 +12832,6 @@ Groupe...
 menu_world/export_world
 Export world
 
-menu_world/font_new
-New
-
-menu_world/font_open
-Open...
-
 menu_world/grid
 Grid
 
@@ -13017,9 +12858,6 @@ New
 
 menu_world/material_open
 Open...
-
-menu_world/menu_font
-Font
 
 menu_world/menu_material
 Material

@@ -19,9 +19,6 @@ Menu menu_move "" disabled
 		Menu menu_model "Model"
 			Item model_new "New" image=hui:new
 			Item model_open "Open..." image=hui:open
-		Menu menu_font "Font"
-			Item font_new "New" image=hui:new
-			Item font_open "Open..." image=hui:open
 		Menu menu_material "Material"
 			Item material_new "New" image=hui:new
 			Item material_open "Open..." image=hui:open
