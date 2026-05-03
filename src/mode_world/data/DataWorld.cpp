@@ -273,11 +273,15 @@ void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
 }
 
 
+ecs::Component* DataWorld::entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const Array<ecs::InstanceDataVariable>& variables) {
+	return static_cast<ecs::Component*>(execute(new ActionWorldAddComponent(entity_manager->entity_index(e), type, variables)));
+}
+
 ecs::Component* DataWorld::entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const ComponentParams& _variables) {
 	Array<ecs::InstanceDataVariable> variables;
 	for (const auto& [k, v]: _variables)
 		variables.add({k, v});
-	return static_cast<ecs::Component*>(execute(new ActionWorldAddComponent(entity_manager->entity_index(e), type, variables)));
+	return entity_add_component_generic(e, type, variables);
 }
 void DataWorld::entity_remove_component(ecs::Entity* e, const kaba::Class* type) {
 	execute(new ActionWorldRemoveComponent(entity_manager->entity_index(e), type));
@@ -300,6 +304,19 @@ ecs::Entity *DataWorld::_create_entity(const vec3 &pos, const quaternion &ang) {
 }
 
 
+
+void DataWorld::entity_apply_component(ecs::Entity *e, const ecs::InstanceData& cc) {
+	for (const auto c: session->plugin_manager->component_classes)
+		if (cc.class_name == c->name) {
+			entity_add_component_generic(e, c, cc.variables);
+			return;
+		}
+
+	msg_error("UNKNOWN COMPONENT: " + cc.class_name);
+	auto tag = e->get_component<EdwardTag>();
+	tag->unknown_components.add(cc);
+};
+
 void DataWorld::_entity_apply_component(ecs::Entity *e, const ecs::InstanceData& cc) {
 	for (const auto c: session->plugin_manager->component_classes)
 		if (cc.class_name == c->name) {
@@ -311,12 +328,12 @@ void DataWorld::_entity_apply_component(ecs::Entity *e, const ecs::InstanceData&
 	msg_error("UNKNOWN COMPONENT: " + cc.class_name);
 	auto tag = e->get_component<EdwardTag>();
 	tag->unknown_components.add(cc);
-};
+}
 
 void DataWorld::_entity_apply_components(ecs::Entity *e, const Array<ecs::InstanceData> &components) {
 	for (const auto& cc: components) {
 		_entity_apply_component(e, cc);
 	}
-};
+}
 
 

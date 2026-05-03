@@ -127,11 +127,13 @@ public:
 	ecs::Entity* add_entity(const vec3& pos, const quaternion& ang);
 	void edit_entity(ecs::Entity* e, const vec3& pos, const quaternion& ang);
 	void edit_terrain_meta_data(int index, const vec3& pattern);
-	ecs::Component* entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const ComponentParams& variables = {});
+	ecs::Component* entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const ComponentParams& variables);
+	ecs::Component* entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const Array<ecs::InstanceDataVariable>& variables = {});
 	template<class T>
 	T* entity_add_component(ecs::Entity* e, const ComponentParams& variables = {}) {
 		return static_cast<T*>(entity_add_component_generic(e, T::_class, variables));
 	}
+	void entity_apply_component(ecs::Entity* e, const ecs::InstanceData& component);
 	void entity_remove_component(ecs::Entity* e, const kaba::Class* type);
 	void entity_edit_component(ecs::Entity* e, const kaba::Class* type, const ecs::InstanceData& c);
 	void entity_remove_unknown_component(ecs::Entity* e, int cindex);

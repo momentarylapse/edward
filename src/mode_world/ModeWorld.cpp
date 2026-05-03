@@ -218,34 +218,39 @@ void ModeWorld::on_enter() {
 			Path filename = session->win->drag.payload.sub_ref(9);
 			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_MODEL));
 			session->info(str(fn_rel));
+			data->begin_action_group("new-entity");
 			auto e = data->add_entity(p, quaternion::ID);
-			auto c = data->entity_add_component<ModelRef>(e);
-			c->model = session->resource_manager->load_model(fn_rel);
+			[[maybe_unused]] auto c = data->entity_add_component<ModelRef>(e, {{{"model", str(fn_rel)}}});
 
 			// suggest automatic components...
 			// well... SolidBody will be removed soon!
-			if (c->model)
-				data->_entity_apply_components(e, c->model->_template->components);
+		//	if (c->model)
+		//		for (const auto& cc: c->model->_template->components)
+		//			data->entity_apply_component(e, cc);
+			data->end_action_group();
 		} else if (session->win->drag.payload.match("filename:*.map")) {
 			Path filename = session->win->drag.payload.sub_ref(9);
 			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_TERRAIN));
 			session->info(str(fn_rel));
+			data->begin_action_group("new-entity");
 			auto e = data->add_entity(p, quaternion::ID);
-			auto c = data->entity_add_component<TerrainRef>(e);
-			c->terrain = session->resource_manager->load_terrain_lazy(fn_rel);
-			c->terrain->reload(session->resource_manager);
+			[[maybe_unused]] auto c = data->entity_add_component<TerrainRef>(e, {{{"terrain", str(fn_rel)}}});
 
 			// suggest automatic components
-			data->_entity_apply_components(e, LevelData::auto_terrain_components());
+			for (const auto& cc: LevelData::auto_terrain_components())
+				data->entity_apply_component(e, cc);
+			data->end_action_group();
 		} else if (session->win->drag.payload.match("filename:*.template")) {
 			Path filename = session->win->drag.payload.sub_ref(9);
 			auto fn_rel = filename.relative_to(session->storage->get_root_dir(FD_MODEL));
 			session->info(str(fn_rel));
+			data->begin_action_group("new-entity");
 			auto e = data->add_entity(p, quaternion::ID);
 			auto t = session->resource_manager->load_template(filename);
-			auto tr = data->entity_add_component<TemplateRef>(e);
-			tr->_template = t;
-			data->_entity_apply_components(e, t->components);
+			[[maybe_unused]] auto tr = data->entity_add_component<TemplateRef>(e, {{{"template", str(fn_rel)}}});
+			for (const auto& cc: t->components)
+				data->entity_apply_component(e, cc);
+			data->end_action_group();
 		}
 	}));
 
