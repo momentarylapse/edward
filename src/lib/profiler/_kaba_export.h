@@ -1,6 +1,7 @@
 namespace kaba {
-	class Exporter;
+	class IExporter;
 }
 
-void export_package_profiler(kaba::Exporter* e);
+void export_package_profiler(kaba::IExporter* e);
+void _export_package_profiler_internal(kaba::IExporter* e);
 

@@ -255,6 +255,7 @@ add_executable(edward
 	src/lib/kaba/Interpreter.cpp
 	src/lib/kaba/kaba.cpp
 	src/lib/kaba/Module.cpp
+	src/lib/kapi/kapi.cpp
 	src/lib/layout/Grid.cpp
 	src/lib/layout/Node.cpp
 	src/lib/math/Box.cpp
@@ -312,6 +313,7 @@ add_executable(edward
 	src/lib/os/stream.cpp
 	src/lib/os/terminal.cpp
 	src/lib/os/time.cpp
+	src/lib/pattern/_kaba_export.cpp
 	src/lib/pattern/Observable.cpp
 	src/lib/profiler/_kaba_export.cpp
 	src/lib/profiler/Profiler.cpp

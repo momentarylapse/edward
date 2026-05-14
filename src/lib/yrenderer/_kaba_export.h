@@ -1,7 +1,7 @@
 namespace kaba {
-	class Exporter;
+	class IExporter;
 }
 
-void export_package_yrenderer(kaba::Exporter* e);
-void _export_package_yrenderer_internal(kaba::Exporter* e);
+void export_package_yrenderer(kaba::IExporter* e);
+void _export_package_yrenderer_internal(kaba::IExporter* e);
 

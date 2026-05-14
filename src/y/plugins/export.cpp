@@ -219,7 +219,7 @@ Light* attach_light_cone(ecs::Entity* e, const color& c, float r, float theta) {
 	return world.attach_light_cone(e, c, r, theta);
 }
 
-void export_ecs(kaba::Exporter* ext) {
+void export_ecs(kaba::IExporter* ext) {
 	ecs::BaseClass entity;
 	ext->declare_class_size("BaseClass", sizeof(ecs::BaseClass));
 	//	ext->link_class_func("BaseClass.__init__", &ecs::Entity::__init__);
@@ -285,7 +285,7 @@ void export_ecs(kaba::Exporter* ext) {
 	ext->link_func("__get_system", &ecs::SystemManager::_get_generic);
 }
 
-void export_world(kaba::Exporter* ext) {
+void export_world(kaba::IExporter* ext) {
 	ext->declare_enum("PhysicsMode.NONE", PhysicsMode::NONE);
 	ext->declare_enum("PhysicsMode.SIMPLE", PhysicsMode::SIMPLE);
 	ext->declare_enum("PhysicsMode.FULL_EXTERNAL", PhysicsMode::FULL_EXTERNAL);
@@ -529,7 +529,7 @@ void export_world(kaba::Exporter* ext) {
 	ext->link_func("attach_light_cone", &attach_light_cone);
 }
 
-void export_gfx(kaba::Exporter* ext) {
+void export_gfx(kaba::IExporter* ext) {
 
 	ext->link_func("load_shader", &__load_shader);
 	ext->link_func("create_shader", &__create_shader);
@@ -543,7 +543,7 @@ void export_gfx(kaba::Exporter* ext) {
 		ext->link("tex_white", &dummy);
 }
 
-void export_fx(kaba::Exporter* ext) {
+void export_fx(kaba::IExporter* ext) {
 	ext->declare_class_size("Particle", sizeof(Particle));
 	ext->declare_class_element("Particle.pos", &Particle::pos);
 	ext->declare_class_element("Particle.vel", &Particle::vel);
@@ -610,7 +610,7 @@ void export_fx(kaba::Exporter* ext) {
 	}
 }
 
-void export_ui(kaba::Exporter* ext) {
+void export_ui(kaba::IExporter* ext) {
 #ifdef HAS_INPUT
 	ext->declare_enum("VRDeviceRole.NONE", input::VRDeviceRole::None);
 	ext->declare_enum("VRDeviceRole.CONTROLLER_RIGHT", input::VRDeviceRole::ControllerRight);
@@ -753,7 +753,7 @@ void export_ui(kaba::Exporter* ext) {
 	ext->link("toplevel", &gui::toplevel);
 }
 
-void export_sound(kaba::Exporter* ext) {
+void export_sound(kaba::IExporter* ext) {
 	ext->declare_class_size("SoundSource", sizeof(audio::SoundSource));
 	ext->declare_class_element("SoundSource.loop", &audio::SoundSource::loop);
 	ext->declare_class_element("SoundSource.suicidal", &audio::SoundSource::suicidal);
@@ -778,7 +778,7 @@ void export_sound(kaba::Exporter* ext) {
 	ext->link_func("create_audio_stream", &__create_audio_stream);
 }
 
-void export_net(kaba::Exporter* ext) {
+void export_net(kaba::IExporter* ext) {
 	ext->declare_class_size("NetworkManager", sizeof(NetworkManager));
 	ext->declare_class_element("NewtorkManager.cur_con", &NetworkManager::cur_con);
 	ext->link_class_func("NetworkManager.connect_to_host", &NetworkManager::connect_to_host);
@@ -793,7 +793,7 @@ void export_net(kaba::Exporter* ext) {
 	ext->link_class_func("Connection.send", &NetworkManager::Connection::send);
 }
 
-void export_engine(kaba::Exporter* ext) {
+void export_engine(kaba::IExporter* ext) {
 
 	// unused
 /*	ext->declare_class_size("ResourceManager", sizeof(ResourceManager));
@@ -867,7 +867,7 @@ void export_engine(kaba::Exporter* ext) {
 	ext->link_func("SceneView.shadow_projection", &scene_view_shadow_projection);
 }
 
-void export_renderer(kaba::Exporter* ext) {
+void export_renderer(kaba::IExporter* ext) {
 
 	using RenderPath = yrenderer::RenderPath;
 	ext->declare_class_size("RenderPath", sizeof(RenderPath));
@@ -901,7 +901,7 @@ void export_renderer(kaba::Exporter* ext) {
 	ext->link_class_func("FullCameraRenderer.get_cubemap", &camera_renderer_get_cubemap);
 }
 
-void export_kaba_package_yengine(kaba::Exporter* ext) {
+void export_kaba_package_yengine(kaba::IExporter* ext) {
 	ext->package_info("yengine", EngineData::CURRENT_API_VERSION);
 	export_gfx(ext);
 	export_ecs(ext);

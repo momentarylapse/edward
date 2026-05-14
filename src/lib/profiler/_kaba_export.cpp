@@ -1,9 +1,10 @@
+#include "_kaba_export.h"
 #include "../base/base.h"
+#include "../kapi/KabaExporter.h"
 #include "Profiler.h"
-#include "../kabaexport/KabaExporter.h"
 
 
-void export_package_profiler(kaba::Exporter* e) {
+void _export_package_profiler_internal(kaba::IExporter* e) {
 	e->declare_class_size("Profiler.Channel", sizeof(profiler::Channel));
 	e->declare_class_element("Profiler.Channel.name", &profiler::Channel::name);
 	e->declare_class_element("Profiler.Channel.parent", &profiler::Channel::parent);
@@ -27,6 +28,11 @@ void export_package_profiler(kaba::Exporter* e) {
 	e->link("Profiler.channels", &profiler::channels);
 	e->link("Profiler.previous_frame_timing", &profiler::previous_frame_timing);
 	e->link("Profiler.history", &profiler::history);
+}
+
+void export_package_profiler(kaba::IExporter* ext) {
+	ext->package_info("profiler", "0.1");
+	_export_package_profiler_internal(ext);
 }
 
 

@@ -190,12 +190,12 @@ void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 	current_code = text;
 	errors.clear();
 
-	context = kaba::default_context->dll_create_context();
+	context = kaba::default_context->create_new_context();
 	module = nullptr;
 
 	try {
 		//msg_write(kaba::config.directory.str());
-		module = context->dll_create_module_for_source(text, filename, true);
+		module = context->create_module_for_source(text, filename, true);
 
 		clear_symbols();
 
@@ -225,7 +225,7 @@ void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 		//msg_error(e.message());
 	}
 
-	for (auto p: weak(context->internal_packages)) {
+	for (auto p: weak(context.get()->internal_packages)) {
 		add_class(this, p->main_module->base_class(), "");
 		//if (p->used_by_default)
 			add_class_content(this, p->main_module->base_class(), "");

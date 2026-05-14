@@ -4,7 +4,7 @@
 #include "Panel.h"
 #include "Resource.h"
 #include "Window.h"
-#include "../kabaexport/KabaExporter.h"
+#include "../kapi/KabaExporter.h"
 #include "../base/callable.h"
 #include "controls/Toolbar.h"
 
@@ -56,8 +56,8 @@ namespace hui{
 void _dummy() {}
 
 
-void export_package_xhui(kaba::Exporter* e) {
-	e->package_info("xhui", "0.8");
+void export_package_xhui(kaba::IExporter* e) {
+	e->package_info("xhui", "0.9");
 
 	e->declare_class_size("Menu", sizeof(xhui::Menu));
 	e->link_class_func("Menu.__init__", &kaba::generic_init<xhui::Menu>);

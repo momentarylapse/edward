@@ -29,7 +29,7 @@ public:
 	base::optional<SymbolInfo> symbol_info(const string& text, int offset, int length) override;
 
 	string current_code;
-	owned<kaba::Context> context;
+	owned<kaba::IContext> context;
 	shared<kaba::Module> module;
 	Array<Error> errors;
 };

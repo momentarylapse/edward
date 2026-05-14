@@ -1,5 +1,5 @@
 #include "vulkan.h"
-#include "../kabaexport/KabaExporter.h"
+#include "../kapi/KabaExporter.h"
 
 #ifdef HAS_LIB_VULKAN
 
@@ -266,9 +266,9 @@ public:
 
 
 
-void export_package_vulkan(kaba::Exporter* e) {
+void export_package_vulkan(kaba::IExporter* e) {
 	//printf("<vulkan export>\n");
-	e->package_info("vulkan", "2");
+	e->package_info("vulkan", "3");
 
 	e->declare_class_size("Instance", sizeof(vulkan::Instance));
 	e->link_class_func("Instance.__delete__", &kaba::generic_delete<vulkan::Instance>);
@@ -279,7 +279,7 @@ void export_package_vulkan(kaba::Exporter* e) {
 
 #else
 
-void export_package_vulkan(kaba::Exporter* e) {
+void export_package_vulkan(kaba::IExporter* e) {
 }
 
 #endif

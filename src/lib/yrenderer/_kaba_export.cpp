@@ -18,7 +18,7 @@
 #include "target/XhuiRenderer.h"
 #include "../ygraphics/graphics-impl.h"
 #include "../image/image.h"
-#include "../kabaexport/KabaExporter.h"
+#include "../kapi/KabaExporter.h"
 #include "../os/msg.h"
 #include "target/TextureRenderer.h"
 
@@ -29,11 +29,7 @@
 //using namespace yrenderer;
 using namespace ygfx;
 
-
-#pragma GCC push_options
-#pragma GCC optimize("no-omit-frame-pointer")
-#pragma GCC optimize("no-inline")
-#pragma GCC optimize("0")
+KABA_LINK_GROUP_BEGIN
 
 
 void framebuffer_init(FrameBuffer *fb, const shared_array<Texture> &tex) {
@@ -188,7 +184,7 @@ void shader_set_floats(Shader *s, const string &name, float *f, int num) {
 #endif
 }
 
-#pragma GCC pop_options
+KABA_LINK_GROUP_END
 
 
 
@@ -200,7 +196,7 @@ shared_array<Texture> hdr_resolver_get_tex_bloom(yrenderer::HDRResolver &r) {
 }
 
 
-void _export_package_yrenderer_internal(kaba::Exporter* ext) {
+void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 	using namespace yrenderer;
 
 	ext->declare_class_size("Material.Pass", sizeof(Material::RenderPassData));
@@ -493,8 +489,8 @@ void _export_package_yrenderer_internal(kaba::Exporter* ext) {
 	ext->link_func("api_init_xhui", &api_init_xhui);
 }
 
-void export_package_yrenderer(kaba::Exporter* ext) {
-	ext->package_info("yrenderer", "0.9");
+void export_package_yrenderer(kaba::IExporter* ext) {
+	ext->package_info("yrenderer", "0.10");
 	_export_package_yrenderer_internal(ext);
 }
 

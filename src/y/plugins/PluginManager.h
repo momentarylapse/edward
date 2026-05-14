@@ -17,7 +17,7 @@ namespace ecs {
 }
 namespace kaba {
 	class Class;
-	class Exporter;
+	class IExporter;
 }
 class ResourceManager;
 struct vec3;
@@ -25,7 +25,7 @@ struct color;
 
 namespace PluginManager {
 	void init();
-	void export_kaba_package_yengine(kaba::Exporter* exporter);
+	void export_kaba_package_yengine(kaba::IExporter* exporter);
 	void import_kaba();
 
 	const kaba::Class* find_class(const Path &filename, const string &name);
