@@ -89,9 +89,15 @@ public:
 	template<class F>
 	void for_control(const string& id, F f) {
 		auto ccc = controls; // some controls might register new children here...
-		for (auto& c: ccc)
-			if (c->id == id)
+		for (auto c: ccc)
+			if (c and c->id == id) {
 				f(c);
+
+				// in case we delete controls...
+				for (int i=0; i<ccc.num; i++)
+					if (controls.find(ccc[i]) < 0)
+						ccc[i] = nullptr;
+			}
 		if (this->id == id)
 			f(this);
 	}

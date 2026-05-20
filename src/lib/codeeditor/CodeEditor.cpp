@@ -179,7 +179,12 @@ void CodeEditor::update_structure() {
 		label_line_numbers.clear();
 		for (const auto& l: p->find_labels(edit->text)) {
 			string title = l.name;
-			title = title.replace("class ", "<b><font color='red'>C</font></b>  ").replace("struct ", "<b><red>S</red></b>  ").replace("enum ", "<b><font color='red'>E</font></b>  ").replace("func ", "<font color='green'><b>F</b></font>  ");
+			title = title
+				.replace("class ", "<b><font color='red'>C</font></b>  ")
+				.replace("struct ", "<b><font color='red'>S</font></b>  ")
+				.replace("trait ", "<b><font color='red'>T</font></b>  ")
+				.replace("enum ", "<b><font color='red'>E</font></b>  ")
+				.replace("func ", "<font color='green'><b>F</b></font>  ");
 			int p0 = title.find("(");
 			if (p0 >= 0)
 				title = title.sub(0, p0) + " <span alpha='50%'>" + title.sub(p0) + "</span>";
@@ -337,6 +342,10 @@ void CodeEditor::show_errors() {
 			out_info("no error");
 		}
 	}
+}
+
+void CodeEditor::set_cursor_pos(int pos) {
+	edit->set_cursor_pos(pos);
 }
 }
 

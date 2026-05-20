@@ -72,7 +72,7 @@ public:
 	void register_package_init(const string& name, const Path& dir, std::function<void(IExporter*)> f) override;
 
 	Context();
-	~Context();
+	~Context() override;
 
 	void clean_up() override;
 
@@ -94,6 +94,11 @@ public:
 	string type_name(const Class* c) const override;
 	Any dynify(const void* p, const Class* type) const override;
 	void unwrap_any(const Any &aa, void *var, const Class *type) const override;
+
+	Array<string> list_keywords() const override;
+	Array<string> list_modifiers() const override;
+	Array<string> list_special_functions() const override;
+	Array<string> list_operator_functions() const override;
 
 	static xfer<Context> create();
 	static Path installation_root();

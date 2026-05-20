@@ -4,6 +4,7 @@
 #include "Panel.h"
 #include "Resource.h"
 #include "Window.h"
+#include "dialogs/FileSelectionDialog.h"
 #include "../kapi/KabaExporter.h"
 #include "../base/callable.h"
 #include "controls/Toolbar.h"
@@ -57,7 +58,7 @@ void _dummy() {}
 
 
 void export_package_xhui(kaba::IExporter* e) {
-	e->package_info("xhui", "0.9");
+	e->package_info("xhui", "0.10");
 
 	e->declare_class_size("Menu", sizeof(xhui::Menu));
 	e->link_class_func("Menu.__init__", &kaba::generic_init<xhui::Menu>);
@@ -79,6 +80,8 @@ void export_package_xhui(kaba::IExporter* e) {
 	{
 		xhui::Control ctrl("");
 		e->declare_class_size("Control", sizeof(xhui::Control));
+		e->link_class_func("Control.request_redraw", &xhui::Control::request_redraw);
+
 		e->link_virtual("Control.add_child", &xhui::Control::add_child, &ctrl);
 		e->link_virtual("Control.remove_child", &xhui::Control::remove_child, &ctrl);
 		e->link_virtual("Control.set_string", &xhui::Control::set_string, &ctrl);
@@ -135,34 +138,12 @@ void export_package_xhui(kaba::IExporter* e) {
 		//	e->declare_class_element("Panel.win", &xhui::Panel::win);
 		e->link_class_func("Panel.__init__", &kaba::generic_init_ext<xhui::Panel, const string&>);
 		e->link_virtual("Panel.__delete__", &kaba::generic_virtual<KabaPanelWrapper>::__delete__, &panel);
-		/*	e->link_class_func("Panel.set_border_width", &xhui::Panel::set_border_width);
-			e->link_class_func("Panel.set_decimals", &xhui::Panel::set_decimals);
-			e->link_class_func("Panel.activate", &xhui::Panel::activate);
-			e->link_class_func("Panel.is_active", &xhui::Panel::is_active);*/
+		//e->link_class_func("Panel.set_border_width", &xhui::Panel::set_border_width);
+		//e->link_class_func("Panel.set_decimals", &xhui::Panel::set_decimals);
+		e->link_class_func("Panel.activate", &xhui::Panel::activate);
+		//e->link_class_func("Panel.is_active", &xhui::Panel::is_active);
 		e->link_class_func("Panel.from_source", &xhui::Panel::from_source);
-		/*e->link_class_func("Panel.add_button", &xhui::Panel::add_button);
-		e->link_class_func("Panel.add_toggle_button", &xhui::Panel::add_toggle_button);
-		e->link_class_func("Panel.add_check_box", &xhui::Panel::add_check_box);
-		e->link_class_func("Panel.add_label", &xhui::Panel::add_label);
-		e->link_class_func("Panel.add_edit", &xhui::Panel::add_edit);
-		e->link_class_func("Panel.add_multiline_edit", &xhui::Panel::add_multiline_edit);
-		e->link_class_func("Panel.add_group", &xhui::Panel::add_group);
-		e->link_class_func("Panel.add_combo_box", &xhui::Panel::add_combo_box);
-		e->link_class_func("Panel.add_tab_control", &xhui::Panel::add_tab_control);
-		e->link_class_func("Panel.set_target", &xhui::Panel::set_target);
-		e->link_class_func("Panel.add_list_view", &xhui::Panel::add_list_view);
-		e->link_class_func("Panel.add_tree_view", &xhui::Panel::add_tree_view);
-		e->link_class_func("Panel.add_icon_view", &xhui::Panel::add_icon_view);
-		e->link_class_func("Panel.add_progress_bar", &xhui::Panel::add_progress_bar);
-		e->link_class_func("Panel.add_slider", &xhui::Panel::add_slider);
-		e->link_class_func("Panel.add_drawing_area", &xhui::Panel::add_drawing_area);
-		e->link_class_func("Panel.add_grid", &xhui::Panel::add_grid);
-		e->link_class_func("Panel.add_spin_button", &xhui::Panel::add_spin_button);
-		e->link_class_func("Panel.add_radio_button", &xhui::Panel::add_radio_button);
-		e->link_class_func("Panel.add_scroller", &xhui::Panel::add_scroller);
-		e->link_class_func("Panel.add_expander", &xhui::Panel::add_expander);
-		e->link_class_func("Panel.add_separator", &xhui::Panel::add_separator);
-		e->link_class_func("Panel.add_paned", &xhui::Panel::add_paned);*/
+		e->link_class_func("Panel.add_control", &xhui::Panel::add_control);
 		e->link_class_func("Panel.embed", &xhui::Panel::embed);
 		e->link_class_func("Panel.unembed", &xhui::Panel::unembed);
 		e->link_class_func("Panel.set_string", &xhui::Panel::set_string);
@@ -191,6 +172,8 @@ void export_package_xhui(kaba::IExporter* e) {
 		//	e->link_class_func("Panel.expand", &xhui::Panel::expand_row);
 		e->link_class_func("Panel.expand", &xhui::Panel::expand);
 		//	e->link_class_func("Panel.is_expanded", &xhui::Panel::is_expanded);
+		e->link_class_func("Panel.get_control", &xhui::Panel::get_control);
+		e->link_class_func("Panel.open_dialog", &xhui::Panel::open_dialog);
 
 		e->link_class_func("Panel.event", &KabaPanelWrapper::_kaba_event);
 		e->link_class_func("Panel.event_x", &KabaPanelWrapper::_kaba_event_x);
@@ -230,14 +213,18 @@ void export_package_xhui(kaba::IExporter* e) {
 			e->link_class_func("Window.get_key", &xhui::Window::get_key);*/
 		//	e->link_virtual("Window.on_close_request", &xhui::Window::on_close_request, &win);
 		e->link_class_func("Window.redraw", &xhui::Window::redraw);
+		e->link_class_func("Window.set_key_code", &xhui::Window::set_key_code);
+		e->link_class_func("Window.request_destroy", &xhui::Window::request_destroy);
 	}
 
-
-/*	e->link_class_func("GlWindow.__init__", &xhui::NixWindow::__init_ext__);
-	e->link_virtual("GlWindow.__delete__", &xhui::NixWindow::__delete__, &win);
-	
-	e->link_class_func("Dialog.__init__", &xhui::Dialog::__init_ext__);
-	e->link_virtual("Dialog.__delete__", &xhui::Dialog::__delete__, &win);*/
+	{
+		xhui::Dialog dlg("", 0, 0, nullptr);
+		e->declare_class_size("Dialog", sizeof(xhui::Dialog));
+		e->link_class_func("Dialog.__init__", &kaba::generic_init_ext<xhui::Dialog, const string&, int, int, xhui::Panel*, xhui::DialogFlags>);
+		e->link_virtual("Dialog.__delete__", &xhui::Dialog::__delete__, &dlg);
+		e->link_class_func("Dialog.request_destroy", &xhui::Dialog::request_destroy);
+		e->link_class_func("Dialog.set_title", &xhui::Dialog::set_title);
+	}
 	
 
 	xhui::Painter painter(nullptr, nullptr, rect::ID, rect::ID);
@@ -271,6 +258,8 @@ void export_package_xhui(kaba::IExporter* e) {
 	e->link_func("open_document", &xhui::open_document);
 	e->link_func("make_gui_image", &xhui::set_image);
 #endif
+
+	e->link_func("file_dialog", &xhui::FileSelectionDialog::ask);
 
 
 	e->link_func("clipboard.paste", &xhui::clipboard::paste);

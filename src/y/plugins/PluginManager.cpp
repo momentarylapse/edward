@@ -105,13 +105,13 @@ void import_component_class(shared<kaba::Module> m, const string& name, const st
 }
 
 void import_kaba() {
-	auto m_model = kaba::default_context->load_module("yengine/model.kaba");
+	auto m_model = kaba::default_context->load_module("yengine/model.kaba", false);
 	import_component_class<Animator>(m_model, "Animator");
 	import_component_class<Skeleton>(m_model, "Skeleton");
 	import_component_class<ModelRef>(m_model, "ModelRef");
 	//import_component_class<Model>(m_model, "Model");
 
-	auto m_world = kaba::default_context->load_module("yengine/world.kaba");
+	auto m_world = kaba::default_context->load_module("yengine/world.kaba", false);
 	import_component_class<RigidBody>(m_world, "RigidBody");
 	import_component_class<Collider>(m_world, "Collider");
 	import_component_class<MeshCollider>(m_world, "MeshCollider");
@@ -132,21 +132,21 @@ void import_kaba() {
 	import_component_class<AnimationManager>(m_world, "AnimationManager", "ecs.System");
 	import_component_class<ParticleManager>(m_world, "ParticleManager", "ecs.System");
 
-	auto m_fx = kaba::default_context->load_module("yengine/fx.kaba");
+	auto m_fx = kaba::default_context->load_module("yengine/fx.kaba", false);
 	import_component_class<ParticleGroup>(m_fx, "ParticleGroup");
 	import_component_class<ParticleEmitter>(m_fx, "ParticleEmitter");
 	import_component_class<LegacyParticle>(m_fx, "LegacyParticle");
 	import_component_class<LegacyBeam>(m_fx, "LegacyBeam");
 
-	auto m_audio = kaba::default_context->load_module("yengine/audio.kaba");
+	auto m_audio = kaba::default_context->load_module("yengine/audio.kaba", false);
 	import_component_class<audio::SoundSource>(m_audio, "SoundSource");
 	import_component_class<audio::Listener>(m_audio, "Listener");
 	import_component_class<audio::Manager>(m_audio, "AudioManager", "ecs.System");
 
-	auto m_net = kaba::default_context->load_module("yengine/networking.kaba");
+	auto m_net = kaba::default_context->load_module("yengine/networking.kaba", false);
 	import_component_class<NetworkManager>(m_net, "NetworkManager", "ecs.System");
 
-	auto m_y = kaba::default_context->load_module("yengine/yengine.kaba");
+	auto m_y = kaba::default_context->load_module("yengine/yengine.kaba", false);
 	import_component_class<UserMesh>(m_y, "UserMesh");
 
 	//msg_write(MeshCollider::_class->name);
@@ -270,7 +270,7 @@ void assign_variables(void* p, const kaba::Class* c, const Array<ecs::InstanceDa
 const kaba::Class *find_class_derived(const Path &filename, const string &base_class) {
 	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
 	try {
-		auto s = kaba::default_context->load_module(filename);
+		auto s = kaba::default_context->load_module(filename, false);
 		for (auto c: s->classes()) {
 			if (c->is_derived_from_s(base_class)) {
 				return c;
@@ -317,7 +317,7 @@ const kaba::Class *find_class(const Path &filename, const string &name) {
 			return EgoMarker::_class;
 	}
 	try {
-		auto s = kaba::default_context->load_module(filename);
+		auto s = kaba::default_context->load_module(filename, false);
 		for (auto c: s->classes()) {
 			if (c->name == name) {
 				return c;
