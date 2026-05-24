@@ -7,7 +7,12 @@
 #include "dialogs/FileSelectionDialog.h"
 #include "../kapi/KabaExporter.h"
 #include "../base/callable.h"
+#include "controls/ListView.h"
+#include "controls/ListView.h"
+#include "controls/MultilineEdit.h"
 #include "controls/Toolbar.h"
+
+#include <lib/os/msg.h>
 
 
 #define KABA_EXPORT_HUI
@@ -52,13 +57,43 @@ namespace hui{
 			event_xp(id, msg, [&ff](Painter *p){ ff(p); });
 		}
 	};
+	class KabaMultilineEditWrapper : public xhui::Edit {
+	public:
+#ifdef OS_WINDOWS
+		static void index_to_line_pos_x(xhui::Edit* edit, xhui::Edit::LinePos* lp, int pos) {
+			*lp = edit->index_to_line_pos(pos);
+		}
+#else
+		static void index_to_line_pos_x(xhui::Edit::LinePos* lp, xhui::Edit* edit, int pos) {
+			*lp = edit->index_to_line_pos(pos);
+		}
+#endif
+	};
+	class KabaListViewColumnFactoryWrapper: public xhui::ListView::ColumnFactory {
+	public:
+		void set_create(Callable<xhui::Control*(const string&)>& f) {
+			f_create = [&f] (const string& id) { return f(id); };
+		}
+		void set_set(Callable<void(xhui::Control*, const string&)>& f) {
+			f_set = [&f] (xhui::Control* c, const string& id) { f(c, id); };
+		}
+		void set_select(Callable<void(xhui::Control*, bool)>& f) {
+			f_select = [&f] (xhui::Control* c, bool x) { f(c, x); };
+		}
+	};
+	class KabaListViewWrapper: public xhui::ListView {
+	public:
+		ColumnFactory* column_factory(int i) {
+			return &column_factories[i];
+		}
+	};
 #endif
 
 void _dummy() {}
 
 
 void export_package_xhui(kaba::IExporter* e) {
-	e->package_info("xhui", "0.10");
+	e->package_info("xhui", "0.12");
 
 	e->declare_class_size("Menu", sizeof(xhui::Menu));
 	e->link_class_func("Menu.__init__", &kaba::generic_init<xhui::Menu>);
@@ -81,6 +116,7 @@ void export_package_xhui(kaba::IExporter* e) {
 		xhui::Control ctrl("");
 		e->declare_class_size("Control", sizeof(xhui::Control));
 		e->link_class_func("Control.request_redraw", &xhui::Control::request_redraw);
+		e->link_class_func("Control.get_window", &xhui::Control::get_window);
 
 		e->link_virtual("Control.add_child", &xhui::Control::add_child, &ctrl);
 		e->link_virtual("Control.remove_child", &xhui::Control::remove_child, &ctrl);
@@ -131,10 +167,57 @@ void export_package_xhui(kaba::IExporter* e) {
 		e->link_virtual("Control.negotiate_area", &xhui::Control::negotiate_area, &ctrl);
 	}
 
+	{
+		e->declare_class_size("MultilineEdit.Cache", sizeof(xhui::MultilineEdit::Cache));
+		e->declare_class_size("MultilineEdit.Cache.lines", sizeof(xhui::MultilineEdit::Cache::lines));
+		e->declare_class_size("MultilineEdit.Cache.line_first_index", sizeof(xhui::MultilineEdit::Cache::line_first_index));
+		e->declare_class_size("MultilineEdit.Cache.line_num_characters", sizeof(xhui::MultilineEdit::Cache::line_num_characters));
+
+		e->declare_class_size("MultilineEdit.LinePos", sizeof(xhui::MultilineEdit::LinePos));
+		e->declare_class_element("MultilineEdit.LinePos.line", &xhui::MultilineEdit::LinePos::line);
+		e->declare_class_element("MultilineEdit.LinePos.offset", &xhui::MultilineEdit::LinePos::offset);
+
+		e->declare_class_size("MultilineEdit.Markup", sizeof(xhui::MultilineEdit::Markup));
+		e->declare_class_element("MultilineEdit.Markup.i0", &xhui::MultilineEdit::Markup::i0);
+		e->declare_class_element("MultilineEdit.Markup.i1", &xhui::MultilineEdit::Markup::i1);
+		e->declare_class_element("MultilineEdit.Markup.flags", &xhui::MultilineEdit::Markup::flags);
+		e->declare_class_element("MultilineEdit.Markup.color", &xhui::MultilineEdit::Markup::col);
+
+		e->declare_class_element("MultilineEdit.cache", &xhui::MultilineEdit::cache);
+		e->declare_class_element("MultilineEdit.text", &xhui::MultilineEdit::text);
+		e->declare_class_element("MultilineEdit.cursor_pos", &xhui::MultilineEdit::cursor_pos);
+		e->declare_class_element("MultilineEdit.selection_start", &xhui::MultilineEdit::selection_start);
+		e->link_class_func("MultilineEdit.clear_history", &xhui::MultilineEdit::clear_history);
+		e->link_class_func("MultilineEdit.set_save_state", &xhui::MultilineEdit::set_save_state);
+		e->link_class_func("MultilineEdit.is_save_state", &xhui::MultilineEdit::is_save_state);
+		e->link_class_func("MultilineEdit.is_undoable", &xhui::MultilineEdit::is_undoable);
+		e->link_class_func("MultilineEdit.is_redoable", &xhui::MultilineEdit::is_redoable);
+		e->link_class_func("MultilineEdit.undo", &xhui::MultilineEdit::undo);
+		e->link_class_func("MultilineEdit.redo", &xhui::MultilineEdit::redo);
+		e->link_class_func("MultilineEdit.set_cursor_pos", &xhui::MultilineEdit::set_cursor_pos);
+		e->link_class_func("MultilineEdit.replace_range", &xhui::MultilineEdit::replace_range);
+		e->link_func("MultilineEdit.index_to_line_pos", &KabaMultilineEditWrapper::index_to_line_pos_x); // EVIL :D
+		e->link_class_func("MultilineEdit.line_pos_to_index", &xhui::MultilineEdit::line_pos_to_index);
+		e->link_class_func("MultilineEdit.find_word_start", &xhui::MultilineEdit::find_word_start);
+		e->link_class_func("MultilineEdit.find_word_end", &xhui::MultilineEdit::find_word_end);
+		e->link_class_func("MultilineEdit.clean_markup", &xhui::MultilineEdit::clean_markup);
+		e->link_class_func("MultilineEdit.add_markup", &xhui::MultilineEdit::add_markup);
+	}
+
+	{
+		e->link_class_func("ListView.ColumnFactory.set_create", &KabaListViewColumnFactoryWrapper::set_create);
+		e->link_class_func("ListView.ColumnFactory.set_set", &KabaListViewColumnFactoryWrapper::set_set);
+		e->link_class_func("ListView.ColumnFactory.set_select", &KabaListViewColumnFactoryWrapper::set_select);
+
+		e->declare_class_size("ListView", sizeof(xhui::ListView));
+		e->link_class_func("ListView.column_factory", &KabaListViewWrapper::column_factory);
+	}
+
 
 	{
 		xhui::Panel panel("");
 		e->declare_class_size("Panel", sizeof(xhui::Panel));
+		e->declare_class_element("Panel.propagate_events", &xhui::Panel::propagate_events);
 		//	e->declare_class_element("Panel.win", &xhui::Panel::win);
 		e->link_class_func("Panel.__init__", &kaba::generic_init_ext<xhui::Panel, const string&>);
 		e->link_virtual("Panel.__delete__", &kaba::generic_virtual<KabaPanelWrapper>::__delete__, &panel);
@@ -174,6 +257,8 @@ void export_package_xhui(kaba::IExporter* e) {
 		//	e->link_class_func("Panel.is_expanded", &xhui::Panel::is_expanded);
 		e->link_class_func("Panel.get_control", &xhui::Panel::get_control);
 		e->link_class_func("Panel.open_dialog", &xhui::Panel::open_dialog);
+
+		e->link_class_func("Panel.set_visible", &xhui::Panel::set_visible);
 
 		e->link_class_func("Panel.event", &KabaPanelWrapper::_kaba_event);
 		e->link_class_func("Panel.event_x", &KabaPanelWrapper::_kaba_event_x);
@@ -215,6 +300,9 @@ void export_package_xhui(kaba::IExporter* e) {
 		e->link_class_func("Window.redraw", &xhui::Window::redraw);
 		e->link_class_func("Window.set_key_code", &xhui::Window::set_key_code);
 		e->link_class_func("Window.request_destroy", &xhui::Window::request_destroy);
+		e->link_class_func("Window.get_mouse_position", &xhui::Window::mouse_position);
+		e->link_class_func("Window.get_key_code", &xhui::Window::get_key_code);
+		e->link_class_func("Window.is_key_pressed", &xhui::Window::is_key_pressed);
 	}
 
 	{
@@ -391,6 +479,8 @@ void export_package_xhui(kaba::IExporter* e) {
 #endif
 
 	e->link("app_config", &xhui::config);
+
+	e->link_func("create_control", &xhui::create_control);
 }
 
 

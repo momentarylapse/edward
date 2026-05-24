@@ -70,6 +70,7 @@ public:
 	bool alt_background = false;
 	string text;
 	Index cursor_pos = 0;
+	int _cursor_preferred_col = 0;
 	Index selection_start = 0;
 	vec2 viewport_offset = {0,0};
 	vec2 viewport_size() const;
@@ -104,6 +105,8 @@ public:
 
 	LinePos index_to_line_pos(Index index) const;
 	Index line_pos_to_index(const LinePos& lp) const;
+	int index_to_column(Index index) const;
+	Index column_to_index(int col, int line) const;
 	Index prior_index(Index index) const;
 	Index next_index(Index index) const;
 	vec2 index_to_xy(Index index) const;

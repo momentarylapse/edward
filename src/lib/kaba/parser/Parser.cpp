@@ -409,7 +409,7 @@ void Parser::realize_enum(shared<Node> node, Class *_namespace) {
 		if (node->params[i*3+2]) {
 			auto cv = eval_to_const(node->params[i*3+2], tree->root_of_all_evil->block, common_types.i32);
 			next_value = cv->as_const()->as_int();
-		} else {
+		} else if (flags_has(_class->flags, Flags::Extern)) {
 			// linked from host program?
 			next_value = context->external->process_class_offset(_class->cname(_namespace), c->name, next_value);
 		}
@@ -458,7 +458,8 @@ void parser_class_add_element(Parser *p, Class *_class, const string &name, cons
 		_class->static_variables.add(v);
 	} else {
 		_offset = mem_align(_offset, type->alignment);
-		_offset = p->context->external->process_class_offset(_class->cname(p->tree->base_class), name, _offset);
+		if (flags_has(_class->flags, Flags::Extern))
+			_offset = p->context->external->process_class_offset(_class->cname(p->tree->base_class), name, _offset);
 		auto el = ClassElement(name, type, _offset, token_id);
 		_class->elements.add(el);
 		_offset += (int)type->size;
@@ -500,6 +501,8 @@ Class *Parser::realize_class_header(shared<Node> node, Class* _namespace, int64&
 			tree->module->do_error_internal("class declaration ...not found " + name);
 		_class->token_id = node->token_id;
 		_class->from_template = parse_class_type(node->params[0]->as_token()); // class/struct/interface;
+		if (flags_has(node->flags, Flags::Extern))
+			flags_set(_class->flags, Flags::Extern);
 	}
 
 	// template?
@@ -549,6 +552,7 @@ Class *Parser::realize_class_header(shared<Node> node, Class* _namespace, int64&
 	// traits
 	if (node->params[4])
 		for (auto& p: node->params[4]->params) {
+			int num_elements_before = _class->elements.num;
 			auto trait = con.concretify_as_type(p, tree->root_of_all_evil->block, _namespace); // force
 			if (!trait->fully_parsed()) {
 				do_error(format("trait class '%s' not defined or nor fully parsed yet", trait->long_name()), p);
@@ -565,7 +569,7 @@ Class *Parser::realize_class_header(shared<Node> node, Class* _namespace, int64&
 
 				for (const auto& init: trait->initializers)
 					if (init.element == i)
-						_class->initializers.add(init);
+						_class->initializers.add({init.element + num_elements_before, init.value});
 			}
 
 			for (auto f: weak(trait->functions)) {
@@ -640,8 +644,11 @@ void Parser::post_process_newly_parsed_class(Class *_class, int size) {
 				do_error("no virtual functions allowed when inheriting from class without virtual functions", _class->token_id);
 			// element "-vtable-" being derived
 		} else {
-			for (ClassElement &e: _class->elements)
-				e.offset = external->process_class_offset(_class->cname(tree->base_class), e.name, e.offset + config.target.pointer_size);
+			for (ClassElement &e: _class->elements) {
+				e.offset += config.target.pointer_size;
+				if (flags_has(_class->flags, Flags::Extern))
+					e.offset = external->process_class_offset(_class->cname(tree->base_class), e.name, e.offset);
+			}
 
 			auto el = ClassElement(Identifier::VtableVar, common_types.pointer, 0, _class->token_id);
 			_class->elements.insert(el, 0);
@@ -658,7 +665,10 @@ void Parser::post_process_newly_parsed_class(Class *_class, int size) {
 	for (auto &e: _class->elements)
 		align = max(align, e.type->alignment);
 	size = mem_align(size, align);
-	_class->size = external->process_class_size(_class->cname(tree->base_class), size);
+	if (flags_has(_class->flags, Flags::Extern))
+		size = external->process_class_size(_class->cname(tree->base_class), size);
+	flags_clear(_class->flags, Flags::Extern);
+	_class->size = size;
 	_class->alignment = align;
 
 

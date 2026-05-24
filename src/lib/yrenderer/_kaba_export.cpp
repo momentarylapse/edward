@@ -490,7 +490,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 }
 
 void export_package_yrenderer(kaba::IExporter* ext) {
-	ext->package_info("yrenderer", "0.10");
+	ext->package_info("yrenderer", "0.11");
 	_export_package_yrenderer_internal(ext);
 }
 

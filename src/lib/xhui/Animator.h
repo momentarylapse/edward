@@ -21,7 +21,7 @@ struct Animator {
 	float time = 0; // real time
 	float duration = 0.3f;
 	float t0 = 0; // relative mapping (0 => t0, duration => t1)
-	float t1 = 0;
+	float t1 = 1;
 	float t = 0;
 	int id_runner = -1;
 	os::Timer timer;

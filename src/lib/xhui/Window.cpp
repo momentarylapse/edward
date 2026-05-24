@@ -726,6 +726,10 @@ vec2 Window::mouse_position() const {
 	return state.m;
 }
 
+int Window::get_key_code() const {
+	return state.key_code;
+}
+
 
 void Window::start_pre_drag(Control* source) {
 	drag.pre_distance = 0;

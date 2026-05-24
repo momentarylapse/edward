@@ -177,6 +177,7 @@ add_executable(edward
 	src/lib/base/array.cpp
 	src/lib/base/pointer.cpp
 	src/lib/base/strings.cpp
+	src/lib/codeeditor/_kaba_export.cpp
 	src/lib/codeeditor/CodeEditor.cpp
 	src/lib/doc/_kaba_export.cpp
 	src/lib/doc/chunked.cpp
@@ -317,6 +318,7 @@ add_executable(edward
 	src/lib/pattern/Observable.cpp
 	src/lib/profiler/_kaba_export.cpp
 	src/lib/profiler/Profiler.cpp
+	src/lib/syntaxhighlight/_kaba_export.cpp
 	src/lib/syntaxhighlight/AutoComplete.cpp
 	src/lib/syntaxhighlight/BaseParser.cpp
 	src/lib/syntaxhighlight/ParserC.cpp

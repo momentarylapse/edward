@@ -83,7 +83,7 @@ int file_line_column_to_offset(const Path& file, int line, int col) {
 	string text = os::fs::read_text(file);
 	int offset = col;
 	auto lines = text.explode("\n");
-	for (int i=0; i<line; i++)
+	for (int i=0; i<min(line, lines.num); i++)
 		offset += lines[i].num + 1;
 	return offset;
 }

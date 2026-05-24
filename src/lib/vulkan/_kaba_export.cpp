@@ -268,7 +268,7 @@ public:
 
 void export_package_vulkan(kaba::IExporter* e) {
 	//printf("<vulkan export>\n");
-	e->package_info("vulkan", "3");
+	e->package_info("vulkan", "4");
 
 	e->declare_class_size("Instance", sizeof(vulkan::Instance));
 	e->link_class_func("Instance.__delete__", &kaba::generic_delete<vulkan::Instance>);
