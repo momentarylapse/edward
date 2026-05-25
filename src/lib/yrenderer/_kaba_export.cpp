@@ -216,6 +216,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 	ext->declare_class_element("Material.Friction.jump", &Material::Friction::jump);
 
 	ext->declare_class_size("Material", sizeof(Material));
+	ext->link_class_func("Material.__init__", &kaba::generic_init<Material>);
 	ext->link_class_func("Material.__delete__", &kaba::generic_delete<Material>);
 	ext->declare_class_element("Material.textures", &Material::textures);
 	ext->declare_class_element("Material.pass0", &Material::pass0);

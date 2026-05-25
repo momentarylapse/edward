@@ -101,6 +101,7 @@ public:
 
 	struct LinePos {
 		int line, offset;
+		int dummy[6]; // prevent return-by-value for kaba compatibility :P
 	};
 
 	LinePos index_to_line_pos(Index index) const;

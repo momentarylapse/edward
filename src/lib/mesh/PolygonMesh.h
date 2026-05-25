@@ -74,7 +74,7 @@ struct PolygonMesh {
 	void clear();
 	bool is_empty() const;
 
-	Box bounding_box() const;
+	base::optional<Box> bounding_box() const;
 
 	void add_vertex(const vec3 &pos);
 	void add_polygon(const Array<int> &v, const Array<vec3> &sv);

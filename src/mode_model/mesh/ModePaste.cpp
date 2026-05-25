@@ -51,7 +51,7 @@ void ModePaste::on_key_down(int key) {
 
 void ModePaste::on_mouse_move(const vec2& m, const vec2& d) {
 	const vec3 p = multi_view->cursor_pos_3d(m);
-	transformation = mat4::translation(p - mode_mesh->temp_mesh->bounding_box().center());
+	transformation = mat4::translation(p - mode_mesh->temp_mesh->bounding_box().value_or(Box::EMPTY).center());
 	session->win->request_redraw();
 }
 

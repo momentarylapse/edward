@@ -57,18 +57,6 @@ namespace hui{
 			event_xp(id, msg, [&ff](Painter *p){ ff(p); });
 		}
 	};
-	class KabaMultilineEditWrapper : public xhui::Edit {
-	public:
-#ifdef OS_WINDOWS
-		static void index_to_line_pos_x(xhui::Edit* edit, xhui::Edit::LinePos* lp, int pos) {
-			*lp = edit->index_to_line_pos(pos);
-		}
-#else
-		static void index_to_line_pos_x(xhui::Edit::LinePos* lp, xhui::Edit* edit, int pos) {
-			*lp = edit->index_to_line_pos(pos);
-		}
-#endif
-	};
 	class KabaListViewColumnFactoryWrapper: public xhui::ListView::ColumnFactory {
 	public:
 		void set_create(Callable<xhui::Control*(const string&)>& f) {
@@ -196,7 +184,7 @@ void export_package_xhui(kaba::IExporter* e) {
 		e->link_class_func("MultilineEdit.redo", &xhui::MultilineEdit::redo);
 		e->link_class_func("MultilineEdit.set_cursor_pos", &xhui::MultilineEdit::set_cursor_pos);
 		e->link_class_func("MultilineEdit.replace_range", &xhui::MultilineEdit::replace_range);
-		e->link_func("MultilineEdit.index_to_line_pos", &KabaMultilineEditWrapper::index_to_line_pos_x); // EVIL :D
+		e->link_class_func("MultilineEdit.index_to_line_pos", &xhui::MultilineEdit::index_to_line_pos);
 		e->link_class_func("MultilineEdit.line_pos_to_index", &xhui::MultilineEdit::line_pos_to_index);
 		e->link_class_func("MultilineEdit.find_word_start", &xhui::MultilineEdit::find_word_start);
 		e->link_class_func("MultilineEdit.find_word_end", &xhui::MultilineEdit::find_word_end);

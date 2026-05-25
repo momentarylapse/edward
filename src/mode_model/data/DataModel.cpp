@@ -279,8 +279,8 @@ void DataModel::import_from_triangle_mesh(int index) {
 
 
 Box DataModel::bounding_box() {
-	auto box = mesh->bounding_box();
-	auto box2 = phys_mesh->bounding_box();
+	auto box = mesh->bounding_box().value_or(Box::EMPTY);
+	auto box2 = phys_mesh->bounding_box().value_or(Box::EMPTY);
 	if (box2.min != box2.max)
 		box = box or box2;
 	return box;

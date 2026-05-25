@@ -413,10 +413,10 @@ void PolygonMesh::remove_unused_vertices() {
 		}
 }
 
-Box PolygonMesh::bounding_box() const {
-	Box box = {v_0, v_0};
-	if (vertices.num > 0)
-		box = {vertices[0].pos, vertices[0].pos};
+base::optional<Box> PolygonMesh::bounding_box() const {
+	if (vertices.num == 0)
+		return base::None;
+	Box box = {vertices[0].pos, vertices[0].pos};
 
 	for (const auto &v: vertices)
 		box = box or Box{v.pos, v.pos};
