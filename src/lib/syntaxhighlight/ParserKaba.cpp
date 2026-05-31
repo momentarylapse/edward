@@ -130,6 +130,7 @@ void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 		//msg_error(e.message());
 	}
 
+	clear_symbols();
 	for (auto p: weak(context.get()->internal_packages)) {
 		add_class(this, p->main_module->base_class(), "");
 		//if (p->used_by_default)

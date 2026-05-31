@@ -12,6 +12,8 @@ DrawingHelperData::DrawingHelperData(Context* c) {
 
 void DrawingHelperData::reset_frame() {
 	//descriptor_sets_used = 0;
+	num_line_vbs_used = 0;
+	num_line_vbs_with_color_used = 0;
 }
 
 void DrawingHelperData::create_basic() {

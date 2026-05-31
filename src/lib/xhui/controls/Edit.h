@@ -95,6 +95,7 @@ public:
 	void auto_insert(const string& t);
 	void multi_line_indent(int indent);
 	string get_range(Index i0, Index i1) const;
+	string current_line_leading_whitespace() const;
 
 	Index find_word_start(Index i0) const;
 	Index find_word_end(Index i0) const;

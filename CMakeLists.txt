@@ -412,6 +412,7 @@ add_executable(edward
 	src/lib/yrenderer/helper/CubeMapSource.cpp
 	src/lib/yrenderer/helper/jitter.cpp
 	src/lib/yrenderer/helper/LightMeter.cpp
+	src/lib/yrenderer/helper/LineHelper.cpp
 	src/lib/yrenderer/helper/Pipeline.cpp
 	src/lib/yrenderer/helper/PipelineManager.cpp
 	src/lib/yrenderer/post/HDRResolver.cpp

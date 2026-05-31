@@ -245,7 +245,7 @@ void Edit::on_key_down(int key) {
 	} else if (key == KEY_Y + mod) {
 		redo();
 		prevent_event_propagation();
-	} else if (key == KEY_BACKSPACE) {
+	} else if (key == KEY_BACKSPACE or key == KEY_BACKSPACE + KEY_SHIFT) {
 		if (cursor_pos != selection_start) {
 			delete_selection();
 		} else if (cursor_pos > 0) {
@@ -263,14 +263,14 @@ void Edit::on_key_down(int key) {
 		if (cursor_pos != selection_start) {
 			delete_selection();
 		} else if (cursor_pos > 0) {
-			delete_range(find_word_start(cursor_pos), cursor_pos);
+			delete_range(find_word_start(cursor_pos-1), cursor_pos);
 		}
 		prevent_event_propagation();
 	} else if (key == KEY_DELETE + mod_word) {
 		if (cursor_pos != selection_start) {
 			delete_selection();
 		} else if (cursor_pos < text.num) {
-			delete_range(cursor_pos, find_word_end(cursor_pos));
+			delete_range(cursor_pos, find_word_end(cursor_pos+1));
 		}
 		prevent_event_propagation();
 	} else if (key_no_shift == KEY_LEFT + mod_word) {
@@ -281,7 +281,7 @@ void Edit::on_key_down(int key) {
 		prevent_event_propagation();
 	} else if (key == KEY_RETURN) {
 		if (multiline)
-			auto_insert("\n");
+			auto_insert("\n" + current_line_leading_whitespace());
 		else
 			emit_event(event_id::ActivateDialogDefault, false);
 		prevent_event_propagation();
@@ -300,6 +300,17 @@ void Edit::on_key_down(int key) {
 	emit_event(event_id::KeyDown, false);
 	request_redraw();
 	user_editing = false;
+}
+
+string Edit::current_line_leading_whitespace() const {
+	int line0 = index_to_line_pos(cursor_pos).line;
+	if (line0 < 0 or line0 >= cache.lines.num)
+		return "";
+	const auto& l = cache.lines[line0];
+	for (int i=0; i<l.num; i++)
+		if (l[i] != ' ' and l[i] != '\t')
+			return l.head(i);
+	return l;
 }
 
 void Edit::multi_line_indent(int indent) {
@@ -790,7 +801,8 @@ Edit::Index Edit::column_to_index(int col_target, int line_no) const {
 			col = ((col + tab_size) / tab_size) * tab_size;
 		else
 			col ++;
-		offset = next;
+		if (col <= col_target)
+			offset = next;
 	}
 	return clamp(i0 + offset, 0, text.num);
 }

@@ -726,6 +726,14 @@ vec2 Window::mouse_position() const {
 	return state.m;
 }
 
+vec2 Window::mouse_delta() const {
+	return state.m - state_prev.m;
+}
+
+vec2 Window::get_scroll() const {
+	return state.scroll;
+}
+
 int Window::get_key_code() const {
 	return state.key_code;
 }

@@ -26,6 +26,26 @@ void Context::_create_default_textures() {
 	tex_white->_pointer_ref_counter = 999999999;
 }
 
+VertexBuffer* DrawingHelperData::get_line_vb(bool with_color) {
+	if (with_color) {
+		if (num_line_vbs_with_color_used < line_vbs_with_color.num)
+			return line_vbs_with_color[num_line_vbs_with_color_used ++];
+
+		auto _vb = new VertexBuffer("3f,3f,2f,4f");
+		line_vbs_with_color.add(_vb);
+		num_line_vbs_with_color_used ++;
+		return _vb;
+	} else {
+		if (num_line_vbs_used < line_vbs.num)
+			return line_vbs[num_line_vbs_used ++];
+
+		auto _vb = new VertexBuffer("3f,3f,2f");
+		line_vbs.add(_vb);
+		num_line_vbs_used ++;
+		return _vb;
+	}
+}
+
 TextCache& DrawingHelperData::get_text_cache(const string& text, font::Face* face, float font_size, float ui_scale) {
 	for (auto& tc: text_caches)
 		if (tc.text == text and tc.face == face and tc.font_size == font_size) {

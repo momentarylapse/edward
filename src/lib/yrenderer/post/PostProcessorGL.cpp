@@ -185,7 +185,7 @@ void PostProcessor::process_depth(FrameBuffer *source, FrameBuffer *target, cons
 
 void PostProcessor::process(const Array<Texture*> &source, FrameBuffer *target, Shader *shader, const Any &data) {
 	nix::bind_frame_buffer(target);
-	nix::set_scissor(dynamicly_scaled_area(target));
+	nix::set_scissor(dynamicly_scaled_area(target), target->area());
 	nix::set_z(false, false);
 	//nix::set_projection_ortho_relative();
 	//nix::set_view_matrix(matrix::ID);
@@ -196,7 +196,7 @@ void PostProcessor::process(const Array<Texture*> &source, FrameBuffer *target, 
 
 	nix::bind_textures(source);
 	nix::draw_triangles(vb_2d);
-	nix::set_scissor(rect::EMPTY);
+	nix::set_scissor(rect::EMPTY, target->area());
 }
 
 }

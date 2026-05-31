@@ -10,6 +10,20 @@
 
 namespace ygfx {
 
+
+void draw_simple(DrawingHelperData* aux, const Array<Vertex1>& p, const mat4& mat, const color& _color, bool use_z) {
+	auto vb = aux->get_line_vb();
+	vb->update(p);
+
+	nix::set_model_matrix(mat);
+	nix::set_shader(aux->shader);
+	nix::set_z(use_z, use_z);
+	aux->shader->set_color("_color_", _color);
+	aux->shader->set_default_data();
+	nix::bind_texture(0, aux->context->tex_white);
+	nix::draw_triangles(vb);
+}
+
 void Painter::clear(const color &c) {
 	nix::clear(context->color_input_to_shaders(c));
 }
@@ -76,31 +90,6 @@ void Painter::draw_rect(const rect &r) {
 	}
 }
 
-void Painter::draw_line(const vec2 &a, const vec2 &b) {
-	//nix::set_model_matrix(mat4::translation(vec3(offset_x + r.x1, offset_y + r.y1, 0)) * mat4::scale(r.width(), r.height(), 1));
-	nix::set_model_matrix(mat4::translation(vec3(a.x + offset_x, a.y + offset_y, 0))
-			* mat4::rotation_z(atan2(b.y - a.y, b.x - a.x))
-			* mat4::scale((b - a).length(), line_width, 1));
-	nix::set_shader(aux->shader);
-	if (_color.a < 1)
-		nix::set_alpha_split(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA, nix::Alpha::ZERO, nix::Alpha::ONE);
-	aux->shader->set_color("_color_", _color);
-	aux->shader->set_default_data();
-	nix::bind_texture(0, context->tex_white);
-	nix::draw_triangles(aux->vb);
-	nix::disable_alpha();
-}
-
-void Painter::draw_lines(const Array<vec2> &p) {
-	if (contiguous) {
-		for (int i=0; i<p.num-1; i++)
-			draw_line(p[i], p[i+1]);
-	} else {
-		for (int i=0; i<p.num-1; i+=2)
-			draw_line(p[i], p[i+1]);
-	}
-}
-
 
 void Painter::set_transform(float rot[], const vec2 &offset) {
 	offset_x = offset.x;
@@ -109,7 +98,7 @@ void Painter::set_transform(float rot[], const vec2 &offset) {
 
 void Painter::set_clip(const rect &r) {
 	_clip = r;
-	nix::set_scissor({r.x1 * ui_scale, max(r.x2, r.x1) * ui_scale, r.y1 * ui_scale, max(r.y2, r.y1) * ui_scale});
+	nix::set_scissor({r.x1 * ui_scale, max(r.x2, r.x1) * ui_scale, r.y1 * ui_scale, max(r.y2, r.y1) * ui_scale}, native_area_window);
 }
 
 

@@ -913,7 +913,7 @@ void export_kaba_package_yengine(kaba::IExporter* ext) {
 	export_engine(ext);
 	export_renderer(ext);
 	_export_package_yrenderer_internal(ext);
-	export_package_profiler(ext);
+	_export_package_profiler_internal(ext);
 }
 
 }

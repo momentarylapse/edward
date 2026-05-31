@@ -4,6 +4,9 @@
 #include "Panel.h"
 #include "Resource.h"
 #include "Window.h"
+#include "Theme.h"
+#include "TextLayout.h"
+#include "dialogs/ColorSelectionDialog.h"
 #include "dialogs/FileSelectionDialog.h"
 #include "../kapi/KabaExporter.h"
 #include "../base/callable.h"
@@ -57,6 +60,18 @@ namespace hui{
 			event_xp(id, msg, [&ff](Painter *p){ ff(p); });
 		}
 	};
+	class KabaWindowWrapper : public xhui::Window {
+	public:
+		bool left_button() {
+			return state.lbut;
+		}
+		bool middle_button() {
+			return state.mbut;
+		}
+		bool right_button() {
+			return state.rbut;
+		}
+	};
 	class KabaListViewColumnFactoryWrapper: public xhui::ListView::ColumnFactory {
 	public:
 		void set_create(Callable<xhui::Control*(const string&)>& f) {
@@ -79,9 +94,48 @@ namespace hui{
 
 void _dummy() {}
 
+template<class T>
+class ParamCallback : public Callable<void(typename base::xparam<T>::t)> {};
+
+template<class T>
+class FutureWrapper : public base::future<color> {
+public:
+	void kaba_then(ParamCallback<T> &c) {
+		if constexpr (std::is_same_v<T, void>)
+			this->then([&c] { c(); });
+		else
+			this->then([&c] (typename base::xparam<T>::t p) { c(p); });
+	}
+	void kaba_then_or_fail(ParamCallback<T> &c, Callable<void()> &c_fail) {
+		if constexpr (std::is_same_v<T, void>)
+			this->then([&c] { c(); }).on_fail([&c_fail] { c_fail(); });
+		else
+			this->then([&c] (typename base::xparam<T>::t p) { c(p); }).on_fail([&c_fail] { c_fail(); });
+	}
+};
+
 
 void export_package_xhui(kaba::IExporter* e) {
-	e->package_info("xhui", "0.12");
+	e->package_info("xhui", "0.15");
+
+
+//	e->link_class_func("future[Color].__init__", &kaba::generic_init<kaba::KabaFuture<color>>);
+	e->link_class_func("future[Color].__delete__", &kaba::generic_delete<FutureWrapper<color>>);
+	e->link_class_func("future[Color].__assign__", &kaba::generic_assign<FutureWrapper<color>>);
+	e->link_class_func("future[Color].then", &FutureWrapper<color>::kaba_then);
+	e->link_class_func("future[Color].then_or_fail", &FutureWrapper<color>::kaba_then_or_fail);
+
+	e->declare_class_size("TextLayout", sizeof(xhui::TextLayout));
+	e->declare_class_element("TextLayout.box", &xhui::TextLayout::box);
+	e->link_class_func("TextLayout.__init__", &kaba::generic_init<xhui::TextLayout>);
+	e->link_class_func("TextLayout.__delete__", &kaba::generic_delete<xhui::TextLayout>);
+	e->link_class_func("TextLayout.__assign__", &kaba::generic_assign<xhui::TextLayout>);
+	e->link_func("TextLayout.from_format_string", &xhui::TextLayout::from_format_string);
+
+
+	e->link_func("draw_text_layout", &xhui::draw_text_layout);
+	e->link_func("draw_text_layout_with_box", &xhui::draw_text_layout_with_box);
+
 
 	e->declare_class_size("Menu", sizeof(xhui::Menu));
 	e->link_class_func("Menu.__init__", &kaba::generic_init<xhui::Menu>);
@@ -103,6 +157,8 @@ void export_package_xhui(kaba::IExporter* e) {
 	{
 		xhui::Control ctrl("");
 		e->declare_class_size("Control", sizeof(xhui::Control));
+		e->declare_class_element("Control.id", &xhui::Control::id);
+		e->declare_class_element("Control.area", &xhui::Control::area);
 		e->link_class_func("Control.request_redraw", &xhui::Control::request_redraw);
 		e->link_class_func("Control.get_window", &xhui::Control::get_window);
 
@@ -217,6 +273,7 @@ void export_package_xhui(kaba::IExporter* e) {
 		e->link_class_func("Panel.add_control", &xhui::Panel::add_control);
 		e->link_class_func("Panel.embed", &xhui::Panel::embed);
 		e->link_class_func("Panel.unembed", &xhui::Panel::unembed);
+		e->link_class_func("Panel.set_target", &xhui::Panel::set_target);
 		e->link_class_func("Panel.set_string", &xhui::Panel::set_string);
 		e->link_class_func("Panel.add_string", &xhui::Panel::add_string);
 		e->link_class_func("Panel.get_string", &xhui::Panel::get_string);
@@ -263,8 +320,13 @@ void export_package_xhui(kaba::IExporter* e) {
 	}
 
 	{
+		e->declare_class_size("Window.Drag", sizeof(xhui::Window::Drag));
+		e->declare_class_element("Window.Drag.title", &xhui::Window::Drag::title);
+		e->declare_class_element("Window.Drag.payload", &xhui::Window::Drag::payload);
+
 		xhui::Window win("", 0, 0, xhui::Flags::FAKE);
 		e->declare_class_size("Window", sizeof(xhui::Window));
+		e->declare_class_element("Window.drag", &xhui::Window::drag);
 		e->link_class_func("Window.__init__", &kaba::generic_init_ext<xhui::Window, const string&, int, int>);
 		e->link_virtual("Window.__delete__", &xhui::Window::__delete__, &win);
 		e->link_class_func("Window.destroy", &xhui::Window::request_destroy);
@@ -288,9 +350,16 @@ void export_package_xhui(kaba::IExporter* e) {
 		e->link_class_func("Window.redraw", &xhui::Window::redraw);
 		e->link_class_func("Window.set_key_code", &xhui::Window::set_key_code);
 		e->link_class_func("Window.request_destroy", &xhui::Window::request_destroy);
+		e->link_class_func("Window.set_mouse_mode", &xhui::Window::set_mouse_mode);
 		e->link_class_func("Window.get_mouse_position", &xhui::Window::mouse_position);
+		e->link_class_func("Window.get_mouse_delta", &xhui::Window::mouse_delta);
+		e->link_class_func("Window.get_scroll", &xhui::Window::get_scroll);
 		e->link_class_func("Window.get_key_code", &xhui::Window::get_key_code);
 		e->link_class_func("Window.is_key_pressed", &xhui::Window::is_key_pressed);
+		e->link_class_func("Window.left_button", &KabaWindowWrapper::left_button);
+		e->link_class_func("Window.middle_button", &KabaWindowWrapper::middle_button);
+		e->link_class_func("Window.right_button", &KabaWindowWrapper::right_button);
+		e->link_class_func("Window.start_drag", &xhui::Window::start_drag);
 	}
 
 	{
@@ -304,6 +373,9 @@ void export_package_xhui(kaba::IExporter* e) {
 	
 
 	xhui::Painter painter(nullptr, nullptr, rect::ID, rect::ID);
+	e->declare_class_element("Painter._area", &xhui::Painter::_area);
+	e->declare_class_element("Painter.native_area", &xhui::Painter::native_area);
+	e->declare_class_element("Painter.ui_scale", &xhui::Painter::ui_scale);
 	e->link_func("Painter.__init__", &_dummy); // dummy
 	e->link_virtual("Painter.__delete__", &kaba::generic_virtual<xhui::Painter>::__delete__, &painter);
 
@@ -336,6 +408,7 @@ void export_package_xhui(kaba::IExporter* e) {
 #endif
 
 	e->link_func("file_dialog", &xhui::FileSelectionDialog::ask);
+	e->link_func("color_dialog", &xhui::ColorSelectionDialog::ask);
 
 
 	e->link_func("clipboard.paste", &xhui::clipboard::paste);
@@ -466,7 +539,34 @@ void export_package_xhui(kaba::IExporter* e) {
 	add_enum("KEY_ANY", TypeInt32, hui::KEY_ANY);
 #endif
 
+	e->declare_class_size("Theme", sizeof(xhui::Theme));
+	e->declare_class_element("Theme.font_size", &xhui::Theme::font_size);
+	e->declare_class_element("Theme.font_size_small", &xhui::Theme::font_size_small);
+	e->declare_class_element("Theme.font_size_big", &xhui::Theme::font_size_big);
+	e->declare_class_element("Theme.background", &xhui::Theme::background);
+	e->declare_class_element("Theme.background_button", &xhui::Theme::background_button);
+	e->declare_class_element("Theme.background_button_primary", &xhui::Theme::background_button_primary);
+	e->declare_class_element("Theme.background_button_primary_hover", &xhui::Theme::background_button_primary_hover);
+	e->declare_class_element("Theme.background_button_primary_active", &xhui::Theme::background_button_primary_active);
+	e->declare_class_element("Theme.background_button_danger", &xhui::Theme::background_button_danger);
+	e->declare_class_element("Theme.background_button_danger_hover", &xhui::Theme::background_button_danger_hover);
+	e->declare_class_element("Theme.background_button_danger_active", &xhui::Theme::background_button_danger_active);
+	e->declare_class_element("Theme.background_header", &xhui::Theme::background_header);
+	e->declare_class_element("Theme.background_header_button", &xhui::Theme::background_header_button);
+	e->declare_class_element("Theme.background_hover", &xhui::Theme::background_active);
+	e->declare_class_element("Theme.background_low", &xhui::Theme::background_low);
+	e->declare_class_element("Theme.background_low_hover", &xhui::Theme::background_low_hover);
+	e->declare_class_element("Theme.background_low_selected", &xhui::Theme::background_low_selected);
+	e->declare_class_element("Theme.text", &xhui::Theme::text);
+	e->declare_class_element("Theme.text_label", &xhui::Theme::text_label);
+	e->declare_class_element("Theme.text_disabled", &xhui::Theme::text_disabled);
+	e->declare_class_element("Theme.text_link", &xhui::Theme::text_link);
+	e->declare_class_element("Theme.border", &xhui::Theme::border);
+	e->declare_class_element("Theme.background", &xhui::Theme::background);
+	e->link_class_func("Theme.background_raised", &xhui::Theme::background_raised);
+
 	e->link("app_config", &xhui::config);
+	e->link("theme", &xhui::Theme::_default);
 
 	e->link_func("create_control", &xhui::create_control);
 }

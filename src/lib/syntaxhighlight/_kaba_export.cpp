@@ -39,12 +39,12 @@ void _export_package_syntaxhighlight_internal(kaba::IExporter* e) {
 
 	e->link_func("get_parser", &GetParser);
 
-	e->declare_class_size("Context", sizeof(syntaxhighlight::Context));
-	e->declare_class_element("Context.fg", &syntaxhighlight::Context::fg);
-	e->declare_class_element("Context.bg", &syntaxhighlight::Context::bg);
-	e->declare_class_element("Context.bold", &syntaxhighlight::Context::bold);
-	e->declare_class_element("Context.italic", &syntaxhighlight::Context::italic);
-	e->declare_class_element("Context.set_bg", &syntaxhighlight::Context::set_bg);
+	e->declare_class_size("ThemeContext", sizeof(syntaxhighlight::Context));
+	e->declare_class_element("ThemeContext.fg", &syntaxhighlight::Context::fg);
+	e->declare_class_element("ThemeContext.bg", &syntaxhighlight::Context::bg);
+	e->declare_class_element("ThemeContext.bold", &syntaxhighlight::Context::bold);
+	e->declare_class_element("ThemeContext.italic", &syntaxhighlight::Context::italic);
+	e->declare_class_element("ThemeContext.set_bg", &syntaxhighlight::Context::set_bg);
 
 	e->declare_class_size("Theme", sizeof(syntaxhighlight::Theme));
 	e->declare_class_element("Theme.name", &syntaxhighlight::Theme::name);

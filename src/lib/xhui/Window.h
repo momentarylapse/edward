@@ -63,6 +63,8 @@ public:
 	bool is_key_pressed(int key) const;
 	void set_mouse_mode(int mode);
 	vec2 mouse_position() const;
+	vec2 mouse_delta() const;
+	vec2 get_scroll() const;
 	int get_key_code() const;
 
 	struct InputState {

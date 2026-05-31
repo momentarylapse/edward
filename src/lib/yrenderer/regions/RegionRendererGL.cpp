@@ -25,11 +25,11 @@ void RegionRenderer::draw(const RenderParams& params) {
 			sub_params.desired_aspect_ratio *= r->dest.width() / r->dest.height();
 			auto rr = rect(area.x2 * r->dest.x1, area.x2 * r->dest.x2, area.y2 * r->dest.y1, area.y2 * r->dest.y2);
 			nix::set_viewport(rect(rr));
-			nix::set_scissor(rr);
+			nix::set_scissor(rr, params.frame_buffer->area());
 			r->renderer->draw(sub_params);
 		}
 	}
-	nix::set_scissor(rect::EMPTY);
+	nix::set_scissor(rect::EMPTY, params.frame_buffer->area());
 	nix::set_viewport(area);
 	profiler::end(channel);
 }

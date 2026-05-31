@@ -7,6 +7,13 @@
 #include <lib/xhui/Painter.h>
 #include <lib/xhui/Context.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/ygraphics/Context.h>
+
+#ifdef USING_OPENGL
+namespace nix {
+	extern FrameBuffer* cur_framebuffer;
+}
+#endif
 
 namespace yrenderer {
 
@@ -18,6 +25,8 @@ RenderParams XhuiRenderer::extract_params(Painter* p) {
 	params.command_buffer = pp->cb;
 	params.render_pass = pp->context->render_pass;
 	params.frame_buffer = pp->context->current_frame_buffer();
+#else
+	params.frame_buffer = pp->context->context->ctx->default_framebuffer;
 #endif
 	params.target_is_window = true;
 	params.desired_aspect_ratio = pp->native_area.width() / pp->native_area.height();
@@ -38,14 +47,14 @@ void XhuiRenderer::render(const RenderParams& params) {
 #endif
 #ifdef USING_OPENGL
 	nix::set_viewport(params.area);
-	nix::set_scissor(params.area);
+	nix::set_scissor(params.area, params.frame_buffer->area());
 #endif
 
 	for (auto c: children)
 		c->draw(params);
 
 #ifdef USING_OPENGL
-	nix::set_scissor(rect::EMPTY);
+	nix::set_scissor(rect::EMPTY, params.frame_buffer->area());
 	nix::set_viewport(native_area_window);
 #endif
 #ifdef USING_VULKAN
