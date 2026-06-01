@@ -11,7 +11,7 @@ ActionModelEditMesh::ActionModelEditMesh(ModelMesh* _mesh, const MeshEdit& _edit
 	edit = _edit;
 }
 
-void* ActionModelEditMesh::execute(Data* data) {
+void* ActionModelEditMesh::execute(history::Data* data) {
 	auto d = dynamic_cast<DataModel*>(data);
 	edit = edit.apply_inplace(*mesh);
 
@@ -19,7 +19,7 @@ void* ActionModelEditMesh::execute(Data* data) {
 	return nullptr;
 }
 
-void ActionModelEditMesh::undo(Data* data) {
+void ActionModelEditMesh::undo(history::Data* data) {
 	execute(data);
 }
 

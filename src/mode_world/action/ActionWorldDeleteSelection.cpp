@@ -10,7 +10,7 @@
 #include <lib/base/sort.h>
 #include <ecs/EntityManager.h>
 
-ActionWorldDeleteSelection::ActionWorldDeleteSelection(DataWorld* w, const Data::Selection& selection) {
+ActionWorldDeleteSelection::ActionWorldDeleteSelection(DataWorld* w, const Selection& selection) {
 	w->copy(temp, selection);
 	if (selection.contains(MultiViewType::WORLD_ENTITY))
 		for (auto&& [i, e]: enumerate(w->entity_manager->entities))
@@ -24,7 +24,7 @@ ActionWorldDeleteSelection::ActionWorldDeleteSelection(DataWorld* w, const Data:
 			}
 }
 
-void *ActionWorldDeleteSelection::execute(Data *d) {
+void *ActionWorldDeleteSelection::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 
 	for (int i: base::reverse(entity_indices)) {
@@ -37,7 +37,7 @@ void *ActionWorldDeleteSelection::execute(Data *d) {
 	return nullptr;
 }
 
-void ActionWorldDeleteSelection::undo(Data *d) {
+void ActionWorldDeleteSelection::undo(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 
 	// TODO keep indices...

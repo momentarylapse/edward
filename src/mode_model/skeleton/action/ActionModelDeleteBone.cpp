@@ -15,7 +15,7 @@ ActionModelDeleteBone::ActionModelDeleteBone(int _index) {
 
 
 
-void *ActionModelDeleteBone::execute(Data *d) {
+void *ActionModelDeleteBone::execute(history::Data* d) {
 	auto m = dynamic_cast<DataModel*>(d);
 	ModelBone &b = m->bones[index];
 	pos = b.pos;
@@ -98,7 +98,7 @@ void *ActionModelDeleteBone::execute(Data *d) {
 
 
 
-void ActionModelDeleteBone::undo(Data *d) {
+void ActionModelDeleteBone::undo(history::Data* d) {
 	auto m = dynamic_cast<DataModel*>(d);
 	ModelBone b;
 	b.parent = parent;

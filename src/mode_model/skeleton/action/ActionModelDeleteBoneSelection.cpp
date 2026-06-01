@@ -11,5 +11,5 @@
 ActionModelDeleteBoneSelection::ActionModelDeleteBoneSelection(DataModel *m, const base::set<int>& sel) {
 	foreachib(ModelBone &b, m->bones, bi)
 		if (sel.contains(bi))
-			addSubAction(new ActionModelDeleteBone(bi), m);
+			add_sub_action(new ActionModelDeleteBone(bi), m);
 }

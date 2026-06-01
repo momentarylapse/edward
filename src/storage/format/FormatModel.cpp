@@ -1052,11 +1052,6 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 	if (data->materials.num == 0) {
 		data->materials.add(new yrenderer::Material);
 	}
-
-
-
-	if (deep)
-		data->on_post_action_update();
 }
 
 void FormatModel::_save(const Path &filename, DataModel *data) {

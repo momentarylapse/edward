@@ -8,9 +8,10 @@
 #ifndef ADMINFILE_H_
 #define ADMINFILE_H_
 
-#include "../../data/Data.h"
+#include <lib/history/Data.h>
 
 class AdminFileList;
+class Session;
 
 class AdminFile{
 public:

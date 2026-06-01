@@ -56,7 +56,7 @@ public:
 		data = _data;
 		index = _index;
 
-		material_parameter_panel = new MaterialParameterPanel(data, material());
+		material_parameter_panel = new MaterialParameterPanel(data->session, data, material());
 		material_parameter_panel->f_add_texture = [this] (shared<ygfx::Texture> t) {
 			data->execute(new ActionModelMaterialAddTexture(index, t));
 		};

@@ -5,7 +5,7 @@
 #pragma once
 
 #include <view/Mode.h>
-#include <data/Data.h>
+#include <lib/history/Data.h>
 #include <lib/base/pointer.h>
 
 class Path;
@@ -16,7 +16,7 @@ namespace codeedit {
 }
 
 
-class CodeData : public Data {
+class CodeData : public history::Data {
 public:
 	CodeData(DocumentSession* doc);
 	void reset() override {}

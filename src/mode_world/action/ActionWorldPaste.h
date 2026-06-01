@@ -7,19 +7,19 @@
 
 #pragma once
 
-#include "../../action/Action.h"
+#include <lib/history/Action.h>
 #include <y/world/LevelData.h>
 
 class DataWorld;
 struct WorldEntity;
 
-class ActionWorldPaste : public Action {
+class ActionWorldPaste : public history::Action {
 public:
 	explicit ActionWorldPaste(const LevelData& temp);
-	string name() override { return "WorldPaste"; }
+	string name() const override { return "WorldPaste"; }
 
-	void* execute(Data *d) override;
-	void undo(Data *d) override;
+	void* execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 private:
 	LevelData temp;
 };

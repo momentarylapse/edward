@@ -16,7 +16,7 @@ ActionModelPasteMesh::ActionModelPasteMesh(ModelMesh* m, const PolygonMesh &_geo
 	default_material = _default_material;
 }
 
-void *ActionModelPasteMesh::execute(Data* data) {
+void *ActionModelPasteMesh::execute(history::Data* data) {
 	auto d = dynamic_cast<DataModel*>(data);
 
 	int nv = mesh->vertices.num;
@@ -39,7 +39,7 @@ void *ActionModelPasteMesh::execute(Data* data) {
 	return nullptr;
 }
 
-void ActionModelPasteMesh::undo(Data* data) {
+void ActionModelPasteMesh::undo(history::Data* data) {
 	auto d = dynamic_cast<DataModel*>(data);
 
 	mesh->vertices.resize(mesh->vertices.num - geo.vertices.num);

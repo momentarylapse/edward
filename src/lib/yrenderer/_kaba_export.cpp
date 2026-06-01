@@ -1,27 +1,31 @@
+#include "../image/image.h"
+#include "../kapi/KabaExporter.h"
+#include "../os/msg.h"
+#include "../ygraphics/graphics-impl.h"
+#include "../ygraphics/Context.h"
 #include "Context.h"
 #include "Material.h"
+#include "MaterialManager.h"
+#include "TextureManager.h"
+#include "ShaderManager.h"
 #include "helper/ComputeTask.h"
 #include "helper/LightMeter.h"
 #include "helper/LineHelper.h"
 #include "post/HDRResolver.h"
-#include "scene/Light.h"
+#include "regions/RegionRenderer.h"
 #include "scene/CameraParams.h"
-#include "scene/SceneView.h"
+#include "scene/Light.h"
+#include "scene/MeshEmitter.h"
 #include "scene/RenderViewData.h"
 #include "scene/SceneRenderer.h"
-#include "scene/MeshEmitter.h"
+#include "scene/SceneView.h"
 #include "scene/mesh/CubeEmitter.h"
 #include "scene/path/RenderPath.h"
-#include "scene/path/RenderPathForward.h"
 #include "scene/path/RenderPathDeferred.h"
-#include "regions/RegionRenderer.h"
+#include "scene/path/RenderPathForward.h"
+#include "target/TextureRenderer.h"
 #include "target/WindowRenderer.h"
 #include "target/XhuiRenderer.h"
-#include "../ygraphics/graphics-impl.h"
-#include "../image/image.h"
-#include "../kapi/KabaExporter.h"
-#include "../os/msg.h"
-#include "target/TextureRenderer.h"
 
 
 #define _OFFSET(VAR, MEMBER)	(char*)&VAR.MEMBER - (char*)&VAR
@@ -328,6 +332,8 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 	ext->link_class_func("Shader.set_float", &shader_set_float);
 	ext->link_class_func("Shader.set_floats", &shader_set_floats);
 
+	ext->link_class_func("GfxContext.make_public", &ygfx::Context::make_current);
+
 	{
 		ext->declare_class_size("RenderParams", sizeof(RenderParams));
 		ext->link_class_func("RenderParams.__assign__", &kaba::generic_assign<RenderParams>);
@@ -527,9 +533,17 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 	ext->declare_class_element("LightMeter.histogram", &LightMeter::histogram);
 	ext->declare_class_element("LightMeter.brightness", &LightMeter::brightness);
 
+	ext->declare_class_size("TextureManager", sizeof(TextureManager));
+	ext->declare_class_size("MaterialManager", sizeof(MaterialManager));
+	ext->declare_class_size("ShaderManager", sizeof(ShaderManager));
+	ext->declare_class_element("ShaderManager.default_shader", &ShaderManager::default_shader);
+	ext->link_class_func("ShaderManager.load_shader_module", &ShaderManager::load_shader_module);
 
 	ext->declare_class_size("Context", sizeof(yrenderer::Context));
 	ext->declare_class_element("Context.ctx", &yrenderer::Context::context);
+	ext->declare_class_element("Context.texture_manager", &yrenderer::Context::texture_manager);
+	ext->declare_class_element("Context.shader_manager", &yrenderer::Context::shader_manager);
+	ext->declare_class_element("Context.material_manager", &yrenderer::Context::material_manager);
 	ext->declare_class_element("Context.tex_white", &yrenderer::Context::tex_white);
 	ext->link_class_func("Context.create_managers", &yrenderer::Context::create_managers);
 	ext->link_class_func("Context.load_material", &yrenderer::Context::load_material);

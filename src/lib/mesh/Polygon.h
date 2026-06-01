@@ -7,7 +7,6 @@
 #include <lib/base/base.h>
 #include <lib/math/vec3.h>
 #include <lib/math/vec4.h>
-#include <lib/yrenderer/Material.h>
 
 class MultiViewWindow;
 class VertexStagingBuffer;
@@ -16,9 +15,11 @@ struct mat4;
 struct MeshVertex;
 struct Edge;
 
+#define POLYGON_MAX_TEXTURES 8
+
 struct PolygonSide {
 	int vertex;
-	vec3 skin_vertex[MATERIAL_MAX_TEXTURES];
+	vec3 skin_vertex[POLYGON_MAX_TEXTURES];
 	int normal_index;
 	int smoothing_id = -1;
 	vec3 normal;

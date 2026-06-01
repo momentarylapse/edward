@@ -29,7 +29,7 @@
 
 #include <lib/base/algo.h>
 #include "view/Mode.h"
-#include "data/Data.h"
+#include <lib/history/Data.h>
 #include "storage/format/Format.h"
 #include "storage/Storage.h"
 #include "lib/xhui/config.h"

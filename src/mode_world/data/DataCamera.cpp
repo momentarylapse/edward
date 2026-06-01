@@ -13,7 +13,7 @@
 #include <lib/os/msg.h>
 
 DataCamera::DataCamera(DocumentSession *s) :
-	Data(s, FD_CAMERAFLIGHT)
+	Data(FD_CAMERAFLIGHT)
 {
 }
 
@@ -137,7 +137,7 @@ bool DataCamera::save(const Path &_filename)
 	f->write_comment("#");
 
 	delete f;
-	session->info("Camera script saved!");
+	action_manager->out_saved();
 	action_manager->mark_current_as_save();
 
 	} catch(Exception &e) {

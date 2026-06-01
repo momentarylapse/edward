@@ -26,7 +26,7 @@ ActionWorldAddTerrain::ActionWorldAddTerrain(const vec3 &_pos, const vec3 &_size
 	num_z = _num_z;
 }
 
-void ActionWorldAddTerrain::undo(Data *d) {
+void ActionWorldAddTerrain::undo(history::Data* d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	/*assert(w->terrains.num > 0);
 
@@ -36,7 +36,7 @@ void ActionWorldAddTerrain::undo(Data *d) {
 
 
 
-void *ActionWorldAddTerrain::execute(Data *d) {
+void *ActionWorldAddTerrain::execute(history::Data* d) {
 	DataWorld *w = dynamic_cast<DataWorld*>(d);
 	WorldTerrain t;
 

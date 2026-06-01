@@ -13,7 +13,7 @@
 #include "../../../data/ModelMesh.h"
 #include <lib/mesh/Polygon.h>
 
-ActionModelSetMaterial::ActionModelSetMaterial(DataModel *m, const Data::Selection& sel, int _material) {
+ActionModelSetMaterial::ActionModelSetMaterial(DataModel *m, const Selection& sel, int _material) {
 	material = _material;
 
 	// save old data
@@ -25,7 +25,7 @@ ActionModelSetMaterial::ActionModelSetMaterial(DataModel *m, const Data::Selecti
 }
 
 
-void *ActionModelSetMaterial::execute(Data *d) {
+void *ActionModelSetMaterial::execute(history::Data* d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 
@@ -38,7 +38,7 @@ void *ActionModelSetMaterial::execute(Data *d) {
 
 
 
-void ActionModelSetMaterial::undo(Data *d) {
+void ActionModelSetMaterial::undo(history::Data* d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	foreachi (int i, triangle, k) {

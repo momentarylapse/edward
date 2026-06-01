@@ -15,7 +15,7 @@
 #include <ecs/EntityManager.h>
 #include <ecs/Entity.h>
 
-ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Selection& selection) {
+ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Selection& selection) {
 	// list of selected objects and save old pos
 	if (selection.contains(MultiViewType::WORLD_ENTITY))
 		for (const auto& [i, o]: enumerate(d->entity_manager->entities))
@@ -36,7 +36,7 @@ ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Data::Sel
 			}
 }
 
-void *ActionWorldMoveSelection::execute(Data *d) {
+void *ActionWorldMoveSelection::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto dq = quaternion::rotation(mat);
 	for (const auto& [ii, i]: enumerate(index)) {
@@ -50,7 +50,7 @@ void *ActionWorldMoveSelection::execute(Data *d) {
 	return nullptr;
 }
 
-void ActionWorldMoveSelection::undo(Data *d) {
+void ActionWorldMoveSelection::undo(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	for (const auto& [ii, i]: enumerate(index)) {
 		if (type[ii] == MultiViewType::WORLD_ENTITY) {

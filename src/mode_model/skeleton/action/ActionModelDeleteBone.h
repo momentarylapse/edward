@@ -8,17 +8,17 @@
 #ifndef ACTIONMODELDELETEBONE_H_
 #define ACTIONMODELDELETEBONE_H_
 
-#include <action/Action.h>
+#include <lib/history/Action.h>
 #include <lib/math/vec3.h>
 #include <lib/math/vec4.h>
 
-class ActionModelDeleteBone: public Action {
+class ActionModelDeleteBone: public history::Action {
 public:
 	explicit ActionModelDeleteBone(int _index);
-	string name() override { return "ModelDeleteBone"; }
+	string name() const override { return "ModelDeleteBone"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	int index;

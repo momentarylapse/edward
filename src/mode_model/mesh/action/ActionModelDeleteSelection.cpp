@@ -9,7 +9,7 @@
 #include <mode_model/data/DataModel.h>
 #include <mode_model/data/ModelMesh.h>
 
-ActionModelDeleteSelection::ActionModelDeleteSelection(ModelMesh* m, const Data::Selection& selection, bool greedy) {
+ActionModelDeleteSelection::ActionModelDeleteSelection(ModelMesh* m, const Selection& selection, bool greedy) {
 	mesh = m;
 	if (greedy) {
 		if (selection.contains(MultiViewType::MODEL_VERTEX)) {
@@ -93,7 +93,7 @@ ActionModelDeleteSelection::ActionModelDeleteSelection(ModelMesh* m, const Data:
 	}
 }
 
-void *ActionModelDeleteSelection::execute(Data* data) {
+void *ActionModelDeleteSelection::execute(history::Data* data) {
 	auto d = dynamic_cast<DataModel*>(data);
 
 	for (int i: base::reverse(vertex_indices))
@@ -118,7 +118,7 @@ void *ActionModelDeleteSelection::execute(Data* data) {
 	return nullptr;
 }
 
-void ActionModelDeleteSelection::undo(Data* data) {
+void ActionModelDeleteSelection::undo(history::Data* data) {
 	auto d = dynamic_cast<DataModel*>(data);
 
 	for (auto& p: mesh->polygons)

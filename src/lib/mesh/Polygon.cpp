@@ -51,9 +51,9 @@ Array<Edge> Polygon::get_edges() const {
 
 Array<vec3> Polygon::get_skin_vertices() const {
 	Array<vec3> sv;
-	sv.resize(side.num * MATERIAL_MAX_TEXTURES);
+	sv.resize(side.num * POLYGON_MAX_TEXTURES);
 	int n = 0;
-	for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
+	for (int l=0;l<POLYGON_MAX_TEXTURES;l++)
 		for (int i=0; i<side.num; i++)
 			sv[n ++] = side[i].skin_vertex[l];
 	return sv;

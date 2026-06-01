@@ -7,6 +7,7 @@
 #include "action/ActionModelDeleteBoneSelection.h"
 #include "../mesh/ModeMesh.h"
 #include "../ModeModel.h"
+#include "../data/DataModel.h"
 #include <view/DrawingHelper.h>
 #include <view/MultiView.h>
 #include <view/MultiViewWindow.h>
@@ -44,9 +45,9 @@ void ModeSkeleton::on_enter() {
 	multi_view->f_select = [this] (MultiViewWindow* win, const rect& r) {
 		return select_in_rect(win, r);
 	};
-	multi_view->f_make_selection_consistent = [this] (Data::Selection& sel) {
+	multi_view->f_make_selection_consistent = [] (Selection& sel) {
 	};
-	multi_view->f_get_selection_box = [this] (const Data::Selection& sel) {
+	multi_view->f_get_selection_box = [this] (const Selection& sel) {
 		return get_selection_box(sel);
 	};
 	multi_view->f_create_action = [this] {
@@ -66,7 +67,7 @@ void ModeSkeleton::on_leave_rec() {
 void ModeSkeleton::optimize_view() {
 }
 
-base::optional<string> skeleton_selection_description(DataModel* m, const Data::Selection& sel) {
+base::optional<string> skeleton_selection_description(DataModel* m, const Selection& sel) {
 	int nbones = 0;
 	if (sel.contains(MultiViewType::SKELETON_BONE))
 		nbones = sel[MultiViewType::SKELETON_BONE].num;
@@ -160,13 +161,13 @@ base::optional<Hover> ModeSkeleton::get_hover(MultiViewWindow* win, const vec2& 
 	return h;
 }
 
-Data::Selection ModeSkeleton::select_in_rect(MultiViewWindow* win, const rect& r) {
-	Data::Selection sel;
+Selection ModeSkeleton::select_in_rect(MultiViewWindow* win, const rect& r) {
+	Selection sel;
 	sel.add({MultiViewType::SKELETON_BONE, MultiView::select_points_in_rect(win, r, data->bones)});
 	return sel;
 }
 
-base::optional<Box> ModeSkeleton::get_selection_box(const Data::Selection& sel) const {
+base::optional<Box> ModeSkeleton::get_selection_box(const Selection& sel) const {
 	return MultiView::points_get_selection_box(data->bones, sel[MultiViewType::SKELETON_BONE]);
 }
 

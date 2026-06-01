@@ -195,10 +195,10 @@ void ModeMesh::on_enter() {
 	multi_view->f_select = [this] (MultiViewWindow* win, const rect& r) {
 		return select_in_rect(win, r);
 	};
-	multi_view->f_make_selection_consistent = [this] (Data::Selection& sel) {
+	multi_view->f_make_selection_consistent = [this] (Selection& sel) {
 		return make_selection_consistent(sel);
 	};
-	multi_view->f_get_selection_box = [this] (const Data::Selection& sel) {
+	multi_view->f_get_selection_box = [this] (const Selection& sel) {
 		return get_selection_box(sel);
 	};
 	multi_view->f_create_action = [this] {
@@ -450,7 +450,7 @@ void ModeMesh::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindo
 		draw_edges(params, win, sele);
 }
 
-base::optional<string> model_selection_description(DataModel* m, const Data::Selection& sel) {
+base::optional<string> model_selection_description(DataModel* m, const Selection& sel) {
 	int nvert = 0, npoly = 0, nsphere = 0, ncyl = 0;
 	if (sel.contains(MultiViewType::MODEL_VERTEX))
 		nvert = sel[MultiViewType::MODEL_VERTEX].num;
@@ -631,8 +631,8 @@ void selection_edges_from_polygons(base::set<int>& sele, const base::set<int>& s
 				sele.add(edges.find(e));
 }
 
-Data::Selection ModeMesh::select_in_rect(MultiViewWindow* win, const rect& r) {
-	Data::Selection sel;
+Selection ModeMesh::select_in_rect(MultiViewWindow* win, const rect& r) {
+	Selection sel;
 	sel.add({MultiViewType::MODEL_VERTEX, {}});
 	sel.add({MultiViewType::MODEL_EDGE, {}});
 	sel.add({MultiViewType::MODEL_POLYGON, {}});
@@ -652,7 +652,7 @@ Data::Selection ModeMesh::select_in_rect(MultiViewWindow* win, const rect& r) {
 	return sel;
 }
 
-void ModeMesh::make_selection_consistent(Data::Selection &sel) const {
+void ModeMesh::make_selection_consistent(Selection &sel) const {
 	if (presentation_mode == PresentationMode::Vertices) {
 		selection_edges_from_vertices(sel[MultiViewType::MODEL_EDGE], sel[MultiViewType::MODEL_VERTEX], edges_cached);
 		selection_polygons_from_vertices(sel[MultiViewType::MODEL_POLYGON], sel[MultiViewType::MODEL_VERTEX], *data->editing_mesh);
@@ -671,7 +671,7 @@ void ModeMesh::make_selection_consistent(Data::Selection &sel) const {
 	}
 }
 
-base::optional<Box> ModeMesh::get_selection_box(const Data::Selection& sel) const {
+base::optional<Box> ModeMesh::get_selection_box(const Selection& sel) const {
 	return MultiView::points_get_selection_box(data->editing_mesh->vertices, sel[MultiViewType::MODEL_VERTEX]);
 }
 

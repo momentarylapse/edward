@@ -11,14 +11,14 @@ ActionModelAddPolygon::ActionModelAddPolygon(ModelMesh* _mesh, const Polygon& p)
 	polygon = p;
 }
 
-void *ActionModelAddPolygon::execute(Data* data) {
+void *ActionModelAddPolygon::execute(history::Data* data) {
 	auto d = dynamic_cast<DataModel*>(data);
 	mesh->polygons.add(polygon);
 	d->out_topology_changed();
 	return &mesh->polygons.back();
 }
 
-void ActionModelAddPolygon::undo(Data* data) {
+void ActionModelAddPolygon::undo(history::Data* data) {
 	auto d = dynamic_cast<DataModel*>(data);
 	mesh->polygons.pop();
 	d->out_topology_changed();

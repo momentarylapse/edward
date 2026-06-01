@@ -16,7 +16,7 @@
 
 #include "format/FormatTerrain.h"
 #include "format/FormatWorld.h"
-#include "../data/Data.h"
+#include <lib/history/Data.h>
 #include "../lib/os/filesystem.h"
 #include "../lib/os/msg.h"
 #include "../lib/xhui/xhui.h"
@@ -54,7 +54,7 @@ Storage::~Storage() {
 		delete f;
 }
 
-int data_type(Data *data) {
+int data_type(history::Data *data) {
 	return data->type;
 	/*if (dynamic_cast<DataModel*>(data))
 		return FD_MODEL;
@@ -76,7 +76,7 @@ int Storage::guess_type(const Path &filename) {
 	return -1;
 }
 
-bool Storage::load(const Path &_filename, Data *data, bool deep) {
+bool Storage::load(const Path &_filename, history::Data *data, bool deep) {
 	auto filename = _filename.absolute().canonical();
 	try {
 		int type = data_type(data);
@@ -108,7 +108,7 @@ bool Storage::load(const Path &_filename, Data *data, bool deep) {
 	return false;
 }
 
-bool Storage::save(const Path &_filename, Data *data) {
+bool Storage::save(const Path &_filename, history::Data *data) {
 	auto filename = _filename.absolute().canonical();
 	try {
 		int type = data_type(data);
@@ -135,7 +135,7 @@ bool Storage::save(const Path &_filename, Data *data) {
 }
 
 // canonical
-base::future<void> Storage::open(Data *data) {
+base::future<void> Storage::open(history::Data *data) {
 	base::promise<void> promise;
 
 	session->allow_termination().then([this, data, promise] {
@@ -160,7 +160,7 @@ base::future<void> Storage::open(Data *data) {
 }
 
 // canonical
-base::future<void> Storage::save_as(Data *data) {
+base::future<void> Storage::save_as(history::Data *data) {
 	base::promise<void> promise;
 
 	int type = data_type(data);
@@ -181,7 +181,7 @@ base::future<void> Storage::save_as(Data *data) {
 	return promise.get_future();
 }
 
-base::future<void> Storage::auto_save(Data *data) {
+base::future<void> Storage::auto_save(history::Data *data) {
 	if (data->filename) {
 		base::promise<void> promise;
 		if (save(data->filename, data))

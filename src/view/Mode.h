@@ -18,7 +18,9 @@ class MultiView;
 class DocumentSession;
 class Session;
 class Painter;
-class Data;
+namespace history {
+	class Data;
+}
 class MultiViewWindow;
 struct Hover;
 class Path;
@@ -66,8 +68,8 @@ public:
 	DocumentSession* doc = nullptr;
 	Session* session = nullptr;
 	MultiView* multi_view = nullptr;
-	Data* generic_data = nullptr;
-	Data* get_data() const { return generic_data; }
+	history::Data* generic_data = nullptr;
+	history::Data* get_data() const { return generic_data; }
 	virtual Path get_filename() const;
 	virtual bool is_save_state() const;
 	virtual bool is_undoable() const;

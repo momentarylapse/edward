@@ -6,16 +6,16 @@
 #define ACTIONWORLDEDITCOMPONENT_H
 
 
-#include "../../../action/Action.h"
+#include <lib/history/Action.h>
 #include "../../data/DataWorld.h"
 
-class ActionWorldEditBaseEntity : public Action {
+class ActionWorldEditBaseEntity : public history::Action {
 public:
 	explicit ActionWorldEditBaseEntity(int index, const vec3& pos, const quaternion& ang);
-	string name() override { return "WorldEditBaseEntity"; }
+	string name() const override { return "WorldEditBaseEntity"; }
 
-	void* execute(Data* d) override;
-	void undo(Data* d) override;
+	void* execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	int index;
@@ -23,13 +23,13 @@ private:
 	quaternion ang;
 };
 
-class ActionWorldEditComponent : public Action {
+class ActionWorldEditComponent : public history::Action {
 public:
 	explicit ActionWorldEditComponent(int index, const kaba::Class* type, const ecs::InstanceData& c);
-	string name() override { return "WorldEditComponent"; }
+	string name() const override { return "WorldEditComponent"; }
 
-	void *execute(Data* d) override;
-	void undo(Data* d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	int index;
@@ -37,13 +37,13 @@ private:
 	ecs::InstanceData component;
 };
 
-class ActionWorldAddComponent : public Action {
+class ActionWorldAddComponent : public history::Action {
 public:
 	explicit ActionWorldAddComponent(int index, const kaba::Class* type, const Array<ecs::InstanceDataVariable>& variables);
-	string name() override { return "WorldAddComponent"; }
+	string name() const override { return "WorldAddComponent"; }
 
-	void* execute(Data* d) override;
-	void undo(Data* d) override;
+	void* execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	int index;
@@ -52,26 +52,26 @@ private:
 	ecs::Component* component = nullptr;
 };
 
-/*class ActionWorldAddUserComponent : public Action {
+/*class ActionWorldAddUserComponent : public history::Action {
 public:
 	explicit ActionWorldAddUserComponent(int index, const ecs::InstanceData& c);
-	string name() override { return "WorldAddUserComponent"; }
+	string name() const override { return "WorldAddUserComponent"; }
 
-	void* execute(Data* d) override;
-	void undo(Data* d) override;
+	void* execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	int index;
 	ecs::InstanceData component;
 };*/
 
-class ActionWorldRemoveComponent : public Action {
+class ActionWorldRemoveComponent : public history::Action {
 public:
 	explicit ActionWorldRemoveComponent(int index, const kaba::Class* type);
-	string name() override { return "WorldRemoveComponent"; }
+	string name() const override { return "WorldRemoveComponent"; }
 
-	void *execute(Data* d) override;
-	void undo(Data* d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	int index;
@@ -79,13 +79,13 @@ private:
 	ecs::InstanceData component;
 };
 
-class ActionWorldRemoveUnknownComponent : public Action {
+class ActionWorldRemoveUnknownComponent : public history::Action {
 public:
 	explicit ActionWorldRemoveUnknownComponent(int index, int cindex);
-	string name() override { return "WorldRemoveUnknownComponent"; }
+	string name() const override { return "WorldRemoveUnknownComponent"; }
 
-	void *execute(Data* d) override;
-	void undo(Data* d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	int index, cindex;

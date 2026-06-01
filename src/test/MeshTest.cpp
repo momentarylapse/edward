@@ -248,8 +248,8 @@ void MeshTest::test_diff_iterated() {
 	}
 }
 
-Data::Selection mesh_select_random_polygons(const PolygonMesh& mesh, int seed) {
-	Data::Selection sel;
+Selection mesh_select_random_polygons(const PolygonMesh& mesh, int seed) {
+	Selection sel;
 	sel.set(MultiViewType::MODEL_POLYGON, {});
 
 	Random r;
@@ -297,7 +297,7 @@ void MeshTest::test_extrude_undo_redo() {
 	const PolygonMesh mesh0 = GeometryCube::create(Box::ID_SYM, {1,1,1});
 
 	PolygonMesh mesh = mesh0;
-	Data::Selection sel;
+	Selection sel;
 	sel.set(MultiViewType::MODEL_POLYGON, {0});
 	auto ed = mesh_prepare_extrude_polygons(mesh, sel, 0.1f, false);
 

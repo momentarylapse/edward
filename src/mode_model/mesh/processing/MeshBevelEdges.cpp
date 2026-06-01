@@ -66,7 +66,7 @@ bool mesh_get_polygons_and_edges_around_vertex(const PolygonMesh& mesh, int vert
 	}
 }
 
-BevelInfo prepare_bevel(const PolygonMesh& mesh, const Array<Edge>& edges, const Data::Selection& sel) {
+BevelInfo prepare_bevel(const PolygonMesh& mesh, const Array<Edge>& edges, const Selection& sel) {
 	const auto& selv = sel[MultiViewType::MODEL_VERTEX];
 	BevelInfo b;
 
@@ -132,7 +132,7 @@ BevelInfo prepare_bevel(const PolygonMesh& mesh, const Array<Edge>& edges, const
 }
 
 
-MeshEdit mesh_prepare_bevel_edges(const PolygonMesh& mesh, const Data::Selection& sel, float radius) {
+MeshEdit mesh_prepare_bevel_edges(const PolygonMesh& mesh, const Selection& sel, float radius) {
 	auto edges = mesh.edges();
 	auto b = prepare_bevel(mesh, edges, sel);
 	MeshEdit ed;

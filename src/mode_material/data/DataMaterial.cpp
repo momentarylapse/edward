@@ -20,8 +20,10 @@
 
 
 DataMaterial::DataMaterial(DocumentSession* d) :
-	Data(d, FD_MATERIAL)
+	Data(FD_MATERIAL)
 {
+	doc = d;
+	session = doc->session;
 	reset();
 }
 
@@ -48,7 +50,7 @@ void DataMaterial::ShaderData::reset(DocumentSession *s) {
 void DataMaterial::reset() {
 	filename = "";
 
-	material.textures = {session->resource_manager->load_texture("")};
+	material.textures = {doc->session->resource_manager->load_texture("")};
 
 	material.albedo = White;
 	material.roughness = 0.5f;
@@ -156,11 +158,11 @@ void DataMaterial::ShaderData::save_to_file(DocumentSession *s) {
 
 
 
-DataMaterial DataMaterial::from_material(DocumentSession* s, yrenderer::Material *material) {
+/*DataMaterial DataMaterial::from_material(DocumentSession* s, yrenderer::Material *material) {
 	DataMaterial m(s);
 	m.material = *material;
 	return m;
-}
+}*/
 
 
 const yrenderer::Material* DataMaterial::to_material() const {

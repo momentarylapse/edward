@@ -3,7 +3,7 @@
 //
 
 #include "MaterialParameterPanel.h"
-#include <data/Data.h>
+#include <lib/history/Data.h>
 #include <Session.h>
 #include <view/MaterialPreviewManager.h>
 #include <storage/Storage.h>
@@ -28,10 +28,10 @@ ygfx::Texture* create_blank_texture() {
 	return t;
 }
 
-MaterialParameterPanel::MaterialParameterPanel(Data* _data, yrenderer::Material* _material) : Node("") {
+MaterialParameterPanel::MaterialParameterPanel(Session* s, history::Data* _data, yrenderer::Material* _material) : Node("") {
 	from_resource("material-parameter-panel");
 	data = _data;
-	session = data->session;
+	session = s;
 	material = _material;
 	popup_textures = xhui::create_resource_menu("model-texture-list-popup");
 
@@ -59,7 +59,7 @@ MaterialParameterPanel::MaterialParameterPanel(Data* _data, yrenderer::Material*
 		MaterialSelectionDialog::ask(session, "Select parent material", {}, false, true).then([this] (yrenderer::Material* parent) {
 			auto m = *material;
 			m.derive_from(parent);
-			data->execute(new ActionModelEditMaterial(material, m));
+			data->execute(new ActionModelEditMaterial(session, material, m));
 		});
 	});
 
@@ -67,7 +67,7 @@ MaterialParameterPanel::MaterialParameterPanel(Data* _data, yrenderer::Material*
 		apply_queue_depth ++;
 		auto m = *material;
 		m.albedo = m.parent->albedo;
-		data->execute(new ActionModelEditMaterial(material, m));
+		data->execute(new ActionModelEditMaterial(session, material, m));
 		update_ui();
 		apply_queue_depth --;
 	});
@@ -75,7 +75,7 @@ MaterialParameterPanel::MaterialParameterPanel(Data* _data, yrenderer::Material*
 		apply_queue_depth ++;
 		auto m = *material;
 		m.roughness = m.parent->roughness;
-		data->execute(new ActionModelEditMaterial(material, m));
+		data->execute(new ActionModelEditMaterial(session, material, m));
 		update_ui();
 		apply_queue_depth --;
 	});
@@ -83,7 +83,7 @@ MaterialParameterPanel::MaterialParameterPanel(Data* _data, yrenderer::Material*
 		apply_queue_depth ++;
 		auto m = *material;
 		m.metal = m.parent->metal;
-		data->execute(new ActionModelEditMaterial(material, m));
+		data->execute(new ActionModelEditMaterial(session, material, m));
 		update_ui();
 		apply_queue_depth --;
 	});
@@ -91,7 +91,7 @@ MaterialParameterPanel::MaterialParameterPanel(Data* _data, yrenderer::Material*
 		apply_queue_depth ++;
 		auto m = *material;
 		m.emission = m.parent->emission;
-		data->execute(new ActionModelEditMaterial(material, m));
+		data->execute(new ActionModelEditMaterial(session, material, m));
 		update_ui();
 		apply_queue_depth --;
 	});
@@ -105,12 +105,12 @@ MaterialParameterPanel::MaterialParameterPanel(Data* _data, yrenderer::Material*
 	f_add_texture = [this] (shared<ygfx::Texture> t) {
 		auto temp = *material;
 		temp.textures.add(t);
-		data->execute(new ActionModelEditMaterial(material, temp));
+		data->execute(new ActionModelEditMaterial(session, material, temp));
 	};
 	f_delete_texture = [this] (int index) {
 		auto temp = *material;
 		temp.textures.erase(index);
-		data->execute(new ActionModelEditMaterial(material, temp));
+		data->execute(new ActionModelEditMaterial(session, material, temp));
 	};
 
 	session->resource_manager->material_manager->out_material_edited >> create_data_sink<yrenderer::Material*>([this] (yrenderer::Material* m) {
@@ -174,7 +174,7 @@ void MaterialParameterPanel::apply_data_color() {
 	set_float("metal", temp.metal);
 	set_float("roughness", temp.roughness);
 
-	data->execute(new ActionModelEditMaterial(material, temp));
+	data->execute(new ActionModelEditMaterial(session, material, temp));
 	this->apply_queue_depth --;
 }
 
@@ -215,7 +215,7 @@ void MaterialParameterPanel::on_texture_level_load() {
 			auto temp = *material;
 			auto rm = session->resource_manager;
 			temp.textures[sel] = rm->load_texture(p.relative);
-			data->execute(new ActionModelEditMaterial(material, temp));
+			data->execute(new ActionModelEditMaterial(session, material, temp));
 		});
 	}
 }
@@ -235,7 +235,7 @@ void MaterialParameterPanel::on_texture_level_save() {
 
 			auto temp = *material;
 			temp.textures[sel] = session->resource_manager->load_texture(p.relative);
-			data->execute(new ActionModelEditMaterial(material, temp));
+			data->execute(new ActionModelEditMaterial(session, material, temp));
 		});
 }
 
@@ -273,7 +273,7 @@ void MaterialParameterPanel::on_texture_level_clear() {
 	if (sel >= 0) {
 		auto temp = *material;
 		temp.textures[sel] = create_blank_texture();
-		data->execute(new ActionModelEditMaterial(material, temp));
+		data->execute(new ActionModelEditMaterial(session, material, temp));
 	}
 }
 
@@ -283,7 +283,7 @@ void MaterialParameterPanel::on_texture_level_linear() {
 		auto temp = *material;
 		auto rm = session->resource_manager;
 		temp.textures[sel] = rm->load_texture(rm->filename(temp.textures[sel].get()).with("@linear"));
-		data->execute(new ActionModelEditMaterial(material, temp));
+		data->execute(new ActionModelEditMaterial(session, material, temp));
 	}
 }
 
@@ -293,7 +293,7 @@ void MaterialParameterPanel::on_texture_level_srgb() {
 		auto temp = *material;
 		auto rm = session->resource_manager;
 		temp.textures[sel] = rm->load_texture(str(rm->filename(temp.textures[sel].get())).replace("@linear", ""));
-		data->execute(new ActionModelEditMaterial(material, temp));
+		data->execute(new ActionModelEditMaterial(session, material, temp));
 	}
 }
 

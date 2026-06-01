@@ -175,11 +175,11 @@ void ModeWorld::on_enter() {
 		return get_hover(win, m);
 	};
 	multi_view->f_select = [this] (MultiViewWindow* win, const rect& r) {
-		Data::Selection sel;
+		Selection sel;
 		sel.set(MultiViewType::WORLD_ENTITY, MultiView::select_points_in_rect(win, r, data->dummy_entities));
 		return sel;
 	};
-	multi_view->f_get_selection_box = [this] (const Data::Selection& sel) -> base::optional<Box> {
+	multi_view->f_get_selection_box = [this] (const Selection& sel) -> base::optional<Box> {
 		return MultiView::points_get_selection_box(data->dummy_entities, sel[MultiViewType::WORLD_ENTITY]);
 	};
 	multi_view->f_create_action = [this] {
@@ -371,9 +371,9 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& mou
 	return h;
 }
 
-Data::Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) const {
+Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) const {
 	auto r = _r.canonical();
-	Data::Selection s;
+	Selection s;
 	s.add({MultiViewType::WORLD_ENTITY, {}});
 	for (const auto& [i, e]: enumerate(data->entity_manager->entities)) {
 		const auto p = win->project(e->pos);
@@ -690,7 +690,7 @@ void ModeWorld::draw_links(MultiViewWindow *win) {
 }
 
 
-static base::optional<string> world_selection_description(DataWorld* data, const Data::Selection& sel) {
+static base::optional<string> world_selection_description(DataWorld* data, const Selection& sel) {
 	int nob = 0, nter = 0, ncam = 0, nlight = 0, nent = 0;
 	if (sel.contains(MultiViewType::WORLD_ENTITY)) {
 		nent = sel[MultiViewType::WORLD_ENTITY].num;

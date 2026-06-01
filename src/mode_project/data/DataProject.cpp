@@ -13,18 +13,19 @@
 #include "../../mode_model/data/DataModel.h"
 #include "../../mode_material/data/DataMaterial.h"
 //#include "../../mode_font/data/DataFont.h"
-#include "../../Session.h"
-#include "../../Edward.h"
+#include <Session.h>
+#include <view/DocumentSession.h>
 //#include "../../stuff/Progress.h"
-#include "../../storage/Storage.h"
+#include <storage/Storage.h>
 #include <lib/os/app.h>
 #include <lib/os/file.h>
 #include <lib/os/filesystem.h>
 #include <lib/os/formatter.h>
 
-DataProject::DataProject(DocumentSession *s) :
-	Data(s, -1)
+DataProject::DataProject(DocumentSession *d) :
+	Data(-1)
 {
+	doc = d;
 	GameIni = new GameIniData;
 	file_list = new AdminFileList;
 }
@@ -49,7 +50,7 @@ void DataProject::MetaFraesDir(int kind) {
 	string extension ="x";
 	cft.clear();
 
-	auto dir = session->storage->get_root_dir(kind);
+	auto dir = doc->session->storage->get_root_dir(kind);
 	if (kind==FD_WORLD)		extension = ".world";
 	if (kind==FD_TERRAIN)	extension = ".map";
 	if (kind==FD_MODEL)		extension = ".model";

@@ -6,11 +6,12 @@
  */
 
 #include "Action.h"
-
+#include "ActionManager.h"
 #include <lib/os/msg.h>
 
 //#define ACTION_DEBUG
 
+namespace history {
 
 
 void ActionException::add_parent(const string &loc) {
@@ -58,6 +59,8 @@ void Action::redo_logged(Data* d) {
 #ifdef ACTION_DEBUG
 	d->TestSanity("redo " + name());
 #endif
+}
+
 }
 
 

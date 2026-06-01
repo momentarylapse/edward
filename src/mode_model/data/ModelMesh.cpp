@@ -675,7 +675,7 @@ bool ModelCylinder::overlap_rect(MultiView::Window *win, const rect &r) {
 }
 #endif
 
-PolygonMesh ModelMesh::copy_geometry(const Data::Selection& sel) const {
+PolygonMesh ModelMesh::copy_geometry(const Selection& sel) const {
 	PolygonMesh geo;
 
 	// copy vertices

@@ -6,7 +6,7 @@
 #include "Mode.h"
 #include "EdwardWindow.h"
 #include "MultiView.h"
-#include <data/Data.h>
+#include <lib/history/Data.h>
 #include <Session.h>
 #include <lib/yrenderer/target/XhuiRenderer.h>
 

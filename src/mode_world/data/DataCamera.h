@@ -8,11 +8,12 @@
 #ifndef DATACAMERA_H_
 #define DATACAMERA_H_
 
-#include "../../data/Data.h"
+#include <lib/history/Data.h>
 #include <view/SingleData.h>
 #include "../../lib/math/vec3.h"
 #include "../../lib/math/interpolation.h"
 
+class DocumentSession;
 
 #define CPKSetCamPos	0
 #define CPKSetCamPosRel	1
@@ -31,10 +32,10 @@ public:
 class WorldCamPointVel: public multiview::SingleData {
 };
 
-class DataCamera : public Data {
+class DataCamera : public history::Data {
 public:
 	explicit DataCamera(DocumentSession *s);
-	virtual ~DataCamera();
+	~DataCamera() override;
 
 	void reset();
 	bool load(const Path &_filename, bool deep = true);

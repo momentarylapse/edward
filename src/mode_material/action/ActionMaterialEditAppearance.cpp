@@ -8,14 +8,14 @@ ActionMaterialEditAppearance::ActionMaterialEditAppearance(const yrenderer::Mate
 	data = m;
 }
 
-void* ActionMaterialEditAppearance::execute(Data* d) {
+void* ActionMaterialEditAppearance::execute(history::Data* d) {
 	auto m = static_cast<DataMaterial*>(d);
 
 	std::swap(m->material, data);
 	return nullptr;
 }
 
-void ActionMaterialEditAppearance::undo(Data* d) {
+void ActionMaterialEditAppearance::undo(history::Data* d) {
 	execute(d);
 }
 

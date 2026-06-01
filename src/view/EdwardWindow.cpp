@@ -31,7 +31,7 @@
 #include <storage/Storage.h>
 #include <stuff/PluginManager.h>
 #include "Mode.h"
-#include <data/Data.h>
+#include <lib/history/Data.h>
 #include <Session.h>
 #include <cmath>
 
@@ -84,9 +84,9 @@ EdwardWindow::EdwardWindow(xfer<Session> _session) : obs::Node<xhui::Window>(App
 		request_redraw();
 		update_menu();
 	}),
-	in_action_failed(this, [this] {
+	in_action_failed(this, [this] (const string& message) {
 		auto am = cur_mode()->get_data()->action_manager;
-		session->error(format("Action failed: %s\nReason: %s", am->error_location.c_str(), am->error_message.c_str()));
+		session->error(format("Action failed: %s\nReason: %s", "???", message));
 	}),
 	in_saved(this, [this] {
 		session->info("Saved!");

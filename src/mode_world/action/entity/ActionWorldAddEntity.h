@@ -6,16 +6,16 @@
 #define ACTIONWORLDADDENTITY_H
 
 
-#include "../../../action/Action.h"
+#include <lib/history/Action.h>
 #include "../../data/DataWorld.h"
 
-class ActionWorldAddEntity : public Action {
+class ActionWorldAddEntity : public history::Action {
 public:
 	explicit ActionWorldAddEntity(const vec3& pos, const quaternion& ang);
-	string name() override { return "WorldAddEntity"; }
+	string name() const override { return "WorldAddEntity"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	vec3 pos;

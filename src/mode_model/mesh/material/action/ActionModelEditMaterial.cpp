@@ -14,29 +14,36 @@
 #include <lib/yrenderer/MaterialManager.h>
 #include <y/helper/ResourceManager.h>
 #include <Session.h>
+#include <view/DocumentSession.h>
 
 #include <assert.h>
 
 
-ActionModelEditMaterial::ActionModelEditMaterial(yrenderer::Material* _material, const yrenderer::Material &_new_material) {
+ActionModelEditMaterial::ActionModelEditMaterial(Session* _session, yrenderer::Material* _material, const yrenderer::Material &_new_material) {
+	session = _session;
 	material = _material;
 	new_material = _new_material;
 }
 
-void *ActionModelEditMaterial::execute(Data *d) {
+void *ActionModelEditMaterial::execute(history::Data* d) {
 	std::swap(*material, new_material);
-	d->session->resource_manager->material_manager->invalidate(material);
+	session->resource_manager->material_manager->invalidate(material);
 	return nullptr;
 }
 
 
 
-void ActionModelEditMaterial::undo(Data *d) {
+void ActionModelEditMaterial::undo(history::Data* d) {
 	execute(d);
 }
 
-
-
+bool ActionModelEditMaterial::absorb(Action *previous) {
+	if (auto p = dynamic_cast<ActionModelEditMaterial*>(previous)) {
+		p->material = material;
+		return true;
+	}
+	return false;
+}
 
 
 ActionModelMaterialAddTexture::ActionModelMaterialAddTexture(int _index, shared<ygfx::Texture> _texture) {
@@ -44,7 +51,7 @@ ActionModelMaterialAddTexture::ActionModelMaterialAddTexture(int _index, shared<
 	texture = _texture;
 }
 
-void *ActionModelMaterialAddTexture::execute(Data *d) {
+void *ActionModelMaterialAddTexture::execute(history::Data* d) {
 	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->materials.num));
 
@@ -66,7 +73,7 @@ void *ActionModelMaterialAddTexture::execute(Data *d) {
 	return nullptr;
 }
 
-void ActionModelMaterialAddTexture::undo(Data *d) {
+void ActionModelMaterialAddTexture::undo(history::Data* d) {
 	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->materials.num));
 
@@ -84,7 +91,7 @@ ActionModelMaterialDeleteTexture::ActionModelMaterialDeleteTexture(int _index, i
 	level = _level;
 }
 
-void *ActionModelMaterialDeleteTexture::execute(Data *d) {
+void *ActionModelMaterialDeleteTexture::execute(history::Data* d) {
 	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->materials.num));
 	assert((level >= 0) and (level < m->materials[index]->textures.num));
@@ -101,7 +108,7 @@ void *ActionModelMaterialDeleteTexture::execute(Data *d) {
 	return nullptr;
 }
 
-void ActionModelMaterialDeleteTexture::undo(Data *d) {
+void ActionModelMaterialDeleteTexture::undo(history::Data* d) {
 	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->materials.num));
 
@@ -131,7 +138,7 @@ ActionModelMaterialScaleTexture::~ActionModelMaterialScaleTexture() {
 		delete image;
 }
 
-void *ActionModelMaterialScaleTexture::execute(Data *d) {
+void *ActionModelMaterialScaleTexture::execute(history::Data* d) {
 	auto *m = dynamic_cast<DataModel*>(d);
 	assert((index >= 0) and (index < m->materials.num));
 
@@ -153,6 +160,6 @@ void *ActionModelMaterialScaleTexture::execute(Data *d) {
 	return nullptr;
 }
 
-void ActionModelMaterialScaleTexture::undo(Data *d) {
+void ActionModelMaterialScaleTexture::undo(history::Data* d) {
 	execute(d);
 }

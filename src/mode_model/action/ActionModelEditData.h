@@ -8,16 +8,16 @@
 #ifndef ACTIONMODELEDITDATA_H_
 #define ACTIONMODELEDITDATA_H_
 
-#include <action/Action.h>
+#include <lib/history/Action.h>
 #include "../data/DataModel.h"
 
-class ActionModelEditData : public Action {
+class ActionModelEditData : public history::Action {
 public:
 	explicit ActionModelEditData(const DataModel::MetaData& _data);
-	string name() override { return "ModelEditData"; }
+	string name() const override { return "ModelEditData"; }
 
-	void* execute(Data* d) override;
-	void undo(Data* d) override;
+	void* execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	DataModel::MetaData data;

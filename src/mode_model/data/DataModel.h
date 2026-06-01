@@ -7,11 +7,12 @@
 
 #pragma once
 
-#include <data/Data.h>
+#include <lib/history/Data.h>
 #include <view/SingleData.h>
 #include <lib/base/set.h>
 #include <y/world/Model.h>
 #include <lib/yrenderer/Material.h>
+#include <stuff/Selection.h>
 
 struct MeshEdit;
 struct Box;
@@ -22,9 +23,11 @@ struct MeshVertex;
 struct PolygonMesh;
 class ModelSelection;
 enum class AnimationType;
+class DocumentSession;
+class Session;
 
 
-class GeometryException : public ActionException {
+class GeometryException : public history::ActionException {
 public:
 	explicit GeometryException(const string &message) : ActionException(message){}
 };
@@ -117,7 +120,7 @@ struct ModelScriptVariable {
 	string name, type, value;
 };
 
-class DataModel: public Data {
+class DataModel: public history::Data {
 public:
 	explicit DataModel(DocumentSession* s);
 	~DataModel() override;
@@ -126,6 +129,9 @@ public:
 	obs::source out_material_added_or_deleted{this, "material-added-or-deleted"};
 	obs::source out_texture_changed{this, "texture-changed"};
 	obs::source out_topology_changed{this, "topology-changed"};
+
+	Session* session;
+	DocumentSession* doc;
 
 	void reset() override;
 

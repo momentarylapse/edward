@@ -10,6 +10,7 @@
 
 #include <action/ActionMultiView.h>
 #include <lib/base/set.h>
+#include <stuff/Selection.h>
 
 class DataWorld;
 struct vec3;
@@ -17,11 +18,11 @@ enum class MultiViewType;
 
 class ActionWorldMoveSelection: public ActionMultiView {
 public:
-	explicit ActionWorldMoveSelection(DataWorld *d, const Data::Selection& selection);
-	string name() override { return "WorldMoveSelection"; }
+	explicit ActionWorldMoveSelection(DataWorld *d, const Selection& selection);
+	string name() const override { return "WorldMoveSelection"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 private:
 	Array<MultiViewType> type;
 	Array<quaternion> old_ang;

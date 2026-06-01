@@ -26,12 +26,12 @@ public:
 
 	int guess_type(const Path &filename);
 
-	bool load(const Path &filename, Data *data, bool deep = true);
-	bool save(const Path &filename, Data *data);
+	bool load(const Path &filename, history::Data *data, bool deep = true);
+	bool save(const Path &filename, history::Data *data);
 
-	base::future<void> auto_save(Data *data);
-	base::future<void> open(Data *data);
-	base::future<void> save_as(Data *data);
+	base::future<void> auto_save(history::Data *data);
+	base::future<void> open(history::Data *data);
+	base::future<void> save_as(history::Data *data);
 
 	Session *session;
 	Array<Format*> formats;

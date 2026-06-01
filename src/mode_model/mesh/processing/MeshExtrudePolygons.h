@@ -5,12 +5,13 @@
 #ifndef MESHEXTRUDEPOLYGONS_H
 #define MESHEXTRUDEPOLYGONS_H
 
-#include <data/Data.h>
+#include <lib/history/Data.h>
+#include <stuff/Selection.h>
 
 class PolygonMesh;
 class MeshEdit;
 
-MeshEdit mesh_prepare_extrude_polygons(const PolygonMesh& mesh, const Data::Selection& sel, float distance, bool keep_connected);
+MeshEdit mesh_prepare_extrude_polygons(const PolygonMesh& mesh, const Selection& sel, float distance, bool keep_connected);
 
 
 

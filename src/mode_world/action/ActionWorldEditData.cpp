@@ -10,7 +10,7 @@
 ActionWorldEditData::ActionWorldEditData(const DataWorld::MetaData &_data) {
 	data = _data;
 }
-void *ActionWorldEditData::execute(Data *d) {
+void *ActionWorldEditData::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 
 	std::swap(w->meta_data, data);
@@ -27,7 +27,7 @@ void *ActionWorldEditData::execute(Data *d) {
 	return nullptr;
 }
 
-void ActionWorldEditData::undo(Data *d) {
+void ActionWorldEditData::undo(history::Data* d) {
 	execute(d);
 }
 

@@ -8,14 +8,16 @@
 #ifndef DATAMATERIAL_H_
 #define DATAMATERIAL_H_
 
-#include "../../data/Data.h"
+#include <lib/history/Data.h>
 //#include "ShaderGraph.h"
 #include <lib/yrenderer/Material.h>
 #include <lib/ygraphics/graphics-impl.h>
 
 class ShaderGraph;
+class DocumentSession;
+class Session;
 
-class DataMaterial: public Data {
+class DataMaterial: public history::Data {
 public:
 	explicit DataMaterial(DocumentSession *doc);
 	~DataMaterial() override;
@@ -37,10 +39,12 @@ public:
 		void reset(DocumentSession *s);
 	};
 
+	Session* session;
+	DocumentSession* doc;
 	yrenderer::Material material;
 
 	const yrenderer::Material* to_material() const;
-	static DataMaterial from_material(DocumentSession* doc, yrenderer::Material* material);
+	//static DataMaterial from_material(DocumentSession* doc, yrenderer::Material* material);
 };
 
 #endif /* DATAMATERIAL_H_ */

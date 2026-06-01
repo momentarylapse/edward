@@ -6,16 +6,16 @@
 #define ACTIONMATERIALEDITAPPEARANCE_H
 
 
-#include <action/Action.h>
+#include <lib/history/Action.h>
 #include "../data/DataMaterial.h"
 
-class ActionMaterialEditAppearance : public Action {
+class ActionMaterialEditAppearance : public history::Action {
 public:
 	explicit ActionMaterialEditAppearance(const yrenderer::Material& m);
-	string name() override { return "MaterialEditAppearance"; }
+	string name() const override { return "MaterialEditAppearance"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	yrenderer::Material data;

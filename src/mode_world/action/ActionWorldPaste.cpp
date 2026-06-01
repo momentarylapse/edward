@@ -14,7 +14,7 @@ ActionWorldPaste::ActionWorldPaste(const LevelData& _temp) {
 	temp = _temp;
 }
 
-void* ActionWorldPaste::execute(Data *d) {
+void* ActionWorldPaste::execute(history::Data* d) {
 	auto *w = dynamic_cast<DataWorld*>(d);
 
 	for (const auto& o: temp.entities) {
@@ -25,7 +25,7 @@ void* ActionWorldPaste::execute(Data *d) {
 	return nullptr;
 }
 
-void ActionWorldPaste::undo(Data *d) {
+void ActionWorldPaste::undo(history::Data* d) {
 	auto *w = dynamic_cast<DataWorld*>(d);
 	for (int i=0; i<temp.entities.num; i++)
 		w->entity_manager->delete_entity(w->entity_manager->entities.back());

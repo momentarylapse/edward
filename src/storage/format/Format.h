@@ -13,7 +13,9 @@
 #include "../../lib/image/color.h"
 #include "../../lib/os/file.h"
 
-class Data;
+namespace history {
+	class Data;
+}
 struct color;
 class Path;
 class Session;
@@ -112,8 +114,8 @@ public:
 
 	void warning(const string &message);
 
-	virtual void load(const Path &filename, Data *data, bool deep) {}
-	virtual void save(const Path &filename, Data *data) {}
+	virtual void load(const Path &filename, history::Data *data, bool deep) {}
+	virtual void save(const Path &filename, history::Data *data) {}
 
 	Session *session;
 	string extension;
@@ -131,10 +133,10 @@ public:
 	virtual void _load(const Path &filename, T *data, bool deep) {}
 	virtual void _save(const Path &filename, T *data) {}
 
-	void load(const Path &filename, Data *data, bool deep) override {
+	void load(const Path &filename, history::Data *data, bool deep) override {
 		_load(filename, reinterpret_cast<T*>(data), deep);
 	}
-	void save(const Path &filename, Data *data) override {
+	void save(const Path &filename, history::Data *data) override {
 		_save(filename, reinterpret_cast<T*>(data));
 	}
 };

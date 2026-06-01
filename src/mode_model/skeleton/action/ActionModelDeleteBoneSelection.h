@@ -8,13 +8,13 @@
 #ifndef ACTIONMODELDELETEBONESELECTION_H_
 #define ACTIONMODELDELETEBONESELECTION_H_
 
-#include <action/ActionGroup.h>
+#include <lib/history/ActionGroup.h>
 #include "../../data/DataModel.h"
 
-class ActionModelDeleteBoneSelection: public ActionGroup {
+class ActionModelDeleteBoneSelection: public history::ActionGroup {
 public:
 	explicit ActionModelDeleteBoneSelection(DataModel *m, const base::set<int>& sel);
-	string name() override { return "ModelDeleteBoneSelection"; }
+	string name() const override { return "ModelDeleteBoneSelection"; }
 };
 
 #endif /* ACTIONMODELDELETEBONESELECTION_H_ */

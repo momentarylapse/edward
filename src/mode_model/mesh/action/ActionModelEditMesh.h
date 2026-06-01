@@ -6,19 +6,19 @@
 #define ACTIONMODELEDITMESH_H
 
 
-#include <action/Action.h>
+#include <lib/history/Action.h>
 #include <lib/mesh/PolygonMesh.h>
 #include <lib/mesh/MeshEdit.h>
 
 struct ModelMesh;
 
-class ActionModelEditMesh : public Action {
+class ActionModelEditMesh : public history::Action {
 public:
 	ActionModelEditMesh(ModelMesh* mesh, const MeshEdit& edit);
-	string name() override { return "ModelEditMesh"; }
+	string name() const override { return "ModelEditMesh"; }
 
-	void *execute(Data* d) override;
-	void undo(Data* d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 private:
 	ModelMesh* mesh;
 	MeshEdit edit;

@@ -5,7 +5,9 @@
 
 #include "lib/ygraphics/graphics-impl.h"
 
-class Data;
+namespace history {
+	class Data;
+}
 class Session;
 namespace yrenderer {
 	class Material;
@@ -17,7 +19,7 @@ namespace xhui {
 class MaterialParameterPanel : public obs::Node<xhui::Panel> {
 public:
 	Session* session;
-	Data* data;
+	history::Data* data;
 	yrenderer::Material* material;
 	shared<xhui::Menu> popup_textures;
 	int apply_queue_depth = 0;
@@ -25,7 +27,7 @@ public:
 	std::function<void(shared<ygfx::Texture>)> f_add_texture;
 	std::function<void(int index)> f_delete_texture;
 
-	MaterialParameterPanel(Data* _data, yrenderer::Material* _material);
+	MaterialParameterPanel(Session* s, history::Data* _data, yrenderer::Material* _material);
 	void set_material(yrenderer::Material* m);
 	string material_name() const;
 	void update_ui();

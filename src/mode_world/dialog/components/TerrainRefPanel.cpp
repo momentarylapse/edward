@@ -37,7 +37,7 @@ Dialog terrain-panel ''
 	data = _data;
 	index = _index;
 
-	material_selector = new MaterialSelector(data);
+	material_selector = new MaterialSelector(data->session, data);
 	embed("main-grid", 0, 1, material_selector);
 
 	auto e = data->entity(index);

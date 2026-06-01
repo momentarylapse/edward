@@ -8,6 +8,7 @@
 
 #include <action/ActionMultiView.h>
 #include <lib/base/set.h>
+#include <stuff/Selection.h>
 
 class DataModel;
 struct vec3;
@@ -15,11 +16,11 @@ enum class MultiViewType;
 
 class ActionModelMoveBones: public ActionMultiView {
 public:
-	explicit ActionModelMoveBones(DataModel* m, const Data::Selection& selection);
-	string name() override { return "ModelMoveBones"; }
+	explicit ActionModelMoveBones(DataModel* m, const Selection& selection);
+	string name() const override { return "ModelMoveBones"; }
 
-	void* execute(Data *d) override;
-	void undo(Data *d) override;
+	void* execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 private:
 };
 

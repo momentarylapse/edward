@@ -19,6 +19,8 @@
 #include <world/components/Collider.h>
 #include <world/components/Skeleton.h>
 #include <world/components/RigidBody.h>
+
+#include "view/DocumentSession.h"
 #if 0 //HAS_LIB_GL
 #include "../../mode/world/ModeWorld.h"
 #endif
@@ -60,9 +62,11 @@ ecs::InstanceData& EdwardTag::get(const string& class_name) {
 }
 
 
-DataWorld::DataWorld(DocumentSession* doc) :
-	Data(doc, FD_WORLD)
+DataWorld::DataWorld(DocumentSession* _doc) :
+	Data(FD_WORLD)
 {
+	doc = _doc;
+	session = doc->session;
 	entity_manager = new ecs::EntityManager;
 	entity_manager->init_components = false;
 	entity_manager->component_manager->f_create = [] (const kaba::Class* type) -> ecs::Component* {
@@ -218,7 +222,7 @@ void DataWorld::update_data() {
 }
 
 
-void DataWorld::copy(LevelData& temp, const Data::Selection& sel) const {
+void DataWorld::copy(LevelData& temp, const Selection& sel) const {
 	temp.entities.clear();
 
 	if (sel.contains(MultiViewType::WORLD_ENTITY))

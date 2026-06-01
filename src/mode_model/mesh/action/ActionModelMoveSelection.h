@@ -8,6 +8,7 @@
 
 #include <action/ActionMultiView.h>
 #include <lib/base/set.h>
+#include <stuff/Selection.h>
 
 struct ModelMesh;
 struct vec3;
@@ -15,11 +16,11 @@ enum class MultiViewType;
 
 class ActionModelMoveSelection: public ActionMultiView {
 public:
-	explicit ActionModelMoveSelection(ModelMesh* m, const Data::Selection& selection);
-	string name() override { return "ModelMoveSelection"; }
+	explicit ActionModelMoveSelection(ModelMesh* m, const Selection& selection);
+	string name() const override { return "ModelMoveSelection"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 private:
 	ModelMesh* mesh;
 	Array<MultiViewType> type;

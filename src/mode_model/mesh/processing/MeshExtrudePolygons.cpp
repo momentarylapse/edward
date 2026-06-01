@@ -10,7 +10,7 @@
 #include <lib/base/iter.h>
 
 
-MeshEdit mesh_prepare_extrude_polygons(const PolygonMesh& mesh, const Data::Selection& sel, float distance, bool keep_connected) {
+MeshEdit mesh_prepare_extrude_polygons(const PolygonMesh& mesh, const Selection& sel, float distance, bool keep_connected) {
 	MeshEdit ed;
 	for (const auto& [i, p]: enumerate(mesh.polygons))
 		if (sel[MultiViewType::MODEL_POLYGON].contains(i)) {

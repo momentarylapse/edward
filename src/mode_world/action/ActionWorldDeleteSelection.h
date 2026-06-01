@@ -7,18 +7,18 @@
 
 #pragma once
 
-#include <action/Action.h>
+#include <lib/history/Action.h>
 #include "../data/DataWorld.h"
 #include "../data/WorldLink.h"
 #include <y/world/LevelData.h>
 
-class ActionWorldDeleteSelection : public Action {
+class ActionWorldDeleteSelection : public history::Action {
 public:
-	explicit ActionWorldDeleteSelection(DataWorld* d, const Data::Selection& selection);
-	string name() override { return "WorldDeleteSelection";	}
+	explicit ActionWorldDeleteSelection(DataWorld* d, const Selection& selection);
+	string name() const override { return "WorldDeleteSelection";	}
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 	LevelData temp;
 	Array<int> entity_indices;

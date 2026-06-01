@@ -8,17 +8,17 @@
 #ifndef ACTIONMODELPASTEGEOMETRY_H_
 #define ACTIONMODELPASTEGEOMETRY_H_
 
-#include <action/Action.h>
+#include <lib/history/Action.h>
 #include <lib/mesh/PolygonMesh.h>
 struct ModelMesh;
 
-class ActionModelPasteMesh : public Action {
+class ActionModelPasteMesh : public history::Action {
 public:
 	ActionModelPasteMesh(ModelMesh* m, const PolygonMesh &geo, int material);
-	string name() override { return "ModelPasteMesh"; }
+	string name() const override { return "ModelPasteMesh"; }
 
-	void *execute(Data* d) override;
-	void undo(Data* d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 private:
 	ModelMesh* mesh;
 	PolygonMesh geo;

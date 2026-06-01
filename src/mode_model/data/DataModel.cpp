@@ -9,12 +9,14 @@
 #include "ModelMesh.h"
 //#include "ModelSelection.h"
 #include <lib/mesh/PolygonMesh.h>
+
+#include "view/DocumentSession.h"
 #if 0 //HAS_LIB_GL
 #include "../../mode/model/ModeModel.h"
 #include "../../mode/model/mesh/ModeModelMesh.h"
 #endif
-#include "../../action/Action.h"
-#include "../../action/ActionManager.h"
+#include <lib/history/Action.h>
+#include <lib/history/Action.h>
 #include "../../Session.h"
 #include "../../storage/Storage.h"
 #include "../../lib/math/Box.h"
@@ -102,9 +104,11 @@ void ModelEffect::clear()
 }
 
 
-DataModel::DataModel(DocumentSession *s) :
-	Data(s, FD_MODEL)
+DataModel::DataModel(DocumentSession* d) :
+	Data(FD_MODEL)
 {
+	doc = d;
+	session = doc->session;
 	mesh = new ModelMesh();
 	phys_mesh = new ModelMesh();
 	editing_mesh = mesh.get();

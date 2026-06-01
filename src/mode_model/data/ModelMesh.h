@@ -11,7 +11,8 @@
 #include <view/SingleData.h>
 #include <lib/mesh/PolygonMesh.h>
 #include <lib/math/vec4.h>
-#include "data/Data.h"
+#include <lib/history/Data.h>
+#include <stuff/Selection.h>
 
 struct Box;
 class DataModel;
@@ -71,7 +72,7 @@ struct ModelMesh : PolygonMesh {
 	void set_selection(const ModelSelection &s);
 
 
-	PolygonMesh copy_geometry(const Data::Selection& sel) const;
+	PolygonMesh copy_geometry(const Selection& sel) const;
 };
 
 #endif /* SRC_DATA_MODEL_MODELMESH_H_ */

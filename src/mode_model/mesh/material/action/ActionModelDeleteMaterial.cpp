@@ -18,7 +18,7 @@ ActionModelDeleteMaterial::ActionModelDeleteMaterial(int _index) {
 
 
 
-void *ActionModelDeleteMaterial::execute(Data *d) {
+void *ActionModelDeleteMaterial::execute(history::Data* d) {
 	auto m = dynamic_cast<DataModel*>(d);
 
 	material = m->materials.extract(index);
@@ -36,7 +36,7 @@ void *ActionModelDeleteMaterial::execute(Data *d) {
 
 
 
-void ActionModelDeleteMaterial::undo(Data *d) {
+void ActionModelDeleteMaterial::undo(history::Data* d) {
 	auto m = dynamic_cast<DataModel*>(d);
 
 	m->materials.insert(material.give(), index);

@@ -11,16 +11,16 @@ ActionMultiView::ActionMultiView() {
 	mat = mat4::ID;
 }
 
-void ActionMultiView::abort(Data *d) {
+void ActionMultiView::abort(history::Data *d) {
 	undo(d);
 }
 
-void ActionMultiView::abort_and_notify(Data *d) {
+void ActionMultiView::abort_and_notify(history::Data *d) {
 	abort(d);
 	d->out_changed.notify();
 }
 
-void ActionMultiView::update_and_notify(Data *d, const mat4 &m) {
+void ActionMultiView::update_and_notify(history::Data *d, const mat4 &m) {
 	abort(d);
 	mat = m;
 	execute(d);

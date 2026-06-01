@@ -8,7 +8,7 @@
 #include <Session.h>
 #include <lib/base/iter.h>
 
-ActionModelAlignToGrid::ActionModelAlignToGrid(ModelMesh* m, const Data::Selection& selection, const std::function<vec3(const vec3&)>& f) {
+ActionModelAlignToGrid::ActionModelAlignToGrid(ModelMesh* m, const Selection& selection, const std::function<vec3(const vec3&)>& f) {
 	mesh = m;
 	// list of selected objects and save old pos
 	if (selection.contains(MultiViewType::MODEL_VERTEX))
@@ -19,13 +19,13 @@ ActionModelAlignToGrid::ActionModelAlignToGrid(ModelMesh* m, const Data::Selecti
 			}
 }
 
-void *ActionModelAlignToGrid::execute(Data*) {
+void *ActionModelAlignToGrid::execute(history::Data*) {
 	for (const auto& [ii, i]: enumerate(index)) {
 		std::swap(mesh->vertices[i].pos, old_pos[ii]);
 	}
 	return nullptr;
 }
 
-void ActionModelAlignToGrid::undo(Data* d) {
+void ActionModelAlignToGrid::undo(history::Data* d) {
 	execute(d);
 }

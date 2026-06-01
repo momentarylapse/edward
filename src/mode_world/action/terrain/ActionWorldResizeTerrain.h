@@ -6,16 +6,16 @@
 #define ACTIONWORLDRESIZETERRAIN_H
 
 
-#include <action/Action.h>
+#include <lib/history/Action.h>
 #include <lib/math/vec3.h>
 
-class ActionWorldResizeTerrain : public Action {
+class ActionWorldResizeTerrain : public history::Action {
 public:
 	ActionWorldResizeTerrain(int index, int nx, int nz);
-	string name() override { return "WorldResizeTerrain";	}
+	string name() const override { return "WorldResizeTerrain";	}
 
-	void* execute(Data *d) override;
-	void undo(Data *d) override;
+	void* execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	int index;

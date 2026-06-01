@@ -20,7 +20,7 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 	from_resource("material-panel");
 	data = _mode->data;
 
-	material_parameter_panel = new MaterialParameterPanel(data, &data->material);
+	material_parameter_panel = new MaterialParameterPanel(_mode->session, data, &data->material);
 	embed("parameter-grid", 0, 0, material_parameter_panel);
 
 

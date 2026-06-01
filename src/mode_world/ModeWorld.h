@@ -78,6 +78,6 @@ public:
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 
-	Data::Selection get_selection(MultiViewWindow* win, const rect& r) const;
+	Selection get_selection(MultiViewWindow* win, const rect& r) const;
 };
 

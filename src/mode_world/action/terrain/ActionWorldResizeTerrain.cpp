@@ -14,7 +14,7 @@ ActionWorldResizeTerrain::ActionWorldResizeTerrain(int _index, int _nx, int _nz)
 	heights.resize((nx + 1) * (nz + 1));
 }
 
-void* ActionWorldResizeTerrain::execute(Data* d) {
+void* ActionWorldResizeTerrain::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto terrain = w->entity(index)->get_component<TerrainRef>()->terrain;
 	std::swap(terrain->num_x, nx);
@@ -24,7 +24,7 @@ void* ActionWorldResizeTerrain::execute(Data* d) {
 	return nullptr;
 }
 
-void ActionWorldResizeTerrain::undo(Data* d) {
+void ActionWorldResizeTerrain::undo(history::Data* d) {
 	execute(d);
 }
 

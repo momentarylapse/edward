@@ -12,7 +12,7 @@ ActionWorldEditTerrainMetaData::ActionWorldEditTerrainMetaData(int _index, const
 	pattern = _pattern;
 }
 
-void* ActionWorldEditTerrainMetaData::execute(Data* d) {
+void* ActionWorldEditTerrainMetaData::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto terrain = w->entity(index)->get_component<TerrainRef>()->terrain;
 	std::swap(terrain->pattern, pattern);
@@ -20,7 +20,7 @@ void* ActionWorldEditTerrainMetaData::execute(Data* d) {
 	return nullptr;
 }
 
-void ActionWorldEditTerrainMetaData::undo(Data* d) {
+void ActionWorldEditTerrainMetaData::undo(history::Data* d) {
 	execute(d);
 }
 

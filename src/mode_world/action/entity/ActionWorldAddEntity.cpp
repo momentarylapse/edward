@@ -11,7 +11,7 @@ ActionWorldAddEntity::ActionWorldAddEntity(const vec3& _pos, const quaternion& _
 	ang = _ang;
 }
 
-void* ActionWorldAddEntity::execute(Data* d) {
+void* ActionWorldAddEntity::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	entity = w->entity_manager->create_entity(pos, ang);
 	w->entity_manager->add_component<EdwardTag>(entity);
@@ -19,7 +19,7 @@ void* ActionWorldAddEntity::execute(Data* d) {
 	return entity;
 }
 
-void ActionWorldAddEntity::undo(Data* d) {
+void ActionWorldAddEntity::undo(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	w->entity_manager->delete_entity(entity);
 	w->out_entity_removed();

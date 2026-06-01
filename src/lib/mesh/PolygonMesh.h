@@ -9,11 +9,11 @@
 
 #include "Polygon.h"
 #include <lib/base/base.h>
+#include <lib/base/set.h>
 #include <lib/base/optional.h>
 #include <lib/math/vec3.h>
 #include <lib/math/vec4.h>
 #include <lib/ygraphics/graphics-fwd.h>
-#include <lib/yrenderer/Material.h>
 
 struct PolygonMesh;
 class MultiViewWindow;

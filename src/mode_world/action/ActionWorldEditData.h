@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include <action/Action.h>
+#include <lib/history/Action.h>
 #include "../data/DataWorld.h"
 
-class ActionWorldEditData : public Action {
+class ActionWorldEditData : public history::Action {
 public:
 	explicit ActionWorldEditData(const DataWorld::MetaData &_data);
-	string name() override { return "WorldEditData"; }
+	string name() const override { return "WorldEditData"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	DataWorld::MetaData data;

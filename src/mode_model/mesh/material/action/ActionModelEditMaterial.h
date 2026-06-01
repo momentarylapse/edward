@@ -8,44 +8,48 @@
 #ifndef ACTIONMODELEDITMATERIAL_H_
 #define ACTIONMODELEDITMATERIAL_H_
 
-#include <action/Action.h>
+#include <lib/history/MergableAction.h>
 #include "../../../data/DataModel.h"
 
 class Image;
+class Session;
 
-class ActionModelEditMaterial : public Action {
+class ActionModelEditMaterial : public history::MergableAction {
 public:
-	ActionModelEditMaterial(yrenderer::Material* material, const yrenderer::Material& new_material);
-	string name() override { return "ModelEditMaterial"; }
+	ActionModelEditMaterial(Session* session, yrenderer::Material* material, const yrenderer::Material& new_material);
+	string name() const override { return "ModelEditMaterial"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
+
+	bool absorb(Action *previous) override;
 
 private:
+	Session* session;
 	yrenderer::Material* material;
 	yrenderer::Material new_material;
 };
 
-class ActionModelMaterialAddTexture : public Action {
+class ActionModelMaterialAddTexture : public history::Action {
 public:
 	explicit ActionModelMaterialAddTexture(int _index, shared<ygfx::Texture> texture);
-	string name() override { return "ModelMaterialAddTexture"; }
+	string name() const override { return "ModelMaterialAddTexture"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	int index;
 	shared<ygfx::Texture> texture;
 };
 
-class ActionModelMaterialDeleteTexture : public Action {
+class ActionModelMaterialDeleteTexture : public history::Action {
 public:
 	ActionModelMaterialDeleteTexture(int index, int level);
-	string name() override { return "ModelMaterialDeleteTexture"; }
+	string name() const override { return "ModelMaterialDeleteTexture"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	int index, level;
@@ -53,14 +57,14 @@ private:
 };
 
 
-class ActionModelMaterialScaleTexture : public Action {
+class ActionModelMaterialScaleTexture : public history::Action {
 public:
 	ActionModelMaterialScaleTexture(int index, int level, int width, int height);
 	~ActionModelMaterialScaleTexture() override;
-	string name() override { return "ModelMaterialScaleTexture"; }
+	string name() const override { return "ModelMaterialScaleTexture"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	int index, level;

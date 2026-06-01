@@ -59,7 +59,7 @@ void update_file(const Path &filename, bool allow_write) {
 	}*/
 
 
-	Data *data = nullptr;
+	history::Data *data = nullptr;
 	string ext = filename.extension();
 
 #if 0

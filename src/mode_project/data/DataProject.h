@@ -8,11 +8,12 @@
 #pragma once
 
 
-#include "../../data/Data.h"
+#include <lib/history/Data.h>
 
 class AdminFile;
 class AdminFileList;
 class GameIniData;
+class DocumentSession;
 
 class AdminGameExportException {
 public:
@@ -24,7 +25,7 @@ public:
 
 
 
-class DataProject : public Data {
+class DataProject : public history::Data {
 public:
 	explicit DataProject(DocumentSession *s);
 	~DataProject() override;
@@ -42,7 +43,8 @@ public:
 
 	void ExportGame(const Path &dir, GameIniData &game_ini);
 
-	AdminFileList *file_list;
+	DocumentSession* doc;
+	AdminFileList* file_list;
 
 	Array<Path> cft;
 

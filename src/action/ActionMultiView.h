@@ -8,21 +8,18 @@
 #ifndef ACTIONMULTIVIEW_H_
 #define ACTIONMULTIVIEW_H_
 
-#include "Action.h"
-class Data;
-#include "../lib/math/mat4.h"
-#include "../lib/math/vec3.h"
+#include <lib/history/Action.h>
+#include <lib/math/mat4.h>
+#include <lib/math/vec3.h>
 
-class Data;
-
-class ActionMultiView: public Action {
+class ActionMultiView: public history::Action {
 public:
 	ActionMultiView();
 
 	// continuous editing
-	void abort(Data *d) override;
-	void abort_and_notify(Data *d);
-	void update_and_notify(Data *d, const mat4 &m);
+	void abort(history::Data *d) override;
+	void abort_and_notify(history::Data *d);
+	void update_and_notify(history::Data *d, const mat4 &m);
 
 protected:
 	Array<int> index;

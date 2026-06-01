@@ -60,7 +60,7 @@ ActionController::ActionController(MultiView *view) :
 
 ActionController::~ActionController() = default;
 
-void ActionController::start_action(Data* _data, ActionMultiView* a, const vec3 &_m, Constraint _constraints) {
+void ActionController::start_action(history::Data* _data, ActionMultiView* a, const vec3 &_m, Constraint _constraints) {
 	if (cur_action)
 		end_action(false);
 	if (!allowed)

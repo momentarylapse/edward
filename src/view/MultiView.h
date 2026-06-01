@@ -7,7 +7,8 @@
 
 #include "MultiViewWindow.h"
 #include "Hover.h"
-#include <data/Data.h>
+#include <stuff/Selection.h>
+#include <lib/history/Data.h>
 #include <lib/xhui/Panel.h>
 #include <lib/yrenderer/Renderer.h>
 #include <lib/yrenderer/scene/SceneView.h>
@@ -125,13 +126,13 @@ public:
 	bool _allow_select = false;
 	bool _show_grid = false;
 
-	std::function<Data::Selection(MultiViewWindow*, const rect&)> f_select;
-	std::function<void(Data::Selection&)> f_make_selection_consistent;
-	std::function<base::optional<Box>(const Data::Selection&)> f_get_selection_box;
+	std::function<Selection(MultiViewWindow*, const rect&)> f_select;
+	std::function<void(Selection&)> f_make_selection_consistent;
+	std::function<base::optional<Box>(const Selection&)> f_get_selection_box;
 	base::optional<Box> selection_box;
 	void update_selection_box();
-	Data::Selection selection;
-	Data::Selection temp_selection;
+	Selection selection;
+	Selection temp_selection;
 
 	static base::optional<Box> points_get_selection_box(const DynamicArray& array, const base::set<int>& sel);
 

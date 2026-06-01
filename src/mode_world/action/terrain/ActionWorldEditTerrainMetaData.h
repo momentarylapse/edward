@@ -7,16 +7,16 @@
 
 
 
-#include <action/Action.h>
+#include <lib/history/Action.h>
 #include <lib/math/vec3.h>
 
-class ActionWorldEditTerrainMetaData : public Action {
+class ActionWorldEditTerrainMetaData : public history::Action {
 public:
 	ActionWorldEditTerrainMetaData(int index, const vec3& pattern);
-	string name() override { return "WorldEditTerrainMetaData";	}
+	string name() const override { return "WorldEditTerrainMetaData";	}
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 
 private:
 	int index;

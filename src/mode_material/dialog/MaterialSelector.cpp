@@ -4,12 +4,12 @@
 #include <Session.h>
 #include <view/MaterialPreviewManager.h>
 #include <lib/yrenderer/MaterialManager.h>
-#include <data/Data.h>
+#include <lib/history/Data.h>
 #include <y/helper/ResourceManager.h>
 #include <storage/format/Format.h>
 
 
-MaterialSelector::MaterialSelector(Data* _data) : Node("material-selector") {
+MaterialSelector::MaterialSelector(Session* s, history::Data* _data) : Node("material-selector") {
 	from_source(R"foodelim(
 Dialog material-selector ''
 	Grid ? ''
@@ -28,8 +28,8 @@ Dialog material-selector ''
 					Button edit 'Edit' primary 'tooltip=Fully edit material'
 )foodelim");
 	data = _data;
-	session = data->session;
-	edit_panel = new MaterialParameterPanel(data, nullptr);
+	session = s;
+	edit_panel = new MaterialParameterPanel(session, data, nullptr);
 	embed("editor-grid", 0, 0, edit_panel);
 
 	event("material", [this] {

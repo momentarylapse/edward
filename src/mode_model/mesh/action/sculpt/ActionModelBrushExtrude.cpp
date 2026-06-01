@@ -18,7 +18,7 @@ ActionModelBrushExtrude::ActionModelBrushExtrude(const vec3& _pos, const vec3& _
 	depth = _depth;
 }
 
-void* ActionModelBrushExtrude::execute(Data* d) {
+void* ActionModelBrushExtrude::execute(history::Data* d) {
 	auto m = dynamic_cast<DataModel*>(d);
 
 	float r2 = radius * radius;
@@ -36,7 +36,7 @@ void* ActionModelBrushExtrude::execute(Data* d) {
 	return nullptr;
 }
 
-void ActionModelBrushExtrude::undo(Data* d) {
+void ActionModelBrushExtrude::undo(history::Data* d) {
 	auto m = dynamic_cast<DataModel*>(d);
 
 	//m->set_normals_dirty_by_vertices(index);

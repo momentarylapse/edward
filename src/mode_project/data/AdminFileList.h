@@ -8,7 +8,7 @@
 #ifndef ADMINFILELIST_H_
 #define ADMINFILELIST_H_
 
-#include "../../data/Data.h"
+#include <lib/history/Data.h>
 
 class AdminFile;
 class GameIniData;
@@ -19,7 +19,7 @@ public:
 	void clear_deep();
 	void sort();
 	void add_recursive(AdminFile *a);
-	AdminFile *add_unchecked(int kind, const Path &filename, AdminFile *source = NULL);
+	AdminFile *add_unchecked(int kind, const Path &filename, AdminFile *source = nullptr);
 	AdminFile *add_unchecked_ae(int kind, const Path &filename, AdminFile *source);
 	AdminFile *get(int kind, const Path &name);
 	void remove_obsolete();

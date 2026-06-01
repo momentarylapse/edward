@@ -12,7 +12,7 @@ ActionModelEditData::ActionModelEditData(const DataModel::MetaData& _data) {
 	data = _data;
 }
 
-void *ActionModelEditData::execute(Data* d) {
+void *ActionModelEditData::execute(history::Data* d) {
 	auto m = dynamic_cast<DataModel*>(d);
 
 	std::swap(data, m->meta_data);
@@ -22,7 +22,7 @@ void *ActionModelEditData::execute(Data* d) {
 
 
 
-void ActionModelEditData::undo(Data* d) {
+void ActionModelEditData::undo(history::Data* d) {
 	execute(d);
 }
 

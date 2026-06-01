@@ -15,7 +15,7 @@
 #include <view/ActionController.h>
 #include <view/MultiViewWindow.h>
 #include <view/DocumentSession.h>
-#include <data/Data.h>
+#include <lib/history/Data.h>
 #include <lib/mesh/PolygonMesh.h>
 #include <lib/mesh/GeometryBall.h>
 #include <lib/mesh/GeometryCube.h>
@@ -258,13 +258,12 @@ void PluginManager::link_plugins() {
 	//	ext->declare_class_element("Mode.name", &ModeBase::name);
 	//	ext->declare_class_element("Mode.multi_view", &ModeBase::multi_view);
 
-	ext->declare_class_size("Data", sizeof(Data));
-	ext->declare_class_element("Data.filename", &Data::filename);
-	ext->declare_class_element("Data.file_time", &Data::file_time);
-	ext->declare_class_element("Data.binary_file_format", &Data::binary_file_format);
-	ext->declare_class_element("Data.type", &Data::type);
-	ext->link_class_func("Data.begin_action", &Data::begin_action_group);
-	ext->link_class_func("Data.end_action", &Data::end_action_group);
+	ext->declare_class_size("Data", sizeof(history::Data));
+	ext->declare_class_element("Data.filename", &history::Data::filename);
+	ext->declare_class_element("Data.file_time", &history::Data::file_time);
+	ext->declare_class_element("Data.type", &history::Data::type);
+	ext->link_class_func("Data.begin_action", &history::Data::begin_action_group);
+	ext->link_class_func("Data.end_action", &history::Data::end_action_group);
 
 	ext->declare_class_size("MultiView.SingleData", sizeof(multiview::SingleData));
 	ext->declare_class_element("MultiView.SingleData.pos", &multiview::SingleData::pos);

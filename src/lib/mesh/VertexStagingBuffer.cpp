@@ -33,7 +33,7 @@ void VertexStagingBuffer::build(ygfx::VertexBuffer *vb, int num_textures) {
 void VertexStagingBuffer::clear() {
 	p.clear();
 	n.clear();
-	for (int i=0; i<MATERIAL_MAX_TEXTURES; i++)
+	for (int i=0; i<POLYGON_MAX_TEXTURES; i++)
 		uv[i].clear();
 }
 

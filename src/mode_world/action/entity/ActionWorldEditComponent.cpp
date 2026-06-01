@@ -16,7 +16,7 @@ ActionWorldEditBaseEntity::ActionWorldEditBaseEntity(int _index, const vec3& _po
 	index = _index;
 }
 
-void* ActionWorldEditBaseEntity::execute(Data* d) {
+void* ActionWorldEditBaseEntity::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto e = w->entity(index);
 	std::swap(e->pos, pos);
@@ -24,7 +24,7 @@ void* ActionWorldEditBaseEntity::execute(Data* d) {
 	return nullptr;
 }
 
-void ActionWorldEditBaseEntity::undo(Data* d) {
+void ActionWorldEditBaseEntity::undo(history::Data* d) {
 	execute(d);
 }
 
@@ -35,7 +35,7 @@ ActionWorldEditComponent::ActionWorldEditComponent(int _index, const kaba::Class
 	component = c;
 }
 
-void* ActionWorldEditComponent::execute(Data* d) {
+void* ActionWorldEditComponent::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	if (auto c = w->entity(index)->_get_component_generic_(type)) {
 		auto temp = w->session->plugin_manager->describe_class(type, c);
@@ -45,7 +45,7 @@ void* ActionWorldEditComponent::execute(Data* d) {
 	return nullptr;
 }
 
-void ActionWorldEditComponent::undo(Data* d) {
+void ActionWorldEditComponent::undo(history::Data* d) {
 	execute(d);
 }
 
@@ -56,7 +56,7 @@ ActionWorldAddComponent::ActionWorldAddComponent(int _index, const kaba::Class* 
 	variables = _variables;
 }
 
-void *ActionWorldAddComponent::execute(Data* d) {
+void *ActionWorldAddComponent::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto e = w->entity(index);
 	component = w->entity_manager->_add_component_generic_(e, type, variables);
@@ -64,7 +64,7 @@ void *ActionWorldAddComponent::execute(Data* d) {
 	return component;
 }
 
-void ActionWorldAddComponent::undo(Data* d) {
+void ActionWorldAddComponent::undo(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto e = w->entity(index);
 	w->entity_manager->delete_component(e, component);
@@ -77,7 +77,7 @@ void ActionWorldAddComponent::undo(Data* d) {
 	component = c;
 }
 
-void *ActionWorldAddUserComponent::execute(Data* d) {
+void *ActionWorldAddUserComponent::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto tag = w->entity(index)->get_component<EdwardTag>();
 	tag->user_components.add(component);
@@ -85,7 +85,7 @@ void *ActionWorldAddUserComponent::execute(Data* d) {
 	return nullptr;
 }
 
-void ActionWorldAddUserComponent::undo(Data* d) {
+void ActionWorldAddUserComponent::undo(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto tag = w->entity(index)->get_component<EdwardTag>();
 	tag->user_components.pop();
@@ -98,7 +98,7 @@ ActionWorldRemoveComponent::ActionWorldRemoveComponent(int _index, const kaba::C
 	type = _type;
 }
 
-void *ActionWorldRemoveComponent::execute(Data* d) {
+void *ActionWorldRemoveComponent::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto e = w->entity(index);
 	auto c = e->_get_component_generic_(type);
@@ -108,7 +108,7 @@ void *ActionWorldRemoveComponent::execute(Data* d) {
 	return nullptr;
 }
 
-void ActionWorldRemoveComponent::undo(Data* d) {
+void ActionWorldRemoveComponent::undo(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto e = w->entity(index);
 	w->entity_manager->_add_component_generic_(e, type);
@@ -122,7 +122,7 @@ ActionWorldRemoveUnknownComponent::ActionWorldRemoveUnknownComponent(int _index,
 	cindex = _cindex;
 }
 
-void *ActionWorldRemoveUnknownComponent::execute(Data* d) {
+void *ActionWorldRemoveUnknownComponent::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto tag = w->entity(index)->get_component<EdwardTag>();
 	component = tag->unknown_components[cindex];
@@ -131,7 +131,7 @@ void *ActionWorldRemoveUnknownComponent::execute(Data* d) {
 	return nullptr;
 }
 
-void ActionWorldRemoveUnknownComponent::undo(Data* d) {
+void ActionWorldRemoveUnknownComponent::undo(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto tag = w->entity(index)->get_component<EdwardTag>();
 	tag->unknown_components.insert(component, cindex);

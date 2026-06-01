@@ -13,7 +13,7 @@ ActionModelAddMaterial::ActionModelAddMaterial(xfer<yrenderer::Material> m) {
 	material = m;
 }
 
-void *ActionModelAddMaterial::execute(Data *d) {
+void *ActionModelAddMaterial::execute(history::Data* d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	m->materials.add(material.get());
@@ -23,7 +23,7 @@ void *ActionModelAddMaterial::execute(Data *d) {
 
 
 
-void ActionModelAddMaterial::undo(Data *d) {
+void ActionModelAddMaterial::undo(history::Data* d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	m->materials.pop();

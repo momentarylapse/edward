@@ -10,12 +10,13 @@
 
 #include <Session.h>
 #include "WorldTerrain.h"
-#include <data/Data.h>
+#include <lib/history/Data.h>
 #include <view/SingleData.h>
 #include <lib/yrenderer/Material.h>
 #include <lib/ygraphics/graphics-fwd.h>
 #include <lib/any/any.h>
 #include <lib/math/quaternion.h>
+#include <stuff/Selection.h>
 
 #include "fx/ParticleEmitter.h"
 //#include <y/EntityManager.h>
@@ -59,7 +60,7 @@ struct EdwardTag : ecs::Component {
 	static const kaba::Class* _class;
 };
 
-class DataWorld: public Data {
+class DataWorld: public history::Data {
 public:
 	explicit DataWorld(DocumentSession* doc);
 	~DataWorld() override;
@@ -78,6 +79,9 @@ public:
 	void reset() override;
 	void add_initial_data();
 	bool is_empty() const;
+
+	DocumentSession* doc;
+	Session* session;
 
 
 	Box get_bounding_box() const;
@@ -139,9 +143,9 @@ public:
 	void entity_remove_unknown_component(ecs::Entity* e, int cindex);
 	void entity_edit_unknown_component(ecs::Entity* e, int cindex, const ecs::InstanceData& c);
 
-	void copy(LevelData& temp, const Data::Selection& sel) const; // actually not an action
+	void copy(LevelData& temp, const Selection& sel) const; // actually not an action
 	void paste(const LevelData& temp, Selection* selection = nullptr);
-	void delete_selection(const Data::Selection& selection);
+	void delete_selection(const Selection& selection);
 
 	// low level (no action)
 	//Entity* _create_entity(const LevelData::Entity& e);

@@ -5,6 +5,7 @@
 #include "MeshEdit.h"
 
 #include <lib/base/algo.h>
+#include <lib/base/map.h>
 #include <lib/base/sort.h>
 #include <lib/base/iter.h>
 #include <lib/os/msg.h>

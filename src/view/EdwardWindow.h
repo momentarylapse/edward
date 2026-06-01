@@ -24,7 +24,7 @@ public:
 	obs::sink in_redraw;
 	obs::sink in_data_selection_changed;
 	obs::sink in_data_changed;
-	obs::sink in_action_failed;
+	obs::xsink<string> in_action_failed;
 	obs::sink in_saved;
 
 	xhui::MenuBar* menu_bar;

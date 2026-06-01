@@ -17,6 +17,7 @@ namespace yrenderer {
 static vulkan::Surface surface; // FIXME
 
 Context::Context(ygfx::Context* ctx) {
+	ctx->make_current();
 	context = ctx;
 	device = ctx->device;
 }

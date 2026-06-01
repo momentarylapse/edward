@@ -18,7 +18,9 @@
 
 struct PolygonMesh;
 class ActionMultiView;
-class Data;
+namespace history {
+	class Data;
+}
 class Painter;
 class MultiView;
 class MultiViewWindow;
@@ -80,7 +82,7 @@ public:
 	void draw_post(Painter* p);
 	Constraint get_hover(MultiViewWindow* win, const vec2& m, vec3 &tp) const;
 	bool performing_action();
-	void start_action(Data* data, ActionMultiView* a, const vec3& m, Constraint constraints);
+	void start_action(history::Data* data, ActionMultiView* a, const vec3& m, Constraint constraints);
 	void update_action(const vec2& m);
 	void update_param(const vec3 &p);
 	void end_action(bool set);
@@ -113,7 +115,7 @@ private:
 	MultiView* multi_view;
 	MouseAction action;
 	ActionMultiView* cur_action = nullptr;
-	Data* data;
+	history::Data* data;
 
 	void update_manipulator();
 

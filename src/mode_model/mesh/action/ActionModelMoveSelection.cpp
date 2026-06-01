@@ -8,7 +8,7 @@
 #include <Session.h>
 #include <lib/base/iter.h>
 
-ActionModelMoveSelection::ActionModelMoveSelection(ModelMesh* m, const Data::Selection& selection) {
+ActionModelMoveSelection::ActionModelMoveSelection(ModelMesh* m, const Selection& selection) {
 	mesh = m;
 	// list of selected objects and save old pos
 	if (selection.contains(MultiViewType::MODEL_VERTEX))
@@ -20,7 +20,7 @@ ActionModelMoveSelection::ActionModelMoveSelection(ModelMesh* m, const Data::Sel
 			}
 }
 
-void *ActionModelMoveSelection::execute(Data*) {
+void *ActionModelMoveSelection::execute(history::Data*) {
 	for (const auto& [ii, i]: enumerate(index)) {
 		if (type[ii] == MultiViewType::MODEL_VERTEX) {
 			mesh->vertices[i].pos = mat * old_data[ii];
@@ -29,7 +29,7 @@ void *ActionModelMoveSelection::execute(Data*) {
 	return nullptr;
 }
 
-void ActionModelMoveSelection::undo(Data*) {
+void ActionModelMoveSelection::undo(history::Data*) {
 	for (const auto& [ii, i]: enumerate(index)) {
 		if (type[ii] == MultiViewType::MODEL_VERTEX) {
 			mesh->vertices[i].pos = old_data[ii];

@@ -7,7 +7,7 @@
 #include <Session.h>
 #include <lib/base/iter.h>
 
-ActionModelMoveBones::ActionModelMoveBones(DataModel* m, const Data::Selection& selection) {
+ActionModelMoveBones::ActionModelMoveBones(DataModel* m, const Selection& selection) {
 	// list of selected objects and save old pos
 	if (selection.contains(MultiViewType::SKELETON_BONE))
 		for (const auto& [i, o]: enumerate(m->bones))
@@ -17,7 +17,7 @@ ActionModelMoveBones::ActionModelMoveBones(DataModel* m, const Data::Selection& 
 			}
 }
 
-void *ActionModelMoveBones::execute(Data* d) {
+void *ActionModelMoveBones::execute(history::Data* d) {
 	auto m = static_cast<DataModel*>(d);
 	for (const auto& [ii, i]: enumerate(index)) {
 		m->bones[i].pos = mat * old_data[ii];
@@ -25,7 +25,7 @@ void *ActionModelMoveBones::execute(Data* d) {
 	return nullptr;
 }
 
-void ActionModelMoveBones::undo(Data* d) {
+void ActionModelMoveBones::undo(history::Data* d) {
 	auto m = static_cast<DataModel*>(d);
 	for (const auto& [ii, i]: enumerate(index)) {
 		m->bones[i].pos = old_data[ii];

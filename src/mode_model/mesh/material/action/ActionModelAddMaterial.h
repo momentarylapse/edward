@@ -8,20 +8,20 @@
 #ifndef ACTIONMODELADDMATERIAL_H_
 #define ACTIONMODELADDMATERIAL_H_
 
-#include <action/Action.h>
+#include <lib/history/Action.h>
 #include <lib/base/pointer.h>
 
 namespace yrenderer {
 	class Material;
 }
 
-class ActionModelAddMaterial : public Action {
+class ActionModelAddMaterial : public history::Action {
 public:
 	explicit ActionModelAddMaterial(xfer<yrenderer::Material> material);
-	string name() override { return "ModelAddMaterial"; }
+	string name() const override { return "ModelAddMaterial"; }
 
-	void* execute(Data* d) override;
-	void undo(Data* d) override;
+	void* execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 private:
 	owned<yrenderer::Material> material;
 };

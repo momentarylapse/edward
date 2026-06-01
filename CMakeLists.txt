@@ -167,11 +167,7 @@ list(APPEND DEPS Threads::Threads)
 #=======================================================================================
 
 add_executable(edward
-	src/action/Action.cpp
-	src/action/ActionGroup.cpp
-	src/action/ActionManager.cpp
 	src/action/ActionMultiView.cpp
-	src/data/Data.cpp
 	src/lib/any/any.cpp
 	src/lib/any/conversion.cpp
 	src/lib/base/array.cpp
@@ -184,6 +180,11 @@ add_executable(edward
 	src/lib/doc/pdf.cpp
 	src/lib/doc/ttf.cpp
 	src/lib/doc/xml.cpp
+	src/lib/history/Action.cpp
+	src/lib/history/ActionGroup.cpp
+	src/lib/history/ActionManager.cpp
+	src/lib/history/Data.cpp
+	src/lib/history/MergableAction.cpp
 	src/lib/image/color.cpp
 	src/lib/image/image.cpp
 	src/lib/image/image_bmp.cpp

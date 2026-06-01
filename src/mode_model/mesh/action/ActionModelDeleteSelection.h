@@ -6,19 +6,19 @@
 #define ACTIONMODELDELETESELECTION_H
 
 
-#include <action/Action.h>
+#include <lib/history/Action.h>
 #include <lib/mesh/Polygon.h>
 #include "../../data/ModelMesh.h"
 class DataModel;
 struct ModelMesh;
 
-class ActionModelDeleteSelection : public Action {
+class ActionModelDeleteSelection : public history::Action {
 public:
-	ActionModelDeleteSelection(ModelMesh* m, const Data::Selection& sel, bool greedy);
-	string name() override { return "ModelDeleteSelection"; }
+	ActionModelDeleteSelection(ModelMesh* m, const Selection& sel, bool greedy);
+	string name() const override { return "ModelDeleteSelection"; }
 
-	void *execute(Data *d) override;
-	void undo(Data *d) override;
+	void *execute(history::Data* d) override;
+	void undo(history::Data* d) override;
 private:
 
 	int map_vertex(int v) const;

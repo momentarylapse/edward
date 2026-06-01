@@ -4,7 +4,7 @@
 
 #include "ModeCoding.h"
 #include <view/DocumentSession.h>
-#include <data/Data.h>
+#include <lib/history/Data.h>
 #include <storage/format/Format.h>
 #include <storage/Storage.h>
 #include <lib/codeeditor/CodeEditor.h>
@@ -19,7 +19,7 @@
 
 #include "lib/os/msg.h"
 
-CodeData::CodeData(DocumentSession* doc) : Data(doc, FD_SCRIPT) {
+CodeData::CodeData(DocumentSession* doc) : Data(FD_SCRIPT) {
 }
 
 
