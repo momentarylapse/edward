@@ -6,13 +6,13 @@
 #include "System.h"
 #include "EntityManager.h"
 #include "ComponentManager.h"
+#include "Component.h"
 #include "../plugins/PluginManager.h"
 #include <lib/profiler/Profiler.h>
 #include <lib/kaba/kaba.h>
 #include <lib/os/path.h>
 #include <lib/os/msg.h>
-
-#include "Component.h"
+#include <lib/os/app.h>
 
 
 namespace ecs {
@@ -42,12 +42,26 @@ void SystemManager::reset() {
 	system_by_type.clear();
 }
 
-void SystemManager::create(const Path& filename, const string& __name, const Array<InstanceDataVariable> &variables) {
+void SystemManager::create(const Path& filename, const string& name, const Array<InstanceDataVariable> &variables) {
 	msg_write("add system: " + filename.str());
-	auto type = PluginManager::find_class_derived(filename, "ecs.System");
+	int n0 = entity_manager->entities.num;
+	const kaba::Class* type;
+	if (name != "")
+		type = PluginManager::find_class(filename, name);
+	else
+		type = PluginManager::find_class_derived(filename, "ecs.System");
+	if (!type->is_derived_from_s("ecs.System")) {
+		msg_error(format("%s: is not derived from ecs.System.", type->long_name()));
+		os::app::exit(1);
+	}
 	auto* s = reinterpret_cast<System*>(PluginManager::create_instance(type, variables));
 
 	register_system(type, s);
+
+	if (entity_manager->entities.num != n0) {
+		msg_error(format("%s: not allowed to create entities during System.on_init(). Use on_finished_loading() instead.", type->long_name()));
+		os::app::exit(1);
+	}
 }
 
 void SystemManager::register_system(const kaba::Class* type, System* s) {

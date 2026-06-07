@@ -26,6 +26,7 @@
 #include <lib/yrenderer/ShaderManager.h>
 #include <lib/yrenderer/_kaba_export.h>
 #include <lib/profiler/_kaba_export.h>
+#include <lib/net/_kaba_export.h>
 #include "../helper/Scheduler.h"
 #include "lib/any/conversion.h"
 #include "lib/yrenderer/MaterialManager.h"
@@ -38,17 +39,10 @@
 #define HAS_INPUT
 #endif
 #include "../net/NetworkManager.h"
-#include <lib/yrenderer/Context.h>
 #include "../renderer/helper/RendererFactory.h"
-#include <lib/yrenderer/helper/CubeMapSource.h>
-#include <lib/yrenderer/scene/SceneRenderer.h>
 #include "../renderer/FullCameraRenderer.h"
-#include <lib/yrenderer/scene/path/RenderPathForward.h>
-#include <lib/yrenderer/scene/path/RenderPathDeferred.h>
 #include "../renderer/gui/GuiRenderer.h"
-#include <lib/yrenderer/post/PostProcessor.h>
 #include <renderer/helper/Raytracing.h>
-#include <lib/yrenderer/scene/SceneView.h>
 #include <EngineData.h>
 #include <ecs/Component.h>
 #include <ecs/ComponentManager.h>
@@ -89,6 +83,8 @@ ResourceManager* default_resource_manager = nullptr;
 
 void init() {
 	kaba::default_context->register_package_init("yengine", engine.script_dir | "yengine", &export_kaba_package_yengine);
+	kaba::default_context->register_package_init("net", engine.script_dir | "net", &export_package_net);
+	kaba::default_context->register_package_init("profiler", engine.script_dir | "profiler", &export_package_profiler);
 	import_kaba();
 }
 
@@ -280,7 +276,7 @@ const kaba::Class *find_class_derived(const Path &filename, const string &base_c
 		msg_error(e.message());
 		throw Exception(e.message());
 	}
-	throw Exception(format("script does not contain a class derived from '%s'", base_class));
+	throw Exception(format("script '%s' does not contain a class derived from '%s'", filename, base_class));
 	return nullptr;
 }
 
@@ -327,7 +323,7 @@ const kaba::Class *find_class(const Path &filename, const string &name) {
 		msg_error(e.message());
 		throw;
 	}
-	throw Exception(format("script does not contain a class named '%s'", name));
+	throw Exception(format("script '%s' does not contain a class named '%s'", filename, name));
 	return nullptr;
 }
 

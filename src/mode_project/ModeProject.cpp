@@ -129,6 +129,8 @@ void ModeProject::upgrade_project(const Path &dir) {
 		Path engine_api_dir = engine_dir | "api";
 		auto list = os::fs::search(engine_api_dir, "*", "rf");
 		for (auto &f: list) {
+			if (f.str_unix().find("/.docs/") >= 0 or f.str_unix().find("/test/") >= 0)
+				continue;
 			auto dest = dir | "Scripts" | f;
 			bool required = true;//f.is_in("y");
 			sync_files(engine_api_dir | f, dest, required);

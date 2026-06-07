@@ -505,10 +505,6 @@ void export_world(kaba::IExporter* ext) {
 	ext->declare_class_element("Light.shadow_dist_min", _OFFSET(light, light.shadow_dist_min));
 	ext->link_class_func("Light.set_direction", &Light::set_direction);
 
-	/*ext->link_class_func("Light.Parallel.__init__", &Light::__init_parallel__);
-	ext->link_class_func("Light.Spherical.__init__", &Light::__init_spherical__);
-	ext->link_class_func("Light.Cone.__init__", &Light::__init_cone__);*/
-
 	ext->declare_class_size("Link", sizeof(Link));
 	ext->declare_class_element("Link.type", &Link::link_type);
 	ext->declare_class_element("Link.a", &Link::a);
@@ -913,7 +909,6 @@ void export_kaba_package_yengine(kaba::IExporter* ext) {
 	export_engine(ext);
 	export_renderer(ext);
 	_export_package_yrenderer_internal(ext);
-	_export_package_profiler_internal(ext);
 }
 
 }
