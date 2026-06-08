@@ -313,6 +313,7 @@ const kaba::Class *find_class(const Path &filename, const string &name) {
 			return EgoMarker::_class;
 	}
 	try {
+		msg_write(p2s(kaba::default_context));
 		auto s = kaba::default_context->load_module(filename, false);
 		for (auto c: s->classes()) {
 			if (c->name == name) {

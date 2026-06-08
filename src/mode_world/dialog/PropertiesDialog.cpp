@@ -215,9 +215,28 @@ void PropertiesDialog::add_new_system() {
 class <NAME> extends System
 	var some_variable: f32
 
-	func override on_init()
+	func override on_finished_loading()
+		# called when world is fully loaded
+
+
+	func override on_add_component(out c: ComponentInfo)
+		# called whenever a component is added to an entity in the world
+
+
+	func override on_remove_component(out c: ComponentInfo)
+		# called whenever a component is removed from an entity in the world
+
 
 	func override on_iterate(dt: f32)
+		# called in each frame
+
+
+	func override on_key_down(key: Key)
+		# called when a key on the keyboard is pressed down
+
+
+	func override on_left_button_down()
+		# called when the left mouse button is pressed down
 )foodelim").replace("<NAME>", name));
 
 			temp.systems.add({name, path.relative, {}});

@@ -16,6 +16,7 @@
 ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session* session, const string& base_class) : Dialog("component-selection-dialog", parent) {
 	width = 400;
 	height = 600;
+	flags = flags | xhui::DialogFlags::CloseByEscape;
 
 	if (base_class.match("*System")) {
 		classes = session->plugin_manager->system_classes;

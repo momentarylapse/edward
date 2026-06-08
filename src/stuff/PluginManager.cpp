@@ -344,7 +344,6 @@ void link_component_x(shared<kaba::Module> mm, const string& name) {
 }
 
 void PluginManager::load_project_stuff(const Path &dir) {
-
 	session->kaba_ctx->register_package_init("yengine", dir.absolute().canonical() | "Scripts/yengine", &::PluginManager::export_kaba_package_yengine);
 	session->kaba_ctx->register_package_init("profiler", dir.absolute().canonical() | "Scripts/profiler", &export_package_profiler);
 	session->kaba_ctx->register_package_init("net", dir.absolute().canonical() | "Scripts/net", &export_package_net);

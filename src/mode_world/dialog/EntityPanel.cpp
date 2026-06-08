@@ -14,12 +14,14 @@
 #include <lib/xhui/xhui.h>
 #include <view/MultiView.h>
 #include <view/DocumentSession.h>
+#include <view/dialogs/CommonDialogs.h>
 #include <ecs/Entity.h>
 #include <y/world/components/Camera.h>
+#include <y/helper/ResourceManager.h>
+#include <y/plugins/PluginManager.h>
 #include <storage/Storage.h>
 #include <lib/base/iter.h>
-
-#include "helper/ResourceManager.h"
+#include <lib/kaba/Context.h>
 
 
 EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-panel") {
@@ -30,7 +32,8 @@ Dialog entity-panel '' padding=0
 		ListView components 'c' nobar sunkenbackground=no showselection=no selectsingle
 		---|
 		Grid ? ""
-			Button add-component '+' 'tooltip=Select a component class to add to this entity' noexpandx
+			Button create-new-component '' 'tooltip=Create a new component class to add to this entity' noexpandx image=new
+			Button add-component '' 'tooltip=Select a component class to add to this entity' noexpandx image=open
 			Button save-template '' 'tooltip=Save current components as template' noexpandx image=save
 )foodelim");
 
@@ -56,6 +59,9 @@ Dialog entity-panel '' padding=0
 		update(false);
 	});
 
+	event("create-new-component", [this] {
+		create_new_component();
+	});
 	event("add-component", [this] {
 		ComponentSelectionDialog::ask(this, mode_world->session).then([this] (const kaba::Class* c) {
 			auto e = mode_world->data->entity(cur_entity_index);
@@ -82,6 +88,36 @@ Dialog entity-panel '' padding=0
 
 	/*mode->data->out_changed >> create_sink([this] {
 	});*/
+}
+
+void EntityPanel::create_new_component() {
+	mode_world->session->storage->file_dialog(FD_SCRIPT, true, true).then([this] (const ComplexPath& path) {
+		TextDialog::ask(this, "Component name", "Test").then([this, path] (const string& name) {
+			os::fs::write_text(path.complete, string(R"foodelim(use yengine.*
+
+class <NAME> extends Component
+	var some_variable: f32
+
+	func override on_init()
+		# called once after attaching to an entity
+
+
+	func override on_iterate(dt: f32)
+		# called each frame
+
+
+	func override on_collide(col: CollisionData)
+		# called when this entity collided with another
+)foodelim").replace("<NAME>", name));
+
+			auto e = mode_world->data->entity(cur_entity_index);
+			auto ctx = kaba::default_context;
+			kaba::default_context = mode_world->session->kaba_ctx.get();
+			auto c = PluginManager::find_class(path.complete, name);
+			kaba::default_context = ctx;
+			mode_world->data->entity_add_component_generic(e, c);
+		});
+	});
 }
 
 void EntityPanel::update_to_entity(int index, bool force) {

@@ -25,5 +25,6 @@ public:
 
 	void update(bool force);
 	void update_to_entity(int index, bool force);
+	void create_new_component();
 };
 
