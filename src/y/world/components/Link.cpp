@@ -63,6 +63,14 @@ void Link::create() {
 	}
 }
 
+void unfreeze(int index) {
+#if HAS_LIB_BULLET
+	if (auto e = world.get_entity(index))
+		if (auto b = e->get_component<RigidBody>())
+			b->body->activate(true);
+#endif
+}
+
 
 void Link::create_socket() {
 	auto _a = world.get_entity(a);
@@ -165,6 +173,10 @@ void Link::set_motor(float v, float max) {
 #if HAS_LIB_BULLET
 	if (link_type == LinkType::HINGE) {
 		((btHingeConstraint*)con)->enableAngularMotor(max > 0, v, max);
+		if (v != 0) {
+			unfreeze(a);
+			unfreeze(b);
+		}
 	}
 #endif
 }
@@ -184,6 +196,10 @@ void Link::set_frame(int n, const quaternion &q) {
 			((btHingeConstraint*)con)->getBFrame().setRotation(bt_set_q(q));
 		else
 			((btHingeConstraint*)con)->getAFrame().setRotation(bt_set_q(q));
+		if (true) { // TODO
+			unfreeze(a);
+			unfreeze(b);
+		}
 	}
 #endif
 }

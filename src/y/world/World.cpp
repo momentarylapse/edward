@@ -30,6 +30,7 @@
 #include "components/Collider.h"
 #include "components/MultiInstance.h"
 #include "components/Light.h"
+#include "components/Link.h"
 #include "components/Camera.h"
 #include "systems/Physics.h"
 #include <ecs/SystemManager.h>
@@ -312,6 +313,20 @@ Light *World::create_light_cone(const vec3 &pos, const quaternion &ang, const co
 Camera *World::create_camera(const vec3 &pos, const quaternion &ang) {
 	auto e = create_entity(pos, ang);
 	return entity_manager->add_component<Camera>(e);
+}
+
+Link *World::create_link_socket(ecs::Entity *a, ecs::Entity *b, const vec3 &pos) {
+	auto e = create_entity(pos, quaternion::ID);
+	int ia = entity_manager->entity_index(a);
+	int ib = entity_manager->entity_index(b);
+	return entity_manager->add_component<Link>(e, {{"a", ia}, {"b", ib}, {"type", (int)LinkType::SOCKET}});
+}
+
+Link *World::create_link_hinge(ecs::Entity *a, ecs::Entity *b, const vec3 &pos, const vec3& axis) {
+	auto e = create_entity(pos, quaternion::rotation(axis.dir2ang()));
+	int ia = entity_manager->entity_index(a);
+	int ib = entity_manager->entity_index(b);
+	return entity_manager->add_component<Link>(e, {{"a", ia}, {"b", ib}, {"type", (int)LinkType::HINGE}});
 }
 
 

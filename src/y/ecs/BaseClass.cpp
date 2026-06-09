@@ -40,7 +40,7 @@ bool InstanceDataVariable::operator!=(const InstanceDataVariable& other) const {
 
 Array<InstanceDataVariable> sorted_variables(const Array<InstanceDataVariable>& variables) {
 	return base::sorted(variables, [] (const InstanceDataVariable& a, const InstanceDataVariable& b) {
-		return a.name < b.name;
+		return a.name <= b.name;
 	});
 }
 

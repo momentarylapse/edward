@@ -468,6 +468,8 @@ void export_world(kaba::IExporter* ext) {
 	ext->link_class_func("World.create_light_point", &World::create_light_point);
 	ext->link_class_func("World.create_light_cone", &World::create_light_cone);
 	ext->link_class_func("World.create_camera", &World::create_camera);
+	ext->link_class_func("World.create_link_hinge", &World::create_link_hinge);
+	ext->link_class_func("World.create_link_socket", &World::create_link_socket);
 	ext->link_class_func("World.emit_sound", &World::emit_sound);
 	ext->link_class_func("World.emit_sound_file", &World::emit_sound_file);
 	ext->link_class_func("World.emit_sound_stream", &World::emit_sound_stream);

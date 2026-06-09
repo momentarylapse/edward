@@ -99,6 +99,9 @@ public:
 
 	Camera* create_camera(const vec3& pos, const quaternion& ang);
 
+	Link* create_link_socket(ecs::Entity* a, ecs::Entity* b, const vec3& pos);
+	Link* create_link_hinge(ecs::Entity* a, ecs::Entity* b, const vec3& pos, const vec3& axis);
+
 	audio::SoundSource* emit_sound(audio::AudioBuffer* buffer, const vec3 &pos, float radius1);
 	audio::SoundSource* emit_sound_file(const Path &filename, const vec3 &pos, float radius1);
 	audio::SoundSource* emit_sound_stream(audio::AudioStream* stream, const vec3 &pos, float radius1);
