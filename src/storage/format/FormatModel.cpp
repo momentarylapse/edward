@@ -48,8 +48,6 @@ public:
 
 void update_model_script_data(Session *session, DataModel::MetaData &m) {}
 
-void FormatModel::_load_old(LegacyFile&, DataModel *data, bool deep) {}
-
 bool DataModelAllowUpdating = true;
 
 ivec4 read_ivec4(Stream *f);

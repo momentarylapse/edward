@@ -6,10 +6,8 @@
  */
 
 #include "../FormatModel.h"
-#include "../../../data/model/DataModel.h"
-#include "../../../data/model/ModelMesh.h"
-#include "../../../data/model/ModelPolygon.h"
-#include "../../../mode/model/ModeModel.h"
+#include <mode_model/data/DataModel.h>
+#include <mode_model/data/ModelMesh.h>
 #include <y/helper/ResourceManager.h>
 #include <y/world/components/Animator.h>
 #include "../../../lib/os/file.h"
@@ -17,11 +15,14 @@
 #include "../../../lib/os/formatter.h"
 #include "../../../lib/os/msg.h"
 #include "../../../Session.h"
-#include <graphics-impl.h>
+#include <lib/ygraphics/graphics-impl.h>
+
+#include "lib/yrenderer/MaterialManager.h"
+#include "lib/yrenderer/TextureManager.h"
 
 vec3 get_normal_by_index(int index);
 
-
+#if 0
 int find_other_poly_from_edge(ModelMesh *m, int e, int t) {
 	if (m->edge[e].polygon[0] == t)
 		return m->edge[e].polygon[1];
@@ -29,9 +30,9 @@ int find_other_poly_from_edge(ModelMesh *m, int e, int t) {
 }
 
 void guess_smooth_groups(DataModel *m) {
-	auto mesh = m->mesh;
+	auto mesh = m->mesh.get();
 
-	std::function<void(base::set<int>&, base::set<int>&, ModelPolygon&,int,int,int&)> add_and_grow_outwards = [&](base::set<int> &polys, base::set<int> &edges, ModelPolygon &p, int index, int g, int &n_found) {
+	auto add_and_grow_outwards = [&](base::set<int> &polys, base::set<int> &edges, Polygon &p, int index, int g, int &n_found) {
 		if (polys.contains(index))
 			return;
 		p.smooth_group = g;
@@ -39,7 +40,7 @@ void guess_smooth_groups(DataModel *m) {
 		n_found ++;
 
 		for (int k=0; k<p.side.num; k++) {
-			int ei = p.side[k].edge;
+			int ei = p.side[k].edges;
 			edges.add(ei);
 			int pp = find_other_poly_from_edge(mesh, ei, index);
 			if (pp < 0)
@@ -94,6 +95,9 @@ void guess_smooth_groups(DataModel *m) {
 			groups.add(p.smooth_group);
 	msg_write(format(" %d smooth groups found", groups.num));
 }
+#else
+void guess_smooth_groups(DataModel *m) {}
+#endif
 
 Stream *load_file_x(const Path &filename, int &version);
 
@@ -110,7 +114,7 @@ void FormatModel::_load_old(LegacyFile& lf, DataModel *data, bool deep) {
 				_load_v11_edit(*lfe, data, deep);
 		}
 	} else {
-		throw FormatError(format(_("File %s has a wrong (old) file format: %d (expected: %d - %d)!"), lf.filename, lf.ffv, 10, 11));
+		throw FormatError(format("File %s has a wrong (old) file format: %d (expected: %d - %d)!", lf.filename, lf.ffv, 10, 11));
 	}
 
 	delete lf.f;
@@ -119,24 +123,25 @@ void FormatModel::_load_old(LegacyFile& lf, DataModel *data, bool deep) {
 
 void FormatModel::_load_v10(LegacyFile& lf, DataModel *data, bool deep) {
 	auto f = lf.f;
+	throw FormatError("TODO load v10 model...");
 
+#if 0
 	Array<vec3> skin_vert;
 
 	// Materials
 	f->read_comment();
-	data->material.resize(f->read_int());
-	for (auto &m: data->material) {
-		m = new ModelMaterial(data->session);
-		m->filename = f->read_str();
-		m->col.user = f->read_bool();
-		if (m->col.user){
+	data->materials.resize(f->read_int());
+	for (auto &m: data->materials) {
+		m = data->session->resource_manager->load_material(f->read_str());
+		bool user = f->read_bool();
+		if (user){
 			color am, di, sp, em;
 			read_color_argb(f, am);
 			read_color_argb(f, di);
 			read_color_argb(f, sp);
 			read_color_argb(f, em);
 			float shininess = (float)f->read_int();
-			m->col.import(am, di, sp, shininess, em);
+		//	m->col.import(am, di, sp, shininess, em);
 		}
 		f->read_int();
 		f->read_int();
@@ -153,8 +158,8 @@ void FormatModel::_load_v10(LegacyFile& lf, DataModel *data, bool deep) {
 	}
 	// create subs...
 	for (int k=0;k<4;k++){
-		data->triangle_mesh[k].sub.resize(data->material.num);
-		for (int j=0;j<data->material.num;j++)
+		data->triangle_mesh[k].sub.resize(data->materials.num);
+		for (int j=0;j<data->materials.num;j++)
 			data->triangle_mesh[k].sub[j].num_textures = 1;
 	}
 
@@ -162,24 +167,24 @@ void FormatModel::_load_v10(LegacyFile& lf, DataModel *data, bool deep) {
 
 	// vertices
 	f->read_comment();
-	data->phys_mesh->vertex.resize(f->read_int());
-	for (auto &v: data->phys_mesh->vertex){
+	data->phys_mesh->vertices.resize(f->read_int());
+	for (auto &v: data->phys_mesh->vertices) {
 		v.bone_index = {max(f->read_int(), 0), 0, 0, 0};
 		v.bone_weight = {1,0,0,0};
 		f->read_vector(&v.pos);
 	}
 
 	// triangles
-	data->triangle_mesh[0].sub[0].triangle.resize(f->read_int());
-	for (int j=0;j<data->triangle_mesh[0].sub[0].triangle.num;j++){
-		data->triangle_mesh[0].sub[0].triangle[j].normal_dirty = true;
+	data->triangle_mesh[0].sub[0].triangles.resize(f->read_int());
+	for (int j=0;j<data->triangle_mesh[0].sub[0].triangles.num;j++){
+		data->triangle_mesh[0].sub[0].triangles[j].normal_dirty = true;
 		for (int k=0;k<3;k++)
-			data->triangle_mesh[0].sub[0].triangle[j].vertex[k] = f->read_int();
+			data->triangle_mesh[0].sub[0].triangles[j].vertex[k] = f->read_int();
 	}
 
 	// balls
-	data->phys_mesh->ball.resize(f->read_int());
-	for (auto &b: data->phys_mesh->ball){
+	data->phys_mesh->spheres.resize(f->read_int());
+	for (auto &b: data->phys_mesh->spheres) {
 		b.index = f->read_int();
 		b.radius = f->read_float();
 	}
@@ -207,18 +212,18 @@ void FormatModel::_load_v10(LegacyFile& lf, DataModel *data, bool deep) {
 		normal_mode_all -= (normal_mode_all & NORMAL_MODE_PRE);
 
 		// vertices
-		data->triangle_mesh[i].vertex.resize(f->read_int());
-		for (int j=0;j<data->triangle_mesh[i].vertex.num;j++){
-			data->triangle_mesh[i].vertex[j].bone_index = {f->read_int(), 0, 0, 0};
-			data->triangle_mesh[i].vertex[j].bone_index = {1,0,0,0};
-			if (data->triangle_mesh[i].vertex[j].bone_index.i < 0)
-				data->triangle_mesh[i].vertex[j].bone_index.i = 0;
-			f->read_vector(&data->triangle_mesh[i].vertex[j].pos);
+		data->triangle_mesh[i].vertices.resize(f->read_int());
+		for (int j=0;j<data->triangle_mesh[i].vertices.num;j++){
+			data->triangle_mesh[i].vertices[j].bone_index = {f->read_int(), 0, 0, 0};
+			data->triangle_mesh[i].vertices[j].bone_index = {1,0,0,0};
+			if (data->triangle_mesh[i].vertices[j].bone_index.i < 0)
+				data->triangle_mesh[i].vertices[j].bone_index.i = 0;
+			f->read_vector(&data->triangle_mesh[i].vertices[j].pos);
 			if (normal_mode_all == NORMAL_MODE_PER_VERTEX)
-				data->triangle_mesh[i].vertex[j].normal_mode = f->read_byte();
+				data->triangle_mesh[i].vertices[j].normal_mode = f->read_byte();
 			else
-				data->triangle_mesh[i].vertex[j].normal_mode = normal_mode_all;
-			data->triangle_mesh[i].vertex[j].normal_dirty = true;
+				data->triangle_mesh[i].vertices[j].normal_mode = normal_mode_all;
+			data->triangle_mesh[i].vertices[j].normal_dirty = true;
 		}
 
 		// skin vertices
@@ -232,35 +237,34 @@ void FormatModel::_load_v10(LegacyFile& lf, DataModel *data, bool deep) {
 
 		// triangles (subs)
 		int num_trias = f->read_int();
-		for (int t=0;t<data->material.num;t++)
-			data->triangle_mesh[i].sub[t].triangle.resize(f->read_int());
-		for (int t=0;t<data->material.num;t++)
-			for (int j=0;j<data->triangle_mesh[i].sub[t].triangle.num;j++)
+		for (int t=0;t<data->materials.num;t++)
+			data->triangle_mesh[i].sub[t].triangles.resize(f->read_int());
+		for (int t=0;t<data->materials.num;t++)
+			for (int j=0;j<data->triangle_mesh[i].sub[t].triangles.num;j++)
 				for (int k=0;k<3;k++){
-					data->triangle_mesh[i].sub[t].triangle[j].vertex[k] = f->read_int();
+					data->triangle_mesh[i].sub[t].triangles[j].vertex[k] = f->read_int();
 					int svi = f->read_int();
-					data->triangle_mesh[i].sub[t].triangle[j].skin_vertex[0][k] = skin_vert[svi];
+					data->triangle_mesh[i].sub[t].triangles[j].skin_vertex[k] = skin_vert[svi];
 					int normal_index = (int)f->read_byte();
 					//data->triangle_mesh[i].sub[t].triangle[j].normal[k] = get_normal_by_index(normal_index);
-					data->triangle_mesh[i].sub[t].triangle[j].normal_dirty = true;
+					data->triangle_mesh[i].sub[t].triangles[j].normal_dirty = true;
 				}
 	}
 
 // Skeleton
 	f->read_comment();
-	data->bone.resize(f->read_int());
-	for (auto &b: data->bone){
+	data->bones.resize(f->read_int());
+	for (auto &b: data->bones){
 		f->read_vector(&b.pos);
 		b.parent = f->read_int();
 		if (b.parent > 32000)
 			b.parent = -1;
 		if (b.parent >= 0)
-			b.pos += data->bone[b.parent].pos;
+			b.pos += data->bones[b.parent].pos;
 		b.model_file = f->read_str();
 		if (deep)
 			b.model = data->session->resource_manager->load_model(b.model_file);
 		b.const_pos = false;
-		b.is_selected = b.m_old = false;
 	}
 
 // Animations
@@ -268,42 +272,42 @@ void FormatModel::_load_v10(LegacyFile& lf, DataModel *data, bool deep) {
 	int num_anims = f->read_int();
 	for (int i=0;i<num_anims;i++){
 		int anim_index = f->read_int();
-		data->move.resize(anim_index + 1);
-		ModelMove *m = &data->move[anim_index];
+		data->moves.resize(anim_index + 1);
+		ModelMove *m = &data->moves[anim_index];
 		m->name = f->read_str();
 		m->type = (AnimationType)f->read_int();
-		m->frame.resize(f->read_int());
+		m->frames.resize(f->read_int());
 		m->frames_per_sec_const = f->read_float();
 		m->frames_per_sec_factor = f->read_float();
 
 		// vertex animation
 		if (m->type == AnimationType::VERTEX){
-			for (int fr=0;fr<m->frame.num;fr++){
-				m->frame[fr].duration = 1;
+			for (int fr=0;fr<m->frames.num;fr++){
+				m->frames[fr].duration = 1;
 				for (int s=0;s<4;s++){
-					m->frame[fr].skin[s].dpos.resize(data->triangle_mesh[s].vertex.num);
+					m->frames[fr].skin[s].dpos.resize(data->triangle_mesh[s].vertices.num);
 					int num_vertices = f->read_int();
 					for (int j=0;j<num_vertices;j++){
 						int vertex_index = f->read_int();
-						f->read_vector(&m->frame[fr].skin[s].dpos[vertex_index]);
+						f->read_vector(&m->frames[fr].skin[s].dpos[vertex_index]);
 					}
 				}
 			}
 		}else if (m->type == AnimationType::SKELETAL){
 			Array<bool> VarDeltaPos;
-			VarDeltaPos.resize(data->bone.num);
-			for (int j=0;j<data->bone.num;j++)
+			VarDeltaPos.resize(data->bones.num);
+			for (int j=0;j<data->bones.num;j++)
 				VarDeltaPos[j] = f->read_bool();
 			m->interpolated_quadratic = f->read_bool();
 			m->interpolated_loop = f->read_bool();
-			for (int fr=0;fr<m->frame.num;fr++){
-				m->frame[fr].duration = 1;
-				m->frame[fr].skel_dpos.resize(data->bone.num);
-				m->frame[fr].skel_ang.resize(data->bone.num);
-				for (int j=0;j<data->bone.num;j++){
-					f->read_vector(&m->frame[fr].skel_ang[j]);
+			for (int fr=0;fr<m->frames.num;fr++){
+				m->frames[fr].duration = 1;
+				m->frames[fr].skel_dpos.resize(data->bones.num);
+				m->frames[fr].skel_ang.resize(data->bones.num);
+				for (int j=0;j<data->bones.num;j++){
+					f->read_vector(&m->frames[fr].skel_ang[j]);
 					if (VarDeltaPos[j])
-						f->read_vector(&m->frame[fr].skel_dpos[j]);
+						f->read_vector(&m->frames[fr].skel_dpos[j]);
 				}
 			}
 		}
@@ -390,6 +394,7 @@ void FormatModel::_load_v10(LegacyFile& lf, DataModel *data, bool deep) {
 	AlphaZBuffer=(TransparencyMode!=TransparencyMode::FUNCTIONS)and(TransparencyMode!=TransparencyMode::FACTOR);*/
 
 	guess_smooth_groups(data);
+#endif
 }
 
 
@@ -415,58 +420,87 @@ void FormatModel::_load_v11(LegacyFile& lf, DataModel *data, bool deep) {
 
 	// Materials
 	f->read_comment();
-	data->material.resize(f->read_int());
-	for (auto &m: data->material){
-		m = new ModelMaterial(data->session);
-		m->filename = f->read_str();
-		m->col.user = f->read_bool();
+	data->materials.resize(f->read_int());
+	for (auto &m: data->materials){
+		string filename = f->read_str();
+		bool user_color = f->read_bool();
+		//m = data->session->resource_manager->load_material(f->read_str());
 		color am, di, sp, em;
 		read_color_argb(f, am);
 		read_color_argb(f, di);
 		read_color_argb(f, sp);
 		read_color_argb(f, em);
 		float shininess = (float)f->read_int();
-		m->col.import(em, di, sp, shininess, em);
+//		m->col.import(em, di, sp, shininess, em);
 		f->read_int();
 		f->read_int();
 		f->read_int();
 		f->read_int();
 		f->read_bool();
 		int n = f->read_int();
-		m->texture_levels.clear();
-		for (int t=0;t<n;t++) {
-			ModelMaterial::TextureLevel tl;
-			tl.filename = f->read_str();
-			m->texture_levels.add(tl);
+		yrenderer::Material temp;
+		m->textures.clear();
+		for (int t=0;t<n;t++)
+			temp.textures.add(session->resource_manager->load_texture(f->read_str()));
+
+		bool user_texture = user_color;
+		if (filename != "") {
+			m = session->resource_manager->load_material(filename);
+			user_texture = weak(temp.textures) != weak(m->textures);
+			if (user_color or user_texture) {
+				auto p = m;
+				m = session->resource_manager->material_manager->create_internal();
+				m->derive_from(p);
+			}
+		} else {
+			m = session->resource_manager->material_manager->create_internal();
+			user_color = true;
+			user_texture = true;
+		}
+
+		// overwrite...?
+		if (user_color) {
+			m->albedo = temp.albedo;
+			m->emission = temp.emission;
+			m->metal = temp.metal;
+			m->roughness = temp.roughness;
+		}
+		if (user_texture) {
+			for (int t=0; t<min(m->textures.num, temp.textures.num); t++)
+				if (temp.textures[t] != session->resource_manager->texture_manager->tex_white.get())
+					m->textures[t] = temp.textures[t];
+			for (int t=m->textures.num; t<temp.textures.num; t++)
+				if (temp.textures[t] != session->resource_manager->texture_manager->tex_white.get())
+					m->textures.add(temp.textures[t]);
 		}
 	}
 	// create subs...
 	for (int k=0;k<4;k++){
-		data->triangle_mesh[k].sub.resize(data->material.num);
-		for (int j=0;j<data->material.num;j++)
-			data->triangle_mesh[k].sub[j].num_textures = data->material[j]->texture_levels.num;
+		data->triangle_mesh[k].sub.resize(data->materials.num);
+		for (int j=0;j<data->materials.num;j++)
+			data->triangle_mesh[k].sub[j].num_textures = data->materials[j]->textures.num;
 	}
 
 // Physical Skin
 
 	// vertices
 	f->read_comment();
-	data->phys_mesh->vertex.resize(f->read_int());
-	for (int j=0;j<data->phys_mesh->vertex.num;j++) {
-		data->phys_mesh->vertex[j].bone_index = {f->read_int(), 0, 0, 0};
-		data->phys_mesh->vertex[j].bone_weight = {1, 0, 0, 0};
+	data->phys_mesh->vertices.resize(f->read_int());
+	for (int j=0;j<data->phys_mesh->vertices.num;j++) {
+		data->phys_mesh->vertices[j].bone_index = {f->read_int(), 0, 0, 0};
+		data->phys_mesh->vertices[j].bone_weight = {1, 0, 0, 0};
 	}
-	for (int j=0;j<data->phys_mesh->vertex.num;j++)
-		f->read_vector(&data->phys_mesh->vertex[j].pos);
+	for (int j=0;j<data->phys_mesh->vertices.num;j++)
+		f->read_vector(&data->phys_mesh->vertices[j].pos);
 
-	msg_write("phys vert: " + i2s(data->phys_mesh->vertex.num));
+	msg_write("phys vert: " + i2s(data->phys_mesh->vertices.num));
 
 	// triangles
 	f->read_int();
 
 	// balls
-	data->phys_mesh->ball.resize(f->read_int());
-	for (auto &b: data->phys_mesh->ball){
+	data->phys_mesh->spheres.resize(f->read_int());
+	for (auto &b: data->phys_mesh->spheres){
 		b.index = f->read_int();
 		b.radius = f->read_float();
 	}
@@ -517,12 +551,12 @@ void FormatModel::_load_v11(LegacyFile& lf, DataModel *data, bool deep) {
 						v = relink[k+1];
 						break;
 					}
-				if (data->phys_mesh->vertex[v].ref_count > 0) {
+				if (data->phys_mesh->vertices[v].ref_count > 0) {
 					//msg_write("clone vertex");
-					int nv = data->phys_mesh->vertex.num;
+					int nv = data->phys_mesh->vertices.num;
 					relink.append({v, nv});
 					msg_write(format("  relink %d  %d", v, nv));
-					data->phys_mesh->add_vertex(data->phys_mesh->vertex[v].pos, {0,0,0,0}, {1,0,0,0}, 0);
+					data->phys_mesh->add_vertex(data->phys_mesh->vertices[v].pos, {0,0,0,0}, {1,0,0,0}, 0);
 					v = nv;
 				}
 			}
@@ -545,15 +579,15 @@ void FormatModel::_load_v11(LegacyFile& lf, DataModel *data, bool deep) {
 
 		// vertices
 		f->read_comment();
-		data->triangle_mesh[i].vertex.resize(f->read_int());
-		for (int j=0;j<data->triangle_mesh[i].vertex.num;j++)
-			f->read_vector(&data->triangle_mesh[i].vertex[j].pos);
-		for (int j=0;j<data->triangle_mesh[i].vertex.num;j++) {
-			data->triangle_mesh[i].vertex[j].bone_index = {f->read_int(), 0,0,0};
-			data->triangle_mesh[i].vertex[j].bone_weight = {1,0,0,0};
+		data->triangle_mesh[i].vertices.resize(f->read_int());
+		for (int j=0;j<data->triangle_mesh[i].vertices.num;j++)
+			f->read_vector(&data->triangle_mesh[i].vertices[j].pos);
+		for (int j=0;j<data->triangle_mesh[i].vertices.num;j++) {
+			data->triangle_mesh[i].vertices[j].bone_index = {f->read_int(), 0,0,0};
+			data->triangle_mesh[i].vertices[j].bone_weight = {1,0,0,0};
 		}
-		for (int j=0;j<data->triangle_mesh[i].vertex.num;j++)
-			data->triangle_mesh[i].vertex[j].normal_dirty = false;//true;
+		for (int j=0;j<data->triangle_mesh[i].vertices.num;j++)
+			data->triangle_mesh[i].vertices[j].normal_dirty = false;//true;
 
 		// skin vertices
 		skin_vert.resize(f->read_int());
@@ -565,26 +599,27 @@ void FormatModel::_load_v11(LegacyFile& lf, DataModel *data, bool deep) {
 
 
 		// triangles (subs)
-		for (int m=0;m<data->material.num;m++){
-			data->triangle_mesh[i].sub[m].triangle.resize(f->read_int());
+		for (int m=0;m<data->materials.num;m++){
+			data->triangle_mesh[i].sub[m].triangles.resize(f->read_int());
 			// vertex
-			for (int j=0;j<data->triangle_mesh[i].sub[m].triangle.num;j++)
+			for (int j=0;j<data->triangle_mesh[i].sub[m].triangles.num;j++)
 				for (int k=0;k<3;k++)
-					data->triangle_mesh[i].sub[m].triangle[j].vertex[k] = f->read_int();
+					data->triangle_mesh[i].sub[m].triangles[j].vertex[k] = f->read_int();
 			// skin vertex
-			for (int tl=0;tl<data->material[m]->texture_levels.num;tl++)
-				for (int j=0;j<data->triangle_mesh[i].sub[m].triangle.num;j++)
+			for (int tl=0;tl<data->materials[m]->textures.num;tl++)
+				for (int j=0;j<data->triangle_mesh[i].sub[m].triangles.num;j++)
 					for (int k=0;k<3;k++){
 						int svi = f->read_int();
-						data->triangle_mesh[i].sub[m].triangle[j].skin_vertex[tl][k] = skin_vert[svi];
+						if (tl == 0)
+							data->triangle_mesh[i].sub[m].triangles[j].skin_vertex[k] = skin_vert[svi];
 					}
 			// normals
-			for (int j=0;j<data->triangle_mesh[i].sub[m].triangle.num;j++){
+			for (int j=0;j<data->triangle_mesh[i].sub[m].triangles.num;j++){
 				for (int k=0;k<3;k++){
 					int normal_index = (int)(unsigned short)f->read_word();
-					data->triangle_mesh[i].sub[m].triangle[j].normal[k] = get_normal_by_index(normal_index);
+					data->triangle_mesh[i].sub[m].triangles[j].normal[k] = get_normal_by_index(normal_index);
 				}
-				data->triangle_mesh[i].sub[m].triangle[j].normal_dirty = false;
+				data->triangle_mesh[i].sub[m].triangles[j].normal_dirty = false;
 			}
 			f->read_int();
 		}
@@ -593,14 +628,14 @@ void FormatModel::_load_v11(LegacyFile& lf, DataModel *data, bool deep) {
 
 // Skeleton
 	f->read_comment();
-	data->bone.resize(f->read_int());
-	for (ModelBone &b: data->bone){
+	data->bones.resize(f->read_int());
+	for (ModelBone &b: data->bones){
 		f->read_vector(&b.pos);
 		b.parent = f->read_int();
-		if ((b.parent < 0) || (b.parent >= data->bone.num))
+		if ((b.parent < 0) || (b.parent >= data->bones.num))
 			b.parent = -1;
 		if (b.parent >= 0)
-			b.pos += data->bone[b.parent].pos;
+			b.pos += data->bones[b.parent].pos;
 		b.model_file = f->read_str();
 		try{
 			if (deep)
@@ -609,35 +644,34 @@ void FormatModel::_load_v11(LegacyFile& lf, DataModel *data, bool deep) {
 			msg_error(e.message());
 		}
 		b.const_pos = false;
-		b.is_selected = b.m_old = false;
 	}
 
 // Animations
 	f->read_comment();
-	data->move.resize(f->read_int());
+	data->moves.resize(f->read_int());
 	int num_anims = f->read_int();
 	f->read_int();
 	f->read_int();
 	for (int i=0;i<num_anims;i++){
 		int anim_index = f->read_int();
-		data->move.resize(anim_index + 1);
-		ModelMove *m = &data->move[anim_index];
+		data->moves.resize(anim_index + 1);
+		ModelMove *m = &data->moves[anim_index];
 		m->name = f->read_str();
 		int tt = f->read_int();
 		m->type = (AnimationType)(tt & 0x7f);
 		bool rubber_timing = (tt & 128);
-		m->frame.resize(f->read_int());
+		m->frames.resize(f->read_int());
 		m->frames_per_sec_const = f->read_float();
 		m->frames_per_sec_factor = f->read_float();
 
 		// vertex animation
 		if (m->type == AnimationType::VERTEX){
-			for (ModelFrame &fr: m->frame){
+			for (ModelFrame &fr: m->frames){
 				fr.duration = 1;
 				if (rubber_timing)
 					fr.duration = f->read_float();
 				for (int s=0;s<4;s++){
-					fr.skin[s].dpos.resize(data->triangle_mesh[s].vertex.num);
+					fr.skin[s].dpos.resize(data->triangle_mesh[s].vertices.num);
 					int num_vertices = f->read_int();
 					for (int j=0;j<num_vertices;j++){
 						int vertex_index = f->read_int();
@@ -647,18 +681,18 @@ void FormatModel::_load_v11(LegacyFile& lf, DataModel *data, bool deep) {
 			}
 		}else if (m->type == AnimationType::SKELETAL){
 			Array<bool> VarDeltaPos;
-			VarDeltaPos.resize(data->bone.num);
-			for (int j=0;j<data->bone.num;j++)
+			VarDeltaPos.resize(data->bones.num);
+			for (int j=0;j<data->bones.num;j++)
 				VarDeltaPos[j] = f->read_bool();
 			m->interpolated_quadratic = f->read_bool();
 			m->interpolated_loop = f->read_bool();
-			for (ModelFrame &fr: m->frame){
+			for (ModelFrame &fr: m->frames){
 				fr.duration = 1;
 				if (rubber_timing)
 					fr.duration = f->read_float();
-				fr.skel_dpos.resize(data->bone.num);
-				fr.skel_ang.resize(data->bone.num);
-				for (int j=0;j<data->bone.num;j++){
+				fr.skel_dpos.resize(data->bones.num);
+				fr.skel_ang.resize(data->bones.num);
+				for (int j=0;j<data->bones.num;j++){
 					f->read_vector(&fr.skel_ang[j]);
 					if (VarDeltaPos[j])
 						f->read_vector(&fr.skel_dpos[j]);
@@ -723,23 +757,24 @@ void FormatModel::_load_v11(LegacyFile& lf, DataModel *data, bool deep) {
 // object data
 	// Object Data
 	f->read_comment();
-	data->meta_data.name = f->read_str();
-	data->meta_data.description = f->read_str();
+	/*data->meta_data.name =*/ f->read_str();
+	/*data->meta_data.description =*/ f->read_str();
 
 	// Inventary
 	f->read_comment();
-	data->meta_data.inventary.resize(f->read_int());
-	for (int i=0;i<data->meta_data.inventary.num;i++){
-		data->meta_data.inventary[i] = f->read_str();
+	//data->meta_data.inventary.resize(f->read_int());
+	int num_inv = f->read_int();
+	for (int i=0;i<num_inv;i++){
+		/*data->meta_data.inventary[i] =*/ f->read_str();
 		f->read_int();
 	}
 
 	// Script
 	f->read_comment();
-	data->meta_data.script_file = f->read_str();
-	data->meta_data.script_var.resize(f->read_int());
-	for (int i=0;i<data->meta_data.script_var.num;i++)
-		data->meta_data.script_var[i] = f->read_float();
+	/*data->meta_data.script_file =*/ f->read_str();
+	int num_vars = f->read_int();
+	for (int i=0;i<num_vars;i++)
+		/*data->meta_data.script_var[i] =*/ f->read_float();
 
 	_load_v11_edit(lf, data, deep);
 
@@ -765,36 +800,35 @@ void FormatModel::_load_v11_edit(LegacyFile& lf, DataModel *data, bool deep) {
 				ModelTriangleMesh *s = &data->triangle_mesh[i];
 				int normal_mode_all = f->read_int();
 				if (normal_mode_all == NORMAL_MODE_PER_VERTEX){
-					for (ModelVertex &v: s->vertex)
+					for (auto &v: s->vertices)
 						v.normal_mode = f->read_int();
 				}else{
-					for (ModelVertex &v: s->vertex)
+					for (auto &v: s->vertices)
 						v.normal_mode = normal_mode_all;
 				}
 			}
 		}else if (s == "// Polygons"){
 			//data->begin_action_group("LoadPolygonData");
-			foreachi(ModelVertex &v, data->triangle_mesh[1].vertex, i)
-				data->addVertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
+			foreachi(auto &v, data->triangle_mesh[1].vertices, i)
+				data->add_vertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
 			int ns = f->read_int();
 			for (int i=0;i<ns;i++){
 				int nv = f->read_int();
 				for (int j=0;j<nv;j++){
-					ModelPolygon t;
-					t.is_selected = false;
+					Polygon t;
 					t.triangulation_dirty = true;
 					int n = f->read_int();
 					t.material = f->read_int();
 					t.side.resize(n);
 					for (int k=0;k<n;k++){
 						t.side[k].vertex = f->read_int();
-						for (int l=0;l<data->material[t.material]->texture_levels.num;l++){
+						for (int l=0;l<data->materials[t.material]->textures.num;l++){
 							t.side[k].skin_vertex[l].x = f->read_float();
 							t.side[k].skin_vertex[l].y = f->read_float();
 						}
 					}
 					t.normal_dirty = true;
-					data->mesh->polygon.add(t);
+					data->mesh->polygons.add(t);
 				}
 				f->read_bool();
 				f->read_bool();
@@ -810,7 +844,7 @@ void FormatModel::_load_v11_edit(LegacyFile& lf, DataModel *data, bool deep) {
 				c.index[1] = f->read_int();
 				c.radius = f->read_float();
 				c.round = f->read_bool();
-				data->phys_mesh->cylinder.add(c);
+				data->phys_mesh->cylinders.add(c);
 			}
 		}else if (s == "// Script Vars"){
 			int n = f->read_int();
@@ -818,7 +852,7 @@ void FormatModel::_load_v11_edit(LegacyFile& lf, DataModel *data, bool deep) {
 				ModelScriptVariable v;
 				v.name = f->read_str();
 				v.value = f->read_str();
-				data->meta_data.variables.add(v);
+				//data->meta_data.variables.add(v);
 			}
 		}else if (s == "#"){
 			break;
@@ -830,33 +864,3 @@ void FormatModel::_load_v11_edit(LegacyFile& lf, DataModel *data, bool deep) {
 }
 
 
-
-
-void FormatModel::_save_v11(const Path &filename, DataModel *data) {
-
-	auto f = os::fs::open(filename, "wb");
-	//f->WriteFileFormatVersion(true, 11);//FFVBinary, 11);
-	f->write("b");
-	f->write_word(11);
-	//f->float_decimals = 5;
-
-
-
-
-//	f->write_comment("// LOD-Distances");
-//	f->write_float(data->meta_data.detail_dist[0]);
-//	f->write_float(data->meta_data.detail_dist[1]);
-//	f->write_float(data->meta_data.detail_dist[2]);
-
-
-	// additional data for editing
-	f->write_str("// Editor");
-	f->write_bool(data->meta_data.auto_generate_tensor);
-	f->write_bool(data->meta_data.auto_generate_dists);
-	f->write_bool(data->meta_data.auto_generate_skin[1]);
-	f->write_bool(data->meta_data.auto_generate_skin[2]);
-	f->write_int(data->meta_data.detail_factor[1]);
-	f->write_int(data->meta_data.detail_factor[2]);
-
-	delete f;
-}

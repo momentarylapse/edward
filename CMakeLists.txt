@@ -538,6 +538,7 @@ add_executable(edward
 	src/mode_world/ModeEditTerrain.cpp
 	src/mode_world/ModeWorld.cpp
 	src/mode_world/ModeWorldProperties.cpp
+	src/storage/format/old/LoadModelV11.cpp
 	src/storage/format/old/LoadWorldV9V10.cpp
 	src/storage/format/Format.cpp
 	src/storage/format/FormatMaterial.cpp
