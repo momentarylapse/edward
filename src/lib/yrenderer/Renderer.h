@@ -78,7 +78,8 @@ public:
 	~RenderTask() override;
 
 	Array<Renderer*> children;
-	void add_child(Renderer *child);
+	void add_child(Renderer* child);
+	void remove_child(Renderer* child);
 	Array<RenderTask*> sub_tasks;
 	void add_sub_task(RenderTask* child);
 

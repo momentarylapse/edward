@@ -59,7 +59,7 @@ yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albed
 ModeWorld::ModeWorld(DocumentSession* doc) :
 	Mode(doc)
 {
-	auto mvp = new MultiViewPanel(doc);
+	auto mvp = new MultiViewPanel(doc, new MultiView(doc));
 	multi_view = mvp->multi_view;
 	doc->set_document_panel(mvp);
 
@@ -386,7 +386,6 @@ Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) const {
 }
 
 void ModeWorld::on_mouse_move(const vec2& m, const vec2& d) {
-	out_redraw();
 }
 
 void ModeWorld::on_mouse_leave(const vec2& m) {

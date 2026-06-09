@@ -19,9 +19,13 @@
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
 ModeModel::ModeModel(DocumentSession* doc) : Mode(doc) {
-	auto mvp = new MultiViewPanel(doc);
-	multi_view = mvp->multi_view;
-	doc->set_document_panel(mvp);
+	multi_view_3d = new MultiView(doc);
+	multi_view_2d = new MultiView(doc);
+	multi_view_2d->view_port.pos = {0.5f, 0.5f, 0};
+	multi_view_2d->view_port.radius = 2;
+	multi_view_panel = new MultiViewPanel(doc, multi_view_3d.get());
+	multi_view = multi_view_3d.get();
+	doc->set_document_panel(multi_view_panel.get());
 	data = new DataModel(doc);
 	data->reset();
 	generic_data = data.get();
@@ -96,6 +100,7 @@ void ModeModel::on_update_menu() {
 
 	win->check("mode_model_deform", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_sculpt.get());
 	win->check("mode_model_materials", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_material.get());
+	win->check("mode_model_texture_coord", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_uv.get());
 	win->check("mode_model_skeleton", doc->cur_mode == mode_skeleton.get());
 
 	mode_mesh->update_menu_presentation_mode();

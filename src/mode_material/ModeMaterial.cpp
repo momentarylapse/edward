@@ -39,7 +39,7 @@
 ModeMaterial::ModeMaterial(DocumentSession* doc) :
 	Mode(doc)
 {
-	auto mvp = new MultiViewPanel(doc);
+	auto mvp = new MultiViewPanel(doc, new MultiView(doc));
 	multi_view = mvp->multi_view;
 	doc->set_document_panel(mvp);
 	data = new DataMaterial(doc);

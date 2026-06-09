@@ -2,8 +2,7 @@
 // Created by Michael Ankele on 2025-02-20.
 //
 
-#ifndef MODEMESH_H
-#define MODEMESH_H
+#pragma once
 
 
 
@@ -23,6 +22,7 @@ namespace yrenderer {
 class ModeModel;
 class ModeMeshMaterial;
 class ModeMeshSculpt;
+class ModeMeshUV;
 
 class ModeMesh : public SubMode {
 public:
@@ -64,6 +64,7 @@ public:
 
 	owned<ModeMeshMaterial> mode_mesh_material;
 	owned<ModeMeshSculpt> mode_mesh_sculpt;
+	owned<ModeMeshUV> mode_mesh_uv;
 
 	DataModel* data;
 	Array<Edge> edges_cached;
@@ -106,5 +107,3 @@ public:
 };
 
 
-
-#endif //MODEMESH_H

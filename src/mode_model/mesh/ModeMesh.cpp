@@ -14,6 +14,7 @@
 #include "ModeBevelEdges.h"
 #include "ModeExtrudePolygons.h"
 #include "ModeMeshSculpt.h"
+#include "ModeMeshUV.h"
 #include "material/ModeMeshMaterial.h"
 #include "../ModeModel.h"
 #include "action/ActionModelMoveSelection.h"
@@ -63,6 +64,7 @@ ModeMesh::ModeMesh(ModeModel* parent) : SubMode(parent) {
 
 	mode_mesh_material = new ModeMeshMaterial(this);
 	mode_mesh_sculpt = new ModeMeshSculpt(this);
+	mode_mesh_uv = new ModeMeshUV(this);
 }
 
 ModeMesh::~ModeMesh() = default;
@@ -109,6 +111,9 @@ void ModeMesh::on_connect_events_rec() {
 	});
 	doc->event("mode_model_materials", [this] {
 		doc->set_mode(mode_mesh_material.get());
+	});
+	doc->event("mode_model_texture_coord", [this] {
+		doc->set_mode(mode_mesh_uv.get());
 	});
 
 	doc->event("mode_model_vertex", [this] {
@@ -174,7 +179,7 @@ void ModeMesh::on_enter() {
 		normals_dirty = true;
 		update_vb();
 		update_selection_vb();
-		session->win->request_redraw();
+		out_redraw();
 	};
 
 	auto win = session->win;
@@ -227,7 +232,7 @@ void ModeMesh::on_enter() {
 			update_edge_info();
 			update_vb();
 			update_selection_vb();
-			session->win->request_redraw();
+			out_redraw();
 			normals_dirty = false;
 		}
 	});
@@ -353,7 +358,7 @@ void ModeMesh::set_presentation_mode(PresentationMode m) {
 	make_selection_consistent(multi_view->selection);
 	multi_view->out_selection_changed();
 	on_update_menu();
-	session->win->request_redraw();
+	out_redraw();
 }
 
 void ModeMesh::on_update_menu() {
@@ -721,7 +726,6 @@ void ModeMesh::on_key_down(int key) {
 }
 
 void ModeMesh::on_mouse_move(const vec2& m, const vec2& d) {
-	out_redraw();
 }
 
 void ModeMesh::optimize_view() {

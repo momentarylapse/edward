@@ -10,6 +10,7 @@
 
 class ModeMesh;
 class ModeSkeleton;
+class MultiViewPanel;
 
 class ModeModel : public Mode {
 public:
@@ -27,6 +28,9 @@ public:
 	owned<DataModel> data;
 	owned<ModeMesh> mode_mesh;
 	owned<ModeSkeleton> mode_skeleton;
+	shared<MultiViewPanel> multi_view_panel;
+	owned<MultiView> multi_view_3d;
+	owned<MultiView> multi_view_2d;
 };
 
 

@@ -540,7 +540,7 @@ void MultiView::ViewPort::suggest_for_box(const Box& box) {
 }
 
 
-MultiViewPanel::MultiViewPanel(DocumentSession* _doc) : xhui::Panel("multi-view-panel") {
+MultiViewPanel::MultiViewPanel(DocumentSession* _doc, MultiView* mv) : xhui::Panel("multi-view-panel") {
 	doc = _doc;
 	from_source(R"foodelim(
 Dialog multi-view-panel ''
@@ -559,11 +559,10 @@ Dialog multi-view-panel ''
 	propagate_events = true;
 
 	win = doc->session->win;
-
-	multi_view = new MultiView(doc);
+	multi_view = nullptr;
 
 	renderer = new yrenderer::XhuiRenderer(doc->session->ctx);
-	renderer->add_child(multi_view->renderer.get());
+	set_multi_view(mv);
 
 	win_events.add(win->event_xp(win->id, xhui::event_id::JustBeforeDraw, [this] (Painter* p) {
 		if (!doc->cur_mode or !multi_view)
@@ -589,6 +588,7 @@ Dialog multi-view-panel ''
 			return;
 		multi_view->on_mouse_move(win->state.m, win->state.m - win->state_prev.m);
 		doc->cur_mode->on_mouse_move(win->state.m, win->state.m - win->state_prev.m);
+		doc->cur_mode->out_redraw();
 	}));
 	events.add(event_x("area", xhui::event_id::MouseWheel, [this] {
 		if (!doc->cur_mode or !multi_view)
@@ -650,5 +650,12 @@ MultiViewPanel::~MultiViewPanel() {
 		remove_event_handler(eid);
 	for (int eid: win_events)
 		win->remove_event_handler(eid);
+}
+
+void MultiViewPanel::set_multi_view(MultiView *mv) {
+	if (multi_view)
+		renderer->remove_child(multi_view->renderer.get());
+	multi_view = mv;
+	renderer->add_child(multi_view->renderer.get());
 }
 

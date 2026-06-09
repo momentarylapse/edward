@@ -97,6 +97,12 @@ void RenderTask::add_child(Renderer *child) {
 	children.add(child);
 }
 
+void RenderTask::remove_child(Renderer *child) {
+	int i = children.find(child);
+	if (i >= 0)
+		children.erase(i);
+}
+
 void RenderTask::add_sub_task(RenderTask* child) {
 	sub_tasks.add(child);
 }

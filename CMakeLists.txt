@@ -476,6 +476,7 @@ add_executable(edward
 	src/mode_model/mesh/action/ActionModelEditMesh.cpp
 	src/mode_model/mesh/action/ActionModelMoveSelection.cpp
 	src/mode_model/mesh/action/ActionModelPasteMesh.cpp
+	src/mode_model/mesh/action/ActionModelUVMoveSelection.cpp
 	src/mode_model/mesh/material/action/ActionModelAddMaterial.cpp
 	src/mode_model/mesh/material/action/ActionModelDeleteMaterial.cpp
 	src/mode_model/mesh/material/action/ActionModelEditMaterial.cpp
@@ -495,6 +496,7 @@ add_executable(edward
 	src/mode_model/mesh/ModeExtrudePolygons.cpp
 	src/mode_model/mesh/ModeMesh.cpp
 	src/mode_model/mesh/ModeMeshSculpt.cpp
+	src/mode_model/mesh/ModeMeshUV.cpp
 	src/mode_model/mesh/ModePaste.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBone.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBoneSelection.cpp
