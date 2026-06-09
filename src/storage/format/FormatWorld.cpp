@@ -94,10 +94,94 @@ Array<ecs::InstanceDataVariable> str2vars(const string& s) {
 void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	data->reset();
 
+	//data->entities.clear();
+	data->entity_manager->reset();
+	data->meta_data.skybox_files.clear();
+
+
+	LevelData ld;
+
 	if (auto lf = file_get_legacy_header(filename))
-		_load_old(*lf, data, deep);
+		_load_old(*lf, ld);
 	else
-		_load_xml(filename, data, deep);
+		ld.load(filename);
+
+
+
+	data->meta_data.background_color = ld.background_color;
+	data->meta_data.skybox_files = ld.skybox_filename;
+
+
+	/*for (auto& e: ld.objects) {
+		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
+		o->get_component<EdwardTag>()->request_auto_components = true;
+		auto m = data->entity_manager->add_component<ModelRef>(o);
+		m->model = data->session->resource_manager->load_model(e.filename.with(".model"));
+		data->_entity_apply_components(o, e.components);
+	}
+	for (auto& e: ld.cameras) {
+		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
+		auto c = data->entity_manager->add_component<Camera>(o);
+		c->min_depth = e.min_depth;
+		c->max_depth = e.max_depth;
+		c->exposure = e.exposure;
+		c->fov = e.fov;
+		c->bloom_factor = e.bloom_factor;
+		data->_entity_apply_components(o, e.components);
+	}
+	for (auto& e: ld.lights) {
+		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
+		auto l = data->entity_manager->add_component<Light>(o);
+		l->light.type = e.type;
+		l->light.col = e._color;
+		if (l->light.type != yrenderer::LightType::DIRECTIONAL)
+			l->light.power = yrenderer::Light::_radius_to_power(e.radius);
+		l->light.theta = e.theta;
+		l->light.harshness = e.harshness;
+		l->light.enabled = e.enabled;
+		l->light.allow_shadow = (l->light.type == yrenderer::LightType::DIRECTIONAL);
+		data->_entity_apply_components(o, e.components);
+	}
+	for (auto& e: ld.terrains) {
+		auto o = data->_create_entity(e.pos, quaternion::ID);
+		o->get_component<EdwardTag>()->request_auto_components = true;
+		auto t = data->entity_manager->add_component<TerrainRef>(o);
+		t->terrain = data->session->resource_manager->load_terrain_lazy(e.filename);
+		t->material = data->session->resource_manager->load_material(e.material);
+		data->_entity_apply_components(o, e.components);
+	}*/
+	for (auto& e: ld.entities) {
+		auto o = data->_create_entity(e.pos, e.ang);
+		data->_entity_apply_components(o, e.components);
+	}
+	/*for (const auto& ll: ld.links) {
+		WorldLink l;
+		l.type = ll.type;
+		l.object[0] = ll.object[0];
+		l.object[1] = ll.object[1];
+		l.pos = ll.pos;
+		l.ang = ll.ang;
+		//l.radius = e.value("radius")._float();
+		data->links.add(l);
+	}*/
+
+	data->meta_data.physics_enabled = ld.physics_enabled;
+	data->meta_data.physics_mode = ld.physics_mode;
+	data->meta_data.gravity = ld.gravity;
+	data->meta_data.fog.enabled = ld.fog.enabled;
+	data->meta_data.fog.mode = (ygfx::FogMode)ld.fog.mode;
+	data->meta_data.fog.start = ld.fog.start;
+	data->meta_data.fog.end = ld.fog.end;
+	data->meta_data.fog.density = 1/ld.fog.distance;
+	data->meta_data.fog.col = ld.fog._color;
+	data->meta_data.systems = ld.systems;
+	for (auto& ss: data->meta_data.systems) {
+		if (ss.class_name == "") {
+			for (const auto& sss: session->plugin_manager->system_classes)
+				if (sss->owner->module->filename == (session->project_dir | "Scripts" | ss.filename))
+					ss.class_name = sss->name;
+		}
+	}
 
 
 
@@ -181,91 +265,6 @@ void read_components(WorldEntity& o, const xml::Element& e) {
 				}
 			o.components.add(sd);
 		}
-}
-
-void FormatWorld::_load_xml(const Path &filename, DataWorld *data, bool deep) {
-	//data->entities.clear();
-	data->entity_manager->reset();
-	data->meta_data.skybox_files.clear();
-
-
-	LevelData ld;
-	ld.load(filename);
-
-	data->meta_data.background_color = ld.background_color;
-	data->meta_data.skybox_files = ld.skybox_filename;
-
-
-	/*for (auto& e: ld.objects) {
-		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
-		o->get_component<EdwardTag>()->request_auto_components = true;
-		auto m = data->entity_manager->add_component<ModelRef>(o);
-		m->model = data->session->resource_manager->load_model(e.filename.with(".model"));
-		data->_entity_apply_components(o, e.components);
-	}
-	for (auto& e: ld.cameras) {
-		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
-		auto c = data->entity_manager->add_component<Camera>(o);
-		c->min_depth = e.min_depth;
-		c->max_depth = e.max_depth;
-		c->exposure = e.exposure;
-		c->fov = e.fov;
-		c->bloom_factor = e.bloom_factor;
-		data->_entity_apply_components(o, e.components);
-	}
-	for (auto& e: ld.lights) {
-		auto o = data->_create_entity(e.pos, quaternion::rotation(e.ang));
-		auto l = data->entity_manager->add_component<Light>(o);
-		l->light.type = e.type;
-		l->light.col = e._color;
-		if (l->light.type != yrenderer::LightType::DIRECTIONAL)
-			l->light.power = yrenderer::Light::_radius_to_power(e.radius);
-		l->light.theta = e.theta;
-		l->light.harshness = e.harshness;
-		l->light.enabled = e.enabled;
-		l->light.allow_shadow = (l->light.type == yrenderer::LightType::DIRECTIONAL);
-		data->_entity_apply_components(o, e.components);
-	}
-	for (auto& e: ld.terrains) {
-		auto o = data->_create_entity(e.pos, quaternion::ID);
-		o->get_component<EdwardTag>()->request_auto_components = true;
-		auto t = data->entity_manager->add_component<TerrainRef>(o);
-		t->terrain = data->session->resource_manager->load_terrain_lazy(e.filename);
-		t->material = data->session->resource_manager->load_material(e.material);
-		data->_entity_apply_components(o, e.components);
-	}*/
-	for (auto& e: ld.entities) {
-		auto o = data->_create_entity(e.pos, e.ang);
-		data->_entity_apply_components(o, e.components);
-	}
-	/*for (const auto& ll: ld.links) {
-		WorldLink l;
-		l.type = ll.type;
-		l.object[0] = ll.object[0];
-		l.object[1] = ll.object[1];
-		l.pos = ll.pos;
-		l.ang = ll.ang;
-		//l.radius = e.value("radius")._float();
-		data->links.add(l);
-	}*/
-
-	data->meta_data.physics_enabled = ld.physics_enabled;
-	data->meta_data.physics_mode = ld.physics_mode;
-	data->meta_data.gravity = ld.gravity;
-	data->meta_data.fog.enabled = ld.fog.enabled;
-	data->meta_data.fog.mode = (ygfx::FogMode)ld.fog.mode;
-	data->meta_data.fog.start = ld.fog.start;
-	data->meta_data.fog.end = ld.fog.end;
-	data->meta_data.fog.density = 1/ld.fog.distance;
-	data->meta_data.fog.col = ld.fog._color;
-	data->meta_data.systems = ld.systems;
-	for (auto& ss: data->meta_data.systems) {
-		if (ss.class_name == "") {
-			for (const auto& sss: session->plugin_manager->system_classes)
-				if (sss->owner->module->filename == (session->project_dir | "Scripts" | ss.filename))
-					ss.class_name = sss->name;
-		}
-	}
 }
 
 string phys_mode_name(PhysicsMode m);
