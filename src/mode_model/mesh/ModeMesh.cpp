@@ -536,8 +536,7 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 				continue;
 			h = {MultiViewType::MODEL_VERTEX, i, v.pos};
 		}
-	}
-	if (presentation_mode == PresentationMode::Edges) {
+	} else if (presentation_mode == PresentationMode::Edges) {
 		float zmax = 1;
 		for (const auto& [i, e]: enumerate(edges_cached)) {
 			const auto pp0 = win->project(data->editing_mesh->vertices[e.index[0]].pos);
@@ -557,8 +556,7 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 			zmax = pp.z;
 			h = {MultiViewType::MODEL_EDGE, i, p};
 		}
-	}
-	if (presentation_mode == PresentationMode::Polygons) {
+	} else if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces) {
 		vec3 tp;
 		int index;
 		if (data->editing_mesh->is_mouse_over(win, mat4::ID, m, tp, index, false))
@@ -634,32 +632,44 @@ Selection ModeMesh::select_in_rect(MultiViewWindow* win, const rect& r) {
 	auto selv = sel[MultiViewType::MODEL_VERTEX] = MultiView::select_points_in_rect(win, r, data->editing_mesh->vertices);
 	if (presentation_mode == PresentationMode::Vertices) {
 		sel[MultiViewType::MODEL_VERTEX] = selv;
-	}
-	if (presentation_mode == PresentationMode::Edges) {
+	} else if (presentation_mode == PresentationMode::Edges) {
 		selection_edges_from_vertices(sel[MultiViewType::MODEL_EDGE], selv, edges_cached);
-	}
-	if (presentation_mode == PresentationMode::Polygons) {
+	} else if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces) {
 		selection_polygons_from_vertices(sel[MultiViewType::MODEL_POLYGON], selv, *data->editing_mesh);
 	}
 	return sel;
 }
 
 void ModeMesh::make_selection_consistent(Selection &sel) const {
+	auto& selv = sel[MultiViewType::MODEL_VERTEX];
+	auto& sele = sel[MultiViewType::MODEL_EDGE];
+	auto& selp = sel[MultiViewType::MODEL_POLYGON];
 	if (presentation_mode == PresentationMode::Vertices) {
-		selection_edges_from_vertices(sel[MultiViewType::MODEL_EDGE], sel[MultiViewType::MODEL_VERTEX], edges_cached);
-		selection_polygons_from_vertices(sel[MultiViewType::MODEL_POLYGON], sel[MultiViewType::MODEL_VERTEX], *data->editing_mesh);
+		selection_edges_from_vertices(sele, selv, edges_cached);
+		selection_polygons_from_vertices(selp, selv, *data->editing_mesh);
 		/*for (auto& b: data->editing_mesh->spheres)
 			b.is_selected = data->editing_mesh->vertices[b.index].is_selected;
 		for (auto& c: data->editing_mesh->cylinders)
 			c.is_selected = data->editing_mesh->vertices[c.index[0]].is_selected and data->editing_mesh->vertices[c.index[1]].is_selected;*/
-	}
-	if (presentation_mode == PresentationMode::Edges) {
-		selection_vertices_from_edges(sel[MultiViewType::MODEL_VERTEX], sel[MultiViewType::MODEL_EDGE], edges_cached);
-		selection_polygons_from_edges(sel[MultiViewType::MODEL_POLYGON], sel[MultiViewType::MODEL_EDGE], *data->editing_mesh, edges_cached);
-	}
-	if (presentation_mode == PresentationMode::Polygons) {
-		selection_vertices_from_polygons(sel[MultiViewType::MODEL_VERTEX], sel[MultiViewType::MODEL_POLYGON], *data->editing_mesh);
-		selection_edges_from_polygons(sel[MultiViewType::MODEL_EDGE], sel[MultiViewType::MODEL_POLYGON], *data->editing_mesh, edges_cached);
+	} else if (presentation_mode == PresentationMode::Edges) {
+		selection_vertices_from_edges(selv, sele, edges_cached);
+		selection_polygons_from_edges(selp, sele, *data->editing_mesh, edges_cached);
+	} else if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces) {
+		if (presentation_mode == PresentationMode::Surfaces) {
+			// grow selection along connected polygons
+			int n0;
+			do {
+				n0 = selp.num;
+				selection_vertices_from_polygons(selv, selp, *data->editing_mesh);
+				for (const auto& [i, p]: enumerate(data->editing_mesh->polygons)) {
+					for (const auto& s: p.side)
+						if (selv.contains(s.vertex))
+							selp.add(i);
+				}
+			} while (selp.num > n0);
+		}
+		selection_vertices_from_polygons(selv, selp, *data->editing_mesh);
+		selection_edges_from_polygons(sele, selp, *data->editing_mesh, edges_cached);
 	}
 }
 
