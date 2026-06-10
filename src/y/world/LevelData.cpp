@@ -134,6 +134,8 @@ bool LevelData::load(const Path& filename) {
 					if (e.has_value("radius"))
 						l.set("power", yrenderer::Light::_radius_to_power(e.value("radius")._float()));
 					l.set("theta", e.value("theta")._float());
+				} else if (e.value("type") == "ambient") {
+					l.set("type", (int)yrenderer::LightType::AMBIENT);
 				}
 				l.set("enabled", e.value("enabled", "true")._bool());
 				o.components.add(l);

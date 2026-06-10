@@ -429,14 +429,13 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 			el = xml::Element("light").witha("type", light_type_canonical(l->light.type))
 			.witha("color", c2s(l->light.col))
 			.witha("harshness", f2s(l->light.harshness, 4))
-			.witha("power", f2s(l->light.power, 3));
+			.witha("power", f2s(l->light.power, 3))
+			.witha("pos", v2s(e->pos)); // also for directional/ambient! (for editing)
 			if (l->light.type == yrenderer::LightType::DIRECTIONAL) {
 				el.add_attribute("ang", v2s(e->ang.get_angles()));
 			} else if (l->light.type == yrenderer::LightType::POINT) {
-				el.add_attribute("pos", v2s(e->pos));
 				el.add_attribute("allow_shadow", b2s(l->light.allow_shadow));
 			} else if (l->light.type == yrenderer::LightType::CONE) {
-				el.add_attribute("pos", v2s(e->pos));
 				el.add_attribute("ang", v2s(e->ang.get_angles()));
 				el.add_attribute("theta", f2s(l->light.theta, 3));
 			}
