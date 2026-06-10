@@ -69,7 +69,7 @@ public:
 		vec3 pos;
 		quaternion ang;
 		float radius;
-		yrenderer::CameraParams cam;
+		yrenderer::CameraParams cam() const;
 		owned<yrenderer::SceneView> scene_view;
 		MultiView* multi_view;
 

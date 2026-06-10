@@ -95,11 +95,6 @@ MultiViewRenderer::MultiViewRenderer(yrenderer::Context *ctx, MultiView *mv) : R
 
 void MultiViewRenderer::prepare(const yrenderer::RenderParams& params) {
 	auto& view_port = multi_view->view_port;
-	view_port.cam.ang = view_port.ang;
-	view_port.cam.pos = view_port.pos - view_port.cam.ang * vec3::EZ * view_port.radius;
-	view_port.cam.min_depth = view_port.radius * 0.01f;
-	view_port.cam.max_depth = view_port.radius * 300;
-	//view_port.cam.update_matrix_cache(area.width() / area.height());
 	view_port.scene_view->shadow_box_size = view_port.radius * 8;
 
 	multi_view->window->local_ang = view_port.ang;
@@ -486,15 +481,20 @@ void MultiView::set_show_grid(bool allow) {
 MultiView::ViewPort::ViewPort(MultiView* _multi_view) {
 	multi_view = _multi_view;
 	pos = v_0;
-	ang = quaternion::ID;
+	ang = quaternion::rotation({1, 0, 0}, 0.33f);//quaternion::ID;
 	radius = 100;
-	cam.ang = quaternion::rotation({1, 0, 0}, 0.33f);
-	cam.pos = {1000,1000,-800};
-	cam.fov = pi/4;
-	cam.min_depth = 0.01f;
-	cam.max_depth = 1000.0f;
 	scene_view = new yrenderer::SceneView;
-	scene_view->main_camera_params = cam;
+	scene_view->main_camera_params = cam();
+}
+
+yrenderer::CameraParams MultiView::ViewPort::cam() const {
+	yrenderer::CameraParams cam;
+	cam.fov = pi/4;
+	cam.ang = ang;
+	cam.pos = pos - ang * vec3::EZ * radius;
+	cam.min_depth = radius * 0.01f;
+	cam.max_depth = radius * 300;
+	return cam;
 }
 
 void MultiView::ViewPort::move(const vec3& drel) {

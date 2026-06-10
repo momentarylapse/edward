@@ -193,11 +193,8 @@ mat3 MultiViewWindow::edit_frame() const {
 }
 
 void MultiViewWindow::prepare(const yrenderer::RenderParams& params) {
-	projection = multi_view->view_port.cam.projection_matrix(area.width() / area.height());
-
-	auto cam = multi_view->view_port.cam;
-	cam.pos = view_pos();
-	cam.ang = view_ang();
+	const auto cam = multi_view->view_port.cam();
+	projection = cam.projection_matrix(area.width() / area.height());
 	scene_renderer->set_view(params, cam, &projection);
 	view = scene_renderer->rvd.ubo.v;
 	scene_renderer->prepare(params);
