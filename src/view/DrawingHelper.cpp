@@ -166,6 +166,8 @@ struct XVertex {
 
 
 static void add_vb_line(Array<XVertex>& vertices, const vec3& a, const vec3& b, const color& col, MultiViewWindow* win, float line_width) {
+	if (a.z < 0 or a.z > 1 or b.z < 0 or b.z > 1)
+		return;
 	float w = win->area.width();
 	float h = win->area.height();
 	vec2 ba_pixel = vec2((b.x - a.x) * w, (b.y - a.y) * h);
@@ -297,11 +299,15 @@ void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& _a, 
 	auto& a = const_cast<DynamicArray&>(_a);
 	for (int i=0; i<a.num; i++) {
 		const auto v = static_cast<multiview::SingleData*>(a.simple_element(i));
-		p->set_color(sel.contains(i) ? Red : Blue);
+		p->set_color(sel.contains(i) ? Red : color(1, 0.25f, 0.25f, 1.0f));
 		auto p1 = win->project(v->pos);
-		float r = 2;
-		if (i == _hover)
-			r = 4;
+		if (p1.z < 0 or p1.z > 1)
+			continue;
+		float r = 2.5f;
+		if (i == _hover) {
+			r = 5;
+			p->set_color(sel.contains(i) ? color(1, 1, 0.2f, 0.2f) : color(1, 0.45f, 0.45f, 1.0f));
+		}
 		p->draw_rect({p1.x - r,p1.x + r, p1.y - r,p1.y + r});
 	}
 }
