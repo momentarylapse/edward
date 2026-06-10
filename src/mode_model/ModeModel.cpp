@@ -57,6 +57,18 @@ void ModeModel::on_connect_events_rec() {
 	doc->event("mode_model_mesh", [this] {
 		doc->set_mode(mode_mesh.get());
 	});
+	doc->event("mode_model_mesh", [this] {
+		doc->set_mode(this);
+	});
+	doc->event("mode_model_deform", [this] {
+		doc->set_mode((Mode*)mode_mesh->mode_mesh_sculpt.get());
+	});
+	doc->event("mode_model_materials", [this] {
+		doc->set_mode((Mode*)mode_mesh->mode_mesh_material.get());
+	});
+	doc->event("mode_model_texture_coord", [this] {
+		doc->set_mode((Mode*)mode_mesh->mode_mesh_uv.get());
+	});
 	doc->event("mode_model_skeleton", [this] {
 		doc->set_mode(mode_skeleton.get());
 	});

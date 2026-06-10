@@ -60,14 +60,19 @@ void ModeMeshUV::on_enter_rec() {
 
 	if (!vb_bg) {
 		vb_bg = new ygfx::VertexBuffer("3f,3f,2f");
-		vb_bg->create_quad(rect::ID);
+		const float R = 100;
+		vb_bg->create_quad({-R,R, -R,R}, {-R,R, -R,R});
 	}
 	if (!material_bg) {
 		material_bg = session->resource_manager->material_manager->create_internal();
 		material_bg->albedo = Black;
 		material_bg->emission = White;
+		material_bg->pass0.shader_path = "default-pure-emission.shader";
 		material_bg->pass0.cull_mode = ygfx::CullMode::NONE;
+		material_bg->pass0.z_test = false;
+		material_bg->pass0.z_write = false;
 	}
+	material_bg->textures[0] = mode_mesh->data->materials[0]->textures[0];
 
 	mode_mesh->data->out_changed >> create_sink([this] {
 		update_uvs();
@@ -147,8 +152,8 @@ void ModeMeshUV::export_selection() {
 void ModeMeshUV::on_draw_background(const yrenderer::RenderParams &params, yrenderer::RenderViewData &rvd) {
 	mode_mesh->on_draw_background(params, rvd);
 
-	auto shader = rvd.get_shader(material_bg, 0, "default");
-	rvd.start(params, mat4::ID, shader, material_bg, 0, ygfx::PrimitiveTopology::TRIANGLES, vb_bg.get());
+	auto dh = session->drawing_helper;
+	dh->draw_mesh(params, rvd, mat4::ID, vb_bg.get(), material_bg);
 }
 
 void ModeMeshUV::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
@@ -160,8 +165,8 @@ void ModeMeshUV::on_draw_win(const yrenderer::RenderParams& params, MultiViewWin
 			points.add(poly.side[(i+1) % poly.side.num].skin_vertex[0]);
 		}
 	session->drawing_helper->set_z_test(false);
-	session->drawing_helper->set_line_width(1.5f);
-	session->drawing_helper->set_color(Gray);
+	session->drawing_helper->set_line_width(2.0f);
+	session->drawing_helper->set_color(White);
 	session->drawing_helper->draw_lines(points, false);
 
 	points.clear();
@@ -175,7 +180,7 @@ void ModeMeshUV::on_draw_win(const yrenderer::RenderParams& params, MultiViewWin
 			}
 		n0 += poly.side.num;
 	}
-	session->drawing_helper->set_line_width(2.5f);
+	session->drawing_helper->set_line_width(3.0f);
 	session->drawing_helper->set_color(Red);
 	session->drawing_helper->draw_lines(points, false);
 	session->drawing_helper->set_z_test(true);

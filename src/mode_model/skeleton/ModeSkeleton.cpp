@@ -107,7 +107,7 @@ void ModeSkeleton::on_prepare_scene(const yrenderer::RenderParams& params) {
 }
 
 void ModeSkeleton::on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
-	rvd.clear(params, {xhui::Theme::_default.background_low});
+	rvd.clear(params, {xhui::Theme::_default.background_low.srgb_to_linear()});
 }
 
 void ModeSkeleton::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {

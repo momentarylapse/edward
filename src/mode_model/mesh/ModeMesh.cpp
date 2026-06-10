@@ -103,19 +103,6 @@ void ModeMesh::on_enter_rec() {
 }
 
 void ModeMesh::on_connect_events_rec() {
-	doc->event("mode_model_mesh", [this] {
-		doc->set_mode(this);
-	});
-	doc->event("mode_model_deform", [this] {
-		doc->set_mode(mode_mesh_sculpt.get());
-	});
-	doc->event("mode_model_materials", [this] {
-		doc->set_mode(mode_mesh_material.get());
-	});
-	doc->event("mode_model_texture_coord", [this] {
-		doc->set_mode(mode_mesh_uv.get());
-	});
-
 	doc->event("mode_model_vertex", [this] {
 		set_presentation_mode(PresentationMode::Vertices);
 	});
