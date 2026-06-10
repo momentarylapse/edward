@@ -11,13 +11,15 @@
 #include <lib/polymesh/MeshEdit.h>
 #include <lib/polymesh/create/Cube.h>
 #include <lib/polymesh/create/Plane.h>
-#include <mode_model/mesh/processing/MeshExtrudePolygons.h>
+#include <lib/polymesh/edit/ExtrudePolygons.h>
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>
 #include <lib/math/Box.h>
 #include <lib/math/random.h>
 #include <lib/math/rect.h>
 #include <lib/math/vec2.h>
+
+#include "stuff/Selection.h"
 
 namespace unittest {
 
@@ -269,7 +271,7 @@ void MeshTest::test_extrude() {
 	PolygonMesh mesh = mesh0;
 	for (int i=0; i<15; i++) {
 		auto sel = mesh_select_random_polygons(mesh, i);
-		auto ed = mesh_prepare_extrude_polygons(mesh, sel, 0.1f, false);
+		auto ed = polymesh::extrude_polygons(mesh, sel[MultiViewType::MODEL_POLYGON], 0.1f, false);
 		edits.add(ed);
 		inv.add(ed.apply_inplace(mesh));
 		check_mesh_health(mesh);
@@ -299,7 +301,7 @@ void MeshTest::test_extrude_undo_redo() {
 	PolygonMesh mesh = mesh0;
 	Selection sel;
 	sel.set(MultiViewType::MODEL_POLYGON, {0});
-	auto ed = mesh_prepare_extrude_polygons(mesh, sel, 0.1f, false);
+	auto ed = polymesh::extrude_polygons(mesh, sel[MultiViewType::MODEL_POLYGON], 0.1f, false);
 
 	Array<PolygonMesh> meshes;
 

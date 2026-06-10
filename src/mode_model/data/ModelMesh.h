@@ -63,7 +63,6 @@ struct ModelMesh : PolygonMesh {
 	void export_to_triangle_mesh(ModelTriangleMesh &trias, DataModel* model);
 	void set_normals_dirty_by_vertices(const Array<int> &index);
 	void set_all_normals_dirty();
-	void update_normals();
 	void clear_selection();
 	void selection_from_polygons();
 	void selection_from_vertices();

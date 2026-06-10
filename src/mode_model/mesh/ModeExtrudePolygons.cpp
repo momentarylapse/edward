@@ -5,7 +5,7 @@
 #include "ModeExtrudePolygons.h"
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
-#include "processing/MeshExtrudePolygons.h"
+#include <lib/polymesh/edit/ExtrudePolygons.h>
 #include <Session.h>
 #include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
@@ -27,7 +27,9 @@ void ModeExtrudePolygons::on_enter() {
 	multi_view->set_allow_action(false);
 
 	auto update = [this] {
-		diff = mesh_prepare_extrude_polygons(*mode_mesh->data->editing_mesh, mode_mesh->multi_view->selection, dialog->get_float("distance"), dialog->is_checked("connected"));
+		diff = polymesh::extrude_polygons(*mode_mesh->data->editing_mesh,
+			mode_mesh->multi_view->selection[MultiViewType::MODEL_POLYGON],
+			dialog->get_float("distance"), dialog->is_checked("connected"));
 	};
 
 	dialog = new xhui::Panel("xxx");

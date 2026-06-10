@@ -430,6 +430,186 @@ base::optional<Box> PolygonMesh::bounding_box() const {
 	return box;
 }
 
+
+void PolygonMesh::update_normals() {
+#define NEW_NORMALS 1
+
+#if NEW_NORMALS
+
+
+	// "flat" triangle normals
+	for (auto &t: polygons)
+		if (t.normal_dirty) {
+			t.normal_dirty = false;
+			t.temp_normal = t.get_normal(vertices);
+			for (int k=0; k<t.side.num; k++)
+				t.side[k].normal = t.temp_normal;
+		}
+
+	Array<int> cur_polys;
+	Array<int> cur_faces;
+	Array<int> cur_groups;
+	base::set<int> cur_groups_done;
+	for (int v=0; v<vertices.num; v++) {
+		cur_polys.clear();
+		cur_faces.clear();
+		cur_groups.clear();
+		cur_groups_done.clear();
+		foreachi(auto &p, polygons, i) {
+			if (p.smooth_group < 0)
+				continue;
+			for (int k=0; k<p.side.num; k++) {
+				if (p.side[k].vertex == v) {
+					cur_polys.add(i);
+					cur_faces.add(k);
+					cur_groups.add(p.smooth_group);
+				}
+			}
+		}
+		for (int i=0; i<cur_groups.num; i++) {
+			int g = cur_groups[i];
+			if (cur_groups_done.contains(g))
+				continue;
+			vec3 n = v_0;
+			for (int k=i; k<cur_groups.num; k++)
+				if (cur_groups[k] == g)
+					n += polygons[cur_polys[k]].temp_normal;
+			n.normalize();
+			for (int k=i; k<cur_groups.num; k++)
+				if (cur_groups[k] == g)
+					polygons[cur_polys[k]].side[cur_faces[k]].normal = n;
+			cur_groups_done.add(g);
+		}
+	}
+
+#else
+
+
+	base::set<int> ee, vert;
+
+	// "flat" triangle normals
+	for (ModelPolygon &t: polygon)
+		if (t.normal_dirty) {
+			t.normal_dirty = false;
+			t.temp_normal = t.get_normal(vertex);
+
+			for (int k=0;k<t.side.num;k++) {
+				t.side[k].normal = t.temp_normal;
+				int e = t.side[k].edge;
+				if (edge[e].ref_count == 2)
+					ee.add(e);
+			}
+		}
+
+	// round edges?
+	for (int ip: ee) {
+		ModelEdge &e = edge[ip];
+
+		// adjoined triangles
+		ModelPolygon &t1 = polygon[e.polygon[0]];
+		ModelPolygon &t2 = polygon[e.polygon[1]];
+
+		ModelVertex &v1 = vertex[e.vertex[0]];
+		ModelVertex &v2 = vertex[e.vertex[1]];
+
+		// round?
+		e.is_round = false;
+		if ((v1.normal_mode == NORMAL_MODE_ANGULAR) || (v2.normal_mode == NORMAL_MODE_ANGULAR))
+			e.is_round = (t1.temp_normal * t2.temp_normal > 0.6f);
+
+		if (((v1.normal_mode == NORMAL_MODE_ANGULAR) && (e.is_round)) || (v1.normal_mode == NORMAL_MODE_SMOOTH))
+			vert.add(e.vertex[0]);
+		if (((v2.normal_mode == NORMAL_MODE_ANGULAR) && (e.is_round)) || (v2.normal_mode == NORMAL_MODE_SMOOTH))
+			vert.add(e.vertex[1]);
+
+		/*if (e.IsRound){
+			vector n = t1.TempNormal + t2.TempNormal;
+			VecNormalize(n);
+			for (int k=0;k<3;k++)
+				if ((t1.Vertex[k] == e.Vertex[0]) || (t1.Vertex[k] == e.Vertex[1]))
+					t1.Normal[k] = n;
+			for (int k=0;k<3;k++)
+				if ((t2.Vertex[k] == e.Vertex[0]) || (t2.Vertex[k] == e.Vertex[1]))
+					t2.Normal[k] = n;
+		}*/
+	}
+
+	// find all triangles shared by each found vertex
+	Array<Array<PolySideData> > poly_side;
+	poly_side.resize(vert.num);
+	foreachi(ModelPolygon &t, polygon, i){
+		for (int k=0;k<t.side.num;k++){
+			int n = vert.find(t.side[k].vertex);
+			if (n >= 0){
+				t.side[k].normal = t.temp_normal;
+				PolySideData d;
+				d.poly = i;
+				d.side = k;
+				poly_side[n].add(d);
+			}
+		}
+	}
+
+	// per vertex...
+	foreachi(int ip, vert, nn){
+
+		// hard vertex -> nothing to do
+		if (vertex[ip].normal_mode == NORMAL_MODE_HARD)
+			continue;
+
+		Array<PolySideData> &pd = poly_side[nn];
+
+		// smooth vertex
+		if (vertex[ip].normal_mode == NORMAL_MODE_SMOOTH){
+
+			// average normal
+			vec3 n = v_0;
+			for (int i=0;i<pd.num;i++)
+				n += polygon[pd[i].poly].side[pd[i].side].normal;
+			n.normalize();
+			// apply normal...
+			for (int i=0;i<pd.num;i++)
+				polygon[pd[i].poly].side[pd[i].side].normal = n;
+			continue;
+		}
+
+		// angular vertex...
+
+		// find groups of triangles that are connected by round edges
+		while (pd.num > 0){
+
+			// start with the 1st triangle
+			base::set<int> used;
+			used.add(0);
+
+			// search to the right
+			bool closed = find_tria_top(this, pd, used, true);
+
+			// search to the left
+			if (!closed)
+				find_tria_top(this, pd, used, false);
+
+			if (used.num == 1){
+				// no smoothly connected triangles...
+				pd.erase(0);
+				continue;
+			}
+
+			// average normal
+			vec3 n = v_0;
+			for (int i=0;i<used.num;i++)
+				n += polygon[pd[used[i]].poly].side[pd[used[i]].side].normal;
+			n.normalize();
+			// apply normal... and remove from list
+			for (int i=used.num-1;i>=0;i--){
+				polygon[pd[used[i]].poly].side[pd[used[i]].side].normal = n;
+				pd.erase(used[i]);
+			}
+		}
+	}
+#endif
+}
+
 #if __has_include(<view/MultiView.h>)
 bool PolygonMesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec2& m, vec3 &tp, int& index, bool any_hit) {
 	vec3 M = vec3(m, 0);

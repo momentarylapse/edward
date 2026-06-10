@@ -102,6 +102,8 @@ struct PolygonMesh {
 	void remove_unused_vertices();
 	bool is_inside(const vec3 &v) const;
 
+	void update_normals();
+
 #if __has_include(<view/MultiView.h>)
 	bool is_mouse_over(MultiViewWindow* win, const mat4 &matrix, const vec2& m, vec3 &tp, int& index, bool any_hit);
 #endif

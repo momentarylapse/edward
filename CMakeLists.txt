@@ -311,6 +311,8 @@ add_executable(edward
 	src/lib/polymesh/create/Teapot.cpp
 	src/lib/polymesh/create/Torus.cpp
 	src/lib/polymesh/create/TorusKnot.cpp
+	src/lib/polymesh/edit/BevelEdges.cpp
+	src/lib/polymesh/edit/ExtrudePolygons.cpp
 	src/lib/polymesh/_kaba_export.cpp
 	src/lib/polymesh/GeometrySubtract.cpp
 	src/lib/polymesh/MeshEdit.cpp
@@ -482,8 +484,6 @@ add_executable(edward
 	src/mode_model/mesh/material/action/ActionModelEditMaterial.cpp
 	src/mode_model/mesh/material/dialog/ModelMaterialPanel.cpp
 	src/mode_model/mesh/material/ModeMeshMaterial.cpp
-	src/mode_model/mesh/processing/MeshBevelEdges.cpp
-	src/mode_model/mesh/processing/MeshExtrudePolygons.cpp
 	src/mode_model/mesh/processing/MeshRandomSurfacePoints.cpp
 	src/mode_model/mesh/ModeAddCube.cpp
 	src/mode_model/mesh/ModeAddCylinder.cpp

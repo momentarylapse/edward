@@ -5,7 +5,7 @@
 #include "ModeBevelEdges.h"
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
-#include "processing/MeshBevelEdges.h"
+#include <lib/polymesh/edit/BevelEdges.h>
 #include <Session.h>
 #include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
@@ -28,7 +28,8 @@ void ModeBevelEdges::on_enter() {
 	multi_view->set_allow_action(false);
 
 	auto update = [this] {
-		diff = mesh_prepare_bevel_edges(*mode_mesh->data->editing_mesh, mode_mesh->multi_view->selection, dialog->get_float("radius"));
+		const auto& sel = mode_mesh->multi_view->selection;
+		diff = polymesh::bevel_edges(*mode_mesh->data->editing_mesh, sel[MultiViewType::MODEL_VERTEX], sel[MultiViewType::MODEL_EDGE], dialog->get_float("radius"));
 	};
 
 	dialog = new xhui::Panel("xxx");

@@ -2,16 +2,18 @@
 // Created by michi on 18.05.25.
 //
 
-#include "MeshBevelEdges.h"
-#include <Session.h>
+#include "BevelEdges.h"
 #include <lib/polymesh/Polygon.h>
 #include <lib/polymesh/PolygonMesh.h>
 #include <lib/polymesh/MeshEdit.h>
 #include <lib/base/iter.h>
 #include <lib/base/algo.h>
+#include <lib/base/map.h>
 
 #include "lib/os/msg.h"
 
+
+namespace polymesh {
 
 struct BevelInfo {
 	struct Cap {
@@ -66,8 +68,7 @@ bool mesh_get_polygons_and_edges_around_vertex(const PolygonMesh& mesh, int vert
 	}
 }
 
-BevelInfo prepare_bevel(const PolygonMesh& mesh, const Array<Edge>& edges, const Selection& sel) {
-	const auto& selv = sel[MultiViewType::MODEL_VERTEX];
+BevelInfo prepare_bevel(const PolygonMesh& mesh, const Array<Edge>& edges, const base::set<int>& selv) {
 	BevelInfo b;
 
 	for (const auto& [i, v]: enumerate(mesh.vertices))
@@ -110,7 +111,7 @@ BevelInfo prepare_bevel(const PolygonMesh& mesh, const Array<Edge>& edges, const
 				int i_prev = c.polygon->previous_vertex(i);
 				const vec3 dir_next = (mesh.vertices[i_next].pos - p0).normalized();
 				const vec3 dir_prev = (mesh.vertices[i_prev].pos - p0).normalized();
-				if (sel[MultiViewType::MODEL_VERTEX].contains(i_next) and sel[MultiViewType::MODEL_VERTEX].contains(i_prev)) {
+				if (selv.contains(i_next) and selv.contains(i_prev)) {
 					cap.dirs.add(dir_next + dir_prev);
 					cap.next_dir_no.set(i_prev, cap.dirs.num - 1);
 					cap.prev_dir_no.set(i_next, cap.dirs.num - 1);
@@ -131,12 +132,10 @@ BevelInfo prepare_bevel(const PolygonMesh& mesh, const Array<Edge>& edges, const
 	return b;
 }
 
-
-MeshEdit mesh_prepare_bevel_edges(const PolygonMesh& mesh, const Selection& sel, float radius) {
+MeshEdit bevel_edges(const PolygonMesh& mesh, const base::set<int>& selv, const base::set<int>& sele, float radius) {
 	auto edges = mesh.edges();
-	auto b = prepare_bevel(mesh, edges, sel);
+	auto b = prepare_bevel(mesh, edges, selv);
 	MeshEdit ed;
-	const auto& sele = sel[MultiViewType::MODEL_EDGE];
 
 	for (auto& c: b.caps)
 		for (const auto& d: c.dirs)
@@ -181,4 +180,4 @@ MeshEdit mesh_prepare_bevel_edges(const PolygonMesh& mesh, const Selection& sel,
 	return ed;
 }
 
-
+}
