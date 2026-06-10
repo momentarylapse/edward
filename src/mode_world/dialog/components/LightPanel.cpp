@@ -95,13 +95,7 @@ void LightPanel::on_edit() {
 		l.power = yrenderer::Light::_radius_to_power(radius);
 		set_float("power", l.power);
 	}
-	if (l.type == yrenderer::LightType::CONE) {
-		l.theta = get_float("theta") * pi / 180;
-	} else if (l.type == yrenderer::LightType::AMBIENT) {
-		l.theta = 5;
-	} else {
-		l.theta = -1;
-	}
+	l.theta = get_float("theta") * pi / 180;
 	l.harshness = get_float("harshness") / 100;
 	l.allow_shadow = is_checked("allow-shadows");
 

@@ -50,7 +50,12 @@ UBOLight Light::to_ubo(const vec3& view_pos, const quaternion& view_ang, bool us
 		l.radius = -1;
 	else
 		l.radius = render_radius();
-	l.theta = theta;
+	if (type == LightType::CONE)
+		l.theta = theta;
+	else if (type == LightType::AMBIENT)
+		l.theta = 5;
+	else
+		l.theta = -1;
 	if (using_view_space) {
 		l.pos = view_ang.bar() * (pos - view_pos);
 		l.dir = view_ang.bar() * _ang * vec3::EZ;
