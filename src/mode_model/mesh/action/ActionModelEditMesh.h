@@ -7,8 +7,8 @@
 
 
 #include <lib/history/Action.h>
-#include <lib/mesh/PolygonMesh.h>
-#include <lib/mesh/MeshEdit.h>
+#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/MeshEdit.h>
 
 struct ModelMesh;
 

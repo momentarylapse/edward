@@ -5,7 +5,7 @@
 #include "MaterialPreviewManager.h"
 #include <Session.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <lib/mesh/GeometryBall.h>
+#include <lib/polymesh/create/Ball.h>
 #include <lib/xhui/xhui.h>
 #include <lib/yrenderer/scene/Light.h>
 #include <lib/yrenderer/scene/path/RenderPathForward.h>
@@ -48,7 +48,7 @@ public:
 	XEmitter(Session* s, yrenderer::Material* m) : yrenderer::MeshEmitter(s->ctx, "x") {
 		material = m;
 		vb = new ygfx::VertexBuffer("3f,3f,2f");
-		auto g = GeometryBall::create({0,0,4}, 1, 32, 64);
+		auto g = polymesh::create_ball({0,0,4}, 1, 32, 64);
 		g.smoothen();
 		g.build(vb.get());
 	}

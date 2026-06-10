@@ -6,7 +6,7 @@
 #define ACTIONMODELADDPOLYGON_H
 
 #include <lib/history/Action.h>
-#include <lib/mesh/Polygon.h>
+#include <lib/polymesh/Polygon.h>
 class DataModel;
 struct ModelMesh;
 

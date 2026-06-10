@@ -43,12 +43,10 @@
 #include "dialog/PropertiesDialog.h"
 #include <cmath>
 
-#include <lib/mesh/Polygon.h>
-#include <lib/mesh/VertexStagingBuffer.h>
-#include <lib/mesh/PolygonMesh.h>
-#include <lib/mesh/GeometrySphere.h>
-#include <lib/mesh/GeometryCylinder.h>
-#include <y/world/components/RigidBody.h>
+#include <lib/polymesh/Polygon.h>
+#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/create/Sphere.h>
+#include <lib/polymesh/create/Cylinder.h>
 #include <y/world/systems/AnimationManager.h>
 #include <y/ecs/EntityManager.h>
 #include <y/ecs/SystemManager.h>
@@ -485,9 +483,9 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 							}
 						}
 						for (const auto& b: p->balls)
-							mesh.add(GeometrySphere(p->vertex[b.index], b.radius, 8));
+							mesh.add(polymesh::create_sphere(p->vertex[b.index], b.radius, 8));
 						for (const auto& c: p->cylinders)
-							mesh.add(GeometryCylinder(p->vertex[c.index[0]], p->vertex[c.index[1]], c.radius, 1, 32, c.round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT));
+							mesh.add(polymesh::create_cylinder(p->vertex[c.index[0]], p->vertex[c.index[1]], c.radius, 1, 32, c.round ? polymesh::End::ROUND : polymesh::End::FLAT));
 
 						mesh.build(_vb);
 						physical_vertex_buffers.set(p, _vb);

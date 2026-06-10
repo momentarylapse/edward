@@ -6,7 +6,7 @@
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
 #include <Session.h>
-#include <lib/mesh/GeometryCylinder.h>
+#include <lib/polymesh/create/Cylinder.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>
@@ -96,18 +96,18 @@ void ModeAddCylinder::on_key_down(int key) {
 }
 
 void ModeAddCylinder::on_mouse_move(const vec2& m, const vec2& d) {
-	auto end_mode = round ? GeometryCylinder::END_ROUND : GeometryCylinder::END_FLAT;
+	auto end_mode = round ? polymesh::End::ROUND : polymesh::End::FLAT;
 	if (points.num == 0) {
 		next_point = multi_view->cursor_pos_3d(m);
 		//mesh = GeometryCylinder(multi_view->cursor_pos_3d(m), {20,0,0}, {0,20,0}, {0,0,20}, slices[0], slices[1], slices[2]);
 	} else if (points.num == 1) {
 		next_point = multi_view->cursor_pos_3d(m);
 		float r = multi_view->hover_window->pixel_to_size(50); // 50 px
-		mesh = GeometryCylinder(points[0], next_point, r, rings, edges, end_mode);
+		mesh = polymesh::create_cylinder(points[0], next_point, r, rings, edges, end_mode);
 	} else if (points.num == 2) {
 		next_point = multi_view->hover_window->unproject(m, points[1]);
 		float r = (next_point - points[1]).length();
-		mesh = GeometryCylinder(points[0], points[1], r, rings, edges, end_mode);
+		mesh = polymesh::create_cylinder(points[0], points[1], r, rings, edges, end_mode);
 	}
 
 	mesh.build(vertex_buffer.get());

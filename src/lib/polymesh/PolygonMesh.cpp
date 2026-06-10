@@ -8,8 +8,9 @@
 #include "PolygonMesh.h"
 #include "Polygon.h"
 #include "MeshEdit.h"
-#include "VertexStagingBuffer.h"
+#if __has_include(<lib/ygraphics/graphics-fwd.h>)
 #include <lib/ygraphics/graphics-impl.h>
+#endif
 #include <lib/base/iter.h>
 #include <lib/base/sort.h>
 #include <lib/math/mat4.h>
@@ -315,20 +316,21 @@ int PolygonMesh::next_edge_at_vertex(int index0, int index1) const {
 }
 
 
-
-void PolygonMesh::build(ygfx::VertexBuffer *vb) const {
-	VertexStagingBuffer vbs;
-#ifdef USING_VULKAN
-	int num_textures = 1;
-#else
-	int num_textures = vb->num_attributes - 2;
-#endif
+void PolygonMesh::build_x(DynamicArray& buf) const {
 	for (auto &p: const_cast<Array<Polygon>&>(polygons)){
 		p.triangulation_dirty = true;
-		p.add_to_vertex_buffer(vertices, vbs, num_textures);
+		p.add_to_vertex_buffer(vertices, buf);
 	}
-	vbs.build(vb, num_textures);
 }
+
+
+#if __has_include(<lib/ygraphics/graphics-fwd.h>)
+void PolygonMesh::build(ygfx::VertexBuffer *vb) const {
+	Array<ygfx::Vertex1> buf;
+	build_x(buf);
+	vb->update(buf);
+}
+#endif
 
 bool PolygonMesh::is_closed() const {
 	// TOSO

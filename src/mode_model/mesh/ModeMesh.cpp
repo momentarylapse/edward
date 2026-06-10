@@ -22,8 +22,8 @@
 #include "../data/ModelMesh.h"
 #include <mode_material/dialog/MaterialSelectionDialog.h>
 #include <Session.h>
-#include <lib/mesh/GeometryCylinder.h>
-#include <lib/mesh/GeometrySphere.h>
+#include <lib/polymesh/create/Cylinder.h>
+#include <lib/polymesh/create/Sphere.h>
 #include <helper/ResourceManager.h>
 #include <lib/base/iter.h>
 #include <lib/image/Painter.h>
@@ -34,7 +34,6 @@
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/DocumentSession.h>
-#include <lib/mesh/VertexStagingBuffer.h>
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
 #include <lib/ygraphics/graphics-impl.h>
@@ -432,10 +431,10 @@ void ModeMesh::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindo
 
 	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_selection, material_selection, 0);
 
-	VertexStagingBuffer vsb;
+	Array<ygfx::Vertex1> buf;
 	if (multi_view->hover and multi_view->hover->type == MultiViewType::MODEL_POLYGON)
-		data->editing_mesh->polygons[multi_view->hover->index].add_to_vertex_buffer(data->editing_mesh->vertices, vsb, 1);
-	vsb.build(vertex_buffer_hover, 1);
+		data->editing_mesh->polygons[multi_view->hover->index].add_to_vertex_buffer(data->editing_mesh->vertices, buf);
+	vertex_buffer_hover->update(buf);
 	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_hover, material_hover, 0);
 
 	if (presentation_mode == PresentationMode::Vertices or presentation_mode == PresentationMode::Edges or presentation_mode == PresentationMode::Polygons)
@@ -484,32 +483,32 @@ void ModeMesh::update_vb() {
 		if (!vertex_buffers[i])
 			vertex_buffers[i] = new ygfx::VertexBuffer("3f,3f,2f");
 
-		VertexStagingBuffer vsb;
+		Array<ygfx::Vertex1> buf;
 		for (auto& p: data->mesh->polygons)
 			if (p.material == i)
-				p.add_to_vertex_buffer(data->mesh->vertices, vsb, 1);
-		vsb.build(vertex_buffers[i], 1);
+				p.add_to_vertex_buffer(data->mesh->vertices, buf);
+		vertex_buffers[i]->update(buf);
 	}
 
 	PolygonMesh m;
 	m.vertices = data->phys_mesh->vertices;
 	m.polygons = data->phys_mesh->polygons;
 	for (const auto& b: data->editing_mesh->spheres)
-		m.add(GeometrySphere(data->editing_mesh->vertices[b.index].pos, b.radius, 8));
+		m.add(polymesh::create_sphere(data->editing_mesh->vertices[b.index].pos, b.radius, 8));
 	for (const auto& c: data->editing_mesh->cylinders)
-		m.add(GeometryCylinder(data->editing_mesh->vertices[c.index[0]].pos, data->editing_mesh->vertices[c.index[1]].pos, c.radius, 1, 32));
+		m.add(polymesh::create_cylinder(data->editing_mesh->vertices[c.index[0]].pos, data->editing_mesh->vertices[c.index[1]].pos, c.radius, 1, 32));
 	m.build(vertex_buffer_physical);
 }
 
 
 void ModeMesh::update_selection_vb() {
-	VertexStagingBuffer vsb;
+	Array<ygfx::Vertex1> buf;
 	const auto& selp = multi_view->selection[MultiViewType::MODEL_POLYGON];
 	for (auto&& [i, p]: enumerate(data->editing_mesh->polygons))
 		if (selp.contains(i))
-			p.add_to_vertex_buffer(data->editing_mesh->vertices, vsb, 1);
+			p.add_to_vertex_buffer(data->editing_mesh->vertices, buf);
 	// TODO spheres/cylinders
-	vsb.build(vertex_buffer_selection, 1);
+	vertex_buffer_selection->update(buf);
 }
 
 vec2 line_closest_point2d(const vec2& a, const vec2& b, const vec2& p) {

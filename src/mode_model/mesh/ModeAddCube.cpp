@@ -6,7 +6,7 @@
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
 #include <Session.h>
-#include <lib/mesh/GeometryCube.h>
+#include <lib/polymesh/create/Cube.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>
@@ -121,7 +121,7 @@ bool ModeAddCube::set_dpos3(const vec2& m) {
 void ModeAddCube::on_mouse_move(const vec2& m, const vec2& d) {
 	if (points.num == 0) {
 		float r = multi_view->hover_window->pixel_to_size(10);
-		mesh = GeometryCube(multi_view->cursor_pos_3d(m), {r,0,0}, {0,r,0}, {0,0,r}, slices[0], slices[1], slices[2]);
+		mesh = polymesh::create_cube_x(multi_view->cursor_pos_3d(m), {r,0,0}, {0,r,0}, {0,0,r}, slices[0], slices[1], slices[2]);
 	} else if (points.num == 1) {
 		vec3 pos2 = multi_view->cursor_pos_3d(m);
 		const mat3 frame = multi_view->hover_window->edit_frame();
@@ -132,10 +132,10 @@ void ModeAddCube::on_mouse_move(const vec2& m, const vec2& d) {
 		float min_thick = multi_view->hover_window->pixel_to_size(10);
 		vec3 n = vec3::cross(length[0], length[1]).normalized();
 		length[2] = n * min_thick;
-		mesh = GeometryCube(points[0] - length[2]/2, length[0], length[1], length[2], slices[0], slices[1], slices[2]);
+		mesh = polymesh::create_cube_x(points[0] - length[2]/2, length[0], length[1], length[2], slices[0], slices[1], slices[2]);
 	} else if (points.num == 2) {
 		set_dpos3(m);
-		mesh = GeometryCube(points[0] - length[2]/2, length[0], length[1], length[2], slices[0], slices[1], slices[2]);
+		mesh = polymesh::create_cube_x(points[0] - length[2]/2, length[0], length[1], length[2], slices[0], slices[1], slices[2]);
 	}
 
 

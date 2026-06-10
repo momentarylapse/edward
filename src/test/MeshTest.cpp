@@ -7,10 +7,10 @@
 #ifndef NDEBUG
 
 #include "MeshTest.h"
-#include <lib/mesh/PolygonMesh.h>
-#include <lib/mesh/MeshEdit.h>
-#include <lib/mesh/GeometryCube.h>
-#include <lib/mesh/GeometryPlane.h>
+#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/MeshEdit.h>
+#include <lib/polymesh/create/Cube.h>
+#include <lib/polymesh/create/Plane.h>
 #include <mode_model/mesh/processing/MeshExtrudePolygons.h>
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>
@@ -186,8 +186,8 @@ void MeshTest::test_diff_basic_vertices() {
 
 
 void MeshTest::test_diff_invertible() {
-	//const PolygonMesh mesh0 = GeometryCube::create(Box::ID_SYM, {1,1,1});
-	const PolygonMesh mesh0 = GeometryPlane::create(rect::ID_SYM, {1,1});
+	//const PolygonMesh mesh0 = polymesh::create_cube(Box::ID_SYM, {1,1,1});
+	const PolygonMesh mesh0 = polymesh::create_plane(rect::ID_SYM, {1,1});
 	if constexpr (verbose)
 		show_mesh(mesh0);
 
@@ -214,7 +214,7 @@ void MeshTest::test_diff_invertible() {
 }
 
 void MeshTest::test_diff_iterated() {
-	const PolygonMesh mesh0 = GeometryCube::create(Box::ID_SYM, {1,1,1});
+	const PolygonMesh mesh0 = polymesh::create_cube(Box::ID_SYM, {1,1,1});
 
 	for (int i=0; i<100; i++) {
 		//msg_write("====");
@@ -260,7 +260,7 @@ Selection mesh_select_random_polygons(const PolygonMesh& mesh, int seed) {
 }
 
 void MeshTest::test_extrude() {
-	const PolygonMesh mesh0 = GeometryCube::create(Box::ID_SYM, {1,1,1});
+	const PolygonMesh mesh0 = polymesh::create_cube(Box::ID_SYM, {1,1,1});
 
 	Array<MeshEdit> edits;
 	Array<MeshEdit> inv;
@@ -294,7 +294,7 @@ void MeshTest::test_extrude() {
 }
 
 void MeshTest::test_extrude_undo_redo() {
-	const PolygonMesh mesh0 = GeometryCube::create(Box::ID_SYM, {1,1,1});
+	const PolygonMesh mesh0 = polymesh::create_cube(Box::ID_SYM, {1,1,1});
 
 	PolygonMesh mesh = mesh0;
 	Selection sel;

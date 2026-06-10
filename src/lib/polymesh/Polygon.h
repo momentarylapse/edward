@@ -9,7 +9,6 @@
 #include <lib/math/vec4.h>
 
 class MultiViewWindow;
-class VertexStagingBuffer;
 struct vec3;
 struct mat4;
 struct MeshVertex;
@@ -51,7 +50,8 @@ struct Polygon {
 	Edge get_side_edge_in(int side_no) const;
 	Edge get_side_edge_out(int side_no) const;
 	void invert();
-	void add_to_vertex_buffer(const Array<MeshVertex> &vertex, VertexStagingBuffer &vbs, int num_textures);
+
+	void add_to_vertex_buffer(const Array<MeshVertex> &vertex, DynamicArray& buf);
 };
 
 

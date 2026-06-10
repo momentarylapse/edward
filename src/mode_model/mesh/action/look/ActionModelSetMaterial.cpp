@@ -11,7 +11,7 @@
 
 #include "../../../data/DataModel.h"
 #include "../../../data/ModelMesh.h"
-#include <lib/mesh/Polygon.h>
+#include <lib/polymesh/Polygon.h>
 
 ActionModelSetMaterial::ActionModelSetMaterial(DataModel *m, const Selection& sel, int _material) {
 	material = _material;

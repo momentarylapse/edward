@@ -7,7 +7,7 @@
 
 
 #include <lib/history/Action.h>
-#include <lib/mesh/Polygon.h>
+#include <lib/polymesh/Polygon.h>
 #include "../../data/ModelMesh.h"
 class DataModel;
 struct ModelMesh;

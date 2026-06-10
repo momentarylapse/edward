@@ -9,7 +9,7 @@
 #define SRC_DATA_MODEL_MODELMESH_H_
 
 #include <view/SingleData.h>
-#include <lib/mesh/PolygonMesh.h>
+#include <lib/polymesh/PolygonMesh.h>
 #include <lib/math/vec4.h>
 #include <lib/history/Data.h>
 #include <stuff/Selection.h>

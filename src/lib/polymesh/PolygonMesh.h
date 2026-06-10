@@ -13,7 +13,9 @@
 #include <lib/base/optional.h>
 #include <lib/math/vec3.h>
 #include <lib/math/vec4.h>
+#if __has_include(<lib/ygraphics/graphics-fwd.h>)
 #include <lib/ygraphics/graphics-fwd.h>
+#endif
 
 struct PolygonMesh;
 class MultiViewWindow;
@@ -104,7 +106,10 @@ struct PolygonMesh {
 	bool is_mouse_over(MultiViewWindow* win, const mat4 &matrix, const vec2& m, vec3 &tp, int& index, bool any_hit);
 #endif
 
+	void build_x(DynamicArray& buf) const;
+#if __has_include(<lib/ygraphics/graphics-fwd.h>)
 	void build(ygfx::VertexBuffer *vb) const;
+#endif
 
 	Array<MeshVertex> vertices;
 	Array<Polygon> polygons;
@@ -119,6 +124,4 @@ struct PolygonMesh {
 	//bool trace(const vec3& p0, const vec3& p1, vec3& tp, int& index);
 };
 
-//int GeometrySubtract(const Geometry &a, const Geometry &b, Geometry &c);
-//int GeometryAnd(const Geometry &a, const Geometry &b, Geometry &c);
 

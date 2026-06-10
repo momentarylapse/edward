@@ -7,7 +7,7 @@
 
 
 #include <view/Mode.h>
-#include <lib/mesh/MeshEdit.h>
+#include <lib/polymesh/MeshEdit.h>
 
 class MultiViewWindow;
 class ModeMesh;

@@ -9,7 +9,7 @@
 #define ACTIONMODELPASTEGEOMETRY_H_
 
 #include <lib/history/Action.h>
-#include <lib/mesh/PolygonMesh.h>
+#include <lib/polymesh/PolygonMesh.h>
 struct ModelMesh;
 
 class ActionModelPasteMesh : public history::Action {

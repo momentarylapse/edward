@@ -12,7 +12,7 @@
 #include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
-#include <lib/mesh/MeshEdit.h>
+#include <lib/polymesh/MeshEdit.h>
 #include "MultiView.h"
 #include "SingleData.h"
 #include "lib/xhui/Context.h"

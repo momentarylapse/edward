@@ -8,7 +8,7 @@
 #include "DataModel.h"
 #include "ModelMesh.h"
 //#include "ModelSelection.h"
-#include <lib/mesh/PolygonMesh.h>
+#include <lib/polymesh/PolygonMesh.h>
 
 #include "view/DocumentSession.h"
 #if 0 //HAS_LIB_GL

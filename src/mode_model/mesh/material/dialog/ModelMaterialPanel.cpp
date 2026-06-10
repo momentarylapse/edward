@@ -9,7 +9,7 @@
 #include "../../../ModeModel.h"
 #include "../../../data/DataModel.h"
 #include "../../../data/ModelMesh.h"
-#include <lib/mesh/Polygon.h>
+#include <lib/polymesh/Polygon.h>
 #include "../action/ActionModelAddMaterial.h"
 #include "../action/ActionModelDeleteMaterial.h"
 #include <Session.h>

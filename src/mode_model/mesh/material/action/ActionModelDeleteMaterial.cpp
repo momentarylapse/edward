@@ -8,7 +8,7 @@
 #include "ActionModelDeleteMaterial.h"
 #include "../../../data/DataModel.h"
 #include "../../../data/ModelMesh.h"
-#include <lib/mesh/Polygon.h>
+#include <lib/polymesh/Polygon.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <assert.h>
 

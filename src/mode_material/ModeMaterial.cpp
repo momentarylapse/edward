@@ -27,12 +27,12 @@
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
 #include <view/DrawingHelper.h>
-#include <lib/mesh/GeometryCube.h>
-#include <lib/mesh/GeometryPlatonic.h>
-#include <lib/mesh/GeometrySphere.h>
-#include <lib/mesh/GeometryTorus.h>
-#include <lib/mesh/GeometryTorusKnot.h>
-#include <lib/mesh/GeometryTeapot.h>
+#include <lib/polymesh/create/Cube.h>
+#include <lib/polymesh/create/Platonic.h>
+#include <lib/polymesh/create/Sphere.h>
+#include <lib/polymesh/create/Torus.h>
+#include <lib/polymesh/create/TorusKnot.h>
+#include <lib/polymesh/create/Teapot.h>
 #include <lib/os/msg.h>
 
 
@@ -74,7 +74,7 @@ void ModeMaterial::on_enter() {
 
 	// ground
 	vertex_buffer_ground = new ygfx::VertexBuffer("3f,3f,2f");
-	auto cube = GeometryCube::create({{-4,-1.2f,-4}, {4,-1.0f,4}}, {1, 1, 1});
+	auto cube = polymesh::create_cube({{-4,-1.2f,-4}, {4,-1.0f,4}}, {1, 1, 1});
 	cube.build(vertex_buffer_ground.get());
 
 	Image im(16,16,White);
@@ -200,26 +200,26 @@ void ModeMaterial::set_mesh(PreviewMesh m) {
 	PolygonMesh mesh;
 	switch (m) {
 	case PreviewMesh::CUBE:
-		mesh = GeometryCube::create(Box::ID_SYM, {1, 1, 1});
+		mesh = polymesh::create_cube(Box::ID_SYM, {1, 1, 1});
 		break;
 	case PreviewMesh::ICOSAHEDRON:
-		mesh = GeometryPlatonic({0,0,0}, 1, 20);
+		mesh = polymesh::create_icosahedron({0,0,0}, 1);
 		break;
 	case PreviewMesh::SPHERE:
-		mesh = GeometrySphere({0,0,0}, 1, 16);
+		mesh = polymesh::create_sphere({0,0,0}, 1, 16);
 		mesh.smoothen();
 		break;
 	case PreviewMesh::TORUS:
-		mesh = GeometryTorus({0,0,0}, vec3::EZ, 1, 0.5f, 32, 32);
+		mesh = polymesh::create_torus({0,0,0}, vec3::EZ, 1, 0.5f, 32, 32);
 		mesh.smoothen();
 		break;
 	case PreviewMesh::TORUS_KNOT:
-		mesh = GeometryTorusKnot({0,0,0}, vec3::EZ, 1, 0.5f, 0.3f, 3, 5, 256, 16);
+		mesh = polymesh::create_torus_knot({0,0,0}, vec3::EZ, 1, 0.5f, 0.3f, 3, 5, 256, 16);
 		mesh.smoothen();
 		break;
 	case PreviewMesh::TEAPOT:
 	default:
-		mesh = GeometryTeapot::create({0,0,0}, 1.5f, 8);
+		mesh = polymesh::create_teapot({0,0,0}, 1.5f, 8);
 		mesh.smoothen();
 		break;
 	}

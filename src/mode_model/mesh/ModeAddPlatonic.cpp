@@ -6,8 +6,8 @@
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
 #include <Session.h>
-#include <lib/mesh/GeometryPlatonic.h>
-#include <lib/mesh/GeometryTeapot.h>
+#include <lib/polymesh/create/Platonic.h>
+#include <lib/polymesh/create/Teapot.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>
@@ -17,6 +17,8 @@
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
+
+#include "lib/polymesh/create/Cube.h"
 
 ModeAddPlatonic::ModeAddPlatonic(ModeMesh* parent) :
 	SubMode(parent)
@@ -120,17 +122,17 @@ void ModeAddPlatonic::on_key_down(int key) {
 
 void ModeAddPlatonic::update_mesh() {
 	if (type == Type::Tetrahedron) {
-		mesh = GeometryPlatonic(center, radius, 4);
+		mesh = polymesh::create_tetrahedron(center, radius);
 	} else if (type == Type::Cube) {
-		mesh = GeometryPlatonic(center, radius, 6); // meh
+		mesh = polymesh::create_platonic(center, radius, 6); // meh
 	} else if (type == Type::Octahedron) {
-		mesh = GeometryPlatonic(center, radius, 8);
+		mesh = polymesh::create_octahedron(center, radius);
 	} else if (type == Type::Dodecahedron) {
-		mesh = GeometryPlatonic(center, radius, 12);
+		mesh = polymesh::create_dodecahedron(center, radius);
 	} else if (type == Type::Icosahedron) {
-		mesh = GeometryPlatonic(center, radius, 20);
+		mesh = polymesh::create_icosahedron(center, radius);
 	} else {
-		mesh = GeometryTeapot::create(center, radius, complexity);
+		mesh = polymesh::create_teapot(center, radius, complexity);
 		mesh.smoothen();
 	}
 

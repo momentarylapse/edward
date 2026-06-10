@@ -6,8 +6,8 @@
 #include "ModeMesh.h"
 #include "../data/ModelMesh.h"
 #include <Session.h>
-#include <lib/mesh/GeometryBall.h>
-#include <lib/mesh/GeometrySphere.h>
+#include <lib/polymesh/create/Ball.h>
+#include <lib/polymesh/create/Sphere.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>
@@ -118,9 +118,9 @@ void ModeAddSphere::on_key_down(int key) {
 void ModeAddSphere::update_mesh() {
 	vec3 p = center.value_or(next_point);
 	if (type == Type::Ball)
-		mesh = GeometryBall(p, radius, slices[0], slices[1]);
+		mesh = polymesh::create_ball(p, radius, slices[0], slices[1]);
 	else
-		mesh = GeometrySphere(p, radius, complexity);
+		mesh = polymesh::create_sphere(p, radius, complexity);
 	mesh.build(vertex_buffer.get());
 
 	session->win->request_redraw();

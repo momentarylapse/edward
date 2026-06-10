@@ -274,21 +274,6 @@ add_executable(edward
 	src/lib/math/vec2.cpp
 	src/lib/math/vec3.cpp
 	src/lib/math/vec4.cpp
-	src/lib/mesh/GeometryBall.cpp
-	src/lib/mesh/GeometryCube.cpp
-	src/lib/mesh/GeometryCylinder.cpp
-	src/lib/mesh/GeometryPlane.cpp
-	src/lib/mesh/GeometryPlatonic.cpp
-	src/lib/mesh/GeometrySphere.cpp
-	src/lib/mesh/GeometrySubtract.cpp
-	src/lib/mesh/GeometryTeapot.cpp
-	src/lib/mesh/GeometryTorus.cpp
-	src/lib/mesh/GeometryTorusKnot.cpp
-	src/lib/mesh/MeshEdit.cpp
-	src/lib/mesh/Polygon.cpp
-	src/lib/mesh/PolygonMesh.cpp
-	src/lib/mesh/SkinGenerator.cpp
-	src/lib/mesh/VertexStagingBuffer.cpp
 	src/lib/net/_kaba_export.cpp
 	src/lib/net/BinaryBuffer.cpp
 	src/lib/net/net.cpp
@@ -317,6 +302,21 @@ add_executable(edward
 	src/lib/os/time.cpp
 	src/lib/pattern/_kaba_export.cpp
 	src/lib/pattern/Observable.cpp
+	src/lib/polymesh/create/Ball.cpp
+	src/lib/polymesh/create/Cube.cpp
+	src/lib/polymesh/create/Cylinder.cpp
+	src/lib/polymesh/create/Plane.cpp
+	src/lib/polymesh/create/Platonic.cpp
+	src/lib/polymesh/create/Sphere.cpp
+	src/lib/polymesh/create/Teapot.cpp
+	src/lib/polymesh/create/Torus.cpp
+	src/lib/polymesh/create/TorusKnot.cpp
+	src/lib/polymesh/_kaba_export.cpp
+	src/lib/polymesh/GeometrySubtract.cpp
+	src/lib/polymesh/MeshEdit.cpp
+	src/lib/polymesh/Polygon.cpp
+	src/lib/polymesh/PolygonMesh.cpp
+	src/lib/polymesh/SkinGenerator.cpp
 	src/lib/profiler/_kaba_export.cpp
 	src/lib/profiler/Profiler.cpp
 	src/lib/syntaxhighlight/_kaba_export.cpp

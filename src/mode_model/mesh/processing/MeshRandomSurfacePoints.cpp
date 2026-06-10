@@ -3,7 +3,7 @@
 //
 
 #include "MeshRandomSurfacePoints.h"
-#include <lib/mesh/PolygonMesh.h>
+#include <lib/polymesh/PolygonMesh.h>
 #include <lib/math/vec2.h>
 #include <lib/os/msg.h>
 

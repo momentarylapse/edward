@@ -9,7 +9,7 @@
 #define ACTIONMODELBRUSHEXTRUDE_H_
 
 #include <lib/history/Action.h>
-#include <lib/mesh/Polygon.h>
+#include <lib/polymesh/Polygon.h>
 #include <lib/math/vec3.h>
 
 class DataModel;

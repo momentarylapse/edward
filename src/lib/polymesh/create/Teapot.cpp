@@ -1,16 +1,16 @@
 /*
- * GeometryTeapot.cpp
+ * Teapot.cpp
  *
  *  Created on: 11.01.2013
  *      Author: michi
  */
 
-#include "GeometryTeapot.h"
+#include "Teapot.h"
 #include <lib/math/mat4.h>
 
 // Utah teapot by Martin Newell
 
-const vec3 tp_vert[] = {
+static const vec3 tp_vert[] = {
 	vec3(0,0,0), // lazy index compensation
 	vec3(1.4,0.0,2.4),
 	vec3(1.4,-0.784,2.4),
@@ -331,8 +331,8 @@ const vec3 tp_vert[] = {
 	fill_array(i0,i1,i2,i3,i4,i5,i6,i7,i8,i9,i10,i11,i12,i13,i14,i15); \
 	mesh.add_bezier3(v, samples, samples, 0.01f / samples)
 
-namespace GeometryTeapot {
-PolygonMesh create(const vec3 &pos, float radius, int samples) {
+namespace polymesh {
+PolygonMesh create_teapot(const vec3 &pos, float radius, int samples) {
 	PolygonMesh mesh;
 	Array<vec3> v;
 	_add_bezier(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16);

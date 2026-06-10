@@ -7,7 +7,7 @@
 #include "../data/ModelMesh.h"
 #include "action/sculpt/ActionModelBrushExtrude.h"
 #include <Session.h>
-#include <lib/mesh/GeometryCube.h>
+#include <lib/polymesh/create/Cube.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>

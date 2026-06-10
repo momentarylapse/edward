@@ -4,7 +4,6 @@
 
 #include "Polygon.h"
 #include "PolygonMesh.h"
-#include "VertexStagingBuffer.h"
 #include <lib/math/vec2.h>
 #include <lib/math/plane.h>
 #include <cmath>
@@ -183,27 +182,23 @@ void Polygon::update_triangulation(const Array<MeshVertex> &vertex) {
 	triangulation_dirty = false;
 }
 
-void Polygon::add_to_vertex_buffer(const Array<MeshVertex> &vertex, VertexStagingBuffer &vbs, int num_textures) {
+struct DummyVertex {
+	vec3 pos, n;
+	vec2 u, v;
+};
+
+void Polygon::add_to_vertex_buffer(const Array<MeshVertex> &vertex, DynamicArray& buf) {
 	if (triangulation_dirty)
 		update_triangulation(vertex);
+	int i0 = buf.num;
+	buf.simple_resize(buf.num + 3*(side.num - 2));
 	for (int i=0; i<side.num-2; i++) {
 		auto &a = side[side[i].triangulation[0]];
 		auto &b = side[side[i].triangulation[1]];
 		auto &c = side[side[i].triangulation[2]];
-		vbs.p.add(vertex[a.vertex].pos);
-		vbs.p.add(vertex[b.vertex].pos);
-		vbs.p.add(vertex[c.vertex].pos);
-		vbs.n.add(a.normal);
-		vbs.n.add(b.normal);
-		vbs.n.add(c.normal);
-		for (int l=0; l<num_textures; l++){
-			vbs.uv[l].add(a.skin_vertex[l].x);
-			vbs.uv[l].add(a.skin_vertex[l].y);
-			vbs.uv[l].add(b.skin_vertex[l].x);
-			vbs.uv[l].add(b.skin_vertex[l].y);
-			vbs.uv[l].add(c.skin_vertex[l].x);
-			vbs.uv[l].add(c.skin_vertex[l].y);
-		}
+		*reinterpret_cast<DummyVertex*>(buf.simple_element(i0 + i*3  )) = {vertex[a.vertex].pos, a.normal, a.skin_vertex[0].xy()};
+		*reinterpret_cast<DummyVertex*>(buf.simple_element(i0 + i*3+1)) = {vertex[b.vertex].pos, b.normal, b.skin_vertex[0].xy()};
+		*reinterpret_cast<DummyVertex*>(buf.simple_element(i0 + i*3+2)) = {vertex[c.vertex].pos, c.normal, c.skin_vertex[0].xy()};
 	}
 }
 

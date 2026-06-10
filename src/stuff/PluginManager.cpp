@@ -16,16 +16,16 @@
 #include <view/MultiViewWindow.h>
 #include <view/DocumentSession.h>
 #include <lib/history/Data.h>
-#include <lib/mesh/PolygonMesh.h>
-#include <lib/mesh/GeometryBall.h>
-#include <lib/mesh/GeometryCube.h>
-#include <lib/mesh/GeometryCylinder.h>
-#include <lib/mesh/GeometryPlane.h>
-#include <lib/mesh/GeometryPlatonic.h>
-#include <lib/mesh/GeometrySphere.h>
-#include <lib/mesh/GeometryTeapot.h>
-#include <lib/mesh/GeometryTorus.h>
-#include <lib/mesh/GeometryTorusKnot.h>
+#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/create/Ball.h>
+#include <lib/polymesh/create/Cube.h>
+#include <lib/polymesh/create/Cylinder.h>
+#include <lib/polymesh/create/Plane.h>
+#include <lib/polymesh/create/Platonic.h>
+#include <lib/polymesh/create/Sphere.h>
+#include <lib/polymesh/create/Teapot.h>
+#include <lib/polymesh/create/Torus.h>
+#include <lib/polymesh/create/TorusKnot.h>
 
 #include <mode_material/data/DataMaterial.h>
 #include <mode_material/ModeMaterial.h>
@@ -135,16 +135,16 @@ void link_mesh(kaba::ExternalLinkData* ext) {
 	ext->declare_class_element("Mesh.spheres", &PolygonMesh::spheres);
 	ext->declare_class_element("Mesh.cylinders", &PolygonMesh::cylinders);
 
-	ext->link("Mesh.create_ball", (void*)&GeometryBall::create);
-	ext->link("Mesh.create_cube", (void*)&GeometryCube::create);
-	ext->link("Mesh.create_sphere", (void*)&GeometrySphere::create);
+	ext->link("Mesh.create_ball", (void*)&polymesh::create_ball);
+	ext->link("Mesh.create_cube", (void*)&polymesh::create_cube);
+	ext->link("Mesh.create_sphere", (void*)&polymesh::create_sphere);
 	//ext->link_class_func("Geometry.Cylinder.__init__", &GeometryCylinder::__init__);
 	//ext->link_class_func("Geometry.CylinderComplex.__init__", &GeometryCylinder::__init2__);
-	ext->link("Mesh.create_torus", (void*)&GeometryTorus::create);
-	ext->link("Mesh.create_torus_knot", (void*)&GeometryTorusKnot::create);
-	ext->link("Mesh.create_plane", (void*)&GeometryPlane::create);
-	ext->link("Mesh.create_platonic", (void*)&GeometryPlatonic::create);
-	ext->link("Mesh.create_teapot", (void*)&GeometryTeapot::create);
+	ext->link("Mesh.create_torus", (void*)&polymesh::create_torus);
+	ext->link("Mesh.create_torus_knot", (void*)&polymesh::create_torus_knot);
+	ext->link("Mesh.create_plane", (void*)&polymesh::create_plane);
+	ext->link("Mesh.create_platonic", (void*)&polymesh::create_platonic);
+	ext->link("Mesh.create_teapot", (void*)&polymesh::create_teapot);
 //	ext->link("Geometry.subtract", (void*)&GeometrySubtract);
 //	ext->link("Geometry.and", (void*)&GeometryAnd);
 

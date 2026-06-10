@@ -14,11 +14,11 @@
 #include "EdwardWindow.h"
 #include <Session.h>
 #include <action/ActionMultiView.h>
-#include <lib/mesh/PolygonMesh.h>
-#include <lib/mesh/GeometryBall.h>
-#include <lib/mesh/GeometryCylinder.h>
-#include <lib/mesh/GeometryTorus.h>
-#include <lib/mesh/GeometryCube.h>
+#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/create/Ball.h>
+#include <lib/polymesh/create/Cylinder.h>
+#include <lib/polymesh/create/Torus.h>
+#include <lib/polymesh/create/Cube.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
 #include <lib/base/iter.h>
