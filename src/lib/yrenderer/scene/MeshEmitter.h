@@ -18,6 +18,7 @@ class MeshEmitter : public Sharable<VirtualBase> {
 public:
 	explicit MeshEmitter(Context* ctx, const string& name);
 
+	virtual void prepare(const RenderParams& params) {}
 	virtual void emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {}
 
 	Context* ctx;

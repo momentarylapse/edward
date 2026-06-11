@@ -45,6 +45,10 @@ void SceneRenderer::prepare(const RenderParams& params) {
 
 	if (!is_shadow_pass)
 		rvd.update_light_ubo();
+
+	for (auto e: weak(emitters))
+		e->prepare(params);
+
 	profiler::end(ch_prepare);
 }
 

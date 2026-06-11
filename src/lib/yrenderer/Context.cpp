@@ -32,6 +32,10 @@ Material* Context::load_material(const Path &filename) const {
 	return material_manager->load(filename);
 }
 
+Material *Context::create_internal_material() const {
+	return material_manager->create_internal();
+}
+
 shared<ygfx::Texture> Context::load_texture(const Path& filename) const {
 	return texture_manager->load_texture(filename);
 }

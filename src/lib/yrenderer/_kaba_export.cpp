@@ -395,6 +395,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 		ext->declare_class_element("MeshEmitter.ctx", &MeshEmitter::ctx);
 		ext->declare_class_element("MeshEmitter._shared_ref_count", &MeshEmitter::_pointer_ref_counter);
 		ext->link_class_func("MeshEmitter.__init__", &kaba::generic_init_ext<MeshEmitter, yrenderer::Context*, const string&>);
+		ext->link_virtual("MeshEmitter.prepare", &MeshEmitter::prepare, &emitter);
 		ext->link_virtual("MeshEmitter.emit", &MeshEmitter::emit, &emitter);
 	}
 	{
@@ -554,6 +555,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 	ext->declare_class_element("Context.tex_white", &yrenderer::Context::tex_white);
 	ext->link_class_func("Context.create_managers", &yrenderer::Context::create_managers);
 	ext->link_class_func("Context.load_material", &yrenderer::Context::load_material);
+	ext->link_class_func("Context.create_internal_material", &yrenderer::Context::create_internal_material);
 	ext->link_class_func("Context.load_texture", &yrenderer::Context::load_texture);
 	ext->link_class_func("Context.load_shader", &yrenderer::Context::load_shader);
 	ext->link_class_func("Context.create_shader", &yrenderer::Context::create_shader);
