@@ -45,7 +45,9 @@ void export_package_polymesh(kaba::IExporter* ext) {
 	ext->declare_class_element("PMVertex.normal_mode", &MeshVertex::normal_mode);
 	ext->declare_class_element("PMVertex.bone_index", &MeshVertex::bone_index);
 	ext->declare_class_element("PMVertex.normal_dirty", &MeshVertex::normal_dirty);
-	ext->declare_class_element("PMVertex.ref_count", &MeshVertex::ref_count);
+	ext->declare_class_element("PMVertex.smoothing_id", &MeshVertex::smoothing_id);
+	ext->link_class_func("PMVertex.__init__:PMVertex", &kaba::generic_init<MeshVertex>);
+	ext->link_class_func("PMVertex.__init__:PMVertex:math.vec3", &kaba::generic_init_ext<MeshVertex, const vec3&>);
 
 	ext->declare_class_size("Polygon.Side", sizeof(PolygonSide));
 	ext->declare_class_element("Polygon.Side.vertex", &PolygonSide::vertex);
@@ -60,11 +62,15 @@ void export_package_polymesh(kaba::IExporter* ext) {
 	ext->declare_class_element("Polygon.normal_dirty", &Polygon::normal_dirty);
 	ext->declare_class_element("Polygon.triangulation_dirty", &Polygon::triangulation_dirty);
 	ext->declare_class_element("Polygon.material", &Polygon::material);
+	ext->link_class_func("Polygon.get_vertices", &Polygon::get_vertices);
 
 	ext->declare_class_size("PolygonMesh", sizeof(PolygonMesh));
 	ext->link_class_func("PolygonMesh.__init__", &kaba::generic_init<PolygonMesh>);
 	ext->link_class_func("PolygonMesh.__delete__", &kaba::generic_delete<PolygonMesh>);
 	ext->link_class_func("PolygonMesh.__assign__", &kaba::generic_assign<PolygonMesh>);
+	ext->link_class_func("PolygonMesh.add_vertex", &PolygonMesh::add_vertex);
+	ext->link_class_func("PolygonMesh.add_polygon", &PolygonMesh::add_polygon);
+	ext->link_class_func("PolygonMesh.add_polygon_auto_texture", &PolygonMesh::add_polygon_auto_texture);
 	ext->link_class_func("PolygonMesh.bounding_box", &PolygonMesh::bounding_box);
 	ext->link_class_func("PolygonMesh.add", &PolygonMesh::add);
 	ext->link_class_func("PolygonMesh.smoothen", &PolygonMesh::smoothen);
@@ -78,6 +84,10 @@ void export_package_polymesh(kaba::IExporter* ext) {
 	ext->declare_class_element("PolygonMesh.cylinders", &PolygonMesh::cylinders);
 
 	ext->declare_class_size("MeshEdit", sizeof(MeshEdit));
+	ext->declare_class_element("MeshEdit._del_vertices", &MeshEdit::_del_vertices);
+	ext->declare_class_element("MeshEdit._del_polygons", &MeshEdit::_del_polygons);
+	ext->declare_class_element("MeshEdit._new_vertices", &MeshEdit::_new_vertices);
+	ext->declare_class_element("MeshEdit._new_polygons", &MeshEdit::_new_polygons);
 	ext->link_class_func("MeshEdit.__init__", &kaba::generic_init<MeshEdit>);
 	ext->link_class_func("MeshEdit.__delete__", &kaba::generic_delete<MeshEdit>);
 	ext->link_class_func("MeshEdit.__assign__", &kaba::generic_assign<MeshEdit>);
