@@ -472,12 +472,23 @@ add_executable(edward
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/dialog/ModelPropertiesDialog.cpp
 	src/mode_model/mesh/action/look/ActionModelSetMaterial.cpp
-	src/mode_model/mesh/action/ActionModelAddPolygon.cpp
-	src/mode_model/mesh/action/ActionModelAlignToGrid.cpp
-	src/mode_model/mesh/action/ActionModelDeleteSelection.cpp
-	src/mode_model/mesh/action/ActionModelEditMesh.cpp
-	src/mode_model/mesh/action/ActionModelMoveSelection.cpp
-	src/mode_model/mesh/action/ActionModelPasteMesh.cpp
+	src/mode_model/mesh/geometry/action/ActionModelAddPolygon.cpp
+	src/mode_model/mesh/geometry/action/ActionModelAlignToGrid.cpp
+	src/mode_model/mesh/geometry/action/ActionModelDeleteSelection.cpp
+	src/mode_model/mesh/geometry/action/ActionModelEditMesh.cpp
+	src/mode_model/mesh/geometry/action/ActionModelMoveSelection.cpp
+	src/mode_model/mesh/geometry/action/ActionModelPasteMesh.cpp
+	src/mode_model/mesh/geometry/ModeAddCube.cpp
+	src/mode_model/mesh/geometry/ModeAddCylinder.cpp
+	src/mode_model/mesh/geometry/ModeAddFromLathe.cpp
+	src/mode_model/mesh/geometry/ModeAddPlatonic.cpp
+	src/mode_model/mesh/geometry/ModeAddPolygon.cpp
+	src/mode_model/mesh/geometry/ModeAddSphere.cpp
+	src/mode_model/mesh/geometry/ModeAddVertex.cpp
+	src/mode_model/mesh/geometry/ModeBevelEdges.cpp
+	src/mode_model/mesh/geometry/ModeExtrudePolygons.cpp
+	src/mode_model/mesh/geometry/ModeMeshGeometry.cpp
+	src/mode_model/mesh/geometry/ModePaste.cpp
 	src/mode_model/mesh/material/action/ActionModelAddMaterial.cpp
 	src/mode_model/mesh/material/action/ActionModelDeleteMaterial.cpp
 	src/mode_model/mesh/material/action/ActionModelEditMaterial.cpp
@@ -488,17 +499,7 @@ add_executable(edward
 	src/mode_model/mesh/sculpt/ModeMeshSculpt.cpp
 	src/mode_model/mesh/uv/action/ActionModelUVMoveSelection.cpp
 	src/mode_model/mesh/uv/ModeMeshUV.cpp
-	src/mode_model/mesh/ModeAddCube.cpp
-	src/mode_model/mesh/ModeAddCylinder.cpp
-	src/mode_model/mesh/ModeAddFromLathe.cpp
-	src/mode_model/mesh/ModeAddPlatonic.cpp
-	src/mode_model/mesh/ModeAddPolygon.cpp
-	src/mode_model/mesh/ModeAddSphere.cpp
-	src/mode_model/mesh/ModeAddVertex.cpp
-	src/mode_model/mesh/ModeBevelEdges.cpp
-	src/mode_model/mesh/ModeExtrudePolygons.cpp
 	src/mode_model/mesh/ModeMesh.cpp
-	src/mode_model/mesh/ModePaste.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBone.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBoneSelection.cpp
 	src/mode_model/skeleton/action/ActionModelMoveBones.cpp

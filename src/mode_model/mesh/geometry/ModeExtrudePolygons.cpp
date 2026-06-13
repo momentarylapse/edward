@@ -3,8 +3,9 @@
 //
 
 #include "ModeExtrudePolygons.h"
-#include "ModeMesh.h"
-#include "../data/ModelMesh.h"
+#include "ModeMeshGeometry.h"
+#include "../ModeMesh.h"
+#include "../../data/ModelMesh.h"
 #include <lib/polymesh/edit/ExtrudePolygons.h>
 #include <Session.h>
 #include <view/DocumentSession.h>
@@ -14,10 +15,10 @@
 
 
 
-ModeExtrudePolygons::ModeExtrudePolygons(ModeMesh* parent) :
+ModeExtrudePolygons::ModeExtrudePolygons(ModeMeshGeometry* parent) :
 	SubMode(parent)
 {
-	mode_mesh = parent;
+	mode_mesh = parent->mode_mesh;
 	multi_view = mode_mesh->multi_view;
 	generic_data = mode_mesh->generic_data;
 }
@@ -73,7 +74,7 @@ void ModeExtrudePolygons::on_leave() {
 
 
 void ModeExtrudePolygons::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
-	mode_mesh->on_draw_win(params, win);
+	_parent->on_draw_win(params, win);
 	auto dh = session->drawing_helper;
 
 	dh->set_color(DrawingHelper::COLOR_X);
@@ -85,7 +86,7 @@ void ModeExtrudePolygons::on_draw_win(const yrenderer::RenderParams& params, Mul
 }
 
 void ModeExtrudePolygons::on_draw_post(Painter* p) {
-	mode_mesh->on_draw_post(p);
+	_parent->on_draw_post(p);
 
 	draw_info(p, "extrude...");
 }

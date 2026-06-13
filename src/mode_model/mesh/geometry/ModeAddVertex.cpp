@@ -3,8 +3,9 @@
 //
 
 #include "ModeAddVertex.h"
-#include "ModeMesh.h"
-#include "../data/ModelMesh.h"
+#include "ModeMeshGeometry.h"
+#include "../ModeMesh.h"
+#include "../../data/ModelMesh.h"
 #include <Session.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
@@ -12,10 +13,10 @@
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
 
-ModeAddVertex::ModeAddVertex(ModeMesh* parent) :
+ModeAddVertex::ModeAddVertex(ModeMeshGeometry* parent) :
 	SubMode(parent)
 {
-	mode_mesh = parent;
+	mode_mesh = parent->mode_mesh;
 	multi_view = mode_mesh->multi_view;
 	generic_data = mode_mesh->generic_data;
 }
@@ -27,7 +28,7 @@ void ModeAddVertex::on_enter() {
 }
 
 void ModeAddVertex::on_draw_post(Painter* p) {
-	mode_mesh->on_draw_post(p);
+	_parent->on_draw_post(p);
 
 	draw_info(p, "click to add vertices");
 }

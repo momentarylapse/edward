@@ -36,6 +36,7 @@ void ModeSkeleton::on_set_menu() {
 
 
 void ModeSkeleton::on_enter() {
+	parent->mode_mesh->set_presentation_mode(ModeMesh::PresentationMode::Polygons);
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);
 	multi_view->set_show_grid(true);
@@ -111,8 +112,8 @@ void ModeSkeleton::on_draw_background(const yrenderer::RenderParams& params, yre
 }
 
 void ModeSkeleton::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
-	parent->mode_mesh->draw_polygons(params, win);
-	parent->mode_mesh->draw_edges(params, win, {});
+	parent->mode_mesh->draw_mesh(params, win, false);
+
 	auto dh = session->drawing_helper;
 	const auto& sel = multi_view->selection[MultiViewType::SKELETON_BONE];
 

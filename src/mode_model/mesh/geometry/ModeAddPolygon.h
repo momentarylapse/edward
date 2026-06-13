@@ -1,23 +1,23 @@
 //
-// Created by Michael Ankele on 2025-05-18.
+// Created by Michael Ankele on 2025-02-18.
 //
 
-#ifndef MODEEXTRUDEPOLYGONS_H
-#define MODEEXTRUDEPOLYGONS_H
+#ifndef MODEADDPOLYGON_H
+#define MODEADDPOLYGON_H
 
 
 #include <view/Mode.h>
-#include <lib/polymesh/MeshEdit.h>
+#include "../../data/DataModel.h"
 
 class MultiViewWindow;
+class ModeMeshGeometry;
 class ModeMesh;
 
-class ModeExtrudePolygons : public SubMode {
+class ModeAddPolygon : public SubMode {
 public:
-	explicit ModeExtrudePolygons(ModeMesh* parent);
+	explicit ModeAddPolygon(ModeMeshGeometry* parent);
 
 	void on_enter() override;
-	void on_leave() override;
 	void on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) override;
 	void on_draw_post(Painter*) override;
 	void on_key_down(int key) override;
@@ -25,9 +25,12 @@ public:
 	void on_mouse_move(const vec2& m, const vec2& d) override;
 
 	ModeMesh* mode_mesh;
-	MeshEdit diff;
+
+	Array<int> vertices;
+	vec3 next_point;
 };
 
 
 
-#endif //MODEEXTRUDEPOLYGONS_H
+
+#endif //MODEADDPOLYGON_H

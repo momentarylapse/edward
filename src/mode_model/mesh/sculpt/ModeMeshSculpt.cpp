@@ -51,7 +51,7 @@ void ModeMeshSculpt::on_leave() {
 }
 
 void ModeMeshSculpt::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
-	mode_mesh->on_draw_win(params, win);
+	mode_mesh->draw_mesh(params, win, false);
 	if (target) {
 		session->drawing_helper->set_color(DrawingHelper::COLOR_X);
 		session->drawing_helper->set_line_width(DrawingHelper::LINE_MEDIUM);
@@ -67,9 +67,6 @@ void ModeMeshSculpt::on_draw_post(Painter* p) {
 
 
 void ModeMeshSculpt::on_key_down(int key) {
-	if (key == xhui::KEY_ESCAPE) {
-		doc->set_mode(mode_mesh);
-	}
 }
 
 void ModeMeshSculpt::on_mouse_move(const vec2& m, const vec2& d) {

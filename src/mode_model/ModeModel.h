@@ -17,6 +17,7 @@ public:
 	explicit ModeModel(DocumentSession* doc);
 	~ModeModel() override;
 
+	void on_enter() override;
 	void on_enter_rec() override;
 	void on_connect_events_rec() override;
 	void on_leave_rec() override;

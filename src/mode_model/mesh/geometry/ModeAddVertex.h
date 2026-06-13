@@ -6,15 +6,16 @@
 #define MODEADDVERTEX_H
 
 
-#include "../../view/Mode.h"
-#include "../data/DataModel.h"
+#include <view/Mode.h>
+#include "../../data/DataModel.h"
 
+class ModeMeshGeometry;
 class MultiViewWindow;
 class ModeMesh;
 
 class ModeAddVertex : public SubMode {
 public:
-	explicit ModeAddVertex(ModeMesh* parent);
+	explicit ModeAddVertex(ModeMeshGeometry* parent);
 
 	void on_enter() override;
 	void on_draw_post(Painter*) override;

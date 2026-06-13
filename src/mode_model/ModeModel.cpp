@@ -42,6 +42,11 @@ void ModeModel::on_set_menu() {
 	tb->set_by_id("model-toolbar");
 }
 
+void ModeModel::on_enter() {
+	xhui::run_later(0.01f, [this] {
+		doc->set_mode((Mode*)mode_mesh->mode_mesh_geometry.get());
+	});
+}
 
 void ModeModel::on_enter_rec() {
 	doc->out_changed >> create_sink([this] {
@@ -55,10 +60,7 @@ void ModeModel::on_enter_rec() {
 
 void ModeModel::on_connect_events_rec() {
 	doc->event("mode_model_mesh", [this] {
-		doc->set_mode(mode_mesh.get());
-	});
-	doc->event("mode_model_mesh", [this] {
-		doc->set_mode(this);
+		doc->set_mode((Mode*)mode_mesh->mode_mesh_geometry.get());
 	});
 	doc->event("mode_model_deform", [this] {
 		doc->set_mode((Mode*)mode_mesh->mode_mesh_sculpt.get());
@@ -106,10 +108,10 @@ void ModeModel::on_command(const string& id) {
 void ModeModel::on_update_menu() {
 	auto win = session->win;
 
-	win->check("mode_model_mesh", doc->cur_mode == mode_mesh.get());
 	win->check("mesh-visible0", data->editing_mesh == data->mesh.get());
 	win->check("mesh-physical", data->editing_mesh == data->phys_mesh.get());
 
+	win->check("mode_model_mesh", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_geometry.get());
 	win->check("mode_model_deform", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_sculpt.get());
 	win->check("mode_model_materials", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_material.get());
 	win->check("mode_model_texture_coord", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_uv.get());

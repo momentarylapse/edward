@@ -17,9 +17,10 @@ namespace xhui {
 	class Panel;
 }
 namespace yrenderer {
-	class Material;
+	struct Material;
 }
 class ModeModel;
+class ModeMeshGeometry;
 class ModeMeshMaterial;
 class ModeMeshSculpt;
 class ModeMeshUV;
@@ -41,15 +42,10 @@ public:
 	void on_set_menu() override;
 	void on_update_menu() override;
 	void update_menu_presentation_mode();
-	void on_prepare_scene(const yrenderer::RenderParams& params) override;
 	void on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;
-	void on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) override;
 	void draw_polygons(const yrenderer::RenderParams& params, MultiViewWindow* win);
 	void draw_edges(const yrenderer::RenderParams& params, MultiViewWindow* win, const base::set<int>& sel);
-	void on_draw_post(Painter*) override;
-	void on_command(const string& id) override;
-	void on_key_down(int key) override;
-	void on_mouse_move(const vec2& m, const vec2& d) override;
+	void draw_mesh(const yrenderer::RenderParams& params, MultiViewWindow* win, bool with_selection);
 
 	void on_update_selection();
 	void update_vb();
@@ -57,11 +53,7 @@ public:
 	void on_update_topology();
 	void update_edge_info();
 
-	void optimize_view();
-
-	void copy();
-	void paste();
-
+	owned<ModeMeshGeometry> mode_mesh_geometry;
 	owned<ModeMeshMaterial> mode_mesh_material;
 	owned<ModeMeshSculpt> mode_mesh_sculpt;
 	owned<ModeMeshUV> mode_mesh_uv;
@@ -83,7 +75,6 @@ public:
 
 	void set_edit_mesh(ModelMesh* mesh);
 
-	owned<ModelMesh> temp_mesh;
 	owned_array<ygfx::VertexBuffer> vertex_buffers;
 	ygfx::VertexBuffer* vertex_buffer_physical;
 	ygfx::VertexBuffer* vertex_buffer_selection;

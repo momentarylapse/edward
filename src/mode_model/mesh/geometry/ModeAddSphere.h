@@ -1,20 +1,23 @@
 //
-// Created by Michael Ankele on 2025-05-13.
+// Created by Michael Ankele on 2025-02-23.
 //
 
-#ifndef MODEADDCYLINDER_H
-#define MODEADDCYLINDER_H
+#ifndef MODEADDSPHERE_H
+#define MODEADDSPHERE_H
 
-#include "../../view/Mode.h"
-#include "../data/DataModel.h"
+
+#include <view/Mode.h>
+#include "../../data/DataModel.h"
 #include <lib/polymesh/PolygonMesh.h>
+#include <lib/base/optional.h>
 
 class MultiViewWindow;
+class ModeMeshGeometry;
 class ModeMesh;
 
-class ModeAddCylinder : public SubMode {
+class ModeAddSphere : public SubMode {
 public:
-	explicit ModeAddCylinder(ModeMesh* parent);
+	explicit ModeAddSphere(ModeMeshGeometry* parent);
 
 	void on_enter() override;
 	void on_leave() override;
@@ -23,18 +26,24 @@ public:
 	void on_key_down(int key) override;
 	void on_left_button_down(const vec2&) override;
 	void on_mouse_move(const vec2& m, const vec2& d) override;
+	void update_mesh();
 
 	ModeMesh* mode_mesh;
 
-	Array<vec3> points;
+	base::optional<vec3> center;
+	vec3 next_point;
+	float radius;
 	PolygonMesh mesh;
 	owned<ygfx::VertexBuffer> vertex_buffer;
 
-	vec3 next_point;
-
-	int rings, edges;
-	bool round;
+	enum class Type {
+		Ball,
+		Sphere
+	} type;
+	int slices[2];
+	int complexity;
 };
 
 
-#endif //MODEADDCYLINDER_H
+
+#endif //MODEADDSPHERE_H

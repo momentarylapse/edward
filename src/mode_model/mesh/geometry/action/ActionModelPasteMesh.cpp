@@ -6,8 +6,8 @@
  */
 
 #include "ActionModelPasteMesh.h"
-#include "../../data/DataModel.h"
-#include "../../data/ModelMesh.h"
+#include "../../../data/DataModel.h"
+#include "../../../data/ModelMesh.h"
 
 ActionModelPasteMesh::ActionModelPasteMesh(ModelMesh* m, const PolygonMesh &_geo, int _default_material) :
 	geo(_geo)

@@ -8,7 +8,7 @@
 
 #include <lib/history/Action.h>
 #include <lib/polymesh/Polygon.h>
-#include "../../data/ModelMesh.h"
+#include "../../../data/ModelMesh.h"
 class DataModel;
 struct ModelMesh;
 

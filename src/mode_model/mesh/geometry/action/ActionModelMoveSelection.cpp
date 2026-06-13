@@ -3,8 +3,8 @@
 //
 
 #include "ActionModelMoveSelection.h"
-#include "../../data/DataModel.h"
-#include "../../data/ModelMesh.h"
+#include "../../../data/DataModel.h"
+#include "../../../data/ModelMesh.h"
 #include <Session.h>
 #include <lib/base/iter.h>
 

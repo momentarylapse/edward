@@ -3,24 +3,12 @@
 //
 
 #include "ModeMesh.h"
-#include "ModeAddVertex.h"
-#include "ModeAddPolygon.h"
-#include "ModeAddCube.h"
-#include "ModeAddSphere.h"
-#include "ModeAddPlatonic.h"
-#include "ModeAddFromLathe.h"
-#include "ModeAddCylinder.h"
-#include "ModePaste.h"
-#include "ModeBevelEdges.h"
-#include "ModeExtrudePolygons.h"
+#include "geometry/ModeMeshGeometry.h"
 #include "sculpt/ModeMeshSculpt.h"
 #include "uv/ModeMeshUV.h"
 #include "material/ModeMeshMaterial.h"
 #include "../ModeModel.h"
-#include "action/ActionModelMoveSelection.h"
-#include "action/ActionModelAlignToGrid.h"
 #include "../data/ModelMesh.h"
-#include <mode_material/dialog/MaterialSelectionDialog.h>
 #include <Session.h>
 #include <lib/polymesh/create/Cylinder.h>
 #include <lib/polymesh/create/Sphere.h>
@@ -39,10 +27,6 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <cmath>
 
-#include "lib/polymesh/edit/InvertPolygons.h"
-#include "lib/yrenderer/MaterialManager.h"
-#include "material/action/ActionModelAddMaterial.h"
-
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
 ModeMesh::ModeMesh(ModeModel* parent) : SubMode(parent) {
@@ -56,12 +40,12 @@ ModeMesh::ModeMesh(ModeModel* parent) : SubMode(parent) {
 	material_selection = create_material(session->ctx, Black.with_alpha(0.4f), 0.7f, 0.2f, Red, true);
 	material_hover = create_material(session->ctx, Black.with_alpha(0.4f), 0.7f, 0.2f, White, true);
 
-	temp_mesh = new ModelMesh();
 	current_material = 0;
 	current_texture_level = 0;
 
 	presentation_mode = PresentationMode::Polygons;
 
+	mode_mesh_geometry = new ModeMeshGeometry(this);
 	mode_mesh_material = new ModeMeshMaterial(this);
 	mode_mesh_sculpt = new ModeMeshSculpt(this);
 	mode_mesh_uv = new ModeMeshUV(this);
@@ -103,6 +87,13 @@ void ModeMesh::on_enter_rec() {
 }
 
 void ModeMesh::on_connect_events_rec() {
+	doc->event("mesh-visible0", [this] {
+		set_edit_mesh(data->mesh.get());
+	});
+	doc->event("mesh-physical", [this] {
+		set_edit_mesh(data->phys_mesh.get());
+	});
+
 	doc->event("mode_model_vertex", [this] {
 		set_presentation_mode(PresentationMode::Vertices);
 	});
@@ -127,40 +118,6 @@ void ModeMesh::on_set_menu() {
 	session->win->menu_bar->set_menu(menu);
 }
 
-class MeshOpButtons : public xhui::Panel {
-public:
-	explicit MeshOpButtons(MultiView* multi_view) : xhui::Panel("mesh-op-buttons") {
-		from_source(R"foodelim(
-Dialog mesh-op-buttons '' propagateevents
-	Grid ? '' spacing=20 vertical
-		Button mouse-action 'T' 'tooltip=Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-vertex 'V' 'tooltip=Add Vertex' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-polygon 'P' 'tooltip=Add Polygon' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-cube 'Q' 'tooltip=Add cube' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-sphere 'S' 'tooltip=Add sphere' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-platonic 'P' 'tooltip=Add platonic body' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-from-lathe 'L' 'tooltip=Add rotational symmetric (lathe)' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-cylinder 'C' 'tooltip=Add cylinder' height=50 width=50 padding=7 noexpandx ignorefocus
-)foodelim");
-
-		event("mouse-action", [this, multi_view] {
-			auto ac = multi_view->action_controller.get();
-			const auto mode = ac->action_mode();
-			if (mode == MouseActionMode::MOVE) {
-				ac->set_action_mode(MouseActionMode::ROTATE);
-				set_options("mouse-action", "image=rf-rotate");
-			} else if (mode == MouseActionMode::ROTATE) {
-				ac->set_action_mode(MouseActionMode::SCALE);
-				set_options("mouse-action", "image=rf-scale");
-			} else if (mode == MouseActionMode::SCALE) {
-				ac->set_action_mode(MouseActionMode::MOVE);
-				set_options("mouse-action", "image=rf-translate");
-			}
-			set_string("mouse-action", multi_view->action_controller->action_name().sub(0, 1).upper());
-		});
-	}
-};
-
 void ModeMesh::on_enter() {
 	auto update = [this] {
 		normals_dirty = true;
@@ -168,6 +125,9 @@ void ModeMesh::on_enter() {
 		update_selection_vb();
 		out_redraw();
 	};
+	xhui::run_later(0.01f, [this] {
+		doc->set_mode(mode_mesh_geometry.get());
+	});
 
 	auto win = session->win;
 
@@ -178,30 +138,11 @@ void ModeMesh::on_enter() {
 	win->enable("mode_model_texture_coord", false);
 	win->enable("mode_model_paint", false);
 
-	multi_view->set_allow_select(true);
-	multi_view->set_allow_action(true);
 	multi_view->set_show_grid(true);
-	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
-		return get_hover(win, m);
-	};
-	multi_view->f_select = [this] (MultiViewWindow* win, const rect& r) {
-		return select_in_rect(win, r);
-	};
-	multi_view->f_make_selection_consistent = [this] (Selection& sel) {
-		return make_selection_consistent(sel);
-	};
-	multi_view->f_get_selection_box = [this] (const Selection& sel) {
-		return get_selection_box(sel);
-	};
-	multi_view->f_create_action = [this] {
-		return new ActionModelMoveSelection(data->editing_mesh, multi_view->selection);
-	};
 	set_edit_mesh(data->mesh.get());
 	multi_view->out_selection_changed >> create_sink([this] {
 		on_update_selection();
 	});
-
-	set_overlay_panel(new MeshOpButtons(multi_view));
 
 	data->out_changed >> create_sink(update);
 	data->out_topology_changed >> create_sink([this] {
@@ -226,90 +167,6 @@ void ModeMesh::on_enter() {
 }
 
 void ModeMesh::on_connect_events() {
-	doc->event("mesh-visible0", [this] {
-		set_edit_mesh(data->mesh.get());
-	});
-	doc->event("mesh-physical", [this] {
-		set_edit_mesh(data->phys_mesh.get());
-	});
-
-
-	doc->event("add-vertex", [this] {
-		doc->set_mode(new ModeAddVertex(this));
-	});
-	doc->event("add-polygon", [this] {
-		doc->set_mode(new ModeAddPolygon(this));
-	});
-	doc->event("add-cube", [this] {
-		doc->set_mode(new ModeAddCube(this));
-	});
-	doc->event("add-sphere", [this] {
-		doc->set_mode(new ModeAddSphere(this));
-	});
-	doc->event("add-platonic", [this] {
-		doc->set_mode(new ModeAddPlatonic(this));
-	});
-	doc->event("add-from-lathe", [this] {
-		doc->set_mode(new ModeAddFromLathe(this));
-	});
-	doc->event("add-cylinder", [this] {
-		doc->set_mode(new ModeAddCylinder(this));
-	});
-	doc->event("normal_this_hard", [this] {
-		const auto& sel = multi_view->selection[MultiViewType::MODEL_POLYGON];
-		for (auto&& [i, p]: enumerate(data->mesh->polygons))
-			if (sel.contains(i)) {
-				p.smooth_group = -1;
-				p.normal_dirty = true;
-			}
-		data->mesh->update_normals();
-		data->out_changed();
-	});
-	doc->event("normal_this_smooth", [this] {
-		const auto& sel = multi_view->selection[MultiViewType::MODEL_POLYGON];
-		for (auto&& [i, p]: enumerate(data->mesh->polygons))
-			if (sel.contains(i)) {
-				p.smooth_group = 42;
-				p.normal_dirty = true;
-			}
-		data->mesh->update_normals();
-		data->out_changed();
-	});
-	doc->event("choose_material", [this] {
-		MaterialSelectionDialog::ask(session, "Apply material", weak(data->materials), true, false).then([this] (yrenderer::Material* material) {
-			int n = weak(data->materials).find(material);
-			if (n >= 0) {
-				// already internal
-				data->apply_material(multi_view->selection, n);
-				session->info("applied material to polygons");
-			} else {
-				data->begin_action_group("apply-material");
-				data->execute(new ActionModelAddMaterial(material));
-				data->apply_material(multi_view->selection, data->materials.num - 1);
-				data->end_action_group();
-				session->info("added material and applied to polygons");
-			}
-		});
-	});
-	doc->event("align_to_grid", [this] {
-		data->execute(new ActionModelAlignToGrid(data->editing_mesh, multi_view->selection, [this] (const vec3& v) {
-			return multi_view->snap_v(v);
-		}));
-		session->info(format("aligned to grid (%s)", multi_view->format_length(multi_view->active_window->get_grid_d())));
-	});
-	doc->event("bevel_edges", [this] {
-		doc->set_mode(new ModeBevelEdges(this));
-	});
-	// extrude_triangles_independent
-	doc->event("extrude_triangles", [this] {
-		doc->set_mode(new ModeExtrudePolygons(this));
-	});
-	doc->event("invert_trias", [this] {
-		auto ed = polymesh::invert_polygons(*data->mesh, multi_view->selection[MultiViewType::MODEL_POLYGON]);
-		data->edit_mesh(ed);
-	});
-
-
 }
 
 
@@ -366,10 +223,6 @@ void ModeMesh::update_menu_presentation_mode() {
 	win->check("mode_model_surface", presentation_mode == PresentationMode::Surfaces);
 }
 
-
-void ModeMesh::on_prepare_scene(const yrenderer::RenderParams& params) {
-}
-
 void ModeMesh::on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
 	rvd.clear(params, {xhui::Theme::_default.background_low.srgb_to_linear()});
 }
@@ -422,7 +275,7 @@ void ModeMesh::draw_edges(const yrenderer::RenderParams& params, MultiViewWindow
 	}
 }
 
-void ModeMesh::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
+void ModeMesh::draw_mesh(const yrenderer::RenderParams& params, MultiViewWindow* win, bool with_selection) {
 	auto& rvd = win->rvd();
 	auto dh = win->multi_view->session->drawing_helper;
 	const auto& selv = multi_view->selection[MultiViewType::MODEL_VERTEX];
@@ -434,50 +287,20 @@ void ModeMesh::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindo
 
 	if (data->editing_mesh == data->phys_mesh.get())
 		// spheres & cylinders
-		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_physical, material_physical, 0);
+			dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_physical, material_physical, 0);
 
-	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_selection, material_selection, 0);
+	if (with_selection) {
+		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_selection, material_selection, 0);
 
-	Array<ygfx::Vertex1> buf;
-	if (multi_view->hover and multi_view->hover->type == MultiViewType::MODEL_POLYGON)
-		data->editing_mesh->polygons[multi_view->hover->index].add_to_vertex_buffer(data->editing_mesh->vertices, buf);
-	vertex_buffer_hover->update(buf);
-	dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_hover, material_hover, 0);
+		Array<ygfx::Vertex1> buf;
+		if (multi_view->hover and multi_view->hover->type == MultiViewType::MODEL_POLYGON)
+			data->editing_mesh->polygons[multi_view->hover->index].add_to_vertex_buffer(data->editing_mesh->vertices, buf);
+		vertex_buffer_hover->update(buf);
+		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer_hover, material_hover, 0);
+	}
 
 	if (presentation_mode == PresentationMode::Vertices or presentation_mode == PresentationMode::Edges or presentation_mode == PresentationMode::Polygons)
-		draw_edges(params, win, sele);
-}
-
-base::optional<string> model_selection_description(DataModel* m, const Selection& sel) {
-	int nvert = 0, npoly = 0, nsphere = 0, ncyl = 0;
-	if (sel.contains(MultiViewType::MODEL_VERTEX))
-		nvert = sel[MultiViewType::MODEL_VERTEX].num;
-	if (sel.contains(MultiViewType::MODEL_POLYGON))
-		npoly = sel[MultiViewType::MODEL_POLYGON].num;
-	if (sel.contains(MultiViewType::MODEL_BALL))
-		nsphere = sel[MultiViewType::MODEL_BALL].num;
-	if (sel.contains(MultiViewType::MODEL_CYLINDER))
-		ncyl = sel[MultiViewType::MODEL_CYLINDER].num;
-	if (nvert + npoly == 0)
-		return base::None;
-	Array<string> s;
-	if (nvert > 0)
-		s.add(format("%d vertices", nvert));
-	if (npoly > 0)
-		s.add(format("%d polygons", npoly));
-	if (nsphere > 0)
-		s.add(format("%d spheres", nsphere));
-	if (ncyl > 0)
-		s.add(format("%d cylinders", ncyl));
-	return implode(s, ", ");
-}
-
-void ModeMesh::on_draw_post(Painter* p) {
-	if (presentation_mode == PresentationMode::Vertices)
-		drawing2d::draw_data_points(p, multi_view->active_window, data->editing_mesh->vertices, MultiViewType::MODEL_VERTEX, multi_view->hover, multi_view->selection[MultiViewType::MODEL_VERTEX]);
-
-	if (auto s = model_selection_description(data, multi_view->selection))
-		draw_info(p, "selected: " + *s);
+		draw_edges(params, win, with_selection ? sele : base::set<int>());
 }
 
 void ModeMesh::on_update_selection() {
@@ -683,57 +506,6 @@ base::optional<Box> ModeMesh::get_selection_box(const Selection& sel) const {
 	return MultiView::points_get_selection_box(data->editing_mesh->vertices, sel[MultiViewType::MODEL_VERTEX]);
 }
 
-
-
-void ModeMesh::on_command(const string& id) {
-	if (id == "copy")
-		copy();
-	if (id == "paste")
-		paste();
-	if (id == "delete") {
-		if (auto s = model_selection_description(data, multi_view->selection)) {
-			data->delete_selection(multi_view->selection, presentation_mode == PresentationMode::Vertices);
-			multi_view->clear_selection();
-			session->info("deleted: " + *s);
-		} else {
-			session->warning("nothing selected");
-		}
-	}
-	_parent->on_command(id);
-}
-
-void ModeMesh::copy() {
-	temp_mesh->clear();
-	temp_mesh->add(data->editing_mesh->copy_geometry(multi_view->selection));
-	if (temp_mesh->is_empty())
-		session->warning("nothing selected");
-	else
-		session->info("copied: " + *model_selection_description(data, multi_view->selection));
-}
-
-void ModeMesh::paste() {
-	multi_view->clear_selection();
-	if (temp_mesh->is_empty()) {
-		session->warning("nothing to paste");
-	} else {
-		doc->set_mode(new ModePaste(this));
-	}
-}
-
-
-void ModeMesh::on_key_down(int key) {
-	if (key == (xhui::KEY_CONTROL | xhui::KEY_B))
-		doc->set_mode(new ModeBevelEdges(this));
-	if (key == (xhui::KEY_CONTROL | xhui::KEY_X))
-		doc->set_mode(new ModeExtrudePolygons(this));
-}
-
-void ModeMesh::on_mouse_move(const vec2& m, const vec2& d) {
-}
-
-void ModeMesh::optimize_view() {
-	multi_view->view_port.suggest_for_box(data->bounding_box());
-}
 
 
 

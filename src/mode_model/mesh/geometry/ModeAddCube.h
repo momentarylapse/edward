@@ -6,16 +6,17 @@
 #define MODEADDCUBE_H
 
 
-#include "../../view/Mode.h"
-#include "../data/DataModel.h"
+#include <view/Mode.h>
+#include "../../data/DataModel.h"
 #include <lib/polymesh/PolygonMesh.h>
 
 class MultiViewWindow;
+class ModeMeshGeometry;
 class ModeMesh;
 
 class ModeAddCube : public SubMode {
 public:
-	explicit ModeAddCube(ModeMesh* parent);
+	explicit ModeAddCube(ModeMeshGeometry* parent);
 
 	void on_enter() override;
 	void on_leave() override;

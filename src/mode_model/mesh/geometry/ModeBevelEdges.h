@@ -10,11 +10,12 @@
 #include <lib/polymesh/MeshEdit.h>
 
 class MultiViewWindow;
+class ModeMeshGeometry;
 class ModeMesh;
 
 class ModeBevelEdges : public SubMode {
 public:
-	explicit ModeBevelEdges(ModeMesh* parent);
+	explicit ModeBevelEdges(ModeMeshGeometry* parent);
 
 	void on_enter() override;
 	void on_leave() override;

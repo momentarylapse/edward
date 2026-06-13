@@ -3,8 +3,9 @@
 //
 
 #include "ModeAddCube.h"
-#include "ModeMesh.h"
-#include "../data/ModelMesh.h"
+#include "ModeMeshGeometry.h"
+#include "../ModeMesh.h"
+#include "../../data/ModelMesh.h"
 #include <Session.h>
 #include <lib/polymesh/create/Cube.h>
 #include <lib/os/msg.h>
@@ -18,10 +19,10 @@
 #include <view/MultiView.h>
 #include <cmath>
 
-ModeAddCube::ModeAddCube(ModeMesh* parent) :
+ModeAddCube::ModeAddCube(ModeMeshGeometry* parent) :
 	SubMode(parent)
 {
-	mode_mesh = parent;
+	mode_mesh = parent->mode_mesh;
 	multi_view = mode_mesh->multi_view;
 	generic_data = mode_mesh->generic_data;
 
@@ -66,7 +67,7 @@ void ModeAddCube::on_leave() {
 
 
 void ModeAddCube::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
-	mode_mesh->on_draw_win(params, win);
+	_parent->on_draw_win(params, win);
 	auto dh = session->drawing_helper;
 
 	dh->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
@@ -81,7 +82,7 @@ void ModeAddCube::on_draw_win(const yrenderer::RenderParams& params, MultiViewWi
 }
 
 void ModeAddCube::on_draw_post(Painter* p) {
-	mode_mesh->on_draw_post(p);
+	_parent->on_draw_post(p);
 
 	if (points.num == 0)
 		draw_info(p, "cube: place first corner point");

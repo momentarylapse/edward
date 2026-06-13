@@ -3,8 +3,9 @@
 //
 
 #include "ModeAddPlatonic.h"
-#include "ModeMesh.h"
-#include "../data/ModelMesh.h"
+#include "ModeMeshGeometry.h"
+#include "../ModeMesh.h"
+#include "../../data/ModelMesh.h"
 #include <Session.h>
 #include <lib/polymesh/create/Platonic.h>
 #include <lib/polymesh/create/Teapot.h>
@@ -20,10 +21,10 @@
 
 #include "lib/polymesh/create/Cube.h"
 
-ModeAddPlatonic::ModeAddPlatonic(ModeMesh* parent) :
+ModeAddPlatonic::ModeAddPlatonic(ModeMeshGeometry* parent) :
 	SubMode(parent)
 {
-	mode_mesh = parent;
+	mode_mesh = parent->mode_mesh;
 	multi_view = mode_mesh->multi_view;
 	generic_data = mode_mesh->generic_data;
 
@@ -92,7 +93,7 @@ void ModeAddPlatonic::on_leave() {
 }
 
 void ModeAddPlatonic::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
-	mode_mesh->on_draw_win(params, win);
+	_parent->on_draw_win(params, win);
 	auto dh = session->drawing_helper;
 
 	session->drawing_helper->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
@@ -106,7 +107,7 @@ void ModeAddPlatonic::on_draw_win(const yrenderer::RenderParams& params, MultiVi
 }
 
 void ModeAddPlatonic::on_draw_post(Painter* p) {
-	mode_mesh->on_draw_post(p);
+	_parent->on_draw_post(p);
 	if (center_selected)
 		draw_info(p, format("sphere: radius %s", multi_view->format_length(radius)));
 	else
@@ -156,7 +157,7 @@ void ModeAddPlatonic::on_mouse_move(const vec2& m, const vec2& d) {
 void ModeAddPlatonic::on_left_button_down(const vec2& m) {
 	if (center_selected) {
 		mode_mesh->data->paste_mesh(mesh, 0);
-		doc->set_mode(mode_mesh);
+		request_mode_end();
 	} else {
 		center = multi_view->cursor_pos_3d(m);
 		center_selected = true;

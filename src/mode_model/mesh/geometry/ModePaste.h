@@ -6,15 +6,16 @@
 #define MODEPASTE_H
 
 
-#include "../../view/Mode.h"
-#include "../data/DataModel.h"
+#include <view/Mode.h>
+#include "../../data/DataModel.h"
 
 class MultiViewWindow;
+class ModeMeshGeometry;
 class ModeMesh;
 
 class ModePaste : public SubMode {
 public:
-	explicit ModePaste(ModeMesh* parent);
+	explicit ModePaste(ModeMeshGeometry* parent);
 
 	void on_enter() override;
 	void on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) override;

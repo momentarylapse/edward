@@ -1,22 +1,22 @@
 //
-// Created by Michael Ankele on 2025-02-23.
+// Created by Michael Ankele on 2025-04-14.
 //
 
-#ifndef MODEADDSPHERE_H
-#define MODEADDSPHERE_H
+#ifndef MODEADDFROMLATHE_H
+#define MODEADDFROMLATHE_H
 
-
-#include "../../view/Mode.h"
-#include "../data/DataModel.h"
+#include <view/Mode.h>
+#include "../../data/DataModel.h"
 #include <lib/polymesh/PolygonMesh.h>
 #include <lib/base/optional.h>
 
 class MultiViewWindow;
+class ModeMeshGeometry;
 class ModeMesh;
 
-class ModeAddSphere : public SubMode {
+class ModeAddFromLathe : public SubMode {
 public:
-	explicit ModeAddSphere(ModeMesh* parent);
+	explicit ModeAddFromLathe(ModeMeshGeometry* parent);
 
 	void on_enter() override;
 	void on_leave() override;
@@ -25,24 +25,20 @@ public:
 	void on_key_down(int key) override;
 	void on_left_button_down(const vec2&) override;
 	void on_mouse_move(const vec2& m, const vec2& d) override;
-	void update_mesh();
+
+	vec3 suggest_axis(const vec3& p2) const;
+	void create_turned_mesh();
 
 	ModeMesh* mode_mesh;
 
 	base::optional<vec3> center;
+	base::optional<vec3> axis;
+	vec3 preview_axis;
+	Array<vec3> contour;
 	vec3 next_point;
-	float radius;
 	PolygonMesh mesh;
 	owned<ygfx::VertexBuffer> vertex_buffer;
 
-	enum class Type {
-		Ball,
-		Sphere
-	} type;
-	int slices[2];
-	int complexity;
+	int slices;
 };
-
-
-
-#endif //MODEADDSPHERE_H
+#endif //MODEADDFROMLATHE_H

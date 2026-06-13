@@ -16,6 +16,7 @@
 #include "mode/administration/dialog/ConfigurationDialog.h"*/
 #include <mode_model/ModeModel.h>
 #include <mode_model/mesh/ModeMesh.h>
+#include <mode_model/mesh/geometry/ModeMeshGeometry.h>
 #include <mode_material/ModeMaterial.h>
 #include <mode_world/ModeWorld.h>
 #include <mode_coding/ModeCoding.h>
@@ -265,7 +266,7 @@ void Session::universal_new(int preferred_type) {
 		if (preferred_type == FD_MODEL) {
 			doc->mode_model = new ModeModel(doc);
 			doc->set_mode(doc->mode_model->mode_mesh.get());
-			doc->mode_model->mode_mesh->optimize_view();
+			doc->mode_model->mode_mesh->mode_mesh_geometry->optimize_view();
 		} else if (preferred_type == FD_WORLD) {
 			doc->mode_world = new ModeWorld(doc);
 			doc->mode_world->data->add_initial_data();
@@ -327,7 +328,7 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 					doc->mode_model = new ModeModel(doc);
 				doc->session->storage->load(filename, doc->mode_model->data.get(), true);
 				doc->set_mode(doc->mode_model->mode_mesh.get());
-				doc->mode_model->mode_mesh->optimize_view();
+				doc->mode_model->mode_mesh->mode_mesh_geometry->optimize_view();
 				break;
 			case FD_MATERIAL:
 				if (!doc->mode_material)
