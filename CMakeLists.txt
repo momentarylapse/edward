@@ -471,7 +471,6 @@ add_executable(edward
 	src/mode_model/data/DataModel.cpp
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/dialog/ModelPropertiesDialog.cpp
-	src/mode_model/mesh/action/look/ActionModelSetMaterial.cpp
 	src/mode_model/mesh/geometry/action/ActionModelAddPolygon.cpp
 	src/mode_model/mesh/geometry/action/ActionModelAlignToGrid.cpp
 	src/mode_model/mesh/geometry/action/ActionModelDeleteSelection.cpp
@@ -492,6 +491,7 @@ add_executable(edward
 	src/mode_model/mesh/material/action/ActionModelAddMaterial.cpp
 	src/mode_model/mesh/material/action/ActionModelDeleteMaterial.cpp
 	src/mode_model/mesh/material/action/ActionModelEditMaterial.cpp
+	src/mode_model/mesh/material/action/ActionModelSetMaterial.cpp
 	src/mode_model/mesh/material/dialog/ModelMaterialPanel.cpp
 	src/mode_model/mesh/material/ModeMeshMaterial.cpp
 	src/mode_model/mesh/processing/MeshRandomSurfacePoints.cpp

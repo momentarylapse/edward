@@ -42,7 +42,7 @@
 #include "../../action/model/mesh/surface/ActionModelAutoWeldSelection.h"
 #include "../../action/model/mesh/surface/ActionModelSurfacesSubdivide.h"
 #include "../../action/model/mesh/skin/ActionModelAutomap.h"*/
-#include "../mesh/action/look/ActionModelSetMaterial.h"
+#include "../mesh/material/action/ActionModelSetMaterial.h"
 /*#include "../../action/model/mesh/look/ActionModelSetNormalModeSelection.h"
 #include "../../action/model/mesh/effect/ActionModelAddEffects.h"
 #include "../../action/model/mesh/effect/ActionModelClearEffects.h"
