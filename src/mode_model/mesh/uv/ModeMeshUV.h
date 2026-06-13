@@ -3,8 +3,8 @@
 
 
 #include <view/Mode.h>
-#include "../data/DataModel.h"
-#include "../data/ModelMesh.h"
+#include "../../data/DataModel.h"
+#include "../../data/ModelMesh.h"
 
 class MultiViewWindow;
 class ModeMesh;

@@ -14,7 +14,7 @@
 #include "ModeBevelEdges.h"
 #include "ModeExtrudePolygons.h"
 #include "ModeMeshSculpt.h"
-#include "ModeMeshUV.h"
+#include "uv/ModeMeshUV.h"
 #include "material/ModeMeshMaterial.h"
 #include "../ModeModel.h"
 #include "action/ActionModelMoveSelection.h"

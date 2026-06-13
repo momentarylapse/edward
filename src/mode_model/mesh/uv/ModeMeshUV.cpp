@@ -1,6 +1,6 @@
 #include "ModeMeshUV.h"
-#include "ModeMesh.h"
-#include "../data/ModelMesh.h"
+#include "../ModeMesh.h"
+#include "../../data/ModelMesh.h"
 #include <Session.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>

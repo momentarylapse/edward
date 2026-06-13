@@ -479,13 +479,14 @@ add_executable(edward
 	src/mode_model/mesh/action/ActionModelEditMesh.cpp
 	src/mode_model/mesh/action/ActionModelMoveSelection.cpp
 	src/mode_model/mesh/action/ActionModelPasteMesh.cpp
-	src/mode_model/mesh/action/ActionModelUVMoveSelection.cpp
 	src/mode_model/mesh/material/action/ActionModelAddMaterial.cpp
 	src/mode_model/mesh/material/action/ActionModelDeleteMaterial.cpp
 	src/mode_model/mesh/material/action/ActionModelEditMaterial.cpp
 	src/mode_model/mesh/material/dialog/ModelMaterialPanel.cpp
 	src/mode_model/mesh/material/ModeMeshMaterial.cpp
 	src/mode_model/mesh/processing/MeshRandomSurfacePoints.cpp
+	src/mode_model/mesh/uv/action/ActionModelUVMoveSelection.cpp
+	src/mode_model/mesh/uv/ModeMeshUV.cpp
 	src/mode_model/mesh/ModeAddCube.cpp
 	src/mode_model/mesh/ModeAddCylinder.cpp
 	src/mode_model/mesh/ModeAddFromLathe.cpp
@@ -497,7 +498,6 @@ add_executable(edward
 	src/mode_model/mesh/ModeExtrudePolygons.cpp
 	src/mode_model/mesh/ModeMesh.cpp
 	src/mode_model/mesh/ModeMeshSculpt.cpp
-	src/mode_model/mesh/ModeMeshUV.cpp
 	src/mode_model/mesh/ModePaste.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBone.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBoneSelection.cpp
