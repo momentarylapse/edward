@@ -27,7 +27,6 @@ public:
 	void on_leave_rec() override;
 	void on_enter() override;
 	void on_leave() override;
-	void on_set_menu() override;
 	void on_update_menu() override;
 	void on_prepare_scene(const yrenderer::RenderParams& params) override;
 	void on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;

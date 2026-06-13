@@ -33,8 +33,6 @@
 #include <lib/os/msg.h>
 #include <lib/os/terminal.h>
 #include <lib/xhui/config.h>
-#include <lib/xhui/Resource.h>
-#include <lib/xhui/controls/MenuBar.h>
 #include <lib/xhui/controls/Toolbar.h>
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
@@ -63,6 +61,8 @@ ModeWorld::ModeWorld(DocumentSession* doc) :
 
 	data = new DataWorld(doc);
 	generic_data = data;
+	toolbar_id = "world-toolbar";
+	menu_id = "menu_world";
 
 	view_mode = ViewMode::Default;
 
@@ -74,15 +74,6 @@ ModeWorld::ModeWorld(DocumentSession* doc) :
 	animation_manager->entity_manager = data->entity_manager.get();
 	data->entity_manager->out_add_component >> animation_manager->in_add_component;
 	data->entity_manager->out_remove_component >> animation_manager->in_remove_component;
-}
-
-void ModeWorld::on_set_menu() {
-	auto tb = session->win->tool_bar;
-	tb->set_by_id("world-toolbar");
-
-
-	auto menu = xhui::create_resource_menu("menu_world");
-	session->win->menu_bar->set_menu(menu);
 }
 
 

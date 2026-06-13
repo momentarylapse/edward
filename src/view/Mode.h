@@ -46,7 +46,7 @@ public:
 	virtual void on_leave() {}
 
 	virtual void on_command(const string& id) {}
-	virtual void on_set_menu() {}
+	//virtual void on_set_menu() {}
 	virtual void on_update_menu() {}
 
 	virtual void on_mouse_move(const vec2& m, const vec2& d) {}
@@ -64,6 +64,9 @@ public:
 	bool is_ancestor_of(Mode* m);
 
 	void draw_info(Painter* p, const string& msg);
+
+	string menu_id;
+	string toolbar_id;
 
 	DocumentSession* doc = nullptr;
 	Session* session = nullptr;
@@ -90,7 +93,6 @@ public:
 	explicit SubMode(Mode* parent);
 
 	void on_command(const string& id) override;
-	void on_set_menu() override;
 	void on_update_menu() override;
 	void on_connect_events_rec() override;
 

@@ -30,8 +30,6 @@
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/DocumentSession.h>
-#include <lib/xhui/Resource.h>
-#include <lib/xhui/controls/MenuBar.h>
 #include <lib/ygraphics/graphics-impl.h>
 
 
@@ -40,6 +38,8 @@ ModeMeshGeometry::ModeMeshGeometry(ModeMesh* parent) : SubMode(parent) {
 	multi_view = parent->multi_view;
 	data = parent->data;
 	generic_data = data;
+	menu_id = "menu-model-geometry";
+	toolbar_id = parent->toolbar_id;
 
 	temp_mesh = new ModelMesh();
 }
@@ -58,12 +58,6 @@ void ModeMeshGeometry::on_connect_events_rec() {
 
 void ModeMeshGeometry::on_leave_rec() {
 	doc->out_changed.unsubscribe(this);
-}
-
-void ModeMeshGeometry::on_set_menu() {
-	_parent->on_set_menu();
-	auto menu = xhui::create_resource_menu("menu_model");
-	session->win->menu_bar->set_menu(menu);
 }
 
 class MeshOpButtons : public xhui::Panel {
@@ -109,10 +103,6 @@ void ModeMeshGeometry::on_enter() {
 	};
 
 	auto win = session->win;
-
-	auto menu_bar = (xhui::MenuBar*)win->get_control("menu");
-	auto menu = xhui::create_resource_menu("menu_model");
-	menu_bar->set_menu(menu);
 
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);

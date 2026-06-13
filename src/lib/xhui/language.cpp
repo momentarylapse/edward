@@ -29,8 +29,8 @@ void set_language(const string &language) {
 			cur_lang = &l;
 			_using_language_ = true;
 		}
-	if (!_using_language_)
-		msg_error("HuiSetLanguage: language not found: " + language);
+//	if (!_using_language_)
+//		msg_error("HuiSetLanguage: language not found: " + language);
 
 	UpdateAll();
 }

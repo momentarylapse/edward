@@ -29,6 +29,8 @@ ModeCoding::ModeCoding(DocumentSession* doc) : Mode(doc) {
 	data = new CodeData(doc);
 	data->reset();
 	generic_data = data.get();
+	toolbar_id = "coding-toolbar";
+	menu_id = "menu-coding";
 
 	editor->out_changed >> create_sink([this] {
 		data->out_changed();
@@ -75,16 +77,6 @@ void ModeCoding::on_command(const string& id) {
 		editor->undo();
 	if (id == "redo")
 		editor->redo();
-}
-
-
-void ModeCoding::on_set_menu() {
-	auto tb = session->win->tool_bar;
-	tb->set_by_id("coding-toolbar");
-
-
-	auto menu = xhui::create_resource_menu("menu-coding");
-	session->win->menu_bar->set_menu(menu);
 }
 
 void ModeCoding::update_menu() {

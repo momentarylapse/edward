@@ -112,12 +112,6 @@ void ModeMesh::on_leave_rec() {
 	doc->out_changed.unsubscribe(this);
 }
 
-void ModeMesh::on_set_menu() {
-	_parent->on_set_menu();
-	auto menu = xhui::create_resource_menu("menu_model");
-	session->win->menu_bar->set_menu(menu);
-}
-
 void ModeMesh::on_enter() {
 	auto update = [this] {
 		normals_dirty = true;
@@ -130,10 +124,6 @@ void ModeMesh::on_enter() {
 	});
 
 	auto win = session->win;
-
-	auto menu_bar = (xhui::MenuBar*)win->get_control("menu");
-	auto menu = xhui::create_resource_menu("menu_model");
-	menu_bar->set_menu(menu);
 
 	win->enable("mode-mesh-uv", false);
 	win->enable("mode-mesh-paint", false);

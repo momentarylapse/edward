@@ -16,9 +16,9 @@ Toolbar model-toolbar ""
 	Item mode-mesh-sculpt "Sculpting mode" checkable image=model-deform
 	Item mode-mesh-materials "Edit materials" checkable image=model-textures
 	Item mode-mesh-uv "Edit UV texture coordinates" checkable image=model-uv
-	Item mode-mesh-paint "Paint on mesh (into texture)" checkable image=model-paint
+	Item mode-mesh-paint "Paint on mesh (into texture)" checkable image=model-paint disabled
 	Item mode-skeleton "Edit skeleton" checkable image=model-skeleton
-	Item mode-animation "Edit animations" checkable image=model-move
+	Item mode-animation "Edit animations" checkable image=model-move disabled
 	Separator
 	Item mode_properties "Properties" image=configure
 	Separator

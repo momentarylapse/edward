@@ -44,19 +44,12 @@ ModeMaterial::ModeMaterial(DocumentSession* doc) :
 	doc->set_document_panel(mvp);
 	data = new DataMaterial(doc);
 	generic_data = data;
+	toolbar_id = "material-toolbar";
+	menu_id = "menu_material";
 
 	data->out_changed >> create_sink([this] {
 		material = data->to_material();
 	});
-}
-
-void ModeMaterial::on_set_menu() {
-	auto tb = session->win->tool_bar;
-	tb->set_by_id("material-toolbar");
-
-
-	auto menu = xhui::create_resource_menu("menu_material");
-	session->win->menu_bar->set_menu(menu);
 }
 
 

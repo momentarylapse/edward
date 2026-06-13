@@ -1,4 +1,4 @@
-Menu menu_model "Model" disabled
+Menu menu-model-paint "Model" disabled
 	Menu menu_model_file "File"
 		Item new "New" image=hui:new
 		Item open "Open..." image=hui:open
@@ -50,81 +50,6 @@ Menu menu_model "Model" disabled
 		Item selection-grow-connected "Grow along connected" disabled
 		Separator
 		Item select_cw "triangles only clockwise" checkable
-	Menu menu_model_creation "Create"
-		Item new_point "Vertex"
-		Item new_tria "New triangle"
-		Item new_plane "Plane"
-		Item new_cube "Cube"
-		Item new_ball "ball"
-		Menu menu_model_platonic "Platonic bodies"
-			Item new_tetrahedron "Tetrahedron"
-			Item new_octahedron "Octahedron"
-			Item new_dodecahedron "Dodecahedron"
-			Item new_icosahedron "Icosahedron"
-			Item new_teapot "Teapot"
-		Item new_torus "Torus"
-		Item new_cylinder "Cylinder..."
-		Item new_cylindersnake "Cylinder snake"
-	Menu menu_model_appearance "Appearance"
-		Item menu_vertex2_header "Vertex points" disabled
-		Menu menu_model_normals "Normals"
-			Item just_selection "Selection" disabled
-			Item normal_this_smooth "Smooth"
-			Item normal_this_hard "Flat/sharp"
-		Menu menu_model_fx "Effects"
-			Item fx_headline "Selected vertices" disabled
-			Item fx_new_light "Attach light..." image=hui:new
-			Item fx_new_sound "Attach sound..." image=hui:new
-			Item fx_new_field "Attach forcefield..." image=hui:new
-			Item fx_new_script "Attach script effect..." image=hui:new
-			Item fx_edit "Edit..." image=hui:edit
-			Item fx_none "-none-" image=hui:delete
-		Separator
-		Item menu_model_material "Materials" disabled
-		Item mode_model_materials "Materials..." checkable
-		Item choose_material "Choose material..." image=hui:open
-		Separator
-		Item menu_mapping "Texture mapping" disabled
-		Item text_from_bg "Texture coordinates from background"
-		Item automapping "Automatic (all)"
-	Menu menu_model_geometry "Geometry"
-		Menu menu_rightmouse "Right mouse button"
-			Item rotate "Rotate" checkable
-			Item scale "Scale X=Y=Z" checkable
-			Item scale_2d "Scale 2D" checkable
-			Item mirror "mirror" checkable
-		Separator
-		Item menu_vertex_header "Vertices" disabled
-		Item align_to_grid "Align to grid"
-		Item connect "Connect Points"
-		Item nearify "Nearify"
-		Item flatten_vertices "Flatten 2d"
-		Menu menu_model_deformation "Deformation"
-			Item deformation_cylinder "Cylinder radius"
-			Item deformation_function "Function"
-		Separator
-		Item menu_edge_header "Edges" disabled
-		Item bevel_edges "Bevel edges"
-		Item cut_loop "Cut loop"
-		Separator
-		Item menu_tria_header "Polygons" disabled
-		Item cut_out "Cut off" image=hui:cut
-		Item split_polygon "Split"
-		Item extrude_triangles "Extrude"
-		Item extrude_triangles_independent "Extrude (independent)"
-		Item convert_to_triangles "Dissect into triangles"
-		Item untriangulate_selection "Un-triangulate"
-		Separator
-		Item menu_surface_header "Surfaces" disabled
-		Item invert_trias "Invert polygons"
-		Item autoweld_surfaces "Weld..."
-		Item volume_subtract "Volume subtract" image=hui:cut
-		Item volume_and "Restrict volume"
-		Item new_outline "Outline"
-		Item subdivide_surfaces "Subdivide/smoothen"
-		Separator
-		Item menu_all_header "All" disabled
-		Item easify_skin "Easify skin"
 	Menu menu_model_view "View"
 		Menu menu_model_mode "Mode"
 			Item mode_model_mesh "Mesh" checkable

@@ -12,10 +12,10 @@
 #include <view/MultiView.h>
 
 #include "action/ActionModelUVMoveSelection.h"
-#include "lib/base/iter.h"
-#include "lib/yrenderer/MaterialManager.h"
-#include "mode_model/ModeModel.h"
-#include "view/ActionController.h"
+#include <lib/base/iter.h>
+#include <lib/yrenderer/MaterialManager.h>
+#include "../../ModeModel.h"
+#include <view/ActionController.h>
 
 
 class MeshUVOpButtons : public xhui::Panel {
@@ -52,6 +52,8 @@ ModeMeshUV::ModeMeshUV(ModeMesh* parent) :
 	auto mode_model = static_cast<ModeModel*>(mode_mesh->get_parent());
 	multi_view = mode_model->multi_view_2d.get();
 	generic_data = mode_mesh->generic_data;
+	toolbar_id = "model-toolbar";
+	menu_id = "menu-model-uv";
 }
 
 void ModeMeshUV::on_enter_rec() {

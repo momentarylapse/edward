@@ -8,9 +8,6 @@
 #include "dialog/ModelMaterialPanel.h"
 #include <Session.h>
 #include <lib/os/msg.h>
-#include <lib/xhui/config.h>
-#include <lib/xhui/Theme.h>
-#include <lib/xhui/xhui.h>
 #include <view/DocumentSession.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
@@ -24,6 +21,8 @@ ModeMeshMaterial::ModeMeshMaterial(ModeMesh* parent) :
 	data = mode_mesh->data;
 	multi_view = mode_mesh->multi_view;
 	generic_data = mode_mesh->generic_data;
+	toolbar_id = "model-toolbar";
+	menu_id = "menu-model-material";
 }
 
 void ModeMeshMaterial::on_enter() {

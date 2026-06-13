@@ -33,7 +33,6 @@ public:
 	void on_connect_events_rec() override;
 	void on_command(const string& id) override;
 
-	void on_set_menu() override;
 	void update_menu();
 
 	bool is_save_state() const override;

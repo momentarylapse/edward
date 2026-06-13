@@ -12,7 +12,6 @@
 #include <view/MultiView.h>
 #include <view/EdwardWindow.h>
 #include <view/DocumentSession.h>
-#include <lib/xhui/controls/Toolbar.h>
 
 #include "lib/os/msg.h"
 
@@ -29,18 +28,13 @@ ModeModel::ModeModel(DocumentSession* doc) : Mode(doc) {
 	data = new DataModel(doc);
 	data->reset();
 	generic_data = data.get();
+	toolbar_id = "model-toolbar";
 
 	mode_mesh = new ModeMesh(this);
 	mode_skeleton = new ModeSkeleton(this);
 }
 
 ModeModel::~ModeModel() = default;
-
-void ModeModel::on_set_menu() {
-	auto win = session->win;
-	auto tb = win->tool_bar;
-	tb->set_by_id("model-toolbar");
-}
 
 void ModeModel::on_enter() {
 	xhui::run_later(0.01f, [this] {

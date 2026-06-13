@@ -84,6 +84,8 @@ void Mode::redo() {
 
 SubMode::SubMode(Mode* parent) : Mode(parent->doc) {
 	_parent = parent;
+	menu_id = parent->menu_id;
+	toolbar_id = parent->toolbar_id;
 }
 
 void SubMode::on_command(const string& id) {
@@ -92,10 +94,6 @@ void SubMode::on_command(const string& id) {
 
 void SubMode::on_connect_events_rec() {
 	_parent->on_connect_events_rec();
-}
-
-void SubMode::on_set_menu() {
-	_parent->on_set_menu();
 }
 
 void SubMode::on_update_menu() {

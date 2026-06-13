@@ -8,7 +8,11 @@
 #include "MultiView.h"
 #include <lib/history/Data.h>
 #include <Session.h>
+#include <lib/xhui/Resource.h>
+#include <lib/xhui/controls/MenuBar.h>
+#include <lib/xhui/controls/Toolbar.h>
 #include <lib/yrenderer/target/XhuiRenderer.h>
+
 
 DocumentSession::DocumentSession(Session* _session) {
 	session = _session;
@@ -136,7 +140,6 @@ void DocumentSession::set_mode_now(Mode *m) {
 	// start new
 	//msg_write("ENTER");
 	cur_mode = m;
-	cur_mode->on_set_menu();
 	cur_mode->on_enter();
 //	win->renderer->children.clear();
 //	win->renderer->add_child(cur_mode->multi_view->renderer.get());
@@ -199,7 +202,13 @@ void DocumentSession::enter() {
 			p = p->get_parent();
 		}
 		m->on_connect_events();
-		m->on_set_menu();
+
+		if (m->menu_id != "") {
+			auto menu = xhui::create_resource_menu(m->menu_id);
+			session->win->menu_bar->set_menu(menu);
+		}
+		if (m->toolbar_id != "")
+			session->win->tool_bar->set_by_id(m->toolbar_id);
 		m->on_update_menu();
 	}
 }

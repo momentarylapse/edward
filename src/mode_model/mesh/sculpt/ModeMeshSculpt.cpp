@@ -7,10 +7,6 @@
 #include "../../data/ModelMesh.h"
 #include "action/ActionModelBrushExtrude.h"
 #include <Session.h>
-#include <lib/polymesh/create/Cube.h>
-#include <lib/os/msg.h>
-#include <lib/xhui/config.h>
-#include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
 #include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
@@ -24,6 +20,8 @@ ModeMeshSculpt::ModeMeshSculpt(ModeMesh* parent) :
 	data = mode_mesh->data;
 	multi_view = mode_mesh->multi_view;
 	generic_data = mode_mesh->generic_data;
+	toolbar_id = "model-toolbar";
+	menu_id = "menu-model-sculpt";
 
 	brush.radius = multi_view->view_port.radius * 0.07f;
 	brush.depth = brush.radius * 0.3f;
