@@ -622,7 +622,9 @@ base::future<void> Panel::open_dialog(shared<Dialog> dialog) {
 	dialog->owner = this;
 	if (auto w = get_window()) {
 		w->dialogs.add(dialog.get());
-		w->_clear_hover();
+		run_later(0.01f, [w] {
+			w->update_hover(w->mouse_position());
+		});
 	}
 	request_redraw();
 	return dialog->basic_promise.get_future();
@@ -638,6 +640,7 @@ void Panel::close_dialog(Dialog* dialog) {
 	if (auto w = get_window()) {
 		w->dialogs.pop();
 		w->_clear_hover();
+		w->update_hover(w->mouse_position());
 		w->focus_control = nullptr;
 	}
 	dialog->basic_promise();

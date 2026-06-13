@@ -382,7 +382,6 @@ void Window::_on_right_button_up(const vec2& m) {
 	on_right_button_up(m);
 }
 void Window::_on_mouse_move(const vec2 &m, const vec2& d) {
-	auto hover = get_hover_control(m);
 	if (state.lbut and drag.source) {
 		if (drag.active) {
 			drag.m = m;
@@ -396,28 +395,8 @@ void Window::_on_mouse_move(const vec2 &m, const vec2& d) {
 		}
 	}
 
-	if (hover != hover_control and !state.lbut or drag.active) {
-		if (hover_control)
-			hover_control->on_mouse_leave(m);
-		hover_control = hover;
-		if (hover_control) {
-			hover_control->on_mouse_enter(m);
-			if (tooltip == "" and hover_control->tooltip != "") {
-				// start tooltip -> delayed
-				run_later(0.25f, [this] {
-					if (hover_control) {
-						tooltip = hover_control->tooltip;
-						request_redraw();
-					}
-				});
-			} else if (tooltip != "") {
-				// switch -> quick
-				tooltip = hover_control->tooltip;
-			}
-		} else {
-			tooltip = "";
-		}
-	}
+	if (!state.lbut)
+		update_hover(m);
 	if (hover_control)
 		hover_control->on_mouse_move(m, d);
 	on_mouse_move(m, d);
@@ -665,6 +644,32 @@ Control *Window::get_hover_control(const vec2 &p) {
 		}
 	}
 	return best;
+}
+
+void Window::update_hover(const vec2& m) {
+	auto hover = get_hover_control(m);
+	if (hover != hover_control or drag.active) {
+		if (hover_control)
+			hover_control->on_mouse_leave(m);
+		hover_control = hover;
+		if (hover_control) {
+			hover_control->on_mouse_enter(m);
+			if (tooltip == "" and hover_control->tooltip != "") {
+				// start tooltip -> delayed
+				run_later(0.25f, [this] {
+					if (hover_control) {
+						tooltip = hover_control->tooltip;
+						request_redraw();
+					}
+				});
+			} else if (tooltip != "") {
+				// switch -> quick
+				tooltip = hover_control->tooltip;
+			}
+		} else {
+			tooltip = "";
+		}
+	}
 }
 
 void Window::focus(const string& id) {

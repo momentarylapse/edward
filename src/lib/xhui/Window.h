@@ -117,6 +117,7 @@ protected:
 	void _on_draw();
 
 	Control* get_hover_control(const vec2& p);
+	void update_hover(const vec2& m);
 
 	Control* hover_control = nullptr;
 	Control* focus_control = nullptr;

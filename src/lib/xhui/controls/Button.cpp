@@ -37,12 +37,12 @@ void Button::on_left_button_down(const vec2&) {
 	emit_event(event_id::LeftButtonDown, false);
 }
 
-void Button::on_left_button_up(const vec2&) {
+void Button::on_left_button_up(const vec2& m) {
 	if (enabled)
 		state = State::HOVER;
 	request_redraw();
 	emit_event(event_id::LeftButtonUp, false);
-	if (enabled)
+	if (enabled and area.inside(m))
 		on_click();
 }
 
