@@ -12,13 +12,13 @@ Toolbar model-toolbar ""
 	Item mesh-visible0 "Vis" checkable image=model-surface "tooltip=Visible mesh"
 	Item mesh-physical "Phys" checkable "tooltip=Physical mesh"
 	Separator
-	Item mode_model_mesh "Mesh" checkable image=model-surface
-	Item mode_model_deform "Deformation mode" checkable image=model-deform
-	Item mode_model_materials "Materials" checkable image=model-textures
-	Item mode_model_texture_coord "Texture coordinates" checkable image=model-uv
-	Item mode_model_paint "Paint on mesh (into texture)" checkable image=model-paint
-	Item mode_model_skeleton "Skeleton" checkable image=model-skeleton
-	Item mode_model_animation "Animations" checkable image=model-move
+	Item mode-mesh-geometry "Mesh geometry mode" checkable image=model-surface
+	Item mode-mesh-sculpt "Sculpting mode" checkable image=model-deform
+	Item mode-mesh-materials "Edit materials" checkable image=model-textures
+	Item mode-mesh-uv "Edit UV texture coordinates" checkable image=model-uv
+	Item mode-mesh-paint "Paint on mesh (into texture)" checkable image=model-paint
+	Item mode-skeleton "Edit skeleton" checkable image=model-skeleton
+	Item mode-animation "Edit animations" checkable image=model-move
 	Separator
 	Item mode_properties "Properties" image=configure
 	Separator

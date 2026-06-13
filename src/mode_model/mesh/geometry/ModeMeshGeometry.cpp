@@ -114,9 +114,6 @@ void ModeMeshGeometry::on_enter() {
 	auto menu = xhui::create_resource_menu("menu_model");
 	menu_bar->set_menu(menu);
 
-	win->enable("mode_model_texture_coord", false);
-	win->enable("mode_model_paint", false);
-
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);
 	multi_view->set_show_grid(true);

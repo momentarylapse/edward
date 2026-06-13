@@ -195,11 +195,13 @@ bool match_event(Panel::EventHandler& e, const string &id, const string &msg, bo
 	return e.msg == msg;
 }
 
-bool Panel::handle_event(const string &id, const string &msg, bool is_default) {
+bool Panel::handle_event(const string& _id, const string& _msg, bool is_default) {
 	if (_pointer_ref_counter == 0)
 		return false;
 	shared<Panel> _keep_alive = this;
 	bool any_match = false;
+	string id = _id; // in case we delete the event source :/
+	string msg = _msg;
 	const auto xxx = event_handlers; // in case we add/remove event handlers here...
 	for (auto& e: xxx)
 		if (match_event(e, id, msg, is_default) and e.f) {

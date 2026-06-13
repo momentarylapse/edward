@@ -55,23 +55,23 @@ void ModeModel::on_enter_rec() {
 	data->out_changed >> multi_view->in_data_changed;
 
 	auto win = session->win;
-	win->enable("mode_model_animation", false);
+	win->enable("mode-animation", false);
 }
 
 void ModeModel::on_connect_events_rec() {
-	doc->event("mode_model_mesh", [this] {
+	doc->event("mode-mesh-geometry", [this] {
 		doc->set_mode((Mode*)mode_mesh->mode_mesh_geometry.get());
 	});
-	doc->event("mode_model_deform", [this] {
+	doc->event("mode-mesh-sculpt", [this] {
 		doc->set_mode((Mode*)mode_mesh->mode_mesh_sculpt.get());
 	});
-	doc->event("mode_model_materials", [this] {
+	doc->event("mode-mesh-materials", [this] {
 		doc->set_mode((Mode*)mode_mesh->mode_mesh_material.get());
 	});
-	doc->event("mode_model_texture_coord", [this] {
+	doc->event("mode-mesh-uv", [this] {
 		doc->set_mode((Mode*)mode_mesh->mode_mesh_uv.get());
 	});
-	doc->event("mode_model_skeleton", [this] {
+	doc->event("mode-skeleton", [this] {
 		doc->set_mode(mode_skeleton.get());
 	});
 	doc->event("mode_properties", [this] {
@@ -111,11 +111,11 @@ void ModeModel::on_update_menu() {
 	win->check("mesh-visible0", data->editing_mesh == data->mesh.get());
 	win->check("mesh-physical", data->editing_mesh == data->phys_mesh.get());
 
-	win->check("mode_model_mesh", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_geometry.get());
-	win->check("mode_model_deform", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_sculpt.get());
-	win->check("mode_model_materials", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_material.get());
-	win->check("mode_model_texture_coord", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_uv.get());
-	win->check("mode_model_skeleton", doc->cur_mode == mode_skeleton.get());
+	win->check("mode-mesh-geometry", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_geometry.get());
+	win->check("mode-mesh-sculpt", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_sculpt.get());
+	win->check("mode-mesh-materials", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_material.get());
+	win->check("mode-mesh-uv", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_uv.get());
+	win->check("mode-skeleton", doc->cur_mode == mode_skeleton.get());
 
 	mode_mesh->update_menu_presentation_mode();
 }

@@ -135,8 +135,8 @@ void ModeMesh::on_enter() {
 	auto menu = xhui::create_resource_menu("menu_model");
 	menu_bar->set_menu(menu);
 
-	win->enable("mode_model_texture_coord", false);
-	win->enable("mode_model_paint", false);
+	win->enable("mode-mesh-uv", false);
+	win->enable("mode-mesh-paint", false);
 
 	multi_view->set_show_grid(true);
 	set_edit_mesh(data->mesh.get());

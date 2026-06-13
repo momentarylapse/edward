@@ -7446,43 +7446,43 @@ Separator
 0
 0
 Item
-mode_model_mesh
+mode-mesh-geometry
 checkable,image=model-surface
 13
 0
 0
 Item
-mode_model_deform
+mode-mesh-sculpt
 checkable,image=model-deform
 14
 0
 0
 Item
-mode_model_materials
+mode-mesh-materials
 checkable,image=model-textures
 15
 0
 0
 Item
-mode_model_texture_coord
+mode-mesh-uv
 checkable,image=model-uv
 16
 0
 0
 Item
-mode_model_paint
+mode-mesh-paint
 checkable,image=model-paint
 17
 0
 0
 Item
-mode_model_skeleton
+mode-skeleton
 checkable,image=model-skeleton
 18
 0
 0
 Item
-mode_model_animation
+mode-animation
 checkable,image=model-move
 19
 0
@@ -13228,35 +13228,35 @@ Physical mesh
 model-toolbar/mesh-visible0
 Vis
 Visible mesh
-model-toolbar/mode_model_animation
-Animations
+model-toolbar/mode-animation
+Edit animations
 
-model-toolbar/mode_model_deform
-Deformation mode
+model-toolbar/mode-mesh-geometry
+Mesh geometry mode
+
+model-toolbar/mode-mesh-materials
+Edit materials
+
+model-toolbar/mode-mesh-paint
+Paint on mesh (into texture)
+
+model-toolbar/mode-mesh-sculpt
+Sculpting mode
+
+model-toolbar/mode-mesh-uv
+Edit UV texture coordinates
+
+model-toolbar/mode-skeleton
+Edit skeleton
 
 model-toolbar/mode_model_edge
 Edges
 
-model-toolbar/mode_model_materials
-Materials
-
-model-toolbar/mode_model_mesh
-Mesh
-
-model-toolbar/mode_model_paint
-Paint on mesh (into texture)
-
 model-toolbar/mode_model_polygon
 Polygons
 
-model-toolbar/mode_model_skeleton
-Skeleton
-
 model-toolbar/mode_model_surface
 Surfaces
-
-model-toolbar/mode_model_texture_coord
-Texture coordinates
 
 model-toolbar/mode_model_vertex
 Vertex points

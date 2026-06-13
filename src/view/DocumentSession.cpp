@@ -61,8 +61,6 @@ void DocumentSession::set_document_panel(shared<xhui::Panel> panel) {
 
 
 
-// do we change roots?
-//  -> data loss?
 base::future<void> mode_switch_allowed(Mode *m) {
 	//	if (!m->session->cur_mode or m->equal_roots(m->session->cur_mode)) {
 	base::promise<void> promise;
@@ -78,7 +76,9 @@ void DocumentSession::set_mode(Mode *m) {
 	if (cur_mode == m)
 		return;
 	mode_switch_allowed(m).then([this, m] {
-		set_mode_now(m);
+		xhui::run_later(0.01f, [this, m] {
+			set_mode_now(m);
+		});
 	});
 }
 
