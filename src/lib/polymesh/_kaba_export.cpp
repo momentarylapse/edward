@@ -19,6 +19,7 @@
 #include "create/TorusKnot.h"
 #include "edit/BevelEdges.h"
 #include "edit/ExtrudePolygons.h"
+#include "edit/InvertPolygons.h"
 
 
 base::set<int> setify(const Array<int>& _sel) {
@@ -31,6 +32,10 @@ base::set<int> setify(const Array<int>& _sel) {
 
 MeshEdit kaba_wrap_extrude_polygons(const PolygonMesh& mesh, const Array<int>& sel, float distance, bool keep_connected) {
 	return polymesh::extrude_polygons(mesh, setify(sel), distance, keep_connected);
+}
+
+MeshEdit kaba_wrap_invert_polygons(const PolygonMesh& mesh, const Array<int>& sel) {
+	return polymesh::invert_polygons(mesh, setify(sel));
 }
 
 MeshEdit kaba_wrap_bevel_edges(const PolygonMesh& mesh, const Array<int>& selv, const Array<int>& sele, float radius) {
@@ -114,6 +119,7 @@ void export_package_polymesh(kaba::IExporter* ext) {
 
 	ext->link_func("bevel_edges", &kaba_wrap_bevel_edges);
 	ext->link_func("extrude_polygons", &kaba_wrap_extrude_polygons);
+	ext->link_func("invert_polygons", &kaba_wrap_invert_polygons);
 }
 
 

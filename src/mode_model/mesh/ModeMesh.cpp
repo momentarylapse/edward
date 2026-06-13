@@ -39,6 +39,7 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <cmath>
 
+#include "lib/polymesh/edit/InvertPolygons.h"
 #include "lib/yrenderer/MaterialManager.h"
 #include "material/action/ActionModelAddMaterial.h"
 
@@ -303,6 +304,12 @@ void ModeMesh::on_connect_events() {
 	doc->event("extrude_triangles", [this] {
 		doc->set_mode(new ModeExtrudePolygons(this));
 	});
+	doc->event("invert_trias", [this] {
+		auto ed = polymesh::invert_polygons(*data->mesh, multi_view->selection[MultiViewType::MODEL_POLYGON]);
+		data->edit_mesh(ed);
+	});
+
+
 }
 
 
