@@ -3,9 +3,9 @@
 //
 
 #include "ModeMeshSculpt.h"
-#include "ModeMesh.h"
-#include "../data/ModelMesh.h"
-#include "action/sculpt/ActionModelBrushExtrude.h"
+#include "../ModeMesh.h"
+#include "../../data/ModelMesh.h"
+#include "action/ActionModelBrushExtrude.h"
 #include <Session.h>
 #include <lib/polymesh/create/Cube.h>
 #include <lib/os/msg.h>

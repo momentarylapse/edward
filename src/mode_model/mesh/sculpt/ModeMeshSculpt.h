@@ -6,8 +6,8 @@
 #define MODEMESHSCULPT_H
 
 
-#include "../../view/Mode.h"
-#include "../data/DataModel.h"
+#include <view/Mode.h>
+#include "../../data/DataModel.h"
 #include <lib/polymesh/PolygonMesh.h>
 #include <lib/base/optional.h>
 

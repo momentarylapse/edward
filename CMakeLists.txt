@@ -472,7 +472,6 @@ add_executable(edward
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/dialog/ModelPropertiesDialog.cpp
 	src/mode_model/mesh/action/look/ActionModelSetMaterial.cpp
-	src/mode_model/mesh/action/sculpt/ActionModelBrushExtrude.cpp
 	src/mode_model/mesh/action/ActionModelAddPolygon.cpp
 	src/mode_model/mesh/action/ActionModelAlignToGrid.cpp
 	src/mode_model/mesh/action/ActionModelDeleteSelection.cpp
@@ -485,6 +484,8 @@ add_executable(edward
 	src/mode_model/mesh/material/dialog/ModelMaterialPanel.cpp
 	src/mode_model/mesh/material/ModeMeshMaterial.cpp
 	src/mode_model/mesh/processing/MeshRandomSurfacePoints.cpp
+	src/mode_model/mesh/sculpt/action/ActionModelBrushExtrude.cpp
+	src/mode_model/mesh/sculpt/ModeMeshSculpt.cpp
 	src/mode_model/mesh/uv/action/ActionModelUVMoveSelection.cpp
 	src/mode_model/mesh/uv/ModeMeshUV.cpp
 	src/mode_model/mesh/ModeAddCube.cpp
@@ -497,7 +498,6 @@ add_executable(edward
 	src/mode_model/mesh/ModeBevelEdges.cpp
 	src/mode_model/mesh/ModeExtrudePolygons.cpp
 	src/mode_model/mesh/ModeMesh.cpp
-	src/mode_model/mesh/ModeMeshSculpt.cpp
 	src/mode_model/mesh/ModePaste.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBone.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBoneSelection.cpp

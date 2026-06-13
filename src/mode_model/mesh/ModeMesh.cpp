@@ -13,7 +13,7 @@
 #include "ModePaste.h"
 #include "ModeBevelEdges.h"
 #include "ModeExtrudePolygons.h"
-#include "ModeMeshSculpt.h"
+#include "sculpt/ModeMeshSculpt.h"
 #include "uv/ModeMeshUV.h"
 #include "material/ModeMeshMaterial.h"
 #include "../ModeModel.h"
