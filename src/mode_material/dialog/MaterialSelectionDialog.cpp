@@ -10,12 +10,14 @@
 #include <view/MaterialPreviewManager.h>
 #include <y/helper/ResourceManager.h>
 #include <lib/yrenderer/MaterialManager.h>
+#include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/filesystem.h>
 
 
 string file_secure(const Path &filename);
 
 yrenderer::Material* MaterialSelectionDialog::new_material = nullptr;
+ygfx::Texture* create_blank_texture();
 
 MaterialSelectionDialog::MaterialSelectionDialog(Session* _session, const string& title, const Array<yrenderer::Material*>& _internal_materials, bool allow_new, bool allow_none) : Dialog("", _session->win) {
 	session = _session;
@@ -41,7 +43,12 @@ MaterialSelectionDialog::MaterialSelectionDialog(Session* _session, const string
 
 	auto select_and_close = [this] {
 		int i = get_int("material_list");
-		promise(materials[i] == new_material ? session->resource_manager->material_manager->create_internal() : materials[i]);
+		auto m = materials[i];
+		if (m == new_material) {
+			m = session->resource_manager->material_manager->create_internal();
+			m->textures[0] = create_blank_texture();
+		}
+		promise(m);
 		request_destroy();
 	};
 

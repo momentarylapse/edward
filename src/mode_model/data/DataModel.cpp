@@ -78,8 +78,9 @@
 #include <cmath>
 
 
-string ModelEffect::get_type()
-{
+ygfx::Texture* create_blank_texture();
+
+string ModelEffect::get_type() {
 	if (type == FX_TYPE_SCRIPT)
 		return _("Script");
 	if (type == FX_TYPE_LIGHT)
@@ -158,10 +159,8 @@ void DataModel::reset() {
 
 	materials.clear();
 	materials.resize(1);
-	materials[0] = new yrenderer::Material();
-	materials[0]->textures.add(new ygfx::Texture(512, 512, "rgba:i8"));
-	materials[0]->albedo = White;
-	materials[0]->roughness = 0.4f;
+	materials[0] = session->ctx->create_internal_material();
+	materials[0]->textures[0] = create_blank_texture();
 
 	// skeleton
 	bones.clear();
