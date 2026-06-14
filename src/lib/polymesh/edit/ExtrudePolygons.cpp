@@ -31,6 +31,10 @@ namespace polymesh {
 					ppp.side[1].vertex = p.side[(k+1) % p.side.num].vertex;
 					ppp.side[2].vertex = new_vertices[(k+1) % p.side.num];
 					ppp.side[3].vertex = new_vertices[k];
+					ppp.side[0].skin_vertex[0] = {0,0,0};
+					ppp.side[1].skin_vertex[0] = {1,0,0};
+					ppp.side[2].skin_vertex[0] = {1,1,0};
+					ppp.side[3].skin_vertex[0] = {0,1,0};
 					ed.add_polygon(ppp);
 				}
 				ed.add_polygon(pp);
