@@ -395,7 +395,7 @@ void Window::_on_mouse_move(const vec2 &m, const vec2& d) {
 		}
 	}
 
-	if (!state.lbut)
+	if (!state.lbut or drag.active)
 		update_hover(m);
 	if (hover_control)
 		hover_control->on_mouse_move(m, d);
