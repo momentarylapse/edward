@@ -1,10 +1,6 @@
 #include "_kaba_export.h"
-
-#include <iterator>
-
-#include "../base/base.h"
+#include <lib/base/base.h>
 #include <lib/math/Box.h>
-
 #include "MeshEdit.h"
 #include "../kapi/KabaExporter.h"
 #include "PolygonMesh.h"
@@ -17,6 +13,7 @@
 #include "create/Teapot.h"
 #include "create/Torus.h"
 #include "create/TorusKnot.h"
+#include "edit/AutoMergePolygons.h"
 #include "edit/BevelEdges.h"
 #include "edit/ExtrudePolygons.h"
 #include "edit/InvertPolygons.h"
@@ -38,12 +35,16 @@ MeshEdit kaba_wrap_invert_polygons(const PolygonMesh& mesh, const Array<int>& se
 	return polymesh::invert_polygons(mesh, setify(sel));
 }
 
+MeshEdit kaba_wrap_auto_merge_polygons(const PolygonMesh& mesh, const Array<int>& sel, float dang) {
+	return polymesh::auto_merge_polygons(mesh, setify(sel), dang);
+}
+
 MeshEdit kaba_wrap_bevel_edges(const PolygonMesh& mesh, const Array<int>& selv, const Array<int>& sele, float radius) {
 	return polymesh::bevel_edges(mesh, setify(selv), setify(sele), radius);
 }
 
 void export_package_polymesh(kaba::IExporter* ext) {
-	ext->package_info("polymesh", "0.1");
+	ext->package_info("polymesh", "0.2");
 
 	ext->declare_class_size("PMVertex", sizeof(MeshVertex));
 	ext->declare_class_element("PMVertex.pos", &MeshVertex::pos);
@@ -120,6 +121,7 @@ void export_package_polymesh(kaba::IExporter* ext) {
 	ext->link_func("bevel_edges", &kaba_wrap_bevel_edges);
 	ext->link_func("extrude_polygons", &kaba_wrap_extrude_polygons);
 	ext->link_func("invert_polygons", &kaba_wrap_invert_polygons);
+	ext->link_func("auto_merge_polygons", &kaba_wrap_auto_merge_polygons);
 }
 
 

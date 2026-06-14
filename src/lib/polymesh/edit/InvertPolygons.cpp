@@ -3,7 +3,7 @@
 //
 
 #include "InvertPolygons.h"
-#include "..//MeshEdit.h"
+#include "../MeshEdit.h"
 #include "../PolygonMesh.h"
 #include <lib/base/iter.h>
 #include <lib/base/sort.h>

@@ -39,6 +39,8 @@ int MeshEdit::add_vertex(const MeshVertex& v, int at_index) {
 
 void MeshEdit::add_polygon(const Polygon& p, int at_index) {
 	_new_polygons.add({p, at_index});
+	_new_polygons.back().p.normal_dirty = true;
+	_new_polygons.back().p.triangulation_dirty = true;
 }
 
 MeshEdit MeshEdit::apply_inplace(PolygonMesh& mesh) const {

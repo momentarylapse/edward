@@ -32,6 +32,8 @@
 #include <view/DocumentSession.h>
 #include <lib/ygraphics/graphics-impl.h>
 
+#include "lib/polymesh/edit/AutoMergePolygons.h"
+
 
 ModeMeshGeometry::ModeMeshGeometry(ModeMesh* parent) : SubMode(parent) {
 	mode_mesh = parent;
@@ -209,6 +211,10 @@ void ModeMeshGeometry::on_connect_events() {
 	});
 	doc->event("invert_trias", [this] {
 		auto ed = polymesh::invert_polygons(*data->mesh, multi_view->selection[MultiViewType::MODEL_POLYGON]);
+		data->edit_mesh(ed);
+	});
+	doc->event("untriangulate_selection", [this] {
+		auto ed = polymesh::auto_merge_polygons(*data->mesh, multi_view->selection[MultiViewType::MODEL_POLYGON]);
 		data->edit_mesh(ed);
 	});
 
