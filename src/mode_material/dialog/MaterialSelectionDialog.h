@@ -3,7 +3,7 @@
 #include <lib/xhui/Dialog.h>
 
 namespace yrenderer {
-	class Material;
+	struct Material;
 }
 
 class Session;

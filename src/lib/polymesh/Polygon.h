@@ -8,10 +8,12 @@
 #include <lib/math/vec3.h>
 #include <lib/math/vec4.h>
 
-class MultiViewWindow;
 struct vec3;
 struct mat4;
-struct MeshVertex;
+
+namespace polymesh {
+
+struct Vertex;
 struct Edge;
 
 struct PolygonSide {
@@ -31,10 +33,10 @@ struct Polygon {
 	int material = 0;
 	int smooth_group = -1;
 
-	Array<int> triangulate(const Array<MeshVertex> &vertex) const;
-	void update_triangulation(const Array<MeshVertex> &vertex);
-	vec3 get_normal(const Array<MeshVertex> &vertex) const;
-	vec3 get_area_vector(const Array<MeshVertex> &vertex) const;
+	Array<int> triangulate(const Array<Vertex> &vertex) const;
+	void update_triangulation(const Array<Vertex> &vertex);
+	vec3 get_normal(const Array<Vertex> &vertex) const;
+	vec3 get_area_vector(const Array<Vertex> &vertex) const;
 	Array<int> get_vertices() const;
 	Array<Edge> get_edges() const;
 	Array<vec3> get_uvs() const;
@@ -44,7 +46,9 @@ struct Polygon {
 	Edge get_side_edge_out(int side_no) const;
 	void invert();
 
-	void add_to_vertex_buffer(const Array<MeshVertex> &vertex, DynamicArray& buf);
+	void add_to_vertex_buffer(const Array<Vertex> &vertex, DynamicArray& buf);
 };
+
+}
 
 

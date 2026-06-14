@@ -14,15 +14,17 @@
 
 #include "MultiView.h"
 
-struct MeshEdit;
-struct PolygonMesh;
+namespace polymesh {
+	struct Mesh;
+	struct MeshEdit;
+}
 class ResourceManager;
 class MultiViewWindow;
 namespace yrenderer {
 	struct RenderViewData;
 	struct RenderParams;
-	class Material;
-	class Context;
+	struct Material;
+	struct Context;
 }
 namespace xhui {
 	class Context;
@@ -91,5 +93,5 @@ void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& a, M
 }
 
 
-Array<vec3> mesh_edit_to_lines(const PolygonMesh& mesh, const MeshEdit& ed);
+Array<vec3> mesh_edit_to_lines(const polymesh::Mesh& mesh, const polymesh::MeshEdit& ed);
 

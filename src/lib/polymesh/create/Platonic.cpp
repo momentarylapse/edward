@@ -12,7 +12,7 @@
 
 
 namespace polymesh {
-	PolygonMesh create_platonic(const vec3 &pos, float radius, int type) {
+	Mesh create_platonic(const vec3 &pos, float radius, int type) {
 		if (type == 4)
 			return create_tetrahedron(pos, radius);
 		if (type == 6)
@@ -26,8 +26,8 @@ namespace polymesh {
 		return {};
 	}
 
-	PolygonMesh create_tetrahedron(const vec3& pos, float radius) {
-		PolygonMesh m;
+	Mesh create_tetrahedron(const vec3& pos, float radius) {
+		Mesh m;
 
 		const float r = radius / sqrtf(3.0f/2);
 		m.add_vertex(pos + vec3( 1, 0, -1/sqrtf(2.0f)) * r);
@@ -41,8 +41,8 @@ namespace polymesh {
 		return m;
 	}
 
-	PolygonMesh create_octahedron(const vec3& pos, float radius) {
-		PolygonMesh m;
+	Mesh create_octahedron(const vec3& pos, float radius) {
+		Mesh m;
 		const float r = radius;
 		m.add_vertex(pos + vec3( 1, 0, 0) * r);
 		m.add_vertex(pos + vec3(-1, 0, 0) * r);
@@ -61,8 +61,8 @@ namespace polymesh {
 		return m;
 	}
 
-	PolygonMesh create_dodecahedron(const vec3& pos, float radius) {
-		PolygonMesh m;
+	Mesh create_dodecahedron(const vec3& pos, float radius) {
+		Mesh m;
 
 		float phi = (1 + sqrtf(5.0f))/2;
 		float r = radius / sqrtf(3.0f);
@@ -101,8 +101,8 @@ namespace polymesh {
 		return m;
 	}
 
-	PolygonMesh create_icosahedron(const vec3& pos, float radius) {
-		PolygonMesh m;
+	Mesh create_icosahedron(const vec3& pos, float radius) {
+		Mesh m;
 
 		float phi = (1 + sqrtf(5.0f))/2;
 		float r = radius / sqrtf(phi * sqrtf(5.0f));

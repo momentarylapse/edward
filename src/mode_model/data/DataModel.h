@@ -14,13 +14,15 @@
 #include <lib/yrenderer/Material.h>
 #include <stuff/Selection.h>
 
-struct MeshEdit;
+namespace polymesh {
+	struct MeshEdit;
+	struct Mesh;
+	struct Polygon;
+	struct Vertex;
+}
 struct Box;
 class DataModel;
 struct ModelMesh;
-struct Polygon;
-struct MeshVertex;
-struct PolygonMesh;
 class ModelSelection;
 enum class AnimationType;
 class DocumentSession;
@@ -70,7 +72,7 @@ struct ModelTriangleSubMesh {
 // exported geometry
 struct ModelTriangleMesh {
 	// vertices
-	Array<MeshVertex> vertices;
+	Array<polymesh::Vertex> vertices;
 
 	// sub skins
 	Array<ModelTriangleSubMesh> sub;
@@ -165,11 +167,11 @@ public:
 
 	// high level (actions)
 	void add_vertex(const vec3 &pos, const ivec4 &bone_index = {0,0,0,0}, const vec4 &bone_weight = {1,0,0,0}, int normal_mode = -1);
-	Polygon *add_triangle(int a, int b, int c, int material);
-	Polygon *add_polygon(const Array<int> &v, int material);
-	Polygon *add_polygon_with_skin(const Array<int> &v, const Array<vec3> &sv, int material);
+	polymesh::Polygon *add_triangle(int a, int b, int c, int material);
+	polymesh::Polygon *add_polygon(const Array<int> &v, int material);
+	polymesh::Polygon *add_polygon_with_skin(const Array<int> &v, const Array<vec3> &sv, int material);
 
-	void edit_mesh(const MeshEdit& edit);
+	void edit_mesh(const polymesh::MeshEdit& edit);
 
 /*	void delete_polygon(int index);
 
@@ -199,7 +201,7 @@ public:
 
 	// actions
 	void delete_selection(const Selection& sel, bool greedy);
-	void paste_mesh(const PolygonMesh& geo, int default_material = -1);
+	void paste_mesh(const polymesh::Mesh& geo, int default_material = -1);
 
 
 	// properties

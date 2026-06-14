@@ -4,12 +4,12 @@
 
 #include "ExtrudePolygons.h"
 #include <lib/polymesh/Polygon.h>
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 #include <lib/polymesh/MeshEdit.h>
 #include <lib/base/iter.h>
 
 namespace polymesh {
-	MeshEdit extrude_polygons(const PolygonMesh& mesh, const base::set<int>& sel, float distance, bool keep_connected) {
+	MeshEdit extrude_polygons(const Mesh& mesh, const base::set<int>& sel, float distance, bool keep_connected) {
 		MeshEdit ed;
 		for (const auto& [i, p]: enumerate(mesh.polygons))
 			if (sel.contains(i)) {
@@ -18,7 +18,7 @@ namespace polymesh {
 				Array<int> new_vertices;
 				for (int k=0; k<p.side.num; k++) {
 					int v0 = p.side[k].vertex;
-					MeshVertex vv = mesh.vertices[v0];
+					Vertex vv = mesh.vertices[v0];
 					vv.pos += distance * p.get_normal(mesh.vertices);
 					int v1 = ed.add_vertex(vv);
 					new_vertices.add(v1);

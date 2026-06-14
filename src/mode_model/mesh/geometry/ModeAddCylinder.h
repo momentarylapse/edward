@@ -7,7 +7,7 @@
 
 #include <view/Mode.h>
 #include "../../data/DataModel.h"
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 
 class MultiViewWindow;
 class ModeMeshGeometry;
@@ -28,7 +28,7 @@ public:
 	ModeMesh* mode_mesh;
 
 	Array<vec3> points;
-	PolygonMesh mesh;
+	polymesh::Mesh mesh;
 	owned<ygfx::VertexBuffer> vertex_buffer;
 
 	vec3 next_point;

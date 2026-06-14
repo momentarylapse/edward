@@ -7,14 +7,16 @@
 
 #include <lib/math/vec3.h>
 
-struct PolygonMesh;
+namespace polymesh {
+	struct Mesh;
+}
 
 struct SurfacePoint {
 	vec3 pos;
 	vec3 normal;
 };
 
-Array<SurfacePoint> mesh_surface_points(const PolygonMesh& mesh, float r);
+Array<SurfacePoint> mesh_surface_points(const polymesh::Mesh& mesh, float r);
 
 
 

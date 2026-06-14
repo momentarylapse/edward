@@ -12,14 +12,14 @@ struct ModelMesh;
 
 class ActionModelAddPolygon : public history::Action {
 public:
-	explicit ActionModelAddPolygon(ModelMesh* mesh, const Polygon &p);
+	explicit ActionModelAddPolygon(ModelMesh* mesh, const polymesh::Polygon &p);
 	string name() const override { return "ModelAddPolygon"; }
 
 	void *execute(history::Data* d) override;
 	void undo(history::Data* d) override;
 private:
 	ModelMesh* mesh;
-	Polygon polygon;
+	polymesh::Polygon polygon;
 };
 
 

@@ -7,22 +7,14 @@
 
 #include "DataModel.h"
 #include "ModelMesh.h"
-//#include "ModelSelection.h"
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 
 #include "view/DocumentSession.h"
-#if 0 //HAS_LIB_GL
-#include "../../mode/model/ModeModel.h"
-#include "../../mode/model/mesh/ModeModelMesh.h"
-#endif
 #include <lib/history/Action.h>
 #include <lib/history/Action.h>
 #include "../../Session.h"
 #include "../../storage/Storage.h"
 #include "../../lib/math/Box.h"
-#if 0 //HAS_LIB_GL
-#include "../../multiview/MultiView.h"
-#endif
 /*#include "../../action/model/mesh/vertex/ActionModelAddVertex.h"
 #include "../../action/model/mesh/vertex/ActionModelNearifyVertices.h"
 #include "../../action/model/mesh/vertex/ActionModelCollapseVertices.h"
@@ -324,7 +316,7 @@ void DataModel::selectionFromVertices() {
 #endif
 
 void DataModel::add_vertex(const vec3 &pos, const ivec4 &bone_index, const vec4 &bone_weight, int normal_mode) {
-	PolygonMesh m;
+	polymesh::Mesh m;
 	m.add_vertex(pos);
 	m.vertices[0].bone_index = bone_index;
 	m.vertices[0].bone_weight = bone_weight;
@@ -333,11 +325,11 @@ void DataModel::add_vertex(const vec3 &pos, const ivec4 &bone_index, const vec4 
 	//execute(new ActionModelAddVertex(pos, bone_index, bone_weight, normal_mode));
 }
 
-Polygon *DataModel::add_triangle(int a, int b, int c, int material) {
+polymesh::Polygon *DataModel::add_triangle(int a, int b, int c, int material) {
 	return add_polygon({a, b, c}, material);
 }
 
-Polygon *DataModel::add_polygon(const Array<int> &v, int material) {
+polymesh::Polygon *DataModel::add_polygon(const Array<int> &v, int material) {
 	Array<vec3> sv;
 	for (int i=0;i<v.num;i++) {
 		float w = (float)i / (float)v.num * 2 * pi;
@@ -346,10 +338,10 @@ Polygon *DataModel::add_polygon(const Array<int> &v, int material) {
 	return add_polygon_with_skin(v, sv, material);
 }
 
-Polygon *DataModel::add_polygon_with_skin(const Array<int> &v, const Array<vec3> &sv, int material) {
-	Polygon p;
+polymesh::Polygon *DataModel::add_polygon_with_skin(const Array<int> &v, const Array<vec3> &sv, int material) {
+	polymesh::Polygon p;
 	for (int i=0; i<v.num; i++) {
-		PolygonSide s;
+		polymesh::PolygonSide s;
 		s.vertex = v[i];
 		s.uv = sv[i];
 		s.normal_index = -1;
@@ -357,10 +349,10 @@ Polygon *DataModel::add_polygon_with_skin(const Array<int> &v, const Array<vec3>
 		p.side.add(s);
 		p.material = material;
 	}
-	return (Polygon*)execute(new ActionModelAddPolygon(editing_mesh, p));
+	return (polymesh::Polygon*)execute(new ActionModelAddPolygon(editing_mesh, p));
 }
 
-void DataModel::edit_mesh(const MeshEdit& edit) {
+void DataModel::edit_mesh(const polymesh::MeshEdit& edit) {
 	execute(new ActionModelEditMesh(editing_mesh, edit));
 }
 
@@ -579,7 +571,7 @@ void DataModel::apply_material(const Selection& sel, int material) {
 	execute(new ActionModelSetMaterial(this, sel, material));
 }
 
-void DataModel::paste_mesh(const PolygonMesh& geo, int default_material) {
+void DataModel::paste_mesh(const polymesh::Mesh& geo, int default_material) {
 	execute(new ActionModelPasteMesh(editing_mesh, geo, default_material));
 }
 

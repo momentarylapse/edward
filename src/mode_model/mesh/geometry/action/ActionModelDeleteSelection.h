@@ -25,16 +25,16 @@ private:
 	int unmap_vertex(int v) const;
 
 	ModelMesh* mesh;
-	Array<MeshVertex> vertices;
+	Array<polymesh::Vertex> vertices;
 	Array<int> vertex_indices;
 
-	Array<Polygon> polygons;
+	Array<polymesh::Polygon> polygons;
 	Array<int> polygon_indices;
 
-	Array<ModelBall> spheres;
+	Array<polymesh::Sphere> spheres;
 	Array<int> sphere_indices;
 
-	Array<ModelCylinder> cylinders;
+	Array<polymesh::Cylinder> cylinders;
 	Array<int> cylinder_indices;
 };
 

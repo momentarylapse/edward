@@ -317,9 +317,9 @@ add_executable(edward
 	src/lib/polymesh/edit/InvertPolygons.cpp
 	src/lib/polymesh/_kaba_export.cpp
 	src/lib/polymesh/GeometrySubtract.cpp
+	src/lib/polymesh/Mesh.cpp
 	src/lib/polymesh/MeshEdit.cpp
 	src/lib/polymesh/Polygon.cpp
-	src/lib/polymesh/PolygonMesh.cpp
 	src/lib/polymesh/SkinGenerator.cpp
 	src/lib/profiler/_kaba_export.cpp
 	src/lib/profiler/Profiler.cpp

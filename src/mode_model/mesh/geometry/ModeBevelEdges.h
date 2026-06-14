@@ -26,7 +26,7 @@ public:
 	void on_mouse_move(const vec2& m, const vec2& d) override;
 
 	ModeMesh* mode_mesh;
-	MeshEdit diff;
+	polymesh::MeshEdit diff;
 };
 
 

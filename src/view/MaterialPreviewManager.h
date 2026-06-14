@@ -10,7 +10,7 @@
 
 class Session;
 namespace yrenderer {
-	class Material;
+	struct Material;
 }
 
 class MaterialPreviewManager : public obs::Node<VirtualBase> {

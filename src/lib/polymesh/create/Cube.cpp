@@ -8,7 +8,11 @@
 #include "Cube.h"
 #include <lib/math/Box.h>
 
-class GeometryCube : public PolygonMesh {
+
+namespace polymesh {
+
+
+class GeometryCube : public Mesh {
 public:
 	GeometryCube(const vec3 &_pos, const vec3 &dv1, const vec3 &dv2, const vec3 &dv3, int num_1, int num_2, int num_3) {
 		vec3 pos = _pos;
@@ -69,11 +73,10 @@ public:
 };
 
 
-namespace polymesh {
-	PolygonMesh create_cube(const Box& box, const ivec3& slices) {
+	Mesh create_cube(const Box& box, const ivec3& slices) {
 		return GeometryCube(box.min, {box.size().x,0,0}, {0,box.size().y,0}, {0,0,box.size().z}, slices.i, slices.j, slices.k);
 	}
-	PolygonMesh create_cube_x(const vec3 &_pos, const vec3 &dv1, const vec3 &dv2, const vec3 &dv3, int num_1, int num_2, int num_3) {
+	Mesh create_cube_x(const vec3 &_pos, const vec3 &dv1, const vec3 &dv2, const vec3 &dv3, int num_1, int num_2, int num_3) {
 		return GeometryCube(_pos, dv1, dv2, dv3, num_1, num_2, num_3);
 	}
 }

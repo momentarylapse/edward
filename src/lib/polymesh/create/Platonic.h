@@ -7,15 +7,15 @@
 
 #pragma once
 
-#include "../PolygonMesh.h"
+#include "../Mesh.h"
 struct vec3;
 
 namespace polymesh {
-	PolygonMesh create_tetrahedron(const vec3& pos, float radius);
-	PolygonMesh create_octahedron(const vec3& pos, float radius);
-	PolygonMesh create_dodecahedron(const vec3& pos, float radius);
-	PolygonMesh create_icosahedron(const vec3& pos, float radius);
+	Mesh create_tetrahedron(const vec3& pos, float radius);
+	Mesh create_octahedron(const vec3& pos, float radius);
+	Mesh create_dodecahedron(const vec3& pos, float radius);
+	Mesh create_icosahedron(const vec3& pos, float radius);
 
-	PolygonMesh create_platonic(const vec3& pos, float radius, int type);
+	Mesh create_platonic(const vec3& pos, float radius, int type);
 }
 

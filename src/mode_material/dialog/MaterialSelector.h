@@ -9,7 +9,7 @@ namespace history {
 class Session;
 class MaterialParameterPanel;
 namespace yrenderer {
-	class Material;
+	struct Material;
 }
 
 

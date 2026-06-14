@@ -4,7 +4,7 @@
 
 #include "BevelEdges.h"
 #include <lib/polymesh/Polygon.h>
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 #include <lib/polymesh/MeshEdit.h>
 #include <lib/base/iter.h>
 #include <lib/base/algo.h>
@@ -35,7 +35,7 @@ struct BevelInfo {
 	Array<Edge> edges;
 };
 
-bool mesh_get_polygons_and_edges_around_vertex(const PolygonMesh& mesh, int vertex, Array<PolygonCorner>& out_corners, Array<Edge>& out_edges) {
+bool mesh_get_polygons_and_edges_around_vertex(const Mesh& mesh, int vertex, Array<PolygonCorner>& out_corners, Array<Edge>& out_edges) {
 	out_corners.clear();
 	out_edges.clear();
 	base::set<int> corners_used;
@@ -74,7 +74,7 @@ bool mesh_get_polygons_and_edges_around_vertex(const PolygonMesh& mesh, int vert
 	}
 }
 
-BevelInfo prepare_bevel(const PolygonMesh& mesh, const Array<Edge>& edges, const base::set<int>& selv) {
+BevelInfo prepare_bevel(const Mesh& mesh, const Array<Edge>& edges, const base::set<int>& selv) {
 	BevelInfo bi;
 
 	for (const auto& [i, v]: enumerate(mesh.vertices))
@@ -110,7 +110,7 @@ BevelInfo prepare_bevel(const PolygonMesh& mesh, const Array<Edge>& edges, const
 	return bi;
 }
 
-MeshEdit bevel_edges(const PolygonMesh& mesh, const base::set<int>& selv, const base::set<int>& sele, float radius) {
+MeshEdit bevel_edges(const Mesh& mesh, const base::set<int>& selv, const base::set<int>& sele, float radius) {
 	auto edges = mesh.edges();
 	auto b = prepare_bevel(mesh, edges, selv);
 	MeshEdit ed;
@@ -122,12 +122,12 @@ MeshEdit bevel_edges(const PolygonMesh& mesh, const base::set<int>& selv, const 
 		for (auto&& [i, d]: enumerate(c.edge_dirs)) {
 			c.new_vertices_e[i] = c.new_vertices_p[i] = -1; // meh
 			if (!sele.contains(c.edges[i])) {
-				int v = ed.add_vertex(MeshVertex{c.p0 + d * radius});
+				int v = ed.add_vertex(Vertex{c.p0 + d * radius});
 				c.new_vertices_e[i] = v;
 				c.new_vertices.add(v);
 			}
 			if (sele.contains(c.edges[i]) and sele.contains(c.edges[(i + c.edges.num - 1) % c.edges.num])) {
-				int v = ed.add_vertex(MeshVertex{c.p0 + c.polygon_dirs[i] * radius});
+				int v = ed.add_vertex(Vertex{c.p0 + c.polygon_dirs[i] * radius});
 				c.new_vertices_p[i] = v;
 				c.new_vertices.add(v);
 			}

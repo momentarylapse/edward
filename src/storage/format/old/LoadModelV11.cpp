@@ -815,7 +815,7 @@ void FormatModel::_load_v11_edit(LegacyFile& lf, DataModel *data, bool deep) {
 			for (int i=0;i<ns;i++){
 				int nv = f->read_int();
 				for (int j=0;j<nv;j++){
-					Polygon t;
+					polymesh::Polygon t;
 					t.triangulation_dirty = true;
 					int n = f->read_int();
 					t.material = f->read_int();
@@ -841,7 +841,7 @@ void FormatModel::_load_v11_edit(LegacyFile& lf, DataModel *data, bool deep) {
 		}else if (s == "// Cylinders"){
 			int n = f->read_int();
 			for (int i=0; i<n; i++){
-				ModelCylinder c;
+				polymesh::Cylinder c{};
 				c.index[0] = f->read_int();
 				c.index[1] = f->read_int();
 				c.radius = f->read_float();

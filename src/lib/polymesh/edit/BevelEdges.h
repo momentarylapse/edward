@@ -7,9 +7,9 @@
 #include <lib/base/base.h>
 #include <lib/base/set.h>
 
-class PolygonMesh;
-class MeshEdit;
-
 namespace polymesh {
-	MeshEdit bevel_edges(const PolygonMesh& mesh, const base::set<int>& selv, const base::set<int>& sele, float distance);
+	class Mesh;
+	class MeshEdit;
+
+	MeshEdit bevel_edges(const Mesh& mesh, const base::set<int>& selv, const base::set<int>& sele, float distance);
 }

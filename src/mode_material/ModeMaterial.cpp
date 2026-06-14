@@ -190,7 +190,7 @@ void ModeMaterial::on_key_down(int key) {
 }
 
 void ModeMaterial::set_mesh(PreviewMesh m) {
-	PolygonMesh mesh;
+	polymesh::Mesh mesh;
 	switch (m) {
 	case PreviewMesh::CUBE:
 		mesh = polymesh::create_cube(Box::ID_SYM, {1, 1, 1});

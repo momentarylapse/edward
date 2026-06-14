@@ -7,13 +7,10 @@
 
 #include <lib/math/math.h>
 #include "SkinGenerator.h"
-#include <lib/polymesh/PolygonMesh.h>
-#if 0 //HAS_LIB_GL
-#include "../../multiview/MultiView.h"
-#include "../../multiview/Window.h"
-#endif
-//#include "../../lib/nix/nix.h"
-//#include <mode_model/data/ModelMesh.h>
+#include "Mesh.h"
+
+using namespace polymesh;
+
 
 SkinGenerator::SkinGenerator() {
 	m = mat4::ID;
@@ -48,7 +45,7 @@ void SkinGenerator::init_projective(const mat4 &_m) {
 #endif
 //}
 
-void SkinGenerator::init_polygon(const Array<MeshVertex> &v, const Polygon &p) {
+void SkinGenerator::init_polygon(const Array<Vertex> &v, const Polygon &p) {
 	vec3 n = p.temp_normal;
 	vec3 d1 = n.ortho();
 	vec3 d2 = vec3::cross(n, d1);
@@ -98,7 +95,7 @@ void SkinGenerator::init_polygon(const Array<MeshVertex> &v, const Polygon &p) {
 }
 
 
-static vec3 get_cloud_normal(const Array<MeshVertex> &pp, const Array<int> &v)
+static vec3 get_cloud_normal(const Array<Vertex> &pp, const Array<int> &v)
 {
 	Array<vec3> p;
 	for (int i=1;i<v.num;i++){
@@ -115,7 +112,7 @@ static vec3 get_cloud_normal(const Array<MeshVertex> &pp, const Array<int> &v)
 	return v_0;
 }
 
-void SkinGenerator::init_point_cloud_boundary(const Array<MeshVertex> &p, const Array<int> &v)
+void SkinGenerator::init_point_cloud_boundary(const Array<Vertex> &p, const Array<int> &v)
 {
 	vec3 n = get_cloud_normal(p, v);
 	vec3 d[2];

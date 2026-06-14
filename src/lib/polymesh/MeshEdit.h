@@ -6,14 +6,15 @@
 
 #include <lib/base/base.h>
 #include <lib/base/set.h>
-#include "PolygonMesh.h"
+#include "Mesh.h"
 
+namespace polymesh {
 
 struct MeshEdit {
 	base::set<int> _del_vertices;
 	base::set<int> _del_polygons;
 	struct NewVertex {
-		MeshVertex v;
+		Vertex v;
 		int at;
 		int id;
 	};
@@ -25,12 +26,14 @@ struct MeshEdit {
 	Array<NewPolygon> _new_polygons; // indices are pre-vertex-insertion/deletion!
 	void delete_vertex(int index);
 	void delete_polygon(int index);
-	int add_vertex(const MeshVertex& v, int at_index=-1);
+	int add_vertex(const Vertex& v, int at_index=-1);
 	void add_polygon(const Polygon& p, int at_index=-1);
 
-	MeshEdit apply_inplace(PolygonMesh& mesh) const;
-	PolygonMesh apply(const PolygonMesh& mesh, MeshEdit* inv = nullptr) const;
+	MeshEdit apply_inplace(Mesh& mesh) const;
+	Mesh apply(const Mesh& mesh, MeshEdit* inv = nullptr) const;
 
 	bool changes_topology() const;
 };
+
+}
 

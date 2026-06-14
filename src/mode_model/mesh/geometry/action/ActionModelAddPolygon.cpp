@@ -6,7 +6,7 @@
 #include <mode_model/data/DataModel.h>
 #include <mode_model/data/ModelMesh.h>
 
-ActionModelAddPolygon::ActionModelAddPolygon(ModelMesh* _mesh, const Polygon& p) {
+ActionModelAddPolygon::ActionModelAddPolygon(ModelMesh* _mesh, const polymesh::Polygon& p) {
 	mesh = _mesh;
 	polygon = p;
 }

@@ -8,8 +8,9 @@
 #include "Sphere.h"
 #include <lib/math/mat4.h>
 
+namespace polymesh {
 
-class GeometrySphere : public PolygonMesh {
+class GeometrySphere : public Mesh {
 public:
 	GeometrySphere(const vec3 &pos, float radius, int num) {
 		int nv = 0;
@@ -53,8 +54,7 @@ public:
 	}
 };
 
-namespace polymesh {
-	PolygonMesh create_sphere(const vec3& pos, float radius, int num) {
+	Mesh create_sphere(const vec3& pos, float radius, int num) {
 		return GeometrySphere(pos, radius, num);
 	}
 }

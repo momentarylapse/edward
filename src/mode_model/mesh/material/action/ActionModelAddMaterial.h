@@ -12,7 +12,7 @@
 #include <lib/base/pointer.h>
 
 namespace yrenderer {
-	class Material;
+	struct Material;
 }
 
 class ActionModelAddMaterial : public history::Action {

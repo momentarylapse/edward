@@ -10,7 +10,7 @@ namespace history {
 }
 class Session;
 namespace yrenderer {
-	class Material;
+	struct Material;
 }
 namespace xhui {
 	class Menu;

@@ -7,9 +7,9 @@
 #include <lib/base/base.h>
 #include <lib/base/set.h>
 
-class PolygonMesh;
-class MeshEdit;
-
 namespace polymesh {
-	MeshEdit invert_polygons(const PolygonMesh& mesh, const base::set<int>& selp);
+	class Mesh;
+	class MeshEdit;
+
+	MeshEdit invert_polygons(const Mesh& mesh, const base::set<int>& selp);
 }

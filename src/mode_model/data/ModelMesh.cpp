@@ -39,7 +39,7 @@ void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vec
 	if (int_array_has_duplicates(v))
 		throw GeometryException("AddPolygon: duplicate vertices");
 
-	Polygon t;
+	polymesh::Polygon t;
 	t.side.resize(v.num);
 	for (int k=0;k<v.num;k++) {
 		t.side[k].vertex = v[k];
@@ -88,7 +88,7 @@ void ModelMesh::build_topology()
 		v.ref_count = 0;
 
 	// add all triangles
-	foreachi(Polygon &t, polygons, ti){
+	foreachi(const auto &t, polygons, ti){
 		// vertices
 		for (int k=0;k<t.side.num;k++)
 			vertices[t.side[k].vertex].ref_count ++;
@@ -411,7 +411,7 @@ Array<int> ModelMesh::get_boundary_loop(int v0)
 void ModelMesh::add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &bone_weight, int normal_mode, int index) {
 
 	// new vertex
-	MeshVertex vv;
+	polymesh::Vertex vv;
 	vv.pos = pos;
 	vv.normal_mode = normal_mode;
 	vv.bone_index = bone;
@@ -428,7 +428,7 @@ void ModelMesh::add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &bone_
 
 }
 
-void ModelMesh::_add_vertices(const Array<MeshVertex> &v, DataModel* model) {
+void ModelMesh::_add_vertices(const Array<polymesh::Vertex> &v, DataModel* model) {
 	vertices.append(v);
 	_post_vertex_number_change_update(model);
 }
@@ -494,8 +494,8 @@ bool ModelCylinder::overlap_rect(MultiView::Window *win, const rect &r) {
 }
 #endif
 
-PolygonMesh ModelMesh::copy_geometry(const Selection& sel) const {
-	PolygonMesh geo;
+polymesh::Mesh ModelMesh::copy_geometry(const Selection& sel) const {
+	Mesh geo;
 
 	// copy vertices
 	Array<int> vert_map;
@@ -509,7 +509,7 @@ PolygonMesh ModelMesh::copy_geometry(const Selection& sel) const {
 	// copy triangles
 	for (const auto& [ti, t]: enumerate(polygons))
 		if (sel[MultiViewType::MODEL_POLYGON].contains(ti)) {
-			Polygon tt = t;
+			polymesh::Polygon tt = t;
 			for (int k=0; k<t.side.num; k++)
 				tt.side[k].vertex = vert_map[t.side[k].vertex];
 			geo.polygons.add(tt);

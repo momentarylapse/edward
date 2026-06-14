@@ -10,8 +10,9 @@
 
 #define _tor_vert(i, j)         ( num_y * ((i) % num_x) + ((j) % num_y))
 
+namespace polymesh {
 
-class GeometryTorus : public PolygonMesh {
+class GeometryTorus : public Mesh {
 public:
 	GeometryTorus(const vec3 &pos, const vec3 &axis, float radius1, float radius2, int num_x, int num_y)
 	{
@@ -47,8 +48,7 @@ public:
 	}
 };
 
-namespace polymesh {
-	PolygonMesh create_torus(const vec3 &pos, const vec3 &axis, float radius1, float radius2, int num_x, int num_y) {
+	Mesh create_torus(const vec3 &pos, const vec3 &axis, float radius1, float radius2, int num_x, int num_y) {
 		return GeometryTorus(pos, axis, radius1, radius2, num_x, num_y);
 	}
 }

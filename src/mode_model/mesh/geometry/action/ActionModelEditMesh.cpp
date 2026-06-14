@@ -6,7 +6,7 @@
 #include "../../../data/DataModel.h"
 #include "../../../data/ModelMesh.h"
 
-ActionModelEditMesh::ActionModelEditMesh(ModelMesh* _mesh, const MeshEdit& _edit) {
+ActionModelEditMesh::ActionModelEditMesh(ModelMesh* _mesh, const polymesh::MeshEdit& _edit) {
 	mesh = _mesh;
 	edit = _edit;
 }

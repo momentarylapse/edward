@@ -8,7 +8,7 @@
 
 #include <view/Mode.h>
 #include "../../data/DataModel.h"
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 #include <lib/base/optional.h>
 
 class MultiViewWindow;
@@ -33,7 +33,7 @@ public:
 	base::optional<vec3> center;
 	vec3 next_point;
 	float radius;
-	PolygonMesh mesh;
+	polymesh::Mesh mesh;
 	owned<ygfx::VertexBuffer> vertex_buffer;
 
 	enum class Type {

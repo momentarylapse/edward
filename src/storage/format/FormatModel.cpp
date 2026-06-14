@@ -71,15 +71,15 @@ int get_normal_index(vec3 &n) {
 vec3 get_normal_by_index(int index);
 
 
-Array<Array<Polygon>> split_conv_polyhedra(ModelMesh* m) {
-	Array<Array<Polygon>> polyhedra;
-	base::set<const Polygon*> done;
+Array<Array<polymesh::Polygon>> split_conv_polyhedra(ModelMesh* m) {
+	Array<Array<polymesh::Polygon>> polyhedra;
+	base::set<const polymesh::Polygon*> done;
 
 	auto find_next_polyhedron = [&] {
-		Array<Polygon> polyhedron;
+		Array<polymesh::Polygon> polyhedron;
 		base::set<int> cur_vertices;
 
-		auto add_poly = [&] (const Polygon& p) {
+		auto add_poly = [&] (const polymesh::Polygon& p) {
 			polyhedron.add(p);
 			done.add(&p);
 			for (const auto& ss: p.side)
@@ -479,14 +479,14 @@ public:
 	}
 	void read(Stream *f) override {
 
-		for (const MeshVertex &v: parent->triangle_mesh[1].vertices)
+		for (const polymesh::Vertex &v: parent->triangle_mesh[1].vertices)
 			parent->mesh->add_vertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
 			//parent->addVertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
 
 		// polygons
 		int num_poly = f->read_int();
 		for (int j=0; j<num_poly; j++) {
-			Polygon t;
+			polymesh::Polygon t;
 			t.triangulation_dirty = true;
 			int num_faces = f->read_word();
 			t.material = f->read_word();
@@ -594,7 +594,7 @@ public:
 		// cylinders
 		int n = f->read_int();
 		for (int i=0; i<n; i++) {
-			ModelCylinder c;
+			polymesh::Cylinder c;
 			c.index[0] = f->read_int();
 			c.index[1] = f->read_int();
 			c.radius = f->read_float();

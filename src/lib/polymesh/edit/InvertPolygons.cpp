@@ -4,12 +4,12 @@
 
 #include "InvertPolygons.h"
 #include "../MeshEdit.h"
-#include "../PolygonMesh.h"
+#include "../Mesh.h"
 #include <lib/base/iter.h>
 #include <lib/base/sort.h>
 
 namespace polymesh {
-	MeshEdit invert_polygons(const PolygonMesh& mesh, const base::set<int>& selp) {
+	MeshEdit invert_polygons(const Mesh& mesh, const base::set<int>& selp) {
 		MeshEdit ed;
 
 		for (const auto& [i, p]: enumerate(mesh.polygons))

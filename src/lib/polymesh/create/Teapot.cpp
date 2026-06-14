@@ -332,8 +332,8 @@ static const vec3 tp_vert[] = {
 	mesh.add_bezier3(v, samples, samples, 0.01f / samples)
 
 namespace polymesh {
-PolygonMesh create_teapot(const vec3 &pos, float radius, int samples) {
-	PolygonMesh mesh;
+Mesh create_teapot(const vec3 &pos, float radius, int samples) {
+	Mesh mesh;
 	Array<vec3> v;
 	_add_bezier(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16);
 	_add_bezier(4,17,18,19,8,20,21,22,12,23,24,25,16,26,27,28);

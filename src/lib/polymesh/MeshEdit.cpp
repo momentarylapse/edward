@@ -10,7 +10,7 @@
 #include <lib/base/iter.h>
 #include <lib/os/msg.h>
 
-
+namespace polymesh {
 
 void show_mesh_diff(const MeshEdit& edit) {
 	msg_write("-  " + str(edit._del_vertices));
@@ -31,7 +31,7 @@ void MeshEdit::delete_polygon(int index) {
 	_del_polygons.add(index);
 }
 
-int MeshEdit::add_vertex(const MeshVertex& v, int at_index) {
+int MeshEdit::add_vertex(const Vertex& v, int at_index) {
 	int id = -_new_vertices.num - 1; // starts at -1!
 	_new_vertices.add({v, at_index, id});
 	return id;
@@ -43,9 +43,9 @@ void MeshEdit::add_polygon(const Polygon& p, int at_index) {
 	_new_polygons.back().p.triangulation_dirty = true;
 }
 
-MeshEdit MeshEdit::apply_inplace(PolygonMesh& mesh) const {
+MeshEdit MeshEdit::apply_inplace(Mesh& mesh) const {
 	MeshEdit inv;
-	PolygonMesh out;
+	Mesh out;
 	base::map<int,int> del_map;
 	base::map<int,int> add_map;
 
@@ -140,8 +140,8 @@ MeshEdit MeshEdit::apply_inplace(PolygonMesh& mesh) const {
 	return inv;
 }
 
-PolygonMesh MeshEdit::apply(const PolygonMesh& mesh, MeshEdit* inv) const {
-	PolygonMesh mesh2 = mesh;
+Mesh MeshEdit::apply(const Mesh& mesh, MeshEdit* inv) const {
+	Mesh mesh2 = mesh;
 	if (inv)
 		*inv = apply_inplace(mesh2);
 	else
@@ -155,6 +155,8 @@ bool MeshEdit::changes_topology() const {
 	// TODO
 	//for (const auto& p: _new_polygons)
 	return true;
+}
+
 }
 
 

@@ -314,7 +314,7 @@ void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& _a, 
 
 }
 
-Array<vec3> mesh_edit_to_lines(const PolygonMesh& mesh, const MeshEdit& ed) {
+Array<vec3> mesh_edit_to_lines(const polymesh::Mesh& mesh, const polymesh::MeshEdit& ed) {
 	Array<vec3> points;
 	for (const auto& p: ed._new_polygons) {
 		for (int k=0; k<p.p.side.num; k++) {

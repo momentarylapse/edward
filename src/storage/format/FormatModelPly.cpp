@@ -33,7 +33,7 @@ void FormatModelPly::_load(const Path &filename, DataModel *m, bool deep) {
 	Array<Element> elements;
 	bool binary = false;
 
-	PolygonMesh g;
+	polymesh::Mesh g;
 
 	// header
 	while (true) {

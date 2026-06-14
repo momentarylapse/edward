@@ -7,7 +7,7 @@
 
 #include <view/Mode.h>
 #include "../../data/DataModel.h"
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 #include <lib/base/optional.h>
 
 class MultiViewWindow;
@@ -36,7 +36,7 @@ public:
 	vec3 preview_axis;
 	Array<vec3> contour;
 	vec3 next_point;
-	PolygonMesh mesh;
+	polymesh::Mesh mesh;
 	owned<ygfx::VertexBuffer> vertex_buffer;
 
 	int slices;

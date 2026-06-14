@@ -9,7 +9,9 @@
 
 #define ball_ang(x, y)	vec3((float)(y)/(float)num_y,(float)(x)/(float)num_x,0)
 
-class GeometryBall : public PolygonMesh {
+
+namespace polymesh {
+class GeometryBall : public Mesh {
 public:
 	GeometryBall(const vec3 &pos, float radius, int num_x, int num_y) {
 		// ball from disks
@@ -63,8 +65,7 @@ public:
 };
 
 
-namespace polymesh {
-	PolygonMesh create_ball(const vec3 &pos, float radius, int num_x, int num_y) {
+	Mesh create_ball(const vec3 &pos, float radius, int num_x, int num_y) {
 		return GeometryBall(pos, radius, num_x, num_y);
 	}
 }

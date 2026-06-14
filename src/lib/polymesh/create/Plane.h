@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "../PolygonMesh.h"
+#include "../Mesh.h"
 
 struct ivec2;
 struct rect;
 
 namespace polymesh {
-	PolygonMesh create_plane(const rect& r, const ivec2& slices);
+	Mesh create_plane(const rect& r, const ivec2& slices);
 };

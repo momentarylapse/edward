@@ -15,7 +15,7 @@
 #define _cyl_svert(i, j)        sv[(edges + 1) * (i) +(j) % (edges + 1)]
 
 namespace polymesh {
-	class GeometryCylinder : public PolygonMesh {
+	class GeometryCylinder : public Mesh {
 	public:
 		GeometryCylinder(Array<vec3> &pos, Array<float> &radius, int rings, int edges, End end_mode) {
 			Interpolator<float> inter_r(Interpolator<float>::TYPE_CUBIC_SPLINE_NOTANG);
@@ -70,7 +70,7 @@ namespace polymesh {
 			return trans * rot;
 		}
 
-		static PolygonMesh half_ball(float radius, int edges, bool upper) {
+		static Mesh half_ball(float radius, int edges, bool upper) {
 			float scale = upper ? 1 : -1;
 			auto ball = polymesh::create_ball(v_0, radius, edges/2, edges);
 			for (int i=ball.polygons.num-1; i>=0; i--) {
@@ -204,13 +204,13 @@ namespace polymesh {
 			}
 		}
 	};
-	PolygonMesh create_cylinder(Array<vec3> &pos, Array<float> &radius, int rings, int edges, End end_mode) {
+	Mesh create_cylinder(Array<vec3> &pos, Array<float> &radius, int rings, int edges, End end_mode) {
 		return GeometryCylinder(pos, radius, rings, edges, end_mode);
 	}
-	PolygonMesh create_cylinder(Array<vec3> &pos, float radius, int rings, int edges, End end_mode) {
+	Mesh create_cylinder(Array<vec3> &pos, float radius, int rings, int edges, End end_mode) {
 		return GeometryCylinder(pos, radius, rings, edges, end_mode);
 	}
-	PolygonMesh create_cylinder(const vec3 &pos1, const vec3 &pos2, float radius, int rings, int edges, End end_mode) {
+	Mesh create_cylinder(const vec3 &pos1, const vec3 &pos2, float radius, int rings, int edges, End end_mode) {
 		return GeometryCylinder(pos1, pos2, radius, rings, edges, end_mode);
 	}
 }

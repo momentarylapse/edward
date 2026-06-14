@@ -85,7 +85,7 @@ void FormatModel3ds::load_mesh(DataModel *m, Stream *f, int _length)
 				int nv=f->read_word();
 				msg_write(format("\t\t\t\tNumVertices: %d",nv));
 				for (int i=0;i<nv;i++){
-					MeshVertex v;
+					polymesh::Vertex v;
 					v.pos.x = f->read_float();
 					v.pos.y = f->read_float();
 					v.pos.z = f->read_float();

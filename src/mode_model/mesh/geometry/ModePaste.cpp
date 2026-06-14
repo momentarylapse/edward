@@ -58,7 +58,7 @@ void ModePaste::on_mouse_move(const vec2& m, const vec2& d) {
 
 
 void ModePaste::on_left_button_down(const vec2& m) {
-	PolygonMesh mesh = *mode_mesh->mode_mesh_geometry->temp_mesh;
+	polymesh::Mesh mesh = *mode_mesh->mode_mesh_geometry->temp_mesh;
 	for (auto& v: mesh.vertices)
 		v.pos = transformation * v.pos;
 	mode_mesh->data->paste_mesh(mesh);

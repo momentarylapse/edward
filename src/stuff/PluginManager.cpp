@@ -16,7 +16,7 @@
 #include <view/MultiViewWindow.h>
 #include <view/DocumentSession.h>
 #include <lib/history/Data.h>
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 #include <lib/polymesh/create/Ball.h>
 #include <lib/polymesh/create/Cube.h>
 #include <lib/polymesh/create/Cylinder.h>
@@ -100,40 +100,40 @@ void PluginManager::init_edward() {
 }
 
 void link_mesh(kaba::ExternalLinkData* ext) {
-	ext->declare_class_size("Mesh.Vertex", sizeof(MeshVertex));
-	ext->declare_class_element("Mesh.Vertex.normal_mode", &MeshVertex::normal_mode);
-	ext->declare_class_element("Mesh.Vertex.bone_index", &MeshVertex::bone_index);
-	ext->declare_class_element("Mesh.Vertex.normal_dirty", &MeshVertex::normal_dirty);
-	ext->declare_class_element("Mesh.Vertex.ref_count", &MeshVertex::ref_count);
+	ext->declare_class_size("Mesh.Vertex", sizeof(polymesh::Vertex));
+	ext->declare_class_element("Mesh.Vertex.normal_mode", &polymesh::Vertex::normal_mode);
+	ext->declare_class_element("Mesh.Vertex.bone_index", &polymesh::Vertex::bone_index);
+	ext->declare_class_element("Mesh.Vertex.normal_dirty", &polymesh::Vertex::normal_dirty);
+	ext->declare_class_element("Mesh.Vertex.ref_count", &polymesh::Vertex::ref_count);
 
-	ext->declare_class_size("Mesh.Polygon.Side", sizeof(PolygonSide));
-	ext->declare_class_element("Mesh.Polygon.Side.vertex", &PolygonSide::vertex);
-	//	ext->declare_class_element("Mesh.Polygon.Side.edge", &PolygonSide::edge);
-	//	ext->declare_class_element("Mesh.Polygon.Side.edge_direction", &ModelPolygonSide::edge_direction);
-	ext->declare_class_element("Mesh.Polygon.Side.skin_vertex", &PolygonSide::uv);
-	ext->declare_class_element("Mesh.Polygon.Side.normal_index", &PolygonSide::normal_index);
-	ext->declare_class_element("Mesh.Polygon.Side.normal", &PolygonSide::normal);
-	ext->declare_class_element("Mesh.Polygon.Side.triangulation", &PolygonSide::triangulation);
+	ext->declare_class_size("Mesh.Polygon.Side", sizeof(polymesh::PolygonSide));
+	ext->declare_class_element("Mesh.Polygon.Side.vertex", &polymesh::PolygonSide::vertex);
+	//	ext->declare_class_element("Mesh.Polygon.Side.edge", &polymesh::PolygonSide::edge);
+	//	ext->declare_class_element("Mesh.Polygon.Side.edge_direction", &polymesh::PolygonSide::edge_direction);
+	ext->declare_class_element("Mesh.Polygon.Side.skin_vertex", &polymesh::PolygonSide::uv);
+	ext->declare_class_element("Mesh.Polygon.Side.normal_index", &polymesh::PolygonSide::normal_index);
+	ext->declare_class_element("Mesh.Polygon.Side.normal", &polymesh::PolygonSide::normal);
+	ext->declare_class_element("Mesh.Polygon.Side.triangulation", &polymesh::PolygonSide::triangulation);
 
-	ext->declare_class_size("Mesh.Polygon", sizeof(Polygon));
-	ext->declare_class_element("Mesh.Polygon.side", &Polygon::side);
-	ext->declare_class_element("Mesh.Polygon.temp_normal", &Polygon::temp_normal);
-	ext->declare_class_element("Mesh.Polygon.normal_dirty", &Polygon::normal_dirty);
-	ext->declare_class_element("Mesh.Polygon.triangulation_dirty", &Polygon::triangulation_dirty);
-	ext->declare_class_element("Mesh.Polygon.material", &Polygon::material);
+	ext->declare_class_size("Mesh.Polygon", sizeof(polymesh::Polygon));
+	ext->declare_class_element("Mesh.Polygon.side", &polymesh::Polygon::side);
+	ext->declare_class_element("Mesh.Polygon.temp_normal", &polymesh::Polygon::temp_normal);
+	ext->declare_class_element("Mesh.Polygon.normal_dirty", &polymesh::Polygon::normal_dirty);
+	ext->declare_class_element("Mesh.Polygon.triangulation_dirty", &polymesh::Polygon::triangulation_dirty);
+	ext->declare_class_element("Mesh.Polygon.material", &polymesh::Polygon::material);
 
-	ext->declare_class_size("Mesh", sizeof(PolygonMesh));
-	ext->link_class_func("Mesh.__init__", &kaba::generic_init<PolygonMesh>);
-	ext->link_class_func("Mesh.__delete__", &kaba::generic_delete<PolygonMesh>);
-	ext->link_class_func("Mesh.__assign__", &kaba::generic_assign<PolygonMesh>);
-	ext->link_class_func("Mesh.add", &PolygonMesh::add);
-	ext->link_class_func("Mesh.transform", &PolygonMesh::transform);
-	ext->link_class_func("Mesh.invert", &PolygonMesh::invert);
-	ext->declare_class_element("Mesh.vertices", &PolygonMesh::vertices);
-	ext->declare_class_element("Mesh.polygons", &PolygonMesh::polygons);
-	//	ext->declare_class_element("Mesh.edges", &PolygonMesh::edges);
-	ext->declare_class_element("Mesh.spheres", &PolygonMesh::spheres);
-	ext->declare_class_element("Mesh.cylinders", &PolygonMesh::cylinders);
+	ext->declare_class_size("Mesh", sizeof(polymesh::Mesh));
+	ext->link_class_func("Mesh.__init__", &kaba::generic_init<polymesh::Mesh>);
+	ext->link_class_func("Mesh.__delete__", &kaba::generic_delete<polymesh::Mesh>);
+	ext->link_class_func("Mesh.__assign__", &kaba::generic_assign<polymesh::Mesh>);
+	ext->link_class_func("Mesh.add", &polymesh::Mesh::add);
+	ext->link_class_func("Mesh.transform", &polymesh::Mesh::transform);
+	ext->link_class_func("Mesh.invert", &polymesh::Mesh::invert);
+	ext->declare_class_element("Mesh.vertices", &polymesh::Mesh::vertices);
+	ext->declare_class_element("Mesh.polygons", &polymesh::Mesh::polygons);
+	//	ext->declare_class_element("Mesh.edges", &polymesh::PolygonMesh::edges);
+	ext->declare_class_element("Mesh.spheres", &polymesh::Mesh::spheres);
+	ext->declare_class_element("Mesh.cylinders", &polymesh::Mesh::cylinders);
 
 	ext->link("Mesh.create_ball", (void*)&polymesh::create_ball);
 	ext->link("Mesh.create_cube", (void*)&polymesh::create_cube);

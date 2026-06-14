@@ -14,7 +14,7 @@
 #include "EdwardWindow.h"
 #include <Session.h>
 #include <action/ActionMultiView.h>
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 #include <lib/polymesh/create/Ball.h>
 #include <lib/polymesh/create/Cylinder.h>
 #include <lib/polymesh/create/Torus.h>

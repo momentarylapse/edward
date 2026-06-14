@@ -17,7 +17,7 @@ ActionModelSetMaterial::ActionModelSetMaterial(DataModel *m, const Selection& se
 	material = _material;
 
 	// save old data
-	foreachi(Polygon &t, m->mesh->polygons, ti)
+	foreachi(const auto &t, m->mesh->polygons, ti)
 		if (sel[MultiViewType::MODEL_POLYGON].contains(ti)) {
 			triangle.add(ti);
 			old_material.add(t.material);
@@ -30,7 +30,7 @@ void *ActionModelSetMaterial::execute(history::Data* d) {
 
 
 	for (int i: triangle) {
-		Polygon &t = m->mesh->polygons[i];
+		auto &t = m->mesh->polygons[i];
 		t.material = material;
 	}
 	return NULL;
@@ -42,7 +42,7 @@ void ActionModelSetMaterial::undo(history::Data* d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 
 	foreachi (int i, triangle, k) {
-		Polygon &t = m->mesh->polygons[i];
+		auto &t = m->mesh->polygons[i];
 		t.material = old_material[k];
 	}
 }

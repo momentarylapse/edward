@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "../PolygonMesh.h"
+#include "../Mesh.h"
 struct vec3;
 
 namespace polymesh {
-	PolygonMesh create_sphere(const vec3& pos, float radius, int num);
+	Mesh create_sphere(const vec3& pos, float radius, int num);
 }

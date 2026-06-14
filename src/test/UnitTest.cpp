@@ -12,7 +12,7 @@
 #include "../lib/os/time.h"
 #include "../lib/os/terminal.h"
 //#include "../lib/hui/hui.h"
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 #include <cmath>
 #include <cstdio>
 

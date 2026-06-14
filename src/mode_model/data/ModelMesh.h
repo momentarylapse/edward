@@ -9,7 +9,7 @@
 #define SRC_DATA_MODEL_MODELMESH_H_
 
 #include <view/SingleData.h>
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 #include <lib/math/vec4.h>
 #include <lib/history/Data.h>
 #include <stuff/Selection.h>
@@ -30,7 +30,7 @@ struct ModelSkinVertexDummy: multiview::SingleData {
 
 
 
-struct ModelMesh : PolygonMesh {
+struct ModelMesh : polymesh::Mesh {
 	explicit ModelMesh();
 	~ModelMesh();
 
@@ -40,7 +40,7 @@ struct ModelMesh : PolygonMesh {
 	void _shift_vertex_links(int offset, int delta);
 	void _add_polygon(const Array<int> &v, int material, const Array<vec3> &sv, int index = -1);
 	void _remove_polygon(int index);
-	void _add_vertices(const Array<MeshVertex> &vertices, DataModel* model);
+	void _add_vertices(const Array<polymesh::Vertex> &vertices, DataModel* model);
 	void _post_vertex_number_change_update(DataModel* model);
 
 
@@ -71,7 +71,7 @@ struct ModelMesh : PolygonMesh {
 	void set_selection(const ModelSelection &s);
 
 
-	PolygonMesh copy_geometry(const Selection& sel) const;
+	Mesh copy_geometry(const Selection& sel) const;
 };
 
 #endif /* SRC_DATA_MODEL_MODELMESH_H_ */

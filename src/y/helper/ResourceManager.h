@@ -14,7 +14,7 @@ class TemplateManager;
 class TerrainManager;
 
 namespace yrenderer {
-	class Context;
+	struct Context;
 	struct Material;
 	class MaterialManager;
 	class ShaderManager;

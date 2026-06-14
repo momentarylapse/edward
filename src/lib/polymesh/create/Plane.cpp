@@ -10,7 +10,8 @@
 #include <lib/math/rect.h>
 #include <lib/math/vec2.h>
 
-class GeometryPlane : public PolygonMesh {
+namespace polymesh {
+class GeometryPlane : public Mesh {
 public:
 	GeometryPlane(const vec3 &pos, const vec3 &dv1, const vec3 &dv2, int num_x, int num_y) {
 		assert(num_x * num_y > 0);
@@ -40,9 +41,7 @@ public:
 	}
 };
 
-
-namespace polymesh {
-	PolygonMesh create_plane(const rect& r, const ivec2& slices) {
+	Mesh create_plane(const rect& r, const ivec2& slices) {
 		return GeometryPlane({r.x1, r.y1, 0}, {r.width(), 0, 0}, {0, r.height(), 0}, slices.i, slices.j);
 	}
 }

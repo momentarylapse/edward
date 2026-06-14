@@ -1,11 +1,11 @@
 /*
- * Geometry.cpp
+ * Mesh.cpp
  *
  *  Created on: 11.01.2013
  *      Author: michi
  */
 
-#include "PolygonMesh.h"
+#include "Mesh.h"
 #include "Polygon.h"
 #include "MeshEdit.h"
 #if __has_include(<lib/ygraphics/graphics-fwd.h>)
@@ -21,6 +21,8 @@
 #if __has_include(<view/MultiView.h>)
 #include <view/MultiView.h>
 #endif
+
+namespace polymesh {
 
 class GeometryException : public Exception {
 public:
@@ -40,7 +42,7 @@ static float Bernstein3(int i, float t) {
 
 
 
-MeshVertex::MeshVertex(const vec3 &_pos) {
+Vertex::Vertex(const vec3 &_pos) {
 	pos = _pos;
 	ref_count = 0;
 	normal_mode = 3;//NORMAL_MODE_ANGULAR;
@@ -49,7 +51,7 @@ MeshVertex::MeshVertex(const vec3 &_pos) {
 	normal_dirty = false;
 }
 
-MeshVertex::MeshVertex() : MeshVertex(v_0) {}
+Vertex::Vertex() : Vertex(v_0) {}
 
 base::optional<int> Edge::find_other_vertex(int vertex) const {
 	if (vertex == index[0])
@@ -73,23 +75,23 @@ bool Edge::operator>(const Edge& o) {
 
 
 
-void PolygonMesh::clear() {
+void Mesh::clear() {
 	polygons.clear();
 	vertices.clear();
 	spheres.clear();
 	cylinders.clear();
 }
 
-bool PolygonMesh::is_empty() const {
+bool Mesh::is_empty() const {
 	return vertices.num == 0;
 }
 
 
-void PolygonMesh::add_vertex(const vec3 &pos) {
-	vertices.add(MeshVertex(pos));
+void Mesh::add_vertex(const vec3 &pos) {
+	vertices.add(Vertex(pos));
 }
 
-void PolygonMesh::add_polygon(const Array<int> &v, const Array<vec3> &sv) {
+void Mesh::add_polygon(const Array<int> &v, const Array<vec3> &sv) {
 	Polygon p;
 	p.side.resize(v.num);
 	for (int k=0; k<v.num; k++) {
@@ -105,7 +107,7 @@ void PolygonMesh::add_polygon(const Array<int> &v, const Array<vec3> &sv) {
 	polygons.add(p);
 }
 
-void PolygonMesh::add_polygon_auto_texture(const Array<int> &v) {
+void Mesh::add_polygon_auto_texture(const Array<int> &v) {
 	SkinGenerator sg;
 	sg.init_point_cloud_boundary(vertices, v);
 
@@ -116,11 +118,11 @@ void PolygonMesh::add_polygon_auto_texture(const Array<int> &v) {
 	add_polygon(v, sv);
 }
 
-void PolygonMesh::add_polygon_single_texture(const Array<int> &v, const Array<vec3> &sv) {
+void Mesh::add_polygon_single_texture(const Array<int> &v, const Array<vec3> &sv) {
 	add_polygon(v, sv);
 }
 
-void PolygonMesh::add_bezier3(const Array<vec3> &v, int num_x, int num_y, float epsilon)
+void Mesh::add_bezier3(const Array<vec3> &v, int num_x, int num_y, float epsilon)
 {
 	vec3 vv[4][4] = {{v[0], v[1], v[2], v[3]}, {v[4], v[5], v[6], v[7]}, {v[8], v[9], v[10], v[11]}, {v[12], v[13], v[14], v[15]}};
 	Array<vec3> pp;
@@ -174,14 +176,14 @@ void PolygonMesh::add_bezier3(const Array<vec3> &v, int num_x, int num_y, float 
 		}
 }
 
-void PolygonMesh::add_easy(int nv, const Array<int> &delta) {
+void Mesh::add_easy(int nv, const Array<int> &delta) {
 	Array<int> v;
 	for (int d: delta)
 		v.add(nv + d);
 	add_polygon_auto_texture(v);
 }
 
-void PolygonMesh::add(const PolygonMesh& geo) {
+void Mesh::add(const Mesh& geo) {
 	int nv = vertices.num;
 	int np = polygons.num;
 	vertices.append(geo.vertices);
@@ -191,7 +193,7 @@ void PolygonMesh::add(const PolygonMesh& geo) {
 			polygons[i].side[k].vertex += nv;
 }
 
-void PolygonMesh::weld(float epsilon)
+void Mesh::weld(float epsilon)
 {
 	//return; // TODO
 	//msg_write("------------------------ weld");
@@ -226,11 +228,11 @@ void PolygonMesh::weld(float epsilon)
 			}
 }
 
-void PolygonMesh::weld(const PolygonMesh &geo, float epsilon)
+void Mesh::weld(const Mesh &geo, float epsilon)
 {
 }
 
-void PolygonMesh::smoothen()
+void Mesh::smoothen()
 {
 	Array<vec3> n;
 	n.resize(vertices.num);
@@ -251,8 +253,8 @@ void PolygonMesh::smoothen()
 	}
 }
 
-PolygonMesh PolygonMesh::transform(const mat4 &mat) const {
-	PolygonMesh mesh = *this;
+Mesh Mesh::transform(const mat4 &mat) const {
+	Mesh mesh = *this;
 	for (auto &v: mesh.vertices)
 		v.pos = mat * v.pos;
 	//matrix mat2 = mat * (float)pow(mat.determinant(), - 1.0f / 3.0f);
@@ -267,16 +269,16 @@ PolygonMesh PolygonMesh::transform(const mat4 &mat) const {
 	return mesh;
 }
 
-MeshEdit PolygonMesh::edit_inplace(const MeshEdit& edit) {
+MeshEdit Mesh::edit_inplace(const MeshEdit& edit) {
 	return edit.apply_inplace(*this);
 }
 
-PolygonMesh PolygonMesh::edit(const MeshEdit& edit, MeshEdit* inv) const {
+Mesh Mesh::edit(const MeshEdit& edit, MeshEdit* inv) const {
 	return edit.apply(*this, inv);
 }
 
 
-base::set<Edge> PolygonMesh::edges() const {
+base::set<Edge> Mesh::edges() const {
 	base::set<Edge> _edges;
 	for (const auto& p: polygons)
 		for (int k=0; k<p.side.num; k++) {
@@ -287,7 +289,7 @@ base::set<Edge> PolygonMesh::edges() const {
 	return _edges;
 }
 
-Array<PolygonCorner> PolygonMesh::get_polygons_around_vertex(int index) const {
+Array<PolygonCorner> Mesh::get_polygons_around_vertex(int index) const {
 	Array<PolygonCorner> corners;
 
 	// unsorted
@@ -299,7 +301,7 @@ Array<PolygonCorner> PolygonMesh::get_polygons_around_vertex(int index) const {
 	return corners;
 }
 
-int PolygonMesh::next_edge_at_vertex(int index0, int index1) const {
+int Mesh::next_edge_at_vertex(int index0, int index1) const {
 	for (const auto& p: polygons)
 		for (int k=0; k<p.side.num; k++)
 			if (p.side[k].vertex == index0)
@@ -309,7 +311,7 @@ int PolygonMesh::next_edge_at_vertex(int index0, int index1) const {
 }
 
 
-void PolygonMesh::build_x(DynamicArray& buf) const {
+void Mesh::build_x(DynamicArray& buf) const {
 	for (auto &p: const_cast<Array<Polygon>&>(polygons)){
 		p.triangulation_dirty = true;
 		p.add_to_vertex_buffer(vertices, buf);
@@ -318,14 +320,14 @@ void PolygonMesh::build_x(DynamicArray& buf) const {
 
 
 #if __has_include(<lib/ygraphics/graphics-fwd.h>)
-void PolygonMesh::build(ygfx::VertexBuffer *vb) const {
+void Mesh::build(ygfx::VertexBuffer *vb) const {
 	Array<ygfx::Vertex1> buf;
 	build_x(buf);
 	vb->update(buf);
 }
 #endif
 
-bool PolygonMesh::is_closed() const {
+bool Mesh::is_closed() const {
 	// TOSO
 	return false;
 	/*for (auto &e: edge)
@@ -334,7 +336,7 @@ bool PolygonMesh::is_closed() const {
 	return true;*/
 }
 
-bool PolygonMesh::is_inside(const vec3 &p) const {
+bool Mesh::is_inside(const vec3 &p) const {
 	// how often does a ray from p intersect the surface?
 	int n = 0;
 	Array<vec3> v;
@@ -384,14 +386,14 @@ bool PolygonMesh::is_inside(const vec3 &p) const {
 	return ((n % 2) == 1);
 }
 
-PolygonMesh PolygonMesh::invert() const {
-	PolygonMesh mesh = *this;
+Mesh Mesh::invert() const {
+	Mesh mesh = *this;
 	for (auto &p: mesh.polygons)
 		p.invert();
 	return mesh;
 }
 
-void PolygonMesh::remove_unused_vertices() {
+void Mesh::remove_unused_vertices() {
 	for (auto &v: vertices)
 		v.ref_count = 0;
 	for (auto &p: polygons)
@@ -408,7 +410,7 @@ void PolygonMesh::remove_unused_vertices() {
 		}
 }
 
-base::optional<Box> PolygonMesh::bounding_box() const {
+base::optional<Box> Mesh::bounding_box() const {
 	if (vertices.num == 0)
 		return base::None;
 	Box box = {vertices[0].pos, vertices[0].pos};
@@ -424,7 +426,7 @@ base::optional<Box> PolygonMesh::bounding_box() const {
 }
 
 
-void PolygonMesh::update_normals() {
+void Mesh::update_normals() {
 #define NEW_NORMALS 1
 
 #if NEW_NORMALS
@@ -604,7 +606,7 @@ void PolygonMesh::update_normals() {
 }
 
 #if __has_include(<view/MultiView.h>)
-bool PolygonMesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec2& m, vec3 &tp, int& index, bool any_hit) {
+bool Mesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec2& m, vec3 &tp, int& index, bool any_hit) {
 	vec3 M = vec3(m, 0);
 	float zmin = 1;
 	for (const auto& [i, p]: enumerate(polygons)) {
@@ -655,7 +657,7 @@ bool PolygonMesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec
 }
 #endif
 
-void geo_poly_find_connected(const PolygonMesh &g, int p0, base::set<int> &polys) {
+void geo_poly_find_connected(const Mesh &g, int p0, base::set<int> &polys) {
 	base::set<int> verts;
 	bool found_more = true;
 
@@ -687,15 +689,15 @@ void geo_poly_find_connected(const PolygonMesh &g, int p0, base::set<int> &polys
 	}
 }
 
-Array<PolygonMesh> PolygonMesh::split_connected() const {
-	Array<PolygonMesh> r;
+Array<Mesh> Mesh::split_connected() const {
+	Array<Mesh> r;
 	base::set<int> poly_used;
 
 	for (const auto& [i, p]: enumerate(polygons)) {
 		if (poly_used.contains(i))
 			continue;
 
-		PolygonMesh g;
+		Mesh g;
 		g.vertices = vertices;
 
 		base::set<int> g_polys;
@@ -721,4 +723,6 @@ Array<PolygonMesh> PolygonMesh::split_connected() const {
 	}
 	return false;
 }*/
+
+}
 

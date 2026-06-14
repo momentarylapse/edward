@@ -42,7 +42,7 @@
 #include <cmath>
 
 #include <lib/polymesh/Polygon.h>
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 #include <lib/polymesh/create/Sphere.h>
 #include <lib/polymesh/create/Cylinder.h>
 #include <y/world/systems/AnimationManager.h>
@@ -467,11 +467,11 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 				if (auto p = m->_template->physical_mesh.get()) {
 					if (!physical_vertex_buffers.contains(p)) {
 						auto _vb = new ygfx::VertexBuffer("3f,3f,2f");
-						PolygonMesh mesh;
+						polymesh::Mesh mesh;
 						for (const auto& v: p->vertex)
-							mesh.vertices.add(MeshVertex(v));
+							mesh.vertices.add(polymesh::Vertex(v));
 						for (const auto& poly: p->poly) {
-							Polygon polygon;
+							polymesh::Polygon polygon;
 							for (int f=0; f<poly.num_faces; f++) {
 								polygon.side.resize(poly.face[f].num_vertices);
 								for (int k=0; k<poly.face[f].num_vertices; k++)

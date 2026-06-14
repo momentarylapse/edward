@@ -7,7 +7,7 @@
 
 #include <view/Mode.h>
 #include "../../data/DataModel.h"
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 #include <lib/base/optional.h>
 
 class MultiViewWindow;

@@ -7,10 +7,10 @@
 #include <lib/base/base.h>
 #include <lib/base/set.h>
 
-class PolygonMesh;
-class MeshEdit;
-
 namespace polymesh {
-	MeshEdit extrude_polygons(const PolygonMesh& mesh, const base::set<int>& sel, float distance, bool keep_connected);
+	class Mesh;
+	class MeshEdit;
+
+	MeshEdit extrude_polygons(const Mesh& mesh, const base::set<int>& sel, float distance, bool keep_connected);
 }
 

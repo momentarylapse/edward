@@ -4,7 +4,7 @@
 
 #include "AutoMergePolygons.h"
 #include "../MeshEdit.h"
-#include "../PolygonMesh.h"
+#include "../Mesh.h"
 #include <lib/base/iter.h>
 #include <lib/base/sort.h>
 #include "lib/os/msg.h"
@@ -24,7 +24,7 @@ namespace polymesh {
 		return false;
 	}
 
-	void grow_polygon(const PolygonMesh& mesh, int i0, const Polygon& p0, base::set<int>& used, MeshEdit& ed, const base::set<int>& selp, float dang) {
+	void grow_polygon(const Mesh& mesh, int i0, const Polygon& p0, base::set<int>& used, MeshEdit& ed, const base::set<int>& selp, float dang) {
 		auto p = p0;
 		const vec3 n = p.get_normal(mesh.vertices);
 		base::set<int> used_now;
@@ -53,7 +53,7 @@ namespace polymesh {
 	}
 
 
-	MeshEdit auto_merge_polygons(const PolygonMesh& mesh, const base::set<int>& selp, float dang) {
+	MeshEdit auto_merge_polygons(const Mesh& mesh, const base::set<int>& selp, float dang) {
 		MeshEdit ed;
 		const auto edges = mesh.edges();
 

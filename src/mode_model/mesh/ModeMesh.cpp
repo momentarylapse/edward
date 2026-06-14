@@ -310,7 +310,7 @@ void ModeMesh::update_vb() {
 		vertex_buffers[i]->update(buf);
 	}
 
-	PolygonMesh m;
+	polymesh::Mesh m;
 	m.vertices = data->phys_mesh->vertices;
 	m.polygons = data->phys_mesh->polygons;
 	for (const auto& b: data->editing_mesh->spheres)
@@ -384,7 +384,7 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 	return h;
 }
 
-void selection_edges_from_vertices(base::set<int>& sele, const base::set<int>& selv, const Array<Edge>& edges) {
+void selection_edges_from_vertices(base::set<int>& sele, const base::set<int>& selv, const Array<polymesh::Edge>& edges) {
 	sele.clear();
 	for (const auto& [i, e]: enumerate(edges)) {
 		if (selv.contains(e.index[0]) and selv.contains(e.index[1]))
@@ -392,7 +392,7 @@ void selection_edges_from_vertices(base::set<int>& sele, const base::set<int>& s
 	}
 }
 
-void selection_polygons_from_vertices(base::set<int>& selp, const base::set<int>& selv, const PolygonMesh& mesh) {
+void selection_polygons_from_vertices(base::set<int>& selp, const base::set<int>& selv, const polymesh::Mesh& mesh) {
 	selp.clear();
 	for (const auto& [i, p]: enumerate(mesh.polygons)) {
 		bool is_selected = true;
@@ -403,7 +403,7 @@ void selection_polygons_from_vertices(base::set<int>& selp, const base::set<int>
 	}
 }
 
-void selection_vertices_from_edges(base::set<int>& selv, const base::set<int>& sele, const Array<Edge>& edges) {
+void selection_vertices_from_edges(base::set<int>& selv, const base::set<int>& sele, const Array<polymesh::Edge>& edges) {
 	selv.clear();
 	for (const auto& [i,e]: enumerate(edges))
 		if (sele.contains(i)) {
@@ -412,7 +412,7 @@ void selection_vertices_from_edges(base::set<int>& selv, const base::set<int>& s
 		}
 }
 
-void selection_polygons_from_edges(base::set<int>& selp, const base::set<int>& sele, const PolygonMesh& mesh, const Array<Edge>& edges) {
+void selection_polygons_from_edges(base::set<int>& selp, const base::set<int>& sele, const polymesh::Mesh& mesh, const Array<polymesh::Edge>& edges) {
 	selp.clear();
 	for (const auto& [i,p]: enumerate(mesh.polygons)) {
 		bool is_selected = true;
@@ -424,7 +424,7 @@ void selection_polygons_from_edges(base::set<int>& selp, const base::set<int>& s
 	}
 }
 
-void selection_vertices_from_polygons(base::set<int>& selv, const base::set<int>& selp, const PolygonMesh& mesh) {
+void selection_vertices_from_polygons(base::set<int>& selv, const base::set<int>& selp, const polymesh::Mesh& mesh) {
 	selv.clear();
 	for (const auto& [i,p]: enumerate(mesh.polygons))
 		if (selp.contains(i))
@@ -432,7 +432,7 @@ void selection_vertices_from_polygons(base::set<int>& selv, const base::set<int>
 				selv.add(s.vertex);
 }
 
-void selection_edges_from_polygons(base::set<int>& sele, const base::set<int>& selp, const PolygonMesh& mesh, const Array<Edge>& edges) {
+void selection_edges_from_polygons(base::set<int>& sele, const base::set<int>& selp, const polymesh::Mesh& mesh, const Array<polymesh::Edge>& edges) {
 	sele.clear();
 	for (const auto& [i,p]: enumerate(mesh.polygons))
 		if (selp.contains(i))

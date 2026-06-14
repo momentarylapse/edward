@@ -3,12 +3,12 @@
 //
 
 #include "MeshRandomSurfacePoints.h"
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 #include <lib/math/vec2.h>
 #include <lib/os/msg.h>
 
 
-Array<SurfacePoint> mesh_surface_points(const PolygonMesh& mesh, float r) {
+Array<SurfacePoint> mesh_surface_points(const polymesh::Mesh& mesh, float r) {
 	Array<SurfacePoint> points;
 
 	auto allowed = [&points, r] (const vec3& pos) {

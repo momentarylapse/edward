@@ -11,13 +11,15 @@
 #include <view/Hover.h>
 #include "../../data/DataModel.h"
 
-struct Edge;
+namespace polymesh {
+	struct Edge;
+}
 class MultiViewWindow;
 namespace xhui {
 	class Panel;
 }
 namespace yrenderer {
-	class Material;
+	struct Material;
 }
 class ModeModel;
 class ModeMesh;
@@ -56,7 +58,7 @@ public:
 
 	ModeMesh* mode_mesh;
 	DataModel* data;
-	Array<Edge> edges_cached;
+	Array<polymesh::Edge> edges_cached;
 	struct EdgeInfo {
 		int polygons[2];
 		int sides[2];

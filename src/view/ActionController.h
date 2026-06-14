@@ -16,7 +16,9 @@
 #include "../lib/pattern/Observable.h"
 #include <lib/ygraphics/graphics-fwd.h>
 
-struct PolygonMesh;
+namespace polymesh {
+	struct Mesh;
+}
 class ActionMultiView;
 namespace history {
 	class Data;
@@ -25,7 +27,7 @@ class Painter;
 class MultiView;
 class MultiViewWindow;
 namespace yrenderer {
-	class Material;
+	struct Material;
 	struct RenderParams;
 	struct RenderViewData;
 }

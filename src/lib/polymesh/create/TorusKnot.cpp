@@ -8,8 +8,9 @@
 #include "TorusKnot.h"
 #include "Cylinder.h"
 #include <cmath>
+namespace polymesh {
 
-class GeometryTorusKnot : public PolygonMesh {
+class GeometryTorusKnot : public Mesh {
 public:
 	GeometryTorusKnot(const vec3 &_pos, const vec3 &axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges) {
 		Array<vec3> pos;
@@ -26,8 +27,7 @@ public:
 	}
 };
 
-namespace polymesh {
-	PolygonMesh create_torus_knot(const vec3 &pos, const vec3 &axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges) {
+	Mesh create_torus_knot(const vec3 &pos, const vec3 &axis, float radius1, float radius2, float radius3, int turns, int twists, int rings, int edges) {
 		return GeometryTorusKnot(pos, axis, radius1, radius2, radius3, turns, twists, rings, edges);
 	}
 }

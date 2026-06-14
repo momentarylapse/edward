@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "../PolygonMesh.h"
+#include "../Mesh.h"
 
 namespace polymesh {
-	PolygonMesh create_ball(const vec3 &pos, float radius, int num_x, int num_y);
+	Mesh create_ball(const vec3 &pos, float radius, int num_x, int num_y);
 }
 
 

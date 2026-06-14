@@ -8,7 +8,7 @@
 
 #include <view/Mode.h>
 #include "../../data/DataModel.h"
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 
 class MultiViewWindow;
 class ModeMeshGeometry;
@@ -33,7 +33,7 @@ public:
 	bool center_selected;
 	vec3 point2;
 	float radius;
-	PolygonMesh mesh;
+	polymesh::Mesh mesh;
 	owned<ygfx::VertexBuffer> vertex_buffer;
 
 	enum class Type {

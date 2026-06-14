@@ -7,7 +7,7 @@
 #ifndef NDEBUG
 
 #include "MeshTest.h"
-#include <lib/polymesh/PolygonMesh.h>
+#include <lib/polymesh/Mesh.h>
 #include <lib/polymesh/MeshEdit.h>
 #include <lib/polymesh/create/Cube.h>
 #include <lib/polymesh/create/Plane.h>
@@ -25,7 +25,9 @@ namespace unittest {
 
 static constexpr bool verbose = false;
 
-void show_mesh(const PolygonMesh& mesh) {
+	using namespace polymesh;
+
+void show_mesh(const Mesh& mesh) {
 	msg_write("-----");
 	for (const auto& v: mesh.vertices)
 		msg_write(str(v.pos));
@@ -35,7 +37,7 @@ void show_mesh(const PolygonMesh& mesh) {
 
 void show_mesh_diff(const MeshEdit& edit);
 
-void assert_equal(const PolygonMesh &a, const PolygonMesh &b, float epsilon = 0.001f) {
+void assert_equal(const Mesh &a, const Mesh &b, float epsilon = 0.001f) {
 	if (a.vertices.num != b.vertices.num)
 		throw Failure(format("Mesh #vertices: %d != %d", a.vertices.num, b.vertices.num));
 	if (a.polygons.num != b.polygons.num)
@@ -49,7 +51,7 @@ void assert_equal(const PolygonMesh &a, const PolygonMesh &b, float epsilon = 0.
 		assert_equal(a.polygons[i].get_vertices(), b.polygons[i].get_vertices());
 }
 
-void assert_equal_up_to_permutation(const PolygonMesh &a, const PolygonMesh &b, float epsilon = 0.001f) {
+void assert_equal_up_to_permutation(const Mesh &a, const Mesh &b, float epsilon = 0.001f) {
 	if (a.vertices.num != b.vertices.num)
 		throw Failure(format("Mesh #vertices: %d != %d", a.vertices.num, b.vertices.num));
 	if (a.polygons.num != b.polygons.num)
@@ -88,14 +90,14 @@ void assert_equal_up_to_permutation(const PolygonMesh &a, const PolygonMesh &b, 
 		msg_write("pmap " + str(pmap));
 }
 
-void check_mesh_health(const PolygonMesh& mesh) {
+void check_mesh_health(const Mesh& mesh) {
 	for (const auto& p: mesh.polygons)
 		for (const auto& s: p.side)
 			if (s.vertex < 0 or s.vertex >= mesh.vertices.num)
 				throw Failure(format("Mesh  illegal vertex ref: %d  (n=%d)", s.vertex, mesh.vertices.num));
 }
 
-MeshEdit random_mesh_edit(const PolygonMesh &mesh, int seed) {
+MeshEdit random_mesh_edit(const Mesh &mesh, int seed) {
 	Random r;
 	r.seed(str(seed));
 
@@ -113,7 +115,7 @@ MeshEdit random_mesh_edit(const PolygonMesh &mesh, int seed) {
 
 	Array<int> new_vertices;
 	for (int i=0; i<2; i++)
-		new_vertices.add(edit.add_vertex(MeshVertex{r.in_ball(20)}));
+		new_vertices.add(edit.add_vertex(Vertex{r.in_ball(20)}));
 
 	for (int i=0; i<2; i++) {
 		Polygon polygon;
@@ -144,7 +146,7 @@ Array<UnitTest::Test> MeshTest::tests() {
 }
 
 void MeshTest::test_diff_basic_vertices() {
-	PolygonMesh mesh0;
+	Mesh mesh0;
 	for (int i=0; i<5; i++)
 		mesh0.add_vertex(vec3((float)i, 0, 0));
 	mesh0.add_polygon_auto_texture({0,2,4});
@@ -153,13 +155,13 @@ void MeshTest::test_diff_basic_vertices() {
 	MeshEdit ed;
 	ed.delete_vertex(1);
 	ed.delete_vertex(3);
-	ed.add_vertex(MeshVertex(vec3(991,0,0)), 0);
-	ed.add_vertex(MeshVertex(vec3(992,0,0)), 3);
-	ed.add_vertex(MeshVertex(vec3(993,0,0)), 3);
-	ed.add_vertex(MeshVertex(vec3(994,0,0)));
+	ed.add_vertex(Vertex(vec3(991,0,0)), 0);
+	ed.add_vertex(Vertex(vec3(992,0,0)), 3);
+	ed.add_vertex(Vertex(vec3(993,0,0)), 3);
+	ed.add_vertex(Vertex(vec3(994,0,0)));
 	//show_mesh_diff(ed);
 
-	PolygonMesh mesh1_expected;
+	Mesh mesh1_expected;
 	mesh1_expected.add_vertex(vec3(991,0,0));
 	mesh1_expected.add_vertex(vec3(0,0,0));
 	mesh1_expected.add_vertex(vec3(2,0,0));
@@ -188,8 +190,8 @@ void MeshTest::test_diff_basic_vertices() {
 
 
 void MeshTest::test_diff_invertible() {
-	//const PolygonMesh mesh0 = polymesh::create_cube(Box::ID_SYM, {1,1,1});
-	const PolygonMesh mesh0 = polymesh::create_plane(rect::ID_SYM, {1,1});
+	//const PolygonMesh mesh0 = create_cube(Box::ID_SYM, {1,1,1});
+	const Mesh mesh0 = create_plane(rect::ID_SYM, {1,1});
 	if constexpr (verbose)
 		show_mesh(mesh0);
 
@@ -216,13 +218,13 @@ void MeshTest::test_diff_invertible() {
 }
 
 void MeshTest::test_diff_iterated() {
-	const PolygonMesh mesh0 = polymesh::create_cube(Box::ID_SYM, {1,1,1});
+	const Mesh mesh0 = create_cube(Box::ID_SYM, {1,1,1});
 
 	for (int i=0; i<100; i++) {
 		//msg_write("====");
 		//msg_write(i);
 		Array<MeshEdit> inv;
-		Array<PolygonMesh> meshes;
+		Array<Mesh> meshes;
 
 		// forward
 		auto mesh = mesh0;
@@ -250,7 +252,7 @@ void MeshTest::test_diff_iterated() {
 	}
 }
 
-Selection mesh_select_random_polygons(const PolygonMesh& mesh, int seed) {
+Selection mesh_select_random_polygons(const Mesh& mesh, int seed) {
 	Selection sel;
 	sel.set(MultiViewType::MODEL_POLYGON, {});
 
@@ -262,16 +264,16 @@ Selection mesh_select_random_polygons(const PolygonMesh& mesh, int seed) {
 }
 
 void MeshTest::test_extrude() {
-	const PolygonMesh mesh0 = polymesh::create_cube(Box::ID_SYM, {1,1,1});
+	const Mesh mesh0 = create_cube(Box::ID_SYM, {1,1,1});
 
 	Array<MeshEdit> edits;
 	Array<MeshEdit> inv;
 	Array<MeshEdit> invinv;
 
-	PolygonMesh mesh = mesh0;
+	Mesh mesh = mesh0;
 	for (int i=0; i<15; i++) {
 		auto sel = mesh_select_random_polygons(mesh, i);
-		auto ed = polymesh::extrude_polygons(mesh, sel[MultiViewType::MODEL_POLYGON], 0.1f, false);
+		auto ed = extrude_polygons(mesh, sel[MultiViewType::MODEL_POLYGON], 0.1f, false);
 		edits.add(ed);
 		inv.add(ed.apply_inplace(mesh));
 		check_mesh_health(mesh);
@@ -296,14 +298,14 @@ void MeshTest::test_extrude() {
 }
 
 void MeshTest::test_extrude_undo_redo() {
-	const PolygonMesh mesh0 = polymesh::create_cube(Box::ID_SYM, {1,1,1});
+	const Mesh mesh0 = create_cube(Box::ID_SYM, {1,1,1});
 
-	PolygonMesh mesh = mesh0;
+	Mesh mesh = mesh0;
 	Selection sel;
 	sel.set(MultiViewType::MODEL_POLYGON, {0});
-	auto ed = polymesh::extrude_polygons(mesh, sel[MultiViewType::MODEL_POLYGON], 0.1f, false);
+	auto ed = extrude_polygons(mesh, sel[MultiViewType::MODEL_POLYGON], 0.1f, false);
 
-	Array<PolygonMesh> meshes;
+	Array<Mesh> meshes;
 
 	for (int i=0; i<3; i++) {
 		ed = ed.apply_inplace(mesh);
