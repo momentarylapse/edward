@@ -62,6 +62,9 @@ void ModeModel::on_connect_events_rec() {
 	doc->event("mode-mesh-materials", [this] {
 		doc->set_mode((Mode*)mode_mesh->mode_mesh_material.get());
 	});
+	doc->event("mode-mesh-normals", [this] {
+		doc->set_mode((Mode*)mode_mesh->mode_mesh_normals.get());
+	});
 	doc->event("mode-mesh-uv", [this] {
 		doc->set_mode((Mode*)mode_mesh->mode_mesh_uv.get());
 	});
@@ -108,6 +111,7 @@ void ModeModel::on_update_menu() {
 	win->check("mode-mesh-geometry", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_geometry.get());
 	win->check("mode-mesh-sculpt", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_sculpt.get());
 	win->check("mode-mesh-materials", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_material.get());
+	win->check("mode-mesh-normals", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_normals.get());
 	win->check("mode-mesh-uv", doc->cur_mode == (Mode*)mode_mesh->mode_mesh_uv.get());
 	win->check("mode-skeleton", doc->cur_mode == mode_skeleton.get());
 

@@ -24,6 +24,7 @@ namespace yrenderer {
 class ModeModel;
 class ModeMeshGeometry;
 class ModeMeshMaterial;
+class ModeMeshNormals;
 class ModeMeshSculpt;
 class ModeMeshUV;
 
@@ -56,6 +57,7 @@ public:
 
 	owned<ModeMeshGeometry> mode_mesh_geometry;
 	owned<ModeMeshMaterial> mode_mesh_material;
+	owned<ModeMeshNormals> mode_mesh_normals;
 	owned<ModeMeshSculpt> mode_mesh_sculpt;
 	owned<ModeMeshUV> mode_mesh_uv;
 

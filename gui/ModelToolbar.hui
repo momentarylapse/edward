@@ -12,8 +12,9 @@ Toolbar model-toolbar ""
 	Item mesh-visible0 "Vis" checkable image=model-surface "tooltip=Visible mesh"
 	Item mesh-physical "Phys" checkable "tooltip=Physical mesh"
 	Separator
-	Item mode-mesh-geometry "Mesh geometry mode" checkable image=model-surface
+	Item mode-mesh-geometry "Edit mesh geometry" checkable image=model-surface
 	Item mode-mesh-sculpt "Sculpting mode" checkable image=model-deform
+	Item mode-mesh-normals "Edit normals" checkable image=model-deform
 	Item mode-mesh-materials "Edit materials" checkable image=model-textures
 	Item mode-mesh-uv "Edit UV texture coordinates" checkable image=model-uv
 	Item mode-mesh-paint "Paint on mesh (into texture)" checkable image=model-paint disabled

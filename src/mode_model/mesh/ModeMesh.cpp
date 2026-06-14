@@ -4,6 +4,7 @@
 
 #include "ModeMesh.h"
 #include "geometry/ModeMeshGeometry.h"
+#include "normals/ModeMeshNormals.h"
 #include "sculpt/ModeMeshSculpt.h"
 #include "uv/ModeMeshUV.h"
 #include "material/ModeMeshMaterial.h"
@@ -22,8 +23,6 @@
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/DocumentSession.h>
-#include <lib/xhui/Resource.h>
-#include <lib/xhui/controls/MenuBar.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <cmath>
 
@@ -47,6 +46,7 @@ ModeMesh::ModeMesh(ModeModel* parent) : SubMode(parent) {
 
 	mode_mesh_geometry = new ModeMeshGeometry(this);
 	mode_mesh_material = new ModeMeshMaterial(this);
+	mode_mesh_normals = new ModeMeshNormals(this);
 	mode_mesh_sculpt = new ModeMeshSculpt(this);
 	mode_mesh_uv = new ModeMeshUV(this);
 }

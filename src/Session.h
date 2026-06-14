@@ -17,6 +17,10 @@
 #include <lib/yrenderer/Context.h>
 
 
+namespace yrenderer {
+	class LineHelper;
+}
+
 class MultiView;
 class Mode;
 class ModeModel;
@@ -103,6 +107,7 @@ public:
 	yrenderer::Context *ctx;
 	ResourceManager *resource_manager;
 	DrawingHelper *drawing_helper;
+	yrenderer::LineHelper* line_helper;
 	edward::PluginManager* plugin_manager;
 	owned<MaterialPreviewManager> material_preview_manager;
 

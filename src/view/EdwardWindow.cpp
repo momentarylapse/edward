@@ -18,6 +18,7 @@
 #include <lib/yrenderer/Renderer.h>
 #include <lib/yrenderer/TextureManager.h>
 #include <lib/yrenderer/Context.h>
+#include <lib/yrenderer/helper/LineHelper.h>
 #include <sys/stat.h>
 #include <y/EngineData.h>
 
@@ -160,6 +161,7 @@ Dialog x x padding=0
 		session->ctx->material_manager = session->resource_manager->material_manager;
 		session->ctx->shader_manager->default_shader = "default.shader";
 		session->drawing_helper = new DrawingHelper(session->ctx, pp->context);
+		session->line_helper = new yrenderer::LineHelper;
 		session->material_preview_manager = new MaterialPreviewManager(session.get());
 		try {
 			session->ctx->load_shader_module("module-basic-data.shader");
@@ -185,6 +187,7 @@ Dialog x x padding=0
 	});
 	event_xp(id, xhui::event_id::JustBeforeDraw, [this] (Painter* p) {
 		session->material_preview_manager->update();
+		session->line_helper->start_frame(p->ui_scale);
 	});
 	event_xp("overlay-area", xhui::event_id::Draw, [this] (Painter* p) {
 		p->set_color(White);

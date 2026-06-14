@@ -135,6 +135,7 @@ Session::Session() {
 	plugin_manager = nullptr;
 	win = nullptr;
 	drawing_helper = nullptr;
+	line_helper = nullptr;
 
 	all_sessions.add(this);
 }

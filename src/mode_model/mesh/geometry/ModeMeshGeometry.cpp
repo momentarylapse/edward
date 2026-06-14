@@ -196,26 +196,6 @@ void ModeMeshGeometry::on_connect_events() {
 	doc->event("add-cylinder", [this] {
 		doc->set_mode(new ModeAddCylinder(this));
 	});
-	doc->event("normal_this_hard", [this] {
-		const auto& sel = multi_view->selection[MultiViewType::MODEL_POLYGON];
-		for (auto&& [i, p]: enumerate(data->mesh->polygons))
-			if (sel.contains(i)) {
-				p.smooth_group = -1;
-				p.normal_dirty = true;
-			}
-		data->mesh->update_normals();
-		data->out_changed();
-	});
-	doc->event("normal_this_smooth", [this] {
-		const auto& sel = multi_view->selection[MultiViewType::MODEL_POLYGON];
-		for (auto&& [i, p]: enumerate(data->mesh->polygons))
-			if (sel.contains(i)) {
-				p.smooth_group = 42;
-				p.normal_dirty = true;
-			}
-		data->mesh->update_normals();
-		data->out_changed();
-	});
 	doc->event("align-to-grid", [this] {
 		data->execute(new ActionModelAlignToGrid(data->editing_mesh, multi_view->selection, [this] (const vec3& v) {
 			return multi_view->snap_v(v);

@@ -38,7 +38,7 @@ void LineHelper::begin_draw(const RenderParams& params, RenderViewData& _rvd) {
 		nix::set_projection_matrix(mat4::ID);
 #endif
 	area = params.area;
-	mat = rvd->scene_view->main_camera_params.projection_matrix(params.desired_aspect_ratio) * rvd->scene_view->main_camera_params.view_matrix();
+	mat = rvd->camera_params.projection_matrix(params.desired_aspect_ratio) * rvd->camera_params.view_matrix();
 }
 
 void LineHelper::set_color(const color& c) {

@@ -1,4 +1,4 @@
-Menu menu-model-material "Model" disabled
+Menu menu-model-normals "Model" disabled
 	Menu menu_model_file "File"
 		Item new "New" image=hui:new
 		Item open "Open..." image=hui:open
@@ -50,14 +50,9 @@ Menu menu-model-material "Model" disabled
 		Item selection-grow-connected "Grow along connected" disabled
 		Separator
 		Item select_cw "triangles only clockwise" checkable
-	Menu menu_model_appearance "Appearance"
-		Item menu_model_material "Materials" disabled
-		Item mode_model_materials "Materials..." checkable
-		Item choose_material "Choose material..." image=hui:open
-		Separator
-		Item menu_mapping "Texture mapping" disabled
-		Item text_from_bg "Texture coordinates from background"
-		Item automapping "Automatic (all)"
+	Menu menu_model_appearance "Normals"
+		Item normal_this_smooth "Smooth"
+		Item normal_this_hard "Flat/sharp"
 	Menu menu_model_view "View"
 		Menu menu_model_mode "Mode"
 			Item mode_model_mesh "Mesh" checkable

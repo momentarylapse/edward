@@ -495,6 +495,7 @@ add_executable(edward
 	src/mode_model/mesh/material/action/ActionModelSetMaterial.cpp
 	src/mode_model/mesh/material/dialog/ModelMaterialPanel.cpp
 	src/mode_model/mesh/material/ModeMeshMaterial.cpp
+	src/mode_model/mesh/normals/ModeMeshNormals.cpp
 	src/mode_model/mesh/processing/MeshRandomSurfacePoints.cpp
 	src/mode_model/mesh/sculpt/action/ActionModelBrushExtrude.cpp
 	src/mode_model/mesh/sculpt/ModeMeshSculpt.cpp
