@@ -27,13 +27,8 @@ void *ActionModelPasteMesh::execute(history::Data* data) {
 		Array<int> v;
 		for (int k=0;k<t.side.num;k++)
 			v.add(nv + t.side[k].vertex);
-		Array<vec3> sv;
-		for (int l=0;l<MATERIAL_MAX_TEXTURES;l++)
-			for (int k=0;k<t.side.num;k++)
-				sv.add(t.side[k].skin_vertex[l]);
 		int mat = (t.material >= 0) ? t.material : default_material;
-
-		mesh->_add_polygon(v, mat, sv);
+		mesh->_add_polygon(v, mat, t.get_uvs());
 	}
 	d->out_topology_changed();
 	return nullptr;

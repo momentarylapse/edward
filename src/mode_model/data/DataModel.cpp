@@ -341,7 +341,7 @@ Polygon *DataModel::add_polygon(const Array<int> &v, int material) {
 	Array<vec3> sv;
 	for (int i=0;i<v.num;i++) {
 		float w = (float)i / (float)v.num * 2 * pi;
-		sv.add(vec3(0.5f + cos(w) * 0.5f, 0.5f + sin(w), 0));
+		sv.add(vec3(0.5f + cosf(w) * 0.5f, 0.5f + sinf(w), 0));
 	}
 	return add_polygon_with_skin(v, sv, material);
 }
@@ -351,8 +351,7 @@ Polygon *DataModel::add_polygon_with_skin(const Array<int> &v, const Array<vec3>
 	for (int i=0; i<v.num; i++) {
 		PolygonSide s;
 		s.vertex = v[i];
-		for (int k=0; k<MATERIAL_MAX_TEXTURES; k++)
-			s.skin_vertex[k] = sv[k];
+		s.uv = sv[i];
 		s.normal_index = -1;
 		s.smoothing_id = -1;
 		p.side.add(s);

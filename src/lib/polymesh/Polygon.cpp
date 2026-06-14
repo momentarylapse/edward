@@ -48,13 +48,11 @@ Array<Edge> Polygon::get_edges() const {
 }
 
 
-Array<vec3> Polygon::get_skin_vertices() const {
+Array<vec3> Polygon::get_uvs() const {
 	Array<vec3> sv;
-	sv.resize(side.num * POLYGON_MAX_TEXTURES);
-	int n = 0;
-	for (int l=0;l<POLYGON_MAX_TEXTURES;l++)
-		for (int i=0; i<side.num; i++)
-			sv[n ++] = side[i].skin_vertex[l];
+	sv.resize(side.num);
+	for (int i=0; i<side.num; i++)
+		sv[i] = side[i].uv;
 	return sv;
 }
 
@@ -196,9 +194,9 @@ void Polygon::add_to_vertex_buffer(const Array<MeshVertex> &vertex, DynamicArray
 		auto &a = side[side[i].triangulation[0]];
 		auto &b = side[side[i].triangulation[1]];
 		auto &c = side[side[i].triangulation[2]];
-		*reinterpret_cast<DummyVertex*>(buf.simple_element(i0 + i*3  )) = {vertex[a.vertex].pos, a.normal, a.skin_vertex[0].xy()};
-		*reinterpret_cast<DummyVertex*>(buf.simple_element(i0 + i*3+1)) = {vertex[b.vertex].pos, b.normal, b.skin_vertex[0].xy()};
-		*reinterpret_cast<DummyVertex*>(buf.simple_element(i0 + i*3+2)) = {vertex[c.vertex].pos, c.normal, c.skin_vertex[0].xy()};
+		*reinterpret_cast<DummyVertex*>(buf.simple_element(i0 + i*3  )) = {vertex[a.vertex].pos, a.normal, a.uv.xy()};
+		*reinterpret_cast<DummyVertex*>(buf.simple_element(i0 + i*3+1)) = {vertex[b.vertex].pos, b.normal, b.uv.xy()};
+		*reinterpret_cast<DummyVertex*>(buf.simple_element(i0 + i*3+2)) = {vertex[c.vertex].pos, c.normal, c.uv.xy()};
 	}
 }
 
@@ -206,7 +204,7 @@ void Polygon::invert() {
 	Polygon pp = *this;
 	for (int i=0; i<side.num; i++) {
 		side[i].vertex = pp.side[side.num - i - 1].vertex;
-		memcpy(side[i].skin_vertex, pp.side[side.num - i - 1].skin_vertex, sizeof(side[i].skin_vertex));
+		side[i].uv = pp.side[side.num - i - 1].uv;
 		side[i].normal = - pp.side[side.num - i - 1].normal;
 	}
 	temp_normal = - temp_normal;

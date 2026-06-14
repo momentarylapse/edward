@@ -822,9 +822,11 @@ void FormatModel::_load_v11_edit(LegacyFile& lf, DataModel *data, bool deep) {
 					t.side.resize(n);
 					for (int k=0;k<n;k++){
 						t.side[k].vertex = f->read_int();
-						for (int l=0;l<data->materials[t.material]->textures.num;l++){
-							t.side[k].skin_vertex[l].x = f->read_float();
-							t.side[k].skin_vertex[l].y = f->read_float();
+						t.side[k].uv.x = f->read_float();
+						t.side[k].uv.y = f->read_float();
+						for (int l=1; l<data->materials[t.material]->textures.num; l++){
+							[[maybe_unused]] auto x = f->read_float();
+							[[maybe_unused]] auto y = f->read_float();
 						}
 					}
 					t.normal_dirty = true;

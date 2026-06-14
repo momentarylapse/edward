@@ -94,8 +94,7 @@ void PolygonMesh::add_polygon(const Array<int> &v, const Array<vec3> &sv) {
 	p.side.resize(v.num);
 	for (int k=0; k<v.num; k++) {
 		p.side[k].vertex = v[k];
-		for (int l=0; l<POLYGON_MAX_TEXTURES; l++)
-			p.side[k].skin_vertex[l] = sv[l*v.num + k];
+		p.side[k].uv = sv[k];
 	}
 	p.material = -1;
 	p.normal_dirty = true;
@@ -111,20 +110,14 @@ void PolygonMesh::add_polygon_auto_texture(const Array<int> &v) {
 	sg.init_point_cloud_boundary(vertices, v);
 
 	Array<vec3> sv;
-	for (int l=0; l<POLYGON_MAX_TEXTURES; l++)
-		for (int k=0; k<v.num; k++)
-			sv.add(sg.get(vertices[v[k]].pos));
+	for (int k=0; k<v.num; k++)
+		sv.add(sg.get(vertices[v[k]].pos));
 
 	add_polygon(v, sv);
 }
 
 void PolygonMesh::add_polygon_single_texture(const Array<int> &v, const Array<vec3> &sv) {
-	Array<vec3> sv2;
-	for (int l=0; l<POLYGON_MAX_TEXTURES; l++)
-		for (int k=0; k<v.num; k++)
-			sv2.add(sv[k]);
-
-	add_polygon(v, sv2);
+	add_polygon(v, sv);
 }
 
 void PolygonMesh::add_bezier3(const Array<vec3> &v, int num_x, int num_y, float epsilon)

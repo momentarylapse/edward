@@ -43,8 +43,7 @@ void ModelMesh::_add_polygon(const Array<int> &v, int _material, const Array<vec
 	t.side.resize(v.num);
 	for (int k=0;k<v.num;k++) {
 		t.side[k].vertex = v[k];
-		for (int i=0;i<MATERIAL_MAX_TEXTURES;i++)
-			t.side[k].skin_vertex[i] = sv[i * v.num + k];
+		t.side[k].uv = sv[k];
 	}
 
 	for (int vv: v)
@@ -212,7 +211,7 @@ void ModelMesh::export_to_triangle_mesh(ModelTriangleMesh &sk, DataModel* model)
 			for (int k=0;k<3;k++) {
 				tt.vertex[k] = t.side[t.side[i].triangulation[k]].vertex;
 				tt.normal[k] = t.side[t.side[i].triangulation[k]].normal;
-				tt.skin_vertex[k] = t.side[t.side[i].triangulation[k]].skin_vertex[0];
+				tt.skin_vertex[k] = t.side[t.side[i].triangulation[k]].uv;
 			}
 			sk.sub[t.material].triangles.add(tt);
 		}

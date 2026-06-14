@@ -48,7 +48,7 @@ void SkinGenerator::init_projective(const mat4 &_m) {
 #endif
 //}
 
-void SkinGenerator::init_polygon(const Array<MeshVertex> &v, const Polygon &p, int level) {
+void SkinGenerator::init_polygon(const Array<MeshVertex> &v, const Polygon &p) {
 	vec3 n = p.temp_normal;
 	vec3 d1 = n.ortho();
 	vec3 d2 = vec3::cross(n, d1);
@@ -57,8 +57,8 @@ void SkinGenerator::init_polygon(const Array<MeshVertex> &v, const Polygon &p, i
 	for (PolygonSide &s: p.side){
 		float x = vec3::dot(d1, v[s.vertex].pos);
 		float y = vec3::dot(d2, v[s.vertex].pos);
-		float u = s.skin_vertex[level].x;
-		float v = s.skin_vertex[level].y;
+		float u = s.uv.x;
+		float v = s.uv.y;
 		sx += x;
 		sy += y;
 		sxx += x*x;

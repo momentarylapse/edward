@@ -14,7 +14,7 @@ ActionModelUVMoveSelection::ActionModelUVMoveSelection(ModelMesh* m, const Selec
 				if (selection[MultiViewType::MODEL_SKIN_VERTEX].contains(n0 + iside)) {
 					index.add(iside);
 					polygon_no.add(ipoly);
-					old_data.add(p.side[iside].skin_vertex[0]);
+					old_data.add(p.side[iside].uv);
 				}
 			n0 += p.side.num;
 		}
@@ -22,11 +22,11 @@ ActionModelUVMoveSelection::ActionModelUVMoveSelection(ModelMesh* m, const Selec
 
 void *ActionModelUVMoveSelection::execute(history::Data*) {
 	for (const auto& [ii, i]: enumerate(index))
-		mesh->polygons[polygon_no[ii]].side[i].skin_vertex[0] = mat * old_data[ii];
+		mesh->polygons[polygon_no[ii]].side[i].uv = mat * old_data[ii];
 	return nullptr;
 }
 
 void ActionModelUVMoveSelection::undo(history::Data*) {
 	for (const auto& [ii, i]: enumerate(index))
-		mesh->polygons[polygon_no[ii]].side[i].skin_vertex[0] = old_data[ii];
+		mesh->polygons[polygon_no[ii]].side[i].uv = old_data[ii];
 }

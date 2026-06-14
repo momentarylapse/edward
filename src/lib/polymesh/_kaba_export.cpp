@@ -57,7 +57,7 @@ void export_package_polymesh(kaba::IExporter* ext) {
 
 	ext->declare_class_size("Polygon.Side", sizeof(PolygonSide));
 	ext->declare_class_element("Polygon.Side.vertex", &PolygonSide::vertex);
-	ext->declare_class_element("Polygon.Side.uv", &PolygonSide::skin_vertex);
+	ext->declare_class_element("Polygon.Side.uv", &PolygonSide::uv);
 	ext->declare_class_element("Polygon.Side.normal_index", &PolygonSide::normal_index);
 	ext->declare_class_element("Polygon.Side.normal", &PolygonSide::normal);
 	ext->declare_class_element("Polygon.Side.triangulation", &PolygonSide::triangulation);

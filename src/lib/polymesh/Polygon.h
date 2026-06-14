@@ -14,11 +14,9 @@ struct mat4;
 struct MeshVertex;
 struct Edge;
 
-#define POLYGON_MAX_TEXTURES 8
-
 struct PolygonSide {
 	int vertex;
-	vec3 skin_vertex[POLYGON_MAX_TEXTURES];
+	vec3 uv;
 	int normal_index;
 	int smoothing_id = -1;
 	vec3 normal;
@@ -33,18 +31,13 @@ struct Polygon {
 	int material = 0;
 	int smooth_group = -1;
 
-	// -> MeshSelectionModePolygin.cpp
-	/*float hover_distance(MultiView::Window *win, const vec2 &m, vec3 &tp, float &z) override;
-	bool in_rect(MultiView::Window *win, const rect &r) override;
-	bool overlap_rect(MultiView::Window *win, const rect &r) override;*/
-
 	Array<int> triangulate(const Array<MeshVertex> &vertex) const;
 	void update_triangulation(const Array<MeshVertex> &vertex);
 	vec3 get_normal(const Array<MeshVertex> &vertex) const;
 	vec3 get_area_vector(const Array<MeshVertex> &vertex) const;
 	Array<int> get_vertices() const;
 	Array<Edge> get_edges() const;
-	Array<vec3> get_skin_vertices() const;
+	Array<vec3> get_uvs() const;
 	int next_vertex(int index) const;
 	int previous_vertex(int index) const;
 	Edge get_side_edge_in(int side_no) const;

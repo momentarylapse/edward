@@ -138,7 +138,7 @@ void ModeMeshUV::update_uvs() {
 	uv.clear();
 	for (const auto& p : mode_mesh->data->editing_mesh->polygons)
 		for (int i=0; i<p.side.num; i++)
-			uv.add({p.side[i].skin_vertex[0]});
+			uv.add({p.side[i].uv});
 }
 
 void ModeMeshUV::import_selection() {
@@ -174,8 +174,8 @@ void ModeMeshUV::on_draw_win(const yrenderer::RenderParams& params, MultiViewWin
 	Array<vec3> points;
 	for (const auto& poly : mode_mesh->data->editing_mesh->polygons)
 		for (int i=0; i<poly.side.num; i++) {
-			points.add(poly.side[i].skin_vertex[0]);
-			points.add(poly.side[(i+1) % poly.side.num].skin_vertex[0]);
+			points.add(poly.side[i].uv);
+			points.add(poly.side[(i+1) % poly.side.num].uv);
 		}
 	session->drawing_helper->set_z_test(false);
 	session->drawing_helper->set_line_width(2.0f);
@@ -188,8 +188,8 @@ void ModeMeshUV::on_draw_win(const yrenderer::RenderParams& params, MultiViewWin
 	for (const auto& poly : mode_mesh->data->editing_mesh->polygons) {
 		for (int i=0; i<poly.side.num; i++)
 			if (sel.contains(n0 + i) and sel.contains(n0 + ((i+1) % poly.side.num))) {
-				points.add(poly.side[i].skin_vertex[0]);
-				points.add(poly.side[(i+1) % poly.side.num].skin_vertex[0]);
+				points.add(poly.side[i].uv);
+				points.add(poly.side[(i+1) % poly.side.num].uv);
 			}
 		n0 += poly.side.num;
 	}

@@ -496,9 +496,11 @@ public:
 			t.side.resize(num_faces);
 			for (int k=0; k<num_faces; k++) {
 				t.side[k].vertex = f->read_int();
-				for (int l=0;l<parent->materials[t.material]->textures.num;l++) {
-					t.side[k].skin_vertex[l].x = f->read_float();
-					t.side[k].skin_vertex[l].y = f->read_float();
+				t.side[k].uv.x = f->read_float();
+				t.side[k].uv.y = f->read_float();
+				for (int l=1;l<parent->materials[t.material]->textures.num;l++) {
+					f->read_float();
+					f->read_float();
 				}
 			}
 			t.normal_dirty = true;
@@ -518,8 +520,8 @@ public:
 			for (auto &ss: t.side) {
 				f->write_int(ss.vertex);
 				for (int l=0;l<parent->materials[t.material]->textures.num;l++) {
-					f->write_float(ss.skin_vertex[l].x);
-					f->write_float(ss.skin_vertex[l].y);
+					f->write_float(ss.uv.x);
+					f->write_float(ss.uv.y);
 				}
 			}
 		}

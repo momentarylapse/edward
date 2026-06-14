@@ -142,7 +142,7 @@ MeshEdit bevel_edges(const PolygonMesh& mesh, const base::set<int>& selv, const 
 			for (int k=0; k<c.new_vertices.num; k++) {
 				p.side[k].vertex = c.new_vertices[k];
 				float w = (float)k / (float)c.new_vertices.num * 2 * pi;
-				p.side[k].skin_vertex[0] = vec3(0.5f + cosf(w)/2,0.5f + sinf(w)/2,0);
+				p.side[k].uv = vec3(0.5f + cosf(w)/2,0.5f + sinf(w)/2,0);
 			}
 			ed.add_polygon(p);
 		}
@@ -177,10 +177,10 @@ MeshEdit bevel_edges(const PolygonMesh& mesh, const base::set<int>& selv, const 
 				p.side[3].vertex = c0->new_vertices_p[d0_next];
 			else
 				p.side[3].vertex = c0->new_vertices_e[d0_next];
-			p.side[0].skin_vertex[0] = {0,0,0};
-			p.side[1].skin_vertex[0] = {1,0,0};
-			p.side[2].skin_vertex[0] = {1,1,0};
-			p.side[3].skin_vertex[0] = {0,1,0};
+			p.side[0].uv = {0,0,0};
+			p.side[1].uv = {1,0,0};
+			p.side[2].uv = {1,1,0};
+			p.side[3].uv = {0,1,0};
 			ed.add_polygon(p);
 		}
 	}
@@ -195,7 +195,7 @@ MeshEdit bevel_edges(const PolygonMesh& mesh, const base::set<int>& selv, const 
 			continue;
 		Polygon pp;
 		SkinGenerator sg;
-		sg.init_polygon(mesh.vertices, p, 0);
+		sg.init_polygon(mesh.vertices, p);
 		for (const auto& [si, s]: enumerate(p.side))
 			if (selv.contains(s.vertex)) {
 				auto c = base::find_by_element(b.caps, &BevelInfo::Cap::index, s.vertex);

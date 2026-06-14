@@ -110,7 +110,7 @@ void link_mesh(kaba::ExternalLinkData* ext) {
 	ext->declare_class_element("Mesh.Polygon.Side.vertex", &PolygonSide::vertex);
 	//	ext->declare_class_element("Mesh.Polygon.Side.edge", &PolygonSide::edge);
 	//	ext->declare_class_element("Mesh.Polygon.Side.edge_direction", &ModelPolygonSide::edge_direction);
-	ext->declare_class_element("Mesh.Polygon.Side.skin_vertex", &PolygonSide::skin_vertex);
+	ext->declare_class_element("Mesh.Polygon.Side.skin_vertex", &PolygonSide::uv);
 	ext->declare_class_element("Mesh.Polygon.Side.normal_index", &PolygonSide::normal_index);
 	ext->declare_class_element("Mesh.Polygon.Side.normal", &PolygonSide::normal);
 	ext->declare_class_element("Mesh.Polygon.Side.triangulation", &PolygonSide::triangulation);
