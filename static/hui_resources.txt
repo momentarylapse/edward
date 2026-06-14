@@ -4330,47 +4330,11 @@ menu-vertices
 
 4
 0
-5
-Item
-align_to_grid
-
-0
-0
-0
-Item
-connect
-
 1
-0
-0
 Item
-nearify
-
-2
-0
-0
-Item
-flatten_vertices
-
-3
-0
-0
-Menu
-menu_model_deformation
-
-4
-0
-2
-Item
-deformation_cylinder
+align-to-grid
 
 0
-0
-0
-Item
-deformation_function
-
-1
 0
 0
 Menu
@@ -4378,17 +4342,11 @@ menu-edges
 
 5
 0
-2
-Item
-bevel_edges
-
-0
-0
-0
-Item
-cut_loop
-
 1
+Item
+bevel-edges
+
+0
 0
 0
 Menu
@@ -4396,107 +4354,23 @@ menu-polygons
 
 6
 0
-17
+3
 Item
-cut_out
-image=hui:cut
+extrude-polygons
+
 0
 0
 0
 Item
-split_polygon
+auto-merge-polygons
 
 1
 0
 0
 Item
-extrude_triangles
+invert-polygons
 
 2
-0
-0
-Item
-extrude_triangles_independent
-
-3
-0
-0
-Item
-convert_to_triangles
-
-4
-0
-0
-Item
-untriangulate_selection
-
-5
-0
-0
-Item
-invert_trias
-
-6
-0
-0
-Separator
-
-
-7
-0
-0
-Item
-menu_surface_header
-disabled
-8
-0
-0
-Item
-autoweld_surfaces
-
-9
-0
-0
-Item
-volume_subtract
-image=hui:cut
-10
-0
-0
-Item
-volume_and
-
-11
-0
-0
-Item
-new_outline
-
-12
-0
-0
-Item
-subdivide_surfaces
-
-13
-0
-0
-Separator
-
-
-14
-0
-0
-Item
-menu_all_header
-disabled
-15
-0
-0
-Item
-easify_skin
-
-16
 0
 0
 Menu
@@ -12690,7 +12564,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1357
+1338
 # Text
 /ambient
 Ambient
@@ -13568,35 +13442,17 @@ Vertex
 menu-model-geometry/administrate
 Administrate...
 
-menu-model-geometry/align_to_grid
+menu-model-geometry/align-to-grid
 Align to grid
 
-menu-model-geometry/autoweld_surfaces
-Weld...
+menu-model-geometry/auto-merge-polygons
+Auto merge if flat
 
-menu-model-geometry/bevel_edges
+menu-model-geometry/bevel-edges
 Bevel edges
-
-menu-model-geometry/connect
-Connect Points
-
-menu-model-geometry/convert_to_triangles
-Dissect into triangles
 
 menu-model-geometry/copy
 Copy
-
-menu-model-geometry/cut_loop
-Cut loop
-
-menu-model-geometry/cut_out
-Cut off
-
-menu-model-geometry/deformation_cylinder
-Cylinder radius
-
-menu-model-geometry/deformation_function
-Function
 
 menu-model-geometry/delete
 Delete
@@ -13613,9 +13469,6 @@ High-precision skin (default)
 menu-model-geometry/detail_physical
 Physical skin
 
-menu-model-geometry/easify_skin
-Easify skin
-
 menu-model-geometry/execute_plugin
 Execute plugin
 
@@ -13628,14 +13481,8 @@ To GameStudio...
 menu-model-geometry/export_to_json
 Three.js (json)...
 
-menu-model-geometry/extrude_triangles
+menu-model-geometry/extrude-polygons
 Extrude
-
-menu-model-geometry/extrude_triangles_independent
-Extrude (independent)
-
-menu-model-geometry/flatten_vertices
-Flatten 2d
 
 menu-model-geometry/grid
 Grid
@@ -13658,11 +13505,11 @@ Lineage II...
 menu-model-geometry/import_from_ply
 Polygons (ply)...
 
+menu-model-geometry/invert-polygons
+Invert polygons
+
 menu-model-geometry/invert_selection
 Invert
-
-menu-model-geometry/invert_trias
-Invert polygons
 
 menu-model-geometry/light
 Light
@@ -13685,9 +13532,6 @@ Polygons
 menu-model-geometry/menu-vertices
 Vertices
 
-menu-model-geometry/menu_all_header
-All
-
 menu-model-geometry/menu_help
 ?
 
@@ -13696,9 +13540,6 @@ Material
 
 menu-model-geometry/menu_model_creation
 Create
-
-menu-model-geometry/menu_model_deformation
-Deformation
 
 menu-model-geometry/menu_model_edit
 Edit
@@ -13729,9 +13570,6 @@ Viewstage
 
 menu-model-geometry/menu_project
 Project
-
-menu-model-geometry/menu_surface_header
-Surfaces
 
 menu-model-geometry/menu_world
 World
@@ -13769,14 +13607,8 @@ Vertices
 menu-model-geometry/mode_properties
 Properties...
 
-menu-model-geometry/nearify
-Nearify
-
 menu-model-geometry/new
 New
-
-menu-model-geometry/new_outline
-Outline
 
 menu-model-geometry/open
 Open...
@@ -13829,29 +13661,14 @@ Settings...
 menu-model-geometry/snap_to_grid
 Sticky grid
 
-menu-model-geometry/split_polygon
-Split
-
-menu-model-geometry/subdivide_surfaces
-Subdivide/smoothen
-
 menu-model-geometry/undo
 Undo
-
-menu-model-geometry/untriangulate_selection
-Un-triangulate
 
 menu-model-geometry/view_pop
 Pop out
 
 menu-model-geometry/view_push
 Push in
-
-menu-model-geometry/volume_and
-Restrict volume
-
-menu-model-geometry/volume_subtract
-Volume subtract
 
 menu-model-geometry/what_the_fuck
 \"about\"

@@ -63,12 +63,32 @@ Menu menu-model-geometry "Model" disabled
 		Item add-from-lathe "From lathe"
 	Menu menu-vertices "Vertices"
 		Item align-to-grid "Align to grid"
+		#Item connect "Connect Points"
+		#Item nearify "Nearify"
+		#Item flatten_vertices "Flatten 2d"
+		#Menu menu_model_deformation "Deformation"
+			#Item deformation_cylinder "Cylinder radius"
+			#Item deformation_function "Function"
 	Menu menu-edges "Edges"
 		Item bevel-edges "Bevel edges"
+		#Item cut_loop "Cut loop"
 	Menu menu-polygons "Polygons"
+		#Item cut_out "Cut off" image=hui:cut
+		#Item split_polygon "Split"
 		Item extrude-polygons "Extrude"
+		#Item convert_to_triangles "Dissect into triangles"
 		Item auto-merge-polygons "Auto merge if flat"
 		Item invert-polygons "Invert polygons"
+		#Separator
+		#Item menu_surface_header "Surfaces" disabled
+		#Item autoweld_surfaces "Weld..."
+		#Item volume_subtract "Volume subtract" image=hui:cut
+		#Item volume_and "Restrict volume"
+		#Item new_outline "Outline"
+		#Item subdivide_surfaces "Subdivide/smoothen"
+		#Separator
+		#Item menu_all_header "All" disabled
+		#Item easify_skin "Easify skin"
 	Menu menu_model_view "View"
 		Menu menu_model_mode "Mode"
 			Item mode_model_mesh "Mesh" checkable

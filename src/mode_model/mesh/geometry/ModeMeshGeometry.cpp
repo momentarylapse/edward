@@ -68,14 +68,11 @@ public:
 		from_source(R"foodelim(
 Dialog mesh-op-buttons '' propagateevents
 	Grid ? '' spacing=20 vertical
-		Button mouse-action 'T' 'tooltip=Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-vertex 'V' 'tooltip=Add Vertex' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-polygon 'P' 'tooltip=Add Polygon' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-cube 'Q' 'tooltip=Add cube' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-sphere 'S' 'tooltip=Add sphere' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-platonic 'P' 'tooltip=Add platonic body' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-from-lathe 'L' 'tooltip=Add rotational symmetric (lathe)' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-cylinder 'C' 'tooltip=Add cylinder' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button mouse-action '' 'tooltip=Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-shape '+' 'tooltip=Add shape' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button align-to-grid 'A' 'tooltip=Align selected vertices to grid' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button bevel-edges 'B' 'tooltip=Bevel selected edges/vertices' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button extrude-polygons 'E' 'tooltip=Extrude selected polygons' height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 
 		event("mouse-action", [this] {
@@ -102,6 +99,19 @@ Dialog mesh-op-buttons '' propagateevents
 			ac->set_action_mode(MouseActionMode::SCALE);
 			set_options("mouse-action", "image=rf-scale");
 			set_tooltip("mouse-action", "Left button action: scale selection");
+		});
+
+		event("add-shape", [this] {
+			auto m = new xhui::Menu;
+			m->add_item("add-vertex", "Vertex");
+			m->add_item("add-vertex", "Vertex");
+			m->add_item("add-polygon", "Polygon");
+			m->add_item("add-cube", "Cube");
+			m->add_item("add-sphere", "Sphere");
+			m->add_item("add-platonic", "Platonic body");
+			m->add_item("add-from-lathe", "Rotational symmetric (lathe)");
+			m->add_item("add-cylinder", "Cylinder");
+			m->open_popup(this);
 		});
 	}
 };
@@ -206,24 +216,24 @@ void ModeMeshGeometry::on_connect_events() {
 		data->mesh->update_normals();
 		data->out_changed();
 	});
-	doc->event("align_to_grid", [this] {
+	doc->event("align-to-grid", [this] {
 		data->execute(new ActionModelAlignToGrid(data->editing_mesh, multi_view->selection, [this] (const vec3& v) {
 			return multi_view->snap_v(v);
 		}));
 		session->info(format("aligned to grid (%s)", multi_view->format_length(multi_view->active_window->get_grid_d())));
 	});
-	doc->event("bevel_edges", [this] {
+	doc->event("bevel-edges", [this] {
 		doc->set_mode(new ModeBevelEdges(this));
 	});
 	// extrude_triangles_independent
-	doc->event("extrude_triangles", [this] {
+	doc->event("extrude-polygons", [this] {
 		doc->set_mode(new ModeExtrudePolygons(this));
 	});
-	doc->event("invert_trias", [this] {
+	doc->event("invert-polygons", [this] {
 		auto ed = polymesh::invert_polygons(*data->mesh, multi_view->selection[MultiViewType::MODEL_POLYGON]);
 		data->edit_mesh(ed);
 	});
-	doc->event("untriangulate_selection", [this] {
+	doc->event("auto-merge-polygons", [this] {
 		auto ed = polymesh::auto_merge_polygons(*data->mesh, multi_view->selection[MultiViewType::MODEL_POLYGON]);
 		data->edit_mesh(ed);
 	});
