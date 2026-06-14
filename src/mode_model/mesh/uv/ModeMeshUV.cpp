@@ -4,6 +4,7 @@
 #include <Session.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
+#include <lib/xhui/Menu.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/msg.h>
 #include <view/DocumentSession.h>
@@ -27,20 +28,30 @@ Dialog mesh-uv-op-buttons '' propagateevents
 		Button mouse-action 'T' 'tooltip=Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 
-		event("mouse-action", [this, multi_view] {
+		event("mouse-action", [this] {
+			auto m = new xhui::Menu;
+			m->add_item("mouse-action-move", "Move");
+			m->add_item("mouse-action-rotate", "Rotate");
+			m->add_item("mouse-action-scale", "Scale");
+			m->open_popup(this);
+		});
+		event("mouse-action-move", [this, multi_view] {
 			auto ac = multi_view->action_controller.get();
-			const auto mode = ac->action_mode();
-			if (mode == MouseActionMode::MOVE) {
-				ac->set_action_mode(MouseActionMode::ROTATE);
-				set_options("mouse-action", "image=rf-rotate");
-			} else if (mode == MouseActionMode::ROTATE) {
-				ac->set_action_mode(MouseActionMode::SCALE);
-				set_options("mouse-action", "image=rf-scale");
-			} else if (mode == MouseActionMode::SCALE) {
-				ac->set_action_mode(MouseActionMode::MOVE);
-				set_options("mouse-action", "image=rf-translate");
-			}
-			set_string("mouse-action", multi_view->action_controller->action_name().sub(0, 1).upper());
+			ac->set_action_mode(MouseActionMode::MOVE);
+			set_options("mouse-action", "image=rf-translate");
+			set_tooltip("mouse-action", "Left button action: move selection");
+		});
+		event("mouse-action-rotate", [this, multi_view] {
+			auto ac = multi_view->action_controller.get();
+			ac->set_action_mode(MouseActionMode::ROTATE);
+			set_options("mouse-action", "image=rf-rotate");
+			set_tooltip("mouse-action", "Left button action: rotate selection");
+		});
+		event("mouse-action-scale", [this, multi_view] {
+			auto ac = multi_view->action_controller.get();
+			ac->set_action_mode(MouseActionMode::SCALE);
+			set_options("mouse-action", "image=rf-scale");
+			set_tooltip("mouse-action", "Left button action: scale selection");
 		});
 	}
 };

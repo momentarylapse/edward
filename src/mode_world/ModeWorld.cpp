@@ -49,6 +49,8 @@
 #include <y/ecs/EntityManager.h>
 #include <y/ecs/SystemManager.h>
 
+#include "lib/xhui/Menu.h"
+
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
@@ -139,19 +141,23 @@ Dialog world-op-buttons '' propagateevents
 		Button mouse-action 'T' 'tooltip=Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 
-		event("mouse-action", [this, multi_view] {
+		event("mouse-action", [this] {
+			auto m = new xhui::Menu;
+			m->add_item("mouse-action-move", "Move");
+			m->add_item("mouse-action-rotate", "Rotate");
+			m->open_popup(this);
+		});
+		event("mouse-action-move", [this, multi_view] {
 			auto ac = multi_view->action_controller.get();
-			const auto mode = ac->action_mode();
-			if (mode == MouseActionMode::MOVE) {
-				ac->set_action_mode(MouseActionMode::ROTATE);
-				set_options("mouse-action", "image=rf-rotate");
-				set_tooltip("mouse-action", "Left button action: rotate selection");
-			} else if (mode == MouseActionMode::ROTATE) {
-				ac->set_action_mode(MouseActionMode::MOVE);
-				set_options("mouse-action", "image=rf-translate");
-				set_tooltip("mouse-action", "Left button action: move selection");
-			}
-			set_string("mouse-action", multi_view->action_controller->action_name().sub(0, 1).upper());
+			ac->set_action_mode(MouseActionMode::MOVE);
+			set_options("mouse-action", "image=rf-translate");
+			set_tooltip("mouse-action", "Left button action: move selection");
+		});
+		event("mouse-action-rotate", [this, multi_view] {
+			auto ac = multi_view->action_controller.get();
+			ac->set_action_mode(MouseActionMode::ROTATE);
+			set_options("mouse-action", "image=rf-rotate");
+			set_tooltip("mouse-action", "Left button action: rotate selection");
 		});
 	}
 };
