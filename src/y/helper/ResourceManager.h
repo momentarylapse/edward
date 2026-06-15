@@ -34,7 +34,7 @@ public:
 
 	shared<ygfx::Texture> load_texture(const Path& path);
 	yrenderer::Material* load_material(const Path &filename);
-	xfer<Model> load_model_copy(const Path &filename);
+	yrenderer::Material* create_material();
 	Model* load_model(const Path &filename);
 	Terrain* load_terrain(const Path &filename);
 	Terrain* load_terrain_lazy(const Path &filename);

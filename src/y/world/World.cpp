@@ -244,7 +244,7 @@ MultiInstance* World::create_object_multi(const Path &filename, const Array<vec3
 	auto e = create_entity(vec3::ZERO, quaternion::ID);
 	auto mi = entity_manager->add_component<MultiInstance>(e);
 
-	mi->model = engine.resource_manager->load_model_copy(filename);
+	mi->model = engine.resource_manager->load_model(filename);
 
 	for (int i=0; i<pos.num; i++)
 		mi->matrices.add(mat4::translation(pos[i]) * mat4::rotation(ang[i]));

@@ -41,10 +41,6 @@ ModeMaterial::ModeMaterial(DocumentSession* doc) :
 	generic_data = data;
 	toolbar_id = "material-toolbar";
 	menu_id = "menu_material";
-
-	data->out_changed >> create_sink([this] {
-		material = data->to_material();
-	});
 }
 
 
@@ -73,11 +69,11 @@ void ModeMaterial::on_enter() {
 	auto tex = new ygfx::Texture(16, 16, "rgba:i8");
 	tex->write(im);
 	tex->set_options("magfilter=nearest");
-	material_ground = session->resource_manager->load_material("")->copy();
+	material_ground = session->resource_manager->create_material();
 	material_ground->roughness = 0.4f;
 	material_ground->metal = 0;
 	material_ground->albedo = color(1, 0.3f, 0.3f, 0.3f);
-	material_ground->textures.add(tex);
+	material_ground->textures[0] = tex;
 }
 
 void ModeMaterial::on_connect_events() {
@@ -105,10 +101,17 @@ void ModeMaterial::on_connect_events() {
 	});
 }
 
-
 void ModeMaterial::on_leave() {
 	set_side_panel(nullptr);
+}
 
+void ModeMaterial::on_enter_rec() {
+	data->out_changed >> create_sink([this] {
+		material = data->to_material();
+	});
+}
+
+void ModeMaterial::on_leave_rec() {
 	data->out_changed.unsubscribe(this);
 }
 

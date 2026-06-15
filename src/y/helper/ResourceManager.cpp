@@ -142,8 +142,8 @@ yrenderer::Material* ResourceManager::load_material(const Path& filename) {
 	return material_manager->load(filename);
 }
 
-xfer<Model> ResourceManager::load_model_copy(const Path& filename) {
-	return model_manager->load_copy(filename);
+yrenderer::Material* ResourceManager::create_material() {
+	return material_manager->create_internal();
 }
 
 Model* ResourceManager::load_model(const Path& filename) {
