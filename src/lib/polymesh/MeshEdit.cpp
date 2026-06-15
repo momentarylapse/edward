@@ -31,6 +31,14 @@ void MeshEdit::delete_polygon(int index) {
 	_del_polygons.add(index);
 }
 
+void MeshEdit::delete_sphere(int index) {
+	_del_spheres.add(index);
+}
+
+void MeshEdit::delete_cylinder(int index) {
+	_del_cylinders.add(index);
+}
+
 int MeshEdit::add_vertex(const Vertex& v, int at_index) {
 	int id = -_new_vertices.num - 1; // starts at -1!
 	_new_vertices.add({v, at_index, id});
@@ -41,6 +49,14 @@ void MeshEdit::add_polygon(const Polygon& p, int at_index) {
 	_new_polygons.add({p, at_index});
 	_new_polygons.back().p.normal_dirty = true;
 	_new_polygons.back().p.triangulation_dirty = true;
+}
+
+void MeshEdit::add_sphere(const Sphere &s, int at_index) {
+	_new_spheres.add({s, at_index});
+}
+
+void MeshEdit::add_cylinder(const Cylinder &c, int at_index) {
+	_new_cylinders.add({c, at_index});
 }
 
 MeshEdit MeshEdit::apply_inplace(Mesh& mesh) const {
@@ -98,6 +114,7 @@ MeshEdit MeshEdit::apply_inplace(Mesh& mesh) const {
 		});
 		return index - n_del_before + n_insert_before;
 	};
+
 	auto temp_polygons = mesh.polygons;
 	for (auto& p: temp_polygons)
 		for (auto& s: p.side)
@@ -107,34 +124,54 @@ MeshEdit MeshEdit::apply_inplace(Mesh& mesh) const {
 		for (auto& s: p.p.side)
 			s.vertex = _remap(s.vertex);
 
-	// add/delete polygons
-	{
-		out.polygons.resize(mesh.polygons.num - _del_polygons.num + _new_polygons.num);
-		int i_out = 0;
-		// TODO optimize...
-		for (int i=0; i<mesh.polygons.num; i++) { // in
-			// insert new
-			for (const auto& np: new_polygons)
-				if (np.at == i) {
-					inv.delete_polygon(i_out);
-					out.polygons[i_out ++] = np.p;
-				}
+	auto temp_spheres = mesh.spheres;
+	for (auto& s: temp_spheres)
+		s.index = _remap(s.index);
+	auto new_spheres = _new_spheres;
+	for (auto& s: new_spheres)
+		s.p.index = _remap(s.p.index);
 
-			if (_del_polygons.contains(i)) {
-				// delete
-				inv.add_polygon(temp_polygons[i], i_out);
-			} else {
-				// keep
-				out.polygons[i_out ++] = temp_polygons[i];
-			}
-		}
-		// append new
-		for (const auto& np: new_polygons)
-			if (np.at == -1 or np.at == mesh.polygons.num) {
-				inv.delete_polygon(i_out);
-				out.polygons[i_out ++] = np.p;
-			}
+	auto temp_cylinders = mesh.cylinders;
+	for (auto& c: temp_cylinders)
+		for (int k=0; k<2; k++)
+			c.index[k] = _remap(c.index[k]);
+	auto new_cylinders = _new_cylinders;
+	for (auto& c: new_cylinders)
+		for (int k=0; k<2; k++)
+			c.p.index[k] = _remap(c.p.index[k]);
+
+	// add/delete polygons
+
+#define ADD_DELETE(WHAT) \
+	{ \
+		out.WHAT##s.resize(mesh.WHAT##s.num - _del_##WHAT##s.num + _new_##WHAT##s.num); \
+		int i_out = 0; \
+		/* TODO optimize... */ \
+		for (int i=0; i<mesh.WHAT##s.num; i++) { /* in */ \
+			/* insert new */ \
+			for (const auto& np: new_##WHAT##s) \
+				if (np.at == i) { \
+					inv.delete_##WHAT(i_out); \
+					out.WHAT##s[i_out ++] = np.p; \
+				} \
+			if (_del_##WHAT##s.contains(i)) { \
+				/* delete */ \
+				inv.add_##WHAT(temp_##WHAT##s[i], i_out); \
+			} else { \
+				/* keep */ \
+				out.WHAT##s[i_out ++] = temp_##WHAT##s[i]; \
+			} \
+		} \
+		/* append new */ \
+		for (const auto& np: new_##WHAT##s) \
+			if (np.at == -1 or np.at == mesh.WHAT##s.num) { \
+				inv.delete_##WHAT(i_out); \
+				out.WHAT##s[i_out ++] = np.p; \
+			} \
 	}
+	ADD_DELETE(polygon);
+	ADD_DELETE(sphere);
+	ADD_DELETE(cylinder);
 
 	mesh = out;
 	return inv;
