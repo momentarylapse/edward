@@ -7,16 +7,15 @@
 #include <lib/xhui/Menu.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/msg.h>
-#include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
-#include <view/EdwardWindow.h>
 #include <view/MultiView.h>
+#include <view/MultiViewPanel.h>
+#include <view/ActionController.h>
 
 #include "action/ActionModelUVMoveSelection.h"
 #include <lib/base/iter.h>
 #include <lib/yrenderer/MaterialManager.h>
 #include "../../ModeModel.h"
-#include <view/ActionController.h>
 
 
 class MeshUVOpButtons : public xhui::Panel {

@@ -10,6 +10,7 @@
 #include <storage/format/Format.h>
 #include <storage/Storage.h>
 #include <view/MultiView.h>
+#include <view/MultiViewPanel.h>
 #include <view/EdwardWindow.h>
 #include <view/DocumentSession.h>
 

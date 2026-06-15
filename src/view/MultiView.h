@@ -165,21 +165,6 @@ public:
 };
 
 
-class MultiViewPanel : public xhui::Panel {
-public:
-	explicit MultiViewPanel(DocumentSession* doc, MultiView* mv);
-	~MultiViewPanel() override;
-
-	void set_multi_view(MultiView* mv);
-
-	MultiView* multi_view;
-	DocumentSession* doc;
-	xhui::Window* win;
-	Array<int> events, win_events;
-
-	yrenderer::XhuiRenderer* renderer = nullptr;
-	MultiViewRenderer* multi_view_renderer = nullptr;
-};
 
 
 #endif //MULTIVIEW_H

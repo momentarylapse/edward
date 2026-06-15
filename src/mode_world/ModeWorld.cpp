@@ -12,6 +12,7 @@
 #include <lib/kaba/kaba.h>
 #include <lib/os/filesystem.h>
 #include <view/MultiView.h>
+#include <view/MultiViewPanel.h>
 #include <view/DocumentSession.h>
 #include "data/DataWorld.h"
 #include <lib/yrenderer/Renderer.h>

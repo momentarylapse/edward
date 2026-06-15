@@ -569,6 +569,7 @@ add_executable(edward
 	src/view/Mode.cpp
 	src/view/MultiView.cpp
 	src/view/MultiViewMeshEmitter.cpp
+	src/view/MultiViewPanel.cpp
 	src/view/MultiViewWindow.cpp
 	src/view/SingleData.cpp
 	src/y/audio/audio.cpp
