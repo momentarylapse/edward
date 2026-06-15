@@ -408,7 +408,7 @@ Array<int> ModelMesh::get_boundary_loop(int v0)
 }
 #endif
 
-void ModelMesh::add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &bone_weight, int normal_mode, int index) {
+void ModelMesh::_add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &bone_weight, int normal_mode) {
 
 	// new vertex
 	polymesh::Vertex vv;
@@ -417,14 +417,7 @@ void ModelMesh::add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &bone_
 	vv.bone_index = bone;
 	vv.bone_weight = bone_weight;
 	vv.ref_count = 0;
-	if (index >= 0) {
-		vertices.insert(vv, index);
-		_shift_vertex_links(index, 1);
-
-		// correct animations
-	} else {
-		vertices.add(vv);
-	}
+	vertices.add(vv);
 
 }
 
@@ -441,30 +434,6 @@ void ModelMesh::_post_vertex_number_change_update(DataModel* model) {
 				f.vertex_dpos.resize(vertices.num);
 		}
 	}
-}
-
-void ModelMesh::remove_lonely_vertex(int index) {
-	// not done:
-	// move data
-	// fx
-
-	_shift_vertex_links(index, -1);
-
-
-	// erase
-	vertices.erase(index);
-}
-
-void ModelMesh::_shift_vertex_links(int offset, int delta) {
-
-	// correct references
-	for (auto& t: polygons)
-		for (int k=0;k<t.side.num;k++)
-			if (t.side[k].vertex >= offset)
-				t.side[k].vertex += delta;
-	for (auto& b: spheres)
-		if (b.index >= offset)
-			b.index += delta;
 }
 
 #if 0

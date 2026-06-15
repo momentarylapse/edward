@@ -15,7 +15,7 @@ void* ActionModelEditMesh::execute(history::Data* data) {
 	auto d = dynamic_cast<DataModel*>(data);
 	edit = edit.apply_inplace(*mesh);
 
-	d->out_topology_changed();
+	d->out_mesh_edited(edit);
 	return nullptr;
 }
 

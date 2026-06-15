@@ -95,6 +95,7 @@ bool Storage::load(const Path &_filename, history::Data *data, bool deep) {
 			data->filename = filename;
 			data->reset_history();
 			data->out_changed();
+			data->out_finished_loading();
 
 			return true;
 		}

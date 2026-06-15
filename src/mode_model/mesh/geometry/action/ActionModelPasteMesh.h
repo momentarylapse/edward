@@ -10,6 +10,8 @@
 
 #include <lib/history/Action.h>
 #include <lib/polymesh/Mesh.h>
+#include <lib/polymesh/MeshEdit.h>
+
 struct ModelMesh;
 
 class ActionModelPasteMesh : public history::Action {
@@ -21,8 +23,7 @@ public:
 	void undo(history::Data* d) override;
 private:
 	ModelMesh* mesh;
-	polymesh::Mesh geo;
-	int default_material;
+	polymesh::MeshEdit edit;
 };
 
 #endif /* ACTIONMODELPASTEGEOMETRY_H_ */

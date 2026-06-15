@@ -556,7 +556,7 @@ void FormatModel::_load_v11(LegacyFile& lf, DataModel *data, bool deep) {
 					int nv = data->phys_mesh->vertices.num;
 					relink.append({v, nv});
 					msg_write(format("  relink %d  %d", v, nv));
-					data->phys_mesh->add_vertex(data->phys_mesh->vertices[v].pos, {0,0,0,0}, {1,0,0,0}, 0);
+					data->phys_mesh->_add_vertex(data->phys_mesh->vertices[v].pos, {0,0,0,0}, {1,0,0,0}, 0);
 					v = nv;
 				}
 			}

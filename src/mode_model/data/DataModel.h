@@ -130,7 +130,7 @@ public:
 	obs::source out_skin_changed{this, "skin-changed"};
 	obs::source out_material_added_or_deleted{this, "material-added-or-deleted"};
 	obs::source out_texture_changed{this, "texture-changed"};
-	obs::source out_topology_changed{this, "topology-changed"};
+	obs::xsource<polymesh::MeshEdit> out_mesh_edited{this, "mesh-edited"};
 
 	Session* session;
 	DocumentSession* doc;

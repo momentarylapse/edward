@@ -480,8 +480,7 @@ public:
 	void read(Stream *f) override {
 
 		for (const polymesh::Vertex &v: parent->triangle_mesh[1].vertices)
-			parent->mesh->add_vertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
-			//parent->addVertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
+			parent->mesh->_add_vertex(v.pos, v.bone_index, v.bone_weight, v.normal_mode);
 
 		// polygons
 		int num_poly = f->read_int();

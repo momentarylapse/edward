@@ -151,7 +151,7 @@ void ModeMeshGeometry::on_enter() {
 	set_overlay_panel(new MeshOpButtons(multi_view));
 
 	data->out_changed >> create_sink(update);
-	data->out_topology_changed >> create_sink([this] {
+	data->out_mesh_edited >> create_data_sink<polymesh::MeshEdit>([this] (const polymesh::MeshEdit&) {
 		on_update_topology();
 	});
 

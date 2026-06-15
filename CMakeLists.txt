@@ -473,7 +473,6 @@ add_executable(edward
 	src/mode_model/data/DataModel.cpp
 	src/mode_model/data/ModelMesh.cpp
 	src/mode_model/dialog/ModelPropertiesDialog.cpp
-	src/mode_model/mesh/geometry/action/ActionModelAddPolygon.cpp
 	src/mode_model/mesh/geometry/action/ActionModelAlignToGrid.cpp
 	src/mode_model/mesh/geometry/action/ActionModelDeleteSelection.cpp
 	src/mode_model/mesh/geometry/action/ActionModelEditMesh.cpp

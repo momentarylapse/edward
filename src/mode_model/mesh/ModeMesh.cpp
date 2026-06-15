@@ -25,6 +25,7 @@
 #include <view/DocumentSession.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <cmath>
+#include <lib/polymesh/MeshEdit.h>
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
 
@@ -75,7 +76,7 @@ void ModeMesh::set_edit_mesh(ModelMesh* mesh) {
 		{MultiViewType::MODEL_VERTEX, &mesh->vertices},
 		{MultiViewType::MODEL_POLYGON, &mesh->polygons},
 	};
-	data->out_topology_changed();
+	data->out_mesh_edited(polymesh::MeshEdit{});
 	on_update_menu();
 	update_vb();
 }
@@ -135,7 +136,7 @@ void ModeMesh::on_enter() {
 	});
 
 	data->out_changed >> create_sink(update);
-	data->out_topology_changed >> create_sink([this] {
+	data->out_mesh_edited >> create_data_sink<polymesh::MeshEdit>([this] (const polymesh::MeshEdit&) {
 		on_update_topology();
 	});
 

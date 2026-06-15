@@ -56,7 +56,6 @@
 #include "../../action/model/skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../action/model/skeleton/ActionModelReconnectBone.h"
 #include "../../action/model/skeleton/ActionModelSetSubModel.h"*/
-#include "../mesh/geometry/action/ActionModelAddPolygon.h"
 #include "../mesh/geometry/action/ActionModelDeleteSelection.h"
 #include "../mesh/geometry/action/ActionModelPasteMesh.h"
 #include "../mesh/geometry/action/ActionModelEditMesh.h"
@@ -196,7 +195,7 @@ void DataModel::import_from_triangle_mesh(int index) {
 	ModelTriangleMesh &s = triangle_mesh[index];
 	begin_action_group("ImportFromTriangleSkin");
 	foreachi(auto &v, s.vertices, i) {
-		mesh->add_vertex(v.pos, v.bone_index, v.bone_weight, 0);
+		mesh->_add_vertex(v.pos, v.bone_index, v.bone_weight, 0);
 	}
 	for (int i=0;i<materials.num;i++) {
 		for (ModelTriangle &t: s.sub[i].triangles) {
@@ -281,48 +280,15 @@ Box DataModel::bounding_box() {
 	return box;
 }
 
-/*void DataModel::set_normals_dirty_by_vertices(const Array<int> &index) {
-	mesh->set_normals_dirty_by_vertices(index);
-}
-
-void DataModel::set_all_normals_dirty() {
-	mesh->set_all_normals_dirty();
-	phys_mesh->set_all_normals_dirty();
-}
-
-
-void DataModel::update_normals() {
-	mesh->update_normals();
-	phys_mesh->update_normals();
-}*/
-
-#if 0
-void DataModel::clearSelection() {
-	mesh->clear_selection();
-	phys_mesh->clear_selection();
-}
-
-void DataModel::selectionFromPolygons() {
-	mesh->selection_from_polygons();
-}
-
-void DataModel::selectionFromEdges() {
-	mesh->selection_from_edges();
-}
-
-void DataModel::selectionFromVertices() {
-	mesh->selection_from_vertices();
-}
-#endif
-
 void DataModel::add_vertex(const vec3 &pos, const ivec4 &bone_index, const vec4 &bone_weight, int normal_mode) {
-	polymesh::Mesh m;
-	m.add_vertex(pos);
-	m.vertices[0].bone_index = bone_index;
-	m.vertices[0].bone_weight = bone_weight;
-	m.vertices[0].normal_mode = normal_mode;
-	paste_mesh(m, 0);
-	//execute(new ActionModelAddVertex(pos, bone_index, bone_weight, normal_mode));
+	polymesh::Vertex v;
+	v.pos = pos;
+	v.bone_index = bone_index;
+	v.bone_weight = bone_weight;
+	v.normal_mode = normal_mode;
+	polymesh::MeshEdit ed;
+	ed.add_vertex(v);
+	edit_mesh(ed);
 }
 
 polymesh::Polygon *DataModel::add_triangle(int a, int b, int c, int material) {
@@ -349,7 +315,10 @@ polymesh::Polygon *DataModel::add_polygon_with_skin(const Array<int> &v, const A
 		p.side.add(s);
 		p.material = material;
 	}
-	return (polymesh::Polygon*)execute(new ActionModelAddPolygon(editing_mesh, p));
+	polymesh::MeshEdit ed;
+	ed.add_polygon(p);
+	edit_mesh(ed);
+	return &editing_mesh->polygons.back();
 }
 
 void DataModel::edit_mesh(const polymesh::MeshEdit& edit) {
@@ -628,18 +597,6 @@ void DataModel::mergePolygonsSelection()
 void DataModel::selectionClearEffects()
 {	execute(new ActionModelClearEffects(this));	}
 
-
-ModelSelection DataModel::get_selection() const {
-	auto s = mesh->get_selection();
-	foreachi (auto &b, bone, i)
-		if (b.is_selected)
-			s.bone.add(i);
-	return s;
-}
-
-void DataModel::set_selection(const ModelSelection &s) {
-	mesh->set_selection(s);
-}
 #endif
 
 

@@ -35,9 +35,7 @@ struct ModelMesh : polymesh::Mesh {
 	~ModelMesh();
 
 	// low level (un-action'ed)
-	void add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &weight, int normal_mode, int index = -1);
-	void remove_lonely_vertex(int v);
-	void _shift_vertex_links(int offset, int delta);
+	void _add_vertex(const vec3 &pos, const ivec4 &bone, const vec4 &weight, int normal_mode);
 	void _add_polygon(const Array<int> &v, int material, const Array<vec3> &sv, int index = -1);
 	void _remove_polygon(int index);
 	void _add_vertices(const Array<polymesh::Vertex> &vertices, DataModel* model);
@@ -59,16 +57,9 @@ struct ModelMesh : polymesh::Mesh {
 
 
 	void on_post_action_update();
-	void import_from_triangle_skin(int index);
 	void export_to_triangle_mesh(ModelTriangleMesh &trias, DataModel* model);
 	void set_normals_dirty_by_vertices(const Array<int> &index);
 	void set_all_normals_dirty();
-	void clear_selection();
-	void selection_from_polygons();
-	void selection_from_vertices();
-
-	ModelSelection get_selection() const;
-	void set_selection(const ModelSelection &s);
 
 
 	Mesh copy_geometry(const Selection& sel) const;

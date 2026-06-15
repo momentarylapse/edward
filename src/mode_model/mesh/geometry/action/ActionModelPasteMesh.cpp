@@ -9,37 +9,30 @@
 #include "../../../data/DataModel.h"
 #include "../../../data/ModelMesh.h"
 
-ActionModelPasteMesh::ActionModelPasteMesh(ModelMesh* m, const polymesh::Mesh &_geo, int _default_material) :
-	geo(_geo)
-{
+ActionModelPasteMesh::ActionModelPasteMesh(ModelMesh* m, const polymesh::Mesh& geo, int default_material) {
 	mesh = m;
-	default_material = _default_material;
+
+	Array<int> vindex;
+	for (const auto& v: geo.vertices)
+		vindex.add(edit.add_vertex(v));
+
+	for (auto p: geo.polygons) {
+		for (auto& s: p.side)
+			s.vertex = vindex[s.vertex];
+		if (p.material < 0)
+			p.material = default_material;
+		edit.add_polygon(p);
+	}
 }
 
 void *ActionModelPasteMesh::execute(history::Data* data) {
 	auto d = dynamic_cast<DataModel*>(data);
+	edit = edit.apply_inplace(*mesh);
 
-	int nv = mesh->vertices.num;
-
-	mesh->_add_vertices(geo.vertices, d);
-
-	for (auto &t: geo.polygons) {
-		Array<int> v;
-		for (int k=0;k<t.side.num;k++)
-			v.add(nv + t.side[k].vertex);
-		int mat = (t.material >= 0) ? t.material : default_material;
-		mesh->_add_polygon(v, mat, t.get_uvs());
-	}
-	d->out_topology_changed();
+	d->out_mesh_edited(edit);
 	return nullptr;
 }
 
 void ActionModelPasteMesh::undo(history::Data* data) {
-	auto d = dynamic_cast<DataModel*>(data);
-
-	mesh->vertices.resize(mesh->vertices.num - geo.vertices.num);
-	mesh->_post_vertex_number_change_update(d);
-	mesh->polygons.resize(mesh->polygons.num - geo.polygons.num);
-
-	d->out_topology_changed();
+	execute(data);
 }
