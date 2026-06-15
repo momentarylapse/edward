@@ -124,11 +124,6 @@ void ModeMesh::on_enter() {
 		doc->set_mode(mode_mesh_geometry.get());
 	});
 
-	auto win = session->win;
-
-	win->enable("mode-mesh-uv", false);
-	win->enable("mode-mesh-paint", false);
-
 	multi_view->set_show_grid(true);
 	set_edit_mesh(data->mesh.get());
 	multi_view->out_selection_changed >> create_sink([this] {
@@ -136,11 +131,11 @@ void ModeMesh::on_enter() {
 	});
 
 	data->out_changed >> create_sink(update);
-	data->out_mesh_edited >> create_data_sink<polymesh::MeshEdit>([this] (const polymesh::MeshEdit&) {
-		on_update_topology();
+	data->out_mesh_edited >> create_data_sink<polymesh::MeshEdit>([this] (const polymesh::MeshEdit& edit) {
+		on_update_topology(edit);
 	});
 
-	on_update_topology();
+	on_update_topology({});
 	data->editing_mesh->update_normals();
 	normals_dirty = false;
 	update();
@@ -166,8 +161,11 @@ void ModeMesh::on_leave() {
 	set_overlay_panel(nullptr);
 }
 
-void ModeMesh::on_update_topology() {
+void ModeMesh::on_update_topology(const polymesh::MeshEdit& edit) {
 	edges_cached = data->editing_mesh->edges();
+	multi_view->clear_selection();
+	multi_view->hover = base::None;
+	// TODO remap selection...
 	update_edge_info();
 }
 

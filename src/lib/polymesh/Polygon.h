@@ -21,7 +21,7 @@ struct PolygonSide {
 	vec3 uv;
 	int normal_index;
 	int smoothing_id = -1;
-	vec3 normal;
+	mutable vec3 normal;
 	unsigned char triangulation[3];
 };
 

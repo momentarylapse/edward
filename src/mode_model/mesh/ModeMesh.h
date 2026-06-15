@@ -52,7 +52,7 @@ public:
 	void on_update_selection();
 	void update_vb();
 	void update_selection_vb();
-	void on_update_topology();
+	void on_update_topology(const polymesh::MeshEdit& edit);
 	void update_edge_info();
 
 	owned<ModeMeshGeometry> mode_mesh_geometry;

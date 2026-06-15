@@ -123,6 +123,10 @@ Array<int> Polygon::triangulate(const Array<Vertex> &vertex) const {
 		vi.add(k);
 	}
 
+	vec3 n = temp_normal;
+	if (normal_dirty)
+		n = get_normal(vertex);
+
 	while(v.num > 3) {
 
 		// find largest angle (sharpest)
@@ -130,12 +134,12 @@ Array<int> Polygon::triangulate(const Array<Vertex> &vertex) const {
 		int i_max = 0;
 		float f_max = 0;
 		for (int i=0;i<v.num;i++) {
-			float f = get_ang(vertex, v[i], v[(i+1) % v.num], v[(i+2) % v.num], temp_normal);
+			float f = get_ang(vertex, v[i], v[(i+1) % v.num], v[(i+2) % v.num], n);
 			if (f < 0)
 				continue;
 			// cheat: ...
-			float f_n = get_ang(vertex, v[(i+1) % v.num], v[(i+2) % v.num], v[(i+3) % v.num], temp_normal);
-			float f_l = get_ang(vertex, v[(i-1+v.num) % v.num], v[i], v[(i+1) % v.num], temp_normal);
+			float f_n = get_ang(vertex, v[(i+1) % v.num], v[(i+2) % v.num], v[(i+3) % v.num], n);
+			float f_l = get_ang(vertex, v[(i-1+v.num) % v.num], v[i], v[(i+1) % v.num], n);
 			if (f_n >= 0)
 				f += 0.01f / (f_n + 0.01f);
 			if (f_l >= 0)

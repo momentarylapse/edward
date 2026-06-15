@@ -485,7 +485,7 @@ public:
 		// polygons
 		int num_poly = f->read_int();
 		for (int j=0; j<num_poly; j++) {
-			polymesh::Polygon t;
+			polymesh::Polygon t{};
 			t.triangulation_dirty = true;
 			int num_faces = f->read_word();
 			t.material = f->read_word();
