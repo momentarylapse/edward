@@ -24,6 +24,8 @@ public:
 
 	void load_data();
 
+	void on_edit();
+
 
 private:
 	DataMaterial* data;

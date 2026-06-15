@@ -36,16 +36,24 @@ MaterialPanel::MaterialPanel(ModeMaterial *_mode) : Node<xhui::Panel>("") {
 		reinterpret_cast<MaterialPassPanel*>(c)->set_selected(selected);
 	};
 	event("cast-shadows", [this] {
-		apply_queue_depth ++;
-		auto a = data->material;
-		a.cast_shadow = is_checked("cast-shadows");
-		data->execute(new ActionMaterialEditAppearance(a));
-		apply_queue_depth --;
+		on_edit();
 	});
 	event("add-pass", [this] {
 		auto a = data->material;
 		a.set_num_passes(a.num_passes + 1);
 		data->execute(new ActionMaterialEditAppearance(a));
+	});
+	event("rcstatic", [this] {
+		on_edit();
+	});
+	event("rcsliding", [this] {
+		on_edit();
+	});
+	event("rcroll", [this] {
+		on_edit();
+	});
+	event("rcjump", [this] {
+		on_edit();
 	});
 
 	data->out_changed >> create_sink([this] {
@@ -64,6 +72,17 @@ MaterialPanel::~MaterialPanel() {
 	data->unsubscribe(this);
 }
 
+void MaterialPanel::on_edit() {
+	apply_queue_depth ++;
+	auto a = data->material;
+	a.cast_shadow = is_checked("cast-shadows");
+	a.friction._static = get_float("rcstatic");
+	a.friction.sliding = get_float("rcsliding");
+	a.friction.rolling = get_float("rcroll");
+	a.friction.jump = get_float("rcjump");
+	data->execute(new ActionMaterialEditAppearance(a));
+	apply_queue_depth --;
+}
 
 ModeMaterial* MaterialPanel::mode_material() {
 	return data->doc->mode_material;
@@ -77,6 +96,11 @@ void MaterialPanel::load_data() {
 	for (int i=0;i<data->material.num_passes;i++) {
 		add_string("passes", str(i));
 	}
+
+	set_float("rcstatic", data->material.friction._static);
+	set_float("rcsliding", data->material.friction.sliding);
+	set_float("rcroll", data->material.friction.rolling);
+	set_float("rcjump", data->material.friction.jump);
 }
 
 #if 0
