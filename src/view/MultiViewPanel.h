@@ -2,8 +2,7 @@
 // Created by michi on 6/15/26.
 //
 
-#ifndef EDWARD_MULTIVIEWPANEL_H
-#define EDWARD_MULTIVIEWPANEL_H
+#pragma once
 
 
 #include <lib/xhui/Panel.h>
@@ -31,5 +30,3 @@ public:
 	yrenderer::XhuiRenderer* renderer = nullptr;
 	MultiViewRenderer* multi_view_renderer = nullptr;
 };
-
-#endif //EDWARD_MULTIVIEWPANEL_H

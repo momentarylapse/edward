@@ -36,6 +36,10 @@ MultiView::MultiView(DocumentSession* _doc) :
 	doc = _doc;
 	session = doc->session;
 	ctx = session->ctx;
+
+	scene_view = new yrenderer::SceneView;
+	scene_view->main_camera_params = view_port.cam();
+
 	window = new MultiViewWindow(this);
 	active_window = window.get();
 	hover_window = window.get();
@@ -56,20 +60,20 @@ MultiView::MultiView(DocumentSession* _doc) :
 	default_light->harshness = 0.5f;
 	lights.add(default_light);
 
-	shadow_renderer = new yrenderer::ShadowRenderer(session->ctx, view_port.scene_view.get(), 2048);
+	shadow_renderer = new yrenderer::ShadowRenderer(session->ctx, scene_view.get(), 2048);
 	shadow_renderer->add_emitter(new MultiViewShadowGeometryEmitter(this));
-	view_port.scene_view->shadow_maps.add(shadow_renderer->cascades[0].depth_buffer);
-	view_port.scene_view->shadow_maps.add(shadow_renderer->cascades[1].depth_buffer);
+	scene_view->shadow_maps.add(shadow_renderer->cascades[0].depth_buffer);
+	scene_view->shadow_maps.add(shadow_renderer->cascades[1].depth_buffer);
 	//add_child(shadow_renderer.get());
 
 	//cam_main = view_port.cam;
 	cube_map_source = new yrenderer::CubeMapSource;
 	cube_map_source->resolution = 256;
 	cube_map_source->cube_map = new ygfx::CubeMap(cube_map_source->resolution, "rgba:i8");
-	cube_map_renderer = new yrenderer::CubeMapRenderer(session->ctx, *view_port.scene_view.get());
+	cube_map_renderer = new yrenderer::CubeMapRenderer(session->ctx, *scene_view);
 	cube_map_renderer->add_emitter(new MultiViewBackgroundEmitter(this));
 	cube_map_renderer->set_source(cube_map_source.get());
-	view_port.scene_view->cube_map = cube_map_source->cube_map;
+	scene_view->cube_map = cube_map_source->cube_map;
 
 	for (int i=0; i<(int)MultiViewType::_NUM; i++)
 		selection.set((MultiViewType)i, {});
@@ -91,7 +95,7 @@ MultiViewRenderer::MultiViewRenderer(yrenderer::Context *ctx, MultiView *mv) : R
 
 void MultiViewRenderer::prepare(const yrenderer::RenderParams& params) {
 	auto& view_port = multi_view->view_port;
-	view_port.scene_view->shadow_box_size = view_port.radius * 8;
+	multi_view->scene_view->shadow_box_size = view_port.radius * 8;
 
 	multi_view->window->local_ang = view_port.ang;
 
@@ -103,8 +107,8 @@ void MultiViewRenderer::prepare(const yrenderer::RenderParams& params) {
 
 	multi_view->doc->cur_mode->on_prepare_scene(params);
 
-	view_port.scene_view->choose_lights(multi_view->lights);
-	view_port.scene_view->choose_shadows();
+	multi_view->scene_view->choose_lights(multi_view->lights);
+	multi_view->scene_view->choose_shadows();
 
 	multi_view->window->prepare(params);
 
@@ -473,65 +477,4 @@ void MultiView::set_show_grid(bool allow) {
 }
 
 
-
-MultiView::ViewPort::ViewPort(MultiView* _multi_view) {
-	multi_view = _multi_view;
-	pos = v_0;
-	ang = quaternion::rotation({1, 0, 0}, 0.33f);//quaternion::ID;
-	radius = 100;
-	scene_view = new yrenderer::SceneView;
-	scene_view->main_camera_params = cam();
-}
-
-yrenderer::CameraParams MultiView::ViewPort::cam() const {
-	yrenderer::CameraParams cam;
-	cam.fov = pi/4;
-	cam.ang = ang;
-	cam.pos = pos - ang * vec3::EZ * radius;
-	cam.min_depth = radius * 0.01f;
-	cam.max_depth = radius * 300;
-	return cam;
-}
-
-void MultiView::ViewPort::move(const vec3& drel) {
-	pos = pos + ang * drel * radius;
-	out_changed();
-}
-
-void MultiView::ViewPort::rotate(const quaternion& qrel) {
-	ang = ang * qrel;
-	out_changed();
-}
-
-void MultiView::ViewPort::zoom(float factor, const base::optional<vec3>& focus_point) {
-	if (focus_point) {
-		if (factor > 1) {
-			// zoom in -> re-focus camera on plane around <focus_point>
-			auto w = multi_view->hover_window;
-			vec3 pos1 = w->unproject(w->project(pos).xy(), *focus_point);
-			float radius1 = (pos1 - w->view_pos()).length();
-
-			radius = radius1;
-			pos = pos1;
-		}
-
-		// fixed point: <focus_point>
-		radius /= factor;
-		const vec3 d = *focus_point - pos;
-		pos = *focus_point - d / factor;
-	} else {
-		radius /= factor;
-	}
-	out_changed();
-}
-
-void MultiView::ViewPort::suggest_for_box(const Box& box) {
-	pos = box.center();
-	if (box.size() == v_0)
-		radius = 200;
-	else
-		radius = box.size().length() * 1.1f;
-	ang = quaternion::rotation({0.35f, 0, 0});
-	out_changed();
-}
 

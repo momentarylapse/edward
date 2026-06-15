@@ -38,6 +38,8 @@ struct SceneView {
 	vec3 probe_min, probe_max;
 	RayTracingData* ray_tracing_data = nullptr;
 
+	SceneView();
+	~SceneView();
 	void choose_lights(const Array<Light*>& all_lights);
 	void choose_shadows();
 };

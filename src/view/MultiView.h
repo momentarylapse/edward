@@ -2,20 +2,18 @@
 // Created by Michael Ankele on 2025-01-20.
 //
 
-#ifndef MULTIVIEW_H
-#define MULTIVIEW_H
+#pragma once
 
 #include "MultiViewWindow.h"
+#include "ViewPort.h"
 #include "Hover.h"
 #include <stuff/Selection.h>
 #include <lib/history/Data.h>
 #include <lib/xhui/Panel.h>
 #include <lib/yrenderer/Renderer.h>
-#include <lib/yrenderer/scene/SceneView.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
 #include <lib/math/Box.h>
 #include <lib/math/vec3.h>
-#include <lib/math/quaternion.h>
 #include <lib/pattern/Observable.h>
 #include <functional>
 
@@ -64,26 +62,14 @@ public:
 	void on_mouse_wheel(const vec2& m, const vec2& d);
 	void on_key_down(int key);
 
-	struct ViewPort : obs::Node<VirtualBase> {
-		explicit ViewPort(MultiView* multi_view);
-		vec3 pos;
-		quaternion ang;
-		float radius;
-		yrenderer::CameraParams cam() const;
-		owned<yrenderer::SceneView> scene_view;
-		MultiView* multi_view;
-
-		void move(const vec3& drel);
-		void rotate(const quaternion& qrel);
-		void zoom(float factor, const base::optional<vec3>& focus_point);
-		void suggest_for_box(const Box& box);
-	} view_port;
+	ViewPort view_port;
 
 	enum class LightMode {
 		Fixed,
 		FollowCamera
 	} light_mode;
 
+	owned<yrenderer::SceneView> scene_view;
 	Array<yrenderer::Light*> lights;
 	yrenderer::Light* default_light;
 	owned<yrenderer::ShadowRenderer> shadow_renderer;
@@ -164,7 +150,3 @@ public:
 	void draw_mouse_pos(Painter* p);
 };
 
-
-
-
-#endif //MULTIVIEW_H

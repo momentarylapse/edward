@@ -572,6 +572,7 @@ add_executable(edward
 	src/view/MultiViewPanel.cpp
 	src/view/MultiViewWindow.cpp
 	src/view/SingleData.cpp
+	src/view/ViewPort.cpp
 	src/y/audio/audio.cpp
 	src/y/audio/AudioBuffer.cpp
 	src/y/audio/AudioStream.cpp

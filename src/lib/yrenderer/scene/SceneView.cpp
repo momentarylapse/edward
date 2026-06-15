@@ -5,8 +5,12 @@
 #include "SceneView.h"
 #include "Light.h"
 #include <lib/base/iter.h>
+#include <lib/ygraphics/graphics-impl.h>
 
 namespace yrenderer {
+
+SceneView::SceneView() = default;
+SceneView::~SceneView() = default;
 
 void SceneView::choose_lights(const Array<Light*>& all_lights) {
 	lights.clear();
