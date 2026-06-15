@@ -35,17 +35,10 @@ void ModeMeshSculpt::on_enter() {
 	/*dialog = new xhui::Panel("xxx");
 	dialog->from_resource("new_cube_dialog");
 	set_side_panel(dialog);*/
-
-	data->out_changed >> create_sink([this] {
-		mode_mesh->update_vb();
-		session->win->request_redraw();
-	});
 }
 
 void ModeMeshSculpt::on_leave() {
 	//set_side_panel(nullptr);
-
-	data->out_changed.unsubscribe(this);
 }
 
 void ModeMeshSculpt::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {

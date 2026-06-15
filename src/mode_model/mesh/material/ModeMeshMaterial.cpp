@@ -32,17 +32,10 @@ void ModeMeshMaterial::on_enter() {
 
 	dialog = new ModelMaterialPanel(data);
 	set_side_panel(dialog);
-
-	data->out_changed >> create_sink([this] {
-		mode_mesh->update_vb();
-		session->win->request_redraw();
-	});
 }
 
 void ModeMeshMaterial::on_leave() {
 	set_side_panel(nullptr);
-
-	data->out_changed.unsubscribe(this);
 }
 
 void ModeMeshMaterial::on_connect_events() {

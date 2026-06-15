@@ -22,17 +22,17 @@ ActionModelMoveSelection::ActionModelMoveSelection(ModelMesh* m, const Selection
 
 void *ActionModelMoveSelection::execute(history::Data*) {
 	for (const auto& [ii, i]: enumerate(index)) {
-		if (type[ii] == MultiViewType::MODEL_VERTEX) {
+		if (type[ii] == MultiViewType::MODEL_VERTEX)
 			mesh->vertices[i].pos = mat * old_data[ii];
-		}
 	}
+	mesh->set_normals_dirty_by_vertices(index);
 	return nullptr;
 }
 
 void ActionModelMoveSelection::undo(history::Data*) {
 	for (const auto& [ii, i]: enumerate(index)) {
-		if (type[ii] == MultiViewType::MODEL_VERTEX) {
+		if (type[ii] == MultiViewType::MODEL_VERTEX)
 			mesh->vertices[i].pos = old_data[ii];
-		}
 	}
+	mesh->set_normals_dirty_by_vertices(index);
 }

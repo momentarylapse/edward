@@ -47,10 +47,6 @@ public:
 	void on_key_down(int key) override;
 	void on_mouse_move(const vec2& m, const vec2& d) override;
 
-	void on_update_selection();
-	void on_update_topology();
-	void update_edge_info();
-
 	void optimize_view();
 
 	void copy();
@@ -58,14 +54,6 @@ public:
 
 	ModeMesh* mode_mesh;
 	DataModel* data;
-	Array<polymesh::Edge> edges_cached;
-	struct EdgeInfo {
-		int polygons[2];
-		int sides[2];
-		vec3 normal;
-	};
-	Array<EdgeInfo> edge_infos;
-	bool normals_dirty = false;
 
 	owned<ModelMesh> temp_mesh;
 

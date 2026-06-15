@@ -11,18 +11,12 @@
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/controls/MenuBar.h>
 #include <lib/xhui/controls/Toolbar.h>
-#include <lib/yrenderer/target/XhuiRenderer.h>
 
 
 DocumentSession::DocumentSession(Session* _session) {
 	session = _session;
 
 	mode_none = nullptr;
-#if 0
-	mode_none = new ModeNone(this);
-	cur_mode = mode_none;
-	progress = new Progress;
-#endif
 
 	mode_model = nullptr;
 //	mode_admin = nullptr;
@@ -86,12 +80,18 @@ void DocumentSession::set_mode(Mode *m) {
 	});
 }
 
+// <to> must be BELOW <from>!
 Mode* get_next_child_to(Mode* from, Mode* to) {
 	if (!from)
 		return to->get_root();
-	if (from->is_ancestor_of(to))
+	while (true) {
+		if (to->get_parent() == from)
+			return to;
+		to = to->get_parent();
+	}
+	/*if (from->is_ancestor_of(to))
 		return to;
-	return get_next_child_to(from, to->get_parent());
+	return get_next_child_to(from, to->get_parent());*/
 }
 
 void DocumentSession::set_mode_now(Mode *m) {
@@ -122,7 +122,6 @@ void DocumentSession::set_mode_now(Mode *m) {
 	while (cur_mode) {
 		if (cur_mode->is_ancestor_of(m))
 			break;
-		//msg_write("UP");
 		cur_mode->on_leave_rec();
 		cur_mode = cur_mode->get_parent();
 	}
@@ -130,7 +129,6 @@ void DocumentSession::set_mode_now(Mode *m) {
 	// start new modes down
 	while (cur_mode != m) {
 		cur_mode = get_next_child_to(cur_mode, m);
-		//msg_write("DOWN");
 		cur_mode->on_enter_rec();
 	}
 
@@ -138,7 +136,6 @@ void DocumentSession::set_mode_now(Mode *m) {
 
 
 	// start new
-	//msg_write("ENTER");
 	cur_mode = m;
 	cur_mode->on_enter();
 //	win->renderer->children.clear();

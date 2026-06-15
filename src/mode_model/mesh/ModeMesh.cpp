@@ -85,6 +85,42 @@ void ModeMesh::on_enter_rec() {
 	doc->out_changed >> create_sink([this] {
 		on_update_menu();
 	});
+
+	auto update = [this] {
+		normals_dirty = true;
+		update_vb();
+		update_selection_vb();
+		out_redraw();
+	};
+
+	multi_view->set_show_grid(true);
+	set_edit_mesh(data->mesh.get());
+	multi_view->out_selection_changed >> create_sink([this] {
+		on_update_selection();
+	});
+
+	data->out_mesh_edited >> create_data_sink<polymesh::MeshEdit>([this] (const polymesh::MeshEdit& edit) {
+		on_update_topology(edit);
+	});
+
+	on_update_topology({});
+	data->editing_mesh->update_normals();
+	normals_dirty = false;
+
+	update();
+
+	data->out_changed >> create_sink(update);
+
+	id_runner = xhui::run_repeated(1.0f, [this] {
+		if (normals_dirty) {
+			data->editing_mesh->update_normals();
+			update_edge_info();
+			update_vb();
+			update_selection_vb();
+			out_redraw();
+			normals_dirty = false;
+		}
+	});
 }
 
 void ModeMesh::on_connect_events_rec() {
@@ -111,44 +147,15 @@ void ModeMesh::on_connect_events_rec() {
 
 void ModeMesh::on_leave_rec() {
 	doc->out_changed.unsubscribe(this);
+	data->out_changed.unsubscribe(this);
+	multi_view->out_selection_changed.unsubscribe(this);
+	data->out_mesh_edited.unsubscribe(this);
+	xhui::cancel_runner(id_runner);
 }
 
 void ModeMesh::on_enter() {
-	auto update = [this] {
-		normals_dirty = true;
-		update_vb();
-		update_selection_vb();
-		out_redraw();
-	};
 	xhui::run_later(0.01f, [this] {
 		doc->set_mode(mode_mesh_geometry.get());
-	});
-
-	multi_view->set_show_grid(true);
-	set_edit_mesh(data->mesh.get());
-	multi_view->out_selection_changed >> create_sink([this] {
-		on_update_selection();
-	});
-
-	data->out_changed >> create_sink(update);
-	data->out_mesh_edited >> create_data_sink<polymesh::MeshEdit>([this] (const polymesh::MeshEdit& edit) {
-		on_update_topology(edit);
-	});
-
-	on_update_topology({});
-	data->editing_mesh->update_normals();
-	normals_dirty = false;
-	update();
-
-	xhui::run_repeated(1.0f, [this] {
-		if (normals_dirty) {
-			data->editing_mesh->update_normals();
-			update_edge_info();
-			update_vb();
-			update_selection_vb();
-			out_redraw();
-			normals_dirty = false;
-		}
 	});
 }
 
@@ -157,11 +164,11 @@ void ModeMesh::on_connect_events() {
 
 
 void ModeMesh::on_leave() {
-	data->out_changed.unsubscribe(this);
 	set_overlay_panel(nullptr);
 }
 
 void ModeMesh::on_update_topology(const polymesh::MeshEdit& edit) {
+	normals_dirty = true;
 	edges_cached = data->editing_mesh->edges();
 	multi_view->clear_selection();
 	multi_view->hover = base::None;

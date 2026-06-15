@@ -70,6 +70,7 @@ public:
 	};
 	Array<EdgeInfo> edge_infos;
 	bool normals_dirty = false;
+	int id_runner;
 
 	int current_material;
 	void set_current_material(int index);

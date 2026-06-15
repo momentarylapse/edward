@@ -28,10 +28,10 @@ void* ActionModelBrushExtrude::execute(history::Data* d) {
 		if (d2 < r2 * 2) {
 			index.add(i);
 			pos_old.add(m->mesh->vertices[i].pos);
-			m->mesh->vertices[i].pos += n * depth * exp(- d2 / r2 * 2);
+			m->mesh->vertices[i].pos += n * depth * expf(- d2 / r2 * 2);
 		}
 	}
-	//m->set_normals_dirty_by_vertices(index);
+	m->mesh->set_normals_dirty_by_vertices(index);
 
 	return nullptr;
 }
@@ -39,7 +39,7 @@ void* ActionModelBrushExtrude::execute(history::Data* d) {
 void ActionModelBrushExtrude::undo(history::Data* d) {
 	auto m = dynamic_cast<DataModel*>(d);
 
-	//m->set_normals_dirty_by_vertices(index);
+	m->mesh->set_normals_dirty_by_vertices(index);
 	for (const auto& [ii, i]: enumerate(index))
 		m->mesh->vertices[i].pos = pos_old[ii];
 

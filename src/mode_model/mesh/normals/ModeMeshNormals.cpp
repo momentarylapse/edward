@@ -44,17 +44,10 @@ void ModeMeshNormals::on_enter() {
 	multi_view->set_allow_action(false);
 
 	set_overlay_panel(new MeshNormalsOpButtons(multi_view));
-
-	data->out_changed >> create_sink([this] {
-		mode_mesh->update_vb();
-		session->win->request_redraw();
-	});
 }
 
 void ModeMeshNormals::on_leave() {
 	//set_side_panel(nullptr);
-
-	data->out_changed.unsubscribe(this);
 }
 
 void ModeMeshNormals::on_connect_events() {

@@ -116,15 +116,6 @@ Dialog mesh-op-buttons '' propagateevents
 };
 
 void ModeMeshGeometry::on_enter() {
-	auto update = [this] {
-		normals_dirty = true;
-		mode_mesh->update_vb();
-		mode_mesh->update_selection_vb();
-		out_redraw();
-	};
-
-	auto win = session->win;
-
 	multi_view->set_allow_select(true);
 	multi_view->set_allow_action(true);
 	multi_view->set_show_grid(true);
@@ -144,32 +135,8 @@ void ModeMeshGeometry::on_enter() {
 		return new ActionModelMoveSelection(data->editing_mesh, multi_view->selection);
 	};
 	mode_mesh->set_edit_mesh(data->mesh.get());
-	multi_view->out_selection_changed >> create_sink([this] {
-		on_update_selection();
-	});
 
 	set_overlay_panel(new MeshOpButtons(multi_view));
-
-	data->out_changed >> create_sink(update);
-	data->out_mesh_edited >> create_data_sink<polymesh::MeshEdit>([this] (const polymesh::MeshEdit&) {
-		on_update_topology();
-	});
-
-	on_update_topology();
-	data->editing_mesh->update_normals();
-	normals_dirty = false;
-	update();
-
-	xhui::run_repeated(1.0f, [this] {
-		if (normals_dirty) {
-			data->editing_mesh->update_normals();
-			update_edge_info();
-			mode_mesh->update_vb();
-			mode_mesh->update_selection_vb();
-			out_redraw();
-			normals_dirty = false;
-		}
-	});
 }
 
 void ModeMeshGeometry::on_connect_events() {
@@ -220,40 +187,11 @@ void ModeMeshGeometry::on_connect_events() {
 		auto ed = polymesh::auto_merge_polygons(*data->mesh, multi_view->selection[MultiViewType::MODEL_POLYGON]);
 		data->edit_mesh(ed);
 	});
-
-
 }
 
 
 void ModeMeshGeometry::on_leave() {
-	data->out_changed.unsubscribe(this);
 	set_overlay_panel(nullptr);
-}
-
-void ModeMeshGeometry::on_update_topology() {
-	edges_cached = data->editing_mesh->edges();
-	update_edge_info();
-}
-
-void ModeMeshGeometry::update_edge_info() {
-	edge_infos.resize(edges_cached.num);
-	for (auto& ei: edge_infos)
-		ei.polygons[0] = ei.polygons[1] = -1;
-
-	for (const auto& [i, p]: enumerate(data->editing_mesh->polygons)) {
-		for (const auto& [k, e]: enumerate(p.get_edges())) {
-			auto& ei = edge_infos[edges_cached.find(e)];
-			if (ei.polygons[0] < 0) {
-				ei.polygons[1] = i;
-				ei.sides[1] = k;
-				ei.normal = p.temp_normal;
-			} else {
-				ei.polygons[0] = i;
-				ei.sides[0] = k;
-				ei.normal = (ei.normal + p.temp_normal).normalized();
-			}
-		}
-	}
 }
 
 void ModeMeshGeometry::on_update_menu() {
@@ -302,10 +240,6 @@ void ModeMeshGeometry::on_draw_post(Painter* p) {
 
 	if (auto s = model_selection_description(data, multi_view->selection))
 		draw_info(p, "selected: " + *s);
-}
-
-void ModeMeshGeometry::on_update_selection() {
-	mode_mesh->update_selection_vb();
 }
 
 base::optional<Hover> ModeMeshGeometry::get_hover(MultiViewWindow* win, const vec2& m) const {
