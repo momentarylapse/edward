@@ -4354,7 +4354,7 @@ menu-polygons
 
 6
 0
-3
+4
 Item
 extrude-polygons
 
@@ -4368,9 +4368,15 @@ auto-merge-polygons
 0
 0
 Item
-invert-polygons
+triangulate-polygons
 
 2
+0
+0
+Item
+invert-polygons
+
+3
 0
 0
 Menu
@@ -13063,7 +13069,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1410
+1411
 # Text
 /ambient
 Ambient
@@ -14159,6 +14165,9 @@ Settings...
 
 menu-model-geometry/snap_to_grid
 Sticky grid
+
+menu-model-geometry/triangulate-polygons
+Divide into triangles
 
 menu-model-geometry/undo
 Undo

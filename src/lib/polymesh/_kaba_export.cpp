@@ -17,6 +17,7 @@
 #include "edit/BevelEdges.h"
 #include "edit/ExtrudePolygons.h"
 #include "edit/InvertPolygons.h"
+#include "edit/TriangulatePolygons.h"
 
 using namespace polymesh;
 
@@ -30,19 +31,23 @@ base::set<int> setify(const Array<int>& _sel) {
 
 
 MeshEdit kaba_wrap_extrude_polygons(const Mesh& mesh, const Array<int>& sel, float distance, bool keep_connected) {
-	return polymesh::extrude_polygons(mesh, setify(sel), distance, keep_connected);
+	return extrude_polygons(mesh, setify(sel), distance, keep_connected);
 }
 
 MeshEdit kaba_wrap_invert_polygons(const Mesh& mesh, const Array<int>& sel) {
-	return polymesh::invert_polygons(mesh, setify(sel));
+	return invert_polygons(mesh, setify(sel));
+}
+
+MeshEdit kaba_wrap_triangulate_polygons(const Mesh& mesh, const Array<int>& sel) {
+	return triangulate_polygons(mesh, setify(sel));
 }
 
 MeshEdit kaba_wrap_auto_merge_polygons(const Mesh& mesh, const Array<int>& sel, float dang) {
-	return polymesh::auto_merge_polygons(mesh, setify(sel), dang);
+	return auto_merge_polygons(mesh, setify(sel), dang);
 }
 
 MeshEdit kaba_wrap_bevel_edges(const Mesh& mesh, const Array<int>& selv, const Array<int>& sele, float radius) {
-	return polymesh::bevel_edges(mesh, setify(selv), setify(sele), radius);
+	return bevel_edges(mesh, setify(selv), setify(sele), radius);
 }
 
 void export_package_polymesh(kaba::IExporter* ext) {
@@ -123,6 +128,7 @@ void export_package_polymesh(kaba::IExporter* ext) {
 	ext->link_func("bevel_edges", &kaba_wrap_bevel_edges);
 	ext->link_func("extrude_polygons", &kaba_wrap_extrude_polygons);
 	ext->link_func("invert_polygons", &kaba_wrap_invert_polygons);
+	ext->link_func("triangulate_polygons", &kaba_wrap_triangulate_polygons);
 	ext->link_func("auto_merge_polygons", &kaba_wrap_auto_merge_polygons);
 }
 

@@ -19,6 +19,7 @@
 #include "../../data/ModelMesh.h"
 #include <Session.h>
 #include <lib/polymesh/edit/InvertPolygons.h>
+#include <lib/polymesh/edit/TriangulatePolygons.h>
 #include <lib/polymesh/edit/AutoMergePolygons.h>
 #include <helper/ResourceManager.h>
 #include <lib/base/iter.h>
@@ -32,7 +33,6 @@
 #include <view/EdwardWindow.h>
 #include <view/DocumentSession.h>
 #include <lib/ygraphics/graphics-impl.h>
-
 
 
 ModeMeshGeometry::ModeMeshGeometry(ModeMesh* parent) : SubMode(parent) {
@@ -103,7 +103,6 @@ Dialog mesh-op-buttons '' propagateevents
 
 		event("add-shape", [this] {
 			auto m = new xhui::Menu;
-			m->add_item("add-vertex", "Vertex");
 			m->add_item("add-vertex", "Vertex");
 			m->add_item("add-polygon", "Polygon");
 			m->add_item("add-cube", "Cube");
@@ -211,6 +210,10 @@ void ModeMeshGeometry::on_connect_events() {
 	});
 	doc->event("invert-polygons", [this] {
 		auto ed = polymesh::invert_polygons(*data->mesh, multi_view->selection[MultiViewType::MODEL_POLYGON]);
+		data->edit_mesh(ed);
+	});
+	doc->event("triangulate-polygons", [this] {
+		auto ed = polymesh::triangulate_polygons(*data->mesh, multi_view->selection[MultiViewType::MODEL_POLYGON]);
 		data->edit_mesh(ed);
 	});
 	doc->event("auto-merge-polygons", [this] {

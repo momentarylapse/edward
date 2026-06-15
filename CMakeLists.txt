@@ -315,6 +315,7 @@ add_executable(edward
 	src/lib/polymesh/edit/BevelEdges.cpp
 	src/lib/polymesh/edit/ExtrudePolygons.cpp
 	src/lib/polymesh/edit/InvertPolygons.cpp
+	src/lib/polymesh/edit/TriangulatePolygons.cpp
 	src/lib/polymesh/_kaba_export.cpp
 	src/lib/polymesh/GeometrySubtract.cpp
 	src/lib/polymesh/Mesh.cpp

@@ -68,6 +68,7 @@ Menu menu-model-geometry "Model" disabled
 	Menu menu-polygons "Polygons"
 		Item extrude-polygons "Extrude"
 		Item auto-merge-polygons "Auto merge if flat"
+		Item triangulate-polygons "Divide into triangles"
 		Item invert-polygons "Invert polygons"
 	Menu menu_model_view "View"
 		Menu menu_model_mode "Mode"
