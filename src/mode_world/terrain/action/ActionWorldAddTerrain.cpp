@@ -13,6 +13,7 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <assert.h>
 
+#if 0
 ActionWorldAddTerrain::ActionWorldAddTerrain(const vec3 &_pos, const Path &_filename) {
 	filename = _filename;
 	assert(!filename.is_empty());
@@ -83,5 +84,5 @@ void *ActionWorldAddTerrain::execute(history::Data* d) {
 	return &w->terrains.back();*/
 	return nullptr;
 }
-
+#endif
 

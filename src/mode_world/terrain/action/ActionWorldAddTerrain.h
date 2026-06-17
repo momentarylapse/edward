@@ -12,6 +12,8 @@
 #include <lib/math/vec3.h>
 #include <lib/os/path.h>
 
+#if 0
+
 class ActionWorldAddTerrain : public history::Action {
 public:
 	ActionWorldAddTerrain(const vec3 &_pos, const Path &_filename);
@@ -27,5 +29,6 @@ private:
 	vec3 size;
 	int num_x, num_z;
 };
+#endif
 
 #endif /* ACTIONWORLDADDTERRAIN_H_ */

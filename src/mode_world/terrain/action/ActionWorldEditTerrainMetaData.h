@@ -10,17 +10,20 @@
 #include <lib/history/Action.h>
 #include <lib/math/vec3.h>
 
+class Terrain;
+
 class ActionWorldEditTerrainMetaData : public history::Action {
 public:
-	ActionWorldEditTerrainMetaData(int index, const vec3& pattern);
+	ActionWorldEditTerrainMetaData(Terrain* t, const vec3& pattern, const vec3 texture_scale[8]);
 	string name() const override { return "WorldEditTerrainMetaData";	}
 
 	void *execute(history::Data* d) override;
 	void undo(history::Data* d) override;
 
 private:
-	int index;
+	Terrain* terrain;
 	vec3 pattern;
+	vec3 texture_scale[8];
 };
 
 

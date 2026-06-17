@@ -15,7 +15,11 @@ class EditTerrainPanel : public obs::Node<xhui::Panel> {
 public:
 	explicit EditTerrainPanel(ModeEditTerrain* mode);
 
+	void update_ui();
+	void on_edit_texture_map();
+
 	ModeEditTerrain* mode_terrain;
+	bool user_editing = false;
 };
 
 

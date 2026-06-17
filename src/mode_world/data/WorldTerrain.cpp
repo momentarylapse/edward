@@ -22,12 +22,16 @@
 #include <view/DocumentSession.h>
 
 
-bool WorldTerrain::load(const Path &_filename, bool deep) {
+WorldTerrain::WorldTerrain() : Data(FD_TERRAIN) {
+}
 
-	filename = _filename.relative_to(engine.map_dir).no_ext();
+WorldTerrain::~WorldTerrain() = default;
+
+bool WorldTerrain::load(const Path &_filename, bool deep) {
+	filename = _filename;
 
 	terrain = new Terrain();
-	terrain->filename = filename;
+	terrain->filename = filename.relative_to(engine.map_dir);
 	bool Error = !terrain->reload(doc->session->resource_manager, deep);
 
 	if (Error) {
@@ -39,13 +43,13 @@ bool WorldTerrain::load(const Path &_filename, bool deep) {
 }
 
 bool WorldTerrain::save(const Path &_filename) {
-	filename = _filename.relative_to(engine.map_dir).no_ext();
+	filename = _filename;
 
 
 	os::fs::FileStream *f = nullptr;
 
 	try{
-		f = os::fs::open(_filename, "wb");
+		f = os::fs::open(filename, "wb");
 
 		//f->WriteFileFormatVersion(true, 4);
 	f->write_byte('b');
@@ -61,8 +65,13 @@ bool WorldTerrain::save(const Path &_filename) {
 
 	// Textures
 	f->write_comment("// Textures");
-	f->write_int(0);
-	f->write_str("");
+	f->write_int(2);
+	for (int i=0; i<2; i++) {
+		f->write_str(format("rotation=%.2f", terrain->texture_scale[i].y));
+		f->write_float(terrain->texture_scale[i].x);
+		f->write_float(terrain->texture_scale[i].z);
+	}
+	f->write_str(""); // material
 
 	// height
 	for (int x=0;x<terrain->num_x+1;x++)

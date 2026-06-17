@@ -21,6 +21,7 @@ void* ActionWorldResizeTerrain::execute(history::Data* d) {
 	std::swap(terrain->num_z, nz);
 	std::swap(terrain->height, heights);
 	terrain->update(-1, -1, -1, -1, TerrainUpdateAll);
+	w->out_terrain_changed(terrain);
 	return nullptr;
 }
 

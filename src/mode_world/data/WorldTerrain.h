@@ -11,6 +11,7 @@
 #include <view/SingleData.h>
 #include <lib/yrenderer/Material.h>
 #include <lib/math/Box.h>
+#include <lib/history/Data.h>
 
 class Terrain;
 class DocumentSession;
@@ -22,7 +23,7 @@ public:
 	vector Normal;
 };*/
 
-struct WorldTerrain {
+struct WorldTerrain : history::Data {
 
 	DocumentSession* doc;
 	Path filename;
@@ -32,8 +33,11 @@ struct WorldTerrain {
 	bool Changed = false;
 	Terrain *terrain = nullptr;
 
+	WorldTerrain();
+	~WorldTerrain() override;
 	bool load(const Path &filename, bool deep = true);
 	bool save(const Path &filename);
+	void reset() override {}
 
 	/*float hover_distance(multiview::Window *win, const vec2 &m, vec3 &tp, float &z) override;
 	bool in_rect(multiview::Window *win, const rect &r) override;

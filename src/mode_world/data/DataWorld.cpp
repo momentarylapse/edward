@@ -253,8 +253,8 @@ void DataWorld::edit_entity(ecs::Entity* e, const vec3& pos, const quaternion& a
 	execute(new ActionWorldEditBaseEntity(entity_manager->entity_index(e), pos, ang));
 }
 
-void DataWorld::edit_terrain_meta_data(int index, const vec3& pattern) {
-	execute(new ActionWorldEditTerrainMetaData(index, pattern));
+void DataWorld::edit_terrain_meta_data(Terrain* t, const vec3& pattern, const vec3 texture_scale[8]) {
+	execute(new ActionWorldEditTerrainMetaData(t, pattern, texture_scale));
 }
 
 

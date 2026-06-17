@@ -76,6 +76,7 @@ public:
 	obs::source out_system_added{this, "system-added"};
 	obs::source out_system_removed{this, "system-removed"};
 	obs::xsource<int> out_system_changed{this, "system-changed"};
+	obs::xsource<const Terrain*> out_terrain_changed{this, "terrain-changed"};
 
 	void reset() override;
 	void add_initial_data();
@@ -131,7 +132,7 @@ public:
 
 	ecs::Entity* add_entity(const vec3& pos, const quaternion& ang);
 	void edit_entity(ecs::Entity* e, const vec3& pos, const quaternion& ang);
-	void edit_terrain_meta_data(int index, const vec3& pattern);
+	void edit_terrain_meta_data(Terrain* t, const vec3& pattern, const vec3 texture_scale[8]);
 	ecs::Component* entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const ComponentParams& variables);
 	ecs::Component* entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const Array<ecs::InstanceDataVariable>& variables = {});
 	template<class T>
