@@ -10,6 +10,7 @@
 
 #include "Format.h"
 #include "../../mode_world/data/DataWorld.h"
+#include "../../mode_world/data/WorldTerrain.h"
 
 class FormatTerrain : public TypedFormat<WorldTerrain> {
 public:

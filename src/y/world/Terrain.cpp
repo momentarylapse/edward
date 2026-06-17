@@ -81,10 +81,12 @@ bool Terrain::reload(ResourceManager* resource_manager, bool deep) {
 			f->read_comment();
 			int num_textures = f->read_int();
 			for (int i=0;i<num_textures;i++) {
-				f->read_str(); // texture file (deprecated, using material instead)
+				string o = f->read_str(); // texture file (deprecated, using material instead)
 				texture_scale[i].x = f->read_float();
-				texture_scale[i].y = 0.107f + (float)i * 0.231f; // rotation
+				texture_scale[i].y = 0; //0.107f + (float)i * 0.231f; // rotation
 				texture_scale[i].z = f->read_float();
+				if (o.head(9) == "rotation=")
+					texture_scale[i].y = o.sub(9)._float();
 			}
 			// Material
 			/*material_file =*/ f->read_str();

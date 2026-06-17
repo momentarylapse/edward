@@ -17,11 +17,6 @@ ActionWorldDeleteSelection::ActionWorldDeleteSelection(DataWorld* w, const Selec
 			if (selection[MultiViewType::WORLD_ENTITY].contains(i)) {
 				entity_indices.add(i);
 			}
-	if (selection.contains(MultiViewType::WORLD_LINK))
-		for (const auto& [i, o]: enumerate(w->links))
-			if (selection[MultiViewType::WORLD_LINK].contains(i)) {
-		//		link_indices.add(i);
-			}
 }
 
 void *ActionWorldDeleteSelection::execute(history::Data* d) {
@@ -32,8 +27,6 @@ void *ActionWorldDeleteSelection::execute(history::Data* d) {
 		w->out_entity_removed();
 	}
 
-	for (int i: base::reverse(link_indices))
-		w->links.erase(i);
 	return nullptr;
 }
 
@@ -50,8 +43,5 @@ void ActionWorldDeleteSelection::undo(history::Data* d) {
 		w->_entity_apply_components(e, ee.components);
 	}
 
-
-//	for (const auto& [ii, i]: enumerate(link_indices))
-//		w->links.insert(temp.links[ii], i);
 }
 

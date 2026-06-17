@@ -523,7 +523,6 @@ add_executable(edward
 	src/mode_world/action/ActionWorldPaste.cpp
 	src/mode_world/data/DataCamera.cpp
 	src/mode_world/data/DataWorld.cpp
-	src/mode_world/data/WorldLink.cpp
 	src/mode_world/data/WorldTerrain.cpp
 	src/mode_world/dialog/components/CameraPanel.cpp
 	src/mode_world/dialog/components/ComponentPanel.cpp

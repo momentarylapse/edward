@@ -7,11 +7,8 @@
 
 #include "FormatWorld.h"
 #include "../../mode_world/data/DataWorld.h"
-#include "../../mode_world/data/WorldLink.h"
 #include "../../mode_world/data/WorldTerrain.h"
-//#include "../../EdwardWindow.h"
 #include "../../Session.h"
-//#include "../../stuff/Progress.h"
 #include <lib/base/iter.h>
 #include <y/world/Model.h>
 #include <y/world/World.h>
@@ -250,7 +247,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	}*/
 }
 
-void read_components(WorldEntity& o, const xml::Element& e) {
+/*void read_components(WorldEntity& o, const xml::Element& e) {
 	for (auto &ee: e.elements)
 		if (ee.tag == "component") {
 			ecs::InstanceData sd;
@@ -265,7 +262,7 @@ void read_components(WorldEntity& o, const xml::Element& e) {
 				}
 			o.components.add(sd);
 		}
-}
+}*/
 
 string phys_mode_name(PhysicsMode m);
 
@@ -489,7 +486,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		cont.add(el);
 	}
 
-	for (auto &l: data->links) {
+	/*for (auto &l: data->links) {
 		auto e = xml::Element("link")
 		.witha("a", i2s(l.object[0]))
 		.witha("b", i2s(l.object[1]))
@@ -499,7 +496,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		//.witha("pivotB", v2s(l.pos - data->objects[l.object[1]].pos))
 		.witha("ang", v2s(l.ang));
 		cont.add(e);
-	}
+	}*/
 	w.add(cont);
 
 	p.save(filename);

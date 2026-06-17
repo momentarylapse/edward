@@ -9,12 +9,13 @@
 #define DATAWORLD_H_
 
 #include <Session.h>
-#include "WorldTerrain.h"
+//#include "WorldTerrain.h"
 #include <lib/history/Data.h>
 #include <view/SingleData.h>
 #include <lib/yrenderer/Material.h>
 #include <lib/ygraphics/graphics-fwd.h>
 #include <lib/any/any.h>
+#include <lib/math/Box.h>
 #include <lib/math/quaternion.h>
 #include <stuff/Selection.h>
 
@@ -23,9 +24,9 @@
 
 class DataWorld;
 class Terrain;
-struct WorldLink;
+/*struct WorldLink;
 struct WorldObject;
-struct WorldTerrain;
+struct WorldTerrain;*/
 enum class PhysicsMode;
 namespace ecs {
 	struct Entity;
@@ -36,7 +37,7 @@ struct LevelData;
 
 
 
-struct WorldEntity { //: multiview::SingleData {
+/*struct WorldEntity { //: multiview::SingleData {
 	vec3 pos = vec3::ZERO;
 	quaternion ang = quaternion::ID;
 	int view_stage = -1;
@@ -48,7 +49,7 @@ struct WorldEntity { //: multiview::SingleData {
 	Array<ecs::InstanceData> components;
 
 	ecs::InstanceData& get(const string& class_name);
-};
+};*/
 
 struct EdwardTag : ecs::Component {
 	int entity_index; // auto updated by ModeWorld
@@ -92,7 +93,7 @@ public:
 	Array<multiview::SingleData> dummy_entities;
 	ecs::Entity* entity(int index);
 
-	Array<WorldLink> links;
+	//Array<WorldLink> links;
 
 	struct MetaData {
 

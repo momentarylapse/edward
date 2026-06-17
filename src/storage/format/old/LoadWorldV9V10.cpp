@@ -8,22 +8,13 @@
 
 #include "../FormatWorld.h"
 #include "../../../mode_world/data/DataWorld.h"
-#include "../../../mode_world/data/WorldLink.h"
-//#include "../../../mode_world/data/WorldObject.h"
-#include "../../../mode_world/data/WorldTerrain.h"
-//#include "../../../EdwardWindow.h"
-#include <Session.h>
 #include <y/world/Model.h>
 #include <y/world/World.h>
-#include <y/EngineData.h>
-#include <y/world/ModelManager.h>
 #include <y/world/components/Skeleton.h>
-#include "../../../lib/os/date.h"
-#include "../../../lib/os/file.h"
-#include "../../../lib/os/filesystem.h"
-#include "../../../lib/os/formatter.h"
-#include "lib/os/msg.h"
-#include "lib/yrenderer/scene/Light.h"
+#include <lib/os/file.h>
+#include <lib/os/formatter.h>
+#include <lib/os/msg.h>
+#include <lib/yrenderer/scene/Light.h>
 
 
 void FormatWorld::_load_old(LegacyFile& lf, LevelData& ld) {

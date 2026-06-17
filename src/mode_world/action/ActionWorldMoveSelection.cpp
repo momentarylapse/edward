@@ -9,9 +9,6 @@
 #include <lib/base/iter.h>
 #include <lib/math/quaternion.h>
 #include "../data/DataWorld.h"
-#include "../data/WorldLink.h"
-#include <y/world/Terrain.h>
-#include "../../Session.h"
 #include <ecs/EntityManager.h>
 #include <ecs/Entity.h>
 
@@ -25,15 +22,6 @@ ActionWorldMoveSelection::ActionWorldMoveSelection(DataWorld *d, const Selection
 				old_ang.add(o->ang);
 				type.add(MultiViewType::WORLD_ENTITY);
 			}
-
-	if (selection.contains(MultiViewType::WORLD_LINK))
-		for (const auto& [i, l]: enumerate(d->links))
-			if (selection[MultiViewType::WORLD_LINK].contains(i)) {
-				index.add(i);
-				old_data.add(l.pos);
-				old_ang.add(quaternion::ID);
-				type.add(MultiViewType::WORLD_LINK);
-			}
 }
 
 void *ActionWorldMoveSelection::execute(history::Data* d) {
@@ -43,8 +31,6 @@ void *ActionWorldMoveSelection::execute(history::Data* d) {
 		if (type[ii] == MultiViewType::WORLD_ENTITY) {
 			w->entity(i)->pos = mat * old_data[ii];
 			w->entity(i)->ang = dq * old_ang[ii];
-		} else if (type[ii] == MultiViewType::WORLD_LINK) {
-			w->links[i].pos = mat * old_data[ii];
 		}
 	}
 	return nullptr;
@@ -56,8 +42,6 @@ void ActionWorldMoveSelection::undo(history::Data* d) {
 		if (type[ii] == MultiViewType::WORLD_ENTITY) {
 			w->entity(i)->pos = old_data[ii];
 			w->entity(i)->ang = old_ang[ii];
-		} else if (type[ii] == MultiViewType::WORLD_LINK) {
-			w->links[i].pos = old_data[ii];
 		}
 	}
 }

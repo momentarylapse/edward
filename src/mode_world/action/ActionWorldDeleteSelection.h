@@ -9,7 +9,6 @@
 
 #include <lib/history/Action.h>
 #include "../data/DataWorld.h"
-#include "../data/WorldLink.h"
 #include <y/world/LevelData.h>
 
 class ActionWorldDeleteSelection : public history::Action {
@@ -22,5 +21,4 @@ public:
 
 	LevelData temp;
 	Array<int> entity_indices;
-	Array<int> link_indices;
 };

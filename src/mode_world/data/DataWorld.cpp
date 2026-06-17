@@ -10,7 +10,6 @@
 #include <sys/stat.h>
 
 #include "WorldTerrain.h"
-#include "WorldLink.h"
 #include <lib/any/conversion.h>
 #include <lib/kaba/syntax/Class.h>
 #include "plugins/PluginManager.h"
@@ -21,9 +20,6 @@
 #include <world/components/RigidBody.h>
 
 #include "view/DocumentSession.h"
-#if 0 //HAS_LIB_GL
-#include "../../mode/world/ModeWorld.h"
-#endif
 #include "../../Session.h"
 #include "../../storage/Storage.h"
 #include <world/Model.h>
@@ -42,15 +38,6 @@
 #include <stuff/PluginManager.h>
 
 const kaba::Class* EdwardTag::_class = nullptr;
-
-ecs::InstanceData& WorldEntity::get(const string& class_name) {
-	for (auto& c: components)
-		if (c.class_name == class_name)
-			return c;
-	static ecs::InstanceData dummy;
-	dummy.class_name = "";
-	return dummy;
-}
 
 ecs::InstanceData& EdwardTag::get(const string& class_name) {
 	for (auto& c: unknown_components)
@@ -136,7 +123,6 @@ void DataWorld::reset() {
 
 	// delete old data...
 	entity_manager->reset();
-	links.clear();
 
 	meta_data.reset();
 
@@ -238,11 +224,6 @@ void DataWorld::copy(LevelData& temp, const Selection& sel) const {
 					ee.components.add(c);
 
 				temp.entities.add(ee);
-			}
-	if (sel.contains(MultiViewType::WORLD_LINK))
-		for (const auto& [i, o]: enumerate(links))
-			if (sel[MultiViewType::WORLD_LINK].contains(i)) {
-				//links.add(o);
 			}
 }
 
