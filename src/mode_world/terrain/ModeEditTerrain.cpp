@@ -3,7 +3,7 @@
 //
 
 #include "ModeEditTerrain.h"
-#include "ModeWorld.h"
+#include "../ModeWorld.h"
 #include <view/MultiView.h>
 #include <view/DocumentSession.h>
 #include "dialog/EditTerrainPanel.h"

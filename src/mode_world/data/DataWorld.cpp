@@ -31,7 +31,7 @@
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>
 #include <mode_world/action/entity/ActionWorldAddEntity.h>
-#include <mode_world/action/terrain/ActionWorldEditTerrainMetaData.h>
+#include <mode_world/terrain/action/ActionWorldEditTerrainMetaData.h>
 #include "../action/ActionWorldDeleteSelection.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <ecs/EntityManager.h>

@@ -4,8 +4,8 @@
 
 #include "EditTerrainPanel.h"
 #include "../ModeEditTerrain.h"
-#include "../action/terrain/ActionWorldResizeTerrain.h"
-#include "../data/DataWorld.h"
+#include "../action/ActionWorldResizeTerrain.h"
+#include "../../data/DataWorld.h"
 #include <lib/image/image.h>
 #include <storage/Storage.h>
 #include <view/dialogs/CommonDialogs.h>

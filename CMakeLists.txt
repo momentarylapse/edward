@@ -514,9 +514,6 @@ add_executable(edward
 	src/mode_project/ModeProject.cpp
 	src/mode_world/action/entity/ActionWorldAddEntity.cpp
 	src/mode_world/action/entity/ActionWorldEditComponent.cpp
-	src/mode_world/action/terrain/ActionWorldAddTerrain.cpp
-	src/mode_world/action/terrain/ActionWorldEditTerrainMetaData.cpp
-	src/mode_world/action/terrain/ActionWorldResizeTerrain.cpp
 	src/mode_world/action/ActionWorldDeleteSelection.cpp
 	src/mode_world/action/ActionWorldEditData.cpp
 	src/mode_world/action/ActionWorldMoveSelection.cpp
@@ -535,12 +532,15 @@ add_executable(edward
 	src/mode_world/dialog/components/TerrainRefPanel.cpp
 	src/mode_world/dialog/components/UserComponentPanel.cpp
 	src/mode_world/dialog/AddEntityPanel.cpp
-	src/mode_world/dialog/EditTerrainPanel.cpp
 	src/mode_world/dialog/EntityListPanel.cpp
 	src/mode_world/dialog/EntityPanel.cpp
 	src/mode_world/dialog/PropertiesDialog.cpp
 	src/mode_world/dialog/WorldSidePanel.cpp
-	src/mode_world/ModeEditTerrain.cpp
+	src/mode_world/terrain/action/ActionWorldAddTerrain.cpp
+	src/mode_world/terrain/action/ActionWorldEditTerrainMetaData.cpp
+	src/mode_world/terrain/action/ActionWorldResizeTerrain.cpp
+	src/mode_world/terrain/dialog/EditTerrainPanel.cpp
+	src/mode_world/terrain/ModeEditTerrain.cpp
 	src/mode_world/ModeWorld.cpp
 	src/mode_world/ModeWorldProperties.cpp
 	src/storage/format/old/LoadModelV11.cpp

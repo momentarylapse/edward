@@ -3,7 +3,7 @@
 //
 
 #include "ModeWorld.h"
-#include "ModeEditTerrain.h"
+#include "terrain/ModeEditTerrain.h"
 #include "ModeWorldProperties.h"
 #include "dialog/WorldSidePanel.h"
 #include "action/ActionWorldMoveSelection.h"
