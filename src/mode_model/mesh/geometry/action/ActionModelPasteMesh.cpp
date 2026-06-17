@@ -23,6 +23,17 @@ ActionModelPasteMesh::ActionModelPasteMesh(ModelMesh* m, const polymesh::Mesh& g
 			p.material = default_material;
 		edit.add_polygon(p);
 	}
+
+	for (auto s: geo.spheres) {
+		s.index = vindex[s.index];
+		edit.add_sphere(s);
+	}
+
+	for (auto c: geo.cylinders) {
+		c.index[0] = vindex[c.index[0]];
+		c.index[1] = vindex[c.index[1]];
+		edit.add_cylinder(c);
+	}
 }
 
 void *ActionModelPasteMesh::execute(history::Data* data) {

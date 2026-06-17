@@ -28,6 +28,7 @@ public:
 	ModeMesh* mode_mesh;
 
 	Array<vec3> points;
+	base::optional<float> radius;
 	polymesh::Mesh mesh;
 	owned<ygfx::VertexBuffer> vertex_buffer;
 

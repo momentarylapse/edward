@@ -322,7 +322,7 @@ void ModeMesh::update_vb() {
 	for (const auto& b: data->editing_mesh->spheres)
 		m.add(polymesh::create_sphere(data->editing_mesh->vertices[b.index].pos, b.radius, 8));
 	for (const auto& c: data->editing_mesh->cylinders)
-		m.add(polymesh::create_cylinder(data->editing_mesh->vertices[c.index[0]].pos, data->editing_mesh->vertices[c.index[1]].pos, c.radius, 1, 32));
+		m.add(polymesh::create_cylinder(data->editing_mesh->vertices[c.index[0]].pos, data->editing_mesh->vertices[c.index[1]].pos, c.radius, 1, 32, c.round ? polymesh::End::ROUND : polymesh::End::FLAT));
 	m.build(vertex_buffer_physical);
 }
 

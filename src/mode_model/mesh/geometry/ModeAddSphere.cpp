@@ -141,7 +141,14 @@ void ModeAddSphere::on_mouse_move(const vec2& m, const vec2& d) {
 
 void ModeAddSphere::on_left_button_down(const vec2& m) {
 	if (center) {
-		mode_mesh->data->paste_mesh(mesh, 0);
+		if (mode_mesh->data->editing_mesh == mode_mesh->data->phys_mesh) {
+			polymesh::Mesh m2;
+			m2.add_vertex(*center);
+			m2.spheres.add({0, radius});
+			mode_mesh->data->paste_mesh(m2, 0);
+		} else {
+			mode_mesh->data->paste_mesh(mesh, 0);
+		}
 		request_mode_end();
 	} else {
 		center = multi_view->cursor_pos_3d(m);

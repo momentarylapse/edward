@@ -134,7 +134,6 @@ void ModeMeshGeometry::on_enter() {
 	multi_view->f_create_action = [this] {
 		return new ActionModelMoveSelection(data->editing_mesh, multi_view->selection);
 	};
-	mode_mesh->set_edit_mesh(data->mesh.get());
 
 	set_overlay_panel(new MeshOpButtons(multi_view));
 }

@@ -8,7 +8,6 @@
 #include "../../data/ModelMesh.h"
 #include <Session.h>
 #include <lib/polymesh/create/Cylinder.h>
-#include <lib/os/msg.h>
 #include <lib/xhui/config.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
@@ -107,8 +106,8 @@ void ModeAddCylinder::on_mouse_move(const vec2& m, const vec2& d) {
 		mesh = polymesh::create_cylinder(points[0], next_point, r, rings, edges, end_mode);
 	} else if (points.num == 2) {
 		next_point = multi_view->hover_window->unproject(m, points[1]);
-		float r = (next_point - points[1]).length();
-		mesh = polymesh::create_cylinder(points[0], points[1], r, rings, edges, end_mode);
+		radius = (next_point - points[1]).length();
+		mesh = polymesh::create_cylinder(points[0], points[1], *radius, rings, edges, end_mode);
 	}
 
 	mesh.build(vertex_buffer.get());
@@ -119,7 +118,15 @@ void ModeAddCylinder::on_mouse_move(const vec2& m, const vec2& d) {
 
 void ModeAddCylinder::on_left_button_down(const vec2& m) {
 	if (points.num >= 2) {
-		mode_mesh->data->paste_mesh(mesh, 0);
+		if (mode_mesh->data->editing_mesh == mode_mesh->data->phys_mesh) {
+			polymesh::Mesh m2;
+			m2.add_vertex(points[0]);
+			m2.add_vertex(points[1]);
+			m2.cylinders.add({0, 1, *radius, round});
+			mode_mesh->data->paste_mesh(m2, 0);
+		} else {
+			mode_mesh->data->paste_mesh(mesh, 0);
+		}
 		request_mode_end();
 	} else {
 		points.add(next_point);
