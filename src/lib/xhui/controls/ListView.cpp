@@ -50,7 +50,7 @@ void ListView::_update_selection(const Array<int>& sel) {
 
 	if (column_factories[0].f_select)
 		for (const auto& [i,r]: enumerate(cells))
-			column_factories[0].f_select(r[0].control, selected.find(i) >= 0);
+			column_factories[0].f_select(r[0].control.get(), selected.find(i) >= 0);
 
 	request_redraw();
 	emit_event(event_id::Select, false);
@@ -225,7 +225,7 @@ void ListView::set_cell(int row, int col, const string& s) {
 	if (row >= 0 and row < cells.num)
 		if (col >= 0 and col < cells[row].num and col < column_factories.num) {
 			cells[row][col].text = s;
-			column_factories[col].f_set(cells[row][col].control, s);
+			column_factories[col].f_set(cells[row][col].control.get(), s);
 		}
 	request_redraw();
 }
@@ -233,8 +233,12 @@ void ListView::set_cell(int row, int col, const string& s) {
 void ListView::reset() {
 	hover_row = -1;
 	selected.clear();
-	for (auto c: cell_grid->get_children(ChildFilter::All))
-		cell_grid->remove_child(c);
+	for (auto c: cell_grid->get_children(ChildFilter::All)) {
+		if (auto p = as_panel(c))
+			owner->unembed(p);
+		else
+			cell_grid->remove_child(c);
+	}
 	cells.clear();
 	viewport.offset = vec2::ZERO;
 	request_redraw();
@@ -247,7 +251,7 @@ void ListView::set_int(int i) {
 
 	if (column_factories[0].f_select)
 		for (const auto& [i,r]: enumerate(cells))
-			column_factories[0].f_select(r[0].control, selected.find(i) >= 0);
+			column_factories[0].f_select(r[0].control.get(), selected.find(i) >= 0);
 
 	request_redraw();
 }

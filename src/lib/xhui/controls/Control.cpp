@@ -58,6 +58,9 @@ void Control::_unregister() {
 		return;
 	for (auto cc: get_children(ChildFilter::All))
 		cc->_unregister();
+	base::remove_if(owner->event_handlers, [this] (const Panel::EventHandler& e) {
+		return e.id == id;
+	});
 	base::remove(owner->controls, this);
 	owner = nullptr;
 }

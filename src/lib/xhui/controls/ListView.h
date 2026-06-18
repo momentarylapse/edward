@@ -57,7 +57,7 @@ public:
 	Array<ColumnFactory> column_factories;
 	struct Cell {
 		string text;
-		Control* control;
+		shared<Control> control;
 	};
 	Array<Array<Cell>> cells;
 	Viewport viewport;
