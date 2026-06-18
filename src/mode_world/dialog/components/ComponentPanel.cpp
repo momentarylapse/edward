@@ -172,7 +172,7 @@ Dialog unknown-component-panel ''
 
 ComponentPanel::ComponentPanel(DataWorld* _data) : Panel("component-panel") {
 	from_source(R"foodelim(
-Dialog solid-body-panel ''
+Dialog component-panel ''
 	Grid card '' class=card
 		Expander expander 'Component' markup expandx
 			Grid contents ''

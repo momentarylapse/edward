@@ -13,7 +13,7 @@
 WorldSidePanel::WorldSidePanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("world-side-panel") {
 	mode_world = _mode;
 	from_source(R"foodelim(
-Dialog entity-panel '' padding=0
+Dialog world-side-panel '' padding=0
 	Grid main-grid '' expandx spacing=0
 )foodelim");
 
@@ -22,6 +22,7 @@ Dialog entity-panel '' padding=0
 	entity_panel = new EntityPanel(mode_world);
 
 	embed("main-grid", 0, 0, add_entity_panel);
+	current_panel = add_entity_panel.get();
 
 	mode_world->multi_view->out_selection_changed >> create_sink([this] {
 		update(false);
@@ -32,7 +33,9 @@ void WorldSidePanel::update(bool force) {
 	const auto& sel = mode_world->multi_view->selection;
 
 	auto switch_to = [this] (xhui::Panel* p) {
-		if (current_panel and current_panel != p) {
+		if (current_panel == p)
+			return;
+		if (current_panel) {
 			unembed(current_panel);
 		}
 		current_panel = p;
@@ -43,7 +46,7 @@ void WorldSidePanel::update(bool force) {
 		switch_to(add_entity_panel.get());
 	} else if (sel[MultiViewType::WORLD_ENTITY].num == 1) {
 		switch_to(entity_panel.get());
-		entity_panel.to<EntityPanel>()->update(mode_world);
+		entity_panel.to<EntityPanel>()->update(false);
 	} else {
 		switch_to(entity_list_panel.get());
 		entity_list_panel.to<EntityListPanel>()->update(mode_world);
