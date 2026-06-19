@@ -93,7 +93,8 @@ void ModeSkeleton::on_mouse_move(const vec2& m, const vec2& d) {
 }
 
 void ModeSkeleton::on_draw_post(Painter* p) {
-	drawing2d::draw_data_points(p, multi_view->active_window, data->bones, MultiViewType::SKELETON_BONE, multi_view->hover, multi_view->selection[MultiViewType::SKELETON_BONE]);
+	VisibilityStack dummy;
+	drawing2d::draw_data_points(p, multi_view->active_window, data->bones, MultiViewType::SKELETON_BONE, multi_view->hover, multi_view->selection[MultiViewType::SKELETON_BONE], dummy.get(MultiViewType::SKELETON_BONE));
 
 	if (auto s = skeleton_selection_description(data, multi_view->selection))
 		draw_info(p, "selected: " + *s);
@@ -159,7 +160,8 @@ base::optional<Hover> ModeSkeleton::get_hover(MultiViewWindow* win, const vec2& 
 
 Selection ModeSkeleton::select_in_rect(MultiViewWindow* win, const rect& r) {
 	Selection sel;
-	sel.add({MultiViewType::SKELETON_BONE, MultiView::select_points_in_rect(win, r, data->bones)});
+	VisibilityStack dummy;
+	sel.add({MultiViewType::SKELETON_BONE, MultiView::select_points_in_rect(win, r, data->bones, dummy.get(MultiViewType::SKELETON_BONE))});
 	return sel;
 }
 

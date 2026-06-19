@@ -20,6 +20,7 @@
 #include "SkinGenerator.h"
 #if __has_include(<view/MultiView.h>)
 #include <view/MultiView.h>
+#include <view/VisibilityStack.h>
 #endif
 
 namespace polymesh {
@@ -606,10 +607,12 @@ void Mesh::update_normals() {
 }
 
 #if __has_include(<view/MultiView.h>)
-bool Mesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec2& m, vec3 &tp, int& index, bool any_hit) {
+bool Mesh::is_mouse_over(MultiViewWindow* win, const mat4 &mat, const vec2& m, vec3 &tp, int& index, bool any_hit, const VisibilityFilter& filter) {
 	vec3 M = vec3(m, 0);
 	float zmin = 1;
 	for (const auto& [i, p]: enumerate(polygons)) {
+		if (!filter(i))
+			continue;
 		// care for the sense of rotation?
 	//	if (vec3::dot(p.temp_normal, win->get_direction()) > 0)
 	//		continue;

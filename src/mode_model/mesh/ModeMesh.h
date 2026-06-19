@@ -7,8 +7,9 @@
 
 
 #include <lib/base/optional.h>
-#include "../../view/Mode.h"
-#include "../../view/Hover.h"
+#include <view/Mode.h>
+#include <view/Hover.h>
+#include <view/VisibilityStack.h>
 #include "../data/DataModel.h"
 
 namespace polymesh {
@@ -42,6 +43,7 @@ public:
 	void on_enter() override;
 	void on_connect_events() override;
 	void on_leave() override;
+	void on_command(const string &id) override;
 	void on_update_menu() override;
 	void update_menu_presentation_mode();
 	void on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;
@@ -94,6 +96,8 @@ public:
 		Surfaces
 	} presentation_mode;
 	void set_presentation_mode(PresentationMode m);
+
+	VisibilityStack visibility_stack;
 
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 	Selection select_in_rect(MultiViewWindow* win, const rect& r);

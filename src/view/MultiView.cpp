@@ -11,6 +11,7 @@
 #include "EdwardWindow.h"
 #include "Mode.h"
 #include "DocumentSession.h"
+#include "VisibilityStack.h"
 #include <Session.h>
 #include <lib/os/msg.h>
 #include <lib/math/mat3.h>
@@ -225,9 +226,11 @@ void MultiView::select_in_rect(MultiViewWindow* win, const rect& _r) {
 	update_selection_box();
 }
 
-base::set<int> MultiView::select_points_in_rect(MultiViewWindow* win, const rect& r, DynamicArray& array) {
+base::set<int> MultiView::select_points_in_rect(MultiViewWindow* win, const rect& r, DynamicArray& array, const VisibilityFilter& filter) {
 	base::set<int> sel;
 	for (int i=0; i<array.num; i++) {
+		if (!filter(i))
+			continue;
 		auto p = reinterpret_cast<multiview::SingleData*>(array.simple_element(i));
 		if (r.inside(win->project(p->pos).xy()))
 			sel.add(i);

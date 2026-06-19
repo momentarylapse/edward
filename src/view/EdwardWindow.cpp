@@ -141,11 +141,14 @@ Dialog x x padding=0
 	set_key_code("next-document", key_next_doc);
 	set_key_code("previous-document", key_next_doc + xhui::KEY_SHIFT);
 
+	set_key_code("view_push", xhui::KEY_PAGE_UP);
+	set_key_code("view_pop", xhui::KEY_PAGE_DOWN);
+
 	menu_bar = (xhui::MenuBar*)get_control("menu");
 	tool_bar = (xhui::Toolbar*)get_control("toolbar");
 	project_menu_bar = (xhui::MenuBar*)get_control("project-menu");
 
-	Array<string> ids = {"new", "open", "save", "save-as", "exit", "undo", "redo", "copy", "paste", "delete"};
+	Array<string> ids = {"new", "open", "save", "save-as", "exit", "undo", "redo", "copy", "paste", "delete", "view_push", "view_pop"};
 	for (const string& id: ids)
 		event(id, [this, id=id] {
 			if (auto m = cur_mode())

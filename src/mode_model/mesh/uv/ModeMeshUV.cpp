@@ -201,7 +201,9 @@ void ModeMeshUV::on_draw_win(const yrenderer::RenderParams& params, MultiViewWin
 void ModeMeshUV::on_draw_post(Painter* p) {
 	//mode_mesh->on_draw_post(p);
 
-	drawing2d::draw_data_points(p, multi_view->active_window, uv, MultiViewType::MODEL_SKIN_VERTEX, multi_view->hover, multi_view->selection[MultiViewType::MODEL_SKIN_VERTEX]);
+	drawing2d::draw_data_points(p, multi_view->active_window, uv, MultiViewType::MODEL_SKIN_VERTEX,
+		multi_view->hover, multi_view->selection[MultiViewType::MODEL_SKIN_VERTEX],
+		mode_mesh->visibility_stack.get(MultiViewType::MODEL_SKIN_VERTEX));
 
 	draw_info(p, "uv...");
 }
@@ -225,7 +227,7 @@ base::optional<Hover> ModeMeshUV::get_hover(MultiViewWindow* win, const vec2& m)
 Selection ModeMeshUV::select_in_rect(MultiViewWindow* win, const rect& r) {
 	Selection sel;
 	sel.add({MultiViewType::MODEL_SKIN_VERTEX, {}});
-	sel[MultiViewType::MODEL_SKIN_VERTEX] = MultiView::select_points_in_rect(win, r, uv);
+	sel[MultiViewType::MODEL_SKIN_VERTEX] = MultiView::select_points_in_rect(win, r, uv, mode_mesh->visibility_stack.get(MultiViewType::MODEL_SKIN_VERTEX));
 	return sel;
 }
 

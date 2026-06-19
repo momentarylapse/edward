@@ -3,19 +3,19 @@
 //
 
 #include "DrawingHelper.h"
+#include "MultiView.h"
+#include "SingleData.h"
+#include "VisibilityStack.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/ygraphics/Context.h>
-#include <y/helper/ResourceManager.h>
 #include <lib/yrenderer/Context.h>
 #include <lib/math/mat4.h>
 #include <lib/math/vec2.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
+#include <lib/xhui/Context.h>
 #include <lib/polymesh/MeshEdit.h>
-#include "MultiView.h"
-#include "SingleData.h"
-#include "lib/xhui/Context.h"
 #include <cmath>
 
 const float DrawingHelper::LINE_THIN = 2;
@@ -292,12 +292,14 @@ void draw_boxed_str(Painter* p, const vec2& _pos, const string& str, int align, 
 	p->draw_str(pos, str);
 }
 
-void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& _a, MultiViewType kind, const base::optional<Hover>& hover, const base::set<int>& sel) {
+void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& _a, MultiViewType kind, const base::optional<Hover>& hover, const base::set<int>& sel, const VisibilityFilter& filter) {
 	int _hover = -1;
 	if (hover and hover->type == kind)
 		_hover = hover->index;
 	auto& a = const_cast<DynamicArray&>(_a);
 	for (int i=0; i<a.num; i++) {
+		if (!filter(i))
+			continue;
 		const auto v = static_cast<multiview::SingleData*>(a.simple_element(i));
 		p->set_color(sel.contains(i) ? Red : color(1, 0.25f, 0.25f, 1.0f));
 		auto p1 = win->project(v->pos);

@@ -9,6 +9,7 @@
 #include "../view/Hover.h"
 #include "data/DataWorld.h"
 #include <y/world/LevelData.h>
+#include <view/VisibilityStack.h>
 
 
 struct PhysicalMesh;
@@ -67,6 +68,7 @@ public:
 	} view_mode;
 	void set_view_mode(ViewMode mode);
 
+	VisibilityStack visibility_stack;
 	yrenderer::Material* material_physical;
 	base::map<PhysicalMesh*, ygfx::VertexBuffer*> physical_vertex_buffers;
 

@@ -172,7 +172,7 @@ void ModeWorld::on_enter() {
 	};
 	multi_view->f_select = [this] (MultiViewWindow* win, const rect& r) {
 		Selection sel;
-		sel.set(MultiViewType::WORLD_ENTITY, MultiView::select_points_in_rect(win, r, data->dummy_entities));
+		sel.set(MultiViewType::WORLD_ENTITY, MultiView::select_points_in_rect(win, r, data->dummy_entities, visibility_stack.get(MultiViewType::WORLD_ENTITY)));
 		return sel;
 	};
 	multi_view->f_get_selection_box = [this] (const Selection& sel) -> base::optional<Box> {
@@ -341,7 +341,10 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& mou
 
 	float zmin = 1;//multi_view->view_port.radius * 2;
 
+	const auto filter = visibility_stack.get(MultiViewType::WORLD_ENTITY);
 	for (const auto& [i, e]: enumerate(data->entity_manager->entities)) {
+		if (!filter(i))
+			continue;
 		const auto pp = win->project(e->pos);
 		if (pp.z <= 0 or pp.z >= 1)
 			continue;
@@ -354,6 +357,7 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& mou
 	const auto models = data->entity_manager->get_component_list<ModelRef>();
 	for (auto mr: models)
 		if (auto m = mr->model) {
+			// TODO filter?
 			vec3 tp;
 			float z = model_hover_z(m, mr->owner->get_matrix(), win, mouse, tp);
 			//float dist = object_hover_distance(e, win, m, tp, z);
@@ -371,7 +375,10 @@ Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) const {
 	auto r = _r.canonical();
 	Selection s;
 	s.add({MultiViewType::WORLD_ENTITY, {}});
+	const auto filter = visibility_stack.get(MultiViewType::WORLD_ENTITY);
 	for (const auto& [i, e]: enumerate(data->entity_manager->entities)) {
+		if (!filter(i))
+			continue;
 		const auto p = win->project(e->pos);
 		if (p.z <= 0 or p.z >= 1)
 			continue;
@@ -723,7 +730,8 @@ void ModeWorld::on_draw_post(Painter* p) {
 		data->dummy_entities,
 		MultiViewType::WORLD_ENTITY,
 		multi_view->hover,
-		multi_view->selection[MultiViewType::WORLD_ENTITY]);
+		multi_view->selection[MultiViewType::WORLD_ENTITY],
+		visibility_stack.get(MultiViewType::WORLD_ENTITY));
 
 	if (auto s = world_selection_description(data, multi_view->selection))
 		draw_info(p, "selected: " + *s);

@@ -30,6 +30,7 @@ namespace xhui {
 	class Context;
 }
 class Painter;
+struct VisibilityFilter;
 
 // color parameters are in LINEAR space!
 
@@ -88,7 +89,7 @@ enum class Style {
 };
 
 void draw_boxed_str(Painter* p, const vec2& pos, const string& str, int align = -1, Style style = Style::DEFAULT);
-void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& a, MultiViewType kind, const base::optional<Hover>& hover, const base::set<int>& sel);
+void draw_data_points(Painter* p, MultiViewWindow* win, const DynamicArray& a, MultiViewType kind, const base::optional<Hover>& hover, const base::set<int>& sel, const VisibilityFilter& filter);
 
 }
 

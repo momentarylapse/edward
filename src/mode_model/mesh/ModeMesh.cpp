@@ -109,6 +109,11 @@ void ModeMesh::on_enter_rec() {
 
 	update();
 
+	visibility_stack.out_changed >> create_sink([this] {
+		update_vb();
+		on_update_menu();
+	});
+
 	data->out_changed >> create_sink(update);
 
 	id_runner = xhui::run_repeated(1.0f, [this] {
@@ -146,6 +151,7 @@ void ModeMesh::on_connect_events_rec() {
 }
 
 void ModeMesh::on_leave_rec() {
+	visibility_stack.unsubscribe(this);
 	doc->out_changed.unsubscribe(this);
 	data->out_changed.unsubscribe(this);
 	multi_view->out_selection_changed.unsubscribe(this);
@@ -165,6 +171,14 @@ void ModeMesh::on_connect_events() {
 
 void ModeMesh::on_leave() {
 	set_overlay_panel(nullptr);
+}
+
+void ModeMesh::on_command(const string &id) {
+	_parent->on_command(id);
+	if (id == "view_push")
+		visibility_stack.push(multi_view->selection);
+	if (id == "view_pop")
+		visibility_stack.pop();
 }
 
 void ModeMesh::on_update_topology(const polymesh::MeshEdit& edit) {
@@ -209,6 +223,8 @@ void ModeMesh::set_presentation_mode(PresentationMode m) {
 
 void ModeMesh::on_update_menu() {
 	_parent->on_update_menu();
+	auto win = session->win;
+	win->enable("view_pop", visibility_stack.can_pop());
 }
 
 void ModeMesh::update_menu_presentation_mode() {
@@ -232,13 +248,13 @@ void ModeMesh::draw_polygons(const yrenderer::RenderParams& params, MultiViewWin
 }
 
 void ModeMesh::draw_edges(const yrenderer::RenderParams& params, MultiViewWindow* win, const base::set<int>& sel) {
-	auto& rvd = win->rvd();
+	const auto& filter = visibility_stack.get(MultiViewType::MODEL_EDGE);
 	auto dh = win->multi_view->session->drawing_helper;
 	// unselected (colored by normal)
 	Array<vec3> points;
 	Array<color> colors;
 	for (const auto& [i, e]: enumerate(edges_cached))
-		if (!sel.contains(i)) {
+		if (!sel.contains(i) and filter(i)) {
 			points.add(data->editing_mesh->vertices[e.index[0]].pos);
 			points.add(data->editing_mesh->vertices[e.index[1]].pos);
 			float f = (vec3::dot(edge_infos[i].normal, win->direction()) + 1) * 0.5f;
@@ -305,13 +321,14 @@ void ModeMesh::on_update_selection() {
 
 void ModeMesh::update_vb() {
 	vertex_buffers.resize(data->materials.num);
+	const auto& filter = visibility_stack.get(MultiViewType::MODEL_POLYGON);
 	for (int i=0; i<vertex_buffers.num; i++) {
 		if (!vertex_buffers[i])
 			vertex_buffers[i] = new ygfx::VertexBuffer("3f,3f,2f");
 
 		Array<ygfx::Vertex1> buf;
-		for (auto& p: data->mesh->polygons)
-			if (p.material == i)
+		for (auto&& [k, p]: enumerate(data->mesh->polygons))
+			if (p.material == i and filter(k))
 				p.add_to_vertex_buffer(data->mesh->vertices, buf);
 		vertex_buffers[i]->update(buf);
 	}
@@ -343,7 +360,7 @@ vec2 line_closest_point2d(const vec2& a, const vec2& b, const vec2& p) {
 }
 
 float vec2_factor_between(const vec2& a, const vec2& b, const vec2& p) {
-	if (fabs(b.x - a.x) > fabs(b.y - a.y))
+	if (fabsf(b.x - a.x) > fabsf(b.y - a.y))
 		return (p.x - a.x) / (b.x - a.x);
 	return (p.y - a.y) / (b.y - a.y);
 }
@@ -353,7 +370,10 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 	if (presentation_mode == PresentationMode::Vertices) {
 
 		//float zmin = multi_view->view_port.radius * 2;
+		const auto& filter = visibility_stack.get(MultiViewType::MODEL_VERTEX);
 		for (const auto& [i, v]: enumerate(data->editing_mesh->vertices)) {
+			if (!filter(i))
+				continue;
 			const auto pp = win->project(v.pos);
 			if (pp.z <= 0 or pp.z >= 1)
 				continue;
@@ -363,7 +383,10 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 		}
 	} else if (presentation_mode == PresentationMode::Edges) {
 		float zmax = 1;
+		const auto& filter = visibility_stack.get(MultiViewType::MODEL_EDGE);
 		for (const auto& [i, e]: enumerate(edges_cached)) {
+			if (!filter(i))
+				continue;
 			const auto pp0 = win->project(data->editing_mesh->vertices[e.index[0]].pos);
 			const auto pp1 = win->project(data->editing_mesh->vertices[e.index[1]].pos);
 			if (pp0.z <= 0 or pp0.z >= 1 or pp1.z <= 0 or pp1.z >= 1)
@@ -384,7 +407,8 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 	} else if (presentation_mode == PresentationMode::Polygons or presentation_mode == PresentationMode::Surfaces) {
 		vec3 tp;
 		int index;
-		if (data->editing_mesh->is_mouse_over(win, mat4::ID, m, tp, index, false))
+		const auto& filter = visibility_stack.get(MultiViewType::MODEL_POLYGON);
+		if (data->editing_mesh->is_mouse_over(win, mat4::ID, m, tp, index, false, filter))
 			return Hover{MultiViewType::MODEL_POLYGON, index, tp};
 	}
 	return h;
@@ -454,7 +478,8 @@ Selection ModeMesh::select_in_rect(MultiViewWindow* win, const rect& r) {
 	sel.add({MultiViewType::MODEL_BALL, {}});
 	sel.add({MultiViewType::MODEL_CYLINDER, {}});
 
-	auto selv = sel[MultiViewType::MODEL_VERTEX] = MultiView::select_points_in_rect(win, r, data->editing_mesh->vertices);
+
+	auto selv = sel[MultiViewType::MODEL_VERTEX] = MultiView::select_points_in_rect(win, r, data->editing_mesh->vertices, visibility_stack.get(MultiViewType::MODEL_VERTEX));
 	if (presentation_mode == PresentationMode::Vertices) {
 		sel[MultiViewType::MODEL_VERTEX] = selv;
 	} else if (presentation_mode == PresentationMode::Edges) {

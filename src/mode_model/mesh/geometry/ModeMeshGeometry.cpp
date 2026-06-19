@@ -235,7 +235,9 @@ base::optional<string> model_selection_description(DataModel* m, const Selection
 
 void ModeMeshGeometry::on_draw_post(Painter* p) {
 	if (mode_mesh->presentation_mode == ModeMesh::PresentationMode::Vertices)
-		drawing2d::draw_data_points(p, multi_view->active_window, data->editing_mesh->vertices, MultiViewType::MODEL_VERTEX, multi_view->hover, multi_view->selection[MultiViewType::MODEL_VERTEX]);
+		drawing2d::draw_data_points(p, multi_view->active_window, data->editing_mesh->vertices, MultiViewType::MODEL_VERTEX,
+			multi_view->hover, multi_view->selection[MultiViewType::MODEL_VERTEX],
+			mode_mesh->visibility_stack.get(MultiViewType::MODEL_VERTEX));
 
 	if (auto s = model_selection_description(data, multi_view->selection))
 		draw_info(p, "selected: " + *s);

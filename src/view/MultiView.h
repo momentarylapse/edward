@@ -29,6 +29,7 @@ class DocumentSession;
 class Session;
 class ActionMultiView;
 class ActionController;
+struct VisibilityFilter;
 class MultiView;
 namespace multiview {
 	struct SingleData;
@@ -96,7 +97,7 @@ public:
 	void invert_selection();
 	void select_all();
 	void select_in_rect(MultiViewWindow* win, const rect& r);
-	static base::set<int> select_points_in_rect(MultiViewWindow* win, const rect& r, DynamicArray& array);
+	static base::set<int> select_points_in_rect(MultiViewWindow* win, const rect& r, DynamicArray& array, const VisibilityFilter& filter);
 
 	rect area;
 	rect area_native;

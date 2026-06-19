@@ -75,16 +75,6 @@ void ModeModel::on_connect_events_rec() {
 	doc->event("mode_properties", [this] {
 		session->win->open_dialog(new ModelPropertiesDialog(session->win, data.get()));
 	});
-
-	doc->event("save", [this] {
-		if (data->filename.is_empty())
-			session->storage->save_as(data.get());
-		else
-			session->storage->save(data->filename, data.get());
-	});
-	doc->event("save-as", [this] {
-		session->storage->save_as(data.get());
-	});
 }
 
 void ModeModel::on_leave_rec() {
@@ -96,6 +86,14 @@ void ModeModel::on_command(const string& id) {
 		session->universal_new(FD_MODEL);
 	if (id == "open")
 		session->universal_open(FD_MODEL);
+	if (id == "save") {
+		if (data->filename.is_empty())
+			session->storage->save_as(data.get());
+		else
+			session->storage->save(data->filename, data.get());
+	}
+	if (id == "save-as")
+		session->storage->save_as(data.get());
 	if (id == "undo")
 		data->undo();
 	if (id == "redo")
