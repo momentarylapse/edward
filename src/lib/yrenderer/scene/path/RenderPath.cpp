@@ -30,6 +30,7 @@ mat4 mtr(const vec3 &t, const quaternion &a) {
 string RenderPath::light_sources_module = "default";
 string RenderPath::lighting_method = "pbr";
 string RenderPath::shadow_method = "pcf-hardening";
+string RenderPath::fog_module = "simple";
 
 RenderPath::RenderPath(Context* ctx, const string &name) : Renderer(ctx, name) {
 	background_color = color(0.3f, 0.3f, 0.3f, 1);
@@ -41,6 +42,7 @@ RenderPath::RenderPath(Context* ctx, const string &name) : Renderer(ctx, name) {
 		ctx->load_shader_module(format("module-light-sources-%s.shader", light_sources_module));
 		ctx->load_shader_module(format("module-shadows-%s.shader", shadow_method));
 		ctx->load_shader_module(format("module-lighting-%s.shader", lighting_method));
+		ctx->load_shader_module(format("module-fog-%s.shader", fog_module));
 		ctx->load_shader_module("module-vertex-default.shader");
 		ctx->load_shader_module("module-vertex-animated.shader");
 		ctx->load_shader_module("module-vertex-instanced.shader");

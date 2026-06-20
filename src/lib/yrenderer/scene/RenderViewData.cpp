@@ -80,6 +80,9 @@ void RenderViewData::update_light_ubo() {
 			light_meta_data.shadow_proj[ll->shadow_index] = ll->shadow_projection;
 	}
 	light_meta_data.num_lights = scene_view->lights.num;
+	light_meta_data.fog_enabled = scene_view->fog_enabled;
+	light_meta_data.fog_density = scene_view->fog_density;
+	light_meta_data.fog_color = scene_view->fog_color;
 	ubo_light->update_part(&light_meta_data, 0, sizeof(LightMetaData));
 	ubo_light->update_array(lights, sizeof(LightMetaData));
 }

@@ -25,6 +25,7 @@ const string RawConfig::ID_RENDERER_MIN_FRAMERATE = "renderer.min-framerate";
 const string RawConfig::ID_RENDERER_ANTIALIASING = "renderer.antialiasing";
 const string RawConfig::ID_RENDERER_LIGHTING = "renderer.lighting";
 const string RawConfig::ID_RENDERER_LIGHT_SOURCES = "renderer.light-sources";
+const string RawConfig::ID_RENDERER_FOG = "renderer.fog";
 const string RawConfig::ID_RESOLUTION_SCALE_MIN = "renderer.resolution-scale-min";
 const string RawConfig::ID_RESOLUTION_SCALE_MAX = "renderer.resolution-scale-max";
 const string RawConfig::ID_RESOLUTION_SCALE_FILTER = "renderer.resolution-scale-filter";
@@ -192,6 +193,7 @@ DigestedConfig RawConfig::digest() const {
 
 	c.lighting = get_str(ID_RENDERER_LIGHTING, "pbr");
 	c.light_sources = get_str(ID_RENDERER_LIGHT_SOURCES, "default");
+	c.fog = get_str(ID_RENDERER_FOG, "simple");
 	c.resolution_scale_min = get_float(ID_RESOLUTION_SCALE_MIN, 0.5f);
 	c.resolution_scale_max = get_float(ID_RESOLUTION_SCALE_MAX, 1.0f);
 	c.resolution_scale_filter = get_str(ID_RESOLUTION_SCALE_FILTER, "linear");

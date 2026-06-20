@@ -71,6 +71,7 @@ FullCameraRenderer::FullCameraRenderer(Context* ctx, Camera* _cam, RenderPathTyp
 	yrenderer::RenderPath::light_sources_module = config.light_sources;
 	yrenderer::RenderPath::shadow_method = config.shadow_quality;
 	yrenderer::RenderPath::lighting_method = config.lighting;
+	yrenderer::RenderPath::fog_module = config.fog;
 
 
 	if (type != RenderPathType::PathTracing) {
@@ -254,6 +255,9 @@ void FullCameraRenderer::prepare(const yrenderer::RenderParams& params) {
 		lights.add(&l->light);
 	}
 	render_path->set_lights(lights);
+	render_path->scene_view.fog_enabled = world.fog.enabled;
+	render_path->scene_view.fog_density = 1 / world.fog.distance;
+	render_path->scene_view.fog_color = world.fog._color;
 
 	if (cube_map_source)
 		render_path->scene_view.cube_map = cube_map_source->cube_map;

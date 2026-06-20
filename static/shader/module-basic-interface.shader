@@ -57,10 +57,12 @@ uniform Matrices matrix;
 layout(binding=9, std140) uniform LightData {
 	int num_lights;
 	int num_surfels;
-	int _dummy0, _dummy1;
+	bool fog_enabled;
+	float fog_density;
 	ivec4 probe_cells;
 	vec4 probe_min, probe_max;
 	mat4 shadow_proj[2];
+	vec4 fog_color;
 	Light light[500];
 };
 layout(binding=10) uniform Multi {

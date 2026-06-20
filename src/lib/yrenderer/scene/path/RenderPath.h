@@ -59,6 +59,7 @@ public:
 	static string light_sources_module;
 	static string shadow_method;
 	static string lighting_method;
+	static string fog_module;
 };
 
 }

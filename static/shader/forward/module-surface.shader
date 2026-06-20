@@ -6,22 +6,19 @@
 
 #import basic-data
 #import lighting
-
+#import fog
 
 // n - view space
 void surface_out(vec3 n, vec4 albedo, vec4 emission, float metal, float roughness) {
 	//out_color = emission;
 	vec3 p = in_pos.xyz / in_pos.w;
 	vec3 view_dir = normalize(p - eye_pos.xyz);
-	
+
 
 	out_color = perform_lighting(p, n, albedo, emission, metal, roughness, 0, eye_pos);
-	
-/*	float distance = length(p - eye_pos.xyz);
-	float f = exp(-distance / fog.distance);
-	out_color.rgb = f * out_color.rgb + (1-f) * fog.color.rgb;
-	
-	*/
+
+	fog_apply(out_color, p);
+
 	out_color.a = albedo.a;
 }
 
@@ -47,7 +44,7 @@ vec3 surface_transmissivity_factor(vec3 n, vec4 transmissivity) {
 	// a=0.5 => T=transmission...
 	// a=1 => T=black (no transmission)
 	vec3 T = pow(transmissivity.rgb, vec3(1/(1-transmissivity.a)-1));
-	
+
 	T = pow(T, vec3(1 / abs(n.z)));
 	return T;
 }

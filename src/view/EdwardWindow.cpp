@@ -174,6 +174,7 @@ Dialog x x padding=0
 			session->ctx->load_shader_module("module-light-sources-default.shader");
 			session->ctx->load_shader_module("module-shadows-pcf.shader");
 			session->ctx->load_shader_module("module-lighting-pbr.shader");
+			session->ctx->load_shader_module("module-fog-simple.shader");
 			session->ctx->load_shader_module("forward/module-surface.shader");
 		} catch(Exception& e) {
 			msg_error(e.message());

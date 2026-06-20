@@ -10,6 +10,7 @@
 #include <lib/base/pointer.h>
 #include <lib/ygraphics/graphics-fwd.h>
 #include <lib/math/vec3.h>
+#include <lib/image/color.h>
 
 
 struct RayTracingData;
@@ -37,6 +38,9 @@ struct SceneView {
 	ivec3 probe_cells;
 	vec3 probe_min, probe_max;
 	RayTracingData* ray_tracing_data = nullptr;
+	bool fog_enabled = false;
+	float fog_density;
+	color fog_color;
 
 	SceneView();
 	~SceneView();

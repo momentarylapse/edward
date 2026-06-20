@@ -55,6 +55,7 @@ struct DigestedConfig {
 	string shadow_quality;
 	string light_sources;
 	string lighting;
+	string fog;
 	string renderer_path;
 
 	bool terrain_tessellated = false;
@@ -85,6 +86,7 @@ public:
 	static const string ID_RENDERER_ANTIALIASING;
 	static const string ID_RENDERER_LIGHTING;
 	static const string ID_RENDERER_LIGHT_SOURCES;
+	static const string ID_RENDERER_FOG;
 	static const string ID_RESOLUTION_SCALE_MIN;
 	static const string ID_RESOLUTION_SCALE_MAX;
 	static const string ID_RESOLUTION_SCALE_FILTER;
