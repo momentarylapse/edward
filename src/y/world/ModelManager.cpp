@@ -641,15 +641,16 @@ xfer<Model> fancy_copy(Model *orig) {
 }
 
 
-ModelManager::ModelManager(ResourceManager *_resource_manager, yrenderer::MaterialManager *_material_manager) {
+ModelManager::ModelManager(ResourceManager* _resource_manager, yrenderer::MaterialManager* _material_manager, const Path& _object_dir) {
 	resource_manager = _resource_manager;
 	material_manager = _material_manager;
+	object_dir = _object_dir;
 }
 
 Model* ModelManager::load(const Path &_filename) {
 	if (_filename == "")
 		return nullptr;
-	auto filename = engine.object_dir | _filename;
+	auto filename = object_dir | _filename;
 	if (filename.extension() != "model")
 		filename = filename.with(".model");
 	for (auto&& [f, o]: originals)
@@ -713,9 +714,9 @@ xfer<Model> ModelManager::load_copy(const Path &_filename) {
 Path ModelManager::get_filename(const Model* m) {
 	for (auto&& [f, _m]: originals)
 		if (_m == m)
-			return f.relative_to(engine.object_dir);
+			return f.relative_to(object_dir);
 	if (m)
-		return m->filename().relative_to(engine.object_dir);
+		return m->filename().relative_to(object_dir);
 	return "";
 }
 

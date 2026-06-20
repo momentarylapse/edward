@@ -69,7 +69,7 @@ Session* create_session(bool with_window) {
 		s->win = s->_win.get();
 		xhui::fly(s->win);
 	} else {
-		s->resource_manager = new ResourceManager(nullptr, "", "", "");
+		s->resource_manager = new ResourceManager(nullptr, "", "", {}, {}, {});
 		s->material_preview_manager = new MaterialPreviewManager(s);
 	}
 	return s;
@@ -109,16 +109,12 @@ void Session::load_project(const Path& dir, bool serious) {
 	project_dir = dir;
 
 	storage->set_root_directory(dir);
-	engine.set_dirs(storage->root_dir_kind[FD_TEXTURE],
-			storage->root_dir_kind[FD_WORLD],
-			storage->root_dir_kind[FD_MODEL],
-			storage->root_dir_kind[FD_SOUND],
+	engine.set_dirs(storage->root_dir_kind[FD_SOUND],
 			storage->root_dir_kind[FD_SCRIPT],
-			storage->root_dir_kind[FD_MATERIAL],
 			storage->root_dir_kind[FD_FONT]);
-	resource_manager->texture_manager->texture_dir = storage->root_dir_kind[FD_TEXTURE];
-	resource_manager->shader_manager->shader_dir = storage->root_dir_kind[FD_SHADERFILE];
-	resource_manager->material_manager->material_dir = storage->root_dir_kind[FD_MATERIAL];
+	resource_manager->set_dirs(storage->root_dir_kind[FD_MODEL], storage->root_dir_kind[FD_TERRAIN],
+		{storage->root_dir_kind[FD_TEXTURE]}, {storage->root_dir_kind[FD_MATERIAL]},
+		{storage->root_dir_kind[FD_SHADERFILE], os::app::directory_static | "shader"});
 
 	if (serious)
 		plugin_manager->load_project_stuff(project_dir);

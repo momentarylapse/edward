@@ -44,9 +44,9 @@ Path guess_absolute_path(const Path &filename, const Array<Path>& dirs) {
 }
 
 
-ShaderManager::ShaderManager(ygfx::Context *_ctx, const Path &_shader_dir) {
+ShaderManager::ShaderManager(ygfx::Context* _ctx, const Array<Path>& _shader_dirs) {
 	ctx = _ctx;
-	shader_dir = _shader_dir;
+	shader_dirs = _shader_dirs;
 	default_shader = "default.shader";
 }
 
@@ -77,7 +77,7 @@ shared<ygfx::Shader> ShaderManager::load_shader(const Path& filename) {
 	//	TODO default shader?
 	//	return __load_shader("");
 
-	Path fn = guess_absolute_path(filename, {shader_dir, os::app::directory_static | "shader"});
+	Path fn = guess_absolute_path(filename, shader_dirs);
 	if (!fn) {
 		if (ignore_missing_files) {
 			msg_error("missing shader: " + str(filename));
@@ -149,7 +149,7 @@ shared<ygfx::Shader> ShaderManager::load_surface_shader(const Path& _filename, c
 	if (!filename)
 		return __load_shader("", "", -1);
 
-	Path fn = guess_absolute_path(filename, {shader_dir, os::app::directory_static | "shader"});
+	Path fn = guess_absolute_path(filename, shader_dirs);
 	if (fn.is_empty()) {
 		if (ignore_missing_files) {
 			msg_error("missing shader: " + str(filename));
@@ -197,7 +197,7 @@ ygfx::Shader* ShaderManager::create_shader(const string &source) {
 }
 
 void ShaderManager::load_shader_module(const Path& path) {
-	Path fn = guess_absolute_path(path, {shader_dir, os::app::directory_static | "shader"});
+	Path fn = guess_absolute_path(path, shader_dirs);
 	if (fn) {
 		if (shader_modules.find(fn) >= 0)
 			return;

@@ -200,7 +200,7 @@ ecs::Entity* World::create_from_template(const Path& filename, const vec3 &pos, 
 
 	if (const auto t = engine.resource_manager->load_template(filename)) {
 		add_user_components(entity_manager.get(), e, t->components);
-	} else if (os::fs::exists(engine.object_dir | filename.with(".model"))) {
+	} else if (os::fs::exists(engine.resource_manager->model_manager->object_dir | filename.with(".model"))) {
 		attach_model(e, filename);
 	}
 

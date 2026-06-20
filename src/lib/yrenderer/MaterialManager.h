@@ -13,7 +13,7 @@ class TextureManager;
 
 class MaterialManager : public obs::Node<VirtualBase> {
 public:
-	explicit MaterialManager(TextureManager* texture_manager, const Path& material_dir);
+	explicit MaterialManager(TextureManager* texture_manager, const Array<Path>& material_dirs);
 	~MaterialManager() override;
 
 	obs::xsource<Material*> out_material_edited{this, "material-edited"};
@@ -31,7 +31,7 @@ public:
 	bool is_from_file(const Material* m) const;
 	bool has_changes(const Material* m) const;
 
-	Path material_dir;
+	Array<Path> material_dirs;
 
 
 	void _load_from_file(Material* material, const Path& filename);

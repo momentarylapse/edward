@@ -13,6 +13,8 @@
 #include <world/Terrain.h>
 #include <y/EngineData.h>
 
+#include "helper/ResourceManager.h"
+
 EditTerrainPanel::EditTerrainPanel(ModeEditTerrain* mode) : Node<xhui::Panel>("edit-terrain-panel") {
 	mode_terrain = mode;
 	from_source(R"foodelim(
@@ -67,8 +69,8 @@ Dialog edit-terrain-panel ''
 		auto t = mode_terrain->terrain();
 		WorldTerrain ttt;
 		ttt.terrain = t;
-		if (mode_terrain->session->storage->save(engine.map_dir | t->filename, &ttt))
-			mode_terrain->session->info("saved: " + str(t->filename));
+		if (mode_terrain->session->storage->save(mode_terrain->session->resource_manager->map_dir | t->filename_rel, &ttt))
+			mode_terrain->session->info("saved: " + str(t->filename_rel));
 	});
 
 	for (int i=0; i<2; i++) {

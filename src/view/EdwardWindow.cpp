@@ -15,13 +15,11 @@
 #include <lib/xhui/dialogs/QuestionDialog.h>
 #include <lib/xhui/dialogs/AboutDialog.h>
 #include <lib/os/msg.h>
+#include <lib/os/app.h>
 #include <lib/yrenderer/Renderer.h>
-#include <lib/yrenderer/TextureManager.h>
 #include <lib/yrenderer/Context.h>
 #include <lib/yrenderer/helper/LineHelper.h>
-#include <sys/stat.h>
 #include <y/EngineData.h>
-
 #include "ActionController.h"
 #include "DrawingHelper.h"
 #include "MultiView.h"
@@ -37,8 +35,6 @@
 #include <cmath>
 
 #include "MaterialPreviewManager.h"
-#include "Session.h"
-#include "Session.h"
 #include <lib/base/iter.h>
 #include <plugins/PluginManager.h>
 
@@ -158,7 +154,9 @@ Dialog x x padding=0
 	event_xp(id, xhui::event_id::Initialize, [this] (Painter* p) {
 		auto pp = (xhui::Painter*)p;
 		session->ctx = yrenderer::api_init_xhui(pp);
-		session->resource_manager = new ResourceManager(session->ctx, engine.texture_dir, engine.material_dir, engine.shader_dir);
+		session->resource_manager = new ResourceManager(session->ctx, session->project_dir | "Objects", session->project_dir | "Maps",
+			{session->project_dir | "Textures"}, {session->project_dir | "Materials"},
+			{session->project_dir | "Materials", os::app::directory_static | "shader"});
 		session->ctx->texture_manager = session->resource_manager->texture_manager;
 		session->ctx->shader_manager = session->resource_manager->shader_manager;
 		session->ctx->material_manager = session->resource_manager->material_manager;

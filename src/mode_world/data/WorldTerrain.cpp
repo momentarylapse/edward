@@ -31,7 +31,7 @@ bool WorldTerrain::load(const Path &_filename, bool deep) {
 	filename = _filename;
 
 	terrain = new Terrain();
-	terrain->filename = filename.relative_to(engine.map_dir);
+	terrain->filename_rel = filename.relative_to(doc->session->resource_manager->map_dir);
 	bool Error = !terrain->reload(doc->session->resource_manager, deep);
 
 	if (Error) {

@@ -10,8 +10,8 @@
 #include <mode_project/ModeProject.h>
 #include <lib/os/CommandLineParser.h>
 #include <lib/os/msg.h>
+#include <lib/os/app.h>
 #include <lib/kaba/lib/lib.h>
-#include <lib/yrenderer/MaterialManager.h>
 #include <lib/syntaxhighlight/Theme.h>
 #include <lib/xhui/Application.h>
 #include <mode_material/data/DataMaterial.h>
@@ -21,7 +21,6 @@
 
 #include <lib/any/conversion.h>
 #include <mode_model/data/ModelMesh.h>
-#include <world/LevelData.h>
 
 string AppVersion = "0.5.-1.0";
 string AppName = "Edward";
@@ -49,7 +48,7 @@ void update_file(const Path &filename, bool allow_write) {
 	auto _filename = filename.absolute().canonical();
 
 	session->load_project(Session::guess_root_directory(_filename));
-	session->resource_manager->shader_manager->shader_dir = storage->root_dir_kind[FD_MATERIAL];
+	session->resource_manager->shader_manager->shader_dirs = {storage->root_dir_kind[FD_MATERIAL], os::app::directory_static | "shader"};
 	//msg_write(storage->root_dir.str());
 
 	/*int pp = filename.str().find("/Objects/", 0);

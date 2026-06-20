@@ -191,7 +191,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 					data->_entity_apply_components(m->owner, m->model->_template->components);
 			}
 			for (auto t: data->entity_manager->get_component_list<TerrainRef>()) {
-				if (t->terrain and t->terrain->filename and t->terrain->num_x == 0) {
+				if (t->terrain and t->terrain->filename_rel and t->terrain->num_x == 0) {
 					t->terrain->reload(session->resource_manager);
 				}
 

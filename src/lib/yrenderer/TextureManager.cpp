@@ -14,9 +14,9 @@ namespace yrenderer {
 
 Path guess_absolute_path(const Path &filename, const Array<Path>& dirs);
 
-TextureManager::TextureManager(ygfx::Context *_ctx, const Path &_texture_dir) {
+TextureManager::TextureManager(ygfx::Context *_ctx, const Array<Path>& _texture_dirs) {
 	ctx = _ctx;
-	texture_dir = _texture_dir;
+	texture_dirs = _texture_dirs;
 
 	if (ctx) {
 		tex_white = ctx->tex_white;
@@ -26,13 +26,13 @@ TextureManager::TextureManager(ygfx::Context *_ctx, const Path &_texture_dir) {
 Path TextureManager::get_filename(const ygfx::Texture* t) const {
 	for (auto&& [key, _t]: texture_map)
 		if (_t == t)
-			return key.relative_to(texture_dir);
+			return key.relative_to(texture_dirs[0]); // FIXME
 	return "";
 }
 
 
 Path TextureManager::find_absolute_texture_path(const Path& filename) const {
-	return guess_absolute_path(filename, {texture_dir});
+	return guess_absolute_path(filename, texture_dirs);
 }
 
 string split_filename_flags(Path& filename) {

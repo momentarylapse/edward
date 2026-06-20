@@ -43,12 +43,13 @@ struct ModelTemplate : Sharable<base::Empty> {
 
 class ModelManager {
 public:
-	ModelManager(ResourceManager *resource_manager, yrenderer::MaterialManager *material_manager);
+	ModelManager(ResourceManager *resource_manager, yrenderer::MaterialManager *material_manager, const Path& object_dir);
 	Model* load(const Path &filename);
 	xfer<Model> load_copy(const Path &filename);
 	Path get_filename(const Model* m);
 
 	ResourceManager *resource_manager;
 	yrenderer::MaterialManager *material_manager;
+	Path object_dir;
 	base::map<Path, Model*> originals;
 };

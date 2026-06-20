@@ -47,7 +47,7 @@ struct Context {
 
 	void _create_default_textures();
 
-	void create_managers(const Path& texture_dir, const Path& shader_dir, const Path& material_dir);
+	void create_managers(const Array<Path>& texture_dirs, const Array<Path>& shader_dirs, const Array<Path>& material_dirs);
 	shared<ygfx::Texture> load_texture(const Path& path) const;
 	Material* load_material(const Path &filename) const;
 	Material* create_internal_material() const;

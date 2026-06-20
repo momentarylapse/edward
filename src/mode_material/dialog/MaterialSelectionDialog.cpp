@@ -63,7 +63,7 @@ MaterialSelectionDialog::MaterialSelectionDialog(Session* _session, const string
 	auto mm = session->resource_manager->material_manager;
 
 
-	for (const auto &f: os::fs::search(mm->material_dir, "*.material", "-fr")) {
+	for (const auto &f: os::fs::search(mm->material_dirs[0], "*.material", "-fr")) {
 		auto m = mm->load(f.no_ext());
 		materials.add(m);
 	}

@@ -23,7 +23,8 @@ namespace yrenderer {
 
 class ResourceManager {
 public:
-	explicit ResourceManager(yrenderer::Context *ctx, const Path &texture_dir, const Path &material_dir, const Path &shader_dir);
+	explicit ResourceManager(yrenderer::Context *ctx, const Path& object_dir, const Path& terrain_dir, const Array<Path>& texture_dirs, const Array<Path>& material_dirs, const Array<Path>& shader_dirs);
+	void set_dirs(const Path& object_dir, const Path& terrain_dir, const Array<Path>& texture_dirs, const Array<Path>& material_dirs, const Array<Path>& shader_dirs);
 	yrenderer::Context* ctx;
 	yrenderer::MaterialManager* material_manager;
 	ModelManager* model_manager;
@@ -31,6 +32,7 @@ public:
 	yrenderer::TextureManager* texture_manager;
 	owned<TemplateManager> template_manager;
 	owned<TerrainManager> terrain_manager;
+	Path map_dir;
 
 	shared<ygfx::Texture> load_texture(const Path& path);
 	yrenderer::Material* load_material(const Path &filename);

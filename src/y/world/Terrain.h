@@ -79,7 +79,7 @@ public:
 	void calc_detail(ecs::Entity* o, const vec3 &cam_pos);
 	void prepare_draw(ecs::Entity* o, const vec3 &cam_pos);
 
-	Path filename;
+	Path filename_rel;
 	TerrainType terrain_type;
 	bool error;
 

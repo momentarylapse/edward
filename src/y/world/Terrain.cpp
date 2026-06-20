@@ -52,20 +52,20 @@ Terrain::Terrain() {
 }
 
 bool Terrain::reload(ResourceManager* resource_manager, bool deep) {
-	msg_write(format("loading terrain: %s", filename));
+	msg_write(format("loading terrain: %s", filename_rel));
 	msg_right();
 
 	reset();
 
-	if (filename.extension() != "map")
-		filename = filename.with(".map");
-	if (auto f = os::fs::open(engine.map_dir | filename, "rb")) {
+	if (filename_rel.extension() != "map")
+		filename_rel = filename_rel.with(".map");
+	if (auto f = os::fs::open(resource_manager->map_dir | filename_rel, "rb")) {
 		//int ffv = f->read_ReadFileFormatVersion();
 
 		char c = f->read_char();
 		if (c != 'b')
 			return false;
-		int ffv = f->read_word();
+		int ffv = (int)f->read_word();
 		if (ffv == 4) {
 			f->read_byte();
 			// Metrics

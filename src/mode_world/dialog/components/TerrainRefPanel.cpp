@@ -76,7 +76,7 @@ void TerrainRefPanel::update_ui() {
 	auto e = data->entity(index);
 	auto tr = e->get_component<TerrainRef>();
 	if (auto t = tr->terrain) {
-		set_string("terrain", str(t->filename));
+		set_string("terrain", str(t->filename_rel));
 		set_string("size", format("%.1f x %.1f", t->pattern.x * (float)t->num_x, t->pattern.z * (float)t->num_z));
 		set_string("cells", format("%d x %d", t->num_x, t->num_z));
 	}

@@ -20,10 +20,14 @@ namespace vulkan {
 
 class TemplateManager {
 public:
+	Path object_dir;
 	base::map<Path, Template*> templates;
+	explicit TemplateManager(const Path& _object_dir) {
+		object_dir = _object_dir;
+	}
 
 	Path full_path(const Path& _filename) const {
-		auto filename = _filename.is_absolute() ? _filename : engine.object_dir | _filename;
+		auto filename = _filename.is_absolute() ? _filename : object_dir | _filename;
 		if (filename.extension() != "template")
 			return filename.with(".template");
 		return filename;
@@ -80,7 +84,7 @@ public:
 	Path get_filename(const Template* t) const {
 		for (auto&& [f, _t]: templates)
 			if (_t == t)
-				return f.relative_to(engine.object_dir);
+				return f.relative_to(object_dir);
 		return "";
 	}
 
@@ -93,23 +97,27 @@ public:
 
 class TerrainManager {
 public:
+	Path terrain_dir;
 	owned_array<Terrain> terrains;
+	explicit TerrainManager(const Path& _terrain_dir) {
+		terrain_dir = _terrain_dir;
+	}
 
 	Terrain* load_lazy(const Path& filename) {
 		if (!filename)
 			return nullptr;
 		for (auto t: weak(terrains))
-			if (t->filename == filename)
+			if (t->filename_rel == filename)
 				return t;
 		auto t = new Terrain();
-		t->filename = filename;
+		t->filename_rel = filename;
 		terrains.add(t);
 		return t;
 	}
 
 	Terrain* load(ResourceManager* rm, const Path& filename) {
 		auto t = load_lazy(filename);
-		if (t and t->filename and t->height.num == 0)
+		if (t and t->filename_rel and t->height.num == 0)
 			t->reload(rm, true);
 		return t;
 	}
@@ -117,7 +125,7 @@ public:
 	Path get_filename(const Terrain *t) const {
 		for (auto _t: weak(terrains))
 			if (_t == t)
-				return _t->filename;
+				return _t->filename_rel;
 		return "";
 	}
 
@@ -127,15 +135,26 @@ public:
 };
 
 
-ResourceManager::ResourceManager(yrenderer::Context *_ctx, const Path &texture_dir, const Path &material_dir, const Path &shader_dir) {
+ResourceManager::ResourceManager(yrenderer::Context* _ctx, const Path& object_dir, const Path& terrain_dir, const Array<Path>& texture_dirs, const Array<Path>& material_dirs, const Array<Path>& shader_dirs) {
 	ctx = _ctx;
-	texture_manager = new yrenderer::TextureManager(ctx ? ctx->context : nullptr, texture_dir);
-	material_manager = new yrenderer::MaterialManager(texture_manager, material_dir);
-	model_manager = new ModelManager(this, material_manager);
-	shader_manager = new yrenderer::ShaderManager(ctx ? ctx->context : nullptr, shader_dir);
+	texture_manager = new yrenderer::TextureManager(ctx ? ctx->context : nullptr, texture_dirs);
+	material_manager = new yrenderer::MaterialManager(texture_manager, material_dirs);
+	model_manager = new ModelManager(this, material_manager, object_dir);
+	shader_manager = new yrenderer::ShaderManager(ctx ? ctx->context : nullptr, shader_dirs);
 	shader_manager->ignore_missing_files = engine.ignore_missing_files;
-	template_manager = new TemplateManager();
-	terrain_manager = new TerrainManager();
+	template_manager = new TemplateManager(object_dir);
+	terrain_manager = new TerrainManager(terrain_dir);
+	map_dir = terrain_dir;
+}
+
+void ResourceManager::set_dirs(const Path &object_dir, const Path &terrain_dir, const Array<Path> &texture_dirs, const Array<Path> &material_dirs, const Array<Path> &shader_dirs) {
+	terrain_manager->terrain_dir = terrain_dir;
+	template_manager->object_dir = object_dir;
+	texture_manager->texture_dirs = texture_dirs;
+	model_manager->object_dir = object_dir;
+	shader_manager->shader_dirs = shader_dirs;
+	material_manager->material_dirs = material_dirs;
+	map_dir = terrain_dir;
 }
 
 yrenderer::Material* ResourceManager::load_material(const Path& filename) {

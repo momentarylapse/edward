@@ -12,7 +12,7 @@ namespace yrenderer {
 
 class TextureManager {
 public:
-	explicit TextureManager(ygfx::Context *ctx, const Path &texture_dir);
+	explicit TextureManager(ygfx::Context *ctx, const Array<Path>& texture_dirs);
 	ygfx::Context* ctx;
 
 	shared<ygfx::Texture> load_texture(const Path& path);
@@ -21,7 +21,7 @@ public:
 
 	Path get_filename(const ygfx::Texture* t) const;
 
-	Path texture_dir;
+	Array<Path> texture_dirs;
 	void clear();
 
 

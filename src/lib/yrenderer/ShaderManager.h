@@ -13,7 +13,7 @@ namespace yrenderer {
 
 class ShaderManager {
 public:
-	explicit ShaderManager(ygfx::Context *ctx, const Path &_shader_dir);
+	explicit ShaderManager(ygfx::Context *ctx, const Array<Path>& _shader_dirs);
 	ygfx::Context *ctx;
 
 	shared<ygfx::Shader> load_shader(const Path& path);
@@ -29,7 +29,7 @@ public:
 	xfer<ygfx::Shader> __load_shader(const Path& path, const string &overwrite_bindings, int overwrite_push_size);
 	xfer<ygfx::Shader> __create_shader(const string& source, const string &overwrite_bindings, int overwrite_push_size);
 
-	Path shader_dir;
+	Array<Path> shader_dirs;
 	Path default_shader;
 	void clear();
 

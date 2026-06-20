@@ -22,10 +22,10 @@ void Context::_create_default_textures() {
 	tex_black = context->tex_black;
 }
 
-void Context::create_managers(const Path &texture_dir, const Path &shader_dir, const Path &material_dir) {
-	texture_manager = new TextureManager(context, texture_dir);
-	shader_manager = new ShaderManager(context, shader_dir);
-	material_manager = new MaterialManager(texture_manager, material_dir);
+void Context::create_managers(const Array<Path>& texture_dirs, const Array<Path>& shader_dirs, const Array<Path>& material_dirs) {
+	texture_manager = new TextureManager(context, texture_dirs);
+	shader_manager = new ShaderManager(context, shader_dirs);
+	material_manager = new MaterialManager(texture_manager, material_dirs);
 }
 
 Material* Context::load_material(const Path &filename) const {

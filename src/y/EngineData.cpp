@@ -70,14 +70,8 @@ void EngineData::set_context(yrenderer::Context *ctx, ResourceManager *rm) {
 	resource_manager = rm;
 }
 
-void EngineData::set_dirs(const Path &_texture_dir, const Path &_map_dir, const Path &_object_dir, const Path &_sound_dir, const Path &_script_dir, const Path &_material_dir, const Path &_font_dir) {
-	texture_dir = _texture_dir;
-	shader_dir = _material_dir;
-	map_dir = _map_dir;
-	object_dir = _object_dir;
+void EngineData::set_dirs(const Path &_sound_dir, const Path &_script_dir, const Path &_font_dir) {
 	sound_dir = _sound_dir;
-	script_dir = _script_dir;
-	material_dir = _material_dir;
 	font_dir = _font_dir;
 	kaba::config.directory = _script_dir;
 }

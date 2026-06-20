@@ -82,9 +82,10 @@ using namespace ygfx;
 ResourceManager* default_resource_manager = nullptr;
 
 void init() {
-	kaba::default_context->register_package_init("yengine", engine.script_dir | "yengine", &export_kaba_package_yengine);
-	kaba::default_context->register_package_init("net", engine.script_dir | "net", &export_package_net);
-	kaba::default_context->register_package_init("profiler", engine.script_dir | "profiler", &export_package_profiler);
+	const auto script_dir = kaba::config.directory;
+	kaba::default_context->register_package_init("yengine", script_dir | "yengine", &export_kaba_package_yengine);
+	kaba::default_context->register_package_init("net", script_dir | "net", &export_package_net);
+	kaba::default_context->register_package_init("profiler", script_dir | "profiler", &export_package_profiler);
 	import_kaba();
 }
 
