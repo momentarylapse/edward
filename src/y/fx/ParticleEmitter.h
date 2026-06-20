@@ -28,8 +28,7 @@ struct ParticleGroup : ecs::Component {
 	void on_iterate(float dt) override;
 	void iterate_particles(float dt);
 
-	//shared<ygfx::Texture> texture;
-	ygfx::Texture* texture;
+	shared<ygfx::Texture> texture;
 	rect source;
 
 	Array<Particle> particles;

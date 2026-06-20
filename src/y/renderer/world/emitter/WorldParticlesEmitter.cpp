@@ -15,6 +15,7 @@
 #include <EngineData.h>
 #include <ecs/EntityManager.h>
 #include <ecs/Entity.h>
+#include <lib/base/sort.h>
 
 using namespace yrenderer;
 using namespace ygfx;
@@ -29,6 +30,8 @@ WorldParticlesEmitter::WorldParticlesEmitter(yrenderer::Context* ctx, Camera* _c
 	fx_material->pass0.source = Alpha::SOURCE_ALPHA;
 	fx_material->pass0.destination = Alpha::SOURCE_INV_ALPHA;
 	fx_material->pass0.shader_path = "fx.shader";
+	fx_material->pass0.z_test = true;
+	fx_material->pass0.z_write = false;
 
 	fx_vertex_buffers.add(new VertexBuffer("3f,4f,2f"));
 }
@@ -118,21 +121,27 @@ void WorldParticlesEmitter::emit(const RenderParams& params, RenderViewData& rvd
 	auto& particle_groups = ecs::EntityManager::global->get_component_list_family<ParticleGroup>();
 	for (auto g: particle_groups) {
 		auto source = g->source;
+		Array<const Particle*> particles_sorted;
+		for (const auto& p: g->particles)
+			if (p.enabled)
+				particles_sorted.add(&p);
+		base::inplace_sort(particles_sorted, [&rvd] (const Particle* a, const Particle* b) {
+			return (rvd.ubo.v*a->pos).z >= (rvd.ubo.v*b->pos).z;
+		});
 		Array<VertexFx> v;
-		for (auto& p: g->particles)
-			if (p.enabled) {
-				auto m = mat4::translation(p.pos) * r * mat4::scale(p.radius, p.radius, p.radius);
-				v.add({m * vec3(-1, 1,0), p.col, source.x1, source.y1});
-				v.add({m * vec3( 1, 1,0), p.col, source.x2, source.y1});
-				v.add({m * vec3( 1,-1,0), p.col, source.x2, source.y2});
-				v.add({m * vec3(-1, 1,0), p.col, source.x1, source.y1});
-				v.add({m * vec3( 1,-1,0), p.col, source.x2, source.y2});
-				v.add({m * vec3(-1,-1,0), p.col, source.x1, source.y2});
+		for (const auto p: particles_sorted) {
+				auto m = mat4::translation(p->pos) * r * mat4::scale(p->radius, p->radius, p->radius);
+				v.add({m * vec3(-1, 1,0), p->col, source.x1, source.y1});
+				v.add({m * vec3( 1, 1,0), p->col, source.x2, source.y1});
+				v.add({m * vec3( 1,-1,0), p->col, source.x2, source.y2});
+				v.add({m * vec3(-1, 1,0), p->col, source.x1, source.y1});
+				v.add({m * vec3( 1,-1,0), p->col, source.x2, source.y2});
+				v.add({m * vec3(-1,-1,0), p->col, source.x1, source.y2});
 			}
 		auto vb = get_vb();
 		vb->update(v);
 
-		rd.set_texture(BINDING_TEX0, g->texture);
+		rd.set_texture(BINDING_TEX0, g->texture.get());
 		rd.draw_triangles(params, vb);
 	}
 
@@ -170,7 +179,7 @@ void WorldParticlesEmitter::emit(const RenderParams& params, RenderViewData& rvd
 		}
 		auto vb = get_vb();
 		vb->update(v);
-		rd.set_texture(BINDING_TEX0, g->texture);
+		rd.set_texture(BINDING_TEX0, g->texture.get());
 		rd.draw_triangles(params, vb);
 	}
 
