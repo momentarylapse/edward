@@ -6,22 +6,15 @@ Dialog world_dialog "World properties" width=320
 					ColorButton bgc "" alpha linear "tooltip=Sky color"
 				Group grp_skybox "Skybox models"
 					ListView skybox "#\\Model" "tooltip=Models drawn over the sky color\n- double click to select" reorderable style=rich-list
-			Grid ? "" vertical
-				RadioButton fog_mode:none "Deactivated" expandx disabled
-				RadioButton fog_mode:linear "Linear" disabled
-				Grid ? "" indent
-					Label world_dialog_t_fog_start "Distance" right disabled
-					SpinButton fog_start "" range=0:1000000000:0.1 "tooltip=Distance, at which fog starts (intensity 0)" disabled
-					---|
-					Label world_dialog_t_fog_end "to" right disabled
-					SpinButton fog_end "" range=0:1000000000:0.1 "tooltip=maximum viewing distance before full fog intensity" disabled
-				Grid ? ""
-					RadioButton fog_mode:exp "Exponential" disabled
-					RadioButton fog_mode:exp2 "Square exponential" disabled
-				Grid ? "" indent
-					Label world_dialog_t_fog_distance "Distance" right disabled
-					SpinButton fog_distance "" range=0:1000000000:0.1 "tooltip=fog intensity = exp( - distance / viewing-distance )" disabled
-				ColorButton fog_color "" linear disabled
+			Grid ? ""
+				Label t-fog-enabled "Enabled" right disabled
+				CheckBox fog-enabled "" expandx
+				---|
+				Label t-fog-distance "Distance" right disabled
+				SpinButton fog-distance "" range=0:1000000000:0.1 "tooltip=fog intensity = exp( - distance / viewing-distance )"
+				---|
+				Label t-fog-color "Color" right disabled
+				ColorButton fog-color "" linear
 			Grid ? "" vertical
 				Group grp-simulation "Simulation"
 					Grid ? ""

@@ -166,9 +166,6 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 	data->meta_data.physics_mode = ld.physics_mode;
 	data->meta_data.gravity = ld.gravity;
 	data->meta_data.fog.enabled = ld.fog.enabled;
-	data->meta_data.fog.mode = (ygfx::FogMode)ld.fog.mode;
-	data->meta_data.fog.start = ld.fog.start;
-	data->meta_data.fog.end = ld.fog.end;
 	data->meta_data.fog.density = 1/ld.fog.distance;
 	data->meta_data.fog.col = ld.fog._color;
 	data->meta_data.systems = ld.systems;
@@ -330,9 +327,6 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 
 	auto f = xml::Element("fog")
 	.witha("enabled", b2s(data->meta_data.fog.enabled))
-	.witha("mode", i2s((int)data->meta_data.fog.mode))
-	.witha("start", f2s(data->meta_data.fog.start, 3))
-	.witha("end", f2s(data->meta_data.fog.end, 3))
 	.witha("density", f2s(data->meta_data.fog.density, 6))
 	.witha("color", c2s(data->meta_data.fog.col));
 	meta.add(f);

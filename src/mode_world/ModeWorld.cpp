@@ -416,6 +416,9 @@ void ModeWorld::on_prepare_scene(const yrenderer::RenderParams& params) {
 		lights[i]->_ang = l->owner->ang;
 	}
 	multi_view->lights = lights.sub_ref(0, data_lights.num);
+	multi_view->scene_view->fog_enabled = data->meta_data.fog.enabled;
+	multi_view->scene_view->fog_density = data->meta_data.fog.density;
+	multi_view->scene_view->fog_color = data->meta_data.fog.col;
 }
 
 void ModeWorld::on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {

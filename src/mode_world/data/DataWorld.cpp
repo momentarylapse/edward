@@ -97,11 +97,6 @@ DataWorld::~DataWorld() {
 
 void DataWorld::MetaData::reset() {
 	fog.enabled = false;
-#if HAS_LIB_GL
-	fog.mode = nix::FogMode::EXP;
-#endif
-	fog.start = 1;
-	fog.end = 1000;
 	fog.density = 0.0001f;
 	fog.col = color(1, 0.8f, 0.8f, 0.8f).srgb_to_linear();
 

@@ -10971,93 +10971,45 @@ reorderable,style=rich-list
 0
 Grid
 ?
-vertical
+
 1
 0
 6
-RadioButton
-fog_mode:none
-expandx,disabled
-0
-0
-0
-RadioButton
-fog_mode:linear
-disabled
-1
-0
-0
-Grid
-?
-indent
-2
-0
-4
 Label
-world_dialog_t_fog_start
+t-fog-enabled
 right,disabled
 0
 0
 0
-SpinButton
-fog_start
-range=0:1000000000:0.1,disabled
+CheckBox
+fog-enabled
+expandx
 1
 0
 0
 Label
-world_dialog_t_fog_end
+t-fog-distance
 right,disabled
 0
 1
 0
 SpinButton
-fog_end
-range=0:1000000000:0.1,disabled
+fog-distance
+range=0:1000000000:0.1
 1
 1
 0
-Grid
-?
-
-3
-0
-2
-RadioButton
-fog_mode:exp
-disabled
-0
-0
-0
-RadioButton
-fog_mode:exp2
-disabled
-1
-0
-0
-Grid
-?
-indent
-4
-0
-2
 Label
-world_dialog_t_fog_distance
+t-fog-color
 right,disabled
 0
-0
-0
-SpinButton
-fog_distance
-range=0:1000000000:0.1,disabled
-1
-0
+2
 0
 ColorButton
-fog_color
-linear,disabled
-5
-0
+fog-color
+linear
+1
+2
 0
 Grid
 ?
@@ -13069,7 +13021,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1411
+1405
 # Text
 /ambient
 Ambient
@@ -17184,27 +17136,9 @@ Sky color
 world_dialog/create-system
 
 Create new system
-world_dialog/fog_distance
+world_dialog/fog-distance
 
 fog intensity = exp( - distance / viewing-distance )
-world_dialog/fog_end
-
-maximum viewing distance before full fog intensity
-world_dialog/fog_mode:exp
-Exponential
-
-world_dialog/fog_mode:exp2
-Square exponential
-
-world_dialog/fog_mode:linear
-Linear
-
-world_dialog/fog_mode:none
-Deactivated
-
-world_dialog/fog_start
-
-Distance, at which fog starts (intensity 0)
 world_dialog/grp-simulation
 Simulation
 
@@ -17226,6 +17160,15 @@ Models drawn over the sky color\n- double click to select
 world_dialog/systems
 systems
 Global scripts - a class derived from yengine.System is instantiated and running in the background\n * click to edit variables etc.
+world_dialog/t-fog-color
+Color
+
+world_dialog/t-fog-distance
+Distance
+
+world_dialog/t-fog-enabled
+Enabled
+
 world_dialog/t-physics-enabled
 Enabled
 
@@ -17234,15 +17177,6 @@ Mode
 
 world_dialog/world_dialog
 World properties
-
-world_dialog/world_dialog_t_fog_distance
-Distance
-
-world_dialog/world_dialog_t_fog_end
-to
-
-world_dialog/world_dialog_t_fog_start
-Distance
 
 world_dialog/world_dialog_tab_control
 Background\\Fog\\Physics\\Systems

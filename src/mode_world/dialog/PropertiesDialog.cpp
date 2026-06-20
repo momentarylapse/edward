@@ -115,8 +115,10 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//
 	};
 
 	data->out_changed >> create_sink([this] {
-		temp = data->meta_data;
-		update_ui();
+		if (!editing) {
+			temp = data->meta_data;
+			update_ui();
+		}
 	});
 	data->out_system_added >> create_sink([this] {
 		temp = data->meta_data;
@@ -156,6 +158,18 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//
 
 	event("bgc", [this] {
 		temp.background_color = get_color("bgc");
+		apply();
+	});
+	event("fog-enabled", [this] {
+		temp.fog.enabled = is_checked("fog-enabled");
+		apply();
+	});
+	event("fog-distance", [this] {
+		temp.fog.density = 1 / get_float("fog-distance");
+		apply();
+	});
+	event("fog-color", [this] {
+		temp.fog.col = get_color("fog-color");
 		apply();
 	});
 	event("physics_enabled", [this] {
@@ -248,9 +262,13 @@ class <NAME> extends System
 
 void PropertiesDialog::update_ui() {
 	set_color("bgc", temp.background_color);
-	set_float("gravitation_x", temp.gravity.x);
-	set_float("gravitation_y", temp.gravity.y);
-	set_float("gravitation_z", temp.gravity.z);
+	reset("skybox");
+	for (const auto&& [i, sb]: enumerate(temp.skybox_files))
+		add_string("skybox", format("%d\\%s", i, sb));
+
+	check("fog-enabled", temp.fog.enabled);
+	set_float("fog-distance", 1/temp.fog.density);
+	set_color("fog-color", temp.fog.col);
 
 	check("physics_enabled", temp.physics_enabled);
 	if (temp.physics_mode == PhysicsMode::SIMPLE)
@@ -258,9 +276,9 @@ void PropertiesDialog::update_ui() {
 	else if (temp.physics_mode == PhysicsMode::FULL_EXTERNAL)
 		set_int("physics-mode", 1);
 
-	reset("skybox");
-	for (const auto&& [i, sb]: enumerate(temp.skybox_files))
-		add_string("skybox", format("%d\\%s", i, sb));
+	set_float("gravitation_x", temp.gravity.x);
+	set_float("gravitation_y", temp.gravity.y);
+	set_float("gravitation_z", temp.gravity.z);
 }
 
 void PropertiesDialog::fill_systems_list() {
@@ -271,7 +289,9 @@ void PropertiesDialog::fill_systems_list() {
 
 
 void PropertiesDialog::apply() {
+	editing = true;
 	data->execute(new ActionWorldEditData(temp));
+	editing = false;
 }
 
 

@@ -15,6 +15,7 @@ public:
 	DataWorld* data;
 
 	DataWorld::MetaData temp;
+	bool editing = false;
 
 	void apply();
 	void update_ui();

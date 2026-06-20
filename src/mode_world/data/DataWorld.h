@@ -110,9 +110,6 @@ public:
 		// fog
 		struct Fog {
 			bool enabled;
-			ygfx::FogMode mode;
-			float start;
-			float end;
 			float density;
 			color col;
 		} fog;
