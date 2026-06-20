@@ -365,6 +365,58 @@ float vec2_factor_between(const vec2& a, const vec2& b, const vec2& p) {
 	return (p.y - a.y) / (b.y - a.y);
 }
 
+bool mesh_is_mouse_over(const polymesh::Mesh& mesh, MultiViewWindow* win, const mat4 &mat, const vec2& m, vec3 &tp, int& index, bool any_hit, const VisibilityFilter& filter) {
+	vec3 M = vec3(m, 0);
+	float zmin = 1;
+	for (const auto& [i, p]: enumerate(mesh.polygons)) {
+		if (!filter(i))
+			continue;
+		// care for the sense of rotation?
+		//	if (vec3::dot(p.temp_normal, win->get_direction()) > 0)
+		//		continue;
+
+		// project all points
+		Array<vec3> v;
+		bool out = false;
+		for (int k=0; k<p.side.num; k++) {
+			vec3 pp = win->project(mat * mesh.vertices[p.side[k].vertex].pos);
+			if ((pp.z <= 0) or (pp.z >= 1)){
+				out = true;
+				break;
+			}
+			v.add(pp);
+		}
+		if (out)
+			continue;
+
+		// test all sub-triangles
+		if (p.triangulation_dirty)
+			p.update_triangulation(mesh.vertices);
+		for (int k=p.side.num-3; k>=0; k--) {
+			int a = p.side[k].triangulation[0];
+			int b = p.side[k].triangulation[1];
+			int c = p.side[k].triangulation[2];
+			// FIXME: use 2d bary centric!
+			auto fg = bary_centric(M, v[a], v[b], v[c]);
+			// cursor in triangle?
+			if ((fg.x>0) and (fg.y>0) and (fg.x+fg.y<1)) {
+				vec3 va = mesh.vertices[p.side[a].vertex].pos;
+				vec3 vb = mesh.vertices[p.side[b].vertex].pos;
+				vec3 vc = mesh.vertices[p.side[c].vertex].pos;
+				float zz = v[a].z + fg.x*(v[b].z-v[a].z) + fg.x*(v[c].z-v[a].z);
+				if (zz < zmin) {
+					tp = mat * (va + fg.x*(vb-va) + fg.y*(vc-va));
+					index = i;
+					zmin = zz;
+				}
+				if (any_hit)
+					return true;
+			}
+		}
+	}
+	return zmin < 1;
+}
+
 base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) const {
 	base::optional<Hover> h;
 	if (presentation_mode == PresentationMode::Vertices) {
@@ -408,7 +460,7 @@ base::optional<Hover> ModeMesh::get_hover(MultiViewWindow* win, const vec2& m) c
 		vec3 tp;
 		int index;
 		const auto& filter = visibility_stack.get(MultiViewType::MODEL_POLYGON);
-		if (data->editing_mesh->is_mouse_over(win, mat4::ID, m, tp, index, false, filter))
+		if (mesh_is_mouse_over(*data->editing_mesh, win, mat4::ID, m, tp, index, false, filter))
 			return Hover{MultiViewType::MODEL_POLYGON, index, tp};
 	}
 	return h;

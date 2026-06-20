@@ -176,7 +176,7 @@ Array<int> Polygon::triangulate(const Array<Vertex> &vertex) const {
 	return output;
 }
 
-void Polygon::update_triangulation(const Array<Vertex> &vertex) {
+void Polygon::update_triangulation(const Array<Vertex> &vertex) const {
 	auto v = triangulate(vertex);
 	for (int i=0; i<v.num; i+=3)
 		for (int k=0; k<3; k++)

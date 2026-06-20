@@ -58,6 +58,7 @@ void Control::_unregister() {
 		return;
 	for (auto cc: get_children(ChildFilter::All))
 		cc->_unregister();
+	// NOPE we might replace controls but want to keep the event handlers! (e.g. for common toolbar buttons)
 	/*base::remove_if(owner->event_handlers, [this] (const Panel::EventHandler& e) {
 		return e.id == id;
 	});*/
