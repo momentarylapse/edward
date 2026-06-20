@@ -67,10 +67,10 @@ public:
 	void save(const Template* t, const Path& filename) {
 		string o;
 		for (const auto& c: t->components) {
-			if (c.filename and !c.filename.is_in("y"))
-				o += format("%s %s\n", c.class_name, c.filename);
-			else
+			if (c.is_internal())
 				o += c.class_name + "\n";
+			else
+				o += format("%s %s\n", c.class_name, c.filename);
 			for (const auto& v: c.variables)
 				o += format("\t%s=%s\n", v.name, str(v.value));
 		}
