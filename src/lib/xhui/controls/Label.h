@@ -22,6 +22,7 @@ public:
 	bool italic = false;
 	bool url = false;
 	bool markup = false;
+	bool ellipsis = false;
 	string title;
 	enum class Align {
 		Left,

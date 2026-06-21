@@ -152,7 +152,7 @@ void Button::set_option(const string& key, const string& value) {
 		label.set_option("bold", "false");
 		label.set_option("url", "true");
 		request_redraw();
-	} else if (key == "small" or key == "small" or key == "bold") {
+	} else if (key == "small" or key == "small" or key == "bold" or key == "ellipsis") {
 		label.set_option(key, value);
 	} else {
 		Control::set_option(key, value);

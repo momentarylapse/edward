@@ -460,6 +460,9 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 		ext->declare_class_element("SceneView.probe_min", &SceneView::probe_min);
 		ext->declare_class_element("SceneView.probe_max", &SceneView::probe_max);
 		ext->declare_class_element("SceneView.ray_tracing_data", &SceneView::ray_tracing_data);
+		ext->declare_class_element("SceneView.fog_enabled", &SceneView::fog_enabled);
+		ext->declare_class_element("SceneView.fog_density", &SceneView::fog_density);
+		ext->declare_class_element("SceneView.fog_color", &SceneView::fog_color);
 		ext->link_class_func("SceneView.__init__", &kaba::generic_init<SceneView>);
 		ext->link_class_func("SceneView.__delete__", &kaba::generic_delete<SceneView>);
 		ext->link_class_func("SceneView.choose_lights", &SceneView::choose_lights);

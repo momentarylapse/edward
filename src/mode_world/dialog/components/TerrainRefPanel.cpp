@@ -25,7 +25,7 @@ Dialog terrain-panel ''
 		Grid ? ''
 			Label ? 'Terrain' right disabled
 			Grid ? ''
-				Button terrain '' 'tooltip=Select a terrain' expandx
+				Button terrain '' 'tooltip=Select a terrain' ellipsis expandx
 				Button edit-terrain 'E' paddingx=5 'tooltip=Edit terrain' primary noexpandx
 			---|
 			Label ? 'Size' right disabled
