@@ -10,6 +10,7 @@
 #include "ModelRefPanel.h"
 #include "EntityBasePanel.h"
 #include "TerrainRefPanel.h"
+#include "TemplateRefPanel.h"
 #include "UserComponentPanel.h"
 #include "../../data/DataWorld.h"
 #include <y/world/components/Camera.h>
@@ -246,6 +247,8 @@ void ComponentPanelContainer::set_class(const kaba::Class* _class) {
 		content_panel = new DummyComponentPanel;
 	} else if (component_type == TerrainRef::_class) {
 		content_panel = new TerrainRefPanel(data, entity_index);
+	} else if (component_type == TemplateRef::_class) {
+		content_panel = new TemplateRefPanel(data, entity_index);
 	} else if (component_type == Camera::_class) {
 		content_panel = new CameraPanel(data, entity_index);
 	} else if (component_type == Light::_class) {

@@ -47,6 +47,7 @@ Storage::Storage(Session *_s) {
 	CANONICAL_SUB_DIR[FD_SOUND] = "Sounds";
 	CANONICAL_SUB_DIR[FD_TEXTURE] = "Textures";
 	CANONICAL_SUB_DIR[FD_SCRIPT] = "Scripts";
+	CANONICAL_SUB_DIR[FD_TEMPLATE] = "Objects";
 }
 
 Storage::~Storage() {

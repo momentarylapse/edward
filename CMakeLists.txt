@@ -529,6 +529,7 @@ add_executable(edward
 	src/mode_world/dialog/components/LinkPanel.cpp
 	src/mode_world/dialog/components/ModelRefPanel.cpp
 	src/mode_world/dialog/components/RigidBodyPanel.cpp
+	src/mode_world/dialog/components/TemplateRefPanel.cpp
 	src/mode_world/dialog/components/TerrainRefPanel.cpp
 	src/mode_world/dialog/components/UserComponentPanel.cpp
 	src/mode_world/dialog/AddEntityPanel.cpp
