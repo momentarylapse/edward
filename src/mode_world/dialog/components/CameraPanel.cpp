@@ -142,7 +142,7 @@ constexpr float fov_from_35mm_focal_length(float f) {
 	return atanf(SENSOR_HEIGHT/2/f)*2;
 }
 
-CameraPanel::CameraPanel(DataWorld* _data, int _index) : Node("camera-panel") {
+CameraPanel::CameraPanel(DataWorld* _data, int _index) : ComponentContentsPanel(_data, _index) {
 	from_source(R"foodelim(
 Dialog camera-panel ''
 	Grid ? ''
@@ -184,22 +184,18 @@ Dialog camera-panel ''
 		on_edit();
 	});
 	event("exposure", [this] { on_edit(); });
-
-	data->out_changed >> create_sink([this] {
-		if (!user_editing)
-			update_ui();
-	});
 }
 
 CameraPanel::~CameraPanel() = default;
 
 void CameraPanel::update_ui() {
-	auto c = data->entity(index)->get_component<Camera>();
-	set_float("z-min", c->min_depth);
-	set_float("z-max", c->max_depth);
-	set_float("fov", c->fov * 180 / pi);
-	set_float("focal-length", fov_to_35mm_focal_length(c->fov));
-	set_float("exposure", c->exposure);
+	if (auto c = data->entity(index)->get_component<Camera>()) {
+		set_float("z-min", c->min_depth);
+		set_float("z-max", c->max_depth);
+		set_float("fov", c->fov * 180 / pi);
+		set_float("focal-length", fov_to_35mm_focal_length(c->fov));
+		set_float("exposure", c->exposure);
+	}
 }
 void CameraPanel::on_edit() {
 	Camera c;
@@ -208,8 +204,8 @@ void CameraPanel::on_edit() {
 	c.exposure = get_float("exposure");
 	c.fov = get_float("fov") * pi / 180;
 
-	user_editing = true;
+	editing = true;
 	auto e = data->entity(index);
 	data->entity_edit_component(e, Camera::_class, data->session->plugin_manager->describe_class(Camera::_class, &c));
-	user_editing = false;
+	editing = false;
 }

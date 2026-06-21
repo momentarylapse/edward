@@ -102,8 +102,8 @@ void *ActionWorldRemoveComponent::execute(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto e = w->entity(index);
 	auto c = e->_get_component_generic_(type);
+	component = w->session->plugin_manager->describe_class(type, c);
 	w->entity_manager->delete_component(e, c);
-	//w->entities[index].components.erase(cindex);
 	w->out_component_removed();
 	return nullptr;
 }
@@ -111,8 +111,7 @@ void *ActionWorldRemoveComponent::execute(history::Data* d) {
 void ActionWorldRemoveComponent::undo(history::Data* d) {
 	auto w = dynamic_cast<DataWorld*>(d);
 	auto e = w->entity(index);
-	w->entity_manager->_add_component_generic_(e, type);
-	//w->entities[index].components.insert(component, cindex);
+	w->entity_manager->_add_component_generic_(e, type, component.variables);
 	w->out_component_added();
 }
 

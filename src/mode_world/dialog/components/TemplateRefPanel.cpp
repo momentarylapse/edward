@@ -12,7 +12,7 @@
 #include <mode_material/dialog/MaterialSelector.h>
 
 
-TemplateRefPanel::TemplateRefPanel(DataWorld* _data, int _index) : Node("template-ref-panel") {
+TemplateRefPanel::TemplateRefPanel(DataWorld* _data, int _index) : ComponentContentsPanel(_data, _index) {
 	from_source(R"foodelim(
 Dialog template-ref-panel ''
 	Grid main-grid ''
@@ -21,8 +21,6 @@ Dialog template-ref-panel ''
 			Button template '' 'tooltip=Select template' ellipsis expandx
 			Button edit 'E' paddingx=5  'tooltip=Edit template' noexpandx primary
 )foodelim");
-	data = _data;
-	index = _index;
 
 	auto e = data->entity(index);
 	auto mr = e->get_component<ModelRef>();
@@ -40,17 +38,12 @@ Dialog template-ref-panel ''
 		if (tr->_template)
 			data->session->universal_edit(FD_TEMPLATE, data->session->resource_manager->filename(tr->_template), true);
 	});
-
-	data->out_changed >> create_sink([this] {
-		if (true) //!editing)
-			update_ui();
-	});
-	update_ui();
 }
 
 void TemplateRefPanel::update_ui() {
 	auto e = data->entity(index);
-	auto tr = e->get_component<TemplateRef>();
-	set_string("template", str(data->session->resource_manager->filename(tr->_template)));
+	if (auto tr = e->get_component<TemplateRef>()) {
+		set_string("template", str(data->session->resource_manager->filename(tr->_template)));
+	}
 }
 

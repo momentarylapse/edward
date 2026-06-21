@@ -18,7 +18,7 @@
 
 
 
-TerrainRefPanel::TerrainRefPanel(DataWorld* _data, int _index) : Node("terrain-panel") {
+TerrainRefPanel::TerrainRefPanel(DataWorld* _data, int _index) : ComponentContentsPanel(_data, _index) {
 	from_source(R"foodelim(
 Dialog terrain-panel ''
 	Grid main-grid ''
@@ -34,8 +34,6 @@ Dialog terrain-panel ''
 			Label ? 'Cells' right disabled
 			Label cells ''
 )foodelim");
-	data = _data;
-	index = _index;
 
 	material_selector = new MaterialSelector(data->session, data);
 	embed("main-grid", 0, 1, material_selector);
@@ -64,23 +62,18 @@ Dialog terrain-panel ''
 	event("edit-terrain", [this] {
 		data->doc->set_mode(new ModeEditTerrain(data->doc->mode_world.get(), index));
 	});
-
-	data->out_changed >> create_sink([this] {
-		if (true) //!editing)
-			update_ui();
-	});
-	update_ui();
 }
 
 void TerrainRefPanel::update_ui() {
 	auto e = data->entity(index);
-	auto tr = e->get_component<TerrainRef>();
-	if (auto t = tr->terrain) {
-		set_string("terrain", str(t->filename_rel));
-		set_string("size", format("%.1f x %.1f", t->pattern.x * (float)t->num_x, t->pattern.z * (float)t->num_z));
-		set_string("cells", format("%d x %d", t->num_x, t->num_z));
-	}
-	if (auto m = tr->material) {
-		material_selector->set_material(m);
+	if (auto tr = e->get_component<TerrainRef>()) {
+		if (auto t = tr->terrain) {
+			set_string("terrain", str(t->filename_rel));
+			set_string("size", format("%.1f x %.1f", t->pattern.x * (float)t->num_x, t->pattern.z * (float)t->num_z));
+			set_string("cells", format("%d x %d", t->num_x, t->num_z));
+		}
+		if (auto m = tr->material) {
+			material_selector->set_material(m);
+		}
 	}
 }

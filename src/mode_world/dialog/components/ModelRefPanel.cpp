@@ -12,7 +12,7 @@
 #include <mode_material/dialog/MaterialSelector.h>
 
 
-ModelRefPanel::ModelRefPanel(DataWorld* _data, int _index) : Node("model-panel") {
+ModelRefPanel::ModelRefPanel(DataWorld* _data, int _index) : ComponentContentsPanel(_data, _index) {
 	from_source(R"foodelim(
 Dialog model-panel ''
 	Grid main-grid ''
@@ -21,8 +21,6 @@ Dialog model-panel ''
 			Button model '' 'tooltip=Select model' ellipsis expandx
 			Button edit 'E' paddingx=5  'tooltip=Edit model' noexpandx primary
 )foodelim");
-	data = _data;
-	index = _index;
 	material_selector = new MaterialSelector(data->session, data);
 
 	embed("main-grid", 0, 1, material_selector);
@@ -52,20 +50,15 @@ Dialog model-panel ''
 		x.add(str(data->session->resource_manager->filename(m).no_ext()));
 		data->entity_edit_component(e, ModelRef::_class, {"", "", {{"materials", x}}});
 	});
-
-	data->out_changed >> create_sink([this] {
-		if (true) //!editing)
-			update_ui();
-	});
-	update_ui();
 }
 
 void ModelRefPanel::update_ui() {
 	auto e = data->entity(index);
-	auto mr = e->get_component<ModelRef>();
-	set_string("model", str(data->session->resource_manager->filename(mr->model)));
-	if (mr->model) {
-		material_selector->set_material(mr->get_material(0));
-		material_selector->internal_materials = {mr->model->materials[0]};
+	if (auto mr = e->get_component<ModelRef>()) {
+		set_string("model", str(data->session->resource_manager->filename(mr->model)));
+		if (mr->model) {
+			material_selector->set_material(mr->get_material(0));
+			material_selector->internal_materials = {mr->model->materials[0]};
+		}
 	}
 }

@@ -39,14 +39,27 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <y/helper/ResourceManager.h>
 
+ComponentContentsPanel::ComponentContentsPanel(DataWorld* _data, int _index) : Node<Panel>(p2s(this)) {
+	data = _data;
+	index = _index;
 
-class DummyComponentPanel : public xhui::Panel {
+	// TODO... move outside...
+	data->out_changed >> create_sink([this] {
+		if (auto e = data->entity(index))
+			if (!editing)
+				update_ui();
+	});
+}
+
+
+class DummyComponentPanel : public ComponentContentsPanel {
 public:
-	DummyComponentPanel() : Panel("dummy-panel") {
+	DummyComponentPanel(DataWorld* _data, int _index) : ComponentContentsPanel(_data, _index) {
 		add_control("Label", "!italic,expandx,center\\no configuration", 0, 0, "message");
 	}
 };
 
+#if 0
 class MaterialComponentPanel : public xhui::Panel {
 public:
 	explicit MaterialComponentPanel(DataWorld* _data, yrenderer::Material* m, const Path& filename, std::function<void(const ComplexPath&)> _f_save) : Panel("material-panel") {
@@ -144,16 +157,15 @@ Dialog material-panel ''
 	DataWorld* data;
 	std::function<void(const ComplexPath&)> f_save;
 };
+#endif
 
-class UnknownComponentPanel : public xhui::Panel {
+class UnknownComponentPanel : public ComponentContentsPanel {
 public:
-	explicit UnknownComponentPanel(DataWorld* _data, int _index, int _cindex) : Panel("unknown-component-panel") {
+	explicit UnknownComponentPanel(DataWorld* _data, int _index, int _cindex) : ComponentContentsPanel(_data, _index) {
 		from_source(R"foodelim(
 Dialog unknown-component-panel ''
 	Grid grid-variables ''
 )foodelim");
-		data = _data;
-		index = _index;
 		cindex = _cindex;
 
 		auto e = data->entity(index);
@@ -167,13 +179,12 @@ Dialog unknown-component-panel ''
 			add_control("Edit", str(v.value), 2, i, format("var-%d", i));
 		}
 	}
-	DataWorld* data;
-	int index, cindex;
+	int cindex;
 };
 
-ComponentPanelContainer::ComponentPanelContainer(DataWorld* _data) : Panel("component-panel-container") {
+ComponentPanel::ComponentPanel(DataWorld* _data) : Panel("component-panel") {
 	from_source(R"foodelim(
-Dialog component-panel-container ''
+Dialog component-panel ''
 	Grid card '' class=card
 		Expander expander 'Component' markup expandx
 			Grid contents ''
@@ -201,7 +212,8 @@ Dialog component-panel-container ''
 			data->session->universal_edit(FD_SCRIPT, data->entity(entity_index)->components[component_index]->component_type->owner->module->filename, false);
 	});
 }
-void ComponentPanelContainer::update(int _entity_index, const string& category, int _component_index) {
+
+void ComponentPanel::update(int _entity_index, const string& category, int _component_index) {
 	entity_index = _entity_index;
 	component_index = _component_index;
 	unknown_component = false;
@@ -222,7 +234,7 @@ void ComponentPanelContainer::update(int _entity_index, const string& category, 
 	}
 }
 
-void ComponentPanelContainer::set_class(const kaba::Class* _class) {
+void ComponentPanel::set_class(const kaba::Class* _class) {
 	if (_class == component_type)
 		return;
 	component_class = _class->name;
@@ -238,13 +250,13 @@ void ComponentPanelContainer::set_class(const kaba::Class* _class) {
 	} else if (component_type == RigidBody::_class) {
 		content_panel = new RigidBodyPanel(data, entity_index);
 	} else if (component_type == MeshCollider::_class) {
-		content_panel = new DummyComponentPanel;
+		content_panel = new DummyComponentPanel(data, entity_index);
 	} else if (component_type == TerrainCollider::_class) {
-		content_panel = new DummyComponentPanel;
+		content_panel = new DummyComponentPanel(data, entity_index);
 	} else if (component_type == Skeleton::_class) {
-		content_panel = new DummyComponentPanel;
+		content_panel = new DummyComponentPanel(data, entity_index);
 	} else if (component_type == Animator::_class) {
-		content_panel = new DummyComponentPanel;
+		content_panel = new DummyComponentPanel(data, entity_index);
 	} else if (component_type == TerrainRef::_class) {
 		content_panel = new TerrainRefPanel(data, entity_index);
 	} else if (component_type == TemplateRef::_class) {
@@ -256,16 +268,18 @@ void ComponentPanelContainer::set_class(const kaba::Class* _class) {
 	} else if (component_type == Link::_class) {
 		content_panel = new LinkPanel(data, entity_index);
 	} else {
-		content_panel = new UserComponentPanel(data, entity_index, component_index);
+		content_panel = new UserComponentPanel(data, entity_index, component_type);
 		user_component = true;
 	}
 
 	embed("contents", 0, 0, content_panel);
 	set_visible("delete", true);
 	set_visible("edit", user_component);
+
+	content_panel->update_ui();
 }
 
-void ComponentPanelContainer::set_class(const string& _component_class) {
+void ComponentPanel::set_class(const string& _component_class) {
 	if (_component_class == component_class)
 		return;
 	component_class = _component_class;
@@ -287,9 +301,11 @@ void ComponentPanelContainer::set_class(const string& _component_class) {
 	set_visible("delete", component_class != "Entity");
 	set_visible("edit", false);
 	enable("edit", !unknown_component);
+
+	content_panel->update_ui();
 }
 
-void ComponentPanelContainer::set_selected(bool select) {
+void ComponentPanel::set_selected(bool select) {
 	expand("expander", select);
 }
 

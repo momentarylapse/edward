@@ -7,7 +7,7 @@
 #include <ecs/Entity.h>
 
 
-EntityBasePanel::EntityBasePanel(DataWorld* _data, int _index) : Panel("entity-base-panel") {
+EntityBasePanel::EntityBasePanel(DataWorld* _data, int _index) : ComponentContentsPanel(_data, _index) {
 	from_source(R"foodelim(
 Dialog entity-base-panel ''
 	Grid ? ''
@@ -30,9 +30,6 @@ Dialog entity-base-panel ''
 		.
 		SpinButton ang-z '' range=::0.01
 )foodelim");
-	data = _data;
-	index = _index;
-	update_ui();
 
 	event("pos-x", [this] { on_edit(); });
 	event("pos-y", [this] { on_edit(); });

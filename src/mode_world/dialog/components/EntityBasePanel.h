@@ -4,16 +4,13 @@
 
 #pragma once
 
-#include <lib/xhui/Panel.h>
-//#include <lib/pattern/Observable.h>
+#include "ComponentPanel.h"
 
 class DataWorld;
 
-class EntityBasePanel : public xhui::Panel {
+class EntityBasePanel : public ComponentContentsPanel {
 public:
 	explicit EntityBasePanel(DataWorld* _data, int _index);
-	void update_ui();
+	void update_ui() override;
 	void on_edit();
-	DataWorld* data;
-	int index;
 };

@@ -4,19 +4,16 @@
 
 #pragma once
 
-#include <lib/xhui/Panel.h>
-#include <lib/pattern/Observable.h>
+#include "ComponentPanel.h"
 
 class DataWorld;
 
-class UserComponentPanel : public obs::Node<xhui::Panel> {
+class UserComponentPanel : public ComponentContentsPanel {
 public:
-	explicit UserComponentPanel(DataWorld* _data, int _index, int _cindex);
-	DataWorld* data;
-	int index, cindex;
-	bool editing = false;
+	explicit UserComponentPanel(DataWorld* data, int index, const kaba::Class* type);
+	const kaba::Class* type;
 
-	void update_ui();
+	void update_ui() override;
 	void on_edit();
 };
 

@@ -9,7 +9,7 @@
 #include <ecs/Entity.h>
 #include <cmath>
 
-LightPanel::LightPanel(DataWorld* _data, int _index) : Node("light-panel") {
+LightPanel::LightPanel(DataWorld* _data, int _index) : ComponentContentsPanel(_data, _index) {
 	from_source(R"foodelim(
 Dialog light-panel ''
 	Grid ? ''
@@ -39,13 +39,6 @@ Dialog light-panel ''
 		Label ? 'Shadows' right disabled
 		CheckBox allow-shadows '' 'tooltip=Cast shadows (if allowed by mesh materials)?'
 )foodelim");
-	data = _data;
-	index = _index;
-	update_ui();
-	/*data->out_changed >> create_sink([this] {
-		msg_write("update");
-		update_ui();
-	});*/
 
 	event("enabled", [this] { on_edit(); });
 	event("type", [this] { on_edit(); });
@@ -55,27 +48,23 @@ Dialog light-panel ''
 	event("power", [this] { on_edit(); });
 	event("harshness", [this] { on_edit(); });
 	event("allow-shadows", [this] { on_edit(); });
-
-	data->out_changed >> create_sink([this] {
-		if (!editing)
-			update_ui();
-	});
 }
 
 void LightPanel::update_ui() {
 	auto e = data->entity(index);
-	auto l = e->get_component<Light>();
-	check("enabled", l->light.enabled);
-	set_int("type", (int)l->light.type);
-	set_float("radius", l->light.radius());
-	set_float("harshness", l->light.harshness * 100);
-	set_float("theta", max(l->light.theta * 180 / pi, 0.0f));
-	set_color("color", l->light.col);
-	set_float("power", l->light.power);
-	check("allow-shadows", l->light.allow_shadow);
-	enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL or l->light.type == yrenderer::LightType::AMBIENT);
-	enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL and l->light.type != yrenderer::LightType::AMBIENT);
-	enable("theta", l->light.type == yrenderer::LightType::CONE or l->light.type == yrenderer::LightType::AMBIENT);
+	if (auto l = e->get_component<Light>()) {
+		check("enabled", l->light.enabled);
+		set_int("type", (int)l->light.type);
+		set_float("radius", l->light.radius());
+		set_float("harshness", l->light.harshness * 100);
+		set_float("theta", max(l->light.theta * 180 / pi, 0.0f));
+		set_color("color", l->light.col);
+		set_float("power", l->light.power);
+		check("allow-shadows", l->light.allow_shadow);
+		enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL or l->light.type == yrenderer::LightType::AMBIENT);
+		enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL and l->light.type != yrenderer::LightType::AMBIENT);
+		enable("theta", l->light.type == yrenderer::LightType::CONE or l->light.type == yrenderer::LightType::AMBIENT);
+	}
 }
 
 void LightPanel::on_edit() {

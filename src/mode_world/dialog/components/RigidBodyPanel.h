@@ -4,18 +4,14 @@
 
 #pragma once
 
-#include <lib/xhui/Panel.h>
-#include <lib/pattern/Observable.h>
+#include "ComponentPanel.h"
 
 class DataWorld;
 
 
-class RigidBodyPanel : public obs::Node<xhui::Panel> {
+class RigidBodyPanel : public ComponentContentsPanel {
 public:
 	explicit RigidBodyPanel(DataWorld* _data, int _index);
-	void update_ui();
+	void update_ui() override;
 	void on_edit();
-	DataWorld* data;
-	int index;
-	bool editing = false;
 };

@@ -8,7 +8,7 @@
 #include <stuff/PluginManager.h>
 #include <ecs/Entity.h>
 
-LinkPanel::LinkPanel(DataWorld* _data, int _index) : Node("link-panel") {
+LinkPanel::LinkPanel(DataWorld* _data, int _index) : ComponentContentsPanel(_data, _index) {
 	from_source(R"foodelim(
 Dialog link-panel ''
 	Grid ? ''
@@ -21,26 +21,19 @@ Dialog link-panel ''
 		Label ? 'Entity 2' right disabled
 		SpinButton b '' 'tooltip=Index of second attached entity (needs a RigidBody component)' range=0::
 )foodelim");
-	data = _data;
-	index = _index;
-	update_ui();
 
 	event("type", [this] { on_edit(); });
 	event("a", [this] { on_edit(); });
 	event("b", [this] { on_edit(); });
-
-	data->out_changed >> create_sink([this] {
-		if (!editing)
-			update_ui();
-	});
 }
 
 void LinkPanel::update_ui() {
 	auto e = data->entity(index);
-	auto l = e->get_component<Link>();
-	set_int("type", (int)l->link_type);
-	set_int("a", l->a);
-	set_int("b", l->b);
+	if (auto l = e->get_component<Link>()) {
+		set_int("type", (int)l->link_type);
+		set_int("a", l->a);
+		set_int("b", l->b);
+	}
 }
 
 void LinkPanel::on_edit() {

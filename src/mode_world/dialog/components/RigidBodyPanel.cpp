@@ -10,7 +10,7 @@
 
 
 
-RigidBodyPanel::RigidBodyPanel(DataWorld* _data, int _index) : Node("rigid-body-panel") {
+RigidBodyPanel::RigidBodyPanel(DataWorld* _data, int _index) : ComponentContentsPanel(_data, _index) {
 	from_source(R"foodelim(
 Dialog rigid-body-panel ''
 	Grid ? ''
@@ -37,9 +37,6 @@ Dialog rigid-body-panel ''
 			.
 			SpinButton theta-zz '' range=::0.1 compact
 )foodelim");
-	data = _data;
-	index = _index;
-	update_ui();
 	event("active", [this] { on_edit(); });
 	event("mass", [this] { on_edit(); });
 	event("g-factor", [this] { on_edit(); });
@@ -49,34 +46,32 @@ Dialog rigid-body-panel ''
 	event("theta-yy", [this] { on_edit(); });
 	event("theta-yz", [this] { on_edit(); });
 	event("theta-zz", [this] { on_edit(); });
-
-	data->out_changed >> create_sink([this] {
-		if (!editing)
-			update_ui();
-	});
 }
+
 void RigidBodyPanel::update_ui() {
 	auto e = data->entity(index);
-	auto sb = e->get_component<RigidBody>();
-	check("active", sb->dynamic);
-	set_float("mass", sb->mass);
-	set_float("g-factor", sb->g_factor);
-	set_float("theta-xx", sb->theta_0._00);
-	set_float("theta-xy", sb->theta_0._01);
-	set_float("theta-xz", sb->theta_0._02);
-	set_float("theta-yy", sb->theta_0._11);
-	set_float("theta-yz", sb->theta_0._12);
-	set_float("theta-zz", sb->theta_0._22);
+	if (auto sb = e->get_component<RigidBody>()) {
+		check("active", sb->dynamic);
+		set_float("mass", sb->mass);
+		set_float("g-factor", sb->g_factor);
+		set_float("theta-xx", sb->theta_0._00);
+		set_float("theta-xy", sb->theta_0._01);
+		set_float("theta-xz", sb->theta_0._02);
+		set_float("theta-yy", sb->theta_0._11);
+		set_float("theta-yz", sb->theta_0._12);
+		set_float("theta-zz", sb->theta_0._22);
 
-	enable("mass", sb->dynamic);
-	enable("g-factor", sb->dynamic);
-	enable("theta-xx", sb->dynamic);
-	enable("theta-xy", sb->dynamic);
-	enable("theta-xz", sb->dynamic);
-	enable("theta-yy", sb->dynamic);
-	enable("theta-yz", sb->dynamic);
-	enable("theta-zz", sb->dynamic);
+		enable("mass", sb->dynamic);
+		enable("g-factor", sb->dynamic);
+		enable("theta-xx", sb->dynamic);
+		enable("theta-xy", sb->dynamic);
+		enable("theta-xz", sb->dynamic);
+		enable("theta-yy", sb->dynamic);
+		enable("theta-yz", sb->dynamic);
+		enable("theta-zz", sb->dynamic);
+	}
 }
+
 void RigidBodyPanel::on_edit() {
 	RigidBody sb;
 	sb.dynamic = is_checked("active");

@@ -4,17 +4,14 @@
 
 #pragma once
 
-#include <lib/xhui/Panel.h>
-#include <lib/pattern/Observable.h>
+#include "ComponentPanel.h"
 
 class DataWorld;
 class MaterialSelector;
 
-class ModelRefPanel : public obs::Node<xhui::Panel> {
+class ModelRefPanel : public ComponentContentsPanel {
 public:
 	explicit ModelRefPanel(DataWorld* _data, int _index);
-	void update_ui();
-	DataWorld* data;
-	int index;
+	void update_ui() override;
 	MaterialSelector* material_selector;
 };
