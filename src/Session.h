@@ -23,11 +23,6 @@ namespace yrenderer {
 
 class MultiView;
 class Mode;
-class ModeModel;
-class ModeMaterial;
-class ModeWorld;
-class ModeFont;
-class ModeAdministration;
 class Storage;
 class Progress;
 class MaterialPreviewManager;

@@ -7,7 +7,7 @@
 #include "Mode.h"
 #include "DocumentSession.h"
 #include "EdwardWindow.h"
-#include "../Session.h"
+#include <Session.h>
 #include <lib/xhui/xhui.h>
 #include <lib/xhui/controls/DrawingArea.h>
 #include <lib/yrenderer/target/XhuiRenderer.h>

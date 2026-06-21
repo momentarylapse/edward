@@ -79,6 +79,8 @@ ModeWorld::ModeWorld(DocumentSession* doc) :
 	data->entity_manager->out_remove_component >> animation_manager->in_remove_component;
 }
 
+ModeWorld::~ModeWorld() = default;
+
 
 void ModeWorld::on_enter_rec() {
 	doc->out_changed >> create_sink([this] {

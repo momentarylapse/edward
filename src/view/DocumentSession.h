@@ -49,11 +49,11 @@ public:
 	bool is_save_state() const;
 	string title(bool with_markup = false) const;
 
-	Mode* mode_none;
-	ModeModel* mode_model;
-	ModeMaterial* mode_material;
-	ModeWorld* mode_world;
-	ModeCoding* mode_coding;
+	owned<Mode> mode_none;
+	owned<ModeModel> mode_model;
+	owned<ModeMaterial> mode_material;
+	owned<ModeWorld> mode_world;
+	owned<ModeCoding> mode_coding;
 	//ModeFont* mode_font;
 	//ModeAdministration* mode_admin;
 	Mode* cur_mode = nullptr;

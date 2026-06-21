@@ -6,6 +6,10 @@
 #include "Mode.h"
 #include "EdwardWindow.h"
 #include "MultiView.h"
+#include <mode_coding/ModeCoding.h>
+#include <mode_material/ModeMaterial.h>
+#include <mode_model/ModeModel.h>
+#include <mode_world/ModeWorld.h>
 #include <lib/history/Data.h>
 #include <Session.h>
 #include <lib/xhui/Resource.h>
@@ -15,15 +19,6 @@
 
 DocumentSession::DocumentSession(Session* _session) {
 	session = _session;
-
-	mode_none = nullptr;
-
-	mode_model = nullptr;
-//	mode_admin = nullptr;
-//	mode_font = nullptr;
-	mode_material = nullptr;
-	mode_world = nullptr;
-	mode_coding = nullptr;
 
 	if (session->win) { // only in UI mode
 		base_panel = new xhui::Panel(p2s(this));
@@ -38,16 +33,6 @@ DocumentSession::DocumentSession(Session* _session) {
 }
 
 DocumentSession::~DocumentSession() {
-#if 0
-	if (mode_world)
-		delete mode_world;
-	/*delete mode_material;
-	delete mode_model;
-	delete mode_font;
-	delete mode_admin;*/
-
-	// saving the configuration data...
-#endif
 	if (base_panel and document_panel)
 		base_panel->unembed(document_panel.get());
 }

@@ -28,6 +28,7 @@ class AnimationManager;
 class ModeWorld : public Mode {
 public:
 	explicit ModeWorld(DocumentSession* session);
+	~ModeWorld() override;
 
 	void on_enter_rec() override;
 	void on_connect_events_rec() override;

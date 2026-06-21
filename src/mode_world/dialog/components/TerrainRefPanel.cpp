@@ -62,7 +62,7 @@ Dialog terrain-panel ''
 			data->edit_terrain_meta_data(index, {t->pattern.x, 0, get_float("size-z") / (float)t->num_z});
 	});*/
 	event("edit-terrain", [this] {
-		data->doc->set_mode(new ModeEditTerrain(data->doc->mode_world, index));
+		data->doc->set_mode(new ModeEditTerrain(data->doc->mode_world.get(), index));
 	});
 
 	data->out_changed >> create_sink([this] {

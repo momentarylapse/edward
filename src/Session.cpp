@@ -9,45 +9,28 @@
 #include <view/DocumentSession.h>
 #include <view/EdwardWindow.h>
 #include <view/MaterialPreviewManager.h>
-#include "Edward.h"
-/*#include "mode/ModeNone.h"
-#include "mode/ModeCreation.h"
-#include "mode/administration/ModeAdministration.h"
-#include "mode/administration/dialog/ConfigurationDialog.h"*/
 #include <mode_model/ModeModel.h>
 #include <mode_model/mesh/ModeMesh.h>
 #include <mode_model/mesh/geometry/ModeMeshGeometry.h>
 #include <mode_material/ModeMaterial.h>
 #include <mode_world/ModeWorld.h>
 #include <mode_coding/ModeCoding.h>
-/*#include "mode/font/ModeFont.h"
-#include "stuff/Progress.h"*/
 #include <stuff/PluginManager.h>
 #include <view/MultiView.h>
-//#include "view/DrawingHelper.h"
-#include "Session.h"
-#include "Session.h"
-
 #include <lib/base/algo.h>
-#include "view/Mode.h"
+#include <view/Mode.h>
 #include <lib/history/Data.h>
-#include "storage/format/Format.h"
-#include "storage/Storage.h"
-#include "lib/xhui/config.h"
-#include "lib/image/image.h"
+#include <storage/format/Format.h>
+#include <storage/Storage.h>
+#include <lib/xhui/config.h>
+#include <lib/image/image.h>
 #include <lib/os/app.h>
 #include <lib/os/msg.h>
 #include <y/EngineData.h>
 #include <y/helper/ResourceManager.h>
-#include <y/world/components/Camera.h>
-#include <y/world/World.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <lib/yrenderer/target/XhuiRenderer.h>
-#include <lib/yrenderer/MaterialManager.h>
-#include <lib/yrenderer/TextureManager.h>
 #include <lib/kaba/kaba.h>
-
-#include "lib/os/filesystem.h"
+#include <lib/os/filesystem.h>
 
 static Array<Session*> all_sessions;
 bool any_session_running() {
@@ -267,12 +250,12 @@ void Session::universal_new(int preferred_type) {
 		} else if (preferred_type == FD_WORLD) {
 			doc->mode_world = new ModeWorld(doc);
 			doc->mode_world->data->add_initial_data();
-			doc->set_mode(doc->mode_world);
+			doc->set_mode(doc->mode_world.get());
 			doc->mode_world->optimize_view();
 		} else if (preferred_type == FD_MATERIAL) {
 			doc->mode_material = new ModeMaterial(doc);
 			//doc->mode_material->_new();
-			doc->set_mode(doc->mode_material);
+			doc->set_mode(doc->mode_material.get());
 			doc->mode_material->optimize_view();
 		} /*else if (preferred_type == FD_FONT) {
 			doc->mode_font->_new();
@@ -331,7 +314,7 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 				if (!doc->mode_material)
 					doc->mode_material = new ModeMaterial(doc);
 				doc->session->storage->load(filename, doc->mode_material->data, true);
-				doc->set_mode(doc->mode_material);
+				doc->set_mode(doc->mode_material.get());
 				doc->mode_material->optimize_view();
 				break;
 			case FD_FONT:
@@ -340,7 +323,7 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 				if (!doc->mode_world)
 					doc->mode_world = new ModeWorld(doc);
 				doc->session->storage->load(filename, doc->mode_world->data, true);
-				doc->set_mode(doc->mode_world);
+				doc->set_mode(doc->mode_world.get());
 				doc->mode_world->optimize_view();
 				break;
 			case FD_TERRAIN:
@@ -353,7 +336,7 @@ void Session::universal_edit(int type, const Path &_filename, bool relative_path
 				if (!doc->mode_coding)
 					doc->mode_coding = new ModeCoding(doc);
 				doc->mode_coding->load(filename);
-				doc->set_mode(doc->mode_coding);
+				doc->set_mode(doc->mode_coding.get());
 				break;
 				if (type == FD_MODEL) {
 				} else if (type == FD_MATERIAL) {

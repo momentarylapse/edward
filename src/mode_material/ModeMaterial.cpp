@@ -43,6 +43,8 @@ ModeMaterial::ModeMaterial(DocumentSession* doc) :
 	menu_id = "menu_material";
 }
 
+ModeMaterial::~ModeMaterial() = default;
+
 
 void ModeMaterial::on_enter() {
 	multi_view->set_allow_select(false);

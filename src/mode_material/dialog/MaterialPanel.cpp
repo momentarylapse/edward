@@ -85,7 +85,7 @@ void MaterialPanel::on_edit() {
 }
 
 ModeMaterial* MaterialPanel::mode_material() {
-	return data->doc->mode_material;
+	return data->doc->mode_material.get();
 }
 
 // data -> GUI
