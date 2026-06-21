@@ -39,14 +39,14 @@ Dialog entity-panel '' padding=0
 
 	auto component_list = (xhui::ListView*)get_control("components");
 	component_list->column_factories[0].f_create = [this](const string& id) -> xhui::Control* {
-		return new ComponentPanel(mode_world->data);
+		return new ComponentPanelContainer(mode_world->data);
 	};
 	component_list->column_factories[0].f_set = [this](xhui::Control* c, const string& t) {
 		const auto xx = t.explode(":");
-		reinterpret_cast<ComponentPanel*>(c)->update(xx[0]._int(), xx[1], xx[2]._int());
+		reinterpret_cast<ComponentPanelContainer*>(c)->update(xx[0]._int(), xx[1], xx[2]._int());
 	};
 	component_list->column_factories[0].f_select = [this](xhui::Control* c, bool selected) {
-		reinterpret_cast<ComponentPanel*>(c)->set_selected(selected);
+		reinterpret_cast<ComponentPanelContainer*>(c)->set_selected(selected);
 	};
 
 	mode_world->data->out_component_added >> create_sink([this] {

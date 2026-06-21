@@ -170,9 +170,9 @@ Dialog unknown-component-panel ''
 	int index, cindex;
 };
 
-ComponentPanel::ComponentPanel(DataWorld* _data) : Panel("component-panel") {
+ComponentPanelContainer::ComponentPanelContainer(DataWorld* _data) : Panel("component-panel-container") {
 	from_source(R"foodelim(
-Dialog component-panel ''
+Dialog component-panel-container ''
 	Grid card '' class=card
 		Expander expander 'Component' markup expandx
 			Grid contents ''
@@ -200,7 +200,7 @@ Dialog component-panel ''
 			data->session->universal_edit(FD_SCRIPT, data->entity(entity_index)->components[component_index]->component_type->owner->module->filename, false);
 	});
 }
-void ComponentPanel::update(int _entity_index, const string& category, int _component_index) {
+void ComponentPanelContainer::update(int _entity_index, const string& category, int _component_index) {
 	entity_index = _entity_index;
 	component_index = _component_index;
 	unknown_component = false;
@@ -208,7 +208,7 @@ void ComponentPanel::update(int _entity_index, const string& category, int _comp
 	if (category == "e")
 		set_class("Entity");
 	else if (category == "c")
-		set_class(e->components[component_index]->component_type->name);
+		set_class(e->components[component_index]->component_type);
 	else {
 		unknown_component = true;
 		set_class(e->get_component<EdwardTag>()->unknown_components[component_index].class_name);
@@ -220,60 +220,37 @@ void ComponentPanel::update(int _entity_index, const string& category, int _comp
 		set_string("expander", format("<b><span color='%s'>%s</span></b>", c.hex(), component_class));
 	}
 }
-void ComponentPanel::set_class(const string& _component_class) {
-	if (_component_class == component_class)
+
+void ComponentPanelContainer::set_class(const kaba::Class* _class) {
+	if (_class == component_type)
 		return;
-	component_class = _component_class;
+	component_class = _class->name;
+	component_type = _class;
 	user_component = false;
 	if (content_panel) {
 		unembed(content_panel);
 		content_panel = nullptr;
 	}
 
-	auto e = data->entity(entity_index);
-	if (unknown_component) {
-		content_panel = new UnknownComponentPanel(data, entity_index, component_index);
-		user_component = true;
-	} else if (component_class == "Entity") {
-		content_panel = new EntityBasePanel(data, entity_index);
-	} else if (component_class == "ModelRef") {
-		component_type = ModelRef::_class;
+	if (component_type == ModelRef::_class) {
 		content_panel = new ModelRefPanel(data, entity_index);
-	} else if (component_class == "RigidBody") {
-		component_type = RigidBody::_class;
+	} else if (component_type == RigidBody::_class) {
 		content_panel = new RigidBodyPanel(data, entity_index);
-	/*} else if (component_class == "Material") {
-		if (e.basic_type == MultiViewType::WORLD_OBJECT) {
-			content_panel = new MaterialComponentPanel(data, e.object.object->material[0], "???", [this] (const ComplexPath& p) {
-			});
-		} else if (e.basic_type == MultiViewType::WORLD_TERRAIN) {
-			content_panel = new MaterialComponentPanel(data, e.terrain.terrain->material.get(), e.terrain.terrain->material_file, [this, index=entity_index] (const ComplexPath& p) {
-				data->entities[entity_index].terrain.save_material(data->session, p.complete);
-			});
-		}*/
-	} else if (component_class == "MeshCollider") {
-		component_type = MeshCollider::_class;
+	} else if (component_type == MeshCollider::_class) {
 		content_panel = new DummyComponentPanel;
-	} else if (component_class == "TerrainCollider") {
-		component_type = TerrainRef::_class;
+	} else if (component_type == TerrainCollider::_class) {
 		content_panel = new DummyComponentPanel;
-	} else if (component_class == "Skeleton") {
-		component_type = Skeleton::_class;
+	} else if (component_type == Skeleton::_class) {
 		content_panel = new DummyComponentPanel;
-	} else if (component_class == "Animator") {
-		component_type = Animator::_class;
+	} else if (component_type == Animator::_class) {
 		content_panel = new DummyComponentPanel;
-	} else if (component_class == "TerrainRef") {
-		component_type = TerrainRef::_class;
+	} else if (component_type == TerrainRef::_class) {
 		content_panel = new TerrainRefPanel(data, entity_index);
-	} else if (component_class == "Camera") {
-		component_type = Camera::_class;
+	} else if (component_type == Camera::_class) {
 		content_panel = new CameraPanel(data, entity_index);
-	} else if (component_class == "Light") {
-		component_type = Light::_class;
+	} else if (component_type == Light::_class) {
 		content_panel = new LightPanel(data, entity_index);
-	} else if (component_class == "Link") {
-		component_type = Link::_class;
+	} else if (component_type == Link::_class) {
 		content_panel = new LinkPanel(data, entity_index);
 	} else {
 		content_panel = new UserComponentPanel(data, entity_index, component_index);
@@ -281,12 +258,35 @@ void ComponentPanel::set_class(const string& _component_class) {
 	}
 
 	embed("contents", 0, 0, content_panel);
-	set_visible("delete", component_class != "Entity");
+	set_visible("delete", true);
 	set_visible("edit", user_component);
+}
+
+void ComponentPanelContainer::set_class(const string& _component_class) {
+	if (_component_class == component_class)
+		return;
+	component_class = _component_class;
+	component_type = nullptr;
+	user_component = false;
+	if (content_panel) {
+		unembed(content_panel);
+		content_panel = nullptr;
+	}
+
+	if (unknown_component) {
+		content_panel = new UnknownComponentPanel(data, entity_index, component_index);
+		user_component = true;
+	} else if (component_class == "Entity") {
+		content_panel = new EntityBasePanel(data, entity_index);
+	}
+
+	embed("contents", 0, 0, content_panel);
+	set_visible("delete", component_class != "Entity");
+	set_visible("edit", false);
 	enable("edit", !unknown_component);
 }
 
-void ComponentPanel::set_selected(bool select) {
+void ComponentPanelContainer::set_selected(bool select) {
 	expand("expander", select);
 }
 

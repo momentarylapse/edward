@@ -66,6 +66,7 @@ Dialog system 'System'
 		for (const auto& [i, v]: enumerate(s.variables)) {
 			string id_var = format("var-%d", i);
 			add_control("Label", v.name, 0, i, format("l-var-%d", i));
+			set_options(format("l-var-%d", i), "right,disabled");
 			add_control("Edit", str(v.value), 1, i, id_var);
 			event(id_var, [this, i=i, id=id_var] {
 				properties_dialog->temp = data->meta_data;

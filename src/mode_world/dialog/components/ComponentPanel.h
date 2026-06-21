@@ -12,10 +12,11 @@ namespace kaba {
 	class Class;
 }
 
-class ComponentPanel : public xhui::Panel {
+class ComponentPanelContainer : public xhui::Panel {
 public:
-	explicit ComponentPanel(DataWorld* _data);
+	explicit ComponentPanelContainer(DataWorld* _data);
 	void update(int _entity_index, const string& category, int _component_index);
+	void set_class(const kaba::Class* _class);
 	void set_class(const string& _component_class);
 	void set_selected(bool select);
 
