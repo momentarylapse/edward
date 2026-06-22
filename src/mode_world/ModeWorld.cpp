@@ -89,6 +89,9 @@ void ModeWorld::on_enter_rec() {
 	});
 	data->out_entity_added >> multi_view->in_data_changed;
 	data->out_entity_removed >> multi_view->in_data_changed;
+	data->out_entity_removed >> create_sink([this] {
+		multi_view->clear_selection();
+	});
 	auto update_dummies = [this]() {
 		// FIXME
 		auto list = data->entity_manager->get_component_list<EdwardTag>();
