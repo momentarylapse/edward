@@ -77,16 +77,20 @@ void ModeMeshNormals::on_connect_events() {
 void ModeMeshNormals::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	mode_mesh->draw_mesh(params, win, true);
 
+	const auto& selp = multi_view->selection[MultiViewType::MODEL_POLYGON];
+	const auto& filter = mode_mesh->visibility_stack.get(MultiViewType::MODEL_POLYGON);
+
 	const float l = win->multi_view->view_port.radius * 0.02f;
 
 	Array<vec3> points, points_sel;
-	for (const auto& p: data->mesh->polygons)
-		for (const auto& s: p.side) {
-			points.add(data->mesh->vertices[s.vertex].pos);
-			points.add(data->mesh->vertices[s.vertex].pos + s.normal * l);
-		}
 	for (const auto& [i, p]: enumerate(data->mesh->polygons))
-		if (multi_view->selection[MultiViewType::MODEL_POLYGON].contains(i))
+		if (filter(i))
+			for (const auto& s: p.side) {
+				points.add(data->mesh->vertices[s.vertex].pos);
+				points.add(data->mesh->vertices[s.vertex].pos + s.normal * l);
+			}
+	for (const auto& [i, p]: enumerate(data->mesh->polygons))
+		if (selp.contains(i) and filter(i))
 			for (const auto& s: p.side) {
 				points_sel.add(data->mesh->vertices[s.vertex].pos);
 				points_sel.add(data->mesh->vertices[s.vertex].pos + s.normal * l);
