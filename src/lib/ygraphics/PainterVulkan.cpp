@@ -57,7 +57,7 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 	float w = (float)tc.texture->width / ui_scale;
 	float h = (float)tc.texture->height / ui_scale;
 	Parameters params;
-	vec2 q = p + vec2(offset_x, offset_y);
+	vec2 q = p + offset;
 	if (round_to_pixels) {
 		float fx = native_area.width() / _area.width();
 		float fy = native_area.height() / _area.height();
@@ -113,10 +113,8 @@ void Painter::draw_rect(const rect &r) {
 }
 
 
-void Painter::set_transform(float rot[], const vec2 &offset) {
-	return;
-	offset_x = offset.x;
-	offset_y = offset.y;
+void Painter::set_transform(float rot[], const vec2& _offset) {
+	offset = _offset;
 }
 
 void Painter::set_clip(const rect &r) {

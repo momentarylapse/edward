@@ -37,7 +37,7 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 	aux->tex_text->set_options("minfilter=nearest");
 	float w = im.width / ui_scale;
 	float h = im.height / ui_scale;
-	nix::set_model_matrix(mat4::translation(vec3(offset_x + p.x, offset_y + p.y, 0)) * mat4::scale(w, h, 1));
+	nix::set_model_matrix(mat4::translation(vec3(p + offset, 0)) * mat4::scale(w, h, 1));
 
 	nix::set_shader(aux->shader);
 	nix::set_alpha_split(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA, nix::Alpha::ZERO, nix::Alpha::ONE);
@@ -50,7 +50,7 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 
 void Painter::draw_rect(const rect &r) {
 	if (fill) {
-		nix::set_model_matrix(mat4::translation(vec3(offset_x + r.x1, offset_y + r.y1, 0)) * mat4::scale(r.width(), r.height(), 1));
+		nix::set_model_matrix(mat4::translation(vec3(r.p00() + offset, 0)) * mat4::scale(r.width(), r.height(), 1));
 		auto s = aux->shader;
 		if (corner_radius > 0) {
 			s = aux->shader_round;
@@ -91,9 +91,8 @@ void Painter::draw_rect(const rect &r) {
 }
 
 
-void Painter::set_transform(float rot[], const vec2 &offset) {
-	offset_x = offset.x;
-	offset_y = offset.y;
+void Painter::set_transform(float rot[], const vec2& _offset) {
+	offset = _offset;
 }
 
 void Painter::set_clip(const rect &r) {

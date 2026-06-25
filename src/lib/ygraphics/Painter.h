@@ -72,7 +72,7 @@ public:
 	//float dash_offset;
 	float line_width = 1;
 	//bool anti_aliasing;
-	float offset_x = 0, offset_y = 0;
+	vec2 offset = vec2(0, 0);
 	float corner_radius = 0;
 	float softness = 0;
 	bool fill = true;

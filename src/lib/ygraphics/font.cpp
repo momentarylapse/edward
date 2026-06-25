@@ -119,6 +119,8 @@ float Face::units_to_pixel(float units) const {
 #if HAS_LIB_FREETYPE2
 	// 72 pt/inch
 	return units / (float)face->units_per_EM * current_size * dpi / 72.0f;
+#else
+	return 0;
 #endif
 }
 

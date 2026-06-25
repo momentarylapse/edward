@@ -11,6 +11,7 @@
 #include "Semaphore.h"
 #include "vulkan.h"
 #include <cmath>
+#include <limits>
 
 namespace vulkan {
 
