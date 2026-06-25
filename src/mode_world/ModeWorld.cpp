@@ -51,6 +51,7 @@
 #include <y/ecs/SystemManager.h>
 
 #include "lib/xhui/Menu.h"
+#include "lib/yrenderer/helper/LineHelper.h"
 
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
@@ -578,18 +579,18 @@ void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer:
 
 
 void ModeWorld::draw_cameras(MultiViewWindow* win) {
-	auto dh = session->drawing_helper;
+	auto lh = session->line_helper;
 	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
 	for (const auto c: data->entity_manager->get_component_list<Camera>()) {
 		//if (c.view_stage < mode->multi_view->view_stage)
 		//	continue;
 		int i = c->owner->get_component<EdwardTag>()->entity_index;
 
-		dh->set_color(DrawingHelper::COLOR_X);
-		dh->set_line_width(DrawingHelper::LINE_MEDIUM);
+		lh->set_color(DrawingHelper::COLOR_X);
+		lh->set_line_width(DrawingHelper::LINE_MEDIUM);
 		if (sel.contains(i)) {
-			dh->set_color(Red);
-			dh->set_line_width(DrawingHelper::LINE_THICK);
+			lh->set_color(Red);
+			lh->set_line_width(DrawingHelper::LINE_THICK);
 		}
 		auto q = c->owner->ang;
 		float r = win->multi_view->view_port.radius * 0.1f;
@@ -608,7 +609,7 @@ void ModeWorld::draw_cameras(MultiViewWindow* win) {
 			pos + ez - ex + ey, pos + ez - ex - ey,
 			pos + ez - ex - ey, pos + ez + ex - ey,
 			pos + ez + ex - ey, pos + ez + ex + ey};
-		dh->draw_lines(points, false);
+		lh->draw_lines(points, false);
 	}
 }
 
@@ -634,8 +635,8 @@ void draw_tangent_circle(MultiViewWindow *win, const vec3 &p, const vec3 &c, con
 		}
 	}
 	float w = (float)i_max * 2 * pi / (float)N;
-	auto dh = win->multi_view->session->drawing_helper;
-	dh->draw_lines({p, c + sinf(w) * e1 + cosf(w) * e2,
+	auto lh = win->multi_view->session->line_helper;
+	lh->draw_lines({p, c + sinf(w) * e1 + cosf(w) * e2,
 		p, c - sinf(w) * e1 - cosf(w) * e2}, false);
 }
 
@@ -643,59 +644,59 @@ const float LIGHT_RADIUS_FACTOR_HI = 0.03f;
 const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
 
 void ModeWorld::draw_lights(MultiViewWindow *win) {
-	auto dh = session->drawing_helper;
+	auto lh = session->line_helper;
 	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
 	for (const auto l: data->entity_manager->get_component_list<Light>()) {
 		//if (l.view_stage < multi_view->view_stage)
 		//	continue;
 		int i = l->owner->get_component<EdwardTag>()->entity_index;
 
-		dh->set_color(DrawingHelper::COLOR_X);
-		dh->set_line_width(DrawingHelper::LINE_THICK);
+		lh->set_color(DrawingHelper::COLOR_X);
+		lh->set_line_width(DrawingHelper::LINE_THICK);
 		if (sel.contains(i)) {
-			dh->set_color(Red);
-			dh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
+			lh->set_color(Red);
+			lh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
 		}
 
 		const vec3 pos = l->owner->pos;
 		const quaternion ang = l->owner->ang;
 		const float radius = l->light.radius();
 		if (l->light.type == yrenderer::LightType::DIRECTIONAL) {
-			dh->draw_lines({pos, pos + ang * vec3::EZ * win->multi_view->view_port.radius * 0.1f}, false);
+			lh->draw_lines({pos, pos + ang * vec3::EZ * win->multi_view->view_port.radius * 0.1f}, false);
 		} else if (l->light.type == yrenderer::LightType::POINT) {
 			//draw_circle(l.pos, win->get_direction(), l.radius);
-			dh->draw_circle(pos, win->direction(), radius * LIGHT_RADIUS_FACTOR_LO);
-			dh->draw_circle(pos, win->direction(), radius * LIGHT_RADIUS_FACTOR_HI);
+			lh->draw_circle(pos, win->direction(), radius * LIGHT_RADIUS_FACTOR_LO);
+			lh->draw_circle(pos, win->direction(), radius * LIGHT_RADIUS_FACTOR_HI);
 		} else if (l->light.type == yrenderer::LightType::CONE) {
 			const float theta = l->light.theta;
-			dh->draw_lines({pos, pos + ang * vec3::EZ * radius * LIGHT_RADIUS_FACTOR_LO}, false);
-			dh->draw_circle(pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_LO, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_LO);
-			dh->draw_circle(pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_HI, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_HI);
+			lh->draw_lines({pos, pos + ang * vec3::EZ * radius * LIGHT_RADIUS_FACTOR_LO}, false);
+			lh->draw_circle(pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_LO, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_LO);
+			lh->draw_circle(pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_HI, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_HI);
 			draw_tangent_circle(win, pos, pos + ang * vec3::EZ * radius*LIGHT_RADIUS_FACTOR_LO, ang * vec3::EZ, radius * tanf(theta) * LIGHT_RADIUS_FACTOR_LO);
 		}
 	}
 }
 
 void ModeWorld::draw_links(MultiViewWindow *win) {
-	auto dh = session->drawing_helper;
+	auto lh = session->line_helper;
 	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
 	for (const auto l: data->entity_manager->get_component_list<Link>()) {
 		//if (l.view_stage < multi_view->view_stage)
 		//	continue;
 		int i = l->owner->get_component<EdwardTag>()->entity_index;
 
-		dh->set_color(DrawingHelper::COLOR_X);
-		dh->set_line_width(DrawingHelper::LINE_THICK);
+		lh->set_color(DrawingHelper::COLOR_X);
+		lh->set_line_width(DrawingHelper::LINE_THICK);
 		if (sel.contains(i)) {
-			dh->set_color(Red);
-			dh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
+			lh->set_color(Red);
+			lh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
 		}
 
 		const vec3 pos = l->owner->pos;
 		if (auto a = data->entity(l->a))
-			dh->draw_lines({pos, a->pos}, false);
+			lh->draw_lines({pos, a->pos}, false);
 		if (auto b = data->entity(l->b))
-			dh->draw_lines({pos, b->pos}, false);
+			lh->draw_lines({pos, b->pos}, false);
 	}
 }
 

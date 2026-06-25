@@ -10,6 +10,7 @@
 #include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
+#include <lib/yrenderer/helper/LineHelper.h>
 #include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
@@ -31,17 +32,17 @@ void ModeAddPolygon::on_enter() {
 
 void ModeAddPolygon::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	_parent->on_draw_win(params, win);
-	auto dh = session->drawing_helper;
+	auto lh = session->line_helper;
 
-	dh->set_color(DrawingHelper::COLOR_X);
-	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
-	dh->set_z_test(false);
+	lh->set_color(DrawingHelper::COLOR_X);
+	lh->set_line_width(DrawingHelper::LINE_MEDIUM);
+	lh->set_z_test(false);
 	Array<vec3> points;
 	for (int v: vertices)
 		points.add(mode_mesh->data->editing_mesh->vertices[v].pos);
 	points.add(next_point);
-	dh->draw_lines(points, true);
-	dh->set_z_test(true);
+	lh->draw_lines(points, true);
+	lh->set_z_test(true);
 }
 
 void ModeAddPolygon::on_draw_post(Painter* p) {

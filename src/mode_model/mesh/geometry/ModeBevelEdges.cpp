@@ -7,6 +7,7 @@
 #include "../ModeMesh.h"
 #include "../../data/ModelMesh.h"
 #include <lib/polymesh/edit/BevelEdges.h>
+#include <lib/yrenderer/helper/LineHelper.h>
 #include <Session.h>
 #include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
@@ -73,14 +74,14 @@ void ModeBevelEdges::on_leave() {
 
 void ModeBevelEdges::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	_parent->on_draw_win(params, win);
-	auto dh = session->drawing_helper;
+	auto lh = session->line_helper;
 
-	dh->set_color(DrawingHelper::COLOR_X);
-	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
-	dh->set_z_test(false);
+	lh->set_color(DrawingHelper::COLOR_X);
+	lh->set_line_width(DrawingHelper::LINE_MEDIUM);
+	lh->set_z_test(false);
 	auto points = mesh_edit_to_lines(*mode_mesh->data->editing_mesh, diff);
-	dh->draw_lines(points, false);
-	dh->set_z_test(true);
+	lh->draw_lines(points, false);
+	lh->set_z_test(true);
 }
 
 void ModeBevelEdges::on_draw_post(Painter* p) {

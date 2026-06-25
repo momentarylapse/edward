@@ -126,6 +126,7 @@ void set_projection_matrix(const mat4 &m) {
 
 void set_view_matrix(const mat4 &m) {
 	view_matrix = m;
+	model_view_projection_matrix = projection_matrix * view_matrix * model_matrix;
 }
 
 

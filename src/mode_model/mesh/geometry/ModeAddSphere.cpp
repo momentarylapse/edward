@@ -14,6 +14,7 @@
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/yrenderer/helper/LineHelper.h>
 #include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
@@ -89,16 +90,16 @@ void ModeAddSphere::on_leave() {
 
 void ModeAddSphere::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	_parent->on_draw_win(params, win);
-	auto dh = session->drawing_helper;
+	auto lh = session->line_helper;
 
-	dh->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
+	session->drawing_helper->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
 
-	dh->set_color(DrawingHelper::COLOR_X);
-	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
-	dh->set_z_test(false);
+	lh->set_color(DrawingHelper::COLOR_X);
+	lh->set_line_width(DrawingHelper::LINE_MEDIUM);
+	lh->set_z_test(false);
 	if (center)
-		dh->draw_lines({*center, next_point});
-	dh->set_z_test(true);
+		lh->draw_lines({*center, next_point}, false);
+	lh->set_z_test(true);
 }
 
 void ModeAddSphere::on_draw_post(Painter* p) {

@@ -38,6 +38,10 @@ void Painter::draw_ximage(const rect& r, const XImage* image) {
 	cb->draw(aux->vb);
 }
 
+void Painter::prepare_2d_drawing() {
+	cb->set_viewport(native_area_window);
+}
+
 
 }
 

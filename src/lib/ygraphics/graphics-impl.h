@@ -30,3 +30,13 @@ namespace ygfx {
 
 #endif
 
+
+namespace ygfx {
+	struct VertexX {
+		vec3 pos;
+		vec3 normal;
+		float u, v;
+		color col;
+	};
+}
+

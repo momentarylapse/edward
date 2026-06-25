@@ -10,7 +10,6 @@
 
 namespace nix {
 	extern bool allow_separate_vertex_arrays;
-	mat4 create_pixel_projection_matrix();
 }
 
 namespace xhui {
@@ -45,10 +44,8 @@ void Context::begin_draw(Painter *p) {
 	nix::bind_frame_buffer(context->ctx->default_framebuffer);
 
 	nix::start_frame_glfw(context->ctx, window->window);
-	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(window->ui_scale, window->ui_scale, 1));
+	p->prepare_2d_drawing();
 	//nix::clear(color(1, 0.15f, 0.15f, 0.3f));
-	nix::set_cull(nix::CullMode::NONE);
-	nix::set_z(false, false);
 }
 
 void Context::end_draw(Painter *p) {

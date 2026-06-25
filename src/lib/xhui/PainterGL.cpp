@@ -5,9 +5,11 @@
 #include "Context.h"
 #include <lib/ygraphics/Context.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <lib/ygraphics/font.h>
-#include "../image/image.h"
 
+
+namespace nix {
+	mat4 create_pixel_projection_matrix();
+}
 
 namespace xhui {
 
@@ -21,6 +23,20 @@ void Painter::draw_ximage(const rect &r, const XImage *image) {
 	nix::bind_texture(0, t);
 	nix::draw_triangles(aux->vb);
 	nix::disable_alpha();
+}
+
+void Painter::prepare_2d_drawing() {
+	bool gamma_correction = (color_space_display == ColorSpace::SRGB) and (color_space_shaders == ColorSpace::Linear);
+	nix::set_srgb(gamma_correction);
+
+	nix::bind_frame_buffer(context->context->ctx->default_framebuffer);
+	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(ui_scale, ui_scale, 1));
+	nix::set_view_matrix(mat4::ID);
+	nix::set_cull(nix::CullMode::NONE);
+	nix::set_z(false, false);
+
+	nix::set_viewport(native_area_window);
+	nix::set_scissor(rect::EMPTY, native_area_window);
 }
 
 

@@ -1,16 +1,7 @@
 #include "DrawingArea.h"
-
-#include <lib/nix/nix.h>
-#include <lib/nix/nix_view.h>
 #include <lib/os/msg.h>
-
 #include "../Painter.h"
 
-#if HAS_LIB_GL
-namespace nix {
-	mat4 create_pixel_projection_matrix();
-}
-#endif
 
 namespace xhui {
 
@@ -29,32 +20,22 @@ void DrawingArea::_draw(Painter *p) {
 				owner->handle_event_p(id, event_id::Draw, p);
 		});
 	}
-
-
-#if HAS_LIB_GL
-	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(p->ui_scale, p->ui_scale, 1));
-	nix::set_view_matrix(mat4::ID);
-	nix::set_model_matrix(mat4::ID);
-	//nix::clear(color(1, 0.15f, 0.15f, 0.3f));
-	nix::set_cull(nix::CullMode::NONE);
-	nix::set_z(false, false);
-#endif
 }
 
 void DrawingArea::for_painter_do(Painter* p, std::function<void(Painter*)> f) {
-
 	// backup
 	int w = p->width;
 	int h = p->height;
-	auto old_area = p->_area;
-	auto old_native_area = p->native_area;
+	const auto old_area = p->_area;
+	const auto old_native_area = p->native_area;
+	const auto old_clip = p->clip();
 	// new config
 	p->width = (int)area.width();
 	p->height = (int)area.height();
 	p->_area = area;
 	p->native_area = {area.x1 * p->ui_scale, area.x2 * p->ui_scale, area.y1 * p->ui_scale, area.y2 * p->ui_scale};
 
-	//p->set_clip(_area);
+	p->set_clip(area);
 	//p->set_transform({}, vec2(area.x1, area.y1)); // NOPE, we use window coordinates!
 	f(p);
 	//p->set_transform({}, vec2(0, 0));
@@ -64,7 +45,7 @@ void DrawingArea::for_painter_do(Painter* p, std::function<void(Painter*)> f) {
 	p->height = h;
 	p->_area = old_area;
 	p->native_area = old_native_area;
-	//p->set_clip(p->area());
+	p->set_clip(old_clip);
 
 }
 void DrawingArea::on_left_button_down(const vec2& m) {

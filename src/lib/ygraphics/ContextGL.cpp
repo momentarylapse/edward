@@ -18,8 +18,15 @@ void DrawingHelperData::reset_frame() {
 
 void DrawingHelperData::create_basic() {
 
-	vb = new VertexBuffer("3f,3f,2f");
-	vb->create_quad(rect::ID, rect::ID);
+	vb = new VertexBuffer("3f,3f,2f,4f");
+	//vb->create_quad(rect::ID, rect::ID);
+	Array<VertexX> vv = {{vec3(0,0,0), {0,0,0}, 0, 0, White},
+						 {vec3(0,1,0), {0,0,0}, 0, 1, White},
+						 {vec3(1,1,0), {0,0,0}, 1, 1, White},
+						 {vec3(0,0,0), {0,0,0}, 0, 0, White},
+						 {vec3(1,1,0), {0,0,0}, 1, 1, White},
+						 {vec3(1,0,0), {0,0,0}, 1, 0, White}};
+	vb->update(vv);
 
 
 
@@ -60,15 +67,18 @@ struct Matrix { mat4 model, view, project; };
 layout(location = 0) in vec3 in_position;
 layout(location = 1) in vec3 in_normal;
 layout(location = 2) in vec2 in_uv;
+layout(location = 3) in vec4 in_color;
 
 layout(location = 0) out vec3 out_normal;
 layout(location = 1) out vec2 out_uv;
 layout(location = 2) out vec4 out_pos; // camera space
+layout(location = 3) out vec4 out_color;
 
 void main() {
 	gl_Position = matrix.project * matrix.view * matrix.model * vec4(in_position, 1);
 	out_normal = (matrix.view * matrix.model * vec4(in_normal, 0)).xyz;
 	out_uv = in_uv;
+	out_color = in_color;
 }
 </VertexShader>
 <FragmentShader>
@@ -77,13 +87,14 @@ void main() {
 layout(location = 0) in vec3 in_normal;
 layout(location = 1) in vec2 in_uv;
 layout(location = 2) in vec4 in_pos;
+layout(location = 3) in vec4 in_color;
 layout(binding=0) uniform sampler2D tex0;
 uniform vec4 _color_;
 out vec4 out_color;
 
 void main() {
 	out_color = texture(tex0, in_uv);
-	out_color *= _color_;
+	out_color *= _color_ * in_color;
 }
 </FragmentShader>
 )foodelim");
@@ -105,15 +116,18 @@ struct Matrix { mat4 model, view, project; };
 layout(location = 0) in vec3 in_position;
 layout(location = 1) in vec3 in_normal;
 layout(location = 2) in vec2 in_uv;
+layout(location = 3) in vec4 in_color;
 
 layout(location = 0) out vec3 out_normal;
 layout(location = 1) out vec2 out_uv;
 layout(location = 2) out vec4 out_pos; // camera space
+layout(location = 3) out vec4 out_color;
 
 void main() {
 	gl_Position = matrix.project * matrix.view * matrix.model * vec4(in_position, 1);
 	out_normal = (matrix.view * matrix.model * vec4(in_normal, 0)).xyz;
 	out_uv = in_uv;
+	out_color = in_color;
 }
 </VertexShader>
 <FragmentShader>
@@ -122,6 +136,7 @@ void main() {
 layout(location = 0) in vec3 in_normal;
 layout(location = 1) in vec2 in_uv;
 layout(location = 2) in vec4 in_pos;
+layout(location = 3) in vec4 in_color;
 uniform sampler2D tex0;
 uniform vec4 _color_;
 uniform vec2 size;
@@ -131,7 +146,7 @@ out vec4 out_color;
 
 void main() {
 	out_color = texture(tex0, in_uv);
-	out_color *= _color_;
+	out_color *= _color_ * in_color;
 	if (softness >= 0.5) {
 		vec2 pp = (abs(in_uv - 0.5) * size - (0.5*size-softness-radius));
 		pp = clamp(pp, 0, 1000);

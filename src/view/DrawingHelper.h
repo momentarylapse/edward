@@ -37,36 +37,12 @@ struct VisibilityFilter;
 class DrawingHelper {
 public:
 	explicit DrawingHelper(yrenderer::Context* ctx, xhui::Context* xhui_ctx);
-	void set_color(const color& color);
-	color _color;
-
-	void set_line_width(float width);
-	float _line_width;
 
 	static void clear(const yrenderer::RenderParams& params, const color& c);
-
-	void draw_lines(const Array<vec3>& points, bool contiguous = true);
-	void draw_lines_colored(const Array<vec3>& points, const Array<color>& col, bool contiguous = true);
-	void draw_circle(const vec3& center, const vec3& axis, float r);
 
 	void draw_mesh(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, const mat4& matrix, ygfx::VertexBuffer* vb, yrenderer::Material* material, int pass_no = 0, const string& vertex_module = "default");
 
 	yrenderer::Context* ctx;
-	xhui::Context* xhui_ctx;
-	MultiViewWindow* window;
-	void set_window(MultiViewWindow* win);
-	void set_blending(bool b);
-	bool _blending = false;
-	void set_z_test(bool b);
-	bool z_test = true;
-
-	ygfx::Shader* shader = nullptr;
-#ifdef USING_VULKAN
-	vulkan::GraphicsPipeline* pipeline = nullptr;
-	vulkan::GraphicsPipeline* pipeline_alpha = nullptr;
-	vulkan::GraphicsPipeline* pipeline_no_z_test = nullptr;
-	vulkan::DescriptorSet* dset = nullptr;
-#endif
 
 	yrenderer::Material* material_hover;
 	yrenderer::Material* material_selection;

@@ -34,8 +34,15 @@ vulkan::DescriptorSet* DrawingHelperData::get_descriptor_set(Texture* texture) {
 void DrawingHelperData::create_basic() {
 	pool = new vulkan::DescriptorPool("buffer:4096,sampler:4096", 65536);
 
-	vb = new vulkan::VertexBuffer("3f,3f,2f");
-	vb->create_quad(rect::ID, rect::ID);
+	vb = new vulkan::VertexBuffer("3f,3f,2f,4f");
+	//vb->create_quad(rect::ID, rect::ID);
+	Array<VertexX> vv = {{vec3(0,0,0), {0,0,0}, 0, 0, White},
+						 {vec3(0,1,0), {0,0,0}, 0, 1, White},
+						 {vec3(1,1,0), {0,0,0}, 1, 1, White},
+						 {vec3(0,0,0), {0,0,0}, 0, 0, White},
+						 {vec3(1,1,0), {0,0,0}, 1, 1, White},
+						 {vec3(1,0,0), {0,0,0}, 1, 0, White}};
+	vb->update(vv);
 
 	try {
 		shader = vulkan::Shader::create(
@@ -60,14 +67,17 @@ layout(push_constant, std430) uniform Parameters {
 layout(location = 0) in vec3 in_position;
 layout(location = 1) in vec3 in_normal;
 layout(location = 2) in vec2 in_uv;
+layout(location = 3) in vec4 in_color;
 
 layout(location = 0) out vec4 out_pos; // camera space
 layout(location = 1) out vec2 out_uv;
+layout(location = 2) out vec4 out_color;
 
 void main() {
 	gl_Position = params.matrix * vec4(in_position, 1);
 	out_pos = gl_Position;
 	out_uv = in_uv;
+	out_color = in_color;
 }
 </VertexShader>
 <FragmentShader>
@@ -82,6 +92,7 @@ layout(push_constant, std140) uniform Parameters {
 
 layout(location = 0) in vec4 in_pos;
 layout(location = 1) in vec2 in_uv;
+layout(location = 2) in vec4 in_color;
 layout(location = 0) out vec4 out_color;
 
 layout(binding = 0) uniform sampler2D tex0;
@@ -96,7 +107,7 @@ void main() {
 #endif
 
 	out_color = texture(tex0, in_uv);
-	out_color *= params.color;
+	out_color *= params.color * in_color;
 	if (params.softness >= 0.5) {
 		vec2 pp = (abs(in_uv - 0.5) * params.size - (0.5*params.size-params.softness-params.radius));
 		pp = clamp(pp, 0, 1000);
@@ -259,7 +270,7 @@ void DrawingHelperData::rebuild(RenderPass* render_pass) {
 
 	pipeline_alpha = new vulkan::GraphicsPipeline(shader, render_pass, 0, vulkan::PrimitiveTopology::TRIANGLES, vb);
 	pipeline_alpha->set_dynamic({"scissor"});
-	pipeline_alpha->set_z(false, false);
+	pipeline_alpha->set_z(true, false);
 	pipeline_alpha->set_culling(vulkan::CullMode::NONE);
 	pipeline_alpha->set_blend(vulkan::Alpha::SOURCE_ALPHA, vulkan::Alpha::SOURCE_INV_ALPHA);
 	pipeline_alpha->rebuild();

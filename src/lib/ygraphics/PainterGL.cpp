@@ -5,23 +5,26 @@
 #include <lib/ygraphics/Context.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/ygraphics/font.h>
-#include "../image/image.h"
+#include <lib/image/image.h>
 
 
 namespace ygfx {
 
 
-void draw_simple(DrawingHelperData* aux, const Array<Vertex1>& p, const mat4& mat, const color& _color, bool use_z) {
-	auto vb = aux->get_line_vb();
+void draw_simple(DrawingHelperData* aux, const Array<VertexX>& p, const mat4& mat, const color& col, bool use_z, bool use_blending) {
+	auto vb = aux->get_line_vb(true);
 	vb->update(p);
 
 	nix::set_model_matrix(mat);
 	nix::set_shader(aux->shader);
-	nix::set_z(use_z, use_z);
-	aux->shader->set_color("_color_", _color);
+	nix::set_z(use_z and !use_blending, use_z);
+	if (use_blending)
+		nix::set_alpha(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA);
+	aux->shader->set_color("_color_", col);
 	aux->shader->set_default_data();
 	nix::bind_texture(0, aux->context->tex_white);
 	nix::draw_triangles(vb);
+	nix::disable_alpha();
 }
 
 void Painter::clear(const color &c) {
@@ -35,8 +38,8 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 	face->render_text(str, font::Align::LEFT, im);
 	aux->tex_text->write(im);
 	aux->tex_text->set_options("minfilter=nearest");
-	float w = im.width / ui_scale;
-	float h = im.height / ui_scale;
+	float w = (float)im.width / ui_scale;
+	float h = (float)im.height / ui_scale;
 	nix::set_model_matrix(mat4::translation(vec3(p + offset, 0)) * mat4::scale(w, h, 1));
 
 	nix::set_shader(aux->shader);

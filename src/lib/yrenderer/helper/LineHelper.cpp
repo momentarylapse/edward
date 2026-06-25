@@ -3,14 +3,9 @@
 #include "../Context.h"
 #include <lib/ygraphics/Context.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/ygraphics/Painter.h>
 #include <lib/math/vec2.h>
-
-#include "lib/os/msg.h"
-#include "lib/yrenderer/scene/SceneView.h"
-
-namespace ygfx {
-	void draw_simple(DrawingHelperData* aux, const Array<Vertex1>& p, const mat4& mat, const color& _color, bool use_z);
-}
+#include <cmath>
 
 namespace yrenderer {
 
@@ -49,11 +44,15 @@ void LineHelper::set_line_width(float w) {
 	line_width = w;
 }
 
-void LineHelper::set_z(bool enabled) {
+void LineHelper::set_z_test(bool enabled) {
 	use_z = enabled;
 }
 
-static void add_vb_line(Array<ygfx::Vertex1>& vertices, const vec3& a, const vec3& b, const rect& area, float line_width, float ui_scale) {
+void LineHelper::set_blending(bool enabled) {
+	use_blending = enabled;
+}
+
+static void add_vb_line(Array<ygfx::VertexX>& vertices, const vec3& a, const vec3& b, const rect& area, float line_width, float ui_scale, const color& col) {
 	float w = area.width();
 	float h = area.height();
 	vec2 ba_pixel = vec2((b.x - a.x) * w, (b.y - a.y) * h);
@@ -64,25 +63,89 @@ static void add_vb_line(Array<ygfx::Vertex1>& vertices, const vec3& a, const vec
 	vec3 a1 = a + r;
 	vec3 b0 = b - r;
 	vec3 b1 = b + r;
-	vertices.add({a0, v_0, 0,0});
-	vertices.add({a1, v_0, 0,0});
-	vertices.add({b0, v_0, 0,0});
-	vertices.add({b0, v_0, 0,0});
-	vertices.add({a1, v_0, 0,0});
-	vertices.add({b1, v_0, 0,0});
+	vertices.add({a0, v_0, 0,0, col});
+	vertices.add({a1, v_0, 0,0, col});
+	vertices.add({b0, v_0, 0,0, col});
+	vertices.add({b0, v_0, 0,0, col});
+	vertices.add({a1, v_0, 0,0, col});
+	vertices.add({b1, v_0, 0,0, col});
 }
 
 void LineHelper::draw_lines(const Array<vec3>& points, bool contiguous) {
-	Array<ygfx::Vertex1> vertices;
+	Array<ygfx::VertexX> vertices;
 
 	if (contiguous) {
 		for (int i=0; i<points.num-1; i++)
-			add_vb_line(vertices, mat.project(points[i]), mat.project(points[i+1]), area, line_width, ui_scale);
+			add_vb_line(vertices, mat.project(points[i]), mat.project(points[i+1]), area, line_width, ui_scale, White);
 	} else {
 		for (int i=0; i<points.num-1; i+=2)
-			add_vb_line(vertices, mat.project(points[i]), mat.project(points[i+1]), area, line_width, ui_scale);
+			add_vb_line(vertices, mat.project(points[i]), mat.project(points[i+1]), area, line_width, ui_scale, White);
 	}
 
-	ygfx::draw_simple(aux, vertices, mat4::ID, _color, use_z);
+	ygfx::draw_simple(aux, vertices, mat4::ID, _color, use_z, use_blending);
+}
+
+
+void LineHelper::draw_lines_colored(const Array<vec3>& points, const Array<color>& cols, bool contiguous) {
+
+	Array<ygfx::VertexX> vertices;
+
+	if (contiguous) {
+		for (int i=0; i<points.num-1; i++)
+			add_vb_line(vertices, mat.project(points[i]), mat.project(points[i+1]), area, line_width, ui_scale, cols[i]);
+	} else {
+		for (int i=0; i<points.num-1; i+=2)
+			add_vb_line(vertices, mat.project(points[i]), mat.project(points[i+1]), area, line_width, ui_scale, cols[i]);
+	}
+
+	ygfx::draw_simple(aux, vertices, mat4::ID, White, use_z, use_blending);
+#ifdef USING_VULKAN_______X
+	auto vb = xhui_ctx->aux->get_line_vb(true);
+	Array<ygfx::VertexX> vertices;
+	mat4 m = window->projection * window->view;
+	if (contiguous) {
+		for (int i=0; i<points.num-1; i++)
+			add_vb_line(vertices, m.project(points[i]), m.project(points[i+1]), cols[i], window, _line_width);
+	} else {
+		for (int i=0; i<points.num-1; i+=2)
+			add_vb_line(vertices, m.project(points[i]), m.project(points[i+1]), cols[i], window, _line_width);
+	}
+	vb->update(vertices);
+
+	struct Parameters {
+		mat4 matrix;
+		vec2 size;
+		float radius, softness;
+	};
+
+	Parameters params;
+	params.matrix = mat4::ID;
+	params.size = {1000,1000};//(float)width, (float)height};
+	params.radius = 0;//line_width;
+	params.softness = 0;//softness;
+
+	auto cb = xhui_ctx->current_command_buffer();
+	if (!z_test)
+		cb->bind_pipeline(pipeline_no_z_test);
+	else if (_blending)
+		cb->bind_pipeline(pipeline_alpha);
+	else
+		cb->bind_pipeline(pipeline);
+	cb->push_constant(0, sizeof(params), &params);
+	cb->bind_descriptor_set(0, dset);
+	cb->draw(vb);
+#endif
+}
+
+void LineHelper::draw_circle(const vec3& center, const vec3& axis, float r) {
+	int N = 128;
+	Array<vec3> points;
+	vec3 e1 = axis.ortho() * r;
+	vec3 e2 = vec3::cross(axis, e1);
+	for (int i=0; i<=N; i++) {
+		float w = (float)i / (float)N * 2 * pi;
+		points.add(center + e1 * cosf(w) + e2 * sinf(w));
+	}
+	draw_lines(points, true);
 }
 } // yrenderer

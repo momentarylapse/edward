@@ -1,21 +1,20 @@
 #include "ModeMeshUV.h"
 #include "../ModeMesh.h"
 #include "../../data/ModelMesh.h"
+#include "../../ModeModel.h"
+#include "action/ActionModelUVMoveSelection.h"
 #include <Session.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
 #include <lib/xhui/Menu.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <lib/os/msg.h>
 #include <view/DrawingHelper.h>
 #include <view/MultiView.h>
 #include <view/MultiViewPanel.h>
 #include <view/ActionController.h>
-
-#include "action/ActionModelUVMoveSelection.h"
 #include <lib/base/iter.h>
 #include <lib/yrenderer/MaterialManager.h>
-#include "../../ModeModel.h"
+#include <lib/yrenderer/helper/LineHelper.h>
 
 
 class MeshUVOpButtons : public xhui::Panel {
@@ -169,6 +168,7 @@ void ModeMeshUV::on_draw_background(const yrenderer::RenderParams &params, yrend
 }
 
 void ModeMeshUV::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
+	auto lh = session->line_helper;
 
 	Array<vec3> points;
 	for (const auto& poly : mode_mesh->data->editing_mesh->polygons)
@@ -176,10 +176,10 @@ void ModeMeshUV::on_draw_win(const yrenderer::RenderParams& params, MultiViewWin
 			points.add(poly.side[i].uv);
 			points.add(poly.side[(i+1) % poly.side.num].uv);
 		}
-	session->drawing_helper->set_z_test(false);
-	session->drawing_helper->set_line_width(2.0f);
-	session->drawing_helper->set_color(White);
-	session->drawing_helper->draw_lines(points, false);
+	lh->set_z_test(false);
+	lh->set_line_width(2.0f);
+	lh->set_color(White);
+	lh->draw_lines(points, false);
 
 	points.clear();
 	const auto& sel = multi_view->selection[MultiViewType::MODEL_SKIN_VERTEX];
@@ -192,10 +192,10 @@ void ModeMeshUV::on_draw_win(const yrenderer::RenderParams& params, MultiViewWin
 			}
 		n0 += poly.side.num;
 	}
-	session->drawing_helper->set_line_width(3.0f);
-	session->drawing_helper->set_color(Red);
-	session->drawing_helper->draw_lines(points, false);
-	session->drawing_helper->set_z_test(true);
+	lh->set_line_width(3.0f);
+	lh->set_color(Red);
+	lh->draw_lines(points, false);
+	lh->set_z_test(true);
 }
 
 void ModeMeshUV::on_draw_post(Painter* p) {

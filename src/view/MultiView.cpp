@@ -21,8 +21,10 @@
 #include <lib/yrenderer/scene/pass/ShadowRenderer.h>
 #include <lib/yrenderer/scene/pass/CubeMapRenderer.h>
 #include <lib/yrenderer/helper/CubeMapSource.h>
+#include <lib/yrenderer/helper/LineHelper.h>
 #include <lib/yrenderer/target/TextureRenderer.h>
 #include <cmath>
+
 
 
 MultiView::MultiView(DocumentSession* _doc) :

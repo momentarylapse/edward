@@ -13,6 +13,7 @@
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/yrenderer/helper/LineHelper.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/MultiView.h>
@@ -72,28 +73,28 @@ void ModeAddFromLathe::on_leave() {
 
 void ModeAddFromLathe::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	_parent->on_draw_win(params, win);
-	auto dh = session->drawing_helper;
+	auto lh = session->line_helper;
 
-	dh->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
+	session->drawing_helper->draw_mesh(params, win->rvd(), mat4::ID, vertex_buffer.get(), session->drawing_helper->material_creation);
 
-	dh->set_color(White);
-	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
+	lh->set_color(White);
+	lh->set_line_width(DrawingHelper::LINE_MEDIUM);
 	float r = multi_view->hover_window->pixel_to_size(500);
 	if (center) {
 		vec3 a = axis.value_or(preview_axis);
-		session->drawing_helper->draw_lines({*center - a * r, *center + a * r});
+		lh->draw_lines({*center - a * r, *center + a * r}, false);
 	}
 
 	if (contour.num >= 2)
-		session->drawing_helper->draw_lines(contour);
+		lh->draw_lines(contour, false);
 
-	dh->set_color(DrawingHelper::COLOR_X);
-	dh->set_line_width(DrawingHelper::LINE_MEDIUM);
-	dh->set_z_test(false);
-	dh->draw_lines(contour, true);
+	lh->set_color(DrawingHelper::COLOR_X);
+	lh->set_line_width(DrawingHelper::LINE_MEDIUM);
+	lh->set_z_test(false);
+	lh->draw_lines(contour, true);
 	if (contour.num > 0)
-		dh->draw_lines({contour.back(), next_point}, true);
-	dh->set_z_test(true);
+		lh->draw_lines({contour.back(), next_point}, true);
+	lh->set_z_test(true);
 }
 
 void ModeAddFromLathe::on_draw_post(Painter* p) {

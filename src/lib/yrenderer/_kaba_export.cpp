@@ -489,7 +489,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 		ext->link_class_func("LineHelper.__delete__", &kaba::generic_delete<LineHelper>);
 		ext->link_class_func("LineHelper.start_frame", &LineHelper::start_frame);
 		ext->link_class_func("LineHelper.begin_draw", &LineHelper::begin_draw);
-		ext->link_class_func("LineHelper.set_z", &LineHelper::set_z);
+		ext->link_class_func("LineHelper.set_z", &LineHelper::set_z_test);
 		ext->link_class_func("LineHelper.set_color", &LineHelper::set_color);
 		ext->link_class_func("LineHelper.set_line_width", &LineHelper::set_line_width);
 		ext->link_class_func("LineHelper.draw_lines", &LineHelper::draw_lines);

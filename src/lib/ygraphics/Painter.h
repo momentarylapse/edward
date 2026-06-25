@@ -87,5 +87,6 @@ public:
 #endif
 };
 
+void draw_simple(DrawingHelperData* aux, const Array<VertexX>& p, const mat4& mat, const color& col, bool use_z, bool use_blending);
 
 }

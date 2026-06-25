@@ -24,6 +24,7 @@
 #include <view/EdwardWindow.h>
 #include <view/DocumentSession.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/yrenderer/helper/LineHelper.h>
 #include <cmath>
 #include <lib/polymesh/MeshEdit.h>
 
@@ -249,7 +250,7 @@ void ModeMesh::draw_polygons(const yrenderer::RenderParams& params, MultiViewWin
 
 void ModeMesh::draw_edges(const yrenderer::RenderParams& params, MultiViewWindow* win, const base::set<int>& sel) {
 	const auto& filter = visibility_stack.get(MultiViewType::MODEL_EDGE);
-	auto dh = win->multi_view->session->drawing_helper;
+	auto lh = win->multi_view->session->line_helper;
 	// unselected (colored by normal)
 	Array<vec3> points;
 	Array<color> colors;
@@ -262,8 +263,8 @@ void ModeMesh::draw_edges(const yrenderer::RenderParams& params, MultiViewWindow
 			colors.add(c);
 			colors.add(c);
 		}
-	dh->set_line_width(1.5f);//scheme.LINE_WIDTH_THIN);
-	dh->draw_lines_colored(points, colors, false);
+	lh->set_line_width(1.5f);//scheme.LINE_WIDTH_THIN);
+	lh->draw_lines_colored(points, colors, false);
 
 	// selected
 	points.clear();
@@ -272,18 +273,18 @@ void ModeMesh::draw_edges(const yrenderer::RenderParams& params, MultiViewWindow
 			points.add(data->editing_mesh->vertices[e.index[0]].pos);
 			points.add(data->editing_mesh->vertices[e.index[1]].pos);
 		}
-	dh->set_color(Red);
-	dh->set_line_width(2);//scheme.LINE_WIDTH_THIN);
-	dh->draw_lines(points, false);
+	lh->set_color(Red);
+	lh->set_line_width(2);//scheme.LINE_WIDTH_THIN);
+	lh->draw_lines(points, false);
 
 	if (multi_view->hover and multi_view->hover->type == MultiViewType::MODEL_EDGE) {
 		points.clear();
 		const auto& e = edges_cached[multi_view->hover->index];
 		points.add(data->editing_mesh->vertices[e.index[0]].pos);
 		points.add(data->editing_mesh->vertices[e.index[1]].pos);
-		dh->set_color(White);
-		dh->set_line_width(4);//scheme.LINE_WIDTH_THIN);
-		dh->draw_lines(points, false);
+		lh->set_color(White);
+		lh->set_line_width(4);//scheme.LINE_WIDTH_THIN);
+		lh->draw_lines(points, false);
 	}
 }
 

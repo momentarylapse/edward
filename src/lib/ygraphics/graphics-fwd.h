@@ -49,6 +49,7 @@ namespace vulkan {
 	class DescriptorPool;
 	class Device;
 	class AccelerationStructure;
+	struct Vertex1;
 }
 
 namespace ygfx {
@@ -82,6 +83,7 @@ namespace ygfx {
 		EXP,
 		EXP2
 	};
+	using Vertex1 = vulkan::Vertex1;
 }
 
 #endif
@@ -107,6 +109,7 @@ namespace nix {
 	enum class CullMode;
 	enum class FogMode;
 	enum class PrimitiveTopology;
+	struct Vertex1;
 }
 
 namespace ygfx {
@@ -123,6 +126,7 @@ namespace ygfx {
 	using Buffer = nix::Buffer;
 	using UniformBuffer = nix::UniformBuffer;
 	using ShaderStorageBuffer = nix::ShaderStorageBuffer;
+	using Vertex1 = nix::Vertex1;
 
 	using Alpha = nix::Alpha;
 	using AlphaMode = nix::AlphaMode;
@@ -133,4 +137,9 @@ namespace ygfx {
 }
 
 #endif
+
+
+namespace ygfx {
+	struct VertexX;
+}
 

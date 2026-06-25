@@ -36,6 +36,8 @@ public:
 	void set_font_size(float size) override;
 	void draw_ximage(const rect& r, const XImage *image);
 
+	void prepare_2d_drawing();
+
 	Context* context = nullptr;
 };
 

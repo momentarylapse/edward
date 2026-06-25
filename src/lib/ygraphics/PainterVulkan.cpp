@@ -24,21 +24,21 @@ struct Parameters {
 	float radius, softness;
 };
 
-void draw_simple(DrawingHelperData* aux, const Array<Vertex1>& p, const mat4& mat, const color& _color, bool use_z) {
-	auto vb = aux->get_line_vb();
+void draw_simple(DrawingHelperData* aux, const Array<VertexX>& p, const mat4& mat, const color& col, bool use_z, bool use_blending) {
+	auto vb = aux->get_line_vb(true);
 	vb->update(p);
 	Parameters params;
 	if (aux->projection_matrix)
 		params.matrix = *aux->projection_matrix * mat;
 	else
 		params.matrix = mat;
-	params.col = _color;
 	params.size = {(float)1000, (float)1000};
+	params.col = col;
 	params.radius = 0;//line_width;
 	params.softness = 0;//softness;
 
 	auto cb = aux->cb;
-	cb->bind_pipeline(use_z ? aux->pipeline_z : aux->pipeline);
+	cb->bind_pipeline(use_blending ? aux->pipeline_alpha : (use_z ? aux->pipeline_z : aux->pipeline));
 	cb->push_constant(0, sizeof(params), &params);
 	cb->bind_descriptor_set(0, aux->dset);
 	cb->draw(vb);

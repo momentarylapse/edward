@@ -55,20 +55,16 @@ void XhuiRenderer::render(const RenderParams& params) {
 
 	for (auto c: children)
 		c->draw(params);
-
-#ifdef USING_OPENGL
-	nix::set_scissor(rect::EMPTY, params.frame_buffer->area());
-	nix::set_viewport(native_area_window);
-#endif
-#ifdef USING_VULKAN
-	params.command_buffer->set_viewport(native_area_window);
-#endif
 }
 
 void XhuiRenderer::draw(Painter* p) {
+	const auto clip0 = p->clip();
 	const auto params = extract_params(p);
 
 	render(params);
+
+	reinterpret_cast<xhui::Painter*>(p)->prepare_2d_drawing();
+	p->set_clip(clip0);
 }
 
 }

@@ -16,6 +16,7 @@
 #include <lib/base/iter.h>
 #include <lib/xhui/Resource.h>
 #include <lib/xhui/Theme.h>
+#include <lib/yrenderer/helper/LineHelper.h>
 
 
 ModeSkeleton::ModeSkeleton(ModeModel* _parent) : SubMode(_parent) {
@@ -110,10 +111,10 @@ void ModeSkeleton::on_draw_background(const yrenderer::RenderParams& params, yre
 void ModeSkeleton::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	parent->mode_mesh->draw_mesh(params, win, false);
 
-	auto dh = session->drawing_helper;
+	auto lh = session->line_helper;
 	const auto& sel = multi_view->selection[MultiViewType::SKELETON_BONE];
 
-	auto draw_bone = [win, dh] (const vec3& parent, const vec3& child, bool selected) {
+	auto draw_bone = [win, lh] (const vec3& parent, const vec3& child, bool selected) {
 		Array<vec3> points;
 		const vec3 m = parent * 0.8f + child * 0.2f;
 		const vec3 dir = (child - parent).normalized();
@@ -124,20 +125,20 @@ void ModeSkeleton::on_draw_win(const yrenderer::RenderParams& params, MultiViewW
 		points.add(m - t);
 		points.add(parent);
 		if (selected) {
-			dh->set_color(Red);
-			dh->set_line_width(DrawingHelper::LINE_THICK);
+			lh->set_color(Red);
+			lh->set_line_width(DrawingHelper::LINE_THICK);
 		} else {
-			dh->set_color(White);
-			dh->set_line_width(DrawingHelper::LINE_MEDIUM);
+			lh->set_color(White);
+			lh->set_line_width(DrawingHelper::LINE_MEDIUM);
 		}
-		dh->draw_lines(points);
+		lh->draw_lines(points, false);
 	};
 
-	dh->set_z_test(false);
+	lh->set_z_test(false);
 	for (const auto& [i, b]: enumerate(data->bones))
 		if (b.parent >= 0)
 			draw_bone(data->bones[b.parent].pos, b.pos, sel.contains(i));
-	dh->set_z_test(true);
+	lh->set_z_test(true);
 }
 
 void ModeSkeleton::on_update_menu() {

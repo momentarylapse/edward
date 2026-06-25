@@ -97,7 +97,7 @@ void ModeMeshNormals::on_draw_win(const yrenderer::RenderParams& params, MultiVi
 			}
 	auto lh = session->line_helper;
 	lh->begin_draw(params, win->rvd());
-	lh->set_z(false);
+	lh->set_z_test(false);
 	lh->set_color(White);
 	lh->set_line_width(2.0f);
 	lh->draw_lines(points, false);

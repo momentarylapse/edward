@@ -9,6 +9,7 @@
 #include "DrawingHelper.h"
 #include <lib/yrenderer/scene/MeshEmitter.h>
 #include <lib/yrenderer/scene/SceneRenderer.h>
+#include <lib/yrenderer/helper/LineHelper.h>
 #include <y/world/components/Camera.h>
 #include <Session.h>
 #include <lib/math/mat3.h>
@@ -302,18 +303,18 @@ void draw_grid_3d(const color &bg, MultiViewWindow *w, int plane, float alpha) {
 	add_grid(move_rect(r, -1, 1), p, col, D, DERR, dir_1, dir_2, alpha*0.5f);*/
 
 
-	auto dh = w->multi_view->session->drawing_helper;
-	dh->set_blending(true);
-	dh->set_line_width(2);//scheme.LINE_WIDTH_THIN);
+	auto lh = w->multi_view->session->line_helper;
+	lh->set_blending(true);
+	lh->set_line_width(2);//scheme.LINE_WIDTH_THIN);
 	for (int l=3; l>=1; l--)
-		dh->draw_lines_colored(p[l], col[l], false);
-	dh->set_line_width(3);//scheme.LINE_WIDTH_MEDIUM);
-	dh->draw_lines_colored(p[0], col[0], false);
-	dh->set_blending(false);
+		lh->draw_lines_colored(p[l], col[l], false);
+	lh->set_line_width(3);//scheme.LINE_WIDTH_MEDIUM);
+	lh->draw_lines_colored(p[0], col[0], false);
+	lh->set_blending(false);
 }
 
 void MultiViewWindow::draw(const yrenderer::RenderParams& params) {
-	multi_view->session->drawing_helper->set_window(this);
+	multi_view->session->line_helper->begin_draw(params, rvd());
 
 	scene_renderer->draw(params);
 
