@@ -12,14 +12,18 @@ namespace yrenderer {
 class ThroughShaderRenderer;
 class TextureRenderer;
 
-class MultisampleResolver : public RenderTask {
+class MultisampleResolver : public Renderer {
 public:
-	MultisampleResolver(Context* ctx, ygfx::Texture* tex_ms, ygfx::Texture* depth_ms, ygfx::Texture* tex_out, ygfx::Texture* depth_out);
+	MultisampleResolver(Context* ctx, int width, int height, int samples);
 
-	void render(const RenderParams& params) override;
+	void prepare(const RenderParams& params) override;
 
-	owned<ThroughShaderRenderer> tsr;
-	owned<TextureRenderer> into_texture;
+	shared<ygfx::TextureMultiSample> texture;
+	shared<ygfx::TextureMultiSample> depth_buffer;
+
+	owned<ThroughShaderRenderer> out_renderer;
+	owned<TextureRenderer> texture_renderer;
+
 	shared<ygfx::Shader> shader_resolve_multisample;
 };
 

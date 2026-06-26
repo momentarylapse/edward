@@ -41,6 +41,7 @@ ShadowRenderer::ShadowRenderer(Context* ctx, SceneView* parent, int resolution) 
 		c.texture_renderer = new TextureRenderer(ctx, format("cas%d", i), {tex, c.depth_buffer}, {"autoclear", "dest=shader-read-only"});
 		c.scale = (i == 0) ? 4.0f : 1.0f;
 		c.texture_renderer->add_child(c.scene_renderer.get());
+		add_sub_task(c.texture_renderer.get());
 	}
 }
 

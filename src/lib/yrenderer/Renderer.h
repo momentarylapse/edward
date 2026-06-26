@@ -23,6 +23,7 @@ namespace yrenderer {
 struct Context;
 class RenderTask;
 class ShaderManager;
+class Renderer;
 
 rect dynamicly_scaled_area(ygfx::FrameBuffer *fb);
 rect dynamicly_scaled_source();
@@ -44,17 +45,30 @@ struct RenderParams {
 	static RenderParams into_texture(ygfx::FrameBuffer *frame_buffer, const base::optional<float>& aspect_ratio = base::None);
 };
 
-class Renderer : public VirtualBase {
+class Node : public VirtualBase {
 public:
-	explicit Renderer(Context* ctx, const string& name);
-	~Renderer() override;
+	explicit Node(Context* ctx, const string& name);
+	~Node() override;
 
+	Node* custodian; // default=this - forward add_child()
 	Array<Renderer*> children;
 	void add_child(Renderer* child);
 	void remove_child(Renderer* child);
 	Array<RenderTask*> sub_tasks;
 	void add_sub_task(RenderTask* child);
 	void remove_sub_task(RenderTask* child);
+
+	void prepare_children(const RenderParams& params);
+
+	int channel;
+	Context* ctx;
+	ShaderManager* shader_manager;
+};
+
+class Renderer : public Node {
+public:
+	explicit Renderer(Context* ctx, const string& name);
+	~Renderer() override;
 
 	// (vulkan: BEFORE/OUTSIDE a render pass)
 	// can render into separate targets
@@ -66,32 +80,20 @@ public:
 	virtual void draw(const RenderParams& params);
 
 
-	int channel;
 	int ch_prepare;
-	Context* ctx;
-	ShaderManager* shader_manager;
 };
 
-class RenderTask : public  VirtualBase {
+class RenderTask : public  Node {
 public:
 	explicit RenderTask(Context* ctx, const string& name);
 	~RenderTask() override;
 
-	Array<Renderer*> children;
-	void add_child(Renderer* child);
-	void remove_child(Renderer* child);
-	Array<RenderTask*> sub_tasks;
-	void add_sub_task(RenderTask* child);
-
-	void prepare_children(const RenderParams& params);
-
 	virtual void render(const RenderParams& params) = 0;
 
-	int channel;
 	bool active = true;
 	int _priority = 0;
-	Context* ctx;
-	ShaderManager* shader_manager;
 };
+
+void show_render_tree(Node* r, int indent);
 
 }

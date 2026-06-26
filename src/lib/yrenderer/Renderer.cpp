@@ -10,6 +10,7 @@
 #include <lib/math/rect.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/os/msg.h>
 
 namespace yrenderer {
 
@@ -42,39 +43,55 @@ RenderParams RenderParams::into_texture(ygfx::FrameBuffer *frame_buffer, const b
 }
 
 
-Renderer::Renderer(Context* _ctx, const string &name) {
+Node::Node(Context* _ctx, const string &name) {
 	channel = profiler::create_channel(name, -1);
-	ch_prepare = profiler::create_channel(name + ".p", channel);
+	custodian = this;
 
 	ctx = _ctx;
 	if (ctx)
 		shader_manager = ctx->shader_manager;
 }
 
-
-Renderer::~Renderer() = default;
-
-void Renderer::add_child(Renderer* child) {
-	children.add(child);
+Node::~Node() {
+	profiler::delete_channel(channel);
 }
 
-void Renderer::remove_child(Renderer* child) {
-	children.erase(children.find(child));
+void Node::add_child(Renderer* child) {
+	custodian->children.add(child);
 }
 
-void Renderer::add_sub_task(RenderTask* child) {
+void Node::remove_child(Renderer* child) {
+	custodian->children.erase(children.find(child));
+}
+
+void Node::add_sub_task(RenderTask* child) {
 	sub_tasks.add(child);
 }
 
-void Renderer::remove_sub_task(RenderTask* child) {
+void Node::remove_sub_task(RenderTask* child) {
 	sub_tasks.erase(sub_tasks.find(child));
 }
 
-void Renderer::prepare(const RenderParams& params) {
+void Node::prepare_children(const RenderParams& params) {
 	for (auto s: sub_tasks)
-		s->render(params);
+		if (s->active)
+			s->render(params);
 	for (auto c: children)
 		c->prepare(params);
+}
+
+
+
+Renderer::Renderer(Context* _ctx, const string &name) : Node(_ctx, name) {
+	ch_prepare = profiler::create_channel(name + ".p", channel);
+}
+
+Renderer::~Renderer() {
+	profiler::delete_channel(ch_prepare);
+}
+
+void Renderer::prepare(const RenderParams& params) {
+	prepare_children(params);
 }
 
 void Renderer::draw(const RenderParams& params) {
@@ -83,35 +100,21 @@ void Renderer::draw(const RenderParams& params) {
 }
 
 
-RenderTask::RenderTask(Context* _ctx, const string& name) {
-	channel = profiler::create_channel(name, -1);
-
-	ctx = _ctx;
-	if (ctx)
-		shader_manager = ctx->shader_manager;
+RenderTask::RenderTask(Context* _ctx, const string& name) : Node(_ctx, name) {
 }
 
 RenderTask::~RenderTask() = default;
 
-void RenderTask::add_child(Renderer *child) {
-	children.add(child);
-}
 
-void RenderTask::remove_child(Renderer *child) {
-	int i = children.find(child);
-	if (i >= 0)
-		children.erase(i);
-}
-
-void RenderTask::add_sub_task(RenderTask* child) {
-	sub_tasks.add(child);
-}
-
-void RenderTask::prepare_children(const RenderParams& params) {
-	for (auto s: sub_tasks)
-		s->render(params);
-	for (auto c: children)
-		c->prepare(params);
+void show_render_tree(Node* r, int indent) {
+	if (dynamic_cast<RenderTask*>(r))
+		msg_write(string("  ").repeat(indent) + "T " + profiler::get_name(r->channel));
+	else
+		msg_write(string("  ").repeat(indent) + "R " + profiler::get_name(r->channel));
+	for (auto c: r->sub_tasks)
+		show_render_tree(c, indent + 1);
+	for (auto c: r->children)
+		show_render_tree(c, indent + 1);
 }
 
 }

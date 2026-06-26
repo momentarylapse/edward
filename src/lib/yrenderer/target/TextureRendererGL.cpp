@@ -10,8 +10,7 @@
 #include <lib/profiler/Profiler.h>
 #include <lib/yrenderer/Context.h>
 #include <lib/ygraphics/graphics-impl.h>
-
-#include "lib/os/msg.h"
+#include <lib/os/msg.h>
 
 namespace yrenderer {
 
@@ -49,14 +48,15 @@ void TextureRenderer::render(const RenderParams& params) {
 
 	auto p = make_params(params);
 
+	prepare_children(p);
+
 	nix::bind_frame_buffer(frame_buffer.get());
 	nix::set_viewport(p.area);
+	nix::set_scissor(p.area, frame_buffer->area());
 	if (clear_z)
 		nix::clear_z();
 	for (int i=0; i<clear_colors.num; i++)
 		frame_buffer->clear_color(i, clear_colors[i]);
-
-	prepare_children(p);
 
 	for (auto c: children)
 		c->draw(p);

@@ -74,11 +74,12 @@ void RenderPath::create_shadow_renderer(int resolution) {
 	shadow_renderer = new ShadowRenderer(ctx, &scene_view, resolution);
 	scene_view.shadow_maps.add(shadow_renderer->cascades[0].depth_buffer);
 	scene_view.shadow_maps.add(shadow_renderer->cascades[1].depth_buffer);
-	//add_sub_task(shadow_renderer.get());
+	add_sub_task(shadow_renderer.get());
 }
 
 void RenderPath::create_cube_renderer() {
 	cube_map_renderer = new CubeMapRenderer(ctx, scene_view);
+	add_sub_task(cube_map_renderer.get());
 }
 
 void RenderPath::render_into_cubemap(const RenderParams& params, CubeMapSource& source) {

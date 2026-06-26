@@ -64,8 +64,10 @@ HDRResolver::HDRResolver(Context* ctx, int width, int height, bool manual_mode) 
 		bl.tsr[1]->bindings.shader_data.dict_set("threshold:12", Any(0.0f));
 		bl.renderer[0] = new TextureRenderer(ctx, "blur", {bl.tex_temp, depth0});
 		bl.renderer[0]->add_child(bl.tsr[0].get());
+		add_sub_task(bl.renderer[0].get());
 		bl.renderer[1] = new TextureRenderer(ctx, "blur", {bl.tex_out, depth1});
 		bl.renderer[1]->add_child(bl.tsr[1].get());
+		add_sub_task(bl.renderer[1].get());
 		bloom_input = bl.tex_out;
 		threshold = 0;
 	}
@@ -73,11 +75,15 @@ HDRResolver::HDRResolver(Context* ctx, int width, int height, bool manual_mode) 
 	auto shader_out = shader_manager->load_shader("post/hdr.shader");
 	out_renderer = new ThroughShaderRenderer(ctx, "out", shader_out);
 	out_renderer->bind_textures(0, {texture.get(), bloom_levels[0].tex_out.get(), bloom_levels[1].tex_out.get(), bloom_levels[2].tex_out.get(), bloom_levels[3].tex_out.get()});
+	add_child(out_renderer.get());
 
 	if (!manual_mode) {
 		auto ddd = (ygfx::Texture*)depth_buffer.get();
 		texture_renderer = new TextureRenderer(ctx, "tex", {texture, ddd});
+		add_sub_task(texture_renderer.get());
 	}
+
+	custodian = texture_renderer.get();
 }
 
 
@@ -88,7 +94,6 @@ void HDRResolver::prepare(const RenderParams& params) {
 	ctx->gpu_timestamp_begin(params, ch_prepare);
 
 	if (texture_renderer) {
-		texture_renderer->children = children;
 		texture_renderer->render(params);
 	} else {
 		for (auto c: children)
@@ -128,65 +133,6 @@ void HDRResolver::prepare(const RenderParams& params) {
 	profiler::end(ch_prepare);
 }
 
-void HDRResolver::draw(const RenderParams &params) {
-	out_renderer->draw(params);
-}
-
 
 }
-
-#if 0
-
-/*auto bloom_input = texture_renderer->frame_buffer.get();
-float threshold = 1.0f;
-for (int i=0; i<MAX_BLOOM_LEVELS; i++) {
-	process_blur(cb, bloom_input, bloom_levels[i].fb_temp.get(), threshold, i*2);
-	process_blur(cb, bloom_levels[i].fb_temp.get(), bloom_levels[i].fb_out.get(), 0.0f, i*2+1);
-	bloom_input = bloom_levels[i].fb_out.get();
-	threshold = 0;
-}*/
-
-void HDRResolver::process_blur(CommandBuffer *cb, FrameBuffer *source, FrameBuffer *target, float threshold, int iaxis) {
-	const vec2 AXIS[2] = {{1,0}, {0,1}};
-	//const float SCALE[2] = {(float)BLUR_SCALE, 1};
-	//UBOBlur u;
-	float radius = (iaxis <= 1) ? 5 : 11;//cam->bloom_radius * resolution_scale_x * 4 / (float)BLUR_SCALE;
-	//u.threshold = threshold / cam->exposure;
-	//u.axis = AXIS[iaxis % 2];
-	//blur_ubo[iaxis]->update(&u);
-	//blur_dset[iaxis]->set_uniform_buffer(0, blur_ubo[iaxis]);
-	blur_dset[iaxis]->set_texture(1, source->attachments[0].get());
-	blur_dset[iaxis]->update();
-
-	auto rp = blur_render_pass[iaxis];
-
-	cb->begin_render_pass(rp, target);
-	cb->set_viewport(dynamicly_scaled_area(target));
-
-	cb->bind_pipeline(blur_pipeline[iaxis / 2]);
-	cb->bind_descriptor_set(0, blur_dset[iaxis]);
-
-	Any axis_x, axis_y;
-	axis_x.list_set(0, 1.0f);
-	axis_x.list_set(1, 0.0f);
-	axis_y.list_set(0, 0.0f);
-	axis_y.list_set(1, 1.0f);
-
-	Any data;
-	data.dict_set("radius:8", radius);
-	data.dict_set("threshold:12", threshold / cam->exposure);
-	if ((iaxis % 2) == 0)
-		data.dict_set("axis:0", axis_x);
-	else
-		data.dict_set("axis:0", axis_y);
-
-	apply_shader_data(cb, data);
-
-	cb->draw(vb_2d.get());
-
-	cb->end_render_pass();
-
-	//process(cb, {source->attachments[0].get()}, target, shader_blur.get());
-}
-#endif
 

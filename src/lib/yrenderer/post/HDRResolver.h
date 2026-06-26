@@ -23,7 +23,6 @@ public:
 	~HDRResolver() override;
 
 	void prepare(const RenderParams& params) override;
-	void draw(const RenderParams& params) override;
 
 	float exposure = 1.0f;
 	float bloom_factor = 1.0f;

@@ -51,7 +51,6 @@ using SceneView = yrenderer::SceneView;
 using LightMeter = yrenderer::LightMeter;
 using RenderPathType = yrenderer::RenderPathType;
 
-
 yrenderer::RenderPath* create_render_path(Context* ctx, RenderPathType type, int shadow_resolution) {
 #ifdef USING_VULKAN
 	if (type == RenderPathType::PathTracing)
@@ -98,6 +97,8 @@ FullCameraRenderer::FullCameraRenderer(Context* ctx, Camera* _cam, RenderPathTyp
 
 	if (type != RenderPathType::Direct)
 		create_post_processing(render_path);
+	else
+		add_child(render_path);
 }
 
 FullCameraRenderer::~FullCameraRenderer() = default;
@@ -148,24 +149,29 @@ void FullCameraRenderer::check_terrains(const vec3& cam_pos) {
 void FullCameraRenderer::create_post_processing(Renderer* source) {
 
 	HDRResolver::magfilter = config.resolution_scale_filter;
-	hdr_resolver = new HDRResolver(ctx, engine.width, engine.height, true);
 
 	if (config.antialiasing_method == AntialiasingMethod::MSAA) {
 		msg_error("yes msaa");
 
-		auto tex_ms = new ygfx::TextureMultiSample(engine.width, engine.height, 4, "rgba:f16");
-		auto depth_ms = new ygfx::TextureMultiSample(engine.width, engine.height, 4, "d:f32");
-		//auto depth_ms = new nix::RenderBuffer(engine.width, engine.height, 4, "ds:u24i88");
-		texture_renderer = new yrenderer::TextureRenderer(ctx, "world-tex", {tex_ms, depth_ms}, {"samples=4"});
+		multisample_resolver = new yrenderer::MultisampleResolver(ctx, engine.width, engine.height, 4);
+		multisample_resolver->add_child(source);
 
-		multisample_resolver = new yrenderer::MultisampleResolver(ctx, tex_ms, depth_ms, hdr_resolver->texture.get(), hdr_resolver->depth_buffer.get());
+		hdr_resolver = new HDRResolver(ctx, engine.width, engine.height);
+		hdr_resolver->add_child(multisample_resolver);
+
+		texture_renderer = hdr_resolver->texture_renderer.get();
+		add_child(hdr_resolver);
 	} else {
-		texture_renderer = new yrenderer::TextureRenderer(ctx, "world-tex", {hdr_resolver->texture, hdr_resolver->depth_buffer.get()});
+		hdr_resolver = new HDRResolver(ctx, engine.width, engine.height);
+		hdr_resolver->add_child(source);
+
+		texture_renderer = hdr_resolver->texture_renderer.get();
+		add_child(hdr_resolver);
 	}
 
-	texture_renderer->add_child(source);
 
 	light_meter = new LightMeter(ctx, hdr_resolver->texture.get());
+	add_sub_task(light_meter);
 }
 
 
@@ -259,27 +265,26 @@ void FullCameraRenderer::prepare(const yrenderer::RenderParams& params) {
 	render_path->scene_view.fog_density = 1 / world.fog.distance;
 	render_path->scene_view.fog_color = world.fog._color;
 
+	if (hdr_resolver) {
+		hdr_resolver->exposure = cam->exposure;
+		hdr_resolver->bloom_factor = cam->bloom_factor;
+	}
+
 	if (cube_map_source)
 		render_path->scene_view.cube_map = cube_map_source->cube_map;
+
 
 	if (type != RenderPathType::PathTracing)
 		render_cubemaps(params);
 
-	if (texture_renderer) {
+	if (texture_renderer)
 		texture_renderer->set_area(yrenderer::dynamicly_scaled_area(texture_renderer->frame_buffer.get()));
-		texture_renderer->render(params);
-	} else if (type != RenderPathType::PathTracing) {
-		render_path->prepare(params);
-	}
 
-	if (multisample_resolver)
-		multisample_resolver->render(params);
+	if (light_meter and hdr_resolver)
+		light_meter->active = cam and cam->auto_exposure;
 
-	if (hdr_resolver) {
-		hdr_resolver->exposure = cam->exposure;
-		hdr_resolver->bloom_factor = cam->bloom_factor;
-		hdr_resolver->prepare(params);
-	}
+
+	prepare_children(params);
 
 
 	if (light_meter and hdr_resolver) {
