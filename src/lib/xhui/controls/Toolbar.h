@@ -2,14 +2,18 @@
 // Created by Michael Ankele on 2025-02-11.
 //
 
-#ifndef TOOLBAR_H
-#define TOOLBAR_H
+#pragma once
 
 #include "Grid.h"
 
+
+namespace layout {
+	struct Resource;
+}
+
 namespace xhui {
 
-struct Resource;
+using Resource = layout::Resource;
 
 class Toolbar : public Grid {
 public:
@@ -29,5 +33,3 @@ public:
 };
 
 } // xhui
-
-#endif //TOOLBAR_H

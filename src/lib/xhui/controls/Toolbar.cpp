@@ -75,20 +75,20 @@ void Toolbar::from_resource(Resource *res) {
 	//Configure(res->b_param[0], res->b_param[1]);
 	for (Resource &cmd: res->children) {
 		string title = get_lang(id, cmd.id, cmd.title, false);
-		string tooltip = get_language_t(id, cmd.id, cmd.tooltip);
+		string tooltip = get_language_t(id, cmd.id, cmd.value("tooltip"));
 		if (tooltip.num == 0)
 			tooltip = title;
 
 		if (cmd.type == "Item") {
-			if (sa_contains(cmd.options, "checkable"))
-				add_item_checkable(cmd.id, title, cmd.image());
+			if (cmd.has("checkable"))
+				add_item_checkable(cmd.id, title, cmd.value("image"));
 			else
-				add_item(cmd.id, title, cmd.image());
+				add_item(cmd.id, title, cmd.value("image"));
 			static_cast<Control*>(grid.children.back().node.get())->set_option("tooltip", tooltip);
 		} else if (cmd.type == "Separator") {
 			add_separator();
 		} else if (cmd.type == "Menu") {
-			add_item(cmd.id, title, cmd.image());
+			add_item(cmd.id, title, cmd.value("image"));
 			/*bool ok = false;
 			for (string &o: cmd.options)
 				if (o.find("menu=") == 0) {
@@ -105,13 +105,8 @@ void Toolbar::from_resource(Resource *res) {
 		}
 
 		Control* item = get_children(ChildFilter::All).back();
-		for (auto &o: cmd.options) {
-			auto xx = o.explode("=");
-			if (xx.num >= 2)
-				item->set_option(xx[0], xx[1]);
-			else
-				item->set_option(xx[0], "");
-		}
+		for (const auto& o: cmd.options)
+			item->set_option(o.key, o.value);
 	}
 	enable(true);
 }

@@ -8,21 +8,24 @@
 | last update: 2011.01.18 (c) by MichiSoft TM                                  |
 \*----------------------------------------------------------------------------*/
 
-#ifndef _LANG_EXISTS_
-#define _LANG_EXISTS_
+#pragma once
 
-#include "../base/base.h"
+#include <lib/base/base.h>
 
 class Path;
 
 
+
+namespace layout {
+	struct Resource;
+}
 
 namespace xhui {
 
 
 extern string get_lang(const string &ns, const string &id, const string &text, bool allow_keys=false);
 
-struct Resource;
+using Resource = layout::Resource;
 
 
 // language
@@ -58,5 +61,3 @@ struct Language {
 };
 
 };
-
-#endif

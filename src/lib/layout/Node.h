@@ -36,22 +36,22 @@ public:
 //	virtual Array<Control*> get_children(ChildFilter f) const { return {}; }
 //	Array<Control*> get_children_recursive(bool include_me, ChildFilter f) const;
 
-/*	virtual void on_left_button_down(const vec2& m) {}
+	virtual void on_left_button_down(const vec2& m) {}
 	virtual void on_left_button_up(const vec2& m) {}
 	virtual void on_left_double_click(const vec2& m) {}
 	virtual void on_middle_button_down(const vec2& m) {}
 	virtual void on_middle_button_up(const vec2& m) {}
 	virtual void on_right_button_down(const vec2& m) {}
 	virtual void on_right_button_up(const vec2& m) {}
-	virtual void on_mouse_move(const vec2& m, const vec2& d);
+	virtual void on_mouse_move(const vec2& m, const vec2& d) {}
 	virtual void on_mouse_enter(const vec2& m) {}
 	virtual void on_mouse_leave(const vec2& m) {}
 	virtual void on_mouse_wheel(const vec2& d) {}
-	virtual void on_key_down(int key) {}
+	/*virtual void on_key_down(int key) {}
 	virtual void on_key_up(int key) {}
 	virtual void on_key_char(int character) {}*/
 
-	void set_layout_option(const string& key, const string& value);
+	virtual void set_option(const string& key, const string& value);
 
 	string id;
 	rect area;
@@ -66,7 +66,7 @@ public:
 	vec2 get_effective_min_size() const;
 
 	//virtual void negotiate_min_size();
-	virtual void negotiate_area(const rect &available);
+	virtual void negotiate_area(const rect& available);
 };
 
 }

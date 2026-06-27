@@ -130,6 +130,7 @@ void Control::set_option(const string& key, const string& value) {
 	} else if (key == "grabfocus") {
 		can_grab_focus = true;
 		run_later(0.01f, [this] {
+			// wait till we have a window
 			if (auto w = get_window())
 				w->focus_control = this;
 		});
@@ -140,7 +141,7 @@ void Control::set_option(const string& key, const string& value) {
 	} else if (key == "tooltip") {
 		tooltip = value;
 	} else {
-		set_layout_option(key, value);
+		Node::set_option(key, value);
 		request_redraw();
 	}
 }

@@ -66,7 +66,7 @@ void Node::negotiate_area(const rect &available) {
 	}
 }
 
-void Node::set_layout_option(const string& key, const string& value) {
+void Node::set_option(const string& key, const string& value) {
 	if (key == "expandx") {
 		size_mode_x = SizeMode::Expand;
 		if (value._bool())

@@ -58,16 +58,16 @@ string get_language(const string &ns, const string &id) {
 string get_language_r(const string &ns, const Resource &cmd) {
 	string pre;
 	if (cmd.options.num > 0)
-		pre = "!" + implode(cmd.options, ",") + "\\";
+		pre = "!" + cmd._options_str() + "\\";
 
-	if ((!_using_language_) or (cmd.id.num == 0))
+	if (!_using_language_ or (cmd.id.num == 0))
 		return pre + cmd.title;
 
 	FOR_LANG_RET(ns, cmd.id, pre + c.text);
 
 	if (cmd.options.num > 0) {
 		if (cmd.title.head(1) == "!")
-			return "!" + implode(cmd.options, ",") + "," + cmd.title.sub(1);
+			return "!" + cmd._options_str() + "," + cmd.title.sub(1);
 		else
 			return pre + cmd.title;
 	}

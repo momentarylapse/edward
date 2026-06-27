@@ -34,23 +34,6 @@
 namespace xhui {
 
 
-struct Option {
-	string key, value;
-};
-
-Array<Option> parse_options(const string& s) {
-	Array<Option> r;
-	for (const auto& o: s.explode(",")) {
-		auto xx = o.explode("=");
-		if (xx.num >= 2)
-			r.add({xx[0], xx[1]});
-		else
-			r.add({xx[0], ""});
-	}
-	return r;
-}
-
-
 Panel::Panel(const string &_id) : Control(_id, ControlType::Panel) {
 	ignore_hover = true;
 
@@ -471,8 +454,8 @@ void Panel::_add_control(const string &ns, const Resource &cmd, const string &pa
 				cmd.x, cmd.y,
 				cmd.id);
 
-	for (const string &o: cmd.options)
-		set_options(cmd.id, o);
+	for (const auto &o: cmd.options)
+		set_options(cmd.id, str(o));
 
 	enable(cmd.id, cmd.enabled());
 	/*if (cmd.has("hidden"))
@@ -482,7 +465,7 @@ void Panel::_add_control(const string &ns, const Resource &cmd, const string &pa
 		set_image(cmd.id, cmd.image());*/
 
 
-	string tooltip = get_language_t(ns, cmd.id, cmd.tooltip);
+	string tooltip = get_language_t(ns, cmd.id, cmd.value("tooltip"));
 	if (tooltip.num > 0)
 		set_tooltip(cmd.id, tooltip);
 
@@ -543,7 +526,7 @@ void Panel::from_resource(const Resource& res) {
 		int width = res.value("width", "0")._int();
 		int height = res.value("height", "0")._int();
 		for (auto &o: res.options)
-			set_options(id, o);
+			set_options(id, str(o));
 
 		if (auto dlg = as_dialog(this)) {
 			if (width + height > 0) {

@@ -6,11 +6,15 @@
 
 class Painter;
 
+namespace layout {
+	struct Resource;
+}
+
 namespace xhui {
 
 using Callback = std::function<void()>;
 using CallbackP = std::function<void(::Painter*)>;
-struct Resource;
+using Resource = layout::Resource;
 class Dialog;
 
 class Panel : public Control {

@@ -7,9 +7,6 @@
 #include "../os/filesystem.h"
 #include "../os/formatter.h"
 #include "../os/msg.h"
-#include "../math/math.h"
-#include "controls/Control.h"
-//#include "internal.h"
 
 namespace xhui
 {
@@ -17,42 +14,11 @@ namespace xhui
 extern Array<Language> _languages_;
 Array<Resource> _resources_;
 
-Resource::Resource() {
-	x = y = 0;
-}
-
-bool Resource::has(const string &key) const {
-	for (string &o: options)
-		if (o == key)
-			return true;
-	return false;
-}
-
-bool Resource::enabled() const {
-	return !has("disabled");
-}
-
-string Resource::value(const string &key, const string &fallback) const {
-	int n = key.num + 1;
-	for (string &o: options)
-		if (o.head(n) == key+"=")
-			return o.sub(n);
-	return fallback;
-}
-
-string Resource::image() const {
-	return value("image");
-}
-
-Resource *Resource::get_node(const string &id) const {
-	for (Resource &c: children) {
-		if (c.id == id)
-			return &c;
-		Resource *ret = c.get_node(id);
-		if (ret)
-			return ret;
-	}
-	return nullptr;
+Array<layout::Option> parse_options(const string& s) {
+	Array<layout::Option> r;
+	for (const auto& x: s.explode(","))
+		r.add(layout::Option::parse(x));
+	return r;
 }
 
 void load_resource_command7(Stream *f, Resource *c) {
@@ -60,7 +26,7 @@ void load_resource_command7(Stream *f, Resource *c) {
 	c->id = f->read_str();
 	if (c->id == "?")
 		c->id = "id:" + i2s(randi(10000000));
-	c->options = f->read_str().explode(",");
+	c->options = parse_options(f->read_str());
 	c->x = f->read_int();
 	c->y = f->read_int();
 	int n = f->read_int();
@@ -257,180 +223,8 @@ xfer<Menu> create_menu_from_source(const string &source, Panel *panel) {
 #endif
 
 
-
-int res_get_indent(const string &line) {
-	int indent = 0;
-	for (int i=0;i<line.num;i++)
-		if (line[i] != '\t')
-			break;
-		else
-			indent ++;
-	return indent;
-}
-
-
-void res_add_option(Resource &c, const string &option) {
-	if (option.head(8) == "tooltip=") {
-		c.tooltip = option.sub(8);
-		return;
-	}
-	c.options.add(option);
-}
-
-bool res_load_line(const string &l, Resource &c, bool literally) {
-	// parse line
-	auto tokens = l.parse_tokens();
-	if (tokens.num == 0)
-		return false;
-
-	c.x = 0;
-	c.y = 0;
-
-	// id
-	string id;
-	if (tokens.num > 1)
-		id = tokens[1];
-	if ((id == "?") and !literally)
-		id = "rand_id:" + i2s(randi(1000000));
-	if (id.head(1) == "/" and !literally)
-		id = id.sub(1);
-
-	// dummy
-	if (tokens[0] == ".")
-		return false;
-	if (tokens[0] == "Separator" and tokens.num == 1) {
-		c.type = tokens[0];
-		return true;
-	}
-	if (tokens.num < 3)
-		return false;
-
-	// interpret tokens
-	c.type = tokens[0];
-	/*if (cur_indent == 0)
-		c.type = "Dialog";*/
-	c.id = id;
-	c.title = tokens[2];
-	int n_used = 3;
-	for (int i=n_used; i<tokens.num; i++)
-		res_add_option(c, tokens[i]);
-	return true;
-}
-
-bool res_load_rec(Array<string> &lines, int &cur_line, Resource &c, bool literally) {
-	int cur_indent = res_get_indent(lines[cur_line]);
-	bool r = res_load_line(lines[cur_line], c, literally);
-	cur_line ++;
-
-	if (c.type == "Grid") {
-
-		string ind = lines[cur_line-1].head(cur_indent);
-
-		int x = 0, y = 0;
-
-		for (int n=0; n<1024; n++) {
-			if (cur_line >= lines.num)
-				break;
-			int indent = res_get_indent(lines[cur_line]);
-			if (indent <= cur_indent)
-				break;
-
-			if (lines[cur_line] == ind + "\t---|") {
-				x = 0;
-				y ++;
-				cur_line ++;
-				continue;
-			}
-
-			Resource child;
-			if (res_load_rec(lines, cur_line, child, literally)) {
-				child.x = x;
-				child.y = y;
-				c.children.add(child);
-			}
-
-			x ++;
-		}
-
-		return r;
-	}
-
-	for (int n=0; n<1024; n++) {
-		if (cur_line >= lines.num)
-			break;
-		int indent = res_get_indent(lines[cur_line]);
-		if (indent <= cur_indent)
-			break;
-		Resource child;
-		if (res_load_rec(lines, cur_line, child, literally)) {
-			child.x = n;
-			c.children.add(child);
-		}
-
-	}
-	return r;
-}
-
-void Resource::show(int indent) const {
-	string nn = string("    ").repeat(indent);
-	msg_write(nn + format("%s - %s - %d %d - %s", type, id, x, y, str(options)));
-	for (Resource &child: children)
-		child.show(indent + 1);
-}
-
-string Resource::to_string(int indent) const {
-	string ind;
-	for (int i=0;i<indent;i++)
-		ind += "\t";
-	string nn = ind + type;
-	if (type != "Separator")
-		nn += " " + id + " \"" + title.escape() + "\"";
-	for (string &o: options)
-		nn += " " + o;
-	if (tooltip.num > 0)
-		nn += " \"tooltip=" + tooltip.escape() + "\"";
-	if (type == "Grid") {
-		int ymax = 0;
-		for (auto &c: children)
-			ymax = max(ymax, c.y);
-		for (int j=0; j<=ymax; j++) {
-			int xmax = 0;
-			for (auto &c: children)
-				if (c.y == j)
-					xmax = max(xmax, c.x);
-			for (int i=0; i<=xmax; i++) {
-				bool found = false;
-				for (Resource &child: children)
-					if (child.x == i and child.y == j) {
-						nn += "\n" + child.to_string(indent + 1);
-						found = true;
-						break;
-					}
-				if (!found)
-					nn += "\n" + ind + "\t.";
-			}
-			if (j < ymax)
-				nn += "\n" + ind + "\t---|";
-		}
-
-	} else {
-		for (Resource &child: children)
-			nn += "\n" + child.to_string(indent + 1);
-	}
-	return nn;
-}
-
 Resource parse_resource(const string &buffer, bool literally) {
-	Resource r;
-	auto lines = buffer.explode("\n");
-	for (int i=lines.num-1; i>=0; i--)
-		if (lines[i].num == 0)
-			lines.erase(i);
-	int cur_line = 0;
-
-	//HuiResourceNew c;
-	res_load_rec(lines, cur_line, r, literally);
-	return r;
+	return layout::parse_resource(buffer, literally);
 }
 
 xfer<Menu> create_resource_menu(const string& ns, const Resource* r) {
