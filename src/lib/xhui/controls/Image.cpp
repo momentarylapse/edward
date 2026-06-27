@@ -5,7 +5,6 @@
 namespace xhui {
 
 Image::Image(const string &_id, const string &t) : Control(_id) {
-	margin = {0,0,0,0};
 	ignore_hover = true;
 	if (t != "")
 		image = load_image(t);
@@ -32,8 +31,9 @@ void Image::_draw(Painter *p) {
 		if (!enabled)
 			p->set_color(White.with_alpha(0.35f));
 		vec2 s = image->size();
-		float scale = min(area.width() / s.x, area.height() / s.y);
-		p->draw_ximage({area.center() - s * scale/2, area.center() + s * scale/2}, image);
+		const auto ca = content_area();
+		float scale = min(ca.width() / s.x, ca.height() / s.y);
+		p->draw_ximage({ca.center() - s * scale/2, ca.center() + s * scale/2}, image);
 	}
 }
 

@@ -1,5 +1,5 @@
 Dialog world_dialog "World properties" width=320
-	Grid ? "" vertical margin=7
+	Grid ? "" vertical padding=7
 		TabControl world_dialog_tab_control "Background\\Fog\\Physics\\Systems"
 			Grid ? "" vertical
 				Group grp_bg_color "Color"

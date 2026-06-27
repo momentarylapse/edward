@@ -11,7 +11,7 @@ public:
 	float font_size_small;
 	float font_size_big;
 
-	float spacing, window_margin;
+	float spacing, window_padding;
 	float label_margin_x;
 	float label_margin_y;
 	float button_margin_x;

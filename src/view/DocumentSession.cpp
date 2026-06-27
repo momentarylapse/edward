@@ -39,6 +39,7 @@ DocumentSession::~DocumentSession() {
 
 void DocumentSession::set_document_panel(shared<xhui::Panel> panel) {
 	document_panel = panel;
+	panel->set_option("expandy", "");
 	base_panel->embed("base-grid", 0, 0, panel);
 }
 

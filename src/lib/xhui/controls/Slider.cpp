@@ -89,12 +89,6 @@ void Slider::on_mouse_leave(const vec2&) {
 
 vec2 Slider::get_content_min_size() const {
 	return {button_radius*2,0};
-	//return label.get_content_min_size() + padding.p00() + padding.p11();
-}
-
-void Slider::negotiate_area(const rect& available) {
-	Control::negotiate_area(available);
-	//label.negotiate_area({available.p00() + padding.p00(), available.p11() - padding.p11()});
 }
 
 void Slider::_draw(Painter* p) {

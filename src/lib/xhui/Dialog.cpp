@@ -15,7 +15,7 @@
 
 namespace xhui {
 
-static constexpr float HEADER_HEIGHT = 30;
+static constexpr float HEADER_HEIGHT = 35;
 
 DialogFlags operator|(DialogFlags a, DialogFlags b) {
 	return (DialogFlags)((int)a | (int)b);
@@ -33,6 +33,8 @@ public:
 		label->align = Label::Align::Center;
 		label->size_mode_x = SizeMode::Expand;
 		close_button = new CallbackButton(id + ":close", "x", f);
+		close_button->min_height_user = HEADER_HEIGHT-5;
+		close_button->size_mode_y = SizeMode::Shrink;
 		close_button->size_mode_x = SizeMode::Shrink;
 		Grid::add_child(label, 0, 0);
 		Grid::add_child(close_button, 1, 0);
@@ -71,7 +73,8 @@ Dialog::Dialog(const string& _title, int _width, int _height, Panel* parent, Dia
 	height = _height;
 	pos = {0, 0};
 	area = {0, (float)width, 0, (float)height};
-	padding = Theme::_default.window_margin;
+	float wp = Theme::_default.window_padding;
+	padding = rect(wp, wp, wp, wp);
 
 	// forward default activation ([Return] key) to default button
 	event_x("*", event_id::ActivateDialogDefault, [this] {
@@ -100,18 +103,24 @@ Array<Control*> Dialog::get_children(ChildFilter f) const {
 	return r;
 }
 
+vec2 Dialog::get_content_min_size() const {
+	vec2 s = Panel::get_content_min_size();
+	if (header)
+		s.y += HEADER_HEIGHT;//header->get_effective_min_size().y;
+	return s;
+}
 
-
-void Dialog::negotiate_area(const rect& available) {
+void Dialog::negotiate_content_area(const rect& available) {
 	outside->area = {0, 10000, 0, 10000}; // what could go wrong :P
+	rect content_available = available;
 	if (header) {
-		area = {available.p00() - vec2(0, HEADER_HEIGHT), available.p11()};
-		header->negotiate_area({area.p00(), available.p10()});
-	} else {
-		area = {available.p00(), available.p11()};
+	//	area = {available.p00() - vec2(0, HEADER_HEIGHT), available.p11()};
+		float h = HEADER_HEIGHT;//header->get_effective_min_size().y;
+		header->negotiate_outer_area({area.p00(), area.p10() + vec2(0, h)});
+		content_available.y1 += h;
 	}
 	if (top_control)
-		top_control->negotiate_area(available.grow(- padding));
+		top_control->negotiate_outer_area(content_available);
 }
 
 void Dialog::on_key_down(int key) {

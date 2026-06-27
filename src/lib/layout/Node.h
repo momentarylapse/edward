@@ -54,19 +54,23 @@ public:
 	virtual void set_option(const string& key, const string& value);
 
 	string id;
-	rect area;
+	rect area; // "drawable": content + padding
+	rect content_area() const;
+	rect outer_area() const;
 
 	float min_width_user, min_height_user;
 	SizeMode size_mode_x, size_mode_y;
 	vec2 greed_factor = vec2(1, 1); // if expanding...
 	bool visible = true;
+	rect padding; // space "inside", around children/content
+	rect margin; // space "outside"
 
 	virtual vec2 get_greed_factor() const;
-	virtual vec2 get_content_min_size() const;
-	vec2 get_effective_min_size() const;
+	virtual vec2 get_content_min_size() const; // excluding padding/margin
+	vec2 get_effective_min_size() const; // including padding/margin
 
-	//virtual void negotiate_min_size();
-	virtual void negotiate_area(const rect& available);
+	virtual void negotiate_content_area(const rect& available); // excluding padding/margin
+	void negotiate_outer_area(const rect& available); // including padding/margin
 };
 
 }

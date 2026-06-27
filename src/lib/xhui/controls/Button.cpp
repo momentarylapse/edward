@@ -1,7 +1,6 @@
 #include "Button.h"
 #include <lib/os/msg.h>
 #include "../Painter.h"
-#include <lib/ygraphics/font.h>
 #include "../Theme.h"
 
 namespace xhui {
@@ -15,7 +14,7 @@ Button::Button(const string &_id, const string &t) :
 	size_mode_x = SizeMode::Fill;
 	size_mode_y = SizeMode::Fill;
 	label.align = Label::Align::Center;
-	label.margin = {0,0,0,0};
+	label.padding = {0,0,0,0};
 	label.bold = true;
 	padding.x1 = padding.x2 = Theme::_default.button_margin_x;
 	padding.y1 = padding.y2 = Theme::_default.button_margin_y;
@@ -61,12 +60,11 @@ void Button::on_mouse_leave(const vec2&) {
 }
 
 vec2 Button::get_content_min_size() const {
-	return label.get_content_min_size() + padding.p00() + padding.p11();
+	return label.get_effective_min_size();
 }
 
-void Button::negotiate_area(const rect& available) {
-	Control::negotiate_area(available);
-	label.negotiate_area({area.p00() + padding.p00(), area.p11() - padding.p11()});
+void Button::negotiate_content_area(const rect& available) {
+	label.negotiate_outer_area(available);
 }
 
 Array<Control*> Button::get_children(ChildFilter f) const {
@@ -120,18 +118,6 @@ void Button::_draw(Painter *p) {
 void Button::set_option(const string& key, const string& value) {
 	if (key == "image" or key == "align") {
 		label.set_option(key, value);
-	} else if (key == "padding") {
-		float f = value._float();
-		padding = {f, f, f, f};
-		request_redraw();
-	} else if (key == "paddingx") {
-		float f = value._float();
-		padding.x1 = padding.x2 = f;
-		request_redraw();
-	} else if (key == "paddingy") {
-		float f = value._float();
-		padding.y1 = padding.y2 = f;
-		request_redraw();
 	} else if (key == "primary") {
 		primary = true;
 		request_redraw();

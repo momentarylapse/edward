@@ -54,8 +54,8 @@ vec2 Grid::get_content_min_size() const {
 	Array<float> w, h;
 	get_min_sizes(w, h);
 	vec2 s;
-	s.x = sum(w) + spacing * (float)(w.num - 1) + margin.x1 + margin.x2;
-	s.y = sum(h) + spacing * (float)(h.num - 1) + margin.y1 + margin.y2;
+	s.x = sum(w) + spacing * (float)(w.num - 1);
+	s.y = sum(h) + spacing * (float)(h.num - 1);
 	return s;
 }
 
@@ -85,14 +85,12 @@ void Grid::get_greed_factors(Array<float> &x, Array<float> &y) const {
 		}
 }
 
-void Grid::negotiate_area(const rect &available) {
-	node.area = available;
-
+void Grid::negotiate_content_area(const rect &available) {
 	Array<float> w, h;
 	get_min_sizes(w, h);
 	vec2 total_min_size = get_content_min_size();
-	float diff_x = max(available.width() - total_min_size.x, 0.0f); //  - margin * 2 - spacing * (w.num + 1)
-	float diff_y = max(available.height() - total_min_size.y, 0.0f); //  - margin * 2 - spacing * (h.num + 1)
+	float diff_x = max(available.width() - total_min_size.x, 0.0f); //  - spacing * (w.num + 1)
+	float diff_y = max(available.height() - total_min_size.y, 0.0f); //  - spacing * (h.num + 1)
 
 	Array<float> gx, gy;
 	get_greed_factors(gx, gy);
@@ -108,13 +106,13 @@ void Grid::negotiate_area(const rect &available) {
 
 	for (auto &c: children)
 		if (c.node->visible) {
-			float x0 = node.area.x1 + margin.x1;
-			float y0 = node.area.y1 + margin.y1;
+			float x0 = available.x1;
+			float y0 = available.y1;
 			for (int i=0; i<c.x; i++)
 				x0 += w[i] + spacing;
 			for (int i=0; i<c.y; i++)
 				y0 += h[i] + spacing;
-			c.node->negotiate_area(rect(x0, x0 + w[c.x], y0, y0 + h[c.y]));
+			c.node->negotiate_outer_area(rect(x0, x0 + w[c.x], y0, y0 + h[c.y]));
 		}
 }
 
@@ -127,22 +125,7 @@ Array<Node*> Grid::get_children(ChildFilter f) const {
 }
 
 void Grid::set_option(const string& key, const string& value) {
-	if (key == "margin") {
-		float f = value._float();
-		margin = {f,f,f,f};
-	} else if (key == "marginx") {
-		margin.x1 = margin.x2 = value._float();
-	} else if (key == "marginy") {
-		margin.y1 = margin.y2 = value._float();
-	} else if (key == "margintop") {
-		margin.y1 = value._float();
-	} else if (key == "marginbottom") {
-		margin.y2 = value._float();
-	} else if (key == "marginleft") {
-		margin.x1 = value._float();
-	} else if (key == "marginright") {
-		margin.x2 = value._float();
-	} else if (key == "spacing") {
+	if (key == "spacing") {
 		spacing = value._float();
 	} else if (key == "vertical") {
 		vertical = true;

@@ -20,7 +20,6 @@ public:
 	float mouse_to_value(const vec2& m) const;
 
 	vec2 get_content_min_size() const override;
-	void negotiate_area(const rect& available) override;
 
 	void on_mouse_enter(const vec2& m) override;
 	void on_mouse_leave(const vec2& m) override;

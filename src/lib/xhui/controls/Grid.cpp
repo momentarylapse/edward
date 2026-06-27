@@ -1,8 +1,6 @@
 #include "Grid.h"
 #include "../Painter.h"
 #include "../Theme.h"
-#include "../../os/msg.h"
-#include "../../base/algo.h"
 
 namespace xhui {
 
@@ -11,7 +9,7 @@ namespace xhui {
 Grid::Grid(const string &_id) : Control(_id), grid(*this) {
 	ignore_hover = true;
 	grid.spacing = Theme::_default.spacing;
-	grid.margin = {0,0,0,0};
+	padding = {0,0,0,0};
 
 	size_mode_x = SizeMode::ForwardChild;
 	size_mode_y = SizeMode::ForwardChild;
@@ -50,8 +48,8 @@ vec2 Grid::get_greed_factor() const {
 	return grid.get_greed_factor();
 }
 
-void Grid::negotiate_area(const rect &available) {
-	grid.negotiate_area(available);
+void Grid::negotiate_content_area(const rect &available) {
+	grid.negotiate_content_area(available);
 }
 
 Array<Control*> Grid::get_children(ChildFilter f) const {
@@ -66,7 +64,7 @@ void Grid::set_option(const string& key, const string& value) {
 	if (key == "class") {
 		if (value == "card") {
 			card = true;
-			grid.margin = {7,7,7,7};
+			padding = {7,7,7,7};
 			background = Theme::_default.background_raised();
 			corner_radius = Theme::_default.button_radius;
 		}

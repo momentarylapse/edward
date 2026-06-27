@@ -51,8 +51,8 @@ Edit::Edit(const string &_id, const string &t) : Control(_id) {
 	font_name = Theme::_default.font_name;
 	font_size = Theme::_default.font_size;
 
-	margin_x = Theme::_default.edit_margin_x;
-	margin_y = 8;
+	padding.x1 = padding.x2 = Theme::_default.edit_margin_x;
+	padding.y1 = padding.y2 = 4;
 
 	tab_size = 4;
 	face = nullptr;
@@ -93,7 +93,7 @@ string Edit::get_string() {
 
 
 vec2 Edit::get_content_min_size() const {
-	return {80, 30};
+	return {80, 20};
 }
 
 void Edit::on_left_button_down(const vec2& m) {
@@ -129,7 +129,7 @@ void Edit::on_mouse_move(const vec2& m, const vec2& d) {
 }
 
 vec2 Edit::viewport_size() const {
-	return vec2::max(cache.content_size - area.size() + vec2(margin_x * 2 + line_number_area_width, 0), vec2::ZERO);
+	return vec2::max(cache.content_size - area.size() + vec2(line_number_area_width, 0) + padding.p00() + padding.p11(), vec2::ZERO);
 }
 
 
@@ -358,7 +358,7 @@ void Edit::draw_text(Painter* p) {
 	p->set_font(font_name, font_size, false, false);
 	face = p->face;
 
-	text_x0 = area.x1 + margin_x + line_number_area_width - viewport_offset.x;
+	text_x0 = area.x1 + padding.x1 + line_number_area_width - viewport_offset.x;
 
 	// update text dims
 	float inner_height = 0;
@@ -368,7 +368,7 @@ void Edit::draw_text(Painter* p) {
 		cache.line_y0.clear();
 		cache.line_height.clear();
 		cache.line_width.clear();
-		float y0 = area.y1 + margin_y - viewport_offset.y;
+		float y0 = area.y1 + padding.y1 - viewport_offset.y;
 		cache.content_size = {0,0};
 		for (const string &l: lines) {
 			auto dim = get_cached_text_dimensions(l, face, font_size, p->ui_scale);
@@ -387,7 +387,7 @@ void Edit::draw_text(Painter* p) {
 
 	// selection
 	if (cursor_pos != selection_start) {
-		p->set_color(color(0.4f, 0.2f, 0.2f, 1.0f));
+		p->set_color(color(0.4f, 0.3f, 0.3f, 1.0f));
 		auto a = cursor_pos;
 		auto b = selection_start;
 		if (a > b)
@@ -462,7 +462,8 @@ void Edit::draw_text(Painter* p) {
 	// cursor
 	if (has_focus() and enabled) {
 		const vec2 pos = index_to_xy(cursor_pos);
-		p->draw_line({pos.x, pos.y}, {pos.x, pos.y + cache.line_height[0]});
+		p->set_line_width(2);
+		p->draw_line({pos.x+1, pos.y}, {pos.x+1, pos.y + cache.line_height[0]});
 	}
 
 	p->set_clip(clip0);

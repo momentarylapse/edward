@@ -16,7 +16,7 @@ Dialog coding-panel ''
 	Grid ? ''
 		Overlay ? ''
 			MultilineEdit edit '' grabfocus monospace linenumbers focusframe=no
-			Grid ? '' margin=25
+			Grid ? '' padding=25
 				Label ? '' ignorehover expandx
 				Grid search-grid '' class=card hidden
 					Edit search-pattern '' width=300
@@ -46,7 +46,7 @@ Dialog coding-panel ''
 
 	auto list = (xhui::ListView*)get_control(id_structure);
 	list->column_factories[0].f_create = [] (const string& id) -> xhui::Control* {
-		return xhui::create_control("Label", "!markup,vmargin=2", id);
+		return xhui::create_control("Label", "!markup,paddingy=2", id);
 	};
 
 	static int xcounter = 0;

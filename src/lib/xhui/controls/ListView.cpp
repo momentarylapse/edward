@@ -2,7 +2,7 @@
 #include "Grid.h"
 #include "../Painter.h"
 #include "../Theme.h"
-#include "../../base/iter.h"
+#include <lib/base/iter.h>
 
 namespace xhui {
 
@@ -20,16 +20,17 @@ ListView::ListView(const string &_id, const string &t) :
 	column_offsets.resize(headers.num);
 	for (int i=0; i<headers.num; i++) {
 		column_factories.add({[this] (const string& id) {
-			return new Label(id, "");
-		}, [this] (Control* c, const string& t) {
+			return create_control("Label", format("!padding=%.1f", cell_padding), id);
+		}, [] (Control* c, const string& t) {
 			c->set_string(t);
 		}});
 	}
 	cell_grid = new Grid(_id + ":grid");
-	cell_grid->grid.margin = {7,7,4,4};
-	cell_grid->grid.spacing = 8;
+	cell_grid->padding = {0,0,0,0};//{7,7,4,4};
+	cell_grid->grid.spacing = 4;
+	cell_padding = 4;
 	viewport.add_child(cell_grid, 0, 0);
-	viewport.size_mode_y = SizeMode::Shrink;
+	viewport.size_mode_y = SizeMode::Fill;
 	viewport.ignore_hover = true;
 	padding = {5, 5, 5, 5};
 	selection_radius = Theme::_default.button_radius;
@@ -136,18 +137,17 @@ int ListView::get_hover(const vec2& m) const {
 
 
 vec2 ListView::get_content_min_size() const {
-	vec2 s = viewport.get_content_min_size() + padding.p00() + padding.p11();
+	vec2 s = viewport.get_effective_min_size();
 	if (show_headers)
 		s.y += HEADER_DY;
 	return s;
 }
 
-void ListView::negotiate_area(const rect& available) {
-	Control::negotiate_area(available);
+void ListView::negotiate_content_area(const rect& available) {
 	float dy = 0;
 	if (show_headers)
 		dy = HEADER_DY;
-	viewport.negotiate_area({available.p00() + vec2(0, dy) + padding.p00(), available.p11() - padding.p11()});
+	viewport.negotiate_outer_area({available.p00() + vec2(0, dy), available.p11()});
 	if (show_headers and cells.num > 0) {
 		for (int i=0; i<min(headers.num, cells[0].num); i++)
 			column_offsets[i] = cells[0][i].control->area.x1 - area.x1;
@@ -156,8 +156,8 @@ void ListView::negotiate_area(const rect& available) {
 
 
 rect ListView::row_area(int row) const {
-	const auto r0 = cells[row][0].control->area;
-	return {area.x1, area.x2, r0.y1 - 4, r0.y2 + 4};
+	const auto r0 = cells[row][0].control->outer_area();
+	return {area.x1, area.x2, r0.y1, r0.y2};
 }
 
 
@@ -280,16 +280,20 @@ void ListView::set_option(const string& key, const string& value) {
 		sunken_background = value._bool();
 		if (!sunken_background) {
 			padding = {0,0,0,0};
-			cell_grid->grid.margin = {0, 0, 0, 0};
+			cell_grid->padding = {0, 0, 0, 0};
 		}
 	} else if (key == "style") {
 		if (value == "compact") {
 			padding = {0,0,0,0};
 			selection_radius = 0;
+			cell_padding = 4;
+		} else if (value == "larger") {
+			padding = {5, 5, 5, 5};
+			selection_radius = Theme::_default.button_radius;
+			cell_padding = 8;
 		}
-	} else if (key == "padding") {
-		float x = value._float();
-		padding = {x, x, x, x};
+	} else if (key == "spacing") {
+		cell_grid->grid.spacing = value._float();
 	} else if (key == "dragsource") {
 		drag_source_id = value;
 	} else if (key == "selectsingle" or key == "select-single") {

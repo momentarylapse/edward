@@ -22,7 +22,7 @@ public:
 	explicit Panel(const string &id);
 
 	void _draw(Painter* p) override;
-	void negotiate_area(const rect& available) override;
+	void negotiate_content_area(const rect& available) override;
 	vec2 get_content_min_size() const override;
 	vec2 get_greed_factor() const override;
 	Array<Control*> get_children(ChildFilter f) const override;
@@ -59,7 +59,6 @@ public:
 	shared<Control> top_control;
 	Control* target_control = nullptr;
 	Array<Control*> controls;
-	float padding;
 
 	struct EventHandler {
 		EventHandler() = default;

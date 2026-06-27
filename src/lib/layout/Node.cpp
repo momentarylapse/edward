@@ -13,6 +13,8 @@ Node::Node(const string &_id) {
 	size_mode_x = SizeMode::Expand;
 	size_mode_y = SizeMode::Expand;
 	area = rect::EMPTY;
+	padding = rect::EMPTY;
+	margin = rect::EMPTY;
 }
 
 Node::~Node() = default;
@@ -42,18 +44,22 @@ vec2 Node::get_greed_factor() const {
 }
 
 vec2 Node::get_effective_min_size() const {
-	vec2 s = get_content_min_size();
+	vec2 s = get_content_min_size() + padding.p00() + padding.p11();
 	if (min_width_user >= 0)
 		s.x = min_width_user;
 	if (min_height_user >= 0)
 		s.y = min_height_user;
-	return s;
+	return s + margin.p00() + margin.p11();
 }
 
-void Node::negotiate_area(const rect &available) {
-	area = available;
+void Node::negotiate_content_area(const rect &available) {
+}
+
+void Node::negotiate_outer_area(const rect& available) {
+	area = {available.p00() + margin.p00(), available.p11() - margin.p11()};
+
 	if (size_mode_x != SizeMode::Expand or size_mode_y != SizeMode::Expand) {
-		const auto min_size = get_effective_min_size();
+		const auto min_size = get_effective_min_size() - margin.p00() - margin.p11();
 		//if (size_mode_x == SizeMode::Expand)
 		if (size_mode_x == SizeMode::Shrink) {
 			area.x1 = available.center().x - min_size.x / 2;
@@ -64,6 +70,16 @@ void Node::negotiate_area(const rect &available) {
 			area.y2 = available.center().y + min_size.y / 2;
 		}
 	}
+
+	negotiate_content_area(content_area());
+}
+
+rect Node::content_area() const {
+	return {area.p00() + padding.p00(), area.p11() - padding.p11()};
+}
+
+rect Node::outer_area() const {
+	return {area.p00() - margin.p00(), area.p11() + margin.p11()};
 }
 
 void Node::set_option(const string& key, const string& value) {
@@ -95,6 +111,30 @@ void Node::set_option(const string& key, const string& value) {
 	} else if (key == "greedfactory") {
 		greed_factor.y = value._float();
 		size_mode_y = SizeMode::Expand;
+	} else if (key == "padding") {
+		float f = value._float();
+		padding = {f, f, f, f};
+	} else if (key == "paddingx" or key == "paddingh") {
+		float f = value._float();
+		padding.x1 = padding.x2 = f;
+	} else if (key == "paddingy" or key == "paddingv") {
+		float f = value._float();
+		padding.y1 = padding.y2 = f;
+	} else if (key == "paddingtop") {
+		padding.y1 = value._float();
+	} else if (key == "paddingbottom") {
+		padding.y2 = value._float();
+	} else if (key == "paddingleft") {
+		padding.x1 = value._float();
+	} else if (key == "paddingright") {
+		padding.x2 = value._float();
+	} else if (key == "margin") {
+		float f = value._float();
+		margin = rect(f, f, f, f);
+	} else if (key == "hmargin" or key == "marginh" or key == "hmarginx") {
+		margin.x1 = margin.x2 = value._float();
+	} else if (key == "vmargin" or key == "marginv" or key == "hmarginy") {
+		margin.y1 = margin.y2 = value._float();
 	} else if (key == "hidden") {
 		visible = false;
 	} else if (key == "visible") {

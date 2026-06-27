@@ -28,8 +28,8 @@ EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-pane
 	mode_world = _mode;
 	from_source(R"foodelim(
 Dialog entity-panel '' padding=0
-	Grid main-grid '' margin=7
-		ListView components 'c' nobar sunkenbackground=no showselection=no selectsingle
+	Grid main-grid '' padding=7
+		ListView components 'c' nobar sunkenbackground=no showselection=no selectsingle spacing=8
 		---|
 		Grid ? ""
 			Button create-new-component '' 'tooltip=Create a new component class to add to this entity' noexpandx image=new

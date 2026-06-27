@@ -13,8 +13,8 @@ CheckBox::CheckBox(const string &_id, const string &t) :
 	can_grab_focus = true;
 	size_mode_x = SizeMode::Expand;
 	size_mode_y = SizeMode::Fill;
-	label.margin.x1 = label.margin.x2 = Theme::_default.button_margin_x;
-	label.margin.y1 = label.margin.y2 = Theme::_default.button_margin_y;
+	label.padding.x1 = label.padding.x2 = Theme::_default.button_margin_x;
+	label.padding.y1 = label.padding.y2 = Theme::_default.button_margin_y;
 }
 
 Array<Control*> CheckBox::get_children(ChildFilter f) const {
@@ -53,12 +53,11 @@ void CheckBox::on_mouse_leave(const vec2&) {
 }
 
 vec2 CheckBox::get_content_min_size() const {
-	return label.get_content_min_size() + vec2(22, 0);
+	return label.get_effective_min_size() + vec2(22, 0);
 }
 
-void CheckBox::negotiate_area(const rect& available) {
-	Control::negotiate_area(available);
-	label.negotiate_area({area.p00() + vec2(20, 0), area.p11()});
+void CheckBox::negotiate_content_area(const rect& available) {
+	label.negotiate_outer_area({available.p00() + vec2(20, 0), available.p11()});
 }
 
 void CheckBox::_draw(Painter *p) {

@@ -20,7 +20,7 @@ Dialog multi-view-panel ''
 	Grid ? ''
 		Overlay ? ''
 			DrawingArea area '' grabfocus
-			Grid overlay-main-grid '' margin=25
+			Grid overlay-main-grid '' padding=25
 				Grid overlay-button-grid-left '' spacing=20
 				.
 				Label ? '' ignorehover expandx

@@ -41,7 +41,7 @@ void Viewport::on_mouse_wheel(const vec2& d) {
 		offset -= d * speed;
 		offset.x = clamp(offset.x, 0.0f, content_size.x - area.width());
 		offset.y = clamp(offset.y, 0.0f, content_size.y - area.height());
-		child->negotiate_area({area.p00() - offset, area.p00() + content_size - offset});
+		child->negotiate_outer_area({area.p00() - offset, area.p00() + content_size - offset});
 	}
 	request_redraw();
 }
@@ -87,20 +87,18 @@ vec2 Viewport::get_greed_factor() const {
 	return f;
 }
 
-void Viewport::negotiate_area(const rect &available) {
-	area = available;
-
+void Viewport::negotiate_content_area(const rect &available) {
 	if (child) {
-		rect content_area = {area.p00() - offset, area.p00() + content_size - offset};
+		rect content_area = {available.p00() - offset, available.p00() + content_size - offset};
 		if (size_mode_x == SizeMode::ForwardChild) {
-			content_area.x1 = area.x1;
-			content_area.x2 = area.x2;
+			content_area.x1 = available.x1;
+			content_area.x2 = available.x2;
 		}
 		if (size_mode_y == SizeMode::ForwardChild) {
-			content_area.y1 = area.y1;
-			content_area.y2 = area.y2;
+			content_area.y1 = available.y1;
+			content_area.y2 = available.y2;
 		}
-		child->negotiate_area(content_area);
+		child->negotiate_outer_area(content_area);
 	}
 }
 

@@ -208,7 +208,7 @@ void export_package_xhui(kaba::IExporter* e) {
 		e->link_virtual("Control._draw", &xhui::Control::_draw, &ctrl);
 		e->link_virtual("Control.get_greed_factor", &xhui::Control::get_greed_factor, &ctrl);
 		e->link_virtual("Control.get_content_min_size", &xhui::Control::get_content_min_size, &ctrl);
-		e->link_virtual("Control.negotiate_area", &xhui::Control::negotiate_area, &ctrl);
+		e->link_virtual("Control.negotiate_area", &xhui::Control::negotiate_content_area, &ctrl);
 	}
 
 	{
@@ -311,7 +311,7 @@ void export_package_xhui(kaba::IExporter* e) {
 		e->link_class_func("Panel.remove_event_handler", &xhui::Panel::remove_event_handler);
 
 		e->link_virtual("Panel._draw", &xhui::Panel::_draw, &panel);
-		e->link_virtual("Panel.negotiate_area", &xhui::Panel::negotiate_area, &panel);
+		e->link_virtual("Panel.negotiate_area", &xhui::Panel::negotiate_content_area, &panel);
 		e->link_virtual("Panel.get_content_min_size", &xhui::Panel::get_content_min_size, &panel);
 		e->link_virtual("Panel.get_greed_factor", &xhui::Panel::get_greed_factor, &panel);
 		e->link_virtual("Panel.get_children", &xhui::Panel::get_children, &panel);

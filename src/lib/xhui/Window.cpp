@@ -52,7 +52,8 @@ Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":windo
 
 		glfwSetWindowUserPointer(window, this);
 
-		padding = Theme::_default.window_margin;
+		float wp = Theme::_default.window_padding;
+		padding = rect(wp, wp, wp, wp);
 
 		glfwSetKeyCallback(window, _key_callback);
 		glfwSetCharCallback(window, _char_callback);
@@ -491,7 +492,7 @@ void Window::_on_draw() {
 
 		// header
 		if (header_bar) {
-			header_bar->negotiate_area(header);
+			header_bar->negotiate_outer_area(header);
 			header_bar->_draw(p);
 		}
 
@@ -501,13 +502,13 @@ void Window::_on_draw() {
 	}
 
 	// contents
-	Panel::negotiate_area(a);
+	negotiate_outer_area(a);
 	Panel::_draw(p);
 
 	for (auto dlg: dialogs) {
 		p->set_color(color(0.3f, 0, 0, 0));
 		p->draw_rect(a);
-		dlg->negotiate_area(dlg->suggest_area(a));
+		dlg->negotiate_outer_area(dlg->suggest_area(a));
 		dlg->_draw(p);
 	}
 

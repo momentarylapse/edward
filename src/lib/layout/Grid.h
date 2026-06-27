@@ -16,7 +16,6 @@ struct Grid {
 	Array<GridChild> children;
 	int nx = 0, ny = 0;
 	float spacing = 0;
-	rect margin = rect::EMPTY;
 	bool vertical = false;
 
 	void add_child(shared<Node> child, int x, int y);
@@ -27,7 +26,7 @@ struct Grid {
 
 	vec2 get_greed_factor() const;
 	vec2 get_content_min_size() const;
-	void negotiate_area(const rect &available);
+	void negotiate_content_area(const rect& available);
 
 	Array<Node*> get_children(ChildFilter f) const;
 

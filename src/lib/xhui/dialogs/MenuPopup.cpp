@@ -19,7 +19,7 @@ namespace xhui {
 MenuPopup::MenuPopup(const shared<Menu>& m, Panel* _parent, const rect& anchor, const std::function<void(const string&)>& f) :
 		Dialog("", 100, 20, _parent, DialogFlags::NoHeader | DialogFlags::CloseByEscape | DialogFlags::CloseByClickOutside | DialogFlags::FixedPosition) {
 	id = "menu-popup";
-	padding = Theme::_default.spacing;
+	Panel::set_option("padding", str(Theme::_default.spacing));
 	pos = anchor.p01();
 	grid = new Grid("grid");
 	Dialog::add_child(grid, 0, 0);
@@ -61,7 +61,7 @@ void MenuPopup::set_sub_menu(const Menu* m) {
 
 	//size_mode_x = SizeMode::ForwardChild;
 	//size_mode_y = SizeMode::ForwardChild;
-	const vec2 size = Dialog::get_content_min_size();
+	const vec2 size = get_effective_min_size();
 	width = (int)size.x;
 	height = (int)size.y;
 }

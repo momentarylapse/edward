@@ -19,7 +19,7 @@ Dialog add-entity-panel ''
 	Grid card-add '' class=card
 		Group group-add 'Add'
 			Grid ? ''
-				ListView add-list 'a' nobar dragsource=entity cangrabfocus=no noexpandy height=250
+				ListView add-list 'a' nobar dragsource=entity cangrabfocus=no style=larger noexpandy height=250
 )foodelim");
 
 	add_string("add-list", "Entity - empty");

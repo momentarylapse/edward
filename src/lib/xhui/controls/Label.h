@@ -29,7 +29,6 @@ public:
 		Center,
 		Right
 	} align;
-	rect margin;
 
 	XImage* image = nullptr;
 

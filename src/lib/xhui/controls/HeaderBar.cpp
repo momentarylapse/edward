@@ -55,11 +55,10 @@ void HeaderBar::on_mouse_move(const vec2& m, const vec2& d) {
 	}
 }
 
-void HeaderBar::negotiate_area(const rect &available) {
-	area = available;
-	vec2 s = grid_right->get_content_min_size();
+void HeaderBar::negotiate_content_area(const rect &available) {
+	vec2 s = grid_right->get_effective_min_size();
 	float R = Theme::_default.spacing;
-	grid_right->negotiate_area(rect(available.x2 - s.x - R, available.x2 - R, available.y1 + R, available.y2 - R));
+	grid_right->negotiate_outer_area(rect(available.x2 - s.x - R, available.x2 - R, available.y1 + R, available.y2 - R));
 }
 
 void HeaderBar::_draw(Painter *p) {

@@ -28,7 +28,8 @@ void Mode::set_side_panel(xhui::Panel* p) {
 	side_panel = p;
 	if (side_panel) {
 		side_panel->min_width_user = 360;
-		side_panel->size_mode_x = xhui::Control::SizeMode::Shrink;
+		side_panel->size_mode_x = xhui::Control::SizeMode::Fill;
+		side_panel->size_mode_y = xhui::Control::SizeMode::Expand;
 		doc->base_panel->embed("base-grid", 1, 0, side_panel);
 	}
 }

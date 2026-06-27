@@ -63,7 +63,7 @@ vec2 SpinButton::get_content_min_size() const {
 	auto dims = get_cached_text_dimensions(f2s(_max, decimals), default_font_regular, font_size, ui_scale);
 	auto s = Edit::get_content_min_size();
 	float w = dims.bounding_width / ui_scale;
-	s.x = w + margin_x*2;
+	s.x = w + padding.x1 + padding.x2;
 	if (show_buttons)
 		s.x += BUTTON_DX*2;
 	return s;

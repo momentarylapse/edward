@@ -16,8 +16,6 @@ public:
 	void _draw(Painter *p) override;
 	vec2 get_content_min_size() const override;
 
-	rect margin;
-
 	XImage* image = nullptr;
 };
 

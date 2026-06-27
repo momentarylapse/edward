@@ -10,8 +10,8 @@ Label::Label(const string &_id, const string &t) : Control(_id) {
 	text_w = text_h = -1;
 	font_size = Theme::_default.font_size;
 	align = Align::Left;
-	margin.x1 = margin.x2 = 0;
-	margin.y1 = margin.y2 = Theme::_default.label_margin_y;
+	padding.x1 = padding.x2 = 0;
+	padding.y1 = padding.y2 = Theme::_default.label_margin_y;
 	ignore_hover = true;
 
 	size_mode_x = SizeMode::Fill;
@@ -44,8 +44,8 @@ vec2 Label::get_content_min_size() const {
 			}
 		}
 		if (ellipsis)
-			return vec2(20, text_h) + margin.p00() + margin.p11();
-		return vec2(text_w, text_h) + margin.p00() + margin.p11();
+			return {20, text_h};
+		return {text_w, text_h};
 	}
 }
 
@@ -66,7 +66,7 @@ void Label::_draw(Painter *p) {
 		auto l = TextLayout::from_format_string(p, title, font_size);
 		text_h = l.box.height();
 		text_w = l.box.width();
-		draw_text_layout(p, area.p00() + margin.p00() - l.box.p00(), l, enabled ? Theme::_default.text_label : Theme::_default.text_disabled);
+		draw_text_layout(p, area.p00() + padding.p00() - l.box.p00(), l, enabled ? Theme::_default.text_label : Theme::_default.text_disabled);
 	} else {
 		if (url)
 			p->set_color(Theme::_default.text_link);
@@ -78,19 +78,19 @@ void Label::_draw(Painter *p) {
 		p->set_font(Theme::_default.font_name, font_size, bold, italic);
 		auto title_eff = title;
 		auto dim = get_cached_text_dimensions(title, p->face, font_size, ui_scale);
-		if (ellipsis and dim.bounding_width / ui_scale > area.width() - margin.width()) {
+		if (ellipsis and dim.bounding_width / ui_scale > area.width() - padding.width()) {
 			for (int n=title.num/2-1; n>=2; n--) {
 				title_eff = title.head(n) + "..." + title.tail(n);
 				dim = get_cached_text_dimensions(title_eff, p->face, font_size, ui_scale);
-				if (dim.bounding_width / ui_scale <= area.width() - margin.width())
+				if (dim.bounding_width / ui_scale <= area.width() - padding.width())
 					break;
 			}
 		}
-		float x = area.x1 + margin.x1;
+		float x = area.x1 + padding.x1;
 		if (align == Align::Center)
 			x = area.center().x - dim.bounding_width / ui_scale / 2;
 		else if (align == Align::Right)
-			x = area.x2 - dim.bounding_width / ui_scale - margin.x2;
+			x = area.x2 - dim.bounding_width / ui_scale - padding.x2;
 		p->draw_str({x, area.center().y - dim.inner_height() / ui_scale / 2}, title_eff);
 	}
 }
@@ -123,13 +123,6 @@ void Label::set_option(const string& key, const string& value) {
 		markup = true;
 	} else if (key == "ellipsis") {
 		ellipsis = true;
-	} else if (key == "margin") {
-		float f = value._float();
-		margin = rect(f, f, f, f);
-	} else if (key == "hmargin") {
-		margin.x1 = margin.x2 = value._float();
-	} else if (key == "vmargin") {
-		margin.y1 = margin.y2 = value._float();
 	} else {
 		Control::set_option(key, value);
 	}

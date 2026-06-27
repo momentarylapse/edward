@@ -3,7 +3,6 @@
 //
 
 #include "FileSelector.h"
-#include "Image.h"
 #include "Label.h"
 #include "ListView.h"
 #include "Button.h"
@@ -40,10 +39,13 @@ public:
 		icon_dir = create_rounded_icon(16, color(1, 0.8f, 0.6f, 0));
 		icon_file = create_rounded_icon(16, Theme::_default.text_label);
 		column_factories[0].f_create = [] (const string& _id) {
-			return new Image(_id, "");
+			return create_control("Image", "!padding=6", _id);
 		};
 		column_factories[0].f_set = [this] (Control* c, const string& t) {
 			c->set_option("image", (t == "d") ? icon_dir : icon_file);
+		};
+		column_factories[1].f_create = [] (const string& _id) {
+			return create_control("Label", "!padding=0", _id);
 		};
 		size_mode_x = SizeMode::Expand;
 		size_mode_y = SizeMode::Expand;

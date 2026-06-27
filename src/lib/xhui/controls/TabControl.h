@@ -15,7 +15,7 @@ class TabControl : public Control {
 public:
 	TabControl(const string& id, const string& title);
 
-	void negotiate_area(const rect& available) override;
+	void negotiate_content_area(const rect& available) override;
 	vec2 get_content_min_size() const override;
 	vec2 get_greed_factor() const override;
 	void add_child(shared<Control> c, int x, int y) override;

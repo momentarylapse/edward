@@ -52,12 +52,11 @@ Array<Control*> Group::get_children(ChildFilter f) const {
 	return {static_cast<Control*>(const_cast<Label*>(&header))};
 }
 
-void Group::negotiate_area(const rect& available) {
-	area = available;
-	float hh = header.get_content_min_size().y;
-	header.negotiate_area({available.p00(), available.p10() + vec2(0, hh)});
+void Group::negotiate_content_area(const rect& available) {
+	float hh = header.get_effective_min_size().y;
+	header.negotiate_outer_area({available.p00(), available.p10() + vec2(0, hh)});
 	if (child and child->visible)
-		child->negotiate_area({area.p00() + vec2(0, hh + SPACING), area.p11()});
+		child->negotiate_outer_area({available.p00() + vec2(0, hh + SPACING), available.p11()});
 }
 
 vec2 Group::get_content_min_size() const {

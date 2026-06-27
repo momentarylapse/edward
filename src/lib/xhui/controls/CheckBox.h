@@ -9,7 +9,7 @@ public:
 	CheckBox(const string &id, const string &title);
 
 	vec2 get_content_min_size() const override;
-	void negotiate_area(const rect& available) override;
+	void negotiate_content_area(const rect& available) override;
 	Array<Control*> get_children(ChildFilter f) const override;
 
 	void check(bool checked) override;
